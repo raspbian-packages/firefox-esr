@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -28,16 +28,16 @@ class PrintTargetThebes final : public PrintTarget {
   static already_AddRefed<PrintTargetThebes> CreateOrNull(
       gfxASurface* aSurface);
 
-  virtual nsresult BeginPrinting(const nsAString& aTitle,
-                                 const nsAString& aPrintToFileName,
-                                 int32_t aStartPage, int32_t aEndPage) override;
-  virtual nsresult EndPrinting() override;
-  virtual nsresult AbortPrinting() override;
-  virtual nsresult BeginPage() override;
-  virtual nsresult EndPage() override;
-  virtual void Finish() override;
+  nsresult BeginPrinting(const nsAString& aTitle,
+                         const nsAString& aPrintToFileName, int32_t aStartPage,
+                         int32_t aEndPage) override;
+  nsresult EndPrinting() override;
+  nsresult AbortPrinting() override;
+  nsresult BeginPage() override;
+  nsresult EndPage() override;
+  void Finish() override;
 
-  virtual already_AddRefed<DrawTarget> MakeDrawTarget(
+  already_AddRefed<DrawTarget> MakeDrawTarget(
       const IntSize& aSize, DrawEventRecorder* aRecorder = nullptr) override;
 
   already_AddRefed<DrawTarget> GetReferenceDrawTarget() final;

@@ -3,21 +3,30 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "ContentSearch",
-];
+var EXPORTED_SYMBOLS = ["ContentSearch"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-Cu.importGlobalProperties(["XMLHttpRequest"]);
+XPCOMUtils.defineLazyGlobalGetters(this, ["XMLHttpRequest"]);
 
-ChromeUtils.defineModuleGetter(this, "FormHistory",
-  "resource://gre/modules/FormHistory.jsm");
-ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "SearchSuggestionController",
-  "resource://gre/modules/SearchSuggestionController.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "FormHistory",
+  "resource://gre/modules/FormHistory.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "SearchSuggestionController",
+  "resource://gre/modules/SearchSuggestionController.jsm"
+);
 
 const INBOUND_MESSAGE = "ContentSearch";
 const OUTBOUND_MESSAGE = INBOUND_MESSAGE;
@@ -87,7 +96,6 @@ const MAX_SUGGESTIONS = 6;
  */
 
 var ContentSearch = {
-
   // Inbound events are queued and processed in FIFO order instead of handling
   // them immediately, which would result in non-FIFO responses due to the
   // asynchrononicity added by converting image data URIs to ArrayBuffers.
@@ -107,9 +115,12 @@ var ContentSearch = {
 
   init() {
     Services.obs.addObserver(this, "browser-search-engine-modified");
+    Services.obs.addObserver(this, "browser-search-service");
     Services.obs.addObserver(this, "shutdown-leaks-before-check");
     Services.prefs.addObserver("browser.search.hiddenOneOffs", this);
-    this._stringBundle = Services.strings.createBundle("chrome://global/locale/autocomplete.properties");
+    this._stringBundle = Services.strings.createBundle(
+      "chrome://global/locale/autocomplete.properties"
+    );
   },
 
   get searchSuggestionUIStrings() {
@@ -117,12 +128,20 @@ var ContentSearch = {
       return this._searchSuggestionUIStrings;
     }
     this._searchSuggestionUIStrings = {};
-    let searchBundle = Services.strings.createBundle("chrome://browser/locale/search.properties");
-    let stringNames = ["searchHeader", "searchForSomethingWith",
-                       "searchWithHeader", "searchSettings"];
+    let searchBundle = Services.strings.createBundle(
+      "chrome://browser/locale/search.properties"
+    );
+    let stringNames = [
+      "searchHeader",
+      "searchForSomethingWith2",
+      "searchWithHeader",
+      "searchSettings",
+    ];
 
     for (let name of stringNames) {
-      this._searchSuggestionUIStrings[name] = searchBundle.GetStringFromName(name);
+      this._searchSuggestionUIStrings[name] = searchBundle.GetStringFromName(
+        name
+      );
     }
     return this._searchSuggestionUIStrings;
   },
@@ -133,6 +152,7 @@ var ContentSearch = {
     }
 
     Services.obs.removeObserver(this, "browser-search-engine-modified");
+    Services.obs.removeObserver(this, "browser-search-service");
     Services.obs.removeObserver(this, "shutdown-leaks-before-check");
 
     this._eventQueue.length = 0;
@@ -147,11 +167,11 @@ var ContentSearch = {
    */
   focusInput(messageManager) {
     messageManager.sendAsyncMessage(OUTBOUND_MESSAGE, {
-      type: "FocusInput"
+      type: "FocusInput",
     });
   },
 
-  // Listeners and observers are added in nsBrowserGlue.js
+  // Listeners and observers are added in BrowserGlue.jsm
   receiveMessage(msg) {
     // Add a temporary event handler that exists only while the message is in
     // the event queue.  If the message's source docshell changes browsers in
@@ -184,18 +204,24 @@ var ContentSearch = {
 
   observe(subj, topic, data) {
     switch (topic) {
-    case "nsPref:changed":
-    case "browser-search-engine-modified":
-      this._eventQueue.push({
-        type: "Observe",
-        data,
-      });
-      this._processEventQueue();
-      break;
-    case "shutdown-leaks-before-check":
-      subj.wrappedJSObject.client.addBlocker(
-        "ContentSearch: Wait until the service is destroyed", () => this.destroy());
-      break;
+      case "browser-search-service":
+        if (data != "init-complete") {
+          break;
+        }
+      case "nsPref:changed":
+      case "browser-search-engine-modified":
+        this._eventQueue.push({
+          type: "Observe",
+          data,
+        });
+        this._processEventQueue();
+        break;
+      case "shutdown-leaks-before-check":
+        subj.wrappedJSObject.client.addBlocker(
+          "ContentSearch: Wait until the service is destroyed",
+          () => this.destroy()
+        );
+        break;
     }
   },
 
@@ -220,7 +246,11 @@ var ContentSearch = {
       "searchPurpose",
     ]);
     let engine = Services.search.getEngineByName(data.engineName);
-    let submission = engine.getSubmission(data.searchString, "", data.searchPurpose);
+    let submission = engine.getSubmission(
+      data.searchString,
+      "",
+      data.searchPurpose
+    );
     let browser = msg.target;
     let win = browser.ownerGlobal;
     if (!win) {
@@ -239,18 +269,28 @@ var ContentSearch = {
       // Since we're going to load the search in the same browser, blur the search
       // UI to prevent further interaction before we start loading.
       this._reply(msg, "Blur");
-      browser.loadURIWithFlags(submission.uri.spec,
-                               Ci.nsIWebNavigation.LOAD_FLAGS_NONE, null, null,
-                               submission.postData);
+      browser.loadURI(submission.uri.spec, {
+        postData: submission.postData,
+        triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
+          {
+            userContextId: win.gBrowser.selectedBrowser.getAttribute(
+              "userContextId"
+            ),
+          }
+        ),
+      });
     } else {
       let params = {
         postData: submission.postData,
-        inBackground: Services.prefs.getBoolPref("browser.tabs.loadInBackground"),
+        inBackground: Services.prefs.getBoolPref(
+          "browser.tabs.loadInBackground"
+        ),
       };
-      win.openUILinkIn(submission.uri.spec, where, params);
+      win.openTrustedLinkIn(submission.uri.spec, where, params);
     }
-    win.BrowserSearch.recordSearchInTelemetry(engine, data.healthReportKey,
-                                              { selection: data.selection });
+    win.BrowserSearch.recordSearchInTelemetry(engine, data.healthReportKey, {
+      selection: data.selection,
+    });
   },
 
   async getSuggestions(engineName, searchString, browser) {
@@ -306,40 +346,39 @@ var ContentSearch = {
       return false;
     }
     let browserData = this._suggestionDataForBrowser(browser.target, true);
-    FormHistory.update({
-      op: "bump",
-      fieldname: browserData.controller.formHistoryParam,
-      value: entry,
-    }, {
-      handleCompletion: () => {},
-      handleError: err => {
-        Cu.reportError("Error adding form history entry: " + err);
+    FormHistory.update(
+      {
+        op: "bump",
+        fieldname: browserData.controller.formHistoryParam,
+        value: entry,
       },
-    });
+      {
+        handleCompletion: () => {},
+        handleError: err => {
+          Cu.reportError("Error adding form history entry: " + err);
+        },
+      }
+    );
     return true;
   },
 
-  async currentStateObj(uriFlag = false) {
+  async currentStateObj() {
     let state = {
       engines: [],
       currentEngine: await this._currentEngineObj(),
     };
-    if (uriFlag) {
-      state.currentEngine.iconBuffer = Services.search.currentEngine.getIconURLBySize(16, 16);
-    }
+
     let pref = Services.prefs.getCharPref("browser.search.hiddenOneOffs");
     let hiddenList = pref ? pref.split(",") : [];
-    for (let engine of Services.search.getVisibleEngines()) {
+    for (let engine of await Services.search.getVisibleEngines()) {
       let uri = engine.getIconURLBySize(16, 16);
-      let iconBuffer = uri;
-      if (!uriFlag) {
-        iconBuffer = await this._arrayBufferFromDataURI(uri);
-      }
+      let iconData = await this._maybeConvertURIToArrayBuffer(uri);
+
       state.engines.push({
         name: engine.name,
-        iconBuffer,
+        iconData,
         hidden: hiddenList.includes(engine.name),
-        identifier: engine.identifier
+        identifier: engine.identifier,
       });
     }
     return state;
@@ -367,7 +406,10 @@ var ContentSearch = {
   _cancelSuggestions(msg) {
     let cancelled = false;
     // cancel active suggestion request
-    if (this._currentSuggestion && this._currentSuggestion.target === msg.target) {
+    if (
+      this._currentSuggestion &&
+      this._currentSuggestion.target === msg.target
+    ) {
       this._currentSuggestion.controller.stop();
       cancelled = true;
     }
@@ -411,20 +453,21 @@ var ContentSearch = {
   },
 
   _onMessageSetCurrentEngine(msg, data) {
-    Services.search.currentEngine = Services.search.getEngineByName(data);
+    Services.search.defaultEngine = Services.search.getEngineByName(data);
   },
 
   _onMessageManageEngines(msg) {
-    msg.target.ownerGlobal.openPreferences("paneSearch", { origin: "contentSearch" });
+    msg.target.ownerGlobal.openPreferences("paneSearch");
   },
 
   async _onMessageGetSuggestions(msg, data) {
-    this._ensureDataHasProperties(data, [
-      "engineName",
-      "searchString",
-    ]);
-    let {engineName, searchString} = data;
-    let suggestions = await this.getSuggestions(engineName, searchString, msg.target);
+    this._ensureDataHasProperties(data, ["engineName", "searchString"]);
+    let { engineName, searchString } = data;
+    let suggestions = await this.getSuggestions(
+      engineName,
+      searchString,
+      msg.target
+    );
 
     this._reply(msg, "Suggestions", {
       engineName: data.engineName,
@@ -450,18 +493,16 @@ var ContentSearch = {
     if (msg.target.contentWindow) {
       engine.speculativeConnect({
         window: msg.target.contentWindow,
-        originAttributes: msg.target.contentPrincipal.originAttributes
+        originAttributes: msg.target.contentPrincipal.originAttributes,
       });
     }
   },
 
   async _onObserve(data) {
-    if (data === "engine-current") {
+    if (data === "engine-default") {
       let engine = await this._currentEngineObj();
       this._broadcast("CurrentEngine", engine);
-    } else if (data !== "engine-default") {
-      // engine-default is always sent with engine-current and isn't otherwise
-      // relevant to content searches.
+    } else {
       let state = await this.currentStateObj();
       this._broadcast("CurrentState", state);
     }
@@ -490,35 +531,51 @@ var ContentSearch = {
   },
 
   _broadcast(type, data) {
-    Cc["@mozilla.org/globalmessagemanager;1"].
-      getService(Ci.nsIMessageListenerManager).
-      broadcastAsyncMessage(...this._msgArgs(type, data));
+    Services.mm.broadcastAsyncMessage(...this._msgArgs(type, data));
   },
 
   _msgArgs(type, data) {
-    return [OUTBOUND_MESSAGE, {
-      type,
-      data,
-    }];
+    return [
+      OUTBOUND_MESSAGE,
+      {
+        type,
+        data,
+      },
+    ];
   },
 
   async _currentEngineObj() {
-    let engine = Services.search.currentEngine;
+    let engine = Services.search.defaultEngine;
     let favicon = engine.getIconURLBySize(16, 16);
     let placeholder = this._stringBundle.formatStringFromName(
-      "searchWithEngine", [engine.name], 1);
+      "searchWithEngine",
+      [engine.name],
+      1
+    );
     let obj = {
       name: engine.name,
       placeholder,
-      iconBuffer: await this._arrayBufferFromDataURI(favicon),
+      iconData: await this._maybeConvertURIToArrayBuffer(favicon),
     };
     return obj;
   },
 
-  _arrayBufferFromDataURI(uri) {
+  _maybeConvertURIToArrayBuffer(uri) {
     if (!uri) {
       return Promise.resolve(null);
     }
+
+    // The uri received here can be of two types
+    // 1 - resource://search-plugins/images/foo.ico
+    // 2 - data:image/x-icon;base64,VERY-LONG-STRING
+    //
+    // If the URI is not a data: URI, there's no point in converting
+    // it to an arraybuffer (which is used to optimize passing the data
+    // accross processes): we can just pass the original URI, which is cheaper.
+    if (!uri.startsWith("data:")) {
+      return Promise.resolve(uri);
+    }
+
     return new Promise(resolve => {
       let xhr = new XMLHttpRequest();
       xhr.open("GET", uri, true);
@@ -548,8 +605,7 @@ var ContentSearch = {
 
   _initService() {
     if (!this._initServicePromise) {
-      this._initServicePromise =
-        new Promise(resolve => Services.search.init(resolve));
+      this._initServicePromise = Services.search.init();
     }
     return this._initServicePromise;
   },

@@ -133,9 +133,9 @@ class nsHtml5StreamParserPtr {
     return get();
   }
   nsHtml5StreamParser* operator->() const MOZ_NO_ADDREF_RELEASE_ON_RETURN {
-    NS_PRECONDITION(mRawPtr != 0,
-                    "You can't dereference a NULL nsHtml5StreamParserPtr with "
-                    "operator->().");
+    MOZ_ASSERT(mRawPtr != 0,
+               "You can't dereference a NULL nsHtml5StreamParserPtr with "
+               "operator->().");
     return get();
   }
   nsHtml5StreamParserPtr* get_address()
@@ -153,9 +153,9 @@ class nsHtml5StreamParserPtr {
 
  public:
   nsHtml5StreamParser& operator*() const {
-    NS_PRECONDITION(mRawPtr != 0,
-                    "You can't dereference a NULL nsHtml5StreamParserPtr with "
-                    "operator*().");
+    MOZ_ASSERT(mRawPtr != 0,
+               "You can't dereference a NULL nsHtml5StreamParserPtr with "
+               "operator*().");
     return *get();
   }
   nsHtml5StreamParser** StartAssignment() {

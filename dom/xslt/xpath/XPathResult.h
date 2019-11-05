@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,7 +10,7 @@
 #include "nsAutoPtr.h"
 #include "nsCOMPtr.h"
 #include "nsCOMArray.h"
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsCycleCollectionParticipant.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
@@ -18,7 +18,6 @@
 #include "nsWrapperCache.h"
 #include "nsINode.h"
 
-class nsIDocument;
 class txAExprResult;
 
 // {662f2c9a-c7cd-4cab-9349-e733df5a838c}
@@ -171,7 +170,7 @@ class XPathResult final : public nsIXPathResult,
   nsCOMPtr<nsINode> mParent;
   RefPtr<txAExprResult> mResult;
   nsCOMArray<nsINode> mResultNodes;
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<Document> mDocument;
   nsWeakPtr mContextNode;
   uint32_t mCurrentPos;
   uint16_t mResultType;

@@ -40,11 +40,11 @@ UniquePtr<WebRequestChannelEntry> WebRequestService::RegisterChannel(
   MOZ_DIAGNOSTIC_ASSERT(!key);
   key.OrInsert([&entry]() { return entry.get(); });
 
-  return Move(entry);
+  return entry;
 }
 
 already_AddRefed<nsITraceableChannel> WebRequestService::GetTraceableChannel(
-    uint64_t aChannelId, nsAtom* aAddonId, nsIContentParent* aContentParent) {
+    uint64_t aChannelId, nsAtom* aAddonId, ContentParent* aContentParent) {
   if (auto entry = mChannelEntries.Get(aChannelId)) {
     if (entry->mChannel) {
       return entry->mChannel->GetTraceableChannel(aAddonId, aContentParent);

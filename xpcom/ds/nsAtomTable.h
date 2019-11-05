@@ -16,15 +16,9 @@ void NS_ShutdownAtomTable();
 namespace mozilla {
 struct AtomsSizes {
   size_t mTable;
-  size_t mStaticAtomObjects;
-  size_t mDynamicAtomObjects;
-  size_t mDynamicUnsharedBuffers;
+  size_t mDynamicAtoms;
 
-  AtomsSizes()
-      : mTable(0),
-        mStaticAtomObjects(0),
-        mDynamicAtomObjects(0),
-        mDynamicUnsharedBuffers(0) {}
+  AtomsSizes() : mTable(0), mDynamicAtoms(0) {}
 };
 }  // namespace mozilla
 

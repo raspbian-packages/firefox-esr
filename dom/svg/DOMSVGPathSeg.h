@@ -13,17 +13,19 @@
 #include "SVGPathSegUtils.h"
 #include "mozilla/dom/SVGPathSegBinding.h"
 
-class nsSVGElement;
-
 #define MOZ_SVG_LIST_INDEX_BIT_COUNT 31
 
 namespace mozilla {
 
-#define CHECK_ARG_COUNT_IN_SYNC(segType)                                  \
-  MOZ_ASSERT(                                                             \
-      ArrayLength(mArgs) ==                                               \
-              SVGPathSegUtils::ArgCountForType(uint32_t(segType)) ||      \
-          uint32_t(segType) == dom::SVGPathSegBinding::PATHSEG_CLOSEPATH, \
+namespace dom {
+class SVGElement;
+}
+
+#define CHECK_ARG_COUNT_IN_SYNC(segType)                                   \
+  MOZ_ASSERT(                                                              \
+      ArrayLength(mArgs) ==                                                \
+              SVGPathSegUtils::ArgCountForType(uint32_t(segType)) ||       \
+          uint32_t(segType) == dom::SVGPathSeg_Binding::PATHSEG_CLOSEPATH, \
       "Arg count/array size out of sync")
 
 #define IMPL_SVGPATHSEG_SUBCLASS_COMMON(segName, segType)                     \
@@ -49,7 +51,7 @@ namespace mozilla {
                                                                               \
   virtual JSObject* WrapObject(JSContext* aCx,                                \
                                JS::Handle<JSObject*> aGivenProto) override {  \
-    return dom::SVGPathSeg##segName##Binding::Wrap(aCx, this, aGivenProto);   \
+    return dom::SVGPathSeg##segName##_Binding::Wrap(aCx, this, aGivenProto);  \
   }
 
 /**
@@ -132,7 +134,7 @@ class DOMSVGPathSeg : public nsWrapperCache {
    * encoded into a float, followed by its arguments in the same order as they
    * are given in the <path> element's 'd' attribute).
    */
-  void ToSVGPathSegEncodedData(float* aData);
+  void ToSVGPathSegEncodedData(float* aRaw);
 
   /**
    * The type of this path segment.
@@ -171,7 +173,7 @@ class DOMSVGPathSeg : public nsWrapperCache {
     }
   }
 
-  nsSVGElement* Element() { return mList->Element(); }
+  dom::SVGElement* Element() { return mList->Element(); }
 
   /**
    * Get a reference to the internal SVGPathSeg list item that this DOM wrapper
@@ -204,7 +206,7 @@ class DOMSVGPathSegClosePath : public DOMSVGPathSeg {
   DOMSVGPathSegClosePath() : DOMSVGPathSeg() {}
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(ClosePath,
-                                  dom::SVGPathSegBinding::PATHSEG_CLOSEPATH)
+                                  dom::SVGPathSeg_Binding::PATHSEG_CLOSEPATH)
 
  protected:
   // To allow IMPL_SVGPATHSEG_SUBCLASS_COMMON above to compile we need an
@@ -221,7 +223,7 @@ class DOMSVGPathSegMovetoAbs : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(MovetoAbs,
-                                  dom::SVGPathSegBinding::PATHSEG_MOVETO_ABS)
+                                  dom::SVGPathSeg_Binding::PATHSEG_MOVETO_ABS)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -240,7 +242,7 @@ class DOMSVGPathSegMovetoRel : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(MovetoRel,
-                                  dom::SVGPathSegBinding::PATHSEG_MOVETO_REL)
+                                  dom::SVGPathSeg_Binding::PATHSEG_MOVETO_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -259,7 +261,7 @@ class DOMSVGPathSegLinetoAbs : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(LinetoAbs,
-                                  dom::SVGPathSegBinding::PATHSEG_LINETO_ABS)
+                                  dom::SVGPathSeg_Binding::PATHSEG_LINETO_ABS)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -278,7 +280,7 @@ class DOMSVGPathSegLinetoRel : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(LinetoRel,
-                                  dom::SVGPathSegBinding::PATHSEG_LINETO_REL)
+                                  dom::SVGPathSeg_Binding::PATHSEG_LINETO_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -316,7 +318,7 @@ class DOMSVGPathSegCurvetoCubicAbs : public DOMSVGPathSeg {
   void SetY2(float aY2, ErrorResult& rv);
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
-      CurvetoCubicAbs, dom::SVGPathSegBinding::PATHSEG_CURVETO_CUBIC_ABS)
+      CurvetoCubicAbs, dom::SVGPathSeg_Binding::PATHSEG_CURVETO_CUBIC_ABS)
 
  protected:
   float mArgs[6];
@@ -336,7 +338,7 @@ class DOMSVGPathSegCurvetoCubicRel : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
-      CurvetoCubicRel, dom::SVGPathSegBinding::PATHSEG_CURVETO_CUBIC_REL)
+      CurvetoCubicRel, dom::SVGPathSeg_Binding::PATHSEG_CURVETO_CUBIC_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -367,7 +369,7 @@ class DOMSVGPathSegCurvetoQuadraticAbs : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       CurvetoQuadraticAbs,
-      dom::SVGPathSegBinding::PATHSEG_CURVETO_QUADRATIC_ABS)
+      dom::SVGPathSeg_Binding::PATHSEG_CURVETO_QUADRATIC_ABS)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -394,7 +396,7 @@ class DOMSVGPathSegCurvetoQuadraticRel : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       CurvetoQuadraticRel,
-      dom::SVGPathSegBinding::PATHSEG_CURVETO_QUADRATIC_REL)
+      dom::SVGPathSeg_Binding::PATHSEG_CURVETO_QUADRATIC_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -424,7 +426,7 @@ class DOMSVGPathSegArcAbs : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(ArcAbs,
-                                  dom::SVGPathSegBinding::PATHSEG_ARC_ABS)
+                                  dom::SVGPathSeg_Binding::PATHSEG_ARC_ABS)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -437,9 +439,9 @@ class DOMSVGPathSegArcAbs : public DOMSVGPathSeg {
   float Angle();
   void SetAngle(float aAngle, ErrorResult& rv);
   bool LargeArcFlag();
-  void SetLargeArcFlag(bool aFlag, ErrorResult& rv);
+  void SetLargeArcFlag(bool aLargeArcFlag, ErrorResult& rv);
   bool SweepFlag();
-  void SetSweepFlag(bool aFlag, ErrorResult& rv);
+  void SetSweepFlag(bool aSweepFlag, ErrorResult& rv);
 
  protected:
   float mArgs[7];
@@ -460,7 +462,7 @@ class DOMSVGPathSegArcRel : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(ArcRel,
-                                  dom::SVGPathSegBinding::PATHSEG_ARC_REL)
+                                  dom::SVGPathSeg_Binding::PATHSEG_ARC_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -473,9 +475,9 @@ class DOMSVGPathSegArcRel : public DOMSVGPathSeg {
   float Angle();
   void SetAngle(float aAngle, ErrorResult& rv);
   bool LargeArcFlag();
-  void SetLargeArcFlag(bool aFlag, ErrorResult& rv);
+  void SetLargeArcFlag(bool aLargeArcFlag, ErrorResult& rv);
   bool SweepFlag();
-  void SetSweepFlag(bool aFlag, ErrorResult& rv);
+  void SetSweepFlag(bool aSweepFlag, ErrorResult& rv);
 
  protected:
   float mArgs[7];
@@ -489,7 +491,7 @@ class DOMSVGPathSegLinetoHorizontalAbs : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       LinetoHorizontalAbs,
-      dom::SVGPathSegBinding::PATHSEG_LINETO_HORIZONTAL_ABS)
+      dom::SVGPathSeg_Binding::PATHSEG_LINETO_HORIZONTAL_ABS)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -506,7 +508,7 @@ class DOMSVGPathSegLinetoHorizontalRel : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       LinetoHorizontalRel,
-      dom::SVGPathSegBinding::PATHSEG_LINETO_HORIZONTAL_REL)
+      dom::SVGPathSeg_Binding::PATHSEG_LINETO_HORIZONTAL_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -522,7 +524,7 @@ class DOMSVGPathSegLinetoVerticalAbs : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
-      LinetoVerticalAbs, dom::SVGPathSegBinding::PATHSEG_LINETO_VERTICAL_ABS)
+      LinetoVerticalAbs, dom::SVGPathSeg_Binding::PATHSEG_LINETO_VERTICAL_ABS)
 
   float Y();
   void SetY(float aY, ErrorResult& rv);
@@ -538,7 +540,7 @@ class DOMSVGPathSegLinetoVerticalRel : public DOMSVGPathSeg {
   }
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
-      LinetoVerticalRel, dom::SVGPathSegBinding::PATHSEG_LINETO_VERTICAL_REL)
+      LinetoVerticalRel, dom::SVGPathSeg_Binding::PATHSEG_LINETO_VERTICAL_REL)
 
   float Y();
   void SetY(float aY, ErrorResult& rv);
@@ -559,7 +561,7 @@ class DOMSVGPathSegCurvetoCubicSmoothAbs : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       CurvetoCubicSmoothAbs,
-      dom::SVGPathSegBinding::PATHSEG_CURVETO_CUBIC_SMOOTH_ABS)
+      dom::SVGPathSeg_Binding::PATHSEG_CURVETO_CUBIC_SMOOTH_ABS)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -586,7 +588,7 @@ class DOMSVGPathSegCurvetoCubicSmoothRel : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       CurvetoCubicSmoothRel,
-      dom::SVGPathSegBinding::PATHSEG_CURVETO_CUBIC_SMOOTH_REL)
+      dom::SVGPathSeg_Binding::PATHSEG_CURVETO_CUBIC_SMOOTH_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -610,7 +612,7 @@ class DOMSVGPathSegCurvetoQuadraticSmoothAbs : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       CurvetoQuadraticSmoothAbs,
-      dom::SVGPathSegBinding::PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS)
+      dom::SVGPathSeg_Binding::PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS)
 
   float X();
   void SetX(float aX, ErrorResult& rv);
@@ -630,7 +632,7 @@ class DOMSVGPathSegCurvetoQuadraticSmoothRel : public DOMSVGPathSeg {
 
   IMPL_SVGPATHSEG_SUBCLASS_COMMON(
       CurvetoQuadraticSmoothRel,
-      dom::SVGPathSegBinding::PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL)
+      dom::SVGPathSeg_Binding::PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL)
 
   float X();
   void SetX(float aX, ErrorResult& rv);

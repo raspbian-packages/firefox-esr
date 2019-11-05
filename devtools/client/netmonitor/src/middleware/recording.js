@@ -4,13 +4,9 @@
 
 "use strict";
 
-const {
-  TOGGLE_RECORDING,
-} = require("../constants");
+const { TOGGLE_RECORDING } = require("../constants");
 
-const {
-  getRecordingState,
-} = require("../selectors/index");
+const { getRecordingState } = require("../selectors/index");
 
 /**
  * Start/stop HTTP traffic recording.
@@ -26,7 +22,7 @@ function recordingMiddleware(connector) {
     // Pause/resume HTTP monitoring according to
     // the user action.
     if (action.type === TOGGLE_RECORDING) {
-      let recording = getRecordingState(store.getState());
+      const recording = getRecordingState(store.getState());
       if (recording) {
         connector.resume();
       } else {

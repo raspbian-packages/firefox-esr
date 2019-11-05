@@ -11,7 +11,7 @@ function run_test() {
   add_tls_server_setup("BadCertServer", "bad_certs");
 
   let fakeOCSPResponder = new HttpServer();
-  fakeOCSPResponder.registerPrefixHandler("/", function (request, response) {
+  fakeOCSPResponder.registerPrefixHandler("/", function(request, response) {
     response.setStatusLine(request.httpVersion, 500, "Internal Server Error");
   });
   fakeOCSPResponder.start(8888);
@@ -19,37 +19,56 @@ function run_test() {
   // Test successful connection (failedCertChain should be null,
   // succeededCertChain should be set as expected)
   add_connection_test(
-    "good.include-subdomains.pinning.example.com", PRErrorCodeSuccess, null,
-    function withSecurityInfo(aSSLStatus) {
-      let sslstatus = aSSLStatus.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus;
-      equal(sslstatus.failedCertChain, null,
-            "failedCertChain for a successful connection should be null");
-      ok(sslstatus.succeededCertChain.equals(build_cert_chain(["default-ee", "test-ca"])),
-            "succeededCertChain for a successful connection should be as expected");
+    "good.include-subdomains.pinning.example.com",
+    PRErrorCodeSuccess,
+    null,
+    function withSecurityInfo(aSecInfo) {
+      equal(
+        aSecInfo.failedCertChain,
+        null,
+        "failedCertChain for a successful connection should be null"
+      );
+      ok(
+        aSecInfo.succeededCertChain.equals(
+          build_cert_chain(["default-ee", "test-ca"])
+        ),
+        "succeededCertChain for a successful connection should be as expected"
+      );
     }
   );
 
   // Test failed connection (failedCertChain should be set as expected,
   // succeededCertChain should be null)
   add_connection_test(
-    "expired.example.com", SEC_ERROR_EXPIRED_CERTIFICATE, null,
-    function withSecurityInfo(aSSLStatus) {
-      let sslstatus = aSSLStatus.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus;
-      equal(sslstatus.succeededCertChain, null,
-            "succeededCertChain for a failed connection should be null");
-      ok(sslstatus.failedCertChain.equals(build_cert_chain(["expired-ee", "test-ca"])),
-            "failedCertChain for a failed connection should be as expected");
+    "expired.example.com",
+    SEC_ERROR_EXPIRED_CERTIFICATE,
+    null,
+    function withSecurityInfo(aSecInfo) {
+      equal(
+        aSecInfo.succeededCertChain,
+        null,
+        "succeededCertChain for a failed connection should be null"
+      );
+      ok(
+        aSecInfo.failedCertChain.equals(
+          build_cert_chain(["expired-ee", "test-ca"])
+        ),
+        "failedCertChain for a failed connection should be as expected"
+      );
     }
   );
 
   // Ensure the correct failed cert chain is set on cert override
   let overrideStatus = {
-    failedCertChain: build_cert_chain(["expired-ee", "test-ca"])
+    failedCertChain: build_cert_chain(["expired-ee", "test-ca"]),
   };
-  add_cert_override_test("expired.example.com",
-                         Ci.nsICertOverrideService.ERROR_TIME,
-                         SEC_ERROR_EXPIRED_CERTIFICATE, undefined,
-                         overrideStatus);
+  add_cert_override_test(
+    "expired.example.com",
+    Ci.nsICertOverrideService.ERROR_TIME,
+    SEC_ERROR_EXPIRED_CERTIFICATE,
+    undefined,
+    overrideStatus
+  );
 
   run_next_test();
 }

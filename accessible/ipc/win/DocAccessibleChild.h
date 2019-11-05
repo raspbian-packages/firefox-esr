@@ -9,7 +9,7 @@
 
 #include "mozilla/a11y/COMPtrTypes.h"
 #include "mozilla/a11y/DocAccessibleChildBase.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/mscom/Ptr.h"
 
 namespace mozilla {
@@ -54,10 +54,14 @@ class DocAccessibleChild : public DocAccessibleChildBase {
   bool SendTextChangeEvent(const uint64_t& aID, const nsString& aStr,
                            const int32_t& aStart, const uint32_t& aLen,
                            const bool& aIsInsert, const bool& aFromUser,
-                           const bool aDoSyncCheck = true);
+                           const bool aDoSync = false);
   bool SendSelectionEvent(const uint64_t& aID, const uint64_t& aWidgetID,
                           const uint32_t& aType);
-  bool SendRoleChangedEvent(const uint32_t& aRole);
+  bool SendRoleChangedEvent(const a11y::role& aRole);
+  bool SendScrollingEvent(const uint64_t& aID, const uint64_t& aType,
+                          const uint32_t& aScrollX, const uint32_t& aScrollY,
+                          const uint32_t& aMaxScrollX,
+                          const uint32_t& aMaxScrollY);
 
   bool ConstructChildDocInParentProcess(DocAccessibleChild* aNewChildDoc,
                                         uint64_t aUniqueID, uint32_t aMsaaID);
@@ -112,7 +116,7 @@ class DocAccessibleChild : public DocAccessibleChildBase {
       // we move NewTree manually (ugh). We still construct with an empty
       // NewTree above so that the compiler catches any changes made to the
       // ShowEventData structure in IPDL.
-      mEventData.NewTree() = Move(aEventData.NewTree());
+      mEventData.NewTree() = std::move(aEventData.NewTree());
     }
 
     void Dispatch(DocAccessibleChild* aIPCDoc) override {
@@ -226,14 +230,41 @@ class DocAccessibleChild : public DocAccessibleChildBase {
   };
 
   struct SerializedRoleChanged final : public DeferredEvent {
-    explicit SerializedRoleChanged(DocAccessibleChild* aTarget, uint32_t aRole)
+    explicit SerializedRoleChanged(DocAccessibleChild* aTarget,
+                                   a11y::role aRole)
         : DeferredEvent(aTarget), mRole(aRole) {}
 
     void Dispatch(DocAccessibleChild* aIPCDoc) override {
       Unused << aIPCDoc->SendRoleChangedEvent(mRole);
     }
 
-    uint32_t mRole;
+    a11y::role mRole;
+  };
+
+  struct SerializedScrolling final : public DeferredEvent {
+    explicit SerializedScrolling(DocAccessibleChild* aTarget, uint64_t aID,
+                                 uint64_t aType, uint32_t aScrollX,
+                                 uint32_t aScrollY, uint32_t aMaxScrollX,
+                                 uint32_t aMaxScrollY)
+        : DeferredEvent(aTarget),
+          mID(aID),
+          mType(aType),
+          mScrollX(aScrollX),
+          mScrollY(aScrollY),
+          mMaxScrollX(aMaxScrollX),
+          mMaxScrollY(aMaxScrollY) {}
+
+    void Dispatch(DocAccessibleChild* aIPCDoc) override {
+      Unused << aIPCDoc->SendScrollingEvent(mID, mType, mScrollX, mScrollY,
+                                            mMaxScrollX, mMaxScrollY);
+    }
+
+    uint64_t mID;
+    uint64_t mType;
+    uint32_t mScrollX;
+    uint32_t mScrollY;
+    uint32_t mMaxScrollX;
+    uint32_t mMaxScrollY;
   };
 
   struct SerializedEvent final : public DeferredEvent {
@@ -258,9 +289,10 @@ class DocAccessibleChild : public DocAccessibleChildBase {
           mMsaaID(aMsaaID) {}
 
     void Dispatch(DocAccessibleChild* aParentIPCDoc) override {
-      auto tabChild = static_cast<dom::TabChild*>(aParentIPCDoc->Manager());
-      MOZ_ASSERT(tabChild);
-      Unused << tabChild->SendPDocAccessibleConstructor(
+      auto browserChild =
+          static_cast<dom::BrowserChild*>(aParentIPCDoc->Manager());
+      MOZ_ASSERT(browserChild);
+      Unused << browserChild->SendPDocAccessibleConstructor(
           mIPCDoc, aParentIPCDoc, mUniqueID, mMsaaID, IAccessibleHolder());
       mIPCDoc->SetConstructedInParentProcess();
     }

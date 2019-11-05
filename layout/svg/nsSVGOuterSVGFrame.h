@@ -16,6 +16,10 @@
 class gfxContext;
 class nsSVGForeignObjectFrame;
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 ////////////////////////////////////////////////////////////////////////
 // nsSVGOuterSVGFrame class
 
@@ -23,11 +27,12 @@ class nsSVGOuterSVGFrame final : public nsSVGDisplayContainerFrame,
                                  public nsISVGSVGFrame {
   typedef mozilla::image::imgDrawingParams imgDrawingParams;
 
-  friend nsContainerFrame* NS_NewSVGOuterSVGFrame(nsIPresShell* aPresShell,
-                                                  nsStyleContext* aContext);
+  friend nsContainerFrame* NS_NewSVGOuterSVGFrame(
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
 
  protected:
-  explicit nsSVGOuterSVGFrame(nsStyleContext* aContext);
+  explicit nsSVGOuterSVGFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext);
 
  public:
   NS_DECL_QUERYFRAME
@@ -45,7 +50,7 @@ class nsSVGOuterSVGFrame final : public nsSVGDisplayContainerFrame,
   virtual nscoord GetPrefISize(gfxContext* aRenderingContext) override;
 
   virtual mozilla::IntrinsicSize GetIntrinsicSize() override;
-  virtual nsSize GetIntrinsicRatio() override;
+  virtual mozilla::AspectRatio GetIntrinsicRatio() override;
 
   virtual mozilla::LogicalSize ComputeSize(
       gfxContext* aRenderingContext, mozilla::WritingMode aWritingMode,
@@ -68,7 +73,11 @@ class nsSVGOuterSVGFrame final : public nsSVGDisplayContainerFrame,
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
 
-  virtual nsSplittableType GetSplittableType() const override;
+  bool IsFrameOfType(uint32_t aFlags) const override {
+    return nsSVGDisplayContainerFrame::IsFrameOfType(
+        aFlags &
+        ~(eSupportsContainLayoutAndPaint | eReplaced | eReplacedSizing));
+  }
 
 #ifdef DEBUG_FRAME_DUMP
   virtual nsresult GetFrameName(nsAString& aResult) const override {
@@ -173,7 +182,7 @@ class nsSVGOuterSVGFrame final : public nsSVGDisplayContainerFrame,
   // A hash-set containing our nsSVGForeignObjectFrame descendants. Note we use
   // a hash-set to avoid the O(N^2) behavior we'd get tearing down an SVG frame
   // subtree if we were to use a list (see bug 381285 comment 20).
-  nsAutoPtr<nsTHashtable<nsPtrHashKey<nsSVGForeignObjectFrame> > >
+  nsAutoPtr<nsTHashtable<nsPtrHashKey<nsSVGForeignObjectFrame>>>
       mForeignObjectHash;
 
   nsRegion mInvalidRegion;
@@ -182,6 +191,11 @@ class nsSVGOuterSVGFrame final : public nsSVGDisplayContainerFrame,
 
   bool mViewportInitialized;
   bool mIsRootContent;
+
+ private:
+  template <typename... Args>
+  bool IsContainingWindowElementOfType(nsIFrame** aContainingWindowFrame,
+                                       Args... aArgs) const;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -212,10 +226,11 @@ class nsSVGOuterSVGFrame final : public nsSVGDisplayContainerFrame,
  */
 class nsSVGOuterSVGAnonChildFrame final : public nsSVGDisplayContainerFrame {
   friend nsContainerFrame* NS_NewSVGOuterSVGAnonChildFrame(
-      nsIPresShell* aPresShell, nsStyleContext* aContext);
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
 
-  explicit nsSVGOuterSVGAnonChildFrame(nsStyleContext* aContext)
-      : nsSVGDisplayContainerFrame(aContext, kClassID) {}
+  explicit nsSVGOuterSVGAnonChildFrame(ComputedStyle* aStyle,
+                                       nsPresContext* aPresContext)
+      : nsSVGDisplayContainerFrame(aStyle, aPresContext, kClassID) {}
 
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsSVGOuterSVGAnonChildFrame)
@@ -224,6 +239,9 @@ class nsSVGOuterSVGAnonChildFrame final : public nsSVGDisplayContainerFrame {
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
 #endif
+
+  virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
+                                const nsDisplayListSet& aLists) override;
 
 #ifdef DEBUG_FRAME_DUMP
   virtual nsresult GetFrameName(nsAString& aResult) const override {

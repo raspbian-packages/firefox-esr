@@ -24,7 +24,6 @@ import org.mozilla.gecko.mozglue.SafeIntent;
 import org.mozilla.gecko.notifications.WhatsNewReceiver;
 import org.mozilla.gecko.preferences.GeckoPreferences;
 import org.mozilla.gecko.reader.ReaderModeUtils;
-import org.mozilla.gecko.tabs.TabHistoryController;
 import org.mozilla.gecko.util.BundleEventListener;
 import org.mozilla.gecko.util.EventCallback;
 import org.mozilla.gecko.util.GeckoBundle;
@@ -67,6 +66,7 @@ public class Tabs implements BundleEventListener {
     // All writes to mSelectedTab must be synchronized on the Tabs instance.
     // In general, it's preferred to always use selectTab()).
     private volatile Tab mSelectedTab;
+    private volatile int mPreviouslySelectedTabId = INVALID_TAB_ID;
 
     // All accesses to mTabs must be synchronized on the Tabs instance.
     private final HashMap<Integer, Tab> mTabs = new HashMap<Integer, Tab>();
@@ -95,7 +95,9 @@ public class Tabs implements BundleEventListener {
     // Used to indicate a new tab should be appended to the current tabs.
     public static final int NEW_LAST_INDEX = -1;
 
-    private static final AtomicInteger sTabId = new AtomicInteger(0);
+    // Bug 1410749: Desktop numbers tabs starting from 1, and various Webextension bits have
+    // inherited that assumption and treat 0 as an invalid tab.
+    private static final AtomicInteger sTabId = new AtomicInteger(1);
     private volatile boolean mInitialTabsAdded;
 
     private Context mAppContext;
@@ -153,6 +155,7 @@ public class Tabs implements BundleEventListener {
             "Content:LocationChange",
             "Content:SubframeNavigation",
             "Content:SecurityChange",
+            "Content:ContentBlockingEvent",
             "Content:StateChange",
             "Content:LoadError",
             "Content:DOMContentLoaded",
@@ -337,12 +340,16 @@ public class Tabs implements BundleEventListener {
         notifyListeners(tab, TabEvents.SELECTED);
 
         if (oldTab != null) {
+            mPreviouslySelectedTabId = oldTab.getId();
             notifyListeners(oldTab, TabEvents.UNSELECTED);
         }
 
         // Pass a message to Gecko to update tab state in BrowserApp.
-        final GeckoBundle data = new GeckoBundle(1);
+        final GeckoBundle data = new GeckoBundle(2);
         data.putInt("id", tab.getId());
+        if (oldTab != null && mTabs.containsKey(oldTab.getId())) {
+            data.putInt("previousTabId", oldTab.getId());
+        }
         mEventDispatcher.dispatch("Tab:Selected", data);
         EventDispatcher.getInstance().dispatch("Tab:Selected", data);
         return tab;
@@ -492,15 +499,12 @@ public class Tabs implements BundleEventListener {
             }
         }
 
-        Tab parent = getTab(tab.getParentId());
-        if (parent != null) {
-            // If the next tab is a sibling, switch to it. Otherwise go back to the parent.
-            if (nextTab != null && nextTab.getParentId() == tab.getParentId())
-                return nextTab;
-            else
-                return parent;
+        final Tab parentTab = getTab(tab.getParentId());
+        if (tab.getParentId() == mPreviouslySelectedTabId && tab.getParentId() != INVALID_TAB_ID && parentTab != null) {
+            return parentTab;
+        } else {
+            return nextTab;
         }
-        return nextTab;
     }
 
     public Iterable<Tab> getTabsInOrder() {
@@ -618,6 +622,10 @@ public class Tabs implements BundleEventListener {
             tab.updatePageAction();
             notifyListeners(tab, TabEvents.SECURITY_CHANGE);
 
+        } else if ("Content:ContentBlockingEvent".equals(event)) {
+            tab.updateTracking(message.getString("tracking"));
+            notifyListeners(tab, TabEvents.TRACKING_CHANGE);
+
         } else if ("Content:StateChange".equals(event)) {
             final int state = message.getInt("state");
             if ((state & GeckoAppShell.WPL_STATE_IS_NETWORK) == 0) {
@@ -637,12 +645,17 @@ public class Tabs implements BundleEventListener {
             }
 
         } else if ("Content:LoadError".equals(event)) {
-            tab.handleContentLoaded();
+            tab.handleLoadError();
             notifyListeners(tab, Tabs.TabEvents.LOAD_ERROR);
 
         } else if ("Content:DOMContentLoaded".equals(event)) {
-            tab.handleContentLoaded();
-            notifyListeners(tab, TabEvents.LOADED);
+            if (TextUtils.isEmpty(message.getString("errorType"))) {
+                tab.handleContentLoaded();
+                notifyListeners(tab, TabEvents.LOADED);
+            } else {
+                tab.handleLoadError();
+                notifyListeners(tab, TabEvents.LOAD_ERROR);
+            }
 
         } else if ("Content:PageShow".equals(event)) {
             tab.setLoadedFromCache(message.getBoolean("fromCache"));
@@ -757,6 +770,7 @@ public class Tabs implements BundleEventListener {
         PAGE_SHOW,
         LINK_FEED,
         SECURITY_CHANGE,
+        TRACKING_CHANGE,
         DESKTOP_MODE_CHANGE,
         RECORDING_CHANGE,
         BOOKMARK_ADDED,
@@ -824,6 +838,8 @@ public class Tabs implements BundleEventListener {
                     mGeckoView.coverUntilFirstPaint(color);
                 }
                 queuePersistAllTabs();
+                tab.onChange();
+                break;
             case UNSELECTED:
                 tab.onChange();
                 break;
@@ -888,6 +904,27 @@ public class Tabs implements BundleEventListener {
         }
 
         return null;
+    }
+
+    /**
+     * Looks for the last open tab with the given URL and private state.
+     * @param url       the URL of the tab we're looking for
+     *
+     * @return last Tab with the given URL, or null if there is no such tab.
+     */
+    public Tab getLastTabForUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+
+        Tab lastTab = null;
+        for (Tab tab : mOrder) {
+            if (url.equals(tab.getURL())) {
+                lastTab = tab;
+            }
+        }
+
+        return lastTab;
     }
 
     /**

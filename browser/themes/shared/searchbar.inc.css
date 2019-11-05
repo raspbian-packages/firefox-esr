@@ -10,6 +10,10 @@
   fill: currentColor;
 }
 
+.search-one-offs {
+  -moz-box-orient: vertical;
+}
+
 /**
  * The borders of the various elements are specified as follows.
  *
@@ -49,7 +53,11 @@
   border-top: 1px solid var(--panel-separator-color);
   margin: 0;
   padding: 3px 6px;
-  color: GrayText;
+  color: var(--panel-disabled-color);
+}
+
+:root[lwt-popup-brighttext] .search-panel-header {
+  color: var(--autocomplete-popup-color);
 }
 
 .search-panel-header > label {
@@ -84,7 +92,7 @@
   background-size: 1px auto;
   background-repeat: no-repeat;
   background-position: right center;
-  color: GrayText;
+  color: var(--panel-disabled-color);
 }
 
 .searchbar-engine-one-off-item:-moz-locale-dir(rtl) {
@@ -100,10 +108,10 @@
   border-bottom: none !important;
 }
 
-.search-panel-one-offs:not([compact=true]) > .searchbar-engine-one-off-item.last-of-row,
-.search-panel-one-offs[compact=true] > .searchbar-engine-one-off-item.last-of-row:not(.dummy),
-.search-panel-one-offs[compact=true] > .searchbar-engine-one-off-item.dummy:not(.last-of-row),
-.search-panel-one-offs[compact=true] > .searchbar-engine-one-off-item.last-engine,
+.search-one-offs:not([compact=true]) .searchbar-engine-one-off-item.last-of-row,
+.search-one-offs[compact=true] .searchbar-engine-one-off-item.last-of-row:not(.dummy),
+.search-one-offs[compact=true] .searchbar-engine-one-off-item.dummy:not(.last-of-row),
+.search-one-offs[compact=true] .searchbar-engine-one-off-item.last-engine,
 .search-setting-button-compact {
   background-image: none;
 }
@@ -115,9 +123,9 @@
 }
 
 .searchbar-engine-one-off-item[selected] {
-  background-color: Highlight;
+  background-color: var(--autocomplete-popup-highlight-background);
   background-image: none;
-  color: HighlightText;
+  color: var(--autocomplete-popup-highlight-color);
 }
 
 .searchbar-engine-one-off-item > .button-box {
@@ -152,8 +160,8 @@
 }
 
 .addengine-item[selected] {
-  background-color: Highlight;
-  color: HighlightText;
+  background-color: var(--autocomplete-popup-highlight-background);
+  color: var(--autocomplete-popup-highlight-color);
 }
 
 .addengine-item[type=menu][selected] {

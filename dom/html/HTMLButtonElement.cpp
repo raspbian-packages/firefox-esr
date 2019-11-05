@@ -11,24 +11,23 @@
 #include "mozilla/dom/HTMLFormSubmission.h"
 #include "nsAttrValueInlines.h"
 #include "nsGkAtoms.h"
-#include "nsIPresShell.h"
 #include "nsStyleConsts.h"
 #include "nsPresContext.h"
 #include "nsIFormControl.h"
 #include "nsIURL.h"
 #include "nsIFrame.h"
 #include "nsIFormControlFrame.h"
-#include "nsIDOMEvent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/ContentEvents.h"
 #include "mozilla/EventDispatcher.h"
 #include "mozilla/EventStateManager.h"
 #include "mozilla/EventStates.h"
 #include "mozilla/MouseEvents.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/TextEvents.h"
 #include "nsUnicharUtils.h"
 #include "nsLayoutUtils.h"
-#include "nsPresState.h"
+#include "mozilla/PresState.h"
 #include "nsError.h"
 #include "nsFocusManager.h"
 #include "mozilla/dom/HTMLFormElement.h"
@@ -53,8 +52,10 @@ static const nsAttrValue::EnumTable* kButtonDefaultType = &kButtonTypeTable[2];
 
 // Construction, destruction
 HTMLButtonElement::HTMLButtonElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, FromParser aFromParser)
-    : nsGenericHTMLFormElementWithState(aNodeInfo, kButtonDefaultType->value),
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+    FromParser aFromParser)
+    : nsGenericHTMLFormElementWithState(std::move(aNodeInfo),
+                                        kButtonDefaultType->value),
       mDisabledChanged(false),
       mInInternalActivate(false),
       mInhibitStateRestoration(!!(aFromParser & FROM_PARSER_FRAGMENT)) {
@@ -150,17 +151,17 @@ bool HTMLButtonElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                                               aMaybeScriptedPrincipal, aResult);
 }
 
-bool HTMLButtonElement::IsDisabledForEvents(EventMessage aMessage) {
+bool HTMLButtonElement::IsDisabledForEvents(WidgetEvent* aEvent) {
   nsIFormControlFrame* formControlFrame = GetFormControlFrame(false);
   nsIFrame* formFrame = do_QueryFrame(formControlFrame);
-  return IsElementDisabledForEvents(aMessage, formFrame);
+  return IsElementDisabledForEvents(aEvent, formFrame);
 }
 
-nsresult HTMLButtonElement::GetEventTargetParent(
-    EventChainPreVisitor& aVisitor) {
+void HTMLButtonElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   aVisitor.mCanHandle = false;
-  if (IsDisabledForEvents(aVisitor.mEvent->mMessage)) {
-    return NS_OK;
+
+  if (IsDisabledForEvents(aVisitor.mEvent)) {
+    return;
   }
 
   // Track whether we're in the outermost Dispatch invocation that will
@@ -168,13 +169,16 @@ nsresult HTMLButtonElement::GetEventTargetParent(
   // DOMActivate that was dispatched directly, this will be set, but if we're
   // a DOMActivate dispatched from click handling, it will not be set.
   WidgetMouseEvent* mouseEvent = aVisitor.mEvent->AsMouseEvent();
-  bool outerActivateEvent = ((mouseEvent && mouseEvent->IsLeftClickEvent()) ||
-                             (aVisitor.mEvent->mMessage == eLegacyDOMActivate &&
-                              !mInInternalActivate));
+  bool outerActivateEvent =
+      ((mouseEvent && mouseEvent->IsLeftClickEvent()) ||
+       (aVisitor.mEvent->mMessage == eLegacyDOMActivate &&
+        !mInInternalActivate && aVisitor.mEvent->mOriginalTarget == this));
 
   if (outerActivateEvent) {
     aVisitor.mItemFlags |= NS_OUTER_ACTIVATE_EVENT;
-    if (mType == NS_FORM_BUTTON_SUBMIT && mForm) {
+    if (mType == NS_FORM_BUTTON_SUBMIT && mForm &&
+        !aVisitor.mEvent->mFlags.mMultiplePreActionsPrevented) {
+      aVisitor.mEvent->mFlags.mMultiplePreActionsPrevented = true;
       aVisitor.mItemFlags |= NS_IN_SUBMIT_CLICK;
       // tell the form that we are about to enter a click handler.
       // that means that if there are scripted submissions, the
@@ -183,7 +187,7 @@ nsresult HTMLButtonElement::GetEventTargetParent(
     }
   }
 
-  return nsGenericHTMLElement::GetEventTargetParent(aVisitor);
+  nsGenericHTMLElement::GetEventTargetParent(aVisitor);
 }
 
 nsresult HTMLButtonElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
@@ -200,11 +204,10 @@ nsresult HTMLButtonElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
       InternalUIEvent actEvent(true, eLegacyDOMActivate, mouseEvent);
       actEvent.mDetail = 1;
 
-      nsCOMPtr<nsIPresShell> shell = aVisitor.mPresContext->GetPresShell();
-      if (shell) {
+      if (RefPtr<PresShell> presShell = aVisitor.mPresContext->GetPresShell()) {
         nsEventStatus status = nsEventStatus_eIgnore;
         mInInternalActivate = true;
-        shell->HandleDOMEventWithTarget(this, &actEvent, &status);
+        presShell->HandleDOMEventWithTarget(this, &actEvent, &status);
         mInInternalActivate = false;
 
         // If activate is cancelled, we must do the same as when click is
@@ -254,9 +257,8 @@ nsresult HTMLButtonElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
         event.mOriginator = this;
         nsEventStatus status = nsEventStatus_eIgnore;
 
-        nsCOMPtr<nsIPresShell> presShell =
-            aVisitor.mPresContext->GetPresShell();
-        // If |nsIPresShell::Destroy| has been called due to
+        RefPtr<PresShell> presShell = aVisitor.mPresContext->GetPresShell();
+        // If |PresShell::Destroy| has been called due to
         // handling the event, the pres context will return
         // a null pres shell.  See bug 125624.
         //
@@ -285,12 +287,10 @@ nsresult HTMLButtonElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
   return rv;
 }
 
-nsresult HTMLButtonElement::BindToTree(nsIDocument* aDocument,
-                                       nsIContent* aParent,
-                                       nsIContent* aBindingParent,
-                                       bool aCompileEventHandlers) {
+nsresult HTMLButtonElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                       nsIContent* aBindingParent) {
   nsresult rv = nsGenericHTMLFormElementWithState::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+      aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Update our state; we may now be the default submit element
@@ -400,18 +400,19 @@ HTMLButtonElement::SaveState() {
     return NS_OK;
   }
 
-  nsPresState* state = GetPrimaryPresState();
+  PresState* state = GetPrimaryPresState();
   if (state) {
     // We do not want to save the real disabled state but the disabled
     // attribute.
-    state->SetDisabled(HasAttr(kNameSpaceID_None, nsGkAtoms::disabled));
+    state->disabled() = HasAttr(kNameSpaceID_None, nsGkAtoms::disabled);
+    state->disabledSet() = true;
   }
 
   return NS_OK;
 }
 
-bool HTMLButtonElement::RestoreState(nsPresState* aState) {
-  if (aState && aState->IsDisabledSet() && !aState->GetDisabled()) {
+bool HTMLButtonElement::RestoreState(PresState* aState) {
+  if (aState && aState->disabledSet() && !aState->disabled()) {
     SetDisabled(false, IgnoreErrors());
   }
 
@@ -444,7 +445,7 @@ EventStates HTMLButtonElement::IntrinsicState() const {
 
 JSObject* HTMLButtonElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return HTMLButtonElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLButtonElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

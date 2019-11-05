@@ -11,7 +11,7 @@
 #define bookmarks_heading ที่คั่นหน้า
 
 #define bookmarks_toolbarfolder โฟลเดอร์แถบเครื่องมือที่คั่นหน้า
-#define bookmarks_toolbarfolder_description เพิ่มที่คั่นหน้าไปยังโฟลเดอร์นี้เพื่อให้แสดงผลบนแถบเครื่องมือที่คั่นหน้า
+#define bookmarks_toolbarfolder_description เพิ่มที่คั่นหน้าไปยังโฟลเดอร์นี้เพื่อให้แสดงผลที่คั่นหน้าในแถบเครื่องมือที่คั่นหน้า
 
 # LOCALIZATION NOTE (getting_started):
 # link title for https://www.mozilla.org/en-US/firefox/central/
@@ -59,7 +59,7 @@
 
 # LOCALIZATION NOTE (crashes):
 # Nightly builds only, link title for about:crashes
-#define crashes ข้อขัดข้องของคุณทั้งหมด
+#define crashes ข้อขัดข้องทั้งหมดของคุณ
 
 # LOCALIZATION NOTE (irc):
 # Nightly builds only, link title for ircs://irc.mozilla.org/nightly

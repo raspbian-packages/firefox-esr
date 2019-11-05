@@ -7,8 +7,8 @@
 
 #include "nsIDirectoryService.h"
 #include "nsComponentManagerUtils.h"
-#include "nsISimpleEnumerator.h"
 #include "nsIFile.h"
+#include "nsSimpleEnumerator.h"
 #include "mozilla/Attributes.h"
 
 #define NS_BROWSERDIRECTORYPROVIDER_CONTRACTID \
@@ -26,19 +26,18 @@ class DirectoryProvider final : public nsIDirectoryServiceProvider2 {
  private:
   ~DirectoryProvider() {}
 
-  class AppendingEnumerator final : public nsISimpleEnumerator {
+  class AppendingEnumerator final : public nsSimpleEnumerator {
    public:
-    NS_DECL_ISUPPORTS
     NS_DECL_NSISIMPLEENUMERATOR
 
-    AppendingEnumerator(nsISimpleEnumerator *aBase,
-                        char const *const *aAppendList);
+    AppendingEnumerator(nsISimpleEnumerator* aBase,
+                        char const* const* aAppendList);
 
    private:
-    ~AppendingEnumerator() {}
+    ~AppendingEnumerator() override = default;
 
     nsCOMPtr<nsISimpleEnumerator> mBase;
-    char const *const *const mAppendList;
+    char const* const* const mAppendList;
     nsCOMPtr<nsIFile> mNext;
   };
 };

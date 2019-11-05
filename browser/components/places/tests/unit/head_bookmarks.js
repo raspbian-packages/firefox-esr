@@ -3,11 +3,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Import common head.
 /* import-globals-from ../../../../../toolkit/components/places/tests/head_common.js */
-var commonFile = do_get_file("../../../../../toolkit/components/places/tests/head_common.js", false);
+var commonFile = do_get_file(
+  "../../../../../toolkit/components/places/tests/head_common.js",
+  false
+);
 if (commonFile) {
   let uri = Services.io.newFileURI(commonFile);
   Services.scriptloader.loadSubScript(uri.spec, this);
@@ -15,13 +18,11 @@ if (commonFile) {
 
 // Put any other stuff relative to this test folder below.
 
-XPCOMUtils.defineLazyGetter(this, "PlacesUIUtils", function() {
-  ChromeUtils.import("resource:///modules/PlacesUIUtils.jsm");
-  return PlacesUIUtils;
-});
-
-const ORGANIZER_FOLDER_ANNO = "PlacesOrganizer/OrganizerFolder";
-const ORGANIZER_QUERY_ANNO = "PlacesOrganizer/OrganizerQuery";
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesUIUtils",
+  "resource:///modules/PlacesUIUtils.jsm"
+);
 
 // Needed by some test that relies on having an app registered.
 ChromeUtils.import("resource://testing-common/AppInfo.jsm", this);
@@ -32,16 +33,9 @@ updateAppInfo({
   platformVersion: "",
 });
 
-// Smart bookmarks constants.
-const SMART_BOOKMARKS_VERSION = 8;
-const SMART_BOOKMARKS_ON_TOOLBAR = 1;
-const SMART_BOOKMARKS_ON_MENU =  2; // Takes into account the additional separator.
-
 // Default bookmarks constants.
 const DEFAULT_BOOKMARKS_ON_TOOLBAR = 1;
 const DEFAULT_BOOKMARKS_ON_MENU = 1;
-
-const SMART_BOOKMARKS_ANNO = "Places/SmartBookmark";
 
 function checkItemHasAnnotation(guid, name) {
   return PlacesUtils.promiseItemId(guid).then(id => {
@@ -60,41 +54,8 @@ var createCorruptDB = async function() {
   await OS.File.copy(src, dbPath);
 
   // Check there's a DB now.
-  Assert.ok((await OS.File.exists(dbPath)), "should have a DB now");
+  Assert.ok(await OS.File.exists(dbPath), "should have a DB now");
 };
-
-/**
- * Rebuilds smart bookmarks listening to console output to report any message or
- * exception generated.
- *
- * @return {Promise}
- *         Resolved when done.
- */
-function rebuildSmartBookmarks() {
-  let consoleListener = {
-    observe(aMsg) {
-      if (aMsg.message.startsWith("[JavaScript Warning:")) {
-        // TODO (Bug 1300416): Ignore spurious strict warnings.
-        return;
-      }
-      do_throw("Got console message: " + aMsg.message);
-    },
-    QueryInterface: XPCOMUtils.generateQI([ Ci.nsIConsoleListener ]),
-  };
-  Services.console.reset();
-  Services.console.registerListener(consoleListener);
-  registerCleanupFunction(() => {
-    try {
-      Services.console.unregisterListener(consoleListener);
-    } catch (ex) { /* will likely fail */ }
-  });
-  Cc["@mozilla.org/browser/browserglue;1"]
-    .getService(Ci.nsIObserver)
-    .observe(null, "browser-glue-test", "smart-bookmarks-init");
-  return promiseTopicObserved("test-smart-bookmarks-done").then(() => {
-    Services.console.unregisterListener(consoleListener);
-  });
-}
 
 const SINGLE_TRY_TIMEOUT = 100;
 const NUMBER_OF_TRIES = 30;
@@ -115,7 +76,11 @@ const NUMBER_OF_TRIES = 30;
  * @resolves to the asynchronous value being polled.
  * @rejects if the asynchronous value is not available after tryCount attempts.
  */
-var waitForResolvedPromise = async function(promiseFn, timeoutMsg, tryCount = NUMBER_OF_TRIES) {
+var waitForResolvedPromise = async function(
+  promiseFn,
+  timeoutMsg,
+  tryCount = NUMBER_OF_TRIES
+) {
   let tries = 0;
   do {
     try {

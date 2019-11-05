@@ -6,18 +6,25 @@
 "use strict";
 
 let gSiteDataRemoveSelected = {
-
   init() {
-    let bundlePreferences = document.getElementById("bundlePreferences");
-    let acceptBtn = document.getElementById("SiteDataRemoveSelectedDialog")
-                            .getButton("accept");
-    acceptBtn.label = bundlePreferences.getString("acceptRemove");
-
     let hosts = window.arguments[0].hosts;
     hosts.sort();
-    let tree = document.getElementById("sitesTree");
-    this._view._hosts = hosts;
-    tree.view = this._view;
+    let list = document.getElementById("removalList");
+    let fragment = document.createDocumentFragment();
+    for (let host of hosts) {
+      let listItem = document.createXULElement("richlistitem");
+      let label = document.createXULElement("label");
+      label.setAttribute("value", host);
+      listItem.appendChild(label);
+      fragment.appendChild(listItem);
+    }
+    list.appendChild(fragment);
+    document.addEventListener("dialogaccept", function() {
+      gSiteDataRemoveSelected.ondialogaccept();
+    });
+    document.addEventListener("dialogcancel", function() {
+      gSiteDataRemoveSelected.ondialogcancel();
+    });
   },
 
   ondialogaccept() {
@@ -26,19 +33,5 @@ let gSiteDataRemoveSelected = {
 
   ondialogcancel() {
     window.arguments[0].allowed = false;
-  },
-
-  _view: {
-    _hosts: null,
-
-    get rowCount() {
-      return this._hosts.length;
-    },
-    getCellText(index, column) {
-      return this._hosts[index];
-    },
-    getLevel(index) {
-      return 0;
-    },
   },
 };

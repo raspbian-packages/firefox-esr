@@ -40,7 +40,7 @@ void TextUpdater::DoUpdate(const nsAString& aNewText, const nsAString& aOldText,
 
   mHyperText = parent->AsHyperText();
   if (!mHyperText) {
-    NS_ERROR("Text leaf parent is not hypertext!");
+    MOZ_ASSERT_UNREACHABLE("Text leaf parent is not hypertext!");
     return;
   }
 
@@ -180,7 +180,7 @@ void TextUpdater::ComputeTextChangeEvents(
       --colIdx;
       continue;
     }
-    NS_NOTREACHED("huh?");
+    MOZ_ASSERT_UNREACHABLE("huh?");
     return;
   }
 

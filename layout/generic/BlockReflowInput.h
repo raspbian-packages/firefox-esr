@@ -39,7 +39,8 @@ class BlockReflowInput {
           mIsLineLayoutEmpty(false),
           mIsOverflowContainer(false),
           mIsFloatListInBlockPropertyTable(false),
-          mFloatFragmentsInsideColumnEnabled(false) {}
+          mFloatFragmentsInsideColumnEnabled(false),
+          mCanHaveOverflowMarkers(false) {}
 
     // Set in the BlockReflowInput constructor when the frame being reflowed has
     // been given NS_UNCONSTRAINEDSIZE as its available BSize in the
@@ -103,8 +104,8 @@ class BlockReflowInput {
     // Set when the pref layout.float-fragments-inside-column.enabled is true.
     bool mFloatFragmentsInsideColumnEnabled : 1;
 
-    // Set when we need text-overflow processing.
-    bool mCanHaveTextOverflow : 1;
+    // Set when we need text-overflow or -webkit-line-clamp processing.
+    bool mCanHaveOverflowMarkers : 1;
   };
 
  public:
@@ -151,8 +152,7 @@ class BlockReflowInput {
 
   bool FlowAndPlaceFloat(nsIFrame* aFloat);
 
-  void PlaceBelowCurrentLineFloats(nsFloatCacheFreeList& aFloats,
-                                   nsLineBox* aLine);
+  void PlaceBelowCurrentLineFloats(nsLineBox* aLine);
 
   // Returns the first coordinate >= aBCoord that clears the
   // floats indicated by aBreakType and has enough inline size between floats
@@ -184,7 +184,7 @@ class BlockReflowInput {
         // next column or page and try again there.
         return false;
       }
-      NS_NOTREACHED("avail space rect with zero height!");
+      MOZ_ASSERT_UNREACHABLE("avail space rect with zero height!");
       *aBCoord += 1;
     }
     return true;
@@ -212,13 +212,13 @@ class BlockReflowInput {
   // Reconstruct the previous block-end margin that goes before |aLine|.
   void ReconstructMarginBefore(nsLineList::iterator aLine);
 
-  // Caller must have called GetAvailableSpace for the correct position
+  // Caller must have called GetFloatAvailableSpace for the correct position
   // (which need not be the current mBCoord).
   void ComputeReplacedBlockOffsetsForFloats(
       nsIFrame* aFrame, const mozilla::LogicalRect& aFloatAvailableSpace,
       nscoord& aIStartResult, nscoord& aIEndResult) const;
 
-  // Caller must have called GetAvailableSpace for the current mBCoord
+  // Caller must have called GetFloatAvailableSpace for the current mBCoord
   void ComputeBlockAvailSpace(nsIFrame* aFrame,
                               const nsFlowAreaRect& aFloatAvailableSpace,
                               bool aBlockAvoidsFloats,
@@ -249,7 +249,7 @@ class BlockReflowInput {
   // The coordinates within the float manager where the block is being
   // placed <b>after</b> taking into account the blocks border and
   // padding. This, therefore, represents the inner "content area" (in
-  // spacemanager coordinates) where child frames will be placed,
+  // float manager coordinates) where child frames will be placed,
   // including child blocks and floats.
   nscoord mFloatManagerI, mFloatManagerB;
 
@@ -362,7 +362,7 @@ class BlockReflowInput {
 
   //----------------------------------------
 
-  // Temporary line-reflow state. This state is used during the reflow
+  // Temporary state, for line-reflow. This state is used during the reflow
   // of a given line, but doesn't have meaning before or after.
 
   // The list of floats that are "current-line" floats. These are
@@ -375,6 +375,10 @@ class BlockReflowInput {
   // and placed. Again, this is done to keep the list fiddling from
   // being N^2.
   nsFloatCacheFreeList mBelowCurrentLineFloats;
+
+  // The list of floats that are waiting on a break opportunity in order to be
+  // placed, since we're on a nowrap context.
+  nsTArray<nsIFrame*> mNoWrapFloats;
 
   nscoord mMinLineHeight;
 

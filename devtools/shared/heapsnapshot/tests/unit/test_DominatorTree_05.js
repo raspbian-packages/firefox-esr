@@ -6,9 +6,12 @@
 // node and that this forms a tree.
 
 function run_test() {
-  let dominatorTree = saveHeapSnapshotAndComputeDominatorTree();
-  equal(typeof dominatorTree.getImmediatelyDominated, "function",
-        "getImmediatelyDominated should be a function");
+  const dominatorTree = saveHeapSnapshotAndComputeDominatorTree();
+  equal(
+    typeof dominatorTree.getImmediatelyDominated,
+    "function",
+    "getImmediatelyDominated should be a function"
+  );
 
   // Do a traversal of the dominator tree.
   //
@@ -17,30 +20,39 @@ function run_test() {
   // every one. This test would constantly time out and assertion messages would
   // overflow the log size.
 
-  let root = dominatorTree.root;
-  equal(dominatorTree.getImmediateDominator(root), null,
-        "The root should not have a parent");
+  const root = dominatorTree.root;
+  equal(
+    dominatorTree.getImmediateDominator(root),
+    null,
+    "The root should not have a parent"
+  );
 
-  let seen = new Set();
-  let stack = [root];
+  const seen = new Set();
+  const stack = [root];
   while (stack.length > 0) {
-    let top = stack.pop();
+    const top = stack.pop();
 
     if (seen.has(top)) {
-      ok(false, "This is a tree, not a graph: we shouldn't have "
-        + "multiple edges to the same node");
+      ok(
+        false,
+        "This is a tree, not a graph: we shouldn't have " +
+          "multiple edges to the same node"
+      );
     }
     seen.add(top);
     if (seen.size % 1000 === 0) {
       dumpn("Progress update: seen size = " + seen.size);
     }
 
-    let newNodes = dominatorTree.getImmediatelyDominated(top);
+    const newNodes = dominatorTree.getImmediatelyDominated(top);
     if (Object.prototype.toString.call(newNodes) !== "[object Array]") {
-      ok(false, "getImmediatelyDominated should return an array for known node ids");
+      ok(
+        false,
+        "getImmediatelyDominated should return an array for known node ids"
+      );
     }
 
-    let topSize = dominatorTree.getRetainedSize(top);
+    const topSize = dominatorTree.getRetainedSize(top);
 
     let lastSize = Infinity;
     for (let i = 0; i < newNodes.length; i++) {
@@ -52,17 +64,25 @@ function run_test() {
         ok(false, "child's parent should be the expected parent");
       }
 
-      let thisSize = dominatorTree.getRetainedSize(newNodes[i]);
+      const thisSize = dominatorTree.getRetainedSize(newNodes[i]);
 
       if (thisSize >= topSize) {
-        ok(false, "the size of children in the dominator tree should"
-          + " always be less than that of their parent");
+        ok(
+          false,
+          "the size of children in the dominator tree should" +
+            " always be less than that of their parent"
+        );
       }
 
       if (thisSize > lastSize) {
-        ok(false,
-           "children should be sorted by greatest to least retained size, "
-           + "lastSize = " + lastSize + ", thisSize = " + thisSize);
+        ok(
+          false,
+          "children should be sorted by greatest to least retained size, " +
+            "lastSize = " +
+            lastSize +
+            ", thisSize = " +
+            thisSize
+        );
       }
 
       lastSize = thisSize;

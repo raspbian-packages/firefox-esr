@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = SOCKS v5를 사용할 때 프록시 DNS
     .accesskey = d
+connection-dns-over-https =
+    .label = HTTPS를 통해 DNS를 사용 하도록 설정
+    .accesskey = b
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = 기본값 사용({ $url })
+    .accesskey = U
+    .tooltiptext = HTTPS에서 DNS 해석을 위해 기본 URL을 사용
+connection-dns-over-https-url-resolver = 공급자 사용
+    .accesskey = P
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (기본값)
+    .tooltiptext = HTTPS를 통한 DNS 확인에 기본 URL 사용
+connection-dns-over-https-url-custom =
+    .label = 사용자 지정
+    .accesskey = C
+    .tooltiptext = HTTPS를 통한 DNS 해석을 위한 선호하는 URL 입력
+connection-dns-over-https-custom-label = 사용자 지정

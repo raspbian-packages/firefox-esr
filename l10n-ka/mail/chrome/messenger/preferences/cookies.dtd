@@ -4,12 +4,12 @@
 
 <!ENTITY window.width                      "36em">
 
-<!ENTITY cookiesonsystem.label             "თქვენს კომპიუტერში ინახება შემდეგი ნაჭდევები:">
-<!ENTITY cookiename.label                  "ნაჭდევის სახელი">
+<!ENTITY cookiesonsystem.label             "თქვენს კომპიუტერში შემდეგი ფუნთუშები ინახება:">
+<!ENTITY cookiename.label                  "ფუნთუშის სახელი">
 <!ENTITY cookiedomain.label                "საიტი">
-<!ENTITY button.removecookie.label         "ნაჭდევის ამოღება">
+<!ENTITY button.removecookie.label         "ფუნთუშის მოცილება">
 <!ENTITY button.removecookie.accesskey     "R">
-<!ENTITY button.removeallcookies.label     "ყველა ნაჭდევის ამოღება">
+<!ENTITY button.removeallcookies.label     "ყველა ფუნთუშის მოცილება">
 <!ENTITY button.removeallcookies.accesskey "A">
 
 <!ENTITY props.name.label                  "სახელი:">
@@ -20,7 +20,7 @@
 <!ENTITY props.expires.label               "ვადა:">
 <!ENTITY props.container.label             "სათავსი:">
 
-<!ENTITY window.title                      "ნაჭდევები">
+<!ENTITY window.title                      "ფუნთუშები">
 <!ENTITY windowClose.key                   "w">
 <!ENTITY focusSearch1.key                  "f">
 <!ENTITY focusSearch2.key                  "k">

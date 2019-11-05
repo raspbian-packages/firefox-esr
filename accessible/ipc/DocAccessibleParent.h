@@ -105,7 +105,26 @@ class DocAccessibleParent : public ProxyAccessible,
       const uint64_t& aID, const uint64_t& aWidgetID,
       const uint32_t& aType) override;
 
-  mozilla::ipc::IPCResult RecvRoleChangedEvent(const uint32_t& aRole) final;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  virtual mozilla::ipc::IPCResult RecvVirtualCursorChangeEvent(
+      const uint64_t& aID, const uint64_t& aOldPositionID,
+      const int32_t& aOldStartOffset, const int32_t& aOldEndOffset,
+      const uint64_t& aNewPositionID, const int32_t& aNewStartOffset,
+      const int32_t& aNewEndOffset, const int16_t& aReason,
+      const int16_t& aBoundaryType, const bool& aFromUser) override;
+
+  virtual mozilla::ipc::IPCResult RecvScrollingEvent(
+      const uint64_t& aID, const uint64_t& aType, const uint32_t& aScrollX,
+      const uint32_t& aScrollY, const uint32_t& aMaxScrollX,
+      const uint32_t& aMaxScrollY) override;
+
+#if !defined(XP_WIN)
+  virtual mozilla::ipc::IPCResult RecvAnnouncementEvent(
+      const uint64_t& aID, const nsString& aAnnouncement,
+      const uint16_t& aPriority) override;
+#endif
+
+  mozilla::ipc::IPCResult RecvRoleChangedEvent(const a11y::role& aRole) final;
 
   virtual mozilla::ipc::IPCResult RecvBindChildDoc(
       PDocAccessibleParent* aChildDoc, const uint64_t& aID) override;
@@ -183,7 +202,16 @@ class DocAccessibleParent : public ProxyAccessible,
 
 #if defined(XP_WIN)
   void MaybeInitWindowEmulation();
-  void SendParentCOMProxy();
+
+  /**
+   * Note that an OuterDocAccessible can be created before the
+   * DocAccessibleParent or vice versa. Therefore, this must be conditionally
+   * called when either of these is created.
+   * @param aOuterDoc The OuterDocAccessible to be returned as the parent of
+   *        this document. Only GetNativeInterface() is called on this, so it
+   *        may be a ProxyAccessibleWrap or similar.
+   */
+  void SendParentCOMProxy(Accessible* aOuterDoc);
 
   virtual mozilla::ipc::IPCResult RecvGetWindowedPluginIAccessible(
       const WindowsHandle& aHwnd, IAccessibleHolder* aPluginCOMProxy) override;
@@ -194,6 +222,11 @@ class DocAccessibleParent : public ProxyAccessible,
    */
   void SetEmulatedWindowHandle(HWND aWindowHandle);
   HWND GetEmulatedWindowHandle() const { return mEmulatedWindowHandle; }
+#endif
+
+#if !defined(XP_WIN)
+  virtual mozilla::ipc::IPCResult RecvBatch(
+      const uint64_t& aBatchType, nsTArray<BatchData>&& aData) override;
 #endif
 
  private:
@@ -234,10 +267,10 @@ class DocAccessibleParent : public ProxyAccessible,
   // The handle associated with the emulated window that contains this document
   HWND mEmulatedWindowHandle;
 
-#if defined(MOZ_CONTENT_SANDBOX)
+#  if defined(MOZ_SANDBOX)
   mscom::PreservedStreamPtr mParentProxyStream;
-#endif  // defined(MOZ_CONTENT_SANDBOX)
-#endif  // defined(XP_WIN)
+#  endif  // defined(MOZ_SANDBOX)
+#endif    // defined(XP_WIN)
 
   /*
    * Conceptually this is a map from IDs to proxies, but we store the ID in the

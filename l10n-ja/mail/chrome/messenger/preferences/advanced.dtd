@@ -12,6 +12,7 @@
 <!ENTITY enableGlodaSearch.label		"グローバル検索と索引データベースを有効にする"><!-- (^^; Enable Global Search and Indexer -->
 <!ENTITY enableGlodaSearch.accesskey		"G">
 <!ENTITY dateTimeFormatting.label		"日付と時刻の書式">
+<!ENTITY languageSelector.label			"言語">
 <!ENTITY allowHWAccel.label			"ハードウェアアクセラレーション機能を使用する (可能な場合)">
 <!ENTITY allowHWAccel.accesskey			"h">
 <!ENTITY storeType.label			"新しいアカウントのメッセージ格納形式:">
@@ -66,22 +67,23 @@
  -->
 <!ENTITY updateApp.version.pre			"バージョン ">
 <!ENTITY updateApp.version.post			"">
+<!ENTITY updateAppAllow.description		"&brandShortName; の更新動作">
 <!ENTITY updateAuto.label			"更新を自動的にインストールする (推奨: セキュリティ向上)">
 <!ENTITY updateAuto.accesskey			"A">
 <!ENTITY updateCheck.label			"更新を確認するが、インストールするかどうかを選択する">
 <!ENTITY updateCheck.accesskey			"C">
-<!ENTITY updateManual.label			"更新を確認しない (非推奨: セキュリティリスク)">
-<!ENTITY updateManual.accesskey			"N">
 <!ENTITY updateHistory.label			"更新履歴を表示">
 <!ENTITY updateHistory.accesskey		"p">
 
 <!ENTITY useService.label			"更新のインストールにバックグラウンドサービスを使用する">
 <!ENTITY useService.accesskey			"b">
 
+<!ENTITY updateCrossUserSettingWarning.description	"この設定はすべての Windows アカウントと、このバージョンの &brandShortName; で使用するすべてのプロファイルに適用されます。">
+
 <!-- Networking and Disk Space -->
 <!ENTITY showSettings.label			"接続設定...">
 <!ENTITY showSettings.accesskey			"S">
-<!ENTITY proxiesConfigure.label			"インターネット接続に使用するプロキシを設定できます。">
+<!ENTITY proxiesConfigure.label			"インターネット接続に使用するプロキシーを設定できます。">
 <!ENTITY connectionsInfo.caption		"接続">
 <!ENTITY offlineInfo.caption			"オフライン">
 <!ENTITY offlineInfo.label			"オフライン時の動作を設定します。">

@@ -1,20 +1,28 @@
 /* eslint-disable strict */
 function run_test() {
-  ChromeUtils.import("resource://gre/modules/jsdebugger.jsm");
+  Services.prefs.setBoolPref("security.allow_eval_with_system_principal", true);
+  registerCleanupFunction(() => {
+    Services.prefs.clearUserPref("security.allow_eval_with_system_principal");
+  });
+  const { addDebuggerToGlobal } = ChromeUtils.import(
+    "resource://gre/modules/jsdebugger.jsm"
+  );
   addDebuggerToGlobal(this);
-  let xpcInspector = Cc["@mozilla.org/jsinspector;1"].getService(Ci.nsIJSInspector);
-  let g = testGlobal("test1");
+  const xpcInspector = Cc["@mozilla.org/jsinspector;1"].getService(
+    Ci.nsIJSInspector
+  );
+  const g = testGlobal("test1");
 
-  let dbg = new Debugger();
+  const dbg = new Debugger();
   dbg.uncaughtExceptionHook = testExceptionHook;
 
   dbg.addDebuggee(g);
-  dbg.onDebuggerStatement = function (frame) {
+  dbg.onDebuggerStatement = function(frame) {
     Assert.ok(frame === dbg.getNewestFrame());
     // Execute from the nested event loop, dbg.getNewestFrame() won't
     // be working anymore.
 
-    executeSoon(function () {
+    executeSoon(function() {
       try {
         Assert.ok(frame === dbg.getNewestFrame());
       } finally {

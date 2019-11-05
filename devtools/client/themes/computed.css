@@ -11,6 +11,13 @@
   height: 100%;
 }
 
+/* Reset the global rotation of the icon done for RTL layout.
+   Computed view is always LTR */
+#sidebar-panel-computedview .theme-twisty:not(.open):dir(rtl),
+#sidebar-panel-computedview .theme-twisty:not([open]):-moz-locale-dir(rtl) {
+  transform: rotate(-90deg);
+}
+
 #computed-container {
   overflow: auto;
   height: 100%;
@@ -41,6 +48,7 @@
 }
 
 #browser-style-checkbox-label {
+  white-space: nowrap;
   padding-inline-start: 5px;
   margin-inline-end: 5px;
 }
@@ -92,22 +100,22 @@
   outline: 0 !important;
 }
 
-.computed-other-property-value {
-  background-image: url(images/arrow-e.png);
+.computed-other-property-value::before {
+  content: "";
+  display: inline-block;
+  vertical-align: -0.5px;
+  width: 8px;
+  height: 8px;
+  margin: 0 1px;
+  background-image: url(images/arrow-e.svg);
   background-repeat: no-repeat;
-  background-size: 5px 8px;
-  background-position: left center;
-  padding-inline-start: 8px;
+  background-size: contain;
+  -moz-context-properties: fill;
+  fill: var(--theme-text-color-inactive);
 }
 
-.computed-other-property-value:dir(rtl) {
-  background-position-x: right;
-}
-
-@media (min-resolution: 1.1dppx) {
-  .computed-other-property-value {
-    background-image: url(images/arrow-e@2x.png);
-  }
+.computed-other-property-value:dir(rtl)::before {
+  transform: scaleX(-1);
 }
 
 .computed-property-value {
@@ -120,15 +128,6 @@
 
 .computed-property-content {
   padding-inline-start: 17px;
-}
-
-.theme-firebug .computed-property-view,
-.theme-firebug .computed-property-content {
-  font-family: var(--proportional-font-family);
-}
-
-.theme-firebug .computed-property-view {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* Bug 1360238 - getSelection displays an extra "\n" on multiple sibling block elements.

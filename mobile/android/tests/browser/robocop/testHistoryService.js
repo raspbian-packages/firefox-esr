@@ -5,10 +5,8 @@
 
 "use strict";
 
-/* eslint-disable mozilla/use-chromeutils-import */
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Make the timer global so it doesn't get GC'd
 var gTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
@@ -16,12 +14,16 @@ var gTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
 function sleep(wait) {
   return new Promise((resolve, reject) => {
     do_print("sleep start");
-    gTimer.initWithCallback({
-      notify: function() {
-        do_print("sleep end");
-        resolve();
+    gTimer.initWithCallback(
+      {
+        notify: function() {
+          do_print("sleep end");
+          resolve();
+        },
       },
-    }, wait, gTimer.TYPE_ONE_SHOT);
+      wait,
+      gTimer.TYPE_ONE_SHOT
+    );
   });
 }
 
@@ -31,8 +33,17 @@ function promiseLoadEvent(browser, url, eventType = "load") {
 
     function handle(event) {
       // Since we'll be redirecting, don't make assumptions about the given URL and the loaded URL
-      if (event.target != browser.contentDocument || event.target.location.href == "about:blank") {
-        do_print("Skipping spurious '" + eventType + "' event" + " for " + event.target.location.href);
+      if (
+        event.target != browser.contentDocument ||
+        event.target.location.href == "about:blank"
+      ) {
+        do_print(
+          "Skipping spurious '" +
+            eventType +
+            "' event" +
+            " for " +
+            event.target.location.href
+        );
         return;
       }
 
@@ -77,51 +88,80 @@ add_test(function setup_browser() {
 
   // Load a blank page
   let url = "about:blank";
-  gBrowser = BrowserApp.addTab(url, { selected: true, parentId: BrowserApp.selectedTab.id }).browser;
-  gBrowser.addEventListener("load", function(event) {
-    Services.tm.dispatchToMainThread(run_next_test);
-  }, {capture: true, once: true});
+  gBrowser = BrowserApp.addTab(url, {
+    selected: true,
+    parentId: BrowserApp.selectedTab.id,
+  }).browser;
+  gBrowser.addEventListener(
+    "load",
+    function(event) {
+      Services.tm.dispatchToMainThread(run_next_test);
+    },
+    { capture: true, once: true }
+  );
 });
 
-add_task(function* () {
+add_task(async function() {
   // Wait for any initial page loads to be saved to history
-  yield sleep(PENDING_VISIT_WAIT);
+  await sleep(PENDING_VISIT_WAIT);
 
   // Load a simple HTML page with no redirects
   gVisitURLs = [];
-  yield promiseLoadEvent(gBrowser, "http://example.org/tests/robocop/robocop_blank_01.html");
-  yield sleep(PENDING_VISIT_WAIT_LONG);
+  await promiseLoadEvent(
+    gBrowser,
+    "http://example.org/tests/robocop/robocop_blank_01.html"
+  );
+  await sleep(PENDING_VISIT_WAIT_LONG);
 
   do_print("visit counts: " + gVisitURLs.length);
   ok(gVisitURLs.length == 1, "Simple visit makes 1 history item");
 
   do_print("visit URL: " + gVisitURLs[0]);
-  ok(gVisitURLs[0] == "http://example.org/tests/robocop/robocop_blank_01.html", "Simple visit makes final history item");
+  ok(
+    gVisitURLs[0] == "http://example.org/tests/robocop/robocop_blank_01.html",
+    "Simple visit makes final history item"
+  );
 
   // Load a simple HTML page via a 301 temporary redirect
   gVisitURLs = [];
-  yield promiseLoadEvent(gBrowser, "http://example.org/tests/robocop/simple_redirect.sjs?http://example.org/tests/robocop/robocop_blank_02.html");
-  yield sleep(PENDING_VISIT_WAIT);
+  await promiseLoadEvent(
+    gBrowser,
+    "http://example.org/tests/robocop/simple_redirect.sjs?http://example.org/tests/robocop/robocop_blank_02.html"
+  );
+  await sleep(PENDING_VISIT_WAIT);
 
   do_print("visit counts: " + gVisitURLs.length);
   ok(gVisitURLs.length == 1, "Simple 301 redirect makes 1 history item");
 
   do_print("visit URL: " + gVisitURLs[0]);
-  ok(gVisitURLs[0] == "http://example.org/tests/robocop/robocop_blank_02.html", "Simple 301 redirect makes final history item");
+  ok(
+    gVisitURLs[0] == "http://example.org/tests/robocop/robocop_blank_02.html",
+    "Simple 301 redirect makes final history item"
+  );
 
   // Load a simple HTML page via a JavaScript redirect
   gVisitURLs = [];
-  yield promiseLoadEvent(gBrowser, "http://example.org/tests/robocop/javascript_redirect.sjs?http://example.org/tests/robocop/robocop_blank_03.html");
-  yield sleep(PENDING_VISIT_WAIT);
+  await promiseLoadEvent(
+    gBrowser,
+    "http://example.org/tests/robocop/javascript_redirect.sjs?http://example.org/tests/robocop/robocop_blank_03.html"
+  );
+  await sleep(PENDING_VISIT_WAIT);
 
   do_print("visit counts: " + gVisitURLs.length);
   ok(gVisitURLs.length == 2, "JavaScript redirect makes 2 history items");
 
   do_print("visit URL 1: " + gVisitURLs[0]);
-  ok(gVisitURLs[0] == "http://example.org/tests/robocop/javascript_redirect.sjs?http://example.org/tests/robocop/robocop_blank_03.html", "JavaScript redirect makes intermediate history item");
+  ok(
+    gVisitURLs[0] ==
+      "http://example.org/tests/robocop/javascript_redirect.sjs?http://example.org/tests/robocop/robocop_blank_03.html",
+    "JavaScript redirect makes intermediate history item"
+  );
 
   do_print("visit URL 2: " + gVisitURLs[1]);
-  ok(gVisitURLs[1] == "http://example.org/tests/robocop/robocop_blank_03.html", "JavaScript redirect makes final history item");
+  ok(
+    gVisitURLs[1] == "http://example.org/tests/robocop/robocop_blank_03.html",
+    "JavaScript redirect makes final history item"
+  );
 });
 
 run_next_test();

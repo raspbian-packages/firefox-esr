@@ -10,11 +10,13 @@
 
 var EXPORTED_SYMBOLS = ["SearchWidgetTracker"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-ChromeUtils.defineModuleGetter(this, "CustomizableUI",
-                               "resource:///modules/CustomizableUI.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "CustomizableUI",
+  "resource:///modules/CustomizableUI.jsm"
+);
 
 const WIDGET_ID = "search-container";
 const PREF_NAME = "browser.search.widget.inNavBar";
@@ -32,8 +34,9 @@ const SearchWidgetTracker = {
       }
     };
     CustomizableUI.addListener(this);
-    Services.prefs.addObserver(PREF_NAME,
-                               () => this.syncWidgetWithPreference());
+    Services.prefs.addObserver(PREF_NAME, () =>
+      this.syncWidgetWithPreference()
+    );
   },
 
   onAreaNodeRegistered(aArea) {
@@ -64,8 +67,11 @@ const SearchWidgetTracker = {
     if (newValue) {
       // The URL bar widget is always present in the navigation toolbar, so we
       // can simply read its position to place the search bar right after it.
-      CustomizableUI.addWidgetToArea(WIDGET_ID, CustomizableUI.AREA_NAVBAR,
-        CustomizableUI.getPlacementOfWidget("urlbar-container").position + 1);
+      CustomizableUI.addWidgetToArea(
+        WIDGET_ID,
+        CustomizableUI.AREA_NAVBAR,
+        CustomizableUI.getPlacementOfWidget("urlbar-container").position + 1
+      );
     } else {
       CustomizableUI.removeWidgetFromArea(WIDGET_ID);
     }

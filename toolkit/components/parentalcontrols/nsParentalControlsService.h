@@ -12,13 +12,8 @@
 #include "nsIURI.h"
 
 #if defined(XP_WIN)
-// wpcevents.h requires this be elevated
-#if (WINVER < 0x0600)
-#undef WINVER
-#define WINVER 0x0600
-#endif
-#include <wpcapi.h>
-#include <wpcevent.h>
+#  include <wpcapi.h>
+#  include <wpcevent.h>
 #endif
 
 class nsParentalControlsService : public nsIParentalControlsService {
@@ -35,8 +30,8 @@ class nsParentalControlsService : public nsIParentalControlsService {
   bool mEnabled;
 #if defined(XP_WIN)
   REGHANDLE mProvider;
-  IWindowsParentalControls *mPC;
-  void LogFileDownload(bool blocked, nsIURI *aSource, nsIFile *aTarget);
+  IWindowsParentalControls* mPC;
+  void LogFileDownload(bool blocked, nsIURI* aSource, nsIFile* aTarget);
 #endif
 };
 

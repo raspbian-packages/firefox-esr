@@ -14,6 +14,16 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/Move.h"
 
+extern "C" {
+
+// This function uses C linkage because it's exposed to Rust to support the
+// `HashPropertyBag` wrapper in the `storage_variant` crate.
+void NS_NewHashPropertyBag(nsIWritablePropertyBag** aBag) {
+  MakeRefPtr<nsHashPropertyBag>().forget(aBag);
+}
+
+}  // extern "C"
+
 /*
  * nsHashPropertyBagBase implementation.
  */
@@ -108,7 +118,7 @@ nsHashPropertyBagBase::GetEnumerator(nsISimpleEnumerator** aResult) {
     propertyArray->AppendElement(sprop);
   }
 
-  return NS_NewArrayEnumerator(aResult, propertyArray);
+  return NS_NewArrayEnumerator(aResult, propertyArray, NS_GET_IID(nsIProperty));
 }
 
 #define IMPL_GETSETPROPERTY_AS(Name, Type)                          \
@@ -242,12 +252,12 @@ class ProxyHashtableDestructor final : public mozilla::Runnable {
   using HashtableType = nsInterfaceHashtable<nsStringHashKey, nsIVariant>;
   explicit ProxyHashtableDestructor(HashtableType&& aTable)
       : mozilla::Runnable("ProxyHashtableDestructor"),
-        mPropertyHash(mozilla::Move(aTable)) {}
+        mPropertyHash(std::move(aTable)) {}
 
   NS_IMETHODIMP
   Run() override {
     MOZ_ASSERT(NS_IsMainThread());
-    HashtableType table(mozilla::Move(mPropertyHash));
+    HashtableType table(std::move(mPropertyHash));
     return NS_OK;
   }
 
@@ -258,7 +268,7 @@ class ProxyHashtableDestructor final : public mozilla::Runnable {
 nsHashPropertyBag::~nsHashPropertyBag() {
   if (!NS_IsMainThread()) {
     RefPtr<ProxyHashtableDestructor> runnable =
-        new ProxyHashtableDestructor(mozilla::Move(mPropertyHash));
+        new ProxyHashtableDestructor(std::move(mPropertyHash));
     MOZ_ALWAYS_SUCCEEDS(NS_DispatchToMainThread(runnable));
   }
 }

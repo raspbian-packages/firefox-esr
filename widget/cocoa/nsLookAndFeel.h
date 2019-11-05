@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,8 +18,7 @@ class nsLookAndFeel final : public nsXPLookAndFeel {
   virtual nsresult GetIntImpl(IntID aID, int32_t& aResult) override;
   virtual nsresult GetFloatImpl(FloatID aID, float& aResult) override;
   virtual bool GetFontImpl(FontID aID, nsString& aFontName,
-                           gfxFontStyle& aFontStyle,
-                           float aDevPixPerCSSPixel) override;
+                           gfxFontStyle& aFontStyle) override;
 
   virtual char16_t GetPasswordCharacterImpl() override {
     // unicode value for the bullet character, used for password textfields.
@@ -36,12 +35,21 @@ class nsLookAndFeel final : public nsXPLookAndFeel {
   static bool SystemWantsOverlayScrollbars();
   static bool AllowOverlayScrollbarsOverlap();
 
+  static bool SystemWantsDarkTheme();
+  static nscolor ProcessSelectionBackground(nscolor aColor);
+
  private:
   int32_t mUseOverlayScrollbars;
   bool mUseOverlayScrollbarsCached;
 
   int32_t mAllowOverlayScrollbarsOverlap;
   bool mAllowOverlayScrollbarsOverlapCached;
+
+  int32_t mPrefersReducedMotion;
+  bool mPrefersReducedMotionCached;
+
+  int32_t mSystemUsesDarkTheme;
+  bool mSystemUsesDarkThemeCached;
 
   nscolor mColorTextSelectBackground;
   nscolor mColorTextSelectBackgroundDisabled;

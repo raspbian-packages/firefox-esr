@@ -7,15 +7,11 @@
 #include "nsNetCID.h"
 #include "nsNetUtil.h"
 #include "nsIProtocolHandler.h"
-#include "nsCRT.h"
 
 #include "nsIFile.h"
 #include <algorithm>
 
-#ifdef MOZ_TOOLKIT_SEARCH
-#include "nsIBrowserSearchService.h"
-#endif
-
+#include "nsISearchService.h"
 #include "nsIURIFixup.h"
 #include "nsIURIMutator.h"
 #include "nsDefaultURIFixup.h"
@@ -23,6 +19,7 @@
 #include "mozilla/dom/ContentChild.h"
 #include "mozilla/ipc/IPCStreamUtils.h"
 #include "mozilla/ipc/URIUtils.h"
+#include "mozilla/TextUtils.h"
 #include "mozilla/Tokenizer.h"
 #include "mozilla/Unused.h"
 #include "nsIObserverService.h"
@@ -51,34 +48,20 @@ nsDefaultURIFixup::CreateExposableURI(nsIURI* aURI, nsIURI** aReturn) {
   NS_ENSURE_ARG_POINTER(aURI);
   NS_ENSURE_ARG_POINTER(aReturn);
 
-  bool isWyciwyg = false;
-  aURI->SchemeIs("wyciwyg", &isWyciwyg);
-
   nsAutoCString userPass;
   aURI->GetUserPass(userPass);
 
   // most of the time we can just AddRef and return
-  if (!isWyciwyg && userPass.IsEmpty()) {
+  if (userPass.IsEmpty()) {
     *aReturn = aURI;
     NS_ADDREF(*aReturn);
     return NS_OK;
   }
 
   // Rats, we have to massage the URI
-  nsCOMPtr<nsIURI> uri;
-  if (isWyciwyg) {
-    nsresult rv =
-        nsContentUtils::RemoveWyciwygScheme(aURI, getter_AddRefs(uri));
-    NS_ENSURE_SUCCESS(rv, rv);
-  } else {
-    // No need to clone the URI as NS_MutateURI does that for us.
-    uri = aURI;
-  }
+  nsCOMPtr<nsIURI> uri = aURI;
 
-  // hide user:pass unless overridden by pref
-  if (Preferences::GetBool("browser.fixup.hide_user_pass", true)) {
-    Unused << NS_MutateURI(uri).SetUserPass(EmptyCString()).Finalize(uri);
-  }
+  Unused << NS_MutateURI(uri).SetUserPass(EmptyCString()).Finalize(uri);
 
   uri.forget(aReturn);
   return NS_OK;
@@ -282,8 +265,12 @@ nsDefaultURIFixup::GetFixupURIInfo(const nsACString& aStringURI,
   // really know about.
   nsCOMPtr<nsIProtocolHandler> ourHandler, extHandler;
 
-  ioService->GetProtocolHandler(scheme.get(), getter_AddRefs(ourHandler));
   extHandler = do_GetService(NS_NETWORK_PROTOCOL_CONTRACTID_PREFIX "default");
+  if (!scheme.IsEmpty()) {
+    ioService->GetProtocolHandler(scheme.get(), getter_AddRefs(ourHandler));
+  } else {
+    ourHandler = extHandler;
+  }
 
   if (ourHandler != extHandler || !PossiblyHostPortUrl(uriString)) {
     // Just try to create an URL out of it
@@ -419,8 +406,8 @@ nsDefaultURIFixup::KeywordToURI(const nsACString& aKeyword,
       return NS_ERROR_NOT_AVAILABLE;
     }
 
-    nsCOMPtr<nsIInputStream> postData;
-    ipc::OptionalURIParams uri;
+    RefPtr<nsIInputStream> postData;
+    Maybe<ipc::URIParams> uri;
     nsAutoString providerName;
     if (!contentChild->SendKeywordToURI(keyword, &providerName, &postData,
                                         &uri)) {
@@ -439,9 +426,8 @@ nsDefaultURIFixup::KeywordToURI(const nsACString& aKeyword,
     return NS_OK;
   }
 
-#ifdef MOZ_TOOLKIT_SEARCH
   // Try falling back to the search service's default search engine
-  nsCOMPtr<nsIBrowserSearchService> searchSvc =
+  nsCOMPtr<nsISearchService> searchSvc =
       do_GetService("@mozilla.org/browser/search-service;1");
   if (searchSvc) {
     nsCOMPtr<nsISearchEngine> defaultEngine;
@@ -484,7 +470,6 @@ nsDefaultURIFixup::KeywordToURI(const nsACString& aKeyword,
       }
     }
   }
-#endif
 
   // out of options
   return NS_ERROR_NOT_AVAILABLE;
@@ -514,9 +499,7 @@ bool nsDefaultURIFixup::MakeAlternateURI(nsCOMPtr<nsIURI>& aURI) {
   }
 
   // Code only works for http. Not for any other protocol including https!
-  bool isHttp = false;
-  aURI->SchemeIs("http", &isHttp);
-  if (!isHttp) {
+  if (!net::SchemeIsHTTP(aURI)) {
     return false;
   }
 
@@ -727,8 +710,8 @@ bool nsDefaultURIFixup::PossiblyHostPortUrl(const nsACString& aUrl) {
   while (iter != iterEnd) {
     uint32_t chunkSize = 0;
     // Parse a chunk of the address
-    while (iter != iterEnd && (*iter == '-' || nsCRT::IsAsciiAlpha(*iter) ||
-                               nsCRT::IsAsciiDigit(*iter))) {
+    while (iter != iterEnd &&
+           (*iter == '-' || IsAsciiAlpha(*iter) || IsAsciiDigit(*iter))) {
       ++chunkSize;
       ++iter;
     }
@@ -756,7 +739,7 @@ bool nsDefaultURIFixup::PossiblyHostPortUrl(const nsACString& aUrl) {
 
   uint32_t digitCount = 0;
   while (iter != iterEnd && digitCount <= 5) {
-    if (nsCRT::IsAsciiDigit(*iter)) {
+    if (IsAsciiDigit(*iter)) {
       digitCount++;
     } else if (*iter == '/') {
       break;
@@ -831,7 +814,7 @@ nsresult nsDefaultURIFixup::KeywordURIFixup(const nsACString& aURIString,
       if (!(lastLSBracketLoc == 0 &&
             (*iter == ':' || *iter == '.' || *iter == ']' ||
              (*iter >= 'a' && *iter <= 'f') || (*iter >= 'A' && *iter <= 'F') ||
-             nsCRT::IsAsciiDigit(*iter)))) {
+             IsAsciiDigit(*iter)))) {
         looksLikeIpv6 = false;
       }
     }
@@ -878,9 +861,9 @@ nsresult nsDefaultURIFixup::KeywordURIFixup(const nsACString& aURIString,
       foundRSBrackets++;
     } else if (*iter == '/') {
       lastSlashLoc = pos;
-    } else if (nsCRT::IsAsciiAlpha(*iter)) {
+    } else if (IsAsciiAlpha(*iter)) {
       hasAsciiAlpha = true;
-    } else if (nsCRT::IsAsciiDigit(*iter)) {
+    } else if (IsAsciiDigit(*iter)) {
       ++foundDigits;
     }
 

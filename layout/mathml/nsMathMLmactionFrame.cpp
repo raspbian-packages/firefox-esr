@@ -13,8 +13,12 @@
 #include "nsIWebBrowserChrome.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsTextFragment.h"
-#include "nsIDOMEvent.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/gfx/2D.h"
+#include "mozilla/dom/Event.h"
+
+using namespace mozilla;
+using mozilla::dom::Event;
 
 //
 // <maction> -- bind actions to a subexpression - implementation
@@ -58,9 +62,10 @@ static int32_t GetActionType(nsIContent* aContent) {
   return NS_MATHML_ACTION_TYPE_UNKNOWN;
 }
 
-nsIFrame* NS_NewMathMLmactionFrame(nsIPresShell* aPresShell,
-                                   nsStyleContext* aContext) {
-  return new (aPresShell) nsMathMLmactionFrame(aContext);
+nsIFrame* NS_NewMathMLmactionFrame(PresShell* aPresShell,
+                                   ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsMathMLmactionFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMathMLmactionFrame)
@@ -207,7 +212,7 @@ nsresult nsMathMLmactionFrame::AttributeChanged(int32_t aNameSpaceID,
   }
 
   if (needsReflow) {
-    PresShell()->FrameNeedsReflow(this, nsIPresShell::eTreeChange,
+    PresShell()->FrameNeedsReflow(this, IntrinsicDirty::TreeChange,
                                   NS_FRAME_IS_DIRTY);
   }
 
@@ -238,7 +243,7 @@ static void ShowStatus(nsPresContext* aPresContext, nsString& aStatusMsg) {
 }
 
 NS_IMETHODIMP
-nsMathMLmactionFrame::MouseListener::HandleEvent(nsIDOMEvent* aEvent) {
+nsMathMLmactionFrame::MouseListener::HandleEvent(Event* aEvent) {
   nsAutoString eventType;
   aEvent->GetType(eventType);
   if (eventType.EqualsLiteral("mouseover")) {
@@ -302,7 +307,7 @@ void nsMathMLmactionFrame::MouseClick() {
                                      value, notify);
 
       // Now trigger a content-changed reflow...
-      PresShell()->FrameNeedsReflow(mSelectedFrame, nsIPresShell::eTreeChange,
+      PresShell()->FrameNeedsReflow(mSelectedFrame, IntrinsicDirty::TreeChange,
                                     NS_FRAME_IS_DIRTY);
     }
   }

@@ -440,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Otvoriť správu">
 <!ENTITY openMessageWindowCmd.accesskey "t">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Otvoriť ako konverzáciu">
-<!ENTITY openConversationCmd.accesskey "c">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Otvoriť ako konverzáciu">
+<!ENTITY openInConversationCmd.accesskey "c">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Prílohy">
 <!ENTITY openAttachmentListCmd.accesskey "l">
 <!ENTITY openFeedMessage1.label "Pri otváraní správ informačného kanála">
@@ -600,11 +600,13 @@
 <!ENTITY stopButton.tooltip "Zastaviť aktuálny prenos">
 <!ENTITY junkButton.tooltip "Označiť vybrané správy ako nevyžiadané (SPAM)">
 <!ENTITY notJunkButton.tooltip "Označiť vybrané správy ako Nie Spam">
-<!ENTITY addressBookButton.tooltip "Otvoriť adresár">
-<!ENTITY chatButton.tooltip "Zobraziť kartu Konverzácie">
-<!ENTITY tagButton.tooltip "Priradiť k správe popis">
-<!ENTITY compactButton.tooltip "Odstrániť vymazané správy z označeného priečinka">
-<!ENTITY appmenuButton1.tooltip "Zobraziť hlavnú ponuku aplikácie &brandShortName;">
+<!ENTITY addressBookButton.tooltip "Otvorí adresár">
+<!ENTITY chatButton.tooltip "Zobrazí kartu Konverzácie">
+<!ENTITY tagButton.tooltip "Priradí k správe popis">
+<!ENTITY compactButton.tooltip "Odstráni vymazané správy z označeného priečinka">
+<!ENTITY appmenuButton1.tooltip "Zobrazí ponuku aplikácie &brandShortName;">
+
+<!ENTITY addonsButton.tooltip "Správa doplnkov">
 
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Odoslať ďalej v texte">
@@ -792,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "P">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Naposledy použité">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "N">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Obľúbené položky">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "O">
 <!ENTITY contextCopyMsgMenu.label "Skopírovať do">
 <!ENTITY contextCopyMsgMenu.accesskey "r">
 <!ENTITY contextKillThreadMenu.label "Ignorovať vlákno">
@@ -811,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Ukážka pred tlačou">
 <!ENTITY contextPrintPreview.accesskey "U">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Obnoviť predvolené stĺpce">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -857,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "Tento priečinok">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Prehrať">
 <!ENTITY contextPlay.accesskey "P">
@@ -865,7 +862,7 @@
 <!ENTITY contextPause.accesskey "P">
 <!ENTITY contextMute.label "Stlmiť">
 <!ENTITY contextMute.accesskey "m">
-<!ENTITY contextUnmute.label "Zrušiť stlmenie">
+<!ENTITY contextUnmute.label "Zapnúť zvuk">
 <!ENTITY contextUnmute.accesskey "m">
 
 <!-- Quick Search Bar -->
@@ -875,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

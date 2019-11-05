@@ -571,7 +571,6 @@ class BaseMarionetteTestRunner(object):
         if self.e10s:
             self.prefs.update({
                 'browser.tabs.remote.autostart': True,
-                'browser.tabs.remote.force-enable': True,
             })
 
         # If no repeat has been set, default to 30 extra runs
@@ -728,7 +727,7 @@ class BaseMarionetteTestRunner(object):
         }
         if self.bin or self.emulator:
             kwargs.update({
-                'host': 'localhost',
+                'host': '127.0.0.1',
                 'port': 2828,
                 'app': self.app,
                 'app_args': self.app_args,
@@ -872,7 +871,7 @@ class BaseMarionetteTestRunner(object):
         device_info = None
         if self.marionette.instance and self.emulator:
             try:
-                device_info = self.marionette.instance.runner.device.dm.getInfo()
+                device_info = self.marionette.instance.runner.device.device.get_info()
             except Exception:
                 self.logger.warning('Could not get device info', exc_info=True)
 
@@ -892,6 +891,9 @@ class BaseMarionetteTestRunner(object):
                                 name='marionette-test',
                                 version_info=self.version_info,
                                 device_info=device_info)
+
+        if self.shuffle:
+            self.logger.info("Using shuffle seed: %d" % self.shuffle_seed)
 
         self._log_skipped_tests()
 
@@ -925,8 +927,6 @@ class BaseMarionetteTestRunner(object):
 
             for run_tests in self.mixin_run_tests:
                 run_tests(tests)
-            if self.shuffle:
-                self.logger.info("Using shuffle seed: %d" % self.shuffle_seed)
 
             self.logger.suite_end()
         except Exception:

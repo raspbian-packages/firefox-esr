@@ -9,12 +9,14 @@
 #include "ClientState.h"
 #include "mozilla/Unused.h"
 #include "nsIDocShell.h"
-#include "nsIDocShellLoadInfo.h"
+#include "nsDocShellLoadState.h"
 #include "nsIWebNavigation.h"
 #include "nsIWebProgress.h"
 #include "nsIWebProgressListener.h"
 #include "nsNetUtil.h"
 #include "nsPIDOMWindow.h"
+#include "nsURLHelper.h"
+#include "ReferrerInfo.h"
 
 namespace mozilla {
 namespace dom {
@@ -67,7 +69,9 @@ class NavigateLoadListener final : public nsIWebProgressListener,
     // If the resulting window is not same origin, then resolve immediately
     // without returning any information about the new Client.  This is
     // step 6.10 in the Client.navigate(url) spec.
-    rv = ssm->CheckSameOriginURI(mBaseURL, channelURL, false);
+    // todo: if you intend to update CheckSameOriginURI to log the error to the
+    // console you also need to update the 'aFromPrivateWindow' argument.
+    rv = ssm->CheckSameOriginURI(mBaseURL, channelURL, false, false);
     if (NS_FAILED(rv)) {
       mPromise->Resolve(NS_OK, __func__);
       return NS_OK;
@@ -123,6 +127,13 @@ class NavigateLoadListener final : public nsIWebProgressListener,
     return NS_OK;
   }
 
+  NS_IMETHOD
+  OnContentBlockingEvent(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
+                         uint32_t aEvent) override {
+    MOZ_CRASH("Unexpected notification.");
+    return NS_OK;
+  }
+
   NS_DECL_ISUPPORTS
 };
 
@@ -131,9 +142,8 @@ NS_IMPL_ISUPPORTS(NavigateLoadListener, nsIWebProgressListener,
 
 }  // anonymous namespace
 
-already_AddRefed<ClientOpPromise> ClientNavigateOpChild::DoNavigate(
+RefPtr<ClientOpPromise> ClientNavigateOpChild::DoNavigate(
     const ClientNavigateOpConstructorArgs& aArgs) {
-  RefPtr<ClientOpPromise> ref;
   nsCOMPtr<nsPIDOMWindowInner> window;
 
   // Navigating the target client window will result in the original
@@ -148,16 +158,14 @@ already_AddRefed<ClientOpPromise> ClientNavigateOpChild::DoNavigate(
 
     ClientSource* target = targetActor->GetSource();
     if (!target) {
-      ref = ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
-                                             __func__);
-      return ref.forget();
+      return ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
+                                              __func__);
     }
 
     window = target->GetInnerWindow();
     if (!window) {
-      ref = ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
-                                             __func__);
-      return ref.forget();
+      return ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
+                                              __func__);
     }
   }
 
@@ -172,59 +180,74 @@ already_AddRefed<ClientOpPromise> ClientNavigateOpChild::DoNavigate(
   nsCOMPtr<nsIURI> baseURL;
   nsresult rv = NS_NewURI(getter_AddRefs(baseURL), aArgs.baseURL());
   if (NS_FAILED(rv)) {
-    ref = ClientOpPromise::CreateAndReject(rv, __func__);
-    return ref.forget();
+    return ClientOpPromise::CreateAndReject(rv, __func__);
+  }
+
+  // There is an edge case for view-source url here. According to the wpt test
+  // windowclient-navigate.https.html, a view-source URL with a relative inner
+  // URL should be treated as an invalid URL. However, we will still resolve it
+  // into a valid view-source URL since the baseURL is involved while creating
+  // the URI. So, an invalid view-source URL will be treated as a valid URL
+  // in this case. To address this, we should not take the baseURL into account
+  // for the view-source URL.
+  bool shouldUseBaseURL = true;
+  nsAutoCString scheme;
+  if (NS_SUCCEEDED(net_ExtractURLScheme(aArgs.url(), scheme)) &&
+      scheme.LowerCaseEqualsLiteral("view-source")) {
+    shouldUseBaseURL = false;
   }
 
   nsCOMPtr<nsIURI> url;
-  rv = NS_NewURI(getter_AddRefs(url), aArgs.url(), nullptr, baseURL);
+  rv = NS_NewURI(getter_AddRefs(url), aArgs.url(), nullptr,
+                 shouldUseBaseURL ? baseURL.get() : nullptr);
   if (NS_FAILED(rv)) {
-    ref = ClientOpPromise::CreateAndReject(rv, __func__);
-    return ref.forget();
+    return ClientOpPromise::CreateAndReject(rv, __func__);
   }
 
   if (url->GetSpecOrDefault().EqualsLiteral("about:blank")) {
-    ref = ClientOpPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
-    return ref.forget();
+    return ClientOpPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
   }
 
-  nsCOMPtr<nsIDocument> doc = window->GetExtantDoc();
+  RefPtr<Document> doc = window->GetExtantDoc();
   if (!doc || !doc->IsActive()) {
-    ref = ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
-                                           __func__);
-    return ref.forget();
+    return ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
+                                            __func__);
   }
 
   nsCOMPtr<nsIPrincipal> principal = doc->NodePrincipal();
   if (!principal) {
-    ref = ClientOpPromise::CreateAndReject(rv, __func__);
-    return ref.forget();
+    return ClientOpPromise::CreateAndReject(rv, __func__);
   }
 
   nsCOMPtr<nsIDocShell> docShell = window->GetDocShell();
   nsCOMPtr<nsIWebProgress> webProgress = do_GetInterface(docShell);
   if (!docShell || !webProgress) {
-    ref = ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
-                                           __func__);
-    return ref.forget();
+    return ClientOpPromise::CreateAndReject(NS_ERROR_DOM_INVALID_STATE_ERR,
+                                            __func__);
   }
 
-  nsCOMPtr<nsIDocShellLoadInfo> loadInfo;
-  rv = docShell->CreateLoadInfo(getter_AddRefs(loadInfo));
-  if (NS_FAILED(rv)) {
-    ref = ClientOpPromise::CreateAndReject(rv, __func__);
-    return ref.forget();
+  RefPtr<nsDocShellLoadState> loadState = new nsDocShellLoadState(url);
+  nsCOMPtr<nsIReferrerInfo> referrerInfo =
+      new ReferrerInfo(doc->GetDocumentURI(), doc->GetReferrerPolicy());
+  loadState->SetTriggeringPrincipal(principal);
+
+  // Currently we query the CSP from the principal, which is the
+  // doc->NodePrincipal(). After Bug 965637 we can query the CSP
+  // from the doc directly.
+  if (principal) {
+    nsCOMPtr<nsIContentSecurityPolicy> csp;
+    principal->GetCsp(getter_AddRefs(csp));
+    loadState->SetCsp(csp);
   }
 
-  loadInfo->SetTriggeringPrincipal(principal);
-  loadInfo->SetReferrerPolicy(doc->GetReferrerPolicy());
-  loadInfo->SetLoadType(nsIDocShellLoadInfo::loadStopContent);
-  loadInfo->SetSourceDocShell(docShell);
-  rv =
-      docShell->LoadURI(url, loadInfo, nsIWebNavigation::LOAD_FLAGS_NONE, true);
+  loadState->SetReferrerInfo(referrerInfo);
+  loadState->SetLoadType(LOAD_STOP_CONTENT);
+  loadState->SetSourceDocShell(docShell);
+  loadState->SetLoadFlags(nsIWebNavigation::LOAD_FLAGS_NONE);
+  loadState->SetFirstParty(true);
+  rv = docShell->LoadURI(loadState);
   if (NS_FAILED(rv)) {
-    ref = ClientOpPromise::CreateAndReject(rv, __func__);
-    return ref.forget();
+    return ClientOpPromise::CreateAndReject(rv, __func__);
   }
 
   RefPtr<ClientOpPromise::Private> promise =
@@ -237,17 +260,14 @@ already_AddRefed<ClientOpPromise> ClientNavigateOpChild::DoNavigate(
                                         nsIWebProgress::NOTIFY_STATE_DOCUMENT);
   if (NS_FAILED(rv)) {
     promise->Reject(rv, __func__);
-    ref = promise;
-    return ref.forget();
+    return promise.forget();
   }
 
-  ref = promise.get();
-
-  ref->Then(mSerialEventTarget, __func__,
-            [listener](const ClientOpResult& aResult) {},
-            [listener](nsresult aResult) {});
-
-  return ref.forget();
+  return promise->Then(
+      mSerialEventTarget, __func__,
+      [listener](const ClientOpPromise::ResolveOrRejectValue& aValue) {
+        return ClientOpPromise::CreateAndResolveOrReject(aValue, __func__);
+      });
 }
 
 void ClientNavigateOpChild::ActorDestroy(ActorDestroyReason aReason) {
@@ -267,15 +287,16 @@ void ClientNavigateOpChild::Init(const ClientNavigateOpConstructorArgs& aArgs) {
   // Capturing `this` is safe here since we clear the mPromiseRequestHolder in
   // ActorDestroy.
   promise
-      ->Then(mSerialEventTarget, __func__,
-             [this](const ClientOpResult& aResult) {
-               mPromiseRequestHolder.Complete();
-               PClientNavigateOpChild::Send__delete__(this, aResult);
-             },
-             [this](nsresult aResult) {
-               mPromiseRequestHolder.Complete();
-               PClientNavigateOpChild::Send__delete__(this, aResult);
-             })
+      ->Then(
+          mSerialEventTarget, __func__,
+          [this](const ClientOpResult& aResult) {
+            mPromiseRequestHolder.Complete();
+            PClientNavigateOpChild::Send__delete__(this, aResult);
+          },
+          [this](nsresult aResult) {
+            mPromiseRequestHolder.Complete();
+            PClientNavigateOpChild::Send__delete__(this, aResult);
+          })
       ->Track(mPromiseRequestHolder);
 }
 

@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "X11TextureHost.h"
+
 #include "mozilla/layers/BasicCompositor.h"
-#include "mozilla/layers/X11TextureSourceBasic.h"
-#ifdef GL_PROVIDER_GLX
 #include "mozilla/layers/CompositorOGL.h"
+#include "mozilla/layers/X11TextureSourceBasic.h"
 #include "mozilla/layers/X11TextureSourceOGL.h"
-#endif
-#include "gfxXlibSurface.h"
 #include "gfx2DGlue.h"
+#include "gfxPlatform.h"
+#include "gfxXlibSurface.h"
 
 namespace mozilla {
 namespace layers {
@@ -40,12 +40,10 @@ bool X11TextureHost::Lock() {
         mTextureSource = new X11TextureSourceBasic(
             mCompositor->AsBasicCompositor(), mSurface);
         break;
-#ifdef GL_PROVIDER_GLX
       case LayersBackend::LAYERS_OPENGL:
         mTextureSource =
             new X11TextureSourceOGL(mCompositor->AsCompositorOGL(), mSurface);
         break;
-#endif
       default:
         return false;
     }
@@ -72,11 +70,9 @@ SurfaceFormat X11TextureHost::GetFormat() const {
     return SurfaceFormat::UNKNOWN;
   }
   gfxContentType type = mSurface->GetContentType();
-#ifdef GL_PROVIDER_GLX
   if (mCompositor->GetBackendType() == LayersBackend::LAYERS_OPENGL) {
     return X11TextureSourceOGL::ContentTypeToSurfaceFormat(type);
   }
-#endif
   return X11TextureSourceBasic::ContentTypeToSurfaceFormat(type);
 }
 

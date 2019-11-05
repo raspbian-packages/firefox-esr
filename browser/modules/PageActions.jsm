@@ -7,31 +7,50 @@
 var EXPORTED_SYMBOLS = [
   "PageActions",
   // PageActions.Action
-  // PageActions.Button
-  // PageActions.Subview
   // PageActions.ACTION_ID_BOOKMARK
+  // PageActions.ACTION_ID_PIN_TAB
   // PageActions.ACTION_ID_BOOKMARK_SEPARATOR
   // PageActions.ACTION_ID_BUILT_IN_SEPARATOR
+  // PageActions.ACTION_ID_TRANSIENT_SEPARATOR
 ];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-ChromeUtils.defineModuleGetter(this, "AppConstants",
-  "resource://gre/modules/AppConstants.jsm");
-ChromeUtils.defineModuleGetter(this, "AsyncShutdown",
-  "resource://gre/modules/AsyncShutdown.jsm");
-ChromeUtils.defineModuleGetter(this, "BinarySearch",
-  "resource://gre/modules/BinarySearch.jsm");
-
+ChromeUtils.defineModuleGetter(
+  this,
+  "AppConstants",
+  "resource://gre/modules/AppConstants.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "AsyncShutdown",
+  "resource://gre/modules/AsyncShutdown.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "BinarySearch",
+  "resource://gre/modules/BinarySearch.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
 
 const ACTION_ID_BOOKMARK = "bookmark";
+const ACTION_ID_PIN_TAB = "pinTab";
 const ACTION_ID_BOOKMARK_SEPARATOR = "bookmarkSeparator";
 const ACTION_ID_BUILT_IN_SEPARATOR = "builtInSeparator";
+const ACTION_ID_TRANSIENT_SEPARATOR = "transientSeparator";
 
 const PREF_PERSISTED_ACTIONS = "browser.pageActions.persistedActions";
 const PERSISTED_ACTIONS_CURRENT_VERSION = 1;
 
+// Escapes the given raw URL string, and returns an equivalent CSS url()
+// value for it.
+function escapeCSSURL(url) {
+  return `url("${url.replace(/[\\\s"]/g, encodeURIComponent)}")`;
+}
 
 var PageActions = {
   /**
@@ -72,48 +91,66 @@ var PageActions = {
     // downgraded extensions, for example.
     AsyncShutdown.profileBeforeChange.addBlocker(
       "PageActions: purging unregistered actions from cache",
-      () => this._purgeUnregisteredPersistedActions(),
+      () => this._purgeUnregisteredPersistedActions()
     );
   },
 
   _deferredAddActionCalls: [],
 
   /**
-   * The list of Action objects, sorted in the order in which they should be
-   * placed in the page action panel.  If there are both built-in and non-built-
-   * in actions, then the list will include the separator between the two.  The
-   * list is not live.  (array of Action objects)
+   * A list of all Action objects, not in any particular order.  Not live.
+   * (array of Action objects)
    */
   get actions() {
-    let actions = this.builtInActions;
-    if (this.nonBuiltInActions.length) {
-      // There are non-built-in actions, so include them too.
+    let lists = [
+      this._builtInActions,
+      this._nonBuiltInActions,
+      this._transientActions,
+    ];
+    return lists.reduce((memo, list) => memo.concat(list), []);
+  },
+
+  /**
+   * The list of Action objects that should appear in the panel for a given
+   * window, sorted in the order in which they appear.  If there are both
+   * built-in and non-built-in actions, then the list will include the separator
+   * between the two.  The list is not live.  (array of Action objects)
+   *
+   * @param  browserWindow (DOM window, required)
+   *         This window's actions will be returned.
+   * @return (array of PageAction.Action objects) The actions currently in the
+   *         given window's panel.
+   */
+  actionsInPanel(browserWindow) {
+    function filter(action) {
+      return action.shouldShowInPanel(browserWindow);
+    }
+    let actions = this._builtInActions.filter(filter);
+    let nonBuiltInActions = this._nonBuiltInActions.filter(filter);
+    if (nonBuiltInActions.length) {
       if (actions.length) {
-        // There are both built-in and non-built-in actions.  Add a separator
-        // between the two groups so that the returned array looks like:
-        // [...built-ins, separator, ...non-built-ins]
-        actions.push(new Action({
-          id: ACTION_ID_BUILT_IN_SEPARATOR,
-          _isSeparator: true,
-        }));
+        actions.push(
+          new Action({
+            id: ACTION_ID_BUILT_IN_SEPARATOR,
+            _isSeparator: true,
+          })
+        );
       }
-      actions.push(...this.nonBuiltInActions);
+      actions.push(...nonBuiltInActions);
+    }
+    let transientActions = this._transientActions.filter(filter);
+    if (transientActions.length) {
+      if (actions.length) {
+        actions.push(
+          new Action({
+            id: ACTION_ID_TRANSIENT_SEPARATOR,
+            _isSeparator: true,
+          })
+        );
+      }
+      actions.push(...transientActions);
     }
     return actions;
-  },
-
-  /**
-   * The list of built-in actions.  Not live.  (array of Action objects)
-   */
-  get builtInActions() {
-    return this._builtInActions.slice();
-  },
-
-  /**
-   * The list of non-built-in actions.  Not live.  (array of Action objects)
-   */
-  get nonBuiltInActions() {
-    return this._nonBuiltInActions.slice();
   },
 
   /**
@@ -170,25 +207,10 @@ var PageActions = {
       this._deferredAddActionCalls.push(() => this.addAction(action));
       return action;
     }
-
-    let hadSep = this.actions.some(a => a.id == ACTION_ID_BUILT_IN_SEPARATOR);
-
     this._registerAction(action);
-
-    let sep = null;
-    if (!hadSep) {
-      sep = this.actions.find(a => a.id == ACTION_ID_BUILT_IN_SEPARATOR);
-    }
-
     for (let bpa of allBrowserPageActions()) {
-      if (sep) {
-        // There are now both built-in and non-built-in actions, so place the
-        // separator between the two groups.
-        bpa.placeAction(sep);
-      }
       bpa.placeAction(action);
     }
-
     return action;
   },
 
@@ -207,26 +229,34 @@ var PageActions = {
       // A "semi-built-in" action, probably an action from an extension
       // bundled with the browser.  Right now we simply assume that no other
       // consumers will use _insertBeforeActionID.
-      let index =
-        !action.__insertBeforeActionID ? -1 :
-        this._builtInActions.findIndex(a => {
-          return a.id == action.__insertBeforeActionID;
-        });
+      let index = !action.__insertBeforeActionID
+        ? -1
+        : this._builtInActions.findIndex(a => {
+            return a.id == action.__insertBeforeActionID;
+          });
       if (index < 0) {
-        // Append the action.
-        index = this._builtInActions.length;
+        // Append the action (excluding transient actions).
+        index = this._builtInActions.filter(a => !a.__transient).length;
       }
       this._builtInActions.splice(index, 0, action);
-    } else if (gBuiltInActions.find(a => a.id == action.id)) {
-      // A built-in action.  These are always added on init before all other
-      // actions, one after the other, so just push onto the array.
+    } else if (action.__transient) {
+      // A transient action.
+      this._transientActions.push(action);
+    } else if (action._isBuiltIn) {
+      // A built-in action. These are mostly added on init before all other
+      // actions, one after the other. Extension actions load later and should
+      // be at the end, so just push onto the array.
       this._builtInActions.push(action);
     } else {
       // A non-built-in action, like a non-bundled extension potentially.
       // Keep this list sorted by title.
-      let index = BinarySearch.insertionIndexOf((a1, a2) => {
-        return a1.getTitle().localeCompare(a2.getTitle());
-      }, this._nonBuiltInActions, action);
+      let index = BinarySearch.insertionIndexOf(
+        (a1, a2) => {
+          return a1.getTitle().localeCompare(a2.getTitle());
+        },
+        this._nonBuiltInActions,
+        action
+      );
       this._nonBuiltInActions.splice(index, 0, action);
     }
 
@@ -235,8 +265,9 @@ var PageActions = {
       // with the persisted value.  Set the private version of that property
       // so that onActionToggledPinnedToUrlbar isn't called, which happens when
       // the public version is set.
-      action._pinnedToUrlbar =
-        this._persistedActions.idsInUrlbar.includes(action.id);
+      action._pinnedToUrlbar = this._persistedActions.idsInUrlbar.includes(
+        action.id
+      );
     } else {
       // The action is new.  Store it in the persisted actions.
       this._persistedActions.ids.push(action.id);
@@ -248,8 +279,10 @@ var PageActions = {
     let index = this._persistedActions.idsInUrlbar.indexOf(action.id);
     if (action.pinnedToUrlbar) {
       if (index < 0) {
-        index = action.id == ACTION_ID_BOOKMARK ? -1 :
-                this._persistedActions.idsInUrlbar.indexOf(ACTION_ID_BOOKMARK);
+        index =
+          action.id == ACTION_ID_BOOKMARK
+            ? -1
+            : this._persistedActions.idsInUrlbar.indexOf(ACTION_ID_BOOKMARK);
         if (index < 0) {
           index = this._persistedActions.idsInUrlbar.length;
         }
@@ -264,70 +297,8 @@ var PageActions = {
   // These keep track of currently registered actions.
   _builtInActions: [],
   _nonBuiltInActions: [],
+  _transientActions: [],
   _actionsByID: new Map(),
-
-  /**
-   * Returns the ID of the action before which the given action should be
-   * inserted in the urlbar.
-   *
-   * @param  action (Action object, required)
-   *         The action you're inserting.
-   * @return The ID of the reference action, or null if your action should be
-   *         appended.
-   */
-  nextActionIDInUrlbar(browserWindow, action) {
-    // Actions in the urlbar are always inserted before the bookmark action,
-    // which always comes last if it's present.
-    if (action.id == ACTION_ID_BOOKMARK) {
-      return null;
-    }
-    let id = this._nextActionID(action, this.actionsInUrlbar(browserWindow));
-    return id || ACTION_ID_BOOKMARK;
-  },
-
-  /**
-   * Returns the ID of the action before which the given action should be
-   * inserted in the panel.
-   *
-   * @param  action (Action object, required)
-   *         The action you're inserting.
-   * @return The ID of the reference action, or null if your action should be
-   *         appended.
-   */
-  nextActionIDInPanel(action) {
-    return this._nextActionID(action, this.actions);
-  },
-
-  /**
-   * The DOM nodes of actions should be ordered properly, both in the panel and
-   * the urlbar.  This method returns the ID of the action that comes after the
-   * given action in the given array.  You can use the returned ID to get a DOM
-   * node ID to pass to node.insertBefore().
-   *
-   * Pass PageActions.actions to get the ID of the next action in the panel.
-   * Pass PageActions.actionsInUrlbar to get the ID of the next action in the
-   * urlbar.
-   *
-   * @param  action
-   *         The action whose node you want to insert into your DOM.
-   * @param  actionArray
-   *         The relevant array of actions, either PageActions.actions or
-   *         actionsInUrlbar.
-   * @return The ID of the action before which the given action should be
-   *         inserted.  If the given action should be inserted last, returns
-   *         null.
-   */
-  _nextActionID(action, actionArray) {
-    let index = actionArray.findIndex(a => a.id == action.id);
-    if (index < 0) {
-      return null;
-    }
-    let nextAction = actionArray[index + 1];
-    if (!nextAction) {
-      return null;
-    }
-    return nextAction.id;
-  },
 
   /**
    * Call this when an action is removed.
@@ -342,7 +313,12 @@ var PageActions = {
     }
 
     this._actionsByID.delete(action.id);
-    for (let list of [this._nonBuiltInActions, this._builtInActions]) {
+    let lists = [
+      this._builtInActions,
+      this._nonBuiltInActions,
+      this._transientActions,
+    ];
+    for (let list of lists) {
       let index = list.findIndex(a => a.id == action.id);
       if (index >= 0) {
         list.splice(index, 1);
@@ -375,13 +351,14 @@ var PageActions = {
   logTelemetry(type, action, node = null) {
     if (type == "used") {
       type =
-        node && node.closest("#urlbar-container") ? "urlbar_used" :
-        "panel_used";
+        node && node.closest("#urlbar-container")
+          ? "urlbar_used"
+          : "panel_used";
     }
     let histogramID = "FX_PAGE_ACTION_" + type.toUpperCase();
     try {
       let histogram = Services.telemetry.getHistogramById(histogramID);
-      if (action._isBuiltIn) {
+      if (action._isMozillaAction) {
         histogram.add(action.labelForHistogram);
       } else {
         histogram.add("other");
@@ -396,6 +373,7 @@ var PageActions = {
     PageActions._purgeUnregisteredPersistedActions();
     PageActions._builtInActions = [];
     PageActions._nonBuiltInActions = [];
+    PageActions._transientActions = [];
     PageActions._actionsByID = new Map();
   },
 
@@ -425,9 +403,11 @@ var PageActions = {
   _migratePersistedActions(actions) {
     // Start with actions.version and migrate one version at a time, all the way
     // up to the current version.
-    for (let version = actions.version || 0;
-         version < PERSISTED_ACTIONS_CURRENT_VERSION;
-         version++) {
+    for (
+      let version = actions.version || 0;
+      version < PERSISTED_ACTIONS_CURRENT_VERSION;
+      version++
+    ) {
       let methodName = `_migratePersistedActionsTo${version + 1}`;
       actions = this[methodName](actions);
       actions.version = version + 1;
@@ -500,9 +480,6 @@ var PageActions = {
  *        some reason.  You can also pass an object that maps pixel sizes to
  *        URLs, like { 16: url16, 32: url32 }.  The best size for the user's
  *        screen will be used.
- * @param nodeAttributes (object, optional)
- *        An object of name-value pairs.  Each pair will be added as an
- *        attribute to DOM nodes created for this action.
  * @param onBeforePlacedInWindow (function, optional)
  *        Called before the action is placed in the window:
  *        onBeforePlacedInWindow(window)
@@ -551,13 +528,18 @@ var PageActions = {
  *        Called when a browser window's page action panel is showing:
  *        onShowingInPanel(buttonNode)
  *        * buttonNode: The action's node in the page action panel.
+ * @param onSubviewPlaced (function, optional)
+ *        Called when the action's subview is added to its parent panel in a
+ *        browser window:
+ *        onSubviewPlaced(panelViewNode)
+ *        * panelViewNode: The subview's panelview node.
+ * @param onSubviewShowing (function, optional)
+ *        Called when the action's subview is showing in a browser window:
+ *        onSubviewShowing(panelViewNode)
+ *        * panelViewNode: The subview's panelview node.
  * @param pinnedToUrlbar (bool, optional)
  *        Pass true to pin the action to the urlbar.  An action is shown in the
  *        urlbar if it's pinned and not disabled.  False by default.
- * @param subview (object, optional)
- *        An options object suitable for passing to the Subview constructor, if
- *        you'd like the action to have a subview.  See the subview constructor
- *        for info on this object's properties.
  * @param tooltip (string, optional)
  *        The action's button tooltip text.
  * @param urlbarIDOverride (string, optional)
@@ -567,6 +549,10 @@ var PageActions = {
  * @param wantsIframe (bool, optional)
  *        Pass true to make an action that shows an iframe in a panel when
  *        clicked.
+ * @param wantsSubview (bool, optional)
+ *        Pass true to make an action that shows a panel subview when clicked.
+ * @param disablePrivateBrowsing (bool, optional)
+ *        Pass true to prevent the action from showing in a private browsing window.
  */
 function Action(options) {
   setProperties(this, options, {
@@ -577,7 +563,6 @@ function Action(options) {
     extensionID: false,
     iconURL: false,
     labelForHistogram: false,
-    nodeAttributes: false,
     onBeforePlacedInWindow: false,
     onCommand: false,
     onIframeHiding: false,
@@ -588,11 +573,14 @@ function Action(options) {
     onPlacedInUrlbar: false,
     onRemovedFromWindow: false,
     onShowingInPanel: false,
+    onSubviewPlaced: false,
+    onSubviewShowing: false,
     pinnedToUrlbar: false,
-    subview: false,
     tooltip: false,
     urlbarIDOverride: false,
     wantsIframe: false,
+    wantsSubview: false,
+    disablePrivateBrowsing: false,
 
     // private
 
@@ -607,6 +595,12 @@ function Action(options) {
     _isSeparator: false,
 
     // (bool, optional)
+    // Transient actions have a couple of special properties: (1) They stick to
+    // the bottom of the panel, and (2) they're hidden in the panel when they're
+    // disabled.  Other than that they behave like other actions.
+    _transient: false,
+
+    // (bool, optional)
     // True if the action's urlbar button is defined in markup.  In that case, a
     // node with the action's urlbar node ID should already exist in the DOM
     // (either the auto-generated ID or urlbarIDOverride).  That node will be
@@ -614,37 +608,71 @@ function Action(options) {
     // is removed from the urlbar.
     _urlbarNodeInMarkup: false,
   });
-  if (this._subview) {
-    this._subview = new Subview(options.subview);
-  }
+
+  /**
+   * A cache of the pre-computed CSS variable values for a given icon
+   * URLs object, as passed to _createIconProperties.
+   */
+  this._iconProperties = new WeakMap();
+
+  /**
+   * The global values for the action properties.
+   */
+  this._globalProps = {
+    disabled: this._disabled,
+    iconURL: this._iconURL,
+    iconProps: this._createIconProperties(this._iconURL),
+    title: this._title,
+    tooltip: this._tooltip,
+    wantsSubview: this._wantsSubview,
+  };
+
+  /**
+   * A mapping of window-specific action property objects, each of which
+   * derives from the _globalProps object.
+   */
+  this._windowProps = new WeakMap();
 }
 
 Action.prototype = {
   /**
-   * The ID of the action's parent extension (string, nullable)
+   * The ID of the action's parent extension (string)
    */
   get extensionID() {
     return this._extensionID;
   },
 
   /**
-   * The action's ID (string, nonnull)
+   * The action's ID (string)
    */
   get id() {
     return this._id;
   },
 
+  get disablePrivateBrowsing() {
+    return !!this._disablePrivateBrowsing;
+  },
+
   /**
-   * Attribute name => value mapping to set on nodes created for this action
-   * (object, nullable)
+   * Verifies that the action can be shown in a private window.  For
+   * extensions, verifies the extension has access to the window.
    */
-  get nodeAttributes() {
-    return this._nodeAttributes;
+  canShowInWindow(browserWindow) {
+    if (this._extensionID) {
+      let policy = WebExtensionPolicy.getByID(this._extensionID);
+      if (!policy.canAccessWindow(browserWindow)) {
+        return false;
+      }
+    }
+    return !(
+      this.disablePrivateBrowsing &&
+      PrivateBrowsingUtils.isWindowPrivate(browserWindow)
+    );
   },
 
   /**
    * True if the action is pinned to the urlbar.  The action is shown in the
-   * urlbar if it's pinned and not disabled.  (bool, nonnull)
+   * urlbar if it's pinned and not disabled.  (bool)
    */
   get pinnedToUrlbar() {
     return this._pinnedToUrlbar || false;
@@ -658,10 +686,10 @@ Action.prototype = {
   },
 
   /**
-   * The action's disabled state (bool, nonnull)
+   * The action's disabled state (bool)
    */
   getDisabled(browserWindow = null) {
-    return !!this._getProperty("disabled", browserWindow);
+    return !!this._getProperties(browserWindow).disabled;
   },
   setDisabled(value, browserWindow = null) {
     return this._setProperty("disabled", !!value, browserWindow);
@@ -669,33 +697,80 @@ Action.prototype = {
 
   /**
    * The action's icon URL string, or an object mapping sizes to URL strings
-   * (string or object, nullable)
+   * (string or object)
    */
   getIconURL(browserWindow = null) {
-    return this._getProperty("iconURL", browserWindow);
+    return this._getProperties(browserWindow).iconURL;
   },
   setIconURL(value, browserWindow = null) {
-    return this._setProperty("iconURL", value, browserWindow);
+    let props = this._getProperties(browserWindow, !!browserWindow);
+    props.iconURL = value;
+    props.iconProps = this._createIconProperties(value);
+
+    this._updateProperty("iconURL", props.iconProps, browserWindow);
+    return value;
   },
 
   /**
-   * The action's title (string, nonnull)
+   * The set of CSS variables which define the action's icons in various
+   * sizes. This is generated automatically from the iconURL property.
+   */
+  getIconProperties(browserWindow = null) {
+    return this._getProperties(browserWindow).iconProps;
+  },
+
+  _createIconProperties(urls) {
+    if (urls && typeof urls == "object") {
+      let props = this._iconProperties.get(urls);
+      if (!props) {
+        props = Object.freeze({
+          "--pageAction-image-16px": escapeCSSURL(
+            this._iconURLForSize(urls, 16)
+          ),
+          "--pageAction-image-32px": escapeCSSURL(
+            this._iconURLForSize(urls, 32)
+          ),
+        });
+        this._iconProperties.set(urls, props);
+      }
+      return props;
+    }
+
+    let cssURL = urls ? escapeCSSURL(urls) : null;
+    return Object.freeze({
+      "--pageAction-image-16px": cssURL,
+      "--pageAction-image-32px": cssURL,
+    });
+  },
+
+  /**
+   * The action's title (string)
    */
   getTitle(browserWindow = null) {
-    return this._getProperty("title", browserWindow);
+    return this._getProperties(browserWindow).title;
   },
   setTitle(value, browserWindow = null) {
     return this._setProperty("title", value, browserWindow);
   },
 
   /**
-   * The action's tooltip (string, nullable)
+   * The action's tooltip (string)
    */
   getTooltip(browserWindow = null) {
-    return this._getProperty("tooltip", browserWindow);
+    return this._getProperties(browserWindow).tooltip;
   },
   setTooltip(value, browserWindow = null) {
     return this._setProperty("tooltip", value, browserWindow);
+  },
+
+  /**
+   * Whether the action wants a subview (bool)
+   */
+  getWantsSubview(browserWindow = null) {
+    return !!this._getProperties(browserWindow).wantsSubview;
+  },
+  setWantsSubview(value, browserWindow = null) {
+    return this._setProperty("wantsSubview", !!value, browserWindow);
   },
 
   /**
@@ -710,126 +785,111 @@ Action.prototype = {
    *         globally.
    */
   _setProperty(name, value, browserWindow) {
-    if (!browserWindow) {
-      // Set the global state.
-      this[`_${name}`] = value;
-    } else {
-      // Set the per-window state.
-      let props = this._propertiesByBrowserWindow.get(browserWindow);
-      if (!props) {
-        props = {};
-        this._propertiesByBrowserWindow.set(browserWindow, props);
-      }
-      props[name] = value;
-    }
-    // This may be called before the action has been added.
-    if (PageActions.actionForID(this.id)) {
-      for (let bpa of allBrowserPageActions(browserWindow)) {
-        bpa.updateAction(this, name);
-      }
-    }
+    let props = this._getProperties(browserWindow, !!browserWindow);
+    props[name] = value;
+
+    this._updateProperty(name, value, browserWindow);
     return value;
   },
 
-  /**
-   * Gets a property, optionally for a particular browser window.
-   *
-   * @param  name (string, required)
-   *         The (non-underscored) name of the property.
-   * @param  browserWindow (DOM window, optional)
-   *         If given, then the property will be fetched from this window's
-   *         state.  If the property does not exist in the window's state, or if
-   *         no window is given, then the global value is returned.
-   * @return The property value.
-   */
-  _getProperty(name, browserWindow) {
-    if (browserWindow) {
-      // Try the per-window state.
-      let props = this._propertiesByBrowserWindow.get(browserWindow);
-      if (props && name in props) {
-        return props[name];
+  _updateProperty(name, value, browserWindow) {
+    // This may be called before the action has been added.
+    if (PageActions.actionForID(this.id)) {
+      for (let bpa of allBrowserPageActions(browserWindow)) {
+        bpa.updateAction(this, name, { value });
       }
     }
-    // Fall back to the global state.
-    return this[`_${name}`];
-  },
-
-  // maps browser windows => object with properties for that window
-  get _propertiesByBrowserWindow() {
-    if (!this.__propertiesByBrowserWindow) {
-      this.__propertiesByBrowserWindow = new WeakMap();
-    }
-    return this.__propertiesByBrowserWindow;
   },
 
   /**
-   * Override for the ID of the action's activated-action panel anchor (string,
-   * nullable)
+   * Returns the properties object for the given window, if it exists,
+   * or the global properties object if no window-specific properties
+   * exist.
+   *
+   * @param {Window?} window
+   *        The window for which to return the properties object, or
+   *        null to return the global properties object.
+   * @param {bool} [forceWindowSpecific = false]
+   *        If true, always returns a window-specific properties object.
+   *        If a properties object does not exist for the given window,
+   *        one is created and cached.
+   * @returns {object}
+   */
+  _getProperties(window, forceWindowSpecific = false) {
+    let props = window && this._windowProps.get(window);
+
+    if (!props && forceWindowSpecific) {
+      props = Object.create(this._globalProps);
+      this._windowProps.set(window, props);
+    }
+
+    return props || this._globalProps;
+  },
+
+  /**
+   * Override for the ID of the action's activated-action panel anchor (string)
    */
   get anchorIDOverride() {
     return this._anchorIDOverride;
   },
 
   /**
-   * Override for the ID of the action's urlbar node (string, nullable)
+   * Override for the ID of the action's urlbar node (string)
    */
   get urlbarIDOverride() {
     return this._urlbarIDOverride;
   },
 
   /**
-   * True if the action is shown in an iframe (bool, nonnull)
+   * True if the action is shown in an iframe (bool)
    */
   get wantsIframe() {
     return this._wantsIframe || false;
   },
 
-  /**
-   * A Subview object if the action wants a subview (Subview, nullable)
-   */
-  get subview() {
-    return this._subview;
-  },
-
   get labelForHistogram() {
-    return this._labelForHistogram || this._id;
+    // The histogram label value has a length limit of 20 and restricted to a
+    // pattern. See MAX_LABEL_LENGTH and CPP_IDENTIFIER_PATTERN in
+    // toolkit/components/telemetry/parse_histograms.py
+    return (
+      this._labelForHistogram ||
+      this._id.replace(/_\w{1}/g, match => match[1].toUpperCase()).substr(0, 20)
+    );
   },
 
   /**
-   * Returns the URL of the best icon to use given a preferred size.  The best
-   * icon is the one with the smallest size that's equal to or bigger than the
-   * preferred size.  Returns null if the action has no icon URL.
+   * Selects the best matching icon from the given URLs object for the
+   * given preferred size.
    *
-   * @param  peferredSize (number, required)
-   *         The icon size you prefer.
-   * @return The URL of the best icon, or null.
+   * @param {object} urls
+   *        An object containing square icons of various sizes. The name
+   *        of each property is its width, and the value is its image URL.
+   * @param {integer} peferredSize
+   *        The preferred icon width. The most appropriate icon in the
+   *        urls object will be chosen to match that size. An exact
+   *        match will be preferred, followed by an icon exactly double
+   *        the size, followed by the smallest icon larger than the
+   *        preferred size, followed by the largest available icon.
+   * @returns {string}
+   *        The chosen icon URL.
    */
-  iconURLForSize(preferredSize, browserWindow) {
-    let iconURL = this.getIconURL(browserWindow);
-    if (!iconURL) {
-      return null;
+  _iconURLForSize(urls, preferredSize) {
+    // This case is copied from ExtensionParent.jsm so that our image logic is
+    // the same, so that WebExtensions page action tests that deal with icons
+    // pass.
+    let bestSize = null;
+    if (urls[preferredSize]) {
+      bestSize = preferredSize;
+    } else if (urls[2 * preferredSize]) {
+      bestSize = 2 * preferredSize;
+    } else {
+      let sizes = Object.keys(urls)
+        .map(key => parseInt(key, 10))
+        .sort((a, b) => a - b);
+      bestSize =
+        sizes.find(candidate => candidate > preferredSize) || sizes.pop();
     }
-    if (typeof(iconURL) == "string") {
-      return iconURL;
-    }
-    if (typeof(iconURL) == "object") {
-      // This case is copied from ExtensionParent.jsm so that our image logic is
-      // the same, so that WebExtensions page action tests that deal with icons
-      // pass.
-      let bestSize = null;
-      if (iconURL[preferredSize]) {
-        bestSize = preferredSize;
-      } else if (iconURL[2 * preferredSize]) {
-        bestSize = 2 * preferredSize;
-      } else {
-        let sizes = Object.keys(iconURL)
-                          .map(key => parseInt(key, 10))
-                          .sort((a, b) => a - b);
-        bestSize = sizes.find(candidate => candidate > preferredSize) || sizes.pop();
-      }
-      return iconURL[bestSize];
-    }
-    return null;
+    return urls[bestSize];
   },
 
   /**
@@ -974,6 +1034,31 @@ Action.prototype = {
   },
 
   /**
+   * Call this when a panelview node for the action's subview is added to the
+   * DOM.
+   *
+   * @param  panelViewNode (DOM node, required)
+   *         The subview's panelview node.
+   */
+  onSubviewPlaced(panelViewNode) {
+    if (this._onSubviewPlaced) {
+      this._onSubviewPlaced(panelViewNode);
+    }
+  },
+
+  /**
+   * Call this when a panelview node for the action's subview is showing.
+   *
+   * @param  panelViewNode (DOM node, required)
+   *         The subview's panelview node.
+   */
+  onSubviewShowing(panelViewNode) {
+    if (this._onSubviewShowing) {
+      this._onSubviewShowing(panelViewNode);
+    }
+  },
+
+  /**
    * Removes the action's DOM nodes from all browser windows.
    *
    * PageActions will remember the action's urlbar placement, if any, after this
@@ -986,6 +1071,22 @@ Action.prototype = {
   },
 
   /**
+   * Returns whether the action should be shown in a given window's panel.
+   *
+   * @param  browserWindow (DOM window, required)
+   *         The window.
+   * @return True if the action should be shown and false otherwise.  Actions
+   *         are always shown in the panel unless they're both transient and
+   *         disabled.
+   */
+  shouldShowInPanel(browserWindow) {
+    return (
+      (!this.__transient || !this.getDisabled(browserWindow)) &&
+      this.canShowInWindow(browserWindow)
+    );
+  },
+
+  /**
    * Returns whether the action should be shown in a given window's urlbar.
    *
    * @param  browserWindow (DOM window, required)
@@ -994,173 +1095,35 @@ Action.prototype = {
    *         should be shown if it's both pinned and not disabled.
    */
   shouldShowInUrlbar(browserWindow) {
-    return this.pinnedToUrlbar && !this.getDisabled(browserWindow);
+    return (
+      this.pinnedToUrlbar &&
+      !this.getDisabled(browserWindow) &&
+      this.canShowInWindow(browserWindow)
+    );
   },
 
   get _isBuiltIn() {
-    let builtInIDs = [
-      "pocket",
-      "screenshots",
-      "webcompat-reporter-button",
-    ].concat(gBuiltInActions.filter(a => !a.__isSeparator).map(a => a.id));
+    let builtInIDs = ["pocket", "screenshots_mozilla_org"].concat(
+      gBuiltInActions.filter(a => !a.__isSeparator).map(a => a.id)
+    );
     return builtInIDs.includes(this.id);
+  },
+
+  get _isMozillaAction() {
+    return this._isBuiltIn || this.id == "webcompat-reporter_mozilla_org";
   },
 };
 
 this.PageActions.Action = Action;
 
-
-/**
- * A Subview represents a PanelUI panelview that your actions can show.
- * `options` is a required object with the following properties.
- *
- * @param buttons (array, optional)
- *        An array of buttons to show in the subview.  Each item in the array
- *        must be an options object suitable for passing to the Button
- *        constructor.  See the Button constructor for information on these
- *        objects' properties.
- * @param onPlaced (function, optional)
- *        Called when the subview is added to its parent panel in a browser
- *        window:
- *        onPlaced(panelViewNode)
- *        * panelViewNode: The panelview node represented by this Subview.
- * @param onShowing (function, optional)
- *        Called when the subview is showing in a browser window:
- *        onShowing(panelViewNode)
- *        * panelViewNode: The panelview node represented by this Subview.
- */
-function Subview(options) {
-  setProperties(this, options, {
-    buttons: false,
-    onPlaced: false,
-    onShowing: false,
-  });
-  this._buttons = (this._buttons || []).map(buttonOptions => {
-    return new Button(buttonOptions);
-  });
-}
-
-Subview.prototype = {
-  /**
-   * The subview's buttons (array of Button objects, nonnull)
-   */
-  get buttons() {
-    return this._buttons;
-  },
-
-  /**
-   * Call this when a DOM node for the subview is added to the DOM.
-   *
-   * @param  panelViewNode (DOM node, required)
-   *         The subview's panelview node.
-   */
-  onPlaced(panelViewNode) {
-    if (this._onPlaced) {
-      this._onPlaced(panelViewNode);
-    }
-  },
-
-  /**
-   * Call this when a DOM node for the subview is showing.
-   *
-   * @param  panelViewNode (DOM node, required)
-   *         The subview's panelview node.
-   */
-  onShowing(panelViewNode) {
-    if (this._onShowing) {
-      this._onShowing(panelViewNode);
-    }
-  }
-};
-
-this.PageActions.Subview = Subview;
-
-
-/**
- * A button that can be shown in a subview.  `options` is a required object with
- * the following properties.
- *
- * @param id (string, required)
- *        The button's ID.  This will not become the ID of a DOM node by itself,
- *        but it will be used to generate DOM node IDs.  But in terms of spaces
- *        and weird characters and such, do treat this like a DOM node ID.
- * @param title (string, required)
- *        The button's title.
- * @param disabled (bool, required)
- *        Pass true to disable the button.
- * @param onCommand (function, optional)
- *        Called when the button is clicked:
- *        onCommand(event, buttonNode)
- *        * event: The triggering event.
- *        * buttonNode: The node that was clicked.
- * @param shortcut (string, optional)
- *        The button's shortcut text.
- */
-function Button(options) {
-  setProperties(this, options, {
-    id: true,
-    title: true,
-    disabled: false,
-    onCommand: false,
-    shortcut: false,
-  });
-}
-
-Button.prototype = {
-  /**
-   * True if the button is disabled (bool, nonnull)
-   */
-  get disabled() {
-    return this._disabled || false;
-  },
-
-  /**
-   * The button's ID (string, nonnull)
-   */
-  get id() {
-    return this._id;
-  },
-
-  /**
-   * The button's shortcut (string, nullable)
-   */
-  get shortcut() {
-    return this._shortcut;
-  },
-
-  /**
-   * The button's title (string, nonnull)
-   */
-  get title() {
-    return this._title;
-  },
-
-  /**
-   * Call this when the user clicks the button.
-   *
-   * @param  event (DOM event, required)
-   *         The triggering event.
-   * @param  buttonNode (DOM node, required)
-   *         The button's DOM node that was clicked.
-   */
-  onCommand(event, buttonNode) {
-    if (this._onCommand) {
-      this._onCommand(event, buttonNode);
-    }
-  }
-};
-
-this.PageActions.Button = Button;
-
+this.PageActions.ACTION_ID_BUILT_IN_SEPARATOR = ACTION_ID_BUILT_IN_SEPARATOR;
+this.PageActions.ACTION_ID_TRANSIENT_SEPARATOR = ACTION_ID_TRANSIENT_SEPARATOR;
 
 // These are only necessary so that Pocket and the test can use them.
 this.PageActions.ACTION_ID_BOOKMARK = ACTION_ID_BOOKMARK;
+this.PageActions.ACTION_ID_PIN_TAB = ACTION_ID_PIN_TAB;
 this.PageActions.ACTION_ID_BOOKMARK_SEPARATOR = ACTION_ID_BOOKMARK_SEPARATOR;
 this.PageActions.PREF_PERSISTED_ACTIONS = PREF_PERSISTED_ACTIONS;
-
-// This is only necessary so that the test can access it.
-this.PageActions.ACTION_ID_BUILT_IN_SEPARATOR = ACTION_ID_BUILT_IN_SEPARATOR;
-
 
 // Sorted in the order in which they should appear in the page action panel.
 // Does not include the page actions of extensions bundled with the browser.
@@ -1169,7 +1132,6 @@ this.PageActions.ACTION_ID_BUILT_IN_SEPARATOR = ACTION_ID_BUILT_IN_SEPARATOR;
 // want to keep track of), make sure to also update Histograms.json for the
 // new actions.
 var gBuiltInActions = [
-
   // bookmark
   {
     id: ACTION_ID_BOOKMARK,
@@ -1179,14 +1141,47 @@ var gBuiltInActions = [
     // BookmarkingUI.updateBookmarkPageMenuItem().
     title: "",
     pinnedToUrlbar: true,
-    nodeAttributes: {
-      observes: "bookmarkThisPageBroadcaster",
-    },
     onShowingInPanel(buttonNode) {
       browserPageActions(buttonNode).bookmark.onShowingInPanel(buttonNode);
     },
     onCommand(event, buttonNode) {
       browserPageActions(buttonNode).bookmark.onCommand(event, buttonNode);
+    },
+  },
+
+  // pin tab
+  {
+    id: ACTION_ID_PIN_TAB,
+    // The title is set in browser-pageActions.js.
+    title: "",
+    onBeforePlacedInWindow(browserWindow) {
+      function handlePinEvent() {
+        browserPageActions(browserWindow).pinTab.updateState();
+      }
+      function handleWindowUnload() {
+        for (let event of ["TabPinned", "TabUnpinned"]) {
+          browserWindow.removeEventListener(event, handlePinEvent);
+        }
+      }
+
+      for (let event of ["TabPinned", "TabUnpinned"]) {
+        browserWindow.addEventListener(event, handlePinEvent);
+      }
+      browserWindow.addEventListener("unload", handleWindowUnload, {
+        once: true,
+      });
+    },
+    onPlacedInPanel(buttonNode) {
+      browserPageActions(buttonNode).pinTab.updateState();
+    },
+    onPlacedInUrlbar(buttonNode) {
+      browserPageActions(buttonNode).pinTab.updateState();
+    },
+    onLocationChange(browserWindow) {
+      browserPageActions(browserWindow).pinTab.updateState();
+    },
+    onCommand(event, buttonNode) {
+      browserPageActions(buttonNode).pinTab.onCommand(event, buttonNode);
     },
   },
 
@@ -1200,8 +1195,10 @@ var gBuiltInActions = [
   {
     id: "copyURL",
     title: "copyURL-title",
-    onPlacedInPanel(buttonNode) {
-      browserPageActions(buttonNode).copyURL.onPlacedInPanel(buttonNode);
+    onBeforePlacedInWindow(browserWindow) {
+      browserPageActions(browserWindow).copyURL.onBeforePlacedInWindow(
+        browserWindow
+      );
     },
     onCommand(event, buttonNode) {
       browserPageActions(buttonNode).copyURL.onCommand(event, buttonNode);
@@ -1212,47 +1209,107 @@ var gBuiltInActions = [
   {
     id: "emailLink",
     title: "emailLink-title",
-    onPlacedInPanel(buttonNode) {
-      browserPageActions(buttonNode).emailLink.onPlacedInPanel(buttonNode);
+    onBeforePlacedInWindow(browserWindow) {
+      browserPageActions(browserWindow).emailLink.onBeforePlacedInWindow(
+        browserWindow
+      );
     },
     onCommand(event, buttonNode) {
       browserPageActions(buttonNode).emailLink.onCommand(event, buttonNode);
     },
-  }
+  },
+
+  // add search engine
+  {
+    id: "addSearchEngine",
+    // The title is set in browser-pageActions.js.
+    title: "",
+    _transient: true,
+    onShowingInPanel(buttonNode) {
+      browserPageActions(buttonNode).addSearchEngine.onShowingInPanel();
+    },
+    onCommand(event, buttonNode) {
+      browserPageActions(buttonNode).addSearchEngine.onCommand(
+        event,
+        buttonNode
+      );
+    },
+    onSubviewShowing(panelViewNode) {
+      browserPageActions(panelViewNode).addSearchEngine.onSubviewShowing(
+        panelViewNode
+      );
+    },
+  },
 ];
 
+// send to device
 if (Services.prefs.getBoolPref("identity.fxaccounts.enabled")) {
-  gBuiltInActions.push(
-  // send to device
-  {
+  gBuiltInActions.push({
     id: "sendToDevice",
-    title: "sendToDevice-title",
-    onPlacedInPanel(buttonNode) {
-      browserPageActions(buttonNode).sendToDevice.onPlacedInPanel(buttonNode);
+    // The actual title is set by each window, per window, and depends on the
+    // number of tabs that are selected.
+    title: "sendToDevice",
+    onBeforePlacedInWindow(browserWindow) {
+      browserPageActions(browserWindow).sendToDevice.onBeforePlacedInWindow(
+        browserWindow
+      );
     },
     onLocationChange(browserWindow) {
       browserPageActions(browserWindow).sendToDevice.onLocationChange();
     },
-    subview: {
-      buttons: [
-        {
-          id: "notReady",
-          title: "sendToDevice-notReadyTitle",
-          disabled: true,
-        },
-      ],
-      onPlaced(panelViewNode) {
-        browserPageActions(panelViewNode).sendToDevice
-          .onSubviewPlaced(panelViewNode);
-      },
-      onShowing(panelViewNode) {
-        browserPageActions(panelViewNode).sendToDevice
-          .onShowingSubview(panelViewNode);
-      },
+    wantsSubview: true,
+    onSubviewPlaced(panelViewNode) {
+      browserPageActions(panelViewNode).sendToDevice.onSubviewPlaced(
+        panelViewNode
+      );
+    },
+    onSubviewShowing(panelViewNode) {
+      browserPageActions(panelViewNode).sendToDevice.onShowingSubview(
+        panelViewNode
+      );
     },
   });
 }
 
+// share URL
+if (AppConstants.platform == "macosx") {
+  gBuiltInActions.push({
+    id: "shareURL",
+    title: "shareURL-title",
+    onShowingInPanel(buttonNode) {
+      browserPageActions(buttonNode).shareURL.onShowingInPanel(buttonNode);
+    },
+    onBeforePlacedInWindow(browserWindow) {
+      browserPageActions(browserWindow).shareURL.onBeforePlacedInWindow(
+        browserWindow
+      );
+    },
+    wantsSubview: true,
+    onSubviewShowing(panelViewNode) {
+      browserPageActions(panelViewNode).shareURL.onShowingSubview(
+        panelViewNode
+      );
+    },
+  });
+}
+
+if (AppConstants.isPlatformAndVersionAtLeast("win", "6.4")) {
+  gBuiltInActions.push(
+    // Share URL
+    {
+      id: "shareURL",
+      title: "shareURL-title",
+      onBeforePlacedInWindow(buttonNode) {
+        browserPageActions(buttonNode).shareURL.onBeforePlacedInWindow(
+          buttonNode
+        );
+      },
+      onCommand(event, buttonNode) {
+        browserPageActions(buttonNode).shareURL.onCommand(event, buttonNode);
+      },
+    }
+  );
+}
 
 /**
  * Gets a BrowserPageActions object in a browser window.
@@ -1283,10 +1340,7 @@ function* allBrowserWindows(browserWindow = null) {
     yield browserWindow;
     return;
   }
-  let windows = Services.wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements()) {
-    yield windows.getNext();
-  }
+  yield* Services.wm.getEnumerator("navigator:browser");
 }
 
 /**

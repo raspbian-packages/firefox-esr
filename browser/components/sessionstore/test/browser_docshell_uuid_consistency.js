@@ -5,10 +5,8 @@ add_task(async function duplicateTab() {
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
 
   await ContentTask.spawn(tab.linkedBrowser, null, function() {
-    let docshell = content.window.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsIWebNavigation)
-                                 .QueryInterface(Ci.nsIDocShell);
-    let shEntry = docshell.sessionHistory.getEntryAtIndex(0, false);
+    let docshell = content.window.docShell.QueryInterface(Ci.nsIWebNavigation);
+    let shEntry = docshell.sessionHistory.legacySHistory.getEntryAtIndex(0);
     is(shEntry.docshellID.toString(), docshell.historyID.toString());
   });
 
@@ -16,15 +14,13 @@ add_task(async function duplicateTab() {
   await BrowserTestUtils.browserLoaded(tab2.linkedBrowser);
 
   await ContentTask.spawn(tab2.linkedBrowser, null, function() {
-    let docshell = content.window.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsIWebNavigation)
-                                 .QueryInterface(Ci.nsIDocShell);
-    let shEntry = docshell.sessionHistory.getEntryAtIndex(0, false);
+    let docshell = content.window.docShell.QueryInterface(Ci.nsIWebNavigation);
+    let shEntry = docshell.sessionHistory.legacySHistory.getEntryAtIndex(0);
     is(shEntry.docshellID.toString(), docshell.historyID.toString());
   });
 
-  await BrowserTestUtils.removeTab(tab);
-  await BrowserTestUtils.removeTab(tab2);
+  BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab2);
 });
 
 // Second test - open a tab and navigate across processes, which triggers sessionrestore to persist history.
@@ -34,20 +30,23 @@ add_task(async function contentToChromeNavigate() {
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
 
   await ContentTask.spawn(tab.linkedBrowser, null, function() {
-    let docshell = content.window.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsIWebNavigation)
-                                 .QueryInterface(Ci.nsIDocShell);
+    let docshell = content.window.docShell.QueryInterface(Ci.nsIWebNavigation);
     let sh = docshell.sessionHistory;
     is(sh.count, 1);
-    is(sh.getEntryAtIndex(0, false).docshellID.toString(), docshell.historyID.toString());
+    is(
+      sh.legacySHistory.getEntryAtIndex(0).docshellID.toString(),
+      docshell.historyID.toString()
+    );
   });
 
   // Force the browser to navigate to the chrome process.
   await ContentTask.spawn(tab.linkedBrowser, null, function() {
     const CHROME_URL = "about:config";
-    let webnav = content.window.QueryInterface(Ci.nsIInterfaceRequestor)
-                               .getInterface(Ci.nsIWebNavigation);
-    webnav.loadURI(CHROME_URL, Ci.nsIWebNavigation.LOAD_FLAGS_NONE, null, null, null);
+    let webnav = content.window.getInterface(Ci.nsIWebNavigation);
+    let loadURIOptions = {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+    };
+    webnav.loadURI(CHROME_URL, loadURIOptions);
   });
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
 
@@ -58,8 +57,14 @@ add_task(async function contentToChromeNavigate() {
   let sh = docShell.QueryInterface(Ci.nsIWebNavigation).sessionHistory;
 
   is(sh.count, 2);
-  is(sh.getEntryAtIndex(0, false).docshellID.toString(), docShell.historyID.toString());
-  is(sh.getEntryAtIndex(1, false).docshellID.toString(), docShell.historyID.toString());
+  is(
+    sh.legacySHistory.getEntryAtIndex(0).docshellID.toString(),
+    docShell.historyID.toString()
+  );
+  is(
+    sh.legacySHistory.getEntryAtIndex(1).docshellID.toString(),
+    docShell.historyID.toString()
+  );
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 });

@@ -15,8 +15,8 @@
 #include "nsFrameSelection.h"
 
 #include "nsIAccessibleTypes.h"
-#include "nsIDOMDocument.h"
-#include "nsIPresShell.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/Selection.h"
 #include "mozilla/dom/Element.h"
 
@@ -42,17 +42,15 @@ SelectionManager::SelectionManager()
 
 void SelectionManager::ClearControlSelectionListener() {
   // Remove 'this' registered as selection listener for the normal selection.
-  nsCOMPtr<nsISelection> normalSel = do_QueryReferent(mCurrCtrlNormalSel);
-  if (normalSel) {
-    normalSel->AsSelection()->RemoveSelectionListener(this);
+  if (mCurrCtrlNormalSel) {
+    mCurrCtrlNormalSel->RemoveSelectionListener(this);
     mCurrCtrlNormalSel = nullptr;
   }
 
   // Remove 'this' registered as selection listener for the spellcheck
   // selection.
-  nsCOMPtr<nsISelection> spellSel = do_QueryReferent(mCurrCtrlSpellSel);
-  if (spellSel) {
-    spellSel->AsSelection()->RemoveSelectionListener(this);
+  if (mCurrCtrlSpellSel) {
+    mCurrCtrlSpellSel->RemoveSelectionListener(this);
     mCurrCtrlSpellSel = nullptr;
   }
 }
@@ -71,19 +69,17 @@ void SelectionManager::SetControlSelectionListener(dom::Element* aFocusedElm) {
   if (!frameSel) return;
 
   // Register 'this' as selection listener for the normal selection.
-  nsCOMPtr<nsISelection> normalSel =
-      frameSel->GetSelection(SelectionType::eNormal);
-  normalSel->AsSelection()->AddSelectionListener(this);
-  mCurrCtrlNormalSel = do_GetWeakReference(normalSel);
+  Selection* normalSel = frameSel->GetSelection(SelectionType::eNormal);
+  normalSel->AddSelectionListener(this);
+  mCurrCtrlNormalSel = normalSel;
 
   // Register 'this' as selection listener for the spell check selection.
-  nsCOMPtr<nsISelection> spellSel =
-      frameSel->GetSelection(SelectionType::eSpellCheck);
-  spellSel->AsSelection()->AddSelectionListener(this);
-  mCurrCtrlSpellSel = do_GetWeakReference(spellSel);
+  Selection* spellSel = frameSel->GetSelection(SelectionType::eSpellCheck);
+  spellSel->AddSelectionListener(this);
+  mCurrCtrlSpellSel = spellSel;
 }
 
-void SelectionManager::AddDocSelectionListener(nsIPresShell* aPresShell) {
+void SelectionManager::AddDocSelectionListener(PresShell* aPresShell) {
   const nsFrameSelection* frameSel = aPresShell->ConstFrameSelection();
 
   // Register 'this' as selection listener for the normal selection.
@@ -95,7 +91,7 @@ void SelectionManager::AddDocSelectionListener(nsIPresShell* aPresShell) {
   spellSel->AddSelectionListener(this);
 }
 
-void SelectionManager::RemoveDocSelectionListener(nsIPresShell* aPresShell) {
+void SelectionManager::RemoveDocSelectionListener(PresShell* aPresShell) {
   const nsFrameSelection* frameSel = aPresShell->ConstFrameSelection();
 
   // Remove 'this' registered as selection listener for the normal selection.
@@ -142,15 +138,14 @@ void SelectionManager::ProcessTextSelChangeEvent(AccEvent* aEvent) {
 }
 
 NS_IMETHODIMP
-SelectionManager::NotifySelectionChanged(nsIDOMDocument* aDOMDocument,
-                                         nsISelection* aSelection,
+SelectionManager::NotifySelectionChanged(dom::Document* aDocument,
+                                         Selection* aSelection,
                                          int16_t aReason) {
-  if (NS_WARN_IF(!aDOMDocument) || NS_WARN_IF(!aSelection)) {
+  if (NS_WARN_IF(!aDocument) || NS_WARN_IF(!aSelection)) {
     return NS_ERROR_INVALID_ARG;
   }
 
-  nsCOMPtr<nsIDocument> documentNode(do_QueryInterface(aDOMDocument));
-  DocAccessible* document = GetAccService()->GetDocAccessible(documentNode);
+  DocAccessible* document = GetAccService()->GetDocAccessible(aDocument);
 
 #ifdef A11Y_LOG
   if (logging::IsEnabled(logging::eSelection))
@@ -161,7 +156,7 @@ SelectionManager::NotifySelectionChanged(nsIDOMDocument* aDOMDocument,
     // Selection manager has longer lifetime than any document accessible,
     // so that we are guaranteed that the notification is processed before
     // the selection manager is destroyed.
-    RefPtr<SelData> selData = new SelData(aSelection->AsSelection(), aReason);
+    RefPtr<SelData> selData = new SelData(aSelection, aReason);
     document->HandleNotification<SelectionManager, SelData>(
         this, &SelectionManager::ProcessSelectionChanged, selData);
   }
@@ -189,8 +184,8 @@ void SelectionManager::ProcessSelectionChanged(SelData* aSelData) {
 
   HyperTextAccessible* text = nsAccUtils::GetTextContainer(cntrNode);
   if (!text) {
-    NS_NOTREACHED(
-        "We must reach document accessible implementing text interface!");
+    // FIXME bug 1126649
+    NS_ERROR("We must reach document accessible implementing text interface!");
     return;
   }
 

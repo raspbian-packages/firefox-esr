@@ -18,7 +18,20 @@ using namespace mozilla;
 using namespace mozilla::a11y;
 using namespace mozilla::dom;
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(AccessibleNode)
+bool AccessibleNode::IsAOMEnabled(JSContext* aCx, JSObject* /*unused*/) {
+  static bool sPrefCached = false;
+  static bool sPrefCacheValue = false;
+
+  if (!sPrefCached) {
+    sPrefCached = true;
+    Preferences::AddBoolVarCache(&sPrefCacheValue, "accessibility.AOM.enabled");
+  }
+
+  return nsContentUtils::IsSystemCaller(aCx) || sPrefCacheValue;
+}
+
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(AccessibleNode, mRelationProperties,
+                                      mIntl, mDOMNode, mStates)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(AccessibleNode)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
@@ -28,7 +41,14 @@ NS_INTERFACE_MAP_END
 NS_IMPL_CYCLE_COLLECTING_ADDREF(AccessibleNode)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(AccessibleNode)
 
-AccessibleNode::AccessibleNode(nsINode* aNode) : mDOMNode(aNode) {
+AccessibleNode::AccessibleNode(nsINode* aNode)
+    : mDoubleProperties(3),
+      mIntProperties(3),
+      mUIntProperties(6),
+      mBooleanProperties(0),
+      mRelationProperties(3),
+      mStringProperties(16),
+      mDOMNode(aNode) {
   nsAccessibilityService* accService = GetOrCreateAccService();
   if (!accService) {
     return;
@@ -42,16 +62,18 @@ AccessibleNode::AccessibleNode(nsINode* aNode) : mDOMNode(aNode) {
 
 AccessibleNode::~AccessibleNode() {}
 
-/* virtual */ JSObject* AccessibleNode::WrapObject(
-    JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return AccessibleNodeBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* AccessibleNode::WrapObject(JSContext* aCx,
+                                     JS::Handle<JSObject*> aGivenProto) {
+  return AccessibleNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-/* virtual */ ParentObject AccessibleNode::GetParentObject() const {
+/* virtual */
+ParentObject AccessibleNode::GetParentObject() const {
   return mDOMNode->GetParentObject();
 }
 
-void AccessibleNode::GetRole(nsAString& aRole) {
+void AccessibleNode::GetComputedRole(nsAString& aRole) {
   if (mIntl) {
     nsAccessibilityService* accService = GetOrCreateAccService();
     if (accService) {

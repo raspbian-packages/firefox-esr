@@ -6,7 +6,7 @@
 "use strict";
 
 // Make this available to both AMD and CJS environments
-define(function (require, exports, module) {
+define(function(require, exports, module) {
   const { Component } = require("devtools/client/shared/vendor/react");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
   const dom = require("devtools/client/shared/vendor/react-dom-factories");
@@ -45,13 +45,15 @@ define(function (require, exports, module) {
      * the value or expanded state changes.
      */
     shouldComponentUpdate(nextProps, nextState) {
-      return (this.props.value != nextProps.value) ||
-        (this.state !== nextState) ||
-        (this.props.member.open != nextProps.member.open);
+      return (
+        this.props.value != nextProps.value ||
+        this.state !== nextState ||
+        this.props.member.open != nextProps.member.open
+      );
     }
 
     getCellClass(object, id) {
-      let decorator = this.props.decorator;
+      const decorator = this.props.decorator;
       if (!decorator || !decorator.getCellClass) {
         return [];
       }
@@ -70,9 +72,11 @@ define(function (require, exports, module) {
     }
 
     updateInputEnabled(evt) {
-      this.setState(Object.assign({}, this.state, {
-        inputEnabled: evt.target.nodeName.toLowerCase() !== "input",
-      }));
+      this.setState(
+        Object.assign({}, this.state, {
+          inputEnabled: evt.target.nodeName.toLowerCase() !== "input",
+        })
+      );
     }
 
     render() {
@@ -84,10 +88,10 @@ define(function (require, exports, module) {
         renderValue,
         enableInput,
       } = this.props;
-      let type = member.type || "";
+      const type = member.type || "";
 
       // Compute class name list for the <td> element.
-      let classNames = this.getCellClass(member.object, id) || [];
+      const classNames = this.getCellClass(member.object, id) || [];
       classNames.push("treeValueCell");
       classNames.push(type + "Cell");
 
@@ -98,7 +102,7 @@ define(function (require, exports, module) {
         renderValue = decorator.renderValue(member.object, id) || renderValue;
       }
 
-      let props = Object.assign({}, this.props, {
+      const props = Object.assign({}, this.props, {
         object: value,
       });
 
@@ -110,34 +114,32 @@ define(function (require, exports, module) {
           onBlur: this.updateInputEnabled,
           readOnly: true,
           value,
-          "aria-labelledby": id
+          "aria-labelledby": id,
         });
       } else {
-        cellElement = span({
-          onClick: (type !== "object") ? this.updateInputEnabled : null,
-          "aria-labelledby": id
-        },
+        cellElement = span(
+          {
+            onClick: type !== "object" ? this.updateInputEnabled : null,
+            "aria-labelledby": id,
+          },
           renderValue(props)
         );
       }
 
       // Render me!
-      return (
-        td({
+      return td(
+        {
           className: classNames.join(" "),
-          role: "presentation"
+          role: "presentation",
         },
-          cellElement
-        )
+        cellElement
       );
     }
   }
 
   // Default value rendering.
-  let defaultRenderValue = props => {
-    return (
-      props.object + ""
-    );
+  const defaultRenderValue = props => {
+    return props.object + "";
   };
 
   // Exports from this module

@@ -10,21 +10,21 @@
                  type="text/css"?>
 
 <?xml-stylesheet href="chrome://browser/content/places/places.css"?>
-<?xml-stylesheet href="chrome://browser/skin/places/places.css"?>
-<?xul-overlay href="chrome://browser/content/places/placesOverlay.xul"?>
+<?xml-stylesheet href="chrome://browser/skin/places/tree-icons.css"?>
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="1163447:  selectItems in Places no longer selects items within Toolbar or Sidebar folders"
         onload="runTest();">
 
   <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
+          src="chrome://browser/content/places/places-tree.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
   <script type="application/javascript" src="head.js" />
 
   <body xmlns="http://www.w3.org/1999/xhtml" />
 
   <tree id="tree"
-        type="places"
+        is="places-tree"
         flex="1">
     <treecols>
       <treecol label="Title" id="title" anonid="title" primary="true" ordinal="1" flex="1"/>
@@ -49,7 +49,7 @@
           parentGuid: bmu.toolbarGuid,
           index: bmu.DEFAULT_INDEX,
           type: bmu.TYPE_BOOKMARK,
-          url: "place:folder=TOOLBAR",
+          url: `place:parent=${PlacesUtils.bookmarks.toolbarGuid}`,
           title: "shortcut to self - causing infinite recursion if not handled properly"
         });
 
@@ -57,7 +57,7 @@
           parentGuid: bmu.toolbarGuid,
           index: bmu.DEFAULT_INDEX,
           type: bmu.TYPE_BOOKMARK,
-          url: "place:folder=UNFILED_BOOKMARKS",
+          url: `place:parent=${PlacesUtils.bookmarks.unfiledGuid}`,
           title: "shortcut to unfiled, within toolbar"
         });
 
@@ -70,7 +70,7 @@
 
         // Setup the places tree contents.
         let tree = document.getElementById("tree");
-        tree.place = "place:folder=TOOLBAR";
+        tree.place = `place:parent=${PlacesUtils.bookmarks.toolbarGuid}`;
 
         // Select the folder via the selectItems(folder.guid) API being tested
         tree.selectItems([folder.guid]);

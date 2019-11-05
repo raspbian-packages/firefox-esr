@@ -9,7 +9,7 @@
 #include "nsCOMPtr.h"
 #include "nsString.h"
 
-#include "nsISimpleEnumerator.h"
+#include "nsSimpleEnumerator.h"
 #include "nsIXULWindow.h"
 
 class nsWindowMediator;
@@ -42,7 +42,7 @@ struct nsWindowInfo {
 // virtual enumerators
 //
 
-class nsAppShellWindowEnumerator : public nsISimpleEnumerator {
+class nsAppShellWindowEnumerator : public nsSimpleEnumerator {
   friend class nsWindowMediator;
 
  public:
@@ -51,10 +51,8 @@ class nsAppShellWindowEnumerator : public nsISimpleEnumerator {
   NS_IMETHOD GetNext(nsISupports** retval) override = 0;
   NS_IMETHOD HasMoreElements(bool* retval) override;
 
-  NS_DECL_ISUPPORTS
-
  protected:
-  virtual ~nsAppShellWindowEnumerator();
+  ~nsAppShellWindowEnumerator() override;
 
   void AdjustInitialPosition();
   virtual nsWindowInfo* FindNext() = 0;
@@ -80,6 +78,8 @@ class nsASXULWindowEnumerator : public nsAppShellWindowEnumerator {
                           nsWindowMediator& inMediator);
   virtual ~nsASXULWindowEnumerator();
   NS_IMETHOD GetNext(nsISupports** retval) override;
+
+  const nsID& DefaultInterface() override { return NS_GET_IID(nsIXULWindow); }
 };
 
 //
@@ -108,34 +108,12 @@ class nsASXULWindowEarlyToLateEnumerator : public nsASXULWindowEnumerator {
   virtual nsWindowInfo* FindNext() override;
 };
 
-class nsASDOMWindowFrontToBackEnumerator : public nsASDOMWindowEnumerator {
- public:
-  nsASDOMWindowFrontToBackEnumerator(const char16_t* aTypeString,
-                                     nsWindowMediator& inMediator);
-
-  virtual ~nsASDOMWindowFrontToBackEnumerator();
-
- protected:
-  virtual nsWindowInfo* FindNext() override;
-};
-
 class nsASXULWindowFrontToBackEnumerator : public nsASXULWindowEnumerator {
  public:
   nsASXULWindowFrontToBackEnumerator(const char16_t* aTypeString,
                                      nsWindowMediator& inMediator);
 
   virtual ~nsASXULWindowFrontToBackEnumerator();
-
- protected:
-  virtual nsWindowInfo* FindNext() override;
-};
-
-class nsASDOMWindowBackToFrontEnumerator : public nsASDOMWindowEnumerator {
- public:
-  nsASDOMWindowBackToFrontEnumerator(const char16_t* aTypeString,
-                                     nsWindowMediator& inMediator);
-
-  virtual ~nsASDOMWindowBackToFrontEnumerator();
 
  protected:
   virtual nsWindowInfo* FindNext() override;

@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Bainvegni">
 <!ENTITY firstrun_urlbar_message2 "Grazia che ti has tschernì &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Bainvegni a &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "In navigatur mobil modern da Mozilla, l\&apos;organisaziun senza finamira da profit che s\&apos;engascha per ina rait libra ed averta.">
+<!ENTITY newfirstrun_urlbar_subtext "Spert, privat e da tia vart.">
 <!ENTITY firstrun_panel_title_privacy "Sfera privata">
 <!ENTITY firstrun_privacy_message "Navighescha sco sche nagin t\&apos;observass">
 <!ENTITY firstrun_privacy_subtext "Il modus privat cun protecziun cunter il fastizar blochescha fastizaders durant che ti navigheschas e na memorisescha betg la cronologia suenter la navigaziun.">
+<!ENTITY newfirstrun_privacy_subtext "La navigaziun en il modus privat blochescha fastizaders da reclama che ta suondan en l\&apos;internet.">
 <!ENTITY firstrun_panel_title_customize "Persunalisar">
 <!ENTITY firstrun_customize_message "Persunalisescha &brandShortName;.">
 <!ENTITY firstrun_customize_subtext "Persunalisescha &brandShortName; cun supplements. Blochescha reclama, agiuntescha funcziuns u tscherna in design che ta correspunda.">
@@ -20,19 +23,15 @@
 <!ENTITY firstrun_sync_title "Sync">
 <!ENTITY firstrun_sync_message2 "Cuntinuescha là nua che ti has chalà.">
 <!ENTITY firstrun_sync_subtext2 "Utilisescha Sync per chattar segnapaginas, pleds-clav ed autras datas che ti has memorisà en &brandShortName; sin tut tes apparats.">
+<!ENTITY newfirstrun_sync_subtext "Sincronisescha quai che ti memoriseschas sin tes apparat mobil era en Firefox per Windows, macOS u Linux – a moda confidenziala e segira.">
 <!ENTITY firstrun_signin_message "Ta collia per cumenzar">
 <!ENTITY firstrun_signin_button "T\&apos;annunzia per sincronisar">
+<!ENTITY newfirstrun_signin_button "Activar Sync">
 <!ENTITY  onboard_start_button_browser "Cumenzar a navigar">
 <!ENTITY firstrun_button_notnow "Betg gist uss">
 <!ENTITY firstrun_button_next "Enavant">
 
 <!ENTITY firstrun_tabqueue_title "Colliaziuns">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Activar la colonna da tabs">
-<!ENTITY firstrun_tabqueue_subtext_off "Betg avrir immediat colliaziuns en &brandShortName; mabain pir cura che Firefox vegn avià.">
-
-<!ENTITY firstrun_tabqueue_message_on "Success!">
-<!ENTITY firstrun_tabqueue_subtext_on "Ti pos deactivar da tut temp questa funcziun en las &settings; sut &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Artitgels">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -69,6 +68,20 @@
 <!ENTITY  crash_restart_label "Reaviar &brandShortName;">
 
 <!ENTITY url_bar_default_text2 "Tschertgar u tippar l\&apos;adressa">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Tschertgar en il web">
+<!ENTITY search_widget_default_cropped_text "Tschertgar">
+<!ENTITY search_widget_logo_description "Tschertgar en il web cun &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Utilisar il lectur da QR codes per tschertgar u endatar in\&apos;adressa">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Utilisar il microfon per tschertgar u endatar in\&apos;adressa">
 
 <!ENTITY bookmark "Segnapagina">
 <!ENTITY bookmark_remove "Allontanar il segnapagina">
@@ -206,7 +219,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Restaurar tabs, spargnar datas, utensils per sviluppaders">
 <!ENTITY pref_category_notifications "Communicaziuns">
-<!ENTITY pref_category_notifications_summary "Novas funcziuns, actualisaziuns da websites">
+<!ENTITY pref_category_notifications_summary2 "Novas funcziuns, infurmaziuns davart la software">
 <!ENTITY pref_developer_remotedebugging_usb "Debugging a distanza via USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Debugging a distanza via WLAN">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Per utilisar il debugging a distanza via WLAN sto tes apparat disponer dad ina applicaziun per leger codes QR.">
@@ -282,6 +295,19 @@
 <!ENTITY pref_whats_new_notification "Tge è nov en &brandShortName;?">
 <!ENTITY pref_whats_new_notification_summary "Infurmaziuns davart novas funcziuns suenter ina actualisaziun">
 
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Infurmaziuns davart la software e sias funcziuns">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "Ulteriuras infurmaziuns davart &brandShortName; ed auters products da &vendorShortName;">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Per activar questa opziun sto &pref_feature_tips_notification_enabling_path; gia esser activà.)">
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "Funcziuns experimentalas">
@@ -320,6 +346,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Ir a la configuraziun">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Agiuntar in nov tab a la colonna&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -353,8 +382,9 @@
 <!ENTITY pref_use_system_font_size "Utilisar la grondezza da scrittira dal sistem">
 <!ENTITY pref_use_system_font_size_summary "Adattar il cuntegn da web a la grondezza da scrittira dal sistem">
 
-<!ENTITY pref_media_autoplay_enabled "Adina far ir automaticamain">
-<!ENTITY pref_media_autoplay_enabled_summary "Definescha sche paginas pon far ir automaticamain videos ed auter cuntegn multimedial">
+<!ENTITY pref_media_autoplay_enabled "Permetter da far ir automaticamain">
+<!ENTITY pref_media_autoplay_allow "Permetter la reproducziun automatica">
+<!ENTITY pref_media_autoplay_block "Bloccar la reproducziun automatica">
 <!ENTITY pref_zoom_force_enabled "Adina activar il zoom">
 <!ENTITY pref_zoom_force_enabled_summary "Surscriver las valurs da la pagina per pudair engrondir mintga pagina">
 <!ENTITY pref_voice_input "Endataziun vocala">
@@ -377,7 +407,6 @@
 <!ENTITY pref_private_data_searchHistory "Cronologia da tschertgas">
 <!ENTITY pref_private_data_formdata2 "Cronologia da formulars">
 <!ENTITY pref_private_data_cookies2 "Cookies &amp; annunzias activas">
-<!ENTITY pref_private_data_passwords2 "Infurmaziuns d\&apos;annunzia memorisadas">
 <!ENTITY pref_private_data_cache "Cache">
 <!ENTITY pref_private_data_offlineApps "Datas da websites offline">
 <!ENTITY pref_private_data_siteSettings2 "Configuraziun per la website">
@@ -385,6 +414,12 @@
 <!ENTITY pref_private_data_syncedTabs "Tabs sincronisads">
 
 <!ENTITY pref_default_browser "Definir sco navigatur da standard">
+
+<!ENTITY pref_default_browser2 "Definir &brandShortName; sco navigatur da standard">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Smatga sin «browser» (u sumegliant) &amp; tscherna &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Visitar il support da Mozilla">
 <!ENTITY pref_about_firefox "Davart &brandShortName;">
 <!ENTITY pref_vendor_faqs "Dumondas frequentas">
@@ -422,7 +457,6 @@
      crashReporterDesc.label). -->
 <!ENTITY datareporting_fhr_title "Analisa da la sanadad da &brandShortName;">
 <!ENTITY datareporting_fhr_summary2 "Cundivida datas davart la «sanadad» da tes navigatur cun &vendorShortName; e gida da chapir la prestaziun dal navigatur">
-<!ENTITY datareporting_abouthr_title "Mussar l\&apos;analisa da sanadad">
 <!ENTITY datareporting_telemetry_title "Telemetria">
 <!ENTITY datareporting_telemetry_summary "Cundivida datas davart la prestaziun, utilisaziun, hardware e persunalisaziun da tes navigatur cun &vendorShortName; per gidar a meglierar &brandShortName;">
 <!ENTITY datareporting_crashreporter_summary "&brandShortName; trametta rapports davart collaps per gidar &vendorShortName; da meglierar la stabilitad e la segirezza dal navigatur">
@@ -431,6 +465,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Rapportader da collaps">
 <!ENTITY datareporting_wifi_title2 "Servetsch da posiziun da &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Gida a &vendorShortName; da cartografar il mund! Cundivida la posiziun da WLAN e da cellas da telefonia mobila da tes apparat per meglierar il servetsch da posiziun.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "Servetsch da posiziun da &vendorShortName; è activ">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -454,6 +493,7 @@
 <!ENTITY share_image_failed "Impussibel da cundivider questa grafica">
 <!ENTITY save_as_pdf "Memorisar sco PDF">
 <!ENTITY print "Stampar">
+<!ENTITY view_page_source "Mussar il code da funtauna da la pagina">
 <!ENTITY find_in_page "Tschertgar en la pagina">
 <!ENTITY desktop_mode "Pagina per visurs gronds">
 <!ENTITY page "Pagina">
@@ -475,6 +515,10 @@
 <!ENTITY find_next "Proxim">
 <!ENTITY find_close "Serrar">
 
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Impussibel da chattar il text">
+
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
 <!ENTITY media_sending_to "Trametter a l\&apos;apparat">
@@ -485,7 +529,6 @@
 <!ENTITY contextmenu_open_new_tab "Avrir en in nov tab">
 <!ENTITY contextmenu_open_private_tab "Avrir en in tab privat">
 <!ENTITY contextmenu_remove "Allontanar">
-<!ENTITY contextmenu_add_to_launcher "Agiuntar al visur da partenza">
 <!ENTITY contextmenu_add_page_shortcut "Agiuntar ina scursanida a la pagina">
 <!ENTITY contextmenu_set_as_homepage "Definir sco pagina da partenza">
 <!ENTITY contextmenu_share "Cundivider">
@@ -537,10 +580,9 @@
 <!ENTITY pref_compact_tabs_summary2 "Mussar ils tabs en duas colonnas en il format vertical">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Allontanà la pagina">
-
 <!ENTITY folder_removed "Allontanà l\&apos;ordinatur">
 
 <!ENTITY bookmark_edit_title "Modifitgar il segnapagina">
@@ -756,7 +798,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "L\&apos;ultima sincronisaziun: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "L\&apos;ultima sincronisaziun: anc mai">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -814,17 +856,13 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      replaced by the Android OS version (e.g., 14)-->
 <!ENTITY unsupported_sdk_version "Perstgisa! Quest &brandShortName; na funcziuna betg sin quest apparat (&formatS1;, &formatS2;). Telechargia p.pl. la versiun correcta. ">
 
-<!ENTITY eol_notification_title2 "&brandShortName; na vegn betg pli a retschaiver actualisaziuns">
-<!ENTITY eol_notification_summary "Tutgar per ulteriuras infurmaziuns">
+<!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
+<!ENTITY corrupt_apk "Impussibel dad avrir &brandShortName;. Per plaschair reinstallar ed empruvar anc ina giada.">
 
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; è actual">
 <!ENTITY whatsnew_notification_summary "Ve a savair tge ch\&apos;è nov en questa versiun">
-
-<!ENTITY promotion_add_to_homescreen "Agiuntar a la pagina da partenza">
-
-<!ENTITY promotion_add_page_shortcut "Agiuntar ina scursanida a la pagina">
 
 <!ENTITY helper_first_offline_bookmark_title "Leger offline">
 <!ENTITY helper_first_offline_bookmark_message "Chatta tes elements da la glista da lectura en ils segnapaginas, perfin sche ti es offline.">
@@ -875,3 +913,24 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Agiuntar al visur da partenza">
 <!ENTITY pwa_continue_to_website "Cuntinuar vers la website">
 <!ENTITY pwa_onboarding_sumo "Ti pos agiuntar a moda simpla questa website al visur da partenza per avair access direct e navigar pli svelt, sco sch\&apos;i fiss ina app.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Far ir">
+<!ENTITY pip_play_button_description "Cuntinuar la reproducziun">
+<!ENTITY pip_pause_button_title "Pausa">
+<!ENTITY pip_pause_button_description "Metter en pausa la reproducziun">
+
+<!ENTITY pref_notification_settings_link "Administrar ils parameters da communicaziuns">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Navigatur">
+<!ENTITY mls_notification_channel "Servetsch da posiziun da &vendorShortName;">
+<!ENTITY download_notification_channel "Telechargiadas">
+<!ENTITY media_notification_channel2 "Tun e video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "Tips e trics da &vendorShortName;">
+<!ENTITY updater_notification_channel "Actualisaziuns da l\&apos;app">
+<!ENTITY synced_tabs_notification_channel "Tabs sincronisads">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Communicaziuns da websites">

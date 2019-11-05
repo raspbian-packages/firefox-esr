@@ -6,15 +6,16 @@
 
 "use strict";
 
+const Services = require("Services");
+
 const {
   TAKE_SCREENSHOT_START,
   TAKE_SCREENSHOT_END,
 } = require("./index");
 
 const { getFormatStr } = require("../utils/l10n");
-const { getToplevelWindow } = require("../utils/window");
+const { getTopLevelWindow } = require("../utils/window");
 const e10s = require("../utils/e10s");
-const Services = require("Services");
 
 const CAMERA_AUDIO_URL = "resource://devtools/client/themes/audio/shutter.wav";
 
@@ -23,24 +24,24 @@ const animationFrame = () => new Promise(resolve => {
 });
 
 function getFileName() {
-  let date = new Date();
-  let month = ("0" + (date.getMonth() + 1)).substr(-2);
-  let day = ("0" + date.getDate()).substr(-2);
-  let dateString = [date.getFullYear(), month, day].join("-");
-  let timeString = date.toTimeString().replace(/:/g, ".").split(" ")[0];
+  const date = new Date();
+  const month = ("0" + (date.getMonth() + 1)).substr(-2);
+  const day = ("0" + date.getDate()).substr(-2);
+  const dateString = [date.getFullYear(), month, day].join("-");
+  const timeString = date.toTimeString().replace(/:/g, ".").split(" ")[0];
 
   return getFormatStr("responsive.screenshotGeneratedFilename", dateString,
                       timeString);
 }
 
 function createScreenshotFor(node) {
-  let mm = node.frameLoader.messageManager;
+  const mm = node.frameLoader.messageManager;
 
   return e10s.request(mm, "RequestScreenshot");
 }
 
 function saveToFile(data, filename) {
-  const chromeWindow = getToplevelWindow(window);
+  const chromeWindow = getTopLevelWindow(window);
   const chromeDocument = chromeWindow.document;
 
   // append .png extension to filename if it doesn't exist
@@ -53,7 +54,7 @@ function saveToFile(data, filename) {
 
 function simulateCameraEffects(node) {
   if (Services.prefs.getBoolPref("devtools.screenshot.audio.enabled")) {
-    let cameraAudio = new window.Audio(CAMERA_AUDIO_URL);
+    const cameraAudio = new window.Audio(CAMERA_AUDIO_URL);
     cameraAudio.play();
   }
   node.animate({ opacity: [ 0, 1 ] }, 500);
@@ -62,15 +63,15 @@ function simulateCameraEffects(node) {
 module.exports = {
 
   takeScreenshot() {
-    return async function (dispatch, getState) {
+    return async function(dispatch, getState) {
       await dispatch({ type: TAKE_SCREENSHOT_START });
 
       // Waiting the next repaint, to ensure the react components
       // can be properly render after the action dispatched above
       await animationFrame();
 
-      let iframe = document.querySelector("iframe");
-      let data = await createScreenshotFor(iframe);
+      const iframe = document.querySelector("iframe");
+      const data = await createScreenshotFor(iframe);
 
       simulateCameraEffects(iframe);
 
@@ -78,5 +79,5 @@ module.exports = {
 
       dispatch({ type: TAKE_SCREENSHOT_END });
     };
-  }
+  },
 };

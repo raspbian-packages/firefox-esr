@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -15,34 +15,53 @@
 #include "nsThreadManager.h"
 #include "ClearOnShutdown.h"
 
+#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
+#  include "mozilla/SandboxSettings.h"
+#endif
+
 #if defined(XP_MACOSX)
-#include "nsCocoaFeatures.h"
+#  include "nsCocoaFeatures.h"
 // An undocumented CoreGraphics framework method, present in the same form
 // since at least OS X 10.5.
 extern "C" CGError CGSSetDebugOptions(int options);
 #endif
 
 #ifdef XP_WIN
-#if defined(MOZ_SANDBOX)
-#include "mozilla/sandboxTarget.h"
-#endif
+#  if defined(MOZ_SANDBOX)
+#    include "mozilla/sandboxTarget.h"
+#    include "ProcessUtils.h"
+#    include "nsDirectoryService.h"
+#  endif
 #endif
 
 using mozilla::ipc::IOThreadChild;
 
 #ifdef OS_WIN
-#include <algorithm>
+#  include <algorithm>
 #endif
 
 namespace mozilla {
 namespace plugins {
+
+#if defined(XP_WIN) && defined(MOZ_SANDBOX)
+static void SetSandboxTempPath(const std::wstring& aFullTmpPath) {
+  // Save the TMP environment variable so that is is picked up by GetTempPath().
+  // Note that we specifically write to the TMP variable, as that is the first
+  // variable that is checked by GetTempPath() to determine its output.
+  Unused << NS_WARN_IF(!SetEnvironmentVariableW(L"TMP", aFullTmpPath.c_str()));
+
+  // We also set TEMP in case there is naughty third-party code that is
+  // referencing the environment variable directly.
+  Unused << NS_WARN_IF(!SetEnvironmentVariableW(L"TEMP", aFullTmpPath.c_str()));
+}
+#endif
 
 bool PluginProcessChild::Init(int aArgc, char* aArgv[]) {
   nsDebugImpl::SetMultiprocessMode("NPAPI");
 
 #if defined(XP_MACOSX)
   // Remove the trigger for "dyld interposing" that we added in
-  // GeckoChildProcessHost::PerformAsyncLaunchInternal(), in the host
+  // GeckoChildProcessHost::PerformAsyncLaunch(), in the host
   // process just before we were launched.  Dyld interposing will still
   // happen in our process (the plugin child process).  But we don't want
   // it to happen in any processes that the plugin might launch from our
@@ -91,21 +110,33 @@ bool PluginProcessChild::Init(int aArgc, char* aArgv[]) {
 
   pluginFilename = UnmungePluginDsoPath(values[1]);
 
-#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
-  if (values.size() >= 3 && values[2] == "-flashSandbox") {
+#  if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
+  int level;
+  if (values.size() >= 4 && values[2] == "-flashSandboxLevel" &&
+      (level = std::stoi(values[3], nullptr)) > 0) {
+    level = ClampFlashSandboxLevel(level);
+    MOZ_ASSERT(level > 0);
+
     bool enableLogging = false;
-    if (values.size() >= 4 && values[3] == "-flashSandboxLogging") {
+    if (values.size() >= 5 && values[4] == "-flashSandboxLogging") {
       enableLogging = true;
     }
-    mPlugin.EnableFlashSandbox(enableLogging);
+
+    mPlugin.EnableFlashSandbox(level, enableLogging);
   }
-#endif
+#  endif
 
 #elif defined(OS_WIN)
   std::vector<std::wstring> values =
       CommandLine::ForCurrentProcess()->GetLooseValues();
   MOZ_ASSERT(values.size() >= 1, "not enough loose args");
 
+  // parameters are:
+  // values[0] is path to plugin DLL
+  // values[1] is path to folder that should be used for temp files
+  // values[2] is path to the Flash Player roaming folder
+  //   (this is always that Flash folder, regardless of what plugin is being
+  //   run)
   pluginFilename = WideToUTF8(values[0]);
 
   // We don't initialize XPCOM but we need the thread manager and the
@@ -113,17 +144,25 @@ bool PluginProcessChild::Init(int aArgc, char* aArgv[]) {
   NS_SetMainThread();
   mozilla::TimeStamp::Startup();
   NS_LogInit();
-  mozilla::LogModule::Init();
+  mozilla::LogModule::Init(aArgc, aArgv);
   nsThreadManager::get().Init();
 
-#if defined(MOZ_SANDBOX)
+#  if defined(MOZ_SANDBOX)
+  MOZ_ASSERT(values.size() >= 3,
+             "not enough loose args for sandboxed plugin process");
+
+  // The sandbox closes off the default location temp file location so we set
+  // a new one here (regardless of whether or not we are sandboxing).
+  SetSandboxTempPath(values[1]);
+  PluginModuleChild::SetFlashRoamingPath(values[2]);
+
   // This is probably the earliest we would want to start the sandbox.
   // As we attempt to tighten the sandbox, we may need to consider moving this
   // to later in the plugin initialization.
   mozilla::SandboxTarget::Instance()->StartSandbox();
-#endif
+#  endif
 #else
-#error Sorry
+#  error Sorry
 #endif
 
   bool retval = mPlugin.InitForChrome(pluginFilename, ParentPid(),

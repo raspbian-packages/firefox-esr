@@ -78,7 +78,7 @@ void Gamepad::SetAxis(uint32_t aAxis, double aValue) {
   MOZ_ASSERT(aAxis < mAxes.Length());
   if (mAxes[aAxis] != aValue) {
     mAxes[aAxis] = aValue;
-    GamepadBinding::ClearCachedAxesValue(this);
+    Gamepad_Binding::ClearCachedAxesValue(this);
   }
   UpdateTimestamp();
 }
@@ -111,7 +111,7 @@ void Gamepad::SyncState(Gamepad* aOther) {
     mAxes[i] = aOther->mAxes[i];
   }
   if (changed) {
-    GamepadBinding::ClearCachedAxesValue(this);
+    Gamepad_Binding::ClearCachedAxesValue(this);
   }
 
   if (Preferences::GetBool(kGamepadExtEnabledPref)) {
@@ -134,9 +134,10 @@ already_AddRefed<Gamepad> Gamepad::Clone(nsISupports* aParent) {
   return out.forget();
 }
 
-/* virtual */ JSObject* Gamepad::WrapObject(JSContext* aCx,
-                                            JS::Handle<JSObject*> aGivenProto) {
-  return GamepadBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* Gamepad::WrapObject(JSContext* aCx,
+                              JS::Handle<JSObject*> aGivenProto) {
+  return Gamepad_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

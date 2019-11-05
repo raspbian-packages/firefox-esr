@@ -22,7 +22,7 @@
 #include "nsIProgressEventSink.h"
 #include "nsIInputStream.h"
 #include "nsIStreamConverterService.h"
-#include "nsWeakReference.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsIHttpChannel.h"
 #include "nsIMultiPartChannel.h"
 #include "netCore.h"
@@ -31,6 +31,7 @@
 #include "nsIDocShellTreeItem.h"
 #include "nsIDocShellTreeOwner.h"
 #include "nsIThreadRetargetableStreamListener.h"
+#include "nsIChildChannel.h"
 
 #include "nsString.h"
 #include "nsThreadUtils.h"
@@ -38,7 +39,7 @@
 #include "nsError.h"
 
 #include "nsICategoryManager.h"
-#include "nsCExternalHandlerService.h"  // contains contractids for the helper app service
+#include "nsCExternalHandlerService.h"
 
 #include "nsIMIMEHeaderParam.h"
 #include "nsNetCID.h"
@@ -79,9 +80,6 @@ static bool InitPreferences() {
 class nsDocumentOpenInfo final : public nsIStreamListener,
                                  public nsIThreadRetargetableStreamListener {
  public:
-  // Needed for nsCOMPtr to work right... Don't call this!
-  nsDocumentOpenInfo();
-
   // Real constructor
   // aFlags is a combination of the flags on nsIURILoader
   nsDocumentOpenInfo(nsIInterfaceRequestor* aWindowContext, uint32_t aFlags,
@@ -181,10 +179,6 @@ NS_INTERFACE_MAP_BEGIN(nsDocumentOpenInfo)
   NS_INTERFACE_MAP_ENTRY(nsIThreadRetargetableStreamListener)
 NS_INTERFACE_MAP_END
 
-nsDocumentOpenInfo::nsDocumentOpenInfo() {
-  NS_NOTREACHED("This should never be called\n");
-}
-
 nsDocumentOpenInfo::nsDocumentOpenInfo(nsIInterfaceRequestor* aWindowContext,
                                        uint32_t aFlags, nsURILoader* aURILoader)
     : m_originalContext(aWindowContext),
@@ -204,8 +198,7 @@ nsresult nsDocumentOpenInfo::Prepare() {
   return rv;
 }
 
-NS_IMETHODIMP nsDocumentOpenInfo::OnStartRequest(nsIRequest* request,
-                                                 nsISupports* aCtxt) {
+NS_IMETHODIMP nsDocumentOpenInfo::OnStartRequest(nsIRequest* request) {
   LOG(("[0x%p] nsDocumentOpenInfo::OnStartRequest", this));
   MOZ_ASSERT(request);
   if (!request) {
@@ -303,7 +296,7 @@ NS_IMETHODIMP nsDocumentOpenInfo::OnStartRequest(nsIRequest* request,
     return NS_OK;
   }
 
-  rv = DispatchContent(request, aCtxt);
+  rv = DispatchContent(request, nullptr);
 
   LOG(("  After dispatch, m_targetStreamListener: 0x%p, rv: 0x%08" PRIX32,
        m_targetStreamListener.get(), static_cast<uint32_t>(rv)));
@@ -315,7 +308,7 @@ NS_IMETHODIMP nsDocumentOpenInfo::OnStartRequest(nsIRequest* request,
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (m_targetStreamListener)
-    rv = m_targetStreamListener->OnStartRequest(request, aCtxt);
+    rv = m_targetStreamListener->OnStartRequest(request);
 
   LOG(("  OnStartRequest returning: 0x%08" PRIX32, static_cast<uint32_t>(rv)));
 
@@ -340,8 +333,7 @@ nsDocumentOpenInfo::CheckListenerChain() {
 }
 
 NS_IMETHODIMP
-nsDocumentOpenInfo::OnDataAvailable(nsIRequest* request, nsISupports* aCtxt,
-                                    nsIInputStream* inStr,
+nsDocumentOpenInfo::OnDataAvailable(nsIRequest* request, nsIInputStream* inStr,
                                     uint64_t sourceOffset, uint32_t count) {
   // if we have retarged to the end stream listener, then forward the call....
   // otherwise, don't do anything
@@ -349,13 +341,12 @@ nsDocumentOpenInfo::OnDataAvailable(nsIRequest* request, nsISupports* aCtxt,
   nsresult rv = NS_OK;
 
   if (m_targetStreamListener)
-    rv = m_targetStreamListener->OnDataAvailable(request, aCtxt, inStr,
-                                                 sourceOffset, count);
+    rv = m_targetStreamListener->OnDataAvailable(request, inStr, sourceOffset,
+                                                 count);
   return rv;
 }
 
 NS_IMETHODIMP nsDocumentOpenInfo::OnStopRequest(nsIRequest* request,
-                                                nsISupports* aCtxt,
                                                 nsresult aStatus) {
   LOG(("[0x%p] nsDocumentOpenInfo::OnStopRequest", this));
 
@@ -366,7 +357,7 @@ NS_IMETHODIMP nsDocumentOpenInfo::OnStopRequest(nsIRequest* request,
     // OnStartRequest after this... reset state.
     m_targetStreamListener = nullptr;
     mContentType.Truncate();
-    listener->OnStopRequest(request, aCtxt, aStatus);
+    listener->OnStopRequest(request, aStatus);
   }
 
   // Remember...
@@ -381,8 +372,8 @@ nsresult nsDocumentOpenInfo::DispatchContent(nsIRequest* request,
   LOG(("[0x%p] nsDocumentOpenInfo::DispatchContent for type '%s'", this,
        mContentType.get()));
 
-  NS_PRECONDITION(!m_targetStreamListener,
-                  "Why do we already have a target stream listener?");
+  MOZ_ASSERT(!m_targetStreamListener,
+             "Why do we already have a target stream listener?");
 
   nsresult rv;
   nsCOMPtr<nsIChannel> aChannel = do_QueryInterface(request);
@@ -465,8 +456,7 @@ nsresult nsDocumentOpenInfo::DispatchContent(nsIRequest* request,
       if (catman) {
         nsCString contractidString;
         rv = catman->GetCategoryEntry(NS_CONTENT_LISTENER_CATEGORYMANAGER_ENTRY,
-                                      mContentType.get(),
-                                      getter_Copies(contractidString));
+                                      mContentType, contractidString);
         if (NS_SUCCEEDED(rv) && !contractidString.IsEmpty()) {
           LOG(("  Listener contractid for '%s' is '%s'", mContentType.get(),
                contractidString.get()));
@@ -643,8 +633,9 @@ nsresult nsDocumentOpenInfo::ConvertData(nsIRequest* request,
     return NS_ERROR_ABORT;
   }
 
-  NS_PRECONDITION(aSrcContentType != aOutContentType,
-                  "ConvertData called when the two types are the same!");
+  MOZ_ASSERT(aSrcContentType != aOutContentType,
+             "ConvertData called when the two types are the same!");
+
   nsresult rv = NS_OK;
 
   nsCOMPtr<nsIStreamConverterService> StreamConvService =
@@ -697,8 +688,8 @@ bool nsDocumentOpenInfo::TryContentListener(nsIURIContentListener* aListener,
   LOG(("[0x%p] nsDocumentOpenInfo::TryContentListener; mFlags = 0x%x", this,
        mFlags));
 
-  NS_PRECONDITION(aListener, "Must have a non-null listener");
-  NS_PRECONDITION(aChannel, "Must have a channel");
+  MOZ_ASSERT(aListener, "Must have a non-null listener");
+  MOZ_ASSERT(aChannel, "Must have a channel");
 
   bool listenerWantsContent = false;
   nsCString typeToUse;
@@ -835,13 +826,25 @@ NS_IMETHODIMP nsURILoader::OpenURI(nsIChannel* channel, uint32_t aFlags,
                             getter_AddRefs(loader));
 
   if (NS_SUCCEEDED(rv)) {
+    if (aFlags & nsIURILoader::REDIRECTED_CHANNEL) {
+      // Our channel was redirected from another process, so doesn't need to be
+      // opened again. However, it does need its listener hooked up correctly.
+      nsCOMPtr<nsIChildChannel> childChannel = do_QueryInterface(channel);
+      MOZ_ASSERT(childChannel);
+      if (!childChannel) {
+        return NS_ERROR_UNEXPECTED;
+      }
+
+      return childChannel->CompleteRedirectSetup(loader, nullptr);
+    }
+
     // this method is not complete!!! Eventually, we should first go
     // to the content listener and ask them for a protocol handler...
     // if they don't give us one, we need to go to the registry and get
     // the preferred protocol handler.
 
     // But for now, I'm going to let necko do the work for us....
-    rv = channel->AsyncOpen2(loader);
+    rv = channel->AsyncOpen(loader);
 
     // no content from this load - that's OK.
     if (rv == NS_ERROR_NO_CONTENT) {

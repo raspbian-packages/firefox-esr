@@ -4,7 +4,7 @@
 <html>
 <head>
   <title>Bug 1395411 - Changing the urlclassifier.*Table prefs doesn't remove them from the update checker.</title>
-  <script type="text/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <script type="text/javascript" src="classifierHelper.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
@@ -16,7 +16,6 @@
 <pre id="test">
 
 <script class="testbody" type="text/javascript">
-/* import-globals-from classifierHelper.js */
 var Cc = SpecialPowers.Cc;
 var Ci = SpecialPowers.Ci;
 
@@ -71,4 +70,3 @@ SimpleTest.waitForExplicitFinish();
 <iframe id="testFrame" width="100%" height="100%" onload=""></iframe>
 </body>
 </html>
-

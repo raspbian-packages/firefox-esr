@@ -79,7 +79,7 @@ class Performance : public DOMEventTargetHelper {
 
   void AddObserver(PerformanceObserver* aObserver);
   void RemoveObserver(PerformanceObserver* aObserver);
-  void NotifyObservers();
+  MOZ_CAN_RUN_SCRIPT void NotifyObservers();
   void CancelNotificationObservers();
 
   virtual PerformanceTiming* Timing() = 0;
@@ -108,9 +108,11 @@ class Performance : public DOMEventTargetHelper {
 
   void InsertResourceEntry(PerformanceEntry* aEntry);
 
+  virtual void QueueNavigationTimingEntry() = 0;
+
  protected:
-  Performance();
-  explicit Performance(nsPIDOMWindowInner* aWindow);
+  explicit Performance(bool aSystemPrincipal);
+  Performance(nsPIDOMWindowInner* aWindow, bool aSystemPrincipal);
 
   virtual ~Performance();
 
@@ -145,7 +147,7 @@ class Performance : public DOMEventTargetHelper {
   nsTObserverArray<PerformanceObserver*> mObservers;
 
  protected:
-  static const uint64_t kDefaultResourceTimingBufferSize = 150;
+  static const uint64_t kDefaultResourceTimingBufferSize = 250;
 
   // When kDefaultResourceTimingBufferSize is increased or removed, these should
   // be changed to use SegmentedVector
@@ -153,13 +155,21 @@ class Performance : public DOMEventTargetHelper {
       mUserEntries;
   AutoTArray<RefPtr<PerformanceEntry>, kDefaultResourceTimingBufferSize>
       mResourceEntries;
+  AutoTArray<RefPtr<PerformanceEntry>, kDefaultResourceTimingBufferSize>
+      mSecondaryResourceEntries;
 
   uint64_t mResourceTimingBufferSize;
   bool mPendingNotificationObserversTask;
 
+  bool mPendingResourceTimingBufferFullEvent;
+
   RefPtr<PerformanceService> mPerformanceService;
 
   bool mSystemPrincipal;
+
+ private:
+  MOZ_ALWAYS_INLINE bool CanAddResourceTimingEntry();
+  void BufferEvent();
 };
 
 }  // namespace dom

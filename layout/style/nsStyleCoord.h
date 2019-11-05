@@ -13,6 +13,7 @@
 
 #include "mozilla/EnumTypeTraits.h"
 #include "mozilla/gfx/Types.h"
+#include "Units.h"
 #include "nsCoord.h"
 #include "nsISupportsImpl.h"
 #include "nsStyleConsts.h"
@@ -24,7 +25,7 @@ class WritingMode;
 // Logical axis, edge, side and corner constants for use in various places.
 enum LogicalAxis { eLogicalAxisBlock = 0x0, eLogicalAxisInline = 0x1 };
 enum LogicalEdge { eLogicalEdgeStart = 0x0, eLogicalEdgeEnd = 0x1 };
-enum LogicalSide {
+enum LogicalSide : uint8_t {
   eLogicalSideBStart = (eLogicalAxisBlock << 1) | eLogicalEdgeStart,   // 0x0
   eLogicalSideBEnd = (eLogicalAxisBlock << 1) | eLogicalEdgeEnd,       // 0x1
   eLogicalSideIStart = (eLogicalAxisInline << 1) | eLogicalEdgeStart,  // 0x2
@@ -38,6 +39,224 @@ enum LogicalCorner {
   eLogicalCornerBEndIStart = 3
 };
 
+using LengthPercentage = StyleLengthPercentage;
+using LengthPercentageOrAuto = StyleLengthPercentageOrAuto;
+using NonNegativeLengthPercentage = StyleNonNegativeLengthPercentage;
+using NonNegativeLengthPercentageOrAuto =
+    StyleNonNegativeLengthPercentageOrAuto;
+using NonNegativeLengthPercentageOrNormal =
+    StyleNonNegativeLengthPercentageOrNormal;
+using Length = StyleLength;
+using LengthOrAuto = StyleLengthOrAuto;
+using NonNegativeLength = StyleNonNegativeLength;
+using NonNegativeLengthOrAuto = StyleNonNegativeLengthOrAuto;
+using BorderRadius = StyleBorderRadius;
+
+bool StyleCSSPixelLength::IsZero() const { return _0 == 0.0f; }
+
+nscoord StyleCSSPixelLength::ToAppUnits() const {
+  // We want to resolve the length part of the calc() expression rounding 0.5
+  // away from zero, instead of the default behavior of
+  // NSToCoordRound{,WithClamp} which do floor(x + 0.5).
+  //
+  // This is what the rust code in the app_units crate does, and not doing this
+  // would regress bug 1323735, for example.
+  //
+  // FIXME(emilio, bug 1528114): Probably we should do something smarter.
+  float length = _0 * float(mozilla::AppUnitsPerCSSPixel());
+  if (length >= nscoord_MAX) {
+    return nscoord_MAX;
+  }
+  if (length <= nscoord_MIN) {
+    return nscoord_MIN;
+  }
+  return NSToIntRound(length);
+}
+
+constexpr LengthPercentage LengthPercentage::Zero() {
+  return {{0.}, {0.}, StyleAllowedNumericType::All, false, false};
+}
+
+LengthPercentage LengthPercentage::FromPixels(CSSCoord aCoord) {
+  return {{aCoord}, {0.}, StyleAllowedNumericType::All, false, false};
+}
+
+LengthPercentage LengthPercentage::FromAppUnits(nscoord aCoord) {
+  return LengthPercentage::FromPixels(CSSPixel::FromAppUnits(aCoord));
+}
+
+LengthPercentage LengthPercentage::FromPercentage(float aPercentage) {
+  return {{0.}, {aPercentage}, StyleAllowedNumericType::All, true, false};
+}
+
+CSSCoord LengthPercentage::LengthInCSSPixels() const { return length._0; }
+
+float LengthPercentage::Percentage() const { return percentage._0; }
+
+bool LengthPercentage::HasPercent() const { return has_percentage; }
+
+bool LengthPercentage::ConvertsToLength() const { return !HasPercent(); }
+
+nscoord LengthPercentage::ToLength() const {
+  MOZ_ASSERT(ConvertsToLength());
+  return length.ToAppUnits();
+}
+
+bool LengthPercentage::ConvertsToPercentage() const {
+  return has_percentage && length.IsZero();
+}
+
+float LengthPercentage::ToPercentage() const {
+  MOZ_ASSERT(ConvertsToPercentage());
+  return Percentage();
+}
+
+bool LengthPercentage::HasLengthAndPercentage() const {
+  return !ConvertsToLength() && !ConvertsToPercentage();
+}
+
+bool LengthPercentage::IsDefinitelyZero() const {
+  return length.IsZero() && Percentage() == 0.0f;
+}
+
+CSSCoord LengthPercentage::ResolveToCSSPixels(CSSCoord aPercentageBasis) const {
+  return LengthInCSSPixels() + Percentage() * aPercentageBasis;
+}
+
+template <typename T>
+CSSCoord LengthPercentage::ResolveToCSSPixelsWith(T aPercentageGetter) const {
+  static_assert(std::is_same<decltype(aPercentageGetter()), CSSCoord>::value,
+                "Should return CSS pixels");
+  if (ConvertsToLength()) {
+    return LengthInCSSPixels();
+  }
+  return ResolveToCSSPixels(aPercentageGetter());
+}
+
+template <typename T, typename U>
+nscoord LengthPercentage::Resolve(T aPercentageGetter,
+                                  U aPercentageRounder) const {
+  static_assert(std::is_same<decltype(aPercentageGetter()), nscoord>::value,
+                "Should return app units");
+  static_assert(
+      std::is_same<decltype(aPercentageRounder(1.0f)), nscoord>::value,
+      "Should return app units");
+  if (ConvertsToLength()) {
+    return ToLength();
+  }
+  nscoord basis = aPercentageGetter();
+  return length.ToAppUnits() + aPercentageRounder(basis * Percentage());
+}
+
+nscoord LengthPercentage::Resolve(nscoord aPercentageBasis) const {
+  return Resolve([=] { return aPercentageBasis; }, NSToCoordFloorClamped);
+}
+
+template <typename T>
+nscoord LengthPercentage::Resolve(T aPercentageGetter) const {
+  static_assert(std::is_same<decltype(aPercentageGetter()), nscoord>::value,
+                "Should return app units");
+  return Resolve(aPercentageGetter, NSToCoordFloorClamped);
+}
+
+template <typename T>
+nscoord LengthPercentage::Resolve(nscoord aPercentageBasis,
+                                  T aPercentageRounder) const {
+  return Resolve([=] { return aPercentageBasis; }, aPercentageRounder);
+}
+
+#define IMPL_LENGTHPERCENTAGE_FORWARDS(ty_)                                 \
+  template <>                                                               \
+  inline bool ty_::HasPercent() const {                                     \
+    return IsLengthPercentage() && AsLengthPercentage().HasPercent();       \
+  }                                                                         \
+  template <>                                                               \
+  inline bool ty_::ConvertsToLength() const {                               \
+    return IsLengthPercentage() && AsLengthPercentage().ConvertsToLength(); \
+  }                                                                         \
+  template <>                                                               \
+  inline bool ty_::HasLengthAndPercentage() const {                         \
+    return IsLengthPercentage() &&                                          \
+           AsLengthPercentage().HasLengthAndPercentage();                   \
+  }                                                                         \
+  template <>                                                               \
+  inline nscoord ty_::ToLength() const {                                    \
+    MOZ_ASSERT(ConvertsToLength());                                         \
+    return AsLengthPercentage().ToLength();                                 \
+  }                                                                         \
+  template <>                                                               \
+  inline bool ty_::ConvertsToPercentage() const {                           \
+    return IsLengthPercentage() &&                                          \
+           AsLengthPercentage().ConvertsToPercentage();                     \
+  }                                                                         \
+  template <>                                                               \
+  inline float ty_::ToPercentage() const {                                  \
+    MOZ_ASSERT(ConvertsToPercentage());                                     \
+    return AsLengthPercentage().ToPercentage();                             \
+  }
+
+IMPL_LENGTHPERCENTAGE_FORWARDS(LengthPercentageOrAuto)
+IMPL_LENGTHPERCENTAGE_FORWARDS(StyleSize)
+IMPL_LENGTHPERCENTAGE_FORWARDS(StyleMaxSize)
+
+template <>
+inline bool LengthOrAuto::IsLength() const {
+  return IsLengthPercentage();
+}
+
+template <>
+inline const Length& LengthOrAuto::AsLength() const {
+  return AsLengthPercentage();
+}
+
+template <>
+inline bool StyleFlexBasis::IsAuto() const {
+  return IsSize() && AsSize().IsAuto();
+}
+
+template <>
+inline bool StyleSize::BehavesLikeInitialValueOnBlockAxis() const {
+  return IsAuto() || IsExtremumLength();
+}
+
+template <>
+inline bool StyleMaxSize::BehavesLikeInitialValueOnBlockAxis() const {
+  return IsNone() || IsExtremumLength();
+}
+
+template <>
+inline bool StyleBackgroundSize::IsInitialValue() const {
+  return IsExplicitSize() && explicit_size.width.IsAuto() &&
+         explicit_size.height.IsAuto();
+}
+
+template <typename T>
+const T& StyleRect<T>::Get(mozilla::Side aSide) const {
+  static_assert(sizeof(StyleRect<T>) == sizeof(T) * 4, "");
+  static_assert(alignof(StyleRect<T>) == alignof(T), "");
+  return reinterpret_cast<const T*>(this)[aSide];
+}
+
+template <typename T>
+template <typename Predicate>
+bool StyleRect<T>::All(Predicate aPredicate) const {
+  return aPredicate(_0) && aPredicate(_1) && aPredicate(_2) && aPredicate(_3);
+}
+
+template <typename T>
+template <typename Predicate>
+bool StyleRect<T>::Any(Predicate aPredicate) const {
+  return aPredicate(_0) || aPredicate(_1) || aPredicate(_2) || aPredicate(_3);
+}
+
+template <>
+inline const LengthPercentage& BorderRadius::Get(HalfCorner aCorner) const {
+  static_assert(sizeof(BorderRadius) == sizeof(LengthPercentage) * 8, "");
+  static_assert(alignof(BorderRadius) == alignof(LengthPercentage), "");
+  auto* self = reinterpret_cast<const LengthPercentage*>(this);
+  return self[aCorner];
+}
+
 }  // namespace mozilla
 
 enum nsStyleUnit : uint8_t {
@@ -48,9 +267,6 @@ enum nsStyleUnit : uint8_t {
   eStyleUnit_Percent = 10,       // (float) 1.0 == 100%
   eStyleUnit_Factor = 11,        // (float) a multiplier
   eStyleUnit_Degree = 12,        // (float) angle in degrees
-  eStyleUnit_Grad = 13,          // (float) angle in grads
-  eStyleUnit_Radian = 14,        // (float) angle in radians
-  eStyleUnit_Turn = 15,          // (float) angle in turns
   eStyleUnit_FlexFraction = 16,  // (float) <flex> in fr units
   eStyleUnit_Coord = 20,         // (nscoord) value is twips
   eStyleUnit_Integer = 30,       // (int) value is simple integer
@@ -143,9 +359,16 @@ class nsStyleCoord {
     return mUnit;
   }
 
-  bool IsAngleValue() const {
-    return eStyleUnit_Degree <= mUnit && mUnit <= eStyleUnit_Turn;
+  // This is especially useful to check if it is the property's initial value
+  // or keyword for sizing properties.
+  bool IsAutoOrEnum() const {
+    // The initial value of width/height and min-width/min-height is `auto`.
+    // The initial value of max-width/max-height is `none`.
+    return mUnit == eStyleUnit_Auto || mUnit == eStyleUnit_None ||
+           mUnit == eStyleUnit_Enumerated;
   }
+
+  bool IsAngleValue() const { return eStyleUnit_Degree == mUnit; }
 
   static bool IsCalcUnit(nsStyleUnit aUnit) { return aUnit == eStyleUnit_Calc; }
 
@@ -168,6 +391,29 @@ class nsStyleCoord {
     return mUnit == eStyleUnit_Percent || (IsCalcUnit() && CalcHasPercent());
   }
 
+  static bool ConvertsToPercent(const nsStyleUnit aUnit,
+                                const nsStyleUnion aValue) {
+    if (aUnit == eStyleUnit_Percent) {
+      return true;
+    }
+    if (!IsCalcUnit(aUnit)) {
+      return false;
+    }
+    auto* calc = AsCalcValue(aValue);
+    return calc->mLength == 0 && calc->mHasPercent;
+  }
+
+  bool ConvertsToPercent() const { return ConvertsToPercent(mUnit, mValue); }
+
+  float ToPercent() const {
+    MOZ_ASSERT(ConvertsToPercent());
+    if (IsCalcUnit()) {
+      MOZ_ASSERT(CalcHasPercent() && GetCalcValue()->mLength == 0);
+      return GetCalcValue()->mPercent;
+    }
+    return mValue.mFloat;
+  }
+
   static bool ConvertsToLength(const nsStyleUnit aUnit,
                                const nsStyleUnion aValue) {
     return aUnit == eStyleUnit_Coord ||
@@ -179,8 +425,8 @@ class nsStyleCoord {
   static nscoord ToLength(nsStyleUnit aUnit, nsStyleUnion aValue) {
     MOZ_ASSERT(ConvertsToLength(aUnit, aValue));
     if (IsCalcUnit(aUnit)) {
-      return AsCalcValue(aValue)
-          ->ToLength();  // Note: This asserts !mHasPercent
+      // Note: ToLength asserts !mHasPercent
+      return AsCalcValue(aValue)->ToLength();
     }
     MOZ_ASSERT(aUnit == eStyleUnit_Coord);
     return aValue.mInt;
@@ -231,7 +477,6 @@ class nsStyleCoord {
   void SetIntValue(int32_t aValue, nsStyleUnit aUnit);
   void SetPercentValue(float aValue);
   void SetFactorValue(float aValue);
-  void SetAngleValue(float aValue, nsStyleUnit aUnit);
   void SetFlexFractionValue(float aValue);
   void SetNormalValue();
   void SetAutoValue();
@@ -350,45 +595,6 @@ class nsStyleSides {
   nsStyleUnion mValues[4];
 };
 
-/**
- * Class that represents a set of top-left/top-right/bottom-right/bottom-left
- * nsStyleCoord pairs.  This is used to hold the dimensions of the
- * corners of a box (for, e.g., border-radius and outline-radius).
- */
-/** <div rustbindgen private accessor="unsafe"></div> */
-class nsStyleCorners {
- public:
-  nsStyleCorners();
-  nsStyleCorners(const nsStyleCorners&);
-  ~nsStyleCorners();
-
-  // use compiler's version
-  nsStyleCorners& operator=(const nsStyleCorners& aCopy);
-  bool operator==(const nsStyleCorners& aOther) const;
-  bool operator!=(const nsStyleCorners& aOther) const;
-
-  // aHalfCorner is always one of enum HalfCorner in gfx/2d/Types.h.
-  inline nsStyleUnit GetUnit(uint8_t aHalfCorner) const;
-
-  inline nsStyleCoord Get(uint8_t aHalfCorner) const;
-
-  // Sets each corner to null and releases any refcounted objects.  Only use
-  // this if the object is initialized (i.e. don't use it in nsStyleCorners
-  // constructors).
-  void Reset();
-
-  inline void Set(uint8_t aHalfCorner, const nsStyleCoord& aCoord);
-
- protected:
-  // Stored as:
-  // top-left.x, top-left.y,
-  // top-right.x, top-right.y,
-  // bottom-right.x, bottom-right.y,
-  // bottom-left.x, bottom-left.y
-  nsStyleUnit mUnits[8];
-  nsStyleUnion mValues[8];
-};
-
 // -------------------------
 // nsStyleCoord inlines
 //
@@ -455,12 +661,8 @@ inline float nsStyleCoord::GetFactorOrPercentValue() const {
 }
 
 inline float nsStyleCoord::GetAngleValue() const {
-  NS_ASSERTION(mUnit >= eStyleUnit_Degree && mUnit <= eStyleUnit_Turn,
-               "not an angle value");
-  if (mUnit >= eStyleUnit_Degree && mUnit <= eStyleUnit_Turn) {
-    return mValue.mFloat;
-  }
-  return 0.0f;
+  MOZ_ASSERT(mUnit == eStyleUnit_Degree);
+  return mValue.mFloat;
 }
 
 inline float nsStyleCoord::GetFlexFractionValue() const {
@@ -595,24 +797,4 @@ inline void nsStyleSides::SetRight(const nsStyleCoord& aCoord) {
 inline void nsStyleSides::SetBottom(const nsStyleCoord& aCoord) {
   Set(mozilla::eSideBottom, aCoord);
 }
-
-// -------------------------
-// nsStyleCorners inlines
-//
-inline bool nsStyleCorners::operator!=(const nsStyleCorners& aOther) const {
-  return !((*this) == aOther);
-}
-
-inline nsStyleUnit nsStyleCorners::GetUnit(uint8_t aCorner) const {
-  return (nsStyleUnit)mUnits[aCorner];
-}
-
-inline nsStyleCoord nsStyleCorners::Get(uint8_t aCorner) const {
-  return nsStyleCoord(mValues[aCorner], nsStyleUnit(mUnits[aCorner]));
-}
-
-inline void nsStyleCorners::Set(uint8_t aCorner, const nsStyleCoord& aCoord) {
-  nsStyleCoord::SetValue(mUnits[aCorner], mValues[aCorner], aCoord);
-}
-
 #endif /* nsStyleCoord_h___ */

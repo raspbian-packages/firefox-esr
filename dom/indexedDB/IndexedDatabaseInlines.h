@@ -8,7 +8,7 @@
 #define IndexedDatabaseInlines_h
 
 #ifndef mozilla_dom_indexeddatabase_h__
-#error Must include IndexedDatabase.h first
+#  error Must include IndexedDatabase.h first
 #endif
 
 #include "FileInfo.h"
@@ -48,7 +48,7 @@ inline StructuredCloneReadInfo::StructuredCloneReadInfo()
 
 inline StructuredCloneReadInfo::StructuredCloneReadInfo(
     StructuredCloneReadInfo&& aCloneReadInfo)
-    : mData(Move(aCloneReadInfo.mData)) {
+    : mData(std::move(aCloneReadInfo.mData)) {
   MOZ_ASSERT(&aCloneReadInfo != this);
   MOZ_COUNT_CTOR(StructuredCloneReadInfo);
 
@@ -62,7 +62,7 @@ inline StructuredCloneReadInfo::StructuredCloneReadInfo(
 
 inline StructuredCloneReadInfo::StructuredCloneReadInfo(
     SerializedStructuredCloneReadInfo&& aCloneReadInfo)
-    : mData(Move(aCloneReadInfo.data().data)),
+    : mData(std::move(aCloneReadInfo.data().data)),
       mDatabase(nullptr),
       mHasPreprocessInfo(aCloneReadInfo.hasPreprocessInfo()) {
   MOZ_COUNT_CTOR(StructuredCloneReadInfo);
@@ -76,7 +76,7 @@ inline StructuredCloneReadInfo& StructuredCloneReadInfo::operator=(
     StructuredCloneReadInfo&& aCloneReadInfo) {
   MOZ_ASSERT(&aCloneReadInfo != this);
 
-  mData = Move(aCloneReadInfo.mData);
+  mData = std::move(aCloneReadInfo.mData);
   mFiles.Clear();
   mFiles.SwapElements(aCloneReadInfo.mFiles);
   mDatabase = aCloneReadInfo.mDatabase;

@@ -56,9 +56,9 @@
 <!ENTITY otherActionsButton.tooltip "Mais ações">
 <!ENTITY otherActionsOpenConversation1.label "Abrir na conversa">
 <!ENTITY otherActionsOpenConversation1.accesskey "c">
-<!ENTITY otherActionsOpenInNewWindow1.label "Abrir em nova janela">
+<!ENTITY otherActionsOpenInNewWindow1.label "Abrir numa nova janela">
 <!ENTITY otherActionsOpenInNewWindow1.accesskey "j">
-<!ENTITY otherActionsOpenInNewTab1.label "Abrir em novo separador">
+<!ENTITY otherActionsOpenInNewTab1.label "Abrir num novo separador">
 <!ENTITY otherActionsOpenInNewTab1.accesskey "s">
 <!ENTITY markAsReadMenuItem1.label "Marcar como lida">
 <!ENTITY markAsReadMenuItem1.accesskey "M">
@@ -94,6 +94,11 @@
 <!ENTITY deleteAllAttachmentsCmd.accesskey    "A">
 
 <!ENTITY openAttachment.tooltip "Abrir ficheiro anexo">
+
+<!ENTITY detachedAttachmentFolder.show.label        "Abrir pasta de destino">
+<!ENTITY detachedAttachmentFolder.show.accesskey    "p">
+<!ENTITY detachedAttachmentFolder.showMac.label     "Mostrar no Finder">
+<!ENTITY detachedAttachmentFolder.showMac.accesskey "F">
 
 <!-- Attachment toolbar items -->
 <!ENTITY saveAttachmentButton1.label       "Guardar">

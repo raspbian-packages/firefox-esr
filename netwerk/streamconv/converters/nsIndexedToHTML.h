@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -31,17 +31,17 @@ class nsIndexedToHTML : public nsIStreamConverter, public nsIDirIndexListener {
 
   nsIndexedToHTML();
 
-  nsresult Init(nsIStreamListener *aListener);
+  nsresult Init(nsIStreamListener* aListener);
 
-  static nsresult Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
+  static nsresult Create(nsISupports* aOuter, REFNSIID aIID, void** aResult);
 
  protected:
-  void FormatSizeString(int64_t inSize, nsCString &outSizeString);
-  nsresult SendToListener(nsIRequest *aRequest, nsISupports *aContext,
-                          const nsACString &aBuffer);
+  void FormatSizeString(int64_t inSize, nsCString& outSizeString);
+  nsresult SendToListener(nsIRequest* aRequest, nsISupports* aContext,
+                          const nsACString& aBuffer);
   // Helper to properly implement OnStartRequest
-  nsresult DoOnStartRequest(nsIRequest *request, nsISupports *aContext,
-                            nsCString &aBuffer);
+  nsresult DoOnStartRequest(nsIRequest* request, nsISupports* aContext,
+                            nsCString& aBuffer);
 
  protected:
   nsCOMPtr<nsIDirIndexParser> mParser;
@@ -55,7 +55,7 @@ class nsIndexedToHTML : public nsIStreamConverter, public nsIDirIndexListener {
   // Expecting absolute locations, given by 201 lines.
   bool mExpectAbsLoc;
 
-  virtual ~nsIndexedToHTML();
+  virtual ~nsIndexedToHTML() = default;
 };
 
 #endif

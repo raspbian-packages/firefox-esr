@@ -29,9 +29,10 @@ GamepadHapticActuator::GamepadHapticActuator(nsISupports* aParent,
       mType(GamepadHapticActuatorType::Vibration),
       mIndex(aIndex) {}
 
-/* virtual */ JSObject* GamepadHapticActuator::WrapObject(
-    JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return GamepadHapticActuatorBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* GamepadHapticActuator::WrapObject(JSContext* aCx,
+                                            JS::Handle<JSObject*> aGivenProto) {
+  return GamepadHapticActuator_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* GamepadHapticActuator::GetParentObject() const { return mParent; }

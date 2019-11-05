@@ -85,7 +85,7 @@ static void Encode(const SrcT* aSrc, uint32_t aSrcLen, DestT* aDest) {
     case 0:
       break;
     default:
-      NS_NOTREACHED("coding error");
+      MOZ_ASSERT_UNREACHABLE("coding error");
   }
 }
 
@@ -355,16 +355,14 @@ static nsresult Base64EncodeHelper(const T& aBinary, T& aBase64) {
 
   uint32_t base64Len = ((aBinary.Length() + 2) / 3) * 4;
 
-  // Add one byte for null termination.
-  if (!aBase64.SetCapacity(base64Len + 1, fallible)) {
-    return NS_ERROR_OUT_OF_MEMORY;
+  nsresult rv;
+  auto handle = aBase64.BulkWrite(base64Len, 0, false, rv);
+  if (NS_FAILED(rv)) {
+    return rv;
   }
 
-  typename T::char_type* base64 = aBase64.BeginWriting();
-  Encode(aBinary.BeginReading(), aBinary.Length(), base64);
-  base64[base64Len] = '\0';
-
-  aBase64.SetLength(base64Len);
+  Encode(aBinary.BeginReading(), aBinary.Length(), handle.Elements());
+  handle.Finish(base64Len, false);
   return NS_OK;
 }
 
@@ -505,6 +503,8 @@ nsresult Base64Decode(const char* aBase64, uint32_t aBase64Len, char** aBinary,
 
 template <typename T>
 static nsresult Base64DecodeString(const T& aBase64, T& aBinary) {
+  aBinary.Truncate();
+
   // Check for overflow.
   if (aBase64.Length() > UINT32_MAX / 3) {
     return NS_ERROR_FAILURE;
@@ -512,26 +512,29 @@ static nsresult Base64DecodeString(const T& aBase64, T& aBinary) {
 
   // Don't decode the empty string
   if (aBase64.IsEmpty()) {
-    aBinary.Truncate();
     return NS_OK;
   }
 
   uint32_t binaryLen = ((aBase64.Length() * 3) / 4);
 
-  // Add one byte for null termination.
-  if (!aBinary.SetCapacity(binaryLen + 1, fallible)) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-
-  typename T::char_type* binary = aBinary.BeginWriting();
-  nsresult rv = Base64DecodeHelper(aBase64.BeginReading(), aBase64.Length(),
-                                   binary, &binaryLen);
+  nsresult rv;
+  auto handle = aBinary.BulkWrite(binaryLen, 0, false, rv);
   if (NS_FAILED(rv)) {
-    aBinary.Truncate();
+    // Must not touch the handle if failing here, but we
+    // already truncated the string at the top, so it's
+    // unchanged.
     return rv;
   }
 
-  aBinary.SetLength(binaryLen);
+  rv = Base64DecodeHelper(aBase64.BeginReading(), aBase64.Length(),
+                          handle.Elements(), &binaryLen);
+  if (NS_FAILED(rv)) {
+    // Retruncate to match old semantics of this method.
+    handle.Finish(0, true);
+    return rv;
+  }
+
+  handle.Finish(binaryLen, true);
   return NS_OK;
 }
 
@@ -629,9 +632,9 @@ nsresult Base64URLDecode(const nsACString& aBase64,
 nsresult Base64URLEncode(uint32_t aBinaryLen, const uint8_t* aBinary,
                          Base64URLEncodePaddingPolicy aPaddingPolicy,
                          nsACString& aBase64) {
+  aBase64.Truncate();
   // Don't encode empty strings.
   if (aBinaryLen == 0) {
-    aBase64.Truncate();
     return NS_OK;
   }
 
@@ -641,14 +644,15 @@ nsresult Base64URLEncode(uint32_t aBinaryLen, const uint8_t* aBinary,
   }
 
   // Allocate a buffer large enough to hold the encoded string with padding.
-  // Add one byte for null termination.
   uint32_t base64Len = ((aBinaryLen + 2) / 3) * 4;
-  if (NS_WARN_IF(!aBase64.SetCapacity(base64Len + 1, fallible))) {
-    aBase64.Truncate();
-    return NS_ERROR_FAILURE;
+
+  nsresult rv;
+  auto handle = aBase64.BulkWrite(base64Len, 0, false, rv);
+  if (NS_FAILED(rv)) {
+    return rv;
   }
 
-  char* base64 = aBase64.BeginWriting();
+  char* base64 = handle.Elements();
 
   uint32_t index = 0;
   for (; index + 3 <= aBinaryLen; index += 3) {
@@ -671,7 +675,7 @@ nsresult Base64URLEncode(uint32_t aBinaryLen, const uint8_t* aBinary,
     *base64++ = kBase64URLAlphabet[((aBinary[index + 1] & 0xf) << 2)];
   }
 
-  uint32_t length = base64 - aBase64.BeginWriting();
+  uint32_t length = base64 - handle.Elements();
   if (aPaddingPolicy == Base64URLEncodePaddingPolicy::Include) {
     if (length % 4 == 2) {
       *base64++ = '=';
@@ -686,10 +690,7 @@ nsresult Base64URLEncode(uint32_t aBinaryLen, const uint8_t* aBinary,
                "Invalid encode padding policy");
   }
 
-  // Null terminate and truncate to the actual number of characters.
-  *base64 = '\0';
-  aBase64.SetLength(length);
-
+  handle.Finish(length, false);
   return NS_OK;
 }
 

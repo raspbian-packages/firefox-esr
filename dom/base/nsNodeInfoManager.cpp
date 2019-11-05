@@ -11,12 +11,13 @@
 #include "nsNodeInfoManager.h"
 
 #include "mozilla/DebugOnly.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/NodeInfo.h"
 #include "mozilla/dom/NodeInfoInlines.h"
+#include "mozilla/NullPrincipal.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
 #include "nsAtom.h"
-#include "nsIDocument.h"
 #include "nsIPrincipal.h"
 #include "nsIURI.h"
 #include "nsContentUtils.h"
@@ -28,9 +29,7 @@
 #include "nsHashKeys.h"
 #include "nsCCUncollectableMarker.h"
 #include "nsNameSpaceManager.h"
-#include "nsDocument.h"
 #include "nsWindowSizes.h"
-#include "NullPrincipal.h"
 
 using namespace mozilla;
 using mozilla::dom::NodeInfo;
@@ -47,9 +46,7 @@ nsNodeInfoManager::nsNodeInfoManager()
       mTextNodeInfo(nullptr),
       mCommentNodeInfo(nullptr),
       mDocumentNodeInfo(nullptr),
-      mRecentlyUsedNodeInfos{},
-      mSVGEnabled(eTriUnset),
-      mMathMLEnabled(eTriUnset) {
+      mRecentlyUsedNodeInfos() {
   nsLayoutStatics::AddRef();
 
   if (gNodeInfoManagerLeakPRLog)
@@ -85,30 +82,29 @@ NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(nsNodeInfoManager, Release)
 
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_BEGIN(nsNodeInfoManager)
   if (tmp->mDocument) {
-    return NS_CYCLE_COLLECTION_PARTICIPANT(nsDocument)
-        ->CanSkip(tmp->mDocument, aRemovingAllowed);
+    return NS_CYCLE_COLLECTION_PARTICIPANT(Document)->CanSkip(tmp->mDocument,
+                                                              aRemovingAllowed);
   }
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_END
 
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_IN_CC_BEGIN(nsNodeInfoManager)
   if (tmp->mDocument) {
-    return NS_CYCLE_COLLECTION_PARTICIPANT(nsDocument)
-        ->CanSkipInCC(tmp->mDocument);
+    return NS_CYCLE_COLLECTION_PARTICIPANT(Document)->CanSkipInCC(
+        tmp->mDocument);
   }
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_IN_CC_END
 
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_THIS_BEGIN(nsNodeInfoManager)
   if (tmp->mDocument) {
-    return NS_CYCLE_COLLECTION_PARTICIPANT(nsDocument)
-        ->CanSkipThis(tmp->mDocument);
+    return NS_CYCLE_COLLECTION_PARTICIPANT(Document)->CanSkipThis(
+        tmp->mDocument);
   }
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_THIS_END
 
-nsresult nsNodeInfoManager::Init(nsIDocument* aDocument) {
-  NS_PRECONDITION(!mPrincipal,
-                  "Being inited when we already have a principal?");
+nsresult nsNodeInfoManager::Init(Document* aDocument) {
+  MOZ_ASSERT(!mPrincipal, "Being inited when we already have a principal?");
 
-  mPrincipal = NullPrincipal::Create();
+  mPrincipal = NullPrincipal::CreateWithoutOriginAttributes();
 
   if (aDocument) {
     mBindingManager = new nsBindingManager(aDocument);
@@ -148,10 +144,9 @@ already_AddRefed<mozilla::dom::NodeInfo> nsNodeInfoManager::GetNodeInfo(
   NodeInfo::NodeInfoInner tmpKey(aName, aPrefix, aNamespaceID, aNodeType,
                                  aExtraName);
 
-  uint32_t index = tmpKey.Hash() % RECENTLY_USED_NODEINFOS_SIZE;
-  NodeInfo* ni = mRecentlyUsedNodeInfos[index];
-  if (ni && tmpKey == ni->mInner) {
-    RefPtr<NodeInfo> nodeInfo = ni;
+  auto p = mRecentlyUsedNodeInfos.Lookup(tmpKey);
+  if (p) {
+    RefPtr<NodeInfo> nodeInfo = p.Data();
     return nodeInfo.forget();
   }
 
@@ -171,7 +166,7 @@ already_AddRefed<mozilla::dom::NodeInfo> nsNodeInfoManager::GetNodeInfo(
 
   // Have to do the swap thing, because already_AddRefed<nsNodeInfo>
   // doesn't cast to already_AddRefed<mozilla::dom::NodeInfo>
-  mRecentlyUsedNodeInfos[index] = nodeInfo;
+  p.Set(nodeInfo);
   return nodeInfo.forget();
 }
 
@@ -179,7 +174,7 @@ nsresult nsNodeInfoManager::GetNodeInfo(const nsAString& aName, nsAtom* aPrefix,
                                         int32_t aNamespaceID,
                                         uint16_t aNodeType,
                                         NodeInfo** aNodeInfo) {
-// TODO(erahm): Combine this with the atom version.
+  // TODO(erahm): Combine this with the atom version.
 #ifdef DEBUG
   {
     RefPtr<nsAtom> nameAtom = NS_Atomize(aName);
@@ -189,10 +184,9 @@ nsresult nsNodeInfoManager::GetNodeInfo(const nsAString& aName, nsAtom* aPrefix,
 
   NodeInfo::NodeInfoInner tmpKey(aName, aPrefix, aNamespaceID, aNodeType);
 
-  uint32_t index = tmpKey.Hash() % RECENTLY_USED_NODEINFOS_SIZE;
-  NodeInfo* ni = mRecentlyUsedNodeInfos[index];
-  if (ni && ni->mInner == tmpKey) {
-    RefPtr<NodeInfo> nodeInfo = ni;
+  auto p = mRecentlyUsedNodeInfos.Lookup(tmpKey);
+  if (p) {
+    RefPtr<NodeInfo> nodeInfo = p.Data();
     nodeInfo.forget(aNodeInfo);
     return NS_OK;
   }
@@ -210,7 +204,7 @@ nsresult nsNodeInfoManager::GetNodeInfo(const nsAString& aName, nsAtom* aPrefix,
     mNodeInfoHash.Put(&nodeInfo->mInner, nodeInfo);
   }
 
-  mRecentlyUsedNodeInfos[index] = nodeInfo;
+  p.Set(nodeInfo);
   nodeInfo.forget(aNodeInfo);
 
   return NS_OK;
@@ -296,7 +290,7 @@ void nsNodeInfoManager::SetDocumentPrincipal(nsIPrincipal* aPrincipal) {
 }
 
 void nsNodeInfoManager::RemoveNodeInfo(NodeInfo* aNodeInfo) {
-  NS_PRECONDITION(aNodeInfo, "Trying to remove null nodeinfo from manager!");
+  MOZ_ASSERT(aNodeInfo, "Trying to remove null nodeinfo from manager!");
 
   if (aNodeInfo == mDocumentNodeInfo) {
     mDocumentNodeInfo = nullptr;
@@ -317,13 +311,14 @@ void nsNodeInfoManager::RemoveNodeInfo(NodeInfo* aNodeInfo) {
     }
   }
 
-  uint32_t index = aNodeInfo->mInner.Hash() % RECENTLY_USED_NODEINFOS_SIZE;
-  if (mRecentlyUsedNodeInfos[index] == aNodeInfo) {
-    mRecentlyUsedNodeInfos[index] = nullptr;
-  }
-
+  mRecentlyUsedNodeInfos.Remove(aNodeInfo->mInner);
   DebugOnly<bool> ret = mNodeInfoHash.Remove(&aNodeInfo->mInner);
   MOZ_ASSERT(ret, "Can't find mozilla::dom::NodeInfo to remove!!!");
+}
+
+static bool IsSystemOrAddonPrincipal(nsIPrincipal* aPrincipal) {
+  return nsContentUtils::IsSystemPrincipal(aPrincipal) ||
+         BasePrincipal::Cast(aPrincipal)->AddonPolicy();
 }
 
 bool nsNodeInfoManager::InternalSVGEnabled() {
@@ -339,19 +334,23 @@ bool nsNodeInfoManager::InternalSVGEnabled() {
     nsCOMPtr<nsIChannel> channel = mDocument->GetChannel();
     // We don't have a channel for SVGs constructed inside a SVG script
     if (channel) {
-      loadInfo = channel->GetLoadInfo();
+      loadInfo = channel->LoadInfo();
     }
   }
+
+  // We allow SVG (regardless of the pref) if this is a system or add-on
+  // principal, or if this load was requested for a system or add-on principal
+  // (e.g. a remote image being served as part of system or add-on UI)
   bool conclusion =
-      (SVGEnabled || nsContentUtils::IsSystemPrincipal(mPrincipal) ||
+      (SVGEnabled || IsSystemOrAddonPrincipal(mPrincipal) ||
        (loadInfo &&
         (loadInfo->GetExternalContentPolicyType() ==
              nsIContentPolicy::TYPE_IMAGE ||
          loadInfo->GetExternalContentPolicyType() ==
              nsIContentPolicy::TYPE_OTHER) &&
-        (nsContentUtils::IsSystemPrincipal(loadInfo->LoadingPrincipal()) ||
-         nsContentUtils::IsSystemPrincipal(loadInfo->TriggeringPrincipal()))));
-  mSVGEnabled = conclusion ? eTriTrue : eTriFalse;
+        (IsSystemOrAddonPrincipal(loadInfo->LoadingPrincipal()) ||
+         IsSystemOrAddonPrincipal(loadInfo->TriggeringPrincipal()))));
+  mSVGEnabled = Some(conclusion);
   return conclusion;
 }
 
@@ -361,7 +360,7 @@ bool nsNodeInfoManager::InternalMathMLEnabled() {
   nsNameSpaceManager* nsmgr = nsNameSpaceManager::GetInstance();
   bool conclusion = ((nsmgr && !nsmgr->mMathMLDisabled) ||
                      nsContentUtils::IsSystemPrincipal(mPrincipal));
-  mMathMLEnabled = conclusion ? eTriTrue : eTriFalse;
+  mMathMLEnabled = Some(conclusion);
   return conclusion;
 }
 

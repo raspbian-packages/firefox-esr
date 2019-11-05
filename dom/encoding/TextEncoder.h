@@ -34,7 +34,7 @@ class TextEncoder final : public NonRefcountedDOMObject {
 
   bool WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto,
                   JS::MutableHandle<JSObject*> aReflector) {
-    return TextEncoderBinding::Wrap(aCx, this, aGivenProto, aReflector);
+    return TextEncoder_Binding::Wrap(aCx, this, aGivenProto, aReflector);
   }
 
  protected:
@@ -60,6 +60,9 @@ class TextEncoder final : public NonRefcountedDOMObject {
   void Encode(JSContext* aCx, JS::Handle<JSObject*> aObj,
               const nsAString& aString, JS::MutableHandle<JSObject*> aRetval,
               ErrorResult& aRv);
+
+  void EncodeInto(const nsAString& aSrc, const Uint8Array& aDst,
+                  TextEncoderEncodeIntoResult& aResult);
 };
 
 }  // namespace dom

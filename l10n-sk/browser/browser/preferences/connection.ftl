@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Použiť server proxy pre DNS pri použití SOCKS v5
     .accesskey = u
+connection-dns-over-https =
+    .label = Zapnúť DNS cez HTTPS
+    .accesskey = Z
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Použiť predvolenú ({ $url })
+    .accesskey = P
+    .tooltiptext = Použiť predvolenú URL pre DNS cez HTTPS
+connection-dns-over-https-url-resolver = Poskytovateľ
+    .accesskey = P
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (predvolené)
+    .tooltiptext = Použiť predvolenú URL pre DNS cez HTTPS
+connection-dns-over-https-url-custom =
+    .label = Vlastná
+    .accesskey = V
+    .tooltiptext = Zadajte svoju preferovanú URL adresu pre DNS cez HTTPS
+connection-dns-over-https-custom-label = Vlastná

@@ -11,9 +11,7 @@ MOCHITEST_MANIFESTS += ['test/mochitest.ini']
 MOCHITEST_CHROME_MANIFESTS += ['test/chrome.ini']
 
 EXPORTS += [
-    'nsIComboboxControlFrame.h',
     'nsIFormControlFrame.h',
-    'nsIListControlFrame.h',
     'nsISelectControlFrame.h',
     'nsITextControlFrame.h',
 ]
@@ -44,7 +42,6 @@ FINAL_LIBRARY = 'xul'
 include('/ipc/chromium/chromium-config.mozbuild')
 
 LOCAL_INCLUDES += [
-    '../../editor/txmgr',
     '../base',
     '../generic',
     '../painting',

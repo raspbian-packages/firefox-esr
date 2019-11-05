@@ -110,14 +110,15 @@ void CSP_LogStrMessage(const nsAString& aMsg) {
   if (!console) {
     return;
   }
-  nsString msg = PromiseFlatString(aMsg);
+  nsString msg(aMsg);
   console->LogStringMessage(msg.get());
 }
 
 void CSP_LogMessage(const nsAString& aMessage, const nsAString& aSourceName,
                     const nsAString& aSourceLine, uint32_t aLineNumber,
                     uint32_t aColumnNumber, uint32_t aFlags,
-                    const char* aCategory, uint64_t aInnerWindowID) {
+                    const nsACString& aCategory, uint64_t aInnerWindowID,
+                    bool aFromPrivateWindow) {
   nsCOMPtr<nsIConsoleService> console(
       do_GetService(NS_CONSOLESERVICE_CONTRACTID));
 
@@ -139,20 +140,27 @@ void CSP_LogMessage(const nsAString& aMessage, const nsAString& aSourceName,
   // E.g. 'aSourceLine' might be: 'onclick attribute on DIV element'.
   // In such cases we append 'aSourceLine' directly to the error message.
   if (!aSourceLine.IsEmpty()) {
-    cspMsg.AppendLiteral(" Source: ");
+    cspMsg.AppendLiteral(u" Source: ");
     cspMsg.Append(aSourceLine);
     cspMsg.AppendLiteral(u".");
   }
 
+  // Since we are leveraging csp errors as the category names which
+  // we pass to devtools, we should prepend them with "CSP_" to
+  // allow easy distincution in devtools code. e.g.
+  // upgradeInsecureRequest -> CSP_upgradeInsecureRequest
+  nsCString category("CSP_");
+  category.Append(aCategory);
+
   nsresult rv;
   if (aInnerWindowID > 0) {
-    nsCString catStr;
-    catStr.AssignASCII(aCategory);
     rv = error->InitWithWindowID(cspMsg, aSourceName, aSourceLine, aLineNumber,
-                                 aColumnNumber, aFlags, catStr, aInnerWindowID);
+                                 aColumnNumber, aFlags, category,
+                                 aInnerWindowID);
   } else {
     rv = error->Init(cspMsg, aSourceName, aSourceLine, aLineNumber,
-                     aColumnNumber, aFlags, aCategory);
+                     aColumnNumber, aFlags, category.get(), aFromPrivateWindow,
+                     true /* from chrome context */);
   }
   if (NS_FAILED(rv)) {
     return;
@@ -167,11 +175,12 @@ void CSP_LogLocalizedStr(const char* aName, const char16_t** aParams,
                          uint32_t aLength, const nsAString& aSourceName,
                          const nsAString& aSourceLine, uint32_t aLineNumber,
                          uint32_t aColumnNumber, uint32_t aFlags,
-                         const char* aCategory, uint64_t aInnerWindowID) {
+                         const nsACString& aCategory, uint64_t aInnerWindowID,
+                         bool aFromPrivateWindow) {
   nsAutoString logMsg;
   CSP_GetLocalizedStr(aName, aParams, aLength, logMsg);
   CSP_LogMessage(logMsg, aSourceName, aSourceLine, aLineNumber, aColumnNumber,
-                 aFlags, aCategory, aInnerWindowID);
+                 aFlags, aCategory, aInnerWindowID, aFromPrivateWindow);
 }
 
 /* ===== Helpers ============================ */
@@ -186,6 +195,8 @@ CSPDirective CSP_ContentTypeToDirective(nsContentPolicyType aType) {
     case nsIContentPolicy::TYPE_SCRIPT:
     case nsIContentPolicy::TYPE_INTERNAL_SCRIPT:
     case nsIContentPolicy::TYPE_INTERNAL_SCRIPT_PRELOAD:
+    case nsIContentPolicy::TYPE_INTERNAL_MODULE:
+    case nsIContentPolicy::TYPE_INTERNAL_MODULE_PRELOAD:
     case nsIContentPolicy::TYPE_INTERNAL_WORKER_IMPORT_SCRIPTS:
       return nsIContentSecurityPolicy::SCRIPT_SRC_DIRECTIVE;
 
@@ -223,6 +234,7 @@ CSPDirective CSP_ContentTypeToDirective(nsContentPolicyType aType) {
     case nsIContentPolicy::TYPE_XBL:
     case nsIContentPolicy::TYPE_DTD:
     case nsIContentPolicy::TYPE_OTHER:
+    case nsIContentPolicy::TYPE_SPECULATIVE:
       return nsIContentSecurityPolicy::DEFAULT_SRC_DIRECTIVE;
 
     // csp shold not block top level loads, e.g. in case
@@ -274,6 +286,9 @@ nsCSPHostSrc* CSP_CreateHostSrcFromSelfURI(nsIURI* aSelfURI) {
   return hostsrc;
 }
 
+bool CSP_IsEmptyDirective(const nsAString& aValue, const nsAString& aDir) {
+  return (aDir.Length() == 0 && aValue.Length() == 0);
+}
 bool CSP_IsValidDirective(const nsAString& aDir) {
   uint32_t numDirs = (sizeof(CSPStrDirectives) / sizeof(CSPStrDirectives[0]));
 
@@ -293,8 +308,8 @@ bool CSP_IsKeyword(const nsAString& aValue, enum CSPKeyword aKey) {
 }
 
 bool CSP_IsQuotelessKeyword(const nsAString& aKey) {
-  nsString lowerKey = PromiseFlatString(aKey);
-  ToLowerCase(lowerKey);
+  nsString lowerKey;
+  ToLowerCase(aKey, lowerKey);
 
   nsAutoString keyword;
   for (uint32_t i = 0; i < CSP_LAST_KEYWORD_VALUE; i++) {
@@ -465,7 +480,7 @@ bool nsCSPSchemeSrc::visit(nsCSPSrcVisitor* aVisitor) const {
 
 void nsCSPSchemeSrc::toString(nsAString& outStr) const {
   outStr.Append(mScheme);
-  outStr.AppendASCII(":");
+  outStr.AppendLiteral(":");
 }
 
 /* ===== nsCSPHostSrc ======================== */
@@ -585,6 +600,15 @@ bool nsCSPHostSrc::permits(nsIURI* aUri, const nsAString& aNonce,
   // just a specific scheme, the parser should generate a nsCSPSchemeSource.
   NS_ASSERTION((!mHost.IsEmpty()), "host can not be the empty string");
 
+  // Before we can check if the host matches, we have to
+  // extract the host part from aUri.
+  nsAutoCString uriHost;
+  nsresult rv = aUri->GetAsciiHost(uriHost);
+  NS_ENSURE_SUCCESS(rv, false);
+
+  nsString decodedUriHost;
+  CSP_PercentDecodeStr(NS_ConvertUTF8toUTF16(uriHost), decodedUriHost);
+
   // 2) host matching: Enforce a single *
   if (mHost.EqualsASCII("*")) {
     // The single ASTERISK character (*) does not match a URI's scheme of a type
@@ -600,24 +624,18 @@ bool nsCSPHostSrc::permits(nsIURI* aUri, const nsAString& aNonce,
     bool isFileScheme =
         (NS_SUCCEEDED(aUri->SchemeIs("filesystem", &isFileScheme)) &&
          isFileScheme);
-
     if (isBlobScheme || isDataScheme || isFileScheme) {
       return false;
     }
-    return true;
+
+    // If no scheme is present there also wont be a port and folder to check
+    // which means we can return early
+    if (mScheme.IsEmpty()) {
+      return true;
+    }
   }
-
-  // Before we can check if the host matches, we have to
-  // extract the host part from aUri.
-  nsAutoCString uriHost;
-  nsresult rv = aUri->GetAsciiHost(uriHost);
-  NS_ENSURE_SUCCESS(rv, false);
-
-  nsString decodedUriHost;
-  CSP_PercentDecodeStr(NS_ConvertUTF8toUTF16(uriHost), decodedUriHost);
-
   // 4.5) host matching: Check if the allowed host starts with a wilcard.
-  if (mHost.First() == '*') {
+  else if (mHost.First() == '*') {
     NS_ASSERTION(
         mHost[1] == '.',
         "Second character needs to be '.' whenever host starts with '*'");
@@ -690,6 +708,11 @@ bool nsCSPHostSrc::visit(nsCSPSrcVisitor* aVisitor) const {
 }
 
 void nsCSPHostSrc::toString(nsAString& outStr) const {
+  if (mGeneratedFromSelfKeyword) {
+    outStr.AppendLiteral("'self'");
+    return;
+  }
+
   // If mHost is a single "*", we append the wildcard and return.
   if (mHost.EqualsASCII("*") && mScheme.IsEmpty() && mPort.IsEmpty()) {
     outStr.Append(mHost);
@@ -700,12 +723,12 @@ void nsCSPHostSrc::toString(nsAString& outStr) const {
   outStr.Append(mScheme);
 
   // append host
-  outStr.AppendASCII("://");
+  outStr.AppendLiteral("://");
   outStr.Append(mHost);
 
   // append port
   if (!mPort.IsEmpty()) {
-    outStr.AppendASCII(":");
+    outStr.AppendLiteral(":");
     outStr.Append(mPort);
   }
 
@@ -762,9 +785,11 @@ bool nsCSPKeywordSrc::allows(enum CSPKeyword aKeyword,
   }
   // either the keyword allows the load or the policy contains 'strict-dynamic',
   // in which case we have to make sure the script is not parser created before
-  // allowing the load.
+  // allowing the load and also eval should be blocked even if 'strict-dynamic'
+  // is present. Should be allowed only if 'unsafe-eval' is present.
   return ((mKeyword == aKeyword) ||
-          ((mKeyword == CSP_STRICT_DYNAMIC) && !aParserCreated));
+          ((mKeyword == CSP_STRICT_DYNAMIC) && !aParserCreated &&
+           aKeyword != CSP_UNSAFE_EVAL));
 }
 
 bool nsCSPKeywordSrc::visit(nsCSPSrcVisitor* aVisitor) const {
@@ -815,7 +840,7 @@ bool nsCSPNonceSrc::visit(nsCSPSrcVisitor* aVisitor) const {
 void nsCSPNonceSrc::toString(nsAString& outStr) const {
   outStr.Append(CSP_EnumToUTF16Keyword(CSP_NONCE));
   outStr.Append(mNonce);
-  outStr.AppendASCII("'");
+  outStr.AppendLiteral("'");
 }
 
 /* ===== nsCSPHashSrc ===================== */
@@ -868,11 +893,11 @@ bool nsCSPHashSrc::visit(nsCSPSrcVisitor* aVisitor) const {
 }
 
 void nsCSPHashSrc::toString(nsAString& outStr) const {
-  outStr.AppendASCII("'");
+  outStr.AppendLiteral("'");
   outStr.Append(mAlgorithm);
-  outStr.AppendASCII("-");
+  outStr.AppendLiteral("-");
   outStr.Append(mHash);
-  outStr.AppendASCII("'");
+  outStr.AppendLiteral("'");
 }
 
 /* ===== nsCSPReportURI ===================== */
@@ -953,14 +978,14 @@ bool nsCSPDirective::allows(enum CSPKeyword aKeyword,
 void nsCSPDirective::toString(nsAString& outStr) const {
   // Append directive name
   outStr.AppendASCII(CSP_CSPDirectiveToString(mDirective));
-  outStr.AppendASCII(" ");
+  outStr.AppendLiteral(" ");
 
   // Append srcs
   uint32_t length = mSrcs.Length();
   for (uint32_t i = 0; i < length; i++) {
     mSrcs[i]->toString(outStr);
     if (i != (length - 1)) {
-      outStr.AppendASCII(" ");
+      outStr.AppendLiteral(" ");
     }
   }
 }
@@ -977,73 +1002,73 @@ void nsCSPDirective::toDomCSPStruct(mozilla::dom::CSP& outCSP) const {
   switch (mDirective) {
     case nsIContentSecurityPolicy::DEFAULT_SRC_DIRECTIVE:
       outCSP.mDefault_src.Construct();
-      outCSP.mDefault_src.Value() = mozilla::Move(srcs);
+      outCSP.mDefault_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::SCRIPT_SRC_DIRECTIVE:
       outCSP.mScript_src.Construct();
-      outCSP.mScript_src.Value() = mozilla::Move(srcs);
+      outCSP.mScript_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::OBJECT_SRC_DIRECTIVE:
       outCSP.mObject_src.Construct();
-      outCSP.mObject_src.Value() = mozilla::Move(srcs);
+      outCSP.mObject_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::STYLE_SRC_DIRECTIVE:
       outCSP.mStyle_src.Construct();
-      outCSP.mStyle_src.Value() = mozilla::Move(srcs);
+      outCSP.mStyle_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::IMG_SRC_DIRECTIVE:
       outCSP.mImg_src.Construct();
-      outCSP.mImg_src.Value() = mozilla::Move(srcs);
+      outCSP.mImg_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::MEDIA_SRC_DIRECTIVE:
       outCSP.mMedia_src.Construct();
-      outCSP.mMedia_src.Value() = mozilla::Move(srcs);
+      outCSP.mMedia_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::FRAME_SRC_DIRECTIVE:
       outCSP.mFrame_src.Construct();
-      outCSP.mFrame_src.Value() = mozilla::Move(srcs);
+      outCSP.mFrame_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::FONT_SRC_DIRECTIVE:
       outCSP.mFont_src.Construct();
-      outCSP.mFont_src.Value() = mozilla::Move(srcs);
+      outCSP.mFont_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::CONNECT_SRC_DIRECTIVE:
       outCSP.mConnect_src.Construct();
-      outCSP.mConnect_src.Value() = mozilla::Move(srcs);
+      outCSP.mConnect_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::REPORT_URI_DIRECTIVE:
       outCSP.mReport_uri.Construct();
-      outCSP.mReport_uri.Value() = mozilla::Move(srcs);
+      outCSP.mReport_uri.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::FRAME_ANCESTORS_DIRECTIVE:
       outCSP.mFrame_ancestors.Construct();
-      outCSP.mFrame_ancestors.Value() = mozilla::Move(srcs);
+      outCSP.mFrame_ancestors.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::WEB_MANIFEST_SRC_DIRECTIVE:
       outCSP.mManifest_src.Construct();
-      outCSP.mManifest_src.Value() = mozilla::Move(srcs);
+      outCSP.mManifest_src.Value() = std::move(srcs);
       return;
       // not supporting REFLECTED_XSS_DIRECTIVE
 
     case nsIContentSecurityPolicy::BASE_URI_DIRECTIVE:
       outCSP.mBase_uri.Construct();
-      outCSP.mBase_uri.Value() = mozilla::Move(srcs);
+      outCSP.mBase_uri.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::FORM_ACTION_DIRECTIVE:
       outCSP.mForm_action.Construct();
-      outCSP.mForm_action.Value() = mozilla::Move(srcs);
+      outCSP.mForm_action.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::BLOCK_ALL_MIXED_CONTENT:
@@ -1058,21 +1083,18 @@ void nsCSPDirective::toDomCSPStruct(mozilla::dom::CSP& outCSP) const {
 
     case nsIContentSecurityPolicy::CHILD_SRC_DIRECTIVE:
       outCSP.mChild_src.Construct();
-      outCSP.mChild_src.Value() = mozilla::Move(srcs);
+      outCSP.mChild_src.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::SANDBOX_DIRECTIVE:
       outCSP.mSandbox.Construct();
-      outCSP.mSandbox.Value() = mozilla::Move(srcs);
+      outCSP.mSandbox.Value() = std::move(srcs);
       return;
 
     case nsIContentSecurityPolicy::WORKER_SRC_DIRECTIVE:
       outCSP.mWorker_src.Construct();
-      outCSP.mWorker_src.Value() = mozilla::Move(srcs);
+      outCSP.mWorker_src.Value() = std::move(srcs);
       return;
-
-      // REFERRER_DIRECTIVE and REQUIRE_SRI_FOR are handled in
-      // nsCSPPolicy::toDomCSPStruct()
 
     default:
       NS_ASSERTION(false, "cannot find directive to convert CSP to JSON");
@@ -1116,6 +1138,16 @@ bool nsCSPDirective::equals(CSPDirective aDirective) const {
 
 void nsCSPDirective::getDirName(nsAString& outStr) const {
   outStr.AppendASCII(CSP_CSPDirectiveToString(mDirective));
+}
+
+bool nsCSPDirective::hasReportSampleKeyword() const {
+  for (nsCSPBaseSrc* src : mSrcs) {
+    if (src->isReportSample()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /* =============== nsCSPChildSrcDirective ============= */
@@ -1209,54 +1241,12 @@ void nsUpgradeInsecureDirective::getDirName(nsAString& outStr) const {
       nsIContentSecurityPolicy::UPGRADE_IF_INSECURE_DIRECTIVE));
 }
 
-/* ===== nsRequireSRIForDirective ========================= */
-
-nsRequireSRIForDirective::nsRequireSRIForDirective(CSPDirective aDirective)
-    : nsCSPDirective(aDirective) {}
-
-nsRequireSRIForDirective::~nsRequireSRIForDirective() {}
-
-void nsRequireSRIForDirective::toString(nsAString& outStr) const {
-  outStr.AppendASCII(
-      CSP_CSPDirectiveToString(nsIContentSecurityPolicy::REQUIRE_SRI_FOR));
-  for (uint32_t i = 0; i < mTypes.Length(); i++) {
-    if (mTypes[i] == nsIContentPolicy::TYPE_SCRIPT) {
-      outStr.AppendASCII(" script");
-    } else if (mTypes[i] == nsIContentPolicy::TYPE_STYLESHEET) {
-      outStr.AppendASCII(" style");
-    }
-  }
-}
-
-bool nsRequireSRIForDirective::hasType(nsContentPolicyType aType) const {
-  for (uint32_t i = 0; i < mTypes.Length(); i++) {
-    if (mTypes[i] == aType) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool nsRequireSRIForDirective::restrictsContentType(
-    const nsContentPolicyType aType) const {
-  return this->hasType(aType);
-}
-
-bool nsRequireSRIForDirective::allows(enum CSPKeyword aKeyword,
-                                      const nsAString& aHashOrNonce,
-                                      bool aParserCreated) const {
-  // can only disallow CSP_REQUIRE_SRI_FOR.
-  return (aKeyword != CSP_REQUIRE_SRI_FOR);
-}
-
-void nsRequireSRIForDirective::getDirName(nsAString& outStr) const {
-  outStr.AppendASCII(
-      CSP_CSPDirectiveToString(nsIContentSecurityPolicy::REQUIRE_SRI_FOR));
-}
-
 /* ===== nsCSPPolicy ========================= */
 
-nsCSPPolicy::nsCSPPolicy() : mUpgradeInsecDir(nullptr), mReportOnly(false) {
+nsCSPPolicy::nsCSPPolicy()
+    : mUpgradeInsecDir(nullptr),
+      mReportOnly(false),
+      mDeliveredViaMetaTag(false) {
   CSPUTILSLOG(("nsCSPPolicy::nsCSPPolicy"));
 }
 
@@ -1378,16 +1368,9 @@ bool nsCSPPolicy::allows(nsContentPolicyType aContentType,
 void nsCSPPolicy::toString(nsAString& outStr) const {
   uint32_t length = mDirectives.Length();
   for (uint32_t i = 0; i < length; ++i) {
-    if (mDirectives[i]->equals(nsIContentSecurityPolicy::REFERRER_DIRECTIVE)) {
-      outStr.AppendASCII(CSP_CSPDirectiveToString(
-          nsIContentSecurityPolicy::REFERRER_DIRECTIVE));
-      outStr.AppendASCII(" ");
-      outStr.Append(mReferrerPolicy);
-    } else {
-      mDirectives[i]->toString(outStr);
-    }
+    mDirectives[i]->toString(outStr);
     if (i != (length - 1)) {
-      outStr.AppendASCII("; ");
+      outStr.AppendLiteral("; ");
     }
   }
 }
@@ -1396,14 +1379,7 @@ void nsCSPPolicy::toDomCSPStruct(mozilla::dom::CSP& outCSP) const {
   outCSP.mReport_only = mReportOnly;
 
   for (uint32_t i = 0; i < mDirectives.Length(); ++i) {
-    if (mDirectives[i]->equals(nsIContentSecurityPolicy::REFERRER_DIRECTIVE)) {
-      mozilla::dom::Sequence<nsString> srcs;
-      srcs.AppendElement(mReferrerPolicy, mozilla::fallible);
-      outCSP.mReferrer.Construct();
-      outCSP.mReferrer.Value() = srcs;
-    } else {
-      mDirectives[i]->toDomCSPStruct(outCSP);
-    }
+    mDirectives[i]->toDomCSPStruct(outCSP);
   }
 }
 
@@ -1422,12 +1398,17 @@ bool nsCSPPolicy::hasDirective(CSPDirective aDir) const {
  * The parameter outDirective is the equivalent of 'outViolatedDirective'
  * for the ::permits() function family.
  */
-void nsCSPPolicy::getDirectiveStringForContentType(
-    nsContentPolicyType aContentType, nsAString& outDirective) const {
+void nsCSPPolicy::getDirectiveStringAndReportSampleForContentType(
+    nsContentPolicyType aContentType, nsAString& outDirective,
+    bool* aReportSample) const {
+  MOZ_ASSERT(aReportSample);
+  *aReportSample = false;
+
   nsCSPDirective* defaultDir = nullptr;
   for (uint32_t i = 0; i < mDirectives.Length(); i++) {
     if (mDirectives[i]->restrictsContentType(aContentType)) {
       mDirectives[i]->getDirName(outDirective);
+      *aReportSample = mDirectives[i]->hasReportSampleKeyword();
       return;
     }
     if (mDirectives[i]->isDefaultDirective()) {
@@ -1438,10 +1419,11 @@ void nsCSPPolicy::getDirectiveStringForContentType(
   // the contentType must be restricted by the default directive
   if (defaultDir) {
     defaultDir->getDirName(outDirective);
+    *aReportSample = defaultDir->hasReportSampleKeyword();
     return;
   }
   NS_ASSERTION(false, "Can not query directive string for contentType!");
-  outDirective.AppendASCII("couldNotQueryViolatedDirective");
+  outDirective.AppendLiteral("couldNotQueryViolatedDirective");
 }
 
 void nsCSPPolicy::getDirectiveAsString(CSPDirective aDir,
@@ -1494,16 +1476,6 @@ bool nsCSPPolicy::visitDirectiveSrcs(CSPDirective aDir,
   for (uint32_t i = 0; i < mDirectives.Length(); i++) {
     if (mDirectives[i]->equals(aDir)) {
       return mDirectives[i]->visitSrcs(aVisitor);
-    }
-  }
-  return false;
-}
-
-bool nsCSPPolicy::requireSRIForType(nsContentPolicyType aContentType) {
-  for (uint32_t i = 0; i < mDirectives.Length(); i++) {
-    if (mDirectives[i]->equals(nsIContentSecurityPolicy::REQUIRE_SRI_FOR)) {
-      return static_cast<nsRequireSRIForDirective*>(mDirectives[i])
-          ->hasType(aContentType);
     }
   }
   return false;

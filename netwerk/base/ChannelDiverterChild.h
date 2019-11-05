@@ -14,8 +14,8 @@ namespace net {
 
 class ChannelDiverterChild : public PChannelDiverterChild {
  public:
-  ChannelDiverterChild();
-  virtual ~ChannelDiverterChild();
+  ChannelDiverterChild() = default;
+  virtual ~ChannelDiverterChild() = default;
 };
 
 }  // namespace net

@@ -4,11 +4,11 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-
-ChromeUtils.defineModuleGetter(this, "Async",
-                               "resource://services-common/async.js");
-
+ChromeUtils.defineModuleGetter(
+  this,
+  "Async",
+  "resource://services-common/async.js"
+);
 
 var EXPORTED_SYMBOLS = ["CollectionValidator", "CollectionProblemData"];
 
@@ -72,19 +72,21 @@ class CollectionValidator {
 
   async getServerItems(engine) {
     let collection = engine.itemSource();
-    let collectionKey = engine.service.collectionKeys.keyForCollection(engine.name);
+    let collectionKey = engine.service.collectionKeys.keyForCollection(
+      engine.name
+    );
     collection.full = true;
     let result = await collection.getBatched();
     if (!result.response.success) {
       throw result.response;
     }
-    let maybeYield = Async.jankYielder();
     let cleartexts = [];
-    for (let record of result.records) {
-      await maybeYield();
+
+    await Async.yieldingForEach(result.records, async record => {
       await record.decrypt(collectionKey);
       cleartexts.push(record.cleartext);
-    }
+    });
+
     return cleartexts;
   }
 
@@ -146,17 +148,27 @@ class CollectionValidator {
   //   records: Normalized server records,
   //   deletedRecords: Array of ids that were marked as deleted by the server.
   async compareClientWithServer(clientItems, serverItems) {
-    let maybeYield = Async.jankYielder();
+    const yieldState = Async.yieldState();
+
     const clientRecords = [];
-    for (let item of clientItems) {
-      await maybeYield();
-      clientRecords.push(this.normalizeClientItem(item));
-    }
+
+    await Async.yieldingForEach(
+      clientItems,
+      item => {
+        clientRecords.push(this.normalizeClientItem(item));
+      },
+      yieldState
+    );
+
     const serverRecords = [];
-    for (let item of serverItems) {
-      await maybeYield();
-      serverRecords.push((await this.normalizeServerItem(item)));
-    }
+    await Async.yieldingForEach(
+      serverItems,
+      async item => {
+        serverRecords.push(await this.normalizeServerItem(item));
+      },
+      yieldState
+    );
+
     let problems = this.emptyProblemData();
     let seenServer = new Map();
     let serverDeleted = new Set();
@@ -176,7 +188,7 @@ class CollectionValidator {
           problems.duplicates.push(id);
         } else {
           seenServer.set(id, record);
-          allRecords.set(id, { server: record, client: null, });
+          allRecords.set(id, { server: record, client: null });
         }
         record.understood = this.clientUnderstands(record);
       }
@@ -229,7 +241,28 @@ class CollectionValidator {
       problemData: problems,
       clientRecords,
       records: serverRecords,
-      deletedRecords: [...serverDeleted]
+      deletedRecords: [...serverDeleted],
+    };
+  }
+
+  async validate(engine) {
+    let start = Cu.now();
+    let clientItems = await this.getClientItems();
+    let serverItems = await this.getServerItems(engine);
+    let serverRecordCount = serverItems.length;
+    let result = await this.compareClientWithServer(clientItems, serverItems);
+    let end = Cu.now();
+    let duration = end - start;
+    engine._log.debug(`Validated ${this.name} in ${duration}ms`);
+    engine._log.debug(`Problem summary`);
+    for (let { name, count } of result.problemData.getSummary()) {
+      engine._log.debug(`  ${name}: ${count}`);
+    }
+    return {
+      duration,
+      version: this.version,
+      problems: result.problemData,
+      recordCount: serverRecordCount,
     };
   }
 }

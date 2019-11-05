@@ -14,7 +14,8 @@ const { Sorters } = require("../utils/sort-predicates");
  * If one of the compared request is a clone of the other, sort them next to each other.
  */
 function sortWithClones(requests, sorter, a, b) {
-  const aId = a.id, bId = b.id;
+  const aId = a.id,
+    bId = b.id;
 
   if (aId.endsWith("-clone")) {
     const aOrigId = aId.replace(/-clone$/, "");
@@ -35,11 +36,22 @@ function sortWithClones(requests, sorter, a, b) {
   return sorter(a, b);
 }
 
-const getFilterFn = createSelector(
+/**
+ * Take clones into account when filtering. If a request is
+ * a clone, it's not filtered out.
+ */
+const getFilterWithCloneFn = createSelector(
   state => state.filters,
   filters => r => {
     const matchesType = Object.keys(filters.requestFilterTypes).some(filter => {
-      return filters.requestFilterTypes[filter] && Filters[filter] && Filters[filter](r);
+      if (r.id.endsWith("-clone")) {
+        return true;
+      }
+      return (
+        filters.requestFilterTypes[filter] &&
+        Filters[filter] &&
+        Filters[filter](r)
+      );
     });
     return matchesType && isFreetextMatch(r, filters.requestFilterText);
   }
@@ -49,7 +61,11 @@ const getTypeFilterFn = createSelector(
   state => state.filters,
   filters => r => {
     return Object.keys(filters.requestFilterTypes).some(filter => {
-      return filters.requestFilterTypes[filter] && Filters[filter] && Filters[filter](r);
+      return (
+        filters.requestFilterTypes[filter] &&
+        Filters[filter] &&
+        Filters[filter](r)
+      );
     });
   }
 );
@@ -68,7 +84,7 @@ const getSortedRequests = createSelector(
   state => state.requests,
   getSortFn,
   ({ requests }, sortFn) => {
-    let arr = [...requests.values()].sort(sortFn);
+    const arr = [...requests.values()].sort(sortFn);
     arr.get = index => arr[index];
     arr.isEmpty = () => this.length == 0;
     arr.size = arr.length;
@@ -78,10 +94,10 @@ const getSortedRequests = createSelector(
 
 const getDisplayedRequests = createSelector(
   state => state.requests,
-  getFilterFn,
+  getFilterWithCloneFn,
   getSortFn,
   ({ requests }, filterFn, sortFn) => {
-    let arr = [...requests.values()].filter(filterFn).sort(sortFn);
+    const arr = [...requests.values()].filter(filterFn).sort(sortFn);
     arr.get = index => arr[index];
     arr.isEmpty = () => this.length == 0;
     arr.size = arr.length;
@@ -103,17 +119,23 @@ const getDisplayedRequestsSummary = createSelector(
       return { count: 0, bytes: 0, millis: 0 };
     }
 
-    const totalBytes = requests.reduce((totals, item) => {
-      if (typeof item.contentSize == "number") {
-        totals.contentSize += item.contentSize;
-      }
+    const totalBytes = requests.reduce(
+      (totals, item) => {
+        if (typeof item.contentSize == "number") {
+          totals.contentSize += item.contentSize;
+        }
 
-      if (typeof item.transferredSize == "number" && !item.fromCache) {
-        totals.transferredSize += item.transferredSize;
-      }
+        if (
+          typeof item.transferredSize == "number" &&
+          !(item.fromCache || item.status === "304")
+        ) {
+          totals.transferredSize += item.transferredSize;
+        }
 
-      return totals;
-    }, { contentSize: 0, transferredSize: 0 });
+        return totals;
+      },
+      { contentSize: 0, transferredSize: 0 }
+    );
 
     return {
       count: requests.size,
@@ -126,7 +148,8 @@ const getDisplayedRequestsSummary = createSelector(
 
 const getSelectedRequest = createSelector(
   state => state.requests,
-  ({ selectedId, requests }) => selectedId ? requests.get(selectedId) : undefined
+  ({ selectedId, requests }) =>
+    selectedId ? requests.get(selectedId) : undefined
 );
 
 const isSelectedRequestVisible = createSelector(

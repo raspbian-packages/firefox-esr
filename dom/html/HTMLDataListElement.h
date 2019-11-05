@@ -16,8 +16,8 @@ namespace dom {
 class HTMLDataListElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLDataListElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -30,8 +30,7 @@ class HTMLDataListElement final : public nsGenericHTMLElement {
     return mOptions;
   }
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // This function is used to generate the nsContentList (option elements).
   static bool MatchOptions(Element* aElement, int32_t aNamespaceID,

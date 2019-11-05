@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,17 +9,13 @@
 #include "txExprResult.h"
 #include "txIXPathContext.h"
 #include "nsError.h"
-#include "nsIDOMCharacterData.h"
-#include "nsDOMClassInfoID.h"
-#include "nsIDOMDocument.h"
 #include "nsINode.h"
 #include "XPathResult.h"
 #include "txURIUtils.h"
 #include "txXPathTreeWalker.h"
 #include "mozilla/dom/BindingUtils.h"
+#include "mozilla/dom/Text.h"
 #include "mozilla/dom/XPathResultBinding.h"
-
-using mozilla::Move;
 
 namespace mozilla {
 namespace dom {
@@ -48,8 +44,8 @@ class EvalContextImpl : public txIEvalContext {
 
 XPathExpression::XPathExpression(nsAutoPtr<Expr>&& aExpression,
                                  txResultRecycler* aRecycler,
-                                 nsIDocument* aDocument)
-    : mExpression(Move(aExpression)),
+                                 Document* aDocument)
+    : mExpression(std::move(aExpression)),
       mRecycler(aRecycler),
       mDocument(do_GetWeakReference(aDocument)),
       mCheckDocument(aDocument != nullptr) {}
@@ -81,7 +77,7 @@ already_AddRefed<XPathResult> XPathExpression::EvaluateWithContext(
     return nullptr;
   }
 
-  if (aType > XPathResultBinding::FIRST_ORDERED_NODE_TYPE) {
+  if (aType > XPathResult_Binding::FIRST_ORDERED_NODE_TYPE) {
     aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
     return nullptr;
   }
@@ -93,7 +89,7 @@ already_AddRefed<XPathResult> XPathExpression::EvaluateWithContext(
   }
 
   if (mCheckDocument) {
-    nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument);
+    nsCOMPtr<Document> doc = do_QueryReferent(mDocument);
     if (doc != aContextNode.OwnerDoc()) {
       aRv.Throw(NS_ERROR_DOM_WRONG_DOCUMENT_ERR);
       return nullptr;
@@ -104,14 +100,10 @@ already_AddRefed<XPathResult> XPathExpression::EvaluateWithContext(
 
   if (nodeType == nsINode::TEXT_NODE ||
       nodeType == nsINode::CDATA_SECTION_NODE) {
-    nsCOMPtr<nsIDOMCharacterData> textNode = do_QueryInterface(&aContextNode);
-    if (!textNode) {
-      aRv.Throw(NS_ERROR_FAILURE);
-      return nullptr;
-    }
+    Text* textNode = aContextNode.GetAsText();
+    MOZ_ASSERT(textNode);
 
-    uint32_t textLength;
-    textNode->GetLength(&textLength);
+    uint32_t textLength = textNode->Length();
     if (textLength == 0) {
       aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
       return nullptr;

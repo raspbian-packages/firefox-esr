@@ -123,10 +123,11 @@ class MOZ_STACK_CLASS ContentEventHandler {
   nsresult OnQueryDOMWidgetHittest(WidgetQueryContentEvent* aEvent);
 
   // NS_SELECTION_* event
+  MOZ_CAN_RUN_SCRIPT
   nsresult OnSelectionEvent(WidgetSelectionEvent* aEvent);
 
  protected:
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<dom::Document> mDocument;
   // mSelection is typically normal selection but if OnQuerySelectedText()
   // is called, i.e., handling eQuerySelectedText, it's the specified selection
   // by WidgetQueryContentEvent::mInput::mSelectionType.
@@ -139,8 +140,9 @@ class MOZ_STACK_CLASS ContentEventHandler {
   nsresult Init(WidgetQueryContentEvent* aEvent);
   nsresult Init(WidgetSelectionEvent* aEvent);
 
-  nsresult InitBasic();
-  nsresult InitCommon(SelectionType aSelectionType = SelectionType::eNormal);
+  nsresult InitBasic(bool aRequireFlush = true);
+  nsresult InitCommon(SelectionType aSelectionType = SelectionType::eNormal,
+                      bool aRequireFlush = true);
   /**
    * InitRootContent() computes the root content of current focused editor.
    *
@@ -315,11 +317,6 @@ class MOZ_STACK_CLASS ContentEventHandler {
   nsresult QueryTextRectByRange(const RawRange& aRawRange,
                                 LayoutDeviceIntRect& aRect,
                                 WritingMode& aWritingMode);
-
-  // Returns a node and position in the node for computing text rect.
-  NodePosition GetNodePositionHavingFlatText(const NodePosition& aNodePosition);
-  NodePosition GetNodePositionHavingFlatText(nsINode* aNode,
-                                             int32_t aNodeOffset);
 
   struct MOZ_STACK_CLASS FrameAndNodeOffset final {
     // mFrame is safe since this can live in only stack class and

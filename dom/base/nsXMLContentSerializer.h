@@ -47,14 +47,16 @@ class nsXMLContentSerializer : public nsIContentSerializer {
   NS_IMETHOD AppendCDATASection(nsIContent* aCDATASection, int32_t aStartOffset,
                                 int32_t aEndOffset, nsAString& aStr) override;
 
-  NS_IMETHOD AppendProcessingInstruction(nsIContent* aPI, int32_t aStartOffset,
-                                         int32_t aEndOffset,
-                                         nsAString& aStr) override;
+  NS_IMETHOD AppendProcessingInstruction(
+      mozilla::dom::ProcessingInstruction* aPI, int32_t aStartOffset,
+      int32_t aEndOffset, nsAString& aStr) override;
 
-  NS_IMETHOD AppendComment(nsIContent* aComment, int32_t aStartOffset,
-                           int32_t aEndOffset, nsAString& aStr) override;
+  NS_IMETHOD AppendComment(mozilla::dom::Comment* aComment,
+                           int32_t aStartOffset, int32_t aEndOffset,
+                           nsAString& aStr) override;
 
-  NS_IMETHOD AppendDoctype(nsIContent* aDoctype, nsAString& aStr) override;
+  NS_IMETHOD AppendDoctype(mozilla::dom::DocumentType* aDoctype,
+                           nsAString& aStr) override;
 
   NS_IMETHOD AppendElementStart(mozilla::dom::Element* aElement,
                                 mozilla::dom::Element* aOriginalElement,
@@ -65,7 +67,7 @@ class nsXMLContentSerializer : public nsIContentSerializer {
 
   NS_IMETHOD Flush(nsAString& aStr) override { return NS_OK; }
 
-  NS_IMETHOD AppendDocumentStart(nsIDocument* aDocument,
+  NS_IMETHOD AppendDocumentStart(mozilla::dom::Document* aDocument,
                                  nsAString& aStr) override;
 
   NS_IMETHOD ScanElementForPreformat(mozilla::dom::Element* aElement) override {
@@ -153,6 +155,53 @@ class nsXMLContentSerializer : public nsIContentSerializer {
   MOZ_MUST_USE
   virtual bool AppendAndTranslateEntities(const nsAString& aStr,
                                           nsAString& aOutputStr);
+
+  /**
+   * Helper for virtual AppendAndTranslateEntities that does the actualy work.
+   *
+   * Do not call this directly.  Call it via the template helper below.
+   */
+ private:
+  MOZ_MUST_USE
+  static bool AppendAndTranslateEntities(const nsAString& aStr,
+                                         nsAString& aOutputStr,
+                                         const uint8_t aEntityTable[],
+                                         uint16_t aMaxTableIndex,
+                                         const char* const aStringTable[]);
+
+ protected:
+  /**
+   * Helper for calling AppendAndTranslateEntities in a way that guarantees we
+   * don't mess up our aEntityTable sizing.  This is a bit more complicated than
+   * it could be, becaue sometimes we don't want to use all of aEntityTable, so
+   * we have to allow passing the amount to use independently.  But we can
+   * statically ensure it's not too big.
+   *
+   * The first integer template argument, which callers need to specify
+   * explicitly, is the index of the last entry in aEntityTable that should be
+   * considered for encoding as an entity reference.  The second integer
+   * argument will be deduced from the actual table passed in.
+   *
+   * aEntityTable contains as values indices into aStringTable.  Those represent
+   * the strings that should be used to replace the characters that are used to
+   * index into aEntityTable.  aStringTable[0] should be nullptr, and characters
+   * that do not need replacement should map to 0 in aEntityTable.
+   */
+  template <uint16_t LargestIndex, uint16_t TableLength>
+  MOZ_MUST_USE bool AppendAndTranslateEntities(
+      const nsAString& aStr, nsAString& aOutputStr,
+      const uint8_t (&aEntityTable)[TableLength],
+      const char* const aStringTable[]) {
+    static_assert(LargestIndex < TableLength,
+                  "Largest allowed index must be smaller than table length");
+    return AppendAndTranslateEntities(aStr, aOutputStr, aEntityTable,
+                                      LargestIndex, aStringTable);
+  }
+
+  /**
+   * Max index that can be used with some of our entity tables.
+   */
+  static const uint16_t kGTVal = 62;
 
   /**
    * retrieve the text content of the node and append it to the given string
@@ -315,6 +364,8 @@ class nsXMLContentSerializer : public nsIContentSerializer {
     MOZ_ASSERT(ShouldMaintainPreLevel());
     return mPreLevel;
   }
+
+  bool MaybeSerializeIsValue(mozilla::dom::Element* aElement, nsAString& aStr);
 
   int32_t mPrefixIndex;
 

@@ -19,9 +19,9 @@ class TableRowsCollection;
 class HTMLTableElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLTableElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLTableElement, table)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLTableElement, table)
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -155,12 +155,10 @@ class HTMLTableElement final : public nsGenericHTMLElement {
       const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   /**
@@ -206,7 +204,7 @@ class HTMLTableElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

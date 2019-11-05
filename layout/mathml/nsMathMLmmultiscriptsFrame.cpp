@@ -5,12 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsMathMLmmultiscriptsFrame.h"
+
+#include "mozilla/PresShell.h"
 #include "nsPresContext.h"
 #include <algorithm>
 #include "gfxContext.h"
 #include "gfxMathTable.h"
 
-using mozilla::WritingMode;
+using namespace mozilla;
 
 //
 // <mmultiscripts> -- attach prescripts and tensor indices to a base -
@@ -19,9 +21,10 @@ using mozilla::WritingMode;
 // <msup> -- attach a superscript to a base - implementation
 //
 
-nsIFrame* NS_NewMathMLmmultiscriptsFrame(nsIPresShell* aPresShell,
-                                         nsStyleContext* aContext) {
-  return new (aPresShell) nsMathMLmmultiscriptsFrame(aContext);
+nsIFrame* NS_NewMathMLmmultiscriptsFrame(PresShell* aPresShell,
+                                         ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsMathMLmmultiscriptsFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMathMLmmultiscriptsFrame)
@@ -83,8 +86,10 @@ nsMathMLmmultiscriptsFrame::TransmitAutomaticData() {
   return NS_OK;
 }
 
-/* virtual */ nsresult nsMathMLmmultiscriptsFrame::Place(
-    DrawTarget* aDrawTarget, bool aPlaceOrigin, ReflowOutput& aDesiredSize) {
+/* virtual */
+nsresult nsMathMLmmultiscriptsFrame::Place(DrawTarget* aDrawTarget,
+                                           bool aPlaceOrigin,
+                                           ReflowOutput& aDesiredSize) {
   nscoord subScriptShift = 0;
   nscoord supScriptShift = 0;
   float fontSizeInflation = nsLayoutUtils::FontSizeInflationFor(this);
@@ -105,8 +110,8 @@ nsMathMLmmultiscriptsFrame::TransmitAutomaticData() {
     mContent->AsElement()->GetAttr(kNameSpaceID_None,
                                    nsGkAtoms::subscriptshift_, value);
     if (!value.IsEmpty()) {
-      ParseNumericValue(value, &subScriptShift, 0, PresContext(), mStyleContext,
-                        fontSizeInflation);
+      ParseNumericValue(value, &subScriptShift, 0, PresContext(),
+                        mComputedStyle, fontSizeInflation);
     }
   }
   // superscriptshift
@@ -124,8 +129,8 @@ nsMathMLmmultiscriptsFrame::TransmitAutomaticData() {
     mContent->AsElement()->GetAttr(kNameSpaceID_None,
                                    nsGkAtoms::superscriptshift_, value);
     if (!value.IsEmpty()) {
-      ParseNumericValue(value, &supScriptShift, 0, PresContext(), mStyleContext,
-                        fontSizeInflation);
+      ParseNumericValue(value, &supScriptShift, 0, PresContext(),
+                        mComputedStyle, fontSizeInflation);
     }
   }
   return PlaceMultiScript(PresContext(), aDrawTarget, aPlaceOrigin,

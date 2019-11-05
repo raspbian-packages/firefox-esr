@@ -18,20 +18,23 @@
 using namespace mozilla;
 
 #ifdef DEBUG
-#undef NOISY_MAX_ELEMENT_SIZE
-#undef REALLY_NOISY_MAX_ELEMENT_SIZE
-#undef NOISY_BLOCK_DIR_MARGINS
+#  undef NOISY_MAX_ELEMENT_SIZE
+#  undef REALLY_NOISY_MAX_ELEMENT_SIZE
+#  undef NOISY_BLOCK_DIR_MARGINS
 #else
-#undef NOISY_MAX_ELEMENT_SIZE
-#undef REALLY_NOISY_MAX_ELEMENT_SIZE
-#undef NOISY_BLOCK_DIR_MARGINS
+#  undef NOISY_MAX_ELEMENT_SIZE
+#  undef REALLY_NOISY_MAX_ELEMENT_SIZE
+#  undef NOISY_BLOCK_DIR_MARGINS
 #endif
 
 nsBlockReflowContext::nsBlockReflowContext(nsPresContext* aPresContext,
                                            const ReflowInput& aParentRI)
     : mPresContext(aPresContext),
       mOuterReflowInput(aParentRI),
+      mFrame(nullptr),
       mSpace(aParentRI.GetWritingMode()),
+      mICoord(0),
+      mBCoord(0),
       mMetrics(aParentRI) {}
 
 static nsIFrame* DescendIntoBlockLevelFrame(nsIFrame* aFrame) {
@@ -61,7 +64,7 @@ bool nsBlockReflowContext::ComputeCollapsedBStartMargin(
   // caller.
 
 #ifdef NOISY_BLOCKDIR_MARGINS
-  nsFrame::ListTag(stdout, aRI.mFrame);
+  aRI.mFrame->ListTag(stdout);
   printf(": %d => %d\n", aRI.ComputedLogicalMargin().BStart(wm),
          aMargin->get());
 #endif
@@ -78,7 +81,7 @@ bool nsBlockReflowContext::ComputeCollapsedBStartMargin(
   nsPresContext* prescontext = frame->PresContext();
   nsBlockFrame* block = nullptr;
   if (0 == aRI.ComputedLogicalBorderPadding().BStart(wm)) {
-    block = nsLayoutUtils::GetAsBlock(frame);
+    block = do_QueryFrame(frame);
     if (block) {
       bool bStartMarginRoot, unused;
       block->IsMarginRoot(&bStartMarginRoot, &unused);
@@ -141,12 +144,12 @@ bool nsBlockReflowContext::ComputeCollapsedBStartMargin(
           // generational collapse is required we need to compute the
           // child blocks margin and so in so that we can look into
           // it. For its margins to be computed we need to have a reflow
-          // state for it.
+          // input for it.
 
-          // We may have to construct an extra reflow state here if
+          // We may have to construct an extra reflow input here if
           // we drilled down through a block wrapper. At the moment
           // we can only drill down one level so we only have to support
-          // one extra reflow state.
+          // one extra reflow input.
           const ReflowInput* outerReflowInput = &aRI;
           if (frame != aRI.mFrame) {
             NS_ASSERTION(frame->GetParent() == aRI.mFrame,
@@ -208,7 +211,7 @@ done:
   }
 
 #ifdef NOISY_BLOCKDIR_MARGINS
-  nsFrame::ListTag(stdout, aRI.mFrame);
+  aRI.mFrame->ListTag(stdout);
   printf(": => %d\n", aMargin->get());
 #endif
 
@@ -233,9 +236,9 @@ void nsBlockReflowContext::ReflowBlock(
     mBStartMargin = aPrevMargin;
 
 #ifdef NOISY_BLOCKDIR_MARGINS
-    nsFrame::ListTag(stdout, mOuterReflowInput.mFrame);
+    mOuterReflowInput.mFrame->ListTag(stdout);
     printf(": reflowing ");
-    nsFrame::ListTag(stdout, mFrame);
+    mFrame->ListTag(stdout);
     printf(" margin => %d, clearance => %d\n", mBStartMargin.get(), aClearance);
 #endif
 
@@ -300,14 +303,14 @@ void nsBlockReflowContext::ReflowBlock(
          CRAZY_SIZE(mMetrics.BSize(mWritingMode))) &&
         !mFrame->GetParent()->IsCrazySizeAssertSuppressed()) {
       printf("nsBlockReflowContext: ");
-      nsFrame::ListTag(stdout, mFrame);
+      mFrame->ListTag(stdout);
       printf(" metrics=%d,%d!\n", mMetrics.ISize(mWritingMode),
              mMetrics.BSize(mWritingMode));
     }
     if ((mMetrics.ISize(mWritingMode) == nscoord(0xdeadbeef)) ||
         (mMetrics.BSize(mWritingMode) == nscoord(0xdeadbeef))) {
       printf("nsBlockReflowContext: ");
-      nsFrame::ListTag(stdout, mFrame);
+      mFrame->ListTag(stdout);
       printf(" didn't set i/b %d,%d!\n", mMetrics.ISize(mWritingMode),
              mMetrics.BSize(mWritingMode));
     }
@@ -379,9 +382,9 @@ bool nsBlockReflowContext::PlaceBlock(const ReflowInput& aReflowInput,
 
 #ifdef NOISY_BLOCKDIR_MARGINS
     printf("  ");
-    nsFrame::ListTag(stdout, mOuterReflowInput.mFrame);
+    mOuterReflowInput.mFrame->ListTag(stdout);
     printf(": ");
-    nsFrame::ListTag(stdout, mFrame);
+    mFrame->ListTag(stdout);
     printf(
         " -- collapsing block start & end margin together; BStart=%d "
         "spaceBStart=%d\n",

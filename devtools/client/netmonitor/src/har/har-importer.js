@@ -13,7 +13,7 @@ var guid = 0;
  * https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/HAR/Overview.html
  * http://www.softwareishard.com/blog/har-12-spec/
  */
-var HarImporter = function (actions) {
+var HarImporter = function(actions) {
   this.actions = actions;
 };
 
@@ -21,100 +21,108 @@ HarImporter.prototype = {
   /**
    * This is the main method used to import HAR data.
    */
-  import: function (har) {
-    let json = JSON.parse(har);
+  import: function(har) {
+    const json = JSON.parse(har);
     this.doImport(json);
   },
 
-  doImport: function (har) {
+  doImport: function(har) {
     this.actions.clearRequests();
 
     // Helper map for pages.
-    let pages = new Map();
+    const pages = new Map();
     har.log.pages.forEach(page => {
       pages.set(page.id, page);
     });
 
     // Iterate all entries/requests and generate state.
     har.log.entries.forEach(entry => {
-      let requestId = String(++guid);
-      let startedMillis = Date.parse(entry.startedDateTime);
+      const requestId = String(++guid);
+      const startedMillis = Date.parse(entry.startedDateTime);
 
       // Add request
-      this.actions.addRequest(requestId, {
-        startedMillis: startedMillis,
-        method: entry.request.method,
-        url: entry.request.url,
-        isXHR: false,
-        cause: {
-          loadingDocumentUri: "",
-          stackTraceAvailable: false,
-          type: "",
+      this.actions.addRequest(
+        requestId,
+        {
+          startedMillis: startedMillis,
+          method: entry.request.method,
+          url: entry.request.url,
+          isXHR: false,
+          cause: {
+            loadingDocumentUri: "",
+            stackTraceAvailable: false,
+            type: "",
+          },
+          fromCache: false,
+          fromServiceWorker: false,
         },
-        fromCache: false,
-        fromServiceWorker: false,
-      }, false);
+        false
+      );
 
       // Update request
-      this.actions.updateRequest(requestId, {
-        requestHeaders: {
-          headers: entry.request.headers,
-          headersSize: entry.request.headersSize,
-          rawHeaders: "",
-        },
-        responseHeaders: {
-          headers: entry.response.headers,
-          headersSize: entry.response.headersSize,
-          rawHeaders: "",
-        },
-        requestCookies: entry.request.cookies,
-        responseCookies: entry.response.cookies,
-        requestPostData: {
-          postData: entry.request.postData || {},
-          postDataDiscarded: false,
-        },
-        responseContent: {
-          content: entry.response.content,
-          contentDiscarded: false,
-        },
-        eventTimings: {
-          timings: entry.timings,
-        },
-        totalTime: TIMING_KEYS.reduce((sum, type) => {
-          let time = entry.timings[type];
-          return (time != -1) ? (sum + time) : sum;
-        }, 0),
+      this.actions.updateRequest(
+        requestId,
+        {
+          requestHeaders: {
+            headers: entry.request.headers,
+            headersSize: entry.request.headersSize,
+            rawHeaders: "",
+          },
+          responseHeaders: {
+            headers: entry.response.headers,
+            headersSize: entry.response.headersSize,
+            rawHeaders: "",
+          },
+          requestCookies: entry.request.cookies,
+          responseCookies: entry.response.cookies,
+          requestPostData: {
+            postData: entry.request.postData || {},
+            postDataDiscarded: false,
+          },
+          responseContent: {
+            content: entry.response.content,
+            contentDiscarded: false,
+          },
+          eventTimings: {
+            timings: entry.timings,
+          },
+          totalTime: TIMING_KEYS.reduce((sum, type) => {
+            const time = entry.timings[type];
+            return time != -1 ? sum + time : sum;
+          }, 0),
 
-        httpVersion: entry.request.httpVersion,
-        contentSize: entry.response.content.size,
-        mimeType: entry.response.content.mimeType,
-        remoteAddress: entry.serverIPAddress,
-        remotePort: entry.connection,
-        status: entry.response.status,
-        statusText: entry.response.statusText,
-        transferredSize: entry.response.bodySize,
-        securityState: entry._securityState,
+          httpVersion: entry.request.httpVersion,
+          contentSize: entry.response.content.size,
+          mimeType: entry.response.content.mimeType,
+          remoteAddress: entry.serverIPAddress,
+          remotePort: entry.connection,
+          status: entry.response.status,
+          statusText: entry.response.statusText,
+          transferredSize: entry.response.bodySize,
+          securityState: entry._securityState,
 
-        // Avoid auto-fetching data from the backend
-        eventTimingsAvailable: false,
-        requestCookiesAvailable: false,
-        requestHeadersAvailable: false,
-        responseContentAvailable: false,
-        responseStartAvailable: false,
-        responseCookiesAvailable: false,
-        responseHeadersAvailable: false,
-        securityInfoAvailable: false,
-        requestPostDataAvailable: false,
-      }, false);
+          // Avoid auto-fetching data from the backend
+          eventTimingsAvailable: false,
+          requestCookiesAvailable: false,
+          requestHeadersAvailable: false,
+          responseContentAvailable: false,
+          responseStartAvailable: false,
+          responseCookiesAvailable: false,
+          responseHeadersAvailable: false,
+          securityInfoAvailable: false,
+          requestPostDataAvailable: false,
+        },
+        false
+      );
 
       // Page timing markers
-      let pageTimings = pages.get(entry.pageref).pageTimings;
+      const pageTimings = pages.get(entry.pageref).pageTimings;
       let onContentLoad = pageTimings.onContentLoad || 0;
       let onLoad = pageTimings.onLoad || 0;
 
       // Set 0 as the default value
-      onContentLoad = (onContentLoad != -1) ? onContentLoad : 0;
-      onLoad = (onLoad != -1) ? onLoad : 0;
+      onContentLoad = onContentLoad != -1 ? onContentLoad : 0;
+      onLoad = onLoad != -1 ? onLoad : 0;
 
       // Add timing markers
       if (onContentLoad > 0) {

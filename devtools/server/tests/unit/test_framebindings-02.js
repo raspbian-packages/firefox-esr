@@ -11,26 +11,35 @@ var gDebuggee;
 var gClient;
 var gThreadClient;
 
+Services.prefs.setBoolPref("security.allow_eval_with_system_principal", true);
+
+registerCleanupFunction(() => {
+  Services.prefs.clearUserPref("security.allow_eval_with_system_principal");
+});
+
 function run_test() {
   initTestDebuggerServer();
   gDebuggee = addTestGlobal("test-stack");
   gClient = new DebuggerClient(DebuggerServer.connectPipe());
-  gClient.connect().then(function () {
-    attachTestTabAndResume(gClient, "test-stack",
-                           function (response, tabClient, threadClient) {
-                             gThreadClient = threadClient;
-                             test_pause_frame();
-                           });
+  gClient.connect().then(function() {
+    attachTestTabAndResume(gClient, "test-stack", function(
+      response,
+      targetFront,
+      threadClient
+    ) {
+      gThreadClient = threadClient;
+      test_pause_frame();
+    });
   });
   do_test_pending();
 }
 
 function test_pause_frame() {
-  gThreadClient.addOneTimeListener("paused", function (event, packet) {
+  gThreadClient.addOneTimeListener("paused", function(event, packet) {
     let parentEnv = packet.frame.environment.parent;
-    let bindings = parentEnv.bindings;
-    let args = bindings.arguments;
-    let vars = bindings.variables;
+    const bindings = parentEnv.bindings;
+    const args = bindings.arguments;
+    const vars = bindings.variables;
     Assert.notEqual(parentEnv, undefined);
     Assert.equal(args.length, 0);
     Assert.equal(vars.stopMe.value.type, "object");
@@ -40,13 +49,13 @@ function test_pause_frame() {
     // Skip the global lexical scope.
     parentEnv = parentEnv.parent.parent;
     Assert.notEqual(parentEnv, undefined);
-    let objClient = gThreadClient.pauseGrip(parentEnv.object);
-    objClient.getPrototypeAndProperties(function (response) {
+    const objClient = gThreadClient.pauseGrip(parentEnv.object);
+    objClient.getPrototypeAndProperties(function(response) {
       Assert.equal(response.ownProperties.Object.value.type, "object");
       Assert.equal(response.ownProperties.Object.value.class, "Function");
       Assert.ok(!!response.ownProperties.Object.value.actor);
 
-      gThreadClient.resume(function () {
+      gThreadClient.resume().then(function() {
         finishClient(gClient);
       });
     });

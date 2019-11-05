@@ -10,9 +10,12 @@ const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const { L10N } = require("../utils/l10n");
 
-loader.lazyGetter(this, "HarImporter", function () {
-  return require("../har/har-importer").HarImporter;
-});
+loader.lazyRequireGetter(
+  this,
+  "HarMenuUtils",
+  "devtools/client/netmonitor/src/har/har-menu-utils",
+  true
+);
 
 const { div } = dom;
 
@@ -65,53 +68,38 @@ class DropHarHandler extends Component {
     event.preventDefault();
     stopDragging(findDOMNode(this));
 
-    let files = event.dataTransfer.files;
+    const files = event.dataTransfer.files;
     if (!files) {
       return;
     }
+
+    const { actions, openSplitConsole } = this.props;
 
     // Import only the first dragged file for now
     // See also:
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1438792
     if (files.length) {
-      let file = files[0];
+      const file = files[0];
       readFile(file).then(har => {
         if (har) {
-          this.appendPreview(har);
+          HarMenuUtils.appendPreview(har, actions, openSplitConsole);
         }
       });
-    }
-  }
-
-  appendPreview(har) {
-    let {
-      openSplitConsole
-    } = this.props;
-
-    try {
-      let importer = new HarImporter(this.props.actions);
-      importer.import(har);
-    } catch (err) {
-      if (openSplitConsole) {
-        openSplitConsole("Error while processing HAR file: " + err.message);
-      }
     }
   }
 
   // Rendering
 
   render() {
-    return (
-      div({
+    return div(
+      {
         onDragEnter: this.onDragEnter,
         onDragOver: this.onDragOver,
         onDragExit: this.onDragExit,
-        onDrop: this.onDrop},
-        this.props.children,
-        div({className: "dropHarFiles"},
-          div({}, DROP_HAR_FILES)
-        )
-      )
+        onDrop: this.onDrop,
+      },
+      this.props.children,
+      div({ className: "dropHarFiles" }, div({}, DROP_HAR_FILES))
     );
   }
 }
@@ -120,7 +108,7 @@ class DropHarHandler extends Component {
 
 function readFile(file) {
   return new Promise(resolve => {
-    let fileReader = new FileReader();
+    const fileReader = new FileReader();
     fileReader.onloadend = () => {
       resolve(fileReader.result);
     };

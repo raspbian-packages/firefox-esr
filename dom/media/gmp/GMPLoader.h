@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,8 +12,8 @@
 #include "gmp-entrypoints.h"
 #include "mozilla/UniquePtr.h"
 
-#if defined(XP_MACOSX) && defined(MOZ_GMP_SANDBOX)
-#include "mozilla/Sandbox.h"
+#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
+#  include "mozilla/Sandbox.h"
 #endif
 
 namespace mozilla {
@@ -23,7 +23,7 @@ class SandboxStarter {
  public:
   virtual ~SandboxStarter() {}
   virtual bool Start(const char* aLibPath) = 0;
-#if defined(XP_MACOSX) && defined(MOZ_GMP_SANDBOX)
+#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
   // On OS X we need to set Mac-specific sandbox info just before we start the
   // sandbox, which we don't yet know when the GMPLoader and SandboxStarter
   // objects are created.
@@ -69,7 +69,7 @@ class GMPLoader {
   // plugin library.
   void Shutdown();
 
-#if defined(XP_MACOSX) && defined(MOZ_GMP_SANDBOX)
+#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
   // On OS X we need to set Mac-specific sandbox info just before we start the
   // sandbox, which we don't yet know when the GMPLoader and SandboxStarter
   // objects are created.

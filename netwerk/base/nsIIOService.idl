@@ -9,9 +9,10 @@ interface nsIProtocolHandler;
 interface nsIChannel;
 interface nsIURI;
 interface nsIFile;
-interface nsIDOMNode;
 interface nsIPrincipal;
 interface nsILoadInfo;
+
+webidl Node;
 
 %{C++
 #include "mozilla/Maybe.h"
@@ -36,7 +37,7 @@ class ServiceWorkerDescriptor;
  * as a convenience to the programmer and in some cases to improve performance
  * by eliminating intermediate data structures and interfaces.
  */
-[scriptable, uuid(4286de5a-b2ea-446f-8f70-e2a461f42694)]
+[scriptable, builtinclass, uuid(4286de5a-b2ea-446f-8f70-e2a461f42694)]
 interface nsIIOService : nsISupports
 {
     /**
@@ -100,16 +101,16 @@ interface nsIIOService : nsISupports
      * Keep in mind that URIs coming from a webpage should *never* use the
      * systemPrincipal as the loadingPrincipal.
      */
-    nsIChannel newChannelFromURI2(in nsIURI aURI,
-                                  in nsIDOMNode aLoadingNode,
-                                  in nsIPrincipal aLoadingPrincipal,
-                                  in nsIPrincipal aTriggeringPrincipal,
-                                  in unsigned long aSecurityFlags,
-                                  in unsigned long aContentPolicyType);
+    nsIChannel newChannelFromURI(in nsIURI aURI,
+                                 in Node aLoadingNode,
+                                 in nsIPrincipal aLoadingPrincipal,
+                                 in nsIPrincipal aTriggeringPrincipal,
+                                 in unsigned long aSecurityFlags,
+                                 in unsigned long aContentPolicyType);
 
     [noscript, nostdcall, notxpcom]
     nsresult NewChannelFromURIWithClientAndController(in nsIURI aURI,
-                                                      in nsIDOMNode aLoadingNode,
+                                                      in Node aLoadingNode,
                                                       in nsIPrincipal aLoadingPrincipal,
                                                       in nsIPrincipal aTriggeringPrincipal,
                                                       in const_MaybeClientInfoRef aLoadingClientInfo,
@@ -119,44 +120,22 @@ interface nsIIOService : nsISupports
                                                       out nsIChannel aResult);
 
     /**
-     * Equivalent to newChannelFromURI2(aURI, aLoadingNode, ...)
+     * Equivalent to newChannelFromURI(aURI, aLoadingNode, ...)
      */
     nsIChannel newChannelFromURIWithLoadInfo(in nsIURI aURI,
                                              in nsILoadInfo aLoadInfo);
 
     /**
-     * Equivalent to newChannelFromURI2(newURI(...))
-     */
-    nsIChannel newChannel2(in AUTF8String aSpec,
-                           in string aOriginCharset,
-                           in nsIURI aBaseURI,
-                           in nsIDOMNode aLoadingNode,
-                           in nsIPrincipal aLoadingPrincipal,
-                           in nsIPrincipal aTriggeringPrincipal,
-                           in unsigned long aSecurityFlags,
-                           in unsigned long aContentPolicyType);
-
-    /**
-     * ***** DEPRECATED *****
-     * Please use NewChannelFromURI2()
-     *
-     * Creates a channel for a given URI.
-     *
-     * @param aURI nsIURI from which to make a channel
-     * @return reference to the new nsIChannel object
-     */
-    nsIChannel newChannelFromURI(in nsIURI aURI);
-
-    /**
-     * ***** DEPRECATED *****
-     * Please use newChannel2().
-     *
      * Equivalent to newChannelFromURI(newURI(...))
      */
     nsIChannel newChannel(in AUTF8String aSpec,
                           in string aOriginCharset,
-                          in nsIURI aBaseURI);
-
+                          in nsIURI aBaseURI,
+                          in Node aLoadingNode,
+                          in nsIPrincipal aLoadingPrincipal,
+                          in nsIPrincipal aTriggeringPrincipal,
+                          in unsigned long aSecurityFlags,
+                          in unsigned long aContentPolicyType);
 
     /**
      * Returns true if networking is in "offline" mode. When in offline mode, 
@@ -247,14 +226,14 @@ interface nsIIOService : nsISupports
      * then loadingPrincipal must be equal to loadingNode->NodePrincipal().
      * But less error prone is to just supply a loadingNode.
      */
-    nsIChannel newChannelFromURIWithProxyFlags2(in nsIURI aURI,
-                                                in nsIURI aProxyURI,
-                                                in unsigned long aProxyFlags,
-                                                in nsIDOMNode aLoadingNode,
-                                                in nsIPrincipal aLoadingPrincipal,
-                                                in nsIPrincipal aTriggeringPrincipal,
-                                                in unsigned long aSecurityFlags,
-                                                in unsigned long aContentPolicyType);
+    nsIChannel newChannelFromURIWithProxyFlags(in nsIURI aURI,
+                                               in nsIURI aProxyURI,
+                                               in unsigned long aProxyFlags,
+                                               in Node aLoadingNode,
+                                               in nsIPrincipal aLoadingPrincipal,
+                                               in nsIPrincipal aTriggeringPrincipal,
+                                               in unsigned long aSecurityFlags,
+                                               in unsigned long aContentPolicyType);
 };
 
 %{C++

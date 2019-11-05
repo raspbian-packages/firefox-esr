@@ -60,10 +60,10 @@ gfx::IntSize SizeFromBufferDescriptor(const BufferDescriptor& aDescriptor);
 Maybe<gfx::IntSize> CbCrSizeFromBufferDescriptor(
     const BufferDescriptor& aDescriptor);
 
-Maybe<YUVColorSpace> YUVColorSpaceFromBufferDescriptor(
+Maybe<gfx::YUVColorSpace> YUVColorSpaceFromBufferDescriptor(
     const BufferDescriptor& aDescriptor);
 
-Maybe<uint32_t> BitDepthFromBufferDescriptor(
+Maybe<gfx::ColorDepth> ColorDepthFromBufferDescriptor(
     const BufferDescriptor& aDescriptor);
 
 Maybe<StereoMode> StereoModeFromBufferDescriptor(

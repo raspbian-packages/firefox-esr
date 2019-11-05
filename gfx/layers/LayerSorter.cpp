@@ -81,9 +81,9 @@ static gfxFloat RecoverZDepth(const Matrix4x4& aTransform,
  */
 static LayerSortOrder CompareDepth(Layer* aOne, Layer* aTwo) {
   gfxRect ourRect =
-      ThebesRect(aOne->GetLocalVisibleRegion().ToUnknownRegion().GetBounds());
+      ThebesRect(aOne->GetLocalVisibleRegion().GetBounds().ToUnknownRect());
   gfxRect otherRect =
-      ThebesRect(aTwo->GetLocalVisibleRegion().ToUnknownRegion().GetBounds());
+      ThebesRect(aTwo->GetLocalVisibleRegion().GetBounds().ToUnknownRect());
 
   MOZ_ASSERT(aOne->GetParent() && aOne->GetParent()->Extend3DContext() &&
              aTwo->GetParent() && aTwo->GetParent()->Extend3DContext());
@@ -162,7 +162,7 @@ static LayerSortOrder CompareDepth(Layer* aOne, Layer* aTwo) {
 
 #ifdef DEBUG
 // #define USE_XTERM_COLORING
-#ifdef USE_XTERM_COLORING
+#  ifdef USE_XTERM_COLORING
 // List of color values, which can be added to the xterm foreground offset or
 // background offset to generate a xterm color code.
 // NOTE: The colors that we don't explicitly use (by name) are commented out,
@@ -201,7 +201,7 @@ static void print_layer_internal(FILE* aFile, Layer* aLayer, uint32_t aColor) {
   fprintf(aFile, "%p", aLayer);
   SetTextColor(GREEN);
 }
-#else
+#  else
 
 const char* colors[] = {"Black", "Red",     "Green", "Yellow",
                         "Blue",  "Magenta", "Cyan",  "White"};
@@ -209,7 +209,7 @@ const char* colors[] = {"Black", "Red",     "Green", "Yellow",
 static void print_layer_internal(FILE* aFile, Layer* aLayer, uint32_t aColor) {
   fprintf(aFile, "%p(%s)", aLayer, colors[aColor]);
 }
-#endif
+#  endif
 
 static void print_layer(FILE* aFile, Layer* aLayer) {
   print_layer_internal(aFile, aLayer, aLayer->GetDebugColorIndex());

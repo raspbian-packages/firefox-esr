@@ -6,8 +6,8 @@
 
 /* The privileged system principal. */
 
-#ifndef SystemPrincipal_h
-#define SystemPrincipal_h
+#ifndef mozilla_SystemPrincipal_h
+#define mozilla_SystemPrincipal_h
 
 #include "nsIPrincipal.h"
 #include "nsJSPrincipals.h"
@@ -22,7 +22,9 @@
   }
 #define NS_SYSTEMPRINCIPAL_CONTRACTID "@mozilla.org/systemprincipal;1"
 
-class SystemPrincipal final : public mozilla::BasePrincipal {
+namespace mozilla {
+
+class SystemPrincipal final : public BasePrincipal {
   SystemPrincipal() : BasePrincipal(eSystemPrincipal) {}
 
  public:
@@ -32,21 +34,26 @@ class SystemPrincipal final : public mozilla::BasePrincipal {
 
   NS_DECL_NSISERIALIZABLE
   NS_IMETHOD QueryInterface(REFNSIID aIID, void** aInstancePtr) override;
-  NS_IMETHOD GetHashValue(uint32_t* aHashValue) override;
+  uint32_t GetHashValue() override;
   NS_IMETHOD GetURI(nsIURI** aURI) override;
   NS_IMETHOD GetDomain(nsIURI** aDomain) override;
   NS_IMETHOD SetDomain(nsIURI* aDomain) override;
   NS_IMETHOD GetCsp(nsIContentSecurityPolicy** aCsp) override;
   NS_IMETHOD SetCsp(nsIContentSecurityPolicy* aCsp) override;
-  NS_IMETHOD EnsureCSP(nsIDOMDocument* aDocument,
+  NS_IMETHOD EnsureCSP(dom::Document* aDocument,
                        nsIContentSecurityPolicy** aCSP) override;
   NS_IMETHOD GetPreloadCsp(nsIContentSecurityPolicy** aPreloadCSP) override;
-  NS_IMETHOD EnsurePreloadCSP(nsIDOMDocument* aDocument,
+  NS_IMETHOD EnsurePreloadCSP(dom::Document* aDocument,
                               nsIContentSecurityPolicy** aCSP) override;
   NS_IMETHOD GetBaseDomain(nsACString& aBaseDomain) override;
   NS_IMETHOD GetAddonId(nsAString& aAddonId) override;
 
   virtual nsresult GetScriptLocation(nsACString& aStr) override;
+
+  nsresult GetSiteIdentifier(SiteIdentifier& aSite) override {
+    aSite.Init(this);
+    return NS_OK;
+  }
 
  protected:
   virtual ~SystemPrincipal(void) {}
@@ -59,4 +66,6 @@ class SystemPrincipal final : public mozilla::BasePrincipal {
   bool MayLoadInternal(nsIURI* aURI) override { return true; }
 };
 
-#endif  // SystemPrincipal_h
+}  // namespace mozilla
+
+#endif  // mozilla_SystemPrincipal_h

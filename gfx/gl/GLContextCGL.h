@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,7 +12,7 @@
 #include "OpenGL/OpenGL.h"
 
 #ifdef __OBJC__
-#include <AppKit/NSOpenGL.h>
+#  include <AppKit/NSOpenGL.h>
 #else
 typedef void NSOpenGLContext;
 #endif
@@ -41,8 +41,6 @@ class GLContextCGL : public GLContext {
     return static_cast<GLContextCGL*>(gl);
   }
 
-  bool Init() override;
-
   NSOpenGLContext* GetNSOpenGLContext() const { return mContext; }
   CGLContextObj GetCGLContext() const;
 
@@ -52,13 +50,13 @@ class GLContextCGL : public GLContext {
 
   virtual GLenum GetPreferredARGB32Format() const override;
 
-  virtual bool SetupLookupFunction() override;
-
   virtual bool IsDoubleBuffered() const override;
 
   virtual bool SwapBuffers() override;
 
   virtual void GetWSIInfo(nsCString* const out) const override;
+
+  Maybe<SymbolLoader> GetSymbolLoader() const override;
 };
 
 }  // namespace gl

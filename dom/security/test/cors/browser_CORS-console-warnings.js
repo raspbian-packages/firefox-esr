@@ -5,12 +5,12 @@
  *   This test uses the same tests as the plain mochitest, but needs access to
  *   the console.
  */
-'use strict';
+"use strict";
 
 function console_observer(subject, topic, data) {
   var message = subject.wrappedJSObject.arguments[0];
   ok(false, message);
-};
+}
 
 var webconsole = null;
 var messages_seen = 0;
@@ -20,18 +20,18 @@ function on_new_message(new_messages) {
   for (let message of new_messages) {
     let elem = message.node;
     let text = elem.textContent;
-    if (text.match('Cross-Origin Request Blocked:')) {
+    if (text.match("Cross-Origin Request Blocked:")) {
       ok(true, "message is: " + text);
       messages_seen++;
     }
   }
 }
 
-function* do_cleanup() {
+async function do_cleanup() {
   if (webconsole) {
     webconsole.ui.off("new-messages", on_new_message);
   }
-  yield unsetCookiePref();
+  await unsetCookiePref();
 }
 
 /**
@@ -41,11 +41,13 @@ function* do_cleanup() {
 function setCookiePref() {
   return new Promise(resolve =>
     // accept all cookies so that the CORS requests will send the right cookies
-    SpecialPowers.pushPrefEnv({
-      set: [
-        ["network.cookie.cookieBehavior", 0],
-      ]
-    }, resolve));
+    SpecialPowers.pushPrefEnv(
+      {
+        set: [["network.cookie.cookieBehavior", 0]],
+      },
+      resolve
+    )
+  );
 }
 
 /**
@@ -59,19 +61,23 @@ function unsetCookiePref() {
 }
 
 //jscs:disable
-add_task(function*() {
+add_task(async function() {
   //jscs:enable
   // A longer timeout is necessary for this test than the plain mochitests
   // due to opening a new tab with the web console.
   requestLongerTimeout(4);
   registerCleanupFunction(do_cleanup);
-  yield setCookiePref();
+  await setCookiePref();
 
-  let test_uri = "http://mochi.test:8888/browser/dom/security/test/cors/file_cors_logging_test.html";
+  let test_uri =
+    "http://mochi.test:8888/browser/dom/security/test/cors/file_cors_logging_test.html";
 
-  let tab = yield BrowserTestUtils.openNewForegroundTab(gBrowser, "about:blank");
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "about:blank"
+  );
 
-  let toolbox = yield openToolboxForTab(tab, "webconsole");
+  let toolbox = await openToolboxForTab(tab, "webconsole");
   ok(toolbox, "Got toolbox");
   let hud = toolbox.getCurrentPanel().hud;
   ok(hud, "Got hud");
@@ -84,10 +90,26 @@ add_task(function*() {
 
   BrowserTestUtils.loadURI(gBrowser, test_uri);
 
-  yield BrowserTestUtils.waitForLocationChange(gBrowser, test_uri+"#finished");
+  await BrowserTestUtils.waitForLocationChange(
+    gBrowser,
+    test_uri + "#finished"
+  );
 
   // Different OS combinations
   ok(messages_seen > 0, "Saw " + messages_seen + " messages.");
 
-  yield BrowserTestUtils.removeTab(tab);
+  messages_seen = 0;
+  let test_two_uri =
+    "http://mochi.test:8888/browser/dom/security/test/cors/file_bug1456721.html";
+  BrowserTestUtils.loadURI(gBrowser, test_two_uri);
+
+  await BrowserTestUtils.waitForLocationChange(
+    gBrowser,
+    test_two_uri + "#finishedTestTwo"
+  );
+  await BrowserTestUtils.waitForCondition(() => messages_seen > 0);
+
+  ok(messages_seen > 0, "Saw " + messages_seen + " messages.");
+
+  BrowserTestUtils.removeTab(tab);
 });

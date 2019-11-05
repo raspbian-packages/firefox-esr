@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,7 +12,7 @@
 #include "WindowSurfaceX11SHM.h"
 #include "WindowSurfaceXRender.h"
 #ifdef MOZ_WAYLAND
-#include "WindowSurfaceWayland.h"
+#  include "WindowSurfaceWayland.h"
 #endif
 
 namespace mozilla {
@@ -32,11 +32,13 @@ WindowSurfaceProvider::WindowSurfaceProvider()
       ,
       mWidget(nullptr)
 #endif
-{
+      ,
+      mIsShaped(false) {
 }
 
 void WindowSurfaceProvider::Initialize(Display* aDisplay, Window aWindow,
-                                       Visual* aVisual, int aDepth) {
+                                       Visual* aVisual, int aDepth,
+                                       bool aIsShaped) {
   // We should not be initialized
   MOZ_ASSERT(!mXDisplay);
 
@@ -47,14 +49,12 @@ void WindowSurfaceProvider::Initialize(Display* aDisplay, Window aWindow,
   mXWindow = aWindow;
   mXVisual = aVisual;
   mXDepth = aDepth;
+  mIsShaped = aIsShaped;
   mIsX11Display = true;
 }
 
 #ifdef MOZ_WAYLAND
 void WindowSurfaceProvider::Initialize(nsWindow* aWidget) {
-  MOZ_ASSERT(aWidget->GetWaylandDisplay(),
-             "We are supposed to have a Wayland display!");
-
   mWidget = aWidget;
   mIsX11Display = false;
 }
@@ -79,7 +79,7 @@ UniquePtr<WindowSurface> WindowSurfaceProvider::CreateWindowSurface() {
   // 3. XPutImage
 
 #ifdef MOZ_WIDGET_GTK
-  if (gfxVars::UseXRender()) {
+  if (!mIsShaped && gfxVars::UseXRender()) {
     LOGDRAW(("Drawing to nsWindow %p using XRender\n", (void*)this));
     return MakeUnique<WindowSurfaceXRender>(mXDisplay, mXWindow, mXVisual,
                                             mXDepth);
@@ -87,7 +87,7 @@ UniquePtr<WindowSurface> WindowSurfaceProvider::CreateWindowSurface() {
 #endif  // MOZ_WIDGET_GTK
 
 #ifdef MOZ_HAVE_SHMIMAGE
-  if (nsShmImage::UseShm()) {
+  if (!mIsShaped && nsShmImage::UseShm()) {
     LOGDRAW(("Drawing to nsWindow %p using MIT-SHM\n", (void*)this));
     return MakeUnique<WindowSurfaceX11SHM>(mXDisplay, mXWindow, mXVisual,
                                            mXDepth);
@@ -96,7 +96,7 @@ UniquePtr<WindowSurface> WindowSurfaceProvider::CreateWindowSurface() {
 
   LOGDRAW(("Drawing to nsWindow %p using XPutImage\n", (void*)this));
   return MakeUnique<WindowSurfaceX11Image>(mXDisplay, mXWindow, mXVisual,
-                                           mXDepth);
+                                           mXDepth, mIsShaped);
 }
 
 already_AddRefed<gfx::DrawTarget>
@@ -117,8 +117,8 @@ WindowSurfaceProvider::StartRemoteDrawingInRegion(
     // Lock() call on WindowSurfaceWayland should never fail.
     gfxWarningOnce()
         << "Failed to lock WindowSurface, falling back to XPutImage backend.";
-    mWindowSurface = MakeUnique<WindowSurfaceX11Image>(mXDisplay, mXWindow,
-                                                       mXVisual, mXDepth);
+    mWindowSurface = MakeUnique<WindowSurfaceX11Image>(
+        mXDisplay, mXWindow, mXVisual, mXDepth, mIsShaped);
     dt = mWindowSurface->Lock(aInvalidRegion);
   }
   return dt.forget();

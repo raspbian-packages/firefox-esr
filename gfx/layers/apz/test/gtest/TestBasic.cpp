@@ -58,8 +58,8 @@ TEST_F(APZCBasicTester, ComplexTransform) {
   // CSS pixels). The displayport is 1 extra CSS pixel on all
   // sides.
 
-  RefPtr<TestAsyncPanZoomController> childApzc =
-      new TestAsyncPanZoomController(0, mcc, tm);
+  RefPtr<TestAsyncPanZoomController> childApzc = new TestAsyncPanZoomController(
+      LayersId{0}, mcc, tm, wr::RenderRoot::Default);
 
   const char* layerTreeSyntax = "c(c)";
   // LayerID                     0 1
@@ -93,11 +93,11 @@ TEST_F(APZCBasicTester, ComplexTransform) {
   metrics.SetPresShellResolution(2.0f);
   metrics.SetZoom(CSSToParentLayerScale2D(6, 6));
   metrics.SetDevPixelsPerCSSPixel(CSSToLayoutDeviceScale(3));
-  metrics.SetScrollId(FrameMetrics::START_SCROLL_ID);
+  metrics.SetScrollId(ScrollableLayerGuid::START_SCROLL_ID);
 
   ScrollMetadata childMetadata = metadata;
   FrameMetrics& childMetrics = childMetadata.GetMetrics();
-  childMetrics.SetScrollId(FrameMetrics::START_SCROLL_ID + 1);
+  childMetrics.SetScrollId(ScrollableLayerGuid::START_SCROLL_ID + 1);
 
   layers[0]->SetScrollMetadata(metadata);
   layers[1]->SetScrollMetadata(childMetadata);
@@ -185,7 +185,7 @@ TEST_F(APZCBasicTester, FlingIntoOverscroll) {
   SCOPED_GFX_PREF(APZFlingMinVelocityThreshold, float, 0.0f);
 
   // Scroll down by 25 px. Don't fling for simplicity.
-  ApzcPanNoFling(apzc, 50, 25);
+  Pan(apzc, 50, 25, PanOptions::NoFling);
 
   // Now scroll back up by 20px, this time flinging after.
   // The fling should cover the remaining 5 px of room to scroll, then
@@ -270,7 +270,7 @@ TEST_F(APZCBasicTester, PanningTransformNotifications) {
   }
 
   check.Call("Simple pan");
-  ApzcPanNoFling(apzc, 50, 25);
+  Pan(apzc, 50, 25, PanOptions::NoFling);
   check.Call("Complex pan");
   Pan(apzc, 25, 45);
   apzc->AdvanceAnimationsUntilEnd();

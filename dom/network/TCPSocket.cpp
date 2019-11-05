@@ -79,7 +79,7 @@ already_AddRefed<TCPServerSocket> LegacyMozTCPSocket::Listen(
 bool LegacyMozTCPSocket::WrapObject(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto,
                                     JS::MutableHandle<JSObject*> aReflector) {
-  return LegacyMozTCPSocketBinding::Wrap(aCx, this, aGivenProto, aReflector);
+  return LegacyMozTCPSocket_Binding::Wrap(aCx, this, aGivenProto, aReflector);
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(TCPSocket)
@@ -319,13 +319,10 @@ class CopierCallbacks final : public nsIRequestObserver {
 NS_IMPL_ISUPPORTS(CopierCallbacks, nsIRequestObserver)
 
 NS_IMETHODIMP
-CopierCallbacks::OnStartRequest(nsIRequest* aRequest, nsISupports* aContext) {
-  return NS_OK;
-}
+CopierCallbacks::OnStartRequest(nsIRequest* aRequest) { return NS_OK; }
 
 NS_IMETHODIMP
-CopierCallbacks::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
-                               nsresult aStatus) {
+CopierCallbacks::OnStopRequest(nsIRequest* aRequest, nsresult aStatus) {
   mOwner->NotifyCopyComplete(aStatus);
   mOwner = nullptr;
   return NS_OK;
@@ -389,7 +386,7 @@ void TCPSocket::NotifyCopyComplete(nsresult aStatus) {
   }
   mBufferedAmount = bufferedAmount;
 
-  if (mSocketBridgeParent) {
+  if (mSocketBridgeParent && mSocketBridgeParent->IPCOpen()) {
     mozilla::Unused << mSocketBridgeParent->SendUpdateBufferedAmount(
         BufferedAmount(), mTrackingNumber);
   }
@@ -464,8 +461,7 @@ TCPSocket::FireErrorEvent(const nsAString& aName, const nsAString& aType) {
       TCPSocketErrorEvent::Constructor(this, NS_LITERAL_STRING("error"), init);
   MOZ_ASSERT(event);
   event->SetTrusted(true);
-  bool dummy;
-  DispatchEvent(event, &dummy);
+  DispatchEvent(*event);
   return NS_OK;
 }
 
@@ -529,14 +525,13 @@ nsresult TCPSocket::FireDataEvent(JSContext* aCx, const nsAString& aType,
 
   RefPtr<TCPSocketEvent> event = TCPSocketEvent::Constructor(this, aType, init);
   event->SetTrusted(true);
-  bool dummy;
-  DispatchEvent(event, &dummy);
+  DispatchEvent(*event);
   return NS_OK;
 }
 
 JSObject* TCPSocket::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return TCPSocketBinding::Wrap(aCx, this, aGivenProto);
+  return TCPSocket_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void TCPSocket::GetHost(nsAString& aHost) { aHost.Assign(mHost); }
@@ -795,12 +790,10 @@ bool TCPSocket::Send(JSContext* aCx, const ArrayBuffer& aData,
       return false;
     }
   } else {
-    JS::Rooted<JSObject*> obj(aCx, aData.Obj());
-    JSAutoCompartment ac(aCx, obj);
-    JS::Rooted<JS::Value> value(aCx, JS::ObjectValue(*obj));
+    JS::Rooted<JS::Value> value(aCx, JS::ObjectValue(*aData.Obj()));
 
     stream = do_CreateInstance("@mozilla.org/io/arraybuffer-input-stream;1");
-    nsresult rv = stream->SetData(value, aByteOffset, byteLength, aCx);
+    nsresult rv = stream->SetData(value, aByteOffset, byteLength);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       aRv.Throw(rv);
       return false;
@@ -936,14 +929,11 @@ TCPSocket::OnInputStreamReady(nsIAsyncInputStream* aStream) {
 }
 
 NS_IMETHODIMP
-TCPSocket::OnStartRequest(nsIRequest* aRequest, nsISupports* aContext) {
-  return NS_OK;
-}
+TCPSocket::OnStartRequest(nsIRequest* aRequest) { return NS_OK; }
 
 NS_IMETHODIMP
-TCPSocket::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
-                           nsIInputStream* aStream, uint64_t aOffset,
-                           uint32_t aCount) {
+TCPSocket::OnDataAvailable(nsIRequest* aRequest, nsIInputStream* aStream,
+                           uint64_t aOffset, uint32_t aCount) {
   if (mUseArrayBuffers) {
     nsTArray<uint8_t> buffer;
     buffer.SetCapacity(aCount);
@@ -998,8 +988,7 @@ TCPSocket::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
 }
 
 NS_IMETHODIMP
-TCPSocket::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
-                         nsresult aStatus) {
+TCPSocket::OnStopRequest(nsIRequest* aRequest, nsresult aStatus) {
   mInputStreamPump = nullptr;
 
   if (mAsyncCopierActive && NS_SUCCEEDED(aStatus)) {
@@ -1017,6 +1006,8 @@ TCPSocket::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
 }
 
 void TCPSocket::SetSocketBridgeParent(TCPSocketParent* aBridgeParent) {
+  MOZ_ASSERT(NS_IsMainThread());
+
   mSocketBridgeParent = aBridgeParent;
 }
 

@@ -85,6 +85,7 @@ struct NrIceCandidate {
   std::string codeword;
   std::string label;
   bool trickled;
+  uint32_t priority;
 };
 
 struct NrIceCandidatePair {
@@ -125,59 +126,60 @@ struct NrIceCandidatePair {
 
 class NrIceMediaStream {
  public:
-  static RefPtr<NrIceMediaStream> Create(NrIceCtx *ctx, const std::string &name,
-                                         int components);
+  NrIceMediaStream(NrIceCtx* ctx, const std::string& id,
+                   const std::string& name, size_t components);
+
+  nsresult SetIceCredentials(const std::string& ufrag, const std::string& pwd);
+  nsresult ConnectToPeer(const std::string& ufrag, const std::string& pwd,
+                         const std::vector<std::string>& peer_attrs);
   enum State { ICE_CONNECTING, ICE_OPEN, ICE_CLOSED };
 
   State state() const { return state_; }
 
   // The name of the stream
-  const std::string &name() const { return name_; }
+  const std::string& name() const { return name_; }
 
-  // Get all the candidates
-  std::vector<std::string> GetCandidates() const;
+  // Get all the ICE attributes; used for testing
+  std::vector<std::string> GetAttributes() const;
 
-  nsresult GetLocalCandidates(std::vector<NrIceCandidate> *candidates) const;
-  nsresult GetRemoteCandidates(std::vector<NrIceCandidate> *candidates) const;
+  nsresult GetLocalCandidates(std::vector<NrIceCandidate>* candidates) const;
+  nsresult GetRemoteCandidates(std::vector<NrIceCandidate>* candidates) const;
 
   // Get all candidate pairs, whether in the check list or triggered check
   // queue, in priority order. |out_pairs| is cleared before being filled.
-  nsresult GetCandidatePairs(std::vector<NrIceCandidatePair> *out_pairs) const;
+  nsresult GetCandidatePairs(std::vector<NrIceCandidatePair>* out_pairs) const;
 
-  nsresult GetDefaultCandidate(int component, NrIceCandidate *candidate) const;
-
-  // Parse remote attributes
-  nsresult ParseAttributes(std::vector<std::string> &candidates);
-  bool HasParsedAttributes() const { return has_parsed_attrs_; }
+  nsresult GetDefaultCandidate(int component, NrIceCandidate* candidate) const;
 
   // Parse trickle ICE candidate
-  nsresult ParseTrickleCandidate(const std::string &candidate);
+  nsresult ParseTrickleCandidate(const std::string& candidate,
+                                 const std::string& ufrag);
 
   // Disable a component
   nsresult DisableComponent(int component);
 
   // Get the candidate pair currently active. It's the
   // caller's responsibility to free these.
-  nsresult GetActivePair(int component, UniquePtr<NrIceCandidate> *local,
-                         UniquePtr<NrIceCandidate> *remote);
+  nsresult GetActivePair(int component, UniquePtr<NrIceCandidate>* local,
+                         UniquePtr<NrIceCandidate>* remote);
 
   // Get the current ICE consent send status plus the timeval of the last
   // consent update time.
-  nsresult GetConsentStatus(int component, bool *can_send, struct timeval *ts);
+  nsresult GetConsentStatus(int component, bool* can_send, struct timeval* ts);
 
   // The number of components
   size_t components() const { return components_; }
 
-  // The underlying nICEr stream
-  nr_ice_media_stream *stream() { return stream_; }
+  bool HasStream(nr_ice_media_stream* stream) const;
   // Signals to indicate events. API users can (and should)
   // register for these.
 
   // Send a packet
-  nsresult SendPacket(int component_id, const unsigned char *data, size_t len);
+  nsresult SendPacket(int component_id, const unsigned char* data, size_t len);
 
   // Set your state to ready. Called by the NrIceCtx;
   void Ready();
+  void Failed();
 
   // Close the stream. Called by the NrIceCtx.
   // Different from the destructor because other people
@@ -185,37 +187,37 @@ class NrIceMediaStream {
   // the context has been destroyed.
   void Close();
 
-  // So the receiver of SignalCandidate can determine which level
-  // (ie; m-line index) the candidate belongs to.
-  void SetLevel(uint16_t level) { level_ = level; }
+  // So the receiver of SignalCandidate can determine which transport
+  // the candidate belongs to.
+  const std::string& GetId() const { return id_; }
 
-  uint16_t GetLevel() const { return level_; }
-
-  sigslot::signal2<NrIceMediaStream *, const std::string &>
+  sigslot::signal3<NrIceMediaStream*, const std::string&, const std::string&>
       SignalCandidate;  // A new ICE candidate:
 
-  sigslot::signal1<NrIceMediaStream *> SignalReady;   // Candidate pair ready.
-  sigslot::signal1<NrIceMediaStream *> SignalFailed;  // Candidate pair failed.
-  sigslot::signal4<NrIceMediaStream *, int, const unsigned char *, int>
+  sigslot::signal1<NrIceMediaStream*> SignalReady;   // Candidate pair ready.
+  sigslot::signal1<NrIceMediaStream*> SignalFailed;  // Candidate pair failed.
+  sigslot::signal4<NrIceMediaStream*, int, const unsigned char*, int>
       SignalPacketReceived;  // Incoming packet
 
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(NrIceMediaStream)
 
  private:
-  NrIceMediaStream(NrIceCtx *ctx, const std::string &name, size_t components);
-
   ~NrIceMediaStream();
 
   DISALLOW_COPY_ASSIGN(NrIceMediaStream);
 
+  void CloseStream(nr_ice_media_stream** stream);
+  void DeferredCloseOldStream(const nr_ice_media_stream* old);
+  nr_ice_media_stream* GetStreamForRemoteUfrag(const std::string& ufrag);
+
   State state_;
-  nr_ice_ctx *ctx_;
-  nr_ice_peer_ctx *ctx_peer_;
+  nr_ice_ctx* ctx_;
+  nr_ice_peer_ctx* ctx_peer_;
   const std::string name_;
   const size_t components_;
-  nr_ice_media_stream *stream_;
-  uint16_t level_;
-  bool has_parsed_attrs_;
+  nr_ice_media_stream* stream_;
+  nr_ice_media_stream* old_stream_;
+  const std::string id_;
 };
 
 }  // namespace mozilla

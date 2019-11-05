@@ -15,34 +15,35 @@ using namespace mozilla::dom;
 nsresult NS_NewXMLElement(
     Element** aInstancePtrResult,
     already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo) {
-  nsXMLElement* it = new nsXMLElement(aNodeInfo);
-  NS_ADDREF(*aInstancePtrResult = it);
+  RefPtr<nsXMLElement> it = new nsXMLElement(std::move(aNodeInfo));
+  it.forget(aInstancePtrResult);
   return NS_OK;
 }
 
-NS_IMPL_ISUPPORTS_INHERITED(nsXMLElement, Element, nsIDOMNode, nsIDOMElement)
-
 JSObject* nsXMLElement::WrapNode(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return ElementBinding::Wrap(aCx, this, aGivenProto);
+  return Element_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void nsXMLElement::UnbindFromTree(bool aDeep, bool aNullParent) {
-  CSSPseudoElementType pseudoType = GetPseudoElementType();
-  bool isBefore = pseudoType == CSSPseudoElementType::before;
-  nsAtom* property = isBefore ? nsGkAtoms::beforePseudoProperty
-                              : nsGkAtoms::afterPseudoProperty;
-
-  switch (pseudoType) {
-    case CSSPseudoElementType::before:
-    case CSSPseudoElementType::after: {
-      MOZ_ASSERT(GetParent());
-      MOZ_ASSERT(GetParent()->IsElement());
-      GetParent()->DeleteProperty(property);
+  nsAtom* property;
+  switch (GetPseudoElementType()) {
+    case PseudoStyleType::marker:
+      property = nsGkAtoms::markerPseudoProperty;
       break;
-    }
+    case PseudoStyleType::before:
+      property = nsGkAtoms::beforePseudoProperty;
+      break;
+    case PseudoStyleType::after:
+      property = nsGkAtoms::afterPseudoProperty;
+      break;
     default:
-      break;
+      property = nullptr;
+  }
+  if (property) {
+    MOZ_ASSERT(GetParent());
+    MOZ_ASSERT(GetParent()->IsElement());
+    GetParent()->DeleteProperty(property);
   }
   Element::UnbindFromTree(aDeep, aNullParent);
 }

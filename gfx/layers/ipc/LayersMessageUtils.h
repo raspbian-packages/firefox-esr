@@ -14,6 +14,7 @@
 #include "ipc/IPCMessageUtils.h"
 #include "ipc/nsGUIEventIPC.h"
 #include "mozilla/GfxMessageUtils.h"
+#include "mozilla/layers/APZTypes.h"
 #include "mozilla/layers/AsyncDragMetrics.h"
 #include "mozilla/layers/CompositorOptions.h"
 #include "mozilla/layers/CompositorTypes.h"
@@ -22,16 +23,57 @@
 #include "mozilla/layers/KeyboardMap.h"
 #include "mozilla/layers/LayerAttributes.h"
 #include "mozilla/layers/LayersTypes.h"
+#include "mozilla/layers/MatrixMessage.h"
 #include "mozilla/layers/RefCountedShmem.h"
+#include "mozilla/layers/RepaintRequest.h"
+#include "mozilla/layers/WebRenderMessageUtils.h"
+#include "VsyncSource.h"
 #include "mozilla/Move.h"
+#include "nsSize.h"
+#include "VsyncSource.h"
 
 #include <stdint.h>
 
 #ifdef _MSC_VER
-#pragma warning(disable : 4800)
+#  pragma warning(disable : 4800)
 #endif
 
 namespace IPC {
+
+template <>
+struct ParamTraits<mozilla::layers::LayersId>
+    : public PlainOldDataSerializer<mozilla::layers::LayersId> {};
+
+template <typename T>
+struct ParamTraits<mozilla::layers::BaseTransactionId<T>>
+    : public PlainOldDataSerializer<mozilla::layers::BaseTransactionId<T>> {};
+
+template <>
+struct ParamTraits<mozilla::VsyncId>
+    : public PlainOldDataSerializer<mozilla::VsyncId> {};
+
+template <>
+struct ParamTraits<mozilla::VsyncEvent> {
+  typedef mozilla::VsyncEvent paramType;
+
+  static void Write(Message* msg, const paramType& param) {
+    WriteParam(msg, param.mId);
+    WriteParam(msg, param.mTime);
+  }
+  static bool Read(const Message* msg, PickleIterator* iter,
+                   paramType* result) {
+    return ReadParam(msg, iter, &result->mId) &&
+           ReadParam(msg, iter, &result->mTime);
+  }
+};
+
+template <>
+struct ParamTraits<mozilla::layers::MatrixMessage>
+    : public PlainOldDataSerializer<mozilla::layers::MatrixMessage> {};
+
+template <>
+struct ParamTraits<mozilla::layers::LayersObserverEpoch>
+    : public PlainOldDataSerializer<mozilla::layers::LayersObserverEpoch> {};
 
 template <>
 struct ParamTraits<mozilla::layers::LayersBackend>
@@ -45,6 +87,13 @@ struct ParamTraits<mozilla::layers::ScaleMode>
     : public ContiguousEnumSerializerInclusive<
           mozilla::layers::ScaleMode, mozilla::layers::ScaleMode::SCALE_NONE,
           mozilla::layers::kHighestScaleMode> {};
+
+template <>
+struct ParamTraits<mozilla::StyleScrollSnapStrictness>
+    : public ContiguousEnumSerializerInclusive<
+          mozilla::StyleScrollSnapStrictness,
+          mozilla::StyleScrollSnapStrictness::None,
+          mozilla::StyleScrollSnapStrictness::Proximity> {};
 
 template <>
 struct ParamTraits<mozilla::layers::TextureFlags>
@@ -72,6 +121,13 @@ struct ParamTraits<mozilla::layers::FrameMetrics::ScrollOffsetUpdateType>
           mozilla::layers::FrameMetrics::sHighestScrollOffsetUpdateType> {};
 
 template <>
+struct ParamTraits<mozilla::layers::RepaintRequest::ScrollOffsetUpdateType>
+    : public ContiguousEnumSerializerInclusive<
+          mozilla::layers::RepaintRequest::ScrollOffsetUpdateType,
+          mozilla::layers::RepaintRequest::ScrollOffsetUpdateType::eNone,
+          mozilla::layers::RepaintRequest::sHighestScrollOffsetUpdateType> {};
+
+template <>
 struct ParamTraits<mozilla::layers::OverscrollBehavior>
     : public ContiguousEnumSerializerInclusive<
           mozilla::layers::OverscrollBehavior,
@@ -94,19 +150,6 @@ struct ParamTraits<mozilla::layers::LayerHandle> {
 template <>
 struct ParamTraits<mozilla::layers::CompositableHandle> {
   typedef mozilla::layers::CompositableHandle paramType;
-
-  static void Write(Message* msg, const paramType& param) {
-    WriteParam(msg, param.mHandle);
-  }
-  static bool Read(const Message* msg, PickleIterator* iter,
-                   paramType* result) {
-    return ReadParam(msg, iter, &result->mHandle);
-  }
-};
-
-template <>
-struct ParamTraits<mozilla::layers::ReadLockHandle> {
-  typedef mozilla::layers::ReadLockHandle paramType;
 
   static void Write(Message* msg, const paramType& param) {
     WriteParam(msg, param.mHandle);
@@ -151,19 +194,81 @@ struct ParamTraits<mozilla::layers::FrameMetrics>
     WriteParam(aMsg, aParam.mCumulativeResolution);
     WriteParam(aMsg, aParam.mDevPixelsPerCSSPixel);
     WriteParam(aMsg, aParam.mScrollOffset);
+    WriteParam(aMsg, aParam.mBaseScrollOffset);
     WriteParam(aMsg, aParam.mZoom);
     WriteParam(aMsg, aParam.mScrollGeneration);
     WriteParam(aMsg, aParam.mSmoothScrollOffset);
     WriteParam(aMsg, aParam.mRootCompositionSize);
     WriteParam(aMsg, aParam.mDisplayPortMargins);
     WriteParam(aMsg, aParam.mPresShellId);
-    WriteParam(aMsg, aParam.mViewport);
+    WriteParam(aMsg, aParam.mLayoutViewport);
+    WriteParam(aMsg, aParam.mExtraResolution);
+    WriteParam(aMsg, aParam.mPaintRequestTime);
+    WriteParam(aMsg, aParam.mScrollUpdateType);
+    WriteParam(aMsg, aParam.mVisualViewportOffset);
+    WriteParam(aMsg, aParam.mVisualScrollUpdateType);
+    WriteParam(aMsg, aParam.mIsRootContent);
+    WriteParam(aMsg, aParam.mIsRelative);
+    WriteParam(aMsg, aParam.mDoSmoothScroll);
+    WriteParam(aMsg, aParam.mIsScrollInfoLayer);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return (
+        ReadParam(aMsg, aIter, &aResult->mScrollId) &&
+        ReadParam(aMsg, aIter, &aResult->mPresShellResolution) &&
+        ReadParam(aMsg, aIter, &aResult->mCompositionBounds) &&
+        ReadParam(aMsg, aIter, &aResult->mDisplayPort) &&
+        ReadParam(aMsg, aIter, &aResult->mCriticalDisplayPort) &&
+        ReadParam(aMsg, aIter, &aResult->mScrollableRect) &&
+        ReadParam(aMsg, aIter, &aResult->mCumulativeResolution) &&
+        ReadParam(aMsg, aIter, &aResult->mDevPixelsPerCSSPixel) &&
+        ReadParam(aMsg, aIter, &aResult->mScrollOffset) &&
+        ReadParam(aMsg, aIter, &aResult->mBaseScrollOffset) &&
+        ReadParam(aMsg, aIter, &aResult->mZoom) &&
+        ReadParam(aMsg, aIter, &aResult->mScrollGeneration) &&
+        ReadParam(aMsg, aIter, &aResult->mSmoothScrollOffset) &&
+        ReadParam(aMsg, aIter, &aResult->mRootCompositionSize) &&
+        ReadParam(aMsg, aIter, &aResult->mDisplayPortMargins) &&
+        ReadParam(aMsg, aIter, &aResult->mPresShellId) &&
+        ReadParam(aMsg, aIter, &aResult->mLayoutViewport) &&
+        ReadParam(aMsg, aIter, &aResult->mExtraResolution) &&
+        ReadParam(aMsg, aIter, &aResult->mPaintRequestTime) &&
+        ReadParam(aMsg, aIter, &aResult->mScrollUpdateType) &&
+        ReadParam(aMsg, aIter, &aResult->mVisualViewportOffset) &&
+        ReadParam(aMsg, aIter, &aResult->mVisualScrollUpdateType) &&
+        ReadBoolForBitfield(aMsg, aIter, aResult,
+                            &paramType::SetIsRootContent) &&
+        ReadBoolForBitfield(aMsg, aIter, aResult, &paramType::SetIsRelative) &&
+        ReadBoolForBitfield(aMsg, aIter, aResult,
+                            &paramType::SetDoSmoothScroll) &&
+        ReadBoolForBitfield(aMsg, aIter, aResult,
+                            &paramType::SetIsScrollInfoLayer));
+  }
+};
+
+template <>
+struct ParamTraits<mozilla::layers::RepaintRequest>
+    : BitfieldHelper<mozilla::layers::RepaintRequest> {
+  typedef mozilla::layers::RepaintRequest paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mScrollId);
+    WriteParam(aMsg, aParam.mPresShellResolution);
+    WriteParam(aMsg, aParam.mCompositionBounds);
+    WriteParam(aMsg, aParam.mCumulativeResolution);
+    WriteParam(aMsg, aParam.mDevPixelsPerCSSPixel);
+    WriteParam(aMsg, aParam.mScrollOffset);
+    WriteParam(aMsg, aParam.mZoom);
+    WriteParam(aMsg, aParam.mScrollGeneration);
+    WriteParam(aMsg, aParam.mDisplayPortMargins);
+    WriteParam(aMsg, aParam.mPresShellId);
+    WriteParam(aMsg, aParam.mLayoutViewport);
     WriteParam(aMsg, aParam.mExtraResolution);
     WriteParam(aMsg, aParam.mPaintRequestTime);
     WriteParam(aMsg, aParam.mScrollUpdateType);
     WriteParam(aMsg, aParam.mIsRootContent);
-    WriteParam(aMsg, aParam.mDoSmoothScroll);
-    WriteParam(aMsg, aParam.mUseDisplayPortMargins);
     WriteParam(aMsg, aParam.mIsScrollInfoLayer);
   }
 
@@ -172,30 +277,53 @@ struct ParamTraits<mozilla::layers::FrameMetrics>
     return (ReadParam(aMsg, aIter, &aResult->mScrollId) &&
             ReadParam(aMsg, aIter, &aResult->mPresShellResolution) &&
             ReadParam(aMsg, aIter, &aResult->mCompositionBounds) &&
-            ReadParam(aMsg, aIter, &aResult->mDisplayPort) &&
-            ReadParam(aMsg, aIter, &aResult->mCriticalDisplayPort) &&
-            ReadParam(aMsg, aIter, &aResult->mScrollableRect) &&
             ReadParam(aMsg, aIter, &aResult->mCumulativeResolution) &&
             ReadParam(aMsg, aIter, &aResult->mDevPixelsPerCSSPixel) &&
             ReadParam(aMsg, aIter, &aResult->mScrollOffset) &&
             ReadParam(aMsg, aIter, &aResult->mZoom) &&
             ReadParam(aMsg, aIter, &aResult->mScrollGeneration) &&
-            ReadParam(aMsg, aIter, &aResult->mSmoothScrollOffset) &&
-            ReadParam(aMsg, aIter, &aResult->mRootCompositionSize) &&
             ReadParam(aMsg, aIter, &aResult->mDisplayPortMargins) &&
             ReadParam(aMsg, aIter, &aResult->mPresShellId) &&
-            ReadParam(aMsg, aIter, &aResult->mViewport) &&
+            ReadParam(aMsg, aIter, &aResult->mLayoutViewport) &&
             ReadParam(aMsg, aIter, &aResult->mExtraResolution) &&
             ReadParam(aMsg, aIter, &aResult->mPaintRequestTime) &&
             ReadParam(aMsg, aIter, &aResult->mScrollUpdateType) &&
             ReadBoolForBitfield(aMsg, aIter, aResult,
                                 &paramType::SetIsRootContent) &&
             ReadBoolForBitfield(aMsg, aIter, aResult,
-                                &paramType::SetDoSmoothScroll) &&
-            ReadBoolForBitfield(aMsg, aIter, aResult,
-                                &paramType::SetUseDisplayPortMargins) &&
-            ReadBoolForBitfield(aMsg, aIter, aResult,
                                 &paramType::SetIsScrollInfoLayer));
+  }
+};
+
+template <>
+struct ParamTraits<nsSize> {
+  typedef nsSize paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.width);
+    WriteParam(aMsg, aParam.height);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return ReadParam(aMsg, aIter, &aResult->width) &&
+           ReadParam(aMsg, aIter, &aResult->height);
+  }
+};
+
+template <>
+struct ParamTraits<mozilla::layers::ScrollSnapInfo::ScrollSnapRange> {
+  typedef mozilla::layers::ScrollSnapInfo::ScrollSnapRange paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mStart);
+    WriteParam(aMsg, aParam.mEnd);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return ReadParam(aMsg, aIter, &aResult->mStart) &&
+           ReadParam(aMsg, aIter, &aResult->mEnd);
   }
 };
 
@@ -210,6 +338,11 @@ struct ParamTraits<mozilla::layers::ScrollSnapInfo> {
     WriteParam(aMsg, aParam.mScrollSnapIntervalY);
     WriteParam(aMsg, aParam.mScrollSnapDestination);
     WriteParam(aMsg, aParam.mScrollSnapCoordinates);
+    WriteParam(aMsg, aParam.mSnapPositionX);
+    WriteParam(aMsg, aParam.mSnapPositionY);
+    WriteParam(aMsg, aParam.mXRangeWiderThanSnapport);
+    WriteParam(aMsg, aParam.mYRangeWiderThanSnapport);
+    WriteParam(aMsg, aParam.mSnapportSize);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
@@ -219,7 +352,12 @@ struct ParamTraits<mozilla::layers::ScrollSnapInfo> {
             ReadParam(aMsg, aIter, &aResult->mScrollSnapIntervalX) &&
             ReadParam(aMsg, aIter, &aResult->mScrollSnapIntervalY) &&
             ReadParam(aMsg, aIter, &aResult->mScrollSnapDestination) &&
-            ReadParam(aMsg, aIter, &aResult->mScrollSnapCoordinates));
+            ReadParam(aMsg, aIter, &aResult->mScrollSnapCoordinates) &&
+            ReadParam(aMsg, aIter, &aResult->mSnapPositionX) &&
+            ReadParam(aMsg, aIter, &aResult->mSnapPositionY) &&
+            ReadParam(aMsg, aIter, &aResult->mXRangeWiderThanSnapport) &&
+            ReadParam(aMsg, aIter, &aResult->mYRangeWiderThanSnapport) &&
+            ReadParam(aMsg, aIter, &aResult->mSnapportSize));
   }
 };
 
@@ -274,8 +412,10 @@ struct ParamTraits<mozilla::layers::ScrollMetadata>
     WriteParam(aMsg, aParam.mScrollClip);
     WriteParam(aMsg, aParam.mHasScrollgrab);
     WriteParam(aMsg, aParam.mIsLayersIdRoot);
+    WriteParam(aMsg, aParam.mIsAutoDirRootContentRTL);
     WriteParam(aMsg, aParam.mUsesContainerScrolling);
     WriteParam(aMsg, aParam.mForceDisableApz);
+    WriteParam(aMsg, aParam.mResolutionUpdated);
     WriteParam(aMsg, aParam.mDisregardedDirection);
     WriteParam(aMsg, aParam.mOverscrollBehavior);
   }
@@ -305,9 +445,13 @@ struct ParamTraits<mozilla::layers::ScrollMetadata>
             ReadBoolForBitfield(aMsg, aIter, aResult,
                                 &paramType::SetIsLayersIdRoot) &&
             ReadBoolForBitfield(aMsg, aIter, aResult,
+                                &paramType::SetIsAutoDirRootContentRTL) &&
+            ReadBoolForBitfield(aMsg, aIter, aResult,
                                 &paramType::SetUsesContainerScrolling) &&
             ReadBoolForBitfield(aMsg, aIter, aResult,
                                 &paramType::SetForceDisableApz) &&
+            ReadBoolForBitfield(aMsg, aIter, aResult,
+                                &paramType::SetResolutionUpdated) &&
             ReadParam(aMsg, aIter, &aResult->mDisregardedDirection) &&
             ReadParam(aMsg, aIter, &aResult->mOverscrollBehavior));
   }
@@ -321,7 +465,9 @@ struct ParamTraits<mozilla::layers::TextureFactoryIdentifier> {
     WriteParam(aMsg, aParam.mParentBackend);
     WriteParam(aMsg, aParam.mParentProcessType);
     WriteParam(aMsg, aParam.mMaxTextureSize);
+    WriteParam(aMsg, aParam.mSupportsTextureDirectMapping);
     WriteParam(aMsg, aParam.mCompositorUseANGLE);
+    WriteParam(aMsg, aParam.mCompositorUseDComp);
     WriteParam(aMsg, aParam.mSupportsTextureBlitting);
     WriteParam(aMsg, aParam.mSupportsPartialUploads);
     WriteParam(aMsg, aParam.mSupportsComponentAlpha);
@@ -331,15 +477,18 @@ struct ParamTraits<mozilla::layers::TextureFactoryIdentifier> {
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
-    bool result = ReadParam(aMsg, aIter, &aResult->mParentBackend) &&
-                  ReadParam(aMsg, aIter, &aResult->mParentProcessType) &&
-                  ReadParam(aMsg, aIter, &aResult->mMaxTextureSize) &&
-                  ReadParam(aMsg, aIter, &aResult->mCompositorUseANGLE) &&
-                  ReadParam(aMsg, aIter, &aResult->mSupportsTextureBlitting) &&
-                  ReadParam(aMsg, aIter, &aResult->mSupportsPartialUploads) &&
-                  ReadParam(aMsg, aIter, &aResult->mSupportsComponentAlpha) &&
-                  ReadParam(aMsg, aIter, &aResult->mUsingAdvancedLayers) &&
-                  ReadParam(aMsg, aIter, &aResult->mSyncHandle);
+    bool result =
+        ReadParam(aMsg, aIter, &aResult->mParentBackend) &&
+        ReadParam(aMsg, aIter, &aResult->mParentProcessType) &&
+        ReadParam(aMsg, aIter, &aResult->mMaxTextureSize) &&
+        ReadParam(aMsg, aIter, &aResult->mSupportsTextureDirectMapping) &&
+        ReadParam(aMsg, aIter, &aResult->mCompositorUseANGLE) &&
+        ReadParam(aMsg, aIter, &aResult->mCompositorUseDComp) &&
+        ReadParam(aMsg, aIter, &aResult->mSupportsTextureBlitting) &&
+        ReadParam(aMsg, aIter, &aResult->mSupportsPartialUploads) &&
+        ReadParam(aMsg, aIter, &aResult->mSupportsComponentAlpha) &&
+        ReadParam(aMsg, aIter, &aResult->mUsingAdvancedLayers) &&
+        ReadParam(aMsg, aIter, &aResult->mSyncHandle);
     return result;
   }
 };
@@ -382,6 +531,22 @@ struct ParamTraits<mozilla::layers::ScrollableLayerGuid> {
     return (ReadParam(aMsg, aIter, &aResult->mLayersId) &&
             ReadParam(aMsg, aIter, &aResult->mPresShellId) &&
             ReadParam(aMsg, aIter, &aResult->mScrollId));
+  }
+};
+
+template <>
+struct ParamTraits<mozilla::layers::SLGuidAndRenderRoot> {
+  typedef mozilla::layers::SLGuidAndRenderRoot paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mScrollableLayerGuid);
+    WriteParam(aMsg, aParam.mRenderRoot);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return (ReadParam(aMsg, aIter, &aResult->mScrollableLayerGuid) &&
+            ReadParam(aMsg, aIter, &aResult->mRenderRoot));
   }
 };
 
@@ -435,13 +600,17 @@ struct ParamTraits<mozilla::layers::FocusTarget::ScrollTargets> {
 
   static void Write(Message* aMsg, const paramType& aParam) {
     WriteParam(aMsg, aParam.mHorizontal);
+    WriteParam(aMsg, aParam.mHorizontalRenderRoot);
     WriteParam(aMsg, aParam.mVertical);
+    WriteParam(aMsg, aParam.mVerticalRenderRoot);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
     return ReadParam(aMsg, aIter, &aResult->mHorizontal) &&
-           ReadParam(aMsg, aIter, &aResult->mVertical);
+           ReadParam(aMsg, aIter, &aResult->mHorizontalRenderRoot) &&
+           ReadParam(aMsg, aIter, &aResult->mVertical) &&
+           ReadParam(aMsg, aIter, &aResult->mVerticalRenderRoot);
   }
 };
 
@@ -537,7 +706,7 @@ struct ParamTraits<mozilla::layers::KeyboardMap> {
     if (!ReadParam(aMsg, aIter, &shortcuts)) {
       return false;
     }
-    *aResult = mozilla::layers::KeyboardMap(mozilla::Move(shortcuts));
+    *aResult = mozilla::layers::KeyboardMap(std::move(shortcuts));
     return true;
   }
 };
@@ -594,19 +763,48 @@ struct ParamTraits<mozilla::layers::CompositorOptions> {
     WriteParam(aMsg, aParam.mUseAPZ);
     WriteParam(aMsg, aParam.mUseWebRender);
     WriteParam(aMsg, aParam.mUseAdvancedLayers);
+    WriteParam(aMsg, aParam.mInitiallyPaused);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
     return ReadParam(aMsg, aIter, &aResult->mUseAPZ) &&
            ReadParam(aMsg, aIter, &aResult->mUseWebRender) &&
-           ReadParam(aMsg, aIter, &aResult->mUseAdvancedLayers);
+           ReadParam(aMsg, aIter, &aResult->mUseAdvancedLayers) &&
+           ReadParam(aMsg, aIter, &aResult->mInitiallyPaused);
   }
 };
 
 template <>
 struct ParamTraits<mozilla::layers::SimpleLayerAttributes>
     : public PlainOldDataSerializer<mozilla::layers::SimpleLayerAttributes> {};
+
+template <>
+struct ParamTraits<mozilla::layers::ScrollUpdateInfo>
+    : public PlainOldDataSerializer<mozilla::layers::ScrollUpdateInfo> {};
+
+template <>
+struct ParamTraits<mozilla::layers::CompositionPayloadType>
+    : public ContiguousEnumSerializerInclusive<
+          mozilla::layers::CompositionPayloadType,
+          mozilla::layers::CompositionPayloadType::eKeyPress,
+          mozilla::layers::kHighestCompositionPayloadType> {};
+
+template <>
+struct ParamTraits<mozilla::layers::CompositionPayload> {
+  typedef mozilla::layers::CompositionPayload paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mType);
+    WriteParam(aMsg, aParam.mTimeStamp);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return ReadParam(aMsg, aIter, &aResult->mType) &&
+           ReadParam(aMsg, aIter, &aResult->mTimeStamp);
+  }
+};
 
 } /* namespace IPC */
 

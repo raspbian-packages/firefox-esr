@@ -32,7 +32,7 @@ PassthruProxy::PassthruProxy(ProxyStream::Environment* aEnv, REFIID aIidToWrap,
       mForgetPreservedStream(false) {
   ProxyStream proxyStream(aIidToWrap, aObjToWrap, aEnv,
                           ProxyStreamFlags::ePreservable);
-  mPreservedStream = Move(proxyStream.GetPreservedStream());
+  mPreservedStream = proxyStream.GetPreservedStream();
   MOZ_ASSERT(mPreservedStream);
 }
 
@@ -377,7 +377,8 @@ PassthruProxyClassObject::LockServer(BOOL aLock) {
   return S_OK;
 }
 
-/* static */ HRESULT PassthruProxy::Register() {
+/* static */
+HRESULT PassthruProxy::Register() {
   DWORD cookie;
   RefPtr<IClassFactory> classObj(new PassthruProxyClassObject());
   return ::CoRegisterClassObject(CLSID_PassthruProxy, classObj,

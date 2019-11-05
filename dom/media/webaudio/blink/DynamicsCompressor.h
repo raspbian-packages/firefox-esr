@@ -118,8 +118,8 @@ class DynamicsCompressor {
   nsTArray<nsAutoPtr<ZeroPoleFilterPack4> > m_preFilterPacks;
   nsTArray<nsAutoPtr<ZeroPoleFilterPack4> > m_postFilterPacks;
 
-  mozilla::UniquePtr<const float* []> m_sourceChannels;
-  mozilla::UniquePtr<float* []> m_destinationChannels;
+  mozilla::UniquePtr<const float*[]> m_sourceChannels;
+  mozilla::UniquePtr<float*[]> m_destinationChannels;
 
   void setEmphasisStageParameters(unsigned stageIndex, float gain,
                                   float normalizedFrequency /* 0 -> 1 */);

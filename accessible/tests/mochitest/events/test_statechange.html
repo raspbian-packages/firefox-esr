@@ -6,8 +6,7 @@
   <link rel="stylesheet" type="text/css"
         href="chrome://mochikit/content/tests/SimpleTest/test.css" />
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
 
   <script type="application/javascript"
           src="../common.js"></script>
@@ -31,7 +30,6 @@
       };
 
       this.check = function editabledoc_check(aEvent) {
-
         testStates(aDocNode, 0, EXT_STATE_EDITABLE);
 
         let event = null;
@@ -74,7 +72,7 @@
       this.DOMNode = getNode(aID);
 
       this.eventSeq = [
-        new stateChangeChecker(STATE_CHECKED, false, aIsChecked, this.DOMNode)
+        new stateChangeChecker(STATE_CHECKED, false, aIsChecked, this.DOMNode),
       ];
 
       this.invoke = function changeCheckInput_invoke() {
@@ -100,7 +98,7 @@
 
       this.eventSeq = [
         new stateChangeChecker(aState, aIsExtraState, aIsEnabled, this.fileControl),
-        new stateChangeChecker(aState, aIsExtraState, aIsEnabled, this.browseButton)
+        new stateChangeChecker(aState, aIsExtraState, aIsEnabled, this.browseButton),
       ];
 
       this.getID = function stateChangeOnFileInput_getID() {
@@ -111,7 +109,7 @@
     function dupeStateChange(aID, aAttr, aValue,
                              aState, aIsExtraState, aIsEnabled) {
       this.eventSeq = [
-        new stateChangeChecker(aState, aIsExtraState, aIsEnabled, getNode(aID))
+        new stateChangeChecker(aState, aIsExtraState, aIsEnabled, getNode(aID)),
       ];
 
       this.invoke = function dupeStateChange_invoke() {
@@ -128,7 +126,7 @@
       this.eventSeq = [ ];
       this.unexpectedEventSeq = [
         new stateChangeChecker(aState, aIsExtraState, false, getNode(aID)),
-        new stateChangeChecker(aState, aIsExtraState, true, getNode(aID))
+        new stateChangeChecker(aState, aIsExtraState, true, getNode(aID)),
       ];
 
       this.invoke = function oppositeStateChange_invoke() {
@@ -147,14 +145,13 @@
     function echoingStateChange(aID, aARIAAttr, aAttr, aValue,
                                aState, aIsExtraState, aIsEnabled) {
       this.eventSeq = [
-        new stateChangeChecker(aState, aIsExtraState, aIsEnabled, getNode(aID))
+        new stateChangeChecker(aState, aIsExtraState, aIsEnabled, getNode(aID)),
       ];
 
       this.invoke = function echoingStateChange_invoke() {
         if (aValue == null) {
           getNode(aID).removeAttribute(aARIAAttr);
           getNode(aID).removeAttribute(aAttr);
-
         } else {
           getNode(aID).setAttribute(aARIAAttr, aValue);
           getNode(aID).setAttribute(aAttr, aValue);

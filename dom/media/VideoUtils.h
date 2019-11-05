@@ -45,8 +45,8 @@ namespace mozilla {
 class MediaContainerType;
 
 // EME Key System String.
-extern const nsLiteralCString kEMEKeySystemClearkey;
-extern const nsLiteralCString kEMEKeySystemWidevine;
+#define EME_KEY_SYSTEM_CLEARKEY "org.w3.clearkey"
+#define EME_KEY_SYSTEM_WIDEVINE "com.widevine.alpha"
 
 /**
  * ReentrantMonitorConditionallyEnter
@@ -121,7 +121,7 @@ CheckedInt64 FramesToUsecs(int64_t aFrames, uint32_t aRate);
 media::TimeUnit FramesToTimeUnit(int64_t aFrames, uint32_t aRate);
 // Perform aValue * aMul / aDiv, reducing the possibility of overflow due to
 // aValue * aMul overflowing.
-CheckedInt64 SaferMultDiv(int64_t aValue, uint32_t aMul, uint32_t aDiv);
+CheckedInt64 SaferMultDiv(int64_t aValue, uint64_t aMul, uint64_t aDiv);
 
 // Converts from microseconds (aUsecs) to number of audio frames, given the
 // specified audio rate (aRate). Stores the result in aOutFrames. Returns
@@ -150,6 +150,12 @@ void ScaleDisplayByAspectRatio(gfx::IntSize& aDisplay, float aAspectRatio);
 // Downmix Stereo audio samples to Mono.
 // Input are the buffer contains stereo data and the number of frames.
 void DownmixStereoToMono(mozilla::AudioDataValue* aBuffer, uint32_t aFrames);
+
+// Decide the number of playback channels according to the
+// given AudioInfo and the prefs that are being set.
+uint32_t DecideAudioPlaybackChannels(const AudioInfo& info);
+
+bool IsDefaultPlaybackDeviceMono();
 
 bool IsVideoContentType(const nsCString& aContentType);
 
@@ -219,8 +225,8 @@ enum H264_LEVEL {
 // http://blog.pearce.org.nz/2013/11/what-does-h264avc1-codecs-parameters.html
 // for more details.
 // Returns false on failure.
-bool ExtractH264CodecDetails(const nsAString& aCodecs, int16_t& aProfile,
-                             int16_t& aLevel);
+bool ExtractH264CodecDetails(const nsAString& aCodecs, uint8_t& aProfile,
+                             uint8_t& aConstraint, uint8_t& aLevel);
 
 struct VideoColorSpace {
   // TODO: Define the value type as strong type enum
@@ -327,6 +333,8 @@ bool IsVP8CodecString(const nsAString& aCodec);
 
 bool IsVP9CodecString(const nsAString& aCodec);
 
+bool IsAV1CodecString(const nsAString& aCodec);
+
 // Try and create a TrackInfo with a given codec MIME type.
 UniquePtr<TrackInfo> CreateTrackInfoWithMIMEType(
     const nsACString& aCodecMIMEType);
@@ -429,7 +437,10 @@ class StringListRange {
    private:
     friend class StringListRange;
     Iterator(const CharType* aRangeStart, uint32_t aLength)
-        : mRangeEnd(aRangeStart + aLength) {
+        : mRangeEnd(aRangeStart + aLength),
+          mStart(nullptr),
+          mEnd(nullptr),
+          mComma(nullptr) {
       SearchItemAt(aRangeStart);
     }
     void SearchItemAt(Pointer start) {
@@ -533,6 +544,10 @@ inline void AppendStringIfNotEmpty(nsACString& aDest, nsACString&& aSrc) {
     aDest.Append(aSrc);
   }
 }
+
+// Returns true if we're running on a cellular connection; 2G, 3G, etc.
+// Main thread only.
+bool OnCellularConnection();
 
 }  // end namespace mozilla
 

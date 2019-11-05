@@ -26,7 +26,7 @@
 #include "nsIRunnable.h"
 #include "nsICryptoHash.h"
 #ifdef MOZ_PLACES
-#include "nsIFaviconService.h"
+#  include "nsIFaviconService.h"
 #endif
 #include "nsIDownloader.h"
 #include "nsIURI.h"
@@ -89,11 +89,11 @@ typedef enum DPI_AWARENESS {
   DPI_AWARENESS_PER_MONITOR_AWARE = 2
 } DPI_AWARENESS;
 
-#define DPI_AWARENESS_CONTEXT_UNAWARE ((DPI_AWARENESS_CONTEXT)-1)
-#define DPI_AWARENESS_CONTEXT_SYSTEM_AWARE ((DPI_AWARENESS_CONTEXT)-2)
-#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE ((DPI_AWARENESS_CONTEXT)-3)
+#  define DPI_AWARENESS_CONTEXT_UNAWARE ((DPI_AWARENESS_CONTEXT)-1)
+#  define DPI_AWARENESS_CONTEXT_SYSTEM_AWARE ((DPI_AWARENESS_CONTEXT)-2)
+#  define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE ((DPI_AWARENESS_CONTEXT)-3)
 
-#define DPI_AWARENESS_CONTEXT_DECLARED
+#  define DPI_AWARENESS_CONTEXT_DECLARED
 #endif  // (DPI_AWARENESS_CONTEXT_DECLARED)
 
 #if WINVER < 0x0605
@@ -104,8 +104,10 @@ WINUSERAPI BOOL WINAPI AreDpiAwarenessContextsEqual(DPI_AWARENESS_CONTEXT,
 typedef DPI_AWARENESS_CONTEXT(WINAPI* SetThreadDpiAwarenessContextProc)(
     DPI_AWARENESS_CONTEXT);
 typedef BOOL(WINAPI* EnableNonClientDpiScalingProc)(HWND);
+typedef int(WINAPI* GetSystemMetricsForDpiProc)(int, UINT);
 
 namespace mozilla {
+enum class PointerCapabilities : uint8_t;
 #if defined(ACCESSIBILITY)
 namespace a11y {
 class Accessible;
@@ -125,12 +127,12 @@ extern EventMsgInfo gAllEvents[];
 // GetQueueStatus() that include newer win8 specific defines.
 
 #ifndef QS_RAWINPUT
-#define QS_RAWINPUT 0x0400
+#  define QS_RAWINPUT 0x0400
 #endif
 
 #ifndef QS_TOUCH
-#define QS_TOUCH 0x0800
-#define QS_POINTER 0x1000
+#  define QS_TOUCH 0x0800
+#  define QS_POINTER 0x1000
 #endif
 
 #define MOZ_QS_ALLEVENT                                                      \
@@ -166,6 +168,7 @@ class WinUtils {
   // the Win10 update version -- will be set up in Initialize().
   static SetThreadDpiAwarenessContextProc sSetThreadDpiAwarenessContext;
   static EnableNonClientDpiScalingProc sEnableNonClientDpiScaling;
+  static GetSystemMetricsForDpiProc sGetSystemMetricsForDpi;
 
  public:
   class AutoSystemDpiAware {
@@ -227,6 +230,9 @@ class WinUtils {
   static int32_t LogToPhys(HMONITOR aMonitor, double aValue);
   static HMONITOR GetPrimaryMonitor();
   static HMONITOR MonitorFromRect(const gfx::Rect& rect);
+
+  static bool HasSystemMetricsForDpi();
+  static int GetSystemMetricsForDpi(int nIndex, UINT dpi);
 
   /**
    * Logging helpers that dump output to prlog module 'Widget', console, and
@@ -387,7 +393,7 @@ class WinUtils {
 
   /**
    * GetMouseInputSource() returns a pointing device information.  The value is
-   * one of nsIDOMMouseEvent::MOZ_SOURCE_*.  This method MUST be called during
+   * one of MouseEvent_Binding::MOZ_SOURCE_*.  This method MUST be called during
    * mouse message handling.
    */
   static uint16_t GetMouseInputSource();
@@ -446,7 +452,7 @@ class WinUtils {
    * nsIWidget::SynthethizeNative*Event().
    */
   static void SetupKeyModifiersSequence(nsTArray<KeyPair>* aArray,
-                                        uint32_t aModifiers);
+                                        uint32_t aModifiers, UINT aMessage);
 
   /**
    * Does device have touch support
@@ -462,6 +468,17 @@ class WinUtils {
   static uint32_t GetMaxTouchPoints();
 
   /**
+   * Returns the windows power platform role, which is useful for detecting
+   * tablets.
+   */
+  static POWER_PLATFORM_ROLE GetPowerPlatformRole();
+
+  // For pointer and hover media queries features.
+  static PointerCapabilities GetPrimaryPointerCapabilities();
+  // For any-pointer and any-hover media queries features.
+  static PointerCapabilities GetAllPointerCapabilities();
+
+  /**
    * Fully resolves a path to its final path name. So if path contains
    * junction points or symlinks to other folders, we'll resolve the path
    * fully to the actual path that the links target.
@@ -474,29 +491,86 @@ class WinUtils {
   static bool ResolveJunctionPointsAndSymLinks(std::wstring& aPath);
   static bool ResolveJunctionPointsAndSymLinks(nsIFile* aPath);
 
+  /**
+   * Returns true if executable's path is on a network drive.
+   */
+  static bool RunningFromANetworkDrive();
+
   static void Initialize();
 
-  static bool ShouldHideScrollbars();
+  static nsresult WriteBitmap(nsIFile* aFile,
+                              mozilla::gfx::SourceSurface* surface);
+  // This function is a helper, but it cannot be called from the main thread.
+  // Use the one above!
+  static nsresult WriteBitmap(nsIFile* aFile, imgIContainer* aImage);
 
   /**
-   * This function normalizes the input path, converts short filenames to long
-   * filenames, and substitutes environment variables for system paths.
-   * The resulting output string length is guaranteed to be <= MAX_PATH.
+   * Wrapper for ::GetModuleFileNameW().
+   * @param  aModuleHandle [in] The handle of a loaded module
+   * @param  aPath         [out] receives the full path of the module specified
+   *                       by aModuleBase.
+   * @return true if aPath was successfully populated.
    */
-  static bool SanitizePath(const wchar_t* aInputPath, nsAString& aOutput);
+  static bool GetModuleFullPath(HMODULE aModuleHandle, nsAString& aPath);
+
+  /**
+   * Wrapper for PathCanonicalize().
+   * Upon success, the resulting output string length is <= MAX_PATH.
+   * @param  aPath [in,out] The path to transform.
+   * @return true on success, false on failure.
+   */
+  static bool CanonicalizePath(nsAString& aPath);
+
+  /**
+   * Converts short paths (e.g. "C:\\PROGRA~1\\XYZ") to full paths.
+   * Upon success, the resulting output string length is <= MAX_PATH.
+   * @param  aPath [in,out] The path to transform.
+   * @return true on success, false on failure.
+   */
+  static bool MakeLongPath(nsAString& aPath);
+
+  /**
+   * Wrapper for PathUnExpandEnvStringsW().
+   * Upon success, the resulting output string length is <= MAX_PATH.
+   * @param  aPath [in,out] The path to transform.
+   * @return true on success, false on failure.
+   */
+  static bool UnexpandEnvVars(nsAString& aPath);
 
   /**
    * Retrieve a semicolon-delimited list of DLL files derived from AppInit_DLLs
    */
   static bool GetAppInitDLLs(nsAString& aOutput);
 
+  enum class PathTransformFlags : uint32_t {
+    Canonicalize = 1,
+    Lengthen = 2,
+    UnexpandEnvVars = 4,
+    Default = 7,
+  };
+
+  /**
+   * Given a path, transforms it in preparation to be reported via telemetry.
+   * That can include canonicalization, converting short to long paths,
+   * unexpanding environment strings, and removing potentially sensitive data
+   * from the path.
+   *
+   * @param  aPath  [in,out] The path to transform.
+   * @param  aFlags [in] Specifies which transformations to perform, allowing
+   *                the caller to skip operations they know have already been
+   *                performed.
+   * @return true on success, false on failure.
+   */
+  static bool PreparePathForTelemetry(
+      nsAString& aPath,
+      PathTransformFlags aFlags = PathTransformFlags::Default);
+
+  static const nsTArray<Pair<nsString, nsDependentString>>&
+  GetWhitelistedPaths();
+
 #ifdef ACCESSIBILITY
   static a11y::Accessible* GetRootAccessibleForHWND(HWND aHwnd);
 #endif
-
- private:
-  static void GetWhitelistedPaths(
-      nsTArray<mozilla::Pair<nsString, nsDependentString>>& aOutput);
 };
 
 #ifdef MOZ_PLACES
@@ -544,19 +618,6 @@ class AsyncEncodeAndWriteIcon : public nsIRunnable {
   uint32_t mHeight;
 };
 
-class AsyncDeleteIconFromDisk : public nsIRunnable {
- public:
-  NS_DECL_THREADSAFE_ISUPPORTS
-  NS_DECL_NSIRUNNABLE
-
-  explicit AsyncDeleteIconFromDisk(const nsAString& aIconPath);
-
- private:
-  virtual ~AsyncDeleteIconFromDisk();
-
-  nsAutoString mIconPath;
-};
-
 class AsyncDeleteAllFaviconsFromDisk : public nsIRunnable {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
@@ -594,6 +655,8 @@ class FaviconHelper {
 
   static int32_t GetICOCacheSecondsTimeout();
 };
+
+MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(WinUtils::PathTransformFlags);
 
 }  // namespace widget
 }  // namespace mozilla

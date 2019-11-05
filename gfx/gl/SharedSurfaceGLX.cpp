@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -33,7 +33,7 @@ UniquePtr<SharedSurface_GLXDrawable> SharedSurface_GLXDrawable::Create(
   if (!deallocateClient) surf->ReleasePixmap();
 
   ret.reset(new SharedSurface_GLXDrawable(prodGL, size, inSameProcess, surf));
-  return Move(ret);
+  return ret;
 }
 
 SharedSurface_GLXDrawable::SharedSurface_GLXDrawable(
@@ -109,7 +109,7 @@ UniquePtr<SurfaceFactory_GLXDrawable> SurfaceFactory_GLXDrawable::Create(
   UniquePtr<ptrT> ret(
       new ptrT(prodGL, caps, allocator,
                flags & ~layers::TextureFlags::ORIGIN_BOTTOM_LEFT));
-  return Move(ret);
+  return ret;
 }
 
 UniquePtr<SharedSurface> SurfaceFactory_GLXDrawable::CreateShared(

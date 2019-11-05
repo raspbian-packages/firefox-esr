@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim:expandtab:shiftwidth=4:tabstop=4:
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -11,8 +11,9 @@
 #include "nsClipboard.h"
 #include "nsClipboardX11.h"
 #if defined(MOZ_WAYLAND)
-#include "nsClipboardWayland.h"
+#  include "nsClipboardWayland.h"
 #endif
+#include "nsContentUtils.h"
 #include "HeadlessClipboard.h"
 #include "nsSupportsPrimitives.h"
 #include "nsString.h"
@@ -38,19 +39,24 @@ using namespace mozilla;
 // Idle timeout for receiving selection and property notify events (microsec)
 const int kClipboardTimeout = 500000;
 
+// We add this prefix to HTML markup, so that GetHTMLCharset can correctly
+// detect the HTML as UTF-8 encoded.
+static const char kHTMLMarkupPrefix[] =
+    R"(<meta http-equiv="content-type" content="text/html; charset=utf-8">)";
+
 // Callback when someone asks us for the data
-void clipboard_get_cb(GtkClipboard *aGtkClipboard,
-                      GtkSelectionData *aSelectionData, guint info,
+void clipboard_get_cb(GtkClipboard* aGtkClipboard,
+                      GtkSelectionData* aSelectionData, guint info,
                       gpointer user_data);
 
 // Callback when someone asks us to clear a clipboard
-void clipboard_clear_cb(GtkClipboard *aGtkClipboard, gpointer user_data);
+void clipboard_clear_cb(GtkClipboard* aGtkClipboard, gpointer user_data);
 
-static void ConvertHTMLtoUCS2(const char *data, int32_t dataLength,
-                              char16_t **unicodeData, int32_t &outUnicodeLen);
+static void ConvertHTMLtoUCS2(const char* data, int32_t dataLength,
+                              char16_t** unicodeData, int32_t& outUnicodeLen);
 
-static void GetHTMLCharset(const char *data, int32_t dataLength,
-                           nsCString &str);
+static void GetHTMLCharset(const char* data, int32_t dataLength,
+                           nsCString& str);
 
 GdkAtom GetSelectionAtom(int32_t aWhichClipboard) {
   if (aWhichClipboard == nsIClipboard::kGlobalClipboard)
@@ -72,10 +78,10 @@ nsClipboard::~nsClipboard() {
   }
 }
 
-NS_IMPL_ISUPPORTS(nsClipboard, nsIClipboard)
+NS_IMPL_ISUPPORTS(nsClipboard, nsIClipboard, nsIObserver)
 
 nsresult nsClipboard::Init(void) {
-  GdkDisplay *display = gdk_display_get_default();
+  GdkDisplay* display = gdk_display_get_default();
 
   // Create a nsRetrievalContext. If there's no default display
   // create the X11 one as a fallback.
@@ -99,21 +105,21 @@ nsresult nsClipboard::Init(void) {
 
 nsresult nsClipboard::Store(void) {
   if (mGlobalTransferable) {
-    GtkClipboard *clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+    GtkClipboard* clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     gtk_clipboard_store(clipboard);
   }
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsClipboard::Observe(nsISupports *aSubject, const char *aTopic,
-                     const char16_t *aData) {
+nsClipboard::Observe(nsISupports* aSubject, const char* aTopic,
+                     const char16_t* aData) {
   Store();
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsClipboard::SetData(nsITransferable *aTransferable, nsIClipboardOwner *aOwner,
+nsClipboard::SetData(nsITransferable* aTransferable, nsIClipboardOwner* aOwner,
                      int32_t aWhichClipboard) {
   // See if we can short cut
   if ((aWhichClipboard == kGlobalClipboard &&
@@ -129,63 +135,47 @@ nsClipboard::SetData(nsITransferable *aTransferable, nsIClipboardOwner *aOwner,
   EmptyClipboard(aWhichClipboard);
 
   // List of suported targets
-  GtkTargetList *list = gtk_target_list_new(nullptr, 0);
+  GtkTargetList* list = gtk_target_list_new(nullptr, 0);
 
   // Get the types of supported flavors
-  nsCOMPtr<nsIArray> flavors;
-
-  nsresult rv =
-      aTransferable->FlavorsTransferableCanExport(getter_AddRefs(flavors));
-  if (!flavors || NS_FAILED(rv)) return NS_ERROR_FAILURE;
+  nsTArray<nsCString> flavors;
+  nsresult rv = aTransferable->FlavorsTransferableCanExport(flavors);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
 
   // Add all the flavors to this widget's supported type.
   bool imagesAdded = false;
-  uint32_t count;
-  flavors->GetLength(&count);
-  for (uint32_t i = 0; i < count; i++) {
-    nsCOMPtr<nsISupportsCString> flavor = do_QueryElementAt(flavors, i);
+  for (uint32_t i = 0; i < flavors.Length(); i++) {
+    nsCString& flavorStr = flavors[i];
 
-    if (flavor) {
-      nsCString flavorStr;
-      flavor->ToString(getter_Copies(flavorStr));
-
-      // special case text/unicode since we can handle all of
-      // the string types
-      if (flavorStr.EqualsLiteral(kUnicodeMime)) {
-        gtk_target_list_add(list, gdk_atom_intern("UTF8_STRING", FALSE), 0, 0);
-        gtk_target_list_add(list, gdk_atom_intern("COMPOUND_TEXT", FALSE), 0,
-                            0);
-        gtk_target_list_add(list, gdk_atom_intern("TEXT", FALSE), 0, 0);
-        gtk_target_list_add(list, GDK_SELECTION_TYPE_STRING, 0, 0);
-        continue;
-      }
-
-      if (flavorStr.EqualsLiteral(kNativeImageMime) ||
-          flavorStr.EqualsLiteral(kPNGImageMime) ||
-          flavorStr.EqualsLiteral(kJPEGImageMime) ||
-          flavorStr.EqualsLiteral(kJPGImageMime) ||
-          flavorStr.EqualsLiteral(kGIFImageMime)) {
-        // don't bother adding image targets twice
-        if (!imagesAdded) {
-          // accept any writable image type
-          gtk_target_list_add_image_targets(list, 0, TRUE);
-          imagesAdded = true;
-        }
-        continue;
-      }
-
-      // Add this to our list of valid targets
-      GdkAtom atom = gdk_atom_intern(flavorStr.get(), FALSE);
-      gtk_target_list_add(list, atom, 0, 0);
+    // Special case text/unicode since we can handle all of the string types.
+    if (flavorStr.EqualsLiteral(kUnicodeMime)) {
+      gtk_target_list_add_text_targets(list, 0);
+      continue;
     }
+
+    if (nsContentUtils::IsFlavorImage(flavorStr)) {
+      // Don't bother adding image targets twice
+      if (!imagesAdded) {
+        // accept any writable image type
+        gtk_target_list_add_image_targets(list, 0, TRUE);
+        imagesAdded = true;
+      }
+      continue;
+    }
+
+    // Add this to our list of valid targets
+    GdkAtom atom = gdk_atom_intern(flavorStr.get(), FALSE);
+    gtk_target_list_add(list, atom, 0, 0);
   }
 
   // Get GTK clipboard (CLIPBOARD or PRIMARY)
-  GtkClipboard *gtkClipboard =
+  GtkClipboard* gtkClipboard =
       gtk_clipboard_get(GetSelectionAtom(aWhichClipboard));
 
   gint numTargets;
-  GtkTargetEntry *gtkTargets =
+  GtkTargetEntry* gtkTargets =
       gtk_target_table_new_from_list(list, &numTargets);
 
   // Set getcallback and request to store data after an application exit
@@ -215,35 +205,29 @@ nsClipboard::SetData(nsITransferable *aTransferable, nsIClipboardOwner *aOwner,
   return rv;
 }
 
-void nsClipboard::SetTransferableData(nsITransferable *aTransferable,
-                                      nsCString &aFlavor,
-                                      const char *aClipboardData,
+void nsClipboard::SetTransferableData(nsITransferable* aTransferable,
+                                      nsCString& aFlavor,
+                                      const char* aClipboardData,
                                       uint32_t aClipboardDataLength) {
   nsCOMPtr<nsISupports> wrapper;
   nsPrimitiveHelpers::CreatePrimitiveForData(
       aFlavor, aClipboardData, aClipboardDataLength, getter_AddRefs(wrapper));
-  aTransferable->SetTransferData(aFlavor.get(), wrapper, aClipboardDataLength);
+  aTransferable->SetTransferData(aFlavor.get(), wrapper);
 }
 
 NS_IMETHODIMP
-nsClipboard::GetData(nsITransferable *aTransferable, int32_t aWhichClipboard) {
+nsClipboard::GetData(nsITransferable* aTransferable, int32_t aWhichClipboard) {
   if (!aTransferable) return NS_ERROR_FAILURE;
 
   // Get a list of flavors this transferable can import
-  nsCOMPtr<nsIArray> flavors;
-  nsresult rv;
-  rv = aTransferable->FlavorsTransferableCanImport(getter_AddRefs(flavors));
-  if (!flavors || NS_FAILED(rv)) return NS_ERROR_FAILURE;
+  nsTArray<nsCString> flavors;
+  nsresult rv = aTransferable->FlavorsTransferableCanImport(flavors);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
 
-  uint32_t count;
-  flavors->GetLength(&count);
-  for (uint32_t i = 0; i < count; i++) {
-    nsCOMPtr<nsISupportsCString> currentFlavor;
-    currentFlavor = do_QueryElementAt(flavors, i);
-    if (!currentFlavor) continue;
-
-    nsCString flavorStr;
-    currentFlavor->ToString(getter_Copies(flavorStr));
+  for (uint32_t i = 0; i < flavors.Length(); i++) {
+    nsCString& flavorStr = flavors[i];
 
     if (flavorStr.EqualsLiteral(kJPEGImageMime) ||
         flavorStr.EqualsLiteral(kJPGImageMime) ||
@@ -255,15 +239,15 @@ nsClipboard::GetData(nsITransferable *aTransferable, int32_t aWhichClipboard) {
       }
 
       uint32_t clipboardDataLength;
-      const char *clipboardData = mContext->GetClipboardData(
+      const char* clipboardData = mContext->GetClipboardData(
           flavorStr.get(), aWhichClipboard, &clipboardDataLength);
       if (!clipboardData) continue;
 
       nsCOMPtr<nsIInputStream> byteStream;
-      NS_NewByteInputStream(getter_AddRefs(byteStream), clipboardData,
-                            clipboardDataLength, NS_ASSIGNMENT_COPY);
-      aTransferable->SetTransferData(flavorStr.get(), byteStream,
-                                     sizeof(nsIInputStream *));
+      NS_NewByteInputStream(getter_AddRefs(byteStream),
+                            MakeSpan(clipboardData, clipboardDataLength),
+                            NS_ASSIGNMENT_COPY);
+      aTransferable->SetTransferData(flavorStr.get(), byteStream);
 
       mContext->ReleaseClipboardData(clipboardData);
       return NS_OK;
@@ -272,7 +256,7 @@ nsClipboard::GetData(nsITransferable *aTransferable, int32_t aWhichClipboard) {
     // Special case text/unicode since we can convert any
     // string into text/unicode
     if (flavorStr.EqualsLiteral(kUnicodeMime)) {
-      const char *clipboardData = mContext->GetClipboardText(aWhichClipboard);
+      const char* clipboardData = mContext->GetClipboardText(aWhichClipboard);
       if (!clipboardData) {
         // If the type was text/unicode and we couldn't get
         // text off the clipboard, run the next loop
@@ -282,24 +266,24 @@ nsClipboard::GetData(nsITransferable *aTransferable, int32_t aWhichClipboard) {
 
       // Convert utf-8 into our unicode format.
       NS_ConvertUTF8toUTF16 ucs2string(clipboardData);
-      const char *unicodeData = (const char *)ToNewUnicode(ucs2string);
+      const char* unicodeData = (const char*)ToNewUnicode(ucs2string);
       uint32_t unicodeDataLength = ucs2string.Length() * 2;
       SetTransferableData(aTransferable, flavorStr, unicodeData,
                           unicodeDataLength);
-      free((void *)unicodeData);
+      free((void*)unicodeData);
 
       mContext->ReleaseClipboardData(clipboardData);
       return NS_OK;
     }
 
     uint32_t clipboardDataLength;
-    const char *clipboardData = mContext->GetClipboardData(
+    const char* clipboardData = mContext->GetClipboardData(
         flavorStr.get(), aWhichClipboard, &clipboardDataLength);
 
     if (clipboardData) {
       // Special case text/html since we can convert into UCS2
       if (flavorStr.EqualsLiteral(kHTMLMime)) {
-        char16_t *htmlBody = nullptr;
+        char16_t* htmlBody = nullptr;
         int32_t htmlBodyLen = 0;
         // Convert text/html into our unicode format
         ConvertHTMLtoUCS2(clipboardData, clipboardDataLength, &htmlBody,
@@ -311,7 +295,7 @@ nsClipboard::GetData(nsITransferable *aTransferable, int32_t aWhichClipboard) {
           continue;
         }
 
-        SetTransferableData(aTransferable, flavorStr, (const char *)htmlBody,
+        SetTransferableData(aTransferable, flavorStr, (const char*)htmlBody,
                             htmlBodyLen * 2);
         free(htmlBody);
       } else {
@@ -347,14 +331,14 @@ nsClipboard::EmptyClipboard(int32_t aWhichClipboard) {
 }
 
 NS_IMETHODIMP
-nsClipboard::HasDataMatchingFlavors(const char **aFlavorList, uint32_t aLength,
-                                    int32_t aWhichClipboard, bool *_retval) {
+nsClipboard::HasDataMatchingFlavors(const char** aFlavorList, uint32_t aLength,
+                                    int32_t aWhichClipboard, bool* _retval) {
   if (!aFlavorList || !_retval) return NS_ERROR_NULL_POINTER;
 
   *_retval = false;
 
   int targetNums;
-  GdkAtom *targets = mContext->GetTargets(aWhichClipboard, &targetNums);
+  GdkAtom* targets = mContext->GetTargets(aWhichClipboard, &targetNums);
   if (!targets) return NS_OK;
 
   // Walk through the provided types and try to match it to a
@@ -368,7 +352,7 @@ nsClipboard::HasDataMatchingFlavors(const char **aFlavorList, uint32_t aLength,
     }
 
     for (int32_t j = 0; j < targetNums; j++) {
-      gchar *atom_name = gdk_atom_name(targets[j]);
+      gchar* atom_name = gdk_atom_name(targets[j]);
       if (!atom_name) continue;
 
       if (!strcmp(atom_name, aFlavorList[i])) *_retval = true;
@@ -391,19 +375,19 @@ nsClipboard::HasDataMatchingFlavors(const char **aFlavorList, uint32_t aLength,
 }
 
 NS_IMETHODIMP
-nsClipboard::SupportsSelectionClipboard(bool *_retval) {
+nsClipboard::SupportsSelectionClipboard(bool* _retval) {
   *_retval = mContext->HasSelectionSupport();
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsClipboard::SupportsFindClipboard(bool *_retval) {
+nsClipboard::SupportsFindClipboard(bool* _retval) {
   *_retval = false;
   return NS_OK;
 }
 
-nsITransferable *nsClipboard::GetTransferable(int32_t aWhichClipboard) {
-  nsITransferable *retval;
+nsITransferable* nsClipboard::GetTransferable(int32_t aWhichClipboard) {
+  nsITransferable* retval;
 
   if (aWhichClipboard == kSelectionClipboard)
     retval = mSelectionTransferable.get();
@@ -413,8 +397,8 @@ nsITransferable *nsClipboard::GetTransferable(int32_t aWhichClipboard) {
   return retval;
 }
 
-void nsClipboard::SelectionGetEvent(GtkClipboard *aClipboard,
-                                    GtkSelectionData *aSelectionData) {
+void nsClipboard::SelectionGetEvent(GtkClipboard* aClipboard,
+                                    GtkSelectionData* aSelectionData) {
   // Someone has asked us to hand them something.  The first thing
   // that we want to do is see if that something includes text.  If
   // it does, try to give it text/unicode after converting it to
@@ -433,7 +417,7 @@ void nsClipboard::SelectionGetEvent(GtkClipboard *aClipboard,
 
   nsCOMPtr<nsITransferable> trans = GetTransferable(whichClipboard);
   if (!trans) {
-  // We have nothing to serve
+    // We have nothing to serve
 #ifdef DEBUG_CLIPBOARD
     printf("nsClipboard::SelectionGetEvent() - %s clipboard is empty!\n",
            whichClipboard == kSelectionClipboard ? "Selection" : "Global");
@@ -443,21 +427,18 @@ void nsClipboard::SelectionGetEvent(GtkClipboard *aClipboard,
 
   nsresult rv;
   nsCOMPtr<nsISupports> item;
-  uint32_t len;
 
   GdkAtom selectionTarget = gtk_selection_data_get_target(aSelectionData);
 
-  // Check to see if the selection data includes any of the string
-  // types that we support.
-  if (selectionTarget == gdk_atom_intern("STRING", FALSE) ||
-      selectionTarget == gdk_atom_intern("TEXT", FALSE) ||
-      selectionTarget == gdk_atom_intern("COMPOUND_TEXT", FALSE) ||
-      selectionTarget == gdk_atom_intern("UTF8_STRING", FALSE)) {
+  // Check to see if the selection data is some text type.
+  if (gtk_targets_include_text(&selectionTarget, 1)) {
     // Try to convert our internal type into a text string.  Get
     // the transferable for this clipboard and try to get the
     // text/unicode type for it.
-    rv = trans->GetTransferData("text/unicode", getter_AddRefs(item), &len);
-    if (!item || NS_FAILED(rv)) return;
+    rv = trans->GetTransferData("text/unicode", getter_AddRefs(item));
+    if (NS_FAILED(rv) || !item) {
+      return;
+    }
 
     nsCOMPtr<nsISupportsString> wideString;
     wideString = do_QueryInterface(item);
@@ -465,38 +446,38 @@ void nsClipboard::SelectionGetEvent(GtkClipboard *aClipboard,
 
     nsAutoString ucs2string;
     wideString->GetData(ucs2string);
-    char *utf8string = ToNewUTF8String(ucs2string);
-    if (!utf8string) return;
+    NS_ConvertUTF16toUTF8 utf8string(ucs2string);
 
-    gtk_selection_data_set_text(aSelectionData, utf8string, strlen(utf8string));
-
-    free(utf8string);
+    gtk_selection_data_set_text(aSelectionData, utf8string.get(),
+                                utf8string.Length());
     return;
   }
 
   // Check to see if the selection data is an image type
   if (gtk_targets_include_image(&selectionTarget, 1, TRUE)) {
     // Look through our transfer data for the image
-    static const char *const imageMimeTypes[] = {kNativeImageMime,
+    static const char* const imageMimeTypes[] = {kNativeImageMime,
                                                  kPNGImageMime, kJPEGImageMime,
                                                  kJPGImageMime, kGIFImageMime};
     nsCOMPtr<nsISupports> imageItem;
-    nsCOMPtr<nsISupportsInterfacePointer> ptrPrimitive;
-    for (uint32_t i = 0; !ptrPrimitive && i < ArrayLength(imageMimeTypes);
-         i++) {
-      rv = trans->GetTransferData(imageMimeTypes[i], getter_AddRefs(imageItem),
-                                  &len);
-      ptrPrimitive = do_QueryInterface(imageItem);
+    nsCOMPtr<imgIContainer> image;
+    for (uint32_t i = 0; i < ArrayLength(imageMimeTypes); i++) {
+      rv = trans->GetTransferData(imageMimeTypes[i], getter_AddRefs(imageItem));
+      if (NS_FAILED(rv)) {
+        continue;
+      }
+
+      image = do_QueryInterface(imageItem);
+      if (image) {
+        break;
+      }
     }
-    if (!ptrPrimitive) return;
 
-    nsCOMPtr<nsISupports> primitiveData;
-    ptrPrimitive->GetData(getter_AddRefs(primitiveData));
-    nsCOMPtr<imgIContainer> image(do_QueryInterface(primitiveData));
-    if (!image)  // Not getting an image for an image mime type!?
+    if (!image) {  // Not getting an image for an image mime type!?
       return;
+    }
 
-    GdkPixbuf *pixbuf = nsImageToPixbuf::ImageToPixbuf(image);
+    GdkPixbuf* pixbuf = nsImageToPixbuf::ImageToPixbuf(image);
     if (!pixbuf) return;
 
     gtk_selection_data_set_pixbuf(aSelectionData, pixbuf);
@@ -504,53 +485,59 @@ void nsClipboard::SelectionGetEvent(GtkClipboard *aClipboard,
     return;
   }
 
+  if (selectionTarget == gdk_atom_intern(kHTMLMime, FALSE)) {
+    rv = trans->GetTransferData(kHTMLMime, getter_AddRefs(item));
+    if (NS_FAILED(rv) || !item) {
+      return;
+    }
+
+    nsCOMPtr<nsISupportsString> wideString;
+    wideString = do_QueryInterface(item);
+    if (!wideString) {
+      return;
+    }
+
+    nsAutoString ucs2string;
+    wideString->GetData(ucs2string);
+
+    nsAutoCString html;
+    // Add the prefix so the encoding is correctly detected.
+    html.AppendLiteral(kHTMLMarkupPrefix);
+    AppendUTF16toUTF8(ucs2string, html);
+
+    gtk_selection_data_set(aSelectionData, selectionTarget, 8,
+                           (const guchar*)html.get(), html.Length());
+    return;
+  }
+
   // Try to match up the selection data target to something our
   // transferable provides.
-  gchar *target_name = gdk_atom_name(selectionTarget);
+  gchar* target_name = gdk_atom_name(selectionTarget);
   if (!target_name) return;
 
-  rv = trans->GetTransferData(target_name, getter_AddRefs(item), &len);
+  rv = trans->GetTransferData(target_name, getter_AddRefs(item));
   // nothing found?
-  if (!item || NS_FAILED(rv)) {
+  if (NS_FAILED(rv) || !item) {
     g_free(target_name);
     return;
   }
 
-  void *primitive_data = nullptr;
+  void* primitive_data = nullptr;
+  uint32_t dataLen = 0;
   nsPrimitiveHelpers::CreateDataFromPrimitive(nsDependentCString(target_name),
-                                              item, &primitive_data, len);
+                                              item, &primitive_data, &dataLen);
 
   if (primitive_data) {
-    // Check to see if the selection data is text/html
-    if (selectionTarget == gdk_atom_intern(kHTMLMime, FALSE)) {
-      /*
-       * "text/html" can be encoded UCS2. It is recommended that
-       * documents transmitted as UCS2 always begin with a ZERO-WIDTH
-       * NON-BREAKING SPACE character (hexadecimal FEFF, also called
-       * Byte Order Mark (BOM)). Adding BOM can help other app to
-       * detect mozilla use UCS2 encoding when copy-paste.
-       */
-      guchar *buffer =
-          (guchar *)g_malloc((len * sizeof(guchar)) + sizeof(char16_t));
-      if (!buffer) return;
-      char16_t prefix = 0xFEFF;
-      memcpy(buffer, &prefix, sizeof(prefix));
-      memcpy(buffer + sizeof(prefix), primitive_data, len);
-      g_free((guchar *)primitive_data);
-      primitive_data = (guchar *)buffer;
-      len += sizeof(prefix);
-    }
-
     gtk_selection_data_set(aSelectionData, selectionTarget,
                            8, /* 8 bits in a unit */
-                           (const guchar *)primitive_data, len);
-    g_free(primitive_data);
+                           (const guchar*)primitive_data, dataLen);
+    free(primitive_data);
   }
 
   g_free(target_name);
 }
 
-void nsClipboard::SelectionClearEvent(GtkClipboard *aGtkClipboard) {
+void nsClipboard::SelectionClearEvent(GtkClipboard* aGtkClipboard) {
   int32_t whichClipboard;
 
   // which clipboard?
@@ -564,15 +551,15 @@ void nsClipboard::SelectionClearEvent(GtkClipboard *aGtkClipboard) {
   EmptyClipboard(whichClipboard);
 }
 
-void clipboard_get_cb(GtkClipboard *aGtkClipboard,
-                      GtkSelectionData *aSelectionData, guint info,
+void clipboard_get_cb(GtkClipboard* aGtkClipboard,
+                      GtkSelectionData* aSelectionData, guint info,
                       gpointer user_data) {
-  nsClipboard *aClipboard = static_cast<nsClipboard *>(user_data);
+  nsClipboard* aClipboard = static_cast<nsClipboard*>(user_data);
   aClipboard->SelectionGetEvent(aGtkClipboard, aSelectionData);
 }
 
-void clipboard_clear_cb(GtkClipboard *aGtkClipboard, gpointer user_data) {
-  nsClipboard *aClipboard = static_cast<nsClipboard *>(user_data);
+void clipboard_clear_cb(GtkClipboard* aGtkClipboard, gpointer user_data) {
+  nsClipboard* aClipboard = static_cast<nsClipboard*>(user_data);
   aClipboard->SelectionClearEvent(aGtkClipboard);
 }
 
@@ -595,19 +582,17 @@ void clipboard_clear_cb(GtkClipboard *aGtkClipboard, gpointer user_data) {
  * body      : pass to Mozilla
  * bodyLength: pass to Mozilla
  */
-void ConvertHTMLtoUCS2(const char *data, int32_t dataLength,
-                       char16_t **unicodeData, int32_t &outUnicodeLen) {
+void ConvertHTMLtoUCS2(const char* data, int32_t dataLength,
+                       char16_t** unicodeData, int32_t& outUnicodeLen) {
   nsAutoCString charset;
   GetHTMLCharset(data, dataLength, charset);  // get charset of HTML
   if (charset.EqualsLiteral("UTF-16")) {      // current mozilla
     outUnicodeLen = (dataLength / 2) - 1;
-    *unicodeData = reinterpret_cast<char16_t *>(
+    *unicodeData = reinterpret_cast<char16_t*>(
         moz_xmalloc((outUnicodeLen + sizeof('\0')) * sizeof(char16_t)));
-    if (*unicodeData) {
-      memcpy(*unicodeData, data + sizeof(char16_t),
-             outUnicodeLen * sizeof(char16_t));
-      (*unicodeData)[outUnicodeLen] = '\0';
-    }
+    memcpy(*unicodeData, data + sizeof(char16_t),
+           outUnicodeLen * sizeof(char16_t));
+    (*unicodeData)[outUnicodeLen] = '\0';
   } else if (charset.EqualsLiteral("UNKNOWN")) {
     outUnicodeLen = 0;
     return;
@@ -622,8 +607,19 @@ void ConvertHTMLtoUCS2(const char *data, int32_t dataLength,
       outUnicodeLen = 0;
       return;
     }
+
+    auto dataSpan = MakeSpan(data, dataLength);
+    // Remove kHTMLMarkupPrefix again, it won't necessarily cause any
+    // issues, but might confuse other users.
+    const size_t prefixLen = ArrayLength(kHTMLMarkupPrefix) - 1;
+    if (dataSpan.Length() >= prefixLen &&
+        Substring(data, prefixLen).EqualsLiteral(kHTMLMarkupPrefix)) {
+      dataSpan = dataSpan.From(prefixLen);
+    }
+
     auto decoder = encoding->NewDecoder();
-    CheckedInt<size_t> needed = decoder->MaxUTF16BufferLength(dataLength);
+    CheckedInt<size_t> needed =
+        decoder->MaxUTF16BufferLength(dataSpan.Length());
     if (!needed.isValid() || needed.value() > INT32_MAX) {
       outUnicodeLen = 0;
       return;
@@ -631,27 +627,21 @@ void ConvertHTMLtoUCS2(const char *data, int32_t dataLength,
 
     outUnicodeLen = 0;
     if (needed.value()) {
-      *unicodeData = reinterpret_cast<char16_t *>(
+      *unicodeData = reinterpret_cast<char16_t*>(
           moz_xmalloc((needed.value() + 1) * sizeof(char16_t)));
-      if (*unicodeData) {
-        uint32_t result;
-        size_t read;
-        size_t written;
-        bool hadErrors;
-        Tie(result, read, written, hadErrors) = decoder->DecodeToUTF16(
-            AsBytes(MakeSpan(data, dataLength)),
-            MakeSpan(*unicodeData, needed.value()), true);
-        MOZ_ASSERT(result == kInputEmpty);
-        MOZ_ASSERT(read == size_t(dataLength));
-        MOZ_ASSERT(written <= needed.value());
-        Unused << hadErrors;
-#ifdef DEBUG_CLIPBOARD
-        if (read != dataLength) printf("didn't consume all the bytes\n");
-#endif
-        outUnicodeLen = written;
-        // null terminate.
-        (*unicodeData)[outUnicodeLen] = '\0';
-      }
+      uint32_t result;
+      size_t read;
+      size_t written;
+      bool hadErrors;
+      Tie(result, read, written, hadErrors) = decoder->DecodeToUTF16(
+          AsBytes(dataSpan), MakeSpan(*unicodeData, needed.value()), true);
+      MOZ_ASSERT(result == kInputEmpty);
+      MOZ_ASSERT(read == size_t(dataSpan.Length()));
+      MOZ_ASSERT(written <= needed.value());
+      Unused << hadErrors;
+      outUnicodeLen = written;
+      // null terminate.
+      (*unicodeData)[outUnicodeLen] = '\0';
     }  // if valid length
   }
 }
@@ -663,15 +653,15 @@ void ConvertHTMLtoUCS2(const char *data, int32_t dataLength,
  *  2. "UNKNOWN":     mozilla can't detect what encode it use
  *  3. other:         "text/html" with other charset than utf-16
  */
-void GetHTMLCharset(const char *data, int32_t dataLength, nsCString &str) {
+void GetHTMLCharset(const char* data, int32_t dataLength, nsCString& str) {
   // if detect "FFFE" or "FEFF", assume UTF-16
-  char16_t *beginChar = (char16_t *)data;
+  char16_t* beginChar = (char16_t*)data;
   if ((beginChar[0] == 0xFFFE) || (beginChar[0] == 0xFEFF)) {
     str.AssignLiteral("UTF-16");
     return;
   }
   // no "FFFE" and "FEFF", assume ASCII first to find "charset" info
-  const nsDependentCString htmlStr(data, dataLength);
+  const nsDependentCSubstring htmlStr(data, dataLength);
   nsACString::const_iterator start, end;
   htmlStr.BeginReading(start);
   htmlStr.EndReading(end);

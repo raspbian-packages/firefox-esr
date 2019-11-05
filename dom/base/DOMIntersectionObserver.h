@@ -7,8 +7,9 @@
 #ifndef DOMIntersectionObserver_h
 #define DOMIntersectionObserver_h
 
+#include "mozilla/Attributes.h"
 #include "mozilla/dom/IntersectionObserverBinding.h"
-#include "nsCSSValue.h"
+#include "nsStyleCoord.h"
 #include "nsTArray.h"
 
 using mozilla::dom::DOMRect;
@@ -45,8 +46,8 @@ class DOMIntersectionObserverEntry final : public nsISupports,
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override {
-    return mozilla::dom::IntersectionObserverEntryBinding::Wrap(aCx, this,
-                                                                aGivenProto);
+    return mozilla::dom::IntersectionObserverEntry_Binding::Wrap(aCx, this,
+                                                                 aGivenProto);
   }
 
   DOMHighResTimeStamp Time() { return mTime; }
@@ -107,8 +108,8 @@ class DOMIntersectionObserver final : public nsISupports,
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override {
-    return mozilla::dom::IntersectionObserverBinding::Wrap(aCx, this,
-                                                           aGivenProto);
+    return mozilla::dom::IntersectionObserver_Binding::Wrap(aCx, this,
+                                                            aGivenProto);
   }
 
   nsISupports* GetParentObject() const { return mOwner; }
@@ -131,8 +132,8 @@ class DOMIntersectionObserver final : public nsISupports,
 
   bool SetRootMargin(const nsAString& aString);
 
-  void Update(nsIDocument* aDocument, DOMHighResTimeStamp time);
-  void Notify();
+  void Update(Document* aDocument, DOMHighResTimeStamp time);
+  MOZ_CAN_RUN_SCRIPT void Notify();
 
  protected:
   void Connect();
@@ -144,10 +145,10 @@ class DOMIntersectionObserver final : public nsISupports,
                                       double aIntersectionRatio);
 
   nsCOMPtr<nsPIDOMWindowInner> mOwner;
-  RefPtr<nsIDocument> mDocument;
+  RefPtr<Document> mDocument;
   RefPtr<mozilla::dom::IntersectionCallback> mCallback;
   RefPtr<Element> mRoot;
-  nsCSSRect mRootMargin;
+  StyleRect<LengthPercentage> mRootMargin;
   nsTArray<double> mThresholds;
 
   // Holds raw pointers which are explicitly cleared by UnlinkTarget().

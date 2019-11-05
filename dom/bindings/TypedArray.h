@@ -7,6 +7,11 @@
 #ifndef mozilla_dom_TypedArray_h
 #define mozilla_dom_TypedArray_h
 
+#include "jsfriendapi.h"  // js::Scalar
+#include "js/ArrayBuffer.h"
+#include "js/SharedArrayBuffer.h"
+#include "js/GCAPI.h"       // JS::AutoCheckCannotGC
+#include "js/RootingAPI.h"  // JS::Rooted
 #include "mozilla/Attributes.h"
 #include "mozilla/Move.h"
 #include "mozilla/dom/BindingDeclarations.h"
@@ -32,7 +37,7 @@ struct TypedArray_base : public SpiderMonkeyInterfaceObjectStorage,
       : mData(nullptr), mLength(0), mShared(false), mComputed(false) {}
 
   TypedArray_base(TypedArray_base&& aOther)
-      : SpiderMonkeyInterfaceObjectStorage(Move(aOther)),
+      : SpiderMonkeyInterfaceObjectStorage(std::move(aOther)),
         mData(aOther.mData),
         mLength(aOther.mLength),
         mShared(aOther.mShared),
@@ -72,7 +77,7 @@ struct TypedArray_base : public SpiderMonkeyInterfaceObjectStorage,
   // value if the view may not have been computed and if the value is
   // known to represent a JS TypedArray.
   //
-  // (Just use JS_IsSharedArrayBuffer() to test if any object is of
+  // (Just use JS::IsSharedArrayBuffer() to test if any object is of
   // that type.)
   //
   // Code that elects to allow views that map shared memory to be used
@@ -147,14 +152,14 @@ struct TypedArray
  public:
   TypedArray() : Base() {}
 
-  TypedArray(TypedArray&& aOther) : Base(Move(aOther)) {}
+  TypedArray(TypedArray&& aOther) : Base(std::move(aOther)) {}
 
   static inline JSObject* Create(JSContext* cx, nsWrapperCache* creator,
                                  uint32_t length, const T* data = nullptr) {
     JS::Rooted<JSObject*> creatorWrapper(cx);
-    Maybe<JSAutoCompartment> ac;
+    Maybe<JSAutoRealm> ar;
     if (creator && (creatorWrapper = creator->GetWrapperPreserveColor())) {
-      ac.emplace(cx, creatorWrapper);
+      ar.emplace(cx, creatorWrapper);
     }
 
     return CreateCommon(cx, length, data);
@@ -199,10 +204,10 @@ struct ArrayBufferView_base
       Base;
 
  public:
-  ArrayBufferView_base() : Base() {}
+  ArrayBufferView_base() : Base(), mType(js::Scalar::MaxTypedArrayViewType) {}
 
   ArrayBufferView_base(ArrayBufferView_base&& aOther)
-      : Base(Move(aOther)), mType(aOther.mType) {
+      : Base(std::move(aOther)), mType(aOther.mType) {
     aOther.mType = js::Scalar::MaxTypedArrayViewType;
   }
 
@@ -257,13 +262,13 @@ typedef ArrayBufferView_base<js::UnwrapArrayBufferView,
                              js::GetArrayBufferViewLengthAndData,
                              JS_GetArrayBufferViewType>
     ArrayBufferView;
-typedef TypedArray<uint8_t, js::UnwrapArrayBuffer, JS_GetArrayBufferData,
-                   js::GetArrayBufferLengthAndData, JS_NewArrayBuffer>
+typedef TypedArray<uint8_t, JS::UnwrapArrayBuffer, JS::GetArrayBufferData,
+                   JS::GetArrayBufferLengthAndData, JS::NewArrayBuffer>
     ArrayBuffer;
 
 typedef TypedArray<
-    uint8_t, js::UnwrapSharedArrayBuffer, JS_GetSharedArrayBufferData,
-    js::GetSharedArrayBufferLengthAndData, JS_NewSharedArrayBuffer>
+    uint8_t, JS::UnwrapSharedArrayBuffer, JS::GetSharedArrayBufferData,
+    JS::GetSharedArrayBufferLengthAndData, JS::NewSharedArrayBuffer>
     SharedArrayBuffer;
 
 // A class for converting an nsTArray to a TypedArray

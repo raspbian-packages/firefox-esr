@@ -1107,8 +1107,7 @@ impl<'r, 't> Iterator for Matches<'r, 't> {
 ///
 /// In general, users of this crate shouldn't need to implement this trait,
 /// since implementations are already provided for `&str` and
-/// `FnMut(&Captures) -> String` (or any `FnMut(&Captures) -> T`
-/// where `T: AsRef<str>`), which covers most use cases.
+/// `FnMut(&Captures) -> String`, which covers most use cases.
 pub trait Replacer {
     /// Appends text to `dst` to replace the current match.
     ///
@@ -1184,9 +1183,9 @@ impl<'a> Replacer for &'a str {
     }
 }
 
-impl<F, T> Replacer for F where F: FnMut(&Captures) -> T, T: AsRef<str> {
+impl<F> Replacer for F where F: FnMut(&Captures) -> String {
     fn replace_append(&mut self, caps: &Captures, dst: &mut String) {
-        dst.push_str((*self)(caps).as_ref());
+        dst.push_str(&(*self)(caps));
     }
 }
 

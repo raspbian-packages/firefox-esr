@@ -81,16 +81,19 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(HeapSnapshot)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-/* virtual */ JSObject* HeapSnapshot::WrapObject(JSContext* aCx,
-                                                 HandleObject aGivenProto) {
-  return HeapSnapshotBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* HeapSnapshot::WrapObject(JSContext* aCx, HandleObject aGivenProto) {
+  return HeapSnapshot_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 /*** Reading Heap Snapshots ***************************************************/
 
-/* static */ already_AddRefed<HeapSnapshot> HeapSnapshot::Create(
-    JSContext* cx, GlobalObject& global, const uint8_t* buffer, uint32_t size,
-    ErrorResult& rv) {
+/* static */
+already_AddRefed<HeapSnapshot> HeapSnapshot::Create(JSContext* cx,
+                                                    GlobalObject& global,
+                                                    const uint8_t* buffer,
+                                                    uint32_t size,
+                                                    ErrorResult& rv) {
   RefPtr<HeapSnapshot> snapshot = new HeapSnapshot(cx, global.GetAsSupports());
   if (!snapshot->init(cx, buffer, size)) {
     rv.Throw(NS_ERROR_UNEXPECTED);
@@ -133,18 +136,18 @@ struct GetOrInternStringMatcher {
   explicit GetOrInternStringMatcher(InternedStringSet& strings)
       : internedStrings(strings) {}
 
-  const CharT* match(const std::string* str) {
+  const CharT* operator()(const std::string* str) {
     MOZ_ASSERT(str);
     size_t length = str->length() / sizeof(CharT);
     auto tempString = reinterpret_cast<const CharT*>(str->data());
 
-    UniqueFreePtr<CharT[]> owned(NS_strndup(tempString, length));
-    if (!owned || !internedStrings.append(Move(owned))) return nullptr;
+    UniqueFreePtr<CharT[]> owned(NS_xstrndup(tempString, length));
+    if (!internedStrings.append(std::move(owned))) return nullptr;
 
     return internedStrings.back().get();
   }
 
-  const CharT* match(uint64_t ref) {
+  const CharT* operator()(uint64_t ref) {
     if (MOZ_LIKELY(ref < internedStrings.length())) {
       auto& string = internedStrings[ref];
       MOZ_ASSERT(string);
@@ -268,10 +271,20 @@ bool HeapSnapshot::saveNode(const protobuf::Node& node,
     if (NS_WARN_IF(!scriptFilename)) return false;
   }
 
+  const char16_t* descriptiveTypeName = nullptr;
+  if (node.descriptiveTypeNameOrRef_case() !=
+      protobuf::Node::DESCRIPTIVETYPENAMEORREF_NOT_SET) {
+    Maybe<StringOrRef> descriptiveTypeNameOrRef =
+        GET_STRING_OR_REF(node, descriptivetypename);
+    descriptiveTypeName = getOrInternString<char16_t>(internedTwoByteStrings,
+                                                      descriptiveTypeNameOrRef);
+    if (NS_WARN_IF(!descriptiveTypeName)) return false;
+  }
+
   if (NS_WARN_IF(!nodes.putNew(
-          id, DeserializedNode(id, coarseType, typeName, size, Move(edges),
+          id, DeserializedNode(id, coarseType, typeName, size, std::move(edges),
                                allocationStack, jsObjectClassName,
-                               scriptFilename, *this)))) {
+                               scriptFilename, descriptiveTypeName, *this)))) {
     return false;
   };
 
@@ -363,8 +376,6 @@ static bool readSizeOfNextMessage(ZeroCopyInputStream& stream,
 }
 
 bool HeapSnapshot::init(JSContext* cx, const uint8_t* buffer, uint32_t size) {
-  if (!nodes.init() || !frames.init()) return false;
-
   ArrayInputStream stream(buffer, size);
   GzipInputStream gzipStream(&stream);
   uint32_t sizeOfMessage = 0;
@@ -391,7 +402,6 @@ bool HeapSnapshot::init(JSContext* cx, const uint8_t* buffer, uint32_t size) {
 
   // The set of all node ids we've found edges pointing to.
   NodeIdSet edgeReferents(cx);
-  if (NS_WARN_IF(!edgeReferents.init())) return false;
 
   if (NS_WARN_IF(!saveNode(root, edgeReferents))) return false;
 
@@ -410,8 +420,8 @@ bool HeapSnapshot::init(JSContext* cx, const uint8_t* buffer, uint32_t size) {
   // Check the set of node ids referred to by edges we found and ensure that we
   // have the node corresponding to each id. If we don't have all of them, it is
   // unsafe to perform analyses of this heap snapshot.
-  for (auto range = edgeReferents.all(); !range.empty(); range.popFront()) {
-    if (NS_WARN_IF(!nodes.has(range.front()))) return false;
+  for (auto iter = edgeReferents.iter(); !iter.done(); iter.next()) {
+    if (NS_WARN_IF(!nodes.has(iter.get()))) return false;
   }
 
   return true;
@@ -422,10 +432,6 @@ bool HeapSnapshot::init(JSContext* cx, const uint8_t* buffer, uint32_t size) {
 void HeapSnapshot::TakeCensus(JSContext* cx, JS::HandleObject options,
                               JS::MutableHandleValue rval, ErrorResult& rv) {
   JS::ubi::Census census(cx);
-  if (NS_WARN_IF(!census.init())) {
-    rv.Throw(NS_ERROR_OUT_OF_MEMORY);
-    return;
-  }
 
   JS::ubi::CountTypePtr rootType;
   if (NS_WARN_IF(!JS::ubi::ParseCensusOptions(cx, census, options, rootType))) {
@@ -446,10 +452,6 @@ void HeapSnapshot::TakeCensus(JSContext* cx, JS::HandleObject options,
     JS::AutoCheckCannotGC nogc;
 
     JS::ubi::CensusTraversal traversal(cx, handler, nogc);
-    if (NS_WARN_IF(!traversal.init())) {
-      rv.Throw(NS_ERROR_OUT_OF_MEMORY);
-      return;
-    }
 
     if (NS_WARN_IF(!traversal.addStart(getRoot()))) {
       rv.Throw(NS_ERROR_OUT_OF_MEMORY);
@@ -521,7 +523,7 @@ already_AddRefed<DominatorTree> HeapSnapshot::ComputeDominatorTree(
     return nullptr;
   }
 
-  return MakeAndAddRef<DominatorTree>(Move(*maybeTree), this, mParent);
+  return MakeAndAddRef<DominatorTree>(std::move(*maybeTree), this, mParent);
 }
 
 void HeapSnapshot::ComputeShortestPaths(JSContext* cx, uint64_t start,
@@ -551,10 +553,6 @@ void HeapSnapshot::ComputeShortestPaths(JSContext* cx, uint64_t start,
   // snapshot.
 
   JS::ubi::NodeSet targetsSet;
-  if (NS_WARN_IF(!targetsSet.init())) {
-    rv.Throw(NS_ERROR_OUT_OF_MEMORY);
-    return;
-  }
 
   for (const auto& target : targets) {
     Maybe<JS::ubi::Node> targetNode = getNodeById(target);
@@ -574,8 +572,8 @@ void HeapSnapshot::ComputeShortestPaths(JSContext* cx, uint64_t start,
   Maybe<ShortestPaths> maybeShortestPaths;
   {
     JS::AutoCheckCannotGC nogc(cx);
-    maybeShortestPaths = ShortestPaths::Create(cx, nogc, maxNumPaths,
-                                               *startNode, Move(targetsSet));
+    maybeShortestPaths = ShortestPaths::Create(
+        cx, nogc, maxNumPaths, *startNode, std::move(targetsSet));
   }
 
   if (NS_WARN_IF(maybeShortestPaths.isNothing())) {
@@ -594,51 +592,48 @@ void HeapSnapshot::ComputeShortestPaths(JSContext* cx, uint64_t start,
     return;
   }
 
-  for (auto range = shortestPaths.eachTarget(); !range.empty();
-       range.popFront()) {
-    JS::RootedValue key(cx, JS::NumberValue(range.front().identifier()));
-    JS::AutoValueVector paths(cx);
+  for (auto iter = shortestPaths.targetIter(); !iter.done(); iter.next()) {
+    JS::RootedValue key(cx, JS::NumberValue(iter.get().identifier()));
+    JS::RootedValueVector paths(cx);
 
-    bool ok =
-        shortestPaths.forEachPath(range.front(), [&](JS::ubi::Path& path) {
-          JS::AutoValueVector pathValues(cx);
+    bool ok = shortestPaths.forEachPath(iter.get(), [&](JS::ubi::Path& path) {
+      JS::RootedValueVector pathValues(cx);
 
-          for (JS::ubi::BackEdge* edge : path) {
-            JS::RootedObject pathPart(cx, JS_NewPlainObject(cx));
-            if (!pathPart) {
-              return false;
-            }
+      for (JS::ubi::BackEdge* edge : path) {
+        JS::RootedObject pathPart(cx, JS_NewPlainObject(cx));
+        if (!pathPart) {
+          return false;
+        }
 
-            JS::RootedValue predecessor(
-                cx, NumberValue(edge->predecessor().identifier()));
-            if (!JS_DefineProperty(cx, pathPart, "predecessor", predecessor,
-                                   JSPROP_ENUMERATE)) {
-              return false;
-            }
+        JS::RootedValue predecessor(
+            cx, NumberValue(edge->predecessor().identifier()));
+        if (!JS_DefineProperty(cx, pathPart, "predecessor", predecessor,
+                               JSPROP_ENUMERATE)) {
+          return false;
+        }
 
-            RootedValue edgeNameVal(cx, NullValue());
-            if (edge->name()) {
-              RootedString edgeName(cx,
-                                    JS_AtomizeUCString(cx, edge->name().get()));
-              if (!edgeName) {
-                return false;
-              }
-              edgeNameVal = StringValue(edgeName);
-            }
-
-            if (!JS_DefineProperty(cx, pathPart, "edge", edgeNameVal,
-                                   JSPROP_ENUMERATE)) {
-              return false;
-            }
-
-            if (!pathValues.append(ObjectValue(*pathPart))) {
-              return false;
-            }
+        RootedValue edgeNameVal(cx, NullValue());
+        if (edge->name()) {
+          RootedString edgeName(cx, JS_AtomizeUCString(cx, edge->name().get()));
+          if (!edgeName) {
+            return false;
           }
+          edgeNameVal = StringValue(edgeName);
+        }
 
-          RootedObject pathObj(cx, JS_NewArrayObject(cx, pathValues));
-          return pathObj && paths.append(ObjectValue(*pathObj));
-        });
+        if (!JS_DefineProperty(cx, pathPart, "edge", edgeNameVal,
+                               JSPROP_ENUMERATE)) {
+          return false;
+        }
+
+        if (!pathValues.append(ObjectValue(*pathPart))) {
+          return false;
+        }
+      }
+
+      RootedObject pathObj(cx, JS_NewArrayObject(cx, pathValues));
+      return pathObj && paths.append(ObjectValue(*pathObj));
+    });
 
     if (NS_WARN_IF(!ok)) {
       rv.Throw(NS_ERROR_OUT_OF_MEMORY);
@@ -667,9 +662,7 @@ void HeapSnapshot::ComputeShortestPaths(JSContext* cx, uint64_t start,
 // globals, find the set of compartments the globals are allocated
 // within. Returns false on OOM failure.
 static bool PopulateCompartmentsWithGlobals(CompartmentSet& compartments,
-                                            AutoObjectVector& globals) {
-  if (!compartments.init()) return false;
-
+                                            HandleObjectVector globals) {
   unsigned length = globals.length();
   for (unsigned i = 0; i < length; i++) {
     if (!compartments.put(GetObjectCompartment(globals[i]))) return false;
@@ -680,7 +673,8 @@ static bool PopulateCompartmentsWithGlobals(CompartmentSet& compartments,
 
 // Add the given set of globals as explicit roots in the given roots
 // list. Returns false on OOM failure.
-static bool AddGlobalsAsRoots(AutoObjectVector& globals, ubi::RootList& roots) {
+static bool AddGlobalsAsRoots(HandleObjectVector globals,
+                              ubi::RootList& roots) {
   unsigned length = globals.length();
   for (unsigned i = 0; i < length; i++) {
     if (!roots.addRoot(ubi::Node(globals[i].get()), u"heap snapshot global")) {
@@ -705,7 +699,7 @@ static bool EstablishBoundaries(JSContext* cx, ErrorResult& rv,
                                 ubi::RootList& roots,
                                 CompartmentSet& compartments) {
   MOZ_ASSERT(!roots.initialized());
-  MOZ_ASSERT(!compartments.initialized());
+  MOZ_ASSERT(compartments.empty());
 
   bool foundBoundaryProperty = false;
 
@@ -736,8 +730,8 @@ static bool EstablishBoundaries(JSContext* cx, ErrorResult& rv,
       return false;
     }
 
-    AutoObjectVector globals(cx);
-    if (!dbg::GetDebuggeeGlobals(cx, *dbgObj, globals) ||
+    RootedObjectVector globals(cx);
+    if (!dbg::GetDebuggeeGlobals(cx, *dbgObj, &globals) ||
         !PopulateCompartmentsWithGlobals(compartments, globals) ||
         !roots.init(compartments) || !AddGlobalsAsRoots(globals, roots)) {
       rv.Throw(NS_ERROR_OUT_OF_MEMORY);
@@ -758,7 +752,7 @@ static bool EstablishBoundaries(JSContext* cx, ErrorResult& rv,
       return false;
     }
 
-    AutoObjectVector globals(cx);
+    RootedObjectVector globals(cx);
     for (uint32_t i = 0; i < length; i++) {
       JSObject* global = boundaries.mGlobals.Value().ElementAt(i);
       if (!JS_IsGlobalObject(global)) {
@@ -784,8 +778,6 @@ static bool EstablishBoundaries(JSContext* cx, ErrorResult& rv,
   }
 
   MOZ_ASSERT(roots.initialized());
-  MOZ_ASSERT_IF(boundaries.mDebugger.WasPassed(), compartments.initialized());
-  MOZ_ASSERT_IF(boundaries.mGlobals.WasPassed(), compartments.initialized());
   return true;
 }
 
@@ -795,37 +787,6 @@ class TwoByteString
     : public Variant<JSAtom*, const char16_t*, JS::ubi::EdgeName> {
   using Base = Variant<JSAtom*, const char16_t*, JS::ubi::EdgeName>;
 
-  struct AsTwoByteStringMatcher {
-    TwoByteString match(JSAtom* atom) { return TwoByteString(atom); }
-
-    TwoByteString match(const char16_t* chars) { return TwoByteString(chars); }
-  };
-
-  struct IsNonNullMatcher {
-    template <typename T>
-    bool match(const T& t) {
-      return t != nullptr;
-    }
-  };
-
-  struct LengthMatcher {
-    size_t match(JSAtom* atom) {
-      MOZ_ASSERT(atom);
-      JS::ubi::AtomOrTwoByteChars s(atom);
-      return s.length();
-    }
-
-    size_t match(const char16_t* chars) {
-      MOZ_ASSERT(chars);
-      return NS_strlen(chars);
-    }
-
-    size_t match(const JS::ubi::EdgeName& ptr) {
-      MOZ_ASSERT(ptr);
-      return NS_strlen(ptr.get());
-    }
-  };
-
   struct CopyToBufferMatcher {
     RangedPtr<char16_t> destination;
     size_t maxLength;
@@ -833,15 +794,17 @@ class TwoByteString
     CopyToBufferMatcher(RangedPtr<char16_t> destination, size_t maxLength)
         : destination(destination), maxLength(maxLength) {}
 
-    size_t match(JS::ubi::EdgeName& ptr) { return ptr ? match(ptr.get()) : 0; }
+    size_t operator()(JS::ubi::EdgeName& ptr) {
+      return ptr ? operator()(ptr.get()) : 0;
+    }
 
-    size_t match(JSAtom* atom) {
+    size_t operator()(JSAtom* atom) {
       MOZ_ASSERT(atom);
       JS::ubi::AtomOrTwoByteChars s(atom);
       return s.copyToBuffer(destination, maxLength);
     }
 
-    size_t match(const char16_t* chars) {
+    size_t operator()(const char16_t* chars) {
       MOZ_ASSERT(chars);
       JS::ubi::AtomOrTwoByteChars s(chars);
       return s.copyToBuffer(destination, maxLength);
@@ -850,13 +813,13 @@ class TwoByteString
 
  public:
   template <typename T>
-  MOZ_IMPLICIT TwoByteString(T&& rhs) : Base(Forward<T>(rhs)) {}
+  MOZ_IMPLICIT TwoByteString(T&& rhs) : Base(std::forward<T>(rhs)) {}
 
   template <typename T>
   TwoByteString& operator=(T&& rhs) {
     MOZ_ASSERT(this != &rhs, "self-move disallowed");
     this->~TwoByteString();
-    new (this) TwoByteString(Forward<T>(rhs));
+    new (this) TwoByteString(std::forward<T>(rhs));
     return *this;
   }
 
@@ -865,20 +828,30 @@ class TwoByteString
 
   // Rewrap the inner value of a JS::ubi::AtomOrTwoByteChars as a TwoByteString.
   static TwoByteString from(JS::ubi::AtomOrTwoByteChars&& s) {
-    AsTwoByteStringMatcher m;
-    return s.match(m);
+    return s.match([](auto* a) { return TwoByteString(a); });
   }
 
   // Returns true if the given TwoByteString is non-null, false otherwise.
   bool isNonNull() const {
-    IsNonNullMatcher m;
-    return match(m);
+    return match([](auto& t) { return t != nullptr; });
   }
 
   // Return the length of the string, 0 if it is null.
   size_t length() const {
-    LengthMatcher m;
-    return match(m);
+    return match(
+        [](JSAtom* atom) -> size_t {
+          MOZ_ASSERT(atom);
+          JS::ubi::AtomOrTwoByteChars s(atom);
+          return s.length();
+        },
+        [](const char16_t* chars) -> size_t {
+          MOZ_ASSERT(chars);
+          return NS_strlen(chars);
+        },
+        [](const JS::ubi::EdgeName& ptr) -> size_t {
+          MOZ_ASSERT(ptr);
+          return NS_strlen(ptr.get());
+        });
   }
 
   // Copy the contents of a TwoByteString into the provided buffer. The buffer
@@ -903,37 +876,33 @@ class TwoByteString
 struct TwoByteString::HashPolicy {
   using Lookup = TwoByteString;
 
-  struct HashingMatcher {
-    js::HashNumber match(const JSAtom* atom) {
-      return js::DefaultHasher<const JSAtom*>::hash(atom);
-    }
-
-    js::HashNumber match(const char16_t* chars) {
-      MOZ_ASSERT(chars);
-      auto length = NS_strlen(chars);
-      return HashString(chars, length);
-    }
-
-    js::HashNumber match(const JS::ubi::EdgeName& ptr) {
-      MOZ_ASSERT(ptr);
-      return match(ptr.get());
-    }
-  };
-
   static js::HashNumber hash(const Lookup& l) {
-    HashingMatcher hasher;
-    return l.match(hasher);
+    return l.match(
+        [](const JSAtom* atom) {
+          return js::DefaultHasher<const JSAtom*>::hash(atom);
+        },
+        [](const char16_t* chars) {
+          MOZ_ASSERT(chars);
+          auto length = NS_strlen(chars);
+          return HashString(chars, length);
+        },
+        [](const JS::ubi::EdgeName& ptr) {
+          const char16_t* chars = ptr.get();
+          MOZ_ASSERT(chars);
+          auto length = NS_strlen(chars);
+          return HashString(chars, length);
+        });
   }
 
   struct EqualityMatcher {
     const TwoByteString& rhs;
     explicit EqualityMatcher(const TwoByteString& rhs) : rhs(rhs) {}
 
-    bool match(const JSAtom* atom) {
+    bool operator()(const JSAtom* atom) {
       return rhs.is<JSAtom*>() && rhs.as<JSAtom*>() == atom;
     }
 
-    bool match(const char16_t* chars) {
+    bool operator()(const char16_t* chars) {
       MOZ_ASSERT(chars);
 
       const char16_t* rhsChars = nullptr;
@@ -951,9 +920,9 @@ struct TwoByteString::HashPolicy {
       return memcmp(chars, rhsChars, length * sizeof(char16_t)) == 0;
     }
 
-    bool match(const JS::ubi::EdgeName& ptr) {
+    bool operator()(const JS::ubi::EdgeName& ptr) {
       MOZ_ASSERT(ptr);
-      return match(ptr.get());
+      return operator()(ptr.get());
     }
   };
 
@@ -963,7 +932,7 @@ struct TwoByteString::HashPolicy {
   }
 
   static void rekey(TwoByteString& k, TwoByteString&& newKey) {
-    k = Move(newKey);
+    k = std::move(newKey);
   }
 };
 
@@ -999,7 +968,7 @@ static bool ShouldIncludeEdge(JS::CompartmentSet* compartments,
   // serialize nodes in other compartments that are reachable from these
   // non-compartment nodes.
 
-  JSCompartment* compartment = edge.referent.compartment();
+  JS::Compartment* compartment = edge.referent.compartment();
 
   if (!compartment || compartments->has(compartment)) {
     return true;
@@ -1066,7 +1035,7 @@ class MOZ_STACK_CLASS StreamWriter : public CoreDumpWriter {
     string.copyToBuffer(RangedPtr<char16_t>(buf, length), length);
 
     uint64_t ref = twoByteStringsAlreadySerialized.count();
-    if (!twoByteStringsAlreadySerialized.add(ptr, Move(string), ref))
+    if (!twoByteStringsAlreadySerialized.add(ptr, std::move(string), ref))
       return false;
 
     setString(stringData.release());
@@ -1169,12 +1138,6 @@ class MOZ_STACK_CLASS StreamWriter : public CoreDumpWriter {
         stream(stream),
         compartments(compartments) {}
 
-  bool init() {
-    return framesAlreadySerialized.init() &&
-           twoByteStringsAlreadySerialized.init() &&
-           oneByteStringsAlreadySerialized.init();
-  }
-
   ~StreamWriter() override {}
 
   bool writeMetadata(uint64_t timestamp) final {
@@ -1226,7 +1189,7 @@ class MOZ_STACK_CLASS StreamWriter : public CoreDumpWriter {
         protobufEdge->set_referent(ubiEdge.referent.identifier());
 
         if (wantNames && ubiEdge.name) {
-          TwoByteString edgeName(Move(ubiEdge.name));
+          TwoByteString edgeName(std::move(ubiEdge.name));
           if (NS_WARN_IF(!attachTwoByteString(
                   edgeName,
                   [&](std::string* name) {
@@ -1272,6 +1235,20 @@ class MOZ_STACK_CLASS StreamWriter : public CoreDumpWriter {
       }
     }
 
+    if (ubiNode.descriptiveTypeName()) {
+      auto descriptiveTypeName = TwoByteString(ubiNode.descriptiveTypeName());
+      if (NS_WARN_IF(!attachTwoByteString(
+              descriptiveTypeName,
+              [&](std::string* name) {
+                protobufNode.set_allocated_descriptivetypename(name);
+              },
+              [&](uint64_t ref) {
+                protobufNode.set_descriptivetypenameref(ref);
+              }))) {
+        return false;
+      }
+    }
+
     return writeMessage(protobufNode);
   }
 };
@@ -1288,7 +1265,10 @@ class MOZ_STACK_CLASS HeapSnapshotHandler {
   uint32_t edgeCount;
 
   HeapSnapshotHandler(CoreDumpWriter& writer, JS::CompartmentSet* compartments)
-      : writer(writer), compartments(compartments) {}
+      : writer(writer),
+        compartments(compartments),
+        nodeCount(0),
+        edgeCount(0) {}
 
   // JS::ubi::BreadthFirst handler interface.
 
@@ -1333,7 +1313,6 @@ bool WriteHeapGraph(JSContext* cx, const JS::ubi::Node& node,
 
   HeapSnapshotHandler handler(writer, compartments);
   HeapSnapshotHandler::Traversal traversal(cx, handler, noGC);
-  if (!traversal.init()) return false;
   traversal.wantNames = wantNames;
 
   bool ok = traversal.addStartVisited(node) && traversal.traverse();
@@ -1351,7 +1330,8 @@ static unsigned long msSinceProcessCreation(const TimeStamp& now) {
   return (unsigned long)duration.ToMilliseconds();
 }
 
-/* static */ already_AddRefed<nsIFile> HeapSnapshot::CreateUniqueCoreDumpFile(
+/* static */
+already_AddRefed<nsIFile> HeapSnapshot::CreateUniqueCoreDumpFile(
     ErrorResult& rv, const TimeStamp& now, nsAString& outFilePath,
     nsAString& outSnapshotId) {
   nsCOMPtr<nsIFile> file;
@@ -1464,7 +1444,8 @@ namespace dom {
 using namespace JS;
 using namespace devtools;
 
-/* static */ void ChromeUtils::SaveHeapSnapshotShared(
+/* static */
+void ChromeUtils::SaveHeapSnapshotShared(
     GlobalObject& global, const HeapSnapshotBoundaries& boundaries,
     nsAString& outFilePath, nsAString& outSnapshotId, ErrorResult& rv) {
   auto start = TimeStamp::Now();
@@ -1490,11 +1471,7 @@ using namespace devtools;
       return;
 
     StreamWriter writer(cx, gzipStream, wantNames,
-                        compartments.initialized() ? &compartments : nullptr);
-    if (NS_WARN_IF(!writer.init())) {
-      rv.Throw(NS_ERROR_OUT_OF_MEMORY);
-      return;
-    }
+                        !compartments.empty() ? &compartments : nullptr);
 
     MOZ_ASSERT(maybeNoGC.isSome());
     ubi::Node roots(&rootList);
@@ -1504,7 +1481,7 @@ using namespace devtools;
         // Serialize the heap graph to the core dump, starting from our list of
         // roots.
         !WriteHeapGraph(cx, roots, writer, wantNames,
-                        compartments.initialized() ? &compartments : nullptr,
+                        !compartments.empty() ? &compartments : nullptr,
                         maybeNoGC.ref(), nodeCount, edgeCount)) {
       rv.Throw(zeroCopyStream.failed() ? zeroCopyStream.result()
                                        : NS_ERROR_UNEXPECTED);
@@ -1520,21 +1497,24 @@ using namespace devtools;
                         edgeCount);
 }
 
-/* static */ void ChromeUtils::SaveHeapSnapshot(
-    GlobalObject& global, const HeapSnapshotBoundaries& boundaries,
-    nsAString& outFilePath, ErrorResult& rv) {
+/* static */
+void ChromeUtils::SaveHeapSnapshot(GlobalObject& global,
+                                   const HeapSnapshotBoundaries& boundaries,
+                                   nsAString& outFilePath, ErrorResult& rv) {
   nsAutoString snapshotId;
   SaveHeapSnapshotShared(global, boundaries, outFilePath, snapshotId, rv);
 }
 
-/* static */ void ChromeUtils::SaveHeapSnapshotGetId(
+/* static */
+void ChromeUtils::SaveHeapSnapshotGetId(
     GlobalObject& global, const HeapSnapshotBoundaries& boundaries,
     nsAString& outSnapshotId, ErrorResult& rv) {
   nsAutoString filePath;
   SaveHeapSnapshotShared(global, boundaries, filePath, outSnapshotId, rv);
 }
 
-/* static */ already_AddRefed<HeapSnapshot> ChromeUtils::ReadHeapSnapshot(
+/* static */
+already_AddRefed<HeapSnapshot> ChromeUtils::ReadHeapSnapshot(
     GlobalObject& global, const nsAString& filePath, ErrorResult& rv) {
   auto start = TimeStamp::Now();
 

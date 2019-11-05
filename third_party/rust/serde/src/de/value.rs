@@ -1,22 +1,10 @@
-// Copyright 2017 Serde Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 //! Building blocks for deserializing basic values using the `IntoDeserializer`
 //! trait.
 //!
-//! ```rust
-//! #[macro_use]
-//! extern crate serde_derive;
-//!
-//! extern crate serde;
-//!
+//! ```edition2018
 //! use std::str::FromStr;
-//! use serde::de::{value, Deserialize, IntoDeserializer};
+//! use serde::Deserialize;
+//! use serde::de::{value, IntoDeserializer};
 //!
 //! #[derive(Deserialize)]
 //! enum Setting {
@@ -31,16 +19,30 @@
 //!         Self::deserialize(s.into_deserializer())
 //!     }
 //! }
-//! #
-//! # fn main() {}
 //! ```
 
 use lib::*;
 
+use self::private::{First, Second};
 use de::{self, Expected, IntoDeserializer, SeqAccess};
 use private::de::size_hint;
 use ser;
-use self::private::{First, Second};
+
+////////////////////////////////////////////////////////////////////////////////
+
+// For structs that contain a PhantomData. We do not want the trait
+// bound `E: Clone` inferred by derive(Clone).
+macro_rules! impl_copy_clone {
+    ($ty:ident $(<$lifetime:tt>)*) => {
+        impl<$($lifetime,)* E> Copy for $ty<$($lifetime,)* E> {}
+
+        impl<$($lifetime,)* E> Clone for $ty<$($lifetime,)* E> {
+            fn clone(&self) -> Self {
+                *self
+            }
+        }
+    };
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +60,7 @@ type ErrorImpl = ();
 
 impl de::Error for Error {
     #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cold]
     fn custom<T>(msg: T) -> Self
     where
         T: Display,
@@ -68,6 +71,7 @@ impl de::Error for Error {
     }
 
     #[cfg(not(any(feature = "std", feature = "alloc")))]
+    #[cold]
     fn custom<T>(msg: T) -> Self
     where
         T: Display,
@@ -78,6 +82,7 @@ impl de::Error for Error {
 }
 
 impl ser::Error for Error {
+    #[cold]
     fn custom<T>(msg: T) -> Self
     where
         T: Display,
@@ -121,10 +126,12 @@ where
 }
 
 /// A deserializer holding a `()`.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct UnitDeserializer<E> {
     marker: PhantomData<E>,
 }
+
+impl_copy_clone!(UnitDeserializer);
 
 impl<'de, E> de::Deserializer<'de> for UnitDeserializer<E>
 where
@@ -133,9 +140,9 @@ where
     type Error = E;
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf unit unit_struct newtype_struct seq tuple tuple_struct map
-        struct enum identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf unit unit_struct newtype_struct seq tuple tuple_struct
+        map struct enum identifier ignored_any
     }
 
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -155,15 +162,59 @@ where
 
 ////////////////////////////////////////////////////////////////////////////////
 
+/// A deserializer that cannot be instantiated.
+#[cfg(feature = "unstable")]
+pub struct NeverDeserializer<E> {
+    never: !,
+    marker: PhantomData<E>,
+}
+
+#[cfg(feature = "unstable")]
+impl<'de, E> IntoDeserializer<'de, E> for !
+where
+    E: de::Error,
+{
+    type Deserializer = NeverDeserializer<E>;
+
+    fn into_deserializer(self) -> Self::Deserializer {
+        self
+    }
+}
+
+#[cfg(feature = "unstable")]
+impl<'de, E> de::Deserializer<'de> for NeverDeserializer<E>
+where
+    E: de::Error,
+{
+    type Error = E;
+
+    fn deserialize_any<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: de::Visitor<'de>,
+    {
+        self.never
+    }
+
+    forward_to_deserialize_any! {
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct enum identifier ignored_any
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 macro_rules! primitive_deserializer {
     ($ty:ty, $doc:tt, $name:ident, $method:ident $($cast:tt)*) => {
         #[doc = "A deserializer holding"]
         #[doc = $doc]
-        #[derive(Clone, Debug)]
+        #[derive(Debug)]
         pub struct $name<E> {
             value: $ty,
             marker: PhantomData<E>
         }
+
+        impl_copy_clone!($name);
 
         impl<'de, E> IntoDeserializer<'de, E> for $ty
         where
@@ -186,9 +237,9 @@ macro_rules! primitive_deserializer {
             type Error = E;
 
             forward_to_deserialize_any! {
-                bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-                byte_buf option unit unit_struct newtype_struct seq tuple
-                tuple_struct map struct enum identifier ignored_any
+                bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str
+                string bytes byte_buf option unit unit_struct newtype_struct seq
+                tuple tuple_struct map struct enum identifier ignored_any
             }
 
             fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -215,12 +266,19 @@ primitive_deserializer!(f32, "an `f32`.", F32Deserializer, visit_f32);
 primitive_deserializer!(f64, "an `f64`.", F64Deserializer, visit_f64);
 primitive_deserializer!(char, "a `char`.", CharDeserializer, visit_char);
 
+serde_if_integer128! {
+    primitive_deserializer!(i128, "an `i128`.", I128Deserializer, visit_i128);
+    primitive_deserializer!(u128, "a `u128`.", U128Deserializer, visit_u128);
+}
+
 /// A deserializer holding a `u32`.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct U32Deserializer<E> {
     value: u32,
     marker: PhantomData<E>,
 }
+
+impl_copy_clone!(U32Deserializer);
 
 impl<'de, E> IntoDeserializer<'de, E> for u32
 where
@@ -243,9 +301,9 @@ where
     type Error = E;
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct identifier ignored_any
     }
 
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -288,11 +346,13 @@ where
 ////////////////////////////////////////////////////////////////////////////////
 
 /// A deserializer holding a `&str`.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct StrDeserializer<'a, E> {
     value: &'a str,
     marker: PhantomData<E>,
 }
+
+impl_copy_clone!(StrDeserializer<'de>);
 
 impl<'de, 'a, E> IntoDeserializer<'de, E> for &'a str
 where
@@ -336,9 +396,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct identifier ignored_any
     }
 }
 
@@ -361,11 +421,13 @@ where
 
 /// A deserializer holding a `&str` with a lifetime tied to another
 /// deserializer.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct BorrowedStrDeserializer<'de, E> {
     value: &'de str,
     marker: PhantomData<E>,
 }
+
+impl_copy_clone!(BorrowedStrDeserializer<'de>);
 
 impl<'de, E> BorrowedStrDeserializer<'de, E> {
     /// Create a new borrowed deserializer from the given string.
@@ -405,9 +467,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct identifier ignored_any
     }
 }
 
@@ -430,10 +492,20 @@ where
 
 /// A deserializer holding a `String`.
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct StringDeserializer<E> {
     value: String,
     marker: PhantomData<E>,
+}
+
+#[cfg(any(feature = "std", feature = "alloc"))]
+impl<E> Clone for StringDeserializer<E> {
+    fn clone(&self) -> Self {
+        StringDeserializer {
+            value: self.value.clone(),
+            marker: PhantomData,
+        }
+    }
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
@@ -480,9 +552,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct identifier ignored_any
     }
 }
 
@@ -506,10 +578,20 @@ where
 
 /// A deserializer holding a `Cow<str>`.
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct CowStrDeserializer<'a, E> {
     value: Cow<'a, str>,
     marker: PhantomData<E>,
+}
+
+#[cfg(any(feature = "std", feature = "alloc"))]
+impl<'a, E> Clone for CowStrDeserializer<'a, E> {
+    fn clone(&self) -> Self {
+        CowStrDeserializer {
+            value: self.value.clone(),
+            marker: PhantomData,
+        }
+    }
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
@@ -559,9 +641,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct identifier ignored_any
     }
 }
 
@@ -585,11 +667,13 @@ where
 
 /// A deserializer holding a `&[u8]` with a lifetime tied to another
 /// deserializer.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct BorrowedBytesDeserializer<'de, E> {
     value: &'de [u8],
     marker: PhantomData<E>,
 }
+
+impl_copy_clone!(BorrowedBytesDeserializer<'de>);
 
 impl<'de, E> BorrowedBytesDeserializer<'de, E> {
     /// Create a new borrowed deserializer from the given byte slice.
@@ -615,9 +699,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct identifier ignored_any enum
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct identifier ignored_any enum
     }
 }
 
@@ -652,11 +736,8 @@ where
 {
     /// Check for remaining elements after passing a `SeqDeserializer` to
     /// `Visitor::visit_seq`.
-    pub fn end(mut self) -> Result<(), E> {
-        let mut remaining = 0;
-        while self.iter.next().is_some() {
-            remaining += 1;
-        }
+    pub fn end(self) -> Result<(), E> {
+        let remaining = self.iter.count();
         if remaining == 0 {
             Ok(())
         } else {
@@ -688,9 +769,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct enum identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct enum identifier ignored_any
     }
 }
 
@@ -803,9 +884,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct enum identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct enum identifier ignored_any
     }
 }
 
@@ -849,11 +930,8 @@ where
 {
     /// Check for remaining elements after passing a `MapDeserializer` to
     /// `Visitor::visit_map`.
-    pub fn end(mut self) -> Result<(), E> {
-        let mut remaining = 0;
-        while self.iter.next().is_some() {
-            remaining += 1;
-        }
+    pub fn end(self) -> Result<(), E> {
+        let remaining = self.iter.count();
         if remaining == 0 {
             Ok(())
         } else {
@@ -920,9 +998,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct tuple_struct map struct
-        enum identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct tuple_struct map
+        struct enum identifier ignored_any
     }
 }
 
@@ -1062,9 +1140,9 @@ where
     type Error = E;
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct tuple_struct map struct
-        enum identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct tuple_struct map
+        struct enum identifier ignored_any
     }
 
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -1210,9 +1288,9 @@ where
     }
 
     forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
-        byte_buf option unit unit_struct newtype_struct seq tuple tuple_struct
-        map struct enum identifier ignored_any
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+        bytes byte_buf option unit unit_struct newtype_struct seq tuple
+        tuple_struct map struct enum identifier ignored_any
     }
 }
 

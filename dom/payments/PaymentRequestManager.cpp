@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "PaymentRequestManager.h"
-#include "PaymentRequestUtils.h"
 #include "mozilla/ClearOnShutdown.h"
-#include "mozilla/dom/ContentChild.h"
-#include "mozilla/dom/TabChild.h"
 #include "mozilla/dom/PaymentRequestChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "nsContentUtils.h"
 #include "nsString.h"
 #include "nsIPrincipal.h"
+#include "PaymentRequestManager.h"
+#include "PaymentRequestUtils.h"
+#include "PaymentResponse.h"
 
 namespace mozilla {
 namespace dom {
@@ -46,17 +46,9 @@ void ConvertCurrencyAmount(const PaymentCurrencyAmount& aAmount,
 }
 
 void ConvertItem(const PaymentItem& aItem, IPCPaymentItem& aIPCItem) {
-  uint8_t typeIndex = UINT8_MAX;
-  if (aItem.mType.WasPassed()) {
-    typeIndex = static_cast<uint8_t>(aItem.mType.Value());
-  }
-  nsString type;
-  if (typeIndex < ArrayLength(PaymentItemTypeValues::strings)) {
-    type.AssignASCII(PaymentItemTypeValues::strings[typeIndex].value);
-  }
   IPCPaymentCurrencyAmount amount;
   ConvertCurrencyAmount(aItem.mAmount, amount);
-  aIPCItem = IPCPaymentItem(aItem.mLabel, amount, aItem.mPending, type);
+  aIPCItem = IPCPaymentItem(aItem.mLabel, amount, aItem.mPending);
 }
 
 nsresult ConvertModifier(JSContext* aCx,
@@ -74,7 +66,9 @@ nsresult ConvertModifier(JSContext* aCx,
   }
 
   IPCPaymentItem total;
-  ConvertItem(aModifier.mTotal, total);
+  if (aModifier.mTotal.WasPassed()) {
+    ConvertItem(aModifier.mTotal.Value(), total);
+  }
 
   nsTArray<IPCPaymentItem> additionalDisplayItems;
   if (aModifier.mAdditionalDisplayItems.WasPassed()) {
@@ -102,7 +96,7 @@ nsresult ConvertDetailsBase(
     JSContext* aCx, const PaymentDetailsBase& aDetails,
     nsTArray<IPCPaymentItem>& aDisplayItems,
     nsTArray<IPCPaymentShippingOption>& aShippingOptions,
-    nsTArray<IPCPaymentDetailsModifier>& aModifiers) {
+    nsTArray<IPCPaymentDetailsModifier>& aModifiers, bool aRequestShipping) {
   NS_ENSURE_ARG_POINTER(aCx);
   if (aDetails.mDisplayItems.WasPassed()) {
     for (const PaymentItem& item : aDetails.mDisplayItems.Value()) {
@@ -111,7 +105,7 @@ nsresult ConvertDetailsBase(
       aDisplayItems.AppendElement(displayItem);
     }
   }
-  if (aDetails.mShippingOptions.WasPassed()) {
+  if (aRequestShipping && aDetails.mShippingOptions.WasPassed()) {
     for (const PaymentShippingOption& option :
          aDetails.mShippingOptions.Value()) {
       IPCPaymentShippingOption shippingOption;
@@ -133,20 +127,21 @@ nsresult ConvertDetailsBase(
 }
 
 nsresult ConvertDetailsInit(JSContext* aCx, const PaymentDetailsInit& aDetails,
-                            IPCPaymentDetails& aIPCDetails) {
+                            IPCPaymentDetails& aIPCDetails,
+                            bool aRequestShipping) {
   NS_ENSURE_ARG_POINTER(aCx);
   // Convert PaymentDetailsBase members
   nsTArray<IPCPaymentItem> displayItems;
   nsTArray<IPCPaymentShippingOption> shippingOptions;
   nsTArray<IPCPaymentDetailsModifier> modifiers;
   nsresult rv = ConvertDetailsBase(aCx, aDetails, displayItems, shippingOptions,
-                                   modifiers);
+                                   modifiers, aRequestShipping);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
   // Convert |id|
-  nsString id(EmptyString());
+  nsAutoString id;
   if (aDetails.mId.WasPassed()) {
     id = aDetails.mId.Value();
   }
@@ -155,43 +150,70 @@ nsresult ConvertDetailsInit(JSContext* aCx, const PaymentDetailsInit& aDetails,
   IPCPaymentItem total;
   ConvertItem(aDetails.mTotal, total);
 
-  aIPCDetails = IPCPaymentDetails(
-      id, total, displayItems, shippingOptions, modifiers,
-      EmptyString(),  // error message
-      aDetails.mDisplayItems.WasPassed(), aDetails.mShippingOptions.WasPassed(),
-      aDetails.mModifiers.WasPassed());
+  aIPCDetails =
+      IPCPaymentDetails(id, total, displayItems, shippingOptions, modifiers,
+                        EmptyString(),   // error message
+                        EmptyString(),   // shippingAddressErrors
+                        EmptyString(),   // payerErrors
+                        EmptyString());  // paymentMethodErrors
   return NS_OK;
 }
 
 nsresult ConvertDetailsUpdate(JSContext* aCx,
                               const PaymentDetailsUpdate& aDetails,
-                              IPCPaymentDetails& aIPCDetails) {
+                              IPCPaymentDetails& aIPCDetails,
+                              bool aRequestShipping) {
   NS_ENSURE_ARG_POINTER(aCx);
   // Convert PaymentDetailsBase members
   nsTArray<IPCPaymentItem> displayItems;
   nsTArray<IPCPaymentShippingOption> shippingOptions;
   nsTArray<IPCPaymentDetailsModifier> modifiers;
   nsresult rv = ConvertDetailsBase(aCx, aDetails, displayItems, shippingOptions,
-                                   modifiers);
+                                   modifiers, aRequestShipping);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
   // Convert required |total|
   IPCPaymentItem total;
-  ConvertItem(aDetails.mTotal, total);
+  if (aDetails.mTotal.WasPassed()) {
+    ConvertItem(aDetails.mTotal.Value(), total);
+  }
 
   // Convert |error|
-  nsString error(EmptyString());
+  nsAutoString error;
   if (aDetails.mError.WasPassed()) {
     error = aDetails.mError.Value();
   }
 
-  aIPCDetails = IPCPaymentDetails(
-      EmptyString(),  // id
-      total, displayItems, shippingOptions, modifiers, error,
-      aDetails.mDisplayItems.WasPassed(), aDetails.mShippingOptions.WasPassed(),
-      aDetails.mModifiers.WasPassed());
+  nsAutoString shippingAddressErrors;
+  if (aDetails.mShippingAddressErrors.WasPassed()) {
+    if (!aDetails.mShippingAddressErrors.Value().ToJSON(
+            shippingAddressErrors)) {
+      return NS_ERROR_FAILURE;
+    }
+  }
+
+  nsAutoString payerErrors;
+  if (aDetails.mPayerErrors.WasPassed()) {
+    if (!aDetails.mPayerErrors.Value().ToJSON(payerErrors)) {
+      return NS_ERROR_FAILURE;
+    }
+  }
+
+  nsAutoString paymentMethodErrors;
+  if (aDetails.mPaymentMethodErrors.WasPassed()) {
+    JS::RootedObject object(aCx, aDetails.mPaymentMethodErrors.Value());
+    nsresult rv = SerializeFromJSObject(aCx, object, paymentMethodErrors);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+  }
+
+  aIPCDetails = IPCPaymentDetails(EmptyString(),  // id
+                                  total, displayItems, shippingOptions,
+                                  modifiers, error, shippingAddressErrors,
+                                  payerErrors, paymentMethodErrors);
   return NS_OK;
 }
 
@@ -203,112 +225,183 @@ void ConvertOptions(const PaymentOptions& aOptions,
     shippingType.AssignASCII(
         PaymentShippingTypeValues::strings[shippingTypeIndex].value);
   }
-  aIPCOption = IPCPaymentOptions(
-      aOptions.mRequestPayerName, aOptions.mRequestPayerEmail,
-      aOptions.mRequestPayerPhone, aOptions.mRequestShipping, shippingType);
+  aIPCOption =
+      IPCPaymentOptions(aOptions.mRequestPayerName, aOptions.mRequestPayerEmail,
+                        aOptions.mRequestPayerPhone, aOptions.mRequestShipping,
+                        aOptions.mRequestBillingAddress, shippingType);
+}
+
+void ConvertResponseData(const IPCPaymentResponseData& aIPCData,
+                         ResponseData& aData) {
+  switch (aIPCData.type()) {
+    case IPCPaymentResponseData::TIPCGeneralResponse: {
+      const IPCGeneralResponse& data = aIPCData;
+      GeneralData gData;
+      gData.data = data.data();
+      aData = gData;
+      break;
+    }
+    case IPCPaymentResponseData::TIPCBasicCardResponse: {
+      const IPCBasicCardResponse& data = aIPCData;
+      BasicCardData bData;
+      bData.cardholderName = data.cardholderName();
+      bData.cardNumber = data.cardNumber();
+      bData.expiryMonth = data.expiryMonth();
+      bData.expiryYear = data.expiryYear();
+      bData.cardSecurityCode = data.cardSecurityCode();
+      bData.billingAddress.country = data.billingAddress().country();
+      bData.billingAddress.addressLine = data.billingAddress().addressLine();
+      bData.billingAddress.region = data.billingAddress().region();
+      bData.billingAddress.regionCode = data.billingAddress().regionCode();
+      bData.billingAddress.city = data.billingAddress().city();
+      bData.billingAddress.dependentLocality =
+          data.billingAddress().dependentLocality();
+      bData.billingAddress.postalCode = data.billingAddress().postalCode();
+      bData.billingAddress.sortingCode = data.billingAddress().sortingCode();
+      bData.billingAddress.organization = data.billingAddress().organization();
+      bData.billingAddress.recipient = data.billingAddress().recipient();
+      bData.billingAddress.phone = data.billingAddress().phone();
+      aData = bData;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+}
+
+void ConvertMethodChangeDetails(const IPCMethodChangeDetails& aIPCDetails,
+                                ChangeDetails& aDetails) {
+  switch (aIPCDetails.type()) {
+    case IPCMethodChangeDetails::TIPCGeneralChangeDetails: {
+      const IPCGeneralChangeDetails& details = aIPCDetails;
+      GeneralDetails gDetails;
+      gDetails.details = details.details();
+      aDetails = gDetails;
+      break;
+    }
+    case IPCMethodChangeDetails::TIPCBasicCardChangeDetails: {
+      const IPCBasicCardChangeDetails& details = aIPCDetails;
+      BasicCardDetails bDetails;
+      bDetails.billingAddress.country = details.billingAddress().country();
+      bDetails.billingAddress.addressLine =
+          details.billingAddress().addressLine();
+      bDetails.billingAddress.region = details.billingAddress().region();
+      bDetails.billingAddress.regionCode =
+          details.billingAddress().regionCode();
+      bDetails.billingAddress.city = details.billingAddress().city();
+      bDetails.billingAddress.dependentLocality =
+          details.billingAddress().dependentLocality();
+      bDetails.billingAddress.postalCode =
+          details.billingAddress().postalCode();
+      bDetails.billingAddress.sortingCode =
+          details.billingAddress().sortingCode();
+      bDetails.billingAddress.organization =
+          details.billingAddress().organization();
+      bDetails.billingAddress.recipient = details.billingAddress().recipient();
+      bDetails.billingAddress.phone = details.billingAddress().phone();
+      aDetails = bDetails;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
 }
 }  // end of namespace
 
 /* PaymentRequestManager */
 
 StaticRefPtr<PaymentRequestManager> gPaymentManager;
+const char kSupportedRegionsPref[] = "dom.payments.request.supportedRegions";
 
-nsresult PaymentRequestManager::GetPaymentChild(PaymentRequest* aRequest,
-                                                PaymentRequestChild** aChild) {
-  NS_ENSURE_ARG_POINTER(aRequest);
-  NS_ENSURE_ARG_POINTER(aChild);
-  *aChild = nullptr;
+void SupportedRegionsPrefChangedCallback(const char* aPrefName,
+                                         nsTArray<nsString>* aRetval) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(!strcmp(aPrefName, kSupportedRegionsPref));
 
-  RefPtr<PaymentRequestChild> paymentChild;
-  if (mPaymentChildHash.Get(aRequest, getter_AddRefs(paymentChild))) {
-    paymentChild.forget(aChild);
-    return NS_OK;
+  nsAutoString supportedRegions;
+  Preferences::GetString(aPrefName, supportedRegions);
+  aRetval->Clear();
+  for (const nsAString& each : supportedRegions.Split(',')) {
+    aRetval->AppendElement(each);
+  }
+}
+
+PaymentRequestManager::PaymentRequestManager() {
+  Preferences::RegisterCallbackAndCall(SupportedRegionsPrefChangedCallback,
+                                       kSupportedRegionsPref,
+                                       &this->mSupportedRegions);
+}
+
+PaymentRequestManager::~PaymentRequestManager() {
+  MOZ_ASSERT(mActivePayments.Count() == 0);
+  Preferences::UnregisterCallback(SupportedRegionsPrefChangedCallback,
+                                  kSupportedRegionsPref,
+                                  &this->mSupportedRegions);
+  mSupportedRegions.Clear();
+}
+
+bool PaymentRequestManager::IsRegionSupported(const nsAString& region) const {
+  return mSupportedRegions.Contains(region);
+}
+
+PaymentRequestChild* PaymentRequestManager::GetPaymentChild(
+    PaymentRequest* aRequest) {
+  MOZ_ASSERT(aRequest);
+
+  if (PaymentRequestChild* child = aRequest->GetIPC()) {
+    return child;
   }
 
   nsPIDOMWindowInner* win = aRequest->GetOwner();
-  NS_ENSURE_TRUE(win, NS_ERROR_FAILURE);
-  TabChild* tabChild = TabChild::GetFrom(win->GetDocShell());
-  NS_ENSURE_TRUE(tabChild, NS_ERROR_FAILURE);
+  NS_ENSURE_TRUE(win, nullptr);
+  BrowserChild* browserChild = BrowserChild::GetFrom(win->GetDocShell());
+  NS_ENSURE_TRUE(browserChild, nullptr);
   nsAutoString requestId;
   aRequest->GetInternalId(requestId);
 
-  // Only one payment request can interact with user at the same time.
-  // Before we create a new PaymentRequestChild, make sure there is no other
-  // payment request are interacting on the same tab.
-  for (auto iter = mPaymentChildHash.ConstIter(); !iter.Done(); iter.Next()) {
-    RefPtr<PaymentRequest> request = iter.Key();
-    if (request->Equals(requestId)) {
-      continue;
-    }
-    nsPIDOMWindowInner* requestOwner = request->GetOwner();
-    NS_ENSURE_TRUE(requestOwner, NS_ERROR_FAILURE);
-    TabChild* tmpChild = TabChild::GetFrom(requestOwner->GetDocShell());
-    NS_ENSURE_TRUE(tmpChild, NS_ERROR_FAILURE);
-    if (tmpChild->GetTabId() == tabChild->GetTabId()) {
-      return NS_ERROR_FAILURE;
-    }
-  }
+  PaymentRequestChild* paymentChild = new PaymentRequestChild(aRequest);
+  browserChild->SendPPaymentRequestConstructor(paymentChild);
 
-  paymentChild = new PaymentRequestChild();
-  tabChild->SendPPaymentRequestConstructor(paymentChild);
-  if (!mPaymentChildHash.Put(aRequest, paymentChild, mozilla::fallible)) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-  paymentChild.forget(aChild);
-  return NS_OK;
-}
-
-nsresult PaymentRequestManager::ReleasePaymentChild(
-    PaymentRequestChild* aPaymentChild) {
-  NS_ENSURE_ARG_POINTER(aPaymentChild);
-  for (auto iter = mPaymentChildHash.Iter(); !iter.Done(); iter.Next()) {
-    RefPtr<PaymentRequestChild> child = iter.Data();
-    if (NS_WARN_IF(!child)) {
-      return NS_ERROR_FAILURE;
-    }
-    if (child == aPaymentChild) {
-      iter.Remove();
-      return NS_OK;
-    }
-  }
-  return NS_OK;
-}
-
-nsresult PaymentRequestManager::ReleasePaymentChild(PaymentRequest* aRequest) {
-  NS_ENSURE_ARG_POINTER(aRequest);
-
-  RefPtr<PaymentRequestChild> paymentChild;
-  if (!mPaymentChildHash.Remove(aRequest, getter_AddRefs(paymentChild))) {
-    return NS_ERROR_FAILURE;
-  }
-  if (NS_WARN_IF(!paymentChild)) {
-    return NS_ERROR_FAILURE;
-  }
-  paymentChild->MaybeDelete();
-  return NS_OK;
+  return paymentChild;
 }
 
 nsresult PaymentRequestManager::SendRequestPayment(
     PaymentRequest* aRequest, const IPCPaymentActionRequest& aAction,
-    bool aReleaseAfterSend) {
-  RefPtr<PaymentRequestChild> requestChild;
-  nsresult rv = GetPaymentChild(aRequest, getter_AddRefs(requestChild));
+    bool aResponseExpected) {
+  PaymentRequestChild* requestChild = GetPaymentChild(aRequest);
+  nsresult rv = requestChild->RequestPayment(aAction);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
-  rv = requestChild->RequestPayment(aAction);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
-  if (aReleaseAfterSend) {
-    rv = ReleasePaymentChild(aRequest);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
+  if (aResponseExpected) {
+    auto count = mActivePayments.LookupForAdd(aRequest);
+    if (count) {
+      count.Data()++;
+    } else {
+      count.OrInsert([]() { return 1; });
     }
   }
   return NS_OK;
+}
+
+void PaymentRequestManager::NotifyRequestDone(PaymentRequest* aRequest) {
+  auto entry = mActivePayments.Lookup(aRequest);
+  MOZ_ASSERT(entry);
+  MOZ_ASSERT(entry.Data() > 0);
+
+  uint32_t count = --entry.Data();
+  if (count == 0) {
+    entry.Remove();
+  }
+}
+
+void PaymentRequestManager::RequestIPCOver(PaymentRequest* aRequest) {
+  // This must only be called from ActorDestroy or if we're sure we won't
+  // receive any more IPC for aRequest.
+  mActivePayments.Remove(aRequest);
 }
 
 already_AddRefed<PaymentRequestManager> PaymentRequestManager::GetSingleton() {
@@ -320,18 +413,7 @@ already_AddRefed<PaymentRequestManager> PaymentRequestManager::GetSingleton() {
   return manager.forget();
 }
 
-already_AddRefed<PaymentRequest> PaymentRequestManager::GetPaymentRequestById(
-    const nsAString& aRequestId) {
-  for (const RefPtr<PaymentRequest>& request : mRequestQueue) {
-    if (request->Equals(aRequestId)) {
-      RefPtr<PaymentRequest> paymentRequest = request;
-      return paymentRequest.forget();
-    }
-  }
-  return nullptr;
-}
-
-void GetSelectedShippingOption(const PaymentDetailsInit& aDetails,
+void GetSelectedShippingOption(const PaymentDetailsBase& aDetails,
                                nsAString& aOption) {
   SetDOMStringToNull(aOption);
   if (!aDetails.mShippingOptions.WasPassed()) {
@@ -366,7 +448,7 @@ nsresult PaymentRequestManager::CreatePayment(
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
-
+  request->SetOptions(aOptions);
   /*
    *  Set request's |mId| to details.id if details.id exists.
    *  Otherwise, set |mId| to internal id.
@@ -387,6 +469,7 @@ nsresult PaymentRequestManager::CreatePayment(
   nsAutoString shippingOption;
   SetDOMStringToNull(shippingOption);
   if (aOptions.mRequestShipping) {
+    request->ShippingWasRequested();
     request->SetShippingType(
         Nullable<PaymentShippingType>(aOptions.mShippingType));
     GetSelectedShippingOption(aDetails, shippingOption);
@@ -407,7 +490,7 @@ nsresult PaymentRequestManager::CreatePayment(
   }
 
   IPCPaymentDetails details;
-  rv = ConvertDetailsInit(aCx, aDetails, details);
+  rv = ConvertDetailsInit(aCx, aDetails, details, aOptions.mRequestShipping);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -415,130 +498,156 @@ nsresult PaymentRequestManager::CreatePayment(
   IPCPaymentOptions options;
   ConvertOptions(aOptions, options);
 
-  IPCPaymentCreateActionRequest action(internalId,
-                                       IPC::Principal(aTopLevelPrincipal),
-                                       methodData, details, options);
+  nsCOMPtr<nsPIDOMWindowOuter> outerWindow = aWindow->GetOuterWindow();
+  MOZ_ASSERT(outerWindow);
+  if (nsCOMPtr<nsPIDOMWindowOuter> topOuterWindow = outerWindow->GetTop()) {
+    outerWindow = topOuterWindow;
+  }
+  uint64_t topOuterWindowId = outerWindow->WindowID();
 
-  rv = SendRequestPayment(request, action, true);
+  IPCPaymentCreateActionRequest action(
+      topOuterWindowId, internalId, IPC::Principal(aTopLevelPrincipal),
+      methodData, details, options, shippingOption);
+
+  rv = SendRequestPayment(request, action, false);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
-  mRequestQueue.AppendElement(request);
   request.forget(aRequest);
   return NS_OK;
 }
 
-nsresult PaymentRequestManager::CanMakePayment(const nsAString& aRequestId) {
-  RefPtr<PaymentRequest> request = GetPaymentRequestById(aRequestId);
-  if (!request) {
-    return NS_ERROR_FAILURE;
-  }
-
-  nsAutoString requestId(aRequestId);
+nsresult PaymentRequestManager::CanMakePayment(PaymentRequest* aRequest) {
+  nsAutoString requestId;
+  aRequest->GetInternalId(requestId);
   IPCPaymentCanMakeActionRequest action(requestId);
-
-  return SendRequestPayment(request, action);
+  return SendRequestPayment(aRequest, action);
 }
 
-nsresult PaymentRequestManager::ShowPayment(const nsAString& aRequestId) {
-  if (mShowingRequest) {
-    return NS_ERROR_ABORT;
-  }
-  RefPtr<PaymentRequest> request = GetPaymentRequestById(aRequestId);
-  if (!request) {
-    return NS_ERROR_FAILURE;
-  }
-
-  nsAutoString requestId(aRequestId);
-  IPCPaymentShowActionRequest action(requestId);
-  nsresult rv = SendRequestPayment(request, action);
-  mShowingRequest = request;
-  return rv;
+nsresult PaymentRequestManager::ShowPayment(PaymentRequest* aRequest) {
+  nsAutoString requestId;
+  aRequest->GetInternalId(requestId);
+  IPCPaymentShowActionRequest action(requestId, aRequest->IsUpdating());
+  return SendRequestPayment(aRequest, action);
 }
 
-nsresult PaymentRequestManager::AbortPayment(const nsAString& aRequestId) {
-  RefPtr<PaymentRequest> request = GetPaymentRequestById(aRequestId);
-  if (!request) {
-    return NS_ERROR_FAILURE;
-  }
-
-  nsAutoString requestId(aRequestId);
+nsresult PaymentRequestManager::AbortPayment(PaymentRequest* aRequest) {
+  nsAutoString requestId;
+  aRequest->GetInternalId(requestId);
   IPCPaymentAbortActionRequest action(requestId);
-
-  return SendRequestPayment(request, action);
+  return SendRequestPayment(aRequest, action);
 }
 
 nsresult PaymentRequestManager::CompletePayment(
-    const nsAString& aRequestId, const PaymentComplete& aComplete) {
-  RefPtr<PaymentRequest> request = GetPaymentRequestById(aRequestId);
-  if (!request) {
-    return NS_ERROR_FAILURE;
-  }
-
+    PaymentRequest* aRequest, const PaymentComplete& aComplete,
+    bool aTimedOut) {
   nsString completeStatusString(NS_LITERAL_STRING("unknown"));
-  uint8_t completeIndex = static_cast<uint8_t>(aComplete);
-  if (completeIndex < ArrayLength(PaymentCompleteValues::strings)) {
-    completeStatusString.AssignASCII(
-        PaymentCompleteValues::strings[completeIndex].value);
+  if (aTimedOut) {
+    completeStatusString.AssignLiteral("timeout");
+  } else {
+    uint8_t completeIndex = static_cast<uint8_t>(aComplete);
+    if (completeIndex < ArrayLength(PaymentCompleteValues::strings)) {
+      completeStatusString.AssignASCII(
+          PaymentCompleteValues::strings[completeIndex].value);
+    }
   }
 
-  nsAutoString requestId(aRequestId);
+  nsAutoString requestId;
+  aRequest->GetInternalId(requestId);
   IPCPaymentCompleteActionRequest action(requestId, completeStatusString);
-
-  return SendRequestPayment(request, action);
+  return SendRequestPayment(aRequest, action, false);
 }
 
 nsresult PaymentRequestManager::UpdatePayment(
-    JSContext* aCx, const nsAString& aRequestId,
-    const PaymentDetailsUpdate& aDetails) {
+    JSContext* aCx, PaymentRequest* aRequest,
+    const PaymentDetailsUpdate& aDetails, bool aRequestShipping) {
   NS_ENSURE_ARG_POINTER(aCx);
-  RefPtr<PaymentRequest> request = GetPaymentRequestById(aRequestId);
-  if (!request) {
-    return NS_ERROR_UNEXPECTED;
-  }
-
-  // [TODO] Process details.shippingOptions if presented.
-  //        1) Check if there are duplicate IDs in details.shippingOptions,
-  //           if so, reset details.shippingOptions to an empty sequence.
-  //        2) Set request's selectedShippingOption to the ID of last selected
-  //           option.
-
   IPCPaymentDetails details;
-  nsresult rv = ConvertDetailsUpdate(aCx, aDetails, details);
+  nsresult rv = ConvertDetailsUpdate(aCx, aDetails, details, aRequestShipping);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
-  nsAutoString requestId(aRequestId);
-  IPCPaymentUpdateActionRequest action(requestId, details);
-  return SendRequestPayment(request, action);
+  nsAutoString shippingOption;
+  SetDOMStringToNull(shippingOption);
+  if (aRequestShipping) {
+    GetSelectedShippingOption(aDetails, shippingOption);
+    aRequest->SetShippingOption(shippingOption);
+  }
+
+  nsAutoString requestId;
+  aRequest->GetInternalId(requestId);
+  IPCPaymentUpdateActionRequest action(requestId, details, shippingOption);
+  return SendRequestPayment(aRequest, action, false);
+}
+
+nsresult PaymentRequestManager::ClosePayment(PaymentRequest* aRequest) {
+  // for the case, the payment request is waiting for response from user.
+  if (auto entry = mActivePayments.Lookup(aRequest)) {
+    NotifyRequestDone(aRequest);
+  }
+  nsAutoString requestId;
+  aRequest->GetInternalId(requestId);
+  IPCPaymentCloseActionRequest action(requestId);
+  return SendRequestPayment(aRequest, action, false);
+}
+
+nsresult PaymentRequestManager::RetryPayment(
+    JSContext* aCx, PaymentRequest* aRequest,
+    const PaymentValidationErrors& aErrors) {
+  NS_ENSURE_ARG_POINTER(aCx);
+  NS_ENSURE_ARG_POINTER(aRequest);
+
+  nsAutoString requestId;
+  aRequest->GetInternalId(requestId);
+
+  nsAutoString error;
+  if (aErrors.mError.WasPassed()) {
+    error = aErrors.mError.Value();
+  }
+
+  nsAutoString shippingAddressErrors;
+  if (aErrors.mShippingAddress.WasPassed()) {
+    if (!aErrors.mShippingAddress.Value().ToJSON(shippingAddressErrors)) {
+      return NS_ERROR_FAILURE;
+    }
+  }
+
+  nsAutoString payerErrors;
+  if (aErrors.mPayer.WasPassed()) {
+    if (!aErrors.mPayer.Value().ToJSON(payerErrors)) {
+      return NS_ERROR_FAILURE;
+    }
+  }
+
+  nsAutoString paymentMethodErrors;
+  if (aErrors.mPaymentMethod.WasPassed()) {
+    JS::RootedObject object(aCx, aErrors.mPaymentMethod.Value());
+    nsresult rv = SerializeFromJSObject(aCx, object, paymentMethodErrors);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+  }
+  IPCPaymentRetryActionRequest action(requestId, error, payerErrors,
+                                      paymentMethodErrors,
+                                      shippingAddressErrors);
+  return SendRequestPayment(aRequest, action);
 }
 
 nsresult PaymentRequestManager::RespondPayment(
-    const IPCPaymentActionResponse& aResponse) {
+    PaymentRequest* aRequest, const IPCPaymentActionResponse& aResponse) {
   switch (aResponse.type()) {
     case IPCPaymentActionResponse::TIPCPaymentCanMakeActionResponse: {
       const IPCPaymentCanMakeActionResponse& response = aResponse;
-      RefPtr<PaymentRequest> request =
-          GetPaymentRequestById(response.requestId());
-      if (NS_WARN_IF(!request)) {
-        return NS_ERROR_FAILURE;
-      }
-      request->RespondCanMakePayment(response.result());
-      nsresult rv = ReleasePaymentChild(request);
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        return rv;
-      }
+      aRequest->RespondCanMakePayment(response.result());
+      NotifyRequestDone(aRequest);
       break;
     }
     case IPCPaymentActionResponse::TIPCPaymentShowActionResponse: {
       const IPCPaymentShowActionResponse& response = aResponse;
-      RefPtr<PaymentRequest> request =
-          GetPaymentRequestById(response.requestId());
-      if (NS_WARN_IF(!request)) {
-        return NS_ERROR_FAILURE;
-      }
       nsresult rejectedReason = NS_ERROR_DOM_ABORT_ERR;
+      ResponseData responseData;
+      ConvertResponseData(response.data(), responseData);
       switch (response.status()) {
         case nsIPaymentActionResponse::PAYMENT_ACCEPTED: {
           rejectedReason = NS_OK;
@@ -557,81 +666,65 @@ nsresult PaymentRequestManager::RespondPayment(
           break;
         }
       }
-      request->RespondShowPayment(response.methodName(), response.data(),
-                                  response.payerName(), response.payerEmail(),
-                                  response.payerPhone(), rejectedReason);
+      aRequest->RespondShowPayment(response.methodName(), responseData,
+                                   response.payerName(), response.payerEmail(),
+                                   response.payerPhone(), rejectedReason);
       if (NS_FAILED(rejectedReason)) {
-        MOZ_ASSERT(mShowingRequest == request);
-        mShowingRequest = nullptr;
-        mRequestQueue.RemoveElement(request);
-        nsresult rv = ReleasePaymentChild(request);
-        if (NS_WARN_IF(NS_FAILED(rv))) {
-          return rv;
-        }
+        NotifyRequestDone(aRequest);
       }
       break;
     }
     case IPCPaymentActionResponse::TIPCPaymentAbortActionResponse: {
       const IPCPaymentAbortActionResponse& response = aResponse;
-      RefPtr<PaymentRequest> request =
-          GetPaymentRequestById(response.requestId());
-      if (NS_WARN_IF(!request)) {
-        return NS_ERROR_FAILURE;
-      }
-      request->RespondAbortPayment(response.isSucceeded());
-      if (response.isSucceeded()) {
-        MOZ_ASSERT(mShowingRequest == request);
-        mShowingRequest = nullptr;
-        mRequestQueue.RemoveElement(request);
-        nsresult rv = ReleasePaymentChild(request);
-        if (NS_WARN_IF(NS_FAILED(rv))) {
-          return rv;
-        }
-      }
+      aRequest->RespondAbortPayment(response.isSucceeded());
+      NotifyRequestDone(aRequest);
       break;
     }
     case IPCPaymentActionResponse::TIPCPaymentCompleteActionResponse: {
-      const IPCPaymentCompleteActionResponse& response = aResponse;
-      RefPtr<PaymentRequest> request =
-          GetPaymentRequestById(response.requestId());
-      if (NS_WARN_IF(!request)) {
-        return NS_ERROR_FAILURE;
-      }
-      request->RespondComplete();
-      MOZ_ASSERT(mShowingRequest == request);
-      mShowingRequest = nullptr;
-      mRequestQueue.RemoveElement(request);
-      nsresult rv = ReleasePaymentChild(request);
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        return rv;
-      }
+      aRequest->RespondComplete();
+      NotifyRequestDone(aRequest);
       break;
     }
-    default: { return NS_ERROR_FAILURE; }
+    default: {
+      return NS_ERROR_FAILURE;
+    }
   }
   return NS_OK;
 }
 
 nsresult PaymentRequestManager::ChangeShippingAddress(
-    const nsAString& aRequestId, const IPCPaymentAddress& aAddress) {
-  RefPtr<PaymentRequest> request = GetPaymentRequestById(aRequestId);
-  if (NS_WARN_IF(!request)) {
-    return NS_ERROR_FAILURE;
-  }
-  return request->UpdateShippingAddress(
+    PaymentRequest* aRequest, const IPCPaymentAddress& aAddress) {
+  return aRequest->UpdateShippingAddress(
       aAddress.country(), aAddress.addressLine(), aAddress.region(),
-      aAddress.city(), aAddress.dependentLocality(), aAddress.postalCode(),
-      aAddress.sortingCode(), aAddress.languageCode(), aAddress.organization(),
+      aAddress.regionCode(), aAddress.city(), aAddress.dependentLocality(),
+      aAddress.postalCode(), aAddress.sortingCode(), aAddress.organization(),
       aAddress.recipient(), aAddress.phone());
 }
 
-nsresult PaymentRequestManager::ChangeShippingOption(
-    const nsAString& aRequestId, const nsAString& aOption) {
-  RefPtr<PaymentRequest> request = GetPaymentRequestById(aRequestId);
-  if (NS_WARN_IF(!request)) {
-    return NS_ERROR_FAILURE;
+nsresult PaymentRequestManager::ChangeShippingOption(PaymentRequest* aRequest,
+                                                     const nsAString& aOption) {
+  return aRequest->UpdateShippingOption(aOption);
+}
+
+nsresult PaymentRequestManager::ChangePayerDetail(
+    PaymentRequest* aRequest, const nsAString& aPayerName,
+    const nsAString& aPayerEmail, const nsAString& aPayerPhone) {
+  MOZ_ASSERT(aRequest);
+  RefPtr<PaymentResponse> response = aRequest->GetResponse();
+  // ignoring the case call changePayerDetail during show().
+  if (!response) {
+    return NS_OK;
   }
-  return request->UpdateShippingOption(aOption);
+  return response->UpdatePayerDetail(aPayerName, aPayerEmail, aPayerPhone);
+}
+
+nsresult PaymentRequestManager::ChangePaymentMethod(
+    PaymentRequest* aRequest, const nsAString& aMethodName,
+    const IPCMethodChangeDetails& aMethodDetails) {
+  NS_ENSURE_ARG_POINTER(aRequest);
+  ChangeDetails methodDetails;
+  ConvertMethodChangeDetails(aMethodDetails, methodDetails);
+  return aRequest->UpdatePaymentMethod(aMethodName, methodDetails);
 }
 
 }  // end of namespace dom

@@ -13,11 +13,13 @@
 
 #include "mozilla/Maybe.h"
 #include "mozilla/Variant.h"
+#include "mozilla/dom/WindowProxyHolder.h"
 #include "mozilla/extensions/MatchGlob.h"
 #include "mozilla/extensions/MatchPattern.h"
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsISupports.h"
+#include "nsIDocShell.h"
 #include "nsWrapperCache.h"
 
 class nsILoadInfo;
@@ -60,6 +62,25 @@ class MOZ_STACK_CLASS DocInfo final {
     return nullptr;
   }
 
+  nsILoadInfo* GetLoadInfo() const {
+    if (mObj.is<LoadInfo>()) {
+      return mObj.as<LoadInfo>();
+    }
+    return nullptr;
+  }
+
+  already_AddRefed<nsILoadContext> GetLoadContext() const {
+    nsCOMPtr<nsILoadContext> loadContext;
+    if (nsPIDOMWindowOuter* window = GetWindow()) {
+      nsIDocShell* docShell = window->GetDocShell();
+      loadContext = do_QueryInterface(docShell);
+    } else if (nsILoadInfo* loadInfo = GetLoadInfo()) {
+      nsCOMPtr<nsISupports> requestingContext = loadInfo->GetLoadingContext();
+      loadContext = do_QueryInterface(requestingContext);
+    }
+    return loadContext.forget();
+  }
+
  private:
   void SetURL(const URLInfo& aURL);
 
@@ -77,17 +98,15 @@ class MOZ_STACK_CLASS DocInfo final {
   const Variant<LoadInfo, Window> mObj;
 };
 
-class WebExtensionContentScript final : public nsISupports,
-                                        public nsWrapperCache {
+class MozDocumentMatcher : public nsISupports, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(WebExtensionContentScript)
+  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(MozDocumentMatcher)
 
   using MatchGlobArray = nsTArray<RefPtr<MatchGlob>>;
-  using RunAtEnum = dom::ContentScriptRunAt;
 
-  static already_AddRefed<WebExtensionContentScript> Constructor(
-      dom::GlobalObject& aGlobal, WebExtensionPolicy& aExtension,
-      const ContentScriptInit& aInit, ErrorResult& aRv);
+  static already_AddRefed<MozDocumentMatcher> Constructor(
+      dom::GlobalObject& aGlobal, const dom::MozDocumentMatcherInit& aInit,
+      ErrorResult& aRv);
 
   bool Matches(const DocInfo& aDoc) const;
   bool MatchesURI(const URLInfo& aURL) const;
@@ -95,18 +114,17 @@ class WebExtensionContentScript final : public nsISupports,
   bool MatchesLoadInfo(const URLInfo& aURL, nsILoadInfo* aLoadInfo) const {
     return Matches({aURL, aLoadInfo});
   }
-  bool MatchesWindow(nsPIDOMWindowOuter* aWindow) const {
-    return Matches(aWindow);
+  bool MatchesWindow(const dom::WindowProxyHolder& aWindow) const {
+    return Matches(aWindow.get()->GetDOMWindow());
   }
+
+  WebExtensionPolicy* GetExtension() { return mExtension; }
 
   WebExtensionPolicy* Extension() { return mExtension; }
   const WebExtensionPolicy* Extension() const { return mExtension; }
 
   bool AllFrames() const { return mAllFrames; }
   bool MatchAboutBlank() const { return mMatchAboutBlank; }
-  RunAtEnum RunAt() const { return mRunAt; }
-
-  Nullable<uint64_t> GetFrameID() const { return mFrameID; }
 
   MatchPatternSet* Matches() { return mMatches; }
   const MatchPatternSet* GetMatches() const { return mMatches; }
@@ -121,27 +139,21 @@ class WebExtensionContentScript final : public nsISupports,
     ToNullable(mExcludeGlobs, aGlobs);
   }
 
-  void GetCssPaths(nsTArray<nsString>& aPaths) const {
-    aPaths.AppendElements(mCssPaths);
-  }
-  void GetJsPaths(nsTArray<nsString>& aPaths) const {
-    aPaths.AppendElements(mJsPaths);
-  }
+  Nullable<uint64_t> GetFrameID() const { return mFrameID; }
 
   WebExtensionPolicy* GetParentObject() const { return mExtension; }
-
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::HandleObject aGivenProto) override;
 
  protected:
   friend class WebExtensionPolicy;
 
-  virtual ~WebExtensionContentScript() = default;
+  virtual ~MozDocumentMatcher() = default;
 
-  WebExtensionContentScript(WebExtensionPolicy& aExtension,
-                            const ContentScriptInit& aInit, ErrorResult& aRv);
+  MozDocumentMatcher(dom::GlobalObject& aGlobal,
+                     const dom::MozDocumentMatcherInit& aInit, bool aRestricted,
+                     ErrorResult& aRv);
 
- private:
   RefPtr<WebExtensionPolicy> mExtension;
 
   bool mHasActiveTabPermission;
@@ -153,15 +165,11 @@ class WebExtensionContentScript final : public nsISupports,
   Nullable<MatchGlobSet> mIncludeGlobs;
   Nullable<MatchGlobSet> mExcludeGlobs;
 
-  nsTArray<nsString> mCssPaths;
-  nsTArray<nsString> mJsPaths;
-
-  RunAtEnum mRunAt;
-
   bool mAllFrames;
   Nullable<uint64_t> mFrameID;
   bool mMatchAboutBlank;
 
+ private:
   template <typename T, typename U>
   void ToNullable(const Nullable<T>& aInput, Nullable<U>& aOutput) {
     if (aInput.IsNull()) {
@@ -170,6 +178,42 @@ class WebExtensionContentScript final : public nsISupports,
       aOutput.SetValue(aInput.Value());
     }
   }
+};
+
+class WebExtensionContentScript final : public MozDocumentMatcher {
+ public:
+  using RunAtEnum = dom::ContentScriptRunAt;
+
+  static already_AddRefed<WebExtensionContentScript> Constructor(
+      dom::GlobalObject& aGlobal, WebExtensionPolicy& aExtension,
+      const ContentScriptInit& aInit, ErrorResult& aRv);
+
+  RunAtEnum RunAt() const { return mRunAt; }
+
+  void GetCssPaths(nsTArray<nsString>& aPaths) const {
+    aPaths.AppendElements(mCssPaths);
+  }
+  void GetJsPaths(nsTArray<nsString>& aPaths) const {
+    aPaths.AppendElements(mJsPaths);
+  }
+
+  virtual JSObject* WrapObject(JSContext* aCx,
+                               JS::HandleObject aGivenProto) override;
+
+ protected:
+  friend class WebExtensionPolicy;
+
+  virtual ~WebExtensionContentScript() = default;
+
+  WebExtensionContentScript(dom::GlobalObject& aGlobal,
+                            WebExtensionPolicy& aExtension,
+                            const ContentScriptInit& aInit, ErrorResult& aRv);
+
+ private:
+  nsTArray<nsString> mCssPaths;
+  nsTArray<nsString> mJsPaths;
+
+  RunAtEnum mRunAt;
 };
 
 }  // namespace extensions

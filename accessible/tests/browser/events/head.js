@@ -8,8 +8,9 @@
 /* import-globals-from ../shared-head.js */
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/accessible/tests/browser/shared-head.js",
-  this);
+  this
+);
 
 // Loading and common.js from accessible/tests/mochitest/ for all tests, as
 // well as events.js.
-loadScripts({ name: "common.js", dir: MOCHITESTS_DIR }, "events.js", "layout.js");
+loadScripts({ name: "common.js", dir: MOCHITESTS_DIR }, "events.js");

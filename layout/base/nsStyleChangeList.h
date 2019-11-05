@@ -13,7 +13,6 @@
 #define nsStyleChangeList_h___
 
 #include "mozilla/Attributes.h"
-#include "mozilla/StyleBackendType.h"
 
 #include "nsChangeHint.h"
 #include "nsCOMPtr.h"
@@ -32,16 +31,14 @@ class nsStyleChangeList : private AutoTArray<nsStyleChangeData, 10> {
   nsStyleChangeList(const nsStyleChangeList&) = delete;
 
  public:
+  using base_type::begin;
   using base_type::Clear;
+  using base_type::end;
   using base_type::IsEmpty;
   using base_type::Length;
-  using base_type::begin;
-  using base_type::end;
   using base_type::operator[];
 
-  explicit nsStyleChangeList(mozilla::StyleBackendType aType) : mType(aType) {
-    MOZ_COUNT_CTOR(nsStyleChangeList);
-  }
+  nsStyleChangeList() { MOZ_COUNT_CTOR(nsStyleChangeList); }
   ~nsStyleChangeList() { MOZ_COUNT_DTOR(nsStyleChangeList); }
   void AppendChange(nsIFrame* aFrame, nsIContent* aContent, nsChangeHint aHint);
 
@@ -49,15 +46,9 @@ class nsStyleChangeList : private AutoTArray<nsStyleChangeData, 10> {
   // empty or an element with |mContent != aContent| is found.
   void PopChangesForContent(nsIContent* aContent) {
     while (!IsEmpty() && LastElement().mContent == aContent) {
-      RemoveElementAt(Length() - 1);
+      RemoveLastElement();
     }
   }
-
-  bool IsGecko() const { return mType == mozilla::StyleBackendType::Gecko; }
-  bool IsServo() const { return mType == mozilla::StyleBackendType::Servo; }
-
- private:
-  mozilla::StyleBackendType mType;
 };
 
 #endif /* nsStyleChangeList_h___ */

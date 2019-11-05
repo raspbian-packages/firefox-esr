@@ -14,64 +14,59 @@
 #include "mozilla/Sprintf.h"
 
 #ifdef XP_WIN
-#include <comutil.h>
-#include <time.h>
-#ifndef __MINGW32__
-#include <iwscapi.h>
-#endif  // __MINGW32__
-#include <windows.h>
-#include <winioctl.h>
-#ifndef __MINGW32__
-#include <wscapi.h>
-#endif  // __MINGW32__
-#include "base/scoped_handle_win.h"
-#include "nsAppDirectoryServiceDefs.h"
-#include "nsDirectoryServiceDefs.h"
-#include "nsDirectoryServiceUtils.h"
-#include "nsIObserverService.h"
-#include "nsWindowsHelpers.h"
+#  include <comutil.h>
+#  include <time.h>
+#  ifndef __MINGW32__
+#    include <iwscapi.h>
+#  endif  // __MINGW32__
+#  include <windows.h>
+#  include <winioctl.h>
+#  ifndef __MINGW32__
+#    include <wscapi.h>
+#  endif  // __MINGW32__
+#  include "base/scoped_handle_win.h"
+#  include "nsAppDirectoryServiceDefs.h"
+#  include "nsDirectoryServiceDefs.h"
+#  include "nsDirectoryServiceUtils.h"
+#  include "nsIObserverService.h"
+#  include "nsWindowsHelpers.h"
 
 #endif
 
 #ifdef XP_MACOSX
-#include "MacHelpers.h"
+#  include "MacHelpers.h"
 #endif
 
 #ifdef MOZ_WIDGET_GTK
-#include <gtk/gtk.h>
-#include <dlfcn.h>
+#  include <gtk/gtk.h>
+#  include <dlfcn.h>
 #endif
 
 #if defined(XP_LINUX) && !defined(ANDROID)
-#include <unistd.h>
-#include <fstream>
-#include "mozilla/Tokenizer.h"
-#include "nsCharSeparatedTokenizer.h"
+#  include <unistd.h>
+#  include <fstream>
+#  include "mozilla/Tokenizer.h"
+#  include "nsCharSeparatedTokenizer.h"
 
-#include <map>
-#include <string>
+#  include <map>
+#  include <string>
 #endif
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "AndroidBridge.h"
-#include "mozilla/dom/ContentChild.h"
-#endif
-
-#ifdef ANDROID
-extern "C" {
-NS_EXPORT int android_sdk_version;
-}
+#  include "AndroidBuild.h"
+#  include "GeneratedJNIWrappers.h"
+#  include "mozilla/jni/Utils.h"
 #endif
 
 #ifdef XP_MACOSX
-#include <sys/sysctl.h>
+#  include <sys/sysctl.h>
 #endif
 
 #if defined(XP_LINUX) && defined(MOZ_SANDBOX)
-#include "mozilla/SandboxInfo.h"
+#  include "mozilla/SandboxInfo.h"
 #endif
 
-// Slot for NS_InitXPCOM2 to pass information to nsSystemInfo::Init.
+// Slot for NS_InitXPCOM to pass information to nsSystemInfo::Init.
 // Only set to nonzero (potentially) if XP_UNIX.  On such systems, the
 // system call to discover the appropriate value is not thread-safe,
 // so we must call it before going multithreaded, but nsSystemInfo::Init
@@ -106,9 +101,10 @@ static void SimpleParseKeyValuePairs(
 #if defined(XP_WIN)
 namespace {
 nsresult GetHDDInfo(const char* aSpecialDirName, nsAutoCString& aModel,
-                    nsAutoCString& aRevision) {
+                    nsAutoCString& aRevision, nsAutoCString& aType) {
   aModel.Truncate();
   aRevision.Truncate();
+  aType.Truncate();
 
   nsCOMPtr<nsIFile> profDir;
   nsresult rv =
@@ -154,6 +150,36 @@ nsresult GetHDDInfo(const char* aSpecialDirName, nsAutoCString& aModel,
     free(deviceOutput);
     return NS_ERROR_FAILURE;
   }
+
+  queryParameters.PropertyId = StorageDeviceTrimProperty;
+  bytesRead = 0;
+  bool isSSD = false;
+  DEVICE_TRIM_DESCRIPTOR trimDescriptor = {sizeof(DEVICE_TRIM_DESCRIPTOR)};
+  if (::DeviceIoControl(handle, IOCTL_STORAGE_QUERY_PROPERTY, &queryParameters,
+                        sizeof(queryParameters), &trimDescriptor,
+                        sizeof(trimDescriptor), &bytesRead, nullptr)) {
+    if (trimDescriptor.TrimEnabled) {
+      isSSD = true;
+    }
+  }
+
+  if (isSSD) {
+    // Get Seek Penalty
+    queryParameters.PropertyId = StorageDeviceSeekPenaltyProperty;
+    bytesRead = 0;
+    DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = {
+      sizeof(DEVICE_SEEK_PENALTY_DESCRIPTOR)};
+    if (::DeviceIoControl(handle, IOCTL_STORAGE_QUERY_PROPERTY, &queryParameters,
+          sizeof(queryParameters), &seekPenaltyDescriptor,
+          sizeof(seekPenaltyDescriptor), &bytesRead, nullptr)) {
+      // It is possible that the disk has TrimEnabled, but also IncursSeekPenalty;
+      // In this case, this is an HDD
+      if (seekPenaltyDescriptor.IncursSeekPenalty) {
+        isSSD = false;
+      }
+    }
+  }
+
   // Some HDDs are including product ID info in the vendor field. Since PNP
   // IDs include vendor info and product ID concatenated together, we'll do
   // that here and interpret the result as a unique ID for the HDD model.
@@ -170,6 +196,11 @@ nsresult GetHDDInfo(const char* aSpecialDirName, nsAutoCString& aModel,
     aRevision = reinterpret_cast<char*>(deviceOutput) +
                 deviceOutput->ProductRevisionOffset;
     aRevision.CompressWhitespace();
+  }
+  if (isSSD) {
+    aType = "SSD";
+  } else {
+    aType = "HDD";
   }
   free(deviceOutput);
   return NS_OK;
@@ -237,7 +268,7 @@ nsresult GetCountryCode(nsAString& aCountryCode) {
 
 }  // namespace
 
-#ifndef __MINGW32__
+#  ifndef __MINGW32__
 
 static HRESULT EnumWSCProductList(nsAString& aOutput,
                                   NotNull<IWSCProductList*> aProdList) {
@@ -334,7 +365,7 @@ static nsresult GetWindowsSecurityCenterInfo(nsAString& aAVInfo,
   return NS_OK;
 }
 
-#endif  // __MINGW32__
+#  endif  // __MINGW32__
 
 #endif  // defined(XP_WIN)
 
@@ -736,11 +767,51 @@ nsresult nsSystemInfo::Init() {
   }
 
 #ifdef XP_WIN
-  BOOL isWow64;
-  BOOL gotWow64Value = IsWow64Process(GetCurrentProcess(), &isWow64);
+  bool isMinGW =
+#  ifdef __MINGW32__
+      true;
+#  else
+      false;
+#  endif
+  rv = SetPropertyAsBool(NS_LITERAL_STRING("isMinGW"), !!isMinGW);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  // IsWow64Process2 is only available on Windows 10+, so we have to dynamically
+  // check for its existence.
+  typedef BOOL(WINAPI * LPFN_IWP2)(HANDLE, USHORT*, USHORT*);
+  LPFN_IWP2 iwp2 = reinterpret_cast<LPFN_IWP2>(
+      GetProcAddress(GetModuleHandle(L"kernel32"), "IsWow64Process2"));
+  BOOL isWow64 = false;
+  USHORT processMachine = IMAGE_FILE_MACHINE_UNKNOWN;
+  USHORT nativeMachine = IMAGE_FILE_MACHINE_UNKNOWN;
+  BOOL gotWow64Value;
+  if (iwp2) {
+    gotWow64Value = iwp2(GetCurrentProcess(), &processMachine, &nativeMachine);
+    if (gotWow64Value) {
+      isWow64 = (processMachine != IMAGE_FILE_MACHINE_UNKNOWN);
+    }
+  } else {
+    gotWow64Value = IsWow64Process(GetCurrentProcess(), &isWow64);
+    // The function only indicates a WOW64 environment if it's 32-bit x86
+    // running on x86-64, so emulate what IsWow64Process2 would have given.
+    if (gotWow64Value && isWow64) {
+      processMachine = IMAGE_FILE_MACHINE_I386;
+      nativeMachine = IMAGE_FILE_MACHINE_AMD64;
+    }
+  }
   NS_WARNING_ASSERTION(gotWow64Value, "IsWow64Process failed");
   if (gotWow64Value) {
+    // Set this always, even for the x86-on-arm64 case.
     rv = SetPropertyAsBool(NS_LITERAL_STRING("isWow64"), !!isWow64);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+    // Additional information if we're running x86-on-arm64
+    bool isWowARM64 = (processMachine == IMAGE_FILE_MACHINE_I386 &&
+                       nativeMachine == IMAGE_FILE_MACHINE_ARM64);
+    rv = SetPropertyAsBool(NS_LITERAL_STRING("isWowARM64"), !!isWowARM64);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
@@ -758,19 +829,24 @@ nsresult nsSystemInfo::Init() {
       return rv;
     }
   }
-  nsAutoCString hddModel, hddRevision;
-  if (NS_SUCCEEDED(GetHDDInfo(NS_GRE_DIR, hddModel, hddRevision))) {
+  nsAutoCString hddModel, hddRevision, hddType;
+  if (NS_SUCCEEDED(GetHDDInfo(NS_GRE_DIR, hddModel, hddRevision, hddType))) {
     rv = SetPropertyAsACString(NS_LITERAL_STRING("binHDDModel"), hddModel);
     NS_ENSURE_SUCCESS(rv, rv);
     rv =
         SetPropertyAsACString(NS_LITERAL_STRING("binHDDRevision"), hddRevision);
     NS_ENSURE_SUCCESS(rv, rv);
+    rv = SetPropertyAsACString(NS_LITERAL_STRING("binHDDType"), hddType);
+    NS_ENSURE_SUCCESS(rv, rv);
   }
-  if (NS_SUCCEEDED(GetHDDInfo(NS_WIN_WINDOWS_DIR, hddModel, hddRevision))) {
+  if (NS_SUCCEEDED(
+          GetHDDInfo(NS_WIN_WINDOWS_DIR, hddModel, hddRevision, hddType))) {
     rv = SetPropertyAsACString(NS_LITERAL_STRING("winHDDModel"), hddModel);
     NS_ENSURE_SUCCESS(rv, rv);
     rv =
         SetPropertyAsACString(NS_LITERAL_STRING("winHDDRevision"), hddRevision);
+    NS_ENSURE_SUCCESS(rv, rv);
+    rv = SetPropertyAsACString(NS_LITERAL_STRING("winHDDType"), hddType);
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
@@ -788,7 +864,7 @@ nsresult nsSystemInfo::Init() {
     }
   }
 
-#ifndef __MINGW32__
+#  ifndef __MINGW32__
   nsAutoString avInfo, antiSpyInfo, firewallInfo;
   if (NS_SUCCEEDED(
           GetWindowsSecurityCenterInfo(avInfo, antiSpyInfo, firewallInfo))) {
@@ -816,7 +892,7 @@ nsresult nsSystemInfo::Init() {
       }
     }
   }
-#endif  // __MINGW32__
+#  endif  // __MINGW32__
 #endif
 
 #if defined(XP_MACOSX)
@@ -876,16 +952,8 @@ nsresult nsSystemInfo::Init() {
 
 #ifdef MOZ_WIDGET_ANDROID
   AndroidSystemInfo info;
-  if (XRE_IsContentProcess()) {
-    dom::ContentChild* child = dom::ContentChild::GetSingleton();
-    if (child) {
-      child->SendGetAndroidSystemInfo(&info);
-      SetupAndroidInfo(info);
-    }
-  } else {
-    GetAndroidSystemInfo(&info);
-    SetupAndroidInfo(info);
-  }
+  GetAndroidSystemInfo(&info);
+  SetupAndroidInfo(info);
 #endif
 
 #if defined(XP_LINUX) && defined(MOZ_SANDBOX)
@@ -922,49 +990,40 @@ nsresult nsSystemInfo::Init() {
 // This version will need to be updated whenever there is a new official
 // Android release.
 // See: https://cs.chromium.org/chromium/src/base/sys_info_android.cc?l=61
-#define DEFAULT_ANDROID_VERSION "6.0.99"
+#  define DEFAULT_ANDROID_VERSION "6.0.99"
 
 /* static */
 void nsSystemInfo::GetAndroidSystemInfo(AndroidSystemInfo* aInfo) {
-  MOZ_ASSERT(XRE_IsParentProcess());
-
-  if (!mozilla::AndroidBridge::Bridge()) {
+  if (!jni::IsAvailable()) {
+    // called from xpcshell etc.
     aInfo->sdk_version() = 0;
     return;
   }
 
-  nsAutoString str;
-  if (mozilla::AndroidBridge::Bridge()->GetStaticStringField("android/os/Build",
-                                                             "MODEL", str)) {
-    aInfo->device() = str;
+  jni::String::LocalRef model = java::sdk::Build::MODEL();
+  aInfo->device() = model->ToString();
+
+  jni::String::LocalRef manufacturer =
+      mozilla::java::sdk::Build::MANUFACTURER();
+  aInfo->manufacturer() = manufacturer->ToString();
+
+  jni::String::LocalRef hardware = java::sdk::Build::HARDWARE();
+  aInfo->hardware() = hardware->ToString();
+
+  jni::String::LocalRef release = java::sdk::VERSION::RELEASE();
+  nsString str(release->ToString());
+  int major_version;
+  int minor_version;
+  int bugfix_version;
+  int num_read = sscanf(NS_ConvertUTF16toUTF8(str).get(), "%d.%d.%d",
+                        &major_version, &minor_version, &bugfix_version);
+  if (num_read == 0) {
+    aInfo->release_version() = NS_LITERAL_STRING(DEFAULT_ANDROID_VERSION);
+  } else {
+    aInfo->release_version() = str;
   }
-  if (mozilla::AndroidBridge::Bridge()->GetStaticStringField(
-          "android/os/Build", "MANUFACTURER", str)) {
-    aInfo->manufacturer() = str;
-  }
-  if (mozilla::AndroidBridge::Bridge()->GetStaticStringField(
-          "android/os/Build$VERSION", "RELEASE", str)) {
-    int major_version;
-    int minor_version;
-    int bugfix_version;
-    int num_read = sscanf(NS_ConvertUTF16toUTF8(str).get(), "%d.%d.%d",
-                          &major_version, &minor_version, &bugfix_version);
-    if (num_read == 0) {
-      aInfo->release_version() = NS_LITERAL_STRING(DEFAULT_ANDROID_VERSION);
-    } else {
-      aInfo->release_version() = str;
-    }
-  }
-  if (mozilla::AndroidBridge::Bridge()->GetStaticStringField("android/os/Build",
-                                                             "HARDWARE", str)) {
-    aInfo->hardware() = str;
-  }
-  int32_t sdk_version;
-  if (!mozilla::AndroidBridge::Bridge()->GetStaticIntField(
-          "android/os/Build$VERSION", "SDK_INT", &sdk_version)) {
-    sdk_version = 0;
-  }
-  aInfo->sdk_version() = sdk_version;
+
+  aInfo->sdk_version() = jni::GetAPIVersion();
   aInfo->isTablet() = java::GeckoAppShell::IsTablet();
 }
 
@@ -989,14 +1048,12 @@ void nsSystemInfo::SetupAndroidInfo(const AndroidSystemInfo& aInfo) {
   if (NS_SUCCEEDED(rv)) {
     SetPropertyAsAString(NS_LITERAL_STRING("kernel_version"), str);
   }
-  // When AndroidBridge is not available (eg. in xpcshell tests), sdk_version is
-  // 0.
+  // When JNI is not available (eg. in xpcshell tests), sdk_version is 0.
   if (aInfo.sdk_version() != 0) {
-    android_sdk_version = aInfo.sdk_version();
-    if (android_sdk_version >= 8 && !aInfo.hardware().IsEmpty()) {
+    if (!aInfo.hardware().IsEmpty()) {
       SetPropertyAsAString(NS_LITERAL_STRING("hardware"), aInfo.hardware());
     }
-    SetPropertyAsInt32(NS_LITERAL_STRING("version"), android_sdk_version);
+    SetPropertyAsInt32(NS_LITERAL_STRING("version"), aInfo.sdk_version());
   }
 }
 #endif  // MOZ_WIDGET_ANDROID
@@ -1015,8 +1072,8 @@ void nsSystemInfo::SetInt32Property(const nsAString& aPropertyName,
 
 void nsSystemInfo::SetUint32Property(const nsAString& aPropertyName,
                                      const uint32_t aValue) {
-// Only one property is currently set via this function.
-// It may legitimately be zero.
+  // Only one property is currently set via this function.
+  // It may legitimately be zero.
 #ifdef DEBUG
   nsresult rv =
 #endif
@@ -1057,8 +1114,9 @@ nsSystemInfo::Observe(nsISupports* aSubject, const char* aTopic,
 }
 
 nsresult nsSystemInfo::GetProfileHDDInfo() {
-  nsAutoCString hddModel, hddRevision;
-  nsresult rv = GetHDDInfo(NS_APP_USER_PROFILE_50_DIR, hddModel, hddRevision);
+  nsAutoCString hddModel, hddRevision, hddType;
+  nsresult rv =
+      GetHDDInfo(NS_APP_USER_PROFILE_50_DIR, hddModel, hddRevision, hddType);
   if (NS_FAILED(rv)) {
     return rv;
   }
@@ -1068,6 +1126,10 @@ nsresult nsSystemInfo::GetProfileHDDInfo() {
   }
   rv = SetPropertyAsACString(NS_LITERAL_STRING("profileHDDRevision"),
                              hddRevision);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+  rv = SetPropertyAsACString(NS_LITERAL_STRING("profileHDDType"), hddType);
   return rv;
 }
 

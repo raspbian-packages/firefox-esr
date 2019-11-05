@@ -7,25 +7,25 @@
 #include "mozilla/dom/SVGDefsElement.h"
 #include "mozilla/dom/SVGDefsElementBinding.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Defs)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Defs)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGDefsElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SVGDefsElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGDefsElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGDefsElement::SVGDefsElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGGraphicsElement(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGGraphicsElement(std::move(aNodeInfo)) {}
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGDefsElement)
 

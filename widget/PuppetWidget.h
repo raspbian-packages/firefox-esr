@@ -27,20 +27,23 @@
 #include "mozilla/ContentCache.h"
 #include "mozilla/EventForwards.h"
 #include "mozilla/TextEventDispatcherListener.h"
+#include "mozilla/layers/MemoryPressureObserver.h"
 
 namespace mozilla {
 
 namespace dom {
-class TabChild;
+class BrowserChild;
 }  // namespace dom
 
 namespace widget {
 
 struct AutoCacheNativeKeyCommands;
 
-class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
+class PuppetWidget : public nsBaseWidget,
+                     public TextEventDispatcherListener,
+                     public layers::MemoryPressureListener {
   typedef mozilla::CSSRect CSSRect;
-  typedef mozilla::dom::TabChild TabChild;
+  typedef mozilla::dom::BrowserChild BrowserChild;
   typedef mozilla::gfx::DrawTarget DrawTarget;
 
   // Avoiding to make compiler confused between mozilla::widget and nsIWidget.
@@ -54,7 +57,7 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
   static const size_t kMaxDimension;
 
  public:
-  explicit PuppetWidget(TabChild* aTabChild);
+  explicit PuppetWidget(BrowserChild* aBrowserChild);
 
  protected:
   virtual ~PuppetWidget();
@@ -90,7 +93,7 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
     *aY = kMaxDimension;
   }
 
-  // Widget position is controlled by the parent process via TabChild.
+  // Widget position is controlled by the parent process via BrowserChild.
   virtual void Move(double aX, double aY) override {}
 
   virtual void Resize(double aWidth, double aHeight, bool aRepaint) override;
@@ -126,8 +129,15 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
     return NS_ERROR_UNEXPECTED;
   }
 
+  virtual mozilla::LayoutDeviceToLayoutDeviceMatrix4x4
+  WidgetToTopLevelWidgetTransform() override;
+
   virtual LayoutDeviceIntPoint WidgetToScreenOffset() override {
     return GetWindowPosition() + GetChromeOffset();
+  }
+
+  virtual LayoutDeviceIntPoint TopLevelWidgetToScreenOffset() override {
+    return GetWindowPosition();
   }
 
   int32_t RoundsWidgetCoordinatesTo() override;
@@ -140,9 +150,9 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
   nsEventStatus DispatchInputEvent(WidgetInputEvent* aEvent) override;
   void SetConfirmedTargetAPZC(
       uint64_t aInputBlockId,
-      const nsTArray<ScrollableLayerGuid>& aTargets) const override;
+      const nsTArray<SLGuidAndRenderRoot>& aTargets) const override;
   void UpdateZoomConstraints(
-      const uint32_t& aPresShellId, const FrameMetrics::ViewID& aViewId,
+      const uint32_t& aPresShellId, const ScrollableLayerGuid::ViewID& aViewId,
       const mozilla::Maybe<ZoomConstraints>& aConstraints) override;
   bool AsyncPanZoomEnabled() const override;
 
@@ -195,9 +205,8 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
     mNativeTextEventDispatcherListener = aListener;
   }
 
-  virtual void SetCursor(nsCursor aCursor) override;
-  virtual nsresult SetCursor(imgIContainer* aCursor, uint32_t aHotspotX,
-                             uint32_t aHotspotY) override;
+  virtual void SetCursor(nsCursor aDefaultCursor, imgIContainer* aCustomCursor,
+                         uint32_t aHotspotX, uint32_t aHotspotY) override;
 
   virtual void ClearCachedCursor() override;
 
@@ -213,7 +222,9 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
   // Paint the widget immediately if any paints are queued up.
   void PaintNowIfNeeded();
 
-  virtual TabChild* GetOwningTabChild() override { return mTabChild; }
+  virtual BrowserChild* GetOwningBrowserChild() override {
+    return mBrowserChild;
+  }
 
   void UpdateBackingScaleCache(float aDpi, int32_t aRounding, double aScale) {
     mDPI = aDpi;
@@ -273,7 +284,7 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
   virtual void EnableIMEForPlugin(bool aEnable) override;
 
   virtual void ZoomToRect(const uint32_t& aPresShellId,
-                          const FrameMetrics::ViewID& aViewId,
+                          const ScrollableLayerGuid::ViewID& aViewId,
                           const CSSRect& aRect,
                           const uint32_t& aFlags) override;
 
@@ -291,6 +302,12 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
       const nsTArray<mozilla::FontRange>& aFontRangeArray,
       const bool aIsVertical, const LayoutDeviceIntPoint& aPoint) override;
 
+  nsresult SetSystemFont(const nsCString& aFontName) override;
+  nsresult GetSystemFont(nsCString& aFontName) override;
+
+  nsresult SetPrefersReducedMotionOverrideForTest(bool aValue) override;
+  nsresult ResetPrefersReducedMotionOverrideForTest() override;
+
   // TextEventDispatcherListener
   using nsBaseWidget::NotifyIME;
   NS_IMETHOD NotifyIME(TextEventDispatcher* aTextEventDispatcher,
@@ -302,6 +319,8 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
   WillDispatchKeyboardEvent(TextEventDispatcher* aTextEventDispatcher,
                             WidgetKeyboardEvent& aKeyboardEvent,
                             uint32_t aIndexOfKeypress, void* aData) override;
+
+  virtual void OnMemoryPressure(layers::MemoryPressureReason aWhy) override;
 
  private:
   nsresult Paint();
@@ -341,32 +360,19 @@ class PuppetWidget : public nsBaseWidget, public TextEventDispatcherListener {
     PuppetWidget* mWidget;
   };
 
-  class MemoryPressureObserver : public nsIObserver {
-   public:
-    NS_DECL_ISUPPORTS
-    NS_DECL_NSIOBSERVER
-    explicit MemoryPressureObserver(PuppetWidget* aWidget) : mWidget(aWidget) {}
-    void Remove();
-
-   private:
-    virtual ~MemoryPressureObserver() {}
-    PuppetWidget* mWidget;
-  };
-  friend class MemoryPressureObserver;
-
-  // TabChild normally holds a strong reference to this PuppetWidget
+  // BrowserChild normally holds a strong reference to this PuppetWidget
   // or its root ancestor, but each PuppetWidget also needs a
-  // reference back to TabChild (e.g. to delegate nsIWidget IME calls
-  // to chrome) So we hold a weak reference to TabChild here.  Since
-  // it's possible for TabChild to outlive the PuppetWidget, we clear
+  // reference back to BrowserChild (e.g. to delegate nsIWidget IME calls
+  // to chrome) So we hold a weak reference to BrowserChild here.  Since
+  // it's possible for BrowserChild to outlive the PuppetWidget, we clear
   // this weak reference in Destroy()
-  TabChild* mTabChild;
+  BrowserChild* mBrowserChild;
   // The "widget" to which we delegate events if we don't have an
   // event handler.
   RefPtr<PuppetWidget> mChild;
   LayoutDeviceIntRegion mDirtyRegion;
   nsRevocableEventPtr<PaintTask> mPaintTask;
-  RefPtr<MemoryPressureObserver> mMemoryPressureObserver;
+  RefPtr<layers::MemoryPressureObserver> mMemoryPressureObserver;
   // XXX/cjones: keeping this around until we teach LayerManager to do
   // retained-content-only transactions
   RefPtr<DrawTarget> mDrawTarget;

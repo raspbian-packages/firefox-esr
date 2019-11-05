@@ -23,10 +23,10 @@ InProcessCompositorSession::InProcessCompositorSession(
   GPUProcessManager::Get()->RegisterInProcessSession(this);
 }
 
-/* static */ RefPtr<InProcessCompositorSession>
-InProcessCompositorSession::Create(
+/* static */
+RefPtr<InProcessCompositorSession> InProcessCompositorSession::Create(
     nsBaseWidget* aWidget, LayerManager* aLayerManager,
-    const uint64_t& aRootLayerTreeId, CSSToLayoutDeviceScale aScale,
+    const LayersId& aRootLayerTreeId, CSSToLayoutDeviceScale aScale,
     const CompositorOptions& aOptions, bool aUseExternalSurfaceSize,
     const gfx::IntSize& aSurfaceSize, uint32_t aNamespace) {
   CompositorWidgetInitData initData;
@@ -70,10 +70,10 @@ RefPtr<IAPZCTreeManager> InProcessCompositorSession::GetAPZCTreeManager()
 nsIWidget* InProcessCompositorSession::GetWidget() const { return mWidget; }
 
 void InProcessCompositorSession::Shutdown() {
-// Destroy will synchronously wait for the parent to acknowledge shutdown,
-// at which point CBP will defer a Release on the compositor thread. We
-// can safely release our reference now, and let the destructor run on either
-// thread.
+  // Destroy will synchronously wait for the parent to acknowledge shutdown,
+  // at which point CBP will defer a Release on the compositor thread. We
+  // can safely release our reference now, and let the destructor run on either
+  // thread.
 #if defined(MOZ_WIDGET_ANDROID)
   if (mUiCompositorControllerChild) {
     mUiCompositorControllerChild->Destroy();

@@ -12,7 +12,7 @@
 #include "nsICloneableInputStream.h"
 #include "nsIPipe.h"
 #include "nsIEventTarget.h"
-#include "nsISeekableStream.h"
+#include "nsITellableStream.h"
 #include "mozilla/RefPtr.h"
 #include "nsSegmentedBuffer.h"
 #include "nsStreamUtils.h"
@@ -22,13 +22,14 @@
 #include "nsIClassInfoImpl.h"
 #include "nsAlgorithm.h"
 #include "nsMemory.h"
+#include "nsPipe.h"
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"
 
 using namespace mozilla;
 
 #ifdef LOG
-#undef LOG
+#  undef LOG
 #endif
 //
 // set MOZ_LOG=nsPipe:5
@@ -125,16 +126,19 @@ struct nsPipeReadState {
 
 // an input end of a pipe (maintained as a list of refs within the pipe)
 class nsPipeInputStream final : public nsIAsyncInputStream,
-                                public nsISeekableStream,
+                                public nsITellableStream,
                                 public nsISearchableInputStream,
                                 public nsICloneableInputStream,
                                 public nsIClassInfo,
                                 public nsIBufferedInputStream {
  public:
-  NS_DECL_THREADSAFE_ISUPPORTS
+  // Pipe input streams preserve their refcount changes when record/replaying,
+  // as otherwise the thread which destroys the stream may vary between
+  // recording and replaying.
+  NS_DECL_THREADSAFE_ISUPPORTS_WITH_RECORDING(recordreplay::Behavior::Preserve)
   NS_DECL_NSIINPUTSTREAM
   NS_DECL_NSIASYNCINPUTSTREAM
-  NS_DECL_NSISEEKABLESTREAM
+  NS_DECL_NSITELLABLESTREAM
   NS_DECL_NSISEARCHABLEINPUTSTREAM
   NS_DECL_NSICLONEABLEINPUTSTREAM
   NS_DECL_NSICLASSINFO
@@ -241,7 +245,8 @@ class nsPipeOutputStream : public nsIAsyncOutputStream, public nsIClassInfo {
   nsPipe* mPipe;
 
   // separate refcnt so that we know when to close the producer
-  mozilla::ThreadSafeAutoRefCnt mWriterRefCnt;
+  ThreadSafeAutoRefCntWithRecording<recordreplay::Behavior::Preserve>
+      mWriterRefCnt;
   int64_t mLogicalOffset;
   bool mBlocking;
 
@@ -260,7 +265,9 @@ class nsPipe final : public nsIPipe {
   friend class nsPipeOutputStream;
   friend class AutoReadSegment;
 
-  NS_DECL_THREADSAFE_ISUPPORTS
+  // As for nsPipeInputStream, preserve refcount changes when recording or
+  // replaying.
+  NS_DECL_THREADSAFE_ISUPPORTS_WITH_RECORDING(recordreplay::Behavior::Preserve)
   NS_DECL_NSIPIPE
 
   // nsPipe methods:
@@ -1142,7 +1149,7 @@ NS_IMPL_RELEASE(nsPipeInputStream);
 NS_INTERFACE_TABLE_HEAD(nsPipeInputStream)
   NS_INTERFACE_TABLE_BEGIN
     NS_INTERFACE_TABLE_ENTRY(nsPipeInputStream, nsIAsyncInputStream)
-    NS_INTERFACE_TABLE_ENTRY(nsPipeInputStream, nsISeekableStream)
+    NS_INTERFACE_TABLE_ENTRY(nsPipeInputStream, nsITellableStream)
     NS_INTERFACE_TABLE_ENTRY(nsPipeInputStream, nsISearchableInputStream)
     NS_INTERFACE_TABLE_ENTRY(nsPipeInputStream, nsICloneableInputStream)
     NS_INTERFACE_TABLE_ENTRY(nsPipeInputStream, nsIBufferedInputStream)
@@ -1155,7 +1162,7 @@ NS_INTERFACE_TABLE_HEAD(nsPipeInputStream)
 NS_INTERFACE_TABLE_TAIL
 
 NS_IMPL_CI_INTERFACE_GETTER(nsPipeInputStream, nsIInputStream,
-                            nsIAsyncInputStream, nsISeekableStream,
+                            nsIAsyncInputStream, nsITellableStream,
                             nsISearchableInputStream, nsICloneableInputStream,
                             nsIBufferedInputStream)
 
@@ -1395,12 +1402,6 @@ nsPipeInputStream::AsyncWait(nsIInputStreamCallback* aCallback, uint32_t aFlags,
 }
 
 NS_IMETHODIMP
-nsPipeInputStream::Seek(int32_t aWhence, int64_t aOffset) {
-  NS_NOTREACHED("nsPipeInputStream::Seek");
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-NS_IMETHODIMP
 nsPipeInputStream::Tell(int64_t* aOffset) {
   ReentrantMonitorAutoEnter mon(mPipe->mReentrantMonitor);
 
@@ -1411,12 +1412,6 @@ nsPipeInputStream::Tell(int64_t* aOffset) {
 
   *aOffset = mLogicalOffset;
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsPipeInputStream::SetEOF() {
-  NS_NOTREACHED("nsPipeInputStream::SetEOF");
-  return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 static bool strings_equal(bool aIgnoreCase, const char* aS1, const char* aS2,
@@ -1497,7 +1492,7 @@ nsPipeInputStream::Search(const char* aForString, bool aIgnoreCase,
     limit1 = limit2;
   }
 
-  NS_NOTREACHED("can't get here");
+  MOZ_ASSERT_UNREACHABLE("can't get here");
   return NS_ERROR_UNEXPECTED;  // keep compiler happy
 }
 

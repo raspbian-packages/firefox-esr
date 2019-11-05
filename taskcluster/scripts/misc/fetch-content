@@ -25,6 +25,11 @@ try:
 except ImportError:
     zstandard = None
 
+try:
+    import certifi
+except ImportError:
+    certifi = None
+
 
 CONCURRENCY = multiprocessing.cpu_count()
 
@@ -132,7 +137,7 @@ def stream_download(url, sha256=None, size=None):
     length = 0
 
     t0 = time.time()
-    with urllib.request.urlopen(url) as fh:
+    with urllib.request.urlopen(url, cafile=certifi.where()) if certifi else urllib.request.urlopen(url) as fh:
         if not url.endswith('.gz') and fh.info().get('Content-Encoding') == 'gzip':
             fh = gzip.GzipFile(fileobj=fh)
 
@@ -396,8 +401,7 @@ def command_task_artifacts(args):
                     task=fetch['task'], artifact=fetch['artifact'])
             url = api(root_url, 'queue', 'v1', path)
         else:
-            # Until bug 1460015 is finished, use the old baseUrl style proxy URLs
-            url = ('{proxy_url}/queue/v1/task/{task}/artifacts/{artifact}').format(
+            url = ('{proxy_url}/api/queue/v1/task/{task}/artifacts/{artifact}').format(
                     proxy_url=os.environ['TASKCLUSTER_PROXY_URL'],
                     task=fetch['task'],
                     artifact=fetch['artifact'])

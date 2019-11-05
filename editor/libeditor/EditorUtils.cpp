@@ -5,22 +5,17 @@
 
 #include "mozilla/EditorUtils.h"
 
+#include "mozilla/ContentIterator.h"
 #include "mozilla/EditorDOMPoint.h"
 #include "mozilla/OwningNonNull.h"
 #include "mozilla/dom/Selection.h"
 #include "nsComponentManagerUtils.h"
 #include "nsError.h"
-#include "nsIClipboardDragDropHookList.h"
-// hooks
-#include "nsIClipboardDragDropHooks.h"
 #include "nsIContent.h"
-#include "nsIContentIterator.h"
-#include "nsIDOMDocument.h"
 #include "nsIDocShell.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsINode.h"
-#include "nsISimpleEnumerator.h"
 
 class nsISupports;
 class nsRange;
@@ -30,65 +25,22 @@ namespace mozilla {
 using namespace dom;
 
 /******************************************************************************
- * AutoSelectionRestorer
- *****************************************************************************/
-
-AutoSelectionRestorer::AutoSelectionRestorer(
-    Selection* aSelection,
-    EditorBase* aEditorBase MOZ_GUARD_OBJECT_NOTIFIER_PARAM_IN_IMPL)
-    : mEditorBase(nullptr) {
-  MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-  if (NS_WARN_IF(!aSelection) || NS_WARN_IF(!aEditorBase)) {
-    return;
-  }
-  if (aEditorBase->ArePreservingSelection()) {
-    // We already have initialized mSavedSel, so this must be nested call.
-    return;
-  }
-  mSelection = aSelection;
-  mEditorBase = aEditorBase;
-  mEditorBase->PreserveSelectionAcrossActions(mSelection);
-}
-
-AutoSelectionRestorer::~AutoSelectionRestorer() {
-  NS_ASSERTION(!mSelection || mEditorBase,
-               "mEditorBase should be non-null when mSelection is");
-  // mSelection will be null if this was nested call.
-  if (mSelection && mEditorBase->ArePreservingSelection()) {
-    mEditorBase->RestorePreservedSelection(mSelection);
-  }
-}
-
-void AutoSelectionRestorer::Abort() {
-  NS_ASSERTION(!mSelection || mEditorBase,
-               "mEditorBase should be non-null when mSelection is");
-  if (mSelection) {
-    mEditorBase->StopPreservingSelection();
-  }
-}
-
-/******************************************************************************
  * some helper classes for iterating the dom tree
  *****************************************************************************/
 
-DOMIterator::DOMIterator(
-    nsINode& aNode MOZ_GUARD_OBJECT_NOTIFIER_PARAM_IN_IMPL) {
+DOMIterator::DOMIterator(nsINode& aNode MOZ_GUARD_OBJECT_NOTIFIER_PARAM_IN_IMPL)
+    : mIter(&mPostOrderIter) {
   MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-  mIter = NS_NewContentIterator();
   DebugOnly<nsresult> rv = mIter->Init(&aNode);
   MOZ_ASSERT(NS_SUCCEEDED(rv));
 }
 
-nsresult DOMIterator::Init(nsRange& aRange) {
-  mIter = NS_NewContentIterator();
-  return mIter->Init(&aRange);
-}
+nsresult DOMIterator::Init(nsRange& aRange) { return mIter->Init(&aRange); }
 
-DOMIterator::DOMIterator(MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM_IN_IMPL) {
+DOMIterator::DOMIterator(MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM_IN_IMPL)
+    : mIter(&mPostOrderIter) {
   MOZ_GUARD_OBJECT_NOTIFIER_INIT;
 }
-
-DOMIterator::~DOMIterator() {}
 
 void DOMIterator::AppendList(
     const BoolDomIterFunctor& functor,
@@ -105,14 +57,13 @@ void DOMIterator::AppendList(
 
 DOMSubtreeIterator::DOMSubtreeIterator(
     MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM_IN_IMPL)
-    : DOMIterator(MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM_TO_PARENT) {}
-
-nsresult DOMSubtreeIterator::Init(nsRange& aRange) {
-  mIter = NS_NewContentSubtreeIterator();
-  return mIter->Init(&aRange);
+    : DOMIterator(MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM_TO_PARENT) {
+  mIter = &mSubtreeIter;
 }
 
-DOMSubtreeIterator::~DOMSubtreeIterator() {}
+nsresult DOMSubtreeIterator::Init(nsRange& aRange) {
+  return mIter->Init(&aRange);
+}
 
 /******************************************************************************
  * some general purpose editor utils
@@ -158,50 +109,6 @@ bool EditorUtils::IsDescendantOf(const nsINode& aNode, const nsINode& aParent,
   }
 
   return false;
-}
-
-/******************************************************************************
- * utility methods for drag/drop/copy/paste hooks
- *****************************************************************************/
-
-nsresult EditorHookUtils::GetHookEnumeratorFromDocument(
-    nsIDOMDocument* aDoc, nsISimpleEnumerator** aResult) {
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(aDoc);
-  NS_ENSURE_TRUE(doc, NS_ERROR_FAILURE);
-
-  nsCOMPtr<nsIDocShell> docShell = doc->GetDocShell();
-  nsCOMPtr<nsIClipboardDragDropHookList> hookObj = do_GetInterface(docShell);
-  NS_ENSURE_TRUE(hookObj, NS_ERROR_FAILURE);
-
-  return hookObj->GetHookEnumerator(aResult);
-}
-
-bool EditorHookUtils::DoInsertionHook(nsIDOMDocument* aDoc,
-                                      nsIDOMEvent* aDropEvent,
-                                      nsITransferable* aTrans) {
-  nsCOMPtr<nsISimpleEnumerator> enumerator;
-  GetHookEnumeratorFromDocument(aDoc, getter_AddRefs(enumerator));
-  NS_ENSURE_TRUE(enumerator, true);
-
-  bool hasMoreHooks = false;
-  while (NS_SUCCEEDED(enumerator->HasMoreElements(&hasMoreHooks)) &&
-         hasMoreHooks) {
-    nsCOMPtr<nsISupports> isupp;
-    if (NS_FAILED(enumerator->GetNext(getter_AddRefs(isupp)))) {
-      break;
-    }
-
-    nsCOMPtr<nsIClipboardDragDropHooks> override = do_QueryInterface(isupp);
-    if (override) {
-      bool doInsert = true;
-      DebugOnly<nsresult> hookResult =
-          override->OnPasteOrDrop(aDropEvent, aTrans, &doInsert);
-      NS_ASSERTION(NS_SUCCEEDED(hookResult), "hook failure in OnPasteOrDrop");
-      NS_ENSURE_TRUE(doInsert, false);
-    }
-  }
-
-  return true;
 }
 
 }  // namespace mozilla

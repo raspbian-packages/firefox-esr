@@ -6,9 +6,11 @@
 include GraphicsMessages;
 include MemoryReportTypes;
 include HangTypes;
+include protocol PAPZInputBridge;
 include protocol PCompositorManager;
 include protocol PImageBridge;
 include protocol PProfiler;
+include protocol PVRGPU;
 include protocol PVRManager;
 include protocol PVsyncBridge;
 include protocol PUiCompositorController;
@@ -24,31 +26,28 @@ using mozilla::Telemetry::ChildEventData from "mozilla/TelemetryComms.h";
 using mozilla::Telemetry::DiscardedData from "mozilla/TelemetryComms.h";
 using mozilla::gfx::Feature from "gfxFeature.h";
 using mozilla::gfx::Fallback from "gfxFallback.h";
+using mozilla::layers::LayersId from "mozilla/layers/LayersTypes.h";
 
 namespace mozilla {
 namespace gfx {
 
-union GfxPrefValue {
-  bool;
-  int32_t;
-  uint32_t;
-  float;
-  nsCString;
-};
-
-struct GfxPrefSetting {
-  int32_t index;
-  GfxPrefValue value;
-};
-
 struct LayerTreeIdMapping {
-  uint64_t layersId;
+  LayersId layersId;
   ProcessId ownerId;
 };
 
+// This protocol allows the UI process to talk to the GPU process. There is one
+// instance of this protocol, with the GPUParent living on the main thread of
+// the GPU process and the GPUChild living on the main thread of the UI process.
 sync protocol PGPU
 {
+  manages PAPZInputBridge;
+
 parent:
+  // Sent from the UI process to initialize a new APZ input bridge when a new
+  // top-level compositor is created.
+  async PAPZInputBridge(LayersId aLayersId);
+
   // Sent by the UI process to initiate core settings.
   async Init(GfxPrefSetting[] prefs,
              GfxVarUpdate[] vars,
@@ -59,9 +58,10 @@ parent:
   async InitVsyncBridge(Endpoint<PVsyncBridgeParent> endpoint);
   async InitImageBridge(Endpoint<PImageBridgeParent> endpoint);
   async InitVRManager(Endpoint<PVRManagerParent> endpoint);
-  async InitUiCompositorController(uint64_t rootLayerTreeId, Endpoint<PUiCompositorControllerParent> endpoint);
+  async InitUiCompositorController(LayersId rootLayerTreeId, Endpoint<PUiCompositorControllerParent> endpoint);
   async InitProfiler(Endpoint<PProfilerChild> endpoint);
-
+  // Forward GPU process its endpoints to the VR process.
+  async InitVR(Endpoint<PVRGPUChild> endpoint);
   // Called to update a gfx preference or variable.
   async UpdatePref(GfxPrefSetting pref);
   async UpdateVar(GfxVarUpdate var);
@@ -91,7 +91,8 @@ parent:
   async RequestMemoryReport(uint32_t generation,
                             bool anonymize,
                             bool minimizeMemoryUsage,
-                            MaybeFileDesc DMDFile);
+                            FileDescriptor? DMDFile);
+  async ShutdownVR();
 
 child:
   // Sent when the GPU process has initialized devices. This occurs once, after
@@ -105,6 +106,9 @@ child:
   async GraphicsError(nsCString aError);
 
   async InitCrashReporter(Shmem shmem, NativeThreadId threadId);
+
+  async CreateVRProcess();
+  async ShutdownVRProcess();
 
   // Have a message be broadcasted to the UI process by the UI process
   // observer service.

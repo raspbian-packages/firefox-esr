@@ -3,12 +3,12 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <!--LOCALIZATION NOTE : FILE The Applications prefs dialog -->
-<!ENTITY pref.applications.title        "დახმარების პროგრამები">
+<!ENTITY pref.applications.title "დახმარების პროგრამები">
 
-<!ENTITY typeColumn.label        "შიგთავსის ტიპი">
+<!ENTITY typeColumn.label        "შიგთავსის სახეობა">
 <!ENTITY typeColumn.accesskey    "T">
 
 <!ENTITY actionColumn2.label     "ქმედება">
 <!ENTITY actionColumn2.accesskey "A">
 
-<!ENTITY search.placeholder      "ტიპები და ქმედებების ძიება">
+<!ENTITY search.placeholder      "ძიების სახეები და მოქმედებები">

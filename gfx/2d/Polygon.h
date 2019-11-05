@@ -157,7 +157,7 @@ class PolygonTyped {
   typedef Point4DTyped<Units> Point4DType;
 
  public:
-  PolygonTyped() {}
+  PolygonTyped() = default;
 
   explicit PolygonTyped(const nsTArray<Point4DType>& aPoints,
                         const Point4DType& aNormal = DefaultNormal())
@@ -165,7 +165,7 @@ class PolygonTyped {
 
   explicit PolygonTyped(nsTArray<Point4DType>&& aPoints,
                         const Point4DType& aNormal = DefaultNormal())
-      : mNormal(aNormal), mPoints(Move(aPoints)) {}
+      : mNormal(aNormal), mPoints(std::move(aPoints)) {}
 
   explicit PolygonTyped(const std::initializer_list<Point4DType>& aPoints,
                         const Point4DType& aNormal = DefaultNormal())
@@ -247,7 +247,7 @@ class PolygonTyped {
                           frontPoints);
 
       // Only use the points behind the clipping plane.
-      clippedPoints = Move(backPoints);
+      clippedPoints = std::move(backPoints);
 
       if (clippedPoints.Length() < 3) {
         // The clipping created a polygon with no area.
@@ -255,7 +255,7 @@ class PolygonTyped {
       }
     }
 
-    return PolygonTyped<Units>(Move(clippedPoints), mNormal);
+    return PolygonTyped<Units>(std::move(clippedPoints), mNormal);
   }
 
   /**
@@ -268,7 +268,7 @@ class PolygonTyped {
         Point4DType(aRect.XMost(), aRect.YMost(), 0.0f, 1.0f),
         Point4DType(aRect.XMost(), aRect.Y(), 0.0f, 1.0f)};
 
-    return PolygonTyped<Units>(Move(points));
+    return PolygonTyped<Units>(std::move(points));
   }
 
   const Point4DType& GetNormal() const { return mNormal; }
@@ -295,7 +295,7 @@ class PolygonTyped {
       TriangleTyped<Units> triangle(Point(mPoints[0].x, mPoints[0].y),
                                     Point(mPoints[i].x, mPoints[i].y),
                                     Point(mPoints[i + 1].x, mPoints[i + 1].y));
-      triangles.AppendElement(Move(triangle));
+      triangles.AppendElement(std::move(triangle));
     }
 
     return triangles;
@@ -306,9 +306,9 @@ class PolygonTyped {
     mNormal = DefaultNormal();
   }
 
-  void TransformToScreenSpace(const Matrix4x4Typed<Units, Units>& aTransform) {
-    MOZ_ASSERT(!aTransform.IsSingular());
-
+  void TransformToScreenSpace(
+      const Matrix4x4Typed<Units, Units>& aTransform,
+      const Matrix4x4Typed<Units, Units>& aInverseTransform) {
     TransformPoints(aTransform, false);
 
     // Perspective projection transformation might produce points with w <= 0,
@@ -316,7 +316,13 @@ class PolygonTyped {
     mPoints = ClipPointsAtInfinity(mPoints);
 
     // Normal vectors should be transformed using inverse transpose.
-    mNormal = aTransform.Inverse().Transpose().TransformPoint(mNormal);
+    mNormal = aInverseTransform.TransposeTransform4D(mNormal);
+  }
+
+  void TransformToScreenSpace(const Matrix4x4Typed<Units, Units>& aTransform) {
+    MOZ_ASSERT(!aTransform.IsSingular());
+
+    TransformToScreenSpace(aTransform, aTransform.Inverse());
   }
 
  private:

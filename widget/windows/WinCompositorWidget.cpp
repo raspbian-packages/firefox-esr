@@ -11,6 +11,7 @@
 #include "mozilla/widget/PlatformWidgetTypes.h"
 #include "nsWindow.h"
 #include "VsyncDispatcher.h"
+#include "WinCompositorWindowThread.h"
 
 #include <ddraw.h>
 
@@ -26,9 +27,9 @@ WinCompositorWidget::WinCompositorWidget(
     : CompositorWidget(aOptions),
       mWidgetKey(aInitData.widgetKey()),
       mWnd(reinterpret_cast<HWND>(aInitData.hWnd())),
+      mCompositorWnds(nullptr, nullptr),
       mTransparentSurfaceLock("mTransparentSurfaceLock"),
-      mTransparencyMode(
-          static_cast<nsTransparencyMode>(aInitData.transparencyMode())),
+      mTransparencyMode(aInitData.transparencyMode()),
       mMemoryDC(nullptr),
       mCompositeDC(nullptr),
       mLockedBackBufferData(nullptr) {
@@ -40,6 +41,8 @@ WinCompositorWidget::WinCompositorWidget(
                               gfxPlatform::IsInLayoutAsapMode() ||
                               gfxPlatform::ForceSoftwareVsync();
 }
+
+WinCompositorWidget::~WinCompositorWidget() { DestroyCompositorWindow(); }
 
 void WinCompositorWidget::OnDestroyWindow() {
   MutexAutoLock lock(mTransparentSurfaceLock);
@@ -292,6 +295,46 @@ void WinCompositorWidget::FreeWindowSurface(HDC dc) {
 }
 
 bool WinCompositorWidget::IsHidden() const { return ::IsIconic(mWnd); }
+
+void WinCompositorWidget::EnsureCompositorWindow() {
+  if (mCompositorWnds.mCompositorWnd || mCompositorWnds.mInitialParentWnd) {
+    return;
+  }
+
+  mCompositorWnds = WinCompositorWindowThread::CreateCompositorWindow();
+  UpdateCompositorWnd(mCompositorWnds.mCompositorWnd, mWnd);
+
+  MOZ_ASSERT(mCompositorWnds.mCompositorWnd);
+  MOZ_ASSERT(mCompositorWnds.mInitialParentWnd);
+}
+
+void WinCompositorWidget::DestroyCompositorWindow() {
+  if (!mCompositorWnds.mCompositorWnd && !mCompositorWnds.mInitialParentWnd) {
+    return;
+  }
+  WinCompositorWindowThread::DestroyCompositorWindow(mCompositorWnds);
+  mCompositorWnds = WinCompositorWnds(nullptr, nullptr);
+}
+
+void WinCompositorWidget::UpdateCompositorWndSizeIfNecessary() {
+  if (!mCompositorWnds.mCompositorWnd) {
+    return;
+  }
+
+  LayoutDeviceIntSize size = GetClientSize();
+  if (mLastCompositorWndSize == size) {
+    return;
+  }
+
+  // Force a resize and redraw (but not a move, activate, etc.).
+  if (!::SetWindowPos(mCompositorWnds.mCompositorWnd, nullptr, 0, 0, size.width,
+                      size.height,
+                      SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS |
+                          SWP_NOOWNERZORDER | SWP_NOZORDER)) {
+    return;
+  }
+  mLastCompositorWndSize = size;
+}
 
 }  // namespace widget
 }  // namespace mozilla

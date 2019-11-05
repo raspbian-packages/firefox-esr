@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "AnimationInfo.h"
+#include "mozilla/LayerAnimationInfo.h"
 #include "mozilla/layers/WebRenderLayerManager.h"
 #include "mozilla/layers/AnimationHelper.h"
+#include "mozilla/layers/CompositorThread.h"
 #include "mozilla/dom/Animation.h"
+#include "nsIContent.h"
+#include "PuppetWidget.h"
 
 namespace mozilla {
 namespace layers {
 
-AnimationInfo::AnimationInfo(LayerManager* aManager)
-    : mManager(aManager),
-      mCompositorAnimationsId(0),
-      mAnimationGeneration(0),
-      mMutated(false) {}
+AnimationInfo::AnimationInfo() : mCompositorAnimationsId(0), mMutated(false) {}
 
 AnimationInfo::~AnimationInfo() {}
 
@@ -27,6 +27,7 @@ void AnimationInfo::EnsureAnimationsId() {
 }
 
 Animation* AnimationInfo::AddAnimation() {
+  MOZ_ASSERT(!CompositorThreadHolder::IsInCompositorThread());
   // Here generates a new id when the first animation is added and
   // this id is used to represent the animations in this layer.
   EnsureAnimationsId();
@@ -41,6 +42,7 @@ Animation* AnimationInfo::AddAnimation() {
 }
 
 Animation* AnimationInfo::AddAnimationForNextTransaction() {
+  MOZ_ASSERT(!CompositorThreadHolder::IsInCompositorThread());
   MOZ_ASSERT(mPendingAnimations,
              "should have called ClearAnimationsForNextTransaction first");
 
@@ -52,12 +54,12 @@ Animation* AnimationInfo::AddAnimationForNextTransaction() {
 void AnimationInfo::ClearAnimations() {
   mPendingAnimations = nullptr;
 
-  if (mAnimations.IsEmpty() && mAnimationData.IsEmpty()) {
+  if (mAnimations.IsEmpty() && mPropertyAnimationGroups.IsEmpty()) {
     return;
   }
 
   mAnimations.Clear();
-  mAnimationData.Clear();
+  mPropertyAnimationGroups.Clear();
 
   mMutated = true;
 }
@@ -73,11 +75,9 @@ void AnimationInfo::ClearAnimationsForNextTransaction() {
 
 void AnimationInfo::SetCompositorAnimations(
     const CompositorAnimations& aCompositorAnimations) {
-  mAnimations = aCompositorAnimations.animations();
   mCompositorAnimationsId = aCompositorAnimations.id();
-  mAnimationData.Clear();
-  AnimationHelper::SetAnimations(mAnimations, mAnimationData,
-                                 mBaseAnimationStyle);
+  mPropertyAnimationGroups =
+      AnimationHelper::ExtractAnimations(aCompositorAnimations.animations());
 }
 
 bool AnimationInfo::StartPendingAnimations(const TimeStamp& aReadyTime) {
@@ -88,23 +88,21 @@ bool AnimationInfo::StartPendingAnimations(const TimeStamp& aReadyTime) {
 
     // If the animation is doing an async update of its playback rate, then we
     // want to match whatever its current time would be at *aReadyTime*.
-    if (!std::isnan(anim.previousPlaybackRate()) &&
-        anim.startTime().type() == MaybeTimeDuration::TTimeDuration &&
+    if (!std::isnan(anim.previousPlaybackRate()) && anim.startTime().isSome() &&
         !anim.originTime().IsNull() && !anim.isNotPlaying()) {
       TimeDuration readyTime = aReadyTime - anim.originTime();
       anim.holdTime() = dom::Animation::CurrentTimeFromTimelineTime(
-          readyTime, anim.startTime().get_TimeDuration(),
-          anim.previousPlaybackRate());
+          readyTime, anim.startTime().ref(), anim.previousPlaybackRate());
       // Make start time null so that we know to update it below.
-      anim.startTime() = null_t();
+      anim.startTime() = Nothing();
     }
 
     // If the animation is play-pending, resolve the start time.
-    if (anim.startTime().type() == MaybeTimeDuration::Tnull_t &&
-        !anim.originTime().IsNull() && !anim.isNotPlaying()) {
+    if (anim.startTime().isNothing() && !anim.originTime().IsNull() &&
+        !anim.isNotPlaying()) {
       TimeDuration readyTime = aReadyTime - anim.originTime();
-      anim.startTime() = dom::Animation::StartTimeFromTimelineTime(
-          readyTime, anim.holdTime(), anim.playbackRate());
+      anim.startTime() = Some(dom::Animation::StartTimeFromTimelineTime(
+          readyTime, anim.holdTime(), anim.playbackRate()));
       updated = true;
     }
   }
@@ -128,22 +126,103 @@ bool AnimationInfo::ApplyPendingUpdatesForThisTransaction() {
   return false;
 }
 
-bool AnimationInfo::HasOpacityAnimation() const {
+bool AnimationInfo::HasTransformAnimation() const {
+  const nsCSSPropertyIDSet& transformSet =
+      LayerAnimationInfo::GetCSSPropertiesFor(DisplayItemType::TYPE_TRANSFORM);
   for (uint32_t i = 0; i < mAnimations.Length(); i++) {
-    if (mAnimations[i].property() == eCSSProperty_opacity) {
+    if (transformSet.HasProperty(mAnimations[i].property())) {
       return true;
     }
   }
   return false;
 }
 
-bool AnimationInfo::HasTransformAnimation() const {
-  for (uint32_t i = 0; i < mAnimations.Length(); i++) {
-    if (mAnimations[i].property() == eCSSProperty_transform) {
-      return true;
+/* static */
+Maybe<uint64_t> AnimationInfo::GetGenerationFromFrame(
+    nsIFrame* aFrame, DisplayItemType aDisplayItemKey) {
+  MOZ_ASSERT(aFrame->IsPrimaryFrame() ||
+             nsLayoutUtils::IsFirstContinuationOrIBSplitSibling(aFrame));
+
+  layers::Layer* layer =
+      FrameLayerBuilder::GetDedicatedLayer(aFrame, aDisplayItemKey);
+  if (layer) {
+    return layer->GetAnimationInfo().GetAnimationGeneration();
+  }
+
+  // In case of continuation, KeyframeEffectReadOnly uses its first frame,
+  // whereas nsDisplayItem uses its last continuation, so we have to use the
+  // last continuation frame here.
+  if (nsLayoutUtils::IsFirstContinuationOrIBSplitSibling(aFrame)) {
+    aFrame = nsLayoutUtils::LastContinuationOrIBSplitSibling(aFrame);
+  }
+  RefPtr<WebRenderAnimationData> animationData =
+      GetWebRenderUserData<WebRenderAnimationData>(aFrame,
+                                                   (uint32_t)aDisplayItemKey);
+  if (animationData) {
+    return animationData->GetAnimationInfo().GetAnimationGeneration();
+  }
+
+  return Nothing();
+}
+
+/* static */
+void AnimationInfo::EnumerateGenerationOnFrame(
+    const nsIFrame* aFrame, const nsIContent* aContent,
+    const CompositorAnimatableDisplayItemTypes& aDisplayItemTypes,
+    const AnimationGenerationCallback& aCallback) {
+  if (XRE_IsContentProcess()) {
+    if (nsIWidget* widget = nsContentUtils::WidgetForContent(aContent)) {
+      // In case of child processes, we might not have yet created the layer
+      // manager.  That means there is no animation generation we have, thus
+      // we call the callback function with |Nothing()| for the generation.
+      //
+      // Note that we need to use nsContentUtils::WidgetForContent() instead of
+      // BrowserChild::GetFrom(aFrame->PresShell())->WebWidget() because in the
+      // case of child popup content PuppetWidget::mBrowserChild is the same as
+      // the parent's one, which means mBrowserChild->IsLayersConnected() check
+      // in PuppetWidget::GetLayerManager queries the parent state, it results
+      // the assertion in the function failure.
+      if (widget->GetOwningBrowserChild() &&
+          !static_cast<widget::PuppetWidget*>(widget)->HasLayerManager()) {
+        for (auto displayItem : LayerAnimationInfo::sDisplayItemTypes) {
+          aCallback(Nothing(), displayItem);
+        }
+        return;
+      }
     }
   }
-  return false;
+
+  RefPtr<LayerManager> layerManager =
+      nsContentUtils::LayerManagerForContent(aContent);
+
+  if (layerManager &&
+      layerManager->GetBackendType() == layers::LayersBackend::LAYERS_WR) {
+    // In case of continuation, nsDisplayItem uses its last continuation, so we
+    // have to use the last continuation frame here.
+    if (nsLayoutUtils::IsFirstContinuationOrIBSplitSibling(aFrame)) {
+      aFrame = nsLayoutUtils::LastContinuationOrIBSplitSibling(aFrame);
+    }
+
+    for (auto displayItem : LayerAnimationInfo::sDisplayItemTypes) {
+      // For transform animations, the animation is on the primary frame but
+      // |aFrame| is the style frame.
+      const nsIFrame* frameToQuery =
+          displayItem == DisplayItemType::TYPE_TRANSFORM
+              ? nsLayoutUtils::GetPrimaryFrameFromStyleFrame(aFrame)
+              : aFrame;
+      RefPtr<WebRenderAnimationData> animationData =
+          GetWebRenderUserData<WebRenderAnimationData>(frameToQuery,
+                                                       (uint32_t)displayItem);
+      Maybe<uint64_t> generation;
+      if (animationData) {
+        generation = animationData->GetAnimationInfo().GetAnimationGeneration();
+      }
+      aCallback(generation, displayItem);
+    }
+    return;
+  }
+
+  FrameLayerBuilder::EnumerateGenerationForDedicatedLayers(aFrame, aCallback);
 }
 
 }  // namespace layers

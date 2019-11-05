@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import java.util.List;
 
@@ -50,6 +51,36 @@ public class PackageUtil {
         }
 
         return null;
+    }
+
+    private static String getDefaultBrowserPackage(@NonNull final Context context) {
+        final ResolveInfo resolveInfo = getDefaultBrowser(context);
+        if (resolveInfo != null) {
+            return resolveInfo.activityInfo.packageName;
+        } else {
+            return null;
+        }
+    }
+
+    public static boolean isDefaultBrowser(Context context) {
+        final String defaultBrowserPackageName = getDefaultBrowserPackage(context);
+        return TextUtils.equals(defaultBrowserPackageName, context.getPackageName());
+    }
+
+    public static boolean isNoDefaultBrowserSet(Context context) {
+        final String defaultBrowserPackageName = getDefaultBrowserPackage(context);
+        return TextUtils.isEmpty(defaultBrowserPackageName);
+    }
+
+    public static void showInstalledBrowsers(Context context) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://www.mozilla.org/firefox/mobile"));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -8,15 +8,15 @@
 #include "DeleteNodeTransaction.h"
 #include "DeleteTextTransaction.h"
 #include "mozilla/Assertions.h"
-#include "mozilla/EditorBase.h"
+#include "mozilla/ContentIterator.h"
 #include "mozilla/dom/Selection.h"
+#include "mozilla/EditorBase.h"
 #include "mozilla/mozalloc.h"
 #include "mozilla/RangeBoundary.h"
 #include "nsCOMPtr.h"
 #include "nsDebug.h"
 #include "nsError.h"
 #include "nsIContent.h"
-#include "nsIContentIterator.h"
 #include "nsINode.h"
 #include "nsAString.h"
 
@@ -85,20 +85,18 @@ DeleteRangeTransaction::DoTransaction() {
     return rv;
   }
 
-  // only set selection to deletion point if editor gives permission
-  bool bAdjustSelection;
-  mEditorBase->ShouldTxnSetSelection(&bAdjustSelection);
-  if (bAdjustSelection) {
-    RefPtr<Selection> selection = mEditorBase->GetSelection();
-    if (NS_WARN_IF(!selection)) {
-      return NS_ERROR_NULL_POINTER;
-    }
-    rv = selection->Collapse(startRef.AsRaw());
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
-    }
+  if (!mEditorBase->AllowsTransactionsToChangeSelection()) {
+    return NS_OK;
   }
-  // else do nothing - dom range gravity will adjust selection
+
+  RefPtr<Selection> selection = mEditorBase->GetSelection();
+  if (NS_WARN_IF(!selection)) {
+    return NS_ERROR_NULL_POINTER;
+  }
+  rv = selection->Collapse(startRef.AsRaw());
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
 
   return NS_OK;
 }
@@ -126,7 +124,8 @@ nsresult DeleteRangeTransaction::CreateTxnsToDeleteBetween(
   }
 
   // see what kind of node we have
-  if (aStart.Container()->IsNodeOfType(nsINode::eDATA_NODE)) {
+  if (RefPtr<CharacterData> charDataNode =
+          CharacterData::FromNode(aStart.Container())) {
     // if the node is a chardata node, then delete chardata content
     int32_t numToDel;
     if (aStart == aEnd) {
@@ -135,9 +134,6 @@ nsresult DeleteRangeTransaction::CreateTxnsToDeleteBetween(
       numToDel = aEnd.Offset() - aStart.Offset();
       MOZ_DIAGNOSTIC_ASSERT(numToDel > 0);
     }
-
-    RefPtr<nsGenericDOMDataNode> charDataNode =
-        static_cast<nsGenericDOMDataNode*>(aStart.Container());
 
     RefPtr<DeleteTextTransaction> deleteTextTransaction =
         DeleteTextTransaction::MaybeCreate(*mEditorBase, *charDataNode,
@@ -180,7 +176,8 @@ nsresult DeleteRangeTransaction::CreateTxnsToDeleteContent(
     return NS_ERROR_NOT_AVAILABLE;
   }
 
-  if (!aPoint.Container()->IsNodeOfType(nsINode::eDATA_NODE)) {
+  RefPtr<CharacterData> dataNode = CharacterData::FromNode(aPoint.Container());
+  if (!dataNode) {
     return NS_OK;
   }
 
@@ -198,8 +195,6 @@ nsresult DeleteRangeTransaction::CreateTxnsToDeleteContent(
     return NS_OK;
   }
 
-  RefPtr<nsGenericDOMDataNode> dataNode =
-      static_cast<nsGenericDOMDataNode*>(aPoint.Container());
   RefPtr<DeleteTextTransaction> deleteTextTransaction =
       DeleteTextTransaction::MaybeCreate(*mEditorBase, *dataNode, startOffset,
                                          numToDelete);
@@ -219,13 +214,12 @@ nsresult DeleteRangeTransaction::CreateTxnsToDeleteNodesBetween(
     return NS_ERROR_NOT_AVAILABLE;
   }
 
-  nsCOMPtr<nsIContentIterator> iter = NS_NewContentSubtreeIterator();
-
-  nsresult rv = iter->Init(aRangeToDelete);
+  ContentSubtreeIterator subtreeIter;
+  nsresult rv = subtreeIter.Init(aRangeToDelete);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  while (!iter->IsDone()) {
-    nsCOMPtr<nsINode> node = iter->GetCurrentNode();
+  while (!subtreeIter.IsDone()) {
+    nsCOMPtr<nsINode> node = subtreeIter.GetCurrentNode();
     if (NS_WARN_IF(!node)) {
       return NS_ERROR_NULL_POINTER;
     }
@@ -241,7 +235,7 @@ nsresult DeleteRangeTransaction::CreateTxnsToDeleteNodesBetween(
     }
     AppendChild(deleteNodeTransaction);
 
-    iter->Next();
+    subtreeIter.Next();
   }
   return NS_OK;
 }

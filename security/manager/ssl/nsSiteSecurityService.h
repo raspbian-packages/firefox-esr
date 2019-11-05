@@ -14,11 +14,11 @@
 #include "nsISiteSecurityService.h"
 #include "nsString.h"
 #include "nsTArray.h"
-#include "pkix/pkixtypes.h"
+#include "mozpkix/pkixtypes.h"
 #include "prtime.h"
 
 class nsIURI;
-class nsISSLStatus;
+class nsITransportSecurityInfo;
 
 using mozilla::OriginAttributes;
 
@@ -173,31 +173,29 @@ class nsSiteSecurityService : public nsISiteSecurityService,
                         SecurityPropertyState aHSTSState,
                         SecurityPropertySource aSource,
                         const OriginAttributes& aOriginAttributes);
-  nsresult ProcessHeaderInternal(uint32_t aType, nsIURI* aSourceURI,
-                                 const nsCString& aHeader,
-                                 nsISSLStatus* aSSLStatus, uint32_t aFlags,
-                                 SecurityPropertySource aSource,
-                                 const OriginAttributes& aOriginAttributes,
-                                 uint64_t* aMaxAge, bool* aIncludeSubdomains,
-                                 uint32_t* aFailureResult);
+  nsresult ProcessHeaderInternal(
+      uint32_t aType, nsIURI* aSourceURI, const nsCString& aHeader,
+      nsITransportSecurityInfo* aSecInfo, uint32_t aFlags,
+      SecurityPropertySource aSource, const OriginAttributes& aOriginAttributes,
+      uint64_t* aMaxAge, bool* aIncludeSubdomains, uint32_t* aFailureResult);
   nsresult ProcessSTSHeader(nsIURI* aSourceURI, const nsCString& aHeader,
                             uint32_t flags, SecurityPropertySource aSource,
                             const OriginAttributes& aOriginAttributes,
                             uint64_t* aMaxAge, bool* aIncludeSubdomains,
                             uint32_t* aFailureResult);
   nsresult ProcessPKPHeader(nsIURI* aSourceURI, const nsCString& aHeader,
-                            nsISSLStatus* aSSLStatus, uint32_t flags,
+                            nsITransportSecurityInfo* aSecInfo, uint32_t flags,
                             const OriginAttributes& aOriginAttributes,
                             uint64_t* aMaxAge, bool* aIncludeSubdomains,
                             uint32_t* aFailureResult);
   nsresult SetHPKPState(const char* aHost, SiteHPKPState& entry, uint32_t flags,
                         bool aIsPreload,
                         const OriginAttributes& aOriginAttributes);
-  nsresult RemoveStateInternal(uint32_t aType, nsIURI* aURI, uint32_t aFlags,
-                               const OriginAttributes& aOriginAttributes);
-  nsresult RemoveStateInternal(uint32_t aType, const nsAutoCString& aHost,
-                               uint32_t aFlags, bool aIsPreload,
-                               const OriginAttributes& aOriginAttributes);
+  nsresult MarkHostAsNotHSTS(uint32_t aType, const nsAutoCString& aHost,
+                             uint32_t aFlags, bool aIsPreload,
+                             const OriginAttributes& aOriginAttributes);
+  nsresult ResetStateInternal(uint32_t aType, nsIURI* aURI, uint32_t aFlags,
+                              const OriginAttributes& aOriginAttributes);
   bool HostHasHSTSEntry(const nsAutoCString& aHost,
                         bool aRequireIncludeSubdomains, uint32_t aFlags,
                         const OriginAttributes& aOriginAttributes,

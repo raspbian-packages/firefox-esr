@@ -31,8 +31,8 @@ class ViewportFrame : public nsContainerFrame {
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(ViewportFrame)
 
-  explicit ViewportFrame(nsStyleContext* aContext)
-      : ViewportFrame(aContext, kClassID) {}
+  explicit ViewportFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : ViewportFrame(aStyle, aPresContext, kClassID) {}
 
   virtual ~ViewportFrame() {}  // useful for debugging
 
@@ -59,11 +59,11 @@ class ViewportFrame : public nsContainerFrame {
                       const ReflowInput& aReflowInput,
                       nsReflowStatus& aStatus) override;
 
-  virtual bool ComputeCustomOverflow(nsOverflowAreas& aOverflowAreas) override;
+  bool ComputeCustomOverflow(nsOverflowAreas&) override { return false; }
 
   /**
    * Adjust aReflowInput to account for scrollbars and pres shell
-   * GetScrollPositionClampingScrollPortSizeSet and
+   * GetVisualViewportSizeSet and
    * GetContentDocumentFixedPositionMargins adjustments.
    * @return the rect to use as containing block rect
    */
@@ -80,13 +80,17 @@ class ViewportFrame : public nsContainerFrame {
    */
   void AppendDirectlyOwnedAnonBoxes(nsTArray<OwnedAnonBox>& aResult) override;
 
+  // Returns adjusted viewport size to reflect the positions that position:fixed
+  // elements are attached.
+  nsSize AdjustViewportSizeForFixedPosition(const nsRect& aViewportRect) const;
+
 #ifdef DEBUG_FRAME_DUMP
   virtual nsresult GetFrameName(nsAString& aResult) const override;
 #endif
 
  protected:
-  ViewportFrame(nsStyleContext* aContext, ClassID aID)
-      : nsContainerFrame(aContext, aID), mView(nullptr) {}
+  ViewportFrame(ComputedStyle* aStyle, nsPresContext* aPresContext, ClassID aID)
+      : nsContainerFrame(aStyle, aPresContext, aID), mView(nullptr) {}
 
   /**
    * Calculate how much room is available for fixed frames. That means

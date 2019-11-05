@@ -9,13 +9,15 @@
 
 #include <stdint.h>  // for int32_t, uint32_t
 
-#include "FrameMetrics.h"        // for FrameMetrics::ViewID
-#include "mozilla/DefineEnum.h"  // for MOZ_DEFINE_ENUM
-#include "mozilla/Variant.h"     // for Variant
-
-class nsIPresShell;
+#include "mozilla/DefineEnum.h"                  // for MOZ_DEFINE_ENUM
+#include "mozilla/layers/ScrollableLayerGuid.h"  // for ViewID
+#include "mozilla/webrender/WebRenderTypes.h"    // for RenderRoot
+#include "mozilla/Variant.h"                     // for Variant
 
 namespace mozilla {
+
+class PresShell;
+
 namespace layers {
 
 /**
@@ -27,15 +29,24 @@ namespace layers {
 class FocusTarget final {
  public:
   struct ScrollTargets {
-    FrameMetrics::ViewID mHorizontal;
-    FrameMetrics::ViewID mVertical;
+    ScrollableLayerGuid::ViewID mHorizontal;
+    wr::RenderRoot mHorizontalRenderRoot;
+    ScrollableLayerGuid::ViewID mVertical;
+    wr::RenderRoot mVerticalRenderRoot;
 
     bool operator==(const ScrollTargets& aRhs) const {
-      return mHorizontal == aRhs.mHorizontal && mVertical == aRhs.mVertical;
+      bool ret =
+          (mHorizontal == aRhs.mHorizontal && mVertical == aRhs.mVertical);
+      if (ret) {
+        // The render root is a function of where the scrollable frame is in
+        // the DOM/layout tree, so if the ViewIDs match then the render roots
+        // should also match.
+        MOZ_ASSERT(mHorizontalRenderRoot == aRhs.mHorizontalRenderRoot &&
+                   mVerticalRenderRoot == aRhs.mVerticalRenderRoot);
+      }
+      return ret;
     }
   };
-
-  typedef uint64_t RefLayerId;
 
   // We need this to represent the case where mData has no focus target data
   // because we can't have an empty variant
@@ -48,7 +59,7 @@ class FocusTarget final {
   /**
    * Construct a focus target for the specified top level PresShell
    */
-  FocusTarget(nsIPresShell* aRootPresShell, uint64_t aFocusSequenceNumber);
+  FocusTarget(PresShell* aRootPresShell, uint64_t aFocusSequenceNumber);
 
   bool operator==(const FocusTarget& aRhs) const;
 
@@ -62,7 +73,7 @@ class FocusTarget final {
   // in the event target chain of the focused element
   bool mFocusHasKeyEventListeners;
 
-  mozilla::Variant<RefLayerId, ScrollTargets, NoFocusTarget> mData;
+  mozilla::Variant<LayersId, ScrollTargets, NoFocusTarget> mData;
 };
 
 }  // namespace layers

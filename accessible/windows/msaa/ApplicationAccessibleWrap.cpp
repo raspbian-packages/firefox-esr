@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim:expandtab:shiftwidth=4:tabstop=4:
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -11,7 +11,7 @@
 #include "IUnknownImpl.h"
 
 #include "nsIGfxInfo.h"
-#include "nsIPersistentProperties2.h"
+#include "nsPersistentProperties.h"
 #include "nsServiceManagerUtils.h"
 #include "mozilla/Services.h"
 
@@ -24,8 +24,7 @@ NS_IMPL_ISUPPORTS_INHERITED0(ApplicationAccessibleWrap, ApplicationAccessible)
 
 already_AddRefed<nsIPersistentProperties>
 ApplicationAccessibleWrap::NativeAttributes() {
-  nsCOMPtr<nsIPersistentProperties> attributes =
-      do_CreateInstance(NS_PERSISTENTPROPERTIES_CONTRACTID);
+  RefPtr<nsPersistentProperties> attributes = new nsPersistentProperties();
 
   nsCOMPtr<nsIGfxInfo> gfxInfo = services::GetGfxInfo();
   if (gfxInfo) {

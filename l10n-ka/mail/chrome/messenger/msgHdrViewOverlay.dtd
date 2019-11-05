@@ -6,7 +6,7 @@
 <!ENTITY fromField4.label "ვისგან: ">
 <!ENTITY senderField4.label "გამგზავნი: ">
 <!ENTITY author.label "ავტორი">
-<!ENTITY organizationField4.label "ორგანიზაცია: ">
+<!ENTITY organizationField4.label "დაწესებულება">
 <!ENTITY replyToField4.label "პასუხი: ">
 
 <!ENTITY subjectField4.label "თემა: ">
@@ -16,11 +16,11 @@
 <!ENTITY followupToField4.label "კონფერენცია ">
 <!ENTITY tagsHdr4.label "ჭდეები ">
 <!ENTITY dateField4.label "თარიღი ">
-<!ENTITY userAgentField4.label "პროგრამა ">
+<!ENTITY userAgentField4.label "მომხმარებლის პროგრამა">
 <!ENTITY referencesField4.label "დამოწმებები ">
 <!ENTITY messageIdField4.label "გზავნილის კოდი ">
 <!ENTITY inReplyToField4.label "პასუხად ">
-<!ENTITY originalWebsite4.label "ვებსაიტი ">
+<!ENTITY originalWebsite4.label "ვებსაიტი">
 
 <!ENTITY hdrArchiveButton1.label "არქივი">
 <!ENTITY hdrArchiveButton1.tooltip "ამ წერილის დაარქივება">
@@ -30,7 +30,7 @@
 <!ENTITY hdrReplyButton1.label "პასუხი">
 <!ENTITY hdrReplyButton2.tooltip "პასუხი ამ წერილის გამომგზავნს">
 <!ENTITY hdrReplyAllButton1.label "პასუხი ყველას">
-<!ENTITY hdrReplyAllButton1.tooltip "პასუხი გამომგზავნს და ყველა ადრესატს">
+<!ENTITY hdrReplyAllButton1.tooltip "პასუხი გამომგზავნს და ყველა მიმღებს">
 <!ENTITY hdrReplyListButton1.label "პასუხი ჯგუფს">
 <!ENTITY hdrReplyListButton1.tooltip "პასუხი დაგზავნის სიაზე">
 <!ENTITY hdrFollowupButton1.label "ადევნება">
@@ -95,16 +95,21 @@
 
 <!ENTITY openAttachment.tooltip "დართული ფაილის გახსნა">
 
+<!ENTITY detachedAttachmentFolder.show.label        "შემცველი საქაღალდის გახსნა">
+<!ENTITY detachedAttachmentFolder.show.accesskey    "ქ">
+<!ENTITY detachedAttachmentFolder.showMac.label     "Finder-ში ჩვენება">
+<!ENTITY detachedAttachmentFolder.showMac.accesskey "F">
+
 <!-- Attachment toolbar items -->
 <!ENTITY saveAttachmentButton1.label       "შენახვა">
 <!ENTITY saveAttachmentButton1.tooltip     "დართული ფაილის შენახვა">
 <!ENTITY saveAllAttachmentsButton1.label   "ყველას შენახვა">
 <!ENTITY saveAllAttachmentsButton1.tooltip "ყველა დართული ფაილის შენახვა">
 
-<!ENTITY copyLinkCmd.label        "ბმის მისამართის ასლი">
+<!ENTITY copyLinkCmd.label        "ბმულის მისამართის ასლი">
 <!ENTITY copyLinkCmd.accesskey    "ბ">
 
-<!ENTITY CopyMessageId.label "წერილის კოდის კოპირება">
+<!ENTITY CopyMessageId.label "წერილის კოდის ასლი">
 <!ENTITY CopyMessageId.accesskey "კ">
 <!ENTITY OpenMessageForMsgId.label "წერილის გახსნა კოდისთვის">
 <!ENTITY OpenMessageForMsgId.accesskey "ო">

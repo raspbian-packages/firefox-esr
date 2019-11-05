@@ -55,7 +55,7 @@
 <!ENTITY fxaccount_status_sync_now 'Sincronizar ahora'>
 <!ENTITY fxaccount_status_syncing2 'Sincronizando…'>
 <!ENTITY fxaccount_status_device_name 'Nombre del dispositivo'>
-<!ENTITY fxaccount_status_sync_server 'Sincronizar servidor'>
+<!ENTITY fxaccount_status_sync_server 'Servidor de Sync'>
 <!ENTITY fxaccount_status_needs_verification2 'Tu cuenta necesita ser verificada. Toca para reenviar el email de verificación.'>
 <!ENTITY fxaccount_status_needs_credentials 'No se pudo conectar. Toca para conectarte.'>
 <!ENTITY fxaccount_status_needs_upgrade 'Necesitas actualizar &brandShortName; para conectarte.'>
@@ -66,7 +66,7 @@
 <!ENTITY fxaccount_status_bookmarks 'Marcadores'>
 <!ENTITY fxaccount_status_history 'Historial'>
 <!ENTITY fxaccount_status_passwords2 'Conexiones'>
-<!ENTITY fxaccount_status_tabs 'Abrir pestañas'>
+<!ENTITY fxaccount_status_tabs 'Pestañas abiertas'>
 <!ENTITY fxaccount_status_additional_settings 'Ajustes adicionales'>
 <!ENTITY fxaccount_pref_sync_use_metered2 'Sincronizar solo por Wi-Fi'>
 <!-- Localization note: Only affects background syncing, user initiated

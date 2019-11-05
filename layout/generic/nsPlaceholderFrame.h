@@ -39,9 +39,14 @@
 #include "nsFrame.h"
 #include "nsGkAtoms.h"
 
-nsIFrame* NS_NewPlaceholderFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext,
-                                 nsFrameState aTypeBits);
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
+class nsPlaceholderFrame;
+nsPlaceholderFrame* NS_NewPlaceholderFrame(mozilla::PresShell* aPresShell,
+                                           mozilla::ComputedStyle* aStyle,
+                                           nsFrameState aTypeBits);
 
 #define PLACEHOLDER_TYPE_MASK                                                  \
   (PLACEHOLDER_FOR_FLOAT | PLACEHOLDER_FOR_ABSPOS | PLACEHOLDER_FOR_FIXEDPOS | \
@@ -62,11 +67,13 @@ class nsPlaceholderFrame final : public nsFrame {
    * Create a new placeholder frame.  aTypeBit must be one of the
    * PLACEHOLDER_FOR_* constants above.
    */
-  friend nsIFrame* NS_NewPlaceholderFrame(nsIPresShell* aPresShell,
-                                          nsStyleContext* aContext,
-                                          nsFrameState aTypeBits);
-  nsPlaceholderFrame(nsStyleContext* aContext, nsFrameState aTypeBits)
-      : nsFrame(aContext, kClassID), mOutOfFlowFrame(nullptr) {
+  friend nsPlaceholderFrame* NS_NewPlaceholderFrame(
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle,
+      nsFrameState aTypeBits);
+
+  nsPlaceholderFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                     nsFrameState aTypeBits)
+      : nsFrame(aStyle, aPresContext, kClassID), mOutOfFlowFrame(nullptr) {
     MOZ_ASSERT(
         aTypeBits == PLACEHOLDER_FOR_FLOAT ||
             aTypeBits == PLACEHOLDER_FOR_ABSPOS ||
@@ -142,11 +149,11 @@ class nsPlaceholderFrame final : public nsFrame {
   }
 #endif
 
-  nsStyleContext* GetParentStyleContextForOutOfFlow(
+  ComputedStyle* GetParentComputedStyleForOutOfFlow(
       nsIFrame** aProviderFrame) const;
 
-  // Like GetParentStyleContextForOutOfFlow, but ignores display:contents bits.
-  nsStyleContext* GetLayoutParentStyleForOutOfFlow(
+  // Like GetParentComputedStyleForOutOfFlow, but ignores display:contents bits.
+  ComputedStyle* GetLayoutParentStyleForOutOfFlow(
       nsIFrame** aProviderFrame) const;
 
   bool RenumberFrameAndDescendants(int32_t* aOrdinal, int32_t aDepth,
@@ -161,7 +168,7 @@ class nsPlaceholderFrame final : public nsFrame {
    * aFrame
    */
   static nsIFrame* GetRealFrameFor(nsIFrame* aFrame) {
-    NS_PRECONDITION(aFrame, "Must have a frame to work with");
+    MOZ_ASSERT(aFrame, "Must have a frame to work with");
     if (aFrame->IsPlaceholderFrame()) {
       return GetRealFrameForPlaceholder(aFrame);
     }
@@ -172,8 +179,8 @@ class nsPlaceholderFrame final : public nsFrame {
    * @return the out-of-flow for aFrame, which is known to be a placeholder
    */
   static nsIFrame* GetRealFrameForPlaceholder(nsIFrame* aFrame) {
-    NS_PRECONDITION(aFrame->IsPlaceholderFrame(),
-                    "Must have placeholder frame as input");
+    MOZ_ASSERT(aFrame->IsPlaceholderFrame(),
+               "Must have placeholder frame as input");
     nsIFrame* outOfFlow =
         static_cast<nsPlaceholderFrame*>(aFrame)->GetOutOfFlowFrame();
     NS_ASSERTION(outOfFlow, "Null out-of-flow for placeholder?");

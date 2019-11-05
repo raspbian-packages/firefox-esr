@@ -46,7 +46,6 @@ config = {
         "cppunittest": "runcppunittests.py",
         "gtest": "rungtests.py",
         "jittest": "jit_test.py",
-        "mozbase": "test.py",
         "mozmill": "runtestlist.py",
     },
     "minimum_tests_zip_dirs": [
@@ -65,6 +64,7 @@ config = {
         "cppunittest": {
             "options": [
                 "--symbols-path=%(symbols_path)s",
+                "--utility-path=tests/bin",
                 "--xre-path=%(abs_app_dir)s"
             ],
             "run_filename": "runcppunittests.py",
@@ -102,14 +102,6 @@ config = {
             ],
             "run_filename": "runtests.py",
             "testsdir": "mochitest"
-        },
-        "mozbase": {
-            "options": [
-                "-b",
-                "%(binary_path)s"
-            ],
-            "run_filename": "test.py",
-            "testsdir": "mozbase"
         },
         "mozmill": {
             "options": [
@@ -160,33 +152,32 @@ config = {
     },
     # local mochi suites
     "all_mochitest_suites": {
-        "valgrind-plain": ["--valgrind=/usr/bin/valgrind",
+        "mochitest-valgrind-plain": ["--valgrind=/usr/bin/valgrind",
                            "--valgrind-supp-files=" + VALGRIND_SUPP_ARCH +
                                "," + VALGRIND_SUPP_CROSS_ARCH,
                            "--timeout=900", "--max-timeouts=50"],
-        "plain": [],
-        "plain-gpu": ["--subsuite=gpu"],
-        "plain-clipboard": ["--subsuite=clipboard"],
-        "plain-chunked": ["--chunk-by-dir=4"],
-        "plain-chunked-coverage": ["--chunk-by-dir=4", "--timeout=1200"],
+        "mochitest-plain": [],
+        "mochitest-plain-gpu": ["--subsuite=gpu"],
+        "mochitest-plain-chunked": ["--chunk-by-dir=4"],
+        "mochitest-plain-chunked-coverage": ["--chunk-by-dir=4", "--timeout=1200"],
         "mochitest-media": ["--subsuite=media"],
-        "chrome": ["--flavor=chrome"],
-        "chrome-gpu": ["--flavor=chrome", "--subsuite=gpu"],
-        "chrome-clipboard": ["--flavor=chrome", "--subsuite=clipboard"],
-        "chrome-chunked": ["--flavor=chrome", "--chunk-by-dir=4"],
-        "browser-chrome": ["--flavor=browser"],
-        "browser-chrome-gpu": ["--flavor=browser", "--subsuite=gpu"],
-        "browser-chrome-clipboard": ["--flavor=browser", "--subsuite=clipboard"],
-        "browser-chrome-chunked": ["--flavor=browser", "--chunk-by-runtime"],
-        "browser-chrome-addons": ["--flavor=browser", "--chunk-by-runtime", "--tag=addons"],
-        "browser-chrome-coverage": ["--flavor=browser", "--chunk-by-runtime", "--timeout=1200"],
-        "browser-chrome-screenshots": ["--flavor=browser", "--subsuite=screenshots"],
-        "browser-chrome-instrumentation": ["--flavor=browser"],
-        "mochitest-gl": ["--subsuite=webgl"],
+        "mochitest-chrome": ["--flavor=chrome", "--disable-e10s"],
+        "mochitest-chrome-gpu": ["--flavor=chrome", "--subsuite=gpu", "--disable-e10s"],
+        "mochitest-chrome-chunked": ["--flavor=chrome", "--chunk-by-dir=4", "--disable-e10s"],
+        "mochitest-browser-chrome": ["--flavor=browser"],
+        "mochitest-browser-chrome-chunked": ["--flavor=browser", "--chunk-by-runtime"],
+        "mochitest-browser-chrome-coverage": ["--flavor=browser", "--chunk-by-runtime", "--timeout=1200"],
+        "mochitest-browser-chrome-screenshots": ["--flavor=browser", "--subsuite=screenshots"],
+        "mochitest-browser-chrome-instrumentation": ["--flavor=browser"],
+        "mochitest-webgl1-core": ["--subsuite=webgl1-core"],
+        "mochitest-webgl1-ext": ["--subsuite=webgl1-ext"],
+        "mochitest-webgl2-core": ["--subsuite=webgl2-core"],
+        "mochitest-webgl2-ext": ["--subsuite=webgl2-ext"],
+        "mochitest-webgl2-deqp": ["--subsuite=webgl2-deqp"],
         "mochitest-devtools-chrome": ["--flavor=browser", "--subsuite=devtools"],
         "mochitest-devtools-chrome-chunked": ["--flavor=browser", "--subsuite=devtools", "--chunk-by-runtime"],
         "mochitest-devtools-chrome-coverage": ["--flavor=browser", "--subsuite=devtools", "--chunk-by-runtime", "--timeout=1200"],
-        "a11y": ["--flavor=a11y"],
+        "mochitest-a11y": ["--flavor=a11y", "--disable-e10s"],
     },
     # local reftest suites
     "all_reftest_suites": {
@@ -216,12 +207,6 @@ config = {
                         "--manifest=tests/xpcshell/tests/xpcshell.ini"],
             "tests": []
         },
-        "xpcshell-addons": {
-            "options": ["--xpcshell=%(abs_app_dir)s/" + XPCSHELL_NAME,
-                        "--tag=addons",
-                        "--manifest=tests/xpcshell/tests/xpcshell.ini"],
-            "tests": []
-        },
         "xpcshell-coverage": {
             "options": ["--xpcshell=%(abs_app_dir)s/" + XPCSHELL_NAME,
                         "--manifest=tests/xpcshell/tests/xpcshell.ini",
@@ -240,9 +225,6 @@ config = {
         "jittest1": ["--total-chunks=2", "--this-chunk=1"],
         "jittest2": ["--total-chunks=2", "--this-chunk=2"],
         "jittest-chunked": [],
-    },
-    "all_mozbase_suites": {
-        "mozbase": []
     },
     "run_cmd_checks_enabled": True,
     "preflight_run_cmd_suites": [
@@ -274,13 +256,12 @@ config = {
                              "mozmill": [],
                              "cppunittest": [],
                              "jittest": [],
-                             "mozbase": [],
                              },
-    "download_minidump_stackwalk": True,
     "minidump_stackwalk_path": MINIDUMP_STACKWALK_PATH,
     "minidump_tooltool_manifest_path": TOOLTOOL_MANIFEST_PATH,
     "tooltool_cache": "/builds/worker/tooltool-cache",
     "download_nodejs": True,
     "nodejs_path": NODEJS_PATH,
     "nodejs_tooltool_manifest_path": NODEJS_TOOLTOOL_MANIFEST_PATH,
+    # "log_format": "%(levelname)8s - %(message)s",
 }

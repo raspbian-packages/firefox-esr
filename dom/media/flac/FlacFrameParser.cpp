@@ -223,10 +223,12 @@ Result<bool, nsresult> FlacFrameParser::IsHeaderBlock(const uint8_t* aPacket,
   return type >= 1 && type <= 6;
 }
 
-MetadataTags* FlacFrameParser::GetTags() const {
-  MetadataTags* tags;
+UniquePtr<MetadataTags> FlacFrameParser::GetTags() const {
+  if (!mParser) {
+    return nullptr;
+  }
 
-  tags = new MetadataTags;
+  auto tags = MakeUnique<MetadataTags>();
   for (uint32_t i = 0; i < mParser->mTags.Length(); i++) {
     OggCodecState::AddVorbisComment(tags, mParser->mTags[i].Data(),
                                     mParser->mTags[i].Length());

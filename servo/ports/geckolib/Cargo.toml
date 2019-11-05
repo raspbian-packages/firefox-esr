@@ -7,24 +7,25 @@ license = "MPL-2.0"
 [lib]
 name = "geckoservo"
 path = "lib.rs"
-crate-type = ["staticlib", "rlib"]
 
 [features]
 bindgen = ["style/use_bindgen"]
-gecko_debug = ["style/gecko_debug"]
+gecko_debug = ["style/gecko_debug", "nsstring/gecko_debug"]
+gecko_profiler = ["style/gecko_profiler"]
 
 [dependencies]
 atomic_refcell = "0.1"
-cssparser = "0.23.0"
+cssparser = "0.25"
 cstr = "0.1.2"
-env_logger = {version = "0.4", default-features = false} # disable `regex` to reduce code size
 libc = "0.2"
-log = {version = "0.3.5", features = ["release_max_level_info"]}
+log = {version = "0.4", features = ["release_max_level_info"]}
 malloc_size_of = {path = "../../components/malloc_size_of"}
-nsstring = {path = "../../support/gecko/nsstring"}
-parking_lot = "0.4"
+nsstring = {path = "../../../xpcom/rust/nsstring/"}
+num-traits = "0.2"
+parking_lot = "0.6"
 selectors = {path = "../../components/selectors"}
 servo_arc = {path = "../../components/servo_arc"}
 smallvec = "0.6"
 style = {path = "../../components/style", features = ["gecko"]}
 style_traits = {path = "../../components/style_traits"}
+to_shmem = {path = "../../components/to_shmem"}

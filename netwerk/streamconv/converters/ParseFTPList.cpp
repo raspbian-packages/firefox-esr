@@ -11,21 +11,29 @@
 #include "plstr.h"
 #include "nsDebug.h"
 #include "prprf.h"
+#include "nsUnicharUtils.h"
 #include "mozilla/CheckedInt.h"
 #include "mozilla/IntegerPrintfMacros.h"
+#include "mozilla/TextUtils.h"
 #include "mozilla/Sprintf.h"
 
 /* ==================================================================== */
 
 using mozilla::CheckedInt;
+using mozilla::IsAsciiAlpha;
+using mozilla::IsAsciiAlphanumeric;
+using mozilla::IsAsciiDigit;
+using mozilla::IsAsciiLowercaseAlpha;
 
-static inline int ParsingFailed(struct list_state *state) {
+static const int kMaxFTPListLen = 32768;
+
+static inline int ParsingFailed(struct list_state* state) {
   if (state->parsed_one || state->lstyle) /* junk if we fail to parse */
     return '?'; /* this time but had previously parsed successfully */
   return '"';   /* its part of a comment or error message */
 }
 
-void FixupYear(PRExplodedTime *aTime) {
+void FixupYear(PRExplodedTime* aTime) {
   /* if year has only two digits then assume that
      00-79 is 2000-2079
      80-99 is 1980-1999 */
@@ -36,12 +44,12 @@ void FixupYear(PRExplodedTime *aTime) {
   }
 }
 
-int ParseFTPList(const char *line, struct list_state *state,
-                 struct list_result *result, PRTimeParamFn timeParam,
+int ParseFTPList(const char* line, struct list_state* state,
+                 struct list_result* result, PRTimeParamFn timeParam,
                  NowTimeFn nowTimeFn) {
   unsigned int carry_buf_len; /* copy of state->carry_buf_len */
   unsigned int pos;
-  const char *p;
+  const char* p;
 
   if (!line || !state || !result) return 0;
 
@@ -64,9 +72,13 @@ int ParseFTPList(const char *line, struct list_state *state,
 
   /* DON'T strip trailing whitespace. */
 
+  if (linelen > kMaxFTPListLen) {
+    return ParsingFailed(state);
+  }
+
   if (linelen > 0) {
-    static const char *month_names = "JanFebMarAprMayJunJulAugSepOctNovDec";
-    const char *tokens[16]; /* 16 is more than enough */
+    static const char* month_names = "JanFebMarAprMayJunJulAugSepOctNovDec";
+    const char* tokens[16]; /* 16 is more than enough */
     unsigned int toklen[(sizeof(tokens) / sizeof(tokens[0]))];
     unsigned int linelen_sans_wsp;  // line length sans whitespace
     unsigned int numtoks = 0;
@@ -108,7 +120,7 @@ int ParseFTPList(const char *line, struct list_state *state,
       linelen_sans_wsp = pos;
     }
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_EPLF)
     /* EPLF handling must come somewhere before /bin/dls handling. */
@@ -122,8 +134,8 @@ int ParseFTPList(const char *line, struct list_state *state,
           else if (*p == 'r')
             result->fe_type = 'f'; /* its a file */
           else if (*p == 'm') {
-            if (isdigit(line[pos])) {
-              while (pos < linelen && isdigit(line[pos])) pos++;
+            if (IsAsciiDigit(line[pos])) {
+              while (pos < linelen && IsAsciiDigit(line[pos])) pos++;
               if (pos < linelen && line[pos] == ',') {
                 PRTime t;
                 PRTime seconds;
@@ -133,8 +145,8 @@ int ParseFTPList(const char *line, struct list_state *state,
               }
             }
           } else if (*p == 's') {
-            if (isdigit(line[pos])) {
-              while (pos < linelen && isdigit(line[pos])) pos++;
+            if (IsAsciiDigit(line[pos])) {
+              while (pos < linelen && IsAsciiDigit(line[pos])) pos++;
               if (pos < linelen && line[pos] == ',' &&
                   ((&line[pos]) - (p + 1)) < int(sizeof(result->fe_size) - 1)) {
                 memcpy(result->fe_size, p + 1,
@@ -142,7 +154,8 @@ int ParseFTPList(const char *line, struct list_state *state,
                 result->fe_size[(&line[pos] - (p + 1))] = '\0';
               }
             }
-          } else if (isalpha(*p)) /* 'i'/'up' or unknown "fact" (property) */
+          } else if (IsAsciiAlpha(
+                         *p)) /* 'i'/'up' or unknown "fact" (property) */
           {
             while (pos < linelen && *++p != ',') pos++;
           } else if (*p != '\t' || (p + 1) != tokens[1]) {
@@ -170,7 +183,7 @@ int ParseFTPList(const char *line, struct list_state *state,
     }   /* if (!lstyle && (!state->lstyle || state->lstyle == 'E')) */
 #endif  /* SUPPORT_EPLF */
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_VMS)
     if (!lstyle &&
@@ -208,10 +221,10 @@ int ParseFTPList(const char *line, struct list_state *state,
               if (pos == 0 || p[pos - 1] == '[' || p[pos - 1] == '.' ||
                   (p[pos] == '-' && (p[pos + 1] == ']' || p[pos + 1] == '.')))
                 break;
-            } else if (p[pos] != '.' && p[pos] != '~' && !isdigit(p[pos]) &&
-                       !isalpha(p[pos]))
+            } else if (p[pos] != '.' && p[pos] != '~' &&
+                       !IsAsciiAlphanumeric(p[pos]))
               break;
-            else if (isalpha(p[pos]) && p[pos] != toupper(p[pos]))
+            else if (IsAsciiLowercaseAlpha(p[pos]))
               break;
           }
           if (pos > 0) {
@@ -223,9 +236,9 @@ int ParseFTPList(const char *line, struct list_state *state,
           while (pos > 0) {
             pos--;
             if (p[pos] != '$' && p[pos] != '_' && p[pos] != '-' &&
-                p[pos] != '~' && !isdigit(p[pos]) && !isalpha(p[pos]))
+                p[pos] != '~' && !IsAsciiAlphanumeric(p[pos]))
               break;
-            else if (isalpha(p[pos]) && p[pos] != toupper(p[pos]))
+            else if (IsAsciiLowercaseAlpha(p[pos]))
               break;
           }
           if (pos == 0) {
@@ -258,10 +271,10 @@ int ParseFTPList(const char *line, struct list_state *state,
                    (tokens[3][toklen[3] - 3]) == ':') ||
                   ((toklen[3] == 10 || toklen[3] == 11) &&
                    (tokens[3][toklen[3] - 3]) ==
-                       '.')) &&         /* time in [H]H:MM[:SS[.CC]] format */
-                 isdigit(*tokens[1]) && /* size */
-                 isdigit(*tokens[2]) && /* date */
-                 isdigit(*tokens[3])    /* time */
+                       '.')) && /* time in [H]H:MM[:SS[.CC]] format */
+                 IsAsciiDigit(*tokens[1]) && /* size */
+                 IsAsciiDigit(*tokens[2]) && /* date */
+                 IsAsciiDigit(*tokens[3])    /* time */
         ) {
           lstyle = 'V';
         }
@@ -296,7 +309,7 @@ int ParseFTPList(const char *line, struct list_state *state,
             }
             while (lstyle && pos < toklen[0] && *p != ']') {
               if (*p != '$' && *p != '.' && *p != '_' && *p != '-' &&
-                  *p != '~' && !isdigit(*p) && !isalpha(*p))
+                  *p != '~' && !IsAsciiAlphanumeric(*p))
                 lstyle = 0;
               pos++;
               p++;
@@ -314,9 +327,9 @@ int ParseFTPList(const char *line, struct list_state *state,
           }
           while (lstyle && pos < toklen[0] && *p != ';') {
             if (*p != '$' && *p != '.' && *p != '_' && *p != '-' && *p != '~' &&
-                !isdigit(*p) && !isalpha(*p))
+                !IsAsciiAlphanumeric(*p))
               lstyle = 0;
-            else if (isalpha(*p) && *p != toupper(*p))
+            else if (IsAsciiLowercaseAlpha(*p))
               lstyle = 0;
             p++;
             pos++;
@@ -324,7 +337,7 @@ int ParseFTPList(const char *line, struct list_state *state,
           if (lstyle && *p == ';') {
             if (pos == 0 || pos == (toklen[0] - 1)) lstyle = 0;
             for (pos++; lstyle && pos < toklen[0]; pos++) {
-              if (!isdigit(tokens[0][pos])) lstyle = 0;
+              if (!IsAsciiDigit(tokens[0][pos])) lstyle = 0;
             }
           }
           pos = (p - tokens[0]);       /* => fnlength sans ";####" */
@@ -343,11 +356,11 @@ int ParseFTPList(const char *line, struct list_state *state,
               pos = (sizeof(state->carry_buf) - 1); /* shouldn't happen */
             memcpy(state->carry_buf, p, pos);
             state->carry_buf_len = pos;
-            return '?';                   /* tell caller to treat as junk */
-          } else if (isdigit(*tokens[1])) /* not no-privs message */
+            return '?'; /* tell caller to treat as junk */
+          } else if (IsAsciiDigit(*tokens[1])) /* not no-privs message */
           {
             for (pos = 0; lstyle && pos < (toklen[1]); pos++) {
-              if (!isdigit((tokens[1][pos])) && (tokens[1][pos]) != '/')
+              if (!IsAsciiDigit((tokens[1][pos])) && (tokens[1][pos]) != '/')
                 lstyle = 0;
             }
             if (lstyle && numtoks > 4) /* Multinet or UCX but not CMU */
@@ -367,7 +380,7 @@ int ParseFTPList(const char *line, struct list_state *state,
         state->parsed_one = 1;
         state->lstyle = lstyle;
 
-        if (isdigit(*tokens[1])) /* not permission denied etc */
+        if (IsAsciiDigit(*tokens[1])) /* not permission denied etc */
         {
           /* strip leading directory name */
           if (*tokens[0] == '[') /* CMU server */
@@ -422,8 +435,8 @@ int ParseFTPList(const char *line, struct list_state *state,
           p = tokens[2] + 2;
           if (*p == '-') p++;
           tbuf[0] = p[0];
-          tbuf[1] = tolower(p[1]);
-          tbuf[2] = tolower(p[2]);
+          tbuf[1] = ToLowerCaseASCII(p[1]);
+          tbuf[2] = ToLowerCaseASCII(p[2]);
           month_num = 0;
           for (pos = 0; pos < (12 * 3); pos += 3) {
             if (tbuf[0] == month_names[pos + 0] &&
@@ -445,7 +458,7 @@ int ParseFTPList(const char *line, struct list_state *state,
 
           return result->fe_type;
 
-        } /* if (isdigit(*tokens[1])) */
+        } /* if (IsAsciiDigit(*tokens[1])) */
 
         return '?'; /* junk */
 
@@ -453,7 +466,7 @@ int ParseFTPList(const char *line, struct list_state *state,
     }   /* if (!lstyle && (!state->lstyle || state->lstyle == 'V')) */
 #endif
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_CMS)
     /* Virtual Machine/Conversational Monitor System (IBM Mainframe) */
@@ -472,15 +485,15 @@ int ParseFTPList(const char *line, struct list_state *state,
        * LISTing from vm.marist.edu and vm.sc.edu
        * 220-FTPSERVE IBM VM Level 420 at VM.MARIST.EDU, 04:58:12 EDT WEDNESDAY
        * 2002-07-10 AUTHORS           DIR        -          -          -
-       * 1999-09-20 10:31:11 - HARRINGTON        DIR        -          -
-       * - 1997-02-12 15:33:28 - PICS              DIR        -          -
-       * - 2000-10-12 15:43:23 - SYSFILE           DIR        -          -
-       * - 2000-07-20 17:48:01 - WELCNVT  EXEC     V         72          9
-       * 1 1999-09-20 17:16:18 - WELCOME  EREADME  F         80         21
-       * 1 1999-12-27 16:19:00 - WELCOME  README   V         82         21
-       * 1 1999-12-27 16:19:04 - README   ANONYMOU V         71         26
-       * 1 1997-04-02 12:33:20 TCP291 README   ANONYOLD V         71         15
-       * 1 1995-08-25 16:04:27 TCP291
+       * 1999-09-20 10:31:11 - HARRINGTON        DIR        -          - -
+       * 1997-02-12 15:33:28 - PICS              DIR        -          - -
+       * 2000-10-12 15:43:23 - SYSFILE           DIR        -          - -
+       * 2000-07-20 17:48:01 - WELCNVT  EXEC     V         72          9 1
+       * 1999-09-20 17:16:18 - WELCOME  EREADME  F         80         21 1
+       * 1999-12-27 16:19:00 - WELCOME  README   V         82         21 1
+       * 1999-12-27 16:19:04 - README   ANONYMOU V         71         26 1
+       * 1997-04-02 12:33:20 TCP291 README   ANONYOLD V         71         15 1
+       * 1995-08-25 16:04:27 TCP291
        */
       if (numtoks >= 7 && (toklen[0] + toklen[1]) <= 16) {
         for (pos = 1; !lstyle && (pos + 5) < numtoks; pos++) {
@@ -498,8 +511,9 @@ int ParseFTPList(const char *line, struct list_state *state,
               {
                 if ((*tokens[pos + 1] == '-' && *tokens[pos + 2] == '-' &&
                      *tokens[pos + 3] == '-') ||
-                    (isdigit(*tokens[pos + 1]) && isdigit(*tokens[pos + 2]) &&
-                     isdigit(*tokens[pos + 3]))) {
+                    (IsAsciiDigit(*tokens[pos + 1]) &&
+                     IsAsciiDigit(*tokens[pos + 2]) &&
+                     IsAsciiDigit(*tokens[pos + 3]))) {
                   lstyle = 'C';
                   tokmarker = pos;
                 }
@@ -512,13 +526,13 @@ int ParseFTPList(const char *line, struct list_state *state,
       /* extra checking if first pass */
       if (lstyle && !state->lstyle) {
         for (pos = 0, p = tokens[0]; lstyle && pos < toklen[0]; pos++, p++) {
-          if (isalpha(*p) && toupper(*p) != *p) lstyle = 0;
+          if (IsAsciiLowercaseAlpha(*p)) lstyle = 0;
         }
         for (pos = tokmarker + 1; pos <= tokmarker + 3; pos++) {
           if (!(toklen[pos] == 1 && *tokens[pos] == '-')) {
             for (p = tokens[pos]; lstyle && p < (tokens[pos] + toklen[pos]);
                  p++) {
-              if (!isdigit(*p)) lstyle = 0;
+              if (!IsAsciiDigit(*p)) lstyle = 0;
             }
           }
         }
@@ -532,14 +546,14 @@ int ParseFTPList(const char *line, struct list_state *state,
               if (pos != 1 && pos != 4) lstyle = 0;
             } else if (pos != 2 && pos != 5)
               lstyle = 0;
-          } else if (*p != '-' && !isdigit(*p))
+          } else if (*p != '-' && !IsAsciiDigit(*p))
             lstyle = 0;
           else if (*p == '-' && pos != 4 && pos != 7)
             lstyle = 0;
         }
         for (pos = 0, p = tokens[tokmarker + 5];
              lstyle && pos < toklen[tokmarker + 5]; pos++, p++) {
-          if (*p != ':' && !isdigit(*p))
+          if (*p != ':' && !IsAsciiDigit(*p))
             lstyle = 0;
           else if (*p == ':' && pos != (toklen[tokmarker + 5] - 3) &&
                    pos != (toklen[tokmarker + 5] - 6))
@@ -584,7 +598,7 @@ int ParseFTPList(const char *line, struct list_state *state,
         if ((/*newstyle*/ toklen[tokmarker + 4] == 10 && tokmarker > 1) ||
             (/*oldstyle*/ toklen[tokmarker + 4] != 10 &&
              tokmarker > 2)) { /* have a filetype column */
-          char *dot;
+          char* dot;
           p = &(tokens[0][toklen[0]]);
           memcpy(&dot, &p, sizeof(dot)); /* NASTY! */
           *dot++ = '.';
@@ -608,7 +622,7 @@ int ParseFTPList(const char *line, struct list_state *state,
     }   /* VM/CMS */
 #endif
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_DOS) /* WinNT DOS dirstyle */
     if (!lstyle && (!state->lstyle || state->lstyle == 'W')) {
@@ -629,13 +643,14 @@ int ParseFTPList(const char *line, struct list_state *state,
       // clang-format on
       if ((numtoks >= 4) && (toklen[0] == 8 || toklen[0] == 10) &&
           (toklen[1] == 5 || toklen[1] == 7) &&
-          (*tokens[2] == '<' || isdigit(*tokens[2]))) {
+          (*tokens[2] == '<' || IsAsciiDigit(*tokens[2]))) {
         p = tokens[0];
-        if (isdigit(p[0]) && isdigit(p[1]) && p[2] == '-' && isdigit(p[3]) &&
-            isdigit(p[4]) && p[5] == '-' && isdigit(p[6]) && isdigit(p[7])) {
+        if (IsAsciiDigit(p[0]) && IsAsciiDigit(p[1]) && p[2] == '-' &&
+            IsAsciiDigit(p[3]) && IsAsciiDigit(p[4]) && p[5] == '-' &&
+            IsAsciiDigit(p[6]) && IsAsciiDigit(p[7])) {
           p = tokens[1];
-          if (isdigit(p[0]) && isdigit(p[1]) && p[2] == ':' && isdigit(p[3]) &&
-              isdigit(p[4]) &&
+          if (IsAsciiDigit(p[0]) && IsAsciiDigit(p[1]) && p[2] == ':' &&
+              IsAsciiDigit(p[3]) && IsAsciiDigit(p[4]) &&
               (toklen[1] == 5 ||
                (toklen[1] == 7 && (p[5] == 'A' || p[5] == 'P') &&
                 p[6] == 'M'))) {
@@ -645,7 +660,7 @@ int ParseFTPList(const char *line, struct list_state *state,
               /* <DIR> or <JUNCTION> */
               if (*p != '<' || p[toklen[2] - 1] != '>') {
                 for (pos = 1; (lstyle && pos < toklen[2]); pos++) {
-                  if (!isdigit(*++p)) lstyle = 0;
+                  if (!IsAsciiDigit(*++p)) lstyle = 0;
                 }
               }
             }
@@ -736,7 +751,7 @@ int ParseFTPList(const char *line, struct list_state *state,
     }   /* if (!lstyle && (!state->lstyle || state->lstyle == 'W')) */
 #endif
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_OS2)
     if (!lstyle && (!state->lstyle || state->lstyle == 'O')) /* OS/2 test */
@@ -764,18 +779,20 @@ int ParseFTPList(const char *line, struct list_state *state,
        */
       p = &(line[toklen[0]]);
       /* \s(\d\d-\d\d-\d\d)\s+(\d\d:\d\d)\s */
-      if (numtoks >= 4 && toklen[0] <= 18 && isdigit(*tokens[0]) &&
+      if (numtoks >= 4 && toklen[0] <= 18 && IsAsciiDigit(*tokens[0]) &&
           (linelen - toklen[0]) >= (53 - 18) && p[18 - 18] == ' ' &&
           p[34 - 18] == ' ' && p[37 - 18] == '-' && p[40 - 18] == '-' &&
           p[43 - 18] == ' ' && p[45 - 18] == ' ' && p[48 - 18] == ':' &&
-          p[51 - 18] == ' ' && isdigit(p[35 - 18]) && isdigit(p[36 - 18]) &&
-          isdigit(p[38 - 18]) && isdigit(p[39 - 18]) && isdigit(p[41 - 18]) &&
-          isdigit(p[42 - 18]) && isdigit(p[46 - 18]) && isdigit(p[47 - 18]) &&
-          isdigit(p[49 - 18]) && isdigit(p[50 - 18])) {
+          p[51 - 18] == ' ' && IsAsciiDigit(p[35 - 18]) &&
+          IsAsciiDigit(p[36 - 18]) && IsAsciiDigit(p[38 - 18]) &&
+          IsAsciiDigit(p[39 - 18]) && IsAsciiDigit(p[41 - 18]) &&
+          IsAsciiDigit(p[42 - 18]) && IsAsciiDigit(p[46 - 18]) &&
+          IsAsciiDigit(p[47 - 18]) && IsAsciiDigit(p[49 - 18]) &&
+          IsAsciiDigit(p[50 - 18])) {
         lstyle = 'O'; /* OS/2 */
         if (!state->lstyle) {
           for (pos = 1; lstyle && pos < toklen[0]; pos++) {
-            if (!isdigit(tokens[0][pos])) lstyle = 0;
+            if (!IsAsciiDigit(tokens[0][pos])) lstyle = 0;
           }
         }
       }
@@ -828,7 +845,7 @@ int ParseFTPList(const char *line, struct list_state *state,
     } /* if (!lstyle && (!state->lstyle || state->lstyle == 'O')) */
 #endif
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_LSL)
     if (!lstyle && (!state->lstyle || state->lstyle == 'U')) /* /bin/ls & co. */
@@ -900,38 +917,39 @@ int ParseFTPList(const char *line, struct list_state *state,
            *  (\d\d\d\d|\d\:\d\d|\d\d\:\d\d|\d\:\d\d\:\d\d|\d\d\:\d\d\:\d\d)
            *  \s+(.+)$
            */
-          if (isdigit(*tokens[pos]) /* size */
-                                    /* (\w\w\w) */
-              && toklen[pos + 1] == 3 && isalpha(*tokens[pos + 1]) &&
-              isalpha(tokens[pos + 1][1]) &&
-              isalpha(tokens[pos + 1][2])
+          if (IsAsciiDigit(*tokens[pos]) /* size */
+                                         /* (\w\w\w) */
+              && toklen[pos + 1] == 3 && IsAsciiAlpha(*tokens[pos + 1]) &&
+              IsAsciiAlpha(tokens[pos + 1][1]) &&
+              IsAsciiAlpha(tokens[pos + 1][2])
               /* (\d|\d\d) */
-              && isdigit(*tokens[pos + 2]) &&
+              && IsAsciiDigit(*tokens[pos + 2]) &&
               (toklen[pos + 2] == 1 ||
-               (toklen[pos + 2] == 2 && isdigit(tokens[pos + 2][1]))) &&
+               (toklen[pos + 2] == 2 && IsAsciiDigit(tokens[pos + 2][1]))) &&
               toklen[pos + 3] >= 4 &&
-              isdigit(*tokens[pos + 3])
+              IsAsciiDigit(*tokens[pos + 3])
               /* (\d\:\d\d\:\d\d|\d\d\:\d\d\:\d\d) */
               && (toklen[pos + 3] <= 5 ||
                   ((toklen[pos + 3] == 7 || toklen[pos + 3] == 8) &&
                    (tokens[pos + 3][toklen[pos + 3] - 3]) == ':')) &&
-              isdigit(tokens[pos + 3][toklen[pos + 3] - 2]) &&
-              isdigit(tokens[pos + 3][toklen[pos + 3] - 1]) &&
+              IsAsciiDigit(tokens[pos + 3][toklen[pos + 3] - 2]) &&
+              IsAsciiDigit(tokens[pos + 3][toklen[pos + 3] - 1]) &&
               (
                   /* (\d\d\d\d) */
                   ((toklen[pos + 3] == 4 || toklen[pos + 3] == 5) &&
-                   isdigit(tokens[pos + 3][1]) && isdigit(tokens[pos + 3][2]))
+                   IsAsciiDigit(tokens[pos + 3][1]) &&
+                   IsAsciiDigit(tokens[pos + 3][2]))
                   /* (\d\:\d\d|\d\:\d\d\:\d\d) */
-                  ||
-                  ((toklen[pos + 3] == 4 || toklen[pos + 3] == 7) &&
-                   (tokens[pos + 3][1]) == ':' && isdigit(tokens[pos + 3][2]) &&
-                   isdigit(tokens[pos + 3][3]))
+                  || ((toklen[pos + 3] == 4 || toklen[pos + 3] == 7) &&
+                      (tokens[pos + 3][1]) == ':' &&
+                      IsAsciiDigit(tokens[pos + 3][2]) &&
+                      IsAsciiDigit(tokens[pos + 3][3]))
                   /* (\d\d\:\d\d|\d\d\:\d\d\:\d\d) */
-                  ||
-                  ((toklen[pos + 3] == 5 || toklen[pos + 3] == 8) &&
-                   isdigit(tokens[pos + 3][1]) && (tokens[pos + 3][2]) == ':' &&
-                   isdigit(tokens[pos + 3][3]) &&
-                   isdigit(tokens[pos + 3][4])))) {
+                  || ((toklen[pos + 3] == 5 || toklen[pos + 3] == 8) &&
+                      IsAsciiDigit(tokens[pos + 3][1]) &&
+                      (tokens[pos + 3][2]) == ':' &&
+                      IsAsciiDigit(tokens[pos + 3][3]) &&
+                      IsAsciiDigit(tokens[pos + 3][4])))) {
             lstyle = 'U'; /* assume /bin/ls or variant format */
             tokmarker = pos;
 
@@ -939,7 +957,7 @@ int ParseFTPList(const char *line, struct list_state *state,
             p = tokens[tokmarker];
             unsigned int i;
             for (i = 0; i < toklen[tokmarker]; i++) {
-              if (!isdigit(*p++)) {
+              if (!IsAsciiDigit(*p++)) {
                 lstyle = 0;
                 break;
               }
@@ -1015,8 +1033,8 @@ int ParseFTPList(const char *line, struct list_state *state,
         // Don't care about leading spaces when the date string has different
         // format or when old Hellsoft output was detected.
         {
-          const char *date_start = tokens[tokmarker + 1];
-          const char *date_end = tokens[tokmarker + 3] + toklen[tokmarker + 3];
+          const char* date_start = tokens[tokmarker + 1];
+          const char* date_end = tokens[tokmarker + 3] + toklen[tokmarker + 3];
           if (!is_old_Hellsoft &&
               ((date_end - date_start) == 12 ||
                ((date_end - date_start) == 11 && date_end[1] == ' ')))
@@ -1060,7 +1078,7 @@ int ParseFTPList(const char *line, struct list_state *state,
           }
         }
 
-#if defined(SUPPORT_LSLF) /* some (very rare) servers return ls -lF */
+#  if defined(SUPPORT_LSLF) /* some (very rare) servers return ls -lF */
         if (result->fe_fnlen > 1) {
           p = result->fe_fname[result->fe_fnlen - 1];
           pos = result->fe_type;
@@ -1074,7 +1092,7 @@ int ParseFTPList(const char *line, struct list_state *state,
             result->fe_fnlen--; /* socket, whiteout, fifo */
           }
         }
-#endif
+#  endif
 
         /* the caller should do this (if dropping "." and ".." is desired)
         if (result->fe_type == 'd' && result->fe_fname[0] == '.' &&
@@ -1090,7 +1108,7 @@ int ParseFTPList(const char *line, struct list_state *state,
     } /* if (!lstyle && (!state->lstyle || state->lstyle == 'U')) */
 #endif
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_W16) /* 16bit Windows */
     if (!lstyle &&
@@ -1120,30 +1138,32 @@ int ParseFTPList(const char *line, struct list_state *state,
        * CMT.CSV             0      Jul 06 1995 14:56   RHA
        */
       if (numtoks >= 4 && toklen[0] < 13 &&
-          ((toklen[1] == 5 && *tokens[1] == '<') || isdigit(*tokens[1]))) {
+          ((toklen[1] == 5 && *tokens[1] == '<') || IsAsciiDigit(*tokens[1]))) {
         if (numtoks == 4 && (toklen[2] == 8 || toklen[2] == 9) &&
             (((tokens[2][2]) == '/' && (tokens[2][5]) == '/') ||
              ((tokens[2][2]) == '-' && (tokens[2][5]) == '-')) &&
             (toklen[3] == 4 || toklen[3] == 5) &&
-            (tokens[3][toklen[3] - 3]) == ':' && isdigit(tokens[2][0]) &&
-            isdigit(tokens[2][1]) && isdigit(tokens[2][3]) &&
-            isdigit(tokens[2][4]) && isdigit(tokens[2][6]) &&
-            isdigit(tokens[2][7]) && (toklen[2] < 9 || isdigit(tokens[2][8])) &&
-            isdigit(tokens[3][toklen[3] - 1]) &&
-            isdigit(tokens[3][toklen[3] - 2]) &&
-            isdigit(tokens[3][toklen[3] - 4]) && isdigit(*tokens[3])) {
+            (tokens[3][toklen[3] - 3]) == ':' && IsAsciiDigit(tokens[2][0]) &&
+            IsAsciiDigit(tokens[2][1]) && IsAsciiDigit(tokens[2][3]) &&
+            IsAsciiDigit(tokens[2][4]) && IsAsciiDigit(tokens[2][6]) &&
+            IsAsciiDigit(tokens[2][7]) &&
+            (toklen[2] < 9 || IsAsciiDigit(tokens[2][8])) &&
+            IsAsciiDigit(tokens[3][toklen[3] - 1]) &&
+            IsAsciiDigit(tokens[3][toklen[3] - 2]) &&
+            IsAsciiDigit(tokens[3][toklen[3] - 4]) &&
+            IsAsciiDigit(*tokens[3])) {
           lstyle = 'w';
-        } else if (
-            (numtoks == 6 || numtoks == 7) && toklen[2] == 3 &&
-            toklen[3] == 2 && toklen[4] == 4 && toklen[5] == 5 &&
-            (tokens[5][2]) == ':' && isalpha(tokens[2][0]) &&
-            isalpha(tokens[2][1]) && isalpha(tokens[2][2]) &&
-            isdigit(tokens[3][0]) && isdigit(tokens[3][1]) &&
-            isdigit(tokens[4][0]) && isdigit(tokens[4][1]) &&
-            isdigit(tokens[4][2]) && isdigit(tokens[4][3]) &&
-            isdigit(tokens[5][0]) && isdigit(tokens[5][1]) &&
-            isdigit(tokens[5][3]) && isdigit(tokens[5][4])
-            /* could also check that (&(tokens[5][5]) - tokens[2]) == 17 */
+        } else if ((numtoks == 6 || numtoks == 7) && toklen[2] == 3 &&
+                   toklen[3] == 2 && toklen[4] == 4 && toklen[5] == 5 &&
+                   (tokens[5][2]) == ':' && IsAsciiAlpha(tokens[2][0]) &&
+                   IsAsciiAlpha(tokens[2][1]) && IsAsciiAlpha(tokens[2][2]) &&
+                   IsAsciiDigit(tokens[3][0]) && IsAsciiDigit(tokens[3][1]) &&
+                   IsAsciiDigit(tokens[4][0]) && IsAsciiDigit(tokens[4][1]) &&
+                   IsAsciiDigit(tokens[4][2]) && IsAsciiDigit(tokens[4][3]) &&
+                   IsAsciiDigit(tokens[5][0]) && IsAsciiDigit(tokens[5][1]) &&
+                   IsAsciiDigit(tokens[5][3]) && IsAsciiDigit(tokens[5][4])
+                   /* could also check that (&(tokens[5][5]) - tokens[2]) == 17
+                    */
         ) {
           lstyle = 'w';
         }
@@ -1153,7 +1173,7 @@ int ParseFTPList(const char *line, struct list_state *state,
           if (toklen[1] != 5 || p[0] != '<' || p[1] != 'D' || p[2] != 'I' ||
               p[3] != 'R' || p[4] != '>') {
             for (pos = 0; lstyle && pos < toklen[1]; pos++) {
-              if (!isdigit(*p++)) lstyle = 0;
+              if (!IsAsciiDigit(*p++)) lstyle = 0;
             }
           } /* not <DIR> */
         }   /* if (first time) */
@@ -1169,7 +1189,7 @@ int ParseFTPList(const char *line, struct list_state *state,
         result->fe_type = 'd';
 
         p = tokens[1];
-        if (isdigit(*p)) {
+        if (IsAsciiDigit(*p)) {
           result->fe_type = 'f';
           pos = toklen[1];
           if (pos > (sizeof(result->fe_size) - 1))
@@ -1181,9 +1201,9 @@ int ParseFTPList(const char *line, struct list_state *state,
         p = tokens[2];
         if (toklen[2] == 3) /* Chameleon */
         {
-          tbuf[0] = toupper(p[0]);
-          tbuf[1] = tolower(p[1]);
-          tbuf[2] = tolower(p[2]);
+          tbuf[0] = ToUpperCaseASCII(p[0]);
+          tbuf[1] = ToLowerCaseASCII(p[1]);
+          tbuf[2] = ToLowerCaseASCII(p[2]);
           for (pos = 0; pos < (12 * 3); pos += 3) {
             if (tbuf[0] == month_names[pos + 0] &&
                 tbuf[1] == month_names[pos + 1] &&
@@ -1220,7 +1240,7 @@ int ParseFTPList(const char *line, struct list_state *state,
     } /* if (!lstyle && (!state->lstyle || state->lstyle == 'w'))  */
 #endif
 
-      /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+    /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #if defined(SUPPORT_DLS) /* dls -dtR */
     if (!lstyle &&
@@ -1291,7 +1311,7 @@ int ParseFTPList(const char *line, struct list_state *state,
 
         if (linelen > pos) {
           p = &line[pos];
-          if ((*p == '-' || *p == '=' || isdigit(*p)) &&
+          if ((*p == '-' || *p == '=' || IsAsciiDigit(*p)) &&
               ((linelen == (pos + 1)) ||
                (linelen >= (pos + 3) && p[1] == ' ' && p[2] == ' '))) {
             tokmarker = 1;
@@ -1310,7 +1330,7 @@ int ParseFTPList(const char *line, struct list_state *state,
                   lstyle = 0;
               } else {
                 for (pos = 0; lstyle && pos < toklen[tokmarker]; pos++) {
-                  if (!isdigit(tokens[tokmarker][pos])) lstyle = 0;
+                  if (!IsAsciiDigit(tokens[tokmarker][pos])) lstyle = 0;
                 }
               }
               if (lstyle && !state->lstyle) /* first time */
@@ -1362,7 +1382,7 @@ int ParseFTPList(const char *line, struct list_state *state,
             result->fe_fnlen--;
             result->fe_type = 'd';
           }
-        } else if (isdigit(*tokens[tokmarker])) {
+        } else if (IsAsciiDigit(*tokens[tokmarker])) {
           pos = toklen[tokmarker];
           if (pos > (sizeof(result->fe_size) - 1))
             pos = sizeof(result->fe_size) - 1;
@@ -1377,23 +1397,23 @@ int ParseFTPList(const char *line, struct list_state *state,
           p = tokens[pos];
           pos = toklen[pos];
 
-          if ((pos == 4 || pos == 5) && isdigit(*p) && isdigit(p[pos - 1]) &&
-              isdigit(p[pos - 2]) &&
+          if ((pos == 4 || pos == 5) && IsAsciiDigit(*p) &&
+              IsAsciiDigit(p[pos - 1]) && IsAsciiDigit(p[pos - 2]) &&
               ((pos == 5 && p[2] == ':') ||
-               (pos == 4 && (isdigit(p[1]) || p[1] == ':')))) {
+               (pos == 4 && (IsAsciiDigit(p[1]) || p[1] == ':')))) {
             month_num = tokmarker + 1; /* assumed position of month field */
             pos = tokmarker + 2;       /* assumed position of mday field */
-            if (isdigit(*tokens[month_num])) /* positions are reversed */
+            if (IsAsciiDigit(*tokens[month_num])) /* positions are reversed */
             {
               month_num++;
               pos--;
             }
             p = tokens[month_num];
-            if (isdigit(*tokens[pos]) &&
+            if (IsAsciiDigit(*tokens[pos]) &&
                 (toklen[pos] == 1 ||
-                 (toklen[pos] == 2 && isdigit(tokens[pos][1]))) &&
-                toklen[month_num] == 3 && isalpha(*p) && isalpha(p[1]) &&
-                isalpha(p[2])) {
+                 (toklen[pos] == 2 && IsAsciiDigit(tokens[pos][1]))) &&
+                toklen[month_num] == 3 && IsAsciiAlpha(*p) &&
+                IsAsciiAlpha(p[1]) && IsAsciiAlpha(p[2])) {
               pos = atoi(tokens[pos]);
               if (pos > 0 && pos <= 31) {
                 result->fe_time.tm_mday = pos;

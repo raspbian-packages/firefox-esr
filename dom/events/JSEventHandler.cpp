@@ -101,22 +101,21 @@ bool JSEventHandler::IsBlackForCC() {
   // We can claim to be black if all the things we reference are
   // effectively black already.
   return !mTypedHandler.HasEventHandler() ||
-         !mTypedHandler.Ptr()->HasGrayCallable();
+         mTypedHandler.Ptr()->IsBlackForCC();
 }
 
-nsresult JSEventHandler::HandleEvent(nsIDOMEvent* aEvent) {
+nsresult JSEventHandler::HandleEvent(Event* aEvent) {
   nsCOMPtr<EventTarget> target = do_QueryInterface(mTarget);
   if (!target || !mTypedHandler.HasEventHandler() ||
       !GetTypedEventHandler().Ptr()->CallbackPreserveColor()) {
     return NS_ERROR_FAILURE;
   }
 
-  Event* event = aEvent->InternalDOMEvent();
-  bool isMainThread = event->IsMainThreadEvent();
+  bool isMainThread = aEvent->IsMainThreadEvent();
   bool isChromeHandler =
       isMainThread
           ? nsContentUtils::ObjectPrincipal(
-                GetTypedEventHandler().Ptr()->CallbackPreserveColor()) ==
+                GetTypedEventHandler().Ptr()->CallbackGlobalOrNull()) ==
                 nsContentUtils::GetSystemPrincipal()
           : mozilla::dom::IsCurrentThreadRunningChromeWorker();
 
@@ -131,7 +130,7 @@ nsresult JSEventHandler::HandleEvent(nsIDOMEvent* aEvent) {
     Optional<JS::Handle<JS::Value>> error;
 
     NS_ENSURE_TRUE(aEvent, NS_ERROR_UNEXPECTED);
-    ErrorEvent* scriptEvent = aEvent->InternalDOMEvent()->AsErrorEvent();
+    ErrorEvent* scriptEvent = aEvent->AsErrorEvent();
     if (scriptEvent) {
       scriptEvent->GetMessage(errorMsg);
       msgOrEvent.SetAsString().ShareOrDependUpon(errorMsg);
@@ -148,21 +147,21 @@ nsresult JSEventHandler::HandleEvent(nsIDOMEvent* aEvent) {
       error.Construct(RootingCx());
       scriptEvent->GetError(&error.Value());
     } else {
-      msgOrEvent.SetAsEvent() = aEvent->InternalDOMEvent();
+      msgOrEvent.SetAsEvent() = aEvent;
     }
 
     RefPtr<OnErrorEventHandlerNonNull> handler =
         mTypedHandler.OnErrorEventHandler();
     ErrorResult rv;
     JS::Rooted<JS::Value> retval(RootingCx());
-    handler->Call(mTarget, msgOrEvent, fileName, lineNumber, columnNumber,
-                  error, &retval, rv);
+    handler->Call(target, msgOrEvent, fileName, lineNumber, columnNumber, error,
+                  &retval, rv);
     if (rv.Failed()) {
       return rv.StealNSResult();
     }
 
     if (retval.isBoolean() && retval.toBoolean() == bool(scriptEvent)) {
-      event->PreventDefaultInternal(isChromeHandler);
+      aEvent->PreventDefaultInternal(isChromeHandler);
     }
     return NS_OK;
   }
@@ -174,16 +173,16 @@ nsresult JSEventHandler::HandleEvent(nsIDOMEvent* aEvent) {
         mTypedHandler.OnBeforeUnloadEventHandler();
     ErrorResult rv;
     nsString retval;
-    handler->Call(mTarget, *(aEvent->InternalDOMEvent()), retval, rv);
+    handler->Call(target, *aEvent, retval, rv);
     if (rv.Failed()) {
       return rv.StealNSResult();
     }
 
-    BeforeUnloadEvent* beforeUnload = event->AsBeforeUnloadEvent();
+    BeforeUnloadEvent* beforeUnload = aEvent->AsBeforeUnloadEvent();
     NS_ENSURE_STATE(beforeUnload);
 
     if (!DOMStringIsNull(retval)) {
-      event->PreventDefaultInternal(isChromeHandler);
+      aEvent->PreventDefaultInternal(isChromeHandler);
 
       nsAutoString text;
       beforeUnload->GetReturnValue(text);
@@ -203,14 +202,14 @@ nsresult JSEventHandler::HandleEvent(nsIDOMEvent* aEvent) {
   ErrorResult rv;
   RefPtr<EventHandlerNonNull> handler = mTypedHandler.NormalEventHandler();
   JS::Rooted<JS::Value> retval(RootingCx());
-  handler->Call(mTarget, *(aEvent->InternalDOMEvent()), &retval, rv);
+  handler->Call(target, *aEvent, &retval, rv);
   if (rv.Failed()) {
     return rv.StealNSResult();
   }
 
   // If the handler returned false, then prevent default.
   if (retval.isBoolean() && !retval.toBoolean()) {
-    event->PreventDefaultInternal(isChromeHandler);
+    aEvent->PreventDefaultInternal(isChromeHandler);
   }
 
   return NS_OK;

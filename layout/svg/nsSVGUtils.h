@@ -31,15 +31,11 @@
 class gfxContext;
 class nsFrameList;
 class nsIContent;
-class nsIDocument;
+
 class nsIFrame;
 class nsPresContext;
-class nsStyleContext;
 class nsStyleSVGPaint;
 class nsSVGDisplayContainerFrame;
-class nsSVGElement;
-class nsSVGEnum;
-class nsSVGLength2;
 class nsSVGOuterSVGFrame;
 class nsTextFrame;
 
@@ -47,11 +43,14 @@ struct nsStyleSVG;
 struct nsRect;
 
 namespace mozilla {
+class SVGAnimatedEnumeration;
+class SVGAnimatedLength;
 class SVGContextPaint;
 struct SVGContextPaintImpl;
 class SVGGeometryFrame;
 namespace dom {
 class Element;
+class SVGElement;
 class UserSpaceMetrics;
 }  // namespace dom
 namespace gfx {
@@ -70,7 +69,6 @@ class GeneralPattern;
 #define SVG_HIT_TEST_STROKE 0x02
 #define SVG_HIT_TEST_CHECK_MRECT 0x04
 
-bool NS_SVGPathCachingEnabled();
 bool NS_SVGDisplayListHitTestingEnabled();
 bool NS_SVGDisplayListPaintingEnabled();
 bool NS_SVGNewGetBBoxEnabled();
@@ -148,21 +146,6 @@ class MOZ_RAII SVGAutoRenderState {
   MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
 };
 
-#define NS_ISVGFILTERREFERENCE_IID                   \
-  {                                                  \
-    0x9744ee20, 0x1bcf, 0x4c62, {                    \
-      0x86, 0x7d, 0xd3, 0x7a, 0x91, 0x60, 0x3e, 0xef \
-    }                                                \
-  }
-
-class nsISVGFilterReference : public nsISupports {
- public:
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISVGFILTERREFERENCE_IID)
-  virtual void Invalidate() = 0;
-};
-
-NS_DEFINE_STATIC_IID_ACCESSOR(nsISVGFilterReference, NS_ISVGFILTERREFERENCE_IID)
-
 /**
  * General functions used by all of SVG layout and possibly content code.
  * If a method is used by content and depends only on other content methods
@@ -171,11 +154,13 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsISVGFilterReference, NS_ISVGFILTERREFERENCE_IID)
 class nsSVGUtils {
  public:
   typedef mozilla::dom::Element Element;
+  typedef mozilla::dom::SVGElement SVGElement;
   typedef mozilla::gfx::AntialiasMode AntialiasMode;
   typedef mozilla::gfx::DrawTarget DrawTarget;
   typedef mozilla::gfx::FillRule FillRule;
   typedef mozilla::gfx::GeneralPattern GeneralPattern;
   typedef mozilla::gfx::Size Size;
+  typedef mozilla::SVGAnimatedLength SVGAnimatedLength;
   typedef mozilla::SVGContextPaint SVGContextPaint;
   typedef mozilla::SVGContextPaintImpl SVGContextPaintImpl;
   typedef mozilla::SVGGeometryFrame SVGGeometryFrame;
@@ -191,7 +176,7 @@ class nsSVGUtils {
    * being filtered, this function simply returns aUnfilteredRect.
    */
   static nsRect GetPostFilterVisualOverflowRect(nsIFrame* aFrame,
-                                                const nsRect& aUnfilteredRect);
+                                                const nsRect& aPreFilterRect);
 
   /**
    * Schedules an update of the frame's bounds (which will in turn invalidate
@@ -229,11 +214,6 @@ class nsSVGUtils {
    */
   static bool NeedsReflowSVG(nsIFrame* aFrame);
 
-  /*
-   * Update the filter invalidation region for ancestor frames, if relevant.
-   */
-  static void NotifyAncestorsOfFilterRegionChange(nsIFrame* aFrame);
-
   /**
    * Percentage lengths in SVG are resolved against the width/height of the
    * nearest viewport (or its viewBox, if set). This helper returns the size
@@ -246,17 +226,19 @@ class nsSVGUtils {
      Input: rect - bounding box
             length - length to be converted
   */
-  static float ObjectSpace(const gfxRect& aRect, const nsSVGLength2* aLength);
+  static float ObjectSpace(const gfxRect& aRect,
+                           const SVGAnimatedLength* aLength);
 
   /* Computes the input length in terms of user space coordinates.
      Input: content - object to be used for determining user space
      Input: length - length to be converted
   */
-  static float UserSpace(nsSVGElement* aSVGElement,
-                         const nsSVGLength2* aLength);
-  static float UserSpace(nsIFrame* aFrame, const nsSVGLength2* aLength);
+  static float UserSpace(SVGElement* aSVGElement,
+                         const SVGAnimatedLength* aLength);
+  static float UserSpace(nsIFrame* aNonSVGContext,
+                         const SVGAnimatedLength* aLength);
   static float UserSpace(const mozilla::dom::UserSpaceMetrics& aMetrics,
-                         const nsSVGLength2* aLength);
+                         const SVGAnimatedLength* aLength);
 
   /* Find the outermost SVG frame of the passed frame */
   static nsSVGOuterSVGFrame* GetOuterSVGFrame(nsIFrame* aFrame);
@@ -294,17 +276,6 @@ class nsSVGUtils {
    * For regular frames, we just return an identity matrix.
    */
   static gfxMatrix GetCanvasTM(nsIFrame* aFrame);
-
-  /**
-   * Returns the transform from aFrame's user space to canvas space. Only call
-   * with SVG frames. This is like GetCanvasTM, except that it only includes
-   * the transforms from aFrame's user space (i.e. the coordinate context
-   * established by its 'transform' attribute, or else the coordinate context
-   * that its _parent_ establishes for its children) to outer-<svg> device
-   * space. Specifically, it does not include any other transforms introduced
-   * by the frame such as x/y offsets and viewBox attributes.
-   */
-  static gfxMatrix GetUserToCanvasTM(nsIFrame* aFrame);
 
   /**
    * Notify the descendants of aFrame of a change to one of their ancestors
@@ -366,8 +337,8 @@ class nsSVGUtils {
    * @param aFlags One or more of the BBoxFlags values defined below.
    */
   static gfxMatrix AdjustMatrixForUnits(const gfxMatrix& aMatrix,
-                                        nsSVGEnum* aUnits, nsIFrame* aFrame,
-                                        uint32_t aFlags);
+                                        mozilla::SVGAnimatedEnumeration* aUnits,
+                                        nsIFrame* aFrame, uint32_t aFlags);
 
   enum BBoxFlags {
     eBBoxIncludeFill = 1 << 0,
@@ -395,6 +366,9 @@ class nsSVGUtils {
     // this flag is set; Otherwise, getBBox returns the union bounds in
     // the coordinate system formed by the <use> element.
     eUseUserSpaceOfUseElement = 1 << 9,
+    // For a frame with a clip-path, if this flag is set then the result
+    // will not be clipped to the bbox of the content inside the clip-path.
+    eDoNotClipToBBoxOfContentInsideClipPath = 1 << 10,
   };
   /**
    * This function in primarily for implementing the SVG DOM function getBBox()
@@ -431,20 +405,22 @@ class nsSVGUtils {
 
   /**
    * Convert a userSpaceOnUse/objectBoundingBoxUnits rectangle that's specified
-   * using four nsSVGLength2 values into a user unit rectangle in user space.
+   * using four SVGAnimatedLength values into a user unit rectangle in user
+   * space.
    *
-   * @param aXYWH pointer to 4 consecutive nsSVGLength2 objects containing
+   * @param aXYWH pointer to 4 consecutive SVGAnimatedLength objects containing
    * the x, y, width and height values in that order
    * @param aBBox the bounding box of the object the rect is relative to;
    * may be null if aUnits is not SVG_UNIT_TYPE_OBJECTBOUNDINGBOX
    * @param aFrame the object in which to interpret user-space units;
    * may be null if aUnits is SVG_UNIT_TYPE_OBJECTBOUNDINGBOX
    */
-  static gfxRect GetRelativeRect(uint16_t aUnits, const nsSVGLength2* aXYWH,
+  static gfxRect GetRelativeRect(uint16_t aUnits,
+                                 const SVGAnimatedLength* aXYWH,
                                  const gfxRect& aBBox, nsIFrame* aFrame);
 
   static gfxRect GetRelativeRect(
-      uint16_t aUnits, const nsSVGLength2* aXYWH, const gfxRect& aBBox,
+      uint16_t aUnits, const SVGAnimatedLength* aXYWH, const gfxRect& aBBox,
       const mozilla::dom::UserSpaceMetrics& aMetrics);
 
   /**
@@ -499,7 +475,7 @@ class nsSVGUtils {
   }
 
   static nscolor GetFallbackOrPaintColor(
-      nsStyleContext* aStyleContext,
+      mozilla::ComputedStyle* aComputedStyle,
       nsStyleSVGPaint nsStyleSVG::*aFillOrStroke);
 
   static void MakeFillPatternFor(nsIFrame* aFrame, gfxContext* aContext,
@@ -545,8 +521,9 @@ class nsSVGUtils {
                : FillRule::FILL_WINDING;
   }
 
-  static AntialiasMode ToAntialiasMode(uint8_t aTextRendering) {
-    return aTextRendering == NS_STYLE_TEXT_RENDERING_OPTIMIZESPEED
+  static AntialiasMode ToAntialiasMode(
+      mozilla::StyleTextRendering aTextRendering) {
+    return aTextRendering == mozilla::StyleTextRendering::Optimizespeed
                ? AntialiasMode::NONE
                : AntialiasMode::SUBPIXEL;
   }
@@ -584,15 +561,21 @@ class nsSVGUtils {
     bool shouldGenerateMaskLayer;
     bool shouldGenerateClipMaskLayer;
     bool shouldApplyClipPath;
-    bool shouldApplyBasicShape;
+    bool shouldApplyBasicShapeOrPath;
     float opacity;
 
     MaskUsage()
         : shouldGenerateMaskLayer(false),
           shouldGenerateClipMaskLayer(false),
           shouldApplyClipPath(false),
-          shouldApplyBasicShape(false),
+          shouldApplyBasicShapeOrPath(false),
           opacity(0.0) {}
+
+    bool shouldDoSomething() {
+      return shouldGenerateMaskLayer || shouldGenerateClipMaskLayer ||
+             shouldApplyClipPath || shouldApplyBasicShapeOrPath ||
+             opacity != 1.0;
+    }
   };
 
   static void DetermineMaskUsage(nsIFrame* aFrame, bool aHandleOpacity,
@@ -612,6 +595,15 @@ class nsSVGUtils {
     // Returns true if the frame is an SVGTextFrame or one of its descendants.
     return aFrame->GetStateBits() & NS_FRAME_IS_SVG_TEXT;
   }
+
+  /**
+   * It is a replacement of
+   * SVGElement::PrependLocalTransformsTo(eUserSpaceToParent).
+   * If no CSS transform is involved, they should behave exactly the same;
+   * if there are CSS transforms, this one will take them into account
+   * while SVGElement::PrependLocalTransformsTo won't.
+   */
+  static gfxMatrix GetTransformMatrixInUserSpace(const nsIFrame* aFrame);
 };
 
 #endif

@@ -27,10 +27,10 @@
 // GUID_PROP_INPUTSCOPE is declared in inputscope.h using INIT_GUID.
 // With initguid.h, we get its instance instead of extern declaration.
 #ifdef INPUTSCOPE_INIT_GUID
-#include <initguid.h>
+#  include <initguid.h>
 #endif
 #ifdef TEXTATTRS_INIT_GUID
-#include <tsattrs.h>
+#  include <tsattrs.h>
 #endif
 #include <inputscope.h>
 
@@ -356,6 +356,33 @@ class TSFTextStore final : public ITextStoreACP,
   // Destroys native caret if there is.
   void MaybeDestroyNativeCaret();
 
+  /**
+   * MaybeHackNoErrorLayoutBugs() is a helper method of GetTextExt().  In
+   * strictly speaking, TSF is aware of asynchronous layout computation like us.
+   * However, Windows 10 version 1803 and older (including Windows 8.1 and
+   * older) Windows has a bug which is that the caller of GetTextExt() of TSF
+   * does not return TS_E_NOLAYOUT to TIP as is.  Additionally, even after
+   * fixing this bug, some TIPs are not work well when we return TS_E_NOLAYOUT.
+   * For avoiding this issue, this method checks current Windows version and
+   * active TIP, and if in case we cannot return TS_E_NOLAYOUT, this modifies
+   * aACPStart and aACPEnd to making sure that they are in range of unmodified
+   * characters.
+   *
+   * @param aACPStart   Initial value should be acpStart of GetTextExt().
+   *                    If this method returns true, this may be modified
+   *                    to be in range of unmodified characters.
+   * @param aACPEnd     Initial value should be acpEnd of GetTextExt().
+   *                    If this method returns true, this may be modified
+   *                    to be in range of unmodified characters.
+   *                    And also this may become same as aACPStart.
+   * @return            true if the caller shouldn't return TS_E_NOLAYOUT.
+   *                    In this case, this method modifies aACPStart and/or
+   *                    aASCPEnd to compute rectangle of unmodified characters.
+   *                    false if the caller can return TS_E_NOLAYOUT or
+   *                    we cannot have proper unmodified characters.
+   */
+  bool MaybeHackNoErrorLayoutBugs(LONG& aACPStart, LONG& aACPEnd);
+
   // Holds the pointer to our current win32 widget
   RefPtr<nsWindowBase> mWidget;
   // mDispatcher is a helper class to dispatch composition events.
@@ -376,8 +403,29 @@ class TSFTextStore final : public ITextStoreACP,
   DWORD mLockQueued;
 
   uint32_t mHandlingKeyMessage;
-  void OnStartToHandleKeyMessage() { ++mHandlingKeyMessage; }
-  void OnEndHandlingKeyMessage() {
+  void OnStartToHandleKeyMessage() {
+    // If we're starting to handle another key message during handling a
+    // key message, let's assume that the handling key message is handled by
+    // TIP and it sends another key message for hacking something.
+    // Let's try to dispatch a keyboard event now.
+    // FYI: All callers of this method grab this instance with local variable.
+    //      So, even after calling MaybeDispatchKeyboardEventAsProcessedByIME(),
+    //      we're safe to access any members.
+    if (!mDestroyed && sHandlingKeyMsg && !sIsKeyboardEventDispatched) {
+      MaybeDispatchKeyboardEventAsProcessedByIME();
+    }
+    ++mHandlingKeyMessage;
+  }
+  void OnEndHandlingKeyMessage(bool aIsProcessedByTSF) {
+    // If sHandlingKeyMsg has been handled by TSF or TIP and we're still
+    // alive, but we haven't dispatch keyboard event for it, let's fire it now.
+    // FYI: All callers of this method grab this instance with local variable.
+    //      So, even after calling MaybeDispatchKeyboardEventAsProcessedByIME(),
+    //      we're safe to access any members.
+    if (!mDestroyed && sHandlingKeyMsg && aIsProcessedByTSF &&
+        !sIsKeyboardEventDispatched) {
+      MaybeDispatchKeyboardEventAsProcessedByIME();
+    }
     MOZ_ASSERT(mHandlingKeyMessage);
     if (--mHandlingKeyMessage) {
       return;
@@ -388,6 +436,21 @@ class TSFTextStore final : public ITextStoreACP,
       ReleaseTSFObjects();
     }
   }
+
+  /**
+   * MaybeDispatchKeyboardEventAsProcessedByIME() tries to dispatch eKeyDown
+   * event or eKeyUp event for sHandlingKeyMsg and marking the dispatching
+   * event as "processed by IME".  Note that if the document is locked, this
+   * just adds a pending action into the queue and sets
+   * sIsKeyboardEventDispatched to true.
+   */
+  void MaybeDispatchKeyboardEventAsProcessedByIME();
+
+  /**
+   * DispatchKeyboardEventAsProcessedByIME() dispatches an eKeyDown or
+   * eKeyUp event with NativeKey class and aMsg.
+   */
+  void DispatchKeyboardEventAsProcessedByIME(const MSG& aMsg);
 
   class Composition final {
    public:
@@ -598,25 +661,29 @@ class TSFTextStore final : public ITextStoreACP,
   };
 
   struct PendingAction final {
-    enum ActionType : uint8_t {
-      COMPOSITION_START,
-      COMPOSITION_UPDATE,
-      COMPOSITION_END,
-      SET_SELECTION
+    enum class Type : uint8_t {
+      eCompositionStart,
+      eCompositionUpdate,
+      eCompositionEnd,
+      eSetSelection,
+      eKeyboardEvent,
     };
-    ActionType mType;
-    // For compositionstart and selectionset
+    Type mType;
+    // For eCompositionStart, eCompositionEnd and eSetSelection
     LONG mSelectionStart;
+    // For eCompositionStart and eSetSelection
     LONG mSelectionLength;
-    // For compositionstart, compositionupdate and compositionend
+    // For eCompositionStart, eCompositionUpdate and eCompositionEnd
     nsString mData;
-    // For compositionupdate
+    // For eCompositionUpdate
     RefPtr<TextRangeArray> mRanges;
-    // For selectionset
+    // For eKeyboardEvent
+    const MSG* mKeyMsg;
+    // For eSetSelection
     bool mSelectionReversed;
-    // For compositionupdate
+    // For eCompositionUpdate
     bool mIncomplete;
-    // For compositionstart
+    // For eCompositionStart
     bool mAdjustSelection;
   };
   // Items of mPendingActions are appended when TSF tells us to need to dispatch
@@ -628,40 +695,38 @@ class TSFTextStore final : public ITextStoreACP,
   PendingAction* LastOrNewPendingCompositionUpdate() {
     if (!mPendingActions.IsEmpty()) {
       PendingAction& lastAction = mPendingActions.LastElement();
-      if (lastAction.mType == PendingAction::COMPOSITION_UPDATE) {
+      if (lastAction.mType == PendingAction::Type::eCompositionUpdate) {
         return &lastAction;
       }
     }
     PendingAction* newAction = mPendingActions.AppendElement();
-    newAction->mType = PendingAction::COMPOSITION_UPDATE;
+    newAction->mType = PendingAction::Type::eCompositionUpdate;
     newAction->mRanges = new TextRangeArray();
     newAction->mIncomplete = true;
     return newAction;
   }
 
   /**
-   * WasTextInsertedWithoutCompositionAt() checks if text was inserted without
-   * composition immediately before (e.g., see InsertTextAtSelectionInternal()).
+   * IsLastPendingActionCompositionEndAt() checks whether the previous pending
+   * action is committing composition whose range starts from aStart and its
+   * length is aLength.  In other words, this checks whether new composition
+   * which will replace same range as previous pending commit can be merged
+   * with the previous composition.
    *
    * @param aStart              The inserted offset you expected.
    * @param aLength             The inserted text length you expected.
-   * @return                    true if the last pending actions are
-   *                            COMPOSITION_START and COMPOSITION_END and
-   *                            aStart and aLength match their information.
+   * @return                    true if the last pending action is
+   *                            eCompositionEnd and it inserted the text
+   *                            between aStart and aStart + aLength.
    */
-  bool WasTextInsertedWithoutCompositionAt(LONG aStart, LONG aLength) const {
-    if (mPendingActions.Length() < 2) {
+  bool IsLastPendingActionCompositionEndAt(LONG aStart, LONG aLength) const {
+    if (mPendingActions.IsEmpty()) {
       return false;
     }
     const PendingAction& pendingLastAction = mPendingActions.LastElement();
-    if (pendingLastAction.mType != PendingAction::COMPOSITION_END ||
-        pendingLastAction.mData.Length() != ULONG(aLength)) {
-      return false;
-    }
-    const PendingAction& pendingPreLastAction =
-        mPendingActions[mPendingActions.Length() - 2];
-    return pendingPreLastAction.mType == PendingAction::COMPOSITION_START &&
-           pendingPreLastAction.mSelectionStart == aStart;
+    return pendingLastAction.mType == PendingAction::Type::eCompositionEnd &&
+           pendingLastAction.mSelectionStart == aStart &&
+           pendingLastAction.mData.Length() == static_cast<ULONG>(aLength);
   }
 
   bool IsPendingCompositionUpdateIncomplete() const {
@@ -669,7 +734,7 @@ class TSFTextStore final : public ITextStoreACP,
       return false;
     }
     const PendingAction& lastAction = mPendingActions.LastElement();
-    return lastAction.mType == PendingAction::COMPOSITION_UPDATE &&
+    return lastAction.mType == PendingAction::Type::eCompositionUpdate &&
            lastAction.mIncomplete;
   }
 
@@ -678,6 +743,16 @@ class TSFTextStore final : public ITextStoreACP,
       return;
     }
     RecordCompositionUpdateAction();
+  }
+
+  void RemoveLastCompositionUpdateActions() {
+    while (!mPendingActions.IsEmpty()) {
+      const PendingAction& lastAction = mPendingActions.LastElement();
+      if (lastAction.mType != PendingAction::Type::eCompositionUpdate) {
+        break;
+      }
+      mPendingActions.RemoveLastElement();
+    }
   }
 
   // When On*Composition() is called without document lock, we need to flush
@@ -768,19 +843,17 @@ class TSFTextStore final : public ITextStoreACP,
     /**
      * RestoreCommittedComposition() restores the committed string as
      * composing string.  If InsertTextAtSelection() or something is called
-     * before a call of OnStartComposition(), there is a pending
-     * compositionstart and a pending compositionend.  In this case, we
-     * need to cancel the pending compositionend and continue the composition.
+     * before a call of OnStartComposition() or previous composition is
+     * committed and new composition is restarted to clean up the commited
+     * string, there is a pending compositionend.  In this case, we need to
+     * cancel the pending compositionend and continue the composition.
      *
      * @param aCompositionView          The composition view.
-     * @param aPendingCompositionStart  The pending compositionstart which
-     *                                  started the committed composition.
      * @param aCanceledCompositionEnd   The pending compositionend which is
      *                                  canceled for restarting the composition.
      */
     void RestoreCommittedComposition(
         ITfCompositionView* aCompositionView,
-        const PendingAction& aPendingCompositionStart,
         const PendingAction& aCanceledCompositionEnd);
     void EndComposition(const PendingAction& aCompEnd);
 
@@ -963,8 +1036,6 @@ class TSFTextStore final : public ITextStoreACP,
   // If this is false, MaybeFlushPendingNotifications() will clear the
   // mContentForTSF.
   bool mDeferClearingContentForTSF;
-  // While there is native caret, this is true.  Otherwise, false.
-  bool mNativeCaretIsCreated;
   // While the instance is dispatching events, the event may not be handled
   // synchronously in e10s mode.  So, in such case, in strictly speaking,
   // we shouldn't query layout information.  However, TS_E_NOLAYOUT bugs of
@@ -1022,8 +1093,15 @@ class TSFTextStore final : public ITextStoreACP,
   static already_AddRefed<ITfInputProcessorProfiles>
   GetInputProcessorProfiles();
 
+  // Handling key message.
+  static const MSG* sHandlingKeyMsg;
+
   // TSF client ID for the current application
   static DWORD sClientId;
+
+  // true if an eKeyDown or eKeyUp event for sHandlingKeyMsg has already
+  // been dispatched.
+  static bool sIsKeyboardEventDispatched;
 };
 
 }  // namespace widget

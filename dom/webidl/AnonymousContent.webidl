@@ -62,7 +62,7 @@ interface AnonymousContent {
   nsISupports? getCanvasContext(DOMString elementId,
                                 DOMString contextId);
 
-  [Func="nsDocument::IsElementAnimateEnabled", Throws]
+  [Throws]
   Animation setAnimationForElement(DOMString elementId,
                                    object? keyframes,
                                    optional UnrestrictedDoubleOrKeyframeAnimationOptions
@@ -85,4 +85,10 @@ interface AnonymousContent {
   [Throws]
   DOMString? getComputedStylePropertyValue(DOMString elementId,
                                            DOMString propertyName);
+
+  /**
+   * If event's original target is in the anonymous content, this returns the id
+   * attribute value of the target.
+   */
+  DOMString? getTargetIdForEvent(Event event);
 };

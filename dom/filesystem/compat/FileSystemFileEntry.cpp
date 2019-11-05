@@ -24,19 +24,20 @@ class FileCallbackRunnable final : public Runnable {
     MOZ_ASSERT(aFile);
   }
 
-  NS_IMETHOD
-  Run() override {
+  // MOZ_CAN_RUN_SCRIPT_BOUNDARY until Runnable::Run is MOZ_CAN_RUN_SCRIPT.  See
+  // bug 1535398.
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY NS_IMETHOD Run() override {
     // Here we clone the File object.
 
     RefPtr<File> file = File::Create(mFile->GetParentObject(), mFile->Impl());
     MOZ_ASSERT(file);
 
-    mCallback->HandleEvent(*file);
+    mCallback->Call(*file);
     return NS_OK;
   }
 
  private:
-  RefPtr<FileCallback> mCallback;
+  const RefPtr<FileCallback> mCallback;
   RefPtr<File> mFile;
 };
 
@@ -62,7 +63,7 @@ FileSystemFileEntry::~FileSystemFileEntry() {}
 
 JSObject* FileSystemFileEntry::WrapObject(JSContext* aCx,
                                           JS::Handle<JSObject*> aGivenProto) {
-  return FileSystemFileEntryBinding::Wrap(aCx, this, aGivenProto);
+  return FileSystemFileEntry_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void FileSystemFileEntry::GetName(nsAString& aName, ErrorResult& aRv) const {

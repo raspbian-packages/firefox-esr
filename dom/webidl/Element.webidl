@@ -41,6 +41,8 @@ interface Element : Node {
   [Pure]
   DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
   [CEReactions, NeedsSubjectPrincipal=NonSystem, Throws]
+  boolean toggleAttribute(DOMString name, optional boolean force);
+  [CEReactions, NeedsSubjectPrincipal=NonSystem, Throws]
   void setAttribute(DOMString name, DOMString value);
   [CEReactions, NeedsSubjectPrincipal=NonSystem, Throws]
   void setAttributeNS(DOMString? namespace, DOMString name, DOMString value);
@@ -69,9 +71,7 @@ interface Element : Node {
   HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
   [Pure]
   HTMLCollection getElementsByClassName(DOMString classNames);
-  [ChromeOnly, Pure]
-  sequence<Element> getElementsWithGrid();
-
+ 
   [CEReactions, Throws, Pure]
   Element? insertAdjacentElement(DOMString where, Element element); // historical
 
@@ -148,37 +148,23 @@ interface Element : Node {
   Attr? setAttributeNodeNS(Attr newAttr);
 
   [ChromeOnly]
-  /**
-   * Scrolls the element by (dx, dy) CSS pixels without doing any
-   * layout flushing.
-   */
-  boolean scrollByNoFlush(long dx, long dy);
-
-  // Support reporting of Flexbox properties
-  /**
-   * If this element has a display:flex or display:inline-flex style,
-   * this property returns an object with computed values for flex
-   * properties, as well as a property that exposes the flex lines
-   * in this container.
-   */
-  [ChromeOnly, Pure]
-  Flex? getAsFlexContainer();
-
-  // Support reporting of Grid properties
-  /**
-   * If this element has a display:grid or display:inline-grid style,
-   * this property returns an object with computed values for grid
-   * tracks and lines.
-   */
-  [ChromeOnly, Pure]
-  sequence<Grid> getGridFragments();
-
-  [ChromeOnly]
   DOMMatrixReadOnly getTransformToAncestor(Element ancestor);
   [ChromeOnly]
   DOMMatrixReadOnly getTransformToParent();
   [ChromeOnly]
   DOMMatrixReadOnly getTransformToViewport();
+};
+
+// https://html.spec.whatwg.org/#focus-management-apis
+dictionary FocusOptions {
+  boolean preventScroll = false;
+};
+
+// TODO(mbrodesser): once https://bugzilla.mozilla.org/show_bug.cgi?id=1414372
+// is fixed, mixin should be used.
+[NoInterfaceObject] interface HTMLOrSVGOrXULElementMixin {
+  [Throws]
+  void focus(optional FocusOptions options);
 };
 
 // http://dev.w3.org/csswg/cssom-view/
@@ -230,22 +216,12 @@ partial interface Element {
 
 // http://domparsing.spec.whatwg.org/#extensions-to-the-element-interface
 partial interface Element {
-  [CEReactions, SetterNeedsSubjectPrincipal=NonSystem, Pure, SetterThrows, TreatNullAs=EmptyString]
-  attribute DOMString innerHTML;
-  [CEReactions, Pure,SetterThrows,TreatNullAs=EmptyString]
-  attribute DOMString outerHTML;
+  [CEReactions, SetterNeedsSubjectPrincipal=NonSystem, Pure, SetterThrows, GetterCanOOM]
+  attribute [TreatNullAs=EmptyString] DOMString innerHTML;
+  [CEReactions, Pure, SetterThrows]
+  attribute [TreatNullAs=EmptyString] DOMString outerHTML;
   [CEReactions, Throws]
   void insertAdjacentHTML(DOMString position, DOMString text);
-
-  /**
-   * Like the innerHTML setter, but does not sanitize its values, even in
-   * chrome-privileged documents.
-   *
-   * If you're thinking about using this, don't. You have many, much better
-   * options.
-   */
-  [ChromeOnly, Throws]
-  void unsafeSetInnerHTML(DOMString html);
 };
 
 // http://www.w3.org/TR/selectors-api/#interface-definitions
@@ -264,22 +240,22 @@ dictionary ShadowRootInit {
 // https://dom.spec.whatwg.org/#element
 partial interface Element {
   // Shadow DOM v1
-  [Throws, Func="nsDocument::IsShadowDOMEnabled"]
+  [Throws, UseCounter]
   ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
-  [BinaryName="shadowRootByMode", Func="nsDocument::IsShadowDOMEnabled"]
+  [BinaryName="shadowRootByMode"]
   readonly attribute ShadowRoot? shadowRoot;
 
-  [ChromeOnly, Func="nsDocument::IsShadowDOMEnabled", BinaryName="shadowRoot"]
+  [Func="Document::IsCallerChromeOrAddon", BinaryName="shadowRoot"]
   readonly attribute ShadowRoot? openOrClosedShadowRoot;
 
-  [BinaryName="assignedSlotByMode", Func="nsDocument::IsShadowDOMEnabled"]
+  [BinaryName="assignedSlotByMode"]
   readonly attribute HTMLSlotElement? assignedSlot;
-  [CEReactions, Unscopable, SetterThrows, Func="nsDocument::IsShadowDOMEnabled"]
-           attribute DOMString slot;
 
-  // [deprecated] Shadow DOM v0
-  [Throws, Func="nsDocument::IsShadowDOMEnabled"]
-  ShadowRoot createShadowRoot();
+  [ChromeOnly, BinaryName="assignedSlot"]
+  readonly attribute HTMLSlotElement? openOrClosedAssignedSlot;
+
+  [CEReactions, Unscopable, SetterThrows]
+           attribute DOMString slot;
 };
 
 Element implements ChildNode;
@@ -290,14 +266,65 @@ Element implements GeometryUtils;
 
 // https://fullscreen.spec.whatwg.org/#api
 partial interface Element {
-  [Throws, Func="nsDocument::IsUnprefixedFullscreenEnabled", NeedsCallerType]
-  void requestFullscreen();
-  [Throws, BinaryName="requestFullscreen", NeedsCallerType]
-  void mozRequestFullScreen();
+  [Throws, Func="Document::IsUnprefixedFullscreenEnabled", NeedsCallerType]
+  Promise<void> requestFullscreen();
+  [Throws, BinaryName="requestFullscreen", NeedsCallerType, Deprecated="MozRequestFullScreenDeprecatedPrefix"]
+  Promise<void> mozRequestFullScreen();
+
+  // Events handlers
+  [Func="Document::IsUnprefixedFullscreenEnabled"]
+  attribute EventHandler onfullscreenchange;
+  [Func="Document::IsUnprefixedFullscreenEnabled"]
+  attribute EventHandler onfullscreenerror;
 };
 
 // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
 partial interface Element {
-  [NeedsCallerType]
+  [NeedsCallerType, Pref="dom.pointer-lock.enabled"]
   void requestPointerLock();
+};
+
+// Mozilla-specific additions to support devtools
+partial interface Element {
+  // Support reporting of Flexbox properties
+  /**
+   * If this element has a display:flex or display:inline-flex style,
+   * this property returns an object with computed values for flex
+   * properties, as well as a property that exposes the flex lines
+   * in this container.
+   */
+  [ChromeOnly, Pure]
+  Flex? getAsFlexContainer();
+
+  // Support reporting of Grid properties
+  /**
+   * If this element has a display:grid or display:inline-grid style,
+   * this property returns an object with computed values for grid
+   * tracks and lines.
+   */
+  [ChromeOnly, Pure]
+  sequence<Grid> getGridFragments();
+  
+  /**
+   * Returns a sequence of all the descendent elements of this element
+   * that have display:grid or display:inline-grid style and generate
+   * a frame.
+   */
+  [ChromeOnly, Pure]
+  sequence<Element> getElementsWithGrid();
+};
+
+// These variables are used in vtt.js, they are used for positioning vtt cues.
+partial interface Element {
+  // These two attributes are a double version of the clientHeight and the
+  // clientWidth.
+  [ChromeOnly]
+  readonly attribute double clientHeightDouble;
+  [ChromeOnly]
+  readonly attribute double clientWidthDouble;
+  // This attribute returns the block size of the first line box under the different
+  // writing directions. If the direction is horizontal, it represents box's
+  // height. If the direction is vertical, it represents box's width.
+  [ChromeOnly]
+  readonly attribute double firstLineBoxBSize;
 };

@@ -20,7 +20,6 @@
 #include "mozIStorageAsyncStatement.h"
 #include "mozIStorageStatementCallback.h"
 #include "mozIStoragePendingStatement.h"
-#include "nsPIPlacesDatabase.h"
 #include "nsIObserver.h"
 #include "prinrval.h"
 #include "prtime.h"
@@ -187,11 +186,10 @@ already_AddRefed<nsINavHistoryService> do_get_NavHistory() {
 
 already_AddRefed<mozIStorageConnection> do_get_db() {
   nsCOMPtr<nsINavHistoryService> history = do_get_NavHistory();
-  nsCOMPtr<nsPIPlacesDatabase> database = do_QueryInterface(history);
-  do_check_true(database);
+  do_check_true(history);
 
   nsCOMPtr<mozIStorageConnection> dbConn;
-  nsresult rv = database->GetDBConnection(getter_AddRefs(dbConn));
+  nsresult rv = history->GetDBConnection(getter_AddRefs(dbConn));
   do_check_success(rv);
   return dbConn.forget();
 }
@@ -304,7 +302,8 @@ void do_wait_async_updates() {
 void addURI(nsIURI* aURI) {
   nsCOMPtr<mozilla::IHistory> history = do_GetService(NS_IHISTORY_CONTRACTID);
   do_check_true(history);
-  nsresult rv = history->VisitURI(aURI, nullptr, mozilla::IHistory::TOP_LEVEL);
+  nsresult rv =
+      history->VisitURI(nullptr, aURI, nullptr, mozilla::IHistory::TOP_LEVEL);
   do_check_success(rv);
 
   do_wait_async_updates();

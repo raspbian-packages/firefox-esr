@@ -13,4 +13,4 @@ HTMLCanvasAccessible::HTMLCanvasAccessible(nsIContent* aContent,
                                            DocAccessible* aDoc)
     : HyperTextAccessibleWrap(aContent, aDoc) {}
 
-role HTMLCanvasAccessible::NativeRole() { return roles::CANVAS; }
+role HTMLCanvasAccessible::NativeRole() const { return roles::CANVAS; }

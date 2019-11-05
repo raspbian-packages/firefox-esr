@@ -4,9 +4,9 @@
 
 "use strict";
 
-const Editor = require("devtools/client/sourceeditor/editor");
+const Editor = require("devtools/client/shared/sourceeditor/editor");
 const Services = require("Services");
-const EventEmitter = require("devtools/shared/old-event-emitter");
+const EventEmitter = require("devtools/shared/event-emitter");
 
 /**
  * A wrapper around the Editor component, that allows editing of HTML.
@@ -38,15 +38,14 @@ function HTMLEditor(htmlDocument) {
 
   EventEmitter.decorate(this);
 
-  this.doc.defaultView.addEventListener("resize",
-    this.refresh, true);
+  this.doc.defaultView.addEventListener("resize", this.refresh, true);
 
-  let config = {
+  const config = {
     mode: Editor.modes.html,
     lineWrapping: true,
     styleActiveLine: false,
     extraKeys: {},
-    theme: "mozilla markup-view"
+    theme: "mozilla markup-view",
   };
 
   config.extraKeys[ctrl("Enter")] = this.hide;
@@ -62,13 +61,12 @@ function HTMLEditor(htmlDocument) {
 }
 
 HTMLEditor.prototype = {
-
   /**
    * Need to refresh position by manually setting CSS values, so this will
    * need to be called on resizes and other sizing changes.
    */
-  refresh: function () {
-    let element = this._attachedElement;
+  refresh: function() {
+    const element = this._attachedElement;
 
     if (element) {
       this.container.style.top = element.offsetTop + "px";
@@ -86,7 +84,7 @@ HTMLEditor.prototype = {
    *         The element that the editor will be anchored to.
    *         Should belong to the HTMLDocument passed into the constructor.
    */
-  _attach: function (element) {
+  _attach: function(element) {
     this._detach();
     this._attachedElement = element;
     element.classList.add("html-editor-container");
@@ -96,7 +94,7 @@ HTMLEditor.prototype = {
   /**
    * Unanchor the editor from an element.
    */
-  _detach: function () {
+  _detach: function() {
     if (this._attachedElement) {
       this._attachedElement.classList.remove("html-editor-container");
       this._attachedElement = undefined;
@@ -114,7 +112,7 @@ HTMLEditor.prototype = {
    * @param  {Function} cb
    *         The function to call when hiding
    */
-  show: function (element, text) {
+  show: function(element, text) {
     if (this._visible) {
       return;
     }
@@ -139,7 +137,7 @@ HTMLEditor.prototype = {
    *         A change will be committed by default.  If this param
    *         strictly equals false, no change will occur.
    */
-  hide: function (shouldCommit) {
+  hide: function(shouldCommit) {
     if (!this._visible) {
       return;
     }
@@ -147,9 +145,9 @@ HTMLEditor.prototype = {
     this.container.style.display = "none";
     this._detach();
 
-    let newValue = this.editor.getText();
-    let valueHasChanged = this._originalValue !== newValue;
-    let preventCommit = shouldCommit === false || !valueHasChanged;
+    const newValue = this.editor.getText();
+    const valueHasChanged = this._originalValue !== newValue;
+    const preventCommit = shouldCommit === false || !valueHasChanged;
     this._originalValue = undefined;
     this._visible = undefined;
     this.emit("popuphidden", !preventCommit, newValue);
@@ -158,16 +156,15 @@ HTMLEditor.prototype = {
   /**
    * Destroy this object and unbind all event handlers
    */
-  destroy: function () {
-    this.doc.defaultView.removeEventListener("resize",
-      this.refresh, true);
+  destroy: function() {
+    this.doc.defaultView.removeEventListener("resize", this.refresh, true);
     this.container.removeEventListener("click", this.hide);
     this.editorInner.removeEventListener("click", stopPropagation);
 
     this.hide(false);
     this.container.remove();
     this.editor.destroy();
-  }
+  },
 };
 
 function ctrl(k) {

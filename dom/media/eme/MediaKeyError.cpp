@@ -13,7 +13,7 @@ namespace dom {
 
 MediaKeyError::MediaKeyError(EventTarget* aOwner, uint32_t aSystemCode)
     : Event(aOwner, nullptr, nullptr), mSystemCode(aSystemCode) {
-  InitEvent(NS_LITERAL_STRING("error"), false, false);
+  InitEvent(NS_LITERAL_STRING("error"), CanBubble::eNo, Cancelable::eNo);
 }
 
 MediaKeyError::~MediaKeyError() {}
@@ -22,7 +22,7 @@ uint32_t MediaKeyError::SystemCode() const { return mSystemCode; }
 
 JSObject* MediaKeyError::WrapObjectInternal(JSContext* aCx,
                                             JS::Handle<JSObject*> aGivenProto) {
-  return MediaKeyErrorBinding::Wrap(aCx, this, aGivenProto);
+  return MediaKeyError_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

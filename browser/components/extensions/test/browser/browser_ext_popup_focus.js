@@ -2,14 +2,15 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-const DUMMY_PAGE = "http://example.com/browser/browser/components/extensions/test/browser/file_dummy.html";
+const DUMMY_PAGE =
+  "http://example.com/browser/browser/components/extensions/test/browser/file_dummy.html";
 
 add_task(async function testPageActionFocus() {
   let extension = ExtensionTestUtils.loadExtension({
     manifest: {
-      "page_action": {
-        "default_popup": "popup.html",
-        "show_matches": ["<all_urls>"],
+      page_action: {
+        default_popup: "popup.html",
+        show_matches: ["<all_urls>"],
       },
     },
     files: {
@@ -19,10 +20,18 @@ add_task(async function testPageActionFocus() {
         </body></html>
       `,
       "popup.js": function() {
-        window.addEventListener("focus", (event) => {
-          browser.test.assertEq(true, document.hasFocus(), "document should be focused");
-          browser.test.notifyPass("focused");
-        }, {once: true});
+        window.addEventListener(
+          "focus",
+          event => {
+            browser.test.assertEq(
+              true,
+              document.hasFocus(),
+              "document should be focused"
+            );
+            browser.test.notifyPass("focused");
+          },
+          { once: true }
+        );
       },
     },
   });
@@ -34,14 +43,14 @@ add_task(async function testPageActionFocus() {
   await finish;
   await closePageAction(extension);
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
   await extension.unload();
 });
 
 add_task(async function testBrowserActionFocus() {
   let extension = ExtensionTestUtils.loadExtension({
     manifest: {
-      "browser_action": {"default_popup": "popup.html"},
+      browser_action: { default_popup: "popup.html" },
     },
     files: {
       "popup.html": `<!DOCTYPE html><html><head><meta charset="utf-8">
@@ -50,10 +59,18 @@ add_task(async function testBrowserActionFocus() {
         </body></html>
       `,
       "popup.js": function() {
-        window.addEventListener("focus", (event) => {
-          browser.test.assertEq(true, document.hasFocus(), "document should be focused");
-          browser.test.notifyPass("focused");
-        }, {once: true});
+        window.addEventListener(
+          "focus",
+          event => {
+            browser.test.assertEq(
+              true,
+              document.hasFocus(),
+              "document should be focused"
+            );
+            browser.test.notifyPass("focused");
+          },
+          { once: true }
+        );
       },
     },
   });
@@ -66,6 +83,6 @@ add_task(async function testBrowserActionFocus() {
 
   await closeBrowserAction(extension);
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
   await extension.unload();
 });

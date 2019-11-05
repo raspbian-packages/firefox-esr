@@ -15,10 +15,10 @@
 #include "nsGkAtoms.h"
 #include "nsHTMLDNSPrefetch.h"
 #include "nsAttrValueOrString.h"
-#include "nsIDocument.h"
-#include "nsIPresShell.h"
+#include "mozilla/dom/Document.h"
 #include "nsPresContext.h"
 #include "nsIURI.h"
+#include "nsWindowSizes.h"
 
 NS_IMPL_NS_NEW_HTML_ELEMENT(Anchor)
 
@@ -62,7 +62,7 @@ NS_IMPL_ELEMENT_CLONE(HTMLAnchorElement)
 
 JSObject* HTMLAnchorElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return HTMLAnchorElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLAnchorElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 int32_t HTMLAnchorElement::TabIndexDefault() { return 0; }
@@ -93,18 +93,16 @@ bool HTMLAnchorElement::HasDeferredDNSPrefetchRequest() {
   return HasFlag(HTML_ANCHOR_DNS_PREFETCH_DEFERRED);
 }
 
-nsresult HTMLAnchorElement::BindToTree(nsIDocument* aDocument,
-                                       nsIContent* aParent,
-                                       nsIContent* aBindingParent,
-                                       bool aCompileEventHandlers) {
+nsresult HTMLAnchorElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                       nsIContent* aBindingParent) {
   Link::ResetLinkState(false, Link::ElementHasHref());
 
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Prefetch links
-  nsIDocument* doc = GetComposedDoc();
+  Document* doc = GetComposedDoc();
   if (doc) {
     doc->RegisterPendingLinkUpdate(this);
     TryDNSPrefetch();
@@ -120,8 +118,8 @@ void HTMLAnchorElement::UnbindFromTree(bool aDeep, bool aNullParent) {
   CancelDNSPrefetch(HTML_ANCHOR_DNS_PREFETCH_DEFERRED,
                     HTML_ANCHOR_DNS_PREFETCH_REQUESTED);
 
-  // If this link is ever reinserted into a document, it might
-  // be under a different xml:base, so forget the cached state now.
+  // Without removing the link state we risk a dangling pointer
+  // in the mStyledLinks hashtable
   Link::ResetLinkState(false, Link::ElementHasHref());
 
   nsGenericHTMLElement::UnbindFromTree(aDeep, aNullParent);
@@ -145,7 +143,7 @@ bool HTMLAnchorElement::IsHTMLFocusable(bool aWithMouse, bool* aIsFocusable,
   }
 
   // cannot focus links if there is no link handler
-  nsIDocument* doc = GetComposedDoc();
+  Document* doc = GetComposedDoc();
   if (doc) {
     nsPresContext* presContext = doc->GetPresContext();
     if (presContext && !presContext->GetLinkHandler()) {
@@ -190,9 +188,8 @@ bool HTMLAnchorElement::IsHTMLFocusable(bool aWithMouse, bool* aIsFocusable,
   return false;
 }
 
-nsresult HTMLAnchorElement::GetEventTargetParent(
-    EventChainPreVisitor& aVisitor) {
-  return GetEventTargetParentForAnchors(aVisitor);
+void HTMLAnchorElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
+  GetEventTargetParentForAnchors(aVisitor);
 }
 
 nsresult HTMLAnchorElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {

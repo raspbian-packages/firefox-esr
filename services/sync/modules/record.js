@@ -13,14 +13,21 @@ var EXPORTED_SYMBOLS = [
 const CRYPTO_COLLECTION = "crypto";
 const KEYS_WBO = "keys";
 
-ChromeUtils.import("resource://gre/modules/Log.jsm");
-ChromeUtils.import("resource://services-sync/constants.js");
-ChromeUtils.import("resource://services-sync/keys.js");
-ChromeUtils.import("resource://services-sync/main.js");
-ChromeUtils.import("resource://services-sync/resource.js");
-ChromeUtils.import("resource://services-sync/util.js");
-ChromeUtils.import("resource://services-common/async.js");
-ChromeUtils.import("resource://services-common/utils.js");
+const { Log } = ChromeUtils.import("resource://gre/modules/Log.jsm");
+const {
+  DEFAULT_DOWNLOAD_BATCH_SIZE,
+  DEFAULT_KEYBUNDLE_NAME,
+} = ChromeUtils.import("resource://services-sync/constants.js");
+const { BulkKeyBundle } = ChromeUtils.import(
+  "resource://services-sync/keys.js"
+);
+const { Weave } = ChromeUtils.import("resource://services-sync/main.js");
+const { Resource } = ChromeUtils.import("resource://services-sync/resource.js");
+const { Utils } = ChromeUtils.import("resource://services-sync/util.js");
+const { Async } = ChromeUtils.import("resource://services-common/async.js");
+const { CommonUtils } = ChromeUtils.import(
+  "resource://services-common/utils.js"
+);
 
 function WBORecord(collection, id) {
   this.data = {};
@@ -32,8 +39,9 @@ WBORecord.prototype = {
   _logName: "Sync.Record.WBO",
 
   get sortindex() {
-    if (this.data.sortindex)
+    if (this.data.sortindex) {
       return this.data.sortindex;
+    }
     return 0;
   },
 
@@ -46,7 +54,7 @@ WBORecord.prototype = {
 
     let r = await resource.get();
     if (r.success) {
-      this.deserialize(r); // Warning! Muffles exceptions!
+      this.deserialize(r.obj); // Warning! Muffles exceptions!
     }
     this.response = r;
     return this;
@@ -72,8 +80,10 @@ WBORecord.prototype = {
   },
 
   deserialize: function deserialize(json) {
-    this.data = json.constructor.toString() == String ? JSON.parse(json) : json;
-
+    if (!json || typeof json !== "object") {
+      throw new TypeError("Can't deserialize record from: " + json);
+    }
+    this.data = json;
     try {
       // The payload is likely to be JSON, but if not, keep it as a string
       this.payload = JSON.parse(this.payload);
@@ -83,25 +93,43 @@ WBORecord.prototype = {
   toJSON: function toJSON() {
     // Copy fields from data to be stringified, making sure payload is a string
     let obj = {};
-    for (let [key, val] of Object.entries(this.data))
+    for (let [key, val] of Object.entries(this.data)) {
       obj[key] = key == "payload" ? JSON.stringify(val) : val;
-    if (this.ttl)
+    }
+    if (this.ttl) {
       obj.ttl = this.ttl;
+    }
     return obj;
   },
 
   toString: function toString() {
-    return "{ " +
-      "id: " + this.id + "  " +
-      "index: " + this.sortindex + "  " +
-      "modified: " + this.modified + "  " +
-      "ttl: " + this.ttl + "  " +
-      "payload: " + JSON.stringify(this.payload) +
-      " }";
-  }
+    return (
+      "{ " +
+      "id: " +
+      this.id +
+      "  " +
+      "index: " +
+      this.sortindex +
+      "  " +
+      "modified: " +
+      this.modified +
+      "  " +
+      "ttl: " +
+      this.ttl +
+      "  " +
+      "payload: " +
+      JSON.stringify(this.payload) +
+      " }"
+    );
+  },
 };
 
-Utils.deferGetSet(WBORecord, "data", ["id", "modified", "sortindex", "payload"]);
+Utils.deferGetSet(WBORecord, "data", [
+  "id",
+  "modified",
+  "sortindex",
+  "payload",
+]);
 
 function CryptoWrapper(collection, id) {
   this.cleartext = {};
@@ -137,8 +165,11 @@ CryptoWrapper.prototype = {
     }
 
     this.IV = Weave.Crypto.generateRandomIV();
-    this.ciphertext = await Weave.Crypto.encrypt(JSON.stringify(this.cleartext),
-                                                 keyBundle.encryptionKeyB64, this.IV);
+    this.ciphertext = await Weave.Crypto.encrypt(
+      JSON.stringify(this.cleartext),
+      keyBundle.encryptionKeyB64,
+      this.IV
+    );
     this.hmac = this.ciphertextHMAC(keyBundle);
     this.cleartext = null;
   },
@@ -161,22 +192,26 @@ CryptoWrapper.prototype = {
     }
 
     // Handle invalid data here. Elsewhere we assume that cleartext is an object.
-    let cleartext = await Weave.Crypto.decrypt(this.ciphertext,
-                                               keyBundle.encryptionKeyB64, this.IV);
+    let cleartext = await Weave.Crypto.decrypt(
+      this.ciphertext,
+      keyBundle.encryptionKeyB64,
+      this.IV
+    );
     let json_result = JSON.parse(cleartext);
 
-    if (json_result && (json_result instanceof Object)) {
+    if (json_result && json_result instanceof Object) {
       this.cleartext = json_result;
       this.ciphertext = null;
     } else {
       throw new Error(
-          `Decryption failed: result is <${json_result}>, not an object.`);
+        `Decryption failed: result is <${json_result}>, not an object.`
+      );
     }
 
     // Verify that the encrypted id matches the requested record's id.
-    if (this.cleartext.id != this.id)
-      throw new Error(
-          `Record id mismatch: ${this.cleartext.id} != ${this.id}`);
+    if (this.cleartext.id != this.id) {
+      throw new Error(`Record id mismatch: ${this.cleartext.id} != ${this.id}`);
+    }
 
     return this.cleartext;
   },
@@ -188,14 +223,27 @@ CryptoWrapper.prototype = {
   toString: function toString() {
     let payload = this.deleted ? "DELETED" : this.cleartextToString();
 
-    return "{ " +
-      "id: " + this.id + "  " +
-      "index: " + this.sortindex + "  " +
-      "modified: " + this.modified + "  " +
-      "ttl: " + this.ttl + "  " +
-      "payload: " + payload + "  " +
-      "collection: " + (this.collection || "undefined") +
-      " }";
+    return (
+      "{ " +
+      "id: " +
+      this.id +
+      "  " +
+      "index: " +
+      this.sortindex +
+      "  " +
+      "modified: " +
+      this.modified +
+      "  " +
+      "ttl: " +
+      this.ttl +
+      "  " +
+      "payload: " +
+      payload +
+      "  " +
+      "collection: " +
+      (this.collection || "undefined") +
+      " }"
+    );
   },
 
   // The custom setter below masks the parent's getter, so explicitly call it :(
@@ -206,7 +254,7 @@ CryptoWrapper.prototype = {
   // Keep both plaintext and encrypted versions of the id to verify integrity
   set id(val) {
     WBORecord.prototype.__lookupSetter__("id").call(this, val);
-    return this.cleartext.id = val;
+    return (this.cleartext.id = val);
   },
 };
 
@@ -234,11 +282,12 @@ RecordManager.prototype = {
       this.response = await this.service.resource(url).get();
 
       // Don't parse and save the record on failure
-      if (!this.response.success)
+      if (!this.response.success) {
         return null;
+      }
 
       let record = new this._recordType(url);
-      record.deserialize(this.response);
+      record.deserialize(this.response.obj);
 
       return this.set(url, record);
     } catch (ex) {
@@ -253,19 +302,21 @@ RecordManager.prototype = {
   get(url) {
     // Use a url string as the key to the hash
     let spec = url.spec ? url.spec : url;
-    if (spec in this._records)
+    if (spec in this._records) {
       return Promise.resolve(this._records[spec]);
+    }
     return this.import(url);
   },
 
   set: function RecordMgr_set(url, record) {
     let spec = url.spec ? url.spec : url;
-    return this._records[spec] = record;
+    return (this._records[spec] = record);
   },
 
   contains: function RecordMgr_contains(url) {
-    if ((url.spec || url) in this._records)
+    if ((url.spec || url) in this._records) {
       return true;
+    }
     return false;
   },
 
@@ -275,7 +326,7 @@ RecordManager.prototype = {
 
   del: function RecordMgr_del(url) {
     delete this._records[url];
-  }
+  },
 };
 
 /**
@@ -295,7 +346,6 @@ function CollectionKeyManager(lastModified, default_, collections) {
 // TODO: persist this locally as an Identity. Bug 610913.
 // Note that the last modified time needs to be preserved.
 CollectionKeyManager.prototype = {
-
   /**
    * Generate a new CollectionKeyManager that has the same attributes
    * as this one.
@@ -306,7 +356,11 @@ CollectionKeyManager.prototype = {
       newCollections[c] = this._collections[c];
     }
 
-    return new CollectionKeyManager(this.lastModified, this._default, newCollections);
+    return new CollectionKeyManager(
+      this.lastModified,
+      this._default,
+      newCollections
+    );
   },
 
   // Return information about old vs new keys:
@@ -319,8 +373,9 @@ CollectionKeyManager.prototype = {
       for (let k1 in m1) {
         let v1 = m1[k1];
         let v2 = m2[k1];
-        if (!(v1 && v2 && v1.equals(v2)))
+        if (!(v1 && v2 && v1.equals(v2))) {
           changed.push(k1);
+        }
       }
     }
 
@@ -331,13 +386,12 @@ CollectionKeyManager.prototype = {
     // Return a sorted, unique array.
     changed.sort();
     let last;
-    changed = changed.filter(x => (x != last) && (last = x));
-    return {same: changed.length == 0,
-            changed};
+    changed = changed.filter(x => x != last && (last = x));
+    return { same: changed.length == 0, changed };
   },
 
   get isClear() {
-   return !this._default;
+    return !this._default;
   },
 
   clear: function clear() {
@@ -348,8 +402,9 @@ CollectionKeyManager.prototype = {
   },
 
   keyForCollection(collection) {
-    if (collection && this._collections[collection])
+    if (collection && this._collections[collection]) {
       return this._collections[collection];
+    }
 
     return this._default;
   },
@@ -366,10 +421,10 @@ CollectionKeyManager.prototype = {
       c[k] = collections[k].keyPairB64;
     }
     wbo.cleartext = {
-      "default":     defaultBundle ? defaultBundle.keyPairB64 : null,
-      "collections": c,
-      "collection":  CRYPTO_COLLECTION,
-      "id":          KEYS_WBO
+      default: defaultBundle ? defaultBundle.keyPairB64 : null,
+      collections: c,
+      collection: CRYPTO_COLLECTION,
+      id: KEYS_WBO,
     };
     return wbo;
   },
@@ -463,20 +518,23 @@ CollectionKeyManager.prototype = {
   // Take the fetched info/collections WBO, checking the change
   // time of the crypto collection.
   updateNeeded(info_collections) {
-
-    this._log.info("Testing for updateNeeded. Last modified: " + this.lastModified);
+    this._log.info(
+      "Testing for updateNeeded. Last modified: " + this.lastModified
+    );
 
     // No local record of modification time? Need an update.
-    if (!this.lastModified)
+    if (!this.lastModified) {
       return true;
+    }
 
     // No keys on the server? We need an update, though our
     // update handling will be a little more drastic...
-    if (!(CRYPTO_COLLECTION in info_collections))
+    if (!(CRYPTO_COLLECTION in info_collections)) {
       return true;
+    }
 
     // Otherwise, we need an update if our modification time is stale.
-    return (info_collections[CRYPTO_COLLECTION] > this.lastModified);
+    return info_collections[CRYPTO_COLLECTION] > this.lastModified;
   },
 
   //
@@ -489,19 +547,26 @@ CollectionKeyManager.prototype = {
   // * Otherwise, return false -- we were up-to-date.
   //
   setContents: function setContents(payload, modified) {
-
     let self = this;
 
-    this._log.info("Setting collection keys contents. Our last modified: " +
-                   this.lastModified + ", input modified: " + modified + ".");
+    this._log.info(
+      "Setting collection keys contents. Our last modified: " +
+        this.lastModified +
+        ", input modified: " +
+        modified +
+        "."
+    );
 
-    if (!payload)
+    if (!payload) {
       throw new Error("No payload in CollectionKeyManager.setContents().");
+    }
 
     if (!payload.default) {
       this._log.warn("No downloaded default key: this should not occur.");
       this._log.warn("Not clearing local keys.");
-      throw new Error("No default key in CollectionKeyManager.setContents(). Cannot proceed.");
+      throw new Error(
+        "No default key in CollectionKeyManager.setContents(). Cannot proceed."
+      );
     }
 
     // Process the incoming default key.
@@ -525,8 +590,11 @@ CollectionKeyManager.prototype = {
     }
 
     // Check to see if these are already our keys.
-    let sameDefault = (this._default && this._default.equals(newDefault));
-    let collComparison = this._compareKeyBundleCollections(newCollections, this._collections);
+    let sameDefault = this._default && this._default.equals(newDefault);
+    let collComparison = this._compareKeyBundleCollections(
+      newCollections,
+      this._collections
+    );
     let sameColls = collComparison.same;
 
     if (sameDefault && sameColls) {
@@ -542,7 +610,7 @@ CollectionKeyManager.prototype = {
     this.clear();
 
     this._log.info("Saving downloaded keys.");
-    this._default     = newDefault;
+    this._default = newDefault;
     this._collections = newCollections;
 
     // Always trust the server.
@@ -574,7 +642,7 @@ CollectionKeyManager.prototype = {
     let r = this.setContents(payload, storage_keys.modified);
     log.info("Collection keys updated.");
     return r;
-  }
+  },
 };
 
 function Collection(uri, recordObj, service) {
@@ -641,41 +709,52 @@ Collection.prototype = {
       args.push("offset=" + encodeURIComponent(this._offset));
     }
 
-    this.uri = this.uri.mutate()
-                       .setQuery((args.length > 0) ? "?" + args.join("&") : "")
-                       .finalize();
+    this.uri = this.uri
+      .mutate()
+      .setQuery(args.length > 0 ? "?" + args.join("&") : "")
+      .finalize();
   },
 
   // get full items
-  get full() { return this._full; },
+  get full() {
+    return this._full;
+  },
   set full(value) {
     this._full = value;
     this._rebuildURL();
   },
 
   // Apply the action to a certain set of ids
-  get ids() { return this._ids; },
+  get ids() {
+    return this._ids;
+  },
   set ids(value) {
     this._ids = value;
     this._rebuildURL();
   },
 
   // Limit how many records to get
-  get limit() { return this._limit; },
+  get limit() {
+    return this._limit;
+  },
   set limit(value) {
     this._limit = value;
     this._rebuildURL();
   },
 
   // get only items modified before some date
-  get older() { return this._older; },
+  get older() {
+    return this._older;
+  },
   set older(value) {
     this._older = value;
     this._rebuildURL();
   },
 
   // get only items modified since some date
-  get newer() { return this._newer; },
+  get newer() {
+    return this._newer;
+  },
   set newer(value) {
     this._newer = value;
     this._rebuildURL();
@@ -685,30 +764,39 @@ Collection.prototype = {
   // oldest (oldest first)
   // newest (newest first)
   // index
-  get sort() { return this._sort; },
+  get sort() {
+    return this._sort;
+  },
   set sort(value) {
     if (value && value != "oldest" && value != "newest" && value != "index") {
       throw new TypeError(
-        `Illegal value for sort: "${value}" (should be "oldest", "newest", or "index").`);
+        `Illegal value for sort: "${value}" (should be "oldest", "newest", or "index").`
+      );
     }
     this._sort = value;
     this._rebuildURL();
   },
 
-  get offset() { return this._offset; },
+  get offset() {
+    return this._offset;
+  },
   set offset(value) {
     this._offset = value;
     this._rebuildURL();
   },
 
   // Set information about the batch for this request.
-  get batch() { return this._batch; },
+  get batch() {
+    return this._batch;
+  },
   set batch(value) {
     this._batch = value;
     this._rebuildURL();
   },
 
-  get commit() { return this._commit; },
+  get commit() {
+    return this._commit;
+  },
   set commit(value) {
     this._commit = value && true;
     this._rebuildURL();
@@ -744,7 +832,10 @@ Collection.prototype = {
         if (batchSize + recordBuffer.length > totalLimit) {
           this.limit = totalLimit - recordBuffer.length;
         }
-        this._log.trace("Performing batched GET", { limit: this.limit, offset: this.offset });
+        this._log.trace("Performing batched GET", {
+          limit: this.limit,
+          offset: this.offset,
+        });
         // Actually perform the request
         resp = await this.get();
         if (!resp.success) {
@@ -764,8 +855,10 @@ Collection.prototype = {
           this.setHeader("X-If-Unmodified-Since", lastModified);
         } else if (lastModified != lastModifiedTime) {
           // Should be impossible -- We'd get a 412 in this case.
-          throw new Error("X-Last-Modified changed in the middle of a download batch! " +
-                          `${lastModified} => ${lastModifiedTime}`);
+          throw new Error(
+            "X-Last-Modified changed in the middle of a download batch! " +
+              `${lastModified} => ${lastModifiedTime}`
+          );
         }
 
         // If this is missing, we're finished.
@@ -787,7 +880,9 @@ Collection.prototype = {
 
   // This object only supports posting via the postQueue object.
   post() {
-    throw new Error("Don't directly post to a collection - use newPostQueue instead");
+    throw new Error(
+      "Don't directly post to a collection - use newPostQueue instead"
+    );
   },
 
   newPostQueue(log, timestamp, postCallback) {
@@ -799,8 +894,13 @@ Collection.prototype = {
       }
       return Resource.prototype.post.call(this, data);
     };
-    return new PostQueue(poster, timestamp,
-      this._service.serverConfiguration || {}, log, postCallback);
+    return new PostQueue(
+      poster,
+      timestamp,
+      this._service.serverConfiguration || {},
+      log,
+      postCallback
+    );
   },
 };
 
@@ -850,7 +950,6 @@ const DefaultPostQueueConfig = Object.freeze({
   max_total_records: Infinity,
 });
 
-
 // Manages a pair of (byte, count) limits for a PostQueue, such as
 // (max_post_bytes, max_post_records) or (max_total_bytes, max_total_records).
 class LimitTracker {
@@ -870,8 +969,10 @@ class LimitTracker {
     // The record counts are inclusive, but depending on the version of the
     // server, the byte counts may or may not be inclusive (See
     // https://github.com/mozilla-services/server-syncstorage/issues/73).
-    return this.curRecords + 1 <= this.maxRecords &&
-           this.curBytes + payloadSize < this.maxBytes;
+    return (
+      this.curRecords + 1 <= this.maxRecords &&
+      this.curBytes + payloadSize < this.maxBytes
+    );
   }
 
   canNeverAdd(recordSize) {
@@ -881,13 +982,14 @@ class LimitTracker {
   didAddRecord(recordSize) {
     if (!this.canAddRecord(recordSize)) {
       // This is a bug, caller is expected to call canAddRecord first.
-      throw new Error("LimitTracker.canAddRecord must be checked before adding record");
+      throw new Error(
+        "LimitTracker.canAddRecord must be checked before adding record"
+      );
     }
     this.curRecords += 1;
     this.curBytes += recordSize;
   }
 }
-
 
 /* A helper to manage the posting of records while respecting the various
    size limits.
@@ -931,10 +1033,16 @@ function PostQueue(poster, timestamp, serverConfig, log, postCallback) {
 
   // Tracks the count and combined payload size for the records we've queued
   // so far but are yet to POST.
-  this.postLimits = new LimitTracker(config.max_post_bytes, config.max_post_records);
+  this.postLimits = new LimitTracker(
+    config.max_post_bytes,
+    config.max_post_records
+  );
 
   // As above, but for the batch size.
-  this.batchLimits = new LimitTracker(config.max_total_bytes, config.max_total_records);
+  this.batchLimits = new LimitTracker(
+    config.max_total_bytes,
+    config.max_total_records
+  );
 
   // Limit for the size of `this.queued` before we do a post.
   this.maxRequestBytes = config.max_request_bytes;
@@ -966,7 +1074,9 @@ PostQueue.prototype = {
     // still work even if it isn't defined, which isn't what we want.
     let jsonRepr = record.toJSON();
     if (!jsonRepr) {
-      throw new Error("You must only call this with objects that explicitly support JSON");
+      throw new Error(
+        "You must only call this with objects that explicitly support JSON"
+      );
     }
 
     let bytes = JSON.stringify(jsonRepr);
@@ -982,21 +1092,30 @@ PostQueue.prototype = {
 
     // Check first if there's some limit that indicates we cannot ever enqueue
     // this record.
-    let isTooBig = this.postLimits.canNeverAdd(payloadLength) ||
-                   this.batchLimits.canNeverAdd(payloadLength) ||
-                   encodedLength >= this.maxRequestBytes ||
-                   payloadLength >= this.maxPayloadBytes;
+    let isTooBig =
+      this.postLimits.canNeverAdd(payloadLength) ||
+      this.batchLimits.canNeverAdd(payloadLength) ||
+      encodedLength >= this.maxRequestBytes ||
+      payloadLength >= this.maxPayloadBytes;
 
     if (isTooBig) {
-      return { enqueued: false, error: new Error("Single record too large to submit to server") };
+      return {
+        enqueued: false,
+        error: new Error("Single record too large to submit to server"),
+      };
     }
 
     let canPostRecord = this.postLimits.canAddRecord(payloadLength);
     let canBatchRecord = this.batchLimits.canAddRecord(payloadLength);
-    let canSendRecord = this.queued.length + encodedLength < this.maxRequestBytes;
+    let canSendRecord =
+      this.queued.length + encodedLength < this.maxRequestBytes;
 
     if (!canPostRecord || !canBatchRecord || !canSendRecord) {
-      this.log.trace("PostQueue flushing: ", {canPostRecord, canSendRecord, canBatchRecord});
+      this.log.trace("PostQueue flushing: ", {
+        canPostRecord,
+        canSendRecord,
+        canBatchRecord,
+      });
       // We need to write the queue out before handling this one, but we only
       // commit the batch (and thus start a new one) if the record couldn't fit
       // inside the batch.
@@ -1017,7 +1136,11 @@ PostQueue.prototype = {
       // nothing queued - we can't be in a batch, and something has gone very
       // bad if we think we are.
       if (this.batchID) {
-        throw new Error(`Flush called when no queued records but we are in a batch ${this.batchID}`);
+        throw new Error(
+          `Flush called when no queued records but we are in a batch ${
+            this.batchID
+          }`
+        );
       }
       return;
     }
@@ -1038,20 +1161,28 @@ PostQueue.prototype = {
     headers.push(["x-if-unmodified-since", this.lastModified]);
 
     let numQueued = this.postLimits.curRecords;
-    this.log.info(`Posting ${numQueued} records of ${this.queued.length + 1} bytes with batch=${batch}`);
+    this.log.info(
+      `Posting ${numQueued} records of ${this.queued.length +
+        1} bytes with batch=${batch}`
+    );
     let queued = this.queued + "]";
     if (finalBatchPost) {
       this.batchLimits.clear();
     }
     this.postLimits.clear();
     this.queued = "";
-    let response = await this.poster(queued, headers, batch, !!(finalBatchPost && this.batchID !== null));
+    let response = await this.poster(
+      queued,
+      headers,
+      batch,
+      !!(finalBatchPost && this.batchID !== null)
+    );
 
     if (!response.success) {
       this.log.trace("Server error response during a batch", response);
       // not clear what we should do here - we expect the consumer of this to
       // abort by throwing in the postCallback below.
-      await this.postCallback(response, !finalBatchPost);
+      await this.postCallback(this, response, !finalBatchPost);
       return;
     }
 
@@ -1059,17 +1190,19 @@ PostQueue.prototype = {
       this.log.trace("Committed batch", this.batchID);
       this.batchID = undefined; // we are now in "first post for the batch" state.
       this.lastModified = response.headers["x-last-modified"];
-      await this.postCallback(response, false);
+      await this.postCallback(this, response, false);
       return;
     }
 
     if (response.status != 202) {
       if (this.batchID) {
-        throw new Error("Server responded non-202 success code while a batch was in progress");
+        throw new Error(
+          "Server responded non-202 success code while a batch was in progress"
+        );
       }
       this.batchID = null; // no batch semantics are in place.
       this.lastModified = response.headers["x-last-modified"];
-      await this.postCallback(response, false);
+      await this.postCallback(this, response, false);
       return;
     }
 
@@ -1078,7 +1211,10 @@ PostQueue.prototype = {
     let responseBatchID = response.obj.batch;
     this.log.trace("Server responsed 202 with batch", responseBatchID);
     if (!responseBatchID) {
-      this.log.error("Invalid server response: 202 without a batch ID", response);
+      this.log.error(
+        "Invalid server response: 202 without a batch ID",
+        response
+      );
       throw new Error("Invalid server response: 202 without a batch ID");
     }
 
@@ -1093,9 +1229,13 @@ PostQueue.prototype = {
     }
 
     if (this.batchID != responseBatchID) {
-      throw new Error(`Invalid client/server batch state - client has ${this.batchID}, server has ${responseBatchID}`);
+      throw new Error(
+        `Invalid client/server batch state - client has ${
+          this.batchID
+        }, server has ${responseBatchID}`
+      );
     }
 
-    await this.postCallback(response, true);
+    await this.postCallback(this, response, true);
   },
 };

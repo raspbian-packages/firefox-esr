@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -29,8 +29,8 @@ NS_IMPL_ISUPPORTS(nsAboutCache::Channel, nsIChannel, nsIRequest,
                   nsICacheStorageVisitor)
 
 NS_IMETHODIMP
-nsAboutCache::NewChannel(nsIURI *aURI, nsILoadInfo *aLoadInfo,
-                         nsIChannel **result) {
+nsAboutCache::NewChannel(nsIURI* aURI, nsILoadInfo* aLoadInfo,
+                         nsIChannel** result) {
   nsresult rv;
 
   NS_ENSURE_ARG_POINTER(aURI);
@@ -44,7 +44,7 @@ nsAboutCache::NewChannel(nsIURI *aURI, nsILoadInfo *aLoadInfo,
   return NS_OK;
 }
 
-nsresult nsAboutCache::Channel::Init(nsIURI *aURI, nsILoadInfo *aLoadInfo) {
+nsresult nsAboutCache::Channel::Init(nsIURI* aURI, nsILoadInfo* aLoadInfo) {
   nsresult rv;
 
   mCancel = false;
@@ -86,10 +86,11 @@ nsresult nsAboutCache::Channel::Init(nsIURI *aURI, nsILoadInfo *aLoadInfo) {
       "<head>\n"
       "  <title>Network Cache Storage Information</title>\n"
       "  <meta charset=\"utf-8\">\n"
+      "  <meta http-equiv=\"Content-Security-Policy\" content=\"default-src "
+      "chrome:\"/>\n"
       "  <link rel=\"stylesheet\" href=\"chrome://global/skin/about.css\"/>\n"
       "  <link rel=\"stylesheet\" "
       "href=\"chrome://global/skin/aboutCache.css\"/>\n"
-      "  <script src=\"chrome://global/content/aboutCache.js\"></script>"
       "</head>\n"
       "<body class=\"aboutPageWideContainer\">\n"
       "<h1>Information about the Network Cache Storage Service</h1>\n");
@@ -99,18 +100,15 @@ nsresult nsAboutCache::Channel::Init(nsIURI *aURI, nsILoadInfo *aLoadInfo) {
       "<label><input id='priv' type='checkbox'/> Private</label>\n"
       "<label><input id='anon' type='checkbox'/> Anonymous</label>\n");
 
-  // Visit scoping by browser and appid is not implemented for
-  // the old cache, simply don't add these controls.
-  // The appid/inbrowser entries are already mixed in the default
-  // view anyway.
+  // Visit scoping by browseris not implemented for the old cache, simply don't
+  // add these controls.  The inbrowser entries are already mixed in the
+  // default view anyway.
   mBuffer.AppendLiteral(
-      "<label><input id='appid' type='text' size='6'/> AppID</label>\n"
       "<label><input id='inbrowser' type='checkbox'/> In Browser "
       "Element</label>\n");
 
   mBuffer.AppendLiteral(
-      "<label><input id='submit' type='button' value='Update' "
-      "onclick='navigate()'/></label>\n");
+      "<label><input id='submit' type='button' value='Update'/></label>\n");
 
   if (!mOverview) {
     mBuffer.AppendLiteral("<a href=\"about:cache?storage=&amp;context=");
@@ -126,8 +124,7 @@ nsresult nsAboutCache::Channel::Init(nsIURI *aURI, nsILoadInfo *aLoadInfo) {
   return NS_OK;
 }
 
-NS_IMETHODIMP nsAboutCache::Channel::AsyncOpen(nsIStreamListener *aListener,
-                                               nsISupports *aContext) {
+NS_IMETHODIMP nsAboutCache::Channel::AsyncOpen(nsIStreamListener* aListener) {
   nsresult rv;
 
   if (!mChannel) {
@@ -138,26 +135,17 @@ NS_IMETHODIMP nsAboutCache::Channel::AsyncOpen(nsIStreamListener *aListener,
   rv = VisitNextStorage();
   if (NS_FAILED(rv)) return rv;
 
-  MOZ_ASSERT(!aContext, "asyncOpen2() does not take a context argument");
-  rv = NS_MaybeOpenChannelUsingAsyncOpen2(mChannel, aListener);
+  rv = NS_MaybeOpenChannelUsingAsyncOpen(mChannel, aListener);
   if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
 }
 
-NS_IMETHODIMP nsAboutCache::Channel::AsyncOpen2(nsIStreamListener *aListener) {
-  return AsyncOpen(aListener, nullptr);
-}
-
-NS_IMETHODIMP nsAboutCache::Channel::Open(nsIInputStream **_retval) {
+NS_IMETHODIMP nsAboutCache::Channel::Open(nsIInputStream** _retval) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-NS_IMETHODIMP nsAboutCache::Channel::Open2(nsIInputStream **_retval) {
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-nsresult nsAboutCache::Channel::ParseURI(nsIURI *uri, nsACString &storage) {
+nsresult nsAboutCache::Channel::ParseURI(nsIURI* uri, nsACString& storage) {
   //
   // about:cache[?storage=<storage-name>[&context=<context-key>]]
   //
@@ -241,7 +229,7 @@ void nsAboutCache::Channel::FireVisitStorage() {
   }
 }
 
-nsresult nsAboutCache::Channel::VisitStorage(nsACString const &storageName) {
+nsresult nsAboutCache::Channel::VisitStorage(nsACString const& storageName) {
   nsresult rv;
 
   rv = GetStorage(storageName, mLoadInfo, getter_AddRefs(mStorage));
@@ -254,9 +242,9 @@ nsresult nsAboutCache::Channel::VisitStorage(nsACString const &storageName) {
 }
 
 // static
-nsresult nsAboutCache::GetStorage(nsACString const &storageName,
-                                  nsILoadContextInfo *loadInfo,
-                                  nsICacheStorage **storage) {
+nsresult nsAboutCache::GetStorage(nsACString const& storageName,
+                                  nsILoadContextInfo* loadInfo,
+                                  nsICacheStorage** storage) {
   nsresult rv;
 
   nsCOMPtr<nsICacheStorageService> cacheService =
@@ -286,7 +274,7 @@ NS_IMETHODIMP
 nsAboutCache::Channel::OnCacheStorageInfo(uint32_t aEntryCount,
                                           uint64_t aConsumption,
                                           uint64_t aCapacity,
-                                          nsIFile *aDirectory) {
+                                          nsIFile* aDirectory) {
   // We need mStream for this
   if (!mStream) {
     return NS_ERROR_FAILURE;
@@ -381,12 +369,12 @@ nsAboutCache::Channel::OnCacheStorageInfo(uint32_t aEntryCount,
 }
 
 NS_IMETHODIMP
-nsAboutCache::Channel::OnCacheEntryInfo(nsIURI *aURI,
-                                        const nsACString &aIdEnhance,
+nsAboutCache::Channel::OnCacheEntryInfo(nsIURI* aURI,
+                                        const nsACString& aIdEnhance,
                                         int64_t aDataSize, int32_t aFetchCount,
                                         uint32_t aLastModified,
                                         uint32_t aExpirationTime, bool aPinned,
-                                        nsILoadContextInfo *aInfo) {
+                                        nsILoadContextInfo* aInfo) {
   // We need mStream for this
   if (!mStream || mCancel) {
     // Returning a failure from this callback stops the iteration
@@ -527,6 +515,8 @@ nsAboutCache::Channel::OnCacheEntryVisitCompleted() {
   // We are done!
   mBuffer.AppendLiteral(
       "</body>\n"
+      "<script src=\"chrome://global/content/aboutCache.js\">"
+      "</script>\n"
       "</html>\n");
   nsresult rv = FlushBuffer();
   if (NS_FAILED(rv)) {
@@ -552,20 +542,16 @@ nsresult nsAboutCache::Channel::FlushBuffer() {
 }
 
 NS_IMETHODIMP
-nsAboutCache::GetURIFlags(nsIURI *aURI, uint32_t *result) {
+nsAboutCache::GetURIFlags(nsIURI* aURI, uint32_t* result) {
   *result = nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT;
   return NS_OK;
 }
 
 // static
-nsresult nsAboutCache::Create(nsISupports *aOuter, REFNSIID aIID,
-                              void **aResult) {
-  nsAboutCache *about = new nsAboutCache();
-  if (about == nullptr) return NS_ERROR_OUT_OF_MEMORY;
-  NS_ADDREF(about);
-  nsresult rv = about->QueryInterface(aIID, aResult);
-  NS_RELEASE(about);
-  return rv;
+nsresult nsAboutCache::Create(nsISupports* aOuter, REFNSIID aIID,
+                              void** aResult) {
+  RefPtr<nsAboutCache> about = new nsAboutCache();
+  return about->QueryInterface(aIID, aResult);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

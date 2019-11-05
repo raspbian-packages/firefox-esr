@@ -12,7 +12,7 @@
 #include "OmxPlatformLayer.h"
 
 #ifdef LOG
-#undef LOG
+#  undef LOG
 #endif
 
 #define LOG(arg, ...)                        \
@@ -70,7 +70,7 @@ RefPtr<OmxPromiseLayer::OmxBufferPromise> OmxPromiseLayer::FillBuffer(
 
   if (err != OMX_ErrorNone) {
     OmxBufferFailureHolder failure(err, aData);
-    aData->mPromise.Reject(Move(failure), __func__);
+    aData->mPromise.Reject(std::move(failure), __func__);
   } else {
     aData->mStatus = BufferData::BufferStatus::OMX_COMPONENT;
     GetBufferHolders(OMX_DirOutput)->AppendElement(aData);
@@ -90,10 +90,10 @@ RefPtr<OmxPromiseLayer::OmxBufferPromise> OmxPromiseLayer::EmptyBuffer(
 
   if (err != OMX_ErrorNone) {
     OmxBufferFailureHolder failure(err, aData);
-    aData->mPromise.Reject(Move(failure), __func__);
+    aData->mPromise.Reject(std::move(failure), __func__);
   } else {
     if (aData->mRawData) {
-      mRawDatas.AppendElement(Move(aData->mRawData));
+      mRawDatas.AppendElement(std::move(aData->mRawData));
     }
     aData->mStatus = BufferData::BufferStatus::OMX_COMPONENT;
     GetBufferHolders(OMX_DirInput)->AppendElement(aData);
@@ -298,7 +298,9 @@ bool OmxPromiseLayer::Event(OMX_EVENTTYPE aEvent, OMX_U32 aData1,
       }
       break;
     }
-    default: { return false; }
+    default: {
+      return false;
+    }
   }
   return true;
 }

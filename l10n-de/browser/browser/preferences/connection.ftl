@@ -16,7 +16,7 @@ connection-disable-extension =
 connection-proxy-configure = Proxy-Zugriff auf das Internet konfigurieren
 connection-proxy-option-no =
     .label = Kein Proxy
-    .accesskey = e
+    .accesskey = i
 connection-proxy-option-system =
     .label = Proxy-Einstellungen des Systems verwenden
     .accesskey = g
@@ -67,3 +67,31 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Bei Verwendung von SOCKS v5 den Proxy für DNS-Anfragen verwenden
     .accesskey = D
+connection-dns-over-https =
+    .label = DNS über HTTPS aktivieren
+    .accesskey = b
+connection-dns-over-https-url = Adresse
+    .accesskey = e
+    .tooltiptext = Adresse für das Auflösen von DNS über HTTPS
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Standard verwenden ({ $url })
+    .accesskey = S
+    .tooltiptext = Standardadresse für das Auflösen von DNS über HTTPS verwenden
+
+connection-dns-over-https-url-resolver = Anbieter verwenden
+    .accesskey = v
+
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (Standard)
+    .tooltiptext = Standardadresse für das Auflösen von DNS über HTTPS verwenden
+
+connection-dns-over-https-url-custom =
+    .label = Benutzerdefiniert
+    .accesskey = e
+    .tooltiptext = Adresse für das Auflösen von DNS über HTTPS eingeben
+
+connection-dns-over-https-custom-label = Benutzerdefiniert

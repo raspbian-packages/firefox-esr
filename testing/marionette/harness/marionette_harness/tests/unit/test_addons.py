@@ -30,10 +30,12 @@ class TestAddons(MarionetteTestCase):
     def all_addon_ids(self):
         with self.marionette.using_context("chrome"):
             addons = self.marionette.execute_async_script("""
+              let [resolve] = arguments;
               Components.utils.import("resource://gre/modules/AddonManager.jsm");
-              AddonManager.getAllAddons(function(addons) {
+
+              AddonManager.getAllAddons().then(function(addons) {
                 let ids = addons.map(x => x.id);
-                marionetteScriptFinished(ids);
+                resolve(ids);
               });
             """)
 
@@ -43,12 +45,13 @@ class TestAddons(MarionetteTestCase):
         with self.marionette.using_context("chrome"):
             for addon in (self.all_addon_ids - self.preinstalled_addons):
                 addon_id = self.marionette.execute_async_script("""
+                  let [resolve] = arguments;
                   Components.utils.import("resource://gre/modules/AddonManager.jsm");
-                  return new Promise(resolve => {
-                    AddonManager.getAddonByID(arguments[0], function(addon) {
-                      addon.uninstall();
-                      marionetteScriptFinished(addon.id);
-                    });
+
+                  return new Promise(await resolve => {
+                    let addon = await AddonManager.getAddonByID(arguments[0]);
+                    addon.uninstall();
+                    resolve(addon.id);
                   });
                 """, script_args=(addon,))
                 self.assertEqual(addon_id, addon,
@@ -97,9 +100,9 @@ class TestAddons(MarionetteTestCase):
     def test_install_nonexistent_addon(self):
         addon_path = os.path.join(here, "does-not-exist.xpi")
 
-        with self.assertRaisesRegexp(AddonInstallException, "Could not find add-on at"):
+        with self.assertRaises(AddonInstallException):
             self.addons.install(addon_path)
 
     def test_install_with_relative_path(self):
-        with self.assertRaisesRegexp(AddonInstallException, "is not an absolute path."):
+        with self.assertRaises(AddonInstallException):
             self.addons.install('webextension.xpi')

@@ -38,11 +38,12 @@ class AudioBlock : private AudioChunk {
   using AudioChunk::ChannelCount;
   using AudioChunk::ChannelData;
   using AudioChunk::GetDuration;
+  using AudioChunk::IsAudible;
   using AudioChunk::IsNull;
   using AudioChunk::SizeOfExcludingThis;
   using AudioChunk::SizeOfExcludingThisIfUnshared;
   // mDuration is not exposed.  Use GetDuration().
-  // mBuffer is not exposed.  Use SetBuffer().
+  // mBuffer is not exposed.  Use Get/SetBuffer().
   using AudioChunk::mBufferFormat;
   using AudioChunk::mChannelData;
   using AudioChunk::mVolume;
@@ -69,6 +70,7 @@ class AudioBlock : private AudioChunk {
     return static_cast<float*>(const_cast<void*>(mChannelData[aChannel]));
   }
 
+  ThreadSharedObject* GetBuffer() const { return mBuffer; }
   void SetBuffer(ThreadSharedObject* aNewBuffer);
   void SetNull(StreamTime aDuration) {
     MOZ_ASSERT(aDuration == WEBAUDIO_BLOCK_SIZE);

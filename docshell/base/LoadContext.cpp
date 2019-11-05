@@ -8,6 +8,7 @@
 #include "mozilla/BasePrincipal.h"
 #include "mozilla/LoadContext.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/dom/Element.h"
 #include "mozilla/dom/ScriptSettings.h"  // for AutoJSAPI
 #include "nsContentUtils.h"
 #include "xpcpublic.h"
@@ -22,19 +23,20 @@ LoadContext::LoadContext(nsIPrincipal* aPrincipal,
       mNestedFrameId(0),
       mIsContent(true),
       mUseRemoteTabs(false),
-      mUseTrackingProtection(false)
+      mUseRemoteSubframes(false),
+      mUseTrackingProtection(false),
 #ifdef DEBUG
-      ,
-      mIsNotNull(true)
+      mIsNotNull(true),
 #endif
-{
-  mOriginAttributes = aPrincipal->OriginAttributesRef();
+      mOriginAttributes(aPrincipal->OriginAttributesRef()) {
   if (!aOptionalBase) {
     return;
   }
 
   MOZ_ALWAYS_SUCCEEDS(aOptionalBase->GetIsContent(&mIsContent));
   MOZ_ALWAYS_SUCCEEDS(aOptionalBase->GetUseRemoteTabs(&mUseRemoteTabs));
+  MOZ_ALWAYS_SUCCEEDS(
+      aOptionalBase->GetUseRemoteSubframes(&mUseRemoteSubframes));
   MOZ_ALWAYS_SUCCEEDS(
       aOptionalBase->GetUseTrackingProtection(&mUseTrackingProtection));
 }
@@ -60,8 +62,8 @@ LoadContext::GetTopWindow(mozIDOMWindowProxy**) {
 }
 
 NS_IMETHODIMP
-LoadContext::GetTopFrameElement(nsIDOMElement** aElement) {
-  nsCOMPtr<nsIDOMElement> element = do_QueryReferent(mTopFrameElement);
+LoadContext::GetTopFrameElement(dom::Element** aElement) {
+  nsCOMPtr<dom::Element> element = do_QueryReferent(mTopFrameElement);
   element.forget(aElement);
   return NS_OK;
 }
@@ -128,6 +130,24 @@ LoadContext::SetRemoteTabs(bool aUseRemoteTabs) {
 }
 
 NS_IMETHODIMP
+LoadContext::GetUseRemoteSubframes(bool* aUseRemoteSubframes) {
+  MOZ_ASSERT(mIsNotNull);
+
+  NS_ENSURE_ARG_POINTER(aUseRemoteSubframes);
+
+  *aUseRemoteSubframes = mUseRemoteSubframes;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+LoadContext::SetRemoteSubframes(bool aUseRemoteSubframes) {
+  MOZ_ASSERT(mIsNotNull);
+
+  // We shouldn't need this on parent...
+  return NS_ERROR_UNEXPECTED;
+}
+
+NS_IMETHODIMP
 LoadContext::GetIsInIsolatedMozBrowserElement(
     bool* aIsInIsolatedMozBrowserElement) {
   MOZ_ASSERT(mIsNotNull);
@@ -139,11 +159,9 @@ LoadContext::GetIsInIsolatedMozBrowserElement(
 }
 
 NS_IMETHODIMP
-LoadContext::GetScriptableOriginAttributes(JS::MutableHandleValue aAttrs) {
-  JSContext* cx = nsContentUtils::GetCurrentJSContext();
-  MOZ_ASSERT(cx);
-
-  bool ok = ToJSValue(cx, mOriginAttributes, aAttrs);
+LoadContext::GetScriptableOriginAttributes(JSContext* aCx,
+                                           JS::MutableHandleValue aAttrs) {
+  bool ok = ToJSValue(aCx, mOriginAttributes, aAttrs);
   NS_ENSURE_TRUE(ok, NS_ERROR_FAILURE);
   return NS_OK;
 }
@@ -187,31 +205,21 @@ LoadContext::GetInterface(const nsIID& aIID, void** aResult) {
   return NS_NOINTERFACE;
 }
 
-static nsresult CreateTestInstance(bool aPrivate, nsISupports* aOuter,
-                                   REFNSIID aIID, void** aResult) {
-  // Shamelessly modified from NS_GENERIC_FACTORY_CONSTRUCTOR
-  *aResult = nullptr;
-
-  if (aOuter) {
-    return NS_ERROR_NO_AGGREGATION;
-  }
-
+static already_AddRefed<nsILoadContext> CreateInstance(bool aPrivate) {
   OriginAttributes oa;
   oa.mPrivateBrowsingId = aPrivate ? 1 : 0;
 
-  RefPtr<LoadContext> lc = new LoadContext(oa);
+  nsCOMPtr<nsILoadContext> lc = new LoadContext(oa);
 
-  return lc->QueryInterface(aIID, aResult);
+  return lc.forget();
 }
 
-nsresult CreateTestLoadContext(nsISupports* aOuter, REFNSIID aIID,
-                               void** aResult) {
-  return CreateTestInstance(false, aOuter, aIID, aResult);
+already_AddRefed<nsILoadContext> CreateLoadContext() {
+  return CreateInstance(false);
 }
 
-nsresult CreatePrivateTestLoadContext(nsISupports* aOuter, REFNSIID aIID,
-                                      void** aResult) {
-  return CreateTestInstance(true, aOuter, aIID, aResult);
+already_AddRefed<nsILoadContext> CreatePrivateLoadContext() {
+  return CreateInstance(true);
 }
 
 }  // namespace mozilla

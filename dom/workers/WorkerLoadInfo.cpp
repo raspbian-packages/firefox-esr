@@ -7,7 +7,8 @@
 #include "WorkerLoadInfo.h"
 #include "WorkerPrivate.h"
 
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/BasePrincipal.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/ipc/BackgroundUtils.h"
 #include "mozilla/ipc/PBackgroundSharedTypes.h"
 #include "mozilla/LoadContext.h"
@@ -15,7 +16,8 @@
 #include "nsIContentSecurityPolicy.h"
 #include "nsINetworkInterceptController.h"
 #include "nsIProtocolHandler.h"
-#include "nsITabChild.h"
+#include "nsIBrowserChild.h"
+#include "nsScriptSecurityManager.h"
 #include "nsNetUtil.h"
 
 namespace mozilla {
@@ -76,7 +78,7 @@ inline void SwapToISupportsArray(SmartPtr<T>& aSrc,
 
 }  // namespace
 
-WorkerLoadInfo::WorkerLoadInfo()
+WorkerLoadInfoData::WorkerLoadInfoData()
     : mLoadFlags(nsIRequest::LOAD_NORMAL),
       mWindowID(UINT64_MAX),
       mReferrerPolicy(net::RP_Unset),
@@ -85,93 +87,31 @@ WorkerLoadInfo::WorkerLoadInfo()
       mReportCSPViolations(false),
       mXHRParamsAllowed(false),
       mPrincipalIsSystem(false),
-      mStorageAllowed(false),
-      mServiceWorkersTestingInWindow(false) {
-  MOZ_COUNT_CTOR(WorkerLoadInfo);
-}
+      mWatchedByDevtools(false),
+      mStorageAccess(nsContentUtils::StorageAccess::eDeny),
+      mFirstPartyStorageAccessGranted(false),
+      mServiceWorkersTestingInWindow(false),
+      mSecureContext(eNotSet) {}
 
-WorkerLoadInfo::~WorkerLoadInfo() { MOZ_COUNT_DTOR(WorkerLoadInfo); }
-
-void WorkerLoadInfo::StealFrom(WorkerLoadInfo& aOther) {
-  MOZ_ASSERT(!mBaseURI);
-  aOther.mBaseURI.swap(mBaseURI);
-
-  MOZ_ASSERT(!mResolvedScriptURI);
-  aOther.mResolvedScriptURI.swap(mResolvedScriptURI);
-
-  MOZ_ASSERT(!mPrincipal);
-  aOther.mPrincipal.swap(mPrincipal);
-
-  // mLoadingPrincipal can be null if this is a ServiceWorker.
-  aOther.mLoadingPrincipal.swap(mLoadingPrincipal);
-
-  MOZ_ASSERT(!mScriptContext);
-  aOther.mScriptContext.swap(mScriptContext);
-
-  MOZ_ASSERT(!mWindow);
-  aOther.mWindow.swap(mWindow);
-
-  MOZ_ASSERT(!mCSP);
-  aOther.mCSP.swap(mCSP);
-
-  MOZ_ASSERT(!mChannel);
-  aOther.mChannel.swap(mChannel);
-
-  MOZ_ASSERT(!mLoadGroup);
-  aOther.mLoadGroup.swap(mLoadGroup);
-
-  MOZ_ASSERT(!mLoadFailedAsyncRunnable);
-  aOther.mLoadFailedAsyncRunnable.swap(mLoadFailedAsyncRunnable);
-
-  MOZ_ASSERT(!mInterfaceRequestor);
-  aOther.mInterfaceRequestor.swap(mInterfaceRequestor);
-
-  MOZ_ASSERT(!mPrincipalInfo);
-  mPrincipalInfo = aOther.mPrincipalInfo.forget();
-
-  mDomain = aOther.mDomain;
-  mOrigin = aOther.mOrigin;
-  mServiceWorkerCacheName = aOther.mServiceWorkerCacheName;
-  mServiceWorkerDescriptor = aOther.mServiceWorkerDescriptor;
-  mServiceWorkerRegistrationDescriptor =
-      aOther.mServiceWorkerRegistrationDescriptor;
-  mLoadFlags = aOther.mLoadFlags;
-  mWindowID = aOther.mWindowID;
-  mReferrerPolicy = aOther.mReferrerPolicy;
-  mFromWindow = aOther.mFromWindow;
-  mEvalAllowed = aOther.mEvalAllowed;
-  mReportCSPViolations = aOther.mReportCSPViolations;
-  mXHRParamsAllowed = aOther.mXHRParamsAllowed;
-  mPrincipalIsSystem = aOther.mPrincipalIsSystem;
-  mStorageAllowed = aOther.mStorageAllowed;
-  mServiceWorkersTestingInWindow = aOther.mServiceWorkersTestingInWindow;
-  mOriginAttributes = aOther.mOriginAttributes;
-  mParentController = aOther.mParentController;
-}
-
-nsresult WorkerLoadInfo::SetPrincipalOnMainThread(nsIPrincipal* aPrincipal,
-                                                  nsILoadGroup* aLoadGroup) {
+nsresult WorkerLoadInfo::SetPrincipalsOnMainThread(
+    nsIPrincipal* aPrincipal, nsIPrincipal* aStoragePrincipal,
+    nsILoadGroup* aLoadGroup) {
   AssertIsOnMainThread();
   MOZ_ASSERT(NS_LoadGroupMatchesPrincipal(aLoadGroup, aPrincipal));
 
   mPrincipal = aPrincipal;
+  mStoragePrincipal = aStoragePrincipal;
   mPrincipalIsSystem = nsContentUtils::IsSystemPrincipal(aPrincipal);
 
   nsresult rv = aPrincipal->GetCsp(getter_AddRefs(mCSP));
   NS_ENSURE_SUCCESS(rv, rv);
 
+  mCSPInfos.Clear();
+
   if (mCSP) {
     mCSP->GetAllowsEval(&mReportCSPViolations, &mEvalAllowed);
-    // Set ReferrerPolicy
-    bool hasReferrerPolicy = false;
-    uint32_t rp = mozilla::net::RP_Unset;
-
-    rv = mCSP->GetReferrerPolicy(&rp, &hasReferrerPolicy);
+    rv = PopulateContentSecurityPolicies(mCSP, mCSPInfos);
     NS_ENSURE_SUCCESS(rv, rv);
-
-    if (hasReferrerPolicy) {
-      mReferrerPolicy = static_cast<net::ReferrerPolicy>(rp);
-    }
   } else {
     mEvalAllowed = true;
     mReportCSPViolations = false;
@@ -180,10 +120,19 @@ nsresult WorkerLoadInfo::SetPrincipalOnMainThread(nsIPrincipal* aPrincipal,
   mLoadGroup = aLoadGroup;
 
   mPrincipalInfo = new PrincipalInfo();
+  mStoragePrincipalInfo = new PrincipalInfo();
   mOriginAttributes = nsContentUtils::GetOriginAttributes(aLoadGroup);
 
   rv = PrincipalToPrincipalInfo(aPrincipal, mPrincipalInfo);
   NS_ENSURE_SUCCESS(rv, rv);
+
+  if (aPrincipal->Equals(aStoragePrincipal)) {
+    *mStoragePrincipalInfo = *mPrincipalInfo;
+  } else {
+    mStoragePrincipalInfo = new PrincipalInfo();
+    rv = PrincipalToPrincipalInfo(aStoragePrincipal, mStoragePrincipalInfo);
+    NS_ENSURE_SUCCESS(rv, rv);
+  }
 
   rv = nsContentUtils::GetUTFOrigin(aPrincipal, mOrigin);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -191,12 +140,13 @@ nsresult WorkerLoadInfo::SetPrincipalOnMainThread(nsIPrincipal* aPrincipal,
   return NS_OK;
 }
 
-nsresult WorkerLoadInfo::GetPrincipalAndLoadGroupFromChannel(
+nsresult WorkerLoadInfo::GetPrincipalsAndLoadGroupFromChannel(
     nsIChannel* aChannel, nsIPrincipal** aPrincipalOut,
-    nsILoadGroup** aLoadGroupOut) {
+    nsIPrincipal** aStoragePrincipalOut, nsILoadGroup** aLoadGroupOut) {
   AssertIsOnMainThread();
   MOZ_DIAGNOSTIC_ASSERT(aChannel);
   MOZ_DIAGNOSTIC_ASSERT(aPrincipalOut);
+  MOZ_DIAGNOSTIC_ASSERT(aStoragePrincipalOut);
   MOZ_DIAGNOSTIC_ASSERT(aLoadGroupOut);
 
   // Initial triggering principal should be set
@@ -206,8 +156,10 @@ nsresult WorkerLoadInfo::GetPrincipalAndLoadGroupFromChannel(
   MOZ_DIAGNOSTIC_ASSERT(ssm);
 
   nsCOMPtr<nsIPrincipal> channelPrincipal;
-  nsresult rv = ssm->GetChannelResultPrincipal(
-      aChannel, getter_AddRefs(channelPrincipal));
+  nsCOMPtr<nsIPrincipal> channelStoragePrincipal;
+  nsresult rv = ssm->GetChannelResultPrincipals(
+      aChannel, getter_AddRefs(channelPrincipal),
+      getter_AddRefs(channelStoragePrincipal));
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Every time we call GetChannelResultPrincipal() it will return a different
@@ -221,6 +173,7 @@ nsresult WorkerLoadInfo::GetPrincipalAndLoadGroupFromChannel(
   if (mPrincipal && mPrincipal->GetIsNullPrincipal() &&
       channelPrincipal->GetIsNullPrincipal()) {
     channelPrincipal = mPrincipal;
+    channelStoragePrincipal = mPrincipal;
   }
 
   nsCOMPtr<nsILoadGroup> channelLoadGroup;
@@ -253,6 +206,7 @@ nsresult WorkerLoadInfo::GetPrincipalAndLoadGroupFromChannel(
         // Assign the system principal to the resource:// worker only if it
         // was loaded from code using the system principal.
         channelPrincipal = mLoadingPrincipal;
+        channelStoragePrincipal = mLoadingPrincipal;
       } else {
         return NS_ERROR_DOM_BAD_URI;
       }
@@ -260,34 +214,39 @@ nsresult WorkerLoadInfo::GetPrincipalAndLoadGroupFromChannel(
   }
 
   // The principal can change, but it should still match the original
-  // load group's appId and browser element flag.
+  // load group's browser element flag.
   MOZ_ASSERT(NS_LoadGroupMatchesPrincipal(channelLoadGroup, channelPrincipal));
 
   channelPrincipal.forget(aPrincipalOut);
+  channelStoragePrincipal.forget(aStoragePrincipalOut);
   channelLoadGroup.forget(aLoadGroupOut);
 
   return NS_OK;
 }
 
-nsresult WorkerLoadInfo::SetPrincipalFromChannel(nsIChannel* aChannel) {
+nsresult WorkerLoadInfo::SetPrincipalsFromChannel(nsIChannel* aChannel) {
   AssertIsOnMainThread();
 
   nsCOMPtr<nsIPrincipal> principal;
+  nsCOMPtr<nsIPrincipal> storagePrincipal;
   nsCOMPtr<nsILoadGroup> loadGroup;
-  nsresult rv = GetPrincipalAndLoadGroupFromChannel(
-      aChannel, getter_AddRefs(principal), getter_AddRefs(loadGroup));
+  nsresult rv = GetPrincipalsAndLoadGroupFromChannel(
+      aChannel, getter_AddRefs(principal), getter_AddRefs(storagePrincipal),
+      getter_AddRefs(loadGroup));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  return SetPrincipalOnMainThread(principal, loadGroup);
+  return SetPrincipalsOnMainThread(principal, storagePrincipal, loadGroup);
 }
 
 bool WorkerLoadInfo::FinalChannelPrincipalIsValid(nsIChannel* aChannel) {
   AssertIsOnMainThread();
 
   nsCOMPtr<nsIPrincipal> principal;
+  nsCOMPtr<nsIPrincipal> storagePrincipal;
   nsCOMPtr<nsILoadGroup> loadGroup;
-  nsresult rv = GetPrincipalAndLoadGroupFromChannel(
-      aChannel, getter_AddRefs(principal), getter_AddRefs(loadGroup));
+  nsresult rv = GetPrincipalsAndLoadGroupFromChannel(
+      aChannel, getter_AddRefs(principal), getter_AddRefs(storagePrincipal),
+      getter_AddRefs(loadGroup));
   NS_ENSURE_SUCCESS(rv, false);
 
   // Verify that the channel is still a null principal.  We don't care
@@ -310,7 +269,10 @@ bool WorkerLoadInfo::FinalChannelPrincipalIsValid(nsIChannel* aChannel) {
 bool WorkerLoadInfo::PrincipalIsValid() const {
   return mPrincipal && mPrincipalInfo &&
          mPrincipalInfo->type() != PrincipalInfo::T__None &&
-         mPrincipalInfo->type() <= PrincipalInfo::T__Last;
+         mPrincipalInfo->type() <= PrincipalInfo::T__Last &&
+         mStoragePrincipal && mStoragePrincipalInfo &&
+         mStoragePrincipalInfo->type() != PrincipalInfo::T__None &&
+         mStoragePrincipalInfo->type() <= PrincipalInfo::T__Last;
 }
 
 bool WorkerLoadInfo::PrincipalURIMatchesScriptURL() {
@@ -321,7 +283,7 @@ bool WorkerLoadInfo::PrincipalURIMatchesScriptURL() {
   NS_ENSURE_SUCCESS(rv, false);
 
   // A system principal must either be a blob URL or a resource JSM.
-  if (mPrincipal->GetIsSystemPrincipal()) {
+  if (mPrincipal->IsSystemPrincipal()) {
     if (scheme == NS_LITERAL_CSTRING("blob")) {
       return true;
     }
@@ -354,11 +316,20 @@ bool WorkerLoadInfo::PrincipalURIMatchesScriptURL() {
   NS_ENSURE_SUCCESS(rv, false);
   NS_ENSURE_TRUE(principalURI, false);
 
-  bool equal = false;
-  rv = principalURI->Equals(mBaseURI, &equal);
-  NS_ENSURE_SUCCESS(rv, false);
+  if (nsScriptSecurityManager::SecurityCompareURIs(mBaseURI, principalURI)) {
+    return true;
+  }
 
-  return equal;
+  // If strict file origin policy is in effect, local files will always fail
+  // SecurityCompareURIs unless they are identical. Explicitly check file origin
+  // policy, in that case.
+  if (nsScriptSecurityManager::GetStrictFileOriginPolicy() &&
+      NS_URIIsLocalFile(mBaseURI) &&
+      NS_RelaxStrictFileOriginPolicy(mBaseURI, principalURI)) {
+    return true;
+  }
+
+  return false;
 }
 #endif  // MOZ_DIAGNOSTIC_ASSERT_ENABLED
 
@@ -378,11 +349,11 @@ bool WorkerLoadInfo::ProxyReleaseMainThreadObjects(
   SwapToISupportsArray(mBaseURI, doomed);
   SwapToISupportsArray(mResolvedScriptURI, doomed);
   SwapToISupportsArray(mPrincipal, doomed);
+  SwapToISupportsArray(mStoragePrincipal, doomed);
   SwapToISupportsArray(mLoadingPrincipal, doomed);
   SwapToISupportsArray(mChannel, doomed);
   SwapToISupportsArray(mCSP, doomed);
   SwapToISupportsArray(mLoadGroup, doomed);
-  SwapToISupportsArray(mLoadFailedAsyncRunnable, doomed);
   SwapToISupportsArray(mInterfaceRequestor, doomed);
   // Before adding anything here update kDoomedCount above!
 
@@ -414,7 +385,7 @@ WorkerLoadInfo::InterfaceRequestor::InterfaceRequestor(
   mLoadContext = new LoadContext(aPrincipal, baseContext);
 }
 
-void WorkerLoadInfo::InterfaceRequestor::MaybeAddTabChild(
+void WorkerLoadInfo::InterfaceRequestor::MaybeAddBrowserChild(
     nsILoadGroup* aLoadGroup) {
   MOZ_ASSERT(NS_IsMainThread());
 
@@ -428,16 +399,18 @@ void WorkerLoadInfo::InterfaceRequestor::MaybeAddTabChild(
     return;
   }
 
-  nsCOMPtr<nsITabChild> tabChild;
-  callbacks->GetInterface(NS_GET_IID(nsITabChild), getter_AddRefs(tabChild));
-  if (!tabChild) {
+  nsCOMPtr<nsIBrowserChild> browserChild;
+  callbacks->GetInterface(NS_GET_IID(nsIBrowserChild),
+                          getter_AddRefs(browserChild));
+  if (!browserChild) {
     return;
   }
 
   // Use weak references to the tab child.  Holding a strong reference will
-  // not prevent an ActorDestroy() from being called on the TabChild.
-  // Therefore, we should let the TabChild destroy itself as soon as possible.
-  mTabChildList.AppendElement(do_GetWeakReference(tabChild));
+  // not prevent an ActorDestroy() from being called on the BrowserChild.
+  // Therefore, we should let the BrowserChild destroy itself as soon as
+  // possible.
+  mBrowserChildList.AppendElement(do_GetWeakReference(browserChild));
 }
 
 NS_IMETHODIMP
@@ -452,15 +425,15 @@ WorkerLoadInfo::InterfaceRequestor::GetInterface(const nsIID& aIID,
     return NS_OK;
   }
 
-  // If we still have an active nsITabChild, then return it.  Its possible,
-  // though, that all of the TabChild objects have been destroyed.  In that
+  // If we still have an active nsIBrowserChild, then return it.  Its possible,
+  // though, that all of the BrowserChild objects have been destroyed.  In that
   // case we return NS_NOINTERFACE.
-  if (aIID.Equals(NS_GET_IID(nsITabChild))) {
-    nsCOMPtr<nsITabChild> tabChild = GetAnyLiveTabChild();
-    if (!tabChild) {
+  if (aIID.Equals(NS_GET_IID(nsIBrowserChild))) {
+    nsCOMPtr<nsIBrowserChild> browserChild = GetAnyLiveBrowserChild();
+    if (!browserChild) {
       return NS_NOINTERFACE;
     }
-    tabChild.forget(aSink);
+    browserChild.forget(aSink);
     return NS_OK;
   }
 
@@ -474,23 +447,24 @@ WorkerLoadInfo::InterfaceRequestor::GetInterface(const nsIID& aIID,
   return NS_NOINTERFACE;
 }
 
-already_AddRefed<nsITabChild>
-WorkerLoadInfo::InterfaceRequestor::GetAnyLiveTabChild() {
+already_AddRefed<nsIBrowserChild>
+WorkerLoadInfo::InterfaceRequestor::GetAnyLiveBrowserChild() {
   MOZ_ASSERT(NS_IsMainThread());
 
-  // Search our list of known TabChild objects for one that still exists.
-  while (!mTabChildList.IsEmpty()) {
-    nsCOMPtr<nsITabChild> tabChild =
-        do_QueryReferent(mTabChildList.LastElement());
+  // Search our list of known BrowserChild objects for one that still exists.
+  while (!mBrowserChildList.IsEmpty()) {
+    nsCOMPtr<nsIBrowserChild> browserChild =
+        do_QueryReferent(mBrowserChildList.LastElement());
 
     // Does this tab child still exist?  If so, return it.  We are done.  If the
     // PBrowser actor is no longer useful, don't bother returning this tab.
-    if (tabChild && !static_cast<TabChild*>(tabChild.get())->IsDestroyed()) {
-      return tabChild.forget();
+    if (browserChild &&
+        !static_cast<BrowserChild*>(browserChild.get())->IsDestroyed()) {
+      return browserChild.forget();
     }
 
     // Otherwise remove the stale weak reference and check the next one
-    mTabChildList.RemoveElementAt(mTabChildList.Length() - 1);
+    mBrowserChildList.RemoveLastElement();
   }
 
   return nullptr;
@@ -500,6 +474,15 @@ NS_IMPL_ADDREF(WorkerLoadInfo::InterfaceRequestor)
 NS_IMPL_RELEASE(WorkerLoadInfo::InterfaceRequestor)
 NS_IMPL_QUERY_INTERFACE(WorkerLoadInfo::InterfaceRequestor,
                         nsIInterfaceRequestor)
+
+WorkerLoadInfo::WorkerLoadInfo() { MOZ_COUNT_CTOR(WorkerLoadInfo); }
+
+WorkerLoadInfo::WorkerLoadInfo(WorkerLoadInfo&& aOther) noexcept
+    : WorkerLoadInfoData(std::move(aOther)) {
+  MOZ_COUNT_CTOR(WorkerLoadInfo);
+}
+
+WorkerLoadInfo::~WorkerLoadInfo() { MOZ_COUNT_DTOR(WorkerLoadInfo); }
 
 }  // namespace dom
 }  // namespace mozilla

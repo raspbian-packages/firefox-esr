@@ -197,7 +197,7 @@ class ReftestResolver(object):
                     break
             if found:
                 rv = [(os.path.join(dirname, default_manifest),
-                       r".*(?:/|\\)%s(?:[#?].*)?$" % pathname)]
+                       r".*(?:/|\\)%s(?:[#?].*)?$" % pathname.replace('?', '\?'))]
 
         return rv
 
@@ -233,6 +233,7 @@ class RefTest(object):
     def __init__(self, suite):
         update_mozinfo()
         self.lastTestSeen = None
+        self.lastTest = None
         self.haveDumpedScreen = False
         self.resolver = self.resolver_cls()
         self.log = None
@@ -282,9 +283,61 @@ class RefTest(object):
         locations.add_host(server, scheme='http', port=port)
         locations.add_host(server, scheme='https', port=port)
 
-        # Set preferences for communication between our command line arguments
-        # and the reftest harness.  Preferences that are required for reftest
-        # to work should instead be set in reftest-preferences.js .
+        sandbox_whitelist_paths = options.sandboxReadWhitelist
+        if (platform.system() == "Linux" or
+            platform.system() in ("Windows", "Microsoft")):
+            # Trailing slashes are needed to indicate directories on Linux and Windows
+            sandbox_whitelist_paths = map(lambda p: os.path.join(p, ""),
+                                          sandbox_whitelist_paths)
+
+        addons = []
+        if not self.use_marionette:
+            addons.append(options.reftestExtensionPath)
+
+        if options.specialPowersExtensionPath is not None:
+            if not self.use_marionette:
+                addons.append(options.specialPowersExtensionPath)
+
+        # Install distributed extensions, if application has any.
+        distExtDir = os.path.join(options.app[:options.app.rfind(os.sep)],
+                                  "distribution", "extensions")
+        if os.path.isdir(distExtDir):
+            for f in os.listdir(distExtDir):
+                addons.append(os.path.join(distExtDir, f))
+
+        # Install custom extensions.
+        for f in options.extensionsToInstall:
+            addons.append(self.getFullPath(f))
+
+        kwargs = {'addons': addons,
+                  'locations': locations,
+                  'whitelistpaths': sandbox_whitelist_paths}
+        if profile_to_clone:
+            profile = mozprofile.Profile.clone(profile_to_clone, **kwargs)
+        else:
+            profile = mozprofile.Profile(**kwargs)
+
+        # First set prefs from the base profiles under testing/profiles.
+        profile_data_dir = os.path.join(SCRIPT_DIRECTORY, 'profile_data')
+
+        # If possible, read profile data from topsrcdir. This prevents us from
+        # requiring a re-build to pick up newly added extensions in the
+        # <profile>/extensions directory.
+        if build_obj:
+            path = os.path.join(build_obj.topsrcdir, 'testing', 'profiles')
+            if os.path.isdir(path):
+                profile_data_dir = path
+
+        with open(os.path.join(profile_data_dir, 'profiles.json'), 'r') as fh:
+            base_profiles = json.load(fh)['reftest']
+
+        for name in base_profiles:
+            path = os.path.join(profile_data_dir, name)
+            profile.merge(path)
+
+        # Second set preferences for communication between our command line
+        # arguments and the reftest harness. Preferences that are required for
+        # reftest to work should instead be set under srcdir/testing/profiles.
         prefs = prefs or {}
         prefs['reftest.timeout'] = options.timeout * 1000
         if options.logFile:
@@ -304,6 +357,16 @@ class RefTest(object):
         prefs['reftest.focusFilterMode'] = options.focusFilterMode
         prefs['reftest.logLevel'] = options.log_tbpl_level or 'info'
         prefs['reftest.suite'] = options.suite
+        prefs['gfx.font_ahem_antialias_none'] = True
+
+        # Set tests to run or manifests to parse.
+        if tests:
+            testlist = os.path.join(profile.profile, 'reftests.json')
+            with open(testlist, 'w') as fh:
+                json.dump(tests, fh)
+            prefs['reftest.tests'] = testlist
+        elif manifests:
+            prefs['reftest.manifests'] = json.dumps(manifests)
 
         # Unconditionally update the e10s pref.
         if options.e10s:
@@ -322,13 +385,6 @@ class RefTest(object):
            '5.1' in platform.version() and options.e10s:
             prefs['layers.acceleration.disabled'] = True
 
-        sandbox_whitelist_paths = options.sandboxReadWhitelist
-        if (platform.system() == "Linux" or
-            platform.system() in ("Windows", "Microsoft")):
-            # Trailing slashes are needed to indicate directories on Linux and Windows
-            sandbox_whitelist_paths = map(lambda p: os.path.join(p, ""),
-                                          sandbox_whitelist_paths)
-
         # Bug 1300355: Disable canvas cache for win7 as it uses
         # too much memory and causes OOMs.
         if platform.system() in ("Windows", "Microsoft") and \
@@ -342,11 +398,9 @@ class RefTest(object):
 
         # Enable tracing output for detailed failures in case of
         # failing connection attempts, and hangs (bug 1397201)
-        prefs["marionette.log.level"] = "TRACE"
+        prefs["marionette.log.level"] = "Trace"
 
-        preference_file = os.path.join(here, 'reftest-preferences.js')
-        prefs.update(mozprofile.Preferences.read_prefs(preference_file))
-
+        # Third, set preferences passed in via the command line.
         for v in options.extraPrefs:
             thispref = v.split('=')
             if len(thispref) < 2:
@@ -354,44 +408,9 @@ class RefTest(object):
                 sys.exit(1)
             prefs[thispref[0]] = thispref[1].strip()
 
-        addons = []
-        if not self.use_marionette:
-            addons.append(options.reftestExtensionPath)
-
-        if options.specialPowersExtensionPath is not None:
-            if not self.use_marionette:
-                addons.append(options.specialPowersExtensionPath)
-
         for pref in prefs:
             prefs[pref] = mozprofile.Preferences.cast(prefs[pref])
-
-        # Install distributed extensions, if application has any.
-        distExtDir = os.path.join(options.app[:options.app.rfind(os.sep)],
-                                  "distribution", "extensions")
-        if os.path.isdir(distExtDir):
-            for f in os.listdir(distExtDir):
-                addons.append(os.path.join(distExtDir, f))
-
-        # Install custom extensions.
-        for f in options.extensionsToInstall:
-            addons.append(self.getFullPath(f))
-
-        kwargs = {'addons': addons,
-                  'preferences': prefs,
-                  'locations': locations,
-                  'whitelistpaths': sandbox_whitelist_paths}
-        if profile_to_clone:
-            profile = mozprofile.Profile.clone(profile_to_clone, **kwargs)
-        else:
-            profile = mozprofile.Profile(**kwargs)
-
-        if tests:
-            testlist = os.path.join(profile.profile, 'reftests.json')
-            with open(testlist, 'w') as fh:
-                json.dump(tests, fh)
-            profile.set_preferences({'reftest.tests': testlist})
-        elif manifests:
-            profile.set_preferences({'reftest.manifests': json.dumps(manifests)})
+        profile.set_preferences(prefs)
 
         if os.path.join(here, 'chrome') not in options.extraProfileFiles:
             options.extraProfileFiles.append(os.path.join(here, 'chrome'))
@@ -419,6 +438,12 @@ class RefTest(object):
             else:
                 browserEnv["ASAN_OPTIONS"] = "detect_leaks=0"
 
+        # Set environment defaults for jstestbrowser. Keep in sync with the
+        # defaults used in js/src/tests/lib/tests.py.
+        if options.suite == "jstestbrowser":
+            browserEnv["TZ"] = "PST8PDT"
+            browserEnv["LC_ALL"] = "en_US.UTF-8"
+
         for v in options.environment:
             ix = v.find("=")
             if ix <= 0:
@@ -443,6 +468,13 @@ class RefTest(object):
         """
 
         self._populate_logger(options)
+
+        # options.log has done its work, in _populate_logger; remove it so that
+        # options can be deepcopied. An alternative would be to modify
+        # mozlog.structuredlog.StructuredLogger to support copy.deepcopy,
+        # https://docs.python.org/2.7/library/copy.html
+        if hasattr(options, 'log'):
+            delattr(options, 'log')
 
         # Number of times to repeat test(s) when running with --repeat
         VERIFY_REPEAT = 10
@@ -704,11 +736,18 @@ class RefTest(object):
 
         def record_last_test(message):
             """Records the last test seen by this harness for the benefit of crash logging."""
+            def testid(test):
+                if " " in test:
+                    return test.split(" ")[0]
+                return test
+
             if message['action'] == 'test_start':
-                if " " in message['test']:
-                    self.lastTestSeen = message['test'].split(" ")[0]
+                self.lastTestSeen = testid(message['test'])
+            elif message['action'] == 'test_end':
+                if self.lastTest and message['test'] == self.lastTest:
+                    self.lastTestSeen = "Last test finished"
                 else:
-                    self.lastTestSeen = message['test']
+                    self.lastTestSeen = '{} (finished)'.format(testid(message['test']))
 
         self.log.add_handler(record_last_test)
 
@@ -839,6 +878,11 @@ class RefTest(object):
                                                       options.debuggerInteractive)
 
         def run(**kwargs):
+            if kwargs.get('tests'):
+                self.lastTest = kwargs['tests'][-1]['identifier']
+                if not isinstance(self.lastTest, basestring):
+                    self.lastTest = ' '.join(self.lastTest)
+
             status = self.runApp(
                 options,
                 manifests=manifests,
@@ -916,7 +960,7 @@ def run_test_harness(parser, options):
 
     # We have to validate options.app here for the case when the mach
     # command is able to find it after argument parsing. This can happen
-    # when running from a tests.zip.
+    # when running from a tests archive.
     if not options.app:
         parser.error("could not find the application path, --appname must be specified")
 

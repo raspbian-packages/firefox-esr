@@ -1,13 +1,13 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ifdef MOZ_WIDGET_GTK
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-#define GET_NATIVE_WINDOW(aWidget) \
-  GDK_WINDOW_XID((GdkWindow*)aWidget->GetNativeData(NS_NATIVE_WINDOW))
+#  include <gdk/gdk.h>
+#  include <gdk/gdkx.h>
+#  define GET_NATIVE_WINDOW(aWidget) \
+    GDK_WINDOW_XID((GdkWindow*)aWidget->GetNativeData(NS_NATIVE_WINDOW))
 #endif
 
 #include <X11/Xlib.h>
@@ -17,6 +17,8 @@
 #include "mozilla/MathAlgorithms.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/layers/CompositorOptions.h"
+#include "mozilla/Range.h"
+#include "mozilla/ScopeExit.h"
 #include "mozilla/widget/CompositorWidget.h"
 #include "mozilla/widget/GtkCompositorWidget.h"
 #include "mozilla/Unused.h"
@@ -40,7 +42,7 @@
 #include "gfxCrashReporterUtils.h"
 
 #ifdef MOZ_WIDGET_GTK
-#include "gfxPlatformGtk.h"
+#  include "gfxPlatformGtk.h"
 #endif
 
 namespace mozilla {
@@ -72,20 +74,17 @@ bool GLXLibrary::EnsureInitialized() {
   PR_SetEnv("force_s3tc_enable=true");
 
   if (!mOGLLibrary) {
-    const char* libGLfilename = nullptr;
-    bool forceFeatureReport = false;
-
     // see e.g. bug 608526: it is intrinsically interesting to know whether we
     // have dynamically linked to libGL.so.1 because at least the NVIDIA
     // implementation requires an executable stack, which causes mprotect calls,
     // which trigger glibc bug
     // http://sourceware.org/bugzilla/show_bug.cgi?id=12225
+    const char* libGLfilename = "libGL.so.1";
 #ifdef __OpenBSD__
     libGLfilename = "libGL.so";
-#else
-    libGLfilename = "libGL.so.1";
 #endif
 
+    const bool forceFeatureReport = false;
     ScopedGfxFeatureReporter reporter(libGLfilename, forceFeatureReport);
     mOGLLibrary = PR_LoadLibrary(libGLfilename);
     if (!mOGLLibrary) {
@@ -99,21 +98,24 @@ bool GLXLibrary::EnsureInitialized() {
     mDebug = true;
   }
 
-#define SYMBOL(X)                                     \
-  {                                                   \
-    (PRFuncPtr*)&mSymbols.f##X, { "glX" #X, nullptr } \
+#define SYMBOL(X)                 \
+  {                               \
+    (PRFuncPtr*)&mSymbols.f##X, { \
+      { "glX" #X }                \
+    }                             \
   }
-#define END_OF_SYMBOLS   \
-  {                      \
-    nullptr, { nullptr } \
+#define END_OF_SYMBOLS \
+  {                    \
+    nullptr, {}        \
   }
 
-  const GLLibraryLoader::SymLoadStruct symbols[] = {
+  const SymLoadStruct symbols[] = {
       /* functions that were in GLX 1.0 */
       SYMBOL(DestroyContext),
       SYMBOL(MakeCurrent),
       SYMBOL(SwapBuffers),
       SYMBOL(QueryVersion),
+      SYMBOL(GetConfig),
       SYMBOL(GetCurrentContext),
       SYMBOL(WaitGL),
       SYMBOL(WaitX),
@@ -125,6 +127,7 @@ bool GLXLibrary::EnsureInitialized() {
 
       /* functions introduced in GLX 1.3 */
       SYMBOL(ChooseFBConfig),
+      SYMBOL(ChooseVisual),
       SYMBOL(GetFBConfigAttrib),
       SYMBOL(GetFBConfigs),
       SYMBOL(CreatePixmap),
@@ -133,12 +136,17 @@ bool GLXLibrary::EnsureInitialized() {
 
       // Core in GLX 1.4, ARB extension before.
       {(PRFuncPtr*)&mSymbols.fGetProcAddress,
-       {"glXGetProcAddress", "glXGetProcAddressARB", nullptr}},
+       {{"glXGetProcAddress", "glXGetProcAddressARB"}}},
       END_OF_SYMBOLS};
-  if (!GLLibraryLoader::LoadSymbols(mOGLLibrary, symbols)) {
-    NS_WARNING("Couldn't load required GLX symbols.");
-    return false;
+
+  {
+    const SymbolLoader libLoader(*mOGLLibrary);
+    if (!libLoader.LoadSymbols(symbols)) {
+      NS_WARNING("Couldn't load required GLX symbols.");
+      return false;
+    }
   }
+  const SymbolLoader pfnLoader(mSymbols.fGetProcAddress);
 
   Display* display = DefaultXDisplay();
   int screen = DefaultScreen(display);
@@ -151,29 +159,24 @@ bool GLXLibrary::EnsureInitialized() {
     }
   }
 
-  const GLLibraryLoader::SymLoadStruct symbols_texturefrompixmap[] = {
+  const SymLoadStruct symbols_texturefrompixmap[] = {
       SYMBOL(BindTexImageEXT), SYMBOL(ReleaseTexImageEXT), END_OF_SYMBOLS};
 
-  const GLLibraryLoader::SymLoadStruct symbols_createcontext[] = {
+  const SymLoadStruct symbols_createcontext[] = {
       SYMBOL(CreateContextAttribsARB), END_OF_SYMBOLS};
 
-  const GLLibraryLoader::SymLoadStruct symbols_videosync[] = {
+  const SymLoadStruct symbols_videosync[] = {
       SYMBOL(GetVideoSyncSGI), SYMBOL(WaitVideoSyncSGI), END_OF_SYMBOLS};
 
-  const GLLibraryLoader::SymLoadStruct symbols_swapcontrol[] = {
-      SYMBOL(SwapIntervalEXT), END_OF_SYMBOLS};
+  const SymLoadStruct symbols_swapcontrol[] = {SYMBOL(SwapIntervalEXT),
+                                               END_OF_SYMBOLS};
 
-  const auto lookupFunction =
-      (GLLibraryLoader::PlatformLookupFunction)mSymbols.fGetProcAddress;
+  const auto fnLoadSymbols = [&](const SymLoadStruct* symbols) {
+    if (pfnLoader.LoadSymbols(symbols)) return true;
 
-  const auto fnLoadSymbols =
-      [&](const GLLibraryLoader::SymLoadStruct* symbols) {
-        if (GLLibraryLoader::LoadSymbols(mOGLLibrary, symbols, lookupFunction))
-          return true;
-
-        GLLibraryLoader::ClearSymbols(symbols);
-        return false;
-      };
+    ClearSymbols(symbols);
+    return false;
+  };
 
   const char* clientVendor = fGetClientString(display, LOCAL_GLX_VENDOR);
   const char* serverVendor =
@@ -196,6 +199,10 @@ bool GLXLibrary::EnsureInitialized() {
 
   if (HasExtension(extensionsStr, "GLX_ARB_create_context_robustness")) {
     mHasRobustness = true;
+  }
+
+  if (HasExtension(extensionsStr, "GLX_NV_robustness_video_memory_purge")) {
+    mHasVideoMemoryPurge = true;
   }
 
   if (HasExtension(extensionsStr, "GLX_SGI_video_sync") &&
@@ -256,14 +263,14 @@ GLXPixmap GLXLibrary::CreatePixmap(gfxASurface* aSurface) {
                "Unexpected render format with non-adjacent alpha bits");
 
   int attribs[] = {LOCAL_GLX_DOUBLEBUFFER,
-                   False,
+                   X11False,
                    LOCAL_GLX_DRAWABLE_TYPE,
                    LOCAL_GLX_PIXMAP_BIT,
                    LOCAL_GLX_ALPHA_SIZE,
                    alphaSize,
                    (alphaSize ? LOCAL_GLX_BIND_TO_TEXTURE_RGBA_EXT
                               : LOCAL_GLX_BIND_TO_TEXTURE_RGB_EXT),
-                   True,
+                   X11True,
                    LOCAL_GLX_RENDER_TYPE,
                    LOCAL_GLX_RGBA_BIT,
                    X11None};
@@ -477,7 +484,7 @@ already_AddRefed<GLContextGLX> GLContextGLX::CreateGLContext(
     error = false;
 
     if (glx.HasCreateContextAttribs()) {
-      AutoTArray<int, 11> attrib_list;
+      AutoTArray<int, 13> attrib_list;
       if (glx.HasRobustness()) {
         const int robust_attribs[] = {
             LOCAL_GLX_CONTEXT_FLAGS_ARB,
@@ -487,6 +494,14 @@ already_AddRefed<GLContextGLX> GLContextGLX::CreateGLContext(
         };
         attrib_list.AppendElements(robust_attribs,
                                    MOZ_ARRAY_LENGTH(robust_attribs));
+      }
+      if (glx.HasVideoMemoryPurge()) {
+        const int memory_purge_attribs[] = {
+            LOCAL_GLX_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV,
+            LOCAL_GL_TRUE,
+        };
+        attrib_list.AppendElements(memory_purge_attribs,
+                                   MOZ_ARRAY_LENGTH(memory_purge_attribs));
       }
       if (!(flags & CreateContextFlags::REQUIRE_COMPAT_PROFILE)) {
         int core_attribs[] = {
@@ -502,11 +517,11 @@ already_AddRefed<GLContextGLX> GLContextGLX::CreateGLContext(
       };
       attrib_list.AppendElement(0);
 
-      context = glx.fCreateContextAttribs(display, cfg, nullptr, True,
+      context = glx.fCreateContextAttribs(display, cfg, nullptr, X11True,
                                           attrib_list.Elements());
     } else {
       context = glx.fCreateNewContext(display, cfg, LOCAL_GLX_RGBA_TYPE,
-                                      nullptr, True);
+                                      nullptr, X11True);
     }
 
     if (context) {
@@ -538,7 +553,7 @@ GLContextGLX::~GLContextGLX() {
     return;
   }
 
-    // see bug 659842 comment 76
+  // see bug 659842 comment 76
 #ifdef DEBUG
   bool success =
 #endif
@@ -555,8 +570,7 @@ GLContextGLX::~GLContextGLX() {
 }
 
 bool GLContextGLX::Init() {
-  SetupLookupFunction();
-  if (!InitWithPrefix("gl", true)) {
+  if (!GLContext::Init()) {
     return false;
   }
 
@@ -593,9 +607,9 @@ bool GLContextGLX::IsCurrentImpl() const {
   return mGLX->fGetCurrentContext() == mContext;
 }
 
-bool GLContextGLX::SetupLookupFunction() {
-  mLookupFunc = (PlatformLookupFunction)sGLXLibrary.GetGetProcAddress();
-  return true;
+Maybe<SymbolLoader> GLContextGLX::GetSymbolLoader() const {
+  const auto pfn = sGLXLibrary.GetGetProcAddress();
+  return Some(SymbolLoader(pfn));
 }
 
 bool GLContextGLX::IsDoubleBuffered() const { return mDoubleBuffered; }
@@ -648,8 +662,7 @@ GLContextGLX::GLContextGLX(CreateContextFlags flags, const SurfaceCaps& caps,
       mDeleteDrawable(aDeleteDrawable),
       mDoubleBuffered(aDoubleBuffered),
       mGLX(&sGLXLibrary),
-      mPixmap(aPixmap),
-      mOwnsContext(true) {}
+      mPixmap(aPixmap) {}
 
 static bool AreCompatibleVisuals(Visual* one, Visual* two) {
   if (one->c_class != two->c_class) {
@@ -732,13 +745,17 @@ already_AddRefed<GLContext> CreateForWidget(Display* aXDisplay, Window aXWindow,
 }
 
 already_AddRefed<GLContext> GLContextProviderGLX::CreateForCompositorWidget(
-    CompositorWidget* aCompositorWidget, bool aForceAccelerated) {
+    CompositorWidget* aCompositorWidget, bool aWebRender,
+    bool aForceAccelerated) {
+  if (!aCompositorWidget) {
+    MOZ_ASSERT(false);
+    return nullptr;
+  }
   GtkCompositorWidget* compWidget = aCompositorWidget->AsX11();
   MOZ_ASSERT(compWidget);
 
   return CreateForWidget(compWidget->XDisplay(), compWidget->XWindow(),
-                         compWidget->GetCompositorOptions().UseWebRender(),
-                         aForceAccelerated);
+                         aWebRender, aForceAccelerated);
 }
 
 already_AddRefed<GLContext> GLContextProviderGLX::CreateForWindow(
@@ -761,7 +778,7 @@ static bool ChooseConfig(GLXLibrary* glx, Display* display, int screen,
   int attribs[] = {LOCAL_GLX_DRAWABLE_TYPE,
                    LOCAL_GLX_PIXMAP_BIT,
                    LOCAL_GLX_X_RENDERABLE,
-                   True,
+                   X11True,
                    LOCAL_GLX_RED_SIZE,
                    8,
                    LOCAL_GLX_GREEN_SIZE,
@@ -811,14 +828,98 @@ static bool ChooseConfig(GLXLibrary* glx, Display* display, int screen,
   return false;
 }
 
+bool GLContextGLX::FindVisual(Display* display, int screen, bool useWebRender,
+                              bool useAlpha, int* const out_visualId) {
+  if (!sGLXLibrary.EnsureInitialized()) {
+    return false;
+  }
+
+  XVisualInfo visualTemplate;
+  visualTemplate.screen = screen;
+
+  // Get all visuals of screen
+
+  int visualsLen = 0;
+  XVisualInfo* xVisuals =
+      XGetVisualInfo(display, VisualScreenMask, &visualTemplate, &visualsLen);
+  if (!xVisuals) {
+    return false;
+  }
+  const Range<XVisualInfo> visualInfos(xVisuals, visualsLen);
+  auto cleanupVisuals = MakeScopeExit([&] { XFree(xVisuals); });
+
+  // Get default visual info
+
+  Visual* defaultVisual = DefaultVisual(display, screen);
+  const auto defaultVisualInfo = [&]() -> const XVisualInfo* {
+    for (const auto& cur : visualInfos) {
+      if (cur.visual == defaultVisual) {
+        return &cur;
+      }
+    }
+    return nullptr;
+  }();
+  if (!defaultVisualInfo) {
+    MOZ_ASSERT(false);
+    return false;
+  }
+
+  const int bpp = useAlpha ? 32 : 24;
+  const int alphaSize = useAlpha ? 8 : 0;
+  const int depthSize = useWebRender ? 24 : 0;
+
+  for (auto& cur : visualInfos) {
+    const auto fnConfigMatches = [&](const int pname, const int expected) {
+      int actual;
+      if (sGLXLibrary.fGetConfig(display, &cur, pname, &actual)) {
+        return false;
+      }
+      return actual == expected;
+    };
+
+    // Check if visual is compatible.
+    if (cur.depth != bpp || cur.c_class != defaultVisualInfo->c_class) {
+      continue;
+    }
+
+    // Check if visual is compatible to GL requests.
+    if (fnConfigMatches(LOCAL_GLX_USE_GL, 1) &&
+        fnConfigMatches(LOCAL_GLX_DOUBLEBUFFER, 1) &&
+        fnConfigMatches(LOCAL_GLX_RED_SIZE, 8) &&
+        fnConfigMatches(LOCAL_GLX_GREEN_SIZE, 8) &&
+        fnConfigMatches(LOCAL_GLX_BLUE_SIZE, 8) &&
+        fnConfigMatches(LOCAL_GLX_ALPHA_SIZE, alphaSize) &&
+        fnConfigMatches(LOCAL_GLX_DEPTH_SIZE, depthSize)) {
+      *out_visualId = cur.visualid;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool GLContextGLX::FindFBConfigForWindow(
     Display* display, int screen, Window window,
     ScopedXFree<GLXFBConfig>* const out_scopedConfigArr,
     GLXFBConfig* const out_config, int* const out_visid, bool aWebRender) {
+  // XXX the visual ID is almost certainly the LOCAL_GLX_FBCONFIG_ID, so
+  // we could probably do this first and replace the glXGetFBConfigs
+  // with glXChooseConfigs.  Docs are sparklingly clear as always.
+  XWindowAttributes windowAttrs;
+  if (!XGetWindowAttributes(display, window, &windowAttrs)) {
+    NS_WARNING("[GLX] XGetWindowAttributes() failed");
+    return false;
+  }
+
   ScopedXFree<GLXFBConfig>& cfgs = *out_scopedConfigArr;
   int numConfigs;
-  const int webrenderAttribs[] = {LOCAL_GLX_DEPTH_SIZE, 24,
-                                  LOCAL_GLX_DOUBLEBUFFER, True, 0};
+  const int webrenderAttribs[] = {LOCAL_GLX_ALPHA_SIZE,
+                                  windowAttrs.depth == 32 ? 8 : 0,
+                                  LOCAL_GLX_DEPTH_SIZE,
+                                  24,
+                                  LOCAL_GLX_DOUBLEBUFFER,
+                                  X11True,
+                                  0};
 
   if (aWebRender) {
     cfgs = sGLXLibrary.fChooseFBConfig(display, screen, webrenderAttribs,
@@ -833,14 +934,6 @@ bool GLContextGLX::FindFBConfigForWindow(
   }
   NS_ASSERTION(numConfigs > 0, "No FBConfigs found!");
 
-  // XXX the visual ID is almost certainly the LOCAL_GLX_FBCONFIG_ID, so
-  // we could probably do this first and replace the glXGetFBConfigs
-  // with glXChooseConfigs.  Docs are sparklingly clear as always.
-  XWindowAttributes windowAttrs;
-  if (!XGetWindowAttributes(display, window, &windowAttrs)) {
-    NS_WARNING("[GLX] XGetWindowAttributes() failed");
-    return false;
-  }
   const VisualID windowVisualID = XVisualIDFromVisual(windowAttrs.visual);
 #ifdef DEBUG
   printf("[GLX] window %lx has VisualID 0x%lx\n", window, windowVisualID);
@@ -850,21 +943,31 @@ bool GLContextGLX::FindFBConfigForWindow(
     int visid = X11None;
     sGLXLibrary.fGetFBConfigAttrib(display, cfgs[i], LOCAL_GLX_VISUAL_ID,
                                    &visid);
-    if (!visid) {
-      continue;
+    if (visid) {
+      // WebRender compatible GLX visual is configured
+      // at nsWindow::Create() by GLContextGLX::FindVisual(),
+      // just reuse it here.
+      if (windowVisualID == static_cast<VisualID>(visid)) {
+        *out_config = cfgs[i];
+        *out_visid = visid;
+        return true;
+      }
     }
-    if (aWebRender || sGLXLibrary.IsATI()) {
+  }
+
+  // We don't have a frame buffer visual which matches the GLX visual
+  // from GLContextGLX::FindVisual(). Let's try to find a near one and hope
+  // we're not on NVIDIA (Bug 1478454) as it causes X11 BadMatch error there.
+  for (int i = 0; i < numConfigs; i++) {
+    int visid = X11None;
+    sGLXLibrary.fGetFBConfigAttrib(display, cfgs[i], LOCAL_GLX_VISUAL_ID,
+                                   &visid);
+    if (visid) {
       int depth;
       Visual* visual;
       FindVisualAndDepth(display, visid, &visual, &depth);
       if (depth == windowAttrs.depth &&
           AreCompatibleVisuals(windowAttrs.visual, visual)) {
-        *out_config = cfgs[i];
-        *out_visid = visid;
-        return true;
-      }
-    } else {
-      if (windowVisualID == static_cast<VisualID>(visid)) {
         *out_config = cfgs[i];
         *out_visid = visid;
         return true;
@@ -925,7 +1028,8 @@ static already_AddRefed<GLContextGLX> CreateOffscreenPixmapContext(
                                        config, true, surface);
 }
 
-/*static*/ already_AddRefed<GLContext> GLContextProviderGLX::CreateHeadless(
+/*static*/
+already_AddRefed<GLContext> GLContextProviderGLX::CreateHeadless(
     CreateContextFlags flags, nsACString* const out_failureId) {
   IntSize dummySize = IntSize(16, 16);
   SurfaceCaps dummyCaps = SurfaceCaps::Any();
@@ -933,7 +1037,8 @@ static already_AddRefed<GLContextGLX> CreateOffscreenPixmapContext(
                                       out_failureId);
 }
 
-/*static*/ already_AddRefed<GLContext> GLContextProviderGLX::CreateOffscreen(
+/*static*/
+already_AddRefed<GLContext> GLContextProviderGLX::CreateOffscreen(
     const IntSize& size, const SurfaceCaps& minCaps, CreateContextFlags flags,
     nsACString* const out_failureId) {
   SurfaceCaps minBackbufferCaps = minCaps;
@@ -956,12 +1061,14 @@ static already_AddRefed<GLContextGLX> CreateOffscreenPixmapContext(
   return gl.forget();
 }
 
-/*static*/ GLContext* GLContextProviderGLX::GetGlobalContext() {
+/*static*/
+GLContext* GLContextProviderGLX::GetGlobalContext() {
   // Context sharing not supported.
   return nullptr;
 }
 
-/*static*/ void GLContextProviderGLX::Shutdown() {}
+/*static*/
+void GLContextProviderGLX::Shutdown() {}
 
 } /* namespace gl */
 } /* namespace mozilla */

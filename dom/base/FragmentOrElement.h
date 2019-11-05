@@ -6,7 +6,7 @@
 
 /*
  * Base class for all element classes as well as nsDocumentFragment.  This
- * provides an implementation of nsIDOMNode, implements nsIContent, provides
+ * provides an implementation of nsINode, implements nsIContent, provides
  * utility methods for subclasses, and so forth.
  */
 
@@ -16,10 +16,8 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/UniquePtr.h"
-#include "nsAttrAndChildArray.h"           // member
 #include "nsCycleCollectionParticipant.h"  // NS_DECL_CYCLE_*
 #include "nsIContent.h"                    // base class
-#include "nsIWeakReference.h"              // base class
 #include "nsNodeUtils.h"  // class member nsNodeUtils::CloneNodeImpl
 #include "nsIHTMLCollection.h"
 #include "nsDataHashtable.h"
@@ -33,7 +31,6 @@ class nsDOMTokenList;
 class nsIControllers;
 class nsICSSDeclaration;
 class nsDOMCSSAttributeDeclaration;
-class nsIDocument;
 class nsDOMStringMap;
 class nsIURI;
 
@@ -44,28 +41,6 @@ struct CustomElementData;
 class Element;
 }  // namespace dom
 }  // namespace mozilla
-
-/**
- * A class that implements nsIWeakReference
- */
-
-class nsNodeWeakReference final : public nsIWeakReference {
- public:
-  explicit nsNodeWeakReference(nsINode* aNode) : nsIWeakReference(aNode) {}
-
-  // nsISupports
-  NS_DECL_ISUPPORTS
-
-  // nsIWeakReference
-  NS_DECL_NSIWEAKREFERENCE
-  virtual size_t SizeOfOnlyThis(
-      mozilla::MallocSizeOf aMallocSizeOf) const override;
-
-  void NoticeNodeDestruction() { mObject = nullptr; }
-
- private:
-  ~nsNodeWeakReference();
-};
 
 /**
  * Tearoff to use for nodes to implement nsISupportsWeakReference
@@ -89,8 +64,8 @@ class nsNodeSupportsWeakRefTearoff final : public nsISupportsWeakReference {
 };
 
 /**
- * A generic base class for DOM elements, implementing many nsIContent,
- * nsIDOMNode and nsIDOMElement methods.
+ * A generic base class for DOM elements and document fragments,
+ * implementing many nsIContent, nsINode and Element methods.
  */
 namespace mozilla {
 namespace dom {
@@ -104,20 +79,15 @@ class FragmentOrElement : public nsIContent {
   explicit FragmentOrElement(
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
-  NS_DECL_CYCLE_COLLECTING_ISUPPORTS
+  // We want to avoid the overhead of extra function calls for
+  // refcounting when we're not doing refcount logging, so we can't
+  // NS_DECL_ISUPPORTS_INHERITED.
+  NS_IMETHOD QueryInterface(REFNSIID aIID, void** aInstancePtr) override;
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(FragmentOrElement, nsIContent);
 
   NS_DECL_ADDSIZEOFEXCLUDINGTHIS
 
   // nsINode interface methods
-  virtual uint32_t GetChildCount() const override;
-  virtual nsIContent* GetChildAt_Deprecated(uint32_t aIndex) const override;
-  virtual int32_t ComputeIndexOf(const nsINode* aPossibleChild) const override;
-  virtual nsresult InsertChildBefore(nsIContent* aKid, nsIContent* aBeforeThis,
-                                     bool aNotify) override;
-  virtual nsresult InsertChildAt_Deprecated(nsIContent* aKid, uint32_t aIndex,
-                                            bool aNotify) override;
-  virtual void RemoveChildAt_Deprecated(uint32_t aIndex, bool aNotify) override;
-  virtual void RemoveChildNode(nsIContent* aKid, bool aNotify) override;
   virtual void GetTextContentInternal(nsAString& aTextContent,
                                       mozilla::OOMReporter& aError) override;
   virtual void SetTextContentInternal(const nsAString& aTextContent,
@@ -128,21 +98,8 @@ class FragmentOrElement : public nsIContent {
   virtual already_AddRefed<nsINodeList> GetChildren(uint32_t aFilter) override;
   virtual const nsTextFragment* GetText() override;
   virtual uint32_t TextLength() const override;
-  virtual nsresult SetText(const char16_t* aBuffer, uint32_t aLength,
-                           bool aNotify) override;
-  // Need to implement this here too to avoid hiding.
-  nsresult SetText(const nsAString& aStr, bool aNotify) {
-    return SetText(aStr.BeginReading(), aStr.Length(), aNotify);
-  }
-  virtual nsresult AppendText(const char16_t* aBuffer, uint32_t aLength,
-                              bool aNotify) override;
   virtual bool TextIsOnlyWhitespace() override;
   virtual bool ThreadSafeTextIsOnlyWhitespace() const override;
-  virtual bool HasTextForTranslation() override;
-  virtual void AppendTextTo(nsAString& aResult) override;
-  MOZ_MUST_USE
-  virtual bool AppendTextTo(nsAString& aResult,
-                            const mozilla::fallible_t&) override;
   virtual nsXBLBinding* DoGetXBLBinding() const override;
   virtual bool IsLink(nsIURI** aURI) const override;
 
@@ -152,41 +109,21 @@ class FragmentOrElement : public nsIContent {
   nsIHTMLCollection* Children();
   uint32_t ChildElementCount() { return Children()->Length(); }
 
-  /**
-   * Sets the IsElementInStyleScope flag on each element in the subtree rooted
-   * at this node, including any elements reachable through shadow trees.
-   *
-   * @param aInStyleScope The flag value to set.
-   */
-  void SetIsElementInStyleScopeFlagOnSubtree(bool aInStyleScope);
-
  public:
   /**
    * If there are listeners for DOMNodeInserted event, fires the event on all
    * aNodes
    */
-  static void FireNodeInserted(nsIDocument* aDoc, nsINode* aParent,
+  static void FireNodeInserted(Document* aDoc, nsINode* aParent,
                                nsTArray<nsCOMPtr<nsIContent> >& aNodes);
 
-  NS_DECL_CYCLE_COLLECTION_SKIPPABLE_SCRIPT_HOLDER_CLASS(FragmentOrElement)
+  NS_DECL_CYCLE_COLLECTION_SKIPPABLE_SCRIPT_HOLDER_CLASS_INHERITED(
+      FragmentOrElement, nsIContent)
 
   /**
    * Fire a DOMNodeRemoved mutation event for all children of this node
    */
   void FireNodeRemovedForChildren();
-
-  virtual bool OwnedOnlyByTheDOMTree() override {
-    uint32_t rc = mRefCnt.get();
-    if (GetParent()) {
-      --rc;
-    }
-    rc -= mAttrsAndChildren.ChildCount();
-    return rc == 0;
-  }
-
-  virtual bool IsPurple() override { return mRefCnt.IsPurple(); }
-
-  virtual void RemovePurple() override { mRefCnt.RemovePurple(); }
 
   static void ClearContentUnbinder();
   static bool CanSkip(nsINode* aNode, bool aRemovingAllowed);
@@ -195,8 +132,6 @@ class FragmentOrElement : public nsIContent {
   static void RemoveBlackMarkedNode(nsINode* aNode);
   static void MarkNodeChildren(nsINode* aNode);
   static void InitCCCallbacks();
-  static void MarkUserData(void* aObject, nsAtom* aKey, void* aChild,
-                           void* aData);
 
   /**
    * Is the HTML local name a void element?
@@ -207,10 +142,10 @@ class FragmentOrElement : public nsIContent {
   virtual ~FragmentOrElement();
 
   /**
-   * Copy attributes and state to another element
-   * @param aDest the object to copy to
+   * Dummy CopyInnerTo so that we can use the same macros for
+   * Elements and DocumentFragments.
    */
-  nsresult CopyInnerTo(FragmentOrElement* aDest, bool aPreallocateChildren);
+  nsresult CopyInnerTo(FragmentOrElement* aDest) { return NS_OK; }
 
  public:
   /**
@@ -222,13 +157,15 @@ class FragmentOrElement : public nsIContent {
    * accessed through the DOM.
    */
 
-  class nsExtendedDOMSlots final : public nsIContent::nsExtendedContentSlots {
+  class nsExtendedDOMSlots : public nsIContent::nsExtendedContentSlots {
    public:
     nsExtendedDOMSlots();
-    ~nsExtendedDOMSlots() final;
+    ~nsExtendedDOMSlots();
 
-    void Traverse(nsCycleCollectionTraversalCallback&) final;
-    void Unlink() final;
+    void TraverseExtendedSlots(nsCycleCollectionTraversalCallback&) final;
+    void UnlinkExtendedSlots() final;
+
+    size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const final;
 
     /**
      * SMIL Overridde style rules (for SMIL animation of CSS properties)
@@ -239,7 +176,7 @@ class FragmentOrElement : public nsIContent {
     /**
      * Holds any SMIL override style declaration for this element.
      */
-    RefPtr<mozilla::DeclarationBlock> mSMILOverrideStyleDeclaration;
+    RefPtr<DeclarationBlock> mSMILOverrideStyleDeclaration;
 
     /**
      * The controllers of the XUL Element.
@@ -265,17 +202,12 @@ class FragmentOrElement : public nsIContent {
      * Web components custom element data.
      */
     RefPtr<CustomElementData> mCustomElementData;
-
-    /**
-     * For XUL to hold either frameloader or opener.
-     */
-    nsCOMPtr<nsISupports> mFrameLoaderOrOpener;
   };
 
-  class nsDOMSlots final : public nsIContent::nsContentSlots {
+  class nsDOMSlots : public nsIContent::nsContentSlots {
    public:
     nsDOMSlots();
-    ~nsDOMSlots() final;
+    ~nsDOMSlots();
 
     void Traverse(nsCycleCollectionTraversalCallback&) final;
     void Unlink() final;
@@ -311,10 +243,25 @@ class FragmentOrElement : public nsIContent {
     RefPtr<nsDOMTokenList> mClassList;
   };
 
+  /**
+   * In case ExtendedDOMSlots is needed before normal DOMSlots, an instance of
+   * FatSlots class, which combines those two slot types, is created.
+   * This way we can avoid extra allocation for ExtendedDOMSlots.
+   * FatSlots is useful for example when creating Custom Elements.
+   */
+  class FatSlots final : public nsDOMSlots, public nsExtendedDOMSlots {
+   public:
+    FatSlots() : nsDOMSlots(), nsExtendedDOMSlots() {
+      MOZ_COUNT_CTOR(FatSlots);
+      SetExtendedContentSlots(this, false);
+    }
+
+    ~FatSlots() final { MOZ_COUNT_DTOR(FatSlots); }
+  };
+
  protected:
   void GetMarkup(bool aIncludeSelf, nsAString& aMarkup);
-  void SetInnerHTMLInternal(const nsAString& aInnerHTML, ErrorResult& aError,
-                            bool aNeverSanitize = false);
+  void SetInnerHTMLInternal(const nsAString& aInnerHTML, ErrorResult& aError);
 
   // Override from nsINode
   nsIContent::nsContentSlots* CreateSlots() override {
@@ -332,7 +279,18 @@ class FragmentOrElement : public nsIContent {
   }
 
   nsExtendedDOMSlots* ExtendedDOMSlots() {
-    return static_cast<nsExtendedDOMSlots*>(ExtendedContentSlots());
+    nsContentSlots* slots = GetExistingContentSlots();
+    if (!slots) {
+      FatSlots* fatSlots = new FatSlots();
+      mSlots = fatSlots;
+      return fatSlots;
+    }
+
+    if (!slots->GetExtendedContentSlots()) {
+      slots->SetExtendedContentSlots(CreateExtendedSlots(), true);
+    }
+
+    return static_cast<nsExtendedDOMSlots*>(slots->GetExtendedContentSlots());
   }
 
   const nsExtendedDOMSlots* GetExistingExtendedDOMSlots() const {
@@ -344,19 +302,7 @@ class FragmentOrElement : public nsIContent {
     return static_cast<nsExtendedDOMSlots*>(GetExistingExtendedContentSlots());
   }
 
-  /**
-   * Calls SetIsElementInStyleScopeFlagOnSubtree for each shadow tree attached
-   * to this node, which is assumed to be an Element.
-   *
-   * @param aInStyleScope The IsElementInStyleScope flag value to set.
-   */
-  void SetIsElementInStyleScopeFlagOnShadowTree(bool aInStyleScope);
-
   friend class ::ContentUnbinder;
-  /**
-   * Array containing all attributes and children for this element
-   */
-  nsAttrAndChildArray mAttrsAndChildren;
 };
 
 }  // namespace dom

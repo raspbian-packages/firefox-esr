@@ -47,6 +47,8 @@
      lightning.calendarproperties.forceEmailScheduling.tooltiptext2)
      - tooltiptext1 is used in the calendar wizard when setting a new caldav calendar
      - tooltiptext2 is used in the calendar properties dialog for caldav calendars -->
+<!ENTITY lightning.calendarproperties.forceEmailScheduling.tooltiptext1     "Voit ottaa tämän ominaisuuden käyttöön kalenterin asentamisen jälkeen sallimalla ominaisuuden kalenterin ominaisuusikkunassa, jos palvelin tukee ajastamista.">
+<!ENTITY lightning.calendarproperties.forceEmailScheduling.tooltiptext2     "Tämä asetus on käytettävissä vain, jos kalenteripalvelin tukee ajastamista. Ominaisuuden salliminen palauttaa ajastamisen sähköpostipohjaiseen ajastukseen palvelimen suorittaman ajastuksen sijaan.">
 
 <!-- iMIP Bar (meeting support) -->
 <!ENTITY lightning.imipbar.btnAccept.label                                  "Hyväksy">
@@ -75,14 +77,15 @@
 <!ENTITY lightning.imipbar.btnSaveCopy.tooltiptext                          "Tallenna kalenteriin kopio tapahtumasta ilman, että järjestäjä saa tietää. Osallistujaluettelo tyhjennetään.">
 <!ENTITY lightning.imipbar.btnTentative.label                               "Alustava">
 <!ENTITY lightning.imipbar.btnTentative2.tooltiptext                        "Hyväksy tapahtumakutsu alustavasti">
-<!ENTITY lightning.imipbar.btnTentativeRecurrences.label                    "Alustava kaikki">
-<!ENTITY lightning.imipbar.btnTentativeRecurrences2.tooltiptext             "Hyväksy tapahtumakutsu alustavasti koskien kaikkia tapahtuman tapauksia">
+<!ENTITY lightning.imipbar.btnTentativeRecurrences.label                    "Alustavasti kaikki">
+<!ENTITY lightning.imipbar.btnTentativeRecurrences2.tooltiptext             "Hyväksy kaikki tapahtuman esiintymät alustavasti">
 <!ENTITY lightning.imipbar.btnUpdate.label                                  "Päivitä">
 <!ENTITY lightning.imipbar.btnUpdate.tooltiptext                            "Päivitä tapahtumaa kalenterissa">
 <!ENTITY lightning.imipbar.description                                      "Tässä viestissä on kutsu tapahtumaan.">
 
 <!ENTITY lightning.imipbar.btnSend.label                                    "Lähetä vastaus nyt">
 <!ENTITY lightning.imipbar.btnSend.tooltiptext                              "Lähetä vastaus järjestäjälle">
+<!ENTITY lightning.imipbar.btnSendSeries.tooltiptext                        "Lähetä vastaus kaikille järjestäjille">
 <!ENTITY lightning.imipbar.btnDontSend.label                                "Älä lähetä vastausta">
 <!ENTITY lightning.imipbar.btnDontSend.tooltiptext                          "Muuta osallistumistilaasi ilman vastauksen lähettämistä tapahtuman järjestäjälle">
 <!ENTITY lightning.imipbar.btnDontSendSeries.tooltiptext                    "Muuta osallistumistilaasi ilman vastauksen lähettämistä tapahtumasarjan järjestäjälle">

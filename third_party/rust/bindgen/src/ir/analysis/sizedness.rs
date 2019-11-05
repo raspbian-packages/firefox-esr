@@ -5,10 +5,8 @@ use ir::context::{BindgenContext, TypeId};
 use ir::item::IsOpaque;
 use ir::traversal::EdgeKind;
 use ir::ty::TypeKind;
-use std::cmp;
-use std::collections::HashMap;
-use std::collections::hash_map::Entry;
-use std::ops;
+use std::{cmp, ops};
+use {HashMap, Entry};
 
 /// The result of the `Sizedness` analysis for an individual item.
 ///
@@ -194,7 +192,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
             })
             .collect();
 
-        let sized = HashMap::new();
+        let sized = HashMap::default();
 
         SizednessAnalysis {
             ctx,
@@ -261,7 +259,6 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
-            TypeKind::BlockPointer |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::Pointer(..) => {
@@ -276,6 +273,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
 
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
+            TypeKind::BlockPointer(t) |
             TypeKind::ResolvedTypeRef(t) => {
                 trace!("    aliases and type refs forward to their inner type");
                 self.forward(t, id)
@@ -293,6 +291,10 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
             }
             TypeKind::Array(..) => {
                 trace!("    arrays of > 0 elements are not zero-sized");
+                self.insert(id, SizednessResult::NonZeroSized)
+            }
+            TypeKind::Vector(..) => {
+                trace!("    vectors are not zero-sized");
                 self.insert(id, SizednessResult::NonZeroSized)
             }
 

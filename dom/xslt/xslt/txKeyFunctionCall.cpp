@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -100,10 +100,8 @@ bool txKeyFunctionCall::isSensitiveTo(ContextSensitivity aContext) {
 }
 
 #ifdef TX_TO_STRING
-nsresult txKeyFunctionCall::getNameAtom(nsAtom** aAtom) {
-  *aAtom = nsGkAtoms::key;
-  NS_ADDREF(*aAtom);
-  return NS_OK;
+void txKeyFunctionCall::appendName(nsAString& aDest) {
+  aDest.Append(nsGkAtoms::key->GetUTF16String());
 }
 #endif
 
@@ -227,8 +225,8 @@ bool txXSLKey::addKey(nsAutoPtr<txPattern>&& aMatch, nsAutoPtr<Expr>&& aUse) {
   Key* key = mKeys.AppendElement();
   if (!key) return false;
 
-  key->matchPattern = Move(aMatch);
-  key->useExpr = Move(aUse);
+  key->matchPattern = std::move(aMatch);
+  key->useExpr = std::move(aUse);
 
   return true;
 }

@@ -3,11 +3,11 @@ no-comment-disable:
     description: >
       "Use 'disabled=<reason>' to disable a test instead of a
       comment"
-    include:
-        - "**/*.ini"
+    include: ['.']
     exclude:
         - "**/application.ini"
         - "**/l10n.ini"
+        - dom/canvas/test/webgl-conf/mochitest-errata.ini
         - testing/mozbase/manifestparser/tests
         - testing/web-platform
         - xpcom/tests/unit/data

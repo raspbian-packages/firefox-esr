@@ -23,30 +23,27 @@ namespace mozilla {
 namespace dom {
 
 HTMLMetaElement::HTMLMetaElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
 HTMLMetaElement::~HTMLMetaElement() {}
 
 NS_IMPL_ELEMENT_CLONE(HTMLMetaElement)
 
-nsresult HTMLMetaElement::SetMetaReferrer(nsIDocument* aDocument) {
+void HTMLMetaElement::SetMetaReferrer(Document* aDocument) {
   if (!aDocument || !AttrValueIs(kNameSpaceID_None, nsGkAtoms::name,
                                  nsGkAtoms::referrer, eIgnoreCase)) {
-    return NS_OK;
+    return;
   }
   nsAutoString content;
-  nsresult rv = GetContent(content);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
+  GetContent(content);
+
   Element* headElt = aDocument->GetHeadElement();
   if (headElt && nsContentUtils::ContentIsDescendantOf(this, headElt)) {
     content = nsContentUtils::TrimWhitespace<nsContentUtils::IsHTMLWhitespace>(
         content);
     aDocument->SetHeaderData(nsGkAtoms::referrer, content);
   }
-  return NS_OK;
 }
 
 nsresult HTMLMetaElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
@@ -55,44 +52,38 @@ nsresult HTMLMetaElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
                                        nsIPrincipal* aSubjectPrincipal,
                                        bool aNotify) {
   if (aNameSpaceID == kNameSpaceID_None) {
-    nsIDocument* document = GetUncomposedDoc();
+    Document* document = GetUncomposedDoc();
     if (aName == nsGkAtoms::content) {
       if (document && AttrValueIs(kNameSpaceID_None, nsGkAtoms::name,
                                   nsGkAtoms::viewport, eIgnoreCase)) {
         nsAutoString content;
-        nsresult rv = GetContent(content);
-        NS_ENSURE_SUCCESS(rv, rv);
+        GetContent(content);
         nsContentUtils::ProcessViewportInfo(document, content);
       }
       CreateAndDispatchEvent(document, NS_LITERAL_STRING("DOMMetaChanged"));
     }
     // Update referrer policy when it got changed from JS
-    nsresult rv = SetMetaReferrer(document);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
-    }
+    SetMetaReferrer(document);
   }
 
   return nsGenericHTMLElement::AfterSetAttr(
       aNameSpaceID, aName, aValue, aOldValue, aSubjectPrincipal, aNotify);
 }
 
-nsresult HTMLMetaElement::BindToTree(nsIDocument* aDocument,
-                                     nsIContent* aParent,
-                                     nsIContent* aBindingParent,
-                                     bool aCompileEventHandlers) {
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+nsresult HTMLMetaElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                     nsIContent* aBindingParent) {
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
   if (aDocument && AttrValueIs(kNameSpaceID_None, nsGkAtoms::name,
                                nsGkAtoms::viewport, eIgnoreCase)) {
     nsAutoString content;
-    rv = GetContent(content);
-    NS_ENSURE_SUCCESS(rv, rv);
+    GetContent(content);
     nsContentUtils::ProcessViewportInfo(aDocument, content);
   }
 
-  if (CSPService::sCSPEnabled && aDocument && !aDocument->IsLoadedAsData() &&
+  if (StaticPrefs::security_csp_enable() && aDocument &&
+      !aDocument->IsLoadedAsData() &&
       AttrValueIs(kNameSpaceID_None, nsGkAtoms::httpEquiv, nsGkAtoms::headerCSP,
                   eIgnoreCase)) {
     // only accept <meta http-equiv="Content-Security-Policy" content=""> if it
@@ -100,16 +91,14 @@ nsresult HTMLMetaElement::BindToTree(nsIDocument* aDocument,
     Element* headElt = aDocument->GetHeadElement();
     if (headElt && nsContentUtils::ContentIsDescendantOf(this, headElt)) {
       nsAutoString content;
-      rv = GetContent(content);
-      NS_ENSURE_SUCCESS(rv, rv);
+      GetContent(content);
       content =
           nsContentUtils::TrimWhitespace<nsContentUtils::IsHTMLWhitespace>(
               content);
 
       nsIPrincipal* principal = aDocument->NodePrincipal();
       nsCOMPtr<nsIContentSecurityPolicy> csp;
-      nsCOMPtr<nsIDOMDocument> domDoc = do_QueryInterface(aDocument);
-      principal->EnsureCSP(domDoc, getter_AddRefs(csp));
+      principal->EnsureCSP(aDocument, getter_AddRefs(csp));
       if (csp) {
         if (LOG_ENABLED()) {
           nsAutoCString documentURIspec;
@@ -140,32 +129,29 @@ nsresult HTMLMetaElement::BindToTree(nsIDocument* aDocument,
 
   // Referrer Policy spec requires a <meta name="referrer" tag to be in the
   // <head> element.
-  rv = SetMetaReferrer(aDocument);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
+  SetMetaReferrer(aDocument);
   CreateAndDispatchEvent(aDocument, NS_LITERAL_STRING("DOMMetaAdded"));
   return rv;
 }
 
 void HTMLMetaElement::UnbindFromTree(bool aDeep, bool aNullParent) {
-  nsCOMPtr<nsIDocument> oldDoc = GetUncomposedDoc();
+  nsCOMPtr<Document> oldDoc = GetUncomposedDoc();
   CreateAndDispatchEvent(oldDoc, NS_LITERAL_STRING("DOMMetaRemoved"));
   nsGenericHTMLElement::UnbindFromTree(aDeep, aNullParent);
 }
 
-void HTMLMetaElement::CreateAndDispatchEvent(nsIDocument* aDoc,
+void HTMLMetaElement::CreateAndDispatchEvent(Document* aDoc,
                                              const nsAString& aEventName) {
   if (!aDoc) return;
 
-  RefPtr<AsyncEventDispatcher> asyncDispatcher =
-      new AsyncEventDispatcher(this, aEventName, true, true);
+  RefPtr<AsyncEventDispatcher> asyncDispatcher = new AsyncEventDispatcher(
+      this, aEventName, CanBubble::eYes, ChromeOnlyDispatch::eYes);
   asyncDispatcher->RunDOMEventWhenSafe();
 }
 
 JSObject* HTMLMetaElement::WrapNode(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return HTMLMetaElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLMetaElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

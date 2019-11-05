@@ -45,28 +45,27 @@ class SidebarToggle extends Component {
 
   onClick(event) {
     event.stopPropagation();
+    this.setState({ collapsed: !this.state.collapsed });
     this.props.onClick(event);
   }
 
   // Rendering
 
   render() {
-    let title = this.state.collapsed ?
-      this.props.expandPaneTitle :
-      this.props.collapsePaneTitle;
+    const title = this.state.collapsed
+      ? this.props.expandPaneTitle
+      : this.props.collapsePaneTitle;
 
-    let classNames = ["devtools-button", "sidebar-toggle"];
+    const classNames = ["devtools-button", "sidebar-toggle"];
     if (this.state.collapsed) {
       classNames.push("pane-collapsed");
     }
 
-    return (
-      button({
-        className: classNames.join(" "),
-        title: title,
-        onClick: this.onClick
-      })
-    );
+    return button({
+      className: classNames.join(" "),
+      title: title,
+      onClick: this.onClick,
+    });
   }
 }
 

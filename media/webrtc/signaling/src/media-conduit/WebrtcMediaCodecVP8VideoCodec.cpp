@@ -24,7 +24,6 @@
 #include "libyuv/row.h"
 
 #include "webrtc/modules/video_coding/include/video_error_codes.h"
-#include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 
 #include "webrtc/api/video/i420_buffer.h"
 #include <webrtc/common_video/libyuv/include/webrtc_libyuv.h>
@@ -40,16 +39,14 @@ namespace mozilla {
 
 static const char* wmcLogTag = "WebrtcMediaCodecVP8VideoCodec";
 #ifdef LOGTAG
-#undef LOGTAG
+#  undef LOGTAG
 #endif
 #define LOGTAG wmcLogTag
 
 class CallbacksSupport final : public JavaCallbacksSupport {
  public:
-  CallbacksSupport(webrtc::EncodedImageCallback* aCallback)
-      : mCallback(aCallback),
-        mCritSect(webrtc::CriticalSectionWrapper::CreateCriticalSection()),
-        mPictureId(0) {
+  explicit CallbacksSupport(webrtc::EncodedImageCallback* aCallback)
+      : mCallback(aCallback), mPictureId(0) {
     CSFLogDebug(LOGTAG, "%s %p", __FUNCTION__, this);
     memset(&mEncodedImage, 0, sizeof(mEncodedImage));
   }
@@ -85,7 +82,8 @@ class CallbacksSupport final : public JavaCallbacksSupport {
     CSFLogDebug(LOGTAG, "%s %p", __FUNCTION__, this);
   }
 
-  void HandleOutput(Sample::Param aSample) override {
+  void HandleOutput(Sample::Param aSample,
+                    SampleBuffer::Param aBuffer) override {
     CSFLogDebug(LOGTAG, "%s %p", __FUNCTION__, this);
     BufferInfo::LocalRef info = aSample->Info();
 
@@ -94,7 +92,7 @@ class CallbacksSupport final : public JavaCallbacksSupport {
     MOZ_RELEASE_ASSERT(ok);
 
     if (size > 0) {
-      webrtc::CriticalSectionScoped lock(mCritSect.get());
+      rtc::CritScope lock(&mCritSect);
       VerifyAndAllocate(size);
 
       int64_t presentationTimeUs;
@@ -118,7 +116,7 @@ class CallbacksSupport final : public JavaCallbacksSupport {
 
       jni::ByteBuffer::LocalRef dest =
           jni::ByteBuffer::New(mEncodedImage._buffer, size);
-      aSample->WriteToByteBuffer(dest);
+      aBuffer->WriteToByteBuffer(dest, 0, size);
 
       webrtc::CodecSpecificInfo info;
       info.codecType = webrtc::kVideoCodecVP8;
@@ -149,7 +147,7 @@ class CallbacksSupport final : public JavaCallbacksSupport {
   webrtc::EncodedImageCallback* mCallback;
   Atomic<bool> mCanceled;
   webrtc::EncodedImage mEncodedImage;
-  std::unique_ptr<webrtc::CriticalSectionWrapper> mCritSect;
+  rtc::CriticalSection mCritSect;
   uint32_t mPictureId;
 };
 
@@ -642,7 +640,7 @@ class WebrtcAndroidMediaCodec {
  private:
   class OutputDrain : public MediaCodecOutputDrain {
    public:
-    OutputDrain(WebrtcAndroidMediaCodec* aMediaCodec)
+    explicit OutputDrain(WebrtcAndroidMediaCodec* aMediaCodec)
         : MediaCodecOutputDrain(), mMediaCodec(aMediaCodec) {}
 
    protected:
@@ -676,8 +674,8 @@ class WebrtcAndroidMediaCodec {
 
 static bool I420toNV12(uint8_t* dstY, uint16_t* dstUV,
                        const webrtc::VideoFrame& inputImage) {
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> inputBuffer =
-      inputImage.video_frame_buffer();
+  rtc::scoped_refptr<webrtc::I420BufferInterface> inputBuffer =
+      inputImage.video_frame_buffer()->GetI420();
 
   uint8_t* buffer = dstY;
   uint8_t* dst_y = buffer;
@@ -804,8 +802,8 @@ int32_t WebrtcMediaCodecVP8VideoEncoder::Encode(
   uint32_t time = PR_IntervalNow();
 #endif
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> inputBuffer =
-      inputImage.video_frame_buffer();
+  rtc::scoped_refptr<webrtc::I420BufferInterface> inputBuffer =
+      inputImage.video_frame_buffer()->GetI420();
   size_t sizeY = inputImage.height() * inputBuffer->StrideY();
   size_t sizeUV = ((inputImage.height() + 1) / 2) * inputBuffer->StrideU();
   size_t size = sizeY + 2 * sizeUV;
@@ -1077,8 +1075,8 @@ int32_t WebrtcMediaCodecVP8VideoRemoteEncoder::Encode(
     }
   }
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> inputBuffer =
-      inputImage.video_frame_buffer();
+  rtc::scoped_refptr<webrtc::I420BufferInterface> inputBuffer =
+      inputImage.video_frame_buffer()->GetI420();
   size_t sizeY = inputImage.height() * inputBuffer->StrideY();
   size_t sizeUV = ((inputImage.height() + 1) / 2) * inputBuffer->StrideU();
   size_t size = sizeY + 2 * sizeUV;

@@ -18,12 +18,16 @@ one time. So the can be flipped though like a Stack of cards.
 #include "mozilla/Attributes.h"
 #include "nsBoxFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsStackFrame final : public nsBoxFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsStackFrame)
 
-  friend nsIFrame* NS_NewStackFrame(nsIPresShell* aPresShell,
-                                    nsStyleContext* aContext);
+  friend nsIFrame* NS_NewStackFrame(mozilla::PresShell* aPresShell,
+                                    ComputedStyle* aStyle);
 
 #ifdef DEBUG_FRAME_DUMP
   virtual nsresult GetFrameName(nsAString& aResult) const override {
@@ -35,7 +39,7 @@ class nsStackFrame final : public nsBoxFrame {
       nsDisplayListBuilder* aBuilder, const nsDisplayListSet& aLists) override;
 
  protected:
-  explicit nsStackFrame(nsStyleContext* aContext);
+  explicit nsStackFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
 };  // class nsStackFrame
 
 #endif

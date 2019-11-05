@@ -1,7 +1,8 @@
 #include "Entries.h"
 #include "mozilla/EndianUtils.h"
 
-TEST(SafebrowsingHash, ToFromUint32) {
+TEST(UrlClassifierHash, ToFromUint32)
+{
   using namespace mozilla::safebrowsing;
 
   // typedef SafebrowsingHash<PREFIX_SIZE, PrefixComparator> Prefix;
@@ -19,7 +20,8 @@ TEST(SafebrowsingHash, ToFromUint32) {
   ASSERT_EQ(memcmp(PREFIX_RAW, p.buf, 4), 0);
 }
 
-TEST(SafebrowsingHash, Compare) {
+TEST(UrlClassifierHash, Compare)
+{
   using namespace mozilla;
   using namespace mozilla::safebrowsing;
 

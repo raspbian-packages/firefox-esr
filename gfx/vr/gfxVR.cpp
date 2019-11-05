@@ -12,7 +12,7 @@
 #include "VRDisplayHost.h"
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#  define M_PI 3.14159265358979323846
 #endif
 
 using namespace mozilla;
@@ -21,13 +21,11 @@ using namespace mozilla::gfx;
 Atomic<uint32_t> VRSystemManager::sDisplayBase(0);
 Atomic<uint32_t> VRSystemManager::sControllerBase(0);
 
-/* static */ uint32_t VRSystemManager::AllocateDisplayID() {
-  return ++sDisplayBase;
-}
+/* static */
+uint32_t VRSystemManager::AllocateDisplayID() { return ++sDisplayBase; }
 
-/* static */ uint32_t VRSystemManager::AllocateControllerID() {
-  return ++sControllerBase;
-}
+/* static */
+uint32_t VRSystemManager::AllocateControllerID() { return ++sControllerBase; }
 
 /**
  * VRSystemManager::NotifyVsync must be called even when a WebVR site is
@@ -50,6 +48,18 @@ void VRSystemManager::NotifyVSync() {
   if (!GetIsPresenting()) {
     HandleInput();
   }
+}
+
+void VRSystemManager::Run1msTasks(double aDeltaTime) {
+  // To be overridden by children
+}
+
+void VRSystemManager::Run10msTasks() {
+  // To be overridden by children
+}
+
+void VRSystemManager::Run100msTasks() {
+  // To be overridden by children
 }
 
 /**
@@ -162,16 +172,41 @@ void VRHMDSensorState::CalcViewMatrices(
     const gfx::Matrix4x4* aHeadToEyeTransforms) {
   gfx::Matrix4x4 matHead;
   if (flags & VRDisplayCapabilityFlags::Cap_Orientation) {
-    matHead.SetRotationFromQuaternion(gfx::Quaternion(
-        orientation[0], orientation[1], orientation[2], orientation[3]));
+    matHead.SetRotationFromQuaternion(
+        gfx::Quaternion(pose.orientation[0], pose.orientation[1],
+                        pose.orientation[2], pose.orientation[3]));
   }
-  matHead.PreTranslate(-position[0], -position[1], -position[2]);
+  matHead.PreTranslate(-pose.position[0], -pose.position[1], -pose.position[2]);
 
   gfx::Matrix4x4 matView =
-      matHead * aHeadToEyeTransforms[VRDisplayInfo::Eye_Left];
+      matHead * aHeadToEyeTransforms[VRDisplayState::Eye_Left];
   matView.Normalize();
   memcpy(leftViewMatrix, matView.components, sizeof(matView.components));
-  matView = matHead * aHeadToEyeTransforms[VRDisplayInfo::Eye_Right];
+  matView = matHead * aHeadToEyeTransforms[VRDisplayState::Eye_Right];
   matView.Normalize();
   memcpy(rightViewMatrix, matView.components, sizeof(matView.components));
+}
+
+const IntSize VRDisplayInfo::SuggestedEyeResolution() const {
+  return IntSize(mDisplayState.eyeResolution.width,
+                 mDisplayState.eyeResolution.height);
+}
+
+const Point3D VRDisplayInfo::GetEyeTranslation(uint32_t whichEye) const {
+  return Point3D(mDisplayState.eyeTranslation[whichEye].x,
+                 mDisplayState.eyeTranslation[whichEye].y,
+                 mDisplayState.eyeTranslation[whichEye].z);
+}
+
+const Size VRDisplayInfo::GetStageSize() const {
+  return Size(mDisplayState.stageSize.width, mDisplayState.stageSize.height);
+}
+
+const Matrix4x4 VRDisplayInfo::GetSittingToStandingTransform() const {
+  Matrix4x4 m;
+  // If we could replace Matrix4x4 with a pod type, we could
+  // use it directly from the VRDisplayInfo struct.
+  memcpy(m.components, mDisplayState.sittingToStandingTransform,
+         sizeof(float) * 16);
+  return m;
 }

@@ -30,7 +30,7 @@ enum class DecoderFlags : uint8_t {
    * a specific size and won't accept alternatives, then this flag should be
    * set.
    */
-  CANNOT_SUBSTITUTE = 1 << 4
+  CANNOT_SUBSTITUTE = 1 << 4,
 };
 MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(DecoderFlags)
 

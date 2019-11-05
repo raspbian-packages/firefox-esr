@@ -1,8 +1,8 @@
 "use strict";
 
 const STATE = {
-  entries: [{url: "about:robots"}, {url: "about:mozilla"}],
-  selected: 2
+  entries: [{ url: "about:robots" }, { url: "about:mozilla" }],
+  selected: 2,
 };
 
 /**
@@ -13,8 +13,10 @@ const STATE = {
  * restored history around.
  */
 add_task(async function() {
-  await testSwitchToTab("about:mozilla#fooobar", {ignoreFragment: "whenComparingAndReplace"});
-  await testSwitchToTab("about:mozilla?foo=bar", {replaceQueryString: true});
+  await testSwitchToTab("about:mozilla#fooobar", {
+    ignoreFragment: "whenComparingAndReplace",
+  });
+  await testSwitchToTab("about:mozilla?foo=bar", { replaceQueryString: true });
 });
 
 var testSwitchToTab = async function(url, options) {
@@ -32,6 +34,8 @@ var testSwitchToTab = async function(url, options) {
   ok(tab.hasAttribute("pending"), "tab is pending");
   await promise;
 
+  options.triggeringPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+
   // Switch-to-tab with a similar URI.
   switchToTabHavingURI(url, false, options);
 
@@ -42,7 +46,7 @@ var testSwitchToTab = async function(url, options) {
   // Check that we didn't lose any history entries.
   await ContentTask.spawn(browser, null, async function() {
     let webNavigation = docShell.QueryInterface(Ci.nsIWebNavigation);
-    let history = webNavigation.sessionHistory.QueryInterface(Ci.nsISHistoryInternal);
+    let history = webNavigation.sessionHistory;
     Assert.equal(history && history.count, 3, "three history entries");
   });
 

@@ -4,7 +4,9 @@
 
 "use strict";
 
-const { ObjectProvider } = require("devtools/client/shared/components/tree/ObjectProvider");
+const {
+  ObjectProvider,
+} = require("devtools/client/shared/components/tree/ObjectProvider");
 
 /**
  * Custom tree provider.
@@ -20,13 +22,14 @@ var HeadersProvider = {
 
   getChildren(object) {
     if (object.value instanceof HeaderList) {
-      return object.value.headers.map((header, index) =>
-        new Header(header.name, header.value, index));
+      return object.value.headers.map(
+        (header, index) => new Header(header.name, header.value, index)
+      );
     }
     return ObjectProvider.getChildren(object);
   },
 
-  hasChildren: function (object) {
+  hasChildren: function(object) {
     if (object.value instanceof HeaderList) {
       return object.value.headers.length > 0;
     } else if (object instanceof Header) {
@@ -35,14 +38,14 @@ var HeadersProvider = {
     return ObjectProvider.hasChildren(object);
   },
 
-  getLabel: function (object) {
+  getLabel: function(object) {
     if (object instanceof Header) {
       return object.name;
     }
     return ObjectProvider.getLabel(object);
   },
 
-  getValue: function (object) {
+  getValue: function(object) {
     if (object instanceof Header) {
       return object.value;
     }
@@ -56,12 +59,12 @@ var HeadersProvider = {
     return ObjectProvider.getKey(object);
   },
 
-  getType: function (object) {
+  getType: function(object) {
     if (object instanceof Header) {
       return "string";
     }
     return ObjectProvider.getType(object);
-  }
+  },
 };
 
 /**
@@ -83,5 +86,5 @@ function Header(name, value, key) {
 
 module.exports = {
   HeadersProvider,
-  HeaderList
+  HeaderList,
 };

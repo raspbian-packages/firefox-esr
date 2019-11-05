@@ -26,6 +26,10 @@ class nsPKCS11Slot : public nsIPKCS11Slot {
 
  private:
   mozilla::UniquePK11SlotInfo mSlot;
+  // True if this is the "PKCS#11 slot" that provides cryptographic functions.
+  bool mIsInternalCryptoSlot;
+  // True if this is the "PKCS#11 slot" where private keys are stored.
+  bool mIsInternalKeySlot;
   nsCString mSlotDesc;
   nsCString mSlotManufacturerID;
   nsCString mSlotHWVersion;

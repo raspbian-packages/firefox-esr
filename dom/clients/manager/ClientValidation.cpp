@@ -45,12 +45,10 @@ bool ClientIsValidPrincipalInfo(const PrincipalInfo& aPrincipalInfo) {
       NS_ENSURE_SUCCESS(rv, false);
 
       nsAutoCString originOrigin;
-      rv = originURL->GetOrigin(originOrigin);
-      NS_ENSURE_SUCCESS(rv, false);
+      originURL->Origin(originOrigin);
 
       nsAutoCString specOrigin;
-      rv = specURL->GetOrigin(specOrigin);
-      NS_ENSURE_SUCCESS(rv, false);
+      specURL->Origin(specOrigin);
 
       // For now require Clients to have a principal where both its
       // originNoSuffix and spec have the same origin.  This will
@@ -60,7 +58,9 @@ bool ClientIsValidPrincipalInfo(const PrincipalInfo& aPrincipalInfo) {
       // cases in the future.
       return specOrigin == originOrigin;
     }
-    default: { break; }
+    default: {
+      break;
+    }
   }
 
   // Windows and workers should not have expanded URLs, etc.
@@ -91,12 +91,10 @@ bool ClientIsValidCreationURL(const PrincipalInfo& aPrincipalInfo,
       NS_ENSURE_SUCCESS(rv, false);
 
       nsAutoCString origin;
-      rv = url->GetOrigin(origin);
-      NS_ENSURE_SUCCESS(rv, false);
+      url->Origin(origin);
 
       nsAutoCString principalOrigin;
-      rv = principalURL->GetOrigin(principalOrigin);
-      NS_ENSURE_SUCCESS(rv, false);
+      principalURL->Origin(principalOrigin);
 
       // The vast majority of sites should simply result in the same principal
       // and URL origin.
@@ -104,9 +102,7 @@ bool ClientIsValidCreationURL(const PrincipalInfo& aPrincipalInfo,
         return true;
       }
 
-      nsAutoCString scheme;
-      rv = url->GetScheme(scheme);
-      NS_ENSURE_SUCCESS(rv, false);
+      nsDependentCSubstring scheme = url->Scheme();
 
       // Generally any origin can also open javascript: windows and workers.
       if (scheme.LowerCaseEqualsLiteral("javascript")) {
@@ -120,10 +116,6 @@ bool ClientIsValidCreationURL(const PrincipalInfo& aPrincipalInfo,
         return true;
       }
 
-      nsAutoCString principalScheme;
-      rv = principalURL->GetScheme(principalScheme);
-      NS_ENSURE_SUCCESS(rv, false);
-
       // Otherwise don't support this URL type in the clients sub-system for
       // now.  This will exclude a variety of internal browser clients, but
       // currently we don't need to support those.  This function can be
@@ -131,9 +123,7 @@ bool ClientIsValidCreationURL(const PrincipalInfo& aPrincipalInfo,
       return false;
     }
     case PrincipalInfo::TSystemPrincipalInfo: {
-      nsAutoCString scheme;
-      rv = url->GetScheme(scheme);
-      NS_ENSURE_SUCCESS(rv, false);
+      nsDependentCSubstring scheme = url->Scheme();
 
       // While many types of documents can be created with a system principal,
       // there are only a few that can reasonably become windows.  We attempt
@@ -156,7 +146,9 @@ bool ClientIsValidCreationURL(const PrincipalInfo& aPrincipalInfo,
       // queries anyway.
       return true;
     }
-    default: { break; }
+    default: {
+      break;
+    }
   }
 
   // Clients (windows/workers) should never have an expanded principal type.

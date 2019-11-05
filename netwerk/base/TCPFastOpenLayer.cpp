@@ -14,7 +14,7 @@ namespace net {
 
 static PRDescIdentity sTCPFastOpenLayerIdentity;
 static PRIOMethods sTCPFastOpenLayerMethods;
-static PRIOMethods *sTCPFastOpenLayerMethodsPtr = nullptr;
+static PRIOMethods* sTCPFastOpenLayerMethodsPtr = nullptr;
 
 #define TFO_MAX_PACKET_SIZE_IPV4 1460
 #define TFO_MAX_PACKET_SIZE_IPV6 1440
@@ -54,7 +54,17 @@ static PRIOMethods *sTCPFastOpenLayerMethodsPtr = nullptr;
 class TCPFastOpenSecret {
  public:
   TCPFastOpenSecret()
-      : mState(WAITING_FOR_CONNECT), mFirstPacketBufLen(0), mCondition(0) {}
+      : mState(WAITING_FOR_CONNECT), mFirstPacketBufLen(0), mCondition(0) {
+    this->mAddr.raw.family = 0;
+    this->mAddr.inet.family = 0;
+    this->mAddr.inet.port = 0;
+    this->mAddr.inet.ip = 0;
+    this->mAddr.ipv6.family = 0;
+    this->mAddr.ipv6.port = 0;
+    this->mAddr.ipv6.flowinfo = 0;
+    this->mAddr.ipv6.scope_id = 0;
+    this->mAddr.local.family = 0;
+  }
 
   enum {
     CONNECTED,
@@ -69,12 +79,12 @@ class TCPFastOpenSecret {
   PRErrorCode mCondition;
 };
 
-static PRStatus TCPFastOpenConnect(PRFileDesc *fd, const PRNetAddr *addr,
+static PRStatus TCPFastOpenConnect(PRFileDesc* fd, const PRNetAddr* addr,
                                    PRIntervalTime timeout) {
   MOZ_RELEASE_ASSERT(fd->identity == sTCPFastOpenLayerIdentity);
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
-  TCPFastOpenSecret *secret = reinterpret_cast<TCPFastOpenSecret *>(fd->secret);
+  TCPFastOpenSecret* secret = reinterpret_cast<TCPFastOpenSecret*>(fd->secret);
 
   SOCKET_LOG(("TCPFastOpenConnect state=%d.\n", secret->mState));
 
@@ -90,12 +100,12 @@ static PRStatus TCPFastOpenConnect(PRFileDesc *fd, const PRNetAddr *addr,
   return PR_SUCCESS;
 }
 
-static PRInt32 TCPFastOpenSend(PRFileDesc *fd, const void *buf, PRInt32 amount,
+static PRInt32 TCPFastOpenSend(PRFileDesc* fd, const void* buf, PRInt32 amount,
                                PRIntn flags, PRIntervalTime timeout) {
   MOZ_RELEASE_ASSERT(fd->identity == sTCPFastOpenLayerIdentity);
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
-  TCPFastOpenSecret *secret = reinterpret_cast<TCPFastOpenSecret *>(fd->secret);
+  TCPFastOpenSecret* secret = reinterpret_cast<TCPFastOpenSecret*>(fd->secret);
 
   SOCKET_LOG(("TCPFastOpenSend state=%d.\n", secret->mState));
 
@@ -113,17 +123,16 @@ static PRInt32 TCPFastOpenSend(PRFileDesc *fd, const void *buf, PRInt32 amount,
             PR_INTERVAL_NO_WAIT);
         if (rv <= 0) {
           return rv;
-        } else {
-          secret->mFirstPacketBufLen -= rv;
-          if (secret->mFirstPacketBufLen) {
-            memmove(secret->mFirstPacketBuf, secret->mFirstPacketBuf + rv,
-                    secret->mFirstPacketBufLen);
-
-            PR_SetError(PR_WOULD_BLOCK_ERROR, 0);
-            return PR_FAILURE;
-          }  // if we drained the buffer we can fall through this checks and
-             // call send for the new data
         }
+        secret->mFirstPacketBufLen -= rv;
+        if (secret->mFirstPacketBufLen) {
+          memmove(secret->mFirstPacketBuf, secret->mFirstPacketBuf + rv,
+                  secret->mFirstPacketBufLen);
+
+          PR_SetError(PR_WOULD_BLOCK_ERROR, 0);
+          return PR_FAILURE;
+        }  // if we drained the buffer we can fall through this checks and call
+           // send for the new data
       }
       SOCKET_LOG(("TCPFastOpenSend sending new data.\n"));
       return (fd->lower->methods->send)(fd->lower, buf, amount, flags, timeout);
@@ -163,16 +172,16 @@ static PRInt32 TCPFastOpenSend(PRFileDesc *fd, const void *buf, PRInt32 amount,
   return PR_FAILURE;
 }
 
-static PRInt32 TCPFastOpenWrite(PRFileDesc *fd, const void *buf,
+static PRInt32 TCPFastOpenWrite(PRFileDesc* fd, const void* buf,
                                 PRInt32 amount) {
   return TCPFastOpenSend(fd, buf, amount, 0, PR_INTERVAL_NO_WAIT);
 }
 
-static PRInt32 TCPFastOpenRecv(PRFileDesc *fd, void *buf, PRInt32 amount,
+static PRInt32 TCPFastOpenRecv(PRFileDesc* fd, void* buf, PRInt32 amount,
                                PRIntn flags, PRIntervalTime timeout) {
   MOZ_RELEASE_ASSERT(fd->identity == sTCPFastOpenLayerIdentity);
 
-  TCPFastOpenSecret *secret = reinterpret_cast<TCPFastOpenSecret *>(fd->secret);
+  TCPFastOpenSecret* secret = reinterpret_cast<TCPFastOpenSecret*>(fd->secret);
 
   PRInt32 rv = -1;
   switch (secret->mState) {
@@ -192,12 +201,11 @@ static PRInt32 TCPFastOpenRecv(PRFileDesc *fd, void *buf, PRInt32 amount,
             PR_INTERVAL_NO_WAIT);
         if (rv <= 0) {
           return rv;
-        } else {
-          secret->mFirstPacketBufLen -= rv;
-          if (secret->mFirstPacketBufLen) {
-            memmove(secret->mFirstPacketBuf, secret->mFirstPacketBuf + rv,
-                    secret->mFirstPacketBufLen);
-          }
+        }
+        secret->mFirstPacketBufLen -= rv;
+        if (secret->mFirstPacketBufLen) {
+          memmove(secret->mFirstPacketBuf, secret->mFirstPacketBuf + rv,
+                  secret->mFirstPacketBufLen);
         }
       }
       rv = (fd->lower->methods->recv)(fd->lower, buf, amount, flags, timeout);
@@ -215,14 +223,14 @@ static PRInt32 TCPFastOpenRecv(PRFileDesc *fd, void *buf, PRInt32 amount,
   return rv;
 }
 
-static PRInt32 TCPFastOpenRead(PRFileDesc *fd, void *buf, PRInt32 amount) {
+static PRInt32 TCPFastOpenRead(PRFileDesc* fd, void* buf, PRInt32 amount) {
   return TCPFastOpenRecv(fd, buf, amount, 0, PR_INTERVAL_NO_WAIT);
 }
 
-static PRStatus TCPFastOpenConnectContinue(PRFileDesc *fd, PRInt16 out_flags) {
+static PRStatus TCPFastOpenConnectContinue(PRFileDesc* fd, PRInt16 out_flags) {
   MOZ_RELEASE_ASSERT(fd->identity == sTCPFastOpenLayerIdentity);
 
-  TCPFastOpenSecret *secret = reinterpret_cast<TCPFastOpenSecret *>(fd->secret);
+  TCPFastOpenSecret* secret = reinterpret_cast<TCPFastOpenSecret*>(fd->secret);
 
   PRStatus rv = PR_FAILURE;
   switch (secret->mState) {
@@ -247,31 +255,31 @@ static PRStatus TCPFastOpenConnectContinue(PRFileDesc *fd, PRInt16 out_flags) {
   return rv;
 }
 
-static PRStatus TCPFastOpenClose(PRFileDesc *fd) {
+static PRStatus TCPFastOpenClose(PRFileDesc* fd) {
   if (!fd) {
     return PR_FAILURE;
   }
 
-  PRFileDesc *layer = PR_PopIOLayer(fd, PR_TOP_IO_LAYER);
+  PRFileDesc* layer = PR_PopIOLayer(fd, PR_TOP_IO_LAYER);
 
   MOZ_RELEASE_ASSERT(layer && layer->identity == sTCPFastOpenLayerIdentity,
                      "TCP Fast Open Layer not on top of stack");
 
-  TCPFastOpenSecret *secret =
-      reinterpret_cast<TCPFastOpenSecret *>(layer->secret);
+  TCPFastOpenSecret* secret =
+      reinterpret_cast<TCPFastOpenSecret*>(layer->secret);
   layer->secret = nullptr;
   layer->dtor(layer);
   delete secret;
   return fd->methods->close(fd);
 }
 
-static PRStatus TCPFastOpenGetpeername(PRFileDesc *fd, PRNetAddr *addr) {
+static PRStatus TCPFastOpenGetpeername(PRFileDesc* fd, PRNetAddr* addr) {
   MOZ_RELEASE_ASSERT(fd);
   MOZ_RELEASE_ASSERT(addr);
 
   MOZ_RELEASE_ASSERT(fd->identity == sTCPFastOpenLayerIdentity);
 
-  TCPFastOpenSecret *secret = reinterpret_cast<TCPFastOpenSecret *>(fd->secret);
+  TCPFastOpenSecret* secret = reinterpret_cast<TCPFastOpenSecret*>(fd->secret);
   if (secret->mState == TCPFastOpenSecret::WAITING_FOR_CONNECT) {
     PR_SetError(PR_NOT_CONNECTED_ERROR, 0);
     return PR_FAILURE;
@@ -281,12 +289,12 @@ static PRStatus TCPFastOpenGetpeername(PRFileDesc *fd, PRNetAddr *addr) {
   return PR_SUCCESS;
 }
 
-static PRInt16 TCPFastOpenPoll(PRFileDesc *fd, PRInt16 how_flags,
-                               PRInt16 *p_out_flags) {
+static PRInt16 TCPFastOpenPoll(PRFileDesc* fd, PRInt16 how_flags,
+                               PRInt16* p_out_flags) {
   MOZ_RELEASE_ASSERT(fd);
   MOZ_RELEASE_ASSERT(fd->identity == sTCPFastOpenLayerIdentity);
 
-  TCPFastOpenSecret *secret = reinterpret_cast<TCPFastOpenSecret *>(fd->secret);
+  TCPFastOpenSecret* secret = reinterpret_cast<TCPFastOpenSecret*>(fd->secret);
   if (secret->mFirstPacketBufLen) {
     how_flags |= PR_POLL_WRITE;
   }
@@ -294,7 +302,7 @@ static PRInt16 TCPFastOpenPoll(PRFileDesc *fd, PRInt16 how_flags,
   return fd->lower->methods->poll(fd->lower, how_flags, p_out_flags);
 }
 
-nsresult AttachTCPFastOpenIOLayer(PRFileDesc *fd) {
+nsresult AttachTCPFastOpenIOLayer(PRFileDesc* fd) {
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
   if (!sTCPFastOpenLayerMethodsPtr) {
@@ -312,16 +320,16 @@ nsresult AttachTCPFastOpenIOLayer(PRFileDesc *fd) {
     sTCPFastOpenLayerMethodsPtr = &sTCPFastOpenLayerMethods;
   }
 
-  PRFileDesc *layer = PR_CreateIOLayerStub(sTCPFastOpenLayerIdentity,
+  PRFileDesc* layer = PR_CreateIOLayerStub(sTCPFastOpenLayerIdentity,
                                            sTCPFastOpenLayerMethodsPtr);
 
   if (!layer) {
     return NS_ERROR_FAILURE;
   }
 
-  TCPFastOpenSecret *secret = new TCPFastOpenSecret();
+  TCPFastOpenSecret* secret = new TCPFastOpenSecret();
 
-  layer->secret = reinterpret_cast<PRFilePrivate *>(secret);
+  layer->secret = reinterpret_cast<PRFilePrivate*>(secret);
 
   PRStatus status = PR_PushIOLayer(fd, PR_NSPR_IO_LAYER, layer);
 
@@ -333,14 +341,14 @@ nsresult AttachTCPFastOpenIOLayer(PRFileDesc *fd) {
   return NS_OK;
 }
 
-void TCPFastOpenFinish(PRFileDesc *fd, PRErrorCode &err,
-                       bool &fastOpenNotSupported, uint8_t &tfoStatus) {
-  PRFileDesc *tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
+void TCPFastOpenFinish(PRFileDesc* fd, PRErrorCode& err,
+                       bool& fastOpenNotSupported, uint8_t& tfoStatus) {
+  PRFileDesc* tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
   MOZ_RELEASE_ASSERT(tfoFd);
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
-  TCPFastOpenSecret *secret =
-      reinterpret_cast<TCPFastOpenSecret *>(tfoFd->secret);
+  TCPFastOpenSecret* secret =
+      reinterpret_cast<TCPFastOpenSecret*>(tfoFd->secret);
 
   MOZ_ASSERT(secret->mState ==
              TCPFastOpenSecret::COLLECT_DATA_FOR_FIRST_PACKET);
@@ -396,10 +404,10 @@ void TCPFastOpenFinish(PRFileDesc *fd, PRErrorCode &err,
       result = PR_GetError();
       SOCKET_LOG(("TCPFastOpenFinish - sendto error=%d.\n", result));
 
-      if (result == PR_NOT_TCP_SOCKET_ERROR) {  // SendTo will return
-                                                // PR_NOT_TCP_SOCKET_ERROR if
-                                                // TCP Fast Open is turned off
-                                                // on Linux.
+      if (result ==
+          PR_NOT_TCP_SOCKET_ERROR) {  // SendTo will return
+                                      // PR_NOT_TCP_SOCKET_ERROR if TCP Fast
+                                      // Open is turned off on Linux.
         // We can call connect again.
         fastOpenNotSupported = true;
         rv = (tfoFd->lower->methods->connect)(tfoFd->lower, &secret->mAddr,
@@ -440,13 +448,13 @@ void TCPFastOpenFinish(PRFileDesc *fd, PRErrorCode &err,
  * tls-early-data can be rejected and than we still need to send the rest of the
  * record.
  */
-int32_t TCPFastOpenGetBufferSizeLeft(PRFileDesc *fd) {
-  PRFileDesc *tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
+int32_t TCPFastOpenGetBufferSizeLeft(PRFileDesc* fd) {
+  PRFileDesc* tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
   MOZ_RELEASE_ASSERT(tfoFd);
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
-  TCPFastOpenSecret *secret =
-      reinterpret_cast<TCPFastOpenSecret *>(tfoFd->secret);
+  TCPFastOpenSecret* secret =
+      reinterpret_cast<TCPFastOpenSecret*>(tfoFd->secret);
 
   if (secret->mState != TCPFastOpenSecret::COLLECT_DATA_FOR_FIRST_PACKET) {
     return 0;
@@ -465,24 +473,24 @@ int32_t TCPFastOpenGetBufferSizeLeft(PRFileDesc *fd) {
              : 0;
 }
 
-bool TCPFastOpenGetCurrentBufferSize(PRFileDesc *fd) {
-  PRFileDesc *tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
+bool TCPFastOpenGetCurrentBufferSize(PRFileDesc* fd) {
+  PRFileDesc* tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
   MOZ_RELEASE_ASSERT(tfoFd);
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
-  TCPFastOpenSecret *secret =
-      reinterpret_cast<TCPFastOpenSecret *>(tfoFd->secret);
+  TCPFastOpenSecret* secret =
+      reinterpret_cast<TCPFastOpenSecret*>(tfoFd->secret);
 
   return secret->mFirstPacketBufLen;
 }
 
-bool TCPFastOpenFlushBuffer(PRFileDesc *fd) {
-  PRFileDesc *tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
+bool TCPFastOpenFlushBuffer(PRFileDesc* fd) {
+  PRFileDesc* tfoFd = PR_GetIdentitiesLayer(fd, sTCPFastOpenLayerIdentity);
   MOZ_RELEASE_ASSERT(tfoFd);
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
-  TCPFastOpenSecret *secret =
-      reinterpret_cast<TCPFastOpenSecret *>(tfoFd->secret);
+  TCPFastOpenSecret* secret =
+      reinterpret_cast<TCPFastOpenSecret*>(tfoFd->secret);
   MOZ_ASSERT(secret->mState == TCPFastOpenSecret::CONNECTED);
 
   if (secret->mFirstPacketBufLen) {
@@ -499,12 +507,11 @@ bool TCPFastOpenFlushBuffer(PRFileDesc *fd) {
       if (err == PR_WOULD_BLOCK_ERROR) {
         // We still need to send this data.
         return true;
-      } else {
-        // There is an error, let nsSocketTransport pick it up properly.
-        secret->mCondition = err;
-        secret->mState = TCPFastOpenSecret::SOCKET_ERROR_STATE;
-        return false;
       }
+      // There is an error, let nsSocketTransport pick it up properly.
+      secret->mCondition = err;
+      secret->mState = TCPFastOpenSecret::SOCKET_ERROR_STATE;
+      return false;
     }
 
     secret->mFirstPacketBufLen -= rv;

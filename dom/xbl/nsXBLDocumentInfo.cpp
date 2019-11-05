@@ -7,11 +7,10 @@
 #include "mozilla/DebugOnly.h"
 
 #include "nsXBLDocumentInfo.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsXBLPrototypeBinding.h"
 #include "nsIScriptObjectPrincipal.h"
 #include "nsIScriptContext.h"
-#include "nsIDOMDocument.h"
 #include "jsapi.h"
 #include "jsfriendapi.h"
 #include "nsIURI.h"
@@ -23,6 +22,7 @@
 #include "nsIScriptSecurityManager.h"
 #include "nsContentUtils.h"
 #include "nsDOMJSUtils.h"
+#include "nsWindowSizes.h"
 #include "mozilla/Services.h"
 #include "xpcpublic.h"
 #include "mozilla/scache/StartupCache.h"
@@ -96,7 +96,7 @@ NS_INTERFACE_MAP_END
 NS_IMPL_CYCLE_COLLECTING_ADDREF(nsXBLDocumentInfo)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(nsXBLDocumentInfo)
 
-nsXBLDocumentInfo::nsXBLDocumentInfo(nsIDocument* aDocument)
+nsXBLDocumentInfo::nsXBLDocumentInfo(Document* aDocument)
     : mDocument(aDocument),
       mScriptAccess(true),
       mIsChrome(false),
@@ -174,7 +174,7 @@ void nsXBLDocumentInfo::RemovePrototypeBinding(const nsACString& aRef) {
 // static
 nsresult nsXBLDocumentInfo::ReadPrototypeBindings(nsIURI* aURI,
                                                   nsXBLDocumentInfo** aDocInfo,
-                                                  nsIDocument* aBoundDocument) {
+                                                  Document* aBoundDocument) {
   *aDocInfo = nullptr;
 
   nsAutoCString spec(kXBLCachePrefix);
@@ -193,7 +193,8 @@ nsresult nsXBLDocumentInfo::ReadPrototypeBindings(nsIURI* aURI,
   if (NS_FAILED(rv)) return rv;
 
   nsCOMPtr<nsIObjectInputStream> stream;
-  rv = NewObjectInputStreamFromBuffer(Move(buf), len, getter_AddRefs(stream));
+  rv = NewObjectInputStreamFromBuffer(std::move(buf), len,
+                                      getter_AddRefs(stream));
   NS_ENSURE_SUCCESS(rv, rv);
 
   // The file compatibility.ini stores the build id. This is checked in
@@ -213,12 +214,9 @@ nsresult nsXBLDocumentInfo::ReadPrototypeBindings(nsIURI* aURI,
   nsContentUtils::GetSecurityManager()->GetSystemPrincipal(
       getter_AddRefs(principal));
 
-  nsCOMPtr<nsIDOMDocument> domdoc;
-  rv = NS_NewXBLDocument(getter_AddRefs(domdoc), aURI, nullptr, principal);
+  nsCOMPtr<Document> doc;
+  rv = NS_NewXBLDocument(getter_AddRefs(doc), aURI, nullptr, principal);
   NS_ENSURE_SUCCESS(rv, rv);
-
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(domdoc);
-  NS_ASSERTION(doc, "Must have a document!");
 
   RefPtr<nsXBLDocumentInfo> docInfo = new nsXBLDocumentInfo(doc);
 
@@ -279,20 +277,12 @@ nsresult nsXBLDocumentInfo::WritePrototypeBindings() {
   rv = NewBufferFromStorageStream(storageStream, &buf, &len);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  return startupCache->PutBuffer(spec.get(), Move(buf), len);
+  return startupCache->PutBuffer(spec.get(), std::move(buf), len);
 }
 
 void nsXBLDocumentInfo::SetFirstPrototypeBinding(
     nsXBLPrototypeBinding* aBinding) {
   mFirstBinding = aBinding;
-}
-
-void nsXBLDocumentInfo::FlushSkinStylesheets() {
-  if (mBindingTable) {
-    for (auto iter = mBindingTable->Iter(); !iter.Done(); iter.Next()) {
-      iter.UserData()->FlushSkinSheets();
-    }
-  }
 }
 
 #ifdef DEBUG

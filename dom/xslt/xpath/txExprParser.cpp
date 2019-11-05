@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,8 +20,6 @@
 #include "txStringUtils.h"
 #include "txXPathNode.h"
 #include "txXPathOptimizer.h"
-
-using mozilla::Move;
 
 /**
  * Creates an Attribute Value Template using the given value
@@ -110,7 +108,7 @@ nsresult txExprParser::createAVT(const nsAString& aAttrValue,
 
     // Add expression, create a concat() call if necessary
     if (!expr) {
-      expr = Move(newExpr);
+      expr = std::move(newExpr);
     } else {
       if (!concat) {
         concat = new txCoreFunctionCall(txCoreFunctionCall::CONCAT);
@@ -238,7 +236,7 @@ nsresult txExprParser::createBinaryExpr(nsAutoPtr<Expr>& left,
       break;
 
     default:
-      NS_NOTREACHED("operator tokens should be already checked");
+      MOZ_ASSERT_UNREACHABLE("operator tokens should be already checked");
       return NS_ERROR_UNEXPECTED;
   }
   NS_ENSURE_TRUE(expr, NS_ERROR_OUT_OF_MEMORY);
@@ -295,7 +293,7 @@ nsresult txExprParser::createExpr(txExprLexer& lexer, txIParseContext* aContext,
              tokPrecedence <= precedence(static_cast<Token*>(ops.peek()))) {
         // can't use expr as argument due to order of evaluation
         nsAutoPtr<Expr> left(static_cast<Expr*>(exprs.pop()));
-        nsAutoPtr<Expr> right(Move(expr));
+        nsAutoPtr<Expr> right(std::move(expr));
         rv = createBinaryExpr(left, right, static_cast<Token*>(ops.pop()),
                               getter_Transfers(expr));
         if (NS_FAILED(rv)) {
@@ -312,7 +310,7 @@ nsresult txExprParser::createExpr(txExprLexer& lexer, txIParseContext* aContext,
 
   while (NS_SUCCEEDED(rv) && !exprs.isEmpty()) {
     nsAutoPtr<Expr> left(static_cast<Expr*>(exprs.pop()));
-    nsAutoPtr<Expr> right(Move(expr));
+    nsAutoPtr<Expr> right(std::move(expr));
     rv = createBinaryExpr(left, right, static_cast<Token*>(ops.pop()),
                           getter_Transfers(expr));
   }
@@ -669,7 +667,7 @@ nsresult txExprParser::createPathExpr(txExprLexer& lexer,
 
     expr.forget();
   }
-  NS_NOTREACHED("internal xpath parser error");
+  MOZ_ASSERT_UNREACHABLE("internal xpath parser error");
   return NS_ERROR_UNEXPECTED;
 }
 
@@ -796,7 +794,7 @@ nsresult txExprParser::parseParameters(FunctionCall* aFnCall,
     }
   }
 
-  NS_NOTREACHED("internal xpath parser error");
+  MOZ_ASSERT_UNREACHABLE("internal xpath parser error");
   return NS_ERROR_UNEXPECTED;
 }
 

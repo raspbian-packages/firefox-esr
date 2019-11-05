@@ -14,7 +14,10 @@ const {
   scale,
   translate,
 } = require("devtools/shared/layout/dom-matrix-2d");
-const { getViewportDimensions } = require("devtools/shared/layout/utils");
+const {
+  getCurrentZoom,
+  getViewportDimensions,
+} = require("devtools/shared/layout/utils");
 const { getComputedStyle } = require("./markup");
 
 // A set of utility functions for highlighters that render their content to a <canvas>
@@ -58,8 +61,33 @@ const DEFAULT_COLOR = "#9400FF";
  *         The transformation matrix to apply.
  */
 function clearRect(ctx, x1, y1, x2, y2, matrix = identity()) {
-  let p = getPointsFromDiagonal(x1, y1, x2, y2, matrix);
-  ctx.clearRect(p[0].x, p[0].y, p[1].x - p[0].x, p[3].y - p[0].y);
+  const p = getPointsFromDiagonal(x1, y1, x2, y2, matrix);
+
+  // We are creating a clipping path and want it removed after we clear it's
+  // contents so we need to save the context.
+  ctx.save();
+
+  // Create a path to be cleared.
+  ctx.beginPath();
+  ctx.moveTo(Math.round(p[0].x), Math.round(p[0].y));
+  ctx.lineTo(Math.round(p[1].x), Math.round(p[1].y));
+  ctx.lineTo(Math.round(p[2].x), Math.round(p[2].y));
+  ctx.lineTo(Math.round(p[3].x), Math.round(p[3].y));
+  ctx.closePath();
+
+  // Restrict future drawing to the inside of the path.
+  ctx.clip();
+
+  // Clear any transforms applied to the canvas so that clearRect() really does
+  // clear everything.
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+  // Clear the contents of our clipped path by attempting to clear the canvas.
+  ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+  // Restore the context to the state it was before changing transforms and
+  // adding clipping paths.
+  ctx.restore();
 }
 
 /**
@@ -84,7 +112,17 @@ function clearRect(ctx, x1, y1, x2, y2, matrix = identity()) {
  * @param  {String} alignment
  *         The alignment of the rectangle in relation to its position to the grid.
  */
-function drawBubbleRect(ctx, x, y, width, height, radius, margin, arrowSize, alignment) {
+function drawBubbleRect(
+  ctx,
+  x,
+  y,
+  width,
+  height,
+  radius,
+  margin,
+  arrowSize,
+  alignment
+) {
   let angle = 0;
 
   if (alignment === "bottom") {
@@ -97,8 +135,8 @@ function drawBubbleRect(ctx, x, y, width, height, radius, margin, arrowSize, ali
     angle = 270;
   }
 
-  let originX = x;
-  let originY = y;
+  const originX = x;
+  const originY = y;
 
   ctx.save();
   ctx.translate(originX, originY);
@@ -106,17 +144,25 @@ function drawBubbleRect(ctx, x, y, width, height, radius, margin, arrowSize, ali
   ctx.translate(-originX, -originY);
   ctx.translate(-width / 2, -height - arrowSize - margin);
 
+  // The contour of the bubble is drawn with a path. The canvas context will have taken
+  // care of transforming the coordinates before calling the function, so we just always
+  // draw with the arrow pointing down. The top edge has rounded corners too.
   ctx.beginPath();
+  // Start at the top/left corner (below the rounded corner).
   ctx.moveTo(x, y + radius);
-  ctx.lineTo(x, y + height - radius);
-  ctx.arcTo(x, y + height, x + radius, y + height, radius);
-  ctx.lineTo(x + width / 2 - arrowSize, y + height);
+  // Go down.
+  ctx.lineTo(x, y + height);
+  // Go down and the right, to draw the first half of the arrow tip.
   ctx.lineTo(x + width / 2, y + height + arrowSize);
-  ctx.lineTo(x + width / 2 + arrowSize, y + height);
-  ctx.arcTo(x + width, y + height, x + width, y + height - radius, radius);
+  // Go back up and to the right, to draw the second half of the arrow tip.
+  ctx.lineTo(x + width, y + height);
+  // Go up to just below the top/right rounded corner.
   ctx.lineTo(x + width, y + radius);
+  // Draw the top/right rounded corner.
   ctx.arcTo(x + width, y, x + width - radius, y, radius);
+  // Go to the left.
   ctx.lineTo(x + radius, y);
+  // Draw the top/left rounded corner.
   ctx.arcTo(x, y, x, y + radius, radius);
 
   ctx.stroke();
@@ -146,10 +192,10 @@ function drawBubbleRect(ctx, x, y, width, height, radius, margin, arrowSize, ali
  *         If set, the line will be extended to reach the boundaries specified.
  */
 function drawLine(ctx, x1, y1, x2, y2, options) {
-  let matrix = options.matrix || identity();
+  const matrix = options.matrix || identity();
 
-  let p1 = apply(matrix, [x1, y1]);
-  let p2 = apply(matrix, [x2, y2]);
+  const p1 = apply(matrix, [x1, y1]);
+  const p2 = apply(matrix, [x2, y2]);
 
   x1 = p1[0];
   y1 = p1[1];
@@ -162,9 +208,9 @@ function drawLine(ctx, x1, y1, x2, y2, options) {
       x2 = options.extendToBoundaries[2];
     } else {
       y1 = options.extendToBoundaries[1];
-      x1 = (p2[0] - p1[0]) * (y1 - p1[1]) / (p2[1] - p1[1]) + p1[0];
+      x1 = ((p2[0] - p1[0]) * (y1 - p1[1])) / (p2[1] - p1[1]) + p1[0];
       y2 = options.extendToBoundaries[3];
-      x2 = (p2[0] - p1[0]) * (y2 - p1[1]) / (p2[1] - p1[1]) + p1[0];
+      x2 = ((p2[0] - p1[0]) * (y2 - p1[1])) / (p2[1] - p1[1]) + p1[0];
     }
   }
 
@@ -191,7 +237,7 @@ function drawLine(ctx, x1, y1, x2, y2, options) {
  *         The transformation matrix to apply.
  */
 function drawRect(ctx, x1, y1, x2, y2, matrix = identity()) {
-  let p = getPointsFromDiagonal(x1, y1, x2, y2, matrix);
+  const p = getPointsFromDiagonal(x1, y1, x2, y2, matrix);
 
   ctx.beginPath();
   ctx.moveTo(Math.round(p[0].x), Math.round(p[0].y));
@@ -241,7 +287,7 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
  * @return {Object} DOMRect-like object of the 4 points.
  */
 function getBoundsFromPoints(points) {
-  let bounds = {};
+  const bounds = {};
 
   bounds.left = Math.min(points[0].x, points[1].x, points[2].x, points[3].x);
   bounds.right = Math.max(points[0].x, points[1].x, points[2].x, points[3].x);
@@ -276,21 +322,35 @@ function getBoundsFromPoints(points) {
  *         The current element.
  * @param  {Window} window
  *         The window object.
+ * @param  {Object} [options.ignoreWritingModeAndTextDirection=false]
+ *                  Avoid transforming the current matrix to match the text direction
+ *                  and writing mode.
  * @return {Object} An object with the following properties:
  *         - {Array} currentMatrix
  *           The current matrix.
  *         - {Boolean} hasNodeTransformations
  *           true if the node has transformed and false otherwise.
  */
-function getCurrentMatrix(element, window) {
-  let computedStyle = getComputedStyle(element);
+function getCurrentMatrix(
+  element,
+  window,
+  { ignoreWritingModeAndTextDirection } = {}
+) {
+  const computedStyle = getComputedStyle(element);
 
-  let paddingTop = parseFloat(computedStyle.paddingTop);
-  let paddingLeft = parseFloat(computedStyle.paddingLeft);
-  let borderTop = parseFloat(computedStyle.borderTopWidth);
-  let borderLeft = parseFloat(computedStyle.borderLeftWidth);
+  const paddingTop = parseFloat(computedStyle.paddingTop);
+  const paddingRight = parseFloat(computedStyle.paddingRight);
+  const paddingBottom = parseFloat(computedStyle.paddingBottom);
+  const paddingLeft = parseFloat(computedStyle.paddingLeft);
+  const borderTop = parseFloat(computedStyle.borderTopWidth);
+  const borderRight = parseFloat(computedStyle.borderRightWidth);
+  const borderBottom = parseFloat(computedStyle.borderBottomWidth);
+  const borderLeft = parseFloat(computedStyle.borderLeftWidth);
 
-  let nodeMatrix = getNodeTransformationMatrix(element, window.document.documentElement);
+  const nodeMatrix = getNodeTransformationMatrix(
+    element,
+    window.document.documentElement
+  );
 
   let currentMatrix = identity();
   let hasNodeTransformations = false;
@@ -308,17 +368,32 @@ function getCurrentMatrix(element, window) {
   }
 
   // Translate the origin based on the node's padding and border values.
-  currentMatrix = multiply(currentMatrix,
-    translate(paddingLeft + borderLeft, paddingTop + borderTop));
+  currentMatrix = multiply(
+    currentMatrix,
+    translate(paddingLeft + borderLeft, paddingTop + borderTop)
+  );
 
   // Adjust as needed to match the writing mode and text direction of the element.
-  let size = {
-    width: element.offsetWidth,
-    height: element.offsetHeight,
+  const size = {
+    width:
+      element.offsetWidth -
+      borderLeft -
+      borderRight -
+      paddingLeft -
+      paddingRight,
+    height:
+      element.offsetHeight -
+      borderTop -
+      borderBottom -
+      paddingTop -
+      paddingBottom,
   };
-  let writingModeMatrix = getWritingModeMatrix(size, computedStyle);
-  if (!isIdentity(writingModeMatrix)) {
-    currentMatrix = multiply(currentMatrix, writingModeMatrix);
+
+  if (!ignoreWritingModeAndTextDirection) {
+    const writingModeMatrix = getWritingModeMatrix(size, computedStyle);
+    if (!isIdentity(writingModeMatrix)) {
+      currentMatrix = multiply(currentMatrix, writingModeMatrix);
+    }
   }
 
   return { currentMatrix, hasNodeTransformations };
@@ -332,10 +407,27 @@ function getCurrentMatrix(element, window) {
  * @return {String} a Path Description that can be used in svg's <path> element.
  */
 function getPathDescriptionFromPoints(points) {
-  return "M" + points[0].x + "," + points[0].y + " " +
-         "L" + points[1].x + "," + points[1].y + " " +
-         "L" + points[2].x + "," + points[2].y + " " +
-         "L" + points[3].x + "," + points[3].y;
+  return (
+    "M" +
+    points[0].x +
+    "," +
+    points[0].y +
+    " " +
+    "L" +
+    points[1].x +
+    "," +
+    points[1].y +
+    " " +
+    "L" +
+    points[2].x +
+    "," +
+    points[2].y +
+    " " +
+    "L" +
+    points[3].x +
+    "," +
+    points[3].y
+  );
 }
 
 /**
@@ -357,13 +449,8 @@ function getPathDescriptionFromPoints(points) {
  * matrix given.
  */
 function getPointsFromDiagonal(x1, y1, x2, y2, matrix = identity()) {
-  return [
-    [x1, y1],
-    [x2, y1],
-    [x2, y2],
-    [x1, y2]
-  ].map(point => {
-    let transformedPoint = apply(matrix, point);
+  return [[x1, y1], [x2, y1], [x2, y2], [x1, y2]].map(point => {
+    const transformedPoint = apply(matrix, point);
 
     return { x: transformedPoint[0], y: transformedPoint[1] };
   });
@@ -382,15 +469,30 @@ function getPointsFromDiagonal(x1, y1, x2, y2, matrix = identity()) {
  *         corner of the page.
  * @param  {Number} devicePixelRatio
  *         The device pixel ratio.
+ * @param  {Window} [options.zoomWindow]
+ *         Optional window object used to calculate zoom (default = undefined).
  */
-function updateCanvasElement(canvas, canvasPosition, devicePixelRatio) {
+function updateCanvasElement(
+  canvas,
+  canvasPosition,
+  devicePixelRatio,
+  { zoomWindow } = {}
+) {
   let { x, y } = canvasPosition;
-  let size = CANVAS_SIZE / devicePixelRatio;
+  const size = CANVAS_SIZE / devicePixelRatio;
+
+  if (zoomWindow) {
+    const zoom = getCurrentZoom(zoomWindow);
+    x *= zoom;
+    y *= zoom;
+  }
 
   // Resize the canvas taking the dpr into account so as to have crisp lines, and
   // translating it to give the perception that it always covers the viewport.
-  canvas.setAttribute("style",
-    `width: ${size}px; height: ${size}px; transform: translate(${x}px, ${y}px);`);
+  canvas.setAttribute(
+    "style",
+    `width: ${size}px; height: ${size}px; transform: translate(${x}px, ${y}px);`
+  );
   canvas.getCanvasContext("2d").clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 }
 
@@ -411,14 +513,19 @@ function updateCanvasElement(canvas, canvasPosition, devicePixelRatio) {
  *         `window` given.
  * @return {Boolean} true if the <canvas> position was updated and false otherwise.
  */
-function updateCanvasPosition(canvasPosition, scrollPosition, window, windowDimensions) {
+function updateCanvasPosition(
+  canvasPosition,
+  scrollPosition,
+  window,
+  windowDimensions
+) {
   let { x: canvasX, y: canvasY } = canvasPosition;
-  let { x: scrollX, y: scrollY } = scrollPosition;
-  let cssCanvasSize = CANVAS_SIZE / window.devicePixelRatio;
-  let viewportSize = getViewportDimensions(window);
-  let { height, width } = windowDimensions;
-  let canvasWidth = cssCanvasSize;
-  let canvasHeight = cssCanvasSize;
+  const { x: scrollX, y: scrollY } = scrollPosition;
+  const cssCanvasSize = CANVAS_SIZE / window.devicePixelRatio;
+  const viewportSize = getViewportDimensions(window);
+  const { height, width } = windowDimensions;
+  const canvasWidth = cssCanvasSize;
+  const canvasHeight = cssCanvasSize;
   let hasUpdated = false;
 
   // Those values indicates the relative horizontal and vertical space the page can
@@ -427,20 +534,22 @@ function updateCanvasPosition(canvasPosition, scrollPosition, window, windowDime
   // sides (top/bottom, left/right; so 1/2 for each side) and also we don't want to
   // shown the edges of the canvas in case of fast scrolling (to avoid showing undraw
   // areas, therefore another 1/2 here).
-  let bufferSizeX = (canvasWidth - viewportSize.width) >> 2;
-  let bufferSizeY = (canvasHeight - viewportSize.height) >> 2;
+  const bufferSizeX = (canvasWidth - viewportSize.width) >> 2;
+  const bufferSizeY = (canvasHeight - viewportSize.height) >> 2;
 
   // Defines the boundaries for the canvas.
-  let leftBoundary = 0;
-  let rightBoundary = width - canvasWidth;
-  let topBoundary = 0;
-  let bottomBoundary = height - canvasHeight;
+  const leftBoundary = 0;
+  const rightBoundary = width - canvasWidth;
+  const topBoundary = 0;
+  const bottomBoundary = height - canvasHeight;
 
   // Defines the thresholds that triggers the canvas' position to be updated.
-  let leftThreshold = scrollX - bufferSizeX;
-  let rightThreshold = scrollX - canvasWidth + viewportSize.width + bufferSizeX;
-  let topThreshold = scrollY - bufferSizeY;
-  let bottomThreshold = scrollY - canvasHeight + viewportSize.height + bufferSizeY;
+  const leftThreshold = scrollX - bufferSizeX;
+  const rightThreshold =
+    scrollX - canvasWidth + viewportSize.width + bufferSizeX;
+  const topThreshold = scrollY - bufferSizeY;
+  const bottomThreshold =
+    scrollY - canvasHeight + viewportSize.height + bufferSizeY;
 
   if (canvasX < rightBoundary && canvasX < rightThreshold) {
     canvasX = Math.min(leftThreshold, rightBoundary);

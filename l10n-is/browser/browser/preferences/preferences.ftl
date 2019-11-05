@@ -4,8 +4,8 @@
 
 do-not-track-description = Senda vefsvæðum “Do Not Track” merki um að þú viljir ekki láta fylgjast með þér
 do-not-track-learn-more = Fræðast meira
-do-not-track-option-default =
-    .label = Aðeins þegar notað er vörn gegn gagnasöfnun
+do-not-track-option-default-content-blocking-known =
+    .label = Aðeins þegar { -brand-short-name } er stillt til að loka fyrir þekkta rekjara
 do-not-track-option-always =
     .label = Alltaf
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Valkostir
            *[other] Valkostir
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Fyrirtækið þitt hefur lokað á að breyta sumum stillingum.
        *[other] Fyrirtækið þitt hefur lokað á að breyta sumum stillingum.
     }
+managed-notice = Vafra þínum er stjórnað af skipulagsheild þinni.
 pane-general-title = Almennt
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Friðhelgi og öruggi
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox reikningur
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = { -brand-short-name } Stuðningur
+addons-button-label = Viðbætur & þemu
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Endurræsa { -brand-short-name }
 should-restart-ok = Endurræsa { -brand-short-name } núna
 cancel-no-restart-button = Hætta við
 restart-later = Endurræsa seinna
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Viðbót, <img data-l10n-name="icon"/> { $name }, stjórnar þinni heimasíðu.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Viðbót, <img data-l10n-name="icon"/> { $name }, stjórnar nýju flipa síðunni þinni.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Viðbót, <img data-l10n-name="icon"/> { $name }, stjórnar þessari stillingu.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Viðbót, <img data-l10n-name="icon"/> { $name }, hefur breytt sjálfgefinni leitarvél.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Viðbót, <img data-l10n-name="icon"/> { $name }, þarfnast inihalds flipa.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Viðbót, <img data-l10n-name="icon"/> { $name }, stjórnar þessari stillingu.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Viðbót, <img data-l10n-name="icon"/> { $name }, er að stjórna hvernig { -brand-short-name } tengist við Internetið.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Til að virkja viðbót farðu þá í <img data-l10n-name="addons-icon"/> viðbætur í <img data-l10n-name="menu-icon"/> valmyndinni.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } er ekki sjálfgefinn vafri
 set-as-my-default-browser =
     .label = Gera sjálfgefið…
     .accesskey = s
-startup-page = Þegar { -brand-short-name } ræsir
+startup-restore-previous-session =
+    .label = Sækja fyrri vafralotu
     .accesskey = s
-startup-user-homepage =
-    .label = Sýna mína heimasíðu
-startup-blank-page =
-    .label = Sýna tóma síðu
-startup-prev-session =
-    .label = Sýna flipa og glugga frá seinustu keyrslu
+startup-restore-warn-on-quit =
+    .label = Vara við þegar vafra er lokað
 disable-extension =
     .label = Slökkva á viðbót
-home-page-header = Heimasíða
 tabs-group-header = Flipar
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab skiptir á milli flipa í notkunarröð
@@ -181,6 +208,12 @@ choose-language-description = Veldu þau tungumál sem hafa forgang við birting
 choose-button =
     .label = Velja…
     .accesskey = V
+choose-browser-language-description = Veldu tungumálin til að nota til að birta valmyndir, skilaboð og tilkynningar frá { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Stilltu valkosti...
+    .accesskey = l
+confirm-browser-language-change-description = Endurræstu { -brand-short-name } til að staðfesta þessar breytingar
+confirm-browser-language-change-button = Staðfesta og endurræsa
 translate-web-pages =
     .label = Þýða innihald vefsíðu
     .accesskey = Þ
@@ -232,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Vita meira
 update-application-title = { -brand-short-name } uppfærslur
 update-application-description = Viðhalda { -brand-short-name } uppfærðum fyrir bestu afköst, stöðugleika og öryggi.
-update-application-info = Útgáfa { $version } <a>Hvað er nýtt</a>
 update-application-version = Útgáfa { $version } <a data-l10n-name="learn-more">Hvað er nýtt</a>
 update-history =
     .label = Sýna uppfærslusögu…
@@ -247,12 +279,24 @@ update-application-check-choose =
 update-application-manual =
     .label = Aldrei athuga með uppfærslur (ekki mælt með)
     .accesskey = l
+update-application-warning-cross-user-setting = Þessi stilling mun eiga við alla Windows reikninga og { -brand-short-name } notendur sem nota þessa uppsetningu af { -brand-short-name }.
 update-application-use-service =
     .label = Nota bakgrunnsþjónustu til að setja inn uppfærslur
     .accesskey = b
 update-enable-search-update =
     .label = Uppfæra leitarvélar sjálfvirkt
     .accesskey = e
+update-pref-write-failure-title = Skrifvilla
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Ekki er hægt að vista val. Gat ekki skrifað skrá sem: { $path }
+update-setting-write-failure-title = Ekki tókst að vista uppfærða valkosti
+update-in-progress-title = Uppfærsla í vinnslu
+update-in-progress-message = Viltu að { -brand-short-name } framkvæmi þessa uppfærslu?
+update-in-progress-ok-button = &Henda
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Halda áfram
 
 ## General Section - Performance
 
@@ -268,7 +312,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Takmarka þræði fyrir efni
     .accesskey = þ
 performance-limit-content-process-enabled-desc = Fleiri þræðir fyrir efni getur aukið afköst þegar verið er að nota marga flipa, en tekur upp meira minni.
-performance-limit-content-process-disabled-desc = Aðeins er hægt að breyta fjölda efnisþráða með { -brand-short-name } sem inniheldur fjölgjörvavinnslu. <a>Sjáðu hvernig þú athugar hvort fjölgjörvavinnsla er virk</a>
 performance-limit-content-process-blocked-desc = Aðeins er hægt að breyta fjölda efnisþráða með { -brand-short-name } sem inniheldur fjölgjörvavinnslu. <a data-l10n-name="learn-more">Sjáðu hvernig þú athugar hvort fjölgjörvavinnsla er virk</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -293,10 +336,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Leita í texta þegar byrjað er að slá inn orð
     .accesskey = L
+browsing-cfr-recommendations =
+    .label = Viðbætur sem mælt er með til að vafra
+    .accesskey = R
+browsing-cfr-features =
+    .label = Stinga uppá virkni er þú vafrar
+    .accesskey = S
+browsing-cfr-recommendations-learn-more = Fræðast meira
 
 ## General Section - Proxy
 
-network-proxy-title = Net milliþjónn
+network-settings-title = Netstillingar
+network-proxy-connection-description = Stilla hvernig { -brand-short-name } tengist við Internetið.
 network-proxy-connection-learn-more = Fræðast meira
 network-proxy-connection-settings =
     .label = Stillingar…
@@ -305,6 +356,7 @@ network-proxy-connection-settings =
 ## Home Section
 
 home-new-windows-tabs-header = Nýir gluggar og flipar
+home-new-windows-tabs-description2 = Veldu hvað þú sérð þegar þú opnar heimasíðuna þína, nýja glugga og nýja flipa.
 
 ## Home Section - Home Page Customization
 
@@ -337,9 +389,6 @@ use-current-pages =
 choose-bookmark =
     .label = Nota bókamerki…
     .accesskey = b
-restore-default =
-    .label = Endurstilla
-    .accesskey = r
 
 ## Search Section
 
@@ -447,7 +496,7 @@ sync-engine-history =
     .accesskey = r
 sync-engine-tabs =
     .label = Opna flipa
-    .tooltiptext = Listi yfir hvað er opið á öllum tengdum tækjum
+    .tooltiptext = Listi yfir hvað er opið á öllum samstilltum tækjum
     .accesskey = f
 sync-engine-logins =
     .label = Innskráningar
@@ -483,8 +532,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Vista
     .accesskey = V
-sync-mobilepromo-single = Tengja annað tæki
-sync-mobilepromo-multi = Sýsla með tæki
+sync-connect-another-device = Tengja annað tæki
+sync-manage-devices = Sýsla með tæki
+sync-fxa-begin-pairing = Para tæki
 sync-tos-link = Skilmálar þjónustu
 sync-fxa-privacy-notice = Upplýsingar um meðferð persónuupplýsinga
 
@@ -494,7 +544,10 @@ privacy-header = Friðhelgi vafra
 
 ## Privacy Section - Forms
 
-forms-header = Form & lykilorð
+logins-header = Innskráning og lykilorð
+forms-ask-to-save-logins =
+    .label = Biðja um að vista innskráningar og lykilorð fyrir vefsíður
+    .accesskey = r
 forms-exceptions =
     .label = Undanþágur…
     .accesskey = n
@@ -533,9 +586,9 @@ history-dontremember-description = { -brand-short-name } mun nota sömu stilling
 history-private-browsing-permanent =
     .label = Nota alltaf einkavöfrun
     .accesskey = k
-history-remember-option =
-    .label = Muna vafraferil og niðurhalsferil
-    .accesskey = g
+history-remember-browser-option =
+    .label = Muna vafra- og niðurhalsferil
+    .accesskey = b
 history-remember-search-option =
     .label = Muna leit og eyðublaðaferil
     .accesskey = f
@@ -552,36 +605,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Smákökur og gögn vefsvæðis
+sitedata-total-size-calculating = Reikna gagnastærð vefsvæðis og stærð skyndiminnis…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Geymdar smákökur, gögn fyrir vefsvæði og skyndiminni eru að nota { $value } { $unit } af diskplássi.
 sitedata-learn-more = Fræðast meira
-sitedata-accept-cookies-option =
-    .label = Taka á móti smákökum og gögnum frá vefsvæðum (mælt með)
-    .accesskey = a
-sitedata-block-cookies-option =
-    .label = Loka á smákökur og gögn (gæti haft áhrif virkni á vefsvæða)
-    .accesskey = ö
-sitedata-keep-until = Eiga þangað til
-    .accesskey = E
-sitedata-keep-until-expire =
-    .label = þær renna út
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } er lokað
-sitedata-accept-third-party-desc = Taka á móti smákökum frá þriðja aðila og gögnum
-    .accesskey = ö
-sitedata-accept-third-party-always-option =
-    .label = Alltaf
-sitedata-accept-third-party-visited-option =
-    .label = Frá heimsóttum síðum
-sitedata-accept-third-party-never-option =
-    .label = Aldrei
+sitedata-delete-on-close =
+    .label = Eyða vafrakökum og síðugögnum þegar { -brand-short-name } er lokað
+    .accesskey = c
+sitedata-delete-on-close-private-browsing = Þegar einkavöfrun er alltaf virk, munu vefkökum og vefsvæðagögnum ávallt verða eytt þegar { -brand-short-name } er lokað.
+sitedata-allow-cookies-option =
+    .label = Samþykkja vefkökur og síðugögn
+    .accesskey = A
+sitedata-disallow-cookies-option =
+    .label = Blokka vefkökur og síðugögn
+    .accesskey = B
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Tegund blokkuð
+    .accesskey = T
+sitedata-option-block-trackers =
+    .label = Rekjarar þriðja aðila
+sitedata-option-block-unvisited =
+    .label = Vefkökur frá óheimsóttum vefsíðum
+sitedata-option-block-all-third-party =
+    .label = Allar vefkökur frá þriðja aðila (geta valdið því að vefsíður hrynji)
+sitedata-option-block-all =
+    .label = Allar vefkökur (munu valda því að vefsíður hrynji)
 sitedata-clear =
     .label = Hreinsa gögn…
     .accesskey = ö
 sitedata-settings =
     .label = Sýsla með gögn…
     .accesskey = M
-sitedata-cookies-exceptions =
-    .label = Undanþágur…
-    .accesskey = U
+sitedata-cookies-permissions =
+    .label = Stjórna heimildum
+    .accesskey = P
 
 ## Privacy Section - Address Bar
 
@@ -598,30 +658,63 @@ addressbar-locbar-openpage-option =
     .accesskey = O
 addressbar-suggestions-settings = Breyta stillingum fyrir ábendingar leitarvéla
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Blokkun efnis
+content-blocking-description = Blokka efni frá þriðja aðila sem rekur feril þinn um netið. Stjórnaðu hversu mikið af netvirkni þinni er geymd og deilt á milli vefsíðna.
+content-blocking-learn-more = Læra meira
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Staðlað
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = Strangt
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Sérsniðið
+    .accesskey = C
+content-blocking-standard-description = Blokka einungis þekkta rekjara í huliðsgluggum.
+content-blocking-standard-desc = Jafnvægi á vernd og vinnslu. Leyfir suma rekjara svo vefsíður virki rétt.
+content-blocking-strict-desc = Blokka alla rekjara sem { -brand-short-name } uppgötvar. Getur valdið því að sumar síður hrynji.
+content-blocking-custom-desc = Velja hvað skal blokka.
+content-blocking-private-trackers = Þekktir rekjarar einungis í huliðsglugga.
+content-blocking-third-party-cookies = Vefkökur frá þriðja aðila
+content-blocking-all-cookies = Allar vefkökur
+content-blocking-unvisited-cookies = Vefkökur frá óheimsóttum vefsíðum
+content-blocking-all-windows-trackers = Þekktir rekjarar í öllum gluggum
+content-blocking-all-third-party-cookies = Allar vefkökur þriðja aðila
+content-blocking-cryptominers = Rafnám
+content-blocking-warning-title = Gættu þín!
+content-blocking-learn-how = Læra hvernig
+content-blocking-reload-tabs-button =
+    .label = Endurhlaða alla flipa
+    .accesskey = E
+content-blocking-trackers-label =
+    .label = Rekjarar
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = Í öllum gluggum
+    .accesskey = A
+content-blocking-option-private =
+    .label = Bara í huliðsgluggum
+    .accesskey = p
+content-blocking-tracking-protection-change-block-list = Breyta blokkunarlista
+content-blocking-cookies-label =
+    .label = Smákökur
+    .accesskey = S
+content-blocking-expand-section =
+    .tooltiptext = Nánari upplýsingar
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Rafnám
+    .accesskey = y
+
 ## Privacy Section - Tracking
 
-tracking-header = Vörn gegn gagnasöfnun
-tracking-desc = Vörn gegn gagnasöfnun lokar á njósnaraforrit á netinu sem safna vafragögnum á milli margra vefsvæða. <a data-l10n-name="learn-more">Fræðast meira um vörn gegn gagnasöfnun og friðhelgi</a>
-tracking-mode-label = Nota vörn gegn gagnasöfnun til að loka á þekkta gagnasafnara
-tracking-mode-always =
-    .label = Alltaf
-    .accesskey = A
-tracking-mode-private =
-    .label = Aðeins í huliðsgluggum
-    .accesskey = l
-tracking-mode-never =
-    .label = Aldrei
-    .accesskey = d
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Nota vörn gegn gagnasöfnun í huliðsgluggum til að loka á þekkta gagnasafnara
-    .accesskey = v
-tracking-exceptions =
-    .label = Undanþágur…
-    .accesskey = U
-tracking-change-block-list =
-    .label = Breyta lokunarlista…
-    .accesskey = B
+tracking-manage-exceptions =
+    .label = Stjórna undanþágum...
+    .accesskey = x
 
 ## Privacy Section - Permissions
 
@@ -646,6 +739,13 @@ permissions-notification-link = Vita meira
 permissions-notification-pause =
     .label = Stöðva tilkynningar þangað til { -brand-short-name } endurræsir
     .accesskey = n
+permissions-block-autoplay-media-exceptions =
+    .label = Undanþágur...
+    .accesskey = E
+permissions-autoplay = Sjálfvirk spilun
+permissions-autoplay-settings =
+    .label = Stillingar...
+    .accesskey = S
 permissions-block-popups =
     .label = Loka á sprettiglugga
     .accesskey = g
@@ -672,13 +772,15 @@ collection-health-report =
     .label = Leyfa { -brand-short-name } að senda sjálkrafa tæknilegar og notkunar upplýsingar til { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Fræðast meira
+collection-studies =
+    .label = Leyfa { -brand-short-name } að setja upp og keyra rannsóknir
+collection-studies-link = Skoða rannsóknir frá { -brand-short-name }
+addon-recommendations =
+    .label = Leyfa { -brand-short-name } að gera sérsniðnar viðbótarviðbætur.
+addon-recommendations-link = Fræðast meira
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Gagna skýrsla er óvirk í þessari útgáfu
-collection-browser-errors =
-    .label = Leyfa { -brand-short-name } að senda villuskýrslur vafra (með villuskilaboðum) til { -vendor-short-name }
-    .accesskey = b
-collection-browser-errors-link = Fræðast meira
 collection-backlogged-crash-reports =
     .label = Leyfa { -brand-short-name } að senda hrunskýrslu í bakgrunni í þínu nafni
     .accesskey = ð
@@ -721,3 +823,36 @@ certs-view =
 certs-devices =
     .label = Öryggistæki…
     .accesskey = y
+space-alert-learn-more-button =
+    .label = Fræðast meira
+    .accesskey = F
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Opna stillingar
+           *[other] Opna stillingar
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] O
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } er verða búið með diskaplássið. Hugsanlega birtist innihald vefsvæði ekki rétt. Þú getur hreinsað vistuð gögn í Valkostir > Friðhelgi og Öruggi > Smákökur og gögn vefsvæðis.
+       *[other] { -brand-short-name } er verða búið með diskaplássið. Hugsanlega birtist innihald vefsvæðis ekki rétt. Þú getur hreinsað vistuð gögn í Valkostir > Friðhelgi og Öruggi > Smákökur og gögn vefsvæðis.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Í lagi, ég skil
+    .accesskey = l
+space-alert-under-5gb-message = { -brand-short-name } er verða búið með diskaplássið. Hugsanlega birtist innihald vefsvæði ekki rétt. Kíktu á “Fræðast meira” til að lagfæra disk notkun til að vafra betur.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Skjáborð
+downloads-folder-name = Niðurhal
+choose-download-folder-title = Veldu niðurhals möppu:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Vista skrár í { $service-name }

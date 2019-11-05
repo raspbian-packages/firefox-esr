@@ -59,8 +59,8 @@ nsDeviceContextSpecProxy::Init(nsIWidget* aWidget,
     return NS_ERROR_FAILURE;
   }
 
-  rv = mPrintSession->GetRemotePrintJob(getter_AddRefs(mRemotePrintJob));
-  if (NS_FAILED(rv) || !mRemotePrintJob) {
+  mRemotePrintJob = mPrintSession->GetRemotePrintJob();
+  if (!mRemotePrintJob) {
     NS_WARNING("We can't print via the parent without a RemotePrintJobChild.");
     return NS_ERROR_FAILURE;
   }
@@ -125,6 +125,12 @@ float nsDeviceContextSpecProxy::GetPrintingScale() {
   MOZ_ASSERT(mRealDeviceContextSpec);
 
   return mRealDeviceContextSpec->GetPrintingScale();
+}
+
+gfxPoint nsDeviceContextSpecProxy::GetPrintingTranslate() {
+  MOZ_ASSERT(mRealDeviceContextSpec);
+
+  return mRealDeviceContextSpec->GetPrintingTranslate();
 }
 
 NS_IMETHODIMP

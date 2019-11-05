@@ -13,7 +13,7 @@
 
 <!ENTITY  filter.placeholder          "Hledat">
 
-<!ENTITY saveTo.label                 "Ukládat všechny soubory do">
+<!ENTITY saveTo.label                 "Ukládat všechny soubory do složky">
 <!ENTITY saveTo.accesskey             "U">
 <!ENTITY alwaysAsk.label              "U každého souboru se zeptat, kam ho uložit">
 <!ENTITY alwaysAsk.accesskey          "k">
@@ -33,6 +33,8 @@
 <!ENTITY authRequired.description         "Tato služba pro zobrazení nastavení vyžaduje přihlášení.">
 <!ENTITY authRequired.button.label        "Přihlásit">
 <!ENTITY authRequired.button.accesskey    "h">
+
+<!ENTITY findCloudFileProviders.label     "Najít další poskytovatele…">
 
 <!ENTITY enableCloudFileAccountOffer.label "Nabízet nahrávání na úložiště pro soubory větší než">
 <!ENTITY enableCloudFileAccountOffer.mb "MB">

@@ -6,12 +6,15 @@
 
 "use strict";
 
-define(function (require, exports, module) {
-  const { createFactory, Component } = require("devtools/client/shared/vendor/react");
+define(function(require, exports, module) {
+  const {
+    createFactory,
+    Component,
+  } = require("devtools/client/shared/vendor/react");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
   const dom = require("devtools/client/shared/vendor/react-dom-factories");
 
-  const { div, span, table, tbody, tr, td, } = dom;
+  const { div, span, table, tbody, tr, td } = dom;
 
   /**
    * This template is responsible for rendering basic layout
@@ -31,25 +34,30 @@ define(function (require, exports, module) {
     }
 
     render() {
-      let data = this.props.data;
+      const data = this.props.data;
 
-      return (
-        div({className: "netInfoHeadersTable"},
-          div({className: "netHeadersGroup"},
-            div({className: "netInfoHeadersGroup"},
-              JSONView.Locale.$STR("jsonViewer.responseHeaders")
-            ),
-            table({cellPadding: 0, cellSpacing: 0},
-              HeaderListFactory({headers: data.response})
-            )
+      return div(
+        { className: "netInfoHeadersTable" },
+        div(
+          { className: "netHeadersGroup" },
+          div(
+            { className: "netInfoHeadersGroup" },
+            JSONView.Locale["jsonViewer.responseHeaders"]
           ),
-          div({className: "netHeadersGroup"},
-            div({className: "netInfoHeadersGroup"},
-              JSONView.Locale.$STR("jsonViewer.requestHeaders")
-            ),
-            table({cellPadding: 0, cellSpacing: 0},
-              HeaderListFactory({headers: data.request})
-            )
+          table(
+            { cellPadding: 0, cellSpacing: 0 },
+            HeaderListFactory({ headers: data.response })
+          )
+        ),
+        div(
+          { className: "netHeadersGroup" },
+          div(
+            { className: "netInfoHeadersGroup" },
+            JSONView.Locale["jsonViewer.requestHeaders"]
+          ),
+          table(
+            { cellPadding: 0, cellSpacing: 0 },
+            HeaderListFactory({ headers: data.request })
           )
         )
       );
@@ -63,10 +71,12 @@ define(function (require, exports, module) {
   class HeaderList extends Component {
     static get propTypes() {
       return {
-        headers: PropTypes.arrayOf(PropTypes.shape({
-          name: PropTypes.string,
-          value: PropTypes.string
-        }))
+        headers: PropTypes.arrayOf(
+          PropTypes.shape({
+            name: PropTypes.string,
+            value: PropTypes.string,
+          })
+        ),
       };
     }
 
@@ -74,38 +84,36 @@ define(function (require, exports, module) {
       super(props);
 
       this.state = {
-        headers: []
+        headers: [],
       };
     }
 
     render() {
-      let headers = this.props.headers;
+      const headers = this.props.headers;
 
-      headers.sort(function (a, b) {
+      headers.sort(function(a, b) {
         return a.name > b.name ? 1 : -1;
       });
 
-      let rows = [];
+      const rows = [];
       headers.forEach(header => {
         rows.push(
-          tr({key: header.name},
-            td({className: "netInfoParamName"},
-              span({title: header.name}, header.name)
+          tr(
+            { key: header.name },
+            td(
+              { className: "netInfoParamName" },
+              span({ title: header.name }, header.name)
             ),
-            td({className: "netInfoParamValue"}, header.value)
+            td({ className: "netInfoParamValue" }, header.value)
           )
         );
       });
 
-      return (
-        tbody({},
-          rows
-        )
-      );
+      return tbody({}, rows);
     }
   }
 
-  let HeaderListFactory = createFactory(HeaderList);
+  const HeaderListFactory = createFactory(HeaderList);
 
   // Exports from this module
   exports.Headers = Headers;

@@ -23,7 +23,7 @@
 #include "nsIInterfaceRequestor.h"
 
 #ifdef XP_WIN
-#include "win_wifiScanner.h"
+#  include "win_wifiScanner.h"
 #endif
 
 extern mozilla::LazyLogModule gWifiMonitorLog;
@@ -39,7 +39,7 @@ class nsWifiListener {
     mListener = aListener;
     mHasSentData = false;
   }
-  ~nsWifiListener() {}
+  ~nsWifiListener() = default;
 
   nsMainThreadPtrHandle<nsIWifiListener> mListener;
   bool mHasSentData;
@@ -55,7 +55,7 @@ class nsWifiMonitor final : nsIRunnable, nsIWifiMonitor, nsIObserver {
   nsWifiMonitor();
 
  private:
-  ~nsWifiMonitor();
+  ~nsWifiMonitor() = default;
 
   nsresult DoScan();
 

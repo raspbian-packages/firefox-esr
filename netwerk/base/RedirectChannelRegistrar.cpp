@@ -3,9 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "RedirectChannelRegistrar.h"
+#include "mozilla/StaticPtr.h"
+#include "nsThreadUtils.h"
 
 namespace mozilla {
 namespace net {
+
+StaticRefPtr<RedirectChannelRegistrar> RedirectChannelRegistrar::gSingleton;
 
 NS_IMPL_ISUPPORTS(RedirectChannelRegistrar, nsIRedirectChannelRegistrar)
 
@@ -13,11 +17,29 @@ RedirectChannelRegistrar::RedirectChannelRegistrar()
     : mRealChannels(32),
       mParentChannels(32),
       mId(1),
-      mLock("RedirectChannelRegistrar") {}
+      mLock("RedirectChannelRegistrar") {
+  MOZ_ASSERT(!gSingleton);
+}
+
+// static
+already_AddRefed<nsIRedirectChannelRegistrar>
+RedirectChannelRegistrar::GetOrCreate() {
+  MOZ_ASSERT(NS_IsMainThread());
+  if (!gSingleton) {
+    gSingleton = new RedirectChannelRegistrar();
+  }
+  return do_AddRef(gSingleton);
+}
+
+// static
+void RedirectChannelRegistrar::Shutdown() {
+  MOZ_ASSERT(NS_IsMainThread());
+  gSingleton = nullptr;
+}
 
 NS_IMETHODIMP
-RedirectChannelRegistrar::RegisterChannel(nsIChannel *channel,
-                                          uint32_t *_retval) {
+RedirectChannelRegistrar::RegisterChannel(nsIChannel* channel,
+                                          uint32_t* _retval) {
   MutexAutoLock lock(mLock);
 
   mRealChannels.Put(mId, channel);
@@ -33,7 +55,7 @@ RedirectChannelRegistrar::RegisterChannel(nsIChannel *channel,
 
 NS_IMETHODIMP
 RedirectChannelRegistrar::GetRegisteredChannel(uint32_t id,
-                                               nsIChannel **_retval) {
+                                               nsIChannel** _retval) {
   MutexAutoLock lock(mLock);
 
   if (!mRealChannels.Get(id, _retval)) return NS_ERROR_NOT_AVAILABLE;
@@ -42,8 +64,8 @@ RedirectChannelRegistrar::GetRegisteredChannel(uint32_t id,
 }
 
 NS_IMETHODIMP
-RedirectChannelRegistrar::LinkChannels(uint32_t id, nsIParentChannel *channel,
-                                       nsIChannel **_retval) {
+RedirectChannelRegistrar::LinkChannels(uint32_t id, nsIParentChannel* channel,
+                                       nsIChannel** _retval) {
   MutexAutoLock lock(mLock);
 
   if (!mRealChannels.Get(id, _retval)) return NS_ERROR_NOT_AVAILABLE;
@@ -54,7 +76,7 @@ RedirectChannelRegistrar::LinkChannels(uint32_t id, nsIParentChannel *channel,
 
 NS_IMETHODIMP
 RedirectChannelRegistrar::GetParentChannel(uint32_t id,
-                                           nsIParentChannel **_retval) {
+                                           nsIParentChannel** _retval) {
   MutexAutoLock lock(mLock);
 
   if (!mParentChannels.Get(id, _retval)) return NS_ERROR_NOT_AVAILABLE;

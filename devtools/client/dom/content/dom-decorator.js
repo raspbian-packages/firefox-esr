@@ -9,18 +9,17 @@ const { Property } = require("./reducers/grips");
 
 // Implementation
 
-function DomDecorator() {
-}
+function DomDecorator() {}
 
 /**
  * Decorator for DOM panel tree component. It's responsible for
  * appending an icon to read only properties.
  */
 DomDecorator.prototype = {
-  getRowClass: function (object) {
+  getRowClass: function(object) {
     if (object instanceof Property) {
-      let value = object.value;
-      let names = [];
+      const value = object.value;
+      const names = [];
 
       if (value.enumerable) {
         names.push("enumerable");
@@ -42,8 +41,7 @@ DomDecorator.prototype = {
    * Return custom React template for specified object. The template
    * might depend on specified column.
    */
-  getValueRep: function (value, colId) {
-  }
+  getValueRep: function(value, colId) {},
 };
 
 // Exports from this module

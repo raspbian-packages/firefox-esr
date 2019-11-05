@@ -11,8 +11,7 @@
 <window title="Update Wizard pages: error patching, download with staging, and finished (partial failed and download complete), with fast MAR download"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="runTestDefault();">
-<script type="application/javascript"
-        src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+<script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
 <script type="application/javascript"
         src="utils.js"/>
 
@@ -25,20 +24,20 @@
 // button in the download's onStopRequest event listener.
 
 const testDownloadListener = {
-  onStartRequest(aRequest, aContext) { },
+  onStartRequest(aRequest) { },
 
   onProgress(aRequest, aContext, aProgress, aMaxProgress) { },
 
   onStatus(aRequest, aContext, aStatus, aStatusText) { },
 
-  onStopRequest(aRequest, aContext, aStatus) {
+  onStopRequest(aRequest, aStatus) {
     debugDump("clicking errorpatching page next button");
     gDocElem.getButton("next").click();
     gAUS.removeDownloadListener(this);
   },
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIRequestObserver,
-                                         Ci.nsIProgressEventSink])
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIRequestObserver,
+                                          Ci.nsIProgressEventSink])
 };
 
 let TESTS = [ {
@@ -66,7 +65,8 @@ function runTest() {
                     state: STATE_PENDING};
   let patches = getLocalPatchString(patchProps);
   patchProps = {url: slowDownloadURL,
-                selected: "false"};
+                selected: "false",
+                state: null};
   patches += getLocalPatchString(patchProps);
   let updateProps = {isCompleteUpdate: "false"};
   let updates = getLocalUpdateString(updateProps, patches);

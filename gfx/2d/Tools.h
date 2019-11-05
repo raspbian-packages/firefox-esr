@@ -35,8 +35,8 @@ template <class T>
 struct ClassStorage {
   char bytes[sizeof(T)];
 
-  const T *addr() const { return (const T *)bytes; }
-  T *addr() { return (T *)(void *)bytes; }
+  const T* addr() const { return (const T*)bytes; }
+  T* addr() { return (T*)(void*)bytes; }
 };
 
 static inline bool FuzzyEqual(Float aA, Float aB, Float aErr) {
@@ -46,7 +46,7 @@ static inline bool FuzzyEqual(Float aA, Float aB, Float aErr) {
   return false;
 }
 
-static inline void NudgeToInteger(float *aVal) {
+static inline void NudgeToInteger(float* aVal) {
   float r = floorf(*aVal + 0.5f);
   // The error threshold should be proportional to the rounded value. This
   // bounds the relative error introduced by the nudge operation. However,
@@ -58,14 +58,14 @@ static inline void NudgeToInteger(float *aVal) {
   }
 }
 
-static inline void NudgeToInteger(float *aVal, float aErr) {
+static inline void NudgeToInteger(float* aVal, float aErr) {
   float r = floorf(*aVal + 0.5f);
   if (FuzzyEqual(r, *aVal, aErr)) {
     *aVal = r;
   }
 }
 
-static inline void NudgeToInteger(double *aVal) {
+static inline void NudgeToInteger(double* aVal) {
   float f = float(*aVal);
   NudgeToInteger(&f);
   *aVal = f;
@@ -75,59 +75,14 @@ static inline Float Distance(Point aA, Point aB) {
   return hypotf(aB.x - aA.x, aB.y - aA.y);
 }
 
-static inline int BytesPerPixel(SurfaceFormat aFormat) {
-  switch (aFormat) {
-    case SurfaceFormat::A8:
-      return 1;
-    case SurfaceFormat::R5G6B5_UINT16:
-    case SurfaceFormat::A16:
-      return 2;
-    case SurfaceFormat::R8G8B8:
-    case SurfaceFormat::B8G8R8:
-      return 3;
-    case SurfaceFormat::HSV:
-    case SurfaceFormat::Lab:
-      return 3 * sizeof(float);
-    case SurfaceFormat::Depth:
-      return sizeof(uint16_t);
-    default:
-      return 4;
-  }
-}
-
-static inline SurfaceFormat SurfaceFormatForAlphaBitDepth(uint32_t aBitDepth) {
-  if (aBitDepth == 8) {
-    return SurfaceFormat::A8;
-  } else if (aBitDepth == 10 || aBitDepth == 12) {
-    return SurfaceFormat::A16;
-  }
-  MOZ_ASSERT_UNREACHABLE("Unsupported alpha bit depth");
-  return SurfaceFormat::UNKNOWN;
-}
-
-static inline bool IsOpaqueFormat(SurfaceFormat aFormat) {
-  switch (aFormat) {
-    case SurfaceFormat::B8G8R8X8:
-    case SurfaceFormat::R8G8B8X8:
-    case SurfaceFormat::X8R8G8B8:
-    case SurfaceFormat::YUV:
-    case SurfaceFormat::NV12:
-    case SurfaceFormat::YUV422:
-    case SurfaceFormat::R5G6B5_UINT16:
-      return true;
-    default:
-      return false;
-  }
-}
-
 template <typename T, int alignment = 16>
-struct AlignedArray {
+struct AlignedArray final {
   typedef T value_type;
 
-  AlignedArray() : mPtr(nullptr), mStorage(nullptr) {}
+  AlignedArray() : mPtr(nullptr), mStorage(nullptr), mCount(0) {}
 
   explicit MOZ_ALWAYS_INLINE AlignedArray(size_t aCount, bool aZero = false)
-      : mStorage(nullptr), mCount(0) {
+      : mPtr(nullptr), mStorage(nullptr), mCount(0) {
     Realloc(aCount, aZero);
   }
 
@@ -170,9 +125,9 @@ struct AlignedArray {
     if (aZero) {
       // calloc can be more efficient than new[] for large chunks,
       // so we use calloc/malloc/free for everything.
-      mStorage = static_cast<uint8_t *>(calloc(1, storageByteCount.value()));
+      mStorage = static_cast<uint8_t*>(calloc(1u, storageByteCount.value()));
     } else {
-      mStorage = static_cast<uint8_t *>(malloc(storageByteCount.value()));
+      mStorage = static_cast<uint8_t*>(malloc(storageByteCount.value()));
     }
     if (!mStorage) {
       mStorage = nullptr;
@@ -183,10 +138,10 @@ struct AlignedArray {
     if (uintptr_t(mStorage) % alignment) {
       // Our storage does not start at a <alignment>-byte boundary. Make sure
       // mPtr does!
-      mPtr = (T *)(uintptr_t(mStorage) + alignment -
-                   (uintptr_t(mStorage) % alignment));
+      mPtr = (T*)(uintptr_t(mStorage) + alignment -
+                  (uintptr_t(mStorage) % alignment));
     } else {
-      mPtr = (T *)(mStorage);
+      mPtr = (T*)(mStorage);
     }
     // Now that mPtr is pointing to the aligned position we can use placement
     // |operator new| to invoke any ctors at the correct positions. For types
@@ -196,7 +151,7 @@ struct AlignedArray {
     mCount = aCount;
   }
 
-  void Swap(AlignedArray<T, alignment> &aOther) {
+  void Swap(AlignedArray<T, alignment>& aOther) {
     mozilla::Swap(mPtr, aOther.mPtr);
     mozilla::Swap(mStorage, aOther.mStorage);
     mozilla::Swap(mCount, aOther.mCount);
@@ -206,12 +161,12 @@ struct AlignedArray {
     return aMallocSizeOf(mStorage);
   }
 
-  MOZ_ALWAYS_INLINE operator T *() { return mPtr; }
+  MOZ_ALWAYS_INLINE operator T*() { return mPtr; }
 
-  T *mPtr;
+  T* mPtr;
 
  private:
-  uint8_t *mStorage;
+  uint8_t* mStorage;
   size_t mCount;
 };
 

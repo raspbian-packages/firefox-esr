@@ -53,6 +53,9 @@ class AnalyserNode final : public AudioNode {
   virtual size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const override;
   virtual size_t SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const override;
 
+  void SetMinAndMaxDecibels(double aMinValue, double aMaxValue,
+                            ErrorResult& aRv);
+
  private:
   ~AnalyserNode() = default;
 

@@ -6,7 +6,7 @@
 
 #include "Flex.h"
 
-#include "FlexLine.h"
+#include "FlexLineValues.h"
 #include "mozilla/dom/FlexBinding.h"
 #include "nsFlexContainerFrame.h"
 
@@ -34,18 +34,29 @@ Flex::Flex(Element* aParent, nsFlexContainerFrame* aFrame) : mParent(aParent) {
   mLines.SetLength(containerInfo->mLines.Length());
   uint32_t index = 0;
   for (auto&& l : containerInfo->mLines) {
-    FlexLine* line = new FlexLine(this, &l);
+    FlexLineValues* line = new FlexLineValues(this, &l);
     mLines.ElementAt(index) = line;
     index++;
   }
+
+  mMainAxisDirection = containerInfo->mMainAxisDirection;
+  mCrossAxisDirection = containerInfo->mCrossAxisDirection;
 }
 
 JSObject* Flex::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return FlexBinding::Wrap(aCx, this, aGivenProto);
+  return Flex_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-void Flex::GetLines(nsTArray<RefPtr<FlexLine>>& aResult) {
+void Flex::GetLines(nsTArray<RefPtr<FlexLineValues>>& aResult) {
   aResult.AppendElements(mLines);
+}
+
+FlexPhysicalDirection Flex::MainAxisDirection() const {
+  return mMainAxisDirection;
+}
+
+FlexPhysicalDirection Flex::CrossAxisDirection() const {
+  return mCrossAxisDirection;
 }
 
 }  // namespace dom

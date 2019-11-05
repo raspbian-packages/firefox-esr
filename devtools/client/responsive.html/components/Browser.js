@@ -9,12 +9,12 @@
 const Services = require("Services");
 const flags = require("devtools/shared/flags");
 const { PureComponent } = require("devtools/client/shared/vendor/react");
-const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
+const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 
 const e10s = require("../utils/e10s");
 const message = require("../utils/message");
-const { getToplevelWindow } = require("../utils/window");
+const { getTopLevelWindow } = require("../utils/window");
 
 const FRAME_SCRIPT = "resource://devtools/client/responsive.html/browser/content.js";
 
@@ -26,15 +26,18 @@ class Browser extends PureComponent {
    */
   static get propTypes() {
     return {
-      swapAfterMount: PropTypes.bool.isRequired,
       onBrowserMounted: PropTypes.func.isRequired,
       onContentResize: PropTypes.func.isRequired,
+      onResizeViewport: PropTypes.func.isRequired,
+      swapAfterMount: PropTypes.bool.isRequired,
+      userContextId: PropTypes.number.isRequired,
     };
   }
 
   constructor(props) {
     super(props);
     this.onContentResize = this.onContentResize.bind(this);
+    this.onResizeViewport = this.onResizeViewport.bind(this);
   }
 
   /**
@@ -46,7 +49,7 @@ class Browser extends PureComponent {
    */
   componentWillMount() {
     this.browserShown = new Promise(resolve => {
-      let handler = frameLoader => {
+      const handler = frameLoader => {
         if (frameLoader.ownerElement != this.browser) {
           return;
         }
@@ -71,7 +74,7 @@ class Browser extends PureComponent {
     // Notify manager.js that this browser has mounted, so that it can trigger
     // a swap if needed and continue with the rest of its startup.
     await this.browserShown;
-    this.props.onBrowserMounted();
+    this.props.onBrowserMounted(this.browser);
 
     // If we are swapping browsers after mount, wait for the swap to complete
     // and start the frame script after that.
@@ -88,33 +91,44 @@ class Browser extends PureComponent {
   }
 
   onContentResize(msg) {
-    let { onContentResize } = this.props;
-    let { width, height } = msg.data;
+    const { onContentResize } = this.props;
+    const { width, height } = msg.data;
     onContentResize({
       width,
       height,
     });
   }
 
+  onResizeViewport(msg) {
+    const { onResizeViewport } = this.props;
+    const { width, height } = msg.data;
+    onResizeViewport({
+      width,
+      height,
+    });
+  }
+
   async startFrameScript() {
-    let {
+    const {
       browser,
       onContentResize,
+      onResizeViewport,
     } = this;
-    let mm = browser.frameLoader.messageManager;
+    const mm = browser.frameLoader.messageManager;
 
     // Notify tests when the content has received a resize event.  This is not
     // quite the same timing as when we _set_ a new size around the browser,
     // since it still needs to do async work before the content is actually
     // resized to match.
     e10s.on(mm, "OnContentResize", onContentResize);
+    e10s.on(mm, "OnResizeViewport", onResizeViewport);
 
-    let ready = e10s.once(mm, "ChildScriptReady");
+    const ready = e10s.once(mm, "ChildScriptReady");
     mm.loadFrameScript(FRAME_SCRIPT, true);
     await ready;
 
-    let browserWindow = getToplevelWindow(window);
-    let requiresFloatingScrollbars =
+    const browserWindow = getTopLevelWindow(window);
+    const requiresFloatingScrollbars =
       !browserWindow.matchMedia("(-moz-overlay-scrollbars)").matches;
 
     await e10s.request(mm, "Start", {
@@ -125,18 +139,24 @@ class Browser extends PureComponent {
   }
 
   async stopFrameScript() {
-    let {
+    const {
       browser,
       onContentResize,
+      onResizeViewport,
     } = this;
-    let mm = browser.frameLoader.messageManager;
+    const mm = browser.frameLoader.messageManager;
 
     e10s.off(mm, "OnContentResize", onContentResize);
+    e10s.off(mm, "OnResizeViewport", onResizeViewport);
     await e10s.request(mm, "Stop");
     message.post(window, "stop-frame-script:done");
   }
 
   render() {
+    const {
+      userContextId,
+    } = this.props;
+
     // In the case of @remote and @remoteType, the attribute must be set before the
     // element is added to the DOM to have any effect, which we are able to do with this
     // approach.
@@ -144,21 +164,24 @@ class Browser extends PureComponent {
     // @noisolation and @allowfullscreen are needed so that these frames have the same
     // access to browser features as regular browser tabs. The `swapFrameLoaders` platform
     // API we use compares such features before allowing the swap to proceed.
-    return dom.iframe(
-      {
-        allowFullScreen: "true",
-        className: "browser",
-        height: "100%",
-        mozbrowser: "true",
-        noisolation: "true",
-        remote: "true",
-        remotetype: "web",
-        src: "about:blank",
-        width: "100%",
-        ref: browser => {
-          this.browser = browser;
-        },
-      }
+    return (
+      dom.iframe(
+        {
+          allowFullScreen: "true",
+          className: "browser",
+          height: "100%",
+          mozbrowser: "true",
+          noisolation: "true",
+          remote: "true",
+          remoteType: "web",
+          src: "about:blank",
+          usercontextid: userContextId,
+          width: "100%",
+          ref: browser => {
+            this.browser = browser;
+          },
+        }
+      )
     );
   }
 }

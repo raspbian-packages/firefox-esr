@@ -3,29 +3,28 @@
 <head>
   <meta charset="utf-8">
   <title>Test DOMLocalization's attr sanitization functionality</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript">
   "use strict";
   const { DOMLocalization } =
-    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm", {});
-  const { MessageContext } =
-    ChromeUtils.import("resource://gre/modules/MessageContext.jsm", {});
+    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm");
+  const { FluentBundle } =
+    ChromeUtils.import("resource://gre/modules/Fluent.jsm");
 
   async function* mockGenerateMessages(locales, resourceIds) {
-    const mc = new MessageContext(locales);
-    mc.addMessages(`
+    const bundle = new FluentBundle(locales);
+    bundle.addMessages(`
 key1 = Value for Key 1
 
 key2 = Value for <a>Key 2<a/>.
     `);
-    yield mc;
+    yield bundle;
   }
 
   SimpleTest.waitForExplicitFinish();
   addLoadEvent(async () => {
     const domLoc = new DOMLocalization(
-      window,
       [],
       mockGenerateMessages
     );
@@ -36,9 +35,7 @@ key2 = Value for <a>Key 2<a/>.
     const elem2 = document.querySelector("#elem2");
 
     ok(elem1.textContent.includes("Value for"));
-    // This is a limitation of us using Node.localize API
-    // Documenting it here to make sure we notice when we fix it
-    is(elem1.getAttribute("title"), "Old Translation");
+    ok(!elem1.hasAttribute("title"));
 
     ok(elem2.textContent.includes("Value for"));
     ok(!elem2.hasAttribute("title"));

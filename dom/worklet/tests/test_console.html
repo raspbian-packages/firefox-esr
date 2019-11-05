@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Test for Worklet - Console</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <script type="application/javascript" src="common.js"></script>
 </head>
@@ -33,13 +33,14 @@ function configureTest() {
   var cl = new consoleListener();
 
   return SpecialPowers.pushPrefEnv(
-    {"set": [["dom.audioWorklet.enabled", true],
+    {"set": [["dom.audioworklet.enabled", true],
              ["dom.worklet.enabled", true]]});
 }
 
 // This function is called into an iframe.
 function runTestInIframe() {
-  audioWorklet.import("worklet_console.js");
+  var audioContext = new AudioContext();
+  audioContext.audioWorklet.addModule("worklet_console.js");
 }
 
 </script>

@@ -1,6 +1,6 @@
 "use strict";
 
-Cu.importGlobalProperties(["InspectorUtils"]);
+/* globals InspectorUtils */
 
 // This test checks whether applied WebExtension themes that attempt to change
 // the button background color properties are applied correctly.
@@ -11,28 +11,31 @@ add_task(async function test_button_background_properties() {
 
   let extension = ExtensionTestUtils.loadExtension({
     manifest: {
-      "theme": {
-        "images": {
-          "headerURL": "image1.png",
+      theme: {
+        images: {
+          theme_frame: "image1.png",
         },
-        "colors": {
-          "accentcolor": ACCENT_COLOR,
-          "textcolor": TEXT_COLOR,
-          "button_background_active": BUTTON_BACKGROUND_ACTIVE,
-          "button_background_hover": BUTTON_BACKGROUND_HOVER,
+        colors: {
+          frame: ACCENT_COLOR,
+          tab_background_text: TEXT_COLOR,
+          button_background_active: BUTTON_BACKGROUND_ACTIVE,
+          button_background_hover: BUTTON_BACKGROUND_HOVER,
         },
       },
     },
     files: {
       "image1.png": BACKGROUND,
     },
-
   });
 
   await extension.startup();
 
   let toolbarButton = document.querySelector("#home-button");
-  let toolbarButtonIcon = document.getAnonymousElementByAttribute(toolbarButton, "class", "toolbarbutton-icon");
+  let toolbarButtonIcon = document.getAnonymousElementByAttribute(
+    toolbarButton,
+    "class",
+    "toolbarbutton-icon"
+  );
   let toolbarButtonIconCS = window.getComputedStyle(toolbarButtonIcon);
 
   InspectorUtils.addPseudoClassLock(toolbarButton, ":hover");

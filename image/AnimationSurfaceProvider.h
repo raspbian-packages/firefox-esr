@@ -10,6 +10,9 @@
 #ifndef mozilla_image_AnimationSurfaceProvider_h
 #define mozilla_image_AnimationSurfaceProvider_h
 
+#include "mozilla/UniquePtr.h"
+
+#include "Decoder.h"
 #include "FrameAnimator.h"
 #include "IDecodingTask.h"
 #include "ISurfaceProvider.h"
@@ -24,7 +27,8 @@ namespace image {
  * animation.
  */
 class AnimationSurfaceProvider final : public ISurfaceProvider,
-                                       public IDecodingTask {
+                                       public IDecodingTask,
+                                       public IDecoderFrameRecycler {
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(AnimationSurfaceProvider, override)
 
@@ -46,14 +50,14 @@ class AnimationSurfaceProvider final : public ISurfaceProvider,
   bool IsFinished() const override;
   bool IsFullyDecoded() const override;
   size_t LogicalSizeInBytes() const override;
-  void AddSizeOfExcludingThis(MallocSizeOf aMallocSizeOf, size_t& aHeapSizeOut,
-                              size_t& aNonHeapSizeOut,
-                              size_t& aExtHandlesOut) override;
+  void AddSizeOfExcludingThis(MallocSizeOf aMallocSizeOf,
+                              const AddSizeOfCb& aCallback) override;
   void Reset() override;
   void Advance(size_t aFrame) override;
 
  protected:
   DrawableFrameRef DrawableRef(size_t aFrame) override;
+  already_AddRefed<imgFrame> GetFrame(size_t aFrame) override;
 
   // Animation frames are always locked. This is because we only want to release
   // their memory atomically (due to the surface cache discarding them). If they
@@ -75,12 +79,20 @@ class AnimationSurfaceProvider final : public ISurfaceProvider,
   // don't block layout or page load.
   TaskPriority Priority() const override { return TaskPriority::eLow; }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // IDecoderFrameRecycler implementation.
+  //////////////////////////////////////////////////////////////////////////////
+
+ public:
+  RawAccessFrameRef RecycleFrame(gfx::IntRect& aRecycleRect) override;
+
  private:
   virtual ~AnimationSurfaceProvider();
 
   void DropImageReference();
   void AnnounceSurfaceAvailable();
   void FinishDecoding();
+  void RequestFrameDiscarding();
 
   // @returns Whether or not we should continue decoding.
   bool CheckForNewFrameAtYield();
@@ -101,7 +113,7 @@ class AnimationSurfaceProvider final : public ISurfaceProvider,
   mutable Mutex mFramesMutex;
 
   /// The frames of this animation, in order.
-  AnimationFrameBuffer mFrames;
+  UniquePtr<AnimationFrameBuffer> mFrames;
 };
 
 }  // namespace image

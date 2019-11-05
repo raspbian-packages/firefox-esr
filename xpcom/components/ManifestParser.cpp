@@ -14,16 +14,16 @@
 
 #include "prio.h"
 #if defined(XP_WIN)
-#include <windows.h>
+#  include <windows.h>
 #elif defined(MOZ_WIDGET_COCOA)
-#include <CoreServices/CoreServices.h>
-#include "nsCocoaFeatures.h"
+#  include <CoreServices/CoreServices.h>
+#  include "nsCocoaFeatures.h"
 #elif defined(MOZ_WIDGET_GTK)
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 #endif
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "AndroidBridge.h"
+#  include "AndroidBridge.h"
 #endif
 
 #include "mozilla/Services.h"
@@ -45,15 +45,7 @@ struct ManifestDirective {
   const char* directive;
   int argc;
 
-  // Binary components are only allowed for APP locations.
-  bool apponly;
-
-  // Some directives should only be delivered for APP or EXTENSION locations.
-  bool componentonly;
-
   bool ischrome;
-
-  bool allowbootstrap;
 
   // The contentaccessible flags only apply to content/resource directives.
   bool contentflags;
@@ -66,63 +58,45 @@ struct ManifestDirective {
   void (nsChromeRegistry::*regfunc)(
       nsChromeRegistry::ManifestProcessingContext& aCx, int aLineNo,
       char* const* aArgv, int aFlags);
-
-  bool isContract;
 };
 static const ManifestDirective kParsingTable[] = {
     // clang-format off
   {
-    "manifest",         1, false, false, true, true, false,
+    "manifest",         1, true, false,
     &nsComponentManagerImpl::ManifestManifest, nullptr,
   },
   {
-    "binary-component", 1, true, true, false, false, false,
-    &nsComponentManagerImpl::ManifestBinaryComponent, nullptr,
-  },
-  {
-    "interfaces",       1, false, true, false, false, false,
-    &nsComponentManagerImpl::ManifestXPT, nullptr,
-  },
-  {
-    "component",        2, false, true, false, false, false,
+    "component",        2, false, false,
     &nsComponentManagerImpl::ManifestComponent, nullptr,
   },
   {
-    "contract",         2, false, true, false, false, false,
+    "contract",         2, false, false,
     &nsComponentManagerImpl::ManifestContract, nullptr,
   },
   {
-    "category",         3, false, true, false, false, false,
+    "category",         3, false, false,
     &nsComponentManagerImpl::ManifestCategory, nullptr,
   },
   {
-    "content",          2, false, true, true, true,  true,
+    "content",          2, true,  true,
     nullptr, &nsChromeRegistry::ManifestContent,
   },
   {
-    "locale",           3, false, true, true, true, false,
+    "locale",           3, true, false,
     nullptr, &nsChromeRegistry::ManifestLocale,
   },
   {
-    "skin",             3, false, false, true, true, false,
+    "skin",             3, true, false,
     nullptr, &nsChromeRegistry::ManifestSkin,
-  },
-  {
-    "overlay",          2, false, true, true, false, false,
-    nullptr, &nsChromeRegistry::ManifestOverlay,
-  },
-  {
-    "style",            2, false, false, true, false, false,
-    nullptr, &nsChromeRegistry::ManifestStyle,
   },
   {
     // NB: note that while skin manifests can use this, they are only allowed
     // to use it for chrome://../skin/ URLs
-    "override",         2, false, false, true, true, false,
+    "override",         2, true, false,
     nullptr, &nsChromeRegistry::ManifestOverride,
   },
   {
-    "resource",         2, false, true, true, true, true,
+    "resource",         2, false, true,
     nullptr, &nsChromeRegistry::ManifestResource,
   }
     // clang-format on
@@ -181,10 +155,11 @@ void LogMessageWithContext(FileLocation& aFile, uint32_t aLineNumber,
     return;
   }
 
-  nsresult rv =
-      error->Init(NS_ConvertUTF8toUTF16(formatted.get()),
-                  NS_ConvertUTF8toUTF16(file), EmptyString(), aLineNumber, 0,
-                  nsIScriptError::warningFlag, "chrome registration");
+  nsresult rv = error->Init(
+      NS_ConvertUTF8toUTF16(formatted.get()), NS_ConvertUTF8toUTF16(file),
+      EmptyString(), aLineNumber, 0, nsIScriptError::warningFlag,
+      "chrome registration", false /* from private window */,
+      true /* from chrome context */);
   if (NS_FAILED(rv)) {
     return;
   }
@@ -301,22 +276,22 @@ static bool CheckOsFlag(const nsAString& aFlag, const nsAString& aData,
   return result;
 }
 
-  /**
-   * Check for a modifier flag of the following form:
-   *   "flag=version"
-   *   "flag<=version"
-   *   "flag<version"
-   *   "flag>=version"
-   *   "flag>version"
-   * @param aFlag The flag to compare.
-   * @param aData The tokenized data to check; this is lowercased
-   *              before being passed in.
-   * @param aValue The value that is expected. If this is empty then no
-   *               comparison will match.
-   * @param aResult If this is eOK when passed in, this is left alone.
-   *                Otherwise if the flag is found it is set to eBad or eOK.
-   * @return Whether the flag was handled.
-   */
+/**
+ * Check for a modifier flag of the following form:
+ *   "flag=version"
+ *   "flag<=version"
+ *   "flag<version"
+ *   "flag>=version"
+ *   "flag>version"
+ * @param aFlag The flag to compare.
+ * @param aData The tokenized data to check; this is lowercased
+ *              before being passed in.
+ * @param aValue The value that is expected. If this is empty then no
+ *               comparison will match.
+ * @param aResult If this is eOK when passed in, this is left alone.
+ *                Otherwise if the flag is found it is set to eBad or eOK.
+ * @return Whether the flag was handled.
+ */
 
 #define COMPARE_EQ 1 << 0
 #define COMPARE_LT 1 << 1
@@ -479,14 +454,14 @@ void ParseManifest(NSLocationType aType, FileLocation& aFile, char* aBuf,
 
   nsAutoString osVersion;
 #if defined(XP_WIN)
-#pragma warning(push)
-#pragma warning(disable : 4996)  // VC12+ deprecates GetVersionEx
+#  pragma warning(push)
+#  pragma warning(disable : 4996)  // VC12+ deprecates GetVersionEx
   OSVERSIONINFO info = {sizeof(OSVERSIONINFO)};
   if (GetVersionEx(&info)) {
     nsTextFormatter::ssprintf(osVersion, u"%ld.%ld", info.dwMajorVersion,
                               info.dwMinorVersion);
   }
-#pragma warning(pop)
+#  pragma warning(pop)
 #elif defined(MOZ_WIDGET_COCOA)
   SInt32 majorVersion = nsCocoaFeatures::OSXVersionMajor();
   SInt32 minorVersion = nsCocoaFeatures::OSXVersionMinor();
@@ -564,26 +539,10 @@ void ParseManifest(NSLocationType aType, FileLocation& aFile, char* aBuf,
       continue;
     }
 
-    if (!directive->allowbootstrap && NS_BOOTSTRAPPED_LOCATION == aType) {
+    if (!directive->ischrome && NS_BOOTSTRAPPED_LOCATION == aType) {
       LogMessageWithContext(
           aFile, line,
           "Bootstrapped manifest not allowed to use '%s' directive.", token);
-      continue;
-    }
-
-#ifndef MOZ_BINARY_EXTENSIONS
-    if (directive->apponly && NS_APP_LOCATION != aType) {
-      LogMessageWithContext(
-          aFile, line, "Only application manifests may use the '%s' directive.",
-          token);
-      continue;
-    }
-#endif
-
-    if (directive->componentonly && NS_SKIN_LOCATION == aType) {
-      LogMessageWithContext(aFile, line,
-                            "Skin manifest not allowed to use '%s' directive.",
-                            token);
       continue;
     }
 
@@ -694,15 +653,8 @@ void ParseManifest(NSLocationType aType, FileLocation& aFile, char* aBuf,
       (nsChromeRegistry::gChromeRegistry->*(directive->regfunc))(chromecx, line,
                                                                  argv, flags);
     } else if (directive->ischrome || !aChromeOnly) {
-      if (directive->isContract) {
-        CachedDirective* cd = contracts.AppendElement();
-        cd->lineno = line;
-        cd->argv[0] = argv[0];
-        cd->argv[1] = argv[1];
-      } else {
-        (nsComponentManagerImpl::gComponentManager->*(directive->mgrfunc))(
-            mgrcx, line, argv);
-      }
+      (nsComponentManagerImpl::gComponentManager->*(directive->mgrfunc))(
+          mgrcx, line, argv);
     }
   }
 

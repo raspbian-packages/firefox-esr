@@ -113,9 +113,10 @@ class ScopedDIRClose {
 };
 typedef mozilla::UniquePtr<DIR, ScopedDIRClose> ScopedDIR;
 
-void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
-// DANGER: no calls to malloc are allowed from now on:
-// http://crbug.com/36678
+void CloseSuperfluousFds(void* aCtx, bool (*aShouldPreserve)(void*, int)) {
+  // DANGER: no calls to malloc (or locks, etc.) are allowed from now on:
+  // https://crbug.com/36678
+  // Also, beware of STL iterators: https://crbug.com/331459
 #if defined(ANDROID)
   static const rlim_t kSystemDefaultMaxFds = 1024;
   static const char kFDDir[] = "/proc/self/fd";
@@ -151,17 +152,14 @@ void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
     // Fallback case: Try every possible fd.
     for (rlim_t i = 0; i < max_fds; ++i) {
       const int fd = static_cast<int>(i);
-      if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO)
+      if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO ||
+          aShouldPreserve(aCtx, fd)) {
         continue;
-      InjectiveMultimap::const_iterator j;
-      for (j = saved_mapping.begin(); j != saved_mapping.end(); j++) {
-        if (fd == j->dest) break;
       }
-      if (j != saved_mapping.end()) continue;
 
       // Since we're just trying to close anything we can find,
       // ignore any error return values of close().
-      HANDLE_EINTR(close(fd));
+      close(fd);
     }
     return;
   }
@@ -176,56 +174,21 @@ void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
     errno = 0;
     const long int fd = strtol(fd_dir.name(), &endptr, 10);
     if (fd_dir.name()[0] == 0 || *endptr || fd < 0 || errno) continue;
-    if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO)
-      continue;
-    InjectiveMultimap::const_iterator i;
-    for (i = saved_mapping.begin(); i != saved_mapping.end(); i++) {
-      if (fd == i->dest) break;
-    }
-    if (i != saved_mapping.end()) continue;
     if (fd == dir_fd) continue;
+    if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO ||
+        aShouldPreserve(aCtx, fd)) {
+      continue;
+    }
 
     // When running under Valgrind, Valgrind opens several FDs for its
     // own use and will complain if we try to close them.  All of
     // these FDs are >= |max_fds|, so we can check against that here
     // before closing.  See https://bugs.kde.org/show_bug.cgi?id=191758
     if (fd < static_cast<int>(max_fds)) {
-      int ret = HANDLE_EINTR(close(fd));
+      int ret = IGNORE_EINTR(close(fd));
       if (ret != 0) {
         DLOG(ERROR) << "Problem closing fd";
       }
-    }
-  }
-}
-
-// Sets all file descriptors to close on exec except for stdin, stdout
-// and stderr.
-// TODO(agl): Remove this function. It's fundamentally broken for multithreaded
-// apps.
-void SetAllFDsToCloseOnExec() {
-#if defined(OS_LINUX) || defined(OS_SOLARIS)
-  const char fd_dir[] = "/proc/self/fd";
-#elif defined(OS_MACOSX) || defined(OS_BSD)
-  const char fd_dir[] = "/dev/fd";
-#endif
-  ScopedDIR dir_closer(opendir(fd_dir));
-  DIR* dir = dir_closer.get();
-  if (NULL == dir) {
-    DLOG(ERROR) << "Unable to open " << fd_dir;
-    return;
-  }
-
-  struct dirent* ent;
-  while ((ent = readdir(dir))) {
-    // Skip . and .. entries.
-    if (ent->d_name[0] == '.') continue;
-    int i = atoi(ent->d_name);
-    // We don't close stdin, stdout or stderr.
-    if (i <= STDERR_FILENO) continue;
-
-    int flags = fcntl(i, F_GETFD);
-    if ((flags == -1) || (fcntl(i, F_SETFD, flags | FD_CLOEXEC) == -1)) {
-      DLOG(ERROR) << "fcntl failure.";
     }
   }
 }

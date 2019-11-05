@@ -10,10 +10,6 @@
 #include "nsIObserver.h"
 #include "nsWeakReference.h"
 
-#ifdef MOZ_XUL
-#include "nsIXULOverlayProvider.h"
-#endif
-
 #include "nsString.h"
 #include "nsURIHashKey.h"
 #include "nsInterfaceHashtable.h"
@@ -40,24 +36,17 @@ class nsIURL;
   }
 
 class nsChromeRegistry : public nsIToolkitChromeRegistry,
-#ifdef MOZ_XUL
-                         public nsIXULOverlayProvider,
-#endif
                          public nsIObserver,
                          public nsSupportsWeakReference {
  public:
   NS_DECL_ISUPPORTS
 
   // nsIXULChromeRegistry methods:
-  NS_IMETHOD ReloadChrome() override;
-  NS_IMETHOD RefreshSkins() override;
   NS_IMETHOD AllowScriptsForPackage(nsIURI* url, bool* _retval) override;
   NS_IMETHOD AllowContentToAccess(nsIURI* url, bool* _retval) override;
   NS_IMETHOD CanLoadURLRemotely(nsIURI* url, bool* _retval) override;
   NS_IMETHOD MustLoadURLRemotely(nsIURI* url, bool* _retval) override;
 
-  // nsIChromeRegistry methods:
-  NS_IMETHOD_(bool) WrappersEnabled(nsIURI* aURI) override;
   NS_IMETHOD ConvertChromeURL(nsIURI* aChromeURI, nsIURI** aResult) override;
 
   // nsChromeRegistry methods:
@@ -123,10 +112,6 @@ class nsChromeRegistry : public nsIToolkitChromeRegistry,
                               char* const* argv, int flags) = 0;
   virtual void ManifestSkin(ManifestProcessingContext& cx, int lineno,
                             char* const* argv, int flags) = 0;
-  virtual void ManifestOverlay(ManifestProcessingContext& cx, int lineno,
-                               char* const* argv, int flags) = 0;
-  virtual void ManifestStyle(ManifestProcessingContext& cx, int lineno,
-                             char* const* argv, int flags) = 0;
   virtual void ManifestOverride(ManifestProcessingContext& cx, int lineno,
                                 char* const* argv, int flags) = 0;
   virtual void ManifestResource(ManifestProcessingContext& cx, int lineno,

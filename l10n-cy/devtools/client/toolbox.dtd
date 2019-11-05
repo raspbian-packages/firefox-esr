@@ -10,15 +10,6 @@
 <!ENTITY toggleToolboxF12.keycode          "VK_F12">
 <!ENTITY toggleToolboxF12.keytext          "F12">
 
-<!-- LOCALIZATION NOTE (browserToolboxErrorMessage): This is the label
-  -  shown next to error details when the Browser Toolbox is unable to open. -->
-<!ENTITY browserToolboxErrorMessage          "Gwall wrth agor Blwch Offer y Porwr:">
-
-<!-- LOCALIZATION NOTE (browserToolboxStatusMessage): This is the label
-  -  shown next to status details when the Browser Toolbox fails to connect or
-  -  appears to be taking a while to do so. -->
-<!ENTITY browserToolboxStatusMessage "Statws cysylltu Blwch Offer Porwr:">
-
 <!-- LOCALIZATION NOTE (options.context.advancedSettings): This is the label for
   -  the heading of the advanced settings group in the options panel. -->
 <!ENTITY options.context.advancedSettings "Gosodiadau uwch">
@@ -96,8 +87,8 @@
 <!-- LOCALIZATION NOTE (options.disableHTTPCache.label,
   -  options.disableHTTPCache.tooltip): This is the options panel label and
   -  tooltip for the checkbox that toggles the HTTP cache on or off. -->
-<!ENTITY options.disableHTTPCache.label     "Analluogi Storfa HTTP (pan mae'r blwch offer ar agor)">
-<!ENTITY options.disableHTTPCache.tooltip   "Bydd cychwyn y dewis hwn yn analluogi storfa'r HTTP ar gyfer pob tab sydd a' r blwch offer ar agor. Nid yw Service Workers yn cael eu heffeithio gan y dewis hwn.">
+<!ENTITY options.disableHTTPCache.label     "Analluogi Storfa Dros Dro HTTP (pan mae'r blwch offer ar agor)">
+<!ENTITY options.disableHTTPCache.tooltip   "Bydd cychwyn y dewis hwn yn analluogi storfa dros dro'r HTTP ar gyfer pob tab sydd a' r blwch offer ar agor. Nid yw Service Workers yn cael eu heffeithio gan y dewis hwn.">
 
 <!-- LOCALIZATION NOTE (options.enableServiceWorkersHTTP.label,
   -  options.enableServiceWorkersHTTP.tooltip): This is the options panel label and
@@ -144,6 +135,11 @@
    - label for the checkbox that toggles timestamps in the Web Console -->
 <!ENTITY options.timestampMessages.label      "Galluogi stamp amser">
 <!ENTITY options.timestampMessages.tooltip    "Os ydych wedi galluogi'r gorchmyniona bydd allbynnau yn y Consol Gwe yn dangos stamp amser">
+
+<!-- LOCALIZATION NOTE (options.warningGroups.label): This is the
+   - label for the checkbox that toggles the warningGroups feature in the Web Console -->
+<!ENTITY options.warningGroups.label      "Grwpio negeseuon tebyg">
+<!ENTITY options.warningGroups.tooltip    "Pan wedi eu galluogi, bydd negeseuon tebyg yn cael eu rhoi mewn grwpiau">
 
 <!-- LOCALIZATION NOTE (options.debugger.label): This is the label for the
   -  heading of the group of Debugger preferences in the options panel. -->

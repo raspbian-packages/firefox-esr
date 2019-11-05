@@ -29,9 +29,10 @@
 namespace mozilla {
 namespace image {
 
-/*static*/ void ImageFactory::Initialize() {}
+/*static*/
+void ImageFactory::Initialize() {}
 
-static uint32_t ComputeImageFlags(ImageURL* uri, const nsCString& aMimeType,
+static uint32_t ComputeImageFlags(nsIURI* uri, const nsCString& aMimeType,
                                   bool isMultiPart) {
   nsresult rv;
 
@@ -84,9 +85,9 @@ static uint32_t ComputeImageFlags(ImageURL* uri, const nsCString& aMimeType,
 }
 
 #ifdef DEBUG
-static void NotifyImageLoading(ImageURL* aURI) {
+static void NotifyImageLoading(nsIURI* aURI) {
   if (!NS_IsMainThread()) {
-    RefPtr<ImageURL> uri(aURI);
+    nsCOMPtr<nsIURI> uri(aURI);
     nsCOMPtr<nsIRunnable> ev = NS_NewRunnableFunction(
         "NotifyImageLoading", [uri]() -> void { NotifyImageLoading(uri); });
     SystemGroup::Dispatch(TaskCategory::Other, ev.forget());
@@ -104,9 +105,10 @@ static void NotifyImageLoading(ImageURL* aURI) {
 }
 #endif
 
-/* static */ already_AddRefed<Image> ImageFactory::CreateImage(
+/* static */
+already_AddRefed<Image> ImageFactory::CreateImage(
     nsIRequest* aRequest, ProgressTracker* aProgressTracker,
-    const nsCString& aMimeType, ImageURL* aURI, bool aIsMultiPart,
+    const nsCString& aMimeType, nsIURI* aURI, bool aIsMultiPart,
     uint32_t aInnerWindowId) {
   MOZ_ASSERT(gfxPrefs::SingletonExists(),
              "Pref observers should have been initialized already");
@@ -141,28 +143,8 @@ static already_AddRefed<Image> BadImage(const char* aMessage,
   return aImage.forget();
 }
 
-static void SetSourceSizeHint(RasterImage* aImage, uint32_t aSize) {
-  // Pass anything usable on so that the RasterImage can preallocate
-  // its source buffer.
-  if (aSize == 0) {
-    return;
-  }
-
-  // Bound by something reasonable
-  uint32_t sizeHint = std::min<uint32_t>(aSize, 20000000);
-  nsresult rv = aImage->SetSourceSizeHint(sizeHint);
-  if (NS_FAILED(rv)) {
-    // Flush memory, try to get some back, and try again.
-    rv = nsMemory::HeapMinimize(true);
-    nsresult rv2 = aImage->SetSourceSizeHint(sizeHint);
-    // If we've still failed at this point, things are going downhill.
-    if (NS_FAILED(rv) || NS_FAILED(rv2)) {
-      NS_WARNING("About to hit OOM in imagelib!");
-    }
-  }
-}
-
-/* static */ already_AddRefed<Image> ImageFactory::CreateAnonymousImage(
+/* static */
+already_AddRefed<Image> ImageFactory::CreateAnonymousImage(
     const nsCString& aMimeType, uint32_t aSizeHint /* = 0 */) {
   nsresult rv;
 
@@ -177,13 +159,17 @@ static void SetSourceSizeHint(RasterImage* aImage, uint32_t aSize) {
     return BadImage("RasterImage::Init failed", newImage);
   }
 
-  SetSourceSizeHint(newImage, aSizeHint);
+  rv = newImage->SetSourceSizeHint(aSizeHint);
+  if (NS_FAILED(rv)) {
+    return BadImage("RasterImage::SetSourceSizeHint failed", newImage);
+  }
+
   return newImage.forget();
 }
 
-/* static */ already_AddRefed<MultipartImage>
-ImageFactory::CreateMultipartImage(Image* aFirstPart,
-                                   ProgressTracker* aProgressTracker) {
+/* static */
+already_AddRefed<MultipartImage> ImageFactory::CreateMultipartImage(
+    Image* aFirstPart, ProgressTracker* aProgressTracker) {
   MOZ_ASSERT(aFirstPart);
   MOZ_ASSERT(aProgressTracker);
 
@@ -235,9 +221,10 @@ uint32_t GetContentSize(nsIRequest* aRequest) {
   return 0;
 }
 
-/* static */ already_AddRefed<Image> ImageFactory::CreateRasterImage(
+/* static */
+already_AddRefed<Image> ImageFactory::CreateRasterImage(
     nsIRequest* aRequest, ProgressTracker* aProgressTracker,
-    const nsCString& aMimeType, ImageURL* aURI, uint32_t aImageFlags,
+    const nsCString& aMimeType, nsIURI* aURI, uint32_t aImageFlags,
     uint32_t aInnerWindowId) {
   MOZ_ASSERT(aProgressTracker);
 
@@ -254,13 +241,18 @@ uint32_t GetContentSize(nsIRequest* aRequest) {
 
   newImage->SetInnerWindowID(aInnerWindowId);
 
-  SetSourceSizeHint(newImage, GetContentSize(aRequest));
+  rv = newImage->SetSourceSizeHint(GetContentSize(aRequest));
+  if (NS_FAILED(rv)) {
+    return BadImage("RasterImage::SetSourceSizeHint failed", newImage);
+  }
+
   return newImage.forget();
 }
 
-/* static */ already_AddRefed<Image> ImageFactory::CreateVectorImage(
+/* static */
+already_AddRefed<Image> ImageFactory::CreateVectorImage(
     nsIRequest* aRequest, ProgressTracker* aProgressTracker,
-    const nsCString& aMimeType, ImageURL* aURI, uint32_t aImageFlags,
+    const nsCString& aMimeType, nsIURI* aURI, uint32_t aImageFlags,
     uint32_t aInnerWindowId) {
   MOZ_ASSERT(aProgressTracker);
 
@@ -277,7 +269,7 @@ uint32_t GetContentSize(nsIRequest* aRequest) {
 
   newImage->SetInnerWindowID(aInnerWindowId);
 
-  rv = newImage->OnStartRequest(aRequest, nullptr);
+  rv = newImage->OnStartRequest(aRequest);
   if (NS_FAILED(rv)) {
     return BadImage("VectorImage::OnStartRequest failed", newImage);
   }

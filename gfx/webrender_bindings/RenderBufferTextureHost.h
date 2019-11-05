@@ -17,7 +17,8 @@ class RenderBufferTextureHost final : public RenderTextureHost {
   RenderBufferTextureHost(uint8_t* aBuffer,
                           const layers::BufferDescriptor& aDescriptor);
 
-  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL) override;
+  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL,
+                           wr::ImageRendering aRendering) override;
   void Unlock() override;
 
   class RenderBufferData {

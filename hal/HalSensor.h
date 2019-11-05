@@ -33,18 +33,6 @@ class SensorData;
 
 typedef Observer<SensorData> ISensorObserver;
 
-/**
- * Enumeration of sensor accuracy types.
- */
-enum SensorAccuracyType {
-  SENSOR_ACCURACY_UNKNOWN = -1,
-  SENSOR_ACCURACY_UNRELIABLE,
-  SENSOR_ACCURACY_LOW,
-  SENSOR_ACCURACY_MED,
-  SENSOR_ACCURACY_HIGH,
-  NUM_SENSOR_ACCURACY_TYPE
-};
-
 class SensorAccuracy;
 
 typedef Observer<SensorAccuracy> ISensorAccuracyObserver;
@@ -63,14 +51,6 @@ struct ParamTraits<mozilla::hal::SensorType>
     : public ContiguousEnumSerializer<mozilla::hal::SensorType,
                                       mozilla::hal::SENSOR_ORIENTATION,
                                       mozilla::hal::NUM_SENSOR_TYPE> {};
-
-template <>
-struct ParamTraits<mozilla::hal::SensorAccuracyType>
-    : public ContiguousEnumSerializer<mozilla::hal::SensorAccuracyType,
-                                      mozilla::hal::SENSOR_ACCURACY_UNKNOWN,
-                                      mozilla::hal::NUM_SENSOR_ACCURACY_TYPE> {
-
-};
 }  // namespace IPC
 
 #endif /* __HAL_SENSOR_H_ */

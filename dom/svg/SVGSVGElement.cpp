@@ -4,44 +4,46 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozilla/ContentEvents.h"
 #include "mozilla/dom/SVGSVGElement.h"
+
+#include "mozilla/ContentEvents.h"
 #include "mozilla/dom/SVGSVGElementBinding.h"
 #include "mozilla/dom/SVGMatrix.h"
+#include "mozilla/dom/SVGRect.h"
 #include "mozilla/dom/SVGViewElement.h"
 #include "mozilla/EventDispatcher.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/SMILAnimationController.h"
+#include "mozilla/SMILTimeContainer.h"
 
+#include "DOMSVGAngle.h"
 #include "DOMSVGLength.h"
 #include "DOMSVGNumber.h"
 #include "DOMSVGPoint.h"
-#include "nsLayoutStylesheetCache.h"
-#include "nsSVGAngle.h"
 #include "nsFrameSelection.h"
+#include "nsLayoutStylesheetCache.h"
 #include "nsIFrame.h"
 #include "nsISVGSVGFrame.h"
-#include "nsSMILAnimationController.h"
-#include "nsSMILTimeContainer.h"
 #include "nsSVGDisplayableFrame.h"
 #include "nsSVGUtils.h"
-#include "SVGAngle.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT_CHECK_PARSER(SVG)
+NS_IMPL_NS_NEW_SVG_ELEMENT_CHECK_PARSER(SVG)
 
 using namespace mozilla::gfx;
 
 namespace mozilla {
 namespace dom {
 
-using namespace SVGPreserveAspectRatioBinding;
-using namespace SVGSVGElementBinding;
+using namespace SVGPreserveAspectRatio_Binding;
+using namespace SVGSVGElement_Binding;
 
-nsSVGEnumMapping SVGSVGElement::sZoomAndPanMap[] = {
-    {&nsGkAtoms::disable, SVG_ZOOMANDPAN_DISABLE},
-    {&nsGkAtoms::magnify, SVG_ZOOMANDPAN_MAGNIFY},
+SVGEnumMapping SVGSVGElement::sZoomAndPanMap[] = {
+    {nsGkAtoms::disable, SVG_ZOOMANDPAN_DISABLE},
+    {nsGkAtoms::magnify, SVG_ZOOMANDPAN_MAGNIFY},
     {nullptr, 0}};
 
-nsSVGElement::EnumInfo SVGSVGElement::sEnumInfo[1] = {
-    {&nsGkAtoms::zoomAndPan, sZoomAndPanMap, SVG_ZOOMANDPAN_MAGNIFY}};
+SVGElement::EnumInfo SVGSVGElement::sEnumInfo[1] = {
+    {nsGkAtoms::zoomAndPan, sZoomAndPanMap, SVG_ZOOMANDPAN_MAGNIFY}};
 
 NS_IMPL_CYCLE_COLLECTION_INHERITED(DOMSVGTranslatePoint, nsISVGPoint, mElement)
 
@@ -61,7 +63,7 @@ DOMSVGPoint* DOMSVGTranslatePoint::Copy() {
 }
 
 nsISupports* DOMSVGTranslatePoint::GetParentObject() {
-  return static_cast<nsIDOMElement*>(mElement);
+  return ToSupports(mElement);
 }
 
 void DOMSVGTranslatePoint::SetX(float aValue, ErrorResult& rv) {
@@ -86,7 +88,7 @@ already_AddRefed<nsISVGPoint> DOMSVGTranslatePoint::MatrixTransform(
 
 JSObject* SVGSVGElement::WrapNode(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto) {
-  return SVGSVGElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGSVGElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
@@ -107,8 +109,7 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(SVGSVGElement,
   }
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
-NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED(SVGSVGElement, SVGSVGElementBase,
-                                             nsIDOMNode, nsIDOMElement)
+NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED_0(SVGSVGElement, SVGSVGElementBase)
 
 SVGView::SVGView() {
   mZoomAndPan.Init(SVGSVGElement::ZOOMANDPAN, SVG_ZOOMANDPAN_MAGNIFY);
@@ -120,8 +121,9 @@ SVGView::SVGView() {
 // Implementation
 
 SVGSVGElement::SVGSVGElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, FromParser aFromParser)
-    : SVGSVGElementBase(aNodeInfo),
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+    FromParser aFromParser)
+    : SVGSVGElementBase(std::move(aNodeInfo)),
       mCurrentTranslate(0.0f, 0.0f),
       mCurrentScale(1.0f),
       mPreviousTranslate(0.0f, 0.0f),
@@ -131,44 +133,30 @@ SVGSVGElement::SVGSVGElement(
                                   aFromParser == FROM_PARSER_XSLT),
       mImageNeedsTransformInvalidation(false) {}
 
-SVGSVGElement::~SVGSVGElement() {}
-
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT_AND_PARSER(SVGSVGElement)
 
 //----------------------------------------------------------------------
 // nsIDOMSVGSVGElement methods:
 
-already_AddRefed<SVGAnimatedLength> SVGSVGElement::X() {
+already_AddRefed<DOMSVGAnimatedLength> SVGSVGElement::X() {
   return mLengthAttributes[ATTR_X].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGSVGElement::Y() {
+already_AddRefed<DOMSVGAnimatedLength> SVGSVGElement::Y() {
   return mLengthAttributes[ATTR_Y].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGSVGElement::Width() {
+already_AddRefed<DOMSVGAnimatedLength> SVGSVGElement::Width() {
   return mLengthAttributes[ATTR_WIDTH].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGSVGElement::Height() {
+already_AddRefed<DOMSVGAnimatedLength> SVGSVGElement::Height() {
   return mLengthAttributes[ATTR_HEIGHT].ToDOMAnimatedLength(this);
 }
-float SVGSVGElement::PixelUnitToMillimeterX() { return MM_PER_INCH_FLOAT / 96; }
 
-float SVGSVGElement::PixelUnitToMillimeterY() {
-  return PixelUnitToMillimeterX();
-}
-
-float SVGSVGElement::ScreenPixelToMillimeterX() {
-  return MM_PER_INCH_FLOAT / 96;
-}
-
-float SVGSVGElement::ScreenPixelToMillimeterY() {
-  return ScreenPixelToMillimeterX();
-}
 bool SVGSVGElement::UseCurrentView() { return mSVGView || mCurrentViewID; }
 
 float SVGSVGElement::CurrentScale() { return mCurrentScale; }
@@ -207,31 +195,30 @@ void SVGSVGElement::ForceRedraw() {
 
 void SVGSVGElement::PauseAnimations() {
   if (mTimedDocumentRoot) {
-    mTimedDocumentRoot->Pause(nsSMILTimeContainer::PAUSE_SCRIPT);
+    mTimedDocumentRoot->Pause(SMILTimeContainer::PAUSE_SCRIPT);
   }
   // else we're not the outermost <svg> or not bound to a tree, so silently fail
 }
 
 void SVGSVGElement::UnpauseAnimations() {
   if (mTimedDocumentRoot) {
-    mTimedDocumentRoot->Resume(nsSMILTimeContainer::PAUSE_SCRIPT);
+    mTimedDocumentRoot->Resume(SMILTimeContainer::PAUSE_SCRIPT);
   }
   // else we're not the outermost <svg> or not bound to a tree, so silently fail
 }
 
 bool SVGSVGElement::AnimationsPaused() {
-  nsSMILTimeContainer* root = GetTimedDocumentRoot();
-  return root && root->IsPausedByType(nsSMILTimeContainer::PAUSE_SCRIPT);
+  SMILTimeContainer* root = GetTimedDocumentRoot();
+  return root && root->IsPausedByType(SMILTimeContainer::PAUSE_SCRIPT);
 }
 
-float SVGSVGElement::GetCurrentTime() {
-  nsSMILTimeContainer* root = GetTimedDocumentRoot();
+float SVGSVGElement::GetCurrentTimeAsFloat() {
+  SMILTimeContainer* root = GetTimedDocumentRoot();
   if (root) {
-    double fCurrentTimeMs = double(root->GetCurrentTime());
+    double fCurrentTimeMs = double(root->GetCurrentTimeAsSMILTime());
     return (float)(fCurrentTimeMs / PR_MSEC_PER_SEC);
-  } else {
-    return 0.f;
   }
+  return 0.f;
 }
 
 void SVGSVGElement::SetCurrentTime(float seconds) {
@@ -241,7 +228,7 @@ void SVGSVGElement::SetCurrentTime(float seconds) {
     double fMilliseconds = double(seconds) * PR_MSEC_PER_SEC;
     // Round to nearest whole number before converting, to avoid precision
     // errors
-    nsSMILTime lMilliseconds = int64_t(NS_round(fMilliseconds));
+    SMILTime lMilliseconds = int64_t(NS_round(fMilliseconds));
     mTimedDocumentRoot->SetCurrentTime(lMilliseconds);
     AnimationNeedsResample();
     // Trigger synchronous sample now, to:
@@ -263,45 +250,36 @@ void SVGSVGElement::DeselectAll() {
 }
 
 already_AddRefed<DOMSVGNumber> SVGSVGElement::CreateSVGNumber() {
-  RefPtr<DOMSVGNumber> number = new DOMSVGNumber(ToSupports(this));
-  return number.forget();
+  return do_AddRef(new DOMSVGNumber(this));
 }
 
 already_AddRefed<DOMSVGLength> SVGSVGElement::CreateSVGLength() {
-  nsCOMPtr<DOMSVGLength> length = new DOMSVGLength();
-  return length.forget();
+  return do_AddRef(new DOMSVGLength());
 }
 
-already_AddRefed<SVGAngle> SVGSVGElement::CreateSVGAngle() {
-  nsSVGAngle* angle = new nsSVGAngle();
-  angle->Init();
-  RefPtr<SVGAngle> svgangle = new SVGAngle(angle, this, SVGAngle::CreatedValue);
-  return svgangle.forget();
+already_AddRefed<DOMSVGAngle> SVGSVGElement::CreateSVGAngle() {
+  return do_AddRef(new DOMSVGAngle(this));
 }
 
 already_AddRefed<nsISVGPoint> SVGSVGElement::CreateSVGPoint() {
-  nsCOMPtr<nsISVGPoint> point = new DOMSVGPoint(0, 0);
-  return point.forget();
+  return do_AddRef(new DOMSVGPoint(0, 0));
 }
 
 already_AddRefed<SVGMatrix> SVGSVGElement::CreateSVGMatrix() {
-  RefPtr<SVGMatrix> matrix = new SVGMatrix();
-  return matrix.forget();
+  return do_AddRef(new SVGMatrix());
 }
 
 already_AddRefed<SVGIRect> SVGSVGElement::CreateSVGRect() {
   return NS_NewSVGRect(this);
 }
 
-already_AddRefed<SVGTransform> SVGSVGElement::CreateSVGTransform() {
-  RefPtr<SVGTransform> transform = new SVGTransform();
-  return transform.forget();
+already_AddRefed<DOMSVGTransform> SVGSVGElement::CreateSVGTransform() {
+  return do_AddRef(new DOMSVGTransform());
 }
 
-already_AddRefed<SVGTransform> SVGSVGElement::CreateSVGTransformFromMatrix(
+already_AddRefed<DOMSVGTransform> SVGSVGElement::CreateSVGTransformFromMatrix(
     SVGMatrix& matrix) {
-  RefPtr<SVGTransform> transform = new SVGTransform(matrix.GetMatrix());
-  return transform.forget();
+  return do_AddRef(new DOMSVGTransform(matrix.GetMatrix()));
 }
 
 //----------------------------------------------------------------------
@@ -337,9 +315,9 @@ void SVGSVGElement::SetCurrentScaleTranslate(float s, float x, float y) {
   mCurrentTranslate = SVGPoint(x, y);
 
   // now dispatch the appropriate event if we are the root element
-  nsIDocument* doc = GetUncomposedDoc();
+  Document* doc = GetUncomposedDoc();
   if (doc) {
-    nsCOMPtr<nsIPresShell> presShell = doc->GetShell();
+    RefPtr<PresShell> presShell = doc->GetPresShell();
     if (presShell && IsRoot()) {
       nsEventStatus status = nsEventStatus_eIgnore;
       if (mPreviousScale == mCurrentScale) {
@@ -372,7 +350,7 @@ void SVGSVGElement::SetZoomAndPan(uint16_t aZoomAndPan, ErrorResult& rv) {
 }
 
 //----------------------------------------------------------------------
-nsSMILTimeContainer* SVGSVGElement::GetTimedDocumentRoot() {
+SMILTimeContainer* SVGSVGElement::GetTimedDocumentRoot() {
   if (mTimedDocumentRoot) {
     return mTimedDocumentRoot;
   }
@@ -387,11 +365,10 @@ nsSMILTimeContainer* SVGSVGElement::GetTimedDocumentRoot() {
   return nullptr;
 }
 //----------------------------------------------------------------------
-// nsSVGElement
-nsresult SVGSVGElement::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                                   nsIContent* aBindingParent,
-                                   bool aCompileEventHandlers) {
-  nsSMILAnimationController* smilController = nullptr;
+// SVGElement
+nsresult SVGSVGElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                   nsIContent* aBindingParent) {
+  SMILAnimationController* smilController = nullptr;
 
   if (aDocument) {
     smilController = aDocument->GetAnimationController();
@@ -400,7 +377,7 @@ nsresult SVGSVGElement::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
       if (WillBeOutermostSVG(aParent, aBindingParent)) {
         // We'll be the outermost <svg> element.  We'll need a time container.
         if (!mTimedDocumentRoot) {
-          mTimedDocumentRoot = new nsSMILTimeContainer();
+          mTimedDocumentRoot = new SMILTimeContainer();
         }
       } else {
         // We're a child of some other <svg> element, so we don't need our own
@@ -412,18 +389,9 @@ nsresult SVGSVGElement::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
     }
   }
 
-  nsresult rv = SVGGraphicsElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+  nsresult rv =
+      SVGGraphicsElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
-
-  nsIDocument* doc = GetComposedDoc();
-  if (doc) {
-    // Setup the style sheet during binding, not element construction,
-    // because we could move the root SVG element from the document
-    // that created it to another document.
-    auto cache = nsLayoutStylesheetCache::For(doc->GetStyleBackendType());
-    doc->EnsureOnDemandBuiltInUASheet(cache->SVGSheet());
-  }
 
   if (mTimedDocumentRoot && smilController) {
     rv = mTimedDocumentRoot->SetParent(smilController);
@@ -444,7 +412,7 @@ void SVGSVGElement::UnbindFromTree(bool aDeep, bool aNullParent) {
   SVGGraphicsElement::UnbindFromTree(aDeep, aNullParent);
 }
 
-nsSVGAnimatedTransformList* SVGSVGElement::GetAnimatedTransformList(
+SVGAnimatedTransformList* SVGSVGElement::GetAnimatedTransformList(
     uint32_t aFlags) {
   if (!(aFlags & DO_ALLOCATE) && mSVGView && mSVGView->mTransforms) {
     return mSVGView->mTransforms;
@@ -452,7 +420,7 @@ nsSVGAnimatedTransformList* SVGSVGElement::GetAnimatedTransformList(
   return SVGGraphicsElement::GetAnimatedTransformList(aFlags);
 }
 
-nsresult SVGSVGElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
+void SVGSVGElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   if (aVisitor.mEvent->mMessage == eSVGLoad) {
     if (mTimedDocumentRoot) {
       mTimedDocumentRoot->Begin();
@@ -462,7 +430,7 @@ nsresult SVGSVGElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
       AnimationNeedsResample();
     }
   }
-  return SVGSVGElementBase::GetEventTargetParent(aVisitor);
+  SVGSVGElementBase::GetEventTargetParent(aVisitor);
 }
 
 bool SVGSVGElement::IsEventAttributeNameInternal(nsAtom* aName) {
@@ -544,26 +512,24 @@ void SVGSVGElement::InvalidateTransformNotifyFrame() {
   }
 }
 
-nsSVGElement::EnumAttributesInfo SVGSVGElement::GetEnumInfo() {
+SVGElement::EnumAttributesInfo SVGSVGElement::GetEnumInfo() {
   return EnumAttributesInfo(mEnumAttributes, sEnumInfo, ArrayLength(sEnumInfo));
 }
 
 void SVGSVGElement::SetImageOverridePreserveAspectRatio(
     const SVGPreserveAspectRatio& aPAR) {
-#ifdef DEBUG
   MOZ_ASSERT(OwnerDoc()->IsBeingUsedAsImage(),
              "should only override preserveAspectRatio in images");
-#endif
 
-  bool hasViewBoxRect = HasViewBoxRect();
-  if (!hasViewBoxRect && ShouldSynthesizeViewBox()) {
+  bool hasViewBox = HasViewBox();
+  if (!hasViewBox && ShouldSynthesizeViewBox()) {
     // My non-<svg:image> clients will have been painting me with a synthesized
     // viewBox, but my <svg:image> client that's about to paint me now does NOT
     // want that.  Need to tell ourselves to flush our transform.
     mImageNeedsTransformInvalidation = true;
   }
 
-  if (!hasViewBoxRect) {
+  if (!hasViewBox) {
     return;  // preserveAspectRatio irrelevant (only matters if we have viewBox)
   }
 
@@ -573,12 +539,10 @@ void SVGSVGElement::SetImageOverridePreserveAspectRatio(
 }
 
 void SVGSVGElement::ClearImageOverridePreserveAspectRatio() {
-#ifdef DEBUG
   MOZ_ASSERT(OwnerDoc()->IsBeingUsedAsImage(),
              "should only override image preserveAspectRatio in images");
-#endif
 
-  if (!HasViewBoxRect() && ShouldSynthesizeViewBox()) {
+  if (!HasViewBox() && ShouldSynthesizeViewBox()) {
     // My non-<svg:image> clients will want to paint me with a synthesized
     // viewBox, but my <svg:image> client that just painted me did NOT
     // use that.  Need to tell ourselves to flush our transform.
@@ -625,7 +589,7 @@ bool SVGSVGElement::ClearPreserveAspectRatioProperty() {
 
 SVGPreserveAspectRatio SVGSVGElement::GetPreserveAspectRatioWithOverride()
     const {
-  nsIDocument* doc = GetUncomposedDoc();
+  Document* doc = GetUncomposedDoc();
   if (doc && doc->IsBeingUsedAsImage()) {
     const SVGPreserveAspectRatio* pAROverridePtr =
         GetPreserveAspectRatioProperty();
@@ -636,9 +600,9 @@ SVGPreserveAspectRatio SVGSVGElement::GetPreserveAspectRatioWithOverride()
 
   SVGViewElement* viewElement = GetCurrentViewElement();
 
-  // This check is equivalent to "!HasViewBoxRect() &&
+  // This check is equivalent to "!HasViewBox() &&
   // ShouldSynthesizeViewBox()". We're just holding onto the viewElement that
-  // HasViewBoxRect() would look up, so that we don't have to look it up again
+  // HasViewBox() would look up, so that we don't have to look it up again
   // later.
   if (!((viewElement && viewElement->mViewBox.HasRect()) ||
         (mSVGView && mSVGView->mViewBox.HasRect()) || mViewBox.HasRect()) &&
@@ -660,7 +624,7 @@ SVGPreserveAspectRatio SVGSVGElement::GetPreserveAspectRatioWithOverride()
 SVGViewElement* SVGSVGElement::GetCurrentViewElement() const {
   if (mCurrentViewID) {
     // XXXsmaug It is unclear how this should work in case we're in Shadow DOM.
-    nsIDocument* doc = GetUncomposedDoc();
+    Document* doc = GetUncomposedDoc();
     if (doc) {
       Element* element = doc->GetElementById(*mCurrentViewID);
       if (element && element->IsSVGElement(nsGkAtoms::view)) {
@@ -671,19 +635,20 @@ SVGViewElement* SVGSVGElement::GetCurrentViewElement() const {
   return nullptr;
 }
 
-const nsSVGViewBox& SVGSVGElement::GetViewBoxInternal() const {
+const SVGAnimatedViewBox& SVGSVGElement::GetViewBoxInternal() const {
   SVGViewElement* viewElement = GetCurrentViewElement();
 
   if (viewElement && viewElement->mViewBox.HasRect()) {
     return viewElement->mViewBox;
-  } else if (mSVGView && mSVGView->mViewBox.HasRect()) {
+  }
+  if (mSVGView && mSVGView->mViewBox.HasRect()) {
     return mSVGView->mViewBox;
   }
 
   return mViewBox;
 }
 
-nsSVGAnimatedTransformList* SVGSVGElement::GetTransformInternal() const {
+SVGAnimatedTransformList* SVGSVGElement::GetTransformInternal() const {
   return (mSVGView && mSVGView->mTransforms) ? mSVGView->mTransforms
                                              : mTransforms;
 }

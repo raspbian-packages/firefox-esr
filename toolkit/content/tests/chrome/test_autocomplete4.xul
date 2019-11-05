@@ -5,10 +5,8 @@
 <window title="Autocomplete Widget Test 4"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
 
 <textbox id="autocomplete"
          type="autocomplete"
@@ -24,6 +22,8 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Set to indicate whether or not we want autoCompleteSimple to return a result
 var returnResult = true;
+
+const IS_MAC = navigator.platform.includes("Mac");
 
 const ACR = Ci.nsIAutoCompleteResult;
 
@@ -88,6 +88,7 @@ componentManager.registerFactory(autoCompleteSimpleID, "Test Simple Autocomplete
 // Test Bug 325842 - completeDefaultIndex
 
 SimpleTest.waitForExplicitFinish();
+
 setTimeout(nextTest, 0);
 
 var currentTest = null;
@@ -187,7 +188,7 @@ function nextTest() {
   currentTest = tests.shift();
 
   // HOME key works differently on Mac, so we skip tests using it.
-  if (currentTest.key == "KEY_Home" && navigator.platform.includes("Mac"))
+  if (currentTest.key == "KEY_Home" && IS_MAC)
     nextTest();
   else
     setTimeout(runCurrentTest, 0);

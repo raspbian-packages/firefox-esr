@@ -24,7 +24,7 @@ class HTMLOutputElement final : public nsGenericHTMLFormElement,
   using nsIConstraintValidation::GetValidationMessage;
 
   explicit HTMLOutputElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
       FromParser aFromParser = NOT_FROM_PARSER);
 
   // nsISupports
@@ -34,8 +34,7 @@ class HTMLOutputElement final : public nsGenericHTMLFormElement,
   NS_IMETHOD Reset() override;
   NS_IMETHOD SubmitNamesValues(HTMLFormSubmission* aFormSubmission) override;
 
-  nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                 bool aPreallocateChildren) const override;
+  nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                               const nsAString& aValue,
@@ -46,9 +45,8 @@ class HTMLOutputElement final : public nsGenericHTMLFormElement,
 
   EventStates IntrinsicState() const override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
 
   // This function is called when a callback function from nsIMutationObserver
   // has to be used to update the defaultValue attribute.

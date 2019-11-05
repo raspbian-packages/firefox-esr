@@ -13,6 +13,7 @@
 #include "nscore.h"
 #include "nsError.h"
 #include "nsString.h"
+#include <functional>
 
 /**
  * Valid mask values for nsEscape
@@ -99,8 +100,9 @@ enum EscapeMask {
                  * ascii octets (<= 0x7F) to be skipped when unescaping */
   esc_AlwaysCopy =
       1u << 13, /* copy input to result buf even if escaping is unnecessary */
-  esc_Colon = 1u << 14,      /* forces escape of colon */
-  esc_SkipControl = 1u << 15 /* skips C0 and DEL from unescaping */
+  esc_Colon = 1u << 14,       /* forces escape of colon */
+  esc_SkipControl = 1u << 15, /* skips C0 and DEL from unescaping */
+  esc_Spaces = 1u << 16       /* forces escape of spaces */
 };
 
 /**
@@ -123,6 +125,9 @@ enum EscapeMask {
  */
 bool NS_EscapeURL(const char* aStr, int32_t aLen, uint32_t aFlags,
                   nsACString& aResult);
+
+bool NS_EscapeURLSpan(mozilla::Span<const char> aStr, uint32_t aFlags,
+                      nsACString& aResult);
 
 /**
  * Expands URL escape sequences... beware embedded null bytes!
@@ -159,7 +164,7 @@ inline int32_t NS_UnescapeURL(char* aStr) { return nsUnescapeCount(aStr); }
  */
 inline const nsACString& NS_EscapeURL(const nsACString& aStr, uint32_t aFlags,
                                       nsACString& aResult) {
-  if (NS_EscapeURL(aStr.Data(), aStr.Length(), aFlags, aResult)) {
+  if (NS_EscapeURLSpan(aStr, aFlags, aResult)) {
     return aResult;
   }
   return aStr;
@@ -197,14 +202,13 @@ const nsAString& NS_EscapeURL(const nsAString& aStr, uint32_t aFlags,
 /**
  * Percent-escapes all characters in aStr that occurs in aForbidden.
  * @param aStr the input URL string
- * @param aForbidden the characters that should be escaped if found in aStr
- * @note that aForbidden MUST be sorted (low to high)
+ * @param aFunction returns true for characters that should be escaped
  * @param aResult the result if some characters were escaped
  * @return aResult if some characters were escaped, or aStr otherwise (aResult
  *         is unmodified in that case)
  */
 const nsAString& NS_EscapeURL(const nsString& aStr,
-                              const nsTArray<char16_t>& aForbidden,
+                              const std::function<bool(char16_t)>& aFunction,
                               nsAString& aResult);
 
 /**

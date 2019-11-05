@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -50,8 +50,10 @@ void StreamFilter::ForgetActor() {
   }
 }
 
-/* static */ already_AddRefed<StreamFilter> StreamFilter::Create(
-    GlobalObject& aGlobal, uint64_t aRequestId, const nsAString& aAddonId) {
+/* static */
+already_AddRefed<StreamFilter> StreamFilter::Create(GlobalObject& aGlobal,
+                                                    uint64_t aRequestId,
+                                                    const nsAString& aAddonId) {
   nsCOMPtr<nsIGlobalObject> global = do_QueryInterface(aGlobal.GetAsSupports());
   MOZ_ASSERT(global);
 
@@ -77,13 +79,14 @@ void StreamFilter::Connect() {
     RefPtr<StreamFilter> self(this);
 
     cc->SendInitStreamFilter(mChannelId, addonId)
-        ->Then(GetCurrentThreadSerialEventTarget(), __func__,
-               [=](mozilla::ipc::Endpoint<PStreamFilterChild>&& aEndpoint) {
-                 self->FinishConnect(Move(aEndpoint));
-               },
-               [=](mozilla::ipc::ResponseRejectReason aReason) {
-                 self->mActor->RecvInitialized(false);
-               });
+        ->Then(
+            GetCurrentThreadSerialEventTarget(), __func__,
+            [=](mozilla::ipc::Endpoint<PStreamFilterChild>&& aEndpoint) {
+              self->FinishConnect(std::move(aEndpoint));
+            },
+            [=](mozilla::ipc::ResponseRejectReason&& aReason) {
+              self->mActor->RecvInitialized(false);
+            });
   } else {
     mozilla::ipc::Endpoint<PStreamFilterChild> endpoint;
     Unused << StreamFilterParent::Create(nullptr, mChannelId, addonId,
@@ -94,7 +97,7 @@ void StreamFilter::Connect() {
     NS_DispatchToCurrentThread(
         NewRunnableMethod<mozilla::ipc::Endpoint<PStreamFilterChild>&&>(
             "StreamFilter::FinishConnect", this, &StreamFilter::FinishConnect,
-            Move(endpoint)));
+            std::move(endpoint)));
   }
 }
 
@@ -158,7 +161,7 @@ void StreamFilter::Write(const ArrayBufferOrUint8Array& aData,
   }
 
   if (ok) {
-    mActor->Write(Move(data), aRv);
+    mActor->Write(std::move(data), aRv);
   }
 }
 
@@ -213,8 +216,7 @@ void StreamFilter::FireEvent(const nsAString& aType) {
   RefPtr<Event> event = Event::Constructor(this, aType, init);
   event->SetTrusted(true);
 
-  bool defaultPrevented;
-  DispatchEvent(event, &defaultPrevented);
+  DispatchEvent(*event);
 }
 
 void StreamFilter::FireDataEvent(const nsTArray<uint8_t>& aData) {
@@ -238,8 +240,7 @@ void StreamFilter::FireDataEvent(const nsTArray<uint8_t>& aData) {
       StreamFilterDataEvent::Constructor(this, NS_LITERAL_STRING("data"), init);
   event->SetTrusted(true);
 
-  bool defaultPrevented;
-  DispatchEvent(event, &defaultPrevented);
+  DispatchEvent(*event);
 }
 
 void StreamFilter::FireErrorEvent(const nsAString& aError) {
@@ -253,14 +254,14 @@ void StreamFilter::FireErrorEvent(const nsAString& aError) {
  * Glue
  *****************************************************************************/
 
-/* static */ bool StreamFilter::IsAllowedInContext(JSContext* aCx,
-                                                   JSObject* /* unused */) {
+/* static */
+bool StreamFilter::IsAllowedInContext(JSContext* aCx, JSObject* /* unused */) {
   return nsContentUtils::CallerHasPermission(aCx,
                                              nsGkAtoms::webRequestBlocking);
 }
 
 JSObject* StreamFilter::WrapObject(JSContext* aCx, HandleObject aGivenProto) {
-  return StreamFilterBinding::Wrap(aCx, this, aGivenProto);
+  return StreamFilter_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(StreamFilter)

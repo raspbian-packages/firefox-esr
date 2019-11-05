@@ -22,12 +22,6 @@
 
 namespace {
 
-// System pagesize. This value remains constant on x86/64 architectures.
-const int PAGESIZE_KB = 4;
-
-// HeapSetInformation function pointer.
-typedef BOOL(WINAPI* HeapSetFn)(HANDLE, HEAP_INFORMATION_CLASS, PVOID, SIZE_T);
-
 typedef BOOL(WINAPI* InitializeProcThreadAttributeListFn)(
     LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList, DWORD dwAttributeCount,
     DWORD dwFlags, PSIZE_T lpSize);
@@ -320,6 +314,11 @@ bool LaunchApp(const std::wstring& cmdline, const LaunchOptions& options,
   LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList = NULL;
   std::vector<HANDLE> handlesToInherit;
   for (HANDLE h : options.handles_to_inherit) {
+    if (SetHandleInformation(h, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT) ==
+        0) {
+      MOZ_DIAGNOSTIC_ASSERT(false, "SetHandleInformation failed");
+      return false;
+    }
     handlesToInherit.push_back(h);
   }
 

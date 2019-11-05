@@ -402,8 +402,6 @@ static inline nsAString::iterator& copy_multifragment_string(
 
 bool CopyUnicodeTo(const nsScannerIterator& aSrcStart,
                    const nsScannerIterator& aSrcEnd, nsAString& aDest) {
-  nsAString::iterator writer;
-
   mozilla::CheckedInt<nsAString::size_type> distance(
       Distance(aSrcStart, aSrcEnd));
   if (!distance.isValid()) {
@@ -414,7 +412,7 @@ bool CopyUnicodeTo(const nsScannerIterator& aSrcStart,
     aDest.Truncate();
     return false;  // out of memory
   }
-  aDest.BeginWriting(writer);
+  auto writer = aDest.BeginWriting();
   nsScannerIterator fromBegin(aSrcStart);
 
   copy_multifragment_string(fromBegin, aSrcEnd, writer);
@@ -437,7 +435,6 @@ bool AppendUnicodeTo(const nsScannerIterator& aSrcStart,
 
 bool AppendUnicodeTo(const nsScannerIterator& aSrcStart,
                      const nsScannerIterator& aSrcEnd, nsAString& aDest) {
-  nsAString::iterator writer;
   const nsAString::size_type oldLength = aDest.Length();
   CheckedInt<nsAString::size_type> newLen(Distance(aSrcStart, aSrcEnd));
   newLen += oldLength;
@@ -447,7 +444,8 @@ bool AppendUnicodeTo(const nsScannerIterator& aSrcStart,
 
   if (!aDest.SetLength(newLen.value(), mozilla::fallible))
     return false;  // out of memory
-  aDest.BeginWriting(writer).advance(oldLength);
+  auto writer = aDest.BeginWriting();
+  std::advance(writer, oldLength);
   nsScannerIterator fromBegin(aSrcStart);
 
   copy_multifragment_string(fromBegin, aSrcEnd, writer);

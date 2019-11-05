@@ -4,7 +4,10 @@
 
 "use strict";
 
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  Component,
+  createFactory,
+} = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const ReactDOM = require("devtools/client/shared/vendor/react-dom");
@@ -18,7 +21,7 @@ const { DEFAULT_GRAPH_HEIGHT } = require("../../utils/graph-helper");
 // Minimum opacity for semitransparent fill color for keyframes's easing graph.
 const MIN_KEYFRAMES_EASING_OPACITY = 0.5;
 
-class SummaryGraphPath extends PureComponent {
+class SummaryGraphPath extends Component {
   static get propTypes() {
     return {
       animation: PropTypes.object.isRequired,
@@ -35,17 +38,26 @@ class SummaryGraphPath extends PureComponent {
     this.state = {
       // Duration which can display in one pixel.
       durationPerPixel: 0,
+      // To avoid rendering while the state is updating
+      // since we call an async function in updateState.
+      isStateUpdating: false,
       // List of keyframe which consists by only offset and easing.
       keyframesList: [],
     };
   }
 
   componentDidMount() {
-    this.updateState(this.props.animation);
+    // No need to set isStateUpdating state since paint sequence is finish here.
+    this.updateState(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.updateState(nextProps.animation);
+    this.setState({ isStateUpdating: true });
+    this.updateState(nextProps);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !nextState.isStateUpdating;
   }
 
   /**
@@ -101,19 +113,22 @@ class SummaryGraphPath extends PureComponent {
    * @return {Array} list of keyframes which has only easing and offset.
    */
   getOffsetAndEasingOnlyKeyframes(animatedPropertyMap) {
-    return [...animatedPropertyMap.values()].filter((keyframes1, i, self) => {
-      return i !== self.findIndex((keyframes2, j) => {
-        return this.isOffsetAndEasingKeyframesEqual(keyframes1, keyframes2) ? j : -1;
+    return [...animatedPropertyMap.values()]
+      .filter((keyframes1, i, self) => {
+        return (
+          i !==
+          self.findIndex((keyframes2, j) => {
+            return this.isOffsetAndEasingKeyframesEqual(keyframes1, keyframes2)
+              ? j
+              : -1;
+          })
+        );
+      })
+      .map(keyframes => {
+        return keyframes.map(keyframe => {
+          return { easing: keyframe.easing, offset: keyframe.offset };
+        });
       });
-    }).map(keyframes => {
-      return keyframes.map(keyframe => {
-        return { easing: keyframe.easing, offset: keyframe.offset };
-      });
-    });
-  }
-
-  getTotalDuration(animation, timeScale) {
-    return animation.state.playbackRate * timeScale.getDuration();
   }
 
   /**
@@ -132,8 +147,10 @@ class SummaryGraphPath extends PureComponent {
       const keyframe1 = keyframes1[i];
       const keyframe2 = keyframes2[i];
 
-      if (keyframe1.offset !== keyframe2.offset ||
-          keyframe1.easing !== keyframe2.easing) {
+      if (
+        keyframe1.offset !== keyframe2.offset ||
+        keyframe1.easing !== keyframe2.easing
+      ) {
         return false;
       }
     }
@@ -141,100 +158,121 @@ class SummaryGraphPath extends PureComponent {
     return true;
   }
 
-  async updateState(animation) {
+  async updateState(props) {
     const {
+      animation,
       emitEventForTest,
       getAnimatedPropertyMap,
       timeScale,
-    } = this.props;
+    } = props;
 
-    const animatedPropertyMap = await getAnimatedPropertyMap(animation);
-    const keyframesList = this.getOffsetAndEasingOnlyKeyframes(animatedPropertyMap);
+    let animatedPropertyMap = null;
+    let thisEl = null;
 
-    const thisEl = ReactDOM.findDOMNode(this);
-    const totalDuration = this.getTotalDuration(animation, timeScale);
+    try {
+      animatedPropertyMap = await getAnimatedPropertyMap(animation);
+      thisEl = ReactDOM.findDOMNode(this);
+    } catch (e) {
+      // Expected if we've already been destroyed or other node have been selected
+      // in the meantime.
+      console.error(e);
+      return;
+    }
+
+    const keyframesList = this.getOffsetAndEasingOnlyKeyframes(
+      animatedPropertyMap
+    );
+    const totalDuration =
+      timeScale.getDuration() * Math.abs(animation.state.playbackRate);
     const durationPerPixel = totalDuration / thisEl.parentNode.clientWidth;
 
-    this.setState({ durationPerPixel, keyframesList });
+    this.setState({
+      durationPerPixel,
+      isStateUpdating: false,
+      keyframesList,
+    });
 
     emitEventForTest("animation-summary-graph-rendered");
   }
 
   render() {
     const { durationPerPixel, keyframesList } = this.state;
+    const { animation, simulateAnimation, timeScale } = this.props;
 
-    if (!durationPerPixel) {
+    if (!durationPerPixel || !animation.state.type) {
+      // Undefined animation.state.type means that the animation had been removed already.
+      // Even if the animation was removed, we still need the empty svg since the
+      // component might be re-used.
       return dom.svg();
     }
 
-    const {
-      animation,
-      simulateAnimation,
-      timeScale,
-    } = this.props;
+    const { playbackRate } = animation.state;
+    const { createdTime } = animation.state.absoluteValues;
+    const absPlaybackRate = Math.abs(playbackRate);
 
-    const totalDuration = this.getTotalDuration(animation, timeScale);
-    const startTime = timeScale.minStartTime;
-    const opacity = Math.max(1 / keyframesList.length, MIN_KEYFRAMES_EASING_OPACITY);
+    // Absorb the playbackRate in viewBox of SVG and offset of child path elements
+    // in order to each graph path components can draw without considering to the
+    // playbackRate.
+    const offset = createdTime * absPlaybackRate;
+    const startTime = timeScale.minStartTime * absPlaybackRate;
+    const totalDuration = timeScale.getDuration() * absPlaybackRate;
+    const opacity = Math.max(
+      1 / keyframesList.length,
+      MIN_KEYFRAMES_EASING_OPACITY
+    );
 
     return dom.svg(
       {
         className: "animation-summary-graph-path",
         preserveAspectRatio: "none",
-        viewBox: `${ startTime } -${ DEFAULT_GRAPH_HEIGHT } `
-                 + `${ totalDuration } ${ DEFAULT_GRAPH_HEIGHT }`,
+        viewBox:
+          `${startTime} -${DEFAULT_GRAPH_HEIGHT} ` +
+          `${totalDuration} ${DEFAULT_GRAPH_HEIGHT}`,
       },
       keyframesList.map(keyframes =>
-        ComputedTimingPath(
-          {
-            animation,
-            durationPerPixel,
-            keyframes,
-            opacity,
-            simulateAnimation,
-            totalDuration,
-          }
-        )
+        ComputedTimingPath({
+          animation,
+          durationPerPixel,
+          keyframes,
+          offset,
+          opacity,
+          simulateAnimation,
+          totalDuration,
+        })
       ),
-      animation.state.easing !== "linear" ?
-        EffectTimingPath(
-          {
+      animation.state.easing !== "linear"
+        ? EffectTimingPath({
             animation,
             durationPerPixel,
+            offset,
             simulateAnimation,
             totalDuration,
-          }
-        )
-      :
-      null,
-      animation.state.delay < 0 ?
-        keyframesList.map(keyframes => {
-          return NegativeDelayPath(
-            {
+          })
+        : null,
+      animation.state.delay < 0
+        ? keyframesList.map(keyframes => {
+            return NegativeDelayPath({
               animation,
               durationPerPixel,
               keyframes,
+              offset,
               simulateAnimation,
               totalDuration,
-            }
-          );
-        })
-      :
-      null,
-      animation.state.iterationCount && animation.state.endDelay < 0 ?
-        keyframesList.map(keyframes => {
-          return NegativeEndDelayPath(
-            {
+            });
+          })
+        : null,
+      animation.state.iterationCount && animation.state.endDelay < 0
+        ? keyframesList.map(keyframes => {
+            return NegativeEndDelayPath({
               animation,
               durationPerPixel,
               keyframes,
+              offset,
               simulateAnimation,
               totalDuration,
-            }
-          );
-        })
-      :
-      null
+            });
+          })
+        : null
     );
   }
 }

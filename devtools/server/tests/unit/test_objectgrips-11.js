@@ -9,31 +9,42 @@ var gDebuggee;
 var gClient;
 var gThreadClient;
 
+Services.prefs.setBoolPref("security.allow_eval_with_system_principal", true);
+
+registerCleanupFunction(() => {
+  Services.prefs.clearUserPref("security.allow_eval_with_system_principal");
+});
+
 function run_test() {
   initTestDebuggerServer();
   gDebuggee = addTestGlobal("test-grips");
-  gDebuggee.eval(function stopMe(arg1) {
-    debugger;
-  }.toString());
+  gDebuggee.eval(
+    function stopMe(arg1) {
+      debugger;
+    }.toString()
+  );
 
   gClient = new DebuggerClient(DebuggerServer.connectPipe());
-  gClient.connect().then(function () {
-    attachTestTabAndResume(gClient, "test-grips",
-                           function (response, tabClient, threadClient) {
-                             gThreadClient = threadClient;
-                             test_object_grip();
-                           });
+  gClient.connect().then(function() {
+    attachTestTabAndResume(gClient, "test-grips", function(
+      response,
+      targetFront,
+      threadClient
+    ) {
+      gThreadClient = threadClient;
+      test_object_grip();
+    });
   });
   do_test_pending();
 }
 
 function test_object_grip() {
-  gThreadClient.addOneTimeListener("paused", function (event, packet) {
-    let args = packet.frame.arguments;
+  gThreadClient.addOneTimeListener("paused", function(event, packet) {
+    const args = packet.frame.arguments;
 
-    let objClient = gThreadClient.pauseGrip(args[0]);
-    objClient.getOwnPropertyNames(function (response) {
-      let opn = response.ownPropertyNames;
+    const objClient = gThreadClient.pauseGrip(args[0]);
+    objClient.getOwnPropertyNames(function(response) {
+      const opn = response.ownPropertyNames;
       Assert.equal(opn.length, 4);
       opn.sort();
       Assert.equal(opn[0], "columnNumber");
@@ -41,7 +52,7 @@ function test_object_grip() {
       Assert.equal(opn[2], "lineNumber");
       Assert.equal(opn[3], "message");
 
-      gThreadClient.resume(function () {
+      gThreadClient.resume().then(function() {
         finishClient(gClient);
       });
     });
@@ -49,4 +60,3 @@ function test_object_grip() {
 
   gDebuggee.eval("stopMe(new TypeError('error message text'))");
 }
-

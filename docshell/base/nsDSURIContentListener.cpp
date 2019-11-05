@@ -10,7 +10,7 @@
 #include "nsServiceManagerUtils.h"
 #include "nsDocShellCID.h"
 #include "nsIWebNavigationInfo.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDOMWindow.h"
 #include "nsIHttpChannel.h"
 #include "nsError.h"
@@ -245,7 +245,7 @@ nsDSURIContentListener::CanHandleContent(const char* aContentType,
                                          bool aIsContentPreferred,
                                          char** aDesiredContentType,
                                          bool* aCanHandleContent) {
-  NS_PRECONDITION(aCanHandleContent, "Null out param?");
+  MOZ_ASSERT(aCanHandleContent, "Null out param?");
   NS_ENSURE_ARG_POINTER(aDesiredContentType);
 
   *aCanHandleContent = false;

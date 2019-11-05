@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,23 +16,24 @@
 namespace mozilla {
 namespace gl {
 
-/*static*/ UniquePtr<SharedSurface_EGLImage> SharedSurface_EGLImage::Create(
+/*static*/
+UniquePtr<SharedSurface_EGLImage> SharedSurface_EGLImage::Create(
     GLContext* prodGL, const GLFormats& formats, const gfx::IntSize& size,
     bool hasAlpha, EGLContext context) {
-  GLLibraryEGL* egl = &sEGLLibrary;
+  auto* egl = gl::GLLibraryEGL::Get();
   MOZ_ASSERT(egl);
   MOZ_ASSERT(context);
 
   UniquePtr<SharedSurface_EGLImage> ret;
 
   if (!HasExtensions(egl, prodGL)) {
-    return Move(ret);
+    return ret;
   }
 
   MOZ_ALWAYS_TRUE(prodGL->MakeCurrent());
   GLuint prodTex = CreateTextureForOffscreen(prodGL, formats, size);
   if (!prodTex) {
-    return Move(ret);
+    return ret;
   }
 
   EGLClientBuffer buffer =
@@ -41,12 +42,12 @@ namespace gl {
                                      LOCAL_EGL_GL_TEXTURE_2D, buffer, nullptr);
   if (!image) {
     prodGL->fDeleteTextures(1, &prodTex);
-    return Move(ret);
+    return ret;
   }
 
   ret.reset(new SharedSurface_EGLImage(prodGL, egl, size, hasAlpha, formats,
                                        prodTex, image));
-  return Move(ret);
+  return ret;
 }
 
 bool SharedSurface_EGLImage::HasExtensions(GLLibraryEGL* egl, GLContext* gl) {
@@ -133,12 +134,14 @@ bool SharedSurface_EGLImage::ReadbackBySharedHandle(
     gfx::DataSourceSurface* out_surface) {
   MOZ_ASSERT(out_surface);
   MOZ_ASSERT(NS_IsMainThread());
-  return sEGLLibrary.ReadbackEGLImage(mImage, out_surface);
+  auto* egl = gl::GLLibraryEGL::Get();
+  return egl->ReadbackEGLImage(mImage, out_surface);
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-/*static*/ UniquePtr<SurfaceFactory_EGLImage> SurfaceFactory_EGLImage::Create(
+/*static*/
+UniquePtr<SurfaceFactory_EGLImage> SurfaceFactory_EGLImage::Create(
     GLContext* prodGL, const SurfaceCaps& caps,
     const RefPtr<layers::LayersIPCChannel>& allocator,
     const layers::TextureFlags& flags) {
@@ -147,23 +150,22 @@ bool SharedSurface_EGLImage::ReadbackBySharedHandle(
   typedef SurfaceFactory_EGLImage ptrT;
   UniquePtr<ptrT> ret;
 
-  GLLibraryEGL* egl = &sEGLLibrary;
+  auto* egl = gl::GLLibraryEGL::Get();
   if (SharedSurface_EGLImage::HasExtensions(egl, prodGL)) {
     ret.reset(new ptrT(prodGL, caps, allocator, flags, context));
   }
 
-  return Move(ret);
+  return ret;
 }
 
-  ////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 #ifdef MOZ_WIDGET_ANDROID
 
-/*static*/ UniquePtr<SharedSurface_SurfaceTexture>
-SharedSurface_SurfaceTexture::Create(GLContext* prodGL,
-                                     const GLFormats& formats,
-                                     const gfx::IntSize& size, bool hasAlpha,
-                                     java::GeckoSurface::Param surface) {
+/*static*/
+UniquePtr<SharedSurface_SurfaceTexture> SharedSurface_SurfaceTexture::Create(
+    GLContext* prodGL, const GLFormats& formats, const gfx::IntSize& size,
+    bool hasAlpha, java::GeckoSurface::Param surface) {
   MOZ_ASSERT(surface);
 
   UniquePtr<SharedSurface_SurfaceTexture> ret;
@@ -173,12 +175,12 @@ SharedSurface_SurfaceTexture::Create(GLContext* prodGL,
   MOZ_ASSERT(egl);
   EGLSurface eglSurface = egl->CreateCompatibleSurface(window.NativeWindow());
   if (!eglSurface) {
-    return Move(ret);
+    return ret;
   }
 
   ret.reset(new SharedSurface_SurfaceTexture(prodGL, size, hasAlpha, formats,
                                              surface, eglSurface));
-  return Move(ret);
+  return ret;
 }
 
 SharedSurface_SurfaceTexture::SharedSurface_SurfaceTexture(
@@ -223,8 +225,11 @@ void SharedSurface_SurfaceTexture::Commit() {
 }
 
 void SharedSurface_SurfaceTexture::WaitForBufferOwnership() {
-  MOZ_RELEASE_ASSERT(!mSurface->GetAvailable());
   mSurface->SetAvailable(true);
+}
+
+bool SharedSurface_SurfaceTexture::IsBufferAvailable() const {
+  return mSurface->GetAvailable();
 }
 
 bool SharedSurface_SurfaceTexture::ToSurfaceDescriptor(
@@ -237,14 +242,14 @@ bool SharedSurface_SurfaceTexture::ToSurfaceDescriptor(
 
 ////////////////////////////////////////////////////////////////////////
 
-/*static*/ UniquePtr<SurfaceFactory_SurfaceTexture>
-SurfaceFactory_SurfaceTexture::Create(
+/*static*/
+UniquePtr<SurfaceFactory_SurfaceTexture> SurfaceFactory_SurfaceTexture::Create(
     GLContext* prodGL, const SurfaceCaps& caps,
     const RefPtr<layers::LayersIPCChannel>& allocator,
     const layers::TextureFlags& flags) {
   UniquePtr<SurfaceFactory_SurfaceTexture> ret(
       new SurfaceFactory_SurfaceTexture(prodGL, caps, allocator, flags));
-  return Move(ret);
+  return ret;
 }
 
 UniquePtr<SharedSurface> SurfaceFactory_SurfaceTexture::CreateShared(

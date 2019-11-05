@@ -10,10 +10,11 @@
 #include "nsCoreUtils.h"
 #include "StyleInfo.h"
 
-#include "gfxFont.h"
+#include "gfxTextRun.h"
 #include "nsFontMetrics.h"
 #include "nsLayoutUtils.h"
 #include "nsContainerFrame.h"
+#include "nsStyleUtil.h"
 #include "HyperTextAccessible.h"
 #include "mozilla/AppUnits.h"
 #include "mozilla/gfx/2D.h"
@@ -33,7 +34,7 @@ void TextAttrsMgr::GetAttributes(nsIPersistentProperties* aAttributes,
   // 3. Offset accessible and result hyper text offsets must not be specified
   // but include default text attributes flag and attributes list must be
   // specified in the case of default text attributes.
-  NS_PRECONDITION(
+  MOZ_ASSERT(
       mHyperTextAcc &&
           ((mOffsetAcc && mOffsetAccIdx != -1 && aStartOffset && aEndOffset) ||
            (!mOffsetAcc && mOffsetAccIdx == -1 && !aStartOffset &&
@@ -263,8 +264,7 @@ bool TextAttrsMgr::InvalidTextAttr::GetValue(nsIContent* aElm,
   do {
     if (nsAccUtils::HasDefinedARIAToken(elm, nsGkAtoms::aria_invalid)) {
       static Element::AttrValuesArray tokens[] = {
-          &nsGkAtoms::_false, &nsGkAtoms::grammar, &nsGkAtoms::spelling,
-          nullptr};
+          nsGkAtoms::_false, nsGkAtoms::grammar, nsGkAtoms::spelling, nullptr};
 
       int32_t idx = elm->AsElement()->FindAttrValueIn(
           kNameSpaceID_None, nsGkAtoms::aria_invalid, tokens, eCaseMatters);
@@ -348,11 +348,11 @@ bool TextAttrsMgr::BGColorTextAttr::GetColor(nsIFrame* aFrame,
 TextAttrsMgr::ColorTextAttr::ColorTextAttr(nsIFrame* aRootFrame,
                                            nsIFrame* aFrame)
     : TTextAttr<nscolor>(!aFrame) {
-  mRootNativeValue = aRootFrame->StyleColor()->mColor;
+  mRootNativeValue = aRootFrame->StyleColor()->mColor.ToColor();
   mIsRootDefined = true;
 
   if (aFrame) {
-    mNativeValue = aFrame->StyleColor()->mColor;
+    mNativeValue = aFrame->StyleColor()->mColor.ToColor();
     mIsDefined = true;
   }
 }
@@ -361,9 +361,8 @@ bool TextAttrsMgr::ColorTextAttr::GetValueFor(Accessible* aAccessible,
                                               nscolor* aValue) {
   nsIContent* elm = nsCoreUtils::GetDOMElementFor(aAccessible->GetContent());
   if (elm) {
-    nsIFrame* frame = elm->GetPrimaryFrame();
-    if (frame) {
-      *aValue = frame->StyleColor()->mColor;
+    if (nsIFrame* frame = elm->GetPrimaryFrame()) {
+      *aValue = frame->StyleColor()->mColor.ToColor();
       return true;
     }
   }
@@ -414,7 +413,7 @@ bool TextAttrsMgr::FontFamilyTextAttr::GetFontFamily(nsIFrame* aFrame,
   gfxFontGroup* fontGroup = fm->GetThebesFontGroup();
   gfxFont* font = fontGroup->GetFirstValidFont();
   gfxFontEntry* fontEntry = font->GetFontEntry();
-  aFamily = fontEntry->FamilyName();
+  aFamily.Append(NS_ConvertUTF8toUTF16(fontEntry->FamilyName()));
   return true;
 }
 
@@ -476,7 +475,7 @@ void TextAttrsMgr::FontSizeTextAttr::ExposeValue(
 
 TextAttrsMgr::FontStyleTextAttr::FontStyleTextAttr(nsIFrame* aRootFrame,
                                                    nsIFrame* aFrame)
-    : TTextAttr<nscoord>(!aFrame) {
+    : TTextAttr<FontSlantStyle>(!aFrame) {
   mRootNativeValue = aRootFrame->StyleFont()->mFont.style;
   mIsRootDefined = true;
 
@@ -487,7 +486,7 @@ TextAttrsMgr::FontStyleTextAttr::FontStyleTextAttr(nsIFrame* aRootFrame,
 }
 
 bool TextAttrsMgr::FontStyleTextAttr::GetValueFor(Accessible* aAccessible,
-                                                  nscoord* aValue) {
+                                                  FontSlantStyle* aValue) {
   nsIContent* elm = nsCoreUtils::GetDOMElementFor(aAccessible->GetContent());
   if (elm) {
     nsIFrame* frame = elm->GetPrimaryFrame();
@@ -500,11 +499,10 @@ bool TextAttrsMgr::FontStyleTextAttr::GetValueFor(Accessible* aAccessible,
 }
 
 void TextAttrsMgr::FontStyleTextAttr::ExposeValue(
-    nsIPersistentProperties* aAttributes, const nscoord& aValue) {
-  nsAutoString formattedValue;
-  StyleInfo::FormatFontStyle(aValue, formattedValue);
-
-  nsAccUtils::SetAccAttr(aAttributes, nsGkAtoms::font_style, formattedValue);
+    nsIPersistentProperties* aAttributes, const FontSlantStyle& aValue) {
+  nsAutoString string;
+  nsStyleUtil::AppendFontSlantStyle(aValue, string);
+  nsAccUtils::SetAccAttr(aAttributes, nsGkAtoms::font_style, string);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -513,7 +511,7 @@ void TextAttrsMgr::FontStyleTextAttr::ExposeValue(
 
 TextAttrsMgr::FontWeightTextAttr::FontWeightTextAttr(nsIFrame* aRootFrame,
                                                      nsIFrame* aFrame)
-    : TTextAttr<int32_t>(!aFrame) {
+    : TTextAttr<FontWeight>(!aFrame) {
   mRootNativeValue = GetFontWeight(aRootFrame);
   mIsRootDefined = true;
 
@@ -524,7 +522,7 @@ TextAttrsMgr::FontWeightTextAttr::FontWeightTextAttr(nsIFrame* aRootFrame,
 }
 
 bool TextAttrsMgr::FontWeightTextAttr::GetValueFor(Accessible* aAccessible,
-                                                   int32_t* aValue) {
+                                                   FontWeight* aValue) {
   nsIContent* elm = nsCoreUtils::GetDOMElementFor(aAccessible->GetContent());
   if (elm) {
     nsIFrame* frame = elm->GetPrimaryFrame();
@@ -537,14 +535,14 @@ bool TextAttrsMgr::FontWeightTextAttr::GetValueFor(Accessible* aAccessible,
 }
 
 void TextAttrsMgr::FontWeightTextAttr::ExposeValue(
-    nsIPersistentProperties* aAttributes, const int32_t& aValue) {
+    nsIPersistentProperties* aAttributes, const FontWeight& aValue) {
   nsAutoString formattedValue;
-  formattedValue.AppendInt(aValue);
+  formattedValue.AppendFloat(aValue.ToFloat());
 
   nsAccUtils::SetAccAttr(aAttributes, nsGkAtoms::fontWeight, formattedValue);
 }
 
-int32_t TextAttrsMgr::FontWeightTextAttr::GetFontWeight(nsIFrame* aFrame) {
+FontWeight TextAttrsMgr::FontWeightTextAttr::GetFontWeight(nsIFrame* aFrame) {
   // nsFont::width isn't suitable here because it's necessary to expose real
   // value of font weight (used font might not have some font weight values).
   RefPtr<nsFontMetrics> fm =
@@ -558,16 +556,19 @@ int32_t TextAttrsMgr::FontWeightTextAttr::GetFontWeight(nsIFrame* aFrame) {
   // bold font, i.e. synthetic bolding is used. IsSyntheticBold method is only
   // needed on Mac, but it is "safe" to use on all platforms.  (For non-Mac
   // platforms it always return false.)
-  if (font->IsSyntheticBold()) return 700;
+  if (font->IsSyntheticBold()) {
+    return FontWeight::Bold();
+  }
 
   // On Windows, font->GetStyle()->weight will give the same weight as
   // fontEntry->Weight(), the weight of the first font in the font group,
   // which may not be the weight of the font face used to render the
   // characters. On Mac, font->GetStyle()->weight will just give the same
   // number as getComputedStyle(). fontEntry->Weight() will give the weight
-  // of the font face used.
+  // range supported by the font face used, so we clamp the weight that was
+  // requested by style to what is actually supported by the font.
   gfxFontEntry* fontEntry = font->GetFontEntry();
-  return fontEntry->Weight();
+  return fontEntry->Weight().Clamp(font->GetStyle()->weight);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -603,11 +604,10 @@ void TextAttrsMgr::AutoGeneratedTextAttr::ExposeValue(
 TextAttrsMgr::TextDecorValue::TextDecorValue(nsIFrame* aFrame) {
   const nsStyleTextReset* textReset = aFrame->StyleTextReset();
   mStyle = textReset->mTextDecorationStyle;
-  mColor =
-      aFrame->StyleColor()->CalcComplexColor(textReset->mTextDecorationColor);
-  mLine = textReset->mTextDecorationLine &
-          (NS_STYLE_TEXT_DECORATION_LINE_UNDERLINE |
-           NS_STYLE_TEXT_DECORATION_LINE_LINE_THROUGH);
+  mColor = textReset->mTextDecorationColor.CalcColor(aFrame);
+  mLine =
+      textReset->mTextDecorationLine & (StyleTextDecorationLine_UNDERLINE |
+                                        StyleTextDecorationLine_LINE_THROUGH);
 }
 
 TextAttrsMgr::TextDecorTextAttr::TextDecorTextAttr(nsIFrame* aRootFrame,
@@ -717,61 +717,37 @@ void TextAttrsMgr::TextPosTextAttr::ExposeValue(
 
 TextAttrsMgr::TextPosValue TextAttrsMgr::TextPosTextAttr::GetTextPosValue(
     nsIFrame* aFrame) const {
-  const nsStyleCoord& styleCoord = aFrame->StyleDisplay()->mVerticalAlign;
-  switch (styleCoord.GetUnit()) {
-    case eStyleUnit_Enumerated:
-      switch (styleCoord.GetIntValue()) {
-        case NS_STYLE_VERTICAL_ALIGN_BASELINE:
-          return eTextPosBaseline;
-        case NS_STYLE_VERTICAL_ALIGN_SUB:
-          return eTextPosSub;
-        case NS_STYLE_VERTICAL_ALIGN_SUPER:
-          return eTextPosSuper;
-
-          // No good guess for these:
-          //   NS_STYLE_VERTICAL_ALIGN_TOP
-          //   NS_STYLE_VERTICAL_ALIGN_TEXT_TOP
-          //   NS_STYLE_VERTICAL_ALIGN_MIDDLE
-          //   NS_STYLE_VERTICAL_ALIGN_TEXT_BOTTOM
-          //   NS_STYLE_VERTICAL_ALIGN_BOTTOM
-          //   NS_STYLE_VERTICAL_ALIGN_MIDDLE_WITH_BASELINE
-          // Do not expose value of text-position attribute.
-
-        default:
-          break;
-      }
-      return eTextPosNone;
-
-    case eStyleUnit_Percent: {
-      float percentValue = styleCoord.GetPercentValue();
-      return percentValue > 0
-                 ? eTextPosSuper
-                 : (percentValue < 0 ? eTextPosSub : eTextPosBaseline);
+  const auto& verticalAlign = aFrame->StyleDisplay()->mVerticalAlign;
+  if (verticalAlign.IsKeyword()) {
+    switch (verticalAlign.AsKeyword()) {
+      case StyleVerticalAlignKeyword::Baseline:
+        return eTextPosBaseline;
+      case StyleVerticalAlignKeyword::Sub:
+        return eTextPosSub;
+      case StyleVerticalAlignKeyword::Super:
+        return eTextPosSuper;
+      // No good guess for the rest, so do not expose value of text-position
+      // attribute.
+      default:
+        return eTextPosNone;
     }
-
-    case eStyleUnit_Coord: {
-      nscoord coordValue = styleCoord.GetCoordValue();
-      return coordValue > 0 ? eTextPosSuper
-                            : (coordValue < 0 ? eTextPosSub : eTextPosBaseline);
-    }
-
-    case eStyleUnit_Null:
-    case eStyleUnit_Normal:
-    case eStyleUnit_Auto:
-    case eStyleUnit_None:
-    case eStyleUnit_Factor:
-    case eStyleUnit_Degree:
-    case eStyleUnit_Grad:
-    case eStyleUnit_Radian:
-    case eStyleUnit_Turn:
-    case eStyleUnit_FlexFraction:
-    case eStyleUnit_Integer:
-    case eStyleUnit_Calc:
-      break;
   }
 
-  const nsIContent* content = aFrame->GetContent();
-  if (content) {
+  const auto& length = verticalAlign.AsLength();
+  if (length.ConvertsToPercentage()) {
+    float percentValue = length.ToPercentage();
+    return percentValue > 0
+               ? eTextPosSuper
+               : (percentValue < 0 ? eTextPosSub : eTextPosBaseline);
+  }
+
+  if (length.ConvertsToLength()) {
+    nscoord coordValue = length.ToLength();
+    return coordValue > 0 ? eTextPosSuper
+                          : (coordValue < 0 ? eTextPosSub : eTextPosBaseline);
+  }
+
+  if (const nsIContent* content = aFrame->GetContent()) {
     if (content->IsHTMLElement(nsGkAtoms::sup)) return eTextPosSuper;
     if (content->IsHTMLElement(nsGkAtoms::sub)) return eTextPosSub;
   }

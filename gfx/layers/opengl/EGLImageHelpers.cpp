@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -37,20 +37,21 @@ EGLImage EGLImageCreateFromNativeBuffer(GLContext* aGL, void* aBuffer,
       LOCAL_EGL_NONE,
   };
 
+  auto* egl = gl::GLLibraryEGL::Get();
   bool hasCropRect = (aCropSize.width != 0 && aCropSize.height != 0);
   EGLint* usedAttrs = attrs;
   if (hasCropRect &&
-      sEGLLibrary.IsExtensionSupported(GLLibraryEGL::EGL_ANDROID_image_crop)) {
+      egl->IsExtensionSupported(GLLibraryEGL::EGL_ANDROID_image_crop)) {
     usedAttrs = cropAttrs;
   }
 
-  return sEGLLibrary.fCreateImage(sEGLLibrary.Display(), EGL_NO_CONTEXT,
-                                  LOCAL_EGL_NATIVE_BUFFER_ANDROID, aBuffer,
-                                  usedAttrs);
+  return egl->fCreateImage(egl->Display(), EGL_NO_CONTEXT,
+                           LOCAL_EGL_NATIVE_BUFFER_ANDROID, aBuffer, usedAttrs);
 }
 
 void EGLImageDestroy(GLContext* aGL, EGLImage aImage) {
-  sEGLLibrary.fDestroyImage(sEGLLibrary.Display(), aImage);
+  auto* egl = gl::GLLibraryEGL::Get();
+  egl->fDestroyImage(egl->Display(), aImage);
 }
 
 }  // namespace layers

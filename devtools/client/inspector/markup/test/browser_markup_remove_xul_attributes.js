@@ -9,20 +9,25 @@
 
 const TEST_URL = URL_ROOT + "doc_markup_xul.xul";
 
-add_task(function* () {
-  let {inspector, testActor} = yield openInspectorForURL(TEST_URL);
+add_task(async function() {
+  const { inspector, testActor } = await openInspectorForURL(TEST_URL);
 
-  let panelFront = yield getNodeFront("#test", inspector);
-  ok(panelFront.hasAttribute("id"),
-     "panelFront has id attribute in the beginning");
+  const panelFront = await getNodeFront("#test", inspector);
+  ok(
+    panelFront.hasAttribute("id"),
+    "panelFront has id attribute in the beginning"
+  );
 
   info("Removing panel's id attribute");
-  let onMutation = inspector.once("markupmutation");
-  yield testActor.removeAttribute("#test", "id");
+  const onMutation = inspector.once("markupmutation");
+  await testActor.removeAttribute("#test", "id");
 
   info("Waiting for markupmutation");
-  yield onMutation;
+  await onMutation;
 
-  is(panelFront.hasAttribute("id"), false,
-     "panelFront doesn't have id attribute anymore");
+  is(
+    panelFront.hasAttribute("id"),
+    false,
+    "panelFront doesn't have id attribute anymore"
+  );
 });

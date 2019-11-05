@@ -3,15 +3,15 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <!-- Context Menu -->
-<!ENTITY popupWindowRejectCmd.label     "ამ საიტიდან ფირნიშების აკრძალვა">
+<!ENTITY popupWindowRejectCmd.label     "ამ საიტიდან ამომხტომი ფანჯრების აკრძალვა">
 <!ENTITY popupWindowRejectCmd.accesskey "ა">
-<!ENTITY popupWindowAllowCmd.label      "ამ საიტიდან ფირნიშების დაშვება">
+<!ENTITY popupWindowAllowCmd.label      "ამ საიტიდან ამომხტომი ფანჯრების დაშვება">
 <!ENTITY popupWindowAllowCmd.accesskey  "დ">
-<!ENTITY openLinkCmdInTab.label       "ბმის ახალ დაფაზე გახსნა">
+<!ENTITY openLinkCmdInTab.label       "ბმულის ახალ დაფაზე გახსნა">
 <!ENTITY openLinkCmdInTab.accesskey   "გ">
-<!ENTITY openLinkCmd.label            "ბმის ახალ სარკმლეში გახსნა">
+<!ENTITY openLinkCmd.label            "ბმულის ახალ სარკმლეში გახსნა">
 <!ENTITY openLinkCmd.accesskey        "რ">
-<!ENTITY openLinkCmdInPrivateWindow.label     "ბმის პირად სარკმელში გახსნა">
+<!ENTITY openLinkCmdInPrivateWindow.label     "ბმულის პირად სარკმელში გახსნა">
 <!ENTITY openLinkCmdInPrivateWindow.accesskey "პ">
 <!ENTITY openLinkInWindowCmd.label    "გახსნა">
 <!ENTITY openLinkInWindowCmd.accesskey "ხ">
@@ -49,7 +49,7 @@
 <!ENTITY viewFrameInfoCmd.accesskey   "ვ">
 <!ENTITY fitImageCmd.label            "გამოსახულების მორგება ფანჯრის ზომაზე">
 <!ENTITY fitImageCmd.accesskey        "მ">
-<!ENTITY reloadImageCmd.label         "გამოსახულების განახლება">
+<!ENTITY reloadImageCmd.label         "სურათის განახლება">
 <!ENTITY reloadImageCmd.accesskey     "გ">
 <!ENTITY viewImageCmd.label           "სურათის ნახვა">
 <!ENTITY viewImageCmd.accesskey       "ვ">
@@ -77,24 +77,24 @@
 <!ENTITY saveLinkAsCmd.label          "ბმულის შენახვა როგორც…">
 <!ENTITY saveLinkCmd.label            "ბმულის შენახვა…">
 <!ENTITY saveLinkCmd.accesskey        "ნ">
-<!ENTITY saveImageAsCmd.label         "გამოსახულების შენახვა როგორც…">
+<!ENTITY saveImageAsCmd.label         "სურათის შენახვა, როგორც…">
 <!ENTITY saveImageCmd.label           "სურათის შენახვა">
 <!ENTITY saveImageCmd.accesskey       "ნ">
 <!ENTITY saveVideoCmd.label           "ვიდეოს შენახვა როგორც…">
 <!ENTITY saveVideoCmd.accesskey       "ნ">
 <!ENTITY saveAudioCmd.label           "ხმოვანი ფაილის შენახვა როგორც…">
 <!ENTITY saveAudioCmd.accesskey       "ო">
-<!ENTITY copyLinkCmd.label            "ბმულის მისამართის დაკოპირება">
+<!ENTITY copyLinkCmd.label            "ბმულის მისამართის ასლი">
 <!ENTITY copyLinkCmd.accesskey        "უ">
-<!ENTITY copyImageCmd.label           "სურათის დაკოპირება">
+<!ENTITY copyImageCmd.label           "სურათის ასლი">
 <!ENTITY copyImageCmd.accesskey       "რ">
-<!ENTITY copyVideoURLCmd.label        "ვიდეოს მისამართის დაკოპირება">
+<!ENTITY copyVideoURLCmd.label        "ვიდეოს მისამართის ასლი">
 <!ENTITY copyVideoURLCmd.accesskey    "ვ">
-<!ENTITY copyAudioURLCmd.label        "ხმოვანი ფაილის მისამართის დაკოპირება">
+<!ENTITY copyAudioURLCmd.label        "ხმოვანი ფაილის მისამართის ასლი">
 <!ENTITY copyAudioURLCmd.accesskey    "მ">
 <!ENTITY metadataCmd.label            "პარამეტრები">
 <!ENTITY metadataCmd.accesskey        "პ">
-<!ENTITY copyEmailCmd.label           "ელფოსტის მისამართის კოპირება">
+<!ENTITY copyEmailCmd.label           "ელფოსტის მისამართის ასლი">
 <!ENTITY copyEmailCmd.accesskey       "ე">
 <!ENTITY thisFrameMenu.label          "ჩარჩო">
 <!ENTITY thisFrameMenu.accesskey      "ჩ">

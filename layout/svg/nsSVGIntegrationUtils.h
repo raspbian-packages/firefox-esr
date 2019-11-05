@@ -12,6 +12,7 @@
 #include "gfxRect.h"
 #include "nsRegionFwd.h"
 #include "mozilla/gfx/Rect.h"
+#include "mozilla/webrender/WebRenderTypes.h"
 
 class gfxContext;
 class gfxDrawable;
@@ -33,6 +34,14 @@ class LayerManager;
 struct nsPoint;
 struct nsSize;
 
+struct WrFiltersHolder {
+  nsTArray<mozilla::wr::FilterOp> filters;
+  nsTArray<mozilla::wr::WrFilterData> filter_datas;
+  // This exists just to own the values long enough for them to be copied into
+  // rust.
+  nsTArray<nsTArray<float>> values;
+};
+
 /**
  * Integration of SVG effects (clipPath clipping, masking and filters) into
  * regular display list based painting and hit-testing.
@@ -44,6 +53,12 @@ class nsSVGIntegrationUtils final {
 
  public:
   /**
+   * Returns true if SVG effects that affect the overflow of the given frame
+   * are currently applied to the frame.
+   */
+  static bool UsingOverflowAffectingEffects(const nsIFrame* aFrame);
+
+  /**
    * Returns true if SVG effects are currently applied to this frame.
    */
   static bool UsingEffectsForFrame(const nsIFrame* aFrame);
@@ -52,6 +67,12 @@ class nsSVGIntegrationUtils final {
    * Returns true if mask or clippath are currently applied to this frame.
    */
   static bool UsingMaskOrClipPathForFrame(const nsIFrame* aFrame);
+
+  /**
+   * Returns true if the element has a clippath that is simple enough to
+   * be represented without a mask in WebRender.
+   */
+  static bool UsingSimpleClipPathForFrame(const nsIFrame* aFrame);
 
   /**
    * Returns the size of the union of the border-box rects of all of
@@ -120,7 +141,7 @@ class nsSVGIntegrationUtils final {
    * repaint
    */
   static nsRect GetRequiredSourceForInvalidArea(nsIFrame* aFrame,
-                                                const nsRect& aDamageRect);
+                                                const nsRect& aDirtyRect);
 
   /**
    * Returns true if the given point is not clipped out by effects.
@@ -162,11 +183,17 @@ class nsSVGIntegrationUtils final {
    */
   static void PaintMaskAndClipPath(const PaintFramesParams& aParams);
 
+  // This should use FunctionRef instead of std::function because we don't need
+  // to take ownership of the function. See bug 1490781.
+  static void PaintMaskAndClipPath(const PaintFramesParams& aParams,
+                                   const std::function<void()>& aPaintChild);
+
   /**
    * Paint mask of non-SVG frame onto a given context, aParams.ctx.
-   * aParams.ctx must contain an A8 surface.
+   * aParams.ctx must contain an A8 surface. Returns false if the mask
+   * didn't get painted and should be ignored at the call site.
    */
-  static void PaintMask(const PaintFramesParams& aParams);
+  static bool PaintMask(const PaintFramesParams& aParams);
 
   /**
    * Return true if all the mask resource of aFrame are ready.
@@ -177,6 +204,14 @@ class nsSVGIntegrationUtils final {
    * Paint non-SVG frame with filter and opacity effect.
    */
   static void PaintFilter(const PaintFramesParams& aParams);
+
+  /**
+   * Try to build WebRender filters for a frame if the filters applied to it are
+   * supported.
+   */
+  static bool BuildWebRenderFilters(nsIFrame* aFilteredFrame,
+                                    WrFiltersHolder& aWrFilters,
+                                    mozilla::Maybe<nsRect>& aPostFilterClip);
 
   /**
    * @param aRenderingContext the target rendering context in which the paint

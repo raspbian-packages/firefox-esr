@@ -27,7 +27,7 @@
 // GetTickCount() and conflicts with MediaDecoder::GetCurrentTime
 // implementation.
 #ifdef GetCurrentTime
-#undef GetCurrentTime
+#  undef GetCurrentTime
 #endif
 
 struct JSContext;
@@ -191,6 +191,28 @@ void SourceBuffer::AppendBuffer(const ArrayBufferView& aData,
   AppendData(aData.Data(), aData.Length(), aRv);
 }
 
+already_AddRefed<Promise> SourceBuffer::AppendBufferAsync(
+    const ArrayBuffer& aData, ErrorResult& aRv) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  MSE_API("AppendBufferAsync(ArrayBuffer)");
+  aData.ComputeLengthAndData();
+  DDLOG(DDLogCategory::API, "AppendBufferAsync", aData.Length());
+
+  return AppendDataAsync(aData.Data(), aData.Length(), aRv);
+}
+
+already_AddRefed<Promise> SourceBuffer::AppendBufferAsync(
+    const ArrayBufferView& aData, ErrorResult& aRv) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  MSE_API("AppendBufferAsync(ArrayBufferView)");
+  aData.ComputeLengthAndData();
+  DDLOG(DDLogCategory::API, "AppendBufferAsync", aData.Length());
+
+  return AppendDataAsync(aData.Data(), aData.Length(), aRv);
+}
+
 void SourceBuffer::Abort(ErrorResult& aRv) {
   MOZ_ASSERT(NS_IsMainThread());
   MSE_API("Abort()");
@@ -236,6 +258,52 @@ void SourceBuffer::Remove(double aStart, double aEnd, ErrorResult& aRv) {
   MSE_API("Remove(aStart=%f, aEnd=%f)", aStart, aEnd);
   DDLOG(DDLogCategory::API, "Remove-from", aStart);
   DDLOG(DDLogCategory::API, "Remove-until", aEnd);
+
+  PrepareRemove(aStart, aEnd, aRv);
+  if (aRv.Failed()) {
+    return;
+  }
+  RangeRemoval(aStart, aEnd);
+}
+
+already_AddRefed<Promise> SourceBuffer::RemoveAsync(double aStart, double aEnd,
+                                                    ErrorResult& aRv) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MSE_API("RemoveAsync(aStart=%f, aEnd=%f)", aStart, aEnd);
+  DDLOG(DDLogCategory::API, "Remove-from", aStart);
+  DDLOG(DDLogCategory::API, "Remove-until", aEnd);
+
+  if (!IsAttached()) {
+    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
+    return nullptr;
+  }
+
+  nsCOMPtr<nsIGlobalObject> parentObject =
+      do_QueryInterface(mMediaSource->GetParentObject());
+  if (!parentObject) {
+    aRv.Throw(NS_ERROR_UNEXPECTED);
+    return nullptr;
+  }
+
+  RefPtr<Promise> promise = Promise::Create(parentObject, aRv);
+  if (aRv.Failed()) {
+    return nullptr;
+  }
+
+  PrepareRemove(aStart, aEnd, aRv);
+
+  if (aRv.Failed()) {
+    // The bindings will automatically return a rejected promise.
+    return nullptr;
+  }
+  MOZ_ASSERT(!mDOMPromise, "Can't have a pending operation going");
+  mDOMPromise = promise;
+  RangeRemoval(aStart, aEnd);
+
+  return promise.forget();
+}
+
+void SourceBuffer::PrepareRemove(double aStart, double aEnd, ErrorResult& aRv) {
   if (!IsAttached()) {
     aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
     return;
@@ -252,8 +320,6 @@ void SourceBuffer::Remove(double aStart, double aEnd, ErrorResult& aRv) {
   if (mMediaSource->ReadyState() == MediaSourceReadyState::Ended) {
     mMediaSource->SetReadyState(MediaSourceReadyState::Open);
   }
-
-  RangeRemoval(aStart, aEnd);
 }
 
 void SourceBuffer::RangeRemoval(double aStart, double aEnd) {
@@ -262,13 +328,91 @@ void SourceBuffer::RangeRemoval(double aStart, double aEnd) {
   RefPtr<SourceBuffer> self = this;
   mTrackBuffersManager
       ->RangeRemoval(TimeUnit::FromSeconds(aStart), TimeUnit::FromSeconds(aEnd))
-      ->Then(mAbstractMainThread, __func__,
-             [self](bool) {
-               self->mPendingRemoval.Complete();
-               self->StopUpdating();
-             },
-             []() { MOZ_ASSERT(false); })
+      ->Then(
+          mAbstractMainThread, __func__,
+          [self](bool) {
+            self->mPendingRemoval.Complete();
+            self->StopUpdating();
+          },
+          []() { MOZ_ASSERT(false); })
       ->Track(mPendingRemoval);
+}
+
+void SourceBuffer::ChangeType(const nsAString& aType, ErrorResult& aRv) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  // 1. If type is an empty string then throw a TypeError exception and abort
+  //    these steps.
+  if (aType.IsEmpty()) {
+    aRv.Throw(NS_ERROR_DOM_TYPE_ERR);
+    return;
+  }
+
+  // 2. If this object has been removed from the sourceBuffers attribute of the
+  //    parent media source , then throw an InvalidStateError exception and
+  //    abort these steps.
+  // 3. If the updating attribute equals true, then throw an InvalidStateError
+  //    exception and abort these steps.
+  if (!IsAttached() || mUpdating) {
+    DDLOG(DDLogCategory::API, "ChangeType", NS_ERROR_DOM_INVALID_STATE_ERR);
+    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
+    return;
+  }
+
+  // 4. If type contains a MIME type that is not supported or contains a MIME
+  //    type that is not supported with the types specified (currently or
+  //    previously) of SourceBuffer objects in the sourceBuffers attribute of
+  //    the parent media source , then throw a NotSupportedError exception and
+  //    abort these steps.
+  DecoderDoctorDiagnostics diagnostics;
+  nsresult rv = MediaSource::IsTypeSupported(aType, &diagnostics);
+  diagnostics.StoreFormatDiagnostics(
+      mMediaSource->GetOwner() ? mMediaSource->GetOwner()->GetExtantDoc()
+                               : nullptr,
+      aType, NS_SUCCEEDED(rv), __func__);
+  MSE_API("ChangeType(aType=%s)%s", NS_ConvertUTF16toUTF8(aType).get(),
+          rv == NS_OK ? "" : " [not supported]");
+  if (NS_FAILED(rv)) {
+    DDLOG(DDLogCategory::API, "ChangeType", rv);
+    aRv.Throw(rv);
+    return;
+  }
+
+  // 5. If the readyState attribute of the parent media source is in the "ended"
+  //    state then run the following steps:
+  //    1. Set the readyState attribute of the parent media source to "open"
+  //    2.   Queue a task to fire a simple event named sourceopen at the parent
+  //         media source .
+  MOZ_ASSERT(mMediaSource->ReadyState() != MediaSourceReadyState::Closed);
+  if (mMediaSource->ReadyState() == MediaSourceReadyState::Ended) {
+    mMediaSource->SetReadyState(MediaSourceReadyState::Open);
+  }
+  Maybe<MediaContainerType> containerType = MakeMediaContainerType(aType);
+  MOZ_ASSERT(containerType);
+  mType = *containerType;
+  // 6. Run the reset parser state algorithm .
+  ResetParserState();
+
+  // 7. Update the generate timestamps flag on this SourceBuffer object to the
+  //    value in the "Generate Timestamps Flag" column of the byte stream format
+  //    registry [ MSE-REGISTRY ] entry that is associated with type .
+  if (mType.Type() == MEDIAMIMETYPE("audio/mpeg") ||
+      mType.Type() == MEDIAMIMETYPE("audio/aac")) {
+    mCurrentAttributes.mGenerateTimestamps = true;
+    // 8. If the generate timestamps flag equals true:
+    //    Set the mode attribute on this SourceBuffer object to "sequence" ,
+    //    including running the associated steps for that attribute being set.
+    ErrorResult dummy;
+    SetMode(SourceBufferAppendMode::Sequence, dummy);
+  } else {
+    mCurrentAttributes.mGenerateTimestamps = false;
+    //    Otherwise: Keep the previous value of the mode attribute on this
+    //    SourceBuffer object, without running any associated steps for that
+    //    attribute being set.
+  }
+
+  // 9. Set pending initialization segment for changeType flag to true.
+  mTrackBuffersManager->ChangeType(mType);
 }
 
 void SourceBuffer::Detach() {
@@ -334,7 +478,7 @@ MediaSource* SourceBuffer::GetParentObject() const { return mMediaSource; }
 
 JSObject* SourceBuffer::WrapObject(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SourceBufferBinding::Wrap(aCx, this, aGivenProto);
+  return SourceBuffer_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void SourceBuffer::DispatchSimpleEvent(const char* aName) {
@@ -366,6 +510,10 @@ void SourceBuffer::StopUpdating() {
   mUpdating = false;
   QueueAsyncSimpleEvent("update");
   QueueAsyncSimpleEvent("updateend");
+  if (mDOMPromise) {
+    mDOMPromise->MaybeResolveWithUndefined();
+    mDOMPromise = nullptr;
+  }
 }
 
 void SourceBuffer::AbortUpdating() {
@@ -373,6 +521,10 @@ void SourceBuffer::AbortUpdating() {
   mUpdating = false;
   QueueAsyncSimpleEvent("abort");
   QueueAsyncSimpleEvent("updateend");
+  if (mDOMPromise) {
+    mDOMPromise->MaybeReject(NS_ERROR_DOM_MEDIA_ABORT_ERR);
+    mDOMPromise = nullptr;
+  }
 }
 
 void SourceBuffer::CheckEndTime() {
@@ -387,6 +539,7 @@ void SourceBuffer::CheckEndTime() {
 
 void SourceBuffer::AppendData(const uint8_t* aData, uint32_t aLength,
                               ErrorResult& aRv) {
+  MOZ_ASSERT(NS_IsMainThread());
   MSE_DEBUG("AppendData(aLength=%u)", aLength);
 
   RefPtr<MediaByteBuffer> data = PrepareAppend(aData, aLength, aRv);
@@ -400,6 +553,40 @@ void SourceBuffer::AppendData(const uint8_t* aData, uint32_t aLength,
              &SourceBuffer::AppendDataCompletedWithSuccess,
              &SourceBuffer::AppendDataErrored)
       ->Track(mPendingAppend);
+}
+
+already_AddRefed<Promise> SourceBuffer::AppendDataAsync(const uint8_t* aData,
+                                                        uint32_t aLength,
+                                                        ErrorResult& aRv) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  if (!IsAttached()) {
+    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
+    return nullptr;
+  }
+
+  nsCOMPtr<nsIGlobalObject> parentObject =
+      do_QueryInterface(mMediaSource->GetParentObject());
+  if (!parentObject) {
+    aRv.Throw(NS_ERROR_UNEXPECTED);
+    return nullptr;
+  }
+
+  RefPtr<Promise> promise = Promise::Create(parentObject, aRv);
+  if (aRv.Failed()) {
+    return nullptr;
+  }
+
+  AppendData(aData, aLength, aRv);
+
+  if (aRv.Failed()) {
+    return nullptr;
+  }
+
+  MOZ_ASSERT(!mDOMPromise, "Can't have a pending operation going");
+  mDOMPromise = promise;
+
+  return promise.forget();
 }
 
 void SourceBuffer::AppendDataCompletedWithSuccess(
@@ -467,6 +654,11 @@ void SourceBuffer::AppendError(const MediaResult& aDecodeError) {
   MOZ_ASSERT(NS_FAILED(aDecodeError));
 
   mMediaSource->EndOfStream(aDecodeError);
+
+  if (mDOMPromise) {
+    mDOMPromise->MaybeReject(aDecodeError);
+    mDOMPromise = nullptr;
+  }
 }
 
 already_AddRefed<MediaByteBuffer> SourceBuffer::PrepareAppend(
@@ -548,12 +740,14 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(SourceBuffer)
   tmp->Detach();
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mMediaSource)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mBuffered)
+  NS_IMPL_CYCLE_COLLECTION_UNLINK(mDOMPromise)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END_INHERITED(DOMEventTargetHelper)
 
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(SourceBuffer,
                                                   DOMEventTargetHelper)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mMediaSource)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mBuffered)
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mDOMPromise)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
 NS_IMPL_ADDREF_INHERITED(SourceBuffer, DOMEventTargetHelper)

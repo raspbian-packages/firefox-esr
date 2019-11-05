@@ -4,7 +4,7 @@
 
 "use strict";
 
-const { FILTER_FLAGS } = require("../constants");
+const { FILTER_FLAGS, SUPPORTED_HTTP_CODES } = require("../constants");
 
 /**
  * Generates a value for the given filter
@@ -48,16 +48,18 @@ function getAutocompleteValuesForFlag(flag, request) {
       values = responseCookies.map(c => c.value);
       break;
     case "set-cookie-domain":
-      values = responseCookies.map(c => c.hasOwnProperty("domain") ?
-          c.domain : request.urlDetails.host);
+      values = responseCookies.map(c =>
+        c.hasOwnProperty("domain") ? c.domain : request.urlDetails.host
+      );
       break;
     case "is":
       values = ["cached", "from-cache", "running"];
       break;
     case "has-response-header":
       // Some requests not having responseHeaders..?
-      values = request.responseHeaders ?
-        request.responseHeaders.headers.map(h => h.name) : [];
+      values = request.responseHeaders
+        ? request.responseHeaders.headers.map(h => h.name)
+        : [];
       break;
     case "protocol":
       values.push(request.httpVersion);
@@ -102,7 +104,7 @@ function getLastTokenFlagValues(lastToken, requests) {
   }
 
   let values = [];
-  for (let request of requests) {
+  for (const request of requests) {
     values.push(...getAutocompleteValuesForFlag(flag, request));
   }
   values = [...new Set(values)];
@@ -111,14 +113,16 @@ function getLastTokenFlagValues(lastToken, requests) {
     .filter(value => value)
     .filter(value => {
       if (typedFlagValue && value) {
-        let lowerTyped = typedFlagValue.toLowerCase();
-        let lowerValue = value.toLowerCase();
+        const lowerTyped = typedFlagValue.toLowerCase();
+        const lowerValue = value.toLowerCase();
         return lowerValue.includes(lowerTyped) && lowerValue !== lowerTyped;
       }
-      return typeof value !== "undefined" && value !== "" && value !== "undefined";
+      return (
+        typeof value !== "undefined" && value !== "" && value !== "undefined"
+      );
     })
     .sort()
-    .map(value => isNegativeFlag ? `-${flag}:${value}` : `${flag}:${value}`);
+    .map(value => (isNegativeFlag ? `-${flag}:${value}` : `${flag}:${value}`));
 }
 
 /**
@@ -139,14 +143,15 @@ function autocompleteProvider(filter, requests) {
     return [];
   }
 
-  let negativeAutocompleteList = FILTER_FLAGS.map((item) => `-${item}`);
-  let baseList = [...FILTER_FLAGS, ...negativeAutocompleteList]
-    .map((item) => `${item}:`);
+  const negativeAutocompleteList = FILTER_FLAGS.map(item => `-${item}`);
+  const baseList = [...FILTER_FLAGS, ...negativeAutocompleteList].map(
+    item => `${item}:`
+  );
 
   // The last token is used to filter the base autocomplete list
-  let tokens = filter.split(/\s+/g);
-  let lastToken = tokens[tokens.length - 1];
-  let previousTokens = tokens.slice(0, tokens.length - 1);
+  const tokens = filter.split(/\s+/g);
+  const lastToken = tokens[tokens.length - 1];
+  const previousTokens = tokens.slice(0, tokens.length - 1);
 
   // Autocomplete list is not generated for empty lastToken
   if (!lastToken) {
@@ -154,23 +159,39 @@ function autocompleteProvider(filter, requests) {
   }
 
   let autocompleteList;
-  let availableValues = getLastTokenFlagValues(lastToken, requests);
+  const availableValues = getLastTokenFlagValues(lastToken, requests);
   if (availableValues.length > 0) {
     autocompleteList = availableValues;
   } else {
-    autocompleteList = baseList
-      .filter((item) => {
-        return item.toLowerCase().startsWith(lastToken.toLowerCase())
-          && item.toLowerCase() !== lastToken.toLowerCase();
+    const isNegativeFlag = lastToken.startsWith("-");
+
+    // Stores list of HTTP codes that starts with value of lastToken
+    const filteredStatusCodes = SUPPORTED_HTTP_CODES.filter(item => {
+      item = isNegativeFlag ? item.substr(1) : item;
+      return item.toLowerCase().startsWith(lastToken.toLowerCase());
+    });
+
+    if (filteredStatusCodes.length > 0) {
+      // Shows an autocomplete list of "status-code" values from filteredStatusCodes
+      autocompleteList = isNegativeFlag
+        ? filteredStatusCodes.map(item => `-status-code:${item}`)
+        : filteredStatusCodes.map(item => `status-code:${item}`);
+    } else {
+      // Shows an autocomplete list of values from baseList
+      // that starts with value of lastToken
+      autocompleteList = baseList.filter(item => {
+        return (
+          item.toLowerCase().startsWith(lastToken.toLowerCase()) &&
+          item.toLowerCase() !== lastToken.toLowerCase()
+        );
       });
+    }
   }
 
-  return autocompleteList
-    .sort()
-    .map(item => ({
-      value: [...previousTokens, item].join(" "),
-      displayValue: item,
-    }));
+  return autocompleteList.sort().map(item => ({
+    value: [...previousTokens, item].join(" "),
+    displayValue: item,
+  }));
 }
 
 module.exports = {

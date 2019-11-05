@@ -9,10 +9,8 @@
 #include "nsIContent.h"
 #include "nsAtom.h"
 #include "nsPresContext.h"
-#include "nsStyleContext.h"
 #include "nsCSSRendering.h"
 #include "nsNameSpaceManager.h"
-#include "nsIDocument.h"
 #include "nsGkAtoms.h"
 #include "nsMenuFrame.h"
 #include "nsMenuPopupFrame.h"
@@ -21,12 +19,14 @@
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsCSSFrameConstructor.h"
 #ifdef XP_WIN
-#include "nsISound.h"
-#include "nsWidgetsCID.h"
+#  include "nsISound.h"
+#  include "nsWidgetsCID.h"
 #endif
-#include "nsContentUtils.h"
 #include "nsUTF8Utils.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/TextEvents.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/Event.h"
 #include "mozilla/dom/KeyboardEvent.h"
 
@@ -38,22 +38,22 @@ using mozilla::dom::KeyboardEvent;
 //
 // Wrapper for creating a new menu Bar container
 //
-nsIFrame* NS_NewMenuBarFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext) {
-  return new (aPresShell) nsMenuBarFrame(aContext);
+nsIFrame* NS_NewMenuBarFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsMenuBarFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMenuBarFrame)
 
 NS_QUERYFRAME_HEAD(nsMenuBarFrame)
-NS_QUERYFRAME_ENTRY(nsMenuBarFrame)
+  NS_QUERYFRAME_ENTRY(nsMenuBarFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsBoxFrame)
 
 //
 // nsMenuBarFrame cntr
 //
-nsMenuBarFrame::nsMenuBarFrame(nsStyleContext* aContext)
-    : nsBoxFrame(aContext, kClassID),
+nsMenuBarFrame::nsMenuBarFrame(ComputedStyle* aStyle,
+                               nsPresContext* aPresContext)
+    : nsBoxFrame(aStyle, aPresContext, kClassID),
       mStayActive(false),
       mIsActive(false),
       mActiveByKeyboard(false),
@@ -185,7 +185,7 @@ nsMenuFrame* nsMenuBarFrame::FindMenuWithShortcut(KeyboardEvent* aKeyEvent,
     return do_QueryFrame(foundMenu);
   }
 
-    // didn't find a matching menu item
+  // didn't find a matching menu item
 #ifdef XP_WIN
   if (!aPeek) {
     // behavior on Windows - this item is on the menu bar, beep and deactivate
@@ -211,9 +211,8 @@ nsMenuFrame* nsMenuBarFrame::FindMenuWithShortcut(KeyboardEvent* aKeyEvent,
   return nullptr;
 }
 
-/* virtual */ nsMenuFrame* nsMenuBarFrame::GetCurrentMenuItem() {
-  return mCurrentMenu;
-}
+/* virtual */
+nsMenuFrame* nsMenuBarFrame::GetCurrentMenuItem() { return mCurrentMenu; }
 
 NS_IMETHODIMP
 nsMenuBarFrame::SetCurrentMenuItem(nsMenuFrame* aMenuItem) {

@@ -6,7 +6,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-echo "To complete this script you will need the following tokens from https://mozilla-releng.net/tokens/"
+echo "To complete this script you will need the following tokens from https://mozilla-releng.net/tokens"
 echo " - tooltool.upload.public"
 echo " - tooltool.download.public"
 echo ""

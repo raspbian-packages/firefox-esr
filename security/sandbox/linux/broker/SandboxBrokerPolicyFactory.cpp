@@ -8,6 +8,7 @@
 #include "SandboxInfo.h"
 #include "SandboxLogging.h"
 
+#include "base/shared_memory.h"
 #include "mozilla/Array.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/Preferences.h"
@@ -29,11 +30,15 @@
 #include "nsNetCID.h"
 
 #ifdef ANDROID
-#include "cutils/properties.h"
+#  include "cutils/properties.h"
 #endif
 
 #ifdef MOZ_WIDGET_GTK
-#include <glib.h>
+#  include <glib.h>
+#  ifdef MOZ_WAYLAND
+#    include <gdk/gdk.h>
+#    include <gdk/gdkx.h>
+#  endif
 #endif
 
 #include <dirent.h>
@@ -41,12 +46,11 @@
 #include <sys/sysmacros.h>
 #include <sys/types.h>
 #ifndef ANDROID
-#include <glob.h>
+#  include <glob.h>
 #endif
 
 namespace mozilla {
 
-#if defined(MOZ_CONTENT_SANDBOX)
 namespace {
 static const int rdonly = SandboxBroker::MAY_READ;
 static const int wronly = SandboxBroker::MAY_WRITE;
@@ -54,11 +58,13 @@ static const int rdwr = rdonly | wronly;
 static const int rdwrcr = rdwr | SandboxBroker::MAY_CREATE;
 static const int access = SandboxBroker::MAY_ACCESS;
 }  // namespace
-#endif
 
 static void AddMesaSysfsPaths(SandboxBroker::Policy* aPolicy) {
   // Bug 1384178: Mesa driver loader
   aPolicy->AddPrefix(rdonly, "/sys/dev/char/226:");
+
+  // Bug 1480755: Mesa tries to probe /sys paths in turn
+  aPolicy->AddAncestors("/sys/dev/char/");
 
   // Bug 1401666: Mesa driver loader part 2: Mesa <= 12 using libudev
   if (auto dir = opendir("/dev/dri")) {
@@ -79,10 +85,17 @@ static void AddMesaSysfsPaths(SandboxBroker::Policy* aPolicy) {
             // broker.  To match this, allow the canonical paths.
             UniqueFreePtr<char[]> realSysPath(realpath(sysPath.get(), nullptr));
             if (realSysPath) {
-              nsPrintfCString ueventPath("%s/uevent", realSysPath.get());
-              nsPrintfCString configPath("%s/config", realSysPath.get());
-              aPolicy->AddPath(rdonly, ueventPath.get());
-              aPolicy->AddPath(rdonly, configPath.get());
+              static const Array<const char*, 7> kMesaAttrSuffixes = {
+                  "revision",         "vendor", "device", "subsystem_vendor",
+                  "subsystem_device", "uevent", "config"};
+              for (const auto attrSuffix : kMesaAttrSuffixes) {
+                nsPrintfCString attrPath("%s/%s", realSysPath.get(),
+                                         attrSuffix);
+                aPolicy->AddPath(rdonly, attrPath.get());
+              }
+              // Allowing stat-ing the parent dirs
+              nsPrintfCString basePath("%s/", realSysPath.get());
+              aPolicy->AddAncestors(basePath.get());
             }
           }
         }
@@ -120,6 +133,9 @@ static void AddPathsFromFile(SandboxBroker::Policy* aPolicy,
   bool more = true;
   do {
     rv = lineStream->ReadLine(line, &more);
+    if (NS_FAILED(rv)) {
+      break;
+    }
     // Cut off any comments at the end of the line, also catches lines
     // that are entirely a comment
     int32_t hash = line.FindChar('#');
@@ -175,12 +191,17 @@ static void AddLdconfigPaths(SandboxBroker::Policy* aPolicy) {
   AddPathsFromFile(aPolicy, ldconfigPath);
 }
 
+static void AddSharedMemoryPaths(SandboxBroker::Policy* aPolicy, pid_t aPid) {
+  std::string shmPath("/dev/shm");
+  if (base::SharedMemory::AppendPosixShmPrefix(&shmPath, aPid)) {
+    aPolicy->AddPrefix(rdwrcr, shmPath.c_str());
+  }
+}
+
 SandboxBrokerPolicyFactory::SandboxBrokerPolicyFactory() {
-// Policy entries that are the same in every process go here, and
-// are cached over the lifetime of the factory.
-#if defined(MOZ_CONTENT_SANDBOX)
+  // Policy entries that are the same in every process go here, and
+  // are cached over the lifetime of the factory.
   SandboxBroker::Policy* policy = new SandboxBroker::Policy;
-  policy->AddDir(rdwrcr, "/dev/shm");
   // Write permssions
   //
   // Bug 1308851: NVIDIA proprietary driver when using WebGL
@@ -373,18 +394,24 @@ SandboxBrokerPolicyFactory::SandboxBrokerPolicyFactory() {
   }
   policy->AddPath(SandboxBroker::MAY_CONNECT, bumblebeeSocket);
 
+#if defined(MOZ_WIDGET_GTK)
   // Allow local X11 connections, for Primus and VirtualGL to contact
-  // the secondary X server.
+  // the secondary X server. No exception for Wayland.
+#  if defined(MOZ_WAYLAND)
+  if (GDK_IS_X11_DISPLAY(gdk_display_get_default())) {
+    policy->AddPrefix(SandboxBroker::MAY_CONNECT, "/tmp/.X11-unix/X");
+  }
+#  else
   policy->AddPrefix(SandboxBroker::MAY_CONNECT, "/tmp/.X11-unix/X");
+#  endif
   if (const auto xauth = PR_GetEnv("XAUTHORITY")) {
     policy->AddPath(rdonly, xauth);
   }
+#endif
 
   mCommonContentPolicy.reset(policy);
-#endif
 }
 
-#ifdef MOZ_CONTENT_SANDBOX
 UniquePtr<SandboxBroker::Policy> SandboxBrokerPolicyFactory::GetContentPolicy(
     int aPid, bool aFileProcess) {
   // Policy entries that vary per-process (currently the only reason
@@ -393,8 +420,8 @@ UniquePtr<SandboxBroker::Policy> SandboxBrokerPolicyFactory::GetContentPolicy(
   // in early startup.
 
   MOZ_ASSERT(NS_IsMainThread());
-  // File broker usage is controlled through a pref.
-  if (!IsContentSandboxEnabled()) {
+  // The file broker is used at level 2 and up.
+  if (GetEffectiveContentSandboxLevel() <= 1) {
     return nullptr;
   }
 
@@ -496,6 +523,12 @@ UniquePtr<SandboxBroker::Policy> SandboxBrokerPolicyFactory::GetContentPolicy(
     policy->AddDir(rdwr, "/dev/snd");
   }
 
+  if (allowPulse) {
+    policy->AddDir(rdwrcr, "/dev/shm");
+  } else {
+    AddSharedMemoryPaths(policy.get(), aPid);
+  }
+
 #ifdef MOZ_WIDGET_GTK
   if (const auto userDir = g_get_user_runtime_dir()) {
     // Bug 1321134: DConf's single bit of shared memory
@@ -547,5 +580,16 @@ void SandboxBrokerPolicyFactory::AddDynamicPathList(
   }
 }
 
-#endif  // MOZ_CONTENT_SANDBOX
+/* static */ UniquePtr<SandboxBroker::Policy>
+SandboxBrokerPolicyFactory::GetUtilityPolicy(int aPid) {
+  auto policy = MakeUnique<SandboxBroker::Policy>();
+
+  AddSharedMemoryPaths(policy.get(), aPid);
+
+  if (policy->IsEmpty()) {
+    policy = nullptr;
+  }
+  return policy;
+}
+
 }  // namespace mozilla

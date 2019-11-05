@@ -67,15 +67,12 @@ OrientedImage::GetIntrinsicSize(nsSize* aSize) {
   return rv;
 }
 
-NS_IMETHODIMP
-OrientedImage::GetIntrinsicRatio(nsSize* aRatio) {
-  nsresult rv = InnerImage()->GetIntrinsicRatio(aRatio);
-
-  if (mOrientation.SwapsWidthAndHeight()) {
-    swap(aRatio->width, aRatio->height);
+Maybe<AspectRatio> OrientedImage::GetIntrinsicRatio() {
+  Maybe<AspectRatio> ratio = InnerImage()->GetIntrinsicRatio();
+  if (ratio && mOrientation.SwapsWidthAndHeight()) {
+    ratio = Some(ratio->Inverted());
   }
-
-  return rv;
+  return ratio;
 }
 
 NS_IMETHODIMP_(already_AddRefed<SourceSurface>)
@@ -170,10 +167,11 @@ OrientedImage::IsImageContainerAvailableAtSize(LayerManager* aManager,
   return false;
 }
 
-NS_IMETHODIMP_(already_AddRefed<ImageContainer>)
+NS_IMETHODIMP_(ImgDrawResult)
 OrientedImage::GetImageContainerAtSize(
-    LayerManager* aManager, const IntSize& aSize,
-    const Maybe<SVGImageContext>& aSVGContext, uint32_t aFlags) {
+    layers::LayerManager* aManager, const gfx::IntSize& aSize,
+    const Maybe<SVGImageContext>& aSVGContext, uint32_t aFlags,
+    layers::ImageContainer** aOutContainer) {
   // XXX(seth): We currently don't have a way of orienting the result of
   // GetImageContainer. We work around this by always returning null, but if it
   // ever turns out that OrientedImage is widely used on codepaths that can
@@ -182,10 +180,10 @@ OrientedImage::GetImageContainerAtSize(
 
   if (mOrientation.IsIdentity()) {
     return InnerImage()->GetImageContainerAtSize(aManager, aSize, aSVGContext,
-                                                 aFlags);
+                                                 aFlags, aOutContainer);
   }
 
-  return nullptr;
+  return ImgDrawResult::NOT_SUPPORTED;
 }
 
 struct MatrixBuilder {

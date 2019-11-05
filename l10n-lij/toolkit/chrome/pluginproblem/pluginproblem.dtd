@@ -6,7 +6,7 @@
 <!ENTITY tapToPlayPlugin                                     "Tocca chi pe ativâ o plugin.">
 <!ENTITY clickToActivatePlugin                               "Ativa plugin.">
 <!ENTITY checkForUpdates                                     "Contròlla agiornamenti…">
-<!ENTITY blockedPlugin.label                                 "Sto plugin o l'é blocou pr motivi de seguessa.">
+<!ENTITY blockedPlugin.label                                 "Sto plugin o l'é blocòu pe motivi de seguessa.">
 <!ENTITY hidePluginBtn.label                                 "Ascondi plugin">
 <!ENTITY managePlugins                                       "Gestion plugin…">
 
@@ -26,7 +26,7 @@
 <!ENTITY report.comment                                      "Azonzi 'n comento (i comenti en vixibili pubricamente)">
 <!ENTITY report.pageURL                                      "Includdi URL da pagina">
 
-<!ENTITY plugin.file                                         "File">
+<!ENTITY plugin.file                                         "Schedaio">
 <!ENTITY plugin.mimeTypes                                    "Tipi MIME">
 <!ENTITY plugin.flashProtectedMode.label                     "Ativa mòddo proteto in Adobe Flash">
 <!ENTITY plugin.enableBlocklists.label                       "Blòcca contegui Flash grammi e pericolozi">

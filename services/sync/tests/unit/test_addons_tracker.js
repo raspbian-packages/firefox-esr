@@ -3,14 +3,25 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
-ChromeUtils.import("resource://services-sync/engines/addons.js");
-ChromeUtils.import("resource://services-sync/constants.js");
-ChromeUtils.import("resource://services-sync/service.js");
-ChromeUtils.import("resource://services-sync/util.js");
+const { AddonsEngine } = ChromeUtils.import(
+  "resource://services-sync/engines/addons.js"
+);
+const { Service } = ChromeUtils.import("resource://services-sync/service.js");
 
-loadAddonTestFunctions();
-startupManager();
+AddonTestUtils.init(this);
+AddonTestUtils.createAppInfo(
+  "xpcshell@tests.mozilla.org",
+  "XPCShell",
+  "1",
+  "1.9.2"
+);
+AddonTestUtils.overrideCertDB();
+
+Services.prefs.setCharPref("extensions.minCompatibleAppVersion", "0");
+Services.prefs.setCharPref("extensions.minCompatiblePlatformVersion", "0");
+Services.prefs.setBoolPref("extensions.legacy.enabled", true);
+
+AddonTestUtils.awaitPromise(AddonTestUtils.promiseStartupManager());
 Svc.Prefs.set("engine.addons", true);
 
 let engine;
@@ -19,6 +30,19 @@ let store;
 let tracker;
 
 const addon1ID = "addon1@tests.mozilla.org";
+
+const ADDONS = {
+  test_addon1: {
+    manifest: {
+      applications: { gecko: { id: addon1ID } },
+    },
+  },
+};
+
+const XPIS = {};
+for (let [name, data] of Object.entries(ADDONS)) {
+  XPIS[name] = AddonTestUtils.createTempWebExtensionFile(data);
+}
 
 async function cleanup() {
   tracker.stop();
@@ -33,10 +57,10 @@ async function cleanup() {
 
 add_task(async function setup() {
   await Service.engineManager.register(AddonsEngine);
-  engine     = Service.engineManager.get("addons");
+  engine = Service.engineManager.get("addons");
   reconciler = engine._reconciler;
-  store      = engine._store;
-  tracker    = engine._tracker;
+  store = engine._store;
+  tracker = engine._tracker;
 
   // Don't write out by default.
   tracker.persistChangedIDs = false;
@@ -47,7 +71,7 @@ add_task(async function setup() {
 add_task(async function test_empty() {
   _("Verify the tracker is empty to start with.");
 
-  Assert.equal(0, Object.keys((await tracker.getChangedIDs())).length);
+  Assert.equal(0, Object.keys(await tracker.getChangedIDs()).length);
   Assert.equal(0, tracker.score);
 
   await cleanup();
@@ -56,10 +80,10 @@ add_task(async function test_empty() {
 add_task(async function test_not_tracking() {
   _("Ensures the tracker doesn't do anything when it isn't tracking.");
 
-  let addon = await installAddon("test_bootstrap1_1", reconciler);
+  let addon = await installAddon(XPIS.test_addon1, reconciler);
   await uninstallAddon(addon, reconciler);
 
-  Assert.equal(0, Object.keys((await tracker.getChangedIDs())).length);
+  Assert.equal(0, Object.keys(await tracker.getChangedIDs()).length);
   Assert.equal(0, tracker.score);
 
   await cleanup();
@@ -73,7 +97,7 @@ add_task(async function test_track_install() {
   tracker.start();
 
   Assert.equal(0, tracker.score);
-  let addon = await installAddon("test_bootstrap1_1", reconciler);
+  let addon = await installAddon(XPIS.test_addon1, reconciler);
   let changed = await tracker.getChangedIDs();
 
   Assert.equal(1, Object.keys(changed).length);
@@ -89,7 +113,7 @@ add_task(async function test_track_uninstall() {
 
   reconciler.startListening();
 
-  let addon = await installAddon("test_bootstrap1_1", reconciler);
+  let addon = await installAddon(XPIS.test_addon1, reconciler);
   let guid = addon.syncGUID;
   Assert.equal(0, tracker.score);
 
@@ -109,7 +133,7 @@ add_task(async function test_track_user_disable() {
 
   reconciler.startListening();
 
-  let addon = await installAddon("test_bootstrap1_1", reconciler);
+  let addon = await installAddon(XPIS.test_addon1, reconciler);
   Assert.ok(!addon.userDisabled);
   Assert.ok(!addon.appDisabled);
   Assert.ok(addon.isActive);
@@ -117,26 +141,8 @@ add_task(async function test_track_user_disable() {
   tracker.start();
   Assert.equal(0, tracker.score);
 
-  let disabledPromise = new Promise(res => {
-    let listener = {
-      onDisabled(disabled) {
-        _("onDisabled");
-        if (disabled.id == addon.id) {
-          AddonManager.removeAddonListener(listener);
-          res();
-        }
-      },
-      onDisabling(disabling) {
-        _("onDisabling add-on");
-      }
-    };
-    AddonManager.addAddonListener(listener);
-  });
-
   _("Disabling add-on");
-  addon.userDisabled = true;
-  _("Disabling started...");
-  await disabledPromise;
+  await addon.disable();
   await reconciler.queueCaller.promiseCallsComplete();
 
   let changed = await tracker.getChangedIDs();
@@ -153,14 +159,14 @@ add_task(async function test_track_enable() {
 
   reconciler.startListening();
 
-  let addon = await installAddon("test_bootstrap1_1", reconciler);
-  addon.userDisabled = true;
+  let addon = await installAddon(XPIS.test_addon1, reconciler);
+  await addon.disable();
   await Async.promiseYield();
 
   Assert.equal(0, tracker.score);
 
   tracker.start();
-  addon.userDisabled = false;
+  await addon.enable();
   await Async.promiseYield();
   await reconciler.queueCaller.promiseCallsComplete();
 

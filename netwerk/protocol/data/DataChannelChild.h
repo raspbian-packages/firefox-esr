@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=4 sw=4 sts=4 et tw=80: */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=4 sw=2 sts=2 et tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,7 +20,7 @@ class DataChannelChild : public nsDataChannel,
                          public nsIChildChannel,
                          public PDataChannelChild {
  public:
-  explicit DataChannelChild(nsIURI *uri);
+  explicit DataChannelChild(nsIURI* uri);
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_NSICHILDCHANNEL
@@ -29,7 +29,7 @@ class DataChannelChild : public nsDataChannel,
   virtual void ActorDestroy(ActorDestroyReason why) override;
 
  private:
-  ~DataChannelChild();
+  ~DataChannelChild() = default;
 
   void AddIPDLReference();
 

@@ -3,9 +3,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/SpawnTask.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
   <script type="text/javascript" src="head_webrequest.js"></script>
   <script type="text/javascript" src="head.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
@@ -97,7 +96,7 @@ let expected = {
     origin: "file_simple_xhr_frame2.html",
     parent: "file_simple_xhr_frame2.html",
   },
-  // This is loaded in a sandbox iframe.  originUrl is not availabe for that,
+  // This is loaded in a sandbox iframe.  originUrl is not available for that,
   // and requests within a sandboxed iframe will additionally have an empty
   // url on their immediate parent/ancestor.
   "file_simple_sandboxed_frame.html": {
@@ -124,9 +123,24 @@ let expected = {
   },
 };
 
+if (AppConstants.platform != "android") {
+  expected["favicon.ico"] = {
+    type: "image",
+    toplevel: true,
+    origin: "file_simple_xhr.html",
+    cached: false,
+  };
+}
+
 function checkDetails(details) {
+  // See bug 1471387
+  if (details.originUrl == "about:newtab") {
+    return;
+  }
+
   let url = new URL(details.url);
   let filename = url.pathname.split(url.protocol == "data:" ? "," : "/").pop();
+  ok(filename in expected, `Should be expecting a request for ${filename}`);
   let expect = expected[filename];
   is(expect.type, details.type, `${details.type} type matches`);
   if (details.parentFrameId == -1) {
@@ -177,6 +191,10 @@ add_task(async function test_webRequest_main_frame() {
   let imgTools = SpecialPowers.Cc["@mozilla.org/image/tools;1"].getService(SpecialPowers.Ci.imgITools);
   let cache = imgTools.getImgCacheForDocument(document);
   cache.clearCache(false);
+  function clearCache() {
+    ChromeUtils.import("resource://gre/modules/Services.jsm", {}).Services.cache2.clear();
+  }
+  SpecialPowers.loadChromeScript(clearCache);
 
   let extension = ExtensionTestUtils.loadExtension(extensionData);
   await extension.startup();

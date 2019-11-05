@@ -40,13 +40,13 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 #ifdef MOZ_X11
-#ifndef MOZ_WIDGET_GTK
-#error "Unknown toolkit"
-#endif
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-#include "X11UndefineNone.h"
-#include "gfxPlatform.h"
+#  ifndef MOZ_WIDGET_GTK
+#    error "Unknown toolkit"
+#  endif
+#  include <gdk/gdk.h>
+#  include <gdk/gdkx.h>
+#  include "X11UndefineNone.h"
+#  include "gfxPlatform.h"
 #endif
 
 namespace mozilla {
@@ -60,10 +60,10 @@ namespace mozilla {
 // (Longer-term we intend to either proxy or remove X11 access from
 // content processes, at which point this will stop being an issue.)
 static bool IsDisplayLocal() {
-// For X11, check whether the parent's connection is a Unix-domain
-// socket.  This is done instead of trying to parse the display name
-// because an empty hostname (e.g., ":0") will fall back to TCP in
-// case of failure to connect using Unix-domain sockets.
+  // For X11, check whether the parent's connection is a Unix-domain
+  // socket.  This is done instead of trying to parse the display name
+  // because an empty hostname (e.g., ":0") will fall back to TCP in
+  // case of failure to connect using Unix-domain sockets.
 #ifdef MOZ_X11
   // First, ensure that the parent process's graphics are initialized.
   Unused << gfxPlatform::GetPlatform();
@@ -145,8 +145,8 @@ bool HasAtiDrivers() {
 // Content processes may need direct access to SysV IPC in certain
 // uncommon use cases.
 static bool ContentNeedsSysVIPC() {
-// The ALSA dmix plugin uses SysV semaphores and shared memory to
-// coordinate software mixing.
+  // The ALSA dmix plugin uses SysV semaphores and shared memory to
+  // coordinate software mixing.
 #ifdef MOZ_ALSA
   if (!Preferences::GetBool("media.cubeb.sandbox")) {
     return true;
@@ -203,8 +203,6 @@ class SandboxFork : public base::LaunchOptions::ForkDelegate {
   int mFlags;
   int mChrootServer;
   int mChrootClient;
-  // For CloseSuperfluousFds in the chroot helper process:
-  base::InjectiveMultimap mChrootMap;
 
   void StartChrootServer();
   SandboxFork(const SandboxFork&) = delete;
@@ -214,14 +212,11 @@ class SandboxFork : public base::LaunchOptions::ForkDelegate {
 static int GetEffectiveSandboxLevel(GeckoProcessType aType) {
   auto info = SandboxInfo::Get();
   switch (aType) {
-#ifdef MOZ_GMP_SANDBOX
     case GeckoProcessType_GMPlugin:
       if (info.Test(SandboxInfo::kEnabledForMedia)) {
         return 1;
       }
       return 0;
-#endif
-#ifdef MOZ_CONTENT_SANDBOX
     case GeckoProcessType_Content:
       // GetEffectiveContentSandboxLevel is main-thread-only due to prefs.
       MOZ_ASSERT(NS_IsMainThread());
@@ -229,7 +224,8 @@ static int GetEffectiveSandboxLevel(GeckoProcessType aType) {
         return GetEffectiveContentSandboxLevel();
       }
       return 0;
-#endif
+    case GeckoProcessType_RDD:
+      return PR_GetEnv("MOZ_DISABLE_RDD_SANDBOX") == nullptr ? 1 : 0;
     default:
       return 0;
   }
@@ -277,23 +273,22 @@ void SandboxLaunchPrepare(GeckoProcessType aType,
   }
 
   switch (aType) {
-#ifdef MOZ_GMP_SANDBOX
     case GeckoProcessType_GMPlugin:
+    case GeckoProcessType_RDD:
       if (level >= 1) {
         canChroot = true;
         flags |= CLONE_NEWNET | CLONE_NEWIPC;
       }
       break;
-#endif
-#ifdef MOZ_CONTENT_SANDBOX
     case GeckoProcessType_Content:
       if (level >= 4) {
         canChroot = true;
         // Unshare network namespace if allowed by graphics; see
         // function definition above for details.  (The display
         // local-ness is cached because it won't change.)
-        static const bool isDisplayLocal = IsDisplayLocal();
-        if (isDisplayLocal) {
+        static const bool canCloneNet =
+            IsDisplayLocal() && !PR_GetEnv("RENDERDOC_CAPTUREOPTS");
+        if (canCloneNet) {
           flags |= CLONE_NEWNET;
         }
       }
@@ -304,7 +299,6 @@ void SandboxLaunchPrepare(GeckoProcessType aType,
         flags |= CLONE_NEWUSER;
       }
       break;
-#endif
     default:
       // Nothing yet.
       break;
@@ -313,7 +307,7 @@ void SandboxLaunchPrepare(GeckoProcessType aType,
   if (canChroot || flags != 0) {
     auto forker = MakeUnique<SandboxFork>(flags | CLONE_NEWUSER, canChroot);
     forker->PrepareMapping(&aOptions->fds_to_remap);
-    aOptions->fork_delegate = Move(forker);
+    aOptions->fork_delegate = std::move(forker);
     if (canChroot) {
       aOptions->env_map[kSandboxChrootEnvFlag] = "1";
     }
@@ -331,9 +325,6 @@ SandboxFork::SandboxFork(int aFlags, bool aChroot)
     }
     mChrootClient = fds[0];
     mChrootServer = fds[1];
-    // Do this here because the child process won't be able to malloc.
-    mChrootMap.push_back(
-        base::InjectionArc(mChrootServer, mChrootServer, false));
   }
 }
 
@@ -557,7 +548,9 @@ void SandboxFork::StartChrootServer() {
     MOZ_DIAGNOSTIC_ASSERT(false);
   }
 
-  CloseSuperfluousFds(mChrootMap);
+  base::CloseSuperfluousFds(this, [](void* aCtx, int aFd) {
+    return aFd == static_cast<decltype(this)>(aCtx)->mChrootServer;
+  });
 
   char msg;
   ssize_t msgLen = HANDLE_EINTR(read(mChrootServer, &msg, 1));

@@ -21,19 +21,20 @@ UNIFIED_SOURCES += [
     'TestEscape.cpp',
     'TestEventPriorities.cpp',
     'TestEventTargetQI.cpp',
-    'TestExpirationTracker.cpp',
     'TestFile.cpp',
     'TestGCPostBarriers.cpp',
     'TestID.cpp',
+    'TestInputStreamLengthHelper.cpp',
+    'TestLogCommandLineHandler.cpp',
     'TestMoveString.cpp',
     'TestMozPromise.cpp',
+    'TestMruCache.cpp',
     'TestMultiplexInputStream.cpp',
     'TestNonBlockingAsyncInputStream.cpp',
     'TestNsDeque.cpp',
     'TestNSPRLogModulesParser.cpp',
     'TestObserverArray.cpp',
     'TestObserverService.cpp',
-    'TestPipes.cpp',
     'TestPLDHash.cpp',
     'TestPriorityQueue.cpp',
     'TestRacingServiceManager.cpp',
@@ -51,15 +52,38 @@ UNIFIED_SOURCES += [
     'TestTaskQueue.cpp',
     'TestTextFormatter.cpp',
     'TestThreadManager.cpp',
-    'TestThreadPool.cpp',
     'TestThreadPoolListener.cpp',
-    'TestThreads.cpp',
-    'TestThreadUtils.cpp',
-    'TestTimers.cpp',
+    'TestThrottledEventQueue.cpp',
     'TestTimeStamp.cpp',
     'TestTokenizer.cpp',
     'TestUTF.cpp',
 ]
+
+if CONFIG['OS_TARGET'] != 'Darwin':
+    UNIFIED_SOURCES += [
+        'TestExpirationTracker.cpp',
+        'TestThreadMetrics.cpp',
+        'TestThreadPool.cpp',
+    ]
+
+if CONFIG['OS_TARGET'] != 'Android':
+    UNIFIED_SOURCES += [
+        'TestPipes.cpp',
+        'TestThreads.cpp',
+    ]
+
+# skip the test on windows10-aarch64 due to perma-fail, bug 1422219
+if not(CONFIG['OS_TARGET'] == 'WINNT' and CONFIG['CPU_ARCH'] == 'aarch64'):
+    UNIFIED_SOURCES += [
+        'TestThreadUtils.cpp'
+    ]
+
+# skip the test on windows10-aarch64 and Android, aarch64 due to bug 1545670
+if CONFIG['OS_TARGET'] != 'Android' and not(CONFIG['OS_TARGET'] == 'WINNT' and CONFIG['CPU_ARCH'] == 'aarch64'):
+    UNIFIED_SOURCES += [
+        'TestTimers.cpp'
+    ]
+
 
 if CONFIG['MOZ_DEBUG'] and CONFIG['OS_ARCH'] not in ('WINNT') and CONFIG['OS_TARGET'] != 'Android':
     # FIXME bug 523392: TestDeadlockDetector doesn't like Windows
@@ -78,8 +102,7 @@ else:
         'TestFilePreferencesUnix.cpp',
     ]
 
-
-if CONFIG['WRAP_STL_INCLUDES'] and CONFIG['CC_TYPE'] != 'clang-cl':
+if CONFIG['WRAP_STL_INCLUDES'] and CONFIG['CC_TYPE'] != 'clang-cl' and CONFIG['OS_TARGET'] != 'Android':
     UNIFIED_SOURCES += [
         'TestSTLWrappers.cpp',
     ]
@@ -102,14 +125,19 @@ GENERATED_FILES = [
     'dafsa_test_1.inc',
 ]
 dafsa_data = GENERATED_FILES['dafsa_test_1.inc']
-dafsa_data.script = '../../ds/make_dafsa.py'
+dafsa_data.script = '../../ds/tools/make_dafsa.py'
 dafsa_data.inputs = ['dafsa_test_1.dat']
 
 TEST_HARNESS_FILES.gtest += [
+    'wikipedia/ar.txt',
+    'wikipedia/de-edit.txt',
     'wikipedia/de.txt',
     'wikipedia/ja.txt',
+    'wikipedia/ko.txt',
     'wikipedia/ru.txt',
     'wikipedia/th.txt',
+    'wikipedia/tr.txt',
+    'wikipedia/vi.txt',
 ]
 
 FINAL_LIBRARY = 'xul-gtest'

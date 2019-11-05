@@ -9,7 +9,7 @@
 
 #include "mozilla/dom/nsCSPUtils.h"
 #include "mozilla/dom/SecurityPolicyViolationEvent.h"
-#include "nsDataHashtable.h"
+#include "mozilla/StaticPrefs.h"
 #include "nsIChannel.h"
 #include "nsIChannelEventSink.h"
 #include "nsIClassInfo.h"
@@ -17,7 +17,7 @@
 #include "nsIInterfaceRequestor.h"
 #include "nsISerializable.h"
 #include "nsIStreamListener.h"
-#include "nsWeakReference.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsXPCOM.h"
 
 #define NS_CSPCONTEXT_CONTRACTID "@mozilla.org/cspcontext;1"
@@ -33,6 +33,15 @@ class nsINetworkInterceptController;
 class nsIEventTarget;
 struct ConsoleMsgQueueElem;
 
+namespace mozilla {
+namespace dom {
+class Element;
+}
+namespace ipc {
+class ContentSecurityPolicy;
+}
+}  // namespace mozilla
+
 class nsCSPContext : public nsIContentSecurityPolicy {
  public:
   NS_DECL_ISUPPORTS
@@ -44,6 +53,16 @@ class nsCSPContext : public nsIContentSecurityPolicy {
 
  public:
   nsCSPContext();
+
+  static bool Equals(nsIContentSecurityPolicy* aCSP,
+                     nsIContentSecurityPolicy* aOtherCSP);
+
+  nsresult InitFromOther(nsCSPContext* otherContext,
+                         mozilla::dom::Document* aDoc,
+                         nsIPrincipal* aPrincipal);
+
+  void SetIPCPolicies(
+      const nsTArray<mozilla::ipc::ContentSecurityPolicy>& policies);
 
   /**
    * SetRequestContext() needs to be called before the innerWindowID
@@ -60,9 +79,8 @@ class nsCSPContext : public nsIContentSecurityPolicy {
   /**
    * Construct SecurityPolicyViolationEventInit structure.
    *
-   * @param aBlockedContentSource
-   *        Either a CSP Source (like 'self', as string) or nsIURI: the source
-   *        of the violation.
+   * @param aBlockedURI
+   *        A nsIURI: the source of the violation.
    * @param aOriginalUri
    *        The original URI if the blocked content is a redirect, else null
    * @param aViolatedDirective
@@ -73,13 +91,16 @@ class nsCSPContext : public nsIContentSecurityPolicy {
    *        a sample of the violating inline script
    * @param aLineNum
    *        source line number of the violation (if available)
+   * @param aColumnNum
+   *        source column number of the violation (if available)
    * @param aViolationEventInit
    *        The output
    */
   nsresult GatherSecurityPolicyViolationEventData(
-      nsISupports* aBlockedContentSource, nsIURI* aOriginalURI,
-      nsAString& aViolatedDirective, uint32_t aViolatedPolicyIndex,
-      nsAString& aSourceFile, nsAString& aScriptSample, uint32_t aLineNum,
+      nsIURI* aBlockedURI, const nsACString& aBlockedString,
+      nsIURI* aOriginalURI, nsAString& aViolatedDirective,
+      uint32_t aViolatedPolicyIndex, nsAString& aSourceFile,
+      nsAString& aScriptSample, uint32_t aLineNum, uint32_t aColumnNum,
       mozilla::dom::SecurityPolicyViolationEventInit& aViolationEventInit);
 
   nsresult SendReports(
@@ -87,14 +108,25 @@ class nsCSPContext : public nsIContentSecurityPolicy {
       uint32_t aViolatedPolicyIndex);
 
   nsresult FireViolationEvent(
+      mozilla::dom::Element* aTriggeringElement,
+      nsICSPEventListener* aCSPEventListener,
       const mozilla::dom::SecurityPolicyViolationEventInit&
           aViolationEventInit);
 
+  enum BlockedContentSource {
+    eUnknown,
+    eInline,
+    eEval,
+    eSelf,
+  };
+
   nsresult AsyncReportViolation(
-      nsISupports* aBlockedContentSource, nsIURI* aOriginalURI,
+      mozilla::dom::Element* aTriggeringElement,
+      nsICSPEventListener* aCSPEventListener, nsIURI* aBlockedURI,
+      BlockedContentSource aBlockedContentSource, nsIURI* aOriginalURI,
       const nsAString& aViolatedDirective, uint32_t aViolatedPolicyIndex,
       const nsAString& aObserverSubject, const nsAString& aSourceFile,
-      const nsAString& aScriptSample, uint32_t aLineNum);
+      const nsAString& aScriptSample, uint32_t aLineNum, uint32_t aColumnNum);
 
   // Hands off! Don't call this method unless you know what you
   // are doing. It's only supposed to be called from within
@@ -103,34 +135,43 @@ class nsCSPContext : public nsIContentSecurityPolicy {
 
   nsWeakPtr GetLoadingContext() { return mLoadingContext; }
 
+  static uint32_t ScriptSampleMaxLength() {
+    return std::max(
+        mozilla::StaticPrefs::security_csp_reporting_script_sample_max_length(),
+        0);
+  }
+
  private:
-  bool permitsInternal(CSPDirective aDir, nsIURI* aContentLocation,
-                       nsIURI* aOriginalURI, const nsAString& aNonce,
-                       bool aWasRedirected, bool aIsPreload, bool aSpecific,
+  void EnsureIPCPoliciesRead();
+
+  bool permitsInternal(CSPDirective aDir,
+                       mozilla::dom::Element* aTriggeringElement,
+                       nsICSPEventListener* aCSPEventListener,
+                       nsIURI* aContentLocation, nsIURI* aOriginalURIIfRedirect,
+                       const nsAString& aNonce, bool aIsPreload, bool aSpecific,
                        bool aSendViolationReports,
                        bool aSendContentLocationInViolationReports,
                        bool aParserCreated);
 
   // helper to report inline script/style violations
   void reportInlineViolation(nsContentPolicyType aContentType,
+                             mozilla::dom::Element* aTriggeringElement,
+                             nsICSPEventListener* aCSPEventListener,
                              const nsAString& aNonce, const nsAString& aContent,
                              const nsAString& aViolatedDirective,
                              uint32_t aViolatedPolicyIndex,
-                             uint32_t aLineNumber);
-
-  static int32_t sScriptSampleMaxLength;
-
-  static uint32_t ScriptSampleMaxLength() {
-    return std::max(sScriptSampleMaxLength, 0);
-  }
-
-  static bool sViolationEventsEnabled;
+                             uint32_t aLineNumber, uint32_t aColumnNumber);
 
   nsString mReferrer;
   uint64_t mInnerWindowID;  // used for web console logging
+  // When deserializing an nsCSPContext instance, we initially just keep the
+  // policies unparsed. We will only reconstruct actual CSP policy instances
+  // when there's an attempt to use the CSP. Given a better way to serialize/
+  // deserialize individual nsCSPPolicy objects, this performance
+  // optimization could go away.
+  nsTArray<mozilla::ipc::ContentSecurityPolicy> mIPCPolicies;
   nsTArray<nsCSPPolicy*> mPolicies;
   nsCOMPtr<nsIURI> mSelfURI;
-  nsDataHashtable<nsCStringHashKey, int16_t> mShouldLoadCache;
   nsCOMPtr<nsILoadGroup> mCallingChannelLoadGroup;
   nsWeakPtr mLoadingContext;
   // The CSP hangs off the principal, so let's store a raw pointer of the

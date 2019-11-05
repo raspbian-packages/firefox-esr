@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=4 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -31,7 +31,7 @@ static nsresult BroadcastDomainSetChange(DomainSetType aSetType,
     return NS_OK;
   }
 
-  OptionalURIParams uri;
+  Maybe<URIParams> uri;
   SerializeURI(aDomain, uri);
 
   for (uint32_t i = 0; i < parents.Length(); i++) {
@@ -41,10 +41,10 @@ static nsresult BroadcastDomainSetChange(DomainSetType aSetType,
 }
 
 DomainPolicy::DomainPolicy()
-    : mBlacklist(new DomainSet(BLACKLIST)),
-      mSuperBlacklist(new DomainSet(SUPER_BLACKLIST)),
-      mWhitelist(new DomainSet(WHITELIST)),
-      mSuperWhitelist(new DomainSet(SUPER_WHITELIST)) {
+    : mBlocklist(new DomainSet(BLOCKLIST)),
+      mSuperBlocklist(new DomainSet(SUPER_BLOCKLIST)),
+      mAllowlist(new DomainSet(ALLOWLIST)),
+      mSuperAllowlist(new DomainSet(SUPER_ALLOWLIST)) {
   if (XRE_IsParentProcess()) {
     BroadcastDomainSetChange(NO_TYPE, ACTIVATE_POLICY);
   }
@@ -53,34 +53,34 @@ DomainPolicy::DomainPolicy()
 DomainPolicy::~DomainPolicy() {
   // The SSM holds a strong ref to the DomainPolicy until Deactivate() is
   // invoked, so we should never hit the destructor until that happens.
-  MOZ_ASSERT(!mBlacklist && !mSuperBlacklist && !mWhitelist &&
-             !mSuperWhitelist);
+  MOZ_ASSERT(!mBlocklist && !mSuperBlocklist && !mAllowlist &&
+             !mSuperAllowlist);
 }
 
 NS_IMETHODIMP
-DomainPolicy::GetBlacklist(nsIDomainSet** aSet) {
-  nsCOMPtr<nsIDomainSet> set = mBlacklist.get();
+DomainPolicy::GetBlocklist(nsIDomainSet** aSet) {
+  nsCOMPtr<nsIDomainSet> set = mBlocklist.get();
   set.forget(aSet);
   return NS_OK;
 }
 
 NS_IMETHODIMP
-DomainPolicy::GetSuperBlacklist(nsIDomainSet** aSet) {
-  nsCOMPtr<nsIDomainSet> set = mSuperBlacklist.get();
+DomainPolicy::GetSuperBlocklist(nsIDomainSet** aSet) {
+  nsCOMPtr<nsIDomainSet> set = mSuperBlocklist.get();
   set.forget(aSet);
   return NS_OK;
 }
 
 NS_IMETHODIMP
-DomainPolicy::GetWhitelist(nsIDomainSet** aSet) {
-  nsCOMPtr<nsIDomainSet> set = mWhitelist.get();
+DomainPolicy::GetAllowlist(nsIDomainSet** aSet) {
+  nsCOMPtr<nsIDomainSet> set = mAllowlist.get();
   set.forget(aSet);
   return NS_OK;
 }
 
 NS_IMETHODIMP
-DomainPolicy::GetSuperWhitelist(nsIDomainSet** aSet) {
-  nsCOMPtr<nsIDomainSet> set = mSuperWhitelist.get();
+DomainPolicy::GetSuperAllowlist(nsIDomainSet** aSet) {
+  nsCOMPtr<nsIDomainSet> set = mSuperAllowlist.get();
   set.forget(aSet);
   return NS_OK;
 }
@@ -89,16 +89,16 @@ NS_IMETHODIMP
 DomainPolicy::Deactivate() {
   // Clear the hashtables first to free up memory, since script might
   // hold the doomed sets alive indefinitely.
-  mBlacklist->Clear();
-  mSuperBlacklist->Clear();
-  mWhitelist->Clear();
-  mSuperWhitelist->Clear();
+  mBlocklist->Clear();
+  mSuperBlocklist->Clear();
+  mAllowlist->Clear();
+  mSuperAllowlist->Clear();
 
   // Null them out.
-  mBlacklist = nullptr;
-  mSuperBlacklist = nullptr;
-  mWhitelist = nullptr;
-  mSuperWhitelist = nullptr;
+  mBlocklist = nullptr;
+  mSuperBlocklist = nullptr;
+  mAllowlist = nullptr;
+  mSuperAllowlist = nullptr;
 
   // Inform the SSM.
   nsScriptSecurityManager* ssm =
@@ -114,10 +114,10 @@ DomainPolicy::Deactivate() {
 
 void DomainPolicy::CloneDomainPolicy(DomainPolicyClone* aClone) {
   aClone->active() = true;
-  mBlacklist->CloneSet(&aClone->blacklist());
-  mSuperBlacklist->CloneSet(&aClone->superBlacklist());
-  mWhitelist->CloneSet(&aClone->whitelist());
-  mSuperWhitelist->CloneSet(&aClone->superWhitelist());
+  mBlocklist->CloneSet(&aClone->blocklist());
+  mSuperBlocklist->CloneSet(&aClone->superBlocklist());
+  mAllowlist->CloneSet(&aClone->allowlist());
+  mSuperAllowlist->CloneSet(&aClone->superAllowlist());
 }
 
 static void CopyURIs(const InfallibleTArray<URIParams>& aDomains,
@@ -129,10 +129,10 @@ static void CopyURIs(const InfallibleTArray<URIParams>& aDomains,
 }
 
 void DomainPolicy::ApplyClone(const DomainPolicyClone* aClone) {
-  CopyURIs(aClone->blacklist(), mBlacklist);
-  CopyURIs(aClone->whitelist(), mWhitelist);
-  CopyURIs(aClone->superBlacklist(), mSuperBlacklist);
-  CopyURIs(aClone->superWhitelist(), mSuperWhitelist);
+  CopyURIs(aClone->blocklist(), mBlocklist);
+  CopyURIs(aClone->allowlist(), mAllowlist);
+  CopyURIs(aClone->superBlocklist(), mSuperBlocklist);
+  CopyURIs(aClone->superAllowlist(), mSuperAllowlist);
 }
 
 static already_AddRefed<nsIURI> GetCanonicalClone(nsIURI* aURI) {
@@ -212,12 +212,6 @@ DomainSet::ContainsSuperDomain(nsIURI* aDomain, bool* aContains) {
   }
 
   // No match.
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-DomainSet::GetType(uint32_t* aType) {
-  *aType = mType;
   return NS_OK;
 }
 

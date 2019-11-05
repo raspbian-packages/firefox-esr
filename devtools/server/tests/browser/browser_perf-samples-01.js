@@ -11,22 +11,18 @@
 // time in ms
 const WAIT_TIME = 1000;
 
-const { PerformanceFront } = require("devtools/shared/fronts/performance");
+add_task(async function() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["privacy.reduceTimerPrecision", false]],
+  });
+  const target = await addTabTarget(MAIN_DOMAIN + "doc_perf.html");
 
-add_task(async function () {
-  await SpecialPowers.pushPrefEnv({"set": [["privacy.reduceTimerPrecision", false]]});
-  await addTab(MAIN_DOMAIN + "doc_perf.html");
-
-  initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
-  let form = await connectDebuggerClient(client);
-  let front = PerformanceFront(client, form);
-  await front.connect();
+  const front = await target.getFront("performance");
 
   // Perform the first recording...
 
-  let firstRecording = await front.startRecording();
-  let firstRecordingStartTime = firstRecording._startTime;
+  const firstRecording = await front.startRecording();
+  const firstRecordingStartTime = firstRecording._startTime;
   info("Started profiling at: " + firstRecordingStartTime);
 
   // allow the profiler module to sample some cpu activity
@@ -34,37 +30,47 @@ add_task(async function () {
 
   await front.stopRecording(firstRecording);
 
-  ok(firstRecording.getDuration() >= WAIT_TIME,
-    "The first recording duration is correct.");
+  ok(
+    firstRecording.getDuration() >= WAIT_TIME,
+    "The first recording duration is correct."
+  );
 
   // Perform the second recording...
 
-  let secondRecording = await front.startRecording();
-  let secondRecordingStartTime = secondRecording._startTime;
+  const secondRecording = await front.startRecording();
+  const secondRecordingStartTime = secondRecording._startTime;
   info("Started profiling at: " + secondRecordingStartTime);
 
   // allow the profiler module to sample more cpu activity
   busyWait(WAIT_TIME);
 
   await front.stopRecording(secondRecording);
-  let secondRecordingProfile = secondRecording.getProfile();
-  let secondRecordingSamples = secondRecordingProfile.threads[0].samples.data;
+  const secondRecordingProfile = secondRecording.getProfile();
+  const secondRecordingSamples = secondRecordingProfile.threads[0].samples.data;
 
-  ok(secondRecording.getDuration() >= WAIT_TIME,
-    "The second recording duration is correct.");
+  ok(
+    secondRecording.getDuration() >= WAIT_TIME,
+    "The second recording duration is correct."
+  );
 
   const TIME_SLOT = secondRecordingProfile.threads[0].samples.schema.time;
-  ok(secondRecordingSamples[0][TIME_SLOT] < secondRecordingStartTime,
-    "The second recorded sample times were normalized.");
-  ok(secondRecordingSamples[0][TIME_SLOT] > 0,
-    "The second recorded sample times were normalized correctly.");
-  ok(!secondRecordingSamples.find(
-        e => e[TIME_SLOT] + secondRecordingStartTime <= firstRecording.getDuration()
+  ok(
+    secondRecordingSamples[0][TIME_SLOT] < secondRecordingStartTime,
+    "The second recorded sample times were normalized."
+  );
+  ok(
+    secondRecordingSamples[0][TIME_SLOT] > 0,
+    "The second recorded sample times were normalized correctly."
+  );
+  ok(
+    !secondRecordingSamples.find(
+      e =>
+        e[TIME_SLOT] + secondRecordingStartTime <= firstRecording.getDuration()
     ),
     "There should be no samples from the first recording in the second one, " +
-    "even though the total number of frames did not overflow.");
+      "even though the total number of frames did not overflow."
+  );
 
-  await front.destroy();
-  await client.close();
+  await target.destroy();
   gBrowser.removeCurrentTab();
 });

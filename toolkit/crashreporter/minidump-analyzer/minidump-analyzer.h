@@ -11,6 +11,7 @@
 namespace CrashReporter {
 
 bool GenerateStacks(const std::string& aDumpPath, const bool aFullStacks);
+
 }
 
 #endif  // MINIDUMP_ANALYZER_H__

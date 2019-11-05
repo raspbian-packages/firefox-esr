@@ -39,13 +39,13 @@ already_AddRefed<ScreenManager> ScreenManager::GetAddRefedSingleton() {
 }
 
 void ScreenManager::SetHelper(UniquePtr<Helper> aHelper) {
-  mHelper = Move(aHelper);
+  mHelper = std::move(aHelper);
 }
 
 void ScreenManager::Refresh(nsTArray<RefPtr<Screen>>&& aScreens) {
   MOZ_LOG(sScreenLog, LogLevel::Debug, ("Refresh screens"));
 
-  mScreenList = Move(aScreens);
+  mScreenList = std::move(aScreens);
 
   CopyScreensToAllRemotesIfIsParent();
 }

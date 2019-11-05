@@ -7,12 +7,9 @@
 #include "mozilla/dom/HTMLTableCellElement.h"
 #include "mozilla/dom/HTMLTableElement.h"
 #include "mozilla/dom/HTMLTableRowElement.h"
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsMappedAttributes.h"
 #include "nsAttrValueInlines.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsRuleWalker.h"
-#endif
 #include "celldata.h"
 #include "mozilla/dom/HTMLTableCellElementBinding.h"
 
@@ -25,14 +22,14 @@ HTMLTableCellElement::~HTMLTableCellElement() {}
 
 JSObject* HTMLTableCellElement::WrapNode(JSContext* aCx,
                                          JS::Handle<JSObject*> aGivenProto) {
-  return HTMLTableCellElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLTableCellElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_ELEMENT_CLONE(HTMLTableCellElement)
 
 // protected method
 HTMLTableRowElement* HTMLTableCellElement::GetRow() const {
-  return HTMLTableRowElement::FromContentOrNull(GetParent());
+  return HTMLTableRowElement::FromNodeOrNull(GetParent());
 }
 
 // protected method
@@ -82,22 +79,6 @@ int32_t HTMLTableCellElement::CellIndex() const {
 
   return -1;
 }
-
-#ifdef MOZ_OLD_STYLE
-NS_IMETHODIMP
-HTMLTableCellElement::WalkContentStyleRules(nsRuleWalker* aRuleWalker) {
-  nsresult rv = nsGenericHTMLElement::WalkContentStyleRules(aRuleWalker);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  if (nsMappedAttributes* tableInheritedAttributes =
-          GetMappedAttributesInheritedFromTable()) {
-    if (tableInheritedAttributes) {
-      aRuleWalker->Forward(tableInheritedAttributes);
-    }
-  }
-  return NS_OK;
-}
-#endif
 
 nsMappedAttributes*
 HTMLTableCellElement::GetMappedAttributesInheritedFromTable() const {
@@ -181,75 +162,71 @@ bool HTMLTableCellElement::ParseAttribute(int32_t aNamespaceID,
 }
 
 void HTMLTableCellElement::MapAttributesIntoRule(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  if (aData->ShouldComputeStyleStruct(NS_STYLE_INHERIT_BIT(Position))) {
-    // width: value
-    if (!aData->PropertyIsSet(eCSSProperty_width)) {
-      const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::width);
-      if (value && value->Type() == nsAttrValue::eInteger) {
-        if (value->GetIntegerValue() > 0)
-          aData->SetPixelValue(eCSSProperty_width,
-                               (float)value->GetIntegerValue());
-        // else 0 implies auto for compatibility.
-      } else if (value && value->Type() == nsAttrValue::ePercent) {
-        if (value->GetPercentValue() > 0.0f)
-          aData->SetPercentValue(eCSSProperty_width, value->GetPercentValue());
-        // else 0 implies auto for compatibility
-      }
-    }
-    // height: value
-    if (!aData->PropertyIsSet(eCSSProperty_height)) {
-      const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::height);
-      if (value && value->Type() == nsAttrValue::eInteger) {
-        if (value->GetIntegerValue() > 0)
-          aData->SetPixelValue(eCSSProperty_height,
-                               (float)value->GetIntegerValue());
-        // else 0 implies auto for compatibility.
-      } else if (value && value->Type() == nsAttrValue::ePercent) {
-        if (value->GetPercentValue() > 0.0f)
-          aData->SetPercentValue(eCSSProperty_height, value->GetPercentValue());
-        // else 0 implies auto for compatibility
-      }
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  // width: value
+  if (!aDecls.PropertyIsSet(eCSSProperty_width)) {
+    const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::width);
+    if (value && value->Type() == nsAttrValue::eInteger) {
+      if (value->GetIntegerValue() > 0)
+        aDecls.SetPixelValue(eCSSProperty_width,
+                             (float)value->GetIntegerValue());
+      // else 0 implies auto for compatibility.
+    } else if (value && value->Type() == nsAttrValue::ePercent) {
+      if (value->GetPercentValue() > 0.0f)
+        aDecls.SetPercentValue(eCSSProperty_width, value->GetPercentValue());
+      // else 0 implies auto for compatibility
     }
   }
-  if (aData->ShouldComputeStyleStruct(NS_STYLE_INHERIT_BIT(Text))) {
-    if (!aData->PropertyIsSet(eCSSProperty_white_space)) {
-      // nowrap: enum
-      if (aAttributes->GetAttr(nsGkAtoms::nowrap)) {
-        // See if our width is not a nonzero integer width.
-        const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::width);
-        nsCompatibility mode = aData->Document()->GetCompatibilityMode();
-        if (!value || value->Type() != nsAttrValue::eInteger ||
-            value->GetIntegerValue() == 0 || eCompatibility_NavQuirks != mode) {
-          aData->SetKeywordValue(eCSSProperty_white_space,
-                                 StyleWhiteSpace::Nowrap);
-        }
+  // height: value
+  if (!aDecls.PropertyIsSet(eCSSProperty_height)) {
+    const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::height);
+    if (value && value->Type() == nsAttrValue::eInteger) {
+      if (value->GetIntegerValue() > 0)
+        aDecls.SetPixelValue(eCSSProperty_height,
+                             (float)value->GetIntegerValue());
+      // else 0 implies auto for compatibility.
+    } else if (value && value->Type() == nsAttrValue::ePercent) {
+      if (value->GetPercentValue() > 0.0f)
+        aDecls.SetPercentValue(eCSSProperty_height, value->GetPercentValue());
+      // else 0 implies auto for compatibility
+    }
+  }
+  if (!aDecls.PropertyIsSet(eCSSProperty_white_space)) {
+    // nowrap: enum
+    if (aAttributes->GetAttr(nsGkAtoms::nowrap)) {
+      // See if our width is not a nonzero integer width.
+      const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::width);
+      nsCompatibility mode = aDecls.Document()->GetCompatibilityMode();
+      if (!value || value->Type() != nsAttrValue::eInteger ||
+          value->GetIntegerValue() == 0 || eCompatibility_NavQuirks != mode) {
+        aDecls.SetKeywordValue(eCSSProperty_white_space,
+                               StyleWhiteSpace::Nowrap);
       }
     }
   }
 
-  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapVAlignAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapBackgroundAttributesInto(aAttributes, aData);
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapVAlignAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapBackgroundAttributesInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
 HTMLTableCellElement::IsAttributeMapped(const nsAtom* aAttribute) const {
   static const MappedAttributeEntry attributes[] = {
-    {&nsGkAtoms::align},
-    {&nsGkAtoms::valign},
-    {&nsGkAtoms::nowrap},
+    {nsGkAtoms::align},
+    {nsGkAtoms::valign},
+    {nsGkAtoms::nowrap},
 #if 0
     // XXXldb If these are implemented, they might need to move to
     // GetAttributeChangeHint (depending on how, and preferably not).
-    { &nsGkAtoms::abbr },
-    { &nsGkAtoms::axis },
-    { &nsGkAtoms::headers },
-    { &nsGkAtoms::scope },
+    { nsGkAtoms::abbr },
+    { nsGkAtoms::axis },
+    { nsGkAtoms::headers },
+    { nsGkAtoms::scope },
 #endif
-    {&nsGkAtoms::width},
-    {&nsGkAtoms::height},
+    {nsGkAtoms::width},
+    {nsGkAtoms::height},
     {nullptr}
   };
 

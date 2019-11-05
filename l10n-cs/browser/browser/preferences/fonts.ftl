@@ -107,7 +107,7 @@ fonts-languages-fallback-desc = Tato znaková sada textu se používá pro půvo
 fonts-languages-fallback-label = Výchozí znaková sada
     .accesskey = z
 fonts-languages-fallback-name-auto =
-    .label = Výchozí pro aktuální lokalizaci
+    .label = Výchozí pro aktuální jazyk
 fonts-languages-fallback-name-arabic =
     .label = Arabská
 fonts-languages-fallback-name-baltic =
@@ -138,3 +138,12 @@ fonts-languages-fallback-name-vietnamese =
     .label = Vietnamská
 fonts-languages-fallback-name-other =
     .label = Jiná (zahrnuje západoevropské)
+fonts-very-large-warning-title = Velká minimální velikost písma
+fonts-very-large-warning-message = Vybrali jste příliš velkou minimální velikost písma (větší než 24 pixelů). Při této velikosti písma už může být obtížné nebo nemožné používat některé důležité konfigurační stránky, jako je například tato.
+fonts-very-large-warning-accept = I přesto uložit změny
+# Variables:
+#   $name {string, "Arial"} - Name of the default font
+fonts-label-default =
+    .label = Výchozí ({ $name })
+fonts-label-default-unnamed =
+    .label = Výchozí

@@ -11,6 +11,7 @@
 #include "nsIClassOfService.h"
 #include "nsIInputStream.h"
 #include "nsIThreadRetargetableRequest.h"
+#include "nsHttp.h"
 #include "nsNetUtil.h"
 
 static const uint32_t HTTP_PARTIAL_RESPONSE_CODE = 206;
@@ -26,10 +27,12 @@ namespace mozilla {
 
 ChannelMediaResource::ChannelMediaResource(MediaResourceCallback* aCallback,
                                            nsIChannel* aChannel, nsIURI* aURI,
+                                           int64_t aStreamLength,
                                            bool aIsPrivateBrowsing)
     : BaseMediaResource(aCallback, aChannel, aURI),
       mCacheStream(this, aIsPrivateBrowsing),
-      mSuspendAgent(mCacheStream) {}
+      mSuspendAgent(mCacheStream),
+      mKnownStreamLength(aStreamLength) {}
 
 ChannelMediaResource::~ChannelMediaResource() {
   MOZ_ASSERT(mClosed);
@@ -50,15 +53,13 @@ NS_IMPL_ISUPPORTS(ChannelMediaResource::Listener, nsIRequestObserver,
                   nsIStreamListener, nsIChannelEventSink, nsIInterfaceRequestor,
                   nsIThreadRetargetableStreamListener)
 
-nsresult ChannelMediaResource::Listener::OnStartRequest(nsIRequest* aRequest,
-                                                        nsISupports* aContext) {
+nsresult ChannelMediaResource::Listener::OnStartRequest(nsIRequest* aRequest) {
   MOZ_ASSERT(NS_IsMainThread());
   if (!mResource) return NS_OK;
   return mResource->OnStartRequest(aRequest, mOffset);
 }
 
 nsresult ChannelMediaResource::Listener::OnStopRequest(nsIRequest* aRequest,
-                                                       nsISupports* aContext,
                                                        nsresult aStatus) {
   MOZ_ASSERT(NS_IsMainThread());
   if (!mResource) return NS_OK;
@@ -66,8 +67,8 @@ nsresult ChannelMediaResource::Listener::OnStopRequest(nsIRequest* aRequest,
 }
 
 nsresult ChannelMediaResource::Listener::OnDataAvailable(
-    nsIRequest* aRequest, nsISupports* aContext, nsIInputStream* aStream,
-    uint64_t aOffset, uint32_t aCount) {
+    nsIRequest* aRequest, nsIInputStream* aStream, uint64_t aOffset,
+    uint32_t aCount) {
   // This might happen off the main thread.
   RefPtr<ChannelMediaResource> res;
   {
@@ -191,7 +192,8 @@ nsresult ChannelMediaResource::OnStartRequest(nsIRequest* aRequest,
     nsAutoCString ranges;
     Unused << hc->GetResponseHeader(NS_LITERAL_CSTRING("Accept-Ranges"),
                                     ranges);
-    bool acceptsRanges = ranges.EqualsLiteral("bytes");
+    bool acceptsRanges =
+        net::nsHttp::FindToken(ranges.get(), "bytes", HTTP_HEADER_VALUE_SEPS);
 
     int64_t contentLength = -1;
     const bool isCompressed = IsPayloadCompressed(hc);
@@ -255,9 +257,17 @@ nsresult ChannelMediaResource::OnStartRequest(nsIRequest* aRequest,
   // This is important, we want to make sure all principals are updated before
   // any consumer can see the new data.
   UpdatePrincipal();
+  if (owner->HasError()) {
+    // Updating the principal resulted in an error. Abort the load.
+    CloseChannel();
+    return NS_OK;
+  }
 
   mCacheStream.NotifyDataStarted(mLoadID, startOffset, seekable, length);
   mIsTransportSeekable = seekable;
+  if (mFirstReadLength < 0) {
+    mFirstReadLength = length;
+  }
 
   mSuspendAgent.Delegate(mChannel);
 
@@ -278,12 +288,19 @@ nsresult ChannelMediaResource::OnStartRequest(nsIRequest* aRequest,
 
 bool ChannelMediaResource::IsTransportSeekable() {
   MOZ_ASSERT(NS_IsMainThread());
-  return mIsTransportSeekable;
+  // We Report the transport as seekable if we know we will never seek into
+  // the underlying transport. As the MediaCache reads content by block of
+  // BLOCK_SIZE bytes, so the content length is less it will always be fully
+  // read from offset = 0 and we can then always successfully seek within this
+  // buffered content.
+  return mIsTransportSeekable ||
+         (mFirstReadLength > 0 &&
+          mFirstReadLength < MediaCacheStream::BLOCK_SIZE);
 }
 
 nsresult ChannelMediaResource::ParseContentRangeHeader(
     nsIHttpChannel* aHttpChan, int64_t& aRangeStart, int64_t& aRangeEnd,
-    int64_t& aRangeTotal) {
+    int64_t& aRangeTotal) const {
   NS_ENSURE_ARG(aHttpChan);
 
   nsAutoCString rangeStr;
@@ -420,7 +437,7 @@ nsresult ChannelMediaResource::CopySegmentToCache(
   memcpy(data.get(), aFromSegment, aCount);
   cacheStream->OwnerThread()->Dispatch(NS_NewRunnableFunction(
       "MediaCacheStream::NotifyDataReceived",
-      [ self, loadID, data = Move(data), aCount ]() {
+      [self, loadID, data = std::move(data), aCount]() {
         self->mCacheStream.NotifyDataReceived(loadID, aCount, data.get());
       }));
 
@@ -445,20 +462,61 @@ nsresult ChannelMediaResource::OnDataAvailable(uint32_t aLoadID,
   return NS_OK;
 }
 
+int64_t ChannelMediaResource::CalculateStreamLength() const {
+  if (!mChannel) {
+    return -1;
+  }
+
+  nsCOMPtr<nsIHttpChannel> hc = do_QueryInterface(mChannel);
+  if (!hc) {
+    return -1;
+  }
+
+  bool succeeded = false;
+  Unused << hc->GetRequestSucceeded(&succeeded);
+  if (!succeeded) {
+    return -1;
+  }
+
+  // We can't determine the length of uncompressed payload.
+  const bool isCompressed = IsPayloadCompressed(hc);
+  if (isCompressed) {
+    return -1;
+  }
+
+  int64_t contentLength = -1;
+  if (NS_FAILED(hc->GetContentLength(&contentLength))) {
+    return -1;
+  }
+
+  uint32_t responseStatus = 0;
+  Unused << hc->GetResponseStatus(&responseStatus);
+  if (responseStatus != HTTP_PARTIAL_RESPONSE_CODE) {
+    return contentLength;
+  }
+
+  // We have an HTTP Byte Range response. The Content-Length is the length
+  // of the response, not the resource. We need to parse the Content-Range
+  // header and extract the range total in order to get the stream length.
+  int64_t rangeStart = 0;
+  int64_t rangeEnd = 0;
+  int64_t rangeTotal = 0;
+  bool gotRangeHeader = NS_SUCCEEDED(
+      ParseContentRangeHeader(hc, rangeStart, rangeEnd, rangeTotal));
+  if (gotRangeHeader && rangeTotal != -1) {
+    contentLength = std::max(contentLength, rangeTotal);
+  }
+  return contentLength;
+}
+
 nsresult ChannelMediaResource::Open(nsIStreamListener** aStreamListener) {
   NS_ASSERTION(NS_IsMainThread(), "Only call on main thread");
   MOZ_ASSERT(aStreamListener);
   MOZ_ASSERT(mChannel);
 
-  int64_t cl = -1;
-  nsCOMPtr<nsIHttpChannel> hc = do_QueryInterface(mChannel);
-  if (hc && !IsPayloadCompressed(hc)) {
-    if (NS_FAILED(hc->GetContentLength(&cl))) {
-      cl = -1;
-    }
-  }
-
-  nsresult rv = mCacheStream.Init(cl);
+  int64_t streamLength =
+      mKnownStreamLength < 0 ? CalculateStreamLength() : mKnownStreamLength;
+  nsresult rv = mCacheStream.Init(streamLength);
   if (NS_FAILED(rv)) {
     return rv;
   }
@@ -466,7 +524,7 @@ nsresult ChannelMediaResource::Open(nsIStreamListener** aStreamListener) {
   mSharedInfo = new SharedInfo;
   mSharedInfo->mResources.AppendElement(this);
 
-  mIsLiveStream = cl < 0;
+  mIsLiveStream = streamLength < 0;
   mListener = new Listener(this, 0, ++mLoadID);
   *aStreamListener = mListener;
   NS_ADDREF(*aStreamListener);
@@ -486,7 +544,7 @@ nsresult ChannelMediaResource::OpenChannel(int64_t aOffset) {
   rv = SetupChannelHeaders(aOffset);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = mChannel->AsyncOpen2(mListener);
+  rv = mChannel->AsyncOpen(mListener);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Tell the media element that we are fetching data from a channel.
@@ -556,7 +614,7 @@ already_AddRefed<BaseMediaResource> ChannelMediaResource::CloneData(
   MOZ_ASSERT(CanClone(), "Stream can't be cloned");
 
   RefPtr<ChannelMediaResource> resource =
-      new ChannelMediaResource(aCallback, nullptr, mURI);
+      new ChannelMediaResource(aCallback, nullptr, mURI, mKnownStreamLength);
 
   resource->mIsLiveStream = mIsLiveStream;
   resource->mIsTransportSeekable = mIsTransportSeekable;
@@ -663,7 +721,6 @@ nsresult ChannelMediaResource::RecreateChannel() {
   MOZ_DIAGNOSTIC_ASSERT(!mClosed);
 
   nsLoadFlags loadFlags = nsICachingChannel::LOAD_BYPASS_LOCAL_CACHE_IF_BUSY |
-                          nsIChannel::LOAD_CLASSIFY_URI |
                           (mLoadInBackground ? nsIRequest::LOAD_BACKGROUND : 0);
 
   MediaDecoderOwner* owner = mCallback->GetMediaOwner();
@@ -705,12 +762,10 @@ nsresult ChannelMediaResource::RecreateChannel() {
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (setAttrs) {
-    nsCOMPtr<nsILoadInfo> loadInfo = mChannel->GetLoadInfo();
-    if (loadInfo) {
-      // The function simply returns NS_OK, so we ignore the return value.
-      Unused << loadInfo->SetOriginAttributes(
-          triggeringPrincipal->OriginAttributesRef());
-    }
+    nsCOMPtr<nsILoadInfo> loadInfo = mChannel->LoadInfo();
+    // The function simply returns NS_OK, so we ignore the return value.
+    Unused << loadInfo->SetOriginAttributes(
+        triggeringPrincipal->OriginAttributesRef());
   }
 
   nsCOMPtr<nsIClassOfService> cos(do_QueryInterface(mChannel));
@@ -732,7 +787,7 @@ void ChannelMediaResource::CacheClientNotifyDataReceived() {
 void ChannelMediaResource::CacheClientNotifyDataEnded(nsresult aStatus) {
   mCallback->AbstractMainThread()->Dispatch(NS_NewRunnableFunction(
       "ChannelMediaResource::CacheClientNotifyDataEnded",
-      [ self = RefPtr<ChannelMediaResource>(this), aStatus ]() {
+      [self = RefPtr<ChannelMediaResource>(this), aStatus]() {
         if (NS_SUCCEEDED(aStatus)) {
           self->mIsLiveStream = false;
         }

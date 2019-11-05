@@ -7,6 +7,7 @@
 #define _mozilla_dom_ServiceWorkerDescriptor_h
 
 #include "mozilla/UniquePtr.h"
+#include "nsCOMPtr.h"
 #include "nsString.h"
 
 class nsIPrincipal;
@@ -33,12 +34,14 @@ class ServiceWorkerDescriptor final {
   UniquePtr<IPCServiceWorkerDescriptor> mData;
 
  public:
-  ServiceWorkerDescriptor(uint64_t aId, nsIPrincipal* aPrincipal,
-                          const nsACString& aScope,
+  ServiceWorkerDescriptor(uint64_t aId, uint64_t aRegistrationId,
+                          uint64_t aRegistrationVersion,
+                          nsIPrincipal* aPrincipal, const nsACString& aScope,
                           const nsACString& aScriptURL,
                           ServiceWorkerState aState);
 
-  ServiceWorkerDescriptor(uint64_t aId,
+  ServiceWorkerDescriptor(uint64_t aId, uint64_t aRegistrationId,
+                          uint64_t aRegistrationVersion,
                           const mozilla::ipc::PrincipalInfo& aPrincipalInfo,
                           const nsACString& aScope,
                           const nsACString& aScriptURL,
@@ -61,7 +64,13 @@ class ServiceWorkerDescriptor final {
 
   uint64_t Id() const;
 
+  uint64_t RegistrationId() const;
+
+  uint64_t RegistrationVersion() const;
+
   const mozilla::ipc::PrincipalInfo& PrincipalInfo() const;
+
+  nsCOMPtr<nsIPrincipal> GetPrincipal() const;
 
   const nsCString& Scope() const;
 
@@ -70,6 +79,8 @@ class ServiceWorkerDescriptor final {
   ServiceWorkerState State() const;
 
   void SetState(ServiceWorkerState aState);
+
+  void SetRegistrationVersion(uint64_t aVersion);
 
   // Try to determine if two workers match each other.  This is less strict
   // than an operator==() call since it ignores mutable values like State().

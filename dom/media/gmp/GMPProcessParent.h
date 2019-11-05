@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -22,7 +22,6 @@ namespace gmp {
 class GMPProcessParent final : public mozilla::ipc::GeckoChildProcessHost {
  public:
   explicit GMPProcessParent(const std::string& aGMPPath);
-  ~GMPProcessParent();
 
   // Synchronously launch the plugin process. If the process fails to launch
   // after timeoutMs, this method will return false.
@@ -37,6 +36,8 @@ class GMPProcessParent final : public mozilla::ipc::GeckoChildProcessHost {
   using mozilla::ipc::GeckoChildProcessHost::GetChildProcessHandle;
 
  private:
+  ~GMPProcessParent();
+
   void DoDelete();
 
   std::string mGMPPath;

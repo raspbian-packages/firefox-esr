@@ -4,8 +4,6 @@
 
 do-not-track-description = Ուղարկել կայքերին “Չհետագծել“ ազդանշանը, որ դուք չեք ցանկանում հետագծվել
 do-not-track-learn-more = Իմանալ ավելին
-do-not-track-option-default =
-    .label = Միայն Հետագծման պաշտպանությունը օգտագործելիս
 do-not-track-option-always =
     .label = Միշտ
 pref-page =
@@ -14,14 +12,6 @@ pref-page =
             [windows] Կարգավորումներ
            *[other] Կարգավորումներ
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -59,6 +49,7 @@ pane-sync-title = Firefox-ի Հաշիվ
 category-sync =
     .tooltiptext = { pane-sync-title }
 help-button-label = { -brand-short-name }-ի աջակցում
+addons-button-label = Ընդլայնումներ և Ոճեր
 focus-search =
     .key = f
 close-button =
@@ -73,6 +64,41 @@ should-restart-ok = Վերամեկնարկել { -brand-short-name }-ը
 cancel-no-restart-button = Չեղարկել
 restart-later = Վերամեկնարկել հետո
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = <img data-l10n-name="icon"/> { $name } ընդլայնումը ղեկավարում է ձեր տնային էջը:
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = <img data-l10n-name="icon"/> { $name } ընդլայնումը ղեկավարում է ձեր նոր ներդիր էջը:
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = <img data-l10n-name="icon"/>{ $name } ընդլայնումը կառավարում է այս կարգավորումը:
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = <img data-l10n-name="icon"/> { $name } ընդլայնումը կայել է ձեր հիմնական որոնիչը:
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Ընդլայնում, <img data-l10n-name="icon"/> { $name }-ը, պահանջում է Պարունակի ներդիրներ:
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = <img data-l10n-name="icon"/> { $name } ընդլայնումը ղեկավարում է, թե ինչպես { -brand-short-name }-ը կապակցվի համացանցին:
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Ընդլայնումը միացնելու համար անցեք <img data-l10n-name="addons-icon"/> Հավելումներին <img data-l10n-name="menu-icon"/> ցանկում:
+
 ## Preferences UI Search Results
 
 search-results-header = Որոնման արդյունքներ
@@ -86,12 +112,11 @@ search-results-help-link = Օգնությու՞ն է պետք: Այցելեք <a
 
 ## General Section
 
-startup-header = Մեկնարկը                
+startup-header = Մեկնարկը
 # { -brand-short-name } will be 'Firefox Developer Edition',
 # since this setting is only exposed in Firefox Developer Edition
 separate-profile-mode =
     .label = Թույլատրել, որ { -brand-short-name }-ը և Firefox-ը մեկնարկեն միաժամանակ
-use-firefox-sync = Հուշում. Օգտագործում են առանձին պրոֆիլներ: Սինքի միջոցով կարող եք համօգտագործել տվյալները:
 get-started-not-logged-in = Մուտք գործել { -sync-brand-short-name }...
 get-started-configured = Բացել { -sync-brand-short-name }-ի կարգավորումները
 always-check-default =
@@ -102,17 +127,13 @@ is-not-default = { -brand-short-name }-ը այժմ ձեր հիմնական դի�
 set-as-my-default-browser =
     .label = Դարձնել լռելյայն...
     .accesskey = D
-startup-page = Երբ { -brand-short-name }-ը մեկնարկում է
-    .accesskey = մ
-startup-user-homepage =
-    .label = Ցուցադրել տնային էջը
-startup-blank-page =
-    .label = Ցուցադրել դատարկ էջ
-startup-prev-session =
-    .label = Ցուցադրել ձեր նախորդ պատուհանները և ներդիրները
+startup-restore-previous-session =
+    .label = Վերականգնել նախորդ աշխատաշրջանը
+    .accesskey = s
+startup-restore-warn-on-quit =
+    .label = Զգուշացնել ինձ դիտարկիչը փակելիս:
 disable-extension =
     .label = Անջատել ընդլայնումը
-home-page-header = Տնային էջ
 tabs-group-header = Ներդիրներ
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab՝ պտտվում է ներդիրների միջև՝ ըստ վերջին օգտագործածի
@@ -232,7 +253,6 @@ play-drm-content =
 play-drm-content-learn-more = Իմանալ ավելին
 update-application-title = { -brand-short-name }-ի թարմացումներ
 update-application-description = Պահեք { -brand-short-name }-ը թարմացված՝ լավագույն արտադրողականության, կայունության և անվտանգության համար:
-update-application-info = Տարբերակ { $version } <a>Ինչն է նոր</a>
 update-application-version = Տարբերակ { $version } <a data-l10n-name="learn-more">Ինչն է նոր</a>
 update-history =
     .label = Ցուցադրել Թարմացումների Պատմությունը...
@@ -263,12 +283,11 @@ performance-use-recommended-settings-checkbox =
 performance-use-recommended-settings-desc = Այս կարգավորումները հարմարեցված են ձեր համակարգչի սարքաշարին և օպերացիոն համակարգին:
 performance-settings-learn-more = Իմանալ ավելին
 performance-allow-hw-accel =
-    .label = Հնարավորության դեպքում օգտագործել սարքակազմի արագացումը 
+    .label = Հնարավորության դեպքում օգտագործել սարքակազմի արագացումը
     .accesskey = ր
 performance-limit-content-process-option = Բովանդակության ընթացքի սահմանափակում
     .accesskey = ս
 performance-limit-content-process-enabled-desc = Բովանդակության լրացուցիչ ընթացքները կարող են լավարկել արտադրողականությունը, երբ օգտագործվում են բազմակի ներդիրներ, բայց միևնույն ժամանակ՝ դրանք ավելի շատ հիշողություն կխլեն:
-performance-limit-content-process-disabled-desc = Հնարավոր է փոփոխել բովանդակության ընթացքները միայն բազմամշակիչ { -brand-short-name }-ի դեպքում: <a>Կարդալ, թե ինչպես ստուգել՝ արդյոք բազմամշակիչը միացված է:</a>
 performance-limit-content-process-blocked-desc = Հնարավոր է փոփոխել բովանդակության ընթացքները միայն բազմամշակիչ { -brand-short-name }-ի դեպքում: <a data-l10n-name="learn-more">Կարդալ, թե ինչպես ստուգել՝ արդյոք բազմամշակիչը միացված է:</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -296,7 +315,7 @@ browsing-search-on-start-typing =
 
 ## General Section - Proxy
 
-network-proxy-title = Ցանցի պրոքսի
+network-proxy-connection-description = Կազմաձևեք, թե ինչպես { -brand-short-name }-ը կապակցվի համացանցին:
 network-proxy-connection-learn-more = Իմանալ ավելին
 network-proxy-connection-settings =
     .label = Կարգավորել...
@@ -336,17 +355,14 @@ use-current-pages =
         }
     .accesskey = ը
 choose-bookmark =
-    .label = Օգտագործել էջանիշ...                
+    .label = Օգտագործել էջանիշ...
     .accesskey = է
-restore-default =
-    .label = Վերականգնել լռելայնը
-    .accesskey = Վ
 
 ## Search Section
 
 search-bar-header = Որոնման գոտի
 search-bar-hidden =
-    .label = Օգտագործեք հասցեի գոտին՝ որոնման և ուղորդման համար
+    .label = Օգտագործեք հասցեի գոտին՝ որոնման և ուղղորդման համար
 search-bar-shown =
     .label = Ավելացնել որոնման գոտին գործիքագոտիում
 search-engine-default-header = Հիմնական որոնիչը
@@ -486,6 +502,8 @@ sync-device-name-save =
     .accesskey = պ
 sync-mobilepromo-single = Կապակցել այլ սարքի
 sync-mobilepromo-multi = Կառավարել սարքերը
+sync-manage-devices = Կառավարել սարքերը
+sync-fxa-begin-pairing = Կցել սարք
 sync-tos-link = Ծառայության պայմանները
 sync-fxa-privacy-notice = Գաղտնիության Դրույթները
 
@@ -495,7 +513,9 @@ privacy-header = Դիտարկիչի գաղտնիություն
 
 ## Privacy Section - Forms
 
-forms-header = Ձևեր և գաղտնաբառեր
+forms-ask-to-save-logins =
+    .label = Հարցնել և պահպանել մուտքագրումները և գաղտնաբառրը կայքերի համար
+    .accesskey = r
 forms-exceptions =
     .label = Բացառություններ…
     .accesskey = ա
@@ -534,9 +554,9 @@ history-dontremember-description = { -brand-short-name }ը կօգտագործի 
 history-private-browsing-permanent =
     .label = Միշտ օգտագործել Գաղտնի Դիտարկումը
     .accesskey = Գ
-history-remember-option =
-    .label = Հիշել իմ դիտարկումների և ներբեռնումների պատմությունը
-    .accesskey = ե
+history-remember-browser-option =
+    .label = Հիշել դիտարկումները և ներբեռնումների պատմությունը
+    .accesskey = b
 history-remember-search-option =
     .label = Հիշել որոնման և ձևերի պատմությունը
     .accesskey = ձ
@@ -553,36 +573,20 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookie-ներ և կայքի տվյալներ
+sitedata-total-size-calculating = Հաշվում է կայքի տվյալները և շտեմի չափը…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Ձեր cookie-ները, կայքի տվյալները և շտեմը այժմ զբաղեցնում են { $value } { $unit } տեղ:
 sitedata-learn-more = Իմանալ ավելին
-sitedata-accept-cookies-option =
-    .label = Ընդունել cookie-ներ և կայքի տվյալներ կայքերից (հանձնարարելի)
-    .accesskey = A
-sitedata-block-cookies-option =
-    .label = Արգելափակել cookie-ները և կայքի տվյալները (կարող է հանգեցնել կայքերի ընդհատմանը)
-    .accesskey = B
-sitedata-keep-until = Պահել մինչև՝
-    .accesskey = u
-sitedata-keep-until-expire =
-    .label = Դրանք սպառվել են
-sitedata-keep-until-closed =
-    .label = { -brand-short-name }-ը փակ է
-sitedata-accept-third-party-desc = Ընդունել երրորդ կողմի cookie-ները և կայքի տվյալները
-    .accesskey = y
-sitedata-accept-third-party-always-option =
-    .label = Միշտ
-sitedata-accept-third-party-visited-option =
-    .label = Այցելածներից
-sitedata-accept-third-party-never-option =
-    .label = Երբեք
+sitedata-option-block-trackers =
+    .label = Երրորդ կողմի հետագծիչներ
 sitedata-clear =
     .label = Մաքրել տվյալները…
     .accesskey = l
 sitedata-settings =
     .label = Կառավարել տվյալները…
     .accesskey = M
-sitedata-cookies-exceptions =
-    .label = Բացառություններ…
-    .accesskey = Բ
 
 ## Privacy Section - Address Bar
 
@@ -599,30 +603,21 @@ addressbar-locbar-openpage-option =
     .accesskey = Բ
 addressbar-suggestions-settings = Փոխել որոնիչների նախապատվությունները
 
+## Privacy Section - Content Blocking
+
+content-blocking-learn-more = Իմանալ ավելին
+content-blocking-learn-how = Սովորել, թե ինչպես
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Մատնահետքեր
+    .accesskey = F
+
 ## Privacy Section - Tracking
 
-tracking-header = Հետագծման պաշտպանություն
-tracking-desc = Հետագծման պաշտպանությունը արգելափակում է առցանց հետագծումները, որոնք հավաքում են դիտարկումների ձեր տվյալները տարբեր կայքերում: <a data-l10n-name="learn-more">Իմանալ ավելին ՀԵտագծման պաշտպանության և ձեր գաղտնիության մասին</a>
-tracking-mode-label = Օգտագործեք Հետագծման պաշտպանությունը՝ արգելափակելու հայտնի հետագծումները
-tracking-mode-always =
-    .label = Միշտ
-    .accesskey = շ
-tracking-mode-private =
-    .label = Միայն գաղտնի պատուհաններում
-    .accesskey = ա
-tracking-mode-never =
-    .label = Երբեք
-    .accesskey = Ե
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Օգտագործել հետագծման պաշտպանությունը՝ հայտնի հետագծիչները արգելափակելու համար
-    .accesskey = v
-tracking-exceptions =
-    .label = Բացառություններ…
-    .accesskey = ա
-tracking-change-block-list =
-    .label = Փոխել Արգելացուցակը...
-    .accesskey = C
+tracking-manage-exceptions =
+    .label = Կառավարել ընդլայնումները...
+    .accesskey = x
 
 ## Privacy Section - Permissions
 
@@ -671,15 +666,14 @@ collection-description = Մենք փորձում ենք տրամադրել ձե�
 collection-privacy-notice = Գաղտնիության ծանուցում
 collection-health-report =
     .label = Թույլատրել { -brand-short-name }-ին ուղարկել տեխնիկական և փոխազդելու տվյալներ { -vendor-short-name }-ին
-    .accesskey = { "" }
+    .accesskey = r
 collection-health-report-link = Իմանալ ավելին
+collection-studies =
+    .label = Թույլատրել { -brand-short-name }-ին տեղադրել և կատարել հետազոտություններ
+collection-studies-link = Դիտել { -brand-short-name }-ի հետազոտությունները
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Տվյալների զեկուցումը անջատված է կազմաձևի այս կառուցման համար
-collection-browser-errors =
-    .label = Թույլատրել { -brand-short-name }-ին ուղարկել դիտարկիչի սխալի զեկույցներ (այդ թվում՝ սխալի հաղորդագրությունները) { -vendor-short-name }-ին
-    .accesskey = b
-collection-browser-errors-link = Իմանալ ավելին
 collection-backlogged-crash-reports =
     .label = Թույլատրե՞լ { -brand-short-name }-ին ուղարկել հետին վթարի զեկուցներ առանց հարցնելու:
     .accesskey = c
@@ -722,3 +716,27 @@ certs-view =
 certs-devices =
     .label = Անվտանգության սարքեր...
     .accesskey = D
+space-alert-learn-more-button =
+    .label = Իմանալ ավելին
+    .accesskey = Ի
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Բացել ընտրանքները
+           *[other] Բացել նախապատվությունները
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] Բ
+           *[other] Բ
+        }
+space-alert-under-5gb-ok-button =
+    .label = Լավ, հասկացա
+    .accesskey = ա
+space-alert-under-5gb-message = { -brand-short-name }-ում տեղ չկա: Կայքի բովանդակությունը, հնարավոր է, նորմալ չի ցուցադրվի: Այցելեք «Իմանալ ավելին»՝ լավարկելու համար հիշասարքի օգտագործումը՝ դիտարկումների ավելի լավ փորձառության համար:
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Աշխատասեղան
+downloads-folder-name = Ներբեռնումներ
+choose-download-folder-title = Ընտրել ներբեռնումների թղթապանակը.

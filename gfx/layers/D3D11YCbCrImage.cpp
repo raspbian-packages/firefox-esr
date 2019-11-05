@@ -5,8 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "D3D11YCbCrImage.h"
+
+#include "gfx2DGlue.h"
 #include "YCbCrUtils.h"
 #include "mozilla/gfx/gfxVars.h"
+#include "mozilla/gfx/DeviceManagerDx.h"
 #include "mozilla/layers/CompositableClient.h"
 #include "mozilla/layers/CompositableForwarder.h"
 #include "mozilla/layers/TextureD3D11.h"
@@ -15,22 +18,6 @@ using namespace mozilla::gfx;
 
 namespace mozilla {
 namespace layers {
-
-class DXGIYCbCrTextureAllocationHelper : public ITextureClientAllocationHelper {
- public:
-  DXGIYCbCrTextureAllocationHelper(const PlanarYCbCrData& aData,
-                                   TextureFlags aTextureFlags,
-                                   ID3D11Device* aDevice);
-
-  bool IsCompatible(TextureClient* aTextureClient) override;
-
-  already_AddRefed<TextureClient> Allocate(
-      KnowsCompositor* aAllocator) override;
-
- protected:
-  const PlanarYCbCrData& mData;
-  RefPtr<ID3D11Device> mDevice;
-};
 
 D3D11YCbCrImage::D3D11YCbCrImage()
     : Image(NULL, ImageFormat::D3D11_YCBCR_IMAGE) {}
@@ -44,6 +31,7 @@ bool D3D11YCbCrImage::SetData(KnowsCompositor* aAllocator,
                          aData.mPicSize.height);
   mYSize = aData.mYSize;
   mCbCrSize = aData.mCbCrSize;
+  mColorDepth = aData.mColorDepth;
   mColorSpace = aData.mYUVColorSpace;
 
   D3D11YCbCrRecycleAllocator* allocator =
@@ -52,9 +40,14 @@ bool D3D11YCbCrImage::SetData(KnowsCompositor* aAllocator,
     return false;
   }
 
+  RefPtr<ID3D11Device> device = gfx::DeviceManagerDx::Get()->GetImageDevice();
+  if (!device) {
+    return false;
+  }
+
   {
     DXGIYCbCrTextureAllocationHelper helper(aData, TextureFlags::DEFAULT,
-                                            allocator->GetDevice());
+                                            device);
     mTextureClient = allocator->CreateOrRecycle(helper);
   }
 
@@ -70,8 +63,7 @@ bool D3D11YCbCrImage::SetData(KnowsCompositor* aAllocator,
   ID3D11Texture2D* textureCr = data->GetD3D11Texture(2);
 
   RefPtr<ID3D10Multithread> mt;
-  HRESULT hr = allocator->GetDevice()->QueryInterface(
-      (ID3D10Multithread**)getter_AddRefs(mt));
+  HRESULT hr = device->QueryInterface((ID3D10Multithread**)getter_AddRefs(mt));
 
   if (FAILED(hr) || !mt) {
     gfxCriticalError() << "Multithread safety interface not supported. " << hr;
@@ -86,7 +78,7 @@ bool D3D11YCbCrImage::SetData(KnowsCompositor* aAllocator,
   D3D11MTAutoEnter mtAutoEnter(mt.forget());
 
   RefPtr<ID3D11DeviceContext> ctx;
-  allocator->GetDevice()->GetImmediateContext(getter_AddRefs(ctx));
+  device->GetImmediateContext(getter_AddRefs(ctx));
   if (!ctx) {
     gfxCriticalError() << "Failed to get immediate context.";
     return false;
@@ -150,6 +142,11 @@ already_AddRefed<SourceSurface> D3D11YCbCrImage::GetAsSourceSurface() {
 
   RefPtr<ID3D11Device> dev;
   texY->GetDevice(getter_AddRefs(dev));
+
+  if (!dev || dev != gfx::DeviceManagerDx::Get()->GetImageDevice()) {
+    gfxCriticalError() << "D3D11Device is obsoleted";
+    return nullptr;
+  }
 
   RefPtr<ID3D10Multithread> mt;
   hr = dev->QueryInterface((ID3D10Multithread**)getter_AddRefs(mt));
@@ -232,6 +229,7 @@ already_AddRefed<SourceSurface> D3D11YCbCrImage::GetAsSourceSurface() {
   data.mPicY = mPictureRect.Y();
   data.mPicSize = mPictureRect.Size();
   data.mStereoMode = StereoMode::MONO;
+  data.mColorDepth = mColorDepth;
   data.mYUVColorSpace = mColorSpace;
   data.mYSkip = data.mCbSkip = data.mCrSkip = 0;
   data.mYSize = mYSize;
@@ -272,6 +270,42 @@ already_AddRefed<SourceSurface> D3D11YCbCrImage::GetAsSourceSurface() {
   return surface.forget();
 }
 
+class AutoCheckLockD3D11Texture final {
+ public:
+  explicit AutoCheckLockD3D11Texture(ID3D11Texture2D* aTexture)
+      : mIsLocked(false) {
+    aTexture->QueryInterface((IDXGIKeyedMutex**)getter_AddRefs(mMutex));
+    if (!mMutex) {
+      // If D3D11Texture does not have keyed mutex, we think that the
+      // D3D11Texture could be locked.
+      mIsLocked = true;
+      return;
+    }
+
+    // Test to see if the keyed mutex has been released
+    HRESULT hr = mMutex->AcquireSync(0, 0);
+    if (SUCCEEDED(hr)) {
+      mIsLocked = true;
+    }
+  }
+
+  ~AutoCheckLockD3D11Texture() {
+    if (!mMutex) {
+      return;
+    }
+    HRESULT hr = mMutex->ReleaseSync(0);
+    if (FAILED(hr)) {
+      NS_WARNING("Failed to unlock the texture");
+    }
+  }
+
+  bool IsLocked() const { return mIsLocked; }
+
+ private:
+  bool mIsLocked;
+  RefPtr<IDXGIKeyedMutex> mMutex;
+};
+
 DXGIYCbCrTextureAllocationHelper::DXGIYCbCrTextureAllocationHelper(
     const PlanarYCbCrData& aData, TextureFlags aTextureFlags,
     ID3D11Device* aDevice)
@@ -290,17 +324,48 @@ bool DXGIYCbCrTextureAllocationHelper::IsCompatible(
   if (!dxgiData || aTextureClient->GetSize() != mData.mYSize ||
       dxgiData->GetYSize() != mData.mYSize ||
       dxgiData->GetCbCrSize() != mData.mCbCrSize ||
+      dxgiData->GetColorDepth() != mData.mColorDepth ||
       dxgiData->GetYUVColorSpace() != mData.mYUVColorSpace) {
     return false;
   }
+
+  ID3D11Texture2D* textureY = dxgiData->GetD3D11Texture(0);
+  ID3D11Texture2D* textureCb = dxgiData->GetD3D11Texture(1);
+  ID3D11Texture2D* textureCr = dxgiData->GetD3D11Texture(2);
+
+  RefPtr<ID3D11Device> device;
+  textureY->GetDevice(getter_AddRefs(device));
+  if (!device || device != gfx::DeviceManagerDx::Get()->GetImageDevice()) {
+    return false;
+  }
+
+  // Test to see if the keyed mutex has been released.
+  // If D3D11Texture failed to lock, do not recycle the DXGIYCbCrTextureData.
+
+  AutoCheckLockD3D11Texture lockY(textureY);
+  AutoCheckLockD3D11Texture lockCr(textureCr);
+  AutoCheckLockD3D11Texture lockCb(textureCb);
+
+  if (!lockY.IsLocked() || !lockCr.IsLocked() || !lockCb.IsLocked()) {
+    return false;
+  }
+
   return true;
 }
 
 already_AddRefed<TextureClient> DXGIYCbCrTextureAllocationHelper::Allocate(
     KnowsCompositor* aAllocator) {
-  CD3D11_TEXTURE2D_DESC newDesc(DXGI_FORMAT_R8_UNORM, mData.mYSize.width,
-                                mData.mYSize.height, 1, 1);
-  newDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+  CD3D11_TEXTURE2D_DESC newDesc(mData.mColorDepth == gfx::ColorDepth::COLOR_8
+                                    ? DXGI_FORMAT_R8_UNORM
+                                    : DXGI_FORMAT_R16_UNORM,
+                                mData.mYSize.width, mData.mYSize.height, 1, 1);
+  // WebRender requests keyed mutex
+  if (mDevice == gfx::DeviceManagerDx::Get()->GetCompositorDevice() &&
+      !gfxVars::UseWebRender()) {
+    newDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+  } else {
+    newDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+  }
 
   RefPtr<ID3D10Multithread> mt;
   HRESULT hr = mDevice->QueryInterface((ID3D10Multithread**)getter_AddRefs(mt));
@@ -332,11 +397,14 @@ already_AddRefed<TextureClient> DXGIYCbCrTextureAllocationHelper::Allocate(
   hr = mDevice->CreateTexture2D(&newDesc, nullptr, getter_AddRefs(textureCr));
   NS_ENSURE_TRUE(SUCCEEDED(hr), nullptr);
 
+  TextureForwarder* forwarder =
+      aAllocator ? aAllocator->GetTextureForwarder() : nullptr;
+
   return TextureClient::CreateWithData(
       DXGIYCbCrTextureData::Create(textureY, textureCb, textureCr, mData.mYSize,
                                    mData.mYSize, mData.mCbCrSize,
-                                   mData.mYUVColorSpace),
-      mTextureFlags, aAllocator->GetTextureForwarder());
+                                   mData.mColorDepth, mData.mYUVColorSpace),
+      mTextureFlags, forwarder);
 }
 
 already_AddRefed<TextureClient> D3D11YCbCrRecycleAllocator::Allocate(

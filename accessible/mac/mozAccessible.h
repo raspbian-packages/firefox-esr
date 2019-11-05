@@ -42,7 +42,7 @@ inline mozAccessible* GetNativeFromProxy(const ProxyAccessible* aProxy) {
 // This is OR'd with the Accessible owner to indicate the wrap-ee is a proxy.
 static const uintptr_t IS_PROXY = 1;
 
-@interface mozAccessible : NSObject<mozAccessible> {
+@interface mozAccessible : NSObject <mozAccessible> {
   /**
    * Weak reference; it owns us.
    */

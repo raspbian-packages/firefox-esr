@@ -21,6 +21,7 @@ enum TrrType {
   TRRTYPE_NS = 2,
   TRRTYPE_CNAME = 5,
   TRRTYPE_AAAA = 28,
+  TRRTYPE_TXT = 16,
 };
 
 class DOHaddr : public LinkedListElement<DOHaddr> {
@@ -30,17 +31,17 @@ class DOHaddr : public LinkedListElement<DOHaddr> {
 };
 
 class TRRService;
-extern TRRService *gTRRService;
+extern TRRService* gTRRService;
 
 class DOHresp {
  public:
   ~DOHresp() {
-    DOHaddr *el;
+    DOHaddr* el;
     while ((el = mAddresses.popLast())) {
       delete el;
     }
   }
-  nsresult Add(uint32_t TTL, unsigned char *dns, int index, uint16_t len,
+  nsresult Add(uint32_t TTL, unsigned char* dns, int index, uint16_t len,
                bool aLocalAllowed);
   LinkedList<DOHaddr> mAddresses;
 };
@@ -66,7 +67,7 @@ class TRR : public Runnable,
   static const unsigned int kCnameChaseMax = 64;
 
   // when firing off a normal A or AAAA query
-  explicit TRR(AHostResolver *aResolver, nsHostRecord *aRec, enum TrrType aType)
+  explicit TRR(AHostResolver* aResolver, nsHostRecord* aRec, enum TrrType aType)
       : mozilla::Runnable("TRR"),
         mRec(aRec),
         mHostResolver(aResolver),
@@ -74,14 +75,16 @@ class TRR : public Runnable,
         mBodySize(0),
         mFailed(false),
         mCnameLoop(kCnameChaseMax),
-        mAllowRFC1918(false) {
+        mAllowRFC1918(false),
+        mTxtTtl(UINT32_MAX),
+        mOriginSuffix(aRec->originSuffix) {
     mHost = aRec->host;
     mPB = aRec->pb;
   }
 
   // when following CNAMEs
-  explicit TRR(AHostResolver *aResolver, nsHostRecord *aRec, nsCString &aHost,
-               enum TrrType &aType, unsigned int aLoopCount, bool aPB)
+  explicit TRR(AHostResolver* aResolver, nsHostRecord* aRec, nsCString& aHost,
+               enum TrrType& aType, unsigned int aLoopCount, bool aPB)
       : mozilla::Runnable("TRR"),
         mHost(aHost),
         mRec(aRec),
@@ -91,30 +94,37 @@ class TRR : public Runnable,
         mFailed(false),
         mPB(aPB),
         mCnameLoop(aLoopCount),
-        mAllowRFC1918(false) {}
+        mAllowRFC1918(false),
+        mTxtTtl(UINT32_MAX),
+        mOriginSuffix(aRec ? aRec->originSuffix : EmptyCString()) {}
 
   // used on push
-  explicit TRR(AHostResolver *aResolver, bool aPB)
+  explicit TRR(AHostResolver* aResolver, bool aPB)
       : mozilla::Runnable("TRR"),
         mHostResolver(aResolver),
+        mType(TRRTYPE_A),
         mBodySize(0),
         mFailed(false),
         mPB(aPB),
         mCnameLoop(kCnameChaseMax),
-        mAllowRFC1918(false) {}
+        mAllowRFC1918(false),
+        mTxtTtl(UINT32_MAX) {}
 
   // to verify a domain
-  explicit TRR(AHostResolver *aResolver, nsACString &aHost, enum TrrType aType,
-               bool aPB)
+  explicit TRR(AHostResolver* aResolver, nsACString& aHost, enum TrrType aType,
+               const nsACString& aOriginSuffix, bool aPB)
       : mozilla::Runnable("TRR"),
         mHost(aHost),
+        mRec(nullptr),
         mHostResolver(aResolver),
         mType(aType),
         mBodySize(0),
         mFailed(false),
         mPB(aPB),
         mCnameLoop(kCnameChaseMax),
-        mAllowRFC1918(false) {}
+        mAllowRFC1918(false),
+        mTxtTtl(UINT32_MAX),
+        mOriginSuffix(aOriginSuffix) {}
 
   NS_IMETHOD Run() override;
   void Cancel();
@@ -126,13 +136,22 @@ class TRR : public Runnable,
  private:
   ~TRR() = default;
   nsresult SendHTTPRequest();
-  nsresult DohEncode(nsCString &target);
-  nsresult DohDecode();
+  nsresult DohEncode(nsCString& target, bool aDisableECS);
+  nsresult PassQName(unsigned int& index);
+  nsresult GetQname(nsAutoCString& aQname, unsigned int& aIndex);
+  nsresult DohDecode(nsCString& aHost);
   nsresult ReturnData();
-  nsresult FailData();
-  nsresult DohDecodeQuery(const nsCString &query, nsCString &host,
-                          enum TrrType &type);
-  nsresult ReceivePush(nsIHttpChannel *pushed, nsHostRecord *pushedRec);
+
+  // FailData() must be called to signal that the asynch TRR resolve is
+  // completed. For failed name resolves ("no such host"), the 'error' it
+  // passses on in its argument must be NS_ERROR_UNKNOWN_HOST. Other errors
+  // (if host was blacklisted, there as a bad content-type received, etc)
+  // other error codes must be used. This distinction is important for the
+  // subsequent logic to separate the error reasons.
+  nsresult FailData(nsresult error);
+  nsresult DohDecodeQuery(const nsCString& query, nsCString& host,
+                          enum TrrType& type);
+  nsresult ReceivePush(nsIHttpChannel* pushed, nsHostRecord* pushedRec);
   nsresult On200Response();
 
   nsCOMPtr<nsIChannel> mChannel;
@@ -147,6 +166,11 @@ class TRR : public Runnable,
   nsCString mCname;
   uint32_t mCnameLoop;  // loop detection counter
   bool mAllowRFC1918;
+  nsTArray<nsCString> mTxt;
+  uint32_t mTxtTtl;
+
+  // keep a copy of the originSuffix for the cases where mRec == nullptr */
+  const nsCString mOriginSuffix;
 };
 
 }  // namespace net

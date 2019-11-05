@@ -6,6 +6,9 @@
 
 #include "WMFVideoMFTManager.h"
 
+#include <psapi.h>
+#include <winsdkver.h>
+#include <algorithm>
 #include "DXVA2Manager.h"
 #include "GMPUtils.h"  // For SplitAt. TODO: Move SplitAt to a central place.
 #include "IMFYCbCrImage.h"
@@ -16,12 +19,11 @@
 #include "MediaTelemetryConstants.h"
 #include "VPXDecoder.h"
 #include "VideoUtils.h"
+#include "WMFDecoderModule.h"
 #include "WMFUtils.h"
 #include "gfx2DGlue.h"
 #include "gfxPrefs.h"
 #include "gfxWindowsPlatform.h"
-#include "mozilla/gfx/gfxVars.h"
-#include "mozilla/gfx/DeviceManagerDx.h"
 #include "mozilla/AbstractThread.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/Logging.h"
@@ -29,42 +31,19 @@
 #include "mozilla/Telemetry.h"
 #include "mozilla/WindowsVersion.h"
 #include "mozilla/gfx/DeviceManagerDx.h"
+#include "mozilla/gfx/gfxVars.h"
 #include "mozilla/layers/LayersTypes.h"
 #include "nsPrintfCString.h"
 #include "nsThreadUtils.h"
 #include "nsWindowsHelpers.h"
-#include "WMFDecoderModule.h"
-#include <algorithm>
-#include <psapi.h>
-#include <winsdkver.h>
 
 #define LOG(...) MOZ_LOG(sPDMLog, mozilla::LogLevel::Debug, (__VA_ARGS__))
 
-using mozilla::layers::IMFYCbCrImage;
 using mozilla::layers::Image;
+using mozilla::layers::IMFYCbCrImage;
 using mozilla::layers::LayerManager;
 using mozilla::layers::LayersBackend;
 using mozilla::media::TimeUnit;
-
-// AMD
-// Path is appended on to the %ProgramW6432% base path.
-const wchar_t kAMDVPXDecoderDLLPath[] =
-    L"\\Common Files\\ATI Technologies\\Multimedia\\";
-
-const wchar_t kAMDVP9DecoderDLLName[] =
-#if defined(ARCH_CPU_X86)
-    L"amf-mft-decvp9-decoder32.dll";
-#elif defined(ARCH_CPU_X86_64)
-    L"amf-mft-decvp9-decoder64.dll";
-#else
-#error Unsupported Windows CPU Architecture
-#endif
-
-extern const GUID CLSID_AMDWebmMfVp9Dec = {
-    0x2d2d728a,
-    0x67d6,
-    0x48ab,
-    {0x89, 0xfb, 0xa6, 0xec, 0x65, 0x55, 0x49, 0x70}};
 
 #if WINVER_MAXVER < 0x0A00
 // Windows 10+ SDK has VP80 and VP90 defines
@@ -152,16 +131,21 @@ LayersBackend GetCompositorBackendType(
 WMFVideoMFTManager::WMFVideoMFTManager(
     const VideoInfo& aConfig, layers::KnowsCompositor* aKnowsCompositor,
     layers::ImageContainer* aImageContainer, float aFramerate,
-    bool aDXVAEnabled)
+    const CreateDecoderParams::OptionSet& aOptions, bool aDXVAEnabled)
     : mVideoInfo(aConfig),
       mImageSize(aConfig.mImage),
+      mDecodedImageSize(aConfig.mImage),
       mVideoStride(0),
-      mYUVColorSpace(YUVColorSpace::BT601),
+      mColorSpace(aConfig.mColorSpace != gfx::YUVColorSpace::UNKNOWN
+                      ? Some(aConfig.mColorSpace)
+                      : Nothing()),
       mImageContainer(aImageContainer),
       mKnowsCompositor(aKnowsCompositor),
-      mDXVAEnabled(aDXVAEnabled),
-      mAMDVP9InUse(false),
-      mFramerate(aFramerate)
+      mDXVAEnabled(aDXVAEnabled &&
+                   !aOptions.contains(
+                       CreateDecoderParams::Option::HardwareDecoderNotAllowed)),
+      mFramerate(aFramerate),
+      mLowLatency(aOptions.contains(CreateDecoderParams::Option::LowLatency))
 // mVideoStride, mVideoWidth, mVideoHeight, mUseHwAccel are initialized in
 // Init().
 {
@@ -176,6 +160,13 @@ WMFVideoMFTManager::WMFVideoMFTManager(
     mStreamType = VP9;
   } else {
     mStreamType = Unknown;
+  }
+
+  // The V and U planes are stored 16-row-aligned, so we need to add padding
+  // to the row heights to ensure the Y'CbCr planes are referenced properly.
+  // This value is only used with software decoder.
+  if (mDecodedImageSize.height % 16 != 0) {
+    mDecodedImageSize.height += 16 - (mDecodedImageSize.height % 16);
   }
 }
 
@@ -550,30 +541,6 @@ MediaResult WMFVideoMFTManager::ValidateVideoInfo() {
   return NS_OK;
 }
 
-already_AddRefed<MFTDecoder> WMFVideoMFTManager::LoadAMDVP9Decoder() {
-  MOZ_ASSERT(mStreamType == VP9);
-
-  RefPtr<MFTDecoder> decoder = new MFTDecoder();
-
-  HRESULT hr = decoder->Create(CLSID_AMDWebmMfVp9Dec);
-  if (SUCCEEDED(hr)) {
-    return decoder.forget();
-  }
-
-  // Check if we can load the AMD VP9 decoder using the path name.
-  nsString path = GetProgramW6432Path();
-  path.Append(kAMDVPXDecoderDLLPath);
-  path.Append(kAMDVP9DecoderDLLName);
-  HMODULE decoderDLL =
-      ::LoadLibraryEx(path.get(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-  if (!decoderDLL) {
-    return nullptr;
-  }
-  hr = decoder->Create(decoderDLL, CLSID_AMDWebmMfVp9Dec);
-  NS_ENSURE_TRUE(SUCCEEDED(hr), nullptr);
-  return decoder.forget();
-}
-
 MediaResult WMFVideoMFTManager::Init() {
   MediaResult result = ValidateVideoInfo();
   if (NS_FAILED(result)) {
@@ -581,16 +548,6 @@ MediaResult WMFVideoMFTManager::Init() {
   }
 
   result = InitInternal();
-  if (NS_FAILED(result) && mAMDVP9InUse) {
-    // Something failed with the AMD VP9 decoder; attempt again defaulting back
-    // to Microsoft MFT.
-    mCheckForAMDDecoder = false;
-    if (mDXVA2Manager) {
-      DeleteOnMainThread(mDXVA2Manager);
-    }
-    result = InitInternal();
-  }
-
   if (NS_SUCCEEDED(result) && mDXVA2Manager) {
     // If we had some failures but eventually made it work,
     // make sure we preserve the messages.
@@ -616,24 +573,11 @@ MediaResult WMFVideoMFTManager::InitInternal() {
                    mVideoInfo.ImageRect().height > MIN_H264_HW_HEIGHT)) &&
                  InitializeDXVA();
 
-  RefPtr<MFTDecoder> decoder;
-
-  HRESULT hr;
-  if (mStreamType == VP9 && useDxva && mCheckForAMDDecoder &&
-      gfxPrefs::PDMWMFAMDVP9DecoderEnabled()) {
-    if ((decoder = LoadAMDVP9Decoder())) {
-      mAMDVP9InUse = true;
-    }
-  }
-  if (!decoder) {
-    mCheckForAMDDecoder = false;
-    mAMDVP9InUse = false;
-    decoder = new MFTDecoder();
-    hr = decoder->Create(GetMFTGUID());
-    NS_ENSURE_TRUE(SUCCEEDED(hr),
-                   MediaResult(NS_ERROR_DOM_MEDIA_FATAL_ERR,
-                               RESULT_DETAIL("Can't create the MFT decoder.")));
-  }
+  RefPtr<MFTDecoder> decoder = new MFTDecoder();
+  HRESULT hr = decoder->Create(GetMFTGUID());
+  NS_ENSURE_TRUE(SUCCEEDED(hr),
+                 MediaResult(NS_ERROR_DOM_MEDIA_FATAL_ERR,
+                             RESULT_DETAIL("Can't create the MFT decoder.")));
 
   RefPtr<IMFAttributes> attr(decoder->GetAttributes());
   UINT32 aware = 0;
@@ -641,7 +585,10 @@ MediaResult WMFVideoMFTManager::InitInternal() {
     attr->GetUINT32(MF_SA_D3D_AWARE, &aware);
     attr->SetUINT32(CODECAPI_AVDecNumWorkerThreads,
                     WMFDecoderModule::GetNumDecoderThreads());
-    if (gfxPrefs::PDMWMFLowLatencyEnabled()) {
+    bool lowLatency =
+        (gfxPrefs::PDMWMFLowLatencyEnabled() || IsWin10OrLater()) &&
+        !gfxPrefs::PDMWMFLowLatencyForceDisabled();
+    if (mLowLatency || lowLatency) {
       hr = attr->SetUINT32(CODECAPI_AVLowLatencyMode, TRUE);
       if (SUCCEEDED(hr)) {
         LOG("Enabling Low Latency Mode");
@@ -712,14 +659,14 @@ MediaResult WMFVideoMFTManager::InitInternal() {
       (mUseHwAccel ? "Yes" : "No"));
 
   if (mUseHwAccel) {
-    hr = mDXVA2Manager->ConfigureForSize(mVideoInfo.ImageRect().width,
-                                         mVideoInfo.ImageRect().height);
+    hr = mDXVA2Manager->ConfigureForSize(
+        outputType, mColorSpace.refOr(gfx::YUVColorSpace::BT601),
+        mVideoInfo.ImageRect().width, mVideoInfo.ImageRect().height);
     NS_ENSURE_TRUE(SUCCEEDED(hr),
                    MediaResult(NS_ERROR_DOM_MEDIA_FATAL_ERR,
                                RESULT_DETAIL("Fail to configure image size for "
                                              "DXVA2Manager.")));
   } else {
-    mYUVColorSpace = GetYUVColorSpace(outputType);
     GetDefaultStride(outputType, mVideoInfo.ImageRect().width, &mVideoStride);
   }
   LOG("WMFVideoMFTManager frame geometry stride=%u picture=(%d, %d, %d, %d) "
@@ -729,19 +676,9 @@ MediaResult WMFVideoMFTManager::InitInternal() {
       mVideoInfo.mDisplay.width, mVideoInfo.mDisplay.height);
 
   if (!mUseHwAccel) {
-    RefPtr<ID3D11Device> device =
-        gfx::DeviceManagerDx::Get()->GetCompositorDevice();
-    if (!device) {
-      device = gfx::DeviceManagerDx::Get()->GetContentDevice();
-    }
+    RefPtr<ID3D11Device> device = gfx::DeviceManagerDx::Get()->GetImageDevice();
     if (device) {
-      RefPtr<ID3D10Multithread> multi;
-      HRESULT hr =
-          device->QueryInterface((ID3D10Multithread**)getter_AddRefs(multi));
-      if (SUCCEEDED(hr) && multi) {
-        multi->SetMultithreadProtected(TRUE);
-        mIMFUsable = true;
-      }
+      mIMFUsable = true;
     }
   }
   return MediaResult(NS_OK);
@@ -802,15 +739,29 @@ WMFVideoMFTManager::Input(MediaRawData* aSample) {
     return E_FAIL;
   }
 
+  if (mStreamType == VP9 && aSample->mKeyframe) {
+    // Check the VP9 profile. the VP9 MFT can only handle correctly profile 0
+    // and 2 (yuv420 8/10/12 bits)
+    int profile =
+        VPXDecoder::GetVP9Profile(MakeSpan(aSample->Data(), aSample->Size()));
+    if (profile != 0 && profile != 2) {
+      return E_FAIL;
+    }
+  }
+
   RefPtr<IMFSample> inputSample;
   HRESULT hr = mDecoder->CreateInputSample(
       aSample->Data(), uint32_t(aSample->Size()),
       aSample->mTime.ToMicroseconds(), &inputSample);
   NS_ENSURE_TRUE(SUCCEEDED(hr) && inputSample != nullptr, hr);
 
+  if (!mColorSpace && aSample->mTrackInfo) {
+    // The colorspace definition is found in the H264 SPS NAL, available out of
+    // band, while for VP9 it's only available within the VP9 bytestream.
+    // The info would have been updated by the MediaChangeMonitor.
+    mColorSpace = Some(aSample->mTrackInfo->GetAsVideoInfo()->mColorSpace);
+  }
   mLastDuration = aSample->mDuration;
-  mLastTime = aSample->mTime;
-  mSamplesCount++;
 
   // Forward sample data to the decoder.
   return mDecoder->Input(inputSample);
@@ -908,8 +859,19 @@ WMFVideoMFTManager::CreateBasicVideoFrame(IMFSample* aSample,
     stride = mVideoStride;
   }
 
-  // YV12, planar format: [YYYY....][VVVV....][UUUU....]
+  const GUID& subType = mDecoder->GetOutputMediaSubType();
+  MOZ_DIAGNOSTIC_ASSERT(subType == MFVideoFormat_YV12 ||
+                        subType == MFVideoFormat_P010 ||
+                        subType == MFVideoFormat_P016);
+  const gfx::ColorDepth colorDepth = subType == MFVideoFormat_YV12
+                                         ? gfx::ColorDepth::COLOR_8
+                                         : gfx::ColorDepth::COLOR_16;
+
+  // YV12, planar format (3 planes): [YYYY....][VVVV....][UUUU....]
   // i.e., Y, then V, then U.
+  // P010, P016 planar format (2 planes) [YYYY....][UVUV...]
+  // See
+  // https://docs.microsoft.com/en-us/windows/desktop/medfound/10-bit-and-16-bit-yuv-video-formats
   VideoData::YCbCrBuffer b;
 
   uint32_t videoWidth = mImageSize.width;
@@ -923,36 +885,51 @@ WMFVideoMFTManager::CreateBasicVideoFrame(IMFSample* aSample,
   b.mPlanes[0].mOffset = 0;
   b.mPlanes[0].mSkip = 0;
 
-  // The V and U planes are stored 16-row-aligned, so we need to add padding
-  // to the row heights to ensure the Y'CbCr planes are referenced properly.
-  uint32_t padding = 0;
-  if (videoHeight % 16 != 0) {
-    padding = 16 - (videoHeight % 16);
-  }
-  uint32_t y_size = stride * (videoHeight + padding);
-  uint32_t v_size = stride * (videoHeight + padding) / 4;
+  MOZ_DIAGNOSTIC_ASSERT(mDecodedImageSize.height % 16 == 0,
+                        "decoded height must be 16 bytes aligned");
+  uint32_t y_size = stride * mDecodedImageSize.height;
+  uint32_t v_size = stride * mDecodedImageSize.height / 4;
   uint32_t halfStride = (stride + 1) / 2;
   uint32_t halfHeight = (videoHeight + 1) / 2;
   uint32_t halfWidth = (videoWidth + 1) / 2;
 
-  // U plane (Cb)
-  b.mPlanes[1].mData = data + y_size + v_size;
-  b.mPlanes[1].mStride = halfStride;
-  b.mPlanes[1].mHeight = halfHeight;
-  b.mPlanes[1].mWidth = halfWidth;
-  b.mPlanes[1].mOffset = 0;
-  b.mPlanes[1].mSkip = 0;
+  if (subType == MFVideoFormat_YV12) {
+    // U plane (Cb)
+    b.mPlanes[1].mData = data + y_size + v_size;
+    b.mPlanes[1].mStride = halfStride;
+    b.mPlanes[1].mHeight = halfHeight;
+    b.mPlanes[1].mWidth = halfWidth;
+    b.mPlanes[1].mOffset = 0;
+    b.mPlanes[1].mSkip = 0;
 
-  // V plane (Cr)
-  b.mPlanes[2].mData = data + y_size;
-  b.mPlanes[2].mStride = halfStride;
-  b.mPlanes[2].mHeight = halfHeight;
-  b.mPlanes[2].mWidth = halfWidth;
-  b.mPlanes[2].mOffset = 0;
-  b.mPlanes[2].mSkip = 0;
+    // V plane (Cr)
+    b.mPlanes[2].mData = data + y_size;
+    b.mPlanes[2].mStride = halfStride;
+    b.mPlanes[2].mHeight = halfHeight;
+    b.mPlanes[2].mWidth = halfWidth;
+    b.mPlanes[2].mOffset = 0;
+    b.mPlanes[2].mSkip = 0;
+  } else {
+    // U plane (Cb)
+    b.mPlanes[1].mData = data + y_size;
+    b.mPlanes[1].mStride = stride;
+    b.mPlanes[1].mHeight = halfHeight;
+    b.mPlanes[1].mWidth = halfWidth;
+    b.mPlanes[1].mOffset = 0;
+    b.mPlanes[1].mSkip = 1;
+
+    // V plane (Cr)
+    b.mPlanes[2].mData = data + y_size + sizeof(short);
+    b.mPlanes[2].mStride = stride;
+    b.mPlanes[2].mHeight = halfHeight;
+    b.mPlanes[2].mWidth = halfWidth;
+    b.mPlanes[2].mOffset = 0;
+    b.mPlanes[2].mSkip = 1;
+  }
 
   // YuvColorSpace
-  b.mYUVColorSpace = mYUVColorSpace;
+  b.mYUVColorSpace = *mColorSpace;
+  b.mColorDepth = colorDepth;
 
   TimeUnit pts = GetSampleTime(aSample);
   NS_ENSURE_TRUE(pts.IsValid(), E_FAIL);
@@ -961,7 +938,8 @@ WMFVideoMFTManager::CreateBasicVideoFrame(IMFSample* aSample,
   gfx::IntRect pictureRegion =
       mVideoInfo.ScaledImageRect(videoWidth, videoHeight);
 
-  if (!mKnowsCompositor || !mKnowsCompositor->SupportsD3D11() || !mIMFUsable) {
+  if (colorDepth != gfx::ColorDepth::COLOR_8 || !mKnowsCompositor ||
+      !mKnowsCompositor->SupportsD3D11() || !mIMFUsable) {
     RefPtr<VideoData> v = VideoData::CreateAndCopyData(
         mVideoInfo, mImageContainer, aStreamOffset, pts, duration, b, false,
         TimeUnit::FromMicroseconds(-1), pictureRegion);
@@ -975,7 +953,7 @@ WMFVideoMFTManager::CreateBasicVideoFrame(IMFSample* aSample,
   }
 
   RefPtr<layers::PlanarYCbCrImage> image =
-      new IMFYCbCrImage(buffer, twoDBuffer);
+      new IMFYCbCrImage(buffer, twoDBuffer, mKnowsCompositor, mImageContainer);
 
   VideoData::SetVideoDataToImage(image, mVideoInfo, b, pictureRegion, false);
 
@@ -1028,15 +1006,6 @@ WMFVideoMFTManager::Output(int64_t aStreamOffset, RefPtr<MediaData>& aOutData) {
   HRESULT hr;
   aOutData = nullptr;
   int typeChangeCount = 0;
-  bool wasDraining = mDraining;
-  int64_t sampleCount = mSamplesCount;
-  if (wasDraining) {
-    mSamplesCount = 0;
-    mDraining = false;
-  }
-
-  TimeUnit pts;
-  TimeUnit duration;
 
   // Loop until we decode a sample, or an unexpected error that we can't
   // handle occurs.
@@ -1048,21 +1017,45 @@ WMFVideoMFTManager::Output(int64_t aStreamOffset, RefPtr<MediaData>& aOutData) {
 
     if (hr == MF_E_TRANSFORM_STREAM_CHANGE) {
       MOZ_ASSERT(!sample);
-      // Video stream output type change, probably geometric aperture change.
+      // Video stream output type change, probably geometric aperture change or
+      // pixel type.
       // We must reconfigure the decoder output type.
-      hr = mDecoder->SetDecoderOutputType(false /* check all attribute */,
-                                          nullptr, nullptr);
+
+      // Attempt to find an appropriate OutputType, trying in order:
+      // if HW accelerated: NV12, P010, P016
+      // if SW: YV12, P010, P016
+      if (FAILED(
+              (hr = (mDecoder->FindDecoderOutputTypeWithSubtype(
+                   mUseHwAccel ? MFVideoFormat_NV12 : MFVideoFormat_YV12)))) &&
+          FAILED((hr = mDecoder->FindDecoderOutputTypeWithSubtype(
+                      MFVideoFormat_P010))) &&
+          FAILED((hr = mDecoder->FindDecoderOutputTypeWithSubtype(
+                      MFVideoFormat_P016)))) {
+        LOG("No suitable output format found");
+        return hr;
+      }
+
+      RefPtr<IMFMediaType> outputType;
+      hr = mDecoder->GetOutputMediaType(outputType);
       NS_ENSURE_TRUE(SUCCEEDED(hr), hr);
 
-      if (!mUseHwAccel) {
-        // The stride may have changed, recheck for it.
-        RefPtr<IMFMediaType> outputType;
-        hr = mDecoder->GetOutputMediaType(outputType);
+      if (mUseHwAccel) {
+        hr = mDXVA2Manager->ConfigureForSize(
+            outputType, mColorSpace.refOr(gfx::YUVColorSpace::BT601),
+            mVideoInfo.ImageRect().width, mVideoInfo.ImageRect().height);
         NS_ENSURE_TRUE(SUCCEEDED(hr), hr);
-        mYUVColorSpace = GetYUVColorSpace(outputType);
+      } else {
+        // The stride may have changed, recheck for it.
         hr = GetDefaultStride(outputType, mVideoInfo.ImageRect().width,
                               &mVideoStride);
         NS_ENSURE_TRUE(SUCCEEDED(hr), hr);
+
+        UINT32 width = 0, height = 0;
+        hr = MFGetAttributeSize(outputType, MF_MT_FRAME_SIZE, &width, &height);
+        NS_ENSURE_TRUE(SUCCEEDED(hr), hr);
+        NS_ENSURE_TRUE(width <= MAX_VIDEO_WIDTH, E_FAIL);
+        NS_ENSURE_TRUE(height <= MAX_VIDEO_HEIGHT, E_FAIL);
+        mDecodedImageSize = gfx::IntSize(width, height);
       }
       // Catch infinite loops, but some decoders perform at least 2 stream
       // changes on consecutive calls, so be permissive.
@@ -1092,19 +1085,10 @@ WMFVideoMFTManager::Output(int64_t aStreamOffset, RefPtr<MediaData>& aOutData) {
         }
         continue;
       }
-      pts = GetSampleTime(sample);
-      duration = GetSampleDuration(sample);
+      TimeUnit pts = GetSampleTime(sample);
+      TimeUnit duration = GetSampleDuration(sample);
       if (!pts.IsValid() || !duration.IsValid()) {
         return E_FAIL;
-      }
-      if (wasDraining && sampleCount == 1 && pts == TimeUnit::Zero()) {
-        // WMF is unable to calculate a duration if only a single sample
-        // was parsed. Additionally, the pts always comes out at 0 under those
-        // circumstances.
-        // Seeing that we've only fed the decoder a single frame, the pts
-        // and duration are known, it's of the last sample.
-        pts = mLastTime;
-        duration = mLastDuration;
       }
       if (mSeekTargetThreshold.isSome()) {
         if ((pts + duration) < mSeekTargetThreshold.ref()) {
@@ -1135,14 +1119,12 @@ WMFVideoMFTManager::Output(int64_t aStreamOffset, RefPtr<MediaData>& aOutData) {
   NS_ENSURE_TRUE(frame, E_FAIL);
 
   aOutData = frame;
-  // Set the potentially corrected pts and duration.
-  aOutData->mTime = pts;
-  // The VP9 decoder doesn't provide a valid duration. AS VP9 doesn't have a
+  // The VP9 decoder doesn't provide a valid duration. As VP9 doesn't have a
   // concept of pts vs dts and have no latency. We can as such use the last
   // known input duration.
-  aOutData->mDuration = (mStreamType == VP9 && duration == TimeUnit::Zero())
-                            ? mLastDuration
-                            : duration;
+  if (mStreamType == VP9 && aOutData->mDuration == TimeUnit::Zero()) {
+    aOutData->mDuration = mLastDuration;
+  }
 
   if (mNullOutputCount) {
     mGotValidOutputAfterNullOutput = true;
@@ -1164,9 +1146,6 @@ bool WMFVideoMFTManager::IsHardwareAccelerated(
 
 nsCString WMFVideoMFTManager::GetDescriptionName() const {
   nsCString failureReason;
-  if (mAMDVP9InUse) {
-    return NS_LITERAL_CSTRING("amd vp9 hardware video decoder");
-  }
   bool hw = IsHardwareAccelerated(failureReason);
   return nsPrintfCString("wmf %s video decoder - %s",
                          hw ? "hardware" : "software",

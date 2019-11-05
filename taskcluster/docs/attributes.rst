@@ -95,23 +95,34 @@ unittest_suite
 This is the unit test suite being run in a unit test task.  For example,
 ``mochitest`` or ``cppunittest``.
 
-unittest_flavor
-===============
+unittest_category
+=================
 
-If a unittest suite has subdivisions, those are represented as flavors.  Not
-all suites have flavors, in which case this attribute should be set to match
-the suite.  Examples: ``mochitest-devtools-chrome-chunked`` or ``a11y``.
+This is the high-level category of test the suite corresponds to. This is
+usually the test harness used to run the suite.
 
 unittest_try_name
 =================
 
 This is the name used to refer to a unit test via try syntax.  It
-may not match either of ``unittest_suite`` or ``unittest_flavor``.
+may not match ``unittest_suite``.
+
+unittest_variant
+================
+
+The configuration variant the test suite is running with. If set, this usually
+means the tests are running with a special pref enabled. These are defined in
+``taskgraph.transforms.tests.TEST_VARIANTS``.
 
 talos_try_name
 ==============
 
 This is the name used to refer to a talos job via try syntax.
+
+raptor_try_name
+===============
+
+This is the name used to refer to a raptor job via try syntax.
 
 job_try_name
 ============
@@ -141,6 +152,11 @@ nightly
 
 Signals whether the task is part of a nightly graph. Useful when filtering
 out nightly tasks from full task set at target stage.
+
+shippable
+=========
+Signals whether the task is considered "shippable", that it should get signed and is ok to
+be used for nightlies or releases.
 
 all_locales
 ===========
@@ -233,6 +249,11 @@ lot of places. To support private artifacts, we've moved this to the
 ``artifact_prefix`` attribute. It will default to ``public/build`` but will be
 overrideable per-task.
 
+artifact_map
+===============
+For beetmover jobs, this indicates which yaml file should be used to
+generate the upstream artifacts and payload instructions to the task.
+
 enable-full-crashsymbols
 ========================
 In automation, full crashsymbol package generation is normally disabled.  For
@@ -270,7 +291,21 @@ update-channel
 ==============
 The update channel the build is configured to use.
 
+openh264_rev
+============
+Only used for openh264 plugin builds, used to signify the revision (and thus inform artifact name) of the given build.
+
+code-review
+===========
+If a task set this boolean attribute to `true`, it will be processed by the code
+review bot, the task will ran for every new Phabricator diff.
+Any supported and detected issue will be automatically reported on the
+Phabricator revision.
 
 retrigger
 =========
 Whether the task can be retriggered, or if it needs to be re-run.
+
+release-type
+============
+Because we now ship Fennec Nightly off mozilla-beta, `release-type` defines whether the task is a Nightly or a Beta build.

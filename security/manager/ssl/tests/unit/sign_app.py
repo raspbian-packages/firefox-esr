@@ -30,6 +30,7 @@ KID = 4
 ALG = 1
 COSE_Sign = 98
 
+
 def coseAlgorithmToPykeyHash(algorithm):
     """Helper function that takes one of (ES256, ES384, ES512)
     and returns the corresponding pykey.HASH_* identifier."""
@@ -47,6 +48,8 @@ def coseAlgorithmToPykeyHash(algorithm):
 #     unprotected : {},
 #     signature : bstr
 # ]
+
+
 def coseSignature(payload, algorithm, signingKey, signingCertificate,
                   bodyProtected):
     """Returns a COSE_Signature structure.
@@ -78,6 +81,8 @@ def coseSignature(payload, algorithm, signingKey, signingCertificate,
 #     payload : nil,
 #     signatures : [+ COSE_Signature]
 # ]
+
+
 def coseSig(payload, intermediates, signatures):
     """Returns the entire (tagged) COSE_Sign structure.
     payload is a string representing the data to be signed
@@ -96,6 +101,7 @@ def coseSig(payload, intermediates, signatures):
     tagged = CBORTag(COSE_Sign, [protectedEncoded, {}, None, coseSignatures])
     return dumps(tagged)
 
+
 def walkDirectory(directory):
     """Given a relative path to a directory, enumerates the
     files in the tree rooted at that location. Returns a list
@@ -110,6 +116,7 @@ def walkDirectory(directory):
             paths.append((fullPath, internalPath))
     return paths
 
+
 def addManifestEntry(filename, hashes, contents, entries):
     """Helper function to fill out a manifest entry.
     Takes the filename, a list of (hash function, hash function name)
@@ -120,6 +127,7 @@ def addManifestEntry(filename, hashes, contents, entries):
         base64hash = b64encode(hashFunc(contents).digest())
         entry += '%s-Digest: %s\n' % (name, base64hash)
     entries.append(entry)
+
 
 def getCert(subject, keyName, issuerName, ee, issuerKey=""):
     """Helper function to create an X509 cert from a specification.
@@ -141,6 +149,7 @@ def getCert(subject, keyName, issuerName, ee, issuerKey=""):
     certSpecificationStream.seek(0)
     return pycert.Certificate(certSpecificationStream)
 
+
 def coseAlgorithmToSignatureParams(coseAlgorithm, issuerName):
     """Given a COSE algorithm ('ES256', 'ES384', 'ES512') and an issuer
     name, returns a (algorithm id, pykey.ECCKey, encoded certificate)
@@ -153,30 +162,45 @@ def coseAlgorithmToSignatureParams(coseAlgorithm, issuerName):
         keyName = 'secp384r1'
         algId = ES384
     elif coseAlgorithm == 'ES512':
-        keyName = 'secp521r1' # COSE uses the hash algorithm; this is the curve
+        keyName = 'secp521r1'  # COSE uses the hash algorithm; this is the curve
         algId = ES512
     else:
         raise UnknownCOSEAlgorithmError(coseAlgorithm)
     key = pykey.ECCKey(keyName)
     # The subject must differ to avoid errors when importing into NSS later.
-    ee = getCert('xpcshell signed app test signer ' + keyName, keyName, issuerName, True, 'default')
+    ee = getCert('xpcshell signed app test signer ' + keyName,
+                 keyName, issuerName, True, 'default')
     return (algId, key, ee.toDER())
 
+
 def signZip(appDirectory, outputFile, issuerName, rootName, manifestHashes,
-            signatureHashes, pkcs7Hashes, coseAlgorithms, emptySignerInfos):
+            signatureHashes, pkcs7Hashes, coseAlgorithms, emptySignerInfos,
+            headerPaddingFactor):
     """Given a directory containing the files to package up,
     an output filename to write to, the name of the issuer of
     the signing certificate, the name of trust anchor, a list of hash algorithms
     to use in the manifest file, a similar list for the signature file,
     a similar list for the pkcs#7 signature, a list of COSE signature algorithms
-    to include, and whether the pkcs#7 signer info should be kept empty,
-    packages up the files in the directory and creates the output
-    as appropriate."""
-    # This ensures each manifest file starts with the magic string and
-    # then a blank line.
-    mfEntries = ['Manifest-Version: 1.0', '']
+    to include, whether the pkcs#7 signer info should be kept empty, and how
+    many MB to pad the manifests by (to test handling large manifest files),
+    packages up the files in the directory and creates the output as
+    appropriate."""
+    # The header of each manifest starts with the magic string
+    # 'Manifest-Version: 1.0' and ends with a blank line. There can be
+    # essentially anything after the first line before the blank line.
+    mfEntries = ['Manifest-Version: 1.0']
+    if headerPaddingFactor > 0:
+        # In this format, each line can only be 72 bytes long. We make
+        # our padding 50 bytes per line (49 of content and one newline)
+        # so the math is easy.
+        singleLinePadding = 'a' * 49
+        # 1000000 / 50 = 20000
+        allPadding = [singleLinePadding] * (headerPaddingFactor * 20000)
+        mfEntries.extend(allPadding)
+    # Append the blank line.
+    mfEntries.append('')
 
-    with zipfile.ZipFile(outputFile, 'w') as outZip:
+    with zipfile.ZipFile(outputFile, 'w', zipfile.ZIP_DEFLATED) as outZip:
         for (fullPath, internalPath) in walkDirectory(appDirectory):
             with open(fullPath) as inputFile:
                 contents = inputFile.read()
@@ -198,8 +222,8 @@ def signZip(appDirectory, outputFile, issuerName, rootName, manifestHashes,
                 intermediate = intermediate.toDER()
                 intermediates.append(intermediate)
             signatures = map(lambda coseAlgorithm:
-                coseAlgorithmToSignatureParams(coseAlgorithm, coseIssuerName),
-                coseAlgorithms)
+                             coseAlgorithmToSignatureParams(coseAlgorithm, coseIssuerName),
+                             coseAlgorithms)
             coseSignatureBytes = coseSig(coseManifest, intermediates, signatures)
             outZip.writestr('META-INF/cose.sig', coseSignatureBytes)
             addManifestEntry('META-INF/cose.sig', manifestHashes,
@@ -229,6 +253,7 @@ def signZip(appDirectory, outputFile, issuerName, rootName, manifestHashes,
             outZip.writestr('META-INF/A.RSA', p7)
             outZip.writestr('META-INF/A.SF', sfContents)
             outZip.writestr('META-INF/MANIFEST.MF', mfContents)
+
 
 class Error(Exception):
     """Base class for exceptions in this module."""
@@ -264,6 +289,7 @@ def hashNameToFunctionAndIdentifier(name):
         return (sha256, 'SHA256')
     raise UnknownHashAlgorithmError(name)
 
+
 def main(outputFile, appPath, *args):
     """Main entrypoint. Given an already-opened file-like
     object, a path to the app directory to sign, and some
@@ -284,6 +310,9 @@ def main(outputFile, appPath, *args):
                         help='Append a COSE signature with the given ' +
                              'algorithms (out of ES256, ES384, and ES512)',
                         default=[])
+    parser.add_argument('-z', '--pad-headers', action='store', default=0,
+                        help='Pad the header sections of the manifests ' +
+                             'with X MB of repetitive data')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-p', '--pkcs7-hash', action='append',
                        help='Hash algorithms to use in PKCS#7 signature',
@@ -298,4 +327,5 @@ def main(outputFile, appPath, *args):
     signZip(appPath, outputFile, parsed.issuer, parsed.root,
             map(hashNameToFunctionAndIdentifier, parsed.manifest_hash),
             map(hashNameToFunctionAndIdentifier, parsed.signature_hash),
-            parsed.pkcs7_hash, parsed.cose_sign, parsed.empty_signerInfos)
+            parsed.pkcs7_hash, parsed.cose_sign, parsed.empty_signerInfos,
+            int(parsed.pad_headers))

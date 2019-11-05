@@ -6,7 +6,10 @@
 #ifndef RectTextureImage_h_
 #define RectTextureImage_h_
 
+#include "GLTypes.h"
+#include "mozilla/gfx/2D.h"
 #include "mozilla/RefPtr.h"
+#include "Units.h"
 
 class MacIOSurface;
 
@@ -15,6 +18,10 @@ namespace mozilla {
 namespace gl {
 class GLContext;
 }  // namespace gl
+
+namespace layers {
+class GLManager;
+}  // namespace layers
 
 namespace widget {
 
@@ -37,8 +44,7 @@ class RectTextureImage {
 
   void UpdateIfNeeded(const LayoutDeviceIntSize& aNewSize,
                       const LayoutDeviceIntRegion& aDirtyRegion,
-                      void (^aCallback)(gfx::DrawTarget*,
-                                        const LayoutDeviceIntRegion&)) {
+                      void (^aCallback)(gfx::DrawTarget*, const LayoutDeviceIntRegion&)) {
     RefPtr<gfx::DrawTarget> drawTarget = BeginUpdate(aNewSize, aDirtyRegion);
     if (drawTarget) {
       aCallback(drawTarget, GetUpdateRegion());
@@ -47,21 +53,19 @@ class RectTextureImage {
   }
 
   void UpdateFromCGContext(const LayoutDeviceIntSize& aNewSize,
-                           const LayoutDeviceIntRegion& aDirtyRegion,
-                           CGContextRef aCGContext);
+                           const LayoutDeviceIntRegion& aDirtyRegion, CGContextRef aCGContext);
 
   LayoutDeviceIntRegion GetUpdateRegion() {
     MOZ_ASSERT(mInUpdate, "update region only valid during update");
     return mUpdateRegion;
   }
 
-  void Draw(mozilla::layers::GLManager* aManager,
-            const LayoutDeviceIntPoint& aLocation,
+  void Draw(mozilla::layers::GLManager* aManager, const LayoutDeviceIntPoint& aLocation,
             const gfx::Matrix4x4& aTransform = gfx::Matrix4x4());
 
  protected:
   void DeleteTexture();
-  void BindIOSurfaceToTexture(gl::GLContext* aGL);
+  bool BindIOSurfaceToTexture(gl::GLContext* aGL);
 
   RefPtr<MacIOSurface> mIOSurface;
   gl::GLContext* mGLContext;

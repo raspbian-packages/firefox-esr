@@ -6,6 +6,7 @@
 
 #include "mozilla/dom/CallbackInterface.h"
 #include "jsapi.h"
+#include "js/CharacterEncoding.h"
 #include "mozilla/dom/BindingUtils.h"
 #include "nsPrintfCString.h"
 
@@ -19,10 +20,10 @@ bool CallbackInterface::GetCallableProperty(
     return false;
   }
   if (!aCallable.isObject() || !JS::IsCallable(&aCallable.toObject())) {
-    char* propName = JS_EncodeString(
+    JS::RootedString propId(
         cx, JS_FORGET_STRING_FLATNESS(JSID_TO_FLAT_STRING(aPropId)));
-    nsPrintfCString description("Property '%s'", propName);
-    JS_free(cx, propName);
+    JS::UniqueChars propName = JS_EncodeStringToUTF8(cx, propId);
+    nsPrintfCString description("Property '%s'", propName.get());
     ThrowErrorMessage(cx, MSG_NOT_CALLABLE, description.get());
     return false;
   }

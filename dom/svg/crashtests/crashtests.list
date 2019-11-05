@@ -1,4 +1,4 @@
-asserts(0-6) load 307322-1.svg # bug 563481
+load 307322-1.svg
 load 327705-1.svg
 load 336994-1.html
 load 344888-1.svg
@@ -31,7 +31,7 @@ load 409811-1.html
 load 410659-1.svg
 load 410659-2.svg
 load 410659-3.svg
-asserts(3-4) load 412104-1.svg # bug 903785
+load 412104-1.svg
 load 413174-1.svg
 load 414188-1.svg
 load 427325-1.svg
@@ -87,3 +87,9 @@ load 1347617-3.svg
 load 1402798.html
 load 1419250-1.html
 load 1420492.html
+load 1477853.html
+load 1486488.html
+load 1493447.html
+skip-if(Android) load 1507961-1.html  # times out on Android due to the test size
+load 1531578-1.html
+load test_nested_svg.html

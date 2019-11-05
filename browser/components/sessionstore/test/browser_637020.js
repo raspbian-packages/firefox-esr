@@ -1,21 +1,25 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const TEST_URL = "http://mochi.test:8888/browser/browser/components/" +
-                 "sessionstore/test/browser_637020_slow.sjs";
+const TEST_URL =
+  "http://mochi.test:8888/browser/browser/components/" +
+  "sessionstore/test/browser_637020_slow.sjs";
 
 const TEST_STATE = {
-  windows: [{
-    tabs: [
-      { entries: [{ url: "about:mozilla", triggeringPrincipal_base64}] },
-      { entries: [{ url: "about:robots", triggeringPrincipal_base64}] }
-    ]
-  }, {
-    tabs: [
-      { entries: [{ url: TEST_URL, triggeringPrincipal_base64}] },
-      { entries: [{ url: TEST_URL, triggeringPrincipal_base64}] }
-    ]
-  }]
+  windows: [
+    {
+      tabs: [
+        { entries: [{ url: "about:mozilla", triggeringPrincipal_base64 }] },
+        { entries: [{ url: "about:robots", triggeringPrincipal_base64 }] },
+      ],
+    },
+    {
+      tabs: [
+        { entries: [{ url: TEST_URL, triggeringPrincipal_base64 }] },
+        { entries: [{ url: TEST_URL, triggeringPrincipal_base64 }] },
+      ],
+    },
+  ],
 };
 
 /**
@@ -42,6 +46,7 @@ add_task(async function test() {
   let backupState = SessionStore.getBrowserState();
   SessionStore.setBrowserState(JSON.stringify(TEST_STATE));
   let win = await promiseWindow;
+  await promiseWindowRestored(win);
 
   // The window has now been opened. Check the state that is returned,
   // this should come from the cache while the window isn't restored, yet.

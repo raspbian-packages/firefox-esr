@@ -2,18 +2,26 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-
-ChromeUtils.defineModuleGetter(this, "SiteDataManager",
-                               "resource:///modules/SiteDataManager.jsm");
-ChromeUtils.defineModuleGetter(this, "DownloadUtils",
-                               "resource://gre/modules/DownloadUtils.jsm");
 
 "use strict";
 
-let gSiteDataSettings = {
+var { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
+ChromeUtils.defineModuleGetter(
+  this,
+  "SiteDataManager",
+  "resource:///modules/SiteDataManager.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "DownloadUtils",
+  "resource://gre/modules/DownloadUtils.jsm"
+);
+
+let gSiteDataSettings = {
   // Array of metadata of sites. Each array element is object holding:
   // - uri: uri of site; instance of nsIURI
   // - baseDomain: base domain of the site
@@ -24,47 +32,72 @@ let gSiteDataSettings = {
 
   _list: null,
   _searchBox: null,
-  _prefStrBundle: null,
 
   _createSiteListItem(site) {
-    let item = document.createElement("richlistitem");
+    let item = document.createXULElement("richlistitem");
     item.setAttribute("host", site.host);
-    let container = document.createElement("hbox");
+    let container = document.createXULElement("hbox");
 
     // Creates a new column item with the specified relative width.
-    function addColumnItem(value, flexWidth) {
-      let box = document.createElement("hbox");
+    function addColumnItem(l10n, flexWidth, tooltipText) {
+      let box = document.createXULElement("hbox");
       box.className = "item-box";
       box.setAttribute("flex", flexWidth);
-      let label = document.createElement("label");
+      let label = document.createXULElement("label");
       label.setAttribute("crop", "end");
-      if (value) {
-        box.setAttribute("tooltiptext", value);
-        label.setAttribute("value", value);
+      if (l10n) {
+        if (l10n.hasOwnProperty("raw")) {
+          box.setAttribute("tooltiptext", l10n.raw);
+          label.setAttribute("value", l10n.raw);
+        } else {
+          document.l10n.setAttributes(label, l10n.id, l10n.args);
+        }
+      }
+      if (tooltipText) {
+        box.setAttribute("tooltiptext", tooltipText);
       }
       box.appendChild(label);
       container.appendChild(box);
     }
 
     // Add "Host" column.
-    addColumnItem(site.host, "4");
+    addColumnItem({ raw: site.host }, "4");
 
     // Add "Cookies" column.
-    addColumnItem(site.cookies.length, "1");
+    addColumnItem({ raw: site.cookies.length }, "1");
 
     // Add "Storage" column
     if (site.usage > 0 || site.persisted) {
-      let size = DownloadUtils.convertByteUnits(site.usage);
-      let strName = site.persisted ? "siteUsagePersistent" : "siteUsage";
-      addColumnItem(this._prefStrBundle.getFormattedString(strName, size), "2");
+      let [value, unit] = DownloadUtils.convertByteUnits(site.usage);
+      let strName = site.persisted
+        ? "site-storage-persistent"
+        : "site-storage-usage";
+      addColumnItem(
+        {
+          id: strName,
+          args: { value, unit },
+        },
+        "2"
+      );
     } else {
       // Pass null to avoid showing "0KB" when there is no site data stored.
       addColumnItem(null, "2");
     }
 
     // Add "Last Used" column.
-    addColumnItem(site.lastAccessed > 0 ?
-      this._formatter.format(site.lastAccessed) : null, "2");
+    let formattedLastAccessed =
+      site.lastAccessed > 0
+        ? this._relativeTimeFormat.formatBestUnit(site.lastAccessed)
+        : null;
+    let formattedFullDate =
+      site.lastAccessed > 0
+        ? this._absoluteTimeFormat.format(site.lastAccessed)
+        : null;
+    addColumnItem(
+      site.lastAccessed > 0 ? { raw: formattedLastAccessed } : null,
+      "2",
+      formattedFullDate
+    );
 
     item.appendChild(container);
     return item;
@@ -72,28 +105,32 @@ let gSiteDataSettings = {
 
   init() {
     function setEventListener(id, eventType, callback) {
-      document.getElementById(id)
-              .addEventListener(eventType, callback.bind(gSiteDataSettings));
+      document
+        .getElementById(id)
+        .addEventListener(eventType, callback.bind(gSiteDataSettings));
     }
 
-    this._formatter = new Services.intl.DateTimeFormat(undefined, {
-      dateStyle: "short", timeStyle: "short",
+    this._absoluteTimeFormat = new Services.intl.DateTimeFormat(undefined, {
+      dateStyle: "short",
+      timeStyle: "short",
     });
+
+    this._relativeTimeFormat = new Services.intl.RelativeTimeFormat(
+      undefined,
+      {}
+    );
 
     this._list = document.getElementById("sitesList");
     this._searchBox = document.getElementById("searchBox");
-    this._prefStrBundle = document.getElementById("bundlePreferences");
     SiteDataManager.getSites().then(sites => {
       this._sites = sites;
-      let sortCol = document.querySelector("treecol[data-isCurrentSortCol=true]");
+      let sortCol = document.querySelector(
+        "treecol[data-isCurrentSortCol=true]"
+      );
       this._sortSites(this._sites, sortCol);
       this._buildSitesList(this._sites);
       Services.obs.notifyObservers(null, "sitedata-settings-init");
     });
-
-    let brandShortName = document.getElementById("bundle_brand").getString("brandShortName");
-    let settingsDescription = document.getElementById("settingsDescription");
-    settingsDescription.textContent = this._prefStrBundle.getFormattedString("siteDataSettings3.description", [brandShortName]);
 
     setEventListener("sitesList", "select", this.onSelect);
     setEventListener("hostCol", "click", this.onClickTreeCol);
@@ -104,7 +141,7 @@ let gSiteDataSettings = {
     setEventListener("save", "command", this.saveChanges);
     setEventListener("searchBox", "command", this.onCommandSearch);
     setEventListener("removeAll", "command", this.onClickRemoveAll);
-    setEventListener("removeSelected", "command", this.onClickRemoveSelected);
+    setEventListener("removeSelected", "command", this.removeSelected);
   },
 
   _updateButtonsState() {
@@ -114,14 +151,10 @@ let gSiteDataSettings = {
     removeSelectedBtn.disabled = this._list.selectedItems.length == 0;
     removeAllBtn.disabled = items.length == 0;
 
-    let removeAllBtnLabelStringID = "removeAllSiteData.label";
-    let removeAllBtnAccesskeyStringID = "removeAllSiteData.accesskey";
-    if (this._searchBox.value) {
-      removeAllBtnLabelStringID = "removeAllSiteDataShown.label";
-      removeAllBtnAccesskeyStringID = "removeAllSiteDataShown.accesskey";
-    }
-    removeAllBtn.setAttribute("label", this._prefStrBundle.getString(removeAllBtnLabelStringID));
-    removeAllBtn.setAttribute("accesskey", this._prefStrBundle.getString(removeAllBtnAccesskeyStringID));
+    let l10nId = this._searchBox.value
+      ? "site-data-remove-shown"
+      : "site-data-remove-all";
+    document.l10n.setAttributes(removeAllBtn, l10nId);
   },
 
   /**
@@ -130,10 +163,12 @@ let gSiteDataSettings = {
    */
   _sortSites(sites, col) {
     let isCurrentSortCol = col.getAttribute("data-isCurrentSortCol");
-    let sortDirection = col.getAttribute("data-last-sortDirection") || "ascending";
+    let sortDirection =
+      col.getAttribute("data-last-sortDirection") || "ascending";
     if (isCurrentSortCol) {
       // Sort on the current column, flip the sorting direction
-      sortDirection = sortDirection === "ascending" ? "descending" : "ascending";
+      sortDirection =
+        sortDirection === "ascending" ? "descending" : "ascending";
     }
 
     let sortFunc = null;
@@ -164,7 +199,7 @@ let gSiteDataSettings = {
       sites.sort(sortFunc);
     }
 
-    let cols = this._list.querySelectorAll("treecol");
+    let cols = this._list.previousElementSibling.querySelectorAll("treecol");
     cols.forEach(c => {
       c.removeAttribute("sortDirection");
       c.removeAttribute("data-isCurrentSortCol");
@@ -185,6 +220,7 @@ let gSiteDataSettings = {
     }
 
     let keyword = this._searchBox.value.toLowerCase().trim();
+    let fragment = document.createDocumentFragment();
     for (let site of sites) {
       let host = site.host;
       if (keyword && !host.includes(keyword)) {
@@ -196,8 +232,9 @@ let gSiteDataSettings = {
       }
 
       let item = this._createSiteListItem(site);
-      this._list.appendChild(item);
+      fragment.appendChild(item);
     }
+    this._list.appendChild(fragment);
     this._updateButtonsState();
   },
 
@@ -214,7 +251,7 @@ let gSiteDataSettings = {
     this._updateButtonsState();
   },
 
-  saveChanges() {
+  async saveChanges() {
     // Tracks whether the user confirmed their decision.
     let allowed = false;
 
@@ -226,23 +263,18 @@ let gSiteDataSettings = {
       if (this._sites.length == removals.length) {
         allowed = SiteDataManager.promptSiteDataRemoval(window);
         if (allowed) {
-          SiteDataManager.removeAll();
+          try {
+            await SiteDataManager.removeAll();
+          } catch (e) {
+            Cu.reportError(e);
+          }
         }
       } else {
-        let args = {
-          hosts: removals,
-          allowed: false
-        };
-        let features = "centerscreen,chrome,modal,resizable=no";
-        window.openDialog("chrome://browser/content/preferences/siteDataRemoveSelected.xul", "", features, args);
-        allowed = args.allowed;
+        allowed = SiteDataManager.promptSiteDataRemoval(window, removals);
         if (allowed) {
           try {
-            SiteDataManager.remove(removals);
+            await SiteDataManager.remove(removals);
           } catch (e) {
-            // Hit error, maybe remove unknown site.
-            // Let's print out the error, then proceed to close this settings dialog.
-            // When we next open again we will once more get sites from the SiteDataManager and refresh the list.
             Cu.reportError(e);
           }
         }
@@ -260,6 +292,24 @@ let gSiteDataSettings = {
     window.close();
   },
 
+  removeSelected() {
+    let lastIndex = this._list.selectedItems.length - 1;
+    let lastSelectedItem = this._list.selectedItems[lastIndex];
+    let lastSelectedItemPosition = this._list.getIndexOfItem(lastSelectedItem);
+    let nextSelectedItem = this._list.getItemAtIndex(
+      lastSelectedItemPosition + 1
+    );
+
+    this._removeSiteItems(this._list.selectedItems);
+    this._list.clearSelection();
+
+    if (nextSelectedItem) {
+      this._list.selectedItem = nextSelectedItem;
+    } else {
+      this._list.selectedIndex = this._list.itemCount - 1;
+    }
+  },
+
   onClickTreeCol(e) {
     this._sortSites(this._sites, e.target);
     this._buildSitesList(this._sites);
@@ -268,11 +318,6 @@ let gSiteDataSettings = {
 
   onCommandSearch() {
     this._buildSitesList(this._sites);
-    this._list.clearSelection();
-  },
-
-  onClickRemoveSelected() {
-    this._removeSiteItems(this._list.selectedItems);
     this._list.clearSelection();
   },
 
@@ -286,10 +331,16 @@ let gSiteDataSettings = {
   onKeyPress(e) {
     if (e.keyCode == KeyEvent.DOM_VK_ESCAPE) {
       this.close();
+    } else if (
+      e.keyCode == KeyEvent.DOM_VK_DELETE ||
+      (AppConstants.platform == "macosx" &&
+        e.keyCode == KeyEvent.DOM_VK_BACK_SPACE)
+    ) {
+      this.removeSelected();
     }
   },
 
   onSelect() {
     this._updateButtonsState();
-  }
+  },
 };

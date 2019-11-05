@@ -4,8 +4,8 @@
 
 <!ENTITY cutCmd.label "ამოჭრა">
 <!ENTITY cutCmd.accesskey "ა">
-<!ENTITY copyCmd.label "დაკოპირება">
-<!ENTITY copyCmd.accesskey "კ">
+<!ENTITY copyCmd.label "ასლი">
+<!ENTITY copyCmd.accesskey "ლ">
 <!ENTITY pasteCmd.label "ჩასმა">
 <!ENTITY pasteCmd.accesskey "ჩ">
 <!ENTITY undoCmd.label "დაბრუნება">
@@ -16,7 +16,7 @@
 <!ENTITY deleteCmd.accesskey "წ">
 
 <!ENTITY spellAddToDictionary.label "ლექსიკონში დამატება">
-<!ENTITY spellAddToDictionary.accesskey "დ">
+<!ENTITY spellAddToDictionary.accesskey "ლ">
 <!ENTITY spellUndoAddToDictionary.label "ლექსიკონში დამატების გაუქმება">
 <!ENTITY spellUndoAddToDictionary.accesskey "გ">
 <!ENTITY spellCheckToggle.label "მართლწერის შემოწმება">

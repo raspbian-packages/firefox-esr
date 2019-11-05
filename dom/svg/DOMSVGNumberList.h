@@ -14,12 +14,13 @@
 #include "SVGNumberList.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
-
-class nsSVGElement;
+#include "mozilla/RefPtr.h"
 
 namespace mozilla {
 
+namespace dom {
 class DOMSVGNumber;
+class SVGElement;
 
 /**
  * Class DOMSVGNumberList
@@ -61,7 +62,7 @@ class DOMSVGNumberList final : public nsISupports, public nsWrapperCache {
     // aInternalList must be passed in explicitly because we can't use
     // InternalList() here. (Because it depends on IsAnimValList, which depends
     // on this object having been assigned to aAList's mBaseVal or mAnimVal,
-    // which hasn't happend yet.)
+    // which hasn't happened yet.)
 
     InternalListLengthWillChange(aInternalList.Length());  // Sync mItems
   }
@@ -82,7 +83,7 @@ class DOMSVGNumberList final : public nsISupports, public nsWrapperCache {
     return mItems.Length();
   }
 
-  /// Called to notify us to syncronize our length and detach excess items.
+  /// Called to notify us to synchronize our length and detach excess items.
   void InternalListLengthWillChange(uint32_t aNewLength);
 
   /**
@@ -104,15 +105,15 @@ class DOMSVGNumberList final : public nsISupports, public nsWrapperCache {
     return LengthNoFlush();
   }
   void Clear(ErrorResult& error);
-  already_AddRefed<DOMSVGNumber> Initialize(DOMSVGNumber& newItem,
+  already_AddRefed<DOMSVGNumber> Initialize(DOMSVGNumber& aItem,
                                             ErrorResult& error);
   already_AddRefed<DOMSVGNumber> GetItem(uint32_t index, ErrorResult& error);
   already_AddRefed<DOMSVGNumber> IndexedGetter(uint32_t index, bool& found,
                                                ErrorResult& error);
-  already_AddRefed<DOMSVGNumber> InsertItemBefore(DOMSVGNumber& newItem,
+  already_AddRefed<DOMSVGNumber> InsertItemBefore(DOMSVGNumber& aItem,
                                                   uint32_t index,
                                                   ErrorResult& error);
-  already_AddRefed<DOMSVGNumber> ReplaceItem(DOMSVGNumber& newItem,
+  already_AddRefed<DOMSVGNumber> ReplaceItem(DOMSVGNumber& aItem,
                                              uint32_t index,
                                              ErrorResult& error);
   already_AddRefed<DOMSVGNumber> RemoveItem(uint32_t index, ErrorResult& error);
@@ -123,7 +124,7 @@ class DOMSVGNumberList final : public nsISupports, public nsWrapperCache {
   uint32_t Length() const { return NumberOfItems(); }
 
  private:
-  nsSVGElement* Element() const { return mAList->mElement; }
+  dom::SVGElement* Element() const { return mAList->mElement; }
 
   uint8_t AttrEnum() const { return mAList->mAttrEnum; }
 
@@ -157,6 +158,7 @@ class DOMSVGNumberList final : public nsISupports, public nsWrapperCache {
   RefPtr<DOMSVGAnimatedNumberList> mAList;
 };
 
+}  // namespace dom
 }  // namespace mozilla
 
 #endif  // MOZILLA_DOMSVGNUMBERLIST_H__

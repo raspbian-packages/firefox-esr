@@ -17,8 +17,8 @@ class HTMLTableElement;
 class HTMLTableCellElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLTableCellElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {
     SetHasWeirdParserInsertionMode();
   }
 
@@ -100,15 +100,11 @@ class HTMLTableCellElement final : public nsGenericHTMLElement {
                               nsAttrValue& aResult) override;
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
-#ifdef MOZ_OLD_STYLE
-  NS_IMETHOD WalkContentStyleRules(nsRuleWalker* aRuleWalker) override;
-#endif
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
   // Get mapped attributes of ancestor table, if any
   nsMappedAttributes* GetMappedAttributesInheritedFromTable() const;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual ~HTMLTableCellElement();
@@ -122,7 +118,7 @@ class HTMLTableCellElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS når du brukar SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Slå på DNS-over-HTTPS
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Bruk standard ({ $url })
+    .accesskey = u
+    .tooltiptext = Bruk standardnettadressa for å slå opp DNS over HTTPS
+connection-dns-over-https-url-resolver = Bruk leverandør
+    .accesskey = B
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (standard)
+    .tooltiptext = Bruk standard-URL-en til DNS-oppslag over HTTPS
+connection-dns-over-https-url-custom =
+    .label = Tilpassa
+    .accesskey = s
+    .tooltiptext = Spesifiser føretrekt nettadresse for å slå opp DNS over HTTPS
+connection-dns-over-https-custom-label = Tilpassa

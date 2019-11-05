@@ -23,11 +23,11 @@ using namespace mozilla::ipc;
 #define DEFAULT_IMAGE_SIZE 16
 
 #if defined(MAX_PATH)
-#define SANE_FILE_NAME_LEN MAX_PATH
+#  define SANE_FILE_NAME_LEN MAX_PATH
 #elif defined(PATH_MAX)
-#define SANE_FILE_NAME_LEN PATH_MAX
+#  define SANE_FILE_NAME_LEN PATH_MAX
 #else
-#define SANE_FILE_NAME_LEN 1024
+#  define SANE_FILE_NAME_LEN 1024
 #endif
 
 // helper function for parsing out attributes like size, and contentType
@@ -55,7 +55,6 @@ NS_INTERFACE_MAP_BEGIN(nsMozIconURI)
   NS_INTERFACE_MAP_ENTRY(nsIMozIconURI)
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIURI)
   NS_INTERFACE_MAP_ENTRY(nsIURI)
-  NS_INTERFACE_MAP_ENTRY(nsIIPCSerializableURI)
   NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsINestedURI, mIconURL)
 NS_INTERFACE_MAP_END
 
@@ -391,7 +390,7 @@ NS_IMETHODIMP
 nsMozIconURI::Equals(nsIURI* other, bool* result) {
   *result = false;
   NS_ENSURE_ARG_POINTER(other);
-  NS_PRECONDITION(result, "null pointer");
+  MOZ_ASSERT(result, "null pointer");
 
   nsAutoCString spec1;
   nsAutoCString spec2;
@@ -418,31 +417,23 @@ nsMozIconURI::EqualsExceptRef(nsIURI* other, bool* result) {
 
 NS_IMETHODIMP
 nsMozIconURI::SchemeIs(const char* aScheme, bool* aEquals) {
-  NS_ENSURE_ARG_POINTER(aEquals);
+  MOZ_ASSERT(aEquals, "null pointer");
   if (!aScheme) {
-    return NS_ERROR_INVALID_ARG;
+    *aEquals = false;
+    return NS_OK;
   }
 
   *aEquals = PL_strcasecmp("moz-icon", aScheme) ? false : true;
   return NS_OK;
 }
 
-NS_IMETHODIMP
-nsMozIconURI::Clone(nsIURI** result) {
+nsresult nsMozIconURI::Clone(nsIURI** result) {
   nsCOMPtr<nsIURL> newIconURL;
   if (mIconURL) {
-    nsCOMPtr<nsIURI> newURI;
-    nsresult rv = mIconURL->Clone(getter_AddRefs(newURI));
-    if (NS_FAILED(rv)) {
-      return rv;
-    }
-    newIconURL = do_QueryInterface(newURI, &rv);
-    if (NS_FAILED(rv)) {
-      return rv;
-    }
+    newIconURL = mIconURL;
   }
 
-  nsMozIconURI* uri = new nsMozIconURI();
+  RefPtr<nsMozIconURI> uri = new nsMozIconURI();
   newIconURL.swap(uri->mIconURL);
   uri->mSize = mSize;
   uri->mContentType = mContentType;
@@ -450,23 +441,9 @@ nsMozIconURI::Clone(nsIURI** result) {
   uri->mStockIcon = mStockIcon;
   uri->mIconSize = mIconSize;
   uri->mIconState = mIconState;
-  NS_ADDREF(*result = uri);
+  uri.forget(result);
 
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsMozIconURI::CloneIgnoringRef(nsIURI** result) {
-  // GetRef/SetRef not supported by nsMozIconURI, so
-  // CloneIgnoringRef() is the same as Clone().
-  return Clone(result);
-}
-
-NS_IMETHODIMP
-nsMozIconURI::CloneWithNewRef(const nsACString& newRef, nsIURI** result) {
-  // GetRef/SetRef not supported by nsMozIconURI, so
-  // CloneWithNewRef() is the same as Clone().
-  return Clone(result);
 }
 
 NS_IMETHODIMP
@@ -563,8 +540,6 @@ nsMozIconURI::GetIconState(nsACString& aState) {
   }
   return NS_OK;
 }
-////////////////////////////////////////////////////////////////////////////////
-// nsIIPCSerializableURI methods:
 
 void nsMozIconURI::Serialize(URIParams& aParams) {
   IconURIParams params;
@@ -577,9 +552,9 @@ void nsMozIconURI::Serialize(URIParams& aParams) {
       return;
     }
 
-    params.uri() = iconURLParams;
+    params.uri() = Some(std::move(iconURLParams));
   } else {
-    params.uri() = void_t();
+    params.uri() = Nothing();
   }
 
   params.size() = mSize;
@@ -598,8 +573,8 @@ bool nsMozIconURI::Deserialize(const URIParams& aParams) {
   }
 
   const IconURIParams& params = aParams.get_IconURIParams();
-  if (params.uri().type() != OptionalURIParams::Tvoid_t) {
-    nsCOMPtr<nsIURI> uri = DeserializeURI(params.uri().get_URIParams());
+  if (params.uri().isSome()) {
+    nsCOMPtr<nsIURI> uri = DeserializeURI(params.uri().ref());
     mIconURL = do_QueryInterface(uri);
     if (!mIconURL) {
       MOZ_ASSERT_UNREACHABLE("bad nsIURI passed");
@@ -629,7 +604,7 @@ bool nsMozIconURI::Deserialize(const URIParams& aParams) {
 
 NS_IMETHODIMP
 nsMozIconURI::GetInnerURI(nsIURI** aURI) {
-  nsCOMPtr<nsIURI> iconURL = do_QueryInterface(mIconURL);
+  nsCOMPtr<nsIURI> iconURL = mIconURL;
   if (!iconURL) {
     *aURI = nullptr;
     return NS_ERROR_FAILURE;

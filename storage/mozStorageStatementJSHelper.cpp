@@ -21,22 +21,24 @@
 
 #include "xpc_make_class.h"
 
-#include "mozilla/Services.h"
-
 namespace mozilla {
 namespace storage {
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Global Functions
 
-static bool stepFunc(JSContext *aCtx, uint32_t, JS::Value *_vp) {
-  nsCOMPtr<nsIXPConnect> xpc(mozilla::services::GetXPConnect());
+static bool stepFunc(JSContext* aCtx, uint32_t argc, JS::Value* _vp) {
+  JS::CallArgs args = CallArgsFromVp(argc, _vp);
+
+  nsCOMPtr<nsIXPConnect> xpc(nsIXPConnect::XPConnect());
   nsCOMPtr<nsIXPConnectWrappedNative> wrapper;
-  JSObject *obj = JS_THIS_OBJECT(aCtx, _vp);
-  if (!obj) {
+
+  if (!args.thisv().isObject()) {
+    ::JS_ReportErrorASCII(aCtx, "mozIStorageStatement::step() requires object");
     return false;
   }
 
+  JSObject* obj = &args.thisv().toObject();
   nsresult rv =
       xpc->GetWrappedNativeOfJSObject(aCtx, obj, getter_AddRefs(wrapper));
   if (NS_FAILED(rv)) {
@@ -53,13 +55,13 @@ static bool stepFunc(JSContext *aCtx, uint32_t, JS::Value *_vp) {
   }
 #endif
 
-  Statement *stmt = static_cast<Statement *>(
-      static_cast<mozIStorageStatement *>(wrapper->Native()));
+  Statement* stmt = static_cast<Statement*>(
+      static_cast<mozIStorageStatement*>(wrapper->Native()));
 
   bool hasMore = false;
   rv = stmt->ExecuteStep(&hasMore);
   if (NS_SUCCEEDED(rv) && !hasMore) {
-    _vp->setBoolean(false);
+    args.rval().setBoolean(false);
     (void)stmt->Reset();
     return true;
   }
@@ -70,15 +72,15 @@ static bool stepFunc(JSContext *aCtx, uint32_t, JS::Value *_vp) {
     return false;
   }
 
-  _vp->setBoolean(hasMore);
+  args.rval().setBoolean(hasMore);
   return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //// StatementJSHelper
 
-nsresult StatementJSHelper::getRow(Statement *aStatement, JSContext *aCtx,
-                                   JSObject *aScopeObj, JS::Value *_row) {
+nsresult StatementJSHelper::getRow(Statement* aStatement, JSContext* aCtx,
+                                   JSObject* aScopeObj, JS::Value* _row) {
   MOZ_ASSERT(NS_IsMainThread());
 
 #ifdef DEBUG
@@ -111,7 +113,7 @@ nsresult StatementJSHelper::getRow(Statement *aStatement, JSContext *aCtx,
   }
 
   RefPtr<StatementRow> row(aStatement->mStatementRowHolder->Get());
-  JSObject *obj = row->WrapObject(aCtx, nullptr);
+  JSObject* obj = row->WrapObject(aCtx, nullptr);
   if (!obj) {
     return NS_ERROR_UNEXPECTED;
   }
@@ -120,8 +122,8 @@ nsresult StatementJSHelper::getRow(Statement *aStatement, JSContext *aCtx,
   return NS_OK;
 }
 
-nsresult StatementJSHelper::getParams(Statement *aStatement, JSContext *aCtx,
-                                      JSObject *aScopeObj, JS::Value *_params) {
+nsresult StatementJSHelper::getParams(Statement* aStatement, JSContext* aCtx,
+                                      JSObject* aScopeObj, JS::Value* _params) {
   MOZ_ASSERT(NS_IsMainThread());
 
 #ifdef DEBUG
@@ -155,7 +157,7 @@ nsresult StatementJSHelper::getParams(Statement *aStatement, JSContext *aCtx,
   }
 
   RefPtr<StatementParams> params(aStatement->mStatementParamsHolder->Get());
-  JSObject *obj = params->WrapObject(aCtx, nullptr);
+  JSObject* obj = params->WrapObject(aCtx, nullptr);
   if (!obj) {
     return NS_ERROR_UNEXPECTED;
   }
@@ -175,8 +177,8 @@ NS_INTERFACE_MAP_BEGIN(StatementJSHelper)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-  ////////////////////////////////////////////////////////////////////////////////
-  //// nsIXPCScriptable
+////////////////////////////////////////////////////////////////////////////////
+//// nsIXPCScriptable
 
 #define XPC_MAP_CLASSNAME StatementJSHelper
 #define XPC_MAP_QUOTED_CLASSNAME "StatementJSHelper"
@@ -185,12 +187,12 @@ NS_INTERFACE_MAP_END
 #include "xpc_map_end.h"
 
 NS_IMETHODIMP
-StatementJSHelper::Resolve(nsIXPConnectWrappedNative *aWrapper, JSContext *aCtx,
-                           JSObject *aScopeObj, jsid aId, bool *aResolvedp,
-                           bool *_retval) {
+StatementJSHelper::Resolve(nsIXPConnectWrappedNative* aWrapper, JSContext* aCtx,
+                           JSObject* aScopeObj, jsid aId, bool* aResolvedp,
+                           bool* _retval) {
   if (!JSID_IS_STRING(aId)) return NS_OK;
 
-  JS::Rooted<JSObject *> scope(aCtx, aScopeObj);
+  JS::Rooted<JSObject*> scope(aCtx, aScopeObj);
   JS::Rooted<jsid> id(aCtx, aId);
 
 #ifdef DEBUG
@@ -201,10 +203,10 @@ StatementJSHelper::Resolve(nsIXPConnectWrappedNative *aWrapper, JSContext *aCtx,
   }
 #endif
 
-  Statement *stmt = static_cast<Statement *>(
-      static_cast<mozIStorageStatement *>(aWrapper->Native()));
+  Statement* stmt = static_cast<Statement*>(
+      static_cast<mozIStorageStatement*>(aWrapper->Native()));
 
-  JSFlatString *str = JSID_TO_FLAT_STRING(id);
+  JSFlatString* str = JSID_TO_FLAT_STRING(id);
   if (::JS_FlatStringEqualsAscii(str, "step")) {
     *_retval = ::JS_DefineFunction(aCtx, scope, "step", stepFunc, 0,
                                    JSPROP_RESOLVING) != nullptr;

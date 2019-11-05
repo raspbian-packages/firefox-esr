@@ -1,57 +1,36 @@
 "use strict";
 
-var SOURCE_URL = getFileUrl("setBreakpoint-on-line.js");
+const SOURCE_URL = getFileUrl("setBreakpoint-on-line.js");
 
-function run_test() {
-  return (async function () {
-    do_test_pending();
+add_task(
+  threadClientTest(
+    async ({ threadClient, debuggee, client }) => {
+      const promise = waitForNewSource(threadClient, SOURCE_URL);
+      loadSubScript(SOURCE_URL, debuggee);
+      const { source } = await promise;
+      const sourceFront = threadClient.source(source);
 
-    DebuggerServer.registerModule("xpcshell-test/testactors");
-    DebuggerServer.init(() => true);
+      const location = { sourceUrl: sourceFront.url, line: 5 };
+      setBreakpoint(threadClient, location);
 
-    let global = createTestGlobal("test");
-    DebuggerServer.addTestGlobal(global);
+      const packet = await executeOnNextTickAndWaitForPause(function() {
+        Cu.evalInSandbox("f()", debuggee);
+      }, client);
+      Assert.equal(packet.type, "paused");
+      const why = packet.why;
+      Assert.equal(why.type, "breakpoint");
+      Assert.equal(why.actors.length, 1);
+      const frame = packet.frame;
+      const where = frame.where;
+      Assert.equal(where.actor, source.actor);
+      Assert.equal(where.line, location.line);
+      const variables = frame.environment.bindings.variables;
+      Assert.equal(variables.a.value, 1);
+      Assert.equal(variables.b.value.type, "undefined");
+      Assert.equal(variables.c.value.type, "undefined");
 
-    let client = new DebuggerClient(DebuggerServer.connectPipe());
-    await connect(client);
-
-    let { tabs } = await listTabs(client);
-    let tab = findTab(tabs, "test");
-    let [, tabClient] = await attachTab(client, tab);
-
-    let [, threadClient] = await attachThread(tabClient);
-    await resume(threadClient);
-
-    let promise = waitForNewSource(threadClient, SOURCE_URL);
-    loadSubScript(SOURCE_URL, global);
-    let { source } = await promise;
-    let sourceClient = threadClient.source(source);
-
-    let location = { line: 5 };
-    let [packet, breakpointClient] = await setBreakpoint(sourceClient, location);
-    Assert.ok(!packet.isPending);
-    Assert.equal(false, "actualLocation" in packet);
-
-    packet = await executeOnNextTickAndWaitForPause(function () {
-      Cu.evalInSandbox("f()", global);
-    }, client);
-    Assert.equal(packet.type, "paused");
-    let why = packet.why;
-    Assert.equal(why.type, "breakpoint");
-    Assert.equal(why.actors.length, 1);
-    Assert.equal(why.actors[0], breakpointClient.actor);
-    let frame = packet.frame;
-    let where = frame.where;
-    Assert.equal(where.source.actor, source.actor);
-    Assert.equal(where.line, location.line);
-    let variables = frame.environment.bindings.variables;
-    Assert.equal(variables.a.value, 1);
-    Assert.equal(variables.b.value.type, "undefined");
-    Assert.equal(variables.c.value.type, "undefined");
-
-    await resume(threadClient);
-    await close(client);
-
-    do_test_finished();
-  })();
-}
+      await resume(threadClient);
+    },
+    { doNotRunWorker: true }
+  )
+);

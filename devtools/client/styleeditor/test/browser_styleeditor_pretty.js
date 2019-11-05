@@ -20,17 +20,18 @@ const TESTCASE_URI = TEST_BASE_HTTP + "minified.html";
     color:green;
   }
 */
-const PRETTIFIED_SOURCE = "" +
-"body \{\r?\n" +
-  "\tbackground\:white;\r?\n" +
-"\}\r?\n" +
-"div \{\r?\n" +
-  "\tfont\-size\:4em;\r?\n" +
-  "\tcolor\:red\r?\n" +
-"\}\r?\n" +
-"span \{\r?\n" +
-  "\tcolor\:green;\r?\n" +
-"\}\r?\n";
+const PRETTIFIED_SOURCE =
+  "" +
+  "body {\r?\n" +
+  "\tbackground:white;\r?\n" +
+  "}\r?\n" +
+  "div {\r?\n" +
+  "\tfont-size:4em;\r?\n" +
+  "\tcolor:red\r?\n" +
+  "}\r?\n" +
+  "span {\r?\n" +
+  "\tcolor:green;\r?\n" +
+  "}\r?\n";
 
 /*
   body { background: red; }
@@ -39,39 +40,44 @@ const PRETTIFIED_SOURCE = "" +
     color: red
   }
 */
-const ORIGINAL_SOURCE = "" +
-"body \{ background\: red; \}\r?\n" +
-"div \{\r?\n" +
-  "font\-size\: 5em;\r?\n" +
-  "color\: red\r?\n" +
-"\}";
+const ORIGINAL_SOURCE =
+  "" +
+  "body { background: red; }\r?\n" +
+  "div {\r?\n" +
+  "font-size: 5em;\r?\n" +
+  "color: red\r?\n" +
+  "}";
 
 const EXPAND_TAB = "devtools.editor.expandtab";
 
-add_task(function* () {
-  let oldExpandTabPref = SpecialPowers.getBoolPref(EXPAND_TAB);
+add_task(async function() {
+  const oldExpandTabPref = SpecialPowers.getBoolPref(EXPAND_TAB);
   // The 'EXPAND_TAB' preference has to be set to false because
   // the constant 'PRETTIFIED_SOURCE' uses tabs for indentation.
   SpecialPowers.setBoolPref(EXPAND_TAB, false);
 
-  let { ui } = yield openStyleEditorForURL(TESTCASE_URI);
+  const { ui } = await openStyleEditorForURL(TESTCASE_URI);
   is(ui.editors.length, 2, "Two sheets present.");
 
   info("Testing minified style sheet.");
-  let editor = yield ui.editors[0].getSourceEditor();
+  let editor = await ui.editors[0].getSourceEditor();
 
-  let prettifiedSourceRE = new RegExp(PRETTIFIED_SOURCE);
-  ok(prettifiedSourceRE.test(editor.sourceEditor.getText()),
-     "minified source has been prettified automatically");
+  const prettifiedSourceRE = new RegExp(PRETTIFIED_SOURCE);
+  ok(
+    prettifiedSourceRE.test(editor.sourceEditor.getText()),
+    "minified source has been prettified automatically"
+  );
 
   info("Selecting second, non-minified style sheet.");
-  yield ui.selectStyleSheet(ui.editors[1].styleSheet);
+  await ui.selectStyleSheet(ui.editors[1].styleSheet);
 
   editor = ui.editors[1];
 
-  let originalSourceRE = new RegExp(ORIGINAL_SOURCE);
-  ok(originalSourceRE.test(editor.sourceEditor.getText()),
-     "non-minified source has been left untouched");
+  const originalSourceRE = new RegExp(ORIGINAL_SOURCE);
+  ok(
+    originalSourceRE.test(editor.sourceEditor.getText()),
+    "non-minified source has been left untouched"
+  );
 
   SpecialPowers.setBoolPref(EXPAND_TAB, oldExpandTabPref);
 });

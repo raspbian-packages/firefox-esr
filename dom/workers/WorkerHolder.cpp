@@ -14,7 +14,7 @@ namespace {
 
 void AssertOnOwningThread(void* aThread) {
   if (MOZ_UNLIKELY(aThread != GetCurrentVirtualThread())) {
-    MOZ_CRASH_UNSAFE_OOL("WorkerHolder on the wrong thread.");
+    MOZ_CRASH_UNSAFE("WorkerHolder on the wrong thread.");
   }
 }
 
@@ -36,6 +36,8 @@ bool WorkerHolder::HoldWorker(WorkerPrivate* aWorkerPrivate,
                               WorkerStatus aFailStatus) {
   AssertOnOwningThread(mThread);
   MOZ_ASSERT(aWorkerPrivate);
+  MOZ_ASSERT(aFailStatus >= Canceling);
+
   aWorkerPrivate->AssertIsOnWorkerThread();
 
   if (!aWorkerPrivate->AddHolder(this, aFailStatus)) {

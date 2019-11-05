@@ -1,4 +1,4 @@
-/* -*- Mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; -*- */
+/* -*- Mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,41 +9,37 @@
 #include "base/message_loop.h"
 #include "base/task.h"
 #include "mozilla/Hal.h"
-#include "nsExceptionHandler.h"
 #include "nsIScreen.h"
 #include "nsIScreenManager.h"
 #include "nsWindow.h"
 #include "nsThreadUtils.h"
 #include "nsICommandLineRunner.h"
-#include "nsICrashReporter.h"
 #include "nsIObserverService.h"
 #include "nsIAppStartup.h"
 #include "nsIGeolocationProvider.h"
 #include "nsCacheService.h"
 #include "nsIDOMEventListener.h"
-#include "nsIDOMClientRectList.h"
-#include "nsIDOMClientRect.h"
 #include "nsIDOMWakeLockListener.h"
 #include "nsIPowerManagerService.h"
 #include "nsISpeculativeConnect.h"
-#include "nsITabChild.h"
 #include "nsIURIFixup.h"
 #include "nsCategoryManagerUtils.h"
-#include "nsCDefaultURIFixup.h"
-#include "nsToolkitCompsCID.h"
 #include "nsGeoPosition.h"
 
 #include "mozilla/ArrayUtils.h"
+#include "mozilla/Components.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/Services.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Hal.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/intl/OSPreferences.h"
+#include "mozilla/widget/ScreenManager.h"
 #include "prenv.h"
 
 #include "AndroidBridge.h"
 #include "AndroidBridgeUtilities.h"
+#include "AndroidSurfaceTexture.h"
 #include "GeneratedJNINatives.h"
 #include <android/log.h>
 #include <pthread.h>
@@ -51,13 +47,13 @@
 
 #include "GeckoProfiler.h"
 #ifdef MOZ_ANDROID_HISTORY
-#include "nsNetUtil.h"
-#include "nsIURI.h"
-#include "IHistory.h"
+#  include "nsNetUtil.h"
+#  include "nsIURI.h"
+#  include "IHistory.h"
 #endif
 
 #ifdef MOZ_LOGGING
-#include "mozilla/Logging.h"
+#  include "mozilla/Logging.h"
 #endif
 
 #include "AndroidAlerts.h"
@@ -67,21 +63,25 @@
 #include "GeckoNetworkManager.h"
 #include "GeckoProcessManager.h"
 #include "GeckoScreenOrientation.h"
+#include "GeckoSystemStateListener.h"
 #include "GeckoVRManager.h"
 #include "PrefsHelper.h"
+#include "ScreenHelperAndroid.h"
+#include "Telemetry.h"
 #include "fennec/MemoryMonitor.h"
-#include "fennec/Telemetry.h"
 #include "fennec/ThumbnailHelper.h"
+#include "WebExecutorSupport.h"
 
 #ifdef DEBUG_ANDROID_EVENTS
-#define EVLOG(args...) ALOG(args)
+#  define EVLOG(args...) ALOG(args)
 #else
-#define EVLOG(args...) \
-  do {                 \
-  } while (0)
+#  define EVLOG(args...) \
+    do {                 \
+    } while (0)
 #endif
 
 using namespace mozilla;
+using namespace mozilla::widget;
 
 nsIGeolocationUpdate* gLocationCallback = nullptr;
 
@@ -140,10 +140,10 @@ class GeckoThreadSupport final
     OriginAttributes attrs;
     nsCOMPtr<nsIPrincipal> principal =
         BasePrincipal::CreateCodebasePrincipal(uri, attrs);
-    specConn->SpeculativeConnect2(uri, principal, nullptr);
+    specConn->SpeculativeConnect(uri, principal, nullptr);
   }
 
-  static void WaitOnGecko() {
+  static bool WaitOnGecko(int64_t timeoutMillis) {
     struct NoOpRunnable : Runnable {
       NoOpRunnable() : Runnable("NoOpRunnable") {}
       NS_IMETHOD Run() override { return NS_OK; }
@@ -159,7 +159,8 @@ class GeckoThreadSupport final
                                 NS_DISPATCH_SYNC);
       }
     };
-    nsAppShell::SyncRunEvent(NoOpEvent());
+    return nsAppShell::SyncRunEvent(
+        NoOpEvent(), nullptr, TimeDuration::FromMilliseconds(timeoutMillis));
   }
 
   static void OnPause() {
@@ -234,12 +235,16 @@ class GeckoThreadSupport final
   static int64_t RunUiThreadCallback() { return RunAndroidUiTasks(); }
 
   static void ForceQuit() {
-    nsCOMPtr<nsIAppStartup> appStartup =
-        do_GetService(NS_APPSTARTUP_CONTRACTID);
+    nsCOMPtr<nsIAppStartup> appStartup = components::AppStartup::Service();
 
     if (appStartup) {
       appStartup->Quit(nsIAppStartup::eForceQuit);
     }
+  }
+
+  static void Crash() {
+    printf_stderr("Intentionally crashing...\n");
+    MOZ_CRASH("intentional crash");
   }
 };
 
@@ -276,7 +281,7 @@ class GeckoAppShellSupport final
   }
 
   static void OnSensorChanged(int32_t aType, float aX, float aY, float aZ,
-                              float aW, int32_t aAccuracy, int64_t aTime) {
+                              float aW, int64_t aTime) {
     AutoTArray<float, 4> values;
 
     switch (aType) {
@@ -315,21 +320,21 @@ class GeckoAppShellSupport final
                             "Unknown sensor type %d", aType);
     }
 
-    hal::SensorData sdata(hal::SensorType(aType), aTime, values,
-                          hal::SensorAccuracyType(aAccuracy));
+    hal::SensorData sdata(hal::SensorType(aType), aTime, values);
     hal::NotifySensorChange(sdata);
   }
 
   static void OnLocationChanged(double aLatitude, double aLongitude,
                                 double aAltitude, float aAccuracy,
-                                float aBearing, float aSpeed, int64_t aTime) {
+                                float aAltitudeAccuracy, float aHeading,
+                                float aSpeed, int64_t aTime) {
     if (!gLocationCallback) {
       return;
     }
 
     RefPtr<nsIDOMGeoPosition> geoPosition(
         new nsGeoPosition(aLatitude, aLongitude, aAltitude, aAccuracy,
-                          aAccuracy, aBearing, aSpeed, aTime));
+                          aAltitudeAccuracy, aHeading, aSpeed, aTime));
     gLocationCallback->Update(geoPosition);
   }
 
@@ -374,8 +379,15 @@ nsAppShell::nsAppShell()
     sAppShell = this;
   }
 
+  hal::Init();
+
   if (!XRE_IsParentProcess()) {
     if (jni::IsAvailable()) {
+      GeckoThreadSupport::Init();
+      GeckoAppShellSupport::Init();
+      mozilla::GeckoSystemStateListener::Init();
+      mozilla::widget::Telemetry::Init();
+
       // Set the corresponding state in GeckoThread.
       java::GeckoThread::SetState(java::GeckoThread::State::RUNNING());
     }
@@ -383,6 +395,9 @@ nsAppShell::nsAppShell()
   }
 
   if (jni::IsAvailable()) {
+    ScreenManager& screenManager = ScreenManager::GetSingleton();
+    screenManager.SetHelper(mozilla::MakeUnique<ScreenHelperAndroid>());
+
     // Initialize JNI and Set the corresponding state in GeckoThread.
     AndroidBridge::ConstructBridge();
     GeckoAppShellSupport::Init();
@@ -391,15 +406,18 @@ nsAppShell::nsAppShell()
     mozilla::GeckoNetworkManager::Init();
     mozilla::GeckoProcessManager::Init();
     mozilla::GeckoScreenOrientation::Init();
+    mozilla::GeckoSystemStateListener::Init();
     mozilla::PrefsHelper::Init();
-    mozilla::GeckoVRManager::Init();
+    mozilla::widget::Telemetry::Init();
+    mozilla::widget::WebExecutorSupport::Init();
     nsWindow::InitNatives();
+    mozilla::gl::AndroidSurfaceTexture::Init();
+    mozilla::WebAuthnTokenManager::Init();
 
     if (jni::IsFennec()) {
       BrowserLocaleManagerSupport::Init();
       mozilla::ANRReporter::Init();
       mozilla::MemoryMonitor::Init();
-      mozilla::widget::Telemetry::Init();
       mozilla::ThumbnailHelper::Init();
     }
 
@@ -436,6 +454,8 @@ nsAppShell::~nsAppShell() {
     sPowerManagerService = nullptr;
     sWakeLockListener = nullptr;
   }
+
+  hal::Shutdown();
 
   if (jni::IsAvailable() && XRE_IsParentProcess()) {
     DestroyAndroidUiThread();
@@ -489,13 +509,15 @@ nsresult nsAppShell::Init() {
   if (obsServ) {
     obsServ->AddObserver(this, "browser-delayed-startup-finished", false);
     obsServ->AddObserver(this, "profile-after-change", false);
-    obsServ->AddObserver(this, "tab-child-created", false);
     obsServ->AddObserver(this, "quit-application", false);
     obsServ->AddObserver(this, "quit-application-granted", false);
     obsServ->AddObserver(this, "xpcom-shutdown", false);
 
     if (XRE_IsParentProcess()) {
       obsServ->AddObserver(this, "chrome-document-loaded", false);
+    } else {
+      obsServ->AddObserver(this, "content-document-global-created", false);
+      obsServ->AddObserver(this, "geckoview-content-global-transferred", false);
     }
   }
 
@@ -538,11 +560,6 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
 
   } else if (!strcmp(aTopic, "profile-after-change")) {
     if (jni::IsAvailable()) {
-      // See if we want to force 16-bit color before doing anything
-      if (Preferences::GetBool("gfx.android.rgb16.force", false)) {
-        java::GeckoAppShell::SetScreenDepthOverride(16);
-      }
-
       java::GeckoThread::SetState(java::GeckoThread::State::PROFILE_READY());
 
       // Gecko on Android follows the Android app model where it never
@@ -550,8 +567,7 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
       // quit. Therefore, we should *not* exit Gecko when there is no
       // window or the last window is closed. nsIAppStartup::Quit will
       // still force Gecko to exit.
-      nsCOMPtr<nsIAppStartup> appStartup =
-          do_GetService(NS_APPSTARTUP_CONTRACTID);
+      nsCOMPtr<nsIAppStartup> appStartup = components::AppStartup::Service();
       if (appStartup) {
         appStartup->EnterLastWindowClosingSurvivalArea();
       }
@@ -561,19 +577,9 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
   } else if (!strcmp(aTopic, "chrome-document-loaded")) {
     // Set the global ready state and enable the window event dispatcher
     // for this particular GeckoView.
-    nsCOMPtr<nsIDocument> doc = do_QueryInterface(aSubject);
+    nsCOMPtr<dom::Document> doc = do_QueryInterface(aSubject);
     MOZ_ASSERT(doc);
-    nsCOMPtr<nsIWidget> widget =
-        widget::WidgetUtils::DOMWindowToWidget(doc->GetWindow());
-
-    // `widget` may be one of several different types in the parent
-    // process, including the Android nsWindow, PuppetWidget, etc. To
-    // ensure that we only accept the Android nsWindow, we check that the
-    // widget is a top-level window and that its NS_NATIVE_WIDGET value is
-    // non-null, which is not the case for non-native widgets like
-    // PuppetWidget.
-    if (widget && widget->WindowType() == nsWindowType::eWindowType_toplevel &&
-        widget->GetNativeData(NS_NATIVE_WIDGET) == widget) {
+    if (const RefPtr<nsWindow> window = nsWindow::From(doc->GetWindow())) {
       if (jni::IsAvailable()) {
         // When our first window has loaded, assume any JS
         // initialization has run and set Gecko to ready.
@@ -581,7 +587,6 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
             java::GeckoThread::State::PROFILE_READY(),
             java::GeckoThread::State::RUNNING());
       }
-      const auto window = static_cast<nsWindow*>(widget.get());
       window->OnGeckoViewReady();
     }
   } else if (!strcmp(aTopic, "quit-application")) {
@@ -599,8 +604,7 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
       // We are told explicitly to quit, perhaps due to
       // nsIAppStartup::Quit being called. We should release our hold on
       // nsIAppStartup and let it continue to quit.
-      nsCOMPtr<nsIAppStartup> appStartup =
-          do_GetService(NS_APPSTARTUP_CONTRACTID);
+      nsCOMPtr<nsIAppStartup> appStartup = components::AppStartup::Service();
       if (appStartup) {
         appStartup->ExitLastWindowClosingSurvivalArea();
       }
@@ -612,36 +616,26 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
       mozilla::PrefsHelper::OnPrefChange(aData);
     }
 
-  } else if (!strcmp(aTopic, "tab-child-created")) {
-    // Associate the PuppetWidget of the newly-created TabChild with a
+  } else if (!strcmp(aTopic, "content-document-global-created")) {
+    // Associate the PuppetWidget of the newly-created BrowserChild with a
     // GeckoEditableChild instance.
     MOZ_ASSERT(!XRE_IsParentProcess());
 
-    dom::ContentChild* contentChild = dom::ContentChild::GetSingleton();
-    nsCOMPtr<nsITabChild> ptabChild = do_QueryInterface(aSubject);
-    NS_ENSURE_TRUE(contentChild && ptabChild, NS_OK);
+    nsCOMPtr<mozIDOMWindowProxy> domWindow = do_QueryInterface(aSubject);
+    MOZ_ASSERT(domWindow);
+    nsCOMPtr<nsIWidget> domWidget = widget::WidgetUtils::DOMWindowToWidget(
+        nsPIDOMWindowOuter::From(domWindow));
+    NS_ENSURE_TRUE(domWidget, NS_OK);
 
-    // Get the content/tab ID in order to get the correct
-    // IGeckoEditableParent object, which GeckoEditableChild uses to
-    // communicate with the parent process.
-    const auto tabChild = static_cast<dom::TabChild*>(ptabChild.get());
-    const uint64_t contentId = contentChild->GetID();
-    const uint64_t tabId = tabChild->GetTabId();
-    NS_ENSURE_TRUE(contentId && tabId, NS_OK);
+    widget::GeckoEditableSupport::SetOnBrowserChild(
+        domWidget->GetOwningBrowserChild());
 
-    auto editableParent =
-        java::GeckoServiceChildProcess::GetEditableParent(contentId, tabId);
-    NS_ENSURE_TRUE(editableParent, NS_OK);
-
-    RefPtr<widget::PuppetWidget> widget(tabChild->WebWidget());
-    auto editableChild = java::GeckoEditableChild::New(editableParent);
-    NS_ENSURE_TRUE(widget && editableChild, NS_OK);
-
-    RefPtr<widget::GeckoEditableSupport> editableSupport =
-        new widget::GeckoEditableSupport(editableChild);
-
-    // Tell PuppetWidget to use our listener for IME operations.
-    widget->SetNativeTextEventDispatcherListener(editableSupport);
+  } else if (!strcmp(aTopic, "geckoview-content-global-transferred")) {
+    // We're transferring to a new GeckoEditableParent, so notify the
+    // existing GeckoEditableChild instance associated with the docshell.
+    nsCOMPtr<nsIDocShell> docShell = do_QueryInterface(aSubject);
+    widget::GeckoEditableSupport::SetOnBrowserChild(
+        dom::BrowserChild::GetFrom(docShell));
   }
 
   if (removeObserver) {
@@ -657,7 +651,7 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
 bool nsAppShell::ProcessNextNativeEvent(bool mayWait) {
   EVLOG("nsAppShell::ProcessNextNativeEvent %d", mayWait);
 
-  AUTO_PROFILER_LABEL("nsAppShell::ProcessNextNativeEvent", EVENTS);
+  AUTO_PROFILER_LABEL("nsAppShell::ProcessNextNativeEvent", OTHER);
 
   mozilla::UniquePtr<Event> curEvent;
 
@@ -675,23 +669,25 @@ bool nsAppShell::ProcessNextNativeEvent(bool mayWait) {
         return true;
       }
 
-      AUTO_PROFILER_LABEL("nsAppShell::ProcessNextNativeEvent:Wait", EVENTS);
-      mozilla::HangMonitor::Suspend();
+      AUTO_PROFILER_LABEL("nsAppShell::ProcessNextNativeEvent:Wait", IDLE);
+      mozilla::BackgroundHangMonitor().NotifyWait();
 
+      AUTO_PROFILER_THREAD_SLEEP;
       curEvent = mEventQueue.Pop(/* mayWait */ true);
     }
   }
 
   if (!curEvent) return false;
 
-  mozilla::HangMonitor::NotifyActivity(curEvent->ActivityType());
+  mozilla::BackgroundHangMonitor().NotifyActivity();
 
   curEvent->Run();
   return true;
 }
 
-void nsAppShell::SyncRunEvent(
-    Event&& event, UniquePtr<Event> (*eventFactory)(UniquePtr<Event>&&)) {
+bool nsAppShell::SyncRunEvent(
+    Event&& event, UniquePtr<Event> (*eventFactory)(UniquePtr<Event>&&),
+    const TimeDuration timeout) {
   // Perform the call on the Gecko thread in a separate lambda, and wait
   // on the monitor on the current thread.
   MOZ_ASSERT(!NS_IsMainThread());
@@ -703,34 +699,37 @@ void nsAppShell::SyncRunEvent(
 
   if (MOZ_UNLIKELY(!appShell)) {
     // Post-shutdown.
-    return;
+    return false;
   }
 
   bool finished = false;
   auto runAndNotify = [&event, &finished] {
     nsAppShell* const appShell = nsAppShell::Get();
     if (MOZ_UNLIKELY(!appShell || appShell->mSyncRunQuit)) {
-      return;
+      return false;
     }
     event.Run();
     finished = true;
     mozilla::MutexAutoLock shellLock(*sAppShellLock);
     appShell->mSyncRunFinished.NotifyAll();
+    return finished;
   };
 
   UniquePtr<Event> runAndNotifyEvent =
       mozilla::MakeUnique<LambdaEvent<decltype(runAndNotify)>>(
-          mozilla::Move(runAndNotify));
+          std::move(runAndNotify));
 
   if (eventFactory) {
-    runAndNotifyEvent = (*eventFactory)(mozilla::Move(runAndNotifyEvent));
+    runAndNotifyEvent = (*eventFactory)(std::move(runAndNotifyEvent));
   }
 
-  appShell->mEventQueue.Post(mozilla::Move(runAndNotifyEvent));
+  appShell->mEventQueue.Post(std::move(runAndNotifyEvent));
 
   while (!finished && MOZ_LIKELY(sAppShell && !sAppShell->mSyncRunQuit)) {
-    appShell->mSyncRunFinished.Wait();
+    appShell->mSyncRunFinished.Wait(timeout);
   }
+
+  return finished;
 }
 
 already_AddRefed<nsIURI> nsAppShell::ResolveURI(const nsCString& aUriStr) {
@@ -742,7 +741,7 @@ already_AddRefed<nsIURI> nsAppShell::ResolveURI(const nsCString& aUriStr) {
     return uri.forget();
   }
 
-  nsCOMPtr<nsIURIFixup> fixup = do_GetService(NS_URIFIXUP_CONTRACTID);
+  nsCOMPtr<nsIURIFixup> fixup = components::URIFixup::Service();
   if (fixup && NS_SUCCEEDED(fixup->CreateFixupURI(aUriStr, 0, nullptr,
                                                   getter_AddRefs(uri)))) {
     return uri.forget();

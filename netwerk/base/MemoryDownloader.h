@@ -42,7 +42,7 @@ class MemoryDownloader final : public nsIStreamListener {
   explicit MemoryDownloader(IObserver* aObserver);
 
  private:
-  virtual ~MemoryDownloader();
+  virtual ~MemoryDownloader() = default;
 
   static nsresult ConsumeData(nsIInputStream* in, void* closure,
                               const char* fromRawSegment, uint32_t toOffset,

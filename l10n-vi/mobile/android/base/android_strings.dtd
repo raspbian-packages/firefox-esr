@@ -4,35 +4,37 @@
 
 <!ENTITY firstrun_panel_title_welcome "Chào mừng">
 <!ENTITY firstrun_urlbar_message2 "Cảm ơn bạn đã chọn &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Chào mừng đến với &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Một trình duyệt di động hiện đại từ Mozilla, chúng tôi cam kết mang đến một trang web tự do và mở.">
+<!ENTITY newfirstrun_urlbar_subtext "Nhanh chóng, riêng tư, và về phía bạn.">
 <!ENTITY firstrun_panel_title_privacy "Riêng tư">
 <!ENTITY firstrun_privacy_message "Duyệt web không để lại dấu vết">
-<!ENTITY firstrun_privacy_subtext "Duyệt web riêng tư với trình chống theo dõi sẽ ngăn chặn các trình theo dõi trong khi bạn duyệt web và sẽ không ghi nhớ lược sử duyệt web của bạn.">
+<!ENTITY firstrun_privacy_subtext "Duyệt web riêng tư với trình chống theo dõi sẽ ngăn chặn các trình theo dõi trong khi bạn duyệt web và sẽ không ghi nhớ lịch sử duyệt web của bạn.">
+<!ENTITY newfirstrun_privacy_subtext "Trình duyệt riêng tư chặn trình theo dõi quảng cáo theo bạn trực tuyến.">
 <!ENTITY firstrun_panel_title_customize "Tùy chỉnh">
 <!ENTITY firstrun_customize_message "Tạo ra &brandShortName; theo cách của riêng bạn.">
 <!ENTITY firstrun_customize_subtext "Tùy chỉnh &brandShortName; với các tiện ích. Chặn quảng cáo, thêm các tính năng, hoặc chọn một diện mạo mới để phản ánh cá tính của bạn.">
-<!ENTITY firstrun_bookmarks_title "Lược sử">
+<!ENTITY firstrun_bookmarks_title "Lịch sử">
 <!ENTITY firstrun_bookmarks_message "Những gì bạn yêu thích ngay trước mặt bạn">
-<!ENTITY firstrun_bookmarks_subtext "Lấy kết quả từ trang đánh dấu và lược sử của bạn khi bạn tìm kiếm.">
+<!ENTITY firstrun_bookmarks_subtext "Nhận kết quả từ trang đánh dấu và lịch sử của bạn khi bạn tìm kiếm.">
 <!ENTITY firstrun_data_title "Dữ liệu">
 <!ENTITY firstrun_data_message "Dữ liệu ít hơn, tiết kiệm nhiều hơn">
-<!ENTITY firstrun_data_subtext2 "Tắt ảnh để giảm dữ liệu mà bạn cần tải cho mỗi trang">
-<!ENTITY firstrun_sync_title "Đồng bộ">
+<!ENTITY firstrun_data_subtext2 "Tắt hiển thị ảnh để giảm dữ liệu mà bạn cần tải cho mỗi trang.">
+<!ENTITY firstrun_sync_title "Đồng bộ hóa">
+<!ENTITY updatednewfirstrun_sync_title "Tài khoản">
 <!ENTITY firstrun_sync_message2 "Tiếp tục trang mà bạn vừa rời khỏi.">
 <!ENTITY firstrun_sync_subtext2 "Sử dụng đồng bộ hóa để tìm trang đánh dấu, mật khẩu và những thứ bạn lưu vào &brandShortName; trên tất cả các thiết bị của bạn.">
+<!ENTITY newfirstrun_sync_subtext "Đồng bộ hóa những thứ bạn lưu trên thiết bị di động với Firefox cho máy tính để bàn, riêng tư và an toàn.">
+<!ENTITY updatednewfirstrun_sync_subtext "Đăng nhập vào tài khoản của bạn để tận dụng tối đa &brandShortName;">
 <!ENTITY firstrun_signin_message "Thiết lập kết nối và bắt đầu">
 <!ENTITY firstrun_signin_button "Đăng nhập để đồng bộ">
+<!ENTITY newfirstrun_signin_button "Bật đồng bộ hóa">
+<!ENTITY updatednewfirstrun_signin_button "Đăng nhập vào &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Bắt đầu duyệt web">
 <!ENTITY firstrun_button_notnow "Không phải lúc này">
 <!ENTITY firstrun_button_next "Tiếp">
 
 <!ENTITY firstrun_tabqueue_title "Liên kết">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Bật hàng đợi thẻ">
-<!ENTITY firstrun_tabqueue_subtext_off "Lưu đường dẫn trong &brandShortName; để xem sau khi bạn truy cập chúng trong các ứng dụng khác.">
-
-<!ENTITY firstrun_tabqueue_message_on "Thành công!">
-<!ENTITY firstrun_tabqueue_subtext_on "Bạn có thể tắt hoàn toàn trong &settings; dưới &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Bài viết">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -41,14 +43,14 @@
 
 <!-- Localization note (firstrun_devices_title): This is a casual way of addressing the user, somewhat referring to their online identity (which would include other devices, Firefox usage, accounts, etc). -->
 <!ENTITY firstrun_account_title "Bạn">
-<!ENTITY firstrun_account_message "Có &brandShortName; trên thiết bị khác?">
+<!ENTITY firstrun_account_message "Đã có &brandShortName; trên thiết bị khác?">
 
 <!ENTITY  onboard_start_restricted1 "Giữ an toàn và kiểm soát với phiên bản đơn giản hoá này của &brandShortName;.">
 
 <!-- Localization note: These are used as the titles of different pages on the home screen.
      They are automatically converted to all caps by the Android platform. -->
 <!ENTITY  bookmarks_title "Trang đánh dấu">
-<!ENTITY  history_title "Lược sử">
+<!ENTITY  history_title "Lịch sử">
 
 <!ENTITY  switch_to_tab "Chuyển sang thẻ">
 
@@ -56,19 +58,39 @@
 <!ENTITY  tab_offline_version "Đang hiển thị phiên bản ngoại tuyến">
 
 <!ENTITY  crash_reporter_title "Trình báo cáo lỗi &brandShortName;">
-<!ENTITY  crash_message2 "&brandShortName; đã gặp sự cố. Thẻ của bạn sẽ được liệt kê trên trang Khởi động &brandShortName; khi bạn khởi động lại.">
+<!ENTITY  crash_message2 "&brandShortName; đã gặp sự cố. Thẻ của bạn sẽ được liệt kê trên trang khởi động &brandShortName; khi bạn khởi động lại.">
 <!ENTITY  crash_send_report_message3 "Hãy thông báo với &vendorShortName; về sự cố này để họ có thể sửa chữa.">
 <!ENTITY  crash_include_url2 "Thêm vào địa chỉ của trang tôi đã truy cập">
 <!ENTITY  crash_sorry "Chúng tôi thành thật xin lỗi">
 <!ENTITY  crash_comment "Thêm bình luận (các bình luận sẽ được hiển thị công khai)">
 <!ENTITY  crash_allow_contact2 "Cho phép &vendorShortName; liên hệ với bạn về bản báo cáo lỗi này">
 <!ENTITY  crash_email "Email của bạn">
-<!ENTITY  crash_closing_alert "Thoát và không gửi báo cáo sự cố?">
+<!ENTITY  crash_closing_alert "Thoát mà không gửi báo cáo sự cố?">
 <!ENTITY  sending_crash_report "Đang gửi báo cáo lỗi\u2026">
 <!ENTITY  crash_close_label "Đóng">
 <!ENTITY  crash_restart_label "Khởi động lại &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; đã bị vỡ">
+<!ENTITY  crash_notification_message "Nhấn để báo cáo cho &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Bỏ qua">
+
 <!ENTITY url_bar_default_text2 "Tìm kiếm hoặc nhập địa chỉ">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Tìm kiếm trên mạng">
+<!ENTITY search_widget_default_cropped_text "Tìm kiếm">
+<!ENTITY search_widget_logo_description "Tìm kiếm trên mạng với &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Sử dụng đầu đọc QR của bạn để tìm kiếm hoặc nhập địa chỉ">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Sử dụng micrô của bạn để tìm kiếm hoặc nhập địa chỉ">
 
 <!ENTITY bookmark "Trang đánh dấu">
 <!ENTITY bookmark_remove "Xóa trang đánh dấu">
@@ -96,6 +118,10 @@
 <!ENTITY bookmark_parent_folder "Thư mục cha">
 <!ENTITY bookmark_add_folder "Thêm thư mục mới">
 
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(không tiêu đề)">
+
 <!ENTITY reader_saved_offline "Đã lưu ngoại tuyến">
 <!-- Localization note (reader_switch_to_bookmarks) : This
      string is used as an action in a snackbar - it lets you
@@ -111,12 +137,12 @@
 <!ENTITY reload "Tải lại">
 <!ENTITY forward "Tiến">
 <!ENTITY menu "Trình đơn">
-<!ENTITY back "Lùi">
+<!ENTITY back "Quay lại">
 <!ENTITY stop "Dừng">
 <!ENTITY site_security "Bảo mật trang">
 <!ENTITY edit_mode_cancel "Hủy bỏ">
 
-<!ENTITY close_tab "Đóng Thẻ">
+<!ENTITY close_tab "Đóng thẻ">
 <!ENTITY one_tab "1 thẻ">
 <!-- Localization note (num_tabs2) : Number of tabs is always more than one.
      We can't use android plural forms, sadly. See bug #753859. -->
@@ -136,8 +162,8 @@
      the content description. -->
 <!ENTITY tab_title_prefix_is_playing_audio "Phát âm thanh – &formatS;">
 
-<!ENTITY settings "Thiết lập">
-<!ENTITY settings_title "Thiết lập">
+<!ENTITY settings "Cài đặt">
+<!ENTITY settings_title "Cài đặt">
 <!ENTITY pref_category_general "Chung">
 <!ENTITY pref_category_general_summary3 "Trang chủ, ngôn ngữ, hàng đợi thẻ">
 
@@ -185,15 +211,15 @@
 <!ENTITY pref_category_privacy_short "Riêng tư">
 <!ENTITY pref_category_privacy_summary4 "Theo dõi, đăng nhập, lựa chọn dữ liệu">
 <!ENTITY pref_category_vendor2 "&vendorShortName; &brandShortName;">
-<!ENTITY pref_category_vendor_summary2 "Liên quan tới &brandShortName;, câu hỏi thường gặp, phản hồi">
+<!ENTITY pref_category_vendor_summary2 "Về &brandShortName;, câu hỏi thường gặp, phản hồi">
 <!ENTITY pref_category_datareporting "Lựa chọn dữ liệu">
 <!ENTITY pref_category_logins "Đăng nhập">
 <!ENTITY pref_learn_more "Tìm hiểu thêm">
 <!ENTITY pref_category_installed_search_engines "Công cụ tìm kiếm đã được cài đặt">
 <!ENTITY pref_category_add_search_providers "Thêm nhiều công cụ tìm kiếm">
-<!ENTITY pref_category_search_restore_defaults "Phục hồi công cụ tìm kiếm">
-<!ENTITY pref_search_restore_defaults "Phục hồi mặc định">
-<!ENTITY pref_search_restore_defaults_summary "Phục hồi mặc định">
+<!ENTITY pref_category_search_restore_defaults "Khôi phục công cụ tìm kiếm">
+<!ENTITY pref_search_restore_defaults "Khôi phục về mặc định">
+<!ENTITY pref_search_restore_defaults_summary "Khôi phục về mặc định">
 <!-- Localization note (pref_search_hint) : "TIP" as in "hint", "clue" etc. Displayed as an
      advisory message on the customise search providers settings page explaining how to add new
      search providers.
@@ -206,7 +232,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Khôi phục thẻ, tiết kiệm dữ liệu, công cụ phát triển">
 <!ENTITY pref_category_notifications "Thông báo">
-<!ENTITY pref_category_notifications_summary "Tính năng mới, cập nhật của trang">
+<!ENTITY pref_category_notifications_summary2 "Tính năng mới, lời khuyên cho sản phẩm">
 <!ENTITY pref_developer_remotedebugging_usb "Gỡ rối từ xa qua USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Gỡ rối từ xa qua WiFi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Gỡ rồi qua WiFi yêu cầu thiết bị phải có một ứng dụng đọc mã QR được cài đặt.">
@@ -288,6 +314,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Tìm hiểu về cách sử dụng &brandShortName; và các sản phẩm của &vendorShortName;">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Để bật tùy chọn này, &pref_feature_tips_notification_enabling_path; phải được bật.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -312,9 +344,9 @@
 <!ENTITY tracking_protection_prompt_title "Bây giờ với trình chống theo dõi">
 <!ENTITY tracking_protection_prompt_text "Chủ động chặn các phần tử theo dõi để bạn không phải lo lắng.">
 <!ENTITY tracking_protection_prompt_tip_text "Vào phần cài đặt riêng tư để tìm hiểu thêm">
-<!ENTITY tracking_protection_prompt_action_button "Hiểu rồi!">
+<!ENTITY tracking_protection_prompt_action_button "Đã hiểu!">
 
-<!ENTITY tab_queue_toast_message3 "Tab được lưu trong &brandShortName;">
+<!ENTITY tab_queue_toast_message3 "Thẻ đã được lưu trong &brandShortName;">
 <!ENTITY tab_queue_toast_action "Mở ngay">
 <!ENTITY tab_queue_prompt_title "Mở nhiều liên kết cùng lúc?">
 <!ENTITY tab_queue_prompt_text4 "Lưu chúng đến lần tiếp theo bạn mở &brandShortName;.">
@@ -327,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Vào phần cài đặt">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Thêm thẻ mới vào hàng đợi&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "Co giãn nội dung trang web dựa vào kích thước phông chữ hệ thống">
 
 <!ENTITY pref_media_autoplay_enabled "Cho phép tự động phát">
-<!ENTITY pref_media_autoplay_enabled_summary "Kiểm soát nếu trang web có thể tự động phát video và nội dung đa phương tiện khác">
+<!ENTITY pref_media_autoplay_allow "Cho phép tự động phát">
+<!ENTITY pref_media_autoplay_block "Không cho phép tự động phát">
 <!ENTITY pref_zoom_force_enabled "Luôn bật chế độ thu phóng">
 <!ENTITY pref_zoom_force_enabled_summary "Luôn bật để bạn có thể thu phóng ở bất kì trang nào">
 <!ENTITY pref_voice_input "Nhập liệu giọng nói">
@@ -384,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "Lịch sử tìm kiếm">
 <!ENTITY pref_private_data_formdata2 "Lịch sử biểu mẫu">
 <!ENTITY pref_private_data_cookies2 "Cookie và phiên đăng nhập đang hoạt động">
-<!ENTITY pref_private_data_passwords2 "Phiên đăng nhập đã lưu">
 <!ENTITY pref_private_data_cache "Bộ nhớ đệm">
 <!ENTITY pref_private_data_offlineApps "Dữ liệu trang web ngoại tuyến">
-<!ENTITY pref_private_data_siteSettings2 "Thiết lập trang">
-<!ENTITY pref_private_data_downloadFiles2 "Tải về">
+<!ENTITY pref_private_data_siteSettings2 "Cài đặt trang">
+<!ENTITY pref_private_data_downloadFiles2 "Tải xuống">
 <!ENTITY pref_private_data_syncedTabs "Các thẻ đã đồng bộ">
 
-<!ENTITY pref_default_browser "Đặt trình duyệt làm mặc định">
+<!ENTITY pref_default_browser2 "Đặt &brandShortName; làm trình duyệt mặc định của bạn">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Nhấn vào ứng dụng Trình duyệt &amp; chọn &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Tới trang hỗ trợ của Mozilla">
 <!ENTITY pref_about_firefox "Giới thiệu &brandShortName;">
 <!ENTITY pref_vendor_faqs "Câu hỏi thường gặp">
@@ -434,9 +473,14 @@
 <!ENTITY datareporting_crashreporter_summary "&brandShortName; nộp báo cáo sự cố để giúp &vendorShortName; làm cho trình duyệt của bạn ổn định và an toàn hơn">
 <!-- Localization note (datareporting_crashreporter_title_short) : This string matches
      (crashReporterSection.label) in en-US/chrome/browser/preferences/advanced.dtd.-->
-<!ENTITY datareporting_crashreporter_title_short "Báo cáo hỏng hóc">
+<!ENTITY datareporting_crashreporter_title_short "Trình báo cáo lỗi">
 <!ENTITY datareporting_wifi_title2 "Dịch vụ định vị &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Giúp &vendorShortName; tạo bản đồ thế giới! Chia sẻ vị trí Wi-Fi và điểm phát sóng di động nơi bạn sống để cải thiện dịch vụ định vị của chúng tôi.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; Dịch vụ vị trí đang chạy">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -452,7 +496,7 @@
 
 <!ENTITY addons "Tiện ích">
 <!ENTITY logins "Đăng nhập">
-<!ENTITY downloads "Tải về">
+<!ENTITY downloads "Tải xuống">
 <!ENTITY char_encoding "Bảng mã">
 
 <!ENTITY share "Chia sẻ">
@@ -482,6 +526,10 @@
 <!ENTITY find_next "Tiếp theo">
 <!ENTITY find_close "Đóng">
 
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Không tìm thấy cụm từ này">
+
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
 <!ENTITY media_sending_to "Đang gửi đến thiết bị">
@@ -495,12 +543,12 @@
 <!ENTITY contextmenu_add_page_shortcut "Thêm lối tắt tới trang">
 <!ENTITY contextmenu_set_as_homepage "Đặt làm trang chủ">
 <!ENTITY contextmenu_share "Chia sẻ">
-<!ENTITY contextmenu_pasteandgo "Dán &amp; Mở đường dẫn">
+<!ENTITY contextmenu_pasteandgo "Dán &amp; mở đường dẫn">
 <!ENTITY contextmenu_paste "Dán">
 <!ENTITY contextmenu_copyurl "Sao chép địa chỉ">
 <!ENTITY contextmenu_edit_bookmark "Sửa">
 <!ENTITY contextmenu_subscribe "Đăng kí nhận tin từ trang">
-<!ENTITY contextmenu_site_settings "Sửa thiết lập trang">
+<!ENTITY contextmenu_site_settings "Sửa cài đặt trang">
 <!ENTITY contextmenu_top_sites_edit "Chỉnh sửa">
 <!ENTITY contextmenu_top_sites_pin "Ghim trang">
 <!ENTITY contextmenu_top_sites_unpin "Bỏ ghim trang">
@@ -543,21 +591,23 @@
 <!ENTITY pref_compact_tabs_summary2 "Sắp xếp các thẻ thành hai cột ở chế độ màn hình dọc">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Trang đã bị xóa">
 <!ENTITY folder_removed "Thư mục đã xóa">
 
-<!ENTITY bookmark_edit_title "Chỉnh sửa Trang đánh dấu">
+<!ENTITY bookmark_edit_title "Chỉnh sửa trang đánh dấu">
 <!ENTITY bookmark_edit_folder_title "Chỉnh sửa thư mục">
 <!ENTITY bookmark_edit_name "Tên">
 <!ENTITY bookmark_edit_location "Địa chỉ">
 <!ENTITY bookmark_edit_keyword "Từ khóa">
 <!ENTITY bookmark_select_folder "Chọn thư mục">
 
+<!ENTITY bookmark_edit_undo "Hoàn tác">
+
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
-<!ENTITY site_settings_title3       "Thiết lập trang">
+<!ENTITY site_settings_title3       "Cài đặt trang">
 <!ENTITY site_settings_cancel       "Hủy bỏ">
 <!ENTITY site_settings_clear        "Xóa">
 
@@ -565,8 +615,8 @@
      They are not visible in the UI. -->
 <!ENTITY page_action_dropmarker_description "Hành động bổ sung">
 
-<!ENTITY masterpassword_create_title "Tạo mật khẩu chính">
-<!ENTITY masterpassword_remove_title "Xóa Mật Khẩu Chính">
+<!ENTITY masterpassword_create_title "Tạo Mật khẩu chính">
+<!ENTITY masterpassword_remove_title "Xóa Mật khẩu chính">
 <!ENTITY masterpassword_password "Mật khẩu">
 <!ENTITY masterpassword_confirm "Xác nhận mật khẩu">
 
@@ -577,7 +627,7 @@
 <!ENTITY button_clear_data "Xoá dữ liệu">
 <!ENTITY button_set "Thiết lập">
 <!ENTITY button_clear "Xóa">
-<!ENTITY button_copy "Chép">
+<!ENTITY button_copy "Sao chép">
 
 <!ENTITY home_top_sites_title "Trang truy cập nhiều">
 <!-- Localization note (home_top_sites_add): This string is used as placeholder
@@ -587,7 +637,7 @@
 <!-- Localization note (home_title): This string should be kept in sync
      with the page title defined in aboutHome.dtd -->
 <!ENTITY home_title "Trang chủ &brandShortName;">
-<!ENTITY home_history_title "Lược sử">
+<!ENTITY home_history_title "Lịch sử">
 <!ENTITY home_synced_devices_smartfolder "Thiết bị đã đồng bộ">
 <!ENTITY home_synced_devices_number "&formatD; thiết bị">
 <!-- Localization note (home_synced_devices_one_device): This is the singular version of home_synced_devices_number, referring to the number of devices a user has synced. -->
@@ -596,7 +646,7 @@
 <!ENTITY home_clear_history_button "Xóa lịch sử duyệt web">
 <!ENTITY home_clear_history_confirm "Bạn có chắc muốn xóa lịch sử của bạn không?">
 <!ENTITY home_bookmarks_empty "Trang đánh dấu của bạn được hiển thị ở đây">
-<!ENTITY home_closed_tabs_title2 "Đóng gần đây">
+<!ENTITY home_closed_tabs_title2 "Đã đóng gần đây">
 <!ENTITY home_last_tabs_empty "Các thẻ gần đây của bạn sẽ được hiển thị ở đây.">
 <!ENTITY home_restore_all "Khôi phục tất cả">
 <!ENTITY home_closed_tabs_number "&formatD; thẻ">
@@ -643,6 +693,8 @@
 <!ENTITY filepicker_image_title "Chọn hoặc chụp một bức ảnh">
 <!ENTITY filepicker_video_title "Chọn hoặc ghi một đoạn video">
 
+<!ENTITY filepicker_permission_denied "Quyền yêu cầu đã không được cấp, đang trở lại bộ chọn tập tin hệ thống.">
+
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Bạn đang kết nối đến">
 <!-- Localization note (identity_run_by) : This string appears between a
@@ -674,7 +726,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY doorhanger_tracking_message_disabled2 "Trang này bao gồm các phần tử có thể theo dõi bạn duyệt web.">
 
 <!-- Common mixed and tracking content strings in site identity popup -->
-<!ENTITY learn_more "Tìm hiểu Thêm">
+<!ENTITY learn_more "Tìm hiểu thêm">
 <!ENTITY enable_protection "Bật bảo vệ">
 <!ENTITY disable_protection "Tắt bảo vệ">
 
@@ -705,20 +757,20 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 
  <!-- Updater notifications -->
 <!ENTITY updater_start_title2 "Bản cập nhật cho &brandShortName; đã sẵn sàng">
-<!ENTITY updater_start_select2 "Chạm để tải về">
+<!ENTITY updater_start_select2 "Chạm để tải xuống">
 
-<!ENTITY updater_downloading_title2 "Đang tải &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Tải về bị lỗi">
+<!ENTITY updater_downloading_title2 "Đang tải xuống &brandShortName;">
+<!ENTITY updater_downloading_title_failed2 "Tải xuống bị lỗi">
 <!ENTITY updater_downloading_select2 "Chạm để áp dụng cập nhật khi tải xong">
 <!ENTITY updater_downloading_retry2 "Chạm để thử lại">
 
-<!ENTITY updater_apply_title3 "Bản cập nhật &brandShortName; đã được tải về">
+<!ENTITY updater_apply_title3 "Bản cập nhật &brandShortName; đã được tải xuống">
 <!ENTITY updater_apply_select3 "Chạm để cài đặt">
 
 <!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
      if the app requires a runtime permission to download updates. Currently, the updater only sees
      remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Để tải về các tập tin và cập nhật, cho phép &brandShortName; quyền truy cập bộ nhớ.">
+<!ENTITY updater_permission_text "Để tải xuống các tập tin và cập nhật, cho phép &brandShortName; quyền truy cập bộ nhớ.">
 <!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
 <!ENTITY updater_permission_allow "Cho phép">
 
@@ -758,7 +810,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Lần cuối đồng bộ: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Lần cuối đồng bộ: chưa bao giờ">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -788,7 +840,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      a restricted profile (e.g. child). Used inside the Android settings UI. -->
 <!ENTITY restrictable_feature_addons_installation "Tiện ích">
 <!ENTITY restrictable_feature_addons_installation_description "Thêm các tính năng hoặc chức năng cho Firefox. Lưu ý: tiện ích có thể vô hiệu hóa các hạn chế nào đó.">
-<!ENTITY restrictable_feature_private_browsing "Duyệt web Riêng tư">
+<!ENTITY restrictable_feature_private_browsing "Duyệt web riêng tư">
 <!ENTITY restrictable_feature_private_browsing_description "Cho phép các thành viên trong gia đình duyệt web mà không lưu thông tin về những trang mà họ đã truy cập.">
 <!ENTITY restrictable_feature_clear_history "Xóa lịch sử">
 <!ENTITY restrictable_feature_clear_history_description "Cho phép các thành viên gia đình xóa thông tin về những trang mà họ đã truy cập.">
@@ -814,20 +866,15 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE (unsupported_sdk_version): The user installed a build of this app that does not support
      the Android version of this device. the formatS1 is replaced by the CPU ABI (e.g., ARMv7); the formatS2 is
      replaced by the Android OS version (e.g., 14)-->
-<!ENTITY unsupported_sdk_version "Xin lỗi! &brandShortName; sẽ không làm việc trên thiết bị này (&formatS1;, &formatS2;). Xin vui lòng tải về phiên bản khác.">
+<!ENTITY unsupported_sdk_version "Xin lỗi! &brandShortName; sẽ không làm việc trên thiết bị này (&formatS1;, &formatS2;). Xin vui lòng tải xuống phiên bản khác.">
 
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Không thể mở &brandShortName;. Hãy cài lại và thử lại.">
-
-<!ENTITY eol_notification_title2 "&brandShortName; sẽ không còn được cập nhật">
-<!ENTITY eol_notification_summary "Chạm để tìm hiểu thêm">
 
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; đã được cập nhật">
 <!ENTITY whatsnew_notification_summary "Tìm hiểu có gì mới trong phiên bản này">
-
-<!ENTITY promotion_add_page_shortcut "Thêm lối tắt tới trang">
 
 <!ENTITY helper_first_offline_bookmark_title "Đọc ngoại tuyến">
 <!ENTITY helper_first_offline_bookmark_message "Tìm các mục ở chế độ đọc trong trang đánh dấu, ngay cả khi ngoại tuyến.">
@@ -839,18 +886,18 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 
 <!ENTITY activity_stream_topsites "Các trang vào nhiều nhất">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
-<!ENTITY activity_stream_topstories "Khuyên dùng bởi &brandPocket;">
+<!ENTITY activity_stream_topstories "Được đề xuất bởi &brandPocket;">
 <!ENTITY activity_stream_highlights "Nổi bật">
 
 <!-- LOCALIZATION NOTE (activity_stream_link_more1): Link-like text displayed to take user to a website with more content from Pocket. -->
-<!ENTITY activity_stream_link_more1 "MORE">
+<!ENTITY activity_stream_link_more1 "THÊM">
 
 <!-- LOCALIZATION NOTE (activity_stream_highlight_label_bookmarked): This label is shown in the Activity
 Stream list for highlights sourced from th user's bookmarks. -->
-<!ENTITY activity_stream_highlight_label_bookmarked "Đã đánh dấu trang">
+<!ENTITY activity_stream_highlight_label_bookmarked "Đã đánh dấu">
 <!-- LOCALIZATION NOTE (activity_stream_highlight_label_visited): This label is shown in the Activity
 Stream list for highlights sourced from th user's bookmarks. -->
-<!ENTITY activity_stream_highlight_label_visited "Đã thăm">
+<!ENTITY activity_stream_highlight_label_visited "Đã truy cập">
 <!-- LOCALIZATION NOTE (activity_stream_highlight_label_trending): This label is shown in the Activity Stream list for highlights sourced from a recommendations engine. -->
 <!ENTITY activity_stream_highlight_label_trending "Xu hướng">
 <!-- LOCALIZATION NOTE (activity_stream_highlights_empty): This text is shown when we could not find highlights for this user. This is also shown on first run. -->
@@ -864,7 +911,7 @@ is simply hidden from the Activity Stream panel. -->
 
 <!ENTITY private_tab_panel_title "Duyệt web riêng tư + Trình chống theo dõi">
 <!ENTITY private_tab_panel_description "&brandShortName; chặn các phần của các trang web có thể theo dõi hoạt động duyệt web của bạn.">
-<!ENTITY private_tab_panel_description2 "Chúng tôi sẽ không lưu bất kỳ lịch sử nào, nhưng tệp đã tải xuống và trang đánh dấu mới sẽ vẫn được lưu vào thiết bị của bạn.">
+<!ENTITY private_tab_panel_description2 "Chúng tôi sẽ không lưu bất kỳ lịch sử nào, nhưng tập tin đã tải xuống và trang đánh dấu mới sẽ vẫn được lưu vào thiết bị của bạn.">
 <!ENTITY private_tab_learn_more "Muốn tìm hiểu thêm?">
 
 <!ENTITY fullscreen_warning "Đã vào chế độ toàn màn hình">
@@ -878,3 +925,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Thêm vào màn hình chính">
 <!ENTITY pwa_continue_to_website "Tiếp tục với trang web">
 <!ENTITY pwa_onboarding_sumo "Bạn có thể dễ dàng thêm trang web vào màn hình chính của bạn để có thể truy cập và duyệt web nhanh hơn với trải nghiệm giống như trên ứng dụng.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Bật">
+<!ENTITY pip_play_button_description "Tiếp tục phát">
+<!ENTITY pip_pause_button_title "Tạm dừng">
+<!ENTITY pip_pause_button_description "Tạm dừng phát">
+
+<!ENTITY pref_notification_settings_link "Quản lý cài đặt thông báo">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Trình duyệt">
+<!ENTITY mls_notification_channel "&vendorShortName; Dịch vụ vị trí">
+<!ENTITY download_notification_channel "Tải xuống">
+<!ENTITY media_notification_channel2 "Âm thanh và video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; các mẹo và thủ thuật">
+<!ENTITY updater_notification_channel "Cập nhật ứng dụng">
+<!ENTITY synced_tabs_notification_channel "Thẻ đã đồng bộ">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Các thông báo trang">
+<!ENTITY crash_handler_notifications_channel "Báo cáo lỗi &brandShortName;">

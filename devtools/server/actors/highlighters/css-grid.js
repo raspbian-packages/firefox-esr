@@ -30,13 +30,16 @@ const { apply } = require("devtools/shared/layout/dom-matrix-2d");
 const {
   getCurrentZoom,
   getDisplayPixelRatio,
+  getWindowDimensions,
   setIgnoreLayoutChanges,
 } = require("devtools/shared/layout/utils");
-const { stringifyGridFragments } = require("devtools/server/actors/utils/css-grid-utils");
+const {
+  stringifyGridFragments,
+} = require("devtools/server/actors/utils/css-grid-utils");
 const { LocalizationHelper } = require("devtools/shared/l10n");
 
-const LAYOUT_STRINGS_URI = "devtools/client/locales/layout.properties";
-const LAYOUT_L10N = new LocalizationHelper(LAYOUT_STRINGS_URI);
+const STRINGS_URI = "devtools/shared/locales/highlighters.properties";
+const L10N = new LocalizationHelper(STRINGS_URI);
 
 const COLUMNS = "cols";
 const ROWS = "rows";
@@ -46,23 +49,23 @@ const GRID_FONT_FAMILY = "sans-serif";
 const GRID_AREA_NAME_FONT_SIZE = "20";
 
 const GRID_LINES_PROPERTIES = {
-  "edge": {
+  edge: {
     lineDash: [0, 0],
     alpha: 1,
   },
-  "explicit": {
+  explicit: {
     lineDash: [5, 3],
     alpha: 0.75,
   },
-  "implicit": {
+  implicit: {
     lineDash: [2, 2],
     alpha: 0.5,
   },
-  "areaEdge": {
+  areaEdge: {
     lineDash: [0, 0],
     alpha: 1,
     lineWidth: 3,
-  }
+  },
 };
 
 const GRID_GAP_PATTERN_WIDTH = 14; // px
@@ -70,20 +73,30 @@ const GRID_GAP_PATTERN_HEIGHT = 14; // px
 const GRID_GAP_PATTERN_LINE_DASH = [5, 3]; // px
 const GRID_GAP_ALPHA = 0.5;
 
-// 25 is a good margin distance between the document grid container edge without cutting
-// off parts of the arrow box container.
-const OFFSET_FROM_EDGE = 25;
+// This is the minimum distance a line can be to the edge of the document under which we
+// push the line number arrow to be inside the grid. This offset is enough to fit the
+// entire arrow + a stacked arrow behind it.
+const OFFSET_FROM_EDGE = 32;
+// This is how much inside the grid we push the arrow. This a factor of the arrow size.
+// The goal here is for a row and a column arrow that have both been pushed inside the
+// grid, in a corner, not to overlap.
+const FLIP_ARROW_INSIDE_FACTOR = 2.5;
 
 /**
  * Given an `edge` of a box, return the name of the edge one move to the right.
  */
 function rotateEdgeRight(edge) {
   switch (edge) {
-    case "top": return "right";
-    case "right": return "bottom";
-    case "bottom": return "left";
-    case "left": return "top";
-    default: return edge;
+    case "top":
+      return "right";
+    case "right":
+      return "bottom";
+    case "bottom":
+      return "left";
+    case "left":
+      return "top";
+    default:
+      return edge;
   }
 }
 
@@ -92,11 +105,16 @@ function rotateEdgeRight(edge) {
  */
 function rotateEdgeLeft(edge) {
   switch (edge) {
-    case "top": return "left";
-    case "right": return "top";
-    case "bottom": return "right";
-    case "left": return "bottom";
-    default: return edge;
+    case "top":
+      return "left";
+    case "right":
+      return "top";
+    case "bottom":
+      return "right";
+    case "left":
+      return "bottom";
+    default:
+      return edge;
   }
 }
 
@@ -105,11 +123,16 @@ function rotateEdgeLeft(edge) {
  */
 function reflectEdge(edge) {
   switch (edge) {
-    case "top": return "bottom";
-    case "right": return "left";
-    case "bottom": return "top";
-    case "left": return "right";
-    default: return edge;
+    case "top":
+      return "bottom";
+    case "right":
+      return "left";
+    case "bottom":
+      return "top";
+    case "left":
+      return "right";
+    default:
+      return edge;
   }
 }
 
@@ -128,36 +151,39 @@ const gCachedGridPattern = new Map();
  * h.hide();
  * h.destroy();
  *
- * Available Options:
- * - color(colorValue)
- *     @param  {String} colorValue
- *     The color that should be used to draw the highlighter for this grid.
- * - showAllGridAreas(isShown)
- *     @param  {Boolean} isShown
- *     Shows all the grid area highlights for the current grid if isShown is true.
- * - showGridArea(areaName)
- *     @param  {String} areaName
- *     Shows the grid area highlight for the given area name.
- * - showGridAreasOverlay(isShown)
- *     @param  {Boolean} isShown
- *     Displays an overlay of all the grid areas for the current grid container if
- *     isShown is true.
- * - showGridCell({ gridFragmentIndex: Number, rowNumber: Number, columnNumber: Number })
- *     @param  {Object} { gridFragmentIndex: Number, rowNumber: Number,
- *                        columnNumber: Number }
- *     An object containing the grid fragment index, row and column numbers to the
- *     corresponding grid cell to highlight for the current grid.
- * - showGridLineNames({ gridFragmentIndex: Number, lineNumber: Number,
- *                       type: String })
- *     @param  {Object} { gridFragmentIndex: Number, lineNumber: Number }
- *     An object containing the grid fragment index and line number to the
- *     corresponding grid line to highlight for the current grid.
- * - showGridLineNumbers(isShown)
- *     @param  {Boolean} isShown
- *     Displays the grid line numbers on the grid lines if isShown is true.
- * - showInfiniteLines(isShown)
- *     @param  {Boolean} isShown
- *     Displays an infinite line to represent the grid lines if isShown is true.
+ * @param {String} options.color
+ *        The color that should be used to draw the highlighter for this grid.
+ * @param {Boolean} options.showAllGridAreas
+ *        Shows all the grid area highlights for the current grid if isShown is
+ *        true.
+ * @param {String} options.showGridArea
+ *        Shows the grid area highlight for the given area name.
+ * @param {Boolean} options.showGridAreasOverlay
+ *        Displays an overlay of all the grid areas for the current grid
+ *        container if isShown is true.
+ * @param {Object} options.showGridCell
+ *        An object containing the grid fragment index, row and column numbers
+ *        to the corresponding grid cell to highlight for the current grid.
+ * @param {Number} options.showGridCell.gridFragmentIndex
+ *        Index of the grid fragment to render the grid cell highlight.
+ * @param {Number} options.showGridCell.rowNumber
+ *        Row number of the grid cell to highlight.
+ * @param {Number} options.showGridCell.columnNumber
+ *        Column number of the grid cell to highlight.
+ * @param {Object} options.showGridLineNames
+ *        An object containing the grid fragment index and line number to the
+ *        corresponding grid line to highlight for the current grid.
+ * @param {Number} options.showGridLineNames.gridFragmentIndex
+ *        Index of the grid fragment to render the grid line highlight.
+ * @param {Number} options.showGridLineNames.lineNumber
+ *        Line number of the grid line to highlight.
+ * @param {String} options.showGridLineNames.type
+ *        The dimension type of the grid line.
+ * @param {Boolean} options.showGridLineNumbers
+ *        Displays the grid line numbers on the grid lines if isShown is true.
+ * @param {Boolean} options.showInfiniteLines
+ *        Displays an infinite line to represent the grid lines if isShown is
+ *        true.
  *
  * Structure:
  * <div class="highlighter-container">
@@ -199,43 +225,49 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
 
     this.ID_CLASS_PREFIX = "css-grid-";
 
-    this.markup = new CanvasFrameAnonymousContentHelper(this.highlighterEnv,
-      this._buildMarkup.bind(this));
+    this.markup = new CanvasFrameAnonymousContentHelper(
+      this.highlighterEnv,
+      this._buildMarkup.bind(this)
+    );
 
     this.onPageHide = this.onPageHide.bind(this);
     this.onWillNavigate = this.onWillNavigate.bind(this);
 
     this.highlighterEnv.on("will-navigate", this.onWillNavigate);
 
-    let { pageListenerTarget } = highlighterEnv;
+    const { pageListenerTarget } = highlighterEnv;
     pageListenerTarget.addEventListener("pagehide", this.onPageHide);
 
     // Initialize the <canvas> position to the top left corner of the page.
     this._canvasPosition = {
       x: 0,
-      y: 0
+      y: 0,
     };
 
     // Calling `updateCanvasPosition` anyway since the highlighter could be initialized
     // on a page that has scrolled already.
-    updateCanvasPosition(this._canvasPosition, this._scroll, this.win,
-      this._winDimensions);
+    updateCanvasPosition(
+      this._canvasPosition,
+      this._scroll,
+      this.win,
+      this._winDimensions
+    );
   }
 
   _buildMarkup() {
-    let container = createNode(this.win, {
+    const container = createNode(this.win, {
       attributes: {
-        "class": "highlighter-container"
-      }
+        class: "highlighter-container",
+      },
     });
 
-    let root = createNode(this.win, {
+    const root = createNode(this.win, {
       parent: container,
       attributes: {
-        "id": "root",
-        "class": "root"
+        id: "root",
+        class: "root",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     // We use a <canvas> element so that we can draw an arbitrary number of lines
@@ -245,193 +277,193 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
       parent: root,
       nodeType: "canvas",
       attributes: {
-        "id": "canvas",
-        "class": "canvas",
-        "hidden": "true",
-        "width": CANVAS_SIZE,
-        "height": CANVAS_SIZE
+        id: "canvas",
+        class: "canvas",
+        hidden: "true",
+        width: CANVAS_SIZE,
+        height: CANVAS_SIZE,
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     // Build the SVG element.
-    let svg = createSVGNode(this.win, {
+    const svg = createSVGNode(this.win, {
       nodeType: "svg",
       parent: root,
       attributes: {
-        "id": "elements",
-        "width": "100%",
-        "height": "100%",
-        "hidden": "true"
+        id: "elements",
+        width: "100%",
+        height: "100%",
+        hidden: "true",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
-    let regions = createSVGNode(this.win, {
+    const regions = createSVGNode(this.win, {
       nodeType: "g",
       parent: svg,
       attributes: {
-        "class": "regions"
+        class: "regions",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     createSVGNode(this.win, {
       nodeType: "path",
       parent: regions,
       attributes: {
-        "class": "areas",
-        "id": "areas"
+        class: "areas",
+        id: "areas",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     createSVGNode(this.win, {
       nodeType: "path",
       parent: regions,
       attributes: {
-        "class": "cells",
-        "id": "cells"
+        class: "cells",
+        id: "cells",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     // Build the grid area infobar markup.
-    let areaInfobarContainer = createNode(this.win, {
+    const areaInfobarContainer = createNode(this.win, {
       parent: container,
       attributes: {
-        "class": "area-infobar-container",
-        "id": "area-infobar-container",
-        "position": "top",
-        "hidden": "true"
+        class: "area-infobar-container",
+        id: "area-infobar-container",
+        position: "top",
+        hidden: "true",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
-    let areaInfobar = createNode(this.win, {
+    const areaInfobar = createNode(this.win, {
       parent: areaInfobarContainer,
       attributes: {
-        "class": "infobar"
+        class: "infobar",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
-    let areaTextbox = createNode(this.win, {
+    const areaTextbox = createNode(this.win, {
       parent: areaInfobar,
       attributes: {
-        "class": "infobar-text"
+        class: "infobar-text",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
     createNode(this.win, {
       nodeType: "span",
       parent: areaTextbox,
       attributes: {
-        "class": "area-infobar-name",
-        "id": "area-infobar-name"
+        class: "area-infobar-name",
+        id: "area-infobar-name",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
     createNode(this.win, {
       nodeType: "span",
       parent: areaTextbox,
       attributes: {
-        "class": "area-infobar-dimensions",
-        "id": "area-infobar-dimensions"
+        class: "area-infobar-dimensions",
+        id: "area-infobar-dimensions",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     // Build the grid cell infobar markup.
-    let cellInfobarContainer = createNode(this.win, {
+    const cellInfobarContainer = createNode(this.win, {
       parent: container,
       attributes: {
-        "class": "cell-infobar-container",
-        "id": "cell-infobar-container",
-        "position": "top",
-        "hidden": "true"
+        class: "cell-infobar-container",
+        id: "cell-infobar-container",
+        position: "top",
+        hidden: "true",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
-    let cellInfobar = createNode(this.win, {
+    const cellInfobar = createNode(this.win, {
       parent: cellInfobarContainer,
       attributes: {
-        "class": "infobar"
+        class: "infobar",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
-    let cellTextbox = createNode(this.win, {
+    const cellTextbox = createNode(this.win, {
       parent: cellInfobar,
       attributes: {
-        "class": "infobar-text"
+        class: "infobar-text",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
     createNode(this.win, {
       nodeType: "span",
       parent: cellTextbox,
       attributes: {
-        "class": "cell-infobar-position",
-        "id": "cell-infobar-position"
+        class: "cell-infobar-position",
+        id: "cell-infobar-position",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
     createNode(this.win, {
       nodeType: "span",
       parent: cellTextbox,
       attributes: {
-        "class": "cell-infobar-dimensions",
-        "id": "cell-infobar-dimensions"
+        class: "cell-infobar-dimensions",
+        id: "cell-infobar-dimensions",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     // Build the grid line infobar markup.
-    let lineInfobarContainer = createNode(this.win, {
+    const lineInfobarContainer = createNode(this.win, {
       parent: container,
       attributes: {
-        "class": "line-infobar-container",
-        "id": "line-infobar-container",
-        "position": "top",
-        "hidden": "true"
+        class: "line-infobar-container",
+        id: "line-infobar-container",
+        position: "top",
+        hidden: "true",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
-    let lineInfobar = createNode(this.win, {
+    const lineInfobar = createNode(this.win, {
       parent: lineInfobarContainer,
       attributes: {
-        "class": "infobar"
+        class: "infobar",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
-    let lineTextbox = createNode(this.win, {
+    const lineTextbox = createNode(this.win, {
       parent: lineInfobar,
       attributes: {
-        "class": "infobar-text"
+        class: "infobar-text",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
     createNode(this.win, {
       nodeType: "span",
       parent: lineTextbox,
       attributes: {
-        "class": "line-infobar-number",
-        "id": "line-infobar-number"
+        class: "line-infobar-number",
+        id: "line-infobar-number",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
     createNode(this.win, {
       nodeType: "span",
       parent: lineTextbox,
       attributes: {
-        "class": "line-infobar-names",
-        "id": "line-infobar-names"
+        class: "line-infobar-names",
+        id: "line-infobar-names",
       },
-      prefix: this.ID_CLASS_PREFIX
+      prefix: this.ID_CLASS_PREFIX,
     });
 
     return container;
@@ -445,7 +477,7 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    * Clear the grid area highlights.
    */
   clearGridAreas() {
-    let areas = this.getElement("areas");
+    const areas = this.getElement("areas");
     areas.setAttribute("d", "");
   }
 
@@ -453,15 +485,15 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    * Clear the grid cell highlights.
    */
   clearGridCell() {
-    let cells = this.getElement("cells");
+    const cells = this.getElement("cells");
     cells.setAttribute("d", "");
   }
 
   destroy() {
-    let { highlighterEnv } = this;
+    const { highlighterEnv } = this;
     highlighterEnv.off("will-navigate", this.onWillNavigate);
 
-    let { pageListenerTarget } = highlighterEnv;
+    const { pageListenerTarget } = highlighterEnv;
     if (pageListenerTarget) {
       pageListenerTarget.removeEventListener("pagehide", this.onPageHide);
     }
@@ -522,15 +554,15 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     }
 
     // Create the diagonal lines pattern for the rendering the grid gaps.
-    let canvas = createNode(this.win, { nodeType: "canvas" });
-    let width = canvas.width = GRID_GAP_PATTERN_WIDTH * devicePixelRatio;
-    let height = canvas.height = GRID_GAP_PATTERN_HEIGHT * devicePixelRatio;
+    const canvas = createNode(this.win, { nodeType: "canvas" });
+    const width = (canvas.width = GRID_GAP_PATTERN_WIDTH * devicePixelRatio);
+    const height = (canvas.height = GRID_GAP_PATTERN_HEIGHT * devicePixelRatio);
 
-    let ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     ctx.save();
     ctx.setLineDash(GRID_GAP_PATTERN_LINE_DASH);
     ctx.beginPath();
-    ctx.translate(.5, .5);
+    ctx.translate(0.5, 0.5);
 
     if (dimension === COLUMNS) {
       ctx.moveTo(0, 0);
@@ -545,7 +577,7 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     ctx.stroke();
     ctx.restore();
 
-    let pattern = ctx.createPattern(canvas, "repeat");
+    const pattern = ctx.createPattern(canvas, "repeat");
 
     gridPatternMap.set(dimension, pattern);
     gCachedGridPattern.set(devicePixelRatio, gridPatternMap);
@@ -587,11 +619,11 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    * grid-template-* CSS properties with the highlighter displayed).
    */
   _hasMoved() {
-    let hasMoved = AutoRefreshHighlighter.prototype._hasMoved.call(this);
+    const hasMoved = AutoRefreshHighlighter.prototype._hasMoved.call(this);
 
-    let oldGridData = stringifyGridFragments(this.gridData);
+    const oldGridData = stringifyGridFragments(this.gridData);
     this.gridData = this.currentNode.getGridFragments();
-    let newGridData = stringifyGridFragments(this.gridData);
+    const newGridData = stringifyGridFragments(this.gridData);
 
     return hasMoved || oldGridData !== newGridData;
   }
@@ -655,8 +687,12 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    * to give the illusion that it always covers the viewport.
    */
   _scrollUpdate() {
-    let hasUpdated = updateCanvasPosition(this._canvasPosition, this._scroll, this.win,
-      this._winDimensions);
+    const hasUpdated = updateCanvasPosition(
+      this._canvasPosition,
+      this._scroll,
+      this.win,
+      this._winDimensions
+    );
 
     if (hasUpdated) {
       this._update();
@@ -771,10 +807,18 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
       return;
     }
 
-    this.renderLines(fragment.cols, COLUMNS, this.getFirstRowLinePos(fragment),
-      this.getLastRowLinePos(fragment));
-    this.renderLines(fragment.rows, ROWS, this.getFirstColLinePos(fragment),
-      this.getLastColLinePos(fragment));
+    this.renderLines(
+      fragment.cols,
+      COLUMNS,
+      this.getFirstRowLinePos(fragment),
+      this.getLastRowLinePos(fragment)
+    );
+    this.renderLines(
+      fragment.rows,
+      ROWS,
+      this.getFirstColLinePos(fragment),
+      this.getLastColLinePos(fragment)
+    );
 
     if (this.options.showGridAreasOverlay) {
       this.renderGridAreaOverlay();
@@ -782,12 +826,26 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
 
     // Line numbers are rendered in a 2nd step to avoid overlapping with existing lines.
     if (this.options.showGridLineNumbers) {
-      this.renderLineNumbers(fragment.cols, COLUMNS, this.getFirstRowLinePos(fragment));
-      this.renderLineNumbers(fragment.rows, ROWS, this.getFirstColLinePos(fragment));
-      this.renderNegativeLineNumbers(fragment.cols, COLUMNS,
-        this.getLastRowLinePos(fragment));
-      this.renderNegativeLineNumbers(fragment.rows, ROWS,
-        this.getLastColLinePos(fragment));
+      this.renderLineNumbers(
+        fragment.cols,
+        COLUMNS,
+        this.getFirstRowLinePos(fragment)
+      );
+      this.renderLineNumbers(
+        fragment.rows,
+        ROWS,
+        this.getFirstColLinePos(fragment)
+      );
+      this.renderNegativeLineNumbers(
+        fragment.cols,
+        COLUMNS,
+        this.getLastRowLinePos(fragment)
+      );
+      this.renderNegativeLineNumbers(
+        fragment.rows,
+        ROWS,
+        this.getLastColLinePos(fragment)
+      );
     }
   }
 
@@ -799,43 +857,51 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         the grid areas should be highlighted.
    */
   renderGridArea(areaName) {
-    let { devicePixelRatio } = this.win;
-    let displayPixelRatio = getDisplayPixelRatio(this.win);
-    let paths = [];
+    const { devicePixelRatio } = this.win;
+    const displayPixelRatio = getDisplayPixelRatio(this.win);
+    const paths = [];
 
     for (let i = 0; i < this.gridData.length; i++) {
-      let fragment = this.gridData[i];
+      const fragment = this.gridData[i];
 
-      for (let area of fragment.areas) {
+      for (const area of fragment.areas) {
         if (areaName && areaName != area.name) {
           continue;
         }
 
-        let rowStart = fragment.rows.lines[area.rowStart - 1];
-        let rowEnd = fragment.rows.lines[area.rowEnd - 1];
-        let columnStart = fragment.cols.lines[area.columnStart - 1];
-        let columnEnd = fragment.cols.lines[area.columnEnd - 1];
+        const rowStart = fragment.rows.lines[area.rowStart - 1];
+        const rowEnd = fragment.rows.lines[area.rowEnd - 1];
+        const columnStart = fragment.cols.lines[area.columnStart - 1];
+        const columnEnd = fragment.cols.lines[area.columnEnd - 1];
 
-        let x1 = columnStart.start + columnStart.breadth;
-        let y1 = rowStart.start + rowStart.breadth;
-        let x2 = columnEnd.start;
-        let y2 = rowEnd.start;
+        const x1 = columnStart.start + columnStart.breadth;
+        const y1 = rowStart.start + rowStart.breadth;
+        const x2 = columnEnd.start;
+        const y2 = rowEnd.start;
 
-        let points = getPointsFromDiagonal(x1, y1, x2, y2, this.currentMatrix);
+        const points = getPointsFromDiagonal(
+          x1,
+          y1,
+          x2,
+          y2,
+          this.currentMatrix
+        );
 
         // Scale down by `devicePixelRatio` since SVG element already take them into
         // account.
-        let svgPoints = points.map(point => ({
+        const svgPoints = points.map(point => ({
           x: Math.round(point.x / devicePixelRatio),
-          y: Math.round(point.y / devicePixelRatio)
+          y: Math.round(point.y / devicePixelRatio),
         }));
 
         // Scale down by `displayPixelRatio` since infobar's HTML elements already take it
         // into account; and the zoom scaling is handled by `moveInfobar`.
-        let bounds = getBoundsFromPoints(points.map(point => ({
-          x: Math.round(point.x / displayPixelRatio),
-          y: Math.round(point.y / displayPixelRatio)
-        })));
+        const bounds = getBoundsFromPoints(
+          points.map(point => ({
+            x: Math.round(point.x / displayPixelRatio),
+            y: Math.round(point.y / displayPixelRatio),
+          }))
+        );
 
         paths.push(getPathDescriptionFromPoints(svgPoints));
 
@@ -847,7 +913,7 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
       }
     }
 
-    let areas = this.getElement("areas");
+    const areas = this.getElement("areas");
     areas.setAttribute("d", paths.join(" "));
   }
 
@@ -860,13 +926,13 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         The area overlay to render on the CSS highlighter canvas.
    */
   renderGridAreaName(fragment, area) {
-    let { rowStart, rowEnd, columnStart, columnEnd } = area;
-    let { devicePixelRatio } = this.win;
-    let displayPixelRatio = getDisplayPixelRatio(this.win);
-    let offset = (displayPixelRatio / 2) % 1;
+    const { rowStart, rowEnd, columnStart, columnEnd } = area;
+    const { devicePixelRatio } = this.win;
+    const displayPixelRatio = getDisplayPixelRatio(this.win);
+    const offset = (displayPixelRatio / 2) % 1;
     let fontSize = GRID_AREA_NAME_FONT_SIZE * displayPixelRatio;
-    let canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
-    let canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
+    const canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
+    const canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
 
     this.ctx.save();
     this.ctx.translate(offset - canvasX, offset - canvasY);
@@ -877,42 +943,55 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
 
     // Draw the text for the grid area name.
     for (let rowNumber = rowStart; rowNumber < rowEnd; rowNumber++) {
-      for (let columnNumber = columnStart; columnNumber < columnEnd; columnNumber++) {
-        let row = fragment.rows.tracks[rowNumber - 1];
-        let column = fragment.cols.tracks[columnNumber - 1];
+      for (
+        let columnNumber = columnStart;
+        columnNumber < columnEnd;
+        columnNumber++
+      ) {
+        const row = fragment.rows.tracks[rowNumber - 1];
+        const column = fragment.cols.tracks[columnNumber - 1];
 
         // If the font size exceeds the bounds of the containing grid cell, size it its
         // row or column dimension, whichever is smallest.
-        if (fontSize > (column.breadth * displayPixelRatio) ||
-            fontSize > (row.breadth * displayPixelRatio)) {
+        if (
+          fontSize > column.breadth * displayPixelRatio ||
+          fontSize > row.breadth * displayPixelRatio
+        ) {
           fontSize = Math.min([column.breadth, row.breadth]);
           this.ctx.font = fontSize + "px " + GRID_FONT_FAMILY;
         }
 
-        let textWidth = this.ctx.measureText(area.name).width;
+        const textWidth = this.ctx.measureText(area.name).width;
         // The width of the character 'm' approximates the height of the text.
-        let textHeight = this.ctx.measureText("m").width;
+        const textHeight = this.ctx.measureText("m").width;
         // Padding in pixels for the line number text inside of the line number container.
-        let padding = 3 * displayPixelRatio;
+        const padding = 3 * displayPixelRatio;
 
-        let boxWidth = textWidth + 2 * padding;
-        let boxHeight = textHeight + 2 * padding;
+        const boxWidth = textWidth + 2 * padding;
+        const boxHeight = textHeight + 2 * padding;
 
         let x = column.start + column.breadth / 2;
         let y = row.start + row.breadth / 2;
 
         [x, y] = apply(this.currentMatrix, [x, y]);
 
-        let rectXPos = x - boxWidth / 2;
-        let rectYPos = y - boxHeight / 2;
+        const rectXPos = x - boxWidth / 2;
+        const rectYPos = y - boxHeight / 2;
 
         // Draw a rounded rectangle with a border width of 1 pixel,
         // a border color matching the grid color, and a white background.
         this.ctx.lineWidth = 1 * displayPixelRatio;
         this.ctx.strokeStyle = this.color;
         this.ctx.fillStyle = "white";
-        let radius = 2 * displayPixelRatio;
-        drawRoundedRect(this.ctx, rectXPos, rectYPos, boxWidth, boxHeight, radius);
+        const radius = 2 * displayPixelRatio;
+        drawRoundedRect(
+          this.ctx,
+          rectXPos,
+          rectYPos,
+          boxWidth,
+          boxHeight,
+          radius
+        );
 
         this.ctx.fillStyle = this.color;
         this.ctx.fillText(area.name, x, y + padding);
@@ -926,13 +1005,13 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    * Renders the grid area overlay on the css grid highlighter canvas.
    */
   renderGridAreaOverlay() {
-    let padding = 1;
+    const padding = 1;
 
     for (let i = 0; i < this.gridData.length; i++) {
-      let fragment = this.gridData[i];
+      const fragment = this.gridData[i];
 
-      for (let area of fragment.areas) {
-        let { rowStart, rowEnd, columnStart, columnEnd, type } = area;
+      for (const area of fragment.areas) {
+        const { rowStart, rowEnd, columnStart, columnEnd, type } = area;
 
         if (type === "implicit") {
           continue;
@@ -948,15 +1027,35 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
         const areaColStartLinePos = areaColStart.start + areaColStart.breadth;
         const areaRowStartLinePos = areaRowStart.start + areaRowStart.breadth;
 
-        this.renderLine(areaColStartLinePos + padding, areaRowStartLinePos,
-          areaRowEnd.start, COLUMNS, "areaEdge");
-        this.renderLine(areaColEnd.start - padding, areaRowStartLinePos,
-          areaRowEnd.start, COLUMNS, "areaEdge");
+        this.renderLine(
+          areaColStartLinePos + padding,
+          areaRowStartLinePos,
+          areaRowEnd.start,
+          COLUMNS,
+          "areaEdge"
+        );
+        this.renderLine(
+          areaColEnd.start - padding,
+          areaRowStartLinePos,
+          areaRowEnd.start,
+          COLUMNS,
+          "areaEdge"
+        );
 
-        this.renderLine(areaRowStartLinePos + padding, areaColStartLinePos,
-          areaColEnd.start, ROWS, "areaEdge");
-        this.renderLine(areaRowEnd.start - padding, areaColStartLinePos, areaColEnd.start,
-          ROWS, "areaEdge");
+        this.renderLine(
+          areaRowStartLinePos + padding,
+          areaColStartLinePos,
+          areaColEnd.start,
+          ROWS,
+          "areaEdge"
+        );
+        this.renderLine(
+          areaRowEnd.start - padding,
+          areaColStartLinePos,
+          areaColEnd.start,
+          ROWS,
+          "areaEdge"
+        );
 
         this.renderGridAreaName(fragment, area);
       }
@@ -975,42 +1074,44 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         Column number of the grid cell to highlight.
    */
   renderGridCell(gridFragmentIndex, rowNumber, columnNumber) {
-    let fragment = this.gridData[gridFragmentIndex];
+    const fragment = this.gridData[gridFragmentIndex];
 
     if (!fragment) {
       return;
     }
 
-    let row = fragment.rows.tracks[rowNumber - 1];
-    let column = fragment.cols.tracks[columnNumber - 1];
+    const row = fragment.rows.tracks[rowNumber - 1];
+    const column = fragment.cols.tracks[columnNumber - 1];
 
     if (!row || !column) {
       return;
     }
 
-    let x1 = column.start;
-    let y1 = row.start;
-    let x2 = column.start + column.breadth;
-    let y2 = row.start + row.breadth;
+    const x1 = column.start;
+    const y1 = row.start;
+    const x2 = column.start + column.breadth;
+    const y2 = row.start + row.breadth;
 
-    let { devicePixelRatio } = this.win;
-    let displayPixelRatio = getDisplayPixelRatio(this.win);
-    let points = getPointsFromDiagonal(x1, y1, x2, y2, this.currentMatrix);
+    const { devicePixelRatio } = this.win;
+    const displayPixelRatio = getDisplayPixelRatio(this.win);
+    const points = getPointsFromDiagonal(x1, y1, x2, y2, this.currentMatrix);
 
     // Scale down by `devicePixelRatio` since SVG element already take them into account.
-    let svgPoints = points.map(point => ({
+    const svgPoints = points.map(point => ({
       x: Math.round(point.x / devicePixelRatio),
-      y: Math.round(point.y / devicePixelRatio)
+      y: Math.round(point.y / devicePixelRatio),
     }));
 
     // Scale down by `displayPixelRatio` since infobar's HTML elements already take it
     // into account, and the zoom scaling is handled by `moveInfobar`.
-    let bounds = getBoundsFromPoints(points.map(point => ({
-      x: Math.round(point.x / displayPixelRatio),
-      y: Math.round(point.y / displayPixelRatio)
-    })));
+    const bounds = getBoundsFromPoints(
+      points.map(point => ({
+        x: Math.round(point.x / displayPixelRatio),
+        y: Math.round(point.y / displayPixelRatio),
+      }))
+    );
 
-    let cells = this.getElement("cells");
+    const cells = this.getElement("cells");
     cells.setAttribute("d", getPathDescriptionFromPoints(svgPoints));
 
     this._showGridCellInfoBar();
@@ -1033,18 +1134,21 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         The grid dimension type which is either the constant COLUMNS or ROWS.
    */
   renderGridGap(linePos, startPos, endPos, breadth, dimensionType) {
-    let { devicePixelRatio } = this.win;
-    let displayPixelRatio = getDisplayPixelRatio(this.win);
-    let offset = (displayPixelRatio / 2) % 1;
-    let canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
-    let canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
+    const { devicePixelRatio } = this.win;
+    const displayPixelRatio = getDisplayPixelRatio(this.win);
+    const offset = (displayPixelRatio / 2) % 1;
+    const canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
+    const canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
 
     linePos = Math.round(linePos);
     startPos = Math.round(startPos);
     breadth = Math.round(breadth);
 
     this.ctx.save();
-    this.ctx.fillStyle = this.getGridGapPattern(devicePixelRatio, dimensionType);
+    this.ctx.fillStyle = this.getGridGapPattern(
+      devicePixelRatio,
+      dimensionType
+    );
     this.ctx.translate(offset - canvasX, offset - canvasY);
 
     if (dimensionType === COLUMNS) {
@@ -1054,8 +1158,14 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
         endPos = this._winDimensions.height;
         startPos = -endPos;
       }
-      drawRect(this.ctx, linePos, startPos, linePos + breadth, endPos,
-        this.currentMatrix);
+      drawRect(
+        this.ctx,
+        linePos,
+        startPos,
+        linePos + breadth,
+        endPos,
+        this.currentMatrix
+      );
     } else {
       if (isFinite(endPos)) {
         endPos = Math.round(endPos);
@@ -1063,9 +1173,22 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
         endPos = this._winDimensions.width;
         startPos = -endPos;
       }
-      drawRect(this.ctx, startPos, linePos, endPos, linePos + breadth,
-        this.currentMatrix);
+      drawRect(
+        this.ctx,
+        startPos,
+        linePos,
+        endPos,
+        linePos + breadth,
+        this.currentMatrix
+      );
     }
+
+    // Find current angle of grid by measuring the angle of two arbitrary points,
+    // then rotate canvas, so the hash pattern stays 45deg to the gridlines.
+    const p1 = apply(this.currentMatrix, [0, 0]);
+    const p2 = apply(this.currentMatrix, [1, 0]);
+    const angleRad = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]);
+    this.ctx.rotate(angleRad);
 
     this.ctx.fill();
     this.ctx.restore();
@@ -1083,7 +1206,7 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         The dimension type of the grid line.
    */
   renderGridLineNames(gridFragmentIndex, lineNumber, dimensionType) {
-    let fragment = this.gridData[gridFragmentIndex];
+    const fragment = this.gridData[gridFragmentIndex];
 
     if (!fragment || !lineNumber || !dimensionType) {
       return;
@@ -1102,19 +1225,21 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
       return;
     }
 
-    let currentZoom = getCurrentZoom(this.win);
-    let { bounds } = this.currentQuads.content[gridFragmentIndex];
+    const currentZoom = getCurrentZoom(this.win);
+    const { bounds } = this.currentQuads.content[gridFragmentIndex];
 
     const rowYPosition = fragment.rows.lines[0];
     const colXPosition = fragment.rows.lines[0];
 
-    let x = dimensionType === COLUMNS
-      ? linePos.start + (bounds.left / currentZoom)
-      : colXPosition.start + (bounds.left / currentZoom);
+    const x =
+      dimensionType === COLUMNS
+        ? linePos.start + bounds.left / currentZoom
+        : colXPosition.start + bounds.left / currentZoom;
 
-    let y = dimensionType === ROWS
-      ? linePos.start + (bounds.top / currentZoom)
-      : rowYPosition.start + (bounds.top / currentZoom);
+    const y =
+      dimensionType === ROWS
+        ? linePos.start + bounds.top / currentZoom
+        : rowYPosition.start + bounds.top / currentZoom;
 
     this._showGridLineInfoBar();
     this._updateGridLineInfobar(names.join(", "), lineNumber, x, y);
@@ -1134,17 +1259,23 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         The grid line breadth value.
    * @param  {String} dimensionType
    *         The grid dimension type which is either the constant COLUMNS or ROWS.
-   * @param  {Number||undefined} stackedLineIndex
-   *         The line index position of the stacked line.
+   * @param  {Boolean||undefined} isStackedLine
+   *         Boolean indicating if the line is stacked.
    */
-  renderGridLineNumber(lineNumber, linePos, startPos, breadth, dimensionType,
-    stackedLineIndex) {
-    let displayPixelRatio = getDisplayPixelRatio(this.win);
-    let { devicePixelRatio } = this.win;
-    let offset = (displayPixelRatio / 2) % 1;
-    let fontSize = GRID_FONT_SIZE * displayPixelRatio;
-    let canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
-    let canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
+  renderGridLineNumber(
+    lineNumber,
+    linePos,
+    startPos,
+    breadth,
+    dimensionType,
+    isStackedLine
+  ) {
+    const displayPixelRatio = getDisplayPixelRatio(this.win);
+    const { devicePixelRatio } = this.win;
+    const offset = (displayPixelRatio / 2) % 1;
+    const fontSize = GRID_FONT_SIZE * devicePixelRatio;
+    const canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
+    const canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
 
     linePos = Math.round(linePos);
     startPos = Math.round(startPos);
@@ -1162,12 +1293,15 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     // For a general grid box, the height of the character "m" will be its minimum width
     // and height. If line number's text width is greater, then use the grid box's text
     // width instead.
-    let textHeight = this.ctx.measureText("m").width;
-    let textWidth = Math.max(textHeight, this.ctx.measureText(lineNumber).width);
+    const textHeight = this.ctx.measureText("m").width;
+    const textWidth = Math.max(
+      textHeight,
+      this.ctx.measureText(lineNumber).width
+    );
 
     // Padding in pixels for the line number text inside of the line number container.
-    let padding = 3 * displayPixelRatio;
-    let offsetFromEdge = 2 * displayPixelRatio;
+    const padding = 3 * devicePixelRatio;
+    const offsetFromEdge = 2 * devicePixelRatio;
 
     let boxWidth = textWidth + 2 * padding;
     let boxHeight = textHeight + 2 * padding;
@@ -1179,28 +1313,77 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
 
     if (dimensionType === COLUMNS) {
       x = linePos + breadth / 2;
-      y = startPos;
-
-      if (lineNumber > 0) {
-        y -= offsetFromEdge;
-      } else {
-        y += offsetFromEdge;
-      }
+      y =
+        lineNumber > 0 ? startPos - offsetFromEdge : startPos + offsetFromEdge;
     } else if (dimensionType === ROWS) {
-      x = startPos;
       y = linePos + breadth / 2;
-
-      if (lineNumber > 0) {
-        x -= offsetFromEdge;
-      } else {
-        x += offsetFromEdge;
-      }
+      x =
+        lineNumber > 0 ? startPos - offsetFromEdge : startPos + offsetFromEdge;
     }
 
     [x, y] = apply(this.currentMatrix, [x, y]);
 
-    if (stackedLineIndex) {
-      // Offset the stacked line number by half of the box's width/height.
+    // Draw a bubble rectangular arrow with a border width of 2 pixels, a border color
+    // matching the grid color and a white background (the line number will be written in
+    // black).
+    this.ctx.lineWidth = 2 * displayPixelRatio;
+    this.ctx.strokeStyle = this.color;
+    this.ctx.fillStyle = "white";
+
+    // See param definitions of drawBubbleRect.
+    const radius = 2 * displayPixelRatio;
+    const margin = 2 * displayPixelRatio;
+    const arrowSize = 8 * displayPixelRatio;
+
+    const minBoxSize = arrowSize * 2 + padding;
+    boxWidth = Math.max(boxWidth, minBoxSize);
+    boxHeight = Math.max(boxHeight, minBoxSize);
+
+    // Determine which edge of the box to aim the line number arrow at.
+    const boxEdge = this.getBoxEdge(dimensionType, lineNumber);
+
+    let { width, height } = this._winDimensions;
+    width *= displayPixelRatio;
+    height *= displayPixelRatio;
+
+    // Don't draw if the line is out of the viewport.
+    if (
+      (dimensionType === ROWS && (y < 0 || y > height)) ||
+      (dimensionType === COLUMNS && (x < 0 || x > width))
+    ) {
+      this.ctx.restore();
+      return;
+    }
+
+    // If the arrow's edge (the one perpendicular to the line direction) is too close to
+    // the edge of the viewport. Push the arrow inside the grid.
+    const minOffsetFromEdge = OFFSET_FROM_EDGE * displayPixelRatio;
+    switch (boxEdge) {
+      case "left":
+        if (x < minOffsetFromEdge) {
+          x += FLIP_ARROW_INSIDE_FACTOR * boxWidth;
+        }
+        break;
+      case "right":
+        if (width - x < minOffsetFromEdge) {
+          x -= FLIP_ARROW_INSIDE_FACTOR * boxWidth;
+        }
+        break;
+      case "top":
+        if (y < minOffsetFromEdge) {
+          y += FLIP_ARROW_INSIDE_FACTOR * boxHeight;
+        }
+        break;
+      case "bottom":
+        if (height - y < minOffsetFromEdge) {
+          y -= FLIP_ARROW_INSIDE_FACTOR * boxHeight;
+        }
+        break;
+    }
+
+    // Offset stacked line numbers by a quarter of the box's width/height, so a part of
+    // them remains visible behind the number that sits at the top of the stack.
+    if (isStackedLine) {
       const xOffset = boxWidth / 4;
       const yOffset = boxHeight / 4;
 
@@ -1213,41 +1396,107 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
       }
     }
 
-    // Draw a bubble rectangular arrow with a border width of 2 pixels, a border color
-    // matching the grid color and a white background (the line number will be written in
-    // black).
-    this.ctx.lineWidth = 2 * displayPixelRatio;
-    this.ctx.strokeStyle = this.color;
-    this.ctx.fillStyle = "white";
+    // If one the edges of the arrow that's parallel to the line is too close to the edge
+    // of the viewport (and therefore partly hidden), grow the arrow's size in the
+    // opposite direction.
+    // The goal is for the part that's not hidden to be exactly the size of a normal
+    // arrow and for the arrow to keep pointing at the line (keep being centered on it).
+    let grewBox = false;
+    const boxWidthBeforeGrowth = boxWidth;
+    const boxHeightBeforeGrowth = boxHeight;
 
-    // See param definitions of drawBubbleRect.
-    let radius = 2 * displayPixelRatio;
-    let margin = 2 * displayPixelRatio;
-    let arrowSize = 8 * displayPixelRatio;
+    if (dimensionType === ROWS && y <= boxHeight / 2) {
+      grewBox = true;
+      boxHeight = 2 * (boxHeight - y);
+    } else if (dimensionType === ROWS && y >= height - boxHeight / 2) {
+      grewBox = true;
+      boxHeight = 2 * (y - height + boxHeight);
+    } else if (dimensionType === COLUMNS && x <= boxWidth / 2) {
+      grewBox = true;
+      boxWidth = 2 * (boxWidth - x);
+    } else if (dimensionType === COLUMNS && x >= width - boxWidth / 2) {
+      grewBox = true;
+      boxWidth = 2 * (x - width + boxWidth);
+    }
 
-    let minBoxSize = arrowSize * 2 + padding;
-    boxWidth = Math.max(boxWidth, minBoxSize);
-    boxHeight = Math.max(boxHeight, minBoxSize);
+    // Draw the arrow box itself
+    drawBubbleRect(
+      this.ctx,
+      x,
+      y,
+      boxWidth,
+      boxHeight,
+      radius,
+      margin,
+      arrowSize,
+      boxEdge
+    );
 
-    // Determine default box edge to aim the line number arrow at.
-    let boxEdge;
-    if (dimensionType === COLUMNS) {
-      if (lineNumber > 0) {
-        boxEdge = "top";
-      } else {
-        boxEdge = "bottom";
+    // Determine the text position for it to be centered nicely inside the arrow box.
+    switch (boxEdge) {
+      case "left":
+        x -= boxWidth + arrowSize + radius - boxWidth / 2;
+        break;
+      case "right":
+        x += boxWidth + arrowSize + radius - boxWidth / 2;
+        break;
+      case "top":
+        y -= boxHeight + arrowSize + radius - boxHeight / 2;
+        break;
+      case "bottom":
+        y += boxHeight + arrowSize + radius - boxHeight / 2;
+        break;
+    }
+
+    // Do a second pass to adjust the position, along the other axis, if the box grew
+    // during the previous step, so the text is also centered on that axis.
+    if (grewBox) {
+      if (dimensionType === ROWS && y <= boxHeightBeforeGrowth / 2) {
+        y = boxHeightBeforeGrowth / 2;
+      } else if (
+        dimensionType === ROWS &&
+        y >= height - boxHeightBeforeGrowth / 2
+      ) {
+        y = height - boxHeightBeforeGrowth / 2;
+      } else if (dimensionType === COLUMNS && x <= boxWidthBeforeGrowth / 2) {
+        x = boxWidthBeforeGrowth / 2;
+      } else if (
+        dimensionType === COLUMNS &&
+        x >= width - boxWidthBeforeGrowth / 2
+      ) {
+        x = width - boxWidthBeforeGrowth / 2;
       }
     }
-    if (dimensionType === ROWS) {
-      if (lineNumber > 0) {
-        boxEdge = "left";
-      } else {
-        boxEdge = "right";
-      }
+
+    // Write the line number inside of the rectangle.
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+    this.ctx.fillStyle = "black";
+    const numberText = isStackedLine ? "" : lineNumber;
+    this.ctx.fillText(numberText, x, y);
+    this.ctx.restore();
+  }
+
+  /**
+   * Determine which edge of a line number box to aim the line number arrow at.
+   *
+   * @param  {String} dimensionType
+   *         The grid line dimension type which is either the constant COLUMNS or ROWS.
+   * @param  {Number} lineNumber
+   *         The grid line number.
+   * @return {String} The edge of the box: top, right, bottom or left.
+   */
+  getBoxEdge(dimensionType, lineNumber) {
+    let boxEdge;
+
+    if (dimensionType === COLUMNS) {
+      boxEdge = lineNumber > 0 ? "top" : "bottom";
+    } else if (dimensionType === ROWS) {
+      boxEdge = lineNumber > 0 ? "left" : "right";
     }
 
     // Rotate box edge as needed for writing mode and text direction.
-    let { direction, writingMode } = getComputedStyle(this.currentNode);
+    const { direction, writingMode } = getComputedStyle(this.currentNode);
 
     switch (writingMode) {
       case "horizontal-tb":
@@ -1286,70 +1535,7 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
         console.error(`Unexpected direction: ${direction}`);
     }
 
-    // Default to drawing outside the edge, but move inside when close to viewport.
-    let minOffsetFromEdge = OFFSET_FROM_EDGE * displayPixelRatio;
-    let { width, height } = this._winDimensions;
-    width *= displayPixelRatio;
-    height *= displayPixelRatio;
-
-    // Check if the x or y position of the line number's arrow is too close to the edge
-    // of the window.  If it is too close, flip the arrow around (by reflecting the box
-    // edge we're thinking of) and adjust the position by 2 x padding since we're now
-    // going the opposite direction.
-    switch (boxEdge) {
-      case "left":
-        if (x < minOffsetFromEdge) {
-          boxEdge = reflectEdge(boxEdge);
-          x += 2 * padding;
-        }
-        break;
-      case "right":
-        if ((width - x) < minOffsetFromEdge) {
-          boxEdge = reflectEdge(boxEdge);
-          x -= 2 * padding;
-        }
-        break;
-      case "top":
-        if (y < minOffsetFromEdge) {
-          boxEdge = reflectEdge(boxEdge);
-          y += 2 * padding;
-        }
-        break;
-      case "bottom":
-        if ((height - y) < minOffsetFromEdge) {
-          boxEdge = reflectEdge(boxEdge);
-          y -= 2 * padding;
-        }
-        break;
-    }
-
-    // Draw the bubble rect to show the arrow.
-    drawBubbleRect(this.ctx, x, y, boxWidth, boxHeight, radius, margin, arrowSize,
-                   boxEdge);
-
-    // Adjust position based on the edge.
-    switch (boxEdge) {
-      case "left":
-        x -= (boxWidth + arrowSize + radius) - boxWidth / 2;
-        break;
-      case "right":
-        x += (boxWidth + arrowSize + radius) - boxWidth / 2;
-        break;
-      case "top":
-        y -= (boxHeight + arrowSize + radius) - boxHeight / 2;
-        break;
-      case "bottom":
-        y += (boxHeight + arrowSize + radius) - boxHeight / 2;
-        break;
-    }
-
-    // Write the line number inside of the rectangle.
-    this.ctx.textAlign = "center";
-    this.ctx.textBaseline = "middle";
-    this.ctx.fillStyle = "black";
-    const numberText = stackedLineIndex ? "" : lineNumber;
-    this.ctx.fillText(numberText, x, y);
-    this.ctx.restore();
+    return boxEdge;
   }
 
   /**
@@ -1368,11 +1554,11 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         The grid line type - "edge", "explicit", or "implicit".
    */
   renderLine(linePos, startPos, endPos, dimensionType, lineType) {
-    let { devicePixelRatio } = this.win;
-    let lineWidth = getDisplayPixelRatio(this.win);
-    let offset = (lineWidth / 2) % 1;
-    let canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
-    let canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
+    const { devicePixelRatio } = this.win;
+    const lineWidth = getDisplayPixelRatio(this.win);
+    const offset = (lineWidth / 2) % 1;
+    const canvasX = Math.round(this._canvasPosition.x * devicePixelRatio);
+    const canvasY = Math.round(this._canvasPosition.y * devicePixelRatio);
 
     linePos = Math.round(linePos);
     startPos = Math.round(startPos);
@@ -1382,13 +1568,17 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     this.ctx.setLineDash(GRID_LINES_PROPERTIES[lineType].lineDash);
     this.ctx.translate(offset - canvasX, offset - canvasY);
 
-    let lineOptions = {
-      matrix: this.currentMatrix
+    const lineOptions = {
+      matrix: this.currentMatrix,
     };
 
     if (this.options.showInfiniteLines) {
-      lineOptions.extendToBoundaries = [canvasX, canvasY, canvasX + CANVAS_SIZE,
-                                        canvasY + CANVAS_SIZE];
+      lineOptions.extendToBoundaries = [
+        canvasX,
+        canvasY,
+        canvasX + CANVAS_SIZE,
+        canvasY + CANVAS_SIZE,
+      ];
     }
 
     if (dimensionType === COLUMNS) {
@@ -1401,7 +1591,8 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     this.ctx.globalAlpha = GRID_LINES_PROPERTIES[lineType].alpha;
 
     if (GRID_LINES_PROPERTIES[lineType].lineWidth) {
-      this.ctx.lineWidth = GRID_LINES_PROPERTIES[lineType].lineWidth * devicePixelRatio;
+      this.ctx.lineWidth =
+        GRID_LINES_PROPERTIES[lineType].lineWidth * devicePixelRatio;
     } else {
       this.ctx.lineWidth = lineWidth;
     }
@@ -1432,20 +1623,37 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     const lastEdgeLineIndex = this.getLastEdgeLineIndex(tracks);
 
     for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-      let linePos = line.start;
+      const line = lines[i];
+      const linePos = line.start;
 
       if (i == 0 || i == lastEdgeLineIndex) {
         this.renderLine(linePos, startPos, endPos, dimensionType, "edge");
       } else {
-        this.renderLine(linePos, startPos, endPos, dimensionType, tracks[i - 1].type);
+        this.renderLine(
+          linePos,
+          startPos,
+          endPos,
+          dimensionType,
+          tracks[i - 1].type
+        );
       }
 
       // Render a second line to illustrate the gutter for non-zero breadth.
       if (line.breadth > 0) {
-        this.renderGridGap(linePos, startPos, endPos, line.breadth, dimensionType);
-        this.renderLine(linePos + line.breadth, startPos, endPos, dimensionType,
-          tracks[i].type);
+        this.renderGridGap(
+          linePos,
+          startPos,
+          endPos,
+          line.breadth,
+          dimensionType
+        );
+        this.renderLine(
+          linePos + line.breadth,
+          startPos,
+          endPos,
+          dimensionType,
+          tracks[i].type
+        );
       }
     }
   }
@@ -1464,10 +1672,8 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    */
   renderLineNumbers(gridDimension, dimensionType, startPos) {
     const { lines, tracks } = gridDimension;
-    // Keep track of the number of collapsed lines per line position.
-    let stackedLines = [];
 
-    for (let i = 0, line; (line = lines[i++]);) {
+    for (let i = 0, line; (line = lines[i++]); ) {
       // If you place something using negative numbers, you can trigger some implicit
       // grid creation above and to the left of the explicit grid (assuming a
       // horizontal-tb writing mode).
@@ -1481,27 +1687,34 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
         continue;
       }
 
-      // Check for overlapping lines. We render a second box beneath the last overlapping
+      // Check for overlapping lines by measuring the track width between them.
+      // We render a second box beneath the last overlapping
       // line number to indicate there are lines beneath it.
-      const gridLine = tracks[line.number - 1];
+      const gridTrack = tracks[i - 1];
 
-      if (gridLine) {
-        const { breadth }  = gridLine;
+      if (gridTrack) {
+        const { breadth } = gridTrack;
 
         if (breadth === 0) {
-          stackedLines.push(lines[i].number);
-
-          if (stackedLines.length > 0) {
-            this.renderGridLineNumber(line.number, line.start, startPos, line.breadth,
-              dimensionType, 1);
-          }
-
+          this.renderGridLineNumber(
+            line.number,
+            line.start,
+            startPos,
+            line.breadth,
+            dimensionType,
+            true
+          );
           continue;
         }
       }
 
-      this.renderGridLineNumber(line.number, line.start, startPos, line.breadth,
-        dimensionType);
+      this.renderGridLineNumber(
+        line.number,
+        line.start,
+        startPos,
+        line.breadth,
+        dimensionType
+      );
     }
   }
 
@@ -1519,46 +1732,44 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    */
   renderNegativeLineNumbers(gridDimension, dimensionType, startPos) {
     const { lines, tracks } = gridDimension;
-    // Keep track of the number of collapsed lines per line position.
-    let stackedLines = [];
 
-    for (let i = 0, line; (line = lines[i++]);) {
-      let linePos = line.start;
-      let negativeLineNumber = line.negativeNumber;
+    for (let i = 0, line; (line = lines[i++]); ) {
+      const linePos = line.start;
+      const negativeLineNumber = line.negativeNumber;
 
       // Don't render any negative line number greater than -1.
       if (negativeLineNumber == 0) {
         break;
       }
 
-      // Check for overlapping lines. We render a second box beneath the last overlapping
+      // Check for overlapping lines by measuring the track width between them.
+      // We render a second box beneath the last overlapping
       // line number to indicate there are lines beneath it.
-      const gridLine = tracks[line.number - 1];
+      const gridTrack = tracks[i - 1];
+      if (gridTrack) {
+        const { breadth } = gridTrack;
 
-      if (gridLine) {
-        const { breadth }  = gridLine;
-
-        if (breadth === 0) {
-          stackedLines.push(negativeLineNumber);
-
-          if (stackedLines.length > 0) {
-            this.renderGridLineNumber(negativeLineNumber, linePos, startPos,
-              line.breadth, dimensionType, 1);
-          }
-
+        // Ensure "-1" is always visible, since it is always the largest number.
+        if (breadth === 0 && negativeLineNumber != -1) {
+          this.renderGridLineNumber(
+            negativeLineNumber,
+            linePos,
+            startPos,
+            line.breadth,
+            dimensionType,
+            true
+          );
           continue;
         }
       }
 
-      // For negative line numbers, we want to display the smallest
-      // value at the front of the stack.
-      if (stackedLines.length) {
-        negativeLineNumber = stackedLines[0];
-        stackedLines = [];
-      }
-
-      this.renderGridLineNumber(negativeLineNumber, linePos, startPos, line.breadth,
-        dimensionType);
+      this.renderGridLineNumber(
+        negativeLineNumber,
+        linePos,
+        startPos,
+        line.breadth,
+        dimensionType
+      );
     }
   }
 
@@ -1570,32 +1781,38 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
   _update() {
     setIgnoreLayoutChanges(true);
 
-    let root = this.getElement("root");
-    let cells = this.getElement("cells");
-    let areas = this.getElement("areas");
-
-    // Hide the root element and force the reflow in order to get the proper window's
-    // dimensions without increasing them.
-    root.setAttribute("style", "display: none");
-    this.win.document.documentElement.offsetWidth;
+    const root = this.getElement("root");
+    const cells = this.getElement("cells");
+    const areas = this.getElement("areas");
 
     // Set the grid cells and areas fill to the current grid colour.
     cells.setAttribute("style", `fill: ${this.color}`);
     areas.setAttribute("style", `fill: ${this.color}`);
 
-    let { width, height } = this._winDimensions;
+    // Hide the root element and force the reflow in order to get the proper window's
+    // dimensions without increasing them.
+    root.setAttribute("style", "display: none");
+    this.win.document.documentElement.offsetWidth;
+    this._winDimensions = getWindowDimensions(this.win);
+    const { width, height } = this._winDimensions;
 
     // Updates the <canvas> element's position and size.
     // It also clear the <canvas>'s drawing context.
-    updateCanvasElement(this.canvas, this._canvasPosition, this.win.devicePixelRatio);
+    updateCanvasElement(
+      this.canvas,
+      this._canvasPosition,
+      this.win.devicePixelRatio
+    );
 
     // Clear the grid area highlights.
     this.clearGridAreas();
     this.clearGridCell();
 
     // Update the current matrix used in our canvas' rendering.
-    let { currentMatrix, hasNodeTransformations } =
-      getCurrentMatrix(this.currentNode, this.win);
+    const { currentMatrix, hasNodeTransformations } = getCurrentMatrix(
+      this.currentNode,
+      this.win
+    );
     this.currentMatrix = currentMatrix;
     this.hasNodeTransformations = hasNodeTransformations;
 
@@ -1624,8 +1841,10 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     this._showGrid();
     this._showGridElements();
 
-    root.setAttribute("style",
-      `position: absolute; width: ${width}px; height: ${height}px; overflow: hidden`);
+    root.setAttribute(
+      "style",
+      `position: absolute; width: ${width}px; height: ${height}px; overflow: hidden`
+    );
 
     setIgnoreLayoutChanges(false, this.highlighterEnv.document.documentElement);
     return true;
@@ -1640,18 +1859,19 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         A DOMRect-like object represent the grid area rectangle.
    */
   _updateGridAreaInfobar(area, bounds) {
-    let { width, height } = bounds;
-    let dim = parseFloat(width.toPrecision(6)) +
-              " \u00D7 " +
-              parseFloat(height.toPrecision(6));
+    const { width, height } = bounds;
+    const dim =
+      parseFloat(width.toPrecision(6)) +
+      " \u00D7 " +
+      parseFloat(height.toPrecision(6));
 
     this.getElement("area-infobar-name").setTextContent(area.name);
     this.getElement("area-infobar-dimensions").setTextContent(dim);
 
-    let container = this.getElement("area-infobar-container");
+    const container = this.getElement("area-infobar-container");
     moveInfobar(container, bounds, this.win, {
       position: "bottom",
-      hideIfOffscreen: true
+      hideIfOffscreen: true,
     });
   }
 
@@ -1666,20 +1886,24 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
    *         A DOMRect-like object represent the grid cell rectangle.
    */
   _updateGridCellInfobar(rowNumber, columnNumber, bounds) {
-    let { width, height } = bounds;
-    let dim = parseFloat(width.toPrecision(6)) +
-              " \u00D7 " +
-              parseFloat(height.toPrecision(6));
-    let position = LAYOUT_L10N.getFormatStr("layout.rowColumnPositions", rowNumber,
-      columnNumber);
+    const { width, height } = bounds;
+    const dim =
+      parseFloat(width.toPrecision(6)) +
+      " \u00D7 " +
+      parseFloat(height.toPrecision(6));
+    const position = L10N.getFormatStr(
+      "grid.rowColumnPositions",
+      rowNumber,
+      columnNumber
+    );
 
     this.getElement("cell-infobar-position").setTextContent(position);
     this.getElement("cell-infobar-dimensions").setTextContent(dim);
 
-    let container = this.getElement("cell-infobar-container");
+    const container = this.getElement("cell-infobar-container");
     moveInfobar(container, bounds, this.win, {
       position: "top",
-      hideIfOffscreen: true
+      hideIfOffscreen: true,
     });
   }
 
@@ -1699,9 +1923,12 @@ class CssGridHighlighter extends AutoRefreshHighlighter {
     this.getElement("line-infobar-number").setTextContent(gridLineNumber);
     this.getElement("line-infobar-names").setTextContent(gridLineNames);
 
-    let container = this.getElement("line-infobar-container");
-    moveInfobar(container, getBoundsFromPoints([{x, y}, {x, y}, {x, y}, {x, y}]),
-      this.win);
+    const container = this.getElement("line-infobar-container");
+    moveInfobar(
+      container,
+      getBoundsFromPoints([{ x, y }, { x, y }, { x, y }, { x, y }]),
+      this.win
+    );
   }
 }
 

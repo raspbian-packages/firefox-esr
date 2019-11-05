@@ -12,20 +12,20 @@
 
 #ifdef XP_WIN
 
-#include <windows.h>
-#include "ProtocolUtils.h"
-#define INVALID_HANDLE INVALID_HANDLE_VALUE
+#  include <windows.h>
+#  include "ProtocolUtils.h"
+#  define INVALID_HANDLE INVALID_HANDLE_VALUE
 
 #else  // XP_WIN
 
-#include <unistd.h>
+#  include <unistd.h>
 
-#ifndef OS_POSIX
-#define OS_POSIX
-#endif
+#  ifndef OS_POSIX
+#    define OS_POSIX
+#  endif
 
-#include "base/eintr_wrapper.h"
-#define INVALID_HANDLE -1
+#  include "base/eintr_wrapper.h"
+#  define INVALID_HANDLE -1
 
 #endif  // XP_WIN
 
@@ -41,7 +41,7 @@ FileDescriptor::FileDescriptor(const FileDescriptor& aOther)
 
 FileDescriptor::FileDescriptor(FileDescriptor&& aOther)
     : mHandle(INVALID_HANDLE) {
-  *this = mozilla::Move(aOther);
+  *this = std::move(aOther);
 }
 
 FileDescriptor::FileDescriptor(PlatformHandleType aHandle)
@@ -156,7 +156,7 @@ void FileDescriptor::Close(PlatformHandleType aHandle) {
       NS_WARNING("Failed to close file handle for current process!");
     }
 #else  // XP_WIN
-    HANDLE_EINTR(close(aHandle));
+    IGNORE_EINTR(close(aHandle));
 #endif
   }
 }
@@ -207,9 +207,7 @@ bool IPDLParamTraits<FileDescriptor>::Read(const IPC::Message* aMsg,
 
   *aResult = FileDescriptor(FileDescriptor::IPDLPrivate(), pfd);
   if (!aResult->IsValid()) {
-    printf_stderr(
-        "IPDL protocol Error: [%s] Received an invalid file descriptor\n",
-        aActor->ProtocolName());
+    printf_stderr("IPDL protocol Error: Received an invalid file descriptor\n");
   }
   return true;
 }

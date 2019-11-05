@@ -5,25 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "DOMSVGLength.h"
+
 #include "DOMSVGLengthList.h"
 #include "DOMSVGAnimatedLengthList.h"
-#include "SVGLength.h"
-#include "SVGAnimatedLengthList.h"
-#include "nsSVGElement.h"
-#include "nsSVGLength2.h"
 #include "nsError.h"
 #include "nsMathUtils.h"
+#include "SVGAnimatedLength.h"
+#include "SVGAnimatedLengthList.h"
+#include "SVGAttrTearoffTable.h"
+#include "SVGLength.h"
+#include "mozilla/dom/SVGElement.h"
 #include "mozilla/dom/SVGLengthBinding.h"
 #include "mozilla/FloatingPoint.h"
-#include "nsSVGAttrTearoffTable.h"
 
 // See the architecture comment in DOMSVGAnimatedLengthList.h.
 
 namespace mozilla {
 
-using namespace dom;
+namespace dom {
 
-static nsSVGAttrTearoffTable<nsSVGLength2, DOMSVGLength>
+static SVGAttrTearoffTable<SVGAnimatedLength, DOMSVGLength>
     sBaseSVGLengthTearOffTable, sAnimSVGLengthTearOffTable;
 
 // We could use NS_IMPL_CYCLE_COLLECTION(, except that in Unlink() we need to
@@ -54,7 +55,7 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(DOMSVGLength)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DOMSVGLength)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
-  NS_INTERFACE_MAP_ENTRY(mozilla::DOMSVGLength)  // pseudo-interface
+  NS_INTERFACE_MAP_ENTRY(DOMSVGLength)  // pseudo-interface
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
@@ -78,7 +79,9 @@ class MOZ_RAII AutoChangeLengthNotifier {
   ~AutoChangeLengthNotifier() {
     mLength->Element()->DidChangeLengthList(mLength->mAttrEnum,
                                             mEmptyOrOldValue);
-    if (mLength->mList->IsAnimating()) {
+    // Null check mLength->mList, since DidChangeLengthList can run script,
+    // potentially removing mLength from its list.
+    if (mLength->mList && mLength->mList->IsAnimating()) {
       mLength->Element()->AnimationNeedsResample();
     }
   }
@@ -95,7 +98,7 @@ DOMSVGLength::DOMSVGLength(DOMSVGLengthList* aList, uint8_t aAttrEnum,
       mListIndex(aListIndex),
       mAttrEnum(aAttrEnum),
       mIsAnimValItem(aIsAnimValItem),
-      mUnit(SVGLengthBinding::SVG_LENGTHTYPE_NUMBER),
+      mUnit(SVGLength_Binding::SVG_LENGTHTYPE_NUMBER),
       mValue(0.0f),
       mVal(nullptr) {
   // These shifts are in sync with the members in the header.
@@ -110,17 +113,17 @@ DOMSVGLength::DOMSVGLength()
       mListIndex(0),
       mAttrEnum(0),
       mIsAnimValItem(false),
-      mUnit(SVGLengthBinding::SVG_LENGTHTYPE_NUMBER),
+      mUnit(SVGLength_Binding::SVG_LENGTHTYPE_NUMBER),
       mValue(0.0f),
       mVal(nullptr) {}
 
-DOMSVGLength::DOMSVGLength(nsSVGLength2* aVal, nsSVGElement* aSVGElement,
+DOMSVGLength::DOMSVGLength(SVGAnimatedLength* aVal, SVGElement* aSVGElement,
                            bool aAnimVal)
     : mList(nullptr),
       mListIndex(0),
       mAttrEnum(0),
       mIsAnimValItem(aAnimVal),
-      mUnit(SVGLengthBinding::SVG_LENGTHTYPE_NUMBER),
+      mUnit(SVGLength_Binding::SVG_LENGTHTYPE_NUMBER),
       mValue(0.0f),
       mVal(aVal),
       mSVGElement(aSVGElement) {}
@@ -146,8 +149,9 @@ void DOMSVGLength::CleanupWeakRefs() {
 
 DOMSVGLength::~DOMSVGLength() { CleanupWeakRefs(); }
 
-already_AddRefed<DOMSVGLength> DOMSVGLength::GetTearOff(
-    nsSVGLength2* aVal, nsSVGElement* aSVGElement, bool aAnimVal) {
+already_AddRefed<DOMSVGLength> DOMSVGLength::GetTearOff(SVGAnimatedLength* aVal,
+                                                        SVGElement* aSVGElement,
+                                                        bool aAnimVal) {
   auto& table =
       aAnimVal ? sAnimSVGLengthTearOffTable : sBaseSVGLengthTearOffTable;
   RefPtr<DOMSVGLength> domLength = table.GetTearoff(aVal);
@@ -208,8 +212,9 @@ float DOMSVGLength::GetValue(ErrorResult& aRv) {
       aRv.Throw(NS_ERROR_FAILURE);
     }
     return value;
-  } else if (mUnit == SVGLengthBinding::SVG_LENGTHTYPE_NUMBER ||
-             mUnit == SVGLengthBinding::SVG_LENGTHTYPE_PX) {
+  }
+  if (mUnit == SVGLength_Binding::SVG_LENGTHTYPE_NUMBER ||
+      mUnit == SVGLength_Binding::SVG_LENGTHTYPE_PX) {
     return mValue;
   }
   // else [SVGWG issue] Can't convert this length's value to user units
@@ -248,8 +253,8 @@ void DOMSVGLength::SetValue(float aUserUnitValue, ErrorResult& aRv) {
         return;
       }
     }
-  } else if (mUnit == SVGLengthBinding::SVG_LENGTHTYPE_NUMBER ||
-             mUnit == SVGLengthBinding::SVG_LENGTHTYPE_PX) {
+  } else if (mUnit == SVGLength_Binding::SVG_LENGTHTYPE_NUMBER ||
+             mUnit == SVGLength_Binding::SVG_LENGTHTYPE_PX) {
     mValue = aUserUnitValue;
     return;
   }
@@ -415,7 +420,7 @@ void DOMSVGLength::ConvertToSpecifiedUnits(uint16_t aUnit, ErrorResult& aRv) {
 
 JSObject* DOMSVGLength::WrapObject(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SVGLengthBinding::Wrap(aCx, this, aGivenProto);
+  return SVGLength_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void DOMSVGLength::InsertingIntoList(DOMSVGLengthList* aList, uint8_t aAttrEnum,
@@ -459,4 +464,5 @@ bool DOMSVGLength::IndexIsValid() {
 }
 #endif
 
+}  // namespace dom
 }  // namespace mozilla

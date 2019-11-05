@@ -30,9 +30,9 @@ FileLocation::FileLocation(const FileLocation& aOther)
       mPath(aOther.mPath) {}
 
 FileLocation::FileLocation(FileLocation&& aOther)
-    : mBaseFile(Move(aOther.mBaseFile)),
-      mBaseZip(Move(aOther.mBaseZip)),
-      mPath(Move(aOther.mPath)) {
+    : mBaseFile(std::move(aOther.mBaseFile)),
+      mBaseZip(std::move(aOther.mBaseZip)),
+      mPath(std::move(aOther.mPath)) {
   aOther.mPath.Truncate();
 }
 
@@ -201,8 +201,6 @@ nsresult FileLocation::Data::Copy(char* aBuf, uint32_t aLen) {
     uint32_t readLen;
     cursor.Copy(&readLen);
     if (readLen != aLen) {
-      nsZipArchive::sFileCorruptedReason =
-          "FileLocation::Data: insufficient data";
       return NS_ERROR_FILE_CORRUPTED;
     }
     return NS_OK;

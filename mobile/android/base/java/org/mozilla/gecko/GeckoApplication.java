@@ -7,21 +7,28 @@ package org.mozilla.gecko;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
+import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.os.Process;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.multidex.MultiDex;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
@@ -38,10 +45,12 @@ import org.mozilla.gecko.icons.Icons;
 import org.mozilla.gecko.lwt.LightweightTheme;
 import org.mozilla.gecko.mdns.MulticastDNSManager;
 import org.mozilla.gecko.media.AudioFocusAgent;
+import org.mozilla.gecko.mozglue.SafeIntent;
 import org.mozilla.gecko.notifications.NotificationClient;
 import org.mozilla.gecko.notifications.NotificationHelper;
 import org.mozilla.gecko.permissions.Permissions;
 import org.mozilla.gecko.preferences.DistroSharedPrefsImport;
+import org.mozilla.gecko.preferences.GeckoPreferences;
 import org.mozilla.gecko.pwa.PwaUtils;
 import org.mozilla.gecko.telemetry.TelemetryBackgroundReceiver;
 import org.mozilla.gecko.util.ActivityResultHandler;
@@ -50,9 +59,12 @@ import org.mozilla.gecko.util.BundleEventListener;
 import org.mozilla.gecko.util.EventCallback;
 import org.mozilla.gecko.util.GeckoBundle;
 import org.mozilla.gecko.util.HardwareUtils;
+import org.mozilla.gecko.util.IntentUtils;
 import org.mozilla.gecko.util.PRNGFixes;
 import org.mozilla.gecko.util.ShortcutUtils;
 import org.mozilla.gecko.util.ThreadUtils;
+import org.mozilla.geckoview.GeckoRuntime;
+import org.mozilla.geckoview.GeckoRuntimeSettings;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,8 +75,10 @@ import java.net.URL;
 import java.util.UUID;
 
 public class GeckoApplication extends Application
-                              implements HapticFeedbackDelegate {
+                              implements HapticFeedbackDelegate,
+                                         SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = "GeckoApplication";
+    public static final String ACTION_DEBUG = "org.mozilla.gecko.DEBUG";
     private static final String MEDIA_DECODING_PROCESS_CRASH = "MEDIA_DECODING_PROCESS_CRASH";
 
     private boolean mInBackground;
@@ -72,6 +86,10 @@ public class GeckoApplication extends Application
     private boolean mIsInitialResume;
 
     private LightweightTheme mLightweightTheme;
+
+    // GeckoApp *must* keep its GeckoView state around for as long as our app process (and
+    // therefore Gecko) keeps running, even if Android clears the normal savedInstanceState.
+    private SparseArray<Parcelable> mSavedState;
 
     private RefWatcher mRefWatcher;
 
@@ -113,7 +131,7 @@ public class GeckoApplication extends Application
                            "startup (JavaScript) caches.");
             return new String[] { "-purgecaches" };
         }
-        return null;
+        return new String[0];
     }
 
     public static String getDefaultUAString() {
@@ -135,13 +153,14 @@ public class GeckoApplication extends Application
             return;
         }
 
-        // Restarting, so let Restarter kill us.
+        // Actually restarting the Processs / Application.
         final Context context = GeckoAppShell.getApplicationContext();
-        final Intent intent = new Intent();
-        intent.setClass(context, Restarter.class)
-              .putExtra("pid", Process.myPid())
-              .putExtra(Intent.EXTRA_INTENT, restartIntent);
-        context.startService(intent);
+        final Intent intent = new Intent()
+                .setClassName(context, AppConstants.MOZ_ANDROID_BROWSER_INTENT_CLASS)
+                .putExtra("didRestart", true)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+        Process.killProcess(Process.myPid());
     }
 
     /**
@@ -191,23 +210,82 @@ public class GeckoApplication extends Application
                 db.expireHistory(getContentResolver(), BrowserContract.ExpirePriority.NORMAL);
             }
         });
-
-        GeckoNetworkManager.getInstance().stop();
     }
 
     public void onApplicationForeground() {
         if (mIsInitialResume) {
             GeckoBatteryManager.getInstance().start(this);
-            GeckoFontScaleListener.getInstance().initialize(this);
-            GeckoNetworkManager.getInstance().start(this);
             mIsInitialResume = false;
         } else if (mPausedGecko) {
             GeckoThread.onResume();
             mPausedGecko = false;
-            GeckoNetworkManager.getInstance().start(this);
         }
 
         mInBackground = false;
+    }
+
+    private void initFontScaleListener() {
+        final SharedPreferences prefs = GeckoSharedPrefs.forApp(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+        onSharedPreferenceChanged(prefs, GeckoPreferences.PREFS_SYSTEM_FONT_SIZE);
+    }
+
+    private static GeckoRuntime sGeckoRuntime;
+    public static GeckoRuntime getRuntime() {
+        return sGeckoRuntime;
+    }
+
+    public static GeckoRuntime ensureRuntime(@NonNull Context context) {
+        if (sGeckoRuntime != null) {
+            return sGeckoRuntime;
+        }
+
+        return createRuntime(context, null);
+    }
+
+    private static Class<? extends Service> getCrashHandlerServiceClass() {
+        try {
+            return Class.forName("org.mozilla.gecko.CrashHandlerService").asSubclass(Service.class);
+        } catch (Exception e) {
+            // This can only happen as part of a misconfigured build, so rethrow
+            throw new IllegalStateException("Unable to find CrashHandlerService", e);
+        }
+    }
+
+    private static GeckoRuntimeSettings.Builder createSettingsBuilder() {
+        GeckoRuntimeSettings.Builder builder = new GeckoRuntimeSettings.Builder()
+                .arguments(getDefaultGeckoArgs());
+
+        if (AppConstants.MOZ_CRASHREPORTER) {
+            builder.crashHandler(getCrashHandlerServiceClass());
+        }
+
+        return builder;
+    }
+
+    public static GeckoRuntime createRuntime(@NonNull Context context,
+                                             @Nullable SafeIntent intent) {
+        if (sGeckoRuntime != null) {
+            throw new IllegalStateException("Already have a GeckoRuntime!");
+        }
+
+        if (context == null) {
+            throw new IllegalArgumentException("Context must not be null");
+        }
+
+        GeckoRuntimeSettings.Builder builder = createSettingsBuilder();
+        if (intent != null) {
+            builder.pauseForDebugger(ACTION_DEBUG.equals(intent.getAction()));
+
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                builder.extras(extras);
+            }
+        }
+
+        sGeckoRuntime = GeckoRuntime.create(context, builder.build());
+        ((GeckoApplication) GeckoAppShell.getApplicationContext()).initFontScaleListener();
+        return sGeckoRuntime;
     }
 
     @Override
@@ -218,10 +296,18 @@ public class GeckoApplication extends Application
         final Context oldContext = GeckoAppShell.getApplicationContext();
         if (oldContext instanceof GeckoApplication) {
             ((GeckoApplication) oldContext).onDestroy();
+            if (sGeckoRuntime != null) {
+                // The listener is registered when the runtime gets created, so if we already have
+                // a runtime, we need to transfer the listener registration to the new instance.
+                // The old listener will be unregistered through onDestroy().
+                GeckoSharedPrefs.forApp(this).registerOnSharedPreferenceChangeListener(this);
+            }
         }
 
         final Context context = getApplicationContext();
-        GeckoAppShell.ensureCrashHandling();
+        if (AppConstants.MOZ_CRASHREPORTER) {
+            GeckoAppShell.ensureCrashHandling(getCrashHandlerServiceClass());
+        }
         GeckoAppShell.setApplicationContext(context);
 
         // PRNG is a pseudorandom number generator.
@@ -282,6 +368,7 @@ public class GeckoApplication extends Application
         FilePicker.init(context);
         DownloadsIntegration.init();
         HomePanelsManager.getInstance().init(context);
+        AddonUICache.getInstance().init();
 
         GlobalPageMetadata.getInstance().init();
 
@@ -318,6 +405,16 @@ public class GeckoApplication extends Application
         super.onCreate();
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        // API >= 21 natively supports loading multiple DEX files from APK
+        // files, so this is a no-op -- we just need 'multiDexEnabled true' in
+        // the Gradle configuration.
+        MultiDex.install(this);
+    }
+
     /**
      * May be called when a new GeckoApplication object
      * replaces an old one due to assets change.
@@ -338,6 +435,7 @@ public class GeckoApplication extends Application
                 "Image:SetAs",
                 "Profile:Create",
                 null);
+        GeckoSharedPrefs.forApp(this).unregisterOnSharedPreferenceChangeListener(this);
 
         GeckoService.unregister();
     }
@@ -367,9 +465,7 @@ public class GeckoApplication extends Application
             });
         }
 
-        GeckoAccessibility.setAccessibilityManagerListeners(this);
-
-        AudioFocusAgent.getInstance().attachToContext(this);
+        ThreadUtils.postToUiThread(() -> AudioFocusAgent.getInstance().attachToContext(this));
     }
 
     private class EventListener implements BundleEventListener
@@ -565,6 +661,14 @@ public class GeckoApplication extends Application
         mLightweightTheme = new LightweightTheme(this);
     }
 
+    /* package */ void setSavedState(SparseArray<Parcelable> savedState) {
+        mSavedState = savedState;
+    }
+
+    /* package */ SparseArray<Parcelable> getSavedState() {
+        return mSavedState;
+    }
+
     public static void createShortcut() {
         final Tab selectedTab = Tabs.getInstance().getSelectedTab();
         if (selectedTab != null) {
@@ -586,14 +690,22 @@ public class GeckoApplication extends Application
             final boolean safeForPwa = PwaUtils.shouldAddPwaShortcut(selectedTab);
             if (!safeForPwa) {
                 final String message = "This page is not safe for PWA";
+
                 // For release and beta, we record an error message
                 if (AppConstants.RELEASE_OR_BETA) {
                     Log.e(LOG_TAG, message);
                 } else {
-                    // For nightly and local build, we'll throw an exception here.
-                    throw new IllegalStateException(message);
-                }
+                    final Activity currentActivity =
+                            GeckoActivityMonitor.getInstance().getCurrentActivity();
+                    final SafeIntent safeIntent = new SafeIntent(currentActivity.getIntent());
+                    final boolean isInAutomation = IntentUtils.getIsInAutomationFromEnvironment(safeIntent);
 
+                    if (isInAutomation) {
+                        // For nightly automated tests, we'll throw an exception here
+                        // in order to fast fail.
+                        throw new IllegalStateException(message);
+                    }
+                }
             }
 
             final GeckoBundle message = new GeckoBundle();
@@ -609,15 +721,27 @@ public class GeckoApplication extends Application
     }
 
     public static void createBrowserShortcut(final String title, final String url) {
-      Icons.with(GeckoAppShell.getApplicationContext())
+        createBrowserShortcut(title, url, true);
+    }
+
+    private static void createBrowserShortcut(final String title, final String url, final boolean skipMemoryCache) {
+        // Try to fetch the icon from the disk cache. The memory cache is
+        // initially skipped to avoid the use of downsized icons.
+        Icons.with(GeckoAppShell.getApplicationContext())
               .pageUrl(url)
               .skipNetwork()
-              .skipMemory()
+              .skipMemoryIf(skipMemoryCache)
               .forLauncherIcon()
               .build()
               .execute(new IconCallback() {
                   @Override
                   public void onIconResponse(final IconResponse response) {
+                      if (response.isGenerated() && skipMemoryCache) {
+                          // The icon was not found in the disk cache.
+                          // Fall back to the memory cache.
+                          createBrowserShortcut(title, url, false);
+                          return;
+                      }
                       createShortcutWithIcon(title, url, response.getBitmap());
                   }
               });
@@ -805,6 +929,14 @@ public class GeckoApplication extends Application
                 GeckoActivityMonitor.getInstance().getCurrentActivity();
         if (currentActivity != null) {
             currentActivity.getWindow().getDecorView().performHapticFeedback(effect);
+        }
+    }
+
+    @Override // OnSharedPreferenceChangeListener
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (GeckoPreferences.PREFS_SYSTEM_FONT_SIZE.equals(key)) {
+            final boolean enabled = prefs.getBoolean(GeckoPreferences.PREFS_SYSTEM_FONT_SIZE, false);
+            getRuntime().getSettings().setAutomaticFontSizeAdjustment(enabled);
         }
     }
 }

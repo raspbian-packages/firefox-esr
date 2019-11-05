@@ -28,7 +28,9 @@
 
 class nsDiscriminatedUnion {
  public:
-  nsDiscriminatedUnion() : mType(nsIDataType::VTYPE_EMPTY) {}
+  nsDiscriminatedUnion() : mType(nsIDataType::VTYPE_EMPTY) {
+    u.mInt8Value = '\0';
+  }
   nsDiscriminatedUnion(const nsDiscriminatedUnion&) = delete;
   nsDiscriminatedUnion(nsDiscriminatedUnion&&) = delete;
 
@@ -90,7 +92,6 @@ class nsDiscriminatedUnion {
   void SetFromWChar(char16_t aValue);
   void SetFromID(const nsID& aValue);
   void SetFromAString(const nsAString& aValue);
-  void SetFromDOMString(const nsAString& aValue);
   void SetFromAUTF8String(const nsAUTF8String& aValue);
   void SetFromACString(const nsACString& aValue);
   MOZ_MUST_USE nsresult SetFromString(const char* aValue);

@@ -16,7 +16,7 @@
 namespace mozilla {
 namespace layout {
 
-class PRFileDescStream : public mozilla::gfx::EventStream {
+class PRFileDescStream final : public mozilla::gfx::EventStream {
   // Most writes, as seen in the print IPC use case, are very small (<32 bytes),
   // with a small number of very large (>40KB) writes. Writes larger than this
   // value are not buffered.
@@ -107,6 +107,8 @@ class PRFileDescStream : public mozilla::gfx::EventStream {
 
   bool good() { return mGood; }
 
+  void SetIsBad() final { mGood = false; }
+
  private:
   size_t AvailableBufferSpace() { return kBufferSize - mBufferPos; }
 
@@ -122,7 +124,7 @@ class PRFileDescStream : public mozilla::gfx::EventStream {
   bool mGood;
 };
 
-class DrawEventRecorderPRFileDesc : public gfx::DrawEventRecorderPrivate {
+class DrawEventRecorderPRFileDesc final : public gfx::DrawEventRecorderPrivate {
  public:
   MOZ_DECLARE_REFCOUNTED_VIRTUAL_TYPENAME(DrawEventRecorderPRFileDesc, override)
   explicit DrawEventRecorderPRFileDesc(){};

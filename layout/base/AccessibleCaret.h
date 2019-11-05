@@ -19,12 +19,14 @@
 #include "mozilla/RefPtr.h"
 #include "nsString.h"
 
-class nsIDocument;
 class nsIFrame;
-class nsIPresShell;
 struct nsPoint;
 
 namespace mozilla {
+class PresShell;
+namespace dom {
+class Event;
+}  // namespace dom
 
 // -----------------------------------------------------------------------------
 // Upon the creation of AccessibleCaret, it will insert DOM Element as an
@@ -43,7 +45,7 @@ namespace mozilla {
 //
 class AccessibleCaret {
  public:
-  explicit AccessibleCaret(nsIPresShell* aPresShell);
+  explicit AccessibleCaret(PresShell* aPresShell);
   virtual ~AccessibleCaret();
 
   // This enumeration representing the visibility and visual style of an
@@ -89,10 +91,6 @@ class AccessibleCaret {
            (mAppearance != Appearance::NormalNotShown);
   }
 
-  // Set true to enable the "Text Selection Bar" described in "Text Selection
-  // Visual Spec" in bug 921965.
-  virtual void SetSelectionBarEnabled(bool aEnabled);
-
   // This enumeration representing the result returned by SetPosition().
   enum class PositionChangedResult : uint8_t {
     // Position is not changed.
@@ -125,9 +123,11 @@ class AccessibleCaret {
   // AccessibleCaret is attached. It is needed when dragging the caret.
   nsPoint LogicalPosition() const { return mImaginaryCaretRect.Center(); }
 
-  // Element for 'Intersects' test. Container of image and bar elements.
-  dom::Element* CaretElement() const {
-    return mCaretElementHolder->GetContentNode();
+  // Element for 'Intersects' test. This is the container of the caret image
+  // and text-overlay elements. See CreateCaretElement() for the content
+  // structure.
+  dom::Element& CaretElement() const {
+    return mCaretElementHolder->ContentNode();
   }
 
   // Ensures that the caret element is made "APZ aware" so that the APZ code
@@ -139,7 +139,6 @@ class AccessibleCaret {
   void SetCaretElementStyle(const nsRect& aRect, float aZoomLevel);
   void SetTextOverlayElementStyle(const nsRect& aRect, float aZoomLevel);
   void SetCaretImageElementStyle(const nsRect& aRect, float aZoomLevel);
-  void SetSelectionBarElementStyle(const nsRect& aRect, float aZoomLevel);
 
   // Get current zoom level.
   float GetZoomLevel();
@@ -154,11 +153,6 @@ class AccessibleCaret {
     return mCaretElementHolder->GetElementById(sCaretImageElementId);
   }
 
-  // Element which represents the text selection bar.
-  dom::Element* SelectionBarElement() const {
-    return mCaretElementHolder->GetElementById(sSelectionBarElementId);
-  }
-
   nsIFrame* RootFrame() const { return mPresShell->GetRootFrame(); }
 
   nsIFrame* CustomContentContainerFrame() const;
@@ -166,14 +160,13 @@ class AccessibleCaret {
   // Transform Appearance to CSS id used in ua.css.
   static nsAutoString AppearanceString(Appearance aAppearance);
 
-  already_AddRefed<dom::Element> CreateCaretElement(
-      nsIDocument* aDocument) const;
+  already_AddRefed<dom::Element> CreateCaretElement(dom::Document*) const;
 
   // Inject caret element into custom content container.
-  void InjectCaretElement(nsIDocument* aDocument);
+  void InjectCaretElement(dom::Document*);
 
   // Remove caret element from custom content container.
-  void RemoveCaretElement(nsIDocument* aDocument);
+  void RemoveCaretElement(dom::Document*);
 
   // The top-center of the imaginary caret to which this AccessibleCaret is
   // attached.
@@ -184,7 +177,9 @@ class AccessibleCaret {
   class DummyTouchListener final : public nsIDOMEventListener {
    public:
     NS_DECL_ISUPPORTS
-    NS_IMETHOD HandleEvent(nsIDOMEvent* aEvent) override { return NS_OK; }
+    NS_IMETHOD HandleEvent(mozilla::dom::Event* aEvent) override {
+      return NS_OK;
+    }
 
    private:
     virtual ~DummyTouchListener(){};
@@ -193,13 +188,11 @@ class AccessibleCaret {
   // Member variables
   Appearance mAppearance = Appearance::None;
 
-  bool mSelectionBarEnabled = false;
-
   // AccessibleCaretManager owns us by a UniquePtr. When it's terminated by
   // AccessibleCaretEventHub::Terminate() which is called in
   // PresShell::Destroy(), it frees us automatically. No need to worry if we
   // outlive mPresShell.
-  nsIPresShell* MOZ_NON_OWNING_REF const mPresShell = nullptr;
+  PresShell* const MOZ_NON_OWNING_REF mPresShell = nullptr;
 
   RefPtr<dom::AnonymousContent> mCaretElementHolder;
 
@@ -214,13 +207,8 @@ class AccessibleCaret {
   RefPtr<DummyTouchListener> mDummyTouchListener{new DummyTouchListener()};
 
   // Static class variables
-  static float sWidth;
-  static float sHeight;
-  static float sMarginLeft;
-  static float sBarWidth;
   static const nsLiteralString sTextOverlayElementId;
   static const nsLiteralString sCaretImageElementId;
-  static const nsLiteralString sSelectionBarElementId;
 
 };  // class AccessibleCaret
 

@@ -18,11 +18,17 @@ RUN dpkg --add-architecture $ARCH
 # Ideally, we wouldn't need gcc-multilib and the extra linux-libc-dev,
 # but the latter is required to make the former installable, and the former
 # because of bug 1409276.
+# We exclude /usr/share/doc/*/changelog.Debian* files because they might differ
+# between i386 and amd64 variants of the packages we build on automation
+# because of dates stored in them by debchange (and both might end up installed
+# in some cases).
 # On Debian 7, pkg-config was not multiarch-aware, so we rely on the $ARCH
 # pkg-config being valid on the host. On more recent versions of Debian, we can
 # use pkg-config, which is multiarch-aware, but we also need dpkg-dev because
 # of https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=916772.
 RUN apt-get update && \
+    apt-get dist-upgrade && \
+    echo path-exclude=/usr/share/doc/*/changelog.Debian* > /etc/dpkg/dpkg.cfg.d/excludes && \
     if grep -q ^7\\. /etc/debian_version; then \
       BACKPORT=/wheezy-backports; \
       PKG_CONFIG=pkg-config:$ARCH; \

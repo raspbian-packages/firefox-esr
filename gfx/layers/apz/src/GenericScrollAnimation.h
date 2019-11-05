@@ -27,9 +27,11 @@ class GenericScrollAnimation : public AsyncPanZoomAnimation {
   bool DoSample(FrameMetrics& aFrameMetrics,
                 const TimeDuration& aDelta) override;
 
-  void UpdateDelta(TimeStamp aTime, nsPoint aDelta,
+  bool HandleScrollOffsetUpdate(const Maybe<CSSPoint>& aRelativeDelta) override;
+
+  void UpdateDelta(TimeStamp aTime, const nsPoint& aDelta,
                    const nsSize& aCurrentVelocity);
-  void UpdateDestination(TimeStamp aTime, nsPoint aDestination,
+  void UpdateDestination(TimeStamp aTime, const nsPoint& aDestination,
                          const nsSize& aCurrentVelocity);
 
   CSSPoint GetDestination() const {

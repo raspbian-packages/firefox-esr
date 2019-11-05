@@ -19,9 +19,11 @@ namespace mozilla {
 namespace net {
 
 class CookieServiceParent : public PCookieServiceParent {
+  friend class PCookieServiceParent;
+
  public:
   CookieServiceParent();
-  virtual ~CookieServiceParent();
+  virtual ~CookieServiceParent() = default;
 
   void TrackCookieLoad(nsIChannel* aChannel);
 
@@ -42,20 +44,20 @@ class CookieServiceParent : public PCookieServiceParent {
  protected:
   virtual void ActorDestroy(ActorDestroyReason aWhy) override;
 
-  virtual mozilla::ipc::IPCResult RecvGetCookieString(
-      const URIParams& aHost, const bool& aIsForeign,
-      const bool& aIsSafeTopLevelNav, const bool& aIsSameSiteForeign,
-      const OriginAttributes& aAttrs, nsCString* aResult) override;
+  mozilla::ipc::IPCResult RecvSetCookieString(
+      const URIParams& aHost, const Maybe<URIParams>& aChannelURI,
+      const Maybe<LoadInfoArgs>& aLoadInfoArgs, const bool& aIsForeign,
+      const bool& aIsTrackingResource,
+      const bool& aFirstPartyStorageAccessGranted,
+      const OriginAttributes& aAttrs, const nsCString& aCookieString,
+      const nsCString& aServerTime, const bool& aFromHttp);
 
-  virtual mozilla::ipc::IPCResult RecvSetCookieString(
-      const URIParams& aHost, const URIParams& aChannelURI,
-      const bool& aIsForeign, const nsCString& aCookieString,
-      const nsCString& aServerTime, const OriginAttributes& aAttrs,
-      const bool& aFromHttp) override;
-  virtual mozilla::ipc::IPCResult RecvPrepareCookieList(
+  mozilla::ipc::IPCResult RecvPrepareCookieList(
       const URIParams& aHost, const bool& aIsForeign,
+      const bool& aIsTrackingResource,
+      const bool& aFirstPartyStorageAccessGranted,
       const bool& aIsSafeTopLevelNav, const bool& aIsSameSiteForeign,
-      const OriginAttributes& aAttrs) override;
+      const OriginAttributes& aAttrs);
 
   void SerialializeCookieList(const nsTArray<nsCookie*>& aFoundCookieList,
                               nsTArray<CookieStruct>& aCookiesList,

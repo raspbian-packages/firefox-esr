@@ -5,20 +5,22 @@
 
 "use strict";
 
-add_task(async function () {
+add_task(async function() {
   info("Test JSON without JavaScript started.");
 
-  let oldPref = SpecialPowers.getBoolPref("javascript.enabled");
+  const oldPref = SpecialPowers.getBoolPref("javascript.enabled");
   SpecialPowers.setBoolPref("javascript.enabled", false);
 
   const TEST_JSON_URL = "data:application/json,[1,2,3]";
 
   // "uninitialized" will be the last app readyState because JS is disabled.
-  await addJsonViewTab(TEST_JSON_URL, {appReadyState: "uninitialized"});
+  await addJsonViewTab(TEST_JSON_URL, { appReadyState: "uninitialized" });
 
   info("Checking visible text contents.");
-  let {text} = await executeInContent("Test:JsonView:GetElementVisibleText",
-    {selector: "html"});
+  const { text } = await executeInContent(
+    "Test:JsonView:GetElementVisibleText",
+    { selector: "html" }
+  );
   is(text, "[1,2,3]", "The raw source should be visible.");
 
   SpecialPowers.setBoolPref("javascript.enabled", oldPref);

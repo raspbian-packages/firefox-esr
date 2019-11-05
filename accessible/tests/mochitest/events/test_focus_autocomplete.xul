@@ -13,10 +13,8 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="Accessible focus event testing">
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
 
   <script type="application/javascript"
           src="../common.js" />
@@ -36,13 +34,6 @@
     // Hacky stuffs
 
     // This is the hacks needed to use a searchbar without browser.js.
-    function getBrowser()
-    {
-      return {
-        mCurrentBrowser: { engines: new Array() }
-      };
-    }
-
     var BrowserSearch = {
       updateOpenSearchBadge: function() {}
     };
@@ -266,7 +257,7 @@
         // HTML form autocomplete
         var controller = Cc["@mozilla.org/autocomplete/controller;1"].
           getService(Ci.nsIAutoCompleteController);
-        popupNode = controller.input.popup.QueryInterface(nsIDOMNode);
+        popupNode = controller.input.popup;
       }
 
       if (popupNode) {
@@ -504,7 +495,10 @@
       <textbox id="richautocomplete" type="autocomplete"
                autocompletesearch="test-a11y-search"
                autocompletepopup="richpopup"/>
-      <panel id="richpopup" type="autocomplete-richlistbox" noautofocus="true"/>
+      <panel is="autocomplete-richlistbox-popup"
+             id="richpopup"
+             type="autocomplete-richlistbox"
+             noautofocus="true"/>
 
       <iframe id="iframe"/>
 

@@ -5,23 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(MediaFormatReader_h_)
-#define MediaFormatReader_h_
+#  define MediaFormatReader_h_
 
-#include "mozilla/Atomics.h"
-#include "mozilla/Maybe.h"
-#include "mozilla/StateMirroring.h"
-#include "mozilla/TaskQueue.h"
-#include "mozilla/Mutex.h"
+#  include "mozilla/Atomics.h"
+#  include "mozilla/Maybe.h"
+#  include "mozilla/Mutex.h"
+#  include "mozilla/StateMirroring.h"
+#  include "mozilla/StaticPrefs.h"
+#  include "mozilla/TaskQueue.h"
 
-#include "FrameStatistics.h"
-#include "MediaEventSource.h"
-#include "MediaDataDemuxer.h"
-#include "MediaMetadataManager.h"
-#include "MediaPrefs.h"
-#include "MediaPromiseDefs.h"
-#include "nsAutoPtr.h"
-#include "PDMFactory.h"
-#include "SeekTarget.h"
+#  include "FrameStatistics.h"
+#  include "MediaEventSource.h"
+#  include "MediaDataDemuxer.h"
+#  include "MediaMetadataManager.h"
+#  include "MediaPromiseDefs.h"
+#  include "nsAutoPtr.h"
+#  include "PDMFactory.h"
+#  include "SeekTarget.h"
 
 namespace mozilla {
 
@@ -41,9 +41,9 @@ struct WaitForDataRejectValue {
 
 struct SeekRejectValue {
   MOZ_IMPLICIT SeekRejectValue(const MediaResult& aError)
-      : mType(MediaData::NULL_DATA), mError(aError) {}
+      : mType(MediaData::Type::NULL_DATA), mError(aError) {}
   MOZ_IMPLICIT SeekRejectValue(nsresult aResult)
-      : mType(MediaData::NULL_DATA), mError(aResult) {}
+      : mType(MediaData::Type::NULL_DATA), mError(aResult) {}
   SeekRejectValue(MediaData::Type aType, const MediaResult& aError)
       : mType(aType), mError(aError) {}
   MediaData::Type mType;
@@ -285,7 +285,7 @@ class MediaFormatReader final
   // Drain the current decoder.
   void DrainDecoder(TrackType aTrack);
   void NotifyNewOutput(TrackType aTrack,
-                       const MediaDataDecoder::DecodedData& aResults);
+                       MediaDataDecoder::DecodedData&& aResults);
   void NotifyError(TrackType aTrack, const MediaResult& aError);
   void NotifyWaitingForData(TrackType aTrack);
   void NotifyWaitingForKey(TrackType aTrack);
@@ -348,7 +348,8 @@ class MediaFormatReader final
           mSizeOfQueue(0),
           mIsHardwareAccelerated(false),
           mLastStreamSourceID(UINT32_MAX),
-          mIsNullDecode(false) {
+          mIsNullDecode(false),
+          mHardwareDecodingDisabled(false) {
       DecoderDoctorLogger::LogConstruction("MediaFormatReader::DecoderData",
                                            this);
     }
@@ -366,7 +367,10 @@ class MediaFormatReader final
     // Only non-null up until the decoder is created.
     RefPtr<TaskQueue> mTaskQueue;
 
-    // Mutex protecting mDescription and mDecoder.
+    // Mutex protecting mDescription, mDecoder, mTrackDemuxer and mWorkingInfo
+    // as those can be read outside the TaskQueue.
+    // They are only written on the TaskQueue however, as such mMutex doesn't
+    // need to be held when those members are read on the TaskQueue.
     Mutex mMutex;
     // The platform decoder.
     RefPtr<MediaDataDecoder> mDecoder;
@@ -440,7 +444,7 @@ class MediaFormatReader final
         // Allow decode errors to be non-fatal, but give up
         // if we have too many, or if warnings should be treated as errors.
         return mNumOfConsecutiveError > mMaxConsecutiveError ||
-               MediaPrefs::MediaWarningsAsErrors();
+               StaticPrefs::MediaPlaybackWarningsAsErrors();
       } else if (mError.ref() == NS_ERROR_DOM_MEDIA_NEED_NEW_DECODER) {
         // If the caller asked for a new decoder we shouldn't treat
         // it as fatal.
@@ -535,7 +539,11 @@ class MediaFormatReader final
       }
       return mOriginalInfo.get();
     }
-    bool IsEncrypted() const { return GetCurrentInfo()->mCrypto.mValid; }
+    // Return the current TrackInfo updated as per the decoder output.
+    // Typically for audio, the number of channels and/or sampling rate can vary
+    // between what was found in the metadata and what the decoder returned.
+    const TrackInfo* GetWorkingInfo() const { return mWorkingInfo.get(); }
+    bool IsEncrypted() const { return GetCurrentInfo()->mCrypto.IsEncrypted(); }
 
     // Used by the MDSM for logging purposes.
     Atomic<size_t> mSizeOfQueue;
@@ -549,10 +557,14 @@ class MediaFormatReader final
     Maybe<media::TimeUnit> mLastTimeRangesEnd;
     // TrackInfo as first discovered during ReadMetadata.
     UniquePtr<TrackInfo> mOriginalInfo;
+    // Written exclusively on the TaskQueue, can be read on MDSM's TaskQueue.
+    // Must be read with parent's mutex held.
+    UniquePtr<TrackInfo> mWorkingInfo;
     RefPtr<TrackInfoSharedPtr> mInfo;
     Maybe<media::TimeUnit> mFirstDemuxedSampleTime;
     // Use NullDecoderModule or not.
     bool mIsNullDecode;
+    bool mHardwareDecodingDisabled;
 
     class {
      public:

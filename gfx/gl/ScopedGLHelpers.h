@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -30,7 +30,6 @@ struct ScopedGLWrapper {
   explicit ScopedGLWrapper(GLContext* gl) : mIsUnwrapped(false), mGL(gl) {
     MOZ_ASSERT(&ScopedGLWrapper<Derived>::Unwrap == &Derived::Unwrap);
     MOZ_ASSERT(&Derived::UnwrapImpl);
-    MOZ_ASSERT(IsContextCurrent(mGL));
   }
 
   virtual ~ScopedGLWrapper() {
@@ -40,7 +39,6 @@ struct ScopedGLWrapper {
  public:
   void Unwrap() {
     MOZ_ASSERT(!mIsUnwrapped);
-    MOZ_ASSERT(IsContextCurrent(mGL));
 
     Derived* derived = static_cast<Derived*>(this);
     derived->UnwrapImpl();
@@ -192,7 +190,7 @@ struct ScopedFramebufferForTexture
   bool IsComplete() const { return mComplete; }
 
   GLuint FB() const {
-    MOZ_ASSERT(IsComplete());
+    MOZ_GL_ASSERT(mGL, IsComplete());
     return mFB;
   }
 
@@ -288,6 +286,9 @@ struct ScopedPackState : public ScopedGLWrapper<ScopedPackState> {
 
  public:
   explicit ScopedPackState(GLContext* gl);
+
+  // Returns whether the stride was handled successfully.
+  bool SetForWidthAndStrideRGBA(GLsizei aWidth, GLsizei aStride);
 
  protected:
   void UnwrapImpl();

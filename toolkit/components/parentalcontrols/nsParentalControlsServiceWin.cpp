@@ -18,31 +18,14 @@
 
 using namespace mozilla;
 
-static const CLSID CLSID_WinParentalControls = {
-    0xE77CC89B,
-    0x7401,
-    0x4C04,
-    {0x8C, 0xED, 0x14, 0x9D, 0xB3, 0x5A, 0xDD, 0x04}};
-static const IID IID_IWinParentalControls = {
-    0x28B4D88B,
-    0xE072,
-    0x49E6,
-    {0x80, 0x4D, 0x26, 0xED, 0xBE, 0x21, 0xA7, 0xB9}};
-
 NS_IMPL_ISUPPORTS(nsParentalControlsService, nsIParentalControlsService)
-
-static HINSTANCE gAdvAPIDLLInst = nullptr;
-
-decltype(EventWrite) *gEventWrite = nullptr;
-decltype(EventRegister) *gEventRegister = nullptr;
-decltype(EventUnregister) *gEventUnregister = nullptr;
 
 nsParentalControlsService::nsParentalControlsService()
     : mEnabled(false), mProvider(0), mPC(nullptr) {
   HRESULT hr;
   CoInitialize(nullptr);
-  hr = CoCreateInstance(CLSID_WinParentalControls, nullptr, CLSCTX_INPROC,
-                        IID_IWinParentalControls, (void **)&mPC);
+  hr = CoCreateInstance(__uuidof(WindowsParentalControls), nullptr,
+                        CLSCTX_INPROC, IID_PPV_ARGS(&mPC));
   if (FAILED(hr)) return;
 
   RefPtr<IWPCSettings> wpcs;
@@ -63,15 +46,6 @@ nsParentalControlsService::nsParentalControlsService()
                                 : settings != WPCFLAG_NO_RESTRICTION;
 
   if (enable) {
-    gAdvAPIDLLInst = ::LoadLibrary("Advapi32.dll");
-    if (gAdvAPIDLLInst) {
-      gEventWrite =
-          (decltype(EventWrite) *)GetProcAddress(gAdvAPIDLLInst, "EventWrite");
-      gEventRegister = (decltype(EventRegister) *)GetProcAddress(
-          gAdvAPIDLLInst, "EventRegister");
-      gEventUnregister = (decltype(EventUnregister) *)GetProcAddress(
-          gAdvAPIDLLInst, "EventUnregister");
-    }
     mEnabled = true;
   }
 }
@@ -79,15 +53,15 @@ nsParentalControlsService::nsParentalControlsService()
 nsParentalControlsService::~nsParentalControlsService() {
   if (mPC) mPC->Release();
 
-  if (gEventUnregister && mProvider) gEventUnregister(mProvider);
-
-  if (gAdvAPIDLLInst) ::FreeLibrary(gAdvAPIDLLInst);
+  if (mProvider) {
+    EventUnregister(mProvider);
+  }
 }
 
 //------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsParentalControlsService::GetParentalControlsEnabled(bool *aResult) {
+nsParentalControlsService::GetParentalControlsEnabled(bool* aResult) {
   *aResult = false;
 
   if (mEnabled) *aResult = true;
@@ -96,7 +70,7 @@ nsParentalControlsService::GetParentalControlsEnabled(bool *aResult) {
 }
 
 NS_IMETHODIMP
-nsParentalControlsService::GetBlockFileDownloadsEnabled(bool *aResult) {
+nsParentalControlsService::GetBlockFileDownloadsEnabled(bool* aResult) {
   *aResult = false;
 
   if (!mEnabled) return NS_ERROR_NOT_AVAILABLE;
@@ -112,7 +86,7 @@ nsParentalControlsService::GetBlockFileDownloadsEnabled(bool *aResult) {
 }
 
 NS_IMETHODIMP
-nsParentalControlsService::GetLoggingEnabled(bool *aResult) {
+nsParentalControlsService::GetLoggingEnabled(bool* aResult) {
   *aResult = false;
 
   if (!mEnabled) return NS_ERROR_NOT_AVAILABLE;
@@ -131,7 +105,7 @@ nsParentalControlsService::GetLoggingEnabled(bool *aResult) {
 // Post a log event to the system
 NS_IMETHODIMP
 nsParentalControlsService::Log(int16_t aEntryType, bool blocked,
-                               nsIURI *aSource, nsIFile *aTarget) {
+                               nsIURI* aSource, nsIFile* aTarget) {
   if (!mEnabled) return NS_ERROR_NOT_AVAILABLE;
 
   NS_ENSURE_ARG_POINTER(aSource);
@@ -144,8 +118,7 @@ nsParentalControlsService::Log(int16_t aEntryType, bool blocked,
   // Register a Vista log event provider associated with the parental controls
   // channel.
   if (!mProvider) {
-    if (!gEventRegister) return NS_ERROR_NOT_AVAILABLE;
-    if (gEventRegister(&WPCPROV, nullptr, nullptr, &mProvider) != ERROR_SUCCESS)
+    if (EventRegister(&WPCPROV, nullptr, nullptr, &mProvider) != ERROR_SUCCESS)
       return NS_ERROR_OUT_OF_MEMORY;
   }
 
@@ -166,7 +139,7 @@ nsParentalControlsService::Log(int16_t aEntryType, bool blocked,
 // Override a single URI
 NS_IMETHODIMP
 nsParentalControlsService::RequestURIOverride(
-    nsIURI *aTarget, nsIInterfaceRequestor *aWindowContext, bool *_retval) {
+    nsIURI* aTarget, nsIInterfaceRequestor* aWindowContext, bool* _retval) {
   *_retval = false;
 
   if (!mEnabled) return NS_ERROR_NOT_AVAILABLE;
@@ -197,7 +170,7 @@ nsParentalControlsService::RequestURIOverride(
 // Override a web page
 NS_IMETHODIMP
 nsParentalControlsService::RequestURIOverrides(
-    nsIArray *aTargets, nsIInterfaceRequestor *aWindowContext, bool *_retval) {
+    nsIArray* aTargets, nsIInterfaceRequestor* aWindowContext, bool* _retval) {
   *_retval = false;
 
   if (!mEnabled) return NS_ERROR_NOT_AVAILABLE;
@@ -252,12 +225,12 @@ nsParentalControlsService::RequestURIOverrides(
   RefPtr<IWPCWebSettings> wpcws;
   if (SUCCEEDED(mPC->GetWebSettings(nullptr, getter_AddRefs(wpcws)))) {
     wpcws->RequestURLOverride(hWnd, NS_ConvertUTF8toUTF16(rootSpec).get(),
-                              uriIdx, (LPCWSTR *)arrUrls.get(), &ret);
+                              uriIdx, (LPCWSTR*)arrUrls.get(), &ret);
     *_retval = ret;
   }
 
   // Free up the allocated strings in our array
-  for (idx = 0; idx < uriIdx; idx++) free((void *)arrUrls[idx]);
+  for (idx = 0; idx < uriIdx; idx++) free((void*)arrUrls[idx]);
 
   return NS_OK;
 }
@@ -265,11 +238,9 @@ nsParentalControlsService::RequestURIOverrides(
 //------------------------------------------------------------------------
 
 // Sends a file download event to the Vista Event Log
-void nsParentalControlsService::LogFileDownload(bool blocked, nsIURI *aSource,
-                                                nsIFile *aTarget) {
+void nsParentalControlsService::LogFileDownload(bool blocked, nsIURI* aSource,
+                                                nsIFile* aTarget) {
   nsAutoCString curi;
-
-  if (!gEventWrite) return;
 
   // Note, EventDataDescCreate is a macro defined in the headers, not a function
 
@@ -290,34 +261,34 @@ void nsParentalControlsService::LogFileDownload(bool blocked, nsIURI *aSource,
   DWORD dwBlocked = blocked;
 
   EventDataDescCreate(&eventData[WPC_ARGS_FILEDOWNLOADEVENT_URL],
-                      (const void *)uri.get(),
+                      (const void*)uri.get(),
                       ((ULONG)uri.Length() + 1) * sizeof(WCHAR));
   EventDataDescCreate(&eventData[WPC_ARGS_FILEDOWNLOADEVENT_APPNAME],
-                      (const void *)appName.get(),
+                      (const void*)appName.get(),
                       ((ULONG)appName.Length() + 1) * sizeof(WCHAR));
   EventDataDescCreate(&eventData[WPC_ARGS_FILEDOWNLOADEVENT_VERSION],
-                      (const void *)fill, sizeof(fill));
+                      (const void*)fill, sizeof(fill));
   EventDataDescCreate(&eventData[WPC_ARGS_FILEDOWNLOADEVENT_BLOCKED],
-                      (const void *)&dwBlocked, sizeof(dwBlocked));
+                      (const void*)&dwBlocked, sizeof(dwBlocked));
 
   nsCOMPtr<nsILocalFileWin> local(do_QueryInterface(aTarget));  // May be null
   if (local) {
     nsAutoString path;
     local->GetCanonicalPath(path);
     EventDataDescCreate(&eventData[WPC_ARGS_FILEDOWNLOADEVENT_PATH],
-                        (const void *)path.get(),
+                        (const void*)path.get(),
                         ((ULONG)path.Length() + 1) * sizeof(WCHAR));
   } else {
     EventDataDescCreate(&eventData[WPC_ARGS_FILEDOWNLOADEVENT_PATH],
-                        (const void *)fill, sizeof(fill));
+                        (const void*)fill, sizeof(fill));
   }
 
-  gEventWrite(mProvider, &WPCEVENT_WEB_FILEDOWNLOAD, ARRAYSIZE(eventData),
-              eventData);
+  EventWrite(mProvider, &WPCEVENT_WEB_FILEDOWNLOAD, ARRAYSIZE(eventData),
+             eventData);
 }
 
 NS_IMETHODIMP
-nsParentalControlsService::IsAllowed(int16_t aAction, nsIURI *aUri,
-                                     bool *_retval) {
+nsParentalControlsService::IsAllowed(int16_t aAction, nsIURI* aUri,
+                                     bool* _retval) {
   return NS_ERROR_NOT_AVAILABLE;
 }

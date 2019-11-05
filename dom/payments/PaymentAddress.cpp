@@ -23,18 +23,18 @@ NS_INTERFACE_MAP_END
 PaymentAddress::PaymentAddress(
     nsPIDOMWindowInner* aWindow, const nsAString& aCountry,
     const nsTArray<nsString>& aAddressLine, const nsAString& aRegion,
-    const nsAString& aCity, const nsAString& aDependentLocality,
-    const nsAString& aPostalCode, const nsAString& aSortingCode,
-    const nsAString& aLanguageCode, const nsAString& aOrganization,
+    const nsAString& aRegionCode, const nsAString& aCity,
+    const nsAString& aDependentLocality, const nsAString& aPostalCode,
+    const nsAString& aSortingCode, const nsAString& aOrganization,
     const nsAString& aRecipient, const nsAString& aPhone)
     : mCountry(aCountry),
       mAddressLine(aAddressLine),
       mRegion(aRegion),
+      mRegionCode(aRegionCode),
       mCity(aCity),
       mDependentLocality(aDependentLocality),
       mPostalCode(aPostalCode),
       mSortingCode(aSortingCode),
-      mLanguageCode(aLanguageCode),
       mOrganization(aOrganization),
       mRecipient(aRecipient),
       mPhone(aPhone),
@@ -50,6 +50,10 @@ void PaymentAddress::GetAddressLine(nsTArray<nsString>& aRetVal) const {
 
 void PaymentAddress::GetRegion(nsAString& aRetVal) const { aRetVal = mRegion; }
 
+void PaymentAddress::GetRegionCode(nsAString& aRetVal) const {
+  aRetVal = mRegionCode;
+}
+
 void PaymentAddress::GetCity(nsAString& aRetVal) const { aRetVal = mCity; }
 
 void PaymentAddress::GetDependentLocality(nsAString& aRetVal) const {
@@ -62,10 +66,6 @@ void PaymentAddress::GetPostalCode(nsAString& aRetVal) const {
 
 void PaymentAddress::GetSortingCode(nsAString& aRetVal) const {
   aRetVal = mSortingCode;
-}
-
-void PaymentAddress::GetLanguageCode(nsAString& aRetVal) const {
-  aRetVal = mLanguageCode;
 }
 
 void PaymentAddress::GetOrganization(nsAString& aRetVal) const {
@@ -82,7 +82,7 @@ PaymentAddress::~PaymentAddress() {}
 
 JSObject* PaymentAddress::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return PaymentAddressBinding::Wrap(aCx, this, aGivenProto);
+  return PaymentAddress_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

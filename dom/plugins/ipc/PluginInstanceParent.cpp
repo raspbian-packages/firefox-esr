@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,6 +10,7 @@
 #include "mozilla/BasicEvents.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Telemetry.h"
+#include "mozilla/dom/Element.h"
 #include "PluginInstanceParent.h"
 #include "BrowserStreamParent.h"
 #include "PluginBackgroundDestroyer.h"
@@ -25,9 +26,8 @@
 #include "nsNPAPIPluginInstance.h"
 #include "nsPluginInstanceOwner.h"
 #include "nsFocusManager.h"
-#include "nsIDOMElement.h"
 #ifdef MOZ_X11
-#include "gfxXlibSurface.h"
+#  include "gfxXlibSurface.h"
 #endif
 #include "gfxUtils.h"
 #include "mozilla/gfx/2D.h"
@@ -41,30 +41,30 @@
 #include "mozilla/layers/TextureClientRecycleAllocator.h"
 #include "mozilla/layers/ImageBridgeChild.h"
 #if defined(XP_WIN)
-#include "mozilla/layers/D3D11ShareHandleImage.h"
-#include "mozilla/gfx/DeviceManagerDx.h"
-#include "mozilla/layers/TextureD3D11.h"
+#  include "mozilla/layers/D3D11ShareHandleImage.h"
+#  include "mozilla/gfx/DeviceManagerDx.h"
+#  include "mozilla/layers/TextureD3D11.h"
 #endif
 
 #ifdef XP_MACOSX
-#include "MacIOSurfaceImage.h"
+#  include "MacIOSurfaceImage.h"
 #endif
 
 #if defined(OS_WIN)
-#include <windowsx.h>
-#include "gfxWindowsPlatform.h"
-#include "mozilla/plugins/PluginSurfaceParent.h"
-#include "nsClassHashtable.h"
-#include "nsHashKeys.h"
-#include "nsIWidget.h"
-#include "nsPluginNativeWindow.h"
-#include "PluginQuirks.h"
+#  include <windowsx.h>
+#  include "gfxWindowsPlatform.h"
+#  include "mozilla/plugins/PluginSurfaceParent.h"
+#  include "nsClassHashtable.h"
+#  include "nsHashKeys.h"
+#  include "nsIWidget.h"
+#  include "nsPluginNativeWindow.h"
+#  include "PluginQuirks.h"
 extern const wchar_t* kFlashFullscreenClass;
 #elif defined(MOZ_WIDGET_GTK)
-#include "mozilla/dom/ContentChild.h"
-#include <gdk/gdk.h>
+#  include "mozilla/dom/ContentChild.h"
+#  include <gdk/gdk.h>
 #elif defined(XP_MACOSX)
-#include <ApplicationServices/ApplicationServices.h>
+#  include <ApplicationServices/ApplicationServices.h>
 #endif  // defined(XP_MACOSX)
 
 using namespace mozilla::plugins;
@@ -122,8 +122,7 @@ PluginInstanceParent::PluginInstanceParent(PluginModuleParent* parent, NPP npp,
       mPluginHWND(nullptr),
       mChildPluginHWND(nullptr),
       mChildPluginsParentHWND(nullptr),
-      mPluginWndProc(nullptr),
-      mNestedEventState(false)
+      mPluginWndProc(nullptr)
 #endif  // defined(XP_WIN)
 #if defined(XP_MACOSX)
       ,
@@ -235,7 +234,7 @@ PluginInstanceParent::AnswerNPN_GetValue_NPNVnetscapeWindow(
   // TODO: Need Android impl
   int id;
 #else
-#warning Implement me
+#  warning Implement me
 #endif
 
   *result = mNPNIface->getvalue(mNPP, NPNVnetscapeWindow, &id);
@@ -832,9 +831,9 @@ mozilla::ipc::IPCResult PluginInstanceParent::RecvShow(
 #endif
 
   if (mFrontSurface) {
-  // This is the "old front buffer" we're about to hand back to
-  // the plugin.  We might still have drawing operations
-  // referencing it.
+    // This is the "old front buffer" we're about to hand back to
+    // the plugin.  We might still have drawing operations
+    // referencing it.
 #ifdef MOZ_X11
     if (mFrontSurface->GetType() == gfxSurfaceType::Xlib) {
       // Finish with the surface and XSync here to ensure the server has
@@ -850,8 +849,8 @@ mozilla::ipc::IPCResult PluginInstanceParent::RecvShow(
   }
 
   if (mFrontSurface && gfxSharedImageSurface::IsSharedImage(mFrontSurface))
-    *prevSurface =
-        static_cast<gfxSharedImageSurface*>(mFrontSurface.get())->GetShmem();
+    *prevSurface = std::move(
+        static_cast<gfxSharedImageSurface*>(mFrontSurface.get())->GetShmem());
   else
     *prevSurface = null_t();
 
@@ -1076,7 +1075,7 @@ nsresult PluginInstanceParent::EndUpdateBackground(const nsIntRect& aRect) {
   // view of its background, but it does mean that the plugin is
   // drawing onto pixels no older than those in the latest
   // EndUpdateBackground().
-  XSync(DefaultXDisplay(), False);
+  XSync(DefaultXDisplay(), X11False);
 #endif
 
   Unused << SendUpdateBackground(BackgroundDescriptor(), aRect);
@@ -1162,7 +1161,7 @@ PluginInstanceParent::BackgroundDescriptor() {
              "Expected shared image surface");
   gfxSharedImageSurface* shmem =
       static_cast<gfxSharedImageSurface*>(mBackground.get());
-  return shmem->GetShmem();
+  return mozilla::plugins::SurfaceDescriptor(std::move(shmem->GetShmem()));
 #endif
 
   // If this is ever used, which it shouldn't be, it will trigger a
@@ -1479,7 +1478,7 @@ int16_t PluginInstanceParent::NPP_HandleEvent(void* event) {
       // Release any active pointer grab so that the plugin X client can
       // grab the pointer if it wishes.
       Display* dpy = DefaultXDisplay();
-#ifdef MOZ_WIDGET_GTK
+#  ifdef MOZ_WIDGET_GTK
       // GDK attempts to (asynchronously) track whether there is an active
       // grab so ungrab through GDK.
       //
@@ -1491,11 +1490,11 @@ int16_t PluginInstanceParent::NPP_HandleEvent(void* event) {
       } else {
         gdk_pointer_ungrab(npevent->xbutton.time);
       }
-#else
+#  else
       XUngrabPointer(dpy, npevent->xbutton.time);
-#endif
+#  endif
       // Wait for the ungrab to complete.
-      XSync(dpy, False);
+      XSync(dpy, X11False);
       break;
   }
 #endif
@@ -1553,8 +1552,8 @@ int16_t PluginInstanceParent::NPP_HandleEvent(void* event) {
         return false;
       }
 
-      if (!CallNPP_HandleEvent_Shmem(npremoteevent, mShSurface, &handled,
-                                     &mShSurface))
+      if (!CallNPP_HandleEvent_Shmem(npremoteevent, std::move(mShSurface),
+                                     &handled, &mShSurface))
         return false;  // no good way to handle errors here...
 
       if (!mShSurface.IsReadable()) {
@@ -1845,8 +1844,7 @@ mozilla::ipc::IPCResult PluginInstanceParent::RecvSetNetscapeWindowAsParent(
 
   return IPC_OK();
 #else
-  NS_NOTREACHED(
-      "PluginInstanceParent::RecvSetNetscapeWindowAsParent not implemented!");
+  MOZ_ASSERT_UNREACHABLE("RecvSetNetscapeWindowAsParent not implemented!");
   return IPC_FAIL_NO_REASON(this);
 #endif
 }
@@ -1878,7 +1876,8 @@ LRESULT CALLBACK PluginInstanceParent::PluginWindowHookProc(HWND hWnd,
   PluginInstanceParent* self = reinterpret_cast<PluginInstanceParent*>(
       ::GetPropW(hWnd, kPluginInstanceParentProperty));
   if (!self) {
-    NS_NOTREACHED("PluginInstanceParent::PluginWindowHookProc null this ptr!");
+    MOZ_ASSERT_UNREACHABLE(
+        "PluginInstanceParent::PluginWindowHookProc null this ptr!");
     return DefWindowProc(hWnd, message, wParam, lParam);
   }
 
@@ -1896,7 +1895,7 @@ LRESULT CALLBACK PluginInstanceParent::PluginWindowHookProc(HWND hWnd,
   }
 
   if (self->mPluginWndProc == PluginWindowHookProc) {
-    NS_NOTREACHED(
+    MOZ_ASSERT_UNREACHABLE(
         "PluginWindowHookProc invoking mPluginWndProc w/"
         "mPluginWndProc == PluginWindowHookProc????");
     return DefWindowProc(hWnd, message, wParam, lParam);
@@ -2059,7 +2058,7 @@ mozilla::ipc::IPCResult PluginInstanceParent::AnswerPluginFocusChange(
     nsPluginInstanceOwner* owner = GetOwner();
     if (owner) {
       nsIFocusManager* fm = nsFocusManager::GetFocusManager();
-      nsCOMPtr<nsIDOMElement> element;
+      RefPtr<dom::Element> element;
       owner->GetDOMElement(getter_AddRefs(element));
       if (fm && element) {
         fm->SetFocus(element, 0);
@@ -2068,8 +2067,7 @@ mozilla::ipc::IPCResult PluginInstanceParent::AnswerPluginFocusChange(
   }
   return IPC_OK();
 #else
-  NS_NOTREACHED(
-      "PluginInstanceParent::AnswerPluginFocusChange not implemented!");
+  MOZ_ASSERT_UNREACHABLE("AnswerPluginFocusChange not implemented!");
   return IPC_FAIL_NO_REASON(this);
 #endif
 }

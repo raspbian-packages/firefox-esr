@@ -8,7 +8,7 @@
 #define mozilla_dom_PresentationSessionInfo_h
 
 #include "base/process.h"
-#include "mozilla/dom/nsIContentParent.h"
+#include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/PromiseNativeHandler.h"
 #include "mozilla/DebugOnly.h"
@@ -86,7 +86,7 @@ class PresentationSessionInfo
 
   nsresult SendBinaryMsg(const nsACString& aData);
 
-  nsresult SendBlob(nsIDOMBlob* aBlob);
+  nsresult SendBlob(Blob* aBlob);
 
   nsresult Close(nsresult aReason, uint32_t aState);
 
@@ -259,7 +259,7 @@ class PresentationPresentingInfo final : public PresentationSessionInfo,
 
   // The content parent communicating with the content process which the OOP
   // receiver page belongs to.
-  nsCOMPtr<nsIContentParent> mContentParent;
+  RefPtr<ContentParent> mContentParent;
 };
 
 }  // namespace dom

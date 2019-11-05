@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -22,6 +22,7 @@
 #include "nsIPrefLocalizedString.h"
 #include "nsIStringBundle.h"
 #include "nsITextToSubURI.h"
+#include "nsDirIndexParser.h"
 #include "nsNativeCharsetUtils.h"
 #include "nsString.h"
 #include <algorithm>
@@ -49,6 +50,8 @@ static void AppendNonAsciiToNCR(const nsAString& in, nsCString& out) {
     }
   }
 }
+
+nsIndexedToHTML::nsIndexedToHTML() : mExpectAbsLoc(false) {}
 
 nsresult nsIndexedToHTML::Create(nsISupports* aOuter, REFNSIID aIID,
                                  void** aResult) {
@@ -92,14 +95,14 @@ nsIndexedToHTML::AsyncConvertData(const char* aFromType, const char* aToType,
 }
 
 NS_IMETHODIMP
-nsIndexedToHTML::OnStartRequest(nsIRequest* request, nsISupports* aContext) {
+nsIndexedToHTML::OnStartRequest(nsIRequest* request) {
   nsCString buffer;
-  nsresult rv = DoOnStartRequest(request, aContext, buffer);
+  nsresult rv = DoOnStartRequest(request, nullptr, buffer);
   if (NS_FAILED(rv)) {
     request->Cancel(rv);
   }
 
-  rv = mListener->OnStartRequest(request, aContext);
+  rv = mListener->OnStartRequest(request);
   if (NS_FAILED(rv)) return rv;
 
   // The request may have been canceled, and if that happens, we want to
@@ -109,7 +112,7 @@ nsIndexedToHTML::OnStartRequest(nsIRequest* request, nsISupports* aContext) {
 
   // Push our buffer to the listener.
 
-  rv = SendToListener(request, aContext, buffer);
+  rv = SendToListener(request, nullptr, buffer);
   return rv;
 }
 
@@ -136,13 +139,13 @@ nsresult nsIndexedToHTML::DoOnStartRequest(nsIRequest* request,
 
   channel->SetContentType(NS_LITERAL_CSTRING("text/html"));
 
-  mParser = do_CreateInstance("@mozilla.org/dirIndexParser;1", &rv);
-  if (NS_FAILED(rv)) return rv;
+  mParser = nsDirIndexParser::CreateInstance();
+  if (!mParser) return NS_ERROR_FAILURE;
 
   rv = mParser->SetListener(this);
   if (NS_FAILED(rv)) return rv;
 
-  rv = mParser->OnStartRequest(request, aContext);
+  rv = mParser->OnStartRequest(request);
   if (NS_FAILED(rv)) return rv;
 
   nsAutoCString baseUri, titleUri;
@@ -386,7 +389,7 @@ nsresult nsIndexedToHTML::DoOnStartRequest(nsIRequest* request,
       "    headCells[i].addEventListener(\"click\", rowAction(i), true);\n"
       "  }\n"
       "  if (gUI_showHidden) {\n"
-      "    gRows = Array.slice(gTBody.rows);\n"
+      "    gRows = Array.from(gTBody.rows);\n"
       "    hiddenObjects = gRows.some(row => row.className == "
       "\"hidden-object\");\n"
       "  }\n"
@@ -418,7 +421,7 @@ nsresult nsIndexedToHTML::DoOnStartRequest(nsIRequest* request,
       "}\n"
       "function orderBy(column) {\n"
       "  if (!gRows)\n"
-      "    gRows = Array.slice(gTBody.rows);\n"
+      "    gRows = Array.from(gTBody.rows);\n"
       "  var order;\n"
       "  if (gOrderBy == column) {\n"
       "    order = gTable.getAttribute(\"order\") == \"asc\" ? \"desc\" : "
@@ -447,7 +450,7 @@ nsresult nsIndexedToHTML::DoOnStartRequest(nsIRequest* request,
       "}\n"
       "</script>\n");
 
-  buffer.AppendLiteral("<link rel=\"icon\" type=\"image/png\" href=\"");
+  buffer.AppendLiteral(R"(<link rel="icon" type="image/png" href=")");
   nsCOMPtr<nsIURI> innerUri = NS_GetInnermostURI(uri);
   if (!innerUri) return NS_ERROR_UNEXPECTED;
   nsCOMPtr<nsIFileURL> fileURL(do_QueryInterface(innerUri));
@@ -584,7 +587,7 @@ nsresult nsIndexedToHTML::DoOnStartRequest(nsIRequest* request,
     rv = mBundle->GetStringFromName("DirGoUp", parentText);
     if (NS_FAILED(rv)) return rv;
 
-    buffer.AppendLiteral("<p id=\"UI_goUp\"><a class=\"up\" href=\"");
+    buffer.AppendLiteral(R"(<p id="UI_goUp"><a class="up" href=")");
     nsAppendEscapedHTML(parentStr, buffer);
     buffer.AppendLiteral("\">");
     AppendNonAsciiToNCR(parentText, buffer);
@@ -638,19 +641,18 @@ nsresult nsIndexedToHTML::DoOnStartRequest(nsIRequest* request,
 }
 
 NS_IMETHODIMP
-nsIndexedToHTML::OnStopRequest(nsIRequest* request, nsISupports* aContext,
-                               nsresult aStatus) {
+nsIndexedToHTML::OnStopRequest(nsIRequest* request, nsresult aStatus) {
   if (NS_SUCCEEDED(aStatus)) {
     nsCString buffer;
     buffer.AssignLiteral("</tbody></table></body></html>\n");
 
-    aStatus = SendToListener(request, aContext, buffer);
+    aStatus = SendToListener(request, nullptr, buffer);
   }
 
-  mParser->OnStopRequest(request, aContext, aStatus);
+  mParser->OnStopRequest(request, aStatus);
   mParser = nullptr;
 
-  return mListener->OnStopRequest(request, aContext, aStatus);
+  return mListener->OnStopRequest(request, aStatus);
 }
 
 nsresult nsIndexedToHTML::SendToListener(nsIRequest* aRequest,
@@ -659,15 +661,13 @@ nsresult nsIndexedToHTML::SendToListener(nsIRequest* aRequest,
   nsCOMPtr<nsIInputStream> inputData;
   nsresult rv = NS_NewCStringInputStream(getter_AddRefs(inputData), aBuffer);
   NS_ENSURE_SUCCESS(rv, rv);
-  return mListener->OnDataAvailable(aRequest, aContext, inputData, 0,
-                                    aBuffer.Length());
+  return mListener->OnDataAvailable(aRequest, inputData, 0, aBuffer.Length());
 }
 
 NS_IMETHODIMP
-nsIndexedToHTML::OnDataAvailable(nsIRequest* aRequest, nsISupports* aCtxt,
-                                 nsIInputStream* aInput, uint64_t aOffset,
-                                 uint32_t aCount) {
-  return mParser->OnDataAvailable(aRequest, aCtxt, aInput, aOffset, aCount);
+nsIndexedToHTML::OnDataAvailable(nsIRequest* aRequest, nsIInputStream* aInput,
+                                 uint64_t aOffset, uint32_t aCount) {
+  return mParser->OnDataAvailable(aRequest, aInput, aOffset, aCount);
 }
 
 NS_IMETHODIMP
@@ -682,7 +682,7 @@ nsIndexedToHTML::OnIndexAvailable(nsIRequest* aRequest, nsISupports* aCtxt,
   // We don't know the file's character set yet, so retrieve the raw bytes
   // which will be decoded by the HTML parser.
   nsCString loc;
-  aIndex->GetLocation(getter_Copies(loc));
+  aIndex->GetLocation(loc);
 
   // Adjust the length in case unescaping shortened the string.
   loc.Truncate(nsUnescapeCount(loc.BeginWriting()));
@@ -715,7 +715,7 @@ nsIndexedToHTML::OnIndexAvailable(nsIRequest* aRequest, nsISupports* aCtxt,
   pushBuffer.Append(escaped);
 
   pushBuffer.AppendLiteral(
-      "\"><table class=\"ellipsis\"><tbody><tr><td><a class=\"");
+      R"("><table class="ellipsis"><tbody><tr><td><a class=")");
   switch (type) {
     case nsIDirIndex::TYPE_DIRECTORY:
       pushBuffer.AppendLiteral("dir");
@@ -858,7 +858,3 @@ void nsIndexedToHTML::FormatSizeString(int64_t inSize,
     outSizeString.AppendLiteral(" KB");
   }
 }
-
-nsIndexedToHTML::nsIndexedToHTML() {}
-
-nsIndexedToHTML::~nsIndexedToHTML() {}

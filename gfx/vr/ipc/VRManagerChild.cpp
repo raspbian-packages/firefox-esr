@@ -20,6 +20,8 @@
 #include "mozilla/dom/VRServiceTest.h"
 #include "mozilla/layers/SyncObject.h"
 
+using namespace mozilla::dom;
+
 namespace {
 const nsTArray<RefPtr<dom::VREventObserver>>::index_type kNoIndex =
     nsTArray<RefPtr<dom::VREventObserver>>::NoIndex;
@@ -39,7 +41,8 @@ VRManagerChild::VRManagerChild()
       mFrameRequestCallbackCounter(0),
       mBackend(layers::LayersBackend::LAYERS_NONE),
       mPromiseID(0),
-      mVRMockDisplay(nullptr) {
+      mVRMockDisplay(nullptr),
+      mLastControllerState{} {
   MOZ_ASSERT(NS_IsMainThread());
 
   mStartTimeStamp = TimeStamp::Now();
@@ -47,7 +50,8 @@ VRManagerChild::VRManagerChild()
 
 VRManagerChild::~VRManagerChild() { MOZ_ASSERT(NS_IsMainThread()); }
 
-/*static*/ void VRManagerChild::IdentifyTextureHost(
+/*static*/
+void VRManagerChild::IdentifyTextureHost(
     const TextureFactoryIdentifier& aIdentifier) {
   if (sVRManagerChildSingleton) {
     sVRManagerChildSingleton->mBackend = aIdentifier.mParentBackend;
@@ -61,17 +65,17 @@ layers::LayersBackend VRManagerChild::GetBackendType() const {
   return mBackend;
 }
 
-/*static*/ VRManagerChild* VRManagerChild::Get() {
+/*static*/
+VRManagerChild* VRManagerChild::Get() {
   MOZ_ASSERT(sVRManagerChildSingleton);
   return sVRManagerChildSingleton;
 }
 
-/* static */ bool VRManagerChild::IsCreated() {
-  return !!sVRManagerChildSingleton;
-}
+/* static */
+bool VRManagerChild::IsCreated() { return !!sVRManagerChildSingleton; }
 
-/* static */ bool VRManagerChild::InitForContent(
-    Endpoint<PVRManagerChild>&& aEndpoint) {
+/* static */
+bool VRManagerChild::InitForContent(Endpoint<PVRManagerChild>&& aEndpoint) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!sVRManagerChildSingleton);
 
@@ -83,28 +87,29 @@ layers::LayersBackend VRManagerChild::GetBackendType() const {
   return true;
 }
 
-/* static */ bool VRManagerChild::ReinitForContent(
-    Endpoint<PVRManagerChild>&& aEndpoint) {
+/* static */
+bool VRManagerChild::ReinitForContent(Endpoint<PVRManagerChild>&& aEndpoint) {
   MOZ_ASSERT(NS_IsMainThread());
 
   ShutDown();
 
-  return InitForContent(Move(aEndpoint));
+  return InitForContent(std::move(aEndpoint));
 }
 
-/*static*/ void VRManagerChild::InitSameProcess() {
+/*static*/
+void VRManagerChild::InitSameProcess() {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!sVRManagerChildSingleton);
 
   sVRManagerChildSingleton = new VRManagerChild();
   sVRManagerParentSingleton = VRManagerParent::CreateSameProcess();
   sVRManagerChildSingleton->Open(sVRManagerParentSingleton->GetIPCChannel(),
-                                 VRListenerThreadHolder::Loop(),
+                                 CompositorThreadHolder::Loop(),
                                  mozilla::ipc::ChildSide);
 }
 
-/* static */ void VRManagerChild::InitWithGPUProcess(
-    Endpoint<PVRManagerChild>&& aEndpoint) {
+/* static */
+void VRManagerChild::InitWithGPUProcess(Endpoint<PVRManagerChild>&& aEndpoint) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!sVRManagerChildSingleton);
 
@@ -114,7 +119,8 @@ layers::LayersBackend VRManagerChild::GetBackendType() const {
   }
 }
 
-/*static*/ void VRManagerChild::ShutDown() {
+/*static*/
+void VRManagerChild::ShutDown() {
   MOZ_ASSERT(NS_IsMainThread());
   if (sVRManagerChildSingleton) {
     sVRManagerChildSingleton->Destroy();
@@ -122,8 +128,8 @@ layers::LayersBackend VRManagerChild::GetBackendType() const {
   }
 }
 
-/*static*/ void VRManagerChild::DeferredDestroy(
-    RefPtr<VRManagerChild> aVRManagerChild) {
+/*static*/
+void VRManagerChild::DeferredDestroy(RefPtr<VRManagerChild> aVRManagerChild) {
   aVRManagerChild->Close();
 }
 
@@ -151,8 +157,11 @@ void VRManagerChild::UpdateDisplayInfo(
   nsTArray<uint32_t> disconnectedDisplays;
   nsTArray<uint32_t> connectedDisplays;
 
+  nsTArray<RefPtr<VRDisplayClient>> prevDisplays;
+  prevDisplays = mDisplays;
+
   // Check if any displays have been disconnected
-  for (auto& display : mDisplays) {
+  for (auto& display : prevDisplays) {
     bool found = false;
     for (auto& displayUpdate : aDisplayUpdates) {
       if (display->GetDisplayInfo().GetDisplayID() ==
@@ -173,7 +182,7 @@ void VRManagerChild::UpdateDisplayInfo(
   nsTArray<RefPtr<VRDisplayClient>> displays;
   for (VRDisplayInfo& displayUpdate : aDisplayUpdates) {
     bool isNewDisplay = true;
-    for (auto& display : mDisplays) {
+    for (auto& display : prevDisplays) {
       const VRDisplayInfo& prevInfo = display->GetDisplayInfo();
       if (prevInfo.GetDisplayID() == displayUpdate.GetDisplayID()) {
         if (displayUpdate.GetIsConnected() && !prevInfo.GetIsConnected()) {
@@ -274,7 +283,7 @@ PVRLayerChild* VRManagerChild::CreateVRLayer(uint32_t aDisplayID,
 }
 
 // XXX TODO - VRManagerChild::FrameRequest is the same as
-// nsIDocument::FrameRequest, should we consolodate these?
+// Document::FrameRequest, should we consolodate these?
 struct VRManagerChild::FrameRequest {
   FrameRequest(mozilla::dom::FrameRequestCallback& aCallback, int32_t aHandle)
       : mCallback(&aCallback), mHandle(aHandle) {}
@@ -368,7 +377,7 @@ mozilla::ipc::IPCResult VRManagerChild::RecvReplyCreateVRServiceTestController(
 }
 
 void VRManagerChild::RunFrameRequestCallbacks() {
-  AUTO_PROFILER_TRACING("VR", "RunFrameRequestCallbacks");
+  AUTO_PROFILER_TRACING("VR", "RunFrameRequestCallbacks", GRAPHICS);
 
   TimeStamp nowTime = TimeStamp::Now();
   mozilla::TimeDuration duration = nowTime - mStartTimeStamp;
@@ -378,8 +387,17 @@ void VRManagerChild::RunFrameRequestCallbacks() {
   callbacks.AppendElements(mFrameRequestCallbacks);
   mFrameRequestCallbacks.Clear();
   for (auto& callback : callbacks) {
-    callback.mCallback->Call(timeStamp);
+    // The FrameRequest copied into the on-stack array holds a strong ref to its
+    // mCallback and there's nothing that can drop that ref until we return.
+    MOZ_KnownLive(callback.mCallback)->Call(timeStamp);
   }
+}
+
+void VRManagerChild::NotifyPresentationGenerationChanged(uint32_t aDisplayID) {
+  nsContentUtils::AddScriptRunner(NewRunnableMethod<uint32_t>(
+      "gfx::VRManagerChild::NotifyPresentationGenerationChangedInternal", this,
+      &VRManagerChild::NotifyPresentationGenerationChangedInternal,
+      aDisplayID));
 }
 
 void VRManagerChild::FireDOMVRDisplayMountedEvent(uint32_t aDisplayID) {
@@ -465,6 +483,15 @@ void VRManagerChild::FireDOMVRDisplayConnectEventsForLoadInternal(
   aObserver->NotifyVRDisplayConnect(aDisplayID);
 }
 
+void VRManagerChild::NotifyPresentationGenerationChangedInternal(
+    uint32_t aDisplayID) {
+  nsTArray<RefPtr<dom::VREventObserver>> listeners;
+  listeners = mListeners;
+  for (auto& listener : listeners) {
+    listener->NotifyPresentationGenerationChanged(aDisplayID);
+  }
+}
+
 void VRManagerChild::FireDOMVRDisplayConnectEventsForLoad(
     dom::VREventObserver* aObserver) {
   // We need to fire the VRDisplayConnect event when a page is loaded
@@ -505,9 +532,21 @@ void VRManagerChild::RemoveListener(dom::VREventObserver* aObserver) {
   }
 }
 
-void VRManagerChild::HandleFatalError(const char* aName,
-                                      const char* aMsg) const {
-  dom::ContentChild::FatalErrorIfNotUsingGPUProcess(aName, aMsg, OtherPid());
+void VRManagerChild::StartActivity() { Unused << SendStartActivity(); }
+
+void VRManagerChild::StopActivity() {
+  for (auto& listener : mListeners) {
+    if (!listener->GetStopActivityStatus()) {
+      // We are still showing VR in the active window.
+      return;
+    }
+  }
+
+  Unused << SendStopActivity();
+}
+
+void VRManagerChild::HandleFatalError(const char* aMsg) const {
+  dom::ContentChild::FatalErrorIfNotUsingGPUProcess(aMsg, OtherPid());
 }
 
 void VRManagerChild::AddPromise(const uint32_t& aID, dom::Promise* aPromise) {
@@ -534,7 +573,9 @@ mozilla::ipc::IPCResult VRManagerChild::RecvReplyGamepadVibrateHaptic(
 
 mozilla::ipc::IPCResult VRManagerChild::RecvDispatchSubmitFrameResult(
     const uint32_t& aDisplayID, const VRSubmitFrameResultInfo& aResult) {
-  for (auto& display : mDisplays) {
+  nsTArray<RefPtr<VRDisplayClient>> displays;
+  displays = mDisplays;
+  for (auto& display : displays) {
     if (display->GetDisplayInfo().GetDisplayID() == aDisplayID) {
       display->UpdateSubmitFrameResult(aResult);
     }

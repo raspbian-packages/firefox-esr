@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
- * Implementations of DOM Core's nsIDOMComment node.
+ * Implementations of DOM Core's Comment node.
  */
 
 #include "nsCOMPtr.h"
@@ -21,22 +21,15 @@ namespace dom {
 
 Comment::~Comment() {}
 
-NS_IMPL_ISUPPORTS_INHERITED(Comment, nsGenericDOMDataNode, nsIDOMNode,
-                            nsIDOMCharacterData, nsIDOMComment)
-
-bool Comment::IsNodeOfType(uint32_t aFlags) const {
-  return !(aFlags & ~(eCOMMENT | eDATA_NODE));
-}
-
-nsGenericDOMDataNode* Comment::CloneDataNode(mozilla::dom::NodeInfo* aNodeInfo,
-                                             bool aCloneText) const {
+already_AddRefed<CharacterData> Comment::CloneDataNode(
+    mozilla::dom::NodeInfo* aNodeInfo, bool aCloneText) const {
   RefPtr<mozilla::dom::NodeInfo> ni = aNodeInfo;
-  Comment* it = new Comment(ni.forget());
-  if (it && aCloneText) {
+  RefPtr<Comment> it = new Comment(ni.forget());
+  if (aCloneText) {
     it->mText = mText;
   }
 
-  return it;
+  return it.forget();
 }
 
 #ifdef DEBUG
@@ -55,8 +48,10 @@ void Comment::List(FILE* out, int32_t aIndent) const {
 }
 #endif
 
-/* static */ already_AddRefed<Comment> Comment::Constructor(
-    const GlobalObject& aGlobal, const nsAString& aData, ErrorResult& aRv) {
+/* static */
+already_AddRefed<Comment> Comment::Constructor(const GlobalObject& aGlobal,
+                                               const nsAString& aData,
+                                               ErrorResult& aRv) {
   nsCOMPtr<nsPIDOMWindowInner> window =
       do_QueryInterface(aGlobal.GetAsSupports());
   if (!window || !window->GetDoc()) {
@@ -68,7 +63,7 @@ void Comment::List(FILE* out, int32_t aIndent) const {
 }
 
 JSObject* Comment::WrapNode(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return CommentBinding::Wrap(aCx, this, aGivenProto);
+  return Comment_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

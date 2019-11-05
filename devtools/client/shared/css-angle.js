@@ -4,16 +4,16 @@
 
 "use strict";
 
-loader.lazyRequireGetter(this, "CSS_ANGLEUNIT",
-  "devtools/shared/css/properties-db", true);
+const SPECIALVALUES = new Set(["initial", "inherit", "unset"]);
 
-const SPECIALVALUES = new Set([
-  "initial",
-  "inherit",
-  "unset"
-]);
+const { getCSSLexer } = require("devtools/shared/css/lexer");
 
-const {getCSSLexer} = require("devtools/shared/css/lexer");
+loader.lazyRequireGetter(
+  this,
+  "CSS_ANGLEUNIT",
+  "devtools/shared/css/constants",
+  true
+);
 
 /**
  * This module is used to convert between various angle units.
@@ -39,7 +39,7 @@ function CssAngle(angleValue) {
 
 module.exports.angleUtils = {
   CssAngle: CssAngle,
-  classifyAngle: classifyAngle
+  classifyAngle: classifyAngle,
 };
 
 CssAngle.prototype = {
@@ -68,12 +68,14 @@ CssAngle.prototype = {
   },
 
   get valid() {
-    let token = getCSSLexer(this.authored).nextToken();
+    const token = getCSSLexer(this.authored).nextToken();
     if (!token) {
       return false;
     }
-    return (token.tokenType === "dimension"
-      && token.text.toLowerCase() in this.ANGLEUNIT);
+    return (
+      token.tokenType === "dimension" &&
+      token.text.toLowerCase() in this.ANGLEUNIT
+    );
   },
 
   get specialValue() {
@@ -81,12 +83,12 @@ CssAngle.prototype = {
   },
 
   get deg() {
-    let invalidOrSpecialValue = this._getInvalidOrSpecialValue();
+    const invalidOrSpecialValue = this._getInvalidOrSpecialValue();
     if (invalidOrSpecialValue !== false) {
       return invalidOrSpecialValue;
     }
 
-    let angleUnit = classifyAngle(this.authored);
+    const angleUnit = classifyAngle(this.authored);
     if (angleUnit === this.ANGLEUNIT.deg) {
       // The angle is valid and is in degree.
       return this.authored;
@@ -116,12 +118,12 @@ CssAngle.prototype = {
   },
 
   get rad() {
-    let invalidOrSpecialValue = this._getInvalidOrSpecialValue();
+    const invalidOrSpecialValue = this._getInvalidOrSpecialValue();
     if (invalidOrSpecialValue !== false) {
       return invalidOrSpecialValue;
     }
 
-    let unit = classifyAngle(this.authored);
+    const unit = classifyAngle(this.authored);
     if (unit === this.ANGLEUNIT.rad) {
       // The angle is valid and is in radian.
       return this.authored;
@@ -151,12 +153,12 @@ CssAngle.prototype = {
   },
 
   get grad() {
-    let invalidOrSpecialValue = this._getInvalidOrSpecialValue();
+    const invalidOrSpecialValue = this._getInvalidOrSpecialValue();
     if (invalidOrSpecialValue !== false) {
       return invalidOrSpecialValue;
     }
 
-    let unit = classifyAngle(this.authored);
+    const unit = classifyAngle(this.authored);
     if (unit === this.ANGLEUNIT.grad) {
       // The angle is valid and is in gradian
       return this.authored;
@@ -186,12 +188,12 @@ CssAngle.prototype = {
   },
 
   get turn() {
-    let invalidOrSpecialValue = this._getInvalidOrSpecialValue();
+    const invalidOrSpecialValue = this._getInvalidOrSpecialValue();
     if (invalidOrSpecialValue !== false) {
       return invalidOrSpecialValue;
     }
 
-    let unit = classifyAngle(this.authored);
+    const unit = classifyAngle(this.authored);
     if (unit === this.ANGLEUNIT.turn) {
       // The angle is valid and is in turn
       return this.authored;
@@ -205,7 +207,7 @@ CssAngle.prototype = {
 
     if (unit === this.ANGLEUNIT.rad) {
       // The angle is valid and is in radian
-      turnValue = (this.authoredAngleValue / (Math.PI / 180)) / 360;
+      turnValue = this.authoredAngleValue / (Math.PI / 180) / 360;
     }
 
     if (unit === this.ANGLEUNIT.grad) {
@@ -231,7 +233,7 @@ CssAngle.prototype = {
    *         - If the angle is a regular angle e.g. 90deg so we return false
    *           to indicate that the angle is neither invalid nor special.
    */
-  _getInvalidOrSpecialValue: function () {
+  _getInvalidOrSpecialValue: function() {
     if (this.specialValue) {
       return this.specialValue;
     }
@@ -247,32 +249,31 @@ CssAngle.prototype = {
    * @param  {String} angle
    *         Any valid angle value + unit string
    */
-  newAngle: function (angle) {
+  newAngle: function(angle) {
     // Store a lower-cased version of the angle to help with format
     // testing.  The original text is kept as well so it can be
     // returned when needed.
     this.lowerCased = angle.toLowerCase();
-    this._angleUnitUppercase = (angle === angle.toUpperCase());
+    this._angleUnitUppercase = angle === angle.toUpperCase();
     this.authored = angle;
 
-    let reg = new RegExp(
-      `(${Object.keys(this.ANGLEUNIT).join("|")})$`, "i");
-    let unitStartIdx = angle.search(reg);
+    const reg = new RegExp(`(${Object.keys(this.ANGLEUNIT).join("|")})$`, "i");
+    const unitStartIdx = angle.search(reg);
     this.authoredAngleValue = angle.substring(0, unitStartIdx);
     this.authoredAngleUnit = angle.substring(unitStartIdx, angle.length);
 
     return this;
   },
 
-  nextAngleUnit: function () {
+  nextAngleUnit: function() {
     // Get a reordered array from the formats object
     // to have the current format at the front so we can cycle through.
     let formats = Object.keys(this.ANGLEUNIT);
-    let putOnEnd = formats.splice(0, formats.indexOf(this.angleUnit));
+    const putOnEnd = formats.splice(0, formats.indexOf(this.angleUnit));
     formats = formats.concat(putOnEnd);
-    let currentDisplayedValue = this[formats[0]];
+    const currentDisplayedValue = this[formats[0]];
 
-    for (let format of formats) {
+    for (const format of formats) {
       if (this[format].toLowerCase() !== currentDisplayedValue.toLowerCase()) {
         this.angleUnit = this.ANGLEUNIT[format];
         break;
@@ -284,7 +285,7 @@ CssAngle.prototype = {
   /**
    * Return a string representing a angle
    */
-  toString: function () {
+  toString: function() {
     let angle;
 
     switch (this.angleUnit) {
@@ -304,8 +305,7 @@ CssAngle.prototype = {
         angle = this.deg;
     }
 
-    if (this._angleUnitUppercase &&
-        this.angleUnit != this.ANGLEUNIT.authored) {
+    if (this._angleUnitUppercase && this.angleUnit != this.ANGLEUNIT.authored) {
       angle = angle.toUpperCase();
     }
     return angle;
@@ -314,7 +314,7 @@ CssAngle.prototype = {
   /**
    * This method allows comparison of CssAngle objects using ===.
    */
-  valueOf: function () {
+  valueOf: function() {
     return this.deg;
   },
 };

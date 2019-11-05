@@ -13,10 +13,10 @@
 
 namespace mozilla {
 class SVGAnimatedLengthList;
-class DOMSVGAnimatedLengthList;
-class DOMSVGAnimatedNumberList;
 
 namespace dom {
+class DOMSVGAnimatedLengthList;
+class DOMSVGAnimatedNumberList;
 typedef SVGTextContentElement SVGTextPositioningElementBase;
 
 class SVGTextPositioningElement : public SVGTextPositioningElementBase {
@@ -30,8 +30,8 @@ class SVGTextPositioningElement : public SVGTextPositioningElementBase {
 
  protected:
   explicit SVGTextPositioningElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : SVGTextPositioningElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : SVGTextPositioningElementBase(std::move(aNodeInfo)) {}
 
   virtual LengthListAttributesInfo GetLengthListInfo() override;
   virtual NumberListAttributesInfo GetNumberListInfo() override;

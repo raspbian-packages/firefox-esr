@@ -15,10 +15,6 @@
 namespace mozilla {
 namespace net {
 
-ChannelDiverterParent::ChannelDiverterParent() {}
-
-ChannelDiverterParent::~ChannelDiverterParent() {}
-
 bool ChannelDiverterParent::Init(const ChannelDiverterArgs& aArgs) {
   switch (aArgs.type()) {
     case ChannelDiverterArgs::THttpChannelDiverterArgs: {
@@ -37,7 +33,7 @@ bool ChannelDiverterParent::Init(const ChannelDiverterArgs& aArgs) {
       break;
     }
     default:
-      NS_NOTREACHED("unknown ChannelDiverterArgs type");
+      MOZ_ASSERT_UNREACHABLE("unknown ChannelDiverterArgs type");
       return false;
   }
   MOZ_ASSERT(mDivertableChannelParent);

@@ -25,14 +25,6 @@ nsresult nsMemory::HeapMinimize(bool aImmediate) {
   return mem->HeapMinimize(aImmediate);
 }
 
-void* nsMemory::Clone(const void* aPtr, size_t aSize) {
-  void* newPtr = moz_xmalloc(aSize);
-  if (newPtr) {
-    memcpy(newPtr, aPtr, aSize);
-  }
-  return newPtr;
-}
-
 nsIMemory* nsMemory::GetGlobalMemoryService() {
   nsIMemory* mem;
   nsresult rv = NS_GetMemoryManager(&mem);

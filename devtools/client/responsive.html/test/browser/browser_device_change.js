@@ -4,12 +4,9 @@ http://creativecommons.org/publicdomain/zero/1.0/ */
 "use strict";
 
 // Tests changing viewport device (need HTTP load for proper UA testing)
-const TEST_URL = `${URL_ROOT}doc_page_state.html`;
 
+const TEST_URL = `${URL_ROOT}doc_page_state.html`;
 const DEFAULT_DPPX = window.devicePixelRatio;
-const DEFAULT_UA = Cc["@mozilla.org/network/protocol;1?name=http"]
-  .getService(Ci.nsIHttpProtocolHandler)
-  .userAgent;
 
 const Types = require("devtools/client/responsive.html/types");
 
@@ -28,8 +25,8 @@ const testDevice = {
 // Add the new device to the list
 addDeviceForTest(testDevice);
 
-addRDMTask(TEST_URL, async function ({ ui }) {
-  let { store } = ui.toolWindow;
+addRDMTask(TEST_URL, async function({ ui }) {
+  const { store } = ui.toolWindow;
 
   reloadOnUAChange(true);
 
@@ -43,7 +40,7 @@ addRDMTask(TEST_URL, async function ({ ui }) {
   await testUserAgent(ui, DEFAULT_UA);
   await testDevicePixelRatio(ui, DEFAULT_DPPX);
   await testTouchEventsOverride(ui, false);
-  testViewportDeviceSelectLabel(ui, "no device selected");
+  testViewportDeviceMenuLabel(ui, "Responsive");
 
   // Test device with custom properties
   let reloaded = waitForViewportLoad(ui);
@@ -56,7 +53,7 @@ addRDMTask(TEST_URL, async function ({ ui }) {
   await testTouchEventsOverride(ui, true);
 
   // Test resetting device when resizing viewport
-  let deviceRemoved = once(ui, "device-association-removed");
+  const deviceRemoved = once(ui, "device-association-removed");
   reloaded = waitForViewportLoad(ui);
   await testViewportResize(ui, ".viewport-vertical-resize-handle",
     [-10, -10], [testDevice.width, testDevice.height - 10], [0, -10], ui);
@@ -65,7 +62,7 @@ addRDMTask(TEST_URL, async function ({ ui }) {
   await testUserAgent(ui, DEFAULT_UA);
   await testDevicePixelRatio(ui, DEFAULT_DPPX);
   await testTouchEventsOverride(ui, false);
-  testViewportDeviceSelectLabel(ui, "no device selected");
+  testViewportDeviceMenuLabel(ui, "Responsive");
 
   // Test device with generic properties
   await selectDevice(ui, "Laptop (1366 x 768)");
@@ -78,17 +75,19 @@ addRDMTask(TEST_URL, async function ({ ui }) {
   reloadOnUAChange(false);
 });
 
-add_task(async function () {
+add_task(async function() {
   const tab = await addTab(TEST_URL);
   const { ui } = await openRDM(tab);
 
-  let { store } = ui.toolWindow;
+  const { store } = ui.toolWindow;
 
   reloadOnUAChange(true);
 
   // Wait until the viewport has been added and the device list has been loaded
-  await waitUntilState(store, state => state.viewports.length == 1
-    && state.devices.listState == Types.loadableState.LOADED);
+  await waitUntilState(store, state =>
+    state.viewports.length == 1 &&
+    state.viewports[0].device === "Laptop (1366 x 768)" &&
+    state.devices.listState == Types.loadableState.LOADED);
 
   // Select device with custom UA
   let reloaded = waitForViewportLoad(ui);
@@ -111,17 +110,3 @@ add_task(async function () {
 
   reloadOnUAChange(false);
 });
-
-function testViewportDimensions(ui, w, h) {
-  let viewport = ui.toolWindow.document.querySelector(".viewport-content");
-
-  is(ui.toolWindow.getComputedStyle(viewport).getPropertyValue("width"),
-     `${w}px`, `Viewport should have width of ${w}px`);
-  is(ui.toolWindow.getComputedStyle(viewport).getPropertyValue("height"),
-     `${h}px`, `Viewport should have height of ${h}px`);
-}
-
-async function testDevicePixelRatio(ui, expected) {
-  let dppx = await getViewportDevicePixelRatio(ui);
-  is(dppx, expected, `devicePixelRatio should be set to ${expected}`);
-}

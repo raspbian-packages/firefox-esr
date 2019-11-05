@@ -11,12 +11,11 @@
 #include "nsStyleConsts.h"
 #include "nsIFormControl.h"
 #include "nsIForm.h"
-#include "nsIDOMNode.h"
 #include "nsISelectControlFrame.h"
 
 // Notify/query select frame for selected state
 #include "nsIFormControlFrame.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsNodeInfoManager.h"
 #include "nsCOMPtr.h"
 #include "mozilla/EventStates.h"
@@ -34,8 +33,8 @@ namespace mozilla {
 namespace dom {
 
 HTMLOptionElement::HTMLOptionElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo),
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)),
       mSelectedChanged(false),
       mIsSelected(false),
       mIsInSetDefaultSelected(false) {
@@ -72,7 +71,7 @@ void HTMLOptionElement::UpdateDisabledState(bool aNotify) {
 
   if (!isDisabled) {
     nsIContent* parent = GetParent();
-    if (auto optGroupElement = HTMLOptGroupElement::FromContentOrNull(parent)) {
+    if (auto optGroupElement = HTMLOptGroupElement::FromNodeOrNull(parent)) {
       isDisabled = optGroupElement->IsDisabled();
     }
   }
@@ -224,9 +223,8 @@ void HTMLOptionElement::GetText(nsAString& aText) {
 
   nsIContent* child = nsINode::GetFirstChild();
   while (child) {
-    if (child->NodeType() == TEXT_NODE ||
-        child->NodeType() == CDATA_SECTION_NODE) {
-      child->AppendTextTo(text);
+    if (Text* textChild = child->GetAsText()) {
+      textChild->AppendTextTo(text);
     }
     if (child->IsHTMLElement(nsGkAtoms::script) ||
         child->IsSVGElement(nsGkAtoms::script)) {
@@ -245,12 +243,10 @@ void HTMLOptionElement::SetText(const nsAString& aText, ErrorResult& aRv) {
   aRv = nsContentUtils::SetNodeTextContent(this, aText, true);
 }
 
-nsresult HTMLOptionElement::BindToTree(nsIDocument* aDocument,
-                                       nsIContent* aParent,
-                                       nsIContent* aBindingParent,
-                                       bool aCompileEventHandlers) {
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+nsresult HTMLOptionElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                       nsIContent* aBindingParent) {
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Our new parent might change :disabled/:enabled state.
@@ -285,7 +281,7 @@ HTMLSelectElement* HTMLOptionElement::GetSelect() {
     return nullptr;
   }
 
-  HTMLSelectElement* select = HTMLSelectElement::FromContent(parent);
+  HTMLSelectElement* select = HTMLSelectElement::FromNode(parent);
   if (select) {
     return select;
   }
@@ -294,7 +290,7 @@ HTMLSelectElement* HTMLOptionElement::GetSelect() {
     return nullptr;
   }
 
-  return HTMLSelectElement::FromContentOrNull(parent->GetParent());
+  return HTMLSelectElement::FromNodeOrNull(parent->GetParent());
 }
 
 already_AddRefed<HTMLOptionElement> HTMLOptionElement::Option(
@@ -302,17 +298,16 @@ already_AddRefed<HTMLOptionElement> HTMLOptionElement::Option(
     const Optional<nsAString>& aValue, bool aDefaultSelected, bool aSelected,
     ErrorResult& aError) {
   nsCOMPtr<nsPIDOMWindowInner> win = do_QueryInterface(aGlobal.GetAsSupports());
-  nsIDocument* doc;
+  Document* doc;
   if (!win || !(doc = win->GetExtantDoc())) {
     aError.Throw(NS_ERROR_FAILURE);
     return nullptr;
   }
 
-  already_AddRefed<mozilla::dom::NodeInfo> nodeInfo =
-      doc->NodeInfoManager()->GetNodeInfo(nsGkAtoms::option, nullptr,
-                                          kNameSpaceID_XHTML, ELEMENT_NODE);
+  RefPtr<mozilla::dom::NodeInfo> nodeInfo = doc->NodeInfoManager()->GetNodeInfo(
+      nsGkAtoms::option, nullptr, kNameSpaceID_XHTML, ELEMENT_NODE);
 
-  RefPtr<HTMLOptionElement> option = new HTMLOptionElement(nodeInfo);
+  RefPtr<HTMLOptionElement> option = new HTMLOptionElement(nodeInfo.forget());
 
   if (!aText.IsEmpty()) {
     // Create a new text node and append it to the option
@@ -353,9 +348,8 @@ already_AddRefed<HTMLOptionElement> HTMLOptionElement::Option(
   return option.forget();
 }
 
-nsresult HTMLOptionElement::CopyInnerTo(Element* aDest,
-                                        bool aPreallocateChildren) {
-  nsresult rv = nsGenericHTMLElement::CopyInnerTo(aDest, aPreallocateChildren);
+nsresult HTMLOptionElement::CopyInnerTo(Element* aDest) {
+  nsresult rv = nsGenericHTMLElement::CopyInnerTo(aDest);
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (aDest->OwnerDoc()->IsStaticDocument()) {
@@ -366,7 +360,7 @@ nsresult HTMLOptionElement::CopyInnerTo(Element* aDest,
 
 JSObject* HTMLOptionElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return HTMLOptionElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLOptionElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

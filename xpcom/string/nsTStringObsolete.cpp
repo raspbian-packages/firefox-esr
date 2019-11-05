@@ -283,15 +283,11 @@ bool nsTString<T>::ReplaceSubstring(const self_type& aTarget,
   // Note that we always allocate at least an this->mLength sized buffer,
   // because the rest of the algorithm relies on having access to all of the
   // original string.  In other words, we over-allocate in the shrinking case.
-  char_type* oldData;
-  DataFlags oldFlags;
-  if (!this->MutatePrep(XPCOM_MAX(this->mLength, newLength.value()), &oldData,
-                        &oldFlags))
+  uint32_t oldLen = this->mLength;
+  mozilla::Result<uint32_t, nsresult> r =
+      this->StartBulkWriteImpl(XPCOM_MAX(oldLen, newLength.value()), oldLen);
+  if (r.isErr()) {
     return false;
-  if (oldData) {
-    // Copy all of the old data to the new buffer.
-    char_traits::copy(this->mData, oldData, this->mLength);
-    ::ReleaseData(oldData, oldFlags);
   }
 
   if (aTarget.Length() >= aNewValue.Length()) {
@@ -331,8 +327,7 @@ bool nsTString<T>::ReplaceSubstring(const self_type& aTarget,
   }
 
   // Adjust the length and make sure the string is null terminated.
-  this->mLength = newLength.value();
-  this->mData[this->mLength] = char_type(0);
+  this->FinishBulkWriteImpl(newLength.value());
 
   return true;
 }

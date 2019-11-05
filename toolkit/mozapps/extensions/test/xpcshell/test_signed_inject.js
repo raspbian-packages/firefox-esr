@@ -15,7 +15,7 @@ const ADDONS = {
     unsigned: "unsigned_nonbootstrap_2.xpi",
     badid: "signed_nonbootstrap_badid_2.xpi",
     signed: "signed_nonbootstrap_2.xpi",
-  }
+  },
 };
 const ID = "test@tests.mozilla.org";
 
@@ -33,8 +33,7 @@ function breakAddon(file) {
     f.append("install.rdf");
     f.lastModifiedTime = Date.now();
   } else {
-    var zipW = AM_Cc["@mozilla.org/zipwriter;1"].
-               createInstance(AM_Ci.nsIZipWriter);
+    var zipW = Cc["@mozilla.org/zipwriter;1"].createInstance(Ci.nsIZipWriter);
     zipW.open(file, FileUtils.MODE_RDWR | FileUtils.MODE_APPEND);
     zipW.removeEntry("test.txt", false);
     zipW.close();
@@ -55,8 +54,9 @@ function resetPrefs() {
 }
 
 function clearCache(file) {
-  if (TEST_UNPACKED)
+  if (TEST_UNPACKED) {
     return;
+  }
 
   Services.obs.notifyObservers(file, "flush-cache-entry");
 }
@@ -65,23 +65,25 @@ function getActiveVersion() {
   return Services.prefs.getIntPref("bootstraptest.active_version");
 }
 
-function run_test() {
+add_task(async function setup() {
   createAppInfo("xpcshell@tests.mozilla.org", "XPCShell", "4", "4");
 
   // Start and stop the manager to initialise everything in the profile before
   // actual testing
-  startupManager();
-  shutdownManager();
+  await promiseStartupManager();
+  await promiseShutdownManager();
   resetPrefs();
-
-  run_next_test();
-}
+});
 
 // Injecting into profile (bootstrap)
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.bootstrap.unsigned), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.bootstrap.unsigned),
+    profileDir,
+    ID
+  );
 
-  startupManager();
+  await promiseStartupManager();
 
   // Currently we leave the sideloaded add-on there but just don't run it
   let addon = await promiseAddonByID(ID);
@@ -91,7 +93,7 @@ add_task(async function() {
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_MISSING);
   Assert.equal(getActiveVersion(), -1);
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseShutdownManager();
   resetPrefs();
 
@@ -100,10 +102,14 @@ add_task(async function() {
 });
 
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.bootstrap.signed), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.bootstrap.signed),
+    profileDir,
+    ID
+  );
   breakAddon(file);
 
-  startupManager();
+  await promiseStartupManager();
 
   // Currently we leave the sideloaded add-on there but just don't run it
   let addon = await promiseAddonByID(ID);
@@ -113,7 +119,7 @@ add_task(async function() {
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_BROKEN);
   Assert.equal(getActiveVersion(), -1);
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseShutdownManager();
   resetPrefs();
 
@@ -122,9 +128,13 @@ add_task(async function() {
 });
 
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.bootstrap.badid), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.bootstrap.badid),
+    profileDir,
+    ID
+  );
 
-  startupManager();
+  await promiseStartupManager();
 
   // Currently we leave the sideloaded add-on there but just don't run it
   let addon = await promiseAddonByID(ID);
@@ -134,7 +144,7 @@ add_task(async function() {
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_BROKEN);
   Assert.equal(getActiveVersion(), -1);
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseShutdownManager();
   resetPrefs();
 
@@ -144,14 +154,18 @@ add_task(async function() {
 
 // Installs a signed add-on then modifies it in place breaking its signing
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.bootstrap.signed), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.bootstrap.signed),
+    profileDir,
+    ID
+  );
 
   // Make it appear to come from the past so when we modify it later it is
   // detected during startup. Obviously malware can bypass this method of
   // detection but the periodic scan will catch that
   await promiseSetExtensionModifiedTime(file.path, Date.now() - 600000);
 
-  startupManager();
+  await promiseStartupManager();
   let addon = await promiseAddonByID(ID);
   Assert.notEqual(addon, null);
   Assert.ok(!addon.appDisabled);
@@ -166,7 +180,7 @@ add_task(async function() {
   breakAddon(file);
   resetPrefs();
 
-  startupManager();
+  await promiseStartupManager();
 
   addon = await promiseAddonByID(ID);
   Assert.notEqual(addon, null);
@@ -175,11 +189,13 @@ add_task(async function() {
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_BROKEN);
   Assert.equal(getActiveVersion(), -1);
 
-  let ids = AddonManager.getStartupChanges(AddonManager.STARTUP_CHANGE_DISABLED);
+  let ids = AddonManager.getStartupChanges(
+    AddonManager.STARTUP_CHANGE_DISABLED
+  );
   Assert.equal(ids.length, 1);
   Assert.equal(ids[0], ID);
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseShutdownManager();
   resetPrefs();
 
@@ -189,9 +205,13 @@ add_task(async function() {
 
 // Injecting into profile (non-bootstrap)
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.nonbootstrap.unsigned), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.nonbootstrap.unsigned),
+    profileDir,
+    ID
+  );
 
-  startupManager();
+  await promiseStartupManager();
 
   // Currently we leave the sideloaded add-on there but just don't run it
   let addon = await promiseAddonByID(ID);
@@ -199,9 +219,8 @@ add_task(async function() {
   Assert.ok(addon.appDisabled);
   Assert.ok(!addon.isActive);
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_MISSING);
-  Assert.ok(!isExtensionInAddonsList(profileDir, ID));
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseRestartManager();
   await promiseShutdownManager();
 
@@ -210,10 +229,14 @@ add_task(async function() {
 });
 
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.nonbootstrap.signed), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.nonbootstrap.signed),
+    profileDir,
+    ID
+  );
   breakAddon(file);
 
-  startupManager();
+  await promiseStartupManager();
 
   // Currently we leave the sideloaded add-on there but just don't run it
   let addon = await promiseAddonByID(ID);
@@ -221,9 +244,8 @@ add_task(async function() {
   Assert.ok(addon.appDisabled);
   Assert.ok(!addon.isActive);
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_BROKEN);
-  Assert.ok(!isExtensionInAddonsList(profileDir, ID));
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseRestartManager();
   await promiseShutdownManager();
 
@@ -232,9 +254,13 @@ add_task(async function() {
 });
 
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.nonbootstrap.badid), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.nonbootstrap.badid),
+    profileDir,
+    ID
+  );
 
-  startupManager();
+  await promiseStartupManager();
 
   // Currently we leave the sideloaded add-on there but just don't run it
   let addon = await promiseAddonByID(ID);
@@ -242,9 +268,8 @@ add_task(async function() {
   Assert.ok(addon.appDisabled);
   Assert.ok(!addon.isActive);
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_BROKEN);
-  Assert.ok(!isExtensionInAddonsList(profileDir, ID));
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseRestartManager();
   await promiseShutdownManager();
 
@@ -254,7 +279,11 @@ add_task(async function() {
 
 // Installs a signed add-on then modifies it in place breaking its signing
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.nonbootstrap.signed), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.nonbootstrap.signed),
+    profileDir,
+    ID
+  );
 
   // Make it appear to come from the past so when we modify it later it is
   // detected during startup. Obviously malware can bypass this method of
@@ -267,7 +296,6 @@ add_task(async function() {
   Assert.ok(!addon.appDisabled);
   Assert.ok(addon.isActive);
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_SIGNED);
-  Assert.ok(isExtensionInAddonsList(profileDir, ID));
 
   await promiseShutdownManager();
 
@@ -281,13 +309,14 @@ add_task(async function() {
   Assert.ok(addon.appDisabled);
   Assert.ok(!addon.isActive);
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_BROKEN);
-  Assert.ok(!isExtensionInAddonsList(profileDir, ID));
 
-  let ids = AddonManager.getStartupChanges(AddonManager.STARTUP_CHANGE_DISABLED);
+  let ids = AddonManager.getStartupChanges(
+    AddonManager.STARTUP_CHANGE_DISABLED
+  );
   Assert.equal(ids.length, 1);
   Assert.equal(ids[0], ID);
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseRestartManager();
   await promiseShutdownManager();
 
@@ -297,8 +326,10 @@ add_task(async function() {
 
 // Stage install then modify before startup (non-bootstrap)
 add_task(async function() {
-  startupManager();
-  await promiseInstallAllFiles([do_get_file(DATA + ADDONS.nonbootstrap.signed)]);
+  await promiseStartupManager();
+  await promiseInstallAllFiles([
+    do_get_file(DATA + ADDONS.nonbootstrap.signed),
+  ]);
   await promiseShutdownManager();
 
   let staged = profileDir.clone();
@@ -307,7 +338,7 @@ add_task(async function() {
   Assert.ok(staged.exists());
 
   breakAddon(staged);
-  startupManager();
+  await promiseStartupManager();
 
   // Should have refused to install the broken staged version
   let addon = await promiseAddonByID(ID);
@@ -323,10 +354,14 @@ add_task(async function() {
   let stage = profileDir.clone();
   stage.append("staged");
 
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.bootstrap.signed), stage, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.bootstrap.signed),
+    stage,
+    ID
+  );
   breakAddon(file);
 
-  startupManager();
+  await promiseStartupManager();
 
   // Should have refused to install the broken staged version
   let addon = await promiseAddonByID(ID);
@@ -342,9 +377,13 @@ add_task(async function() {
 
 // Preliminarily-signed sideloaded add-ons should work
 add_task(async function() {
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.bootstrap.preliminary), profileDir, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.bootstrap.preliminary),
+    profileDir,
+    ID
+  );
 
-  startupManager();
+  await promiseStartupManager();
 
   let addon = await promiseAddonByID(ID);
   Assert.notEqual(addon, null);
@@ -353,7 +392,7 @@ add_task(async function() {
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_PRELIMINARY);
   Assert.equal(getActiveVersion(), 2);
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseShutdownManager();
   resetPrefs();
 
@@ -366,9 +405,13 @@ add_task(async function() {
   let stage = profileDir.clone();
   stage.append("staged");
 
-  let file = manuallyInstall(do_get_file(DATA + ADDONS.bootstrap.preliminary), stage, ID);
+  let file = await manuallyInstall(
+    do_get_file(DATA + ADDONS.bootstrap.preliminary),
+    stage,
+    ID
+  );
 
-  startupManager();
+  await promiseStartupManager();
 
   let addon = await promiseAddonByID(ID);
   Assert.notEqual(addon, null);
@@ -377,7 +420,7 @@ add_task(async function() {
   Assert.equal(addon.signedState, AddonManager.SIGNEDSTATE_PRELIMINARY);
   Assert.equal(getActiveVersion(), 2);
 
-  addon.uninstall();
+  await addon.uninstall();
   await promiseShutdownManager();
   resetPrefs();
 

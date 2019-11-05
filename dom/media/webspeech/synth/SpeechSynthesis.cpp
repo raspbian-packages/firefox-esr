@@ -8,14 +8,13 @@
 #include "nsSpeechTask.h"
 #include "mozilla/Logging.h"
 
-#include "mozilla/dom/ContentChild.h"
 #include "mozilla/dom/Element.h"
 
 #include "mozilla/dom/SpeechSynthesisBinding.h"
 #include "SpeechSynthesis.h"
 #include "nsContentUtils.h"
 #include "nsSynthVoiceRegistry.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDocShell.h"
 
 #undef LOG
@@ -73,7 +72,7 @@ SpeechSynthesis::~SpeechSynthesis() {}
 
 JSObject* SpeechSynthesis::WrapObject(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return SpeechSynthesisBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechSynthesis_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 bool SpeechSynthesis::Pending() const {
@@ -155,7 +154,7 @@ void SpeechSynthesis::AdvanceQueue() {
 
   nsAutoString docLang;
   nsCOMPtr<nsPIDOMWindowInner> window = GetOwner();
-  nsIDocument* doc = window ? window->GetExtantDoc() : nullptr;
+  Document* doc = window ? window->GetExtantDoc() : nullptr;
 
   if (doc) {
     Element* elm = doc->GetHtmlElement();

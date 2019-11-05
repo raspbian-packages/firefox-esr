@@ -64,20 +64,20 @@ class ISurfaceProvider {
   /// important that it be constant over the lifetime of this object.
   virtual size_t LogicalSizeInBytes() const = 0;
 
+  typedef imgFrame::AddSizeOfCbData AddSizeOfCbData;
+  typedef imgFrame::AddSizeOfCb AddSizeOfCb;
+
   /// @return the actual number of bytes of memory this ISurfaceProvider is
   /// using. May vary over the lifetime of the ISurfaceProvider. The default
   /// implementation is appropriate for static ISurfaceProviders.
   virtual void AddSizeOfExcludingThis(MallocSizeOf aMallocSizeOf,
-                                      size_t& aHeapSizeOut,
-                                      size_t& aNonHeapSizeOut,
-                                      size_t& aExtHandlesOut) {
+                                      const AddSizeOfCb& aCallback) {
     DrawableFrameRef ref = DrawableRef(/* aFrame = */ 0);
     if (!ref) {
       return;
     }
 
-    ref->AddSizeOfExcludingThis(aMallocSizeOf, aHeapSizeOut, aNonHeapSizeOut,
-                                aExtHandlesOut);
+    ref->AddSizeOfExcludingThis(aMallocSizeOf, aCallback);
   }
 
   virtual void Reset() {}
@@ -105,6 +105,13 @@ class ISurfaceProvider {
   /// dynamically generated animation surfaces, @aFrame specifies the 0-based
   /// index of the desired frame.
   virtual DrawableFrameRef DrawableRef(size_t aFrame) = 0;
+
+  /// @return an imgFrame at the 0-based index of the desired frame, as
+  /// specified by @aFrame. Only applies for animated images.
+  virtual already_AddRefed<imgFrame> GetFrame(size_t aFrame) {
+    MOZ_ASSERT_UNREACHABLE("Surface provider does not support direct access!");
+    return nullptr;
+  }
 
   /// @return true if this ISurfaceProvider is locked. (@see SetLocked())
   /// Should only be called from SurfaceCache code as it relies on SurfaceCache
@@ -140,22 +147,23 @@ class MOZ_STACK_CLASS DrawableSurface final {
   DrawableSurface() : mHaveSurface(false) {}
 
   explicit DrawableSurface(DrawableFrameRef&& aDrawableRef)
-      : mDrawableRef(Move(aDrawableRef)), mHaveSurface(bool(mDrawableRef)) {}
+      : mDrawableRef(std::move(aDrawableRef)),
+        mHaveSurface(bool(mDrawableRef)) {}
 
   explicit DrawableSurface(NotNull<ISurfaceProvider*> aProvider)
       : mProvider(aProvider), mHaveSurface(true) {}
 
   DrawableSurface(DrawableSurface&& aOther)
-      : mDrawableRef(Move(aOther.mDrawableRef)),
-        mProvider(Move(aOther.mProvider)),
+      : mDrawableRef(std::move(aOther.mDrawableRef)),
+        mProvider(std::move(aOther.mProvider)),
         mHaveSurface(aOther.mHaveSurface) {
     aOther.mHaveSurface = false;
   }
 
   DrawableSurface& operator=(DrawableSurface&& aOther) {
     MOZ_ASSERT(this != &aOther, "Self-moves are prohibited");
-    mDrawableRef = Move(aOther.mDrawableRef);
-    mProvider = Move(aOther.mProvider);
+    mDrawableRef = std::move(aOther.mDrawableRef);
+    mProvider = std::move(aOther.mProvider);
     mHaveSurface = aOther.mHaveSurface;
     aOther.mHaveSurface = false;
     return *this;
@@ -184,6 +192,17 @@ class MOZ_STACK_CLASS DrawableSurface final {
     mDrawableRef = mProvider->DrawableRef(aFrame);
 
     return mDrawableRef ? NS_OK : NS_ERROR_FAILURE;
+  }
+
+  already_AddRefed<imgFrame> GetFrame(size_t aFrame) {
+    MOZ_ASSERT(mHaveSurface, "Trying to get on an empty DrawableSurface?");
+
+    if (!mProvider) {
+      MOZ_ASSERT_UNREACHABLE("Trying to get on a static DrawableSurface?");
+      return nullptr;
+    }
+
+    return mProvider->GetFrame(aFrame);
   }
 
   void Reset() {

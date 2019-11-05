@@ -25,7 +25,7 @@
 #include "ProxyWrappers.h"
 
 #if defined(MOZ_TELEMETRY_REPORTING)
-#include "mozilla/Telemetry.h"
+#  include "mozilla/Telemetry.h"
 #endif  // defined(MOZ_TELEMETRY_REPORTING)
 
 using namespace mozilla;
@@ -113,6 +113,18 @@ void a11y::ProxyStateChangeEvent(ProxyAccessible* aTarget, uint64_t, bool) {
 
 void a11y::ProxyFocusEvent(ProxyAccessible* aTarget,
                            const LayoutDeviceIntRect& aCaretRect) {
+  FocusManager* focusMgr = FocusMgr();
+  if (focusMgr && focusMgr->FocusedAccessible()) {
+    // This is a focus event from a remote document, but focus has moved out
+    // of that document into the chrome since that event was sent. For example,
+    // this can happen when choosing File menu -> New Tab. See bug 1471466.
+    // Note that this does not handle the case where a focus event is sent from
+    // one remote document, but focus moved into a second remote document
+    // since that event was sent. However, this isn't something anyone has been
+    // able to trigger.
+    return;
+  }
+
   AccessibleWrap::UpdateSystemCaretFor(aTarget, aCaretRect);
   AccessibleWrap::FireWinEvent(WrapperFor(aTarget),
                                nsIAccessibleEvent::EVENT_FOCUS);
@@ -310,14 +322,14 @@ static void AccumulateInstantiatorTelemetry(const nsAString& aValue) {
   MOZ_ASSERT(NS_IsMainThread());
 
   if (!aValue.IsEmpty()) {
-#if defined(MOZ_TELEMETRY_REPORTING)
+#  if defined(MOZ_TELEMETRY_REPORTING)
     Telemetry::ScalarSet(Telemetry::ScalarID::A11Y_INSTANTIATORS, aValue);
-#endif  // defined(MOZ_TELEMETRY_REPORTING)
-#if defined(MOZ_CRASHREPORTER)
+#  endif  // defined(MOZ_TELEMETRY_REPORTING)
+#  if defined(MOZ_CRASHREPORTER)
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("AccessibilityClient"),
+        CrashReporter::Annotation::AccessibilityClient,
         NS_ConvertUTF16toUTF8(aValue));
-#endif  // defined(MOZ_CRASHREPORTER)
+#  endif  // defined(MOZ_CRASHREPORTER)
   }
 }
 

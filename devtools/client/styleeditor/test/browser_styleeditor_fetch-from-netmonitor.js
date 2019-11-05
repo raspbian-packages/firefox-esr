@@ -8,37 +8,41 @@
 
 const TEST_URL = TEST_BASE_HTTP + "doc_fetch_from_netmonitor.html";
 
-add_task(function* () {
+add_task(async function() {
   info("Opening netmonitor");
-  let tab = yield addTab("about:blank");
-  let target = TargetFactory.forTab(tab);
-  let toolbox = yield gDevTools.showToolbox(target, "netmonitor");
-  let monitor = toolbox.getPanel("netmonitor");
-  let { store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let {
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+  const tab = await addTab("about:blank");
+  const target = await TargetFactory.forTab(tab);
+  const toolbox = await gDevTools.showToolbox(target, "netmonitor");
+  const monitor = toolbox.getPanel("netmonitor");
+  const { store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
   info("Navigating to test page");
-  yield navigateTo(TEST_URL);
+  await navigateTo(TEST_URL);
 
   info("Opening Style Editor");
-  let styleeditor = yield toolbox.selectTool("styleeditor");
-  let ui = styleeditor.UI;
+  const styleeditor = await toolbox.selectTool("styleeditor");
+  const ui = styleeditor.UI;
 
   info("Waiting for the sources to be loaded.");
-  yield ui.editors[0].getSourceEditor();
-  yield ui.selectStyleSheet(ui.editors[1].styleSheet);
-  yield ui.editors[1].getSourceEditor();
+  await ui.editors[0].getSourceEditor();
+  await ui.selectStyleSheet(ui.editors[1].styleSheet);
+  await ui.editors[1].getSourceEditor();
+
+  // Wait till there is 5 requests in Netmonitor store.
+  // (i.e. the Styleeditor panel performed one request).
+  await waitUntil(() => getSortedRequests(store.getState()).length == 5);
 
   info("Checking Netmonitor contents.");
-  let shortRequests = [];
-  let longRequests = [];
-  let hugeRequests = [];
-  for (let item of getSortedRequests(store.getState())) {
+  const shortRequests = [];
+  const longRequests = [];
+  const hugeRequests = [];
+  for (const item of getSortedRequests(store.getState())) {
     if (item.url.endsWith("doc_short_string.css")) {
       shortRequests.push(item);
     }
@@ -50,13 +54,22 @@ add_task(function* () {
     }
   }
 
-  is(shortRequests.length, 1,
-     "Got one request for doc_short_string.css after Style Editor was loaded.");
-  is(longRequests.length, 1,
-     "Got one request for doc_long_string.css after Style Editor was loaded.");
+  is(
+    shortRequests.length,
+    1,
+    "Got one request for doc_short_string.css after Style Editor was loaded."
+  );
+  is(
+    longRequests.length,
+    1,
+    "Got one request for doc_long_string.css after Style Editor was loaded."
+  );
 
   // Requests with a response body size greater than 1MB cannot be fetched from the
   // netmonitor, the style editor should perform a separate request.
-  is(hugeRequests.length, 2,
-     "Got two requests for sjs_huge-css-server.sjs after Style Editor was loaded.");
+  is(
+    hugeRequests.length,
+    2,
+    "Got two requests for sjs_huge-css-server.sjs after Style Editor was loaded."
+  );
 });

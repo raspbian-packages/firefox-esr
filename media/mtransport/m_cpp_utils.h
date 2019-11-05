@@ -21,5 +21,5 @@ namespace mozilla {
   DISALLOW_COPY(T);             \
   DISALLOW_ASSIGNMENT(T)
 
-}  // close namespace
+}  // namespace mozilla
 #endif

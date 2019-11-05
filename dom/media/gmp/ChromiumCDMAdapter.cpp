@@ -11,20 +11,21 @@
 #include "gmp-api/gmp-video-codec.h"
 #include "WidevineUtils.h"
 #include "GMPLog.h"
+#include "mozilla/HelperMacros.h"
 #include "mozilla/Move.h"
 
 #ifdef XP_WIN
-#include "WinUtils.h"
-#include "nsWindowsDllInterceptor.h"
-#include <windows.h>
-#include <strsafe.h>
-#include <unordered_map>
-#include <vector>
+#  include "WinUtils.h"
+#  include "nsWindowsDllInterceptor.h"
+#  include <windows.h>
+#  include <strsafe.h>
+#  include <unordered_map>
+#  include <vector>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <unistd.h>
+#  include <fcntl.h>
 #endif
 
 const GMPPlatformAPI* sPlatform = nullptr;
@@ -40,7 +41,7 @@ ChromiumCDMAdapter::ChromiumCDMAdapter(
 #ifdef XP_WIN
   InitializeHooks();
 #endif
-  PopulateHostFiles(Move(aHostPathPairs));
+  PopulateHostFiles(std::move(aHostPathPairs));
 }
 
 void ChromiumCDMAdapter::SetAdaptee(PRLibrary* aLib) { mLib = aLib; }
@@ -53,9 +54,6 @@ void* ChromiumCdmHost(int aHostInterfaceVersion, void* aUserData) {
   }
   return aUserData;
 }
-
-#define STRINGIFY(s) _STRINGIFY(s)
-#define _STRINGIFY(s) #s
 
 #ifdef MOZILLA_OFFICIAL
 static cdm::HostFile TakeToCDMHostFile(HostFileData& aHostFileData) {
@@ -76,7 +74,7 @@ GMPErr ChromiumCDMAdapter::GMPInit(const GMPPlatformAPI* aPlatformAPI) {
   // Note: we must call the VerifyCdmHost_0 function if it's present before
   // we call the initialize function.
   auto verify = reinterpret_cast<decltype(::VerifyCdmHost_0)*>(
-      PR_FindFunctionSymbol(mLib, STRINGIFY(VerifyCdmHost_0)));
+      PR_FindFunctionSymbol(mLib, MOZ_STRINGIFY(VerifyCdmHost_0)));
   if (verify) {
     nsTArray<cdm::HostFile> files;
     for (HostFileData& hostFile : mHostFiles) {
@@ -88,12 +86,12 @@ GMPErr ChromiumCDMAdapter::GMPInit(const GMPPlatformAPI* aPlatformAPI) {
 #endif
 
   auto init = reinterpret_cast<decltype(::INITIALIZE_CDM_MODULE)*>(
-      PR_FindFunctionSymbol(mLib, STRINGIFY(INITIALIZE_CDM_MODULE)));
+      PR_FindFunctionSymbol(mLib, MOZ_STRINGIFY(INITIALIZE_CDM_MODULE)));
   if (!init) {
     return GMPGenericErr;
   }
 
-  GMP_LOG(STRINGIFY(INITIALIZE_CDM_MODULE) "()");
+  GMP_LOG(MOZ_STRINGIFY(INITIALIZE_CDM_MODULE) "()");
   init();
 
   return GMPNoErr;
@@ -118,9 +116,9 @@ GMPErr ChromiumCDMAdapter::GMPGetAPI(const char* aAPIName, void* aHostAPI,
 
     int version = isCDM9 ? cdm::ContentDecryptionModule_9::kVersion
                          : cdm::ContentDecryptionModule_10::kVersion;
-    void* cdm =
-        create(version, kEMEKeySystemWidevine.get(),
-               kEMEKeySystemWidevine.Length(), &ChromiumCdmHost, aHostAPI);
+    void* cdm = create(version, EME_KEY_SYSTEM_WIDEVINE,
+                       mozilla::ArrayLength(EME_KEY_SYSTEM_WIDEVINE) - 1,
+                       &ChromiumCdmHost, aHostAPI);
     if (!cdm) {
       GMP_LOG(
           "ChromiumCDMAdapter::GMPGetAPI(%s, 0x%p, 0x%p, %u) this=0x%p "
@@ -165,7 +163,8 @@ typedef DWORD(WINAPI* QueryDosDeviceWFnPtr)(_In_opt_ LPCWSTR lpDeviceName,
                                             _Out_ LPWSTR lpTargetPath,
                                             _In_ DWORD ucchMax);
 
-static QueryDosDeviceWFnPtr sOriginalQueryDosDeviceWFnPtr = nullptr;
+static WindowsDllInterceptor::FuncHookType<QueryDosDeviceWFnPtr>
+    sOriginalQueryDosDeviceWFnPtr;
 
 static std::unordered_map<std::wstring, std::wstring>* sDeviceNames = nullptr;
 
@@ -237,9 +236,8 @@ static void InitializeHooks() {
   }
 
   sKernel32Intercept.Init("kernelbase.dll");
-  sKernel32Intercept.AddHook("QueryDosDeviceW",
-                             reinterpret_cast<intptr_t>(QueryDosDeviceWHook),
-                             (void**)(&sOriginalQueryDosDeviceWFnPtr));
+  sOriginalQueryDosDeviceWFnPtr.Set(sKernel32Intercept, "QueryDosDeviceW",
+                                    &QueryDosDeviceWHook);
 }
 #endif
 

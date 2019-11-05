@@ -15,20 +15,23 @@ const TEST_URI = `
   </div>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let { inspector, gridInspector } = yield openLayoutView();
-  let { document: doc } = gridInspector;
-  let { highlighters } = inspector;
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { inspector, gridInspector } = await openLayoutView();
+  const { document: doc } = gridInspector;
+  const { highlighters } = inspector;
 
-  yield selectNode("#grid", inspector);
-  let noGridList = doc.querySelector(".grid-pane .devtools-sidepanel-no-result");
-  let gridList = doc.getElementById("grid-list");
+  await selectNode("#grid", inspector);
+  const noGridList = doc.querySelector(
+    ".grid-pane .devtools-sidepanel-no-result"
+  );
+  const gridList = doc.getElementById("grid-list");
 
   info("Checking the initial state of the Grid Inspector.");
   ok(noGridList, "The message no grid containers is displayed.");
   ok(!gridList, "No grid containers are listed.");
-  ok(!highlighters.highlighters[HIGHLIGHTER_TYPE],
-    "No CSS grid highlighter exists in the highlighters overlay.");
-  ok(!highlighters.gridHighlighterShown, "No CSS grid highlighter is shown.");
+  ok(
+    !highlighters.gridHighlighters.size,
+    "No CSS grid highlighter exists in the highlighters overlay."
+  );
 });

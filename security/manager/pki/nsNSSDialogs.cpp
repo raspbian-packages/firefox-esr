@@ -18,6 +18,7 @@
 #include "nsIInterfaceRequestor.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIKeygenThread.h"
+#include "nsIPK11Token.h"
 #include "nsIPromptService.h"
 #include "nsIProtectedAuthThread.h"
 #include "nsIWindowWatcher.h"
@@ -51,8 +52,7 @@ nsresult nsNSSDialogs::Init() {
 }
 
 NS_IMETHODIMP
-nsNSSDialogs::SetPassword(nsIInterfaceRequestor* ctx,
-                          const nsAString& tokenName,
+nsNSSDialogs::SetPassword(nsIInterfaceRequestor* ctx, nsIPK11Token* token,
                           /*out*/ bool* canceled) {
   // |ctx| is allowed to be null.
   NS_ENSURE_ARG(canceled);
@@ -66,8 +66,18 @@ nsNSSDialogs::SetPassword(nsIInterfaceRequestor* ctx,
       do_CreateInstance(NS_DIALOGPARAMBLOCK_CONTRACTID);
   if (!block) return NS_ERROR_FAILURE;
 
-  nsresult rv = block->SetString(1, PromiseFlatString(tokenName).get());
-  if (NS_FAILED(rv)) return rv;
+  nsCOMPtr<nsIMutableArray> objects = nsArrayBase::Create();
+  if (!objects) {
+    return NS_ERROR_FAILURE;
+  }
+  nsresult rv = objects->AppendElement(token);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+  rv = block->SetObjects(objects);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
 
   rv = nsNSSDialogHelper::openDialog(
       parent, "chrome://pippki/content/changepassword.xul", block);
@@ -313,17 +323,6 @@ nsNSSDialogs::GetPKCS12FilePassword(nsIInterfaceRequestor* ctx,
   }
 
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSDialogs::ViewCert(nsIInterfaceRequestor* ctx, nsIX509Cert* cert) {
-  // |ctx| is allowed to be null.
-  NS_ENSURE_ARG(cert);
-
-  // Get the parent window for the dialog
-  nsCOMPtr<mozIDOMWindowProxy> parent = do_GetInterface(ctx);
-  return nsNSSDialogHelper::openDialog(
-      parent, "chrome://pippki/content/certViewer.xul", cert, false /*modal*/);
 }
 
 NS_IMETHODIMP

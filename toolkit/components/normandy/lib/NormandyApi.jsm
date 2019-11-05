@@ -4,14 +4,24 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://normandy/lib/LogManager.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { LogManager } = ChromeUtils.import(
+  "resource://normandy/lib/LogManager.jsm"
+);
 
 ChromeUtils.defineModuleGetter(
-  this, "CanonicalJSON", "resource://gre/modules/CanonicalJSON.jsm");
+  this,
+  "CanonicalJSON",
+  "resource://gre/modules/CanonicalJSON.jsm"
+);
 
-Cu.importGlobalProperties(["fetch", "URL"]); /* globals fetch, URL */
+XPCOMUtils.defineLazyGlobalGetters(this, [
+  "fetch",
+  "URL",
+]); /* globals fetch, URL */
 
 var EXPORTED_SYMBOLS = ["NormandyApi"];
 
@@ -42,8 +52,8 @@ var NormandyApi = {
       }
     }
 
-    const headers = {"Accept": "application/json"};
-    return fetch(url.href, {method, body, headers});
+    const headers = { Accept: "application/json" };
+    return fetch(url.href, { method, body, headers });
   },
 
   get(endpoint, data) {
@@ -55,11 +65,12 @@ var NormandyApi = {
   },
 
   absolutify(url) {
-    const apiBase = prefs.getCharPref("api_url");
-    const server = new URL(apiBase).origin;
     if (url.startsWith("http")) {
       return url;
-    } else if (url.startsWith("/")) {
+    }
+    const apiBase = prefs.getCharPref("api_url");
+    const server = new URL(apiBase).origin;
+    if (url.startsWith("/")) {
       return server + url;
     }
     throw new Error("Can't use relative urls");
@@ -87,55 +98,72 @@ var NormandyApi = {
     const rawText = await objectsResponse.text();
     const objectsWithSigs = JSON.parse(rawText);
 
-    const verifiedObjects = [];
+    return Promise.all(
+      objectsWithSigs.map(async item => {
+        // Check that the rawtext (the object and the signature)
+        // includes the CanonicalJSON version of the object. This isn't
+        // strictly needed, but it is a great benefit for debugging
+        // signature problems.
+        const object = item[type];
+        const serialized = CanonicalJSON.stringify(object);
+        if (!rawText.includes(serialized)) {
+          log.debug(rawText, serialized);
+          throw new NormandyApi.InvalidSignatureError(
+            `Canonical ${type} serialization does not match!`
+          );
+        }
+        // Verify content signature using cryptography (will throw if fails).
+        await this.verifyObjectSignature(serialized, item.signature, type);
+        return object;
+      })
+    );
+  },
 
-    for (const objectWithSig of objectsWithSigs) {
-      const {signature, x5u} = objectWithSig.signature;
-      const object = objectWithSig[type];
+  /**
+   * Verify content signature, by serializing the specified `object` as
+   * canonical JSON, and using the Normandy signer verifier to check that
+   * it matches the signature specified in `signaturePayload`.
+   *
+   * @param {object|String} data The object (or string) to be checked
+   * @param {object} signaturePayload The signature information
+   * @param {String} signaturePayload.x5u The certificate chain URL
+   * @param {String} signaturePayload.signature base64 signature bytes
+   * @param {String} type The object type (eg. `"recipe"`, `"action"`)
+   *
+   * @throws {NormandyApi.InvalidSignatureError} if signature is invalid.
+   */
+  async verifyObjectSignature(data, signaturePayload, type) {
+    const { signature, x5u } = signaturePayload;
+    const certChainResponse = await this.get(this.absolutify(x5u));
+    const certChain = await certChainResponse.text();
+    const builtSignature = `p384ecdsa=${signature}`;
 
-      const serialized = CanonicalJSON.stringify(object);
-      // Check that the rawtext (the object and the signature)
-      // includes the CanonicalJSON version of the object. This isn't
-      // strictly needed, but it is a great benefit for debugging
-      // signature problems.
-      if (!rawText.includes(serialized)) {
-        log.debug(rawText, serialized);
-        throw new NormandyApi.InvalidSignatureError(
-          `Canonical ${type} serialization does not match!`);
-      }
+    const serialized =
+      typeof data == "string" ? data : CanonicalJSON.stringify(data);
 
-      const certChainResponse = await this.get(this.absolutify(x5u));
-      const certChain = await certChainResponse.text();
-      const builtSignature = `p384ecdsa=${signature}`;
+    const verifier = Cc[
+      "@mozilla.org/security/contentsignatureverifier;1"
+    ].createInstance(Ci.nsIContentSignatureVerifier);
 
-      const verifier = Cc["@mozilla.org/security/contentsignatureverifier;1"]
-        .createInstance(Ci.nsIContentSignatureVerifier);
-
-      let valid;
-      try {
-        valid = verifier.verifyContentSignature(
-          serialized,
-          builtSignature,
-          certChain,
-          "normandy.content-signature.mozilla.org"
-        );
-      } catch (err) {
-        throw new NormandyApi.InvalidSignatureError(`${type} signature validation failed: ${err}`);
-      }
-
-      if (!valid) {
-        throw new NormandyApi.InvalidSignatureError(`${type} signature is not valid`);
-      }
-
-      verifiedObjects.push(object);
+    let valid;
+    try {
+      valid = await verifier.asyncVerifyContentSignature(
+        serialized,
+        builtSignature,
+        certChain,
+        "normandy.content-signature.mozilla.org"
+      );
+    } catch (err) {
+      throw new NormandyApi.InvalidSignatureError(
+        `${type} signature validation failed: ${err}`
+      );
     }
 
-    log.debug(
-      `Fetched ${verifiedObjects.length} ${type} from the server:`,
-      verifiedObjects.map(r => r.name).join(", ")
-    );
-
-    return verifiedObjects;
+    if (!valid) {
+      throw new NormandyApi.InvalidSignatureError(
+        `${type} signature is not valid`
+      );
+    }
   },
 
   /**
@@ -157,7 +185,7 @@ var NormandyApi = {
    * recipes. Default true.
    * @resolves {Array}
    */
-  async fetchRecipes(filters = {enabled: true}) {
+  async fetchRecipes(filters = { enabled: true }) {
     return this.fetchSignedObjects("recipe", filters);
   },
 
@@ -169,14 +197,30 @@ var NormandyApi = {
     return this.fetchSignedObjects("action", filters);
   },
 
+  /**
+   * Fetch details for an extension from the server.
+   * @param extensionId {integer} The ID of the extension to look up
+   * @resolves {Object}
+   */
+  async fetchExtensionDetails(extensionId) {
+    const baseUrl = await this.getApiUrl("extension-list");
+    const extensionDetailsUrl = `${baseUrl}${extensionId}/`;
+    const response = await this.get(extensionDetailsUrl);
+    return response.json();
+  },
+
   async fetchImplementation(action) {
-    const implementationUrl = new URL(this.absolutify(action.implementation_url));
+    const implementationUrl = new URL(
+      this.absolutify(action.implementation_url)
+    );
 
     // fetch implementation
     const response = await fetch(implementationUrl);
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch action implementation for ${action.name}: ${response.status}`
+        `Failed to fetch action implementation for ${action.name}: ${
+          response.status
+        }`
       );
     }
     const responseText = await response.text();
@@ -195,21 +239,26 @@ var NormandyApi = {
     if (algorithm !== "sha384") {
       throw new Error(
         `Failed to fetch action implemenation for ${action.name}: ` +
-        `Unexpected integrity algorithm, expected "sha384", got ${algorithm}`
+          `Unexpected integrity algorithm, expected "sha384", got ${algorithm}`
       );
     }
 
     // verify integrity hash
-    const hasher = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
+    const hasher = Cc["@mozilla.org/security/hash;1"].createInstance(
+      Ci.nsICryptoHash
+    );
     hasher.init(hasher.SHA384);
     const dataToHash = new TextEncoder().encode(responseText);
     hasher.update(dataToHash, dataToHash.length);
     const useBase64 = true;
-    const hash = hasher.finish(useBase64).replace(/\+/g, "-").replace(/\//g, "_");
+    const hash = hasher
+      .finish(useBase64)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_");
     if (hash !== expectedHash) {
       throw new Error(
         `Failed to fetch action implementation for ${action.name}: ` +
-        `Integrity hash does not match content. Expected ${expectedHash} got ${hash}.`
+          `Integrity hash does not match content. Expected ${expectedHash} got ${hash}.`
       );
     }
 

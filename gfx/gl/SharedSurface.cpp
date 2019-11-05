@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -22,8 +22,9 @@
 namespace mozilla {
 namespace gl {
 
-/*static*/ void SharedSurface::ProdCopy(SharedSurface* src, SharedSurface* dest,
-                                        SurfaceFactory* factory) {
+/*static*/
+void SharedSurface::ProdCopy(SharedSurface* src, SharedSurface* dest,
+                             SurfaceFactory* factory) {
   GLContext* gl = src->mGL;
 
   // If `src` begins locked, it must end locked, though we may
@@ -300,12 +301,12 @@ SurfaceFactory::NewTexClient(const gfx::IntSize& size) {
     StopRecycling(cur);
   }
 
-  UniquePtr<SharedSurface> surf = Move(CreateShared(size));
+  UniquePtr<SharedSurface> surf = CreateShared(size);
   if (!surf) return nullptr;
 
   RefPtr<layers::SharedSurfaceTextureClient> ret;
-  ret = layers::SharedSurfaceTextureClient::Create(Move(surf), this, mAllocator,
-                                                   mFlags);
+  ret = layers::SharedSurfaceTextureClient::Create(std::move(surf), this,
+                                                   mAllocator, mFlags);
 
   StartRecycling(ret);
 
@@ -334,8 +335,9 @@ void SurfaceFactory::StopRecycling(layers::SharedSurfaceTextureClient* tc) {
   mozilla::Unused << didErase;
 }
 
-/*static*/ void SurfaceFactory::RecycleCallback(layers::TextureClient* rawTC,
-                                                void* rawFactory) {
+/*static*/
+void SurfaceFactory::RecycleCallback(layers::TextureClient* rawTC,
+                                     void* rawFactory) {
   RefPtr<layers::SharedSurfaceTextureClient> tc;
   tc = static_cast<layers::SharedSurfaceTextureClient*>(rawTC);
   SurfaceFactory* factory = static_cast<SurfaceFactory*>(rawFactory);
@@ -365,12 +367,7 @@ bool SurfaceFactory::Recycle(layers::SharedSurfaceTextureClient* texClient) {
 // ScopedReadbackFB
 
 ScopedReadbackFB::ScopedReadbackFB(SharedSurface* src)
-    : mGL(src->mGL),
-      mAutoFB(mGL),
-      mTempFB(0),
-      mTempTex(0),
-      mSurfToUnlock(nullptr),
-      mSurfToLock(nullptr) {
+    : mGL(src->mGL), mAutoFB(mGL) {
   switch (src->mAttachType) {
     case AttachmentType::GLRenderbuffer: {
       mGL->fGenFramebuffers(1, &mTempFB);
@@ -511,14 +508,9 @@ bool ReadbackSharedSurface(SharedSurface* src, gfx::DrawTarget* dst) {
 
     // ReadPixels from the current FB into lockedBits.
     {
-      size_t alignment = 8;
-      if (dstStride % 4 == 0) alignment = 4;
-
       ScopedPackState scopedPackState(gl);
-      if (alignment != 4) {
-        gl->fPixelStorei(LOCAL_GL_PACK_ALIGNMENT, alignment);
-      }
-
+      bool handled = scopedPackState.SetForWidthAndStrideRGBA(width, dstStride);
+      MOZ_RELEASE_ASSERT(handled, "Unhandled stride");
       gl->raw_fReadPixels(0, 0, width, height, readGLFormat, readType,
                           dstBytes);
     }

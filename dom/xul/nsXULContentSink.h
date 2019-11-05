@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,13 +8,12 @@
 
 #include "mozilla/Attributes.h"
 #include "nsIExpatSink.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsIXMLContentSink.h"
 #include "nsNodeInfoManager.h"
-#include "nsWeakPtr.h"
 #include "nsXULElement.h"
 #include "nsIDTD.h"
 
-class nsIDocument;
 class nsIScriptSecurityManager;
 class nsAttrName;
 class nsXULPrototypeDocument;
@@ -44,11 +43,11 @@ class XULContentSinkImpl final : public nsIXMLContentSink, public nsIExpatSink {
   virtual nsISupports* GetTarget() override;
 
   /**
-   * Initialize the content sink, giving it an nsIDocument object
-   * with which to communicate with the outside world, and an
-   * nsXULPrototypeDocument to build.
+   * Initialize the content sink, giving it a document with which to communicate
+   * with the outside world, and an nsXULPrototypeDocument to build.
    */
-  nsresult Init(nsIDocument* aDocument, nsXULPrototypeDocument* aPrototype);
+  nsresult Init(mozilla::dom::Document* aDocument,
+                nsXULPrototypeDocument* aPrototype);
 
  protected:
   virtual ~XULContentSinkImpl();
@@ -105,7 +104,8 @@ class XULContentSinkImpl final : public nsIXMLContentSink, public nsIExpatSink {
       nsPrototypeArray mChildren;
       State mState;
       Entry* mNext;
-      Entry() : mChildren(8) {}
+      Entry(nsXULPrototypeNode* aNode, State aState, Entry* aNext)
+          : mNode(aNode), mChildren(8), mState(aState), mNext(aNext) {}
     };
 
     Entry* mTop;

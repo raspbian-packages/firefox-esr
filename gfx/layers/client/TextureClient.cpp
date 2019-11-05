@@ -37,29 +37,27 @@
 #include "mozilla/ipc/CrossProcessSemaphore.h"
 
 #ifdef XP_WIN
-#include "mozilla/gfx/DeviceManagerDx.h"
-#include "mozilla/layers/TextureD3D11.h"
-#include "mozilla/layers/TextureDIB.h"
-#include "gfxWindowsPlatform.h"
-#include "gfx2DGlue.h"
+#  include "mozilla/gfx/DeviceManagerDx.h"
+#  include "mozilla/layers/TextureD3D11.h"
+#  include "mozilla/layers/TextureDIB.h"
+#  include "gfxWindowsPlatform.h"
+#  include "gfx2DGlue.h"
 #endif
 #ifdef MOZ_X11
-#include "mozilla/layers/TextureClientX11.h"
-#ifdef GL_PROVIDER_GLX
-#include "GLXLibrary.h"
-#endif
+#  include "mozilla/layers/TextureClientX11.h"
+#  include "GLXLibrary.h"
 #endif
 
 #ifdef XP_MACOSX
-#include "mozilla/layers/MacIOSurfaceTextureClientOGL.h"
+#  include "mozilla/layers/MacIOSurfaceTextureClientOGL.h"
 #endif
 
 #if 0
-#define RECYCLE_LOG(...) printf_stderr(__VA_ARGS__)
+#  define RECYCLE_LOG(...) printf_stderr(__VA_ARGS__)
 #else
-#define RECYCLE_LOG(...) \
-  do {                   \
-  } while (0)
+#  define RECYCLE_LOG(...) \
+    do {                   \
+    } while (0)
 #endif
 
 namespace mozilla {
@@ -300,10 +298,12 @@ void TextureChild::Destroy(const TextureDeallocParams& aParams) {
   }
 }
 
-/* static */ Atomic<uint64_t> TextureClient::sSerialCounter(0);
+/* static */
+Atomic<uint64_t> TextureClient::sSerialCounter(0);
 
-void DeallocateTextureClientSyncProxy(TextureDeallocParams params,
-                                      ReentrantMonitor* aBarrier, bool* aDone) {
+static void DeallocateTextureClientSyncProxy(TextureDeallocParams params,
+                                             ReentrantMonitor* aBarrier,
+                                             bool* aDone) {
   DeallocateTextureClient(params);
   ReentrantMonitorAutoEnter autoMon(*aBarrier);
   *aDone = true;
@@ -578,7 +578,12 @@ void TextureClient::Unlock() {
 
 void TextureClient::EnableReadLock() {
   if (!mReadLock) {
-    mReadLock = NonBlockingTextureReadLock::Create(mAllocator);
+    if (mAllocator->GetTileLockAllocator()) {
+      mReadLock = NonBlockingTextureReadLock::Create(mAllocator);
+    } else {
+      // IPC is down
+      gfxCriticalError() << "TextureClient::EnableReadLock IPC is down";
+    }
   }
 }
 
@@ -788,8 +793,8 @@ void TextureClient::SetAddedToCompositableClient() {
   }
 }
 
-void CancelTextureClientRecycle(uint64_t aTextureId,
-                                LayersIPCChannel* aAllocator) {
+static void CancelTextureClientRecycle(uint64_t aTextureId,
+                                       LayersIPCChannel* aAllocator) {
   if (!aAllocator) {
     return;
   }
@@ -814,8 +819,9 @@ void TextureClient::CancelWaitForRecycle() {
   }
 }
 
-/* static */ void TextureClient::TextureClientRecycleCallback(
-    TextureClient* aClient, void* aClosure) {
+/* static */
+void TextureClient::TextureClientRecycleCallback(TextureClient* aClient,
+                                                 void* aClosure) {
   MOZ_ASSERT(aClient->GetRecycleAllocator());
   aClient->GetRecycleAllocator()->RecycleTextureClient(aClient);
 }
@@ -1009,6 +1015,11 @@ already_AddRefed<TextureClient> TextureClient::CreateForDrawing(
     BackendSelector aSelector, TextureFlags aTextureFlags,
     TextureAllocationFlags aAllocFlags) {
   LayersBackend layersBackend = aAllocator->GetCompositorBackendType();
+  if (aAllocator->SupportsTextureDirectMapping() &&
+      std::max(aSize.width, aSize.height) <= aAllocator->GetMaxTextureSize()) {
+    aAllocFlags =
+        TextureAllocationFlags(aAllocFlags | ALLOC_ALLOW_DIRECT_MAPPING);
+  }
   return TextureClient::CreateForDrawing(
       aAllocator->GetTextureForwarder(), aFormat, aSize, layersBackend,
       aAllocator->GetMaxTextureSize(), aSelector, aTextureFlags, aAllocFlags);
@@ -1043,7 +1054,7 @@ already_AddRefed<TextureClient> TextureClient::CreateForDrawing(
         DeviceManagerDx::Get()->GetContentDevice())) &&
       aSize.width <= aMaxTextureSize && aSize.height <= aMaxTextureSize &&
       !(aAllocFlags & ALLOC_UPDATE_FROM_SURFACE)) {
-    data = DXGITextureData::Create(aSize, aFormat, aAllocFlags);
+    data = D3D11TextureData::Create(aSize, aFormat, aAllocFlags);
   }
 
   if (aLayersBackend != LayersBackend::LAYERS_WR && !data &&
@@ -1061,13 +1072,11 @@ already_AddRefed<TextureClient> TextureClient::CreateForDrawing(
       moz2DBackend == gfx::BackendType::CAIRO && type == gfxSurfaceType::Xlib) {
     data = X11TextureData::Create(aSize, aFormat, aTextureFlags, aAllocator);
   }
-#ifdef GL_PROVIDER_GLX
   if (!data && aLayersBackend == LayersBackend::LAYERS_OPENGL &&
       type == gfxSurfaceType::Xlib && aFormat != SurfaceFormat::A8 &&
       gl::sGLXLibrary.UseTextureFromPixmap()) {
     data = X11TextureData::Create(aSize, aFormat, aTextureFlags, aAllocator);
   }
-#endif
 #endif
 
 #ifdef XP_MACOSX
@@ -1157,6 +1166,19 @@ already_AddRefed<TextureClient> TextureClient::CreateForRawBufferAccess(
     KnowsCompositor* aAllocator, gfx::SurfaceFormat aFormat, gfx::IntSize aSize,
     gfx::BackendType aMoz2DBackend, TextureFlags aTextureFlags,
     TextureAllocationFlags aAllocFlags) {
+  // If we exceed the max texture size for the GPU, then just fall back to no
+  // texture direct mapping. If it becomes a problem we can implement tiling
+  // logic inside DirectMapTextureSource to allow this.
+  bool supportsTextureDirectMapping =
+      aAllocator->SupportsTextureDirectMapping() &&
+      std::max(aSize.width, aSize.height) <= aAllocator->GetMaxTextureSize();
+  if (supportsTextureDirectMapping) {
+    aAllocFlags =
+        TextureAllocationFlags(aAllocFlags | ALLOC_ALLOW_DIRECT_MAPPING);
+  } else {
+    aAllocFlags =
+        TextureAllocationFlags(aAllocFlags & ~ALLOC_ALLOW_DIRECT_MAPPING);
+  }
   return CreateForRawBufferAccess(
       aAllocator->GetTextureForwarder(), aFormat, aSize, aMoz2DBackend,
       aAllocator->GetCompositorBackendType(), aTextureFlags, aAllocFlags);
@@ -1209,7 +1231,7 @@ already_AddRefed<TextureClient> TextureClient::CreateForRawBufferAccess(
 already_AddRefed<TextureClient> TextureClient::CreateForYCbCr(
     KnowsCompositor* aAllocator, gfx::IntSize aYSize, uint32_t aYStride,
     gfx::IntSize aCbCrSize, uint32_t aCbCrStride, StereoMode aStereoMode,
-    YUVColorSpace aYUVColorSpace, uint32_t aBitDepth,
+    gfx::ColorDepth aColorDepth, gfx::YUVColorSpace aYUVColorSpace,
     TextureFlags aTextureFlags) {
   if (!aAllocator || !aAllocator->GetLayersIPCActor()->IPCOpen()) {
     return nullptr;
@@ -1221,25 +1243,7 @@ already_AddRefed<TextureClient> TextureClient::CreateForYCbCr(
 
   TextureData* data = BufferTextureData::CreateForYCbCr(
       aAllocator, aYSize, aYStride, aCbCrSize, aCbCrStride, aStereoMode,
-      aYUVColorSpace, aBitDepth, aTextureFlags);
-  if (!data) {
-    return nullptr;
-  }
-
-  return MakeAndAddRef<TextureClient>(data, aTextureFlags,
-                                      aAllocator->GetTextureForwarder());
-}
-
-// static
-already_AddRefed<TextureClient> TextureClient::CreateForYCbCrWithBufferSize(
-    KnowsCompositor* aAllocator, size_t aSize, YUVColorSpace aYUVColorSpace,
-    uint32_t aBitDepth, TextureFlags aTextureFlags) {
-  if (!aAllocator || !aAllocator->GetLayersIPCActor()->IPCOpen()) {
-    return nullptr;
-  }
-
-  TextureData* data = BufferTextureData::CreateForYCbCrWithBufferSize(
-      aAllocator, aSize, aYUVColorSpace, aBitDepth, aTextureFlags);
+      aColorDepth, aYUVColorSpace, aTextureFlags);
   if (!data) {
     return nullptr;
   }
@@ -1363,29 +1367,28 @@ void TextureClient::GPUVideoDesc(SurfaceDescriptorGPUVideo* const aOutDesc) {
   MOZ_RELEASE_ASSERT(mData);
   mData->GetSubDescriptor(&subDesc);
 
-  *aOutDesc = SurfaceDescriptorGPUVideo(handle, Move(subDesc));
+  *aOutDesc = SurfaceDescriptorGPUVideo(handle, std::move(subDesc));
 }
 
 class MemoryTextureReadLock : public NonBlockingTextureReadLock {
  public:
   MemoryTextureReadLock();
 
-  ~MemoryTextureReadLock();
+  virtual ~MemoryTextureReadLock();
 
-  virtual bool ReadLock() override;
+  bool ReadLock() override;
 
-  virtual int32_t ReadUnlock() override;
+  int32_t ReadUnlock() override;
 
-  virtual int32_t GetReadCount() override;
+  int32_t GetReadCount() override;
 
-  virtual LockType GetType() override { return TYPE_NONBLOCKING_MEMORY; }
+  LockType GetType() override { return TYPE_NONBLOCKING_MEMORY; }
 
-  virtual bool IsValid() const override { return true; };
+  bool IsValid() const override { return true; };
 
-  virtual bool Serialize(ReadLockDescriptor& aOutput,
-                         base::ProcessId aOther) override;
+  bool Serialize(ReadLockDescriptor& aOutput, base::ProcessId aOther) override;
 
-  int32_t mReadCount;
+  Atomic<int32_t> mReadCount;
 };
 
 // The cross-prcess implementation of TextureReadLock.
@@ -1404,20 +1407,19 @@ class ShmemTextureReadLock : public NonBlockingTextureReadLock {
 
   explicit ShmemTextureReadLock(LayersIPCChannel* aAllocator);
 
-  ~ShmemTextureReadLock();
+  virtual ~ShmemTextureReadLock();
 
-  virtual bool ReadLock() override;
+  bool ReadLock() override;
 
-  virtual int32_t ReadUnlock() override;
+  int32_t ReadUnlock() override;
 
-  virtual int32_t GetReadCount() override;
+  int32_t GetReadCount() override;
 
-  virtual bool IsValid() const override { return mAllocSuccess; };
+  bool IsValid() const override { return mAllocSuccess; };
 
-  virtual LockType GetType() override { return TYPE_NONBLOCKING_SHMEM; }
+  LockType GetType() override { return TYPE_NONBLOCKING_SHMEM; }
 
-  virtual bool Serialize(ReadLockDescriptor& aOutput,
-                         base::ProcessId aOther) override;
+  bool Serialize(ReadLockDescriptor& aOutput, base::ProcessId aOther) override;
 
   mozilla::layers::ShmemSection& GetShmemSection() { return mShmemSection; }
 
@@ -1445,31 +1447,30 @@ class CrossProcessSemaphoreReadLock : public TextureReadLock {
   explicit CrossProcessSemaphoreReadLock(CrossProcessSemaphoreHandle aHandle)
       : mSemaphore(CrossProcessSemaphore::Create(aHandle)), mShared(false) {}
 
-  virtual bool ReadLock() override {
+  bool ReadLock() override {
     if (!IsValid()) {
       return false;
     }
     return mSemaphore->Wait();
   }
-  virtual bool TryReadLock(TimeDuration aTimeout) override {
+  bool TryReadLock(TimeDuration aTimeout) override {
     if (!IsValid()) {
       return false;
     }
     return mSemaphore->Wait(Some(aTimeout));
   }
-  virtual int32_t ReadUnlock() override {
+  int32_t ReadUnlock() override {
     if (!IsValid()) {
       return 1;
     }
     mSemaphore->Signal();
     return 1;
   }
-  virtual bool IsValid() const override { return !!mSemaphore; }
+  bool IsValid() const override { return !!mSemaphore; }
 
-  virtual bool Serialize(ReadLockDescriptor& aOutput,
-                         base::ProcessId aOther) override;
+  bool Serialize(ReadLockDescriptor& aOutput, base::ProcessId aOther) override;
 
-  virtual LockType GetType() override { return TYPE_CROSS_PROCESS_SEMAPHORE; }
+  LockType GetType() override { return TYPE_CROSS_PROCESS_SEMAPHORE; }
 
   UniquePtr<CrossProcessSemaphore> mSemaphore;
   bool mShared;
@@ -1553,12 +1554,12 @@ bool MemoryTextureReadLock::Serialize(ReadLockDescriptor& aOutput,
 bool MemoryTextureReadLock::ReadLock() {
   NS_ASSERT_OWNINGTHREAD(MemoryTextureReadLock);
 
-  PR_ATOMIC_INCREMENT(&mReadCount);
+  ++mReadCount;
   return true;
 }
 
 int32_t MemoryTextureReadLock::ReadUnlock() {
-  int32_t readCount = PR_ATOMIC_DECREMENT(&mReadCount);
+  int32_t readCount = --mReadCount;
   MOZ_ASSERT(readCount >= 0);
 
   return readCount;
@@ -1573,6 +1574,7 @@ ShmemTextureReadLock::ShmemTextureReadLock(LayersIPCChannel* aAllocator)
     : mClientAllocator(aAllocator), mAllocSuccess(false) {
   MOZ_COUNT_CTOR(ShmemTextureReadLock);
   MOZ_ASSERT(mClientAllocator);
+  MOZ_ASSERT(mClientAllocator->GetTileLockAllocator());
 #define MOZ_ALIGN_WORD(x) (((x) + 3) & ~3)
   if (mClientAllocator->GetTileLockAllocator()->AllocShmemSection(
           MOZ_ALIGN_WORD(sizeof(ShmReadLockInfo)), &mShmemSection)) {
@@ -1660,7 +1662,7 @@ void TextureClient::AddPaintThreadRef() {
 }
 
 void TextureClient::DropPaintThreadRef() {
-  MOZ_RELEASE_ASSERT(PaintThread::IsOnPaintThread());
+  MOZ_RELEASE_ASSERT(PaintThread::Get()->IsOnPaintWorkerThread());
   MOZ_RELEASE_ASSERT(mPaintThreadRefs >= 1);
   mPaintThreadRefs -= 1;
 }
@@ -1681,24 +1683,24 @@ bool UpdateYCbCrTextureClient(TextureClient* aTexture,
     return false;
   }
 
+  uint32_t bytesPerPixel =
+      BytesPerPixel(SurfaceFormatForColorDepth(aData.mColorDepth));
   MappedYCbCrTextureData srcData;
   srcData.y.data = aData.mYChannel;
   srcData.y.size = aData.mYSize;
   srcData.y.stride = aData.mYStride;
   srcData.y.skip = aData.mYSkip;
-  MOZ_ASSERT(aData.mBitDepth == 8 ||
-             (aData.mBitDepth > 8 && aData.mBitDepth <= 16));
-  srcData.y.bytesPerPixel = (aData.mBitDepth > 8) ? 2 : 1;
+  srcData.y.bytesPerPixel = bytesPerPixel;
   srcData.cb.data = aData.mCbChannel;
   srcData.cb.size = aData.mCbCrSize;
   srcData.cb.stride = aData.mCbCrStride;
   srcData.cb.skip = aData.mCbSkip;
-  srcData.cb.bytesPerPixel = (aData.mBitDepth > 8) ? 2 : 1;
+  srcData.cb.bytesPerPixel = bytesPerPixel;
   srcData.cr.data = aData.mCrChannel;
   srcData.cr.size = aData.mCbCrSize;
   srcData.cr.stride = aData.mCbCrStride;
   srcData.cr.skip = aData.mCrSkip;
-  srcData.cr.bytesPerPixel = (aData.mBitDepth > 8) ? 2 : 1;
+  srcData.cr.bytesPerPixel = bytesPerPixel;
   srcData.metadata = nullptr;
 
   if (!srcData.CopyInto(mapped)) {
@@ -1771,14 +1773,6 @@ bool MappedYCbCrChannelData::CopyInto(MappedYCbCrChannelData& aDst) {
   if (bytesPerPixel == 1) {
     copyData(aDst.data, aDst, data, *this);
   } else if (bytesPerPixel == 2) {
-    if (skip != 0) {
-      // The skip value definition doesn't specify if it's in bytes, or in
-      // "pixels". We will assume the later. There are currently no decoders
-      // returning HDR content with a skip value different than zero anyway.
-      NS_WARNING(
-          "skip value non zero for HDR content, please verify code "
-          "(see bug 1421187)");
-    }
     copyData(reinterpret_cast<uint16_t*>(aDst.data), aDst,
              reinterpret_cast<uint16_t*>(data), *this);
   }

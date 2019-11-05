@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -24,7 +24,7 @@ class nsAboutCacheEntry final : public nsIAboutModule {
   NS_DECL_NSIABOUTMODULE
 
  private:
-  virtual ~nsAboutCacheEntry() {}
+  virtual ~nsAboutCacheEntry() = default;
 
   class Channel final : public nsICacheEntryOpenCallback,
                         public nsICacheEntryMetaDataVisitor,
@@ -42,31 +42,31 @@ class nsAboutCacheEntry final : public nsIAboutModule {
     Channel() : mBuffer(nullptr), mWaitingForData(false), mHexDumpState(0) {}
 
    private:
-    virtual ~Channel() {}
+    virtual ~Channel() = default;
 
    public:
-    MOZ_MUST_USE nsresult Init(nsIURI *uri, nsILoadInfo *aLoadInfo);
+    MOZ_MUST_USE nsresult Init(nsIURI* uri, nsILoadInfo* aLoadInfo);
 
-    MOZ_MUST_USE nsresult GetContentStream(nsIURI *, nsIInputStream **);
-    MOZ_MUST_USE nsresult OpenCacheEntry(nsIURI *);
+    MOZ_MUST_USE nsresult GetContentStream(nsIURI*, nsIInputStream**);
+    MOZ_MUST_USE nsresult OpenCacheEntry(nsIURI*);
     MOZ_MUST_USE nsresult OpenCacheEntry();
-    MOZ_MUST_USE nsresult WriteCacheEntryDescription(nsICacheEntry *);
+    MOZ_MUST_USE nsresult WriteCacheEntryDescription(nsICacheEntry*);
     MOZ_MUST_USE nsresult WriteCacheEntryUnavailable();
-    MOZ_MUST_USE nsresult ParseURI(nsIURI *uri, nsACString &storageName,
-                                   nsILoadContextInfo **loadInfo,
-                                   nsCString &enahnceID, nsIURI **cacheUri);
+    MOZ_MUST_USE nsresult ParseURI(nsIURI* uri, nsACString& storageName,
+                                   nsILoadContextInfo** loadInfo,
+                                   nsCString& enahnceID, nsIURI** cacheUri);
     void CloseContent();
 
     static MOZ_MUST_USE nsresult PrintCacheData(
-        nsIInputStream *aInStream, void *aClosure, const char *aFromSegment,
-        uint32_t aToOffset, uint32_t aCount, uint32_t *aWriteCount);
+        nsIInputStream* aInStream, void* aClosure, const char* aFromSegment,
+        uint32_t aToOffset, uint32_t aCount, uint32_t* aWriteCount);
 
    private:
     nsCString mStorageName, mEnhanceId;
     nsCOMPtr<nsILoadContextInfo> mLoadInfo;
     nsCOMPtr<nsIURI> mCacheURI;
 
-    nsCString *mBuffer;
+    nsCString* mBuffer;
     nsCOMPtr<nsIAsyncOutputStream> mOutputStream;
     bool mWaitingForData;
     uint32_t mHexDumpState;

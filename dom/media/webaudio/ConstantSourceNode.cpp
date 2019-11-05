@@ -84,19 +84,39 @@ class ConstantSourceNodeEngine final : public AudioNodeEngine {
       return;
     }
 
-    if (ticks + WEBAUDIO_BLOCK_SIZE <= mStart || ticks >= mStop) {
+    if (ticks + WEBAUDIO_BLOCK_SIZE <= mStart || ticks >= mStop ||
+        mStop <= mStart) {
       aOutput->SetNull(WEBAUDIO_BLOCK_SIZE);
     } else {
       aOutput->AllocateChannels(1);
       float* output = aOutput->ChannelFloatsForWrite(0);
+      uint32_t writeOffset = 0;
+
+      if (ticks < mStart) {
+        MOZ_ASSERT(mStart - ticks <= WEBAUDIO_BLOCK_SIZE);
+        uint32_t count = mStart - ticks;
+        std::fill_n(output, count, 0.0f);
+        writeOffset += count;
+      }
+
+      MOZ_ASSERT(ticks + writeOffset >= mStart);
+      MOZ_ASSERT(mStop - ticks >= writeOffset);
+      uint32_t count =
+          std::min<StreamTime>(WEBAUDIO_BLOCK_SIZE, mStop - ticks) -
+          writeOffset;
 
       if (mOffset.HasSimpleValue()) {
-        for (uint32_t i = 0; i < WEBAUDIO_BLOCK_SIZE; ++i) {
-          output[i] = mOffset.GetValueAtTime(aFrom, 0);
-        }
+        float value = mOffset.GetValueAtTime(ticks);
+        std::fill_n(output + writeOffset, count, value);
       } else {
-        mOffset.GetValuesAtTime(ticks, output, WEBAUDIO_BLOCK_SIZE);
+        mOffset.GetValuesAtTime(ticks + writeOffset, output + writeOffset,
+                                count);
       }
+
+      writeOffset += count;
+
+      std::fill_n(output + writeOffset, WEBAUDIO_BLOCK_SIZE - writeOffset,
+                  0.0f);
     }
 
     if (ticks + WEBAUDIO_BLOCK_SIZE >= mStop) {
@@ -134,11 +154,10 @@ class ConstantSourceNodeEngine final : public AudioNodeEngine {
 };
 
 ConstantSourceNode::ConstantSourceNode(AudioContext* aContext)
-    : AudioScheduledSourceNode(aContext, 1, ChannelCountMode::Max,
+    : AudioScheduledSourceNode(aContext, 2, ChannelCountMode::Max,
                                ChannelInterpretation::Speakers),
-      mOffset(new AudioParam(this, ConstantSourceNodeEngine::OFFSET, "offset",
-                             1.0f)),
       mStartCalled(false) {
+  CreateAudioParam(mOffset, ConstantSourceNodeEngine::OFFSET, "offset", 1.0f);
   ConstantSourceNodeEngine* engine =
       new ConstantSourceNodeEngine(this, aContext->Destination());
   mStream = AudioNodeStream::Create(aContext, engine,
@@ -165,7 +184,7 @@ size_t ConstantSourceNode::SizeOfIncludingThis(
 
 JSObject* ConstantSourceNode::WrapObject(JSContext* aCx,
                                          JS::Handle<JSObject*> aGivenProto) {
-  return ConstantSourceNodeBinding::Wrap(aCx, this, aGivenProto);
+  return ConstantSourceNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<ConstantSourceNode> ConstantSourceNode::Constructor(
@@ -185,7 +204,8 @@ void ConstantSourceNode::DestroyMediaStream() {
 
 void ConstantSourceNode::Start(double aWhen, ErrorResult& aRv) {
   if (!WebAudioUtils::IsTimeValid(aWhen)) {
-    aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+    aRv.ThrowRangeError<MSG_VALUE_OUT_OF_RANGE>(
+        NS_LITERAL_STRING("start time"));
     return;
   }
 
@@ -203,11 +223,12 @@ void ConstantSourceNode::Start(double aWhen, ErrorResult& aRv) {
                                   aWhen);
 
   MarkActive();
+  Context()->StartBlockedAudioContextIfAllowed();
 }
 
 void ConstantSourceNode::Stop(double aWhen, ErrorResult& aRv) {
   if (!WebAudioUtils::IsTimeValid(aWhen)) {
-    aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+    aRv.ThrowRangeError<MSG_VALUE_OUT_OF_RANGE>(NS_LITERAL_STRING("stop time"));
     return;
   }
 

@@ -9,10 +9,12 @@
 
 #include "mozilla/dom/FromParser.h"
 #include "mozilla/dom/IDTracker.h"
-#include "nsStubMutationObserver.h"
 #include "mozilla/dom/SVGGraphicsElement.h"
-#include "nsSVGLength2.h"
-#include "nsSVGString.h"
+#include "mozilla/RefPtr.h"
+#include "nsCOMPtr.h"
+#include "nsStubMutationObserver.h"
+#include "SVGAnimatedLength.h"
+#include "SVGAnimatedString.h"
 #include "nsTArray.h"
 
 class nsIContent;
@@ -39,14 +41,19 @@ class SVGUseElement final : public SVGUseElementBase,
   friend nsresult(::NS_NewSVGUseElement(
       nsIContent** aResult,
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
-  explicit SVGUseElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit SVGUseElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
   virtual ~SVGUseElement();
   virtual JSObject* WrapNode(JSContext* cx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
  public:
-  // interfaces:
+  NS_IMPL_FROMNODE_WITH_TAG(SVGUseElement, kNameSpaceID_SVG, use)
 
+  nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                      nsIContent* aBindingParent) override;
+  void UnbindFromTree(bool aDeep = true, bool aNullParent = true) override;
+
+  // interfaces:
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(SVGUseElement, SVGUseElementBase)
 
@@ -57,31 +64,42 @@ class SVGUseElement final : public SVGUseElementBase,
   NS_DECL_NSIMUTATIONOBSERVER_CONTENTREMOVED
   NS_DECL_NSIMUTATIONOBSERVER_NODEWILLBEDESTROYED
 
-  // for nsSVGUseFrame's nsIAnonymousContentCreator implementation.
-  already_AddRefed<nsIContent> CreateAnonymousContent();
-
-  // nsSVGElement specializations:
+  // SVGElement specializations:
   virtual gfxMatrix PrependLocalTransformsTo(
       const gfxMatrix& aMatrix,
       SVGTransformTypes aWhich = eAllTransforms) const override;
   virtual bool HasValidDimensions() const override;
 
   // nsIContent interface
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
   // WebIDL
-  already_AddRefed<SVGAnimatedString> Href();
-  already_AddRefed<SVGAnimatedLength> X();
-  already_AddRefed<SVGAnimatedLength> Y();
-  already_AddRefed<SVGAnimatedLength> Width();
-  already_AddRefed<SVGAnimatedLength> Height();
+  already_AddRefed<DOMSVGAnimatedString> Href();
+  already_AddRefed<DOMSVGAnimatedLength> X();
+  already_AddRefed<DOMSVGAnimatedLength> Y();
+  already_AddRefed<DOMSVGAnimatedLength> Width();
+  already_AddRefed<DOMSVGAnimatedLength> Height();
 
   nsIURI* GetSourceDocURI();
   URLExtraData* GetContentURLData() const { return mContentURLData; }
 
+  // Updates the internal shadow tree to be an up-to-date clone of the
+  // referenced element.
+  void UpdateShadowTree();
+
+  // Shared code between AfterSetAttr and nsSVGUseFrame::AttributeChanged.
+  //
+  // This is needed because SMIL doesn't go through AfterSetAttr unfortunately.
+  void ProcessAttributeChange(int32_t aNamespaceID, nsAtom* aAttribute);
+
+  nsresult AfterSetAttr(int32_t aNamespaceID, nsAtom* aAttribute,
+                        const nsAttrValue* aValue, const nsAttrValue* aOldValue,
+                        nsIPrincipal* aSubjectPrincipal, bool aNotify) final;
+
  protected:
+  bool IsCyclicReferenceTo(const Element& aTarget) const;
+
   /**
    * Helper that provides a reference to the element with the ID that is
    * referenced by the 'use' element's 'href' attribute, and that will update
@@ -93,8 +111,8 @@ class SVGUseElement final : public SVGUseElementBase,
     explicit ElementTracker(SVGUseElement* aOwningUseElement)
         : mOwningUseElement(aOwningUseElement) {}
 
-   protected:
-    virtual void ElementChanged(Element* aFrom, Element* aTo) override {
+   private:
+    void ElementChanged(Element* aFrom, Element* aTo) override {
       IDTracker::ElementChanged(aFrom, aTo);
       if (aFrom) {
         aFrom->RemoveMutationObserver(mOwningUseElement);
@@ -102,7 +120,6 @@ class SVGUseElement final : public SVGUseElementBase,
       mOwningUseElement->TriggerReclone();
     }
 
-   private:
     SVGUseElement* mOwningUseElement;
   };
 
@@ -123,14 +140,14 @@ class SVGUseElement final : public SVGUseElementBase,
   void UnlinkSource();
 
   enum { ATTR_X, ATTR_Y, ATTR_WIDTH, ATTR_HEIGHT };
-  nsSVGLength2 mLengthAttributes[4];
+  SVGAnimatedLength mLengthAttributes[4];
   static LengthInfo sLengthInfo[4];
 
   enum { HREF, XLINK_HREF };
-  nsSVGString mStringAttributes[2];
+  SVGAnimatedString mStringAttributes[2];
   static StringInfo sStringInfo[2];
 
-  nsCOMPtr<nsIContent> mOriginal;  // if we've been cloned, our "real" copy
+  RefPtr<SVGUseElement> mOriginal;  // if we've been cloned, our "real" copy
   ElementTracker mReferencedElementTracker;
   RefPtr<URLExtraData> mContentURLData;  // URL data for its anonymous content
 };

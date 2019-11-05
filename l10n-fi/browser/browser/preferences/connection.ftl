@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Käytä välityspalvelinta DNS:lle käytettäessä SOCKS v5:tä
     .accesskey = E
+connection-dns-over-https =
+    .label = Käytä DNS:ää HTTPS:n välityksellä
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Käytä oletusta ({ $url })
+    .accesskey = y
+    .tooltiptext = Käytä oletusosoitetta DNS-kyselyjen selvittämiseen HTTPS:n välityksellä
+connection-dns-over-https-url-resolver = Käytä palveluntarjoajaa
+    .accesskey = p
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (oletus)
+    .tooltiptext = Käytä oletusosoitetta nimipalvelukyselyjen tekemiseksi HTTPS:n välityksellä
+connection-dns-over-https-url-custom =
+    .label = Oma
+    .accesskey = m
+    .tooltiptext = Kirjoita ensijainen osoite DNS-kyselyjen selvittämiseen HTTPS:n välityksellä
+connection-dns-over-https-custom-label = Oma

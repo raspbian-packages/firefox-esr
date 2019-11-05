@@ -6,9 +6,6 @@
 
 #include "MediaSource.h"
 
-#if MOZ_AV1
-#include "AOMDecoder.h"
-#endif
 #include "AsyncEventRunner.h"
 #include "DecoderTraits.h"
 #include "Benchmark.h"
@@ -22,6 +19,7 @@
 #include "mozilla/ErrorResult.h"
 #include "mozilla/FloatingPoint.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/dom/HTMLMediaElement.h"
 #include "mozilla/mozalloc.h"
@@ -39,7 +37,7 @@
 #include "mozilla/Sprintf.h"
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "AndroidBridge.h"
+#  include "AndroidBridge.h"
 #endif
 
 struct JSContext;
@@ -119,13 +117,13 @@ nsresult MediaSource::IsTypeSupported(const nsAString& aType,
   }
   if (mimeType == MEDIAMIMETYPE("video/webm")) {
     if (!(Preferences::GetBool("media.mediasource.webm.enabled", false) ||
+          StaticPrefs::MediaCapabilitiesEnabled() ||
           containerType->ExtendedType().Codecs().Contains(
               NS_LITERAL_STRING("vp8")) ||
 #ifdef MOZ_AV1
-          // FIXME: Temporary comparison with the full codecs attribute.
-          // See bug 1377015.
-          AOMDecoder::IsSupportedCodec(
-              containerType->ExtendedType().Codecs().AsString()) ||
+          (StaticPrefs::MediaAv1Enabled() &&
+           IsAV1CodecString(
+               containerType->ExtendedType().Codecs().AsString())) ||
 #endif
           IsWebMForced(aDiagnostics))) {
       return NS_ERROR_DOM_NOT_SUPPORTED_ERR;
@@ -143,7 +141,8 @@ nsresult MediaSource::IsTypeSupported(const nsAString& aType,
   return NS_ERROR_DOM_NOT_SUPPORTED_ERR;
 }
 
-/* static */ already_AddRefed<MediaSource> MediaSource::Constructor(
+/* static */
+already_AddRefed<MediaSource> MediaSource::Constructor(
     const GlobalObject& aGlobal, ErrorResult& aRv) {
   nsCOMPtr<nsPIDOMWindowInner> window =
       do_QueryInterface(aGlobal.GetAsSupports());
@@ -280,7 +279,7 @@ RefPtr<MediaSource::ActiveCompletionPromise> MediaSource::SourceBufferIsActive(
   // It will be resolved once the HTMLMediaElement modifies its readyState.
   MozPromiseHolder<ActiveCompletionPromise> holder;
   RefPtr<ActiveCompletionPromise> promise = holder.Ensure(__func__);
-  mCompletionPromises.AppendElement(Move(holder));
+  mCompletionPromises.AppendElement(std::move(holder));
   return promise;
 }
 
@@ -362,11 +361,62 @@ void MediaSource::EndOfStream(const MediaResult& aError) {
   mDecoder->DecodeError(aError);
 }
 
-/* static */ bool MediaSource::IsTypeSupported(const GlobalObject& aOwner,
-                                               const nsAString& aType) {
+static bool AreExtraParametersSane(const nsAString& aType) {
+  Maybe<MediaContainerType> containerType = MakeMediaContainerType(aType);
+  if (!containerType) {
+    return false;
+  }
+  auto extendedType = containerType->ExtendedType();
+  auto bitrate = extendedType.GetBitrate();
+  if (bitrate && *bitrate > 10000000) {
+    return false;
+  }
+  if (containerType->Type().HasVideoMajorType()) {
+    auto width = extendedType.GetWidth();
+    if (width && *width > MAX_VIDEO_WIDTH) {
+      return false;
+    }
+    auto height = extendedType.GetHeight();
+    if (height && *height > MAX_VIDEO_HEIGHT) {
+      return false;
+    }
+    auto framerate = extendedType.GetFramerate();
+    if (framerate && *framerate > 1000) {
+      return false;
+    }
+    auto eotf = extendedType.GetEOTF();
+    if (eotf && *eotf == EOTF::NOT_SUPPORTED) {
+      return false;
+    }
+  } else if (containerType->Type().HasAudioMajorType()) {
+    auto channels = extendedType.GetChannels();
+    if (channels && *channels > 6) {
+      return false;
+    }
+    auto samplerate = extendedType.GetSamplerate();
+    if (samplerate && *samplerate > 192000) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool IsYouTube(const GlobalObject& aOwner) {
+  nsCString domain;
+  return aOwner.GetSubjectPrincipal() &&
+         NS_SUCCEEDED(aOwner.GetSubjectPrincipal()->GetBaseDomain(domain)) &&
+         domain.EqualsLiteral("youtube.com");
+}
+
+/* static */
+bool MediaSource::IsTypeSupported(const GlobalObject& aOwner,
+                                  const nsAString& aType) {
   MOZ_ASSERT(NS_IsMainThread());
   DecoderDoctorDiagnostics diagnostics;
   nsresult rv = IsTypeSupported(aType, &diagnostics);
+  if (NS_SUCCEEDED(rv) && IsYouTube(aOwner) && !AreExtraParametersSane(aType)) {
+    rv = NS_ERROR_DOM_NOT_SUPPORTED_ERR;
+  }
   nsCOMPtr<nsPIDOMWindowInner> window =
       do_QueryInterface(aOwner.GetAsSupports());
   diagnostics.StoreFormatDiagnostics(window ? window->GetExtantDoc() : nullptr,
@@ -378,8 +428,14 @@ void MediaSource::EndOfStream(const MediaResult& aError) {
   return NS_SUCCEEDED(rv);
 }
 
-/* static */ bool MediaSource::Enabled(JSContext* cx, JSObject* aGlobal) {
+/* static */
+bool MediaSource::Enabled(JSContext* cx, JSObject* aGlobal) {
   return Preferences::GetBool("media.mediasource.enabled");
+}
+
+/* static */
+bool MediaSource::ExperimentalEnabled(JSContext* cx, JSObject* aGlobal) {
+  return Preferences::GetBool("media.mediasource.experimental.enabled");
 }
 
 void MediaSource::SetLiveSeekableRange(double aStart, double aEnd,
@@ -569,7 +625,7 @@ nsPIDOMWindowInner* MediaSource::GetParentObject() const { return GetOwner(); }
 
 JSObject* MediaSource::WrapObject(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto) {
-  return MediaSourceBinding::Wrap(aCx, this, aGivenProto);
+  return MediaSource_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_INHERITED(MediaSource, DOMEventTargetHelper,

@@ -41,22 +41,22 @@ struct MiscContainer final {
         uint32_t mEnumValue;
         int32_t mPercent;
         mozilla::DeclarationBlock* mCSSDeclaration;
-        mozilla::css::URLValue* mURL;
-        mozilla::css::ImageValue* mImage;
+        nsIURI* mURL;
         mozilla::AtomArray* mAtomArray;
         nsIntMargin* mIntMargin;
-        const nsSVGAngle* mSVGAngle;
-        const nsSVGIntegerPair* mSVGIntegerPair;
-        const nsSVGLength2* mSVGLength;
+        const mozilla::SVGAnimatedIntegerPair* mSVGAnimatedIntegerPair;
+        const mozilla::SVGAnimatedLength* mSVGLength;
+        const mozilla::SVGAnimatedNumberPair* mSVGAnimatedNumberPair;
+        const mozilla::SVGAnimatedOrient* mSVGAnimatedOrient;
+        const mozilla::SVGAnimatedPreserveAspectRatio*
+            mSVGAnimatedPreserveAspectRatio;
+        const mozilla::SVGAnimatedViewBox* mSVGAnimatedViewBox;
         const mozilla::SVGLengthList* mSVGLengthList;
         const mozilla::SVGNumberList* mSVGNumberList;
-        const nsSVGNumberPair* mSVGNumberPair;
         const mozilla::SVGPathData* mSVGPathData;
         const mozilla::SVGPointList* mSVGPointList;
-        const mozilla::SVGAnimatedPreserveAspectRatio* mSVGPreserveAspectRatio;
         const mozilla::SVGStringList* mSVGStringList;
         const mozilla::SVGTransformList* mSVGTransformList;
-        const nsSVGViewBox* mSVGViewBox;
       };
       uint32_t mRefCount : 31;
       uint32_t mCached : 1;
@@ -120,13 +120,13 @@ struct MiscContainer final {
  */
 
 inline int32_t nsAttrValue::GetIntegerValue() const {
-  NS_PRECONDITION(Type() == eInteger, "wrong type");
+  MOZ_ASSERT(Type() == eInteger, "wrong type");
   return (BaseType() == eIntegerBase) ? GetIntInternal()
                                       : GetMiscContainer()->mValue.mInteger;
 }
 
 inline int16_t nsAttrValue::GetEnumValue() const {
-  NS_PRECONDITION(Type() == eEnum, "wrong type");
+  MOZ_ASSERT(Type() == eEnum, "wrong type");
   // We don't need to worry about sign extension here since we're
   // returning an int16_t which will cut away the top bits.
   return static_cast<int16_t>(((BaseType() == eIntegerBase)
@@ -136,39 +136,34 @@ inline int16_t nsAttrValue::GetEnumValue() const {
 }
 
 inline float nsAttrValue::GetPercentValue() const {
-  NS_PRECONDITION(Type() == ePercent, "wrong type");
+  MOZ_ASSERT(Type() == ePercent, "wrong type");
   return ((BaseType() == eIntegerBase) ? GetIntInternal()
                                        : GetMiscContainer()->mValue.mPercent) /
          100.0f;
 }
 
 inline mozilla::AtomArray* nsAttrValue::GetAtomArrayValue() const {
-  NS_PRECONDITION(Type() == eAtomArray, "wrong type");
+  MOZ_ASSERT(Type() == eAtomArray, "wrong type");
   return GetMiscContainer()->mValue.mAtomArray;
 }
 
 inline mozilla::DeclarationBlock* nsAttrValue::GetCSSDeclarationValue() const {
-  NS_PRECONDITION(Type() == eCSSDeclaration, "wrong type");
+  MOZ_ASSERT(Type() == eCSSDeclaration, "wrong type");
   return GetMiscContainer()->mValue.mCSSDeclaration;
 }
 
-inline mozilla::css::URLValue* nsAttrValue::GetURLValue() const {
-  NS_PRECONDITION(Type() == eURL, "wrong type");
+inline nsIURI* nsAttrValue::GetURLValue() const {
+  MOZ_ASSERT(Type() == eURL, "wrong type");
   return GetMiscContainer()->mValue.mURL;
 }
 
-inline mozilla::css::ImageValue* nsAttrValue::GetImageValue() const {
-  NS_PRECONDITION(Type() == eImage, "wrong type");
-  return GetMiscContainer()->mValue.mImage;
-}
-
 inline double nsAttrValue::GetDoubleValue() const {
-  NS_PRECONDITION(Type() == eDoubleValue, "wrong type");
+  MOZ_ASSERT(Type() == eDoubleValue, "wrong type");
   return GetMiscContainer()->mDoubleValue;
 }
 
 inline bool nsAttrValue::GetIntMarginValue(nsIntMargin& aMargin) const {
-  NS_PRECONDITION(Type() == eIntMarginValue, "wrong type");
+  MOZ_ASSERT(Type() == eIntMarginValue, "wrong type");
   nsIntMargin* m = GetMiscContainer()->mValue.mIntMargin;
   if (!m) return false;
   aMargin = *m;
@@ -228,7 +223,7 @@ inline nsAttrValue::ValueType nsAttrValue::Type() const {
 }
 
 inline nsAtom* nsAttrValue::GetAtomValue() const {
-  NS_PRECONDITION(Type() == eAtom, "wrong type");
+  MOZ_ASSERT(Type() == eAtom, "wrong type");
   return reinterpret_cast<nsAtom*>(GetPtr());
 }
 
@@ -248,7 +243,9 @@ inline void nsAttrValue::ToString(mozilla::dom::DOMString& aResult) const {
       aResult.SetKnownLiveAtom(atom, mozilla::dom::DOMString::eNullNotExpected);
       break;
     }
-    default: { ToString(aResult.AsAString()); }
+    default: {
+      ToString(aResult.AsAString());
+    }
   }
 }
 

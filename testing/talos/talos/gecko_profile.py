@@ -25,9 +25,10 @@ class GeckoProfile(object):
 
     This allow to collect Gecko profiling data and to zip results in one file.
     """
-    def __init__(self, upload_dir, browser_config, test_config):
+    def __init__(self, upload_dir, browser_config, test_config, webrender_enabled):
         self.upload_dir = upload_dir
         self.browser_config, self.test_config = browser_config, test_config
+        self.cleanup = True
 
         # Create a temporary directory into which the tests can put
         # their profiles. These files will be assembled into one big
@@ -37,6 +38,8 @@ class GeckoProfile(object):
         gecko_profile_interval = test_config.get('gecko_profile_interval', 1)
         gecko_profile_entries = test_config.get('gecko_profile_entries', 1000000)
         gecko_profile_threads = 'GeckoMain,Compositor'
+        if webrender_enabled:
+            gecko_profile_threads += ',WR,Renderer'
 
         # Make sure no archive already exists in the location where
         # we plan to output our profiler archive
@@ -81,7 +84,8 @@ class GeckoProfile(object):
         env.update({
             'MOZ_PROFILER_STARTUP': '1',
             'MOZ_PROFILER_STARTUP_INTERVAL': str(self.option('interval')),
-            'MOZ_PROFILER_STARTUP_ENTRIES': str(self.option('entries'))
+            'MOZ_PROFILER_STARTUP_ENTRIES': str(self.option('entries')),
+            'MOZ_PROFILER_STARTUP_FILTERS': str(self.option('threads'))
         })
 
     def _save_gecko_profile(self, cycle, symbolicator, missing_symbols_zip,
@@ -136,8 +140,7 @@ class GeckoProfile(object):
             # mapping of app or platform names to directories
             # Note: App & OS names from requests are converted
             # to all-uppercase internally
-            "symbolPaths": self.symbol_paths,
-            "platformsRequiringSymbols": ["Windows", "Microsoft"]
+            "symbolPaths": self.symbol_paths
         })
 
         if self.browser_config['symbols_path']:
@@ -145,10 +148,14 @@ class GeckoProfile(object):
                 symbolicator.integrate_symbol_zip_from_url(
                     self.browser_config['symbols_path']
                 )
-            else:
+            elif os.path.isfile(self.browser_config['symbols_path']):
                 symbolicator.integrate_symbol_zip_from_file(
                     self.browser_config['symbols_path']
                 )
+            elif os.path.isdir(self.browser_config['symbols_path']):
+                sym_path = self.browser_config['symbols_path']
+                symbolicator.options["symbolPaths"]["FIREFOX"] = sym_path
+                self.cleanup = False
 
         missing_symbols_zip = os.path.join(self.upload_dir,
                                            "missingsymbols.zip")
@@ -199,11 +206,15 @@ class GeckoProfile(object):
                                               path_in_zip,
                                               self.profile_arcname)
                     )
+            # save the latest gecko profile archive to an env var, so later on
+            # it can be viewed automatically via the view-gecko-profile tool
+            os.environ['TALOS_LATEST_GECKO_PROFILE_ARCHIVE'] = self.profile_arcname
 
     def clean(self):
         """
         Clean up temp folders created with the instance creation.
         """
         mozfile.remove(self.option('dir'))
-        for symbol_path in self.symbol_paths.values():
-            mozfile.remove(symbol_path)
+        if self.cleanup:
+            for symbol_path in self.symbol_paths.values():
+                mozfile.remove(symbol_path)

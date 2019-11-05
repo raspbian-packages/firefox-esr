@@ -31,6 +31,8 @@ class PermissionStatus final : public DOMEventTargetHelper {
 
   IMPL_EVENT_HANDLER(change)
 
+  void DisconnectFromOwner() override;
+
  private:
   ~PermissionStatus();
 

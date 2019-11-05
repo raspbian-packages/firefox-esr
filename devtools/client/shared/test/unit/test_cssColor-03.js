@@ -5,8 +5,8 @@
 
 "use strict";
 
-var {require} = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
-const {colorUtils} = require("devtools/shared/css/color");
+var { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm");
+const { colorUtils } = require("devtools/shared/css/color");
 const InspectorUtils = require("InspectorUtils");
 
 const OLD_STYLE_TESTS = [
@@ -34,22 +34,28 @@ const CSS_COLOR_4_TESTS = [
 ];
 
 function run_test() {
-  for (let test of OLD_STYLE_TESTS) {
-    let ours = colorUtils.colorToRGBA(test, false);
-    let platform = InspectorUtils.colorToRGBA(test);
+  for (const test of OLD_STYLE_TESTS) {
+    const ours = colorUtils.colorToRGBA(test, false);
+    const platform = InspectorUtils.colorToRGBA(test);
     deepEqual(ours, platform, "color " + test + " matches InspectorUtils");
     ok(ours !== null, "'" + test + "' is a color");
   }
 
-  for (let test of CSS_COLOR_4_TESTS) {
-    let oursOld = colorUtils.colorToRGBA(test, false);
-    let oursNew = colorUtils.colorToRGBA(test, true);
-    let platform = InspectorUtils.colorToRGBA(test);
-    notEqual(oursOld, platform, "old style parser for color " + test +
-             " should not match InspectorUtils");
+  for (const test of CSS_COLOR_4_TESTS) {
+    const oursOld = colorUtils.colorToRGBA(test, false);
+    const oursNew = colorUtils.colorToRGBA(test, true);
+    const platform = InspectorUtils.colorToRGBA(test);
+    notEqual(
+      oursOld,
+      platform,
+      "old style parser for color " + test + " should not match InspectorUtils"
+    );
     ok(oursOld === null, "'" + test + "' is not a color with old parser");
-    deepEqual(oursNew, platform,
-              `css-color-4 parser for color ${test} matches InspectorUtils`);
+    deepEqual(
+      oursNew,
+      platform,
+      `css-color-4 parser for color ${test} matches InspectorUtils`
+    );
     ok(oursNew !== null, "'" + test + "' is a color with css-color-4 parser");
   }
 }

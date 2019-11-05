@@ -6,20 +6,24 @@
 // Tests the Filter Editor Widget inputs increase/decrease value when cursor is
 // on a number using arrow keys if cursor is behind/mid/after the number strings
 
-const {CSSFilterEditorWidget} = require("devtools/client/shared/widgets/FilterWidget");
-const {getClientCssProperties} = require("devtools/shared/fronts/css-properties");
+const {
+  CSSFilterEditorWidget,
+} = require("devtools/client/shared/widgets/FilterWidget");
+const {
+  getClientCssProperties,
+} = require("devtools/shared/fronts/css-properties");
 
 const DEFAULT_VALUE_MULTIPLIER = 1;
 
 const TEST_URI = CHROME_URL_ROOT + "doc_filter-editor-01.html";
 
-add_task(function* () {
-  let [,, doc] = yield createHost("bottom", TEST_URI);
+add_task(async function() {
+  const [, , doc] = await createHost("bottom", TEST_URI);
   const cssIsValid = getClientCssProperties().getValidityChecker(doc);
 
   const container = doc.querySelector("#filter-container");
   const initialValue = "drop-shadow(rgb(0, 0, 0) 10px 1px 0px)";
-  let widget = new CSSFilterEditorWidget(container, initialValue, cssIsValid);
+  const widget = new CSSFilterEditorWidget(container, initialValue, cssIsValid);
   const input = widget.el.querySelector("#filters input");
 
   let value = 10;
@@ -32,22 +36,31 @@ add_task(function* () {
   triggerKey(40);
 
   value -= DEFAULT_VALUE_MULTIPLIER;
-  is(widget.getValueAt(0), val(value),
-     "Should work with cursor in the middle of number");
+  is(
+    widget.getValueAt(0),
+    val(value),
+    "Should work with cursor in the middle of number"
+  );
 
   input.setSelectionRange(13, 13);
   triggerKey(38);
 
   value += DEFAULT_VALUE_MULTIPLIER;
-  is(widget.getValueAt(0), val(value),
-     "Should work with cursor before the number");
+  is(
+    widget.getValueAt(0),
+    val(value),
+    "Should work with cursor before the number"
+  );
 
   input.setSelectionRange(15, 15);
   triggerKey(40);
 
   value -= DEFAULT_VALUE_MULTIPLIER;
-  is(widget.getValueAt(0), val(value),
-     "Should work with cursor after the number");
+  is(
+    widget.getValueAt(0),
+    val(value),
+    "Should work with cursor after the number"
+  );
 
   info("Test increment/decrement of string-type numbers with a selection");
 
@@ -57,8 +70,11 @@ add_task(function* () {
   triggerKey(38);
 
   value += DEFAULT_VALUE_MULTIPLIER * 2;
-  is(widget.getValueAt(0), val(value),
-     "Should work if a there is a selection, starting with the number");
+  is(
+    widget.getValueAt(0),
+    val(value),
+    "Should work if a there is a selection, starting with the number"
+  );
 
   triggerKey = null;
 });
@@ -73,7 +89,7 @@ function triggerKey(key, modifier) {
     target: input,
     keyCode: key,
     [modifier]: true,
-    preventDefault: function () {}
+    preventDefault: function() {},
   });
 }
 

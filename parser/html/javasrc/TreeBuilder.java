@@ -444,11 +444,6 @@ public abstract class TreeBuilder<T> implements TokenHandler,
 
     private T headPointer;
 
-    /**
-     * Used to work around Gecko limitations. Not used in Java.
-     */
-    private T deepTreeSurrogateParent;
-
     protected @Auto char[] charBuffer;
 
     protected int charBufferLen = 0;
@@ -615,7 +610,6 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         listPtr = -1;
         formPointer = null;
         headPointer = null;
-        deepTreeSurrogateParent = null;
         // [NOCPP[
         html4 = false;
         idLocations.clear();
@@ -662,8 +656,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 );
                 currentPtr++;
                 stack[currentPtr] = node;
-                tokenizer.setStateAndEndTagExpectation(Tokenizer.DATA,
-                        contextName);
+                tokenizer.setState(Tokenizer.DATA);
                 // The frameset-ok flag is set even though <frameset> never
                 // ends up being allowed as HTML frameset in the fragment case.
                 mode = FRAMESET_OK;
@@ -693,8 +686,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 );
                 currentPtr++;
                 stack[currentPtr] = node;
-                tokenizer.setStateAndEndTagExpectation(Tokenizer.DATA,
-                        contextName);
+                tokenizer.setState(Tokenizer.DATA);
                 // The frameset-ok flag is set even though <frameset> never
                 // ends up being allowed as HTML frameset in the fragment case.
                 mode = FRAMESET_OK;
@@ -713,23 +705,18 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 resetTheInsertionMode();
                 formPointer = getFormPointerForContext(contextNode);
                 if ("title" == contextName || "textarea" == contextName) {
-                    tokenizer.setStateAndEndTagExpectation(Tokenizer.RCDATA,
-                            contextName);
+                    tokenizer.setState(Tokenizer.RCDATA);
                 } else if ("style" == contextName || "xmp" == contextName
                         || "iframe" == contextName || "noembed" == contextName
                         || "noframes" == contextName
                         || (scriptingEnabled && "noscript" == contextName)) {
-                    tokenizer.setStateAndEndTagExpectation(Tokenizer.RAWTEXT,
-                            contextName);
+                    tokenizer.setState(Tokenizer.RAWTEXT);
                 } else if ("plaintext" == contextName) {
-                    tokenizer.setStateAndEndTagExpectation(Tokenizer.PLAINTEXT,
-                            contextName);
+                    tokenizer.setState(Tokenizer.PLAINTEXT);
                 } else if ("script" == contextName) {
-                    tokenizer.setStateAndEndTagExpectation(
-                            Tokenizer.SCRIPT_DATA, contextName);
+                    tokenizer.setState(Tokenizer.SCRIPT_DATA);
                 } else {
-                    tokenizer.setStateAndEndTagExpectation(Tokenizer.DATA,
-                            contextName);
+                    tokenizer.setState(Tokenizer.DATA);
                 }
             }
             contextName = null;
@@ -1167,6 +1154,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                                      */
                                     continue;
                             }
+                            // CPPONLY: MOZ_FALLTHROUGH_ASSERT();
                         default:
                             /*
                              * A character token that is not one of one of
@@ -1643,7 +1631,6 @@ public abstract class TreeBuilder<T> implements TokenHandler,
     public final void endTokenization() throws SAXException {
         formPointer = null;
         headPointer = null;
-        deepTreeSurrogateParent = null;
         templateModeStack = null;
         if (stack != null) {
             while (currentPtr > -1) {
@@ -1734,7 +1721,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                                 errHtmlStartTagInForeignContext(name);
                                 if (!fragment) {
                                     while (!isSpecialParentInForeign(stack[currentPtr])) {
-                                        pop();
+                                        popForeign(-1, -1);
                                     }
                                     continue starttagloop;
                                 } // else fall thru
@@ -3297,17 +3284,20 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     }
             }
         }
-        String charset = null;
         if (start != -1) {
             if (end == -1) {
-                end = buffer.length;
+                if (charsetState == CHARSET_UNQUOTED) {
+                    end = buffer.length;
+                } else {
+                    return null;
+                }
             }
-            charset = Portability.newStringFromBuffer(buffer, start, end
+            return Portability.newStringFromBuffer(buffer, start, end
                     - start
                 // CPPONLY: , tb, false
             );
         }
-        return charset;
+        return null;
     }
 
     private void checkMetaCharset(HtmlAttributes attributes)
@@ -3356,6 +3346,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     }
                 }
                 eltPos = currentPtr;
+                int origPos = currentPtr;
                 for (;;) {
                     if (eltPos == 0) {
                         assert fragment: "We can get this close to the root of the stack in foreign content only in the fragment case.";
@@ -3363,7 +3354,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     }
                     if (stack[eltPos].name == name) {
                         while (currentPtr >= eltPos) {
-                            pop();
+                            popForeign(origPos, eltPos);
                         }
                         break endtagloop;
                     }
@@ -4737,7 +4728,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 removeFromListOfActiveFormattingElements(formattingEltListPos);
                 return true;
             }
+            // commonAncestor is used for running the algorithm and
+            // insertionCommonAncestor is used for the actual insertions to
+            // keep them depth-limited.
             StackNode<T> commonAncestor = stack[formattingEltStackPos - 1]; // weak ref
+            T insertionCommonAncestor = nodeFromStackWithBlinkCompat(formattingEltStackPos - 1); // weak ref
             StackNode<T> furthestBlock = stack[furthestBlockPos]; // weak ref
             // detachFromParent(furthestBlock.node); XXX AAA CHANGE
             int bookmark = formattingEltListPos;
@@ -4785,7 +4780,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 assert node == listOfActiveFormattingElements[nodeListPos];
                 assert node == stack[nodePos];
                 T clone = createElement("http://www.w3.org/1999/xhtml",
-                        node.name, node.attributes.cloneAttributes(null), commonAncestor.node
+                        node.name, node.attributes.cloneAttributes(), insertionCommonAncestor
                         // CPPONLY: , htmlCreator(node.getHtmlCreator())
                         );
                 StackNode<T> newNode = createStackNode(node.getFlags(), node.ns,
@@ -4804,20 +4799,22 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 node = newNode;
                 // } XXX AAA CHANGE
                 detachFromParent(lastNode.node);
-                appendElement(lastNode.node, node.node);
+                appendElement(lastNode.node, nodeFromStackWithBlinkCompat(nodePos));
                 lastNode = node;
             }
+            // If we insert into a foster parent, for simplicity, we insert
+            // accoding to the spec without Blink's depth limit.
             if (commonAncestor.isFosterParenting()) {
                 fatal();
                 detachFromParent(lastNode.node);
                 insertIntoFosterParent(lastNode.node);
             } else {
                 detachFromParent(lastNode.node);
-                appendElement(lastNode.node, commonAncestor.node);
+                appendElement(lastNode.node, insertionCommonAncestor);
             }
             T clone = createElement("http://www.w3.org/1999/xhtml",
                     formattingElt.name,
-                    formattingElt.attributes.cloneAttributes(null), furthestBlock.node
+                    formattingElt.attributes.cloneAttributes(), furthestBlock.node
                     // CPPONLY: , htmlCreator(formattingElt.getHtmlCreator())
                     );
             StackNode<T> formattingClone = createStackNode(
@@ -4999,20 +4996,21 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         while (entryPos < listPtr) {
             entryPos++;
             StackNode<T> entry = listOfActiveFormattingElements[entryPos];
-            StackNode<T> currentNode = stack[currentPtr];
+            StackNode<T> current = stack[currentPtr];
 
             T clone;
-            if (currentNode.isFosterParenting()) {
+            if (current.isFosterParenting()) {
                 clone = createAndInsertFosterParentedElement("http://www.w3.org/1999/xhtml", entry.name,
-                        entry.attributes.cloneAttributes(null)
+                        entry.attributes.cloneAttributes()
                         // CPPONLY: , htmlCreator(entry.getHtmlCreator())
                         );
             } else {
+                T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
                 clone = createElement("http://www.w3.org/1999/xhtml", entry.name,
-                        entry.attributes.cloneAttributes(null), currentNode.node
+                        entry.attributes.cloneAttributes(), currentNode
                         // CPPONLY: , htmlCreator(entry.getHtmlCreator())
                         );
-                appendElement(clone, currentNode.node);
+                appendElement(clone, currentNode);
             }
 
             StackNode<T> entryClone = createStackNode(entry.getFlags(),
@@ -5222,6 +5220,17 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         node.release(this);
     }
 
+    private void popForeign(int origPos, int eltPos) throws SAXException {
+        StackNode<T> node = stack[currentPtr];
+        if (origPos != currentPtr || eltPos != currentPtr) {
+            markMalformedIfScript(node.node);
+        }
+        assert debugOnlyClearLastStackSlot();
+        currentPtr--;
+        elementPopped(node.ns, node.popName, node.node);
+        node.release(this);
+    }
+
     private void silentPop() throws SAXException {
         StackNode<T> node = stack[currentPtr];
         assert debugOnlyClearLastStackSlot();
@@ -5355,7 +5364,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         // [NOCPP[
         checkAttributes(attributes, "http://www.w3.org/1999/xhtml");
         // ]NOCPP]
-        T currentNode = stack[currentPtr].node;
+        T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
         T elt = createElement("http://www.w3.org/1999/xhtml", "head", attributes, currentNode
                 /*
                  * head uses NS_NewHTMLSharedElement creator
@@ -5397,10 +5406,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(NS_NewHTMLFormElement)
                     );
         } else {
-            elt = createElement("http://www.w3.org/1999/xhtml", "form", attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt = createElement("http://www.w3.org/1999/xhtml", "form", attributes, currentNode
                     // CPPONLY: , htmlCreator(NS_NewHTMLFormElement)
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
 
         if (!isTemplateContents()) {
@@ -5423,7 +5433,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         checkAttributes(attributes, "http://www.w3.org/1999/xhtml");
         // ]NOCPP]
         // This method can't be called for custom elements
-        HtmlAttributes clone = attributes.cloneAttributes(null);
+        HtmlAttributes clone = attributes.cloneAttributes();
         // Attributes must not be read after calling createElement, because
         // createElement may delete attributes in C++.
         T elt;
@@ -5434,10 +5444,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
         } else {
-            elt = createElement("http://www.w3.org/1999/xhtml", elementName.getName(), attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt = createElement("http://www.w3.org/1999/xhtml", elementName.getName(), attributes, currentNode
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         StackNode<T> node = createStackNode(elementName, elt, clone
                 // [NOCPP[
@@ -5456,7 +5467,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         checkAttributes(attributes, "http://www.w3.org/1999/xhtml");
         // ]NOCPP]
         // This method can't be called for custom elements
-        T currentNode = stack[currentPtr].node;
+        T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
         T elt = createElement("http://www.w3.org/1999/xhtml", elementName.getName(), attributes, currentNode
                 // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                 );
@@ -5490,10 +5501,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
         } else {
-            elt = createElement("http://www.w3.org/1999/xhtml", popName, attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt = createElement("http://www.w3.org/1999/xhtml", popName, attributes, currentNode
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         StackNode<T> node = createStackNode(elementName, elt, popName
                 // [NOCPP[
@@ -5528,10 +5540,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(null)
                     );
         } else {
-            elt  = createElement("http://www.w3.org/1998/Math/MathML", popName, attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt  = createElement("http://www.w3.org/1998/Math/MathML", popName, attributes, currentNode
                     // CPPONLY: , htmlCreator(null)
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         StackNode<T> node = createStackNode(elementName, elt, popName,
                 markAsHtmlIntegrationPoint
@@ -5581,10 +5594,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , svgCreator(elementName.getSvgCreator())
                     );
         } else {
-            elt = createElement("http://www.w3.org/2000/svg", popName, attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt = createElement("http://www.w3.org/2000/svg", popName, attributes, currentNode
                     // CPPONLY: , svgCreator(elementName.getSvgCreator())
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         StackNode<T> node = createStackNode(elementName, popName, elt
                 // [NOCPP[
@@ -5611,11 +5625,12 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
         } else {
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
             elt = createElement("http://www.w3.org/1999/xhtml", elementName.getName(),
-                    attributes, formOwner, current.node
+                    attributes, formOwner, currentNode
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         StackNode<T> node = createStackNode(elementName, elt
                 // [NOCPP[
@@ -5642,11 +5657,12 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
         } else {
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
             elt = createElement("http://www.w3.org/1999/xhtml", name,
-                    attributes, formOwner, current.node
+                    attributes, formOwner, currentNode
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         elementPushed("http://www.w3.org/1999/xhtml", name, elt);
         elementPopped("http://www.w3.org/1999/xhtml", name, elt);
@@ -5670,10 +5686,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
         } else {
-            elt = createElement("http://www.w3.org/1999/xhtml", popName, attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt = createElement("http://www.w3.org/1999/xhtml", popName, attributes, currentNode
                     // CPPONLY: , htmlCreator(elementName.getHtmlCreator())
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         elementPushed("http://www.w3.org/1999/xhtml", popName, elt);
         elementPopped("http://www.w3.org/1999/xhtml", popName, elt);
@@ -5697,10 +5714,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , svgCreator(elementName.getSvgCreator())
                     );
         } else {
-            elt = createElement("http://www.w3.org/2000/svg", popName, attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt = createElement("http://www.w3.org/2000/svg", popName, attributes, currentNode
                     // CPPONLY: , svgCreator(elementName.getSvgCreator())
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         elementPushed("http://www.w3.org/2000/svg", popName, elt);
         elementPopped("http://www.w3.org/2000/svg", popName, elt);
@@ -5724,10 +5742,11 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                     // CPPONLY: , htmlCreator(null)
                     );
         } else {
-            elt = createElement("http://www.w3.org/1998/Math/MathML", popName, attributes, current.node
+            T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
+            elt = createElement("http://www.w3.org/1998/Math/MathML", popName, attributes, currentNode
                     // CPPONLY: , htmlCreator(null)
                     );
-            appendElement(elt, current.node);
+            appendElement(elt, currentNode);
         }
         elementPushed("http://www.w3.org/1998/Math/MathML", popName, elt);
         elementPopped("http://www.w3.org/1998/Math/MathML", popName, elt);
@@ -5738,7 +5757,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         checkAttributes(attributes, "http://www.w3.org/1999/xhtml");
         // ]NOCPP]
         // Can't be called for custom elements
-        T currentNode = stack[currentPtr].node;
+        T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
         T elt = createElement("http://www.w3.org/1999/xhtml", "input", attributes,
                 form == null || fragment || isTemplateContents() ? null : form, currentNode
                         // CPPONLY: , htmlCreator(NS_NewHTMLInputElement)
@@ -5752,7 +5771,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         // [NOCPP[
         checkAttributes(attributes, "http://www.w3.org/1999/xhtml");
         // ]NOCPP]
-        T currentNode = stack[currentPtr].node;
+        T currentNode = nodeFromStackWithBlinkCompat(currentPtr);
         T elt = createElement("http://www.w3.org/1999/xhtml", "form",
                 attributes, currentNode
                 // CPPONLY: , htmlCreator(NS_NewHTMLFormElement)
@@ -6129,7 +6148,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 StackNode<T> newNode = new StackNode<T>(-1);
                 newNode.setValues(node.getFlags(), node.ns,
                         node.name, node.node, node.popName,
-                        node.attributes.cloneAttributes(null)
+                        node.attributes.cloneAttributes()
                         // CPPONLY: , node.getHtmlCreator()
                         // [NOCPP[
                         , node.getLocator()
@@ -6164,7 +6183,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         System.arraycopy(templateModeStack, 0, templateModeStackCopy, 0,
                 templateModeStackCopy.length);
         return new StateSnapshot<T>(stackCopy, listCopy, templateModeStackCopy, formPointer,
-                headPointer, deepTreeSurrogateParent, mode, originalMode, framesetOk,
+                headPointer, mode, originalMode, framesetOk,
                 needToDropLF, quirks);
     }
 
@@ -6181,7 +6200,6 @@ public abstract class TreeBuilder<T> implements TokenHandler,
                 || templateModeStackLen != templateModePtr + 1
                 || formPointer != snapshot.getFormPointer()
                 || headPointer != snapshot.getHeadPointer()
-                || deepTreeSurrogateParent != snapshot.getDeepTreeSurrogateParent()
                 || mode != snapshot.getMode()
                 || originalMode != snapshot.getOriginalMode()
                 || framesetOk != snapshot.isFramesetOk()
@@ -6216,7 +6234,7 @@ public abstract class TreeBuilder<T> implements TokenHandler,
     }
 
     @SuppressWarnings("unchecked") public void loadState(
-            TreeBuilderState<T> snapshot, Interner interner)
+            TreeBuilderState<T> snapshot)
             throws SAXException {
         // CPPONLY: mCurrentHtmlScriptIsAsyncOrDefer = false;
         StackNode<T>[] stackCopy = snapshot.getStack();
@@ -6253,9 +6271,9 @@ public abstract class TreeBuilder<T> implements TokenHandler,
             StackNode<T> node = listCopy[i];
             if (node != null) {
                 StackNode<T> newNode = createStackNode(node.getFlags(), node.ns,
-                        Portability.newLocalFromLocal(node.name, interner), node.node,
-                        Portability.newLocalFromLocal(node.popName, interner),
-                        node.attributes.cloneAttributes(null)
+                        node.name, node.node,
+                        node.popName,
+                        node.attributes.cloneAttributes()
                         // CPPONLY: , node.getHtmlCreator()
                         // [NOCPP[
                         , node.getLocator()
@@ -6271,8 +6289,8 @@ public abstract class TreeBuilder<T> implements TokenHandler,
             int listIndex = findInArray(node, listCopy);
             if (listIndex == -1) {
                 StackNode<T> newNode = createStackNode(node.getFlags(), node.ns,
-                        Portability.newLocalFromLocal(node.name, interner), node.node,
-                        Portability.newLocalFromLocal(node.popName, interner),
+                        node.name, node.node,
+                        node.popName,
                         null
                         // CPPONLY: , node.getHtmlCreator()
                         // [NOCPP[
@@ -6288,7 +6306,6 @@ public abstract class TreeBuilder<T> implements TokenHandler,
         System.arraycopy(templateModeStackCopy, 0, templateModeStack, 0, templateModeStackLen);
         formPointer = snapshot.getFormPointer();
         headPointer = snapshot.getHeadPointer();
-        deepTreeSurrogateParent = snapshot.getDeepTreeSurrogateParent();
         mode = snapshot.getMode();
         originalMode = snapshot.getOriginalMode();
         framesetOk = snapshot.isFramesetOk();
@@ -6306,6 +6323,32 @@ public abstract class TreeBuilder<T> implements TokenHandler,
     }
 
     /**
+     * Returns <code>stack[stackPos].node</code> if <code>stackPos</code> is
+     * smaller than Blink's magic limit or the node at Blink's magic limit
+     * otherwise.
+     *
+     * In order to get Blink-compatible handling of excessive deeply-nested
+     * markup, this method must be used to obtain the node that is used as the
+     * parent node of an insertion.
+     *
+     * Blink's magic number is 512, but our counting is off by one compared to
+     * Blink's way of counting, so in order to get the same
+     * externally-observable outcome, we use 511 as our magic number.
+     *
+     * @param stackPos the stack position to attempt to read
+     * @return node at the position capped to Blink's magic number
+     * @throws SAXException
+     */
+    private T nodeFromStackWithBlinkCompat(int stackPos) throws SAXException {
+        // Magic number if off by one relative to Blink's magic number, but the
+        // outcome is the same, because the counting is different by one.
+        if (stackPos > 511) {
+            errDeepTree();
+            return stack[511].node;
+        }
+        return stack[stackPos].node;
+    }
+    /**
      * @see nu.validator.htmlparser.impl.TreeBuilderState#getFormPointer()
      */
     @Override
@@ -6321,16 +6364,6 @@ public abstract class TreeBuilder<T> implements TokenHandler,
     @Override
     public T getHeadPointer() {
         return headPointer;
-    }
-
-    /**
-     * Returns the deepTreeSurrogateParent.
-     *
-     * @return the deepTreeSurrogateParent
-     */
-    @Override
-    public T getDeepTreeSurrogateParent() {
-        return deepTreeSurrogateParent;
     }
 
     /**
@@ -6429,6 +6462,16 @@ public abstract class TreeBuilder<T> implements TokenHandler,
     @Override
     public int getTemplateModeStackLength() {
         return templateModePtr + 1;
+    }
+
+    /**
+     * Complains about an over-deep tree. Theoretically this should just be
+     * a warning, but in practice authors should take this as an error.
+     *
+     * @throws SAXException
+     */
+    private void errDeepTree() throws SAXException {
+        err("The document tree is more than 513 elements deep, which causes Firefox and Chrome flatten the tree.");
     }
 
     /**

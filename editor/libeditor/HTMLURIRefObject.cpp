@@ -49,8 +49,7 @@
 #include "nsDOMAttributeMap.h"
 #include "nsError.h"
 #include "nsID.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMNode.h"
+#include "nsINode.h"
 #include "nsISupportsUtils.h"
 #include "nsString.h"
 #include "nsGkAtoms.h"
@@ -79,8 +78,11 @@ NS_IMETHODIMP
 HTMLURIRefObject::GetNextURI(nsAString& aURI) {
   NS_ENSURE_TRUE(mNode, NS_ERROR_NOT_INITIALIZED);
 
-  nsCOMPtr<dom::Element> element = do_QueryInterface(mNode);
-  NS_ENSURE_TRUE(element, NS_ERROR_INVALID_ARG);
+  if (NS_WARN_IF(!mNode->IsElement())) {
+    return NS_ERROR_INVALID_ARG;
+  }
+
+  RefPtr<dom::Element> element = mNode->AsElement();
 
   // Loop over attribute list:
   if (!mAttrsInited) {
@@ -214,16 +216,15 @@ HTMLURIRefObject::RewriteAllURIs(const nsAString& aOldPat,
 }
 
 NS_IMETHODIMP
-HTMLURIRefObject::GetNode(nsIDOMNode** aNode) {
+HTMLURIRefObject::GetNode(nsINode** aNode) {
   NS_ENSURE_TRUE(mNode, NS_ERROR_NOT_INITIALIZED);
   NS_ENSURE_TRUE(aNode, NS_ERROR_NULL_POINTER);
-  *aNode = mNode.get();
-  NS_ADDREF(*aNode);
+  *aNode = do_AddRef(mNode).take();
   return NS_OK;
 }
 
 NS_IMETHODIMP
-HTMLURIRefObject::SetNode(nsIDOMNode* aNode) {
+HTMLURIRefObject::SetNode(nsINode* aNode) {
   mNode = aNode;
   nsAutoString dummyURI;
   if (NS_SUCCEEDED(GetNextURI(dummyURI))) {
@@ -239,7 +240,7 @@ HTMLURIRefObject::SetNode(nsIDOMNode* aNode) {
 
 }  // namespace mozilla
 
-nsresult NS_NewHTMLURIRefObject(nsIURIRefObject** aResult, nsIDOMNode* aNode) {
+nsresult NS_NewHTMLURIRefObject(nsIURIRefObject** aResult, nsINode* aNode) {
   RefPtr<mozilla::HTMLURIRefObject> refObject = new mozilla::HTMLURIRefObject();
   nsresult rv = refObject->SetNode(aNode);
   if (NS_FAILED(rv)) {

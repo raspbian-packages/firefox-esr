@@ -4,18 +4,9 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "getChromeWindow"
-];
+var EXPORTED_SYMBOLS = ["getChromeWindow"];
 
 // Get the chrome (ie, browser) window hosting this content.
 function getChromeWindow(window) {
-  return window
-         .QueryInterface(Ci.nsIInterfaceRequestor)
-         .getInterface(Ci.nsIWebNavigation)
-         .QueryInterface(Ci.nsIDocShellTreeItem)
-         .rootTreeItem
-         .QueryInterface(Ci.nsIInterfaceRequestor)
-         .getInterface(Ci.nsIDOMWindow)
-         .wrappedJSObject;
+  return window.docShell.rootTreeItem.domWindow.wrappedJSObject;
 }

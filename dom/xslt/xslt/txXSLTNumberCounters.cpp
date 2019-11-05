@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -184,11 +184,16 @@ void txRomanCounter::appendNumber(int32_t aNumber, nsAString& aDest) {
   // Hundreds
   posValue = aNumber / 100;
   aNumber %= 100;
-  AppendASCIItoUTF16(kTxRomanNumbers[posValue + mTableOffset], aDest);
+  AppendASCIItoUTF16(
+      mozilla::MakeStringSpan(kTxRomanNumbers[posValue + mTableOffset]), aDest);
   // Tens
   posValue = aNumber / 10;
   aNumber %= 10;
-  AppendASCIItoUTF16(kTxRomanNumbers[10 + posValue + mTableOffset], aDest);
+  AppendASCIItoUTF16(
+      mozilla::MakeStringSpan(kTxRomanNumbers[10 + posValue + mTableOffset]),
+      aDest);
   // Ones
-  AppendASCIItoUTF16(kTxRomanNumbers[20 + aNumber + mTableOffset], aDest);
+  AppendASCIItoUTF16(
+      mozilla::MakeStringSpan(kTxRomanNumbers[20 + aNumber + mTableOffset]),
+      aDest);
 }

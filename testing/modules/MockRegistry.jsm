@@ -1,10 +1,10 @@
-
 "use strict";
 
 var EXPORTED_SYMBOLS = ["MockRegistry"];
 
-ChromeUtils.import("resource://testing-common/MockRegistrar.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { MockRegistrar } = ChromeUtils.import(
+  "resource://testing-common/MockRegistrar.jsm"
+);
 
 class MockRegistry {
   constructor() {
@@ -28,12 +28,12 @@ class MockRegistry {
      * subset of the interface used in tests.  In particular, only values
      * of type string are supported.
      */
-    function MockWindowsRegKey() { }
+    function MockWindowsRegKey() {}
     MockWindowsRegKey.prototype = {
       values: null,
 
       // --- Overridden nsISupports interface functions ---
-      QueryInterface: XPCOMUtils.generateQI([Ci.nsIWindowsRegKey]),
+      QueryInterface: ChromeUtils.generateQI([Ci.nsIWindowsRegKey]),
 
       // --- Overridden nsIWindowsRegKey interface functions ---
       open(root, path, mode) {
@@ -49,8 +49,9 @@ class MockRegistry {
       },
 
       get valueCount() {
-        if (!this.values)
+        if (!this.values) {
           throw Cr.NS_ERROR_FAILURE;
+        }
         return this.values.size;
       },
 
@@ -66,8 +67,9 @@ class MockRegistry {
       },
 
       getValueName(index) {
-        if (!this.values || index >= this.values.size)
+        if (!this.values || index >= this.values.size) {
           throw Cr.NS_ERROR_FAILURE;
+        }
         let names = Array.from(this.values.keys());
         return names[index];
       },
@@ -77,10 +79,13 @@ class MockRegistry {
           throw new Error("invalid registry path");
         }
         return this.values.get(name);
-      }
+      },
     };
 
-    this.cid = MockRegistrar.register("@mozilla.org/windows-registry-key;1", MockWindowsRegKey);
+    this.cid = MockRegistrar.register(
+      "@mozilla.org/windows-registry-key;1",
+      MockWindowsRegKey
+    );
   }
 
   shutdown() {
@@ -110,4 +115,3 @@ class MockRegistry {
     }
   }
 }
-

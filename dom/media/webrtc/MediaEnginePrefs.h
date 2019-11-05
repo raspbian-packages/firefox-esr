@@ -26,6 +26,7 @@ class MediaEnginePrefs {
         mFPS(0),
         mFreq(0),
         mAecOn(false),
+        mUseAecMobile(false),
         mAgcOn(false),
         mNoiseOn(false),
         mAec(0),
@@ -42,6 +43,7 @@ class MediaEnginePrefs {
   int32_t mFPS;
   int32_t mFreq;  // for test tones (fake:true)
   bool mAecOn;
+  bool mUseAecMobile;
   bool mAgcOn;
   bool mNoiseOn;
   int32_t mAec;
@@ -52,6 +54,10 @@ class MediaEnginePrefs {
   bool mDelayAgnostic;
   bool mFakeDeviceChangeEventOn;
   int32_t mChannels;
+
+  bool operator==(const MediaEnginePrefs& aRhs) {
+    return memcmp(this, &aRhs, sizeof(MediaEnginePrefs)) == 0;
+  };
 
   // mWidth and/or mHeight may be zero (=adaptive default), so use functions.
 

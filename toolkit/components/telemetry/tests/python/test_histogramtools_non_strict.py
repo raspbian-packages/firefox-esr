@@ -1,6 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.import json
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
 import mozunit
@@ -10,7 +10,10 @@ from os import path
 
 TELEMETRY_ROOT_PATH = path.abspath(path.join(path.dirname(__file__), path.pardir, path.pardir))
 sys.path.append(TELEMETRY_ROOT_PATH)
-import parse_histograms   # noqa: E402
+# The parsers live in a subdirectory of "build_scripts", account for that.
+# NOTE: if the parsers are moved, this logic will need to be updated.
+sys.path.append(path.join(TELEMETRY_ROOT_PATH, "build_scripts"))
+from mozparsers import parse_histograms   # noqa: E402
 
 
 def load_histogram(histograms):
@@ -49,7 +52,7 @@ class TestParser(unittest.TestCase):
             "TEST_NON_NUMERIC_HISTOGRAM": {
                 "kind": "linear",
                 "description": "sample",
-                "n_buckets": "JS::gcreason::NUM_TELEMETRY_REASONS",
+                "n_buckets": "JS::GCReason::NUM_TELEMETRY_REASONS",
                 "high": "mozilla::StartupTimeline::MAX_EVENT_ID"
                 }}
 

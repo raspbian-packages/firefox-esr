@@ -39,8 +39,8 @@
  *        Controls whether the transaction is committed or rolled back when
  *        this object goes out of scope.
  * @param aType [optional]
- *        The transaction type, as defined in mozIStorageConnection.  Defaults
- *        to TRANSACTION_DEFERRED.
+ *        The transaction type, as defined in mozIStorageConnection. Uses the
+ *        default transaction behavior for the connection if unspecified.
  * @param aAsyncCommit [optional]
  *        Whether commit should be executed asynchronously on the helper thread.
  *        This is a special option introduced as an interim solution to reduce
@@ -62,7 +62,7 @@ class mozStorageTransaction {
  public:
   mozStorageTransaction(
       mozIStorageConnection* aConnection, bool aCommitOnComplete,
-      int32_t aType = mozIStorageConnection::TRANSACTION_DEFERRED,
+      int32_t aType = mozIStorageConnection::TRANSACTION_DEFAULT,
       bool aAsyncCommit = false)
       : mConnection(aConnection),
         mHasTransaction(false),
@@ -71,7 +71,11 @@ class mozStorageTransaction {
         mAsyncCommit(aAsyncCommit) {
     if (mConnection) {
       nsAutoCString query("BEGIN");
-      switch (aType) {
+      int32_t type = aType;
+      if (type == mozIStorageConnection::TRANSACTION_DEFAULT) {
+        MOZ_ALWAYS_SUCCEEDS(mConnection->GetDefaultTransactionType(&type));
+      }
+      switch (type) {
         case mozIStorageConnection::TRANSACTION_IMMEDIATE:
           query.AppendLiteral(" IMMEDIATE");
           break;
@@ -140,7 +144,7 @@ class mozStorageTransaction {
 
     // TODO (bug 1062823): from Sqlite 3.7.11 on, rollback won't ever return
     // a busy error, so this handling can be removed.
-    nsresult rv = NS_OK;
+    nsresult rv;
     do {
       rv = mConnection->ExecuteSimpleSQL(NS_LITERAL_CSTRING("ROLLBACK"));
       if (rv == NS_ERROR_STORAGE_BUSY) (void)PR_Sleep(PR_INTERVAL_NO_WAIT);

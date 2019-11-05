@@ -44,7 +44,8 @@ class QuotaObject {
       : mOriginInfo(aOriginInfo),
         mPath(aPath),
         mSize(aSize),
-        mQuotaCheckDisabled(false) {
+        mQuotaCheckDisabled(false),
+        mWritingDone(false) {
     MOZ_COUNT_CTOR(QuotaObject);
   }
 
@@ -68,6 +69,7 @@ class QuotaObject {
   int64_t mSize;
 
   bool mQuotaCheckDisabled;
+  bool mWritingDone;
 };
 
 END_QUOTA_NAMESPACE

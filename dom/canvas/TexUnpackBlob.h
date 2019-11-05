@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -62,9 +62,8 @@ class TexUnpackBlob {
   virtual ~TexUnpackBlob() {}
 
  protected:
-  bool ConvertIfNeeded(WebGLContext* webgl, const char* funcName,
-                       const uint32_t rowLength, const uint32_t rowCount,
-                       WebGLTexelFormat srcFormat,
+  bool ConvertIfNeeded(WebGLContext* webgl, const uint32_t rowLength,
+                       const uint32_t rowCount, WebGLTexelFormat srcFormat,
                        const uint8_t* const srcBegin, const ptrdiff_t srcStride,
                        WebGLTexelFormat dstFormat, const ptrdiff_t dstStride,
 
@@ -74,17 +73,15 @@ class TexUnpackBlob {
  public:
   virtual bool HasData() const { return true; }
 
-  virtual bool Validate(WebGLContext* webgl, const char* funcName,
-                        const webgl::PackingInfo& pi) = 0;
+  virtual bool Validate(WebGLContext* webgl, const webgl::PackingInfo& pi) = 0;
 
   // Returns false when we've generated a WebGL error.
   // Returns true but with a non-zero *out_error if we still need to generate a
   // WebGL error.
   virtual bool TexOrSubImage(bool isSubImage, bool needsRespec,
-                             const char* funcName, WebGLTexture* tex,
-                             TexImageTarget target, GLint level,
-                             const webgl::DriverUnpackInfo* dui, GLint xOffset,
-                             GLint yOffset, GLint zOffset,
+                             WebGLTexture* tex, TexImageTarget target,
+                             GLint level, const webgl::DriverUnpackInfo* dui,
+                             GLint xOffset, GLint yOffset, GLint zOffset,
                              const webgl::PackingInfo& pi,
                              GLenum* const out_error) const = 0;
 };
@@ -101,13 +98,12 @@ class TexUnpackBytes final : public TexUnpackBlob {
 
   virtual bool HasData() const override { return !mIsClientData || bool(mPtr); }
 
-  virtual bool Validate(WebGLContext* webgl, const char* funcName,
+  virtual bool Validate(WebGLContext* webgl,
                         const webgl::PackingInfo& pi) override;
   virtual bool TexOrSubImage(bool isSubImage, bool needsRespec,
-                             const char* funcName, WebGLTexture* tex,
-                             TexImageTarget target, GLint level,
-                             const webgl::DriverUnpackInfo* dui, GLint xOffset,
-                             GLint yOffset, GLint zOffset,
+                             WebGLTexture* tex, TexImageTarget target,
+                             GLint level, const webgl::DriverUnpackInfo* dui,
+                             GLint xOffset, GLint yOffset, GLint zOffset,
                              const webgl::PackingInfo& pi,
                              GLenum* const out_error) const override;
 };
@@ -122,13 +118,12 @@ class TexUnpackImage final : public TexUnpackBlob {
 
   ~TexUnpackImage();  // Prevent needing to define layers::Image in the header.
 
-  virtual bool Validate(WebGLContext* webgl, const char* funcName,
+  virtual bool Validate(WebGLContext* webgl,
                         const webgl::PackingInfo& pi) override;
   virtual bool TexOrSubImage(bool isSubImage, bool needsRespec,
-                             const char* funcName, WebGLTexture* tex,
-                             TexImageTarget target, GLint level,
-                             const webgl::DriverUnpackInfo* dui, GLint xOffset,
-                             GLint yOffset, GLint zOffset,
+                             WebGLTexture* tex, TexImageTarget target,
+                             GLint level, const webgl::DriverUnpackInfo* dui,
+                             GLint xOffset, GLint yOffset, GLint zOffset,
                              const webgl::PackingInfo& dstPI,
                              GLenum* const out_error) const override;
 };
@@ -141,13 +136,12 @@ class TexUnpackSurface final : public TexUnpackBlob {
                    uint32_t width, uint32_t height, uint32_t depth,
                    gfx::DataSourceSurface* surf, gfxAlphaType srcAlphaType);
 
-  virtual bool Validate(WebGLContext* webgl, const char* funcName,
+  virtual bool Validate(WebGLContext* webgl,
                         const webgl::PackingInfo& pi) override;
   virtual bool TexOrSubImage(bool isSubImage, bool needsRespec,
-                             const char* funcName, WebGLTexture* tex,
-                             TexImageTarget target, GLint level,
-                             const webgl::DriverUnpackInfo* dui, GLint xOffset,
-                             GLint yOffset, GLint zOffset,
+                             WebGLTexture* tex, TexImageTarget target,
+                             GLint level, const webgl::DriverUnpackInfo* dui,
+                             GLint xOffset, GLint yOffset, GLint zOffset,
                              const webgl::PackingInfo& dstPI,
                              GLenum* const out_error) const override;
 };

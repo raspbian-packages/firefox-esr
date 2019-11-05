@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "nsDocument.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/HTMLUnknownElement.h"
 #include "mozilla/dom/HTMLElementBinding.h"
 #include "jsapi.h"
@@ -19,7 +19,7 @@ NS_IMPL_ISUPPORTS_INHERITED(HTMLUnknownElement, nsGenericHTMLElement,
 
 JSObject* HTMLUnknownElement::WrapNode(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return HTMLUnknownElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLUnknownElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_ELEMENT_CLONE(HTMLUnknownElement)

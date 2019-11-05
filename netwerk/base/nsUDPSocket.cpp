@@ -21,7 +21,7 @@
 #include "prio.h"
 #include "nsNetAddr.h"
 #include "nsNetSegmentUtils.h"
-#include "NetworkActivityMonitor.h"
+#include "IOActivityMonitor.h"
 #include "nsServiceManagerUtils.h"
 #include "nsStreamUtils.h"
 #include "nsIPipe.h"
@@ -105,8 +105,6 @@ nsUDPOutputStream::nsUDPOutputStream(nsUDPSocket* aSocket, PRFileDesc* aFD,
       mFD(aFD),
       mPrClientAddr(aPrClientAddr),
       mIsClosed(false) {}
-
-nsUDPOutputStream::~nsUDPOutputStream() {}
 
 NS_IMETHODIMP nsUDPOutputStream::Close() {
   if (mIsClosed) return NS_BASE_STREAM_CLOSED;
@@ -232,6 +230,7 @@ nsUDPSocket::nsUDPSocket()
       mAttached(false),
       mByteReadCount(0),
       mByteWriteCount(0) {
+  this->mAddr.inet = {};
   mAddr.raw.family = PR_AF_UNSPEC;
   // we want to be able to access the STS directly, and it may not have been
   // constructed yet.  the STS constructor sets gSocketTransportService.
@@ -271,6 +270,9 @@ void nsUDPSocket::OnMsgAttach() {
 
   // if we hit an error while trying to attach then bail...
   if (NS_FAILED(mCondition)) {
+    UDPSOCKET_LOG(("nsUDPSocket::OnMsgAttach: TryAttach FAILED err=0x%" PRIx32
+                   " [this=%p]\n",
+                   static_cast<uint32_t>(mCondition), this));
     NS_ASSERTION(!mAttached, "should not be attached already");
     OnSocketDetached(mFD);
   }
@@ -338,7 +340,7 @@ class UDPMessageProxy final : public nsIUDPMessage {
   NS_DECL_NSIUDPMESSAGE
 
  private:
-  ~UDPMessageProxy() {}
+  ~UDPMessageProxy() = default;
 
   NetAddr mAddr;
   nsCOMPtr<nsIOutputStream> mOutputStream;
@@ -384,27 +386,36 @@ UDPMessageProxy::GetOutputStream(nsIOutputStream** aOutputStream) {
 //-----------------------------------------------------------------------------
 
 void nsUDPSocket::OnSocketReady(PRFileDesc* fd, int16_t outFlags) {
+  UDPSOCKET_LOG(
+      ("nsUDPSocket::OnSocketReady: flags=%d [this=%p]\n", outFlags, this));
   NS_ASSERTION(NS_SUCCEEDED(mCondition), "oops");
   NS_ASSERTION(mFD == fd, "wrong file descriptor");
   NS_ASSERTION(outFlags != -1, "unexpected timeout condition reached");
 
-  if (outFlags & (PR_POLL_ERR | PR_POLL_HUP | PR_POLL_NVAL)) {
+  if (outFlags & (PR_POLL_HUP | PR_POLL_NVAL)) {
     NS_WARNING("error polling on listening socket");
     mCondition = NS_ERROR_UNEXPECTED;
     return;
   }
 
   PRNetAddr prClientAddr;
-  uint32_t count;
+  int32_t count;
   // Bug 1252755 - use 9216 bytes to allign with nICEr and transportlayer to
   // support the maximum size of jumbo frames
   char buff[9216];
   count = PR_RecvFrom(mFD, buff, sizeof(buff), 0, &prClientAddr,
                       PR_INTERVAL_NO_WAIT);
+  if (count < 0) {
+    UDPSOCKET_LOG(
+        ("nsUDPSocket::OnSocketReady: PR_RecvFrom failed [this=%p]\n", this));
+    return;
+  }
   mByteReadCount += count;
 
   FallibleTArray<uint8_t> data;
   if (!data.AppendElements(buff, count, fallible)) {
+    UDPSOCKET_LOG((
+        "nsUDPSocket::OnSocketReady: AppendElements FAILED [this=%p]\n", this));
     mCondition = NS_ERROR_UNEXPECTED;
     return;
   }
@@ -438,6 +449,7 @@ void nsUDPSocket::OnSocketReady(PRFileDesc* fd, int16_t outFlags) {
 }
 
 void nsUDPSocket::OnSocketDetached(PRFileDesc* fd) {
+  UDPSOCKET_LOG(("nsUDPSocket::OnSocketDetached [this=%p]\n", this));
   // force a failure condition if none set; maybe the STS is shutting down :-/
   if (NS_SUCCEEDED(mCondition)) mCondition = NS_ERROR_ABORT;
 
@@ -597,8 +609,8 @@ nsUDPSocket::InitWithAddress(const NetAddr* aAddr, nsIPrincipal* aPrincipal,
 
   PRNetAddrToNetAddr(&addr, &mAddr);
 
-  // create proxy via NetworkActivityMonitor
-  NetworkActivityMonitor::AttachIOLayer(mFD);
+  // create proxy via IOActivityMonitor
+  IOActivityMonitor::MonitorSocket(mFD);
 
   // wait until AsyncListen is called before polling the socket for
   // client connections.
@@ -641,6 +653,7 @@ nsUDPSocket::Connect(const NetAddr* aAddr) {
     NS_WARNING("Cannot PR_Connect");
     return NS_ERROR_FAILURE;
   }
+  PR_SetFDInheritable(mFD, false);
 
   // get the resulting socket address, which may have been updated.
   PRNetAddr addr;
@@ -750,7 +763,7 @@ namespace {
 // SocketListenerProxy
 //-----------------------------------------------------------------------------
 class SocketListenerProxy final : public nsIUDPSocketListener {
-  ~SocketListenerProxy() {}
+  ~SocketListenerProxy() = default;
 
  public:
   explicit SocketListenerProxy(nsIUDPSocketListener* aListener)
@@ -844,7 +857,7 @@ SocketListenerProxy::OnStopListeningRunnable::Run() {
 }
 
 class SocketListenerProxyBackground final : public nsIUDPSocketListener {
-  ~SocketListenerProxyBackground() {}
+  ~SocketListenerProxyBackground() = default;
 
  public:
   explicit SocketListenerProxyBackground(nsIUDPSocketListener* aListener)
@@ -949,7 +962,7 @@ class PendingSend : public nsIDNSListener {
   }
 
  private:
-  virtual ~PendingSend() {}
+  virtual ~PendingSend() = default;
 
   RefPtr<nsUDPSocket> mSocket;
   uint16_t mPort;
@@ -977,6 +990,13 @@ PendingSend::OnLookupComplete(nsICancelable* request, nsIDNSRecord* rec,
   return NS_OK;
 }
 
+NS_IMETHODIMP
+PendingSend::OnLookupByTypeComplete(nsICancelable* aRequest,
+                                    nsIDNSByTypeRecord* aRes,
+                                    nsresult aStatus) {
+  return NS_OK;
+}
+
 class PendingSendStream : public nsIDNSListener {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
@@ -987,7 +1007,7 @@ class PendingSendStream : public nsIDNSListener {
       : mSocket(aSocket), mPort(aPort), mStream(aStream) {}
 
  private:
-  virtual ~PendingSendStream() {}
+  virtual ~PendingSendStream() = default;
 
   RefPtr<nsUDPSocket> mSocket;
   uint16_t mPort;
@@ -1013,6 +1033,13 @@ PendingSendStream::OnLookupComplete(nsICancelable* request, nsIDNSRecord* rec,
   return NS_OK;
 }
 
+NS_IMETHODIMP
+PendingSendStream::OnLookupByTypeComplete(nsICancelable* aRequest,
+                                          nsIDNSByTypeRecord* aRes,
+                                          nsresult aStatus) {
+  return NS_OK;
+}
+
 class SendRequestRunnable : public Runnable {
  public:
   SendRequestRunnable(nsUDPSocket* aSocket, const NetAddr& aAddr,
@@ -1020,7 +1047,7 @@ class SendRequestRunnable : public Runnable {
       : Runnable("net::SendRequestRunnable"),
         mSocket(aSocket),
         mAddr(aAddr),
-        mData(Move(aData)) {}
+        mData(std::move(aData)) {}
 
   NS_DECL_NSIRUNNABLE
 
@@ -1131,7 +1158,7 @@ nsUDPSocket::SendWithAddress(const NetAddr* aAddr, const uint8_t* aData,
     }
 
     nsresult rv = mSts->Dispatch(
-        new SendRequestRunnable(this, *aAddr, Move(fallibleArray)),
+        new SendRequestRunnable(this, *aAddr, std::move(fallibleArray)),
         NS_DISPATCH_NORMAL);
     NS_ENSURE_SUCCESS(rv, rv);
     *_retval = aDataLength;

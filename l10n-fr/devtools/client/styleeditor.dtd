@@ -18,7 +18,7 @@
 <!ENTITY importButton.tooltip       "Importer et ajouter une feuille de style existante au document">
 <!ENTITY importButton.accesskey     "I">
 
-<!ENTITY visibilityToggle.tooltip   "Afficher/Masquer la feuille de style">
+<!ENTITY visibilityToggle.tooltip   "Activer/Désactiver la feuille de style">
 
 <!ENTITY saveButton.label           "Enregistrer">
 <!ENTITY saveButton.tooltip         "Enregistrer cette feuille de style dans un fichier">
@@ -65,3 +65,7 @@
 <!-- LOCALIZATION NOTE (openLinkNewTab.label): This is the text for the
      context menu item that opens a stylesheet in a new tab -->
 <!ENTITY openLinkNewTab.label     "Ouvrir le lien dans un nouvel onglet">
+
+<!-- LOCALIZATION NOTE (copyUrl.label): This is the text for the
+     context menu item that copies a stylesheet's URL -->
+<!ENTITY copyUrl.label            "Copier l’URL">

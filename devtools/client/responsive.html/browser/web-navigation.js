@@ -4,11 +4,14 @@
 
 "use strict";
 
-const { Ci, Cu, Cr } = require("chrome");
-const { XPCOMUtils } = require("resource://gre/modules/XPCOMUtils.jsm");
+const { Cc, Ci, Cu, Cr } = require("chrome");
+const ChromeUtils = require("ChromeUtils");
 const Services = require("Services");
 const { NetUtil } = require("resource://gre/modules/NetUtil.jsm");
-const { Utils } = require("resource://gre/modules/sessionstore/Utils.jsm");
+const { E10SUtils } = require("resource://gre/modules/E10SUtils.jsm");
+const Telemetry = require("devtools/client/shared/telemetry");
+
+const telemetry = new Telemetry();
 
 function readInputStreamToString(stream) {
   return NetUtil.readInputStreamToString(stream, stream.available());
@@ -33,9 +36,8 @@ function BrowserElementWebNavigation(browser) {
 
 BrowserElementWebNavigation.prototype = {
 
-  QueryInterface: XPCOMUtils.generateQI([
+  QueryInterface: ChromeUtils.generateQI([
     Ci.nsIWebNavigation,
-    Ci.nsISupports
   ]),
 
   get _mm() {
@@ -62,24 +64,28 @@ BrowserElementWebNavigation.prototype = {
     // No equivalent in the current BrowserElement API
     this.loadURIWithOptions(uri, flags, referrer,
                             Ci.nsIHttpChannel.REFERRER_POLICY_UNSET,
-                            postData, headers, null, null);
+                            postData, headers, null,
+                            Services.scriptSecurityManager.createNullPrincipal({}));
   },
 
   loadURIWithOptions(uri, flags, referrer, referrerPolicy, postData, headers,
                      baseURI, triggeringPrincipal) {
     // No equivalent in the current BrowserElement API
+    let referrerInfo = Cc["@mozilla.org/referrer-info;1"]
+                         .createInstance(Ci.nsIReferrerInfo);
+    referrerInfo.init(referrerPolicy, true, referrer);
+    referrerInfo = E10SUtils.serializeReferrerInfo(referrerInfo);
     this._sendMessage("WebNavigation:LoadURI", {
       uri,
       flags,
-      referrer: referrer ? referrer.spec : null,
-      referrerPolicy: referrerPolicy,
+      referrerInfo,
       postData: postData ? readInputStreamToString(postData) : null,
       headers: headers ? readInputStreamToString(headers) : null,
       baseURI: baseURI ? baseURI.spec : null,
-      triggeringPrincipal: triggeringPrincipal
-                           ? Utils.serializePrincipal(triggeringPrincipal)
-                           : null,
-      requestTime: Services.telemetry.msSystemNow(),
+      triggeringPrincipal: E10SUtils.serializePrincipal(
+                           triggeringPrincipal ||
+                           Services.scriptSecurityManager.createNullPrincipal({})),
+      requestTime: telemetry.msSystemNow(),
     });
   },
 
@@ -148,7 +154,7 @@ BrowserElementWebNavigation.prototype = {
       "canGoForward",
       "_currentURI",
     ];
-    for (let property of state) {
+    for (const property of state) {
       this[property] = otherWebNavigation[property];
     }
   },
@@ -177,7 +183,7 @@ const FLAGS = [
   "STOP_ALL",
 ];
 
-for (let flag of FLAGS) {
+for (const flag of FLAGS) {
   BrowserElementWebNavigation.prototype[flag] = Ci.nsIWebNavigation[flag];
 }
 

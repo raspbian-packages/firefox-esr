@@ -9,22 +9,24 @@
 
 #include "nsIWeakReference.h"
 
+#include "mozilla/AccessibleCaretEventHub.h"
 #include "mozilla/AutoRestore.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/RangeBoundary.h"
+#include "mozilla/SelectionChangeEventDispatcher.h"
 #include "mozilla/TextRange.h"
 #include "mozilla/UniquePtr.h"
-#include "nsISelection.h"
+#include "mozilla/WeakPtr.h"
+#include "nsDirection.h"
 #include "nsISelectionController.h"
 #include "nsISelectionListener.h"
-#include "nsISelectionPrivate.h"
 #include "nsRange.h"
+#include "nsTArrayForwardDeclare.h"
 #include "nsThreadUtils.h"
 #include "nsWrapperCache.h"
 
 struct CachedOffsetForFrame;
 class nsAutoScrollTimer;
-class nsIContentIterator;
-class nsIDocument;
 class nsIFrame;
 class nsFrameSelection;
 class nsPIDOMWindowOuter;
@@ -36,6 +38,8 @@ class nsHTMLCopyEncoder;
 namespace mozilla {
 class ErrorResult;
 class HTMLEditor;
+class PostContentIterator;
+enum class TableSelection : uint32_t;
 struct AutoPrepareFocusRange;
 namespace dom {
 class DocGroup;
@@ -49,18 +53,17 @@ struct RangeData {
   mozilla::TextRangeStyle mTextRangeStyle;
 };
 
+namespace mozilla {
+namespace dom {
+
 // Note, the ownership of mozilla::dom::Selection depends on which way the
 // object is created. When nsFrameSelection has created Selection,
 // addreffing/releasing the Selection object is aggregated to nsFrameSelection.
 // Otherwise normal addref/release is used.  This ensures that nsFrameSelection
 // is never deleted before its Selections.
-namespace mozilla {
-namespace dom {
-
-class Selection final : public nsISelection,
+class Selection final : public nsSupportsWeakReference,
                         public nsWrapperCache,
-                        public nsISelectionPrivate,
-                        public nsSupportsWeakReference {
+                        public SupportsWeakPtr<Selection> {
  protected:
   virtual ~Selection();
 
@@ -68,11 +71,10 @@ class Selection final : public nsISelection,
   Selection();
   explicit Selection(nsFrameSelection* aList);
 
+  MOZ_DECLARE_WEAKREFERENCE_TYPENAME(Selection)
+
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_AMBIGUOUS(Selection,
-                                                         nsISelection)
-  NS_DECL_NSISELECTION
-  NS_DECL_NSISELECTIONPRIVATE
+  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(Selection)
 
   // match this up with EndbatchChanges. will stop ui updates while multiple
   // selection methods are called
@@ -81,12 +83,46 @@ class Selection final : public nsISelection,
   // match this up with StartBatchChanges
   void EndBatchChanges(int16_t aReason = nsISelectionListener::NO_REASON);
 
-  nsIDocument* GetParentObject() const;
+  /**
+   * NotifyAutoCopy() starts to notify AutoCopyListener of selection changes.
+   */
+  void NotifyAutoCopy() { mNotifyAutoCopy = true; }
+
+  /**
+   * MaybeNotifyAccessibleCaretEventHub() starts to notify
+   * AccessibleCaretEventHub of selection change if aPresShell has it.
+   */
+  void MaybeNotifyAccessibleCaretEventHub(PresShell* aPresShell) {
+    if (!mAccessibleCaretEventHub && aPresShell) {
+      mAccessibleCaretEventHub = aPresShell->GetAccessibleCaretEventHub();
+    }
+  }
+
+  /**
+   * StopNotifyingAccessibleCaretEventHub() stops notifying
+   * AccessibleCaretEventHub of selection change.
+   */
+  void StopNotifyingAccessibleCaretEventHub() {
+    mAccessibleCaretEventHub = nullptr;
+  }
+
+  /**
+   * EnableSelectionChangeEvent() starts to notify
+   * SelectionChangeEventDispatcher of selection change to dispatch a
+   * selectionchange event at every selection change.
+   */
+  void EnableSelectionChangeEvent() {
+    if (!mSelectionChangeEventDispatcher) {
+      mSelectionChangeEventDispatcher = new SelectionChangeEventDispatcher();
+    }
+  }
+
+  Document* GetParentObject() const;
   DocGroup* GetDocGroup() const;
 
   // utility methods for scrolling the selection into view
   nsPresContext* GetPresContext() const;
-  nsIPresShell* GetPresShell() const;
+  PresShell* GetPresShell() const;
   nsFrameSelection* GetFrameSelection() const { return mFrameSelection; }
   // Returns a rect containing the selection region, and frame that that
   // position is relative to. For SELECTION_ANCHOR_REGION or
@@ -100,9 +136,10 @@ class Selection final : public nsISelection,
   nsIFrame* GetSelectionEndPointGeometry(SelectionRegion aRegion,
                                          nsRect* aRect);
 
-  nsresult PostScrollSelectionIntoViewEvent(
-      SelectionRegion aRegion, int32_t aFlags,
-      nsIPresShell::ScrollAxis aVertical, nsIPresShell::ScrollAxis aHorizontal);
+  nsresult PostScrollSelectionIntoViewEvent(SelectionRegion aRegion,
+                                            int32_t aFlags,
+                                            ScrollAxis aVertical,
+                                            ScrollAxis aHorizontal);
   enum {
     SCROLL_SYNCHRONOUS = 1 << 1,
     SCROLL_FIRST_ANCESTOR_ONLY = 1 << 2,
@@ -116,11 +153,11 @@ class Selection final : public nsISelection,
   // Otherwise, if SCROLL_DO_FLUSH is also in aFlags, then this method will
   // flush layout and you MUST hold a strong ref on 'this' for the duration
   // of this call.  This might destroy arbitrary layout objects.
-  nsresult ScrollIntoView(
-      SelectionRegion aRegion,
-      nsIPresShell::ScrollAxis aVertical = nsIPresShell::ScrollAxis(),
-      nsIPresShell::ScrollAxis aHorizontal = nsIPresShell::ScrollAxis(),
-      int32_t aFlags = 0);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  nsresult ScrollIntoView(SelectionRegion aRegion,
+                          ScrollAxis aVertical = ScrollAxis(),
+                          ScrollAxis aHorizontal = ScrollAxis(),
+                          int32_t aFlags = 0);
   nsresult SubtractRange(RangeData* aRange, nsRange* aSubtract,
                          nsTArray<RangeData>* aOutput);
   /**
@@ -145,14 +182,18 @@ class Selection final : public nsISelection,
     Collapse(aPoint, result);
     return result.StealNSResult();
   }
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   nsresult Extend(nsINode* aContainer, int32_t aOffset);
+
   nsRange* GetRangeAt(int32_t aIndex) const;
 
   // Get the anchor-to-focus range if we don't care which end is
   // anchor and which end is focus.
   const nsRange* GetAnchorFocusRange() const { return mAnchorFocusRange; }
 
-  nsDirection GetDirection() { return mDirection; }
+  nsDirection GetDirection() const { return mDirection; }
+
   void SetDirection(nsDirection aDir) { mDirection = aDir; }
   nsresult SetAnchorFocusToRange(nsRange* aRange);
   void ReplaceAnchorFocusRange(nsRange* aRange);
@@ -169,7 +210,7 @@ class Selection final : public nsISelection,
 
   NS_IMETHOD Repaint(nsPresContext* aPresContext);
 
-  // Note: StartAutoScrollTimer might destroy arbitrary frames etc.
+  MOZ_CAN_RUN_SCRIPT
   nsresult StartAutoScrollTimer(nsIFrame* aFrame, const nsPoint& aPoint,
                                 uint32_t aDelay);
 
@@ -179,19 +220,19 @@ class Selection final : public nsISelection,
                        JS::Handle<JSObject*> aGivenProto) override;
 
   // WebIDL methods
-  nsINode* GetAnchorNode() {
+  nsINode* GetAnchorNode() const {
     const RangeBoundary& anchor = AnchorRef();
     return anchor.IsSet() ? anchor.Container() : nullptr;
   }
-  uint32_t AnchorOffset() {
+  uint32_t AnchorOffset() const {
     const RangeBoundary& anchor = AnchorRef();
     return anchor.IsSet() ? anchor.Offset() : 0;
   }
-  nsINode* GetFocusNode() {
+  nsINode* GetFocusNode() const {
     const RangeBoundary& focus = FocusRef();
     return focus.IsSet() ? focus.Container() : nullptr;
   }
-  uint32_t FocusOffset() {
+  uint32_t FocusOffset() const {
     const RangeBoundary& focus = FocusRef();
     return focus.IsSet() ? focus.Offset() : 0;
   }
@@ -205,8 +246,8 @@ class Selection final : public nsISelection,
     return focus.IsSet() ? focus.GetChildAtOffset() : nullptr;
   }
 
-  const RangeBoundary& AnchorRef();
-  const RangeBoundary& FocusRef();
+  const RangeBoundary& AnchorRef() const;
+  const RangeBoundary& FocusRef() const;
 
   /*
    * IsCollapsed -- is the whole selection just one point, or unset?
@@ -232,11 +273,15 @@ class Selection final : public nsISelection,
   void CollapseToStartJS(mozilla::ErrorResult& aRv);
   void CollapseToEndJS(mozilla::ErrorResult& aRv);
 
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void ExtendJS(nsINode& aContainer, uint32_t aOffset,
                 mozilla::ErrorResult& aRv);
 
   void SelectAllChildrenJS(nsINode& aNode, mozilla::ErrorResult& aRv);
 
+  /**
+   * Deletes this selection from document the nodes belong to.
+   */
   void DeleteFromDocument(mozilla::ErrorResult& aRv);
 
   uint32_t RangeCount() const { return mRanges.Length(); }
@@ -245,8 +290,11 @@ class Selection final : public nsISelection,
 
   nsRange* GetRangeAt(uint32_t aIndex, mozilla::ErrorResult& aRv);
   void AddRangeJS(nsRange& aRange, mozilla::ErrorResult& aRv);
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void RemoveRange(nsRange& aRange, mozilla::ErrorResult& aRv);
-  void RemoveAllRanges(mozilla::ErrorResult& aRv);
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY void RemoveAllRanges(mozilla::ErrorResult& aRv);
 
   /**
    * RemoveAllRangesTemporarily() is useful if the caller will add one or more
@@ -256,8 +304,19 @@ class Selection final : public nsISelection,
    */
   nsresult RemoveAllRangesTemporarily();
 
-  void Stringify(nsAString& aResult);
+  /**
+   * Whether Stringify should flush layout or not.
+   */
+  enum class FlushFrames { No, Yes };
+  MOZ_CAN_RUN_SCRIPT
+  void Stringify(nsAString& aResult, FlushFrames = FlushFrames::Yes);
 
+  /**
+   * Indicates whether the node is part of the selection. If partlyContained
+   * is true, the function returns true when some part of the node
+   * is part of the selection. If partlyContained is false, the
+   * function only returns true when the entire node is part of the selection.
+   */
   bool ContainsNode(nsINode& aNode, bool aPartlyContained,
                     mozilla::ErrorResult& aRv);
 
@@ -270,9 +329,28 @@ class Selection final : public nsISelection,
    */
   bool ContainsPoint(const nsPoint& aPoint);
 
+  /**
+   * Modifies the selection.  Note that the parameters are case-insensitive.
+   *
+   * @param alter can be one of { "move", "extend" }
+   *   - "move" collapses the selection to the end of the selection and
+   *      applies the movement direction/granularity to the collapsed
+   *      selection.
+   *   - "extend" leaves the start of the selection unchanged, and applies
+   *      movement direction/granularity to the end of the selection.
+   * @param direction can be one of { "forward", "backward", "left", "right" }
+   * @param granularity can be one of { "character", "word",
+   *                                    "line", "lineboundary" }
+   *
+   * @throws NS_ERROR_NOT_IMPLEMENTED if the granularity is "sentence",
+   * "sentenceboundary", "paragraph", "paragraphboundary", or
+   * "documentboundary".  Throws NS_ERROR_INVALID_ARG if alter, direction,
+   * or granularity has an unrecognized value.
+   */
   void Modify(const nsAString& aAlter, const nsAString& aDirection,
               const nsAString& aGranularity, mozilla::ErrorResult& aRv);
 
+  MOZ_CAN_RUN_SCRIPT
   void SetBaseAndExtentJS(nsINode& aAnchorNode, uint32_t aAnchorOffset,
                           nsINode& aFocusNode, uint32_t aFocusOffset,
                           mozilla::ErrorResult& aRv);
@@ -287,10 +365,8 @@ class Selection final : public nsISelection,
   void ToStringWithFormat(const nsAString& aFormatType, uint32_t aFlags,
                           int32_t aWrapColumn, nsAString& aReturn,
                           mozilla::ErrorResult& aRv);
-  void AddSelectionListener(nsISelectionListener* aListener,
-                            mozilla::ErrorResult& aRv);
-  void RemoveSelectionListener(nsISelectionListener* aListener,
-                               mozilla::ErrorResult& aRv);
+  void AddSelectionListener(nsISelectionListener* aListener);
+  void RemoveSelectionListener(nsISelectionListener* aListener);
 
   RawSelectionType RawType() const {
     return ToRawSelectionType(mSelectionType);
@@ -302,9 +378,10 @@ class Selection final : public nsISelection,
                             bool aAllowAdjacent,
                             nsTArray<RefPtr<nsRange>>& aReturn,
                             mozilla::ErrorResult& aRv);
-
-  void ScrollIntoView(int16_t aRegion, bool aIsSynchronous, int16_t aVPercent,
-                      int16_t aHPercent, mozilla::ErrorResult& aRv);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  void ScrollIntoView(int16_t aRegion, bool aIsSynchronous,
+                      WhereToScroll aVPercent, WhereToScroll aHPercent,
+                      mozilla::ErrorResult& aRv);
 
   void SetColors(const nsAString& aForeColor, const nsAString& aBackColor,
                  const nsAString& aAltForeColor, const nsAString& aAltBackColor,
@@ -312,23 +389,149 @@ class Selection final : public nsISelection,
 
   void ResetColors(mozilla::ErrorResult& aRv);
 
-  // Non-JS callers should use the following methods.
+  /**
+   * Non-JS callers should use the following
+   * collapse/collapseToStart/extend/etc methods, instead of the *JS
+   * versions that bindings call.
+   */
+
+  /**
+   * Collapses the selection to a single point, at the specified offset
+   * in the given node. When the selection is collapsed, and the content
+   * is focused and editable, the caret will blink there.
+   * @param aContainer The given node where the selection will be set
+   * @param offset      Where in given dom node to place the selection (the
+   *                    offset into the given node)
+   */
   void Collapse(nsINode& aContainer, uint32_t aOffset, ErrorResult& aRv) {
     Collapse(RawRangeBoundary(&aContainer, aOffset), aRv);
   }
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void Collapse(const RawRangeBoundary& aPoint, ErrorResult& aRv);
+
+  /**
+   * Collapses the whole selection to a single point at the start
+   * of the current selection (irrespective of direction).  If content
+   * is focused and editable, the caret will blink there.
+   */
   void CollapseToStart(mozilla::ErrorResult& aRv);
+
+  /**
+   * Collapses the whole selection to a single point at the end
+   * of the current selection (irrespective of direction).  If content
+   * is focused and editable, the caret will blink there.
+   */
   void CollapseToEnd(mozilla::ErrorResult& aRv);
+
+  /**
+   * Extends the selection by moving the selection end to the specified node and
+   * offset, preserving the selection begin position. The new selection end
+   * result will always be from the anchorNode to the new focusNode, regardless
+   * of direction.
+   *
+   * @param aContainer The node where the selection will be extended to
+   * @param aOffset    Where in aContainer to place the offset of the new
+   *                   selection end.
+   */
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void Extend(nsINode& aContainer, uint32_t aOffset, ErrorResult& aRv);
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void AddRange(nsRange& aRange, mozilla::ErrorResult& aRv);
+
+  /**
+   * Adds all children of the specified node to the selection.
+   * @param aNode the parent of the children to be added to the selection.
+   */
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void SelectAllChildren(nsINode& aNode, mozilla::ErrorResult& aRv);
+
+  /**
+   * SetStartAndEnd() removes all ranges and sets new range as given range.
+   * Different from SetBaseAndExtent(), this won't compare the DOM points of
+   * aStartRef and aEndRef for performance nor set direction to eDirPrevious.
+   * Note that this may reset the limiter and move focus.  If you don't want
+   * that, use SetStartAndEndInLimiter() instead.
+   */
+  MOZ_CAN_RUN_SCRIPT
+  void SetStartAndEnd(const RawRangeBoundary& aStartRef,
+                      const RawRangeBoundary& aEndRef, ErrorResult& aRv) {
+    SetStartAndEndInternal(InLimiter::eNo, aStartRef, aEndRef, eDirNext, aRv);
+  }
+  MOZ_CAN_RUN_SCRIPT
+  void SetStartAndEnd(nsINode& aStartContainer, uint32_t aStartOffset,
+                      nsINode& aEndContainer, uint32_t aEndOffset,
+                      ErrorResult& aRv) {
+    SetStartAndEnd(RawRangeBoundary(&aStartContainer, aStartOffset),
+                   RawRangeBoundary(&aEndContainer, aEndOffset), aRv);
+  }
+
+  /**
+   * SetStartAndEndInLimiter() is similar to SetStartAndEnd(), but this respects
+   * the selection limiter.  If all or part of given range is not in the
+   * limiter, this returns error.
+   */
+  MOZ_CAN_RUN_SCRIPT
+  void SetStartAndEndInLimiter(const RawRangeBoundary& aStartRef,
+                               const RawRangeBoundary& aEndRef,
+                               ErrorResult& aRv) {
+    SetStartAndEndInternal(InLimiter::eYes, aStartRef, aEndRef, eDirNext, aRv);
+  }
+  MOZ_CAN_RUN_SCRIPT
+  void SetStartAndEndInLimiter(nsINode& aStartContainer, uint32_t aStartOffset,
+                               nsINode& aEndContainer, uint32_t aEndOffset,
+                               ErrorResult& aRv) {
+    SetStartAndEndInLimiter(RawRangeBoundary(&aStartContainer, aStartOffset),
+                            RawRangeBoundary(&aEndContainer, aEndOffset), aRv);
+  }
+
+  /**
+   * SetBaseAndExtent() is alternative of the JS API for internal use.
+   * Different from SetStartAndEnd(), this sets anchor and focus points as
+   * specified, then if anchor point is after focus node, this sets the
+   * direction to eDirPrevious.
+   * Note that this may reset the limiter and move focus.  If you don't want
+   * that, use SetBaseAndExtentInLimier() instead.
+   */
+  MOZ_CAN_RUN_SCRIPT
   void SetBaseAndExtent(nsINode& aAnchorNode, uint32_t aAnchorOffset,
                         nsINode& aFocusNode, uint32_t aFocusOffset,
-                        mozilla::ErrorResult& aRv);
+                        ErrorResult& aRv) {
+    SetBaseAndExtent(RawRangeBoundary(&aAnchorNode, aAnchorOffset),
+                     RawRangeBoundary(&aFocusNode, aFocusOffset), aRv);
+  }
+  MOZ_CAN_RUN_SCRIPT
+  void SetBaseAndExtent(const RawRangeBoundary& aAnchorRef,
+                        const RawRangeBoundary& aFocusRef, ErrorResult& aRv) {
+    SetBaseAndExtentInternal(InLimiter::eNo, aAnchorRef, aFocusRef, aRv);
+  }
+
+  /**
+   * SetBaseAndExtentInLimier() is similar to SetBaseAndExtent(), but this
+   * respects the selection limiter.  If all or part of given range is not in
+   * the limiter, this returns error.
+   */
+  MOZ_CAN_RUN_SCRIPT
+  void SetBaseAndExtentInLimiter(nsINode& aAnchorNode, uint32_t aAnchorOffset,
+                                 nsINode& aFocusNode, uint32_t aFocusOffset,
+                                 ErrorResult& aRv) {
+    SetBaseAndExtentInLimiter(RawRangeBoundary(&aAnchorNode, aAnchorOffset),
+                              RawRangeBoundary(&aFocusNode, aFocusOffset), aRv);
+  }
+  MOZ_CAN_RUN_SCRIPT
+  void SetBaseAndExtentInLimiter(const RawRangeBoundary& aAnchorRef,
+                                 const RawRangeBoundary& aFocusRef,
+                                 ErrorResult& aRv) {
+    SetBaseAndExtentInternal(InLimiter::eYes, aAnchorRef, aFocusRef, aRv);
+  }
 
   void AddSelectionChangeBlocker();
   void RemoveSelectionChangeBlocker();
   bool IsBlockingSelectionChangeEvents() const;
+
+  // Whether this selection is focused in an editable element.
+  bool IsEditorSelection() const;
 
   /**
    * Set the painting style for the range. The range must be a range in
@@ -338,11 +541,54 @@ class Selection final : public nsISelection,
   nsresult SetTextRangeStyle(nsRange* aRange,
                              const TextRangeStyle& aTextRangeStyle);
 
+  // Methods to manipulate our mFrameSelection's ancestor limiter.
+  nsIContent* GetAncestorLimiter() const;
+  void SetAncestorLimiter(nsIContent* aLimiter);
+
+  /*
+   * Frame Offset cache can be used just during calling
+   * nsEditor::EndPlaceHolderTransaction. EndPlaceHolderTransaction will give
+   * rise to reflow/refreshing view/scroll, and call times of
+   * nsTextFrame::GetPointFromOffset whose return value is to be cached. see
+   * bugs 35296 and 199412
+   */
+  void SetCanCacheFrameOffset(bool aCanCacheFrameOffset);
+
+  // Selection::GetRangesForIntervalArray
+  //
+  //    Fills a nsTArray with the ranges overlapping the range specified by
+  //    the given endpoints. Ranges in the selection exactly adjacent to the
+  //    input range are not returned unless aAllowAdjacent is set.
+  //
+  //    For example, if the following ranges were in the selection
+  //    (assume everything is within the same node)
+  //
+  //    Start Offset: 0 2 7 9
+  //      End Offset: 2 5 9 10
+  //
+  //    and passed aBeginOffset of 2 and aEndOffset of 9, then with
+  //    aAllowAdjacent set, all the ranges should be returned. If
+  //    aAllowAdjacent was false, the ranges [2, 5] and [7, 9] only
+  //    should be returned
+  //
+  //    Now that overlapping ranges are disallowed, there can be a maximum of
+  //    2 adjacent ranges
+  nsresult GetRangesForIntervalArray(nsINode* aBeginNode, int32_t aBeginOffset,
+                                     nsINode* aEndNode, int32_t aEndOffset,
+                                     bool aAllowAdjacent,
+                                     nsTArray<nsRange*>* aRanges);
+
+  /**
+   * Modifies the cursor Bidi level after a change in keyboard direction
+   * @param langRTL is true if the new language is right-to-left or
+   *                false if the new language is left-to-right.
+   */
+  nsresult SelectionLanguageChange(bool aLangRTL);
+
  private:
   friend class ::nsAutoScrollTimer;
 
-  // Note: DoAutoScroll might destroy arbitrary frames etc.
-  nsresult DoAutoScroll(nsIFrame* aFrame, nsPoint aPoint);
+  MOZ_CAN_RUN_SCRIPT nsresult DoAutoScroll(nsIFrame* aFrame, nsPoint aPoint);
 
   // We are not allowed to be in nodes whose root is not our document
   bool HasSameRoot(nsINode& aNode);
@@ -351,7 +597,8 @@ class Selection final : public nsISelection,
   // XXX supporting broken code (bug 1245883) in the following classes:
   friend class ::nsCopySupport;
   friend class ::nsHTMLCopyEncoder;
-  void AddRangeInternal(nsRange& aRange, nsIDocument* aDocument, ErrorResult&);
+  MOZ_CAN_RUN_SCRIPT
+  void AddRangeInternal(nsRange& aRange, Document* aDocument, ErrorResult&);
 
   // This is helper method for GetPrimaryFrameForFocusNode.
   // If aVisual is true, this returns caret frame.
@@ -362,6 +609,29 @@ class Selection final : public nsISelection,
                                                int32_t* aOffsetUsed,
                                                bool aVisual) const;
 
+  // Get the cached value for nsTextFrame::GetPointFromOffset.
+  nsresult GetCachedFrameOffset(nsIFrame* aFrame, int32_t inOffset,
+                                nsPoint& aPoint);
+
+  enum class InLimiter {
+    // If eYes, the method may reset selection limiter and move focus if the
+    // given range is out of the limiter.
+    eYes,
+    // If eNo, the method won't reset selection limiter.  So, if given range
+    // is out of bounds, the method may return error.
+    eNo,
+  };
+  MOZ_CAN_RUN_SCRIPT
+  void SetStartAndEndInternal(InLimiter aInLimiter,
+                              const RawRangeBoundary& aStartRef,
+                              const RawRangeBoundary& aEndRef,
+                              nsDirection aDirection, ErrorResult& aRv);
+  MOZ_CAN_RUN_SCRIPT
+  void SetBaseAndExtentInternal(InLimiter aInLimiter,
+                                const RawRangeBoundary& aAnchorRef,
+                                const RawRangeBoundary& aFocusRef,
+                                ErrorResult& aRv);
+
  public:
   SelectionType GetType() const { return mSelectionType; }
   void SetType(SelectionType aSelectionType) {
@@ -370,8 +640,8 @@ class Selection final : public nsISelection,
 
   SelectionCustomColors* GetCustomColors() const { return mCustomColors.get(); }
 
-  nsresult NotifySelectionListeners(bool aCalledByJS);
-  nsresult NotifySelectionListeners();
+  MOZ_CAN_RUN_SCRIPT nsresult NotifySelectionListeners(bool aCalledByJS);
+  MOZ_CAN_RUN_SCRIPT nsresult NotifySelectionListeners();
 
   friend struct AutoUserInitiated;
   struct MOZ_RAII AutoUserInitiated {
@@ -394,8 +664,7 @@ class Selection final : public nsISelection,
    public:
     NS_DECL_NSIRUNNABLE
     ScrollSelectionIntoViewEvent(Selection* aSelection, SelectionRegion aRegion,
-                                 nsIPresShell::ScrollAxis aVertical,
-                                 nsIPresShell::ScrollAxis aHorizontal,
+                                 ScrollAxis aVertical, ScrollAxis aHorizontal,
                                  int32_t aFlags)
         : Runnable("dom::Selection::ScrollSelectionIntoViewEvent"),
           mSelection(aSelection),
@@ -410,8 +679,8 @@ class Selection final : public nsISelection,
    private:
     Selection* mSelection;
     SelectionRegion mRegion;
-    nsIPresShell::ScrollAxis mVerticalScroll;
-    nsIPresShell::ScrollAxis mHorizontalScroll;
+    ScrollAxis mVerticalScroll;
+    ScrollAxis mHorizontalScroll;
     int32_t mFlags;
   };
 
@@ -423,13 +692,28 @@ class Selection final : public nsISelection,
    */
   void SetAnchorFocusRange(int32_t aIndex);
   void SelectFramesForContent(nsIContent* aContent, bool aSelected);
-  nsresult SelectAllFramesForContent(nsIContentIterator* aInnerIter,
+  nsresult SelectAllFramesForContent(PostContentIterator& aPostOrderIter,
                                      nsIContent* aContent, bool aSelected);
   nsresult SelectFrames(nsPresContext* aPresContext, nsRange* aRange,
                         bool aSelect);
+
+  /**
+   * SelectFramesInAllRanges() calls SelectFrames() for all current
+   * ranges.
+   */
+  void SelectFramesInAllRanges(nsPresContext* aPresContext);
+
+  /**
+   * Test whether the supplied range points to a single table element.
+   * Result is one of the TableSelection constants. "None" means
+   * a table element isn't selected.
+   */
+  nsresult GetTableSelectionType(nsRange* aRange,
+                                 TableSelection* aTableSelectionType);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   nsresult GetTableCellLocationFromRange(nsRange* aRange,
-                                         int32_t* aSelectionType, int32_t* aRow,
-                                         int32_t* aCol);
+                                         TableSelection* aSelectionType,
+                                         int32_t* aRow, int32_t* aCol);
   nsresult AddTableCellRange(nsRange* aRange, bool* aDidAddRange,
                              int32_t* aOutIndex);
 
@@ -445,7 +729,7 @@ class Selection final : public nsISelection,
                                  nsINode* aEndNode, int32_t aEndOffset,
                                  bool aAllowAdjacent, int32_t* aStartIndex,
                                  int32_t* aEndIndex);
-  RangeData* FindRangeData(nsIDOMRange* aRange);
+  RangeData* FindRangeData(nsRange* aRange);
 
   void UserSelectRangesToAdd(nsRange* aItem,
                              nsTArray<RefPtr<nsRange>>& rangesToAdd);
@@ -455,7 +739,7 @@ class Selection final : public nsISelection,
    */
   nsresult AddItemInternal(nsRange* aRange, int32_t* aOutIndex);
 
-  nsIDocument* GetDocument() const;
+  Document* GetDocument() const;
   nsPIDOMWindowOuter* GetWindow() const;
   HTMLEditor* GetHTMLEditor() const;
 
@@ -492,6 +776,8 @@ class Selection final : public nsISelection,
    */
   Element* GetCommonEditingHostForAllRanges();
 
+  void Disconnect();
+
   // These are the ranges inside this selection. They are kept sorted in order
   // of DOM start position.
   //
@@ -513,15 +799,27 @@ class Selection final : public nsISelection,
   // released by Clear(), RemoveAllRangesTemporarily() stores it with this.
   // If Collapse() is called without existing ranges, it'll reuse this range
   // for saving the creation cost.
+  // Note that while the range is cached by this, we keep the range being
+  // a mutation observer because it is not so cheap to register the range
+  // as a mutation observer again.  On the other hand, we make it not
+  // positioned because it is not so cheap to keep valid DOM point against
+  // mutations.  This does not cause any problems because we will set new
+  // DOM point when we treat it as a range of Selection again.
   RefPtr<nsRange> mCachedRange;
   RefPtr<nsFrameSelection> mFrameSelection;
+  RefPtr<AccessibleCaretEventHub> mAccessibleCaretEventHub;
+  RefPtr<SelectionChangeEventDispatcher> mSelectionChangeEventDispatcher;
   RefPtr<nsAutoScrollTimer> mAutoScrollTimer;
-  FallibleTArray<nsCOMPtr<nsISelectionListener>> mSelectionListeners;
+  nsTArray<nsCOMPtr<nsISelectionListener>> mSelectionListeners;
   nsRevocableEventPtr<ScrollSelectionIntoViewEvent> mScrollEvent;
   CachedOffsetForFrame* mCachedOffsetForFrame;
   nsDirection mDirection;
   SelectionType mSelectionType;
   UniquePtr<SelectionCustomColors> mCustomColors;
+
+  // Non-zero if we don't want any changes we make to the selection to be
+  // visible to content. If non-zero, content won't be notified about changes.
+  uint32_t mSelectionChangeBlockerCount;
 
   /**
    * True if the current selection operation was initiated by user action.
@@ -536,9 +834,10 @@ class Selection final : public nsISelection,
    */
   bool mCalledByJS;
 
-  // Non-zero if we don't want any changes we make to the selection to be
-  // visible to content. If non-zero, content won't be notified about changes.
-  uint32_t mSelectionChangeBlockerCount;
+  /**
+   * true if AutoCopyListner::OnSelectionChange() should be called.
+   */
+  bool mNotifyAutoCopy;
 };
 
 // Stack-class to turn on/off selection batching.
@@ -612,13 +911,10 @@ inline SelectionTypeMask ToSelectionTypeMask(SelectionType aSelectionType) {
   MOZ_ASSERT(aSelectionType != SelectionType::eInvalid);
   return aSelectionType == SelectionType::eNone
              ? 0
-             : (1 << (static_cast<uint8_t>(aSelectionType) - 1));
+             : static_cast<SelectionTypeMask>(
+                   1 << (static_cast<uint8_t>(aSelectionType) - 1));
 }
 
 }  // namespace mozilla
-
-inline mozilla::dom::Selection* nsISelection::AsSelection() {
-  return static_cast<mozilla::dom::Selection*>(this);
-}
 
 #endif  // mozilla_Selection_h__

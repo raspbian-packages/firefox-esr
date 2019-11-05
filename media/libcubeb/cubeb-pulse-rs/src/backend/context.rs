@@ -4,9 +4,8 @@
 // accompanying file LICENSE for details.
 
 use backend::*;
-use cubeb_backend::{ffi, log_enabled, ChannelLayout, Context, ContextOps, DeviceCollectionRef,
-                    DeviceId, DeviceType, Error, Ops, Result, Stream, StreamParams,
-                    StreamParamsRef};
+use cubeb_backend::{ffi, log_enabled, Context, ContextOps, DeviceCollectionRef, DeviceId,
+                    DeviceType, Error, Ops, Result, Stream, StreamParams, StreamParamsRef};
 use pulse::{self, ProplistExt};
 use pulse_ffi::*;
 use semver;
@@ -17,38 +16,6 @@ use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
 
-fn pa_channel_to_cubeb_channel(channel: pulse::ChannelPosition) -> ffi::cubeb_channel {
-    use cubeb_backend::ffi::*;
-    use pulse::ChannelPosition;
-    assert_ne!(channel, ChannelPosition::Invalid);
-    match channel {
-        ChannelPosition::Mono => CHANNEL_MONO,
-        ChannelPosition::FrontLeft => CHANNEL_LEFT,
-        ChannelPosition::FrontRight => CHANNEL_RIGHT,
-        ChannelPosition::FrontCenter => CHANNEL_CENTER,
-        ChannelPosition::SideLeft => CHANNEL_LS,
-        ChannelPosition::SideRight => CHANNEL_RS,
-        ChannelPosition::RearLeft => CHANNEL_RLS,
-        ChannelPosition::RearCenter => CHANNEL_RCENTER,
-        ChannelPosition::RearRight => CHANNEL_RRS,
-        ChannelPosition::LowFreqEffects => CHANNEL_LFE,
-        _ => CHANNEL_INVALID,
-    }
-}
-
-fn channel_map_to_layout(cm: &pulse::ChannelMap) -> ChannelLayout {
-    use cubeb_backend::ffi::{cubeb_channel_map, cubeb_channel_map_to_layout};
-    use pulse::ChannelPosition;
-    let mut cubeb_map: cubeb_channel_map = unsafe { mem::zeroed() };
-    cubeb_map.channels = u32::from(cm.channels);
-    for i in 0usize..cm.channels as usize {
-        cubeb_map.map[i] = pa_channel_to_cubeb_channel(
-            ChannelPosition::try_from(cm.map[i]).unwrap_or(ChannelPosition::Invalid),
-        );
-    }
-    ChannelLayout::from(unsafe { cubeb_channel_map_to_layout(&cubeb_map) })
-}
-
 #[derive(Debug)]
 pub struct DefaultInfo {
     pub sample_spec: pulse::SampleSpec,
@@ -58,6 +25,7 @@ pub struct DefaultInfo {
 
 pub const PULSE_OPS: Ops = capi_new!(PulseContext, PulseStream);
 
+#[repr(C)]
 #[derive(Debug)]
 pub struct PulseContext {
     _ops: *const Ops,
@@ -65,12 +33,15 @@ pub struct PulseContext {
     pub context: Option<pulse::Context>,
     pub default_sink_info: Option<DefaultInfo>,
     pub context_name: Option<CString>,
-    pub collection_changed_callback: ffi::cubeb_device_collection_changed_callback,
-    pub collection_changed_user_ptr: *mut c_void,
+    pub input_collection_changed_callback: ffi::cubeb_device_collection_changed_callback,
+    pub input_collection_changed_user_ptr: *mut c_void,
+    pub output_collection_changed_callback: ffi::cubeb_device_collection_changed_callback,
+    pub output_collection_changed_user_ptr: *mut c_void,
     pub error: bool,
     pub version_2_0_0: bool,
     pub version_0_9_8: bool,
-    #[cfg(feature = "pulse-dlopen")] pub libpulse: LibLoader,
+    #[cfg(feature = "pulse-dlopen")]
+    pub libpulse: LibLoader,
     devids: RefCell<Intern>,
 }
 
@@ -89,8 +60,10 @@ impl PulseContext {
             context: None,
             default_sink_info: None,
             context_name: name,
-            collection_changed_callback: None,
-            collection_changed_user_ptr: ptr::null_mut(),
+            input_collection_changed_callback: None,
+            input_collection_changed_user_ptr: ptr::null_mut(),
+            output_collection_changed_callback: None,
+            output_collection_changed_user_ptr: ptr::null_mut(),
             error: true,
             version_0_9_8: false,
             version_2_0_0: false,
@@ -108,8 +81,10 @@ impl PulseContext {
             context: None,
             default_sink_info: None,
             context_name: name,
-            collection_changed_callback: None,
-            collection_changed_user_ptr: ptr::null_mut(),
+            input_collection_changed_callback: None,
+            input_collection_changed_user_ptr: ptr::null_mut(),
+            output_collection_changed_callback: None,
+            output_collection_changed_user_ptr: ptr::null_mut(),
             error: true,
             version_0_9_8: false,
             version_2_0_0: false,
@@ -118,7 +93,11 @@ impl PulseContext {
     }
 
     fn new(name: Option<&CStr>) -> Result<Box<Self>> {
-        fn server_info_cb(context: &pulse::Context, info: Option<&pulse::ServerInfo>, u: *mut c_void) {
+        fn server_info_cb(
+            context: &pulse::Context,
+            info: Option<&pulse::ServerInfo>,
+            u: *mut c_void,
+        ) {
             fn sink_info_cb(
                 _: &pulse::Context,
                 i: *const pulse::SinkInfo,
@@ -214,13 +193,6 @@ impl ContextOps for PulseContext {
     fn preferred_sample_rate(&mut self) -> Result<u32> {
         match self.default_sink_info {
             Some(ref info) => Ok(info.sample_spec.rate),
-            None => Err(Error::error()),
-        }
-    }
-
-    fn preferred_channel_layout(&mut self) -> Result<ChannelLayout> {
-        match self.default_sink_info {
-            Some(ref info) => Ok(channel_map_to_layout(&info.channel_map)),
             None => Err(Error::error()),
         }
     }
@@ -508,11 +480,22 @@ impl ContextOps for PulseContext {
                         };
                         cubeb_log!("{} {} index {}", op, dev, index);
                     }
-                    unsafe {
-                        ctx.collection_changed_callback.unwrap()(
-                            ctx as *mut _ as *mut _,
-                            ctx.collection_changed_user_ptr,
-                        );
+
+                    if f == pulse::SubscriptionEventFacility::Source {
+                        unsafe {
+                            ctx.input_collection_changed_callback.unwrap()(
+                                ctx as *mut _ as *mut _,
+                                ctx.input_collection_changed_user_ptr,
+                            );
+                        }
+                    }
+                    if f == pulse::SubscriptionEventFacility::Sink {
+                        unsafe {
+                            ctx.output_collection_changed_callback.unwrap()(
+                                ctx as *mut _ as *mut _,
+                                ctx.output_collection_changed_user_ptr,
+                            );
+                        }
                     }
                 }
             }
@@ -520,29 +503,40 @@ impl ContextOps for PulseContext {
 
         fn success(_: &pulse::Context, success: i32, user_data: *mut c_void) {
             let ctx = unsafe { &*(user_data as *mut PulseContext) };
-            debug_assert_ne!(success, 0);
+            if success != 1 {
+                cubeb_log!("subscribe_success ignored failure: {}", success);
+            }
             ctx.mainloop.signal();
         }
 
-        self.collection_changed_callback = cb;
-        self.collection_changed_user_ptr = user_ptr;
+        if devtype.contains(DeviceType::INPUT) {
+            self.input_collection_changed_callback = cb;
+            self.input_collection_changed_user_ptr = user_ptr;
+        }
+        if devtype.contains(DeviceType::OUTPUT) {
+            self.output_collection_changed_callback = cb;
+            self.output_collection_changed_user_ptr = user_ptr;
+        }
+
+        let mut mask = pulse::SubscriptionMask::empty();
+        if self.input_collection_changed_callback.is_some() {
+            mask |= pulse::SubscriptionMask::SOURCE;
+        }
+        if self.output_collection_changed_callback.is_some() {
+            mask |= pulse::SubscriptionMask::SINK;
+        }
 
         let user_data: *mut c_void = self as *const _ as *mut _;
         if let Some(ref context) = self.context {
             self.mainloop.lock();
 
-            let mut mask = pulse::SubscriptionMask::empty();
-            if self.collection_changed_callback.is_none() {
-                // Unregister subscription
-                context.clear_subscribe_callback();
+            if cb.is_none() {
+                if mask.is_empty() {
+                    // Unregister subscription
+                    context.clear_subscribe_callback();
+                }
             } else {
                 context.set_subscribe_callback(update_collection, user_data);
-                if devtype.contains(DeviceType::INPUT) {
-                    mask |= pulse::SubscriptionMask::SOURCE
-                };
-                if devtype.contains(DeviceType::OUTPUT) {
-                    mask = pulse::SubscriptionMask::SINK
-                };
             }
 
             if let Ok(o) = context.subscribe(mask, success, self as *const _ as *mut _) {
@@ -596,12 +590,16 @@ impl PulseContext {
         }
 
         self.mainloop.lock();
-        if let Some(ref context) = self.context {
+        let connected = if let Some(ref context) = self.context {
             context.set_state_callback(error_state, context_ptr);
-            let _ = context.connect(None, pulse::ContextFlags::empty(), ptr::null());
-        }
+            context
+                .connect(None, pulse::ContextFlags::empty(), ptr::null())
+                .is_ok()
+        } else {
+            false
+        };
 
-        if !self.wait_until_context_ready() {
+        if !connected || !self.wait_until_context_ready() {
             self.mainloop.unlock();
             self.context_destroy();
             return Err(Error::error());

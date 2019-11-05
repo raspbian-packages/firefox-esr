@@ -22,10 +22,6 @@
 #include "nsIWidget.h"
 #include "nsIWindowMediator.h"
 #include "nsIDOMChromeWindow.h"
-#include "nsIDOMNode.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMNodeList.h"
-#include "nsIDOMXULElement.h"
 #include "nsIXULBrowserWindow.h"
 #include "mozilla/dom/Element.h"
 
@@ -122,21 +118,21 @@ NS_IMETHODIMP nsChromeTreeOwner::GetPrimaryContentShell(
 }
 
 NS_IMETHODIMP
-nsChromeTreeOwner::TabParentAdded(nsITabParent* aTab, bool aPrimary) {
+nsChromeTreeOwner::RemoteTabAdded(nsIRemoteTab* aTab, bool aPrimary) {
   NS_ENSURE_STATE(mXULWindow);
-  return mXULWindow->TabParentAdded(aTab, aPrimary);
+  return mXULWindow->RemoteTabAdded(aTab, aPrimary);
 }
 
 NS_IMETHODIMP
-nsChromeTreeOwner::TabParentRemoved(nsITabParent* aTab) {
+nsChromeTreeOwner::RemoteTabRemoved(nsIRemoteTab* aTab) {
   NS_ENSURE_STATE(mXULWindow);
-  return mXULWindow->TabParentRemoved(aTab);
+  return mXULWindow->RemoteTabRemoved(aTab);
 }
 
 NS_IMETHODIMP
-nsChromeTreeOwner::GetPrimaryTabParent(nsITabParent** aTab) {
+nsChromeTreeOwner::GetPrimaryRemoteTab(nsIRemoteTab** aTab) {
   NS_ENSURE_STATE(mXULWindow);
-  return mXULWindow->GetPrimaryTabParent(aTab);
+  return mXULWindow->GetPrimaryRemoteTab(aTab);
 }
 
 NS_IMETHODIMP
@@ -449,7 +445,14 @@ nsChromeTreeOwner::OnStatusChange(nsIWebProgress* aWebProgress,
 
 NS_IMETHODIMP
 nsChromeTreeOwner::OnSecurityChange(nsIWebProgress* aWebProgress,
-                                    nsIRequest* aRequest, uint32_t state) {
+                                    nsIRequest* aRequest, uint32_t aState) {
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsChromeTreeOwner::OnContentBlockingEvent(nsIWebProgress* aWebProgress,
+                                          nsIRequest* aRequest,
+                                          uint32_t aEvent) {
   return NS_OK;
 }
 

@@ -13,8 +13,8 @@
 // T must inherit from nsIInterfaceRequestor, but the cast may be ambiguous.
 template <class T, class DestinationType>
 inline nsresult CallGetInterface(T* aSource, DestinationType** aDestination) {
-  NS_PRECONDITION(aSource, "null parameter");
-  NS_PRECONDITION(aDestination, "null parameter");
+  MOZ_ASSERT(aSource, "null parameter");
+  MOZ_ASSERT(aDestination, "null parameter");
 
   return aSource->GetInterface(NS_GET_TEMPLATE_IID(DestinationType),
                                reinterpret_cast<void**>(aDestination));

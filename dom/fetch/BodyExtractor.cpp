@@ -10,9 +10,9 @@
 #include "mozilla/dom/TypedArray.h"
 #include "mozilla/dom/URLSearchParams.h"
 #include "mozilla/dom/XMLHttpRequest.h"
+#include "mozilla/UniquePtr.h"
 #include "nsContentUtils.h"
-#include "nsIDOMDocument.h"
-#include "nsIDOMSerializer.h"
+#include "nsDOMSerializer.h"
 #include "nsIGlobalObject.h"
 #include "nsIInputStream.h"
 #include "nsIOutputStream.h"
@@ -32,8 +32,8 @@ static nsresult GetBufferDataAsStream(
   const char* data = reinterpret_cast<const char*>(aData);
 
   nsCOMPtr<nsIInputStream> stream;
-  nsresult rv = NS_NewByteInputStream(getter_AddRefs(stream), data, aDataLength,
-                                      NS_ASSIGNMENT_COPY);
+  nsresult rv = NS_NewByteInputStream(
+      getter_AddRefs(stream), MakeSpan(data, aDataLength), NS_ASSIGNMENT_COPY);
   NS_ENSURE_SUCCESS(rv, rv);
 
   stream.forget(aResult);
@@ -62,11 +62,10 @@ nsresult BodyExtractor<const ArrayBufferView>::GetAsStream(
 }
 
 template <>
-nsresult BodyExtractor<nsIDocument>::GetAsStream(
+nsresult BodyExtractor<Document>::GetAsStream(
     nsIInputStream** aResult, uint64_t* aContentLength,
     nsACString& aContentTypeWithCharset, nsACString& aCharset) const {
-  nsCOMPtr<nsIDOMDocument> domdoc(do_QueryInterface(mBody));
-  NS_ENSURE_STATE(domdoc);
+  NS_ENSURE_STATE(mBody);
   aCharset.AssignLiteral("UTF-8");
 
   nsresult rv;
@@ -99,13 +98,15 @@ nsresult BodyExtractor<nsIDocument>::GetAsStream(
   } else {
     aContentTypeWithCharset.AssignLiteral("application/xml;charset=UTF-8");
 
-    nsCOMPtr<nsIDOMSerializer> serializer =
-        do_CreateInstance(NS_XMLSERIALIZER_CONTRACTID, &rv);
-    NS_ENSURE_SUCCESS(rv, rv);
+    auto serializer = MakeUnique<nsDOMSerializer>();
 
     // Make sure to use the encoding we'll send
-    rv = serializer->SerializeToStream(domdoc, output, aCharset);
-    NS_ENSURE_SUCCESS(rv, rv);
+    ErrorResult res;
+    serializer->SerializeToStream(*mBody, output, NS_LITERAL_STRING("UTF-8"),
+                                  res);
+    if (NS_WARN_IF(res.Failed())) {
+      return res.StealNSResult();
+    }
   }
 
   output->Close();
@@ -129,12 +130,13 @@ nsresult BodyExtractor<const nsAString>::GetAsStream(
     return NS_ERROR_OUT_OF_MEMORY;
   }
 
-  nsresult rv = NS_NewCStringInputStream(aResult, encoded);
+  uint32_t encodedLength = encoded.Length();
+  nsresult rv = NS_NewCStringInputStream(aResult, std::move(encoded));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
-  *aContentLength = encoded.Length();
+  *aContentLength = encodedLength;
   aContentTypeWithCharset.AssignLiteral("text/plain;charset=UTF-8");
   aCharset.AssignLiteral("UTF-8");
   return NS_OK;

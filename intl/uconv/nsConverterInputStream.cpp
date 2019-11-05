@@ -113,6 +113,9 @@ nsConverterInputStream::ReadSegments(nsWriteUnicharSegmentFun aWriter,
       *aReadCount = 0;
       return rv;
     }
+    if (NS_FAILED(rv)) {
+      return rv;
+    }
   }
 
   if (bytesToWrite > aCount) bytesToWrite = aCount;

@@ -38,7 +38,7 @@ namespace WebCore {
 // The value of 2 milliseconds is larger than the largest delay which exists in
 // any HRTFKernel from the default HRTFDatabase (0.0136 seconds). We ASSERT the
 // delay values used in process() with this value.
-const double MaxDelayTimeSeconds = 0.002;
+const float MaxDelayTimeSeconds = 0.002f;
 
 const int UninitializedAzimuth = -1;
 const unsigned RenderingQuantum = WEBAUDIO_BLOCK_SIZE;
@@ -99,10 +99,7 @@ int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(double azimuth,
   // 360. The azimuth index may then be calculated from this positive value.
   if (azimuth < 0) azimuth += 360.0;
 
-  HRTFDatabase* database = m_databaseLoader->database();
-  MOZ_ASSERT(database);
-
-  int numberOfAzimuths = database->numberOfAzimuths();
+  int numberOfAzimuths = HRTFDatabase::numberOfAzimuths();
   const double angleBetweenAzimuths = 360.0 / numberOfAzimuths;
 
   // Calculate the azimuth index and the blend (0 -> 1) for interpolation.
@@ -230,8 +227,8 @@ void HRTFPanner::pan(double desiredAzimuth, double elevation,
              frameDelayR2 / sampleRate() < MaxDelayTimeSeconds);
 
   // Crossfade inter-aural delays based on transitions.
-  double frameDelaysL[WEBAUDIO_BLOCK_SIZE];
-  double frameDelaysR[WEBAUDIO_BLOCK_SIZE];
+  float frameDelaysL[WEBAUDIO_BLOCK_SIZE];
+  float frameDelaysR[WEBAUDIO_BLOCK_SIZE];
   {
     float x = m_crossfadeX;
     float incr = m_crossfadeIncr;

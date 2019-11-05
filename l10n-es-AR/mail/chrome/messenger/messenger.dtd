@@ -440,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Abrir mensaje">
 <!ENTITY openMessageWindowCmd.accesskey "A">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Abrir en conversación">
-<!ENTITY openConversationCmd.accesskey "s">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Abrir en Conversación">
+<!ENTITY openInConversationCmd.accesskey "s">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Adjuntos">
 <!ENTITY openAttachmentListCmd.accesskey "j">
 <!ENTITY openFeedMessage1.label "Al abrir mensajes">
@@ -605,6 +605,8 @@
 <!ENTITY tagButton.tooltip "Etiquetar mensajes">
 <!ENTITY compactButton.tooltip "Eliminar mensajes borrados de la carpeta actual">
 <!ENTITY appmenuButton1.tooltip "Mostrar el menú de &brandShortName;">
+
+<!ENTITY addonsButton.tooltip "Administrar complementos">
 
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Reenviar incorporado">
@@ -792,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "M">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Reciente">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "R">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Favoritos">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "F">
 <!ENTITY contextCopyMsgMenu.label "Copiar a">
 <!ENTITY contextCopyMsgMenu.accesskey "C">
 <!ENTITY contextKillThreadMenu.label "Ignorar conversación">
@@ -811,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Vista previa">
 <!ENTITY contextPrintPreview.accesskey "v">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Restablecer columnas por defecto">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -856,7 +854,6 @@
      "File here" option for the move to/copy to widget.
   -->
 <!ENTITY columnPicker.thisFolder.label "Esta carpeta">
-
 
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Reproducir">

@@ -14,10 +14,8 @@
 #include "nsIDocShell.h"
 #include "nsHTMLParts.h"
 #include "nsIComponentManager.h"
-#include "nsIDOMElement.h"
 #include "nsIBaseWindow.h"
 #include "nsIDOMWindow.h"
-#include "nsIDOMDocumentType.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
 #include "nsIHttpChannelInternal.h"
@@ -45,6 +43,8 @@
 #include "nsIHTMLDocument.h"
 #include "mozilla/BasicEvents.h"
 #include "mozilla/EventDispatcher.h"
+#include "mozilla/Encoding.h"
+#include "mozilla/dom/DocumentType.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/XMLDocumentBinding.h"
 #include "mozilla/dom/DocumentBinding.h"
@@ -56,10 +56,10 @@ using namespace mozilla::dom;
 // =
 // ==================================================================
 
-nsresult NS_NewDOMDocument(nsIDOMDocument** aInstancePtrResult,
+nsresult NS_NewDOMDocument(Document** aInstancePtrResult,
                            const nsAString& aNamespaceURI,
                            const nsAString& aQualifiedName,
-                           nsIDOMDocumentType* aDoctype, nsIURI* aDocumentURI,
+                           DocumentType* aDoctype, nsIURI* aDocumentURI,
                            nsIURI* aBaseURI, nsIPrincipal* aPrincipal,
                            bool aLoadedAsData, nsIGlobalObject* aEventObject,
                            DocumentFlavor aFlavor) {
@@ -71,7 +71,7 @@ nsresult NS_NewDOMDocument(nsIDOMDocument** aInstancePtrResult,
 
   *aInstancePtrResult = nullptr;
 
-  nsCOMPtr<nsIDocument> d;
+  nsCOMPtr<Document> d;
   bool isHTML = false;
   bool isXHTML = false;
   if (aFlavor == DocumentFlavorSVG) {
@@ -126,12 +126,11 @@ nsresult NS_NewDOMDocument(nsIDOMDocument** aInstancePtrResult,
     htmlDoc->SetCompatibilityMode(eCompatibility_FullStandards);
     htmlDoc->SetIsXHTML(isXHTML);
   }
-  nsDocument* doc = static_cast<nsDocument*>(d.get());
-  doc->SetLoadedAsData(aLoadedAsData);
-  doc->nsDocument::SetDocumentURI(aDocumentURI);
+  d->SetLoadedAsData(aLoadedAsData);
+  d->SetDocumentURI(aDocumentURI);
   // Must set the principal first, since SetBaseURI checks it.
-  doc->SetPrincipal(aPrincipal);
-  doc->SetBaseURI(aBaseURI);
+  d->SetPrincipals(aPrincipal, aPrincipal);
+  d->SetBaseURI(aBaseURI);
 
   // We need to set the script handling object after we set the principal such
   // that the doc group is assigned correctly.
@@ -143,12 +142,11 @@ nsresult NS_NewDOMDocument(nsIDOMDocument** aInstancePtrResult,
 
   // XMLDocuments and documents "created in memory" get to be UTF-8 by default,
   // unlike the legacy HTML mess
-  doc->SetDocumentCharacterSet(UTF_8_ENCODING);
+  d->SetDocumentCharacterSet(UTF_8_ENCODING);
 
   if (aDoctype) {
-    nsCOMPtr<nsINode> doctypeAsNode = do_QueryInterface(aDoctype);
     ErrorResult result;
-    d->AppendChild(*doctypeAsNode, result);
+    d->AppendChild(*aDoctype, result);
     // Need to WouldReportJSException() if our callee can throw a JS
     // exception (which it can) and we're neither propagating the
     // error out nor unconditionally suppressing it.
@@ -164,7 +162,7 @@ nsresult NS_NewDOMDocument(nsIDOMDocument** aInstancePtrResult,
     options.SetAsString();
 
     nsCOMPtr<Element> root =
-        doc->CreateElementNS(aNamespaceURI, aQualifiedName, options, result);
+        d->CreateElementNS(aNamespaceURI, aQualifiedName, options, result);
     if (NS_WARN_IF(result.Failed())) {
       return result.StealNSResult();
     }
@@ -179,13 +177,12 @@ nsresult NS_NewDOMDocument(nsIDOMDocument** aInstancePtrResult,
     }
   }
 
-  *aInstancePtrResult = doc;
-  NS_ADDREF(*aInstancePtrResult);
+  d.forget(aInstancePtrResult);
 
   return NS_OK;
 }
 
-nsresult NS_NewXMLDocument(nsIDocument** aInstancePtrResult, bool aLoadedAsData,
+nsresult NS_NewXMLDocument(Document** aInstancePtrResult, bool aLoadedAsData,
                            bool aIsPlainDocument) {
   RefPtr<XMLDocument> doc = new XMLDocument();
 
@@ -203,25 +200,23 @@ nsresult NS_NewXMLDocument(nsIDocument** aInstancePtrResult, bool aLoadedAsData,
   return NS_OK;
 }
 
-nsresult NS_NewXBLDocument(nsIDOMDocument** aInstancePtrResult,
-                           nsIURI* aDocumentURI, nsIURI* aBaseURI,
-                           nsIPrincipal* aPrincipal) {
+nsresult NS_NewXBLDocument(Document** aInstancePtrResult, nsIURI* aDocumentURI,
+                           nsIURI* aBaseURI, nsIPrincipal* aPrincipal) {
   nsresult rv = NS_NewDOMDocument(
       aInstancePtrResult, NS_LITERAL_STRING("http://www.mozilla.org/xbl"),
       NS_LITERAL_STRING("bindings"), nullptr, aDocumentURI, aBaseURI,
       aPrincipal, false, nullptr, DocumentFlavorLegacyGuess);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsCOMPtr<nsIDocument> idoc = do_QueryInterface(*aInstancePtrResult);
+  Document* doc = *aInstancePtrResult;
 
   // XBL documents must allow XUL and XBL elements in them but the usual check
   // only checks if the document is loaded in the system principal which is
   // sometimes not the case.
-  idoc->ForceEnableXULXBL();
+  doc->ForceEnableXULXBL();
 
-  nsDocument* doc = static_cast<nsDocument*>(idoc.get());
   doc->SetLoadedAsInteractiveData(true);
-  doc->SetReadyStateInternal(nsIDocument::READYSTATE_COMPLETE);
+  doc->SetReadyStateInternal(Document::READYSTATE_COMPLETE);
 
   return NS_OK;
 }
@@ -230,7 +225,7 @@ namespace mozilla {
 namespace dom {
 
 XMLDocument::XMLDocument(const char* aContentType)
-    : nsDocument(aContentType),
+    : Document(aContentType),
       mChannelIsPending(false),
       mAsync(true),
       mLoopingForSyncLoad(false),
@@ -245,29 +240,27 @@ XMLDocument::~XMLDocument() {
   mLoopingForSyncLoad = false;
 }
 
-// QueryInterface implementation for XMLDocument
-NS_IMPL_ISUPPORTS_INHERITED(XMLDocument, nsDocument, nsIDOMXMLDocument)
-
 nsresult XMLDocument::Init() {
-  nsresult rv = nsDocument::Init();
+  nsresult rv = Document::Init();
   NS_ENSURE_SUCCESS(rv, rv);
 
   return rv;
 }
 
 void XMLDocument::Reset(nsIChannel* aChannel, nsILoadGroup* aLoadGroup) {
-  nsDocument::Reset(aChannel, aLoadGroup);
+  Document::Reset(aChannel, aLoadGroup);
 }
 
 void XMLDocument::ResetToURI(nsIURI* aURI, nsILoadGroup* aLoadGroup,
-                             nsIPrincipal* aPrincipal) {
+                             nsIPrincipal* aPrincipal,
+                             nsIPrincipal* aStoragePrincipal) {
   if (mChannelIsPending) {
     StopDocumentLoad();
     mChannel->Cancel(NS_BINDING_ABORTED);
     mChannelIsPending = false;
   }
 
-  nsDocument::ResetToURI(aURI, aLoadGroup, aPrincipal);
+  Document::ResetToURI(aURI, aLoadGroup, aPrincipal, aStoragePrincipal);
 }
 
 bool XMLDocument::Load(const nsAString& aUrl, CallerType aCallerType,
@@ -280,8 +273,9 @@ bool XMLDocument::Load(const nsAString& aUrl, CallerType aCallerType,
     return false;
   }
 
-  nsCOMPtr<nsIDocument> callingDoc = GetEntryDocument();
+  nsCOMPtr<Document> callingDoc = GetEntryDocument();
   nsCOMPtr<nsIPrincipal> principal = NodePrincipal();
+  nsCOMPtr<nsIPrincipal> storagePrincipal = EffectiveStoragePrincipal();
 
   // The callingDoc's Principal and doc's Principal should be the same
   if (callingDoc && (callingDoc->NodePrincipal() != principal)) {
@@ -298,11 +292,11 @@ bool XMLDocument::Load(const nsAString& aUrl, CallerType aCallerType,
   // loaded in a docshell, so won't accumulate telemetry for use counters.  Try
   // warning on our entry document, if any, since that should have things like
   // window ids and associated docshells.
-  nsIDocument* docForWarning = callingDoc ? callingDoc.get() : this;
+  Document* docForWarning = callingDoc ? callingDoc.get() : this;
   if (aCallerType == CallerType::System) {
-    docForWarning->WarnOnceAbout(nsIDocument::eChromeUseOfDOM3LoadMethod);
+    docForWarning->WarnOnceAbout(Document::eChromeUseOfDOM3LoadMethod);
   } else {
-    docForWarning->WarnOnceAbout(nsIDocument::eUseOfDOM3LoadMethod);
+    docForWarning->WarnOnceAbout(Document::eUseOfDOM3LoadMethod);
   }
 
   nsIURI* baseURI = mDocumentURI;
@@ -378,7 +372,7 @@ bool XMLDocument::Load(const nsAString& aUrl, CallerType aCallerType,
     loadGroup = callingDoc->GetDocumentLoadGroup();
   }
 
-  ResetToURI(uri, loadGroup, principal);
+  ResetToURI(uri, loadGroup, principal, storagePrincipal);
 
   mListenerManager = elm;
 
@@ -390,7 +384,7 @@ bool XMLDocument::Load(const nsAString& aUrl, CallerType aCallerType,
   // which in turn keeps STOP button from becoming active
   rv = NS_NewChannel(
       getter_AddRefs(channel), uri,
-      callingDoc ? callingDoc.get() : static_cast<nsIDocument*>(this),
+      callingDoc ? callingDoc.get() : static_cast<Document*>(this),
       nsILoadInfo::SEC_REQUIRE_SAME_ORIGIN_DATA_IS_BLOCKED,
       nsIContentPolicy::TYPE_INTERNAL_XMLHTTPREQUEST,
       nullptr,  // aPerformanceStorage
@@ -415,9 +409,9 @@ bool XMLDocument::Load(const nsAString& aUrl, CallerType aCallerType,
   // uninitialize it. SetReadyStateInternal make this transition invisible to
   // Web content. But before doing that, assert that the current readyState
   // is complete as it should be after the call to ResetToURI() above.
-  MOZ_ASSERT(GetReadyStateEnum() == nsIDocument::READYSTATE_COMPLETE,
+  MOZ_ASSERT(GetReadyStateEnum() == Document::READYSTATE_COMPLETE,
              "Bad readyState");
-  SetReadyStateInternal(nsIDocument::READYSTATE_UNINITIALIZED);
+  SetReadyStateInternal(Document::READYSTATE_UNINITIALIZED);
 
   // Prepare for loading the XML document "into oneself"
   nsCOMPtr<nsIStreamListener> listener;
@@ -432,7 +426,7 @@ bool XMLDocument::Load(const nsAString& aUrl, CallerType aCallerType,
   // mChannelIsPending.
 
   // Start an asynchronous read of the XML document
-  rv = channel->AsyncOpen2(listener);
+  rv = channel->AsyncOpen(listener);
   if (NS_FAILED(rv)) {
     mChannelIsPending = false;
     aRv.Throw(rv);
@@ -485,7 +479,7 @@ nsresult XMLDocument::StartDocumentLoad(const char* aCommand,
                                         nsISupports* aContainer,
                                         nsIStreamListener** aDocListener,
                                         bool aReset, nsIContentSink* aSink) {
-  nsresult rv = nsDocument::StartDocumentLoad(
+  nsresult rv = Document::StartDocumentLoad(
       aCommand, aChannel, aLoadGroup, aContainer, aDocListener, aReset, aSink);
   if (NS_FAILED(rv)) return rv;
 
@@ -543,49 +537,48 @@ void XMLDocument::EndLoad() {
   mLoopingForSyncLoad = false;
 
   mSynchronousDOMContentLoaded = (mLoadedAsData || mLoadedAsInteractiveData);
-  nsDocument::EndLoad();
+  Document::EndLoad();
   if (mSynchronousDOMContentLoaded) {
     mSynchronousDOMContentLoaded = false;
-    nsDocument::SetReadyStateInternal(nsIDocument::READYSTATE_COMPLETE);
+    Document::SetReadyStateInternal(Document::READYSTATE_COMPLETE);
     // Generate a document load event for the case when an XML
     // document was loaded as pure data without any presentation
     // attached to it.
     WidgetEvent event(true, eLoad);
-    EventDispatcher::Dispatch(static_cast<nsIDocument*>(this), nullptr, &event);
+    EventDispatcher::Dispatch(ToSupports(this), nullptr, &event);
   }
 }
 
-/* virtual */ void XMLDocument::DocAddSizeOfExcludingThis(
-    nsWindowSizes& aWindowSizes) const {
-  nsDocument::DocAddSizeOfExcludingThis(aWindowSizes);
+/* virtual */
+void XMLDocument::DocAddSizeOfExcludingThis(nsWindowSizes& aWindowSizes) const {
+  Document::DocAddSizeOfExcludingThis(aWindowSizes);
 }
 
-// nsIDOMDocument interface
+// Document interface
 
-nsresult XMLDocument::Clone(mozilla::dom::NodeInfo* aNodeInfo,
-                            nsINode** aResult,
-                            bool aPreallocateChildren) const {
+nsresult XMLDocument::Clone(dom::NodeInfo* aNodeInfo, nsINode** aResult) const {
   NS_ASSERTION(aNodeInfo->NodeInfoManager() == mNodeInfoManager,
                "Can't import this document into another document!");
 
   RefPtr<XMLDocument> clone = new XMLDocument();
-  nsresult rv = CloneDocHelper(clone, aPreallocateChildren);
+  nsresult rv = CloneDocHelper(clone);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // State from XMLDocument
   clone->mAsync = mAsync;
   clone->mIsPlainDocument = mIsPlainDocument;
 
-  return CallQueryInterface(clone.get(), aResult);
+  clone.forget(aResult);
+  return NS_OK;
 }
 
 JSObject* XMLDocument::WrapNode(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
   if (mIsPlainDocument) {
-    return DocumentBinding::Wrap(aCx, this, aGivenProto);
+    return Document_Binding::Wrap(aCx, this, aGivenProto);
   }
 
-  return XMLDocumentBinding::Wrap(aCx, this, aGivenProto);
+  return XMLDocument_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

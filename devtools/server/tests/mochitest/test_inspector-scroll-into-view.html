@@ -7,13 +7,13 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=901250
   <meta charset="utf-8">
   <title>Test for Bug 901250</title>
 
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript" src="inspector-helpers.js"></script>
   <script type="application/javascript">
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
   runNextTest();
 };
@@ -21,23 +21,19 @@ window.onload = function () {
 let gInspectee = null;
 let gWalker = null;
 
-addTest(function setup() {
-  let url = document.getElementById("inspectorContent").href;
-  attachURL(url, function (err, client, tab, doc) {
-    gInspectee = doc;
-    let {InspectorFront} = require("devtools/shared/fronts/inspector");
-    let inspector = InspectorFront(client, tab);
-    promiseDone(inspector.getWalker().then(walker => {
-      ok(walker, "getWalker() should return an actor.");
-      gWalker = walker;
-    }).then(runNextTest));
-  });
+addTest(async function setup() {
+  const url = document.getElementById("inspectorContent").href;
+  const { target, doc } = await attachURL(url);
+  gInspectee = doc;
+  const inspector = await target.getInspector();
+  gWalker = inspector.walker;
+  runNextTest();
 });
 
 addTest(async function testScrollIntoView() {
-  let id = "#scroll-into-view";
+  const id = "#scroll-into-view";
   let rect = gInspectee.querySelector(id).getBoundingClientRect();
-  let nodeFront = await gWalker.querySelector(gWalker.rootNode, id);
+  const nodeFront = await gWalker.querySelector(gWalker.rootNode, id);
   let inViewport = rect.x >= 0 &&
                    rect.y >= 0 &&
                    rect.y <= gInspectee.defaultView.innerHeight &&

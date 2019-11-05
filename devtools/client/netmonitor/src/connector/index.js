@@ -27,6 +27,7 @@ class Connector {
     this.viewSourceInDebugger = this.viewSourceInDebugger.bind(this);
     this.requestData = this.requestData.bind(this);
     this.getTimingMarker = this.getTimingMarker.bind(this);
+    this.updateNetworkThrottling = this.updateNetworkThrottling.bind(this);
   }
 
   // Connect/Disconnect API
@@ -36,7 +37,7 @@ class Connector {
       return;
     }
 
-    let { clientType } = connection.tab;
+    const { clientType } = connection.tab;
     switch (clientType) {
       case "chrome":
         await this.connectChrome(connection, actions, getState);
@@ -54,12 +55,14 @@ class Connector {
   }
 
   connectChrome(connection, actions, getState) {
-    this.connector = require("./chrome-connector");
+    const ChromeConnector = require("./chrome-connector");
+    this.connector = new ChromeConnector();
     return this.connector.connect(connection, actions, getState);
   }
 
   connectFirefox(connection, actions, getState) {
-    this.connector = require("./firefox-connector");
+    const FirefoxConnector = require("./firefox-connector");
+    this.connector = new FirefoxConnector();
     return this.connector.connect(connection, actions, getState);
   }
 
@@ -93,6 +96,14 @@ class Connector {
     return this.connector.sendHTTPRequest(...arguments);
   }
 
+  blockRequest() {
+    return this.connector.blockRequest(...arguments);
+  }
+
+  unblockRequest() {
+    return this.connector.unblockRequest(...arguments);
+  }
+
   setPreferences() {
     return this.connector.setPreferences(...arguments);
   }
@@ -111,6 +122,10 @@ class Connector {
 
   getTimingMarker() {
     return this.connector.getTimingMarker(...arguments);
+  }
+
+  updateNetworkThrottling() {
+    return this.connector.updateNetworkThrottling(...arguments);
   }
 }
 

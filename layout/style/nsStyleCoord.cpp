@@ -40,7 +40,7 @@ nsStyleCoord::nsStyleCoord(int32_t aValue, nsStyleUnit aUnit) : mUnit(aUnit) {
 
 nsStyleCoord::nsStyleCoord(float aValue, nsStyleUnit aUnit) : mUnit(aUnit) {
   if (aUnit < eStyleUnit_Percent || aUnit >= eStyleUnit_Coord) {
-    NS_NOTREACHED("not a float value");
+    MOZ_ASSERT_UNREACHABLE("not a float value");
     mUnit = eStyleUnit_Null;
     mValue.mInt = 0;
   } else {
@@ -61,9 +61,6 @@ bool nsStyleCoord::operator==(const nsStyleCoord& aOther) const {
     case eStyleUnit_Percent:
     case eStyleUnit_Factor:
     case eStyleUnit_Degree:
-    case eStyleUnit_Grad:
-    case eStyleUnit_Radian:
-    case eStyleUnit_Turn:
     case eStyleUnit_FlexFraction:
       return mValue.mFloat == aOther.mValue.mFloat;
     case eStyleUnit_Coord:
@@ -108,17 +105,6 @@ void nsStyleCoord::SetFactorValue(float aValue) {
   mValue.mFloat = aValue;
 }
 
-void nsStyleCoord::SetAngleValue(float aValue, nsStyleUnit aUnit) {
-  Reset();
-  if (aUnit == eStyleUnit_Degree || aUnit == eStyleUnit_Grad ||
-      aUnit == eStyleUnit_Radian || aUnit == eStyleUnit_Turn) {
-    mUnit = aUnit;
-    mValue.mFloat = aValue;
-  } else {
-    NS_NOTREACHED("not an angle value");
-  }
-}
-
 void nsStyleCoord::SetFlexFractionValue(float aValue) {
   Reset();
   mUnit = eStyleUnit_FlexFraction;
@@ -153,26 +139,12 @@ void nsStyleCoord::SetNoneValue() {
 // accessors that are not inlined
 
 double nsStyleCoord::GetAngleValueInDegrees() const {
-  return GetAngleValueInRadians() * (180.0 / M_PI);
+  // Note that this extends the value from float to double.
+  return GetAngleValue();
 }
 
 double nsStyleCoord::GetAngleValueInRadians() const {
-  double angle = mValue.mFloat;
-
-  switch (GetUnit()) {
-    case eStyleUnit_Radian:
-      return angle;
-    case eStyleUnit_Turn:
-      return angle * 2 * M_PI;
-    case eStyleUnit_Degree:
-      return angle * M_PI / 180.0;
-    case eStyleUnit_Grad:
-      return angle * M_PI / 200.0;
-
-    default:
-      NS_NOTREACHED("unrecognized angular unit");
-      return 0.0;
-  }
+  return GetAngleValueInDegrees() * M_PI / 180.0;
 }
 
 nscoord nsStyleCoord::ComputeComputedCalc(nscoord aPercentageBasis) const {
@@ -229,42 +201,6 @@ bool nsStyleSides::operator==(const nsStyleSides& aOther) const {
 
 void nsStyleSides::Reset() {
   NS_FOR_CSS_SIDES(i) { nsStyleCoord::Reset(mUnits[i], mValues[i]); }
-}
-
-nsStyleCorners::nsStyleCorners() {
-  NS_FOR_CSS_HALF_CORNERS(i) { mUnits[i] = eStyleUnit_Null; }
-  mozilla::PodArrayZero(mValues);
-}
-
-nsStyleCorners::nsStyleCorners(const nsStyleCorners& aOther) {
-  NS_FOR_CSS_HALF_CORNERS(i) { mUnits[i] = eStyleUnit_Null; }
-  *this = aOther;
-}
-
-nsStyleCorners::~nsStyleCorners() { Reset(); }
-
-nsStyleCorners& nsStyleCorners::operator=(const nsStyleCorners& aCopy) {
-  if (this != &aCopy) {
-    NS_FOR_CSS_HALF_CORNERS(i) {
-      nsStyleCoord::SetValue(mUnits[i], mValues[i], aCopy.mUnits[i],
-                             aCopy.mValues[i]);
-    }
-  }
-  return *this;
-}
-
-bool nsStyleCorners::operator==(const nsStyleCorners& aOther) const {
-  NS_FOR_CSS_HALF_CORNERS(i) {
-    if (nsStyleCoord(mValues[i], (nsStyleUnit)mUnits[i]) !=
-        nsStyleCoord(aOther.mValues[i], (nsStyleUnit)aOther.mUnits[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
-void nsStyleCorners::Reset() {
-  NS_FOR_CSS_HALF_CORNERS(i) { nsStyleCoord::Reset(mUnits[i], mValues[i]); }
 }
 
 // Validation of SideIsVertical.

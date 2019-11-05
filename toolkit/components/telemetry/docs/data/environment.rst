@@ -25,10 +25,10 @@ Structure:
         applicationId: <string>, // nsIXULAppInfo.ID
         applicationName: <string>, // "Firefox"
         architecture: <string>, // e.g. "x86", build architecture for the active build
-        architecturesInBinary: <string>, // e.g. "i386-x86_64", from nsIMacUtils.architecturesInBinary, only present for mac universal builds
         buildId: <string>, // e.g. "20141126041045"
         version: <string>, // e.g. "35.0"
         vendor: <string>, // e.g. "Mozilla"
+        displayVersion: <string>, // e.g. "35.0b1"
         platformVersion: <string>, // e.g. "35.0"
         xpcomAbi: <string>, // e.g. "x86-msvc"
         updaterAvailable: <bool>, // Whether the app was built with app update available (MOZ_UPDATER)
@@ -42,12 +42,22 @@ Structure:
           name: <string>, // engine name, e.g. "Yahoo"; or "NONE" if no default
           loadPath: <string>, // where the engine line is located; missing if no default
           origin: <string>, // 'default', 'verified', 'unverified', or 'invalid'; based on the presence and validity of the engine's loadPath verification hash.
-          submissionURL: <string> // missing if no default or for user-installed engines
+          submissionURL: <string> // set for default engines or well known search domains
         },
         searchCohort: <string>, // optional, contains an identifier for any active search A/B experiments
+        launcherProcessState: <integer>, // optional, values correspond to values of mozilla::LauncherRegistryInfo::EnabledState enum
         e10sEnabled: <bool>, // whether e10s is on, i.e. browser tabs open by default in a different process
+        e10sMultiProcesses: <integer>, // Maximum number of processes that will be launched for regular web content
         telemetryEnabled: <bool>, // false on failure
         locale: <string>, // e.g. "it", null on failure
+        intl: {
+          requestedLocales: [ <string>, ... ], // The locales that are being requested.
+          availableLocales: [ <string>, ... ], // The locales that are available for use.
+          appLocales: [ <string>, ... ], // The negotiated locales that are being used.
+          systemLocales: [ <string>, ... ], // The locales for the OS.
+          regionalPrefsLocales: [ <string>, ... ], // The regional preferences for the OS.
+          acceptLanguages: [ <string>, ... ], // The languages for the Accept-Languages header.
+        },
         update: {
           channel: <string>, // e.g. "release", null on failure
           enabled: <bool>, // true on failure
@@ -73,6 +83,8 @@ Structure:
       profile: {
         creationDate: <integer>, // integer days since UNIX epoch, e.g. 16446
         resetDate: <integer>, // integer days since UNIX epoch, e.g. 16446 - optional
+        firstUseDate: <integer>, // integer days since UNIX epoch, e.g. 16446 - optional
+        wasCanary: <bool>, // Android only: true if this profile previously had a canary client ID
       },
       partner: { // This section may not be immediately available on startup
         distributionId: <string>, // pref "distribution.id", null on failure
@@ -88,6 +100,7 @@ Structure:
         memoryMB: <number>,
         virtualMaxMB: <number>, // windows-only
         isWow64: <bool>, // windows-only
+	isWowARM64: <bool>, // windows-only
         cpu: {
             count: <number>,  // desktop only, e.g. 8, or null on failure - logical cpus
             cores: <number>, // desktop only, e.g., 4, or null on failure - physical cores
@@ -128,19 +141,23 @@ Structure:
           profile: { // hdd where the profile folder is located
               model: <string>, // windows only or null on failure
               revision: <string>, // windows only or null on failure
+              type: <string>, // "SSD" or "HDD" windows only or null on failure
           },
           binary:  { // hdd where the application binary is located
               model: <string>, // windows only or null on failure
               revision: <string>, // windows only or null on failure
+              type: <string>, // "SSD" or "HDD" windows only or null on failure
           },
           system:  { // hdd where the system files are located
               model: <string>, // windows only or null on failure
               revision: <string>, // windows only or null on failure
+              type: <string>, // "SSD" or "HDD" windows only or null on failure
           },
         },
         gfx: {
             D2DEnabled: <bool>, // null on failure
             DWriteEnabled: <bool>, // null on failure
+            Headless: <bool>, // null on failure
             //DWriteVersion: <string>, // temporarily removed, pending bug 1154500
             adapters: [
               {
@@ -150,6 +167,7 @@ Structure:
                 subsysID: <string>, // null on failure
                 RAM: <number>, // in MB, null on failure
                 driver: <string>, // null on failure
+                driverVendor: <string>, // null on failure
                 driverVersion: <string>, // null on failure
                 driverDate: <string>, // null on failure
                 GPUActive: <bool>, // currently always true for the first adapter
@@ -157,7 +175,7 @@ Structure:
               ...
             ],
             // Note: currently only added on Desktop. On Linux, only a single
-            // monitor is returned representing the entire virtual screen.
+            // monitor is returned for the primary screen.
             monitors: [
               {
                 screenWidth: <number>,  // screen width in pixels
@@ -170,7 +188,7 @@ Structure:
               ...
             ],
             features: {
-              compositor: <string>,     // Layers backend for compositing (eg "d3d11", "none", "opengl")
+              compositor: <string>,     // Layers backend for compositing (e.g. "d3d11", "none", "opengl", "webrender")
 
               // Each the following features can have one of the following statuses:
               //   "unused"      - This feature has not been requested.
@@ -264,11 +282,6 @@ Structure:
             },
             ...
         },
-        activeExperiment: { // section is empty if there's no active experiment
-            id: <string>, // id
-            branch: <string>, // branch name
-        },
-        persona: <string>, // id of the current persona
       },
       experiments: {
         "<experiment id>": { branch: "<branch>" },
@@ -365,6 +378,41 @@ Specific keys are:
 
 - ``effectiveContentProcessLevel``: The meanings of the values are OS dependent. Details of the meanings can be found in the `Firefox prefs file <https://hg.mozilla.org/mozilla-central/file/tip/browser/app/profile/firefox.js>`_. The value here is the effective value, not the raw value, some platforms enforce a minimum sandbox level. If there is an error calculating this, it will be ``null``.
 
+profile
+-------
+
+creationDate
+~~~~~~~~~~~~
+
+The assumed creation date of this client's profile.
+It's read from a file-stored timestamp from the client's profile directory.
+
+.. note::
+
+    If the timestamp file does not exist all files in the profile directory are scanned.
+    The oldest creation or modification date of the scanned files is then taken to be the profile creation date.
+    This has been shown to sometimes be inaccurate (`bug 1449739 <https://bugzilla.mozilla.org/show_bug.cgi?id=1449739>`_).
+
+resetDate
+~~~~~~~~~~~~
+
+The time of the last reset time for the profile. If the profile has never been
+reset this field will not be present.
+It's read from a file-stored timestamp from the client's profile directory.
+
+firstUseDate
+~~~~~~~~~~~~
+
+The time of the first use of profile. If this is an old profile where we can't
+determine this this field will not be present.
+It's read from a file-stored timestamp from the client's profile directory.
+
+wasCanary
+~~~~~~~~~
+
+Android-only. This attribute is set to ``true`` if the client ID was erroneously set to a canary client ID before
+and later reset to a new random client ID. The attribute is not included if the client ID was not changed.
+
 partner
 -------
 
@@ -417,4 +465,17 @@ Just like activePlugins, this will report dummy values until the blocklist is lo
 
 experiments
 -----------
-For each experiment we collect the ``id`` and the ``branch`` the client is enrolled in. Both fields are truncated to 100 characters and a warning is printed when that happens. This section will eventually supersede ``addons/activeExperiment``.
+For each experiment we collect the ``id`` and the ``branch`` the client is enrolled in. Both fields are truncated to 100 characters and a warning is printed when that happens.
+
+
+Version History
+---------------
+
+- Firefox 67:
+
+  - Removed ``persona``. The ``addons.activeAddons`` list should be used instead. (`bug 1525511 https://bugzilla.mozilla.org/show_bug.cgi?id=1525511>`_)
+
+- Firefox 61:
+
+  - Removed empty ``addons.activeExperiment`` (`bug 1452935 <https://bugzilla.mozilla.org/show_bug.cgi?id=1452935>`_).
+

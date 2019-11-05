@@ -1,5 +1,5 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
- * vim: sw=4 ts=4 et :
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -23,11 +23,10 @@
 #include "nsString.h"
 #include "nsTArray.h"
 #include "mozilla/Logging.h"
-#include "nsExceptionHandler.h"
 #include "nsHashKeys.h"
 
 #ifdef XP_MACOSX
-#include "PluginInterposeOSX.h"
+#  include "PluginInterposeOSX.h"
 #else
 namespace mac_plugin_interposing {
 class NSCursorInfo {};
@@ -52,11 +51,11 @@ std::string UnmungePluginDsoPath(const std::string& munged);
 extern mozilla::LogModule* GetPluginLog();
 
 #if defined(_MSC_VER)
-#define FULLFUNCTION __FUNCSIG__
+#  define FULLFUNCTION __FUNCSIG__
 #elif defined(__GNUC__)
-#define FULLFUNCTION __PRETTY_FUNCTION__
+#  define FULLFUNCTION __PRETTY_FUNCTION__
 #else
-#define FULLFUNCTION __FUNCTION__
+#  define FULLFUNCTION __FUNCTION__
 #endif
 
 #define PLUGIN_LOG_DEBUG(args) \
@@ -107,6 +106,11 @@ struct NPAudioDeviceChangeDetailsIPC {
   std::wstring defaultDevice;
 };
 
+struct NPAudioDeviceStateChangedIPC {
+  std::wstring device;
+  uint32_t state;
+};
+
 #ifdef XP_WIN
 typedef HWND NativeWindowHandle;
 #elif defined(MOZ_X11)
@@ -114,7 +118,7 @@ typedef XID NativeWindowHandle;
 #elif defined(XP_DARWIN) || defined(ANDROID)
 typedef intptr_t NativeWindowHandle;  // never actually used, will always be 0
 #else
-#error Need NativeWindowHandle for this platform
+#  error Need NativeWindowHandle for this platform
 #endif
 
 #ifdef XP_WIN
@@ -380,12 +384,10 @@ struct ParamTraits<mozilla::plugins::NPRemoteWindow> {
 
 #ifdef XP_MACOSX
 template <>
-struct ParamTraits<NPNSString*> {
-  typedef NPNSString* paramType;
-
+struct ParamTraits<NPNSString> {
   // Empty string writes a length of 0 and no buffer.
   // We don't write a nullptr terminating character in buffers.
-  static void Write(Message* aMsg, const paramType& aParam) {
+  static void Write(Message* aMsg, NPNSString* aParam) {
     CFStringRef cfString = (CFStringRef)aParam;
 
     // Write true if we have a string, false represents nullptr.
@@ -413,7 +415,7 @@ struct ParamTraits<NPNSString*> {
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
-                   paramType* aResult) {
+                   NPNSString** aResult) {
     bool haveString = false;
     if (!aMsg->ReadBool(aIter, &haveString)) {
       return false;
@@ -514,13 +516,13 @@ struct ParamTraits<NSCursorInfo> {
     const char* typeName = aParam.GetTypeName();
     nsPoint hotSpot = aParam.GetHotSpot();
     int hotSpotX, hotSpotY;
-#ifdef NS_COORD_IS_FLOAT
+#  ifdef NS_COORD_IS_FLOAT
     hotSpotX = rint(hotSpot.x);
     hotSpotY = rint(hotSpot.y);
-#else
+#  else
     hotSpotX = hotSpot.x;
     hotSpotY = hotSpot.y;
-#endif
+#  endif
     uint32_t dataLength = aParam.GetCustomImageDataLength();
     uint8_t* data = aParam.GetCustomImageData();
 
@@ -612,6 +614,31 @@ struct ParamTraits<mozilla::plugins::NPAudioDeviceChangeDetailsIPC> {
   }
 };
 
+template <>
+struct ParamTraits<mozilla::plugins::NPAudioDeviceStateChangedIPC> {
+  typedef mozilla::plugins::NPAudioDeviceStateChangedIPC paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.device);
+    WriteParam(aMsg, aParam.state);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    int32_t state;
+    std::wstring device;
+    if (ReadParam(aMsg, aIter, &device) && ReadParam(aMsg, aIter, &state)) {
+      aResult->device = device;
+      aResult->state = state;
+      return true;
+    }
+    return false;
+  }
+
+  static void Log(const paramType& aParam, std::wstring* aLog) {
+    aLog->append(StringPrintf(L"[%S,%d]", aParam.device.c_str(), aParam.state));
+  }
+};
 } /* namespace IPC */
 
 // Serializing NPEvents is completely platform-specific and can be rather
@@ -621,15 +648,15 @@ struct ParamTraits<mozilla::plugins::NPAudioDeviceChangeDetailsIPC> {
 // NB: these guards are based on those where struct NPEvent is defined
 // in npapi.h.  They should be kept in sync.
 #if defined(XP_MACOSX)
-#include "mozilla/plugins/NPEventOSX.h"
+#  include "mozilla/plugins/NPEventOSX.h"
 #elif defined(XP_WIN)
-#include "mozilla/plugins/NPEventWindows.h"
+#  include "mozilla/plugins/NPEventWindows.h"
 #elif defined(ANDROID)
-#include "mozilla/plugins/NPEventAndroid.h"
+#  include "mozilla/plugins/NPEventAndroid.h"
 #elif defined(XP_UNIX)
-#include "mozilla/plugins/NPEventUnix.h"
+#  include "mozilla/plugins/NPEventUnix.h"
 #else
-#error Unsupported platform
+#  error Unsupported platform
 #endif
 
 #endif /* DOM_PLUGINS_PLUGINMESSAGEUTILS_H */

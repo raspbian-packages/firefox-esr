@@ -9,7 +9,6 @@
 
 #include "nsID.h"
 #include "nsISupports.h"
-#include "nsIHashable.h"
 #include "nsAutoPtr.h"
 #include "nsCOMPtr.h"
 #include "PLDHashTable.h"
@@ -20,11 +19,13 @@
 #include "nsUnicharUtils.h"
 #include "nsPointerHashKeys.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <utility>
+
 #include "mozilla/HashFunctions.h"
-#include "mozilla/Move.h"
 
 namespace mozilla {
 
@@ -50,6 +51,7 @@ inline uint32_t HashString(const nsACString& aStr) {
  * nsUint32HashKey
  * nsUint64HashKey
  * nsFloatHashKey
+ * IntPtrHashKey
  * nsPtrHashKey
  * nsClearingPtrHashKey
  * nsVoidPtrHashKey
@@ -59,7 +61,6 @@ inline uint32_t HashString(const nsACString& aStr) {
  * nsDepCharHashKey
  * nsCharPtrHashKey
  * nsUnicharPtrHashKey
- * nsHashableHashKey
  * nsGenericHashKey
  */
 
@@ -74,7 +75,9 @@ class nsStringHashKey : public PLDHashEntryHdr {
   typedef const nsAString* KeyTypePointer;
 
   explicit nsStringHashKey(KeyTypePointer aStr) : mStr(*aStr) {}
-  nsStringHashKey(const nsStringHashKey& aToCopy) : mStr(aToCopy.mStr) {}
+  nsStringHashKey(const nsStringHashKey&) = delete;
+  nsStringHashKey(nsStringHashKey&& aToMove)
+      : PLDHashEntryHdr(std::move(aToMove)), mStr(std::move(aToMove.mStr)) {}
   ~nsStringHashKey() {}
 
   KeyType GetKey() const { return mStr; }
@@ -95,7 +98,7 @@ class nsStringHashKey : public PLDHashEntryHdr {
   enum { ALLOW_MEMMOVE = true };
 
  private:
-  const nsString mStr;
+  nsString mStr;
 };
 
 #ifdef MOZILLA_INTERNAL_API
@@ -116,8 +119,11 @@ class nsStringCaseInsensitiveHashKey : public PLDHashEntryHdr {
   explicit nsStringCaseInsensitiveHashKey(KeyTypePointer aStr) : mStr(*aStr) {
     // take it easy just deal HashKey
   }
-  nsStringCaseInsensitiveHashKey(const nsStringCaseInsensitiveHashKey& aToCopy)
-      : mStr(aToCopy.mStr) {}
+
+  nsStringCaseInsensitiveHashKey(const nsStringCaseInsensitiveHashKey&) =
+      delete;
+  nsStringCaseInsensitiveHashKey(nsStringCaseInsensitiveHashKey&& aToMove)
+      : PLDHashEntryHdr(std::move(aToMove)), mStr(std::move(aToMove.mStr)) {}
   ~nsStringCaseInsensitiveHashKey() {}
 
   KeyType GetKey() const { return mStr; }
@@ -155,7 +161,8 @@ class nsCStringHashKey : public PLDHashEntryHdr {
   typedef const nsACString* KeyTypePointer;
 
   explicit nsCStringHashKey(const nsACString* aStr) : mStr(*aStr) {}
-  nsCStringHashKey(const nsCStringHashKey& aToCopy) : mStr(aToCopy.mStr) {}
+  nsCStringHashKey(nsCStringHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mStr(std::move(aOther.mStr)) {}
   ~nsCStringHashKey() {}
 
   KeyType GetKey() const { return mStr; }
@@ -190,7 +197,8 @@ class nsUint32HashKey : public PLDHashEntryHdr {
   typedef const uint32_t* KeyTypePointer;
 
   explicit nsUint32HashKey(KeyTypePointer aKey) : mValue(*aKey) {}
-  nsUint32HashKey(const nsUint32HashKey& aToCopy) : mValue(aToCopy.mValue) {}
+  nsUint32HashKey(nsUint32HashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mValue(std::move(aOther.mValue)) {}
   ~nsUint32HashKey() {}
 
   KeyType GetKey() const { return mValue; }
@@ -215,7 +223,8 @@ class nsUint64HashKey : public PLDHashEntryHdr {
   typedef const uint64_t* KeyTypePointer;
 
   explicit nsUint64HashKey(KeyTypePointer aKey) : mValue(*aKey) {}
-  nsUint64HashKey(const nsUint64HashKey& aToCopy) : mValue(aToCopy.mValue) {}
+  nsUint64HashKey(nsUint64HashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mValue(std::move(aOther.mValue)) {}
   ~nsUint64HashKey() {}
 
   KeyType GetKey() const { return mValue; }
@@ -242,7 +251,8 @@ class nsFloatHashKey : public PLDHashEntryHdr {
   typedef const float* KeyTypePointer;
 
   explicit nsFloatHashKey(KeyTypePointer aKey) : mValue(*aKey) {}
-  nsFloatHashKey(const nsFloatHashKey& aToCopy) : mValue(aToCopy.mValue) {}
+  nsFloatHashKey(nsFloatHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mValue(std::move(aOther.mValue)) {}
   ~nsFloatHashKey() {}
 
   KeyType GetKey() const { return mValue; }
@@ -259,6 +269,34 @@ class nsFloatHashKey : public PLDHashEntryHdr {
 };
 
 /**
+ * hashkey wrapper using intptr_t KeyType
+ *
+ * @see nsTHashtable::EntryType for specification
+ */
+class IntPtrHashKey : public PLDHashEntryHdr {
+ public:
+  typedef const intptr_t& KeyType;
+  typedef const intptr_t* KeyTypePointer;
+
+  explicit IntPtrHashKey(KeyTypePointer aKey) : mValue(*aKey) {}
+  IntPtrHashKey(IntPtrHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mValue(aOther.mValue) {}
+  ~IntPtrHashKey() {}
+
+  KeyType GetKey() const { return mValue; }
+  bool KeyEquals(KeyTypePointer aKey) const { return *aKey == mValue; }
+
+  static KeyTypePointer KeyToPointer(KeyType aKey) { return &aKey; }
+  static PLDHashNumber HashKey(KeyTypePointer aKey) {
+    return mozilla::HashGeneric(*aKey);
+  }
+  enum { ALLOW_MEMMOVE = true };
+
+ private:
+  const intptr_t mValue;
+};
+
+/**
  * hashkey wrapper using nsISupports* KeyType
  *
  * @see nsTHashtable::EntryType for specification
@@ -270,8 +308,9 @@ class nsISupportsHashKey : public PLDHashEntryHdr {
 
   explicit nsISupportsHashKey(const nsISupports* aKey)
       : mSupports(const_cast<nsISupports*>(aKey)) {}
-  nsISupportsHashKey(const nsISupportsHashKey& aToCopy)
-      : mSupports(aToCopy.mSupports) {}
+  nsISupportsHashKey(nsISupportsHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)),
+        mSupports(std::move(aOther.mSupports)) {}
   ~nsISupportsHashKey() {}
 
   KeyType GetKey() const { return mSupports; }
@@ -299,7 +338,8 @@ class nsRefPtrHashKey : public PLDHashEntryHdr {
   typedef const T* KeyTypePointer;
 
   explicit nsRefPtrHashKey(const T* aKey) : mKey(const_cast<T*>(aKey)) {}
-  nsRefPtrHashKey(const nsRefPtrHashKey& aToCopy) : mKey(aToCopy.mKey) {}
+  nsRefPtrHashKey(nsRefPtrHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mKey(std::move(aOther.mKey)) {}
   ~nsRefPtrHashKey() {}
 
   KeyType GetKey() const { return mKey; }
@@ -334,8 +374,8 @@ template <class T>
 class nsClearingPtrHashKey : public nsPtrHashKey<T> {
  public:
   explicit nsClearingPtrHashKey(const T* aKey) : nsPtrHashKey<T>(aKey) {}
-  nsClearingPtrHashKey(const nsClearingPtrHashKey<T>& aToCopy)
-      : nsPtrHashKey<T>(aToCopy) {}
+  nsClearingPtrHashKey(nsClearingPtrHashKey&& aToMove)
+      : nsPtrHashKey<T>(std::move(aToMove)) {}
   ~nsClearingPtrHashKey() { nsPtrHashKey<T>::mKey = nullptr; }
 };
 
@@ -380,7 +420,8 @@ class nsIDHashKey : public PLDHashEntryHdr {
   typedef const nsID* KeyTypePointer;
 
   explicit nsIDHashKey(const nsID* aInID) : mID(*aInID) {}
-  nsIDHashKey(const nsIDHashKey& aToCopy) : mID(aToCopy.mID) {}
+  nsIDHashKey(nsIDHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mID(std::move(aOther.mID)) {}
   ~nsIDHashKey() {}
 
   KeyType GetKey() const { return mID; }
@@ -395,7 +436,37 @@ class nsIDHashKey : public PLDHashEntryHdr {
   enum { ALLOW_MEMMOVE = true };
 
  private:
-  const nsID mID;
+  nsID mID;
+};
+
+/**
+ * hashkey wrapper using nsID* KeyType
+ *
+ * @see nsTHashtable::EntryType for specification
+ */
+class nsIDPointerHashKey : public PLDHashEntryHdr {
+ public:
+  typedef const nsID* KeyType;
+  typedef const nsID* KeyTypePointer;
+
+  explicit nsIDPointerHashKey(const nsID* aInID) : mID(aInID) {}
+  nsIDPointerHashKey(nsIDPointerHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mID(aOther.mID) {}
+  ~nsIDPointerHashKey() = default;
+
+  KeyType GetKey() const { return mID; }
+  bool KeyEquals(KeyTypePointer aKey) const { return aKey->Equals(*mID); }
+
+  static KeyTypePointer KeyToPointer(KeyType aKey) { return aKey; }
+  static PLDHashNumber HashKey(KeyTypePointer aKey) {
+    // Hash the nsID object's raw bytes.
+    return mozilla::HashBytes(aKey, sizeof(*aKey));
+  }
+
+  enum { ALLOW_MEMMOVE = true };
+
+ private:
+  const nsID* mID;
 };
 
 /**
@@ -414,7 +485,8 @@ class nsDepCharHashKey : public PLDHashEntryHdr {
   typedef const char* KeyTypePointer;
 
   explicit nsDepCharHashKey(const char* aKey) : mKey(aKey) {}
-  nsDepCharHashKey(const nsDepCharHashKey& aToCopy) : mKey(aToCopy.mKey) {}
+  nsDepCharHashKey(nsDepCharHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mKey(std::move(aOther.mKey)) {}
   ~nsDepCharHashKey() {}
 
   const char* GetKey() const { return mKey; }
@@ -441,10 +513,10 @@ class nsCharPtrHashKey : public PLDHashEntryHdr {
   typedef const char* KeyTypePointer;
 
   explicit nsCharPtrHashKey(const char* aKey) : mKey(strdup(aKey)) {}
-  nsCharPtrHashKey(const nsCharPtrHashKey& aToCopy)
-      : mKey(strdup(aToCopy.mKey)) {}
 
-  nsCharPtrHashKey(nsCharPtrHashKey&& aOther) : mKey(aOther.mKey) {
+  nsCharPtrHashKey(const nsCharPtrHashKey&) = delete;
+  nsCharPtrHashKey(nsCharPtrHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mKey(aOther.mKey) {
     aOther.mKey = nullptr;
   }
 
@@ -482,11 +554,10 @@ class nsUnicharPtrHashKey : public PLDHashEntryHdr {
   typedef const char16_t* KeyType;
   typedef const char16_t* KeyTypePointer;
 
-  explicit nsUnicharPtrHashKey(const char16_t* aKey) : mKey(NS_strdup(aKey)) {}
-  nsUnicharPtrHashKey(const nsUnicharPtrHashKey& aToCopy)
-      : mKey(NS_strdup(aToCopy.mKey)) {}
-
-  nsUnicharPtrHashKey(nsUnicharPtrHashKey&& aOther) : mKey(aOther.mKey) {
+  explicit nsUnicharPtrHashKey(const char16_t* aKey) : mKey(NS_xstrdup(aKey)) {}
+  nsUnicharPtrHashKey(const nsUnicharPtrHashKey& aToCopy) = delete;
+  nsUnicharPtrHashKey(nsUnicharPtrHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mKey(aOther.mKey) {
     aOther.mKey = nullptr;
   }
 
@@ -514,46 +585,6 @@ class nsUnicharPtrHashKey : public PLDHashEntryHdr {
   const char16_t* mKey;
 };
 
-/**
- * Hashtable key class to use with objects that support nsIHashable
- */
-class nsHashableHashKey : public PLDHashEntryHdr {
- public:
-  typedef nsIHashable* KeyType;
-  typedef const nsIHashable* KeyTypePointer;
-
-  explicit nsHashableHashKey(const nsIHashable* aKey)
-      : mKey(const_cast<nsIHashable*>(aKey)) {}
-  nsHashableHashKey(const nsHashableHashKey& aToCopy) : mKey(aToCopy.mKey) {}
-  ~nsHashableHashKey() {}
-
-  nsIHashable* GetKey() const { return mKey; }
-
-  bool KeyEquals(const nsIHashable* aKey) const {
-    bool eq;
-    if (NS_SUCCEEDED(mKey->Equals(const_cast<nsIHashable*>(aKey), &eq))) {
-      return eq;
-    }
-    return false;
-  }
-
-  static const nsIHashable* KeyToPointer(nsIHashable* aKey) { return aKey; }
-  static PLDHashNumber HashKey(const nsIHashable* aKey) {
-    uint32_t code = 8888;  // magic number if GetHashCode fails :-(
-#ifdef DEBUG
-    nsresult rv =
-#endif
-        const_cast<nsIHashable*>(aKey)->GetHashCode(&code);
-    NS_ASSERTION(NS_SUCCEEDED(rv), "GetHashCode should not throw!");
-    return code;
-  }
-
-  enum { ALLOW_MEMMOVE = true };
-
- private:
-  nsCOMPtr<nsIHashable> mKey;
-};
-
 namespace mozilla {
 
 template <typename T>
@@ -574,7 +605,9 @@ class nsGenericHashKey : public PLDHashEntryHdr {
   typedef const T* KeyTypePointer;
 
   explicit nsGenericHashKey(KeyTypePointer aKey) : mKey(*aKey) {}
-  nsGenericHashKey(const nsGenericHashKey<T>& aOther) : mKey(aOther.mKey) {}
+  nsGenericHashKey(const nsGenericHashKey&) = delete;
+  nsGenericHashKey(nsGenericHashKey&& aOther)
+      : PLDHashEntryHdr(std::move(aOther)), mKey(std::move(aOther.mKey)) {}
 
   KeyType GetKey() const { return mKey; }
   bool KeyEquals(KeyTypePointer aKey) const { return *aKey == mKey; }

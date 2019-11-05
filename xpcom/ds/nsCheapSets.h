@@ -25,7 +25,7 @@ class nsCheapSet {
   typedef typename EntryType::KeyType KeyType;
   typedef nsCheapSetOperator (*Enumerator)(EntryType* aEntry, void* userArg);
 
-  nsCheapSet() : mState(ZERO) {}
+  nsCheapSet() : mState(ZERO) { mUnion.table = nullptr; }
   ~nsCheapSet() { Clear(); }
 
   /**
@@ -42,7 +42,7 @@ class nsCheapSet {
         delete mUnion.table;
         break;
       default:
-        NS_NOTREACHED("bogus state");
+        MOZ_ASSERT_UNREACHABLE("bogus state");
         break;
     }
     mState = ZERO;
@@ -61,7 +61,7 @@ class nsCheapSet {
       case MANY:
         return !!mUnion.table->GetEntry(aVal);
       default:
-        NS_NOTREACHED("bogus state");
+        MOZ_ASSERT_UNREACHABLE("bogus state");
         return false;
     }
   }
@@ -87,7 +87,7 @@ class nsCheapSet {
         return n;
       }
       default:
-        NS_NOTREACHED("bogus state");
+        MOZ_ASSERT_UNREACHABLE("bogus state");
         return 0;
     }
   }
@@ -127,7 +127,7 @@ void nsCheapSet<EntryType>::Put(const KeyType aVal) {
       mUnion.table->PutEntry(aVal);
       return;
     default:
-      NS_NOTREACHED("bogus state");
+      MOZ_ASSERT_UNREACHABLE("bogus state");
       return;
   }
 }
@@ -147,7 +147,7 @@ void nsCheapSet<EntryType>::Remove(const KeyType aVal) {
       mUnion.table->RemoveEntry(aVal);
       break;
     default:
-      NS_NOTREACHED("bogus state");
+      MOZ_ASSERT_UNREACHABLE("bogus state");
       break;
   }
 }

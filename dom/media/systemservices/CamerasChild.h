@@ -9,12 +9,10 @@
 
 #include "mozilla/Move.h"
 #include "mozilla/Pair.h"
-#include "mozilla/dom/ContentChild.h"
 #include "mozilla/camera/PCamerasChild.h"
 #include "mozilla/camera/PCamerasParent.h"
 #include "mozilla/media/DeviceChangeCallback.h"
 #include "mozilla/Mutex.h"
-#include "base/singleton.h"
 #include "nsCOMPtr.h"
 
 // conflicts with #include of scoped_ptr.h
@@ -71,32 +69,35 @@ class LockAndDispatch;
 
 class CamerasSingleton {
  public:
-  CamerasSingleton();
-  ~CamerasSingleton();
-
-  static OffTheBooksMutex& Mutex() { return gTheInstance.get()->mCamerasMutex; }
+  static OffTheBooksMutex& Mutex() { return singleton().mCamerasMutex; }
 
   static CamerasChild*& Child() {
     Mutex().AssertCurrentThreadOwns();
-    return gTheInstance.get()->mCameras;
+    return singleton().mCameras;
   }
 
   static nsCOMPtr<nsIThread>& Thread() {
     Mutex().AssertCurrentThreadOwns();
-    return gTheInstance.get()->mCamerasChildThread;
+    return singleton().mCamerasChildThread;
   }
 
   static nsCOMPtr<nsIThread>& FakeDeviceChangeEventThread() {
     Mutex().AssertCurrentThreadOwns();
-    return gTheInstance.get()->mFakeDeviceChangeEventThread;
+    return singleton().mFakeDeviceChangeEventThread;
   }
 
-  static bool InShutdown() { return gTheInstance.get()->mInShutdown; }
+  static bool InShutdown() { return singleton().mInShutdown; }
 
-  static void StartShutdown() { gTheInstance.get()->mInShutdown = true; }
+  static void StartShutdown() { singleton().mInShutdown = true; }
 
  private:
-  static Singleton<CamerasSingleton> gTheInstance;
+  CamerasSingleton();
+  ~CamerasSingleton();
+
+  static CamerasSingleton& singleton() {
+    static CamerasSingleton camera;
+    return camera;
+  }
 
   // Reinitializing CamerasChild will change the pointers below.
   // We don't want this to happen in the middle of preparing IPC.
@@ -136,7 +137,7 @@ int GetChildAndCall(MEM_FUN&& f, ARGS&&... args) {
   OffTheBooksMutexAutoLock lock(CamerasSingleton::Mutex());
   CamerasChild* child = GetCamerasChild();
   if (child) {
-    return (child->*f)(mozilla::Forward<ARGS>(args)...);
+    return (child->*f)(std::forward<ARGS>(args)...);
   } else {
     return -1;
   }
@@ -185,6 +186,7 @@ class CamerasChild final : public PCamerasChild, public DeviceChangeCallback {
   int StartCapture(CaptureEngine aCapEngine, const int capture_id,
                    webrtc::VideoCaptureCapability& capability,
                    FrameRelay* func);
+  int FocusOnSelectedSource(CaptureEngine aCapEngine, const int capture_id);
   int StopCapture(CaptureEngine aCapEngine, const int capture_id);
   int AllocateCaptureDevice(CaptureEngine aCapEngine, const char* unique_idUTF8,
                             const unsigned int unique_idUTF8Length,

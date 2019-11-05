@@ -1,15 +1,16 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "txURIUtils.h"
 #include "nsNetUtil.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIHttpChannelInternal.h"
 #include "nsIPrincipal.h"
 #include "mozilla/LoadInfo.h"
 
+using mozilla::dom::Document;
 using mozilla::net::LoadInfo;
 
 /**
@@ -42,9 +43,10 @@ void URIUtils::resolveHref(const nsAString& href, const nsAString& base,
 }  //-- resolveHref
 
 // static
-void URIUtils::ResetWithSource(nsIDocument* aNewDoc, nsINode* aSourceNode) {
-  nsCOMPtr<nsIDocument> sourceDoc = aSourceNode->OwnerDoc();
+void URIUtils::ResetWithSource(Document* aNewDoc, nsINode* aSourceNode) {
+  nsCOMPtr<Document> sourceDoc = aSourceNode->OwnerDoc();
   nsIPrincipal* sourcePrincipal = sourceDoc->NodePrincipal();
+  nsIPrincipal* sourceStoragePrincipal = sourceDoc->EffectiveStoragePrincipal();
 
   // Copy the channel and loadgroup from the source document.
   nsCOMPtr<nsILoadGroup> loadGroup = sourceDoc->GetDocumentLoadGroup();
@@ -65,7 +67,7 @@ void URIUtils::ResetWithSource(nsIDocument* aNewDoc, nsINode* aSourceNode) {
   }
 
   aNewDoc->Reset(channel, loadGroup);
-  aNewDoc->SetPrincipal(sourcePrincipal);
+  aNewDoc->SetPrincipals(sourcePrincipal, sourceStoragePrincipal);
   aNewDoc->SetBaseURI(sourceDoc->GetDocBaseURI());
 
   // Copy charset

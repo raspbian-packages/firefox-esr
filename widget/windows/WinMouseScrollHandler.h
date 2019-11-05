@@ -350,8 +350,8 @@ class MouseScrollHandler {
    private:
     void Init();
 
-    static void OnChange(const char* aPrefName, void* aClosure) {
-      static_cast<UserPrefs*>(aClosure)->MarkDirty();
+    static void OnChange(const char* aPrefName, UserPrefs* aClosure) {
+      aClosure->MarkDirty();
     }
 
     bool mInitialized;

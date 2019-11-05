@@ -8,28 +8,22 @@
 #define mozilla_dom_SVGAnimationElement_h
 
 #include "mozilla/Attributes.h"
+#include "mozilla/SMILTimedElement.h"
 #include "mozilla/dom/IDTracker.h"
+#include "mozilla/dom/SVGElement.h"
 #include "mozilla/dom/SVGTests.h"
-#include "nsSMILTimedElement.h"
-#include "nsSVGElement.h"
-
-typedef nsSVGElement SVGAnimationElementBase;
 
 namespace mozilla {
 namespace dom {
 
-enum nsSMILTargetAttrType {
-  eSMILTargetAttrType_auto,
-  eSMILTargetAttrType_CSS,
-  eSMILTargetAttrType_XML
-};
+typedef SVGElement SVGAnimationElementBase;
 
 class SVGAnimationElement : public SVGAnimationElementBase, public SVGTests {
  protected:
   explicit SVGAnimationElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
   nsresult Init();
-  virtual ~SVGAnimationElement();
+  virtual ~SVGAnimationElement() = default;
 
  public:
   // interfaces:
@@ -38,13 +32,11 @@ class SVGAnimationElement : public SVGAnimationElementBase, public SVGTests {
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(SVGAnimationElement,
                                            SVGAnimationElementBase)
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override = 0;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override = 0;
 
   // nsIContent specializations
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep, bool aNullParent) override;
 
   virtual bool IsNodeOfType(uint32_t aFlags) const override;
@@ -60,15 +52,12 @@ class SVGAnimationElement : public SVGAnimationElementBase, public SVGTests {
                                 nsIPrincipal* aSubjectPrincipal,
                                 bool aNotify) override;
 
-  const nsAttrValue* GetAnimAttr(nsAtom* aName) const;
-  bool GetAnimAttr(nsAtom* aAttName, nsAString& aResult) const;
-  bool HasAnimAttr(nsAtom* aAttName) const;
   Element* GetTargetElementContent();
   virtual bool GetTargetAttributeName(int32_t* aNamespaceID,
                                       nsAtom** aLocalName) const;
-  nsSMILTimedElement& TimedElement();
-  nsSMILTimeContainer* GetTimeContainer();
-  virtual nsSMILAnimationFunction& AnimationFunction() = 0;
+  mozilla::SMILTimedElement& TimedElement();
+  mozilla::SMILTimeContainer* GetTimeContainer();
+  virtual SMILAnimationFunction& AnimationFunction() = 0;
 
   virtual bool IsEventAttributeNameInternal(nsAtom* aName) override;
 
@@ -76,9 +65,9 @@ class SVGAnimationElement : public SVGAnimationElementBase, public SVGTests {
   void ActivateByHyperlink();
 
   // WebIDL
-  nsSVGElement* GetTargetElement();
+  SVGElement* GetTargetElement();
   float GetStartTime(ErrorResult& rv);
-  float GetCurrentTime();
+  float GetCurrentTimeAsFloat();
   float GetSimpleDuration(ErrorResult& rv);
   void BeginElement(ErrorResult& rv) { BeginElementAt(0.f, rv); }
   void BeginElementAt(float offset, ErrorResult& rv);
@@ -86,12 +75,12 @@ class SVGAnimationElement : public SVGAnimationElementBase, public SVGTests {
   void EndElementAt(float offset, ErrorResult& rv);
 
   // SVGTests
-  nsSVGElement* AsSVGElement() final { return this; }
+  SVGElement* AsSVGElement() final { return this; }
 
  protected:
-  // nsSVGElement overrides
+  // SVGElement overrides
 
-  void UpdateHrefTarget(nsIContent* aNodeForContext, const nsAString& aHrefStr);
+  void UpdateHrefTarget(const nsAString& aHrefStr);
   void AnimationTargetChanged();
 
   /**
@@ -125,7 +114,7 @@ class SVGAnimationElement : public SVGAnimationElementBase, public SVGTests {
   };
 
   HrefTargetTracker mHrefTarget;
-  nsSMILTimedElement mTimedElement;
+  mozilla::SMILTimedElement mTimedElement;
 };
 
 }  // namespace dom

@@ -16,24 +16,24 @@ const TEST_URI = `
   <div id="flex"></div>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let {inspector, view, testActor} = yield openRuleView();
-  let {highlighters} = view;
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { inspector, view, testActor } = await openRuleView();
+  const { highlighters } = view;
 
-  yield selectNode("#flex", inspector);
-  let container = getRuleViewProperty(view, "#flex", "display").valueSpan;
-  let flexboxToggle = container.querySelector(".ruleview-flex");
+  await selectNode("#flex", inspector);
+  const container = getRuleViewProperty(view, "#flex", "display").valueSpan;
+  const flexboxToggle = container.querySelector(".ruleview-flex");
 
   info("Toggling ON the flexbox highlighter from the rule-view.");
-  let onHighlighterShown = highlighters.once("flexbox-highlighter-shown");
+  const onHighlighterShown = highlighters.once("flexbox-highlighter-shown");
   flexboxToggle.click();
-  yield onHighlighterShown;
+  await onHighlighterShown;
   ok(highlighters.flexboxHighlighterShown, "Flexbox highlighter is shown.");
 
   info("Remove the #flex container in the content page.");
-  let onHighlighterHidden = highlighters.once("flexbox-highlighter-hidden");
+  const onHighlighterHidden = highlighters.once("flexbox-highlighter-hidden");
   testActor.eval(`document.querySelector("#flex").remove();`);
-  yield onHighlighterHidden;
+  await onHighlighterHidden;
   ok(!highlighters.flexboxHighlighterShown, "Flexbox highlighter is hidden.");
 });

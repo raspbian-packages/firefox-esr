@@ -12,7 +12,7 @@
 #include "mozilla/MozPromise.h"
 
 #ifdef XP_WIN
-#undef PostMessage
+#  undef PostMessage
 #endif
 
 namespace mozilla {
@@ -48,8 +48,9 @@ class ClientHandle final : public ClientThing<ClientHandleChild> {
 
   void Shutdown();
 
-  already_AddRefed<ClientOpPromise> StartOp(
-      const ClientOpConstructorArgs& aArgs);
+  void StartOp(const ClientOpConstructorArgs& aArgs,
+               const ClientOpCallback&& aResolveCallback,
+               const ClientOpCallback&& aRejectCallback);
 
   // ClientThing interface
   void OnShutdownThing() override;

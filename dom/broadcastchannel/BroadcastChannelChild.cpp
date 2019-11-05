@@ -15,7 +15,6 @@
 #include "mozilla/dom/ScriptSettings.h"
 #include "mozilla/ipc/PBackgroundChild.h"
 #include "mozilla/dom/ipc/StructuredCloneData.h"
-#include "mozilla/dom/WorkerPrivate.h"
 
 namespace mozilla {
 
@@ -37,17 +36,14 @@ mozilla::ipc::IPCResult BroadcastChannelChild::RecvNotify(
   ipc::StructuredCloneDataNoTransfers cloneData;
   cloneData.BorrowFromClonedMessageDataForBackgroundChild(aData);
 
-  nsCOMPtr<DOMEventTargetHelper> helper = mBC;
-  nsCOMPtr<EventTarget> eventTarget = do_QueryInterface(helper);
+  nsCOMPtr<EventTarget> eventTarget = mBC;
 
   // The object is going to be deleted soon. No notify is required.
   if (!eventTarget) {
     return IPC_OK();
   }
 
-  // CheckInnerWindowCorrectness can be used also without a window when
-  // BroadcastChannel is running in a worker. In this case, it's a NOP.
-  if (NS_FAILED(mBC->CheckInnerWindowCorrectness())) {
+  if (NS_FAILED(mBC->CheckCurrentGlobalCorrectness())) {
     return IPC_OK();
   }
 
@@ -57,7 +53,7 @@ mozilla::ipc::IPCResult BroadcastChannelChild::RecvNotify(
   nsCOMPtr<nsIGlobalObject> globalObject;
 
   if (NS_IsMainThread()) {
-    globalObject = do_QueryInterface(mBC->GetParentObject());
+    globalObject = mBC->GetParentObject();
   } else {
     WorkerPrivate* workerPrivate = GetCurrentThreadWorkerPrivate();
     MOZ_ASSERT(workerPrivate);
@@ -91,8 +87,7 @@ mozilla::ipc::IPCResult BroadcastChannelChild::RecvNotify(
 
   event->SetTrusted(true);
 
-  bool status;
-  mBC->DispatchEvent(static_cast<Event*>(event.get()), &status);
+  mBC->DispatchEvent(*event);
 
   return IPC_OK();
 }
@@ -111,8 +106,7 @@ void BroadcastChannelChild::DispatchError(JSContext* aCx) {
       MessageEvent::Constructor(mBC, NS_LITERAL_STRING("messageerror"), init);
   event->SetTrusted(true);
 
-  bool dummy;
-  mBC->DispatchEvent(event, &dummy);
+  mBC->DispatchEvent(*event);
 }
 
 }  // namespace dom

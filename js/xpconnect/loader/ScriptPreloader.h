@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,10 +18,12 @@
 #include "mozilla/Result.h"
 #include "mozilla/loader/AutoMemMap.h"
 #include "nsClassHashtable.h"
+#include "nsIAsyncShutdown.h"
 #include "nsIFile.h"
 #include "nsIMemoryReporter.h"
 #include "nsIObserver.h"
 #include "nsIThread.h"
+#include "nsITimer.h"
 
 #include "jsapi.h"
 #include "js/GCAnnotations.h"
@@ -40,9 +42,11 @@ class InputBuffer;
 class ScriptCacheChild;
 
 enum class ProcessType : uint8_t {
+  Uninitialized,
   Parent,
   Web,
   Extension,
+  Privileged,
 };
 
 template <typename T>
@@ -55,7 +59,8 @@ using namespace mozilla::loader;
 
 class ScriptPreloader : public nsIObserver,
                         public nsIMemoryReporter,
-                        public nsIRunnable {
+                        public nsIRunnable,
+                        public nsIAsyncShutdownBlocker {
   MOZ_DEFINE_MALLOC_SIZE_OF(MallocSizeOf)
 
   friend class mozilla::loader::ScriptCacheChild;
@@ -65,6 +70,7 @@ class ScriptPreloader : public nsIObserver,
   NS_DECL_NSIOBSERVER
   NS_DECL_NSIMEMORYREPORTER
   NS_DECL_NSIRUNNABLE
+  NS_DECL_NSIASYNCSHUTDOWNBLOCKER
 
   static ScriptPreloader& GetSingleton();
   static ScriptPreloader& GetChildSingleton();
@@ -78,8 +84,12 @@ class ScriptPreloader : public nsIObserver,
   // Notes the execution of a script with the given URL and cache key.
   // Depending on the stage of startup, the script may be serialized and
   // stored to the startup script cache.
+  //
+  // If isRunOnce is true, this script is expected to run only once per
+  // process per browser session. A cached instance will not be kept alive
+  // for repeated execution.
   void NoteScript(const nsCString& url, const nsCString& cachePath,
-                  JS::HandleScript script);
+                  JS::HandleScript script, bool isRunOnce = false);
 
   void NoteScript(const nsCString& url, const nsCString& cachePath,
                   ProcessType processType, nsTArray<uint8_t>&& xdrData,
@@ -96,11 +106,15 @@ class ScriptPreloader : public nsIObserver,
 
  private:
   Result<Ok, nsresult> InitCacheInternal(JS::HandleObject scope = nullptr);
+  JSScript* GetCachedScriptInternal(JSContext* cx, const nsCString& name);
 
  public:
   void Trace(JSTracer* trc);
 
-  static ProcessType CurrentProcessType() { return sProcessType; }
+  static ProcessType CurrentProcessType() {
+    MOZ_ASSERT(sProcessType != ProcessType::Uninitialized);
+    return sProcessType;
+  }
 
   static void InitContentChild(dom::ContentParent& parent);
 
@@ -147,7 +161,8 @@ class ScriptPreloader : public nsIObserver,
           mURL(url),
           mCachePath(cachePath),
           mScript(script),
-          mReadyToExecute(true) {}
+          mReadyToExecute(true),
+          mIsRunOnce(false) {}
 
     inline CachedScript(ScriptPreloader& cache, InputBuffer& buf);
 
@@ -196,6 +211,22 @@ class ScriptPreloader : public nsIObserver,
       if (mLoadTime.IsNull() || loadTime < mLoadTime) {
         mLoadTime = loadTime;
       }
+    }
+
+    // Checks whether the cached JSScript for this entry will be needed
+    // again and, if not, drops it and returns true. This is the case for
+    // run-once scripts that do not still need to be encoded into the
+    // cache.
+    //
+    // If this method returns false, callers may set mScript to a cached
+    // JSScript instance for this entry. If it returns true, they should
+    // not.
+    bool MaybeDropScript() {
+      if (mIsRunOnce && (HasRange() || !mCache.WillWriteScripts())) {
+        mScript = nullptr;
+        return true;
+      }
+      return false;
     }
 
     // Encodes this script into XDR data, and stores the result in mXDRData.
@@ -283,6 +314,11 @@ class ScriptPreloader : public nsIObserver,
     // whenever it is first executed.
     bool mReadyToExecute = false;
 
+    // True if this script is expected to run once per process. If so, its
+    // JSScript instance will be dropped as soon as the script has
+    // executed and been encoded into the cache.
+    bool mIsRunOnce = false;
+
     // The set of processes in which this script has been used.
     EnumSet<ProcessType> mProcessTypes{};
 
@@ -341,7 +377,6 @@ class ScriptPreloader : public nsIObserver,
 
   ScriptPreloader();
 
-  void ForceWriteCacheFile();
   void Cleanup();
 
   void FinishPendingParses(MonitorAutoLock& aMal);
@@ -353,11 +388,23 @@ class ScriptPreloader : public nsIObserver,
   // Writes a new cache file to disk. Must not be called on the main thread.
   Result<Ok, nsresult> WriteCache();
 
+  void StartCacheWrite();
+
   // Prepares scripts for writing to the cache, serializing new scripts to
   // XDR, and calculating their size-based offsets.
   void PrepareCacheWrite();
 
   void PrepareCacheWriteInternal();
+
+  void CacheWriteComplete();
+
+  void FinishContentStartup();
+
+  // Returns true if scripts added to the cache now will be encoded and
+  // written to the cache. If we've already encoded scripts for the cache
+  // write, or this is a content process which hasn't been asked to return
+  // script bytecode, this will return false.
+  bool WillWriteScripts();
 
   // Returns a file pointer for the cache file with the given name in the
   // current profile.
@@ -369,14 +416,11 @@ class ScriptPreloader : public nsIObserver,
 
   void DecodeNextBatch(size_t chunkSize, JS::HandleObject scope = nullptr);
 
-  static void OffThreadDecodeCallback(void* token, void* context);
+  static void OffThreadDecodeCallback(JS::OffThreadToken* token, void* context);
   void MaybeFinishOffThreadDecode();
   void DoFinishOffThreadDecode();
 
-  // Returns the global scope object for off-thread compilation. When global
-  // sharing is enabled in the component loader, this should be the shared
-  // module global. Otherwise, it should be the XPConnect compilation scope.
-  JSObject* CompilationScope(JSContext* cx);
+  already_AddRefed<nsIAsyncShutdownClient> GetShutdownBarrier();
 
   size_t ShallowHeapSizeOfIncludingThis(mozilla::MallocSizeOf mallocSizeOf) {
     return (mallocSizeOf(this) +
@@ -406,7 +450,6 @@ class ScriptPreloader : public nsIObserver,
   bool mSaveComplete = false;
   bool mDataPrepared = false;
   bool mCacheInvalidated = false;
-  bool mBlockedOnSyncDispatch = false;
 
   // The list of scripts that we read from the initial startup cache file,
   // but have yet to initiate a decode task for.
@@ -418,7 +461,7 @@ class ScriptPreloader : public nsIObserver,
   Vector<CachedScript*> mParsingScripts;
 
   // The token for the completed off-thread decode task.
-  void* mToken = nullptr;
+  JS::OffThreadToken* mToken = nullptr;
 
   // True if a runnable has been dispatched to the main thread to finish an
   // off-thread decode operation.
@@ -435,9 +478,11 @@ class ScriptPreloader : public nsIObserver,
   ScriptCacheChild* mChildActor = nullptr;
 
   nsString mBaseName;
+  nsCString mContentStartupFinishedTopic;
 
   nsCOMPtr<nsIFile> mProfD;
   nsCOMPtr<nsIThread> mSaveThread;
+  nsCOMPtr<nsITimer> mSaveTimer;
 
   // The mmapped cache data from this session's cache file.
   AutoMemMap mCacheData;

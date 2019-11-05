@@ -18,7 +18,7 @@
 
 #include "nsIChannel.h"
 #include "nsICacheInfoChannel.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIThreadRetargetableRequest.h"
 #include "nsIInputStream.h"
 #include "nsIMultiPartChannel.h"
@@ -37,8 +37,10 @@
 #include "nsNetUtil.h"
 #include "nsIProtocolHandler.h"
 #include "imgIRequest.h"
+#include "nsProperties.h"
 
 #include "mozilla/IntegerPrintfMacros.h"
+#include "mozilla/SizeOfState.h"
 
 using namespace mozilla;
 using namespace mozilla::image;
@@ -59,10 +61,10 @@ imgRequest::imgRequest(imgLoader* aLoader, const ImageCacheKey& aCacheKey)
       mCORSMode(imgIRequest::CORS_NONE),
       mReferrerPolicy(mozilla::net::RP_Unset),
       mImageErrorCode(NS_OK),
+      mImageAvailable(false),
       mMutex("imgRequest"),
       mProgressTracker(new ProgressTracker()),
       mIsMultiPartChannel(false),
-      mGotData(false),
       mIsInCache(false),
       mDecodeRequested(false),
       mNewPartPending(false),
@@ -75,10 +77,7 @@ imgRequest::~imgRequest() {
     mLoader->RemoveFromUncachedImages(this);
   }
   if (mURI) {
-    nsAutoCString spec;
-    mURI->GetSpec(spec);
-    LOG_FUNC_WITH_PARAM(gImgLog, "imgRequest::~imgRequest()", "keyuri",
-                        spec.get());
+    LOG_FUNC_WITH_PARAM(gImgLog, "imgRequest::~imgRequest()", "keyuri", mURI);
   } else
     LOG_FUNC(gImgLog, "imgRequest::~imgRequest()");
 }
@@ -98,18 +97,12 @@ nsresult imgRequest::Init(nsIURI* aURI, nsIURI* aFinalURI,
   MOZ_ASSERT(aRequest, "No request");
   MOZ_ASSERT(aChannel, "No channel");
 
-  mProperties = do_CreateInstance("@mozilla.org/properties;1");
-
-  // Use ImageURL to ensure access to URI data off main thread.
-  nsresult rv;
-  mURI = new ImageURL(aURI, rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-
+  mProperties = new nsProperties();
+  mURI = aURI;
   mFinalURI = aFinalURI;
   mRequest = aRequest;
   mChannel = aChannel;
   mTimedChannel = do_QueryInterface(mChannel);
-
   mTriggeringPrincipal = aTriggeringPrincipal;
   mCORSMode = aCORSMode;
   mReferrerPolicy = aReferrerPolicy;
@@ -148,7 +141,7 @@ nsresult imgRequest::Init(nsIURI* aURI, nsIURI* aFinalURI,
   SetLoadId(aCX);
 
   // Grab the inner window ID of the loading document, if possible.
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(aCX);
+  nsCOMPtr<dom::Document> doc = do_QueryInterface(aCX);
   if (doc) {
     mInnerWindowId = doc->InnerWindowID();
   }
@@ -184,7 +177,7 @@ void imgRequest::ResetCacheEntry() {
 }
 
 void imgRequest::AddProxy(imgRequestProxy* proxy) {
-  NS_PRECONDITION(proxy, "null imgRequestProxy passed in");
+  MOZ_ASSERT(proxy, "null imgRequestProxy passed in");
   LOG_SCOPE_WITH_PARAM(gImgLog, "imgRequest::AddProxy", "proxy", proxy);
 
   if (!mFirstProxy) {
@@ -233,11 +226,9 @@ nsresult imgRequest::RemoveProxy(imgRequestProxy* proxy, nsresult aStatus) {
       if (mLoader) {
         mLoader->SetHasNoProxies(this, mCacheEntry);
       }
-    } else if (MOZ_LOG_TEST(gImgLog, LogLevel::Debug)) {
-      nsAutoCString spec;
-      mURI->GetSpec(spec);
+    } else {
       LOG_MSG_WITH_PARAM(gImgLog, "imgRequest::RemoveProxy no cache entry",
-                         "uri", spec.get());
+                         "uri", mURI);
     }
 
     /* If |aStatus| is a failure code, then cancel the load if it is still in
@@ -370,7 +361,7 @@ bool imgRequest::IsDecodeRequested() const {
   return mDecodeRequested;
 }
 
-nsresult imgRequest::GetURI(ImageURL** aURI) {
+nsresult imgRequest::GetURI(nsIURI** aURI) {
   MOZ_ASSERT(aURI);
 
   LOG_FUNC(gImgLog, "imgRequest::GetURI");
@@ -412,15 +403,6 @@ bool imgRequest::IsChrome() const { return IsScheme("chrome"); }
 bool imgRequest::IsData() const { return IsScheme("data"); }
 
 nsresult imgRequest::GetImageErrorCode() { return mImageErrorCode; }
-
-nsresult imgRequest::GetSecurityInfo(nsISupports** aSecurityInfo) {
-  LOG_FUNC(gImgLog, "imgRequest::GetSecurityInfo");
-
-  // Missing security info means this is not a security load
-  // i.e. it is not an error when security info is missing
-  NS_IF_ADDREF(*aSecurityInfo = mSecurityInfo);
-  return NS_OK;
-}
 
 void imgRequest::RemoveFromCache() {
   LOG_SCOPE(gImgLog, "imgRequest::RemoveFromCache");
@@ -508,6 +490,10 @@ void imgRequest::BoostPriority(uint32_t aCategory) {
     --delta;
   }
 
+  if (newRequestedCategory & imgIRequest::CATEGORY_FRAME_STYLE) {
+    --delta;
+  }
+
   if (newRequestedCategory & imgIRequest::CATEGORY_SIZE_QUERY) {
     --delta;
   }
@@ -518,11 +504,6 @@ void imgRequest::BoostPriority(uint32_t aCategory) {
 
   AdjustPriorityInternal(delta);
   mBoostCategoriesRequested |= newRequestedCategory;
-}
-
-bool imgRequest::HasTransferredData() const {
-  MutexAutoLock lock(mMutex);
-  return mGotData;
 }
 
 void imgRequest::SetIsInCache(bool aInCache) {
@@ -669,7 +650,7 @@ bool imgRequest::HadInsecureRedirect() const {
 /** nsIRequestObserver methods **/
 
 NS_IMETHODIMP
-imgRequest::OnStartRequest(nsIRequest* aRequest, nsISupports* ctxt) {
+imgRequest::OnStartRequest(nsIRequest* aRequest) {
   LOG_SCOPE(gImgLog, "imgRequest::OnStartRequest");
 
   RefPtr<Image> image;
@@ -708,8 +689,6 @@ imgRequest::OnStartRequest(nsIRequest* aRequest, nsISupports* ctxt) {
 
   nsCOMPtr<nsIChannel> channel(do_QueryInterface(aRequest));
   if (channel) {
-    channel->GetSecurityInfo(getter_AddRefs(mSecurityInfo));
-
     /* Get our principal */
     nsCOMPtr<nsIScriptSecurityManager> secMan =
         nsContentUtils::GetSecurityManager();
@@ -761,8 +740,7 @@ imgRequest::OnStartRequest(nsIRequest* aRequest, nsISupports* ctxt) {
 }
 
 NS_IMETHODIMP
-imgRequest::OnStopRequest(nsIRequest* aRequest, nsISupports* ctxt,
-                          nsresult status) {
+imgRequest::OnStopRequest(nsIRequest* aRequest, nsresult status) {
   LOG_FUNC(gImgLog, "imgRequest::OnStopRequest");
   MOZ_ASSERT(NS_IsMainThread(), "Can't send notifications off-main-thread");
 
@@ -771,7 +749,7 @@ imgRequest::OnStopRequest(nsIRequest* aRequest, nsISupports* ctxt,
   RefPtr<imgRequest> strongThis = this;
 
   if (mIsMultiPartChannel && mNewPartPending) {
-    OnDataAvailable(aRequest, ctxt, nullptr, 0, 0);
+    OnDataAvailable(aRequest, nullptr, 0, 0);
   }
 
   // XXXldb What if this is a non-last part of a multipart request?
@@ -805,7 +783,8 @@ imgRequest::OnStopRequest(nsIRequest* aRequest, nsISupports* ctxt,
   // trigger a failure, since the image might be waiting for more non-optional
   // data and this is the point where we break the news that it's not coming.
   if (image) {
-    nsresult rv = image->OnImageDataComplete(aRequest, ctxt, status, lastPart);
+    nsresult rv =
+        image->OnImageDataComplete(aRequest, nullptr, status, lastPart);
 
     // If we got an error in the OnImageDataComplete() call, we don't want to
     // proceed as if nothing bad happened. However, we also want to give
@@ -886,7 +865,7 @@ struct NewPartResult final {
 
 static NewPartResult PrepareForNewPart(nsIRequest* aRequest,
                                        nsIInputStream* aInStr, uint32_t aCount,
-                                       ImageURL* aURI, bool aIsMultipart,
+                                       nsIURI* aURI, bool aIsMultipart,
                                        image::Image* aExistingImage,
                                        ProgressTracker* aProgressTracker,
                                        uint32_t aInnerWindowId) {
@@ -1000,6 +979,7 @@ void imgRequest::FinishPreparingForNewPart(const NewPartResult& aResult) {
 
   if (aResult.mIsFirstPart) {
     // Notify listeners that we have an image.
+    mImageAvailable = true;
     RefPtr<ProgressTracker> progressTracker = GetProgressTracker();
     progressTracker->OnImageAvailable();
     MOZ_ASSERT(progressTracker->HasImage());
@@ -1014,10 +994,11 @@ void imgRequest::FinishPreparingForNewPart(const NewPartResult& aResult) {
   }
 }
 
+bool imgRequest::ImageAvailable() const { return mImageAvailable; }
+
 NS_IMETHODIMP
-imgRequest::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
-                            nsIInputStream* aInStr, uint64_t aOffset,
-                            uint32_t aCount) {
+imgRequest::OnDataAvailable(nsIRequest* aRequest, nsIInputStream* aInStr,
+                            uint64_t aOffset, uint32_t aCount) {
   LOG_SCOPE_WITH_PARAM(gImgLog, "imgRequest::OnDataAvailable", "count", aCount);
 
   NS_ASSERTION(aRequest, "imgRequest::OnDataAvailable -- no request!");
@@ -1030,7 +1011,6 @@ imgRequest::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
   // Retrieve and update our state.
   {
     MutexAutoLock lock(mMutex);
-    mGotData = true;
     image = mImage;
     progressTracker = mProgressTracker;
     isMultipart = mIsMultiPartChannel;
@@ -1075,8 +1055,9 @@ imgRequest::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
         FinishPreparingForNewPart(result);
       } else {
         nsCOMPtr<nsIRunnable> runnable =
-            new FinishPreparingForNewPartRunnable(this, Move(result));
-        eventTarget->Dispatch(runnable.forget(), NS_DISPATCH_NORMAL);
+            new FinishPreparingForNewPartRunnable(this, std::move(result));
+        eventTarget->Dispatch(CreateMediumHighRunnable(runnable.forget()),
+                              NS_DISPATCH_NORMAL);
       }
     }
 
@@ -1089,8 +1070,8 @@ imgRequest::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
 
   // Notify the image that it has new data.
   if (aInStr) {
-    nsresult rv = image->OnImageDataAvailable(aRequest, aContext, aInStr,
-                                              aOffset, aCount);
+    nsresult rv =
+        image->OnImageDataAvailable(aRequest, nullptr, aInStr, aOffset, aCount);
 
     if (NS_FAILED(rv)) {
       MOZ_LOG(gImgLog, LogLevel::Warning,
@@ -1227,7 +1208,7 @@ imgRequest::OnRedirectVerifyCallback(nsresult result) {
     // to upgrade all requests from http to https before any data is fetched
     // from the network. Do not pollute mHadInsecureRedirect in case of such an
     // internal redirect.
-    nsCOMPtr<nsILoadInfo> loadInfo = mChannel->GetLoadInfo();
+    nsCOMPtr<nsILoadInfo> loadInfo = mChannel->LoadInfo();
     bool upgradeInsecureRequests =
         loadInfo ? loadInfo->GetUpgradeInsecureRequests() ||
                        loadInfo->GetBrowserUpgradeInsecureRequests()

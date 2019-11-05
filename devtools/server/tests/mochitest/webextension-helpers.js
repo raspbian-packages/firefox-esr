@@ -1,43 +1,56 @@
 /* exported attachAddon, setWebExtensionOOPMode, waitForFramesUpdated, reloadAddon,
-            collectFrameUpdates, generateWebExtensionXPI, promiseInstallFile,
-            promiseAddonByID, promiseWebExtensionStartup, promiseWebExtensionShutdown
+   collectFrameUpdates, generateWebExtensionXPI, promiseInstallFile,
+   promiseWebExtensionStartup, promiseWebExtensionShutdown
  */
 
 "use strict";
 
-const {require, loader} = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
-const {DebuggerClient} = require("devtools/shared/client/debugger-client");
-const {DebuggerServer} = require("devtools/server/main");
-const {TargetFactory} = require("devtools/client/framework/target");
+const { require, loader } = ChromeUtils.import(
+  "resource://devtools/shared/Loader.jsm"
+);
+const { DebuggerClient } = require("devtools/shared/client/debugger-client");
+const { DebuggerServer } = require("devtools/server/main");
 
-const {AddonManager} = require("resource://gre/modules/AddonManager.jsm");
-const {Extension, Management} = require("resource://gre/modules/Extension.jsm");
-const {flushJarCache} = require("resource://gre/modules/ExtensionUtils.jsm");
-const {Services} = require("resource://gre/modules/Services.jsm");
+const {
+  AddonTestUtils,
+} = require("resource://testing-common/AddonTestUtils.jsm");
+const {
+  ExtensionTestCommon,
+} = require("resource://testing-common/ExtensionTestCommon.jsm");
 
-loader.lazyImporter(this, "ExtensionParent", "resource://gre/modules/ExtensionParent.jsm");
-loader.lazyImporter(this, "OS", "resource://gre/modules/osfile.jsm");
+loader.lazyImporter(
+  this,
+  "ExtensionParent",
+  "resource://gre/modules/ExtensionParent.jsm"
+);
 
 // Initialize a minimal DebuggerServer and connect to the webextension addon actor.
 if (!DebuggerServer.initialized) {
   DebuggerServer.init();
   DebuggerServer.registerAllActors();
-  SimpleTest.registerCleanupFunction(function () {
+  SimpleTest.registerCleanupFunction(function() {
     DebuggerServer.destroy();
   });
 }
 
-SimpleTest.registerCleanupFunction(function () {
-  const {hiddenXULWindow} = ExtensionParent.DebugUtils;
-  const debugBrowserMapSize = ExtensionParent.DebugUtils.debugBrowserPromises.size;
+SimpleTest.registerCleanupFunction(function() {
+  const { hiddenXULWindow } = ExtensionParent.DebugUtils;
+  const debugBrowserMapSize =
+    ExtensionParent.DebugUtils.debugBrowserPromises.size;
 
   if (debugBrowserMapSize > 0) {
-    is(debugBrowserMapSize, 0,
-       "ExtensionParent DebugUtils debug browsers have not been released");
+    is(
+      debugBrowserMapSize,
+      0,
+      "ExtensionParent DebugUtils debug browsers have not been released"
+    );
   }
 
   if (hiddenXULWindow) {
-    ok(false, "ExtensionParent DebugUtils hiddenXULWindow has not been destroyed");
+    ok(
+      false,
+      "ExtensionParent DebugUtils hiddenXULWindow has not been destroyed"
+    );
   }
 });
 
@@ -45,30 +58,28 @@ SimpleTest.registerCleanupFunction(function () {
 
 function setWebExtensionOOPMode(oopMode) {
   return SpecialPowers.pushPrefEnv({
-    "set": [
-      ["extensions.webextensions.remote", oopMode],
-    ]
+    set: [["extensions.webextensions.remote", oopMode]],
   });
 }
 
-function waitForFramesUpdated({client}, matchFn) {
+function waitForFramesUpdated(target, matchFn) {
   return new Promise(resolve => {
-    const listener = (evt, data) => {
+    const listener = data => {
       if (typeof matchFn === "function" && !matchFn(data)) {
         return;
       } else if (!data.frames) {
         return;
       }
 
-      client.removeListener("frameUpdate", listener);
+      target.off("frameUpdate", listener);
       resolve(data.frames);
     };
-    client.addListener("frameUpdate", listener);
+    target.on("frameUpdate", listener);
   });
 }
 
-function collectFrameUpdates({client}, matchFn) {
-  let collected = [];
+function collectFrameUpdates({ client }, matchFn) {
+  const collected = [];
 
   const listener = (evt, data) => {
     if (matchFn(data)) {
@@ -83,7 +94,7 @@ function collectFrameUpdates({client}, matchFn) {
     return collected;
   };
 
-  SimpleTest.registerCleanupFunction(function () {
+  SimpleTest.registerCleanupFunction(function() {
     if (unsubscribe) {
       unsubscribe();
     }
@@ -98,114 +109,36 @@ async function attachAddon(addonId) {
 
   await client.connect();
 
-  const {addons} = await client.mainRoot.listAddons();
-  const addonActor = addons.filter(actor => actor.id === addonId).pop();
+  const addonFront = await client.mainRoot.getAddon({ id: addonId });
+  const addonTarget = await addonFront.connect();
 
-  if (!addonActor) {
+  if (!addonTarget) {
     client.close();
     throw new Error(`No WebExtension Actor found for ${addonId}`);
   }
-
-  const addonTarget = await TargetFactory.forRemoteTab({
-    form: addonActor,
-    client,
-    chrome: true,
-    isTabActor: true,
-  });
 
   return addonTarget;
 }
 
-async function reloadAddon({client}, addonId) {
-  const {addons} = await client.mainRoot.listAddons();
-  const addonActor = addons.filter(actor => actor.id === addonId).pop();
+async function reloadAddon({ client }, addonId) {
+  const addonTargetFront = await client.mainRoot.getAddon({ id: addonId });
 
-  if (!addonActor) {
+  if (!addonTargetFront) {
     client.close();
     throw new Error(`No WebExtension Actor found for ${addonId}`);
   }
 
-  await client.request({
-    to: addonActor.actor,
-    type: "reload",
-  });
+  await addonTargetFront.reload();
 }
 
 // Test helpers related to the AddonManager.
 
 function generateWebExtensionXPI(extDetails) {
-  const addonFile = Extension.generateXPI(extDetails);
-
-  flushJarCache(addonFile.path);
-  Services.ppmm.broadcastAsyncMessage("Extension:FlushJarCache",
-                                      {path: addonFile.path});
-
-  // Remove the file on cleanup if needed.
-  SimpleTest.registerCleanupFunction(() => {
-    flushJarCache(addonFile.path);
-    Services.ppmm.broadcastAsyncMessage("Extension:FlushJarCache",
-                                        {path: addonFile.path});
-
-    if (addonFile.exists()) {
-      OS.File.remove(addonFile.path);
-    }
-  });
-
-  return addonFile;
+  return ExtensionTestCommon.generateXPI(extDetails);
 }
 
-function promiseCompleteInstall(install) {
-  let listener;
-  return new Promise((resolve, reject) => {
-    listener = {
-      onDownloadFailed: reject,
-      onDownloadCancelled: reject,
-      onInstallFailed: reject,
-      onInstallCancelled: reject,
-      onInstallEnded: resolve,
-      onInstallPostponed: reject,
-    };
-
-    install.addListener(listener);
-    install.install();
-  }).then(() => {
-    install.removeListener(listener);
-    return install;
-  });
-}
-
-function promiseInstallFile(file) {
-  return AddonManager.getInstallForFile(file).then(install => {
-    if (!install) {
-      throw new Error(`No AddonInstall created for ${file.path}`);
-    }
-
-    if (install.state != AddonManager.STATE_DOWNLOADED) {
-      throw new Error(`Expected file to be downloaded for install of ${file.path}`);
-    }
-
-    return promiseCompleteInstall(install);
-  });
-}
-
-function promiseWebExtensionStartup() {
-  return new Promise(resolve => {
-    let listener = (evt, extension) => {
-      Management.off("ready", listener);
-      resolve(extension);
-    };
-
-    Management.on("ready", listener);
-  });
-}
-
-function promiseWebExtensionShutdown() {
-  return new Promise(resolve => {
-    let listener = (event, extension) => {
-      Management.off("shutdown", listener);
-      resolve(extension);
-    };
-
-    Management.on("shutdown", listener);
-  });
-}
+let {
+  promiseInstallFile,
+  promiseWebExtensionStartup,
+  promiseWebExtensionShutdown,
+} = AddonTestUtils;

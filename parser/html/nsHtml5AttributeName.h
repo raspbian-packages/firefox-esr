@@ -64,18 +64,18 @@ class nsHtml5AttributeName {
   static int32_t* XLINK_NS;
 
  public:
-  static nsAtom** ALL_NO_PREFIX;
+  static nsStaticAtom** ALL_NO_PREFIX;
 
  private:
-  static nsAtom** XMLNS_PREFIX;
-  static nsAtom** XLINK_PREFIX;
-  static nsAtom** XML_PREFIX;
-  static nsAtom** SVG_DIFFERENT(nsAtom* name, nsAtom* camel);
-  static nsAtom** MATH_DIFFERENT(nsAtom* name, nsAtom* camel);
-  static nsAtom** COLONIFIED_LOCAL(nsAtom* name, nsAtom* suffix);
+  static nsStaticAtom** XMLNS_PREFIX;
+  static nsStaticAtom** XLINK_PREFIX;
+  static nsStaticAtom** XML_PREFIX;
+  static RefPtr<nsAtom>* SVG_DIFFERENT(nsAtom* name, nsAtom* camel);
+  static RefPtr<nsAtom>* MATH_DIFFERENT(nsAtom* name, nsAtom* camel);
+  static RefPtr<nsAtom>* COLONIFIED_LOCAL(nsAtom* name, nsAtom* suffix);
 
  public:
-  static nsAtom** SAME_LOCAL(nsAtom* name);
+  static RefPtr<nsAtom>* SAME_LOCAL(nsAtom* name);
   inline static int32_t levelOrderBinarySearch(jArray<int32_t, int32_t> data,
                                                int32_t key) {
     int32_t n = data.length;
@@ -154,10 +154,11 @@ class nsHtml5AttributeName {
 
  private:
   int32_t* uri;
-  nsAtom** local;
-  nsAtom** prefix;
+  RefPtr<nsAtom>* local;
+  nsStaticAtom** prefix;
   bool custom;
-  nsHtml5AttributeName(int32_t* uri, nsAtom** local, nsAtom** prefix);
+  nsHtml5AttributeName(int32_t* uri, RefPtr<nsAtom>* local,
+                       nsStaticAtom** prefix);
 
  public:
   nsHtml5AttributeName();
@@ -174,7 +175,7 @@ class nsHtml5AttributeName {
   ~nsHtml5AttributeName();
   int32_t getUri(int32_t mode);
   nsAtom* getLocal(int32_t mode);
-  nsAtom* getPrefix(int32_t mode);
+  nsStaticAtom* getPrefix(int32_t mode);
   bool equalsAnother(nsHtml5AttributeName* another);
   static nsHtml5AttributeName* ATTR_ALT;
   static nsHtml5AttributeName* ATTR_DIR;
@@ -203,7 +204,6 @@ class nsHtml5AttributeName {
   static nsHtml5AttributeName* ATTR_K4;
   static nsHtml5AttributeName* ATTR_XML_SPACE;
   static nsHtml5AttributeName* ATTR_XML_LANG;
-  static nsHtml5AttributeName* ATTR_XML_BASE;
   static nsHtml5AttributeName* ATTR_ARIA_GRAB;
   static nsHtml5AttributeName* ATTR_ARIA_VALUEMAX;
   static nsHtml5AttributeName* ATTR_ARIA_LABELLEDBY;

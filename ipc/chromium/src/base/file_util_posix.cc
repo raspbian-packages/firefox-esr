@@ -211,7 +211,7 @@ int ReadFile(const FilePath& filename, char* data, int size) {
   if (fd < 0) return -1;
 
   int ret_value = HANDLE_EINTR(read(fd, data, size));
-  HANDLE_EINTR(close(fd));
+  IGNORE_EINTR(close(fd));
   return ret_value;
 }
 
@@ -225,13 +225,13 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
     ssize_t bytes_written_partial = HANDLE_EINTR(
         write(fd, data + bytes_written_total, size - bytes_written_total));
     if (bytes_written_partial < 0) {
-      HANDLE_EINTR(close(fd));
+      IGNORE_EINTR(close(fd));
       return -1;
     }
     bytes_written_total += bytes_written_partial;
   } while (bytes_written_total < size);
 
-  HANDLE_EINTR(close(fd));
+  IGNORE_EINTR(close(fd));
   return bytes_written_total;
 }
 
@@ -263,12 +263,12 @@ bool GetTempDir(FilePath* path) {
 }
 
 bool GetShmemTempDir(FilePath* path) {
-#if defined(OS_LINUX) && !defined(ANDROID)
+#  if defined(OS_LINUX) && !defined(ANDROID)
   *path = FilePath("/dev/shm");
   return true;
-#else
+#  else
   return GetTempDir(path);
-#endif
+#  endif
 }
 
 bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
@@ -306,8 +306,8 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
     } while (bytes_written_per_read < bytes_read);
   }
 
-  if (HANDLE_EINTR(close(infile)) < 0) result = false;
-  if (HANDLE_EINTR(close(outfile)) < 0) result = false;
+  if (IGNORE_EINTR(close(infile)) < 0) result = false;
+  if (IGNORE_EINTR(close(outfile)) < 0) result = false;
 
   return result;
 }

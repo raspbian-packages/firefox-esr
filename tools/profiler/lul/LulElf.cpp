@@ -69,7 +69,12 @@
 
 #if defined(GP_PLAT_arm_android) && !defined(SHT_ARM_EXIDX)
 // bionic and older glibsc don't define it
-#define SHT_ARM_EXIDX (SHT_LOPROC + 1)
+#  define SHT_ARM_EXIDX (SHT_LOPROC + 1)
+#endif
+
+// Old Linux header doesn't define EM_AARCH64
+#ifndef EM_AARCH64
+#  define EM_AARCH64 183
 #endif
 
 // This namespace contains helper functions.
@@ -80,9 +85,9 @@ using lul::FindElfSectionByName;
 using lul::GetOffset;
 using lul::IsValidElf;
 using lul::Module;
+using lul::scoped_ptr;
 using lul::Summariser;
 using lul::UniqueStringUniverse;
-using lul::scoped_ptr;
 using std::set;
 using std::string;
 using std::vector;
@@ -160,6 +165,9 @@ bool DwarfCFIRegisterNames(const typename ElfClass::Ehdr* elf_header,
       return true;
     case EM_MIPS:
       *num_dw_regnames = DwarfCFIToModule::RegisterNames::MIPS();
+      return true;
+    case EM_AARCH64:
+      *num_dw_regnames = DwarfCFIToModule::RegisterNames::ARM64();
       return true;
     default:
       MOZ_ASSERT(0);
@@ -421,6 +429,8 @@ const char* ElfArchitecture(const typename ElfClass::Ehdr* elf_header) {
       return "x86";
     case EM_ARM:
       return "arm";
+    case EM_AARCH64:
+      return "arm64";
     case EM_MIPS:
       return "mips";
     case EM_PPC64:

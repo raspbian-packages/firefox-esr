@@ -8,7 +8,6 @@
 
 #include "nscore.h"
 
-class nsIDOMNode;
 class nsINode;
 
 namespace mozilla {
@@ -18,13 +17,10 @@ class TextEditor;
 class TextEditUtils final {
  public:
   // from TextEditRules:
-  static bool IsBody(nsIDOMNode* aNode);
   static bool IsBody(nsINode* aNode);
-  static bool IsBreak(nsIDOMNode* aNode);
   static bool IsBreak(nsINode* aNode);
-  static bool IsMozBR(nsIDOMNode* aNode);
   static bool IsMozBR(nsINode* aNode);
-  static bool HasMozAttr(nsIDOMNode* aNode);
+  static bool HasMozAttr(nsINode* aNode);
 };
 
 /***************************************************************************
@@ -33,11 +29,12 @@ class TextEditUtils final {
  */
 class AutoEditInitRulesTrigger final {
  private:
-  TextEditor* mTextEditor;
+  RefPtr<TextEditor> mTextEditor;
   nsresult& mResult;
 
  public:
   AutoEditInitRulesTrigger(TextEditor* aTextEditor, nsresult& aResult);
+  MOZ_CAN_RUN_SCRIPT
   ~AutoEditInitRulesTrigger();
 };
 

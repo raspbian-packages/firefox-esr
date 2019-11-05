@@ -93,7 +93,7 @@ class nsScannerBufferList {
    */
   class Position {
    public:
-    Position() {}
+    Position() : mBuffer(nullptr), mPosition(nullptr) {}
 
     Position(Buffer* buffer, char16_t* position)
         : mBuffer(buffer), mPosition(position) {}
@@ -311,8 +311,8 @@ class nsScannerIterator {
 
  public:
   // nsScannerIterator();                                       // auto-generate
-  // default constructor is OK nsScannerIterator( const nsScannerIterator& );
-  // // auto-generated copy-constructor OK nsScannerIterator& operator=( const
+  // default constructor is OK nsScannerIterator( const nsScannerIterator& ); //
+  // auto-generated copy-constructor OK nsScannerIterator& operator=( const
   // nsScannerIterator& );  // auto-generated copy-assignment operator OK
 
   inline void normalize_forward();

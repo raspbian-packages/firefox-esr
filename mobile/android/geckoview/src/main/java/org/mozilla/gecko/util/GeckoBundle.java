@@ -35,24 +35,10 @@ public final class GeckoBundle implements Parcelable {
     @WrapForJNI(calledFrom = "gecko")
     private static final boolean[] EMPTY_BOOLEAN_ARRAY = new boolean[0];
     private static final int[] EMPTY_INT_ARRAY = new int[0];
+    private static final long[] EMPTY_LONG_ARRAY = new long[0];
     private static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final GeckoBundle[] EMPTY_BUNDLE_ARRAY = new GeckoBundle[0];
-
-    @WrapForJNI(calledFrom = "gecko")
-    private static Object box(boolean b) { return b; }
-    @WrapForJNI(calledFrom = "gecko")
-    private static Object box(int i) { return i; }
-    @WrapForJNI(calledFrom = "gecko")
-    private static Object box(double d) { return d; }
-    @WrapForJNI(calledFrom = "gecko")
-    private static boolean unboxBoolean(Boolean b) { return b; }
-    @WrapForJNI(calledFrom = "gecko")
-    private static int unboxInteger(Number i) { return i.intValue(); }
-    @WrapForJNI(calledFrom = "gecko")
-    private static double unboxDouble(Number d) { return d.doubleValue(); }
-    @WrapForJNI(calledFrom = "gecko")
-    private static String unboxString(Object s) { return s.toString(); }
 
     private SimpleArrayMap<String, Object> mMap;
 
@@ -248,6 +234,52 @@ public final class GeckoBundle implements Parcelable {
     }
 
     /**
+     * Returns the value associated with an int/double mapping as a long value, or
+     * defaultValue if the mapping does not exist.
+     *
+     * @param key Key to look for.
+     * @param defaultValue Value to return if mapping does not exist.
+     * @return Long value
+     */
+    public long getLong(final String key, final long defaultValue) {
+        final Object value = mMap.get(key);
+        return value == null ? defaultValue : ((Number) value).longValue();
+    }
+
+    /**
+     * Returns the value associated with an int/double mapping as a long value, or
+     * 0 if the mapping does not exist.
+     *
+     * @param key Key to look for.
+     * @return Long value
+     */
+    public long getLong(final String key) {
+        return getLong(key, 0L);
+    }
+
+    private static long[] getLongArray(final Object array) {
+        final int len = Array.getLength(array);
+        final long[] ret = new long[len];
+        for (int i = 0; i < len; i++) {
+            ret[i] = ((Number) Array.get(array, i)).longValue();
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the value associated with an int/double array mapping as a long array, or
+     * null if the mapping does not exist.
+     *
+     * @param key Key to look for.
+     * @return Long array value
+     */
+    public long[] getLongArray(final String key) {
+        final Object value = mMap.get(key);
+        return value == null ? null :
+               Array.getLength(value) == 0 ? EMPTY_LONG_ARRAY : getLongArray(value);
+    }
+
+    /**
      * Returns the value associated with a String mapping, or defaultValue if the mapping
      * does not exist.
      *
@@ -360,20 +392,20 @@ public final class GeckoBundle implements Parcelable {
     }
 
     private void put(final String key, final Object value) {
-      // We intentionally disallow a generic put() method for type safety and sanity. For
-      // example, we assume elsewhere in the code that a value belongs to a small list of
-      // predefined types, and cannot be any arbitrary object. If you want to put an
-      // Object in the bundle, check the type of the Object first and call the
-      // corresponding put methods. For example,
-      //
-      //   if (obj instanceof Integer) {
-      //     bundle.putInt(key, (Integer) key);
-      //   } else if (obj instanceof String) {
-      //     bundle.putString(key, (String) obj);
-      //   } else {
-      //     throw new IllegalArgumentException("unexpected type");
-      //   }
-      throw new UnsupportedOperationException();
+        // We intentionally disallow a generic put() method for type safety and sanity. For
+        // example, we assume elsewhere in the code that a value belongs to a small list of
+        // predefined types, and cannot be any arbitrary object. If you want to put an
+        // Object in the bundle, check the type of the Object first and call the
+        // corresponding put methods. For example,
+        //
+        //   if (obj instanceof Integer) {
+        //     bundle.putInt(key, (Integer) key);
+        //   } else if (obj instanceof String) {
+        //     bundle.putString(key, (String) obj);
+        //   } else {
+        //     throw new IllegalArgumentException("unexpected type");
+        //   }
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -460,15 +492,7 @@ public final class GeckoBundle implements Parcelable {
      * @param value Value to map to.
      */
     public void putDoubleArray(final String key, final Double[] value) {
-        if (value == null) {
-            mMap.put(key, null);
-            return;
-        }
-        final double[] array = new double[value.length];
-        for (int i = 0; i < value.length; i++) {
-            array[i] = value[i];
-        }
-        mMap.put(key, array);
+        putDoubleArray(key, Arrays.asList(value));
     }
 
     /**
@@ -517,15 +541,7 @@ public final class GeckoBundle implements Parcelable {
      * @param value Value to map to.
      */
     public void putIntArray(final String key, final Integer[] value) {
-        if (value == null) {
-            mMap.put(key, null);
-            return;
-        }
-        final int[] array = new int[value.length];
-        for (int i = 0; i < value.length; i++) {
-            array[i] = value[i];
-        }
-        mMap.put(key, array);
+        putIntArray(key, Arrays.asList(value));
     }
 
     /**
@@ -543,6 +559,63 @@ public final class GeckoBundle implements Parcelable {
         int i = 0;
         for (final Integer element : value) {
             array[i++] = element;
+        }
+        mMap.put(key, array);
+    }
+
+    /**
+     * Map a key to a long value stored as a double value.
+     *
+     * @param key Key to map.
+     * @param value Value to map to.
+     */
+    public void putLong(final String key, final long value) {
+        mMap.put(key, (double) value);
+    }
+
+    /**
+     * Map a key to a long array value stored as a double array value.
+     *
+     * @param key Key to map.
+     * @param value Value to map to.
+     */
+    public void putLongArray(final String key, final long[] value) {
+        if (value == null) {
+            mMap.put(key, null);
+            return;
+        }
+        final double[] array = new double[value.length];
+        for (int i = 0; i < value.length; i++) {
+            array[i] = (double) value[i];
+        }
+        mMap.put(key, array);
+    }
+
+    /**
+     * Map a key to a long array value stored as a double array value.
+     *
+     * @param key Key to map.
+     * @param value Value to map to.
+     */
+    public void putLongArray(final String key, final Long[] value) {
+        putLongArray(key, Arrays.asList(value));
+    }
+
+    /**
+     * Map a key to a long array value stored as a double array value.
+     *
+     * @param key Key to map.
+     * @param value Value to map to.
+     */
+    public void putLongArray(final String key, final Collection<Long> value) {
+        if (value == null) {
+            mMap.put(key, null);
+            return;
+        }
+        final double[] array = new double[value.size()];
+        int i = 0;
+        for (final Long element : value) {
+            array[i++] = (double) element;
         }
         mMap.put(key, array);
     }
@@ -667,7 +740,7 @@ public final class GeckoBundle implements Parcelable {
     }
 
     @Override // Object
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         if (!(other instanceof GeckoBundle)) {
             return false;
         }
@@ -852,7 +925,7 @@ public final class GeckoBundle implements Parcelable {
         return new GeckoBundle(keys, values);
     }
 
-    private static Object fromJSONValue(Object value) throws JSONException {
+    private static Object fromJSONValue(final Object value) throws JSONException {
         if (value == null || value == JSONObject.NULL) {
             return null;
         } else if (value instanceof JSONObject) {

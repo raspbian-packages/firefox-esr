@@ -4,8 +4,8 @@
 
 do-not-track-description = Enviar um sinal “Do Not Track” significando que não pretende ser monitorizado(a)
 do-not-track-learn-more = Saber mais
-do-not-track-option-default =
-    .label = Apenas ao utilizar a Proteção contra monitorização
+do-not-track-option-default-content-blocking-known =
+    .label = Apenas quando o { -brand-short-name } está definido para bloquear trackers conhecidos
 do-not-track-option-always =
     .label = Sempre
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Opções
            *[other] Preferências
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,10 +34,11 @@ policies-notice =
         [windows] A sua organização desativou a habilidade de alterar algumas opções.
        *[other] A sua organização desativou a habilidade de alterar algumas preferências.
     }
+managed-notice = O seu navegador está a ser gerido pela sua organização.
 pane-general-title = Geral
 category-general =
     .tooltiptext = { pane-general-title }
-pane-home-title = Página inicial
+pane-home-title = Início
 category-home =
     .tooltiptext = { pane-home-title }
 pane-search-title = Pesquisa
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Privacidade e Segurança
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Conta Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Apoio do { -brand-short-name }
+addons-button-label = Extensões e temas
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Reiniciar o { -brand-short-name }
 should-restart-ok = Reiniciar o { -brand-short-name } agora
 cancel-no-restart-button = Cancelar
 restart-later = Reiniciar mais tarde
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Uma extensão, <img data-l10n-name="icon"/> { $name }, está a controlar a sua página inicial.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Uma extensão, <img data-l10n-name="icon"/> { $name }, está a controlar a sua página Novo separador.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Uma extensão, <img data-l10n-name="icon"/> { $name }, está a controlar esta definição.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Uma extensão, <img data-l10n-name="icon"/> { $name }, definiu o seu motor de pesquisa predefinido.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Uma extensão, <img data-l10n-name="icon"/> { $name }, requer separadores contentores.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Uma extensão,<img data-l10n-name="icon"/>{ $name }, está a controlar esta definição.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Uma extensão, <img data-l10n-name="icon"/> { $name }, está a controlar como o { -brand-short-name } se liga à internet.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Para ativar esta extensão vá a <img data-l10n-name="addons-icon"/> Extras no menu <img data-l10n-name="menu-icon"/>.
 
 ## Preferences UI Search Results
 
@@ -93,7 +124,7 @@ separate-profile-mode =
     .label = Permitir que o { -brand-short-name } e o Firefox sejam utilizados em simultâneo
 use-firefox-sync = Dica: Isto utiliza perfis separados. Utilize o { -sync-brand-short-name } para partilhar dados entre eles.
 get-started-not-logged-in = Iniciar sessão no { -sync-brand-short-name }…
-get-started-configured = Abrir as preferências do { -sync-brand-short-name }
+get-started-configured = Abrir preferências do { -sync-brand-short-name }
 always-check-default =
     .label = Verificar sempre se o { -brand-short-name } é o seu navegador predefinido
     .accesskey = V
@@ -102,17 +133,13 @@ is-not-default = O { -brand-short-name } não é o seu navegador predefinido
 set-as-my-default-browser =
     .label = Tornar predefinido…
     .accesskey = d
-startup-page = Quando o { -brand-short-name } iniciar
-    .accesskey = i
-startup-user-homepage =
-    .label = Mostrar a sua página inicial
-startup-blank-page =
-    .label = Mostrar uma página em branco
-startup-prev-session =
-    .label = Mostrar as suas janelas e separadores abertos da última vez
+startup-restore-previous-session =
+    .label = Restaurar sessão anterior
+    .accesskey = s
+startup-restore-warn-on-quit =
+    .label = Avisar-lhe ao sair do navegador
 disable-extension =
     .label = Desativar extensão
-home-page-header = Página inicial
 tabs-group-header = Separadores
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab permuta em ciclo os separadores pela ordem dos mais recentemente utilizados
@@ -133,22 +160,22 @@ show-tabs-in-taskbar =
     .label = Pré-visualizar separadores na barra de tarefas do Windows
     .accesskey = s
 browser-containers-enabled =
-    .label = Ativar separadores isolados
+    .label = Ativar separadores contentores
     .accesskey = n
 browser-containers-learn-more = Saber mais
 browser-containers-settings =
     .label = Definições…
     .accesskey = i
-containers-disable-alert-title = Fechar todos os separadores isolados?
+containers-disable-alert-title = Fechar todos os separadores contentores?
 containers-disable-alert-desc =
     { $tabCount ->
-        [one] Se desativar os separadores isolados agora, { $tabCount } separador isolado será fechado. Tem a certeza de que pretende desativar os separadores isolados?
-       *[other] Se desativar os separadores isolados agora, { $tabCount } separadores isolados serão fechados. Tem a certeza de que pretende desativar os separadores isolados?
+        [one] Se desativar os separadores contentores agora, { $tabCount } contentor separador será fechado. Tem a certeza de que pretende desativar os separadores contentores?
+       *[other] Se desativar os separadores contentores agora, { $tabCount } separadores contentores serão fechados. Tem a certeza de que pretende desativar os separadores contentores?
     }
 containers-disable-alert-ok-button =
     { $tabCount ->
-        [one] Fechar { $tabCount } separador isolado
-       *[other] Fechar { $tabCount } separadores isolados
+        [one] Fechar { $tabCount } separador contentor
+       *[other] Fechar { $tabCount } separadores contentores
     }
 containers-disable-alert-cancel-button = Manter ativado
 containers-remove-alert-title = Remover este contentor?
@@ -156,8 +183,8 @@ containers-remove-alert-title = Remover este contentor?
 #   $count (Number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
-        [one] Se remover este contentor agora, { $count } separador isolado será fechado. Tem a certeza de que pretende remover este contentor?
-       *[other] Se remover este contentor agora, { $count } separadores isolados serão fechados. Tem a certeza de que pretende remover este contentor?
+        [one] Se remover este contentor agora, { $count } separador contentor será fechado. Tem a certeza de que pretende remover este contentor?
+       *[other] Se remover este contentor agora, { $count } separadores contentores serão fechados. Tem a certeza de que pretende remover este contentor?
     }
 containers-remove-ok-button = Remover este contentor
 containers-remove-cancel-button = Não remover este contentor
@@ -181,6 +208,12 @@ choose-language-description = Escolha o seu idioma preferencial para apresentar 
 choose-button =
     .label = Escolher…
     .accesskey = o
+choose-browser-language-description = Escolha os idiomas utilizados para mostrar menus, mensagens, e notificações do { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Definir alternativas
+    .accesskey = l
+confirm-browser-language-change-description = Reinicie o { -brand-short-name } para aplicar estas alterações
+confirm-browser-language-change-button = Aplicar e reiniciar
 translate-web-pages =
     .label = Traduzir conteúdo web
     .accesskey = T
@@ -191,7 +224,7 @@ translate-exceptions =
     .label = Exceções…
     .accesskey = x
 check-user-spelling =
-    .label = Corrigir ortografia ao escrever
+    .label = Verificar a sua ortografia enquanto escreve
     .accesskey = t
 
 ## General Section - Files and Applications
@@ -232,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Saber mais
 update-application-title = Atualizações do { -brand-short-name }
 update-application-description = Mantenha o { -brand-short-name } atualizado para o melhor desempenho, estabilidade, e segurança.
-update-application-info = Versão { $version } <a>Novidades</a>
 update-application-version = Versão { $version } <a data-l10n-name="learn-more">Novidades</a>
 update-history =
     .label = Mostrar histórico de atualizações…
@@ -247,12 +279,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Nunca procurar atualizações (não recomendado)
     .accesskey = N
+update-application-warning-cross-user-setting = Esta definição irá ser aplicada a todas as contas do Windows e perfis do { -brand-short-name } a utilizar esta instalação do { -brand-short-name }.
 update-application-use-service =
     .label = Utilizar um serviço em segundo plano para instalar atualizações
     .accesskey = t
 update-enable-search-update =
     .label = Atualizar motores de pesquisa automaticamente
     .accesskey = e
+update-pref-write-failure-title = Falha na escrita
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Não foi possível guardar a preferência. Não foi possível escrever no ficheiro: { $path }
+update-setting-write-failure-title = Erro ao guardar as preferências de atualização
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    O { -brand-short-name } encontrou um erro e não guardou esta alteração. Note que definir esta atualização requer permissão para escrever no ficheiro abaixo. Você ou um administrador do sistema pode resolver o erro ao conceder ao grupo Utilizadores controlo total para este ficheiro.
+    
+    Não foi possível escrever para ficheiro: { $path }
+update-in-progress-title = Atualização em progresso
+update-in-progress-message = Pretende que o { -brand-short-name } continue com esta atualização?
+update-in-progress-ok-button = &Descartar
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Continuar
 
 ## General Section - Performance
 
@@ -268,7 +320,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Limite de processos de conteúdo
     .accesskey = L
 performance-limit-content-process-enabled-desc = Processos de conteúdo adicionais podem melhorar o desempenho ao utilizar múltiplos separadores, mas também irá consumir mais memória.
-performance-limit-content-process-disabled-desc = Modificar o número de processos de conteúdo é apenas possível com o multi-processo do { -brand-short-name }. <a>Saber como verificar se o multi-processo está ativado</a>
 performance-limit-content-process-blocked-desc = Modificar o número de processos de conteúdo é apenas possível com o multi-processo do { -brand-short-name }. <a data-l10n-name="learn-more">Saber como verificar se o multi-processo está ativado</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -285,7 +336,7 @@ browsing-use-smooth-scrolling =
     .label = Utilizar deslocação suave
     .accesskey = u
 browsing-use-onscreen-keyboard =
-    .label = Mostrar um teclado de toque quando necessário
+    .label = Mostrar um teclado tátil quando necessário
     .accesskey = t
 browsing-use-cursor-navigation =
     .label = Utilizar sempre as teclas do cursor para navegar entre páginas
@@ -293,10 +344,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Pesquisar texto quando começar a escrever
     .accesskey = x
+browsing-cfr-recommendations =
+    .label = Recomendar extensões enquanto navega
+    .accesskey = R
+browsing-cfr-features =
+    .label = Recomendar funcionalidades enquanto navega
+    .accesskey = f
+browsing-cfr-recommendations-learn-more = Saber mais
 
 ## General Section - Proxy
 
-network-proxy-title = Proxy de rede
+network-settings-title = Definições de rede
+network-proxy-connection-description = Configure como o { -brand-short-name } se liga à internet.
 network-proxy-connection-learn-more = Saber mais
 network-proxy-connection-settings =
     .label = Definições…
@@ -317,7 +376,7 @@ home-restore-defaults =
 # "Firefox" should be treated as a brand and kept in English,
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
-    .label = Página inicial do Firefox (Predefinição)
+    .label = Início do Firefox (Predefinição)
 home-mode-choice-custom =
     .label = URLs personalizados...
 home-mode-choice-blank =
@@ -338,9 +397,6 @@ use-current-pages =
 choose-bookmark =
     .label = Utilizar marcador…
     .accesskey = m
-restore-default =
-    .label = Restaurar predefinição
-    .accesskey = R
 
 ## Search Section
 
@@ -389,7 +445,7 @@ search-keyword-warning-bookmark = Escolheu uma palavra chave que está a ser uti
 ## Containers Section
 
 containers-back-link = « Retroceder
-containers-header = Separadores isolados
+containers-header = Separadores contentores
 containers-add-button =
     .label = Adicionar novo contentor
     .accesskey = A
@@ -423,18 +479,18 @@ sync-mobile-promo = Transfira o Firefox para <img data-l10n-name="android-icon"/
 sync-profile-picture =
     .tooltiptext = Alterar imagem de perfil
 sync-disconnect =
-    .label = Desligar…
+    .label = Desassociar…
     .accesskey = D
 sync-manage-account = Gerir conta
     .accesskey = o
 sync-signedin-unverified = { $email } não está verificado.
-sync-signedin-login-failure = Inicie sessão para voltar a estabelecer ligação { $email }
+sync-signedin-login-failure = Por favor inicie sessão para religar { $email }
 sync-resend-verification =
     .label = Reenviar verificação
     .accesskey = r
 sync-remove-account =
     .label = Remover conta
-    .accesskey = p
+    .accesskey = R
 sync-sign-in =
     .label = Iniciar sessão
     .accesskey = c
@@ -484,8 +540,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Guardar
     .accesskey = r
-sync-mobilepromo-single = Ligar outro dispositivo
-sync-mobilepromo-multi = Gerir dispositivos
+sync-connect-another-device = Ligar outro dispositivo
+sync-manage-devices = Gerir dispositivos
+sync-fxa-begin-pairing = Emparelhar um dispositivo
 sync-tos-link = Termos de serviço
 sync-fxa-privacy-notice = Aviso de privacidade
 
@@ -495,7 +552,7 @@ privacy-header = Privacidade do navegador
 
 ## Privacy Section - Forms
 
-forms-header = Formulários e palavras-passe
+logins-header = Credenciais e palavras-passe
 forms-ask-to-save-logins =
     .label = Perguntar para guardar credenciais e palavras-passe para websites
     .accesskey = r
@@ -537,9 +594,9 @@ history-dontremember-description = O { -brand-short-name } irá utilizar as mesm
 history-private-browsing-permanent =
     .label = Utilizar sempre o modo de navegação privada
     .accesskey = p
-history-remember-option =
-    .label = Memorizar o meu histórico de navegação e de transferências
-    .accesskey = h
+history-remember-browser-option =
+    .label = Memorizar histórico de navegação e de transferências
+    .accesskey = z
 history-remember-search-option =
     .label = Memorizar histórico de pesquisas e de formulários
     .accesskey = f
@@ -556,36 +613,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookies e dados de sites
+sitedata-total-size-calculating = A calcular tamanho dos dados de sites e cache…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Os seus cookies, dados de sites e cache estão atualmente a utilizar { $value } { $unit } de espaço em disco.
 sitedata-learn-more = Saber mais
-sitedata-accept-cookies-option =
-    .label = Aceitar cookies e dados de sites de websites (recomendado)
+sitedata-delete-on-close =
+    .label = Apagar cookies e dados de sites quando o { -brand-short-name } é fechado
+    .accesskey = c
+sitedata-delete-on-close-private-browsing = No modo de navegação privada permanente, os cookies e dados do site irão ser sempre limpos quando o { -brand-short-name } for fechado.
+sitedata-allow-cookies-option =
+    .label = Aceitar cookies e dados de sites
     .accesskey = A
-sitedata-block-cookies-option =
-    .label = Bloquear cookies e dados de sites (pode fazer com que os websites deixam de funcionar)
+sitedata-disallow-cookies-option =
+    .label = Bloquear cookies e dados de sites
     .accesskey = B
-sitedata-keep-until = Manter até
-    .accesskey = a
-sitedata-keep-until-expire =
-    .label = expirarem
-sitedata-keep-until-closed =
-    .label = o { -brand-short-name } ser fechado
-sitedata-accept-third-party-desc = Aceitar cookies de terceiros e dados de sites
-    .accesskey = s
-sitedata-accept-third-party-always-option =
-    .label = Sempre
-sitedata-accept-third-party-visited-option =
-    .label = Dos visitados
-sitedata-accept-third-party-never-option =
-    .label = Nunca
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Tipo bloqueado
+    .accesskey = T
+sitedata-option-block-trackers =
+    .label = Trackers de terceiros
+sitedata-option-block-unvisited =
+    .label = Cookies de sites não visitados
+sitedata-option-block-all-third-party =
+    .label = Todos os cookies de terceiros (pode causar com que websites quebrem)
+sitedata-option-block-all =
+    .label = Todos os cookies (irá causar com que websites quebrem)
 sitedata-clear =
     .label = Limpar dados…
     .accesskey = L
 sitedata-settings =
     .label = Gerir dados…
     .accesskey = G
-sitedata-cookies-exceptions =
-    .label = Exceções…
-    .accesskey = E
+sitedata-cookies-permissions =
+    .label = Gerir permissões…
+    .accesskey = p
 
 ## Privacy Section - Address Bar
 
@@ -602,30 +666,73 @@ addressbar-locbar-openpage-option =
     .accesskey = o
 addressbar-suggestions-settings = Alterar preferências para as sugestões dos motores de pesquisa
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Bloqueio de conteúdo
+content-blocking-description = Bloqueie conteúdo de terceiros que lhe monitoriza pela web. Controle quanto da sua atividade online é armazenada e partilhada entre websites.
+content-blocking-section-description = Proteja a sua privacidade enquanto navega. Bloqueie conteúdo invisível que monitoriza os sites que visita e lhe perfila. Bloquear parte deste conteúdo pode fazer com que as páginas carreguem mais rapidamente.
+content-blocking-learn-more = Saber mais
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Padrão
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = Estrito
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Personalizado
+    .accesskey = e
+content-blocking-standard-description = Apenas bloqueia trackers em janelas privadas.
+content-blocking-standard-desc = Equilibrado para proteção e desempenho. Permite alguns trackers para que os websites funcionem corretamente.
+content-blocking-strict-desc = Bloqueia todos os trackers que o { -brand-short-name } deteta. Pode causar com que alguns sites quebrem.
+content-blocking-strict-description = Proteção mais forte, pode causar com que alguns sites quebrem.
+content-blocking-custom-desc = Escolha o que bloquear.
+content-blocking-private-trackers = Trackers conhecidos apenas em janelas privadas
+content-blocking-third-party-cookies = Cookies de monitorização de terceiros
+content-blocking-all-cookies = Todos os cookies
+content-blocking-unvisited-cookies = Cookies de sites não visitados
+content-blocking-all-windows-trackers = Trackers conhecidos em todas as janelas
+content-blocking-all-third-party-cookies = Todos os cookies de terceiros
+content-blocking-cryptominers = Cryptominers
+content-blocking-fingerprinters = Fingerprinters
+content-blocking-warning-title = Atenção!
+content-blocking-warning-description = Bloquear conteúdo pode causar com que alguns websites quebrem. É fácil desativar o bloqueio para sites em que confia.
+content-blocking-learn-how = Saber mais
+content-blocking-reload-description = Irá precisar de recarregar os seus separadores para aplicar estas alterações.
+content-blocking-reload-tabs-button =
+    .label = Recarregar todos os separadores
+    .accesskey = R
+content-blocking-trackers-label =
+    .label = Trackers
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = Em todas as janelas
+    .accesskey = a
+content-blocking-option-private =
+    .label = Apenas em janelas privadas
+    .accesskey = p
+content-blocking-tracking-protection-change-block-list = Alterar lista de bloqueio
+content-blocking-cookies-label =
+    .label = Cookies
+    .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = Mais informação
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Cryptominers
+    .accesskey = y
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Fingerprinters
+    .accesskey = F
+
 ## Privacy Section - Tracking
 
-tracking-header = Proteção contra monitorização
-tracking-desc = A Proteção contra monitorização bloqueia trackers online que recolhem os seus dados de navegação através de múltiplos websites. <a data-l10n-name="learn-more">Saber mais acerca da Proteção contra monitorização e a sua privacidade</a>
-tracking-mode-label = Utilizar Proteção contra monitorização para bloquear trackers conhecidos
-tracking-mode-always =
-    .label = Sempre
-    .accesskey = r
-tracking-mode-private =
-    .label = Apenas em janelas privadas
-    .accesskey = l
-tracking-mode-never =
-    .label = Nunca
-    .accesskey = N
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Utilizar Proteção contra monitorização na Navegação privada para bloquear trackers conhecidos
-    .accesskey = v
-tracking-exceptions =
-    .label = Exceções…
+tracking-manage-exceptions =
+    .label = Gerir exceções…
     .accesskey = x
-tracking-change-block-list =
-    .label = Alterar lista de bloqueio…
-    .accesskey = A
 
 ## Privacy Section - Permissions
 
@@ -650,6 +757,16 @@ permissions-notification-link = Saber mais
 permissions-notification-pause =
     .label = Pausar notificações até o { -brand-short-name } reiniciar
     .accesskey = n
+permissions-block-autoplay-media2 =
+    .label = Bloquear websites de reproduzir som automaticamente
+    .accesskey = B
+permissions-block-autoplay-media-exceptions =
+    .label = Exceções…
+    .accesskey = E
+permissions-autoplay = Reprodução automática
+permissions-autoplay-settings =
+    .label = Definições…
+    .accesskey = f
 permissions-block-popups =
     .label = Bloquear janelas pop-up
     .accesskey = B
@@ -676,13 +793,15 @@ collection-health-report =
     .label = Permitir ao { -brand-short-name } enviar dados técnicos e de interação para a { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Saber mais
+collection-studies =
+    .label = Permitir ao { -brand-short-name } instalar e executar estudos
+collection-studies-link = Ver estudos do { -brand-short-name }
+addon-recommendations =
+    .label = Permitir ao { -brand-short-name } fazer recomendações personalizadas de extensões
+addon-recommendations-link = Saber mais
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Relato de dados está desativado para a configuração desta compilação
-collection-browser-errors =
-    .label = Permitir ao { -brand-short-name } enviar relatórios de erro do navegador (incluindo mensagens de erro) para a { -vendor-short-name }
-    .accesskey = n
-collection-browser-errors-link = Saber mais
 collection-backlogged-crash-reports =
     .label = Permitir ao { -brand-short-name } enviar relatórios de falha pendentes em seu nome
     .accesskey = f
@@ -725,3 +844,36 @@ certs-view =
 certs-devices =
     .label = Dispositivos de segurança…
     .accesskey = D
+space-alert-learn-more-button =
+    .label = Saber mais
+    .accesskey = S
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Abrir opções
+           *[other] Abrir preferências
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] A
+           *[other] A
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] O { -brand-short-name } está a ficar sem espaço em disco. Os conteúdos de websites podem não ser mostrados corretamente. Pode limpar os dados armazenados em Opções > Privacidade e Segurança > Cookies e dados de sites.
+       *[other] O { -brand-short-name } está a ficar sem espaço em disco. Os conteúdos de websites podem não ser mostrados corretamente. Pode limpar os dados armazenados em Preferências > Privacidade e Segurança > Cookies e dados de sites.
+    }
+space-alert-under-5gb-ok-button =
+    .label = OK, entendi
+    .accesskey = K
+space-alert-under-5gb-message = O { -brand-short-name } está a ficar sem espaço em disco. Os conteúdos de websites podem não ser mostrados devidamente. Visite “Saber mais” para otimizar a utilização do seu disco para melhor experiência de navegação.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Ambiente de trabalho
+downloads-folder-name = Transferências
+choose-download-folder-title = Escolha a pasta de transferências:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Guardar ficheiros para { $service-name }

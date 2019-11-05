@@ -5,6 +5,9 @@
 languages-window =
     .title = Idiomas
     .style = width: 30em
+webpage-languages-window =
+    .title = Definições de idioma de páginas web
+    .style = width: 40em
 languages-close-key =
     .key = w
 languages-description = Por vezes, as páginas web são oferecidas em mais do que um idioma. Escolha idiomas para mostrar estas páginas web, por ordem de preferência
@@ -24,3 +27,32 @@ languages-customize-select-language =
 languages-customize-add =
     .label = Adicionar
     .accesskey = A
+# The pattern used to generate strings presented to the user in the
+# locale selection list.
+#
+# Example:
+#   Icelandic [is]
+#   Spanish (Chile) [es-CL]
+#
+# Variables:
+#   $locale (String) - A name of the locale (for example: "Icelandic", "Spanish (Chile)")
+#   $code (String) - Locale code of the locale (for example: "is", "es-CL")
+languages-code-format =
+    .label = { $locale }  [{ $code }]
+languages-active-code-format =
+    .value = { languages-code-format.label }
+browser-languages-window =
+    .title = Definições de idioma do { -brand-short-name }
+    .style = width: 40em
+browser-languages-description = O { -brand-short-name } irá mostrar o primeiro idioma como o seu predefinido e irá mostrar idiomas alternativos se necessário na ordem que estes aparecem.
+browser-languages-search = Pesquisar por mais idiomas...
+browser-languages-searching =
+    .label = A pesquisar por idiomas...
+browser-languages-downloading =
+    .label = A transferir...
+browser-languages-select-language =
+    .label = Selecione um idioma para adicionar…
+    .placeholder = Selecione um idioma para adicionar…
+browser-languages-installed-label = Idiomas instalados
+browser-languages-available-label = Idiomas disponíveis
+browser-languages-error = O { -brand-short-name } não pode atualizar os seus idiomas neste momento. Verifique que está ligado(a) à internet ou tente novamente.

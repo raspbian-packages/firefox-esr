@@ -1,46 +1,71 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-ChromeUtils.import("resource://gre/modules/LightweightThemeManager.jsm");
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://services-common/utils.js");
-ChromeUtils.import("resource://services-sync/engines/prefs.js");
-ChromeUtils.import("resource://services-sync/service.js");
-ChromeUtils.import("resource://services-sync/util.js");
+const { Preferences } = ChromeUtils.import(
+  "resource://gre/modules/Preferences.jsm"
+);
+const { PrefRec } = ChromeUtils.import(
+  "resource://services-sync/engines/prefs.js"
+);
+const { Service } = ChromeUtils.import("resource://services-sync/service.js");
 
 const PREFS_GUID = CommonUtils.encodeBase64URL(Services.appinfo.ID);
 
-loadAddonTestFunctions();
-startupManager();
+const DEFAULT_THEME_ID = "default-theme@mozilla.org";
+const COMPACT_THEME_ID = "firefox-compact-light@mozilla.org";
 
-function makePersona(id) {
-  return {
-    id: id || Math.random().toString(),
-    name: Math.random().toString(),
-    headerURL: "http://localhost:1234/a"
-  };
-}
+AddonTestUtils.init(this);
+AddonTestUtils.createAppInfo(
+  "xpcshell@tests.mozilla.org",
+  "XPCShell",
+  "1",
+  "1.9.2"
+);
+AddonTestUtils.overrideCertDB();
 
 add_task(async function run_test() {
   _("Test fixtures.");
+  // Part of this test ensures the default theme, via the preference
+  // extensions.activeThemeID, is synced correctly - so we do a little
+  // addons initialization to allow this to work.
+
+  // Enable application scopes to ensure the builtin theme is going to
+  // be installed as part of the the addon manager startup.
+  Preferences.set("extensions.enabledScopes", AddonManager.SCOPE_APPLICATION);
+  await AddonTestUtils.promiseStartupManager();
+
+  // Install another built-in theme.
+  await AddonManager.installBuiltinAddon("resource:///modules/themes/light/");
+
+  const defaultThemeAddon = await AddonManager.getAddonByID(DEFAULT_THEME_ID);
+  ok(defaultThemeAddon, "Got an addon wrapper for the default theme");
+
+  const otherThemeAddon = await AddonManager.getAddonByID(COMPACT_THEME_ID);
+  ok(otherThemeAddon, "Got an addon wrapper for the compact theme");
+
+  await otherThemeAddon.enable();
+
   // read our custom prefs file before doing anything.
-  Services.prefs.readDefaultPrefsFromFile(do_get_file("prefs_test_prefs_store.js"));
+  Services.prefs.readDefaultPrefsFromFile(
+    do_get_file("prefs_test_prefs_store.js")
+  );
 
   let engine = Service.engineManager.get("prefs");
   let store = engine._store;
   let prefs = new Preferences();
   try {
+    _("Expect the compact light theme to be active");
+    Assert.strictEqual(prefs.get("extensions.activeThemeID"), COMPACT_THEME_ID);
 
     _("The GUID corresponds to XUL App ID.");
     let allIDs = await store.getAllIDs();
     let ids = Object.keys(allIDs);
     Assert.equal(ids.length, 1);
     Assert.equal(ids[0], PREFS_GUID);
-    Assert.ok(allIDs[PREFS_GUID], true);
+    Assert.ok(allIDs[PREFS_GUID]);
 
-    Assert.ok((await store.itemExists(PREFS_GUID)));
-    Assert.equal(false, (await store.itemExists("random-gibberish")));
+    Assert.ok(await store.itemExists(PREFS_GUID));
+    Assert.equal(false, await store.itemExists("random-gibberish"));
 
     _("Unknown prefs record is created as deleted.");
     let record = await store.createRecord("random-gibberish", "prefs");
@@ -61,37 +86,80 @@ add_task(async function run_test() {
     _("Prefs record contains the correct control prefs.");
     // All control prefs which have the default value and where the pref
     // itself is synced should appear, but with null as the value.
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.int"], null);
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.string"], null);
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.bool"], null);
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.dont.change"], null);
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.nonexistent"], null);
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.default"], null);
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.int"],
+      null
+    );
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.string"],
+      null
+    );
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.bool"],
+      null
+    );
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.dont.change"],
+      null
+    );
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.nonexistent"],
+      null
+    );
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.default"],
+      null
+    );
 
     // but this control pref has a non-default value so that value is synced.
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.turned.off"], false);
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.turned.off"],
+      false
+    );
 
     _("Unsyncable prefs are treated correctly.");
     // Prefs we consider unsyncable (since they are URLs that won't be stable on
     // another firefox) shouldn't be included - neither the value nor the
     // control pref should appear.
     Assert.strictEqual(record.value["testing.unsynced.url"], undefined);
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.unsynced.url"], undefined);
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.unsynced.url"],
+      undefined
+    );
     // Other URLs with user prefs should be synced, though.
-    Assert.strictEqual(record.value["testing.synced.url"], "https://www.example.com");
-    Assert.strictEqual(record.value["services.sync.prefs.sync.testing.synced.url"], null);
+    Assert.strictEqual(
+      record.value["testing.synced.url"],
+      "https://www.example.com"
+    );
+    Assert.strictEqual(
+      record.value["services.sync.prefs.sync.testing.synced.url"],
+      null
+    );
 
     _("Update some prefs, including one that's to be reset/deleted.");
     // This pref is not going to be reset or deleted as there's no "control pref"
     // in either the incoming record or locally.
-    prefs.set("testing.deleted-without-control-pref", "I'm deleted-without-control-pref");
+    prefs.set(
+      "testing.deleted-without-control-pref",
+      "I'm deleted-without-control-pref"
+    );
     // Another pref with only a local control pref.
-    prefs.set("testing.deleted-with-local-control-pref", "I'm deleted-with-local-control-pref");
-    prefs.set("services.sync.prefs.sync.testing.deleted-with-local-control-pref", true);
+    prefs.set(
+      "testing.deleted-with-local-control-pref",
+      "I'm deleted-with-local-control-pref"
+    );
+    prefs.set(
+      "services.sync.prefs.sync.testing.deleted-with-local-control-pref",
+      true
+    );
     // And a pref without a local control pref but one that's incoming.
-    prefs.set("testing.deleted-with-incoming-control-pref", "I'm deleted-with-incoming-control-pref");
+    prefs.set(
+      "testing.deleted-with-incoming-control-pref",
+      "I'm deleted-with-incoming-control-pref"
+    );
     record = new PrefRec("prefs", PREFS_GUID);
     record.value = {
+      "extensions.activeThemeID": DEFAULT_THEME_ID,
       "testing.int": 42,
       "testing.string": "im in ur prefs",
       "testing.bool": false,
@@ -110,88 +178,67 @@ add_task(async function run_test() {
       "services.sync.prefs.dangerously_allow_arbitrary": true,
       "services.sync.prefs.sync.services.sync.prefs.dangerously_allow_arbitrary": true,
     };
+
+    const onceAddonEnabled = AddonTestUtils.promiseAddonEvent("onEnabled");
+
     await store.update(record);
     Assert.strictEqual(prefs.get("testing.int"), 42);
     Assert.strictEqual(prefs.get("testing.string"), "im in ur prefs");
     Assert.strictEqual(prefs.get("testing.bool"), false);
-    Assert.strictEqual(prefs.get("testing.deleted-without-control-pref"), "I'm deleted-without-control-pref");
-    Assert.strictEqual(prefs.get("testing.deleted-with-local-control-pref"), undefined);
-    Assert.strictEqual(prefs.get("testing.deleted-with-incoming-control-pref"), "I'm deleted-with-incoming-control-pref");
-    Assert.strictEqual(prefs.get("testing.dont.change"), "Please don't change me.");
+    Assert.strictEqual(
+      prefs.get("testing.deleted-without-control-pref"),
+      "I'm deleted-without-control-pref"
+    );
+    Assert.strictEqual(
+      prefs.get("testing.deleted-with-local-control-pref"),
+      undefined
+    );
+    Assert.strictEqual(
+      prefs.get("testing.deleted-with-incoming-control-pref"),
+      "I'm deleted-with-incoming-control-pref"
+    );
+    Assert.strictEqual(
+      prefs.get("testing.dont.change"),
+      "Please don't change me."
+    );
     Assert.strictEqual(prefs.get("testing.somepref"), undefined);
-    Assert.strictEqual(prefs.get("testing.synced.url"), "https://www.example.com");
-    Assert.strictEqual(prefs.get("testing.unsynced.url"), "https://www.example.com/2");
+    Assert.strictEqual(
+      prefs.get("testing.synced.url"),
+      "https://www.example.com"
+    );
+    Assert.strictEqual(
+      prefs.get("testing.unsynced.url"),
+      "https://www.example.com/2"
+    );
     Assert.strictEqual(Svc.Prefs.get("prefs.sync.testing.somepref"), undefined);
-    Assert.strictEqual(prefs.get("services.sync.prefs.dangerously_allow_arbitrary"), false);
-    Assert.strictEqual(prefs.get("services.sync.prefs.sync.services.sync.prefs.dangerously_allow_arbitrary"), undefined);
+    Assert.strictEqual(
+      prefs.get("services.sync.prefs.dangerously_allow_arbitrary"),
+      false
+    );
+    Assert.strictEqual(
+      prefs.get(
+        "services.sync.prefs.sync.services.sync.prefs.dangerously_allow_arbitrary"
+      ),
+      undefined
+    );
 
-    _("Enable persona");
-    // Ensure we don't go to the network to fetch personas and end up leaking
-    // stuff.
-    Services.io.offline = true;
-    Assert.ok(!prefs.get("lightweightThemes.selectedThemeID"));
-    Assert.equal(LightweightThemeManager.currentTheme, null);
-
-    let persona1 = makePersona();
-    let persona2 = makePersona();
-    let usedThemes = JSON.stringify([persona1, persona2]);
-    record.value = {
-      "lightweightThemes.selectedThemeID": persona1.id,
-      "lightweightThemes.usedThemes": usedThemes
-    };
-    await store.update(record);
-    Assert.equal(prefs.get("lightweightThemes.selectedThemeID"), persona1.id);
-    Assert.ok(Utils.deepEquals(LightweightThemeManager.currentTheme,
-              persona1));
-
-    _("Disable persona");
-    record.value = {
-      "lightweightThemes.selectedThemeID": null,
-      "lightweightThemes.usedThemes": usedThemes
-    };
-    await store.update(record);
-    Assert.ok(!prefs.get("lightweightThemes.selectedThemeID"));
-    Assert.equal(LightweightThemeManager.currentTheme, null);
+    await onceAddonEnabled;
+    ok(
+      !defaultThemeAddon.userDisabled,
+      "the default theme should have been enabled"
+    );
+    ok(
+      otherThemeAddon.userDisabled,
+      "the compact theme should have been disabled"
+    );
 
     _("Only the current app's preferences are applied.");
     record = new PrefRec("prefs", "some-fake-app");
     record.value = {
-      "testing.int": 98
+      "testing.int": 98,
     };
     await store.update(record);
     Assert.equal(prefs.get("testing.int"), 42);
-
-    _("The light-weight theme preference is handled correctly.");
-    let lastThemeID = undefined;
-    let orig_updateLightWeightTheme = store._updateLightWeightTheme;
-    store._updateLightWeightTheme = function(themeID) {
-      lastThemeID = themeID;
-    };
-    try {
-      record = new PrefRec("prefs", PREFS_GUID);
-      record.value = {
-        "testing.int": 42,
-      };
-      await store.update(record);
-      Assert.ok(lastThemeID === undefined,
-                "should not have tried to change the theme with an unrelated pref.");
-      Services.prefs.setCharPref("lightweightThemes.selectedThemeID", "foo");
-      record.value = {
-        "lightweightThemes.selectedThemeID": "foo",
-      };
-      await store.update(record);
-      Assert.ok(lastThemeID === undefined,
-                "should not have tried to change the theme when the incoming pref matches current value.");
-
-      record.value = {
-        "lightweightThemes.selectedThemeID": "bar",
-      };
-      await store.update(record);
-      Assert.equal(lastThemeID, "bar",
-                   "should have tried to change the theme when the incoming pref was different.");
-    } finally {
-      store._updateLightWeightTheme = orig_updateLightWeightTheme;
-    }
   } finally {
     prefs.resetBranch("");
   }
@@ -200,9 +247,14 @@ add_task(async function run_test() {
 add_task(async function test_dangerously_allow() {
   _("services.sync.prefs.dangerously_allow_arbitrary");
   // read our custom prefs file before doing anything.
-  Services.prefs.readDefaultPrefsFromFile(do_get_file("prefs_test_prefs_store.js"));
+  Services.prefs.readDefaultPrefsFromFile(
+    do_get_file("prefs_test_prefs_store.js")
+  );
   // configure so that arbitrary prefs are synced.
-  Services.prefs.setBoolPref("services.sync.prefs.dangerously_allow_arbitrary", true);
+  Services.prefs.setBoolPref(
+    "services.sync.prefs.dangerously_allow_arbitrary",
+    true
+  );
 
   let engine = Service.engineManager.get("prefs");
   let store = engine._store;
@@ -211,12 +263,24 @@ add_task(async function test_dangerously_allow() {
     _("Update some prefs");
     // This pref is not going to be reset or deleted as there's no "control pref"
     // in either the incoming record or locally.
-    prefs.set("testing.deleted-without-control-pref", "I'm deleted-without-control-pref");
+    prefs.set(
+      "testing.deleted-without-control-pref",
+      "I'm deleted-without-control-pref"
+    );
     // Another pref with only a local control pref.
-    prefs.set("testing.deleted-with-local-control-pref", "I'm deleted-with-local-control-pref");
-    prefs.set("services.sync.prefs.sync.testing.deleted-with-local-control-pref", true);
+    prefs.set(
+      "testing.deleted-with-local-control-pref",
+      "I'm deleted-with-local-control-pref"
+    );
+    prefs.set(
+      "services.sync.prefs.sync.testing.deleted-with-local-control-pref",
+      true
+    );
     // And a pref without a local control pref but one that's incoming.
-    prefs.set("testing.deleted-with-incoming-control-pref", "I'm deleted-with-incoming-control-pref");
+    prefs.set(
+      "testing.deleted-with-incoming-control-pref",
+      "I'm deleted-with-incoming-control-pref"
+    );
     let record = new PrefRec("prefs", PREFS_GUID);
     record.value = {
       "testing.deleted-without-control-pref": null,
@@ -228,16 +292,35 @@ add_task(async function test_dangerously_allow() {
       // Make sure our "master control pref" is ignored, even when it's already set.
       "services.sync.prefs.dangerously_allow_arbitrary": false,
       "services.sync.prefs.sync.services.sync.prefs.dangerously_allow_arbitrary": true,
-
     };
     await store.update(record);
-    Assert.strictEqual(prefs.get("testing.deleted-without-control-pref"), "I'm deleted-without-control-pref");
-    Assert.strictEqual(prefs.get("testing.deleted-with-local-control-pref"), undefined);
-    Assert.strictEqual(prefs.get("testing.deleted-with-incoming-control-pref"), undefined);
-    Assert.strictEqual(prefs.get("testing.somepref"), "im a new pref from other device");
+    Assert.strictEqual(
+      prefs.get("testing.deleted-without-control-pref"),
+      "I'm deleted-without-control-pref"
+    );
+    Assert.strictEqual(
+      prefs.get("testing.deleted-with-local-control-pref"),
+      undefined
+    );
+    Assert.strictEqual(
+      prefs.get("testing.deleted-with-incoming-control-pref"),
+      undefined
+    );
+    Assert.strictEqual(
+      prefs.get("testing.somepref"),
+      "im a new pref from other device"
+    );
     Assert.strictEqual(Svc.Prefs.get("prefs.sync.testing.somepref"), true);
-    Assert.strictEqual(prefs.get("services.sync.prefs.dangerously_allow_arbitrary"), true);
-    Assert.strictEqual(prefs.get("services.sync.prefs.sync.services.sync.prefs.dangerously_allow_arbitrary"), undefined);
+    Assert.strictEqual(
+      prefs.get("services.sync.prefs.dangerously_allow_arbitrary"),
+      true
+    );
+    Assert.strictEqual(
+      prefs.get(
+        "services.sync.prefs.sync.services.sync.prefs.dangerously_allow_arbitrary"
+      ),
+      undefined
+    );
   } finally {
     prefs.resetBranch("");
   }

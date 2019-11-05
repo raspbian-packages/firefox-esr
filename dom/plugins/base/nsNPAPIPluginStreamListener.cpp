@@ -393,9 +393,9 @@ nsresult nsNPAPIPluginStreamListener::OnDataAvailable(
       NS_ENSURE_SUCCESS(rv, rv);
 
       if (amountRead == 0) {
-        NS_NOTREACHED(
-            "input->Read() returns no data, it's almost impossible "
-            "to get here");
+        MOZ_ASSERT_UNREACHABLE(
+            "input->Read() returns no data, it's almost "
+            "impossible to get here");
 
         break;
       }

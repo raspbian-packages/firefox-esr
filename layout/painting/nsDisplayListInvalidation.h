@@ -13,6 +13,7 @@
 #include "nsRect.h"
 #include "nsColor.h"
 #include "gfxRect.h"
+#include "mozilla/gfx/MatrixFwd.h"
 
 class nsDisplayBackgroundImage;
 class nsCharClipDisplayItem;
@@ -20,9 +21,9 @@ class nsDisplayItem;
 class nsDisplayListBuilder;
 class nsDisplayTableItem;
 class nsDisplayThemedBackground;
-class nsDisplaySVGEffects;
-class nsDisplayMask;
-class nsDisplayFilter;
+class nsDisplayEffectsBase;
+class nsDisplayMasksAndClipPaths;
+class nsDisplayFilters;
 
 namespace mozilla {
 namespace gfx {
@@ -77,7 +78,7 @@ class nsDisplayItemGenericGeometry : public nsDisplayItemGeometry {
   nsDisplayItemGenericGeometry(nsDisplayItem* aItem,
                                nsDisplayListBuilder* aBuilder);
 
-  virtual void MoveBy(const nsPoint& aOffset) override;
+  void MoveBy(const nsPoint& aOffset) override;
 
   nsRect mBorderRect;
 };
@@ -118,6 +119,9 @@ class nsImageGeometryMixin {
 
   static void UpdateDrawResult(nsDisplayItem* aItem,
                                mozilla::image::ImgDrawResult aResult) {
+    MOZ_ASSERT(aResult != mozilla::image::ImgDrawResult::NOT_SUPPORTED,
+               "ImgDrawResult::NOT_SUPPORTED should be handled already!");
+
     auto lastGeometry = static_cast<T*>(
         mozilla::FrameLayerBuilder::GetMostRecentGeometry(aItem));
     if (lastGeometry) {
@@ -164,7 +168,7 @@ class nsDisplayItemGenericImageGeometry
       : nsDisplayItemGenericGeometry(aItem, aBuilder),
         nsImageGeometryMixin(aItem, aBuilder) {}
 
-  virtual bool InvalidateForSyncDecodeImages() const override {
+  bool InvalidateForSyncDecodeImages() const override {
     return ShouldInvalidateToSyncDecodeImages();
   }
 };
@@ -183,7 +187,7 @@ class nsDisplayBorderGeometry
  public:
   nsDisplayBorderGeometry(nsDisplayItem* aItem, nsDisplayListBuilder* aBuilder);
 
-  virtual bool InvalidateForSyncDecodeImages() const override {
+  bool InvalidateForSyncDecodeImages() const override {
     return ShouldInvalidateToSyncDecodeImages();
   }
 };
@@ -195,9 +199,9 @@ class nsDisplayBackgroundGeometry
   nsDisplayBackgroundGeometry(nsDisplayBackgroundImage* aItem,
                               nsDisplayListBuilder* aBuilder);
 
-  virtual void MoveBy(const nsPoint& aOffset) override;
+  void MoveBy(const nsPoint& aOffset) override;
 
-  virtual bool InvalidateForSyncDecodeImages() const override {
+  bool InvalidateForSyncDecodeImages() const override {
     return ShouldInvalidateToSyncDecodeImages();
   }
 
@@ -210,7 +214,7 @@ class nsDisplayThemedBackgroundGeometry : public nsDisplayItemGeometry {
   nsDisplayThemedBackgroundGeometry(nsDisplayThemedBackground* aItem,
                                     nsDisplayListBuilder* aBuilder);
 
-  virtual void MoveBy(const nsPoint& aOffset) override;
+  void MoveBy(const nsPoint& aOffset) override;
 
   nsRect mPositioningArea;
   bool mWindowIsActive;
@@ -221,7 +225,7 @@ class nsDisplayBoxShadowInnerGeometry : public nsDisplayItemGeometry {
   nsDisplayBoxShadowInnerGeometry(nsDisplayItem* aItem,
                                   nsDisplayListBuilder* aBuilder);
 
-  virtual void MoveBy(const nsPoint& aOffset) override;
+  void MoveBy(const nsPoint& aOffset) override;
 
   nsRect mPaddingRect;
 };
@@ -254,7 +258,7 @@ class nsDisplaySolidColorRegionGeometry : public nsDisplayItemBoundsGeometry {
         mRegion(aRegion),
         mColor(aColor) {}
 
-  virtual void MoveBy(const nsPoint& aOffset) override;
+  void MoveBy(const nsPoint& aOffset) override;
 
   nsRegion mRegion;
   mozilla::gfx::Color mColor;
@@ -262,50 +266,42 @@ class nsDisplaySolidColorRegionGeometry : public nsDisplayItemBoundsGeometry {
 
 class nsDisplaySVGEffectGeometry : public nsDisplayItemGeometry {
  public:
-  nsDisplaySVGEffectGeometry(nsDisplaySVGEffects* aItem,
+  nsDisplaySVGEffectGeometry(nsDisplayEffectsBase* aItem,
                              nsDisplayListBuilder* aBuilder);
 
-  virtual void MoveBy(const nsPoint& aOffset) override;
+  void MoveBy(const nsPoint& aOffset) override;
 
   gfxRect mBBox;
   gfxPoint mUserSpaceOffset;
   nsPoint mFrameOffsetToReferenceFrame;
-};
-
-class nsDisplayMaskGeometry
-    : public nsDisplaySVGEffectGeometry,
-      public nsImageGeometryMixin<nsDisplayMaskGeometry> {
- public:
-  nsDisplayMaskGeometry(nsDisplayMask* aItem, nsDisplayListBuilder* aBuilder);
-
-  virtual bool InvalidateForSyncDecodeImages() const override {
-    return ShouldInvalidateToSyncDecodeImages();
-  }
-
-  nsTArray<nsRect> mDestRects;
   float mOpacity;
   bool mHandleOpacity;
 };
 
-class nsDisplayFilterGeometry
+class nsDisplayMasksAndClipPathsGeometry
     : public nsDisplaySVGEffectGeometry,
-      public nsImageGeometryMixin<nsDisplayFilterGeometry> {
+      public nsImageGeometryMixin<nsDisplayMasksAndClipPathsGeometry> {
  public:
-  nsDisplayFilterGeometry(nsDisplayFilter* aItem,
-                          nsDisplayListBuilder* aBuilder);
+  nsDisplayMasksAndClipPathsGeometry(nsDisplayMasksAndClipPaths* aItem,
+                                     nsDisplayListBuilder* aBuilder);
 
-  virtual bool InvalidateForSyncDecodeImages() const override {
+  bool InvalidateForSyncDecodeImages() const override {
     return ShouldInvalidateToSyncDecodeImages();
   }
+
+  nsTArray<nsRect> mDestRects;
 };
 
-class nsCharClipGeometry : public nsDisplayItemGenericGeometry {
+class nsDisplayFiltersGeometry
+    : public nsDisplaySVGEffectGeometry,
+      public nsImageGeometryMixin<nsDisplayFiltersGeometry> {
  public:
-  nsCharClipGeometry(nsCharClipDisplayItem* aItem,
-                     nsDisplayListBuilder* aBuilder);
+  nsDisplayFiltersGeometry(nsDisplayFilters* aItem,
+                           nsDisplayListBuilder* aBuilder);
 
-  nscoord mVisIStartEdge;
-  nscoord mVisIEndEdge;
+  bool InvalidateForSyncDecodeImages() const override {
+    return ShouldInvalidateToSyncDecodeImages();
+  }
 };
 
 class nsDisplayTableItemGeometry
@@ -316,11 +312,41 @@ class nsDisplayTableItemGeometry
                              nsDisplayListBuilder* aBuilder,
                              const nsPoint& aFrameOffsetToViewport);
 
-  virtual bool InvalidateForSyncDecodeImages() const override {
+  bool InvalidateForSyncDecodeImages() const override {
     return ShouldInvalidateToSyncDecodeImages();
   }
 
   nsPoint mFrameOffsetToViewport;
+};
+
+class nsDisplayOpacityGeometry : public nsDisplayItemGenericGeometry {
+ public:
+  nsDisplayOpacityGeometry(nsDisplayItem* aItem, nsDisplayListBuilder* aBuilder,
+                           float aOpacity)
+      : nsDisplayItemGenericGeometry(aItem, aBuilder), mOpacity(aOpacity) {}
+
+  float mOpacity;
+};
+
+class nsDisplayTransformGeometry : public nsDisplayItemGeometry {
+ public:
+  nsDisplayTransformGeometry(nsDisplayItem* aItem,
+                             nsDisplayListBuilder* aBuilder,
+                             const mozilla::gfx::Matrix4x4Flagged& aTransform,
+                             int32_t aAppUnitsPerDevPixel)
+      : nsDisplayItemGeometry(aItem, aBuilder),
+        mTransform(aTransform),
+        mAppUnitsPerDevPixel(aAppUnitsPerDevPixel) {}
+
+  void MoveBy(const nsPoint& aOffset) override {
+    nsDisplayItemGeometry::MoveBy(aOffset);
+    mTransform.PostTranslate(
+        NSAppUnitsToFloatPixels(aOffset.x, mAppUnitsPerDevPixel),
+        NSAppUnitsToFloatPixels(aOffset.y, mAppUnitsPerDevPixel), 0.0f);
+  }
+
+  mozilla::gfx::Matrix4x4Flagged mTransform;
+  int32_t mAppUnitsPerDevPixel;
 };
 
 #endif /*NSDISPLAYLISTINVALIDATION_H_*/

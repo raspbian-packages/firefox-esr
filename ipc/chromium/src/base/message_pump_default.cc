@@ -19,6 +19,8 @@ MessagePumpDefault::MessagePumpDefault()
     : keep_running_(true), event_(false, false) {}
 
 void MessagePumpDefault::Run(Delegate* delegate) {
+  AUTO_PROFILER_LABEL("MessagePumpDefault::Run", OTHER);
+
   DCHECK(keep_running_) << "Quit must have been called outside of Run!";
 
   const MessageLoop* const loop = MessageLoop::current();
@@ -47,7 +49,7 @@ void MessagePumpDefault::Run(Delegate* delegate) {
 
     if (delayed_work_time_.is_null()) {
       hangMonitor.NotifyWait();
-      AUTO_PROFILER_LABEL("MessagePumpDefault::Run:Wait", OTHER);
+      AUTO_PROFILER_LABEL("MessagePumpDefault::Run:Wait", IDLE);
       {
         AUTO_PROFILER_THREAD_SLEEP;
         event_.Wait();
@@ -56,7 +58,7 @@ void MessagePumpDefault::Run(Delegate* delegate) {
       TimeDelta delay = delayed_work_time_ - TimeTicks::Now();
       if (delay > TimeDelta()) {
         hangMonitor.NotifyWait();
-        AUTO_PROFILER_LABEL("MessagePumpDefault::Run:Wait", OTHER);
+        AUTO_PROFILER_LABEL("MessagePumpDefault::Run:Wait", IDLE);
         {
           AUTO_PROFILER_THREAD_SLEEP;
           event_.TimedWait(delay);

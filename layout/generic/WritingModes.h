@@ -7,9 +7,10 @@
 #ifndef WritingModes_h_
 #define WritingModes_h_
 
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/ComputedStyleInlines.h"
+
 #include "nsRect.h"
-#include "nsStyleContext.h"
-#include "nsStyleContextInlines.h"
 #include "nsBidiUtils.h"
 
 // It is the caller's responsibility to operate on logical-coordinate objects
@@ -286,7 +287,7 @@ class WritingMode {
     // and hypothetical) values.  But this is fine; we only need to
     // distinguish between vertical and horizontal in
     // PhysicalAxisForLogicalAxis.
-    int wm = mWritingMode & eOrientationMask;
+    const auto wm = static_cast<uint8_t>(mWritingMode & eOrientationMask);
     return PhysicalAxisForLogicalAxis(wm, aAxis);
   }
 
@@ -361,8 +362,9 @@ class WritingMode {
     if (IsBlock(aSide)) {
       static_assert(eOrientationMask == 0x01 && eBlockFlowMask == 0x04,
                     "unexpected mask values");
-      int wm = ((mWritingMode & eBlockFlowMask) >> 1) |
-               (mWritingMode & eOrientationMask);
+      const auto wm =
+          static_cast<uint8_t>(((mWritingMode & eBlockFlowMask) >> 1) |
+                               (mWritingMode & eOrientationMask));
       return PhysicalSideForBlockAxis(wm, GetEdge(aSide));
     }
 
@@ -375,47 +377,49 @@ class WritingMode {
    * (This is the inverse of the PhysicalSide() method above.)
    */
   LogicalSide LogicalSideForPhysicalSide(mozilla::Side aSide) const {
+    // clang-format off
     // indexes are four-bit values:
     //   bit 0 = the eOrientationMask value
     //   bit 1 = the eInlineFlowMask value
     //   bit 2 = the eBlockFlowMask value
     //   bit 3 = the eLineOrientMask value
     static const LogicalSide kPhysicalToLogicalSides[][4] = {
-        // top                right
-        // bottom             left
-        {eLogicalSideBStart, eLogicalSideIEnd, eLogicalSideBEnd,
-         eLogicalSideIStart},  // horizontal-tb         ltr
-        {eLogicalSideIStart, eLogicalSideBStart, eLogicalSideIEnd,
-         eLogicalSideBEnd},  // vertical-rl           ltr
-        {eLogicalSideBStart, eLogicalSideIStart, eLogicalSideBEnd,
-         eLogicalSideIEnd},  // horizontal-tb         rtl
-        {eLogicalSideIEnd, eLogicalSideBStart, eLogicalSideIStart,
-         eLogicalSideBEnd},  // vertical-rl           rtl
-        {eLogicalSideBEnd, eLogicalSideIStart, eLogicalSideBStart,
-         eLogicalSideIEnd},  // (horizontal-bt) (inv) ltr
-        {eLogicalSideIStart, eLogicalSideBEnd, eLogicalSideIEnd,
-         eLogicalSideBStart},  // vertical-lr   sw-left rtl
-        {eLogicalSideBEnd, eLogicalSideIEnd, eLogicalSideBStart,
-         eLogicalSideIStart},  // (horizontal-bt) (inv) rtl
-        {eLogicalSideIEnd, eLogicalSideBEnd, eLogicalSideIStart,
-         eLogicalSideBStart},  // vertical-lr   sw-left ltr
-        {eLogicalSideBStart, eLogicalSideIEnd, eLogicalSideBEnd,
-         eLogicalSideIStart},  // horizontal-tb   (inv) rtl
-        {eLogicalSideIStart, eLogicalSideBStart, eLogicalSideIEnd,
-         eLogicalSideBEnd},  // vertical-rl   sw-left rtl
-        {eLogicalSideBStart, eLogicalSideIStart, eLogicalSideBEnd,
-         eLogicalSideIEnd},  // horizontal-tb   (inv) ltr
-        {eLogicalSideIEnd, eLogicalSideBStart, eLogicalSideIStart,
-         eLogicalSideBEnd},  // vertical-rl   sw-left ltr
-        {eLogicalSideBEnd, eLogicalSideIEnd, eLogicalSideBStart,
-         eLogicalSideIStart},  // (horizontal-bt)       ltr
-        {eLogicalSideIStart, eLogicalSideBEnd, eLogicalSideIEnd,
-         eLogicalSideBStart},  // vertical-lr           ltr
-        {eLogicalSideBEnd, eLogicalSideIStart, eLogicalSideBStart,
-         eLogicalSideIEnd},  // (horizontal-bt)       rtl
-        {eLogicalSideIEnd, eLogicalSideBEnd, eLogicalSideIStart,
-         eLogicalSideBStart},  // vertical-lr           rtl
+      // top                right
+      // bottom             left
+      { eLogicalSideBStart, eLogicalSideIEnd,
+        eLogicalSideBEnd,   eLogicalSideIStart },  // horizontal-tb         ltr
+      { eLogicalSideIStart, eLogicalSideBStart,
+        eLogicalSideIEnd,   eLogicalSideBEnd   },  // vertical-rl           ltr
+      { eLogicalSideBStart, eLogicalSideIStart,
+        eLogicalSideBEnd,   eLogicalSideIEnd   },  // horizontal-tb         rtl
+      { eLogicalSideIEnd,   eLogicalSideBStart,
+        eLogicalSideIStart, eLogicalSideBEnd   },  // vertical-rl           rtl
+      { eLogicalSideBEnd,   eLogicalSideIStart,
+        eLogicalSideBStart, eLogicalSideIEnd   },  // (horizontal-bt) (inv) ltr
+      { eLogicalSideIStart, eLogicalSideBEnd,
+        eLogicalSideIEnd,   eLogicalSideBStart },  // vertical-lr   sw-left rtl
+      { eLogicalSideBEnd,   eLogicalSideIEnd,
+        eLogicalSideBStart, eLogicalSideIStart },  // (horizontal-bt) (inv) rtl
+      { eLogicalSideIEnd,   eLogicalSideBEnd,
+        eLogicalSideIStart, eLogicalSideBStart },  // vertical-lr   sw-left ltr
+      { eLogicalSideBStart, eLogicalSideIEnd,
+        eLogicalSideBEnd,   eLogicalSideIStart },  // horizontal-tb   (inv) rtl
+      { eLogicalSideIStart, eLogicalSideBStart,
+        eLogicalSideIEnd,   eLogicalSideBEnd   },  // vertical-rl   sw-left rtl
+      { eLogicalSideBStart, eLogicalSideIStart,
+        eLogicalSideBEnd,   eLogicalSideIEnd   },  // horizontal-tb   (inv) ltr
+      { eLogicalSideIEnd,   eLogicalSideBStart,
+        eLogicalSideIStart, eLogicalSideBEnd   },  // vertical-rl   sw-left ltr
+      { eLogicalSideBEnd,   eLogicalSideIEnd,
+        eLogicalSideBStart, eLogicalSideIStart },  // (horizontal-bt)       ltr
+      { eLogicalSideIStart, eLogicalSideBEnd,
+        eLogicalSideIEnd,   eLogicalSideBStart },  // vertical-lr           ltr
+      { eLogicalSideBEnd,   eLogicalSideIStart,
+        eLogicalSideBStart, eLogicalSideIEnd   },  // (horizontal-bt)       rtl
+      { eLogicalSideIEnd,   eLogicalSideBEnd,
+        eLogicalSideIStart, eLogicalSideBStart },  // vertical-lr           rtl
     };
+    // clang-format on
 
     static_assert(eOrientationMask == 0x01 && eInlineFlowMask == 0x02 &&
                       eBlockFlowMask == 0x04 && eLineOrientMask == 0x08,
@@ -444,11 +448,11 @@ class WritingMode {
   WritingMode() : mWritingMode(0) {}
 
   /**
-   * Construct writing mode based on a style context
+   * Construct writing mode based on a ComputedStyle.
    */
-  explicit WritingMode(nsStyleContext* aStyleContext) {
-    NS_ASSERTION(aStyleContext, "we need an nsStyleContext here");
-    InitFromStyleVisibility(aStyleContext->StyleVisibility());
+  explicit WritingMode(ComputedStyle* aComputedStyle) {
+    NS_ASSERTION(aComputedStyle, "we need an ComputedStyle here");
+    InitFromStyleVisibility(aComputedStyle->StyleVisibility());
   }
 
   explicit WritingMode(const nsStyleVisibility* aStyleVisibility) {
@@ -491,7 +495,7 @@ class WritingMode {
         break;
 
       default:
-        NS_NOTREACHED("unknown writing mode!");
+        MOZ_ASSERT_UNREACHABLE("unknown writing mode!");
         mWritingMode = 0;
         break;
     }
@@ -613,12 +617,13 @@ class WritingMode {
   enum Masks {
     // Masks for our bits; true chosen as opposite of commonest case
     eOrientationMask = 0x01,  // true means vertical text
-    eInlineFlowMask =
-        0x02,  // true means absolute RTL/BTT (against physical coords)
-    eBlockFlowMask =
-        0x04,  // true means vertical-LR (or horizontal-BT if added)
-    eLineOrientMask = 0x08,  // true means over != block-start
-    eBidiMask = 0x10,        // true means line-relative RTL (bidi RTL)
+    eInlineFlowMask = 0x02,   // true means absolute RTL/BTT (against physical
+                              // coords)
+    eBlockFlowMask = 0x04,    // true means vertical-LR (or horizontal-BT if
+                              // added)
+    eLineOrientMask = 0x08,   // true means over != block-start
+    eBidiMask = 0x10,         // true means line-relative RTL (bidi RTL)
+
     // Note: We have one excess bit of info; WritingMode can pack into 4 bits.
     // But since we have space, we're caching interesting things for fast
     // access.
@@ -938,6 +943,9 @@ class LogicalSize {
     CHECK_WRITING_MODE(aWritingMode);
     return mSize.height;
   }
+  nscoord Size(LogicalAxis aAxis, WritingMode aWM) const {
+    return aAxis == eLogicalAxisInline ? ISize(aWM) : BSize(aWM);
+  }
 
   nscoord Width(WritingMode aWritingMode) const {
     CHECK_WRITING_MODE(aWritingMode);
@@ -960,6 +968,9 @@ class LogicalSize {
   {
     CHECK_WRITING_MODE(aWritingMode);
     return mSize.height;
+  }
+  nscoord& Size(LogicalAxis aAxis, WritingMode aWM) {
+    return aAxis == eLogicalAxisInline ? ISize(aWM) : BSize(aWM);
   }
 
   /**
@@ -1144,6 +1155,12 @@ class LogicalMargin {
     CHECK_WRITING_MODE(aWritingMode);
     return mMargin.bottom;
   }
+  nscoord Start(LogicalAxis aAxis, WritingMode aWM) const {
+    return aAxis == eLogicalAxisInline ? IStart(aWM) : BStart(aWM);
+  }
+  nscoord End(LogicalAxis aAxis, WritingMode aWM) const {
+    return aAxis == eLogicalAxisInline ? IEnd(aWM) : BEnd(aWM);
+  }
 
   nscoord& IStart(WritingMode aWritingMode)  // inline-start margin
   {
@@ -1165,6 +1182,12 @@ class LogicalMargin {
     CHECK_WRITING_MODE(aWritingMode);
     return mMargin.bottom;
   }
+  nscoord& Start(LogicalAxis aAxis, WritingMode aWM) {
+    return aAxis == eLogicalAxisInline ? IStart(aWM) : BStart(aWM);
+  }
+  nscoord& End(LogicalAxis aAxis, WritingMode aWM) {
+    return aAxis == eLogicalAxisInline ? IEnd(aWM) : BEnd(aWM);
+  }
 
   nscoord IStartEnd(WritingMode aWritingMode) const  // inline margins
   {
@@ -1175,6 +1198,9 @@ class LogicalMargin {
   {
     CHECK_WRITING_MODE(aWritingMode);
     return mMargin.TopBottom();
+  }
+  nscoord StartEnd(LogicalAxis aAxis, WritingMode aWM) const {
+    return aAxis == eLogicalAxisInline ? IStartEnd(aWM) : BStartEnd(aWM);
   }
 
   /*
@@ -1540,10 +1566,8 @@ class LogicalRect {
     CHECK_WRITING_MODE(aWritingMode);
     if (aWritingMode.IsVertical()) {
       return aWritingMode.IsVerticalLR() ? mBStart : aContainerWidth - BEnd();
-    } else {
-      return aWritingMode.IsInlineReversed() ? aContainerWidth - IEnd()
-                                             : mIStart;
     }
+    return aWritingMode.IsInlineReversed() ? aContainerWidth - IEnd() : mIStart;
   }
 
   nscoord Y(WritingMode aWritingMode, nscoord aContainerHeight) const {
@@ -1551,9 +1575,8 @@ class LogicalRect {
     if (aWritingMode.IsVertical()) {
       return aWritingMode.IsInlineReversed() ? aContainerHeight - IEnd()
                                              : mIStart;
-    } else {
-      return mBStart;
     }
+    return mBStart;
   }
 
   nscoord Width(WritingMode aWritingMode) const {
@@ -1570,10 +1593,8 @@ class LogicalRect {
     CHECK_WRITING_MODE(aWritingMode);
     if (aWritingMode.IsVertical()) {
       return aWritingMode.IsVerticalLR() ? BEnd() : aContainerWidth - mBStart;
-    } else {
-      return aWritingMode.IsInlineReversed() ? aContainerWidth - mIStart
-                                             : IEnd();
     }
+    return aWritingMode.IsInlineReversed() ? aContainerWidth - mIStart : IEnd();
   }
 
   nscoord YMost(WritingMode aWritingMode, nscoord aContainerHeight) const {
@@ -1581,9 +1602,8 @@ class LogicalRect {
     if (aWritingMode.IsVertical()) {
       return aWritingMode.IsInlineReversed() ? aContainerHeight - mIStart
                                              : IEnd();
-    } else {
-      return mBStart;
     }
+    return BEnd();
   }
 
   bool IsEmpty() const { return mISize <= 0 || mBSize <= 0; }
@@ -1804,6 +1824,7 @@ class LogicalRect {
     }
 
     MOZ_ASSERT(
+        (rectDebug.IsEmpty() && (mISize == 0 || mBSize == 0)) ||
         rectDebug.IsEqualEdges(nsRect(mIStart, mBStart, mISize, mBSize)));
     return mISize > 0 && mBSize > 0;
   }
@@ -1870,6 +1891,32 @@ class LogicalRect {
   nscoord mBSize;   // block-size
 };
 
+template <typename T>
+const T& StyleRect<T>::Get(mozilla::WritingMode aWM,
+                           mozilla::LogicalSide aSide) const {
+  return Get(aWM.PhysicalSide(aSide));
+}
+
+template <typename T>
+const T& StyleRect<T>::GetIStart(mozilla::WritingMode aWM) const {
+  return Get(aWM, mozilla::eLogicalSideIStart);
+}
+
+template <typename T>
+const T& StyleRect<T>::GetBStart(mozilla::WritingMode aWM) const {
+  return Get(aWM, mozilla::eLogicalSideBStart);
+}
+
+template <typename T>
+const T& StyleRect<T>::GetIEnd(mozilla::WritingMode aWM) const {
+  return Get(aWM, mozilla::eLogicalSideIEnd);
+}
+
+template <typename T>
+const T& StyleRect<T>::GetBEnd(mozilla::WritingMode aWM) const {
+  return Get(aWM, mozilla::eLogicalSideBEnd);
+}
+
 }  // namespace mozilla
 
 // Definitions of inline methods for nsStyleSides, declared in nsStyleCoord.h
@@ -1928,110 +1975,73 @@ inline nsStyleCoord nsStyleSides::GetBEnd(mozilla::WritingMode aWM) const {
 
 // Definitions of inline methods for nsStylePosition, declared in
 // nsStyleStruct.h but not defined there because they need WritingMode.
-inline nsStyleCoord& nsStylePosition::ISize(mozilla::WritingMode aWM) {
+inline const mozilla::StyleSize& nsStylePosition::ISize(WritingMode aWM) const {
   return aWM.IsVertical() ? mHeight : mWidth;
 }
-inline nsStyleCoord& nsStylePosition::MinISize(mozilla::WritingMode aWM) {
+inline const mozilla::StyleSize& nsStylePosition::MinISize(
+    WritingMode aWM) const {
   return aWM.IsVertical() ? mMinHeight : mMinWidth;
 }
-inline nsStyleCoord& nsStylePosition::MaxISize(mozilla::WritingMode aWM) {
+inline const mozilla::StyleMaxSize& nsStylePosition::MaxISize(
+    WritingMode aWM) const {
   return aWM.IsVertical() ? mMaxHeight : mMaxWidth;
 }
-inline nsStyleCoord& nsStylePosition::BSize(mozilla::WritingMode aWM) {
+inline const mozilla::StyleSize& nsStylePosition::BSize(WritingMode aWM) const {
   return aWM.IsVertical() ? mWidth : mHeight;
 }
-inline nsStyleCoord& nsStylePosition::MinBSize(mozilla::WritingMode aWM) {
+inline const mozilla::StyleSize& nsStylePosition::MinBSize(
+    WritingMode aWM) const {
   return aWM.IsVertical() ? mMinWidth : mMinHeight;
 }
-inline nsStyleCoord& nsStylePosition::MaxBSize(mozilla::WritingMode aWM) {
+inline const mozilla::StyleMaxSize& nsStylePosition::MaxBSize(
+    WritingMode aWM) const {
   return aWM.IsVertical() ? mMaxWidth : mMaxHeight;
 }
 
-inline const nsStyleCoord& nsStylePosition::ISize(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? mHeight : mWidth;
+inline bool nsStylePosition::ISizeDependsOnContainer(WritingMode aWM) const {
+  const auto& iSize = ISize(aWM);
+  return iSize.IsAuto() || ISizeCoordDependsOnContainer(iSize);
 }
-inline const nsStyleCoord& nsStylePosition::MinISize(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? mMinHeight : mMinWidth;
+inline bool nsStylePosition::MinISizeDependsOnContainer(WritingMode aWM) const {
+  // NOTE: For a flex item, "min-inline-size:auto" is supposed to behave like
+  // "min-content", which does depend on the container, so you might think we'd
+  // need a special case for "flex item && min-inline-size:auto" here. However,
+  // we don't actually need that special-case code, because flex items are
+  // explicitly supposed to *ignore* their min-inline-size (i.e. behave like
+  // it's 0) until the flex container explicitly considers it. So -- since the
+  // flex container doesn't rely on this method, we don't need to worry about
+  // special behavior for flex items' "min-inline-size:auto" values here.
+  return ISizeCoordDependsOnContainer(MinISize(aWM));
 }
-inline const nsStyleCoord& nsStylePosition::MaxISize(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? mMaxHeight : mMaxWidth;
+inline bool nsStylePosition::MaxISizeDependsOnContainer(WritingMode aWM) const {
+  // NOTE: The comment above MinISizeDependsOnContainer about flex items
+  // applies here, too.
+  return ISizeCoordDependsOnContainer(MaxISize(aWM));
 }
-inline const nsStyleCoord& nsStylePosition::BSize(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? mWidth : mHeight;
+// Note that these functions count `auto` as depending on the container
+// since that's the case for absolutely positioned elements.
+// However, some callers do not care about this case and should check
+// for it, since it is the most common case.
+// FIXME: We should probably change the assumption to be the other way
+// around.
+inline bool nsStylePosition::BSizeDependsOnContainer(WritingMode aWM) const {
+  const auto& bSize = BSize(aWM);
+  return bSize.BehavesLikeInitialValueOnBlockAxis() ||
+         BSizeCoordDependsOnContainer(bSize);
 }
-inline const nsStyleCoord& nsStylePosition::MinBSize(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? mMinWidth : mMinHeight;
+inline bool nsStylePosition::MinBSizeDependsOnContainer(WritingMode aWM) const {
+  return BSizeCoordDependsOnContainer(MinBSize(aWM));
 }
-inline const nsStyleCoord& nsStylePosition::MaxBSize(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? mMaxWidth : mMaxHeight;
-}
-
-inline bool nsStylePosition::ISizeDependsOnContainer(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? HeightDependsOnContainer()
-                          : WidthDependsOnContainer();
-}
-inline bool nsStylePosition::MinISizeDependsOnContainer(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? MinHeightDependsOnContainer()
-                          : MinWidthDependsOnContainer();
-}
-inline bool nsStylePosition::MaxISizeDependsOnContainer(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? MaxHeightDependsOnContainer()
-                          : MaxWidthDependsOnContainer();
-}
-inline bool nsStylePosition::BSizeDependsOnContainer(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? WidthDependsOnContainer()
-                          : HeightDependsOnContainer();
-}
-inline bool nsStylePosition::MinBSizeDependsOnContainer(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? MinWidthDependsOnContainer()
-                          : MinHeightDependsOnContainer();
-}
-inline bool nsStylePosition::MaxBSizeDependsOnContainer(
-    mozilla::WritingMode aWM) const {
-  return aWM.IsVertical() ? MaxWidthDependsOnContainer()
-                          : MaxHeightDependsOnContainer();
-}
-
-inline mozilla::StyleFloat nsStyleDisplay::PhysicalFloats(
-    mozilla::WritingMode aWM) const {
-  using StyleFloat = mozilla::StyleFloat;
-  if (mFloat == StyleFloat::InlineStart) {
-    return aWM.IsBidiLTR() ? StyleFloat::Left : StyleFloat::Right;
-  }
-  if (mFloat == StyleFloat::InlineEnd) {
-    return aWM.IsBidiLTR() ? StyleFloat::Right : StyleFloat::Left;
-  }
-  return mFloat;
-}
-
-inline mozilla::StyleClear nsStyleDisplay::PhysicalBreakType(
-    mozilla::WritingMode aWM) const {
-  using StyleClear = mozilla::StyleClear;
-  if (mBreakType == StyleClear::InlineStart) {
-    return aWM.IsBidiLTR() ? StyleClear::Left : StyleClear::Right;
-  }
-  if (mBreakType == StyleClear::InlineEnd) {
-    return aWM.IsBidiLTR() ? StyleClear::Right : StyleClear::Left;
-  }
-  return mBreakType;
+inline bool nsStylePosition::MaxBSizeDependsOnContainer(WritingMode aWM) const {
+  return BSizeCoordDependsOnContainer(MaxBSize(aWM));
 }
 
 inline bool nsStyleMargin::HasBlockAxisAuto(mozilla::WritingMode aWM) const {
-  return mMargin.HasBlockAxisAuto(aWM);
+  return mMargin.GetBStart(aWM).IsAuto() || mMargin.GetBEnd(aWM).IsAuto();
 }
+
 inline bool nsStyleMargin::HasInlineAxisAuto(mozilla::WritingMode aWM) const {
-  return mMargin.HasInlineAxisAuto(aWM);
+  return mMargin.GetIStart(aWM).IsAuto() || mMargin.GetIEnd(aWM).IsAuto();
 }
 
 #endif  // WritingModes_h_

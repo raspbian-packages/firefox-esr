@@ -16,6 +16,7 @@
 #include "mozilla/ipc/ProtocolUtils.h"
 #include "mozilla/ipc/TaskFactory.h"
 #include "mozilla/ipc/Transport.h"
+#include "mozilla/layers/LayersTypes.h"
 #include "mozilla/webrender/WebRenderTypes.h"
 #include "nsIObserverService.h"
 #include "nsThreadUtils.h"
@@ -23,6 +24,7 @@ class nsBaseWidget;
 
 namespace mozilla {
 class MemoryReportingProcess;
+class PVideoDecoderManagerChild;
 namespace layers {
 class IAPZCTreeManager;
 class CompositorOptions;
@@ -40,8 +42,7 @@ class CompositorWidget;
 }  // namespace widget
 namespace dom {
 class ContentParent;
-class TabParent;
-class PVideoDecoderManagerChild;
+class BrowserParent;
 }  // namespace dom
 namespace ipc {
 class GeckoChildProcessHost;
@@ -66,6 +67,7 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
   typedef layers::CompositorUpdateObserver CompositorUpdateObserver;
   typedef layers::IAPZCTreeManager IAPZCTreeManager;
   typedef layers::LayerManager LayerManager;
+  typedef layers::LayersId LayersId;
   typedef layers::PCompositorBridgeChild PCompositorBridgeChild;
   typedef layers::PCompositorManagerChild PCompositorManagerChild;
   typedef layers::PImageBridgeChild PImageBridgeChild;
@@ -99,27 +101,27 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
       mozilla::ipc::Endpoint<PCompositorManagerChild>* aOutCompositor,
       mozilla::ipc::Endpoint<PImageBridgeChild>* aOutImageBridge,
       mozilla::ipc::Endpoint<PVRManagerChild>* aOutVRBridge,
-      mozilla::ipc::Endpoint<dom::PVideoDecoderManagerChild>* aOutVideoManager,
+      mozilla::ipc::Endpoint<PVideoDecoderManagerChild>* aOutVideoManager,
       nsTArray<uint32_t>* aNamespaces);
 
   // Maps the layer tree and process together so that aOwningPID is allowed
   // to access aLayersId across process.
-  void MapLayerTreeId(uint64_t aLayersId, base::ProcessId aOwningId);
+  void MapLayerTreeId(LayersId aLayersId, base::ProcessId aOwningId);
 
   // Release compositor-thread resources referred to by |aID|.
   //
   // Must run on the content main thread.
-  void UnmapLayerTreeId(uint64_t aLayersId, base::ProcessId aOwningId);
+  void UnmapLayerTreeId(LayersId aLayersId, base::ProcessId aOwningId);
 
   // Checks to see if aLayersId and aRequestingPID have been mapped by
   // MapLayerTreeId
-  bool IsLayerTreeIdMapped(uint64_t aLayersId, base::ProcessId aRequestingId);
+  bool IsLayerTreeIdMapped(LayersId aLayersId, base::ProcessId aRequestingId);
 
   // Allocate an ID that can be used to refer to a layer tree and
   // associated resources that live only on the compositor thread.
   //
   // Must run on the browser main thread.
-  uint64_t AllocateLayerTreeId();
+  LayersId AllocateLayerTreeId();
 
   // Allocate an ID that can be used as Namespace and
   // Must run on the browser main thread.
@@ -132,7 +134,7 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
   // Note that a layer tree id is always allocated, even if this returns false.
   bool AllocateAndConnectLayerTreeId(PCompositorBridgeChild* aCompositorBridge,
                                      base::ProcessId aOtherPid,
-                                     uint64_t* aOutLayersId,
+                                     LayersId* aOutLayersId,
                                      CompositorOptions* aOutCompositorOptions);
 
   // Destroy and recreate all of the compositors
@@ -189,7 +191,7 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
       mozilla::ipc::Endpoint<PVRManagerChild>* aOutEndpoint);
   void CreateContentVideoDecoderManager(
       base::ProcessId aOtherProcess,
-      mozilla::ipc::Endpoint<dom::PVideoDecoderManagerChild>* aOutEndPoint);
+      mozilla::ipc::Endpoint<PVideoDecoderManagerChild>* aOutEndPoint);
 
   // Called from RemoteCompositorSession. We track remote sessions so we can
   // notify their owning widgets that the session must be restarted.
@@ -203,6 +205,8 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
 
   void RebuildRemoteSessions();
   void RebuildInProcessSessions();
+
+  void FallbackToSoftware(const char* aMessage);
 
  private:
   GPUProcessManager();
@@ -226,12 +230,12 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
 
 #if defined(MOZ_WIDGET_ANDROID)
   already_AddRefed<UiCompositorControllerChild> CreateUiCompositorController(
-      nsBaseWidget* aWidget, const uint64_t aId);
+      nsBaseWidget* aWidget, const LayersId aId);
 #endif  // defined(MOZ_WIDGET_ANDROID)
 
   RefPtr<CompositorSession> CreateRemoteSession(
       nsBaseWidget* aWidget, LayerManager* aLayerManager,
-      const uint64_t& aRootLayerTreeId, CSSToLayoutDeviceScale aScale,
+      const LayersId& aRootLayerTreeId, CSSToLayoutDeviceScale aScale,
       const CompositorOptions& aOptions, bool aUseExternalSurfaceSize,
       const gfx::IntSize& aSurfaceSize);
 
@@ -244,7 +248,7 @@ class GPUProcessManager final : public GPUProcessHost::Listener {
     explicit Observer(GPUProcessManager* aManager);
 
    protected:
-    ~Observer() {}
+    virtual ~Observer() = default;
 
     GPUProcessManager* mManager;
   };

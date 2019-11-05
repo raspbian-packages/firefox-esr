@@ -32,8 +32,6 @@ WebSocketChannelParent::WebSocketChannelParent(
   // Websocket channels can't have a private browsing override
   MOZ_ASSERT_IF(!aLoadContext, aOverrideStatus == kPBOverride_Unset);
 }
-
-WebSocketChannelParent::~WebSocketChannelParent() {}
 //-----------------------------------------------------------------------------
 // WebSocketChannelParent::PWebSocketChannelParent
 //-----------------------------------------------------------------------------
@@ -50,13 +48,12 @@ mozilla::ipc::IPCResult WebSocketChannelParent::RecvDeleteSelf() {
 }
 
 mozilla::ipc::IPCResult WebSocketChannelParent::RecvAsyncOpen(
-    const OptionalURIParams& aURI, const nsCString& aOrigin,
+    const Maybe<URIParams>& aURI, const nsCString& aOrigin,
     const uint64_t& aInnerWindowID, const nsCString& aProtocol,
     const bool& aSecure, const uint32_t& aPingInterval,
     const bool& aClientSetPingInterval, const uint32_t& aPingTimeout,
-    const bool& aClientSetPingTimeout,
-    const OptionalLoadInfoArgs& aLoadInfoArgs,
-    const OptionalTransportProvider& aTransportProvider,
+    const bool& aClientSetPingTimeout, const Maybe<LoadInfoArgs>& aLoadInfoArgs,
+    const Maybe<PTransportProviderParent*>& aTransportProvider,
     const nsCString& aNegotiatedExtensions) {
   LOG(("WebSocketChannelParent::RecvAsyncOpen() %p\n", this));
 
@@ -94,10 +91,9 @@ mozilla::ipc::IPCResult WebSocketChannelParent::RecvAsyncOpen(
   rv = mChannel->SetProtocol(aProtocol);
   if (NS_FAILED(rv)) goto fail;
 
-  if (aTransportProvider.type() != OptionalTransportProvider::Tvoid_t) {
+  if (aTransportProvider.isSome()) {
     RefPtr<TransportProviderParent> provider =
-        static_cast<TransportProviderParent*>(
-            aTransportProvider.get_PTransportProviderParent());
+        static_cast<TransportProviderParent*>(aTransportProvider.value());
     rv = mChannel->SetServerParameters(provider, aNegotiatedExtensions);
     if (NS_FAILED(rv)) {
       goto fail;
@@ -191,6 +187,7 @@ WebSocketChannelParent::OnStart(nsISupports* aContext) {
   nsAutoCString protocol, extensions;
   nsString effectiveURL;
   bool encrypted = false;
+  uint64_t httpChannelId = 0;
   if (mChannel) {
     DebugOnly<nsresult> rv = mChannel->GetProtocol(protocol);
     MOZ_ASSERT(NS_SUCCEEDED(rv));
@@ -203,9 +200,10 @@ WebSocketChannelParent::OnStart(nsISupports* aContext) {
 
     channel->GetEffectiveURL(effectiveURL);
     encrypted = channel->IsEncrypted();
+    httpChannelId = channel->HttpChannelId();
   }
-  if (!mIPCOpen ||
-      !SendOnStart(protocol, extensions, effectiveURL, encrypted)) {
+  if (!mIPCOpen || !SendOnStart(protocol, extensions, effectiveURL, encrypted,
+                                httpChannelId)) {
     return NS_ERROR_FAILURE;
   }
   return NS_OK;
@@ -261,6 +259,14 @@ WebSocketChannelParent::OnServerClose(nsISupports* aContext, uint16_t code,
 
 void WebSocketChannelParent::ActorDestroy(ActorDestroyReason why) {
   LOG(("WebSocketChannelParent::ActorDestroy() %p\n", this));
+
+  // Make sure we close the channel if the content process dies without going
+  // through a clean shutdown.
+  if (mChannel) {
+    Unused << mChannel->Close(nsIWebSocketChannel::CLOSE_GOING_AWAY,
+                              NS_LITERAL_CSTRING("Child was killed"));
+  }
+
   mIPCOpen = false;
 }
 

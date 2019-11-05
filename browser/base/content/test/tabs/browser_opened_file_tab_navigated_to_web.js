@@ -19,25 +19,36 @@ add_task(async function() {
   // Open first file:// page.
   let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, uriString);
   registerCleanupFunction(async function() {
-    await BrowserTestUtils.removeTab(tab);
+    BrowserTestUtils.removeTab(tab);
   });
 
   // Open new file:// tab from JavaScript in first file:// page.
-  let promiseTabOpened = BrowserTestUtils.waitForNewTab(gBrowser, openedUriString, true);
+  let promiseTabOpened = BrowserTestUtils.waitForNewTab(
+    gBrowser,
+    openedUriString,
+    true
+  );
   await ContentTask.spawn(tab.linkedBrowser, openedUriString, uri => {
     content.open(uri, "_blank");
   });
 
   let openedTab = await promiseTabOpened;
   registerCleanupFunction(async function() {
-    await BrowserTestUtils.removeTab(openedTab);
+    BrowserTestUtils.removeTab(openedTab);
   });
 
   let openedBrowser = openedTab.linkedBrowser;
 
   // Ensure that new file:// tab can be navigated to web content.
-  openedBrowser.loadURI(WEB_ADDRESS);
-  let href = await BrowserTestUtils.browserLoaded(openedBrowser, false, WEB_ADDRESS);
-  is(href, WEB_ADDRESS,
-     "Check that new file:// page has navigated successfully to web content");
+  BrowserTestUtils.loadURI(openedBrowser, "http://example.org/");
+  let href = await BrowserTestUtils.browserLoaded(
+    openedBrowser,
+    false,
+    WEB_ADDRESS
+  );
+  is(
+    href,
+    WEB_ADDRESS,
+    "Check that new file:// page has navigated successfully to web content"
+  );
 });

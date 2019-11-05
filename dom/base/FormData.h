@@ -98,7 +98,6 @@ class FormData final : public nsISupports,
   // HTMLFormSubmission
   virtual nsresult GetEncodedSubmission(nsIURI* aURI,
                                         nsIInputStream** aPostDataStream,
-                                        int64_t* aPostDataStreamLength,
                                         nsCOMPtr<nsIURI>& aOutURI) override;
 
   virtual nsresult AddNameValuePair(const nsAString& aName,

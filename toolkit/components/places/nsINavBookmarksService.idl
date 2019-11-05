@@ -43,46 +43,6 @@ interface nsINavBookmarkObserver : nsISupports
   void onEndUpdateBatch();
 
   /**
-   * Notifies that an item (any type) was added.  Called after the actual
-   * addition took place.
-   * When a new item is created, all the items following it in the same folder
-   * will have their index shifted down, but no additional notifications will
-   * be sent.
-   *
-   * @param aItemId
-   *        The id of the item that was added.
-   * @param aParentId
-   *        The id of the folder to which the item was added.
-   * @param aIndex
-   *        The item's index in the folder.
-   * @param aItemType
-   *        The type of the added item (see TYPE_* constants below).
-   * @param aURI
-   *        The URI of the added item if it was TYPE_BOOKMARK, null otherwise.
-   * @param aTitle
-   *        The title of the added item.
-   * @param aDateAdded
-   *        The stored date added value, in microseconds from the epoch.
-   * @param aGuid
-   *        The unique ID associated with the item.
-   * @param aParentGuid
-   *        The unique ID associated with the item's parent.
-   * @param aSource
-   *        A change source constant from nsINavBookmarksService::SOURCE_*,
-   *        passed to the method that notifies the observer.
-   */
-  void onItemAdded(in long long aItemId,
-                   in long long aParentId,
-                   in long aIndex,
-                   in unsigned short aItemType,
-                   in nsIURI aURI,
-                   in AUTF8String aTitle,
-                   in PRTime aDateAdded,
-                   in ACString aGuid,
-                   in ACString aParentGuid,
-                   in unsigned short aSource);
-
-  /**
    * Notifies that an item was removed.  Called after the actual remove took
    * place.
    * When an item is removed, all the items following it in the same folder
@@ -246,6 +206,8 @@ interface nsINavBookmarkObserver : nsISupports
    * @param aSource
    *        A change source constant from nsINavBookmarksService::SOURCE_*,
    *        passed to the method that notifies the observer.
+   * @param aURI
+   *        The URI for this bookmark.
    */
   void onItemMoved(in long long aItemId,
                    in long long aOldParentId,
@@ -256,7 +218,8 @@ interface nsINavBookmarkObserver : nsISupports
                    in ACString aGuid,
                    in ACString aOldParentGuid,
                    in ACString aNewParentGuid,
-                   in unsigned short aSource);
+                   in unsigned short aSource,
+                   in AUTF8String aURI);
 };
 
 /**
@@ -283,20 +246,30 @@ interface nsINavBookmarksService : nsISupports
    */
   readonly attribute long long tagsFolder;
 
- /**
-  * The item ID of the unfiled-bookmarks folder.
-  */
-  readonly attribute long long unfiledBookmarksFolder;
-
   /**
    * The item ID of the personal toolbar folder.
    */
   readonly attribute long long toolbarFolder;
 
   /**
-   * The item ID of the mobile bookmarks folder.
+   * The total number of Sync changes (inserts, updates, deletes, merges, and
+   * uploads) recorded since Places startup for all bookmarks.
+   *
+   * Note that this is *not* the number of bookmark syncs. It's a monotonically
+   * increasing counter incremented for every change that affects a bookmark's
+   * `syncChangeCounter`.
+   *
+   * The counter can be used to avoid keeping an exclusive transaction open for
+   * time-consuming work. One way to do that is to store the current value of
+   * the counter, do the work, start a transaction, check the current value
+   * again, and compare it to the stored value to determine if the database
+   * changed during the work.
+   *
+   * The bookmarks mirror does this to check for changes between building and
+   * applying a merged tree. This avoids blocking the main Places connection
+   * during the merge, and ensures that the new tree still applies cleanly.
    */
-  readonly attribute long long mobileFolder;
+  readonly attribute long long totalSyncChanges;
 
   /**
    * This value should be used for APIs that allow passing in an index
@@ -319,23 +292,34 @@ interface nsINavBookmarksService : nsISupports
   const unsigned short SOURCE_DEFAULT = 0;
   const unsigned short SOURCE_SYNC = 1;
   const unsigned short SOURCE_IMPORT = 2;
-  const unsigned short SOURCE_IMPORT_REPLACE = 3;
   const unsigned short SOURCE_SYNC_REPARENT_REMOVED_FOLDER_CHILDREN = 4;
+  const unsigned short SOURCE_RESTORE = 5;
+  const unsigned short SOURCE_RESTORE_ON_STARTUP = 6;
 
   /**
-   * Sync status flags.
+   * Sync status flags, stored in Places for each item. These affect conflict
+   * resolution, when an item is changed both locally and remotely; deduping,
+   * when a local item matches a remote item with similar contents and different
+   * GUIDs; and whether we write a tombstone when an item is deleted locally.
+   *
+   * Status  | Description               | Conflict   | Can     | Needs
+   *         |                           | resolution | dedupe? | tombstone?
+   * -----------------------------------------------------------------------
+   * UNKNOWN | Automatically restored    | Prefer     | No      | No
+   *         | on startup to recover     | deletion   |         |
+   *         | from database corruption, |            |         |
+   *         | or sync ID change on      |            |         |
+   *         | server.                   |            |         |
+   * -----------------------------------------------------------------------
+   * NEW     | Item not uploaded to      | Prefer     | Yes     | No
+   *         | server yet, or Sync       | newer      |         |
+   *         | disconnected.             |            |         |
+   * -----------------------------------------------------------------------
+   * NORMAL  | Item uploaded to server.  | Prefer     | No      | Yes
+   *         |                           | newer      |         |
    */
-  // "UNKNOWN" means sync tracking information was lost because the item
-  // was restored from a backup, and needs to be reconciled with the server.
-  // This is set for migrated and restored bookmarks, and changed to "NORMAL"
-  // before upload.
   const unsigned short SYNC_STATUS_UNKNOWN = 0;
-  // "NEW" means the item has never been synced, so we don't need to write
-  // a tombstone if it's deleted. This is set for all new local bookmarks, and
-  // changed to "NORMAL" before upload.
   const unsigned short SYNC_STATUS_NEW = 1;
-  // "NORMAL" means the item has been uploaded to the server, and needs a
-  // tombstone if it's deleted.
   const unsigned short SYNC_STATUS_NORMAL = 2;
 
   /**
@@ -363,6 +347,7 @@ interface nsINavBookmarksService : nsISupports
    *        aURI will be truncated to URI_LENGTH_MAX.
    *  @throws if aGuid is malformed.
    */
+  [can_run_script]
   long long insertBookmark(in long long aParentId, in nsIURI aURI,
                            in long aIndex, in AUTF8String aTitle,
                            [optional] in ACString aGuid,
@@ -396,6 +381,7 @@ interface nsINavBookmarksService : nsISupports
    *  @return The ID of the newly-inserted folder.
    *  @throws if aGuid is malformed.
    */
+  [can_run_script]
   long long createFolder(in long long aParentFolder, in AUTF8String name,
                          in long index,
                          [optional] in ACString aGuid,
@@ -449,19 +435,11 @@ interface nsINavBookmarksService : nsISupports
                            [optional] in unsigned short aSource);
 
   /**
-   * Get the URI for a bookmark item.
-   */
-  nsIURI getBookmarkURI(in long long aItemId);
-
-  /**
-
-  /**
    * Get the parent folder's id for an item.
    */
   long long getFolderIdForItem(in long long aItemId);
 
   /**
-
    * Adds a bookmark observer. If ownsWeak is false, the bookmark service will
    * keep an owning reference to the observer.  If ownsWeak is true, then
    * aObserver must implement nsISupportsWeakReference, and the bookmark
@@ -478,21 +456,5 @@ interface nsINavBookmarksService : nsISupports
   /**
    * Gets an array of registered nsINavBookmarkObserver objects.
    */
-  void getObservers([optional] out unsigned long count,
-                    [retval, array, size_is(count)] out nsINavBookmarkObserver observers);
-
-  /**
-   * Runs the passed callback inside of a database transaction.
-   * Use this when a lot of things are about to change, for example
-   * adding or deleting a large number of bookmark items. Calls can
-   * be nested. Observers are notified when batches begin and end, via
-   * nsINavBookmarkObserver.onBeginUpdateBatch/onEndUpdateBatch.
-   *
-   * @param aCallback
-   *        nsINavHistoryBatchCallback interface to call.
-   * @param aUserData
-   *        Opaque parameter passed to nsINavBookmarksBatchCallback
-   */
-  void runInBatchMode(in nsINavHistoryBatchCallback aCallback,
-                      in nsISupports aUserData);
+  Array<nsINavBookmarkObserver> getObservers();
 };

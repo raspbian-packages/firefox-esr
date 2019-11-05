@@ -14,7 +14,8 @@
 #include "nsRefreshDriver.h"
 #include "Units.h"
 
-class nsIPresShell;
+class nsChildView;
+class nsIWidget;
 
 namespace mozilla {
 

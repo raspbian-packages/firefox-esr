@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,7 +13,11 @@
 #define kTXWrapper "transformiix:result"
 
 class txOutputFormat;
-class nsIDOMDocument;
+namespace mozilla {
+namespace dom {
+class Document;
+}
+}  // namespace mozilla
 
 /**
  * An interface for handling XML documents, loosely modeled
@@ -138,11 +142,11 @@ class txAOutputXMLEventHandler : public txAXMLEventHandler {
    *
    * @param aDocument the Mozilla output document
    */
-  virtual void getOutputDocument(nsIDOMDocument** aDocument) = 0;
+  virtual void getOutputDocument(mozilla::dom::Document** aDocument) = 0;
 };
 
 #define TX_DECL_TXAOUTPUTXMLEVENTHANDLER \
-  virtual void getOutputDocument(nsIDOMDocument** aDocument) override;
+  virtual void getOutputDocument(mozilla::dom::Document** aDocument) override;
 
 /**
  * Interface used to create the appropriate outputhandler

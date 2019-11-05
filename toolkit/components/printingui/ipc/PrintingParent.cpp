@@ -1,15 +1,15 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/dom/Element.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Unused.h"
 #include "nsIContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDOMWindow.h"
 #include "nsIPrintingPromptService.h"
 #include "nsIPrintProgressParams.h"
@@ -40,16 +40,17 @@ mozilla::ipc::IPCResult PrintingParent::RecvShowProgress(
 
   PrintProgressDialogParent* dialogParent =
       static_cast<PrintProgressDialogParent*>(printProgressDialog);
-  nsCOMPtr<nsIObserver> observer = do_QueryInterface(dialogParent);
+  nsCOMPtr<nsIObserver> observer = dialogParent;
 
   nsCOMPtr<nsIWebProgressListener> printProgressListener;
   nsCOMPtr<nsIPrintProgressParams> printProgressParams;
 
   nsresult rv = NS_ERROR_INVALID_ARG;
   if (parentWin && pps) {
-    rv = pps->ShowProgress(parentWin, nullptr, nullptr, observer, isForPrinting,
-                           getter_AddRefs(printProgressListener),
-                           getter_AddRefs(printProgressParams), &notifyOnOpen);
+    rv = pps->ShowPrintProgressDialog(
+        parentWin, nullptr, nullptr, observer, isForPrinting,
+        getter_AddRefs(printProgressListener),
+        getter_AddRefs(printProgressParams), &notifyOnOpen);
   }
 
   if (NS_SUCCEEDED(rv)) {
@@ -180,9 +181,13 @@ mozilla::ipc::IPCResult PrintingParent::RecvShowPrintDialog(
   // with an async message which frees the child process from
   // its nested event loop.
   if (NS_FAILED(rv)) {
-    mozilla::Unused << aDialog->Send__delete__(aDialog, rv);
+    mozilla::Unused
+        << PPrintingParent::PPrintSettingsDialogParent::Send__delete__(aDialog,
+                                                                       rv);
   } else {
-    mozilla::Unused << aDialog->Send__delete__(aDialog, resultData);
+    mozilla::Unused
+        << PPrintingParent::PPrintSettingsDialogParent::Send__delete__(
+               aDialog, resultData);
   }
   return IPC_OK();
 }
@@ -250,17 +255,17 @@ nsPIDOMWindowOuter* PrintingParent::DOMWindowFromBrowserParent(
     return nullptr;
   }
 
-  TabParent* tabParent = TabParent::GetFrom(parent);
-  if (!tabParent) {
+  BrowserParent* browserParent = BrowserParent::GetFrom(parent);
+  if (!browserParent) {
     return nullptr;
   }
 
-  nsCOMPtr<Element> frameElement = tabParent->GetOwnerElement();
+  nsCOMPtr<Element> frameElement = browserParent->GetOwnerElement();
   if (!frameElement) {
     return nullptr;
   }
 
-  nsCOMPtr<nsIContent> frame(do_QueryInterface(frameElement));
+  nsCOMPtr<nsIContent> frame(frameElement);
   if (!frame) {
     return nullptr;
   }

@@ -21,10 +21,10 @@
  *   of the bookmark container.
  * Bookmark := a
  *   HREF is the destination of the bookmark
- *   FEEDURL is the URI of the RSS feed if this is a livemark.
+ *   FEEDURL is the URI of the RSS feed. This is deprecated and no more
+ *   supported, but some old files may still contain it.
  *   LAST_CHARSET is stored as an annotation so that the next time we go to
  *     that page we remember the user's preference.
- *   WEB_PANEL is set to "true" if the bookmark should be loaded in the sidebar.
  *   ICON will be stored in the favicon service
  *   ICON_URI is new for places bookmarks.html, it refers to the original
  *     URI of the favicon so we don't have to make up favicon URLs.
@@ -56,19 +56,28 @@
  * both require the content (= title) before actually creating it.
  */
 
-var EXPORTED_SYMBOLS = [ "BookmarkHTMLUtils" ];
+var EXPORTED_SYMBOLS = ["BookmarkHTMLUtils"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
-ChromeUtils.import("resource://gre/modules/osfile.jsm");
-ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
-ChromeUtils.import("resource://gre/modules/PlacesUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+const { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+const { FileUtils } = ChromeUtils.import(
+  "resource://gre/modules/FileUtils.jsm"
+);
+const { PlacesUtils } = ChromeUtils.import(
+  "resource://gre/modules/PlacesUtils.jsm"
+);
 
-Cu.importGlobalProperties(["XMLHttpRequest"]);
+XPCOMUtils.defineLazyGlobalGetters(this, ["XMLHttpRequest"]);
 
-ChromeUtils.defineModuleGetter(this, "PlacesBackups",
-  "resource://gre/modules/PlacesBackups.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesBackups",
+  "resource://gre/modules/PlacesBackups.jsm"
+);
 
 const Container_Normal = 0;
 const Container_Toolbar = 1;
@@ -76,22 +85,20 @@ const Container_Menu = 2;
 const Container_Unfiled = 3;
 const Container_Places = 4;
 
-const LOAD_IN_SIDEBAR_ANNO = "bookmarkProperties/loadInSidebar";
 const DESCRIPTION_ANNO = "bookmarkProperties/description";
 
 const MICROSEC_PER_SEC = 1000000;
 
 const EXPORT_INDENT = "    "; // four spaces
 
-// Counter used to build fake favicon urls.
-var serialNumber = 0;
-
 function base64EncodeString(aString) {
-  let stream = Cc["@mozilla.org/io/string-input-stream;1"]
-                 .createInstance(Ci.nsIStringInputStream);
+  let stream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(
+    Ci.nsIStringInputStream
+  );
   stream.setData(aString, aString.length);
-  let encoder = Cc["@mozilla.org/scriptablebase64encoder;1"]
-                  .createInstance(Ci.nsIScriptableBase64Encoder);
+  let encoder = Cc["@mozilla.org/scriptablebase64encoder;1"].createInstance(
+    Ci.nsIScriptableBase64Encoder
+  );
   return encoder.encodeToString(stream, aString.length);
 }
 
@@ -100,11 +107,12 @@ function base64EncodeString(aString) {
  * file, compatible with the old bookmarks system.
  */
 function escapeHtmlEntities(aText) {
-  return (aText || "").replace(/&/g, "&amp;")
-                      .replace(/</g, "&lt;")
-                      .replace(/>/g, "&gt;")
-                      .replace(/"/g, "&quot;")
-                      .replace(/'/g, "&#39;");
+  return (aText || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /**
@@ -116,8 +124,11 @@ function escapeUrl(aText) {
 }
 
 function notifyObservers(aTopic, aInitialImport) {
-  Services.obs.notifyObservers(null, aTopic, aInitialImport ? "html-initial"
-                                                            : "html");
+  Services.obs.notifyObservers(
+    null,
+    aTopic,
+    aInitialImport ? "html-initial" : "html"
+  );
 }
 
 var BookmarkHTMLUtils = Object.freeze({
@@ -127,23 +138,42 @@ var BookmarkHTMLUtils = Object.freeze({
    * @param aSpec
    *        String containing the "file:" URI for the existing "bookmarks.html"
    *        file to be loaded.
-   * @param aInitialImport
-   *        Whether this is the initial import executed on a new profile.
+   * @param [options.replace]
+   *        Whether we should erase existing bookmarks before loading.
+   *        Defaults to `false`.
+   * @param [options.source]
+   *        The bookmark change source, used to determine the sync status for
+   *        imported bookmarks. Defaults to `RESTORE` if `replace = true`, or
+   *        `IMPORT` otherwise.
    *
    * @return {Promise}
    * @resolves When the new bookmarks have been created.
    * @rejects JavaScript exception.
    */
-  async importFromURL(aSpec, aInitialImport) {
+  async importFromURL(
+    aSpec,
+    {
+      replace: aInitialImport = false,
+      source: aSource = aInitialImport
+        ? PlacesUtils.bookmarks.SOURCES.RESTORE
+        : PlacesUtils.bookmarks.SOURCES.IMPORT,
+    } = {}
+  ) {
     notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_BEGIN, aInitialImport);
     try {
-      let importer = new BookmarkImporter(aInitialImport);
+      let importer = new BookmarkImporter(aInitialImport, aSource);
       await importer.importFromURL(aSpec);
 
-      notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_SUCCESS, aInitialImport);
+      notifyObservers(
+        PlacesUtils.TOPIC_BOOKMARKS_RESTORE_SUCCESS,
+        aInitialImport
+      );
     } catch (ex) {
       Cu.reportError("Failed to import bookmarks from " + aSpec + ": " + ex);
-      notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_FAILED, aInitialImport);
+      notifyObservers(
+        PlacesUtils.TOPIC_BOOKMARKS_RESTORE_FAILED,
+        aInitialImport
+      );
       throw ex;
     }
   },
@@ -153,26 +183,49 @@ var BookmarkHTMLUtils = Object.freeze({
    *
    * @param aFilePath
    *        OS.File path string of the "bookmarks.html" file to be loaded.
-   * @param aInitialImport
-   *        Whether this is the initial import executed on a new profile.
+   * @param [options.replace]
+   *        Whether we should erase existing bookmarks before loading.
+   *        Defaults to `false`.
+   * @param [options.source]
+   *        The bookmark change source, used to determine the sync status for
+   *        imported bookmarks. Defaults to `RESTORE` if `replace = true`, or
+   *        `IMPORT` otherwise.
    *
    * @return {Promise}
    * @resolves When the new bookmarks have been created.
    * @rejects JavaScript exception.
    */
-  async importFromFile(aFilePath, aInitialImport) {
+  async importFromFile(
+    aFilePath,
+    {
+      replace: aInitialImport = false,
+      source: aSource = aInitialImport
+        ? PlacesUtils.bookmarks.SOURCES.RESTORE
+        : PlacesUtils.bookmarks.SOURCES.IMPORT,
+    } = {}
+  ) {
     notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_BEGIN, aInitialImport);
     try {
       if (!(await OS.File.exists(aFilePath))) {
-        throw new Error("Cannot import from nonexisting html file: " + aFilePath);
+        throw new Error(
+          "Cannot import from nonexisting html file: " + aFilePath
+        );
       }
-      let importer = new BookmarkImporter(aInitialImport);
+      let importer = new BookmarkImporter(aInitialImport, aSource);
       await importer.importFromURL(OS.Path.toFileURI(aFilePath));
 
-      notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_SUCCESS, aInitialImport);
+      notifyObservers(
+        PlacesUtils.TOPIC_BOOKMARKS_RESTORE_SUCCESS,
+        aInitialImport
+      );
     } catch (ex) {
-      Cu.reportError("Failed to import bookmarks from " + aFilePath + ": " + ex);
-      notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_FAILED, aInitialImport);
+      Cu.reportError(
+        "Failed to import bookmarks from " + aFilePath + ": " + ex
+      );
+      notifyObservers(
+        PlacesUtils.TOPIC_BOOKMARKS_RESTORE_FAILED,
+        aInitialImport
+      );
       throw ex;
     }
   },
@@ -197,8 +250,8 @@ var BookmarkHTMLUtils = Object.freeze({
 
     try {
       Services.telemetry
-              .getHistogramById("PLACES_EXPORT_TOHTML_MS")
-              .add(Date.now() - startTime);
+        .getHistogramById("PLACES_EXPORT_TOHTML_MS")
+        .add(Date.now() - startTime);
     } catch (ex) {
       Cu.reportError("Unable to report telemetry.");
     }
@@ -211,7 +264,7 @@ var BookmarkHTMLUtils = Object.freeze({
       return Services.prefs.getCharPref("browser.bookmarks.file");
     } catch (ex) {}
     return OS.Path.join(OS.Constants.Path.profileDir, "bookmarks.html");
-  }
+  },
 });
 
 function Frame(aFolder) {
@@ -268,12 +321,6 @@ function Frame(aFolder) {
   this.previousLink = null;
 
   /**
-   * contains the URL of the previous livemark, so that when the link ends,
-   * and the livemark title is known, we can create it.
-   */
-  this.previousFeed = null;
-
-  /**
    * Contains a reference to the last created bookmark or folder object.
    */
   this.previousItem = null;
@@ -286,12 +333,9 @@ function Frame(aFolder) {
   this.previousLastModifiedDate = null;
 }
 
-function BookmarkImporter(aInitialImport) {
+function BookmarkImporter(aInitialImport, aSource) {
   this._isImportDefaults = aInitialImport;
-  // The bookmark change source, used to determine the sync status and change
-  // counter.
-  this._source = aInitialImport ? PlacesUtils.bookmarks.SOURCE_IMPORT_REPLACE :
-                                  PlacesUtils.bookmarks.SOURCE_IMPORT;
+  this._source = aSource;
 
   // This root is where we construct the bookmarks tree into, following the format
   // of the imported file.
@@ -303,7 +347,7 @@ function BookmarkImporter(aInitialImport) {
   this._bookmarkTree = {
     type: PlacesUtils.bookmarks.TYPE_FOLDER,
     guid: PlacesUtils.bookmarks.menuGuid,
-    children: []
+    children: [],
   };
 
   this._frames = [];
@@ -335,7 +379,7 @@ BookmarkImporter.prototype = {
 
     let folder = {
       children: [],
-      type: PlacesUtils.bookmarks.TYPE_FOLDER
+      type: PlacesUtils.bookmarks.TYPE_FOLDER,
     };
 
     switch (containerType) {
@@ -372,8 +416,10 @@ BookmarkImporter.prototype = {
       frame.previousLastModifiedDate = null;
     }
 
-    if (!folder.hasOwnProperty("dateAdded") &&
-         folder.hasOwnProperty("lastModified")) {
+    if (
+      !folder.hasOwnProperty("dateAdded") &&
+      folder.hasOwnProperty("lastModified")
+    ) {
       folder.dateAdded = folder.lastModified;
     }
 
@@ -394,7 +440,7 @@ BookmarkImporter.prototype = {
     let frame = this._curFrame;
 
     let separator = {
-      type: PlacesUtils.bookmarks.TYPE_SEPARATOR
+      type: PlacesUtils.bookmarks.TYPE_SEPARATOR,
     };
     frame.folder.children.push(separator);
     frame.previousItem = separator;
@@ -458,13 +504,15 @@ BookmarkImporter.prototype = {
     } else {
       let addDate = aElt.getAttribute("add_date");
       if (addDate) {
-        frame.previousDateAdded =
-          this._convertImportedDateToInternalDate(addDate);
+        frame.previousDateAdded = this._convertImportedDateToInternalDate(
+          addDate
+        );
       }
       let modDate = aElt.getAttribute("last_modified");
       if (modDate) {
-        frame.previousLastModifiedDate =
-          this._convertImportedDateToInternalDate(modDate);
+        frame.previousLastModifiedDate = this._convertImportedDateToInternalDate(
+          modDate
+        );
       }
     }
     this._curFrame.previousText = "";
@@ -478,54 +526,32 @@ BookmarkImporter.prototype = {
   _handleLinkBegin: function handleLinkBegin(aElt) {
     let frame = this._curFrame;
 
-    frame.previousFeed = null;
     frame.previousItem = null;
     frame.previousText = ""; // Will hold link text, clear it.
 
     // Get the attributes we care about.
     let href = this._safeTrim(aElt.getAttribute("href"));
-    let feedUrl = this._safeTrim(aElt.getAttribute("feedurl"));
     let icon = this._safeTrim(aElt.getAttribute("icon"));
     let iconUri = this._safeTrim(aElt.getAttribute("icon_uri"));
     let lastCharset = this._safeTrim(aElt.getAttribute("last_charset"));
     let keyword = this._safeTrim(aElt.getAttribute("shortcuturl"));
     let postData = this._safeTrim(aElt.getAttribute("post_data"));
-    let webPanel = this._safeTrim(aElt.getAttribute("web_panel"));
     let dateAdded = this._safeTrim(aElt.getAttribute("add_date"));
     let lastModified = this._safeTrim(aElt.getAttribute("last_modified"));
     let tags = this._safeTrim(aElt.getAttribute("tags"));
 
-    // For feeds, get the feed URL.  If it is invalid, mPreviousFeed will be
-    // NULL and we'll create it as a normal bookmark.
-    if (feedUrl) {
-      frame.previousFeed = feedUrl;
-    }
-
     // Ignore <a> tags that have no href.
-    if (href) {
-      // Save the address if it's valid.  Note that we ignore errors if this is a
-      // feed since href is optional for them.
-      try {
-        frame.previousLink = Services.io.newURI(href).spec;
-      } catch (e) {
-        if (!frame.previousFeed) {
-          frame.previousLink = null;
-          return;
-        }
-      }
-    } else {
+    try {
+      frame.previousLink = Services.io.newURI(href).spec;
+    } catch (e) {
       frame.previousLink = null;
-      // The exception is for feeds, where the href is an optional component
-      // indicating the source web site.
-      if (!frame.previousFeed) {
-        return;
-      }
+      return;
     }
 
     let bookmark = {};
 
-    // Only set the url for bookmarks, not for livemarks.
-    if (frame.previousLink && !frame.previousFeed) {
+    // Only set the url for bookmarks.
+    if (frame.previousLink) {
       bookmark.url = frame.previousLink;
     }
 
@@ -534,39 +560,28 @@ BookmarkImporter.prototype = {
     }
     // Save bookmark's last modified date.
     if (lastModified) {
-      bookmark.lastModified = this._convertImportedDateToInternalDate(lastModified);
+      bookmark.lastModified = this._convertImportedDateToInternalDate(
+        lastModified
+      );
     }
 
     if (!dateAdded && lastModified) {
       bookmark.dateAdded = bookmark.lastModified;
     }
 
-    if (frame.previousFeed) {
-      // This is a livemark, we've done all we need to do here, so finish early.
-      frame.folder.children.push(bookmark);
-      frame.previousItem = bookmark;
-      return;
-    }
-
     if (tags) {
-      bookmark.tags = tags.split(",").filter(aTag => aTag.length > 0 &&
-        aTag.length <= Ci.nsITaggingService.MAX_TAG_LENGTH);
+      bookmark.tags = tags
+        .split(",")
+        .filter(
+          aTag =>
+            aTag.length > 0 &&
+            aTag.length <= PlacesUtils.bookmarks.MAX_TAG_LENGTH
+        );
 
       // If we end up with none, then delete the property completely.
       if (!bookmark.tags.length) {
         delete bookmark.tags;
       }
-    }
-
-    if (webPanel && webPanel.toLowerCase() == "true") {
-      if (!bookmark.hasOwnProperty("annos")) {
-        bookmark.annos = [];
-      }
-      bookmark.annos.push({ "name": LOAD_IN_SIDEBAR_ANNO,
-                            "flags": 0,
-                            "expires": 4,
-                            "value": 1
-                          });
     }
 
     if (lastCharset) {
@@ -605,8 +620,9 @@ BookmarkImporter.prototype = {
    */
   _handleContainerEnd: function handleContainerEnd() {
     let frame = this._curFrame;
-    if (frame.containerNesting > 0)
+    if (frame.containerNesting > 0) {
       frame.containerNesting--;
+    }
     if (this._frames.length > 1 && frame.containerNesting == 0) {
       this._frames.pop();
     }
@@ -629,26 +645,6 @@ BookmarkImporter.prototype = {
     frame.previousText = frame.previousText.trim();
 
     if (frame.previousItem != null) {
-      if (frame.previousFeed) {
-        if (!frame.previousItem.hasOwnProperty("annos")) {
-          frame.previousItem.annos = [];
-        }
-        frame.previousItem.type = PlacesUtils.bookmarks.TYPE_FOLDER;
-        frame.previousItem.annos.push({
-          "name": PlacesUtils.LMANNO_FEEDURI,
-          "flags": 0,
-          "expires": 4,
-          "value": frame.previousFeed
-        });
-        if (frame.previousLink) {
-          frame.previousItem.annos.push({
-            "name": PlacesUtils.LMANNO_SITEURI,
-            "flags": 0,
-            "expires": 4,
-            "value": frame.previousLink
-          });
-        }
-      }
       frame.previousItem.title = frame.previousText;
     }
 
@@ -687,25 +683,10 @@ BookmarkImporter.prototype = {
   _closeContainer: function closeContainer(aElt) {
     let frame = this._curFrame;
 
-    // see the comment for the definition of inDescription. Basically, we commit
-    // any text in previousText to the description of the node/folder if there
-    // is any.
+    // Although we no longer support importing descriptions, we still need to
+    // clear any previous text, so that it doesn't get swallowed into other elements.
     if (frame.inDescription) {
-      // NOTE ES5 trim trims more than the previous C++ trim.
-      frame.previousText = frame.previousText.trim(); // important
-      if (frame.previousText) {
-        let item = frame.previousLink ? frame.previousItem : frame.folder;
-        if (!item.hasOwnProperty("annos")) {
-          item.annos = [];
-        }
-        item.annos.push({
-          "name": DESCRIPTION_ANNO,
-          "flags": 0,
-          "expires": 4,
-          "value": frame.previousText
-        });
-        frame.previousText = "";
-      }
+      frame.previousText = "";
       frame.inDescription = false;
     }
 
@@ -743,65 +724,11 @@ BookmarkImporter.prototype = {
   },
 
   /**
-   * data is a string that is a data URI for the favicon. Our job is to
-   * decode it and store it in the favicon service.
-   *
-   * When aIconURI is non-null, we will use that as the URI of the favicon
-   * when storing in the favicon service.
-   *
-   * When aIconURI is null, we have to make up a URI for this favicon so that
-   * it can be stored in the service. The real one will be set the next time
-   * the user visits the page. Our made up one should get expired when the
-   * page no longer references it.
-   */
-  _setFaviconForURI: function setFaviconForURI(aPageURI, aIconURI, aData) {
-    // if the input favicon URI is a chrome: URI, then we just save it and don't
-    // worry about data
-    if (aIconURI) {
-      if (aIconURI.schemeIs("chrome")) {
-        PlacesUtils.favicons.setAndFetchFaviconForPage(aPageURI, aIconURI, false,
-                                                       PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, null,
-                                                       Services.scriptSecurityManager.getSystemPrincipal());
-
-        return;
-      }
-    }
-
-    // some bookmarks have placeholder URIs that contain just "data:"
-    // ignore these
-    if (aData.length <= 5) {
-      return;
-    }
-
-    let faviconURI;
-    if (aIconURI) {
-      faviconURI = aIconURI;
-    } else {
-      // Make up a favicon URI for this page.  Later, we'll make sure that this
-      // favicon URI is always associated with local favicon data, so that we
-      // don't load this URI from the network.
-      let faviconSpec = "http://www.mozilla.org/2005/made-up-favicon/"
-                      + serialNumber
-                      + "-"
-                      + new Date().getTime();
-      faviconURI = NetUtil.newURI(faviconSpec);
-      serialNumber++;
-    }
-
-    // This could fail if the favicon is bigger than defined limit, in such a
-    // case neither the favicon URI nor the favicon data will be saved.  If the
-    // bookmark is visited again later, the URI and data will be fetched.
-    PlacesUtils.favicons.replaceFaviconDataFromDataURL(faviconURI, aData, 0,
-                                                       Services.scriptSecurityManager.getSystemPrincipal());
-    PlacesUtils.favicons.setAndFetchFaviconForPage(aPageURI, faviconURI, false,
-                                                   PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, null,
-                                                   Services.scriptSecurityManager.getSystemPrincipal());
-  },
-
-  /**
    * Converts a string date in seconds to a date object
    */
-  _convertImportedDateToInternalDate: function convertImportedDateToInternalDate(aDate) {
+  _convertImportedDateToInternalDate: function convertImportedDateToInternalDate(
+    aDate
+  ) {
     try {
       if (aDate && !isNaN(aDate)) {
         return new Date(parseInt(aDate) * 1000); // in bookmarks.html this value is in seconds
@@ -821,10 +748,10 @@ BookmarkImporter.prototype = {
     let next;
     for (;;) {
       switch (current.nodeType) {
-        case Ci.nsIDOMNode.ELEMENT_NODE:
+        case current.ELEMENT_NODE:
           this._openContainer(current);
           break;
-        case Ci.nsIDOMNode.TEXT_NODE:
+        case current.TEXT_NODE:
           this._appendText(current.data);
           break;
       }
@@ -833,7 +760,7 @@ BookmarkImporter.prototype = {
         continue;
       }
       for (;;) {
-        if (current.nodeType == Ci.nsIDOMNode.ELEMENT_NODE) {
+        if (current.nodeType == current.ELEMENT_NODE) {
           this._closeContainer(current);
         }
         if (current == aDoc) {
@@ -870,7 +797,10 @@ BookmarkImporter.prototype = {
     // the separate roots, but keep the children that are relevant to the
     // bookmark menu.
     this._bookmarkTree.children = this._bookmarkTree.children.filter(child => {
-      if (child.guid && PlacesUtils.bookmarks.userContentRoots.includes(child.guid)) {
+      if (
+        child.guid &&
+        PlacesUtils.bookmarks.userContentRoots.includes(child.guid)
+      ) {
         bookmarkTrees.push(child);
         return false;
       }
@@ -899,7 +829,9 @@ BookmarkImporter.prototype = {
 
       // Give the tree the source.
       tree.source = this._source;
-      await PlacesUtils.bookmarks.insertTree(tree, { fixupOrSkipInvalidEntries: true });
+      await PlacesUtils.bookmarks.insertTree(tree, {
+        fixupOrSkipInvalidEntries: true,
+      });
       insertFaviconsForTree(tree);
     }
   },
@@ -932,11 +864,12 @@ function BookmarkExporter(aBookmarksTree) {
   // the bookmarks toolbar and unfiled bookmarks will be child items.
   this._root = rootsMap.get("bookmarksMenuFolder");
 
-  for (let key of [ "toolbarFolder", "unfiledBookmarksFolder" ]) {
+  for (let key of ["toolbarFolder", "unfiledBookmarksFolder"]) {
     let root = rootsMap.get(key);
     if (root.children && root.children.length > 0) {
-      if (!this._root.children)
+      if (!this._root.children) {
         this._root.children = [];
+      }
       this._root.children.push(root);
     }
   }
@@ -946,16 +879,20 @@ BookmarkExporter.prototype = {
   exportToFile: function exportToFile(aFilePath) {
     return (async () => {
       // Create a file that can be accessed by the current user only.
-      let out = FileUtils.openAtomicFileOutputStream(new FileUtils.File(aFilePath));
+      let out = FileUtils.openAtomicFileOutputStream(
+        new FileUtils.File(aFilePath)
+      );
       try {
         // We need a buffered output stream for performance.  See bug 202477.
-        let bufferedOut = Cc["@mozilla.org/network/buffered-output-stream;1"]
-                          .createInstance(Ci.nsIBufferedOutputStream);
+        let bufferedOut = Cc[
+          "@mozilla.org/network/buffered-output-stream;1"
+        ].createInstance(Ci.nsIBufferedOutputStream);
         bufferedOut.init(out, 4096);
         try {
           // Write bookmarks in UTF-8.
-          this._converterOut = Cc["@mozilla.org/intl/converter-output-stream;1"]
-                               .createInstance(Ci.nsIConverterOutputStream);
+          this._converterOut = Cc[
+            "@mozilla.org/intl/converter-output-stream;1"
+          ].createInstance(Ci.nsIConverterOutputStream);
           this._converterOut.init(bufferedOut, "utf-8");
           try {
             this._writeHeader();
@@ -994,8 +931,9 @@ BookmarkExporter.prototype = {
     this._writeLine("<!-- This is an automatically generated file.");
     this._writeLine("     It will be read and overwritten.");
     this._writeLine("     DO NOT EDIT! -->");
-    this._writeLine('<META HTTP-EQUIV="Content-Type" CONTENT="text/html; ' +
-                    'charset=UTF-8">');
+    this._writeLine(
+      '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">'
+    );
     this._writeLine("<TITLE>Bookmarks</TITLE>");
   },
 
@@ -1007,31 +945,32 @@ BookmarkExporter.prototype = {
       this._write(aIndent + "<DT><H3");
       this._writeDateAttributes(aItem);
 
-      if (aItem.root === "toolbarFolder")
+      if (aItem.root === "toolbarFolder") {
         this._writeAttribute("PERSONAL_TOOLBAR_FOLDER", "true");
-      else if (aItem.root === "unfiledBookmarksFolder")
+      } else if (aItem.root === "unfiledBookmarksFolder") {
         this._writeAttribute("UNFILED_BOOKMARKS_FOLDER", "true");
+      }
       this._writeLine(">" + escapeHtmlEntities(aItem.title) + "</H3>");
     }
 
     this._writeDescription(aItem, aIndent);
 
     this._writeLine(aIndent + "<DL><p>");
-    if (aItem.children)
+    if (aItem.children) {
       await this._writeContainerContents(aItem, aIndent);
-    if (aItem == this._root)
+    }
+    if (aItem == this._root) {
       this._writeLine(aIndent + "</DL>");
-    else
+    } else {
       this._writeLine(aIndent + "</DL><p>");
+    }
   },
 
   async _writeContainerContents(aItem, aIndent) {
     let localIndent = aIndent + EXPORT_INDENT;
 
     for (let child of aItem.children) {
-      if (child.annos && child.annos.some(anno => anno.name == PlacesUtils.LMANNO_FEEDURI)) {
-        this._writeLivemark(child, localIndent);
-      } else if (child.type == PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+      if (child.type == PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
         await this._writeContainer(child, localIndent);
       } else if (child.type == PlacesUtils.TYPE_X_MOZ_PLACE_SEPARATOR) {
         this._writeSeparator(child, localIndent);
@@ -1044,20 +983,10 @@ BookmarkExporter.prototype = {
   _writeSeparator(aItem, aIndent) {
     this._write(aIndent + "<HR");
     // We keep exporting separator titles, but don't support them anymore.
-    if (aItem.title)
+    if (aItem.title) {
       this._writeAttribute("NAME", escapeHtmlEntities(aItem.title));
+    }
     this._write(">");
-  },
-
-  _writeLivemark(aItem, aIndent) {
-    this._write(aIndent + "<DT><A");
-    let feedSpec = aItem.annos.find(anno => anno.name == PlacesUtils.LMANNO_FEEDURI).value;
-    this._writeAttribute("FEEDURL", escapeUrl(feedSpec));
-    let siteSpecAnno = aItem.annos.find(anno => anno.name == PlacesUtils.LMANNO_SITEURI);
-    if (siteSpecAnno)
-      this._writeAttribute("HREF", escapeUrl(siteSpecAnno.value));
-    this._writeLine(">" + escapeHtmlEntities(aItem.title) + "</A>");
-    this._writeDescription(aItem, aIndent);
   },
 
   async _writeItem(aItem, aIndent) {
@@ -1075,35 +1004,43 @@ BookmarkExporter.prototype = {
 
     if (aItem.keyword) {
       this._writeAttribute("SHORTCUTURL", escapeHtmlEntities(aItem.keyword));
-      if (aItem.postData)
+      if (aItem.postData) {
         this._writeAttribute("POST_DATA", escapeHtmlEntities(aItem.postData));
+      }
     }
 
-    if (aItem.annos && aItem.annos.some(anno => anno.name == LOAD_IN_SIDEBAR_ANNO))
-      this._writeAttribute("WEB_PANEL", "true");
-    if (aItem.charset)
+    if (aItem.charset) {
       this._writeAttribute("LAST_CHARSET", escapeHtmlEntities(aItem.charset));
-    if (aItem.tags)
+    }
+    if (aItem.tags) {
       this._writeAttribute("TAGS", escapeHtmlEntities(aItem.tags));
+    }
     this._writeLine(">" + escapeHtmlEntities(aItem.title) + "</A>");
     this._writeDescription(aItem, aIndent);
   },
 
   _writeDateAttributes(aItem) {
-    if (aItem.dateAdded)
-      this._writeAttribute("ADD_DATE",
-                           Math.floor(aItem.dateAdded / MICROSEC_PER_SEC));
-    if (aItem.lastModified)
-      this._writeAttribute("LAST_MODIFIED",
-                           Math.floor(aItem.lastModified / MICROSEC_PER_SEC));
+    if (aItem.dateAdded) {
+      this._writeAttribute(
+        "ADD_DATE",
+        Math.floor(aItem.dateAdded / MICROSEC_PER_SEC)
+      );
+    }
+    if (aItem.lastModified) {
+      this._writeAttribute(
+        "LAST_MODIFIED",
+        Math.floor(aItem.lastModified / MICROSEC_PER_SEC)
+      );
+    }
   },
 
   async _writeFaviconAttribute(aItem) {
-    if (!aItem.iconuri)
+    if (!aItem.iconuri) {
       return;
+    }
     let favicon;
     try {
-      favicon  = await PlacesUtils.promiseFaviconData(aItem.uri);
+      favicon = await PlacesUtils.promiseFaviconData(aItem.uri);
     } catch (ex) {
       Cu.reportError("Unexpected Error trying to fetch icon data");
       return;
@@ -1112,18 +1049,22 @@ BookmarkExporter.prototype = {
     this._writeAttribute("ICON_URI", escapeUrl(favicon.uri.spec));
 
     if (!favicon.uri.schemeIs("chrome") && favicon.dataLen > 0) {
-      let faviconContents = "data:image/png;base64," +
+      let faviconContents =
+        "data:image/png;base64," +
         base64EncodeString(String.fromCharCode.apply(String, favicon.data));
       this._writeAttribute("ICON", faviconContents);
     }
   },
 
   _writeDescription(aItem, aIndent) {
-    let descriptionAnno = aItem.annos &&
-                          aItem.annos.find(anno => anno.name == DESCRIPTION_ANNO);
-    if (descriptionAnno)
-      this._writeLine(aIndent + "<DD>" + escapeHtmlEntities(descriptionAnno.value));
-  }
+    let descriptionAnno =
+      aItem.annos && aItem.annos.find(anno => anno.name == DESCRIPTION_ANNO);
+    if (descriptionAnno) {
+      this._writeLine(
+        aIndent + "<DD>" + escapeHtmlEntities(descriptionAnno.value)
+      );
+    }
+  },
 };
 
 /**
@@ -1139,12 +1080,19 @@ function insertFaviconForNode(node) {
       // Create a fake faviconURI to use (FIXME: bug 523932)
       let faviconURI = Services.io.newURI("fake-favicon-uri:" + node.url);
       PlacesUtils.favicons.replaceFaviconDataFromDataURL(
-        faviconURI, node.icon, 0,
-        Services.scriptSecurityManager.getSystemPrincipal());
+        faviconURI,
+        node.icon,
+        0,
+        Services.scriptSecurityManager.getSystemPrincipal()
+      );
       PlacesUtils.favicons.setAndFetchFaviconForPage(
-        Services.io.newURI(node.url), faviconURI, false,
-        PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, null,
-        Services.scriptSecurityManager.getSystemPrincipal());
+        Services.io.newURI(node.url),
+        faviconURI,
+        false,
+        PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
+        null,
+        Services.scriptSecurityManager.getSystemPrincipal()
+      );
     } catch (ex) {
       Cu.reportError("Failed to import favicon data:" + ex);
     }
@@ -1156,9 +1104,13 @@ function insertFaviconForNode(node) {
 
   try {
     PlacesUtils.favicons.setAndFetchFaviconForPage(
-      Services.io.newURI(node.url), Services.io.newURI(node.iconUri), false,
-      PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, null,
-      Services.scriptSecurityManager.getSystemPrincipal());
+      Services.io.newURI(node.url),
+      Services.io.newURI(node.iconUri),
+      false,
+      PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
+      null,
+      Services.scriptSecurityManager.getSystemPrincipal()
+    );
   } catch (ex) {
     Cu.reportError("Failed to import favicon URI:" + ex);
   }

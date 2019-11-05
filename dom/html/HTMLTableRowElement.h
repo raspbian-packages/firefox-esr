@@ -19,12 +19,12 @@ class HTMLTableSectionElement;
 class HTMLTableRowElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLTableRowElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {
     SetHasWeirdParserInsertionMode();
   }
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLTableRowElement, tr)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLTableRowElement, tr)
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -69,8 +69,7 @@ class HTMLTableRowElement final : public nsGenericHTMLElement {
       const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED_NO_UNLINK(HTMLTableRowElement,
                                                      nsGenericHTMLElement)
@@ -87,7 +86,7 @@ class HTMLTableRowElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

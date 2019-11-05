@@ -23,15 +23,13 @@
 #include "js/Date.h"
 #include "js/StructuredClone.h"
 #include "KeyPath.h"
-#include "NullPrincipal.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/EndianUtils.h"
 #include "mozilla/ErrorResult.h"
 #include "mozilla/JSObjectHolder.h"
 #include "mozilla/Move.h"
+#include "mozilla/NullPrincipal.h"
 #include "mozilla/dom/BindingUtils.h"
-#include "mozilla/dom/ContentChild.h"
-#include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/DOMStringList.h"
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/FileBlobImpl.h"
@@ -82,7 +80,7 @@ struct IDBObjectStore::StructuredCloneWriteInfo {
   }
 
   StructuredCloneWriteInfo(StructuredCloneWriteInfo&& aCloneWriteInfo)
-      : mCloneBuffer(Move(aCloneWriteInfo.mCloneBuffer)),
+      : mCloneBuffer(std::move(aCloneWriteInfo.mCloneBuffer)),
         mDatabase(aCloneWriteInfo.mDatabase),
         mOffsetToKeyProp(aCloneWriteInfo.mOffsetToKeyProp) {
     MOZ_ASSERT(mDatabase);
@@ -172,255 +170,6 @@ already_AddRefed<IDBRequest> GenerateRequest(JSContext* aCx,
 
   return request.forget();
 }
-
-// Blob internal code clones this stream before it's passed to IPC, so we
-// serialize module's optimized code only when AsyncWait() is called.
-class WasmCompiledModuleStream final : public nsIAsyncInputStream,
-                                       public nsICloneableInputStream,
-                                       private JS::WasmModuleListener {
-  nsCOMPtr<nsISerialEventTarget> mOwningThread;
-
-  // Initially and while waiting for compilation to complete, the mModule field
-  // is non-null, keeping alive the module whose code needs to be serialized.
-  RefPtr<JS::WasmModule> mModule;
-
-  // A module stream can have up to one input stream callback.
-  nsCOMPtr<nsIInputStreamCallback> mCallback;
-
-  // When a module's optimized code is ready to be serialized, it will be
-  // serialized into mStream and the mModule will be released. At this point,
-  // stream reads will succeed.
-  nsCOMPtr<nsIInputStream> mStream;
-
-  // When the stream is finished reading or closed, mStatus will be changed from
-  // NS_OK to NS_BASE_STREAM_CLOSED or whatever status was passed to
-  // CloseWithStatus.
-  nsresult mStatus;
-
- public:
-  explicit WasmCompiledModuleStream(JS::WasmModule* aModule)
-      : mOwningThread(GetCurrentThreadSerialEventTarget()),
-        mModule(aModule),
-        mStatus(NS_OK) {
-    AssertIsOnOwningThread();
-    MOZ_ASSERT(aModule);
-  }
-
-  bool IsOnOwningThread() const {
-    MOZ_ASSERT(mOwningThread);
-
-    bool current;
-    return NS_SUCCEEDED(mOwningThread->IsOnCurrentThread(&current)) && current;
-  }
-
-  void AssertIsOnOwningThread() const { MOZ_ASSERT(IsOnOwningThread()); }
-
- private:
-  // Copy constructor for cloning.
-  explicit WasmCompiledModuleStream(const WasmCompiledModuleStream& aOther)
-      : mOwningThread(aOther.mOwningThread),
-        mModule(aOther.mModule),
-        mStatus(aOther.mStatus) {
-    AssertIsOnOwningThread();
-
-    if (aOther.mStream) {
-      nsCOMPtr<nsICloneableInputStream> cloneableStream =
-          do_QueryInterface(aOther.mStream);
-      MOZ_ASSERT(cloneableStream);
-
-      MOZ_ALWAYS_SUCCEEDS(cloneableStream->Clone(getter_AddRefs(mStream)));
-    }
-  }
-
-  ~WasmCompiledModuleStream() override {
-    AssertIsOnOwningThread();
-
-    MOZ_ALWAYS_SUCCEEDS(Close());
-  }
-
-  void CallCallback() {
-    AssertIsOnOwningThread();
-    MOZ_ASSERT(mCallback);
-
-    nsCOMPtr<nsIInputStreamCallback> callback;
-    callback.swap(mCallback);
-
-    callback->OnInputStreamReady(this);
-  }
-
-  NS_DECL_THREADSAFE_ISUPPORTS
-
-  // nsIInputStream:
-
-  NS_IMETHOD
-  Close() override {
-    AssertIsOnOwningThread();
-
-    return CloseWithStatus(NS_BASE_STREAM_CLOSED);
-  }
-
-  NS_IMETHOD
-  Available(uint64_t* _retval) override {
-    AssertIsOnOwningThread();
-
-    if (NS_FAILED(mStatus)) {
-      return mStatus;
-    }
-
-    if (!mStream) {
-      *_retval = 0;
-      return NS_OK;
-    }
-
-    return mStream->Available(_retval);
-  }
-
-  NS_IMETHOD
-  Read(char* aBuf, uint32_t aCount, uint32_t* _retval) override {
-    AssertIsOnOwningThread();
-
-    return ReadSegments(NS_CopySegmentToBuffer, aBuf, aCount, _retval);
-  }
-
-  NS_IMETHOD
-  ReadSegments(nsWriteSegmentFun aWriter, void* aClosure, uint32_t aCount,
-               uint32_t* _retval) override {
-    AssertIsOnOwningThread();
-
-    if (NS_FAILED(mStatus)) {
-      *_retval = 0;
-      return NS_OK;
-    }
-
-    if (!mStream) {
-      return NS_BASE_STREAM_WOULD_BLOCK;
-    }
-
-    return mStream->ReadSegments(aWriter, aClosure, aCount, _retval);
-  }
-
-  NS_IMETHOD
-  IsNonBlocking(bool* _retval) override {
-    AssertIsOnOwningThread();
-
-    *_retval = true;
-    return NS_OK;
-  }
-
-  // nsIAsyncInputStream:
-
-  NS_IMETHOD
-  CloseWithStatus(nsresult aStatus) override {
-    AssertIsOnOwningThread();
-
-    if (NS_FAILED(mStatus)) {
-      return NS_OK;
-    }
-
-    mModule = nullptr;
-
-    if (mStream) {
-      MOZ_ALWAYS_SUCCEEDS(mStream->Close());
-      mStream = nullptr;
-    }
-
-    mStatus = NS_FAILED(aStatus) ? aStatus : NS_BASE_STREAM_CLOSED;
-
-    if (mCallback) {
-      CallCallback();
-    }
-
-    return NS_OK;
-  }
-
-  NS_IMETHOD
-  AsyncWait(nsIInputStreamCallback* aCallback, uint32_t aFlags,
-            uint32_t aRequestedCount, nsIEventTarget* aEventTarget) override {
-    AssertIsOnOwningThread();
-    MOZ_ASSERT_IF(mCallback, !aCallback);
-
-    if (aFlags) {
-      return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    if (!aCallback) {
-      mCallback = nullptr;
-      return NS_OK;
-    }
-
-    if (aEventTarget) {
-      mCallback = NS_NewInputStreamReadyEvent(
-          "WasmCompiledModuleStream::AsyncWait", aCallback, aEventTarget);
-    } else {
-      mCallback = aCallback;
-    }
-
-    if (NS_FAILED(mStatus) || mStream) {
-      CallCallback();
-      return NS_OK;
-    }
-
-    MOZ_ASSERT(mModule);
-    mModule->notifyWhenCompilationComplete(this);
-
-    return NS_OK;
-  }
-
-  // nsICloneableInputStream:
-
-  NS_IMETHOD
-  GetCloneable(bool* aCloneable) override {
-    AssertIsOnOwningThread();
-
-    *aCloneable = true;
-    return NS_OK;
-  }
-
-  NS_IMETHOD
-  Clone(nsIInputStream** _retval) override {
-    AssertIsOnOwningThread();
-
-    nsCOMPtr<nsIInputStream> clone = new WasmCompiledModuleStream(*this);
-
-    clone.forget(_retval);
-    return NS_OK;
-  }
-
-  // JS::WasmModuleListener:
-
-  void onCompilationComplete() override {
-    if (!IsOnOwningThread()) {
-      MOZ_ALWAYS_SUCCEEDS(mOwningThread->Dispatch(NewCancelableRunnableMethod(
-          "WasmCompiledModuleStream::onCompilationComplete", this,
-          &WasmCompiledModuleStream::onCompilationComplete)));
-      return;
-    }
-
-    if (NS_FAILED(mStatus) || !mCallback) {
-      return;
-    }
-
-    MOZ_ASSERT(mModule);
-
-    size_t compiledSize = mModule->compiledSerializedSize();
-
-    nsCString compiled;
-    compiled.SetLength(compiledSize);
-
-    mModule->compiledSerialize(
-        reinterpret_cast<uint8_t*>(compiled.BeginWriting()), compiledSize);
-
-    MOZ_ALWAYS_SUCCEEDS(
-        NS_NewCStringInputStream(getter_AddRefs(mStream), compiled));
-
-    mModule = nullptr;
-
-    CallCallback();
-  }
-};
-
-NS_IMPL_ISUPPORTS(WasmCompiledModuleStream, nsIInputStream, nsIAsyncInputStream,
-                  nsICloneableInputStream)
 
 bool StructuredCloneWriteCallback(JSContext* aCx,
                                   JSStructuredCloneWriter* aWriter,
@@ -575,60 +324,6 @@ bool StructuredCloneWriteCallback(JSContext* aCx,
     }
   }
 
-  if (JS::IsWasmModuleObject(aObj)) {
-    RefPtr<JS::WasmModule> module = JS::GetWasmModule(aObj);
-    MOZ_ASSERT(module);
-
-    size_t bytecodeSize = module->bytecodeSerializedSize();
-    UniquePtr<uint8_t[]> bytecode(new uint8_t[bytecodeSize]);
-    module->bytecodeSerialize(bytecode.get(), bytecodeSize);
-
-    RefPtr<BlobImpl> blobImpl =
-        new MemoryBlobImpl(bytecode.release(), bytecodeSize, EmptyString());
-
-    RefPtr<Blob> bytecodeBlob = Blob::Create(nullptr, blobImpl);
-
-    if (module->compilationComplete()) {
-      size_t compiledSize = module->compiledSerializedSize();
-      UniquePtr<uint8_t[]> compiled(new uint8_t[compiledSize]);
-      module->compiledSerialize(compiled.get(), compiledSize);
-
-      blobImpl =
-          new MemoryBlobImpl(compiled.release(), compiledSize, EmptyString());
-    } else {
-      nsCOMPtr<nsIInputStream> stream(new WasmCompiledModuleStream(module));
-
-      blobImpl = StreamBlobImpl::Create(stream, EmptyString(), UINT64_MAX);
-    }
-
-    RefPtr<Blob> compiledBlob = Blob::Create(nullptr, blobImpl);
-
-    if (cloneWriteInfo->mFiles.Length() + 1 > size_t(UINT32_MAX)) {
-      MOZ_ASSERT(false, "Fix the structured clone data to use a bigger type!");
-      return false;
-    }
-
-    const uint32_t index = cloneWriteInfo->mFiles.Length();
-
-    // The ordering of the bytecode and compiled file is significant and must
-    // never be changed. These two files must always form a pair
-    // [eWasmBytecode, eWasmCompiled]. Everything else depends on it!
-    if (!JS_WriteUint32Pair(aWriter, SCTAG_DOM_WASM, /* flags */ 0) ||
-        !JS_WriteUint32Pair(aWriter, index, index + 1)) {
-      return false;
-    }
-
-    StructuredCloneFile* newFile = cloneWriteInfo->mFiles.AppendElement();
-    newFile->mBlob = bytecodeBlob;
-    newFile->mType = StructuredCloneFile::eWasmBytecode;
-
-    newFile = cloneWriteInfo->mFiles.AppendElement();
-    newFile->mBlob = compiledBlob;
-    newFile->mType = StructuredCloneFile::eWasmCompiled;
-
-    return true;
-  }
-
   return StructuredCloneHolder::WriteFullySerializableObjects(aCx, aWriter,
                                                               aObj);
 }
@@ -694,37 +389,19 @@ bool CopyingStructuredCloneWriteCallback(JSContext* aCx,
     }
   }
 
-  if (JS::IsWasmModuleObject(aObj)) {
-    RefPtr<JS::WasmModule> module = JS::GetWasmModule(aObj);
-    MOZ_ASSERT(module);
-
-    if (cloneInfo->mFiles.Length() > size_t(UINT32_MAX)) {
-      MOZ_ASSERT(false, "Fix the structured clone data to use a bigger type!");
-      return false;
-    }
-
-    const uint32_t index = cloneInfo->mFiles.Length();
-
-    if (!JS_WriteUint32Pair(aWriter, SCTAG_DOM_WASM, index)) {
-      return false;
-    }
-
-    StructuredCloneFile* newFile = cloneInfo->mFiles.AppendElement();
-    newFile->mWasmModule = module;
-    newFile->mType = StructuredCloneFile::eWasmBytecode;
-
-    return true;
-  }
-
   return StructuredCloneHolder::WriteFullySerializableObjects(aCx, aWriter,
                                                               aObj);
 }
 
 nsresult GetAddInfoCallback(JSContext* aCx, void* aClosure) {
   static const JSStructuredCloneCallbacks kStructuredCloneCallbacks = {
-      nullptr /* read */,          StructuredCloneWriteCallback /* write */,
-      nullptr /* reportError */,   nullptr /* readTransfer */,
-      nullptr /* writeTransfer */, nullptr /* freeTransfer */
+      nullptr /* read */,
+      StructuredCloneWriteCallback /* write */,
+      nullptr /* reportError */,
+      nullptr /* readTransfer */,
+      nullptr /* writeTransfer */,
+      nullptr /* freeTransfer */,
+      nullptr /* canTransfer */
   };
 
   MOZ_ASSERT(aCx);
@@ -950,7 +627,7 @@ class ValueDeserializationHelper {
       if (aDatabase && aDatabase->GetParentObject()) {
         parent = aDatabase->GetParentObject();
       } else {
-        parent = xpc::NativeGlobal(JS::CurrentGlobalOrNull(aCx));
+        parent = xpc::CurrentNativeGlobal(aCx);
       }
     } else {
       WorkerPrivate* workerPrivate = GetCurrentThreadWorkerPrivate();
@@ -1009,7 +686,7 @@ class ValueDeserializationHelper {
                                       const WasmModuleData& aData,
                                       JS::MutableHandle<JSObject*> aResult) {
     MOZ_ASSERT(aCx);
-    MOZ_ASSERT(aFile.mType == StructuredCloneFile::eWasmCompiled);
+    MOZ_ASSERT(aFile.mType == StructuredCloneFile::eWasmBytecode);
     MOZ_ASSERT(!aFile.mBlob);
 
     // If we don't have a WasmModule, we are probably using it for an index
@@ -1072,7 +749,7 @@ JSObject* CommonStructuredCloneReadCallback(JSContext* aCx,
         return nullptr;
       }
 
-      StructuredCloneFile& file = cloneReadInfo->mFiles[data.compiledIndex];
+      StructuredCloneFile& file = cloneReadInfo->mFiles[data.bytecodeIndex];
 
       if (NS_WARN_IF(!ValueDeserializationHelper::CreateAndWrapWasmModule(
               aCx, file, data, &result))) {
@@ -1142,12 +819,10 @@ JSObject* CopyingStructuredCloneReadCallback(JSContext* aCx,
 
     if (aTag == SCTAG_DOM_BLOB) {
       MOZ_ASSERT(file.mType == StructuredCloneFile::eBlob);
-
-      RefPtr<Blob> blob = file.mBlob;
-      MOZ_ASSERT(!blob->IsFile());
+      MOZ_ASSERT(!file.mBlob->IsFile());
 
       JS::Rooted<JS::Value> wrappedBlob(aCx);
-      if (NS_WARN_IF(!ToJSValue(aCx, blob, &wrappedBlob))) {
+      if (NS_WARN_IF(!ToJSValue(aCx, file.mBlob, &wrappedBlob))) {
         return nullptr;
       }
 
@@ -1159,18 +834,22 @@ JSObject* CopyingStructuredCloneReadCallback(JSContext* aCx,
     if (aTag == SCTAG_DOM_FILE) {
       MOZ_ASSERT(file.mType == StructuredCloneFile::eBlob);
 
-      RefPtr<Blob> blob = file.mBlob;
-      MOZ_ASSERT(blob->IsFile());
+      {
+        // Create a scope so ~RefPtr fires before returning an unwrapped
+        // JS::Value.
+        RefPtr<Blob> blob = file.mBlob;
+        MOZ_ASSERT(blob->IsFile());
 
-      RefPtr<File> file = blob->ToFile();
-      MOZ_ASSERT(file);
+        RefPtr<File> file = blob->ToFile();
+        MOZ_ASSERT(file);
 
-      JS::Rooted<JS::Value> wrappedFile(aCx);
-      if (NS_WARN_IF(!ToJSValue(aCx, file, &wrappedFile))) {
-        return nullptr;
+        JS::Rooted<JS::Value> wrappedFile(aCx);
+        if (NS_WARN_IF(!ToJSValue(aCx, file, &wrappedFile))) {
+          return nullptr;
+        }
+
+        result.set(&wrappedFile.toObject());
       }
-
-      result.set(&wrappedFile.toObject());
 
       return result;
     }
@@ -1244,68 +923,98 @@ already_AddRefed<IDBObjectStore> IDBObjectStore::Create(
 }
 
 // static
-nsresult IDBObjectStore::AppendIndexUpdateInfo(
+void IDBObjectStore::AppendIndexUpdateInfo(
     int64_t aIndexID, const KeyPath& aKeyPath, bool aUnique, bool aMultiEntry,
     const nsCString& aLocale, JSContext* aCx, JS::Handle<JS::Value> aVal,
-    nsTArray<IndexUpdateInfo>& aUpdateInfoArray) {
-  nsresult rv;
-
+    nsTArray<IndexUpdateInfo>& aUpdateInfoArray, ErrorResult& aRv) {
   const bool localeAware = !aLocale.IsEmpty();
+
+  // This precondition holds when `aVal` is the result of a structured clone.
+  js::AutoAssertNoContentJS noContentJS(aCx);
 
   if (!aMultiEntry) {
     Key key;
-    rv = aKeyPath.ExtractKey(aCx, aVal, key);
+    aRv = aKeyPath.ExtractKey(aCx, aVal, key);
 
     // If an index's keyPath doesn't match an object, we ignore that object.
-    if (rv == NS_ERROR_DOM_INDEXEDDB_DATA_ERR || key.IsUnset()) {
-      return NS_OK;
+    if (aRv.ErrorCodeIs(NS_ERROR_DOM_INDEXEDDB_DATA_ERR) || key.IsUnset()) {
+      aRv.SuppressException();
+      return;
     }
 
-    if (NS_FAILED(rv)) {
-      return rv;
+    if (aRv.Failed()) {
+      return;
     }
 
     IndexUpdateInfo* updateInfo = aUpdateInfoArray.AppendElement();
     updateInfo->indexId() = aIndexID;
     updateInfo->value() = key;
     if (localeAware) {
-      rv = key.ToLocaleBasedKey(updateInfo->localizedValue(), aLocale);
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        return NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR;
+      auto result =
+          key.ToLocaleBasedKey(updateInfo->localizedValue(), aLocale, aRv);
+      if (NS_WARN_IF(!result.Is(Ok, aRv))) {
+        if (result.Is(Invalid, aRv)) {
+          aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+        }
+        return;
       }
     }
 
-    return NS_OK;
+    return;
   }
 
   JS::Rooted<JS::Value> val(aCx);
   if (NS_FAILED(aKeyPath.ExtractKeyAsJSVal(aCx, aVal, val.address()))) {
-    return NS_OK;
+    return;
   }
 
   bool isArray;
-  if (!JS_IsArrayObject(aCx, val, &isArray)) {
+  if (NS_WARN_IF(!JS_IsArrayObject(aCx, val, &isArray))) {
     IDB_REPORT_INTERNAL_ERR();
-    return NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR;
+    aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+    return;
   }
   if (isArray) {
     JS::Rooted<JSObject*> array(aCx, &val.toObject());
     uint32_t arrayLength;
     if (NS_WARN_IF(!JS_GetArrayLength(aCx, array, &arrayLength))) {
       IDB_REPORT_INTERNAL_ERR();
-      return NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR;
+      aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+      return;
     }
 
     for (uint32_t arrayIndex = 0; arrayIndex < arrayLength; arrayIndex++) {
-      JS::Rooted<JS::Value> arrayItem(aCx);
-      if (NS_WARN_IF(!JS_GetElement(aCx, array, arrayIndex, &arrayItem))) {
+      JS::RootedId indexId(aCx);
+      if (NS_WARN_IF(!JS_IndexToId(aCx, arrayIndex, &indexId))) {
         IDB_REPORT_INTERNAL_ERR();
-        return NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR;
+        aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+        return;
+      }
+
+      bool hasOwnProperty;
+      if (NS_WARN_IF(
+              !JS_HasOwnPropertyById(aCx, array, indexId, &hasOwnProperty))) {
+        IDB_REPORT_INTERNAL_ERR();
+        aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+        return;
+      }
+
+      if (!hasOwnProperty) {
+        continue;
+      }
+
+      JS::RootedValue arrayItem(aCx);
+      if (NS_WARN_IF(!JS_GetPropertyById(aCx, array, indexId, &arrayItem))) {
+        IDB_REPORT_INTERNAL_ERR();
+        aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+        return;
       }
 
       Key value;
-      if (NS_FAILED(value.SetFromJSVal(aCx, arrayItem)) || value.IsUnset()) {
+      auto result = value.SetFromJSVal(aCx, arrayItem, aRv);
+      if (!result.Is(Ok, aRv) || value.IsUnset()) {
         // Not a value we can do anything with, ignore it.
+        aRv.SuppressException();
         continue;
       }
 
@@ -1313,31 +1022,39 @@ nsresult IDBObjectStore::AppendIndexUpdateInfo(
       updateInfo->indexId() = aIndexID;
       updateInfo->value() = value;
       if (localeAware) {
-        rv = value.ToLocaleBasedKey(updateInfo->localizedValue(), aLocale);
-        if (NS_WARN_IF(NS_FAILED(rv))) {
-          return NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR;
+        auto result =
+            value.ToLocaleBasedKey(updateInfo->localizedValue(), aLocale, aRv);
+        if (NS_WARN_IF(!result.Is(Ok, aRv))) {
+          if (result.Is(Invalid, aRv)) {
+            aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+          }
+          return;
         }
       }
     }
   } else {
     Key value;
-    if (NS_FAILED(value.SetFromJSVal(aCx, val)) || value.IsUnset()) {
+    auto result = value.SetFromJSVal(aCx, val, aRv);
+    if (!result.Is(Ok, aRv) || value.IsUnset()) {
       // Not a value we can do anything with, ignore it.
-      return NS_OK;
+      aRv.SuppressException();
+      return;
     }
 
     IndexUpdateInfo* updateInfo = aUpdateInfoArray.AppendElement();
     updateInfo->indexId() = aIndexID;
     updateInfo->value() = value;
     if (localeAware) {
-      rv = value.ToLocaleBasedKey(updateInfo->localizedValue(), aLocale);
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        return NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR;
+      auto result =
+          value.ToLocaleBasedKey(updateInfo->localizedValue(), aLocale, aRv);
+      if (NS_WARN_IF(!result.Is(Ok, aRv))) {
+        if (result.Is(Invalid, aRv)) {
+          aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
+        }
+        return;
       }
     }
   }
-
-  return NS_OK;
 }
 
 // static
@@ -1365,10 +1082,9 @@ bool IDBObjectStore::DeserializeValue(JSContext* aCx,
 
   MOZ_ASSERT(!(aCloneReadInfo.mData.Size() % sizeof(uint64_t)));
 
-  JSAutoRequest ar(aCx);
-
   static const JSStructuredCloneCallbacks callbacks = {
       CommonStructuredCloneReadCallback,
+      nullptr,
       nullptr,
       nullptr,
       nullptr,
@@ -1420,7 +1136,8 @@ class SandboxHolder final {
       MOZ_ASSERT(xpc, "This should never be null!");
 
       // Let's use a null principal.
-      nsCOMPtr<nsIPrincipal> principal = NullPrincipal::Create();
+      nsCOMPtr<nsIPrincipal> principal =
+          NullPrincipal::CreateWithoutOriginAttributes();
 
       JS::Rooted<JSObject*> sandbox(aCx);
       nsresult rv = xpc->CreateSandbox(aCx, principal, sandbox.address());
@@ -1455,7 +1172,7 @@ class DeserializeIndexValueHelper final : public Runnable {
         mUpdateInfoArray(aUpdateInfoArray),
         mStatus(NS_ERROR_FAILURE) {}
 
-  nsresult DispatchAndWait() {
+  void DispatchAndWait(ErrorResult& aRv) {
     // We don't need to go to the main-thread and use the sandbox. Let's create
     // the updateInfo data here.
     if (!mCloneReadInfo.mData.Size()) {
@@ -1465,9 +1182,10 @@ class DeserializeIndexValueHelper final : public Runnable {
       JS::Rooted<JS::Value> value(jsapi.cx());
       value.setUndefined();
 
-      return IDBObjectStore::AppendIndexUpdateInfo(
-          mIndexID, mKeyPath, mUnique, mMultiEntry, mLocale, jsapi.cx(), value,
-          mUpdateInfoArray);
+      IDBObjectStore::AppendIndexUpdateInfo(mIndexID, mKeyPath, mUnique,
+                                            mMultiEntry, mLocale, jsapi.cx(),
+                                            value, mUpdateInfoArray, aRv);
+      return;
     }
 
     // The operation will continue on the main-thread.
@@ -1477,13 +1195,15 @@ class DeserializeIndexValueHelper final : public Runnable {
     MonitorAutoLock lock(mMonitor);
 
     RefPtr<Runnable> self = this;
-    nsresult rv = SystemGroup::Dispatch(TaskCategory::Other, self.forget());
+    const nsresult rv =
+        SystemGroup::Dispatch(TaskCategory::Other, self.forget());
     if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
+      aRv.Throw(rv);
+      return;
     }
 
     lock.Wait();
-    return mStatus;
+    aRv = mStatus;
   }
 
   NS_IMETHOD
@@ -1500,20 +1220,21 @@ class DeserializeIndexValueHelper final : public Runnable {
       return NS_OK;
     }
 
-    JSAutoCompartment ac(cx, global);
+    JSAutoRealm ar(cx, global);
 
     JS::Rooted<JS::Value> value(cx);
-    nsresult rv = DeserializeIndexValue(cx, &value);
+    const nsresult rv = DeserializeIndexValue(cx, &value);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       OperationCompleted(rv);
       return NS_OK;
     }
 
-    rv = IDBObjectStore::AppendIndexUpdateInfo(mIndexID, mKeyPath, mUnique,
-                                               mMultiEntry, mLocale, cx, value,
-                                               mUpdateInfoArray);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      OperationCompleted(rv);
+    ErrorResult errorResult;
+    IDBObjectStore::AppendIndexUpdateInfo(mIndexID, mKeyPath, mUnique,
+                                          mMultiEntry, mLocale, cx, value,
+                                          mUpdateInfoArray, errorResult);
+    if (NS_WARN_IF(errorResult.Failed())) {
+      OperationCompleted(errorResult.StealNSResult());
       return NS_OK;
     }
 
@@ -1526,6 +1247,7 @@ class DeserializeIndexValueHelper final : public Runnable {
                                  JS::MutableHandle<JS::Value> aValue) {
     static const JSStructuredCloneCallbacks callbacks = {
         CommonStructuredCloneReadCallback,
+        nullptr,
         nullptr,
         nullptr,
         nullptr,
@@ -1613,7 +1335,7 @@ class DeserializeUpgradeValueHelper final : public Runnable {
       return NS_OK;
     }
 
-    JSAutoCompartment ac(cx, global);
+    JSAutoRealm ar(cx, global);
 
     JS::Rooted<JS::Value> value(cx);
     nsresult rv = DeserializeUpgradeValue(cx, &value);
@@ -1631,6 +1353,7 @@ class DeserializeUpgradeValueHelper final : public Runnable {
                                    JS::MutableHandle<JS::Value> aValue) {
     static const JSStructuredCloneCallbacks callbacks = {
         CommonStructuredCloneReadCallback,
+        nullptr,
         nullptr,
         nullptr,
         nullptr,
@@ -1677,16 +1400,16 @@ class DeserializeUpgradeValueHelper final : public Runnable {
 }  // namespace
 
 // static
-nsresult IDBObjectStore::DeserializeIndexValueToUpdateInfos(
+void IDBObjectStore::DeserializeIndexValueToUpdateInfos(
     int64_t aIndexID, const KeyPath& aKeyPath, bool aUnique, bool aMultiEntry,
     const nsCString& aLocale, StructuredCloneReadInfo& aCloneReadInfo,
-    nsTArray<IndexUpdateInfo>& aUpdateInfoArray) {
+    nsTArray<IndexUpdateInfo>& aUpdateInfoArray, ErrorResult& aRv) {
   MOZ_ASSERT(!NS_IsMainThread());
 
   RefPtr<DeserializeIndexValueHelper> helper = new DeserializeIndexValueHelper(
       aIndexID, aKeyPath, aUnique, aMultiEntry, aLocale, aCloneReadInfo,
       aUpdateInfoArray);
-  return helper->DispatchAndWait();
+  helper->DispatchAndWait(aRv);
 }
 
 // static
@@ -1708,47 +1431,54 @@ void IDBObjectStore::AssertIsOnOwningThread() const {
 
 #endif  // DEBUG
 
-nsresult IDBObjectStore::GetAddInfo(
-    JSContext* aCx, ValueWrapper& aValueWrapper, JS::Handle<JS::Value> aKeyVal,
-    StructuredCloneWriteInfo& aCloneWriteInfo, Key& aKey,
-    nsTArray<IndexUpdateInfo>& aUpdateInfoArray) {
+void IDBObjectStore::GetAddInfo(JSContext* aCx, ValueWrapper& aValueWrapper,
+                                JS::Handle<JS::Value> aKeyVal,
+                                StructuredCloneWriteInfo& aCloneWriteInfo,
+                                Key& aKey,
+                                nsTArray<IndexUpdateInfo>& aUpdateInfoArray,
+                                ErrorResult& aRv) {
   // Return DATA_ERR if a key was passed in and this objectStore uses inline
   // keys.
   if (!aKeyVal.isUndefined() && HasValidKeyPath()) {
-    return NS_ERROR_DOM_INDEXEDDB_DATA_ERR;
+    aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+    return;
   }
 
   bool isAutoIncrement = AutoIncrement();
 
-  nsresult rv;
-
   if (!HasValidKeyPath()) {
     // Out-of-line keys must be passed in.
-    rv = aKey.SetFromJSVal(aCx, aKeyVal);
-    if (NS_FAILED(rv)) {
-      return rv;
+    auto result = aKey.SetFromJSVal(aCx, aKeyVal, aRv);
+    if (!result.Is(Ok, aRv)) {
+      if (result.Is(Invalid, aRv)) {
+        aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+      }
+      return;
     }
   } else if (!isAutoIncrement) {
     if (!aValueWrapper.Clone(aCx)) {
-      return NS_ERROR_DOM_DATA_CLONE_ERR;
+      aRv.Throw(NS_ERROR_DOM_DATA_CLONE_ERR);
+      return;
     }
 
-    rv = GetKeyPath().ExtractKey(aCx, aValueWrapper.Value(), aKey);
-    if (NS_FAILED(rv)) {
-      return rv;
+    aRv = GetKeyPath().ExtractKey(aCx, aValueWrapper.Value(), aKey);
+    if (aRv.Failed()) {
+      return;
     }
   }
 
   // Return DATA_ERR if no key was specified this isn't an autoIncrement
   // objectStore.
   if (aKey.IsUnset() && !isAutoIncrement) {
-    return NS_ERROR_DOM_INDEXEDDB_DATA_ERR;
+    aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+    return;
   }
 
   // Figure out indexes and the index values to update here.
 
   if (mSpec->indexes().Length() && !aValueWrapper.Clone(aCx)) {
-    return NS_ERROR_DOM_DATA_CLONE_ERR;
+    aRv.Throw(NS_ERROR_DOM_DATA_CLONE_ERR);
+    return;
   }
 
   {
@@ -1760,34 +1490,33 @@ nsresult IDBObjectStore::GetAddInfo(
     for (uint32_t idxIndex = 0; idxIndex < idxCount; idxIndex++) {
       const IndexMetadata& metadata = indexes[idxIndex];
 
-      rv = AppendIndexUpdateInfo(metadata.id(), metadata.keyPath(),
-                                 metadata.unique(), metadata.multiEntry(),
-                                 metadata.locale(), aCx, aValueWrapper.Value(),
-                                 aUpdateInfoArray);
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        return rv;
+      AppendIndexUpdateInfo(metadata.id(), metadata.keyPath(),
+                            metadata.unique(), metadata.multiEntry(),
+                            metadata.locale(), aCx, aValueWrapper.Value(),
+                            aUpdateInfoArray, aRv);
+      if (NS_WARN_IF(aRv.Failed())) {
+        return;
       }
     }
   }
 
   if (isAutoIncrement && HasValidKeyPath()) {
     if (!aValueWrapper.Clone(aCx)) {
-      return NS_ERROR_DOM_DATA_CLONE_ERR;
+      aRv.Throw(NS_ERROR_DOM_DATA_CLONE_ERR);
+      return;
     }
 
     GetAddInfoClosure data(aCloneWriteInfo, aValueWrapper.Value());
 
     MOZ_ASSERT(aKey.IsUnset());
 
-    rv = GetKeyPath().ExtractOrCreateKey(aCx, aValueWrapper.Value(), aKey,
-                                         &GetAddInfoCallback, &data);
+    aRv = GetKeyPath().ExtractOrCreateKey(aCx, aValueWrapper.Value(), aKey,
+                                          &GetAddInfoCallback, &data);
   } else {
     GetAddInfoClosure data(aCloneWriteInfo, aValueWrapper.Value());
 
-    rv = GetAddInfoCallback(aCx, &data);
+    aRv = GetAddInfoCallback(aCx, &data);
   }
-
-  return rv;
 }
 
 already_AddRefed<IDBRequest> IDBObjectStore::AddOrPut(
@@ -1816,7 +1545,7 @@ already_AddRefed<IDBRequest> IDBObjectStore::AddOrPut(
   StructuredCloneWriteInfo cloneWriteInfo(mTransaction->Database());
   nsTArray<IndexUpdateInfo> updateInfo;
 
-  aRv = GetAddInfo(aCx, aValueWrapper, aKey, cloneWriteInfo, key, updateInfo);
+  GetAddInfo(aCx, aValueWrapper, aKey, cloneWriteInfo, key, updateInfo, aRv);
   if (aRv.Failed()) {
     return nullptr;
   }
@@ -1857,7 +1586,7 @@ already_AddRefed<IDBRequest> IDBObjectStore::AddOrPut(
   ObjectStoreAddPutParams commonParams;
   commonParams.objectStoreId() = Id();
   commonParams.cloneInfo().data().data =
-      Move(cloneWriteInfo.mCloneBuffer.data());
+      std::move(cloneWriteInfo.mCloneBuffer.data());
   commonParams.cloneInfo().offsetToKeyProp() = cloneWriteInfo.mOffsetToKeyProp;
   commonParams.key() = key;
   commonParams.indexUpdateInfos().SwapElements(updateInfo);
@@ -2001,20 +1730,18 @@ already_AddRefed<IDBRequest> IDBObjectStore::GetAllInternal(
   }
 
   RefPtr<IDBKeyRange> keyRange;
-  aRv = IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange));
+  IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange), aRv);
   if (NS_WARN_IF(aRv.Failed())) {
     return nullptr;
   }
 
   const int64_t id = Id();
 
-  OptionalKeyRange optionalKeyRange;
+  Maybe<SerializedKeyRange> optionalKeyRange;
   if (keyRange) {
     SerializedKeyRange serializedKeyRange;
     keyRange->ToSerialized(serializedKeyRange);
-    optionalKeyRange = serializedKeyRange;
-  } else {
-    optionalKeyRange = void_t();
+    optionalKeyRange.emplace(serializedKeyRange);
   }
 
   const uint32_t limit = aLimit.WasPassed() ? aLimit.Value() : 0;
@@ -2187,10 +1914,10 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(IDBObjectStore)
 
 JSObject* IDBObjectStore::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return IDBObjectStoreBinding::Wrap(aCx, this, aGivenProto);
+  return IDBObjectStore_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsPIDOMWindowInner* IDBObjectStore::GetParentObject() const {
+nsIGlobalObject* IDBObjectStore::GetParentObject() const {
   return mTransaction->GetParentObject();
 }
 
@@ -2250,14 +1977,14 @@ already_AddRefed<IDBRequest> IDBObjectStore::GetInternal(
   }
 
   RefPtr<IDBKeyRange> keyRange;
-  aRv = IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange));
+  IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange), aRv);
   if (aRv.Failed()) {
     return nullptr;
   }
 
   if (!keyRange) {
     // Must specify a key or keyRange for get().
-    aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+    aRv.Throw(NS_ERROR_DOM_INDEXEDDB_KEY_ERR);
     return nullptr;
   }
 
@@ -2312,14 +2039,14 @@ already_AddRefed<IDBRequest> IDBObjectStore::DeleteInternal(
   }
 
   RefPtr<IDBKeyRange> keyRange;
-  aRv = IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange));
+  IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange), aRv);
   if (NS_WARN_IF((aRv.Failed()))) {
     return nullptr;
   }
 
   if (!keyRange) {
     // Must specify a key or keyRange for delete().
-    aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+    aRv.Throw(NS_ERROR_DOM_INDEXEDDB_KEY_ERR);
     return nullptr;
   }
 
@@ -2367,7 +2094,10 @@ already_AddRefed<IDBIndex> IDBObjectStore::CreateIndex(
   auto& indexes = const_cast<nsTArray<IndexMetadata>&>(mSpec->indexes());
   for (uint32_t count = indexes.Length(), index = 0; index < count; index++) {
     if (aName == indexes[index].name()) {
-      aRv.Throw(NS_ERROR_DOM_INDEXEDDB_CONSTRAINT_ERR);
+      aRv.ThrowDOMException(
+          NS_ERROR_DOM_INDEXEDDB_CONSTRAINT_ERR,
+          nsPrintfCString("Index named '%s' already exists at index '%u'",
+                          NS_ConvertUTF16toUTF8(aName).get(), index));
       return nullptr;
     }
   }
@@ -2536,7 +2266,7 @@ already_AddRefed<IDBRequest> IDBObjectStore::Count(JSContext* aCx,
   }
 
   RefPtr<IDBKeyRange> keyRange;
-  aRv = IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange));
+  IDBKeyRange::FromJSVal(aCx, aKey, getter_AddRefs(keyRange), aRv);
   if (aRv.Failed()) {
     return nullptr;
   }
@@ -2547,9 +2277,7 @@ already_AddRefed<IDBRequest> IDBObjectStore::Count(JSContext* aCx,
   if (keyRange) {
     SerializedKeyRange serializedKeyRange;
     keyRange->ToSerialized(serializedKeyRange);
-    params.optionalKeyRange() = serializedKeyRange;
-  } else {
-    params.optionalKeyRange() = void_t();
+    params.optionalKeyRange().emplace(serializedKeyRange);
   }
 
   RefPtr<IDBRequest> request = GenerateRequest(aCx, this);
@@ -2587,22 +2315,20 @@ already_AddRefed<IDBRequest> IDBObjectStore::OpenCursorInternal(
   }
 
   RefPtr<IDBKeyRange> keyRange;
-  aRv = IDBKeyRange::FromJSVal(aCx, aRange, getter_AddRefs(keyRange));
+  IDBKeyRange::FromJSVal(aCx, aRange, getter_AddRefs(keyRange), aRv);
   if (NS_WARN_IF(aRv.Failed())) {
     return nullptr;
   }
 
   int64_t objectStoreId = Id();
 
-  OptionalKeyRange optionalKeyRange;
+  Maybe<SerializedKeyRange> optionalKeyRange;
 
   if (keyRange) {
     SerializedKeyRange serializedKeyRange;
     keyRange->ToSerialized(serializedKeyRange);
 
-    optionalKeyRange = Move(serializedKeyRange);
-  } else {
-    optionalKeyRange = void_t();
+    optionalKeyRange.emplace(std::move(serializedKeyRange));
   }
 
   IDBCursor::Direction direction = IDBCursor::ConvertDirection(aDirection);
@@ -2611,17 +2337,17 @@ already_AddRefed<IDBRequest> IDBObjectStore::OpenCursorInternal(
   if (aKeysOnly) {
     ObjectStoreOpenKeyCursorParams openParams;
     openParams.objectStoreId() = objectStoreId;
-    openParams.optionalKeyRange() = Move(optionalKeyRange);
+    openParams.optionalKeyRange() = std::move(optionalKeyRange);
     openParams.direction() = direction;
 
-    params = Move(openParams);
+    params = std::move(openParams);
   } else {
     ObjectStoreOpenCursorParams openParams;
     openParams.objectStoreId() = objectStoreId;
-    openParams.optionalKeyRange() = Move(optionalKeyRange);
+    openParams.optionalKeyRange() = std::move(optionalKeyRange);
     openParams.direction() = direction;
 
-    params = Move(openParams);
+    params = std::move(openParams);
   }
 
   RefPtr<IDBRequest> request = GenerateRequest(aCx, this);
@@ -2820,6 +2546,7 @@ bool IDBObjectStore::ValueWrapper::Clone(JSContext* aCx) {
       nullptr /* readTransfer */,
       nullptr /* writeTransfer */,
       nullptr /* freeTransfer */,
+      nullptr /* canTransfer */
   };
 
   StructuredCloneInfo cloneInfo;

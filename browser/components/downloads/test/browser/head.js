@@ -9,23 +9,39 @@
 
 // Globals
 
-ChromeUtils.defineModuleGetter(this, "Downloads",
-                               "resource://gre/modules/Downloads.jsm");
-ChromeUtils.defineModuleGetter(this, "DownloadsCommon",
-                               "resource:///modules/DownloadsCommon.jsm");
-ChromeUtils.defineModuleGetter(this, "FileUtils",
-                               "resource://gre/modules/FileUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "PlacesUtils",
-                               "resource://gre/modules/PlacesUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "HttpServer",
-    "resource://testing-common/httpd.js");
+ChromeUtils.defineModuleGetter(
+  this,
+  "Downloads",
+  "resource://gre/modules/Downloads.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "DownloadsCommon",
+  "resource:///modules/DownloadsCommon.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "FileUtils",
+  "resource://gre/modules/FileUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesUtils",
+  "resource://gre/modules/PlacesUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "HttpServer",
+  "resource://testing-common/httpd.js"
+);
 
 var gTestTargetFile = FileUtils.getFile("TmpD", ["dm-ui-test.file"]);
 gTestTargetFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, FileUtils.PERMS_FILE);
 
 // The file may have been already deleted when removing a paused download.
-registerCleanupFunction(() => OS.File.remove(gTestTargetFile.path,
-                                             { ignoreAbsent: true }));
+registerCleanupFunction(() =>
+  OS.File.remove(gTestTargetFile.path, { ignoreAbsent: true })
+);
 
 // Asynchronous support subroutines
 
@@ -41,7 +57,6 @@ function promisePanelOpened() {
   }
 
   return new Promise(resolve => {
-
     // Hook to wait until the panel is shown.
     let originalOnPopupShown = DownloadsPanel.onPopupShown;
     DownloadsPanel.onPopupShown = function() {
@@ -52,7 +67,6 @@ function promisePanelOpened() {
       // processing during the DOM event handler itself.
       setTimeout(resolve, 0);
     };
-
   });
 }
 
@@ -83,10 +97,13 @@ async function task_addDownloads(aItems) {
         path: gTestTargetFile.path,
       },
       succeeded: item.state == DownloadsCommon.DOWNLOAD_FINISHED,
-      canceled: item.state == DownloadsCommon.DOWNLOAD_CANCELED ||
-                item.state == DownloadsCommon.DOWNLOAD_PAUSED,
-      error: item.state == DownloadsCommon.DOWNLOAD_FAILED ?
-             new Error("Failed.") : null,
+      canceled:
+        item.state == DownloadsCommon.DOWNLOAD_CANCELED ||
+        item.state == DownloadsCommon.DOWNLOAD_PAUSED,
+      error:
+        item.state == DownloadsCommon.DOWNLOAD_FAILED
+          ? new Error("Failed.")
+          : null,
       hasPartialData: item.state == DownloadsCommon.DOWNLOAD_PAUSED,
       hasBlockedData: item.hasBlockedData || false,
       startTime: new Date(startTimeMs++),
@@ -121,19 +138,20 @@ async function setDownloadDir() {
     });
   }
 
-  await SpecialPowers.pushPrefEnv({"set": [
-    ["browser.download.folderList", 2],
-    ["browser.download.dir", tmpDir, Ci.nsIFile],
-  ]});
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["browser.download.folderList", 2],
+      ["browser.download.dir", tmpDir, Ci.nsIFile],
+    ],
+  });
 }
-
 
 let gHttpServer = null;
 function startServer() {
   gHttpServer = new HttpServer();
   gHttpServer.start(-1);
   registerCleanupFunction(async function() {
-     await new Promise(function(resolve) {
+    await new Promise(function(resolve) {
       gHttpServer.stop(resolve);
     });
   });
@@ -159,14 +177,18 @@ function startServer() {
 }
 
 function httpUrl(aFileName) {
-  return "http://localhost:" + gHttpServer.identity.primaryPort + "/" +
-    aFileName;
+  return (
+    "http://localhost:" + gHttpServer.identity.primaryPort + "/" + aFileName
+  );
 }
 
 function openLibrary(aLeftPaneRoot) {
-  let library = window.openDialog("chrome://browser/content/places/places.xul",
-                                  "", "chrome,toolbar=yes,dialog=no,resizable",
-                                  aLeftPaneRoot);
+  let library = window.openDialog(
+    "chrome://browser/content/places/places.xul",
+    "",
+    "chrome,toolbar=yes,dialog=no,resizable",
+    aLeftPaneRoot
+  );
 
   return new Promise(resolve => {
     waitForFocus(resolve, library);
@@ -177,10 +199,44 @@ function openLibrary(aLeftPaneRoot) {
  * Waits for a given button to become visible.
  */
 function promiseButtonShown(id) {
-  let dwu = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  let dwu = window.windowUtils;
   return BrowserTestUtils.waitForCondition(() => {
     let target = document.getElementById(id);
     let bounds = dwu.getBoundsWithoutFlushing(target);
     return bounds.width > 0 && bounds.height > 0;
   }, `Waiting for button ${id} to have non-0 size`);
+}
+
+async function simulateDropAndCheck(win, dropTarget, urls) {
+  let dragData = [[{ type: "text/plain", data: urls.join("\n") }]];
+  let list = await Downloads.getList(Downloads.ALL);
+
+  let added = new Set();
+  let succeeded = new Set();
+  await new Promise(resolve => {
+    let view = {
+      onDownloadAdded(download) {
+        added.add(download.source.url);
+      },
+      onDownloadChanged(download) {
+        if (!added.has(download.source.url)) {
+          return;
+        }
+        if (!download.succeeded) {
+          return;
+        }
+        succeeded.add(download.source.url);
+        if (succeeded.size == urls.length) {
+          list.removeView(view).then(resolve);
+        }
+      },
+    };
+    list.addView(view).then(function() {
+      EventUtils.synthesizeDrop(dropTarget, dropTarget, dragData, "link", win);
+    });
+  });
+
+  for (let url of urls) {
+    ok(added.has(url), url + " is added to download");
+  }
 }

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -142,7 +142,8 @@ static const FeatureInfo sFeatureInfoArr[] = {
      GLESVersion::ES3,
      GLContext::Extension_None,
      {GLContext::ARB_color_buffer_float, GLContext::EXT_color_buffer_float,
-      GLContext::EXT_color_buffer_half_float, GLContext::Extensions_End}},
+      GLContext::EXT_color_buffer_half_float,
+      GLContext::CHROMIUM_color_buffer_float_rgba, GLContext::Extensions_End}},
     {"frag_depth",
      GLVersion::GL2,
      GLESVersion::ES3,
@@ -244,7 +245,7 @@ static const FeatureInfo sFeatureInfoArr[] = {
      GLVersion::GL3,
      GLESVersion::ES3,
      GLContext::ARB_map_buffer_range,
-     {GLContext::Extensions_End}},
+     {GLContext::EXT_map_buffer_range, GLContext::Extensions_End}},
     {
         "occlusion_query",
         GLVersion::GL2,
@@ -336,7 +337,7 @@ static const FeatureInfo sFeatureInfoArr[] = {
      GLESVersion::ES3_2,
      GLContext::Extension_None,
      {GLContext::ARB_texture_float, GLContext::EXT_color_buffer_float,
-      GLContext::Extensions_End}},
+      GLContext::CHROMIUM_color_buffer_float_rgba, GLContext::Extensions_End}},
     {"renderbuffer_color_half_float",
      GLVersion::GL3,
      GLESVersion::ES3_2,
@@ -413,6 +414,18 @@ static const FeatureInfo sFeatureInfoArr[] = {
      GLContext::Extension_None,
      {GLContext::EXT_copy_texture, GLContext::OES_texture_3D,
       GLContext::Extensions_End}},
+    {"texture_compression_bptc",
+     GLVersion::GL4_2,
+     GLESVersion::NONE,
+     GLContext::Extension_None,
+     {GLContext::ARB_texture_compression_bptc,
+      GLContext::EXT_texture_compression_bptc, GLContext::Extensions_End}},
+    {"texture_compression_rgtc",
+     GLVersion::GL3,
+     GLESVersion::NONE,
+     GLContext::Extension_None,
+     {GLContext::ARB_texture_compression_rgtc,
+      GLContext::EXT_texture_compression_rgtc, GLContext::Extensions_End}},
     {"texture_float",
      GLVersion::GL3,
      GLESVersion::ES3,
@@ -421,7 +434,7 @@ static const FeatureInfo sFeatureInfoArr[] = {
       GLContext::Extensions_End}},
     {"texture_float_linear",
      GLVersion::GL3_1,
-     GLESVersion::ES3,
+     GLESVersion::NONE,
      GLContext::Extension_None,
      {GLContext::ARB_texture_float, GLContext::OES_texture_float_linear,
       GLContext::Extensions_End}},

@@ -15,28 +15,29 @@ function fastAssert(cond, msg) {
   }
 }
 
-let COUNT = { by: "count", count: false, bytes: true };
+const COUNT = { by: "count", count: false, bytes: true };
 
 function run_test() {
-  let path = saveNewHeapSnapshot();
-  let snapshot = ChromeUtils.readHeapSnapshot(path);
-  let dominatorTree = snapshot.computeDominatorTree();
+  const path = saveNewHeapSnapshot();
+  const snapshot = ChromeUtils.readHeapSnapshot(path);
+  const dominatorTree = snapshot.computeDominatorTree();
 
   // Do a traversal of the dominator tree and assert the relationship between
   // retained size, shallow size, and children's retained sizes.
 
-  let root = dominatorTree.root;
-  let stack = [root];
+  const root = dominatorTree.root;
+  const stack = [root];
   while (stack.length > 0) {
-    let top = stack.pop();
+    const top = stack.pop();
 
-    let children = dominatorTree.getImmediatelyDominated(top);
+    const children = dominatorTree.getImmediatelyDominated(top);
 
-    let topRetainedSize = dominatorTree.getRetainedSize(top);
-    let topShallowSize = snapshot.describeNode(COUNT, top).bytes;
-    fastAssert(topShallowSize <= topRetainedSize,
-               "The shallow size should be less than or equal to the " +
-               "retained size");
+    const topRetainedSize = dominatorTree.getRetainedSize(top);
+    const topShallowSize = snapshot.describeNode(COUNT, top).bytes;
+    fastAssert(
+      topShallowSize <= topRetainedSize,
+      "The shallow size should be less than or equal to the " + "retained size"
+    );
 
     let sumOfChildrensRetainedSizes = 0;
     for (let i = 0; i < children.length; i++) {
@@ -44,12 +45,16 @@ function run_test() {
       stack.push(children[i]);
     }
 
-    fastAssert(sumOfChildrensRetainedSizes <= topRetainedSize,
-               "The sum of the children's retained sizes should be less than " +
-               "or equal to the retained size");
-    fastAssert(sumOfChildrensRetainedSizes + topShallowSize === topRetainedSize,
-               "The sum of the children's retained sizes plus the shallow " +
-               "size should be equal to the retained size");
+    fastAssert(
+      sumOfChildrensRetainedSizes <= topRetainedSize,
+      "The sum of the children's retained sizes should be less than " +
+        "or equal to the retained size"
+    );
+    fastAssert(
+      sumOfChildrensRetainedSizes + topShallowSize === topRetainedSize,
+      "The sum of the children's retained sizes plus the shallow " +
+        "size should be equal to the retained size"
+    );
   }
 
   ok(true, "Successfully walked the tree");

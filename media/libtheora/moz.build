@@ -22,20 +22,18 @@ FINAL_LIBRARY = 'gkmedias'
 DEFINES['THEORA_DISABLE_ENCODE'] = True
 
 # Suppress warnings in third-party code.
-if CONFIG['CC_TYPE'] in ('clang', 'clang-cl', 'gcc'):
-    CFLAGS += ['-Wno-type-limits']
+CFLAGS += ['-Wno-type-limits']
 if CONFIG['CC_TYPE'] in ('clang', 'clang-cl'):
     CFLAGS += ['-Wno-tautological-compare']
 if CONFIG['CC_TYPE'] == 'clang-cl':
     CFLAGS += [
+        '-Wno-parentheses',
         '-Wno-pointer-sign',
-        '-Wno-shift-op-parentheses',
+        '-Wno-shift-negative-value',
     ]
 
 UNIFIED_SOURCES += [
-    'lib/apiwrapper.c',
     'lib/bitpack.c',
-    'lib/decapiwrapper.c',
     'lib/decinfo.c',
     'lib/decode.c',
     'lib/dequant.c',
@@ -50,27 +48,25 @@ UNIFIED_SOURCES += [
 
 LOCAL_INCLUDES += ['include']
 
-if '86' in CONFIG['OS_TEST']:
+if CONFIG['INTEL_ARCHITECTURE']:
     if CONFIG['OS_ARCH'] != 'SunOS':
         if CONFIG['CC_TYPE'] == 'clang-cl':
             # clang-cl can't handle libtheora's inline asm.
             pass
-        elif CONFIG['OS_ARCH'] != 'WINNT' or CONFIG['OS_TEST'] != 'x86_64':
+        elif CONFIG['OS_ARCH'] != 'WINNT' or CONFIG['CPU_ARCH'] != 'x86_64':
             DEFINES['OC_X86_ASM'] = True
-            if '64' in CONFIG['OS_TEST']:
+            if CONFIG['CPU_ARCH'] == 'x86_64':
                 DEFINES['OC_X86_64_ASM'] = True
-    if CONFIG['CC_TYPE'] in ('msvc', 'clang-cl'):
-        if CONFIG['CC_TYPE'] == 'clang-cl':
-            # clang-cl can't handle libtheora's inline asm.
-            pass
-        elif '64' not in CONFIG['OS_TEST']:
-            SOURCES += [
-                'lib/x86_vc/mmxfrag.c',
-                'lib/x86_vc/mmxidct.c',
-                'lib/x86_vc/mmxstate.c',
-                'lib/x86_vc/x86cpu.c',
-                'lib/x86_vc/x86state.c',
-            ]
+    if CONFIG['CC_TYPE'] == 'clang-cl':
+        # clang-cl can't handle libtheora's inline asm.
+        pass
+        #SOURCES += [
+        #    'lib/x86_vc/mmxfrag.c',
+        #    'lib/x86_vc/mmxidct.c',
+        #    'lib/x86_vc/mmxstate.c',
+        #    'lib/x86_vc/x86cpu.c',
+        #    'lib/x86_vc/x86state.c',
+        #]
     else:
         SOURCES += [
             'lib/x86/mmxfrag.c',
@@ -82,7 +78,7 @@ if '86' in CONFIG['OS_TEST']:
         ]
 
 if CONFIG['GNU_AS']:
-    if 'arm' in CONFIG['OS_TEST']:
+    if CONFIG['CPU_ARCH'] == 'arm':
         SOURCES += [
             'lib/arm/armcpu.c',
             'lib/arm/armstate.c',

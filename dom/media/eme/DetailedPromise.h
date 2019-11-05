@@ -31,10 +31,10 @@ class DetailedPromise : public Promise {
       Telemetry::HistogramID aFailureLatencyProbe);
 
   template <typename T>
-  void MaybeResolve(const T& aArg) {
+  void MaybeResolve(T&& aArg) {
     EME_LOG("%s promise resolved", mName.get());
     MaybeReportTelemetry(eStatus::kSucceeded);
-    Promise::MaybeResolve<T>(aArg);
+    Promise::MaybeResolve(std::forward<T>(aArg));
   }
 
   void MaybeReject(nsresult aArg) = delete;

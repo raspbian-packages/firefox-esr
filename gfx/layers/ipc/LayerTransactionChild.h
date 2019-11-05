@@ -15,10 +15,6 @@
 
 namespace mozilla {
 
-namespace layout {
-class RenderFrameChild;
-}  // namespace layout
-
 namespace layers {
 
 class ShadowLayerForwarder;
@@ -43,14 +39,14 @@ class LayerTransactionChild : public PLayerTransactionChild {
     mForwarder = aForwarder;
   }
 
-  uint64_t GetId() const { return mId; }
+  LayersId GetId() const { return mId; }
 
   void MarkDestroyed() { mDestroyed = true; }
 
  protected:
-  explicit LayerTransactionChild(const uint64_t& aId)
+  explicit LayerTransactionChild(const LayersId& aId)
       : mForwarder(nullptr), mIPCOpen(false), mDestroyed(false), mId(aId) {}
-  ~LayerTransactionChild() {}
+  virtual ~LayerTransactionChild() = default;
 
   void ActorDestroy(ActorDestroyReason why) override;
 
@@ -65,12 +61,11 @@ class LayerTransactionChild : public PLayerTransactionChild {
     Release();
   }
   friend class CompositorBridgeChild;
-  friend class layout::RenderFrameChild;
 
   ShadowLayerForwarder* mForwarder;
   bool mIPCOpen;
   bool mDestroyed;
-  uint64_t mId;
+  LayersId mId;
 };
 
 }  // namespace layers

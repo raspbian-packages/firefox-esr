@@ -22,7 +22,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(AbortController)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-/* static */ already_AddRefed<AbortController> AbortController::Constructor(
+/* static */
+already_AddRefed<AbortController> AbortController::Constructor(
     const GlobalObject& aGlobal, ErrorResult& aRv) {
   nsCOMPtr<nsIGlobalObject> global = do_QueryInterface(aGlobal.GetAsSupports());
   if (!global) {
@@ -39,14 +40,14 @@ AbortController::AbortController(nsIGlobalObject* aGlobal)
 
 JSObject* AbortController::WrapObject(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return AbortControllerBinding::Wrap(aCx, this, aGivenProto);
+  return AbortController_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsIGlobalObject* AbortController::GetParentObject() const { return mGlobal; }
 
 AbortSignal* AbortController::Signal() {
   if (!mSignal) {
-    mSignal = new AbortSignal(this, mAborted);
+    mSignal = new AbortSignal(mGlobal, mAborted);
   }
 
   return mSignal;

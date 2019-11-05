@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 "use strict";
-const {EVENTS} = require("../../constants");
-const {Payloads} = require("./utils");
-const {getBulkLoader, PriorityLevels} = require("./bulk-loader");
+const { EVENTS } = require("../../constants");
+const { Payloads } = require("./utils");
+const { getBulkLoader, PriorityLevels } = require("./bulk-loader");
 
 class CDPConnector {
   constructor() {
@@ -19,7 +19,7 @@ class CDPConnector {
   }
 
   setup(connection, actions) {
-    let {Network, Page} = connection;
+    const { Network, Page } = connection;
     this.Network = Network;
     this.Page = Page;
     this.actions = actions;
@@ -44,7 +44,7 @@ class CDPConnector {
       this.Page.disable(),
       this.payloads.clear(),
       this.Network.enable(),
-      this.Page.enable()
+      this.Page.enable(),
     ]);
   }
 
@@ -53,51 +53,53 @@ class CDPConnector {
   }
 
   onNetworkUpdate(params) {
-    let {requestId} = params;
-    let payload = this.payloads.add(requestId);
-    return payload.update(params).then(
-      ([request, header, postData]) => {
-        let bulkloader = getBulkLoader();
-        bulkloader.add(
-          requestId,
-          (resolve, reject) =>
-            this.addRequest(requestId, request).then(() => {
-              this.updateRequestHeader(requestId, header);
-              this.updatePostData(requestId, postData);
-              resolve();
-            })
-          , PriorityLevels.Critical);
-      });
+    const { requestId } = params;
+    const payload = this.payloads.add(requestId);
+    return payload.update(params).then(([request, header, postData]) => {
+      const bulkloader = getBulkLoader();
+      bulkloader.add(
+        requestId,
+        (resolve, reject) =>
+          this.addRequest(requestId, request).then(() => {
+            this.updateRequestHeader(requestId, header);
+            this.updatePostData(requestId, postData);
+            resolve();
+          }),
+        PriorityLevels.Critical
+      );
+    });
   }
 
   onResponseReceived(params) {
-    let {requestId} = params;
-    let payload = this.payloads.get(requestId);
-    return payload.update(params).then(
-      ([request, header, postData, state, timings]) => {
-        let loader = getBulkLoader();
+    const { requestId } = params;
+    const payload = this.payloads.get(requestId);
+    return payload
+      .update(params)
+      .then(([request, header, postData, state, timings]) => {
+        const loader = getBulkLoader();
         loader.add(
           requestId,
-          (resolve) => {
+          resolve => {
             this.updateResponseHeader(requestId, header);
             this.updateResponseState(requestId, state);
             this.updateResponseTiming(requestId, timings);
             this.getResponseContent(params);
             resolve();
-          }
-          , PriorityLevels.Major);
+          },
+          PriorityLevels.Major
+        );
       });
   }
 
   onDataReceived(params) {
-    let {requestId} = params;
-    let payload = this.payloads.get(requestId);
+    const { requestId } = params;
+    const payload = this.payloads.get(requestId);
     payload.update(params);
   }
 
   onLoadingFinished(params) {
-    let {requestId} = params;
-    let payload = this.payloads.get(requestId);
+    const { requestId } = params;
+    const payload = this.payloads.get(requestId);
     if (payload) {
       payload.log("LoadingFinished", params);
     }
@@ -110,7 +112,7 @@ class CDPConnector {
       return;
     }
     this.update(requestId, {
-      requestHeaders: header
+      requestHeaders: header,
     }).then(() => {
       window.emit(EVENTS.RECEIVED_REQUEST_HEADERS, header);
     });
@@ -121,7 +123,7 @@ class CDPConnector {
       return;
     }
     this.update(requestId, {
-      eventTimings: timings
+      eventTimings: timings,
     }).then(() => {
       window.emit(EVENTS.RECEIVED_EVENT_TIMINGS, requestId);
     });
@@ -138,15 +140,15 @@ class CDPConnector {
       return;
     }
     this.update(requestId, {
-      responseHeaders: header
+      responseHeaders: header,
     }).then(() => {
       window.emit(EVENTS.RECEIVED_RESPONSE_HEADERS, header);
     });
   }
 
   onLoadingFailed(params) {
-    let {requestId} = params;
-    let payload = this.payloads.get(requestId);
+    const { requestId } = params;
+    const payload = this.payloads.get(requestId);
     if (payload) {
       payload.log("LoadingFailed", params);
     }
@@ -154,17 +156,18 @@ class CDPConnector {
   }
 
   async getResponseContent(params) {
-    let {requestId, response} = params;
+    const { requestId, response } = params;
 
-    return this.Network.getResponseBody({requestId}).then(
-      (content) => {
-        let payload = this.payloads.get(requestId);
-        return payload.update({requestId, response, content}).then(
+    return this.Network.getResponseBody({ requestId }).then(content => {
+      const payload = this.payloads.get(requestId);
+      return payload
+        .update({ requestId, response, content })
+        .then(
           ([request, header, postData, state, timings, responseContent]) => {
-            let loader = getBulkLoader();
+            const loader = getBulkLoader();
             loader.add(
               requestId,
-              (resolve) => {
+              resolve => {
                 this.updateResponseContent(requestId, responseContent);
                 return resolve();
               },
@@ -172,19 +175,16 @@ class CDPConnector {
             );
           }
         );
-      }
-    );
+    });
   }
 
   updateResponseContent(requestId, payload) {
     if (!payload) {
       return;
     }
-    this.actions.updateRequest(requestId, payload, true).then(
-      () => {
-        window.emit(EVENTS.RECEIVED_RESPONSE_CONTENT, requestId);
-      }
-    );
+    this.actions.updateRequest(requestId, payload, true).then(() => {
+      window.emit(EVENTS.RECEIVED_RESPONSE_CONTENT, requestId);
+    });
   }
 
   updatePostData(requestId, postData) {
@@ -203,7 +203,7 @@ class CDPConnector {
   }
 
   async addRequest(id, data) {
-    let {
+    const {
       method,
       url,
       isXHR,
@@ -213,23 +213,24 @@ class CDPConnector {
       fromServiceWorker,
     } = data;
 
-    this.actions.addRequest(
-      id,
-      {
-        startedMillis: startedDateTime,
-        method,
-        url,
-        isXHR,
-        cause,
-        fromCache,
-        fromServiceWorker,
-      },
-      true,
-    )
+    this.actions
+      .addRequest(
+        id,
+        {
+          startedMillis: startedDateTime,
+          method,
+          url,
+          isXHR,
+          cause,
+          fromCache,
+          fromServiceWorker,
+        },
+        true
+      )
       .then(() => window.emit(EVENTS.REQUEST_ADDED, id));
   }
 }
 
 module.exports = {
-  CDPConnector
+  CDPConnector,
 };

@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -21,7 +21,9 @@ using namespace mozilla;
 // nsID, not the hash of the pointer to the nsID.
 
 static PLDHashNumber HashIIDPtrKey(const void* key) {
-  return HashGeneric(*((uintptr_t*)key));
+  uintptr_t v;
+  memcpy(&v, key, sizeof(v));
+  return HashGeneric(v);
 }
 
 static bool MatchIIDPtrKey(const PLDHashEntryHdr* entry, const void* key) {
@@ -41,33 +43,35 @@ void JSObject2WrappedJSMap::UpdateWeakPointersAfterGC() {
   // moved. Release any wrappers whose weakly held JSObject has died.
 
   nsTArray<RefPtr<nsXPCWrappedJS>> dying;
-  for (Map::Enum e(mTable); !e.empty(); e.popFront()) {
-    nsXPCWrappedJS* wrapper = e.front().value();
+  for (auto iter = mTable.modIter(); !iter.done(); iter.next()) {
+    nsXPCWrappedJS* wrapper = iter.get().value();
     MOZ_ASSERT(wrapper, "found a null JS wrapper!");
 
     // Walk the wrapper chain and update all JSObjects.
     while (wrapper) {
       if (wrapper->IsSubjectToFinalization()) {
         wrapper->UpdateObjectPointerAfterGC();
-        if (!wrapper->GetJSObjectPreserveColor())
+        if (!wrapper->GetJSObjectPreserveColor()) {
           dying.AppendElement(dont_AddRef(wrapper));
+        }
       }
       wrapper = wrapper->GetNextWrapper();
     }
 
     // Remove or update the JSObject key in the table if necessary.
-    JSObject* obj = e.front().key().unbarrieredGet();
+    JSObject* obj = iter.get().key().unbarrieredGet();
     JS_UpdateWeakPointerAfterGCUnbarriered(&obj);
-    if (!obj)
-      e.removeFront();
-    else
-      e.front().mutableKey() = obj;
+    if (!obj) {
+      iter.remove();
+    } else {
+      iter.get().mutableKey() = obj;
+    }
   }
 }
 
 void JSObject2WrappedJSMap::ShutdownMarker() {
-  for (Map::Range r = mTable.all(); !r.empty(); r.popFront()) {
-    nsXPCWrappedJS* wrapper = r.front().value();
+  for (auto iter = mTable.iter(); !iter.done(); iter.next()) {
+    nsXPCWrappedJS* wrapper = iter.get().value();
     MOZ_ASSERT(wrapper, "found a null JS wrapper!");
     MOZ_ASSERT(wrapper->IsValid(), "found an invalid JS wrapper!");
     wrapper->SystemIsBeingShutDown();
@@ -77,15 +81,16 @@ void JSObject2WrappedJSMap::ShutdownMarker() {
 size_t JSObject2WrappedJSMap::SizeOfIncludingThis(
     mozilla::MallocSizeOf mallocSizeOf) const {
   size_t n = mallocSizeOf(this);
-  n += mTable.sizeOfExcludingThis(mallocSizeOf);
+  n += mTable.shallowSizeOfExcludingThis(mallocSizeOf);
   return n;
 }
 
 size_t JSObject2WrappedJSMap::SizeOfWrappedJS(
     mozilla::MallocSizeOf mallocSizeOf) const {
   size_t n = 0;
-  for (Map::Range r = mTable.all(); !r.empty(); r.popFront())
-    n += r.front().value()->SizeOfIncludingThis(mallocSizeOf);
+  for (auto iter = mTable.iter(); !iter.done(); iter.next()) {
+    n += iter.get().value()->SizeOfIncludingThis(mallocSizeOf);
+  }
   return n;
 }
 
@@ -110,21 +115,6 @@ size_t Native2WrappedNativeMap::SizeOfIncludingThis(
   }
   return n;
 }
-
-/***************************************************************************/
-// implement IID2WrappedJSClassMap...
-
-const struct PLDHashTableOps IID2WrappedJSClassMap::Entry::sOps = {
-    HashIIDPtrKey, MatchIIDPtrKey, PLDHashTable::MoveEntryStub,
-    PLDHashTable::ClearEntryStub};
-
-// static
-IID2WrappedJSClassMap* IID2WrappedJSClassMap::newMap(int length) {
-  return new IID2WrappedJSClassMap(length);
-}
-
-IID2WrappedJSClassMap::IID2WrappedJSClassMap(int length)
-    : mTable(&Entry::sOps, sizeof(Entry), length) {}
 
 /***************************************************************************/
 // implement IID2NativeInterfaceMap...
@@ -239,16 +229,21 @@ bool NativeSetMap::Entry::Match(const PLDHashEntryHdr* entry, const void* key) {
             SetInTable->GetInterfaceAt(1) == Addition);
   }
 
-  if (!Addition && Set == SetInTable) return true;
+  if (!Addition && Set == SetInTable) {
+    return true;
+  }
 
   uint16_t count = Set->GetInterfaceCount();
-  if (count + (Addition ? 1 : 0) != SetInTable->GetInterfaceCount())
+  if (count + (Addition ? 1 : 0) != SetInTable->GetInterfaceCount()) {
     return false;
+  }
 
   XPCNativeInterface** CurrentInTable = SetInTable->GetInterfaceArray();
   XPCNativeInterface** Current = Set->GetInterfaceArray();
   for (uint16_t i = 0; i < count; i++) {
-    if (*(Current++) != *(CurrentInTable++)) return false;
+    if (*(Current++) != *(CurrentInTable++)) {
+      return false;
+    }
   }
   return !Addition || Addition == *(CurrentInTable++);
 }
@@ -275,31 +270,6 @@ size_t NativeSetMap::SizeOfIncludingThis(
   }
   return n;
 }
-
-/***************************************************************************/
-// implement IID2ThisTranslatorMap...
-
-bool IID2ThisTranslatorMap::Entry::Match(const PLDHashEntryHdr* entry,
-                                         const void* key) {
-  return ((const nsID*)key)->Equals(((Entry*)entry)->key);
-}
-
-void IID2ThisTranslatorMap::Entry::Clear(PLDHashTable* table,
-                                         PLDHashEntryHdr* entry) {
-  static_cast<Entry*>(entry)->value = nullptr;
-  memset(entry, 0, table->EntrySize());
-}
-
-const struct PLDHashTableOps IID2ThisTranslatorMap::Entry::sOps = {
-    HashIIDPtrKey, Match, PLDHashTable::MoveEntryStub, Clear};
-
-// static
-IID2ThisTranslatorMap* IID2ThisTranslatorMap::newMap(int length) {
-  return new IID2ThisTranslatorMap(length);
-}
-
-IID2ThisTranslatorMap::IID2ThisTranslatorMap(int length)
-    : mTable(&Entry::sOps, sizeof(Entry), length) {}
 
 /***************************************************************************/
 // implement XPCWrappedNativeProtoMap...

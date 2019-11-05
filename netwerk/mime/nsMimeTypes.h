@@ -75,6 +75,8 @@
 #define APPLICATION_RDF_XML "application/rdf+xml"
 #define APPLICATION_WAPXHTML_XML "application/vnd.wap.xhtml+xml"
 #define APPLICATION_PACKAGE "application/package"
+#define APPLICATION_JAVASCRIPT_BINAST "application/javascript-binast"
+#define APPLICATION_WASM "application/wasm"
 
 #define AUDIO_BASIC "audio/basic"
 #define AUDIO_OGG "audio/ogg"
@@ -107,12 +109,16 @@
 #define IMAGE_TIFF "image/tiff"
 #define IMAGE_BMP "image/bmp"
 #define IMAGE_BMP_MS "image/x-ms-bmp"
+// This is used internally to represent Windows clipboard BMPs which remove
+// part of the header.
+#define IMAGE_BMP_MS_CLIPBOARD "image/x-ms-clipboard-bmp"
 #define IMAGE_ICO "image/x-icon"
 #define IMAGE_ICO_MS "image/vnd.microsoft.icon"
 #define IMAGE_ICON_MS "image/icon"
 #define IMAGE_MNG "video/x-mng"
 #define IMAGE_JNG "image/x-jng"
 #define IMAGE_SVG_XML "image/svg+xml"
+#define IMAGE_WEBP "image/webp"
 
 #define MESSAGE_EXTERNAL_BODY "message/external-body"
 #define MESSAGE_NEWS "message/news"

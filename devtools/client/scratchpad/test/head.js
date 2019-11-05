@@ -4,24 +4,17 @@
 
 "use strict";
 
-const {NetUtil} = ChromeUtils.import("resource://gre/modules/NetUtil.jsm", {});
-const {FileUtils} = ChromeUtils.import("resource://gre/modules/FileUtils.jsm", {});
-const {ScratchpadManager} = ChromeUtils.import("resource://devtools/client/scratchpad/scratchpad-manager.jsm", {});
-const {require} = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
-const {gDevTools} = require("devtools/client/framework/devtools");
-const Services = require("Services");
+const { FileUtils } = ChromeUtils.import(
+  "resource://gre/modules/FileUtils.jsm"
+);
+const { ScratchpadManager } = ChromeUtils.import(
+  "resource://devtools/client/scratchpad/scratchpad-manager.jsm"
+);
+const { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm");
+const { gDevTools } = require("devtools/client/framework/devtools");
 const DevToolsUtils = require("devtools/shared/DevToolsUtils");
-const flags = require("devtools/shared/flags");
-const promise = require("promise");
-const defer = require("devtools/shared/defer");
-
 
 var gScratchpadWindow; // Reference to the Scratchpad chrome window object
-
-flags.testing = true;
-registerCleanupFunction(() => {
-  flags.testing = false;
-});
 
 /**
  * Open a Scratchpad window.
@@ -44,19 +37,18 @@ registerCleanupFunction(() => {
  *         gScratchpadWindow global is also updated to reference the new window
  *         object.
  */
-function openScratchpad(aReadyCallback, aOptions = {})
-{
-  let win = aOptions.window ||
-            ScratchpadManager.openScratchpad(aOptions.state);
+function openScratchpad(aReadyCallback, aOptions = {}) {
+  const win =
+    aOptions.window || ScratchpadManager.openScratchpad(aOptions.state);
   if (!win) {
     return;
   }
 
-  let onLoad = function () {
+  const onLoad = function() {
     win.removeEventListener("load", onLoad);
 
     win.Scratchpad.addObserver({
-      onReady: function (aScratchpad) {
+      onReady: function(aScratchpad) {
         aScratchpad.removeObserver(this);
 
         if (aOptions.noFocus) {
@@ -64,7 +56,7 @@ function openScratchpad(aReadyCallback, aOptions = {})
         } else {
           waitForFocus(aReadyCallback.bind(null, win, aScratchpad), win);
         }
-      }
+      },
     });
   };
 
@@ -86,16 +78,19 @@ function openScratchpad(aReadyCallback, aOptions = {})
  *          A string providing the html content of the tab.
  * @return Promise
  */
-function openTabAndScratchpad(aOptions = {})
-{
+function openTabAndScratchpad(aOptions = {}) {
   waitForExplicitFinish();
-  return new promise(resolve => {
+  // eslint-disable-next-line new-cap
+  return new Promise(resolve => {
     gBrowser.selectedTab = BrowserTestUtils.addTab(gBrowser);
-    let {selectedBrowser} = gBrowser;
-    BrowserTestUtils.browserLoaded(selectedBrowser).then(function () {
+    const { selectedBrowser } = gBrowser;
+    BrowserTestUtils.browserLoaded(selectedBrowser).then(function() {
       openScratchpad((win, sp) => resolve([win, sp]), aOptions);
     });
-    gBrowser.loadURI("data:text/html;charset=utf8," + (aOptions.tabContent || ""));
+    BrowserTestUtils.loadURI(
+      gBrowser,
+      "data:text/html;charset=utf8," + (aOptions.tabContent || "")
+    );
   });
 }
 
@@ -112,24 +107,29 @@ function openTabAndScratchpad(aOptions = {})
  *        to the file. It will receive two parameters: status code
  *        and a file object.
  */
-function createTempFile(aName, aContent, aCallback = function () {})
-{
+function createTempFile(aName, aContent, aCallback = function() {}) {
   // Create a temporary file.
-  let file = FileUtils.getFile("TmpD", [aName]);
+  const file = FileUtils.getFile("TmpD", [aName]);
   file.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("666", 8));
 
   // Write the temporary file.
-  let fout = Cc["@mozilla.org/network/file-output-stream;1"].
-             createInstance(Ci.nsIFileOutputStream);
-  fout.init(file.QueryInterface(Ci.nsIFile), 0x02 | 0x08 | 0x20,
-            parseInt("644", 8), fout.DEFER_OPEN);
+  const fout = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(
+    Ci.nsIFileOutputStream
+  );
+  fout.init(
+    file.QueryInterface(Ci.nsIFile),
+    0x02 | 0x08 | 0x20,
+    parseInt("644", 8),
+    fout.DEFER_OPEN
+  );
 
-  let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
-                  createInstance(Ci.nsIScriptableUnicodeConverter);
+  const converter = Cc[
+    "@mozilla.org/intl/scriptableunicodeconverter"
+  ].createInstance(Ci.nsIScriptableUnicodeConverter);
   converter.charset = "UTF-8";
-  let fileContentStream = converter.convertToInputStream(aContent);
+  const fileContentStream = converter.convertToInputStream(aContent);
 
-  NetUtil.asyncCopy(fileContentStream, fout, function (aStatus) {
+  NetUtil.asyncCopy(fileContentStream, fout, function(aStatus) {
     aCallback(aStatus, file);
   });
 }
@@ -137,9 +137,9 @@ function createTempFile(aName, aContent, aCallback = function () {})
 /**
  * Run a set of asychronous tests sequentially defined by input and output.
  *
- * @param Scratchpad aScratchpad
+ * @param Scratchpad scratchpad
  *        The scratchpad to use in running the tests.
- * @param array aTests
+ * @param array tests
  *        An array of test objects, each with the following properties:
  *        - method
  *          Scratchpad method to use, one of "run", "display", or "inspect".
@@ -152,27 +152,27 @@ function createTempFile(aName, aContent, aCallback = function () {})
  * @return Promise
  *         The promise that will be resolved when all tests are finished.
  */
-function runAsyncTests(aScratchpad, aTests)
-{
-  let deferred = defer();
-
-  (function runTest() {
-    if (aTests.length) {
-      let test = aTests.shift();
-      aScratchpad.setText(test.code);
-      aScratchpad[test.method]().then(function success() {
-        is(aScratchpad.getText(), test.result, test.label);
-        runTest();
-      }, function failure(error) {
-        ok(false, error.stack + " " + test.label);
-        runTest();
-      });
-    } else {
-      deferred.resolve();
-    }
-  })();
-
-  return deferred.promise;
+function runAsyncTests(scratchpad, tests) {
+  return new Promise(resolve => {
+    (function runTest() {
+      if (tests.length) {
+        const test = tests.shift();
+        scratchpad.setText(test.code);
+        scratchpad[test.method]().then(
+          function success() {
+            is(scratchpad.getText(), test.result, test.label);
+            runTest();
+          },
+          function failure(error) {
+            ok(false, error.stack + " " + test.label);
+            runTest();
+          }
+        );
+      } else {
+        resolve();
+      }
+    })();
+  });
 }
 
 /**
@@ -192,13 +192,13 @@ function runAsyncTests(aScratchpad, aTests)
  * @return Promise
  *         The promise that will be resolved when all tests are finished.
  */
-var runAsyncCallbackTests = Task.async(function* (aScratchpad, aTests) {
-  for (let {prepare, method, then} of aTests) {
-    yield prepare();
-    let res = yield aScratchpad[method]();
-    yield then(res);
+var runAsyncCallbackTests = async function(aScratchpad, aTests) {
+  for (const { prepare, method, then } of aTests) {
+    await prepare();
+    const res = await aScratchpad[method]();
+    await then(res);
   }
-});
+};
 
 /**
  * A simple wrapper for ContentTask.spawn for more compact code.
@@ -207,8 +207,7 @@ function inContent(generator) {
   return ContentTask.spawn(gBrowser.selectedBrowser, {}, generator);
 }
 
-function cleanup()
-{
+function cleanup() {
   if (gScratchpadWindow) {
     gScratchpadWindow.close();
     gScratchpadWindow = null;

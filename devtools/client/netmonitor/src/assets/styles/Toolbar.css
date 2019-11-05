@@ -6,32 +6,45 @@
 
 .devtools-toolbar {
   display: flex;
-}
-
-.devtools-toolbar-container {
-  height: auto;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.devtools-toolbar-group {
-  display: flex;
-  flex: 0 0 auto;
-  flex-wrap: nowrap;
   align-items: center;
 }
 
+#netmonitor-toolbar-container > .devtools-toolbar {
+  /* @TODO: Remove this in bug 1535956 */
+  min-height: var(--primary-toolbar-height);
+}
+
 .requests-list-filter-buttons {
-  display: flex;
-  flex-wrap: wrap;
+  white-space: nowrap;
+  margin: 0 7px;
+}
+
+.devtools-button.devtools-pause-icon::before,
+.devtools-button.devtools-play-icon::before {
+  margin-bottom: 1px;
 }
 
 .devtools-button.devtools-pause-icon::before {
-  background-image: var(--pause-icon-url);
+  background-image: url("chrome://devtools/skin/images/pause.svg");
 }
 
 .devtools-button.devtools-play-icon::before {
-  background-image: var(--play-icon-url);
+  background-image: url("chrome://devtools/content/netmonitor/src/assets/icons/play.svg");
+}
+
+/* HAR button */
+
+#devtools-har-button {
+  margin-inline-end: 10px;
+  padding-left: 2px;
+  padding-right: 10px;
+  background-position: right center;
+}
+
+/* Throttling Button */
+
+#network-throttling-menu {
+  margin-inline-start: 10px;
 }
 
 .devtools-checkbox {
@@ -41,31 +54,23 @@
 }
 
 .devtools-checkbox-label {
-  margin-inline-start: 10px;
-  margin-inline-end: 3px;
+  margin-inline-start: 2px;
+  margin-inline-end: 2px;
   white-space: nowrap;
 }
 
-/* Network details panel toggle */
-
-.network-details-panel-toggle:dir(ltr)::before,
-.network-details-panel-toggle.pane-collapsed:dir(rtl)::before {
-  background-image: var(--theme-pane-collapse-image);
+.devtools-checkbox-label.devtools-persistlog-checkbox {
+  margin-inline-start: 4px;
 }
 
-.network-details-panel-toggle.pane-collapsed:dir(ltr)::before,
-.network-details-panel-toggle:dir(rtl)::before {
-  background-image: var(--theme-pane-expand-image);
+.devtools-checkbox-label.devtools-cache-checkbox {
+  margin-inline-end: 7px;
 }
 
-/* Responsive web design support */
-
-@media (max-width: 700px) {
-  .network-details-panel-toggle:dir(ltr)::before {
-    transform: rotate(90deg);
-  }
-
-  .network-details-panel-toggle:dir(rtl)::before {
-    transform: rotate(-90deg);
+/* Hide filter input learn more link if there is not enough
+   horizontal space. */
+@media (max-width: 590px) {
+  .network-monitor .devtools-searchbox .learn-more-link {
+    display: none;
   }
 }

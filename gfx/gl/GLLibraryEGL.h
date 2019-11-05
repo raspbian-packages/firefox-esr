@@ -6,7 +6,7 @@
 #define GLLIBRARYEGL_H_
 
 #if defined(MOZ_X11)
-#include "mozilla/X11Util.h"
+#  include "mozilla/X11Util.h"
 #endif
 
 #include "GLLibraryLoader.h"
@@ -18,23 +18,13 @@
 #include <bitset>
 #include <vector>
 
-#ifdef ANDROID
-// We only need to explicitly dlopen egltrace
-// on android as we can use LD_PRELOAD or other tricks
-// on other platforms. We look for it in /data/local
-// as that's writeable by all users
-//
-// This should really go in GLLibraryEGL.cpp but we currently reference
-// APITRACE_LIB in GLContextProviderEGL.cpp. Further refactoring
-// will come in subsequent patches on Bug 732865
-#define APITRACE_LIB "/data/local/tmp/egltrace.so"
+#if defined(MOZ_X11)
+#  define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType)mozilla::DefaultXDisplay())
+#else
+#  define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType)0)
 #endif
 
-#if defined(MOZ_X11)
-#define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType)mozilla::DefaultXDisplay())
-#else
-#define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType)0)
-#endif
+class nsIGfxInfo;
 
 namespace angle {
 class Platform;
@@ -49,19 +39,17 @@ class DataSourceSurface;
 namespace gl {
 
 class GLContext;
+PRLibrary* LoadApitraceLibrary();
 
 void BeforeEGLCall(const char* funcName);
 void AfterEGLCall(const char* funcName);
 
-class GLLibraryEGL {
+class GLLibraryEGL final {
+ protected:
+  ~GLLibraryEGL() {}
+
  public:
-  GLLibraryEGL()
-      : mSymbols{nullptr},
-        mInitialized(false),
-        mEGLLibrary(nullptr),
-        mEGLDisplay(EGL_NO_DISPLAY),
-        mIsANGLE(false),
-        mIsWARP(false) {}
+  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(GLLibraryEGL)
 
   void InitClientExtensions();
   void InitDisplayExtensions();
@@ -71,7 +59,7 @@ class GLLibraryEGL {
    * IsExtensionSupported.  The results of this are cached, and as
    * such it's safe to use this even in performance critical code.
    * If you add to this array, remember to add to the string names
-   * in GLContext.cpp.
+   * in GLLibraryEGL.cpp.
    */
   enum EGLExtensions {
     KHR_image_base,
@@ -95,6 +83,9 @@ class GLLibraryEGL {
     ANGLE_stream_producer_d3d_texture,
     ANGLE_device_creation,
     ANGLE_device_creation_d3d11,
+    KHR_surfaceless_context,
+    KHR_create_context_no_error,
+    MOZ_create_context_provoking_vertex_dont_care,
     Extensions_Max
   };
 
@@ -110,36 +101,32 @@ class GLLibraryEGL {
   std::bitset<Extensions_Max> mAvailableExtensions;
 
  public:
-  GLLibraryLoader::PlatformLookupFunction GetLookupFunction() const {
-    return (GLLibraryLoader::PlatformLookupFunction)mSymbols.fGetProcAddress;
-  }
-
-    ////
+  ////
 
 #ifdef MOZ_WIDGET_ANDROID
-#define PROFILE_CALL AUTO_PROFILER_LABEL(__func__, GRAPHICS);
+#  define PROFILE_CALL AUTO_PROFILER_LABEL(__func__, GRAPHICS);
 #else
-#define PROFILE_CALL
+#  define PROFILE_CALL
 #endif
 
 #ifndef MOZ_FUNCTION_NAME
-#ifdef __GNUC__
-#define MOZ_FUNCTION_NAME __PRETTY_FUNCTION__
-#elif defined(_MSC_VER)
-#define MOZ_FUNCTION_NAME __FUNCTION__
-#else
-#define MOZ_FUNCTION_NAME \
-  __func__  // defined in C99, supported in various C++ compilers. Just raw
-            // function name.
-#endif
+#  ifdef __GNUC__
+#    define MOZ_FUNCTION_NAME __PRETTY_FUNCTION__
+#  elif defined(_MSC_VER)
+#    define MOZ_FUNCTION_NAME __FUNCTION__
+#  else
+#    define MOZ_FUNCTION_NAME \
+      __func__  // defined in C99, supported in various C++ compilers. Just raw
+                // function name.
+#  endif
 #endif
 
 #ifdef DEBUG
-#define BEFORE_CALL BeforeEGLCall(MOZ_FUNCTION_NAME);
-#define AFTER_CALL AfterEGLCall(MOZ_FUNCTION_NAME);
+#  define BEFORE_CALL BeforeEGLCall(MOZ_FUNCTION_NAME);
+#  define AFTER_CALL AfterEGLCall(MOZ_FUNCTION_NAME);
 #else
-#define BEFORE_CALL
-#define AFTER_CALL
+#  define BEFORE_CALL
+#  define AFTER_CALL
 #endif
 
 #define WRAP(X)                  \
@@ -407,10 +394,17 @@ class GLLibraryEGL {
 
   bool ReadbackEGLImage(EGLImage image, gfx::DataSourceSurface* out_surface);
 
-  bool EnsureInitialized(bool forceAccel, nsACString* const out_failureId);
+  inline static GLLibraryEGL* Get() { return sEGLLibrary; }
+
+  static bool EnsureInitialized(bool forceAccel,
+                                nsACString* const out_failureId);
+
+  void Shutdown();
 
   void DumpEGLConfig(EGLConfig cfg);
   void DumpEGLConfigs();
+
+  Maybe<SymbolLoader> GetSymbolLoader() const;
 
  private:
   struct {
@@ -528,21 +522,27 @@ class GLLibraryEGL {
                                                  const EGLAttrib* attrib_list);
     EGLBoolean(GLAPIENTRY* fReleaseDeviceANGLE)(EGLDeviceEXT device);
 
-  } mSymbols;
+  } mSymbols = {};
 
  private:
-  bool mInitialized;
-  PRLibrary* mEGLLibrary;
-  EGLDisplay mEGLDisplay;
+  bool DoEnsureInitialized();
+  bool DoEnsureInitialized(bool forceAccel, nsACString* const out_failureId);
+  EGLDisplay CreateDisplay(bool forceAccel, const nsCOMPtr<nsIGfxInfo>& gfxInfo,
+                           nsACString* const out_failureId);
+
+  bool mInitialized = false;
+  PRLibrary* mEGLLibrary = nullptr;
+  mutable PRLibrary* mGLLibrary = nullptr;
+  EGLDisplay mEGLDisplay = EGL_NO_DISPLAY;
   RefPtr<GLContext> mReadbackGL;
 
-  bool mIsANGLE;
-  bool mIsWARP;
+  bool mIsANGLE = false;
+  bool mIsWARP = false;
   static StaticMutex sMutex;
+  static StaticRefPtr<GLLibraryEGL> sEGLLibrary;
 };
 
-extern GLLibraryEGL sEGLLibrary;
-#define EGL_DISPLAY() sEGLLibrary.Display()
+#define EGL_DISPLAY() GLLibraryEGL::Get()->Display()
 
 } /* namespace gl */
 } /* namespace mozilla */

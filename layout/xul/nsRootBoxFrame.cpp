@@ -7,13 +7,14 @@
 #include "nsHTMLParts.h"
 #include "nsStyleConsts.h"
 #include "nsGkAtoms.h"
-#include "nsIPresShell.h"
 #include "nsBoxFrame.h"
+#include "nsDisplayList.h"
 #include "nsStackLayout.h"
-#include "nsIRootBox.h"
+#include "nsIPopupContainer.h"
 #include "nsIContent.h"
 #include "nsFrameManager.h"
 #include "mozilla/BasicEvents.h"
+#include "mozilla/PresShell.h"
 
 using namespace mozilla;
 
@@ -22,11 +23,11 @@ using namespace mozilla;
 //#define DEBUG_REFLOW
 
 // static
-nsIRootBox* nsIRootBox::GetRootBox(nsIPresShell* aShell) {
-  if (!aShell) {
+nsIPopupContainer* nsIPopupContainer::GetPopupContainer(PresShell* aPresShell) {
+  if (!aPresShell) {
     return nullptr;
   }
-  nsIFrame* rootFrame = aShell->GetRootFrame();
+  nsIFrame* rootFrame = aPresShell->GetRootFrame();
   if (!rootFrame) {
     return nullptr;
   }
@@ -35,16 +36,25 @@ nsIRootBox* nsIRootBox::GetRootBox(nsIPresShell* aShell) {
     rootFrame = rootFrame->PrincipalChildList().FirstChild();
   }
 
-  nsIRootBox* rootBox = do_QueryFrame(rootFrame);
+  nsIPopupContainer* rootBox = do_QueryFrame(rootFrame);
+
+  // If the rootBox was not found yet this may be a top level non-XUL document.
+  if (rootFrame && !rootBox) {
+    // In a non-XUL document the rootFrame here will be a nsHTMLScrollFrame,
+    // get the nsCanvasFrame (which is the popup container) from it.
+    rootFrame = rootFrame->GetContentInsertionFrame();
+    rootBox = do_QueryFrame(rootFrame);
+  }
+
   return rootBox;
 }
 
-class nsRootBoxFrame final : public nsBoxFrame, public nsIRootBox {
+class nsRootBoxFrame final : public nsBoxFrame, public nsIPopupContainer {
  public:
-  friend nsIFrame* NS_NewBoxFrame(nsIPresShell* aPresShell,
-                                  nsStyleContext* aContext);
+  friend nsIFrame* NS_NewBoxFrame(mozilla::PresShell* aPresShell,
+                                  ComputedStyle* aStyle);
 
-  explicit nsRootBoxFrame(nsStyleContext* aContext);
+  explicit nsRootBoxFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
 
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsRootBoxFrame)
@@ -89,15 +99,16 @@ class nsRootBoxFrame final : public nsBoxFrame, public nsIRootBox {
 
 //----------------------------------------------------------------------
 
-nsContainerFrame* NS_NewRootBoxFrame(nsIPresShell* aPresShell,
-                                     nsStyleContext* aContext) {
-  return new (aPresShell) nsRootBoxFrame(aContext);
+nsContainerFrame* NS_NewRootBoxFrame(PresShell* aPresShell,
+                                     ComputedStyle* aStyle) {
+  return new (aPresShell) nsRootBoxFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsRootBoxFrame)
 
-nsRootBoxFrame::nsRootBoxFrame(nsStyleContext* aContext)
-    : nsBoxFrame(aContext, kClassID, true),
+nsRootBoxFrame::nsRootBoxFrame(ComputedStyle* aStyle,
+                               nsPresContext* aPresContext)
+    : nsBoxFrame(aStyle, aPresContext, kClassID, true),
       mPopupSetFrame(nullptr),
       mDefaultTooltip(nullptr) {
   nsCOMPtr<nsBoxLayout> layout;
@@ -192,11 +203,9 @@ void nsRootBoxFrame::SetPopupSetFrame(nsPopupSetFrame* aPopupSet) {
   // popupset.  Since the anonymous content is associated with the
   // nsDocElementBoxFrame, we'll get a new popupset when the new doc
   // element box frame is created.
-  if (!mPopupSetFrame || !aPopupSet) {
-    mPopupSetFrame = aPopupSet;
-  } else {
-    NS_NOTREACHED("Popup set is already defined! Only 1 allowed.");
-  }
+  MOZ_ASSERT(!aPopupSet || !mPopupSetFrame,
+             "Popup set is already defined! Only 1 allowed.");
+  mPopupSetFrame = aPopupSet;
 }
 
 Element* nsRootBoxFrame::GetDefaultTooltip() { return mDefaultTooltip; }
@@ -206,7 +215,7 @@ void nsRootBoxFrame::SetDefaultTooltip(Element* aTooltip) {
 }
 
 NS_QUERYFRAME_HEAD(nsRootBoxFrame)
-NS_QUERYFRAME_ENTRY(nsIRootBox)
+  NS_QUERYFRAME_ENTRY(nsIPopupContainer)
 NS_QUERYFRAME_TAIL_INHERITING(nsBoxFrame)
 
 #ifdef DEBUG_FRAME_DUMP

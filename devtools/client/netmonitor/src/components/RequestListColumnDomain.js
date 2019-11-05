@@ -13,11 +13,7 @@ const { propertiesEqual } = require("../utils/request-utils");
 
 const { div } = dom;
 
-const UPDATED_DOMAIN_PROPS = [
-  "remoteAddress",
-  "securityState",
-  "urlDetails",
-];
+const UPDATED_DOMAIN_PROPS = ["remoteAddress", "securityState", "urlDetails"];
 
 class RequestListColumnDomain extends Component {
   static get propTypes() {
@@ -28,35 +24,55 @@ class RequestListColumnDomain extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return !propertiesEqual(UPDATED_DOMAIN_PROPS, this.props.item, nextProps.item);
+    return !propertiesEqual(
+      UPDATED_DOMAIN_PROPS,
+      this.props.item,
+      nextProps.item
+    );
   }
 
   render() {
-    let { item, onSecurityIconMouseDown } = this.props;
-    let { remoteAddress, remotePort, securityState,
-      urlDetails: { host, isLocal } } = item;
-    let iconClassList = ["requests-security-state-icon"];
+    const { item, onSecurityIconMouseDown } = this.props;
+    const {
+      remoteAddress,
+      remotePort,
+      securityState,
+      urlDetails: { host, isLocal },
+    } = item;
+    const iconClassList = ["requests-security-state-icon"];
     let iconTitle;
-    let title = host + (remoteAddress ?
-      ` (${getFormattedIPAndPort(remoteAddress, remotePort)})` : "");
+    const title =
+      host +
+      (remoteAddress
+        ? ` (${getFormattedIPAndPort(remoteAddress, remotePort)})`
+        : "");
 
+    let realSecurityState = securityState;
+
+    // Locally delivered files such as http://localhost and file:// paths
+    // are considered to have been delivered securely.
     if (isLocal) {
-      iconClassList.push("security-state-local");
-      iconTitle = L10N.getStr("netmonitor.security.state.secure");
-    } else if (securityState) {
-      iconClassList.push(`security-state-${securityState}`);
-      iconTitle = L10N.getStr(`netmonitor.security.state.${securityState}`);
+      realSecurityState = "secure";
     }
 
-    return (
-      div({ className: "requests-list-column requests-list-domain", title },
+    if (realSecurityState) {
+      iconClassList.push(`security-state-${realSecurityState}`);
+      iconTitle = L10N.getStr(`netmonitor.security.state.${realSecurityState}`);
+    }
+
+    return dom.td(
+      { className: "requests-list-column requests-list-domain", title },
+      div({
+        className: iconClassList.join(" "),
+        onMouseDown: onSecurityIconMouseDown,
+        title: iconTitle,
+      }),
+      item.isThirdPartyTrackingResource &&
         div({
-          className: iconClassList.join(" "),
-          onMouseDown: onSecurityIconMouseDown,
-          title: iconTitle,
+          className: "tracking-resource",
+          title: L10N.getStr("netmonitor.trackingResource.tooltip"),
         }),
-        host,
-      )
+      host
     );
   }
 }

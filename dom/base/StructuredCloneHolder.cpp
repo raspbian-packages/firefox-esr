@@ -13,6 +13,7 @@
 #include "mozilla/dom/StructuredCloneBlob.h"
 #include "mozilla/dom/Directory.h"
 #include "mozilla/dom/DirectoryBinding.h"
+#include "mozilla/dom/DOMPrefs.h"
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/FileList.h"
 #include "mozilla/dom/FileListBinding.h"
@@ -28,6 +29,8 @@
 #include "mozilla/dom/OffscreenCanvasBinding.h"
 #include "mozilla/dom/PMessagePort.h"
 #include "mozilla/dom/StructuredCloneTags.h"
+#include "mozilla/dom/StructuredCloneTester.h"
+#include "mozilla/dom/StructuredCloneTesterBinding.h"
 #include "mozilla/dom/SubtleCryptoBinding.h"
 #include "mozilla/dom/ToJSValue.h"
 #include "mozilla/dom/URLSearchParams.h"
@@ -41,8 +44,8 @@
 #include "nsQueryObject.h"
 
 #ifdef MOZ_WEBRTC
-#include "mozilla/dom/RTCCertificate.h"
-#include "mozilla/dom/RTCCertificateBinding.h"
+#  include "mozilla/dom/RTCCertificate.h"
+#  include "mozilla/dom/RTCCertificateBinding.h"
 #endif
 
 using namespace mozilla::ipc;
@@ -105,6 +108,15 @@ void StructuredCloneCallbacksFreeTransfer(uint32_t aTag,
                                            aExtraData);
 }
 
+bool StructuredCloneCallbacksCanTransfer(JSContext* aCx,
+                                         JS::Handle<JSObject*> aObject,
+                                         void* aClosure) {
+  StructuredCloneHolderBase* holder =
+      static_cast<StructuredCloneHolderBase*>(aClosure);
+  MOZ_ASSERT(holder);
+  return holder->CustomCanTransferHandler(aCx, aObject);
+}
+
 void StructuredCloneCallbacksError(JSContext* aCx, uint32_t aErrorId) {
   NS_WARNING("Failed to clone data.");
 }
@@ -112,12 +124,11 @@ void StructuredCloneCallbacksError(JSContext* aCx, uint32_t aErrorId) {
 }  // anonymous namespace
 
 const JSStructuredCloneCallbacks StructuredCloneHolder::sCallbacks = {
-    StructuredCloneCallbacksRead,
-    StructuredCloneCallbacksWrite,
-    StructuredCloneCallbacksError,
-    StructuredCloneCallbacksReadTransfer,
-    StructuredCloneCallbacksWriteTransfer,
-    StructuredCloneCallbacksFreeTransfer};
+    StructuredCloneCallbacksRead,          StructuredCloneCallbacksWrite,
+    StructuredCloneCallbacksError,         StructuredCloneCallbacksReadTransfer,
+    StructuredCloneCallbacksWriteTransfer, StructuredCloneCallbacksFreeTransfer,
+    StructuredCloneCallbacksCanTransfer,
+};
 
 // StructuredCloneHolderBase class
 
@@ -200,6 +211,11 @@ void StructuredCloneHolderBase::CustomFreeTransferHandler(
     uint32_t aTag, JS::TransferableOwnership aOwnership, void* aContent,
     uint64_t aExtraData) {
   MOZ_CRASH("Nothing to free.");
+}
+
+bool StructuredCloneHolderBase::CustomCanTransferHandler(
+    JSContext* aCx, JS::Handle<JSObject*> aObj) {
+  return false;
 }
 
 // StructuredCloneHolder class
@@ -301,14 +317,15 @@ void StructuredCloneHolder::ReadFromBuffer(nsISupports* aParent, JSContext* aCx,
   }
 }
 
-/* static */ JSObject* StructuredCloneHolder::ReadFullySerializableObjects(
+/* static */
+JSObject* StructuredCloneHolder::ReadFullySerializableObjects(
     JSContext* aCx, JSStructuredCloneReader* aReader, uint32_t aTag) {
   if (aTag == SCTAG_DOM_IMAGEDATA) {
     return ReadStructuredCloneImageData(aCx, aReader);
   }
 
   if (aTag == SCTAG_DOM_WEBCRYPTO_KEY || aTag == SCTAG_DOM_URLSEARCHPARAMS) {
-    nsIGlobalObject* global = xpc::NativeGlobal(JS::CurrentGlobalOrNull(aCx));
+    nsIGlobalObject* global = xpc::CurrentNativeGlobal(aCx);
     if (!global) {
       return nullptr;
     }
@@ -365,7 +382,7 @@ void StructuredCloneHolder::ReadFromBuffer(nsISupports* aParent, JSContext* aCx,
       return nullptr;
     }
 
-    nsIGlobalObject* global = xpc::NativeGlobal(JS::CurrentGlobalOrNull(aCx));
+    nsIGlobalObject* global = xpc::CurrentNativeGlobal(aCx);
     if (!global) {
       return nullptr;
     }
@@ -384,12 +401,17 @@ void StructuredCloneHolder::ReadFromBuffer(nsISupports* aParent, JSContext* aCx,
   }
 #endif
 
+  if (aTag == SCTAG_DOM_STRUCTURED_CLONE_TESTER) {
+    return StructuredCloneTester::ReadStructuredClone(aCx, aReader);
+  }
+
   // Don't know what this is. Bail.
   xpc::Throw(aCx, NS_ERROR_DOM_DATA_CLONE_ERR);
   return nullptr;
 }
 
-/* static */ bool StructuredCloneHolder::WriteFullySerializableObjects(
+/* static */
+bool StructuredCloneHolder::WriteFullySerializableObjects(
     JSContext* aCx, JSStructuredCloneWriter* aWriter,
     JS::Handle<JSObject*> aObj) {
   JS::Rooted<JSObject*> obj(aCx, aObj);
@@ -432,8 +454,25 @@ void StructuredCloneHolder::ReadFromBuffer(nsISupports* aParent, JSContext* aCx,
   }
 #endif
 
-  if (NS_IsMainThread() && xpc::IsReflector(obj)) {
-    nsCOMPtr<nsISupports> base = xpc::UnwrapReflectorToISupports(obj);
+  // StructuredCloneTester - testing only
+  {
+    StructuredCloneTester* sct = nullptr;
+    if (NS_SUCCEEDED(UNWRAP_OBJECT(StructuredCloneTester, &obj, sct))) {
+      MOZ_ASSERT(StaticPrefs::dom_testing_structuredclonetester_enabled());
+
+      // "Fail" serialization
+      if (!sct->Serializable()) {
+        xpc::Throw(aCx, NS_ERROR_DOM_DATA_CLONE_ERR);
+        return false;
+      }
+
+      return sct->WriteStructuredClone(aWriter);
+    }
+  }
+
+  if (NS_IsMainThread() && xpc::IsReflector(obj, aCx)) {
+    // We only care about principals, so ReflectorToISupportsStatic is fine.
+    nsCOMPtr<nsISupports> base = xpc::ReflectorToISupportsStatic(obj);
     nsCOMPtr<nsIPrincipal> principal = do_QueryInterface(base);
     if (principal) {
       auto nsjsprincipals = nsJSPrincipals::get(principal);
@@ -1006,7 +1045,8 @@ bool StructuredCloneHolder::CustomWriteHandler(JSContext* aCx,
   }
 
   {
-    nsCOMPtr<nsISupports> base = xpc::UnwrapReflectorToISupports(aObj);
+    // We only care about streams, so ReflectorToISupportsStatic is fine.
+    nsCOMPtr<nsISupports> base = xpc::ReflectorToISupportsStatic(aObj);
     nsCOMPtr<nsIInputStream> inputStream = do_QueryInterface(base);
     if (inputStream) {
       return WriteInputStream(aWriter, inputStream, this);
@@ -1115,6 +1155,10 @@ bool StructuredCloneHolder::CustomWriteTransferHandler(
       *aExtraData = mPortIdentifiers.Length();
       MessagePortIdentifier* identifier = mPortIdentifiers.AppendElement();
 
+      if (!port->CanBeCloned()) {
+        return false;
+      }
+
       port->CloneAndDisentangle(*identifier);
 
       *aTag = SCTAG_DOM_MAP_MESSAGEPORT;
@@ -1131,6 +1175,10 @@ bool StructuredCloneHolder::CustomWriteTransferHandler(
       rv = UNWRAP_OBJECT(OffscreenCanvas, &obj, canvas);
       if (NS_SUCCEEDED(rv)) {
         MOZ_ASSERT(canvas);
+
+        if (canvas->IsNeutered()) {
+          return false;
+        }
 
         *aExtraData = 0;
         *aTag = SCTAG_DOM_CANVAS;
@@ -1150,7 +1198,13 @@ bool StructuredCloneHolder::CustomWriteTransferHandler(
         *aExtraData = 0;
         *aTag = SCTAG_DOM_IMAGEBITMAP;
         *aOwnership = JS::SCTAG_TMO_CUSTOM;
-        *aContent = bitmap->ToCloneData().release();
+
+        UniquePtr<ImageBitmapCloneData> clonedBitmap = bitmap->ToCloneData();
+        if (!clonedBitmap) {
+          return false;
+        }
+
+        *aContent = clonedBitmap.release();
         MOZ_ASSERT(*aContent);
         bitmap->Close();
 
@@ -1199,6 +1253,41 @@ void StructuredCloneHolder::CustomFreeTransferHandler(
     delete data;
     return;
   }
+}
+
+bool StructuredCloneHolder::CustomCanTransferHandler(
+    JSContext* aCx, JS::Handle<JSObject*> aObj) {
+  if (!mSupportsTransferring) {
+    return false;
+  }
+
+  JS::Rooted<JSObject*> obj(aCx, aObj);
+
+  {
+    MessagePort* port = nullptr;
+    nsresult rv = UNWRAP_OBJECT(MessagePort, &obj, port);
+    if (NS_SUCCEEDED(rv)) {
+      return true;
+    }
+
+    if (mStructuredCloneScope == StructuredCloneScope::SameProcessSameThread ||
+        mStructuredCloneScope ==
+            StructuredCloneScope::SameProcessDifferentThread) {
+      OffscreenCanvas* canvas = nullptr;
+      rv = UNWRAP_OBJECT(OffscreenCanvas, &obj, canvas);
+      if (NS_SUCCEEDED(rv)) {
+        return true;
+      }
+
+      ImageBitmap* bitmap = nullptr;
+      rv = UNWRAP_OBJECT(ImageBitmap, &obj, bitmap);
+      if (NS_SUCCEEDED(rv)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 bool StructuredCloneHolder::TakeTransferredPortsAsSequence(

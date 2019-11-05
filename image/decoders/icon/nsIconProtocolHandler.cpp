@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -64,8 +64,8 @@ nsIconProtocolHandler::NewURI(const nsACString& aSpec,
 }
 
 NS_IMETHODIMP
-nsIconProtocolHandler::NewChannel2(nsIURI* url, nsILoadInfo* aLoadInfo,
-                                   nsIChannel** result) {
+nsIconProtocolHandler::NewChannel(nsIURI* url, nsILoadInfo* aLoadInfo,
+                                  nsIChannel** result) {
   NS_ENSURE_ARG_POINTER(url);
   nsIconChannel* channel = new nsIconChannel;
   if (!channel) {
@@ -88,11 +88,6 @@ nsIconProtocolHandler::NewChannel2(nsIURI* url, nsILoadInfo* aLoadInfo,
 
   *result = channel;
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsIconProtocolHandler::NewChannel(nsIURI* url, nsIChannel** result) {
-  return NewChannel2(url, nullptr, result);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

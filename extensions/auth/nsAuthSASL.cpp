@@ -1,4 +1,4 @@
-/* vim:set ts=4 sw=4 et cindent: */
+/* vim:set ts=4 sw=2 et cindent: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,9 +20,9 @@ void nsAuthSASL::Reset() { mSASLReady = false; }
 NS_IMPL_ISUPPORTS(nsAuthSASL, nsIAuthModule)
 
 NS_IMETHODIMP
-nsAuthSASL::Init(const char *serviceName, uint32_t serviceFlags,
-                 const char16_t *domain, const char16_t *username,
-                 const char16_t *password) {
+nsAuthSASL::Init(const char* serviceName, uint32_t serviceFlags,
+                 const char16_t* domain, const char16_t* username,
+                 const char16_t* password) {
   nsresult rv;
 
   NS_ASSERTION(username, "SASL requires a username");
@@ -34,19 +34,16 @@ nsAuthSASL::Init(const char *serviceName, uint32_t serviceFlags,
   serviceFlags |= REQ_MUTUAL_AUTH;
 
   // Find out whether we should be trying SSPI or not
-  const char *contractID = NS_AUTH_MODULE_CONTRACTID_PREFIX "kerb-gss";
+  const char* authType = "kerb-gss";
 
   nsCOMPtr<nsIPrefBranch> prefs = do_GetService(NS_PREFSERVICE_CONTRACTID);
   if (prefs) {
     bool val;
     rv = prefs->GetBoolPref(kNegotiateAuthSSPI, &val);
-    if (NS_SUCCEEDED(rv) && val)
-      contractID = NS_AUTH_MODULE_CONTRACTID_PREFIX "kerb-sspi";
+    if (NS_SUCCEEDED(rv) && val) authType = "kerb-sspi";
   }
 
-  mInnerModule = do_CreateInstance(contractID, &rv);
-  // if we can't create the GSSAPI module, then bail
-  NS_ENSURE_SUCCESS(rv, rv);
+  MOZ_ALWAYS_TRUE(mInnerModule = nsIAuthModule::CreateInstance(authType));
 
   mInnerModule->Init(serviceName, serviceFlags, nullptr, nullptr, nullptr);
 
@@ -54,11 +51,11 @@ nsAuthSASL::Init(const char *serviceName, uint32_t serviceFlags,
 }
 
 NS_IMETHODIMP
-nsAuthSASL::GetNextToken(const void *inToken, uint32_t inTokenLen,
-                         void **outToken, uint32_t *outTokenLen) {
+nsAuthSASL::GetNextToken(const void* inToken, uint32_t inTokenLen,
+                         void** outToken, uint32_t* outTokenLen) {
   nsresult rv;
-  void *unwrappedToken;
-  char *message;
+  void* unwrappedToken;
+  char* message;
   uint32_t unwrappedTokenLen, messageLen;
   nsAutoCString userbuf;
 
@@ -91,11 +88,7 @@ nsAuthSASL::GetNextToken(const void *inToken, uint32_t inTokenLen,
 
     NS_CopyUnicodeToNative(mUsername, userbuf);
     messageLen = userbuf.Length() + 4 + 1;
-    message = (char *)moz_xmalloc(messageLen);
-    if (!message) {
-      Reset();
-      return NS_ERROR_OUT_OF_MEMORY;
-    }
+    message = (char*)moz_xmalloc(messageLen);
     message[0] = 0x01;  // No security layer
     message[1] = 0x00;
     message[2] = 0x00;
@@ -103,7 +96,7 @@ nsAuthSASL::GetNextToken(const void *inToken, uint32_t inTokenLen,
     strcpy(message + 4, userbuf.get());
     // Userbuf should not be nullptr terminated, so trim the trailing nullptr
     // when wrapping the message
-    rv = mInnerModule->Wrap((void *)message, messageLen - 1, false, outToken,
+    rv = mInnerModule->Wrap((void*)message, messageLen - 1, false, outToken,
                             outTokenLen);
     free(message);
     Reset();  // All done
@@ -118,13 +111,13 @@ nsAuthSASL::GetNextToken(const void *inToken, uint32_t inTokenLen,
 }
 
 NS_IMETHODIMP
-nsAuthSASL::Unwrap(const void *inToken, uint32_t inTokenLen, void **outToken,
-                   uint32_t *outTokenLen) {
+nsAuthSASL::Unwrap(const void* inToken, uint32_t inTokenLen, void** outToken,
+                   uint32_t* outTokenLen) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
-nsAuthSASL::Wrap(const void *inToken, uint32_t inTokenLen, bool confidential,
-                 void **outToken, uint32_t *outTokenLen) {
+nsAuthSASL::Wrap(const void* inToken, uint32_t inTokenLen, bool confidential,
+                 void** outToken, uint32_t* outTokenLen) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }

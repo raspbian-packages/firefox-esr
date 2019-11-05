@@ -14,6 +14,7 @@
 #include "nsHttp.h"
 #include "nsHttpHeaderArray.h"
 #include "nsHttpResponseHead.h"
+#include "mozilla/Tuple.h"
 
 #include "nsIClassInfo.h"
 
@@ -187,7 +188,7 @@ struct ParamTraits<mozilla::net::nsHttpResponseHead> {
 
   static void Write(Message* aMsg, const paramType& aParam) {
     WriteParam(aMsg, aParam.mHeaders);
-    WriteParam(aMsg, aParam.mVersion);
+    WriteParam(aMsg, static_cast<uint32_t>(aParam.mVersion));
     WriteParam(aMsg, aParam.mStatus);
     WriteParam(aMsg, aParam.mStatusText);
     WriteParam(aMsg, aParam.mContentLength);
@@ -201,8 +202,9 @@ struct ParamTraits<mozilla::net::nsHttpResponseHead> {
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
+    uint32_t version;
     if (!ReadParam(aMsg, aIter, &aResult->mHeaders) ||
-        !ReadParam(aMsg, aIter, &aResult->mVersion) ||
+        !ReadParam(aMsg, aIter, &version) ||
         !ReadParam(aMsg, aIter, &aResult->mStatus) ||
         !ReadParam(aMsg, aIter, &aResult->mStatusText) ||
         !ReadParam(aMsg, aIter, &aResult->mContentLength) ||
@@ -214,6 +216,7 @@ struct ParamTraits<mozilla::net::nsHttpResponseHead> {
         !ReadParam(aMsg, aIter, &aResult->mPragmaNoCache))
       return false;
 
+    aResult->mVersion = static_cast<mozilla::net::HttpVersion>(version);
     return true;
   }
 };

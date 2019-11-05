@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,8 +12,9 @@
 namespace mozilla {
 namespace gfx {
 
-/* static */ already_AddRefed<PrintTargetThebes>
-PrintTargetThebes::CreateOrNull(gfxASurface* aSurface) {
+/* static */
+already_AddRefed<PrintTargetThebes> PrintTargetThebes::CreateOrNull(
+    gfxASurface* aSurface) {
   MOZ_ASSERT(aSurface);
 
   if (!aSurface || aSurface->CairoStatus()) {

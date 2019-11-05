@@ -4,30 +4,54 @@
 
 "use strict";
 
-const {Cu} = require("chrome");
+const { Cu } = require("chrome");
 const Services = require("Services");
 
-const {DevToolsShim} = require("chrome://devtools-shim/content/DevToolsShim.jsm");
+const {
+  DevToolsShim,
+} = require("chrome://devtools-startup/content/DevToolsShim.jsm");
 
-// Load gDevToolsBrowser toolbox lazily as they need gDevTools to be fully initialized
-loader.lazyRequireGetter(this, "TargetFactory", "devtools/client/framework/target", true);
-loader.lazyRequireGetter(this, "TabTarget", "devtools/client/framework/target", true);
-loader.lazyRequireGetter(this, "Toolbox", "devtools/client/framework/toolbox", true);
-loader.lazyRequireGetter(this, "ToolboxHostManager", "devtools/client/framework/toolbox-host-manager", true);
-loader.lazyRequireGetter(this, "gDevToolsBrowser", "devtools/client/framework/devtools-browser", true);
-loader.lazyRequireGetter(this, "HUDService", "devtools/client/webconsole/hudservice", true);
-loader.lazyImporter(this, "ScratchpadManager", "resource://devtools/client/scratchpad/scratchpad-manager.jsm");
-loader.lazyImporter(this, "BrowserToolboxProcess", "resource://devtools/client/framework/ToolboxProcess.jsm");
+loader.lazyRequireGetter(
+  this,
+  "TargetFactory",
+  "devtools/client/framework/target",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "ToolboxHostManager",
+  "devtools/client/framework/toolbox-host-manager",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "HUDService",
+  "devtools/client/webconsole/hudservice",
+  true
+);
+loader.lazyRequireGetter(this, "Telemetry", "devtools/client/shared/telemetry");
+loader.lazyImporter(
+  this,
+  "ScratchpadManager",
+  "resource://devtools/client/scratchpad/scratchpad-manager.jsm"
+);
+loader.lazyImporter(
+  this,
+  "BrowserToolboxProcess",
+  "resource://devtools/client/framework/ToolboxProcess.jsm"
+);
 
-loader.lazyRequireGetter(this, "WebExtensionInspectedWindowFront",
-      "devtools/shared/fronts/webextension-inspected-window", true);
-
-const {defaultTools: DefaultTools, defaultThemes: DefaultThemes} =
-  require("devtools/client/definitions");
-const EventEmitter = require("devtools/shared/old-event-emitter");
-const {Task} = require("devtools/shared/task");
-const {getTheme, setTheme, addThemeObserver, removeThemeObserver} =
-  require("devtools/client/shared/theme");
+const {
+  defaultTools: DefaultTools,
+  defaultThemes: DefaultThemes,
+} = require("devtools/client/definitions");
+const EventEmitter = require("devtools/shared/event-emitter");
+const {
+  getTheme,
+  setTheme,
+  addThemeObserver,
+  removeThemeObserver,
+} = require("devtools/client/shared/theme");
 
 const FORBIDDEN_IDS = new Set(["toolbox", ""]);
 const MAX_ORDINAL = 99;
@@ -44,6 +68,8 @@ function DevTools() {
   this._creatingToolboxes = new Map(); // Map<target, toolbox Promise>
 
   EventEmitter.decorate(this);
+  this._telemetry = new Telemetry();
+  this._telemetry.setEventRecordingEnabled(true);
 
   // Listen for changes to the theme pref.
   this._onThemeChanged = this._onThemeChanged.bind(this);
@@ -54,9 +80,8 @@ function DevTools() {
   // related events.
   this.registerDefaults();
 
-  // Register this new DevTools instance to Firefox. DevToolsShim is part of Firefox,
-  // integrating with all Firefox codebase and making the glue between code from
-  // mozilla-central and DevTools add-on on github
+  // Register this DevTools instance on the DevToolsShim, which is used by non-devtools
+  // code to interact with DevTools.
   DevToolsShim.register(this);
 }
 
@@ -69,14 +94,16 @@ DevTools.prototype = {
     // Ensure registering items in the sorted order (getDefault* functions
     // return sorted lists)
     this.getDefaultTools().forEach(definition => this.registerTool(definition));
-    this.getDefaultThemes().forEach(definition => this.registerTheme(definition));
+    this.getDefaultThemes().forEach(definition =>
+      this.registerTheme(definition)
+    );
   },
 
   unregisterDefaults() {
-    for (let definition of this.getToolDefinitionArray()) {
+    for (const definition of this.getToolDefinitionArray()) {
       this.unregisterTool(definition.id);
     }
-    for (let definition of this.getThemeDefinitionArray()) {
+    for (const definition of this.getThemeDefinitionArray()) {
       this.unregisterTheme(definition.id);
     }
   },
@@ -109,7 +136,7 @@ DevTools.prototype = {
    *          And returns an instance of ToolPanel (function|required)
    */
   registerTool(toolDefinition) {
-    let toolId = toolDefinition.id;
+    const toolId = toolDefinition.id;
 
     if (!toolId || FORBIDDEN_IDS.has(toolId)) {
       throw new Error("Invalid definition.id");
@@ -144,10 +171,12 @@ DevTools.prototype = {
       toolId = tool;
       tool = this._tools.get(tool);
     } else {
-      let {Deprecated} = require("resource://gre/modules/Deprecated.jsm");
-      Deprecated.warning("Deprecation WARNING: gDevTools.unregisterTool(tool) is " +
-        "deprecated. You should unregister a tool using its toolId: " +
-        "gDevTools.unregisterTool(toolId).");
+      const { Deprecated } = require("resource://gre/modules/Deprecated.jsm");
+      Deprecated.warning(
+        "Deprecation WARNING: gDevTools.unregisterTool(tool) is " +
+          "deprecated. You should unregister a tool using its toolId: " +
+          "gDevTools.unregisterTool(toolId)."
+      );
       toolId = tool.id;
     }
     this._tools.delete(toolId);
@@ -161,8 +190,8 @@ DevTools.prototype = {
    * Sorting function used for sorting tools based on their ordinals.
    */
   ordinalSort(d1, d2) {
-    let o1 = (typeof d1.ordinal == "number") ? d1.ordinal : MAX_ORDINAL;
-    let o2 = (typeof d2.ordinal == "number") ? d2.ordinal : MAX_ORDINAL;
+    const o1 = typeof d1.ordinal == "number" ? d1.ordinal : MAX_ORDINAL;
+    const o2 = typeof d2.ordinal == "number" ? d2.ordinal : MAX_ORDINAL;
     return o1 - o2;
   },
 
@@ -171,8 +200,8 @@ DevTools.prototype = {
   },
 
   getAdditionalTools() {
-    let tools = [];
-    for (let [, value] of this._tools) {
+    const tools = [];
+    for (const [, value] of this._tools) {
       if (!DefaultTools.includes(value)) {
         tools.push(value);
       }
@@ -194,14 +223,14 @@ DevTools.prototype = {
    *         The ToolDefinition for the id or null.
    */
   getToolDefinition(toolId) {
-    let tool = this._tools.get(toolId);
+    const tool = this._tools.get(toolId);
     if (!tool) {
       return null;
     } else if (!tool.visibilityswitch) {
       return tool;
     }
 
-    let enabled = Services.prefs.getBoolPref(tool.visibilityswitch, true);
+    const enabled = Services.prefs.getBoolPref(tool.visibilityswitch, true);
 
     return enabled ? tool : null;
   },
@@ -214,9 +243,9 @@ DevTools.prototype = {
    *         A map of the the tool definitions registered in this instance
    */
   getToolDefinitionMap() {
-    let tools = new Map();
+    const tools = new Map();
 
-    for (let [id, definition] of this._tools) {
+    for (const [id, definition] of this._tools) {
       if (this.getToolDefinition(id)) {
         tools.set(id, definition);
       }
@@ -234,9 +263,9 @@ DevTools.prototype = {
    *         A sorted array of the tool definitions registered in this instance
    */
   getToolDefinitionArray() {
-    let definitions = [];
+    const definitions = [];
 
-    for (let [id, definition] of this._tools) {
+    for (const [id, definition] of this._tools) {
       if (this.getToolDefinition(id)) {
         definitions.push(definition);
       }
@@ -285,7 +314,7 @@ DevTools.prototype = {
    *            and the new theme id as arguments (function)
    */
   registerTheme(themeDefinition) {
-    let themeId = themeDefinition.id;
+    const themeId = themeDefinition.id;
 
     if (!themeId) {
       throw new Error("Invalid theme id");
@@ -316,19 +345,21 @@ DevTools.prototype = {
       themeId = theme.id;
     }
 
-    let currTheme = getTheme();
+    const currTheme = getTheme();
 
     // Note that we can't check if `theme` is an item
     // of `DefaultThemes` as we end up reloading definitions
     // module and end up with different theme objects
-    let isCoreTheme = DefaultThemes.some(t => t.id === themeId);
+    const isCoreTheme = DefaultThemes.some(t => t.id === themeId);
 
     // Reset the theme if an extension theme that's currently applied
     // is being removed.
     // Ignore shutdown since addons get disabled during that time.
-    if (!Services.startup.shuttingDown &&
-        !isCoreTheme &&
-        theme.id == currTheme) {
+    if (
+      !Services.startup.shuttingDown &&
+      !isCoreTheme &&
+      theme.id == currTheme
+    ) {
       setTheme("light");
 
       this.emit("theme-unregistered", theme);
@@ -347,7 +378,7 @@ DevTools.prototype = {
    *         The ThemeDefinition for the id or null.
    */
   getThemeDefinition(themeId) {
-    let theme = this._themes.get(themeId);
+    const theme = this._themes.get(themeId);
     if (!theme) {
       return null;
     }
@@ -361,9 +392,9 @@ DevTools.prototype = {
    *         A map of the the theme definitions registered in this instance
    */
   getThemeDefinitionMap() {
-    let themes = new Map();
+    const themes = new Map();
 
-    for (let [id, definition] of this._themes) {
+    for (const [id, definition] of this._themes) {
       if (this.getThemeDefinition(id)) {
         themes.set(id, definition);
       }
@@ -379,9 +410,9 @@ DevTools.prototype = {
    *         A sorted array of the theme definitions registered in this instance
    */
   getThemeDefinitionArray() {
-    let definitions = [];
+    const definitions = [];
 
-    for (let [id, definition] of this._themes) {
+    for (const [id, definition] of this._themes) {
       if (this.getThemeDefinition(id)) {
         definitions.push(definition);
       }
@@ -396,13 +427,17 @@ DevTools.prototype = {
    * @param {Object} state
    *                 A SessionStore state object that gets modified by reference
    */
-  saveDevToolsSession: function (state) {
+  saveDevToolsSession: function(state) {
     state.browserConsole = HUDService.getBrowserConsoleSessionState();
     state.browserToolbox = BrowserToolboxProcess.getBrowserToolboxSessionState();
 
     // Check if the module is loaded to avoid loading ScratchpadManager for no reason.
     state.scratchpads = [];
-    if (Cu.isModuleLoaded("resource://devtools/client/scratchpad/scratchpad-manager.jsm")) {
+    if (
+      Cu.isModuleLoaded(
+        "resource://devtools/client/scratchpad/scratchpad-manager.jsm"
+      )
+    ) {
       state.scratchpads = ScratchpadManager.getSessionState();
     }
   },
@@ -410,7 +445,11 @@ DevTools.prototype = {
   /**
    * Restore the devtools session state as provided by SessionStore.
    */
-  restoreDevToolsSession: function ({scratchpads, browserConsole, browserToolbox}) {
+  restoreDevToolsSession: function({
+    scratchpads,
+    browserConsole,
+    browserToolbox,
+  }) {
     if (scratchpads) {
       ScratchpadManager.restoreSession(scratchpads);
     }
@@ -443,25 +482,37 @@ DevTools.prototype = {
    * @param {string} toolId
    *        The id of the tool to show
    * @param {Toolbox.HostType} hostType
-   *        The type of host (bottom, window, side)
+   *        The type of host (bottom, window, left, right)
    * @param {object} hostOptions
    *        Options for host specifically
    * @param {Number} startTime
    *        Optional, indicates the time at which the user event related to this toolbox
-   *        opening started. This is a `performance.now()` timing.
+   *        opening started. This is a `Cu.now()` timing.
+   * @param {string} reason
+   *        Reason the tool was opened
    *
    * @return {Toolbox} toolbox
    *        The toolbox that was opened
    */
-  showToolbox: Task.async(function* (target, toolId, hostType, hostOptions, startTime) {
+  async showToolbox(
+    target,
+    toolId,
+    hostType,
+    hostOptions,
+    startTime,
+    reason = "toolbox_show"
+  ) {
     let toolbox = this._toolboxes.get(target);
+
     if (toolbox) {
       if (hostType != null && toolbox.hostType != hostType) {
-        yield toolbox.switchHost(hostType);
+        await toolbox.switchHost(hostType);
       }
 
-      if (toolId != null && toolbox.currentToolId != toolId) {
-        yield toolbox.selectTool(toolId);
+      if (toolId != null) {
+        // selectTool will either select the tool if not currently selected, or wait for
+        // the tool to be loaded if needed.
+        await toolbox.selectTool(toolId, reason);
       }
 
       toolbox.raise();
@@ -469,22 +520,43 @@ DevTools.prototype = {
       // As toolbox object creation is async, we have to be careful about races
       // Check for possible already in process of loading toolboxes before
       // actually trying to create a new one.
-      let promise = this._creatingToolboxes.get(target);
+      const promise = this._creatingToolboxes.get(target);
       if (promise) {
-        return yield promise;
+        return promise;
       }
-      let toolboxPromise = this.createToolbox(target, toolId, hostType, hostOptions);
+      const toolboxPromise = this.createToolbox(
+        target,
+        toolId,
+        hostType,
+        hostOptions
+      );
       this._creatingToolboxes.set(target, toolboxPromise);
-      toolbox = yield toolboxPromise;
+      toolbox = await toolboxPromise;
       this._creatingToolboxes.delete(target);
 
       if (startTime) {
-        this.logToolboxOpenTime(toolbox.currentToolId, startTime);
+        this.logToolboxOpenTime(toolbox, startTime);
       }
       this._firstShowToolbox = false;
     }
+
+    // We send the "enter" width here to ensure it is always sent *after*
+    // the "open" event.
+    const width = Math.ceil(toolbox.win.outerWidth / 50) * 50;
+    const panelName = this.makeToolIdHumanReadable(
+      toolId || toolbox.defaultToolId
+    );
+    this._telemetry.addEventProperty(
+      toolbox,
+      "enter",
+      panelName,
+      null,
+      "width",
+      width
+    );
+
     return toolbox;
-  }),
+  },
 
   /**
    * Log telemetry related to toolbox opening.
@@ -493,25 +565,57 @@ DevTools.prototype = {
    * subsequent toolbox opening, which should all be faster.
    * These two probes are indexed by Tool ID.
    *
-   * @param {String} toolId
-   *        The id of the opened tool.
+   * @param {String} toolbox
+   *        Toolbox instance.
    * @param {Number} startTime
    *        Indicates the time at which the user event related to the toolbox
-   *        opening started. This is a `performance.now()` timing.
+   *        opening started. This is a `Cu.now()` timing.
    */
-  logToolboxOpenTime(toolId, startTime) {
-    let { performance } = Services.appShell.hiddenDOMWindow;
-    let delay = performance.now() - startTime;
-    let telemetryKey = this._firstShowToolbox ?
-      "DEVTOOLS_COLD_TOOLBOX_OPEN_DELAY_MS" : "DEVTOOLS_WARM_TOOLBOX_OPEN_DELAY_MS";
-    let histogram = Services.telemetry.getKeyedHistogramById(telemetryKey);
-    histogram.add(toolId, delay);
+  logToolboxOpenTime(toolbox, startTime) {
+    const toolId = toolbox.currentToolId || toolbox.defaultToolId;
+    const delay = Cu.now() - startTime;
+    const panelName = this.makeToolIdHumanReadable(toolId);
+
+    const telemetryKey = this._firstShowToolbox
+      ? "DEVTOOLS_COLD_TOOLBOX_OPEN_DELAY_MS"
+      : "DEVTOOLS_WARM_TOOLBOX_OPEN_DELAY_MS";
+    this._telemetry.getKeyedHistogramById(telemetryKey).add(toolId, delay);
+
+    const browserWin = toolbox.win.top;
+    this._telemetry.addEventProperty(
+      browserWin,
+      "open",
+      "tools",
+      null,
+      "first_panel",
+      panelName
+    );
   },
 
-  createToolbox: Task.async(function* (target, toolId, hostType, hostOptions) {
-    let manager = new ToolboxHostManager(target, hostType, hostOptions);
+  makeToolIdHumanReadable(toolId) {
+    if (/^[0-9a-fA-F]{40}_temporary-addon/.test(toolId)) {
+      return "temporary-addon";
+    }
 
-    let toolbox = yield manager.create(toolId);
+    let matches = toolId.match(
+      /^_([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})_/
+    );
+    if (matches && matches.length === 2) {
+      return matches[1];
+    }
+
+    matches = toolId.match(/^_?(.*)-\d+-\d+-devtools-panel$/);
+    if (matches && matches.length === 2) {
+      return matches[1];
+    }
+
+    return toolId;
+  },
+
+  async createToolbox(target, toolId, hostType, hostOptions) {
+    const manager = new ToolboxHostManager(target, hostType, hostOptions);
+
+    const toolbox = await manager.create(toolId);
 
     this._toolboxes.set(target, toolbox);
 
@@ -526,11 +630,11 @@ DevTools.prototype = {
       this.emit("toolbox-destroyed", target);
     });
 
-    yield toolbox.open();
+    await toolbox.open();
     this.emit("toolbox-ready", toolbox);
 
     return toolbox;
-  }),
+  },
 
   /**
    * Return the toolbox for a given target.
@@ -553,17 +657,17 @@ DevTools.prototype = {
    *         associated to the target. true, if the toolbox was successfully
    *         closed.
    */
-  closeToolbox: Task.async(function* (target) {
-    let toolbox = yield this._creatingToolboxes.get(target);
+  async closeToolbox(target) {
+    let toolbox = await this._creatingToolboxes.get(target);
     if (!toolbox) {
       toolbox = this._toolboxes.get(target);
     }
     if (!toolbox) {
       return false;
     }
-    yield toolbox.destroy();
+    await toolbox.destroy();
     return true;
-  }),
+  },
 
   /**
    * Wrapper on TargetFactory.forTab, constructs a Target for the provided tab.
@@ -571,9 +675,9 @@ DevTools.prototype = {
    * @param  {XULTab} tab
    *         The tab to use in creating a new target.
    *
-   * @return {TabTarget} A target object
+   * @return {Target} A target object
    */
-  getTargetForTab: function (tab) {
+  getTargetForTab: function(tab) {
     return TargetFactory.forTab(tab);
   },
 
@@ -581,28 +685,65 @@ DevTools.prototype = {
    * Compatibility layer for web-extensions. Used by DevToolsShim for
    * browser/components/extensions/ext-devtools.js
    *
-   * web-extensions need to use dedicated instances of TabTarget and cannot reuse the
+   * web-extensions need to use dedicated instances of Target and cannot reuse the
    * cached instances managed by DevTools target factory.
    */
-  createTargetForTab: function (tab) {
-    return new TabTarget(tab);
+  createTargetForTab: function(tab) {
+    return TargetFactory.createTargetForTab(tab);
   },
 
   /**
    * Compatibility layer for web-extensions. Used by DevToolsShim for
    * browser/components/extensions/ext-devtools-inspectedWindow.js
    */
-  createWebExtensionInspectedWindowFront: function (tabTarget) {
-    return new WebExtensionInspectedWindowFront(tabTarget.client, tabTarget.form);
+  createWebExtensionInspectedWindowFront: function(tabTarget) {
+    return tabTarget.getFront("webExtensionInspectedWindow");
   },
 
   /**
    * Compatibility layer for web-extensions. Used by DevToolsShim for
    * toolkit/components/extensions/ext-c-toolkit.js
    */
-  openBrowserConsole: function () {
-    let {HUDService} = require("devtools/client/webconsole/hudservice");
+  openBrowserConsole: function() {
+    const { HUDService } = require("devtools/client/webconsole/hudservice");
     HUDService.openBrowserConsoleOrFocus();
+  },
+
+  /**
+   * Evaluate the cross iframes query selectors
+   * @oaram {Object} walker
+   * @param {Array} selectors
+   *        An array of CSS selectors to find the target accessible object.
+   *        Several selectors can be needed if the element is nested in frames
+   *        and not directly in the root document.
+   * @return {Promise} a promise that resolves when the node front is found for
+   *                   selection using inspector tools.
+   */
+  async findNodeFront(walker, nodeSelectors) {
+    async function querySelectors(nodeFront) {
+      const selector = nodeSelectors.shift();
+      if (!selector) {
+        return nodeFront;
+      }
+      nodeFront = await walker.querySelector(nodeFront, selector);
+      if (nodeSelectors.length > 0) {
+        const { nodes } = await walker.children(nodeFront);
+        // If there are remaining selectors to process, they will target a document or a
+        // document-fragment under the current node. Whether the element is a frame or
+        // a web component, it can only contain one document/document-fragment, so just
+        // select the first one available.
+        nodeFront = nodes.find(node => {
+          const { nodeType } = node;
+          return (
+            nodeType === Node.DOCUMENT_FRAGMENT_NODE ||
+            nodeType === Node.DOCUMENT_NODE
+          );
+        });
+      }
+      return querySelectors(nodeFront);
+    }
+    const nodeFront = await walker.getRootNode();
+    return querySelectors(nodeFront);
   },
 
   /**
@@ -617,15 +758,22 @@ DevTools.prototype = {
    *        ending with the deepest nested frame.
    * @param {Number} startTime
    *        Optional, indicates the time at which the user event related to this node
-   *        inspection started. This is a `performance.now()` timing.
+   *        inspection started. This is a `Cu.now()` timing.
    * @return {Promise} a promise that resolves when the node is selected in the inspector
    *         markup view.
    */
   async inspectNode(tab, nodeSelectors, startTime) {
-    let target = TargetFactory.forTab(tab);
+    const target = await TargetFactory.forTab(tab);
 
-    let toolbox = await gDevTools.showToolbox(target, "inspector", null, null, startTime);
-    let inspector = toolbox.getCurrentPanel();
+    const toolbox = await gDevTools.showToolbox(
+      target,
+      "inspector",
+      null,
+      null,
+      startTime,
+      "inspect_dom"
+    );
+    const inspector = toolbox.getCurrentPanel();
 
     // If the toolbox has been switched into a nested frame, we should first remove
     // selectors according to the frame depth.
@@ -633,26 +781,13 @@ DevTools.prototype = {
 
     // new-node-front tells us when the node has been selected, whether the
     // browser is remote or not.
-    let onNewNode = inspector.selection.once("new-node-front");
+    const onNewNode = inspector.selection.once("new-node-front");
 
-    // Evaluate the cross iframes query selectors
-    async function querySelectors(nodeFront) {
-      let selector = nodeSelectors.shift();
-      if (!selector) {
-        return nodeFront;
-      }
-      nodeFront = await inspector.walker.querySelector(nodeFront, selector);
-      if (nodeSelectors.length > 0) {
-        let { nodes } = await inspector.walker.children(nodeFront);
-        // This is the NodeFront for the document node inside the iframe
-        nodeFront = nodes[0];
-      }
-      return querySelectors(nodeFront);
-    }
-    let nodeFront = await inspector.walker.getRootNode();
-    nodeFront = await querySelectors(nodeFront);
+    const nodeFront = await this.findNodeFront(inspector.walker, nodeSelectors);
     // Select the final node
-    inspector.selection.setNodeFront(nodeFront, "browser-context-menu");
+    inspector.selection.setNodeFront(nodeFront, {
+      reason: "browser-context-menu",
+    });
 
     await onNewNode;
     // Now that the node has been selected, wait until the inspector is
@@ -661,24 +796,55 @@ DevTools.prototype = {
   },
 
   /**
-   * Either the SDK Loader has been destroyed by the add-on contribution
-   * workflow, or firefox is shutting down.
+   * Called from the DevToolsShim, used by nsContextMenu.js.
+   *
+   * @param {XULTab} tab
+   *        The browser tab on which inspect accessibility was used.
+   * @param {Array} selectors
+   *        An array of CSS selectors to find the target accessible object.
+   *        Several selectors can be needed if the element is nested in frames
+   *        and not directly in the root document.
+   * @param {Number} startTime
+   *        Optional, indicates the time at which the user event related to this
+   *        node inspection started. This is a `Cu.now()` timing.
+   * @return {Promise} a promise that resolves when the accessible object is
+   *         selected in the accessibility inspector.
+   */
+  async inspectA11Y(tab, nodeSelectors, startTime) {
+    const target = await TargetFactory.forTab(tab);
 
+    const toolbox = await gDevTools.showToolbox(
+      target,
+      "accessibility",
+      null,
+      null,
+      startTime
+    );
+    const nodeFront = await this.findNodeFront(toolbox.walker, nodeSelectors);
+    // Select the accessible object in the panel and wait for the event that
+    // tells us it has been done.
+    const a11yPanel = toolbox.getCurrentPanel();
+    const onSelected = a11yPanel.once("new-accessible-front-selected");
+    a11yPanel.selectAccessibleForNode(nodeFront, "browser-context-menu");
+    await onSelected;
+  },
+
+  /**
+   * Either the DevTools Loader has been destroyed or firefox is shutting down.
    * @param {boolean} shuttingDown
    *        True if firefox is currently shutting down. We may prevent doing
    *        some cleanups to speed it up. Otherwise everything need to be
    *        cleaned up in order to be able to load devtools again.
    */
   destroy({ shuttingDown }) {
-    // Do not cleanup everything during firefox shutdown, but only when
-    // devtools are reloaded via the add-on contribution workflow.
+    // Do not cleanup everything during firefox shutdown.
     if (!shuttingDown) {
-      for (let [, toolbox] of this._toolboxes) {
+      for (const [, toolbox] of this._toolboxes) {
         toolbox.destroy();
       }
     }
 
-    for (let [key, ] of this.getToolDefinitionMap()) {
+    for (const [key] of this.getToolDefinitionMap()) {
       this.unregisterTool(key, true);
     }
 
@@ -691,7 +857,7 @@ DevTools.prototype = {
     // manager state on shutdown.
     if (!shuttingDown) {
       // Notify the DevToolsShim that DevTools are no longer available, particularly if
-      // the destroy was caused by disabling/removing the DevTools add-on.
+      // the destroy was caused by disabling/removing DevTools.
       DevToolsShim.unregister();
     }
 
@@ -701,13 +867,14 @@ DevTools.prototype = {
   },
 
   /**
-   * Iterator that yields each of the toolboxes.
+   * Returns the array of the existing toolboxes.
+   *
+   * @return {Array<Toolbox>}
+   *   An array of toolboxes.
    */
-  * [Symbol.iterator ]() {
-    for (let toolbox of this._toolboxes) {
-      yield toolbox;
-    }
-  }
+  getToolboxes() {
+    return Array.from(this._toolboxes.values());
+  },
 };
 
-const gDevTools = exports.gDevTools = new DevTools();
+const gDevTools = (exports.gDevTools = new DevTools());

@@ -5,15 +5,15 @@
 
 #if XP_WIN && HAVE_64BIT_BUILD
 
-#include "MozStackFrameSymbolizer.h"
+#  include "MozStackFrameSymbolizer.h"
 
-#include "MinidumpAnalyzerUtils.h"
+#  include "MinidumpAnalyzerUtils.h"
 
-#include "processor/cfi_frame_info.h"
+#  include "processor/cfi_frame_info.h"
 
-#include <iostream>
-#include <sstream>
-#include <fstream>
+#  include <iostream>
+#  include <sstream>
+#  include <fstream>
 
 namespace CrashReporter {
 
@@ -26,10 +26,11 @@ MozStackFrameSymbolizer::MozStackFrameSymbolizer()
 
 MozStackFrameSymbolizer::SymbolizerResult
 MozStackFrameSymbolizer::FillSourceLineInfo(const CodeModules* modules,
+                                            const CodeModules* unloaded_modules,
                                             const SystemInfo* system_info,
                                             StackFrame* stack_frame) {
   SymbolizerResult ret = StackFrameSymbolizer::FillSourceLineInfo(
-      modules, system_info, stack_frame);
+      modules, unloaded_modules, system_info, stack_frame);
 
   if (ret == kNoError && this->HasImplementation() &&
       stack_frame->function_name.empty()) {

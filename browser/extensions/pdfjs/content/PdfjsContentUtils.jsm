@@ -17,38 +17,14 @@
 
 var EXPORTED_SYMBOLS = ["PdfjsContentUtils"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 var PdfjsContentUtils = {
-  _mm: null,
+  _mm: Services.cpmm,
 
   /*
    * Public API
    */
-
-  get isRemote() {
-    return (Services.appinfo.processType ===
-            Services.appinfo.PROCESS_TYPE_CONTENT);
-  },
-
-  init() {
-    // child *process* mm, or when loaded into the parent for in-content
-    // support the psuedo child process mm 'child PPMM'.
-    if (!this._mm) {
-      this._mm = Services.cpmm;
-      this._mm.addMessageListener("PDFJS:Child:updateSettings", this);
-
-      Services.obs.addObserver(this, "quit-application");
-    }
-  },
-
-  uninit() {
-    if (this._mm) {
-      this._mm.removeMessageListener("PDFJS:Child:updateSettings", this);
-      Services.obs.removeObserver(this, "quit-application");
-    }
-    this._mm = null;
-  },
 
   /*
    * prefs utilities - the child does not have write access to prefs.
@@ -96,43 +72,11 @@ var PdfjsContentUtils = {
    */
   displayWarning(aWindow, aMessage, aLabel, aAccessKey) {
     // the child's dom frame mm associated with the window.
-    let winmm = aWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-                       .getInterface(Ci.nsIDocShell)
-                       .QueryInterface(Ci.nsIInterfaceRequestor)
-                       .getInterface(Ci.nsIContentFrameMessageManager);
+    let winmm = aWindow.docShell.messageManager;
     winmm.sendAsyncMessage("PDFJS:Parent:displayWarning", {
       message: aMessage,
       label: aLabel,
       accessKey: aAccessKey,
     });
   },
-
-  /*
-   * Events
-   */
-
-  observe(aSubject, aTopic, aData) {
-    if (aTopic === "quit-application") {
-      this.uninit();
-    }
-  },
-
-  receiveMessage(aMsg) {
-    switch (aMsg.name) {
-      case "PDFJS:Child:updateSettings":
-        // Only react to this if we are remote.
-        if (Services.appinfo.processType ===
-            Services.appinfo.PROCESS_TYPE_CONTENT) {
-          let jsm = "resource://pdf.js/PdfJs.jsm";
-          let pdfjs = ChromeUtils.import(jsm, {}).PdfJs;
-          if (aMsg.data.enabled) {
-            pdfjs.ensureRegistered();
-          } else {
-            pdfjs.ensureUnregistered();
-          }
-        }
-        break;
-    }
-  },
 };
-

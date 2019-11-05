@@ -9,8 +9,6 @@
 #include "nsIDragService.h"
 #include "nsIDragSession.h"
 #include "nsITransferable.h"
-#include "nsIDOMDocument.h"
-#include "nsIDOMDataTransfer.h"
 #include "nsCOMPtr.h"
 #include "nsRect.h"
 #include "nsPoint.h"
@@ -19,13 +17,15 @@
 #include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/HTMLCanvasElement.h"
 #include "nsTArray.h"
+#include "nsRegion.h"
 #include "Units.h"
 
 // translucency level for drag images
 #define DRAG_TRANSLUCENCY 0.65
 
 class nsIContent;
-class nsIDOMNode;
+
+class nsINode;
 class nsPresContext;
 class nsIImageLoadingContent;
 
@@ -33,6 +33,11 @@ namespace mozilla {
 namespace gfx {
 class SourceSurface;
 }  // namespace gfx
+
+namespace dom {
+class DataTransfer;
+class Selection;
+}  // namespace dom
 }  // namespace mozilla
 
 /**
@@ -72,9 +77,10 @@ class nsBaseDragService : public nsIDragService, public nsIDragSession {
    * in this process.  This is expected to ensure that StartDragSession() and
    * EndDragSession() get called if the platform drag is successfully invoked.
    */
-  virtual nsresult InvokeDragSessionImpl(nsIArray* aTransferableArray,
-                                         nsIScriptableRegion* aDragRgn,
-                                         uint32_t aActionType) = 0;
+  MOZ_CAN_RUN_SCRIPT virtual nsresult InvokeDragSessionImpl(
+      nsIArray* aTransferableArray,
+      const mozilla::Maybe<mozilla::CSSIntRegion>& aRegion,
+      uint32_t aActionType) = 0;
 
   /**
    * Draw the drag image, if any, to a surface and return it. The drag image
@@ -98,7 +104,8 @@ class nsBaseDragService : public nsIDragService, public nsIDragSession {
    * aPresContext will be set to the nsPresContext used determined from
    * whichever of mImage or aDOMNode is used.
    */
-  nsresult DrawDrag(nsIDOMNode* aDOMNode, nsIScriptableRegion* aRegion,
+  nsresult DrawDrag(nsINode* aDOMNode,
+                    const mozilla::Maybe<mozilla::CSSIntRegion>& aRegion,
                     mozilla::CSSIntPoint aScreenPosition,
                     mozilla::LayoutDeviceIntRect* aScreenDragRect,
                     RefPtr<SourceSurface>* aSurface,
@@ -151,24 +158,26 @@ class nsBaseDragService : public nsIDragService, public nsIDragSession {
   uint32_t mDragAction;
   uint32_t mDragActionFromChildProcess;
 
-  nsSize mTargetSize;
-  nsCOMPtr<nsIDOMNode> mSourceNode;
-  nsCString mTriggeringPrincipalURISpec;
-  nsCOMPtr<nsIDOMDocument>
-      mSourceDocument;  // the document at the drag source. will be null
-                        //  if it came from outside the app.
-  nsContentPolicyType
-      mContentPolicyType;  // the contentpolicy type passed to the channel
-                           // when initiating the drag session
-  nsCOMPtr<nsIDOMDataTransfer> mDataTransfer;
+  nsCOMPtr<nsINode> mSourceNode;
+  nsCOMPtr<nsIPrincipal> mTriggeringPrincipal;
+
+  // the document at the drag source. will be null if it came from outside the
+  // app.
+  RefPtr<mozilla::dom::Document> mSourceDocument;
+
+  // the contentpolicy type passed to the channel when initiating the drag
+  // session
+  nsContentPolicyType mContentPolicyType;
+
+  RefPtr<mozilla::dom::DataTransfer> mDataTransfer;
 
   // used to determine the image to appear on the cursor while dragging
-  nsCOMPtr<nsIDOMNode> mImage;
+  nsCOMPtr<nsINode> mImage;
   // offset of cursor within the image
   mozilla::CSSIntPoint mImageOffset;
 
   // set if a selection is being dragged
-  nsCOMPtr<nsISelection> mSelection;
+  RefPtr<mozilla::dom::Selection> mSelection;
 
   // set if the image in mImage is a popup. If this case, the popup will be
   // opened and moved instead of using a drag image.
@@ -183,11 +192,13 @@ class nsBaseDragService : public nsIDragService, public nsIDragSession {
 
   uint32_t mSuppressLevel;
 
-  // The input source of the drag event. Possible values are from
-  // nsIDOMMouseEvent.
+  // The input source of the drag event. Possible values are from MouseEvent.
   uint16_t mInputSource;
 
   nsTArray<RefPtr<mozilla::dom::ContentParent>> mChildProcesses;
+
+  // Sub-region for tree-selections.
+  mozilla::Maybe<mozilla::CSSIntRegion> mRegion;
 };
 
 #endif  // nsBaseDragService_h__

@@ -35,7 +35,6 @@ class nsIURI;
 namespace mozilla {
 namespace image {
 class Image;
-class ImageURL;
 class ProgressTracker;
 }  // namespace image
 }  // namespace mozilla
@@ -49,7 +48,6 @@ class imgRequest final : public nsIStreamListener,
                          public nsIAsyncVerifyRedirectCallback {
   typedef mozilla::image::Image Image;
   typedef mozilla::image::ImageCacheKey ImageCacheKey;
-  typedef mozilla::image::ImageURL ImageURL;
   typedef mozilla::image::ProgressTracker ProgressTracker;
   typedef mozilla::net::ReferrerPolicy ReferrerPolicy;
 
@@ -93,6 +91,9 @@ class imgRequest final : public nsIStreamListener,
   void StartDecoding();
 
   inline uint64_t InnerWindowID() const { return mInnerWindowId; }
+  void SetInnerWindowID(uint64_t aInnerWindowId) {
+    mInnerWindowId = aInnerWindowId;
+  }
 
   // Set the cache validation information (expiry time, whether we must
   // validate, etc) on the cache entry based on the request information.
@@ -143,16 +144,13 @@ class imgRequest final : public nsIStreamListener,
   void ResetCacheEntry();
 
   // OK to use on any thread.
-  nsresult GetURI(ImageURL** aURI);
+  nsresult GetURI(nsIURI** aURI);
   nsresult GetFinalURI(nsIURI** aURI);
   bool IsScheme(const char* aScheme) const;
   bool IsChrome() const;
   bool IsData() const;
 
   nsresult GetImageErrorCode(void);
-
-  /// Returns true if we've received any data.
-  bool HasTransferredData() const;
 
   /// Returns a non-owning pointer to this imgRequest's MIME type.
   const char* GetMimeType() const { return mContentType.get(); }
@@ -171,8 +169,6 @@ class imgRequest final : public nsIStreamListener,
   nsIRequest* GetRequest() const { return mRequest; }
 
   nsITimedChannel* GetTimedChannel() const { return mTimedChannel; }
-
-  nsresult GetSecurityInfo(nsISupports** aSecurityInfoOut);
 
   imgCacheValidator* GetValidator() const { return mValidator; }
   void SetValidator(imgCacheValidator* aValidator) { mValidator = aValidator; }
@@ -204,6 +200,8 @@ class imgRequest final : public nsIStreamListener,
 
   bool HasConsumers() const;
 
+  bool ImageAvailable() const;
+
  private:
   friend class FinishPreparingForNewPartRunnable;
 
@@ -227,7 +225,7 @@ class imgRequest final : public nsIStreamListener,
   // The original URI we were loaded with. This is the same as the URI we are
   // keyed on in the cache. We store a string here to avoid off main thread
   // refcounting issues with nsStandardURL.
-  RefPtr<ImageURL> mURI;
+  nsCOMPtr<nsIURI> mURI;
   // The URI of the resource we ended up loading after all redirects, etc.
   nsCOMPtr<nsIURI> mFinalURI;
   // The principal which triggered the load of this image. Generally either
@@ -238,7 +236,6 @@ class imgRequest final : public nsIStreamListener,
   // The principal of this image.
   nsCOMPtr<nsIPrincipal> mPrincipal;
   nsCOMPtr<nsIProperties> mProperties;
-  nsCOMPtr<nsISupports> mSecurityInfo;
   nsCOMPtr<nsIChannel> mChannel;
   nsCOMPtr<nsIInterfaceRequestor> mPrevChannelSink;
   nsCOMPtr<nsIApplicationCache> mApplicationCache;
@@ -278,6 +275,9 @@ class imgRequest final : public nsIStreamListener,
   // The categories of prioritization strategy that have been requested.
   uint32_t mBoostCategoriesRequested = 0;
 
+  // If we've called OnImageAvailable.
+  bool mImageAvailable;
+
   mutable mozilla::Mutex mMutex;
 
   // Member variables protected by mMutex. Note that *all* flags in our bitfield
@@ -286,7 +286,6 @@ class imgRequest final : public nsIStreamListener,
   RefPtr<ProgressTracker> mProgressTracker;
   RefPtr<Image> mImage;
   bool mIsMultiPartChannel : 1;
-  bool mGotData : 1;
   bool mIsInCache : 1;
   bool mDecodeRequested : 1;
   bool mNewPartPending : 1;

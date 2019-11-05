@@ -4,10 +4,25 @@
 
 "use strict";
 
-const {Cc, Ci, Cu} = require("chrome");
+const { Cc, Ci, Cu } = require("chrome");
 
-loader.lazyRequireGetter(this, "nodeFilterConstants", "devtools/shared/dom-node-filter-constants");
-loader.lazyRequireGetter(this, "standardTreeWalkerFilter", "devtools/server/actors/inspector/utils", true);
+loader.lazyRequireGetter(
+  this,
+  "isShadowRoot",
+  "devtools/shared/layout/utils",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "nodeFilterConstants",
+  "devtools/shared/dom-node-filter-constants"
+);
+loader.lazyRequireGetter(
+  this,
+  "standardTreeWalkerFilter",
+  "devtools/server/actors/inspector/utils",
+  true
+);
 
 // SKIP_TO_* arguments are used with the DocumentWalker, driving the strategy to use if
 // the starting node is incompatible with the filter function of the walker.
@@ -20,27 +35,40 @@ const SKIP_TO_SIBLING = "SKIP_TO_SIBLING";
  *
  * @param {DOMNode} node
  * @param {Window} rootWin
- * @param {Number} whatToShow
- *        See nodeFilterConstants / inIDeepTreeWalker for options.
- * @param {Function} filter
- *        A custom filter function Taking in a DOMNode and returning an Int. See
- *        WalkerActor.nodeFilter for an example.
- * @param {String} skipTo
- *        Either SKIP_TO_PARENT or SKIP_TO_SIBLING. If the provided node is not compatible
- *        with the filter function for this walker, try to find a compatible one either
- *        in the parents or in the siblings of the node.
+ * @param {Object}
+ *        - {Number} whatToShow
+ *          See nodeFilterConstants / inIDeepTreeWalker for options.
+ *        - {Function} filter
+ *          A custom filter function Taking in a DOMNode and returning an Int. See
+ *          WalkerActor.nodeFilter for an example.
+ *        - {String} skipTo
+ *          Either SKIP_TO_PARENT or SKIP_TO_SIBLING. If the provided node is not
+ *          compatible with the filter function for this walker, try to find a compatible
+ *          one either in the parents or in the siblings of the node.
+ *        - {Boolean} showAnonymousContent
+ *          Pass true to let the walker return and traverse anonymous content.
+ *          When navigating host elements to which shadow DOM is attached, the light tree
+ *          will be visible only to a walker with showAnonymousContent=false. The shadow
+ *          tree will only be visible to a walker with showAnonymousContent=true.
  */
-function DocumentWalker(node, rootWin,
-  whatToShow = nodeFilterConstants.SHOW_ALL,
-  filter = standardTreeWalkerFilter,
-  skipTo = SKIP_TO_PARENT) {
+function DocumentWalker(
+  node,
+  rootWin,
+  {
+    whatToShow = nodeFilterConstants.SHOW_ALL,
+    filter = standardTreeWalkerFilter,
+    skipTo = SKIP_TO_PARENT,
+    showAnonymousContent = true,
+  } = {}
+) {
   if (Cu.isDeadWrapper(rootWin) || !rootWin.location) {
     throw new Error("Got an invalid root window in DocumentWalker");
   }
 
-  this.walker = Cc["@mozilla.org/inspector/deep-tree-walker;1"]
-    .createInstance(Ci.inIDeepTreeWalker);
-  this.walker.showAnonymousContent = true;
+  this.walker = Cc["@mozilla.org/inspector/deep-tree-walker;1"].createInstance(
+    Ci.inIDeepTreeWalker
+  );
+  this.walker.showAnonymousContent = showAnonymousContent;
   this.walker.showSubDocuments = true;
   this.walker.showDocumentsAsNodes = true;
   this.walker.init(rootWin.document, whatToShow);
@@ -52,7 +80,6 @@ function DocumentWalker(node, rootWin,
 }
 
 DocumentWalker.prototype = {
-
   get whatToShow() {
     return this.walker.whatToShow;
   },
@@ -63,12 +90,23 @@ DocumentWalker.prototype = {
     this.walker.currentNode = val;
   },
 
-  parentNode: function () {
+  parentNode: function() {
+    if (isShadowRoot(this.currentNode)) {
+      this.currentNode = this.currentNode.host;
+      return this.currentNode;
+    }
+
+    const parentNode = this.currentNode.parentNode;
+    // deep-tree-walker currently does not return shadowRoot elements as parentNodes.
+    if (parentNode && isShadowRoot(parentNode)) {
+      this.currentNode = parentNode;
+      return this.currentNode;
+    }
     return this.walker.parentNode();
   },
 
-  nextNode: function () {
-    let node = this.walker.currentNode;
+  nextNode: function() {
+    const node = this.walker.currentNode;
     if (!node) {
       return null;
     }
@@ -81,8 +119,8 @@ DocumentWalker.prototype = {
     return nextNode;
   },
 
-  firstChild: function () {
-    let node = this.walker.currentNode;
+  firstChild: function() {
+    const node = this.walker.currentNode;
     if (!node) {
       return null;
     }
@@ -95,8 +133,8 @@ DocumentWalker.prototype = {
     return firstChild;
   },
 
-  lastChild: function () {
-    let node = this.walker.currentNode;
+  lastChild: function() {
+    const node = this.walker.currentNode;
     if (!node) {
       return null;
     }
@@ -109,7 +147,7 @@ DocumentWalker.prototype = {
     return lastChild;
   },
 
-  previousSibling: function () {
+  previousSibling: function() {
     let node = this.walker.previousSibling();
     while (node && this.isSkippedNode(node)) {
       node = this.walker.previousSibling();
@@ -117,7 +155,7 @@ DocumentWalker.prototype = {
     return node;
   },
 
-  nextSibling: function () {
+  nextSibling: function() {
     let node = this.walker.nextSibling();
     while (node && this.isSkippedNode(node)) {
       node = this.walker.nextSibling();
@@ -125,10 +163,10 @@ DocumentWalker.prototype = {
     return node;
   },
 
-  getStartingNode: function (node, skipTo) {
+  getStartingNode: function(node, skipTo) {
     // Keep a reference on the starting node in case we can't find a node compatible with
     // the filter.
-    let startingNode = node;
+    const startingNode = node;
 
     if (skipTo === SKIP_TO_PARENT) {
       while (node && this.isSkippedNode(node)) {
@@ -145,7 +183,7 @@ DocumentWalker.prototype = {
    * Loop on all of the provided node siblings until finding one that is compliant with
    * the filter function.
    */
-  getClosestAcceptedSibling: function (node) {
+  getClosestAcceptedSibling: function(node) {
     if (this.filter(node) === nodeFilterConstants.FILTER_ACCEPT) {
       // node is already valid, return immediately.
       return node;
@@ -158,7 +196,10 @@ DocumentWalker.prototype = {
       previous = previous && previous.previousSibling;
       next = next && next.nextSibling;
 
-      if (previous && this.filter(previous) === nodeFilterConstants.FILTER_ACCEPT) {
+      if (
+        previous &&
+        this.filter(previous) === nodeFilterConstants.FILTER_ACCEPT
+      ) {
         // A valid node was found in the previous siblings of the node.
         return previous;
       }
@@ -172,7 +213,7 @@ DocumentWalker.prototype = {
     return null;
   },
 
-  isSkippedNode: function (node) {
+  isSkippedNode: function(node) {
     return this.filter(node) === nodeFilterConstants.FILTER_SKIP;
   },
 };

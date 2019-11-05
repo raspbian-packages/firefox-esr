@@ -79,16 +79,18 @@ class StereoPannerNodeEngine final : public AudioNodeEngine {
 
   void UpmixToStereoIfNeeded(const AudioBlock& aInput, AudioBlock* aOutput) {
     if (aInput.ChannelCount() == 2) {
-      const float* inputL = static_cast<const float*>(aInput.mChannelData[0]);
-      const float* inputR = static_cast<const float*>(aInput.mChannelData[1]);
-      float* outputL = aOutput->ChannelFloatsForWrite(0);
-      float* outputR = aOutput->ChannelFloatsForWrite(1);
-
-      AudioBlockCopyChannelWithScale(inputL, aInput.mVolume, outputL);
-      AudioBlockCopyChannelWithScale(inputR, aInput.mVolume, outputR);
+      *aOutput = aInput;
     } else {
       MOZ_ASSERT(aInput.ChannelCount() == 1);
-      GainMonoToStereo(aInput, aOutput, aInput.mVolume, aInput.mVolume);
+      aOutput->SetBuffer(aInput.GetBuffer());
+      aOutput->mChannelData.SetLength(2);
+      for (uint32_t i = 0; i < 2; ++i) {
+        aOutput->mChannelData[i] = aInput.ChannelData<float>()[0];
+      }
+      // 1/sqrt(2) multiplier is because StereoPanner up-mixing differs from
+      // input up-mixing.
+      aOutput->mVolume = M_SQRT1_2 * aInput.mVolume;
+      aOutput->mBufferFormat = AUDIO_FORMAT_FLOAT32;
     }
   }
 
@@ -97,12 +99,11 @@ class StereoPannerNodeEngine final : public AudioNodeEngine {
                             bool* aFinished) override {
     // The output of this node is always stereo, no matter what the inputs are.
     MOZ_ASSERT(aInput.ChannelCount() <= 2);
-    aOutput->AllocateChannels(2);
     bool monoToStereo = aInput.ChannelCount() == 1;
 
     if (aInput.IsNull()) {
       // If input is silent, so is the output
-      SetToSilentStereoBlock(aOutput);
+      aOutput->SetNull(WEBAUDIO_BLOCK_SIZE);
     } else if (mPan.HasSimpleValue()) {
       float panning = mPan.GetValue();
       // If the panning is 0.0, we can simply copy the input to the
@@ -116,8 +117,7 @@ class StereoPannerNodeEngine final : public AudioNodeEngine {
         float gainL, gainR;
 
         GetGainValuesForPanning(panning, monoToStereo, gainL, gainR);
-        ApplyStereoPanning(aInput, aOutput, gainL * aInput.mVolume,
-                           gainR * aInput.mVolume, panning <= 0);
+        ApplyStereoPanning(aInput, aOutput, gainL, gainR, panning <= 0);
       }
     } else {
       float computedGain[2 * WEBAUDIO_BLOCK_SIZE + 4];
@@ -133,9 +133,8 @@ class StereoPannerNodeEngine final : public AudioNodeEngine {
         float left, right;
         GetGainValuesForPanning(values[counter], monoToStereo, left, right);
 
-        alignedComputedGain[counter] = left * aInput.mVolume;
-        alignedComputedGain[WEBAUDIO_BLOCK_SIZE + counter] =
-            right * aInput.mVolume;
+        alignedComputedGain[counter] = left;
+        alignedComputedGain[WEBAUDIO_BLOCK_SIZE + counter] = right;
         onLeft[counter] = values[counter] <= 0;
       }
 
@@ -156,22 +155,18 @@ class StereoPannerNodeEngine final : public AudioNodeEngine {
 
 StereoPannerNode::StereoPannerNode(AudioContext* aContext)
     : AudioNode(aContext, 2, ChannelCountMode::Clamped_max,
-                ChannelInterpretation::Speakers),
-      mPan(new AudioParam(this, StereoPannerNodeEngine::PAN, "pan", 0.f, -1.f,
-                          1.f)) {
+                ChannelInterpretation::Speakers) {
+  CreateAudioParam(mPan, StereoPannerNodeEngine::PAN, "pan", 0.f, -1.f, 1.f);
   StereoPannerNodeEngine* engine =
       new StereoPannerNodeEngine(this, aContext->Destination());
   mStream = AudioNodeStream::Create(
       aContext, engine, AudioNodeStream::NO_STREAM_FLAGS, aContext->Graph());
 }
 
-/* static */ already_AddRefed<StereoPannerNode> StereoPannerNode::Create(
+/* static */
+already_AddRefed<StereoPannerNode> StereoPannerNode::Create(
     AudioContext& aAudioContext, const StereoPannerOptions& aOptions,
     ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
   RefPtr<StereoPannerNode> audioNode = new StereoPannerNode(&aAudioContext);
 
   audioNode->Initialize(aOptions, aRv);
@@ -195,7 +190,7 @@ size_t StereoPannerNode::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
 
 JSObject* StereoPannerNode::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return StereoPannerNodeBinding::Wrap(aCx, this, aGivenProto);
+  return StereoPannerNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

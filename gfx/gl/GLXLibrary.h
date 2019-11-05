@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,6 +12,8 @@ typedef realGLboolean GLboolean;
 
 // stuff from glx.h
 #include "X11/Xlib.h"
+#include "X11/Xutil.h"  // for XVisualInfo
+#include "X11UndefineNone.h"
 typedef struct __GLXcontextRec* GLXContext;
 typedef XID GLXPixmap;
 typedef XID GLXDrawable;
@@ -26,22 +28,10 @@ class gfxASurface;
 namespace mozilla {
 namespace gl {
 
-class GLXLibrary {
- public:
-  GLXLibrary()
-      : mSymbols{nullptr},
-        mInitialized(false),
-        mTriedInitializing(false),
-        mUseTextureFromPixmap(false),
-        mDebug(false),
-        mHasRobustness(false),
-        mHasCreateContextAttribs(false),
-        mHasVideoSync(false),
-        mIsATI(false),
-        mIsNVIDIA(false),
-        mClientIsMesa(false),
-        mOGLLibrary(nullptr) {}
+class GLContextGLX;
 
+class GLXLibrary final {
+ public:
   bool EnsureInitialized();
 
  private:
@@ -50,11 +40,11 @@ class GLXLibrary {
 
  public:
 #ifdef DEBUG
-#define BEFORE_CALL BeforeGLXCall();
-#define AFTER_CALL AfterGLXCall();
+#  define BEFORE_CALL BeforeGLXCall();
+#  define AFTER_CALL AfterGLXCall();
 #else
-#define BEFORE_CALL
-#define AFTER_CALL
+#  define BEFORE_CALL
+#  define AFTER_CALL
 #endif
 
 #define WRAP(X)                  \
@@ -78,12 +68,20 @@ class GLXLibrary {
                             GLXContext context) const
       WRAP(fMakeCurrent(display, drawable, context))
 
+          XVisualInfo* fGetConfig(Display* display, XVisualInfo* info,
+                                  int attrib, int* value) const
+      WRAP(fGetConfig(display, info, attrib, value))
+
           GLXContext fGetCurrentContext() const WRAP(fGetCurrentContext())
 
               GLXFBConfig* fChooseFBConfig(Display* display, int screen,
                                            const int* attrib_list,
                                            int* nelements) const
       WRAP(fChooseFBConfig(display, screen, attrib_list, nelements))
+
+          XVisualInfo* fChooseVisual(Display* display, int screen,
+                                     int* attrib_list) const
+      WRAP(fChooseVisual(display, screen, attrib_list))
 
           GLXFBConfig* fGetFBConfigs(Display* display, int screen,
                                      int* nelements) const
@@ -173,6 +171,7 @@ class GLXLibrary {
 
   bool UseTextureFromPixmap() { return mUseTextureFromPixmap; }
   bool HasRobustness() { return mHasRobustness; }
+  bool HasVideoMemoryPurge() { return mHasVideoMemoryPurge; }
   bool HasCreateContextAttribs() { return mHasCreateContextAttribs; }
   bool SupportsTextureFromPixmap(gfxASurface* aSurface);
   bool SupportsVideoSync();
@@ -180,17 +179,17 @@ class GLXLibrary {
   bool IsATI() { return mIsATI; }
   bool IsMesa() { return mClientIsMesa; }
 
-  PRFuncPtr GetGetProcAddress() const {
-    return (PRFuncPtr)mSymbols.fGetProcAddress;
-  }
+  auto GetGetProcAddress() const { return mSymbols.fGetProcAddress; }
 
  private:
   struct {
     void(GLAPIENTRY* fDestroyContext)(Display*, GLXContext);
     Bool(GLAPIENTRY* fMakeCurrent)(Display*, GLXDrawable, GLXContext);
+    XVisualInfo*(GLAPIENTRY* fGetConfig)(Display*, XVisualInfo*, int, int*);
     GLXContext(GLAPIENTRY* fGetCurrentContext)();
     void*(GLAPIENTRY* fGetProcAddress)(const char*);
     GLXFBConfig*(GLAPIENTRY* fChooseFBConfig)(Display*, int, const int*, int*);
+    XVisualInfo*(GLAPIENTRY* fChooseVisual)(Display*, int, const int*);
     GLXFBConfig*(GLAPIENTRY* fGetFBConfigs)(Display*, int, int*);
     GLXContext(GLAPIENTRY* fCreateNewContext)(Display*, GLXFBConfig, int,
                                               GLXContext, Bool);
@@ -215,24 +214,25 @@ class GLXLibrary {
     int(GLAPIENTRY* fGetVideoSyncSGI)(unsigned int*);
     int(GLAPIENTRY* fWaitVideoSyncSGI)(int, int, unsigned int*);
     void(GLAPIENTRY* fSwapIntervalEXT)(Display*, GLXDrawable, int);
-  } mSymbols;
+  } mSymbols = {};
 
 #ifdef DEBUG
   void BeforeGLXCall();
   void AfterGLXCall();
 #endif
 
-  bool mInitialized;
-  bool mTriedInitializing;
-  bool mUseTextureFromPixmap;
-  bool mDebug;
-  bool mHasRobustness;
-  bool mHasCreateContextAttribs;
-  bool mHasVideoSync;
-  bool mIsATI;
-  bool mIsNVIDIA;
-  bool mClientIsMesa;
-  PRLibrary* mOGLLibrary;
+  bool mInitialized = false;
+  bool mTriedInitializing = false;
+  bool mUseTextureFromPixmap = false;
+  bool mDebug = false;
+  bool mHasRobustness = false;
+  bool mHasVideoMemoryPurge = false;
+  bool mHasCreateContextAttribs = false;
+  bool mHasVideoSync = false;
+  bool mIsATI = false;
+  bool mIsNVIDIA = false;
+  bool mClientIsMesa = false;
+  PRLibrary* mOGLLibrary = nullptr;
 };
 
 // a global GLXLibrary instance

@@ -23,21 +23,26 @@
 #include "mozilla/ErrorResult.h"
 #include "nsIContentPolicy.h"
 #include "mozilla/dom/BindingDeclarations.h"
+#include "mozilla/dom/Promise.h"
 #include "mozilla/net/ReferrerPolicy.h"
+#include "nsAttrValue.h"
 
 class nsIURI;
-class nsIDocument;
 class nsPresContext;
 class nsIContent;
 class imgRequestProxy;
 
 namespace mozilla {
 class AsyncEventDispatcher;
+namespace dom {
+class Document;
+class Element;
+}  // namespace dom
 }  // namespace mozilla
 
 #ifdef LoadImage
 // Undefine LoadImage to prevent naming conflict with Windows.
-#undef LoadImage
+#  undef LoadImage
 #endif
 
 class nsImageLoadingContent : public nsIImageLoadingContent {
@@ -70,6 +75,19 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
   already_AddRefed<nsIURI> GetCurrentURI(mozilla::ErrorResult& aError);
   already_AddRefed<nsIURI> GetCurrentRequestFinalURI();
   void ForceReload(bool aNotify, mozilla::ErrorResult& aError);
+
+  mozilla::dom::Element* FindImageMap();
+
+  /**
+   * Toggle whether or not to synchronously decode an image on draw.
+   */
+  void SetSyncDecodingHint(bool aHint);
+
+  /**
+   * Notify us that the document state has changed. Called by nsDocument so that
+   * we may reject any promises which require the document to be active.
+   */
+  void NotifyOwnerDocumentActivityChanged();
 
  protected:
   enum ImageLoadType {
@@ -133,7 +151,7 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
    */
   nsresult LoadImage(nsIURI* aNewURI, bool aForce, bool aNotify,
                      ImageLoadType aImageLoadType, bool aLoadStart = true,
-                     nsIDocument* aDocument = nullptr,
+                     mozilla::dom::Document* aDocument = nullptr,
                      nsLoadFlags aLoadFlags = nsIRequest::LOAD_NORMAL,
                      nsIPrincipal* aTriggeringPrincipal = nullptr);
 
@@ -151,8 +169,8 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
    *
    * @return the document we belong to
    */
-  nsIDocument* GetOurOwnerDoc();
-  nsIDocument* GetOurCurrentDoc();
+  mozilla::dom::Document* GetOurOwnerDoc();
+  mozilla::dom::Document* GetOurCurrentDoc();
 
   /**
    * Helper function to get the frame associated with this content. Not named
@@ -180,15 +198,6 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
   void CancelImageRequests(bool aNotify);
 
   /**
-   * UseAsPrimaryRequest is called by subclasses when they have an existing
-   * imgRequestProxy that they want this nsImageLoadingContent to use.  This may
-   * effectively be called instead of LoadImage or LoadImageWithChannel.
-   * If aNotify is true, this method will notify on state changes.
-   */
-  nsresult UseAsPrimaryRequest(imgRequestProxy* aRequest, bool aNotify,
-                               ImageLoadType aImageLoadType);
-
-  /**
    * Derived classes of nsImageLoadingContent MUST call
    * DestroyImageLoadingContent from their destructor, or earlier.  It
    * does things that cannot be done in ~nsImageLoadingContent because
@@ -197,8 +206,6 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
    * calling the base class destructors.
    */
   void DestroyImageLoadingContent();
-
-  void ClearBrokenState() { mBroken = false; }
 
   /**
    * Returns the CORS mode that will be used for all future image loads. The
@@ -209,8 +216,8 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
   virtual mozilla::net::ReferrerPolicy GetImageReferrerPolicy();
 
   // Subclasses are *required* to call BindToTree/UnbindFromTree.
-  void BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                  nsIContent* aBindingParent, bool aCompileEventHandlers);
+  void BindToTree(mozilla::dom::Document* aDocument, nsIContent* aParent,
+                  nsIContent* aBindingParent);
   void UnbindFromTree(bool aDeep, bool aNullParent);
 
   nsresult OnLoadComplete(imgIRequest* aRequest, nsresult aStatus);
@@ -226,7 +233,64 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
   // want a non-const nsIContent.
   virtual nsIContent* AsContent() = 0;
 
+  // Hooks for subclasses to call to get the intrinsic width and height.
+  uint32_t NaturalWidth();
+  uint32_t NaturalHeight();
+
+  /**
+   * Create a promise and queue a microtask which will ensure the current
+   * request (after any pending loads are applied) has requested a full decode.
+   * The promise is fulfilled once the request has a fully decoded surface that
+   * is available for drawing, or an error condition occurrs (e.g. broken image,
+   * current request is updated, etc).
+   *
+   * https://html.spec.whatwg.org/multipage/embedded-content.html#dom-img-decode
+   */
+  already_AddRefed<mozilla::dom::Promise> QueueDecodeAsync(
+      mozilla::ErrorResult& aRv);
+
+  enum class ImageDecodingType : uint8_t {
+    Auto,
+    Async,
+    Sync,
+  };
+
+  static const nsAttrValue::EnumTable kDecodingTable[];
+  static const nsAttrValue::EnumTable* kDecodingTableDefault;
+
  private:
+  /**
+   * Enqueue and/or fulfill a promise created by QueueDecodeAsync.
+   */
+  void DecodeAsync(RefPtr<mozilla::dom::Promise>&& aPromise,
+                   uint32_t aRequestGeneration);
+
+  /**
+   * Attempt to resolve all queued promises based on the state of the current
+   * request. If the current request does not yet have all of the encoded data,
+   * or the decoding has not yet completed, it will return without changing the
+   * promise states.
+   */
+  void MaybeResolveDecodePromises();
+
+  /**
+   * Reject all queued promises with the given status.
+   */
+  void RejectDecodePromises(nsresult aStatus);
+
+  /**
+   * Age the generation counter if we have a new current request with a
+   * different URI. If the generation counter is aged, then all queued promises
+   * will also be rejected.
+   */
+  void MaybeAgeRequestGeneration(nsIURI* aNewURI);
+
+  /**
+   * Deregister as an observer for the owner document's activity notifications
+   * if we have no outstanding decode promises.
+   */
+  void MaybeDeregisterActivityObserver();
+
   /**
    * Struct used to manage the native image observers.
    */
@@ -310,8 +374,8 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
    * @param aDocument the document we belong to
    * @return the URI we want to be loading
    */
-  nsresult StringToURI(const nsAString& aSpec, nsIDocument* aDocument,
-                       nsIURI** aURI);
+  nsresult StringToURI(const nsAString& aSpec,
+                       mozilla::dom::Document* aDocument, nsIURI** aURI);
 
   void CreateStaticImageClone(nsImageLoadingContent* aDest) const;
 
@@ -441,6 +505,19 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
   void MakePendingScriptedRequestsCurrent();
 
   /**
+   * Depending on the configured decoding hint, and/or how recently we updated
+   * the image request, force or stop the frame from decoding the image
+   * synchronously when it is drawn.
+   * @param aPrepareNextRequest True if this is when updating the image request.
+   * @param aFrame If called from FrameCreated the frame passed to FrameCreated.
+   *               This is our frame, but at the time of the FrameCreated call
+   *               our primary frame pointer hasn't been set yet, so this is
+   *               only way to get our frame.
+   */
+  void MaybeForceSyncDecoding(bool aPrepareNextRequest,
+                              nsIFrame* aFrame = nullptr);
+
+  /**
    * Typically we will have only one observer (our frame in the screen
    * prescontext), so we want to only make space for one and to
    * heap-allocate anything past that (saves memory and malloc churn
@@ -458,12 +535,35 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
   nsTArray<RefPtr<ScriptedImageObserver>> mScriptedObservers;
 
   /**
+   * Promises created by QueueDecodeAsync that are still waiting to be
+   * fulfilled by the image being fully decoded.
+   */
+  nsTArray<RefPtr<mozilla::dom::Promise>> mDecodePromises;
+
+  /**
    * When mIsImageStateForced is true, this holds the ImageState that we'll
    * return in ImageState().
    */
   mozilla::EventStates mForcedImageState;
 
   mozilla::TimeStamp mMostRecentRequestChange;
+
+  /**
+   * Total number of outstanding decode promises, including those stored in
+   * mDecodePromises and those embedded in runnables waiting to be enqueued.
+   * This is used to determine whether we need to register as an observer for
+   * document activity notifications.
+   */
+  size_t mOutstandingDecodePromises;
+
+  /**
+   * An incrementing counter representing the current request generation;
+   * Each time mCurrentRequest is modified with a different URI, this will
+   * be incremented. Each QueueDecodeAsync call will cache the generation
+   * of the current request so that when it is processed, it knows if it
+   * should have rejected because the request changed.
+   */
+  uint32_t mRequestGeneration;
 
   int16_t mImageBlockingStatus;
   bool mLoadingEnabled : 1;
@@ -521,6 +621,9 @@ class nsImageLoadingContent : public nsIImageLoadingContent {
   // Also we use this variable to check if some evil code is reentering
   // LoadImage.
   bool mIsStartingImageLoad;
+
+  // If true, force frames to synchronously decode images on draw.
+  bool mSyncDecodingHint;
 };
 
 #endif  // nsImageLoadingContent_h__

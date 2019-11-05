@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,7 +14,7 @@
 #include "mozilla/dom/XPathExpressionBinding.h"
 
 class Expr;
-class nsIDocument;
+
 class nsINode;
 class txResultRecycler;
 
@@ -29,12 +29,12 @@ class XPathResult;
 class XPathExpression final : public NonRefcountedDOMObject {
  public:
   XPathExpression(nsAutoPtr<Expr>&& aExpression, txResultRecycler* aRecycler,
-                  nsIDocument* aDocument);
+                  Document* aDocument);
   ~XPathExpression();
 
   bool WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto,
                   JS::MutableHandle<JSObject*> aReflector) {
-    return XPathExpressionBinding::Wrap(aCx, this, aGivenProto, aReflector);
+    return XPathExpression_Binding::Wrap(aCx, this, aGivenProto, aReflector);
   }
 
   already_AddRefed<XPathResult> Evaluate(JSContext* aCx, nsINode& aContextNode,

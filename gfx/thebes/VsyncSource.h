@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,12 +11,21 @@
 #include "mozilla/Mutex.h"
 #include "mozilla/TimeStamp.h"
 #include "nsISupportsImpl.h"
+#include "mozilla/layers/LayersTypes.h"
 
 namespace mozilla {
 class RefreshTimerVsyncDispatcher;
 class CompositorVsyncDispatcher;
 
+class VsyncIdType {};
+typedef layers::BaseTransactionId<VsyncIdType> VsyncId;
+
+namespace layout {
+class PVsyncChild;
+}
+
 namespace gfx {
+class PVsyncBridgeParent;
 
 // Controls how and when to enable/disable vsync. Lives as long as the
 // gfxPlatform does on the parent process
@@ -50,6 +59,7 @@ class VsyncSource {
         CompositorVsyncDispatcher* aCompositorVsyncDispatcher);
     void RemoveCompositorVsyncDispatcher(
         CompositorVsyncDispatcher* aCompositorVsyncDispatcher);
+    void MoveListenersToNewSource(VsyncSource::Display& aNewDisplay);
     void NotifyRefreshTimerVsyncStatus(bool aEnable);
     virtual TimeDuration GetVsyncRate();
 
@@ -66,6 +76,7 @@ class VsyncSource {
     bool mRefreshTimerNeedsVsync;
     nsTArray<RefPtr<CompositorVsyncDispatcher>> mCompositorVsyncDispatchers;
     RefPtr<RefreshTimerVsyncDispatcher> mRefreshTimerVsyncDispatcher;
+    VsyncId mVsyncId;
   };
 
   void AddCompositorVsyncDispatcher(
@@ -73,15 +84,38 @@ class VsyncSource {
   void RemoveCompositorVsyncDispatcher(
       CompositorVsyncDispatcher* aCompositorVsyncDispatcher);
 
+  void MoveListenersToNewSource(VsyncSource* aNewSource);
+
   RefPtr<RefreshTimerVsyncDispatcher> GetRefreshTimerVsyncDispatcher();
   virtual Display& GetGlobalDisplay() = 0;  // Works across all displays
   void Shutdown();
 
  protected:
-  virtual ~VsyncSource() {}
+  virtual ~VsyncSource() = default;
 };
 
 }  // namespace gfx
+
+namespace recordreplay {
+namespace child {
+void NotifyVsyncObserver();
+}
+}  // namespace recordreplay
+
+struct VsyncEvent {
+  VsyncId mId;
+  TimeStamp mTime;
+
+ private:
+  VsyncEvent(const VsyncId& aId, const TimeStamp& aTime)
+      : mId(aId), mTime(aTime) {}
+  VsyncEvent() {}
+  friend class gfx::VsyncSource::Display;
+  friend class gfx::PVsyncBridgeParent;
+  friend class layout::PVsyncChild;
+  friend void recordreplay::child::NotifyVsyncObserver();
+};
+
 }  // namespace mozilla
 
 #endif /* GFX_VSYNCSOURCE_H */

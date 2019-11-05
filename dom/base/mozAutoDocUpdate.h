@@ -8,7 +8,7 @@
 #define mozAutoDocUpdate_h_
 
 #include "nsContentUtils.h"  // For AddScriptBlocker() and RemoveScriptBlocker().
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDocumentObserver.h"
 
 /**
@@ -20,11 +20,10 @@
  */
 class MOZ_STACK_CLASS mozAutoDocUpdate {
  public:
-  mozAutoDocUpdate(nsIDocument* aDocument, nsUpdateType aUpdateType,
-                   bool aNotify)
-      : mDocument(aNotify ? aDocument : nullptr), mUpdateType(aUpdateType) {
+  mozAutoDocUpdate(mozilla::dom::Document* aDocument, bool aNotify)
+      : mDocument(aNotify ? aDocument : nullptr) {
     if (mDocument) {
-      mDocument->BeginUpdate(mUpdateType);
+      mDocument->BeginUpdate();
     } else {
       nsContentUtils::AddScriptBlocker();
     }
@@ -32,49 +31,21 @@ class MOZ_STACK_CLASS mozAutoDocUpdate {
 
   ~mozAutoDocUpdate() {
     if (mDocument) {
-      mDocument->EndUpdate(mUpdateType);
+      mDocument->EndUpdate();
     } else {
       nsContentUtils::RemoveScriptBlocker();
     }
   }
 
  private:
-  nsCOMPtr<nsIDocument> mDocument;
-  nsUpdateType mUpdateType;
+  RefPtr<mozilla::dom::Document> mDocument;
 };
 
 #define MOZ_AUTO_DOC_UPDATE_PASTE2(tok, line) tok##line
 #define MOZ_AUTO_DOC_UPDATE_PASTE(tok, line) \
   MOZ_AUTO_DOC_UPDATE_PASTE2(tok, line)
-#define MOZ_AUTO_DOC_UPDATE(doc, type, notify)                            \
+#define MOZ_AUTO_DOC_UPDATE(doc, notify)                                  \
   mozAutoDocUpdate MOZ_AUTO_DOC_UPDATE_PASTE(_autoDocUpdater_, __LINE__)( \
-      doc, type, notify)
-
-/**
- * Creates an update batch only under certain conditions.
- * Use this rather than mozAutoDocUpdate when you expect inner updates
- * to notify but you don't always want to spec cycles creating a batch.
- * This is needed to avoid having this batch always create a blocker,
- * but then have inner mozAutoDocUpdate call the last EndUpdate before.
- * we remove that blocker. See bug 423269.
- */
-class MOZ_STACK_CLASS mozAutoDocConditionalContentUpdateBatch {
- public:
-  mozAutoDocConditionalContentUpdateBatch(nsIDocument* aDocument, bool aNotify)
-      : mDocument(aNotify ? aDocument : nullptr) {
-    if (mDocument) {
-      mDocument->BeginUpdate(UPDATE_CONTENT_MODEL);
-    }
-  }
-
-  ~mozAutoDocConditionalContentUpdateBatch() {
-    if (mDocument) {
-      mDocument->EndUpdate(UPDATE_CONTENT_MODEL);
-    }
-  }
-
- private:
-  nsCOMPtr<nsIDocument> mDocument;
-};
+      doc, notify)
 
 #endif

@@ -4,9 +4,11 @@
 "use strict";
 
 const RAND = Math.random();
-const URL = "http://mochi.test:8888/browser/" +
-            "browser/components/sessionstore/test/browser_sessionStorage.html" +
-            "?" + RAND;
+const URL =
+  "http://mochi.test:8888/browser/" +
+  "browser/components/sessionstore/test/browser_sessionStorage.html" +
+  "?" +
+  RAND;
 
 const OUTER_VALUE = "outer-value-" + RAND;
 
@@ -26,7 +28,7 @@ add_task(async function test_large_content() {
   info(JSON.stringify(state, null, "\t"));
   Assert.equal(state.storage, null, "We have no storage for the tab");
   Assert.equal(state.entries[0].title, OUTER_VALUE);
-  await promiseRemoveTab(tab);
+  BrowserTestUtils.removeTab(tab);
 
   Services.prefs.clearUserPref("browser.sessionstore.dom_storage_limit");
 });

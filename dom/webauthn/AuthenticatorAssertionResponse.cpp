@@ -51,7 +51,7 @@ AuthenticatorAssertionResponse::~AuthenticatorAssertionResponse() {
 
 JSObject* AuthenticatorAssertionResponse::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return AuthenticatorAssertionResponseBinding::Wrap(aCx, this, aGivenProto);
+  return AuthenticatorAssertionResponse_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void AuthenticatorAssertionResponse::GetAuthenticatorData(

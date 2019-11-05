@@ -5,13 +5,13 @@
 <!ENTITY safeModeDialog.title             "&brandShortName; უსაფრთხო რეჟიმი">
 <!ENTITY window.width                     "37em">
 
-<!ENTITY safeModeDescription.label        "&brandShortName; უსაფრთხო რეჟიმშია, რომლის დროსაც დროებით ამოიღტვება თქვენი პარამეტრები, თემები და პაკეტები.">
+<!ENTITY safeModeDescription.label        "&brandShortName; უსაფრთხო რეჟიმშია, რომლის დროსაც დროებით ამოირთვება თქვენი პარამეტრები, თემები და გაფართოებები.">
 <!ENTITY safeModeDescription2.label       "ზოგი ან ყველა ცვლილება შესაძლებელია მიუთითოთ, როგორც მუდმივი:">
 
 <!ENTITY disableAddons.label              "ყველა მოდულის ამორთვა">
 <!ENTITY disableAddons.accesskey          "D">
 
-<!ENTITY resetToolbars.label              "პულტებისა და მართვის ელემენტების ამორთვა">
+<!ENTITY resetToolbars.label              "ხელსაწყოთა ზოლებისა და სამართავების ჩამოყრა">
 <!ENTITY resetToolbars.accesskey          "R">
 
 <!ENTITY changeAndRestartButton.label     "ცვლილებების შენახვა და ხელახლა გახსნა">

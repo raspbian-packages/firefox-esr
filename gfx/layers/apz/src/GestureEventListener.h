@@ -153,10 +153,10 @@ class GestureEventListener final {
   bool SecondTapIsFar() const;
 
   /**
-   * Returns current vertical span, counting from the where the user first put
-   * her finger down.
+   * Returns current vertical span, counting from the where the gesture first
+   * began (after a brief delay detecting the gesture from first touch).
    */
-  ParentLayerCoord GetYSpanFromStartPoint();
+  ScreenCoord GetYSpanFromGestureStartPoint();
 
   /**
    * Do actual state transition and reset substates.
@@ -185,17 +185,17 @@ class GestureEventListener final {
    * out we are compared to our original pinch span. Note that this does _not_
    * continue to be updated once we jump into the |GESTURE_PINCH| state.
    */
-  ParentLayerCoord mSpanChange;
+  ScreenCoord mSpanChange;
 
   /**
    * Previous span calculated for the purposes of setting inside a
    * PinchGestureInput.
    */
-  ParentLayerCoord mPreviousSpan;
+  ScreenCoord mPreviousSpan;
 
   /* Properties similar to mSpanChange and mPreviousSpan, but for the focus */
-  ParentLayerCoord mFocusChange;
-  ParentLayerPoint mPreviousFocus;
+  ScreenCoord mFocusChange;
+  ScreenPoint mPreviousFocus;
 
   /**
    * Cached copy of the last touch input.
@@ -212,6 +212,16 @@ class GestureEventListener final {
   MultiTouchInput mLastTapInput;
 
   /**
+   * Position of the last touch that exceeds the GetTouchStartTolerance when
+   * performing a one-touch-pinch gesture; using the mTouchStartPosition is
+   * slightly inaccurate because by the time the touch position has passed
+   * the threshold for the gesture, there is already a span that the zoom
+   * is calculated from, instead of starting at 1.0 when the threshold gets
+   * passed.
+   */
+  ScreenPoint mOneTouchPinchStartPosition;
+
+  /**
    * Position of the last touch starting. This is only valid during an attempt
    * to determine if a touch is a tap. If a touch point moves away from
    * mTouchStartPosition to the distance greater than
@@ -220,7 +230,13 @@ class GestureEventListener final {
    * or GESTURE_SECOND_SINGLE_TOUCH_DOWN then we're certain the gesture is
    * not tap.
    */
-  ParentLayerPoint mTouchStartPosition;
+  ScreenPoint mTouchStartPosition;
+
+  /**
+   * We store the window/GeckoView's display offset as well, so we can
+   * track the user's physical touch movements in absolute display coordinates.
+   */
+  ExternalPoint mTouchStartOffset;
 
   /**
    * Task used to timeout a long tap. This gets posted to the UI thread such

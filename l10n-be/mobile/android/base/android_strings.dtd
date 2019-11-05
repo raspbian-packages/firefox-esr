@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Вітаем">
 <!ENTITY firstrun_urlbar_message2 "Дзякуй, што абралі &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Вітаем у &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Сучасны мабільны браўзер ад Mozilla, некамерцыйнай арганізацыі, якая прытрымліваецца свабоды і адкрытасці Інтэрнэту.">
+<!ENTITY newfirstrun_urlbar_subtext "Хуткі, прыватны, і на вашым баку.">
 <!ENTITY firstrun_panel_title_privacy "Прыватнасць">
 <!ENTITY firstrun_privacy_message "Аглядайце не баючыся сачэння">
 <!ENTITY firstrun_privacy_subtext "Прыватнае агляданне блакуе сачэнне пакуль вы праглядаеце Інтэрнэт і не запамінае гісторыю пасля завяршэння.">
+<!ENTITY newfirstrun_privacy_subtext "Прыватнае агляданне блакуе рэкламныя трэкеры, што ідуць за вамі па сеціве.">
 <!ENTITY firstrun_panel_title_customize "Уладкаваць">
 <!ENTITY firstrun_customize_message "Зрабіць &brandShortName; зручным для сябе.">
 <!ENTITY firstrun_customize_subtext "Пашырайце магчымасці &brandShortName; з дапамогай дадаткаў. Блакіруйце рэкламу або абярыце новую тэму, каб падкрэсліць сваю індывідуальнасць.">
@@ -18,21 +21,20 @@
 <!ENTITY firstrun_data_message "Менш трафіку, больш эканоміі">
 <!ENTITY firstrun_data_subtext2 "Адключайце выявы, каб паменшыць расход трафіку на кожным наведаным сайце.">
 <!ENTITY firstrun_sync_title "Sync">
+<!ENTITY updatednewfirstrun_sync_title "Уліковы запіс">
 <!ENTITY firstrun_sync_message2 "Працягвайце адтуль, дзе спыніліся.">
 <!ENTITY firstrun_sync_subtext2 "Выкарыстоўвайце Sync для доступу да закладак, пароляў і іншых дадзеных, якія вы захоўваеце ў &brandShortName; на ўсіх прыладах.">
+<!ENTITY newfirstrun_sync_subtext "Сінхранізуйце рэчы, захаваныя на тэлефоне, з Firefox на камп\&apos;ютары, прыватна і бяспечна.">
+<!ENTITY updatednewfirstrun_sync_subtext "Увайдзіце ў свой уліковы запіс, каб атрымаць максімальную аддачу ад &brandShortName;">
 <!ENTITY firstrun_signin_message "Падключайцеся і пачынайце">
 <!ENTITY firstrun_signin_button "Увайсці ў Sync">
+<!ENTITY newfirstrun_signin_button "Уключыць Sync">
+<!ENTITY updatednewfirstrun_signin_button "Увайсці ў &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Пачаць агляданне">
 <!ENTITY firstrun_button_notnow "Не зараз">
 <!ENTITY firstrun_button_next "Далей">
 
 <!ENTITY firstrun_tabqueue_title "Спасылкі">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Уключыць чаргу картак">
-<!ENTITY firstrun_tabqueue_subtext_off "Стаўце спасылкі ў чаргу, дакранаючыся іх у іншых праграмах, каб адкрыць іх пазней у &brandShortName;.">
-
-<!ENTITY firstrun_tabqueue_message_on "Поспех!">
-<!ENTITY firstrun_tabqueue_subtext_on "Вы заўсёды можаце адключыць яе ў меню &settings; у раздзеле &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Артыкулы">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -68,7 +70,27 @@
 <!ENTITY  crash_close_label "Зачыніць">
 <!ENTITY  crash_restart_label "Перазапусціць &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; упаў">
+<!ENTITY  crash_notification_message "Націсніце, каб паведаміць у &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Ігнараваць">
+
 <!ENTITY url_bar_default_text2 "Шукаць ці ўвесці адрас">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Пошук у інтэрнэце">
+<!ENTITY search_widget_default_cropped_text "Пошук">
+<!ENTITY search_widget_logo_description "Пошук у інтэрнэце з дапамогай &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Скарыстайцеся сканерам QR-кодаў для пошуку або ўводу адраса">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Скарыстайцеся мікрафонам для пошуку або ўводу адраса">
 
 <!ENTITY bookmark "Закладка">
 <!ENTITY bookmark_remove "Выдаліць закладку">
@@ -95,6 +117,10 @@
 <!ENTITY bookmark_folder_updated "Папка абноўлена">
 <!ENTITY bookmark_parent_folder "Бацькоўская папка">
 <!ENTITY bookmark_add_folder "Дадаць новую папку">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(без назвы)">
 
 <!ENTITY reader_saved_offline "Захавана па-за сеткай">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -205,8 +231,8 @@
      context means consuming less data, e.g. by not loading images, not
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Аднаўленне картак, эканомія трафіку, інструменты распрацоўшчака">
-<!ENTITY pref_category_notifications "Апавяшчэнні">
-<!ENTITY pref_category_notifications_summary "Новыя магчымасці, абнаўленні сайтаў">
+<!ENTITY pref_category_notifications "Абвесткі">
+<!ENTITY pref_category_notifications_summary2 "Новыя магчымасці, парады да прадукту">
 <!ENTITY pref_developer_remotedebugging_usb "Аддаленая адладка праз USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Аддаленая адладка праз Wi-Fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Для аддаленай адладкі праз Wi-Fi неабходна, каб на вашай прыладзе была ўсталявана праграма для чытання QR-кодаў.">
@@ -246,7 +272,7 @@
 <!ENTITY pref_header_search "Пошук">
 <!ENTITY pref_header_privacy_short "Прыватнасць">
 <!ENTITY pref_header_accessibility "Спецыяльныя магчымасці">
-<!ENTITY pref_header_notifications "Апавяшчэнні">
+<!ENTITY pref_header_notifications "Абвесткі">
 <!ENTITY pref_header_advanced "Пашыраныя">
 <!ENTITY pref_header_help "Даведка">
 <!ENTITY pref_header_vendor "&vendorShortName;">
@@ -288,6 +314,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Даведайцеся больш пра выкарыстанне &brandShortName; і іншых прадуктаў &vendorShortName;">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Каб уключыць гэту наладу, &pref_feature_tips_notification_enabling_path; мусіць быць ужо ўключаны.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -327,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Перайсці ў налады">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Даданне новай карткі ў чаргу&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "Маштабаваць вэб-змесціва ў адпаведнасці з сістэмным памерам шрыфта">
 
 <!ENTITY pref_media_autoplay_enabled "Дазволіць аўтазапуск">
-<!ENTITY pref_media_autoplay_enabled_summary "Кантралюе, ці могуць вэб-сайты аўтаматычна запускаць відэа і іншы медыякантэнт">
+<!ENTITY pref_media_autoplay_allow "Дазволіць аўтазапуск">
+<!ENTITY pref_media_autoplay_block "Забараніць аўтазапуск">
 <!ENTITY pref_zoom_force_enabled "Заўсёды дазваляць змяняць маштаб">
 <!ENTITY pref_zoom_force_enabled_summary "Ігнараваць налады сайтаў, каб вы маглі мяняць маштаб любой старонкі">
 <!ENTITY pref_voice_input "Галасавы ўвод">
@@ -384,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "Гісторыя пошуку">
 <!ENTITY pref_private_data_formdata2 "Гісторыя формаў">
 <!ENTITY pref_private_data_cookies2 "Кукі і актыўныя сеансы">
-<!ENTITY pref_private_data_passwords2 "Захаваныя лагіны">
 <!ENTITY pref_private_data_cache "Кэш">
 <!ENTITY pref_private_data_offlineApps "Пазасеткавыя дадзеныя вэб-сайтаў">
 <!ENTITY pref_private_data_siteSettings2 "Налады сайта">
 <!ENTITY pref_private_data_downloadFiles2 "Сцягванні">
 <!ENTITY pref_private_data_syncedTabs "Сінхранізаваныя карткі">
 
-<!ENTITY pref_default_browser "Зрабіць прадвызначаным браўзерам">
+<!ENTITY pref_default_browser2 "Зрабіць &brandShortName; прадвызначаным браўзерам">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Націсніце Браўзер &amp; выберыце &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Наведаць Падтрымку Mozilla">
 <!ENTITY pref_about_firefox "Пра &brandShortName;">
 <!ENTITY pref_vendor_faqs "Пытанні і адказы">
@@ -437,6 +476,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Паведамляльнік пра крахі">
 <!ENTITY datareporting_wifi_title2 "Служба месцазнаходжанняў &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Дапамажыце &vendorShortName; стварыць карту свету! Падзяліцеся прыблізным размяшчэннем Wi-Fi і мабільнай сеткі прылады, каб палепшыць нашу службу вызначэння месцазнаходжання.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "Служба месцазнаходжанняў &vendorShortName; запушчана">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -481,6 +525,10 @@
 <!ENTITY find_prev "Папярэдняя">
 <!ENTITY find_next "Наступная">
 <!ENTITY find_close "Закрыць">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Выраз не знойдзены">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -543,7 +591,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Карткі ў два слупкі ў партрэтным рэжыме">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Старонка выдалена">
 <!ENTITY folder_removed "Папка выдалена">
@@ -554,6 +602,8 @@
 <!ENTITY bookmark_edit_location "Месцазнаходжанне">
 <!ENTITY bookmark_edit_keyword "Ключавое слова">
 <!ENTITY bookmark_select_folder "Выбраць папку">
+
+<!ENTITY bookmark_edit_undo "Адмяніць">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -642,6 +692,8 @@
 <!ENTITY filepicker_audio_title "Выбраць ці запісаць гук">
 <!ENTITY filepicker_image_title "Выбраць выяву ці зрабіць фота">
 <!ENTITY filepicker_video_title "Выбраць ці запісаць відэя">
+
+<!ENTITY filepicker_permission_denied "Запытаныя дазволы не прадстаўлены, вяртаемся да сістэмнага дыялогу выбару файлаў.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Вы з злучаны з">
@@ -761,7 +813,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Апошняя сінхранізацыя: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Апошняя сінхранізацыя: ніколі">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -822,15 +874,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Не атрымалася адкрыць &brandShortName;. Калі ласка, пераўсталюйце яго і паспрабуйце зноў.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; больш не будзе абнаўляцца">
-<!ENTITY eol_notification_summary "Клікніце, каб даведацца больш">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; абноўлены">
 <!ENTITY whatsnew_notification_summary "Даведацца, што новага ў гэтай версіі">
-
-<!ENTITY promotion_add_page_shortcut "Дадаць цэтлік старонкі">
 
 <!ENTITY helper_first_offline_bookmark_title "Чытаць па-за сеткай">
 <!ENTITY helper_first_offline_bookmark_message "Знайдзіце элементы Рэжыму чытання ў закладках, нават па-за сеткай.">
@@ -881,3 +928,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Дадаць на хатні экран">
 <!ENTITY pwa_continue_to_website "Перайсці на вэб-сайт">
 <!ENTITY pwa_onboarding_sumo "Вы можаце лёгка дадаць гэты вэб-сайт на хатні экран, каб мець да яго імгненны доступ і аглядаць хутчэй.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Граць">
+<!ENTITY pip_play_button_description "Узнавіць ігранне">
+<!ENTITY pip_pause_button_title "Прыпыніць">
+<!ENTITY pip_pause_button_description "Прыпыніць ігранне">
+
+<!ENTITY pref_notification_settings_link "Кіраваць наладамі абвестак">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Браўзер">
+<!ENTITY mls_notification_channel "Служба месцазнаходжання &vendorShortName;">
+<!ENTITY download_notification_channel "Сцягванні">
+<!ENTITY media_notification_channel2 "Гук і відэа">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "Парады і падказкі ад &vendorShortName;">
+<!ENTITY updater_notification_channel "Абнаўленні праграмы">
+<!ENTITY synced_tabs_notification_channel "Сінхранізаваныя карткі">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Абвесткі сайта">
+<!ENTITY crash_handler_notifications_channel "Справаздача аб падзенні &brandShortName;">

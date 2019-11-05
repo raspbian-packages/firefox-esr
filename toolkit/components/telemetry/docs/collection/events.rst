@@ -6,6 +6,7 @@ Events
 
 Across the different Firefox initiatives, there is a common need for a mechanism for recording, storing, sending & analysing application usage in an event-oriented format.
 *Event Telemetry* specifies a common events data format, which allows for broader, shared usage of data processing tools.
+Adding events is supported in artifact builds and build faster workflows.
 
 For events recorded into Firefox Telemetry we also provide an API that opaquely handles storage and submission to our servers.
 
@@ -13,10 +14,12 @@ For events recorded into Firefox Telemetry we also provide an API that opaquely 
 
     Every new data collection in Firefox needs a `data collection review <https://wiki.mozilla.org/Firefox/Data_Collection#Requesting_Approval>`_ from a data collection peer. Just set the feedback? flag for one of the data peers. We try to reply within a business day.
 
+.. _events.serializationformat:
+
 Serialization format
 ====================
 
-Events are submitted as an array, e.g.:
+Events are submitted in an :doc:`../data/event-ping` as an array, e.g.:
 
 .. code-block:: js
 
@@ -43,24 +46,35 @@ Where the individual fields are:
 - ``method``: ``String``, identifier. This describes the type of event that occurred, e.g. ``click``, ``keydown`` or ``focus``.
 - ``object``: ``String``, identifier. This is the object the event occurred on, e.g. ``reload_button`` or ``urlbar``.
 - ``value``: ``String``, optional, may be ``null``. This is a user defined value, providing context for the event.
-- ``extra``: ``Object``, optional, may be ``null``. This is an object of the form ``{"key": "value", ...}``, both keys and values need to be strings. This is used for events where additional richer context is needed.
+- ``extra``: ``Object``, optional, may be ``null``. This is an object of the form ``{"key": "value", ...}``, both keys and values need to be strings, keys are identifiers. This is used for events where additional richer context is needed.
 
 .. _eventlimits:
 
 Limits
 ------
 
-Each ``String`` marked as an identifier is restricted to the following regex pattern: ``^[:alpha:][:alnum:_.]*[:alnum:]$``.
+Each ``String`` marked as an identifier (the event ``name``, ``category``, ``method``,
+``object``, and the keys of ``extra``) is restricted to be composed of alphanumeric ASCII
+characters ([a-zA-Z0-9]) plus infix underscores ('_' characters that aren't the first or last).
+``category`` is also permitted infix periods ('.' characters, so long as they aren't the
+first or last character).
 
-For the Firefox Telemetry implementation, several fields are subject to limits:
+For the Firefox Telemetry implementation, several fields are subject to length limits:
 
 - ``category``: Max. byte length is ``30``.
 - ``method``: Max. byte length is ``20``.
 - ``object``: Max. byte length is ``20``.
 - ``value``: Max. byte length is ``80``.
 - ``extra``: Max. number of keys is ``10``.
+
   - Each extra key name: Max. string length is ``15``.
   - Each extra value: Max. byte length is ``80``.
+
+Only ``value`` and the values of ``extra`` will be truncated if over the specified length.
+Any other ``String`` going over its limit will be reported as an error and the operation
+aborted.
+
+.. _eventdefinition:
 
 The YAML definition file
 ========================
@@ -92,7 +106,7 @@ The probes in the definition file are represented in a fixed-depth, three-level 
         loadtime: How long it took to load this completion entry.
     # ...
 
-Category and probe names are subject to the limits and regex patterns :ref:`specified above <eventlimits>`.
+Category and event names are subject to the limits :ref:`specified above <eventlimits>`.
 
 The following event properties are valid:
 
@@ -115,6 +129,24 @@ The following event properties are valid:
   - ``expiry_version`` *(string)*: The version number in which the event expires, e.g. ``"50"``, or ``"never"``. A version number of type "N" is automatically converted to "N.0a1" in order to expire the event also in the development channels. For events that never expire the value ``never`` can be used.
 
 - ``extra_keys`` *(optional, object)*: An object that specifies valid keys for the ``extra`` argument and a description - see the example above.
+- ``products`` *(optional, list of strings)*: A list of products the event can be recorded on. It defaults to ``all``. Currently supported values are:
+
+  - ``firefox``
+  - ``fennec``
+  - ``geckoview``
+  - ``all`` (record on all products)
+- ``operating_systems`` *(optional, list of strings)*: This field restricts recording to certain operating systems only. It defaults to ``all``. Currently supported values are:
+
+   - ``mac``
+   - ``linux``
+   - ``windows``
+   - ``android``
+   - ``unix``
+   - ``all`` (record on all operating systems)
+
+.. note::
+
+  Combinations of ``category``, ``method``, and ``object`` defined in the file must be unique.
 
 The API
 =======
@@ -136,6 +168,11 @@ Record a registered event.
 
 Throws if the combination of ``category``, ``method`` and ``object`` is unknown.
 Recording an expired event will not throw, but print a warning into the browser console.
+
+.. note::
+
+  Each ``recordEvent`` of a known non-expired combination of ``category``, ``method``, and
+  ``object``, will be :ref:`summarized <events.event-summary>`.
 
 .. warning::
 
@@ -172,6 +209,13 @@ Example:
   Services.telemetry.setEventRecordingEnabled("ui", false);
   // ... now "ui" events will not be recorded anymore.
 
+.. note::
+
+  Even if your event category isn't enabled, counts of events that attempted to be recorded will
+  be :ref:`summarized <events.event-summary>`.
+
+.. _registerevents:
+
 ``registerEvents()``
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -192,8 +236,9 @@ Register new events from add-ons.
 
 For events recorded from add-ons, registration happens at runtime. Any new events must first be registered through this function before they can be recorded.
 The registered categories will automatically be enabled for recording.
+If a dynamic event uses the same category as a static event, the category will also be enabled upon registration.
 
-After registration, the events can be recorded through the ``recordEvent()`` function. They will be submitted in the main pings payload under ``processes.dynamic.events``.
+After registration, the events can be recorded through the ``recordEvent()`` function. They will be submitted in event pings like static events are, under the ``dynamic`` process.
 
 New events registered here are subject to the same limitations as the ones registered through ``Events.yaml``, although the naming was in parts updated to recent policy changes.
 
@@ -217,10 +262,73 @@ Internal API
 
 .. code-block:: js
 
-  Services.telemetry.snapshotEvents(dataset, clear);
+  Services.telemetry.snapshotEvents(dataset, clear, eventLimit);
   Services.telemetry.clearEvents();
 
 These functions are only supposed to be used by Telemetry internally or in tests.
+
+Also, the ``event-telemetry-storage-limit-reached`` topic is notified when the event ping event
+limit is reached (configurable via the ``toolkit.telemetry.eventping.eventLimit`` preference).
+This is intended only for use internally or in tests.
+
+.. _events.event-summary:
+
+Event Summary
+=============
+
+Calling ``recordEvent`` on any non-expired registered event will accumulate to a
+:doc:`Scalar <scalars>` for ease of analysing uptake and usage patterns. Even if the event category
+isn't enabled.
+
+The scalar is ``telemetry.event_counts`` for statically-registered events (the ones in
+``Events.yaml``) and ``telemetry.dynamic_event_counts`` for dynamically-registered events (the ones
+registered via ``registerEvents``). These are :ref:`keyed scalars <scalars.keyed-scalars>` where
+the keys are of the form ``category#method#object`` and the values are counts of the number of
+times ``recordEvent`` was called with that combination of ``category``, ``method``, and ``object``.
+
+These two scalars have a default maximum key limit of 500 per process. This limit is configurable
+via the ``toolkit.telemetry.maxEventSummaryKeys`` preference.
+
+Example:
+
+.. code-block:: js
+
+  // telemetry.event_counts summarizes in the same process the events were recorded
+
+  // Let us suppose in the parent process this happens:
+  Services.telemetry.recordEvent("interaction", "click", "document", "xuldoc");
+  Services.telemetry.recordEvent("interaction", "click", "document", "xuldoc-neighbour");
+
+  // And in each of child processes 1 through 4, this happens:
+  Services.telemetry.recordEvent("interaction", "click", "document", "htmldoc");
+
+In the case that ``interaction.click.document`` is statically-registered, this will result in the
+parent-process scalar ``telemetry.event_counts`` having a key ``interaction#click#document`` with
+value ``2`` and the content-process scalar ``telemetry.event_counts`` having a key
+``interaction#click#document`` with the value ``4``.
+
+All dynamically-registered events end up in the dynamic-process ``telemetry.dynamic_event_counts``
+(notice the different name) regardless of in which process the events were recorded. From the
+example above, if ``interaction.click.document`` was registered with ``registerEvents`` then
+the dynamic-process scalar ``telemetry.dynamic_event_counts`` would have a key
+``interaction#click#document`` with the value ``6``.
+
+Testing
+=======
+
+Tests involving Event Telemetry often follow this four-step form:
+
+1. ``Services.telemetry.clearEvents();`` To minimize the effects of prior code and tests.
+2. ``Services.telemetry.setEventRecordingEnabled(myCategory, true);`` To enable the collection of
+   your events. (May or may not be relevant in your case)
+3. ``runTheCode();`` This is part of the test where you call the code that's supposed to collect
+   Event Telemetry.
+4. ``TelemetryTestUtils.assertEvents(expected, filter, options);`` This will check the
+   events recorded by Event Telemetry against your provided list of expected events.
+   If you only need to check the number of events recorded, you can use
+   ``TelemetryTestUtils.assertNumberOfEvents(expectedNum, filter, options);``.
+   Both utilities have `helpful inline documentation <https://hg.mozilla.org/mozilla-central/file/tip/toolkit/components/telemetry/tests/utils/TelemetryTestUtils.jsm>`_.
+
 
 Version History
 ===============
@@ -233,3 +341,8 @@ Version History
 
    - Ignore re-registering existing events for a category instead of failing (`bug 1408975 <https://bugzilla.mozilla.org/show_bug.cgi?id=1408975>`_).
    - Removed support for the ``expiry_date`` property, as it was unused (`bug 1414638 <https://bugzilla.mozilla.org/show_bug.cgi?id=1414638>`_).
+- Firefox 61:
+
+   - Enabled support for adding events in artifact builds and build-faster workflows (`bug 1448945 <https://bugzilla.mozilla.org/show_bug.cgi?id=1448945>`_).
+   - Added summarization of events (`bug 1440673 <https://bugzilla.mozilla.org/show_bug.cgi?id=1440673>`_).
+- Firefox 66: Replace ``cpp_guard`` with ``operating_systems`` (`bug 1482912 <https://bugzilla.mozilla.org/show_bug.cgi?id=1482912>`_)`

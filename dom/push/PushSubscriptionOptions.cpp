@@ -15,7 +15,7 @@ namespace dom {
 PushSubscriptionOptions::PushSubscriptionOptions(
     nsIGlobalObject* aGlobal, nsTArray<uint8_t>&& aRawAppServerKey)
     : mGlobal(aGlobal),
-      mRawAppServerKey(Move(aRawAppServerKey)),
+      mRawAppServerKey(std::move(aRawAppServerKey)),
       mAppServerKey(nullptr) {
   // There's only one global on a worker, so we don't need to pass a global
   // object to the constructor.
@@ -52,7 +52,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* PushSubscriptionOptions::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return PushSubscriptionOptionsBinding::Wrap(aCx, this, aGivenProto);
+  return PushSubscriptionOptions_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void PushSubscriptionOptions::GetApplicationServerKey(

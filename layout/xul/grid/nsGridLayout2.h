@@ -23,8 +23,7 @@ class nsBoxLayoutState;
  */
 class nsGridLayout2 final : public nsStackLayout, public nsIGridPart {
  public:
-  friend nsresult NS_NewGridLayout2(nsIPresShell* aPresShell,
-                                    nsBoxLayout** aNewLayout);
+  friend nsresult NS_NewGridLayout2(nsBoxLayout** aNewLayout);
 
   NS_DECL_ISUPPORTS_INHERITED
 
@@ -41,7 +40,7 @@ class nsGridLayout2 final : public nsStackLayout, public nsIGridPart {
                           nsGridRowLayout* aRequestor = nullptr) override;
   virtual nsIGridPart* GetParentGridPart(nsIFrame* aBox,
                                          nsIFrame** aParentBox) override {
-    NS_NOTREACHED("Should not be called");
+    MOZ_ASSERT_UNREACHABLE("Should not be called");
     return nullptr;
   }
   virtual nsSize GetXULMinSize(nsIFrame* aBox,
@@ -74,8 +73,8 @@ class nsGridLayout2 final : public nsStackLayout, public nsIGridPart {
   static void AddOffset(nsIFrame* aChild, nsSize& aSize);
 
  protected:
-  explicit nsGridLayout2(nsIPresShell* aShell);
-  virtual ~nsGridLayout2();
+  explicit nsGridLayout2() = default;
+  virtual ~nsGridLayout2() = default;
   nsGrid mGrid;
 
  private:

@@ -9,7 +9,9 @@ HAS_MISC_RULE = True
 FINAL_TARGET = '_tests/xpcshell/toolkit/mozapps/update/tests/data'
 
 if not CONFIG['MOZ_SUITE']:
-  BROWSER_CHROME_MANIFESTS += ['browser/browser.ini']
+    BROWSER_CHROME_MANIFESTS += ['browser/browser.ini']
+    if CONFIG['MOZ_BITS_DOWNLOAD']:
+        BROWSER_CHROME_MANIFESTS += ['browser/browser.bits.ini']
 
 MOCHITEST_CHROME_MANIFESTS += ['chrome/chrome.ini']
 
@@ -40,17 +42,21 @@ USE_LIBS += [
     'updatecommon',
 ]
 
-for var in ('MOZ_APP_NAME', 'MOZ_APP_BASENAME', 'MOZ_APP_DISPLAYNAME',
-            'MOZ_APP_VENDOR', 'BIN_SUFFIX', 'MOZ_DEBUG'):
+for var in ('MOZ_APP_VENDOR', 'MOZ_APP_BASENAME'):
     DEFINES[var] = CONFIG[var]
 
 DEFINES['NS_NO_XPCOM'] = True
+
+DisableStlWrapping()
 
 if CONFIG['MOZ_MAINTENANCE_SERVICE']:
     DEFINES['MOZ_MAINTENANCE_SERVICE'] = CONFIG['MOZ_MAINTENANCE_SERVICE']
 
 # For debugging purposes only
 #DEFINES['DISABLE_UPDATER_AUTHENTICODE_CHECK'] = True
+
+if CONFIG['CC_TYPE'] == 'clang-cl':
+    WIN32_EXE_LDFLAGS += ['-ENTRY:wmainCRTStartup']
 
 if CONFIG['OS_ARCH'] == 'WINNT':
     DEFINES['UNICODE'] = True
@@ -60,15 +66,10 @@ if CONFIG['OS_ARCH'] == 'WINNT':
         WIN32_EXE_LDFLAGS += ['-municode']
 
 TEST_HARNESS_FILES.testing.mochitest.browser.toolkit.mozapps.update.tests.browser += [
-    'chrome/update.sjs',
-    'data/shared.js',
-    'data/sharedUpdateXML.js',
     'data/simple.mar',
 ]
 
-TEST_HARNESS_FILES.testing.mochitest.chrome.toolkit.mozapps.update.tests.data += [
-    'data/shared.js',
-    'data/sharedUpdateXML.js',
+TEST_HARNESS_FILES.testing.mochitest.chrome.toolkit.mozapps.update.tests.chrome += [
     'data/simple.mar',
 ]
 
@@ -99,15 +100,15 @@ FINAL_TARGET_FILES += [
     'data/partial_removed-files_mac',
     'data/partial_update_manifest',
     'data/replace_log_success',
-    'data/shared.js',
-    'data/sharedUpdateXML.js',
     'data/simple.mar',
-    'data/wrong_product_channel.mar',
-    'data/xpcshellUtilsAUS.js',
     'TestAUSReadStrings1.ini',
     'TestAUSReadStrings2.ini',
     'TestAUSReadStrings3.ini',
 ]
 
-with Files("browser/browser_TelemetryUpdatePing.js"):
+FINAL_TARGET_PP_FILES += [
+    'data/xpcshellConstantsPP.js',
+]
+
+with Files("browser/browser_telemetry_updatePing_ready.js"):
     BUG_COMPONENT = ("Toolkit", "Telemetry")

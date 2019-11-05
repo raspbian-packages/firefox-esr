@@ -10,6 +10,7 @@
 
 #include "gfx2DGlue.h"
 #include "mozilla/ArrayUtils.h"
+#include "mozilla/ComputedStyle.h"
 #include "mozilla/DebugOnly.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/Helpers.h"
@@ -19,7 +20,6 @@
 #include "nsPresContext.h"
 #include "nsPoint.h"
 #include "nsRect.h"
-#include "nsStyleContext.h"
 #include "nsCSSColorUtils.h"
 #include "gfxContext.h"
 #include "nsStyleStructInlines.h"
@@ -350,14 +350,14 @@ static void ResolveMidpoints(nsTArray<ColorStop>& stops) {
     }
     // calculate colors
 
-    for (size_t y = 0; y < 9; y++) {
+    for (auto& newStop : newStops) {
       // Calculate the intermediate color stops per the formula of the CSS
       // images spec. http://dev.w3.org/csswg/css-images/#color-stop-syntax 9
       // points were chosen since it is the minimum number of stops that always
       // give the smoothest appearace regardless of midpoint position and
       // difference in luminance of the end points.
       float relativeOffset =
-          (newStops[y].mPosition - offset1) / (offset2 - offset1);
+          (newStop.mPosition - offset1) / (offset2 - offset1);
       float multiplier = powf(relativeOffset, logf(.5f) / logf(midpoint));
 
       gfx::Float red = color1.r + multiplier * (color2.r - color1.r);
@@ -365,7 +365,7 @@ static void ResolveMidpoints(nsTArray<ColorStop>& stops) {
       gfx::Float blue = color1.b + multiplier * (color2.b - color1.b);
       gfx::Float alpha = color1.a + multiplier * (color2.a - color1.a);
 
-      newStops[y].mColor = Color(red, green, blue, alpha);
+      newStop.mColor = Color(red, green, blue, alpha);
     }
 
     stops.ReplaceElementsAt(x, 1, newStops, 9);
@@ -399,8 +399,10 @@ static void ResolvePremultipliedAlpha(nsTArray<ColorStop>& aStops) {
     const ColorStop rightStop = aStops[x];
 
     // if the left and right stop have the same alpha value, we don't need
-    // to do anything
-    if (leftStop.mColor.a == rightStop.mColor.a) {
+    // to do anything. Hardstops should be instant, and also should never
+    // require dealing with interpolation.
+    if (leftStop.mColor.a == rightStop.mColor.a ||
+        leftStop.mPosition == rightStop.mPosition) {
       continue;
     }
 
@@ -516,9 +518,117 @@ static void ClampColorStops(nsTArray<ColorStop>& aStops) {
 
 namespace mozilla {
 
+static Color GetSpecifiedColor(const StyleGradientItem& aItem,
+                               const ComputedStyle& aStyle) {
+  if (aItem.IsInterpolationHint()) {
+    return Color();
+  }
+  const StyleColor& color = aItem.IsSimpleColorStop()
+                                ? aItem.AsSimpleColorStop()
+                                : aItem.AsComplexColorStop().color;
+  return Color::FromABGR(color.CalcColor(aStyle));
+}
+
+static Maybe<double> GetSpecifiedGradientPosition(
+    const StyleGradientItem& aItem, int32_t aAppUnitsPerPixel,
+    gfxFloat aLineLength) {
+  auto GetCoord = [&](CSSCoord aCoord) -> double {
+    if (aLineLength < 1e-6) {
+      return 0.0;
+    }
+    return NSAppUnitsToFloatPixels(CSSPixel::ToAppUnits(aCoord),
+                                   aAppUnitsPerPixel) /
+           aLineLength;
+  };
+
+  if (aItem.IsSimpleColorStop()) {
+    return Nothing();
+  }
+
+  const LengthPercentage& pos = aItem.IsComplexColorStop()
+                                    ? aItem.AsComplexColorStop().position
+                                    : aItem.AsInterpolationHint();
+
+  if (pos.ConvertsToPercentage()) {
+    return Some(pos.ToPercentage());
+  }
+
+  return Some(pos.Percentage() + GetCoord(pos.LengthInCSSPixels()));
+}
+
+static nsTArray<ColorStop> ComputeColorStops(ComputedStyle* aComputedStyle,
+                                             const nsStyleGradient& aGradient,
+                                             int32_t aAppUnitsPerPixel,
+                                             gfxFloat aLineLength) {
+  MOZ_ASSERT(aGradient.mStops.Length() >= 2,
+             "The parser should reject gradients with less than two stops");
+
+  nsTArray<ColorStop> stops(aGradient.mStops.Length());
+
+  // If there is a run of stops before stop i that did not have specified
+  // positions, then this is the index of the first stop in that run, otherwise
+  // it's -1.
+  int32_t firstUnsetPosition = -1;
+  for (uint32_t i = 0; i < aGradient.mStops.Length(); ++i) {
+    const StyleGradientItem& stop = aGradient.mStops[i];
+    double position;
+
+    Maybe<double> specifiedPosition =
+        GetSpecifiedGradientPosition(stop, aAppUnitsPerPixel, aLineLength);
+
+    if (specifiedPosition) {
+      position = *specifiedPosition;
+    } else if (i == 0) {
+      // First stop defaults to position 0.0
+      position = 0.0;
+    } else if (i == aGradient.mStops.Length() - 1) {
+      // Last stop defaults to position 1.0
+      position = 1.0;
+    } else {
+      // Other stops with no specified position get their position assigned
+      // later by interpolation, see below.
+      // Remember where the run of stops with no specified position starts,
+      // if it starts here.
+      if (firstUnsetPosition < 0) {
+        firstUnsetPosition = i;
+      }
+      MOZ_ASSERT(!stop.IsInterpolationHint(),
+                 "Interpolation hints always specify position");
+      auto color = GetSpecifiedColor(stop, *aComputedStyle);
+      stops.AppendElement(ColorStop(0, false, color));
+      continue;
+    }
+
+    if (i > 0) {
+      // Prevent decreasing stop positions by advancing this position
+      // to the previous stop position, if necessary
+      double previousPosition = firstUnsetPosition > 0
+                                    ? stops[firstUnsetPosition - 1].mPosition
+                                    : stops[i - 1].mPosition;
+      position = std::max(position, previousPosition);
+    }
+    auto stopColor = GetSpecifiedColor(stop, *aComputedStyle);
+    stops.AppendElement(
+        ColorStop(position, stop.IsInterpolationHint(), stopColor));
+    if (firstUnsetPosition > 0) {
+      // Interpolate positions for all stops that didn't have a specified
+      // position
+      double p = stops[firstUnsetPosition - 1].mPosition;
+      double d = (stops[i].mPosition - p) / (i - firstUnsetPosition + 1);
+      for (uint32_t j = firstUnsetPosition; j < i; ++j) {
+        p += d;
+        stops[j].mPosition = p;
+      }
+      firstUnsetPosition = -1;
+    }
+  }
+
+  return stops;
+}
+
 nsCSSGradientRenderer nsCSSGradientRenderer::Create(
-    nsPresContext* aPresContext, nsStyleGradient* aGradient,
-    const nsSize& aIntrinsicSize) {
+    nsPresContext* aPresContext, ComputedStyle* aComputedStyle,
+    nsStyleGradient* aGradient, const nsSize& aIntrinsicSize) {
   nscoord appUnitsPerDevPixel = aPresContext->AppUnitsPerDevPixel();
   gfxSize srcSize =
       gfxSize(gfxFloat(aIntrinsicSize.width) / appUnitsPerDevPixel,
@@ -542,83 +652,9 @@ nsCSSGradientRenderer nsCSSGradientRenderer::Create(
   gfxFloat lineLength =
       NS_hypot(lineEnd.x - lineStart.x, lineEnd.y - lineStart.y);
 
-  MOZ_ASSERT(aGradient->mStops.Length() >= 2,
-             "The parser should reject gradients with less than two stops");
-
   // Build color stop array and compute stop positions
-  nsTArray<ColorStop> stops;
-  // If there is a run of stops before stop i that did not have specified
-  // positions, then this is the index of the first stop in that run, otherwise
-  // it's -1.
-  int32_t firstUnsetPosition = -1;
-  for (uint32_t i = 0; i < aGradient->mStops.Length(); ++i) {
-    const nsStyleGradientStop& stop = aGradient->mStops[i];
-    double position;
-    switch (stop.mLocation.GetUnit()) {
-      case eStyleUnit_None:
-        if (i == 0) {
-          // First stop defaults to position 0.0
-          position = 0.0;
-        } else if (i == aGradient->mStops.Length() - 1) {
-          // Last stop defaults to position 1.0
-          position = 1.0;
-        } else {
-          // Other stops with no specified position get their position assigned
-          // later by interpolation, see below.
-          // Remeber where the run of stops with no specified position starts,
-          // if it starts here.
-          if (firstUnsetPosition < 0) {
-            firstUnsetPosition = i;
-          }
-          stops.AppendElement(ColorStop(0, stop.mIsInterpolationHint,
-                                        Color::FromABGR(stop.mColor)));
-          continue;
-        }
-        break;
-      case eStyleUnit_Percent:
-        position = stop.mLocation.GetPercentValue();
-        break;
-      case eStyleUnit_Coord:
-        position = lineLength < 1e-6 ? 0.0
-                                     : stop.mLocation.GetCoordValue() /
-                                           appUnitsPerDevPixel / lineLength;
-        break;
-      case eStyleUnit_Calc:
-        nsStyleCoord::Calc* calc;
-        calc = stop.mLocation.GetCalcValue();
-        position =
-            calc->mPercent + ((lineLength < 1e-6)
-                                  ? 0.0
-                                  : (NSAppUnitsToFloatPixels(
-                                         calc->mLength, appUnitsPerDevPixel) /
-                                     lineLength));
-        break;
-      default:
-        MOZ_ASSERT(false, "Unknown stop position type");
-    }
-
-    if (i > 0) {
-      // Prevent decreasing stop positions by advancing this position
-      // to the previous stop position, if necessary
-      double previousPosition = firstUnsetPosition > 0
-                                    ? stops[firstUnsetPosition - 1].mPosition
-                                    : stops[i - 1].mPosition;
-      position = std::max(position, previousPosition);
-    }
-    stops.AppendElement(ColorStop(position, stop.mIsInterpolationHint,
-                                  Color::FromABGR(stop.mColor)));
-    if (firstUnsetPosition > 0) {
-      // Interpolate positions for all stops that didn't have a specified
-      // position
-      double p = stops[firstUnsetPosition - 1].mPosition;
-      double d = (stops[i].mPosition - p) / (i - firstUnsetPosition + 1);
-      for (uint32_t j = firstUnsetPosition; j < i; ++j) {
-        p += d;
-        stops[j].mPosition = p;
-      }
-      firstUnsetPosition = -1;
-    }
-  }
+  nsTArray<ColorStop> stops = ComputeColorStops(
+      aComputedStyle, *aGradient, appUnitsPerDevPixel, lineLength);
 
   ResolveMidpoints(stops);
 
@@ -789,7 +825,6 @@ void nsCSSGradientRenderer::Paint(gfxContext& aContext, const nsRect& aDest,
       mRadiusX = mRadiusY = 0.0;
     }
     stopDelta = 0.0;
-    lastStop = firstStop;
   }
 
   // Don't normalize non-repeating or degenerate gradients below 0..1
@@ -854,8 +889,8 @@ void nsCSSGradientRenderer::Paint(gfxContext& aContext, const nsRect& aDest,
   matrix.PreTranslate(gfxPoint(mPresContext->CSSPixelsToDevPixels(aSrc.x),
                                mPresContext->CSSPixelsToDevPixels(aSrc.y)));
   matrix.PreScale(
-      gfxFloat(mPresContext->CSSPixelsToAppUnits(aSrc.width)) / aDest.width,
-      gfxFloat(mPresContext->CSSPixelsToAppUnits(aSrc.height)) / aDest.height);
+      gfxFloat(nsPresContext::CSSPixelsToAppUnits(aSrc.width)) / aDest.width,
+      gfxFloat(nsPresContext::CSSPixelsToAppUnits(aSrc.height)) / aDest.height);
   gradientPattern->SetMatrix(matrix);
 
   if (stopDelta == 0.0) {
@@ -924,6 +959,12 @@ void nsCSSGradientRenderer::Paint(gfxContext& aContext, const nsRect& aDest,
   nscoord yEnd =
       forceRepeatToCoverTiles ? yStart + aDest.height : dirty.YMost();
 
+  if (TryPaintTilesWithExtendMode(aContext, gradientPattern, xStart, yStart,
+                                  dirtyAreaToFill, aDest, aRepeatSize,
+                                  forceRepeatToCoverTiles)) {
+    return;
+  }
+
   // x and y are the top-left corner of the tile to draw
   for (nscoord y = yStart; y < yEnd; y += aRepeatSize.height) {
     for (nscoord x = xStart; x < xEnd; x += aRepeatSize.width) {
@@ -981,6 +1022,88 @@ void nsCSSGradientRenderer::Paint(gfxContext& aContext, const nsRect& aDest,
       aContext.SetMatrix(ctm);
     }
   }
+}
+
+bool nsCSSGradientRenderer::TryPaintTilesWithExtendMode(
+    gfxContext& aContext, gfxPattern* aGradientPattern, nscoord aXStart,
+    nscoord aYStart, const gfxRect& aDirtyAreaToFill, const nsRect& aDest,
+    const nsSize& aRepeatSize, bool aForceRepeatToCoverTiles) {
+  // If we have forced a non-repeating gradient to repeat to cover tiles,
+  // then it will be faster to just paint it once using that optimization
+  if (aForceRepeatToCoverTiles) {
+    return false;
+  }
+
+  nscoord appUnitsPerDevPixel = mPresContext->AppUnitsPerDevPixel();
+
+  // We can only use this fast path if we don't have to worry about pixel
+  // snapping, and there is no spacing between tiles. We could handle spacing
+  // by increasing the size of tileSurface and leaving it transparent, but I'm
+  // not sure it's worth it
+  bool canUseExtendModeForTiling = (aXStart % appUnitsPerDevPixel == 0) &&
+                                   (aYStart % appUnitsPerDevPixel == 0) &&
+                                   (aDest.width % appUnitsPerDevPixel == 0) &&
+                                   (aDest.height % appUnitsPerDevPixel == 0) &&
+                                   (aRepeatSize.width == aDest.width) &&
+                                   (aRepeatSize.height == aDest.height);
+
+  if (!canUseExtendModeForTiling) {
+    return false;
+  }
+
+  IntSize tileSize{
+      NSAppUnitsToIntPixels(aDest.width, appUnitsPerDevPixel),
+      NSAppUnitsToIntPixels(aDest.height, appUnitsPerDevPixel),
+  };
+
+  // Check whether this is a reasonable surface size and doesn't overflow
+  // before doing calculations with the tile size
+  if (!Factory::ReasonableSurfaceSize(tileSize)) {
+    return false;
+  }
+
+  // We only want to do this when there are enough tiles to justify the
+  // overhead of painting to an offscreen surface. The heuristic here
+  // is when we will be painting at least 16 tiles or more, this is kind
+  // of arbitrary
+  bool shouldUseExtendModeForTiling =
+      aDirtyAreaToFill.Area() > (tileSize.width * tileSize.height) * 16.0;
+
+  if (!shouldUseExtendModeForTiling) {
+    return false;
+  }
+
+  // Draw the gradient pattern into a surface for our single tile
+  RefPtr<gfx::SourceSurface> tileSurface;
+  {
+    RefPtr<gfx::DrawTarget> tileTarget =
+        aContext.GetDrawTarget()->CreateSimilarDrawTarget(
+            tileSize, gfx::SurfaceFormat::B8G8R8A8);
+    if (!tileTarget || !tileTarget->IsValid()) {
+      return false;
+    }
+
+    RefPtr<gfxContext> tileContext = gfxContext::CreateOrNull(tileTarget);
+
+    tileContext->SetPattern(aGradientPattern);
+    tileContext->Paint();
+
+    tileContext = nullptr;
+    tileSurface = tileTarget->Snapshot();
+    tileTarget = nullptr;
+  }
+
+  // Draw the gradient using tileSurface as a repeating pattern masked by
+  // the dirtyRect
+  Matrix tileTransform = Matrix::Translation(
+      NSAppUnitsToFloatPixels(aXStart, appUnitsPerDevPixel),
+      NSAppUnitsToFloatPixels(aYStart, appUnitsPerDevPixel));
+
+  aContext.NewPath();
+  aContext.Rectangle(aDirtyAreaToFill);
+  aContext.Fill(SurfacePattern(tileSurface, ExtendMode::REPEAT, tileTransform));
+
+  return true;
 }
 
 void nsCSSGradientRenderer::BuildWebRenderParameters(
@@ -1044,16 +1167,12 @@ void nsCSSGradientRenderer::BuildWebRenderDisplayItems(
   // Calculate the tile spacing, which is the repeat size minus the tile size
   LayoutDeviceSize tileSpacing = tileRepeat - firstTileBounds.Size();
 
-  // Make the rects relative to the parent stacking context
-  wr::LayoutRect wrClipBounds = aSc.ToRelativeLayoutRect(clipBounds);
-  wr::LayoutRect wrGradientBounds = aSc.ToRelativeLayoutRect(gradientBounds);
-
   // srcTransform is used for scaling the gradient to match aSrc
   LayoutDeviceRect srcTransform = LayoutDeviceRect(
-      mPresContext->CSSPixelsToAppUnits(aSrc.x),
-      mPresContext->CSSPixelsToAppUnits(aSrc.y),
-      aDest.width / ((float)mPresContext->CSSPixelsToAppUnits(aSrc.width)),
-      aDest.height / ((float)mPresContext->CSSPixelsToAppUnits(aSrc.height)));
+      nsPresContext::CSSPixelsToAppUnits(aSrc.x),
+      nsPresContext::CSSPixelsToAppUnits(aSrc.y),
+      aDest.width / ((float)nsPresContext::CSSPixelsToAppUnits(aSrc.width)),
+      aDest.height / ((float)nsPresContext::CSSPixelsToAppUnits(aSrc.height)));
 
   lineStart.x = (lineStart.x - srcTransform.x) * srcTransform.width;
   lineStart.y = (lineStart.y - srcTransform.y) * srcTransform.height;
@@ -1063,7 +1182,8 @@ void nsCSSGradientRenderer::BuildWebRenderDisplayItems(
     lineEnd.y = (lineEnd.y - srcTransform.y) * srcTransform.height;
 
     aBuilder.PushLinearGradient(
-        wrGradientBounds, wrClipBounds, aIsBackfaceVisible,
+        mozilla::wr::ToLayoutRect(gradientBounds),
+        mozilla::wr::ToLayoutRect(clipBounds), aIsBackfaceVisible,
         mozilla::wr::ToLayoutPoint(lineStart),
         mozilla::wr::ToLayoutPoint(lineEnd), stops, extendMode,
         mozilla::wr::ToLayoutSize(firstTileBounds.Size()),
@@ -1073,7 +1193,8 @@ void nsCSSGradientRenderer::BuildWebRenderDisplayItems(
     gradientRadius.height *= srcTransform.height;
 
     aBuilder.PushRadialGradient(
-        wrGradientBounds, wrClipBounds, aIsBackfaceVisible,
+        mozilla::wr::ToLayoutRect(gradientBounds),
+        mozilla::wr::ToLayoutRect(clipBounds), aIsBackfaceVisible,
         mozilla::wr::ToLayoutPoint(lineStart),
         mozilla::wr::ToLayoutSize(gradientRadius), stops, extendMode,
         mozilla::wr::ToLayoutSize(firstTileBounds.Size()),

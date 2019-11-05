@@ -4,35 +4,41 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-XPCOMUtils.defineLazyServiceGetter(
-    this, "env", "@mozilla.org/process/environment;1", "nsIEnvironment");
-ChromeUtils.defineModuleGetter(this, "Log",
-    "resource://gre/modules/Log.jsm");
-ChromeUtils.defineModuleGetter(this, "Preferences",
-    "resource://gre/modules/Preferences.jsm");
-XPCOMUtils.defineLazyGetter(this, "log", () => {
-  let log = Log.repository.getLogger("Marionette");
-  log.addAppender(new Log.DumpAppender());
-  return log;
+const { EnvironmentPrefs, MarionettePrefs } = ChromeUtils.import(
+  "chrome://marionette/content/prefs.js",
+  null
+);
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  Log: "chrome://marionette/content/log.js",
+  Preferences: "resource://gre/modules/Preferences.jsm",
+  TCPListener: "chrome://marionette/content/server.js",
 });
 
-const PREF_ENABLED = "marionette.enabled";
-const PREF_LOG_LEVEL_FALLBACK = "marionette.logging";
-const PREF_LOG_LEVEL = "marionette.log.level";
-const PREF_PORT_FALLBACK = "marionette.defaultPrefs.port";
-const PREF_PORT = "marionette.port";
-const PREF_RECOMMENDED = "marionette.prefs.recommended";
+XPCOMUtils.defineLazyGetter(this, "log", Log.get);
 
-const DEFAULT_LOG_LEVEL = "info";
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "env",
+  "@mozilla.org/process/environment;1",
+  "nsIEnvironment"
+);
+
+const XMLURI_PARSE_ERROR =
+  "http://www.mozilla.org/newlayout/xml/parsererror.xml";
+
 const NOTIFY_RUNNING = "remote-active";
 
 // Complements -marionette flag for starting the Marionette server.
 // We also set this if Marionette is running in order to start the server
 // again after a Firefox restart.
 const ENV_ENABLED = "MOZ_MARIONETTE";
+const PREF_ENABLED = "marionette.enabled";
 
 // Besides starting based on existing prefs in a profile and a command
 // line flag, we also support inheriting prefs out of an env var, and to
@@ -47,24 +53,29 @@ const ENV_ENABLED = "MOZ_MARIONETTE";
 // pref being set to 4444.
 const ENV_PRESERVE_PREFS = "MOZ_MARIONETTE_PREF_STATE_ACROSS_RESTARTS";
 
+// ALL CHANGES TO THIS LIST MUST HAVE REVIEW FROM A MARIONETTE PEER!
+//
 // Marionette sets preferences recommended for automation when it starts,
 // unless marionette.prefs.recommended has been set to false.
-// Where noted, some prefs should also be set in the profile passed to
-// Marionette to prevent them from affecting startup, since some of these
-// are checked before Marionette initialises.
+//
+// All prefs as added here have immediate effect, and don't require a restart
+// nor have to be set in the profile before the application starts. If such a
+// latter preference has to be added, it needs to be done for the client like
+// Marionette client (geckoinstance.py), or geckodriver (prefs.rs).
+//
+// Note: Clients do not always use the latest version of the application. As
+// such backward compatibility has to be ensured at least for the last three
+// releases.
 const RECOMMENDED_PREFS = new Map([
+  // Make sure Shield doesn't hit the network.
+  ["app.normandy.api_url", ""],
 
-  // Disable automatic downloading of new releases.
+  // Disable automatically upgrading Firefox
   //
-  // This should also be set in the profile prior to starting Firefox,
-  // as it is picked up at runtime.
-  ["app.update.auto", false],
-
-  // Disable automatically upgrading Firefox.
-  //
-  // This should also be set in the profile prior to starting Firefox,
-  // as it is picked up at runtime.
-  ["app.update.enabled", false],
+  // Note: This preference should have already been set by the client when
+  // creating the profile. But if not and to absolutely make sure that updates
+  // of Firefox aren't downloaded and applied, enforce its presence.
+  ["app.update.disabledForTesting", true],
 
   // Increase the APZ content response timeout in tests to 1 minute.
   // This is to accommodate the fact that test environments tends to be
@@ -75,25 +86,17 @@ const RECOMMENDED_PREFS = new Map([
   // (bug 1176798, bug 1177018, bug 1210465)
   ["apz.content_response_timeout", 60000],
 
+  // Don't show the content blocking introduction panel.
+  // We use a larger number than the default 22 to have some buffer
+  ["browser.contentblocking.introCount", 99],
+
   // Indicate that the download panel has been shown once so that
   // whichever download test runs first doesn't show the popup
   // inconsistently.
   ["browser.download.panel.shown", true],
 
-  // Do not show the EULA notification.
-  //
-  // This should also be set in the profile prior to starting Firefox,
-  // as it is picked up at runtime.
-  ["browser.EULA.override", true],
-
   // Always display a blank page
   ["browser.newtabpage.enabled", false],
-
-  // Never start the browser in offline mode
-  //
-  // This should also be set in the profile prior to starting Firefox,
-  // as it is picked up at runtime.
-  ["browser.offline", false],
 
   // Background thumbnails in particular cause grief, and disabling
   // thumbnails in general cannot hurt
@@ -123,16 +126,25 @@ const RECOMMENDED_PREFS = new Map([
   // as it is picked up at runtime.
   ["browser.shell.checkDefaultBrowser", false],
 
-  // Start with a blank page (about:blank)
-  ["browser.startup.page", 0],
-
   // Do not redirect user when a milstone upgrade of Firefox is detected
   ["browser.startup.homepage_override.mstone", "ignore"],
 
-  // Do not allow background tabs to be zombified, otherwise for tests
-  // that open additional tabs, the test harness tab itself might get
+  // Do not close the window when the last tab gets closed
+  ["browser.tabs.closeWindowWithLastTab", false],
+
+  // Do not allow background tabs to be zombified on Android, otherwise for
+  // tests that open additional tabs, the test harness tab itself might get
   // unloaded
   ["browser.tabs.disableBackgroundZombification", false],
+
+  // Bug 1557457: Disable because modal dialogs might not appear in Firefox
+  ["browser.tabs.remote.separatePrivilegedContentProcess", false],
+
+  // Don't unload tabs when available memory is running low
+  ["browser.tabs.unloadOnLowMemory", false],
+
+  // Do not warn when closing all open tabs
+  ["browser.tabs.warnOnClose", false],
 
   // Do not warn when closing all other open tabs
   ["browser.tabs.warnOnCloseOtherTabs", false],
@@ -152,9 +164,8 @@ const RECOMMENDED_PREFS = new Map([
   // network connections.
   ["browser.urlbar.suggest.searches", false],
 
-  // Turn off the location bar search suggestions opt-in.  It interferes with
-  // tests that don't expect it to be there.
-  ["browser.urlbar.userMadeSearchSuggestionsChoice", true],
+  // Do not warn on quitting Firefox
+  ["browser.warnOnQuit", false],
 
   // Do not show datareporting policy notifications which can
   // interfere with tests
@@ -169,6 +180,9 @@ const RECOMMENDED_PREFS = new Map([
   ["datareporting.policy.dataSubmissionEnabled", false],
   ["datareporting.policy.dataSubmissionPolicyAccepted", false],
   ["datareporting.policy.dataSubmissionPolicyBypassNotification", true],
+
+  // Automatically unload beforeunload alerts
+  ["dom.disable_beforeunload", true],
 
   // Disable popup-blocker
   ["dom.disable_open_during_load", false],
@@ -197,20 +211,12 @@ const RECOMMENDED_PREFS = new Map([
   // Should be set in profile.
   ["extensions.installDistroAddons", false],
 
-  // Make sure Shield doesn't hit the network.
-  ["extensions.shield-recipe-client.api_url", ""],
-
-  ["extensions.showMismatchUI", false],
-
   // Turn off extension updates so they do not bother tests
   ["extensions.update.enabled", false],
   ["extensions.update.notifyUser", false],
 
   // Make sure opening about:addons will not hit the network
-  [
-    "extensions.webservice.discoverURL",
-    "http://%(server)s/dummy/discoveryURL",
-  ],
+  ["extensions.webservice.discoverURL", "http://%(server)s/dummy/discoveryURL"],
 
   // Allow the application to have focus even it runs in the background
   ["focusmanager.testmode", true],
@@ -225,11 +231,11 @@ const RECOMMENDED_PREFS = new Map([
   // Do not scan Wifi
   ["geo.wifi.scan", false],
 
-  // No hang monitor
-  ["hangmonitor.timeout", 0],
-
   // Show chrome errors and warnings in the error console
   ["javascript.options.showInConsole", true],
+
+  // Do not prompt with long usernames or passwords in URLs
+  ["network.http.phishy-userpass-length", 255],
 
   // Do not prompt for temporary redirects
   ["network.http.prompt-temp-redirect", false],
@@ -243,6 +249,9 @@ const RECOMMENDED_PREFS = new Map([
 
   // Make sure SNTP requests do not hit the network
   ["network.sntp.pools", "%(server)s"],
+
+  // Don't do network connections for mitm priming
+  ["security.certerrors.mitm.priming.enabled", false],
 
   // Local documents have access to all other local documents,
   // including directory listings
@@ -271,104 +280,12 @@ const RECOMMENDED_PREFS = new Map([
 
   // Prevent starting into safe mode after application crashes
   ["toolkit.startup.max_resumed_crashes", -1],
-
 ]);
 
-const isRemote = Services.appinfo.processType ==
-    Services.appinfo.PROCESS_TYPE_CONTENT;
+const isRemote =
+  Services.appinfo.processType == Services.appinfo.PROCESS_TYPE_CONTENT;
 
-const LogLevel = {
-  get(level) {
-    let levels = new Map([
-      ["fatal", Log.Level.Fatal],
-      ["error", Log.Level.Error],
-      ["warn", Log.Level.Warn],
-      ["info", Log.Level.Info],
-      ["config", Log.Level.Config],
-      ["debug", Log.Level.Debug],
-      ["trace", Log.Level.Trace],
-    ]);
-
-    let s = String(level).toLowerCase();
-    if (!levels.has(s)) {
-      return DEFAULT_LOG_LEVEL;
-    }
-    return levels.get(s);
-  },
-};
-
-function getPrefVal(pref) {
-  const {PREF_STRING, PREF_BOOL, PREF_INT, PREF_INVALID} = Ci.nsIPrefBranch;
-
-  let type = Services.prefs.getPrefType(pref);
-  switch (type) {
-    case PREF_STRING:
-      return Services.prefs.getStringPref(pref);
-
-    case PREF_BOOL:
-      return Services.prefs.getBoolPref(pref);
-
-    case PREF_INT:
-      return Services.prefs.getIntPref(pref);
-
-    case PREF_INVALID:
-      return undefined;
-
-    default:
-      throw new TypeError(`Unexpected preference type (${type}) for ${pref}`);
-  }
-}
-
-// Get preference value of |preferred|, falling back to |fallback|
-// if |preferred| is not user-modified and |fallback| exists.
-function getPref(preferred, fallback) {
-  if (!Services.prefs.prefHasUserValue(preferred) &&
-      Services.prefs.getPrefType(fallback) != Ci.nsIPrefBranch.PREF_INVALID) {
-    return getPrefVal(fallback, getPrefVal(preferred));
-  }
-  return getPrefVal(preferred);
-}
-
-// Marionette preferences recently changed names.  This is an abstraction
-// that first looks for the new name, but falls back to using the old name
-// if the new does not exist.
-//
-// This shim can be removed when Firefox 55 ships.
-const prefs = {
-  get port() {
-    return getPref(PREF_PORT, PREF_PORT_FALLBACK);
-  },
-
-  get logLevel() {
-    let s = getPref(PREF_LOG_LEVEL, PREF_LOG_LEVEL_FALLBACK);
-    return LogLevel.get(s);
-  },
-
-  readFromEnvironment(key) {
-    const env = Cc["@mozilla.org/process/environment;1"]
-        .getService(Ci.nsIEnvironment);
-
-    if (env.exists(key)) {
-      let prefs;
-      try {
-        prefs = JSON.parse(env.get(key));
-      } catch (e) {
-        Cu.reportError(
-            "Invalid Marionette preferences in environment; " +
-            "preferences will not have been applied");
-        Cu.reportError(e);
-      }
-
-      if (prefs) {
-        for (let prefName of Object.keys(prefs)) {
-          Preferences.set(prefName, prefs[prefName]);
-        }
-      }
-    }
-  },
-};
-
-class MarionetteMainProcess {
+class MarionetteParentProcess {
   constructor() {
     this.server = null;
 
@@ -380,8 +297,6 @@ class MarionetteMainProcess {
     // and that we are ready to start the Marionette server
     this.finalUIStartup = false;
 
-    log.level = prefs.logLevel;
-
     this.enabled = env.exists(ENV_ENABLED);
     this.alteredPrefs = new Set();
 
@@ -390,35 +305,35 @@ class MarionetteMainProcess {
   }
 
   get running() {
-    return this.server && this.server.alive;
+    return !!this.server && this.server.alive;
   }
 
   set enabled(value) {
-    Services.prefs.setBoolPref(PREF_ENABLED, value);
+    MarionettePrefs.enabled = value;
   }
 
   get enabled() {
-    return Services.prefs.getBoolPref(PREF_ENABLED);
+    return MarionettePrefs.enabled;
   }
 
-  receiveMessage({name}) {
+  receiveMessage({ name }) {
     switch (name) {
       case "Marionette:IsRunning":
         return this.running;
 
       default:
-        log.warn("Unknown IPC message to main process: " + name);
+        log.warn("Unknown IPC message to parent process: " + name);
         return null;
     }
   }
 
   observe(subject, topic) {
-    log.debug(`Received observer notification ${topic}`);
+    log.trace(`Received observer notification ${topic}`);
 
     switch (topic) {
       case "nsPref:changed":
-        if (Services.prefs.getBoolPref(PREF_ENABLED)) {
-          this.init();
+        if (this.enabled) {
+          this.init(false);
         } else {
           this.uninit();
         }
@@ -426,9 +341,12 @@ class MarionetteMainProcess {
 
       case "profile-after-change":
         Services.obs.addObserver(this, "command-line-startup");
-        Services.obs.addObserver(this, "sessionstore-windows-restored");
+        Services.obs.addObserver(this, "toplevel-window-ready");
+        Services.obs.addObserver(this, "marionette-startup-requested");
 
-        prefs.readFromEnvironment(ENV_PRESERVE_PREFS);
+        for (let [pref, value] of EnvironmentPrefs.from(ENV_PRESERVE_PREFS)) {
+          Preferences.set(pref, value);
+        }
         break;
 
       // In safe mode the command line handlers are getting parsed after the
@@ -453,8 +371,10 @@ class MarionetteMainProcess {
       case "domwindowclosed":
         if (this.gfxWindow === null || subject === this.gfxWindow) {
           Services.obs.removeObserver(this, topic);
+          Services.obs.removeObserver(this, "toplevel-window-ready");
 
           Services.obs.addObserver(this, "xpcom-will-shutdown");
+
           this.finalUIStartup = true;
           this.init();
         }
@@ -465,25 +385,49 @@ class MarionetteMainProcess {
         this.suppressSafeModeDialog(subject);
         break;
 
-      case "sessionstore-windows-restored":
+      case "toplevel-window-ready":
+        subject.addEventListener(
+          "load",
+          ev => {
+            if (ev.target.documentElement.namespaceURI == XMLURI_PARSE_ERROR) {
+              Services.obs.removeObserver(this, topic);
+
+              let parserError = ev.target.querySelector("parsererror");
+              log.fatal(parserError.textContent);
+              this.uninit();
+              Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
+            }
+          },
+          { once: true }
+        );
+        break;
+
+      case "marionette-startup-requested":
         Services.obs.removeObserver(this, topic);
 
         // When Firefox starts on Windows, an additional GFX sanity test
         // window may appear off-screen.  Marionette should wait for it
         // to close.
-        let winEn = Services.wm.getEnumerator(null);
-        while (winEn.hasMoreElements()) {
-          let win = winEn.getNext();
-          if (win.document.documentURI == "chrome://gfxsanity/content/sanityparent.html") {
+        for (let win of Services.wm.getEnumerator(null)) {
+          if (
+            win.document.documentURI ==
+            "chrome://gfxsanity/content/sanityparent.html"
+          ) {
             this.gfxWindow = win;
             break;
           }
         }
 
         if (this.gfxWindow) {
+          log.trace(
+            "GFX sanity window detected, waiting until it has been closed..."
+          );
           Services.obs.addObserver(this, "domwindowclosed");
         } else {
+          Services.obs.removeObserver(this, "toplevel-window-ready");
+
           Services.obs.addObserver(this, "xpcom-will-shutdown");
+
           this.finalUIStartup = true;
           this.init();
         }
@@ -498,33 +442,43 @@ class MarionetteMainProcess {
   }
 
   suppressSafeModeDialog(win) {
-    win.addEventListener("load", () => {
-      if (win.document.getElementById("safeModeDialog")) {
-        // accept the dialog to start in safe-mode
-        log.debug("Safe mode detected, supressing dialog");
-        win.setTimeout(() => {
-          win.document.documentElement.getButton("accept").click();
-        });
-      }
-    }, {once: true});
+    win.addEventListener(
+      "load",
+      () => {
+        if (win.document.getElementById("safeModeDialog")) {
+          // accept the dialog to start in safe-mode
+          log.trace("Safe mode detected, supressing dialog");
+          win.setTimeout(() => {
+            win.document.documentElement.getButton("accept").click();
+          });
+        }
+      },
+      { once: true }
+    );
   }
 
-  init() {
+  init(quit = true) {
     if (this.running || !this.enabled || !this.finalUIStartup) {
+      log.debug(
+        `Init aborted (running=${this.running}, ` +
+          `enabled=${this.enabled}, finalUIStartup=${this.finalUIStartup})`
+      );
       return;
     }
 
-    // wait for delayed startup...
+    log.trace(
+      `Waiting until startup recorder finished recording startup scripts...`
+    );
     Services.tm.idleDispatchToMainThread(async () => {
-      // ... and for startup tests
       let startupRecorder = Promise.resolve();
       if ("@mozilla.org/test/startuprecorder;1" in Cc) {
-        startupRecorder = Cc["@mozilla.org/test/startuprecorder;1"]
-            .getService().wrappedJSObject.done;
+        startupRecorder = Cc["@mozilla.org/test/startuprecorder;1"].getService()
+          .wrappedJSObject.done;
       }
       await startupRecorder;
+      log.trace(`All scripts recorded.`);
 
-      if (Preferences.get(PREF_RECOMMENDED)) {
+      if (MarionettePrefs.recommendedPrefs) {
         for (let [k, v] of RECOMMENDED_PREFS) {
           if (!Preferences.isSet(k)) {
             log.debug(`Setting recommended pref ${k} to ${v}`);
@@ -535,36 +489,39 @@ class MarionetteMainProcess {
       }
 
       try {
-        ChromeUtils.import("chrome://marionette/content/server.js");
-        let listener = new server.TCPListener(prefs.port);
-        listener.start();
-        this.server = listener;
+        this.server = new TCPListener(MarionettePrefs.port);
+        this.server.start();
       } catch (e) {
         log.fatal("Remote protocol server failed to start", e);
         this.uninit();
-        Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
+        if (quit) {
+          Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
+        }
+        return;
       }
 
       env.set(ENV_ENABLED, "1");
       Services.obs.notifyObservers(this, NOTIFY_RUNNING, true);
-      log.info(`Listening on port ${this.server.port}`);
+      log.debug("Remote service is active");
     });
   }
 
   uninit() {
+    for (let k of this.alteredPrefs) {
+      log.debug(`Resetting recommended pref ${k}`);
+      Preferences.reset(k);
+    }
+    this.alteredPrefs.clear();
+
     if (this.running) {
       this.server.stop();
-      for (let k of this.alteredPrefs) {
-        log.debug(`Resetting recommended pref ${k}`);
-        Preferences.reset(k);
-      }
-      this.alteredPrefs.clear();
       Services.obs.notifyObservers(this, NOTIFY_RUNNING);
+      log.debug("Remote service is inactive");
     }
   }
 
   get QueryInterface() {
-    return XPCOMUtils.generateQI([
+    return ChromeUtils.generateQI([
       Ci.nsICommandLineHandler,
       Ci.nsIMarionette,
       Ci.nsIObserver,
@@ -576,14 +533,14 @@ class MarionetteContentProcess {
   get running() {
     let reply = Services.cpmm.sendSyncMessage("Marionette:IsRunning");
     if (reply.length == 0) {
-      log.warn("No reply from main process");
+      log.warn("No reply from parent process");
       return false;
     }
     return reply[0];
   }
 
   get QueryInterface() {
-    return XPCOMUtils.generateQI([Ci.nsIMarionette]);
+    return ChromeUtils.generateQI([Ci.nsIMarionette]);
   }
 }
 
@@ -599,7 +556,7 @@ const MarionetteFactory = {
       if (isRemote) {
         this.instance_ = new MarionetteContentProcess();
       } else {
-        this.instance_ = new MarionetteMainProcess();
+        this.instance_ = new MarionetteParentProcess();
       }
     }
 
@@ -614,14 +571,8 @@ Marionette.prototype = {
   classID: Components.ID("{786a1369-dca5-4adc-8486-33d23c88010a}"),
   contractID: "@mozilla.org/remote/marionette;1",
 
-  /* eslint-disable camelcase */
+  /* eslint-disable-next-line camelcase */
   _xpcom_factory: MarionetteFactory,
-
-  _xpcom_categories: [
-    {category: "command-line-handler", entry: "b-marionette"},
-    {category: "profile-after-change", service: true},
-  ],
-  /* eslint-enable camelcase */
 
   helpInfo: "  --marionette       Enable remote control server.\n",
 };

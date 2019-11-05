@@ -5,16 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsMathMLsemanticsFrame.h"
+
 #include "nsMimeTypes.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/gfx/2D.h"
+
+using namespace mozilla;
 
 //
 // <semantics> -- associate annotations with a MathML expression
 //
 
-nsIFrame* NS_NewMathMLsemanticsFrame(nsIPresShell* aPresShell,
-                                     nsStyleContext* aContext) {
-  return new (aPresShell) nsMathMLsemanticsFrame(aContext);
+nsIFrame* NS_NewMathMLsemanticsFrame(PresShell* aPresShell,
+                                     ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsMathMLsemanticsFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMathMLsemanticsFrame)

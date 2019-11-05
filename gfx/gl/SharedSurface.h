@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -128,6 +128,10 @@ class SharedSurface {
   // To optimize the performance, some implementaions recycle SharedSurfaces
   // even when its buffer is still being used.
   virtual void WaitForBufferOwnership() {}
+
+  // Returns true if the buffer is available.
+  // You can call WaitForBufferOwnership to wait for availability.
+  virtual bool IsBufferAvailable() const { return true; }
 
   // For use when AttachType is correct.
   virtual GLenum ProdTextureTarget() const {
@@ -284,13 +288,13 @@ class SurfaceFactory : public SupportsWeakPtr<SurfaceFactory> {
   bool Recycle(layers::SharedSurfaceTextureClient* texClient);
 };
 
-class ScopedReadbackFB {
+class ScopedReadbackFB final {
   GLContext* const mGL;
   ScopedBindFramebuffer mAutoFB;
-  GLuint mTempFB;
-  GLuint mTempTex;
-  SharedSurface* mSurfToUnlock;
-  SharedSurface* mSurfToLock;
+  GLuint mTempFB = 0;
+  GLuint mTempTex = 0;
+  SharedSurface* mSurfToUnlock = nullptr;
+  SharedSurface* mSurfToLock = nullptr;
 
  public:
   explicit ScopedReadbackFB(SharedSurface* src);

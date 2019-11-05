@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -125,7 +125,7 @@ class URLPreloader final : public nsIObserver, public nsIMemoryReporter {
 
       MonitorAutoLock mal(reader.mMonitor);
 
-      while (!reader.mReaderInitialized && reader.sInitialized) {
+      while (!reader.mReaderInitialized && URLPreloader::sInitialized) {
         mal.Wait();
       }
     }
@@ -297,7 +297,10 @@ class URLPreloader final : public nsIObserver, public nsIMemoryReporter {
   nsCOMPtr<nsIChromeRegistry> mChromeReg;
   nsCOMPtr<nsIFile> mProfD;
 
-  nsCOMPtr<nsIThread> mReaderThread;
+  // Note: We use a RefPtr rather than an nsCOMPtr here because the
+  // AssertNoQueryNeeded checks done by getter_AddRefs happen at a time that
+  // violate data access invariants.
+  RefPtr<nsIThread> mReaderThread;
 
   // A map of URL entries which have were either read this session, or read
   // from the last session's cache file.

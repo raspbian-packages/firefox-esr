@@ -14,83 +14,84 @@
 #include "mozilla/gfx/PathHelpers.h"
 #include <algorithm>
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Rect)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Rect)
 
 using namespace mozilla::gfx;
 
 namespace mozilla {
 namespace dom {
 
-class SVGAnimatedLength;
+class DOMSVGAnimatedLength;
 
 JSObject* SVGRectElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SVGRectElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGRectElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::LengthInfo SVGRectElement::sLengthInfo[6] = {
-    {&nsGkAtoms::x, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+SVGElement::LengthInfo SVGRectElement::sLengthInfo[6] = {
+    {nsGkAtoms::x, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::y, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::y, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
-    {&nsGkAtoms::width, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::width, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::height, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::height, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
-    {&nsGkAtoms::rx, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::rx, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::ry, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::ry, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y}};
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGRectElement::SVGRectElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGRectElementBase(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGRectElementBase(std::move(aNodeInfo)) {}
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGRectElement)
 
 //----------------------------------------------------------------------
 
-already_AddRefed<SVGAnimatedLength> SVGRectElement::X() {
+already_AddRefed<DOMSVGAnimatedLength> SVGRectElement::X() {
   return mLengthAttributes[ATTR_X].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGRectElement::Y() {
+already_AddRefed<DOMSVGAnimatedLength> SVGRectElement::Y() {
   return mLengthAttributes[ATTR_Y].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGRectElement::Width() {
+already_AddRefed<DOMSVGAnimatedLength> SVGRectElement::Width() {
   return mLengthAttributes[ATTR_WIDTH].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGRectElement::Height() {
+already_AddRefed<DOMSVGAnimatedLength> SVGRectElement::Height() {
   return mLengthAttributes[ATTR_HEIGHT].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGRectElement::Rx() {
+already_AddRefed<DOMSVGAnimatedLength> SVGRectElement::Rx() {
   return mLengthAttributes[ATTR_RX].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGRectElement::Ry() {
+already_AddRefed<DOMSVGAnimatedLength> SVGRectElement::Ry() {
   return mLengthAttributes[ATTR_RY].ToDOMAnimatedLength(this);
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-/* virtual */ bool SVGRectElement::HasValidDimensions() const {
+/* virtual */
+bool SVGRectElement::HasValidDimensions() const {
   return mLengthAttributes[ATTR_WIDTH].IsExplicitlySet() &&
          mLengthAttributes[ATTR_WIDTH].GetAnimValInSpecifiedUnits() > 0 &&
          mLengthAttributes[ATTR_HEIGHT].IsExplicitlySet() &&
          mLengthAttributes[ATTR_HEIGHT].GetAnimValInSpecifiedUnits() > 0;
 }
 
-nsSVGElement::LengthAttributesInfo SVGRectElement::GetLengthInfo() {
+SVGElement::LengthAttributesInfo SVGRectElement::GetLengthInfo() {
   return LengthAttributesInfo(mLengthAttributes, sLengthInfo,
                               ArrayLength(sLengthInfo));
 }

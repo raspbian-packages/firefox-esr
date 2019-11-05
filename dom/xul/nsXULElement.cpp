@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,38 +7,30 @@
 #include "nsDOMCID.h"
 #include "nsError.h"
 #include "nsDOMString.h"
-#include "nsIDOMEvent.h"
 #include "nsAtom.h"
 #include "nsIBaseWindow.h"
-#include "nsIDOMDocument.h"
-#include "nsIDOMElement.h"
 #include "nsIDOMEventListener.h"
-#include "nsIDOMNodeList.h"
 #include "nsIDOMXULCommandDispatcher.h"
-#include "nsIDOMXULElement.h"
 #include "nsIDOMXULSelectCntrlItemEl.h"
-#include "nsIDocument.h"
-#include "nsLayoutStylesheetCache.h"
-#include "mozilla/AsyncEventDispatcher.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/EventListenerManager.h"
 #include "mozilla/EventStateManager.h"
 #include "mozilla/EventStates.h"
-#include "mozilla/DeclarationBlockInlines.h"
+#include "mozilla/DeclarationBlock.h"
+#include "mozilla/PresShell.h"
+#include "js/CompilationAndEvaluation.h"
+#include "js/SourceText.h"
 #include "nsFocusManager.h"
 #include "nsHTMLStyleSheet.h"
 #include "nsNameSpaceManager.h"
 #include "nsIObjectInputStream.h"
 #include "nsIObjectOutputStream.h"
-#include "nsIPresShell.h"
 #include "nsIPrincipal.h"
 #include "nsIScriptContext.h"
 #include "nsIScriptError.h"
 #include "nsIScriptSecurityManager.h"
 #include "nsIServiceManager.h"
-#ifdef MOZ_OLD_STYLE
-#include "mozilla/css/StyleRule.h"
-#endif
 #include "nsIURL.h"
 #include "nsViewManager.h"
 #include "nsIWidget.h"
@@ -52,11 +44,6 @@
 #include "nsPIBoxObject.h"
 #include "XULDocument.h"
 #include "nsXULPopupListener.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsRuleWalker.h"
-#endif
-#include "nsCSSParser.h"
-#include "ListBoxObject.h"
 #include "nsContentUtils.h"
 #include "nsContentList.h"
 #include "mozilla/InternalMutationEvent.h"
@@ -84,15 +71,20 @@
 #include "nsXULTooltipListener.h"
 #include "mozilla/EventDispatcher.h"
 #include "mozAutoDocUpdate.h"
-#include "nsIDOMXULCommandEvent.h"
 #include "nsCCUncollectableMarker.h"
 #include "nsICSSDeclaration.h"
 #include "nsLayoutUtils.h"
+#include "XULFrameElement.h"
+#include "XULMenuElement.h"
+#include "XULPopupElement.h"
+#include "XULTreeElement.h"
 
 #include "mozilla/dom/XULElementBinding.h"
 #include "mozilla/dom/BoxObject.h"
-#include "mozilla/dom/HTMLIFrameElement.h"
+#include "mozilla/dom/XULBroadcastManager.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/dom/MutationEventBinding.h"
+#include "mozilla/dom/XULCommandEvent.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
@@ -108,35 +100,12 @@ uint32_t nsXULPrototypeAttribute::gNumCacheFills;
 
 #define NS_DISPATCH_XUL_COMMAND (1 << 0)
 
-class nsXULElementTearoff final : public nsIFrameLoaderOwner {
-  ~nsXULElementTearoff() {}
-
- public:
-  NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_CYCLE_COLLECTION_CLASS(nsXULElementTearoff)
-
-  explicit nsXULElementTearoff(nsXULElement* aElement) : mElement(aElement) {}
-
-  NS_FORWARD_NSIFRAMELOADEROWNER(static_cast<nsXULElement*>(mElement.get())->)
- private:
-  nsCOMPtr<nsIDOMXULElement> mElement;
-};
-
-NS_IMPL_CYCLE_COLLECTION(nsXULElementTearoff, mElement)
-
-NS_IMPL_CYCLE_COLLECTING_ADDREF(nsXULElementTearoff)
-NS_IMPL_CYCLE_COLLECTING_RELEASE(nsXULElementTearoff)
-
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(nsXULElementTearoff)
-  NS_INTERFACE_MAP_ENTRY(nsIFrameLoaderOwner)
-NS_INTERFACE_MAP_END_AGGREGATED(mElement)
-
 //----------------------------------------------------------------------
 // nsXULElement
 //
 
-nsXULElement::nsXULElement(already_AddRefed<mozilla::dom::NodeInfo> aNodeInfo)
-    : nsStyledElement(aNodeInfo), mBindingParent(nullptr) {
+nsXULElement::nsXULElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsStyledElement(std::move(aNodeInfo)), mBindingParent(nullptr) {
   XUL_PROTOTYPE_ATTRIBUTE_METER(gNumElements);
 
   // We may be READWRITE by default; check.
@@ -162,16 +131,59 @@ void nsXULElement::MaybeUpdatePrivateLifetime() {
 }
 
 /* static */
-already_AddRefed<nsXULElement> nsXULElement::Create(
+nsXULElement* NS_NewBasicXULElement(
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo) {
+  return new nsXULElement(std::move(aNodeInfo));
+}
+
+/* static */
+nsXULElement* nsXULElement::Construct(
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo) {
+  RefPtr<mozilla::dom::NodeInfo> nodeInfo = aNodeInfo;
+  if (nodeInfo->Equals(nsGkAtoms::label) ||
+      nodeInfo->Equals(nsGkAtoms::description)) {
+    return new XULTextElement(nodeInfo.forget());
+  }
+
+  if (nodeInfo->Equals(nsGkAtoms::menupopup) ||
+      nodeInfo->Equals(nsGkAtoms::popup) ||
+      nodeInfo->Equals(nsGkAtoms::panel)) {
+    return NS_NewXULPopupElement(nodeInfo.forget());
+  }
+
+  if (nodeInfo->Equals(nsGkAtoms::tooltip)) {
+    return NS_NewXULTooltipElement(nodeInfo.forget());
+  }
+
+  if (nodeInfo->Equals(nsGkAtoms::iframe) ||
+      nodeInfo->Equals(nsGkAtoms::browser) ||
+      nodeInfo->Equals(nsGkAtoms::editor)) {
+    return new XULFrameElement(nodeInfo.forget());
+  }
+
+  if (nodeInfo->Equals(nsGkAtoms::menu) ||
+      nodeInfo->Equals(nsGkAtoms::menulist)) {
+    return new XULMenuElement(nodeInfo.forget());
+  }
+
+  if (nodeInfo->Equals(nsGkAtoms::tree)) {
+    return new XULTreeElement(nodeInfo.forget());
+  }
+
+  return NS_NewBasicXULElement(nodeInfo.forget());
+}
+
+/* static */
+already_AddRefed<nsXULElement> nsXULElement::CreateFromPrototype(
     nsXULPrototypeElement* aPrototype, mozilla::dom::NodeInfo* aNodeInfo,
     bool aIsScriptable, bool aIsRoot) {
   RefPtr<mozilla::dom::NodeInfo> ni = aNodeInfo;
   nsCOMPtr<Element> baseElement;
   NS_NewXULElement(getter_AddRefs(baseElement), ni.forget(),
-                   dom::FROM_PARSER_NETWORK);
+                   dom::FROM_PARSER_NETWORK, aPrototype->mIsAtom);
 
   if (baseElement) {
-    nsXULElement* element = FromContent(baseElement);
+    nsXULElement* element = FromNode(baseElement);
 
     if (aPrototype->mHasIdAttribute) {
       element->SetHasID();
@@ -189,7 +201,7 @@ already_AddRefed<nsXULElement> nsXULElement::Create(
       // any additional processing and hookup that would otherwise be
       // done 'automagically' by SetAttr().
       for (uint32_t i = 0; i < aPrototype->mNumAttributes; ++i) {
-        element->AddListenerFor(aPrototype->mAttributes[i].mName, true);
+        element->AddListenerFor(aPrototype->mAttributes[i].mName);
       }
     }
 
@@ -207,14 +219,15 @@ already_AddRefed<nsXULElement> nsXULElement::Create(
   return nullptr;
 }
 
-nsresult nsXULElement::Create(nsXULPrototypeElement* aPrototype,
-                              nsIDocument* aDocument, bool aIsScriptable,
-                              bool aIsRoot, Element** aResult) {
+nsresult nsXULElement::CreateFromPrototype(nsXULPrototypeElement* aPrototype,
+                                           Document* aDocument,
+                                           bool aIsScriptable, bool aIsRoot,
+                                           Element** aResult) {
   // Create an nsXULElement from a prototype
-  NS_PRECONDITION(aPrototype != nullptr, "null ptr");
+  MOZ_ASSERT(aPrototype != nullptr, "null ptr");
   if (!aPrototype) return NS_ERROR_NULL_POINTER;
 
-  NS_PRECONDITION(aResult != nullptr, "null ptr");
+  MOZ_ASSERT(aResult != nullptr, "null ptr");
   if (!aResult) return NS_ERROR_NULL_POINTER;
 
   RefPtr<mozilla::dom::NodeInfo> nodeInfo;
@@ -227,7 +240,7 @@ nsresult nsXULElement::Create(nsXULPrototypeElement* aPrototype,
   }
 
   RefPtr<nsXULElement> element =
-      Create(aPrototype, nodeInfo, aIsScriptable, aIsRoot);
+      CreateFromPrototype(aPrototype, nodeInfo, aIsScriptable, aIsRoot);
   element.forget(aResult);
 
   return NS_OK;
@@ -235,31 +248,32 @@ nsresult nsXULElement::Create(nsXULPrototypeElement* aPrototype,
 
 nsresult NS_NewXULElement(Element** aResult,
                           already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
-                          FromParser aFromParser) {
+                          FromParser aFromParser, nsAtom* aIsAtom,
+                          mozilla::dom::CustomElementDefinition* aDefinition) {
   RefPtr<mozilla::dom::NodeInfo> nodeInfo = aNodeInfo;
 
-  NS_PRECONDITION(nodeInfo, "need nodeinfo for non-proto Create");
+  MOZ_ASSERT(nodeInfo, "need nodeinfo for non-proto Create");
 
   NS_ASSERTION(
       nodeInfo->NamespaceEquals(kNameSpaceID_XUL),
       "Trying to create XUL elements that don't have the XUL namespace");
 
-  nsIDocument* doc = nodeInfo->GetDocument();
+  Document* doc = nodeInfo->GetDocument();
   if (doc && !doc->AllowXULXBL()) {
     return NS_ERROR_NOT_AVAILABLE;
   }
 
   return nsContentUtils::NewXULOrHTMLElement(aResult, nodeInfo, aFromParser,
-                                             nullptr, nullptr);
+                                             aIsAtom, aDefinition);
 }
 
 void NS_TrustedNewXULElement(
     Element** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo) {
   RefPtr<mozilla::dom::NodeInfo> ni = aNodeInfo;
-  NS_PRECONDITION(ni, "need nodeinfo for non-proto Create");
+  MOZ_ASSERT(ni, "need nodeinfo for non-proto Create");
 
   // Create an nsXULElement with the specified namespace and tag.
-  NS_ADDREF(*aResult = new nsXULElement(ni.forget()));
+  NS_ADDREF(*aResult = nsXULElement::Construct(ni.forget()));
 }
 
 //----------------------------------------------------------------------
@@ -268,46 +282,42 @@ void NS_TrustedNewXULElement(
 NS_IMPL_CYCLE_COLLECTION_CLASS(nsXULElement)
 
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(nsXULElement, nsStyledElement)
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mBindingParent);
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(nsXULElement, nsStyledElement)
   // Why aren't we unlinking the prototype?
   tmp->ClearHasID();
+  NS_IMPL_CYCLE_COLLECTION_UNLINK(mBindingParent);
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 
 NS_IMPL_ADDREF_INHERITED(nsXULElement, nsStyledElement)
 NS_IMPL_RELEASE_INHERITED(nsXULElement, nsStyledElement)
 
 NS_INTERFACE_TABLE_HEAD_CYCLE_COLLECTION_INHERITED(nsXULElement)
-  NS_INTERFACE_TABLE_INHERITED(nsXULElement, nsIDOMNode, nsIDOMElement,
-                               nsIDOMXULElement)
   NS_ELEMENT_INTERFACE_TABLE_TO_MAP_SEGUE
-  NS_INTERFACE_MAP_ENTRY_TEAROFF(nsIFrameLoaderOwner,
-                                 new nsXULElementTearoff(this))
 NS_INTERFACE_MAP_END_INHERITING(nsStyledElement)
 
 //----------------------------------------------------------------------
-// nsIDOMNode interface
+// nsINode interface
 
 nsresult nsXULElement::Clone(mozilla::dom::NodeInfo* aNodeInfo,
-                             nsINode** aResult,
-                             bool aPreallocateChildren) const {
+                             nsINode** aResult) const {
   *aResult = nullptr;
 
   RefPtr<mozilla::dom::NodeInfo> ni = aNodeInfo;
-  RefPtr<nsXULElement> element = new nsXULElement(ni.forget());
+  RefPtr<nsXULElement> element = Construct(ni.forget());
 
-  nsresult rv = element->mAttrsAndChildren.EnsureCapacityToClone(
-      mAttrsAndChildren, aPreallocateChildren);
+  nsresult rv = element->mAttrs.EnsureCapacityToClone(mAttrs);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Note that we're _not_ copying mControllers.
 
-  uint32_t count = mAttrsAndChildren.AttrCount();
+  uint32_t count = mAttrs.AttrCount();
   rv = NS_OK;
   for (uint32_t i = 0; i < count; ++i) {
-    const nsAttrName* originalName = mAttrsAndChildren.AttrNameAt(i);
-    const nsAttrValue* originalValue = mAttrsAndChildren.AttrAt(i);
+    const nsAttrName* originalName = mAttrs.AttrNameAt(i);
+    const nsAttrValue* originalValue = mAttrs.AttrAt(i);
     nsAttrValue attrValue;
 
     // Style rules need to be cloned.
@@ -325,14 +335,14 @@ nsresult nsXULElement::Clone(mozilla::dom::NodeInfo* aNodeInfo,
 
     bool oldValueSet;
     if (originalName->IsAtom()) {
-      rv = element->mAttrsAndChildren.SetAndSwapAttr(originalName->Atom(),
-                                                     attrValue, &oldValueSet);
+      rv = element->mAttrs.SetAndSwapAttr(originalName->Atom(), attrValue,
+                                          &oldValueSet);
     } else {
-      rv = element->mAttrsAndChildren.SetAndSwapAttr(originalName->NodeInfo(),
-                                                     attrValue, &oldValueSet);
+      rv = element->mAttrs.SetAndSwapAttr(originalName->NodeInfo(), attrValue,
+                                          &oldValueSet);
     }
     NS_ENSURE_SUCCESS(rv, rv);
-    element->AddListenerFor(*originalName, true);
+    element->AddListenerFor(*originalName);
     if (originalName->Equals(nsGkAtoms::id) &&
         !originalValue->IsEmptyString()) {
       element->SetHasID();
@@ -351,49 +361,16 @@ nsresult nsXULElement::Clone(mozilla::dom::NodeInfo* aNodeInfo,
 
 //----------------------------------------------------------------------
 
-already_AddRefed<nsINodeList> nsXULElement::GetElementsByAttribute(
-    const nsAString& aAttribute, const nsAString& aValue) {
-  RefPtr<nsAtom> attrAtom(NS_Atomize(aAttribute));
-  void* attrValue = new nsString(aValue);
-  RefPtr<nsContentList> list = new nsContentList(
-      this, XULDocument::MatchAttribute, nsContentUtils::DestroyMatchString,
-      attrValue, true, attrAtom, kNameSpaceID_Unknown);
-  return list.forget();
-}
-
-already_AddRefed<nsINodeList> nsXULElement::GetElementsByAttributeNS(
-    const nsAString& aNamespaceURI, const nsAString& aAttribute,
-    const nsAString& aValue, ErrorResult& rv) {
-  RefPtr<nsAtom> attrAtom(NS_Atomize(aAttribute));
-
-  int32_t nameSpaceId = kNameSpaceID_Wildcard;
-  if (!aNamespaceURI.EqualsLiteral("*")) {
-    rv = nsContentUtils::NameSpaceManager()->RegisterNameSpace(aNamespaceURI,
-                                                               nameSpaceId);
-    if (rv.Failed()) {
-      return nullptr;
-    }
-  }
-
-  void* attrValue = new nsString(aValue);
-  RefPtr<nsContentList> list = new nsContentList(
-      this, XULDocument::MatchAttribute, nsContentUtils::DestroyMatchString,
-      attrValue, true, attrAtom, nameSpaceId);
-
-  return list.forget();
-}
-
 EventListenerManager* nsXULElement::GetEventListenerManagerForAttr(
     nsAtom* aAttrName, bool* aDefer) {
   // XXXbz sXBL/XBL2 issue: should we instead use GetComposedDoc()
   // here, override BindToTree for those classes and munge event
   // listeners there?
-  nsIDocument* doc = OwnerDoc();
+  Document* doc = OwnerDoc();
 
   nsPIDOMWindowInner* window;
   Element* root = doc->GetRootElement();
-  if ((!root || root == this) && !mNodeInfo->Equals(nsGkAtoms::overlay) &&
-      (window = doc->GetInnerWindow())) {
+  if ((!root || root == this) && (window = doc->GetInnerWindow())) {
     nsCOMPtr<EventTarget> piTarget = do_QueryInterface(window);
 
     *aDefer = false;
@@ -406,7 +383,6 @@ EventListenerManager* nsXULElement::GetEventListenerManagerForAttr(
 // returns true if the element is not a list
 static bool IsNonList(mozilla::dom::NodeInfo* aNodeInfo) {
   return !aNodeInfo->Equals(nsGkAtoms::tree) &&
-         !aNodeInfo->Equals(nsGkAtoms::listbox) &&
          !aNodeInfo->Equals(nsGkAtoms::richlistbox);
 }
 
@@ -424,16 +400,15 @@ bool nsXULElement::IsFocusableInternal(int32_t* aTabIndex, bool aWithMouse) {
    * For controls, the element cannot be focused and is not part of the tab
    * order if it is disabled.
    *
-   * Controls (those that implement nsIDOMXULControlElement):
+   * -moz-user-focus is overridden if a tabindex (even -1) is specified.
+   *
+   * Specifically, the behaviour for all XUL elements is as follows:
    *  *aTabIndex = -1  no tabindex     Not focusable or tabbable
-   *  *aTabIndex = -1  tabindex="-1"   Not focusable or tabbable
+   *  *aTabIndex = -1  tabindex="-1"   Focusable but not tabbable
    *  *aTabIndex = -1  tabindex=">=0"  Focusable and tabbable
    *  *aTabIndex >= 0  no tabindex     Focusable and tabbable
    *  *aTabIndex >= 0  tabindex="-1"   Focusable but not tabbable
    *  *aTabIndex >= 0  tabindex=">=0"  Focusable and tabbable
-   * Non-controls:
-   *  *aTabIndex = -1                  Not focusable or tabbable
-   *  *aTabIndex >= 0                  Focusable and tabbable
    *
    * If aTabIndex is null, then the tabindex is not computed, and
    * true is returned for non-disabled controls and false otherwise.
@@ -452,7 +427,7 @@ bool nsXULElement::IsFocusableInternal(int32_t* aTabIndex, bool aWithMouse) {
   }
 #endif
 
-  nsCOMPtr<nsIDOMXULControlElement> xulControl = do_QueryObject(this);
+  nsCOMPtr<nsIDOMXULControlElement> xulControl = AsXULControl();
   if (xulControl) {
     // a disabled element cannot be focused and is not part of the tab order
     bool disabled;
@@ -465,44 +440,73 @@ bool nsXULElement::IsFocusableInternal(int32_t* aTabIndex, bool aWithMouse) {
   }
 
   if (aTabIndex) {
-    if (xulControl) {
-      if (HasAttr(kNameSpaceID_None, nsGkAtoms::tabindex)) {
-        // if either the aTabIndex argument or a specified tabindex is
-        // non-negative, the element becomes focusable.
-        int32_t tabIndex = 0;
-        xulControl->GetTabIndex(&tabIndex);
-        shouldFocus = *aTabIndex >= 0 || tabIndex >= 0;
-        *aTabIndex = tabIndex;
-      } else {
-        // otherwise, if there is no tabindex attribute, just use the value of
-        // *aTabIndex to indicate focusability. Reset any supplied tabindex to
-        // 0.
-        shouldFocus = *aTabIndex >= 0;
-        if (shouldFocus) *aTabIndex = 0;
-      }
-
-      if (shouldFocus && sTabFocusModelAppliesToXUL &&
-          !(sTabFocusModel & eTabFocus_formElementsMask)) {
-        // By default, the tab focus model doesn't apply to xul element on any
-        // system but OS X. on OS X we're following it for UI elements (XUL) as
-        // sTabFocusModel is based on "Full Keyboard Access" system setting (see
-        // mac/nsILookAndFeel). both textboxes and list elements (i.e. trees and
-        // list) should always be focusable (textboxes are handled as
-        // html:input) For compatibility, we only do this for controls,
-        // otherwise elements like <browser> cannot take this focus.
-        if (IsNonList(mNodeInfo)) *aTabIndex = -1;
-      }
+    if (HasAttr(kNameSpaceID_None, nsGkAtoms::tabindex)) {
+      // The tabindex attribute was specified, so the element becomes
+      // focusable.
+      shouldFocus = true;
+      *aTabIndex = TabIndex();
     } else {
+      // otherwise, if there is no tabindex attribute, just use the value of
+      // *aTabIndex to indicate focusability. Reset any supplied tabindex to 0.
       shouldFocus = *aTabIndex >= 0;
+      if (shouldFocus) {
+        *aTabIndex = 0;
+      }
+    }
+
+    if (xulControl && shouldFocus && sTabFocusModelAppliesToXUL &&
+        !(sTabFocusModel & eTabFocus_formElementsMask)) {
+      // By default, the tab focus model doesn't apply to xul element on any
+      // system but OS X. on OS X we're following it for UI elements (XUL) as
+      // sTabFocusModel is based on "Full Keyboard Access" system setting (see
+      // mac/nsILookAndFeel). both textboxes and list elements (i.e. trees and
+      // list) should always be focusable (textboxes are handled as html:input)
+      // For compatibility, we only do this for controls, otherwise elements
+      // like <browser> cannot take this focus.
+      if (IsNonList(mNodeInfo)) {
+        *aTabIndex = -1;
+      }
     }
   }
 
   return shouldFocus;
 }
 
+int32_t nsXULElement::ScreenX() {
+  nsIFrame* frame = GetPrimaryFrame(FlushType::Layout);
+  return frame ? frame->GetScreenRect().x : 0;
+}
+
+int32_t nsXULElement::ScreenY() {
+  nsIFrame* frame = GetPrimaryFrame(FlushType::Layout);
+  return frame ? frame->GetScreenRect().y : 0;
+}
+
+bool nsXULElement::HasMenu() {
+  nsMenuFrame* menu = do_QueryFrame(GetPrimaryFrame());
+  return menu != nullptr;
+}
+
+void nsXULElement::OpenMenu(bool aOpenFlag) {
+  nsMenuFrame* menu = do_QueryFrame(GetPrimaryFrame(FlushType::Frames));
+
+  nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
+  if (pm) {
+    if (aOpenFlag) {
+      // Nothing will happen if this element isn't a menu.
+      pm->ShowMenu(this, false, false);
+    } else if (menu) {
+      nsMenuPopupFrame* popupFrame = menu->GetPopup();
+      if (popupFrame) {
+        pm->HidePopup(popupFrame->GetContent(), false, true, false, false);
+      }
+    }
+  }
+}
+
 bool nsXULElement::PerformAccesskey(bool aKeyCausesActivation,
                                     bool aIsTrustedEvent) {
-  nsCOMPtr<nsIContent> content(this);
+  RefPtr<Element> content(this);
 
   if (IsXULElement(nsGkAtoms::label)) {
     nsAutoString control;
@@ -513,7 +517,7 @@ bool nsXULElement::PerformAccesskey(bool aKeyCausesActivation,
 
     // XXXsmaug Should we use ShadowRoot::GetElementById in case
     //         content is in Shadow DOM?
-    nsCOMPtr<nsIDocument> document = content->GetUncomposedDoc();
+    nsCOMPtr<Document> document = content->GetUncomposedDoc();
     if (!document) {
       return false;
     }
@@ -530,41 +534,39 @@ bool nsXULElement::PerformAccesskey(bool aKeyCausesActivation,
   }
 
   bool focused = false;
-  nsXULElement* elm = FromContent(content);
+  nsXULElement* elm = FromNode(content);
   if (elm) {
     // Define behavior for each type of XUL element.
     if (!content->IsXULElement(nsGkAtoms::toolbarbutton)) {
       nsIFocusManager* fm = nsFocusManager::GetFocusManager();
       if (fm) {
-        nsCOMPtr<nsIDOMElement> elementToFocus;
+        nsCOMPtr<Element> elementToFocus;
         // for radio buttons, focus the radiogroup instead
         if (content->IsXULElement(nsGkAtoms::radio)) {
-          nsCOMPtr<nsIDOMXULSelectControlItemElement> controlItem(
-              do_QueryInterface(content));
+          nsCOMPtr<nsIDOMXULSelectControlItemElement> controlItem =
+              content->AsXULSelectControlItem();
           if (controlItem) {
             bool disabled;
             controlItem->GetDisabled(&disabled);
             if (!disabled) {
-              nsCOMPtr<nsIDOMXULSelectControlElement> selectControl;
-              controlItem->GetControl(getter_AddRefs(selectControl));
-              elementToFocus = do_QueryInterface(selectControl);
+              controlItem->GetControl(getter_AddRefs(elementToFocus));
             }
           }
         } else {
-          elementToFocus = do_QueryInterface(content);
+          elementToFocus = content;
         }
         if (elementToFocus) {
           fm->SetFocus(elementToFocus, nsIFocusManager::FLAG_BYKEY);
 
           // Return true if the element became focused.
           nsPIDOMWindowOuter* window = OwnerDoc()->GetWindow();
-          focused = (window && window->GetFocusedNode());
+          focused = (window && window->GetFocusedElement());
         }
       }
     }
     if (aKeyCausesActivation &&
         !content->IsAnyOfXULElements(nsGkAtoms::textbox, nsGkAtoms::menulist)) {
-      elm->ClickWithInputSource(nsIDOMMouseEvent::MOZ_SOURCE_KEYBOARD,
+      elm->ClickWithInputSource(MouseEvent_Binding::MOZ_SOURCE_KEYBOARD,
                                 aIsTrustedEvent);
     }
   } else {
@@ -576,8 +578,7 @@ bool nsXULElement::PerformAccesskey(bool aKeyCausesActivation,
 
 //----------------------------------------------------------------------
 
-void nsXULElement::AddListenerFor(const nsAttrName& aName,
-                                  bool aCompileEventHandlers) {
+void nsXULElement::AddListenerFor(const nsAttrName& aName) {
   // If appropriate, add a popup listener and/or compile the event
   // handler. Called when we change the element's document, create a
   // new element, change an attribute's value, etc.
@@ -585,8 +586,7 @@ void nsXULElement::AddListenerFor(const nsAttrName& aName,
   if (aName.IsAtom()) {
     nsAtom* attr = aName.Atom();
     MaybeAddPopupListener(attr);
-    if (aCompileEventHandlers &&
-        nsContentUtils::IsEventAttributeName(attr, EventNameType_XUL)) {
+    if (nsContentUtils::IsEventAttributeName(attr, EventNameType_XUL)) {
       nsAutoString value;
       GetAttr(kNameSpaceID_None, attr, value);
       SetEventHandler(attr, value, true);
@@ -618,51 +618,18 @@ void nsXULElement::UpdateEditableState(bool aNotify) {
   UpdateState(aNotify);
 }
 
-/**
- * Returns true if the user-agent style sheet rules for this XUL element are
- * in minimal-xul.css instead of xul.css.
- */
-static inline bool XULElementsRulesInMinimalXULSheet(nsAtom* aTag) {
-  return  // scrollbar parts:
-      aTag == nsGkAtoms::scrollbar || aTag == nsGkAtoms::scrollbarbutton ||
-      aTag == nsGkAtoms::scrollcorner || aTag == nsGkAtoms::slider ||
-      aTag == nsGkAtoms::thumb || aTag == nsGkAtoms::scale ||
-      // other
-      aTag == nsGkAtoms::datetimebox || aTag == nsGkAtoms::resizer ||
-      aTag == nsGkAtoms::label || aTag == nsGkAtoms::videocontrols;
-}
-
-#ifdef DEBUG
-/**
- * Returns true if aElement is a XUL element created by the video controls
- * binding. HTML <video> and <audio> bindings pull in this binding. This
- * binding creates lots of different types of XUL elements.
- */
-static inline bool IsInVideoControls(nsXULElement* aElement) {
-  nsIContent* ancestor = aElement->GetParent();
-  while (ancestor) {
-    if (ancestor->NodeInfo()->Equals(nsGkAtoms::videocontrols,
-                                     kNameSpaceID_XUL)) {
-      return true;
-    }
-    ancestor = ancestor->GetParent();
-  }
-  return false;
-}
-#endif
-
 class XULInContentErrorReporter : public Runnable {
  public:
-  explicit XULInContentErrorReporter(nsIDocument* aDocument)
+  explicit XULInContentErrorReporter(Document* aDocument)
       : mozilla::Runnable("XULInContentErrorReporter"), mDocument(aDocument) {}
 
   NS_IMETHOD Run() override {
-    mDocument->WarnOnceAbout(nsIDocument::eImportXULIntoContent, false);
+    mDocument->WarnOnceAbout(Document::eImportXULIntoContent, false);
     return NS_OK;
   }
 
  private:
-  nsCOMPtr<nsIDocument> mDocument;
+  nsCOMPtr<Document> mDocument;
 };
 
 static bool NeedTooltipSupport(const nsXULElement& aXULElement) {
@@ -676,67 +643,74 @@ static bool NeedTooltipSupport(const nsXULElement& aXULElement) {
          aXULElement.GetBoolAttr(nsGkAtoms::tooltiptext);
 }
 
-nsresult nsXULElement::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                                  nsIContent* aBindingParent,
-                                  bool aCompileEventHandlers) {
+nsresult nsXULElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                  nsIContent* aBindingParent) {
   if (!aBindingParent && aDocument && !aDocument->IsLoadedAsInteractiveData() &&
       !aDocument->AllowXULXBL() &&
-      !aDocument->HasWarnedAbout(nsIDocument::eImportXULIntoContent)) {
+      !aDocument->HasWarnedAbout(Document::eImportXULIntoContent)) {
     nsContentUtils::AddScriptRunner(new XULInContentErrorReporter(aDocument));
   }
 
-  nsresult rv = nsStyledElement::BindToTree(aDocument, aParent, aBindingParent,
-                                            aCompileEventHandlers);
+  nsresult rv = nsStyledElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsIDocument* doc = GetComposedDoc();
-  if (doc && !doc->LoadsFullXULStyleSheetUpFront() &&
-      !doc->IsUnstyledDocument()) {
+  Document* doc = GetComposedDoc();
+#ifdef DEBUG
+  if (doc && !doc->AllowXULXBL() && !doc->IsUnstyledDocument()) {
     // To save CPU cycles and memory, non-XUL documents only load the user
     // agent style sheet rules for a minimal set of XUL elements such as
     // 'scrollbar' that may be created implicitly for their content (those
-    // rules being in minimal-xul.css).  This is where we make sure that all
-    // the other XUL UA style sheet rules (xul.css) have been loaded if the
-    // minimal set is not sufficient.
+    // rules being in minimal-xul.css).
     //
-    // We do this during binding, not element construction, because elements
-    // can be moved from the document that creates them to another document.
+    // This assertion makes sure no other XUL element is used in a non-XUL
+    // document.
+    nsAtom* tag = NodeInfo()->NameAtom();
+    MOZ_ASSERT(
+        // scrollbar parts
+        tag == nsGkAtoms::scrollbar || tag == nsGkAtoms::scrollbarbutton ||
+            tag == nsGkAtoms::scrollcorner || tag == nsGkAtoms::slider ||
+            tag == nsGkAtoms::thumb ||
+            // other
+            tag == nsGkAtoms::resizer || tag == nsGkAtoms::label,
+        "Unexpected XUL element in non-XUL doc");
+  }
+#endif
 
-    if (!XULElementsRulesInMinimalXULSheet(NodeInfo()->NameAtom())) {
-      auto cache = nsLayoutStylesheetCache::For(doc->GetStyleBackendType());
-      doc->EnsureOnDemandBuiltInUASheet(cache->XULSheet());
-      // To keep memory usage down it is important that we try and avoid
-      // pulling xul.css into non-XUL documents. That should be very rare, and
-      // for HTML we currently should only pull it in if the document contains
-      // an <audio> or <video> element. This assertion is here to make sure
-      // that we don't fail to notice if a change to bindings causes us to
-      // start pulling in xul.css much more frequently. If this assertion
-      // fails then we need to figure out why, and how we can continue to avoid
-      // pulling in xul.css.
-      // Note that add-ons may introduce bindings that cause this assertion to
-      // fire.
-      NS_ASSERTION(IsInVideoControls(this),
-                   "Unexpected XUL element in non-XUL doc");
-    }
+  if (doc && NodeInfo()->Equals(nsGkAtoms::keyset, kNameSpaceID_XUL)) {
+    // Create our XUL key listener and hook it up.
+    nsXBLService::AttachGlobalKeyHandler(this);
   }
 
   if (doc && NeedTooltipSupport(*this)) {
     AddTooltipSupport();
   }
 
-  if (aDocument) {
-    NS_ASSERTION(!nsContentUtils::IsSafeToRunScript(),
-                 "Missing a script blocker!");
-    // We're in a document now.  Kick off the frame load.
-    LoadSrc();
+  if (doc && XULBroadcastManager::MayNeedListener(*this)) {
+    if (!doc->HasXULBroadcastManager()) {
+      doc->InitializeXULBroadcastManager();
+    }
+    XULBroadcastManager* broadcastManager = doc->GetXULBroadcastManager();
+    broadcastManager->AddListener(this);
   }
 
   return rv;
 }
 
 void nsXULElement::UnbindFromTree(bool aDeep, bool aNullParent) {
+  if (NodeInfo()->Equals(nsGkAtoms::keyset, kNameSpaceID_XUL)) {
+    nsXBLService::DetachGlobalKeyHandler(this);
+  }
+
   if (NeedTooltipSupport(*this)) {
     RemoveTooltipSupport();
+  }
+
+  Document* doc = GetComposedDoc();
+  if (doc && doc->HasXULBroadcastManager() &&
+      XULBroadcastManager::MayNeedListener(*this)) {
+    RefPtr<XULBroadcastManager> broadcastManager =
+        doc->GetXULBroadcastManager();
+    broadcastManager->RemoveListener(this);
   }
 
   // mControllers can own objects that are implemented
@@ -753,207 +727,28 @@ void nsXULElement::UnbindFromTree(bool aDeep, bool aNullParent) {
   nsExtendedDOMSlots* slots = GetExistingExtendedDOMSlots();
   if (slots) {
     slots->mControllers = nullptr;
-    RefPtr<nsFrameLoader> frameLoader = GetFrameLoader();
-    if (frameLoader) {
-      frameLoader->Destroy();
-    }
-    slots->mFrameLoaderOrOpener = nullptr;
   }
 
   nsStyledElement::UnbindFromTree(aDeep, aNullParent);
 }
 
-void nsXULElement::RemoveChildAt_Deprecated(uint32_t aIndex, bool aNotify) {
-  nsCOMPtr<nsIContent> oldKid = mAttrsAndChildren.GetSafeChildAt(aIndex);
-  if (!oldKid) {
-    return;
-  }
-
-  // On the removal of a <treeitem>, <treechildren>, or <treecell> element,
-  // the possibility exists that some of the items in the removed subtree
-  // are selected (and therefore need to be deselected). We need to account for
-  // this.
-  nsCOMPtr<nsIDOMXULMultiSelectControlElement> controlElement;
-  nsCOMPtr<nsIListBoxObject> listBox;
-  bool fireSelectionHandler = false;
-
-  // -1 = do nothing, -2 = null out current item
-  // anything else = index to re-set as current
-  int32_t newCurrentIndex = -1;
-
-  if (oldKid->NodeInfo()->Equals(nsGkAtoms::listitem, kNameSpaceID_XUL)) {
-    // This is the nasty case. We have (potentially) a slew of selected items
-    // and cells going away.
-    // First, retrieve the tree.
-    // Check first whether this element IS the tree
-    controlElement = do_QueryObject(this);
-
-    // If it's not, look at our parent
-    if (!controlElement) GetParentTree(getter_AddRefs(controlElement));
-    nsCOMPtr<nsIContent> controlContent(do_QueryInterface(controlElement));
-    RefPtr<nsXULElement> xulElement = FromContentOrNull(controlContent);
-
-    nsCOMPtr<nsIDOMElement> oldKidElem = do_QueryInterface(oldKid);
-    if (xulElement && oldKidElem) {
-      // Iterate over all of the items and find out if they are contained inside
-      // the removed subtree.
-      int32_t length;
-      controlElement->GetSelectedCount(&length);
-      for (int32_t i = 0; i < length; i++) {
-        nsCOMPtr<nsIDOMXULSelectControlItemElement> node;
-        controlElement->MultiGetSelectedItem(i, getter_AddRefs(node));
-        // we need to QI here to do an XPCOM-correct pointercompare
-        nsCOMPtr<nsIDOMElement> selElem = do_QueryInterface(node);
-        if (selElem == oldKidElem &&
-            NS_SUCCEEDED(controlElement->RemoveItemFromSelection(node))) {
-          length--;
-          i--;
-          fireSelectionHandler = true;
-        }
-      }
-
-      nsCOMPtr<nsIDOMXULSelectControlItemElement> curItem;
-      controlElement->GetCurrentItem(getter_AddRefs(curItem));
-      nsCOMPtr<nsIContent> curNode = do_QueryInterface(curItem);
-      if (curNode && nsContentUtils::ContentIsDescendantOf(curNode, oldKid)) {
-        // Current item going away
-        nsCOMPtr<nsIBoxObject> box = xulElement->GetBoxObject(IgnoreErrors());
-        listBox = do_QueryInterface(box);
-        if (listBox && oldKidElem) {
-          listBox->GetIndexOfItem(oldKidElem, &newCurrentIndex);
-        }
-
-        // If any of this fails, we'll just set the current item to null
-        if (newCurrentIndex == -1) newCurrentIndex = -2;
-      }
+void nsXULElement::DoneAddingChildren(bool aHaveNotified) {
+  if (IsXULElement(nsGkAtoms::linkset)) {
+    Document* doc = GetComposedDoc();
+    if (doc) {
+      doc->OnL10nResourceContainerParsed();
     }
-  }
-
-  nsStyledElement::RemoveChildAt_Deprecated(aIndex, aNotify);
-
-  if (newCurrentIndex == -2) {
-    controlElement->SetCurrentItem(nullptr);
-  } else if (newCurrentIndex > -1) {
-    // Make sure the index is still valid
-    int32_t treeRows;
-    listBox->GetRowCount(&treeRows);
-    if (treeRows > 0) {
-      newCurrentIndex = std::min((treeRows - 1), newCurrentIndex);
-      nsCOMPtr<nsIDOMElement> newCurrentItem;
-      listBox->GetItemAtIndex(newCurrentIndex, getter_AddRefs(newCurrentItem));
-      nsCOMPtr<nsIDOMXULSelectControlItemElement> xulCurItem =
-          do_QueryInterface(newCurrentItem);
-      if (xulCurItem) controlElement->SetCurrentItem(xulCurItem);
-    } else {
-      controlElement->SetCurrentItem(nullptr);
-    }
-  }
-
-  nsIDocument* doc;
-  if (fireSelectionHandler && (doc = GetComposedDoc())) {
-    nsContentUtils::DispatchTrustedEvent(doc, static_cast<nsIContent*>(this),
-                                         NS_LITERAL_STRING("select"), false,
-                                         true);
-  }
-}
-
-void nsXULElement::RemoveChildNode(nsIContent* aKid, bool aNotify) {
-  // On the removal of a <treeitem>, <treechildren>, or <treecell> element,
-  // the possibility exists that some of the items in the removed subtree
-  // are selected (and therefore need to be deselected). We need to account for
-  // this.
-  nsCOMPtr<nsIDOMXULMultiSelectControlElement> controlElement;
-  nsCOMPtr<nsIListBoxObject> listBox;
-  bool fireSelectionHandler = false;
-
-  // -1 = do nothing, -2 = null out current item
-  // anything else = index to re-set as current
-  int32_t newCurrentIndex = -1;
-
-  if (aKid->NodeInfo()->Equals(nsGkAtoms::listitem, kNameSpaceID_XUL)) {
-    // This is the nasty case. We have (potentially) a slew of selected items
-    // and cells going away.
-    // First, retrieve the tree.
-    // Check first whether this element IS the tree
-    controlElement = do_QueryObject(this);
-
-    // If it's not, look at our parent
-    if (!controlElement) GetParentTree(getter_AddRefs(controlElement));
-    nsCOMPtr<nsIContent> controlContent(do_QueryInterface(controlElement));
-    RefPtr<nsXULElement> xulElement = FromContentOrNull(controlContent);
-
-    nsCOMPtr<nsIDOMElement> oldKidElem = do_QueryInterface(aKid);
-    if (xulElement && oldKidElem) {
-      // Iterate over all of the items and find out if they are contained inside
-      // the removed subtree.
-      int32_t length;
-      controlElement->GetSelectedCount(&length);
-      for (int32_t i = 0; i < length; i++) {
-        nsCOMPtr<nsIDOMXULSelectControlItemElement> node;
-        controlElement->MultiGetSelectedItem(i, getter_AddRefs(node));
-        // we need to QI here to do an XPCOM-correct pointercompare
-        nsCOMPtr<nsIDOMElement> selElem = do_QueryInterface(node);
-        if (selElem == oldKidElem &&
-            NS_SUCCEEDED(controlElement->RemoveItemFromSelection(node))) {
-          length--;
-          i--;
-          fireSelectionHandler = true;
-        }
-      }
-
-      nsCOMPtr<nsIDOMXULSelectControlItemElement> curItem;
-      controlElement->GetCurrentItem(getter_AddRefs(curItem));
-      nsCOMPtr<nsIContent> curNode = do_QueryInterface(curItem);
-      if (curNode && nsContentUtils::ContentIsDescendantOf(curNode, aKid)) {
-        // Current item going away
-        nsCOMPtr<nsIBoxObject> box = xulElement->GetBoxObject(IgnoreErrors());
-        listBox = do_QueryInterface(box);
-        if (listBox && oldKidElem) {
-          listBox->GetIndexOfItem(oldKidElem, &newCurrentIndex);
-        }
-
-        // If any of this fails, we'll just set the current item to null
-        if (newCurrentIndex == -1) newCurrentIndex = -2;
-      }
-    }
-  }
-
-  nsStyledElement::RemoveChildNode(aKid, aNotify);
-
-  if (newCurrentIndex == -2) {
-    controlElement->SetCurrentItem(nullptr);
-  } else if (newCurrentIndex > -1) {
-    // Make sure the index is still valid
-    int32_t treeRows;
-    listBox->GetRowCount(&treeRows);
-    if (treeRows > 0) {
-      newCurrentIndex = std::min((treeRows - 1), newCurrentIndex);
-      nsCOMPtr<nsIDOMElement> newCurrentItem;
-      listBox->GetItemAtIndex(newCurrentIndex, getter_AddRefs(newCurrentItem));
-      nsCOMPtr<nsIDOMXULSelectControlItemElement> xulCurItem =
-          do_QueryInterface(newCurrentItem);
-      if (xulCurItem) controlElement->SetCurrentItem(xulCurItem);
-    } else {
-      controlElement->SetCurrentItem(nullptr);
-    }
-  }
-
-  nsIDocument* doc;
-  if (fireSelectionHandler && (doc = GetComposedDoc())) {
-    nsContentUtils::DispatchTrustedEvent(doc, static_cast<nsIContent*>(this),
-                                         NS_LITERAL_STRING("select"), false,
-                                         true);
   }
 }
 
 void nsXULElement::UnregisterAccessKey(const nsAString& aOldValue) {
   // If someone changes the accesskey, unregister the old one
   //
-  nsIDocument* doc = GetComposedDoc();
+  Document* doc = GetComposedDoc();
   if (doc && !aOldValue.IsEmpty()) {
-    nsIPresShell* shell = doc->GetShell();
+    PresShell* presShell = doc->GetPresShell();
 
-    if (shell) {
+    if (presShell) {
       Element* element = this;
 
       // find out what type of content node this is
@@ -966,7 +761,7 @@ void nsXULElement::UnregisterAccessKey(const nsAString& aOldValue) {
       }
 
       if (element) {
-        shell->GetPresContext()->EventStateManager()->UnregisterAccessKey(
+        presShell->GetPresContext()->EventStateManager()->UnregisterAccessKey(
             element, aOldValue.First());
       }
     }
@@ -986,14 +781,19 @@ nsresult nsXULElement::BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
              (aName == nsGkAtoms::command || aName == nsGkAtoms::observes) &&
              IsInUncomposedDoc()) {
     //         XXX sXBL/XBL2 issue! Owner or current document?
+    // XXX Why does this not also remove broadcast listeners if the
+    // "element" attribute was changed on an <observer>?
     nsAutoString oldValue;
     GetAttr(kNameSpaceID_None, nsGkAtoms::observes, oldValue);
     if (oldValue.IsEmpty()) {
       GetAttr(kNameSpaceID_None, nsGkAtoms::command, oldValue);
     }
 
-    if (!oldValue.IsEmpty()) {
-      RemoveBroadcaster(oldValue);
+    Document* doc = GetUncomposedDoc();
+    if (!oldValue.IsEmpty() && doc->HasXULBroadcastManager()) {
+      RefPtr<XULBroadcastManager> broadcastManager =
+          doc->GetXULBroadcastManager();
+      broadcastManager->RemoveListener(this);
     }
   } else if (aNamespaceID == kNameSpaceID_None && aValue &&
              mNodeInfo->Equals(nsGkAtoms::window) &&
@@ -1037,7 +837,7 @@ nsresult nsXULElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
         }
       }
 
-      nsIDocument* document = GetUncomposedDoc();
+      Document* document = GetUncomposedDoc();
 
       // Hide chrome if needed
       if (mNodeInfo->Equals(nsGkAtoms::window)) {
@@ -1051,24 +851,11 @@ nsresult nsXULElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
           MaybeUpdatePrivateLifetime();
         }
       }
-      // title, (in)activetitlebarcolor and drawintitlebar are settable on
+      // title and drawintitlebar are settable on
       // any root node (windows, dialogs, etc)
       if (document && document->GetRootElement() == this) {
         if (aName == nsGkAtoms::title) {
           document->NotifyPossibleTitleChange(false);
-        } else if ((aName == nsGkAtoms::activetitlebarcolor ||
-                    aName == nsGkAtoms::inactivetitlebarcolor)) {
-          nscolor color = NS_RGBA(0, 0, 0, 0);
-          if (aValue->Type() == nsAttrValue::eColor) {
-            aValue->GetColorValue(color);
-          } else {
-            nsAutoString tmp;
-            nsAttrValue attrValue;
-            aValue->ToString(tmp);
-            attrValue.ParseColor(tmp);
-            attrValue.GetColorValue(color);
-          }
-          SetTitlebarColor(color, aName == nsGkAtoms::activetitlebarcolor);
         } else if (aName == nsGkAtoms::drawintitlebar) {
           SetDrawsInTitlebar(
               aValue->Equals(NS_LITERAL_STRING("true"), eCaseMatters));
@@ -1078,26 +865,16 @@ nsresult nsXULElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
         } else if (aName == nsGkAtoms::localedir) {
           // if the localedir changed on the root element, reset the document
           // direction
-          XULDocument* xuldoc = document->AsXULDocument();
-          if (xuldoc) {
-            xuldoc->ResetDocumentDirection();
-          }
+          document->ResetDocumentDirection();
         } else if (aName == nsGkAtoms::lwtheme ||
                    aName == nsGkAtoms::lwthemetextcolor) {
           // if the lwtheme changed, make sure to reset the document lwtheme
           // cache
-          XULDocument* xuldoc = document->AsXULDocument();
-          if (xuldoc) {
-            xuldoc->ResetDocumentLWTheme();
-            UpdateBrightTitlebarForeground(document);
-          }
+          document->ResetDocumentLWTheme();
+          UpdateBrightTitlebarForeground(document);
         } else if (aName == nsGkAtoms::brighttitlebarforeground) {
           UpdateBrightTitlebarForeground(document);
         }
-      }
-
-      if (aName == nsGkAtoms::src && document) {
-        LoadSrc();
       }
     } else {
       if (mNodeInfo->Equals(nsGkAtoms::window)) {
@@ -1108,28 +885,17 @@ nsresult nsXULElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
         }
       }
 
-      nsIDocument* doc = GetUncomposedDoc();
+      Document* doc = GetUncomposedDoc();
       if (doc && doc->GetRootElement() == this) {
-        if ((aName == nsGkAtoms::activetitlebarcolor ||
-             aName == nsGkAtoms::inactivetitlebarcolor)) {
-          // Use 0, 0, 0, 0 as the "none" color.
-          SetTitlebarColor(NS_RGBA(0, 0, 0, 0),
-                           aName == nsGkAtoms::activetitlebarcolor);
-        } else if (aName == nsGkAtoms::localedir) {
+        if (aName == nsGkAtoms::localedir) {
           // if the localedir changed on the root element, reset the document
           // direction
-          XULDocument* xuldoc = doc->AsXULDocument();
-          if (xuldoc) {
-            xuldoc->ResetDocumentDirection();
-          }
+          doc->ResetDocumentDirection();
         } else if ((aName == nsGkAtoms::lwtheme ||
                     aName == nsGkAtoms::lwthemetextcolor)) {
           // if the lwtheme changed, make sure to restyle appropriately
-          XULDocument* xuldoc = doc->AsXULDocument();
-          if (xuldoc) {
-            xuldoc->ResetDocumentLWTheme();
-            UpdateBrightTitlebarForeground(doc);
-          }
+          doc->ResetDocumentLWTheme();
+          UpdateBrightTitlebarForeground(doc);
         } else if (aName == nsGkAtoms::brighttitlebarforeground) {
           UpdateBrightTitlebarForeground(doc);
         } else if (aName == nsGkAtoms::drawintitlebar) {
@@ -1150,6 +916,20 @@ nsresult nsXULElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
         }
       }
     }
+    Document* doc = GetComposedDoc();
+    if (doc && doc->HasXULBroadcastManager()) {
+      RefPtr<XULBroadcastManager> broadcastManager =
+          doc->GetXULBroadcastManager();
+      broadcastManager->AttributeChanged(this, aNamespaceID, aName);
+    }
+    if (doc && XULBroadcastManager::MayNeedListener(*this)) {
+      if (!doc->HasXULBroadcastManager()) {
+        doc->InitializeXULBroadcastManager();
+      }
+      XULBroadcastManager* broadcastManager = doc->GetXULBroadcastManager();
+      broadcastManager->AddListener(this);
+    }
+
     // XXX need to check if they're changing an event handler: if
     // so, then we need to unhook the old one.  Or something.
   }
@@ -1180,6 +960,10 @@ bool nsXULElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                                   const nsAString& aValue,
                                   nsIPrincipal* aMaybeScriptedPrincipal,
                                   nsAttrValue& aResult) {
+  if (aNamespaceID == kNameSpaceID_None && aAttribute == nsGkAtoms::tabindex) {
+    return aResult.ParseIntValue(aValue);
+  }
+
   // Parse into a nsAttrValue
   if (!nsStyledElement::ParseAttribute(aNamespaceID, aAttribute, aValue,
                                        aMaybeScriptedPrincipal, aResult)) {
@@ -1190,26 +974,10 @@ bool nsXULElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
   return true;
 }
 
-void nsXULElement::RemoveBroadcaster(const nsAString& broadcasterId) {
-  XULDocument* xuldoc = OwnerDoc()->AsXULDocument();
-  if (xuldoc) {
-    Element* broadcaster = xuldoc->GetElementById(broadcasterId);
-    if (broadcaster) {
-      xuldoc->RemoveBroadcastListenerFor(*broadcaster, *this,
-                                         NS_LITERAL_STRING("*"));
-    }
-  }
-}
-
 void nsXULElement::DestroyContent() {
   nsExtendedDOMSlots* slots = GetExistingExtendedDOMSlots();
   if (slots) {
     slots->mControllers = nullptr;
-    RefPtr<nsFrameLoader> frameLoader = GetFrameLoader();
-    if (frameLoader) {
-      frameLoader->Destroy();
-    }
-    slots->mFrameLoaderOrOpener = nullptr;
   }
 
   nsStyledElement::DestroyContent();
@@ -1238,7 +1006,7 @@ bool nsXULElement::IsEventStoppedFromAnonymousScrollbar(EventMessage aMessage) {
 nsresult nsXULElement::DispatchXULCommand(const EventChainVisitor& aVisitor,
                                           nsAutoString& aCommand) {
   // XXX sXBL/XBL2 issue! Owner or current document?
-  nsCOMPtr<nsIDocument> doc = GetUncomposedDoc();
+  nsCOMPtr<Document> doc = GetUncomposedDoc();
   NS_ENSURE_STATE(doc);
   RefPtr<Element> commandElt = doc->GetElementById(aCommand);
   if (commandElt) {
@@ -1246,38 +1014,36 @@ nsresult nsXULElement::DispatchXULCommand(const EventChainVisitor& aVisitor,
     // pointed to by the command attribute. The new event's
     // sourceEvent will be the original command event that we're
     // handling.
-    nsCOMPtr<nsIDOMEvent> domEvent = aVisitor.mDOMEvent;
-    uint16_t inputSource = nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN;
-    while (domEvent) {
-      Event* event = domEvent->InternalDOMEvent();
-      NS_ENSURE_STATE(!SameCOMIdentity(event->GetOriginalTarget(), commandElt));
-      nsCOMPtr<nsIDOMXULCommandEvent> commandEvent =
-          do_QueryInterface(domEvent);
+    RefPtr<Event> event = aVisitor.mDOMEvent;
+    uint16_t inputSource = MouseEvent_Binding::MOZ_SOURCE_UNKNOWN;
+    while (event) {
+      NS_ENSURE_STATE(event->GetOriginalTarget() != commandElt);
+      RefPtr<XULCommandEvent> commandEvent = event->AsXULCommandEvent();
       if (commandEvent) {
-        commandEvent->GetSourceEvent(getter_AddRefs(domEvent));
-        commandEvent->GetInputSource(&inputSource);
+        event = commandEvent->GetSourceEvent();
+        inputSource = commandEvent->InputSource();
       } else {
-        domEvent = nullptr;
+        event = nullptr;
       }
     }
     WidgetInputEvent* orig = aVisitor.mEvent->AsInputEvent();
     nsContentUtils::DispatchXULCommand(
-        commandElt, orig->IsTrusted(), aVisitor.mDOMEvent, nullptr,
-        orig->IsControl(), orig->IsAlt(), orig->IsShift(), orig->IsMeta(),
-        inputSource);
+        commandElt, orig->IsTrusted(), MOZ_KnownLive(aVisitor.mDOMEvent),
+        nullptr, orig->IsControl(), orig->IsAlt(), orig->IsShift(),
+        orig->IsMeta(), inputSource);
   } else {
     NS_WARNING("A XUL element is attached to a command that doesn't exist!\n");
   }
   return NS_OK;
 }
 
-nsresult nsXULElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
+void nsXULElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   aVisitor.mForceContentDispatch = true;  // FIXME! Bug 329119
   if (IsEventStoppedFromAnonymousScrollbar(aVisitor.mEvent->mMessage)) {
     // Don't propagate these events from native anonymous scrollbar.
     aVisitor.mCanHandle = true;
     aVisitor.SetParentTarget(nullptr, false);
-    return NS_OK;
+    return;
   }
   if (aVisitor.mEvent->mMessage == eXULCommand &&
       aVisitor.mEvent->mClass == eInputEventClass &&
@@ -1285,12 +1051,11 @@ nsresult nsXULElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
       !IsXULElement(nsGkAtoms::command)) {
     // Check that we really have an xul command event. That will be handled
     // in a special way.
-    nsCOMPtr<nsIDOMXULCommandEvent> xulEvent =
-        do_QueryInterface(aVisitor.mDOMEvent);
     // See if we have a command elt.  If so, we execute on the command
     // instead of on our content element.
     nsAutoString command;
-    if (xulEvent && GetAttr(kNameSpaceID_None, nsGkAtoms::command, command) &&
+    if (aVisitor.mDOMEvent && aVisitor.mDOMEvent->AsXULCommandEvent() &&
+        GetAttr(kNameSpaceID_None, nsGkAtoms::command, command) &&
         !command.IsEmpty()) {
       // Stop building the event target chain for the original event.
       // We don't want it to propagate to any DOM nodes.
@@ -1300,11 +1065,11 @@ nsresult nsXULElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
       // target chain creation
       aVisitor.mWantsPreHandleEvent = true;
       aVisitor.mItemFlags |= NS_DISPATCH_XUL_COMMAND;
-      return NS_OK;
+      return;
     }
   }
 
-  return nsStyledElement::GetEventTargetParent(aVisitor);
+  nsStyledElement::GetEventTargetParent(aVisitor);
 }
 
 nsresult nsXULElement::PreHandleEvent(EventChainVisitor& aVisitor) {
@@ -1317,38 +1082,38 @@ nsresult nsXULElement::PreHandleEvent(EventChainVisitor& aVisitor) {
   return nsStyledElement::PreHandleEvent(aVisitor);
 }
 
-  //----------------------------------------------------------------------
-  // Implementation methods
-
-#ifdef MOZ_OLD_STYLE
-NS_IMETHODIMP
-nsXULElement::WalkContentStyleRules(nsRuleWalker* aRuleWalker) { return NS_OK; }
-#endif
+//----------------------------------------------------------------------
+// Implementation methods
 
 nsChangeHint nsXULElement::GetAttributeChangeHint(const nsAtom* aAttribute,
                                                   int32_t aModType) const {
-  nsChangeHint retval(nsChangeHint(0));
-
   if (aAttribute == nsGkAtoms::value &&
-      (aModType == MutationEventBinding::REMOVAL ||
-       aModType == MutationEventBinding::ADDITION)) {
-    if (IsAnyOfXULElements(nsGkAtoms::label, nsGkAtoms::description))
-      // Label and description dynamically morph between a normal
-      // block and a cropping single-line XUL text frame.  If the
-      // value attribute is being added or removed, then we need to
-      // return a hint of frame change.  (See bugzilla bug 95475 for
-      // details.)
-      retval = nsChangeHint_ReconstructFrame;
-  } else {
-    // if left or top changes we reflow. This will happen in xul
-    // containers that manage positioned children such as a stack.
-    if (nsGkAtoms::left == aAttribute || nsGkAtoms::top == aAttribute ||
-        nsGkAtoms::right == aAttribute || nsGkAtoms::bottom == aAttribute ||
-        nsGkAtoms::start == aAttribute || nsGkAtoms::end == aAttribute)
-      retval = NS_STYLE_HINT_REFLOW;
+      (aModType == MutationEvent_Binding::REMOVAL ||
+       aModType == MutationEvent_Binding::ADDITION) &&
+      IsAnyOfXULElements(nsGkAtoms::label, nsGkAtoms::description)) {
+    // Label and description dynamically morph between a normal
+    // block and a cropping single-line XUL text frame.  If the
+    // value attribute is being added or removed, then we need to
+    // return a hint of frame change.  (See bugzilla bug 95475 for
+    // details.)
+    return nsChangeHint_ReconstructFrame;
   }
 
-  return retval;
+  if (aAttribute == nsGkAtoms::type &&
+      IsAnyOfXULElements(nsGkAtoms::toolbarbutton, nsGkAtoms::button)) {
+    // type=menu switches from a button frame to a menu frame.
+    return nsChangeHint_ReconstructFrame;
+  }
+
+  // if left or top changes we reflow. This will happen in xul
+  // containers that manage positioned children such as a stack.
+  if (nsGkAtoms::left == aAttribute || nsGkAtoms::top == aAttribute ||
+      nsGkAtoms::right == aAttribute || nsGkAtoms::bottom == aAttribute ||
+      nsGkAtoms::start == aAttribute || nsGkAtoms::end == aAttribute) {
+    return NS_STYLE_HINT_REFLOW;
+  }
+
+  return nsChangeHint(0);
 }
 
 NS_IMETHODIMP_(bool)
@@ -1360,13 +1125,7 @@ nsIControllers* nsXULElement::GetControllers(ErrorResult& rv) {
   if (!Controllers()) {
     nsExtendedDOMSlots* slots = ExtendedDOMSlots();
 
-    rv = NS_NewXULControllers(nullptr, NS_GET_IID(nsIControllers),
-                              reinterpret_cast<void**>(&slots->mControllers));
-
-    NS_ASSERTION(!rv.Failed(), "unable to create a controllers");
-    if (rv.Failed()) {
-      return nullptr;
-    }
+    slots->mControllers = new nsXULControllers();
   }
 
   return Controllers();
@@ -1377,148 +1136,8 @@ already_AddRefed<BoxObject> nsXULElement::GetBoxObject(ErrorResult& rv) {
   return OwnerDoc()->GetBoxObjectFor(this, rv);
 }
 
-nsresult nsXULElement::LoadSrc() {
-  // Allow frame loader only on objects for which a container box object
-  // can be obtained.
-  if (!IsAnyOfXULElements(nsGkAtoms::browser, nsGkAtoms::editor,
-                          nsGkAtoms::iframe)) {
-    return NS_OK;
-  }
-  if (!IsInUncomposedDoc() || !OwnerDoc()->GetRootElement() ||
-      OwnerDoc()->GetRootElement()->NodeInfo()->Equals(nsGkAtoms::overlay,
-                                                       kNameSpaceID_XUL)) {
-    return NS_OK;
-  }
-  RefPtr<nsFrameLoader> frameLoader = GetFrameLoader();
-  if (!frameLoader) {
-    // Check if we have an opener we need to be setting
-    nsExtendedDOMSlots* slots = ExtendedDOMSlots();
-    nsCOMPtr<nsPIDOMWindowOuter> opener =
-        do_QueryInterface(slots->mFrameLoaderOrOpener);
-    if (!opener) {
-      // If we are a primary xul-browser, we want to take the opener property!
-      nsCOMPtr<nsPIDOMWindowOuter> window = OwnerDoc()->GetWindow();
-      if (AttrValueIs(kNameSpaceID_None, nsGkAtoms::primary, nsGkAtoms::_true,
-                      eIgnoreCase) &&
-          window) {
-        opener = window->TakeOpenerForInitialContentBrowser();
-      }
-    }
-
-    // false as the last parameter so that xul:iframe/browser/editor
-    // session history handling works like dynamic html:iframes.
-    // Usually xul elements are used in chrome, which doesn't have
-    // session history at all.
-    frameLoader = nsFrameLoader::Create(this, opener, false);
-    slots->mFrameLoaderOrOpener = static_cast<nsIFrameLoader*>(frameLoader);
-    NS_ENSURE_TRUE(frameLoader, NS_OK);
-
-    (new AsyncEventDispatcher(this, NS_LITERAL_STRING("XULFrameLoaderCreated"),
-                              /* aBubbles */ true))
-        ->RunDOMEventWhenSafe();
-  }
-
-  return frameLoader->LoadFrame(false);
-}
-
-nsresult nsXULElement::GetFrameLoaderXPCOM(nsIFrameLoader** aFrameLoader) {
-  *aFrameLoader = GetFrameLoader().take();
-  return NS_OK;
-}
-
-already_AddRefed<nsFrameLoader> nsXULElement::GetFrameLoader() {
-  nsExtendedDOMSlots* slots = GetExistingExtendedDOMSlots();
-  if (!slots) return nullptr;
-
-  nsCOMPtr<nsIFrameLoader> loader =
-      do_QueryInterface(slots->mFrameLoaderOrOpener);
-  return already_AddRefed<nsFrameLoader>(
-      static_cast<nsFrameLoader*>(loader.forget().take()));
-}
-
-void nsXULElement::PresetOpenerWindow(mozIDOMWindowProxy* aWindow,
-                                      ErrorResult& aRv) {
-  nsExtendedDOMSlots* slots = ExtendedDOMSlots();
-  MOZ_ASSERT(
-      !slots->mFrameLoaderOrOpener,
-      "A frameLoader or opener is present when calling PresetOpenerWindow");
-
-  slots->mFrameLoaderOrOpener = aWindow;
-}
-
-void nsXULElement::InternalSetFrameLoader(nsIFrameLoader* aNewFrameLoader) {
-  nsExtendedDOMSlots* slots = GetExistingExtendedDOMSlots();
-  MOZ_ASSERT(slots);
-
-  slots->mFrameLoaderOrOpener = aNewFrameLoader;
-}
-
-void nsXULElement::SwapFrameLoaders(HTMLIFrameElement& aOtherLoaderOwner,
-                                    ErrorResult& rv) {
-  if (!GetExistingDOMSlots()) {
-    rv.Throw(NS_ERROR_NOT_IMPLEMENTED);
-    return;
-  }
-
-  nsCOMPtr<nsIFrameLoaderOwner> flo =
-      do_QueryInterface(static_cast<nsIDOMXULElement*>(this));
-  aOtherLoaderOwner.SwapFrameLoaders(flo, rv);
-}
-
-void nsXULElement::SwapFrameLoaders(nsXULElement& aOtherLoaderOwner,
-                                    ErrorResult& rv) {
-  if (&aOtherLoaderOwner == this) {
-    // nothing to do
-    return;
-  }
-
-  if (!GetExistingDOMSlots()) {
-    rv.Throw(NS_ERROR_NOT_IMPLEMENTED);
-    return;
-  }
-
-  nsCOMPtr<nsIFrameLoaderOwner> flo =
-      do_QueryInterface(static_cast<nsIDOMXULElement*>(this));
-  aOtherLoaderOwner.SwapFrameLoaders(flo, rv);
-}
-
-void nsXULElement::SwapFrameLoaders(nsIFrameLoaderOwner* aOtherLoaderOwner,
-                                    mozilla::ErrorResult& rv) {
-  if (!GetExistingDOMSlots()) {
-    rv.Throw(NS_ERROR_NOT_IMPLEMENTED);
-    return;
-  }
-
-  RefPtr<nsFrameLoader> loader = GetFrameLoader();
-  RefPtr<nsFrameLoader> otherLoader = aOtherLoaderOwner->GetFrameLoader();
-  if (!loader || !otherLoader) {
-    rv.Throw(NS_ERROR_NOT_IMPLEMENTED);
-    return;
-  }
-
-  nsCOMPtr<nsIFrameLoaderOwner> flo =
-      do_QueryInterface(static_cast<nsIDOMXULElement*>(this));
-  rv = loader->SwapWithOtherLoader(otherLoader, flo, aOtherLoaderOwner);
-}
-
-NS_IMETHODIMP
-nsXULElement::GetParentTree(nsIDOMXULMultiSelectControlElement** aTreeElement) {
-  for (nsIContent* current = GetParent(); current;
-       current = current->GetParent()) {
-    if (current->NodeInfo()->Equals(nsGkAtoms::listbox, kNameSpaceID_XUL)) {
-      CallQueryInterface(current, aTreeElement);
-      // XXX returning NS_OK because that's what the code used to do;
-      // is that the right thing, though?
-
-      return NS_OK;
-    }
-  }
-
-  return NS_OK;
-}
-
 void nsXULElement::Click(CallerType aCallerType) {
-  ClickWithInputSource(nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN,
+  ClickWithInputSource(MouseEvent_Binding::MOZ_SOURCE_UNKNOWN,
                        aCallerType == CallerType::System);
 }
 
@@ -1526,7 +1145,7 @@ void nsXULElement::ClickWithInputSource(uint16_t aInputSource,
                                         bool aIsTrustedEvent) {
   if (BoolAttrIsTrue(nsGkAtoms::disabled)) return;
 
-  nsCOMPtr<nsIDocument> doc = GetComposedDoc();  // Strong just in case
+  nsCOMPtr<Document> doc = GetComposedDoc();  // Strong just in case
   if (doc) {
     RefPtr<nsPresContext> context = doc->GetPresContext();
     if (context) {
@@ -1538,7 +1157,7 @@ void nsXULElement::ClickWithInputSource(uint16_t aInputSource,
                                WidgetMouseEvent::eReal);
       WidgetMouseEvent eventClick(aIsTrustedEvent, eMouseClick, nullptr,
                                   WidgetMouseEvent::eReal);
-      eventDown.inputSource = eventUp.inputSource = eventClick.inputSource =
+      eventDown.mInputSource = eventUp.mInputSource = eventClick.mInputSource =
           aInputSource;
 
       // send mouse down
@@ -1569,9 +1188,10 @@ void nsXULElement::ClickWithInputSource(uint16_t aInputSource,
 }
 
 void nsXULElement::DoCommand() {
-  nsCOMPtr<nsIDocument> doc = GetComposedDoc();  // strong just in case
+  nsCOMPtr<Document> doc = GetComposedDoc();  // strong just in case
   if (doc) {
-    nsContentUtils::DispatchXULCommand(this, true);
+    RefPtr<nsXULElement> self = this;
+    nsContentUtils::DispatchXULCommand(self, true);
   }
 }
 
@@ -1645,11 +1265,11 @@ nsresult nsXULElement::MakeHeavyweight(nsXULPrototypeElement* aPrototype) {
     bool oldValueSet;
     // XXX we might wanna have a SetAndTakeAttr that takes an nsAttrName
     if (protoattr->mName.IsAtom()) {
-      rv = mAttrsAndChildren.SetAndSwapAttr(protoattr->mName.Atom(), attrValue,
-                                            &oldValueSet);
+      rv = mAttrs.SetAndSwapAttr(protoattr->mName.Atom(), attrValue,
+                                 &oldValueSet);
     } else {
-      rv = mAttrsAndChildren.SetAndSwapAttr(protoattr->mName.NodeInfo(),
-                                            attrValue, &oldValueSet);
+      rv = mAttrs.SetAndSwapAttr(protoattr->mName.NodeInfo(), attrValue,
+                                 &oldValueSet);
     }
     NS_ENSURE_SUCCESS(rv, rv);
   }
@@ -1657,7 +1277,7 @@ nsresult nsXULElement::MakeHeavyweight(nsXULPrototypeElement* aPrototype) {
 }
 
 nsresult nsXULElement::HideWindowChrome(bool aShouldHide) {
-  nsIDocument* doc = GetUncomposedDoc();
+  Document* doc = GetUncomposedDoc();
   if (!doc || doc->GetRootElement() != this) return NS_ERROR_UNEXPECTED;
 
   // only top level chrome documents can hide the window chrome
@@ -1683,7 +1303,7 @@ nsresult nsXULElement::HideWindowChrome(bool aShouldHide) {
 }
 
 nsIWidget* nsXULElement::GetWindowWidget() {
-  nsIDocument* doc = GetComposedDoc();
+  Document* doc = GetComposedDoc();
 
   // only top level chrome documents can set the titlebar color
   if (doc && doc->IsRootDisplayDocument()) {
@@ -1696,13 +1316,6 @@ nsIWidget* nsXULElement::GetWindowWidget() {
     }
   }
   return nullptr;
-}
-
-void nsXULElement::SetTitlebarColor(nscolor aColor, bool aActive) {
-  nsIWidget* mainWidget = GetWindowWidget();
-  if (mainWidget) {
-    mainWidget->SetWindowTitlebarColor(aColor, aActive);
-  }
 }
 
 class SetDrawInTitleBarEvent : public Runnable {
@@ -1742,13 +1355,13 @@ void nsXULElement::SetDrawsTitle(bool aState) {
   }
 }
 
-void nsXULElement::UpdateBrightTitlebarForeground(nsIDocument* aDoc) {
+void nsXULElement::UpdateBrightTitlebarForeground(Document* aDoc) {
   nsIWidget* mainWidget = GetWindowWidget();
   if (mainWidget) {
     // We can do this synchronously because SetBrightTitlebarForeground doesn't
     // have any synchronous effects apart from a harmless invalidation.
     mainWidget->SetUseBrightTitlebarForeground(
-        aDoc->GetDocumentLWTheme() == nsIDocument::Doc_Theme_Bright ||
+        aDoc->GetDocumentLWTheme() == Document::Doc_Theme_Bright ||
         aDoc->GetRootElement()->AttrValueIs(
             kNameSpaceID_None, nsGkAtoms::brighttitlebarforeground,
             NS_LITERAL_STRING("true"), eCaseMatters));
@@ -1814,9 +1427,9 @@ bool nsXULElement::BoolAttrIsTrue(nsAtom* aName) const {
 }
 
 void nsXULElement::RecompileScriptEventListeners() {
-  int32_t i, count = mAttrsAndChildren.AttrCount();
+  int32_t i, count = mAttrs.AttrCount();
   for (i = 0; i < count; ++i) {
-    const nsAttrName* name = mAttrsAndChildren.AttrNameAt(i);
+    const nsAttrName* name = mAttrs.AttrNameAt(i);
 
     // Eventlistenener-attributes are always in the null namespace
     if (!name->IsAtom()) {
@@ -1840,7 +1453,12 @@ bool nsXULElement::IsEventAttributeNameInternal(nsAtom* aName) {
 
 JSObject* nsXULElement::WrapNode(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return dom::XULElementBinding::Wrap(aCx, this, aGivenProto);
+  return dom::XULElement_Binding::Wrap(aCx, this, aGivenProto);
+}
+
+bool nsXULElement::IsInteractiveHTMLContent(bool aIgnoreTabindex) const {
+  return IsXULElement(nsGkAtoms::menupopup) ||
+         Element::IsInteractiveHTMLContent(aIgnoreTabindex);
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(nsXULPrototypeNode)
@@ -2007,7 +1625,7 @@ nsresult nsXULPrototypeElement::Deserialize(
     nsIObjectInputStream* aStream, nsXULPrototypeDocument* aProtoDoc,
     nsIURI* aDocumentURI,
     const nsTArray<RefPtr<mozilla::dom::NodeInfo>>* aNodeInfos) {
-  NS_PRECONDITION(aNodeInfos, "missing nodeinfo array");
+  MOZ_ASSERT(aNodeInfos, "missing nodeinfo array");
 
   // Read Node Info
   uint32_t number = 0;
@@ -2129,13 +1747,22 @@ nsresult nsXULPrototypeElement::Deserialize(
 nsresult nsXULPrototypeElement::SetAttrAt(uint32_t aPos,
                                           const nsAString& aValue,
                                           nsIURI* aDocumentURI) {
-  NS_PRECONDITION(aPos < mNumAttributes, "out-of-bounds");
+  MOZ_ASSERT(aPos < mNumAttributes, "out-of-bounds");
 
   // WARNING!!
   // This code is largely duplicated in nsXULElement::SetAttr.
   // Any changes should be made to both functions.
 
   if (!mNodeInfo->NamespaceEquals(kNameSpaceID_XUL)) {
+    if (mNodeInfo->NamespaceEquals(kNameSpaceID_XHTML) &&
+        mAttributes[aPos].mName.Equals(nsGkAtoms::is)) {
+      // We still care about the is attribute set on HTML elements.
+      mAttributes[aPos].mValue.ParseAtom(aValue);
+      mIsAtom = mAttributes[aPos].mValue.GetAtomValue();
+
+      return NS_OK;
+    }
+
     mAttributes[aPos].mValue.ParseStringOrAtom(aValue);
 
     return NS_OK;
@@ -2147,6 +1774,12 @@ nsresult nsXULPrototypeElement::SetAttrAt(uint32_t aPos,
     // id="" means that the element has no id. Not that it has
     // emptystring as id.
     mAttributes[aPos].mValue.ParseAtom(aValue);
+
+    return NS_OK;
+  } else if (mAttributes[aPos].mName.Equals(nsGkAtoms::is)) {
+    // Store is as atom.
+    mAttributes[aPos].mValue.ParseAtom(aValue);
+    mIsAtom = mAttributes[aPos].mValue.GetAtomValue();
 
     return NS_OK;
   } else if (mAttributes[aPos].mName.Equals(nsGkAtoms::_class)) {
@@ -2165,29 +1798,21 @@ nsresult nsXULPrototypeElement::SetAttrAt(uint32_t aPos,
     // TODO: If we implement Content Security Policy for chrome documents
     // as has been discussed, the CSP should be checked here to see if
     // inline styles are allowed to be applied.
-
-    RefPtr<DeclarationBlock> declaration;
-    if (nsLayoutUtils::StyloEnabled() &&
-        nsLayoutUtils::ShouldUseStylo(principal)) {
-      RefPtr<URLExtraData> data =
-          new URLExtraData(aDocumentURI, aDocumentURI, principal);
-      declaration = ServoDeclarationBlock::FromCssText(
-          aValue, data, eCompatibility_FullStandards, nullptr);
-    } else {
-#ifdef MOZ_OLD_STYLE
-      nsCSSParser parser;
-      declaration = parser.ParseStyleAttribute(aValue, aDocumentURI,
-                                               aDocumentURI, principal);
-#else
-      MOZ_CRASH("old style system disabled");
-#endif
-    }
+    // XXX No specific specs talk about xul and referrer policy, pass Unset
+    RefPtr<URLExtraData> data = new URLExtraData(
+        aDocumentURI, aDocumentURI, principal, mozilla::net::RP_Unset);
+    RefPtr<DeclarationBlock> declaration = DeclarationBlock::FromCssText(
+        aValue, data, eCompatibility_FullStandards, nullptr);
     if (declaration) {
       mAttributes[aPos].mValue.SetTo(declaration.forget(), &aValue);
 
       return NS_OK;
     }
     // Don't abort if parsing failed, it could just be malformed css.
+  } else if (mAttributes[aPos].mName.Equals(nsGkAtoms::tabindex)) {
+    mAttributes[aPos].mValue.ParseIntValue(aValue);
+
+    return NS_OK;
   }
 
   mAttributes[aPos].mValue.ParseStringOrAtom(aValue);
@@ -2405,11 +2030,11 @@ class NotifyOffThreadScriptCompletedRunnable : public Runnable {
   static bool sSetupClearOnShutdown;
 
   nsIOffThreadScriptReceiver* mReceiver;
-  void* mToken;
+  JS::OffThreadToken* mToken;
 
  public:
   NotifyOffThreadScriptCompletedRunnable(nsIOffThreadScriptReceiver* aReceiver,
-                                         void* aToken)
+                                         JS::OffThreadToken* aToken)
       : mozilla::Runnable("NotifyOffThreadScriptCompletedRunnable"),
         mReceiver(aReceiver),
         mToken(aToken) {}
@@ -2463,7 +2088,8 @@ NotifyOffThreadScriptCompletedRunnable::Run() {
                                            script ? NS_OK : NS_ERROR_FAILURE);
 }
 
-static void OffThreadScriptReceiverCallback(void* aToken, void* aCallbackData) {
+static void OffThreadScriptReceiverCallback(JS::OffThreadToken* aToken,
+                                            void* aCallbackData) {
   // Be careful not to adjust the refcount on the receiver, as this callback
   // may be invoked off the main thread.
   nsIOffThreadScriptReceiver* aReceiver =
@@ -2474,19 +2100,29 @@ static void OffThreadScriptReceiverCallback(void* aToken, void* aCallbackData) {
 }
 
 nsresult nsXULPrototypeScript::Compile(
-    JS::SourceBufferHolder& aSrcBuf, nsIURI* aURI, uint32_t aLineNo,
-    nsIDocument* aDocument,
+    const char16_t* aText, size_t aTextLength, JS::SourceOwnership aOwnership,
+    nsIURI* aURI, uint32_t aLineNo, Document* aDocument,
     nsIOffThreadScriptReceiver* aOffThreadReceiver /* = nullptr */) {
   // We'll compile the script in the compilation scope.
   AutoJSAPI jsapi;
   if (!jsapi.Init(xpc::CompilationScope())) {
+    if (aOwnership == JS::SourceOwnership::TakeOwnership) {
+      // In this early-exit case -- before the |srcBuf.init| call will
+      // own |aText| -- we must relinquish ownership manually.
+      js_free(const_cast<char16_t*>(aText));
+    }
+
     return NS_ERROR_UNEXPECTED;
   }
   JSContext* cx = jsapi.cx();
 
-  nsresult rv;
+  JS::SourceText<char16_t> srcBuf;
+  if (NS_WARN_IF(!srcBuf.init(cx, aText, aTextLength, aOwnership))) {
+    return NS_ERROR_FAILURE;
+  }
+
   nsAutoCString urlspec;
-  nsContentUtils::GetWrapperSafeScriptFilename(aDocument, aURI, urlspec, &rv);
+  nsresult rv = aURI->GetSpec(urlspec);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -2500,34 +2136,22 @@ nsresult nsXULPrototypeScript::Compile(
   // source from the files on demand.
   options.setSourceIsLazy(mOutOfLine);
   JS::Rooted<JSObject*> scope(cx, JS::CurrentGlobalOrNull(cx));
-  if (scope) {
-    JS::ExposeObjectToActiveJS(scope);
-  }
 
-  if (aOffThreadReceiver &&
-      JS::CanCompileOffThread(cx, options, aSrcBuf.length())) {
-    if (!JS::CompileOffThread(cx, options, aSrcBuf.get(), aSrcBuf.length(),
+  if (aOffThreadReceiver && JS::CanCompileOffThread(cx, options, aTextLength)) {
+    if (!JS::CompileOffThread(cx, options, srcBuf,
                               OffThreadScriptReceiverCallback,
                               static_cast<void*>(aOffThreadReceiver))) {
       return NS_ERROR_OUT_OF_MEMORY;
     }
     NotifyOffThreadScriptCompletedRunnable::NoteReceiver(aOffThreadReceiver);
   } else {
-    JS::Rooted<JSScript*> script(cx);
-    if (!JS::Compile(cx, options, aSrcBuf, &script))
+    JS::Rooted<JSScript*> script(cx, JS::Compile(cx, options, srcBuf));
+    if (!script) {
       return NS_ERROR_OUT_OF_MEMORY;
+    }
     Set(script);
   }
   return NS_OK;
-}
-
-nsresult nsXULPrototypeScript::Compile(
-    const char16_t* aText, int32_t aTextLength, nsIURI* aURI, uint32_t aLineNo,
-    nsIDocument* aDocument,
-    nsIOffThreadScriptReceiver* aOffThreadReceiver /* = nullptr */) {
-  JS::SourceBufferHolder srcBuf(aText, aTextLength,
-                                JS::SourceBufferHolder::NoOwnership);
-  return Compile(srcBuf, aURI, aLineNo, aDocument, aOffThreadReceiver);
 }
 
 void nsXULPrototypeScript::UnlinkJSObjects() {

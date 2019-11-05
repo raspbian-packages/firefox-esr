@@ -16,11 +16,8 @@ import org.mozilla.gecko.util.GeckoBundle;
 import org.mozilla.gecko.util.ThreadUtils;
 import org.mozilla.geckoview.BuildConfig;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.AnyThread;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -28,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @RobocopTarget
@@ -76,7 +72,7 @@ public final class EventDispatcher extends JNIObject {
         return mNativeQueue.isReady();
     }
 
-    @WrapForJNI(dispatchTo = "gecko") @Override // JNIObject
+    @WrapForJNI @Override // JNIObject
     protected native void disposeNative();
 
     @WrapForJNI private static final int DETACHED = 0;
@@ -86,13 +82,25 @@ public final class EventDispatcher extends JNIObject {
     @WrapForJNI(calledFrom = "gecko")
     private synchronized void setAttachedToGecko(final int state) {
         if (mAttachedToGecko && state == DETACHED) {
-            if (GeckoThread.isRunning()) {
-                disposeNative();
-            } else {
-                GeckoThread.queueNativeCall(this, "disposeNative");
-            }
+            dispose(false);
         }
         mAttachedToGecko = (state == ATTACHED);
+    }
+
+    private void dispose(final boolean force) {
+        final Handler geckoHandler = ThreadUtils.sGeckoHandler;
+        if (geckoHandler == null) {
+            return;
+        }
+
+        geckoHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (force || !mAttachedToGecko) {
+                    disposeNative();
+                }
+            }
+        });
     }
 
     private <T> void registerListener(final Class<?> listType,
@@ -234,25 +242,32 @@ public final class EventDispatcher extends JNIObject {
      * @param message Bundle message
      * @param callback Optional object for callbacks from events.
      */
+    @AnyThread
     public void dispatch(final String type, final GeckoBundle message,
                          final EventCallback callback) {
+        final boolean isGeckoReady;
         synchronized (this) {
-            if (isReadyForDispatchingToGecko() && mAttachedToGecko &&
-                hasGeckoListener(type)) {
+            isGeckoReady = isReadyForDispatchingToGecko();
+            if (isGeckoReady && mAttachedToGecko && hasGeckoListener(type)) {
                 dispatchToGecko(type, message, JavaCallbackDelegate.wrap(callback));
                 return;
             }
         }
 
-        if (!dispatchToThreads(type, message, /* callback */ callback)) {
-            Log.w(LOGTAG, "No listener for " + type);
-        }
+        dispatchToThreads(type, message, callback, isGeckoReady);
     }
 
     @WrapForJNI(calledFrom = "gecko")
     private boolean dispatchToThreads(final String type,
                                       final GeckoBundle message,
                                       final EventCallback callback) {
+        return dispatchToThreads(type, message, callback, /* isGeckoReady */ true);
+    }
+
+    private boolean dispatchToThreads(final String type,
+                                      final GeckoBundle message,
+                                      final EventCallback callback,
+                                      final boolean isGeckoReady) {
         final List<BundleEventListener> geckoListeners;
         synchronized (mGeckoThreadListeners) {
             geckoListeners = mGeckoThreadListeners.get(type);
@@ -289,7 +304,7 @@ public final class EventDispatcher extends JNIObject {
             return true;
         }
 
-        if (!isReadyForDispatchingToGecko()) {
+        if (!isGeckoReady) {
             // Usually, we discard an event if there is no listeners for it by
             // the time of the dispatch. However, if Gecko(View) is not ready and
             // there is no listener for this event that's possibly headed to
@@ -301,6 +316,22 @@ public final class EventDispatcher extends JNIObject {
                 GeckoBundle.class, message,
                 EventCallback.class, JavaCallbackDelegate.wrap(callback));
             return true;
+        }
+
+        Log.w(LOGTAG, "No listener for " + type);
+        return false;
+    }
+
+    @WrapForJNI
+    public boolean hasListener(final String event) {
+        for (final Map<String, ?> listenersMap : Arrays.asList(mGeckoThreadListeners,
+                mUiThreadListeners,
+                mBackgroundThreadListeners)) {
+            synchronized (listenersMap) {
+                if (listenersMap.get(event) != null) {
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -342,6 +373,11 @@ public final class EventDispatcher extends JNIObject {
         }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        dispose(true);
+    }
+
     private static class NativeCallbackDelegate extends JNIObject implements EventCallback {
         @WrapForJNI(calledFrom = "gecko")
         private NativeCallbackDelegate() {
@@ -364,8 +400,8 @@ public final class EventDispatcher extends JNIObject {
     }
 
     private static class JavaCallbackDelegate implements EventCallback {
-        private final Thread originalThread = Thread.currentThread();
-        private final EventCallback callback;
+        private final Thread mOriginalThread = Thread.currentThread();
+        private final EventCallback mCallback;
 
         public static EventCallback wrap(final EventCallback callback) {
             if (callback == null) {
@@ -379,7 +415,7 @@ public final class EventDispatcher extends JNIObject {
         }
 
         JavaCallbackDelegate(final EventCallback callback) {
-            this.callback = callback;
+            mCallback = callback;
         }
 
         private void makeCallback(final boolean callSuccess, final Object rawResponse) {
@@ -404,11 +440,11 @@ public final class EventDispatcher extends JNIObject {
 
             // Call back synchronously if we happen to be on the same thread as the thread
             // making the original request.
-            if (ThreadUtils.isOnThread(originalThread)) {
+            if (ThreadUtils.isOnThread(mOriginalThread)) {
                 if (callSuccess) {
-                    callback.sendSuccess(response);
+                    mCallback.sendSuccess(response);
                 } else {
-                    callback.sendError(response);
+                    mCallback.sendError(response);
                 }
                 return;
             }
@@ -416,10 +452,10 @@ public final class EventDispatcher extends JNIObject {
             // Make callback on the thread of the original request, if the original thread
             // is the UI or Gecko thread. Otherwise default to the background thread.
             final Handler handler =
-                    originalThread == ThreadUtils.getUiThread() ? ThreadUtils.getUiHandler() :
-                    originalThread == ThreadUtils.sGeckoThread ? ThreadUtils.sGeckoHandler :
+                    mOriginalThread == ThreadUtils.getUiThread() ? ThreadUtils.getUiHandler() :
+                    mOriginalThread == ThreadUtils.sGeckoThread ? ThreadUtils.sGeckoHandler :
                                                                  ThreadUtils.getBackgroundHandler();
-            final EventCallback callback = this.callback;
+            final EventCallback callback = mCallback;
 
             handler.post(new Runnable() {
                 @Override
@@ -434,12 +470,12 @@ public final class EventDispatcher extends JNIObject {
         }
 
         @Override // EventCallback
-        public void sendSuccess(Object response) {
+        public void sendSuccess(final Object response) {
             makeCallback(/* success */ true, response);
         }
 
         @Override // EventCallback
-        public void sendError(Object response) {
+        public void sendError(final Object response) {
             makeCallback(/* success */ false, response);
         }
     }

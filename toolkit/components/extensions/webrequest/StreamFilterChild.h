@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -27,6 +27,7 @@ class StreamFilter;
 class StreamFilterChild final : public PStreamFilterChild,
                                 public StreamFilterBase {
   friend class StreamFilter;
+  friend class PStreamFilterChild;
 
  public:
   NS_INLINE_DECL_REFCOUNTING(StreamFilterChild)
@@ -62,7 +63,7 @@ class StreamFilterChild final : public PStreamFilterChild,
     Closed,
     // The channel is being disconnected from the parent, and all further events
     // and data will pass unfiltered. Data received by the child in this state
-    // will be automatically written ot the output stream listener. No data may
+    // will be automatically written to the output stream listener. No data may
     // be explicitly written.
     Disconnecting,
     // The channel has been disconnected from the parent, and all further data
@@ -88,15 +89,15 @@ class StreamFilterChild final : public PStreamFilterChild,
   void RecvInitialized(bool aSuccess);
 
  protected:
-  virtual IPCResult RecvStartRequest() override;
-  virtual IPCResult RecvData(Data&& data) override;
-  virtual IPCResult RecvStopRequest(const nsresult& aStatus) override;
-  virtual IPCResult RecvError(const nsCString& aError) override;
+  IPCResult RecvStartRequest();
+  IPCResult RecvData(Data&& data);
+  IPCResult RecvStopRequest(const nsresult& aStatus);
+  IPCResult RecvError(const nsCString& aError);
 
-  virtual IPCResult RecvClosed() override;
-  virtual IPCResult RecvSuspended() override;
-  virtual IPCResult RecvResumed() override;
-  virtual IPCResult RecvFlushData() override;
+  IPCResult RecvClosed();
+  IPCResult RecvSuspended();
+  IPCResult RecvResumed();
+  IPCResult RecvFlushData();
 
   virtual void DeallocPStreamFilterChild() override;
 

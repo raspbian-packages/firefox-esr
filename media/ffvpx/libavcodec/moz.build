@@ -9,6 +9,8 @@
 if CONFIG['FFVPX_ASFLAGS']:
     if CONFIG['CPU_ARCH'] == 'x86' or CONFIG['CPU_ARCH'] == 'x86_64':
         DIRS += ['x86']
+    elif CONFIG['CPU_ARCH'] == 'aarch64':
+        DIRS += ['aarch64']
     elif CONFIG['CPU_ARCH'] == 'arm':
         DIRS += ['arm']
 
@@ -39,7 +41,6 @@ SOURCES += [
 
 if not CONFIG['MOZ_FFVPX_FLACONLY']:
     SOURCES += [
-        'audioconvert.c',
         'avpicture.c',
         'bitstream.c',
         'bitstream_filter.c',
@@ -50,8 +51,6 @@ if not CONFIG['MOZ_FFVPX_FLACONLY']:
         'profiles.c',
         'qsv_api.c',
         'raw.c',
-        'resample.c',
-        'resample2.c',
         'reverse.c',
         'videodsp.c',
         'vp56rac.c',
@@ -60,6 +59,7 @@ if not CONFIG['MOZ_FFVPX_FLACONLY']:
         'vp8dsp.c',
         'vp9.c',
         'vp9_parser.c',
+        'vp9_superframe_split_bsf.c',
         'vp9block.c',
         'vp9data.c',
         'vp9dsp.c',
@@ -70,6 +70,13 @@ if not CONFIG['MOZ_FFVPX_FLACONLY']:
         'vp9mvs.c',
         'vp9prob.c',
         'vp9recon.c'
+    ]
+
+if CONFIG['MOZ_LIBAV_FFT']:
+    SOURCES += [
+        'avfft.c',
+        'fft_float.c',
+        'rdft.c',
     ]
 
 SYMBOLS_FILE = 'avcodec.symbols'

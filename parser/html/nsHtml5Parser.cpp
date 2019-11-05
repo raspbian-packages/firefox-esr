@@ -1,5 +1,5 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* vim: set sw=2 ts=2 et tw=79: */
+/* vim: set sw=2 ts=2 et tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,10 +9,10 @@
 #include "mozilla/AutoRestore.h"
 #include "nsCRT.h"
 #include "nsContentUtils.h"  // for kLoadAsData
-#include "nsHtml5Tokenizer.h"
-#include "nsHtml5TreeBuilder.h"
 #include "nsHtml5AtomTable.h"
 #include "nsHtml5DependentUTF16Buffer.h"
+#include "nsHtml5Tokenizer.h"
+#include "nsHtml5TreeBuilder.h"
 #include "nsNetUtil.h"
 
 NS_INTERFACE_TABLE_HEAD(nsHtml5Parser)
@@ -40,7 +40,7 @@ nsHtml5Parser::nsHtml5Parser()
       mDocWriteSpeculativeLastWasCR(false),
       mBlocked(0),
       mDocWriteSpeculatorActive(false),
-      mInsertionPointPushLevel(0),
+      mScriptNestingLevel(0),
       mDocumentClosed(false),
       mInDocumentWrite(false),
       mInsertionPointPermanentlyUndefined(false),
@@ -94,9 +94,8 @@ nsHtml5Parser::SetCommand(eParserCommands aParserCommand) {
 
 void nsHtml5Parser::SetDocumentCharset(NotNull<const Encoding*> aEncoding,
                                        int32_t aCharsetSource) {
-  NS_PRECONDITION(!mExecutor->HasStarted(), "Document charset set too late.");
-  NS_PRECONDITION(GetStreamParser(),
-                  "Setting charset on a script-only parser.");
+  MOZ_ASSERT(!mExecutor->HasStarted(), "Document charset set too late.");
+  MOZ_ASSERT(GetStreamParser(), "Setting charset on a script-only parser.");
   GetStreamParser()->SetDocumentCharset(aEncoding, aCharsetSource);
   mExecutor->SetDocumentCharsetAndSource(aEncoding, aCharsetSource);
 }
@@ -122,7 +121,7 @@ nsIStreamListener* nsHtml5Parser::GetStreamListener() {
 
 NS_IMETHODIMP
 nsHtml5Parser::ContinueInterruptedParsing() {
-  NS_NOTREACHED("Don't call. For interface compat only.");
+  MOZ_ASSERT_UNREACHABLE("Don't call. For interface compat only.");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -162,10 +161,11 @@ nsHtml5Parser::Parse(nsIURI* aURL, nsIRequestObserver* aObserver,
    * Do NOT cause WillBuildModel to be called synchronously from here!
    * The document won't be ready for it until OnStartRequest!
    */
-  NS_PRECONDITION(!mExecutor->HasStarted(),
-                  "Tried to start parse without initializing the parser.");
-  NS_PRECONDITION(GetStreamParser(),
-                  "Can't call this Parse() variant on script-created parser");
+  MOZ_ASSERT(!mExecutor->HasStarted(),
+             "Tried to start parse without initializing the parser.");
+  MOZ_ASSERT(GetStreamParser(),
+             "Can't call this Parse() variant on script-created parser");
+
   GetStreamParser()->SetObserver(aObserver);
   GetStreamParser()->SetViewSourceTitle(aURL);  // In case we're viewing source
   mExecutor->SetStreamParser(GetStreamParser());
@@ -450,7 +450,7 @@ nsresult nsHtml5Parser::Parse(const nsAString& aSourceBuffer, void* aKey,
         mDocWriteSpeculativeTokenizer->start();
       }
       mDocWriteSpeculativeTokenizer->resetToDataState();
-      mDocWriteSpeculativeTreeBuilder->loadState(mTreeBuilder, &mAtomTable);
+      mDocWriteSpeculativeTreeBuilder->loadState(mTreeBuilder);
       mDocWriteSpeculativeLastWasCR = false;
     }
 
@@ -513,29 +513,33 @@ nsHtml5Parser::ParseFragment(const nsAString& aSourceBuffer,
 
 NS_IMETHODIMP
 nsHtml5Parser::BuildModel() {
-  NS_NOTREACHED("Don't call this!");
+  MOZ_ASSERT_UNREACHABLE("Don't call this!");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
 nsHtml5Parser::CancelParsingEvents() {
-  NS_NOTREACHED("Don't call this!");
+  MOZ_ASSERT_UNREACHABLE("Don't call this!");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-void nsHtml5Parser::Reset() { NS_NOTREACHED("Don't call this!"); }
+void nsHtml5Parser::Reset() { MOZ_ASSERT_UNREACHABLE("Don't call this!"); }
 
 bool nsHtml5Parser::IsInsertionPointDefined() {
   return !mExecutor->IsFlushing() && !mInsertionPointPermanentlyUndefined &&
-         (!GetStreamParser() || mInsertionPointPushLevel);
+         (!GetStreamParser() || mScriptNestingLevel != 0);
 }
 
-void nsHtml5Parser::PushDefinedInsertionPoint() { ++mInsertionPointPushLevel; }
+void nsHtml5Parser::IncrementScriptNestingLevel() { ++mScriptNestingLevel; }
 
-void nsHtml5Parser::PopDefinedInsertionPoint() { --mInsertionPointPushLevel; }
+void nsHtml5Parser::DecrementScriptNestingLevel() { --mScriptNestingLevel; }
+
+bool nsHtml5Parser::HasNonzeroScriptNestingLevel() const {
+  return mScriptNestingLevel != 0;
+}
 
 void nsHtml5Parser::MarkAsNotScriptCreated(const char* aCommand) {
-  NS_PRECONDITION(!mStreamListener, "Must not call this twice.");
+  MOZ_ASSERT(!mStreamListener, "Must not call this twice.");
   eParserMode mode = NORMAL;
   if (!nsCRT::strcmp(aCommand, "view-source")) {
     mode = VIEW_SOURCE_HTML;
@@ -666,7 +670,7 @@ nsresult nsHtml5Parser::ParseUntilBlocked() {
   }
 }
 
-nsresult nsHtml5Parser::Initialize(nsIDocument* aDoc, nsIURI* aURI,
+nsresult nsHtml5Parser::Initialize(mozilla::dom::Document* aDoc, nsIURI* aURI,
                                    nsISupports* aContainer,
                                    nsIChannel* aChannel) {
   return mExecutor->Init(aDoc, aURI, aContainer, aChannel);
@@ -690,13 +694,13 @@ void nsHtml5Parser::InitializeDocWriteParserState(
     nsAHtml5TreeBuilderState* aState, int32_t aLine) {
   mTokenizer->resetToDataState();
   mTokenizer->setLineNumber(aLine);
-  mTreeBuilder->loadState(aState, &mAtomTable);
+  mTreeBuilder->loadState(aState);
   mLastWasCR = false;
   mReturnToStreamParserPermitted = true;
 }
 
 void nsHtml5Parser::ContinueAfterFailedCharsetSwitch() {
-  NS_PRECONDITION(
+  MOZ_ASSERT(
       GetStreamParser(),
       "Tried to continue after failed charset switch without a stream parser");
   GetStreamParser()->ContinueAfterFailedCharsetSwitch();

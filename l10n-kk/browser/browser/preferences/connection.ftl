@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = SOCKS v5 қолдану кезінде DNS сұранымдарын прокси арқылы жіберу
     .accesskey = д
+connection-dns-over-https =
+    .label = HTTPS арқылы DNS іске қосу
+    .accesskey = ы
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Бастапқысын қолдану ({ $url })
+    .accesskey = ы
+    .tooltiptext = HTTPS арқылы DNS шешу үшін бастапқы URL қолдану
+connection-dns-over-https-url-resolver = Провайдерді қолдану
+    .accesskey = п
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (Бастапқы)
+    .tooltiptext = HTTPS арқылы DNS шешу үшін бастапқы URL қолдану
+connection-dns-over-https-url-custom =
+    .label = Таңдауыңызша
+    .accesskey = т
+    .tooltiptext = HTTPS арқылы DNS шешу үшін таңдауыңызша URL енгізіңіз
+connection-dns-over-https-custom-label = Таңдауыңызша

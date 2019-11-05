@@ -10,47 +10,81 @@
 // is used (from service.js).
 /* global Service */
 
-ChromeUtils.import("resource://services-common/async.js");
-ChromeUtils.import("resource://services-common/utils.js");
-ChromeUtils.import("resource://testing-common/PlacesTestUtils.jsm");
-ChromeUtils.import("resource://services-sync/util.js");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/PlacesUtils.jsm");
-ChromeUtils.import("resource://gre/modules/PlacesSyncUtils.jsm");
-ChromeUtils.import("resource://gre/modules/ObjectUtils.jsm");
-ChromeUtils.import("resource://testing-common/services/sync/utils.js");
+var { AddonTestUtils, MockAsyncShutdown } = ChromeUtils.import(
+  "resource://testing-common/AddonTestUtils.jsm"
+);
+var { Async } = ChromeUtils.import("resource://services-common/async.js");
+var { CommonUtils } = ChromeUtils.import("resource://services-common/utils.js");
+var { PlacesTestUtils } = ChromeUtils.import(
+  "resource://testing-common/PlacesTestUtils.jsm"
+);
+var { sinon } = ChromeUtils.import("resource://testing-common/Sinon.jsm");
+var { SerializableSet, Svc, Utils, getChromeWindow } = ChromeUtils.import(
+  "resource://services-sync/util.js"
+);
+var { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+var { PlacesUtils } = ChromeUtils.import(
+  "resource://gre/modules/PlacesUtils.jsm"
+);
+var { PlacesSyncUtils } = ChromeUtils.import(
+  "resource://gre/modules/PlacesSyncUtils.jsm"
+);
+var { ObjectUtils } = ChromeUtils.import(
+  "resource://gre/modules/ObjectUtils.jsm"
+);
+var {
+  AccountState,
+  MockFxaStorageManager,
+  SyncTestingInfrastructure,
+  configureFxAccountIdentity,
+  configureIdentity,
+  encryptPayload,
+  getLoginTelemetryScalar,
+  makeFxAccountsInternalMock,
+  makeIdentityConfig,
+  promiseNamedTimer,
+  promiseZeroTimer,
+  sumHistogram,
+  syncTestLogging,
+  waitForZeroTimer,
+} = ChromeUtils.import("resource://testing-common/services/sync/utils.js");
+ChromeUtils.defineModuleGetter(
+  this,
+  "AddonManager",
+  "resource://gre/modules/AddonManager.jsm"
+);
 
 add_task(async function head_setup() {
   // Initialize logging. This will sometimes be reset by a pref reset,
   // so it's also called as part of SyncTestingInfrastructure().
   syncTestLogging();
   // If a test imports Service, make sure it is initialized first.
-  if (this.Service) {
-    await this.Service.promiseInitialized;
+  if (typeof Service !== "undefined") {
+    await Service.promiseInitialized;
   }
 });
-
-// ================================================
-// Load mocking/stubbing library, sinon
-// docs: http://sinonjs.org/releases/v2.3.2/
-ChromeUtils.import("resource://gre/modules/Timer.jsm");
-Services.scriptloader.loadSubScript("resource://testing-common/sinon-2.3.2.js", this);
-/* globals sinon */
-// ================================================
 
 XPCOMUtils.defineLazyGetter(this, "SyncPingSchema", function() {
   let ns = {};
   ChromeUtils.import("resource://gre/modules/FileUtils.jsm", ns);
   ChromeUtils.import("resource://gre/modules/NetUtil.jsm", ns);
-  let stream = Cc["@mozilla.org/network/file-input-stream;1"]
-               .createInstance(Ci.nsIFileInputStream);
+  let stream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(
+    Ci.nsIFileInputStream
+  );
   let schema;
   try {
     let schemaFile = do_get_file("sync_ping_schema.json");
-    stream.init(schemaFile, ns.FileUtils.MODE_RDONLY, ns.FileUtils.PERMS_FILE, 0);
+    stream.init(
+      schemaFile,
+      ns.FileUtils.MODE_RDONLY,
+      ns.FileUtils.PERMS_FILE,
+      0
+    );
 
     let bytes = ns.NetUtil.readInputStream(stream, stream.available());
-    schema = JSON.parse((new TextDecoder()).decode(bytes));
+    schema = JSON.parse(new TextDecoder().decode(bytes));
   } finally {
     stream.close();
   }
@@ -79,22 +113,6 @@ function ExtensionsTestPath(path) {
   return "../../../../toolkit/mozapps/extensions/test/xpcshell" + path;
 }
 
-/**
- * Loads the AddonManager test functions by importing its test file.
- *
- * This should be called in the global scope of any test file needing to
- * interface with the AddonManager. It should only be called once, or the
- * universe will end.
- */
-function loadAddonTestFunctions() {
-  const path = ExtensionsTestPath("/head_addons.js");
-  let file = do_get_file(path);
-  let uri = Services.io.newFileURI(file);
-  /* import-globals-from ../../../../toolkit/mozapps/extensions/test/xpcshell/head_addons.js */
-  Services.scriptloader.loadSubScript(uri.spec, gGlobalScope);
-  createAppInfo("xpcshell@tests.mozilla.org", "XPCShell", "1", "1.9.2");
-}
-
 function webExtensionsTestPath(path) {
   if (path[0] != "/") {
     throw Error("Path must begin with '/': " + path);
@@ -114,28 +132,13 @@ function loadWebExtensionTestFunctions() {
   Services.scriptloader.loadSubScript(uri.spec, gGlobalScope);
 }
 
-// Returns a promise
-function getAddonInstall(name) {
-  let f = do_get_file(ExtensionsTestPath("/addons/" + name + ".xpi"));
-  return AddonManager.getInstallForFile(f);
-}
-
 /**
  * Installs an add-on from an addonInstall
  *
  * @param  install addonInstall instance to install
  */
 async function installAddonFromInstall(install) {
-  await new Promise(res => {
-    let listener = {
-      onInstallEnded() {
-        AddonManager.removeAddonListener(listener);
-        res();
-      }
-    };
-    AddonManager.addInstallListener(listener);
-    install.install();
-  });
+  await install.install();
 
   Assert.notEqual(null, install.addon);
   Assert.notEqual(null, install.addon.syncGUID);
@@ -146,15 +149,15 @@ async function installAddonFromInstall(install) {
 /**
  * Convenience function to install an add-on from the extensions unit tests.
  *
- * @param  name
- *         String name of add-on to install. e.g. test_install1
+ * @param  file
+ *         Add-on file to install.
  * @param  reconciler
  *         addons reconciler, if passed we will wait on the events to be
  *         processed before resolving
  * @return addon object that was installed
  */
-async function installAddon(name, reconciler = null) {
-  let install = await getAddonInstall(name);
+async function installAddon(file, reconciler = null) {
+  let install = await AddonManager.getInstallForFile(file);
   Assert.notEqual(null, install);
   const addon = await installAddonFromInstall(install);
   if (reconciler) {
@@ -180,7 +183,7 @@ async function uninstallAddon(addon, reconciler = null) {
           AddonManager.removeAddonListener(listener);
           res(uninstalled);
         }
-      }
+      },
     };
     AddonManager.addAddonListener(listener);
   });
@@ -202,8 +205,7 @@ async function generateNewKeys(collectionKeys, collections = null) {
 // and stub part of Service.wm.
 
 function mockShouldSkipWindow(win) {
-  return win.closed ||
-         win.mockIsPrivate;
+  return win.closed || win.mockIsPrivate;
 }
 
 function mockGetTabState(tab) {
@@ -215,8 +217,8 @@ function mockGetWindowEnumerator(url, numWindows, numTabs, indexes, moreURLs) {
 
   function url2entry(urlToConvert) {
     return {
-      url: ((typeof urlToConvert == "function") ? urlToConvert() : urlToConvert),
-      title: "title"
+      url: typeof urlToConvert == "function" ? urlToConvert() : urlToConvert,
+      title: "title",
     };
   }
 
@@ -232,14 +234,21 @@ function mockGetWindowEnumerator(url, numWindows, numTabs, indexes, moreURLs) {
     elements.push(win);
 
     for (let t = 0; t < numTabs; ++t) {
-      tabs.push(Cu.cloneInto({
-        index: indexes ? indexes() : 1,
-        entries: (moreURLs ? [url].concat(moreURLs()) : [url]).map(url2entry),
-        attributes: {
-          image: "image"
-        },
-        lastAccessed: 1499
-      }, {}));
+      tabs.push(
+        Cu.cloneInto(
+          {
+            index: indexes ? indexes() : 1,
+            entries: (moreURLs ? [url].concat(moreURLs()) : [url]).map(
+              url2entry
+            ),
+            attributes: {
+              image: "image",
+            },
+            lastAccessed: 1499,
+          },
+          {}
+        )
+      );
     }
   }
 
@@ -260,14 +269,7 @@ function mockGetWindowEnumerator(url, numWindows, numTabs, indexes, moreURLs) {
     },
   });
 
-  return {
-    hasMoreElements() {
-      return elements.length;
-    },
-    getNext() {
-      return elements.shift();
-    },
-  };
+  return elements.values();
 }
 
 // Helper function to get the sync telemetry and add the typically used test
@@ -296,8 +298,14 @@ function assert_valid_ping(record) {
         // the ping actually was - so be helpful.
         info("telemetry ping validation failed");
         info("the ping data is: " + JSON.stringify(record, undefined, 2));
-        info("the validation failures: " + JSON.stringify(SyncPingValidator.errors, undefined, 2));
-        ok(false, "Sync telemetry ping validation failed - see output above for details");
+        info(
+          "the validation failures: " +
+            JSON.stringify(SyncPingValidator.errors, undefined, 2)
+        );
+        ok(
+          false,
+          "Sync telemetry ping validation failed - see output above for details"
+        );
       }
     }
     equal(record.version, 1);
@@ -305,8 +313,11 @@ function assert_valid_ping(record) {
       lessOrEqual(p.when, Date.now());
       if (p.devices) {
         ok(!p.devices.some(device => device.id == record.deviceID));
-        equal(new Set(p.devices.map(device => device.id)).size,
-              p.devices.length, "Duplicate device ids in ping devices list");
+        equal(
+          new Set(p.devices.map(device => device.id)).size,
+          p.devices.length,
+          "Duplicate device ids in ping devices list"
+        );
       }
     });
   }
@@ -388,7 +399,11 @@ function sync_and_validate_telem(allowErrorPings, getFullPing = false) {
 // engine is actually synced, but we still want to ensure we're generating a
 // valid ping. Returns a promise that resolves to the ping, or rejects with the
 // thrown error after calling an optional callback.
-async function sync_engine_and_validate_telem(engine, allowErrorPings, onError) {
+async function sync_engine_and_validate_telem(
+  engine,
+  allowErrorPings,
+  onError
+) {
   let telem = get_sync_test_telemetry();
   let caughtError = null;
   // Clear out status, so failures from previous syncs won't show up in the
@@ -414,22 +429,27 @@ async function sync_engine_and_validate_telem(engine, allowErrorPings, onError) 
       ping.syncs.forEach(record => {
         if (record && record.status) {
           // did we see anything to lead us to believe that something bad actually happened
-          let realProblem = record.failureReason || record.engines.some(e => {
-            if (e.failureReason || e.status) {
-              return true;
-            }
-            if (e.outgoing && e.outgoing.some(o => o.failed > 0)) {
-              return true;
-            }
-            return e.incoming && e.incoming.failed;
-          });
+          let realProblem =
+            record.failureReason ||
+            record.engines.some(e => {
+              if (e.failureReason || e.status) {
+                return true;
+              }
+              if (e.outgoing && e.outgoing.some(o => o.failed > 0)) {
+                return true;
+              }
+              return e.incoming && e.incoming.failed;
+            });
           if (!realProblem) {
             // no, so if the status is the same as it was initially, just assume
             // that its leftover and that we can ignore it.
             if (record.status.sync && record.status.sync == initialSyncStatus) {
               delete record.status.sync;
             }
-            if (record.status.service && record.status.service == initialServiceStatus) {
+            if (
+              record.status.service &&
+              record.status.service == initialServiceStatus
+            ) {
               delete record.status.service;
             }
             if (!record.status.sync && !record.status.service) {
@@ -499,23 +519,27 @@ Utils.getDefaultDeviceName = function() {
 };
 
 async function registerRotaryEngine() {
-  let {RotaryEngine} =
-    ChromeUtils.import("resource://testing-common/services/sync/rotaryengine.js", {});
+  let { RotaryEngine } = ChromeUtils.import(
+    "resource://testing-common/services/sync/rotaryengine.js"
+  );
   await Service.engineManager.clear();
 
   await Service.engineManager.register(RotaryEngine);
   let engine = Service.engineManager.get("rotary");
+  let syncID = await engine.resetLocalSyncID();
   engine.enabled = true;
 
-  return { engine, tracker: engine._tracker };
+  return { engine, syncID, tracker: engine._tracker };
 }
 
 // Set the validation prefs to attempt validation every time to avoid non-determinism.
-function enableValidationPrefs() {
-  Svc.Prefs.set("engine.bookmarks.validation.interval", 0);
-  Svc.Prefs.set("engine.bookmarks.validation.percentageChance", 100);
-  Svc.Prefs.set("engine.bookmarks.validation.maxRecords", -1);
-  Svc.Prefs.set("engine.bookmarks.validation.enabled", true);
+function enableValidationPrefs(engines = ["bookmarks"]) {
+  for (let engine of engines) {
+    Svc.Prefs.set(`engine.${engine}.validation.interval`, 0);
+    Svc.Prefs.set(`engine.${engine}.validation.percentageChance`, 100);
+    Svc.Prefs.set(`engine.${engine}.validation.maxRecords`, -1);
+    Svc.Prefs.set(`engine.${engine}.validation.enabled`, true);
+  }
 }
 
 async function serverForEnginesWithKeys(users, engines, callback) {
@@ -527,16 +551,13 @@ async function serverForEnginesWithKeys(users, engines, callback) {
 
   let allEngines = [Service.clientsEngine].concat(engines);
 
-  let globalEngines = allEngines.reduce((entries, engine) => {
-    let { name, version, syncID } = engine;
-    entries[name] = { version, syncID };
-    return entries;
-  }, {});
+  let globalEngines = {};
+  for (let engine of allEngines) {
+    let syncID = await engine.resetLocalSyncID();
+    globalEngines[engine.name] = { version: engine.version, syncID };
+  }
 
-  let contents = allEngines.reduce((collections, engine) => {
-    collections[engine.name] = {};
-    return collections;
-  }, {
+  let contents = {
     meta: {
       global: {
         syncID: Service.syncID,
@@ -547,7 +568,10 @@ async function serverForEnginesWithKeys(users, engines, callback) {
     crypto: {
       keys: encryptPayload(wbo.cleartext),
     },
-  });
+  };
+  for (let engine of allEngines) {
+    contents[engine.name] = {};
+  }
 
   return serverForUsers(users, contents, callback);
 }
@@ -558,7 +582,7 @@ async function serverForFoo(engine, callback) {
   // do an engine sync only, there's no locking - so we end up with multiple
   // syncs running. Neuter that by making the threshold very large.
   Service.scheduler.syncThreshold = 10000000;
-  return serverForEnginesWithKeys({"foo": "password"}, engine, callback);
+  return serverForEnginesWithKeys({ foo: "password" }, engine, callback);
 }
 
 // Places notifies history observers asynchronously, so `addVisits` might return
@@ -567,15 +591,20 @@ async function serverForFoo(engine, callback) {
 async function promiseVisit(expectedType, expectedURI) {
   return new Promise(resolve => {
     function done(type, uri) {
-      if (uri.equals(expectedURI) && type == expectedType) {
+      if (uri == expectedURI.spec && type == expectedType) {
         PlacesUtils.history.removeObserver(observer);
+        PlacesObservers.removeListener(
+          ["page-visited"],
+          observer.handlePlacesEvents
+        );
         resolve();
       }
     }
     let observer = {
-      onVisits(visits) {
-        Assert.equal(visits.length, 1);
-        done("added", visits[0].uri);
+      handlePlacesEvents(events) {
+        Assert.equal(events.length, 1);
+        Assert.equal(events[0].type, "page-visited");
+        done("added", events[0].url);
       },
       onBeginUpdateBatch() {},
       onEndUpdateBatch() {},
@@ -583,17 +612,22 @@ async function promiseVisit(expectedType, expectedURI) {
       onFrecencyChanged() {},
       onManyFrecenciesChanged() {},
       onDeleteURI(uri) {
-        done("removed", uri);
+        done("removed", uri.spec);
       },
       onClearHistory() {},
       onPageChanged() {},
       onDeleteVisits() {},
     };
     PlacesUtils.history.addObserver(observer, false);
+    PlacesObservers.addListener(["page-visited"], observer.handlePlacesEvents);
   });
 }
 
-async function addVisit(suffix, referrer = null, transition = PlacesUtils.history.TRANSITION_LINK) {
+async function addVisit(
+  suffix,
+  referrer = null,
+  transition = PlacesUtils.history.TRANSITION_LINK
+) {
   let uriString = "http://getfirefox.com/" + suffix;
   let uri = CommonUtils.makeURI(uriString);
   _("Adding visit for URI " + uriString);
@@ -620,9 +654,7 @@ function bookmarkNodesToInfos(nodes) {
       info.children = bookmarkNodesToInfos(node.children);
     }
     if (node.annos) {
-      let orphanAnno = node.annos.find(anno =>
-        anno.name == "sync/parent"
-      );
+      let orphanAnno = node.annos.find(anno => anno.name == "sync/parent");
       if (orphanAnno) {
         info.requestedParent = orphanAnno.value;
       }
@@ -640,4 +672,11 @@ async function assertBookmarksTreeMatches(rootGuid, expected, message) {
     _(`Actual structure for ${rootGuid}`, JSON.stringify(actual));
     throw new Assert.constructor.AssertionError({ actual, expected, message });
   }
+}
+
+function bufferedBookmarksEnabled() {
+  return Services.prefs.getBoolPref(
+    "services.sync.engine.bookmarks.buffer",
+    false
+  );
 }

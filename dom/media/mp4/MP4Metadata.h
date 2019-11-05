@@ -62,7 +62,7 @@ class MP4Metadata : public DecoderDoctorLifeLogger<MP4Metadata> {
    public:
     template <typename M2, typename T2>
     ResultAndType(M2&& aM, T2&& aT)
-        : mResult(Forward<M2>(aM)), mT(Forward<T2>(aT)) {}
+        : mResult(std::forward<M2>(aM)), mT(std::forward<T2>(aT)) {}
     ResultAndType(const ResultAndType&) = default;
     ResultAndType& operator=(const ResultAndType&) = default;
     ResultAndType(ResultAndType&&) = default;

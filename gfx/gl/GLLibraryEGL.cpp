@@ -19,10 +19,10 @@
 #include "nsIGfxInfo.h"
 #include "nsPrintfCString.h"
 #ifdef XP_WIN
-#include "mozilla/gfx/DeviceManagerDx.h"
-#include "nsWindowsHelpers.h"
+#  include "mozilla/gfx/DeviceManagerDx.h"
+#  include "nsWindowsHelpers.h"
 
-#include <d3d11.h>
+#  include <d3d11.h>
 #endif
 #include "OGLShaderProgram.h"
 #include "prenv.h"
@@ -31,12 +31,19 @@
 #include "GLContextProvider.h"
 #include "gfxPrefs.h"
 #include "ScopedGLHelpers.h"
+#ifdef MOZ_WIDGET_GTK
+#  include <gdk/gdk.h>
+#  ifdef MOZ_WAYLAND
+#    include <gdk/gdkwayland.h>
+#    include <dlfcn.h>
+#  endif  // MOZ_WIDGET_GTK
+#endif    // MOZ_WAYLAND
 
 namespace mozilla {
 namespace gl {
 
 StaticMutex GLLibraryEGL::sMutex;
-GLLibraryEGL sEGLLibrary;
+StaticRefPtr<GLLibraryEGL> GLLibraryEGL::sEGLLibrary;
 
 // should match the order of EGLExtensions, and be null-terminated.
 static const char* sEGLExtensionNames[] = {
@@ -61,11 +68,22 @@ static const char* sEGLExtensionNames[] = {
     "EGL_ANGLE_stream_producer_d3d_texture",
     "EGL_ANGLE_device_creation",
     "EGL_ANGLE_device_creation_d3d11",
-};
+    "EGL_KHR_surfaceless_context",
+    "EGL_KHR_create_context_no_error",
+    "EGL_MOZ_create_context_provoking_vertex_dont_care"};
 
-#if defined(ANDROID)
+PRLibrary* LoadApitraceLibrary() {
+  const char* path = nullptr;
 
-static PRLibrary* LoadApitraceLibrary() {
+#ifdef ANDROID
+  // We only need to explicitly dlopen egltrace
+  // on android as we can use LD_PRELOAD or other tricks
+  // on other platforms. We look for it in /data/local
+  // as that's writeable by all users.
+  path = "/data/local/tmp/egltrace.so";
+#endif
+  if (!path) return nullptr;
+
   // Initialization of gfx prefs here is only needed during the unit tests...
   gfxPrefs::GetSingleton();
   if (!gfxPrefs::UseApitrace()) {
@@ -73,7 +91,6 @@ static PRLibrary* LoadApitraceLibrary() {
   }
 
   static PRLibrary* sApitraceLibrary = nullptr;
-
   if (sApitraceLibrary) return sApitraceLibrary;
 
   nsAutoCString logFile;
@@ -87,19 +104,18 @@ static PRLibrary* LoadApitraceLibrary() {
   nsAutoCString logPath;
   logPath.AppendPrintf("%s/%s", getenv("GRE_HOME"), logFile.get());
 
+#ifndef XP_WIN  // Windows is missing setenv and forbids PR_LoadLibrary.
   // apitrace uses the TRACE_FILE environment variable to determine where
   // to log trace output to
   printf_stderr("Logging GL tracing output to %s", logPath.get());
   setenv("TRACE_FILE", logPath.get(), false);
 
-  printf_stderr("Attempting load of %s\n", APITRACE_LIB);
-
-  sApitraceLibrary = PR_LoadLibrary(APITRACE_LIB);
+  printf_stderr("Attempting load of %s\n", path);
+  sApitraceLibrary = PR_LoadLibrary(path);
+#endif
 
   return sApitraceLibrary;
 }
-
-#endif  // ANDROID
 
 #ifdef XP_WIN
 // see the comment in GLLibraryEGL::EnsureInitialized() for the rationale here.
@@ -177,6 +193,12 @@ static EGLDisplay GetAndInitDisplayForWebRender(GLLibraryEGL& egl,
   }
 
   if (!egl.fInitialize(display, nullptr, nullptr)) {
+    const EGLint err = egl.fGetError();
+    if (err != LOCAL_EGL_SUCCESS) {
+      gfxCriticalError()
+          << "Failed to initialize EGLDisplay for WebRender error: "
+          << gfx::hexa(err);
+    }
     return EGL_NO_DISPLAY;
   }
   return display;
@@ -188,8 +210,8 @@ static EGLDisplay GetAndInitDisplayForWebRender(GLLibraryEGL& egl,
 static bool IsAccelAngleSupported(const nsCOMPtr<nsIGfxInfo>& gfxInfo,
                                   nsACString* const out_failureId) {
   if (wr::RenderThread::IsInRenderThread()) {
-  // We can only enter here with WebRender, so assert that this is a
-  // WebRender-enabled build.
+    // We can only enter here with WebRender, so assert that this is a
+    // WebRender-enabled build.
 #ifndef MOZ_BUILD_WEBRENDER
     MOZ_ASSERT(false);
 #endif
@@ -221,7 +243,7 @@ static EGLDisplay GetAndInitDisplay(GLLibraryEGL& egl, void* displayType) {
 
 class AngleErrorReporting {
  public:
-  AngleErrorReporting() {
+  AngleErrorReporting() : mFailureId(nullptr) {
     // No static constructor
   }
 
@@ -335,8 +357,47 @@ bool GLLibraryEGL::ReadbackEGLImage(EGLImage image,
   return true;
 }
 
+// -
+
+#if defined(XP_UNIX)
+#  define GLES2_LIB "libGLESv2.so"
+#  define GLES2_LIB2 "libGLESv2.so.2"
+#elif defined(XP_WIN)
+#  define GLES2_LIB "libGLESv2.dll"
+#else
+#  error "Platform not recognized"
+#endif
+
+Maybe<SymbolLoader> GLLibraryEGL::GetSymbolLoader() const {
+  auto ret = SymbolLoader(mSymbols.fGetProcAddress);
+  ret.mLib = mGLLibrary;
+  return Some(ret);
+}
+
+// -
+
+/* static */
 bool GLLibraryEGL::EnsureInitialized(bool forceAccel,
                                      nsACString* const out_failureId) {
+  if (!sEGLLibrary) {
+    sEGLLibrary = new GLLibraryEGL();
+  }
+  return sEGLLibrary->DoEnsureInitialized(forceAccel, out_failureId);
+}
+
+bool GLLibraryEGL::DoEnsureInitialized() {
+  nsCString failureId;
+  return DoEnsureInitialized(false, &failureId);
+}
+
+bool GLLibraryEGL::DoEnsureInitialized(bool forceAccel,
+                                       nsACString* const out_failureId) {
+  if (mInitialized && !mSymbols.fTerminate) {
+    *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_EGL_DESTROYED");
+    MOZ_ASSERT(false);
+    return false;
+  }
+
   if (mInitialized) {
     return true;
   }
@@ -361,23 +422,18 @@ bool GLLibraryEGL::EnsureInitialized(bool forceAccel,
 
       if (LoadLibrarySystem32(L"d3dcompiler_47.dll")) break;
 
-#ifdef MOZ_D3DCOMPILER_VISTA_DLL
+#  ifdef MOZ_D3DCOMPILER_VISTA_DLL
       if (LoadLibraryForEGLOnWindows(
-              NS_LITERAL_STRING(NS_STRINGIFY(MOZ_D3DCOMPILER_VISTA_DLL))))
+              NS_LITERAL_STRING(MOZ_STRINGIFY(MOZ_D3DCOMPILER_VISTA_DLL))))
         break;
-#endif
+#  endif
 
       MOZ_ASSERT(false, "d3dcompiler DLL loading failed.");
     } while (false);
 
-    LoadLibraryForEGLOnWindows(NS_LITERAL_STRING("libGLESv2.dll"));
+    mGLLibrary = LoadLibraryForEGLOnWindows(NS_LITERAL_STRING("libGLESv2.dll"));
 
     mEGLLibrary = LoadLibraryForEGLOnWindows(NS_LITERAL_STRING("libEGL.dll"));
-
-    if (!mEGLLibrary) {
-      *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_EGL_LOAD");
-      return false;
-    }
   }
 
 #else  // !Windows
@@ -385,73 +441,93 @@ bool GLLibraryEGL::EnsureInitialized(bool forceAccel,
   // On non-Windows (Android) we use system copies of libEGL. We look for
   // the APITrace lib, libEGL.so, and libEGL.so.1 in that order.
 
-#if defined(ANDROID)
+#  if defined(ANDROID)
   if (!mEGLLibrary) mEGLLibrary = LoadApitraceLibrary();
-#endif
+#  endif
 
   if (!mEGLLibrary) {
     printf_stderr("Attempting load of libEGL.so\n");
     mEGLLibrary = PR_LoadLibrary("libEGL.so");
   }
-#if defined(XP_UNIX)
+#  if defined(XP_UNIX)
   if (!mEGLLibrary) {
     mEGLLibrary = PR_LoadLibrary("libEGL.so.1");
   }
-#endif
+#  endif
 
-  if (!mEGLLibrary) {
-    NS_WARNING("Couldn't load EGL LIB.");
-    *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_EGL_LOAD_2");
-    return false;
+#  ifdef APITRACE_LIB
+  if (!mGLLibrary) {
+    mGLLibrary = PR_LoadLibrary(APITRACE_LIB);
   }
+#  endif
+
+  if (!mGLLibrary) {
+    mGLLibrary = PR_LoadLibrary(GLES2_LIB);
+  }
+
+#  ifdef GLES2_LIB2
+  if (!mGLLibrary) {
+    mGLLibrary = PR_LoadLibrary(GLES2_LIB2);
+  }
+#  endif
 
 #endif  // !Windows
 
-#define SYMBOL(X)                                     \
-  {                                                   \
-    (PRFuncPtr*)&mSymbols.f##X, { "egl" #X, nullptr } \
-  }
-#define END_OF_SYMBOLS   \
-  {                      \
-    nullptr, { nullptr } \
-  }
-
-  GLLibraryLoader::SymLoadStruct earlySymbols[] = {
-      SYMBOL(GetDisplay),
-      SYMBOL(Terminate),
-      SYMBOL(GetCurrentSurface),
-      SYMBOL(GetCurrentContext),
-      SYMBOL(MakeCurrent),
-      SYMBOL(DestroyContext),
-      SYMBOL(CreateContext),
-      SYMBOL(DestroySurface),
-      SYMBOL(CreateWindowSurface),
-      SYMBOL(CreatePbufferSurface),
-      SYMBOL(CreatePbufferFromClientBuffer),
-      SYMBOL(CreatePixmapSurface),
-      SYMBOL(BindAPI),
-      SYMBOL(Initialize),
-      SYMBOL(ChooseConfig),
-      SYMBOL(GetError),
-      SYMBOL(GetConfigs),
-      SYMBOL(GetConfigAttrib),
-      SYMBOL(WaitNative),
-      SYMBOL(GetProcAddress),
-      SYMBOL(SwapBuffers),
-      SYMBOL(CopyBuffers),
-      SYMBOL(QueryString),
-      SYMBOL(QueryContext),
-      SYMBOL(BindTexImage),
-      SYMBOL(ReleaseTexImage),
-      SYMBOL(SwapInterval),
-      SYMBOL(QuerySurface),
-      END_OF_SYMBOLS};
-
-  if (!GLLibraryLoader::LoadSymbols(mEGLLibrary, earlySymbols)) {
-    NS_WARNING(
-        "Couldn't find required entry points in EGL library (early init)");
-    *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_EGL_SYM");
+  if (!mEGLLibrary || !mGLLibrary) {
+    NS_WARNING("Couldn't load EGL LIB.");
+    *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_EGL_LOAD_3");
     return false;
+  }
+
+#define SYMBOL(X)                 \
+  {                               \
+    (PRFuncPtr*)&mSymbols.f##X, { \
+      { "egl" #X }                \
+    }                             \
+  }
+#define END_OF_SYMBOLS \
+  {                    \
+    nullptr, {}        \
+  }
+
+  SymLoadStruct earlySymbols[] = {SYMBOL(GetDisplay),
+                                  SYMBOL(Terminate),
+                                  SYMBOL(GetCurrentSurface),
+                                  SYMBOL(GetCurrentContext),
+                                  SYMBOL(MakeCurrent),
+                                  SYMBOL(DestroyContext),
+                                  SYMBOL(CreateContext),
+                                  SYMBOL(DestroySurface),
+                                  SYMBOL(CreateWindowSurface),
+                                  SYMBOL(CreatePbufferSurface),
+                                  SYMBOL(CreatePbufferFromClientBuffer),
+                                  SYMBOL(CreatePixmapSurface),
+                                  SYMBOL(BindAPI),
+                                  SYMBOL(Initialize),
+                                  SYMBOL(ChooseConfig),
+                                  SYMBOL(GetError),
+                                  SYMBOL(GetConfigs),
+                                  SYMBOL(GetConfigAttrib),
+                                  SYMBOL(WaitNative),
+                                  SYMBOL(GetProcAddress),
+                                  SYMBOL(SwapBuffers),
+                                  SYMBOL(CopyBuffers),
+                                  SYMBOL(QueryString),
+                                  SYMBOL(QueryContext),
+                                  SYMBOL(BindTexImage),
+                                  SYMBOL(ReleaseTexImage),
+                                  SYMBOL(SwapInterval),
+                                  SYMBOL(QuerySurface),
+                                  END_OF_SYMBOLS};
+
+  {
+    const SymbolLoader libLoader(*mEGLLibrary);
+    if (!libLoader.LoadSymbols(earlySymbols)) {
+      NS_WARNING(
+          "Couldn't find required entry points in EGL library (early init)");
+      *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_EGL_SYM");
+      return false;
+    }
   }
 
   {
@@ -463,39 +539,33 @@ bool GLLibraryEGL::EnsureInitialized(bool forceAccel,
       *(PRFuncPtr*)&mSymbols.fQueryString = internalFunc;
     }
   }
+  const SymbolLoader pfnLoader(mSymbols.fGetProcAddress);
 
   InitClientExtensions();
 
-  const auto lookupFunction =
-      (GLLibraryLoader::PlatformLookupFunction)mSymbols.fGetProcAddress;
+  const auto fnLoadSymbols = [&](const SymLoadStruct* symbols) {
+    if (pfnLoader.LoadSymbols(symbols)) return true;
 
-  const auto fnLoadSymbols =
-      [&](const GLLibraryLoader::SymLoadStruct* symbols) {
-        if (GLLibraryLoader::LoadSymbols(mEGLLibrary, symbols, lookupFunction))
-          return true;
-
-        ClearSymbols(symbols);
-        return false;
-      };
+    ClearSymbols(symbols);
+    return false;
+  };
 
   // Check the ANGLE support the system has
   nsCOMPtr<nsIGfxInfo> gfxInfo = do_GetService("@mozilla.org/gfx/info;1");
   mIsANGLE = IsExtensionSupported(ANGLE_platform_angle);
 
-  EGLDisplay chosenDisplay = nullptr;
-
   // Client exts are ready. (But not display exts!)
 
   if (mIsANGLE) {
     MOZ_ASSERT(IsExtensionSupported(ANGLE_platform_angle_d3d));
-    const GLLibraryLoader::SymLoadStruct angleSymbols[] = {
-        SYMBOL(GetPlatformDisplayEXT), END_OF_SYMBOLS};
+    const SymLoadStruct angleSymbols[] = {SYMBOL(GetPlatformDisplayEXT),
+                                          END_OF_SYMBOLS};
     if (!fnLoadSymbols(angleSymbols)) {
       gfxCriticalError() << "Failed to load ANGLE symbols!";
       return false;
     }
     MOZ_ASSERT(IsExtensionSupported(ANGLE_platform_angle_d3d));
-    const GLLibraryLoader::SymLoadStruct createDeviceSymbols[] = {
+    const SymLoadStruct createDeviceSymbols[] = {
         SYMBOL(CreateDeviceANGLE), SYMBOL(ReleaseDeviceANGLE), END_OF_SYMBOLS};
     if (!fnLoadSymbols(createDeviceSymbols)) {
       NS_ERROR(
@@ -503,6 +573,166 @@ bool GLLibraryEGL::EnsureInitialized(bool forceAccel,
       MarkExtensionUnsupported(ANGLE_device_creation);
     }
   }
+
+  mEGLDisplay = CreateDisplay(forceAccel, gfxInfo, out_failureId);
+  if (!mEGLDisplay) {
+    return false;
+  }
+
+  InitDisplayExtensions();
+
+  ////////////////////////////////////
+  // Alright, load display exts.
+
+  if (IsExtensionSupported(KHR_lock_surface)) {
+    const SymLoadStruct lockSymbols[] = {
+        SYMBOL(LockSurfaceKHR), SYMBOL(UnlockSurfaceKHR), END_OF_SYMBOLS};
+    if (!fnLoadSymbols(lockSymbols)) {
+      NS_ERROR("EGL supports KHR_lock_surface without exposing its functions!");
+      MarkExtensionUnsupported(KHR_lock_surface);
+    }
+  }
+
+  if (IsExtensionSupported(ANGLE_surface_d3d_texture_2d_share_handle)) {
+    const SymLoadStruct d3dSymbols[] = {SYMBOL(QuerySurfacePointerANGLE),
+                                        END_OF_SYMBOLS};
+    if (!fnLoadSymbols(d3dSymbols)) {
+      NS_ERROR(
+          "EGL supports ANGLE_surface_d3d_texture_2d_share_handle without "
+          "exposing its functions!");
+      MarkExtensionUnsupported(ANGLE_surface_d3d_texture_2d_share_handle);
+    }
+  }
+
+  if (IsExtensionSupported(KHR_fence_sync)) {
+    const SymLoadStruct syncSymbols[] = {
+        SYMBOL(CreateSyncKHR), SYMBOL(DestroySyncKHR),
+        SYMBOL(ClientWaitSyncKHR), SYMBOL(GetSyncAttribKHR), END_OF_SYMBOLS};
+    if (!fnLoadSymbols(syncSymbols)) {
+      NS_ERROR("EGL supports KHR_fence_sync without exposing its functions!");
+      MarkExtensionUnsupported(KHR_fence_sync);
+    }
+  }
+
+  if (IsExtensionSupported(KHR_image) || IsExtensionSupported(KHR_image_base)) {
+    const SymLoadStruct imageSymbols[] = {
+        SYMBOL(CreateImageKHR), SYMBOL(DestroyImageKHR), END_OF_SYMBOLS};
+    if (!fnLoadSymbols(imageSymbols)) {
+      NS_ERROR("EGL supports KHR_image(_base) without exposing its functions!");
+      MarkExtensionUnsupported(KHR_image);
+      MarkExtensionUnsupported(KHR_image_base);
+      MarkExtensionUnsupported(KHR_image_pixmap);
+    }
+  } else {
+    MarkExtensionUnsupported(KHR_image_pixmap);
+  }
+
+  if (IsExtensionSupported(ANDROID_native_fence_sync)) {
+    const SymLoadStruct nativeFenceSymbols[] = {SYMBOL(DupNativeFenceFDANDROID),
+                                                END_OF_SYMBOLS};
+    if (!fnLoadSymbols(nativeFenceSymbols)) {
+      NS_ERROR(
+          "EGL supports ANDROID_native_fence_sync without exposing its "
+          "functions!");
+      MarkExtensionUnsupported(ANDROID_native_fence_sync);
+    }
+  }
+
+  if (IsExtensionSupported(KHR_stream)) {
+    const SymLoadStruct streamSymbols[] = {
+        SYMBOL(CreateStreamKHR), SYMBOL(DestroyStreamKHR),
+        SYMBOL(QueryStreamKHR), END_OF_SYMBOLS};
+    if (!fnLoadSymbols(streamSymbols)) {
+      NS_ERROR("EGL supports KHR_stream without exposing its functions!");
+      MarkExtensionUnsupported(KHR_stream);
+    }
+  }
+
+  if (IsExtensionSupported(KHR_stream_consumer_gltexture)) {
+    const SymLoadStruct streamConsumerSymbols[] = {
+        SYMBOL(StreamConsumerGLTextureExternalKHR),
+        SYMBOL(StreamConsumerAcquireKHR), SYMBOL(StreamConsumerReleaseKHR),
+        END_OF_SYMBOLS};
+    if (!fnLoadSymbols(streamConsumerSymbols)) {
+      NS_ERROR(
+          "EGL supports KHR_stream_consumer_gltexture without exposing its "
+          "functions!");
+      MarkExtensionUnsupported(KHR_stream_consumer_gltexture);
+    }
+  }
+
+  if (IsExtensionSupported(EXT_device_query)) {
+    const SymLoadStruct queryDisplaySymbols[] = {SYMBOL(QueryDisplayAttribEXT),
+                                                 SYMBOL(QueryDeviceAttribEXT),
+                                                 END_OF_SYMBOLS};
+    if (!fnLoadSymbols(queryDisplaySymbols)) {
+      NS_ERROR("EGL supports EXT_device_query without exposing its functions!");
+      MarkExtensionUnsupported(EXT_device_query);
+    }
+  }
+
+  if (IsExtensionSupported(NV_stream_consumer_gltexture_yuv)) {
+    const SymLoadStruct nvStreamSymbols[] = {
+        SYMBOL(StreamConsumerGLTextureExternalAttribsNV), END_OF_SYMBOLS};
+    if (!fnLoadSymbols(nvStreamSymbols)) {
+      NS_ERROR(
+          "EGL supports NV_stream_consumer_gltexture_yuv without exposing its "
+          "functions!");
+      MarkExtensionUnsupported(NV_stream_consumer_gltexture_yuv);
+    }
+  }
+
+  if (IsExtensionSupported(ANGLE_stream_producer_d3d_texture)) {
+    const SymLoadStruct nvStreamSymbols[] = {
+        SYMBOL(CreateStreamProducerD3DTextureANGLE),
+        SYMBOL(StreamPostD3DTextureANGLE), END_OF_SYMBOLS};
+    if (!fnLoadSymbols(nvStreamSymbols)) {
+      NS_ERROR(
+          "EGL supports ANGLE_stream_producer_d3d_texture without exposing its "
+          "functions!");
+      MarkExtensionUnsupported(ANGLE_stream_producer_d3d_texture);
+    }
+  }
+
+  if (IsExtensionSupported(KHR_surfaceless_context)) {
+    const auto vendor = fQueryString(mEGLDisplay, LOCAL_EGL_VENDOR);
+
+    // Bug 1464610: Mali T720 (Amazon Fire 8 HD) claims to support this
+    // extension, but if you actually eglMakeCurrent() with EGL_NO_SURFACE, it
+    // fails to render anything when a real surface is provided later on. We
+    // only have the EGL vendor available here, so just avoid using this
+    // extension on all Mali devices.
+    if (strcmp((const char*)vendor, "ARM") == 0) {
+      MarkExtensionUnsupported(KHR_surfaceless_context);
+    }
+  }
+
+  mInitialized = true;
+  reporter.SetSuccessful();
+  return true;
+}
+
+#undef SYMBOL
+#undef END_OF_SYMBOLS
+
+void GLLibraryEGL::Shutdown() {
+  if (this != sEGLLibrary) {
+    return;
+  }
+  if (mEGLDisplay) {
+    fTerminate(mEGLDisplay);
+    mEGLDisplay = EGL_NO_DISPLAY;
+  }
+  mSymbols = {};
+  sEGLLibrary = nullptr;
+}
+
+EGLDisplay GLLibraryEGL::CreateDisplay(bool forceAccel,
+                                       const nsCOMPtr<nsIGfxInfo>& gfxInfo,
+                                       nsACString* const out_failureId) {
+  MOZ_ASSERT(!mInitialized);
+
+  EGLDisplay chosenDisplay = nullptr;
 
   if (IsExtensionSupported(ANGLE_platform_angle_d3d)) {
     nsCString accelAngleFailureId;
@@ -548,12 +778,27 @@ bool GLLibraryEGL::EnsureInitialized(bool forceAccel,
           *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_WARP_FALLBACK");
         }
         NS_ERROR("Fallback WARP context failed to initialize.");
-        return false;
+        return nullptr;
       }
       mIsWARP = true;
     }
   } else {
-    chosenDisplay = GetAndInitDisplay(*this, EGL_DEFAULT_DISPLAY);
+    void* nativeDisplay = EGL_DEFAULT_DISPLAY;
+#ifdef MOZ_WAYLAND
+    // Some drivers doesn't support EGL_DEFAULT_DISPLAY
+    GdkDisplay* gdkDisplay = gdk_display_get_default();
+    if (!GDK_IS_X11_DISPLAY(gdkDisplay)) {
+      static auto sGdkWaylandDisplayGetWlDisplay =
+          (wl_display * (*)(GdkDisplay*))
+              dlsym(RTLD_DEFAULT, "gdk_wayland_display_get_wl_display");
+      nativeDisplay = sGdkWaylandDisplayGetWlDisplay(gdkDisplay);
+      if (!nativeDisplay) {
+        NS_WARNING("Failed to get wl_display.");
+        return nullptr;
+      }
+    }
+#endif
+    chosenDisplay = GetAndInitDisplay(*this, nativeDisplay);
   }
 
   if (!chosenDisplay) {
@@ -561,132 +806,10 @@ bool GLLibraryEGL::EnsureInitialized(bool forceAccel,
       *out_failureId = NS_LITERAL_CSTRING("FEATURE_FAILURE_NO_DISPLAY");
     }
     NS_WARNING("Failed to initialize a display.");
-    return false;
+    return nullptr;
   }
-  mEGLDisplay = chosenDisplay;
-
-  InitDisplayExtensions();
-
-  ////////////////////////////////////
-  // Alright, load display exts.
-
-  if (IsExtensionSupported(KHR_lock_surface)) {
-    const GLLibraryLoader::SymLoadStruct lockSymbols[] = {
-        SYMBOL(LockSurfaceKHR), SYMBOL(UnlockSurfaceKHR), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(lockSymbols)) {
-      NS_ERROR("EGL supports KHR_lock_surface without exposing its functions!");
-      MarkExtensionUnsupported(KHR_lock_surface);
-    }
-  }
-
-  if (IsExtensionSupported(ANGLE_surface_d3d_texture_2d_share_handle)) {
-    const GLLibraryLoader::SymLoadStruct d3dSymbols[] = {
-        SYMBOL(QuerySurfacePointerANGLE), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(d3dSymbols)) {
-      NS_ERROR(
-          "EGL supports ANGLE_surface_d3d_texture_2d_share_handle without "
-          "exposing its functions!");
-      MarkExtensionUnsupported(ANGLE_surface_d3d_texture_2d_share_handle);
-    }
-  }
-
-  if (IsExtensionSupported(KHR_fence_sync)) {
-    const GLLibraryLoader::SymLoadStruct syncSymbols[] = {
-        SYMBOL(CreateSyncKHR), SYMBOL(DestroySyncKHR),
-        SYMBOL(ClientWaitSyncKHR), SYMBOL(GetSyncAttribKHR), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(syncSymbols)) {
-      NS_ERROR("EGL supports KHR_fence_sync without exposing its functions!");
-      MarkExtensionUnsupported(KHR_fence_sync);
-    }
-  }
-
-  if (IsExtensionSupported(KHR_image) || IsExtensionSupported(KHR_image_base)) {
-    const GLLibraryLoader::SymLoadStruct imageSymbols[] = {
-        SYMBOL(CreateImageKHR), SYMBOL(DestroyImageKHR), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(imageSymbols)) {
-      NS_ERROR("EGL supports KHR_image(_base) without exposing its functions!");
-      MarkExtensionUnsupported(KHR_image);
-      MarkExtensionUnsupported(KHR_image_base);
-      MarkExtensionUnsupported(KHR_image_pixmap);
-    }
-  } else {
-    MarkExtensionUnsupported(KHR_image_pixmap);
-  }
-
-  if (IsExtensionSupported(ANDROID_native_fence_sync)) {
-    const GLLibraryLoader::SymLoadStruct nativeFenceSymbols[] = {
-        SYMBOL(DupNativeFenceFDANDROID), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(nativeFenceSymbols)) {
-      NS_ERROR(
-          "EGL supports ANDROID_native_fence_sync without exposing its "
-          "functions!");
-      MarkExtensionUnsupported(ANDROID_native_fence_sync);
-    }
-  }
-
-  if (IsExtensionSupported(KHR_stream)) {
-    const GLLibraryLoader::SymLoadStruct streamSymbols[] = {
-        SYMBOL(CreateStreamKHR), SYMBOL(DestroyStreamKHR),
-        SYMBOL(QueryStreamKHR), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(streamSymbols)) {
-      NS_ERROR("EGL supports KHR_stream without exposing its functions!");
-      MarkExtensionUnsupported(KHR_stream);
-    }
-  }
-
-  if (IsExtensionSupported(KHR_stream_consumer_gltexture)) {
-    const GLLibraryLoader::SymLoadStruct streamConsumerSymbols[] = {
-        SYMBOL(StreamConsumerGLTextureExternalKHR),
-        SYMBOL(StreamConsumerAcquireKHR), SYMBOL(StreamConsumerReleaseKHR),
-        END_OF_SYMBOLS};
-    if (!fnLoadSymbols(streamConsumerSymbols)) {
-      NS_ERROR(
-          "EGL supports KHR_stream_consumer_gltexture without exposing its "
-          "functions!");
-      MarkExtensionUnsupported(KHR_stream_consumer_gltexture);
-    }
-  }
-
-  if (IsExtensionSupported(EXT_device_query)) {
-    const GLLibraryLoader::SymLoadStruct queryDisplaySymbols[] = {
-        SYMBOL(QueryDisplayAttribEXT), SYMBOL(QueryDeviceAttribEXT),
-        END_OF_SYMBOLS};
-    if (!fnLoadSymbols(queryDisplaySymbols)) {
-      NS_ERROR("EGL supports EXT_device_query without exposing its functions!");
-      MarkExtensionUnsupported(EXT_device_query);
-    }
-  }
-
-  if (IsExtensionSupported(NV_stream_consumer_gltexture_yuv)) {
-    const GLLibraryLoader::SymLoadStruct nvStreamSymbols[] = {
-        SYMBOL(StreamConsumerGLTextureExternalAttribsNV), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(nvStreamSymbols)) {
-      NS_ERROR(
-          "EGL supports NV_stream_consumer_gltexture_yuv without exposing its "
-          "functions!");
-      MarkExtensionUnsupported(NV_stream_consumer_gltexture_yuv);
-    }
-  }
-
-  if (IsExtensionSupported(ANGLE_stream_producer_d3d_texture)) {
-    const GLLibraryLoader::SymLoadStruct nvStreamSymbols[] = {
-        SYMBOL(CreateStreamProducerD3DTextureANGLE),
-        SYMBOL(StreamPostD3DTextureANGLE), END_OF_SYMBOLS};
-    if (!fnLoadSymbols(nvStreamSymbols)) {
-      NS_ERROR(
-          "EGL supports ANGLE_stream_producer_d3d_texture without exposing its "
-          "functions!");
-      MarkExtensionUnsupported(ANGLE_stream_producer_d3d_texture);
-    }
-  }
-
-  mInitialized = true;
-  reporter.SetSuccessful();
-  return true;
+  return chosenDisplay;
 }
-
-#undef SYMBOL
-#undef END_OF_SYMBOLS
 
 template <size_t N>
 static void MarkExtensions(const char* rawExtString, bool shouldDumpExts,

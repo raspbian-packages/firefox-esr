@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -176,16 +176,24 @@ class nsHtml5Parser final : public nsIParser, public nsSupportsWeakReference {
 
   /**
    * Call immediately before starting to evaluate a parser-inserted script or
-   * in general when the spec says to define an insertion point.
+   * in general when the spec says to increment the script nesting level.
    */
-  virtual void PushDefinedInsertionPoint() override;
+  void IncrementScriptNestingLevel() final;
 
   /**
    * Call immediately after having evaluated a parser-inserted script or
    * generally want to restore to the state before the last
-   * PushDefinedInsertionPoint call.
+   * IncrementScriptNestingLevel call.
    */
-  virtual void PopDefinedInsertionPoint() override;
+  void DecrementScriptNestingLevel() final;
+
+  /**
+   * True if this is an HTML5 parser whose script nesting level (in
+   * the sense of
+   * <https://html.spec.whatwg.org/multipage/parsing.html#script-nesting-level>)
+   * is nonzero.
+   */
+  bool HasNonzeroScriptNestingLevel() const final;
 
   /**
    * Marks the HTML5 parser as not a script-created parser: Prepares the
@@ -210,7 +218,7 @@ class nsHtml5Parser final : public nsIParser, public nsSupportsWeakReference {
   /**
    * Initializes the parser to load from a channel.
    */
-  virtual nsresult Initialize(nsIDocument* aDoc, nsIURI* aURI,
+  virtual nsresult Initialize(mozilla::dom::Document* aDoc, nsIURI* aURI,
                               nsISupports* aContainer, nsIChannel* aChannel);
 
   inline nsHtml5Tokenizer* GetTokenizer() { return mTokenizer; }
@@ -274,10 +282,10 @@ class nsHtml5Parser final : public nsIParser, public nsSupportsWeakReference {
   bool mDocWriteSpeculatorActive;
 
   /**
-   * The number of PushDefinedInsertionPoint calls we've seen without a
-   * matching PopDefinedInsertionPoint.
+   * The number of IncrementScriptNestingLevel calls we've seen without a
+   * matching DecrementScriptNestingLevel.
    */
-  int32_t mInsertionPointPushLevel;
+  int32_t mScriptNestingLevel;
 
   /**
    * True if document.close() has been called.

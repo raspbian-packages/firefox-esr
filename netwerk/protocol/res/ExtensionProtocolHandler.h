@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -72,7 +72,7 @@ class ExtensionProtocolHandler final
                              NeckoParent::GetExtensionFDResolver& aResolve);
 
  protected:
-  ~ExtensionProtocolHandler() {}
+  ~ExtensionProtocolHandler() = default;
 
  private:
   explicit ExtensionProtocolHandler();
@@ -152,12 +152,9 @@ class ExtensionProtocolHandler final
    *        nsIFile for which Normalize() has already been called.
    * @param aRequestedFile the requested web-accessible resource file. Argument
    *        must be an nsIFile for which Normalize() has already been called.
-   * @param aResult outparam set to true when the load of the requested file
-   *        should be allowed.
    */
-  Result<Ok, nsresult> AllowExternalResource(nsIFile* aExtensionDir,
-                                             nsIFile* aRequestedFile,
-                                             bool* aResult);
+  Result<bool, nsresult> AllowExternalResource(nsIFile* aExtensionDir,
+                                               nsIFile* aRequestedFile);
 
 #if defined(XP_MACOSX)
   /**
@@ -171,10 +168,8 @@ class ExtensionProtocolHandler final
    *
    * @param aRequestedFile the requested web-accessible resource file. Argument
    *        must be an nsIFile for which Normalize() has already been called.
-   * @param aResult outparam set to true on development builds when the
-   *        requested file resides in the repo.
    */
-  Result<Ok, nsresult> DevRepoContains(nsIFile* aRequestedFile, bool* aResult);
+  Result<bool, nsresult> DevRepoContains(nsIFile* aRequestedFile);
 
   // On development builds, this points to development repo. Lazily set.
   nsCOMPtr<nsIFile> mDevRepo;
@@ -198,10 +193,8 @@ class ExtensionProtocolHandler final
    *
    * @param aExtensionDir the extension directory. Argument must be an
    *        nsIFile for which Normalize() has already been called.
-   * @param aResult outparam set to true on development builds when the
-   *        requested file resides in the repo.
    */
-  Result<Ok, nsresult> AppDirContains(nsIFile* aExtensionDir, bool* aResult);
+  Result<bool, nsresult> AppDirContains(nsIFile* aExtensionDir);
 
   // On development builds, cache the NS_GRE_DIR repo. Lazily set.
   nsCOMPtr<nsIFile> mAppDir;

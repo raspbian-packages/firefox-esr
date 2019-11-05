@@ -14,6 +14,7 @@ namespace psm {
 
 SECStatus AuthCertificateHook(void* arg, PRFileDesc* fd, PRBool checkSig,
                               PRBool isServer);
+
 }
 }  // namespace mozilla
 

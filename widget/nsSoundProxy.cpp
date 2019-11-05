@@ -14,10 +14,10 @@ using namespace mozilla::dom;
 NS_IMPL_ISUPPORTS(nsSoundProxy, nsISound)
 
 NS_IMETHODIMP
-nsSoundProxy::Play(nsIURL *aURL) {
+nsSoundProxy::Play(nsIURL* aURL) {
   MOZ_ASSERT(XRE_GetProcessType() == GeckoProcessType_Content);
 
-  nsCOMPtr<nsIURI> soundURI(do_QueryInterface(aURL));
+  nsCOMPtr<nsIURI> soundURI(aURL);
   bool isChrome = false;
   // Only allow playing a chrome:// URL from the content process.
   if (!soundURI || NS_FAILED(soundURI->SchemeIs("chrome", &isChrome)) ||
@@ -29,13 +29,6 @@ nsSoundProxy::Play(nsIURL *aURL) {
   mozilla::ipc::SerializeURI(soundURI, soundParams);
   ContentChild::GetSingleton()->SendPlaySound(soundParams);
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsSoundProxy::PlaySystemSound(const nsAString &aSoundAlias) {
-  MOZ_ASSERT(XRE_GetProcessType() == GeckoProcessType_Content);
-  MOZ_ASSERT(false, "PlaySystemSound is unimplemented.");
-  return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP

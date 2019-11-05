@@ -6,6 +6,7 @@
 #define peerconnectionctx_h___h__
 
 #include <string>
+#include <map>
 
 #include "WebrtcGlobalChild.h"
 
@@ -14,6 +15,7 @@
 #include "PeerConnectionImpl.h"
 #include "mozIGeckoMediaPluginService.h"
 #include "nsIRunnable.h"
+#include "MediaTransportHandler.h"  // Mostly for IceLogPromise
 
 namespace mozilla {
 class PeerConnectionCtxObserver;
@@ -28,9 +30,9 @@ class WebrtcGlobalInformation;
 // * GMP related state
 class PeerConnectionCtx {
  public:
-  static nsresult InitializeGlobal(nsIThread *mainThread,
-                                   nsIEventTarget *stsThread);
-  static PeerConnectionCtx *GetInstance();
+  static nsresult InitializeGlobal(nsIThread* mainThread,
+                                   nsIEventTarget* stsThread);
+  static PeerConnectionCtx* GetInstance();
   static bool isActive();
   static void Destroy();
 
@@ -42,12 +44,16 @@ class PeerConnectionCtx {
     return true;
   }
 
-  void queueJSEPOperation(nsIRunnable *aJSEPOperation);
+  void queueJSEPOperation(nsIRunnable* aJSEPOperation);
   void onGMPReady();
 
   bool gmpHasH264();
 
   static void UpdateNetworkState(bool online);
+
+  RefPtr<MediaTransportHandler> GetTransportHandler() const {
+    return mTransportHandler;
+  }
 
   // Make these classes friend so that they can access mPeerconnections.
   friend class PeerConnectionImpl;
@@ -59,17 +65,19 @@ class PeerConnectionCtx {
   mozilla::dom::Sequence<mozilla::dom::RTCStatsReportInternal>
       mStatsForClosedPeerConnections;
 
-  const std::map<const std::string, PeerConnectionImpl *>
-      &mGetPeerConnections();
+  const std::map<const std::string, PeerConnectionImpl*>& mGetPeerConnections();
 
  private:
   // We could make these available only via accessors but it's too much trouble.
-  std::map<const std::string, PeerConnectionImpl *> mPeerConnections;
+  std::map<const std::string, PeerConnectionImpl*> mPeerConnections;
 
-  PeerConnectionCtx() : mGMPReady(false) {}
+  PeerConnectionCtx()
+      : mGMPReady(false),
+        mTransportHandler(
+            MediaTransportHandler::Create(GetMainThreadSerialEventTarget())) {}
   // This is a singleton, so don't copy construct it, etc.
-  PeerConnectionCtx(const PeerConnectionCtx &other) = delete;
-  void operator=(const PeerConnectionCtx &other) = delete;
+  PeerConnectionCtx(const PeerConnectionCtx& other) = delete;
+  void operator=(const PeerConnectionCtx& other) = delete;
   virtual ~PeerConnectionCtx();
 
   nsresult Initialize();
@@ -77,17 +85,15 @@ class PeerConnectionCtx {
 
   void initGMP();
 
-  static void EverySecondTelemetryCallback_m(nsITimer *timer, void *);
+  static void EverySecondTelemetryCallback_m(nsITimer* timer, void*);
 
   nsCOMPtr<nsITimer> mTelemetryTimer;
 
- public:
-  // TODO(jib): If we ever enable move semantics on std::map...
-  // std::map<nsString,nsAutoPtr<mozilla::dom::RTCStatsReportInternal>>
-  // mLastReports;
-  nsTArray<nsAutoPtr<mozilla::dom::RTCStatsReportInternal>> mLastReports;
-
  private:
+  void DeliverStats(RTCStatsQuery& aQuery);
+
+  std::map<nsString, std::unique_ptr<mozilla::dom::RTCStatsReportInternal>>
+      mLastReports;
   // We cannot form offers/answers properly until the Gecko Media Plugin stuff
   // has been initted, which is a complicated mess of thread dispatches,
   // including sync dispatches to main. So, we need to be able to queue up
@@ -97,10 +103,13 @@ class PeerConnectionCtx {
   bool mGMPReady;
   nsTArray<nsCOMPtr<nsIRunnable>> mQueuedJSEPOperations;
 
-  static PeerConnectionCtx *gInstance;
+  // Not initted, just for ICE logging stuff
+  RefPtr<MediaTransportHandler> mTransportHandler;
+
+  static PeerConnectionCtx* gInstance;
 
  public:
-  static nsIThread *gMainThread;
+  static nsIThread* gMainThread;
   static mozilla::StaticRefPtr<mozilla::PeerConnectionCtxObserver>
       gPeerConnectionCtxObserver;
 };

@@ -8,20 +8,23 @@
 #include "nsContainerFrame.h"
 #include "nsFrame.h"
 #include "nsGkAtoms.h"
-#include "nsStyleContext.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "SVGObserverUtils.h"
+
+using namespace mozilla;
 
 // This is a very simple frame whose only purpose is to capture style change
 // events and propagate them to the parent.  Most of the heavy lifting is done
 // within the nsSVGGradientFrame, which is the parent for this frame
 
 class nsSVGStopFrame : public nsFrame {
-  friend nsIFrame* NS_NewSVGStopFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext);
+  friend nsIFrame* NS_NewSVGStopFrame(mozilla::PresShell* aPresShell,
+                                      ComputedStyle* aStyle);
 
  protected:
-  explicit nsSVGStopFrame(nsStyleContext* aContext)
-      : nsFrame(aContext, kClassID) {
+  explicit nsSVGStopFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsFrame(aStyle, aPresContext, kClassID) {
     AddStateBits(NS_FRAME_IS_NONDISPLAY);
   }
 
@@ -41,6 +44,10 @@ class nsSVGStopFrame : public nsFrame {
                                     int32_t aModType) override;
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsFrame::IsFrameOfType(aFlags & ~(nsIFrame::eSVG));
   }
 
@@ -87,7 +94,6 @@ nsresult nsSVGStopFrame::AttributeChanged(int32_t aNameSpaceID,
 // Public functions
 // -------------------------------------------------------------------------
 
-nsIFrame* NS_NewSVGStopFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext) {
-  return new (aPresShell) nsSVGStopFrame(aContext);
+nsIFrame* NS_NewSVGStopFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsSVGStopFrame(aStyle, aPresShell->GetPresContext());
 }

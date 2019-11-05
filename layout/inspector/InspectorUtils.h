@@ -8,12 +8,11 @@
 #ifndef mozilla_dom_InspectorUtils_h
 #define mozilla_dom_InspectorUtils_h
 
-#include "mozilla/dom/BindingDeclarations.h"
+#include "mozilla/dom/InspectorUtilsBinding.h"
 
 class nsAtom;
-class nsGenericDOMDataNode;
-class nsIDocument;
-class nsStyleContext;
+class nsINode;
+class ComputedStyle;
 
 namespace mozilla {
 class StyleSheet;
@@ -21,6 +20,7 @@ namespace css {
 class Rule;
 }  // namespace css
 namespace dom {
+class CharacterData;
 class Element;
 class InspectorFontFace;
 }  // namespace dom
@@ -34,11 +34,12 @@ namespace dom {
  */
 class InspectorUtils {
  public:
-  static void GetAllStyleSheets(GlobalObject& aGlobal, nsIDocument& aDocument,
+  static void GetAllStyleSheets(GlobalObject& aGlobal, Document& aDocument,
+                                bool aDocumentOnly,
                                 nsTArray<RefPtr<StyleSheet>>& aResult);
   static void GetCSSStyleRules(GlobalObject& aGlobal, Element& aElement,
                                const nsAString& aPseudo,
-                               nsTArray<RefPtr<css::Rule>>& aResult);
+                               nsTArray<RefPtr<BindingStyleRule>>& aResult);
 
   /**
    * Get the line number of a rule.
@@ -68,8 +69,6 @@ class InspectorUtils {
 
   static bool HasRulesModifiedByCSSOM(GlobalObject& aGlobal,
                                       StyleSheet& aSheet);
-
-  static CSSLexer* GetCSSLexer(GlobalObject& aGlobal, const nsAString& aText);
 
   // Utilities for working with selectors.  We don't have a JS OM representation
   // of a single selector or a selector list yet, but given a rule we can index
@@ -105,6 +104,11 @@ class InspectorUtils {
   static void GetCSSPropertyNames(GlobalObject& aGlobal,
                                   const PropertyNamesOptions& aOptions,
                                   nsTArray<nsString>& aResult);
+
+  // Get a list of all properties controlled by preference, as well as
+  // their corresponding preference names.
+  static void GetCSSPropertyPrefs(GlobalObject& aGlobal,
+                                  nsTArray<PropertyPref>& aResult);
 
   // Get a list of all valid keywords and colors for aProperty.
   static void GetCSSValuesForProperty(GlobalObject& aGlobal,
@@ -150,13 +154,13 @@ class InspectorUtils {
   // unknown types.
   static bool CssPropertySupportsType(GlobalObject& aGlobal,
                                       const nsAString& aProperty,
-                                      uint32_t aType, ErrorResult& aRv);
+                                      InspectorPropertyType, ErrorResult& aRv);
 
   static bool IsIgnorableWhitespace(GlobalObject& aGlobalObject,
-                                    nsGenericDOMDataNode& aDataNode) {
+                                    CharacterData& aDataNode) {
     return IsIgnorableWhitespace(aDataNode);
   }
-  static bool IsIgnorableWhitespace(nsGenericDOMDataNode& aDataNode);
+  static bool IsIgnorableWhitespace(CharacterData& aDataNode);
 
   // Returns the "parent" of a node.  The parent of a document node is the
   // frame/iframe containing that document.  aShowingAnonymousContent says
@@ -201,6 +205,7 @@ class InspectorUtils {
   static void GetUsedFontFaces(GlobalObject& aGlobal, nsRange& aRange,
                                uint32_t aMaxRanges,  // max number of ranges to
                                                      // record for each face
+                               bool aSkipCollapsedWhitespace,
                                nsTArray<nsAutoPtr<InspectorFontFace>>& aResult,
                                ErrorResult& aRv);
 
@@ -235,13 +240,13 @@ class InspectorUtils {
                               const nsAString& aInput, ErrorResult& aRv);
 
   /**
-   * Scroll an element completely into view, if possible.
-   * This is similar to ensureElementIsVisible but for all ancestors.
+   * Check if the provided name can be custom element name.
    */
-  static void ScrollElementIntoView(GlobalObject& aGlobal, Element& aElement);
+  static bool IsCustomElementName(GlobalObject&, const nsAString& aName,
+                                  const nsAString& aNamespaceURI);
 
  private:
-  static already_AddRefed<nsStyleContext> GetCleanStyleContextForElement(
+  static already_AddRefed<ComputedStyle> GetCleanComputedStyleForElement(
       Element* aElement, nsAtom* aPseudo);
 };
 

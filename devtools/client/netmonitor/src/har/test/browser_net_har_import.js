@@ -7,43 +7,52 @@
  * Tests for importing HAR data.
  */
 add_task(async () => {
-  let { tab, monitor } = await initNetMonitor(
-    HAR_EXAMPLE_URL + "html_har_import-test-page.html");
+  const { tab, monitor } = await initNetMonitor(
+    HAR_EXAMPLE_URL + "html_har_import-test-page.html"
+  );
 
   info("Starting test... ");
 
-  let { actions, connector, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let RequestListContextMenu = windowRequire(
-    "devtools/client/netmonitor/src/widgets/RequestListContextMenu");
-  let { getSortedRequests } = windowRequire(
-    "devtools/client/netmonitor/src/selectors/index");
-  let { HarImporter } = windowRequire(
-    "devtools/client/netmonitor/src/har/har-importer");
+  const { actions, connector, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { HarMenuUtils } = windowRequire(
+    "devtools/client/netmonitor/src/har/har-menu-utils"
+  );
+  const { getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
+  const { HarImporter } = windowRequire(
+    "devtools/client/netmonitor/src/har/har-importer"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
   // Execute one POST request on the page and wait till its done.
-  let wait = waitForNetworkEvents(monitor, 3);
+  const wait = waitForNetworkEvents(monitor, 3);
   await ContentTask.spawn(tab.linkedBrowser, {}, async () => {
     await content.wrappedJSObject.executeTest();
   });
   await wait;
 
   // Copy HAR into the clipboard
-  let contextMenu = new RequestListContextMenu({ connector });
-  let json1 = await contextMenu.copyAllAsHar(getSortedRequests(store.getState()));
+  const json1 = await HarMenuUtils.copyAllAsHar(
+    getSortedRequests(store.getState()),
+    connector
+  );
 
   // Import HAR string
-  let importer = new HarImporter(actions);
+  const importer = new HarImporter(actions);
   importer.import(json1);
 
   // Copy HAR into the clipboard again
-  let json2 = await contextMenu.copyAllAsHar(getSortedRequests(store.getState()));
+  const json2 = await HarMenuUtils.copyAllAsHar(
+    getSortedRequests(store.getState()),
+    connector
+  );
 
   // Compare exported HAR data
-  let har1 = JSON.parse(json1);
-  let har2 = JSON.parse(json2);
+  const har1 = JSON.parse(json1);
+  const har2 = JSON.parse(json2);
 
   dump("---------------\n");
   dump(json1 + "\n");
@@ -53,18 +62,26 @@ add_task(async () => {
   dump("---------------\n");
 
   // Explicit tests
-  is(har2.log.entries.length, 3,
-    "There must be expected number of requests");
-  ok(har2.log.entries[0].request.headers.length > 0,
-    "There must be some request headers");
-  ok(har2.log.entries[0].response.headers.length > 0,
-    "There must be some response headers");
-  is(har2.log.entries[1].response.cookies.length, 3,
-    "There must be expected number of cookies");
-  is(har2.log.entries[1]._securityState, "insecure",
-    "There must be expected security state");
-  is(har2.log.entries[2].response.status, 304,
-    "There must be expected status");
+  is(har2.log.entries.length, 3, "There must be expected number of requests");
+  ok(
+    har2.log.entries[0].request.headers.length > 0,
+    "There must be some request headers"
+  );
+  ok(
+    har2.log.entries[0].response.headers.length > 0,
+    "There must be some response headers"
+  );
+  is(
+    har2.log.entries[1].response.cookies.length,
+    3,
+    "There must be expected number of cookies"
+  );
+  is(
+    har2.log.entries[1]._securityState,
+    "insecure",
+    "There must be expected security state"
+  );
+  is(har2.log.entries[2].response.status, 304, "There must be expected status");
 
   // Complex test comparing exported & imported HARs.
   ok(compare(har1.log, har2.log, ["log"]), "Exported HAR must be the same");
@@ -77,12 +94,16 @@ add_task(async () => {
  * Check equality of HAR files.
  */
 function compare(obj1, obj2, path) {
-  let keys1 = Object.getOwnPropertyNames(obj1).sort();
-  let keys2 = Object.getOwnPropertyNames(obj2).sort();
+  const keys1 = Object.getOwnPropertyNames(obj1).sort();
+  const keys2 = Object.getOwnPropertyNames(obj2).sort();
 
-  let name = path.join("/");
+  const name = path.join("/");
 
-  is(keys1.length, keys2.length, "There must be the same number of keys for: " + name);
+  is(
+    keys1.length,
+    keys2.length,
+    "There must be the same number of keys for: " + name
+  );
   if (keys1.length != keys2.length) {
     return false;
   }
@@ -93,7 +114,7 @@ function compare(obj1, obj2, path) {
   }
 
   // Page IDs are generated and don't have to be the same after import.
-  let ignore = [
+  const ignore = [
     "log/entries/0/pageref",
     "log/entries/1/pageref",
     "log/entries/2/pageref",
@@ -104,9 +125,9 @@ function compare(obj1, obj2, path) {
 
   let result = true;
   for (let i = 0; i < keys1.length; i++) {
-    let key = keys1[i];
-    let prop1 = obj1[key];
-    let prop2 = obj2[key];
+    const key = keys1[i];
+    const prop1 = obj1[key];
+    const prop2 = obj2[key];
 
     if (prop1 instanceof Array) {
       if (!(prop2 instanceof Array)) {
@@ -129,7 +150,7 @@ function compare(obj1, obj2, path) {
         break;
       }
     } else if (prop1 !== prop2) {
-      let propName = name + "/" + key;
+      const propName = name + "/" + key;
       if (!ignore.includes(propName)) {
         is(prop1, prop2, "Values are not the same: " + propName);
         result = false;

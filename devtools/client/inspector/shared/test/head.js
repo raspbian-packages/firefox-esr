@@ -8,12 +8,14 @@
 // Import the inspector's head.js first (which itself imports shared-head.js).
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/devtools/client/inspector/test/head.js",
-  this);
+  this
+);
 
-var {CssRuleView} = require("devtools/client/inspector/rules/rules");
-var {getInplaceEditorForSpan: inplaceEditor} =
-  require("devtools/client/shared/inplace-editor");
-const {getColor: getThemeColor} = require("devtools/client/shared/theme");
+var { CssRuleView } = require("devtools/client/inspector/rules/rules");
+var {
+  getInplaceEditorForSpan: inplaceEditor,
+} = require("devtools/client/shared/inplace-editor");
+const { getColor: getThemeColor } = require("devtools/client/shared/theme");
 
 const TEST_URL_ROOT =
   "http://example.com/browser/devtools/client/inspector/shared/test/";
@@ -21,8 +23,9 @@ const TEST_URL_ROOT_SSL =
   "https://example.com/browser/devtools/client/inspector/shared/test/";
 const ROOT_TEST_DIR = getRootDirectory(gTestPath);
 const FRAME_SCRIPT_URL = ROOT_TEST_DIR + "doc_frame_script.js";
-const STYLE_INSPECTOR_L10N =
-      new LocalizationHelper("devtools/shared/locales/styleinspector.properties");
+const STYLE_INSPECTOR_L10N = new LocalizationHelper(
+  "devtools/shared/locales/styleinspector.properties"
+);
 
 // Clean-up all prefs that might have been changed during a test run
 // (safer here because if the test fails, then the pref is never reverted)
@@ -79,10 +82,10 @@ registerCleanupFunction(() => {
  * script, so they can run on remote targets too.
  */
 var _addTab = addTab;
-addTab = function (url) {
+addTab = function(url) {
   return _addTab(url).then(tab => {
     info("Loading the helper frame script " + FRAME_SCRIPT_URL);
-    let browser = tab.linkedBrowser;
+    const browser = tab.linkedBrowser;
     browser.messageManager.loadFrameScript(FRAME_SCRIPT_URL, false);
     return tab;
   });
@@ -124,13 +127,13 @@ function waitForSuccess(validatorFn, name = "untitled") {
  *        The NodeActor that will used to retrieve the dataURL for the
  *        font family tooltip contents.
  */
-var getFontFamilyDataURL = Task.async(function* (font, nodeFront) {
-  let fillStyle = getThemeColor("body-color");
+var getFontFamilyDataURL = async function(font, nodeFront) {
+  const fillStyle = getThemeColor("body-color");
 
-  let {data} = yield nodeFront.getFontFamilyDataURL(font, fillStyle);
-  let dataURL = yield data.string();
+  const { data } = await nodeFront.getFontFamilyDataURL(font, fillStyle);
+  const dataURL = await data.string();
   return dataURL;
-});
+};
 
 /* *********************************************
  * RULE-VIEW
@@ -156,27 +159,31 @@ var getFontFamilyDataURL = Task.async(function* (font, nodeFront) {
  *          - {String} value The expected style value
  * The style will be checked like so: getComputedStyle(element)[name] === value
  */
-var simulateColorPickerChange = Task.async(function* (ruleView, colorPicker,
-    newRgba, expectedChange) {
-  let onRuleViewChanged = ruleView.once("ruleview-changed");
+var simulateColorPickerChange = async function(
+  ruleView,
+  colorPicker,
+  newRgba,
+  expectedChange
+) {
+  const onRuleViewChanged = ruleView.once("ruleview-changed");
   info("Getting the spectrum colorpicker object");
-  let spectrum = yield colorPicker.spectrum;
+  const spectrum = await colorPicker.spectrum;
   info("Setting the new color");
   spectrum.rgb = newRgba;
   info("Applying the change");
   spectrum.updateUI();
   spectrum.onChange();
   info("Waiting for rule-view to update");
-  yield onRuleViewChanged;
+  await onRuleViewChanged;
 
   if (expectedChange) {
     info("Waiting for the style to be applied on the page");
-    yield waitForSuccess(() => {
-      let {element, name, value} = expectedChange;
+    await waitForSuccess(() => {
+      const { element, name, value } = expectedChange;
       return content.getComputedStyle(element)[name] === value;
     }, "Color picker change applied on the page");
   }
-});
+};
 
 /* *********************************************
  * COMPUTED-VIEW
@@ -197,12 +204,14 @@ var simulateColorPickerChange = Task.async(function* (ruleView, colorPicker,
  */
 function getComputedViewProperty(view, name) {
   let prop;
-  for (let property of view.styleDocument.querySelectorAll(".computed-property-view")) {
-    let nameSpan = property.querySelector(".computed-property-name");
-    let valueSpan = property.querySelector(".computed-property-value");
+  for (const property of view.styleDocument.querySelectorAll(
+    ".computed-property-view"
+  )) {
+    const nameSpan = property.querySelector(".computed-property-name");
+    const valueSpan = property.querySelector(".computed-property-value");
 
     if (nameSpan.firstChild.textContent === name) {
-      prop = {nameSpan, valueSpan};
+      prop = { nameSpan, valueSpan };
       break;
     }
   }
@@ -220,5 +229,6 @@ function getComputedViewProperty(view, name) {
  * @return {String} The property value
  */
 function getComputedViewPropertyValue(view, name, propertyName) {
-  return getComputedViewProperty(view, name, propertyName).valueSpan.textContent;
+  return getComputedViewProperty(view, name, propertyName).valueSpan
+    .textContent;
 }

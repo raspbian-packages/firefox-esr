@@ -6,7 +6,9 @@
 
 const { getJSON } = require("devtools/client/shared/getjson");
 const { LocalizationHelper } = require("devtools/shared/l10n");
-const L10N = new LocalizationHelper("devtools/client/locales/device.properties");
+const L10N = new LocalizationHelper(
+  "devtools/client/locales/device.properties"
+);
 
 loader.lazyRequireGetter(this, "asyncStorage", "devtools/shared/async-storage");
 
@@ -69,7 +71,7 @@ async function addDevice(device, type = "phones") {
   }
 
   // Ensure the new device is has a unique name
-  let exists = list.some(entry => entry.name == device.name);
+  const exists = list.some(entry => entry.name == device.name);
   if (exists) {
     return false;
   }
@@ -81,17 +83,40 @@ async function addDevice(device, type = "phones") {
 }
 
 /**
+ * Edit a device from the local catalog.
+ * Returns `true` if the device is edited, `false` otherwise.
+ */
+async function editDevice(oldDevice, newDevice, type = "phones") {
+  await loadLocalDevices();
+  const list = localDevices[type];
+  if (!list) {
+    return false;
+  }
+
+  const index = list.findIndex(entry => entry.name == oldDevice.name);
+  if (index == -1) {
+    return false;
+  }
+
+  // Replace old device info with new one
+  list.splice(index, 1, newDevice);
+  await asyncStorage.setItem(LOCAL_DEVICES, JSON.stringify(localDevices));
+
+  return true;
+}
+
+/**
  * Remove a device from the local catalog.
  * Returns `true` if the device is removed, `false` otherwise.
  */
 async function removeDevice(device, type = "phones") {
   await loadLocalDevices();
-  let list = localDevices[type];
+  const list = localDevices[type];
   if (!list) {
     return false;
   }
 
-  let index = list.findIndex(entry => entry.name == device.name);
+  const index = list.findIndex(entry => entry.name == device.name);
   if (index == -1) {
     return false;
   }
@@ -115,9 +140,9 @@ async function removeLocalDevices() {
  */
 async function getDevices() {
   // Fetch common devices from Mozilla's CDN.
-  let devices = await getJSON(DEVICES_URL);
+  const devices = await getJSON(DEVICES_URL);
   await loadLocalDevices();
-  for (let type in localDevices) {
+  for (const type in localDevices) {
     if (!devices[type]) {
       devices.TYPES.push(type);
       devices[type] = [];
@@ -136,6 +161,7 @@ function getDeviceString(deviceType) {
 
 module.exports = {
   addDevice,
+  editDevice,
   removeDevice,
   removeLocalDevices,
   getDevices,

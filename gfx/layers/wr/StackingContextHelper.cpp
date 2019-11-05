@@ -13,47 +13,117 @@ namespace mozilla {
 namespace layers {
 
 StackingContextHelper::StackingContextHelper()
-    : mBuilder(nullptr), mScale(1.0f, 1.0f), mAffectsClipPositioning(false) {
+    : mBuilder(nullptr),
+      mScale(1.0f, 1.0f),
+      mAffectsClipPositioning(false),
+      mIsPreserve3D(false),
+      mRasterizeLocally(false) {
   // mOrigin remains at 0,0
 }
 
 StackingContextHelper::StackingContextHelper(
-    const StackingContextHelper& aParentSC, wr::DisplayListBuilder& aBuilder,
-    const nsTArray<wr::WrFilterOp>& aFilters, const LayoutDeviceRect& aBounds,
-    const gfx::Matrix4x4* aBoundTransform,
-    const wr::WrAnimationProperty* aAnimation, float* aOpacityPtr,
-    gfx::Matrix4x4* aTransformPtr, gfx::Matrix4x4* aPerspectivePtr,
-    const gfx::CompositionOp& aMixBlendMode, bool aBackfaceVisible,
-    bool aIsPreserve3D)
-    : mBuilder(&aBuilder), mScale(1.0f, 1.0f) {
-  // Compute scale for fallback rendering.
+    const StackingContextHelper& aParentSC, const ActiveScrolledRoot* aAsr,
+    nsIFrame* aContainerFrame, nsDisplayItem* aContainerItem,
+    wr::DisplayListBuilder& aBuilder, const wr::StackingContextParams& aParams,
+    const LayoutDeviceRect& aBounds)
+    : mBuilder(&aBuilder),
+      mScale(1.0f, 1.0f),
+      mDeferredTransformItem(aParams.mDeferredTransformItem),
+      mIsPreserve3D(aParams.transform_style == wr::TransformStyle::Preserve3D),
+      mRasterizeLocally(aParams.mRasterizeLocally ||
+                        aParentSC.mRasterizeLocally) {
+  mOrigin = aParentSC.mOrigin + aBounds.TopLeft();
+  // Compute scale for fallback rendering. We don't try to guess a scale for 3d
+  // transformed items
   gfx::Matrix transform2d;
-  if (aBoundTransform && aBoundTransform->CanDraw2D(&transform2d)) {
+  if (aParams.mBoundTransform &&
+      aParams.mBoundTransform->CanDraw2D(&transform2d) &&
+      aParams.reference_frame_kind != wr::WrReferenceFrameKind::Perspective &&
+      !aParentSC.mIsPreserve3D) {
     mInheritedTransform = transform2d * aParentSC.mInheritedTransform;
-    mScale = mInheritedTransform.ScaleFactors(true);
+
+    int32_t apd = aContainerFrame->PresContext()->AppUnitsPerDevPixel();
+    nsRect r = LayoutDevicePixel::ToAppUnits(aBounds, apd);
+    mScale = FrameLayerBuilder::ChooseScale(aContainerFrame, aContainerItem, r,
+                                            1.f, 1.f, mInheritedTransform,
+                                            /* aCanDraw2D = */ true);
+
+    if (aParams.mAnimated) {
+      mSnappingSurfaceTransform =
+          gfx::Matrix::Scaling(mScale.width, mScale.height);
+    } else {
+      mSnappingSurfaceTransform =
+          transform2d * aParentSC.mSnappingSurfaceTransform;
+    }
+  } else {
+    mInheritedTransform = aParentSC.mInheritedTransform;
+    mScale = aParentSC.mScale;
   }
 
-  mBuilder->PushStackingContext(
-      wr::ToLayoutRect(aBounds), aAnimation, aOpacityPtr, aTransformPtr,
-      aIsPreserve3D ? wr::TransformStyle::Preserve3D : wr::TransformStyle::Flat,
-      aPerspectivePtr, wr::ToMixBlendMode(aMixBlendMode), aFilters,
-      aBackfaceVisible);
+  auto rasterSpace =
+      mRasterizeLocally
+          ? wr::RasterSpace::Local(std::max(mScale.width, mScale.height))
+          : wr::RasterSpace::Screen();
 
-  mAffectsClipPositioning = (aTransformPtr && !aTransformPtr->IsIdentity()) ||
-                            (aBounds.TopLeft() != LayoutDevicePoint());
+  MOZ_ASSERT(!aParams.clip.IsNone());
+  mReferenceFrameId = mBuilder->PushStackingContext(
+      aParams, wr::ToLayoutRect(aBounds), rasterSpace);
+
+  if (mReferenceFrameId) {
+    mSpaceAndClipChainHelper.emplace(aBuilder, mReferenceFrameId.ref());
+  }
+
+  mAffectsClipPositioning =
+      mReferenceFrameId.isSome() || (aBounds.TopLeft() != LayoutDevicePoint());
+
+  // If the parent stacking context has a deferred transform item, inherit it
+  // into this stacking context, as long as the ASR hasn't changed. Refer to
+  // the comments on StackingContextHelper::mDeferredTransformItem for an
+  // explanation of what goes in these fields.
+  if (aParentSC.mDeferredTransformItem &&
+      aAsr == (*aParentSC.mDeferredTransformItem)->GetActiveScrolledRoot()) {
+    if (mDeferredTransformItem) {
+      // If we are deferring another transform, put the combined transform from
+      // all the ancestor deferred items into mDeferredAncestorTransform
+      mDeferredAncestorTransform = aParentSC.GetDeferredTransformMatrix();
+    } else {
+      // We are not deferring another transform, so we can just inherit the
+      // parent stacking context's deferred data without any modification.
+      mDeferredTransformItem = aParentSC.mDeferredTransformItem;
+      mDeferredAncestorTransform = aParentSC.mDeferredAncestorTransform;
+    }
+  }
 }
 
 StackingContextHelper::~StackingContextHelper() {
   if (mBuilder) {
-    mBuilder->PopStackingContext();
+    mSpaceAndClipChainHelper.reset();
+    mBuilder->PopStackingContext(mReferenceFrameId.isSome());
   }
 }
 
-wr::LayoutRect StackingContextHelper::ToRelativeLayoutRect(
-    const LayoutDeviceRect& aRect) const {
-  auto rect = aRect;
-  rect.Round();
-  return wr::ToLayoutRect(rect);
+const Maybe<nsDisplayTransform*>&
+StackingContextHelper::GetDeferredTransformItem() const {
+  return mDeferredTransformItem;
+}
+
+Maybe<gfx::Matrix4x4> StackingContextHelper::GetDeferredTransformMatrix()
+    const {
+  if (mDeferredTransformItem) {
+    // See the comments on StackingContextHelper::mDeferredTransformItem for
+    // an explanation of what's stored in mDeferredTransformItem and
+    // mDeferredAncestorTransform. Here we need to return the combined transform
+    // transform from all the deferred ancestors, including
+    // mDeferredTransformItem.
+    gfx::Matrix4x4 result =
+        (*mDeferredTransformItem)->GetTransform().GetMatrix();
+    if (mDeferredAncestorTransform) {
+      result = *mDeferredAncestorTransform * result;
+    }
+    return Some(result);
+  } else {
+    return Nothing();
+  }
 }
 
 }  // namespace layers

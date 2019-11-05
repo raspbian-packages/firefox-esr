@@ -14,7 +14,7 @@ const server = createTestHTTPServer();
 // Register a slow image handler so we can simulate a long time between
 // a reload and the load event firing.
 server.registerContentType("gif", "image/gif");
-server.registerPathHandler("/slow.gif", function (metadata, response) {
+server.registerPathHandler("/slow.gif", function(metadata, response) {
   info("Image has been requested");
   response.processAsync();
   setTimeout(() => {
@@ -24,20 +24,23 @@ server.registerPathHandler("/slow.gif", function (metadata, response) {
 });
 
 // Test page load events.
-const TEST_URL = "data:text/html," +
+const TEST_URL =
+  "data:text/html," +
   "<!DOCTYPE html>" +
   "<head><meta charset='utf-8' /></head>" +
   "<body>" +
   "<p>Slow script</p>" +
-  "<img src='http://localhost:" + server.identity.primaryPort + "/slow.gif' />" +
+  "<img src='http://localhost:" +
+  server.identity.primaryPort +
+  "/slow.gif' />" +
   "</body>" +
   "</html>";
 
-add_task(function* () {
-  let {inspector, testActor, tab} = yield openInspectorForURL(TEST_URL);
+add_task(async function() {
+  const { inspector, testActor, tab } = await openInspectorForURL(TEST_URL);
 
-  let domContentLoaded = waitForLinkedBrowserEvent(tab, "DOMContentLoaded");
-  let pageLoaded = waitForLinkedBrowserEvent(tab, "load");
+  const domContentLoaded = waitForLinkedBrowserEvent(tab, "DOMContentLoaded");
+  const pageLoaded = waitForLinkedBrowserEvent(tab, "load");
 
   ok(inspector.markup, "There is a markup view");
 
@@ -45,31 +48,35 @@ add_task(function* () {
   testActor.eval("location.reload()");
 
   info("Wait for DOMContentLoaded");
-  yield domContentLoaded;
+  await domContentLoaded;
 
   info("Inspect element via context menu");
-  let markupLoaded = inspector.once("markuploaded");
-  yield chooseWithInspectElementContextMenu("img", tab);
+  const markupLoaded = inspector.once("markuploaded");
+  await chooseWithInspectElementContextMenu("img", tab);
 
   info("Wait for load");
-  yield pageLoaded;
+  await pageLoaded;
 
   info("Wait for markup-loaded after element inspection");
-  yield markupLoaded;
+  await markupLoaded;
   info("Wait for multiple children updates after element inspection");
-  yield waitForMultipleChildrenUpdates(inspector);
+  await waitForMultipleChildrenUpdates(inspector);
 
   ok(inspector.markup, "There is a markup view");
   is(inspector.markup._elt.children.length, 1, "The markup view is rendering");
 });
 
-function* chooseWithInspectElementContextMenu(selector, tab) {
-  yield BrowserTestUtils.synthesizeMouseAtCenter(selector, {
-    type: "contextmenu",
-    button: 2
-  }, tab.linkedBrowser);
+async function chooseWithInspectElementContextMenu(selector, tab) {
+  await BrowserTestUtils.synthesizeMouseAtCenter(
+    selector,
+    {
+      type: "contextmenu",
+      button: 2,
+    },
+    tab.linkedBrowser
+  );
 
-  yield EventUtils.sendString("Q");
+  await EventUtils.sendString("Q");
 }
 
 function waitForLinkedBrowserEvent(tab, event) {

@@ -4,17 +4,22 @@
 "use strict";
 
 /**
- * Tests for timings columns.
+ * Tests for timings columns. Note that the column
+ * header is visible only if there are requests in the list.
  */
-add_task(async function () {
-  let { tab, monitor } = await initNetMonitor(SIMPLE_URL);
+add_task(async function() {
+  const { tab, monitor } = await initNetMonitor(SIMPLE_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
   store.dispatch(Actions.batchEnable(false));
 
-  let visibleColumns = store.getState().ui.columns;
+  const visibleColumns = store.getState().ui.columns;
+
+  const wait = waitForNetworkEvents(monitor, 1);
+  tab.linkedBrowser.reload();
+  await wait;
 
   // Hide the waterfall column to make sure timing data are fetched
   // by the other timing columns ("endTime", "responseTime", "duration",
@@ -25,33 +30,31 @@ add_task(async function () {
     await hideColumn(monitor, "waterfall");
   }
 
-  ["endTime", "responseTime", "duration", "latency"].forEach(async (column) => {
+  ["endTime", "responseTime", "duration", "latency"].forEach(async column => {
     if (!visibleColumns[column]) {
       await showColumn(monitor, column);
     }
   });
 
-  let onNetworkEvents = waitForNetworkEvents(monitor, 1);
-  let onEventTimings = waitFor(monitor.panelWin, EVENTS.RECEIVED_EVENT_TIMINGS);
+  const onNetworkEvents = waitForNetworkEvents(monitor, 1);
+  const onEventTimings = waitFor(
+    monitor.panelWin.api,
+    EVENTS.RECEIVED_EVENT_TIMINGS
+  );
   tab.linkedBrowser.reload();
   await Promise.all([onNetworkEvents, onEventTimings]);
 
   // There should be one request in the list.
-  let requestItems = document.querySelectorAll(".request-list-item");
+  const requestItems = document.querySelectorAll(".request-list-item");
   is(requestItems.length, 1, "There must be one visible item");
 
-  let item = requestItems[0];
-  let types = [
-    "end",
-    "response",
-    "duration",
-    "latency"
-  ];
+  const item = requestItems[0];
+  const types = ["end", "response", "duration", "latency"];
 
-  for (let t of types) {
+  for (const t of types) {
     await waitUntil(() => {
-      let node = item.querySelector(".requests-list-" + t + "-time");
-      let value = parseInt(node.textContent, 10);
+      const node = item.querySelector(".requests-list-" + t + "-time");
+      const value = parseInt(node.textContent, 10);
       return value > 0;
     });
   }

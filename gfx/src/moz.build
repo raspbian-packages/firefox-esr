@@ -6,7 +6,6 @@
 
 XPIDL_SOURCES += [
     'nsIFontEnumerator.idl',
-    'nsIScriptableRegion.idl',
 ]
 
 XPIDL_MODULE = 'gfx'
@@ -35,9 +34,7 @@ EXPORTS += [
     'nsRegion.h',
     'nsRegionFwd.h',
     'nsSize.h',
-    'nsThemeConstants.h',
     'nsTransform2D.h',
-    'PingPongRegion.h',
     'RegionBuilder.h',
     'X11UndefineNone.h'
 ]
@@ -45,6 +42,8 @@ EXPORTS += [
 EXPORTS.mozilla += [
     'AppUnits.h',
     'ArrayView.h',
+    'FontPropertyTypes.h',
+    'RelativeLuminanceUtils.h',
 ]
 
 EXPORTS.mozilla.gfx += [
@@ -68,9 +67,7 @@ UNIFIED_SOURCES += [
     'nsFontMetrics.cpp',
     'nsRect.cpp',
     'nsRegion.cpp',
-    'nsScriptableRegion.cpp',
     'nsThebesFontEnumerator.cpp',
-    'nsThebesGfxFactory.cpp',
     'nsTransform2D.cpp',
     'TiledRegion.cpp',
 ]
@@ -78,6 +75,10 @@ UNIFIED_SOURCES += [
 # nsDeviceContext.cpp cannot be built in unified mode because it pulls in OS X system headers.
 SOURCES += [
     'nsDeviceContext.cpp',
+]
+
+XPCOM_MANIFESTS += [
+    'components.conf',
 ]
 
 include('/ipc/chromium/chromium-config.mozbuild')

@@ -9,8 +9,6 @@ const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const { fetchNetworkUpdatePacket } = require("../utils/request-utils");
 
-const { div } = dom;
-
 class RequestListColumnSetCookies extends Component {
   static get propTypes() {
     return {
@@ -20,18 +18,22 @@ class RequestListColumnSetCookies extends Component {
   }
 
   componentDidMount() {
-    let { item, connector } = this.props;
+    const { item, connector } = this.props;
     fetchNetworkUpdatePacket(connector.requestData, item, ["responseCookies"]);
   }
 
   componentWillReceiveProps(nextProps) {
-    let { item, connector } = nextProps;
+    const { item, connector } = nextProps;
     fetchNetworkUpdatePacket(connector.requestData, item, ["responseCookies"]);
   }
 
   shouldComponentUpdate(nextProps) {
-    let { responseCookies: currResponseCookies = { cookies: [] } } = this.props.item;
-    let { responseCookies: nextResponseCookies = { cookies: [] } } = nextProps.item;
+    let {
+      responseCookies: currResponseCookies = { cookies: [] },
+    } = this.props.item;
+    let {
+      responseCookies: nextResponseCookies = { cookies: [] },
+    } = nextProps.item;
     currResponseCookies = currResponseCookies.cookies || currResponseCookies;
     nextResponseCookies = nextResponseCookies.cookies || nextResponseCookies;
     return currResponseCookies !== nextResponseCookies;
@@ -40,12 +42,14 @@ class RequestListColumnSetCookies extends Component {
   render() {
     let { responseCookies = { cookies: [] } } = this.props.item;
     responseCookies = responseCookies.cookies || responseCookies;
-    let responseCookiesLength = responseCookies.length > 0 ? responseCookies.length : "";
-    return (
-      div({
+    const responseCookiesLength =
+      responseCookies.length > 0 ? responseCookies.length : "";
+    return dom.td(
+      {
         className: "requests-list-column requests-list-set-cookies",
-        title: responseCookiesLength
-      }, responseCookiesLength)
+        title: responseCookiesLength,
+      },
+      responseCookiesLength
     );
   }
 }

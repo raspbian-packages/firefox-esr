@@ -8,30 +8,32 @@
 
 #include "nsFirstLetterFrame.h"
 #include "nsPresContext.h"
-#include "nsStyleContext.h"
+#include "nsPresContextInlines.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/PresShellInlines.h"
+#include "mozilla/RestyleManager.h"
+#include "mozilla/ServoStyleSet.h"
 #include "nsIContent.h"
 #include "nsLineLayout.h"
 #include "nsGkAtoms.h"
-#include "mozilla/StyleSetHandle.h"
-#include "mozilla/StyleSetHandleInlines.h"
 #include "nsFrameManager.h"
-#include "mozilla/RestyleManager.h"
-#include "mozilla/RestyleManagerInlines.h"
 #include "nsPlaceholderFrame.h"
 #include "nsCSSFrameConstructor.h"
 
 using namespace mozilla;
 using namespace mozilla::layout;
 
-nsFirstLetterFrame* NS_NewFirstLetterFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext) {
-  return new (aPresShell) nsFirstLetterFrame(aContext);
+nsFirstLetterFrame* NS_NewFirstLetterFrame(PresShell* aPresShell,
+                                           ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsFirstLetterFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsFirstLetterFrame)
 
 NS_QUERYFRAME_HEAD(nsFirstLetterFrame)
-NS_QUERYFRAME_ENTRY(nsFirstLetterFrame)
+  NS_QUERYFRAME_ENTRY(nsFirstLetterFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 #ifdef DEBUG_FRAME_DUMP
@@ -47,17 +49,17 @@ void nsFirstLetterFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
 
 void nsFirstLetterFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
                               nsIFrame* aPrevInFlow) {
-  RefPtr<nsStyleContext> newSC;
+  RefPtr<ComputedStyle> newSC;
   if (aPrevInFlow) {
-    // Get proper style context for ourselves.  We're creating the frame
+    // Get proper ComputedStyle for ourselves.  We're creating the frame
     // that represents everything *except* the first letter, so just create
-    // a style context that inherits from our style parent, with no extra rules.
+    // a ComputedStyle that inherits from our style parent, with no extra rules.
     nsIFrame* styleParent =
-        CorrectStyleParentFrame(aParent, nsCSSPseudoElements::firstLetter);
-    nsStyleContext* parentStyleContext = styleParent->StyleContext();
+        CorrectStyleParentFrame(aParent, PseudoStyleType::firstLetter);
+    ComputedStyle* parentComputedStyle = styleParent->Style();
     newSC = PresContext()->StyleSet()->ResolveStyleForFirstLetterContinuation(
-        parentStyleContext);
-    SetStyleContextWithoutNotification(newSC);
+        parentComputedStyle);
+    SetComputedStyleWithoutNotification(newSC);
   }
 
   nsContainerFrame::Init(aContent, aParent, aPrevInFlow);
@@ -72,10 +74,6 @@ void nsFirstLetterFrame::SetInitialChildList(ChildListID aListID,
     MOZ_ASSERT(f->GetParent() == this, "Unexpected parent");
     MOZ_ASSERT(f->IsTextFrame(),
                "We should not have kids that are containers!");
-#ifdef MOZ_OLD_STYLE
-    MOZ_ASSERT_IF(f->StyleContext()->IsGecko(),
-                  f->StyleContext()->AsGecko()->GetParent() == StyleContext());
-#endif
     nsLayoutUtils::MarkDescendantsDirty(f);  // Drops cached textruns
   }
 
@@ -97,28 +95,30 @@ nsresult nsFirstLetterFrame::GetChildFrameContainingOffset(
 
 // Needed for non-floating first-letter frames and for the continuations
 // following the first-letter that we also use nsFirstLetterFrame for.
-/* virtual */ void nsFirstLetterFrame::AddInlineMinISize(
+/* virtual */
+void nsFirstLetterFrame::AddInlineMinISize(
     gfxContext* aRenderingContext, nsIFrame::InlineMinISizeData* aData) {
   DoInlineIntrinsicISize(aRenderingContext, aData, nsLayoutUtils::MIN_ISIZE);
 }
 
 // Needed for non-floating first-letter frames and for the continuations
 // following the first-letter that we also use nsFirstLetterFrame for.
-/* virtual */ void nsFirstLetterFrame::AddInlinePrefISize(
+/* virtual */
+void nsFirstLetterFrame::AddInlinePrefISize(
     gfxContext* aRenderingContext, nsIFrame::InlinePrefISizeData* aData) {
   DoInlineIntrinsicISize(aRenderingContext, aData, nsLayoutUtils::PREF_ISIZE);
   aData->mLineIsEmpty = false;
 }
 
 // Needed for floating first-letter frames.
-/* virtual */ nscoord nsFirstLetterFrame::GetMinISize(
-    gfxContext* aRenderingContext) {
+/* virtual */
+nscoord nsFirstLetterFrame::GetMinISize(gfxContext* aRenderingContext) {
   return nsLayoutUtils::MinISizeFromInline(this, aRenderingContext);
 }
 
 // Needed for floating first-letter frames.
-/* virtual */ nscoord nsFirstLetterFrame::GetPrefISize(
-    gfxContext* aRenderingContext) {
+/* virtual */
+nscoord nsFirstLetterFrame::GetPrefISize(gfxContext* aRenderingContext) {
   return nsLayoutUtils::PrefISizeFromInline(this, aRenderingContext);
 }
 
@@ -153,7 +153,7 @@ void nsFirstLetterFrame::Reflow(nsPresContext* aPresContext,
 
   nsIFrame* kid = mFrames.FirstChild();
 
-  // Setup reflow state for our child
+  // Setup reflow input for our child
   WritingMode wm = aReflowInput.GetWritingMode();
   LogicalSize availSize = aReflowInput.AvailableSize();
   const LogicalMargin& bp = aReflowInput.ComputedLogicalBorderPadding();
@@ -219,8 +219,8 @@ void nsFirstLetterFrame::Reflow(nsPresContext* aPresContext,
     nsLineLayout* ll = aReflowInput.mLineLayout;
     bool pushedFrame;
 
-    ll->SetInFirstLetter(mStyleContext->GetPseudo() ==
-                         nsCSSPseudoElements::firstLetter);
+    ll->SetInFirstLetter(Style()->GetPseudoType() ==
+                         PseudoStyleType::firstLetter);
     ll->BeginSpan(this, &aReflowInput, bp.IStart(wm), availSize.ISize(wm),
                   &mBaseline);
     ll->ReflowFrame(kid, aReflowStatus, &kidMetrics, pushedFrame);
@@ -231,7 +231,7 @@ void nsFirstLetterFrame::Reflow(nsPresContext* aPresContext,
     aMetrics.ISize(lineWM) = ll->EndSpan(this) + bp.IStartEnd(wm);
     ll->SetInFirstLetter(false);
 
-    if (mStyleContext->StyleTextReset()->mInitialLetterSize != 0.0f) {
+    if (mComputedStyle->StyleTextReset()->mInitialLetterSize != 0.0f) {
       aMetrics.SetBlockStartAscent(kidMetrics.BlockStartAscent() +
                                    bp.BStart(wm));
       aMetrics.BSize(lineWM) = kidMetrics.BSize(lineWM) + bp.BStartEnd(wm);
@@ -276,7 +276,8 @@ void nsFirstLetterFrame::Reflow(nsPresContext* aPresContext,
   NS_FRAME_SET_TRUNCATION(aReflowStatus, aReflowInput, aMetrics);
 }
 
-/* virtual */ bool nsFirstLetterFrame::CanContinueTextRun() const {
+/* virtual */
+bool nsFirstLetterFrame::CanContinueTextRun() const {
   // We can continue a text run through a first-letter frame.
   return true;
 }
@@ -286,11 +287,11 @@ nsresult nsFirstLetterFrame::CreateContinuationForFloatingParent(
     bool aIsFluid) {
   NS_ASSERTION(IsFloating(),
                "can only call this on floating first letter frames");
-  NS_PRECONDITION(aContinuation, "bad args");
+  MOZ_ASSERT(aContinuation, "bad args");
 
   *aContinuation = nullptr;
 
-  nsIPresShell* presShell = aPresContext->PresShell();
+  mozilla::PresShell* presShell = aPresContext->PresShell();
   nsPlaceholderFrame* placeholderFrame = GetPlaceholderFrame();
   nsContainerFrame* parent = placeholderFrame->GetParent();
 
@@ -298,18 +299,18 @@ nsresult nsFirstLetterFrame::CreateContinuationForFloatingParent(
       aPresContext, aChild, parent, aIsFluid);
 
   // The continuation will have gotten the first letter style from its
-  // prev continuation, so we need to repair the style context so it
+  // prev continuation, so we need to repair the ComputedStyle so it
   // doesn't have the first letter styling.
   //
-  // Note that getting parent frame's style context is different from getting
-  // this frame's style context's parent in the presence of ::first-line,
+  // Note that getting parent frame's ComputedStyle is different from getting
+  // this frame's ComputedStyle's parent in the presence of ::first-line,
   // which we do want the continuation to inherit from.
-  nsStyleContext* parentSC = parent->StyleContext();
+  ComputedStyle* parentSC = parent->Style();
   if (parentSC) {
-    RefPtr<nsStyleContext> newSC;
+    RefPtr<ComputedStyle> newSC;
     newSC =
         presShell->StyleSet()->ResolveStyleForFirstLetterContinuation(parentSC);
-    continuation->SetStyleContext(newSC);
+    continuation->SetComputedStyle(newSC);
     nsLayoutUtils::MarkDescendantsDirty(continuation);
   }
 
@@ -348,28 +349,27 @@ void nsFirstLetterFrame::DrainOverflowFrames(nsPresContext* aPresContext) {
     mFrames.AppendFrames(nullptr, *overflowFrames);
   }
 
-  // Now repair our first frames style context (since we only reflow
+  // Now repair our first frames ComputedStyle (since we only reflow
   // one frame there is no point in doing any other ones until they
   // are reflowed)
   nsIFrame* kid = mFrames.FirstChild();
   if (kid) {
     nsIContent* kidContent = kid->GetContent();
     if (kidContent) {
-      NS_ASSERTION(kidContent->IsNodeOfType(nsINode::eTEXT),
-                   "should contain only text nodes");
-      nsStyleContext* parentSC;
+      NS_ASSERTION(kidContent->IsText(), "should contain only text nodes");
+      ComputedStyle* parentSC;
       if (prevInFlow) {
         // This is for the rest of the content not in the first-letter.
-        nsIFrame* styleParent = CorrectStyleParentFrame(
-            GetParent(), nsCSSPseudoElements::firstLetter);
-        parentSC = styleParent->StyleContext();
+        nsIFrame* styleParent =
+            CorrectStyleParentFrame(GetParent(), PseudoStyleType::firstLetter);
+        parentSC = styleParent->Style();
       } else {
         // And this for the first-letter style.
-        parentSC = mStyleContext;
+        parentSC = mComputedStyle;
       }
-      RefPtr<nsStyleContext> sc =
+      RefPtr<ComputedStyle> sc =
           aPresContext->StyleSet()->ResolveStyleForText(kidContent, parentSC);
-      kid->SetStyleContext(sc);
+      kid->SetComputedStyle(sc);
       nsLayoutUtils::MarkDescendantsDirty(kid);
     }
   }
@@ -383,7 +383,7 @@ nsIFrame::LogicalSides nsFirstLetterFrame::GetLogicalSkipSides(
     const ReflowInput* aReflowInput) const {
   if (GetPrevContinuation()) {
     // We shouldn't get calls to GetSkipSides for later continuations since
-    // they have separate style contexts with initial values for all the
+    // they have separate ComputedStyles with initial values for all the
     // properties that could trigger a call to GetSkipSides.  Then again,
     // it's not really an error to call GetSkipSides on any frame, so
     // that's why we handle it properly.

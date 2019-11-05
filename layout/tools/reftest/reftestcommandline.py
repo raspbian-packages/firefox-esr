@@ -313,8 +313,8 @@ class ReftestArgumentsParser(argparse.ArgumentParser):
 
         if options.reftestExtensionPath is None:
             if self.build_obj is not None:
-                reftestExtensionPath = os.path.join(self.build_obj.topobjdir, "_tests",
-                                                    "reftest", "reftest")
+                reftestExtensionPath = os.path.join(self.build_obj.distdir,
+                                                    "xpi-stage", "reftest")
             else:
                 reftestExtensionPath = os.path.join(here, "reftest")
             options.reftestExtensionPath = os.path.normpath(reftestExtensionPath)
@@ -322,8 +322,8 @@ class ReftestArgumentsParser(argparse.ArgumentParser):
         if (options.specialPowersExtensionPath is None and
             options.suite in ["crashtest", "jstestbrowser"]):
             if self.build_obj is not None:
-                specialPowersExtensionPath = os.path.join(self.build_obj.topobjdir, "_tests",
-                                                          "reftest", "specialpowers")
+                specialPowersExtensionPath = os.path.join(self.build_obj.distdir,
+                                                          "xpi-stage", "specialpowers")
             else:
                 specialPowersExtensionPath = os.path.join(here, "specialpowers")
             options.specialPowersExtensionPath = os.path.normpath(specialPowersExtensionPath)
@@ -406,103 +406,62 @@ class RemoteArgumentsParser(ReftestArgumentsParser):
                           utilityPath="",
                           localLogName=None)
 
-        self.add_argument("--remote-app-path",
-                          action="store",
-                          type=str,
-                          dest="remoteAppPath",
-                          help="Path to remote executable relative to device root using only "
-                               "forward slashes.  Either this or app must be specified, "
-                               "but not both.")
-
         self.add_argument("--adbpath",
                           action="store",
                           type=str,
                           dest="adb_path",
                           default=None,
-                          help="path to adb")
-
-        self.add_argument("--deviceIP",
-                          action="store",
-                          type=str,
-                          dest="deviceIP",
-                          help="ip address of remote device to test")
+                          help="Path to adb binary.")
 
         self.add_argument("--deviceSerial",
                           action="store",
                           type=str,
                           dest="deviceSerial",
-                          help="adb serial number of remote device to test")
-
-        self.add_argument("--devicePort",
-                          action="store",
-                          type=str,
-                          default="20701",
-                          dest="devicePort",
-                          help="port of remote device to test")
+                          help="adb serial number of remote device. This is required "
+                               "when more than one device is connected to the host. "
+                               "Use 'adb devices' to see connected devices.")
 
         self.add_argument("--remote-webserver",
                           action="store",
                           type=str,
                           dest="remoteWebServer",
-                          help="IP Address of the webserver hosting the reftest content")
+                          help="IP address of the remote web server.")
 
         self.add_argument("--http-port",
                           action="store",
                           type=str,
                           dest="httpPort",
-                          help="port of the web server for http traffic")
+                          help="http port of the remote web server.")
 
         self.add_argument("--ssl-port",
                           action="store",
                           type=str,
                           dest="sslPort",
-                          help="Port for https traffic to the web server")
-
-        self.add_argument("--remote-logfile",
-                          action="store",
-                          type=str,
-                          dest="remoteLogFile",
-                          default="reftest.log",
-                          help="Name of log file on the device relative to device root.  "
-                               "PLEASE USE ONLY A FILENAME.")
-
-        self.add_argument("--pidfile",
-                          action="store",
-                          type=str,
-                          dest="pidFile",
-                          default="",
-                          help="name of the pidfile to generate")
+                          help="ssl port of the remote web server.")
 
         self.add_argument("--remoteTestRoot",
                           action="store",
                           type=str,
                           dest="remoteTestRoot",
-                          help="remote directory to use as test root "
-                               "(eg. /mnt/sdcard/tests or /data/local/tests)")
+                          help="Remote directory to use as test root "
+                               "(eg. /mnt/sdcard/tests or /data/local/tests).")
 
         self.add_argument("--httpd-path",
                           action="store",
                           type=str,
                           dest="httpdPath",
-                          help="path to the httpd.js file")
+                          help="Path to the httpd.js file.")
 
         self.add_argument("--no-device-info",
                           action="store_false",
                           dest="printDeviceInfo",
                           default=True,
-                          help="do not display verbose diagnostics about the remote device")
+                          help="Do not display verbose diagnostics about the remote device.")
 
     def validate_remote(self, options, automation):
-        # Ensure our defaults are set properly for everything we can infer
-        if not options.remoteTestRoot:
-            options.remoteTestRoot = automation._dm.deviceRoot + \
-                '/reftest'
-        options.remoteProfile = options.remoteTestRoot + "/profile"
-
         if options.remoteWebServer is None:
             options.remoteWebServer = self.get_ip()
 
-        # Verify that our remotewebserver is set properly
         if options.remoteWebServer == '127.0.0.1':
             self.error("ERROR: Either you specified the loopback for the remote webserver or ",
                        "your local IP cannot be detected.  "
@@ -514,43 +473,12 @@ class RemoteArgumentsParser(ReftestArgumentsParser):
         if not options.sslPort:
             options.sslPort = automation.DEFAULT_SSL_PORT
 
-        # One of remoteAppPath (relative path to application) or the app (executable) must be
-        # set, but not both.  If both are set, we destroy the user's selection for app
-        # so instead of silently destroying a user specificied setting, we
-        # error.
-        if options.remoteAppPath and options.app:
-            self.error(
-                "ERROR: You cannot specify both the remoteAppPath and the app")
-        elif options.remoteAppPath:
-            options.app = options.remoteTestRoot + "/" + options.remoteAppPath
-        elif options.app is None:
-            # Neither remoteAppPath nor app are set -- error
-            self.error("ERROR: You must specify either appPath or app")
-
         if options.xrePath is None:
             self.error(
                 "ERROR: You must specify the path to the controller xre directory")
         else:
             # Ensure xrepath is a full path
             options.xrePath = os.path.abspath(options.xrePath)
-
-        options.localLogName = options.remoteLogFile
-        options.remoteLogFile = options.remoteTestRoot + \
-            '/' + options.remoteLogFile
-
-        # Ensure that the options.logfile (which the base class uses) is set to
-        # the remote setting when running remote. Also, if the user set the
-        # log file name there, use that instead of reusing the remotelogfile as
-        # above.
-        if options.logFile:
-            # If the user specified a local logfile name use that
-            options.localLogName = options.logFile
-
-        options.logFile = options.remoteLogFile
-
-        if options.pidFile != "":
-            with open(options.pidFile, 'w') as f:
-                f.write(str(os.getpid()))
 
         # httpd-path is specified by standard makefile targets and may be specified
         # on the command line to select a particular version of httpd.js. If not
@@ -559,17 +487,4 @@ class RemoteArgumentsParser(ReftestArgumentsParser):
         if not options.httpdPath:
             options.httpdPath = os.path.join(options.utilityPath, "components")
 
-        if not options.ignoreWindowSize:
-            parts = automation._dm.getInfo(
-                'screen')['screen'][0].split()
-            width = int(parts[0].split(':')[1])
-            height = int(parts[1].split(':')[1])
-            if (width < 1366 or height < 1050):
-                self.error("ERROR: Invalid screen resolution %sx%s, "
-                           "please adjust to 1366x1050 or higher" % (
-                            width, height))
-
-        # Disable e10s by default on Android because we don't run Android
-        # e10s jobs anywhere yet.
-        options.e10s = False
         return options

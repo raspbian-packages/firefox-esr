@@ -11,11 +11,12 @@
 #include "nsIURI.h"
 #include "nsCOMPtr.h"
 #include "nsIScriptLoaderObserver.h"
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsIParser.h"
 #include "nsIContent.h"
 #include "nsContentCreatorFunctions.h"
 #include "mozilla/CORSMode.h"
+#include "mozilla/net/ReferrerPolicy.h"
 
 // Must be kept in sync with xpcom/rust/xpcom/src/interfaces/nonidl.rs
 #define NS_ISCRIPTELEMENT_IID                        \
@@ -34,6 +35,7 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
 
   explicit nsIScriptElement(mozilla::dom::FromParser aFromParser)
       : mLineNumber(1),
+        mColumnNumber(1),
         mAlreadyStarted(false),
         mMalformed(false),
         mDoneAddingChildren(aFromParser == mozilla::dom::NOT_FROM_PARSER ||
@@ -64,12 +66,12 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
    * this is assumed to be an inline script element.
    */
   nsIURI* GetScriptURI() {
-    NS_PRECONDITION(mFrozen, "Not ready for this call yet!");
+    MOZ_ASSERT(mFrozen, "Not ready for this call yet!");
     return mUri;
   }
 
   nsIPrincipal* GetScriptURITriggeringPrincipal() {
-    NS_PRECONDITION(mFrozen, "Not ready for this call yet!");
+    MOZ_ASSERT(mFrozen, "Not ready for this call yet!");
     return mSrcTriggeringPrincipal;
   }
 
@@ -89,13 +91,13 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
    *  - GetScriptURI()
    *  - GetScriptExternal()
    */
-  virtual void FreezeExecutionAttrs(nsIDocument* aOwnerDoc) = 0;
+  virtual void FreezeExecutionAttrs(mozilla::dom::Document*) = 0;
 
   /**
    * Is the script a module script. Currently only supported by HTML scripts.
    */
   bool GetScriptIsModule() {
-    NS_PRECONDITION(mFrozen, "Not ready for this call yet!");
+    MOZ_ASSERT(mFrozen, "Not ready for this call yet!");
     return mIsModule;
   }
 
@@ -103,7 +105,7 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
    * Is the script deferred. Currently only supported by HTML scripts.
    */
   bool GetScriptDeferred() {
-    NS_PRECONDITION(mFrozen, "Not ready for this call yet!");
+    MOZ_ASSERT(mFrozen, "Not ready for this call yet!");
     return mDefer;
   }
 
@@ -111,7 +113,7 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
    * Is the script async. Currently only supported by HTML scripts.
    */
   bool GetScriptAsync() {
-    NS_PRECONDITION(mFrozen, "Not ready for this call yet!");
+    MOZ_ASSERT(mFrozen, "Not ready for this call yet!");
     return mAsync;
   }
 
@@ -119,7 +121,7 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
    * Is the script an external script?
    */
   bool GetScriptExternal() {
-    NS_PRECONDITION(mFrozen, "Not ready for this call yet!");
+    MOZ_ASSERT(mFrozen, "Not ready for this call yet!");
     return mExternal;
   }
 
@@ -131,6 +133,12 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
   void SetScriptLineNumber(uint32_t aLineNumber) { mLineNumber = aLineNumber; }
 
   uint32_t GetScriptLineNumber() { return mLineNumber; }
+
+  void SetScriptColumnNumber(uint32_t aColumnNumber) {
+    mColumnNumber = aColumnNumber;
+  }
+
+  uint32_t GetScriptColumnNumber() { return mColumnNumber; }
 
   void SetIsMalformed() { mMalformed = true; }
 
@@ -182,7 +190,7 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
   void BeginEvaluating() {
     nsCOMPtr<nsIParser> parser = do_QueryReferent(mCreatorParser);
     if (parser) {
-      parser->PushDefinedInsertionPoint();
+      parser->IncrementScriptNestingLevel();
     }
   }
 
@@ -192,7 +200,7 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
   void EndEvaluating() {
     nsCOMPtr<nsIParser> parser = do_QueryReferent(mCreatorParser);
     if (parser) {
-      parser->PopDefinedInsertionPoint();
+      parser->DecrementScriptNestingLevel();
     }
   }
 
@@ -231,6 +239,13 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
   }
 
   /**
+   * Get referrer policy of the script element
+   */
+  virtual mozilla::net::ReferrerPolicy GetReferrerPolicy() {
+    return mozilla::net::RP_Unset;
+  }
+
+  /**
    * Fire an error event
    */
   virtual nsresult FireErrorEvent() = 0;
@@ -264,6 +279,11 @@ class nsIScriptElement : public nsIScriptLoaderObserver {
    * The start line number of the script.
    */
   uint32_t mLineNumber;
+
+  /**
+   * The start column number of the script.
+   */
+  uint32_t mColumnNumber;
 
   /**
    * The "already started" flag per HTML5.

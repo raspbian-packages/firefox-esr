@@ -50,10 +50,13 @@ callback mozPacketCallback = void (unsigned long level,
 
 dictionary RTCDataChannelInit {
   boolean        ordered = true;
+  [EnforceRange]
   unsigned short maxPacketLifeTime;
+  [EnforceRange]
   unsigned short maxRetransmits;
   DOMString      protocol = "";
   boolean        negotiated = false;
+  [EnforceRange]
   unsigned short id;
 
   // These are deprecated due to renaming in the spec, but still supported for Fx53
@@ -83,8 +86,7 @@ interface RTCPeerConnection : EventTarget  {
 
   [Pref="media.peerconnection.identity.enabled"]
   void setIdentityProvider (DOMString provider,
-                            optional DOMString protocol,
-                            optional DOMString username);
+                            optional RTCIdentityProviderOptions options);
   [Pref="media.peerconnection.identity.enabled"]
   Promise<DOMString> getIdentityAssertion();
   Promise<RTCSessionDescriptionInit> createOffer (optional RTCOfferOptions options);
@@ -98,7 +100,7 @@ interface RTCPeerConnection : EventTarget  {
   readonly attribute RTCSessionDescription? currentRemoteDescription;
   readonly attribute RTCSessionDescription? pendingRemoteDescription;
   readonly attribute RTCSignalingState signalingState;
-  Promise<void> addIceCandidate ((RTCIceCandidateInit or RTCIceCandidate)? candidate);
+  Promise<void> addIceCandidate (optional (RTCIceCandidateInit or RTCIceCandidate) candidate);
   readonly attribute boolean? canTrickleIceCandidates;
   readonly attribute RTCIceGatheringState iceGatheringState;
   readonly attribute RTCIceConnectionState iceConnectionState;
@@ -122,8 +124,7 @@ interface RTCPeerConnection : EventTarget  {
   // indicate which particular streams should be referenced in signaling
 
   RTCRtpSender addTrack(MediaStreamTrack track,
-                        MediaStream stream,
-                        MediaStream... moreStreams);
+                        MediaStream... streams);
   void removeTrack(RTCRtpSender sender);
 
   RTCRtpTransceiver addTransceiver((MediaStreamTrack or DOMString) trackOrKind,
@@ -165,11 +166,10 @@ interface RTCPeerConnection : EventTarget  {
   attribute EventHandler onaddstream; // obsolete
   attribute EventHandler onaddtrack;  // obsolete
   attribute EventHandler ontrack;     // replaces onaddtrack and onaddstream.
-  attribute EventHandler onremovestream;
   attribute EventHandler oniceconnectionstatechange;
   attribute EventHandler onicegatheringstatechange;
 
-  Promise<RTCStatsReport> getStats (optional MediaStreamTrack? selector);
+  Promise<RTCStatsReport> getStats (optional MediaStreamTrack? selector = null);
 
   // Data channel.
   RTCDataChannel createDataChannel (DOMString label,
@@ -198,7 +198,4 @@ partial interface RTCPeerConnection {
   Promise<void> addIceCandidate (RTCIceCandidate candidate,
                                  VoidFunction successCallback,
                                  RTCPeerConnectionErrorCallback failureCallback);
-  Promise<void> getStats (MediaStreamTrack? selector,
-                          RTCStatsCallback successCallback,
-                          RTCPeerConnectionErrorCallback failureCallback);
 };

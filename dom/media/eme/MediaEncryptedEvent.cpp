@@ -46,13 +46,13 @@ MediaEncryptedEvent::~MediaEncryptedEvent() {
 
 JSObject* MediaEncryptedEvent::WrapObjectInternal(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return MediaEncryptedEventBinding::Wrap(aCx, this, aGivenProto);
+  return MediaEncryptedEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<MediaEncryptedEvent> MediaEncryptedEvent::Constructor(
     EventTarget* aOwner) {
   RefPtr<MediaEncryptedEvent> e = new MediaEncryptedEvent(aOwner);
-  e->InitEvent(NS_LITERAL_STRING("encrypted"), false, false);
+  e->InitEvent(NS_LITERAL_STRING("encrypted"), CanBubble::eNo, Cancelable::eNo);
   e->SetTrusted(true);
   return e.forget();
 }
@@ -61,7 +61,7 @@ already_AddRefed<MediaEncryptedEvent> MediaEncryptedEvent::Constructor(
     EventTarget* aOwner, const nsAString& aInitDataType,
     const nsTArray<uint8_t>& aInitData) {
   RefPtr<MediaEncryptedEvent> e = new MediaEncryptedEvent(aOwner);
-  e->InitEvent(NS_LITERAL_STRING("encrypted"), false, false);
+  e->InitEvent(NS_LITERAL_STRING("encrypted"), CanBubble::eNo, Cancelable::eNo);
   e->mInitDataType = aInitDataType;
   e->mRawInitData = aInitData;
   e->SetTrusted(true);

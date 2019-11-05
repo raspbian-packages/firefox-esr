@@ -58,7 +58,7 @@ class UnsubscribeResultRunnable final : public WorkerRunnable {
                             already_AddRefed<PromiseWorkerProxy>&& aProxy,
                             nsresult aStatus, bool aSuccess)
       : WorkerRunnable(aWorkerPrivate),
-        mProxy(Move(aProxy)),
+        mProxy(std::move(aProxy)),
         mStatus(aStatus),
         mSuccess(aSuccess) {
     AssertIsOnMainThread();
@@ -184,8 +184,8 @@ PushSubscription::PushSubscription(nsIGlobalObject* aGlobal,
                                    nsTArray<uint8_t>&& aAppServerKey)
     : mEndpoint(aEndpoint),
       mScope(aScope),
-      mRawP256dhKey(Move(aRawP256dhKey)),
-      mAuthSecret(Move(aAuthSecret)) {
+      mRawP256dhKey(std::move(aRawP256dhKey)),
+      mAuthSecret(std::move(aAuthSecret)) {
   if (NS_IsMainThread()) {
     mGlobal = aGlobal;
   } else {
@@ -197,7 +197,7 @@ PushSubscription::PushSubscription(nsIGlobalObject* aGlobal,
     worker->AssertIsOnWorkerThread();
 #endif
   }
-  mOptions = new PushSubscriptionOptions(mGlobal, Move(aAppServerKey));
+  mOptions = new PushSubscriptionOptions(mGlobal, std::move(aAppServerKey));
 }
 
 PushSubscription::~PushSubscription() {}
@@ -212,7 +212,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* PushSubscription::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return PushSubscriptionBinding::Wrap(aCx, this, aGivenProto);
+  return PushSubscription_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 // static
@@ -250,9 +250,9 @@ already_AddRefed<PushSubscription> PushSubscription::Constructor(
     }
   }
 
-  RefPtr<PushSubscription> sub =
-      new PushSubscription(global, aInitDict.mEndpoint, aInitDict.mScope,
-                           Move(rawKey), Move(authSecret), Move(appServerKey));
+  RefPtr<PushSubscription> sub = new PushSubscription(
+      global, aInitDict.mEndpoint, aInitDict.mScope, std::move(rawKey),
+      std::move(authSecret), std::move(appServerKey));
 
   return sub.forget();
 }

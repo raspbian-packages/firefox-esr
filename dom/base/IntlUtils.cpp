@@ -27,7 +27,7 @@ IntlUtils::~IntlUtils() {}
 
 JSObject* IntlUtils::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return IntlUtilsBinding::Wrap(aCx, this, aGivenProto);
+  return IntlUtils_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void IntlUtils::GetDisplayNames(const Sequence<nsString>& aLocales,
@@ -35,7 +35,8 @@ void IntlUtils::GetDisplayNames(const Sequence<nsString>& aLocales,
                                 DisplayNameResult& aResult,
                                 ErrorResult& aError) {
   MOZ_ASSERT(nsContentUtils::IsCallerChrome() ||
-             nsContentUtils::IsCallerContentXBL());
+             nsContentUtils::IsCallerContentXBL() ||
+             nsContentUtils::IsCallerUAWidget());
 
   nsCOMPtr<mozIMozIntl> mozIntl = do_GetService("@mozilla.org/mozintl;1");
   if (!mozIntl) {
@@ -75,13 +76,12 @@ void IntlUtils::GetDisplayNames(const Sequence<nsString>& aLocales,
     return;
   }
 
-  if (!retVal.isObject()) {
+  if (!retVal.isObject() || !JS_WrapValue(cx, &retVal)) {
     aError.Throw(NS_ERROR_FAILURE);
     return;
   }
 
   // Return the result as DisplayNameResult.
-  JSAutoCompartment ac(cx, &retVal.toObject());
   if (!aResult.Init(cx, retVal)) {
     aError.Throw(NS_ERROR_FAILURE);
   }
@@ -90,7 +90,8 @@ void IntlUtils::GetDisplayNames(const Sequence<nsString>& aLocales,
 void IntlUtils::GetLocaleInfo(const Sequence<nsString>& aLocales,
                               LocaleInfo& aResult, ErrorResult& aError) {
   MOZ_ASSERT(nsContentUtils::IsCallerChrome() ||
-             nsContentUtils::IsCallerContentXBL());
+             nsContentUtils::IsCallerContentXBL() ||
+             nsContentUtils::IsCallerUAWidget());
 
   nsCOMPtr<mozIMozIntl> mozIntl = do_GetService("@mozilla.org/mozintl;1");
   if (!mozIntl) {
@@ -120,13 +121,12 @@ void IntlUtils::GetLocaleInfo(const Sequence<nsString>& aLocales,
     return;
   }
 
-  if (!retVal.isObject()) {
+  if (!retVal.isObject() || !JS_WrapValue(cx, &retVal)) {
     aError.Throw(NS_ERROR_FAILURE);
     return;
   }
 
   // Return the result as LocaleInfo.
-  JSAutoCompartment ac(cx, &retVal.toObject());
   if (!aResult.Init(cx, retVal)) {
     aError.Throw(NS_ERROR_FAILURE);
   }

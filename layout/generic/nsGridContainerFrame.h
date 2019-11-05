@@ -15,12 +15,16 @@
 #include "nsHashKeys.h"
 #include "nsTHashtable.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 /**
  * Factory function.
  * @return a newly allocated nsGridContainerFrame (infallible)
  */
-nsContainerFrame* NS_NewGridContainerFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext);
+nsContainerFrame* NS_NewGridContainerFrame(mozilla::PresShell* aPresShell,
+                                           mozilla::ComputedStyle* aStyle);
 
 namespace mozilla {
 
@@ -82,13 +86,25 @@ class nsGridContainerFrame final : public nsContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsGridContainerFrame)
   NS_DECL_QUERYFRAME
-  typedef mozilla::ComputedGridTrackInfo ComputedGridTrackInfo;
-  typedef mozilla::ComputedGridLineInfo ComputedGridLineInfo;
+  using ComputedGridTrackInfo = mozilla::ComputedGridTrackInfo;
+  using ComputedGridLineInfo = mozilla::ComputedGridLineInfo;
+  using LogicalAxis = mozilla::LogicalAxis;
+  using BaselineSharingGroup = mozilla::BaselineSharingGroup;
+
+  template <typename T>
+  using PerBaseline = mozilla::EnumeratedArray<BaselineSharingGroup,
+                                               BaselineSharingGroup(2), T>;
+
+  template <typename T>
+  using PerLogicalAxis =
+      mozilla::EnumeratedArray<LogicalAxis, LogicalAxis(2), T>;
 
   // nsIFrame overrides
   void Reflow(nsPresContext* aPresContext, ReflowOutput& aDesiredSize,
               const ReflowInput& aReflowInput,
               nsReflowStatus& aStatus) override;
+  void Init(nsIContent* aContent, nsContainerFrame* aParent,
+            nsIFrame* aPrevInFlow) override;
   nscoord GetMinISize(gfxContext* aRenderingContext) override;
   nscoord GetPrefISize(gfxContext* aRenderingContext) override;
   void MarkIntrinsicISizesDirty() override;
@@ -106,13 +122,13 @@ class nsGridContainerFrame final : public nsContainerFrame {
       return nsContainerFrame::GetLogicalBaseline(aWM);
     }
     nscoord b;
-    GetBBaseline(BaselineSharingGroup::eFirst, &b);
+    GetBBaseline(BaselineSharingGroup::First, &b);
     return b;
   }
 
   bool GetVerticalAlignBaseline(mozilla::WritingMode aWM,
                                 nscoord* aBaseline) const override {
-    return GetNaturalBaselineBOffset(aWM, BaselineSharingGroup::eFirst,
+    return GetNaturalBaselineBOffset(aWM, BaselineSharingGroup::First,
                                      aBaseline);
   }
 
@@ -146,8 +162,7 @@ class nsGridContainerFrame final : public nsContainerFrame {
 
   /**
    * Return the containing block for aChild which MUST be an abs.pos. child
-   * of a grid container.  This is just a helper method for
-   * nsAbsoluteContainingBlock::Reflow - it's not meant to be used elsewhere.
+   * of a grid container and that container must have been reflowed.
    */
   static const nsRect& GridItemCB(nsIFrame* aChild);
 
@@ -202,11 +217,44 @@ class nsGridContainerFrame final : public nsContainerFrame {
     return GetProperty(ExplicitNamedAreasProperty());
   }
 
+  /** Return true if this frame is subgridded in its aAxis. */
+  bool IsSubgrid(mozilla::LogicalAxis aAxis) const {
+    return HasAnyStateBits(aAxis == mozilla::eLogicalAxisBlock
+                               ? NS_STATE_GRID_IS_ROW_SUBGRID
+                               : NS_STATE_GRID_IS_COL_SUBGRID);
+  }
+  bool IsColSubgrid() const { return IsSubgrid(mozilla::eLogicalAxisInline); }
+  bool IsRowSubgrid() const { return IsSubgrid(mozilla::eLogicalAxisBlock); }
+  /** Return true if this frame is subgridded in any axis. */
+  bool IsSubgrid() const {
+    return HasAnyStateBits(NS_STATE_GRID_IS_ROW_SUBGRID |
+                           NS_STATE_GRID_IS_COL_SUBGRID);
+  }
+
+  /** Return true if this frame has an item that is subgridded in our aAxis. */
+  bool HasSubgridItems(mozilla::LogicalAxis aAxis) const {
+    return HasAnyStateBits(aAxis == mozilla::eLogicalAxisBlock
+                               ? NS_STATE_GRID_HAS_ROW_SUBGRID_ITEM
+                               : NS_STATE_GRID_HAS_COL_SUBGRID_ITEM);
+  }
+  /** Return true if this frame has any subgrid items. */
+  bool HasSubgridItems() const {
+    return HasAnyStateBits(NS_STATE_GRID_HAS_ROW_SUBGRID_ITEM |
+                           NS_STATE_GRID_HAS_COL_SUBGRID_ITEM);
+  }
+
   /**
-   * Return a containing grid frame, and ensure it has computed grid info
+   * Return a container grid frame for the supplied frame, if available.
+   * @return nullptr if aFrame has no grid container.
+   */
+  static nsGridContainerFrame* GetGridContainerFrame(nsIFrame* aFrame);
+
+  /**
+   * Return a container grid frame, and ensure it has computed grid info
    * @return nullptr if aFrame has no grid container, or frame was destroyed
    * @note this might destroy layout/style data since it may flush layout
    */
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   static nsGridContainerFrame* GetGridFrameWithComputedInfo(nsIFrame* aFrame);
 
   struct TrackSize;
@@ -241,16 +289,18 @@ class nsGridContainerFrame final : public nsContainerFrame {
   struct TrackSizingFunctions;
   struct Tracks;
   struct TranslatedLineRange;
-  friend nsContainerFrame* NS_NewGridContainerFrame(nsIPresShell* aPresShell,
-                                                    nsStyleContext* aContext);
-  explicit nsGridContainerFrame(nsStyleContext* aContext)
-      : nsContainerFrame(aContext, kClassID),
-        mCachedMinISize(NS_INTRINSIC_WIDTH_UNKNOWN),
-        mCachedPrefISize(NS_INTRINSIC_WIDTH_UNKNOWN) {
-    mBaseline[0][0] = NS_INTRINSIC_WIDTH_UNKNOWN;
-    mBaseline[0][1] = NS_INTRINSIC_WIDTH_UNKNOWN;
-    mBaseline[1][0] = NS_INTRINSIC_WIDTH_UNKNOWN;
-    mBaseline[1][1] = NS_INTRINSIC_WIDTH_UNKNOWN;
+  friend nsContainerFrame* NS_NewGridContainerFrame(
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
+  explicit nsGridContainerFrame(ComputedStyle* aStyle,
+                                nsPresContext* aPresContext)
+      : nsContainerFrame(aStyle, aPresContext, kClassID),
+        mCachedMinISize(NS_INTRINSIC_ISIZE_UNKNOWN),
+        mCachedPrefISize(NS_INTRINSIC_ISIZE_UNKNOWN) {
+    for (auto& perAxisBaseline : mBaseline) {
+      for (auto& baseline : perAxisBaseline) {
+        baseline = NS_INTRINSIC_ISIZE_UNKNOWN;
+      }
+    }
   }
 
   /**
@@ -420,7 +470,7 @@ class nsGridContainerFrame final : public nsContainerFrame {
   nscoord mCachedPrefISize;
 
   // Our baselines, one per BaselineSharingGroup per axis.
-  nscoord mBaseline[2 /*LogicalAxis*/][2 /*BaselineSharingGroup*/];
+  PerLogicalAxis<PerBaseline<nscoord>> mBaseline;
 
 #ifdef DEBUG
   // If true, NS_STATE_GRID_DID_PUSH_ITEMS may be set even though all pushed

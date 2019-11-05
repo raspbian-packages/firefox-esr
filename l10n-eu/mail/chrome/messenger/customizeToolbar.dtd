@@ -13,5 +13,7 @@
 <!ENTITY useSmallIcons.label      "Erabili ikono txikiak">
 <!ENTITY restoreDefaultSet.label  "Berrezarri lehenetsiak">
 <!ENTITY addNewToolbar.label      "Gehitu tresna-barra berria">
+<!ENTITY showTitlebar.label       "Erakutsi titulu-barra">
+<!ENTITY extraDragSpace.label     "Gehitu arrastatu zuriunea">
 <!ENTITY saveChanges.label        "Eginda">
 <!ENTITY undoChanges.label        "Desegin aldaketak">

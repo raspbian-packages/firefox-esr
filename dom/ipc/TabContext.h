@@ -20,8 +20,8 @@ class IPCTabContext;
 /**
  * TabContext encapsulates information about an iframe that may be a mozbrowser.
  *
- * TabParent and TabChild both inherit from TabContext, and you can also have
- * standalone TabContext objects.
+ * BrowserParent and BrowserChild both inherit from TabContext, and you can also
+ * have standalone TabContext objects.
  *
  * This class is immutable except by calling one of the protected
  * SetTabContext*() methods (and those methods can only be called once).  See
@@ -65,6 +65,8 @@ class TabContext {
   bool IsJSPlugin() const;
   int32_t JSPluginId() const;
 
+  uint64_t ChromeOuterWindowID() const;
+
   /**
    * OriginAttributesRef() returns the OriginAttributes of this frame to
    * the caller. This is used to store any attribute associated with the frame's
@@ -103,7 +105,7 @@ class TabContext {
    */
   void SetPrivateBrowsingAttributes(bool aIsPrivateBrowsing);
 
-  bool SetTabContext(bool aIsMozBrowserElement,
+  bool SetTabContext(bool aIsMozBrowserElement, uint64_t aChromeOuterWindowID,
                      UIStateChangeType aShowAccelerators,
                      UIStateChangeType aShowFocusRings,
                      const OriginAttributes& aOriginAttributes,
@@ -144,6 +146,11 @@ class TabContext {
    */
   bool mIsMozBrowserElement;
 
+  /**
+   * The outerWindowID of the window hosting the remote frameloader.
+   */
+  uint64_t mChromeOuterWindowID;
+
   int32_t mJSPluginID;
 
   /**
@@ -174,14 +181,14 @@ class MutableTabContext : public TabContext {
     return TabContext::SetTabContext(aContext);
   }
 
-  bool SetTabContext(bool aIsMozBrowserElement,
+  bool SetTabContext(bool aIsMozBrowserElement, uint64_t aChromeOuterWindowID,
                      UIStateChangeType aShowAccelerators,
                      UIStateChangeType aShowFocusRings,
                      const OriginAttributes& aOriginAttributes,
                      const nsAString& aPresentationURL = EmptyString()) {
-    return TabContext::SetTabContext(aIsMozBrowserElement, aShowAccelerators,
-                                     aShowFocusRings, aOriginAttributes,
-                                     aPresentationURL);
+    return TabContext::SetTabContext(aIsMozBrowserElement, aChromeOuterWindowID,
+                                     aShowAccelerators, aShowFocusRings,
+                                     aOriginAttributes, aPresentationURL);
   }
 
   bool SetTabContextForJSPluginFrame(uint32_t aJSPluginID) {

@@ -67,20 +67,25 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
   if (!compositable) {
     return false;
   }
+  return ReceiveCompositableUpdate(aEdit.detail(), WrapNotNull(compositable));
+}
+
+bool CompositableParentManager::ReceiveCompositableUpdate(
+    const CompositableOperationDetail& aDetail,
+    NotNull<CompositableHost*> aCompositable) {
   if (TextureSourceProvider* provider =
-          compositable->GetTextureSourceProvider()) {
+          aCompositable->GetTextureSourceProvider()) {
     if (!provider->IsValid()) {
       return false;
     }
   }
 
-  switch (aEdit.detail().type()) {
+  switch (aDetail.type()) {
     case CompositableOperationDetail::TOpPaintTextureRegion: {
       MOZ_LAYERS_LOG(("[ParentSide] Paint PaintedLayer"));
 
-      const OpPaintTextureRegion& op =
-          aEdit.detail().get_OpPaintTextureRegion();
-      Layer* layer = compositable->GetLayer();
+      const OpPaintTextureRegion& op = aDetail.get_OpPaintTextureRegion();
+      Layer* layer = aCompositable->GetLayer();
       if (!layer || layer->GetType() != Layer::TYPE_PAINTED) {
         return false;
       }
@@ -92,8 +97,8 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
       RenderTraceInvalidateStart(thebes, "FF00FF",
                                  op.updatedRegion().GetBounds());
 
-      if (!compositable->UpdateThebes(bufferData, op.updatedRegion(),
-                                      thebes->GetValidRegion())) {
+      if (!aCompositable->UpdateThebes(bufferData, op.updatedRegion(),
+                                       thebes->GetValidRegion())) {
         return false;
       }
 
@@ -102,9 +107,8 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
     }
     case CompositableOperationDetail::TOpUseTiledLayerBuffer: {
       MOZ_LAYERS_LOG(("[ParentSide] Paint TiledLayerBuffer"));
-      const OpUseTiledLayerBuffer& op =
-          aEdit.detail().get_OpUseTiledLayerBuffer();
-      TiledContentHost* tiledHost = compositable->AsTiledContentHost();
+      const OpUseTiledLayerBuffer& op = aDetail.get_OpUseTiledLayerBuffer();
+      TiledContentHost* tiledHost = aCompositable->AsTiledContentHost();
 
       NS_ASSERTION(tiledHost, "The compositable is not tiled");
 
@@ -129,10 +133,9 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
           // because the recycling logic depends on it.
           MOZ_ASSERT(texture->NumCompositableRefs() > 0);
         }
-        if (texturedDesc.textureOnWhite().type() ==
-            MaybeTexture::TPTextureParent) {
+        if (texturedDesc.textureOnWhiteParent().isSome()) {
           texture = TextureHost::AsTextureHost(
-              texturedDesc.textureOnWhite().get_PTextureParent());
+              texturedDesc.textureOnWhiteParent().ref());
           if (texture) {
             texture->SetLastFwdTransactionId(mFwdTransactionId);
             // Make sure that each texture was handled by the compositable
@@ -147,16 +150,16 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
       break;
     }
     case CompositableOperationDetail::TOpRemoveTexture: {
-      const OpRemoveTexture& op = aEdit.detail().get_OpRemoveTexture();
+      const OpRemoveTexture& op = aDetail.get_OpRemoveTexture();
 
       RefPtr<TextureHost> tex = TextureHost::AsTextureHost(op.textureParent());
 
       MOZ_ASSERT(tex.get());
-      compositable->RemoveTextureHost(tex);
+      aCompositable->RemoveTextureHost(tex);
       break;
     }
     case CompositableOperationDetail::TOpUseTexture: {
-      const OpUseTexture& op = aEdit.detail().get_OpUseTexture();
+      const OpUseTexture& op = aDetail.get_OpUseTexture();
 
       AutoTArray<CompositableHost::TimedTexture, 4> textures;
       for (auto& timedTexture : op.textures()) {
@@ -172,7 +175,7 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
         }
       }
       if (textures.Length() > 0) {
-        compositable->UseTextureHost(textures);
+        aCompositable->UseTextureHost(textures);
 
         for (auto& timedTexture : op.textures()) {
           RefPtr<TextureHost> texture =
@@ -186,14 +189,14 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
         }
       }
 
-      if (UsesImageBridge() && compositable->GetLayer()) {
-        ScheduleComposition(compositable);
+      if (UsesImageBridge() && aCompositable->GetLayer()) {
+        ScheduleComposition(aCompositable);
       }
       break;
     }
     case CompositableOperationDetail::TOpUseComponentAlphaTextures: {
       const OpUseComponentAlphaTextures& op =
-          aEdit.detail().get_OpUseComponentAlphaTextures();
+          aDetail.get_OpUseComponentAlphaTextures();
       RefPtr<TextureHost> texOnBlack =
           TextureHost::AsTextureHost(op.textureOnBlackParent());
       RefPtr<TextureHost> texOnWhite =
@@ -206,7 +209,7 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
       }
 
       MOZ_ASSERT(texOnBlack && texOnWhite);
-      compositable->UseComponentAlphaTextures(texOnBlack, texOnWhite);
+      aCompositable->UseComponentAlphaTextures(texOnBlack, texOnWhite);
 
       if (texOnBlack) {
         texOnBlack->SetLastFwdTransactionId(mFwdTransactionId);
@@ -223,11 +226,13 @@ bool CompositableParentManager::ReceiveCompositableUpdate(
       }
 
       if (UsesImageBridge()) {
-        ScheduleComposition(compositable);
+        ScheduleComposition(aCompositable);
       }
       break;
     }
-    default: { MOZ_ASSERT(false, "bad type"); }
+    default: {
+      MOZ_ASSERT(false, "bad type");
+    }
   }
 
   return true;
@@ -244,7 +249,9 @@ void CompositableParentManager::DestroyActor(const OpDestroy& aOp) {
       ReleaseCompositable(aOp.get_CompositableHandle());
       break;
     }
-    default: { MOZ_ASSERT(false, "unsupported type"); }
+    default: {
+      MOZ_ASSERT(false, "unsupported type");
+    }
   }
 }
 
@@ -290,27 +297,6 @@ void CompositableParentManager::ReleaseCompositable(
   mCompositables.erase(iter);
 
   host->Detach(nullptr, CompositableHost::FORCE_DETACH);
-}
-
-bool CompositableParentManager::AddReadLocks(ReadLockArray&& aReadLocks) {
-  for (ReadLockInit& r : aReadLocks) {
-    if (mReadLocks.find(r.handle().Value()) != mReadLocks.end()) {
-      NS_ERROR("Duplicate read lock handle!");
-      return false;
-    }
-    mReadLocks[r.handle().Value()] =
-        TextureReadLock::Deserialize(r.sharedLock(), this);
-  }
-  return true;
-}
-
-TextureReadLock* CompositableParentManager::FindReadLock(
-    const ReadLockHandle& aHandle) {
-  auto iter = mReadLocks.find(aHandle.Value());
-  if (iter == mReadLocks.end()) {
-    return nullptr;
-  }
-  return iter->second.get();
 }
 
 }  // namespace layers

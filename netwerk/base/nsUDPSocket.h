@@ -8,6 +8,7 @@
 
 #include "nsIUDPSocket.h"
 #include "mozilla/Mutex.h"
+#include "mozilla/net/DNS.h"
 #include "nsIOutputStream.h"
 #include "nsAutoPtr.h"
 #include "nsCycleCollectionParticipant.h"
@@ -99,7 +100,7 @@ class nsUDPOutputStream : public nsIOutputStream {
                     PRNetAddr& aPrClientAddr);
 
  private:
-  virtual ~nsUDPOutputStream();
+  virtual ~nsUDPOutputStream() = default;
 
   RefPtr<nsUDPSocket> mSocket;
   PRFileDesc* mFD;

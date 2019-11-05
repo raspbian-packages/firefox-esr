@@ -23,11 +23,11 @@ NS_INTERFACE_MAP_END
 SpeechRecognitionResult::SpeechRecognitionResult(SpeechRecognition* aParent)
     : mParent(aParent) {}
 
-SpeechRecognitionResult::~SpeechRecognitionResult() {}
+SpeechRecognitionResult::~SpeechRecognitionResult() = default;
 
 JSObject* SpeechRecognitionResult::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return SpeechRecognitionResultBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechRecognitionResult_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* SpeechRecognitionResult::GetParentObject() const {

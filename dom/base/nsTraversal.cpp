@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,7 +6,6 @@
 
 #include "nsTraversal.h"
 
-#include "nsIDOMNode.h"
 #include "nsError.h"
 #include "nsINode.h"
 #include "mozilla/AutoRestore.h"
@@ -45,12 +44,12 @@ int16_t nsTraversal::TestNode(nsINode* aNode, mozilla::ErrorResult& aResult) {
   uint16_t nodeType = aNode->NodeType();
 
   if (nodeType <= 12 && !((1 << (nodeType - 1)) & mWhatToShow)) {
-    return NodeFilterBinding::FILTER_SKIP;
+    return NodeFilter_Binding::FILTER_SKIP;
   }
 
   if (!mFilter) {
     // No filter, just accept
-    return NodeFilterBinding::FILTER_ACCEPT;
+    return NodeFilter_Binding::FILTER_ACCEPT;
   }
 
   AutoRestore<bool> inAcceptNode(mInAcceptNode);

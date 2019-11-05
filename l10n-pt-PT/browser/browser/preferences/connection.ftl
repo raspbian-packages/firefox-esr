@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 connection-window =
-    .title = Definições da ligação
+    .title = Definições de ligação
     .style =
         { PLATFORM() ->
             [macos] width: 44em
@@ -65,5 +65,26 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Esta opção autentica-lhe silenciosamente nos proxies quando tem credenciais para os mesmos. Será solicitado(a) se a autenticação falhar.
 connection-proxy-socks-remote-dns =
-    .label = Encaminhar DNS quando utilizar SOCKS v5
-    .accesskey = d
+    .label = Encaminhar DNS via proxy ao utilizar SOCKS v5
+    .accesskey = D
+connection-dns-over-https =
+    .label = Ativar DNS por HTTPS
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Utilizar predefinição ({ $url })
+    .accesskey = U
+    .tooltiptext = Utilize o URL predefinido para resolver DNS por HTTPS
+connection-dns-over-https-url-resolver = Utilizar fornecedor
+    .accesskey = f
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (predefinido)
+    .tooltiptext = Utilize o URL predefinido para resolver DNS por HTTPS
+connection-dns-over-https-url-custom =
+    .label = Personalizar
+    .accesskey = P
+    .tooltiptext = Introduza o seu URL preferido para resolver DNS por HTTPS
+connection-dns-over-https-custom-label = Personalizar

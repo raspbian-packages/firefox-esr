@@ -22,16 +22,12 @@ inline already_AddRefed<nsThread> CreateMainThread(
     SynchronizedQueueT** aSynchronizedQueue = nullptr) {
   using MainThreadQueueT = PrioritizedEventQueue<InnerQueueT>;
 
-  auto queue = MakeUnique<MainThreadQueueT>(
-      MakeUnique<InnerQueueT>(EventPriority::High),
-      MakeUnique<InnerQueueT>(EventPriority::Input),
-      MakeUnique<InnerQueueT>(EventPriority::Normal),
-      MakeUnique<InnerQueueT>(EventPriority::Idle), do_AddRef(aIdlePeriod));
+  auto queue = MakeUnique<MainThreadQueueT>(do_AddRef(aIdlePeriod));
 
   MainThreadQueueT* prioritized = queue.get();
 
   RefPtr<SynchronizedQueueT> synchronizedQueue =
-      new SynchronizedQueueT(Move(queue));
+      new SynchronizedQueueT(std::move(queue));
 
   prioritized->SetMutexRef(synchronizedQueue->MutexRef());
 

@@ -10,7 +10,7 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/dom/File.h"
 #include "nsISupports.h"
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 
 #define FILEIMPLSNAPSHOT_IID                         \
   {                                                  \
@@ -72,12 +72,12 @@ class BlobImplSnapshot final : public BlobImpl, public PIBlobImplSnapshot {
 
   virtual void GetMozFullPath(nsAString& aName,
                               SystemCallerGuarantee aGuarantee,
-                              ErrorResult& aRv) const override {
+                              ErrorResult& aRv) override {
     mBlobImpl->GetMozFullPath(aName, aGuarantee, aRv);
   }
 
   virtual void GetMozFullPathInternal(nsAString& aFileName,
-                                      ErrorResult& aRv) const override {
+                                      ErrorResult& aRv) override {
     mBlobImpl->GetMozFullPathInternal(aFileName, aRv);
   }
 
@@ -87,8 +87,15 @@ class BlobImplSnapshot final : public BlobImpl, public PIBlobImplSnapshot {
 
   virtual void GetType(nsAString& aType) override { mBlobImpl->GetType(aType); }
 
+  virtual void GetBlobImplType(nsAString& aBlobImplType) const override;
+
   size_t GetAllocationSize() const override {
     return mBlobImpl->GetAllocationSize();
+  }
+
+  size_t GetAllocationSize(
+      FallibleTArray<BlobImpl*>& aVisitedBlobs) const override {
+    return mBlobImpl->GetAllocationSize(aVisitedBlobs);
   }
 
   virtual uint64_t GetSerialNumber() const override {

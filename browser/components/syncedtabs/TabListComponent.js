@@ -4,20 +4,21 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-let log = ChromeUtils.import("resource://gre/modules/Log.jsm", {})
-            .Log.repository.getLogger("Sync.RemoteTabs");
+let log = ChromeUtils.import(
+  "resource://gre/modules/Log.jsm",
+  {}
+).Log.repository.getLogger("Sync.RemoteTabs");
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  BrowserUITelemetry: "resource:///modules/BrowserUITelemetry.jsm",
   OpenInTabsUtils: "resource:///modules/OpenInTabsUtils.jsm",
 });
 
-var EXPORTED_SYMBOLS = [
-  "TabListComponent"
-];
+var EXPORTED_SYMBOLS = ["TabListComponent"];
 
 /**
  * TabListComponent
@@ -28,8 +29,14 @@ var EXPORTED_SYMBOLS = [
  * to state changes so it can rerender.
  */
 
-function TabListComponent({window, store, View, SyncedTabs, clipboardHelper,
-                           getChromeWindow}) {
+function TabListComponent({
+  window,
+  store,
+  View,
+  SyncedTabs,
+  clipboardHelper,
+  getChromeWindow,
+}) {
   this._window = window;
   this._store = store;
   this._View = View;
@@ -60,11 +67,11 @@ TabListComponent.prototype = {
       onFilter: (...args) => this.onFilter(...args),
       onClearFilter: (...args) => this.onClearFilter(...args),
       onFilterFocus: (...args) => this.onFilterFocus(...args),
-      onFilterBlur: (...args) => this.onFilterBlur(...args)
+      onFilterBlur: (...args) => this.onFilterBlur(...args),
     });
 
     this._store.on("change", state => this._view.render(state));
-    this._view.render({clients: []});
+    this._view.render({ clients: [] });
     // get what's already available...
     this._store.getData();
     this._store.focusInput();
@@ -107,14 +114,13 @@ TabListComponent.prototype = {
   },
 
   onBookmarkTab(uri, title) {
-    this._window.top.PlacesCommandHook
-      .bookmarkLink(this._window.top.PlacesUtils.bookmarksMenuFolderId, uri, title)
-      .catch(Cu.reportError);
+    this._window.top.PlacesCommandHook.bookmarkLink(uri, title).catch(
+      Cu.reportError
+    );
   },
 
   onOpenTab(url, where, params) {
-    this._window.openUILinkIn(url, where, params);
-    BrowserUITelemetry.countSyncedTabEvent("open", "sidebar");
+    this._window.openTrustedLinkIn(url, where, params);
   },
 
   onOpenTabs(urls, where) {
@@ -122,8 +128,12 @@ TabListComponent.prototype = {
       return;
     }
     if (where == "window") {
-      this._window.openDialog(this._window.getBrowserURL(), "_blank",
-                              "chrome,dialog=no,all", urls.join("|"));
+      this._window.openDialog(
+        this._window.AppConstants.BROWSER_CHROME_URL,
+        "_blank",
+        "chrome,dialog=no,all",
+        urls.join("|")
+      );
     } else {
       let loadInBackground = where == "tabshifted";
       this._getChromeWindow(this._window).gBrowser.loadTabs(urls, {
@@ -132,7 +142,6 @@ TabListComponent.prototype = {
         triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
       });
     }
-    BrowserUITelemetry.countSyncedTabEvent("openmultiple", "sidebar");
   },
 
   onCopyTabLocation(url) {
@@ -141,5 +150,5 @@ TabListComponent.prototype = {
 
   onSyncRefresh() {
     this._SyncedTabs.syncTabs(true);
-  }
+  },
 };

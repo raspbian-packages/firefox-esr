@@ -1,21 +1,42 @@
+/* -*- Mode: Java; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*-
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package org.mozilla.geckoview.test;
 
-import org.mozilla.gecko.mozglue.GeckoLoader;
-import org.mozilla.gecko.mozglue.SafeIntent;
+import org.json.JSONObject;
+import org.mozilla.geckoview.AllowOrDeny;
+import org.mozilla.geckoview.GeckoDisplay;
+import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.GeckoView;
+import org.mozilla.geckoview.GeckoRuntime;
+import org.mozilla.geckoview.GeckoRuntimeSettings;
+import org.mozilla.geckoview.WebRequestError;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Surface;
+
+import java.util.HashMap;
 
 public class TestRunnerActivity extends Activity {
     private static final String LOGTAG = "TestRunnerActivity";
+    private static final String ERROR_PAGE =
+            "<!DOCTYPE html><head><title>Error</title></head><body>Error!</body></html>";
 
-    GeckoSession mSession;
-    GeckoView mView;
+    static GeckoRuntime sRuntime;
+
+    private GeckoSession mSession;
+    private GeckoView mView;
+    private boolean mKillProcessOnDestroy;
+
+    private HashMap<GeckoSession, GeckoDisplay> mDisplays = new HashMap<>();
 
     private GeckoSession.NavigationDelegate mNavigationDelegate = new GeckoSession.NavigationDelegate() {
         @Override
@@ -34,14 +55,21 @@ public class TestRunnerActivity extends Activity {
         }
 
         @Override
-        public boolean onLoadRequest(GeckoSession session, String uri, int target) {
+        public GeckoResult<AllowOrDeny> onLoadRequest(GeckoSession session,
+                                                  LoadRequest request) {
             // Allow Gecko to load all URIs
-            return false;
+            return GeckoResult.fromValue(AllowOrDeny.ALLOW);
         }
 
         @Override
-        public void onNewSession(GeckoSession session, String uri, GeckoSession.Response<GeckoSession> response) {
-            response.respond(createSession(session.getSettings()));
+        public GeckoResult<GeckoSession> onNewSession(GeckoSession session, String uri) {
+            return GeckoResult.fromValue(createBackgroundSession(session.getSettings()));
+        }
+
+        @Override
+        public GeckoResult<String> onLoadError(GeckoSession session, String uri, WebRequestError error) {
+
+            return GeckoResult.fromValue("data:text/html," + ERROR_PAGE);
         }
     };
 
@@ -58,7 +86,7 @@ public class TestRunnerActivity extends Activity {
 
         @Override
         public void onCloseRequest(GeckoSession session) {
-            session.close();
+            closeSession(session);
         }
 
         @Override
@@ -67,8 +95,28 @@ public class TestRunnerActivity extends Activity {
         }
 
         @Override
-        public void onContextMenu(GeckoSession session, int screenX, int screenY, String uri, String elementSrc) {
+        public void onContextMenu(GeckoSession session, int screenX, int screenY,
+                                  ContextElement element) {
 
+        }
+
+        @Override
+        public void onExternalResponse(GeckoSession session, GeckoSession.WebResponseInfo request) {
+        }
+
+        @Override
+        public void onCrash(GeckoSession session) {
+            if (System.getenv("MOZ_CRASHREPORTER_SHUTDOWN") != null) {
+                sRuntime.shutdown();
+            }
+        }
+
+        @Override
+        public void onFirstComposite(final GeckoSession session) {
+        }
+
+        @Override
+        public void onWebAppManifest(final GeckoSession session, final JSONObject manifest) {
         }
     };
 
@@ -79,15 +127,35 @@ public class TestRunnerActivity extends Activity {
     private GeckoSession createSession(GeckoSessionSettings settings) {
         if (settings == null) {
             settings = new GeckoSessionSettings();
-
-            // We can't use e10s because we get deadlocked when quickly creating and
-            // destroying sessions. Bug 1348361.
-            settings.setBoolean(GeckoSessionSettings.USE_MULTIPROCESS, false);
         }
 
         final GeckoSession session = new GeckoSession(settings);
         session.setNavigationDelegate(mNavigationDelegate);
+        session.setContentDelegate(mContentDelegate);
         return session;
+    }
+
+    private GeckoSession createBackgroundSession(final GeckoSessionSettings settings) {
+        final GeckoSession session = createSession(settings);
+
+        final SurfaceTexture texture  = new SurfaceTexture(0);
+        final Surface surface = new Surface(texture);
+
+        final GeckoDisplay display = session.acquireDisplay();
+        display.surfaceChanged(surface, mView.getWidth(), mView.getHeight());
+        mDisplays.put(session, display);
+
+        return session;
+    }
+
+    private void closeSession(GeckoSession session) {
+        if (mDisplays.containsKey(session)) {
+            final GeckoDisplay display = mDisplays.remove(session);
+            display.surfaceDestroyed();
+
+            session.releaseDisplay(display);
+        }
+        session.close();
     }
 
     @Override
@@ -95,13 +163,38 @@ public class TestRunnerActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-        GeckoSession.preload(this, new String[] { "-purgecaches" },
-                             intent.getExtras(), false /* no multiprocess, see below */);
 
-        // We can't use e10s because we get deadlocked when quickly creating and
-        // destroying sessions. Bug 1348361.
+        if (sRuntime == null) {
+            final GeckoRuntimeSettings.Builder runtimeSettingsBuilder =
+                new GeckoRuntimeSettings.Builder();
+
+            // Mochitest and reftest encounter rounding errors if we have a
+            // a window.devicePixelRation like 3.625, so simplify that here.
+            runtimeSettingsBuilder
+                    .arguments(new String[] { "-purgecaches" })
+                    .displayDpiOverride(160)
+                    .displayDensityOverride(1.0f)
+                    .remoteDebuggingEnabled(true)
+                    .autoplayDefault(GeckoRuntimeSettings.AUTOPLAY_DEFAULT_ALLOWED);
+
+            final Bundle extras = intent.getExtras();
+            if (extras != null) {
+                runtimeSettingsBuilder.extras(extras);
+            }
+
+            runtimeSettingsBuilder
+                    .consoleOutput(true)
+                    .crashHandler(TestCrashHandler.class);
+
+            sRuntime = GeckoRuntime.create(this, runtimeSettingsBuilder.build());
+            sRuntime.setDelegate(() -> {
+                mKillProcessOnDestroy = true;
+                finish();
+            });
+        }
+
         mSession = createSession();
-        mSession.open(this);
+        mSession.open(sRuntime);
 
         // If we were passed a URI in the Intent, open it
         final Uri uri = intent.getData();
@@ -118,6 +211,10 @@ public class TestRunnerActivity extends Activity {
     protected void onDestroy() {
         mSession.close();
         super.onDestroy();
+
+        if (mKillProcessOnDestroy) {
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
     }
 
     public GeckoView getGeckoView() {

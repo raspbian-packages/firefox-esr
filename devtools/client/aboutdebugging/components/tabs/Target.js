@@ -13,7 +13,8 @@ const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const Services = require("Services");
 
 const Strings = Services.strings.createBundle(
-  "chrome://devtools/locale/aboutdebugging.properties");
+  "chrome://devtools/locale/aboutdebugging.properties"
+);
 
 class TabTarget extends Component {
   static get propTypes() {
@@ -23,8 +24,8 @@ class TabTarget extends Component {
         icon: PropTypes.string,
         outerWindowID: PropTypes.number.isRequired,
         title: PropTypes.string,
-        url: PropTypes.string.isRequired
-      }).isRequired
+        url: PropTypes.string.isRequired,
+      }).isRequired,
     };
   }
 
@@ -34,33 +35,42 @@ class TabTarget extends Component {
   }
 
   debug() {
-    let { target, connect } = this.props;
+    const { target, connect } = this.props;
     let url = "about:devtools-toolbox?type=tab&id=" + target.outerWindowID;
     if (connect.type == "REMOTE") {
-      let {host, port} = connect.params;
-      url += `&host=${encodeURIComponent(host)}&port=${encodeURIComponent(port)}`;
+      const { host, port } = connect.params;
+      url += `&host=${encodeURIComponent(host)}&port=${encodeURIComponent(
+        port
+      )}`;
     }
     window.open(url);
   }
 
   render() {
-    let { target } = this.props;
+    const { target } = this.props;
 
-    return dom.div({ className: "target-container" },
+    return dom.div(
+      { className: "target-container" },
       dom.img({
         className: "target-icon",
         role: "presentation",
-        src: target.icon
+        src: target.icon,
       }),
-      dom.div({ className: "target" },
+      dom.div(
+        { className: "target" },
         // If the title is empty, display the url instead.
-        dom.div({ className: "target-name", title: target.url },
-          target.title || target.url)
+        dom.div(
+          { className: "target-name", title: target.url },
+          target.title || target.url
+        )
       ),
-      dom.button({
-        className: "debug-button",
-        onClick: this.debug,
-      }, Strings.GetStringFromName("debug"))
+      dom.button(
+        {
+          className: "debug-button",
+          onClick: this.debug,
+        },
+        Strings.GetStringFromName("debug")
+      )
     );
   }
 }

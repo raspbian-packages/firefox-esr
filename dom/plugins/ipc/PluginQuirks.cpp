@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -27,10 +27,12 @@ int GetQuirksFromMimeTypeAndFilename(const nsCString& aMimeType,
     quirks |= QUIRK_FLASH_HOOK_GETWINDOWINFO;
     quirks |= QUIRK_FLASH_FIXUP_MOUSE_CAPTURE;
     quirks |= QUIRK_WINLESS_HOOK_IME;
-#if defined(_M_X64) || defined(__x86_64__)
+#  if defined(_M_X64) || defined(__x86_64__)
     quirks |= QUIRK_FLASH_HOOK_GETKEYSTATE;
     quirks |= QUIRK_FLASH_HOOK_PRINTDLGW;
-#endif
+    quirks |= QUIRK_FLASH_HOOK_SSL;
+    quirks |= QUIRK_FLASH_HOOK_CREATEMUTEXW;
+#  endif
 #endif
   }
 

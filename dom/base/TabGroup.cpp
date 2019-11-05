@@ -7,8 +7,9 @@
 #include "mozilla/dom/TabGroup.h"
 
 #include "mozilla/dom/ContentChild.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/dom/DocGroup.h"
+#include "mozilla/dom/TimeoutManager.h"
 #include "mozilla/AbstractThread.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StaticPtr.h"
@@ -23,6 +24,8 @@ namespace dom {
 
 static StaticRefPtr<TabGroup> sChromeTabGroup;
 
+LinkedList<TabGroup>* TabGroup::sTabGroups = nullptr;
+
 TabGroup::TabGroup(bool aIsChrome)
     : mLastWindowLeft(false),
       mThrottledQueuesInitialized(false),
@@ -30,6 +33,11 @@ TabGroup::TabGroup(bool aIsChrome)
       mNumOfIndexedDBDatabases(0),
       mIsChrome(aIsChrome),
       mForegroundCount(0) {
+  if (!sTabGroups) {
+    sTabGroups = new LinkedList<TabGroup>();
+  }
+  sTabGroups->insertBack(this);
+
   CreateEventTargets(/* aNeedValidation = */ !aIsChrome);
 
   // Do not throttle runnables from chrome windows.  In theory we should
@@ -52,6 +60,15 @@ TabGroup::~TabGroup() {
   MOZ_ASSERT(mDocGroups.IsEmpty());
   MOZ_ASSERT(mWindows.IsEmpty());
   MOZ_RELEASE_ASSERT(mLastWindowLeft || mIsChrome);
+
+  LinkedListElement<TabGroup>* listElement =
+      static_cast<LinkedListElement<TabGroup>*>(this);
+  listElement->remove();
+
+  if (sTabGroups->isEmpty()) {
+    delete sTabGroups;
+    sTabGroups = nullptr;
+  }
 }
 
 void TabGroup::EnsureThrottledEventQueues() {
@@ -63,19 +80,20 @@ void TabGroup::EnsureThrottledEventQueues() {
 
   for (size_t i = 0; i < size_t(TaskCategory::Count); i++) {
     TaskCategory category = static_cast<TaskCategory>(i);
-    if (category == TaskCategory::Worker || category == TaskCategory::Timer) {
-      nsCOMPtr<nsISerialEventTarget> target =
-          ThrottledEventQueue::Create(mEventTargets[i]);
-      if (target) {
-        // This may return nullptr during xpcom shutdown.  This is ok as we
-        // do not guarantee a ThrottledEventQueue will be present.
-        mEventTargets[i] = target;
-      }
+    if (category == TaskCategory::Worker) {
+      mEventTargets[i] =
+          ThrottledEventQueue::Create(mEventTargets[i],
+                                      "TabGroup worker queue");
+    } else if (category == TaskCategory::Timer) {
+      mEventTargets[i] =
+          ThrottledEventQueue::Create(mEventTargets[i],
+                                      "TabGroup timer queue");
     }
   }
 }
 
-/* static */ TabGroup* TabGroup::GetChromeTabGroup() {
+/* static */
+TabGroup* TabGroup::GetChromeTabGroup() {
   if (!sChromeTabGroup) {
     sChromeTabGroup = new TabGroup(true /* chrome tab group */);
     ClearOnShutdown(&sChromeTabGroup);
@@ -83,19 +101,26 @@ void TabGroup::EnsureThrottledEventQueues() {
   return sChromeTabGroup;
 }
 
-/* static */ TabGroup* TabGroup::GetFromWindow(mozIDOMWindowProxy* aWindow) {
-  if (TabChild* tabChild = TabChild::GetFrom(aWindow)) {
-    return tabChild->TabGroup();
+/* static */
+TabGroup* TabGroup::GetFromWindow(mozIDOMWindowProxy* aWindow) {
+  if (BrowserChild* browserChild = BrowserChild::GetFrom(aWindow)) {
+    return browserChild->TabGroup();
   }
 
   return nullptr;
 }
 
-/* static */ TabGroup* TabGroup::GetFromActor(TabChild* aTabChild) {
+/* static */
+TabGroup* TabGroup::GetFromActor(BrowserChild* aBrowserChild) {
   MOZ_RELEASE_ASSERT(NS_IsMainThread());
 
+  // Middleman processes do not assign event targets to their tab children.
+  if (recordreplay::IsMiddleman()) {
+    return GetChromeTabGroup();
+  }
+
   nsCOMPtr<nsIEventTarget> target =
-      aTabChild->Manager()->GetEventTargetFor(aTabChild);
+      aBrowserChild->Manager()->GetEventTargetFor(aBrowserChild);
   if (!target) {
     return nullptr;
   }
@@ -120,7 +145,7 @@ already_AddRefed<DocGroup> TabGroup::GetDocGroup(const nsACString& aKey) {
 }
 
 already_AddRefed<DocGroup> TabGroup::AddDocument(const nsACString& aKey,
-                                                 nsIDocument* aDocument) {
+                                                 Document* aDocument) {
   MOZ_ASSERT(NS_IsMainThread());
   HashEntry* entry = mDocGroups.PutEntry(aKey);
   RefPtr<DocGroup> docGroup;
@@ -139,8 +164,9 @@ already_AddRefed<DocGroup> TabGroup::AddDocument(const nsACString& aKey,
   return docGroup.forget();
 }
 
-/* static */ already_AddRefed<TabGroup> TabGroup::Join(
-    nsPIDOMWindowOuter* aWindow, TabGroup* aTabGroup) {
+/* static */
+already_AddRefed<TabGroup> TabGroup::Join(nsPIDOMWindowOuter* aWindow,
+                                          TabGroup* aTabGroup) {
   MOZ_ASSERT(NS_IsMainThread());
   RefPtr<TabGroup> tabGroup = aTabGroup;
   if (!tabGroup) {
@@ -276,6 +302,51 @@ bool TabGroup::IsBackground() const {
 #endif
 
   return mForegroundCount == 0;
+}
+
+uint32_t TabGroup::Count(bool aActiveOnly) const {
+  if (!aActiveOnly) {
+    return mDocGroups.Count();
+  }
+
+  uint32_t count = 0;
+  for (auto iter = mDocGroups.ConstIter(); !iter.Done(); iter.Next()) {
+    if (iter.Get()->mDocGroup->IsActive()) {
+      ++count;
+    }
+  }
+
+  return count;
+}
+
+/*static*/
+bool TabGroup::HasOnlyThrottableTabs() {
+  if (!sTabGroups) {
+    return false;
+  }
+
+  for (TabGroup* tabGroup = sTabGroups->getFirst(); tabGroup;
+       tabGroup =
+           static_cast<LinkedListElement<TabGroup>*>(tabGroup)->getNext()) {
+    for (auto iter = tabGroup->Iter(); !iter.Done(); iter.Next()) {
+      DocGroup* docGroup = iter.Get()->mDocGroup;
+      for (auto* documentInDocGroup : *docGroup) {
+        if (documentInDocGroup->IsCurrentActiveDocument()) {
+          nsPIDOMWindowInner* win = documentInDocGroup->GetInnerWindow();
+          if (win && win->IsCurrentInnerWindow()) {
+            nsPIDOMWindowOuter* outer = win->GetOuterWindow();
+            if (outer) {
+              TimeoutManager& tm = win->TimeoutManager();
+              if (!tm.BudgetThrottlingEnabled(outer->IsBackground())) {
+                return false;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return true;
 }
 
 }  // namespace dom

@@ -1,4 +1,4 @@
-/* vim:set ts=4 sw=4 et cindent: */
+/* vim:set ts=4 sw=2 et cindent: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -212,8 +212,7 @@ nsAuthSambaNTLM::GetNextToken(const void* inToken, uint32_t inTokenLen,
                               void** outToken, uint32_t* outTokenLen) {
   if (!inToken) {
     /* someone wants our initial message */
-    *outToken = nsMemory::Clone(mInitialMessage, mInitialMessageLen);
-    if (!*outToken) return NS_ERROR_OUT_OF_MEMORY;
+    *outToken = moz_xmemdup(mInitialMessage, mInitialMessageLen);
     *outTokenLen = mInitialMessageLen;
     return NS_OK;
   }
@@ -239,11 +238,8 @@ nsAuthSambaNTLM::GetNextToken(const void* inToken, uint32_t inTokenLen,
   }
   uint8_t* buf = ExtractMessage(line, outTokenLen);
   if (!buf) return NS_ERROR_FAILURE;
-  *outToken = nsMemory::Clone(buf, *outTokenLen);
+  *outToken = moz_xmemdup(buf, *outTokenLen);
   PR_Free(buf);
-  if (!*outToken) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
 
   // We're done. Close our file descriptors now and reap the helper
   // process.

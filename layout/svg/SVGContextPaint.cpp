@@ -9,11 +9,11 @@
 #include "gfxContext.h"
 #include "gfxUtils.h"
 #include "mozilla/gfx/2D.h"
+#include "mozilla/dom/SVGDocument.h"
 #include "mozilla/Preferences.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsSVGPaintServerFrame.h"
 #include "SVGObserverUtils.h"
-#include "nsSVGPaintServerFrame.h"
 
 using namespace mozilla::gfx;
 using namespace mozilla::image;
@@ -22,7 +22,8 @@ namespace mozilla {
 
 using image::imgDrawingParams;
 
-/* static */ bool SVGContextPaint::IsAllowedForImageFromURI(nsIURI* aURI) {
+/* static */
+bool SVGContextPaint::IsAllowedForImageFromURI(nsIURI* aURI) {
   static bool sEnabledForContent = false;
   static bool sEnabledForContentCached = false;
 
@@ -72,8 +73,7 @@ using image::imgDrawingParams;
   nsString addonId;
   if (NS_SUCCEEDED(principal->GetAddonId(addonId))) {
     if (StringEndsWith(addonId, NS_LITERAL_STRING("@mozilla.org")) ||
-        StringEndsWith(addonId, NS_LITERAL_STRING("@mozilla.com")) ||
-        StringBeginsWith(addonId, NS_LITERAL_STRING("@testpilot-"))) {
+        StringEndsWith(addonId, NS_LITERAL_STRING("@mozilla.com"))) {
       return true;
     }
   }
@@ -87,19 +87,17 @@ using image::imgDrawingParams;
  * @param aOuterContextPaint pattern information from the outer text context
  * @param aTargetPaint where to store the current pattern information
  * @param aFillOrStroke member pointer to the paint we are setting up
- * @param aProperty the frame property descriptor of the fill or stroke paint
- *   server frame
  */
-static void SetupInheritablePaint(
-    const DrawTarget* aDrawTarget, const gfxMatrix& aContextMatrix,
-    nsIFrame* aFrame, float& aOpacity, SVGContextPaint* aOuterContextPaint,
-    SVGContextPaintImpl::Paint& aTargetPaint,
-    nsStyleSVGPaint nsStyleSVG::*aFillOrStroke,
-    SVGObserverUtils::PaintingPropertyDescriptor aProperty,
-    imgDrawingParams& aImgParams) {
+static void SetupInheritablePaint(const DrawTarget* aDrawTarget,
+                                  const gfxMatrix& aContextMatrix,
+                                  nsIFrame* aFrame, float& aOpacity,
+                                  SVGContextPaint* aOuterContextPaint,
+                                  SVGContextPaintImpl::Paint& aTargetPaint,
+                                  nsStyleSVGPaint nsStyleSVG::*aFillOrStroke,
+                                  imgDrawingParams& aImgParams) {
   const nsStyleSVG* style = aFrame->StyleSVG();
   nsSVGPaintServerFrame* ps =
-      SVGObserverUtils::GetPaintServer(aFrame, aFillOrStroke, aProperty);
+      SVGObserverUtils::GetAndObservePaintServer(aFrame, aFillOrStroke);
 
   if (ps) {
     RefPtr<gfxPattern> pattern =
@@ -132,8 +130,8 @@ static void SetupInheritablePaint(
     }
   }
 
-  nscolor color = nsSVGUtils::GetFallbackOrPaintColor(aFrame->StyleContext(),
-                                                      aFillOrStroke);
+  nscolor color =
+      nsSVGUtils::GetFallbackOrPaintColor(aFrame->Style(), aFillOrStroke);
   aTargetPaint.SetColor(color);
 }
 
@@ -155,7 +153,7 @@ DrawMode SVGContextPaintImpl::Init(const DrawTarget* aDrawTarget,
 
     SetupInheritablePaint(aDrawTarget, aContextMatrix, aFrame, opacity,
                           aOuterContextPaint, mFillPaint, &nsStyleSVG::mFill,
-                          SVGObserverUtils::FillProperty(), aImgParams);
+                          aImgParams);
 
     SetFillOpacity(opacity);
 
@@ -172,8 +170,7 @@ DrawMode SVGContextPaintImpl::Init(const DrawTarget* aDrawTarget,
 
     SetupInheritablePaint(aDrawTarget, aContextMatrix, aFrame, opacity,
                           aOuterContextPaint, mStrokePaint,
-                          &nsStyleSVG::mStroke,
-                          SVGObserverUtils::StrokeProperty(), aImgParams);
+                          &nsStyleSVG::mStroke, aImgParams);
 
     SetStrokeOpacity(opacity);
 
@@ -193,17 +190,19 @@ void SVGContextPaint::InitStrokeGeometry(gfxContext* aContext,
   mDashOffset /= devUnitsPerSVGUnit;
 }
 
-/* static */ SVGContextPaint* SVGContextPaint::GetContextPaint(
-    nsIContent* aContent) {
-  nsIDocument* ownerDoc = aContent->OwnerDoc();
-
-  if (!ownerDoc->IsBeingUsedAsImage()) {
+SVGContextPaint* SVGContextPaint::GetContextPaint(nsIContent* aContent) {
+  dom::Document* ownerDoc = aContent->OwnerDoc();
+  if (!ownerDoc->IsSVGDocument()) {
     return nullptr;
   }
 
-  // XXX The SVGContextPaint that was passed to SetProperty was const. Ideally
-  // we could and should re-apply that constness to the SVGContextPaint that
-  // we get here (SVGImageContext is never changed after it is initialized).
+  auto* contextPaint = ownerDoc->AsSVGDocument()->GetCurrentContextPaint();
+  MOZ_ASSERT_IF(contextPaint, ownerDoc->IsBeingUsedAsImage());
+
+  // XXX The SVGContextPaint that SVGDocument keeps around is const. We could
+  // and should keep that constness to the SVGContextPaint that we get here
+  // (SVGImageContext is never changed after it is initialized).
+  //
   // Unfortunately lazy initialization of SVGContextPaint (which is a member of
   // SVGImageContext, and also conceptually never changes after construction)
   // prevents some of SVGContextPaint's conceptually const methods from being
@@ -211,9 +210,7 @@ void SVGContextPaint::InitStrokeGeometry(gfxContext* aContext,
   // bit of a headache so for now we punt on that, don't reapply the constness
   // to the SVGContextPaint here, and trust that no one will add code that
   // actually modifies the object.
-
-  return static_cast<SVGContextPaint*>(
-      ownerDoc->GetProperty(nsGkAtoms::svgContextPaint));
+  return const_cast<SVGContextPaint*>(contextPaint);
 }
 
 already_AddRefed<gfxPattern> SVGContextPaintImpl::GetFillPattern(
@@ -294,36 +291,17 @@ already_AddRefed<gfxPattern> SVGContextPaintImpl::Paint::GetPattern(
 }
 
 AutoSetRestoreSVGContextPaint::AutoSetRestoreSVGContextPaint(
-    const SVGContextPaint* aContextPaint, nsIDocument* aSVGDocument)
+    const SVGContextPaint& aContextPaint, dom::SVGDocument& aSVGDocument)
     : mSVGDocument(aSVGDocument),
-      mOuterContextPaint(
-          aSVGDocument->GetProperty(nsGkAtoms::svgContextPaint)) {
-  // The way that we supply context paint is to temporarily set the context
-  // paint on the owner document of the SVG that we're painting while it's
-  // being painted.
-
-  MOZ_ASSERT(aContextPaint);
-  MOZ_ASSERT(aSVGDocument->IsBeingUsedAsImage(),
+      mOuterContextPaint(aSVGDocument.GetCurrentContextPaint()) {
+  MOZ_ASSERT(aSVGDocument.IsBeingUsedAsImage(),
              "SVGContextPaint::GetContextPaint assumes this");
 
-  if (mOuterContextPaint) {
-    mSVGDocument->UnsetProperty(nsGkAtoms::svgContextPaint);
-  }
-
-  DebugOnly<nsresult> res = mSVGDocument->SetProperty(
-      nsGkAtoms::svgContextPaint, const_cast<SVGContextPaint*>(aContextPaint));
-
-  NS_WARNING_ASSERTION(NS_SUCCEEDED(res), "Failed to set context paint");
+  mSVGDocument.SetCurrentContextPaint(&aContextPaint);
 }
 
 AutoSetRestoreSVGContextPaint::~AutoSetRestoreSVGContextPaint() {
-  mSVGDocument->UnsetProperty(nsGkAtoms::svgContextPaint);
-  if (mOuterContextPaint) {
-    DebugOnly<nsresult> res = mSVGDocument->SetProperty(
-        nsGkAtoms::svgContextPaint, mOuterContextPaint);
-
-    NS_WARNING_ASSERTION(NS_SUCCEEDED(res), "Failed to restore context paint");
-  }
+  mSVGDocument.SetCurrentContextPaint(mOuterContextPaint);
 }
 
 // SVGEmbeddingContextPaint

@@ -8,13 +8,13 @@
 
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/BinarySearch.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/ComputedStyleInlines.h"
 
 #include "nsStyleConsts.h"
 #include "nsTextFrameUtils.h"
 #include "nsFontMetrics.h"
 #include "nsDeviceContext.h"
-#include "nsStyleContext.h"
-#include "nsStyleContextInlines.h"
 #include "nsUnicodeScriptCodes.h"
 
 using namespace mozilla;
@@ -433,8 +433,8 @@ void MathMLTextRunFactory::RebuildTextRun(
   AutoTArray<uint8_t, 50> canBreakBeforeArray;
   bool mergeNeeded = false;
 
-  bool singleCharMI = !!(aTextRun->GetFlags2() &
-                         nsTextFrameUtils::Flags::TEXT_IS_SINGLE_CHAR_MI);
+  bool singleCharMI =
+      !!(aTextRun->GetFlags2() & nsTextFrameUtils::Flags::IsSingleCharMi);
 
   uint32_t length = aTextRun->GetLength();
   const char16_t* str = aTextRun->mString.BeginReading();
@@ -526,15 +526,15 @@ void MathMLTextRunFactory::RebuildTextRun(
       // This overrides the initial values specified in fontStyle, to avoid
       // inconsistencies in which attributes allow CSS changes and which do not.
       if (mFlags & MATH_FONT_WEIGHT_BOLD) {
-        font.weight = NS_FONT_WEIGHT_BOLD;
+        font.weight = FontWeight::Bold();
         if (mFlags & MATH_FONT_STYLING_NORMAL) {
-          font.style = NS_FONT_STYLE_NORMAL;
+          font.style = FontSlantStyle::Normal();
         } else {
-          font.style = NS_FONT_STYLE_ITALIC;
+          font.style = FontSlantStyle::Italic();
         }
       } else if (mFlags & MATH_FONT_STYLING_NORMAL) {
-        font.style = NS_FONT_STYLE_NORMAL;
-        font.weight = NS_FONT_WEIGHT_NORMAL;
+        font.style = FontSlantStyle::Normal();
+        font.weight = FontWeight::Normal();
       } else {
         mathVar = NS_MATHML_MATHVARIANT_ITALIC;
       }
@@ -560,7 +560,7 @@ void MathMLTextRunFactory::RebuildTextRun(
         // Bug 930504. Some platforms do not have fonts for Mathematical
         // Alphanumeric Symbols. Hence we check whether the transformed
         // character is actually available.
-        uint8_t matchType;
+        FontMatchType matchType;
         RefPtr<gfxFont> mathFont = fontGroup->FindFontForChar(
             ch2, 0, 0, unicode::Script::COMMON, nullptr, &matchType);
         if (mathFont) {
@@ -613,21 +613,21 @@ void MathMLTextRunFactory::RebuildTextRun(
   gfxTextRun* child;
 
   if (mathVar == NS_MATHML_MATHVARIANT_BOLD && doMathvariantStyling) {
-    font.style = NS_FONT_STYLE_NORMAL;
-    font.weight = NS_FONT_WEIGHT_BOLD;
+    font.style = FontSlantStyle::Normal();
+    font.weight = FontWeight::Bold();
   } else if (mathVar == NS_MATHML_MATHVARIANT_ITALIC && doMathvariantStyling) {
-    font.style = NS_FONT_STYLE_ITALIC;
-    font.weight = NS_FONT_WEIGHT_NORMAL;
+    font.style = FontSlantStyle::Italic();
+    font.weight = FontWeight::Normal();
   } else if (mathVar == NS_MATHML_MATHVARIANT_BOLD_ITALIC &&
              doMathvariantStyling) {
-    font.style = NS_FONT_STYLE_ITALIC;
-    font.weight = NS_FONT_WEIGHT_BOLD;
+    font.style = FontSlantStyle::Italic();
+    font.weight = FontWeight::Bold();
   } else if (mathVar != NS_MATHML_MATHVARIANT_NONE) {
     // Mathvariant overrides fontstyle and fontweight
     // Need to check to see if mathvariant is actually applied as this function
     // is used for other purposes.
-    font.style = NS_FONT_STYLE_NORMAL;
-    font.weight = NS_FONT_WEIGHT_NORMAL;
+    font.style = FontSlantStyle::Normal();
+    font.weight = FontWeight::Normal();
   }
   gfxFontGroup* newFontGroup = nullptr;
 
@@ -640,6 +640,7 @@ void MathMLTextRunFactory::RebuildTextRun(
     params.explicitLanguage = styles[0]->mExplicitLanguage;
     params.userFontSet = pc->GetUserFontSet();
     params.textPerf = pc->GetTextPerfMetrics();
+    params.featureValueLookup = pc->GetFontFeatureValuesLookup();
     RefPtr<nsFontMetrics> metrics =
         pc->DeviceContext()->GetMetricsFor(font, params);
     newFontGroup = metrics->GetThebesFontGroup();
@@ -654,7 +655,7 @@ void MathMLTextRunFactory::RebuildTextRun(
   if (mInnerTransformingTextRunFactory) {
     transformedChild = mInnerTransformingTextRunFactory->MakeTextRun(
         convertedString.BeginReading(), convertedString.Length(), &innerParams,
-        newFontGroup, flags, nsTextFrameUtils::Flags(), Move(styleArray),
+        newFontGroup, flags, nsTextFrameUtils::Flags(), std::move(styleArray),
         false);
     child = transformedChild.get();
   } else {

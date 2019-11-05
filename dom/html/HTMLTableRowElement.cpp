@@ -6,7 +6,7 @@
 
 #include "mozilla/dom/HTMLTableRowElement.h"
 #include "mozilla/dom/HTMLTableElement.h"
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsMappedAttributes.h"
 #include "nsAttrValueInlines.h"
 #include "mozilla/dom/BindingUtils.h"
@@ -23,7 +23,7 @@ HTMLTableRowElement::~HTMLTableRowElement() {}
 
 JSObject* HTMLTableRowElement::WrapNode(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return HTMLTableRowElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLTableRowElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(HTMLTableRowElement)
@@ -56,12 +56,12 @@ HTMLTableElement* HTMLTableRowElement::GetTable() const {
   }
 
   // We may not be in a section
-  HTMLTableElement* table = HTMLTableElement::FromContent(parent);
+  HTMLTableElement* table = HTMLTableElement::FromNode(parent);
   if (table) {
     return table;
   }
 
-  return HTMLTableElement::FromContentOrNull(parent->GetParent());
+  return HTMLTableElement::FromNodeOrNull(parent->GetParent());
 }
 
 int32_t HTMLTableRowElement::RowIndex() const {
@@ -229,20 +229,18 @@ bool HTMLTableRowElement::ParseAttribute(int32_t aNamespaceID,
 }
 
 void HTMLTableRowElement::MapAttributesIntoRule(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  nsGenericHTMLElement::MapHeightAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapVAlignAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapBackgroundAttributesInto(aAttributes, aData);
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  nsGenericHTMLElement::MapHeightAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapVAlignAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapBackgroundAttributesInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
 HTMLTableRowElement::IsAttributeMapped(const nsAtom* aAttribute) const {
-  static const MappedAttributeEntry attributes[] = {{&nsGkAtoms::align},
-                                                    {&nsGkAtoms::valign},
-                                                    {&nsGkAtoms::height},
-                                                    {nullptr}};
+  static const MappedAttributeEntry attributes[] = {
+      {nsGkAtoms::align}, {nsGkAtoms::valign}, {nsGkAtoms::height}, {nullptr}};
 
   static const MappedAttributeEntry* const map[] = {
       attributes,

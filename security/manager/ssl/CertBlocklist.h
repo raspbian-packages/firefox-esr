@@ -14,7 +14,7 @@
 #include "nsIX509CertDB.h"
 #include "nsString.h"
 #include "nsTHashtable.h"
-#include "pkix/Input.h"
+#include "mozpkix/Input.h"
 
 #define NS_CERT_BLOCKLIST_CID                        \
   {                                                  \
@@ -78,7 +78,7 @@ class CertBlocklist : public nsICertBlocklist {
   nsCOMPtr<nsIFile> mBackingFile;
 
  protected:
-  static void PreferenceChanged(const char* aPref, void* aClosure);
+  static void PreferenceChanged(const char* aPref, CertBlocklist* aBlocklist);
   static uint32_t sLastBlocklistUpdate;
   static uint32_t sLastKintoUpdate;
   static uint32_t sMaxStaleness;

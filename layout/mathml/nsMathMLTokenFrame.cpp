@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsMathMLTokenFrame.h"
+
+#include "mozilla/PresShell.h"
 #include "nsPresContext.h"
 #include "nsContentUtils.h"
 #include "nsTextFrame.h"
-#ifdef MOZ_OLD_STYLE
-#include "mozilla/GeckoRestyleManager.h"
-#endif
 #include <algorithm>
 
 using namespace mozilla;
 
-nsIFrame* NS_NewMathMLTokenFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext) {
-  return new (aPresShell) nsMathMLTokenFrame(aContext);
+nsIFrame* NS_NewMathMLTokenFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsMathMLTokenFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMathMLTokenFrame)
@@ -40,7 +39,7 @@ eMathMLFrameType nsMathMLTokenFrame::GetMathMLFrameType() {
 
   uint8_t mathVariant = StyleFont()->mMathVariant;
   if ((mathVariant == NS_MATHML_MATHVARIANT_NONE &&
-       (StyleFont()->mFont.style == NS_STYLE_FONT_STYLE_ITALIC ||
+       (StyleFont()->mFont.style == FontSlantStyle::Italic() ||
         HasAnyStateBits(NS_FRAME_IS_IN_SINGLE_CHAR_MI))) ||
       mathVariant == NS_MATHML_MATHVARIANT_ITALIC ||
       mathVariant == NS_MATHML_MATHVARIANT_BOLD_ITALIC ||
@@ -122,9 +121,7 @@ void nsMathMLTokenFrame::Reflow(nsPresContext* aPresContext,
 
   for (nsIFrame* childFrame : PrincipalChildList()) {
     // ask our children to compute their bounding metrics
-    ReflowOutput childDesiredSize(
-        aReflowInput.GetWritingMode(),
-        aDesiredSize.mFlags | NS_REFLOW_CALC_BOUNDING_METRICS);
+    ReflowOutput childDesiredSize(aReflowInput.GetWritingMode());
     WritingMode wm = childFrame->GetWritingMode();
     LogicalSize availSize = aReflowInput.ComputedSize(wm);
     availSize.BSize(wm) = NS_UNCONSTRAINEDSIZE;
@@ -147,9 +144,9 @@ void nsMathMLTokenFrame::Reflow(nsPresContext* aPresContext,
 // For token elements, mBoundingMetrics is computed at the ReflowToken
 // pass, it is not computed here because our children may be text frames
 // that do not implement the GetBoundingMetrics() interface.
-/* virtual */ nsresult nsMathMLTokenFrame::Place(DrawTarget* aDrawTarget,
-                                                 bool aPlaceOrigin,
-                                                 ReflowOutput& aDesiredSize) {
+/* virtual */
+nsresult nsMathMLTokenFrame::Place(DrawTarget* aDrawTarget, bool aPlaceOrigin,
+                                   ReflowOutput& aDesiredSize) {
   mBoundingMetrics = nsBoundingMetrics();
   for (nsIFrame* childFrame : PrincipalChildList()) {
     ReflowOutput childSize(aDesiredSize.GetWritingMode());

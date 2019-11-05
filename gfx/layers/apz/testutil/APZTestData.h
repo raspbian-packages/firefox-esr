@@ -10,13 +10,14 @@
 #include <map>
 
 #include "gfxPrefs.h"
-#include "FrameMetrics.h"
 #include "nsDebug.h"  // for NS_WARNING
 #include "nsTArray.h"
-#include "mozilla/Assertions.h"  // for MOZ_ASSERT
-#include "mozilla/DebugOnly.h"   // for DebugOnly
-#include "mozilla/ToString.h"    // for ToString
+#include "mozilla/Assertions.h"       // for MOZ_ASSERT
+#include "mozilla/DebugOnly.h"        // for DebugOnly
+#include "mozilla/GfxMessageUtils.h"  // for ParamTraits specializations
+#include "mozilla/ToString.h"         // for ToString
 #include "mozilla/gfx/CompositorHitTestInfo.h"
+#include "mozilla/layers/ScrollableLayerGuid.h"
 #include "ipc/IPCMessageUtils.h"
 #include "js/TypeDecls.h"
 
@@ -42,10 +43,10 @@ typedef uint32_t SequenceNumber;
 // TODO(botond):
 //  - Improve warnings/asserts.
 //  - Add ability to associate a repaint request triggered during a layers
-//  update
-//    with the sequence number of the paint that caused the layers update.
+//    update with the sequence number of the paint that caused the layers
+//    update.
 class APZTestData {
-  typedef FrameMetrics::ViewID ViewID;
+  typedef ScrollableLayerGuid::ViewID ViewID;
   friend struct IPC::ParamTraits<APZTestData>;
   friend struct APZTestDataToJSConverter;
 
@@ -77,11 +78,15 @@ class APZTestData {
                        const ViewID& aScrollId) {
     mHitResults.AppendElement(HitResult{aPoint, aResult, aScrollId});
   }
+  void RecordAdditionalData(const std::string& aKey,
+                            const std::string& aValue) {
+    mAdditionalData[aKey] = aValue;
+  }
 
   // Convert this object to a JS representation.
   bool ToJS(JS::MutableHandleValue aOutValue, JSContext* aContext) const;
 
-  // Use dummy derived structures wrapping the tyepdefs to work around a type
+  // Use dummy derived structures wrapping the typedefs to work around a type
   // name length limit in MSVC.
   typedef std::map<std::string, std::string> ScrollFrameDataBase;
   struct ScrollFrameData : ScrollFrameDataBase {};
@@ -99,6 +104,8 @@ class APZTestData {
   DataStore mPaints;
   DataStore mRepaintRequests;
   nsTArray<HitResult> mHitResults;
+  // Additional free-form data that's not grouped paint or scroll frame.
+  std::map<std::string, std::string> mAdditionalData;
 
   void LogTestDataImpl(DataStore& aDataStore, SequenceNumber aSequenceNumber,
                        ViewID aScrollId, const std::string& aKey,
@@ -128,15 +135,15 @@ class APZPaintLogHelper {
   }
 
   template <typename Value>
-  void LogTestData(FrameMetrics::ViewID aScrollId, const std::string& aKey,
-                   const Value& aValue) const {
+  void LogTestData(ScrollableLayerGuid::ViewID aScrollId,
+                   const std::string& aKey, const Value& aValue) const {
     if (mTestData) {  // avoid stringifying if mTestData == nullptr
       LogTestData(aScrollId, aKey, ToString(aValue));
     }
   }
 
-  void LogTestData(FrameMetrics::ViewID aScrollId, const std::string& aKey,
-                   const std::string& aValue) const {
+  void LogTestData(ScrollableLayerGuid::ViewID aScrollId,
+                   const std::string& aKey, const std::string& aValue) const {
     if (mTestData) {
       mTestData->LogTestDataForPaint(mPaintSequenceNumber, aScrollId, aKey,
                                      aValue);

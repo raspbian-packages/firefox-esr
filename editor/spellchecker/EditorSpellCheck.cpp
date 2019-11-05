@@ -8,6 +8,7 @@
 
 #include "mozilla/Attributes.h"   // for final
 #include "mozilla/EditorBase.h"   // for EditorBase
+#include "mozilla/HTMLEditor.h"   // for HTMLEditor
 #include "mozilla/dom/Element.h"  // for Element
 #include "mozilla/dom/Selection.h"
 #include "mozilla/intl/LocaleService.h"    // for retrieving app locale
@@ -22,21 +23,16 @@
 #include "nsError.h"                       // for NS_ERROR_NOT_INITIALIZED, etc
 #include "nsIContent.h"                    // for nsIContent
 #include "nsIContentPrefService2.h"        // for nsIContentPrefService2, etc
-#include "nsIDOMDocument.h"                // for nsIDOMDocument
-#include "nsIDOMElement.h"                 // for nsIDOMElement
-#include "nsIDocument.h"                   // for nsIDocument
+#include "mozilla/dom/Document.h"          // for Document
 #include "nsIEditor.h"                     // for nsIEditor
-#include "nsIHTMLEditor.h"                 // for nsIHTMLEditor
 #include "nsILoadContext.h"
-#include "nsISelection.h"           // for nsISelection
-#include "nsISupportsBase.h"        // for nsISupports
-#include "nsISupportsUtils.h"       // for NS_ADDREF
-#include "nsITextServicesFilter.h"  // for nsITextServicesFilter
-#include "nsIURI.h"                 // for nsIURI
-#include "nsThreadUtils.h"          // for GetMainThreadSerialEventTarget
-#include "nsVariant.h"              // for nsIWritableVariant, etc
-#include "nsLiteralString.h"        // for NS_LITERAL_STRING, etc
-#include "nsMemory.h"               // for nsMemory
+#include "nsISupportsBase.h"   // for nsISupports
+#include "nsISupportsUtils.h"  // for NS_ADDREF
+#include "nsIURI.h"            // for nsIURI
+#include "nsThreadUtils.h"     // for GetMainThreadSerialEventTarget
+#include "nsVariant.h"         // for nsIWritableVariant, etc
+#include "nsLiteralString.h"   // for NS_LITERAL_STRING, etc
+#include "nsMemory.h"          // for nsMemory
 #include "nsRange.h"
 #include "nsReadableUtils.h"        // for ToNewUnicode, EmptyString, etc
 #include "nsServiceManagerUtils.h"  // for do_GetService
@@ -74,35 +70,24 @@ class UpdateDictionaryHolder {
 /**
  * Gets the URI of aEditor's document.
  */
-static nsresult GetDocumentURI(nsIEditor* aEditor, nsIURI** aURI) {
-  NS_ENSURE_ARG_POINTER(aEditor);
-  NS_ENSURE_ARG_POINTER(aURI);
+static nsIURI* GetDocumentURI(EditorBase* aEditor) {
+  MOZ_ASSERT(aEditor);
 
-  nsCOMPtr<nsIDOMDocument> domDoc;
-  aEditor->GetDocument(getter_AddRefs(domDoc));
-  NS_ENSURE_TRUE(domDoc, NS_ERROR_FAILURE);
+  Document* doc = aEditor->AsEditorBase()->GetDocument();
+  if (NS_WARN_IF(!doc)) {
+    return nullptr;
+  }
 
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(domDoc);
-  NS_ENSURE_TRUE(doc, NS_ERROR_FAILURE);
-
-  nsCOMPtr<nsIURI> docUri = doc->GetDocumentURI();
-  NS_ENSURE_TRUE(docUri, NS_ERROR_FAILURE);
-
-  *aURI = docUri;
-  NS_ADDREF(*aURI);
-  return NS_OK;
+  return doc->GetDocumentURI();
 }
 
-static already_AddRefed<nsILoadContext> GetLoadContext(nsIEditor* aEditor) {
-  nsCOMPtr<nsIDOMDocument> domDoc;
-  aEditor->GetDocument(getter_AddRefs(domDoc));
-  NS_ENSURE_TRUE(domDoc, nullptr);
+static nsILoadContext* GetLoadContext(nsIEditor* aEditor) {
+  Document* doc = aEditor->AsEditorBase()->GetDocument();
+  if (NS_WARN_IF(!doc)) {
+    return nullptr;
+  }
 
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(domDoc);
-  NS_ENSURE_TRUE(doc, nullptr);
-
-  nsCOMPtr<nsILoadContext> loadContext = doc->GetLoadContext();
-  return loadContext.forget();
+  return doc->GetLoadContext();
 }
 
 /**
@@ -153,11 +138,11 @@ class ContentPrefInitializerRunnable final : public Runnable {
   ContentPrefInitializerRunnable(nsIEditor* aEditor,
                                  nsIContentPrefCallback2* aCallback)
       : Runnable("ContentPrefInitializerRunnable"),
-        mEditor(aEditor),
+        mEditorBase(aEditor->AsEditorBase()),
         mCallback(aCallback) {}
 
   NS_IMETHOD Run() override {
-    if (mEditor->AsEditorBase()->Destroyed()) {
+    if (mEditorBase->Destroyed()) {
       mCallback->HandleError(NS_ERROR_NOT_AVAILABLE);
       return NS_OK;
     }
@@ -169,24 +154,22 @@ class ContentPrefInitializerRunnable final : public Runnable {
       return NS_OK;
     }
 
-    nsCOMPtr<nsIURI> docUri;
-    nsresult rv = GetDocumentURI(mEditor, getter_AddRefs(docUri));
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      mCallback->HandleError(rv);
+    nsCOMPtr<nsIURI> docUri = GetDocumentURI(mEditorBase);
+    if (NS_WARN_IF(!docUri)) {
+      mCallback->HandleError(NS_ERROR_FAILURE);
       return NS_OK;
     }
 
     nsAutoCString docUriSpec;
-    rv = docUri->GetSpec(docUriSpec);
+    nsresult rv = docUri->GetSpec(docUriSpec);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       mCallback->HandleError(rv);
       return NS_OK;
     }
 
-    nsCOMPtr<nsILoadContext> loadContext = GetLoadContext(mEditor);
     rv = contentPrefService->GetByDomainAndName(
-        NS_ConvertUTF8toUTF16(docUriSpec), CPS_PREF_NAME, loadContext,
-        mCallback);
+        NS_ConvertUTF8toUTF16(docUriSpec), CPS_PREF_NAME,
+        GetLoadContext(mEditorBase), mCallback);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       mCallback->HandleError(rv);
       return NS_OK;
@@ -195,7 +178,7 @@ class ContentPrefInitializerRunnable final : public Runnable {
   }
 
  private:
-  nsCOMPtr<nsIEditor> mEditor;
+  RefPtr<EditorBase> mEditorBase;
   nsCOMPtr<nsIContentPrefCallback2> mCallback;
 };
 
@@ -205,7 +188,8 @@ DictionaryFetcher::Fetch(nsIEditor* aEditor) {
 
   nsCOMPtr<nsIRunnable> runnable =
       new ContentPrefInitializerRunnable(aEditor, this);
-  NS_IdleDispatchToCurrentThread(runnable.forget(), 1000);
+  NS_DispatchToCurrentThreadQueue(runnable.forget(), 1000,
+                                  EventQueuePriority::Idle);
 
   return NS_OK;
 }
@@ -213,15 +197,16 @@ DictionaryFetcher::Fetch(nsIEditor* aEditor) {
 /**
  * Stores the current dictionary for aEditor's document URL.
  */
-static nsresult StoreCurrentDictionary(nsIEditor* aEditor,
+static nsresult StoreCurrentDictionary(EditorBase* aEditorBase,
                                        const nsAString& aDictionary) {
-  NS_ENSURE_ARG_POINTER(aEditor);
+  NS_ENSURE_ARG_POINTER(aEditorBase);
 
   nsresult rv;
 
-  nsCOMPtr<nsIURI> docUri;
-  rv = GetDocumentURI(aEditor, getter_AddRefs(docUri));
-  NS_ENSURE_SUCCESS(rv, rv);
+  nsCOMPtr<nsIURI> docUri = GetDocumentURI(aEditorBase);
+  if (NS_WARN_IF(!docUri)) {
+    return NS_ERROR_FAILURE;
+  }
 
   nsAutoCString docUriSpec;
   rv = docUri->GetSpec(docUriSpec);
@@ -234,23 +219,23 @@ static nsresult StoreCurrentDictionary(nsIEditor* aEditor,
       do_GetService(NS_CONTENT_PREF_SERVICE_CONTRACTID);
   NS_ENSURE_TRUE(contentPrefService, NS_ERROR_NOT_INITIALIZED);
 
-  nsCOMPtr<nsILoadContext> loadContext = GetLoadContext(aEditor);
   return contentPrefService->Set(NS_ConvertUTF8toUTF16(docUriSpec),
-                                 CPS_PREF_NAME, prefValue, loadContext,
-                                 nullptr);
+                                 CPS_PREF_NAME, prefValue,
+                                 GetLoadContext(aEditorBase), nullptr);
 }
 
 /**
  * Forgets the current dictionary stored for aEditor's document URL.
  */
-static nsresult ClearCurrentDictionary(nsIEditor* aEditor) {
-  NS_ENSURE_ARG_POINTER(aEditor);
+static nsresult ClearCurrentDictionary(EditorBase* aEditorBase) {
+  NS_ENSURE_ARG_POINTER(aEditorBase);
 
   nsresult rv;
 
-  nsCOMPtr<nsIURI> docUri;
-  rv = GetDocumentURI(aEditor, getter_AddRefs(docUri));
-  NS_ENSURE_SUCCESS(rv, rv);
+  nsCOMPtr<nsIURI> docUri = GetDocumentURI(aEditorBase);
+  if (NS_WARN_IF(!docUri)) {
+    return NS_ERROR_FAILURE;
+  }
 
   nsAutoCString docUriSpec;
   rv = docUri->GetSpec(docUriSpec);
@@ -260,9 +245,9 @@ static nsresult ClearCurrentDictionary(nsIEditor* aEditor) {
       do_GetService(NS_CONTENT_PREF_SERVICE_CONTRACTID);
   NS_ENSURE_TRUE(contentPrefService, NS_ERROR_NOT_INITIALIZED);
 
-  nsCOMPtr<nsILoadContext> loadContext = GetLoadContext(aEditor);
   return contentPrefService->RemoveByDomainAndName(
-      NS_ConvertUTF8toUTF16(docUriSpec), CPS_PREF_NAME, loadContext, nullptr);
+      NS_ConvertUTF8toUTF16(docUriSpec), CPS_PREF_NAME,
+      GetLoadContext(aEditorBase), nullptr);
 }
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(EditorSpellCheck)
@@ -274,11 +259,11 @@ NS_INTERFACE_MAP_BEGIN(EditorSpellCheck)
   NS_INTERFACE_MAP_ENTRIES_CYCLE_COLLECTION(EditorSpellCheck)
 NS_INTERFACE_MAP_END
 
-NS_IMPL_CYCLE_COLLECTION(EditorSpellCheck, mEditor, mSpellChecker,
-                         mTxtSrvFilter)
+NS_IMPL_CYCLE_COLLECTION(EditorSpellCheck, mEditor, mSpellChecker)
 
 EditorSpellCheck::EditorSpellCheck()
-    : mSuggestedWordIndex(0),
+    : mTxtSrvFilterType(0),
+      mSuggestedWordIndex(0),
       mDictionaryIndex(0),
       mDictionaryFetcherGroup(0),
       mUpdateDictionaryRunning(false) {}
@@ -300,9 +285,8 @@ NS_IMETHODIMP
 EditorSpellCheck::CanSpellCheck(bool* aCanSpellCheck) {
   RefPtr<mozSpellChecker> spellChecker = mSpellChecker;
   if (!spellChecker) {
-    spellChecker = new mozSpellChecker();
-    DebugOnly<nsresult> rv = spellChecker->Init();
-    MOZ_ASSERT(NS_SUCCEEDED(rv));
+    spellChecker = mozSpellChecker::Create();
+    MOZ_ASSERT(spellChecker);
   }
   nsTArray<nsString> dictList;
   nsresult rv = spellChecker->GetDictionaryList(&dictList);
@@ -339,25 +323,26 @@ EditorSpellCheck::InitSpellChecker(nsIEditor* aEditor,
                                    bool aEnableSelectionChecking,
                                    nsIEditorSpellCheckCallback* aCallback) {
   NS_ENSURE_TRUE(aEditor, NS_ERROR_NULL_POINTER);
-  mEditor = aEditor;
+  mEditor = aEditor->AsEditorBase();
 
-  nsCOMPtr<nsIDOMDocument> domDoc;
-  mEditor->GetDocument(getter_AddRefs(domDoc));
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(domDoc);
-  NS_ENSURE_STATE(doc);
+  RefPtr<Document> doc = mEditor->GetDocument();
+  if (NS_WARN_IF(!doc)) {
+    return NS_ERROR_FAILURE;
+  }
 
   nsresult rv;
 
   // We can spell check with any editor type
   RefPtr<TextServicesDocument> textServicesDocument =
       new TextServicesDocument();
-  textServicesDocument->SetFilter(mTxtSrvFilter);
+  textServicesDocument->SetFilterType(mTxtSrvFilterType);
 
   // EditorBase::AddEditActionListener() needs to access mSpellChecker and
   // mSpellChecker->GetTextServicesDocument().  Therefore, we need to
   // initialize them before calling TextServicesDocument::InitWithEditor()
   // since it calls EditorBase::AddEditActionListener().
-  mSpellChecker = new mozSpellChecker();
+  mSpellChecker = mozSpellChecker::Create();
+  MOZ_ASSERT(mSpellChecker);
   rv = mSpellChecker->SetDocument(textServicesDocument, true);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
@@ -371,12 +356,11 @@ EditorSpellCheck::InitSpellChecker(nsIEditor* aEditor,
     // Find out if the section is collapsed or not.
     // If it isn't, we want to spellcheck just the selection.
 
-    nsCOMPtr<nsISelection> domSelection;
-    aEditor->GetSelection(getter_AddRefs(domSelection));
-    if (NS_WARN_IF(!domSelection)) {
+    RefPtr<Selection> selection;
+    aEditor->GetSelection(getter_AddRefs(selection));
+    if (NS_WARN_IF(!selection)) {
       return NS_ERROR_FAILURE;
     }
-    RefPtr<Selection> selection = domSelection->AsSelection();
 
     if (selection->RangeCount()) {
       RefPtr<nsRange> range = selection->GetRangeAt(0);
@@ -401,9 +385,6 @@ EditorSpellCheck::InitSpellChecker(nsIEditor* aEditor,
       }
     }
   }
-
-  rv = mSpellChecker->Init();
-  MOZ_ASSERT(NS_SUCCEEDED(rv));
   // do not fail if UpdateCurrentDictionary fails because this method may
   // succeed later.
   rv = UpdateCurrentDictionary(aCallback);
@@ -426,8 +407,9 @@ EditorSpellCheck::GetNextMisspelledWord(nsAString& aNextMisspelledWord) {
   DeleteSuggestedWordList();
   // Beware! This may flush notifications via synchronous
   // ScrollSelectionIntoView.
-  return mSpellChecker->NextMisspelledWord(aNextMisspelledWord,
-                                           &mSuggestedWordList);
+  RefPtr<mozSpellChecker> spellChecker(mSpellChecker);
+  return spellChecker->NextMisspelledWord(aNextMisspelledWord,
+                                          mSuggestedWordList);
 }
 
 NS_IMETHODIMP
@@ -453,12 +435,14 @@ EditorSpellCheck::CheckCurrentWord(const nsAString& aSuggestedWord,
                                   &mSuggestedWordList);
 }
 
-NS_IMETHODIMP
-EditorSpellCheck::CheckCurrentWordNoSuggest(const nsAString& aSuggestedWord,
-                                            bool* aIsMisspelled) {
-  NS_ENSURE_TRUE(mSpellChecker, NS_ERROR_NOT_INITIALIZED);
+RefPtr<CheckWordPromise> EditorSpellCheck::CheckCurrentWordsNoSuggest(
+    const nsTArray<nsString>& aSuggestedWords) {
+  if (NS_WARN_IF(!mSpellChecker)) {
+    return CheckWordPromise::CreateAndReject(NS_ERROR_NOT_INITIALIZED,
+                                             __func__);
+  }
 
-  return mSpellChecker->CheckWord(aSuggestedWord, aIsMisspelled, nullptr);
+  return mSpellChecker->CheckWords(aSuggestedWords);
 }
 
 NS_IMETHODIMP
@@ -467,7 +451,8 @@ EditorSpellCheck::ReplaceWord(const nsAString& aMisspelledWord,
                               bool aAllOccurrences) {
   NS_ENSURE_TRUE(mSpellChecker, NS_ERROR_NOT_INITIALIZED);
 
-  return mSpellChecker->Replace(aMisspelledWord, aReplaceWord, aAllOccurrences);
+  RefPtr<mozSpellChecker> spellChecker(mSpellChecker);
+  return spellChecker->Replace(aMisspelledWord, aReplaceWord, aAllOccurrences);
 }
 
 NS_IMETHODIMP
@@ -539,8 +524,6 @@ EditorSpellCheck::GetDictionaryList(char16_t*** aDictionaryList,
 
     tmpPtr = (char16_t**)moz_xmalloc(sizeof(char16_t*));
 
-    NS_ENSURE_TRUE(tmpPtr, NS_ERROR_OUT_OF_MEMORY);
-
     *tmpPtr = 0;
     *aDictionaryList = tmpPtr;
     *aCount = 0;
@@ -549,8 +532,6 @@ EditorSpellCheck::GetDictionaryList(char16_t*** aDictionaryList,
   }
 
   tmpPtr = (char16_t**)moz_xmalloc(sizeof(char16_t*) * dictList.Length());
-
-  NS_ENSURE_TRUE(tmpPtr, NS_ERROR_OUT_OF_MEMORY);
 
   *aDictionaryList = tmpPtr;
   *aCount = dictList.Length();
@@ -644,8 +625,8 @@ EditorSpellCheck::UninitSpellChecker() {
 }
 
 NS_IMETHODIMP
-EditorSpellCheck::SetFilter(nsITextServicesFilter* aFilter) {
-  mTxtSrvFilter = aFilter;
+EditorSpellCheck::SetFilterType(uint32_t aFilterType) {
+  mTxtSrvFilterType = aFilterType;
   return NS_OK;
 }
 
@@ -668,36 +649,35 @@ EditorSpellCheck::UpdateCurrentDictionary(
 
   // Get language with html5 algorithm
   nsCOMPtr<nsIContent> rootContent;
-  nsCOMPtr<nsIHTMLEditor> htmlEditor = do_QueryInterface(mEditor);
+  HTMLEditor* htmlEditor = mEditor->AsHTMLEditor();
   if (htmlEditor) {
-    rootContent = htmlEditor->GetActiveEditingHost();
+    rootContent = htmlEditor->GetFocusedContent();
   } else {
-    nsCOMPtr<nsIDOMElement> rootElement;
-    rv = mEditor->GetRootElement(getter_AddRefs(rootElement));
-    NS_ENSURE_SUCCESS(rv, rv);
-    rootContent = do_QueryInterface(rootElement);
-  }
-
-  // Try to get topmost document's document element for embedded mail editor.
-  uint32_t flags = 0;
-  mEditor->GetFlags(&flags);
-  if (flags & nsIPlaintextEditor::eEditorMailMask) {
-    nsCOMPtr<nsIDocument> ownerDoc = rootContent->OwnerDoc();
-    NS_ENSURE_TRUE(ownerDoc, NS_ERROR_FAILURE);
-    nsIDocument* parentDoc = ownerDoc->GetParentDocument();
-    if (parentDoc) {
-      rootContent = do_QueryInterface(parentDoc->GetDocumentElement());
-    }
+    rootContent = mEditor->GetRoot();
   }
 
   if (!rootContent) {
     return NS_ERROR_FAILURE;
   }
 
+  // Try to get topmost document's document element for embedded mail editor.
+  uint32_t flags = 0;
+  mEditor->GetFlags(&flags);
+  if (flags & nsIPlaintextEditor::eEditorMailMask) {
+    RefPtr<Document> ownerDoc = rootContent->OwnerDoc();
+    Document* parentDoc = ownerDoc->GetParentDocument();
+    if (parentDoc) {
+      rootContent = parentDoc->GetDocumentElement();
+      if (!rootContent) {
+        return NS_ERROR_FAILURE;
+      }
+    }
+  }
+
   RefPtr<DictionaryFetcher> fetcher =
       new DictionaryFetcher(this, aCallback, mDictionaryFetcherGroup);
   rootContent->GetLang(fetcher->mRootContentLang);
-  nsCOMPtr<nsIDocument> doc = rootContent->GetComposedDoc();
+  RefPtr<Document> doc = rootContent->GetComposedDoc();
   NS_ENSURE_STATE(doc);
   doc->GetContentLanguage(fetcher->mRootDocContentLang);
 
@@ -826,29 +806,33 @@ nsresult EditorSpellCheck::DictionaryFetched(DictionaryFetcher* aFetcher) {
       RefPtr<EditorSpellCheck> self = this;
       RefPtr<DictionaryFetcher> fetcher = aFetcher;
       mSpellChecker->SetCurrentDictionaryFromList(tryDictList)
-          ->Then(GetMainThreadSerialEventTarget(), __func__,
-                 [self, fetcher]() {
+          ->Then(
+              GetMainThreadSerialEventTarget(), __func__,
+              [self, fetcher]() {
 #ifdef DEBUG_DICT
-                   printf("***** Assigned from content preferences |%s|\n",
-                          NS_ConvertUTF16toUTF8(dictName).get());
+                printf("***** Assigned from content preferences |%s|\n",
+                       NS_ConvertUTF16toUTF8(dictName).get());
 #endif
-                   // We take an early exit here, so let's not forget to clear
-                   // the word list.
-                   self->DeleteSuggestedWordList();
+                // We take an early exit here, so let's not forget to clear
+                // the word list.
+                self->DeleteSuggestedWordList();
 
-                   self->EndUpdateDictionary();
-                   if (fetcher->mCallback) {
-                     fetcher->mCallback->EditorSpellCheckDone();
-                   }
-                 },
-                 [self, fetcher]() {
-                   // May be dictionary was uninstalled ?
-                   // Clear the content preference and continue.
-                   ClearCurrentDictionary(self->mEditor);
+                self->EndUpdateDictionary();
+                if (fetcher->mCallback) {
+                  fetcher->mCallback->EditorSpellCheckDone();
+                }
+              },
+              [self, fetcher](nsresult aError) {
+                if (aError == NS_ERROR_ABORT) {
+                  return;
+                }
+                // May be dictionary was uninstalled ?
+                // Clear the content preference and continue.
+                ClearCurrentDictionary(self->mEditor);
 
-                   // Priority 2 or later will handled by the following
-                   self->SetFallbackDictionary(fetcher);
-                 });
+                // Priority 2 or later will handled by the following
+                self->SetFallbackDictionary(fetcher);
+              });
       return NS_OK;
     }
   }
@@ -919,7 +903,7 @@ void EditorSpellCheck::SetFallbackDictionary(DictionaryFetcher* aFetcher) {
                           DICT_COMPARE_CASE_INSENSITIVE, tryDictList);
     }
 
-      // Use any dictionary with the required language.
+    // Use any dictionary with the required language.
 #ifdef DEBUG_DICT
     printf("***** Trying to find match for language code |%s|\n",
            NS_ConvertUTF16toUTF8(langCode).get());

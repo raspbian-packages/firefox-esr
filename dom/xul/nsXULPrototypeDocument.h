@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,6 +13,7 @@
 #include "nsTArray.h"
 #include "nsISerializable.h"
 #include "nsCycleCollectionParticipant.h"
+#include <functional>
 
 class nsAtom;
 class nsIPrincipal;
@@ -20,12 +21,6 @@ class nsIURI;
 class nsNodeInfoManager;
 class nsXULPrototypeElement;
 class nsXULPrototypePI;
-
-namespace mozilla {
-namespace dom {
-class XULDocument;
-}  // namespace dom
-}  // namespace mozilla
 
 /**
  * A "prototype" document that stores shared document information
@@ -37,6 +32,8 @@ class XULDocument;
 class nsXULPrototypeDocument final : public nsISerializable {
  public:
   static nsresult Create(nsIURI* aURI, nsXULPrototypeDocument** aResult);
+
+  typedef std::function<void()> Callback;
 
   // nsISupports interface
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
@@ -69,24 +66,6 @@ class nsXULPrototypeDocument final : public nsISerializable {
    */
   const nsTArray<RefPtr<nsXULPrototypePI> >& GetProcessingInstructions() const;
 
-  /**
-   * Access the array of style overlays for this document.
-   *
-   * Style overlays are stylesheets that need to be applied to the
-   * document, but are not referenced from within the document. They
-   * are currently obtained from the chrome registry via
-   * nsIXULOverlayProvider::getStyleOverlays.)
-   */
-  void AddStyleSheetReference(nsIURI* aStyleSheet);
-  const nsCOMArray<nsIURI>& GetStyleSheetReferences() const;
-
-  /**
-   * Access HTTP header data.
-   * @note Not implemented.
-   */
-  NS_IMETHOD GetHeaderData(nsAtom* aField, nsAString& aData) const;
-  NS_IMETHOD SetHeaderData(nsAtom* aField, const nsAString& aData);
-
   nsIPrincipal* DocumentPrincipal();
   void SetDocumentPrincipal(nsIPrincipal* aPrincipal);
 
@@ -96,7 +75,7 @@ class nsXULPrototypeDocument final : public nsISerializable {
    * XULDocument::OnPrototypeLoadDone()) and sets aLoaded to false.
    * Otherwise sets aLoaded to true.
    */
-  nsresult AwaitLoadDone(mozilla::dom::XULDocument* aDocument, bool* aResult);
+  nsresult AwaitLoadDone(Callback&& aCallback, bool* aResult);
 
   /**
    * Notifies each document registered via AwaitLoadDone on this
@@ -118,10 +97,9 @@ class nsXULPrototypeDocument final : public nsISerializable {
   nsCOMPtr<nsIURI> mURI;
   RefPtr<nsXULPrototypeElement> mRoot;
   nsTArray<RefPtr<nsXULPrototypePI> > mProcessingInstructions;
-  nsCOMArray<nsIURI> mStyleSheetReferences;
 
   bool mLoaded;
-  nsTArray<RefPtr<mozilla::dom::XULDocument> > mPrototypeWaiters;
+  nsTArray<Callback> mPrototypeWaiters;
 
   RefPtr<nsNodeInfoManager> mNodeInfoManager;
 

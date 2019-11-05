@@ -27,7 +27,7 @@ class TransitionEvent : public Event {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return TransitionEventBinding::Wrap(aCx, this, aGivenProto);
+    return TransitionEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   void GetPropertyName(nsAString& aPropertyName) const;

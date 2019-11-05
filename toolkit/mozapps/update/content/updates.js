@@ -11,32 +11,45 @@
 ChromeUtils.import("resource://gre/modules/DownloadUtils.jsm", this);
 ChromeUtils.import("resource://gre/modules/Services.jsm", this);
 ChromeUtils.import("resource://gre/modules/UpdateTelemetry.jsm", this);
+ChromeUtils.defineModuleGetter(
+  this,
+  "UpdateUtils",
+  "resource://gre/modules/UpdateUtils.jsm"
+);
 
-const XMLNS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "gAUS",
+  "@mozilla.org/updates/update-service;1",
+  "nsIApplicationUpdateService"
+);
 
-const PREF_APP_UPDATE_BACKGROUNDERRORS    = "app.update.backgroundErrors";
-const PREF_APP_UPDATE_CERT_ERRORS         = "app.update.cert.errors";
-const PREF_APP_UPDATE_ELEVATE_NEVER       = "app.update.elevate.never";
-const PREF_APP_UPDATE_ENABLED             = "app.update.enabled";
-const PREF_APP_UPDATE_LOG                 = "app.update.log";
+const XMLNS_XUL =
+  "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+
+const PREF_APP_UPDATE_BACKGROUNDERRORS = "app.update.backgroundErrors";
+const PREF_APP_UPDATE_CERT_ERRORS = "app.update.cert.errors";
+const PREF_APP_UPDATE_ELEVATE_NEVER = "app.update.elevate.never";
+const PREF_APP_UPDATE_LOG = "app.update.log";
 const PREF_APP_UPDATE_NOTIFIEDUNSUPPORTED = "app.update.notifiedUnsupported";
-const PREF_APP_UPDATE_URL_MANUAL          = "app.update.url.manual";
+const PREF_APP_UPDATE_URL_MANUAL = "app.update.url.manual";
 
-const URI_UPDATES_PROPERTIES  = "chrome://mozapps/locale/update/updates.properties";
+const URI_UPDATES_PROPERTIES =
+  "chrome://mozapps/locale/update/updates.properties";
 
-const STATE_DOWNLOADING       = "downloading";
-const STATE_PENDING           = "pending";
-const STATE_PENDING_SERVICE   = "pending-service";
-const STATE_PENDING_ELEVATE   = "pending-elevate";
-const STATE_APPLYING          = "applying";
-const STATE_APPLIED           = "applied";
-const STATE_APPLIED_SERVICE   = "applied-service";
-const STATE_SUCCEEDED         = "succeeded";
-const STATE_DOWNLOAD_FAILED   = "download-failed";
-const STATE_FAILED            = "failed";
+const STATE_DOWNLOADING = "downloading";
+const STATE_PENDING = "pending";
+const STATE_PENDING_SERVICE = "pending-service";
+const STATE_PENDING_ELEVATE = "pending-elevate";
+const STATE_APPLYING = "applying";
+const STATE_APPLIED = "applied";
+const STATE_APPLIED_SERVICE = "applied-service";
+const STATE_SUCCEEDED = "succeeded";
+const STATE_DOWNLOAD_FAILED = "download-failed";
+const STATE_FAILED = "failed";
 
-const SRCEVT_FOREGROUND       = 1;
-const SRCEVT_BACKGROUND       = 2;
+const SRCEVT_FOREGROUND = 1;
+const SRCEVT_BACKGROUND = 2;
 
 const BACKGROUNDCHECK_MULTIPLE_FAILURES = 110;
 
@@ -71,8 +84,9 @@ function LOG(module, string) {
  * for where to open a URL.
  */
 function openUpdateURL(event) {
-  if (event.button == 0)
+  if (event.button == 0) {
     openURL(event.target.getAttribute("url"));
+  }
 }
 
 /**
@@ -122,11 +136,14 @@ var gUpdates = {
   _setButton(button, string) {
     if (string) {
       var label = this.getAUSString(string);
-      if (label.includes("%S"))
+      if (label.includes("%S")) {
         label = label.replace(/%S/, this.brandName);
+      }
       button.label = label;
-      button.setAttribute("accesskey",
-                          this.getAUSString(string + ".accesskey"));
+      button.setAttribute(
+        "accesskey",
+        this.getAUSString(string + ".accesskey")
+      );
     } else {
       button.label = button.defaultLabel;
       button.setAttribute("accesskey", button.defaultAccesskey);
@@ -164,8 +181,13 @@ var gUpdates = {
    * | [ extra1 ] [ extra2 ]                     [ next or finish ] |
    * +--------------------------------------------------------------+
    */
-  setButtons(extra1ButtonString, extra2ButtonString,
-                       nextFinishButtonString, canAdvance, showCancel) {
+  setButtons(
+    extra1ButtonString,
+    extra2ButtonString,
+    nextFinishButtonString,
+    canAdvance,
+    showCancel
+  ) {
     this.wiz.canAdvance = canAdvance;
 
     var bnf = this.wiz.getButton(this.wiz.onLastPage ? "finish" : "next");
@@ -195,8 +217,9 @@ var gUpdates = {
   },
 
   getAUSString(key, strings) {
-    if (strings)
+    if (strings) {
       return this.strings.getFormattedString(key, strings);
+    }
     return this.strings.getString(key);
   },
 
@@ -204,11 +227,11 @@ var gUpdates = {
     // If the user clicks "No Thanks", we should not prompt them to update to
     // this version again unless they manually select "Check for Updates..."
     // which will clear app.update.elevate.never preference.
-    let aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-    if (aus.elevationRequired) {
-      Services.prefs.setCharPref(PREF_APP_UPDATE_ELEVATE_NEVER,
-                                 this.update.appVersion);
+    if (gAUS.elevationRequired) {
+      Services.prefs.setCharPref(
+        PREF_APP_UPDATE_ELEVATE_NEVER,
+        this.update.appVersion
+      );
     }
   },
 
@@ -216,7 +239,7 @@ var gUpdates = {
    * A hash of |pageid| attribute to page object. Can be used to dispatch
    * function calls to the appropriate page.
    */
-  _pages: { },
+  _pages: {},
 
   /**
    * Called when the user presses the "Finish" button on the wizard, dispatches
@@ -225,8 +248,9 @@ var gUpdates = {
   onWizardFinish() {
     this._runUnload = false;
     var pageid = document.documentElement.currentPage.pageid;
-    if ("onWizardFinish" in this._pages[pageid])
+    if ("onWizardFinish" in this._pages[pageid]) {
       this._pages[pageid].onWizardFinish();
+    }
     this._submitTelemetry(pageid);
   },
 
@@ -237,8 +261,9 @@ var gUpdates = {
   onWizardCancel() {
     this._runUnload = false;
     var pageid = document.documentElement.currentPage.pageid;
-    if ("onWizardCancel" in this._pages[pageid])
+    if ("onWizardCancel" in this._pages[pageid]) {
       this._pages[pageid].onWizardCancel();
+    }
     this._submitTelemetry(pageid);
   },
 
@@ -248,11 +273,13 @@ var gUpdates = {
    */
   onWizardNext() {
     var cp = document.documentElement.currentPage;
-    if (!cp)
+    if (!cp) {
       return;
+    }
     var pageid = cp.pageid;
-    if ("onWizardNext" in this._pages[pageid])
+    if ("onWizardNext" in this._pages[pageid]) {
       this._pages[pageid].onWizardNext();
+    }
   },
 
   /**
@@ -263,7 +290,9 @@ var gUpdates = {
    *   should remain active for the duration of the download.
    * SRCEVT_BACKGROUND:
    *   A background update check caused this UI to appear, probably because
-   *   the user has the app.update.auto preference set to false.
+   *   UpdateUtils.getAppUpdateAutoEnabled returned false, indicating that the
+   *   user has selected the setting "Check for updates but let you choose to
+   *   install them".
    */
   sourceEvent: SRCEVT_FOREGROUND,
 
@@ -292,9 +321,10 @@ var gUpdates = {
     var pages = this.wiz.childNodes;
     for (var i = 0; i < pages.length; ++i) {
       var page = pages[i];
-      if (page.localName == "wizardpage")
+      if (page.localName == "wizardpage") {
         // eslint-disable-next-line no-eval
         this._pages[page.pageid] = eval(page.getAttribute("object"));
+      }
     }
 
     // Cache the standard button labels in case we need to restore them
@@ -303,9 +333,106 @@ var gUpdates = {
     this._cacheButtonStrings("extra1");
     this._cacheButtonStrings("extra2");
 
+    document.addEventListener("wizardfinish", function() {
+      gUpdates.onWizardFinish();
+    });
+    document.addEventListener("wizardcancel", function() {
+      gUpdates.onWizardCancel();
+    });
+    document.addEventListener("wizardnext", function() {
+      gUpdates.onWizardNext();
+    });
+
+    document
+      .getElementById("checking")
+      .addEventListener("pageshow", function() {
+        gCheckingPage.onPageShow();
+      });
+    document
+      .getElementById("noupdatesfound")
+      .addEventListener("pageshow", function() {
+        gNoUpdatesPage.onPageShow();
+      });
+    document
+      .getElementById("manualUpdate")
+      .addEventListener("pageshow", function() {
+        gManualUpdatePage.onPageShow();
+      });
+    document
+      .getElementById("unsupported")
+      .addEventListener("pageshow", function() {
+        gUnsupportedPage.onPageShow();
+      });
+    document
+      .getElementById("updatesfoundbasic")
+      .addEventListener("pageshow", function() {
+        gUpdatesFoundBasicPage.onPageShow();
+      });
+    document
+      .getElementById("downloading")
+      .addEventListener("pageshow", function() {
+        gDownloadingPage.onPageShow();
+      });
+    document.getElementById("errors").addEventListener("pageshow", function() {
+      gErrorsPage.onPageShow();
+    });
+    document
+      .getElementById("errorextra")
+      .addEventListener("pageshow", function() {
+        gErrorExtraPage.onPageShow();
+      });
+    document
+      .getElementById("errorpatching")
+      .addEventListener("pageshow", function() {
+        gErrorPatchingPage.onPageShow();
+      });
+    document
+      .getElementById("finished")
+      .addEventListener("pageshow", function() {
+        gFinishedPage.onPageShow();
+      });
+    document
+      .getElementById("finishedBackground")
+      .addEventListener("pageshow", function() {
+        gFinishedPage.onPageShowBackground();
+      });
+
+    document
+      .getElementById("updatesfoundbasic")
+      .addEventListener("extra1", function() {
+        gUpdatesFoundBasicPage.onExtra1();
+      });
+    document
+      .getElementById("downloading")
+      .addEventListener("extra1", function() {
+        gDownloadingPage.onHide();
+      });
+    document.getElementById("finished").addEventListener("extra1", function() {
+      gFinishedPage.onExtra1();
+    });
+    document
+      .getElementById("finishedBackground")
+      .addEventListener("extra1", function() {
+        gFinishedPage.onExtra1();
+      });
+
+    document
+      .getElementById("updatesfoundbasic")
+      .addEventListener("extra2", function() {
+        gUpdatesFoundBasicPage.onExtra2();
+      });
+    document
+      .getElementById("finishedBackground")
+      .addEventListener("extra2", function() {
+        gFinishedPage.onExtra2();
+      });
+
     // Advance to the Start page.
     this.getStartPageID(function(startPageID) {
-      LOG("gUpdates", "onLoad - setting current page to startpage " + startPageID);
+      LOG(
+        "gUpdates",
+        "onLoad - setting current page to startpage " + startPageID
+      );
       gUpdates.wiz.currentPage = document.getElementById(startPageID);
     });
   },
@@ -316,8 +443,9 @@ var gUpdates = {
   onUnload() {
     if (this._runUnload) {
       var cp = this.wiz.currentPage;
-      if (cp.pageid != "finished" && cp.pageid != "finishedBackground")
+      if (cp.pageid != "finished" && cp.pageid != "finishedBackground") {
         this.onWizardCancel();
+      }
     }
   },
 
@@ -401,9 +529,7 @@ var gUpdates = {
           }
         }
 
-        let aus = Cc["@mozilla.org/updates/update-service;1"].
-                  getService(Ci.nsIApplicationUpdateService);
-        if (!aus.canApplyUpdates) {
+        if (!gAUS.canApplyUpdates) {
           aCallback("manualUpdate");
           return;
         }
@@ -412,8 +538,9 @@ var gUpdates = {
         return;
       }
     } else {
-      var um = Cc["@mozilla.org/updates/update-manager;1"].
-               getService(Ci.nsIUpdateManager);
+      var um = Cc["@mozilla.org/updates/update-manager;1"].getService(
+        Ci.nsIUpdateManager
+      );
       if (um.activeUpdate) {
         this.setUpdate(um.activeUpdate);
         aCallback("downloading");
@@ -428,9 +555,10 @@ var gUpdates = {
    * on the update's metadata.
    */
   get updatesFoundPageId() {
-    if (gUpdatesFoundPageId)
+    if (gUpdatesFoundPageId) {
       return gUpdatesFoundPageId;
-    return gUpdatesFoundPageId = "updatesfoundbasic";
+    }
+    return (gUpdatesFoundPageId = "updatesfoundbasic");
   },
 
   /**
@@ -440,9 +568,10 @@ var gUpdates = {
    */
   setUpdate(update) {
     this.update = update;
-    if (this.update)
+    if (this.update) {
       this.update.QueryInterface(Ci.nsIWritablePropertyBag);
-  }
+    }
+  },
 };
 
 /**
@@ -482,8 +611,9 @@ var gCheckingPage = {
       Services.prefs.clearUserPref(PREF_APP_UPDATE_NOTIFIEDUNSUPPORTED);
     }
 
-    this._checker = Cc["@mozilla.org/updates/update-checker;1"].
-                    createInstance(Ci.nsIUpdateChecker);
+    this._checker = Cc["@mozilla.org/updates/update-checker;1"].createInstance(
+      Ci.nsIUpdateChecker
+    );
     this._checker.checkForUpdates(this.updateListener, true);
   },
 
@@ -492,7 +622,7 @@ var gCheckingPage = {
    * Manager control, so stop checking for updates.
    */
   onWizardCancel() {
-    this._checker.stopChecking(Ci.nsIUpdateChecker.CURRENT_CHECK);
+    this._checker.stopCurrentCheck();
   },
 
   /**
@@ -504,9 +634,7 @@ var gCheckingPage = {
      * See nsIUpdateCheckListener
      */
     onCheckComplete(request, updates, updateCount) {
-      var aus = Cc["@mozilla.org/updates/update-service;1"].
-                getService(Ci.nsIApplicationUpdateService);
-      gUpdates.setUpdate(aus.selectUpdate(updates, updates.length));
+      gUpdates.setUpdate(gAUS.selectUpdate(updates, updates.length));
       if (gUpdates.update) {
         LOG("gCheckingPage", "onCheckComplete - update found");
         if (gUpdates.update.unsupported) {
@@ -522,7 +650,7 @@ var gCheckingPage = {
           return;
         }
 
-        if (!aus.canApplyUpdates) {
+        if (!gAUS.canApplyUpdates) {
           gUpdates.wiz.goTo("manualUpdate");
           return;
         }
@@ -547,13 +675,8 @@ var gCheckingPage = {
     /**
      * See nsISupports.idl
      */
-    QueryInterface(aIID) {
-      if (!aIID.equals(Ci.nsIUpdateCheckListener) &&
-          !aIID.equals(Ci.nsISupports))
-        throw Cr.NS_ERROR_NO_INTERFACE;
-      return this;
-    }
-  }
+    QueryInterface: ChromeUtils.generateQI(["nsIUpdateCheckListener"]),
+  },
 };
 
 /**
@@ -563,18 +686,22 @@ var gNoUpdatesPage = {
   /**
    * Initialize
    */
-  onPageShow() {
-    LOG("gNoUpdatesPage", "onPageShow - could not select an appropriate " +
-        "update. Either there were no updates or |selectUpdate| failed");
-
-    if (Services.prefs.getBoolPref(PREF_APP_UPDATE_ENABLED, true))
-      document.getElementById("noUpdatesAutoEnabled").hidden = false;
-    else
-      document.getElementById("noUpdatesAutoDisabled").hidden = false;
-
+  async onPageShow() {
+    LOG(
+      "gNoUpdatesPage",
+      "onPageShow - could not select an appropriate " +
+        "update. Either there were no updates or |selectUpdate| failed"
+    );
     gUpdates.setButtons(null, null, "okButton", true);
     gUpdates.wiz.getButton("finish").focus();
-  }
+
+    let autoUpdateEnabled = await UpdateUtils.getAppUpdateAutoEnabled();
+    if (autoUpdateEnabled) {
+      document.getElementById("noUpdatesAutoEnabled").hidden = false;
+    } else {
+      document.getElementById("noUpdatesAutoDisabled").hidden = false;
+    }
+  },
 };
 
 /**
@@ -583,14 +710,18 @@ var gNoUpdatesPage = {
  */
 var gManualUpdatePage = {
   onPageShow() {
-    var manualURL = Services.urlFormatter.formatURLPref(PREF_APP_UPDATE_URL_MANUAL);
-    var manualUpdateLinkLabel = document.getElementById("manualUpdateLinkLabel");
+    var manualURL = Services.urlFormatter.formatURLPref(
+      PREF_APP_UPDATE_URL_MANUAL
+    );
+    var manualUpdateLinkLabel = document.getElementById(
+      "manualUpdateLinkLabel"
+    );
     manualUpdateLinkLabel.value = manualURL;
     manualUpdateLinkLabel.setAttribute("url", manualURL);
 
     gUpdates.setButtons(null, null, "okButton", true);
     gUpdates.wiz.getButton("finish").focus();
-  }
+  },
 };
 
 /**
@@ -601,13 +732,15 @@ var gUnsupportedPage = {
   onPageShow() {
     Services.prefs.setBoolPref(PREF_APP_UPDATE_NOTIFIEDUNSUPPORTED, true);
     if (gUpdates.update.detailsURL) {
-      let unsupportedLinkLabel = document.getElementById("unsupportedLinkLabel");
+      let unsupportedLinkLabel = document.getElementById(
+        "unsupportedLinkLabel"
+      );
       unsupportedLinkLabel.setAttribute("url", gUpdates.update.detailsURL);
     }
 
     gUpdates.setButtons(null, null, "okButton", true);
     gUpdates.wiz.getButton("finish").focus();
-  }
+  },
 };
 
 /**
@@ -621,46 +754,57 @@ var gUpdatesFoundBasicPage = {
   onPageShow() {
     gUpdates.wiz.canRewind = false;
     var update = gUpdates.update;
-    gUpdates.setButtons("askLaterButton", null, "updateButton_" + update.type,
-                        true);
+    gUpdates.setButtons(
+      "askLaterButton",
+      null,
+      "updateButton_" + update.type,
+      true
+    );
     var btn = gUpdates.wiz.getButton("next");
     btn.focus();
 
     var updateName = update.name;
     if (update.channel == "nightly") {
-      updateName = gUpdates.getAUSString("updateNightlyName",
-                                         [gUpdates.brandName,
-                                          update.displayVersion,
-                                          update.buildID]);
+      updateName = gUpdates.getAUSString("updateNightlyName", [
+        gUpdates.brandName,
+        update.displayVersion,
+        update.buildID,
+      ]);
     }
     var updateNameElement = document.getElementById("updateName");
     updateNameElement.value = updateName;
 
-    var introText = gUpdates.getAUSString("intro_" + update.type,
-                                          [gUpdates.brandName, update.displayVersion]);
+    var introText = gUpdates.getAUSString("intro_" + update.type, [
+      gUpdates.brandName,
+      update.displayVersion,
+    ]);
     var introElem = document.getElementById("updatesFoundInto");
     introElem.setAttribute("severity", update.type);
     introElem.textContent = introText;
 
     var updateMoreInfoURL = document.getElementById("updateMoreInfoURL");
-    if (update.detailsURL)
+    if (update.detailsURL) {
       updateMoreInfoURL.setAttribute("url", update.detailsURL);
-    else
+    } else {
       updateMoreInfoURL.hidden = true;
+    }
 
-    var updateTitle = gUpdates.getAUSString("updatesfound_" + update.type +
-                                            ".title");
-    document.getElementById("updatesFoundBasicHeader").setAttribute("label", updateTitle);
+    var updateTitle = gUpdates.getAUSString(
+      "updatesfound_" + update.type + ".title"
+    );
+    document
+      .getElementById("updatesFoundBasicHeader")
+      .setAttribute("label", updateTitle);
   },
 
   onExtra1() {
     gUpdates.wiz.cancel();
-  }
+  },
 };
 
 /**
  * The "Update is Downloading" page - provides feedback for the download
- * process plus a pause/resume UI
+ * process
  */
 var gDownloadingPage = {
   /**
@@ -668,12 +812,6 @@ var gDownloadingPage = {
    */
   _downloadStatus: null,
   _downloadProgress: null,
-  _pauseButton: null,
-
-  /**
-   * Whether or not we are currently paused
-   */
-  _paused: false,
 
   /**
    * Label cache to hold the 'Connecting' string
@@ -685,7 +823,6 @@ var gDownloadingPage = {
    */
   _lastSec: Infinity,
   _startTime: null,
-  _pausedStatus: "",
 
   _hiding: false,
 
@@ -700,21 +837,11 @@ var gDownloadingPage = {
   onPageShow() {
     this._downloadStatus = document.getElementById("downloadStatus");
     this._downloadProgress = document.getElementById("downloadProgress");
-    this._pauseButton = document.getElementById("pauseButton");
     this._label_downloadStatus = this._downloadStatus.textContent;
 
-    this._pauseButton.setAttribute("tooltiptext",
-                                   gUpdates.getAUSString("pauseButtonPause"));
-
-    // move focus to the pause/resume button and then disable it (bug #353177)
-    this._pauseButton.focus();
-    this._pauseButton.disabled = true;
-
-    var aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-
-    var um = Cc["@mozilla.org/updates/update-manager;1"].
-             getService(Ci.nsIUpdateManager);
+    var um = Cc["@mozilla.org/updates/update-manager;1"].getService(
+      Ci.nsIUpdateManager
+    );
     var activeUpdate = um.activeUpdate;
     if (activeUpdate) {
       gUpdates.setUpdate(activeUpdate);
@@ -722,9 +849,11 @@ var gDownloadingPage = {
       // It's possible the update has already been downloaded and is being
       // applied by the time this page is shown, depending on how fast the
       // download goes and how quickly the 'next' button is clicked to get here.
-      if (activeUpdate.state == STATE_PENDING ||
-          activeUpdate.state == STATE_PENDING_ELEVATE ||
-          activeUpdate.state == STATE_PENDING_SERVICE) {
+      if (
+        activeUpdate.state == STATE_PENDING ||
+        activeUpdate.state == STATE_PENDING_ELEVATE ||
+        activeUpdate.state == STATE_PENDING_SERVICE
+      ) {
         if (!activeUpdate.getProperty("stagingFailed")) {
           gUpdates.setButtons("hideButton", null, null, false);
           gUpdates.wiz.getButton("extra1").focus();
@@ -751,10 +880,7 @@ var gDownloadingPage = {
       gUpdates.update.QueryInterface(Ci.nsIWritablePropertyBag);
       gUpdates.update.setProperty("foregroundDownload", "true");
 
-      // Pause any active background download and restart it as a foreground
-      // download.
-      aus.pauseDownload();
-      var state = aus.downloadUpdate(gUpdates.update, false);
+      let state = gAUS.downloadUpdate(gUpdates.update, false);
       if (state == "failed") {
         // We've tried as hard as we could to download a valid update -
         // we fell back from a partial patch to a complete patch and even
@@ -765,10 +891,12 @@ var gDownloadingPage = {
         return;
       }
       // Add this UI as a listener for active downloads
-      aus.addDownloadListener(this);
+      gAUS.addDownloadListener(this);
 
-      if (activeUpdate)
-        this._setUIState(!aus.isDownloading);
+      if (activeUpdate) {
+        this._downloadProgress.removeAttribute("value");
+        this._setStatus(this._label_downloadStatus);
+      }
     } catch (e) {
       LOG("gDownloadingPage", "onPageShow - error: " + e);
     }
@@ -783,10 +911,12 @@ var gDownloadingPage = {
   _setStatus(status) {
     // Don't bother setting the same text more than once. This can happen
     // due to the asynchronous behavior of the downloader.
-    if (this._downloadStatus.textContent == status)
+    if (this._downloadStatus.textContent == status) {
       return;
-    while (this._downloadStatus.hasChildNodes())
+    }
+    while (this._downloadStatus.hasChildNodes()) {
       this._downloadStatus.firstChild.remove();
+    }
     this._downloadStatus.appendChild(document.createTextNode(status));
   },
 
@@ -804,51 +934,22 @@ var gDownloadingPage = {
     let status;
 
     // Get the download time left and progress
-    let rate = aCurr / (Date.now() - this._startTime) * 1000;
-    [status, this._lastSec] =
-      DownloadUtils.getDownloadStatus(aCurr, aMax, rate, this._lastSec);
-
-    // Get the download progress for pausing
-    this._pausedStatus = DownloadUtils.getTransferTotal(aCurr, aMax);
+    let rate = (aCurr / (Date.now() - this._startTime)) * 1000;
+    [status, this._lastSec] = DownloadUtils.getDownloadStatus(
+      aCurr,
+      aMax,
+      rate,
+      this._lastSec
+    );
 
     return status;
-  },
-
-  /**
-   * Adjust UI to suit a certain state of paused-ness
-   * @param   paused
-   *          Whether or not the download is paused
-   */
-  _setUIState(paused) {
-    var u = gUpdates.update;
-    if (paused) {
-      if (this._downloadProgress.mode != "normal")
-        this._downloadProgress.mode = "normal";
-      this._pauseButton.setAttribute("tooltiptext",
-                                     gUpdates.getAUSString("pauseButtonResume"));
-      this._pauseButton.setAttribute("paused", "true");
-      var p = u.selectedPatch.QueryInterface(Ci.nsIPropertyBag);
-      var status = p.getProperty("status");
-      if (status) {
-        let pausedStatus = gUpdates.getAUSString("downloadPausedStatus", [status]);
-        this._setStatus(pausedStatus);
-      }
-    } else {
-      if (this._downloadProgress.mode != "undetermined")
-        this._downloadProgress.mode = "undetermined";
-      this._pauseButton.setAttribute("paused", "false");
-      this._pauseButton.setAttribute("tooltiptext",
-                                     gUpdates.getAUSString("pauseButtonPause"));
-      this._setStatus(this._label_downloadStatus);
-    }
   },
 
   /**
    * Wait for an update being staged in the background.
    */
   _setUpdateApplying() {
-    this._downloadProgress.mode = "undetermined";
-    this._pauseButton.hidden = true;
+    this._downloadProgress.removeAttribute("value");
     let applyingStatus = gUpdates.getAUSString("applyingUpdate");
     this._setStatus(applyingStatus);
 
@@ -860,9 +961,7 @@ var gDownloadingPage = {
    * Clean up the listener and observer registered for the wizard.
    */
   cleanUp() {
-    var aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-    aus.removeDownloadListener(this);
+    gAUS.removeDownloadListener(this);
 
     if (this._updateApplyingObserver) {
       Services.obs.removeObserver(this, "update-staged");
@@ -871,32 +970,13 @@ var gDownloadingPage = {
   },
 
   /**
-   * When the user clicks the Pause/Resume button
-   */
-  onPause() {
-    var aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-    if (this._paused)
-      aus.downloadUpdate(gUpdates.update, false);
-    else {
-      var patch = gUpdates.update.selectedPatch;
-      patch.QueryInterface(Ci.nsIWritablePropertyBag);
-      patch.setProperty("status", this._pausedStatus);
-      aus.pauseDownload();
-    }
-    this._paused = !this._paused;
-
-    // Update the UI
-    this._setUIState(this._paused);
-  },
-
-  /**
    * When the user has closed the window using a Window Manager control (this
    * page doesn't have a cancel button) cancel the update in progress.
    */
   onWizardCancel() {
-    if (this._hiding)
+    if (this._hiding) {
       return;
+    }
 
     this.cleanUp();
   },
@@ -914,37 +994,17 @@ var gDownloadingPage = {
     // gone away.
     this.cleanUp();
 
-    var aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-    var um = Cc["@mozilla.org/updates/update-manager;1"].
-             getService(Ci.nsIUpdateManager);
+    var um = Cc["@mozilla.org/updates/update-manager;1"].getService(
+      Ci.nsIUpdateManager
+    );
     um.activeUpdate = gUpdates.update;
 
-    // If the download was paused by the user, ask the user if they want to
-    // have the update resume in the background.
-    var downloadInBackground = true;
-    if (this._paused) {
-      var title = gUpdates.getAUSString("resumePausedAfterCloseTitle");
-      var message = gUpdates.getAUSString("resumePausedAfterCloseMsg",
-                                          [gUpdates.brandName]);
-      var ps = Services.prompt;
-      var flags = ps.STD_YES_NO_BUTTONS;
-      // Focus the software update wizard before prompting. This will raise
-      // the software update wizard if it is minimized making it more obvious
-      // what the prompt is for and will solve the problem of windows
-      // obscuring the prompt. See bug #350299 for more details.
-      window.focus();
-      var rv = ps.confirmEx(window, title, message, flags, null, null, null,
-                            null, { });
-      if (rv == Ci.nsIPromptService.BUTTON_POS_0)
-        downloadInBackground = false;
-    }
-    if (downloadInBackground) {
-      // Continue download in the background at full speed.
-      LOG("gDownloadingPage", "onHide - continuing download in background " +
-          "at full speed");
-      aus.downloadUpdate(gUpdates.update, false);
-    }
+    // Continue download in the background at full speed.
+    LOG(
+      "gDownloadingPage",
+      "onHide - continuing download in background at full speed"
+    );
+    gAUS.downloadUpdate(gUpdates.update, false);
     gUpdates.wiz.cancel();
   },
 
@@ -955,14 +1015,8 @@ var gDownloadingPage = {
    * @param   context
    *          Additional data
    */
-  onStartRequest(request, context) {
-    // This !paused test is necessary because onStartRequest may fire after
-    // the download was paused (for those speedy clickers...)
-    if (this._paused)
-      return;
-
-    if (this._downloadProgress.mode != "undetermined")
-      this._downloadProgress.mode = "undetermined";
+  onStartRequest(request) {
+    this._downloadProgress.removeAttribute("value");
     this._setStatus(this._label_downloadStatus);
   },
 
@@ -986,17 +1040,7 @@ var gDownloadingPage = {
     p.setProperty("progress", currentProgress);
     p.setProperty("status", status);
 
-    // This !paused test is necessary because onProgress may fire after
-    // the download was paused (for those speedy clickers...)
-    if (this._paused)
-      return;
-
-    if (this._downloadProgress.mode != "normal")
-      this._downloadProgress.mode = "normal";
-    if (this._downloadProgress.value != currentProgress)
-      this._downloadProgress.value = currentProgress;
-    if (this._pauseButton.disabled)
-      this._pauseButton.disabled = false;
+    this._downloadProgress.setAttribute("value", currentProgress);
 
     // If the update has completed downloading and the download status contains
     // the original text return early to avoid an assertion in debug builds.
@@ -1004,9 +1048,12 @@ var gDownloadingPage = {
     // download updating the status is not important.
     // nsTextFrame::GetTrimmedOffsets 'Can only call this on frames that have
     // been reflowed'.
-    if (progress == maxProgress &&
-        this._downloadStatus.textContent == this._label_downloadStatus)
+    if (
+      progress == maxProgress &&
+      this._downloadStatus.textContent == this._label_downloadStatus
+    ) {
       return;
+    }
 
     this._setStatus(status);
   },
@@ -1035,16 +1082,17 @@ var gDownloadingPage = {
    * @param   status
    *          Status code containing the reason for the cessation.
    */
-  onStopRequest(request, context, status) {
-    if (this._downloadProgress.mode != "normal")
-      this._downloadProgress.mode = "normal";
+  onStopRequest(request, status) {
+    this._downloadProgress.setAttribute("value", "100");
 
     var u = gUpdates.update;
     switch (status) {
       case Cr.NS_ERROR_CORRUPTED_CONTENT:
       case Cr.NS_ERROR_UNEXPECTED:
-        if (u.selectedPatch.state == STATE_DOWNLOAD_FAILED &&
-            (u.isCompleteUpdate || u.patchCount != 2)) {
+        if (
+          u.selectedPatch.state == STATE_DOWNLOAD_FAILED &&
+          (u.isCompleteUpdate || u.patchCount != 2)
+        ) {
           // Verification error of complete patch, informational text is held in
           // the update object.
           this.cleanUp();
@@ -1056,7 +1104,7 @@ var gDownloadingPage = {
 
         // Reset the progress meter to "undertermined" mode so that we don't
         // show old progress for the new download of the "complete" patch.
-        this._downloadProgress.mode = "undetermined";
+        this._downloadProgress.removeAttribute("value");
         document.getElementById("verificationFailed").hidden = false;
         break;
       case Cr.NS_BINDING_ABORTED:
@@ -1067,9 +1115,7 @@ var gDownloadingPage = {
         LOG("gDownloadingPage", "onStopRequest - patch verification succeeded");
         // If the background update pref is set, we should wait until the update
         // is actually staged in the background.
-        let aus = Cc["@mozilla.org/updates/update-service;1"].
-                  getService(Ci.nsIApplicationUpdateService);
-        if (aus.canStageUpdates) {
+        if (gAUS.canStageUpdates) {
           this._setUpdateApplying();
         } else {
           this.cleanUp();
@@ -1097,11 +1143,13 @@ var gDownloadingPage = {
         return;
       }
       this.cleanUp();
-      if (aData == STATE_APPLIED ||
-          aData == STATE_APPLIED_SERVICE ||
-          aData == STATE_PENDING ||
-          aData == STATE_PENDING_SERVICE ||
-          aData == STATE_PENDING_ELEVATE) {
+      if (
+        aData == STATE_APPLIED ||
+        aData == STATE_APPLIED_SERVICE ||
+        aData == STATE_PENDING ||
+        aData == STATE_PENDING_SERVICE ||
+        aData == STATE_PENDING_ELEVATE
+      ) {
         // If the update is successfully applied, or if the updater has
         // fallen back to non-staged updates, go to the finish page.
         gUpdates.wiz.goTo("finished");
@@ -1114,14 +1162,11 @@ var gDownloadingPage = {
   /**
    * See nsISupports.idl
    */
-  QueryInterface(iid) {
-    if (!iid.equals(Ci.nsIRequestObserver) &&
-        !iid.equals(Ci.nsIProgressEventSink) &&
-        !iid.equals(Ci.nsIObserver) &&
-        !iid.equals(Ci.nsISupports))
-      throw Cr.NS_ERROR_NO_INTERFACE;
-    return this;
-  }
+  QueryInterface: ChromeUtils.generateQI([
+    "nsIRequestObserver",
+    "nsIProgressEventSink",
+    "nsIObserver",
+  ]),
 };
 
 /**
@@ -1140,11 +1185,13 @@ var gErrorsPage = {
 
     var errorReason = document.getElementById("errorReason");
     errorReason.value = statusText;
-    var manualURL = Services.urlFormatter.formatURLPref(PREF_APP_UPDATE_URL_MANUAL);
+    var manualURL = Services.urlFormatter.formatURLPref(
+      PREF_APP_UPDATE_URL_MANUAL
+    );
     var errorLinkLabel = document.getElementById("errorLinkLabel");
     errorLinkLabel.value = manualURL;
     errorLinkLabel.setAttribute("url", manualURL);
-  }
+  },
 };
 
 /**
@@ -1164,11 +1211,13 @@ var gErrorExtraPage = {
     }
 
     document.getElementById("genericBackgroundErrorLabel").hidden = false;
-    let manualURL = Services.urlFormatter.formatURLPref(PREF_APP_UPDATE_URL_MANUAL);
+    let manualURL = Services.urlFormatter.formatURLPref(
+      PREF_APP_UPDATE_URL_MANUAL
+    );
     let errorLinkLabel = document.getElementById("errorExtraLinkLabel");
     errorLinkLabel.value = manualURL;
     errorLinkLabel.setAttribute("url", manualURL);
-  }
+  },
 };
 
 /**
@@ -1190,9 +1239,7 @@ var gErrorPatchingPage = {
         break;
       case STATE_PENDING:
       case STATE_PENDING_SERVICE:
-        let aus = Cc["@mozilla.org/updates/update-service;1"].
-                  getService(Ci.nsIApplicationUpdateService);
-        if (!aus.canStageUpdates) {
+        if (!gAUS.canStageUpdates) {
           gUpdates.wiz.goTo("finished");
           break;
         }
@@ -1204,7 +1251,7 @@ var gErrorPatchingPage = {
         gUpdates.wiz.goTo("errors");
         break;
     }
-  }
+  },
 };
 
 /**
@@ -1216,16 +1263,17 @@ var gFinishedPage = {
    * Initialize
    */
   onPageShow() {
-    let aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-    if (aus.elevationRequired) {
+    if (gAUS.elevationRequired) {
       LOG("gFinishedPage", "elevationRequired");
-      gUpdates.setButtons("restartLaterButton", "noThanksButton",
-                          "restartNowButton", true);
+      gUpdates.setButtons(
+        "restartLaterButton",
+        "noThanksButton",
+        "restartNowButton",
+        true
+      );
     } else {
       LOG("gFinishedPage", "not elevationRequired");
-      gUpdates.setButtons("restartLaterButton", null, "restartNowButton",
-                          true);
+      gUpdates.setButtons("restartLaterButton", null, "restartNowButton", true);
     }
     gUpdates.wiz.getButton("finish").focus();
   },
@@ -1247,20 +1295,23 @@ var gFinishedPage = {
     } else {
       link.hidden = true;
     }
-    let aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-    if (aus.elevationRequired) {
+    if (gAUS.elevationRequired) {
       let more = document.getElementById("finishedBackgroundMore");
       more.setAttribute("hidden", "true");
-      let moreElevated =
-        document.getElementById("finishedBackgroundMoreElevated");
+      let moreElevated = document.getElementById(
+        "finishedBackgroundMoreElevated"
+      );
       moreElevated.setAttribute("hidden", "false");
-      let moreElevatedLink =
-        document.getElementById("finishedBackgroundMoreElevatedLink");
+      let moreElevatedLink = document.getElementById(
+        "finishedBackgroundMoreElevatedLink"
+      );
       moreElevatedLink.setAttribute("hidden", "false");
-      let moreElevatedLinkLabel =
-        document.getElementById("finishedBackgroundMoreElevatedLinkLabel");
-      let manualURL = Services.urlFormatter.formatURLPref(PREF_APP_UPDATE_URL_MANUAL);
+      let moreElevatedLinkLabel = document.getElementById(
+        "finishedBackgroundMoreElevatedLinkLabel"
+      );
+      let manualURL = Services.urlFormatter.formatURLPref(
+        PREF_APP_UPDATE_URL_MANUAL
+      );
       moreElevatedLinkLabel.value = manualURL;
       moreElevatedLinkLabel.setAttribute("url", manualURL);
       moreElevatedLinkLabel.setAttribute("hidden", "false");
@@ -1275,11 +1326,10 @@ var gFinishedPage = {
     // Do the restart
     LOG("gFinishedPage", "onWizardFinish - restarting the application");
 
-    let aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-    if (aus.elevationRequired) {
-      let um = Cc["@mozilla.org/updates/update-manager;1"].
-               getService(Ci.nsIUpdateManager);
+    if (gAUS.elevationRequired) {
+      let um = Cc["@mozilla.org/updates/update-manager;1"].getService(
+        Ci.nsIUpdateManager
+      );
       if (um) {
         um.elevationOptedIn();
       }
@@ -1298,24 +1348,32 @@ var gFinishedPage = {
     gUpdates.wiz.getButton("extra1").disabled = true;
 
     // Notify all windows that an application quit has been requested.
-    var cancelQuit = Cc["@mozilla.org/supports-PRBool;1"].
-                     createInstance(Ci.nsISupportsPRBool);
-    Services.obs.notifyObservers(cancelQuit, "quit-application-requested",
-                                 "restart");
+    var cancelQuit = Cc["@mozilla.org/supports-PRBool;1"].createInstance(
+      Ci.nsISupportsPRBool
+    );
+    Services.obs.notifyObservers(
+      cancelQuit,
+      "quit-application-requested",
+      "restart"
+    );
 
     // Something aborted the quit process.
-    if (cancelQuit.data)
+    if (cancelQuit.data) {
       return;
+    }
 
     // If already in safe mode restart in safe mode (bug 327119)
     if (Services.appinfo.inSafeMode) {
-      let env = Cc["@mozilla.org/process/environment;1"].
-                getService(Ci.nsIEnvironment);
+      let env = Cc["@mozilla.org/process/environment;1"].getService(
+        Ci.nsIEnvironment
+      );
       env.set("MOZ_SAFE_MODE_RESTART", "1");
     }
 
     // Restart the application
-    Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+    Services.startup.quit(
+      Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+    );
   },
 
   /**
@@ -1331,8 +1389,9 @@ var gFinishedPage = {
    */
   async onExtra2() {
     Services.obs.notifyObservers(null, "update-canceled");
-    let um = Cc["@mozilla.org/updates/update-manager;1"].
-             getService(Ci.nsIUpdateManager);
+    let um = Cc["@mozilla.org/updates/update-manager;1"].getService(
+      Ci.nsIUpdateManager
+    );
     um.cleanupActiveUpdate();
     gUpdates.never();
     gUpdates.wiz.cancel();

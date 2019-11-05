@@ -2,16 +2,37 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Imported via permissions.xul.
-/* import-globals-from ../../../toolkit/content/treeUtils.js */
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+var { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-
-const nsIPermissionManager = Ci.nsIPermissionManager;
-const nsICookiePermission = Ci.nsICookiePermission;
-
-const NOTIFICATION_FLUSH_PERMISSIONS = "flush-pending-permissions";
+const permissionExceptionsL10n = {
+  trackingprotection: {
+    window: "permissions-exceptions-content-blocking-window",
+    description: "permissions-exceptions-content-blocking-desc",
+  },
+  cookie: {
+    window: "permissions-exceptions-cookie-window",
+    description: "permissions-exceptions-cookie-desc",
+  },
+  popup: {
+    window: "permissions-exceptions-popup-window",
+    description: "permissions-exceptions-popup-desc",
+  },
+  "login-saving": {
+    window: "permissions-exceptions-saved-logins-window",
+    description: "permissions-exceptions-saved-logins-desc",
+  },
+  install: {
+    window: "permissions-exceptions-addons-window",
+    description: "permissions-exceptions-addons-desc",
+  },
+  "autoplay-media": {
+    window: "permissions-exceptions-autoplay-media-window2",
+    description: "permissions-exceptions-autoplay-media-desc2",
+  },
+};
 
 function Permission(principal, type, capability) {
   this.principal = principal;
@@ -22,66 +43,187 @@ function Permission(principal, type, capability) {
 
 var gPermissionManager = {
   _type: "",
-  _permissions: [],
+  _isObserving: false,
+  _permissions: new Map(),
   _permissionsToAdd: new Map(),
   _permissionsToDelete: new Map(),
   _bundle: null,
-  _tree: null,
-  _observerRemoved: false,
+  _list: null,
+  _removeButton: null,
+  _removeAllButton: null,
 
-  _view: {
-    _rowCount: 0,
-    get rowCount() {
-      return this._rowCount;
-    },
-    getCellText(aRow, aColumn) {
-      if (aColumn.id == "siteCol")
-        return gPermissionManager._permissions[aRow].origin;
-      else if (aColumn.id == "statusCol")
-        return gPermissionManager._permissions[aRow].capability;
-      return "";
-    },
+  onLoad() {
+    let params = window.arguments[0];
+    document.mozSubdialogReady = this.init(params);
+  },
 
-    isSeparator(aIndex) { return false; },
-    isSorted() { return false; },
-    isContainer(aIndex) { return false; },
-    setTree(aTree) {},
-    getImageSrc(aRow, aColumn) {},
-    getCellValue(aRow, aColumn) {},
-    cycleHeader(column) {},
-    getRowProperties(row) { return ""; },
-    getColumnProperties(column) { return ""; },
-    getCellProperties(row, column) {
-      if (column.element.getAttribute("id") == "siteCol")
-        return "ltr";
+  async init(params) {
+    if (!this._isObserving) {
+      Services.obs.addObserver(this, "perm-changed");
+      this._isObserving = true;
+    }
 
-      return "";
+    this._type = params.permissionType;
+    this._list = document.getElementById("permissionsBox");
+    this._removeButton = document.getElementById("removePermission");
+    this._removeAllButton = document.getElementById("removeAllPermissions");
+
+    let permissionsText = document.getElementById("permissionsText");
+
+    let l10n = permissionExceptionsL10n[this._type];
+    document.l10n.setAttributes(permissionsText, l10n.description);
+    document.l10n.setAttributes(document.documentElement, l10n.window);
+
+    await document.l10n.translateElements([
+      permissionsText,
+      document.documentElement,
+    ]);
+
+    document.getElementById("btnBlock").hidden = !params.blockVisible;
+    document.getElementById("btnSession").hidden = !params.sessionVisible;
+    document.getElementById("btnAllow").hidden = !params.allowVisible;
+
+    let urlFieldVisible =
+      params.blockVisible || params.sessionVisible || params.allowVisible;
+
+    let urlField = document.getElementById("url");
+    urlField.value = params.prefilledHost;
+    urlField.hidden = !urlFieldVisible;
+
+    this.onHostInput(urlField);
+
+    let urlLabel = document.getElementById("urlLabel");
+    urlLabel.hidden = !urlFieldVisible;
+
+    this._hideStatusColumn = params.hideStatusColumn;
+    let statusCol = document.getElementById("statusCol");
+    statusCol.hidden = this._hideStatusColumn;
+    if (this._hideStatusColumn) {
+      statusCol.removeAttribute("data-isCurrentSortCol");
+      document
+        .getElementById("siteCol")
+        .setAttribute("data-isCurrentSortCol", "true");
+    }
+
+    Services.obs.notifyObservers(null, "flush-pending-permissions", this._type);
+
+    this._loadPermissions();
+    this.buildPermissionsList();
+
+    urlField.focus();
+  },
+
+  uninit() {
+    if (this._isObserving) {
+      Services.obs.removeObserver(this, "perm-changed");
+      this._isObserving = false;
     }
   },
 
-  _getCapabilityString(aCapability) {
-    var stringKey = null;
-    switch (aCapability) {
-    case nsIPermissionManager.ALLOW_ACTION:
-      stringKey = "can";
-      break;
-    case nsIPermissionManager.DENY_ACTION:
-      stringKey = "cannot";
-      break;
-    case nsICookiePermission.ACCESS_ALLOW_FIRST_PARTY_ONLY:
-      stringKey = "canAccessFirstParty";
-      break;
-    case nsICookiePermission.ACCESS_SESSION:
-      stringKey = "canSession";
-      break;
+  observe(subject, topic, data) {
+    if (topic !== "perm-changed") {
+      return;
     }
-    return this._bundle.getString(stringKey);
+
+    let permission = subject.QueryInterface(Ci.nsIPermission);
+
+    // Ignore unrelated permission types.
+    if (permission.type !== this._type) {
+      return;
+    }
+
+    if (data == "added") {
+      this._addPermissionToList(permission);
+      this.buildPermissionsList();
+    } else if (data == "changed") {
+      let p = this._permissions.get(permission.principal.origin);
+      // Maybe this item has been excluded before because it had an invalid capability.
+      if (p) {
+        p.capability = permission.capability;
+        this._handleCapabilityChange(p);
+      } else {
+        this._addPermissionToList(permission);
+      }
+      this.buildPermissionsList();
+    } else if (data == "deleted") {
+      this._removePermissionFromList(permission.principal.origin);
+    }
   },
 
-  addPermission(aCapability) {
-    var textbox = document.getElementById("url");
-    var input_url = textbox.value.replace(/^\s*/, ""); // trim any leading space
-    let principal;
+  _handleCapabilityChange(perm) {
+    let permissionlistitem = document.getElementsByAttribute(
+      "origin",
+      perm.origin
+    )[0];
+    document.l10n.setAttributes(
+      permissionlistitem.querySelector(".website-capability-value"),
+      this._getCapabilityL10nId(perm.capability)
+    );
+  },
+
+  _isCapabilitySupported(capability) {
+    return (
+      capability == Ci.nsIPermissionManager.ALLOW_ACTION ||
+      capability == Ci.nsIPermissionManager.DENY_ACTION ||
+      capability == Ci.nsICookiePermission.ACCESS_SESSION
+    );
+  },
+
+  _getCapabilityL10nId(capability) {
+    let stringKey = null;
+    switch (capability) {
+      case Ci.nsIPermissionManager.ALLOW_ACTION:
+        stringKey = "permissions-capabilities-listitem-allow";
+        break;
+      case Ci.nsIPermissionManager.DENY_ACTION:
+        stringKey = "permissions-capabilities-listitem-block";
+        break;
+      case Ci.nsICookiePermission.ACCESS_SESSION:
+        stringKey = "permissions-capabilities-listitem-allow-session";
+        break;
+      default:
+        throw new Error(`Unknown capability: ${capability}`);
+    }
+    return stringKey;
+  },
+
+  _addPermissionToList(perm) {
+    if (perm.type !== this._type) {
+      return;
+    }
+    if (!this._isCapabilitySupported(perm.capability)) {
+      return;
+    }
+
+    let p = new Permission(perm.principal, perm.type, perm.capability);
+    this._permissions.set(p.origin, p);
+  },
+
+  _addOrModifyPermission(principal, capability) {
+    // check whether the permission already exists, if not, add it
+    let permissionParams = { principal, type: this._type, capability };
+    let existingPermission = this._permissions.get(principal.origin);
+    if (!existingPermission) {
+      this._permissionsToAdd.set(principal.origin, permissionParams);
+      this._addPermissionToList(permissionParams);
+      this.buildPermissionsList();
+    } else if (existingPermission.capability != capability) {
+      existingPermission.capability = capability;
+      this._permissionsToAdd.set(principal.origin, permissionParams);
+      this._handleCapabilityChange(existingPermission);
+    }
+  },
+
+  _addNewPrincipalToList(list, uri) {
+    list.push(Services.scriptSecurityManager.createCodebasePrincipal(uri, {}));
+    // If we have ended up with an unknown scheme, the following will throw.
+    list[list.length - 1].origin;
+  },
+
+  addPermission(capability) {
+    let textbox = document.getElementById("url");
+    let input_url = textbox.value.trim(); // trim any leading and trailing space
+    let principals = [];
     try {
       // The origin accessor on the principal object will throw if the
       // principal doesn't have a canonical origin representation. This will
@@ -90,49 +232,40 @@ var gPermissionManager = {
       // an invalid URI. A canonical origin representation is required by the
       // permission manager for storage, so this won't prevent any valid
       // permissions from being entered by the user.
-      let uri;
       try {
-        uri = Services.io.newURI(input_url);
-        principal = Services.scriptSecurityManager.createCodebasePrincipal(uri, {});
+        let uri = Services.io.newURI(input_url);
+        let principal = Services.scriptSecurityManager.createCodebasePrincipal(
+          uri,
+          {}
+        );
         if (principal.origin.startsWith("moz-nullprincipal:")) {
-          throw "Null principal";
+          throw new Error("Null principal");
         }
+        principals.push(principal);
       } catch (ex) {
-        uri = Services.io.newURI("http://" + input_url);
-        principal = Services.scriptSecurityManager.createCodebasePrincipal(uri, {});
-        // If we have ended up with an unknown scheme, the following will throw.
-        principal.origin;
+        this._addNewPrincipalToList(
+          principals,
+          Services.io.newURI("http://" + input_url)
+        );
+        this._addNewPrincipalToList(
+          principals,
+          Services.io.newURI("https://" + input_url)
+        );
       }
     } catch (ex) {
-      var message = this._bundle.getString("invalidURI");
-      var title = this._bundle.getString("invalidURITitle");
-      Services.prompt.alert(window, title, message);
+      document.l10n
+        .formatValues([
+          { id: "permissions-invalid-uri-title" },
+          { id: "permissions-invalid-uri-label" },
+        ])
+        .then(([title, message]) => {
+          Services.prompt.alert(window, title, message);
+        });
       return;
     }
 
-    var capabilityString = this._getCapabilityString(aCapability);
-
-    // check whether the permission already exists, if not, add it
-    let permissionExists = false;
-    let capabilityExists = false;
-    for (var i = 0; i < this._permissions.length; ++i) {
-      if (this._permissions[i].principal.equals(principal)) {
-        permissionExists = true;
-        capabilityExists = this._permissions[i].capability == capabilityString;
-        if (!capabilityExists) {
-          this._permissions[i].capability = capabilityString;
-        }
-        break;
-      }
-    }
-
-    let permissionParams = {principal, type: this._type, capability: aCapability};
-    if (!permissionExists) {
-      this._permissionsToAdd.set(principal.origin, permissionParams);
-      this._addPermission(permissionParams);
-    } else if (!capabilityExists) {
-      this._permissionsToAdd.set(principal.origin, permissionParams);
-      this._handleCapabilityChange();
+    for (let principal of principals) {
+      this._addOrModifyPermission(principal, capability);
     }
 
     textbox.value = "";
@@ -142,219 +275,137 @@ var gPermissionManager = {
     this.onHostInput(textbox);
 
     // enable "remove all" button as needed
-    document.getElementById("removeAllPermissions").disabled = this._permissions.length == 0;
+    this._setRemoveButtonState();
   },
 
-  _removePermission(aPermission) {
-    this._removePermissionFromList(aPermission.principal);
+  _removePermission(permission) {
+    this._removePermissionFromList(permission.origin);
 
     // If this permission was added during this session, let's remove
     // it from the pending adds list to prevent calls to the
     // permission manager.
-    let isNewPermission = this._permissionsToAdd.delete(aPermission.principal.origin);
-
+    let isNewPermission = this._permissionsToAdd.delete(permission.origin);
     if (!isNewPermission) {
-      this._permissionsToDelete.set(aPermission.principal.origin, aPermission);
+      this._permissionsToDelete.set(permission.origin, permission);
+    }
+  },
+
+  _removePermissionFromList(origin) {
+    this._permissions.delete(origin);
+    let permissionlistitem = document.getElementsByAttribute(
+      "origin",
+      origin
+    )[0];
+    if (permissionlistitem) {
+      permissionlistitem.remove();
+    }
+  },
+
+  _loadPermissions() {
+    // load permissions into a table.
+    for (let nextPermission of Services.perms.enumerator) {
+      this._addPermissionToList(nextPermission);
+    }
+  },
+
+  _createPermissionListItem(permission) {
+    let richlistitem = document.createXULElement("richlistitem");
+    richlistitem.setAttribute("origin", permission.origin);
+    let row = document.createXULElement("hbox");
+    row.setAttribute("flex", "1");
+
+    let hbox = document.createXULElement("hbox");
+    let website = document.createXULElement("label");
+    website.setAttribute("value", permission.origin);
+    hbox.setAttribute("width", "0");
+    hbox.setAttribute("class", "website-name");
+    hbox.setAttribute("flex", "3");
+    hbox.appendChild(website);
+    row.appendChild(hbox);
+
+    if (!this._hideStatusColumn) {
+      hbox = document.createXULElement("hbox");
+      let capability = document.createXULElement("label");
+      capability.setAttribute("class", "website-capability-value");
+      document.l10n.setAttributes(
+        capability,
+        this._getCapabilityL10nId(permission.capability)
+      );
+      hbox.setAttribute("width", "0");
+      hbox.setAttribute("class", "website-name");
+      hbox.setAttribute("flex", "1");
+      hbox.appendChild(capability);
+      row.appendChild(hbox);
     }
 
+    richlistitem.appendChild(row);
+    return richlistitem;
   },
 
-  _handleCapabilityChange() {
-    // Re-do the sort, if the status changed from Block to Allow
-    // or vice versa, since if we're sorted on status, we may no
-    // longer be in order.
-    if (this._lastPermissionSortColumn == "statusCol") {
-      this._resortPermissions();
-    }
-    this._tree.treeBoxObject.invalidate();
-  },
-
-  _addPermission(aPermission) {
-    this._addPermissionToList(aPermission);
-    ++this._view._rowCount;
-    this._tree.treeBoxObject.rowCountChanged(this._view.rowCount - 1, 1);
-    // Re-do the sort, since we inserted this new item at the end.
-    this._resortPermissions();
-  },
-
-  _resortPermissions() {
-    gTreeUtils.sort(this._tree, this._view, this._permissions,
-                    this._lastPermissionSortColumn,
-                    this._permissionsComparator,
-                    this._lastPermissionSortColumn,
-                    !this._lastPermissionSortAscending); // keep sort direction
-  },
-
-  onHostInput(aSiteField) {
-    document.getElementById("btnSession").disabled = !aSiteField.value;
-    document.getElementById("btnBlock").disabled = !aSiteField.value;
-    document.getElementById("btnAllow").disabled = !aSiteField.value;
-  },
-
-  onWindowKeyPress(aEvent) {
-    if (aEvent.keyCode == KeyEvent.DOM_VK_ESCAPE)
+  onWindowKeyPress(event) {
+    if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
       window.close();
+    }
   },
 
-  onHostKeyPress(aEvent) {
-    if (aEvent.keyCode == KeyEvent.DOM_VK_RETURN)
+  onPermissionKeyPress(event) {
+    if (!this._list.selectedItem) {
+      return;
+    }
+
+    if (
+      event.keyCode == KeyEvent.DOM_VK_DELETE ||
+      (AppConstants.platform == "macosx" &&
+        event.keyCode == KeyEvent.DOM_VK_BACK_SPACE)
+    ) {
+      this.onPermissionDelete();
+      event.preventDefault();
+    }
+  },
+
+  onHostKeyPress(event) {
+    if (event.keyCode == KeyEvent.DOM_VK_RETURN) {
       document.getElementById("btnAllow").click();
-  },
-
-  onLoad() {
-    this._bundle = document.getElementById("bundlePreferences");
-    var params = window.arguments[0];
-    this.init(params);
-  },
-
-  init(aParams) {
-    if (this._type) {
-      // reusing an open dialog, clear the old observer
-      this.uninit();
-    }
-
-    this._type = aParams.permissionType;
-    this._manageCapability = aParams.manageCapability;
-
-    var permissionsText = document.getElementById("permissionsText");
-    while (permissionsText.hasChildNodes())
-      permissionsText.firstChild.remove();
-    permissionsText.appendChild(document.createTextNode(aParams.introText));
-
-    document.title = aParams.windowTitle;
-
-    document.getElementById("btnBlock").hidden    = !aParams.blockVisible;
-    document.getElementById("btnSession").hidden  = !aParams.sessionVisible;
-    document.getElementById("btnAllow").hidden    = !aParams.allowVisible;
-
-    var urlFieldVisible = (aParams.blockVisible || aParams.sessionVisible || aParams.allowVisible);
-
-    var urlField = document.getElementById("url");
-    urlField.value = aParams.prefilledHost;
-    urlField.hidden = !urlFieldVisible;
-
-    this.onHostInput(urlField);
-
-    var urlLabel = document.getElementById("urlLabel");
-    urlLabel.hidden = !urlFieldVisible;
-
-    if (aParams.hideStatusColumn) {
-      document.getElementById("statusCol").hidden = true;
-    }
-
-    let treecols = document.getElementsByTagName("treecols")[0];
-    treecols.addEventListener("click", event => {
-      if (event.target.nodeName != "treecol" || event.button != 0) {
-        return;
-      }
-
-      let sortField = event.target.getAttribute("data-field-name");
-      if (!sortField) {
-        return;
-      }
-
-      gPermissionManager.onPermissionSort(sortField);
-    });
-
-    Services.obs.notifyObservers(null, NOTIFICATION_FLUSH_PERMISSIONS, this._type);
-    Services.obs.addObserver(this, "perm-changed");
-
-    this._loadPermissions();
-
-    urlField.focus();
-  },
-
-  uninit() {
-    if (!this._observerRemoved) {
-      Services.obs.removeObserver(this, "perm-changed");
-
-      this._observerRemoved = true;
     }
   },
 
-  observe(aSubject, aTopic, aData) {
-    if (aTopic == "perm-changed") {
-      var permission = aSubject.QueryInterface(Ci.nsIPermission);
-
-      // Ignore unrelated permission types.
-      if (permission.type != this._type)
-        return;
-
-      if (aData == "added") {
-        this._addPermission(permission);
-      } else if (aData == "changed") {
-        for (var i = 0; i < this._permissions.length; ++i) {
-          if (permission.matches(this._permissions[i].principal, true)) {
-            this._permissions[i].capability = this._getCapabilityString(permission.capability);
-            break;
-          }
-        }
-        this._handleCapabilityChange();
-      } else if (aData == "deleted") {
-        this._removePermissionFromList(permission.principal);
-      }
-    }
+  onHostInput(siteField) {
+    document.getElementById("btnSession").disabled = !siteField.value;
+    document.getElementById("btnBlock").disabled = !siteField.value;
+    document.getElementById("btnAllow").disabled = !siteField.value;
   },
 
-  onPermissionSelected() {
-    var hasSelection = this._tree.view.selection.count > 0;
-    var hasRows = this._tree.view.rowCount > 0;
-    document.getElementById("removePermission").disabled = !hasRows || !hasSelection;
-    document.getElementById("removeAllPermissions").disabled = !hasRows;
-  },
-
-  onPermissionDeleted() {
-    if (!this._view.rowCount)
+  _setRemoveButtonState() {
+    if (!this._list) {
       return;
-    var removedPermissions = [];
-    gTreeUtils.deleteSelectedItems(this._tree, this._view, this._permissions, removedPermissions);
-    for (var i = 0; i < removedPermissions.length; ++i) {
-      var p = removedPermissions[i];
-      this._removePermission(p);
     }
-    document.getElementById("removePermission").disabled = !this._permissions.length;
-    document.getElementById("removeAllPermissions").disabled = !this._permissions.length;
+
+    let hasSelection = this._list.selectedIndex >= 0;
+    let hasRows = this._list.itemCount > 0;
+    this._removeButton.disabled = !hasSelection;
+    this._removeAllButton.disabled = !hasRows;
   },
 
-  onAllPermissionsDeleted() {
-    if (!this._view.rowCount)
-      return;
-    var removedPermissions = [];
-    gTreeUtils.deleteAll(this._tree, this._view, this._permissions, removedPermissions);
-    for (var i = 0; i < removedPermissions.length; ++i) {
-      var p = removedPermissions[i];
-      this._removePermission(p);
+  onPermissionDelete() {
+    let richlistitem = this._list.selectedItem;
+    let origin = richlistitem.getAttribute("origin");
+    let permission = this._permissions.get(origin);
+
+    this._removePermission(permission);
+
+    this._setRemoveButtonState();
+  },
+
+  onAllPermissionsDelete() {
+    for (let permission of this._permissions.values()) {
+      this._removePermission(permission);
     }
-    document.getElementById("removePermission").disabled = true;
-    document.getElementById("removeAllPermissions").disabled = true;
+
+    this._setRemoveButtonState();
   },
 
-  onPermissionKeyPress(aEvent) {
-    if (aEvent.keyCode == KeyEvent.DOM_VK_DELETE) {
-      this.onPermissionDeleted();
-    } else if (AppConstants.platform == "macosx" &&
-               aEvent.keyCode == KeyEvent.DOM_VK_BACK_SPACE) {
-      this.onPermissionDeleted();
-      aEvent.preventDefault();
-    }
-  },
-
-  _lastPermissionSortColumn: "",
-  _lastPermissionSortAscending: false,
-  _permissionsComparator(a, b) {
-    return a.toLowerCase().localeCompare(b.toLowerCase());
-  },
-
-
-  onPermissionSort(aColumn) {
-    this._lastPermissionSortAscending = gTreeUtils.sort(this._tree,
-                                                        this._view,
-                                                        this._permissions,
-                                                        aColumn,
-                                                        this._permissionsComparator,
-                                                        this._lastPermissionSortColumn,
-                                                        this._lastPermissionSortAscending);
-    this._lastPermissionSortColumn = aColumn;
+  onPermissionSelect() {
+    this._setRemoveButtonState();
   },
 
   onApplyChanges() {
@@ -363,73 +414,103 @@ var gPermissionManager = {
     // to update the UI
     this.uninit();
 
-    for (let permissionParams of this._permissionsToAdd.values()) {
-      Services.perms.addFromPrincipal(permissionParams.principal, permissionParams.type, permissionParams.capability);
-    }
-
     for (let p of this._permissionsToDelete.values()) {
       Services.perms.removeFromPrincipal(p.principal, p.type);
+    }
+
+    for (let p of this._permissionsToAdd.values()) {
+      Services.perms.addFromPrincipal(p.principal, p.type, p.capability);
     }
 
     window.close();
   },
 
-  _loadPermissions() {
-    this._tree = document.getElementById("permissionsTree");
-    this._permissions = [];
+  buildPermissionsList(sortCol) {
+    // Clear old entries.
+    let oldItems = this._list.querySelectorAll("richlistitem");
+    for (let item of oldItems) {
+      item.remove();
+    }
+    let frag = document.createDocumentFragment();
 
-    // load permissions into a table
-    var enumerator = Services.perms.enumerator;
-    while (enumerator.hasMoreElements()) {
-      var nextPermission = enumerator.getNext().QueryInterface(Ci.nsIPermission);
-      this._addPermissionToList(nextPermission);
+    let permissions = Array.from(this._permissions.values());
+
+    for (let permission of permissions) {
+      let richlistitem = this._createPermissionListItem(permission);
+      frag.appendChild(richlistitem);
     }
 
-    this._view._rowCount = this._permissions.length;
+    // Sort permissions.
+    this._sortPermissions(this._list, frag, sortCol);
 
-    // sort and display the table
-    this._tree.view = this._view;
-    this.onPermissionSort("origin");
+    this._list.appendChild(frag);
 
-    // disable "remove all" button if there are none
-    document.getElementById("removeAllPermissions").disabled = this._permissions.length == 0;
+    this._setRemoveButtonState();
   },
 
-  _addPermissionToList(aPermission) {
-    if (aPermission.type == this._type &&
-        (!this._manageCapability ||
-         (aPermission.capability == this._manageCapability))) {
+  _sortPermissions(list, frag, column) {
+    let sortDirection;
 
-      var principal = aPermission.principal;
-      var capabilityString = this._getCapabilityString(aPermission.capability);
-      var p = new Permission(principal,
-                             aPermission.type,
-                             capabilityString);
-      this._permissions.push(p);
+    if (!column) {
+      column = document.querySelector("treecol[data-isCurrentSortCol=true]");
+      sortDirection =
+        column.getAttribute("data-last-sortDirection") || "ascending";
+    } else {
+      sortDirection = column.getAttribute("data-last-sortDirection");
+      sortDirection =
+        sortDirection === "ascending" ? "descending" : "ascending";
     }
-  },
 
-  _removePermissionFromList(aPrincipal) {
-    for (let i = 0; i < this._permissions.length; ++i) {
-      if (this._permissions[i].principal.equals(aPrincipal)) {
-        this._permissions.splice(i, 1);
-        this._view._rowCount--;
-        this._tree.treeBoxObject.rowCountChanged(this._view.rowCount - 1, -1);
-        this._tree.treeBoxObject.invalidate();
+    let sortFunc = null;
+    switch (column.id) {
+      case "siteCol":
+        sortFunc = (a, b) => {
+          return comp.compare(
+            a.getAttribute("origin"),
+            b.getAttribute("origin")
+          );
+        };
         break;
-      }
+
+      case "statusCol":
+        sortFunc = (a, b) => {
+          // The capabilities values ("Allow" and "Block") are localized asynchronously.
+          // Sort based on the guaranteed-present localization ID instead, note that the
+          // ascending/descending arrow may be pointing the wrong way.
+          return (
+            a
+              .querySelector(".website-capability-value")
+              .getAttribute("data-l10n-id") >
+            b
+              .querySelector(".website-capability-value")
+              .getAttribute("data-l10n-id")
+          );
+        };
+        break;
     }
+
+    let comp = new Services.intl.Collator(undefined, {
+      usage: "sort",
+    });
+
+    let items = Array.from(frag.querySelectorAll("richlistitem"));
+
+    if (sortDirection === "descending") {
+      items.sort((a, b) => sortFunc(b, a));
+    } else {
+      items.sort(sortFunc);
+    }
+
+    // Re-append items in the correct order:
+    items.forEach(item => frag.appendChild(item));
+
+    let cols = list.previousElementSibling.querySelectorAll("treecol");
+    cols.forEach(c => {
+      c.removeAttribute("data-isCurrentSortCol");
+      c.removeAttribute("sortDirection");
+    });
+    column.setAttribute("data-isCurrentSortCol", "true");
+    column.setAttribute("sortDirection", sortDirection);
+    column.setAttribute("data-last-sortDirection", sortDirection);
   },
-
-  setOrigin(aOrigin) {
-    document.getElementById("url").value = aOrigin;
-  }
 };
-
-function setOrigin(aOrigin) {
-  gPermissionManager.setOrigin(aOrigin);
-}
-
-function initWithParams(aParams) {
-  gPermissionManager.init(aParams);
-}

@@ -5,12 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Keep in (case-insensitive) order:
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/SVGSVGElement.h"
+#include "mozilla/dom/SVGViewElement.h"
 #include "nsFrame.h"
 #include "nsGkAtoms.h"
 #include "nsSVGOuterSVGFrame.h"
-#include "mozilla/dom/SVGSVGElement.h"
-#include "mozilla/dom/SVGViewElement.h"
 
+using namespace mozilla;
 using namespace mozilla::dom;
 
 /**
@@ -19,13 +21,13 @@ using namespace mozilla::dom;
  * identifier. The SVGViewFrame class passes on any attribute changes
  * the view receives to the overridden <svg> element (if there is one).
  **/
-class SVGViewFrame : public nsFrame {
-  friend nsIFrame* NS_NewSVGViewFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext);
+class SVGViewFrame final : public nsFrame {
+  friend nsIFrame* NS_NewSVGViewFrame(mozilla::PresShell* aPresShell,
+                                      ComputedStyle* aStyle);
 
  protected:
-  explicit SVGViewFrame(nsStyleContext* aContext)
-      : nsFrame(aContext, kClassID) {
+  explicit SVGViewFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsFrame(aStyle, aPresContext, kClassID) {
     AddStateBits(NS_FRAME_IS_NONDISPLAY);
   }
 
@@ -38,6 +40,10 @@ class SVGViewFrame : public nsFrame {
 #endif
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsFrame::IsFrameOfType(aFlags & ~(nsIFrame::eSVG));
   }
 
@@ -56,9 +62,8 @@ class SVGViewFrame : public nsFrame {
   }
 };
 
-nsIFrame* NS_NewSVGViewFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext) {
-  return new (aPresShell) SVGViewFrame(aContext);
+nsIFrame* NS_NewSVGViewFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) SVGViewFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(SVGViewFrame)
@@ -79,8 +84,7 @@ nsresult SVGViewFrame::AttributeChanged(int32_t aNameSpaceID,
 
   if (aNameSpaceID == kNameSpaceID_None &&
       (aAttribute == nsGkAtoms::preserveAspectRatio ||
-       aAttribute == nsGkAtoms::viewBox ||
-       aAttribute == nsGkAtoms::viewTarget)) {
+       aAttribute == nsGkAtoms::viewBox)) {
     nsSVGOuterSVGFrame* outerSVGFrame = nsSVGUtils::GetOuterSVGFrame(this);
     NS_ASSERTION(outerSVGFrame->GetContent()->IsSVGElement(nsGkAtoms::svg),
                  "Expecting an <svg> element");

@@ -4,7 +4,7 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/osfile.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 var XULStore = null;
 var browserURI = "chrome://browser/content/browser.xul";
@@ -25,30 +25,11 @@ function checkValueExists(uri, id, attr, exists) {
 }
 
 function getIDs(uri) {
-  let it = XULStore.getIDsEnumerator(uri);
-  let result = [];
-
-  while (it.hasMore()) {
-    let value = it.getNext();
-    result.push(value);
-  }
-
-  result.sort();
-  return result;
+  return Array.from(XULStore.getIDsEnumerator(uri)).sort();
 }
 
 function getAttributes(uri, id) {
-  let it = XULStore.getAttributeEnumerator(uri, id);
-
-  let result = [];
-
-  while (it.hasMore()) {
-    let value = it.getNext();
-    result.push(value);
-  }
-
-  result.sort();
-  return result;
+  return Array.from(XULStore.getAttributeEnumerator(uri, id)).sort();
 }
 
 function checkArrays(a, b) {
@@ -57,51 +38,25 @@ function checkArrays(a, b) {
   Assert.equal(a.toString(), b.toString());
 }
 
-function checkOldStore() {
-  checkArrays([], getIDs(browserURI));
-  checkArrays([], getAttributes(browserURI, "addon-bar"));
-  checkArrays([],
-              getAttributes(browserURI, "main-window"));
-  checkArrays([], getAttributes(browserURI, "sidebar-title"));
-
-  checkValue(browserURI, "addon-bar", "collapsed", "");
-  checkValue(browserURI, "main-window", "width", "");
-  checkValue(browserURI, "main-window", "height", "");
-  checkValue(browserURI, "main-window", "screenX", "");
-  checkValue(browserURI, "main-window", "screenY", "");
-  checkValue(browserURI, "main-window", "sizemode", "");
-  checkValue(browserURI, "sidebar-title", "value", "");
-
-  checkArrays([], getIDs(aboutURI));
-  checkArrays([], getAttributes(aboutURI, "lockCol"));
-  checkArrays([], getAttributes(aboutURI, "prefCol"));
-
-  checkValue(aboutURI, "prefCol", "ordinal", "");
-  checkValue(aboutURI, "prefCol", "sortDirection", "");
-  checkValue(aboutURI, "lockCol", "ordinal", "");
-}
-
-add_task(async function testImport() {
-  let src = "localstore.rdf";
-  let dst = OS.Path.join(OS.Constants.Path.profileDir, src);
-
-  await OS.File.copy(src, dst);
-
-  // Test to make sure that localstore.rdf isn't imported any more.
-  XULStore = Cc["@mozilla.org/xul/xulstore;1"].getService(Ci.nsIXULStore);
-  checkOldStore();
-
+add_task(async function setup() {
   // Set a value that a future test depends on manually
+  XULStore = Services.xulStore;
   XULStore.setValue(browserURI, "main-window", "width", "994");
 });
 
 add_task(async function testTruncation() {
   let dos = Array(8192).join("~");
   // Long id names should trigger an exception
-  Assert.throws(() => XULStore.setValue(browserURI, dos, "foo", "foo"), /NS_ERROR_ILLEGAL_VALUE/);
+  Assert.throws(
+    () => XULStore.setValue(browserURI, dos, "foo", "foo"),
+    /NS_ERROR_ILLEGAL_VALUE/
+  );
 
   // Long attr names should trigger an exception
-  Assert.throws(() => XULStore.setValue(browserURI, "foo", dos, "foo"), /NS_ERROR_ILLEGAL_VALUE/);
+  Assert.throws(
+    () => XULStore.setValue(browserURI, "foo", dos, "foo"),
+    /NS_ERROR_ILLEGAL_VALUE/
+  );
 
   // Long values should be truncated
   XULStore.setValue(browserURI, "dos", "dos", dos);

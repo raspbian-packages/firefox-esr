@@ -46,7 +46,6 @@ class SipccSdpAttributeList : public SdpAttributeList {
       const override;
   virtual const SdpSetupAttribute& GetSetup() const override;
   virtual const SdpSsrcAttributeList& GetSsrc() const override;
-  virtual const SdpSsrcGroupAttributeList& GetSsrcGroup() const override;
   virtual const SdpDtlsMessageAttribute& GetDtlsMessage() const override;
 
   // These attributes can appear multiple times, so the returned

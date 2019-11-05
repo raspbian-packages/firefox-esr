@@ -406,7 +406,7 @@ class StreamingLexer {
       MOZ_ASSERT(state == SourceBufferIterator::COMPLETE);
       return Nothing();
     }
-    return Some(Move(other));
+    return Some(std::move(other));
   }
 
   template <typename Func>
@@ -635,7 +635,7 @@ class StreamingLexer {
     MOZ_ASSERT(mBuffer.length() <= mTransition.Size(),
                "Buffered more than we needed?");
 
-    State nextState = Move(*mYieldingToState);
+    State nextState = std::move(*mYieldingToState);
 
     // After a yield, we need to take the same data that we delivered to the
     // last state, and deliver it again to the new state. We know that this is

@@ -13,8 +13,8 @@
 #include "nsCOMPtr.h"
 #include "nsCSSPseudoElements.h"
 
-class nsMeterFrame : public nsContainerFrame,
-                     public nsIAnonymousContentCreator
+class nsMeterFrame final : public nsContainerFrame,
+                           public nsIAnonymousContentCreator
 
 {
   typedef mozilla::dom::Element Element;
@@ -23,7 +23,7 @@ class nsMeterFrame : public nsContainerFrame,
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsMeterFrame)
 
-  explicit nsMeterFrame(nsStyleContext* aContext);
+  explicit nsMeterFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
   virtual ~nsMeterFrame();
 
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
@@ -66,9 +66,6 @@ class nsMeterFrame : public nsContainerFrame,
    * Returns whether the frame and its child should use the native style.
    */
   bool ShouldUseNativeStyle() const;
-
-  virtual Element* GetPseudoElement(
-      mozilla::CSSPseudoElementType aType) override;
 
  protected:
   // Helper function which reflow the anonymous div frame.

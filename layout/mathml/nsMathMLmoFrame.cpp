@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "gfxContext.h"
+#include "mozilla/PresShell.h"
 #include "nsMathMLmoFrame.h"
 #include "nsPresContext.h"
 #include "nsContentUtils.h"
@@ -12,16 +13,17 @@
 #include "nsMathMLElement.h"
 #include <algorithm>
 
+using namespace mozilla;
+
 //
 // <mo> -- operator, fence, or separator - implementation
 //
 
-// additional style context to be used by our MathMLChar.
+// additional ComputedStyle to be used by our MathMLChar.
 #define NS_MATHML_CHAR_STYLE_CONTEXT_INDEX 0
 
-nsIFrame* NS_NewMathMLmoFrame(nsIPresShell* aPresShell,
-                              nsStyleContext* aContext) {
-  return new (aPresShell) nsMathMLmoFrame(aContext);
+nsIFrame* NS_NewMathMLmoFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsMathMLmoFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMathMLmoFrame)
@@ -111,7 +113,7 @@ void nsMathMLmoFrame::ProcessTextData() {
   if (mFrames.GetLength() != 1) {
     data.Truncate();  // empty data to reset the char
     mMathMLChar.SetData(data);
-    ResolveMathMLCharStyle(presContext, mContent, mStyleContext, &mMathMLChar);
+    ResolveMathMLCharStyle(presContext, mContent, mComputedStyle, &mMathMLChar);
     return;
   }
 
@@ -166,7 +168,7 @@ void nsMathMLmoFrame::ProcessTextData() {
       (mEmbellishData.direction != NS_STRETCH_DIRECTION_UNSUPPORTED);
   if (isMutable) mFlags |= NS_MATHML_OPERATOR_MUTABLE;
 
-  ResolveMathMLCharStyle(presContext, mContent, mStyleContext, &mMathMLChar);
+  ResolveMathMLCharStyle(presContext, mContent, mComputedStyle, &mMathMLChar);
 }
 
 // get our 'form' and lookup in the Operator Dictionary to fetch
@@ -376,8 +378,8 @@ void nsMathMLmoFrame::ProcessOperatorData() {
       if ((eCSSUnit_Number == cssValue.GetUnit()) && !cssValue.GetFloatValue())
         leadingSpace = 0;
       else if (cssValue.IsLengthUnit())
-        leadingSpace =
-            CalcLength(presContext, mStyleContext, cssValue, fontSizeInflation);
+        leadingSpace = CalcLength(presContext, mComputedStyle, cssValue,
+                                  fontSizeInflation);
       mFlags |= NS_MATHML_OPERATOR_LSPACE_ATTR;
     }
   }
@@ -403,8 +405,8 @@ void nsMathMLmoFrame::ProcessOperatorData() {
       if ((eCSSUnit_Number == cssValue.GetUnit()) && !cssValue.GetFloatValue())
         trailingSpace = 0;
       else if (cssValue.IsLengthUnit())
-        trailingSpace =
-            CalcLength(presContext, mStyleContext, cssValue, fontSizeInflation);
+        trailingSpace = CalcLength(presContext, mComputedStyle, cssValue,
+                                   fontSizeInflation);
       mFlags |= NS_MATHML_OPERATOR_RSPACE_ATTR;
     }
   }
@@ -491,7 +493,7 @@ void nsMathMLmoFrame::ProcessOperatorData() {
       else if (eCSSUnit_Percent == unit)
         mMinSize = cssValue.GetPercentValue();
       else if (eCSSUnit_Null != unit) {
-        mMinSize = float(CalcLength(presContext, mStyleContext, cssValue,
+        mMinSize = float(CalcLength(presContext, mComputedStyle, cssValue,
                                     fontSizeInflation));
         mFlags |= NS_MATHML_OPERATOR_MINSIZE_ABSOLUTE;
       }
@@ -523,7 +525,7 @@ void nsMathMLmoFrame::ProcessOperatorData() {
       else if (eCSSUnit_Percent == unit)
         mMaxSize = cssValue.GetPercentValue();
       else if (eCSSUnit_Null != unit) {
-        mMaxSize = float(CalcLength(presContext, mStyleContext, cssValue,
+        mMaxSize = float(CalcLength(presContext, mComputedStyle, cssValue,
                                     fontSizeInflation));
         mFlags |= NS_MATHML_OPERATOR_MAXSIZE_ABSOLUTE;
       }
@@ -910,7 +912,7 @@ void nsMathMLmoFrame::Reflow(nsPresContext* aPresContext,
                              nsReflowStatus& aStatus) {
   MOZ_ASSERT(aStatus.IsEmpty(), "Caller should pass a fresh reflow status!");
 
-  // certain values use units that depend on our style context, so
+  // certain values use units that depend on our ComputedStyle, so
   // it is safer to just process the whole lot here
   ProcessOperatorData();
 
@@ -967,7 +969,8 @@ nsresult nsMathMLmoFrame::Place(DrawTarget* aDrawTarget, bool aPlaceOrigin,
   return NS_OK;
 }
 
-/* virtual */ void nsMathMLmoFrame::MarkIntrinsicISizesDirty() {
+/* virtual */
+void nsMathMLmoFrame::MarkIntrinsicISizesDirty() {
   // if we get this, it may mean that something changed in the text
   // content. So blow away everything an re-build the automatic data
   // from the parent of our outermost embellished container (we ensure
@@ -990,8 +993,9 @@ nsresult nsMathMLmoFrame::Place(DrawTarget* aDrawTarget, bool aPlaceOrigin,
   nsMathMLContainerFrame::MarkIntrinsicISizesDirty();
 }
 
-/* virtual */ void nsMathMLmoFrame::GetIntrinsicISizeMetrics(
-    gfxContext* aRenderingContext, ReflowOutput& aDesiredSize) {
+/* virtual */
+void nsMathMLmoFrame::GetIntrinsicISizeMetrics(gfxContext* aRenderingContext,
+                                               ReflowOutput& aDesiredSize) {
   ProcessOperatorData();
   if (UseMathMLChar()) {
     uint32_t stretchHint =
@@ -1045,24 +1049,24 @@ nsresult nsMathMLmoFrame::AttributeChanged(int32_t aNameSpaceID,
 }
 
 // ----------------------
-// No need to track the style context given to our MathML char.
-// the Style System will use these to pass the proper style context to our
+// No need to track the ComputedStyle given to our MathML char.
+// the Style System will use these to pass the proper ComputedStyle to our
 // MathMLChar
-nsStyleContext* nsMathMLmoFrame::GetAdditionalStyleContext(
+ComputedStyle* nsMathMLmoFrame::GetAdditionalComputedStyle(
     int32_t aIndex) const {
   switch (aIndex) {
     case NS_MATHML_CHAR_STYLE_CONTEXT_INDEX:
-      return mMathMLChar.GetStyleContext();
+      return mMathMLChar.GetComputedStyle();
     default:
       return nullptr;
   }
 }
 
-void nsMathMLmoFrame::SetAdditionalStyleContext(int32_t aIndex,
-                                                nsStyleContext* aStyleContext) {
+void nsMathMLmoFrame::SetAdditionalComputedStyle(
+    int32_t aIndex, ComputedStyle* aComputedStyle) {
   switch (aIndex) {
     case NS_MATHML_CHAR_STYLE_CONTEXT_INDEX:
-      mMathMLChar.SetStyleContext(aStyleContext);
+      mMathMLChar.SetComputedStyle(aComputedStyle);
       break;
   }
 }

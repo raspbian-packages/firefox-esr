@@ -8,14 +8,17 @@
 #include "nsITransactionManager.h"
 #include "nsComponentManagerUtils.h"
 #include "mozilla/Likely.h"
+#include "mozilla/TransactionManager.h"
+
+using mozilla::TransactionManager;
 
 static int32_t sConstructorCount = 0;
 static int32_t sDoCount = 0;
-static int32_t *sDoOrderArr = 0;
+static int32_t* sDoOrderArr = 0;
 static int32_t sUndoCount = 0;
-static int32_t *sUndoOrderArr = 0;
+static int32_t* sUndoOrderArr = 0;
 static int32_t sRedoCount = 0;
-static int32_t *sRedoOrderArr = 0;
+static int32_t* sRedoOrderArr = 0;
 
 int32_t sSimpleTestDoOrderArr[] = {
     1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,
@@ -315,14 +318,14 @@ class SimpleTransaction : public TestTransaction {
     return (mFlags & THROWS_REDO_ERROR_FLAG) ? NS_ERROR_FAILURE : NS_OK;
   }
 
-  NS_IMETHOD GetIsTransient(bool *aIsTransient) override {
+  NS_IMETHOD GetIsTransient(bool* aIsTransient) override {
     if (aIsTransient) {
       *aIsTransient = (mFlags & TRANSIENT_FLAG) ? true : false;
     }
     return NS_OK;
   }
 
-  NS_IMETHOD Merge(nsITransaction *aTransaction, bool *aDidMerge) override {
+  NS_IMETHOD Merge(nsITransaction* aTransaction, bool* aDidMerge) override {
     if (aDidMerge) {
       *aDidMerge = (mFlags & MERGE_FLAG) ? true : false;
     }
@@ -332,7 +335,7 @@ class SimpleTransaction : public TestTransaction {
 
 class AggregateTransaction : public SimpleTransaction {
  private:
-  AggregateTransaction(nsITransactionManager *aTXMgr, int32_t aLevel,
+  AggregateTransaction(nsITransactionManager* aTXMgr, int32_t aLevel,
                        int32_t aNumber, int32_t aMaxLevel,
                        int32_t aNumChildrenPerNode, int32_t aFlags) {
     mLevel = aLevel;
@@ -345,7 +348,7 @@ class AggregateTransaction : public SimpleTransaction {
     mNumChildrenPerNode = aNumChildrenPerNode;
   }
 
-  nsITransactionManager *mTXMgr;
+  nsITransactionManager* mTXMgr;
 
   int32_t mLevel;
   int32_t mNumber;
@@ -355,7 +358,7 @@ class AggregateTransaction : public SimpleTransaction {
   int32_t mNumChildrenPerNode;
 
  public:
-  AggregateTransaction(nsITransactionManager *aTXMgr, int32_t aMaxLevel,
+  AggregateTransaction(nsITransactionManager* aTXMgr, int32_t aMaxLevel,
                        int32_t aNumChildrenPerNode,
                        int32_t aFlags = NONE_FLAG) {
     mLevel = 1;
@@ -431,15 +434,15 @@ class AggregateTransaction : public SimpleTransaction {
 
 class TestTransactionFactory {
  public:
-  virtual TestTransaction *create(nsITransactionManager *txmgr,
+  virtual TestTransaction* create(nsITransactionManager* txmgr,
                                   int32_t flags) = 0;
 };
 
 class SimpleTransactionFactory : public TestTransactionFactory {
  public:
-  TestTransaction *create(nsITransactionManager *txmgr,
+  TestTransaction* create(nsITransactionManager* txmgr,
                           int32_t flags) override {
-    return (TestTransaction *)new SimpleTransaction(flags);
+    return (TestTransaction*)new SimpleTransaction(flags);
   }
 };
 
@@ -456,9 +459,9 @@ class AggregateTransactionFactory : public TestTransactionFactory {
         mNumChildrenPerNode(aNumChildrenPerNode),
         mFixedFlags(aFixedFlags) {}
 
-  TestTransaction *create(nsITransactionManager *txmgr,
+  TestTransaction* create(nsITransactionManager* txmgr,
                           int32_t flags) override {
-    return (TestTransaction *)new AggregateTransaction(
+    return (TestTransaction*)new AggregateTransaction(
         txmgr, mMaxLevel, mNumChildrenPerNode, flags | mFixedFlags);
   }
 };
@@ -479,17 +482,14 @@ void reset_globals() {
 /**
  * Test behaviors in non-batch mode.
  **/
-void quick_test(TestTransactionFactory *factory) {
+void quick_test(TestTransactionFactory* factory) {
   /*******************************************************************
    *
    * Create a transaction manager implementation:
    *
    *******************************************************************/
 
-  nsresult rv;
-  nsCOMPtr<nsITransactionManager> mgr =
-      do_CreateInstance(NS_TRANSACTIONMANAGER_CONTRACTID, &rv);
-  ASSERT_TRUE(NS_SUCCEEDED(rv));
+  nsCOMPtr<nsITransactionManager> mgr = new TransactionManager();
 
   /*******************************************************************
    *
@@ -497,7 +497,7 @@ void quick_test(TestTransactionFactory *factory) {
    *
    *******************************************************************/
 
-  rv = mgr->DoTransaction(0);
+  nsresult rv = mgr->DoTransaction(0);
   EXPECT_EQ(rv, NS_ERROR_NULL_POINTER);
 
   /*******************************************************************
@@ -1179,7 +1179,8 @@ void quick_test(TestTransactionFactory *factory) {
   EXPECT_TRUE(NS_SUCCEEDED(rv));
 }
 
-TEST(TestTXMgr, SimpleTest) {
+TEST(TestTXMgr, SimpleTest)
+{
   /*******************************************************************
    *
    * Initialize globals for test.
@@ -1201,7 +1202,8 @@ TEST(TestTXMgr, SimpleTest) {
   quick_test(&factory);
 }
 
-TEST(TestTXMgr, AggregationTest) {
+TEST(TestTXMgr, AggregationTest)
+{
   /*******************************************************************
    *
    * Initialize globals for test.
@@ -1227,18 +1229,14 @@ TEST(TestTXMgr, AggregationTest) {
 /**
  * Test behaviors in batch mode.
  **/
-void quick_batch_test(TestTransactionFactory *factory) {
+void quick_batch_test(TestTransactionFactory* factory) {
   /*******************************************************************
    *
    * Create a transaction manager implementation:
    *
    *******************************************************************/
 
-  nsresult rv;
-  nsCOMPtr<nsITransactionManager> mgr =
-      do_CreateInstance(NS_TRANSACTIONMANAGER_CONTRACTID, &rv);
-  ASSERT_TRUE(mgr);
-  ASSERT_TRUE(NS_SUCCEEDED(rv));
+  nsCOMPtr<nsITransactionManager> mgr = new TransactionManager();
 
   int32_t numitems;
 
@@ -1249,7 +1247,7 @@ void quick_batch_test(TestTransactionFactory *factory) {
    *
    *******************************************************************/
 
-  rv = mgr->GetNumberOfUndoItems(&numitems);
+  nsresult rv = mgr->GetNumberOfUndoItems(&numitems);
   EXPECT_TRUE(NS_SUCCEEDED(rv));
   EXPECT_EQ(numitems, 0);
 
@@ -1810,7 +1808,8 @@ void quick_batch_test(TestTransactionFactory *factory) {
   EXPECT_TRUE(NS_SUCCEEDED(rv));
 }
 
-TEST(TestTXMgr, SimpleBatchTest) {
+TEST(TestTXMgr, SimpleBatchTest)
+{
   /*******************************************************************
    *
    * Initialize globals for test.
@@ -1831,7 +1830,8 @@ TEST(TestTXMgr, SimpleBatchTest) {
   quick_batch_test(&factory);
 }
 
-TEST(TestTXMgr, AggregationBatchTest) {
+TEST(TestTXMgr, AggregationBatchTest)
+{
   /*******************************************************************
    *
    * Initialize globals for test.
@@ -1858,19 +1858,16 @@ TEST(TestTXMgr, AggregationBatchTest) {
  * Create 'iterations * (iterations + 1) / 2' transactions;
  * do/undo/redo/undo them.
  **/
-void stress_test(TestTransactionFactory *factory, int32_t iterations) {
+void stress_test(TestTransactionFactory* factory, int32_t iterations) {
   /*******************************************************************
    *
    * Create a transaction manager:
    *
    *******************************************************************/
 
-  nsresult rv;
-  nsCOMPtr<nsITransactionManager> mgr =
-      do_CreateInstance(NS_TRANSACTIONMANAGER_CONTRACTID, &rv);
-  ASSERT_TRUE(NS_SUCCEEDED(rv));
-  ASSERT_TRUE(mgr);
+  nsCOMPtr<nsITransactionManager> mgr = new TransactionManager();
 
+  nsresult rv;
   int32_t i, j;
 
   for (i = 1; i <= iterations; i++) {
@@ -1926,7 +1923,8 @@ void stress_test(TestTransactionFactory *factory, int32_t iterations) {
   EXPECT_TRUE(NS_SUCCEEDED(rv));
 }
 
-TEST(TestTXMgr, SimpleStressTest) {
+TEST(TestTXMgr, SimpleStressTest)
+{
   /*******************************************************************
    *
    * Initialize globals for test.
@@ -1956,7 +1954,8 @@ TEST(TestTXMgr, SimpleStressTest) {
   stress_test(&factory, iterations);
 }
 
-TEST(TestTXMgr, AggregationStressTest) {
+TEST(TestTXMgr, AggregationStressTest)
+{
   /*******************************************************************
    *
    * Initialize globals for test.
@@ -1986,7 +1985,8 @@ TEST(TestTXMgr, AggregationStressTest) {
   stress_test(&factory, iterations);
 }
 
-TEST(TestTXMgr, AggregationBatchStressTest) {
+TEST(TestTXMgr, AggregationBatchStressTest)
+{
   /*******************************************************************
    *
    * Initialize globals for test.
@@ -2007,15 +2007,15 @@ TEST(TestTXMgr, AggregationBatchStressTest) {
 #ifdef DEBUG
       10
 #else
-#if defined(MOZ_ASAN) || defined(MOZ_WIDGET_ANDROID)
+#  if defined(MOZ_ASAN) || defined(MOZ_WIDGET_ANDROID)
       // See Bug 929985: 500 is too many for ASAN and Android, 100 is safe.
       100
-#else
+#  else
       //
       // 500 iterations sends 2,630,250 transactions through the system!!
       //
       500
-#endif
+#  endif
 #endif
       ;
   stress_test(&factory, iterations);

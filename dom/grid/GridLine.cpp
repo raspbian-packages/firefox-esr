@@ -25,7 +25,8 @@ GridLine::GridLine(GridLines* aParent)
       mStart(0.0),
       mBreadth(0.0),
       mType(GridDeclaration::Implicit),
-      mNumber(0) {
+      mNumber(0),
+      mNegativeNumber(0) {
   MOZ_ASSERT(aParent, "Should never be instantiated with a null GridLines");
 }
 
@@ -35,7 +36,7 @@ void GridLine::GetNames(nsTArray<nsString>& aNames) const { aNames = mNames; }
 
 JSObject* GridLine::WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) {
-  return GridLineBinding::Wrap(aCx, this, aGivenProto);
+  return GridLine_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 double GridLine::Start() const { return mStart; }
@@ -57,6 +58,10 @@ void GridLine::SetLineValues(const nsTArray<nsString>& aNames, double aStart,
   mNumber = aNumber;
   mNegativeNumber = aNegativeNumber;
   mType = aType;
+}
+
+void GridLine::SetLineNames(const nsTArray<nsString>& aNames) {
+  mNames = aNames;
 }
 
 }  // namespace dom

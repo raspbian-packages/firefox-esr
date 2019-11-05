@@ -32,15 +32,13 @@
 #include <mmsystem.h>
 #include <process.h>
 
-#ifdef __MINGW32__
-#include <immintrin.h>  // for _mm_pause
-#endif
-
 #include "nsWindowsDllInterceptor.h"
 #include "mozilla/StackWalk_windows.h"
 #include "mozilla/WindowsVersion.h"
 
-/* static */ int Thread::GetCurrentId() {
+int profiler_current_process_id() { return _getpid(); }
+
+int profiler_current_thread_id() {
   DWORD threadId = GetCurrentThreadId();
   MOZ_ASSERT(threadId <= INT32_MAX, "native thread ID is > INT32_MAX");
   return int(threadId);
@@ -60,8 +58,12 @@ static void PopulateRegsFromContext(Registers& aRegs, CONTEXT* aContext) {
   aRegs.mPC = reinterpret_cast<Address>(aContext->Eip);
   aRegs.mSP = reinterpret_cast<Address>(aContext->Esp);
   aRegs.mFP = reinterpret_cast<Address>(aContext->Ebp);
+#elif defined(GP_ARCH_arm64)
+  aRegs.mPC = reinterpret_cast<Address>(aContext->Pc);
+  aRegs.mSP = reinterpret_cast<Address>(aContext->Sp);
+  aRegs.mFP = reinterpret_cast<Address>(aContext->Fp);
 #else
-#error "bad arch"
+#  error "bad arch"
 #endif
   aRegs.mLR = 0;
 }
@@ -94,8 +96,10 @@ class PlatformData {
   HANDLE mProfiledThread;
 };
 
+#if defined(USE_MOZ_STACK_WALK)
 HANDLE
 GetThreadHandle(PlatformData* aData) { return aData->ProfiledThread(); }
+#endif
 
 static const HANDLE kNoThread = INVALID_HANDLE_VALUE;
 
@@ -128,12 +132,12 @@ void Sampler::SuspendAndSampleAndResumeThread(
     return;
   }
 
-    // SuspendThread is asynchronous, so the thread may still be running.
-    // Call GetThreadContext first to ensure the thread is really suspended.
-    // See https://blogs.msdn.microsoft.com/oldnewthing/20150205-00/?p=44743.
+  // SuspendThread is asynchronous, so the thread may still be running.
+  // Call GetThreadContext first to ensure the thread is really suspended.
+  // See https://blogs.msdn.microsoft.com/oldnewthing/20150205-00/?p=44743.
 
-    // Using only CONTEXT_CONTROL is faster but on 64-bit it causes crashes in
-    // RtlVirtualUnwind (see bug 1120126) so we set all the flags.
+  // Using only CONTEXT_CONTROL is faster but on 64-bit it causes crashes in
+  // RtlVirtualUnwind (see bug 1120126) so we set all the flags.
 #if defined(GP_ARCH_amd64)
   context.ContextFlags = CONTEXT_FULL;
 #else
@@ -230,7 +234,7 @@ void SamplerThread::SleepMicro(uint32_t aMicroseconds) {
 
     // Then, spin until enough time has passed.
     while (TimeStamp::Now() < end) {
-      _mm_pause();
+      YieldProcessor();
     }
   }
 }
@@ -268,7 +272,7 @@ void Registers::SyncPopulate() {
 static WindowsDllInterceptor NtDllIntercept;
 
 typedef NTSTATUS(NTAPI* LdrUnloadDll_func)(HMODULE module);
-static LdrUnloadDll_func stub_LdrUnloadDll;
+static WindowsDllInterceptor::FuncHookType<LdrUnloadDll_func> stub_LdrUnloadDll;
 
 static NTSTATUS NTAPI patched_LdrUnloadDll(HMODULE module) {
   // Prevent the stack walker from suspending this thread when LdrUnloadDll
@@ -281,7 +285,8 @@ static NTSTATUS NTAPI patched_LdrUnloadDll(HMODULE module) {
 typedef PVOID(WINAPI* LdrResolveDelayLoadedAPI_func)(
     PVOID ParentModuleBase, PVOID DelayloadDescriptor, PVOID FailureDllHook,
     PVOID FailureSystemHook, PVOID ThunkAddress, ULONG Flags);
-static LdrResolveDelayLoadedAPI_func stub_LdrResolveDelayLoadedAPI;
+static WindowsDllInterceptor::FuncHookType<LdrResolveDelayLoadedAPI_func>
+    stub_LdrResolveDelayLoadedAPI;
 
 static PVOID WINAPI patched_LdrResolveDelayLoadedAPI(
     PVOID ParentModuleBase, PVOID DelayloadDescriptor, PVOID FailureDllHook,
@@ -295,21 +300,12 @@ static PVOID WINAPI patched_LdrResolveDelayLoadedAPI(
 }
 
 void InitializeWin64ProfilerHooks() {
-  static bool initialized = false;
-  if (initialized) {
-    return;
-  }
-  initialized = true;
-
   NtDllIntercept.Init("ntdll.dll");
-  NtDllIntercept.AddHook("LdrUnloadDll",
-                         reinterpret_cast<intptr_t>(patched_LdrUnloadDll),
-                         (void**)&stub_LdrUnloadDll);
+  stub_LdrUnloadDll.Set(NtDllIntercept, "LdrUnloadDll", &patched_LdrUnloadDll);
   if (IsWin8OrLater()) {  // LdrResolveDelayLoadedAPI was introduced in Win8
-    NtDllIntercept.AddHook(
-        "LdrResolveDelayLoadedAPI",
-        reinterpret_cast<intptr_t>(patched_LdrResolveDelayLoadedAPI),
-        (void**)&stub_LdrResolveDelayLoadedAPI);
+    stub_LdrResolveDelayLoadedAPI.Set(NtDllIntercept,
+                                      "LdrResolveDelayLoadedAPI",
+                                      &patched_LdrResolveDelayLoadedAPI);
   }
 }
 #endif  // defined(GP_PLAT_amd64_windows)

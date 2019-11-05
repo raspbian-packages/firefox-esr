@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Peranta DNS dum uzo de SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Aktivigi DNS sur HTTPS
+    .accesskey = A
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Uzi norman ({ $url })
+    .accesskey = i
+    .tooltiptext = Uzi la norman servilon por trovi adresojn (DNS) per HTTPS
+connection-dns-over-https-url-resolver = Uzi provizanton
+    .accesskey = U
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (Norma)
+    .tooltiptext = Uzi la norman retadreson por DNS per HTTPS
+connection-dns-over-https-url-custom =
+    .label = Personecigita
+    .accesskey = P
+    .tooltiptext = Entajpu retadreson de preferata servilo por DNS per HTTPS
+connection-dns-over-https-custom-label = Personecigita

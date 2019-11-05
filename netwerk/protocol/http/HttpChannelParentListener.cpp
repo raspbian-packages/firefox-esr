@@ -11,11 +11,12 @@
 #include "mozilla/dom/ServiceWorkerInterceptController.h"
 #include "mozilla/dom/ServiceWorkerUtils.h"
 #include "mozilla/net/HttpChannelParent.h"
+#include "mozilla/net/RedirectChannelRegistrar.h"
 #include "mozilla/Unused.h"
 #include "nsIAuthPrompt.h"
 #include "nsIAuthPrompt2.h"
 #include "nsIHttpHeaderVisitor.h"
-#include "nsIRedirectChannelRegistrar.h"
+#include "nsIRemoteTab.h"
 #include "nsIPromptFactory.h"
 #include "nsIWindowWatcher.h"
 #include "nsQueryObject.h"
@@ -44,7 +45,9 @@ HttpChannelParentListener::HttpChannelParentListener(
   }
 }
 
-HttpChannelParentListener::~HttpChannelParentListener() {}
+HttpChannelParentListener::~HttpChannelParentListener() {
+  LOG(("HttpChannelParentListener::~HttpChannelParentListener %p", this));
+}
 
 //-----------------------------------------------------------------------------
 // HttpChannelParentListener::nsISupports
@@ -60,9 +63,7 @@ NS_INTERFACE_MAP_BEGIN(HttpChannelParentListener)
   NS_INTERFACE_MAP_ENTRY(nsIRedirectResultListener)
   NS_INTERFACE_MAP_ENTRY(nsINetworkInterceptController)
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIInterfaceRequestor)
-  if (aIID.Equals(NS_GET_IID(HttpChannelParentListener))) {
-    foundInterface = static_cast<nsIInterfaceRequestor*>(this);
-  } else
+  NS_INTERFACE_MAP_ENTRY_CONCRETE(HttpChannelParentListener)
 NS_INTERFACE_MAP_END
 
 //-----------------------------------------------------------------------------
@@ -70,20 +71,18 @@ NS_INTERFACE_MAP_END
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-HttpChannelParentListener::OnStartRequest(nsIRequest* aRequest,
-                                          nsISupports* aContext) {
+HttpChannelParentListener::OnStartRequest(nsIRequest* aRequest) {
   MOZ_RELEASE_ASSERT(!mSuspendedForDiversion,
                      "Cannot call OnStartRequest if suspended for diversion!");
 
   if (!mNextListener) return NS_ERROR_UNEXPECTED;
 
   LOG(("HttpChannelParentListener::OnStartRequest [this=%p]\n", this));
-  return mNextListener->OnStartRequest(aRequest, aContext);
+  return mNextListener->OnStartRequest(aRequest);
 }
 
 NS_IMETHODIMP
 HttpChannelParentListener::OnStopRequest(nsIRequest* aRequest,
-                                         nsISupports* aContext,
                                          nsresult aStatusCode) {
   MOZ_RELEASE_ASSERT(!mSuspendedForDiversion,
                      "Cannot call OnStopRequest if suspended for diversion!");
@@ -93,7 +92,7 @@ HttpChannelParentListener::OnStopRequest(nsIRequest* aRequest,
   LOG(("HttpChannelParentListener::OnStopRequest: [this=%p status=%" PRIu32
        "]\n",
        this, static_cast<uint32_t>(aStatusCode)));
-  nsresult rv = mNextListener->OnStopRequest(aRequest, aContext, aStatusCode);
+  nsresult rv = mNextListener->OnStopRequest(aRequest, aStatusCode);
 
   mNextListener = nullptr;
   return rv;
@@ -105,7 +104,6 @@ HttpChannelParentListener::OnStopRequest(nsIRequest* aRequest,
 
 NS_IMETHODIMP
 HttpChannelParentListener::OnDataAvailable(nsIRequest* aRequest,
-                                           nsISupports* aContext,
                                            nsIInputStream* aInputStream,
                                            uint64_t aOffset, uint32_t aCount) {
   MOZ_RELEASE_ASSERT(!mSuspendedForDiversion,
@@ -114,8 +112,8 @@ HttpChannelParentListener::OnDataAvailable(nsIRequest* aRequest,
   if (!mNextListener) return NS_ERROR_UNEXPECTED;
 
   LOG(("HttpChannelParentListener::OnDataAvailable [this=%p]\n", this));
-  return mNextListener->OnDataAvailable(aRequest, aContext, aInputStream,
-                                        aOffset, aCount);
+  return mNextListener->OnDataAvailable(aRequest, aInputStream, aOffset,
+                                        aCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -152,15 +150,80 @@ HttpChannelParentListener::GetInterface(const nsIID& aIID, void** result) {
 //-----------------------------------------------------------------------------
 // HttpChannelParentListener::nsIChannelEventSink
 //-----------------------------------------------------------------------------
+nsresult HttpChannelParentListener::TriggerCrossProcessRedirect(
+    nsIChannel* aChannel, nsILoadInfo* aLoadInfo, uint64_t aIdentifier) {
+  RefPtr<HttpChannelParent> channelParent = do_QueryObject(mNextListener);
+  MOZ_ASSERT(channelParent);
+  channelParent->CancelChildCrossProcessRedirect();
+
+  nsCOMPtr<nsIChannel> channel = aChannel;
+  RefPtr<nsHttpChannel> httpChannel = do_QueryObject(channel);
+  RefPtr<nsHttpChannel::TabPromise> p = httpChannel->TakeRedirectTabPromise();
+  nsCOMPtr<nsILoadInfo> loadInfo = aLoadInfo;
+
+  RefPtr<HttpChannelParentListener> self = this;
+  p->Then(
+      GetMainThreadSerialEventTarget(), __func__,
+      [=](nsCOMPtr<nsIRemoteTab> tp) {
+        nsresult rv;
+
+        // Register the new channel and obtain id for it
+        nsCOMPtr<nsIRedirectChannelRegistrar> registrar =
+            RedirectChannelRegistrar::GetOrCreate();
+        MOZ_ASSERT(registrar);
+        rv = registrar->RegisterChannel(channel, &self->mRedirectChannelId);
+        NS_ENSURE_SUCCESS(rv, rv);
+
+        LOG(("Registered %p channel under id=%d", channel.get(),
+             self->mRedirectChannelId));
+
+        Maybe<LoadInfoArgs> loadInfoArgs;
+        MOZ_ALWAYS_SUCCEEDS(LoadInfoToLoadInfoArgs(loadInfo, &loadInfoArgs));
+
+        uint32_t newLoadFlags = nsIRequest::LOAD_NORMAL;
+        MOZ_ALWAYS_SUCCEEDS(channel->GetLoadFlags(&newLoadFlags));
+
+        nsCOMPtr<nsIURI> uri;
+        channel->GetURI(getter_AddRefs(uri));
+
+        nsCOMPtr<nsIURI> originalURI;
+        channel->GetOriginalURI(getter_AddRefs(originalURI));
+
+        uint64_t channelId;
+        MOZ_ALWAYS_SUCCEEDS(httpChannel->GetChannelId(&channelId));
+
+        uint32_t redirectMode = nsIHttpChannelInternal::REDIRECT_MODE_FOLLOW;
+        nsCOMPtr<nsIHttpChannelInternal> internalChannel =
+            do_QueryInterface(channel);
+        if (internalChannel) {
+          MOZ_ALWAYS_SUCCEEDS(internalChannel->GetRedirectMode(&redirectMode));
+        }
+
+        dom::BrowserParent* browserParent = dom::BrowserParent::GetFrom(tp);
+        auto result = browserParent->Manager()->SendCrossProcessRedirect(
+            self->mRedirectChannelId, uri, newLoadFlags, loadInfoArgs,
+            channelId, originalURI, aIdentifier, redirectMode);
+
+        MOZ_ASSERT(result, "SendCrossProcessRedirect failed");
+
+        return result ? NS_OK : NS_ERROR_UNEXPECTED;
+      },
+      [httpChannel](nsresult aStatus) {
+        MOZ_ASSERT(NS_FAILED(aStatus), "Status should be error");
+        httpChannel->OnRedirectVerifyCallback(aStatus);
+      });
+
+  return NS_OK;
+}
 
 NS_IMETHODIMP
 HttpChannelParentListener::AsyncOnChannelRedirect(
-    nsIChannel* oldChannel, nsIChannel* newChannel, uint32_t redirectFlags,
-    nsIAsyncVerifyRedirectCallback* callback) {
+    nsIChannel* aOldChannel, nsIChannel* aNewChannel, uint32_t aRedirectFlags,
+    nsIAsyncVerifyRedirectCallback* aCallback) {
   LOG(
       ("HttpChannelParentListener::AsyncOnChannelRedirect [this=%p, old=%p, "
        "new=%p, flags=%u]",
-       this, oldChannel, newChannel, redirectFlags));
+       this, aOldChannel, aNewChannel, aRedirectFlags));
 
   nsresult rv;
 
@@ -175,16 +238,16 @@ HttpChannelParentListener::AsyncOnChannelRedirect(
 
   // Register the new channel and obtain id for it
   nsCOMPtr<nsIRedirectChannelRegistrar> registrar =
-      do_GetService("@mozilla.org/redirectchannelregistrar;1", &rv);
+      RedirectChannelRegistrar::GetOrCreate();
+  MOZ_ASSERT(registrar);
+
+  rv = registrar->RegisterChannel(aNewChannel, &mRedirectChannelId);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = registrar->RegisterChannel(newChannel, &mRedirectChannelId);
-  NS_ENSURE_SUCCESS(rv, rv);
+  LOG(("Registered %p channel under id=%d", aNewChannel, mRedirectChannelId));
 
-  LOG(("Registered %p channel under id=%d", newChannel, mRedirectChannelId));
-
-  return activeRedirectingChannel->StartRedirect(mRedirectChannelId, newChannel,
-                                                 redirectFlags, callback);
+  return activeRedirectingChannel->StartRedirect(
+      mRedirectChannelId, aNewChannel, aRedirectFlags, aCallback);
 }
 
 //-----------------------------------------------------------------------------
@@ -201,8 +264,8 @@ HttpChannelParentListener::OnRedirectResult(bool succeeded) {
   nsCOMPtr<nsIParentChannel> redirectChannel;
   if (mRedirectChannelId) {
     nsCOMPtr<nsIRedirectChannelRegistrar> registrar =
-        do_GetService("@mozilla.org/redirectchannelregistrar;1", &rv);
-    NS_ENSURE_SUCCESS(rv, rv);
+        RedirectChannelRegistrar::GetOrCreate();
+    MOZ_ASSERT(registrar);
 
     rv = registrar->GetParentChannel(mRedirectChannelId,
                                      getter_AddRefs(redirectChannel));
@@ -252,7 +315,7 @@ HttpChannelParentListener::OnRedirectResult(bool succeeded) {
       MOZ_ASSERT(parent);
       parent->Delete();
       mInterceptCanceled = false;
-      mNextListener = do_QueryInterface(redirectChannel);
+      mNextListener = redirectChannel;
       MOZ_ASSERT(mNextListener);
       redirectChannel->SetParentListener(this);
     }
@@ -284,7 +347,7 @@ HttpChannelParentListener::ShouldPrepareForIntercept(nsIURI* aURI,
 
 class HeaderVisitor final : public nsIHttpHeaderVisitor {
   nsCOMPtr<nsIInterceptedChannel> mChannel;
-  ~HeaderVisitor() {}
+  ~HeaderVisitor() = default;
 
  public:
   explicit HeaderVisitor(nsIInterceptedChannel* aChannel)

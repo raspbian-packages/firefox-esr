@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,202 +6,158 @@
 #ifndef GFX_FONT_FAMILY_LIST_H
 #define GFX_FONT_FAMILY_LIST_H
 
+#include "nsAtom.h"
 #include "nsDebug.h"
 #include "nsISupportsImpl.h"
 #include "nsString.h"
+#include "nsStyleConsts.h"
 #include "nsUnicharUtils.h"
 #include "nsTArray.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/NotNull.h"
 #include "mozilla/StaticPtr.h"
+#include "mozilla/TimeStamp.h"
 
 namespace mozilla {
 
 /**
- * type of font family name, either a name (e.g. Helvetica) or a
- * generic (e.g. serif, sans-serif), with the ability to distinguish
- * between unquoted and quoted names for serializaiton
- */
-
-enum FontFamilyType : uint32_t {
-  eFamily_none = 0,  // used when finding generics
-
-  // explicitly named font family (e.g. Helvetica)
-  eFamily_named,
-  eFamily_named_quoted,
-
-  // generics
-  eFamily_serif,  // pref font code relies on this ordering!!!
-  eFamily_sans_serif,
-  eFamily_monospace,
-  eFamily_cursive,
-  eFamily_fantasy,
-
-  // special
-  eFamily_moz_variable,
-  eFamily_moz_fixed,
-  eFamily_moz_emoji,
-
-  eFamily_generic_first = eFamily_serif,
-  eFamily_generic_last = eFamily_fantasy,
-  eFamily_generic_count = (eFamily_fantasy - eFamily_serif + 1)
-};
-
-enum QuotedName { eQuotedName, eUnquotedName };
-
-/**
- * font family name, a string for the name if not a generic and
+ * font family name, an Atom for the name if not a generic and
  * a font type indicated named family or which generic family
  */
 
 struct FontFamilyName final {
-  FontFamilyName() : mType(eFamily_named) {}
+  using Syntax = StyleFontFamilyNameSyntax;
+
+  FontFamilyName() = delete;
 
   // named font family - e.g. Helvetica
-  explicit FontFamilyName(const nsAString& aFamilyName,
-                          QuotedName aQuoted = eUnquotedName) {
-    mType = (aQuoted == eQuotedName) ? eFamily_named_quoted : eFamily_named;
-    mName = aFamilyName;
-  }
+  explicit FontFamilyName(nsAtom* aFamilyName, Syntax aSyntax)
+      : mName(aFamilyName), mSyntax(aSyntax) {}
+
+  explicit FontFamilyName(const nsACString& aFamilyName, Syntax aSyntax)
+      : mName(NS_Atomize(aFamilyName)), mSyntax(aSyntax) {}
 
   // generic font family - e.g. sans-serif
-  explicit FontFamilyName(FontFamilyType aType) {
-    NS_ASSERTION(aType != eFamily_named && aType != eFamily_named_quoted &&
-                     aType != eFamily_none,
-                 "expected a generic font type");
-    mName.Truncate();
-    mType = aType;
+  explicit FontFamilyName(StyleGenericFontFamily aGeneric)
+      : mGeneric(aGeneric) {
+    MOZ_ASSERT(mGeneric != StyleGenericFontFamily::None);
   }
 
-  FontFamilyName(const FontFamilyName& aCopy) {
-    mType = aCopy.mType;
-    mName = aCopy.mName;
-  }
+  FontFamilyName(const FontFamilyName&) = default;
 
-  bool IsNamed() const {
-    return mType == eFamily_named || mType == eFamily_named_quoted;
-  }
+  bool IsNamed() const { return !!mName; }
 
   bool IsGeneric() const { return !IsNamed(); }
 
-  void AppendToString(nsAString& aFamilyList, bool aQuotes = true) const {
-    switch (mType) {
-      case eFamily_named:
-        aFamilyList.Append(mName);
-        break;
-      case eFamily_named_quoted:
-        if (aQuotes) {
-          aFamilyList.Append('"');
-        }
-        aFamilyList.Append(mName);
-        if (aQuotes) {
-          aFamilyList.Append('"');
-        }
-        break;
-      case eFamily_serif:
+  bool IsQuoted() const { return mSyntax == StyleFontFamilyNameSyntax::Quoted; }
+
+  void AppendToString(nsACString& aFamilyList, bool aQuotes = true) const {
+    if (IsNamed()) {
+      if (mSyntax == Syntax::Identifiers) {
+        return aFamilyList.Append(nsAtomCString(mName));
+      }
+      if (aQuotes) {
+        aFamilyList.Append('"');
+      }
+      aFamilyList.Append(nsAtomCString(mName));
+      if (aQuotes) {
+        aFamilyList.Append('"');
+      }
+      return;
+    }
+    switch (mGeneric) {
+      case StyleGenericFontFamily::None:
+      case StyleGenericFontFamily::MozEmoji:
+        MOZ_FALLTHROUGH_ASSERT("Should never appear in a font-family name!");
+      case StyleGenericFontFamily::Serif:
         aFamilyList.AppendLiteral("serif");
         break;
-      case eFamily_sans_serif:
+      case StyleGenericFontFamily::SansSerif:
         aFamilyList.AppendLiteral("sans-serif");
         break;
-      case eFamily_monospace:
+      case StyleGenericFontFamily::Monospace:
         aFamilyList.AppendLiteral("monospace");
         break;
-      case eFamily_cursive:
+      case StyleGenericFontFamily::Cursive:
         aFamilyList.AppendLiteral("cursive");
         break;
-      case eFamily_fantasy:
+      case StyleGenericFontFamily::Fantasy:
         aFamilyList.AppendLiteral("fantasy");
         break;
-      case eFamily_moz_fixed:
-        aFamilyList.AppendLiteral("-moz-fixed");
-        break;
       default:
+        MOZ_ASSERT_UNREACHABLE("Unknown generic font-family!");
         break;
     }
   }
 
   // helper method that converts generic names to the right enum value
-  static FontFamilyName Convert(const nsAString& aFamilyOrGenericName) {
+  static FontFamilyName Convert(const nsACString& aFamilyOrGenericName) {
     // should only be passed a single font - not entirely correct, a family
     // *could* have a comma in it but in practice never does so
     // for debug purposes this is fine
     NS_ASSERTION(aFamilyOrGenericName.FindChar(',') == -1,
                  "Convert method should only be passed a single family name");
 
-    FontFamilyType genericType = eFamily_none;
+    auto genericType = StyleGenericFontFamily::None;
     if (aFamilyOrGenericName.LowerCaseEqualsLiteral("serif")) {
-      genericType = eFamily_serif;
+      genericType = StyleGenericFontFamily::Serif;
     } else if (aFamilyOrGenericName.LowerCaseEqualsLiteral("sans-serif")) {
-      genericType = eFamily_sans_serif;
-    } else if (aFamilyOrGenericName.LowerCaseEqualsLiteral("monospace")) {
-      genericType = eFamily_monospace;
+      genericType = StyleGenericFontFamily::SansSerif;
+    } else if (aFamilyOrGenericName.LowerCaseEqualsLiteral("monospace") ||
+               aFamilyOrGenericName.LowerCaseEqualsLiteral("-moz-fixed")) {
+      genericType = StyleGenericFontFamily::Monospace;
     } else if (aFamilyOrGenericName.LowerCaseEqualsLiteral("cursive")) {
-      genericType = eFamily_cursive;
+      genericType = StyleGenericFontFamily::Cursive;
     } else if (aFamilyOrGenericName.LowerCaseEqualsLiteral("fantasy")) {
-      genericType = eFamily_fantasy;
-    } else if (aFamilyOrGenericName.LowerCaseEqualsLiteral("-moz-fixed")) {
-      genericType = eFamily_moz_fixed;
+      genericType = StyleGenericFontFamily::Fantasy;
     } else {
-      return FontFamilyName(aFamilyOrGenericName, eUnquotedName);
+      return FontFamilyName(aFamilyOrGenericName, Syntax::Identifiers);
     }
 
     return FontFamilyName(genericType);
   }
 
-  // memory reporting
-  size_t SizeOfExcludingThis(mozilla::MallocSizeOf aMallocSizeOf) const {
-    return mName.SizeOfExcludingThisIfUnshared(aMallocSizeOf);
-  }
-
-  FontFamilyType mType;
-  nsString mName;  // empty if mType != eFamily_named
+  RefPtr<nsAtom> mName;  // null if mGeneric != Default
+  StyleFontFamilyNameSyntax mSyntax = StyleFontFamilyNameSyntax::Quoted;
+  StyleGenericFontFamily mGeneric = StyleGenericFontFamily::None;
 };
 
 inline bool operator==(const FontFamilyName& a, const FontFamilyName& b) {
-  return a.mType == b.mType && a.mName == b.mName;
+  return a.mName == b.mName && a.mSyntax == b.mSyntax &&
+         a.mGeneric == b.mGeneric;
 }
 
 /**
  * A refcounted array of FontFamilyNames.  We use this to store the specified
- * value (in Servo) and the computed value (in both Gecko and Servo) of the
- * font-family property.
+ * and computed value of the font-family property.
+ *
+ * TODO(heycam): It might better to define this type (and FontFamilyList and
+ * FontFamilyName) in Rust.
  */
 class SharedFontList {
+  using Syntax = StyleFontFamilyNameSyntax;
+
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(SharedFontList);
 
-  SharedFontList() {}
+  SharedFontList() = default;
 
-  explicit SharedFontList(FontFamilyType aGenericType)
+  explicit SharedFontList(StyleGenericFontFamily aGenericType)
       : mNames{FontFamilyName(aGenericType)} {}
 
-  SharedFontList(const nsAString& aFamilyName, QuotedName aQuoted)
-      : mNames{FontFamilyName(aFamilyName, aQuoted)} {}
+  SharedFontList(nsAtom* aFamilyName, Syntax aSyntax)
+      : mNames{FontFamilyName(aFamilyName, aSyntax)} {}
 
-  explicit SharedFontList(const FontFamilyName& aName) : mNames{aName} {}
+  SharedFontList(const nsACString& aFamilyName, Syntax aSyntax)
+      : mNames{FontFamilyName(aFamilyName, aSyntax)} {}
 
   explicit SharedFontList(nsTArray<FontFamilyName>&& aNames)
-      : mNames(Move(aNames)) {}
-
-  FontFamilyType FirstGeneric() const {
-    for (const FontFamilyName& name : mNames) {
-      if (name.IsGeneric()) {
-        return name.mType;
-      }
-    }
-    return eFamily_none;
-  }
-
-  bool HasGeneric() const { return FirstGeneric() != eFamily_none; }
+      : mNames(std::move(aNames)) {}
 
   size_t SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
     size_t n = 0;
     n += aMallocSizeOf(this);
     n += mNames.ShallowSizeOfExcludingThis(aMallocSizeOf);
-    for (const FontFamilyName& name : mNames) {
-      n += name.SizeOfExcludingThis(aMallocSizeOf);
-    }
     return n;
   }
 
@@ -218,6 +174,8 @@ class SharedFontList {
   static void Initialize();
   static void Shutdown();
   static StaticRefPtr<SharedFontList> sEmpty;
+  static StaticRefPtr<SharedFontList>
+      sSingleGenerics[size_t(StyleGenericFontFamily::MozEmoji)];
 
  private:
   ~SharedFontList() = default;
@@ -229,35 +187,32 @@ class SharedFontList {
  * font type is used to preserve the variable font fallback behavior
  */
 class FontFamilyList {
+  using Syntax = StyleFontFamilyNameSyntax;
+
  public:
-  FontFamilyList()
-      : mFontlist(WrapNotNull(SharedFontList::sEmpty.get())),
-        mDefaultFontType(eFamily_none) {}
+  FontFamilyList() : mFontlist(WrapNotNull(SharedFontList::sEmpty.get())) {}
 
-  explicit FontFamilyList(FontFamilyType aGenericType)
-      : mFontlist(MakeNotNull<SharedFontList*>(aGenericType)),
-        mDefaultFontType(eFamily_none) {}
+  explicit FontFamilyList(StyleGenericFontFamily aGenericType)
+      : mFontlist(MakeNotNull<SharedFontList*>(aGenericType)) {}
 
-  FontFamilyList(const nsAString& aFamilyName, QuotedName aQuoted)
-      : mFontlist(MakeNotNull<SharedFontList*>(aFamilyName, aQuoted)),
-        mDefaultFontType(eFamily_none) {}
+  FontFamilyList(nsAtom* aFamilyName, Syntax aSyntax)
+      : mFontlist(MakeNotNull<SharedFontList*>(aFamilyName, aSyntax)) {}
 
-  explicit FontFamilyList(const FontFamilyName& aName)
-      : mFontlist(MakeNotNull<SharedFontList*>(aName)),
-        mDefaultFontType(eFamily_none) {}
+  FontFamilyList(const nsACString& aFamilyName, Syntax aSyntax)
+      : mFontlist(MakeNotNull<SharedFontList*>(aFamilyName, aSyntax)) {}
 
   explicit FontFamilyList(nsTArray<FontFamilyName>&& aNames)
-      : mFontlist(MakeNotNull<SharedFontList*>(Move(aNames))) {}
+      : mFontlist(MakeNotNull<SharedFontList*>(std::move(aNames))) {}
 
   FontFamilyList(const FontFamilyList& aOther)
       : mFontlist(aOther.mFontlist),
         mDefaultFontType(aOther.mDefaultFontType) {}
 
   explicit FontFamilyList(NotNull<SharedFontList*> aFontList)
-      : mFontlist(aFontList), mDefaultFontType(eFamily_none) {}
+      : mFontlist(aFontList) {}
 
   void SetFontlist(nsTArray<FontFamilyName>&& aNames) {
-    mFontlist = MakeNotNull<SharedFontList*>(Move(aNames));
+    mFontlist = MakeNotNull<SharedFontList*>(std::move(aNames));
   }
 
   void SetFontlist(NotNull<SharedFontList*> aFontlist) {
@@ -276,13 +231,12 @@ class FontFamilyList {
            mDefaultFontType == aFontlist.mDefaultFontType;
   }
 
-  FontFamilyType FirstGeneric() const { return mFontlist->FirstGeneric(); }
-
-  bool HasGeneric() const { return mFontlist->HasGeneric(); }
-
   bool HasDefaultGeneric() const {
+    if (mDefaultFontType == StyleGenericFontFamily::None) {
+      return false;
+    }
     for (const FontFamilyName& name : mFontlist->mNames) {
-      if (name.mType == mDefaultFontType) {
+      if (name.mGeneric == mDefaultFontType) {
         return true;
       }
     }
@@ -297,7 +251,8 @@ class FontFamilyList {
     for (uint32_t i = 0; i < len; i++) {
       const FontFamilyName name = mFontlist->mNames[i];
       if (name.IsGeneric()) {
-        if (name.mType == eFamily_cursive || name.mType == eFamily_fantasy) {
+        if (name.mGeneric == StyleGenericFontFamily::Cursive ||
+            name.mGeneric == StyleGenericFontFamily::Fantasy) {
           continue;
         }
         if (i > 0) {
@@ -305,7 +260,7 @@ class FontFamilyList {
           names.AppendElements(mFontlist->mNames);
           names.RemoveElementAt(i);
           names.InsertElementAt(0, name);
-          SetFontlist(Move(names));
+          SetFontlist(std::move(names));
         }
         return true;
       }
@@ -313,14 +268,14 @@ class FontFamilyList {
     return false;
   }
 
-  void PrependGeneric(FontFamilyType aType) {
+  void PrependGeneric(StyleGenericFontFamily aGeneric) {
     nsTArray<FontFamilyName> names;
     names.AppendElements(mFontlist->mNames);
-    names.InsertElementAt(0, FontFamilyName(aType));
-    SetFontlist(Move(names));
+    names.InsertElementAt(0, FontFamilyName(aGeneric));
+    SetFontlist(std::move(names));
   }
 
-  void ToString(nsAString& aFamilyList, bool aQuotes = true,
+  void ToString(nsACString& aFamilyList, bool aQuotes = true,
                 bool aIncludeDefault = false) const {
     const nsTArray<FontFamilyName>& names = mFontlist->mNames;
     aFamilyList.Truncate();
@@ -332,11 +287,11 @@ class FontFamilyList {
       const FontFamilyName& name = names[i];
       name.AppendToString(aFamilyList, aQuotes);
     }
-    if (aIncludeDefault && mDefaultFontType != eFamily_none) {
+    if (aIncludeDefault && mDefaultFontType != StyleGenericFontFamily::None) {
       if (!aFamilyList.IsEmpty()) {
         aFamilyList.Append(',');
       }
-      if (mDefaultFontType == eFamily_serif) {
+      if (mDefaultFontType == StyleGenericFontFamily::Serif) {
         aFamilyList.AppendLiteral("serif");
       } else {
         aFamilyList.AppendLiteral("sans-serif");
@@ -344,27 +299,26 @@ class FontFamilyList {
     }
   }
 
-  // searches for a specific non-generic name, lowercase comparison
-  bool Contains(const nsAString& aFamilyName) const {
-    nsAutoString fam(aFamilyName);
-    ToLowerCase(fam);
+  // searches for a specific non-generic name, case-insensitive comparison
+  bool Contains(const nsACString& aFamilyName) const {
+    NS_ConvertUTF8toUTF16 fam(aFamilyName);
     for (const FontFamilyName& name : mFontlist->mNames) {
-      if (name.mType != eFamily_named && name.mType != eFamily_named_quoted) {
+      if (!name.IsNamed()) {
         continue;
       }
-      nsAutoString listname(name.mName);
-      ToLowerCase(listname);
-      if (listname.Equals(fam)) {
+      nsDependentAtomString listname(name.mName);
+      if (listname.Equals(fam, nsCaseInsensitiveStringComparator())) {
         return true;
       }
     }
     return false;
   }
 
-  FontFamilyType GetDefaultFontType() const { return mDefaultFontType; }
-  void SetDefaultFontType(FontFamilyType aType) {
-    NS_ASSERTION(aType == eFamily_none || aType == eFamily_serif ||
-                     aType == eFamily_sans_serif,
+  StyleGenericFontFamily GetDefaultFontType() const { return mDefaultFontType; }
+  void SetDefaultFontType(StyleGenericFontFamily aType) {
+    NS_ASSERTION(aType == StyleGenericFontFamily::None ||
+                     aType == StyleGenericFontFamily::Serif ||
+                     aType == StyleGenericFontFamily::SansSerif,
                  "default font type must be either serif or sans-serif");
     mDefaultFontType = aType;
   }
@@ -382,7 +336,8 @@ class FontFamilyList {
 
  protected:
   NotNull<RefPtr<SharedFontList>> mFontlist;
-  FontFamilyType mDefaultFontType;  // none, serif or sans-serif
+  StyleGenericFontFamily mDefaultFontType =
+      StyleGenericFontFamily::None;  // or serif, or sans-serif
 };
 
 inline bool operator==(const FontFamilyList& a, const FontFamilyList& b) {

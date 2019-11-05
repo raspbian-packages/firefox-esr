@@ -7,9 +7,9 @@
 
 this.EXPORTED_SYMBOLS = ["Match"];
 
-this.Match = (function () {
+this.Match = (function() {
   function Pattern(template) {
-      // act like a constructor even as a function
+    // act like a constructor even as a function
     if (!(this instanceof Pattern)) {
       return new Pattern(template);
     }
@@ -18,11 +18,11 @@ this.Match = (function () {
   }
 
   Pattern.prototype = {
-    match: function (act) {
+    match: function(act) {
       return match(act, this.template);
     },
 
-    matches: function (act) {
+    matches: function(act) {
       try {
         return this.match(act);
       } catch (e) {
@@ -33,7 +33,7 @@ this.Match = (function () {
       return false;
     },
 
-    assert: function (act, message) {
+    assert: function(act, message) {
       try {
         return this.match(act);
       } catch (e) {
@@ -44,48 +44,50 @@ this.Match = (function () {
       return false;
     },
 
-    toString: () => "[object Pattern]"
+    toString: () => "[object Pattern]",
   };
 
   Pattern.ANY = new Pattern();
   Pattern.ANY.template = Pattern.ANY;
 
   Pattern.NUMBER = new Pattern();
-  Pattern.NUMBER.match = function (act) {
+  Pattern.NUMBER.match = function(act) {
     if (typeof act !== "number") {
       throw new MatchError("Expected number, got: " + quote(act));
     }
   };
 
   Pattern.NATURAL = new Pattern();
-  Pattern.NATURAL.match = function (act) {
+  Pattern.NATURAL.match = function(act) {
     if (typeof act !== "number" || act !== Math.floor(act) || act < 0) {
       throw new MatchError("Expected natural number, got: " + quote(act));
     }
   };
 
-  let quote = uneval;
+  const quote = uneval;
 
   function MatchError(msg) {
     this.message = msg;
   }
 
   MatchError.prototype = {
-    toString: function () {
+    toString: function() {
       return "match error: " + this.message;
-    }
+    },
   };
 
   function isAtom(x) {
-    return (typeof x === "number") ||
-        (typeof x === "string") ||
-        (typeof x === "boolean") ||
-        (x === null) ||
-        (typeof x === "object" && x instanceof RegExp);
+    return (
+      typeof x === "number" ||
+      typeof x === "string" ||
+      typeof x === "boolean" ||
+      x === null ||
+      (typeof x === "object" && x instanceof RegExp)
+    );
   }
 
   function isObject(x) {
-    return (x !== null) && (typeof x === "object");
+    return x !== null && typeof x === "object";
   }
 
   function isFunction(x) {
@@ -93,12 +95,12 @@ this.Match = (function () {
   }
 
   function isArrayLike(x) {
-    return isObject(x) && ("length" in x);
+    return isObject(x) && "length" in x;
   }
 
   function matchAtom(act, exp) {
-    if ((typeof exp) === "number" && isNaN(exp)) {
-      if ((typeof act) !== "number" || !isNaN(act)) {
+    if (typeof exp === "number" && isNaN(exp)) {
+      if (typeof act !== "number" || !isNaN(act)) {
         throw new MatchError("expected NaN, got: " + quote(act));
       }
       return true;
@@ -121,7 +123,9 @@ this.Match = (function () {
     switch (typeof exp) {
       case "string":
         if (act !== exp) {
-          throw new MatchError("expected " + quote(exp) + ", got " + quote(act));
+          throw new MatchError(
+            "expected " + quote(exp) + ", got " + quote(act)
+          );
         }
         return true;
       case "boolean":
@@ -140,10 +144,11 @@ this.Match = (function () {
       throw new MatchError("expected object, got " + quote(act));
     }
 
-    for (let key in exp) {
+    for (const key in exp) {
       if (!(key in act)) {
-        throw new MatchError("expected property " + quote(key)
-          + " not found in " + quote(act));
+        throw new MatchError(
+          "expected property " + quote(key) + " not found in " + quote(act)
+        );
       }
       match(act[key], exp[key]);
     }
@@ -157,8 +162,9 @@ this.Match = (function () {
     }
 
     if (act !== exp) {
-      throw new MatchError("expected function: " + exp +
-                             "\nbut got different function: " + act);
+      throw new MatchError(
+        "expected function: " + exp + "\nbut got different function: " + act
+      );
     }
   }
 
@@ -167,17 +173,19 @@ this.Match = (function () {
       throw new MatchError("expected array-like object, got " + quote(act));
     }
 
-    let length = exp.length;
+    const length = exp.length;
     if (act.length !== exp.length) {
-      throw new MatchError("expected array-like object of length "
-        + length + ", got " + quote(act));
+      throw new MatchError(
+        "expected array-like object of length " + length + ", got " + quote(act)
+      );
     }
 
     for (let i = 0; i < length; i++) {
       if (i in exp) {
         if (!(i in act)) {
-          throw new MatchError("expected array property " + i + " not found in "
-            + quote(act));
+          throw new MatchError(
+            "expected array property " + i + " not found in " + quote(act)
+          );
         }
         match(act[i], exp[i]);
       }

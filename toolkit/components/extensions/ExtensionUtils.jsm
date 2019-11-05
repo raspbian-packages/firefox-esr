@@ -7,24 +7,21 @@
 
 var EXPORTED_SYMBOLS = ["ExtensionUtils"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-ChromeUtils.defineModuleGetter(this, "ConsoleAPI",
-                               "resource://gre/modules/Console.jsm");
-
-function getConsole() {
-  return new ConsoleAPI({
-    maxLogLevelPref: "extensions.webextensions.log.level",
-    prefix: "WebExtensions",
-  });
-}
-
-XPCOMUtils.defineLazyGetter(this, "console", getConsole);
+ChromeUtils.defineModuleGetter(
+  this,
+  "setTimeout",
+  "resource://gre/modules/Timer.jsm"
+);
 
 // xpcshell doesn't handle idle callbacks well.
-XPCOMUtils.defineLazyGetter(this, "idleTimeout",
-                            () => Services.appinfo.name === "XPCShell" ? 500 : undefined);
+XPCOMUtils.defineLazyGetter(this, "idleTimeout", () =>
+  Services.appinfo.name === "XPCShell" ? 500 : undefined
+);
 
 // It would be nicer to go through `Services.appinfo`, but some tests need to be
 // able to replace that field with a custom implementation before it is first
@@ -38,7 +35,7 @@ const uniqueProcessID = appinfo.uniqueProcessID;
 // double's mantissa.
 // Note: We can't use bitwise ops here, since they truncate to a 32 bit
 // integer and we need all 53 mantissa bits.
-const processIDMask = (uniqueProcessID & 0xffff) * (2 ** 37);
+const processIDMask = (uniqueProcessID & 0xffff) * 2 ** 37;
 
 function getUniqueId() {
   // Note: We can't use bitwise ops here, since they truncate to a 32 bit
@@ -46,6 +43,9 @@ function getUniqueId() {
   return processIDMask + nextId++;
 }
 
+function promiseTimeout(delay) {
+  return new Promise(resolve => setTimeout(resolve, delay));
+}
 
 /**
  * An Error subclass for which complete error messages are always passed
@@ -54,24 +54,10 @@ function getUniqueId() {
 class ExtensionError extends Error {}
 
 function filterStack(error) {
-  return String(error.stack).replace(/(^.*(Task\.jsm|Promise-backend\.js).*\n)+/gm, "<Promise Chain>\n");
-}
-
-// Run a function and report exceptions.
-function runSafeSyncWithoutClone(f, ...args) {
-  try {
-    return f(...args);
-  } catch (e) {
-    dump(`Extension error: ${e} ${e.fileName} ${e.lineNumber}\n[[Exception stack\n${filterStack(e)}Current stack\n${filterStack(Error())}]]\n`);
-    Cu.reportError(e);
-  }
-}
-
-// Return true if the given value is an instance of the given
-// native type.
-function instanceOf(value, type) {
-  return (value && typeof value === "object" &&
-          ChromeUtils.getClassName(value) === type);
+  return String(error.stack).replace(
+    /(^.*(Task\.jsm|Promise-backend\.js).*\n)+/gm,
+    "<Promise Chain>\n"
+  );
 }
 
 /**
@@ -115,129 +101,12 @@ class DefaultMap extends Map {
 }
 
 const _winUtils = new DefaultWeakMap(win => {
-  return win.QueryInterface(Ci.nsIInterfaceRequestor)
-            .getInterface(Ci.nsIDOMWindowUtils);
+  return win.windowUtils;
 });
 const getWinUtils = win => _winUtils.get(win);
 
 function getInnerWindowID(window) {
   return getWinUtils(window).currentInnerWindowID;
-}
-
-function withHandlingUserInput(window, callable) {
-  let handle = getWinUtils(window).setHandlingUserInput(true);
-  try {
-    return callable();
-  } finally {
-    handle.destruct();
-  }
-}
-
-const LISTENERS = Symbol("listeners");
-const ONCE_MAP = Symbol("onceMap");
-
-class EventEmitter {
-  constructor() {
-    this[LISTENERS] = new Map();
-    this[ONCE_MAP] = new WeakMap();
-  }
-
-  /**
-   * Adds the given function as a listener for the given event.
-   *
-   * The listener function may optionally return a Promise which
-   * resolves when it has completed all operations which event
-   * dispatchers may need to block on.
-   *
-   * @param {string} event
-   *       The name of the event to listen for.
-   * @param {function(string, ...any)} listener
-   *        The listener to call when events are emitted.
-   */
-  on(event, listener) {
-    let listeners = this[LISTENERS].get(event);
-    if (!listeners) {
-      listeners = new Set();
-      this[LISTENERS].set(event, listeners);
-    }
-
-    listeners.add(listener);
-  }
-
-  /**
-   * Removes the given function as a listener for the given event.
-   *
-   * @param {string} event
-   *       The name of the event to stop listening for.
-   * @param {function(string, ...any)} listener
-   *        The listener function to remove.
-   */
-  off(event, listener) {
-    let set = this[LISTENERS].get(event);
-    if (set) {
-      set.delete(listener);
-      set.delete(this[ONCE_MAP].get(listener));
-      if (!set.size) {
-        this[LISTENERS].delete(event);
-      }
-    }
-  }
-
-  /**
-   * Adds the given function as a listener for the given event once.
-   *
-   * @param {string} event
-   *       The name of the event to listen for.
-   * @param {function(string, ...any)} listener
-   *        The listener to call when events are emitted.
-   */
-  once(event, listener) {
-    let wrapper = (...args) => {
-      this.off(event, wrapper);
-      this[ONCE_MAP].delete(listener);
-
-      return listener(...args);
-    };
-    this[ONCE_MAP].set(listener, wrapper);
-
-    this.on(event, wrapper);
-  }
-
-
-  /**
-   * Triggers all listeners for the given event. If any listeners return
-   * a value, returns a promise which resolves when all returned
-   * promises have resolved. Otherwise, returns undefined.
-   *
-   * @param {string} event
-   *       The name of the event to emit.
-   * @param {any} args
-   *        Arbitrary arguments to pass to the listener functions, after
-   *        the event name.
-   * @returns {Promise?}
-   */
-  emit(event, ...args) {
-    let listeners = this[LISTENERS].get(event);
-
-    if (listeners) {
-      let promises = [];
-
-      for (let listener of listeners) {
-        try {
-          let result = listener(event, ...args);
-          if (result !== undefined) {
-            promises.push(result);
-          }
-        } catch (e) {
-          Cu.reportError(e);
-        }
-      }
-
-      if (promises.length) {
-        return Promise.all(promises);
-      }
-    }
-  }
 }
 
 /**
@@ -253,7 +122,7 @@ class EventEmitter {
  *        An iterable of initial entries to add to the set.
  */
 class LimitedSet extends Set {
-  constructor(limit, slop = Math.round(limit * .25), iterable = undefined) {
+  constructor(limit, slop = Math.round(limit * 0.25), iterable = undefined) {
     super(iterable);
     this.limit = limit;
     this.slop = slop;
@@ -293,12 +162,16 @@ function promiseDocumentReady(doc) {
   }
 
   return new Promise(resolve => {
-    doc.addEventListener("DOMContentLoaded", function onReady(event) {
-      if (event.target === event.currentTarget) {
-        doc.removeEventListener("DOMContentLoaded", onReady, true);
-        resolve(doc);
-      }
-    }, true);
+    doc.addEventListener(
+      "DOMContentLoaded",
+      function onReady(event) {
+        if (event.target === event.currentTarget) {
+          doc.removeEventListener("DOMContentLoaded", onReady, true);
+          resolve(doc);
+        }
+      },
+      true
+    );
   });
 }
 
@@ -314,7 +187,8 @@ function promiseDocumentReady(doc) {
 function promiseDocumentIdle(window) {
   return window.document.documentReadyForIdle.then(() => {
     return new Promise(resolve =>
-      window.requestIdleCallback(resolve, {timeout: idleTimeout}));
+      window.requestIdleCallback(resolve, { timeout: idleTimeout })
+    );
   });
 }
 
@@ -331,7 +205,9 @@ function promiseDocumentLoaded(doc) {
   }
 
   return new Promise(resolve => {
-    doc.defaultView.addEventListener("load", () => resolve(doc), {once: true});
+    doc.defaultView.addEventListener("load", () => resolve(doc), {
+      once: true,
+    });
   });
 }
 
@@ -352,7 +228,12 @@ function promiseDocumentLoaded(doc) {
  *        expected event, false otherwise.
  * @returns {Promise<Event>}
  */
-function promiseEvent(element, eventName, useCapture = true, test = event => true) {
+function promiseEvent(
+  element,
+  eventName,
+  useCapture = true,
+  test = event => true
+) {
   return new Promise(resolve => {
     function listener(event) {
       if (test(event)) {
@@ -381,7 +262,7 @@ function promiseObserved(topic, test = () => true) {
     let observer = (subject, topic, data) => {
       if (test(subject, data)) {
         Services.obs.removeObserver(observer, topic);
-        resolve({subject, data});
+        resolve({ subject, data });
       }
     };
     Services.obs.addObserver(observer, topic);
@@ -392,289 +273,28 @@ function getMessageManager(target) {
   if (target.frameLoader) {
     return target.frameLoader.messageManager;
   }
-  return target.QueryInterface(Ci.nsIMessageSender);
+  return target;
 }
 
 function flushJarCache(jarPath) {
   Services.obs.notifyObservers(null, "flush-cache-entry", jarPath);
 }
 
-/**
- * Convert any of several different representations of a date/time to a Date object.
- * Accepts several formats:
- * a Date object, an ISO8601 string, or a number of milliseconds since the epoch as
- * either a number or a string.
- *
- * @param {Date|string|number} date
- *      The date to convert.
- * @returns {Date}
- *      A Date object
- */
-function normalizeTime(date) {
-  // Of all the formats we accept the "number of milliseconds since the epoch as a string"
-  // is an outlier, everything else can just be passed directly to the Date constructor.
-  return new Date((typeof date == "string" && /^\d+$/.test(date))
-                        ? parseInt(date, 10) : date);
-}
-
-/**
- * Defines a lazy getter for the given property on the given object. The
- * first time the property is accessed, the return value of the getter
- * is defined on the current `this` object with the given property name.
- * Importantly, this means that a lazy getter defined on an object
- * prototype will be invoked separately for each object instance that
- * it's accessed on.
- *
- * @param {object} object
- *        The prototype object on which to define the getter.
- * @param {string|Symbol} prop
- *        The property name for which to define the getter.
- * @param {function} getter
- *        The function to call in order to generate the final property
- *        value.
- */
-function defineLazyGetter(object, prop, getter) {
-  let redefine = (obj, value) => {
-    Object.defineProperty(obj, prop, {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value,
-    });
-    return value;
-  };
-
-  Object.defineProperty(object, prop, {
-    enumerable: true,
-    configurable: true,
-
-    get() {
-      return redefine(this, getter.call(this));
-    },
-
-    set(value) {
-      redefine(this, value);
-    },
-  });
-}
-
-/**
- * Acts as a proxy for a message manager or message manager owner, and
- * tracks docShell swaps so that messages are always sent to the same
- * receiver, even if it is moved to a different <browser>.
- *
- * @param {nsIMessageSender|Element} target
- *        The target message manager on which to send messages, or the
- *        <browser> element which owns it.
- */
-class MessageManagerProxy {
-  constructor(target) {
-    this.listeners = new DefaultMap(() => new Map());
-
-    if (target instanceof Ci.nsIMessageSender) {
-      this.messageManager = target;
-    } else {
-      this.addListeners(target);
-    }
-  }
-
-  /**
-   * Disposes of the proxy object, removes event listeners, and drops
-   * all references to the underlying message manager.
-   *
-   * Must be called before the last reference to the proxy is dropped,
-   * unless the underlying message manager or <browser> is also being
-   * destroyed.
-   */
-  dispose() {
-    if (this.eventTarget) {
-      this.removeListeners(this.eventTarget);
-      this.eventTarget = null;
-    }
-    this.messageManager = null;
-  }
-
-  /**
-   * Returns true if the given target is the same as, or owns, the given
-   * message manager.
-   *
-   * @param {nsIMessageSender|MessageManagerProxy|Element} target
-   *        The message manager, MessageManagerProxy, or <browser>
-   *        element agaisnt which to match.
-   * @param {nsIMessageSender} messageManager
-   *        The message manager against which to match `target`.
-   *
-   * @returns {boolean}
-   *        True if `messageManager` is the same object as `target`, or
-   *        `target` is a MessageManagerProxy or <browser> element that
-   *        is tied to it.
-   */
-  static matches(target, messageManager) {
-    return target === messageManager || target.messageManager === messageManager;
-  }
-
-  /**
-   * @property {nsIMessageSender|null} messageManager
-   *        The message manager that is currently being proxied. This
-   *        may change during the life of the proxy object, so should
-   *        not be stored elsewhere.
-   */
-
-  /**
-   * Sends a message on the proxied message manager.
-   *
-   * @param {array} args
-   *        Arguments to be passed verbatim to the underlying
-   *        sendAsyncMessage method.
-   * @returns {undefined}
-   */
-  sendAsyncMessage(...args) {
-    if (this.messageManager) {
-      return this.messageManager.sendAsyncMessage(...args);
-    }
-
-    Cu.reportError(`Cannot send message: Other side disconnected: ${uneval(args)}`);
-  }
-
-  get isDisconnected() {
-    return !this.messageManager;
-  }
-
-  /**
-   * Adds a message listener to the current message manager, and
-   * transfers it to the new message manager after a docShell swap.
-   *
-   * @param {string} message
-   *        The name of the message to listen for.
-   * @param {nsIMessageListener} listener
-   *        The listener to add.
-   * @param {boolean} [listenWhenClosed = false]
-   *        If true, the listener will receive messages which were sent
-   *        after the remote side of the listener began closing.
-   */
-  addMessageListener(message, listener, listenWhenClosed = false) {
-    this.messageManager.addMessageListener(message, listener, listenWhenClosed);
-    this.listeners.get(message).set(listener, listenWhenClosed);
-  }
-
-  /**
-   * Adds a message listener from the current message manager.
-   *
-   * @param {string} message
-   *        The name of the message to stop listening for.
-   * @param {nsIMessageListener} listener
-   *        The listener to remove.
-   */
-  removeMessageListener(message, listener) {
-    this.messageManager.removeMessageListener(message, listener);
-
-    let listeners = this.listeners.get(message);
-    listeners.delete(listener);
-    if (!listeners.size) {
-      this.listeners.delete(message);
-    }
-  }
-
-  /**
-   * @private
-   * Iterates over all of the currently registered message listeners.
-   */
-  * iterListeners() {
-    for (let [message, listeners] of this.listeners) {
-      for (let [listener, listenWhenClosed] of listeners) {
-        yield {message, listener, listenWhenClosed};
-      }
-    }
-  }
-
-  /**
-   * @private
-   * Adds docShell swap listeners to the message manager owner.
-   *
-   * @param {Element} target
-   *        The target element.
-   */
-  addListeners(target) {
-    target.addEventListener("SwapDocShells", this);
-
-    this.eventTarget = target;
-    this.messageManager = target.messageManager;
-
-    for (let {message, listener, listenWhenClosed} of this.iterListeners()) {
-      this.messageManager.addMessageListener(message, listener, listenWhenClosed);
-    }
-  }
-
-  /**
-   * @private
-   * Removes docShell swap listeners to the message manager owner.
-   *
-   * @param {Element} target
-   *        The target element.
-   */
-  removeListeners(target) {
-    target.removeEventListener("SwapDocShells", this);
-
-    for (let {message, listener} of this.iterListeners()) {
-      this.messageManager.removeMessageListener(message, listener);
-    }
-  }
-
-  handleEvent(event) {
-    if (event.type == "SwapDocShells") {
-      this.removeListeners(this.eventTarget);
-      this.addListeners(event.detail);
-    }
-  }
-}
-
-function checkLoadURL(url, principal, options) {
-  let ssm = Services.scriptSecurityManager;
-
-  let flags = ssm.STANDARD;
-  if (!options.allowScript) {
-    flags |= ssm.DISALLOW_SCRIPT;
-  }
-  if (!options.allowInheritsPrincipal) {
-    flags |= ssm.DISALLOW_INHERIT_PRINCIPAL;
-  }
-  if (options.dontReportErrors) {
-    flags |= ssm.DONT_REPORT_ERRORS;
-  }
-
-  try {
-    ssm.checkLoadURIWithPrincipal(principal,
-                                  Services.io.newURI(url),
-                                  flags);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
-
 var ExtensionUtils = {
-  checkLoadURL,
-  defineLazyGetter,
   flushJarCache,
-  getConsole,
   getInnerWindowID,
   getMessageManager,
   getUniqueId,
   filterStack,
   getWinUtils,
-  instanceOf,
-  normalizeTime,
   promiseDocumentIdle,
   promiseDocumentLoaded,
   promiseDocumentReady,
   promiseEvent,
   promiseObserved,
-  runSafeSyncWithoutClone,
-  withHandlingUserInput,
+  promiseTimeout,
   DefaultMap,
   DefaultWeakMap,
-  EventEmitter,
   ExtensionError,
   LimitedSet,
-  MessageManagerProxy,
 };

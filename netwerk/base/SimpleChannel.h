@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -34,7 +34,7 @@ class SimpleChannelCallbacks {
   virtual RequestOrReason StartAsyncRead(nsIStreamListener* stream,
                                          nsIChannel* channel) = 0;
 
-  virtual ~SimpleChannelCallbacks() {}
+  virtual ~SimpleChannelCallbacks() = default;
 };
 
 template <typename F1, typename F2, typename T>
@@ -46,7 +46,7 @@ class SimpleChannelCallbacksImpl final : public SimpleChannelCallbacks {
         mOpenContentStream(aOpenContentStream),
         mContext(context) {}
 
-  virtual ~SimpleChannelCallbacksImpl() {}
+  virtual ~SimpleChannelCallbacksImpl() = default;
 
   virtual InputStreamOrReason OpenContentStream(bool async,
                                                 nsIChannel* channel) override {
@@ -73,8 +73,8 @@ already_AddRefed<nsIChannel> NS_NewSimpleChannelInternal(
 
 /**
  * Creates a simple channel which wraps an input stream created by the given
- * callbacks. The callbacks are not called until the underlying AsyncOpen2 or
- * Open2 methods are called, and correspond to the nsBaseChannel::StartAsyncRead
+ * callbacks. The callbacks are not called until the underlying AsyncOpen or
+ * Open methods are called, and correspond to the nsBaseChannel::StartAsyncRead
  * and nsBaseChannel::OpenContentStream methods of the same names.
  *
  * The last two arguments of each callback are the created channel instance,
@@ -89,9 +89,10 @@ inline already_AddRefed<nsIChannel> NS_NewSimpleChannel(
   using namespace mozilla;
 
   auto callbacks = MakeUnique<net::SimpleChannelCallbacksImpl<F1, F2, T>>(
-      Move(aStartAsyncRead), Move(aOpenContentStream), context);
+      std::move(aStartAsyncRead), std::move(aOpenContentStream), context);
 
-  return net::NS_NewSimpleChannelInternal(aURI, aLoadInfo, Move(callbacks));
+  return net::NS_NewSimpleChannelInternal(aURI, aLoadInfo,
+                                          std::move(callbacks));
 }
 
 template <typename T, typename F1>
@@ -105,8 +106,9 @@ inline already_AddRefed<nsIChannel> NS_NewSimpleChannel(nsIURI* aURI,
     return Err(NS_ERROR_NOT_IMPLEMENTED);
   };
 
-  return NS_NewSimpleChannel(aURI, aLoadInfo, context, Move(aStartAsyncRead),
-                             Move(openContentStream));
+  return NS_NewSimpleChannel(aURI, aLoadInfo, context,
+                             std::move(aStartAsyncRead),
+                             std::move(openContentStream));
 }
 
 #endif  // SimpleChannel_h

@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Selamat Datang">
 <!ENTITY firstrun_urlbar_message2 "Terima kasih telah memilih &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Selamat datang di &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Peramban seluler modern dari Mozilla, organisasi nirlaba yang berkomitmen untuk web yang bebas dan terbuka.">
+<!ENTITY newfirstrun_urlbar_subtext "Cepat, pribadi, dan ada di sisi Anda.">
 <!ENTITY firstrun_panel_title_privacy "Privasi">
 <!ENTITY firstrun_privacy_message "Menjelajah seperti tidak ada yang mengawasi">
 <!ENTITY firstrun_privacy_subtext "Penjelajahan Pribadi dengan Perlindungan Pelacakan memblokir pelacak ketika Anda menjelajah dan tidak akan mengingat riwayat Anda saat Anda selesai menjelajah.">
+<!ENTITY newfirstrun_privacy_subtext "Penjelajahan pribadi memblokir pelacak iklan yang mengikuti Anda secara daring.">
 <!ENTITY firstrun_panel_title_customize "Ubahsuai">
 <!ENTITY firstrun_customize_message "Sesuaikan &brandShortName;.">
 <!ENTITY firstrun_customize_subtext "Ubahsuai &brandShortName; dengan pengaya. Blokir iklan, tambahkan fitur, atau pilih tema baru untuk mencerminkan kepribadian Anda.">
@@ -18,21 +21,20 @@
 <!ENTITY firstrun_data_message "Lebih sedikit data, lebih banyak hematnya">
 <!ENTITY firstrun_data_subtext2 "Nonaktifkan gambar untuk menghemat kuota data di setiap situs yang Anda buka.">
 <!ENTITY firstrun_sync_title "Sync">
+<!ENTITY updatednewfirstrun_sync_title "Akun">
 <!ENTITY firstrun_sync_message2 "Mulai dari situasi saat Anda pergi.">
 <!ENTITY firstrun_sync_subtext2 "Gunakan Sync untuk menemukan markah, sandi, dan hal lainnya yang Anda simpan ke &brandShortName; di semua peranti Anda.">
+<!ENTITY newfirstrun_sync_subtext "Sinkronkan hal-hal yang Anda simpan di ponsel ke Firefox untuk desktop, secara pribadi dan aman.">
+<!ENTITY updatednewfirstrun_sync_subtext "Masuk ke akun Anda untuk memaksimalkan &brandShortName;">
 <!ENTITY firstrun_signin_message "Sambungkan, dan mulai">
 <!ENTITY firstrun_signin_button "Masuk ke Sync">
+<!ENTITY newfirstrun_signin_button "Aktifkan Sync">
+<!ENTITY updatednewfirstrun_signin_button "Masuk ke &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Mulai Menjelajah">
 <!ENTITY firstrun_button_notnow "Tidak saat ini">
 <!ENTITY firstrun_button_next "Selanjutnya">
 
 <!ENTITY firstrun_tabqueue_title "Tautan">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Nyalakan Antrian tab">
-<!ENTITY firstrun_tabqueue_subtext_off "Simpan tautan untuk nanti di &brandShortName; ketika mengetuknya di aplikasi lain.">
-
-<!ENTITY firstrun_tabqueue_message_on "Sukses!">
-<!ENTITY firstrun_tabqueue_subtext_on "Anda dapat selalu mematikan ini di &settings; di bawah &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Artikel">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -68,7 +70,27 @@
 <!ENTITY  crash_close_label "Tutup">
 <!ENTITY  crash_restart_label "Mulai ulang &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; bermasalah">
+<!ENTITY  crash_notification_message "Ketuk untuk melaporkan ke &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Abaikan">
+
 <!ENTITY url_bar_default_text2 "Cari atau masukkan alamat">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Cari di web">
+<!ENTITY search_widget_default_cropped_text "Cari">
+<!ENTITY search_widget_logo_description "Cari di web dengan &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Gunakan Pembaca QR untuk mencari atau memasukkan alamat">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Gunakan mikrofon untuk mencari atau memasukkan alamat">
 
 <!ENTITY bookmark "Markah">
 <!ENTITY bookmark_remove "Hapus markah">
@@ -95,6 +117,10 @@
 <!ENTITY bookmark_folder_updated "Folder diperbarui">
 <!ENTITY bookmark_parent_folder "Folder Induk">
 <!ENTITY bookmark_add_folder "Tambah folder baru">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(tanpa judul)">
 
 <!ENTITY reader_saved_offline "Simpan luring">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -206,10 +232,10 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Pulihkan tab, penghemat data, alat pengembang">
 <!ENTITY pref_category_notifications "Notifikasi">
-<!ENTITY pref_category_notifications_summary "Fitur baru, pembaruan situs web">
-<!ENTITY pref_developer_remotedebugging_usb "Pendebugan daring via USB">
-<!ENTITY pref_developer_remotedebugging_wifi "Pendebugan daring via Wi-Fi">
-<!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Pendebugan Wi-Fi mewajibkan pada peranti Anda telah terpasang aplikasi pembaca kode QR.">
+<!ENTITY pref_category_notifications_summary2 "Fitur baru, kiat produk">
+<!ENTITY pref_developer_remotedebugging_usb "Pendebugan jarak jauh via USB">
+<!ENTITY pref_developer_remotedebugging_wifi "Pendebugan jarak jauh via Wi-Fi">
+<!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Pendebugan Wi-Fi mewajibkan pada perangkat Anda telah terpasang aplikasi pembaca kode QR.">
 <!ENTITY pref_remember_signons2 "Ingat info masuk">
 <!ENTITY pref_manage_logins "Kelola info masuk">
 
@@ -269,7 +295,7 @@
 <!ENTITY pref_tap_to_load_images_disabled2 "Terblokir">
 
 <!ENTITY pref_show_web_fonts "Tampilkan font web">
-<!ENTITY pref_show_web_fonts_summary2 "Unduh font daring ketika memuat halaman">
+<!ENTITY pref_show_web_fonts_summary2 "Unduh font jarak jauh ketika memuat halaman">
 
 <!ENTITY pref_tracking_protection_title2 "Perlindungan Pelacakan">
 <!ENTITY pref_donottrack_title "Jangan lacak">
@@ -284,9 +310,16 @@
 
 <!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Kiat dan fitur produk">
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Pelajari lebih lanjut tentang &brandShortName; dan produk &vendorShortName; lainnya">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Untuk mengaktifkan pilihan ini, &pref_feature_tips_notification_enabling_path; harus sudah diaktifkan.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -326,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Buka Pengaturan">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Menambahkan tab baru ke antrean&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -360,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "Skalakan konten web dengan ukuran font sistem">
 
 <!ENTITY pref_media_autoplay_enabled "Izinkan putar otomatis">
-<!ENTITY pref_media_autoplay_enabled_summary "Kendalikan apakah situs web dapat memutar video dan konten media lainnya secara otomatis">
+<!ENTITY pref_media_autoplay_allow "Izinkan putar otomatis">
+<!ENTITY pref_media_autoplay_block "Blokir putar otomatis">
 <!ENTITY pref_zoom_force_enabled "Selalu aktifkan perbesaran">
 <!ENTITY pref_zoom_force_enabled_summary "Paksa timpa agar Anda dapat memperbesar/memperkecil laman apa saja">
 <!ENTITY pref_voice_input "Input suara">
@@ -383,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "Riwayat pencarian">
 <!ENTITY pref_private_data_formdata2 "Riwayat formulir">
 <!ENTITY pref_private_data_cookies2 "Kuki dan info masuk aktif">
-<!ENTITY pref_private_data_passwords2 "Sandi tersimpan">
 <!ENTITY pref_private_data_cache "Tembolok">
 <!ENTITY pref_private_data_offlineApps "Data situs web luring">
 <!ENTITY pref_private_data_siteSettings2 "Pengaturan situs">
 <!ENTITY pref_private_data_downloadFiles2 "Unduhan">
 <!ENTITY pref_private_data_syncedTabs "Tab yang disinkronkan">
 
-<!ENTITY pref_default_browser "Jadikan peramban utama">
+<!ENTITY pref_default_browser2 "Jadikan &brandShortName; sebagai peramban baku">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Ketuk Browser &amp; pilih &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Kunjungi Dukungan Mozilla">
 <!ENTITY pref_about_firefox "Tentang &brandShortName;">
 <!ENTITY pref_vendor_faqs "T&amp;J">
@@ -436,6 +476,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Pelapor Kerusakan">
 <!ENTITY datareporting_wifi_title2 "Layanan Lokasi &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Bantu &vendorShortName; memetakan dunia! Bagikan perkiraan lokasi Wi-Fi dan seluler perangkat Anda untuk menyempurnakan layanan geolokasi kami.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "Layanan Lokasi &vendorShortName; berjalan">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -480,6 +525,10 @@
 <!ENTITY find_prev "Sebelumnya">
 <!ENTITY find_next "Selanjutnya">
 <!ENTITY find_close "Tutup">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Frasa tidak ditemukan">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -542,7 +591,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Atur tab menjadi dua kolom dalam mode tegak">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Laman dihapus">
 <!ENTITY folder_removed "Folder dihapus">
@@ -553,6 +602,8 @@
 <!ENTITY bookmark_edit_location "Lokasi">
 <!ENTITY bookmark_edit_keyword "Kata Kunci">
 <!ENTITY bookmark_select_folder "Pilih folder">
+
+<!ENTITY bookmark_edit_undo "Urungkan">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -624,16 +675,16 @@
 <!ENTITY home_remote_tabs_hidden_devices_title "Perangkat tersembunyi">
 <!-- Localization note (home_remote_tabs_unhide_selected_devices) : This is
      the text of a button; we expect more than one device. -->
-<!ENTITY home_remote_tabs_unhide_selected_devices "Tampilkan perangkat dipilih">
+<!ENTITY home_remote_tabs_unhide_selected_devices "Tampilkan perangkat terpilih">
 
 <!-- Localization note (home_pinned_site) : This is a snackbar label displayed after
     a site is pinned or unpinned. -->
 <!ENTITY home_pinned_site "Situs tersemat">
 <!ENTITY home_unpinned_site "Situs tidak disemat">
 
-<!ENTITY remote_tabs_panel_moved_title "Di mana tab saya?">
-<!ENTITY remote_tabs_panel_moved_desc "Kami telah memindahkan tab dari perangkat lain ke panel di beranda agar mudah diakses saat Anda membuka tab baru.">
-<!ENTITY remote_tabs_panel_moved_link "Buka panel baru.">
+<!ENTITY remote_tabs_panel_moved_title "Ke mana tab saya?">
+<!ENTITY remote_tabs_panel_moved_desc "Kami telah memindahkan tab Anda dari perangkat lain ke panel di beranda yang mudah diakses setiap kali Anda membuka tab baru.">
+<!ENTITY remote_tabs_panel_moved_link "Bawa saya menuju panel baru.">
 
 <!ENTITY pin_site_dialog_hint "Masukkan yang dicari">
 
@@ -641,6 +692,8 @@
 <!ENTITY filepicker_audio_title "Pilih atau rekam suara">
 <!ENTITY filepicker_image_title "Pilih atau ambil gambar">
 <!ENTITY filepicker_video_title "Pilih atau rekam video">
+
+<!ENTITY filepicker_permission_denied "Izin yang diperlukan tidak diberikan, kembali ke pemilih berkas sistem.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Anda tersambung ke">
@@ -757,7 +810,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Terakhir disinkronkan: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Terakhir disinkronkan: tidak pernah">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -818,15 +871,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Tidak dapat membuka &brandShortName;. Silakan pasang ulang dan coba lagi.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; tidak lagi akan diperbarui">
-<!ENTITY eol_notification_summary "Ketuk untuk mempelajari lebih lanjut">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; sudah dalam versi terbaru">
 <!ENTITY whatsnew_notification_summary "Lihat apa yang baru pada versi ini">
-
-<!ENTITY promotion_add_page_shortcut "Tambahkan pintasan laman">
 
 <!ENTITY helper_first_offline_bookmark_title "Baca luring">
 <!ENTITY helper_first_offline_bookmark_message "Cari item Tampilan Baca Anda dalam Markah, meskipun sedang luring.">
@@ -877,3 +925,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Tambahkan ke Layar Beranda">
 <!ENTITY pwa_continue_to_website "Lanjutkan ke Situs Web">
 <!ENTITY pwa_onboarding_sumo "Anda dapat dengan mudah menambahkan situs web ini ke layar Beranda Anda untuk mendapatkan akses instan dan penjelajahan lebih cepat seperti menggunakan aplikasi.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Putar">
+<!ENTITY pip_play_button_description "Lanjutkan memutar">
+<!ENTITY pip_pause_button_title "Jeda">
+<!ENTITY pip_pause_button_description "Jeda memutar">
+
+<!ENTITY pref_notification_settings_link "Kelola pengaturan notifikasi">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Peramban">
+<!ENTITY mls_notification_channel "Layanan Lokasi &vendorShortName;">
+<!ENTITY download_notification_channel "Unduhan">
+<!ENTITY media_notification_channel2 "Suara dan video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "Kiat dan trik &vendorShortName;">
+<!ENTITY updater_notification_channel "Pembaruan aplikasi">
+<!ENTITY synced_tabs_notification_channel "Tab tersinkron">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Notifikasi situs">
+<!ENTITY crash_handler_notifications_channel "Pelapor Kerusakan &brandShortName;">

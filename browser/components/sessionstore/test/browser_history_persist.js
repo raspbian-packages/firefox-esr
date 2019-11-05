@@ -17,7 +17,7 @@ add_task(async function check_history_not_persisted() {
   await TabStateFlusher.flush(browser);
   let state = JSON.parse(ss.getTabState(tab));
   ok(!state.entries[0].persist, "Should have collected the persistence state");
-  await promiseRemoveTab(tab);
+  BrowserTestUtils.removeTab(tab);
   browser = null;
 
   // Open a new tab to restore into.
@@ -26,25 +26,35 @@ add_task(async function check_history_not_persisted() {
   await promiseTabState(tab, state);
 
   await ContentTask.spawn(browser, null, function() {
-    let sessionHistory = docShell.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsISHistory);
+    let sessionHistory = docShell
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsISHistory);
 
     is(sessionHistory.count, 1, "Should be a single history entry");
-    is(sessionHistory.getEntryAtIndex(0, false).URI.spec, "about:blank", "Should be the right URL");
+    is(
+      sessionHistory.getEntryAtIndex(0).URI.spec,
+      "about:blank",
+      "Should be the right URL"
+    );
   });
 
   // Load a new URL into the tab, it should replace the about:blank history entry
-  browser.loadURI("about:robots");
+  BrowserTestUtils.loadURI(browser, "about:robots");
   await promiseBrowserLoaded(browser);
   await ContentTask.spawn(browser, null, function() {
-    let sessionHistory = docShell.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsISHistory);
+    let sessionHistory = docShell
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsISHistory);
     is(sessionHistory.count, 1, "Should be a single history entry");
-    is(sessionHistory.getEntryAtIndex(0, false).URI.spec, "about:robots", "Should be the right URL");
+    is(
+      sessionHistory.getEntryAtIndex(0).URI.spec,
+      "about:robots",
+      "Should be the right URL"
+    );
   });
 
   // Cleanup.
-  await promiseRemoveTab(tab);
+  BrowserTestUtils.removeTab(tab);
 });
 
 /**
@@ -61,7 +71,7 @@ add_task(async function check_history_default_persisted() {
   await TabStateFlusher.flush(browser);
   let state = JSON.parse(ss.getTabState(tab));
   delete state.entries[0].persist;
-  await promiseRemoveTab(tab);
+  BrowserTestUtils.removeTab(tab);
   browser = null;
 
   // Open a new tab to restore into.
@@ -69,24 +79,38 @@ add_task(async function check_history_default_persisted() {
   browser = tab.linkedBrowser;
   await promiseTabState(tab, state);
   await ContentTask.spawn(browser, null, function() {
-    let sessionHistory = docShell.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsISHistory);
+    let sessionHistory = docShell
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsISHistory);
 
     is(sessionHistory.count, 1, "Should be a single history entry");
-    is(sessionHistory.getEntryAtIndex(0, false).URI.spec, "about:blank", "Should be the right URL");
+    is(
+      sessionHistory.getEntryAtIndex(0).URI.spec,
+      "about:blank",
+      "Should be the right URL"
+    );
   });
 
   // Load a new URL into the tab, it should replace the about:blank history entry
-  browser.loadURI("about:robots");
+  BrowserTestUtils.loadURI(browser, "about:robots");
   await promiseBrowserLoaded(browser);
   await ContentTask.spawn(browser, null, function() {
-    let sessionHistory = docShell.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsISHistory);
+    let sessionHistory = docShell
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsISHistory);
     is(sessionHistory.count, 2, "Should be two history entries");
-    is(sessionHistory.getEntryAtIndex(0, false).URI.spec, "about:blank", "Should be the right URL");
-    is(sessionHistory.getEntryAtIndex(1, false).URI.spec, "about:robots", "Should be the right URL");
+    is(
+      sessionHistory.getEntryAtIndex(0).URI.spec,
+      "about:blank",
+      "Should be the right URL"
+    );
+    is(
+      sessionHistory.getEntryAtIndex(1).URI.spec,
+      "about:robots",
+      "Should be the right URL"
+    );
   });
 
   // Cleanup.
-  await promiseRemoveTab(tab);
+  BrowserTestUtils.removeTab(tab);
 });

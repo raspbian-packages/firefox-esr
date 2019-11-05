@@ -7,6 +7,7 @@
 #include "ContentPrincipal.h"
 
 #include "mozIThirdPartyUtil.h"
+#include "nsContentUtils.h"
 #include "nscore.h"
 #include "nsScriptSecurityManager.h"
 #include "nsString.h"
@@ -15,7 +16,8 @@
 #include "nsIURI.h"
 #include "nsIURL.h"
 #include "nsIStandardURL.h"
-#include "nsIURIWithPrincipal.h"
+#include "nsIURIWithSpecialOrigin.h"
+#include "nsIURIMutator.h"
 #include "nsJSPrincipals.h"
 #include "nsIEffectiveTLDService.h"
 #include "nsIClassInfoImpl.h"
@@ -27,6 +29,7 @@
 #include "nsNetCID.h"
 #include "js/Wrapper.h"
 
+#include "mozilla/dom/BlobURLProtocolHandler.h"
 #include "mozilla/dom/nsCSPContext.h"
 #include "mozilla/dom/ScriptSettings.h"
 #include "mozilla/ClearOnShutdown.h"
@@ -35,13 +38,6 @@
 #include "mozilla/HashFunctions.h"
 
 using namespace mozilla;
-
-static bool URIIsImmutable(nsIURI* aURI) {
-  nsCOMPtr<nsIMutable> mutableObj(do_QueryInterface(aURI));
-  bool isMutable;
-  return mutableObj && NS_SUCCEEDED(mutableObj->GetMutable(&isMutable)) &&
-         !isMutable;
-}
 
 static inline ExtensionPolicyService& EPS() {
   return ExtensionPolicyService::GetSingleton();
@@ -52,10 +48,7 @@ NS_IMPL_CLASSINFO(ContentPrincipal, nullptr, nsIClassInfo::MAIN_THREAD_ONLY,
 NS_IMPL_QUERY_INTERFACE_CI(ContentPrincipal, nsIPrincipal, nsISerializable)
 NS_IMPL_CI_INTERFACE_GETTER(ContentPrincipal, nsIPrincipal, nsISerializable)
 
-ContentPrincipal::ContentPrincipal()
-    : BasePrincipal(eCodebasePrincipal),
-      mCodebaseImmutable(false),
-      mDomainImmutable(false) {}
+ContentPrincipal::ContentPrincipal() : BasePrincipal(eCodebasePrincipal) {}
 
 ContentPrincipal::~ContentPrincipal() {
   // let's clear the principal within the csp to avoid a tangling pointer
@@ -82,11 +75,21 @@ nsresult ContentPrincipal::Init(nsIURI* aCodebase,
           &hasFlag)) &&
       !hasFlag);
 
-  mCodebase = NS_TryToMakeImmutable(aCodebase);
-  mCodebaseImmutable = URIIsImmutable(mCodebase);
-
+  mCodebase = aCodebase;
   FinishInit(aOriginNoSuffix, aOriginAttributes);
 
+  return NS_OK;
+}
+
+nsresult ContentPrincipal::Init(ContentPrincipal* aOther,
+                                const OriginAttributes& aOriginAttributes) {
+  NS_ENSURE_ARG(aOther);
+
+  mCodebase = aOther->mCodebase;
+  FinishInit(aOther, aOriginAttributes);
+
+  mDomain = aOther->mDomain;
+  mAddon = aOther->mAddon;
   return NS_OK;
 }
 
@@ -94,7 +97,8 @@ nsresult ContentPrincipal::GetScriptLocation(nsACString& aStr) {
   return mCodebase->GetSpec(aStr);
 }
 
-/* static */ nsresult ContentPrincipal::GenerateOriginNoSuffixFromURI(
+/* static */
+nsresult ContentPrincipal::GenerateOriginNoSuffixFromURI(
     nsIURI* aURI, nsACString& aOriginNoSuffix) {
   if (!aURI) {
     return NS_ERROR_FAILURE;
@@ -148,10 +152,22 @@ nsresult ContentPrincipal::GetScriptLocation(nsACString& aStr) {
        // about:blank is special since it can be generated from different
        // sources. We check for moz-safe-about:blank since origin is an
        // innermost URI.
-       !origin->GetSpecOrDefault().EqualsLiteral("moz-safe-about:blank")) ||
-      (NS_SUCCEEDED(origin->SchemeIs("indexeddb", &isBehaved)) && isBehaved)) {
+       !StringBeginsWith(origin->GetSpecOrDefault(),
+                         NS_LITERAL_CSTRING("moz-safe-about:blank")))) {
     rv = origin->GetAsciiSpec(aOriginNoSuffix);
     NS_ENSURE_SUCCESS(rv, rv);
+
+    int32_t pos = aOriginNoSuffix.FindChar('?');
+    int32_t hashPos = aOriginNoSuffix.FindChar('#');
+
+    if (hashPos != kNotFound && (pos == kNotFound || hashPos < pos)) {
+      pos = hashPos;
+    }
+
+    if (pos != kNotFound) {
+      aOriginNoSuffix.Truncate(pos);
+    }
+
     // These URIs could technically contain a '^', but they never should.
     if (NS_WARN_IF(aOriginNoSuffix.FindChar('^', 0) != -1)) {
       aOriginNoSuffix.Truncate();
@@ -162,15 +178,11 @@ nsresult ContentPrincipal::GetScriptLocation(nsACString& aStr) {
 
   // This URL can be a blobURL. In this case, we should use the 'parent'
   // principal instead.
-  nsCOMPtr<nsIURIWithPrincipal> uriWithPrincipal = do_QueryInterface(origin);
-  if (uriWithPrincipal) {
-    nsCOMPtr<nsIPrincipal> uriPrincipal;
-    rv = uriWithPrincipal->GetPrincipal(getter_AddRefs(uriPrincipal));
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    if (uriPrincipal) {
-      return uriPrincipal->GetOriginNoSuffix(aOriginNoSuffix);
-    }
+  nsCOMPtr<nsIPrincipal> blobPrincipal;
+  if (dom::BlobURLProtocolHandler::GetBlobURLPrincipal(
+          origin, getter_AddRefs(blobPrincipal))) {
+    MOZ_ASSERT(blobPrincipal);
+    return blobPrincipal->GetOriginNoSuffix(aOriginNoSuffix);
   }
 
   // If we reached this branch, we can only create an origin if we have a
@@ -246,8 +258,19 @@ bool ContentPrincipal::SubsumesInternal(
     // If either has .domain set, we have equality i.f.f. the domains match.
     // Otherwise, we fall through to the non-document-domain-considering case.
     if (thisDomain || otherDomain) {
-      return nsScriptSecurityManager::SecurityCompareURIs(thisDomain,
-                                                          otherDomain);
+      bool isMatch =
+          nsScriptSecurityManager::SecurityCompareURIs(thisDomain, otherDomain);
+#ifdef DEBUG
+      if (isMatch) {
+        nsAutoCString thisSiteOrigin, otherSiteOrigin;
+        MOZ_ALWAYS_SUCCEEDS(GetSiteOrigin(thisSiteOrigin));
+        MOZ_ALWAYS_SUCCEEDS(aOther->GetSiteOrigin(otherSiteOrigin));
+        MOZ_ASSERT(
+            thisSiteOrigin == otherSiteOrigin,
+            "SubsumesConsideringDomain passed with mismatched siteOrigin!");
+      }
+#endif
+      return isMatch;
     }
   }
 
@@ -261,29 +284,35 @@ bool ContentPrincipal::SubsumesInternal(
 
 NS_IMETHODIMP
 ContentPrincipal::GetURI(nsIURI** aURI) {
-  if (mCodebaseImmutable) {
-    NS_ADDREF(*aURI = mCodebase);
-    return NS_OK;
-  }
-
-  if (!mCodebase) {
-    *aURI = nullptr;
-    return NS_OK;
-  }
-
-  return NS_EnsureSafeToReturn(mCodebase, aURI);
+  NS_ADDREF(*aURI = mCodebase);
+  return NS_OK;
 }
 
 bool ContentPrincipal::MayLoadInternal(nsIURI* aURI) {
-  // See if aURI is something like a Blob URI that is actually associated with
-  // a principal.
-  nsCOMPtr<nsIURIWithPrincipal> uriWithPrin = do_QueryInterface(aURI);
-  nsCOMPtr<nsIPrincipal> uriPrin;
-  if (uriWithPrin) {
-    uriWithPrin->GetPrincipal(getter_AddRefs(uriPrin));
+  MOZ_ASSERT(aURI);
+
+#if defined(MOZ_THUNDERBIRD) || defined(MOZ_SUITE)
+  nsCOMPtr<nsIURIWithSpecialOrigin> uriWithSpecialOrigin =
+      do_QueryInterface(aURI);
+  if (uriWithSpecialOrigin) {
+    nsCOMPtr<nsIURI> origin;
+    nsresult rv = uriWithSpecialOrigin->GetOrigin(getter_AddRefs(origin));
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return false;
+    }
+    MOZ_ASSERT(origin);
+    OriginAttributes attrs;
+    RefPtr<BasePrincipal> principal =
+        BasePrincipal::CreateCodebasePrincipal(origin, attrs);
+    return nsIPrincipal::Subsumes(principal);
   }
-  if (uriPrin) {
-    return nsIPrincipal::Subsumes(uriPrin);
+#endif
+
+  nsCOMPtr<nsIPrincipal> blobPrincipal;
+  if (dom::BlobURLProtocolHandler::GetBlobURLPrincipal(
+          aURI, getter_AddRefs(blobPrincipal))) {
+    MOZ_ASSERT(blobPrincipal);
+    return nsIPrincipal::Subsumes(blobPrincipal);
   }
 
   // If this principal is associated with an addon, check whether that addon
@@ -308,12 +337,10 @@ bool ContentPrincipal::MayLoadInternal(nsIURI* aURI) {
   return false;
 }
 
-NS_IMETHODIMP
-ContentPrincipal::GetHashValue(uint32_t* aValue) {
-  NS_PRECONDITION(mCodebase, "Need a codebase");
+uint32_t ContentPrincipal::GetHashValue() {
+  MOZ_ASSERT(mCodebase, "Need a codebase");
 
-  *aValue = nsScriptSecurityManager::HashPrincipalByOrigin(this);
-  return NS_OK;
+  return nsScriptSecurityManager::HashPrincipalByOrigin(this);
 }
 
 NS_IMETHODIMP
@@ -323,67 +350,171 @@ ContentPrincipal::GetDomain(nsIURI** aDomain) {
     return NS_OK;
   }
 
-  if (mDomainImmutable) {
-    NS_ADDREF(*aDomain = mDomain);
-    return NS_OK;
-  }
-
-  return NS_EnsureSafeToReturn(mDomain, aDomain);
-}
-
-NS_IMETHODIMP
-ContentPrincipal::SetDomain(nsIURI* aDomain) {
-  mDomain = NS_TryToMakeImmutable(aDomain);
-  mDomainImmutable = URIIsImmutable(mDomain);
-  SetHasExplicitDomain();
-
-  // Recompute all wrappers between compartments using this principal and other
-  // non-chrome compartments.
-  AutoSafeJSContext cx;
-  JSPrincipals* principals =
-      nsJSPrincipals::get(static_cast<nsIPrincipal*>(this));
-  bool success =
-      js::RecomputeWrappers(cx, js::ContentCompartmentsOnly(),
-                            js::CompartmentsWithPrincipals(principals));
-  NS_ENSURE_TRUE(success, NS_ERROR_FAILURE);
-  success =
-      js::RecomputeWrappers(cx, js::CompartmentsWithPrincipals(principals),
-                            js::ContentCompartmentsOnly());
-  NS_ENSURE_TRUE(success, NS_ERROR_FAILURE);
-
+  NS_ADDREF(*aDomain = mDomain);
   return NS_OK;
 }
 
 NS_IMETHODIMP
-ContentPrincipal::GetBaseDomain(nsACString& aBaseDomain) {
-  // For a file URI, we return the file path.
-  if (NS_URIIsLocalFile(mCodebase)) {
-    nsCOMPtr<nsIURL> url = do_QueryInterface(mCodebase);
+ContentPrincipal::SetDomain(nsIURI* aDomain) {
+  MOZ_ASSERT(aDomain);
+
+  mDomain = aDomain;
+  SetHasExplicitDomain();
+
+  // Set the changed-document-domain flag on compartments containing realms
+  // using this principal.
+  auto cb = [](JSContext*, void*, JS::Handle<JS::Realm*> aRealm) {
+    JS::Compartment* comp = JS::GetCompartmentForRealm(aRealm);
+    xpc::SetCompartmentChangedDocumentDomain(comp);
+  };
+  JSPrincipals* principals =
+      nsJSPrincipals::get(static_cast<nsIPrincipal*>(this));
+  AutoSafeJSContext cx;
+  JS::IterateRealmsWithPrincipals(cx, principals, nullptr, cb);
+
+  return NS_OK;
+}
+
+static nsresult GetSpecialBaseDomain(const nsCOMPtr<nsIURI>& aCodebase,
+                                     bool* aHandled, nsACString& aBaseDomain) {
+  *aHandled = false;
+
+  // Special handling for a file URI.
+  if (NS_URIIsLocalFile(aCodebase)) {
+    // If strict file origin policy is not in effect, all local files are
+    // considered to be same-origin, so return a known dummy domain here.
+    if (!nsScriptSecurityManager::GetStrictFileOriginPolicy()) {
+      *aHandled = true;
+      aBaseDomain.AssignLiteral("UNIVERSAL_FILE_URI_ORIGIN");
+      return NS_OK;
+    }
+
+    // Otherwise, we return the file path.
+    nsCOMPtr<nsIURL> url = do_QueryInterface(aCodebase);
 
     if (url) {
+      *aHandled = true;
       return url->GetFilePath(aBaseDomain);
     }
   }
 
   bool hasNoRelativeFlag;
   nsresult rv = NS_URIChainHasFlags(
-      mCodebase, nsIProtocolHandler::URI_NORELATIVE, &hasNoRelativeFlag);
+      aCodebase, nsIProtocolHandler::URI_NORELATIVE, &hasNoRelativeFlag);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
   if (hasNoRelativeFlag) {
-    return mCodebase->GetSpec(aBaseDomain);
+    *aHandled = true;
+    return aCodebase->GetSpec(aBaseDomain);
   }
 
-  // For everything else, we ask the TLD service via
-  // the ThirdPartyUtil.
+  bool isBehaved;
+  if (NS_SUCCEEDED(aCodebase->SchemeIs("indexeddb", &isBehaved)) && isBehaved) {
+    *aHandled = true;
+    return aCodebase->GetSpec(aBaseDomain);
+  }
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPrincipal::GetBaseDomain(nsACString& aBaseDomain) {
+  // Handle some special URIs first.
+  bool handled;
+  nsresult rv = GetSpecialBaseDomain(mCodebase, &handled, aBaseDomain);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  if (handled) {
+    return NS_OK;
+  }
+
+  // For everything else, we ask the TLD service via the ThirdPartyUtil.
   nsCOMPtr<mozIThirdPartyUtil> thirdPartyUtil =
       do_GetService(THIRDPARTYUTIL_CONTRACTID);
-  if (thirdPartyUtil) {
-    return thirdPartyUtil->GetBaseDomain(mCodebase, aBaseDomain);
+  if (!thirdPartyUtil) {
+    return NS_ERROR_FAILURE;
   }
 
+  return thirdPartyUtil->GetBaseDomain(mCodebase, aBaseDomain);
+}
+
+NS_IMETHODIMP
+ContentPrincipal::GetSiteOrigin(nsACString& aSiteOrigin) {
+  // Handle some special URIs first.
+  nsAutoCString baseDomain;
+  bool handled;
+  nsresult rv = GetSpecialBaseDomain(mCodebase, &handled, baseDomain);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  if (handled) {
+    // This is a special URI ("file:", "about:", "view-source:", etc). Just
+    // return the origin.
+    return GetOrigin(aSiteOrigin);
+  }
+
+  // For everything else, we ask the TLD service. Note that, unlike in
+  // GetBaseDomain, we don't use ThirdPartyUtil.getBaseDomain because if the
+  // host is an IP address that returns the raw address and we can't use it with
+  // SetHost below because SetHost expects '[' and ']' around IPv6 addresses.
+  // See bug 1491728.
+  nsCOMPtr<nsIEffectiveTLDService> tldService =
+      do_GetService(NS_EFFECTIVETLDSERVICE_CONTRACTID);
+  if (!tldService) {
+    return NS_ERROR_FAILURE;
+  }
+
+  bool gotBaseDomain = false;
+  rv = tldService->GetBaseDomain(mCodebase, 0, baseDomain);
+  if (NS_SUCCEEDED(rv)) {
+    gotBaseDomain = true;
+  } else {
+    // If this is an IP address or something like "localhost", we just continue
+    // with gotBaseDomain = false.
+    if (rv != NS_ERROR_HOST_IS_IP_ADDRESS &&
+        rv != NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS) {
+      return rv;
+    }
+  }
+
+  // NOTE: Calling `SetHostPort` with a portless domain is insufficient to clear
+  // the port, so an extra `SetPort` call has to be made.
+  nsCOMPtr<nsIURI> siteUri;
+  NS_MutateURI mutator(mCodebase);
+  mutator.SetUserPass(EmptyCString()).SetPort(-1);
+  if (gotBaseDomain) {
+    mutator.SetHost(baseDomain);
+  }
+  rv = mutator.Finalize(siteUri);
+  MOZ_ASSERT(NS_SUCCEEDED(rv), "failed to create siteUri");
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  rv = GenerateOriginNoSuffixFromURI(siteUri, aSiteOrigin);
+  MOZ_ASSERT(NS_SUCCEEDED(rv), "failed to create siteOriginNoSuffix");
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  nsAutoCString suffix;
+  rv = GetOriginSuffix(suffix);
+  MOZ_ASSERT(NS_SUCCEEDED(rv), "failed to create suffix");
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  aSiteOrigin.Append(suffix);
+  return NS_OK;
+}
+
+nsresult ContentPrincipal::GetSiteIdentifier(SiteIdentifier& aSite) {
+  nsCString siteOrigin;
+  nsresult rv = GetSiteOrigin(siteOrigin);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  RefPtr<BasePrincipal> principal = CreateCodebasePrincipal(siteOrigin);
+  if (!principal) {
+    NS_WARNING("could not instantiate codebase principal");
+    return NS_ERROR_FAILURE;
+  }
+
+  aSite.Init(principal);
   return NS_OK;
 }
 
@@ -424,6 +555,15 @@ ContentPrincipal::Read(nsIObjectInputStream* aStream) {
   }
 
   codebase = do_QueryInterface(supports);
+  // Enforce re-parsing about: URIs so that if they change, we continue to use
+  // their new principals correctly.
+  bool isAbout = false;
+  if (NS_SUCCEEDED(codebase->SchemeIs("about", &isAbout)) && isAbout) {
+    nsAutoCString spec;
+    codebase->GetSpec(spec);
+    NS_ENSURE_SUCCESS(NS_NewURI(getter_AddRefs(codebase), spec),
+                      NS_ERROR_FAILURE);
+  }
 
   nsCOMPtr<nsIURI> domain;
   rv = NS_ReadOptionalObject(aStream, true, getter_AddRefs(supports));
@@ -458,7 +598,12 @@ ContentPrincipal::Read(nsIObjectInputStream* aStream) {
     mCSP->SetRequestContext(nullptr, this);
   }
 
-  SetDomain(domain);
+  // Note: we don't call SetDomain here because we don't need the wrapper
+  // recomputation code there (we just created this principal).
+  mDomain = domain;
+  if (mDomain) {
+    SetHasExplicitDomain();
+  }
 
   return NS_OK;
 }
@@ -489,9 +634,6 @@ ContentPrincipal::Write(nsIObjectOutputStream* aStream) {
   if (NS_FAILED(rv)) {
     return rv;
   }
-
-  // mCodebaseImmutable and mDomainImmutable will be recomputed based
-  // on the deserialized URIs in Read().
 
   return NS_OK;
 }

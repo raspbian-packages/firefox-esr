@@ -11,12 +11,12 @@
 
 #include "nsDOMDataChannelDeclarations.h"
 #include "nsDOMDataChannel.h"
-#include "nsIDOMDataChannel.h"
 #include "mozilla/DOMEventTargetHelper.h"
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/MessageEvent.h"
 #include "mozilla/dom/MessageEventBinding.h"
 #include "mozilla/dom/ScriptSettings.h"
+#include "mozilla/dom/Blob.h"
 
 #include "nsError.h"
 #include "nsContentUtils.h"
@@ -34,7 +34,7 @@
 // Since we've moved the windows.h include down here, we have to explicitly
 // undef GetBinaryType, otherwise we'll get really odd conflicts
 #ifdef GetBinaryType
-#undef GetBinaryType
+#  undef GetBinaryType
 #endif
 
 using namespace mozilla;
@@ -49,9 +49,10 @@ nsDOMDataChannel::~nsDOMDataChannel() {
   mDataChannel->Close();
 }
 
-/* virtual */ JSObject* nsDOMDataChannel::WrapObject(
-    JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return RTCDataChannelBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* nsDOMDataChannel::WrapObject(JSContext* aCx,
+                                       JS::Handle<JSObject*> aGivenProto) {
+  return RTCDataChannel_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(nsDOMDataChannel)
@@ -68,7 +69,6 @@ NS_IMPL_ADDREF_INHERITED(nsDOMDataChannel, DOMEventTargetHelper)
 NS_IMPL_RELEASE_INHERITED(nsDOMDataChannel, DOMEventTargetHelper)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(nsDOMDataChannel)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMDataChannel)
 NS_INTERFACE_MAP_END_INHERITING(DOMEventTargetHelper)
 
 nsDOMDataChannel::nsDOMDataChannel(
@@ -101,7 +101,7 @@ nsresult nsDOMDataChannel::Init(nsPIDOMWindowInner* aDOMWindow) {
 
   // Attempt to kill "ghost" DataChannel (if one can happen): but usually too
   // early for check to fail
-  rv = CheckInnerWindowCorrectness();
+  rv = CheckCurrentGlobalCorrectness();
   NS_ENSURE_SUCCESS(rv, rv);
 
   rv = nsContentUtils::GetUTFOrigin(principal, mOrigin);
@@ -120,12 +120,29 @@ void nsDOMDataChannel::GetProtocol(nsAString& aProtocol) {
   mDataChannel->GetProtocol(aProtocol);
 }
 
-uint16_t nsDOMDataChannel::Id() const { return mDataChannel->GetStream(); }
+mozilla::dom::Nullable<uint16_t> nsDOMDataChannel::GetId() const {
+  mozilla::dom::Nullable<uint16_t> result = mDataChannel->GetStream();
+  if (result.Value() == 65535) {
+    result.SetNull();
+  }
+  return result;
+}
 
 // XXX should be GetType()?  Open question for the spec
 bool nsDOMDataChannel::Reliable() const {
   return mDataChannel->GetType() == mozilla::DataChannelConnection::RELIABLE;
 }
+
+mozilla::dom::Nullable<uint16_t> nsDOMDataChannel::GetMaxPacketLifeTime()
+    const {
+  return mDataChannel->GetMaxPacketLifeTime();
+}
+
+mozilla::dom::Nullable<uint16_t> nsDOMDataChannel::GetMaxRetransmits() const {
+  return mDataChannel->GetMaxRetransmits();
+}
+
+bool nsDOMDataChannel::Negotiated() const { return mDataChannel->GetNegotiated(); }
 
 bool nsDOMDataChannel::Ordered() const { return mDataChannel->GetOrdered(); }
 
@@ -156,7 +173,7 @@ void nsDOMDataChannel::Close() {
 // All of the following is copy/pasted from WebSocket.cpp.
 void nsDOMDataChannel::Send(const nsAString& aData, ErrorResult& aRv) {
   NS_ConvertUTF16toUTF8 msgString(aData);
-  Send(nullptr, msgString, false, aRv);
+  Send(nullptr, &msgString, false, aRv);
 }
 
 void nsDOMDataChannel::Send(Blob& aData, ErrorResult& aRv) {
@@ -178,7 +195,7 @@ void nsDOMDataChannel::Send(Blob& aData, ErrorResult& aRv) {
     return;
   }
 
-  Send(msgStream, EmptyCString(), true, aRv);
+  Send(&aData, nullptr, true, aRv);
 }
 
 void nsDOMDataChannel::Send(const ArrayBuffer& aData, ErrorResult& aRv) {
@@ -192,7 +209,7 @@ void nsDOMDataChannel::Send(const ArrayBuffer& aData, ErrorResult& aRv) {
   char* data = reinterpret_cast<char*>(aData.Data());
 
   nsDependentCSubstring msgString(data, len);
-  Send(nullptr, msgString, true, aRv);
+  Send(nullptr, &msgString, true, aRv);
 }
 
 void nsDOMDataChannel::Send(const ArrayBufferView& aData, ErrorResult& aRv) {
@@ -206,12 +223,12 @@ void nsDOMDataChannel::Send(const ArrayBufferView& aData, ErrorResult& aRv) {
   char* data = reinterpret_cast<char*>(aData.Data());
 
   nsDependentCSubstring msgString(data, len);
-  Send(nullptr, msgString, true, aRv);
+  Send(nullptr, &msgString, true, aRv);
 }
 
-void nsDOMDataChannel::Send(nsIInputStream* aMsgStream,
-                            const nsACString& aMsgString, bool aIsBinary,
-                            ErrorResult& aRv) {
+void nsDOMDataChannel::Send(mozilla::dom::Blob* aMsgBlob,
+                            const nsACString* aMsgString, bool aIsBinary,
+                            mozilla::ErrorResult& aRv) {
   MOZ_ASSERT(NS_IsMainThread());
   uint16_t state = mozilla::DataChannel::CLOSED;
   if (!mSentClose) {
@@ -233,13 +250,13 @@ void nsDOMDataChannel::Send(nsIInputStream* aMsgStream,
   MOZ_ASSERT(state == mozilla::DataChannel::OPEN,
              "Unknown state in nsDOMDataChannel::Send");
 
-  if (aMsgStream) {
-    mDataChannel->SendBinaryStream(aMsgStream, aRv);
+  if (aMsgBlob) {
+    mDataChannel->SendBinaryBlob(*aMsgBlob, aRv);
   } else {
     if (aIsBinary) {
-      mDataChannel->SendBinaryMsg(aMsgString, aRv);
+      mDataChannel->SendBinaryMsg(*aMsgString, aRv);
     } else {
-      mDataChannel->SendMsg(aMsgString, aRv);
+      mDataChannel->SendMsg(*aMsgString, aRv);
     }
   }
 }
@@ -253,7 +270,7 @@ nsresult nsDOMDataChannel::DoOnMessageAvailable(const nsACString& aData,
            ? ((mBinaryType == DC_BINARY_TYPE_BLOB) ? " (blob)" : " (binary)")
            : ""));
 
-  nsresult rv = CheckInnerWindowCorrectness();
+  nsresult rv = CheckCurrentGlobalCorrectness();
   if (NS_FAILED(rv)) {
     return NS_OK;
   }
@@ -295,18 +312,18 @@ nsresult nsDOMDataChannel::DoOnMessageAvailable(const nsACString& aData,
 
   RefPtr<MessageEvent> event = new MessageEvent(this, nullptr, nullptr);
 
-  event->InitMessageEvent(nullptr, NS_LITERAL_STRING("message"), false, false,
-                          jsData, mOrigin, EmptyString(), nullptr,
-                          Sequence<OwningNonNull<MessagePort>>());
+  event->InitMessageEvent(nullptr, NS_LITERAL_STRING("message"), CanBubble::eNo,
+                          Cancelable::eNo, jsData, mOrigin, EmptyString(),
+                          nullptr, Sequence<OwningNonNull<MessagePort>>());
   event->SetTrusted(true);
 
   LOG(("%p(%p): %s - Dispatching\n", this, (void*)mDataChannel, __FUNCTION__));
-  bool dummy;
-  rv = DispatchEvent(static_cast<Event*>(event), &dummy);
-  if (NS_FAILED(rv)) {
+  ErrorResult err;
+  DispatchEvent(*event, err);
+  if (err.Failed()) {
     NS_WARNING("Failed to dispatch the message event!!!");
   }
-  return rv;
+  return err.StealNSResult();
 }
 
 nsresult nsDOMDataChannel::OnMessageAvailable(nsISupports* aContext,
@@ -325,18 +342,19 @@ nsresult nsDOMDataChannel::OnSimpleEvent(nsISupports* aContext,
                                          const nsAString& aName) {
   MOZ_ASSERT(NS_IsMainThread());
 
-  nsresult rv = CheckInnerWindowCorrectness();
+  nsresult rv = CheckCurrentGlobalCorrectness();
   if (NS_FAILED(rv)) {
     return NS_OK;
   }
 
   RefPtr<Event> event = NS_NewDOMEvent(this, nullptr, nullptr);
 
-  event->InitEvent(aName, false, false);
+  event->InitEvent(aName, CanBubble::eNo, Cancelable::eNo);
   event->SetTrusted(true);
 
-  bool dummy;
-  return DispatchEvent(event, &dummy);
+  ErrorResult err;
+  DispatchEvent(*event, err);
+  return err.StealNSResult();
 }
 
 nsresult nsDOMDataChannel::OnChannelConnected(nsISupports* aContext) {
@@ -468,16 +486,12 @@ void nsDOMDataChannel::EventListenerRemoved(nsAtom* aType) {
 /* static */
 nsresult NS_NewDOMDataChannel(
     already_AddRefed<mozilla::DataChannel>&& aDataChannel,
-    nsPIDOMWindowInner* aWindow, nsIDOMDataChannel** aDomDataChannel) {
+    nsPIDOMWindowInner* aWindow, nsDOMDataChannel** aDomDataChannel) {
   RefPtr<nsDOMDataChannel> domdc = new nsDOMDataChannel(aDataChannel, aWindow);
 
   nsresult rv = domdc->Init(aWindow);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  return CallQueryInterface(domdc, aDomDataChannel);
-}
-
-/* static */
-void NS_DataChannelAppReady(nsIDOMDataChannel* aDomDataChannel) {
-  ((nsDOMDataChannel*)aDomDataChannel)->AppReady();
+  domdc.forget(aDomDataChannel);
+  return NS_OK;
 }

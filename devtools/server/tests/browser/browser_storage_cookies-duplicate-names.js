@@ -7,8 +7,11 @@
 // Test that the storage panel is able to display multiple cookies with the same
 // name (and different paths).
 
-const {StorageFront} = require("devtools/shared/fronts/storage");
-Services.scriptloader.loadSubScript("chrome://mochitests/content/browser/devtools/server/tests/browser/storage-helpers.js", this);
+/* import-globals-from storage-helpers.js */
+Services.scriptloader.loadSubScript(
+  "chrome://mochitests/content/browser/devtools/server/tests/browser/storage-helpers.js",
+  this
+);
 
 const TESTDATA = {
   "http://test1.example.org": [
@@ -18,7 +21,7 @@ const TESTDATA = {
       expires: 0,
       path: "/",
       host: "test1.example.org",
-      isDomain: false,
+      hostOnly: true,
       isSecure: false,
     },
     {
@@ -27,7 +30,7 @@ const TESTDATA = {
       expires: 0,
       path: "/path2/",
       host: "test1.example.org",
-      isDomain: false,
+      hostOnly: true,
       isSecure: false,
     },
     {
@@ -36,20 +39,18 @@ const TESTDATA = {
       expires: 0,
       path: "/path3/",
       host: "test1.example.org",
-      isDomain: false,
+      hostOnly: true,
       isSecure: false,
-    }
-  ]
+    },
+  ],
 };
 
-add_task(async function () {
-  await openTabAndSetupStorage(MAIN_DOMAIN + "storage-cookies-same-name.html");
+add_task(async function() {
+  const { target, front } = await openTabAndSetupStorage(
+    MAIN_DOMAIN + "storage-cookies-same-name.html"
+  );
 
-  initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
-  let form = await connectDebuggerClient(client);
-  let front = StorageFront(client, form);
-  let data = await front.listStores();
+  const data = await front.listStores();
 
   ok(data.cookies, "Cookies storage actor is present");
 
@@ -58,29 +59,34 @@ add_task(async function () {
 
   // Forcing GC/CC to get rid of docshells and windows created by this test.
   forceCollections();
-  await client.close();
+  await target.destroy();
   forceCollections();
   DebuggerServer.destroy();
   forceCollections();
 });
 
 function testCookies(cookiesActor) {
-  let numHosts = Object.keys(cookiesActor.hosts).length;
+  const numHosts = Object.keys(cookiesActor.hosts).length;
   is(numHosts, 1, "Correct number of host entries for cookies");
   return testCookiesObjects(0, cookiesActor.hosts, cookiesActor);
 }
 
-var testCookiesObjects = async function (index, hosts, cookiesActor) {
-  let host = Object.keys(hosts)[index];
-  let matchItems = data => {
-    is(data.total, TESTDATA[host].length,
-       "Number of cookies in host " + host + " matches");
-    for (let item of data.data) {
+var testCookiesObjects = async function(index, hosts, cookiesActor) {
+  const host = Object.keys(hosts)[index];
+  const matchItems = data => {
+    is(
+      data.total,
+      TESTDATA[host].length,
+      "Number of cookies in host " + host + " matches"
+    );
+    for (const item of data.data) {
       let found = false;
-      for (let toMatch of TESTDATA[host]) {
-        if (item.name === toMatch.name &&
-            item.host === toMatch.host &&
-            item.path === toMatch.path) {
+      for (const toMatch of TESTDATA[host]) {
+        if (
+          item.name === toMatch.name &&
+          item.host === toMatch.host &&
+          item.path === toMatch.path
+        ) {
           found = true;
           ok(true, "Found cookie " + item.name + " in response");
           is(item.value.str, toMatch.value, "The value matches.");
@@ -88,7 +94,7 @@ var testCookiesObjects = async function (index, hosts, cookiesActor) {
           is(item.path, toMatch.path, "The path matches.");
           is(item.host, toMatch.host, "The host matches.");
           is(item.isSecure, toMatch.isSecure, "The isSecure value matches.");
-          is(item.isDomain, toMatch.isDomain, "The isDomain value matches.");
+          is(item.hostOnly, toMatch.hostOnly, "The hostOnly value matches.");
           break;
         }
       }

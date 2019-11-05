@@ -10,6 +10,8 @@
 #include "mozilla/EventStates.h"
 #include "mozilla/MouseEvents.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "nsLayoutUtils.h"
 #include "nsGkAtoms.h"
 #include "nsFontMetrics.h"
@@ -21,6 +23,9 @@
 #include "nsIFrame.h"
 #include <algorithm>
 #include "LayersLogging.h"
+
+using namespace mozilla;
+using namespace mozilla::dom;
 
 // If debugging this code you may wish to enable this logging, and also
 // uncomment the DumpFrameTree call near the bottom of the file.
@@ -105,17 +110,17 @@ static const EventRadiusPrefs* GetPrefsFor(EventClassID aEventClassID) {
     prefs->mRegistered = true;
 
     nsPrintfCString enabledPref("ui.%s.radius.enabled", prefBranch);
-    Preferences::AddBoolVarCache(&prefs->mEnabled, enabledPref.get(), false);
+    Preferences::AddBoolVarCache(&prefs->mEnabled, enabledPref, false);
 
     nsPrintfCString visitedWeightPref("ui.%s.radius.visitedWeight", prefBranch);
-    Preferences::AddUintVarCache(&prefs->mVisitedWeight,
-                                 visitedWeightPref.get(), 100);
+    Preferences::AddUintVarCache(&prefs->mVisitedWeight, visitedWeightPref,
+                                 100);
 
     static const char prefNames[4][9] = {"topmm", "rightmm", "bottommm",
                                          "leftmm"};
     for (int32_t i = 0; i < 4; ++i) {
       nsPrintfCString radiusPref("ui.%s.radius.%s", prefBranch, prefNames[i]);
-      Preferences::AddUintVarCache(&prefs->mSideRadii[i], radiusPref.get(), 0);
+      Preferences::AddUintVarCache(&prefs->mSideRadii[i], radiusPref, 0);
     }
 
     if (aEventClassID == eMouseEventClass) {
@@ -126,8 +131,8 @@ static const EventRadiusPrefs* GetPrefsFor(EventClassID aEventClassID) {
     }
 
     nsPrintfCString repositionPref("ui.%s.radius.reposition", prefBranch);
-    Preferences::AddBoolVarCache(&prefs->mRepositionEventCoords,
-                                 repositionPref.get(), false);
+    Preferences::AddBoolVarCache(&prefs->mRepositionEventCoords, repositionPref,
+                                 false);
 
     // These values were formerly set by ui.zoomedview preferences.
     prefs->mTouchClusterDetectionEnabled = false;
@@ -220,7 +225,7 @@ static nsIContent* GetClickableAncestor(
         content->AsElement()->AttrValueIs(kNameSpaceID_None,
                                           nsGkAtoms::mozbrowser,
                                           nsGkAtoms::_true, eIgnoreCase) &&
-        content->AsElement()->AttrValueIs(kNameSpaceID_None, nsGkAtoms::Remote,
+        content->AsElement()->AttrValueIs(kNameSpaceID_None, nsGkAtoms::remote,
                                           nsGkAtoms::_true, eIgnoreCase)) {
       return content;
     }
@@ -229,14 +234,13 @@ static nsIContent* GetClickableAncestor(
     // really intended to be used with XUL, though.
     if (content->IsAnyOfXULElements(
             nsGkAtoms::button, nsGkAtoms::checkbox, nsGkAtoms::radio,
-            nsGkAtoms::autorepeatbutton, nsGkAtoms::menu, nsGkAtoms::menubutton,
-            nsGkAtoms::menuitem, nsGkAtoms::menulist,
+            nsGkAtoms::menu, nsGkAtoms::menuitem, nsGkAtoms::menulist,
             nsGkAtoms::scrollbarbutton, nsGkAtoms::resizer)) {
       return content;
     }
 
     static Element::AttrValuesArray clickableRoles[] = {
-        &nsGkAtoms::button, &nsGkAtoms::key, nullptr};
+        nsGkAtoms::button, nsGkAtoms::key, nullptr};
     if (content->IsElement() && content->AsElement()->FindAttrValueIn(
                                     kNameSpaceID_None, nsGkAtoms::role,
                                     clickableRoles, eIgnoreCase) >= 0) {
@@ -255,12 +259,10 @@ static nsIContent* GetClickableAncestor(
 
 static nscoord AppUnitsFromMM(nsIFrame* aFrame, uint32_t aMM) {
   nsPresContext* pc = aFrame->PresContext();
-  nsIPresShell* presShell = pc->PresShell();
+  PresShell* presShell = pc->PresShell();
   float result = float(aMM) * (pc->DeviceContext()->AppUnitsPerPhysicalInch() /
                                MM_PER_INCH_FLOAT);
-  if (presShell->ScaleToResolution()) {
-    result = result / presShell->GetResolution();
-  }
+  result = result / presShell->GetResolution();
   return NSToCoordRound(result);
 }
 
@@ -355,7 +357,7 @@ static bool IsLargeElement(nsIFrame* aFrame, const EventRadiusPrefs* aPrefs) {
   uint32_t keepLimitSizeForCluster = aPrefs->mKeepLimitSizeForCluster;
   nsSize frameSize = aFrame->GetSize();
   nsPresContext* pc = aFrame->PresContext();
-  nsIPresShell* presShell = pc->PresShell();
+  PresShell* presShell = pc->PresShell();
   float cumulativeResolution = presShell->GetCumulativeResolution();
   if ((pc->AppUnitsToGfxUnits(frameSize.height) * cumulativeResolution) >
           keepLimitSizeForCluster &&
@@ -486,7 +488,7 @@ static bool IsElementClickableAndReadable(nsIFrame* aFrame,
   uint32_t limitReadableSize = aPrefs->mLimitReadableSize;
   nsSize frameSize = aFrame->GetSize();
   nsPresContext* pc = aFrame->PresContext();
-  nsIPresShell* presShell = pc->PresShell();
+  PresShell* presShell = pc->PresShell();
   float cumulativeResolution = presShell->GetCumulativeResolution();
   if ((pc->AppUnitsToGfxUnits(frameSize.height) * cumulativeResolution) <
           limitReadableSize ||
@@ -504,12 +506,12 @@ static bool IsElementClickableAndReadable(nsIFrame* aFrame,
   if (content) {
     nsINodeList* childNodes = content->ChildNodes();
     uint32_t childNodeCount = childNodes->Length();
-    if ((content->IsNodeOfType(nsINode::eTEXT)) ||
+    if ((content->IsText()) ||
         // click occurs on the text inside <a></a> or other clickable tags with
         // text inside
 
         (childNodeCount == 1 && childNodes->Item(0) &&
-         childNodes->Item(0)->IsNodeOfType(nsINode::eTEXT))) {
+         childNodes->Item(0)->IsText())) {
       // The click occurs on an element with only one text node child. In this
       // case, the font size can be tested. The number of child nodes is tested
       // to avoid the following cases (See bug 1172488):
@@ -538,11 +540,13 @@ static bool IsElementClickableAndReadable(nsIFrame* aFrame,
 nsIFrame* FindFrameTargetedByInputEvent(
     WidgetGUIEvent* aEvent, nsIFrame* aRootFrame,
     const nsPoint& aPointRelativeToRootFrame, uint32_t aFlags) {
-  uint32_t flags = (aFlags & INPUT_IGNORE_ROOT_SCROLL_FRAME)
-                       ? nsLayoutUtils::IGNORE_ROOT_SCROLL_FRAME
-                       : 0;
+  using FrameForPointOption = nsLayoutUtils::FrameForPointOption;
+  EnumSet<FrameForPointOption> options;
+  if (aFlags & INPUT_IGNORE_ROOT_SCROLL_FRAME) {
+    options += FrameForPointOption::IgnoreRootScrollFrame;
+  }
   nsIFrame* target = nsLayoutUtils::GetFrameForPoint(
-      aRootFrame, aPointRelativeToRootFrame, flags);
+      aRootFrame, aPointRelativeToRootFrame, options);
   PET_LOG(
       "Found initial target %p for event class %s point %s relative to root "
       "frame %p\n",
@@ -563,7 +567,7 @@ nsIFrame* FindFrameTargetedByInputEvent(
     clickableAncestor = GetClickableAncestor(target, nsGkAtoms::body);
     if (clickableAncestor) {
       if (!IsElementClickableAndReadable(target, aEvent, prefs)) {
-        aEvent->AsMouseEventBase()->hitCluster = true;
+        aEvent->AsMouseEventBase()->mHitCluster = true;
       }
       PET_LOG("Target %p is clickable\n", target);
       // If the target that was directly hit has a clickable ancestor, that
@@ -577,8 +581,8 @@ nsIFrame* FindFrameTargetedByInputEvent(
   // Do not modify targeting for actual mouse hardware; only for mouse
   // events generated by touch-screen hardware.
   if (aEvent->mClass == eMouseEventClass && prefs->mTouchOnly &&
-      aEvent->AsMouseEvent()->inputSource !=
-          nsIDOMMouseEvent::MOZ_SOURCE_TOUCH) {
+      aEvent->AsMouseEvent()->mInputSource !=
+          MouseEvent_Binding::MOZ_SOURCE_TOUCH) {
     PET_LOG("Mouse input event is not from a touch source\n");
     return target;
   }
@@ -597,7 +601,7 @@ nsIFrame* FindFrameTargetedByInputEvent(
           mozilla::layers::Stringify(targetRect).c_str());
   AutoTArray<nsIFrame*, 8> candidates;
   nsresult rv = nsLayoutUtils::GetFramesForArea(aRootFrame, targetRect,
-                                                candidates, flags);
+                                                candidates, options);
   if (NS_FAILED(rv)) {
     return target;
   }
@@ -612,7 +616,7 @@ nsIFrame* FindFrameTargetedByInputEvent(
         (!IsElementClickableAndReadable(closestClickable, aEvent, prefs))) {
       if (aEvent->mClass == eMouseEventClass) {
         WidgetMouseEventBase* mouseEventBase = aEvent->AsMouseEventBase();
-        mouseEventBase->hitCluster = true;
+        mouseEventBase->mHitCluster = true;
       }
     }
     target = closestClickable;

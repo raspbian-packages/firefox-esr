@@ -117,7 +117,7 @@ class Test_get_test(object):
 
 
 class Test_get_browser_config(object):
-    required = ('preferences', 'extensions', 'browser_path', 'browser_wait',
+    required = ('extensions', 'browser_path', 'browser_wait',
                 'extra_args', 'buildid', 'env', 'init_url', 'webserver')
     optional = ['bcontroller_config',
                 'child_process',
@@ -135,10 +135,9 @@ class Test_get_browser_config(object):
                 'xperf_path',
                 'error_filename',
                 'no_upload_results',
-                'enable_stylo',
-                'disable_stylo',
                 'stylothreads',
-                'subtests']
+                'subtests',
+                'preferences']
 
     def test_that_contains_title(self):
         config_no_optionals = dict.fromkeys(self.required, '')
@@ -156,7 +155,7 @@ class Test_get_browser_config(object):
     def test_raises_keyerror_for_required_keys(self):
         config_missing_required = dict.fromkeys(self.required, '')
         config_missing_required.update(title='is_mandatory')
-        del config_missing_required['preferences']
+        del config_missing_required['extensions']
 
         with pytest.raises(KeyError):
             get_browser_config(config_missing_required)
@@ -169,16 +168,6 @@ class Test_get_browser_config(object):
             get_browser_config(config_missing_optionals)
         except KeyError:
             pytest.fail('Must not raise exception on missing optional')
-
-    def test_browser_keys_are_subset_from_config(self):
-        config_extensive = dict.fromkeys(self.required, '')
-        config_extensive.update(dict.fromkeys(self.optional, ''))
-        config_extensive['title'] = 'is_mandatory'
-        config_extensive['extra_custom_key'] = 'value'
-
-        browser_config = get_browser_config(config_extensive)
-        assert browser_config != config_extensive
-        assert set(browser_config).issubset(set(config_extensive))
 
 
 class Test_get_config(object):
@@ -212,10 +201,9 @@ class Test_get_config(object):
         cls.argv_sessionrestore_many_windows = \
             '--activeTests sessionrestore_many_windows -e /some/random/path'.split()
         cls.argv_tresize = '--activeTests tresize -e /some/random/path'.split()
-        cls.argv_tpaint = '--activeTests tpaint -e /some/random/path'.split()
         cls.argv_cpstartup = '--activeTests cpstartup -e /some/random/path'.split()
         cls.argv_tabpaint = '--activeTests tabpaint -e /some/random/path'.split()
-        cls.argv_tps = '--activeTests tps -e /some/random/path'.split()
+        cls.argv_tabswitch = '--activeTests tabswitch -e /some/random/path'.split()
         cls.argv_tart = '--activeTests tart -e /some/random/path'.split()
         cls.argv_damp = '--activeTests damp -e /some/random/path'.split()
         cls.argv_glterrain = '--activeTests glterrain -e /some/random/path'.split()
@@ -406,22 +394,6 @@ class Test_get_config(object):
         assert test_config['filters'] is not None
         # assert test_config['unit'] == 'ms'
 
-    def test_tpaint_has_expected_attributes(self):
-        config = get_config(self.argv_tpaint)
-        test_config = config['tests'][0]
-
-        assert test_config['name'] == 'tpaint'
-        assert test_config['tpcycles'] == 1
-        assert test_config['tppagecycles'] == 20
-        assert test_config['timeout'] == 300
-        assert test_config['gecko_profile_interval'] == 1
-        assert test_config['gecko_profile_entries'] == 2000000
-        assert test_config['tpmozafterpaint'] is True
-        assert test_config['filters'] is not None
-        assert test_config['unit'] == 'ms'
-        assert test_config['preferences'] == {
-            'security.data_uri.block_toplevel_data_uri_navigations': False}
-
     def test_cpstartup_has_expected_attributes(self):
         config = get_config(self.argv_cpstartup)
         test_config = config['tests'][0]
@@ -434,6 +406,7 @@ class Test_get_config(object):
         assert test_config['tploadnocache'] is True
         assert test_config['unit'] == 'ms'
         assert test_config['preferences'] == {
+            'addon.test.cpstartup.webserver': '${webserver}',
             'browser.link.open_newwindow': 3,
             'browser.link.open_newwindow.restriction': 2,
         }
@@ -454,13 +427,13 @@ class Test_get_config(object):
             'browser.link.open_newwindow.restriction': 2,
         }
 
-    def test_tps_has_expected_attributes(self):
-        config = get_config(self.argv_tps)
+    def test_tabswitch_has_expected_attributes(self):
+        config = get_config(self.argv_tabswitch)
         test_config = config['tests'][0]
 
-        assert test_config['name'] == 'tps'
+        assert test_config['name'] == 'tabswitch'
         assert test_config['tpcycles'] == 1
-        assert test_config['tpmanifest'] != '${talos}/tests/tabswitch/tps.manifest'
+        assert test_config['tpmanifest'] != '${talos}/tests/tabswitch/tabswitch.manifest'
         assert test_config['tppagecycles'] == 5
         assert test_config['gecko_profile_entries'] == 5000000
         assert test_config['tploadnocache'] is True
@@ -659,7 +632,7 @@ class Test_get_config(object):
         assert test_config['filters'] is not None
         assert test_config['timeout'] == 1800
         assert test_config['unit'] == 'ms'
-        assert test_config['webextensions'] == '${talos}/webextensions/dummy/dummy-signed.xpi'
+        assert test_config['webextensions'] == '${talos}/webextensions/dummy/dummy.xpi'
         assert test_config['preferences'] == {'xpinstall.signatures.required': False}
 
     @mock.patch('talos.config.build_manifest', conftest.patched_build_manifest)
@@ -938,7 +911,7 @@ class Test_get_config(object):
         assert test_config['filters'] is not None
         assert test_config['unit'] == 'ms'
         assert test_config['lower_is_better'] is True
-        assert test_config['fnbpaint'] is True
+        assert test_config['fnbpaint'] is False
         assert test_config['tpmanifest'] != \
             '${talos}/tests/quantum_pageload/quantum_pageload_google.manifest'
 
@@ -954,7 +927,7 @@ class Test_get_config(object):
         assert test_config['filters'] is not None
         assert test_config['unit'] == 'ms'
         assert test_config['lower_is_better'] is True
-        assert test_config['fnbpaint'] is True
+        assert test_config['fnbpaint'] is False
         assert test_config['profile'] == 'simple'
 
     def test_tp6_youtube_has_expected_attributes(self):

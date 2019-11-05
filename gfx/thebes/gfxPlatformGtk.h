@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -34,23 +34,18 @@ class gfxPlatformGtk : public gfxPlatform {
   void ReadSystemFontList(
       InfallibleTArray<mozilla::dom::SystemFontListEntry>* retValue) override;
 
-  virtual already_AddRefed<gfxASurface> CreateOffscreenSurface(
+  already_AddRefed<gfxASurface> CreateOffscreenSurface(
       const IntSize& aSize, gfxImageFormat aFormat) override;
 
-  virtual nsresult GetFontList(nsAtom* aLangGroup,
-                               const nsACString& aGenericFamily,
-                               nsTArray<nsString>& aListOfFonts) override;
+  nsresult GetFontList(nsAtom* aLangGroup, const nsACString& aGenericFamily,
+                       nsTArray<nsString>& aListOfFonts) override;
 
-  virtual nsresult UpdateFontList() override;
+  nsresult UpdateFontList() override;
 
-  virtual void GetCommonFallbackFonts(
-      uint32_t aCh, uint32_t aNextCh, Script aRunScript,
-      nsTArray<const char*>& aFontList) override;
+  void GetCommonFallbackFonts(uint32_t aCh, uint32_t aNextCh, Script aRunScript,
+                              nsTArray<const char*>& aFontList) override;
 
-  virtual gfxPlatformFontList* CreatePlatformFontList() override;
-
-  virtual nsresult GetStandardFamilyName(const nsAString& aFontName,
-                                         nsAString& aFamilyName) override;
+  gfxPlatformFontList* CreatePlatformFontList() override;
 
   gfxFontGroup* CreateFontGroup(const mozilla::FontFamilyList& aFontFamilyList,
                                 const gfxFontStyle* aStyle,
@@ -59,27 +54,9 @@ class gfxPlatformGtk : public gfxPlatform {
                                 gfxFloat aDevToCssSize) override;
 
   /**
-   * Look up a local platform font using the full font face name (needed to
-   * support @font-face src local() )
-   */
-  virtual gfxFontEntry* LookupLocalFont(const nsAString& aFontName,
-                                        uint16_t aWeight, int16_t aStretch,
-                                        uint8_t aStyle) override;
-
-  /**
-   * Activate a platform font (needed to support @font-face src url() )
-   *
-   */
-  virtual gfxFontEntry* MakePlatformFont(const nsAString& aFontName,
-                                         uint16_t aWeight, int16_t aStretch,
-                                         uint8_t aStyle,
-                                         const uint8_t* aFontData,
-                                         uint32_t aLength) override;
-
-  /**
    * Calls XFlush if xrender is enabled.
    */
-  virtual void FlushContentDrawing() override;
+  void FlushContentDrawing() override;
 
   FT_Library GetFTLibrary() override;
 
@@ -87,7 +64,7 @@ class gfxPlatformGtk : public gfxPlatform {
   static double GetFontScaleFactor();
 
 #ifdef MOZ_X11
-  virtual void GetAzureBackendInfo(mozilla::widget::InfoObject& aObj) override {
+  void GetAzureBackendInfo(mozilla::widget::InfoObject& aObj) override {
     gfxPlatform::GetAzureBackendInfo(aObj);
     aObj.DefineProperty("CairoUseXRender", mozilla::gfx::gfxVars::UseXRender());
   }
@@ -95,7 +72,7 @@ class gfxPlatformGtk : public gfxPlatform {
 
   bool UseImageOffscreenSurfaces();
 
-  virtual gfxImageFormat GetOffscreenFormat() override;
+  gfxImageFormat GetOffscreenFormat() override;
 
   bool SupportsApzWheelInput() const override { return true; }
 
@@ -108,7 +85,7 @@ class gfxPlatformGtk : public gfxPlatform {
 
   bool AccelerateLayersByDefault() override;
 
-#ifdef GL_PROVIDER_GLX
+#ifdef MOZ_X11
   already_AddRefed<mozilla::gfx::VsyncSource> CreateHardwareVsyncSource()
       override;
 #endif
@@ -117,14 +94,31 @@ class gfxPlatformGtk : public gfxPlatform {
   Display* GetCompositorDisplay() { return mCompositorDisplay; }
 #endif  // MOZ_X11
 
+#ifdef MOZ_WAYLAND
+  void SetWaylandLastVsync(uint32_t aVsyncTimestamp) {
+    mWaylandLastVsyncTimestamp = aVsyncTimestamp;
+  }
+  int64_t GetWaylandLastVsync() { return mWaylandLastVsyncTimestamp; }
+  void SetWaylandFrameDelay(int64_t aFrameDelay) {
+    mWaylandFrameDelay = aFrameDelay;
+  }
+  int64_t GetWaylandFrameDelay() { return mWaylandFrameDelay; }
+#endif
+
  protected:
+  bool CheckVariationFontSupport() override;
+
   int8_t mMaxGenericSubstitutions;
 
  private:
-  virtual void GetPlatformCMSOutputProfile(void*& mem, size_t& size) override;
+  void GetPlatformCMSOutputProfile(void*& mem, size_t& size) override;
 
 #ifdef MOZ_X11
   Display* mCompositorDisplay;
+#endif
+#ifdef MOZ_WAYLAND
+  int64_t mWaylandLastVsyncTimestamp;
+  int64_t mWaylandFrameDelay;
 #endif
 };
 

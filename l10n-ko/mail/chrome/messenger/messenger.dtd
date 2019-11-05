@@ -36,6 +36,12 @@
 <!ENTITY newFeedAccountCmd.accesskey "d">
 <!ENTITY newIMContactCmd.label "채팅 연락처…">
 <!ENTITY newIMContactCmd.accesskey "h">
+<!ENTITY  newMessageCmd2.key "N">
+<!ENTITY  newMessageCmd.key "M">
+<!ENTITY  newMessageCmd.label "메시지">
+<!ENTITY  newMessageCmd.accesskey "m">
+<!ENTITY  newContactCmd.label "주소록 연락처…">
+<!ENTITY  newContactCmd.accesskey "C">
 <!ENTITY openMessageFileCmd.label "메시지 열기…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "다른 이름으로 저장">
@@ -317,7 +323,6 @@
 <!ENTITY goBackCmd.commandKey "[">
 <!ENTITY goChatCmd.label "채팅">
 <!ENTITY goChatCmd.accesskey "c">
-<!ENTITY goChatCmd.key "C">
 <!ENTITY goChatCmd2.key "H">
 <!ENTITY prevStarredMsgCmd.label "별표 메시지">
 <!ENTITY prevStarredMsgCmd.accesskey "S">
@@ -435,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "메시지 열기">
 <!ENTITY openMessageWindowCmd.accesskey "O">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "새 탭으로 대화 열기">
-<!ENTITY openConversationCmd.accesskey "s">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "대화에서 열기">
+<!ENTITY openInConversationCmd.accesskey "s">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "첨부">
 <!ENTITY openAttachmentListCmd.accesskey "A">
 <!ENTITY openFeedMessage1.label "피드를 열 때">
@@ -510,8 +515,6 @@
 <!ENTITY devToolboxCmd.label "개발자 도구 모음">
 <!ENTITY devToolboxCmd.accesskey "T">
 <!ENTITY devToolboxCmd.commandkey "i">
-<!ENTITY addonDebugCmd.label "부가 기능 디버거">
-<!ENTITY addonDebugCmd.accesskey "A">
 <!ENTITY debugAddonsCmd.label "부가기능 디버그">
 <!ENTITY debugAddonsCmd.accesskey "A">
 <!ENTITY tabsDebugCmd.label "콘텐츠 프레임 디버거">
@@ -603,6 +606,8 @@
 <!ENTITY compactButton.tooltip "선택한 폴더에서 삭제 표시된 메시지 지우기">
 <!ENTITY appmenuButton1.tooltip "앱 메뉴 표시하기">
 
+<!ENTITY addonsButton.tooltip "부가 기능 관리하기">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "인라인 전달">
 <!ENTITY buttonMenuForwardAsAttachment.label "첨부 전달">
@@ -646,6 +651,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "메시지 받기">
 <!ENTITY folderContextGetMessages.accesskey "G">
+<!ENTITY folderContextMarkAllFoldersRead.label "모든 폴더 읽음 표시">
 <!ENTITY folderContextPauseAllUpdates.label "모든 업데이트 중지">
 <!ENTITY folderContextPauseUpdates.label "업데이트 중지">
 <!ENTITY folderContextPauseUpdates.accesskey "U">
@@ -788,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "M">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "최근">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "R">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "즐겨찾기">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "F">
 <!ENTITY contextCopyMsgMenu.label "복사">
 <!ENTITY contextCopyMsgMenu.accesskey "C">
 <!ENTITY contextKillThreadMenu.label "글타래 무시">
@@ -807,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "인쇄 미리 보기">
 <!ENTITY contextPrintPreview.accesskey "v">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "기본값으로 재설정">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -853,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "현재 폴더">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "실행">
 <!ENTITY contextPlay.accesskey "P">
@@ -871,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

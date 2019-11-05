@@ -24,6 +24,7 @@
 #include "mozilla/PluginLibrary.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/WeakPtr.h"
+#include "mozilla/dom/PopupBlocker.h"
 
 class nsPluginStreamListenerPeer;   // browser-initiated stream class
 class nsNPAPIPluginStreamListener;  // plugin-initiated stream class
@@ -31,17 +32,23 @@ class nsIPluginInstanceOwner;
 class nsIOutputStream;
 class nsPluginInstanceOwner;
 
+namespace mozilla {
+namespace dom {
+class Element;
+}  // namespace dom
+}  // namespace mozilla
+
 #if defined(OS_WIN)
 const NPDrawingModel kDefaultDrawingModel = NPDrawingModelSyncWin;
 #elif defined(MOZ_X11)
 const NPDrawingModel kDefaultDrawingModel = NPDrawingModelSyncX;
 #elif defined(XP_MACOSX)
-#ifndef NP_NO_QUICKDRAW
+#  ifndef NP_NO_QUICKDRAW
 const NPDrawingModel kDefaultDrawingModel =
     NPDrawingModelQuickDraw;  // Not supported
-#else
+#  else
 const NPDrawingModel kDefaultDrawingModel = NPDrawingModelCoreGraphics;
-#endif
+#  endif
 #else
 const NPDrawingModel kDefaultDrawingModel = static_cast<NPDrawingModel>(0);
 #endif
@@ -184,7 +191,7 @@ class nsNPAPIPluginInstance final
 
   nsresult IsPrivateBrowsing(bool* aEnabled);
 
-  nsresult GetDOMElement(nsIDOMElement** result);
+  nsresult GetDOMElement(mozilla::dom::Element** result);
 
   nsNPAPITimer* TimerWithID(uint32_t id, uint32_t* index);
   uint32_t ScheduleTimer(uint32_t interval, NPBool repeat,
@@ -263,7 +270,7 @@ class nsNPAPIPluginInstance final
 
   nsTArray<nsPluginStreamListenerPeer*> mFileCachedStreamListeners;
 
-  nsTArray<PopupControlState> mPopupStates;
+  nsTArray<mozilla::dom::PopupBlocker::PopupControlState> mPopupStates;
 
   char* mMIMEType;
 
@@ -281,9 +288,6 @@ class nsNPAPIPluginInstance final
   // Timestamp for the last time this plugin was stopped.
   // This is only valid when the plugin is actually stopped!
   mozilla::TimeStamp mStopTime;
-
-  // is this instance Java and affected by bug 750480?
-  bool mHaveJavaC2PJSObjectQuirk;
 
   static uint32_t gInUnsafePluginCalls;
 

@@ -73,7 +73,7 @@ int32_t RefCountedShm::Release(const RefCountedShmem& aShm) {
   return 0;
 }
 
-bool RefCountedShm::Alloc(IProtocol* aAllocator, size_t aSize,
+bool RefCountedShm::Alloc(mozilla::ipc::IProtocol* aAllocator, size_t aSize,
                           RefCountedShmem& aShm) {
   MOZ_ASSERT(!IsValid(aShm));
   auto shmType = ipc::SharedMemory::SharedMemoryType::TYPE_BASIC;
@@ -84,7 +84,8 @@ bool RefCountedShm::Alloc(IProtocol* aAllocator, size_t aSize,
   return true;
 }
 
-void RefCountedShm::Dealloc(IProtocol* aAllocator, RefCountedShmem& aShm) {
+void RefCountedShm::Dealloc(mozilla::ipc::IProtocol* aAllocator,
+                            RefCountedShmem& aShm) {
   aAllocator->DeallocShmem(aShm.buffer());
   aShm.buffer() = ipc::Shmem();
 }

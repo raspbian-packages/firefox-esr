@@ -22,22 +22,20 @@ class HTMLMenuItemElement final : public nsGenericHTMLElement {
  public:
   using mozilla::dom::Element::GetText;
 
-  HTMLMenuItemElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+  HTMLMenuItemElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
                       mozilla::dom::FromParser aFromParser);
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLMenuItemElement, menuitem)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLMenuItemElement, menuitem)
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLMenuItemElement,
                                        nsGenericHTMLElement)
 
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
   virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
 
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                               const nsAString& aValue,
@@ -46,8 +44,7 @@ class HTMLMenuItemElement final : public nsGenericHTMLElement {
 
   virtual void DoneCreatingElement() override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   uint8_t GetType() const { return mType; }
 

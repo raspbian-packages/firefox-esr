@@ -5,9 +5,9 @@
 MOZ_APP_BASENAME=Fennec
 MOZ_APP_VENDOR=Mozilla
 
-MOZ_APP_VERSION=$FIREFOX_VERSION
-MOZ_APP_VERSION_DISPLAY=$FIREFOX_VERSION_DISPLAY
 MOZ_APP_UA_NAME=Firefox
+
+BROWSER_CHROME_URL=chrome://browser/content/browser.xul
 
 MOZ_BRANDING_DIRECTORY=mobile/android/branding/unofficial
 MOZ_OFFICIAL_BRANDING_DIRECTORY=mobile/android/branding/official
@@ -30,15 +30,9 @@ MOZ_ANDROID_BROWSER_INTENT_CLASS=org.mozilla.gecko.BrowserApp
 
 MOZ_NO_SMART_CARDS=1
 
-MOZ_XULRUNNER=
-
-MOZ_CAPTURE=1
 MOZ_RAW=1
 
 # use custom widget for html:select
 MOZ_USE_NATIVE_POPUP_WINDOWS=1
 
 MOZ_APP_ID={aa3c5121-dab2-40e2-81ca-7ea25febc110}
-
-# Enable checking that add-ons are signed by the trusted root
-MOZ_ADDON_SIGNING=1

@@ -7,8 +7,8 @@
 
 var EXPORTED_SYMBOLS = ["ReadTopManifest", "CreateUrls"];
 
-Cu.import("chrome://reftest/content/globals.jsm", this);
-Cu.import("chrome://reftest/content/reftest.jsm", this);
+Cu.import("resource://reftest/globals.jsm", this);
+Cu.import("resource://reftest/reftest.jsm", this);
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 
@@ -50,7 +50,7 @@ function ReadManifest(aURL, aFilter)
 
     var listURL = aURL;
     var channel = NetUtil.newChannel({uri: aURL, loadUsingSystemPrincipal: true});
-    var inputStream = channel.open2();
+    var inputStream = channel.open();
     if (channel instanceof Ci.nsIHttpChannel
         && channel.responseStatus != 200) {
       g.logger.error("HTTP ERROR : " + channel.responseStatus);
@@ -67,10 +67,6 @@ function ReadManifest(aURL, aFilter)
     if (g.compareRetainedDisplayLists) {
         AddRetainedDisplayListTestPrefs(sandbox, defaultTestPrefSettings,
                                         defaultRefPrefSettings);
-    }
-    if (g.compareStyloToGecko) {
-        AddStyloTestPrefs(sandbox, defaultTestPrefSettings,
-                          defaultRefPrefSettings);
     }
     for (var str of lines) {
         ++lineNo;
@@ -110,10 +106,6 @@ function ReadManifest(aURL, aFilter)
                 AddRetainedDisplayListTestPrefs(sandbox, defaultTestPrefSettings,
                                                 defaultRefPrefSettings);
             }
-            if (g.compareStyloToGecko) {
-                AddStyloTestPrefs(sandbox, defaultTestPrefSettings,
-                                  defaultRefPrefSettings);
-            }
             continue;
         }
 
@@ -128,9 +120,10 @@ function ReadManifest(aURL, aFilter)
         var fuzzy_delta = { min: 0, max: 2 };
         var fuzzy_pixels = { min: 0, max: 1 };
         var chaosMode = false;
+        var wrCapture = { test: false, ref: false };
         var nonSkipUsed = false;
 
-        while (items[0].match(/^(fails|needs-focus|random|skip|asserts|slow|require-or|silentfail|pref|test-pref|ref-pref|fuzzy|chaos-mode)/)) {
+        while (items[0].match(/^(fails|needs-focus|random|skip|asserts|slow|require-or|silentfail|pref|test-pref|ref-pref|fuzzy|chaos-mode|wr-capture|wr-capture-ref)/)) {
             var item = items.shift();
             var stat;
             var cond;
@@ -197,12 +190,12 @@ function ReadManifest(aURL, aFilter)
                 if (!AddPrefSettings(m[1], m[2], m[3], sandbox, testPrefSettings, refPrefSettings)) {
                     throw "Error in pref value in manifest file " + aURL.spec + " line " + lineNo;
                 }
-            } else if ((m = item.match(/^fuzzy\((\d+)(-\d+)?,(\d+)(-\d+)?\)$/))) {
+            } else if ((m = item.match(/^fuzzy\((\d+)-(\d+),(\d+)-(\d+)\)$/))) {
               cond = false;
               expected_status = EXPECTED_FUZZY;
               fuzzy_delta = ExtractRange(m, 1);
               fuzzy_pixels = ExtractRange(m, 3);
-            } else if ((m = item.match(/^fuzzy-if\((.*?),(\d+)(-\d+)?,(\d+)(-\d+)?\)$/))) {
+            } else if ((m = item.match(/^fuzzy-if\((.*?),(\d+)-(\d+),(\d+)-(\d+)\)$/))) {
               cond = false;
               if (Cu.evalInSandbox("(" + m[1] + ")", sandbox)) {
                 expected_status = EXPECTED_FUZZY;
@@ -212,6 +205,12 @@ function ReadManifest(aURL, aFilter)
             } else if (item == "chaos-mode") {
                 cond = false;
                 chaosMode = true;
+            } else if (item == "wr-capture") {
+                cond = false;
+                wrCapture.test = true;
+            } else if (item == "wr-capture-ref") {
+                cond = false;
+                wrCapture.ref = true;
             } else {
                 throw "Error in manifest file " + aURL.spec + " line " + lineNo + ": unexpected item " + item;
             }
@@ -293,11 +292,12 @@ function ReadManifest(aURL, aFilter)
                 ReadManifest(incURI, aFilter);
             }
         } else if (items[0] == TYPE_LOAD || items[0] == TYPE_SCRIPT) {
+            var type = items[0];
             if (items.length != 2)
-                throw "Error in manifest file " + aURL.spec + " line " + lineNo + ": incorrect number of arguments to " + items[0];
-            if (items[0] == TYPE_LOAD && expected_status != EXPECTED_PASS && expected_status != EXPECTED_DEATH)
+                throw "Error in manifest file " + aURL.spec + " line " + lineNo + ": incorrect number of arguments to " + type;
+            if (type == TYPE_LOAD && expected_status != EXPECTED_PASS && expected_status != EXPECTED_DEATH)
                 throw "Error in manifest file " + aURL.spec + " line " + lineNo + ": incorrect known failure type for load test";
-            AddTestItem({ type: TYPE_LOAD,
+            AddTestItem({ type: type,
                           expected: expected_status,
                           manifest: aURL.spec,
                           allowSilentFail: allow_silent_fail,
@@ -315,7 +315,8 @@ function ReadManifest(aURL, aFilter)
                           httpDepth: httpDepth,
                           url1: items[1],
                           url2: null,
-                          chaosMode: chaosMode }, aFilter);
+                          chaosMode: chaosMode,
+                          wrCapture: wrCapture }, aFilter);
         } else if (items[0] == TYPE_REFTEST_EQUAL || items[0] == TYPE_REFTEST_NOTEQUAL || items[0] == TYPE_PRINT) {
             if (items.length != 3)
                 throw "Error in manifest file " + aURL.spec + " line " + lineNo + ": incorrect number of arguments to " + items[0];
@@ -327,19 +328,17 @@ function ReadManifest(aURL, aFilter)
             }
 
             var type = items[0];
-            if (g.compareStyloToGecko || g.compareRetainedDisplayLists) {
+            if (g.compareRetainedDisplayLists) {
                 type = TYPE_REFTEST_EQUAL;
 
-                // We expect twice as many assertion failures when running in
-                // styloVsGecko mode because we run each test twice: once in
-                // Stylo mode and once in Gecko mode.
+                // We expect twice as many assertion failures when comparing
+                // tests because we run each test twice.
                 minAsserts *= 2;
                 maxAsserts *= 2;
 
-                // Skip the test if it is expected to fail in both Stylo and
-                // Gecko modes. It would unexpectedly "pass" in styloVsGecko
-                // mode when comparing the two failures, which is not a useful
-                // result.
+                // Skip the test if it is expected to fail in both modes.
+                // It would unexpectedly "pass" in comparison mode mode when
+                // comparing the two failures, which is not a useful result.
                 if (expected_status === EXPECTED_FAIL ||
                     expected_status === EXPECTED_RANDOM) {
                     expected_status = EXPECTED_DEATH;
@@ -364,7 +363,8 @@ function ReadManifest(aURL, aFilter)
                           httpDepth: httpDepth,
                           url1: items[1],
                           url2: items[2],
-                          chaosMode: chaosMode }, aFilter);
+                          chaosMode: chaosMode,
+                          wrCapture: wrCapture }, aFilter);
         } else {
             throw "Error in manifest file " + aURL.spec + " line " + lineNo + ": unknown test type " + items[0];
         }
@@ -426,13 +426,12 @@ function BuildConditionSandbox(aURL) {
     var info = gfxInfo.getInfo();
     var canvasBackend = readGfxInfo(info, "AzureCanvasBackend");
     var contentBackend = readGfxInfo(info, "AzureContentBackend");
-    var canvasAccelerated = readGfxInfo(info, "AzureCanvasAccelerated");
 
     sandbox.gpuProcess = gfxInfo.usingGPUProcess;
     sandbox.azureCairo = canvasBackend == "cairo";
     sandbox.azureSkia = canvasBackend == "skia";
     sandbox.skiaContent = contentBackend == "skia";
-    sandbox.azureSkiaGL = canvasAccelerated; // FIXME: assumes GL right now
+    sandbox.azureSkiaGL = false;
     // true if we are using the same Azure backend for rendering canvas and content
     sandbox.contentSameGfxBackendAsCanvas = contentBackend == canvasBackend
                                             || (contentBackend == "none" && canvasBackend == "cairo");
@@ -463,6 +462,8 @@ function BuildConditionSandbox(aURL) {
     sandbox.qtWidget = xr.widgetToolkit == "qt";
     sandbox.winWidget = xr.widgetToolkit == "windows";
 
+    sandbox.is64Bit = xr.is64Bit;
+
     // Scrollbars that are semi-transparent. See bug 1169666.
     sandbox.transparentScrollbars = xr.widgetToolkit == "gtk3";
 
@@ -489,24 +490,6 @@ function BuildConditionSandbox(aURL) {
 let retainedDisplayListsEnabled = prefs.getBoolPref("layout.display-list.retain", false);
 sandbox.retainedDisplayLists = retainedDisplayListsEnabled && !g.compareRetainedDisplayLists;
 sandbox.compareRetainedDisplayLists = g.compareRetainedDisplayLists;
-
-#ifdef MOZ_STYLO
-    let styloEnabled = false;
-    // Perhaps a bit redundant in places, but this is easier to compare with the
-    // the real check in `nsLayoutUtils.cpp` to ensure they test the same way.
-    if (env.get("STYLO_FORCE_ENABLED")) {
-        styloEnabled = true;
-    } else if (env.get("STYLO_FORCE_DISABLED")) {
-        styloEnabled = false;
-    } else {
-        styloEnabled = prefs.getBoolPref("layout.css.servo.enabled", false);
-    }
-    sandbox.stylo = styloEnabled && !g.compareStyloToGecko;
-    sandbox.styloVsGecko = g.compareStyloToGecko;
-#else
-    sandbox.stylo = false;
-    sandbox.styloVsGecko = false;
-#endif
 
     sandbox.skiaPdf = false;
 
@@ -555,7 +538,7 @@ sandbox.compareRetainedDisplayLists = g.compareRetainedDisplayLists;
     sandbox.browserIsRemote = g.browserIsRemote;
 
     try {
-        sandbox.asyncPan = g.containingWindow.document.docShell.asyncPanZoomEnabled;
+        sandbox.asyncPan = g.containingWindow.docShell.asyncPanZoomEnabled;
     } catch (e) {
         sandbox.asyncPan = false;
     }
@@ -565,6 +548,9 @@ sandbox.compareRetainedDisplayLists = g.compareRetainedDisplayLists;
 
     // Running in a test-verify session?
     sandbox.verify = prefs.getBoolPref("reftest.verify", false);
+
+    // Running with serviceworker e10s redesign enabled?
+    sandbox.serviceWorkerE10s = prefs.getBoolPref("dom.serviceWorkers.parent_intercept", false);
 
     if (!g.dumpedConditionSandbox) {
         g.logger.info("Dumping JSON representation of sandbox");
@@ -580,13 +566,6 @@ function AddRetainedDisplayListTestPrefs(aSandbox, aTestPrefSettings,
     AddPrefSettings("test-", "layout.display-list.retain", "true", aSandbox,
                     aTestPrefSettings, aRefPrefSettings);
     AddPrefSettings("ref-", "layout.display-list.retain", "false", aSandbox,
-                    aTestPrefSettings, aRefPrefSettings);
-}
-
-function AddStyloTestPrefs(aSandbox, aTestPrefSettings, aRefPrefSettings) {
-    AddPrefSettings("test-", "layout.css.servo.enabled", "true", aSandbox,
-                    aTestPrefSettings, aRefPrefSettings);
-    AddPrefSettings("ref-", "layout.css.servo.enabled", "false", aSandbox,
                     aTestPrefSettings, aRefPrefSettings);
 }
 
@@ -607,8 +586,7 @@ function AddPrefSettings(aWhere, aPrefName, aPrefValExpression, aSandbox, aTestP
                     type: prefType,
                     value: prefVal };
 
-    if ((g.compareStyloToGecko && aPrefName != "layout.css.servo.enabled") ||
-        (g.compareRetainedDisplayLists && aPrefName != "layout.display-list.retain")) {
+    if (g.compareRetainedDisplayLists && aPrefName != "layout.display-list.retain") {
         // ref-pref() is ignored, test-pref() and pref() are added to both
         if (aWhere != "ref-") {
             aTestPrefSettings.push(setting);
@@ -625,16 +603,10 @@ function AddPrefSettings(aWhere, aPrefName, aPrefValExpression, aSandbox, aTestP
     return true;
 }
 
-function ExtractRange(matches, startIndex, defaultMin = 0) {
-    if (matches[startIndex + 1] === undefined) {
-        return {
-            min: defaultMin,
-            max: Number(matches[startIndex])
-        };
-    }
+function ExtractRange(matches, startIndex) {
     return {
         min: Number(matches[startIndex]),
-        max: Number(matches[startIndex + 1].substring(1))
+        max: Number(matches[startIndex + 1])
     };
 }
 
@@ -671,7 +643,6 @@ function CreateUrls(test) {
                     .getService(Ci.nsIScriptSecurityManager);
 
     let manifestURL = g.ioService.newURI(test.manifest);
-    let principal = secMan.createCodebasePrincipal(manifestURL, {});
 
     let testbase = manifestURL;
     if (test.runHttp)
@@ -683,6 +654,9 @@ function CreateUrls(test) {
             return file;
 
         var testURI = g.ioService.newURI(file, null, testbase);
+        let isChrome = testURI.scheme == "chrome";
+        let principal = isChrome ? secMan.getSystemPrincipal() :
+                                   secMan.createCodebasePrincipal(manifestURL, {});
         secMan.checkLoadURIWithPrincipal(principal, testURI,
                                          Ci.nsIScriptSecurityManager.DISALLOW_SCRIPT);
         return testURI;
@@ -690,8 +664,6 @@ function CreateUrls(test) {
 
     let files = [test.url1, test.url2];
     [test.url1, test.url2] = files.map(FileToURI);
-    if (test.url2 && g.compareStyloToGecko)
-        test.url2 = test.url1;
 
     return test;
 }
@@ -705,9 +677,9 @@ function AddTestItem(aTest, aFilter) {
     var globalFilter = aFilter[0];
     var manifestFilter = aFilter[1];
     var invertManifest = aFilter[2];
-    if ((globalFilter && !globalFilter.test(url1.spec)) ||
-        (manifestFilter &&
-         !(invertManifest ^ manifestFilter.test(url1.spec))))
+    if (globalFilter && !globalFilter.test(url1.spec))
+        return;
+    if (manifestFilter && !(invertManifest ^ manifestFilter.test(url1.spec)))
         return;
     if (g.focusFilterMode == FOCUS_FILTER_NEEDS_FOCUS_TESTS &&
         !aTest.needsFocus)
@@ -721,4 +693,10 @@ function AddTestItem(aTest, aFilter) {
     else
         aTest.identifier = url1.spec;
     g.urls.push(aTest);
+    // Periodically log progress to avoid no-output timeout on slow platforms.
+    // No-output timeouts during manifest parsing have been a problem for
+    // jsreftests on Android/debug. Any logging resets the no-output timer,
+    // even debug logging which is normally not displayed.
+    if ((g.urls.length % 5000) == 0)
+        g.logger.debug(g.urls.length + " tests found...");
 }

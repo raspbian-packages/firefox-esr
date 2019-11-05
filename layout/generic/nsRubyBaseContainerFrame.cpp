@@ -10,13 +10,14 @@
 #include "nsRubyTextContainerFrame.h"
 #include "nsRubyBaseFrame.h"
 #include "nsRubyTextFrame.h"
+#include "mozilla/ComputedStyle.h"
 #include "mozilla/DebugOnly.h"
 #include "mozilla/Maybe.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/WritingModes.h"
 #include "nsLayoutUtils.h"
 #include "nsLineLayout.h"
 #include "nsPresContext.h"
-#include "nsStyleContext.h"
 #include "nsStyleStructInlines.h"
 #include "nsTextFrame.h"
 #include "RubyUtils.h"
@@ -30,20 +31,21 @@ using namespace mozilla::gfx;
 // =======================
 
 NS_QUERYFRAME_HEAD(nsRubyBaseContainerFrame)
-NS_QUERYFRAME_ENTRY(nsRubyBaseContainerFrame)
+  NS_QUERYFRAME_ENTRY(nsRubyBaseContainerFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 NS_IMPL_FRAMEARENA_HELPERS(nsRubyBaseContainerFrame)
 
-nsContainerFrame* NS_NewRubyBaseContainerFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext) {
-  return new (aPresShell) nsRubyBaseContainerFrame(aContext);
+nsContainerFrame* NS_NewRubyBaseContainerFrame(PresShell* aPresShell,
+                                               ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsRubyBaseContainerFrame(aStyle, aPresShell->GetPresContext());
 }
 
-  //----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
-  // nsRubyBaseContainerFrame Method Implementations
-  // ===============================================
+// nsRubyBaseContainerFrame Method Implementations
+// ===============================================
 
 #ifdef DEBUG_FRAME_DUMP
 nsresult nsRubyBaseContainerFrame::GetFrameName(nsAString& aResult) const {
@@ -97,7 +99,7 @@ static void GetIsLineBreakAllowed(nsIFrame* aFrame, bool aIsLineBreakable,
                                   bool* aAllowInitialLineBreak,
                                   bool* aAllowLineBreak) {
   nsIFrame* parent = aFrame->GetParent();
-  bool lineBreakSuppressed = parent->StyleContext()->ShouldSuppressLineBreak();
+  bool lineBreakSuppressed = parent->Style()->ShouldSuppressLineBreak();
   // Allow line break between ruby bases when white-space allows,
   // we are not inside a nested ruby, and there is no span.
   bool allowLineBreak =
@@ -155,7 +157,8 @@ static nscoord CalculateColumnPrefISize(
 // FIXME Currently we use pref isize of ruby content frames for
 //       computing min isize of ruby frame, which may cause problem.
 //       See bug 1134945.
-/* virtual */ void nsRubyBaseContainerFrame::AddInlineMinISize(
+/* virtual */
+void nsRubyBaseContainerFrame::AddInlineMinISize(
     gfxContext* aRenderingContext, nsIFrame::InlineMinISizeData* aData) {
   AutoRubyTextContainerArray textContainers(this);
 
@@ -207,7 +210,8 @@ static nscoord CalculateColumnPrefISize(
   }
 }
 
-/* virtual */ void nsRubyBaseContainerFrame::AddInlinePrefISize(
+/* virtual */
+void nsRubyBaseContainerFrame::AddInlinePrefISize(
     gfxContext* aRenderingContext, nsIFrame::InlinePrefISizeData* aData) {
   AutoRubyTextContainerArray textContainers(this);
 
@@ -231,20 +235,20 @@ static nscoord CalculateColumnPrefISize(
   aData->mCurrentLine += sum;
 }
 
-/* virtual */ bool nsRubyBaseContainerFrame::IsFrameOfType(
-    uint32_t aFlags) const {
-  if (aFlags & eSupportsCSSTransforms) {
+/* virtual */
+bool nsRubyBaseContainerFrame::IsFrameOfType(uint32_t aFlags) const {
+  if (aFlags & (eSupportsCSSTransforms | eSupportsContainLayoutAndPaint)) {
     return false;
   }
   return nsContainerFrame::IsFrameOfType(aFlags &
                                          ~(nsIFrame::eLineParticipant));
 }
 
-/* virtual */ bool nsRubyBaseContainerFrame::CanContinueTextRun() const {
-  return true;
-}
+/* virtual */
+bool nsRubyBaseContainerFrame::CanContinueTextRun() const { return true; }
 
-/* virtual */ LogicalSize nsRubyBaseContainerFrame::ComputeSize(
+/* virtual */
+LogicalSize nsRubyBaseContainerFrame::ComputeSize(
     gfxContext* aRenderingContext, WritingMode aWM, const LogicalSize& aCBSize,
     nscoord aAvailableISize, const LogicalSize& aMargin,
     const LogicalSize& aBorder, const LogicalSize& aPadding,
@@ -254,7 +258,8 @@ static nscoord CalculateColumnPrefISize(
   return LogicalSize(aWM, NS_UNCONSTRAINEDSIZE, NS_UNCONSTRAINEDSIZE);
 }
 
-/* virtual */ nscoord nsRubyBaseContainerFrame::GetLogicalBaseline(
+/* virtual */
+nscoord nsRubyBaseContainerFrame::GetLogicalBaseline(
     WritingMode aWritingMode) const {
   return mBaseline;
 }
@@ -267,9 +272,11 @@ struct nsRubyBaseContainerFrame::RubyReflowInput {
   const nsTArray<UniquePtr<ReflowInput>>& mTextReflowInputs;
 };
 
-/* virtual */ void nsRubyBaseContainerFrame::Reflow(
-    nsPresContext* aPresContext, ReflowOutput& aDesiredSize,
-    const ReflowInput& aReflowInput, nsReflowStatus& aStatus) {
+/* virtual */
+void nsRubyBaseContainerFrame::Reflow(nsPresContext* aPresContext,
+                                      ReflowOutput& aDesiredSize,
+                                      const ReflowInput& aReflowInput,
+                                      nsReflowStatus& aStatus) {
   MarkInReflow();
   DO_GLOBAL_REFLOW_COUNT("nsRubyBaseContainerFrame");
   DISPLAY_REFLOW(aPresContext, this, aReflowInput, aDesiredSize, aStatus);
@@ -297,11 +304,11 @@ struct nsRubyBaseContainerFrame::RubyReflowInput {
   LogicalSize availSize(lineWM, aReflowInput.AvailableISize(),
                         aReflowInput.AvailableBSize());
 
-  // We have a reflow state and a line layout for each RTC.
+  // We have a reflow input and a line layout for each RTC.
   // They are conceptually the state of the RTCs, but we don't actually
   // reflow those RTCs in this code. These two arrays are holders of
-  // the reflow states and line layouts.
-  // Since there are pointers refer to reflow states and line layouts,
+  // the reflow inputs and line layouts.
+  // Since there are pointers refer to reflow inputs and line layouts,
   // it is necessary to guarantee that they won't be moved. For this
   // reason, they are wrapped in UniquePtr here.
   AutoTArray<UniquePtr<ReflowInput>, RTC_ARRAY_SIZE> reflowInputs;
@@ -735,12 +742,12 @@ void nsRubyBaseContainerFrame::PullOneColumn(nsLineLayout* aLineLayout,
                  "the same old float containing block");
     }
 #endif
-    nsBlockFrame* newFloatCB =
-        nsLayoutUtils::GetAsBlock(aLineLayout->LineContainerFrame());
+    nsBlockFrame* newFloatCB = do_QueryFrame(aLineLayout->LineContainerFrame());
     MOZ_ASSERT(newFloatCB, "Must have a float containing block");
     if (oldFloatCB != newFloatCB) {
       for (nsIFrame* frame : aColumn) {
-        newFloatCB->ReparentFloats(frame, oldFloatCB, false);
+        newFloatCB->ReparentFloats(frame, oldFloatCB, false,
+                                   ReparentingDirection::Backwards);
       }
     }
   }

@@ -4,8 +4,8 @@
 
 do-not-track-description = שליחת חיווי ”נא לא לעקוב” לאתרים שאין ברצונך שיעקבו אחריך
 do-not-track-learn-more = מידע נוסף
-do-not-track-option-default =
-    .label = רק בעת שימוש בהגנת מעקב
+do-not-track-option-default-content-blocking-known =
+    .label = רק כאשר { -brand-short-name } מוגדר לחסום רכיבי מעקב מוכרים
 do-not-track-option-always =
     .label = תמיד
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] אפשרויות
            *[other] העדפות
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -58,7 +50,11 @@ category-privacy =
 pane-sync-title = חשבון Firefox
 category-sync =
     .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = תמיכה ב־{ -brand-short-name }
+addons-button-label = הרחבות וערכות נושא
 focus-search =
     .key = f
 close-button =
@@ -72,6 +68,44 @@ should-restart-title = הפעלת { -brand-short-name } מחדש
 should-restart-ok = הפעלת { -brand-short-name } מחדש כעת
 cancel-no-restart-button = ביטול
 restart-later = הפעלה מחדש מאוחר יותר
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = הרחבה בשם <img data-l10n-name="icon"/> { $name } שולטת על דף הבית שלך.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = הרחבה בשם <img data-l10n-name="icon"/> { $name } שולטת על דף הלשונית החדשה שלך.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = הרחבה בשם <img data-l10n-name="icon"/> { $name } שולטת על הגדרה זו.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = הרחבה בשם <img data-l10n-name="icon"/> { $name } הגדירה את מנוע החיפוש ברירת המחדל שלך.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = הרחבה בשם <img data-l10n-name="icon"/> { $name } דורשת שימוש במגירת לשוניות.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = הרחבה בשם <img data-l10n-name="icon"/> { $name } שולטת על הגדרה זו.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = הרחבה בשם <img data-l10n-name="icon"/> { $name } שולטת באופן החיבור של { -brand-short-name } לאינטרנט.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = להפעלת ההרחבה יש לגשת לתוספות <img data-l10n-name="addons-icon"/> בתפריט <img data-l10n-name="menu-icon"/>.
 
 ## Preferences UI Search Results
 
@@ -95,24 +129,20 @@ use-firefox-sync = טיפ: פעולה זו מתאפשרת תודות ליציר�
 get-started-not-logged-in = התחברות אל { -sync-brand-short-name }…
 get-started-configured = פתיחת מסך ההעדפות של { -sync-brand-short-name }
 always-check-default =
-    .label = תמיד לבדוק אם { -brand-short-name } הוא דפדפן בררת מחדל
+    .label = תמיד לבדוק אם { -brand-short-name } הוא דפדפן ברירת המחדל
     .accesskey = ת
-is-default = { -brand-short-name } הוא כרגע דפדפן בררת המחדל שלך
-is-not-default = { -brand-short-name } אינו דפדפן בררת המחדל שלך
+is-default = { -brand-short-name } הוא כרגע דפדפן ברירת המחדל שלך
+is-not-default = { -brand-short-name } אינו דפדפן ברירת המחדל שלך
 set-as-my-default-browser =
-    .label = הגדרה כדפדפן בררת המחדל…
+    .label = הגדרה כדפדפן ברירת המחדל…
     .accesskey = ב
-startup-page = כאשר { -brand-short-name } מופעל
-    .accesskey = כ
-startup-user-homepage =
-    .label = יוצג דף הבית
-startup-blank-page =
-    .label = יוצג דף ריק
-startup-prev-session =
-    .label = יוצגו החלונות והלשוניות מהפעם האחרונה
+startup-restore-previous-session =
+    .label = שחזור הפעלה קודמת
+    .accesskey = ש
+startup-restore-warn-on-quit =
+    .label = הצגת אזהרה בעת סגירת הדפדפן
 disable-extension =
     .label = נטרול הרחבה
-home-page-header = דף הבית
 tabs-group-header = לשוניות
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab מחליף את הלשוניות לפי סדר השימוש בהן
@@ -166,7 +196,7 @@ containers-remove-cancel-button = לא להסיר מגירה זו
 
 language-and-appearance-header = שפה ותצוגה
 fonts-and-colors-header = גופנים וצבעים
-default-font = גופן בררת מחדל
+default-font = גופן ברירת מחדל
     .accesskey = ב
 default-font-size = גודל
     .accesskey = ג
@@ -174,13 +204,19 @@ advanced-fonts =
     .label = מתקדם...
     .accesskey = מ
 colors-settings =
-    .label = צבעים...
+    .label = צבעים…
     .accesskey = צ
 language-header = שפה
 choose-language-description = בחירת השפה המועדפת עליך להצגת דפים
 choose-button =
     .label = בחירה…
     .accesskey = ב
+choose-browser-language-description = נא לבחור את השפות בהן ייעשה שימוש להצגת תפריטים, הודעות והתרעות מ־{ -brand-short-name }.
+manage-browser-languages-button =
+    .label = הגדרת חלופות…
+    .accesskey = ח
+confirm-browser-language-change-description = הפעלת { -brand-short-name } מחדש כדי להחיל את השינויים האלה
+confirm-browser-language-change-button = החלה והפעלה מחדש
 translate-web-pages =
     .label = תרגום תוכן רשת
     .accesskey = ת
@@ -215,7 +251,7 @@ download-choose-folder =
 download-always-ask-where =
     .label = לשאול תמיד היכן לשמור קבצים
     .accesskey = ק
-applications-header = ישומים
+applications-header = יישומים
 applications-description = בחירה כיצד { -brand-short-name } יטפל בקבצים שהורדו מהרשת או ביישומים שיהיו בשימוש במהלך הגלישה.
 applications-filter =
     .placeholder = חיפוש סוגי קבצים או יישומים
@@ -227,12 +263,11 @@ applications-action-column =
     .accesskey = פ
 drm-content-header = תוכן ניהול זכויות דיגיטלי (DRM)
 play-drm-content =
-    .label = לנגן תוכן מוגן DRM
-    .accesskey = נ
+    .label = הפעלת תוכן מוגן DRM
+    .accesskey = ה
 play-drm-content-learn-more = מידע נוסף
 update-application-title = עדכוני { -brand-short-name }
 update-application-description = כדאי להשאיר את { -brand-short-name } עדכני לטובת ביצועים, יציבות ואבטחה ברמה הטובה ביותר.
-update-application-info = גרסה { $version } <a>מה חדש</a>
 update-application-version = גרסה { $version } <a data-l10n-name="learn-more">מה חדש</a>
 update-history =
     .label = הצגת היסטורית עדכונים…
@@ -247,12 +282,17 @@ update-application-check-choose =
 update-application-manual =
     .label = לעולם לא לבדוק לעדכונים (לא מומלץ)
     .accesskey = ל
+update-application-warning-cross-user-setting = הגדרה זו תחול על כל חשבונות Windows ופרופילי { -brand-short-name } המשתמשים בהתקנה זו של { -brand-short-name }.
 update-application-use-service =
     .label = שימוש בשירות רקע לשם התקנת עדכונים
     .accesskey = ר
 update-enable-search-update =
     .label = עדכון מנועי חיפוש באופן אוטומטי
     .accesskey = ע
+update-pref-write-failure-title = כשל בכתיבה
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = לא ניתן לשמור את ההעדפה. לא ניתן לכתוב לקובץ: { $path }
 
 ## General Section - Performance
 
@@ -267,13 +307,12 @@ performance-allow-hw-accel =
     .accesskey = ה
 performance-limit-content-process-option = הגבלת תהליך תוכן
     .accesskey = ה
-performance-limit-content-process-enabled-desc = תהליכי תוכן נוספים עשויים לשפר את הביצועים בעת שימוש במספר לשוניות, עם זאת יעשה שימוש ביותר זיכרון.
-performance-limit-content-process-disabled-desc = שינוי מספר תהליכי תוכן אפשרי רק עם { -brand-short-name } מרובה תהליכים. <a>כיצד לבדוק אם ריבוי תהליכים מופעל</a>
+performance-limit-content-process-enabled-desc = תהליכי תוכן נוספים עשויים לשפר את הביצועים בעת שימוש במספר לשוניות, עם זאת ייעשה שימוש ביותר זיכרון.
 performance-limit-content-process-blocked-desc = שינוי מספר תהליכי תוכן אפשרי רק עם { -brand-short-name } מרובה תהליכים. <a data-l10n-name="learn-more">כיצד לבדוק אם ריבוי תהליכים מופעל</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
 performance-default-content-process-count =
-    .label = { $num } (בררת מחדל)
+    .label = { $num } (ברירת מחדל)
 
 ## General Section - Browsing
 
@@ -288,18 +327,26 @@ browsing-use-onscreen-keyboard =
     .label = הצגת מקלדת מגע בעת הצורך
     .accesskey = מ
 browsing-use-cursor-navigation =
-    .label = השתמש תמיד במקשי הסמן לניווט בתוך דפים
+    .label = תמיד להשתמש במקשי הסמן לניווט בתוך דפים
     .accesskey = ס
 browsing-search-on-start-typing =
     .label = חיפוש מלל עם תחילת הקלדה
     .accesskey = מ
+browsing-cfr-recommendations =
+    .label = קבלת המלצות על הרחבות תוך כדי גלישה
+    .accesskey = ק
+browsing-cfr-features =
+    .label = קבלת המלצות על תכונות תוך כדי גלישה
+    .accesskey = ת
+browsing-cfr-recommendations-learn-more = מידע נוסף
 
 ## General Section - Proxy
 
-network-proxy-title = מתווך רשת
+network-settings-title = הגדרות רשת
+network-proxy-connection-description = הגדרת אופן החיבור של { -brand-short-name } לאינטרנט.
 network-proxy-connection-learn-more = מידע נוסף
 network-proxy-connection-settings =
-    .label = הגדרות...
+    .label = הגדרות…
     .accesskey = ה
 
 ## Home Section
@@ -317,7 +364,7 @@ home-restore-defaults =
 # "Firefox" should be treated as a brand and kept in English,
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
-    .label = דף הבית של Firefox (ברירת מחדל)
+    .label = מסך הבית של Firefox (ברירת מחדל)
 home-mode-choice-custom =
     .label = כתובות מותאמות אישית…
 home-mode-choice-blank =
@@ -338,9 +385,6 @@ use-current-pages =
 choose-bookmark =
     .label = שימוש בסימנייה…
     .accesskey = ס
-restore-default =
-    .label = שחזור לבררת המחדל
-    .accesskey = ש
 
 ## Search Section
 
@@ -349,8 +393,8 @@ search-bar-hidden =
     .label = שימוש בשורת הכתובת לחיפוש וניווט
 search-bar-shown =
     .label = הוספת שורת החיפוש לסרגל הכלים
-search-engine-default-header = מנוע חיפוש בררת מחדל
-search-engine-default-desc = בחירת מנוע חיפוש בררת המחדל לשימוש בסרגל הכתובת ובסרגל החיפוש.
+search-engine-default-header = מנוע חיפוש ברירת מחדל
+search-engine-default-desc = בחירת מנוע חיפוש ברירת המחדל לשימוש בסרגל הכתובת ובסרגל החיפוש.
 search-suggestions-option =
     .label = הצגת המלצות חיפוש
     .accesskey = מ
@@ -372,7 +416,7 @@ search-choose-engine-column =
 search-choose-keyword-column =
     .label = מילת מפתח
 search-restore-default =
-    .label = שחזור למנועי חיפוש בררת מחדל
+    .label = שחזור למנועי חיפוש ברירת מחדל
     .accesskey = ש
 search-remove-engine =
     .label = הסרה
@@ -384,7 +428,7 @@ search-keyword-warning-title = מילת מפתח כפולה
 # Variables:
 #   $name (String) - Name of a search engine.
 search-keyword-warning-engine = בחרת להשתמש במילת מפתח שנמצאת כרגע בשימוש עבור "{ $name }". אנא בחר במילה אחרת.
-search-keyword-warning-bookmark = בחרת להשתמש במילת מפתח שנמצאת כרגע בשימוש של סימנייה. אנא בחר במילה אחרת.
+search-keyword-warning-bookmark = בחרת להשתמש במילת מפתח שנמצאת כרגע בשימוש על ידי סימנייה. נא לבחור במילה אחרת.
 
 ## Containers Section
 
@@ -447,7 +491,7 @@ sync-engine-history =
     .label = היסטוריה
     .accesskey = ה
 sync-engine-tabs =
-    .label = פתיחת לשוניות
+    .label = לשוניות פתוחות
     .tooltiptext = רשימה של מה שפתוח בכל ההתקנים המסונכרנים
     .accesskey = ל
 sync-engine-logins =
@@ -473,7 +517,7 @@ sync-engine-prefs =
            *[other] העדפות
         }
     .tooltiptext = הגדרות כלליות, פרטיות ואבטחה ששינית
-    .accesskey = ה
+    .accesskey = ת
 sync-device-name-header = שם התקן
 sync-device-name-change =
     .label = שינוי שם התקן…
@@ -486,6 +530,9 @@ sync-device-name-save =
     .accesskey = ש
 sync-mobilepromo-single = חיבור התקן נוסף
 sync-mobilepromo-multi = ניהול התקנים
+sync-connect-another-device = חיבור מכשיר נוסף
+sync-manage-devices = ניהול מכשירים
+sync-fxa-begin-pairing = צימוד מכשיר
 sync-tos-link = תנאי שימוש
 sync-fxa-privacy-notice = הצהרת פרטיות
 
@@ -495,7 +542,7 @@ privacy-header = פרטיות דפדפן
 
 ## Privacy Section - Forms
 
-forms-header = טפסים וססמאות
+logins-header = כניסות וססמאות
 forms-ask-to-save-logins =
     .label = הצגת בקשה לשמירת פרטי כניסה וססמאות לאתרים
     .accesskey = צ
@@ -537,9 +584,9 @@ history-dontremember-description = { -brand-short-name } ישתמש באותן �
 history-private-browsing-permanent =
     .label = שימוש תמידי במצב גלישה פרטית
     .accesskey = ה
-history-remember-option =
+history-remember-browser-option =
     .label = שמירת היסטורית גלישה והורדות
-    .accesskey = ג
+    .accesskey = ש
 history-remember-search-option =
     .label = שמירת חיפושים והיסטורית טפסים
     .accesskey = ט
@@ -556,36 +603,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = עוגיות ונתוני אתרים
+sitedata-total-size-calculating = חישוב גודל נתוני אתרים ומטמון…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = העוגיות, נתוני האתרים והמטמון השמורים שלך משתמשים כרגע ב־{ $value } { $unit } משטח הדיסק.
 sitedata-learn-more = מידע נוסף
-sitedata-accept-cookies-option =
-    .label = קבלת עוגיות ונתוני אתרים מאתרי אינטרנט (מומלץ)
-    .accesskey = ק
-sitedata-block-cookies-option =
-    .label = חסימת עוגיות ונתוני אתרים (עשוי לגרום לשיבוש באתרי אינטרנט)
+sitedata-delete-on-close =
+    .label = מחיקת עוגיות ונתוני אתרים עם סגירת { -brand-short-name }
     .accesskey = ח
-sitedata-keep-until = שמירה עד ש:
-    .accesskey = מ
-sitedata-keep-until-expire =
-    .label = התפוגה שלהם
-sitedata-keep-until-closed =
-    .label = ‏{ -brand-short-name } סגור
-sitedata-accept-third-party-desc = קבלת עוגיות ונתוני אתרים מצד שלישי
-    .accesskey = ש
-sitedata-accept-third-party-always-option =
-    .label = תמיד
-sitedata-accept-third-party-visited-option =
-    .label = מאתרים בהם ביקרנו בעבר
-sitedata-accept-third-party-never-option =
-    .label = לעולם לא
+sitedata-delete-on-close-private-browsing = במצב גלישה פרטית קבועה, עוגיות ונתוני אתרים ינוקו תמיד כש־{ -brand-short-name } נסגר.
+sitedata-allow-cookies-option =
+    .label = קבלת עוגיות ונתוני אתרים
+    .accesskey = ק
+sitedata-disallow-cookies-option =
+    .label = חסימת עוגיות ונתוני אתרים
+    .accesskey = ח
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = סוג שנחסם
+    .accesskey = ס
+sitedata-option-block-trackers =
+    .label = רכיבי מעקב צד־שלישי
+sitedata-option-block-unvisited =
+    .label = עוגיות מאתרים שלא ביקרת בהם
+sitedata-option-block-all-third-party =
+    .label = כל העוגיות מגופי צד־שלישי (עשוי לפגום בחוויית השימוש בחלק מהאתרים)
+sitedata-option-block-all =
+    .label = כל העוגיות (יפגום בחוויית השימוש)
 sitedata-clear =
     .label = ניקוי נתונים…
     .accesskey = נ
 sitedata-settings =
     .label = ניהול נתונים…
     .accesskey = נ
-sitedata-cookies-exceptions =
-    .label = חריגות…
-    .accesskey = ח
+sitedata-cookies-permissions =
+    .label = ניהול הרשאות…
+    .accesskey = ה
 
 ## Privacy Section - Address Bar
 
@@ -602,30 +656,73 @@ addressbar-locbar-openpage-option =
     .accesskey = ל
 addressbar-suggestions-settings = שינוי העדפות של הצעות מנועי חיפוש
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = חסימת תוכן
+content-blocking-description = חסימת תוכן צד־שלישי שעוקב אחריך ברחבי האינטרנט. שליטה בכמות הפעילות המקוונת שלך שנשמרת ומשותפת בין אתרים.
+content-blocking-learn-more = מידע נוסף
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = רגיל
+    .accesskey = ר
+content-blocking-setting-strict =
+    .label = מחמיר
+    .accesskey = ח
+content-blocking-setting-custom =
+    .label = התאמה אישית
+    .accesskey = ה
+content-blocking-standard-description = חסימת רכיבי מעקב מוכרים בחלונות פרטיים בלבד.
+content-blocking-standard-desc = מאוזן בין הגנה לביצועים. מאפשר את פעולתם של חלק מרכיבי המעקב כדי שהאתרים יפעלו כראוי.
+content-blocking-strict-desc = חסימת כל רכיבי המעקב ש־{ -brand-short-name } מזהה. עשוי לשבש פעילות של אתרים.
+content-blocking-strict-description = הגנה חזקה יותר, שעשויה לשבש פעילות של אתרים.
+content-blocking-custom-desc = בחירת הפריטים שייחסמו.
+content-blocking-private-trackers = רכיבי מעקב מוכרים בחלונות פרטיים בלבד
+content-blocking-third-party-cookies = עוגיות מעקב צד־שלישי
+content-blocking-all-cookies = כל העוגיות
+content-blocking-unvisited-cookies = עוגיות מאתרים שלא ביקרתי בהם
+content-blocking-all-windows-trackers = רכיבי מעקב מוכרים בכל החלונות
+content-blocking-all-third-party-cookies = כל העוגיות צד־שלישי
+content-blocking-cryptominers = כורי מטבעות דיגיטליים
+content-blocking-fingerprinters = רכיבי זהות דיגיטלית
+content-blocking-warning-title = לתשומת לבך!
+content-blocking-warning-desc = חסימת עוגיות ורכיבי מעקב עשויה לשבש פעילות של מספר אתרים. קל להשבית חסימה של אתרים המהימנים בעיניך.
+content-blocking-warning-description = חסימת תוכן עלולה לגרום לאתרים מסוימים להישבר. קל לבטל חסימה עבור אתרים בטוחים.
+content-blocking-learn-how = מידע נוסף
+content-blocking-reload-description = יהיה עליך לטעון מחדש את הלשוניות שלך כדי להחיל שינויים אלו.
+content-blocking-reload-tabs-button =
+    .label = טעינת כל הלשוניות מחדש
+    .accesskey = ט
+content-blocking-trackers-label =
+    .label = רכיבי מעקב
+    .accesskey = ר
+content-blocking-tracking-protection-option-all-windows =
+    .label = בכל החלונות
+    .accesskey = כ
+content-blocking-option-private =
+    .label = רק בחלונות פרטיים
+    .accesskey = פ
+content-blocking-tracking-protection-change-block-list = שינוי רשימת חסימות
+content-blocking-cookies-label =
+    .label = עוגיות
+    .accesskey = ע
+content-blocking-expand-section =
+    .tooltiptext = מידע נוסף
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = כורי מטבעות דיגיטליים
+    .accesskey = כ
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = רכיבי זהות דיגיטלית
+    .accesskey = ז
+
 ## Privacy Section - Tracking
 
-tracking-header = הגנת מעקב
-tracking-desc = הגנת מעקב חוסמת רכיבי מעקב מקוונים שאוספים את נתוני הגלישה שלך ממגוון אתרים. <a data-l10n-name="learn-more">מידע נוסף על הגנת מעקב ועל הפרטיות שלך</a>
-tracking-mode-label = שימוש בהגנת מעקב לחסימת רכיבי מעקב ידועים
-tracking-mode-always =
-    .label = תמיד
-    .accesskey = ת
-tracking-mode-private =
-    .label = רק בחלונות פרטיים
-    .accesskey = ר
-tracking-mode-never =
-    .label = לעולם לא
-    .accesskey = ל
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = שימוש בהגנת מעקב בגלישה פרטית לחסימת רכיבי מעקב ידועים
-    .accesskey = ט
-tracking-exceptions =
-    .label = חריגות…
+tracking-manage-exceptions =
+    .label = ניהול חריגות…
     .accesskey = ח
-tracking-change-block-list =
-    .label = שינוי רשימת חסימות…
-    .accesskey = ר
 
 ## Privacy Section - Permissions
 
@@ -633,23 +730,29 @@ permissions-header = הרשאות
 permissions-location = מיקום
 permissions-location-settings =
     .label = הגדרות…
-    .accesskey = מ
+    .accesskey = ה
 permissions-camera = מצלמה
 permissions-camera-settings =
     .label = הגדרות…
-    .accesskey = צ
+    .accesskey = ה
 permissions-microphone = מיקרופון
 permissions-microphone-settings =
     .label = הגדרות…
-    .accesskey = ק
+    .accesskey = ה
 permissions-notification = התרעות
 permissions-notification-settings =
     .label = הגדרות…
-    .accesskey = ע
+    .accesskey = ה
 permissions-notification-link = מידע נוסף
 permissions-notification-pause =
     .label = השהיית התרעות עד להפעלה מחדש של { -brand-short-name }
     .accesskey = ה
+permissions-block-autoplay-media2 =
+    .label = חסימת אתרים מניגון קול באופן אוטומטי
+    .accesskey = ח
+permissions-block-autoplay-media-exceptions =
+    .label = חריגות…
+    .accesskey = ח
 permissions-block-popups =
     .label = חסימת חלונות קופצים
     .accesskey = ח
@@ -673,16 +776,18 @@ collection-header = איסוף המידע של { -brand-short-name }
 collection-description = אנו חותרים לספק לך זכות בחירה ולאסוף רק מה שנדרש לנו כדי לספק ולשפר את { -brand-short-name } לטובת הכלל. אנו תמיד נבקש את רשותך לפני קבלת פרטים אישיים.
 collection-privacy-notice = הצהרת פרטיות
 collection-health-report =
-    .label = האם לאפשר ל־{ -brand-short-name } לשלוח אל { -vendor-short-name } מידע טכני ופעולות שבוצעו בדפדפן
+    .label = לאפשר ל־{ -brand-short-name } לשלוח אל { -vendor-short-name } מידע טכני ופעולות שבוצעו בדפדפן
     .accesskey = ד
 collection-health-report-link = מידע נוסף
+collection-studies =
+    .label = לאפשר ל־{ -brand-short-name } להתקין ולהריץ מחקרים
+collection-studies-link = הצגת המחקרים של { -brand-short-name }
+addon-recommendations =
+    .label = לאפשר ל־{ -brand-short-name } להציע הרחבות מותאמות אישית
+addon-recommendations-link = מידע נוסף
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = דיווח נתונים מנוטרל עבור תצורת בנייה זו
-collection-browser-errors =
-    .label = לאפשר ל־{ -brand-short-name } לשלוח דיווחי שגיאות בדפדפן (לרבות הודעות שגיאה) אל { -vendor-short-name }
-    .accesskey = ד
-collection-browser-errors-link = מידע נוסף
 collection-backlogged-crash-reports =
     .label = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסות שנשמרו בשמך
     .accesskey = ק
@@ -725,3 +830,36 @@ certs-view =
 certs-devices =
     .label = התקני אבטחה…
     .accesskey = א
+space-alert-learn-more-button =
+    .label = מידע נוסף
+    .accesskey = מ
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] פתיחת אפשרויות
+           *[other] פתיחת העדפות
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] א
+           *[other] ה
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] ל־{ -brand-short-name } אוזל שטח הדיסק. יתכן שתכני אתרים לא יוצגו כשורה. ניתן למחוק נתונים שמורים באפשרויות > פרטיות ואבטחה > עוגיות ונתוני אתרים.
+       *[other] ל־{ -brand-short-name } אוזל שטח הדיסק. יתכן שתכני אתרים לא יוצגו כשורה. ניתן למחוק נתונים שמורים בהעדפות > פרטיות ואבטחה > עוגיות ונתוני אתרים.
+    }
+space-alert-under-5gb-ok-button =
+    .label = בסדר, הבנתי
+    .accesskey = ב
+space-alert-under-5gb-message = ל־{ -brand-short-name } אוזל שטח הדיסק. יתכן שנתוני אתרים לא יוצגו כשורה. ניתן לבקר בקישור של “מידע נוסף” כדי לייעל את אופן השימוש בדיסק לחוויית גלישה טובה יותר.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = שולחן עבודה
+downloads-folder-name = הורדות
+choose-download-folder-title = בחירת תיקייה להורדה:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = שמירת קבצים ב־{ $service-name }

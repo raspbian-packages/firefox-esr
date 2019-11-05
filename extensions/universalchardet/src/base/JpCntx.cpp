@@ -519,11 +519,11 @@ void JapaneseContextAnalysis::HandleData(const char* aBuf, uint32_t aLen) {
   if (mDone) return;
 
   // The buffer we got is byte oriented, and a character may span in more than
-  // one  buffers. In case the last one or two byte in last buffer is not
-  // complete, we  record how many byte needed to complete that character and
-  // skip these bytes here.  We can choose to record those bytes as well and
-  // analyse the character once it  is complete, but since a character will not
-  // make much difference, by simply skipping  this character will simply our
+  // one buffers. In case the last one or two byte in last buffer is not
+  // complete, we record how many byte needed to complete that character and
+  // skip these bytes here. We can choose to record those bytes as well and
+  // analyse the character once it is complete, but since a character will not
+  // make much difference, by simply skipping this character will simply our
   // logic and improve performance.
   for (i = mNeedToSkipCharNum; i < aLen;) {
     order = GetOrder(aBuf + i, &charLen);

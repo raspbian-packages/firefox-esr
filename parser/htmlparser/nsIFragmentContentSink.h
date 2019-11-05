@@ -7,8 +7,12 @@
 
 #include "nsISupports.h"
 
-class nsIDOMDocumentFragment;
-class nsIDocument;
+namespace mozilla {
+namespace dom {
+class Document;
+class DocumentFragment;
+}  // namespace dom
+}  // namespace mozilla
 
 #define NS_I_FRAGMENT_CONTENT_SINK_IID               \
   {                                                  \
@@ -32,7 +36,8 @@ class nsIFragmentContentSink : public nsISupports {
    *
    * The sink drops its reference to the fragment.
    */
-  NS_IMETHOD FinishFragmentParsing(nsIDOMDocumentFragment** aFragment) = 0;
+  NS_IMETHOD FinishFragmentParsing(mozilla::dom::DocumentFragment** aFragment) =
+      0;
 
   /**
    * This method is used to set the target document for this fragment
@@ -42,7 +47,7 @@ class nsIFragmentContentSink : public nsISupports {
    * @param aDocument the document the new nodes will belong to
    * (should not be null)
    */
-  NS_IMETHOD SetTargetDocument(nsIDocument* aDocument) = 0;
+  NS_IMETHOD SetTargetDocument(mozilla::dom::Document*) = 0;
 
   /**
    * This method is used to indicate to the sink that we're done building

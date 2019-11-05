@@ -87,8 +87,8 @@ ActivationContext::~ActivationContext() { Release(); }
   return reinterpret_cast<uintptr_t>(actCtx);
 }
 
-/* static */ HRESULT ActivationContext::GetCurrentManifestPath(
-    nsAString& aOutManifestPath) {
+/* static */
+HRESULT ActivationContext::GetCurrentManifestPath(nsAString& aOutManifestPath) {
   aOutManifestPath.Truncate();
 
   SIZE_T bytesNeeded;
@@ -166,27 +166,27 @@ ActivationContextRegion& ActivationContextRegion::operator=(
 }
 
 ActivationContextRegion::ActivationContextRegion(ActivationContext&& aActCtx)
-    : mActCtx(Move(aActCtx)), mActCookie(0) {
+    : mActCtx(std::move(aActCtx)), mActCookie(0) {
   Activate();
 }
 
 ActivationContextRegion& ActivationContextRegion::operator=(
     ActivationContext&& aActCtx) {
   Deactivate();
-  mActCtx = Move(aActCtx);
+  mActCtx = std::move(aActCtx);
   Activate();
   return *this;
 }
 
 ActivationContextRegion::ActivationContextRegion(ActivationContextRegion&& aRgn)
-    : mActCtx(Move(aRgn.mActCtx)), mActCookie(aRgn.mActCookie) {
+    : mActCtx(std::move(aRgn.mActCtx)), mActCookie(aRgn.mActCookie) {
   aRgn.mActCookie = 0;
 }
 
 ActivationContextRegion& ActivationContextRegion::operator=(
     ActivationContextRegion&& aRgn) {
   Deactivate();
-  mActCtx = Move(aRgn.mActCtx);
+  mActCtx = std::move(aRgn.mActCtx);
   mActCookie = aRgn.mActCookie;
   aRgn.mActCookie = 0;
   return *this;
@@ -197,7 +197,10 @@ void ActivationContextRegion::Activate() {
     return;
   }
 
-  BOOL activated = ::ActivateActCtx(mActCtx.mActCtx, &mActCookie);
+#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
+  BOOL activated =
+#endif
+      ::ActivateActCtx(mActCtx.mActCtx, &mActCookie);
   MOZ_DIAGNOSTIC_ASSERT(activated);
 }
 

@@ -12,10 +12,11 @@
 pub use core_foundation_sys::bundle::*;
 use core_foundation_sys::base::kCFAllocatorDefault;
 
-use base::TCFType;
+use base::{CFType, TCFType};
 use url::CFURL;
 use dictionary::CFDictionary;
-
+use std::os::raw::c_void;
+use string::CFString;
 
 declare_TCFType!{
     /// A Bundle type.
@@ -35,6 +36,24 @@ impl CFBundle {
         }
     }
 
+    pub fn bundle_with_identifier(identifier: CFString) -> Option<CFBundle> {
+        unsafe {
+            let bundle_ref = CFBundleGetBundleWithIdentifier(identifier.as_concrete_TypeRef());
+            if bundle_ref.is_null() {
+                None
+            } else {
+                Some(TCFType::wrap_under_get_rule(bundle_ref))
+            }
+        }
+    }
+
+    pub fn function_pointer_for_name(&self, function_name: CFString) -> *const c_void {
+        unsafe {
+            CFBundleGetFunctionPointerForName(self.as_concrete_TypeRef(),
+                                              function_name.as_concrete_TypeRef())
+        }
+    }
+
     pub fn main_bundle() -> CFBundle {
         unsafe {
             let bundle_ref = CFBundleGetMainBundle();
@@ -42,7 +61,7 @@ impl CFBundle {
         }
     }
 
-    pub fn info_dictionary(&self) -> CFDictionary {
+    pub fn info_dictionary(&self) -> CFDictionary<CFString, CFType> {
         unsafe {
             let info_dictionary = CFBundleGetInfoDictionary(self.0);
             TCFType::wrap_under_get_rule(info_dictionary)

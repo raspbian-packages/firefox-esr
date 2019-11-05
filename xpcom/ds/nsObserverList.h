@@ -8,36 +8,13 @@
 #define nsObserverList_h___
 
 #include "nsISupports.h"
-#include "nsTArray.h"
 #include "nsCOMPtr.h"
 #include "nsCOMArray.h"
 #include "nsIObserver.h"
-#include "nsIWeakReference.h"
 #include "nsHashKeys.h"
-#include "nsISimpleEnumerator.h"
+#include "nsMaybeWeakPtr.h"
+#include "nsSimpleEnumerator.h"
 #include "mozilla/Attributes.h"
-
-struct ObserverRef {
-  ObserverRef(const ObserverRef& aO) : isWeakRef(aO.isWeakRef), ref(aO.ref) {}
-  explicit ObserverRef(nsIObserver* aObserver)
-      : isWeakRef(false), ref(aObserver) {}
-  explicit ObserverRef(nsIWeakReference* aWeak) : isWeakRef(true), ref(aWeak) {}
-
-  bool isWeakRef;
-  nsCOMPtr<nsISupports> ref;
-
-  nsIObserver* asObserver() {
-    NS_ASSERTION(!isWeakRef, "Isn't a strong ref.");
-    return static_cast<nsIObserver*>((nsISupports*)ref);
-  }
-
-  nsIWeakReference* asWeak() {
-    NS_ASSERTION(isWeakRef, "Isn't a weak ref.");
-    return static_cast<nsIWeakReference*>((nsISupports*)ref);
-  }
-
-  bool operator==(nsISupports* aRhs) const { return ref == aRhs; }
-};
 
 class nsObserverList : public nsCharPtrHashKey {
   friend class nsObserverService;
@@ -46,6 +23,10 @@ class nsObserverList : public nsCharPtrHashKey {
   explicit nsObserverList(const char* aKey) : nsCharPtrHashKey(aKey) {
     MOZ_COUNT_CTOR(nsObserverList);
   }
+
+  nsObserverList(nsObserverList&& aOther)
+      : nsCharPtrHashKey(std::move(aOther)),
+        mObservers(std::move(aOther.mObservers)) {}
 
   ~nsObserverList() { MOZ_COUNT_DTOR(nsObserverList); }
 
@@ -64,18 +45,19 @@ class nsObserverList : public nsCharPtrHashKey {
   void AppendStrongObservers(nsCOMArray<nsIObserver>& aArray);
 
  private:
-  nsTArray<ObserverRef> mObservers;
+  nsMaybeWeakPtrArray<nsIObserver> mObservers;
 };
 
-class nsObserverEnumerator final : public nsISimpleEnumerator {
+class nsObserverEnumerator final : public nsSimpleEnumerator {
  public:
-  NS_DECL_ISUPPORTS
   NS_DECL_NSISIMPLEENUMERATOR
 
   explicit nsObserverEnumerator(nsObserverList* aObserverList);
 
+  const nsID& DefaultInterface() override { return NS_GET_IID(nsIObserver); }
+
  private:
-  ~nsObserverEnumerator() {}
+  ~nsObserverEnumerator() override = default;
 
   int32_t mIndex;  // Counts up from 0
   nsCOMArray<nsIObserver> mObservers;

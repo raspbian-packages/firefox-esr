@@ -1,21 +1,21 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Specified percentages.
 
+use crate::parser::{Parse, ParserContext};
+use crate::values::computed::percentage::Percentage as ComputedPercentage;
+use crate::values::computed::{Context, ToComputedValue};
+use crate::values::specified::calc::CalcNode;
+use crate::values::{serialize_percentage, CSSFloat};
 use cssparser::{Parser, Token};
-use parser::{Parse, ParserContext};
 use std::fmt::{self, Write};
-use style_traits::{CssWriter, ParseError, ToCss};
 use style_traits::values::specified::AllowedNumericType;
-use values::{CSSFloat, serialize_percentage};
-use values::computed::{Context, ToComputedValue};
-use values::computed::percentage::Percentage as ComputedPercentage;
-use values::specified::calc::CalcNode;
+use style_traits::{CssWriter, ParseError, SpecifiedValueInfo, ToCss};
 
 /// A percentage value.
-#[derive(Clone, Copy, Debug, Default, MallocSizeOf, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, MallocSizeOf, PartialEq, ToShmem)]
 pub struct Percentage {
     /// The percentage value as a float.
     ///
@@ -25,7 +25,6 @@ pub struct Percentage {
     /// clamping should be done on the value.
     calc_clamping_mode: Option<AllowedNumericType>,
 }
-
 
 impl ToCss for Percentage {
     fn to_css<W>(&self, dest: &mut CssWriter<W>) -> fmt::Result
@@ -73,7 +72,8 @@ impl Percentage {
     }
     /// Gets the underlying value for this float.
     pub fn get(&self) -> CSSFloat {
-        self.calc_clamping_mode.map_or(self.value, |mode| mode.clamp(self.value))
+        self.calc_clamping_mode
+            .map_or(self.value, |mode| mode.clamp(self.value))
     }
 
     /// Returns whether this percentage is a `calc()` value.
@@ -98,16 +98,16 @@ impl Percentage {
         let location = input.current_source_location();
         // FIXME: remove early returns when lifetimes are non-lexical
         match *input.next()? {
-            Token::Percentage { unit_value, .. } if num_context.is_ok(context.parsing_mode, unit_value) => {
+            Token::Percentage { unit_value, .. }
+                if num_context.is_ok(context.parsing_mode, unit_value) =>
+            {
                 return Ok(Percentage::new(unit_value));
             }
             Token::Function(ref name) if name.eq_ignore_ascii_case("calc") => {},
             ref t => return Err(location.new_unexpected_token_error(t.clone())),
         }
 
-        let result = input.parse_nested_block(|i| {
-            CalcNode::parse_percentage(context, i)
-        })?;
+        let result = input.parse_nested_block(|i| CalcNode::parse_percentage(context, i))?;
 
         // TODO(emilio): -moz-image-rect is the only thing that uses
         // the clamping mode... I guess we could disallow it...
@@ -139,7 +139,7 @@ impl Parse for Percentage {
     #[inline]
     fn parse<'i, 't>(
         context: &ParserContext,
-        input: &mut Parser<'i, 't>
+        input: &mut Parser<'i, 't>,
     ) -> Result<Self, ParseError<'i>> {
         Self::parse_with_clamping_mode(context, input, AllowedNumericType::All)
     }
@@ -158,3 +158,5 @@ impl ToComputedValue for Percentage {
         Percentage::new(computed.0)
     }
 }
+
+impl SpecifiedValueInfo for Percentage {}

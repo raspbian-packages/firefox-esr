@@ -12,16 +12,20 @@
 #include "nsIDOMEventListener.h"
 #include "mozilla/Attributes.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <maction> -- bind actions to a subexpression
 //
 
-class nsMathMLmactionFrame : public nsMathMLSelectedFrame {
+class nsMathMLmactionFrame final : public nsMathMLSelectedFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmactionFrame)
 
-  friend nsIFrame* NS_NewMathMLmactionFrame(nsIPresShell* aPresShell,
-                                            nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmactionFrame(mozilla::PresShell* aPresShell,
+                                            ComputedStyle* aStyle);
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
@@ -53,8 +57,9 @@ class nsMathMLmactionFrame : public nsMathMLSelectedFrame {
   };
 
  protected:
-  explicit nsMathMLmactionFrame(nsStyleContext* aContext)
-      : nsMathMLSelectedFrame(aContext, kClassID) {}
+  explicit nsMathMLmactionFrame(ComputedStyle* aStyle,
+                                nsPresContext* aPresContext)
+      : nsMathMLSelectedFrame(aStyle, aPresContext, kClassID) {}
   virtual ~nsMathMLmactionFrame();
 
  private:

@@ -7,6 +7,7 @@
 #ifndef mozilla_dom_ServiceWorkerScriptCache_h
 #define mozilla_dom_ServiceWorkerScriptCache_h
 
+#include "nsIRequest.h"
 #include "nsString.h"
 
 class nsILoadGroup;
@@ -23,6 +24,8 @@ nsresult PurgeCache(nsIPrincipal* aPrincipal, const nsAString& aCacheName);
 
 nsresult GenerateCacheName(nsAString& aName);
 
+enum class OnFailure : uint8_t { DoNothing, Uninstall };
+
 class CompareCallback {
  public:
   /*
@@ -32,6 +35,7 @@ class CompareCallback {
    * use the new cache name to load the ServiceWorker.
    */
   virtual void ComparisonResult(nsresult aStatus, bool aInCacheAndEqual,
+                                OnFailure aOnFailure,
                                 const nsAString& aNewCacheName,
                                 const nsACString& aMaxScope,
                                 nsLoadFlags aLoadFlags) = 0;
@@ -41,8 +45,7 @@ class CompareCallback {
 
 nsresult Compare(ServiceWorkerRegistrationInfo* aRegistration,
                  nsIPrincipal* aPrincipal, const nsAString& aCacheName,
-                 const nsAString& aURL, CompareCallback* aCallback,
-                 nsILoadGroup* aLoadGroup);
+                 const nsAString& aURL, CompareCallback* aCallback);
 
 }  // namespace serviceWorkerScriptCache
 

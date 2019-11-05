@@ -19,8 +19,9 @@
 #include "nsISimpleEnumerator.h"
 #include "nsAccUtils.h"
 #ifdef MOZ_ACCESSIBILITY_ATK
-#include "AccessibleWrap.h"
+#  include "AccessibleWrap.h"
 #endif
+#include "mozilla/PresShell.h"
 
 namespace mozilla {
 namespace a11y {
@@ -146,42 +147,10 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvAttributes(
   if (!acc) return IPC_OK();
 
   nsCOMPtr<nsIPersistentProperties> props = acc->Attributes();
-  if (!PersistentPropertiesToArray(props, aAttributes)) {
+  if (!nsAccUtils::PersistentPropertiesToArray(props, aAttributes)) {
     return IPC_FAIL_NO_REASON(this);
   }
   return IPC_OK();
-}
-
-bool DocAccessibleChild::PersistentPropertiesToArray(
-    nsIPersistentProperties* aProps, nsTArray<Attribute>* aAttributes) {
-  if (!aProps) {
-    return true;
-  }
-  nsCOMPtr<nsISimpleEnumerator> propEnum;
-  nsresult rv = aProps->Enumerate(getter_AddRefs(propEnum));
-  NS_ENSURE_SUCCESS(rv, false);
-
-  bool hasMore;
-  while (NS_SUCCEEDED(propEnum->HasMoreElements(&hasMore)) && hasMore) {
-    nsCOMPtr<nsISupports> sup;
-    rv = propEnum->GetNext(getter_AddRefs(sup));
-    NS_ENSURE_SUCCESS(rv, false);
-
-    nsCOMPtr<nsIPropertyElement> propElem(do_QueryInterface(sup));
-    NS_ENSURE_TRUE(propElem, false);
-
-    nsAutoCString name;
-    rv = propElem->GetKey(name);
-    NS_ENSURE_SUCCESS(rv, false);
-
-    nsAutoString value;
-    rv = propElem->GetValue(value);
-    NS_ENSURE_SUCCESS(rv, false);
-
-    aAttributes->AppendElement(Attribute(name, value));
-  }
-
-  return true;
 }
 
 mozilla::ipc::IPCResult DocAccessibleChild::RecvRelationByType(
@@ -192,7 +161,7 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvRelationByType(
   auto type = static_cast<RelationType>(aType);
   Relation rel = acc->RelationByType(type);
   while (Accessible* target = rel.Next())
-    aTargets->AppendElement(reinterpret_cast<uintptr_t>(target));
+    aTargets->AppendElement(reinterpret_cast<uint64_t>(target->UniqueID()));
 
   return IPC_OK();
 }
@@ -202,7 +171,7 @@ static void AddRelation(Accessible* aAcc, RelationType aType,
   Relation rel = aAcc->RelationByType(aType);
   nsTArray<uint64_t> targets;
   while (Accessible* target = rel.Next())
-    targets.AppendElement(reinterpret_cast<uintptr_t>(target));
+    targets.AppendElement(reinterpret_cast<uint64_t>(target->UniqueID()));
 
   if (!targets.IsEmpty()) {
     RelationTargets* newRelation = aTargets->AppendElement(
@@ -256,7 +225,7 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvARIARoleAtom(
   }
 
   if (const nsRoleMapEntry* roleMap = acc->ARIARoleMap()) {
-    if (nsAtom* roleAtom = *(roleMap->roleAtom)) {
+    if (nsStaticAtom* roleAtom = roleMap->roleAtom) {
       roleAtom->ToString(*aRole);
     }
   }
@@ -277,8 +246,9 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvScrollTo(
     const uint64_t& aID, const uint32_t& aScrollType) {
   Accessible* acc = IdToAccessible(aID);
   if (acc) {
-    nsCoreUtils::ScrollTo(acc->Document()->PresShell(), acc->GetContent(),
-                          aScrollType);
+    RefPtr<PresShell> presShell = acc->Document()->PresShellPtr();
+    nsCOMPtr<nsIContent> content = acc->GetContent();
+    nsCoreUtils::ScrollTo(presShell, content, aScrollType);
   }
 
   return IPC_OK();
@@ -290,6 +260,17 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvScrollToPoint(
   Accessible* acc = IdToAccessible(aID);
   if (acc) {
     acc->ScrollToPoint(aScrollType, aX, aY);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChild::RecvAnnounce(
+    const uint64_t& aID, const nsString& aAnnouncement,
+    const uint16_t& aPriority) {
+  Accessible* acc = IdToAccessible(aID);
+  if (acc) {
+    acc->Announce(aAnnouncement, aPriority);
   }
 
   return IPC_OK();
@@ -404,7 +385,7 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvTextAttributes(
 
   nsCOMPtr<nsIPersistentProperties> props =
       acc->TextAttributes(aIncludeDefAttrs, aOffset, aStartOffset, aEndOffset);
-  if (!PersistentPropertiesToArray(props, aAttributes)) {
+  if (!nsAccUtils::PersistentPropertiesToArray(props, aAttributes)) {
     return IPC_FAIL_NO_REASON(this);
   }
   return IPC_OK();
@@ -418,7 +399,7 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvDefaultTextAttributes(
   }
 
   nsCOMPtr<nsIPersistentProperties> props = acc->DefaultTextAttributes();
-  if (!PersistentPropertiesToArray(props, aAttributes)) {
+  if (!nsAccUtils::PersistentPropertiesToArray(props, aAttributes)) {
     return IPC_FAIL_NO_REASON(this);
   }
   return IPC_OK();
@@ -603,7 +584,7 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvDeleteText(
 
 mozilla::ipc::IPCResult DocAccessibleChild::RecvPasteText(
     const uint64_t& aID, const int32_t& aPosition, bool* aValid) {
-  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  RefPtr<HyperTextAccessible> acc = IdToHyperTextAccessible(aID);
   if (acc && acc->IsTextRole()) {
     *aValid = acc->IsValidOffset(aPosition);
     acc->PasteText(aPosition);
@@ -1645,6 +1626,26 @@ mozilla::ipc::IPCResult DocAccessibleChild::RecvExtents(
         screenRect.y -= winCoords.y;
       }
 
+      *aX = screenRect.x;
+      *aY = screenRect.y;
+      *aWidth = screenRect.width;
+      *aHeight = screenRect.height;
+    }
+  }
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChild::RecvExtentsInCSSPixels(
+    const uint64_t& aID, int32_t* aX, int32_t* aY, int32_t* aWidth,
+    int32_t* aHeight) {
+  *aX = 0;
+  *aY = 0;
+  *aWidth = 0;
+  *aHeight = 0;
+  Accessible* acc = IdToAccessible(aID);
+  if (acc && !acc->IsDefunct()) {
+    nsIntRect screenRect = acc->BoundsInCSSPixels();
+    if (!screenRect.IsEmpty()) {
       *aX = screenRect.x;
       *aY = screenRect.y;
       *aWidth = screenRect.width;

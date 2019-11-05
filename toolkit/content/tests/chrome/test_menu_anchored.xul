@@ -6,15 +6,15 @@
   -->
 <window title="Anchored Menus Test"
         align="start"
-        onload="setTimeout(runTest, 0,'tb1');"
+        onload="setTimeout(runTest, 0, 'tb1');"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"></script>
   <script type="application/javascript" src="xul_selectcontrol.js"/>
 
 <hbox>
 
-<toolbarbutton id="tb1" type="menu-button" label="Open" anchor="dropmarker">
+<toolbarbutton id="tb1" type="menu" label="Open" anchor="dropmarker">
   <menupopup id="popup1"
              onpopupshown="checkPopup(this, document.getAnonymousElementByAttribute(this.parentNode, 'anonid', 'dropmarker'))"
              onpopuphidden="runTest('tb2')">
@@ -22,13 +22,13 @@
   </menupopup>
 </toolbarbutton>
 
-<toolbarbutton id="tb2" type="menu-button" label="Open" anchor="someanchor">
+<toolbarbutton id="tb2" type="menu" label="Open" anchor="someanchor">
   <menupopup id="popup2" onpopupshown="checkPopup(this, $('someanchor'))" onpopuphidden="runTest('tb3')">
     <menuitem label="Item"/>
   </menupopup>
 </toolbarbutton>
 
-<toolbarbutton id="tb3" type="menu-button" label="Open" anchor="noexist">
+<toolbarbutton id="tb3" type="menu" label="Open" anchor="noexist">
   <menupopup id="popup3" onpopupshown="checkPopup(this, this.parentNode)" onpopuphidden="SimpleTest.finish()">
     <menuitem label="Item"/>
   </menupopup>

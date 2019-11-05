@@ -38,6 +38,10 @@
 <!ENTITY bookmarksToolbar.tooltip         "Bokmerkelinje">
 <!ENTITY navigationToolbar.tooltip        "Navigasjonsverktøylinje">
 
+<!ENTITY editBookmark.done.label "Ferdig">
+<!ENTITY editBookmark.cancel.label "Avbryt">
+<!ENTITY editBookmark.removeBookmark.accessKey "r">
+
 <!-- Toolbar items --> 
 <!ENTITY backButton.label             "Tilbake">
 <!ENTITY backButton.tooltip           "Gå tilbake en side">
@@ -80,3 +84,6 @@
 <!ENTITY viewCertificate.accesskey   "s">
 <!ENTITY viewCertManager.label       "Åpne sertifikatbehandler">
 <!ENTITY viewCertManager.accesskey   "n">
+
+<!ENTITY zoomIn.tooltiptext          "Større">
+<!ENTITY zoomOut.tooltiptext         "Mindre">

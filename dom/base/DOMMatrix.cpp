@@ -13,13 +13,18 @@
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/dom/ToJSValue.h"
 #include "mozilla/ServoCSSParser.h"
-#include "nsCSSParser.h"
+#include "nsGlobalWindowInner.h"
 #include "nsStyleTransformMatrix.h"
+#include "nsGlobalWindowInner.h"
 
 #include <math.h>
 
 namespace mozilla {
 namespace dom {
+
+template <typename T>
+static void SetDataInMatrix(DOMMatrixReadOnly* aMatrix, const T* aData,
+                            int aLength, ErrorResult& aRv);
 
 static const double radPerDegree = 2.0 * M_PI / 360.0;
 
@@ -27,6 +32,38 @@ NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(DOMMatrixReadOnly, mParent)
 
 NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(DOMMatrixReadOnly, AddRef)
 NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(DOMMatrixReadOnly, Release)
+
+JSObject* DOMMatrixReadOnly::WrapObject(JSContext* aCx,
+                                        JS::Handle<JSObject*> aGivenProto) {
+  return DOMMatrixReadOnly_Binding::Wrap(aCx, this, aGivenProto);
+}
+
+already_AddRefed<DOMMatrixReadOnly> DOMMatrixReadOnly::Constructor(
+    const GlobalObject& aGlobal,
+    const Optional<StringOrUnrestrictedDoubleSequence>& aArg,
+    ErrorResult& aRv) {
+  RefPtr<DOMMatrixReadOnly> rval =
+      new DOMMatrixReadOnly(aGlobal.GetAsSupports());
+  if (!aArg.WasPassed()) {
+    return rval.forget();
+  }
+
+  const auto& arg = aArg.Value();
+  if (arg.IsString()) {
+    nsCOMPtr<nsPIDOMWindowInner> win =
+        do_QueryInterface(aGlobal.GetAsSupports());
+    if (!win) {
+      aRv.ThrowTypeError<MSG_ILLEGAL_CONSTRUCTOR>();
+      return nullptr;
+    }
+    rval->SetMatrixValue(arg.GetAsString(), aRv);
+  } else {
+    const auto& sequence = arg.GetAsUnrestrictedDoubleSequence();
+    SetDataInMatrix(rval, sequence.Elements(), sequence.Length(), aRv);
+  }
+
+  return rval.forget();
+}
 
 already_AddRefed<DOMMatrix> DOMMatrixReadOnly::Translate(double aTx, double aTy,
                                                          double aTz) const {
@@ -319,25 +356,16 @@ void DOMMatrixReadOnly::Stringify(nsAString& aResult) {
   aResult = matrixStr;
 }
 
-static bool IsStyledByServo(JSContext* aContext) {
-  nsGlobalWindowInner* win = xpc::CurrentWindowOrNull(aContext);
-  nsIDocument* doc = win ? win->GetDoc() : nullptr;
-  return doc ? doc->IsStyledByServo() : false;
-}
-
 already_AddRefed<DOMMatrix> DOMMatrix::Constructor(const GlobalObject& aGlobal,
                                                    ErrorResult& aRv) {
-  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports(),
-                                        IsStyledByServo(aGlobal.Context()));
+  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports());
   return obj.forget();
 }
 
 already_AddRefed<DOMMatrix> DOMMatrix::Constructor(
     const GlobalObject& aGlobal, const nsAString& aTransformList,
     ErrorResult& aRv) {
-  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports(),
-                                        IsStyledByServo(aGlobal.Context()));
-
+  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports());
   obj = obj->SetMatrixValue(aTransformList, aRv);
   return obj.forget();
 }
@@ -350,8 +378,8 @@ already_AddRefed<DOMMatrix> DOMMatrix::Constructor(
 }
 
 template <typename T>
-void SetDataInMatrix(DOMMatrix* aMatrix, const T* aData, int aLength,
-                     ErrorResult& aRv) {
+static void SetDataInMatrix(DOMMatrixReadOnly* aMatrix, const T* aData,
+                            int aLength, ErrorResult& aRv) {
   if (aLength == 16) {
     aMatrix->SetM11(aData[0]);
     aMatrix->SetM12(aData[1]);
@@ -377,15 +405,16 @@ void SetDataInMatrix(DOMMatrix* aMatrix, const T* aData, int aLength,
     aMatrix->SetE(aData[4]);
     aMatrix->SetF(aData[5]);
   } else {
-    aRv.Throw(NS_ERROR_DOM_INDEX_SIZE_ERR);
+    nsAutoString lengthStr;
+    lengthStr.AppendInt(aLength);
+    aRv.ThrowTypeError<MSG_MATRIX_INIT_LENGTH_WRONG>(lengthStr);
   }
 }
 
 already_AddRefed<DOMMatrix> DOMMatrix::Constructor(const GlobalObject& aGlobal,
                                                    const Float32Array& aArray32,
                                                    ErrorResult& aRv) {
-  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports(),
-                                        IsStyledByServo(aGlobal.Context()));
+  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports());
   aArray32.ComputeLengthAndData();
   SetDataInMatrix(obj, aArray32.Data(), aArray32.Length(), aRv);
 
@@ -395,8 +424,7 @@ already_AddRefed<DOMMatrix> DOMMatrix::Constructor(const GlobalObject& aGlobal,
 already_AddRefed<DOMMatrix> DOMMatrix::Constructor(const GlobalObject& aGlobal,
                                                    const Float64Array& aArray64,
                                                    ErrorResult& aRv) {
-  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports(),
-                                        IsStyledByServo(aGlobal.Context()));
+  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports());
   aArray64.ComputeLengthAndData();
   SetDataInMatrix(obj, aArray64.Data(), aArray64.Length(), aRv);
 
@@ -406,15 +434,14 @@ already_AddRefed<DOMMatrix> DOMMatrix::Constructor(const GlobalObject& aGlobal,
 already_AddRefed<DOMMatrix> DOMMatrix::Constructor(
     const GlobalObject& aGlobal, const Sequence<double>& aNumberSequence,
     ErrorResult& aRv) {
-  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports(),
-                                        IsStyledByServo(aGlobal.Context()));
+  RefPtr<DOMMatrix> obj = new DOMMatrix(aGlobal.GetAsSupports());
   SetDataInMatrix(obj, aNumberSequence.Elements(), aNumberSequence.Length(),
                   aRv);
 
   return obj.forget();
 }
 
-void DOMMatrix::Ensure3DMatrix() {
+void DOMMatrixReadOnly::Ensure3DMatrix() {
   if (!mMatrix3D) {
     mMatrix3D = new gfx::Matrix4x4(gfx::Matrix4x4::From2D(*mMatrix2D));
     mMatrix2D = nullptr;
@@ -613,8 +640,8 @@ DOMMatrix* DOMMatrix::InvertSelf() {
   return this;
 }
 
-DOMMatrix* DOMMatrix::SetMatrixValue(const nsAString& aTransformList,
-                                     ErrorResult& aRv) {
+DOMMatrixReadOnly* DOMMatrixReadOnly::SetMatrixValue(
+    const nsAString& aTransformList, ErrorResult& aRv) {
   // An empty string is a no-op.
   if (aTransformList.IsEmpty()) {
     return this;
@@ -622,44 +649,10 @@ DOMMatrix* DOMMatrix::SetMatrixValue(const nsAString& aTransformList,
 
   gfx::Matrix4x4 transform;
   bool contains3dTransform = false;
-  if (mIsServo) {
-    if (!ServoCSSParser::ParseTransformIntoMatrix(
-            aTransformList, contains3dTransform, transform.components)) {
-      aRv.Throw(NS_ERROR_DOM_SYNTAX_ERR);
-      return nullptr;
-    }
-  } else {
-#ifdef MOZ_OLD_STYLE
-    nsCSSValue value;
-    nsCSSParser parser;
-    bool parseSuccess =
-        parser.ParseTransformProperty(aTransformList, true, value);
-    if (!parseSuccess) {
-      aRv.Throw(NS_ERROR_DOM_SYNTAX_ERR);
-      return nullptr;
-    }
-
-    // A value of "none" results in a 2D identity matrix.
-    if (value.GetUnit() == eCSSUnit_None) {
-      mMatrix3D = nullptr;
-      mMatrix2D = new gfx::Matrix();
-      return this;
-    }
-
-    // A value other than a transform-list is a syntax error.
-    if (value.GetUnit() != eCSSUnit_SharedList) {
-      aRv.Throw(NS_ERROR_DOM_SYNTAX_ERR);
-      return nullptr;
-    }
-
-    RuleNodeCacheConditions dummy;
-    nsStyleTransformMatrix::TransformReferenceBox dummyBox;
-    transform = nsStyleTransformMatrix::ReadTransforms(
-        value.GetSharedListValue()->mHead, nullptr, nullptr, dummy, dummyBox,
-        nsPresContext::AppUnitsPerCSSPixel(), &contains3dTransform);
-#else
-    MOZ_CRASH("old style system disabled");
-#endif
+  if (!ServoCSSParser::ParseTransformIntoMatrix(
+          aTransformList, contains3dTransform, transform)) {
+    aRv.Throw(NS_ERROR_DOM_SYNTAX_ERR);
+    return nullptr;
   }
 
   if (!contains3dTransform) {
@@ -680,9 +673,15 @@ DOMMatrix* DOMMatrix::SetMatrixValue(const nsAString& aTransformList,
   return this;
 }
 
+DOMMatrix* DOMMatrix::SetMatrixValue(const nsAString& aTransformList,
+                                     ErrorResult& aRv) {
+  DOMMatrixReadOnly::SetMatrixValue(aTransformList, aRv);
+  return this;
+}
+
 JSObject* DOMMatrix::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return DOMMatrixBinding::Wrap(aCx, this, aGivenProto);
+  return DOMMatrix_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

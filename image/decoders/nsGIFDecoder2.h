@@ -64,8 +64,11 @@ class nsGIFDecoder2 : public Decoder {
 
   /// A generator function that performs LZW decompression and yields pixels.
   template <typename PixelSize>
-  NextPixel<PixelSize> YieldPixel(const uint8_t* aData, size_t aLength,
-                                  size_t* aBytesReadOut);
+  Tuple<int32_t, Maybe<WriteState>> YieldPixels(const uint8_t* aData,
+                                                size_t aLength,
+                                                size_t* aBytesReadOut,
+                                                PixelSize* aPixelBlock,
+                                                int32_t aBlockSize);
 
   /// Checks if we have transparency, either because the header indicates that
   /// there's alpha, or because the frame rect doesn't cover the entire image.
@@ -140,6 +143,8 @@ class nsGIFDecoder2 : public Decoder {
   // current position - i.e., the offset into which the next byte should be
   // written.
   size_t mColorTablePos;
+  uint32_t* mColormap;  // Current colormap to be used in Cairo format
+  uint32_t mColormapSize;
 
   uint8_t mColorMask;  // Apply this to the pixel to keep within colormap
   bool mGIFOpen;

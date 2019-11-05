@@ -26,8 +26,8 @@ class LayerManager;
 class nsPresContext;
 class nsDisplayItem;
 
-class nsVideoFrame : public nsContainerFrame,
-                     public nsIAnonymousContentCreator {
+class nsVideoFrame final : public nsContainerFrame,
+                           public nsIAnonymousContentCreator {
  public:
   template <typename T>
   using Maybe = mozilla::Maybe<T>;
@@ -38,7 +38,7 @@ class nsVideoFrame : public nsContainerFrame,
   typedef mozilla::layers::LayerManager LayerManager;
   typedef mozilla::ContainerLayerParameters ContainerLayerParameters;
 
-  explicit nsVideoFrame(nsStyleContext* aContext);
+  explicit nsVideoFrame(ComputedStyle*, nsPresContext*);
 
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsVideoFrame)
@@ -55,7 +55,7 @@ class nsVideoFrame : public nsContainerFrame,
 
   /* get the size of the video's display */
   nsSize GetVideoIntrinsicSize(gfxContext* aRenderingContext);
-  nsSize GetIntrinsicRatio() override;
+  mozilla::AspectRatio GetIntrinsicRatio() override;
   mozilla::LogicalSize ComputeSize(
       gfxContext* aRenderingContext, mozilla::WritingMode aWritingMode,
       const mozilla::LogicalSize& aCBSize, nscoord aAvailableISize,
@@ -90,8 +90,7 @@ class nsVideoFrame : public nsContainerFrame,
   bool ShouldDisplayPoster();
 
   nsIContent* GetCaptionOverlay() { return mCaptionDiv; }
-
-  nsIContent* GetVideoControls() { return mVideoControls; }
+  nsIContent* GetVideoControls();
 
 #ifdef DEBUG_FRAME_DUMP
   nsresult GetFrameName(nsAString& aResult) const override;
@@ -121,9 +120,6 @@ class nsVideoFrame : public nsContainerFrame,
   void UpdateTextTrack();
 
   virtual ~nsVideoFrame();
-
-  // Anonymous child which is bound via XBL to the video controls.
-  RefPtr<mozilla::dom::Element> mVideoControls;
 
   // Anonymous child which is the image element of the poster frame.
   RefPtr<mozilla::dom::Element> mPosterImage;

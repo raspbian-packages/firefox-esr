@@ -9,7 +9,7 @@
 #include "mozilla/dom/HTMLTitleElementBinding.h"
 #include "mozilla/ErrorResult.h"
 #include "nsStyleConsts.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsContentUtils.h"
 
 NS_IMPL_NS_NEW_HTML_ELEMENT(Title)
@@ -18,8 +18,8 @@ namespace mozilla {
 namespace dom {
 
 HTMLTitleElement::HTMLTitleElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {
   AddMutationObserver(this);
 }
 
@@ -32,7 +32,7 @@ NS_IMPL_ELEMENT_CLONE(HTMLTitleElement)
 
 JSObject* HTMLTitleElement::WrapNode(JSContext* cx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return HTMLTitleElementBinding::Wrap(cx, this, aGivenProto);
+  return HTMLTitleElement_Binding::Wrap(cx, this, aGivenProto);
 }
 
 void HTMLTitleElement::GetText(DOMString& aText, ErrorResult& aError) {
@@ -63,13 +63,11 @@ void HTMLTitleElement::ContentRemoved(nsIContent* aChild,
   SendTitleChangeEvent(false);
 }
 
-nsresult HTMLTitleElement::BindToTree(nsIDocument* aDocument,
-                                      nsIContent* aParent,
-                                      nsIContent* aBindingParent,
-                                      bool aCompileEventHandlers) {
+nsresult HTMLTitleElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                      nsIContent* aBindingParent) {
   // Let this fall through.
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   SendTitleChangeEvent(true);
@@ -91,7 +89,7 @@ void HTMLTitleElement::DoneAddingChildren(bool aHaveNotified) {
 }
 
 void HTMLTitleElement::SendTitleChangeEvent(bool aBound) {
-  nsIDocument* doc = GetUncomposedDoc();
+  Document* doc = GetUncomposedDoc();
   if (doc) {
     doc->NotifyPossibleTitleChange(aBound);
   }

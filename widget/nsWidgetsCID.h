@@ -3,30 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* 2d96b3d0-c051-11d1-a827-0040959a28c9 */
-#define NS_WINDOW_CID                                \
-  {                                                  \
-    0x2d96b3d0, 0xc051, 0x11d1, {                    \
-      0xa8, 0x27, 0x00, 0x40, 0x95, 0x9a, 0x28, 0xc9 \
-    }                                                \
-  }
-
-/* 2d96b3d1-c051-11d1-a827-0040959a28c9 */
-#define NS_CHILD_CID                                 \
-  {                                                  \
-    0x2d96b3d1, 0xc051, 0x11d1, {                    \
-      0xa8, 0x27, 0x00, 0x40, 0x95, 0x9a, 0x28, 0xc9 \
-    }                                                \
-  }
-
-/* BA7DE611-6088-11d3-A83E-00105A183419 */
-#define NS_POPUP_CID                                \
-  {                                                 \
-    0xba7de611, 0x6088, 0x11d3, {                   \
-      0xa8, 0x3e, 0x0, 0x10, 0x5a, 0x18, 0x34, 0x19 \
-    }                                               \
-  }
-
 /* bd57cee8-1dd1-11b2-9fe7-95cf4709aea3 */
 #define NS_FILEPICKER_CID                            \
   {                                                  \
@@ -114,11 +90,43 @@
     }                                                \
   }
 
+// {de59fe1a-46c8-490f-b04d-34545acb06c9}
+#define NS_MACSHARINGSERVICE_CID                     \
+  {                                                  \
+    0xde59fe1a, 0x46c8, 0x490f, {                    \
+      0xb0, 0x4d, 0x34, 0x54, 0x5a, 0xcb, 0x06, 0xc9 \
+    }                                                \
+  }
+
 // {b6e1a890-b2b8-4883-a65f-9476f6185313}
 #define NS_MACSYSTEMSTATUSBAR_CID                    \
   {                                                  \
     0xb6e1a890, 0xb2b8, 0x4883, {                    \
       0xa6, 0x5f, 0x94, 0x76, 0xf6, 0x18, 0x53, 0x13 \
+    }                                                \
+  }
+
+// {ea109912-3acc-48de-b679-c23b6a122da5}
+#define NS_TOUCHBARHELPER_CID                        \
+  {                                                  \
+    0xea109912, 0x3acc, 0x48de, {                    \
+      0xb6, 0x79, 0xc2, 0x3b, 0x6a, 0x12, 0x2d, 0xa5 \
+    }                                                \
+  }
+
+// {38f396e2-93c9-4a77-aaf7-2d50b9962186}
+#define NS_TOUCHBARUPDATER_CID                       \
+  {                                                  \
+    0x38f396e2, 0x93c9, 0x4a77, {                    \
+      0xaa, 0xf7, 0x2d, 0x50, 0xb9, 0x96, 0x21, 0x86 \
+    }                                                \
+  }
+
+// {77441d17-f29c-49d7-982f-f20a5ab5a900}
+#define NS_TOUCHBARINPUT_CID                         \
+  {                                                  \
+    0x77441d17, 0xf29c, 0x49d7, {                    \
+      0x98, 0x2f, 0xf2, 0x0a, 0x5a, 0xb5, 0xa9, 0x00 \
     }                                                \
   }
 
@@ -182,21 +190,6 @@
     0xb148eed2, 0x236d, 0x11d3, {                   \
       0xb3, 0x5c, 0x0, 0xa0, 0xcc, 0x3c, 0x1c, 0xde \
     }                                               \
-  }
-
-// {9f1800ab-f428-4207-b40c-e832e77b01fc}
-#define NS_BIDIKEYBOARD_CID                          \
-  {                                                  \
-    0x9f1800ab, 0xf428, 0x4207, {                    \
-      0xb4, 0x0c, 0xe8, 0x32, 0xe7, 0x7b, 0x01, 0xfc \
-    }                                                \
-  }
-
-#define PUPPETBIDIKEYBOARD_CID                       \
-  {                                                  \
-    0x689e2586, 0x0344, 0x40b2, {                    \
-      0x83, 0x75, 0x13, 0x67, 0x2d, 0x3b, 0x71, 0x9a \
-    }                                                \
   }
 
 #define NS_SCREENMANAGER_CID                         \
@@ -266,6 +259,14 @@
   {                                                  \
     0xe9096367, 0xddd9, 0x45e4, {                    \
       0xb7, 0x62, 0x49, 0xc0, 0xc1, 0x8b, 0x71, 0x19 \
+    }                                                \
+  }
+
+// {a9339876-0027-430f-b953-84c9c11c2da3}
+#define NS_GTK_TASKBARPROGRESS_CID                   \
+  {                                                  \
+    0xa9339876, 0x0027, 0x430f, {                    \
+      0xb9, 0x53, 0x84, 0xc9, 0xc1, 0x1c, 0x2d, 0xa3 \
     }                                                \
   }
 

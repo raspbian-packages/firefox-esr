@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -27,16 +27,13 @@ class FilteringWrapper : public Base {
       JSContext* cx, JS::Handle<JSObject*> wrapper, JS::Handle<jsid> id,
       JS::MutableHandle<JS::PropertyDescriptor> desc) const override;
   virtual bool ownPropertyKeys(JSContext* cx, JS::Handle<JSObject*> wrapper,
-                               JS::AutoIdVector& props) const override;
+                               JS::MutableHandleIdVector props) const override;
 
-  virtual bool getPropertyDescriptor(
-      JSContext* cx, JS::Handle<JSObject*> wrapper, JS::Handle<jsid> id,
-      JS::MutableHandle<JS::PropertyDescriptor> desc) const override;
   virtual bool getOwnEnumerablePropertyKeys(
       JSContext* cx, JS::Handle<JSObject*> wrapper,
-      JS::AutoIdVector& props) const override;
-  virtual JSObject* enumerate(JSContext* cx,
-                              JS::Handle<JSObject*> wrapper) const override;
+      JS::MutableHandleIdVector props) const override;
+  virtual bool enumerate(JSContext* cx, JS::Handle<JSObject*> wrapper,
+                         JS::MutableHandleIdVector props) const override;
 
   virtual bool call(JSContext* cx, JS::Handle<JSObject*> wrapper,
                     const JS::CallArgs& args) const override;
@@ -52,43 +49,6 @@ class FilteringWrapper : public Base {
 
   static const FilteringWrapper singleton;
 };
-
-/*
- * The HTML5 spec mandates very particular object behavior for cross-origin DOM
- * objects (Window and Location), some of which runs contrary to the way that
- * other XrayWrappers behave. We use this class to implement those semantics.
- */
-class CrossOriginXrayWrapper : public SecurityXrayDOM {
- public:
-  constexpr explicit CrossOriginXrayWrapper(unsigned flags)
-      : SecurityXrayDOM(flags) {}
-
-  virtual bool getOwnPropertyDescriptor(
-      JSContext* cx, JS::Handle<JSObject*> wrapper, JS::Handle<jsid> id,
-      JS::MutableHandle<JS::PropertyDescriptor> desc) const override;
-  virtual bool defineProperty(JSContext* cx, JS::Handle<JSObject*> wrapper,
-                              JS::Handle<jsid> id,
-                              JS::Handle<JS::PropertyDescriptor> desc,
-                              JS::ObjectOpResult& result) const override;
-  virtual bool ownPropertyKeys(JSContext* cx, JS::Handle<JSObject*> wrapper,
-                               JS::AutoIdVector& props) const override;
-  virtual bool delete_(JSContext* cx, JS::Handle<JSObject*> wrapper,
-                       JS::Handle<jsid> id,
-                       JS::ObjectOpResult& result) const override;
-
-  virtual bool getPropertyDescriptor(
-      JSContext* cx, JS::Handle<JSObject*> wrapper, JS::Handle<jsid> id,
-      JS::MutableHandle<JS::PropertyDescriptor> desc) const override;
-
-  virtual bool setPrototype(JSContext* cx, JS::HandleObject wrapper,
-                            JS::HandleObject proto,
-                            JS::ObjectOpResult& result) const override;
-};
-
-// Check whether the given jsid is a property name (string or symbol) whose
-// value can be gotten cross-origin.  Cross-origin gets always return undefined
-// as the value, unless the Xray actually provides a different value.
-bool IsCrossOriginWhitelistedProp(JSContext* cx, JS::HandleId id);
 
 }  // namespace xpc
 

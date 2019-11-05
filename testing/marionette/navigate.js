@@ -4,7 +4,11 @@
 
 "use strict";
 
-Cu.importGlobalProperties(["URL"]);
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+
+XPCOMUtils.defineLazyGlobalGetters(this, ["URL"]);
 
 this.EXPORTED_SYMBOLS = ["navigate"];
 
@@ -49,8 +53,11 @@ navigate.isLoadEventExpected = function(current, future = undefined) {
   }
 
   // If hashes are present and identical
-  if (cur.href.includes("#") && fut.href.includes("#") &&
-      cur.hash === fut.hash) {
+  if (
+    cur.href.includes("#") &&
+    fut.href.includes("#") &&
+    cur.hash === fut.hash
+  ) {
     return false;
   }
 

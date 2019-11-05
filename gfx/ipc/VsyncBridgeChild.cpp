@@ -16,14 +16,15 @@ VsyncBridgeChild::VsyncBridgeChild(RefPtr<VsyncIOThreadHolder> aThread,
 
 VsyncBridgeChild::~VsyncBridgeChild() {}
 
-/* static */ RefPtr<VsyncBridgeChild> VsyncBridgeChild::Create(
+/* static */
+RefPtr<VsyncBridgeChild> VsyncBridgeChild::Create(
     RefPtr<VsyncIOThreadHolder> aThread, const uint64_t& aProcessToken,
     Endpoint<PVsyncBridgeChild>&& aEndpoint) {
   RefPtr<VsyncBridgeChild> child = new VsyncBridgeChild(aThread, aProcessToken);
 
   RefPtr<nsIRunnable> task = NewRunnableMethod<Endpoint<PVsyncBridgeChild>&&>(
       "gfx::VsyncBridgeChild::Open", child, &VsyncBridgeChild::Open,
-      Move(aEndpoint));
+      std::move(aEndpoint));
   aThread->GetThread()->Dispatch(task.forget(), nsIThread::DISPATCH_NORMAL);
 
   return child;
@@ -44,47 +45,46 @@ void VsyncBridgeChild::Open(Endpoint<PVsyncBridgeChild>&& aEndpoint) {
 
 class NotifyVsyncTask : public Runnable {
  public:
-  NotifyVsyncTask(RefPtr<VsyncBridgeChild> aVsyncBridge, TimeStamp aTimeStamp,
-                  const uint64_t& aLayersId)
+  NotifyVsyncTask(RefPtr<VsyncBridgeChild> aVsyncBridge,
+                  const VsyncEvent& aVsync, const layers::LayersId& aLayersId)
       : Runnable("gfx::NotifyVsyncTask"),
         mVsyncBridge(aVsyncBridge),
-        mTimeStamp(aTimeStamp),
+        mVsync(aVsync),
         mLayersId(aLayersId) {}
 
   NS_IMETHOD Run() override {
-    mVsyncBridge->NotifyVsyncImpl(mTimeStamp, mLayersId);
+    mVsyncBridge->NotifyVsyncImpl(mVsync, mLayersId);
     return NS_OK;
   }
 
  private:
   RefPtr<VsyncBridgeChild> mVsyncBridge;
-  TimeStamp mTimeStamp;
-  uint64_t mLayersId;
+  VsyncEvent mVsync;
+  layers::LayersId mLayersId;
 };
 
 bool VsyncBridgeChild::IsOnVsyncIOThread() const {
   return mThread->IsOnCurrentThread();
 }
 
-void VsyncBridgeChild::NotifyVsync(TimeStamp aTimeStamp,
-                                   const uint64_t& aLayersId) {
+void VsyncBridgeChild::NotifyVsync(const VsyncEvent& aVsync,
+                                   const layers::LayersId& aLayersId) {
   // This should be on the Vsync thread (not the Vsync I/O thread).
   MOZ_ASSERT(!IsOnVsyncIOThread());
 
-  RefPtr<NotifyVsyncTask> task =
-      new NotifyVsyncTask(this, aTimeStamp, aLayersId);
+  RefPtr<NotifyVsyncTask> task = new NotifyVsyncTask(this, aVsync, aLayersId);
   mThread->Dispatch(task.forget());
 }
 
-void VsyncBridgeChild::NotifyVsyncImpl(TimeStamp aTimeStamp,
-                                       const uint64_t& aLayersId) {
+void VsyncBridgeChild::NotifyVsyncImpl(const VsyncEvent& aVsync,
+                                       const layers::LayersId& aLayersId) {
   // This should be on the Vsync I/O thread.
   MOZ_ASSERT(IsOnVsyncIOThread());
 
   if (!mProcessToken) {
     return;
   }
-  SendNotifyVsync(aTimeStamp, aLayersId);
+  SendNotifyVsync(aVsync, aLayersId);
 }
 
 void VsyncBridgeChild::Close() {
@@ -122,9 +122,8 @@ void VsyncBridgeChild::ProcessingError(Result aCode, const char* aReason) {
                      "Processing error in VsyncBridgeChild");
 }
 
-void VsyncBridgeChild::HandleFatalError(const char* aName,
-                                        const char* aMsg) const {
-  dom::ContentChild::FatalErrorIfNotUsingGPUProcess(aName, aMsg, OtherPid());
+void VsyncBridgeChild::HandleFatalError(const char* aMsg) const {
+  dom::ContentChild::FatalErrorIfNotUsingGPUProcess(aMsg, OtherPid());
 }
 
 }  // namespace gfx

@@ -8,7 +8,7 @@
 #define mozilla_dom_CoalescedInputData_h
 
 #include "mozilla/UniquePtr.h"
-#include "FrameMetrics.h"
+#include "mozilla/layers/ScrollableLayerGuid.h"
 
 namespace mozilla {
 namespace dom {
@@ -26,7 +26,7 @@ class CoalescedInputData {
   CoalescedInputData() : mInputBlockId(0) {}
 
   void RetrieveDataFrom(CoalescedInputData& aSource) {
-    mCoalescedInputEvent = Move(aSource.mCoalescedInputEvent);
+    mCoalescedInputEvent = std::move(aSource.mCoalescedInputEvent);
     mGuid = aSource.mGuid;
     mInputBlockId = aSource.mInputBlockId;
   }
@@ -38,7 +38,7 @@ class CoalescedInputData {
                    const uint64_t& aInputBlockId);
 
   UniquePtr<InputEventType> TakeCoalescedEvent() {
-    return Move(mCoalescedInputEvent);
+    return std::move(mCoalescedInputEvent);
   }
 
   ScrollableLayerGuid GetScrollableLayerGuid() { return mGuid; }

@@ -20,7 +20,7 @@ ImageBitmapRenderingContext::~ImageBitmapRenderingContext() {
 
 JSObject* ImageBitmapRenderingContext::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return ImageBitmapRenderingContextBinding::Wrap(aCx, this, aGivenProto);
+  return ImageBitmapRenderingContext_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<layers::Image>
@@ -139,7 +139,7 @@ mozilla::UniquePtr<uint8_t[]> ImageBitmapRenderingContext::GetImageBuffer(
 
 NS_IMETHODIMP
 ImageBitmapRenderingContext::GetInputStream(const char* aMimeType,
-                                            const char16_t* aEncoderOptions,
+                                            const nsAString& aEncoderOptions,
                                             nsIInputStream** aStream) {
   nsCString enccid("@mozilla.org/image/encoder;2?type=");
   enccid += aMimeType;
@@ -179,7 +179,10 @@ ImageBitmapRenderingContext::GetSurfaceSnapshot(
   return surface.forget();
 }
 
-void ImageBitmapRenderingContext::SetIsOpaque(bool aIsOpaque) {}
+void ImageBitmapRenderingContext::SetOpaqueValueFromOpaqueAttr(
+    bool aOpaqueAttrValue) {
+  // ignored
+}
 
 bool ImageBitmapRenderingContext::GetIsOpaque() { return false; }
 
@@ -213,7 +216,7 @@ already_AddRefed<Layer> ImageBitmapRenderingContext::GetCanvasLayer(
 
   RefPtr<ImageContainer> imageContainer = imageLayer->GetContainer();
   if (!imageContainer) {
-    imageContainer = aManager->CreateImageContainer();
+    imageContainer = LayerManager::CreateImageContainer();
     imageLayer->SetContainer(imageContainer);
   }
 

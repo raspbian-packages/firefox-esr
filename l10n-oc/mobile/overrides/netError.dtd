@@ -107,10 +107,10 @@
 </ul>
 ">
 
-<!ENTITY proxyConnectFailure.title "Lo servidor mandatòri refusa las connexions">
+<!ENTITY proxyConnectFailure.title "Lo servidor mandatari refusa las connexions">
 <!ENTITY proxyConnectFailure.longDesc "<ul> <li>Verificatz que los paramètres del proxy son corrèctes</li> <li>Contactatz vòstre administrator de ret per vos assegurar que lo servidor proxy fonciona.</li> </ul>">
 
-<!ENTITY proxyResolveFailure.title "Impossible de trobar lo servidor mandatòri">
+<!ENTITY proxyResolveFailure.title "Impossible de trobar lo servidor mandatari">
 <!-- LOCALIZATION NOTE (proxyResolveFailure.longDesc3) This string contains markup including widgets for enabling wifi connections.
      The text inside the tags should be localized. Do not touch the ids. -->
 <!ENTITY proxyResolveFailure.longDesc3 "
@@ -200,3 +200,6 @@ netError.xhtml) because it exposes functionality specific to firefox. -->
 <!-- LOCALIZATION NOTE (inadequateSecurityError.longDesc) - Do not translate
      "NS_ERROR_NET_INADEQUATE_SECURITY". -->
 <!ENTITY inadequateSecurityError.longDesc "<p><span class='hostname'></span> utiliza de tecnologias de seguretat obsolètas e vulnerablas a las atacas. Un atacaire poiriá revelar aisidament d’informacions que pensèssetz seguras. L’administrator del site web deurà d’en primièr adobar lo servidor abans que poscatz visitar lo site.</p><p>Còdi error : NS_ERROR_NET_INADEQUATE_SECURITY</p>">
+
+<!ENTITY networkProtocolError.title "Error de protocòl ret">
+<!ENTITY networkProtocolError.longDesc "<p>La pagina que volètz veire pòt pas èsser afichada a causa d’una error de protocòl ret detectada.</p><ul><li>Mercés de contactar los proprietaris del site web per los informar d’aqueste problèma.</li></ul>">

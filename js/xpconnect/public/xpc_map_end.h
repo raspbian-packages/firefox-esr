@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,15 +8,15 @@
 // of the file doing the including.
 
 #ifndef XPC_MAP_CLASSNAME
-#error "Must #define XPC_MAP_CLASSNAME before #including xpc_map_end.h"
+#  error "Must #define XPC_MAP_CLASSNAME before #including xpc_map_end.h"
 #endif
 
 #ifndef XPC_MAP_QUOTED_CLASSNAME
-#error "Must #define XPC_MAP_QUOTED_CLASSNAME before #including xpc_map_end.h"
+#  error "Must #define XPC_MAP_QUOTED_CLASSNAME before #including xpc_map_end.h"
 #endif
 
 #ifndef XPC_MAP_FLAGS
-#error "Must #define XPC_MAP_FLAGS before #including xpc_map_end.h"
+#  error "Must #define XPC_MAP_FLAGS before #including xpc_map_end.h"
 #endif
 
 #include "js/Id.h"
@@ -44,7 +44,7 @@ const js::Class* XPC_MAP_CLASSNAME::GetClass() {
 // virtual
 const JSClass* XPC_MAP_CLASSNAME::GetJSClass() { return Jsvalify(GetClass()); }
 
-  /**************************************************************/
+/**************************************************************/
 
 #if !((XPC_MAP_FLAGS)&XPC_SCRIPTABLE_WANT_PRECREATE)
 NS_IMETHODIMP XPC_MAP_CLASSNAME::PreCreate(nsISupports* nativeObj,
@@ -58,7 +58,7 @@ NS_IMETHODIMP XPC_MAP_CLASSNAME::PreCreate(nsISupports* nativeObj,
 #if !((XPC_MAP_FLAGS)&XPC_SCRIPTABLE_WANT_NEWENUMERATE)
 NS_IMETHODIMP XPC_MAP_CLASSNAME::NewEnumerate(
     nsIXPConnectWrappedNative* wrapper, JSContext* cx, JSObject* obj,
-    JS::AutoIdVector& properties, bool* _retval) {
+    JS::MutableHandleIdVector properties, bool enumerableOnly, bool* _retval) {
   NS_ERROR("never called");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -119,12 +119,7 @@ NS_IMETHODIMP XPC_MAP_CLASSNAME::HasInstance(nsIXPConnectWrappedNative* wrapper,
 }
 #endif
 
-NS_IMETHODIMP XPC_MAP_CLASSNAME::PostCreatePrototype(JSContext* cx,
-                                                     JSObject* proto) {
-  return NS_OK;
-}
-
-  /**************************************************************/
+/**************************************************************/
 
 #undef XPC_MAP_CLASSNAME
 #undef XPC_MAP_QUOTED_CLASSNAME

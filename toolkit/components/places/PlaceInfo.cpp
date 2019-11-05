@@ -7,7 +7,6 @@
 #include "nsIURI.h"
 #include "nsServiceManagerUtils.h"
 #include "nsIXPConnect.h"
-#include "mozilla/Services.h"
 #include "jsapi.h"
 
 namespace mozilla {
@@ -25,7 +24,7 @@ PlaceInfo::PlaceInfo(int64_t aId, const nsCString& aGUID,
       mTitle(aTitle),
       mFrecency(aFrecency),
       mVisitsAvailable(false) {
-  NS_PRECONDITION(mURI, "Must provide a non-null uri!");
+  MOZ_ASSERT(mURI, "Must provide a non-null uri!");
 }
 
 PlaceInfo::PlaceInfo(int64_t aId, const nsCString& aGUID,
@@ -38,7 +37,7 @@ PlaceInfo::PlaceInfo(int64_t aId, const nsCString& aGUID,
       mFrecency(aFrecency),
       mVisits(aVisits),
       mVisitsAvailable(true) {
-  NS_PRECONDITION(mURI, "Must provide a non-null uri!");
+  MOZ_ASSERT(mURI, "Must provide a non-null uri!");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +92,7 @@ PlaceInfo::GetVisits(JSContext* aContext,
   JS::Rooted<JSObject*> global(aContext, JS::CurrentGlobalOrNull(aContext));
   NS_ENSURE_TRUE(global, NS_ERROR_UNEXPECTED);
 
-  nsCOMPtr<nsIXPConnect> xpc = mozilla::services::GetXPConnect();
+  nsCOMPtr<nsIXPConnect> xpc = nsIXPConnect::XPConnect();
 
   for (VisitsArray::size_type idx = 0; idx < mVisits.Length(); idx++) {
     JS::RootedObject jsobj(aContext);

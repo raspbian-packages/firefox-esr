@@ -3,7 +3,10 @@
 
 function run_test() {
   let profd = do_get_profile();
-  var SessionFile = ChromeUtils.import("resource:///modules/sessionstore/SessionFile.jsm", {}).SessionFile;
+  var SessionFile = ChromeUtils.import(
+    "resource:///modules/sessionstore/SessionFile.jsm",
+    {}
+  ).SessionFile;
 
   let sourceSession = do_get_file("data/sessionstore_invalid.js");
   sourceSession.copyTo(profd, "sessionstore.js");
@@ -15,11 +18,8 @@ function run_test() {
   // and remove sessionstore.js
   let oldExtSessionFile = SessionFile.Paths.clean.replace("jsonlz4", "js");
   writeCompressedFile(oldExtSessionFile, SessionFile.Paths.clean).then(() => {
-    let startup = Cc["@mozilla.org/browser/sessionstartup;1"].
-        getService(Ci.nsISessionStartup);
-
     afterSessionStartupInitialization(function cb() {
-      Assert.equal(startup.sessionType, Ci.nsISessionStartup.NO_SESSION);
+      Assert.equal(SessionStartup.sessionType, SessionStartup.NO_SESSION);
       do_test_finished();
     });
   });

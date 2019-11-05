@@ -8,7 +8,6 @@
 #define nsDOMOfflineResourceList_h___
 
 #include "nscore.h"
-#include "nsIDOMOfflineResourceList.h"
 #include "nsIApplicationCache.h"
 #include "nsIApplicationCacheContainer.h"
 #include "nsIApplicationCacheService.h"
@@ -30,11 +29,11 @@
 namespace mozilla {
 namespace dom {
 class DOMStringList;
+class Event;
 }  // namespace dom
 }  // namespace mozilla
 
 class nsDOMOfflineResourceList final : public mozilla::DOMEventTargetHelper,
-                                       public nsIDOMOfflineResourceList,
                                        public nsIObserver,
                                        public nsIOfflineCacheUpdateObserver,
                                        public nsSupportsWeakReference {
@@ -42,7 +41,6 @@ class nsDOMOfflineResourceList final : public mozilla::DOMEventTargetHelper,
 
  public:
   NS_DECL_ISUPPORTS_INHERITED
-  NS_DECL_NSIDOMOFFLINERESOURCELIST
   NS_DECL_NSIOBSERVER
   NS_DECL_NSIOFFLINECACHEUPDATEOBSERVER
 
@@ -62,13 +60,11 @@ class nsDOMOfflineResourceList final : public mozilla::DOMEventTargetHelper,
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
-  uint16_t GetStatus(ErrorResult& aRv) {
-    uint16_t status = 0;
-    aRv = GetStatus(&status);
-    return status;
-  }
-  void Update(ErrorResult& aRv) { aRv = Update(); }
-  void SwapCache(ErrorResult& aRv) { aRv = SwapCache(); }
+  uint16_t GetStatus(ErrorResult& aRv);
+
+  void Update(ErrorResult& aRv);
+
+  void SwapCache(ErrorResult& aRv);
 
   IMPL_EVENT_HANDLER(checking)
   IMPL_EVENT_HANDLER(error)
@@ -80,33 +76,18 @@ class nsDOMOfflineResourceList final : public mozilla::DOMEventTargetHelper,
   IMPL_EVENT_HANDLER(obsolete)
 
   already_AddRefed<mozilla::dom::DOMStringList> GetMozItems(ErrorResult& aRv);
-  bool MozHasItem(const nsAString& aURI, ErrorResult& aRv) {
-    bool hasItem = false;
-    aRv = MozHasItem(aURI, &hasItem);
-    return hasItem;
-  }
-  uint32_t GetMozLength(ErrorResult& aRv) {
-    uint32_t length = 0;
-    aRv = GetMozLength(&length);
-    return length;
-  }
-  void MozItem(uint32_t aIndex, nsAString& aURI, ErrorResult& aRv) {
-    aRv = MozItem(aIndex, aURI);
-  }
+  bool MozHasItem(const nsAString& aURI, ErrorResult& aRv);
+  uint32_t GetMozLength(ErrorResult& aRv);
+  void MozItem(uint32_t aIndex, nsAString& aURI, ErrorResult& aRv);
   void IndexedGetter(uint32_t aIndex, bool& aFound, nsAString& aURI,
-                     ErrorResult& aRv) {
-    MozItem(aIndex, aURI, aRv);
-    aFound = !aURI.IsVoid();
-  }
+                     ErrorResult& aRv);
   uint32_t Length() {
     mozilla::IgnoredErrorResult rv;
     uint32_t length = GetMozLength(rv);
     return rv.Failed() ? 0 : length;
   }
-  void MozAdd(const nsAString& aURI, ErrorResult& aRv) { aRv = MozAdd(aURI); }
-  void MozRemove(const nsAString& aURI, ErrorResult& aRv) {
-    aRv = MozRemove(aURI);
-  }
+  void MozAdd(const nsAString& aURI, ErrorResult& aRv);
+  void MozRemove(const nsAString& aURI, ErrorResult& aRv);
 
  protected:
   virtual ~nsDOMOfflineResourceList();
@@ -144,7 +125,7 @@ class nsDOMOfflineResourceList final : public mozilla::DOMEventTargetHelper,
   char** mCachedKeys;
   uint32_t mCachedKeysCount;
 
-  nsCOMArray<nsIDOMEvent> mPendingEvents;
+  nsCOMArray<mozilla::dom::Event> mPendingEvents;
 };
 
 #endif

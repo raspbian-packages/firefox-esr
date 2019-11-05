@@ -96,10 +96,10 @@ class nsXBLProtoImpl final {
   nsString mClassName;  // The name of the class.
 
  protected:
-  JSObject* mPrecompiledMemberHolder;  // The class object for the binding.
-                                       // We'll use this to pre-compile
-                                       // properties and methods for the
-                                       // binding.
+  JSObject*
+      mPrecompiledMemberHolder;  // The class object for the binding. We'll use
+                                 // this to pre-compile properties and methods
+                                 // for the binding.
 
   nsXBLProtoImplMember* mMembers;  // The members of an implementation are
                                    // chained in this singly-linked list.

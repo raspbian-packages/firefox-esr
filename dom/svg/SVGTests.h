@@ -8,13 +8,12 @@
 #define mozilla_dom_SVGTests_h
 
 #include "nsStringFwd.h"
-#include "SVGStringList.h"
-#include "nsCOMPtr.h"
+#include "mozilla/AlreadyAddRefed.h"
+#include "mozilla/SVGStringList.h"
 
 class nsAttrValue;
 class nsAtom;
 class nsStaticAtom;
-class nsSVGElement;
 
 namespace mozilla {
 class DOMSVGStringList;
@@ -27,6 +26,8 @@ class DOMSVGStringList;
   }
 
 namespace dom {
+
+class SVGElement;
 
 class SVGTests : public nsISupports {
  public:
@@ -86,7 +87,7 @@ class SVGTests : public nsISupports {
    */
   void UnsetAttr(const nsAtom* aAttribute);
 
-  nsAtom* GetAttrName(uint8_t aAttrEnum) const;
+  nsStaticAtom* GetAttrName(uint8_t aAttrEnum) const;
   void GetAttrValue(uint8_t aAttrEnum, nsAttrValue& aValue) const;
 
   void MaybeInvalidate();
@@ -95,21 +96,22 @@ class SVGTests : public nsISupports {
   already_AddRefed<DOMSVGStringList> RequiredFeatures();
   already_AddRefed<DOMSVGStringList> RequiredExtensions();
   already_AddRefed<DOMSVGStringList> SystemLanguage();
-  bool HasExtension(const nsAString& aExtension);
 
-  virtual nsSVGElement* AsSVGElement() = 0;
+  bool HasExtension(const nsAString& aExtension) const;
 
-  const nsSVGElement* AsSVGElement() const {
+  virtual SVGElement* AsSVGElement() = 0;
+
+  const SVGElement* AsSVGElement() const {
     return const_cast<SVGTests*>(this)->AsSVGElement();
   }
 
  protected:
-  virtual ~SVGTests() {}
+  virtual ~SVGTests() = default;
 
  private:
   enum { FEATURES, EXTENSIONS, LANGUAGE };
   SVGStringList mStringListAttributes[3];
-  static nsStaticAtom** sStringListNames[3];
+  static nsStaticAtom* const sStringListNames[3];
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(SVGTests, MOZILLA_DOMSVGTESTS_IID)

@@ -7,13 +7,13 @@
 #ifndef mozilla_dom_SVGClipPathElement_h
 #define mozilla_dom_SVGClipPathElement_h
 
-#include "nsSVGEnum.h"
+#include "SVGAnimatedEnumeration.h"
 #include "mozilla/dom/SVGTransformableElement.h"
 
 class nsSVGClipPathFrame;
 
 nsresult NS_NewSVGClipPathElement(
-    nsIContent **aResult, already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo);
+    nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
 namespace mozilla {
 namespace dom {
@@ -25,19 +25,18 @@ class SVGClipPathElement final : public SVGClipPathElementBase {
 
  protected:
   friend nsresult(::NS_NewSVGClipPathElement(
-      nsIContent **aResult,
-      already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo));
+      nsIContent** aResult,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
   explicit SVGClipPathElement(
-      already_AddRefed<mozilla::dom::NodeInfo> &aNodeInfo);
-  virtual JSObject *WrapNode(JSContext *cx,
-                             JS::Handle<JSObject *> aGivenProto) override;
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+  virtual JSObject* WrapNode(JSContext* cx,
+                             JS::Handle<JSObject*> aGivenProto) override;
 
  public:
-  virtual nsresult Clone(mozilla::dom::NodeInfo *aNodeInfo, nsINode **aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL
-  already_AddRefed<SVGAnimatedEnumeration> ClipPathUnits();
+  already_AddRefed<DOMSVGAnimatedEnumeration> ClipPathUnits();
 
   // This is an internal method that does not flush style, and thus
   // the answer may be out of date if there's a pending style flush.
@@ -45,7 +44,7 @@ class SVGClipPathElement final : public SVGClipPathElementBase {
 
  protected:
   enum { CLIPPATHUNITS };
-  nsSVGEnum mEnumAttributes[1];
+  SVGAnimatedEnumeration mEnumAttributes[1];
   static EnumInfo sEnumInfo[1];
 
   virtual EnumAttributesInfo GetEnumInfo() override;

@@ -17,7 +17,7 @@
 #include "gfxPoint.h"
 #include "nsRect.h"
 #ifdef MOZ_ENABLE_SKIA
-#include "mozilla/gfx/ConvolutionFilter.h"
+#  include "mozilla/gfx/ConvolutionFilter.h"
 #endif
 
 namespace mozilla {
@@ -127,7 +127,7 @@ class Downscaler {
   uint8_t* mOutputBuffer;
 
   UniquePtr<uint8_t[]> mRowBuffer;
-  UniquePtr<uint8_t* []> mWindow;
+  UniquePtr<uint8_t*[]> mWindow;
 
   gfx::ConvolutionFilter mXFilter;
   gfx::ConvolutionFilter mYFilter;

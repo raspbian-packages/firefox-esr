@@ -11,12 +11,15 @@
 #include "nsStringFwd.h"
 
 class nsIContent;
-class nsIDocument;
 
 namespace mozilla {
 class Encoding;
 namespace dom {
+class Comment;
+class Document;
+class DocumentType;
 class Element;
+class ProcessingInstruction;
 }  // namespace dom
 }  // namespace mozilla
 
@@ -41,14 +44,16 @@ class nsIContentSerializer : public nsISupports {
   NS_IMETHOD AppendCDATASection(nsIContent* aCDATASection, int32_t aStartOffset,
                                 int32_t aEndOffset, nsAString& aStr) = 0;
 
-  NS_IMETHOD AppendProcessingInstruction(nsIContent* aPI, int32_t aStartOffset,
-                                         int32_t aEndOffset,
-                                         nsAString& aStr) = 0;
+  NS_IMETHOD AppendProcessingInstruction(
+      mozilla::dom::ProcessingInstruction* aPI, int32_t aStartOffset,
+      int32_t aEndOffset, nsAString& aStr) = 0;
 
-  NS_IMETHOD AppendComment(nsIContent* aComment, int32_t aStartOffset,
-                           int32_t aEndOffset, nsAString& aStr) = 0;
+  NS_IMETHOD AppendComment(mozilla::dom::Comment* aComment,
+                           int32_t aStartOffset, int32_t aEndOffset,
+                           nsAString& aStr) = 0;
 
-  NS_IMETHOD AppendDoctype(nsIContent* aDoctype, nsAString& aStr) = 0;
+  NS_IMETHOD AppendDoctype(mozilla::dom::DocumentType* aDoctype,
+                           nsAString& aStr) = 0;
 
   NS_IMETHOD AppendElementStart(mozilla::dom::Element* aElement,
                                 mozilla::dom::Element* aOriginalElement,
@@ -64,7 +69,8 @@ class nsIContentSerializer : public nsISupports {
    * serialized by other methods. XML declaration is the most likely
    * thing this method can produce.
    */
-  NS_IMETHOD AppendDocumentStart(nsIDocument* aDocument, nsAString& aStr) = 0;
+  NS_IMETHOD AppendDocumentStart(mozilla::dom::Document* aDocument,
+                                 nsAString& aStr) = 0;
 
   // If Init() sets *aNeedsPerformatScanning to true, then these methods are
   // called when elements are started and ended, before AppendElementStart

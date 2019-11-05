@@ -62,6 +62,7 @@ void Foo(int aSeven) {
   char* a[6];
   for (int i = 0; i < aSeven - 1; i++) {
     a[i] = (char*)malloc(128 - 16 * i);
+    UseItOrLoseIt(a[i], aSeven);
   }
 
   // Oddly, some versions of clang will cause identical stack traces to be
@@ -74,6 +75,7 @@ void Foo(int aSeven) {
 
   for (int i = 0; i < aSeven - 5; i++) {
     Report(a[i]);  // reported
+    UseItOrLoseIt(a[i], aSeven);
   }
 
   UseItOrLoseIt(a[2], aSeven);
@@ -93,7 +95,7 @@ void TestEmpty(const char* aTestName, const char* aMode) {
   ResetEverything(options);
 
   // Zero for everything.
-  Analyze(Move(f));
+  Analyze(std::move(f));
 }
 
 void TestFull(const char* aTestName, int aNum, const char* aMode, int aSeven) {
@@ -177,6 +179,7 @@ void TestFull(const char* aTestName, int aNum, const char* aMode, int aSeven) {
   // Analyze 1: freed, irrelevant.
   // Analyze 2: freed, irrelevant.
   char* f1 = (char*)malloc(64);
+  UseItOrLoseIt(f1, aSeven);
   free(f1);
 
   // Analyze 1: ignored.
@@ -233,7 +236,7 @@ void TestFull(const char* aTestName, int aNum, const char* aMode, int aSeven) {
 
   if (aNum == 1) {
     // Analyze 1.
-    Analyze(Move(f));
+    Analyze(std::move(f));
   }
 
   ClearReports();
@@ -253,12 +256,14 @@ void TestFull(const char* aTestName, int aNum, const char* aMode, int aSeven) {
 
   // Do some allocations that will only show up in cumulative mode.
   for (int i = 0; i < 100; i++) {
-    free(malloc(128));
+    void* v = malloc(128);
+    UseItOrLoseIt(v, aSeven);
+    free(v);
   }
 
   if (aNum == 2) {
     // Analyze 2.
-    Analyze(Move(f));
+    Analyze(std::move(f));
   }
 }
 
@@ -302,7 +307,7 @@ void TestPartial(const char* aTestName, const char* aMode, int aSeven) {
     UseItOrLoseIt(s, aSeven);
   }
 
-  Analyze(Move(f));
+  Analyze(std::move(f));
 }
 
 void TestScan(int aSeven) {
@@ -310,7 +315,7 @@ void TestScan(int aSeven) {
 
   ResetEverything("--mode=scan");
 
-  uintptr_t* p = (uintptr_t*)malloc(6 * sizeof(uintptr_t*));
+  uintptr_t* p = (uintptr_t*)malloc(6 * sizeof(uintptr_t));
   UseItOrLoseIt(p, aSeven);
 
   // Hard-coded values checked by scan-test.py
@@ -321,7 +326,7 @@ void TestScan(int aSeven) {
   p[4] = (uintptr_t)((uint8_t*)p + 1);  // pointer into a block
   p[5] = 0x0;                           // trailing null
 
-  Analyze(Move(f));
+  Analyze(std::move(f));
 }
 
 void RunTests() {

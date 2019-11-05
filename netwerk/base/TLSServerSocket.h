@@ -31,7 +31,7 @@ class TLSServerSocket final : public nsServerSocket, public nsITLSServerSocket {
   TLSServerSocket();
 
  private:
-  virtual ~TLSServerSocket();
+  virtual ~TLSServerSocket() = default;
 
   static SECStatus AuthCertificateHook(void* arg, PRFileDesc* fd,
                                        PRBool checksig, PRBool isServer);

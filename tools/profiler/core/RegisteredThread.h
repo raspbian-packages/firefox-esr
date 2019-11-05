@@ -7,10 +7,15 @@
 #ifndef RegisteredThread_h
 #define RegisteredThread_h
 
-#include "mozilla/UniquePtrExtensions.h"
-
 #include "platform.h"
+#include "ProfilerMarker.h"
+#include "ProfilerMarkerPayload.h"
 #include "ThreadInfo.h"
+
+#include "js/TraceLoggerAPI.h"
+#include "jsapi.h"
+#include "mozilla/UniquePtr.h"
+#include "nsIEventTarget.h"
 
 // This class contains the state for a single thread that is accessible without
 // protection from gPSMutex in platform.cpp. Because there is no external
@@ -20,17 +25,26 @@
 class RacyRegisteredThread final {
  public:
   explicit RacyRegisteredThread(int aThreadId)
-      : mThreadId(aThreadId), mSleep(AWAKE) {
+      : mThreadId(aThreadId), mSleep(AWAKE), mIsBeingProfiled(false) {
     MOZ_COUNT_CTOR(RacyRegisteredThread);
   }
 
   ~RacyRegisteredThread() { MOZ_COUNT_DTOR(RacyRegisteredThread); }
 
+  void SetIsBeingProfiled(bool aIsBeingProfiled) {
+    mIsBeingProfiled = aIsBeingProfiled;
+  }
+
+  bool IsBeingProfiled() const { return mIsBeingProfiled; }
+
   void AddPendingMarker(const char* aMarkerName,
+                        JS::ProfilingCategoryPair aCategoryPair,
                         mozilla::UniquePtr<ProfilerMarkerPayload> aPayload,
                         double aTime) {
-    ProfilerMarker* marker =
-        new ProfilerMarker(aMarkerName, mThreadId, Move(aPayload), aTime);
+    // Note: We don't assert on mIsBeingProfiled, because it could have changed
+    // between the check in the caller and now.
+    ProfilerMarker* marker = new ProfilerMarker(
+        aMarkerName, aCategoryPair, mThreadId, std::move(aPayload), aTime);
     mPendingMarkers.insert(marker);
   }
 
@@ -83,13 +97,13 @@ class RacyRegisteredThread final {
 
   int ThreadId() const { return mThreadId; }
 
-  class PseudoStack& PseudoStack() {
-    return mPseudoStack;
+  class ProfilingStack& ProfilingStack() {
+    return mProfilingStack;
   }
-  const class PseudoStack& PseudoStack() const { return mPseudoStack; }
+  const class ProfilingStack& ProfilingStack() const { return mProfilingStack; }
 
  private:
-  class PseudoStack mPseudoStack;
+  class ProfilingStack mProfilingStack;
 
   // A list of pending markers that must be moved to the circular buffer.
   ProfilerSignalSafeLinkedList<ProfilerMarker> mPendingMarkers;
@@ -135,6 +149,13 @@ class RacyRegisteredThread final {
   static const int SLEEPING_NOT_OBSERVED = 1;
   static const int SLEEPING_OBSERVED = 2;
   mozilla::Atomic<int> mSleep;
+
+  // Is this thread being profiled? (e.g., should markers be recorded?)
+  // Accesses to this atomic are not recorded by web replay as they may occur
+  // at non-deterministic points.
+  mozilla::Atomic<bool, mozilla::MemoryOrdering::Relaxed,
+                  mozilla::recordreplay::Behavior::DontPreserve>
+      mIsBeingProfiled;
 };
 
 // This class contains information that's relevant to a single thread only
@@ -167,12 +188,10 @@ class RegisteredThread final {
 
     mContext = aContext;
 
-    // We give the JS engine a non-owning reference to the PseudoStack. It's
+    // We give the JS engine a non-owning reference to the ProfilingStack. It's
     // important that the JS engine doesn't touch this once the thread dies.
     js::SetContextProfilingStack(aContext,
-                                 &RacyRegisteredThread().PseudoStack());
-
-    PollJSSampling();
+                                 &RacyRegisteredThread().ProfilingStack());
   }
 
   void ClearJSContext() {
@@ -188,12 +207,13 @@ class RegisteredThread final {
   // Request that this thread start JS sampling. JS sampling won't actually
   // start until a subsequent PollJSSampling() call occurs *and* mContext has
   // been set.
-  void StartJSSampling() {
+  void StartJSSampling(uint32_t aJSFlags) {
     // This function runs on-thread or off-thread.
 
     MOZ_RELEASE_ASSERT(mJSSampling == INACTIVE ||
                        mJSSampling == INACTIVE_REQUESTED);
     mJSSampling = ACTIVE_REQUESTED;
+    mJSFlags = aJSFlags;
   }
 
   // Request that this thread stop JS sampling. JS sampling won't actually stop
@@ -224,11 +244,21 @@ class RegisteredThread final {
       if (mJSSampling == ACTIVE_REQUESTED) {
         mJSSampling = ACTIVE;
         js::EnableContextProfilingStack(mContext, true);
-        js::RegisterContextProfilingEventMarker(mContext, profiler_add_marker);
+        JS_SetGlobalJitCompilerOption(mContext,
+                                      JSJITCOMPILER_TRACK_OPTIMIZATIONS,
+                                      TrackOptimizationsEnabled());
+        if (JSTracerEnabled()) {
+          JS::StartTraceLogger(mContext);
+        }
+        js::RegisterContextProfilingEventMarker(mContext,
+                                                profiler_add_js_marker);
 
       } else if (mJSSampling == INACTIVE_REQUESTED) {
         mJSSampling = INACTIVE;
         js::EnableContextProfilingStack(mContext, false);
+        if (JSTracerEnabled()) {
+          JS::StopTraceLogger(mContext);
+        }
       }
     }
   }
@@ -292,6 +322,16 @@ class RegisteredThread final {
     ACTIVE = 2,
     INACTIVE_REQUESTED = 3,
   } mJSSampling;
+
+  uint32_t mJSFlags;
+
+  bool TrackOptimizationsEnabled() {
+    return mJSFlags & uint32_t(JSSamplingFlags::TrackOptimizations);
+  }
+
+  bool JSTracerEnabled() {
+    return mJSFlags & uint32_t(JSSamplingFlags::TraceLogging);
+  }
 };
 
 #endif  // RegisteredThread_h

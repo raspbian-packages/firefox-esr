@@ -4,23 +4,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "nsSVGElement.h"
 #include "DOMSVGPathSegList.h"
+
 #include "DOMSVGPathSeg.h"
 #include "nsError.h"
 #include "SVGAnimatedPathSegList.h"
-#include "nsCOMPtr.h"
-#include "nsSVGAttrTearoffTable.h"
+#include "SVGAttrTearoffTable.h"
 #include "SVGPathSegUtils.h"
+#include "mozilla/dom/SVGElement.h"
 #include "mozilla/dom/SVGPathSegListBinding.h"
+#include "mozilla/RefPtr.h"
+
+using namespace mozilla::dom;
 
 // See the comment in this file's header.
 
 namespace mozilla {
 
-static inline nsSVGAttrTearoffTable<void, DOMSVGPathSegList>&
+static inline SVGAttrTearoffTable<void, DOMSVGPathSegList>&
 SVGPathSegListTearoffTable() {
-  static nsSVGAttrTearoffTable<void, DOMSVGPathSegList>
+  static SVGAttrTearoffTable<void, DOMSVGPathSegList>
       sSVGPathSegListTearoffTable;
   return sSVGPathSegListTearoffTable;
 }
@@ -74,9 +77,9 @@ class MOZ_RAII AutoChangePathSegListNotifier {
   MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
 };
 
-/* static */ already_AddRefed<DOMSVGPathSegList>
-DOMSVGPathSegList::GetDOMWrapper(void* aList, nsSVGElement* aElement,
-                                 bool aIsAnimValList) {
+/* static */
+already_AddRefed<DOMSVGPathSegList> DOMSVGPathSegList::GetDOMWrapper(
+    void* aList, SVGElement* aElement, bool aIsAnimValList) {
   RefPtr<DOMSVGPathSegList> wrapper =
       SVGPathSegListTearoffTable().GetTearoff(aList);
   if (!wrapper) {
@@ -86,8 +89,8 @@ DOMSVGPathSegList::GetDOMWrapper(void* aList, nsSVGElement* aElement,
   return wrapper.forget();
 }
 
-/* static */ DOMSVGPathSegList* DOMSVGPathSegList::GetDOMWrapperIfExists(
-    void* aList) {
+/* static */
+DOMSVGPathSegList* DOMSVGPathSegList::GetDOMWrapperIfExists(void* aList) {
   return SVGPathSegListTearoffTable().GetTearoff(aList);
 }
 
@@ -101,7 +104,7 @@ DOMSVGPathSegList::~DOMSVGPathSegList() {
 
 JSObject* DOMSVGPathSegList::WrapObject(JSContext* cx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::SVGPathSegListBinding::Wrap(cx, this, aGivenProto);
+  return mozilla::dom::SVGPathSegList_Binding::Wrap(cx, this, aGivenProto);
 }
 
 void DOMSVGPathSegList::InternalListWillChangeTo(const SVGPathData& aNewValue) {
@@ -112,7 +115,8 @@ void DOMSVGPathSegList::InternalListWillChangeTo(const SVGPathData& aNewValue) {
   // mean that - assuming we aren't reading bad memory - we would likely end up
   // decoding command types from argument floats when looking in our
   // SVGPathData's data array! Either way, we'll likely then go down
-  // NS_NOTREACHED code paths, or end up reading/setting more bad memory!!
+  // MOZ_ASSERT_UNREACHABLE code paths, or end up reading/setting more bad
+  // memory!!
 
   // The only time that our other DOM list type implementations remove items is
   // if those items become surplus items due to an attribute change or SMIL

@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set ts=4 sw=4 sts=4 et cin: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=4 sw=2 sts=2 et cin: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,13 +16,6 @@
 #include "mozilla/TimeStamp.h"
 #include "mozilla/UniquePtr.h"
 
-// http version codes
-#define NS_HTTP_VERSION_UNKNOWN 0
-#define NS_HTTP_VERSION_0_9 9
-#define NS_HTTP_VERSION_1_0 10
-#define NS_HTTP_VERSION_1_1 11
-#define NS_HTTP_VERSION_2_0 20
-
 class nsICacheEntry;
 
 namespace mozilla {
@@ -34,11 +27,20 @@ class nsHttpResponseHead;
 class nsHttpRequestHead;
 class CacheControlParser;
 
-enum {
+enum class HttpVersion {
+  UNKNOWN = 0,
+  v0_9 = 9,
+  v1_0 = 10,
+  v1_1 = 11,
+  v2_0 = 20
+};
+
+enum class SpdyVersion {
+  NONE = 0,
   // SPDY_VERSION_2 = 2, REMOVED
   // SPDY_VERSION_3 = 3, REMOVED
   // SPDY_VERSION_31 = 4, REMOVED
-  HTTP_VERSION_2 = 5
+  HTTP_2 = 5
 
   // leave room for official versions. telem goes to 48
   // 24 was a internal spdy/3.1
@@ -50,8 +52,6 @@ enum {
   // 30 was h2-14 and h2-15
   // 31 was h2-16
 };
-
-typedef uint8_t nsHttpVersion;
 
 //-----------------------------------------------------------------------------
 // http connection capabilities
@@ -107,6 +107,26 @@ typedef uint8_t nsHttpVersion;
 // on ERROR_NET_RESET.
 #define NS_HTTP_CONNECTION_RESTARTABLE (1 << 13)
 
+// Disallow name resolutions for this transaction to use TRR - primarily
+// for use with TRR implementations themselves
+#define NS_HTTP_DISABLE_TRR (1 << 14)
+
+// Allow re-using a spdy/http2 connection with NS_HTTP_ALLOW_KEEPALIVE not set.
+// This is primarily used to allow connection sharing for websockets over http/2
+// without accidentally allowing it for websockets not over http/2
+#define NS_HTTP_ALLOW_SPDY_WITHOUT_KEEPALIVE (1 << 15)
+
+// Only permit CONNECTing to a proxy. A channel with this flag will not send an
+// http request after CONNECT or setup tls. An http upgrade handler MUST be
+// set. An ALPN header is set using the upgrade protocol.
+#define NS_HTTP_CONNECT_ONLY (1 << 16)
+
+// The connection should not use IPv4.
+#define NS_HTTP_DISABLE_IPV4 (1 << 17)
+
+// The connection should not use IPv6
+#define NS_HTTP_DISABLE_IPV6 (1 << 18)
+
 //-----------------------------------------------------------------------------
 // some default values
 //-----------------------------------------------------------------------------
@@ -121,14 +141,14 @@ typedef uint8_t nsHttpVersion;
 //-----------------------------------------------------------------------------
 
 struct nsHttpAtom {
-  operator const char *() const { return _val; }
-  const char *get() const { return _val; }
+  operator const char*() const { return _val; }
+  const char* get() const { return _val; }
 
-  void operator=(const char *v) { _val = v; }
-  void operator=(const nsHttpAtom &a) { _val = a._val; }
+  void operator=(const char* v) { _val = v; }
+  void operator=(const nsHttpAtom& a) { _val = a._val; }
 
   // private
-  const char *_val;
+  const char* _val;
 };
 
 namespace nsHttp {
@@ -138,37 +158,37 @@ void DestroyAtomTable();
 // The mutex is valid any time the Atom Table is valid
 // This mutex is used in the unusual case that the network thread and
 // main thread might access the same data
-Mutex *GetLock();
+Mutex* GetLock();
 
 // will dynamically add atoms to the table if they don't already exist
-nsHttpAtom ResolveAtom(const char *);
-inline nsHttpAtom ResolveAtom(const nsACString &s) {
+nsHttpAtom ResolveAtom(const char*);
+inline nsHttpAtom ResolveAtom(const nsACString& s) {
   return ResolveAtom(PromiseFlatCString(s).get());
 }
 
 // returns true if the specified token [start,end) is valid per RFC 2616
 // section 2.2
-bool IsValidToken(const char *start, const char *end);
+bool IsValidToken(const char* start, const char* end);
 
-inline bool IsValidToken(const nsACString &s) {
+inline bool IsValidToken(const nsACString& s) {
   return IsValidToken(s.BeginReading(), s.EndReading());
 }
 
 // Strip the leading or trailing HTTP whitespace per fetch spec section 2.2.
-void TrimHTTPWhitespace(const nsACString &aSource, nsACString &aDest);
+void TrimHTTPWhitespace(const nsACString& aSource, nsACString& aDest);
 
 // Returns true if the specified value is reasonable given the defintion
 // in RFC 2616 section 4.2.  Full strict validation is not performed
 // currently as it would require full parsing of the value.
-bool IsReasonableHeaderValue(const nsACString &s);
+bool IsReasonableHeaderValue(const nsACString& s);
 
 // find the first instance (case-insensitive comparison) of the given
 // |token| in the |input| string.  the |token| is bounded by elements of
 // |separators| and may appear at the beginning or end of the |input|
 // string.  null is returned if the |token| is not found.  |input| may be
 // null, in which case null is returned.
-const char *FindToken(const char *input, const char *token,
-                      const char *separators);
+const char* FindToken(const char* input, const char* token,
+                      const char* separators);
 
 // This function parses a string containing a decimal-valued, non-negative
 // 64-bit integer.  If the value would exceed INT64_MAX, then false is
@@ -178,13 +198,13 @@ const char *FindToken(const char *input, const char *token,
 //
 // TODO(darin): Replace this with something generic.
 //
-MOZ_MUST_USE bool ParseInt64(const char *input, const char **next,
-                             int64_t *result);
+MOZ_MUST_USE bool ParseInt64(const char* input, const char** next,
+                             int64_t* result);
 
 // Variant on ParseInt64 that expects the input string to contain nothing
 // more than the value being parsed.
-inline MOZ_MUST_USE bool ParseInt64(const char *input, int64_t *result) {
-  const char *next;
+inline MOZ_MUST_USE bool ParseInt64(const char* input, int64_t* result) {
+  const char* next;
   return ParseInt64(input, &next, result) && *next == '\0';
 }
 
@@ -192,35 +212,38 @@ inline MOZ_MUST_USE bool ParseInt64(const char *input, int64_t *result) {
 bool IsPermanentRedirect(uint32_t httpStatus);
 
 // Returns the APLN token which represents the used protocol version.
-const char *GetProtocolVersion(uint32_t pv);
+const char* GetProtocolVersion(HttpVersion pv);
 
 bool ValidationRequired(bool isForcedValid,
-                        nsHttpResponseHead *cachedResponseHead,
+                        nsHttpResponseHead* cachedResponseHead,
                         uint32_t loadFlags, bool allowStaleCacheContent,
                         bool isImmutable, bool customConditionalRequest,
-                        nsHttpRequestHead &requestHead, nsICacheEntry *entry,
-                        CacheControlParser &cacheControlRequest,
-                        bool fromPreviousSession);
+                        nsHttpRequestHead& requestHead, nsICacheEntry* entry,
+                        CacheControlParser& cacheControlRequest,
+                        bool fromPreviousSession,
+                        bool* performBackgroundRevalidation = nullptr);
 
 nsresult GetHttpResponseHeadFromCacheEntry(
-    nsICacheEntry *entry, nsHttpResponseHead *cachedResponseHead);
+    nsICacheEntry* entry, nsHttpResponseHead* cachedResponseHead);
 
-nsresult CheckPartial(nsICacheEntry *aEntry, int64_t *aSize,
-                      int64_t *aContentLength,
-                      nsHttpResponseHead *responseHead);
+nsresult CheckPartial(nsICacheEntry* aEntry, int64_t* aSize,
+                      int64_t* aContentLength,
+                      nsHttpResponseHead* responseHead);
 
-void DetermineFramingAndImmutability(nsICacheEntry *entry,
-                                     nsHttpResponseHead *cachedResponseHead,
-                                     bool isHttps, bool *weaklyFramed,
-                                     bool *isImmutable);
+void DetermineFramingAndImmutability(nsICacheEntry* entry,
+                                     nsHttpResponseHead* cachedResponseHead,
+                                     bool isHttps, bool* weaklyFramed,
+                                     bool* isImmutable);
 
 // Called when an optimization feature affecting active vs background tab load
 // took place.  Called only on the parent process and only updates
 // mLastActiveTabLoadOptimizationHit timestamp to now.
 void NotifyActiveTabLoadOptimization();
 TimeStamp const GetLastActiveTabLoadOptimizationHit();
-void SetLastActiveTabLoadOptimizationHit(TimeStamp const &when);
-bool IsBeforeLastActiveTabLoadOptimization(TimeStamp const &when);
+void SetLastActiveTabLoadOptimizationHit(TimeStamp const& when);
+bool IsBeforeLastActiveTabLoadOptimization(TimeStamp const& when);
+
+HttpVersion GetHttpVersionFromSpdy(SpdyVersion sv);
 
 // Declare all atoms
 //
@@ -249,20 +272,20 @@ static inline uint32_t PRTimeToSeconds(PRTime t_usec) {
 #define HTTP_LWS " \t"
 #define HTTP_HEADER_VALUE_SEPS HTTP_LWS ","
 
-void EnsureBuffer(UniquePtr<char[]> &buf, uint32_t newSize, uint32_t preserve,
-                  uint32_t &objSize);
-void EnsureBuffer(UniquePtr<uint8_t[]> &buf, uint32_t newSize,
-                  uint32_t preserve, uint32_t &objSize);
+void EnsureBuffer(UniquePtr<char[]>& buf, uint32_t newSize, uint32_t preserve,
+                  uint32_t& objSize);
+void EnsureBuffer(UniquePtr<uint8_t[]>& buf, uint32_t newSize,
+                  uint32_t preserve, uint32_t& objSize);
 
 // h2=":443"; ma=60; single
 // results in 3 mValues = {{h2, :443}, {ma, 60}, {single}}
 
 class ParsedHeaderPair {
  public:
-  ParsedHeaderPair(const char *name, int32_t nameLen, const char *val,
+  ParsedHeaderPair(const char* name, int32_t nameLen, const char* val,
                    int32_t valLen, bool isQuotedValue);
 
-  ParsedHeaderPair(ParsedHeaderPair const &copy)
+  ParsedHeaderPair(ParsedHeaderPair const& copy)
       : mName(copy.mName),
         mValue(copy.mValue),
         mUnquotedValue(copy.mUnquotedValue),
@@ -279,16 +302,16 @@ class ParsedHeaderPair {
   nsCString mUnquotedValue;
   bool mIsQuotedValue;
 
-  void RemoveQuotedStringEscapes(const char *val, int32_t valLen);
+  void RemoveQuotedStringEscapes(const char* val, int32_t valLen);
 };
 
 class ParsedHeaderValueList {
  public:
-  ParsedHeaderValueList(const char *t, uint32_t len, bool allowInvalidValue);
+  ParsedHeaderValueList(const char* t, uint32_t len, bool allowInvalidValue);
   nsTArray<ParsedHeaderPair> mValues;
 
  private:
-  void ParseNameAndValue(const char *input, bool allowInvalidValue);
+  void ParseNameAndValue(const char* input, bool allowInvalidValue);
 };
 
 class ParsedHeaderValueListList {
@@ -299,13 +322,15 @@ class ParsedHeaderValueListList {
   // Note that ParsedHeaderValueListList is currently used to parse
   // Alt-Svc and Server-Timing header. |allowInvalidValue| is set to true
   // when parsing Alt-Svc for historical reasons.
-  explicit ParsedHeaderValueListList(const nsCString &txt,
+  explicit ParsedHeaderValueListList(const nsCString& txt,
                                      bool allowInvalidValue = true);
   nsTArray<ParsedHeaderValueList> mValues;
 
  private:
   nsCString mFull;
 };
+
+void LogHeaders(const char* lineStart);
 
 }  // namespace net
 }  // namespace mozilla

@@ -10,6 +10,10 @@
 #include "mozilla/Attributes.h"
 #include "nsMathMLmencloseFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <msqrt> -- form a radical
 //
@@ -33,12 +37,12 @@ These attributes are inherited by every element from its rendering environment,
 but can be set explicitly only on <mstyle>. (See Section 3.3.4.)
 */
 
-class nsMathMLmsqrtFrame : public nsMathMLmencloseFrame {
+class nsMathMLmsqrtFrame final : public nsMathMLmencloseFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmsqrtFrame)
 
-  friend nsIFrame* NS_NewMathMLmsqrtFrame(nsIPresShell* aPresShell,
-                                          nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmsqrtFrame(mozilla::PresShell* aPresShell,
+                                          ComputedStyle* aStyle);
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
@@ -54,7 +58,8 @@ class nsMathMLmsqrtFrame : public nsMathMLmencloseFrame {
   }
 
  protected:
-  explicit nsMathMLmsqrtFrame(nsStyleContext* aContext);
+  explicit nsMathMLmsqrtFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext);
   virtual ~nsMathMLmsqrtFrame();
 };
 

@@ -39,13 +39,13 @@ struct OriginComparator {
 };
 
 ExpandedPrincipal::ExpandedPrincipal(
-    nsTArray<nsCOMPtr<nsIPrincipal>>& aWhiteList)
+    nsTArray<nsCOMPtr<nsIPrincipal>>& aAllowList)
     : BasePrincipal(eExpandedPrincipal) {
   // We force the principals to be sorted by origin so that ExpandedPrincipal
   // origins can have a canonical form.
   OriginComparator c;
-  for (size_t i = 0; i < aWhiteList.Length(); ++i) {
-    mPrincipals.InsertElementSorted(aWhiteList[i], c);
+  for (size_t i = 0; i < aAllowList.Length(); ++i) {
+    mPrincipals.InsertElementSorted(aAllowList[i], c);
   }
 }
 
@@ -54,9 +54,9 @@ ExpandedPrincipal::ExpandedPrincipal() : BasePrincipal(eExpandedPrincipal) {}
 ExpandedPrincipal::~ExpandedPrincipal() {}
 
 already_AddRefed<ExpandedPrincipal> ExpandedPrincipal::Create(
-    nsTArray<nsCOMPtr<nsIPrincipal>>& aWhiteList,
+    nsTArray<nsCOMPtr<nsIPrincipal>>& aAllowList,
     const OriginAttributes& aAttrs) {
-  RefPtr<ExpandedPrincipal> ep = new ExpandedPrincipal(aWhiteList);
+  RefPtr<ExpandedPrincipal> ep = new ExpandedPrincipal(aAllowList);
 
   nsAutoCString origin;
   origin.AssignLiteral("[Expanded Principal [");
@@ -93,7 +93,7 @@ bool ExpandedPrincipal::SubsumesInternal(
   if (Cast(aOther)->Is<ExpandedPrincipal>()) {
     auto* expanded = Cast(aOther)->As<ExpandedPrincipal>();
 
-    for (auto& other : expanded->WhiteList()) {
+    for (auto& other : expanded->AllowList()) {
       // Use SubsumesInternal rather than Subsumes here, since OriginAttribute
       // checks are only done between non-expanded sub-principals, and we don't
       // need to incur the extra virtual call overhead.
@@ -125,8 +125,7 @@ bool ExpandedPrincipal::MayLoadInternal(nsIURI* uri) {
   return false;
 }
 
-NS_IMETHODIMP
-ExpandedPrincipal::GetHashValue(uint32_t* result) {
+uint32_t ExpandedPrincipal::GetHashValue() {
   MOZ_CRASH("extended principal should never be used as key in a hash map");
 }
 
@@ -136,7 +135,7 @@ ExpandedPrincipal::GetURI(nsIURI** aURI) {
   return NS_OK;
 }
 
-const nsTArray<nsCOMPtr<nsIPrincipal>>& ExpandedPrincipal::WhiteList() {
+const nsTArray<nsCOMPtr<nsIPrincipal>>& ExpandedPrincipal::AllowList() {
   return mPrincipals;
 }
 
@@ -160,6 +159,16 @@ bool ExpandedPrincipal::AddonHasPermission(const nsAtom* aPerm) {
   return false;
 }
 
+bool ExpandedPrincipal::AddonAllowsLoad(nsIURI* aURI,
+                                        bool aExplicit /* = false */) {
+  for (const auto& principal : mPrincipals) {
+    if (Cast(principal)->AddonAllowsLoad(aURI, aExplicit)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 nsIPrincipal* ExpandedPrincipal::PrincipalToInherit(nsIURI* aRequestedURI) {
   if (aRequestedURI) {
     // If a given sub-principal subsumes the given URI, use that principal for
@@ -167,7 +176,7 @@ nsIPrincipal* ExpandedPrincipal::PrincipalToInherit(nsIURI* aRequestedURI) {
     // with forced principal inheritance, and creation of XML documents from
     // XMLHttpRequests or fetch requests. For URIs that normally inherit a
     // principal (such as data: URIs), we fall back to the last principal in the
-    // whitelist.
+    // allowlist.
     for (const auto& principal : mPrincipals) {
       if (Cast(principal)->MayLoadInternal(aRequestedURI)) {
         return principal;
@@ -238,7 +247,7 @@ ExpandedPrincipal::Read(nsIObjectInputStream* aStream) {
 
     // Play it safe and InsertElementSorted, in case the sort order
     // changed for some bizarre reason.
-    mPrincipals.InsertElementSorted(Move(principal), c);
+    mPrincipals.InsertElementSorted(std::move(principal), c);
   }
 
   return NS_OK;
@@ -263,5 +272,25 @@ ExpandedPrincipal::Write(nsIObjectOutputStream* aStream) {
     }
   }
 
+  return NS_OK;
+}
+
+nsresult ExpandedPrincipal::GetSiteIdentifier(SiteIdentifier& aSite) {
+  // Call GetSiteIdentifier on each of our principals and return a new
+  // ExpandedPrincipal.
+
+  nsTArray<nsCOMPtr<nsIPrincipal>> allowlist;
+  for (const auto& principal : mPrincipals) {
+    SiteIdentifier site;
+    nsresult rv = Cast(principal)->GetSiteIdentifier(site);
+    NS_ENSURE_SUCCESS(rv, rv);
+    allowlist.AppendElement(site.GetPrincipal());
+  }
+
+  RefPtr<ExpandedPrincipal> expandedPrincipal =
+      ExpandedPrincipal::Create(allowlist, OriginAttributesRef());
+  MOZ_ASSERT(expandedPrincipal, "ExpandedPrincipal::Create returned nullptr?");
+
+  aSite.Init(expandedPrincipal);
   return NS_OK;
 }

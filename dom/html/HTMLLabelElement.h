@@ -19,10 +19,11 @@ namespace dom {
 
 class HTMLLabelElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLLabelElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo), mHandlingEvent(false) {}
+  explicit HTMLLabelElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)), mHandlingEvent(false) {}
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLLabelElement, label)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLLabelElement, label)
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLLabelElement, nsGenericHTMLElement)
@@ -42,14 +43,15 @@ class HTMLLabelElement final : public nsGenericHTMLElement {
   nsGenericHTMLElement* GetControl() const { return GetLabeledElement(); }
 
   using nsGenericHTMLElement::Focus;
-  virtual void Focus(mozilla::ErrorResult& aError) override;
+  virtual void Focus(const FocusOptions& aOptions,
+                     ErrorResult& aError) override;
 
   // nsIContent
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
   virtual bool PerformAccesskey(bool aKeyCausesActivation,
                                 bool aIsTrustedEvent) override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   nsGenericHTMLElement* GetLabeledElement() const;
 

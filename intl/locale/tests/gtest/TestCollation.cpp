@@ -4,14 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "gtest/gtest.h"
-#include "mozilla/Services.h"
 #include "nsCollationCID.h"
 #include "nsComponentManagerUtils.h"
 #include "nsCOMPtr.h"
 #include "nsICollation.h"
 #include "nsString.h"
 
-TEST(Collation, AllocateRowSortKey) {
+TEST(Collation, AllocateRowSortKey)
+{
   nsCOMPtr<nsICollationFactory> colFactory =
       do_CreateInstance(NS_COLLATIONFACTORY_CONTRACTID);
   ASSERT_TRUE(colFactory);

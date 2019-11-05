@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -76,6 +76,76 @@ static uint8_t ElemSizeFromType(GLenum elemType) {
 
 ////////////////////
 
+static webgl::AttribBaseType ElemBaseType(const GLenum elemType) {
+  switch (elemType) {
+    case LOCAL_GL_FLOAT:
+    case LOCAL_GL_FLOAT_VEC2:
+    case LOCAL_GL_FLOAT_VEC3:
+    case LOCAL_GL_FLOAT_VEC4:
+
+    case LOCAL_GL_FLOAT_MAT2:
+    case LOCAL_GL_FLOAT_MAT2x3:
+    case LOCAL_GL_FLOAT_MAT2x4:
+
+    case LOCAL_GL_FLOAT_MAT3x2:
+    case LOCAL_GL_FLOAT_MAT3:
+    case LOCAL_GL_FLOAT_MAT3x4:
+
+    case LOCAL_GL_FLOAT_MAT4x2:
+    case LOCAL_GL_FLOAT_MAT4x3:
+    case LOCAL_GL_FLOAT_MAT4:
+      return webgl::AttribBaseType::Float;
+
+      // -
+
+    case LOCAL_GL_INT:
+    case LOCAL_GL_INT_VEC2:
+    case LOCAL_GL_INT_VEC3:
+    case LOCAL_GL_INT_VEC4:
+
+    case LOCAL_GL_SAMPLER_2D:
+    case LOCAL_GL_SAMPLER_3D:
+    case LOCAL_GL_SAMPLER_CUBE:
+    case LOCAL_GL_SAMPLER_2D_ARRAY:
+    case LOCAL_GL_SAMPLER_2D_SHADOW:
+    case LOCAL_GL_SAMPLER_CUBE_SHADOW:
+    case LOCAL_GL_SAMPLER_2D_ARRAY_SHADOW:
+
+    case LOCAL_GL_INT_SAMPLER_2D:
+    case LOCAL_GL_INT_SAMPLER_3D:
+    case LOCAL_GL_INT_SAMPLER_CUBE:
+    case LOCAL_GL_INT_SAMPLER_2D_ARRAY:
+
+    case LOCAL_GL_UNSIGNED_INT_SAMPLER_2D:
+    case LOCAL_GL_UNSIGNED_INT_SAMPLER_3D:
+    case LOCAL_GL_UNSIGNED_INT_SAMPLER_CUBE:
+    case LOCAL_GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+      return webgl::AttribBaseType::Int;
+
+      // -
+
+    case LOCAL_GL_UNSIGNED_INT:
+    case LOCAL_GL_UNSIGNED_INT_VEC2:
+    case LOCAL_GL_UNSIGNED_INT_VEC3:
+    case LOCAL_GL_UNSIGNED_INT_VEC4:
+      return webgl::AttribBaseType::UInt;
+
+      // -
+
+    case LOCAL_GL_BOOL:
+    case LOCAL_GL_BOOL_VEC2:
+    case LOCAL_GL_BOOL_VEC3:
+    case LOCAL_GL_BOOL_VEC4:
+      return webgl::AttribBaseType::Boolean;
+
+      // -
+
+    default:
+      MOZ_ASSERT(false, "unexpected attrib elemType");
+      return webgl::AttribBaseType::Float;  // Just pick something.
+  }
+}
+
 WebGLActiveInfo::WebGLActiveInfo(WebGLContext* webgl, GLint elemCount,
                                  GLenum elemType, bool isArray,
                                  const nsACString& baseUserName,
@@ -86,7 +156,8 @@ WebGLActiveInfo::WebGLActiveInfo(WebGLContext* webgl, GLint elemCount,
       mBaseUserName(baseUserName),
       mIsArray(isArray),
       mElemSize(ElemSizeFromType(elemType)),
-      mBaseMappedName(baseMappedName) {}
+      mBaseMappedName(baseMappedName),
+      mBaseType(ElemBaseType(mElemType)) {}
 
 bool WebGLActiveInfo::IsSampler() const {
   switch (mElemType) {
@@ -116,7 +187,7 @@ bool WebGLActiveInfo::IsSampler() const {
 
 JSObject* WebGLActiveInfo::WrapObject(JSContext* js,
                                       JS::Handle<JSObject*> givenProto) {
-  return dom::WebGLActiveInfoBinding::Wrap(js, this, givenProto);
+  return dom::WebGLActiveInfo_Binding::Wrap(js, this, givenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(WebGLActiveInfo)

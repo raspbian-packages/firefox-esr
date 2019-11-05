@@ -19,17 +19,19 @@
 
 class nsIChannel;
 class nsIContentSecurityPolicy;
+class nsICookieSettings;
 class nsILoadGroup;
 class nsIPrincipal;
 class nsIRunnable;
 class nsIScriptContext;
-class nsITabChild;
+class nsIBrowserChild;
 class nsIURI;
 class nsPIDOMWindowInner;
 
 namespace mozilla {
 
 namespace ipc {
+class ContentSecurityPolicy;
 class PrincipalInfo;
 }  // namespace ipc
 
@@ -37,7 +39,7 @@ namespace dom {
 
 class WorkerPrivate;
 
-struct WorkerLoadInfo {
+struct WorkerLoadInfoData {
   // All of these should be released in
   // WorkerPrivateParent::ForgetMainThreadObjects.
   nsCOMPtr<nsIURI> mBaseURI;
@@ -49,6 +51,10 @@ struct WorkerLoadInfo {
   // If we load a data: URL, mPrincipal will be a null principal.
   nsCOMPtr<nsIPrincipal> mLoadingPrincipal;
   nsCOMPtr<nsIPrincipal> mPrincipal;
+  nsCOMPtr<nsIPrincipal> mStoragePrincipal;
+
+  // Taken from the parent context.
+  nsCOMPtr<nsICookieSettings> mCookieSettings;
 
   nsCOMPtr<nsIScriptContext> mScriptContext;
   nsCOMPtr<nsPIDOMWindowInner> mWindow;
@@ -56,39 +62,43 @@ struct WorkerLoadInfo {
   nsCOMPtr<nsIChannel> mChannel;
   nsCOMPtr<nsILoadGroup> mLoadGroup;
 
-  // mLoadFailedAsyncRunnable will execute on main thread if script loading
-  // fails during script loading.  If script loading is never started due to
-  // a synchronous error, then the runnable is never executed.  The runnable
-  // is guaranteed to be released on the main thread.
-  nsCOMPtr<nsIRunnable> mLoadFailedAsyncRunnable;
-
   class InterfaceRequestor final : public nsIInterfaceRequestor {
     NS_DECL_ISUPPORTS
 
    public:
     InterfaceRequestor(nsIPrincipal* aPrincipal, nsILoadGroup* aLoadGroup);
-    void MaybeAddTabChild(nsILoadGroup* aLoadGroup);
+    void MaybeAddBrowserChild(nsILoadGroup* aLoadGroup);
     NS_IMETHOD GetInterface(const nsIID& aIID, void** aSink) override;
+
+    void SetOuterRequestor(nsIInterfaceRequestor* aOuterRequestor) {
+      MOZ_ASSERT(!mOuterRequestor);
+      MOZ_ASSERT(aOuterRequestor);
+      mOuterRequestor = aOuterRequestor;
+    }
 
    private:
     ~InterfaceRequestor() {}
 
-    already_AddRefed<nsITabChild> GetAnyLiveTabChild();
+    already_AddRefed<nsIBrowserChild> GetAnyLiveBrowserChild();
 
     nsCOMPtr<nsILoadContext> mLoadContext;
     nsCOMPtr<nsIInterfaceRequestor> mOuterRequestor;
 
-    // Array of weak references to nsITabChild.  We do not want to keep TabChild
-    // actors alive for long after their ActorDestroy() methods are called.
-    nsTArray<nsWeakPtr> mTabChildList;
+    // Array of weak references to nsIBrowserChild.  We do not want to keep
+    // BrowserChild actors alive for long after their ActorDestroy() methods are
+    // called.
+    nsTArray<nsWeakPtr> mBrowserChildList;
   };
 
   // Only set if we have a custom overriden load group
   RefPtr<InterfaceRequestor> mInterfaceRequestor;
 
   nsAutoPtr<mozilla::ipc::PrincipalInfo> mPrincipalInfo;
+  nsAutoPtr<mozilla::ipc::PrincipalInfo> mStoragePrincipalInfo;
   nsCString mDomain;
   nsString mOrigin;  // Derived from mPrincipal; can be used on worker thread.
+
+  nsTArray<mozilla::ipc::ContentSecurityPolicy> mCSPInfos;
 
   nsString mServiceWorkerCacheName;
   Maybe<ServiceWorkerDescriptor> mServiceWorkerDescriptor;
@@ -108,23 +118,40 @@ struct WorkerLoadInfo {
   bool mReportCSPViolations;
   bool mXHRParamsAllowed;
   bool mPrincipalIsSystem;
-  bool mStorageAllowed;
+  bool mWatchedByDevtools;
+  nsContentUtils::StorageAccess mStorageAccess;
+  bool mFirstPartyStorageAccessGranted;
   bool mServiceWorkersTestingInWindow;
   OriginAttributes mOriginAttributes;
 
+  enum {
+    eNotSet,
+    eInsecureContext,
+    eSecureContext,
+  } mSecureContext;
+
+  WorkerLoadInfoData();
+  WorkerLoadInfoData(WorkerLoadInfoData&& aOther) = default;
+
+  WorkerLoadInfoData& operator=(WorkerLoadInfoData&& aOther) = default;
+};
+
+struct WorkerLoadInfo : WorkerLoadInfoData {
   WorkerLoadInfo();
+  WorkerLoadInfo(WorkerLoadInfo&& aOther) noexcept;
   ~WorkerLoadInfo();
 
-  void StealFrom(WorkerLoadInfo& aOther);
+  WorkerLoadInfo& operator=(WorkerLoadInfo&& aOther) = default;
 
-  nsresult SetPrincipalOnMainThread(nsIPrincipal* aPrincipal,
-                                    nsILoadGroup* aLoadGroup);
+  nsresult SetPrincipalsOnMainThread(nsIPrincipal* aPrincipal,
+                                     nsIPrincipal* aStoragePrincipal,
+                                     nsILoadGroup* aLoadGroup);
 
-  nsresult GetPrincipalAndLoadGroupFromChannel(nsIChannel* aChannel,
-                                               nsIPrincipal** aPrincipalOut,
-                                               nsILoadGroup** aLoadGroupOut);
+  nsresult GetPrincipalsAndLoadGroupFromChannel(
+      nsIChannel* aChannel, nsIPrincipal** aPrincipalOut,
+      nsIPrincipal** aStoragePrincipalOut, nsILoadGroup** aLoadGroupOut);
 
-  nsresult SetPrincipalFromChannel(nsIChannel* aChannel);
+  nsresult SetPrincipalsFromChannel(nsIChannel* aChannel);
 
   bool FinalChannelPrincipalIsValid(nsIChannel* aChannel);
 

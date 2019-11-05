@@ -8,10 +8,12 @@
 #define TextDrawTarget_h
 
 #include "mozilla/gfx/2D.h"
+#include "mozilla/layers/RenderRootStateManager.h"
 #include "mozilla/layers/WebRenderLayerManager.h"
 #include "mozilla/layers/WebRenderBridgeChild.h"
 #include "mozilla/webrender/WebRenderAPI.h"
 #include "mozilla/layers/StackingContextHelper.h"
+#include "mozilla/layers/IpcResourceUpdateQueue.h"
 
 namespace mozilla {
 namespace layout {
@@ -48,11 +50,32 @@ using namespace gfx;
 // for details.
 class TextDrawTarget : public DrawTarget {
  public:
-  explicit TextDrawTarget(wr::DisplayListBuilder &aBuilder,
-                          const layers::StackingContextHelper &aSc,
-                          layers::WebRenderLayerManager *aManager,
-                          nsDisplayItem *aItem, nsRect &aBounds)
-      : mBuilder(aBuilder), mSc(aSc), mManager(aManager) {
+  explicit TextDrawTarget(wr::DisplayListBuilder& aBuilder,
+                          wr::IpcResourceUpdateQueue& aResources,
+                          const layers::StackingContextHelper& aSc,
+                          layers::RenderRootStateManager* aManager,
+                          nsDisplayItem* aItem, nsRect& aBounds,
+                          bool aCallerDoesSaveRestore = false)
+      : mCallerDoesSaveRestore(aCallerDoesSaveRestore), mBuilder(aBuilder) {
+    Reinitialize(aResources, aSc, aManager, aItem, aBounds);
+  }
+
+  // Prevent this from being copied
+  TextDrawTarget(const TextDrawTarget& src) = delete;
+  TextDrawTarget& operator=(const TextDrawTarget&) = delete;
+
+  ~TextDrawTarget() { MOZ_ASSERT(mFinished); }
+
+  void Reinitialize(wr::IpcResourceUpdateQueue& aResources,
+                    const layers::StackingContextHelper& aSc,
+                    layers::RenderRootStateManager* aManager,
+                    nsDisplayItem* aItem, nsRect& aBounds) {
+    mResources = &aResources;
+    mSc = &aSc;
+    mManager = aManager;
+    mHasUnsupportedFeatures = false;
+    mHasShadows = false;
+
     SetPermitSubpixelAA(!aItem->IsSubpixelAADisabled());
 
     // Compute clip/bounds
@@ -61,32 +84,46 @@ class TextDrawTarget : public DrawTarget {
     LayoutDeviceRect layoutBoundsRect =
         LayoutDeviceRect::FromAppUnits(aBounds, appUnitsPerDevPixel);
     LayoutDeviceRect layoutClipRect = layoutBoundsRect;
-    mBoundsRect = aSc.ToRelativeLayoutRect(layoutBoundsRect);
+    mBoundsRect = wr::ToRoundedLayoutRect(layoutBoundsRect);
 
     // Add 1 pixel of dirty area around clip rect to allow us to paint
     // antialiased pixels beyond the measured text extents.
     layoutClipRect.Inflate(1);
+    mSize = IntSize::Ceil(layoutClipRect.Width(), layoutClipRect.Height());
+    mClipStack.ClearAndRetainStorage();
     mClipStack.AppendElement(layoutClipRect);
 
     mBackfaceVisible = !aItem->BackfaceIsHidden();
 
-    mBuilder.Save();
-  }
-
-  // Prevent this from being copied
-  TextDrawTarget(const TextDrawTarget &src) = delete;
-  TextDrawTarget &operator=(const TextDrawTarget &) = delete;
-
-  ~TextDrawTarget() {
-    if (mHasUnsupportedFeatures) {
-      mBuilder.Restore();
-    } else {
-      mBuilder.ClearSave();
+    if (!mCallerDoesSaveRestore) {
+      mBuilder.Save();
     }
   }
 
   void FoundUnsupportedFeature() { mHasUnsupportedFeatures = true; }
-  bool HasUnsupportedFeatures() { return mHasUnsupportedFeatures; }
+  bool CheckHasUnsupportedFeatures() {
+    MOZ_ASSERT(mCallerDoesSaveRestore);
+#ifdef DEBUG
+    MOZ_ASSERT(!mFinished);
+    mFinished = true;
+#endif
+    return mHasUnsupportedFeatures;
+  }
+
+  bool Finish() {
+    MOZ_ASSERT(!mCallerDoesSaveRestore);
+#ifdef DEBUG
+    mFinished = true;
+#endif
+    if (mHasUnsupportedFeatures) {
+      mBuilder.Restore();
+      return false;
+    }
+    mBuilder.ClearSave();
+    return true;
+  }
+
+  wr::RenderRoot GetRenderRoot() { return mResources->GetRenderRoot(); }
 
   wr::FontInstanceFlags GetWRGlyphFlags() const { return mWRGlyphFlags; }
   void SetWRGlyphFlags(wr::FontInstanceFlags aFlags) { mWRGlyphFlags = aFlags; }
@@ -99,7 +136,7 @@ class TextDrawTarget : public DrawTarget {
       }
     }
 
-    void Save(TextDrawTarget *aTarget) {
+    void Save(TextDrawTarget* aTarget) {
       // This allows for recursive saves, in case the flags need to be modified
       // under multiple conditions (i.e. transforms and synthetic italics),
       // since the flags will be restored to the first saved value in the
@@ -118,14 +155,14 @@ class TextDrawTarget : public DrawTarget {
     }
 
    private:
-    TextDrawTarget *mTarget = nullptr;
+    TextDrawTarget* mTarget = nullptr;
     wr::FontInstanceFlags mFlags = {0};
   };
 
   // This overload just stores the glyphs/font/color.
-  void FillGlyphs(ScaledFont *aFont, const GlyphBuffer &aBuffer,
-                  const Pattern &aPattern,
-                  const DrawOptions &aOptions) override {
+  void FillGlyphs(ScaledFont* aFont, const GlyphBuffer& aBuffer,
+                  const Pattern& aPattern,
+                  const DrawOptions& aOptions) override {
     // Make sure we're only given boring color patterns
     MOZ_RELEASE_ASSERT(aOptions.mCompositionOp == CompositionOp::OP_OVER);
     MOZ_RELEASE_ASSERT(aOptions.mAlpha == 1.0f);
@@ -138,11 +175,11 @@ class TextDrawTarget : public DrawTarget {
       return;
     }
 
-    auto *colorPat = static_cast<const ColorPattern *>(&aPattern);
+    auto* colorPat = static_cast<const ColorPattern*>(&aPattern);
     auto color = wr::ToColorF(colorPat->mColor);
     MOZ_ASSERT(aBuffer.mNumGlyphs);
     auto glyphs = Range<const wr::GlyphInstance>(
-        reinterpret_cast<const wr::GlyphInstance *>(aBuffer.mGlyphs),
+        reinterpret_cast<const wr::GlyphInstance*>(aBuffer.mGlyphs),
         aBuffer.mNumGlyphs);
     // MSVC won't let us use offsetof on the following directly so we give it a
     // name with typedef
@@ -176,23 +213,24 @@ class TextDrawTarget : public DrawTarget {
         wr::ToFontRenderMode(aOptions.mAntialiasMode, GetPermitSubpixelAA());
     glyphOptions.flags = mWRGlyphFlags;
 
-    mManager->WrBridge()->PushGlyphs(mBuilder, glyphs, aFont, color, mSc,
+    mManager->WrBridge()->PushGlyphs(mBuilder, glyphs, aFont, color, *mSc,
                                      mBoundsRect, ClipRect(), mBackfaceVisible,
                                      &glyphOptions);
   }
 
-  void PushClipRect(const Rect &aRect) override {
+  void PushClipRect(const Rect& aRect) override {
     LayoutDeviceRect rect = LayoutDeviceRect::FromUnknownRect(aRect);
     rect = rect.Intersect(mClipStack.LastElement());
     mClipStack.AppendElement(rect);
   }
 
-  void PopClip() override {
-    mClipStack.RemoveElementAt(mClipStack.Length() - 1);
-  }
+  void PopClip() override { mClipStack.RemoveLastElement(); }
 
-  void AppendShadow(const wr::Shadow &aShadow) {
-    mBuilder.PushShadow(mBoundsRect, ClipRect(), mBackfaceVisible, aShadow);
+  IntSize GetSize() const override { return mSize; }
+
+  void AppendShadow(const wr::Shadow& aShadow, bool aInflate) {
+    mBuilder.PushShadow(mBoundsRect, ClipRect(), mBackfaceVisible, aShadow,
+                        aInflate);
     mHasShadows = true;
   }
 
@@ -203,7 +241,7 @@ class TextDrawTarget : public DrawTarget {
     }
   }
 
-  void AppendSelectionRect(const LayoutDeviceRect &aRect, const Color &aColor) {
+  void AppendSelectionRect(const LayoutDeviceRect& aRect, const Color& aColor) {
     auto rect = wr::ToLayoutRect(aRect);
     auto color = wr::ToColorF(aColor);
     mBuilder.PushRect(rect, ClipRect(), mBackfaceVisible, color);
@@ -222,9 +260,9 @@ class TextDrawTarget : public DrawTarget {
   //
   // NOTE: we assume the points are axis-aligned, and aStart should be used
   // as the top-left corner of the rect.
-  void AppendDecoration(const Point &aStart, const Point &aEnd,
+  void AppendDecoration(const Point& aStart, const Point& aEnd,
                         const float aThickness, const bool aVertical,
-                        const Color &aColor, const uint8_t aStyle) {
+                        const Color& aColor, const uint8_t aStyle) {
     auto pos = LayoutDevicePoint::FromUnknownPoint(aStart);
     LayoutDeviceSize size;
 
@@ -237,7 +275,7 @@ class TextDrawTarget : public DrawTarget {
     }
 
     wr::Line decoration;
-    decoration.bounds = mSc.ToRelativeLayoutRect(LayoutDeviceRect(pos, size));
+    decoration.bounds = wr::ToRoundedLayoutRect(LayoutDeviceRect(pos, size));
     decoration.wavyLineThickness = 0;  // dummy value, unused
     decoration.color = wr::ToColorF(aColor);
     decoration.orientation = aVertical ? wr::LineOrientation::Vertical
@@ -267,12 +305,12 @@ class TextDrawTarget : public DrawTarget {
   // Seperated out from AppendDecoration because Wavy Lines are completely
   // different, and trying to merge the concept is more of a mess than it's
   // worth.
-  void AppendWavyDecoration(const Rect &aBounds, const float aThickness,
-                            const bool aVertical, const Color &aColor) {
+  void AppendWavyDecoration(const Rect& aBounds, const float aThickness,
+                            const bool aVertical, const Color& aColor) {
     wr::Line decoration;
 
     decoration.bounds =
-        mSc.ToRelativeLayoutRect(LayoutDeviceRect::FromUnknownRect(aBounds));
+        wr::ToRoundedLayoutRect(LayoutDeviceRect::FromUnknownRect(aBounds));
     decoration.wavyLineThickness = aThickness;
     decoration.color = wr::ToColorF(aColor);
     decoration.orientation = aVertical ? wr::LineOrientation::Vertical
@@ -282,10 +320,36 @@ class TextDrawTarget : public DrawTarget {
     mBuilder.PushLine(ClipRect(), mBackfaceVisible, decoration);
   }
 
- private:
-  wr::LayerRect ClipRect() {
-    return mSc.ToRelativeLayoutRect(mClipStack.LastElement());
+  layers::WebRenderBridgeChild* WrBridge() { return mManager->WrBridge(); }
+  layers::WebRenderLayerManager* WrLayerManager() {
+    return mManager->LayerManager();
   }
+
+  Maybe<wr::ImageKey> DefineImage(const IntSize& aSize, uint32_t aStride,
+                                  SurfaceFormat aFormat, const uint8_t* aData) {
+    wr::ImageKey key = mManager->WrBridge()->GetNextImageKey();
+    wr::ImageDescriptor desc(aSize, aStride, aFormat);
+    Range<uint8_t> bytes(const_cast<uint8_t*>(aData), aStride * aSize.height);
+    if (mResources->AddImage(key, desc, bytes)) {
+      return Some(key);
+    }
+    return Nothing();
+  }
+
+  void PushImage(wr::ImageKey aKey, const Rect& aBounds, const Rect& aClip,
+                 wr::ImageRendering aFilter, const wr::ColorF& aColor) {
+    if (!aClip.Intersects(GeckoClipRect().ToUnknownRect())) {
+      return;
+    }
+    mBuilder.PushImage(wr::ToLayoutRect(aBounds), wr::ToLayoutRect(aClip), true,
+                       aFilter, aKey, true, aColor);
+  }
+
+ private:
+  wr::LayoutRect ClipRect() {
+    return wr::ToRoundedLayoutRect(mClipStack.LastElement());
+  }
+  LayoutDeviceRect GeckoClipRect() { return mClipStack.LastElement(); }
   // Whether anything unsupported was encountered. Currently:
   //
   // * Synthetic bold/italics
@@ -297,17 +361,25 @@ class TextDrawTarget : public DrawTarget {
   // * Text stroke
   bool mHasUnsupportedFeatures = false;
 
+  // The caller promises to call Save/Restore on the builder as needed.
+  bool mCallerDoesSaveRestore = false;
+#ifdef DEBUG
+  bool mFinished = false;
+#endif
+
   // Whether PopAllShadows needs to be called
   bool mHasShadows = false;
 
   // Things used to push to webrender
-  wr::DisplayListBuilder &mBuilder;
-  const layers::StackingContextHelper &mSc;
-  layers::WebRenderLayerManager *mManager;
+  wr::DisplayListBuilder& mBuilder;
+  wr::IpcResourceUpdateQueue* mResources;
+  const layers::StackingContextHelper* mSc;
+  layers::RenderRootStateManager* mManager;
 
   // Computed facts
-  wr::LayerRect mBoundsRect;
-  nsTArray<LayoutDeviceRect> mClipStack;
+  IntSize mSize;
+  wr::LayoutRect mBoundsRect;
+  AutoTArray<LayoutDeviceRect, 3> mClipStack;
   bool mBackfaceVisible;
 
   wr::FontInstanceFlags mWRGlyphFlags = {0};
@@ -336,149 +408,132 @@ class TextDrawTarget : public DrawTarget {
     return nullptr;
   }
 
-  IntSize GetSize() const override {
-    MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
-    return IntSize(1, 1);
-  }
-
   void Flush() override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void DrawCapturedDT(DrawTargetCapture *aCaptureDT,
-                      const Matrix &aTransform) override {
+  void DrawCapturedDT(DrawTargetCapture* aCaptureDT,
+                      const Matrix& aTransform) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void DrawSurface(SourceSurface *aSurface, const Rect &aDest,
-                   const Rect &aSource, const DrawSurfaceOptions &aSurfOptions,
-                   const DrawOptions &aOptions) override {
+  void DrawSurface(SourceSurface* aSurface, const Rect& aDest,
+                   const Rect& aSource, const DrawSurfaceOptions& aSurfOptions,
+                   const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void DrawFilter(FilterNode *aNode, const Rect &aSourceRect,
-                  const Point &aDestPoint,
-                  const DrawOptions &aOptions) override {
+  void DrawFilter(FilterNode* aNode, const Rect& aSourceRect,
+                  const Point& aDestPoint,
+                  const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void DrawSurfaceWithShadow(SourceSurface *aSurface, const Point &aDest,
-                             const Color &aColor, const Point &aOffset,
+  void DrawSurfaceWithShadow(SourceSurface* aSurface, const Point& aDest,
+                             const Color& aColor, const Point& aOffset,
                              Float aSigma, CompositionOp aOperator) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void ClearRect(const Rect &aRect) override {
+  void ClearRect(const Rect& aRect) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void CopySurface(SourceSurface *aSurface, const IntRect &aSourceRect,
-                   const IntPoint &aDestination) override {
+  void CopySurface(SourceSurface* aSurface, const IntRect& aSourceRect,
+                   const IntPoint& aDestination) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void FillRect(const Rect &aRect, const Pattern &aPattern,
-                const DrawOptions &aOptions = DrawOptions()) override {
+  void FillRect(const Rect& aRect, const Pattern& aPattern,
+                const DrawOptions& aOptions = DrawOptions()) override {
     MOZ_RELEASE_ASSERT(aPattern.GetType() == PatternType::COLOR);
 
+    if (!aRect.Intersects(GeckoClipRect().ToUnknownRect())) {
+      return;
+    }
     auto rect =
-        mSc.ToRelativeLayoutRect(LayoutDeviceRect::FromUnknownRect(aRect));
+        wr::ToRoundedLayoutRect(LayoutDeviceRect::FromUnknownRect(aRect));
     auto color =
-        wr::ToColorF(static_cast<const ColorPattern &>(aPattern).mColor);
+        wr::ToColorF(static_cast<const ColorPattern&>(aPattern).mColor);
     mBuilder.PushRect(rect, ClipRect(), mBackfaceVisible, color);
   }
 
-  void StrokeRect(const Rect &aRect, const Pattern &aPattern,
-                  const StrokeOptions &aStrokeOptions,
-                  const DrawOptions &aOptions) override {
+  void StrokeRect(const Rect& aRect, const Pattern& aPattern,
+                  const StrokeOptions& aStrokeOptions,
+                  const DrawOptions& aOptions) override {
     MOZ_RELEASE_ASSERT(aPattern.GetType() == PatternType::COLOR &&
                        aStrokeOptions.mDashLength == 0);
 
-    wr::Line line;
-    line.wavyLineThickness = 0;  // dummy value, unused
-    line.color =
-        wr::ToColorF(static_cast<const ColorPattern &>(aPattern).mColor);
-    line.style = wr::LineStyle::Solid;
-
-    // Top horizontal line
-    LayoutDevicePoint top(aRect.x, aRect.y - aStrokeOptions.mLineWidth / 2);
-    LayoutDeviceSize horiSize(aRect.width, aStrokeOptions.mLineWidth);
-    line.bounds = mSc.ToRelativeLayoutRect(LayoutDeviceRect(top, horiSize));
-    line.orientation = wr::LineOrientation::Horizontal;
-    mBuilder.PushLine(ClipRect(), mBackfaceVisible, line);
-
-    // Bottom horizontal line
-    LayoutDevicePoint bottom(aRect.x,
-                             aRect.YMost() - aStrokeOptions.mLineWidth / 2);
-    line.bounds = mSc.ToRelativeLayoutRect(LayoutDeviceRect(bottom, horiSize));
-    mBuilder.PushLine(ClipRect(), mBackfaceVisible, line);
-
-    // Left vertical line
-    LayoutDevicePoint left(aRect.x + aStrokeOptions.mLineWidth / 2,
-                           aRect.y + aStrokeOptions.mLineWidth / 2);
-    LayoutDeviceSize vertSize(aStrokeOptions.mLineWidth,
-                              aRect.height - aStrokeOptions.mLineWidth);
-    line.bounds = mSc.ToRelativeLayoutRect(LayoutDeviceRect(left, vertSize));
-    line.orientation = wr::LineOrientation::Vertical;
-    mBuilder.PushLine(ClipRect(), mBackfaceVisible, line);
-
-    // Right vertical line
-    LayoutDevicePoint right(aRect.XMost() - aStrokeOptions.mLineWidth / 2,
-                            aRect.y + aStrokeOptions.mLineWidth / 2);
-    line.bounds = mSc.ToRelativeLayoutRect(LayoutDeviceRect(right, vertSize));
-    mBuilder.PushLine(ClipRect(), mBackfaceVisible, line);
+    wr::LayoutSideOffsets widths = {
+        aStrokeOptions.mLineWidth, aStrokeOptions.mLineWidth,
+        aStrokeOptions.mLineWidth, aStrokeOptions.mLineWidth};
+    wr::ColorF color =
+        wr::ToColorF(static_cast<const ColorPattern&>(aPattern).mColor);
+    wr::BorderSide sides[4] = {{color, wr::BorderStyle::Solid},
+                               {color, wr::BorderStyle::Solid},
+                               {color, wr::BorderStyle::Solid},
+                               {color, wr::BorderStyle::Solid}};
+    wr::BorderRadius radius = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
+    LayoutDeviceRect rect = LayoutDeviceRect::FromUnknownRect(aRect);
+    rect.Inflate(aStrokeOptions.mLineWidth / 2);
+    if (!rect.Intersects(GeckoClipRect())) {
+      return;
+    }
+    wr::LayoutRect bounds = wr::ToRoundedLayoutRect(rect);
+    mBuilder.PushBorder(bounds, ClipRect(), true, widths,
+                        Range<const wr::BorderSide>(sides, 4), radius);
   }
 
-  void StrokeLine(const Point &aStart, const Point &aEnd,
-                  const Pattern &aPattern, const StrokeOptions &aStrokeOptions,
-                  const DrawOptions &aOptions) override {
+  void StrokeLine(const Point& aStart, const Point& aEnd,
+                  const Pattern& aPattern, const StrokeOptions& aStrokeOptions,
+                  const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void Stroke(const Path *aPath, const Pattern &aPattern,
-              const StrokeOptions &aStrokeOptions,
-              const DrawOptions &aOptions) override {
+  void Stroke(const Path* aPath, const Pattern& aPattern,
+              const StrokeOptions& aStrokeOptions,
+              const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void Fill(const Path *aPath, const Pattern &aPattern,
-            const DrawOptions &aOptions) override {
+  void Fill(const Path* aPath, const Pattern& aPattern,
+            const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void StrokeGlyphs(ScaledFont *aFont, const GlyphBuffer &aBuffer,
-                    const Pattern &aPattern,
-                    const StrokeOptions &aStrokeOptions,
-                    const DrawOptions &aOptions) override {
+  void StrokeGlyphs(ScaledFont* aFont, const GlyphBuffer& aBuffer,
+                    const Pattern& aPattern,
+                    const StrokeOptions& aStrokeOptions,
+                    const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void Mask(const Pattern &aSource, const Pattern &aMask,
-            const DrawOptions &aOptions) override {
+  void Mask(const Pattern& aSource, const Pattern& aMask,
+            const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void MaskSurface(const Pattern &aSource, SourceSurface *aMask, Point aOffset,
-                   const DrawOptions &aOptions) override {
+  void MaskSurface(const Pattern& aSource, SourceSurface* aMask, Point aOffset,
+                   const DrawOptions& aOptions) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  bool Draw3DTransformedSurface(SourceSurface *aSurface,
-                                const Matrix4x4 &aMatrix) override {
+  bool Draw3DTransformedSurface(SourceSurface* aSurface,
+                                const Matrix4x4& aMatrix) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void PushClip(const Path *aPath) override {
+  void PushClip(const Path* aPath) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void PushDeviceSpaceClipRects(const IntRect *aRects,
+  void PushDeviceSpaceClipRects(const IntRect* aRects,
                                 uint32_t aCount) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
   }
 
-  void PushLayer(bool aOpaque, Float aOpacity, SourceSurface *aMask,
-                 const Matrix &aMaskTransform, const IntRect &aBounds,
+  void PushLayer(bool aOpaque, Float aOpacity, SourceSurface* aMask,
+                 const Matrix& aMaskTransform, const IntRect& aBounds,
                  bool aCopyBackground) override {
     // Fine to pretend we do this
   }
@@ -488,28 +543,34 @@ class TextDrawTarget : public DrawTarget {
   }
 
   already_AddRefed<SourceSurface> CreateSourceSurfaceFromData(
-      unsigned char *aData, const IntSize &aSize, int32_t aStride,
+      unsigned char* aData, const IntSize& aSize, int32_t aStride,
       SurfaceFormat aFormat) const override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
     return nullptr;
   }
 
   already_AddRefed<SourceSurface> OptimizeSourceSurface(
-      SourceSurface *aSurface) const override {
+      SourceSurface* aSurface) const override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
     return nullptr;
   }
 
   already_AddRefed<SourceSurface> CreateSourceSurfaceFromNativeSurface(
-      const NativeSurface &aSurface) const override {
+      const NativeSurface& aSurface) const override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
     return nullptr;
   }
 
   already_AddRefed<DrawTarget> CreateSimilarDrawTarget(
-      const IntSize &aSize, SurfaceFormat aFormat) const override {
+      const IntSize& aSize, SurfaceFormat aFormat) const override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
     return nullptr;
+  }
+
+  bool CanCreateSimilarDrawTarget(const IntSize& aSize,
+                                  SurfaceFormat aFormat) const override {
+    MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
+    return false;
   }
 
   already_AddRefed<PathBuilder> CreatePathBuilder(
@@ -524,13 +585,13 @@ class TextDrawTarget : public DrawTarget {
   }
 
   already_AddRefed<GradientStops> CreateGradientStops(
-      GradientStop *aStops, uint32_t aNumStops,
+      GradientStop* aStops, uint32_t aNumStops,
       ExtendMode aExtendMode) const override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
     return nullptr;
   }
 
-  void *GetNativeSurface(NativeSurfaceType aType) override {
+  void* GetNativeSurface(NativeSurfaceType aType) override {
     MOZ_CRASH("TextDrawTarget: Method shouldn't be called");
     return nullptr;
   }

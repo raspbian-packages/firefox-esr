@@ -135,6 +135,8 @@ class CompositorD3D11;
 class BasicCompositor;
 class TextureReadLock;
 struct GPUStats;
+class AsyncReadbackBuffer;
+class RecordedFrame;
 
 enum SurfaceInitMode { INIT_MODE_NONE, INIT_MODE_CLEAR };
 
@@ -185,7 +187,7 @@ class Compositor : public TextureSourceProvider {
                       CompositorBridgeParent* aParent = nullptr);
 
   virtual bool Initialize(nsCString* const out_failureReason) = 0;
-  virtual void Destroy() override;
+  void Destroy() override;
   bool IsDestroyed() const { return mIsDestroyed; }
 
   virtual void DetachWidget() { mWidget = nullptr; }
@@ -251,6 +253,37 @@ class Compositor : public TextureSourceProvider {
                                const gfx::IntPoint& aSourcePoint) = 0;
 
   /**
+   * Grab a snapshot of aSource and store it in aDest, so that the pixels can
+   * be read on the CPU by mapping aDest at some point in the future.
+   * aSource and aDest must have the same size.
+   * If this is a GPU compositor, this call must not block on the GPU.
+   * Returns whether the operation was successful.
+   */
+  virtual bool ReadbackRenderTarget(CompositingRenderTarget* aSource,
+                                    AsyncReadbackBuffer* aDest) {
+    return false;
+  }
+
+  /**
+   * Create an AsyncReadbackBuffer of the specified size. Can return null.
+   */
+  virtual already_AddRefed<AsyncReadbackBuffer> CreateAsyncReadbackBuffer(
+      const gfx::IntSize& aSize) {
+    return nullptr;
+  }
+
+  /**
+   * Draw a part of aSource into the current render target.
+   * Scaling is done with linear filtering.
+   * Returns whether the operation was successful.
+   */
+  virtual bool BlitRenderTarget(CompositingRenderTarget* aSource,
+                                const gfx::IntSize& aSourceSize,
+                                const gfx::IntSize& aDestSize) {
+    return false;
+  }
+
+  /**
    * Sets the given surface as the target for subsequent calls to DrawQuad.
    * Passing null as aSurface sets the screen as the target.
    */
@@ -260,7 +293,19 @@ class Compositor : public TextureSourceProvider {
    * Returns the current target for rendering. Will return null if we are
    * rendering to the screen.
    */
-  virtual CompositingRenderTarget* GetCurrentRenderTarget() const = 0;
+  virtual already_AddRefed<CompositingRenderTarget> GetCurrentRenderTarget()
+      const = 0;
+
+  /**
+   * Returns a render target which contains the entire window's drawing.
+   * On platforms where no such render target is used during compositing (e.g.
+   * with buffered BasicCompositor, where only the invalid area is drawn to a
+   * render target), this will return null.
+   */
+  virtual already_AddRefed<CompositingRenderTarget> GetWindowRenderTarget()
+      const {
+    return nullptr;
+  }
 
   /**
    * Mostly the compositor will pull the size from a widget and this method will
@@ -397,8 +442,6 @@ class Compositor : public TextureSourceProvider {
 
   virtual void CancelFrame(bool aNeedFlush = true) { ReadUnlockTextures(); }
 
-  virtual void SetDispAcquireFence(Layer* aLayer);
-
   /**
    * Whether textures created by this compositor can receive partial updates.
    */
@@ -426,11 +469,10 @@ class Compositor : public TextureSourceProvider {
 
   virtual LayersBackend GetBackendType() const = 0;
 
-  virtual CompositorOGL* AsCompositorOGL() { return nullptr; }
   virtual CompositorD3D11* AsCompositorD3D11() { return nullptr; }
   virtual BasicCompositor* AsBasicCompositor() { return nullptr; }
 
-  virtual Compositor* AsCompositor() override { return this; }
+  Compositor* AsCompositor() override { return this; }
 
   TimeStamp GetLastCompositionEndTime() const override {
     return mLastCompositionEndTime;
@@ -477,8 +519,23 @@ class Compositor : public TextureSourceProvider {
   // A stale Compositor has no CompositorBridgeParent; it will not process
   // frames and should not be used.
   void SetInvalid();
-  virtual bool IsValid() const override;
+  bool IsValid() const override;
   CompositorBridgeParent* GetCompositorBridgeParent() const { return mParent; }
+
+  /**
+   * Request the compositor to allow recording its frames.
+   *
+   * This is a noop on |CompositorOGL|.
+   */
+  virtual void RequestAllowFrameRecording(bool aWillRecord) {}
+
+  /**
+   * Record the current frame for readback by the |CompositionRecorder|.
+   *
+   * If this compositor does not support this feature, a null pointer is
+   * returned instead.
+   */
+  already_AddRefed<RecordedFrame> RecordFrame(const TimeStamp& aTimeStamp);
 
  protected:
   void DrawDiagnosticsInternal(DiagnosticFlags aFlags,
@@ -584,6 +641,21 @@ static inline bool BlendOpIsMixBlendMode(gfx::CompositionOp aOp) {
       return false;
   }
 }
+
+class AsyncReadbackBuffer {
+ public:
+  NS_INLINE_DECL_REFCOUNTING(AsyncReadbackBuffer)
+
+  gfx::IntSize GetSize() const { return mSize; }
+  virtual bool MapAndCopyInto(gfx::DataSourceSurface* aSurface,
+                              const gfx::IntSize& aReadSize) const = 0;
+
+ protected:
+  explicit AsyncReadbackBuffer(const gfx::IntSize& aSize) : mSize(aSize) {}
+  virtual ~AsyncReadbackBuffer() = default;
+
+  gfx::IntSize mSize;
+};
 
 struct TexturedVertex {
   float position[2];

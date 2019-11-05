@@ -2,12 +2,15 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
+<!ENTITY  windowClose.key                  "m">
+<!ENTITY  preferencesDefaultTitleMac.title "Ismenyifen">
+<!ENTITY  preferencesDefaultTitleWin.title "Iγewwaṛen">
+<!ENTITY  preferencesCloseButton.label     "Mdel">
+<!ENTITY  preferencesCloseButton.accesskey "M">
+
 <!ENTITY  prefWindow.titleWin     "Iɣewwaṛen">
 <!ENTITY  prefWindow.titleGNOME   "Ismenyifen n &brandShortName;">
 <!ENTITY  prefWindow.titleMAC     "Ismenyifen">
-<!ENTITY  prefWindow.styleWindows "width: 48em; min-height: 38.5em;">
-<!ENTITY  prefWindow.styleMac     "width: 52em;">
-<!ENTITY  prefWindow.styleGNOME   "width: 47em; min-height: 38em;">
 
 <!ENTITY paneGeneral.title        "Amatu">
 <!ENTITY paneDisplay.title        "Sken">
@@ -16,8 +19,11 @@
 <!ENTITY paneAttachments.title    "Imeddayen">
 <!ENTITY panePrivacy.title        "Tabaḍnit">
 <!ENTITY paneSecurity.title       "Taɣellist">
+<!ENTITY paneLightning.title      "Awitay">
 <!ENTITY paneAdvanced.title       "Leqqayen">
 <!ENTITY paneAccount.title        "Imiḍanen">
+
+<!ENTITY addonsButton.label       "Isiɣzaf &amp; Isental">
 
 <!ENTITY okButton.title           "OK">
 <!ENTITY okButton.accesskey       "O">

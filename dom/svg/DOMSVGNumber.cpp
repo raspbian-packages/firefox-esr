@@ -8,14 +8,16 @@
 #include "DOMSVGNumberList.h"
 #include "DOMSVGAnimatedNumberList.h"
 #include "SVGAnimatedNumberList.h"
-#include "nsSVGElement.h"
+#include "SVGElement.h"
 #include "nsError.h"
 #include "nsContentUtils.h"  // for NS_ENSURE_FINITE
 #include "mozilla/dom/SVGNumberBinding.h"
+#include "mozilla/dom/SVGSVGElement.h"
 
 // See the architecture comment in DOMSVGAnimatedNumberList.h.
 
 namespace mozilla {
+namespace dom {
 
 // We could use NS_IMPL_CYCLE_COLLECTION(, except that in Unlink() we need to
 // clear our list's weak ref to us to be safe. (The other option would be to
@@ -68,7 +70,9 @@ class MOZ_RAII AutoChangeNumberNotifier {
   ~AutoChangeNumberNotifier() {
     mNumber->Element()->DidChangeNumberList(mNumber->mAttrEnum,
                                             mEmptyOrOldValue);
-    if (mNumber->mList->IsAnimating()) {
+    // Null check mNumber->mList, since DidChangeNumberList can run script,
+    // potentially removing mNumber from its list.
+    if (mNumber->mList && mNumber->mList->IsAnimating()) {
       mNumber->Element()->AnimationNeedsResample();
     }
   }
@@ -102,32 +106,13 @@ DOMSVGNumber::DOMSVGNumber(nsISupports* aParent)
       mIsAnimValItem(false),
       mValue(0.0f) {}
 
-/* static */ already_AddRefed<DOMSVGNumber> DOMSVGNumber::Constructor(
-    const dom::GlobalObject& aGlobal, ErrorResult& aRv) {
-  nsCOMPtr<nsPIDOMWindowInner> window =
-      do_QueryInterface(aGlobal.GetAsSupports());
-  if (!window) {
-    aRv.Throw(NS_ERROR_UNEXPECTED);
-    return nullptr;
-  }
-
-  RefPtr<DOMSVGNumber> number = new DOMSVGNumber(window);
-  return number.forget();
-}
-
-/* static */ already_AddRefed<DOMSVGNumber> DOMSVGNumber::Constructor(
-    const dom::GlobalObject& aGlobal, float aValue, ErrorResult& aRv) {
-  nsCOMPtr<nsPIDOMWindowInner> window =
-      do_QueryInterface(aGlobal.GetAsSupports());
-  if (!window) {
-    aRv.Throw(NS_ERROR_UNEXPECTED);
-    return nullptr;
-  }
-
-  RefPtr<DOMSVGNumber> number = new DOMSVGNumber(window);
-  number->SetValue(aValue, aRv);
-  return number.forget();
-}
+DOMSVGNumber::DOMSVGNumber(SVGSVGElement* aParent)
+    : mList(nullptr),
+      mParent(ToSupports(aParent)),
+      mListIndex(0),
+      mAttrEnum(0),
+      mIsAnimValItem(false),
+      mValue(0.0f) {}
 
 float DOMSVGNumber::Value() {
   if (mIsAnimValItem && HasOwner()) {
@@ -192,7 +177,8 @@ bool DOMSVGNumber::IndexIsValid() {
 
 JSObject* DOMSVGNumber::WrapObject(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return dom::SVGNumberBinding::Wrap(aCx, this, aGivenProto);
+  return SVGNumber_Binding::Wrap(aCx, this, aGivenProto);
 }
 
+}  // namespace dom
 }  // namespace mozilla

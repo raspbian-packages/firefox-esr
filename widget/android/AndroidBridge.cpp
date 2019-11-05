@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
+/* -*- Mode: c++; c-basic-offset: 2; tab-width: 20; indent-tabs-mode: nil; -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -30,9 +30,7 @@
 #include "nsPresContext.h"
 #include "nsIDocShell.h"
 #include "nsPIDOMWindow.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "nsIDOMWindowUtils.h"
-#include "nsIDOMClientRect.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "nsPrintfCString.h"
 #include "nsContentUtils.h"
@@ -46,10 +44,8 @@
 
 #include "mozilla/TimeStamp.h"
 #include "mozilla/UniquePtr.h"
-#include "mozilla/dom/ContentChild.h"
 #include "nsIObserverService.h"
 #include "nsISupportsPrimitives.h"
-#include "MediaPrefs.h"
 #include "WidgetUtils.h"
 
 #include "FennecJNIWrappers.h"
@@ -137,8 +133,6 @@ void AndroidBridge::ConstructBridge() {
 
   MOZ_ASSERT(!sBridge);
   sBridge = new AndroidBridge();
-
-  MediaPrefs::GetSingleton();
 }
 
 void AndroidBridge::DeconstructBridge() {
@@ -298,31 +292,6 @@ void AndroidBridge::GetExtensionFromMimeType(const nsACString& aMimeType,
   }
 }
 
-bool AndroidBridge::GetClipboardText(nsAString& aText) {
-  ALOG_BRIDGE("AndroidBridge::GetClipboardText");
-
-  auto text = Clipboard::GetText(GeckoAppShell::GetApplicationContext());
-
-  if (text) {
-    aText = text->ToString();
-  }
-  return !!text;
-}
-
-int AndroidBridge::GetDPI() {
-  static int sDPI = 0;
-  if (sDPI) return sDPI;
-
-  const int DEFAULT_DPI = 160;
-
-  sDPI = GeckoAppShell::GetDpi();
-  if (!sDPI) {
-    return DEFAULT_DPI;
-  }
-
-  return sDPI;
-}
-
 int AndroidBridge::GetScreenDepth() {
   ALOG_BRIDGE("%s", __PRETTY_FUNCTION__);
 
@@ -338,6 +307,7 @@ int AndroidBridge::GetScreenDepth() {
 
   return sDepth;
 }
+
 void AndroidBridge::Vibrate(const nsTArray<uint32_t>& aPattern) {
   ALOG_BRIDGE("%s", __PRETTY_FUNCTION__);
 
@@ -633,44 +603,6 @@ nsAndroidBridge::nsAndroidBridge() : mAudibleWindowsNum(0) {
 
 nsAndroidBridge::~nsAndroidBridge() {}
 
-NS_IMETHODIMP nsAndroidBridge::HandleGeckoMessage(JS::HandleValue val,
-                                                  JSContext* cx) {
-  // Spit out a warning before sending the message.
-  nsContentUtils::ReportToConsoleNonLocalized(
-      NS_LITERAL_STRING("Use of handleGeckoMessage is deprecated. "
-                        "Please use EventDispatcher from Messaging.jsm."),
-      nsIScriptError::warningFlag, NS_LITERAL_CSTRING("nsIAndroidBridge"),
-      nullptr);
-
-  JS::RootedValue jsonVal(cx);
-
-  if (val.isObject()) {
-    jsonVal = val;
-
-  } else {
-    // Handle legacy JSON messages.
-    if (!val.isString()) {
-      return NS_ERROR_INVALID_ARG;
-    }
-    JS::RootedString jsonStr(cx, val.toString());
-
-    if (!JS_ParseJSON(cx, jsonStr, &jsonVal) || !jsonVal.isObject()) {
-      JS_ClearPendingException(cx);
-      return NS_ERROR_INVALID_ARG;
-    }
-  }
-
-  JS::RootedObject jsonObj(cx, &jsonVal.toObject());
-  JS::RootedValue typeVal(cx);
-
-  if (!JS_GetProperty(cx, jsonObj, "type", &typeVal)) {
-    JS_ClearPendingException(cx);
-    return NS_ERROR_INVALID_ARG;
-  }
-
-  return Dispatch(typeVal, jsonVal, /* callback */ nullptr, cx);
-}
-
 NS_IMETHODIMP nsAndroidBridge::ContentDocumentChanged(
     mozIDOMWindowProxy* aWindow) {
   AndroidBridge::Bridge()->ContentDocumentChanged(aWindow);
@@ -736,9 +668,7 @@ uint32_t AndroidBridge::GetScreenOrientation() {
 
   int16_t orientation = GeckoAppShell::GetScreenOrientation();
 
-  if (!orientation) return dom::eScreenOrientation_None;
-
-  return static_cast<dom::ScreenOrientationInternal>(orientation);
+  return static_cast<hal::ScreenOrientation>(orientation);
 }
 
 uint16_t AndroidBridge::GetScreenAngle() {
@@ -786,6 +716,11 @@ bool AndroidBridge::PumpMessageLoop() {
   return GeckoThread::PumpMessageLoop(msg);
 }
 
+NS_IMETHODIMP nsAndroidBridge::GetIsFennec(bool* aIsFennec) {
+  *aIsFennec = jni::IsFennec();
+  return NS_OK;
+}
+
 NS_IMETHODIMP nsAndroidBridge::GetBrowserApp(
     nsIAndroidBrowserApp** aBrowserApp) {
   nsAppShell* const appShell = nsAppShell::Get();
@@ -804,27 +739,16 @@ extern "C" __attribute__((visibility("default"))) jobject JNICALL
 Java_org_mozilla_gecko_GeckoAppShell_allocateDirectBuffer(JNIEnv* env, jclass,
                                                           jlong size);
 
-static RefPtr<nsWindow> GetWidget(mozIDOMWindowProxy* aWindow) {
-  MOZ_ASSERT(aWindow);
-
-  nsCOMPtr<nsPIDOMWindowOuter> domWindow = nsPIDOMWindowOuter::From(aWindow);
-  nsCOMPtr<nsIWidget> widget =
-      widget::WidgetUtils::DOMWindowToWidget(domWindow);
-  MOZ_ASSERT(widget);
-
-  return RefPtr<nsWindow>(static_cast<nsWindow*>(widget.get()));
-}
-
 void AndroidBridge::ContentDocumentChanged(mozIDOMWindowProxy* aWindow) {
-  auto widget = GetWidget(aWindow);
-  if (widget) {
+  if (RefPtr<nsWindow> widget =
+          nsWindow::From(nsPIDOMWindowOuter::From(aWindow))) {
     widget->SetContentDocumentDisplayed(false);
   }
 }
 
 bool AndroidBridge::IsContentDocumentDisplayed(mozIDOMWindowProxy* aWindow) {
-  auto widget = GetWidget(aWindow);
-  if (widget) {
+  if (RefPtr<nsWindow> widget =
+          nsWindow::From(nsPIDOMWindowOuter::From(aWindow))) {
     return widget->IsContentDocumentDisplayed();
   }
   return false;

@@ -21,26 +21,37 @@
 //! in-memory encoding is sometimes used as a storage optimization of text
 //! when UTF-16 indexing and length semantics are exposed.
 
-use ascii::*;
-use super::in_inclusive_range8;
+use std::borrow::Cow;
+
 use super::in_inclusive_range16;
-use super::in_range16;
 use super::in_inclusive_range32;
+use super::in_inclusive_range8;
+use super::in_range16;
 use super::in_range32;
 use super::DecoderResult;
-use super::EncoderResult;
+use ascii::*;
 use utf_8::*;
 
-cfg_if!{
+macro_rules! non_fuzz_debug_assert {
+    ($($arg:tt)*) => (if !cfg!(fuzzing) { debug_assert!($($arg)*); })
+}
+
+cfg_if! {
     if #[cfg(feature = "simd-accel")] {
-		use ::std::intrinsics::unlikely;
-	} else {
-		#[inline(always)]
-		// Unsafe to match the intrinsic, which is needlessly unsafe.
-		unsafe fn unlikely(b: bool) -> bool {
-			b
-		}
-	}
+        use ::std::intrinsics::likely;
+        use ::std::intrinsics::unlikely;
+    } else {
+        #[inline(always)]
+        // Unsafe to match the intrinsic, which is needlessly unsafe.
+        unsafe fn likely(b: bool) -> bool {
+            b
+        }
+        #[inline(always)]
+        // Unsafe to match the intrinsic, which is needlessly unsafe.
+        unsafe fn unlikely(b: bool) -> bool {
+            b
+        }
+    }
 }
 
 /// Classification of text as Latin1 (all code points are below U+0100),
@@ -61,149 +72,164 @@ pub enum Latin1Bidi {
 
 // `as` truncates, so works on 32-bit, too.
 #[allow(dead_code)]
-const LATIN1_MASK: usize = 0xFF00FF00_FF00FF00u64 as usize;
+const LATIN1_MASK: usize = 0xFF00_FF00_FF00_FF00u64 as usize;
 
 #[allow(unused_macros)]
 macro_rules! by_unit_check_alu {
-    ($name:ident,
-     $unit:ty,
-     $bound:expr,
-     $mask:ident) => (
-    #[inline(always)]
-    fn $name(buffer: &[$unit]) -> bool {
-        let mut offset = 0usize;
-        let mut accu = 0usize;
-        let unit_size = ::std::mem::size_of::<$unit>();
-        let len = buffer.len();
-        if len >= ALIGNMENT / unit_size {
-            // The most common reason to return `false` is for the first code
-            // unit to fail the test, so check that first.
-            if buffer[0] >= $bound {
-                return false;
-            }
-            let src = buffer.as_ptr();
-            let mut until_alignment = ((ALIGNMENT - ((src as usize) & ALIGNMENT_MASK)) &
-                                       ALIGNMENT_MASK) / unit_size;
-            if until_alignment + ALIGNMENT / unit_size <= len {
-                if until_alignment != 0 {
-                    accu |= buffer[offset] as usize;
-                    offset += 1;
-                    until_alignment -= 1;
-                    while until_alignment != 0 {
+    ($name:ident, $unit:ty, $bound:expr, $mask:ident) => {
+        #[cfg_attr(feature = "cargo-clippy", allow(cast_ptr_alignment))]
+        #[inline(always)]
+        fn $name(buffer: &[$unit]) -> bool {
+            let mut offset = 0usize;
+            let mut accu = 0usize;
+            let unit_size = ::std::mem::size_of::<$unit>();
+            let len = buffer.len();
+            if len >= ALU_ALIGNMENT / unit_size {
+                // The most common reason to return `false` is for the first code
+                // unit to fail the test, so check that first.
+                if buffer[0] >= $bound {
+                    return false;
+                }
+                let src = buffer.as_ptr();
+                let mut until_alignment = ((ALU_ALIGNMENT - ((src as usize) & ALU_ALIGNMENT_MASK))
+                    & ALU_ALIGNMENT_MASK)
+                    / unit_size;
+                if until_alignment + ALU_ALIGNMENT / unit_size <= len {
+                    if until_alignment != 0 {
                         accu |= buffer[offset] as usize;
                         offset += 1;
                         until_alignment -= 1;
-                    }
-                    if accu >= $bound {
-                        return false;
-                    }
-                }
-                let len_minus_stride = len - ALIGNMENT / unit_size;
-                if offset + (4 * (ALIGNMENT / unit_size)) <= len {
-                    let len_minus_unroll = len - (4 * (ALIGNMENT / unit_size));
-                    loop {
-                        let unroll_accu = unsafe { *(src.offset(offset as isize) as *const usize) } |
-                                          unsafe { *(src.offset((offset + (ALIGNMENT / unit_size)) as isize) as *const usize) } |
-                                          unsafe { *(src.offset((offset + (2 * (ALIGNMENT / unit_size))) as isize) as *const usize) } |
-                                          unsafe { *(src.offset((offset + (3 * (ALIGNMENT / unit_size))) as isize) as *const usize) };
-                        if unroll_accu & $mask != 0 {
+                        while until_alignment != 0 {
+                            accu |= buffer[offset] as usize;
+                            offset += 1;
+                            until_alignment -= 1;
+                        }
+                        if accu >= $bound {
                             return false;
                         }
-                        offset += 4 * (ALIGNMENT / unit_size);
-                        if offset > len_minus_unroll {
-                            break;
+                    }
+                    let len_minus_stride = len - ALU_ALIGNMENT / unit_size;
+                    if offset + (4 * (ALU_ALIGNMENT / unit_size)) <= len {
+                        let len_minus_unroll = len - (4 * (ALU_ALIGNMENT / unit_size));
+                        loop {
+                            let unroll_accu = unsafe { *(src.add(offset) as *const usize) }
+                                | unsafe {
+                                    *(src.add(offset + (ALU_ALIGNMENT / unit_size)) as *const usize)
+                                }
+                                | unsafe {
+                                    *(src.add(offset + (2 * (ALU_ALIGNMENT / unit_size)))
+                                        as *const usize)
+                                }
+                                | unsafe {
+                                    *(src.add(offset + (3 * (ALU_ALIGNMENT / unit_size)))
+                                        as *const usize)
+                                };
+                            if unroll_accu & $mask != 0 {
+                                return false;
+                            }
+                            offset += 4 * (ALU_ALIGNMENT / unit_size);
+                            if offset > len_minus_unroll {
+                                break;
+                            }
                         }
                     }
-                }
-                while offset <= len_minus_stride {
-                    accu |= unsafe { *(src.offset(offset as isize) as *const usize) };
-                    offset += ALIGNMENT / unit_size;
+                    while offset <= len_minus_stride {
+                        accu |= unsafe { *(src.add(offset) as *const usize) };
+                        offset += ALU_ALIGNMENT / unit_size;
+                    }
                 }
             }
+            for &unit in &buffer[offset..] {
+                accu |= unit as usize;
+            }
+            accu & $mask == 0
         }
-        for &unit in &buffer[offset..] {
-            accu |= unit as usize;
-        }
-        accu & $mask == 0
-    })
+    };
 }
 
 #[allow(unused_macros)]
 macro_rules! by_unit_check_simd {
-    ($name:ident,
-     $unit:ty,
-     $splat:expr,
-     $simd_ty:ty,
-     $bound:expr,
-     $func:ident) => (
-    #[inline(always)]
-    fn $name(buffer: &[$unit]) -> bool {
-        let mut offset = 0usize;
-        let mut accu = 0usize;
-        let unit_size = ::std::mem::size_of::<$unit>();
-        let len = buffer.len();
-        if len >= STRIDE_SIZE / unit_size {
-            // The most common reason to return `false` is for the first code
-            // unit to fail the test, so check that first.
-            if buffer[0] >= $bound {
-                return false;
-            }
-            let src = buffer.as_ptr();
-            let mut until_alignment = ((SIMD_ALIGNMENT - ((src as usize) & SIMD_ALIGNMENT_MASK)) &
-                                       SIMD_ALIGNMENT_MASK) / unit_size;
-            if until_alignment + STRIDE_SIZE / unit_size <= len {
-                if until_alignment != 0 {
-                    accu |= buffer[offset] as usize;
-                    offset += 1;
-                    until_alignment -= 1;
-                    while until_alignment != 0 {
+    ($name:ident, $unit:ty, $splat:expr, $simd_ty:ty, $bound:expr, $func:ident) => {
+        #[inline(always)]
+        fn $name(buffer: &[$unit]) -> bool {
+            let mut offset = 0usize;
+            let mut accu = 0usize;
+            let unit_size = ::std::mem::size_of::<$unit>();
+            let len = buffer.len();
+            if len >= SIMD_STRIDE_SIZE / unit_size {
+                // The most common reason to return `false` is for the first code
+                // unit to fail the test, so check that first.
+                if buffer[0] >= $bound {
+                    return false;
+                }
+                let src = buffer.as_ptr();
+                let mut until_alignment = ((SIMD_ALIGNMENT
+                    - ((src as usize) & SIMD_ALIGNMENT_MASK))
+                    & SIMD_ALIGNMENT_MASK)
+                    / unit_size;
+                if until_alignment + SIMD_STRIDE_SIZE / unit_size <= len {
+                    if until_alignment != 0 {
                         accu |= buffer[offset] as usize;
                         offset += 1;
                         until_alignment -= 1;
+                        while until_alignment != 0 {
+                            accu |= buffer[offset] as usize;
+                            offset += 1;
+                            until_alignment -= 1;
+                        }
+                        if accu >= $bound {
+                            return false;
+                        }
                     }
-                    if accu >= $bound {
+                    let len_minus_stride = len - SIMD_STRIDE_SIZE / unit_size;
+                    if offset + (4 * (SIMD_STRIDE_SIZE / unit_size)) <= len {
+                        let len_minus_unroll = len - (4 * (SIMD_STRIDE_SIZE / unit_size));
+                        loop {
+                            let unroll_accu = unsafe { *(src.add(offset) as *const $simd_ty) }
+                                | unsafe {
+                                    *(src.add(offset + (SIMD_STRIDE_SIZE / unit_size))
+                                        as *const $simd_ty)
+                                }
+                                | unsafe {
+                                    *(src.add(offset + (2 * (SIMD_STRIDE_SIZE / unit_size)))
+                                        as *const $simd_ty)
+                                }
+                                | unsafe {
+                                    *(src.add(offset + (3 * (SIMD_STRIDE_SIZE / unit_size)))
+                                        as *const $simd_ty)
+                                };
+                            if !$func(unroll_accu) {
+                                return false;
+                            }
+                            offset += 4 * (SIMD_STRIDE_SIZE / unit_size);
+                            if offset > len_minus_unroll {
+                                break;
+                            }
+                        }
+                    }
+                    let mut simd_accu = $splat;
+                    while offset <= len_minus_stride {
+                        simd_accu = simd_accu | unsafe { *(src.add(offset) as *const $simd_ty) };
+                        offset += SIMD_STRIDE_SIZE / unit_size;
+                    }
+                    if !$func(simd_accu) {
                         return false;
                     }
                 }
-                let len_minus_stride = len - STRIDE_SIZE / unit_size;
-                if offset + (4 * (STRIDE_SIZE / unit_size)) <= len {
-                    let len_minus_unroll = len - (4 * (STRIDE_SIZE / unit_size));
-                    loop {
-                        let unroll_accu = unsafe { *(src.offset(offset as isize) as *const $simd_ty) } |
-                                          unsafe { *(src.offset((offset + (STRIDE_SIZE / unit_size)) as isize) as *const $simd_ty) } |
-                                          unsafe { *(src.offset((offset + (2 * (STRIDE_SIZE / unit_size))) as isize) as *const $simd_ty) } |
-                                          unsafe { *(src.offset((offset + (3 * (STRIDE_SIZE / unit_size))) as isize) as *const $simd_ty) };
-                        if !$func(unroll_accu) {
-                            return false;
-                        }
-                        offset += 4 * (STRIDE_SIZE / unit_size);
-                        if offset > len_minus_unroll {
-                            break;
-                        }
-                    }
-                }
-                let mut simd_accu = $splat;
-                while offset <= len_minus_stride {
-                    simd_accu = simd_accu | unsafe { *(src.offset(offset as isize) as *const $simd_ty) };
-                    offset += STRIDE_SIZE / unit_size;
-                }
-                if !$func(simd_accu) {
-                    return false;
-                }
             }
+            for &unit in &buffer[offset..] {
+                accu |= unit as usize;
+            }
+            accu < $bound
         }
-        for &unit in &buffer[offset..] {
-            accu |= unit as usize;
-        }
-        accu < $bound
-    })
+    };
 }
 
-cfg_if!{
-    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"))))] {
+cfg_if! {
+    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"), all(target_endian = "little", target_feature = "neon"))))] {
         use simd_funcs::*;
-        use simd::u8x16;
-        use simd::u16x8;
+        use packed_simd::u8x16;
+        use packed_simd::u16x8;
 
         const SIMD_ALIGNMENT: usize = 16;
 
@@ -224,16 +250,16 @@ cfg_if!{
             let len = buffer.len();
             let mut offset = 0usize;
             'outer: loop {
-                let until_alignment = ((SIMD_ALIGNMENT - ((unsafe { src.offset(offset as isize) } as usize) & SIMD_ALIGNMENT_MASK)) &
+                let until_alignment = ((SIMD_ALIGNMENT - ((unsafe { src.add(offset) } as usize) & SIMD_ALIGNMENT_MASK)) &
                                         SIMD_ALIGNMENT_MASK) / unit_size;
                 if until_alignment == 0 {
-                    if offset + STRIDE_SIZE / unit_size > len {
+                    if offset + SIMD_STRIDE_SIZE / unit_size > len {
                         break;
                     }
                 } else {
                     let offset_plus_until_alignment = offset + until_alignment;
                     let offset_plus_until_alignment_plus_one = offset_plus_until_alignment + 1;
-                    if offset_plus_until_alignment_plus_one + STRIDE_SIZE / unit_size > len {
+                    if offset_plus_until_alignment_plus_one + SIMD_STRIDE_SIZE / unit_size > len {
                         break;
                     }
                     let (up_to, last_valid_low) = utf16_valid_up_to_alu(&buffer[offset..offset_plus_until_alignment_plus_one]);
@@ -246,16 +272,16 @@ cfg_if!{
                     }
                     offset = offset_plus_until_alignment;
                 }
-                let len_minus_stride = len - STRIDE_SIZE / unit_size;
+                let len_minus_stride = len - SIMD_STRIDE_SIZE / unit_size;
                 'inner: loop {
-                    let offset_plus_stride = offset + STRIDE_SIZE / unit_size;
-                    if contains_surrogates(unsafe { *(src.offset(offset as isize) as *const u16x8) }) {
+                    let offset_plus_stride = offset + SIMD_STRIDE_SIZE / unit_size;
+                    if contains_surrogates(unsafe { *(src.add(offset) as *const u16x8) }) {
                         if offset_plus_stride == len {
                             break 'outer;
                         }
                         let offset_plus_stride_plus_one = offset_plus_stride + 1;
                         let (up_to, last_valid_low) = utf16_valid_up_to_alu(&buffer[offset..offset_plus_stride_plus_one]);
-                        if up_to < STRIDE_SIZE / unit_size {
+                        if up_to < SIMD_STRIDE_SIZE / unit_size {
                             return offset + up_to;
                         }
                         if last_valid_low {
@@ -287,6 +313,7 @@ cfg_if!{
 
 /// The second return value is true iff the last code unit of the slice was
 /// reached and turned out to be a low surrogate that is part of a valid pair.
+#[cfg_attr(feature = "cargo-clippy", allow(collapsible_if))]
 #[inline(always)]
 fn utf16_valid_up_to_alu(buffer: &[u16]) -> (usize, bool) {
     let len = buffer.len();
@@ -330,18 +357,18 @@ fn utf16_valid_up_to_alu(buffer: &[u16]) -> (usize, bool) {
     }
 }
 
-cfg_if!{
-    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"))))] {
+cfg_if! {
+    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"), all(target_endian = "little", target_feature = "neon"))))] {
         #[inline(always)]
         fn is_str_latin1_impl(buffer: &str) -> Option<usize> {
             let mut offset = 0usize;
             let bytes = buffer.as_bytes();
             let len = bytes.len();
-            if len >= STRIDE_SIZE {
+            if len >= SIMD_STRIDE_SIZE {
                 let src = bytes.as_ptr();
                 let mut until_alignment = (SIMD_ALIGNMENT - ((src as usize) & SIMD_ALIGNMENT_MASK)) &
                                            SIMD_ALIGNMENT_MASK;
-                if until_alignment + STRIDE_SIZE <= len {
+                if until_alignment + SIMD_STRIDE_SIZE <= len {
                     while until_alignment != 0 {
                         if bytes[offset] > 0xC3 {
                             return Some(offset);
@@ -349,16 +376,16 @@ cfg_if!{
                         offset += 1;
                         until_alignment -= 1;
                     }
-                    let len_minus_stride = len - STRIDE_SIZE;
+                    let len_minus_stride = len - SIMD_STRIDE_SIZE;
                     loop {
-                        if !simd_is_str_latin1(unsafe { *(src.offset(offset as isize) as *const u8x16) }) {
+                        if !simd_is_str_latin1(unsafe { *(src.add(offset) as *const u8x16) }) {
                             // TODO: Ensure this compiles away when inlined into `is_str_latin1()`.
                             while bytes[offset] & 0xC0 == 0x80 {
                                 offset += 1;
                             }
                             return Some(offset);
                         }
-                        offset += STRIDE_SIZE;
+                        offset += SIMD_STRIDE_SIZE;
                         if offset > len_minus_stride {
                             break;
                         }
@@ -419,17 +446,17 @@ fn is_utf8_latin1_impl(buffer: &[u8]) -> Option<usize> {
     }
 }
 
-cfg_if!{
-    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"))))] {
+cfg_if! {
+    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"), all(target_endian = "little", target_feature = "neon"))))] {
         #[inline(always)]
         fn is_utf16_bidi_impl(buffer: &[u16]) -> bool {
             let mut offset = 0usize;
             let len = buffer.len();
-            if len >= STRIDE_SIZE / 2 {
+            if len >= SIMD_STRIDE_SIZE / 2 {
                 let src = buffer.as_ptr();
                 let mut until_alignment = ((SIMD_ALIGNMENT - ((src as usize) & SIMD_ALIGNMENT_MASK)) &
                                            SIMD_ALIGNMENT_MASK) / 2;
-                if until_alignment + (STRIDE_SIZE / 2) <= len {
+                if until_alignment + (SIMD_STRIDE_SIZE / 2) <= len {
                     while until_alignment != 0 {
                         if is_utf16_code_unit_bidi(buffer[offset]) {
                             return true;
@@ -437,12 +464,12 @@ cfg_if!{
                         offset += 1;
                         until_alignment -= 1;
                     }
-                    let len_minus_stride = len - (STRIDE_SIZE / 2);
+                    let len_minus_stride = len - (SIMD_STRIDE_SIZE / 2);
                     loop {
-                        if is_u16x8_bidi(unsafe { *(src.offset(offset as isize) as *const u16x8) }) {
+                        if is_u16x8_bidi(unsafe { *(src.add(offset) as *const u16x8) }) {
                             return true;
                         }
-                        offset += STRIDE_SIZE / 2;
+                        offset += SIMD_STRIDE_SIZE / 2;
                         if offset > len_minus_stride {
                             break;
                         }
@@ -469,17 +496,17 @@ cfg_if!{
     }
 }
 
-cfg_if!{
-    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"))))] {
+cfg_if! {
+    if #[cfg(all(feature = "simd-accel", any(target_feature = "sse2", all(target_endian = "little", target_arch = "aarch64"), all(target_endian = "little", target_feature = "neon"))))] {
         #[inline(always)]
         fn check_utf16_for_latin1_and_bidi_impl(buffer: &[u16]) -> Latin1Bidi {
             let mut offset = 0usize;
             let len = buffer.len();
-            if len >= STRIDE_SIZE / 2 {
+            if len >= SIMD_STRIDE_SIZE / 2 {
                 let src = buffer.as_ptr();
                 let mut until_alignment = ((SIMD_ALIGNMENT - ((src as usize) & SIMD_ALIGNMENT_MASK)) &
                                            SIMD_ALIGNMENT_MASK) / 2;
-                if until_alignment + (STRIDE_SIZE / 2) <= len {
+                if until_alignment + (SIMD_STRIDE_SIZE / 2) <= len {
                     while until_alignment != 0 {
                         if buffer[offset] > 0xFF {
                             // This transition isn't optimal, since the aligment is recomputing
@@ -492,15 +519,15 @@ cfg_if!{
                         offset += 1;
                         until_alignment -= 1;
                     }
-                    let len_minus_stride = len - (STRIDE_SIZE / 2);
+                    let len_minus_stride = len - (SIMD_STRIDE_SIZE / 2);
                     loop {
-                        let mut s = unsafe { *(src.offset(offset as isize) as *const u16x8) };
+                        let mut s = unsafe { *(src.add(offset) as *const u16x8) };
                         if !simd_is_latin1(s) {
                             loop {
                                 if is_u16x8_bidi(s) {
                                     return Latin1Bidi::Bidi;
                                 }
-                                offset += STRIDE_SIZE / 2;
+                                offset += SIMD_STRIDE_SIZE / 2;
                                 if offset > len_minus_stride {
                                     for &u in &buffer[offset..] {
                                         if is_utf16_code_unit_bidi(u) {
@@ -509,10 +536,10 @@ cfg_if!{
                                     }
                                     return Latin1Bidi::LeftToRight;
                                 }
-                                s = unsafe { *(src.offset(offset as isize) as *const u16x8) };
+                                s = unsafe { *(src.add(offset) as *const u16x8) };
                             }
                         }
-                        offset += STRIDE_SIZE / 2;
+                        offset += SIMD_STRIDE_SIZE / 2;
                         if offset > len_minus_stride {
                             break;
                         }
@@ -541,15 +568,16 @@ cfg_if!{
             }
         }
     } else {
+        #[cfg_attr(feature = "cargo-clippy", allow(cast_ptr_alignment))]
         #[inline(always)]
         fn check_utf16_for_latin1_and_bidi_impl(buffer: &[u16]) -> Latin1Bidi {
             let mut offset = 0usize;
             let len = buffer.len();
-            if len >= ALIGNMENT / 2 {
+            if len >= ALU_ALIGNMENT / 2 {
                 let src = buffer.as_ptr();
-                let mut until_alignment = ((ALIGNMENT - ((src as usize) & ALIGNMENT_MASK)) &
-                                           ALIGNMENT_MASK) / 2;
-                if until_alignment + ALIGNMENT / 2 <= len {
+                let mut until_alignment = ((ALU_ALIGNMENT - ((src as usize) & ALU_ALIGNMENT_MASK)) &
+                                           ALU_ALIGNMENT_MASK) / 2;
+                if until_alignment + ALU_ALIGNMENT / 2 <= len {
                     while until_alignment != 0 {
                         if buffer[offset] > 0xFF {
                             if is_utf16_bidi_impl(&buffer[offset..]) {
@@ -560,15 +588,15 @@ cfg_if!{
                         offset += 1;
                         until_alignment -= 1;
                     }
-                    let len_minus_stride = len - ALIGNMENT / 2;
+                    let len_minus_stride = len - ALU_ALIGNMENT / 2;
                     loop {
-                        if unsafe { *(src.offset(offset as isize) as *const usize) } & LATIN1_MASK != 0 {
+                        if unsafe { *(src.add(offset) as *const usize) } & LATIN1_MASK != 0 {
                             if is_utf16_bidi_impl(&buffer[offset..]) {
                                 return Latin1Bidi::Bidi;
                             }
                             return Latin1Bidi::LeftToRight;
                         }
-                        offset += ALIGNMENT / 2;
+                        offset += ALU_ALIGNMENT / 2;
                         if offset > len_minus_stride {
                             break;
                         }
@@ -603,7 +631,6 @@ cfg_if!{
 ///
 /// May read the entire buffer even if it isn't all-ASCII. (I.e. the function
 /// is not guaranteed to fail fast.)
-#[inline]
 pub fn is_ascii(buffer: &[u8]) -> bool {
     is_ascii_impl(buffer)
 }
@@ -613,7 +640,6 @@ pub fn is_ascii(buffer: &[u8]) -> bool {
 ///
 /// May read the entire buffer even if it isn't all-ASCII. (I.e. the function
 /// is not guaranteed to fail fast.)
-#[inline]
 pub fn is_basic_latin(buffer: &[u16]) -> bool {
     is_basic_latin_impl(buffer)
 }
@@ -623,7 +649,6 @@ pub fn is_basic_latin(buffer: &[u16]) -> bool {
 ///
 /// Fails fast. (I.e. returns before having read the whole buffer if UTF-8
 /// invalidity or code points above U+00FF are discovered.
-#[inline]
 pub fn is_utf8_latin1(buffer: &[u8]) -> bool {
     is_utf8_latin1_impl(buffer).is_none()
 }
@@ -633,7 +658,6 @@ pub fn is_utf8_latin1(buffer: &[u8]) -> bool {
 ///
 /// Fails fast. (I.e. returns before having read the whole buffer if code
 /// points above U+00FF are discovered.
-#[inline]
 pub fn is_str_latin1(buffer: &str) -> bool {
     is_str_latin1_impl(buffer).is_none()
 }
@@ -643,7 +667,6 @@ pub fn is_str_latin1(buffer: &str) -> bool {
 ///
 /// May read the entire buffer even if it isn't all-Latin1. (I.e. the function
 /// is not guaranteed to fail fast.)
-#[inline]
 pub fn is_utf16_latin1(buffer: &[u16]) -> bool {
     is_utf16_latin1_impl(buffer)
 }
@@ -652,15 +675,19 @@ pub fn is_utf16_latin1(buffer: &[u16]) -> bool {
 /// that trigger right-to-left processing.
 ///
 /// The check is done on a Unicode block basis without regard to assigned
-/// vs. unassigned code points in the block. Additionally, the four
-/// RIGHT-TO-LEFT FOO controls in General Punctuation are checked for.
-/// Control characters that are technically bidi controls but do not cause
-/// right-to-left behavior without the presence of right-to-left characters
-/// or right-to-left controls are not checked for.
+/// vs. unassigned code points in the block. Hebrew presentation forms in
+/// the Alphabetic Presentation Forms block are treated as if they formed
+/// a block on their own (i.e. it treated as right-to-left). Additionally,
+/// the four RIGHT-TO-LEFT FOO controls in General Punctuation are checked
+/// for. Control characters that are technically bidi controls but do not
+/// cause right-to-left behavior without the presence of right-to-left
+/// characters or right-to-left controls are not checked for. As a special
+/// case, U+FEFF is excluded from Arabic Presentation Forms-B.
 ///
 /// Returns `true` if the input is invalid UTF-8 or the input contains an
 /// RTL character. Returns `false` if the input is valid UTF-8 and contains
 /// no RTL characters.
+#[cfg_attr(feature = "cargo-clippy", allow(collapsible_if, cyclomatic_complexity))]
 #[inline]
 pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
     // As of rustc 1.25.0-nightly (73ac5d6a8 2018-01-11), this is faster
@@ -682,15 +709,15 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
     // U+202E: E2 80 AE
     // U+2067: E2 81 A7
     //
-    // U+FB4F: EF AD 8F
-    // U+FB50: EF AD 90
+    // U+FB1C: EF AC 9C
+    // U+FB1D: EF AC 9D
     // U+FDFF: EF B7 BF
     // U+FE00: EF B8 80
     //
     // U+FE6F: EF B9 AF
     // U+FE70: EF B9 B0
+    // U+FEFE: EF BB BE
     // U+FEFF: EF BB BF
-    // U+FF00: EF BC 80
     //
     // U+107FF: F0 90 9F BF
     // U+10800: F0 90 A0 80
@@ -701,33 +728,33 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
     // U+1E800: F0 9E A0 80
     // U+1EFFF: F0 9E BF BF
     // U+1F000: F0 9F 80 80
-    let mut bytes = buffer;
+    let mut src = buffer;
     'outer: loop {
-        if let Some((mut byte, mut read)) = validate_ascii(bytes) {
+        if let Some((mut byte, mut read)) = validate_ascii(src) {
             // Check for the longest sequence to avoid checking twice for the
             // multi-byte sequences.
-            if read + 4 <= bytes.len() {
+            if read + 4 <= src.len() {
                 'inner: loop {
                     // At this point, `byte` is not included in `read`.
                     match byte {
                         0...0x7F => {
                             // ASCII: go back to SIMD.
                             read += 1;
-                            bytes = &bytes[read..];
+                            src = &src[read..];
                             continue 'outer;
                         }
                         0xC2...0xD5 => {
                             // Two-byte
-                            let second = bytes[read + 1];
-                            if (UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) != 0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            if !in_inclusive_range8(second, 0x80, 0xBF) {
                                 return true;
                             }
                             read += 2;
                         }
                         0xD6 => {
                             // Two-byte
-                            let second = bytes[read + 1];
-                            if (UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) != 0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            if !in_inclusive_range8(second, 0x80, 0xBF) {
                                 return true;
                             }
                             // XXX consider folding the above and below checks
@@ -739,22 +766,30 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                         // two-byte starting with 0xD7 and above is bidi
                         0xE1 | 0xE3...0xEC | 0xEE => {
                             // Three-byte normal
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            if ((UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            let third = unsafe { *(src.get_unchecked(read + 2)) };
+                            if ((UTF8_DATA.table[usize::from(second)]
+                                & unsafe {
+                                    *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80))
+                                })
+                                | (third >> 6))
+                                != 2
+                            {
                                 return true;
                             }
                             read += 3;
                         }
                         0xE2 => {
                             // Three-byte normal, potentially bidi
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            if ((UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            let third = unsafe { *(src.get_unchecked(read + 2)) };
+                            if ((UTF8_DATA.table[usize::from(second)]
+                                & unsafe {
+                                    *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80))
+                                })
+                                | (third >> 6))
+                                != 2
+                            {
                                 return true;
                             }
                             if second == 0x80 {
@@ -770,16 +805,20 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                         }
                         0xEF => {
                             // Three-byte normal, potentially bidi
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            if ((UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            let third = unsafe { *(src.get_unchecked(read + 2)) };
+                            if ((UTF8_DATA.table[usize::from(second)]
+                                & unsafe {
+                                    *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80))
+                                })
+                                | (third >> 6))
+                                != 2
+                            {
                                 return true;
                             }
-                            if in_inclusive_range8(second, 0xAD, 0xB7) {
-                                if second == 0xAD {
-                                    if third > 0x8F {
+                            if in_inclusive_range8(second, 0xAC, 0xB7) {
+                                if second == 0xAC {
+                                    if third > 0x9C {
                                         return true;
                                     }
                                 } else {
@@ -790,6 +829,10 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                                     if third > 0xAF {
                                         return true;
                                     }
+                                } else if second == 0xBB {
+                                    if third != 0xBF {
+                                        return true;
+                                    }
                                 } else {
                                     return true;
                                 }
@@ -798,12 +841,15 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                         }
                         0xE0 => {
                             // Three-byte special lower bound, potentially bidi
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            if ((UTF8_TRAIL_INVALID[second as usize] &
-                                 UTF8_THREE_BYTE_SPECIAL_LOWER_BOUND_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            let third = unsafe { *(src.get_unchecked(read + 2)) };
+                            if ((UTF8_DATA.table[usize::from(second)]
+                                & unsafe {
+                                    *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80))
+                                })
+                                | (third >> 6))
+                                != 2
+                            {
                                 return true;
                             }
                             // XXX can this be folded into the above validity check
@@ -814,60 +860,58 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                         }
                         0xED => {
                             // Three-byte special upper bound
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            if ((UTF8_TRAIL_INVALID[second as usize] &
-                                 UTF8_THREE_BYTE_SPECIAL_UPPER_BOUND_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            let third = unsafe { *(src.get_unchecked(read + 2)) };
+                            if ((UTF8_DATA.table[usize::from(second)]
+                                & unsafe {
+                                    *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80))
+                                })
+                                | (third >> 6))
+                                != 2
+                            {
                                 return true;
                             }
                             read += 3;
                         }
-                        0xF1...0xF3 => {
+                        0xF1...0xF4 => {
                             // Four-byte normal
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            let fourth = bytes[read + 3];
-                            if ((UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL) |
-                                (UTF8_TRAIL_INVALID[fourth as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            let third = unsafe { *(src.get_unchecked(read + 2)) };
+                            let fourth = unsafe { *(src.get_unchecked(read + 3)) };
+                            if (u16::from(
+                                UTF8_DATA.table[usize::from(second)]
+                                    & unsafe {
+                                        *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80))
+                                    },
+                            ) | u16::from(third >> 6)
+                                | (u16::from(fourth & 0xC0) << 2))
+                                != 0x202
+                            {
                                 return true;
                             }
                             read += 4;
                         }
                         0xF0 => {
                             // Four-byte special lower bound, potentially bidi
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            let fourth = bytes[read + 3];
-                            if ((UTF8_TRAIL_INVALID[second as usize] &
-                                 UTF8_FOUR_BYTE_SPECIAL_LOWER_BOUND_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL) |
-                                (UTF8_TRAIL_INVALID[fourth as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
+                            let second = unsafe { *(src.get_unchecked(read + 1)) };
+                            let third = unsafe { *(src.get_unchecked(read + 2)) };
+                            let fourth = unsafe { *(src.get_unchecked(read + 3)) };
+                            if (u16::from(
+                                UTF8_DATA.table[usize::from(second)]
+                                    & unsafe {
+                                        *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80))
+                                    },
+                            ) | u16::from(third >> 6)
+                                | (u16::from(fourth & 0xC0) << 2))
+                                != 0x202
+                            {
                                 return true;
                             }
                             if unsafe { unlikely(second == 0x90 || second == 0x9E) } {
-                                let third = bytes[read + 2];
+                                let third = src[read + 2];
                                 if third >= 0xA0 {
                                     return true;
                                 }
-                            }
-                            read += 4;
-                        }
-                        0xF4 => {
-                            // Four-byte special upper bound
-                            let second = bytes[read + 1];
-                            let third = bytes[read + 2];
-                            let fourth = bytes[read + 3];
-                            if ((UTF8_TRAIL_INVALID[second as usize] &
-                                 UTF8_FOUR_BYTE_SPECIAL_UPPER_BOUND_TRAIL) |
-                                (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL) |
-                                (UTF8_TRAIL_INVALID[fourth as usize] & UTF8_NORMAL_TRAIL)) !=
-                               0 {
-                                return true;
                             }
                             read += 4;
                         }
@@ -876,14 +920,14 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                             return true;
                         }
                     }
-                    if read + 4 > bytes.len() {
-                        if read == bytes.len() {
+                    if read + 4 > src.len() {
+                        if read == src.len() {
                             return false;
                         }
-                        byte = bytes[read];
+                        byte = src[read];
                         break 'inner;
                     }
-                    byte = bytes[read];
+                    byte = src[read];
                     continue 'inner;
                 }
             }
@@ -895,33 +939,33 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                 0...0x7F => {
                     // ASCII: go back to SIMD.
                     read += 1;
-                    bytes = &bytes[read..];
+                    src = &src[read..];
                     continue 'outer;
                 }
                 0xC2...0xD5 => {
                     // Two-byte
                     let new_read = read + 2;
-                    if new_read > bytes.len() {
+                    if new_read > src.len() {
                         return true;
                     }
-                    let second = bytes[read + 1];
-                    if (UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) != 0 {
+                    let second = unsafe { *(src.get_unchecked(read + 1)) };
+                    if !in_inclusive_range8(second, 0x80, 0xBF) {
                         return true;
                     }
                     read = new_read;
                     // We need to deal with the case where we came here with 3 bytes
                     // left, so we need to take a look at the last one.
-                    bytes = &bytes[read..];
+                    src = &src[read..];
                     continue 'outer;
                 }
                 0xD6 => {
                     // Two-byte, potentially bidi
                     let new_read = read + 2;
-                    if new_read > bytes.len() {
+                    if new_read > src.len() {
                         return true;
                     }
-                    let second = bytes[read + 1];
-                    if (UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) != 0 {
+                    let second = unsafe { *(src.get_unchecked(read + 1)) };
+                    if !in_inclusive_range8(second, 0x80, 0xBF) {
                         return true;
                     }
                     // XXX consider folding the above and below checks
@@ -931,35 +975,39 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                     read = new_read;
                     // We need to deal with the case where we came here with 3 bytes
                     // left, so we need to take a look at the last one.
-                    bytes = &bytes[read..];
+                    src = &src[read..];
                     continue 'outer;
                 }
                 // two-byte starting with 0xD7 and above is bidi
                 0xE1 | 0xE3...0xEC | 0xEE => {
                     // Three-byte normal
                     let new_read = read + 3;
-                    if new_read > bytes.len() {
+                    if new_read > src.len() {
                         return true;
                     }
-                    let second = bytes[read + 1];
-                    let third = bytes[read + 2];
-                    if ((UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) |
-                        (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                       0 {
+                    let second = unsafe { *(src.get_unchecked(read + 1)) };
+                    let third = unsafe { *(src.get_unchecked(read + 2)) };
+                    if ((UTF8_DATA.table[usize::from(second)]
+                        & unsafe { *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80)) })
+                        | (third >> 6))
+                        != 2
+                    {
                         return true;
                     }
                 }
                 0xE2 => {
                     // Three-byte normal, potentially bidi
                     let new_read = read + 3;
-                    if new_read > bytes.len() {
+                    if new_read > src.len() {
                         return true;
                     }
-                    let second = bytes[read + 1];
-                    let third = bytes[read + 2];
-                    if ((UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) |
-                        (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                       0 {
+                    let second = unsafe { *(src.get_unchecked(read + 1)) };
+                    let third = unsafe { *(src.get_unchecked(read + 2)) };
+                    if ((UTF8_DATA.table[usize::from(second)]
+                        & unsafe { *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80)) })
+                        | (third >> 6))
+                        != 2
+                    {
                         return true;
                     }
                     if second == 0x80 {
@@ -975,19 +1023,21 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                 0xEF => {
                     // Three-byte normal, potentially bidi
                     let new_read = read + 3;
-                    if new_read > bytes.len() {
+                    if new_read > src.len() {
                         return true;
                     }
-                    let second = bytes[read + 1];
-                    let third = bytes[read + 2];
-                    if ((UTF8_TRAIL_INVALID[second as usize] & UTF8_NORMAL_TRAIL) |
-                        (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                       0 {
+                    let second = unsafe { *(src.get_unchecked(read + 1)) };
+                    let third = unsafe { *(src.get_unchecked(read + 2)) };
+                    if ((UTF8_DATA.table[usize::from(second)]
+                        & unsafe { *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80)) })
+                        | (third >> 6))
+                        != 2
+                    {
                         return true;
                     }
-                    if in_inclusive_range8(second, 0xAD, 0xB7) {
-                        if second == 0xAD {
-                            if third > 0x8F {
+                    if in_inclusive_range8(second, 0xAC, 0xB7) {
+                        if second == 0xAC {
+                            if third > 0x9C {
                                 return true;
                             }
                         } else {
@@ -998,6 +1048,10 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                             if third > 0xAF {
                                 return true;
                             }
+                        } else if second == 0xBB {
+                            if third != 0xBF {
+                                return true;
+                            }
                         } else {
                             return true;
                         }
@@ -1006,15 +1060,16 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                 0xE0 => {
                     // Three-byte special lower bound, potentially bidi
                     let new_read = read + 3;
-                    if new_read > bytes.len() {
+                    if new_read > src.len() {
                         return true;
                     }
-                    let second = bytes[read + 1];
-                    let third = bytes[read + 2];
-                    if ((UTF8_TRAIL_INVALID[second as usize] &
-                         UTF8_THREE_BYTE_SPECIAL_LOWER_BOUND_TRAIL) |
-                        (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                       0 {
+                    let second = unsafe { *(src.get_unchecked(read + 1)) };
+                    let third = unsafe { *(src.get_unchecked(read + 2)) };
+                    if ((UTF8_DATA.table[usize::from(second)]
+                        & unsafe { *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80)) })
+                        | (third >> 6))
+                        != 2
+                    {
                         return true;
                     }
                     // XXX can this be folded into the above validity check
@@ -1025,15 +1080,16 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
                 0xED => {
                     // Three-byte special upper bound
                     let new_read = read + 3;
-                    if new_read > bytes.len() {
+                    if new_read > src.len() {
                         return true;
                     }
-                    let second = bytes[read + 1];
-                    let third = bytes[read + 2];
-                    if ((UTF8_TRAIL_INVALID[second as usize] &
-                         UTF8_THREE_BYTE_SPECIAL_UPPER_BOUND_TRAIL) |
-                        (UTF8_TRAIL_INVALID[third as usize] & UTF8_NORMAL_TRAIL)) !=
-                       0 {
+                    let second = unsafe { *(src.get_unchecked(read + 1)) };
+                    let third = unsafe { *(src.get_unchecked(read + 2)) };
+                    if ((UTF8_DATA.table[usize::from(second)]
+                        & unsafe { *(UTF8_DATA.table.get_unchecked(byte as usize + 0x80)) })
+                        | (third >> 6))
+                        != 2
+                    {
                         return true;
                     }
                 }
@@ -1053,11 +1109,15 @@ pub fn is_utf8_bidi(buffer: &[u8]) -> bool {
 /// right-to-left processing.
 ///
 /// The check is done on a Unicode block basis without regard to assigned
-/// vs. unassigned code points in the block. Additionally, the four
-/// RIGHT-TO-LEFT FOO controls in General Punctuation are checked for.
-/// Control characters that are technically bidi controls but do not cause
-/// right-to-left behavior without the presence of right-to-left characters
-/// or right-to-left controls are not checked for.
+/// vs. unassigned code points in the block. Hebrew presentation forms in
+/// the Alphabetic Presentation Forms block are treated as if they formed
+/// a block on their own (i.e. it treated as right-to-left). Additionally,
+/// the four RIGHT-TO-LEFT FOO controls in General Punctuation are checked
+/// for. Control characters that are technically bidi controls but do not
+/// cause right-to-left behavior without the presence of right-to-left
+/// characters or right-to-left controls are not checked for. As a special
+/// case, U+FEFF is excluded from Arabic Presentation Forms-B.
+#[cfg_attr(feature = "cargo-clippy", allow(collapsible_if))]
 #[inline]
 pub fn is_str_bidi(buffer: &str) -> bool {
     // U+058F: D6 8F
@@ -1070,15 +1130,15 @@ pub fn is_str_bidi(buffer: &str) -> bool {
     // U+202E: E2 80 AE
     // U+2067: E2 81 A7
     //
-    // U+FB4F: EF AD 8F
-    // U+FB50: EF AD 90
+    // U+FB1C: EF AC 9C
+    // U+FB1D: EF AC 9D
     // U+FDFF: EF B7 BF
     // U+FE00: EF B8 80
     //
     // U+FE6F: EF B9 AF
     // U+FE70: EF B9 B0
+    // U+FEFE: EF BB BE
     // U+FEFF: EF BB BF
-    // U+FF00: EF BC 80
     //
     // U+107FF: F0 90 9F BF
     // U+10800: F0 90 A0 80
@@ -1148,10 +1208,10 @@ pub fn is_str_bidi(buffer: &str) -> bool {
                             }
                         } else {
                             debug_assert_eq!(byte, 0xEF);
-                            if in_inclusive_range8(second, 0xAD, 0xB7) {
-                                if second == 0xAD {
+                            if in_inclusive_range8(second, 0xAC, 0xB7) {
+                                if second == 0xAC {
                                     let third = bytes[read + 2];
-                                    if third > 0x8F {
+                                    if third > 0x9C {
                                         return true;
                                     }
                                 } else {
@@ -1161,6 +1221,11 @@ pub fn is_str_bidi(buffer: &str) -> bool {
                                 if second == 0xB9 {
                                     let third = bytes[read + 2];
                                     if third > 0xAF {
+                                        return true;
+                                    }
+                                } else if second == 0xBB {
+                                    let third = bytes[read + 2];
+                                    if third != 0xBF {
                                         return true;
                                     }
                                 } else {
@@ -1200,17 +1265,19 @@ pub fn is_str_bidi(buffer: &str) -> bool {
 /// right-to-left processing.
 ///
 /// The check is done on a Unicode block basis without regard to assigned
-/// vs. unassigned code points in the block. Additionally, the four
-/// RIGHT-TO-LEFT FOO controls in General Punctuation are checked for.
-/// Control characters that are technically bidi controls but do not cause
-/// right-to-left behavior without the presence of right-to-left characters
-/// or right-to-left controls are not checked for.
+/// vs. unassigned code points in the block. Hebrew presentation forms in
+/// the Alphabetic Presentation Forms block are treated as if they formed
+/// a block on their own (i.e. it treated as right-to-left). Additionally,
+/// the four RIGHT-TO-LEFT FOO controls in General Punctuation are checked
+/// for. Control characters that are technically bidi controls but do not
+/// cause right-to-left behavior without the presence of right-to-left
+/// characters or right-to-left controls are not checked for. As a special
+/// case, U+FEFF is excluded from Arabic Presentation Forms-B.
 ///
 /// Returns `true` if the input contains an RTL character or an unpaired
 /// high surrogate that could be the high half of an RTL character.
-/// Returns `false` if teh input contains neither RTL characters nor
+/// Returns `false` if the input contains neither RTL characters nor
 /// unpaired high surrogates that could be higher halves of RTL characters.
-#[inline]
 pub fn is_utf16_bidi(buffer: &[u16]) -> bool {
     is_utf16_bidi_impl(buffer)
 }
@@ -1218,11 +1285,14 @@ pub fn is_utf16_bidi(buffer: &[u16]) -> bool {
 /// Checks whether a code point triggers right-to-left processing.
 ///
 /// The check is done on a Unicode block basis without regard to assigned
-/// vs. unassigned code points in the block. Additionally, the four
-/// RIGHT-TO-LEFT FOO controls in General Punctuation are checked for.
-/// Control characters that are technically bidi controls but do not cause
-/// right-to-left behavior without the presence of right-to-left characters
-/// or right-to-left controls are not checked for.
+/// vs. unassigned code points in the block. Hebrew presentation forms in
+/// the Alphabetic Presentation Forms block are treated as if they formed
+/// a block on their own (i.e. it treated as right-to-left). Additionally,
+/// the four RIGHT-TO-LEFT FOO controls in General Punctuation are checked
+/// for. Control characters that are technically bidi controls but do not
+/// cause right-to-left behavior without the presence of right-to-left
+/// characters or right-to-left controls are not checked for. As a special
+/// case, U+FEFF is excluded from Arabic Presentation Forms-B.
 #[inline(always)]
 pub fn is_char_bidi(c: char) -> bool {
     // Controls:
@@ -1236,24 +1306,27 @@ pub fn is_char_bidi(c: char) -> bool {
     // BMP RTL:
     // https://www.unicode.org/roadmaps/bmp/
     // U+0590...U+08FF
-    // U+FB50...U+FDFF Arabic Presentation Forms A
-    // U+FE70...U+FEFF Arabic Presentation Forms B
+    // U+FB1D...U+FDFF Hebrew presentation forms and
+    //                 Arabic Presentation Forms A
+    // U+FE70...U+FEFE Arabic Presentation Forms B (excl. BOM)
     //
     // Supplementary RTL:
     // https://www.unicode.org/roadmaps/smp/
     // U+10800...U+10FFF (Lead surrogate U+D802 or U+D803)
     // U+1E800...U+1EFFF (Lead surrogate U+D83A or U+D83B)
-    let code_point = c as u32;
+    let code_point = u32::from(c);
     if code_point < 0x0590 {
         // Below Hebrew
         return false;
     }
-    if in_range32(code_point, 0x0900, 0xFB50) {
-        // Above Arabic Extended-A and below Arabic Presentation Forms
+    if in_range32(code_point, 0x0900, 0xFB1D) {
+        // Above Arabic Extended-A and below Hebrew presentation forms
         if in_inclusive_range32(code_point, 0x200F, 0x2067) {
             // In the range that contains the RTL controls
-            return code_point == 0x200F || code_point == 0x202B || code_point == 0x202E ||
-                   code_point == 0x2067;
+            return code_point == 0x200F
+                || code_point == 0x202B
+                || code_point == 0x202E
+                || code_point == 0x2067;
         }
         return false;
     }
@@ -1265,8 +1338,8 @@ pub fn is_char_bidi(c: char) -> bool {
         // Between astral RTL blocks
         return false;
     }
-    if in_range32(code_point, 0xFF00, 0x10800) {
-        // Above Arabic Presentations Forms B and below first
+    if in_range32(code_point, 0xFEFF, 0x10800) {
+        // Above Arabic Presentations Forms B (excl. BOM) and below first
         // astral RTL
         return false;
     }
@@ -1280,11 +1353,14 @@ pub fn is_char_bidi(c: char) -> bool {
 /// Checks whether a UTF-16 code unit triggers right-to-left processing.
 ///
 /// The check is done on a Unicode block basis without regard to assigned
-/// vs. unassigned code points in the block. Additionally, the four
-/// RIGHT-TO-LEFT FOO controls in General Punctuation are checked for.
-/// Control characters that are technically bidi controls but do not cause
-/// right-to-left behavior without the presence of right-to-left characters
-/// or right-to-left controls are not checked for.
+/// vs. unassigned code points in the block. Hebrew presentation forms in
+/// the Alphabetic Presentation Forms block are treated as if they formed
+/// a block on their own (i.e. it treated as right-to-left). Additionally,
+/// the four RIGHT-TO-LEFT FOO controls in General Punctuation are checked
+/// for. Control characters that are technically bidi controls but do not
+/// cause right-to-left behavior without the presence of right-to-left
+/// characters or right-to-left controls are not checked for. As a special
+/// case, U+FEFF is excluded from Arabic Presentation Forms-B.
 ///
 /// Since supplementary-plane right-to-left blocks are identifiable from the
 /// high surrogate without examining the low surrogate, this function returns
@@ -1306,8 +1382,8 @@ pub fn is_utf16_code_unit_bidi(u: u16) -> bool {
         }
         return false;
     }
-    if in_range16(u, 0xD83C, 0xFB50) {
-        // Between astral RTL high surrogates and Arabic Presentation Forms
+    if in_range16(u, 0xD83C, 0xFB1D) {
+        // Between astral RTL high surrogates and Hebrew presentation forms
         // (Emoji is here)
         return false;
     }
@@ -1315,8 +1391,8 @@ pub fn is_utf16_code_unit_bidi(u: u16) -> bool {
         // Between RTL high surragates
         return false;
     }
-    if u > 0xFEFF {
-        // Above Arabic Presentation Forms
+    if u > 0xFEFE {
+        // Above Arabic Presentation Forms (excl. BOM)
         return false;
     }
     if in_range16(u, 0xFE00, 0xFE70) {
@@ -1334,7 +1410,6 @@ pub fn is_utf16_code_unit_bidi(u: u16) -> bool {
 /// Returns `Latin1Bidi::Latin1` if `is_utf8_latin1()` would return `true`.
 /// Otherwise, returns `Latin1Bidi::Bidi` if `is_utf8_bidi()` would return
 /// `true`. Otherwise, returns `Latin1Bidi::LeftToRight`.
-#[inline]
 pub fn check_utf8_for_latin1_and_bidi(buffer: &[u8]) -> Latin1Bidi {
     if let Some(offset) = is_utf8_latin1_impl(buffer) {
         if is_utf8_bidi(&buffer[offset..]) {
@@ -1355,7 +1430,6 @@ pub fn check_utf8_for_latin1_and_bidi(buffer: &[u8]) -> Latin1Bidi {
 /// Returns `Latin1Bidi::Latin1` if `is_str_latin1()` would return `true`.
 /// Otherwise, returns `Latin1Bidi::Bidi` if `is_str_bidi()` would return
 /// `true`. Otherwise, returns `Latin1Bidi::LeftToRight`.
-#[inline]
 pub fn check_str_for_latin1_and_bidi(buffer: &str) -> Latin1Bidi {
     // The transition from the latin1 check to the bidi check isn't
     // optimal but not tweaking it to perfection today.
@@ -1378,7 +1452,6 @@ pub fn check_str_for_latin1_and_bidi(buffer: &str) -> Latin1Bidi {
 /// Returns `Latin1Bidi::Latin1` if `is_utf16_latin1()` would return `true`.
 /// Otherwise, returns `Latin1Bidi::Bidi` if `is_utf16_bidi()` would return
 /// `true`. Otherwise, returns `Latin1Bidi::LeftToRight`.
-#[inline]
 pub fn check_utf16_for_latin1_and_bidi(buffer: &[u16]) -> Latin1Bidi {
     check_utf16_for_latin1_and_bidi_impl(buffer)
 }
@@ -1394,10 +1467,10 @@ pub fn check_utf16_for_latin1_and_bidi(buffer: &[u16]) -> Latin1Bidi {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
 pub fn convert_utf8_to_utf16(src: &[u8], dst: &mut [u16]) -> usize {
-    // TODO: Can the + 1 be eliminated?
-    assert!(dst.len() >= src.len() + 1);
+    // TODO: Can the requirement for dst to be at least one unit longer
+    // be eliminated?
+    assert!(dst.len() > src.len());
     let mut decoder = Utf8Decoder::new_inner();
     let mut total_read = 0usize;
     let mut total_written = 0usize;
@@ -1433,7 +1506,6 @@ pub fn convert_utf8_to_utf16(src: &[u8], dst: &mut [u16]) -> usize {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
 pub fn convert_str_to_utf16(src: &str, dst: &mut [u16]) -> usize {
     assert!(
         dst.len() >= src.len(),
@@ -1448,12 +1520,8 @@ pub fn convert_str_to_utf16(src: &str, dst: &mut [u16]) -> usize {
             let dst_remaining = &mut dst[written..];
             let length = src_remaining.len();
             match unsafe {
-                      ascii_to_basic_latin(
-                    src_remaining.as_ptr(),
-                    dst_remaining.as_mut_ptr(),
-                    length,
-                )
-                  } {
+                ascii_to_basic_latin(src_remaining.as_ptr(), dst_remaining.as_mut_ptr(), length)
+            } {
                 None => {
                     written += length;
                     return written;
@@ -1471,13 +1539,13 @@ pub fn convert_str_to_utf16(src: &str, dst: &mut [u16]) -> usize {
                 if byte >= 0x80 {
                     // Two-byte
                     let second = bytes[read + 1];
-                    let point = (((byte as u32) & 0x1Fu32) << 6) | (second as u32 & 0x3Fu32);
-                    dst[written] = point as u16;
+                    let point = ((u16::from(byte) & 0x1F) << 6) | (u16::from(second) & 0x3F);
+                    dst[written] = point;
                     read += 2;
                     written += 1;
                 } else {
                     // ASCII: write and go back to SIMD.
-                    dst[written] = byte as u16;
+                    dst[written] = u16::from(byte);
                     read += 1;
                     written += 1;
                     // Intuitively, we should go back to the outer loop only
@@ -1491,9 +1559,10 @@ pub fn convert_str_to_utf16(src: &str, dst: &mut [u16]) -> usize {
                 // Three-byte
                 let second = bytes[read + 1];
                 let third = bytes[read + 2];
-                let point = (((byte as u32) & 0xFu32) << 12) | ((second as u32 & 0x3Fu32) << 6) |
-                            (third as u32 & 0x3Fu32);
-                dst[written] = point as u16;
+                let point = ((u16::from(byte) & 0xF) << 12)
+                    | ((u16::from(second) & 0x3F) << 6)
+                    | (u16::from(third) & 0x3F);
+                dst[written] = point;
                 read += 3;
                 written += 1;
             } else {
@@ -1501,9 +1570,10 @@ pub fn convert_str_to_utf16(src: &str, dst: &mut [u16]) -> usize {
                 let second = bytes[read + 1];
                 let third = bytes[read + 2];
                 let fourth = bytes[read + 3];
-                let point = (((byte as u32) & 0x7u32) << 18) | ((second as u32 & 0x3Fu32) << 12) |
-                            ((third as u32 & 0x3Fu32) << 6) |
-                            (fourth as u32 & 0x3Fu32);
+                let point = ((u32::from(byte) & 0x7) << 18)
+                    | ((u32::from(second) & 0x3F) << 12)
+                    | ((u32::from(third) & 0x3F) << 6)
+                    | (u32::from(fourth) & 0x3F);
                 dst[written] = (0xD7C0 + (point >> 10)) as u16;
                 dst[written + 1] = (0xDC00 + (point & 0x3FF)) as u16;
                 read += 4;
@@ -1522,10 +1592,53 @@ pub fn convert_str_to_utf16(src: &str, dst: &mut [u16]) -> usize {
 }
 
 /// Converts potentially-invalid UTF-16 to valid UTF-8 with errors replaced
+/// with the REPLACEMENT CHARACTER with potentially insufficient output
+/// space.
+///
+/// Returns the number of code units read and the number of bytes written.
+///
+/// Guarantees that the bytes in the destination beyond the number of
+/// bytes claimed as written by the second item of the return tuple
+/// are left unmodified.
+///
+/// Not all code units are read if there isn't enough output space.
+///
+/// Note  that this method isn't designed for general streamability but for
+/// not allocating memory for the worst case up front. Specifically,
+/// if the input starts with or ends with an unpaired surrogate, those are
+/// replaced with the REPLACEMENT CHARACTER.
+///
+/// Matches the semantics of `TextEncoder.encodeInto()` from the
+/// Encoding Standard.
+///
+/// # Safety
+///
+/// If you want to convert into a `&mut str`, use
+/// `convert_utf16_to_str_partial()` instead of using this function
+/// together with the `unsafe` method `as_bytes_mut()` on `&mut str`.
+#[inline(always)]
+pub fn convert_utf16_to_utf8_partial(src: &[u16], dst: &mut [u8]) -> (usize, usize) {
+    // The two functions called below are marked `inline(never)` to make
+    // transitions from the hot part (first function) into the cold part
+    // (second function) go through a return and another call to discouge
+    // the CPU from speculating from the hot code into the cold code.
+    // Letting the transitions be mere intra-function jumps, even to
+    // basic blocks out-of-lined to the end of the function would wipe
+    // away a quarter of Arabic encode performance on Haswell!
+    let (read, written) = convert_utf16_to_utf16_partial_inner(src, dst);
+    if unsafe { likely(read == src.len()) } {
+        return (read, written);
+    }
+    let (tail_read, tail_written) =
+        convert_utf16_to_utf16_partial_tail(&src[read..], &mut dst[written..]);
+    (read + tail_read, written + tail_written)
+}
+
+/// Converts potentially-invalid UTF-16 to valid UTF-8 with errors replaced
 /// with the REPLACEMENT CHARACTER.
 ///
 /// The length of the destination buffer must be at least the length of the
-/// source buffer times three _plus one_.
+/// source buffer times three.
 ///
 /// Returns the number of bytes written.
 ///
@@ -1535,17 +1648,40 @@ pub fn convert_str_to_utf16(src: &str, dst: &mut [u16]) -> usize {
 ///
 /// # Safety
 ///
-/// Note that this function may write garbage beyond the number of bytes
-/// indicated by the return value, so using a `&mut str` interpreted as
-/// `&mut [u8]` as the destination is not safe. If you want to convert into
-/// a `&mut str`, use `convert_utf16_to_str()` instead of this function.
-#[inline]
+/// If you want to convert into a `&mut str`, use `convert_utf16_to_str()`
+/// instead of using this function together with the `unsafe` method
+/// `as_bytes_mut()` on `&mut str`.
+#[inline(always)]
 pub fn convert_utf16_to_utf8(src: &[u16], dst: &mut [u8]) -> usize {
-    assert!(dst.len() >= src.len() * 3 + 1);
-    let mut encoder = Utf8Encoder;
-    let (result, _, written) = encoder.encode_from_utf16_raw(src, dst, true);
-    debug_assert!(result == EncoderResult::InputEmpty);
+    assert!(dst.len() >= src.len() * 3);
+    let (read, written) = convert_utf16_to_utf8_partial(src, dst);
+    debug_assert_eq!(read, src.len());
     written
+}
+
+/// Converts potentially-invalid UTF-16 to valid UTF-8 with errors replaced
+/// with the REPLACEMENT CHARACTER such that the validity of the output is
+/// signaled using the Rust type system with potentially insufficient output
+/// space.
+///
+/// Returns the number of code units read and the number of bytes written.
+///
+/// Not all code units are read if there isn't enough output space.
+///
+/// Note  that this method isn't designed for general streamability but for
+/// not allocating memory for the worst case up front. Specifically,
+/// if the input starts with or ends with an unpaired surrogate, those are
+/// replaced with the REPLACEMENT CHARACTER.
+pub fn convert_utf16_to_str_partial(src: &[u16], dst: &mut str) -> (usize, usize) {
+    let bytes: &mut [u8] = unsafe { dst.as_bytes_mut() };
+    let (read, written) = convert_utf16_to_utf8_partial(src, bytes);
+    let len = bytes.len();
+    let mut trail = written;
+    while trail < len && ((bytes[trail] & 0xC0) == 0x80) {
+        bytes[trail] = 0;
+        trail += 1;
+    }
+    (read, written)
 }
 
 /// Converts potentially-invalid UTF-16 to valid UTF-8 with errors replaced
@@ -1553,28 +1689,18 @@ pub fn convert_utf16_to_utf8(src: &[u16], dst: &mut [u8]) -> usize {
 /// signaled using the Rust type system.
 ///
 /// The length of the destination buffer must be at least the length of the
-/// source buffer times three _plus one_.
+/// source buffer times three.
 ///
 /// Returns the number of bytes written.
 ///
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
+#[inline(always)]
 pub fn convert_utf16_to_str(src: &[u16], dst: &mut str) -> usize {
-    let bytes: &mut [u8] = unsafe { ::std::mem::transmute(dst) };
-    let written = convert_utf16_to_utf8(src, bytes);
-    let len = bytes.len();
-    let mut trail = written;
-    let max = ::std::cmp::min(len, trail + STRIDE_SIZE);
-    while trail < max {
-        bytes[trail] = 0;
-        trail += 1;
-    }
-    while trail < len && ((bytes[trail] & 0xC0) == 0x80) {
-        bytes[trail] = 0;
-        trail += 1;
-    }
+    assert!(dst.len() >= src.len() * 3);
+    let (read, written) = convert_utf16_to_str_partial(src, dst);
+    debug_assert_eq!(read, src.len());
     written
 }
 
@@ -1589,7 +1715,6 @@ pub fn convert_utf16_to_str(src: &[u16], dst: &mut str) -> usize {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
 pub fn convert_latin1_to_utf16(src: &[u8], dst: &mut [u16]) {
     assert!(
         dst.len() >= src.len(),
@@ -1600,6 +1725,57 @@ pub fn convert_latin1_to_utf16(src: &[u8], dst: &mut [u16]) {
     // faster.
     unsafe {
         unpack_latin1(src.as_ptr(), dst.as_mut_ptr(), src.len());
+    }
+}
+
+/// Converts bytes whose unsigned value is interpreted as Unicode code point
+/// (i.e. U+0000 to U+00FF, inclusive) to UTF-8 with potentially insufficient
+/// output space.
+///
+/// Returns the number of bytes read and the number of bytes written.
+///
+/// If the output isn't large enough, not all input is consumed.
+///
+/// # Safety
+///
+/// Note that this function may write garbage beyond the number of bytes
+/// indicated by the return value, so using a `&mut str` interpreted as
+/// `&mut [u8]` as the destination is not safe. If you want to convert into
+/// a `&mut str`, use `convert_utf16_to_str()` instead of this function.
+pub fn convert_latin1_to_utf8_partial(src: &[u8], dst: &mut [u8]) -> (usize, usize) {
+    let src_len = src.len();
+    let src_ptr = src.as_ptr();
+    let dst_ptr = dst.as_mut_ptr();
+    let dst_len = dst.len();
+    let mut total_read = 0usize;
+    let mut total_written = 0usize;
+    loop {
+        // src can't advance more than dst
+        let src_left = src_len - total_read;
+        let dst_left = dst_len - total_written;
+        let min_left = ::std::cmp::min(src_left, dst_left);
+        if let Some((non_ascii, consumed)) = unsafe {
+            ascii_to_ascii(
+                src_ptr.add(total_read),
+                dst_ptr.add(total_written),
+                min_left,
+            )
+        } {
+            total_read += consumed;
+            total_written += consumed;
+            if total_written.checked_add(2).unwrap() > dst_len {
+                return (total_read, total_written);
+            }
+
+            total_read += 1; // consume `non_ascii`
+
+            dst[total_written] = (non_ascii >> 6) | 0xC0;
+            total_written += 1;
+            dst[total_written] = (non_ascii & 0x3F) | 0x80;
+            total_written += 1;
+            continue;
+        }
+        return (total_read + min_left, total_written + min_left);
     }
 }
 
@@ -1627,34 +1803,35 @@ pub fn convert_latin1_to_utf8(src: &[u8], dst: &mut [u8]) -> usize {
         dst.len() >= src.len() * 2,
         "Destination must not be shorter than the source times two."
     );
-    let src_len = src.len();
-    let src_ptr = src.as_ptr();
-    let dst_ptr = dst.as_mut_ptr();
-    let mut total_read = 0usize;
-    let mut total_written = 0usize;
-    loop {
-        // src can't advance more than dst
-        let src_left = src_len - total_read;
-        if let Some((non_ascii, consumed)) =
-            unsafe {
-                ascii_to_ascii(
-                    src_ptr.offset(total_read as isize),
-                    dst_ptr.offset(total_written as isize),
-                    src_left,
-                )
-            } {
-            total_read += consumed + 1;
-            total_written += consumed;
+    let (read, written) = convert_latin1_to_utf8_partial(src, dst);
+    debug_assert_eq!(read, src.len());
+    written
+}
 
-            let code_point = non_ascii as u32;
-            dst[total_written] = ((code_point >> 6) | 0xC0u32) as u8;
-            total_written += 1;
-            dst[total_written] = ((code_point as u32 & 0x3Fu32) | 0x80u32) as u8;
-            total_written += 1;
-            continue;
-        }
-        return total_written + src_left;
+/// Converts bytes whose unsigned value is interpreted as Unicode code point
+/// (i.e. U+0000 to U+00FF, inclusive) to UTF-8 such that the validity of the
+/// output is signaled using the Rust type system with potentially insufficient
+/// output space.
+///
+/// Returns the number of bytes read and the number of bytes written.
+///
+/// If the output isn't large enough, not all input is consumed.
+#[inline]
+pub fn convert_latin1_to_str_partial(src: &[u8], dst: &mut str) -> (usize, usize) {
+    let bytes: &mut [u8] = unsafe { dst.as_bytes_mut() };
+    let (read, written) = convert_latin1_to_utf8_partial(src, bytes);
+    let len = bytes.len();
+    let mut trail = written;
+    let max = ::std::cmp::min(len, trail + MAX_STRIDE_SIZE);
+    while trail < max {
+        bytes[trail] = 0;
+        trail += 1;
     }
+    while trail < len && ((bytes[trail] & 0xC0) == 0x80) {
+        bytes[trail] = 0;
+        trail += 1;
+    }
+    (read, written)
 }
 
 /// Converts bytes whose unsigned value is interpreted as Unicode code point
@@ -1671,19 +1848,12 @@ pub fn convert_latin1_to_utf8(src: &[u8], dst: &mut [u8]) -> usize {
 /// Panics if the destination buffer is shorter than stated above.
 #[inline]
 pub fn convert_latin1_to_str(src: &[u8], dst: &mut str) -> usize {
-    let bytes: &mut [u8] = unsafe { ::std::mem::transmute(dst) };
-    let written = convert_latin1_to_utf8(src, bytes);
-    let len = bytes.len();
-    let mut trail = written;
-    let max = ::std::cmp::min(len, trail + STRIDE_SIZE);
-    while trail < max {
-        bytes[trail] = 0;
-        trail += 1;
-    }
-    while trail < len && ((bytes[trail] & 0xC0) == 0x80) {
-        bytes[trail] = 0;
-        trail += 1;
-    }
+    assert!(
+        dst.len() >= src.len() * 2,
+        "Destination must not be shorter than the source times two."
+    );
+    let (read, written) = convert_latin1_to_str_partial(src, dst);
+    debug_assert_eq!(read, src.len());
     written
 }
 
@@ -1693,6 +1863,7 @@ pub fn convert_latin1_to_str(src: &[u8], dst: &mut str) -> usize {
 /// each output byte.
 ///
 /// If the input does not fulfill the condition stated above, this function
+/// panics if debug assertions are enabled (and fuzzing isn't) and otherwise
 /// does something that is memory-safe without any promises about any
 /// properties of the output. In particular, callers shouldn't assume the
 /// output to be the same across crate versions or CPU architectures and
@@ -1706,12 +1877,15 @@ pub fn convert_latin1_to_str(src: &[u8], dst: &mut str) -> usize {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
+///
+/// If debug assertions are enabled (and not fuzzing) and the input is
+/// not in the range U+0000 to U+00FF, inclusive.
 pub fn convert_utf8_to_latin1_lossy(src: &[u8], dst: &mut [u8]) -> usize {
     assert!(
         dst.len() >= src.len(),
         "Destination must not be shorter than the source."
     );
+    non_fuzz_debug_assert!(is_utf8_latin1(src));
     let src_len = src.len();
     let src_ptr = src.as_ptr();
     let dst_ptr = dst.as_mut_ptr();
@@ -1720,14 +1894,13 @@ pub fn convert_utf8_to_latin1_lossy(src: &[u8], dst: &mut [u8]) -> usize {
     loop {
         // dst can't advance more than src
         let src_left = src_len - total_read;
-        if let Some((non_ascii, consumed)) =
-            unsafe {
-                ascii_to_ascii(
-                    src_ptr.offset(total_read as isize),
-                    dst_ptr.offset(total_written as isize),
-                    src_left,
-                )
-            } {
+        if let Some((non_ascii, consumed)) = unsafe {
+            ascii_to_ascii(
+                src_ptr.add(total_read),
+                dst_ptr.add(total_written),
+                src_left,
+            )
+        } {
             total_read += consumed + 1;
             total_written += consumed;
 
@@ -1738,8 +1911,7 @@ pub fn convert_utf8_to_latin1_lossy(src: &[u8], dst: &mut [u8]) -> usize {
             let trail = src[total_read];
             total_read += 1;
 
-            dst[total_written] = (((non_ascii as u32 & 0x1Fu32) << 6) |
-                                  (trail as u32 & 0x3Fu32)) as u8;
+            dst[total_written] = ((non_ascii & 0x1F) << 6) | (trail & 0x3F);
             total_written += 1;
             continue;
         }
@@ -1752,11 +1924,12 @@ pub fn convert_utf8_to_latin1_lossy(src: &[u8], dst: &mut [u8]) -> usize {
 /// represents the value of each code point as the unsigned byte value of
 /// each output byte.
 ///
-/// If the input does not fulfill the condition stated above, this function
-/// does something that is memory-safe without any promises about any
-/// properties of the output. In particular, callers shouldn't assume the
-/// output to be the same across crate versions or CPU architectures and
-/// should not assume that non-Basic Latin input can't map to ASCII output.
+/// If the input does not fulfill the condition stated above, does something
+/// that is memory-safe without any promises about any properties of the
+/// output and will probably assert in debug builds in future versions.
+/// In particular, callers shouldn't assume the output to be the same across
+/// crate versions or CPU architectures and should not assume that non-ASCII
+/// input can't map to ASCII output.
 ///
 /// The length of the destination buffer must be at least the length of the
 /// source buffer.
@@ -1766,20 +1939,81 @@ pub fn convert_utf8_to_latin1_lossy(src: &[u8], dst: &mut [u8]) -> usize {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
+///
+/// (Probably in future versions if debug assertions are enabled (and not
+/// fuzzing) and the input is not in the range U+0000 to U+00FF, inclusive.)
 pub fn convert_utf16_to_latin1_lossy(src: &[u16], dst: &mut [u8]) {
     assert!(
         dst.len() >= src.len(),
         "Destination must not be shorter than the source."
     );
+    // non_fuzz_debug_assert!(is_utf16_latin1(src));
     unsafe {
         pack_latin1(src.as_ptr(), dst.as_mut_ptr(), src.len());
     }
 }
 
+/// Converts bytes whose unsigned value is interpreted as Unicode code point
+/// (i.e. U+0000 to U+00FF, inclusive) to UTF-8.
+///
+/// Borrows if input is ASCII-only. Performs a single heap allocation
+/// otherwise.
+pub fn decode_latin1<'a>(bytes: &'a [u8]) -> Cow<'a, str> {
+    let up_to = ascii_valid_up_to(bytes);
+    // >= makes later things optimize better than ==
+    if up_to >= bytes.len() {
+        debug_assert_eq!(up_to, bytes.len());
+        let s: &str = unsafe { ::std::str::from_utf8_unchecked(bytes) };
+        return Cow::Borrowed(s);
+    }
+    let (head, tail) = bytes.split_at(up_to);
+    let capacity = head.len() + tail.len() * 2;
+    let mut vec = Vec::with_capacity(capacity);
+    unsafe {
+        vec.set_len(capacity);
+    }
+    (&mut vec[..up_to]).copy_from_slice(head);
+    let written = convert_latin1_to_utf8(tail, &mut vec[up_to..]);
+    vec.truncate(up_to + written);
+    Cow::Owned(unsafe { String::from_utf8_unchecked(vec) })
+}
+
+/// If the input is valid UTF-8 representing only Unicode code points from
+/// U+0000 to U+00FF, inclusive, converts the input into output that
+/// represents the value of each code point as the unsigned byte value of
+/// each output byte.
+///
+/// If the input does not fulfill the condition stated above, this function
+/// panics if debug assertions are enabled (and fuzzing isn't) and otherwise
+/// does something that is memory-safe without any promises about any
+/// properties of the output. In particular, callers shouldn't assume the
+/// output to be the same across crate versions or CPU architectures and
+/// should not assume that non-ASCII input can't map to ASCII output.
+///
+/// Borrows if input is ASCII-only. Performs a single heap allocation
+/// otherwise.
+pub fn encode_latin1_lossy<'a>(string: &'a str) -> Cow<'a, [u8]> {
+    let bytes = string.as_bytes();
+    let up_to = ascii_valid_up_to(bytes);
+    // >= makes later things optimize better than ==
+    if up_to >= bytes.len() {
+        debug_assert_eq!(up_to, bytes.len());
+        return Cow::Borrowed(bytes);
+    }
+    let (head, tail) = bytes.split_at(up_to);
+    let capacity = bytes.len();
+    let mut vec = Vec::with_capacity(capacity);
+    unsafe {
+        vec.set_len(capacity);
+    }
+    (&mut vec[..up_to]).copy_from_slice(head);
+    let written = convert_utf8_to_latin1_lossy(tail, &mut vec[up_to..]);
+    vec.truncate(up_to + written);
+    Cow::Owned(vec)
+}
+
 /// Returns the index of the first unpaired surrogate or, if the input is
 /// valid UTF-16 in its entirety, the length of the input.
-#[inline]
 pub fn utf16_valid_up_to(buffer: &[u16]) -> usize {
     utf16_valid_up_to_impl(buffer)
 }
@@ -1809,14 +2043,14 @@ pub fn ensure_utf16_validity(buffer: &mut [u16]) {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
 pub fn copy_ascii_to_ascii(src: &[u8], dst: &mut [u8]) -> usize {
     assert!(
         dst.len() >= src.len(),
         "Destination must not be shorter than the source."
     );
     if let Some((_, consumed)) =
-        unsafe { ascii_to_ascii(src.as_ptr(), dst.as_mut_ptr(), src.len()) } {
+        unsafe { ascii_to_ascii(src.as_ptr(), dst.as_mut_ptr(), src.len()) }
+    {
         consumed
     } else {
         src.len()
@@ -1835,14 +2069,14 @@ pub fn copy_ascii_to_ascii(src: &[u8], dst: &mut [u8]) -> usize {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
 pub fn copy_ascii_to_basic_latin(src: &[u8], dst: &mut [u16]) -> usize {
     assert!(
         dst.len() >= src.len(),
         "Destination must not be shorter than the source."
     );
     if let Some((_, consumed)) =
-        unsafe { ascii_to_basic_latin(src.as_ptr(), dst.as_mut_ptr(), src.len()) } {
+        unsafe { ascii_to_basic_latin(src.as_ptr(), dst.as_mut_ptr(), src.len()) }
+    {
         consumed
     } else {
         src.len()
@@ -1861,14 +2095,14 @@ pub fn copy_ascii_to_basic_latin(src: &[u8], dst: &mut [u16]) -> usize {
 /// # Panics
 ///
 /// Panics if the destination buffer is shorter than stated above.
-#[inline]
 pub fn copy_basic_latin_to_ascii(src: &[u16], dst: &mut [u8]) -> usize {
     assert!(
         dst.len() >= src.len(),
         "Destination must not be shorter than the source."
     );
     if let Some((_, consumed)) =
-        unsafe { basic_latin_to_ascii(src.as_ptr(), dst.as_mut_ptr(), src.len()) } {
+        unsafe { basic_latin_to_ascii(src.as_ptr(), dst.as_mut_ptr(), src.len()) }
+    {
         consumed
     } else {
         src.len()
@@ -2074,6 +2308,18 @@ mod tests {
     }
 
     #[test]
+    fn test_convert_utf16_to_utf8_partial() {
+        let reference = "abcdefghijklmnopqrstu\u{1F4A9}v\u{2603}w\u{00B6}xyzz";
+        let src: Vec<u16> = reference.encode_utf16().collect();
+        let mut dst: Vec<u8> = Vec::with_capacity(src.len() * 3 + 1);
+        dst.resize(src.len() * 3 + 1, 0);
+        let (read, written) = convert_utf16_to_utf8_partial(&src[..], &mut dst[..24]);
+        let len = written + convert_utf16_to_utf8(&src[read..], &mut dst[written..]);
+        dst.truncate(len);
+        assert_eq!(dst, reference.as_bytes());
+    }
+
+    #[test]
     fn test_convert_utf16_to_utf8() {
         let reference = "abcdefghijklmnopqrstu\u{1F4A9}v\u{2603}w\u{00B6}xyzz";
         let src: Vec<u16> = reference.encode_utf16().collect();
@@ -2098,6 +2344,14 @@ mod tests {
         dst.resize(src.len(), 0);
         convert_latin1_to_utf16(&src[..], &mut dst[..]);
         assert_eq!(dst, reference);
+    }
+
+    #[test]
+    fn test_convert_latin1_to_utf8_partial() {
+        let mut dst = [0u8, 2];
+        let (read, written) = convert_latin1_to_utf8_partial(b"a\xFF", &mut dst[..]);
+        assert_eq!(read, 1);
+        assert_eq!(written, 1);
     }
 
     #[test]
@@ -2136,6 +2390,14 @@ mod tests {
         assert_eq!(dst, reference);
     }
 
+    #[cfg(all(debug_assertions, not(fuzzing)))]
+    #[test]
+    #[should_panic]
+    fn test_convert_utf8_to_latin1_lossy_panics() {
+        let mut dst = [0u8; 16];
+        let _ = convert_utf8_to_latin1_lossy("\u{100}".as_bytes(), &mut dst[..]);
+    }
+
     #[test]
     fn test_convert_utf16_to_latin1_lossy() {
         let mut src: Vec<u16> = Vec::with_capacity(256);
@@ -2153,30 +2415,48 @@ mod tests {
     }
 
     #[test]
+    // #[should_panic]
+    fn test_convert_utf16_to_latin1_lossy_panics() {
+        let mut dst = [0u8; 16];
+        let _ = convert_utf16_to_latin1_lossy(&[0x0100u16], &mut dst[..]);
+    }
+
+    #[test]
     fn test_utf16_valid_up_to() {
-        let valid = vec![0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
-                         0x2603u16, 0xD83Du16, 0xDCA9u16, 0x00B6u16];
+        let valid = vec![
+            0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0x2603u16,
+            0xD83Du16, 0xDCA9u16, 0x00B6u16,
+        ];
         assert_eq!(utf16_valid_up_to(&valid[..]), 16);;
-        let lone_high = vec![0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
-                             0u16, 0u16, 0x2603u16, 0xD83Du16, 0x00B6u16];
+        let lone_high = vec![
+            0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+            0x2603u16, 0xD83Du16, 0x00B6u16,
+        ];
         assert_eq!(utf16_valid_up_to(&lone_high[..]), 14);;
-        let lone_low = vec![0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
-                            0u16, 0u16, 0x2603u16, 0xDCA9u16, 0x00B6u16];
+        let lone_low = vec![
+            0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+            0x2603u16, 0xDCA9u16, 0x00B6u16,
+        ];
         assert_eq!(utf16_valid_up_to(&lone_low[..]), 14);;
-        let lone_high_at_end = vec![0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
-                                    0u16, 0u16, 0u16, 0x2603u16, 0x00B6u16, 0xD83Du16];
+        let lone_high_at_end = vec![
+            0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+            0x2603u16, 0x00B6u16, 0xD83Du16,
+        ];
         assert_eq!(utf16_valid_up_to(&lone_high_at_end[..]), 15);;
     }
 
     #[test]
     fn test_ensure_utf16_validity() {
-        let mut src = vec![0u16, 0xD83Du16, 0u16, 0u16, 0u16, 0xD83Du16, 0xDCA9u16, 0u16, 0u16,
-                           0u16, 0u16, 0u16, 0u16, 0xDCA9u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
-                           0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16];
-        let reference = vec![0u16, 0xFFFDu16, 0u16, 0u16, 0u16, 0xD83Du16, 0xDCA9u16, 0u16, 0u16,
-                             0u16, 0u16, 0u16, 0u16, 0xFFFDu16, 0u16, 0u16, 0u16, 0u16, 0u16,
-                             0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
-                             0u16];
+        let mut src = vec![
+            0u16, 0xD83Du16, 0u16, 0u16, 0u16, 0xD83Du16, 0xDCA9u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+            0u16, 0xDCA9u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+            0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+        ];
+        let reference = vec![
+            0u16, 0xFFFDu16, 0u16, 0u16, 0u16, 0xD83Du16, 0xDCA9u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+            0u16, 0xFFFDu16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+            0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+        ];
         ensure_utf16_validity(&mut src[..]);
         assert_eq!(src, reference);
     }
@@ -2189,13 +2469,14 @@ mod tests {
         assert!(!is_char_bidi('\u{1F4A9}'));
         assert!(!is_char_bidi('\u{FE00}'));
         assert!(!is_char_bidi('\u{202C}'));
+        assert!(!is_char_bidi('\u{FEFF}'));
         assert!(is_char_bidi('\u{0590}'));
         assert!(is_char_bidi('\u{08FF}'));
         assert!(is_char_bidi('\u{061C}'));
         assert!(is_char_bidi('\u{FB50}'));
         assert!(is_char_bidi('\u{FDFF}'));
         assert!(is_char_bidi('\u{FE70}'));
-        assert!(is_char_bidi('\u{FEFF}'));
+        assert!(is_char_bidi('\u{FEFE}'));
         assert!(is_char_bidi('\u{200F}'));
         assert!(is_char_bidi('\u{202B}'));
         assert!(is_char_bidi('\u{202E}'));
@@ -2214,13 +2495,15 @@ mod tests {
         assert!(!is_utf16_code_unit_bidi(0xD801));
         assert!(!is_utf16_code_unit_bidi(0xFE00));
         assert!(!is_utf16_code_unit_bidi(0x202C));
+        assert!(!is_utf16_code_unit_bidi(0xFEFF));
         assert!(is_utf16_code_unit_bidi(0x0590));
         assert!(is_utf16_code_unit_bidi(0x08FF));
         assert!(is_utf16_code_unit_bidi(0x061C));
+        assert!(is_utf16_code_unit_bidi(0xFB1D));
         assert!(is_utf16_code_unit_bidi(0xFB50));
         assert!(is_utf16_code_unit_bidi(0xFDFF));
         assert!(is_utf16_code_unit_bidi(0xFE70));
-        assert!(is_utf16_code_unit_bidi(0xFEFF));
+        assert!(is_utf16_code_unit_bidi(0xFEFE));
         assert!(is_utf16_code_unit_bidi(0x200F));
         assert!(is_utf16_code_unit_bidi(0x202B));
         assert!(is_utf16_code_unit_bidi(0x202E));
@@ -2239,13 +2522,14 @@ mod tests {
         assert!(!is_str_bidi("abcdefghijklmnop\u{1F4A9}abcdefghijklmnop"));
         assert!(!is_str_bidi("abcdefghijklmnop\u{FE00}abcdefghijklmnop"));
         assert!(!is_str_bidi("abcdefghijklmnop\u{202C}abcdefghijklmnop"));
+        assert!(!is_str_bidi("abcdefghijklmnop\u{FEFF}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{0590}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{08FF}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{061C}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{FB50}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{FDFF}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{FE70}abcdefghijklmnop"));
-        assert!(is_str_bidi("abcdefghijklmnop\u{FEFF}abcdefghijklmnop"));
+        assert!(is_str_bidi("abcdefghijklmnop\u{FEFE}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{200F}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{202B}abcdefghijklmnop"));
         assert!(is_str_bidi("abcdefghijklmnop\u{202E}abcdefghijklmnop"));
@@ -2258,164 +2542,173 @@ mod tests {
 
     #[test]
     fn test_is_utf8_bidi() {
-        assert!(!is_utf8_bidi("abcdefghijklmnopaabcdefghijklmnop".as_bytes()));
-        assert!(!is_utf8_bidi("abcdefghijklmnop\u{03B1}abcdefghijklmnop".as_bytes()));
-        assert!(!is_utf8_bidi("abcdefghijklmnop\u{3041}abcdefghijklmnop".as_bytes()));
-        assert!(!is_utf8_bidi("abcdefghijklmnop\u{1F4A9}abcdefghijklmnop".as_bytes()));
-        assert!(!is_utf8_bidi("abcdefghijklmnop\u{FE00}abcdefghijklmnop".as_bytes()));
-        assert!(!is_utf8_bidi("abcdefghijklmnop\u{202C}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{0590}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{08FF}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{061C}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{FB50}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{FDFF}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{FE70}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{FEFF}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{200F}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{202B}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{202E}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{2067}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{10800}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{10FFF}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{1E800}abcdefghijklmnop".as_bytes()));
-        assert!(is_utf8_bidi("abcdefghijklmnop\u{1EFFF}abcdefghijklmnop".as_bytes()));
+        assert!(!is_utf8_bidi(
+            "abcdefghijklmnopaabcdefghijklmnop".as_bytes()
+        ));
+        assert!(!is_utf8_bidi(
+            "abcdefghijklmnop\u{03B1}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(!is_utf8_bidi(
+            "abcdefghijklmnop\u{3041}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(!is_utf8_bidi(
+            "abcdefghijklmnop\u{1F4A9}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(!is_utf8_bidi(
+            "abcdefghijklmnop\u{FE00}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(!is_utf8_bidi(
+            "abcdefghijklmnop\u{202C}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(!is_utf8_bidi(
+            "abcdefghijklmnop\u{FEFF}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{0590}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{08FF}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{061C}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{FB50}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{FDFF}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{FE70}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{FEFE}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{200F}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{202B}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{202E}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{2067}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{10800}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{10FFF}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{1E800}abcdefghijklmnop".as_bytes()
+        ));
+        assert!(is_utf8_bidi(
+            "abcdefghijklmnop\u{1EFFF}abcdefghijklmnop".as_bytes()
+        ));
     }
 
     #[test]
     fn test_is_utf16_bidi() {
-        assert!(
-            !is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0062, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            !is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x03B1, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            !is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x3041, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            !is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD801, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            !is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE00, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            !is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202C, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x08FF, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x061C, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFB50, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFDFF, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE70, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFEFF, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x200F, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202B, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202E, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x2067, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD802, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD803, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83A, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83B, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            )
-        );
+        assert!(!is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0062, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(!is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x03B1, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(!is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x3041, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(!is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD801, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(!is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE00, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(!is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202C, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(!is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFEFF, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x08FF, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x061C, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFB1D, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFB50, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFDFF, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE70, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFEFE, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x200F, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202B, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202E, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x2067, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD802, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD803, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83A, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83B, 0x62, 0x63, 0x64, 0x65, 0x66,
+            0x67, 0x68, 0x69,
+        ]));
 
-        assert!(
-            is_utf16_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x3041, 0x62, 0x63,
-                  0x64, 0x65, 0x66, 0x67, 0x68, 0x69]
-            )
-        );
+        assert!(is_utf16_bidi(&[
+            0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x3041, 0x62, 0x63, 0x64, 0x65,
+            0x66, 0x67, 0x68, 0x69,
+        ]));
     }
 
     #[test]
@@ -2444,6 +2737,10 @@ mod tests {
             check_str_for_latin1_and_bidi("abcdefghijklmnop\u{202C}abcdefghijklmnop"),
             Latin1Bidi::Bidi
         );
+        assert_ne!(
+            check_str_for_latin1_and_bidi("abcdefghijklmnop\u{FEFF}abcdefghijklmnop"),
+            Latin1Bidi::Bidi
+        );
         assert_eq!(
             check_str_for_latin1_and_bidi("abcdefghijklmnop\u{0590}abcdefghijklmnop"),
             Latin1Bidi::Bidi
@@ -2469,7 +2766,7 @@ mod tests {
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_str_for_latin1_and_bidi("abcdefghijklmnop\u{FEFF}abcdefghijklmnop"),
+            check_str_for_latin1_and_bidi("abcdefghijklmnop\u{FEFE}abcdefghijklmnop"),
             Latin1Bidi::Bidi
         );
         assert_eq!(
@@ -2532,6 +2829,10 @@ mod tests {
             check_utf8_for_latin1_and_bidi("abcdefghijklmnop\u{202C}abcdefghijklmnop".as_bytes()),
             Latin1Bidi::Bidi
         );
+        assert_ne!(
+            check_utf8_for_latin1_and_bidi("abcdefghijklmnop\u{FEFF}abcdefghijklmnop".as_bytes()),
+            Latin1Bidi::Bidi
+        );
         assert_eq!(
             check_utf8_for_latin1_and_bidi("abcdefghijklmnop\u{0590}abcdefghijklmnop".as_bytes()),
             Latin1Bidi::Bidi
@@ -2557,7 +2858,7 @@ mod tests {
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf8_for_latin1_and_bidi("abcdefghijklmnop\u{FEFF}abcdefghijklmnop".as_bytes()),
+            check_utf8_for_latin1_and_bidi("abcdefghijklmnop\u{FEFE}abcdefghijklmnop".as_bytes()),
             Latin1Bidi::Bidi
         );
         assert_eq!(
@@ -2597,158 +2898,172 @@ mod tests {
     #[test]
     fn test_check_utf16_for_latin1_and_bidi() {
         assert_ne!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0062, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0062, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_ne!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x03B1, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x03B1, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_ne!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x3041, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x3041, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_ne!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD801, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD801, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_ne!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE00, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE00, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_ne!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202C, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202C, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
+            Latin1Bidi::Bidi
+        );
+        assert_ne!(
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFEFF, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x08FF, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x08FF, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x061C, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x061C, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFB50, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFB1D, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFDFF, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFB50, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE70, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFDFF, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFEFF, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFE70, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x200F, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xFEFE, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202B, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x200F, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202E, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202B, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x2067, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x202E, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD802, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x2067, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD803, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD802, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83A, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD803, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83B, 0x62, 0x63, 0x64, 0x65,
-                  0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83A, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
+            Latin1Bidi::Bidi
+        );
+        assert_eq!(
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xD83B, 0x62, 0x63, 0x64, 0x65,
+                0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
 
         assert_eq!(
-            check_utf16_for_latin1_and_bidi(
-                &[0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x3041, 0x62, 0x63,
-                  0x64, 0x65, 0x66, 0x67, 0x68, 0x69]
-            ),
+            check_utf16_for_latin1_and_bidi(&[
+                0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x0590, 0x3041, 0x62, 0x63, 0x64,
+                0x65, 0x66, 0x67, 0x68, 0x69,
+            ]),
             Latin1Bidi::Bidi
         );
     }
@@ -2756,15 +3071,15 @@ mod tests {
     #[inline(always)]
     pub fn reference_is_char_bidi(c: char) -> bool {
         match c {
-            '\u{0590}'...'\u{08FF}' |
-            '\u{FB50}'...'\u{FDFF}' |
-            '\u{FE70}'...'\u{FEFF}' |
-            '\u{10800}'...'\u{10FFF}' |
-            '\u{1E800}'...'\u{1EFFF}' |
-            '\u{200F}' |
-            '\u{202B}' |
-            '\u{202E}' |
-            '\u{2067}' => true,
+            '\u{0590}'...'\u{08FF}'
+            | '\u{FB1D}'...'\u{FDFF}'
+            | '\u{FE70}'...'\u{FEFE}'
+            | '\u{10800}'...'\u{10FFF}'
+            | '\u{1E800}'...'\u{1EFFF}'
+            | '\u{200F}'
+            | '\u{202B}'
+            | '\u{202E}'
+            | '\u{2067}' => true,
             _ => false,
         }
     }
@@ -2772,8 +3087,17 @@ mod tests {
     #[inline(always)]
     pub fn reference_is_utf16_code_unit_bidi(u: u16) -> bool {
         match u {
-            0x0590...0x08FF | 0xFB50...0xFDFF | 0xFE70...0xFEFF | 0xD802 | 0xD803 | 0xD83A |
-            0xD83B | 0x200F | 0x202B | 0x202E | 0x2067 => true,
+            0x0590...0x08FF
+            | 0xFB1D...0xFDFF
+            | 0xFE70...0xFEFE
+            | 0xD802
+            | 0xD803
+            | 0xD83A
+            | 0xD83B
+            | 0x200F
+            | 0x202B
+            | 0x202E
+            | 0x2067 => true,
             _ => false,
         }
     }
@@ -2781,11 +3105,11 @@ mod tests {
     #[test]
     fn test_is_char_bidi_thoroughly() {
         for i in 0..0xD800u32 {
-            let c: char = unsafe { ::std::mem::transmute(i) };
+            let c: char = ::std::char::from_u32(i).unwrap();
             assert_eq!(is_char_bidi(c), reference_is_char_bidi(c));
         }
         for i in 0xE000..0x110000u32 {
-            let c: char = unsafe { ::std::mem::transmute(i) };
+            let c: char = ::std::char::from_u32(i).unwrap();
             assert_eq!(is_char_bidi(c), reference_is_char_bidi(c));
         }
     }
@@ -2805,14 +3129,14 @@ mod tests {
     fn test_is_str_bidi_thoroughly() {
         let mut buf = [0; 4];
         for i in 0..0xD800u32 {
-            let c: char = unsafe { ::std::mem::transmute(i) };
+            let c: char = ::std::char::from_u32(i).unwrap();
             assert_eq!(
                 is_str_bidi(c.encode_utf8(&mut buf[..])),
                 reference_is_char_bidi(c)
             );
         }
         for i in 0xE000..0x110000u32 {
-            let c: char = unsafe { ::std::mem::transmute(i) };
+            let c: char = ::std::char::from_u32(i).unwrap();
             assert_eq!(
                 is_str_bidi(c.encode_utf8(&mut buf[..])),
                 reference_is_char_bidi(c)
@@ -2824,7 +3148,7 @@ mod tests {
     fn test_is_utf8_bidi_thoroughly() {
         let mut buf = [0; 8];
         for i in 0..0xD800u32 {
-            let c: char = unsafe { ::std::mem::transmute(i) };
+            let c: char = ::std::char::from_u32(i).unwrap();
             let expect = reference_is_char_bidi(c);
             {
                 let len = {
@@ -2842,7 +3166,7 @@ mod tests {
             assert_eq!(is_utf8_bidi(&buf[..]), expect);
         }
         for i in 0xE000..0x110000u32 {
-            let c: char = unsafe { ::std::mem::transmute(i) };
+            let c: char = ::std::char::from_u32(i).unwrap();
             let expect = reference_is_char_bidi(c);
             {
                 let len = {
@@ -2858,6 +3182,19 @@ mod tests {
                 }
             }
             assert_eq!(is_utf8_bidi(&buf[..]), expect);
+        }
+    }
+
+    #[test]
+    fn test_is_utf16_bidi_thoroughly() {
+        let mut buf = [0; 32];
+        for i in 0..0x10000u32 {
+            let u = i as u16;
+            buf[15] = u;
+            assert_eq!(
+                is_utf16_bidi(&buf[..]),
+                reference_is_utf16_code_unit_bidi(u)
+            );
         }
     }
 
@@ -2870,4 +3207,31 @@ mod tests {
         assert!(is_utf8_bidi(b"\xD6\x80\xC2"));
         assert!(is_utf8_bidi(b"ab\xC2"));
     }
+
+    #[test]
+    fn test_decode_latin1() {
+        match decode_latin1(b"ab") {
+            Cow::Borrowed(s) => {
+                assert_eq!(s, "ab");
+            }
+            Cow::Owned(_) => {
+                unreachable!("Should have borrowed");
+            }
+        }
+        assert_eq!(decode_latin1(b"a\xE4"), "a\u{E4}");
+    }
+
+    #[test]
+    fn test_encode_latin1_lossy() {
+        match encode_latin1_lossy("ab") {
+            Cow::Borrowed(s) => {
+                assert_eq!(s, b"ab");
+            }
+            Cow::Owned(_) => {
+                unreachable!("Should have borrowed");
+            }
+        }
+        assert_eq!(encode_latin1_lossy("a\u{E4}"), &(b"a\xE4")[..]);
+    }
+
 }

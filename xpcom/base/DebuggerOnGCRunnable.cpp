@@ -14,15 +14,16 @@
 
 namespace mozilla {
 
-/* static */ nsresult DebuggerOnGCRunnable::Enqueue(
-    JSContext* aCx, const JS::GCDescription& aDesc) {
+/* static */
+nsresult DebuggerOnGCRunnable::Enqueue(JSContext* aCx,
+                                       const JS::GCDescription& aDesc) {
   auto gcEvent = aDesc.toGCEvent(aCx);
   if (!gcEvent) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
 
   RefPtr<DebuggerOnGCRunnable> runOnGC =
-      new DebuggerOnGCRunnable(Move(gcEvent));
+      new DebuggerOnGCRunnable(std::move(gcEvent));
   if (NS_IsMainThread()) {
     return SystemGroup::Dispatch(TaskCategory::GarbageCollection,
                                  runOnGC.forget());
@@ -35,7 +36,7 @@ NS_IMETHODIMP
 DebuggerOnGCRunnable::Run() {
   AutoJSAPI jsapi;
   jsapi.Init();
-  if (!JS::dbg::FireOnGarbageCollectionHook(jsapi.cx(), Move(mGCData))) {
+  if (!JS::dbg::FireOnGarbageCollectionHook(jsapi.cx(), std::move(mGCData))) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
   return NS_OK;

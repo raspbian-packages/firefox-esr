@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "DOMSVGPoint.h"
+
 #include "DOMSVGPointList.h"
-#include "SVGPoint.h"
 #include "gfx2DGlue.h"
-#include "nsSVGElement.h"
+#include "nsCOMPtr.h"
 #include "nsError.h"
+#include "SVGPoint.h"
+#include "mozilla/dom/SVGElement.h"
 #include "mozilla/dom/SVGMatrix.h"
 
 // See the architecture comment in DOMSVGPointList.h.
@@ -37,7 +39,9 @@ class MOZ_RAII AutoChangePointNotifier {
 
   ~AutoChangePointNotifier() {
     mPoint->Element()->DidChangePointList(mEmptyOrOldValue);
-    if (mPoint->mList->AttrIsAnimating()) {
+    // Null check mPoint->mList, since DidChangePointList can run script,
+    // potentially removing mPoint from its list.
+    if (mPoint->mList && mPoint->mList->AttrIsAnimating()) {
       mPoint->Element()->AnimationNeedsResample();
     }
   }

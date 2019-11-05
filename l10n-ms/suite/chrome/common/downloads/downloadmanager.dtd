@@ -82,9 +82,15 @@
 <!ENTITY cmd.open.accesskey              "B">
 <!ENTITY cmd.show.label                  "Buka Kandungan Folder">
 <!ENTITY cmd.show.accesskey              "F">
-<!ENTITY cmd.goToDownloadPage.label      "Pergi Ke Halaman Muat turun">
+<!ENTITY cmd.goToDownloadPage.label      "Pergi ke Halaman Muat Turun">
 <!ENTITY cmd.goToDownloadPage.accesskey  "P">
 <!ENTITY cmd.copyDownloadLink.label      "Salin Pautan Muat Turun">
 <!ENTITY cmd.copyDownloadLink.accesskey  "T">
 <!ENTITY cmd.properties.label            "Sifat…">
 <!ENTITY cmd.properties.accesskey        "f">
+<!-- LOCALIZATION NOTE (cmd.unblock2.label):
+     This command is shown in the context menu when downloads are blocked.
+     -->
+<!ENTITY cmd.unblock2.label               "Izinkan Muat turun">
+<!ENTITY cmd.unblock2.accesskey           "i">
+

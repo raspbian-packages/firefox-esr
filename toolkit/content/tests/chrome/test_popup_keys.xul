@@ -7,8 +7,8 @@
         onload="runTests();"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>      
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"></script>      
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>      
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"></script>      
 
 <!--
   This test checks that the ignorekeys attribute can be used on a menu to
@@ -48,9 +48,6 @@ function runTests()
 {
   (async function() {
     var popup = $("popup");
-    popup.enableKeyboardNavigator(false);
-    is(popup.getAttribute("ignorekeys"), "true", "keys disabled");
-    popup.enableKeyboardNavigator(true);
     is(popup.hasAttribute("ignorekeys"), false, "keys enabled");
 
     let popupShownPromise = waitForEvent(popup, "popupshown");

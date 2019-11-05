@@ -7,11 +7,16 @@
 const { assert } = require("devtools/shared/DevToolsUtils");
 const { actions } = require("../constants");
 
-let handlers = Object.create(null);
+const handlers = Object.create(null);
 
-handlers[actions.TOGGLE_RECORD_ALLOCATION_STACKS_START] = function (state, action) {
-  assert(!state.togglingInProgress,
-         "Changing recording state must not be reentrant.");
+handlers[actions.TOGGLE_RECORD_ALLOCATION_STACKS_START] = function(
+  state,
+  action
+) {
+  assert(
+    !state.togglingInProgress,
+    "Changing recording state must not be reentrant."
+  );
 
   return {
     recording: !state.recording,
@@ -19,10 +24,15 @@ handlers[actions.TOGGLE_RECORD_ALLOCATION_STACKS_START] = function (state, actio
   };
 };
 
-handlers[actions.TOGGLE_RECORD_ALLOCATION_STACKS_END] = function (state, action) {
-  assert(state.togglingInProgress,
-         "Should not complete changing recording state if we weren't changing "
-         + "recording state already.");
+handlers[actions.TOGGLE_RECORD_ALLOCATION_STACKS_END] = function(
+  state,
+  action
+) {
+  assert(
+    state.togglingInProgress,
+    "Should not complete changing recording state if we weren't changing " +
+      "recording state already."
+  );
 
   return {
     recording: state.recording,
@@ -32,11 +42,11 @@ handlers[actions.TOGGLE_RECORD_ALLOCATION_STACKS_END] = function (state, action)
 
 const DEFAULT_ALLOCATIONS_STATE = {
   recording: false,
-  togglingInProgress: false
+  togglingInProgress: false,
 };
 
-module.exports = function (state = DEFAULT_ALLOCATIONS_STATE, action) {
-  let handle = handlers[action.type];
+module.exports = function(state = DEFAULT_ALLOCATIONS_STATE, action) {
+  const handle = handlers[action.type];
   if (handle) {
     return handle(state, action);
   }

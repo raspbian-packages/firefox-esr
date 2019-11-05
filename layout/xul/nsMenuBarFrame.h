@@ -22,20 +22,21 @@
 class nsIContent;
 
 namespace mozilla {
+class PresShell;
 namespace dom {
 class KeyboardEvent;
 }  // namespace dom
 }  // namespace mozilla
 
-nsIFrame* NS_NewMenuBarFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext);
+nsIFrame* NS_NewMenuBarFrame(mozilla::PresShell* aPresShell,
+                             mozilla::ComputedStyle* aStyle);
 
 class nsMenuBarFrame final : public nsBoxFrame, public nsMenuParent {
  public:
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsMenuBarFrame)
 
-  explicit nsMenuBarFrame(nsStyleContext* aContext);
+  explicit nsMenuBarFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
 
   // nsMenuParent interface
   virtual nsMenuFrame* GetCurrentMenuItem() override;
@@ -51,8 +52,9 @@ class nsMenuBarFrame final : public nsBoxFrame, public nsMenuParent {
   virtual bool IsActive() override { return mIsActive; }
   virtual bool IsMenu() override { return false; }
   virtual bool IsOpen() override {
+    // menubars are considered always open
     return true;
-  }  // menubars are considered always open
+  }
 
   bool IsMenuOpen() { return mCurrentMenu && mCurrentMenu->IsOpen(); }
 

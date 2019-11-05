@@ -17,8 +17,7 @@ nsresult SharedDIB::Create(uint32_t aSize) {
   Close();
 
   mShMem = new base::SharedMemory();
-  if (!mShMem || !mShMem->Create("", false, false, aSize))
-    return NS_ERROR_OUT_OF_MEMORY;
+  if (!mShMem || !mShMem->Create(aSize)) return NS_ERROR_OUT_OF_MEMORY;
 
   return NS_OK;
 }
@@ -26,7 +25,7 @@ nsresult SharedDIB::Create(uint32_t aSize) {
 bool SharedDIB::IsValid() {
   if (!mShMem) return false;
 
-  return mShMem->IsHandleValid(mShMem->handle());
+  return base::SharedMemory::IsHandleValid(mShMem->handle());
 }
 
 nsresult SharedDIB::Close() {
@@ -47,7 +46,7 @@ nsresult SharedDIB::Attach(Handle aHandle, uint32_t aSize) {
 }
 
 nsresult SharedDIB::ShareToProcess(base::ProcessId aTargetPid,
-                                   Handle *aNewHandle) {
+                                   Handle* aNewHandle) {
   if (!mShMem) return NS_ERROR_UNEXPECTED;
 
   if (!mShMem->ShareToProcess(aTargetPid, aNewHandle))

@@ -16,7 +16,7 @@
 #include "xpcAccessibleDocument.h"
 
 #include "nsIMutableArray.h"
-#include "nsIPersistentProperties2.h"
+#include "nsPersistentProperties.h"
 
 using namespace mozilla::a11y;
 
@@ -158,14 +158,14 @@ xpcAccessible::GetIndexInParent(int32_t* aIndexInParent) {
 }
 
 NS_IMETHODIMP
-xpcAccessible::GetDOMNode(nsIDOMNode** aDOMNode) {
+xpcAccessible::GetDOMNode(nsINode** aDOMNode) {
   NS_ENSURE_ARG_POINTER(aDOMNode);
   *aDOMNode = nullptr;
 
   if (!Intl()) return NS_ERROR_FAILURE;
 
-  nsINode* node = Intl()->GetNode();
-  if (node) CallQueryInterface(node, aDOMNode);
+  nsCOMPtr<nsINode> node = Intl()->GetNode();
+  node.forget(aDOMNode);
 
   return NS_OK;
 }
@@ -372,8 +372,7 @@ xpcAccessible::GetAttributes(nsIPersistentProperties** aAttributes) {
   AutoTArray<Attribute, 10> attrs;
   proxy->Attributes(&attrs);
 
-  nsCOMPtr<nsIPersistentProperties> props =
-      do_CreateInstance(NS_PERSISTENTPROPERTIES_CONTRACTID);
+  RefPtr<nsPersistentProperties> props = new nsPersistentProperties();
   uint32_t attrCount = attrs.Length();
   nsAutoString unused;
   for (uint32_t i = 0; i < attrCount; i++) {
@@ -403,6 +402,33 @@ xpcAccessible::GetBounds(int32_t* aX, int32_t* aY, int32_t* aWidth,
     rect = acc->Bounds();
   } else {
     rect = IntlGeneric().AsProxy()->Bounds();
+  }
+
+  rect.GetRect(aX, aY, aWidth, aHeight);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+xpcAccessible::GetBoundsInCSSPixels(int32_t* aX, int32_t* aY, int32_t* aWidth,
+                                    int32_t* aHeight) {
+  NS_ENSURE_ARG_POINTER(aX);
+  *aX = 0;
+  NS_ENSURE_ARG_POINTER(aY);
+  *aY = 0;
+  NS_ENSURE_ARG_POINTER(aWidth);
+  *aWidth = 0;
+  NS_ENSURE_ARG_POINTER(aHeight);
+  *aHeight = 0;
+
+  if (IntlGeneric().IsNull()) {
+    return NS_ERROR_FAILURE;
+  }
+
+  nsIntRect rect;
+  if (Accessible* acc = IntlGeneric().AsAccessible()) {
+    rect = acc->BoundsInCSSPixels();
+  } else {
+    rect = IntlGeneric().AsProxy()->BoundsInCSSPixels();
   }
 
   rect.GetRect(aX, aY, aWidth, aHeight);
@@ -709,7 +735,8 @@ xpcAccessible::ScrollTo(uint32_t aHow) {
     proxy->ScrollTo(aHow);
 #endif
   } else {
-    Intl()->ScrollTo(aHow);
+    RefPtr<Accessible> intl = Intl();
+    intl->ScrollTo(aHow);
   }
 
   return NS_OK;
@@ -727,6 +754,22 @@ xpcAccessible::ScrollToPoint(uint32_t aCoordinateType, int32_t aX, int32_t aY) {
 #endif
   } else {
     Intl()->ScrollToPoint(aCoordinateType, aX, aY);
+  }
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+xpcAccessible::Announce(const nsAString& aAnnouncement, uint16_t aPriority) {
+  if (ProxyAccessible* proxy = IntlGeneric().AsProxy()) {
+#if defined(XP_WIN)
+    return NS_ERROR_NOT_IMPLEMENTED;
+#else
+    nsString announcement(aAnnouncement);
+    proxy->Announce(announcement, aPriority);
+#endif
+  } else {
+    Intl()->Announce(aAnnouncement, aPriority);
   }
 
   return NS_OK;

@@ -4,10 +4,12 @@
  */
 
 const PREF_FEATURE_ENABLED = "browser.urlbar.usepreloadedtopurls.enabled";
-const PREF_FEATURE_EXPIRE_DAYS = "browser.urlbar.usepreloadedtopurls.expire_days";
+const PREF_FEATURE_EXPIRE_DAYS =
+  "browser.urlbar.usepreloadedtopurls.expire_days";
 
-const autocompleteObject = Cc["@mozilla.org/autocomplete/search;1?name=unifiedcomplete"]
-                             .getService(Ci.mozIPlacesAutoComplete);
+const autocompleteObject = Cc[
+  "@mozilla.org/autocomplete/search;1?name=unifiedcomplete"
+].getService(Ci.mozIPlacesAutoComplete);
 
 Cu.importGlobalProperties(["fetch"]);
 
@@ -26,7 +28,7 @@ async function assert_feature_works(condition) {
   await check_autocomplete({
     search: "ooo",
     matches: [
-      { uri: yahoooURI, title: "Yahooo",  style: ["preloaded-top-site"] },
+      { uri: yahoooURI, title: "Yahooo", style: ["preloaded-top-site"] },
       { uri: gooogleURI, title: "Gooogle", style: ["preloaded-top-site"] },
     ],
   });
@@ -78,7 +80,7 @@ add_task(async function test_it_works() {
 
 add_task(async function test_sorting_against_bookmark() {
   let boookmarkURI = NetUtil.newURI("https://boookmark.com");
-  await addBookmark( { uri: boookmarkURI, title: "Boookmark" } );
+  await addBookmark({ uri: boookmarkURI, title: "Boookmark" });
 
   Services.prefs.setBoolPref(PREF_FEATURE_ENABLED, true);
   Services.prefs.setIntPref(PREF_FEATURE_EXPIRE_DAYS, 14);
@@ -88,8 +90,8 @@ add_task(async function test_sorting_against_bookmark() {
     checkSorting: true,
     search: "ooo",
     matches: [
-      { uri: boookmarkURI, title: "Boookmark",  style: ["bookmark"] },
-      { uri: yahoooURI, title: "Yahooo",  style: ["preloaded-top-site"] },
+      { uri: boookmarkURI, title: "Boookmark", style: ["bookmark"] },
+      { uri: yahoooURI, title: "Yahooo", style: ["preloaded-top-site"] },
       { uri: gooogleURI, title: "Gooogle", style: ["preloaded-top-site"] },
     ],
   });
@@ -99,7 +101,7 @@ add_task(async function test_sorting_against_bookmark() {
 
 add_task(async function test_sorting_against_history() {
   let histoooryURI = NetUtil.newURI("https://histooory.com");
-  await PlacesTestUtils.addVisits( { uri: histoooryURI, title: "Histooory" } );
+  await PlacesTestUtils.addVisits({ uri: histoooryURI, title: "Histooory" });
 
   Services.prefs.setBoolPref(PREF_FEATURE_ENABLED, true);
   Services.prefs.setIntPref(PREF_FEATURE_EXPIRE_DAYS, 14);
@@ -110,7 +112,7 @@ add_task(async function test_sorting_against_history() {
     search: "ooo",
     matches: [
       { uri: histoooryURI, title: "Histooory" },
-      { uri: yahoooURI, title: "Yahooo",  style: ["preloaded-top-site"] },
+      { uri: yahoooURI, title: "Yahooo", style: ["preloaded-top-site"] },
       { uri: gooogleURI, title: "Gooogle", style: ["preloaded-top-site"] },
     ],
   });
@@ -122,10 +124,10 @@ add_task(async function test_scheme_and_www() {
   // Order is important to check sorting
   let sites = [
     ["https://www.ooops-https-www.com/", "Ooops"],
-    ["https://ooops-https.com/",         "Ooops"],
-    ["HTTP://ooops-HTTP.com/",           "Ooops"],
-    ["HTTP://www.ooops-HTTP-www.com/",   "Ooops"],
-    ["https://foo.com/",     "Title with www"],
+    ["https://ooops-https.com/", "Ooops"],
+    ["HTTP://ooops-HTTP.com/", "Ooops"],
+    ["HTTP://www.ooops-HTTP-www.com/", "Ooops"],
+    ["https://foo.com/", "Title with www"],
     ["https://www.bar.com/", "Tile"],
   ];
 
@@ -133,142 +135,117 @@ add_task(async function test_scheme_and_www() {
 
   autocompleteObject.populatePreloadedSiteStorage(sites);
 
-  let tests =
-  [
+  let tests = [
     // User typed,
-    // Inline autofill,
-    // Substitute after enter is pressed,
+    // Inline autofill (`autofilled`),
+    // Substitute after enter is pressed (`completed`),
     //   [List matches, with sorting]
     //   not tested if omitted
     //   !!! first one is always an autofill entry !!!
 
-    [// Protocol by itself doesn't match anything
-    "https://",
-    "https://",
-    "https://",
-      []
+    [
+      // Protocol by itself doesn't match anything
+      "https://",
+      "https://",
+      "https://",
+      [],
     ],
 
-    [// "www." by itself doesn't match anything
-    "www.",
-    "www.",
-    "www.",
-      []
-    ],
-
-    [// Protocol with "www." by itself doesn't match anything
-    "http://www.",
-    "http://www.",
-    "http://www.",
-      []
-    ],
-
-    [// ftp: - ignore
-    "ftp://ooops",
-    "ftp://ooops",
-    "ftp://ooops",
-      []
-    ],
-
-    [// Edge case: no "www." in search string, autofill and list entries with "www."
-    "ww",
-    "www.ooops-https-www.com/",
-    "https://www.ooops-https-www.com/", // 2nd in list, but has priority as strict
-      [
-      ["https://www.ooops-https-www.com/", "https://www.ooops-https-www.com"],
-      "HTTP://www.ooops-HTTP-www.com/",
-      ["https://foo.com/", "Title with www", ["preloaded-top-site"]],
-      "https://www.bar.com/",
-      ]
-    ],
-
-    [// Strict match, no "www."
-    "ooops",
-    "ooops-https.com/",
-    "https://ooops-https.com/", // 2nd in list, but has priority as strict
-      [// List entries are not sorted (initial sorting preserved)
-       // except autofill entry is on top as always
-      ["https://ooops-https.com/", "https://ooops-https.com"],
+    [
+      "www.",
+      "www.ooops-https-www.com/",
       "https://www.ooops-https-www.com/",
-      "HTTP://ooops-HTTP.com/",
-      "HTTP://www.ooops-HTTP-www.com/",
-      ]
-    ],
-
-    [// Strict match with "www."
-    "www.ooops",
-    "www.ooops-https-www.com/",
-    "https://www.ooops-https-www.com/",
-      [// Matches with "www." sorted on top
-      ["https://www.ooops-https-www.com/", "https://www.ooops-https-www.com"],
-      "HTTP://www.ooops-HTTP-www.com/",
-      "https://ooops-https.com/",
-      "HTTP://ooops-HTTP.com/",
-      ]
-    ],
-
-    [// Loose match: search no "www.", result with "www."
-    "ooops-https-www",
-    "ooops-https-www.com/",
-    "https://www.ooops-https-www.com/",
       [
-      ["https://www.ooops-https-www.com/", "https://www.ooops-https-www.com"],
-      ]
+        ["www.ooops-https-www.com/", "https://www.ooops-https-www.com"],
+        "HTTP://www.ooops-HTTP-www.com/",
+        "https://www.bar.com/",
+      ],
     ],
 
-    [// Loose match: search "www.", no-www site gets "www."
-    "www.ooops-https.",
-    "www.ooops-https.com/",
-    "https://www.ooops-https.com/",
-      [// Only autofill entry gets "www."
-      ["https://www.ooops-https.com/", "https://www.ooops-https.com"],
-      "https://ooops-https.com/", // List entry with preloaded top URL for match site
-      ]
+    [
+      "http://www.",
+      "http://www.ooops-http-www.com/",
+      "http://www.ooops-http-www.com/",
+      [["http://www.ooops-http-www.com/", "www.ooops-http-www.com"]],
     ],
 
-    [// Explicit protocol, no "www."
-    "https://ooops",
-    "https://ooops-https.com/",
-    "https://ooops-https.com/",
-      [
-      ["https://ooops-https.com/", "https://ooops-https.com"],
+    ["ftp://ooops", "ftp://ooops", "ftp://ooops", []],
+
+    [
+      "ww",
+      "www.ooops-https-www.com/",
       "https://www.ooops-https-www.com/",
-      ]
-    ],
-
-    [// Explicit protocol, with "www."
-    "https://www.ooops",
-    "https://www.ooops-https-www.com/",
-    "https://www.ooops-https-www.com/",
       [
-      ["https://www.ooops-https-www.com/", "https://www.ooops-https-www.com"],
-      "https://ooops-https.com/",
-      ]
+        ["www.ooops-https-www.com/", "https://www.ooops-https-www.com"],
+        "HTTP://www.ooops-HTTP-www.com/",
+        ["https://foo.com/", "Title with www", ["preloaded-top-site"]],
+        "https://www.bar.com/",
+      ],
     ],
 
-    [// Explicit HTTP protocol, no-www site gets "www."
-    "http://www.ooops-http.",
-    "http://www.ooops-http.com/",
-    "http://www.ooops-http.com/",
+    [
+      "ooops",
+      "ooops-https-www.com/",
+      "https://www.ooops-https-www.com/",
       [
-      ["HTTP://www.ooops-HTTP.com/", "www.ooops-http.com"],
-      "HTTP://ooops-HTTP.com/",
-      ]
+        ["ooops-https-www.com/", "https://www.ooops-https-www.com"],
+        "https://ooops-https.com/",
+        "HTTP://ooops-HTTP.com/",
+        "HTTP://www.ooops-HTTP-www.com/",
+      ],
     ],
 
-    [// Wrong protocol
-    "http://ooops-https",
-    "http://ooops-https",
-    "http://ooops-https",
-      []
+    [
+      "www.ooops",
+      "www.ooops-https-www.com/",
+      "https://www.ooops-https-www.com/",
+      [
+        ["www.ooops-https-www.com/", "https://www.ooops-https-www.com"],
+        "HTTP://www.ooops-HTTP-www.com/",
+      ],
     ],
+
+    [
+      "ooops-https-www",
+      "ooops-https-www.com/",
+      "https://www.ooops-https-www.com/",
+      [["ooops-https-www.com/", "https://www.ooops-https-www.com"]],
+    ],
+
+    ["www.ooops-https.", "www.ooops-https.", "www.ooops-https.", []],
+
+    [
+      "https://ooops",
+      "https://ooops-https-www.com/",
+      "https://www.ooops-https-www.com/",
+      [
+        ["https://ooops-https-www.com/", "https://www.ooops-https-www.com"],
+        "https://ooops-https.com/",
+      ],
+    ],
+
+    [
+      "https://www.ooops",
+      "https://www.ooops-https-www.com/",
+      "https://www.ooops-https-www.com/",
+      [["https://www.ooops-https-www.com/", "https://www.ooops-https-www.com"]],
+    ],
+
+    [
+      "http://www.ooops-http.",
+      "http://www.ooops-http.",
+      "http://www.ooops-http.",
+      [],
+    ],
+
+    ["http://ooops-https", "http://ooops-https", "http://ooops-https", []],
   ];
 
   function toMatch(entry, index) {
     if (Array.isArray(entry)) {
       return {
-        uri: NetUtil.newURI(entry[0]),
-        title: entry[1],
+        value: entry[0],
+        comment: entry[1],
         style: entry[2] || ["autofill", "heuristic", "preloaded-top-site"],
       };
     }
@@ -295,7 +272,9 @@ add_task(async function test_scheme_and_www() {
 });
 
 add_task(async function test_data_file() {
-  let response = await fetch("chrome://global/content/unifiedcomplete-top-urls.json");
+  let response = await fetch(
+    "chrome://global/content/unifiedcomplete-top-urls.json"
+  );
 
   info("Source file is supplied and fetched OK");
   Assert.ok(response.ok);
@@ -316,5 +295,25 @@ add_task(async function test_data_file() {
     completed: uri.spec,
   });
 
+  await cleanup();
+});
+
+add_task(async function test_partial_scheme() {
+  // "tt" should not result in a match of "ttps://whatever.com/".
+  autocompleteObject.populatePreloadedSiteStorage([
+    ["http://www.ttt.com/", "Test"],
+  ]);
+  await check_autocomplete({
+    search: "tt",
+    autofilled: "ttt.com/",
+    completed: "http://www.ttt.com/",
+    matches: [
+      {
+        value: "ttt.com/",
+        comment: "www.ttt.com",
+        style: ["autofill", "heuristic", "preloaded-top-site"],
+      },
+    ],
+  });
   await cleanup();
 });

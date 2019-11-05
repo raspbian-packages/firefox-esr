@@ -1,22 +1,23 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! A gecko snapshot, that stores the element attributes and state before they
 //! change in order to properly calculate restyle hints.
 
-use WeakAtom;
-use dom::TElement;
-use element_state::ElementState;
-use gecko::snapshot_helpers;
-use gecko::wrapper::{NamespaceConstraintHelpers, GeckoElement};
-use gecko_bindings::bindings;
-use gecko_bindings::structs::ServoElementSnapshot;
-use gecko_bindings::structs::ServoElementSnapshotFlags as Flags;
-use gecko_bindings::structs::ServoElementSnapshotTable;
-use invalidation::element::element_wrapper::ElementSnapshot;
-use selectors::attr::{AttrSelectorOperation, AttrSelectorOperator, CaseSensitivity, NamespaceConstraint};
-use string_cache::{Atom, Namespace};
+use crate::dom::TElement;
+use crate::element_state::ElementState;
+use crate::gecko::snapshot_helpers;
+use crate::gecko::wrapper::{GeckoElement, NamespaceConstraintHelpers};
+use crate::gecko_bindings::bindings;
+use crate::gecko_bindings::structs::ServoElementSnapshot;
+use crate::gecko_bindings::structs::ServoElementSnapshotFlags as Flags;
+use crate::gecko_bindings::structs::ServoElementSnapshotTable;
+use crate::invalidation::element::element_wrapper::ElementSnapshot;
+use crate::string_cache::{Atom, Namespace};
+use crate::WeakAtom;
+use selectors::attr::{AttrSelectorOperation, AttrSelectorOperator};
+use selectors::attr::{CaseSensitivity, NamespaceConstraint};
 
 /// A snapshot of a Gecko element.
 pub type GeckoElementSnapshot = ServoElementSnapshot;
@@ -48,10 +49,6 @@ impl GeckoElementSnapshot {
     #[inline]
     fn has_any(&self, flags: Flags) -> bool {
         (self.mContains as u8 & flags as u8) != 0
-    }
-
-    fn as_ptr(&self) -> *const Self {
-        self
     }
 
     /// Returns true if the snapshot has stored state for pseudo-classes
@@ -90,13 +87,13 @@ impl GeckoElementSnapshot {
         unsafe {
             match *operation {
                 AttrSelectorOperation::Exists => {
-                    bindings:: Gecko_SnapshotHasAttr(
-                        self,
-                        ns.atom_or_null(),
-                        local_name.as_ptr(),
-                    )
-                }
-                AttrSelectorOperation::WithValue { operator, case_sensitivity, expected_value } => {
+                    bindings::Gecko_SnapshotHasAttr(self, ns.atom_or_null(), local_name.as_ptr())
+                },
+                AttrSelectorOperation::WithValue {
+                    operator,
+                    case_sensitivity,
+                    expected_value,
+                } => {
                     let ignore_case = match case_sensitivity {
                         CaseSensitivity::CaseSensitive => false,
                         CaseSensitivity::AsciiCaseInsensitive => true,
@@ -108,7 +105,7 @@ impl GeckoElementSnapshot {
                             ns.atom_or_null(),
                             local_name.as_ptr(),
                             expected_value.as_ptr(),
-                            ignore_case
+                            ignore_case,
                         ),
                         AttrSelectorOperator::Includes => bindings::Gecko_SnapshotAttrIncludes(
                             self,
@@ -138,21 +135,32 @@ impl GeckoElementSnapshot {
                             expected_value.as_ptr(),
                             ignore_case,
                         ),
-                        AttrSelectorOperator::Substring => bindings::Gecko_SnapshotAttrHasSubstring(
-                            self,
-                            ns.atom_or_null(),
-                            local_name.as_ptr(),
-                            expected_value.as_ptr(),
-                            ignore_case,
-                        ),
+                        AttrSelectorOperator::Substring => {
+                            bindings::Gecko_SnapshotAttrHasSubstring(
+                                self,
+                                ns.atom_or_null(),
+                                local_name.as_ptr(),
+                                expected_value.as_ptr(),
+                                ignore_case,
+                            )
+                        },
                     }
-                }
+                },
             }
         }
     }
 }
 
 impl ElementSnapshot for GeckoElementSnapshot {
+    fn debug_list_attributes(&self) -> String {
+        use nsstring::nsCString;
+        let mut string = nsCString::new();
+        unsafe {
+            bindings::Gecko_Snapshot_DebugListAttributes(self, &mut string);
+        }
+        String::from_utf8_lossy(&*string).into_owned()
+    }
+
     fn state(&self) -> Option<ElementState> {
         if self.has_any(Flags::State) {
             Some(ElementState::from_bits_truncate(self.mState))
@@ -169,19 +177,20 @@ impl ElementSnapshot for GeckoElementSnapshot {
     #[inline]
     fn id_attr(&self) -> Option<&WeakAtom> {
         if !self.has_any(Flags::Id) {
-            return None
+            return None;
         }
 
-        let ptr = unsafe {
-            bindings::Gecko_SnapshotAtomAttrValue(self, atom!("id").as_ptr())
+        snapshot_helpers::get_id(&*self.mAttrs)
+    }
+
+    #[inline]
+    fn is_part(&self, name: &Atom) -> bool {
+        let attr = match snapshot_helpers::find_attr(&*self.mAttrs, &atom!("part")) {
+            Some(attr) => attr,
+            None => return false,
         };
 
-        // FIXME(emilio): This should assert, since this flag is exact.
-        if ptr.is_null() {
-            None
-        } else {
-            Some(unsafe { WeakAtom::new(ptr) })
-        }
+        snapshot_helpers::has_class_or_part(name, CaseSensitivity::CaseSensitive, attr)
     }
 
     #[inline]
@@ -190,28 +199,19 @@ impl ElementSnapshot for GeckoElementSnapshot {
             return false;
         }
 
-        snapshot_helpers::has_class(
-            self.as_ptr(),
-            name,
-            case_sensitivity,
-            bindings::Gecko_SnapshotHasClass,
-        )
+        snapshot_helpers::has_class_or_part(name, case_sensitivity, &self.mClass)
     }
 
     #[inline]
     fn each_class<F>(&self, callback: F)
     where
-        F: FnMut(&Atom)
+        F: FnMut(&Atom),
     {
         if !self.has_any(Flags::MaybeClass) {
             return;
         }
 
-        snapshot_helpers::each_class(
-            self.as_ptr(),
-            callback,
-            bindings::Gecko_SnapshotClassOrClassList,
-        )
+        snapshot_helpers::each_class(&self.mClass, callback)
     }
 
     #[inline]

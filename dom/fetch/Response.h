@@ -33,13 +33,13 @@ class Response final : public nsISupports,
 
  public:
   Response(nsIGlobalObject* aGlobal, InternalResponse* aInternalResponse,
-           AbortSignal* aSignal);
+           AbortSignalImpl* aSignalImpl);
 
   Response(const Response& aOther) = delete;
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override {
-    return ResponseBinding::Wrap(aCx, this, aGivenProto);
+    return Response_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   ResponseType Type() const { return mInternalResponse->Type(); }
@@ -74,6 +74,10 @@ class Response final : public nsISupports,
     return mInternalResponse->GetPrincipalInfo();
   }
 
+  bool HasCacheInfoChannel() const {
+    return mInternalResponse->HasCacheInfoChannel();
+  }
+
   Headers* Headers_();
 
   void GetBody(nsIInputStream** aStream, int64_t* aBodyLength = nullptr) {
@@ -81,6 +85,18 @@ class Response final : public nsISupports,
   }
 
   using FetchBody::GetBody;
+
+  using FetchBody::BodyBlobURISpec;
+
+  const nsACString& BodyBlobURISpec() const {
+    return mInternalResponse->BodyBlobURISpec();
+  }
+
+  using FetchBody::BodyLocalPath;
+
+  const nsAString& BodyLocalPath() const {
+    return mInternalResponse->BodyLocalPath();
+  }
 
   static already_AddRefed<Response> Error(const GlobalObject& aGlobal);
 
@@ -104,7 +120,7 @@ class Response final : public nsISupports,
 
   already_AddRefed<InternalResponse> GetInternalResponse() const;
 
-  AbortSignal* GetSignal() const override { return mSignal; }
+  AbortSignalImpl* GetSignalImpl() const override { return mSignalImpl; }
 
  private:
   ~Response();
@@ -112,7 +128,7 @@ class Response final : public nsISupports,
   RefPtr<InternalResponse> mInternalResponse;
   // Lazily created
   RefPtr<Headers> mHeaders;
-  RefPtr<AbortSignal> mSignal;
+  RefPtr<AbortSignalImpl> mSignalImpl;
 };
 
 }  // namespace dom

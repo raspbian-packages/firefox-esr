@@ -1,17 +1,12 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 use std::cmp::Ordering;
 use std::fmt::{self, Display};
 use std::hash::{Hash, Hasher};
 
-use proc_macro2::{Span, Term};
+use proc_macro2::{Ident, Span};
 use unicode_xid::UnicodeXID;
+
+#[cfg(feature = "parsing")]
+use lookahead;
 
 /// A Rust lifetime: `'a`.
 ///
@@ -19,7 +14,6 @@ use unicode_xid::UnicodeXID;
 ///
 /// - Must start with an apostrophe.
 /// - Must not consist of just an apostrophe: `'`.
-/// - Must not consist of apostrophe + underscore: `'_`.
 /// - Character after the apostrophe must be `_` or a Unicode code point with
 ///   the XID_Start property.
 /// - All following characters must be Unicode code points with the XID_Continue
@@ -28,34 +22,41 @@ use unicode_xid::UnicodeXID;
 /// *This type is available if Syn is built with the `"derive"` or `"full"`
 /// feature.*
 #[cfg_attr(feature = "extra-traits", derive(Debug))]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Lifetime {
-    term: Term,
-    pub span: Span,
+    pub apostrophe: Span,
+    pub ident: Ident,
 }
 
 impl Lifetime {
-    pub fn new(term: Term, span: Span) -> Self {
-        let s = term.as_str();
-
-        if !s.starts_with('\'') {
+    /// # Panics
+    ///
+    /// Panics if the lifetime does not conform to the bulleted rules above.
+    ///
+    /// # Invocation
+    ///
+    /// ```edition2018
+    /// # use proc_macro2::Span;
+    /// # use syn::Lifetime;
+    /// #
+    /// # fn f() -> Lifetime {
+    /// Lifetime::new("'a", Span::call_site())
+    /// # }
+    /// ```
+    pub fn new(symbol: &str, span: Span) -> Self {
+        if !symbol.starts_with('\'') {
             panic!(
-                "lifetime name must start with apostrophe as in \"'a\", \
-                 got {:?}",
-                s
+                "lifetime name must start with apostrophe as in \"'a\", got {:?}",
+                symbol
             );
         }
 
-        if s == "'" {
+        if symbol == "'" {
             panic!("lifetime name must not be empty");
         }
 
-        if s == "'_" {
-            panic!("\"'_\" is not a valid lifetime name");
-        }
-
-        fn xid_ok(s: &str) -> bool {
-            let mut chars = s.chars();
+        fn xid_ok(symbol: &str) -> bool {
+            let mut chars = symbol.chars();
             let first = chars.next().unwrap();
             if !(UnicodeXID::is_xid_start(first) || first == '_') {
                 return false;
@@ -68,26 +69,27 @@ impl Lifetime {
             true
         }
 
-        if !xid_ok(&s[1..]) {
-            panic!("{:?} is not a valid lifetime name", s);
+        if !xid_ok(&symbol[1..]) {
+            panic!("{:?} is not a valid lifetime name", symbol);
         }
 
         Lifetime {
-            term: term,
-            span: span,
+            apostrophe: span,
+            ident: Ident::new(&symbol[1..], span),
         }
     }
 }
 
 impl Display for Lifetime {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        self.term.as_str().fmt(formatter)
+        "'".fmt(formatter)?;
+        self.ident.fmt(formatter)
     }
 }
 
 impl PartialEq for Lifetime {
     fn eq(&self, other: &Lifetime) -> bool {
-        self.term.as_str() == other.term.as_str()
+        self.ident.eq(&other.ident)
     }
 }
 
@@ -101,45 +103,36 @@ impl PartialOrd for Lifetime {
 
 impl Ord for Lifetime {
     fn cmp(&self, other: &Lifetime) -> Ordering {
-        self.term.as_str().cmp(other.term.as_str())
+        self.ident.cmp(&other.ident)
     }
 }
 
 impl Hash for Lifetime {
     fn hash<H: Hasher>(&self, h: &mut H) {
-        self.term.as_str().hash(h)
+        self.ident.hash(h)
     }
+}
+
+#[cfg(feature = "parsing")]
+#[doc(hidden)]
+#[allow(non_snake_case)]
+pub fn Lifetime(marker: lookahead::TokenMarker) -> Lifetime {
+    match marker {}
 }
 
 #[cfg(feature = "parsing")]
 pub mod parsing {
     use super::*;
-    use synom::Synom;
-    use buffer::Cursor;
-    use parse_error;
-    use synom::PResult;
 
-    impl Synom for Lifetime {
-        fn parse(input: Cursor) -> PResult<Self> {
-            let (span, term, rest) = match input.term() {
-                Some(term) => term,
-                _ => return parse_error(),
-            };
-            if !term.as_str().starts_with('\'') {
-                return parse_error();
-            }
+    use parse::{Parse, ParseStream, Result};
 
-            Ok((
-                Lifetime {
-                    term: term,
-                    span: span,
-                },
-                rest,
-            ))
-        }
-
-        fn description() -> Option<&'static str> {
-            Some("lifetime")
+    impl Parse for Lifetime {
+        fn parse(input: ParseStream) -> Result<Self> {
+            input.step(|cursor| {
+                cursor
+                    .lifetime()
+                    .ok_or_else(|| cursor.error("expected lifetime"))
+            })
         }
     }
 }
@@ -147,15 +140,16 @@ pub mod parsing {
 #[cfg(feature = "printing")]
 mod printing {
     use super::*;
-    use quote::{ToTokens, Tokens};
-    use proc_macro2::{TokenNode, TokenTree};
+
+    use proc_macro2::{Punct, Spacing, TokenStream};
+    use quote::{ToTokens, TokenStreamExt};
 
     impl ToTokens for Lifetime {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Term(self.term),
-            })
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            let mut apostrophe = Punct::new('\'', Spacing::Joint);
+            apostrophe.set_span(self.apostrophe);
+            tokens.append(apostrophe);
+            self.ident.to_tokens(tokens);
         }
     }
 }

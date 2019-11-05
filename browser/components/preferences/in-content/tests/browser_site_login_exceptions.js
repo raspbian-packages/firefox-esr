@@ -17,15 +17,17 @@ add_task(async function openLoginExceptionsSubDialog() {
     gBrowser.removeCurrentTab();
   });
 
-  await openPreferencesViaOpenPreferencesAPI("privacy", {leaveOpen: true});
+  await openPreferencesViaOpenPreferencesAPI("privacy", { leaveOpen: true });
 
   let dialogOpened = promiseLoadSubDialog(PERMISSIONS_URL);
 
   await ContentTask.spawn(gBrowser.selectedBrowser, null, function() {
     let doc = content.document;
     let savePasswordCheckBox = doc.getElementById("savePasswords");
-    Assert.ok(!savePasswordCheckBox.checked,
-              "Save Password CheckBox should be unchecked by default");
+    Assert.ok(
+      !savePasswordCheckBox.checked,
+      "Save Password CheckBox should be unchecked by default"
+    );
     savePasswordCheckBox.click();
 
     let loginExceptionsButton = doc.getElementById("passwordExceptions");
@@ -38,8 +40,8 @@ add_task(async function openLoginExceptionsSubDialog() {
 add_task(async function addALoginException() {
   let doc = exceptionsDialog.document;
 
-  let tree = doc.getElementById("permissionsTree");
-  Assert.equal(tree.view.rowCount, 0, "Row count should initially be 0");
+  let richlistbox = doc.getElementById("permissionsBox");
+  Assert.equal(richlistbox.itemCount, 0, "Row count should initially be 0");
 
   let inputBox = doc.getElementById("url");
   inputBox.focus();
@@ -49,29 +51,44 @@ add_task(async function addALoginException() {
   let btnBlock = doc.getElementById("btnBlock");
   btnBlock.click();
 
-  await TestUtils.waitForCondition(() => tree.view.rowCount == 1);
+  await TestUtils.waitForCondition(() => richlistbox.itemCount == 2);
 
-  Assert.equal(tree.view.getCellText(0, tree.treeBoxObject.columns.getColumnAt(0)),
-               "http://www.example.com");
+  let expectedResult = ["http://www.example.com", "https://www.example.com"];
+  for (let website of expectedResult) {
+    let elements = richlistbox.getElementsByAttribute("origin", website);
+    is(elements.length, 1, "It should find only one coincidence");
+  }
 });
 
 add_task(async function deleteALoginException() {
   let doc = exceptionsDialog.document;
 
-  let tree = doc.getElementById("permissionsTree");
-  Assert.equal(tree.view.rowCount, 1, "Row count should initially be 1");
-  tree.focus();
-  tree.view.selection.select(0);
+  let richlistbox = doc.getElementById("permissionsBox");
+  let currentItems = 2;
+  Assert.equal(
+    richlistbox.itemCount,
+    currentItems,
+    `Row count should initially be ${currentItems}`
+  );
+  richlistbox.focus();
 
-  if (AppConstants.platform == "macosx") {
-    EventUtils.synthesizeKey("KEY_Backspace");
-  } else {
-    EventUtils.synthesizeKey("KEY_Delete");
+  while (richlistbox.itemCount) {
+    richlistbox.selectedIndex = 0;
+
+    if (AppConstants.platform == "macosx") {
+      EventUtils.synthesizeKey("KEY_Backspace");
+    } else {
+      EventUtils.synthesizeKey("KEY_Delete");
+    }
+
+    currentItems -= 1;
+
+    await TestUtils.waitForCondition(
+      () => richlistbox.itemCount == currentItems
+    );
+    is_element_visible(
+      content.gSubDialog._dialogs[0]._box,
+      "Subdialog is visible after deleting an element"
+    );
   }
-
-  await TestUtils.waitForCondition(() => tree.view.rowCount == 0);
-
-  // eslint-disable-next-line mozilla/no-cpows-in-tests
-  is_element_visible(content.gSubDialog._dialogs[0]._box,
-    "Subdialog is visible after deleting an element");
 });

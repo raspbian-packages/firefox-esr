@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 services = []
+
+
 def service(name, iface, contractid):
     """Define a convenient service getter"""
     services.append((name, iface, contractid))
+
 
 service('ChromeRegistryService', 'nsIChromeRegistry',
         "@mozilla.org/chrome/chrome-registry;1")
@@ -11,18 +14,18 @@ service('ToolkitChromeRegistryService', 'nsIToolkitChromeRegistry',
         "@mozilla.org/chrome/chrome-registry;1")
 service('XULChromeRegistryService', 'nsIXULChromeRegistry',
         "@mozilla.org/chrome/chrome-registry;1")
-service('XULOverlayProviderService', 'nsIXULOverlayProvider',
-        "@mozilla.org/chrome/chrome-registry;1")
+service('DirectoryService', 'nsIProperties',
+        "@mozilla.org/file/directory_service;1"),
 service('IOService', 'nsIIOService',
         "@mozilla.org/network/io-service;1")
 service('ObserverService', 'nsIObserverService',
         "@mozilla.org/observer-service;1")
 service('StringBundleService', 'nsIStringBundleService',
         "@mozilla.org/intl/stringbundle;1")
-service('XPConnect', 'nsIXPConnect',
-        "@mozilla.org/js/xpc/XPConnect;1")
 service('PermissionManager', 'nsIPermissionManager',
         "@mozilla.org/permissionmanager;1")
+service('PreferencesService', 'nsIPrefService',
+        "@mozilla.org/preferences-service;1")
 service('ServiceWorkerManager', 'nsIServiceWorkerManager',
         "@mozilla.org/serviceworkers/manager;1")
 service('AsyncShutdown', 'nsIAsyncShutdownService',
@@ -43,6 +46,15 @@ service('ActivityDistributor', 'nsIHttpActivityDistributor',
         "@mozilla.org/network/http-activity-distributor;1")
 service('HistoryService', 'mozilla::IHistory',
         "@mozilla.org/browser/history;1")
+service('ThirdPartyUtil', 'mozIThirdPartyUtil',
+        "@mozilla.org/thirdpartyutil;1")
+service('URIFixup', 'nsIURIFixup',
+        "@mozilla.org/docshell/urifixup;1")
+service('Bits', 'nsIBits',
+        "@mozilla.org/bits;1")
+# NB: this should also expose nsIXULAppInfo, as does Services.jsm.
+service('AppInfoService', 'nsIXULRuntime',
+        "@mozilla.org/xre/app-info;1")
 
 # The definition file needs access to the definitions of the particular
 # interfaces. If you add a new interface here, make sure the necessary includes
@@ -50,6 +62,7 @@ service('HistoryService', 'mozilla::IHistory',
 CPP_INCLUDES = """
 #include "mozilla/Likely.h"
 #include "mozilla/Services.h"
+#include "mozIThirdPartyUtil.h"
 #include "nsComponentManager.h"
 #include "nsIObserverService.h"
 #include "nsNetCID.h"
@@ -60,10 +73,10 @@ CPP_INCLUDES = """
 #include "nsIChromeRegistry.h"
 #include "nsIStringBundle.h"
 #include "nsIToolkitChromeRegistry.h"
-#include "nsIXULOverlayProvider.h"
 #include "IHistory.h"
 #include "nsIXPConnect.h"
 #include "nsIPermissionManager.h"
+#include "nsIPrefService.h"
 #include "nsIServiceWorkerManager.h"
 #include "nsICacheStorageService.h"
 #include "nsIStreamTransportService.h"
@@ -73,6 +86,9 @@ CPP_INCLUDES = """
 #include "nsIAsyncShutdown.h"
 #include "nsIUUIDGenerator.h"
 #include "nsIGfxInfo.h"
+#include "nsIURIFixup.h"
+#include "nsIBits.h"
+#include "nsIXULRuntime.h"
 """
 
 #####
@@ -83,6 +99,7 @@ CPP_INCLUDES = """
 # service getters in both rust and C++ code.
 #
 # XXX(nika): would it be a good idea to unify Services.jsm into here too?
+
 
 def services_h(output):
     output.write("""\
@@ -109,7 +126,7 @@ def services_h(output):
 #ifdef MOZILLA_INTERNAL_API
 extern "C" {
 /**
- * NOTE: Don't call this method directly, instead call mozilla::services::Get{0}.
+ * NOTE: Don't call this method directly, instead call mozilla::services::Get%(name)s.
  * It is used to expose XPCOM services to rust code. The return value is already addrefed.
  */
 %(type)s* XPCOMService_Get%(name)s();
@@ -130,9 +147,9 @@ Get%(name)s()
 } // namespace mozilla
 #endif // defined(MOZILLA_INTERNAL_API)
 """ % {
-    'name': name,
-    'type': iface,
-})
+            'name': name,
+            'type': iface,
+        })
 
     output.write("#endif // !defined(mozilla_Services_h)\n")
 
@@ -149,7 +166,7 @@ static %(type)s* g%(name)s = nullptr;
 
 extern "C" {
 /**
- * NOTE: Don't call this method directly, instead call `mozilla::services::Get{0}`.
+ * NOTE: Don't call this method directly, instead call `mozilla::services::Get%(name)s`.
  * This method is extern "C" to expose XPCOM services to rust code.
  * The return value is already addrefed.
  */
@@ -167,10 +184,10 @@ XPCOMService_Get%(name)s()
 }
 } // extern "C"
 """ % {
-    'name': name,
-    'type': iface,
-    'contractid': contractid,
-})
+            'name': name,
+            'type': iface,
+            'contractid': contractid,
+        })
 
     output.write("""
 /**
@@ -208,6 +225,6 @@ pub fn get_%(name)s() -> Option<RefPtr<::interfaces::%(type)s>> {
     unsafe { RefPtr::from_raw_dont_addref(XPCOMService_Get%(name)s()) }
 }
 """ % {
-    'name': name,
-    'type': iface,
-})
+            'name': name,
+            'type': iface,
+        })

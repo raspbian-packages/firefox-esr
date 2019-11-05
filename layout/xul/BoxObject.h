@@ -21,9 +21,11 @@
 #include "nsRect.h"
 
 class nsIFrame;
-class nsIPresShell;
 
 namespace mozilla {
+
+class PresShell;
+
 namespace dom {
 
 class Element;
@@ -37,22 +39,19 @@ class BoxObject : public nsPIBoxObject, public nsWrapperCache {
   BoxObject();
 
   // nsPIBoxObject
-  virtual nsresult Init(nsIContent* aContent) override;
+  virtual nsresult Init(Element* aElement) override;
   virtual void Clear() override;
   virtual void ClearCachedValues() override;
 
-  nsIFrame* GetFrame(bool aFlushLayout);
-  nsIPresShell* GetPresShell(bool aFlushLayout);
-  nsresult GetOffsetRect(nsIntRect& aRect);
-  nsresult GetScreenPosition(nsIntPoint& aPoint);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY nsresult GetOffsetRect(nsIntRect& aRect);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY nsresult GetScreenPosition(nsIntPoint& aPoint);
 
   // Given a parent frame and a child frame, find the frame whose
   // next sibling is the given child frame and return its element
-  static nsresult GetPreviousSibling(nsIFrame* aParentFrame, nsIFrame* aFrame,
-                                     nsIDOMElement** aResult);
+  static Element* GetPreviousSibling(nsIFrame* aParentFrame, nsIFrame* aFrame);
 
   // WebIDL (wraps old impls)
-  nsIContent* GetParentObject() const;
+  Element* GetParentObject() const;
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
@@ -74,19 +73,23 @@ class BoxObject : public nsPIBoxObject, public nsWrapperCache {
                    const nsAString& propertyValue);
   void RemoveProperty(const nsAString& propertyName);
 
-  already_AddRefed<Element> GetParentBox();
-  already_AddRefed<Element> GetFirstChild();
-  already_AddRefed<Element> GetLastChild();
-  already_AddRefed<Element> GetNextSibling();
-  already_AddRefed<Element> GetPreviousSibling();
+  Element* GetParentBox();
+  Element* GetFirstChild();
+  Element* GetLastChild();
+  Element* GetNextSibling();
+  Element* GetPreviousSibling();
 
  protected:
   virtual ~BoxObject();
 
-  nsAutoPtr<nsInterfaceHashtable<nsStringHashKey, nsISupports> >
-      mPropertyTable;  //[OWNER]
+  nsIFrame* GetFrame() const;
+  MOZ_CAN_RUN_SCRIPT nsIFrame* GetFrameWithFlushPendingNotifications();
+  PresShell* GetPresShell() const;
+  MOZ_CAN_RUN_SCRIPT PresShell* GetPresShellWithFlushPendingNotifications();
 
-  nsIContent* mContent;  // [WEAK]
+  nsAutoPtr<nsInterfaceHashtable<nsStringHashKey, nsISupports>> mPropertyTable;
+
+  Element* mContent;  // [WEAK]
 };
 
 }  // namespace dom

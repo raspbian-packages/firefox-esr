@@ -171,11 +171,10 @@ class Channel {
     // by the peer when the channel is connected.  The message contains
     // just the process id (pid).  The message has a special routing_id
     // (MSG_ROUTING_NONE) and type (HELLO_MESSAGE_TYPE).
-    HELLO_MESSAGE_TYPE =
-        kuint16max  // Maximum value of message type (uint16_t),
-                    // to avoid conflicting with normal
-                    // message types, which are enumeration
-                    // constants starting from 0.
+    HELLO_MESSAGE_TYPE = kuint16max  // Maximum value of message type
+                                     // (uint16_t), to avoid conflicting with
+                                     // normal message types, which are
+                                     // enumeration constants starting from 0.
   };
 };
 

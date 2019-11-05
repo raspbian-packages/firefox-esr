@@ -1,19 +1,19 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Common handling for the specified value CSS url() values.
 
+use crate::parser::{Parse, ParserContext};
 use cssparser::Parser;
-use parser::{Parse, ParserContext};
 use servo_url::ServoUrl;
 use std::fmt::{self, Write};
 // Note: We use std::sync::Arc rather than servo_arc::Arc here because the
 // nonzero optimization is important in keeping the size of SpecifiedUrl below
 // the threshold.
-use std::sync::Arc;
+use crate::values::computed::{Context, ToComputedValue};
+use servo_arc::Arc;
 use style_traits::{CssWriter, ParseError, ToCss};
-use values::computed::{Context, ToComputedValue};
 
 /// A CSS url() value for servo.
 ///
@@ -23,7 +23,10 @@ use values::computed::{Context, ToComputedValue};
 ///
 /// However, this approach is still not necessarily optimal: See
 /// <https://bugzilla.mozilla.org/show_bug.cgi?id=1347435#c6>
-#[derive(Clone, Debug, Deserialize, MallocSizeOf, Serialize)]
+///
+/// TODO(emilio): This should be shrunk by making CssUrl a wrapper type of an
+/// arc, and keep the serialization in that Arc. See gecko/url.rs for example.
+#[derive(Clone, Debug, Deserialize, MallocSizeOf, Serialize, SpecifiedValueInfo, ToShmem)]
 pub struct CssUrl {
     /// The original URI. This might be optional since we may insert computed
     /// values of images into the cascade directly, and we don't bother to
@@ -40,17 +43,14 @@ pub struct CssUrl {
 
 impl CssUrl {
     /// Try to parse a URL from a string value that is a valid CSS token for a
-    /// URL. Never fails - the API is only fallible to be compatible with the
-    /// gecko version.
-    pub fn parse_from_string<'a>(url: String,
-                                 context: &ParserContext)
-                                 -> Result<Self, ParseError<'a>> {
+    /// URL.
+    pub fn parse_from_string(url: String, context: &ParserContext) -> Self {
         let serialization = Arc::new(url);
         let resolved = context.url_data.join(&serialization).ok();
-        Ok(CssUrl {
+        CssUrl {
             original: Some(serialization),
             resolved: resolved,
-        })
+        }
     }
 
     /// Returns true if the URL is definitely invalid. For Servo URLs, we can
@@ -101,12 +101,27 @@ impl CssUrl {
             resolved: ServoUrl::parse(url).ok(),
         }
     }
+
+    /// Parses a URL request and records that the corresponding request needs to
+    /// be CORS-enabled.
+    ///
+    /// This is only for shape images and masks in Gecko, thus unimplemented for
+    /// now so somebody notices when trying to do so.
+    pub fn parse_with_cors_anonymous<'i, 't>(
+        _context: &ParserContext,
+        _input: &mut Parser<'i, 't>,
+    ) -> Result<Self, ParseError<'i>> {
+        unimplemented!("Need to record somewhere that the request needs to be CORS-enabled")
+    }
 }
 
 impl Parse for CssUrl {
-    fn parse<'i, 't>(context: &ParserContext, input: &mut Parser<'i, 't>) -> Result<Self, ParseError<'i>> {
+    fn parse<'i, 't>(
+        context: &ParserContext,
+        input: &mut Parser<'i, 't>,
+    ) -> Result<Self, ParseError<'i>> {
         let url = input.expect_url()?;
-        Self::parse_from_string(url.as_ref().to_owned(), context)
+        Ok(Self::parse_from_string(url.as_ref().to_owned(), context))
     }
 }
 
@@ -133,7 +148,7 @@ impl ToCss for CssUrl {
                 // user *and* it's an invalid url that has been transformed
                 // back to specified value via the "uncompute" functionality.
                 None => "about:invalid",
-            }
+            },
         };
 
         dest.write_str("url(")?;
@@ -158,7 +173,7 @@ impl ToComputedValue for SpecifiedUrl {
                 None => {
                     unreachable!("Found specified url with neither resolved or original URI!");
                 },
-            }
+            },
         }
     }
 
@@ -171,7 +186,7 @@ impl ToComputedValue for SpecifiedUrl {
             ComputedUrl::Invalid(ref url) => SpecifiedUrl {
                 original: Some(url.clone()),
                 resolved: None,
-            }
+            },
         }
     }
 }

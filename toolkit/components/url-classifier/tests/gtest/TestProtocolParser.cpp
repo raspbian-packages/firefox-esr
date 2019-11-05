@@ -18,7 +18,8 @@ static bool InitUpdateResponse(ListUpdateResponse* aUpdateResponse,
 
 static void DumpBinary(const nsACString& aBinary);
 
-TEST(ProtocolParser, UpdateWait) {
+TEST(UrlClassifierProtocolParser, UpdateWait)
+{
   // Top level response which contains a list of update response
   // for different lists.
   FetchThreatListUpdatesResponse response;
@@ -45,7 +46,8 @@ TEST(ProtocolParser, UpdateWait) {
   delete p;
 }
 
-TEST(ProtocolParser, SingleValueEncoding) {
+TEST(UrlClassifierProtocolParser, SingleValueEncoding)
+{
   // Top level response which contains a list of update response
   // for different lists.
   FetchThreatListUpdatesResponse response;
@@ -53,13 +55,13 @@ TEST(ProtocolParser, SingleValueEncoding) {
   auto r = response.mutable_list_update_responses()->Add();
 
   const char* expectedPrefix = "\x00\x01\x02\x00";
-  if (!InitUpdateResponse(
-          r, SOCIAL_ENGINEERING_PUBLIC, nsCString("sta\x00te", 6),
-          nsCString("check\x0sum", 9), true,
-          // As per spec, we should interpret the prefix as uint32
-          // in little endian before encoding.
-          {LittleEndian::readUint32(expectedPrefix)},
-          true /* aDoPrefixEncoding */)) {
+  if (!InitUpdateResponse(r, SOCIAL_ENGINEERING_PUBLIC,
+                          nsCString("sta\x00te", 6),
+                          nsCString("check\x0sum", 9), true,
+                          // As per spec, we should interpret the prefix as
+                          // uint32 in little endian before encoding.
+                          {LittleEndian::readUint32(expectedPrefix)},
+                          true /* aDoPrefixEncoding */)) {
     printf("Failed to initialize update response.");
     ASSERT_TRUE(false);
     return;
@@ -79,17 +81,17 @@ TEST(ProtocolParser, SingleValueEncoding) {
   p->AppendStream(nsCString(s.c_str(), s.length()));
   p->End();
 
-  auto& tus = p->GetTableUpdates();
-  auto tuv4 = TableUpdate::Cast<TableUpdateV4>(tus[0]);
+  const TableUpdateArray& tus = p->GetTableUpdates();
+  RefPtr<const TableUpdateV4> tuv4 = TableUpdate::Cast<TableUpdateV4>(tus[0]);
   auto& prefixMap = tuv4->Prefixes();
-  for (auto iter = prefixMap.Iter(); !iter.Done(); iter.Next()) {
+  for (auto iter = prefixMap.ConstIter(); !iter.Done(); iter.Next()) {
     // This prefix map should contain only a single 4-byte prefixe.
     ASSERT_EQ(iter.Key(), 4u);
 
-    // The fixed-length prefix string from ProtcolParser should
+    // The fixed-length prefix string from ProtocolParser should
     // exactly match the expected prefix string.
-    auto& prefix = iter.Data()->GetPrefixString();
-    ASSERT_TRUE(prefix.Equals(nsCString(expectedPrefix, 4)));
+    nsCString* prefix = iter.Data();
+    ASSERT_TRUE(prefix->Equals(nsCString(expectedPrefix, 4)));
   }
 
   delete p;

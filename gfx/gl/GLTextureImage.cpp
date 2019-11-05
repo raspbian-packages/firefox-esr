@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -204,6 +204,7 @@ TiledTextureImage::TiledTextureImage(GLContext* aGL, gfx::IntSize aSize,
       mCurrentImage(0),
       mIterationCallback(nullptr),
       mIterationCallbackData(nullptr),
+      mTileSize(0),
       mRows(0),
       mColumns(0),
       mGL(aGL),
@@ -407,7 +408,7 @@ void TiledTextureImage::Resize(const gfx::IntSize& aSize) {
 
   // Prune any unused tiles at the end of the store.
   unsigned int length = mImages.Length();
-  for (; i < length; i++) mImages.RemoveElementAt(mImages.Length() - 1);
+  for (; i < length; i++) mImages.RemoveLastElement();
 
   // Reset tile-store properties.
   mRows = rows;

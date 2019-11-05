@@ -18,7 +18,12 @@
 class nsITimer;
 class nsSliderFrame;
 
-nsIFrame* NS_NewSliderFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
+nsIFrame* NS_NewSliderFrame(mozilla::PresShell* aPresShell,
+                            mozilla::ComputedStyle* aStyle);
 
 class nsSliderMediator final : public nsIDOMEventListener {
  public:
@@ -30,7 +35,7 @@ class nsSliderMediator final : public nsIDOMEventListener {
 
   virtual void SetSlider(nsSliderFrame* aSlider) { mSlider = aSlider; }
 
-  NS_IMETHOD HandleEvent(nsIDOMEvent* aEvent) override;
+  NS_DECL_NSIDOMEVENTLISTENER
 
  protected:
   virtual ~nsSliderMediator() {}
@@ -43,7 +48,7 @@ class nsSliderFrame final : public nsBoxFrame {
 
   friend class nsSliderMediator;
 
-  explicit nsSliderFrame(nsStyleContext* aContext);
+  explicit nsSliderFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
   virtual ~nsSliderFrame();
 
 #ifdef DEBUG_FRAME_DUMP
@@ -86,7 +91,7 @@ class nsSliderFrame final : public nsBoxFrame {
                             nsFrameList& aFrameList) override;
   virtual void RemoveFrame(ChildListID aListID, nsIFrame* aOldFrame) override;
 
-  nsresult StartDrag(nsIDOMEvent* aEvent);
+  nsresult StartDrag(mozilla::dom::Event* aEvent);
   nsresult StopDrag();
 
   void StartAPZDrag(mozilla::WidgetGUIEvent* aEvent);
@@ -111,6 +116,7 @@ class nsSliderFrame final : public nsBoxFrame {
     return NS_OK;
   }
 
+  MOZ_CAN_RUN_SCRIPT
   NS_IMETHOD HandleDrag(nsPresContext* aPresContext,
                         mozilla::WidgetGUIEvent* aEvent,
                         nsEventStatus* aEventStatus) override {
@@ -125,7 +131,12 @@ class nsSliderFrame final : public nsBoxFrame {
   // scrolled frame.
   float GetThumbRatio() const;
 
-  // Notify the slider frame than an async scrollbar drag requested in
+  // Notify the slider frame that an async scrollbar drag was started on the
+  // APZ side without consulting the main thread. The block id is the APZ
+  // input block id of the mousedown that started the drag.
+  void AsyncScrollbarDragInitiated(uint64_t aDragBlockId);
+
+  // Notify the slider frame that an async scrollbar drag requested in
   // StartAPZDrag() was rejected by APZ, and the slider frame should
   // fall back to main-thread dragging.
   void AsyncScrollbarDragRejected();
@@ -154,7 +165,7 @@ class nsSliderFrame final : public nsBoxFrame {
   void DragThumb(bool aGrabMouseEvents);
   void AddListener();
   void RemoveListener();
-  bool isDraggingThumb();
+  bool isDraggingThumb() const;
 
   void SuppressDisplayport();
   void UnsuppressDisplayport();
@@ -198,6 +209,13 @@ class nsSliderFrame final : public nsBoxFrame {
   // true if displayport suppression is active, for more performant
   // scrollbar-dragging behaviour.
   bool mSuppressionActive;
+
+  // If APZ initiated a scrollbar drag without main-thread involvement, it
+  // notifies us and this variable stores the input block id of the APZ input
+  // block that started the drag. This lets us handle the corresponding
+  // mousedown event properly, if it arrives after the scroll position has
+  // been shifted due to async scrollbar drag.
+  Maybe<uint64_t> mAPZDragInitiated;
 
   static bool gMiddlePref;
   static int32_t gSnapMultiplier;

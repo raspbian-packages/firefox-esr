@@ -20,6 +20,7 @@
 #include "mozilla/net/MozURL.h"
 #include "mozIStorageConnection.h"
 #include "mozIStorageStatement.h"
+#include "mozIThirdPartyUtil.h"
 #include "mozStorageHelper.h"
 #include "nsCOMPtr.h"
 #include "nsCRT.h"
@@ -309,7 +310,6 @@ static_assert(nsIContentPolicy::TYPE_INVALID == 0 &&
                   nsIContentPolicy::TYPE_FETCH == 20 &&
                   nsIContentPolicy::TYPE_IMAGESET == 21 &&
                   nsIContentPolicy::TYPE_WEB_MANIFEST == 22 &&
-                  nsIContentPolicy::TYPE_SAVEAS_DOWNLOAD == 43 &&
                   nsIContentPolicy::TYPE_INTERNAL_SCRIPT == 23 &&
                   nsIContentPolicy::TYPE_INTERNAL_WORKER == 24 &&
                   nsIContentPolicy::TYPE_INTERNAL_SHARED_WORKER == 25 &&
@@ -329,7 +329,11 @@ static_assert(nsIContentPolicy::TYPE_INVALID == 0 &&
                   nsIContentPolicy::TYPE_INTERNAL_STYLESHEET == 39 &&
                   nsIContentPolicy::TYPE_INTERNAL_STYLESHEET_PRELOAD == 40 &&
                   nsIContentPolicy::TYPE_INTERNAL_IMAGE_FAVICON == 41 &&
-                  nsIContentPolicy::TYPE_INTERNAL_WORKER_IMPORT_SCRIPTS == 42,
+                  nsIContentPolicy::TYPE_INTERNAL_WORKER_IMPORT_SCRIPTS == 42 &&
+                  nsIContentPolicy::TYPE_SAVEAS_DOWNLOAD == 43 &&
+                  nsIContentPolicy::TYPE_SPECULATIVE == 44 &&
+                  nsIContentPolicy::TYPE_INTERNAL_MODULE == 45 &&
+                  nsIContentPolicy::TYPE_INTERNAL_MODULE_PRELOAD == 46,
               "nsContentPolicyType values are as expected");
 
 namespace {
@@ -621,9 +625,9 @@ nsresult InitializeConnection(mozIStorageConnection* aConn) {
     return rv;
   }
 
-    // Verify that we successfully set the vacuum mode to incremental.  It
-    // is very easy to put the database in a state where the auto_vacuum
-    // pragma above fails silently.
+  // Verify that we successfully set the vacuum mode to incremental.  It
+  // is very easy to put the database in a state where the auto_vacuum
+  // pragma above fails silently.
 #ifdef DEBUG
   nsCOMPtr<mozIStorageStatement> state;
   rv = aConn->CreateStatement(NS_LITERAL_CSTRING("PRAGMA auto_vacuum;"),
@@ -912,7 +916,7 @@ nsresult CacheMatch(mozIStorageConnection* aConn, CacheId aCacheId,
 }
 
 nsresult CacheMatchAll(mozIStorageConnection* aConn, CacheId aCacheId,
-                       const CacheRequestOrVoid& aRequestOrVoid,
+                       const Maybe<CacheRequest>& aMaybeRequest,
                        const CacheQueryParams& aParams,
                        nsTArray<SavedResponse>& aSavedResponsesOut) {
   MOZ_ASSERT(!NS_IsMainThread());
@@ -920,13 +924,13 @@ nsresult CacheMatchAll(mozIStorageConnection* aConn, CacheId aCacheId,
   nsresult rv;
 
   AutoTArray<EntryId, 256> matches;
-  if (aRequestOrVoid.type() == CacheRequestOrVoid::Tvoid_t) {
+  if (aMaybeRequest.isNothing()) {
     rv = QueryAll(aConn, aCacheId, matches);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
   } else {
-    rv = QueryCache(aConn, aCacheId, aRequestOrVoid, aParams, matches);
+    rv = QueryCache(aConn, aCacheId, aMaybeRequest.ref(), aParams, matches);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
@@ -1031,7 +1035,7 @@ nsresult CacheDelete(mozIStorageConnection* aConn, CacheId aCacheId,
 }
 
 nsresult CacheKeys(mozIStorageConnection* aConn, CacheId aCacheId,
-                   const CacheRequestOrVoid& aRequestOrVoid,
+                   const Maybe<CacheRequest>& aMaybeRequest,
                    const CacheQueryParams& aParams,
                    nsTArray<SavedRequest>& aSavedRequestsOut) {
   MOZ_ASSERT(!NS_IsMainThread());
@@ -1039,13 +1043,13 @@ nsresult CacheKeys(mozIStorageConnection* aConn, CacheId aCacheId,
   nsresult rv;
 
   AutoTArray<EntryId, 256> matches;
-  if (aRequestOrVoid.type() == CacheRequestOrVoid::Tvoid_t) {
+  if (aMaybeRequest.isNothing()) {
     rv = QueryAll(aConn, aCacheId, matches);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
   } else {
-    rv = QueryCache(aConn, aCacheId, aRequestOrVoid, aParams, matches);
+    rv = QueryCache(aConn, aCacheId, aMaybeRequest.ref(), aParams, matches);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
@@ -1348,7 +1352,7 @@ nsresult QueryCache(mozIStorageConnection* aConn, CacheId aCacheId,
       "FROM entries "
       "LEFT OUTER JOIN response_headers ON "
       "entries.id=response_headers.entry_id "
-      "AND response_headers.name='vary' "
+      "AND response_headers.name='vary' COLLATE NOCASE "
       "WHERE entries.cache_id=:cache_id "
       "AND entries.request_url_no_query_hash=:url_no_query_hash ");
 
@@ -1468,7 +1472,8 @@ nsresult MatchByVaryHeader(mozIStorageConnection* aConn,
   nsCOMPtr<mozIStorageStatement> state;
   nsresult rv = aConn->CreateStatement(
       NS_LITERAL_CSTRING("SELECT value FROM response_headers "
-                         "WHERE name='vary' AND entry_id=:entry_id;"),
+                         "WHERE name='vary' COLLATE NOCASE "
+                         "AND entry_id=:entry_id;"),
       getter_AddRefs(state));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
@@ -2212,10 +2217,9 @@ nsresult InsertEntry(mozIStorageConnection* aConn, CacheId aCacheId,
 
   nsAutoCString serializedInfo;
   // We only allow content serviceworkers right now.
-  if (aResponse.principalInfo().type() ==
-      mozilla::ipc::OptionalPrincipalInfo::TPrincipalInfo) {
+  if (aResponse.principalInfo().isSome()) {
     const mozilla::ipc::PrincipalInfo& principalInfo =
-        aResponse.principalInfo().get_PrincipalInfo();
+        aResponse.principalInfo().ref();
     MOZ_DIAGNOSTIC_ASSERT(principalInfo.type() ==
                           mozilla::ipc::PrincipalInfo::TContentPrincipalInfo);
     const mozilla::ipc::ContentPrincipalInfo& cInfo =
@@ -2465,7 +2469,7 @@ nsresult ReadResponse(mozIStorageConnection* aConn, EntryId aEntryId,
     return rv;
   }
 
-  aSavedResponseOut->mValue.principalInfo() = void_t();
+  aSavedResponseOut->mValue.principalInfo() = Nothing();
   if (!serializedInfo.IsEmpty()) {
     nsAutoCString specNoSuffix;
     OriginAttributes attrs;
@@ -2481,22 +2485,26 @@ nsresult ReadResponse(mozIStorageConnection* aConn, EntryId aEntryId,
     }
 
 #ifdef DEBUG
-    nsCString scheme;
-    rv = url->GetScheme(scheme);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
-    }
+    nsDependentCSubstring scheme = url->Scheme();
     MOZ_ASSERT(scheme == "http" || scheme == "https" || scheme == "file");
 #endif
 
     nsCString origin;
-    rv = url->GetOrigin(origin);
+    url->Origin(origin);
+
+    // CSP is recovered from the headers, no need to initialise it here.
+    nsTArray<mozilla::ipc::ContentSecurityPolicy> policies;
+
+    nsCString baseDomain;
+    rv = url->BaseDomain(baseDomain);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
 
     aSavedResponseOut->mValue.principalInfo() =
-        mozilla::ipc::ContentPrincipalInfo(attrs, origin, specNoSuffix);
+        Some(mozilla::ipc::ContentPrincipalInfo(attrs, origin, specNoSuffix,
+                                                Nothing(), std::move(policies),
+                                                baseDomain));
   }
 
   bool nullPadding = false;
@@ -2956,7 +2964,7 @@ nsresult IncrementalVacuum(mozIStorageConnection* aConn) {
     return rv;
   }
 
-    // Verify that our incremental vacuum actually did something
+  // Verify that our incremental vacuum actually did something
 #ifdef DEBUG
   rv = aConn->CreateStatement(NS_LITERAL_CSTRING("PRAGMA freelist_count;"),
                               getter_AddRefs(state));

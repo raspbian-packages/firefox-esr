@@ -22,16 +22,16 @@ using TagAtomTable =
     nsDataHashtable<nsPtrHashKey<nsAtom>, SVGContentCreatorFunction>;
 StaticAutoPtr<TagAtomTable> sTagAtomTable;
 
-#define SVG_TAG(_tag, _classname)                                             \
-  nsresult NS_NewSVG##_classname##Element(                                    \
-      nsIContent** aResult,                                                   \
-      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);                  \
-                                                                              \
-  nsresult NS_NewSVG##_classname##Element(                                    \
-      nsIContent** aResult,                                                   \
-      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,                   \
-      FromParser aFromParser) {                                               \
-    return NS_NewSVG##_classname##Element(aResult, mozilla::Move(aNodeInfo)); \
+#define SVG_TAG(_tag, _classname)                                         \
+  nsresult NS_NewSVG##_classname##Element(                                \
+      nsIContent** aResult,                                               \
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);              \
+                                                                          \
+  nsresult NS_NewSVG##_classname##Element(                                \
+      nsIContent** aResult,                                               \
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,               \
+      FromParser aFromParser) {                                           \
+    return NS_NewSVG##_classname##Element(aResult, std::move(aNodeInfo)); \
   }
 
 #define SVG_FROM_PARSER_TAG(_tag, _classname)

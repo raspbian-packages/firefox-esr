@@ -21,7 +21,8 @@ class HTMLLinkElement final : public nsGenericHTMLElement,
                               public nsStyleLinkElement,
                               public Link {
  public:
-  explicit HTMLLinkElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit HTMLLinkElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -30,27 +31,25 @@ class HTMLLinkElement final : public nsGenericHTMLElement,
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLLinkElement,
                                            nsGenericHTMLElement)
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLLinkElement, link);
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLLinkElement, link);
   NS_DECL_ADDSIZEOFEXCLUDINGTHIS
 
   void LinkAdded();
   void LinkRemoved();
 
-  // nsIDOMEventTarget
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
-  virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
+  // EventTarget
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
+  MOZ_CAN_RUN_SCRIPT
+  nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
 
   // nsINode
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
   virtual JSObject* WrapNode(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual nsresult BeforeSetAttr(int32_t aNameSpaceID, nsAtom* aName,
@@ -72,15 +71,15 @@ class HTMLLinkElement final : public nsGenericHTMLElement,
   virtual void GetLinkTarget(nsAString& aTarget) override;
   virtual EventStates IntrinsicState() const override;
 
-  void CreateAndDispatchEvent(nsIDocument* aDoc, const nsAString& aEventName);
+  void CreateAndDispatchEvent(Document* aDoc, const nsAString& aEventName);
 
   virtual void OnDNSPrefetchDeferred() override;
   virtual void OnDNSPrefetchRequested() override;
   virtual bool HasDeferredDNSPrefetchRequest() override;
 
   // WebIDL
-  bool Disabled();
-  void SetDisabled(bool aDisabled);
+  bool Disabled() const;
+  void SetDisabled(bool aDisabled, ErrorResult& aRv);
 
   void GetHref(nsAString& aValue) {
     GetURIAttr(nsGkAtoms::href, nullptr, aValue);
@@ -152,29 +151,33 @@ class HTMLLinkElement final : public nsGenericHTMLElement,
   void GetReferrerPolicy(nsAString& aReferrer) {
     GetEnumAttr(nsGkAtoms::referrerpolicy, EmptyCString().get(), aReferrer);
   }
-  mozilla::net::ReferrerPolicy GetLinkReferrerPolicy() override {
-    return GetReferrerPolicyAsEnum();
+
+  CORSMode GetCORSMode() const {
+    return AttrValueToCORSMode(GetParsedAttr(nsGkAtoms::crossorigin));
   }
 
-  virtual CORSMode GetCORSMode() const override;
-
-  void NodeInfoChanged(nsIDocument* aOldDoc) final {
+  void NodeInfoChanged(Document* aOldDoc) final {
     ClearHasPendingLinkUpdate();
     nsGenericHTMLElement::NodeInfoChanged(aOldDoc);
   }
+
+  static bool CheckPreloadAttrs(const nsAttrValue& aAs, const nsAString& aType,
+                                const nsAString& aMedia, Document* aDocument);
 
  protected:
   virtual ~HTMLLinkElement();
 
   // nsStyleLinkElement
-  virtual already_AddRefed<nsIURI> GetStyleSheetURL(
-      bool* aIsInline, nsIPrincipal** aTriggeringPrincipal) override;
-  virtual void GetStyleSheetInfo(nsAString& aTitle, nsAString& aType,
-                                 nsAString& aMedia, bool* aIsScoped,
-                                 bool* aIsAlternate) override;
+  Maybe<SheetInfo> GetStyleSheetInfo() final;
 
- protected:
   RefPtr<nsDOMTokenList> mRelList;
+
+  // The "explicitly enabled" flag. This flag is set whenever the `disabled`
+  // attribute is explicitly unset, and makes alternate stylesheets not be
+  // disabled by default anymore.
+  //
+  // See https://github.com/whatwg/html/issues/3840#issuecomment-481034206.
+  bool mExplicitlyEnabled = false;
 };
 
 }  // namespace dom

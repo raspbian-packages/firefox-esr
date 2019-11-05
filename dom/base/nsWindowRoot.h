@@ -7,12 +7,10 @@
 #ifndef nsWindowRoot_h__
 #define nsWindowRoot_h__
 
-class nsIDOMEvent;
 class nsIGlobalObject;
 
 #include "mozilla/Attributes.h"
 #include "mozilla/EventListenerManager.h"
-#include "nsIDOMEventTarget.h"
 #include "nsIWeakReferenceUtils.h"
 #include "nsPIWindowRoot.h"
 #include "nsCycleCollectionParticipant.h"
@@ -24,18 +22,20 @@ class nsWindowRoot final : public nsPIWindowRoot {
   explicit nsWindowRoot(nsPIDOMWindowOuter* aWindow);
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_NSIDOMEVENTTARGET
 
   virtual mozilla::EventListenerManager* GetExistingListenerManager()
       const override;
   virtual mozilla::EventListenerManager* GetOrCreateListenerManager() override;
 
-  using mozilla::dom::EventTarget::RemoveEventListener;
-  virtual void AddEventListener(
-      const nsAString& aType, mozilla::dom::EventListener* aListener,
-      const mozilla::dom::AddEventListenerOptionsOrBoolean& aOptions,
-      const mozilla::dom::Nullable<bool>& aWantsUntrusted,
-      mozilla::ErrorResult& aRv) override;
+  bool ComputeDefaultWantsUntrusted(mozilla::ErrorResult& aRv) final;
+
+  bool DispatchEvent(mozilla::dom::Event& aEvent,
+                     mozilla::dom::CallerType aCallerType,
+                     mozilla::ErrorResult& aRv) override;
+
+  void GetEventTargetParent(mozilla::EventChainPreVisitor& aVisitor) override;
+
+  nsresult PostHandleEvent(mozilla::EventChainPostVisitor& aVisitor) override;
 
   // nsPIWindowRoot
 
@@ -60,7 +60,7 @@ class nsWindowRoot final : public nsPIWindowRoot {
   virtual mozilla::dom::EventTarget* GetParentTarget() override {
     return mParent;
   }
-  virtual nsPIDOMWindowOuter* GetOwnerGlobalForBindings() override;
+  virtual nsPIDOMWindowOuter* GetOwnerGlobalForBindingsInternal() override;
   virtual nsIGlobalObject* GetOwnerGlobal() const override;
 
   nsIGlobalObject* GetParentObject();
@@ -68,11 +68,10 @@ class nsWindowRoot final : public nsPIWindowRoot {
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
-  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_AMBIGUOUS(nsWindowRoot,
-                                                         nsIDOMEventTarget)
+  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(nsWindowRoot)
 
-  virtual void AddBrowser(mozilla::dom::TabParent* aBrowser) override;
-  virtual void RemoveBrowser(mozilla::dom::TabParent* aBrowser) override;
+  virtual void AddBrowser(mozilla::dom::BrowserParent* aBrowser) override;
+  virtual void RemoveBrowser(mozilla::dom::BrowserParent* aBrowser) override;
   virtual void EnumerateBrowsers(BrowserEnumerator aEnumFunc,
                                  void* aArg) override;
 
@@ -110,7 +109,8 @@ class nsWindowRoot final : public nsPIWindowRoot {
 
   nsCOMPtr<mozilla::dom::EventTarget> mParent;
 
-  // The TabParents that are currently registered with this top-level window.
+  // The BrowserParents that are currently registered with this top-level
+  // window.
   typedef nsTHashtable<nsRefPtrHashKey<nsIWeakReference>> WeakBrowserTable;
   WeakBrowserTable mWeakBrowsers;
 };

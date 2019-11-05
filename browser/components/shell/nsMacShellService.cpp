@@ -4,9 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsDirectoryServiceDefs.h"
-#include "nsIDOMElement.h"
 #include "nsIImageLoadingContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIContent.h"
 #include "nsILocalFileMac.h"
 #include "nsIObserverService.h"
@@ -22,9 +21,12 @@
 #include "nsString.h"
 #include "nsIDocShell.h"
 #include "nsILoadContext.h"
+#include "mozilla/dom/Element.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <ApplicationServices/ApplicationServices.h>
+
+using mozilla::dom::Element;
 
 #define NETWORK_PREFPANE \
   NS_LITERAL_CSTRING("/System/Library/PreferencePanes/Network.prefPane")
@@ -35,10 +37,10 @@
 #define SAFARI_BUNDLE_IDENTIFIER "com.apple.Safari"
 
 NS_IMPL_ISUPPORTS(nsMacShellService, nsIMacShellService, nsIShellService,
-                  nsIWebProgressListener)
+                  nsIToolkitShellService, nsIWebProgressListener)
 
 NS_IMETHODIMP
-nsMacShellService::IsDefaultBrowser(bool aStartupCheck, bool aForAllTypes,
+nsMacShellService::IsDefaultBrowser(bool aForAllTypes,
                                     bool* aIsDefaultBrowser) {
   *aIsDefaultBrowser = false;
 
@@ -101,8 +103,7 @@ nsMacShellService::SetDefaultBrowser(bool aClaimAllTypes, bool aForAllUsers) {
 }
 
 NS_IMETHODIMP
-nsMacShellService::SetDesktopBackground(nsIDOMElement* aElement,
-                                        int32_t aPosition,
+nsMacShellService::SetDesktopBackground(Element* aElement, int32_t aPosition,
                                         const nsACString& aImageName) {
   // Note: We don't support aPosition on OS X.
 
@@ -115,11 +116,7 @@ nsMacShellService::SetDesktopBackground(nsIDOMElement* aElement,
   rv = imageContent->GetCurrentURI(getter_AddRefs(imageURI));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // We need the referer URI for nsIWebBrowserPersist::saveURI
-  nsCOMPtr<nsIContent> content = do_QueryInterface(aElement, &rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  nsIURI* docURI = content->OwnerDoc()->GetDocumentURI();
+  nsIURI* docURI = aElement->OwnerDoc()->GetDocumentURI();
   if (!docURI) return NS_ERROR_FAILURE;
 
   nsCOMPtr<nsIProperties> fileLocator(
@@ -150,14 +147,14 @@ nsMacShellService::SetDesktopBackground(nsIDOMElement* aElement,
   wbp->SetProgressListener(this);
 
   nsCOMPtr<nsILoadContext> loadContext;
-  nsCOMPtr<nsISupports> container = content->OwnerDoc()->GetContainer();
+  nsCOMPtr<nsISupports> container = aElement->OwnerDoc()->GetContainer();
   nsCOMPtr<nsIDocShell> docShell = do_QueryInterface(container);
   if (docShell) {
     loadContext = do_QueryInterface(docShell);
   }
 
-  return wbp->SaveURI(imageURI, nullptr, docURI,
-                      content->OwnerDoc()->GetReferrerPolicy(), nullptr,
+  return wbp->SaveURI(imageURI, aElement->NodePrincipal(), 0, docURI,
+                      aElement->OwnerDoc()->GetReferrerPolicy(), nullptr,
                       nullptr, mBackgroundFile, loadContext);
 }
 
@@ -188,6 +185,13 @@ nsMacShellService::OnStatusChange(nsIWebProgress* aWebProgress,
 NS_IMETHODIMP
 nsMacShellService::OnSecurityChange(nsIWebProgress* aWebProgress,
                                     nsIRequest* aRequest, uint32_t aState) {
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsMacShellService::OnContentBlockingEvent(nsIWebProgress* aWebProgress,
+                                          nsIRequest* aRequest,
+                                          uint32_t aEvent) {
   return NS_OK;
 }
 
@@ -360,42 +364,4 @@ nsMacShellService::OpenApplicationWithURI(nsIFile* aApplication,
   ::CFRelease(uri);
 
   return err != noErr ? NS_ERROR_FAILURE : NS_OK;
-}
-
-NS_IMETHODIMP
-nsMacShellService::GetDefaultFeedReader(nsIFile** _retval) {
-  nsresult rv = NS_ERROR_FAILURE;
-  *_retval = nullptr;
-
-  CFStringRef defaultHandlerID =
-      ::LSCopyDefaultHandlerForURLScheme(CFSTR("feed"));
-  if (!defaultHandlerID) {
-    defaultHandlerID = ::CFStringCreateWithCString(
-        kCFAllocatorDefault, SAFARI_BUNDLE_IDENTIFIER, kCFStringEncodingASCII);
-  }
-
-  CFURLRef defaultHandlerURL = nullptr;
-  OSStatus status =
-      ::LSFindApplicationForInfo(kLSUnknownCreator, defaultHandlerID,
-                                 nullptr,  // inName
-                                 nullptr,  // outAppRef
-                                 &defaultHandlerURL);
-
-  if (status == noErr && defaultHandlerURL) {
-    nsCOMPtr<nsILocalFileMac> defaultReader =
-        do_CreateInstance("@mozilla.org/file/local;1", &rv);
-    if (NS_SUCCEEDED(rv)) {
-      rv = defaultReader->InitWithCFURL(defaultHandlerURL);
-      if (NS_SUCCEEDED(rv)) {
-        NS_ADDREF(*_retval = defaultReader);
-        rv = NS_OK;
-      }
-    }
-
-    ::CFRelease(defaultHandlerURL);
-  }
-
-  ::CFRelease(defaultHandlerID);
-
-  return rv;
 }

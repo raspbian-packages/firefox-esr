@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -108,10 +108,17 @@ enum class EffectiveFormat : EffectiveFormatValueT {
   COMPRESSED_RGBA8_ETC2_EAC,
   COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
 
-  // AMD_compressed_ATC_texture
-  ATC_RGB_AMD,
-  ATC_RGBA_EXPLICIT_ALPHA_AMD,
-  ATC_RGBA_INTERPOLATED_ALPHA_AMD,
+  // EXT_texture_compression_bptc
+  COMPRESSED_RGBA_BPTC_UNORM,
+  COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+  COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+  COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+
+  // EXT_texture_compression_rgtc
+  COMPRESSED_RED_RGTC1,
+  COMPRESSED_SIGNED_RED_RGTC1,
+  COMPRESSED_RG_RGTC2,
+  COMPRESSED_SIGNED_RG_RGTC2,
 
   // EXT_texture_compression_s3tc
   COMPRESSED_RGB_S3TC_DXT1_EXT,
@@ -200,21 +207,28 @@ enum class UnsizedFormat : uint8_t {
 
 // GLES 3.0.4 p114 Table 3.4, p240
 enum class ComponentType : uint8_t {
-  None,
   Int,       // RGBA32I
-  UInt,      // RGBA32UI, STENCIL_INDEX8
+  UInt,      // RGBA32UI
   NormInt,   // RGBA8_SNORM
-  NormUInt,  // RGBA8, DEPTH_COMPONENT16
+  NormUInt,  // RGBA8
   Float,     // RGBA32F
-  Special,   // DEPTH24_STENCIL8
 };
+
+enum class TextureBaseType : uint8_t {
+  Int = uint8_t(ComponentType::Int),
+  UInt = uint8_t(ComponentType::UInt),
+  Float = uint8_t(ComponentType::Float),  // Also includes NormU?Int and Depth
+};
+
+const char* ToString(TextureBaseType);
 
 enum class CompressionFamily : uint8_t {
   ASTC,
-  ATC,
+  BPTC,
   ES3,  // ETC2 or EAC
   ETC1,
   PVRTC,
+  RGTC,
   S3TC,
 };
 
@@ -234,6 +248,7 @@ struct FormatInfo {
   const GLenum sizedFormat;
   const UnsizedFormat unsizedFormat;
   const ComponentType componentType;
+  const TextureBaseType baseType;
   const bool isSRGB;
 
   const CompressedFormatInfo* const compression;
@@ -298,31 +313,30 @@ struct FormatUsageInfo {
   const FormatInfo* const format;
 
  private:
-  bool isRenderable;
+  bool isRenderable = false;
 
  public:
-  bool isFilterable;
+  bool isFilterable = false;
 
   std::map<PackingInfo, DriverUnpackInfo> validUnpacks;
-  const DriverUnpackInfo* idealUnpack;
+  const DriverUnpackInfo* idealUnpack = nullptr;
 
-  const GLint* textureSwizzleRGBA;
+  const GLint* textureSwizzleRGBA = nullptr;
 
-  bool maxSamplesKnown;
-  uint32_t maxSamples;
+ private:
+  mutable bool maxSamplesKnown = false;
+  mutable uint32_t maxSamples = 0;
 
+ public:
   static const GLint kLuminanceSwizzleRGBA[4];
   static const GLint kAlphaSwizzleRGBA[4];
   static const GLint kLumAlphaSwizzleRGBA[4];
 
-  explicit FormatUsageInfo(const FormatInfo* _format)
-      : format(_format),
-        isRenderable(false),
-        isFilterable(false),
-        idealUnpack(nullptr),
-        textureSwizzleRGBA(nullptr),
-        maxSamplesKnown(false),
-        maxSamples(0) {}
+  explicit FormatUsageInfo(const FormatInfo* const _format) : format(_format) {
+    if (format->IsColorFormat() && format->baseType != TextureBaseType::Float) {
+      maxSamplesKnown = true;
+    }
+  }
 
   bool IsRenderable() const { return isRenderable; }
   void SetRenderable();
@@ -330,7 +344,16 @@ struct FormatUsageInfo {
   bool IsUnpackValid(const PackingInfo& key,
                      const DriverUnpackInfo** const out_value) const;
 
-  void ResolveMaxSamples(gl::GLContext* gl);
+ private:
+  void ResolveMaxSamples(gl::GLContext& gl) const;
+
+ public:
+  uint32_t MaxSamples(gl::GLContext& gl) const {
+    if (!maxSamplesKnown) {
+      ResolveMaxSamples(gl);
+    }
+    return maxSamples;
+  }
 };
 
 class FormatUsageAuthority {
@@ -361,7 +384,8 @@ class FormatUsageAuthority {
   bool IsInternalFormatEnumValid(GLenum internalFormat) const;
   bool AreUnpackEnumsValid(GLenum unpackFormat, GLenum unpackType) const;
 
-  void AllowRBFormat(GLenum sizedFormat, const FormatUsageInfo* usage);
+  void AllowRBFormat(GLenum sizedFormat, const FormatUsageInfo* usage,
+                     bool expectRenderable = true);
   void AllowSizedTexFormat(GLenum sizedFormat, const FormatUsageInfo* usage);
   void AllowUnsizedTexFormat(const PackingInfo& pi,
                              const FormatUsageInfo* usage);

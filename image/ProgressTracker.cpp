@@ -155,6 +155,31 @@ class AsyncNotifyRunnable : public Runnable {
   nsTArray<RefPtr<IProgressObserver>> mObservers;
 };
 
+ProgressTracker::MediumHighRunnable::MediumHighRunnable(
+    already_AddRefed<AsyncNotifyRunnable>&& aEvent)
+    : PrioritizableRunnable(std::move(aEvent),
+                            nsIRunnablePriority::PRIORITY_MEDIUMHIGH) {}
+
+void ProgressTracker::MediumHighRunnable::AddObserver(
+    IProgressObserver* aObserver) {
+  static_cast<AsyncNotifyRunnable*>(mRunnable.get())->AddObserver(aObserver);
+}
+
+void ProgressTracker::MediumHighRunnable::RemoveObserver(
+    IProgressObserver* aObserver) {
+  static_cast<AsyncNotifyRunnable*>(mRunnable.get())->RemoveObserver(aObserver);
+}
+
+/* static */
+already_AddRefed<ProgressTracker::MediumHighRunnable>
+ProgressTracker::MediumHighRunnable::Create(
+    already_AddRefed<AsyncNotifyRunnable>&& aEvent) {
+  MOZ_ASSERT(NS_IsMainThread());
+  RefPtr<ProgressTracker::MediumHighRunnable> event(
+      new ProgressTracker::MediumHighRunnable(std::move(aEvent)));
+  return event.forget();
+}
+
 void ProgressTracker::Notify(IProgressObserver* aObserver) {
   MOZ_ASSERT(NS_IsMainThread());
 
@@ -165,16 +190,7 @@ void ProgressTracker::Notify(IProgressObserver* aObserver) {
 
   if (MOZ_LOG_TEST(gImgLog, LogLevel::Debug)) {
     RefPtr<Image> image = GetImage();
-    if (image && image->GetURI()) {
-      RefPtr<ImageURL> uri(image->GetURI());
-      nsAutoCString spec;
-      uri->GetSpec(spec);
-      LOG_FUNC_WITH_PARAM(gImgLog, "ProgressTracker::Notify async", "uri",
-                          spec.get());
-    } else {
-      LOG_FUNC_WITH_PARAM(gImgLog, "ProgressTracker::Notify async", "uri",
-                          "<unknown>");
-    }
+    LOG_FUNC_WITH_PARAM(gImgLog, "ProgressTracker::Notify async", "uri", image);
   }
 
   aObserver->MarkPendingNotify();
@@ -182,13 +198,11 @@ void ProgressTracker::Notify(IProgressObserver* aObserver) {
   // If we have an existing runnable that we can use, we just append this
   // observer to its list of observers to be notified. This ensures we don't
   // unnecessarily delay onload.
-  AsyncNotifyRunnable* runnable =
-      static_cast<AsyncNotifyRunnable*>(mRunnable.get());
-
-  if (runnable) {
-    runnable->AddObserver(aObserver);
+  if (mRunnable) {
+    mRunnable->AddObserver(aObserver);
   } else {
-    mRunnable = new AsyncNotifyRunnable(this, aObserver);
+    RefPtr<AsyncNotifyRunnable> ev = new AsyncNotifyRunnable(this, aObserver);
+    mRunnable = ProgressTracker::MediumHighRunnable::Create(ev.forget());
     mEventTarget->Dispatch(mRunnable, NS_DISPATCH_NORMAL);
   }
 }
@@ -235,12 +249,8 @@ void ProgressTracker::NotifyCurrentState(IProgressObserver* aObserver) {
 
   if (MOZ_LOG_TEST(gImgLog, LogLevel::Debug)) {
     RefPtr<Image> image = GetImage();
-    nsAutoCString spec;
-    if (image && image->GetURI()) {
-      image->GetURI()->GetSpec(spec);
-    }
     LOG_FUNC_WITH_PARAM(gImgLog, "ProgressTracker::NotifyCurrentState", "uri",
-                        spec.get());
+                        image);
   }
 
   aObserver->MarkPendingNotify();
@@ -370,13 +380,7 @@ void ProgressTracker::SyncNotify(IProgressObserver* aObserver) {
   MOZ_ASSERT(NS_IsMainThread());
 
   RefPtr<Image> image = GetImage();
-
-  nsAutoCString spec;
-  if (image && image->GetURI()) {
-    image->GetURI()->GetSpec(spec);
-  }
-  LOG_SCOPE_WITH_PARAM(gImgLog, "ProgressTracker::SyncNotify", "uri",
-                       spec.get());
+  LOG_SCOPE_WITH_PARAM(gImgLog, "ProgressTracker::SyncNotify", "uri", image);
 
   nsIntRect rect;
   if (image) {
@@ -482,11 +486,8 @@ bool ProgressTracker::RemoveObserver(IProgressObserver* aObserver) {
 
   // Make sure we don't give callbacks to an observer that isn't interested in
   // them any more.
-  AsyncNotifyRunnable* runnable =
-      static_cast<AsyncNotifyRunnable*>(mRunnable.get());
-
-  if (aObserver->NotificationsDeferred() && runnable) {
-    runnable->RemoveObserver(aObserver);
+  if (aObserver->NotificationsDeferred() && mRunnable) {
+    mRunnable->RemoveObserver(aObserver);
     aObserver->ClearPendingNotify();
   }
 
@@ -542,11 +543,7 @@ void ProgressTracker::FireFailureNotification() {
   RefPtr<Image> image = GetImage();
   if (image) {
     // Should be on main thread, so ok to create a new nsIURI.
-    nsCOMPtr<nsIURI> uri;
-    {
-      RefPtr<ImageURL> threadsafeUriData = image->GetURI();
-      uri = threadsafeUriData ? threadsafeUriData->ToIURI() : nullptr;
-    }
+    nsCOMPtr<nsIURI> uri = image->GetURI();
     if (uri) {
       nsCOMPtr<nsIObserverService> os = mozilla::services::GetObserverService();
       if (os) {

@@ -111,6 +111,13 @@ bool WorkerRunnable::DispatchInternal() {
     return NS_SUCCEEDED(parent->Dispatch(runnable.forget()));
   }
 
+  if (IsDebuggeeRunnable()) {
+    RefPtr<WorkerDebuggeeRunnable> debuggeeRunnable =
+        runnable.forget().downcast<WorkerDebuggeeRunnable>();
+    return NS_SUCCEEDED(mWorkerPrivate->DispatchDebuggeeToMainThread(
+        debuggeeRunnable.forget(), NS_DISPATCH_NORMAL));
+  }
+
   return NS_SUCCEEDED(mWorkerPrivate->DispatchToMainThread(runnable.forget()));
 }
 
@@ -250,7 +257,7 @@ WorkerRunnable::Run() {
                "ScriptExecutorRunnable");
     mWorkerPrivate->AssertIsOnWorkerThread();
     MOZ_ASSERT(!JS_IsExceptionPending(mWorkerPrivate->GetJSContext()));
-    // We can't enter a useful compartment on the JSContext here; just pass it
+    // We can't enter a useful realm on the JSContext here; just pass it
     // in as-is.
     PostRun(mWorkerPrivate->GetJSContext(), mWorkerPrivate, false);
     return NS_ERROR_FAILURE;
@@ -322,34 +329,34 @@ WorkerRunnable::Run() {
   MOZ_ASSERT_IF(!targetIsWorkerThread && !isMainThread,
                 mWorkerPrivate->IsDedicatedWorker() && globalObject);
 
-  // If we're on the parent thread we might be in a null compartment in the
+  // If we're on the parent thread we might be in a null realm in the
   // situation described above when globalObject is null.  Make sure to enter
-  // the compartment of the worker's reflector if there is one.  There might
+  // the realm of the worker's reflector if there is one.  There might
   // not be one if we're just starting to compile the script for this worker.
-  Maybe<JSAutoCompartment> ac;
+  Maybe<JSAutoRealm> ar;
   if (!targetIsWorkerThread && mWorkerPrivate->IsDedicatedWorker() &&
       mWorkerPrivate->ParentEventTargetRef()->GetWrapper()) {
     JSObject* wrapper = mWorkerPrivate->ParentEventTargetRef()->GetWrapper();
 
     // If we're on the parent thread and have a reflector and a globalObject,
-    // then the compartments of cx, globalObject, and the worker's reflector
+    // then the realms of cx, globalObject, and the worker's reflector
     // should all match.
-    MOZ_ASSERT_IF(globalObject, js::GetObjectCompartment(wrapper) ==
-                                    js::GetContextCompartment(cx));
-    MOZ_ASSERT_IF(globalObject, js::GetObjectCompartment(wrapper) ==
-                                    js::GetObjectCompartment(
-                                        globalObject->GetGlobalJSObject()));
+    MOZ_ASSERT_IF(globalObject,
+                  js::GetNonCCWObjectRealm(wrapper) == js::GetContextRealm(cx));
+    MOZ_ASSERT_IF(globalObject,
+                  js::GetNonCCWObjectRealm(wrapper) ==
+                      js::GetNonCCWObjectRealm(
+                          globalObject->GetGlobalJSObjectPreserveColor()));
 
     // If we're on the parent thread and have a reflector, then our
-    // JSContext had better be either in the null compartment (and hence
-    // have no globalObject) or in the compartment of our reflector.
-    MOZ_ASSERT(
-        !js::GetContextCompartment(cx) ||
-            js::GetObjectCompartment(wrapper) == js::GetContextCompartment(cx),
-        "Must either be in the null compartment or in our reflector "
-        "compartment");
+    // JSContext had better be either in the null realm (and hence
+    // have no globalObject) or in the realm of our reflector.
+    MOZ_ASSERT(!js::GetContextRealm(cx) ||
+                   js::GetNonCCWObjectRealm(wrapper) == js::GetContextRealm(cx),
+               "Must either be in the null compartment or in our reflector "
+               "compartment");
 
-    ac.emplace(cx, wrapper);
+    ar.emplace(cx, wrapper);
   }
 
   MOZ_ASSERT(!jsapi->HasException());
@@ -438,7 +445,7 @@ void MainThreadWorkerSyncRunnable::PostDispatch(WorkerPrivate* aWorkerPrivate,
 MainThreadStopSyncLoopRunnable::MainThreadStopSyncLoopRunnable(
     WorkerPrivate* aWorkerPrivate,
     already_AddRefed<nsIEventTarget>&& aSyncLoopTarget, bool aResult)
-    : WorkerSyncRunnable(aWorkerPrivate, Move(aSyncLoopTarget)),
+    : WorkerSyncRunnable(aWorkerPrivate, std::move(aSyncLoopTarget)),
       mResult(aResult) {
   AssertIsOnMainThread();
 #ifdef DEBUG
@@ -593,27 +600,31 @@ void WorkerSameThreadRunnable::PostDispatch(WorkerPrivate* aWorkerPrivate,
   }
 }
 
-WorkerProxyToMainThreadRunnable::WorkerProxyToMainThreadRunnable(
-    WorkerPrivate* aWorkerPrivate)
-    : mozilla::Runnable("dom::WorkerProxyToMainThreadRunnable"),
-      mWorkerPrivate(aWorkerPrivate) {
-  MOZ_ASSERT(mWorkerPrivate);
-  mWorkerPrivate->AssertIsOnWorkerThread();
-}
+WorkerProxyToMainThreadRunnable::WorkerProxyToMainThreadRunnable()
+    : mozilla::Runnable("dom::WorkerProxyToMainThreadRunnable") {}
 
-WorkerProxyToMainThreadRunnable::~WorkerProxyToMainThreadRunnable() {}
+WorkerProxyToMainThreadRunnable::~WorkerProxyToMainThreadRunnable() = default;
 
-bool WorkerProxyToMainThreadRunnable::Dispatch() {
-  mWorkerPrivate->AssertIsOnWorkerThread();
+bool WorkerProxyToMainThreadRunnable::Dispatch(WorkerPrivate* aWorkerPrivate) {
+  MOZ_ASSERT(aWorkerPrivate);
+  aWorkerPrivate->AssertIsOnWorkerThread();
 
-  if (NS_WARN_IF(!HoldWorker())) {
-    RunBackOnWorkerThreadForCleanup();
+  RefPtr<StrongWorkerRef> workerRef = StrongWorkerRef::Create(
+      aWorkerPrivate, "WorkerProxyToMainThreadRunnable");
+  if (NS_WARN_IF(!workerRef)) {
+    RunBackOnWorkerThreadForCleanup(aWorkerPrivate);
     return false;
   }
 
-  if (NS_WARN_IF(NS_FAILED(mWorkerPrivate->DispatchToMainThread(this)))) {
+  MOZ_ASSERT(!mWorkerRef);
+  mWorkerRef = new ThreadSafeWorkerRef(workerRef);
+
+  if (ForMessaging()
+          ? NS_WARN_IF(NS_FAILED(
+                aWorkerPrivate->DispatchToMainThreadForMessaging(this)))
+          : NS_WARN_IF(NS_FAILED(aWorkerPrivate->DispatchToMainThread(this)))) {
     ReleaseWorker();
-    RunBackOnWorkerThreadForCleanup();
+    RunBackOnWorkerThreadForCleanup(aWorkerPrivate);
     return false;
   }
 
@@ -623,7 +634,7 @@ bool WorkerProxyToMainThreadRunnable::Dispatch() {
 NS_IMETHODIMP
 WorkerProxyToMainThreadRunnable::Run() {
   AssertIsOnMainThread();
-  RunOnMainThread();
+  RunOnMainThread(mWorkerRef->Private());
   PostDispatchOnMainThread();
   return NS_OK;
 }
@@ -653,7 +664,7 @@ void WorkerProxyToMainThreadRunnable::PostDispatchOnMainThread() {
       aWorkerPrivate->AssertIsOnWorkerThread();
 
       if (mRunnable) {
-        mRunnable->RunBackOnWorkerThreadForCleanup();
+        mRunnable->RunBackOnWorkerThreadForCleanup(aWorkerPrivate);
 
         // Let's release the worker thread.
         mRunnable->ReleaseWorker();
@@ -668,39 +679,27 @@ void WorkerProxyToMainThreadRunnable::PostDispatchOnMainThread() {
   };
 
   RefPtr<WorkerControlRunnable> runnable =
-      new ReleaseRunnable(mWorkerPrivate, this);
+      new ReleaseRunnable(mWorkerRef->Private(), this);
   Unused << NS_WARN_IF(!runnable->Dispatch());
 }
 
-bool WorkerProxyToMainThreadRunnable::HoldWorker() {
-  mWorkerPrivate->AssertIsOnWorkerThread();
-  MOZ_ASSERT(!mWorkerHolder);
+void WorkerProxyToMainThreadRunnable::ReleaseWorker() { mWorkerRef = nullptr; }
 
-  class SimpleWorkerHolder final : public WorkerHolder {
-   public:
-    SimpleWorkerHolder()
-        : WorkerHolder("WorkerProxyToMainThreadRunnable::SimpleWorkerHolder") {}
-
-    bool Notify(WorkerStatus aStatus) override {
-      // We don't care about the notification. We just want to keep the
-      // mWorkerPrivate alive.
-      return true;
+bool WorkerDebuggeeRunnable::PreDispatch(WorkerPrivate* aWorkerPrivate) {
+  if (mBehavior == ParentThreadUnchangedBusyCount) {
+    RefPtr<StrongWorkerRef> strongRef = StrongWorkerRef::Create(
+        aWorkerPrivate, "WorkerDebuggeeRunnable::mSender");
+    if (!strongRef) {
+      return false;
     }
-  };
 
-  UniquePtr<WorkerHolder> workerHolder(new SimpleWorkerHolder());
-  if (NS_WARN_IF(!workerHolder->HoldWorker(mWorkerPrivate, Canceling))) {
-    return false;
+    mSender = new ThreadSafeWorkerRef(strongRef);
+    if (!mSender) {
+      return false;
+    }
   }
 
-  mWorkerHolder = Move(workerHolder);
-  return true;
-}
-
-void WorkerProxyToMainThreadRunnable::ReleaseWorker() {
-  mWorkerPrivate->AssertIsOnWorkerThread();
-  MOZ_ASSERT(mWorkerHolder);
-  mWorkerHolder = nullptr;
+  return WorkerRunnable::PreDispatch(aWorkerPrivate);
 }
 
 }  // namespace dom

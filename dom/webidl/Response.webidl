@@ -29,19 +29,22 @@ interface Response {
    NewObject] Response clone();
 
   [ChromeOnly, NewObject, Throws] Response cloneUnfiltered();
+
+  // For testing only.
+  [ChromeOnly] readonly attribute boolean hasCacheInfoChannel;
 };
 Response implements Body;
 
 // This should be part of Body but we don't want to expose body to request yet.
 // See bug 1387483.
 partial interface Response {
-  [GetterThrows, Func="mozilla::dom::DOMPrefs::StreamsEnabled"]
+  [GetterThrows, Func="mozilla::dom::DOMPrefs::javascript_options_streams"]
   readonly attribute ReadableStream? body;
 };
 
 dictionary ResponseInit {
   unsigned short status = 200;
-  ByteString statusText = "OK";
+  ByteString statusText = "";
   HeadersInit headers;
 };
 

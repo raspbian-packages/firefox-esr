@@ -24,13 +24,13 @@ class KeyboardEvent : public UIEvent {
 
   virtual KeyboardEvent* AsKeyboardEvent() override { return this; }
 
-  static already_AddRefed<KeyboardEvent> Constructor(
+  static already_AddRefed<KeyboardEvent> ConstructorJS(
       const GlobalObject& aGlobal, const nsAString& aType,
       const KeyboardEventInit& aParam, ErrorResult& aRv);
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return KeyboardEventBinding::Wrap(aCx, this, aGivenProto);
+    return KeyboardEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   bool AltKey(CallerType aCallerType = CallerType::System);
@@ -53,7 +53,7 @@ class KeyboardEvent : public UIEvent {
   bool Repeat();
   bool IsComposing();
   void GetKey(nsAString& aKey) const;
-  uint32_t CharCode();
+  uint32_t CharCode(CallerType aCallerType = CallerType::System);
   uint32_t KeyCode(CallerType aCallerType = CallerType::System);
   virtual uint32_t Which(CallerType aCallerType = CallerType::System) override;
   uint32_t Location();
@@ -61,16 +61,16 @@ class KeyboardEvent : public UIEvent {
   void GetCode(nsAString& aCode, CallerType aCallerType = CallerType::System);
   void GetInitDict(KeyboardEventInit& aParam);
 
-  void InitKeyEvent(const nsAString& aType, bool aCanBubble, bool aCancelable,
-                    nsGlobalWindowInner* aView, bool aCtrlKey, bool aAltKey,
-                    bool aShiftKey, bool aMetaKey, uint32_t aKeyCode,
-                    uint32_t aCharCode);
+  void InitKeyEventJS(const nsAString& aType, bool aCanBubble, bool aCancelable,
+                      nsGlobalWindowInner* aView, bool aCtrlKey, bool aAltKey,
+                      bool aShiftKey, bool aMetaKey, uint32_t aKeyCode,
+                      uint32_t aCharCode);
 
-  void InitKeyboardEvent(const nsAString& aType, bool aCanBubble,
-                         bool aCancelable, nsGlobalWindowInner* aView,
-                         const nsAString& aKey, uint32_t aLocation,
-                         bool aCtrlKey, bool aAltKey, bool aShiftKey,
-                         bool aMetaKey, ErrorResult& aRv);
+  void InitKeyboardEventJS(const nsAString& aType, bool aCanBubble,
+                           bool aCancelable, nsGlobalWindowInner* aView,
+                           const nsAString& aKey, uint32_t aLocation,
+                           bool aCtrlKey, bool aAltKey, bool aShiftKey,
+                           bool aMetaKey, ErrorResult& aRv);
 
  protected:
   ~KeyboardEvent() {}
@@ -80,7 +80,9 @@ class KeyboardEvent : public UIEvent {
                                  ErrorResult& aRv);
 
  private:
-  // True, if the instance is created with Constructor().
+  // True, if the instance is initialized by JS.
+  bool mInitializedByJS;
+  // True, if the instance is initialized by Ctor.
   bool mInitializedByCtor;
 
   // If the instance is created with Constructor(), which may have independent
@@ -94,14 +96,31 @@ class KeyboardEvent : public UIEvent {
   // Otherwise, it will return false.
   bool ShouldResistFingerprinting(CallerType aCallerType);
 
-  // This method returns the nsIDocument which is associated with the event
-  // target.
-  already_AddRefed<nsIDocument> GetDocument();
-
   // This method returns the spoofed modifier state of the given modifier key
   // for fingerprinting resistance.
   bool GetSpoofedModifierStates(const Modifiers aModifierKey,
                                 const bool aRawModifierState);
+
+  /**
+   * ComputeTraditionalKeyCode() computes traditional keyCode value.  I.e.,
+   * returns 0 if this event should return non-zero from CharCode().
+   * In spite of the name containing "traditional", this computes spoof
+   * keyCode value if user wants it.
+   *
+   * @param aKeyboardEvent  Should be |*mEvent->AsKeyboardEvent()|.
+   * @param aCallerType     Set caller type of KeyCode() or CharCode().
+   * @return                If traditional charCode value is 0, returns
+   *                        the raw keyCode value or spoof keyCode value.
+   *                        Otherwise, 0.
+   */
+  uint32_t ComputeTraditionalKeyCode(WidgetKeyboardEvent& aKeyboardEvent,
+                                     CallerType aCallerType);
+  /**
+   * ShouldUseSameValueForCharCodeAndKeyCode() returns true if KeyCode() and
+   * CharCode() should return same value.
+   */
+  bool ShouldUseSameValueForCharCodeAndKeyCode(
+      const WidgetKeyboardEvent& aKeyboardEvent, CallerType aCallerType) const;
 };
 
 }  // namespace dom

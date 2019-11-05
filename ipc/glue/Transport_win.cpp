@@ -81,7 +81,7 @@ UniquePtr<Transport> OpenDescriptor(const TransportDescriptor& aTd,
 
 UniquePtr<Transport> OpenDescriptor(const FileDescriptor& aFd,
                                     Transport::Mode aMode) {
-  NS_NOTREACHED("Not implemented!");
+  MOZ_ASSERT_UNREACHABLE("Not implemented!");
   return nullptr;
 }
 

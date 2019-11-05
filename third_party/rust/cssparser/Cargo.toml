@@ -3,7 +3,7 @@
 # When uploading crates to the registry Cargo will automatically
 # "normalize" Cargo.toml files for maximal compatibility
 # with all versions of Cargo and also rewrite `path` dependencies
-# to registry (e.g. crates.io) dependencies
+# to registry (e.g., crates.io) dependencies
 #
 # If you believe there's an error in this file please file an
 # issue against the rust-lang/cargo repository. If you're
@@ -12,7 +12,7 @@
 
 [package]
 name = "cssparser"
-version = "0.23.2"
+version = "0.25.5"
 authors = ["Simon Sapin <simon.sapin@exyr.org>"]
 build = "build.rs"
 exclude = ["src/css-parsing-tests/**", "src/big-data-url.css"]
@@ -23,7 +23,7 @@ keywords = ["css", "syntax", "parser"]
 license = "MPL-2.0"
 repository = "https://github.com/servo/rust-cssparser"
 [dependencies.cssparser-macros]
-version = "0.3"
+version = "0.3.3"
 
 [dependencies.dtoa-short]
 version = "0.3"
@@ -33,7 +33,7 @@ version = ">= 0.3, < 0.5"
 optional = true
 
 [dependencies.itoa]
-version = "0.3"
+version = "0.4"
 
 [dependencies.matches]
 version = "0.1"
@@ -51,18 +51,22 @@ optional = true
 [dependencies.smallvec]
 version = "0.6"
 [dev-dependencies.difference]
-version = "1.0"
+version = "2.0"
 
 [dev-dependencies.encoding_rs]
-version = "0.7"
+version = "0.8"
 
 [dev-dependencies.rustc-serialize]
 version = "0.3"
+[build-dependencies.proc-macro2]
+version = "0.4"
+
 [build-dependencies.quote]
-version = "0.3"
+version = "0.6"
 
 [build-dependencies.syn]
-version = "0.11"
+version = "0.15.12"
+features = ["extra-traits", "fold", "full"]
 
 [features]
 bench = []

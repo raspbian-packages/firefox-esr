@@ -10,6 +10,8 @@
 #include "mozilla/Types.h"  // for decltype
 #include "mozilla/layers/SharedSurfacesChild.h"
 
+#include "base/process_util.h"
+
 #ifdef DEBUG
 /**
  * If defined, this makes SourceSurfaceSharedData::Finalize memory protect the
@@ -17,8 +19,10 @@
  * process). Given flushing the page table is expensive, and its utility is
  * predominantly diagnostic (in case of overrun), turn it off by default.
  */
-#define SHARED_SURFACE_PROTECT_FINALIZED
+#  define SHARED_SURFACE_PROTECT_FINALIZED
 #endif
+
+using namespace mozilla::layers;
 
 namespace mozilla {
 namespace gfx {
@@ -82,13 +86,17 @@ void SourceSurfaceSharedData::GuaranteePersistance() {
 
 void SourceSurfaceSharedData::AddSizeOfExcludingThis(
     MallocSizeOf aMallocSizeOf, size_t& aHeapSizeOut, size_t& aNonHeapSizeOut,
-    size_t& aExtHandlesOut) const {
+    size_t& aExtHandlesOut, uint64_t& aExtIdOut) const {
   MutexAutoLock lock(mMutex);
   if (mBuf) {
     aNonHeapSizeOut += GetAlignedDataLength();
   }
   if (!mClosed) {
     ++aExtHandlesOut;
+  }
+  Maybe<wr::ExternalImageId> extId = SharedSurfacesChild::GetExternalId(this);
+  if (extId) {
+    aExtIdOut = wr::AsUint64(extId.ref());
   }
 }
 
@@ -163,9 +171,9 @@ bool SourceSurfaceSharedData::ReallocHandle() {
 #endif
 
   if (mMapCount > 0 && !mOldBuf) {
-    mOldBuf = Move(mBuf);
+    mOldBuf = std::move(mBuf);
   }
-  mBuf = Move(buf);
+  mBuf = std::move(buf);
   mClosed = false;
   mShared = false;
   return true;

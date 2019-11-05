@@ -11,9 +11,13 @@
 #include "ScopedNSSTypes.h"
 #include "mozilla/BasePrincipal.h"
 #include "mozilla/TimeStamp.h"
-#include "nsICertBlocklist.h"
+#ifdef MOZ_NEW_CERT_STORAGE
+#  include "nsICertStorage.h"
+#else
+#  include "nsICertBlocklist.h"
+#endif
 #include "nsString.h"
-#include "pkix/pkixtypes.h"
+#include "mozpkix/pkixtypes.h"
 #include "secmodt.h"
 
 namespace mozilla {
@@ -50,16 +54,64 @@ void DisableMD5();
  *        The path to the directory containing the NSS builtin roots module.
  *        Usually the same as the path to the other NSS shared libraries.
  *        If empty, the (library) path will be searched.
- * @param modNameUTF8
- *        The UTF-8 name to give the module for display purposes.
  * @return true if the roots were successfully loaded, false otherwise.
  */
-bool LoadLoadableRoots(const nsCString& dir, const nsCString& modNameUTF8);
+bool LoadLoadableRoots(const nsCString& dir);
 
-void UnloadLoadableRoots(const char* modNameUTF8);
+void UnloadLoadableRoots();
 
 nsresult DefaultServerNicknameForCert(const CERTCertificate* cert,
                                       /*out*/ nsCString& nickname);
+
+#ifdef MOZ_NEW_CERT_STORAGE
+/**
+ * Build nsTArray<uint8_t>s out of the issuer, serial, subject and public key
+ * data from the supplied certificate for use in revocation checks.
+ *
+ * @param cert
+ *        The CERTCertificate* from which to extract the data.
+ * @param out encIssuer
+ *        The array to populate with issuer data.
+ * @param out encSerial
+ *        The array to populate with serial number data.
+ * @param out encSubject
+ *        The array to populate with subject data.
+ * @param out encPubKey
+ *        The array to populate with public key data.
+ * @return
+ *        NS_OK, unless there's a memory allocation problem, in which case
+ *        NS_ERROR_OUT_OF_MEMORY.
+ */
+nsresult BuildRevocationCheckArrays(const UniqueCERTCertificate& cert,
+                                    /*out*/ nsTArray<uint8_t>& issuerBytes,
+                                    /*out*/ nsTArray<uint8_t>& serialBytes,
+                                    /*out*/ nsTArray<uint8_t>& subjectBytes,
+                                    /*out*/ nsTArray<uint8_t>& pubKeyBytes);
+#else
+/**
+ * Build strings of base64 encoded issuer, serial, subject and public key data
+ * from the supplied certificate for use in revocation checks.
+ *
+ * @param cert
+ *        The CERTCertificate* from which to extract the data.
+ * @param out encIssuer
+ *        The string to populate with base64 encoded issuer data.
+ * @param out encSerial
+ *        The string to populate with base64 encoded serial number data.
+ * @param out encSubject
+ *        The string to populate with base64 encoded subject data.
+ * @param out encPubKey
+ *        The string to populate with base64 encoded public key data.
+ * @return
+ *        NS_OK, unless there's a Base64 encoding problem, in which case
+ *        NS_ERROR_FAILURE.
+ */
+nsresult BuildRevocationCheckStrings(const CERTCertificate* cert,
+                                     /*out*/ nsCString& encIssuer,
+                                     /*out*/ nsCString& encSerial,
+                                     /*out*/ nsCString& encSubject,
+                                     /*out*/ nsCString& encPubKey);
+#endif
 
 void SaveIntermediateCerts(const UniqueCERTCertList& certList);
 
@@ -77,16 +129,17 @@ class NSSCertDBTrustDomain : public mozilla::pkix::TrustDomain {
 
   NSSCertDBTrustDomain(
       SECTrustType certDBTrustType, OCSPFetching ocspFetching,
-      OCSPCache& ocspCache, void* pinArg,
-      CertVerifier::OcspGetConfig ocspGETConfig,
-      mozilla::TimeDuration ocspTimeoutSoft,
+      OCSPCache& ocspCache, void* pinArg, mozilla::TimeDuration ocspTimeoutSoft,
       mozilla::TimeDuration ocspTimeoutHard, uint32_t certShortLifetimeInDays,
       CertVerifier::PinningMode pinningMode, unsigned int minRSABits,
       ValidityCheckingMode validityCheckingMode,
       CertVerifier::SHA1Mode sha1Mode,
       NetscapeStepUpPolicy netscapeStepUpPolicy,
       DistrustedCAPolicy distrustedCAPolicy,
-      const OriginAttributes& originAttributes, UniqueCERTCertList& builtChain,
+      const OriginAttributes& originAttributes,
+      const Vector<mozilla::pkix::Input>& thirdPartyRootInputs,
+      const Vector<mozilla::pkix::Input>& thirdPartyIntermediateInputs,
+      /*out*/ UniqueCERTCertList& builtChain,
       /*optional*/ PinningTelemetryInfo* pinningTelemetryInfo = nullptr,
       /*optional*/ const char* hostname = nullptr);
 
@@ -179,11 +232,19 @@ class NSSCertDBTrustDomain : public mozilla::pkix::TrustDomain {
       EncodedResponseSource responseSource, /*out*/ bool& expired);
   TimeDuration GetOCSPTimeout() const;
 
+  Result SynchronousCheckRevocationWithServer(
+      const mozilla::pkix::CertID& certID, const nsCString& aiaLocation,
+      mozilla::pkix::Time time, uint16_t maxOCSPLifetimeInDays,
+      const Result cachedResponseResult,
+      const Result stapledOCSPResponseResult);
+  Result HandleOCSPFailure(const Result cachedResponseResult,
+                           const Result stapledOCSPResponseResult,
+                           const Result error);
+
   const SECTrustType mCertDBTrustType;
   const OCSPFetching mOCSPFetching;
   OCSPCache& mOCSPCache;  // non-owning!
   void* mPinArg;          // non-owning!
-  const CertVerifier::OcspGetConfig mOCSPGetConfig;
   const mozilla::TimeDuration mOCSPTimeoutSoft;
   const mozilla::TimeDuration mOCSPTimeoutHard;
   const uint32_t mCertShortLifetimeInDays;
@@ -195,10 +256,17 @@ class NSSCertDBTrustDomain : public mozilla::pkix::TrustDomain {
   DistrustedCAPolicy mDistrustedCAPolicy;
   bool mSawDistrustedCAByPolicyError;
   const OriginAttributes& mOriginAttributes;
-  UniqueCERTCertList& mBuiltChain;  // non-owning
+  const Vector<mozilla::pkix::Input>& mThirdPartyRootInputs;  // non-owning
+  const Vector<mozilla::pkix::Input>&
+      mThirdPartyIntermediateInputs;  // non-owning
+  UniqueCERTCertList& mBuiltChain;    // non-owning
   PinningTelemetryInfo* mPinningTelemetryInfo;
   const char* mHostname;  // non-owning - only used for pinning checks
+#ifdef MOZ_NEW_CERT_STORAGE
+  nsCOMPtr<nsICertStorage> mCertStorage;
+#else
   nsCOMPtr<nsICertBlocklist> mCertBlocklist;
+#endif
   CertVerifier::OCSPStaplingStatus mOCSPStaplingStatus;
   // Certificate Transparency data extracted during certificate verification
   UniqueSECItem mSCTListFromCertificate;

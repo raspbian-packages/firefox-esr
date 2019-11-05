@@ -12,15 +12,20 @@
 #include "nsAutoPtr.h"
 #include "nsSVGContainerFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsSVGGFrame : public nsSVGDisplayContainerFrame {
-  friend nsIFrame* NS_NewSVGGFrame(nsIPresShell* aPresShell,
-                                   nsStyleContext* aContext);
-  explicit nsSVGGFrame(nsStyleContext* aContext)
-      : nsSVGGFrame(aContext, kClassID) {}
+  friend nsIFrame* NS_NewSVGGFrame(mozilla::PresShell* aPresShell,
+                                   ComputedStyle* aStyle);
+  explicit nsSVGGFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsSVGGFrame(aStyle, aPresContext, kClassID) {}
 
  protected:
-  nsSVGGFrame(nsStyleContext* aContext, nsIFrame::ClassID aID)
-      : nsSVGDisplayContainerFrame(aContext, aID) {}
+  nsSVGGFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+              nsIFrame::ClassID aID)
+      : nsSVGDisplayContainerFrame(aStyle, aPresContext, aID) {}
 
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsSVGGFrame)

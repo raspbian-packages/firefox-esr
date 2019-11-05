@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 // vim:cindent:tabstop=4:expandtab:shiftwidth=4:
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,8 +23,8 @@ class nsLayoutDebuggingTools : public nsILayoutDebuggingTools {
   virtual ~nsLayoutDebuggingTools();
 
   void ForceRefresh();
-  nsresult GetBoolPref(const char *aPrefName, bool *aValue);
-  nsresult SetBoolPrefAndRefresh(const char *aPrefName, bool aNewValue);
+  nsresult GetBoolPref(const char* aPrefName, bool* aValue);
+  nsresult SetBoolPrefAndRefresh(const char* aPrefName, bool aNewValue);
 
   nsCOMPtr<nsIDocShell> mDocShell;
 

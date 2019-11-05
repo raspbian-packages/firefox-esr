@@ -24,12 +24,12 @@
 #include "mozilla/Maybe.h"
 #include "mozilla/TypeTraits.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/dom/Event.h"
 #include "mozilla/dom/PermissionMessageUtils.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/dom/indexedDB/PBackgroundIDBDatabaseFileChild.h"
-#include "mozilla/dom/indexedDB/PIndexedDBPermissionRequestChild.h"
-#include "mozilla/dom/ipc/PendingIPCBlobChild.h"
 #include "mozilla/dom/IPCBlobUtils.h"
+#include "mozilla/dom/PendingIPCBlobChild.h"
 #include "mozilla/dom/WorkerPrivate.h"
 #include "mozilla/dom/WorkerRunnable.h"
 #include "mozilla/Encoding.h"
@@ -39,8 +39,7 @@
 #include "nsContentUtils.h"
 #include "nsIAsyncInputStream.h"
 #include "nsIBFCacheEntry.h"
-#include "nsIDocument.h"
-#include "nsIDOMEvent.h"
+#include "mozilla/dom/Document.h"
 #include "nsIEventTarget.h"
 #include "nsIFileStreams.h"
 #include "nsNetCID.h"
@@ -52,17 +51,17 @@
 #include "ReportInternalError.h"
 
 #ifdef DEBUG
-#include "IndexedDatabaseManager.h"
+#  include "IndexedDatabaseManager.h"
 #endif
 
 #define GC_ON_IPC_MESSAGES 0
 
 #if defined(DEBUG) || GC_ON_IPC_MESSAGES
 
-#include "js/GCAPI.h"
-#include "nsJSEnvironment.h"
+#  include "js/GCAPI.h"
+#  include "nsJSEnvironment.h"
 
-#define BUILD_GC_ON_IPC_MESSAGES
+#  define BUILD_GC_ON_IPC_MESSAGES
 
 #endif  // DEBUG || GC_ON_IPC_MESSAGES
 
@@ -103,11 +102,11 @@ namespace {
 void MaybeCollectGarbageOnIPCMessage() {
 #ifdef BUILD_GC_ON_IPC_MESSAGES
   static const bool kCollectGarbageOnIPCMessages =
-#if GC_ON_IPC_MESSAGES
+#  if GC_ON_IPC_MESSAGES
       true;
-#else
+#  else
       false;
-#endif  // GC_ON_IPC_MESSAGES
+#  endif  // GC_ON_IPC_MESSAGES
 
   if (!kCollectGarbageOnIPCMessages) {
     return;
@@ -129,7 +128,7 @@ void MaybeCollectGarbageOnIPCMessage() {
     return;
   }
 
-  nsJSContext::GarbageCollectNow(JS::gcreason::DOM_IPC);
+  nsJSContext::GarbageCollectNow(JS::GCReason::DOM_IPC);
   nsJSContext::CycleCollectNow();
 #endif  // BUILD_GC_ON_IPC_MESSAGES
 }
@@ -494,27 +493,6 @@ class PermissionRequestMainProcessHelper final : public PermissionRequestBase {
   virtual void OnPromptComplete(PermissionValue aPermissionValue) override;
 };
 
-class PermissionRequestChildProcessActor final
-    : public PIndexedDBPermissionRequestChild {
-  BackgroundFactoryRequestChild* mActor;
-  RefPtr<IDBFactory> mFactory;
-
- public:
-  PermissionRequestChildProcessActor(BackgroundFactoryRequestChild* aActor,
-                                     IDBFactory* aFactory)
-      : mActor(aActor), mFactory(aFactory) {
-    MOZ_ASSERT(aActor);
-    MOZ_ASSERT(aFactory);
-    aActor->AssertIsOnOwningThread();
-  }
-
- protected:
-  ~PermissionRequestChildProcessActor() {}
-
-  virtual mozilla::ipc::IPCResult Recv__delete__(
-      const uint32_t& aPermission) override;
-};
-
 void DeserializeStructuredCloneFiles(
     IDBDatabase* aDatabase,
     const nsTArray<SerializedStructuredCloneFile>& aSerializedFiles,
@@ -544,7 +522,8 @@ void DeserializeStructuredCloneFiles(
           RefPtr<BlobImpl> blobImpl = IPCBlobUtils::Deserialize(ipcBlob);
           MOZ_ASSERT(blobImpl);
 
-          RefPtr<Blob> blob = Blob::Create(aDatabase->GetOwner(), blobImpl);
+          RefPtr<Blob> blob =
+              Blob::Create(aDatabase->GetOwnerGlobal(), blobImpl);
 
           StructuredCloneFile* file = aFiles.AppendElement();
           MOZ_ASSERT(file);
@@ -608,22 +587,19 @@ void DeserializeStructuredCloneFiles(
           break;
         }
 
-        case StructuredCloneFile::eWasmBytecode:
-        case StructuredCloneFile::eWasmCompiled: {
+        case StructuredCloneFile::eWasmBytecode: {
           if (aModuleSet) {
             MOZ_ASSERT(blobOrMutableFile.type() == BlobOrMutableFile::Tnull_t);
 
             StructuredCloneFile* file = aFiles.AppendElement();
             MOZ_ASSERT(file);
 
-            file->mType = serializedFile.type();
+            file->mType = StructuredCloneFile::eWasmBytecode;
 
             MOZ_ASSERT(moduleIndex < aModuleSet->Length());
             file->mWasmModule = aModuleSet->ElementAt(moduleIndex);
 
-            if (serializedFile.type() == StructuredCloneFile::eWasmCompiled) {
-              moduleIndex++;
-            }
+            moduleIndex++;
 
             break;
           }
@@ -635,13 +611,23 @@ void DeserializeStructuredCloneFiles(
           RefPtr<BlobImpl> blobImpl = IPCBlobUtils::Deserialize(ipcBlob);
           MOZ_ASSERT(blobImpl);
 
-          RefPtr<Blob> blob = Blob::Create(aDatabase->GetOwner(), blobImpl);
+          RefPtr<Blob> blob =
+              Blob::Create(aDatabase->GetOwnerGlobal(), blobImpl);
 
           StructuredCloneFile* file = aFiles.AppendElement();
           MOZ_ASSERT(file);
 
-          file->mType = serializedFile.type();
+          file->mType = StructuredCloneFile::eWasmBytecode;
           file->mBlob.swap(blob);
+
+          break;
+        }
+
+        case StructuredCloneFile::eWasmCompiled: {
+          StructuredCloneFile* file = aFiles.AppendElement();
+          MOZ_ASSERT(file);
+
+          file->mType = StructuredCloneFile::eWasmCompiled;
 
           break;
         }
@@ -655,20 +641,20 @@ void DeserializeStructuredCloneFiles(
 
 void DispatchErrorEvent(IDBRequest* aRequest, nsresult aErrorCode,
                         IDBTransaction* aTransaction = nullptr,
-                        nsIDOMEvent* aEvent = nullptr) {
+                        Event* aEvent = nullptr) {
   MOZ_ASSERT(aRequest);
   aRequest->AssertIsOnOwningThread();
   MOZ_ASSERT(NS_FAILED(aErrorCode));
   MOZ_ASSERT(NS_ERROR_GET_MODULE(aErrorCode) == NS_ERROR_MODULE_DOM_INDEXEDDB);
 
-  AUTO_PROFILER_LABEL("IndexedDB:DispatchErrorEvent", STORAGE);
+  AUTO_PROFILER_LABEL("IndexedDB:DispatchErrorEvent", DOM);
 
   RefPtr<IDBRequest> request = aRequest;
   RefPtr<IDBTransaction> transaction = aTransaction;
 
   request->SetError(aErrorCode);
 
-  nsCOMPtr<nsIDOMEvent> errorEvent;
+  RefPtr<Event> errorEvent;
   if (!aEvent) {
     // Make an error event and fire it at the target.
     errorEvent = CreateGenericEvent(request, nsDependentString(kErrorEventType),
@@ -699,9 +685,9 @@ void DispatchErrorEvent(IDBRequest* aRequest, nsresult aErrorCode,
         IDB_LOG_STRINGIFY(aEvent, kErrorEventType), aErrorCode);
   }
 
-  bool doDefault;
-  nsresult rv = request->DispatchEvent(aEvent, &doDefault);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
+  IgnoredErrorResult rv;
+  bool doDefault = request->DispatchEvent(*aEvent, CallerType::System, rv);
+  if (NS_WARN_IF(rv.Failed())) {
     return;
   }
 
@@ -725,10 +711,10 @@ void DispatchErrorEvent(IDBRequest* aRequest, nsresult aErrorCode,
 }
 
 void DispatchSuccessEvent(ResultHelper* aResultHelper,
-                          nsIDOMEvent* aEvent = nullptr) {
+                          Event* aEvent = nullptr) {
   MOZ_ASSERT(aResultHelper);
 
-  AUTO_PROFILER_LABEL("IndexedDB:DispatchSuccessEvent", STORAGE);
+  AUTO_PROFILER_LABEL("IndexedDB:DispatchSuccessEvent", DOM);
 
   RefPtr<IDBRequest> request = aResultHelper->Request();
   MOZ_ASSERT(request);
@@ -741,7 +727,7 @@ void DispatchSuccessEvent(ResultHelper* aResultHelper,
     return;
   }
 
-  nsCOMPtr<nsIDOMEvent> successEvent;
+  RefPtr<Event> successEvent;
   if (!aEvent) {
     successEvent =
         CreateGenericEvent(request, nsDependentString(kSuccessEventType),
@@ -773,9 +759,9 @@ void DispatchSuccessEvent(ResultHelper* aResultHelper,
   MOZ_ASSERT_IF(transaction,
                 transaction->IsOpen() && !transaction->IsAborted());
 
-  bool dummy;
-  nsresult rv = request->DispatchEvent(aEvent, &dummy);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
+  IgnoredErrorResult rv;
+  request->DispatchEvent(*aEvent, rv);
+  if (NS_WARN_IF(rv.Failed())) {
     return;
   }
 
@@ -847,27 +833,6 @@ class WorkerPermissionRequest final : public PermissionRequestBase {
   ~WorkerPermissionRequest() { MOZ_ASSERT(NS_IsMainThread()); }
 
   virtual void OnPromptComplete(PermissionValue aPermissionValue) override;
-};
-
-// This class is used in the main thread of all child processes.
-class WorkerPermissionRequestChildProcessActor final
-    : public PIndexedDBPermissionRequestChild {
-  RefPtr<WorkerPermissionChallenge> mChallenge;
-
- public:
-  explicit WorkerPermissionRequestChildProcessActor(
-      WorkerPermissionChallenge* aChallenge)
-      : mChallenge(aChallenge) {
-    MOZ_ASSERT(!XRE_IsParentProcess());
-    MOZ_ASSERT(NS_IsMainThread());
-    MOZ_ASSERT(aChallenge);
-  }
-
- protected:
-  ~WorkerPermissionRequestChildProcessActor() {}
-
-  virtual mozilla::ipc::IPCResult Recv__delete__(
-      const uint32_t& aPermission) override;
 };
 
 class WorkerPermissionChallenge final : public Runnable {
@@ -979,15 +944,17 @@ class WorkerPermissionChallenge final : public Runnable {
       return permission != PermissionRequestBase::kPermissionPrompt;
     }
 
-    TabChild* tabChild = TabChild::GetFrom(window);
-    MOZ_ASSERT(tabChild);
+    BrowserChild* browserChild = BrowserChild::GetFrom(window);
+    MOZ_ASSERT(browserChild);
 
     IPC::Principal ipcPrincipal(principal);
 
-    auto* actor = new WorkerPermissionRequestChildProcessActor(this);
-    tabChild->SetEventTargetForActor(actor, wp->MainThreadEventTarget());
-    MOZ_ASSERT(actor->GetActorEventTarget());
-    tabChild->SendPIndexedDBPermissionRequestConstructor(actor, ipcPrincipal);
+    RefPtr<WorkerPermissionChallenge> self(this);
+    browserChild->SendIndexedDBPermissionRequest(ipcPrincipal)
+        ->Then(
+            GetCurrentThreadSerialEventTarget(), __func__,
+            [self](const uint32_t& aPermission) { self->OperationCompleted(); },
+            [](const mozilla::ipc::ResponseRejectReason) {});
     return false;
   }
 
@@ -1009,14 +976,6 @@ bool WorkerPermissionOperationCompleted::WorkerRun(
   aWorkerPrivate->AssertIsOnWorkerThread();
   mChallenge->OperationCompleted();
   return true;
-}
-
-mozilla::ipc::IPCResult
-WorkerPermissionRequestChildProcessActor::Recv__delete__(
-    const uint32_t& /* aPermission */) {
-  MOZ_ASSERT(NS_IsMainThread());
-  mChallenge->OperationCompleted();
-  return IPC_OK();
 }
 
 class MOZ_STACK_CLASS AutoSetCurrentFileHandle final {
@@ -1218,24 +1177,19 @@ class MOZ_STACK_CLASS FileHandleResultHelper final
       return NS_ERROR_DOM_FILEHANDLE_UNKNOWN_ERR;
     }
 
-    const FileRequestSize& size = aMetadata->size();
-    if (size.type() != FileRequestSize::Tvoid_t) {
-      MOZ_ASSERT(size.type() == FileRequestSize::Tuint64_t);
-
-      JS::Rooted<JS::Value> number(aCx, JS_NumberValue(size.get_uint64_t()));
+    const Maybe<uint64_t>& size = aMetadata->size();
+    if (size.isSome()) {
+      JS::Rooted<JS::Value> number(aCx, JS_NumberValue(size.value()));
 
       if (NS_WARN_IF(!JS_DefineProperty(aCx, obj, "size", number, 0))) {
         return NS_ERROR_DOM_FILEHANDLE_UNKNOWN_ERR;
       }
     }
 
-    const FileRequestLastModified& lastModified = aMetadata->lastModified();
-    if (lastModified.type() != FileRequestLastModified::Tvoid_t) {
-      MOZ_ASSERT(lastModified.type() == FileRequestLastModified::Tint64_t);
-
+    const Maybe<int64_t>& lastModified = aMetadata->lastModified();
+    if (lastModified.isSome()) {
       JS::Rooted<JSObject*> date(
-          aCx,
-          JS::NewDateObject(aCx, JS::TimeClip(lastModified.get_int64_t())));
+          aCx, JS::NewDateObject(aCx, JS::TimeClip(lastModified.value())));
       if (NS_WARN_IF(!date)) {
         return NS_ERROR_DOM_FILEHANDLE_UNKNOWN_ERR;
       }
@@ -1259,21 +1213,22 @@ already_AddRefed<File> ConvertActorToFile(
 
   const FileRequestMetadata& metadata = aResponse.metadata();
 
-  const FileRequestSize& size = metadata.size();
-  MOZ_ASSERT(size.type() == FileRequestSize::Tuint64_t);
+  const Maybe<uint64_t>& size = metadata.size();
+  MOZ_ASSERT(size.isSome());
 
-  const FileRequestLastModified& lastModified = metadata.lastModified();
-  MOZ_ASSERT(lastModified.type() == FileRequestLastModified::Tint64_t);
+  const Maybe<int64_t>& lastModified = metadata.lastModified();
+  MOZ_ASSERT(lastModified.isSome());
 
   RefPtr<BlobImpl> blobImpl = actor->SetPendingInfoAndDeleteActor(
-      mutableFile->Name(), mutableFile->Type(), size.get_uint64_t(),
-      lastModified.get_int64_t());
+      mutableFile->Name(), mutableFile->Type(), size.value(),
+      lastModified.value());
   MOZ_ASSERT(blobImpl);
 
   RefPtr<BlobImpl> blobImplSnapshot =
       new BlobImplSnapshot(blobImpl, static_cast<IDBFileHandle*>(aFileHandle));
 
-  RefPtr<File> file = File::Create(mutableFile->GetOwner(), blobImplSnapshot);
+  RefPtr<File> file =
+      File::Create(mutableFile->GetOwnerGlobal(), blobImplSnapshot);
   return file.forget();
 }
 
@@ -1329,17 +1284,13 @@ class BackgroundRequestChild::PreprocessHelper final
     : public CancelableRunnable,
       public nsIInputStreamCallback,
       public nsIFileMetadataCallback {
-  typedef std::pair<nsCOMPtr<nsIInputStream>, nsCOMPtr<nsIInputStream>>
-      StreamPair;
-
   nsCOMPtr<nsIEventTarget> mOwningEventTarget;
-  nsTArray<StreamPair> mStreamPairs;
+  nsTArray<nsCOMPtr<nsIInputStream>> mStreams;
   nsTArray<RefPtr<JS::WasmModule>> mModuleSet;
   BackgroundRequestChild* mActor;
 
-  // These 2 are populated when the processing of the stream pairs runs.
+  // This is populated when the processing of the stream runs.
   PRFileDesc* mCurrentBytecodeFileDesc;
-  PRFileDesc* mCurrentCompiledFileDesc;
 
   RefPtr<TaskQueue> mTaskQueue;
   nsCOMPtr<nsIEventTarget> mTaskQueueEventTarget;
@@ -1354,7 +1305,6 @@ class BackgroundRequestChild::PreprocessHelper final
         mOwningEventTarget(aActor->GetActorEventTarget()),
         mActor(aActor),
         mCurrentBytecodeFileDesc(nullptr),
-        mCurrentCompiledFileDesc(nullptr),
         mModuleSetIndex(aModuleSetIndex),
         mResultCode(NS_OK) {
     AssertIsOnOwningThread();
@@ -1391,7 +1341,7 @@ class BackgroundRequestChild::PreprocessHelper final
 
   void RunOnOwningThread();
 
-  void ProcessCurrentStreamPair();
+  void ProcessCurrentStream();
 
   nsresult WaitForStreamReady(nsIInputStream* aInputStream);
 
@@ -1422,23 +1372,6 @@ void PermissionRequestMainProcessHelper::OnPromptComplete(
 
   mActor = nullptr;
   mFactory = nullptr;
-}
-
-mozilla::ipc::IPCResult PermissionRequestChildProcessActor::Recv__delete__(
-    const uint32_t& /* aPermission */) {
-  MOZ_ASSERT(mActor);
-  mActor->AssertIsOnOwningThread();
-  MOZ_ASSERT(mFactory);
-
-  MaybeCollectGarbageOnIPCMessage();
-
-  RefPtr<IDBFactory> factory;
-  mFactory.swap(factory);
-
-  mActor->SendPermissionRetry();
-  mActor = nullptr;
-
-  return IPC_OK();
 }
 
 /*******************************************************************************
@@ -1657,7 +1590,7 @@ bool BackgroundFactoryRequestChild::HandleResponse(
 
   ResultHelper helper(mRequest, nullptr, &JS::UndefinedHandleValue);
 
-  nsCOMPtr<nsIDOMEvent> successEvent = IDBVersionChangeEvent::Create(
+  RefPtr<Event> successEvent = IDBVersionChangeEvent::Create(
       mRequest, nsDependentString(kSuccessEventType),
       aResponse.previousVersion());
   MOZ_ASSERT(successEvent);
@@ -1747,7 +1680,8 @@ mozilla::ipc::IPCResult BackgroundFactoryRequestChild::RecvPermissionChallenge(
   }
 
   if (XRE_IsParentProcess()) {
-    nsCOMPtr<nsPIDOMWindowInner> window = mFactory->GetParentObject();
+    nsCOMPtr<nsIGlobalObject> global = mFactory->GetParentObject();
+    nsCOMPtr<nsPIDOMWindowInner> window = do_QueryInterface(global);
     MOZ_ASSERT(window);
 
     nsCOMPtr<Element> ownerElement =
@@ -1780,16 +1714,20 @@ mozilla::ipc::IPCResult BackgroundFactoryRequestChild::RecvPermissionChallenge(
     return IPC_OK();
   }
 
-  RefPtr<TabChild> tabChild = mFactory->GetTabChild();
-  MOZ_ASSERT(tabChild);
+  RefPtr<BrowserChild> browserChild = mFactory->GetBrowserChild();
+  MOZ_ASSERT(browserChild);
 
   IPC::Principal ipcPrincipal(principal);
 
-  auto* actor = new PermissionRequestChildProcessActor(this, mFactory);
-
-  tabChild->SetEventTargetForActor(actor, this->GetActorEventTarget());
-  MOZ_ASSERT(actor->GetActorEventTarget());
-  tabChild->SendPIndexedDBPermissionRequestConstructor(actor, ipcPrincipal);
+  browserChild->SendIndexedDBPermissionRequest(ipcPrincipal)
+      ->Then(
+          GetCurrentThreadSerialEventTarget(), __func__,
+          [this](const uint32_t& aPermission) {
+            this->AssertIsOnOwningThread();
+            MaybeCollectGarbageOnIPCMessage();
+            this->SendPermissionRetry();
+          },
+          [](const mozilla::ipc::ResponseRejectReason) {});
 
   return IPC_OK();
 }
@@ -1803,7 +1741,7 @@ mozilla::ipc::IPCResult BackgroundFactoryRequestChild::RecvBlocked(
 
   const nsDependentString type(kBlockedEventType);
 
-  nsCOMPtr<nsIDOMEvent> blockedEvent;
+  RefPtr<Event> blockedEvent;
   if (mIsDeleteOp) {
     blockedEvent =
         IDBVersionChangeEvent::Create(mRequest, type, aCurrentVersion);
@@ -1820,8 +1758,9 @@ mozilla::ipc::IPCResult BackgroundFactoryRequestChild::RecvBlocked(
                "IndexedDB %s: C R[%llu]: \"blocked\"", IDB_LOG_ID_STRING(),
                kungFuDeathGrip->LoggingSerialNumber());
 
-  bool dummy;
-  if (NS_FAILED(kungFuDeathGrip->DispatchEvent(blockedEvent, &dummy))) {
+  IgnoredErrorResult rv;
+  kungFuDeathGrip->DispatchEvent(*blockedEvent, rv);
+  if (rv.Failed()) {
     NS_WARNING("Failed to dispatch event!");
   }
 
@@ -2018,7 +1957,7 @@ BackgroundDatabaseChild::RecvPBackgroundIDBVersionChangeTransactionConstructor(
 
   request->SetTransaction(transaction);
 
-  nsCOMPtr<nsIDOMEvent> upgradeNeededEvent = IDBVersionChangeEvent::Create(
+  RefPtr<Event> upgradeNeededEvent = IDBVersionChangeEvent::Create(
       request, nsDependentString(kUpgradeNeededEventType), aCurrentVersion,
       aRequestedVersion);
   MOZ_ASSERT(upgradeNeededEvent);
@@ -2056,7 +1995,7 @@ bool BackgroundDatabaseChild::DeallocPBackgroundMutableFileChild(
 }
 
 mozilla::ipc::IPCResult BackgroundDatabaseChild::RecvVersionChange(
-    const uint64_t& aOldVersion, const NullableVersion& aNewVersion) {
+    const uint64_t& aOldVersion, const Maybe<uint64_t>& aNewVersion) {
   AssertIsOnOwningThread();
 
   MaybeCollectGarbageOnIPCMessage();
@@ -2074,7 +2013,7 @@ mozilla::ipc::IPCResult BackgroundDatabaseChild::RecvVersionChange(
 
     // Anything in the bfcache has to be evicted and then we have to close the
     // database also.
-    if (nsCOMPtr<nsIDocument> doc = owner->GetExtantDoc()) {
+    if (nsCOMPtr<Document> doc = owner->GetExtantDoc()) {
       if (nsCOMPtr<nsIBFCacheEntry> bfCacheEntry = doc->GetBFCacheEntry()) {
         bfCacheEntry->RemoveFromBFCacheSync();
         shouldAbortAndClose = true;
@@ -2093,31 +2032,25 @@ mozilla::ipc::IPCResult BackgroundDatabaseChild::RecvVersionChange(
   // Otherwise fire a versionchange event.
   const nsDependentString type(kVersionChangeEventType);
 
-  nsCOMPtr<nsIDOMEvent> versionChangeEvent;
+  RefPtr<Event> versionChangeEvent;
 
-  switch (aNewVersion.type()) {
-    case NullableVersion::Tnull_t:
-      versionChangeEvent =
-          IDBVersionChangeEvent::Create(kungFuDeathGrip, type, aOldVersion);
-      MOZ_ASSERT(versionChangeEvent);
-      break;
-
-    case NullableVersion::Tuint64_t:
-      versionChangeEvent = IDBVersionChangeEvent::Create(
-          kungFuDeathGrip, type, aOldVersion, aNewVersion.get_uint64_t());
-      MOZ_ASSERT(versionChangeEvent);
-      break;
-
-    default:
-      MOZ_CRASH("Should never get here!");
+  if (aNewVersion.isNothing()) {
+    versionChangeEvent =
+        IDBVersionChangeEvent::Create(kungFuDeathGrip, type, aOldVersion);
+    MOZ_ASSERT(versionChangeEvent);
+  } else {
+    versionChangeEvent = IDBVersionChangeEvent::Create(
+        kungFuDeathGrip, type, aOldVersion, aNewVersion.value());
+    MOZ_ASSERT(versionChangeEvent);
   }
 
   IDB_LOG_MARK("IndexedDB %s: Child : Firing \"versionchange\" event",
                "IndexedDB %s: C: IDBDatabase \"versionchange\" event",
                IDB_LOG_ID_STRING());
 
-  bool dummy;
-  if (NS_FAILED(kungFuDeathGrip->DispatchEvent(versionChangeEvent, &dummy))) {
+  IgnoredErrorResult rv;
+  kungFuDeathGrip->DispatchEvent(*versionChangeEvent, rv);
+  if (rv.Failed()) {
     NS_WARNING("Failed to dispatch event!");
   }
 
@@ -2717,7 +2650,7 @@ void BackgroundRequestChild::HandleResponse(
   auto& serializedCloneInfo =
       const_cast<SerializedStructuredCloneReadInfo&>(aResponse);
 
-  StructuredCloneReadInfo cloneReadInfo(Move(serializedCloneInfo));
+  StructuredCloneReadInfo cloneReadInfo(std::move(serializedCloneInfo));
 
   DeserializeStructuredCloneFiles(mTransaction->Database(), aResponse.files(),
                                   GetNextModuleSet(cloneReadInfo),
@@ -2749,14 +2682,14 @@ void BackgroundRequestChild::HandleResponse(
       StructuredCloneReadInfo* cloneReadInfo = cloneReadInfos.AppendElement();
 
       // Move relevant data into the cloneReadInfo
-      *cloneReadInfo = Move(serializedCloneInfo);
+      *cloneReadInfo = std::move(serializedCloneInfo);
 
       // Get the files
       nsTArray<StructuredCloneFile> files;
       DeserializeStructuredCloneFiles(database, serializedCloneInfo.files(),
                                       GetNextModuleSet(*cloneReadInfo), files);
 
-      cloneReadInfo->mFiles = Move(files);
+      cloneReadInfo->mFiles = std::move(files);
     }
   }
 
@@ -3020,26 +2953,12 @@ nsresult BackgroundRequestChild::PreprocessHelper::Init(
   AssertIsOnOwningThread();
   MOZ_ASSERT(!aFiles.IsEmpty());
 
-  uint32_t count = aFiles.Length();
-
-  // We should receive even number of files.
-  MOZ_ASSERT(count % 2 == 0);
-
-  // Let's process it as pairs.
-  count = count / 2;
-
-  nsTArray<StreamPair> streamPairs;
-  for (uint32_t index = 0; index < count; index++) {
-    uint32_t bytecodeIndex = index * 2;
-    uint32_t compiledIndex = bytecodeIndex + 1;
-
-    const StructuredCloneFile& bytecodeFile = aFiles[bytecodeIndex];
-    const StructuredCloneFile& compiledFile = aFiles[compiledIndex];
+  nsTArray<nsCOMPtr<nsIInputStream>> streams;
+  for (uint32_t index = 0; index < aFiles.Length(); index++) {
+    const StructuredCloneFile& bytecodeFile = aFiles[index];
 
     MOZ_ASSERT(bytecodeFile.mType == StructuredCloneFile::eWasmBytecode);
     MOZ_ASSERT(bytecodeFile.mBlob);
-    MOZ_ASSERT(compiledFile.mType == StructuredCloneFile::eWasmCompiled);
-    MOZ_ASSERT(compiledFile.mBlob);
 
     ErrorResult errorResult;
 
@@ -3050,17 +2969,10 @@ nsresult BackgroundRequestChild::PreprocessHelper::Init(
       return errorResult.StealNSResult();
     }
 
-    nsCOMPtr<nsIInputStream> compiledStream;
-    compiledFile.mBlob->CreateInputStream(getter_AddRefs(compiledStream),
-                                          errorResult);
-    if (NS_WARN_IF(errorResult.Failed())) {
-      return errorResult.StealNSResult();
-    }
-
-    streamPairs.AppendElement(StreamPair(bytecodeStream, compiledStream));
+    streams.AppendElement(bytecodeStream);
   }
 
-  mStreamPairs = Move(streamPairs);
+  mStreams = std::move(streams);
 
   return NS_OK;
 }
@@ -3105,22 +3017,18 @@ void BackgroundRequestChild::PreprocessHelper::RunOnOwningThread() {
   }
 }
 
-void BackgroundRequestChild::PreprocessHelper::ProcessCurrentStreamPair() {
+void BackgroundRequestChild::PreprocessHelper::ProcessCurrentStream() {
   MOZ_ASSERT(!IsOnOwningThread());
-  MOZ_ASSERT(!mStreamPairs.IsEmpty());
-
-  nsresult rv;
-
-  const StreamPair& streamPair = mStreamPairs[0];
+  MOZ_ASSERT(!mStreams.IsEmpty());
 
   // We still don't have the current bytecode FileDesc.
   if (!mCurrentBytecodeFileDesc) {
-    const nsCOMPtr<nsIInputStream>& bytecodeStream = streamPair.first;
+    const nsCOMPtr<nsIInputStream>& bytecodeStream = mStreams[0];
     MOZ_ASSERT(bytecodeStream);
 
     mCurrentBytecodeFileDesc = GetFileDescriptorFromStream(bytecodeStream);
     if (!mCurrentBytecodeFileDesc) {
-      rv = WaitForStreamReady(bytecodeStream);
+      nsresult rv = WaitForStreamReady(bytecodeStream);
       if (NS_WARN_IF(NS_FAILED(rv))) {
         ContinueWithStatus(rv);
       }
@@ -3128,39 +3036,17 @@ void BackgroundRequestChild::PreprocessHelper::ProcessCurrentStreamPair() {
     }
   }
 
-  if (!mCurrentCompiledFileDesc) {
-    const nsCOMPtr<nsIInputStream>& compiledStream = streamPair.second;
-    MOZ_ASSERT(compiledStream);
+  MOZ_ASSERT(mCurrentBytecodeFileDesc);
 
-    mCurrentCompiledFileDesc = GetFileDescriptorFromStream(compiledStream);
-    if (!mCurrentCompiledFileDesc) {
-      rv = WaitForStreamReady(compiledStream);
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        ContinueWithStatus(rv);
-      }
-      return;
-    }
-  }
-
-  MOZ_ASSERT(mCurrentBytecodeFileDesc && mCurrentCompiledFileDesc);
-
-  JS::BuildIdCharVector buildId;
-  bool ok = GetBuildId(&buildId);
-  if (NS_WARN_IF(!ok)) {
-    ContinueWithStatus(NS_ERROR_FAILURE);
-    return;
-  }
-
-  RefPtr<JS::WasmModule> module = JS::DeserializeWasmModule(
-      mCurrentBytecodeFileDesc, mCurrentCompiledFileDesc, Move(buildId),
-      nullptr, 0, 0);
+  RefPtr<JS::WasmModule> module =
+      JS::DeserializeWasmModule(mCurrentBytecodeFileDesc, nullptr, 0);
   if (NS_WARN_IF(!module)) {
     ContinueWithStatus(NS_ERROR_FAILURE);
     return;
   }
 
   mModuleSet.AppendElement(module);
-  mStreamPairs.RemoveElementAt(0);
+  mStreams.RemoveElementAt(0);
 
   ContinueWithStatus(NS_OK);
 }
@@ -3173,7 +3059,8 @@ nsresult BackgroundRequestChild::PreprocessHelper::WaitForStreamReady(
   nsCOMPtr<nsIAsyncFileMetadata> asyncFileMetadata =
       do_QueryInterface(aInputStream);
   if (asyncFileMetadata) {
-    nsresult rv = asyncFileMetadata->AsyncWait(this, mTaskQueueEventTarget);
+    nsresult rv =
+        asyncFileMetadata->AsyncFileMetadataWait(this, mTaskQueueEventTarget);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
@@ -3200,18 +3087,17 @@ void BackgroundRequestChild::PreprocessHelper::ContinueWithStatus(
 
   // Let's reset the value for the next operation.
   mCurrentBytecodeFileDesc = nullptr;
-  mCurrentCompiledFileDesc = nullptr;
 
   nsCOMPtr<nsIEventTarget> eventTarget;
 
   if (NS_WARN_IF(NS_FAILED(aStatus))) {
     // If the previous operation failed, we don't continue the processing of the
-    // other stream pairs.
+    // other streams.
     MOZ_ASSERT(mResultCode == NS_OK);
     mResultCode = aStatus;
 
     eventTarget = mOwningEventTarget;
-  } else if (mStreamPairs.IsEmpty()) {
+  } else if (mStreams.IsEmpty()) {
     // If all the streams have been processed, we can go back to the owning
     // thread.
     eventTarget = mOwningEventTarget;
@@ -3233,7 +3119,7 @@ BackgroundRequestChild::PreprocessHelper::Run() {
   if (IsOnOwningThread()) {
     RunOnOwningThread();
   } else {
-    ProcessCurrentStreamPair();
+    ProcessCurrentStream();
   }
 
   return NS_OK;
@@ -3258,7 +3144,7 @@ nsresult BackgroundRequestChild::PreprocessHelper::DataIsReady(
     nsIInputStream* aStream) {
   MOZ_ASSERT(!IsOnOwningThread());
   MOZ_ASSERT(aStream);
-  MOZ_ASSERT(!mStreamPairs.IsEmpty());
+  MOZ_ASSERT(!mStreams.IsEmpty());
 
   // We still don't have the current bytecode FileDesc.
   if (!mCurrentBytecodeFileDesc) {
@@ -3268,20 +3154,8 @@ nsresult BackgroundRequestChild::PreprocessHelper::DataIsReady(
       return NS_OK;
     }
 
-    // Let's continue with the processing of the current pair.
-    ProcessCurrentStreamPair();
-    return NS_OK;
-  }
-
-  if (!mCurrentCompiledFileDesc) {
-    mCurrentCompiledFileDesc = GetFileDescriptorFromStream(aStream);
-    if (!mCurrentCompiledFileDesc) {
-      ContinueWithStatus(NS_ERROR_FAILURE);
-      return NS_OK;
-    }
-
-    // Let's continue with the processing of the current pair.
-    ProcessCurrentStreamPair();
+    // Let's continue with the processing of the current stream.
+    ProcessCurrentStream();
     return NS_OK;
   }
 
@@ -3451,7 +3325,7 @@ void BackgroundCursorChild::HandleResponse(
       const_cast<nsTArray<ObjectStoreCursorResponse>&>(aResponses);
 
   for (ObjectStoreCursorResponse& response : responses) {
-    StructuredCloneReadInfo cloneReadInfo(Move(response.cloneInfo()));
+    StructuredCloneReadInfo cloneReadInfo(std::move(response.cloneInfo()));
     cloneReadInfo.mDatabase = mTransaction->Database();
 
     DeserializeStructuredCloneFiles(mTransaction->Database(),
@@ -3461,10 +3335,10 @@ void BackgroundCursorChild::HandleResponse(
     RefPtr<IDBCursor> newCursor;
 
     if (mCursor) {
-      mCursor->Reset(Move(response.key()), Move(cloneReadInfo));
+      mCursor->Reset(std::move(response.key()), std::move(cloneReadInfo));
     } else {
-      newCursor =
-          IDBCursor::Create(this, Move(response.key()), Move(cloneReadInfo));
+      newCursor = IDBCursor::Create(this, std::move(response.key()),
+                                    std::move(cloneReadInfo));
       mCursor = newCursor;
     }
   }
@@ -3488,9 +3362,9 @@ void BackgroundCursorChild::HandleResponse(
   RefPtr<IDBCursor> newCursor;
 
   if (mCursor) {
-    mCursor->Reset(Move(response.key()));
+    mCursor->Reset(std::move(response.key()));
   } else {
-    newCursor = IDBCursor::Create(this, Move(response.key()));
+    newCursor = IDBCursor::Create(this, std::move(response.key()));
     mCursor = newCursor;
   }
 
@@ -3510,7 +3384,7 @@ void BackgroundCursorChild::HandleResponse(
   // XXX Fix this somehow...
   auto& response = const_cast<IndexCursorResponse&>(aResponse);
 
-  StructuredCloneReadInfo cloneReadInfo(Move(response.cloneInfo()));
+  StructuredCloneReadInfo cloneReadInfo(std::move(response.cloneInfo()));
   cloneReadInfo.mDatabase = mTransaction->Database();
 
   DeserializeStructuredCloneFiles(mTransaction->Database(),
@@ -3520,12 +3394,12 @@ void BackgroundCursorChild::HandleResponse(
   RefPtr<IDBCursor> newCursor;
 
   if (mCursor) {
-    mCursor->Reset(Move(response.key()), Move(response.sortKey()),
-                   Move(response.objectKey()), Move(cloneReadInfo));
+    mCursor->Reset(std::move(response.key()), std::move(response.sortKey()),
+                   std::move(response.objectKey()), std::move(cloneReadInfo));
   } else {
-    newCursor =
-        IDBCursor::Create(this, Move(response.key()), Move(response.sortKey()),
-                          Move(response.objectKey()), Move(cloneReadInfo));
+    newCursor = IDBCursor::Create(
+        this, std::move(response.key()), std::move(response.sortKey()),
+        std::move(response.objectKey()), std::move(cloneReadInfo));
     mCursor = newCursor;
   }
 
@@ -3548,12 +3422,12 @@ void BackgroundCursorChild::HandleResponse(
   RefPtr<IDBCursor> newCursor;
 
   if (mCursor) {
-    mCursor->Reset(Move(response.key()), Move(response.sortKey()),
-                   Move(response.objectKey()));
+    mCursor->Reset(std::move(response.key()), std::move(response.sortKey()),
+                   std::move(response.objectKey()));
   } else {
-    newCursor =
-        IDBCursor::Create(this, Move(response.key()), Move(response.sortKey()),
-                          Move(response.objectKey()));
+    newCursor = IDBCursor::Create(this, std::move(response.key()),
+                                  std::move(response.sortKey()),
+                                  std::move(response.objectKey()));
     mCursor = newCursor;
   }
 

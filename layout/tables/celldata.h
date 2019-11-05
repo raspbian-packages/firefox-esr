@@ -66,8 +66,8 @@ class CellData {
    */
   uint32_t GetRowSpanOffset() const;
 
-  /** set the distance from the current entry to the corresponding origin of the
-   * rowspan
+  /** set the distance from the current entry to the corresponding origin of
+   * the rowspan
    * @param    the distance in the column to the originating cell
    */
   void SetRowSpanOffset(uint32_t aSpan);
@@ -77,8 +77,8 @@ class CellData {
    */
   bool IsColSpan() const;
 
-  /** get the distance from the current entry to the corresponding origin of the
-   * colspan
+  /** get the distance from the current entry to the corresponding origin of
+   *  the colspan
    * @return    containing the distance in the row to the originating cell
    */
   uint32_t GetColSpanOffset() const;
@@ -95,8 +95,8 @@ class CellData {
   bool IsOverlap() const;
 
   /** mark the current entry as spanned by a row- and a colspan
-   * @param aOverlap    if true mark the entry as covered by a row- and a
-   * colspan
+   * @param aOverlap    if true mark the entry as covered by a row- and
+   *                    a colspan
    */
   void SetOverlap(bool aOverlap);
 
@@ -110,13 +110,13 @@ class CellData {
   friend class nsCellMap;
   friend class BCCellData;
 
-  /** constructor.
+  /**
+   * Implemented in nsCellMap.cpp
+   *
    * @param aOrigCell  the table cell frame which will be stored in mOrigCell.
    */
-  explicit CellData(
-      nsTableCellFrame* aOrigCell);  // implemented in nsCellMap.cpp
+  explicit CellData(nsTableCellFrame* aOrigCell);
 
-  /** destructor */
   ~CellData();  // implemented in nsCellMap.cpp
 
  protected:
@@ -160,11 +160,11 @@ static inline BCPixelSize BC_BORDER_START_HALF(BCPixelSize px) {
 // The half of border on inline/block-axis end side
 static inline BCPixelSize BC_BORDER_END_HALF(BCPixelSize px) { return px / 2; }
 
-static inline nscoord BC_BORDER_START_HALF_COORD(int32_t p2t, BCPixelSize px) {
-  return BC_BORDER_START_HALF(px) * p2t;
+static inline nscoord BC_BORDER_START_HALF_COORD(int32_t d2a, BCPixelSize px) {
+  return BC_BORDER_START_HALF(px) * d2a;
 }
-static inline nscoord BC_BORDER_END_HALF_COORD(int32_t p2t, BCPixelSize px) {
-  return BC_BORDER_END_HALF(px) * p2t;
+static inline nscoord BC_BORDER_END_HALF_COORD(int32_t d2a, BCPixelSize px) {
+  return BC_BORDER_END_HALF(px) * d2a;
 }
 
 // BCData stores the bstart and istart border info and the corner connecting the

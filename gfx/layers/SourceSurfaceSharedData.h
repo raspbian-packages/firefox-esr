@@ -39,7 +39,11 @@ class SourceSurfaceSharedDataWrapper final : public DataSourceSurface {
                                           override)
 
   SourceSurfaceSharedDataWrapper()
-      : mStride(0), mFormat(SurfaceFormat::UNKNOWN) {}
+      : mStride(0),
+        mConsumers(0),
+        mFormat(SurfaceFormat::UNKNOWN),
+        mCreatorPid(0),
+        mCreatorRef(true) {}
 
   bool Init(const IntSize& aSize, int32_t aStride, SurfaceFormat aFormat,
             const SharedMemoryBasic::Handle& aHandle,
@@ -59,20 +63,26 @@ class SourceSurfaceSharedDataWrapper final : public DataSourceSurface {
 
   bool OnHeap() const override { return false; }
 
-  bool Map(MapType, MappedSurface* aMappedSurface) override {
-    aMappedSurface->mData = GetData();
-    aMappedSurface->mStride = mStride;
-    return true;
-  }
-
-  void Unmap() override {}
-
   bool AddConsumer() { return ++mConsumers == 1; }
 
-  bool RemoveConsumer() {
+  bool RemoveConsumer(bool aForCreator) {
     MOZ_ASSERT(mConsumers > 0);
+    if (aForCreator) {
+      if (!mCreatorRef) {
+        MOZ_ASSERT_UNREACHABLE("Already released creator reference!");
+        return false;
+      }
+      mCreatorRef = false;
+    }
     return --mConsumers == 0;
   }
+
+  uint32_t GetConsumers() const {
+    MOZ_ASSERT(mConsumers > 0);
+    return mConsumers;
+  }
+
+  bool HasCreatorRef() const { return mCreatorRef; }
 
  private:
   size_t GetDataLength() const {
@@ -89,6 +99,7 @@ class SourceSurfaceSharedDataWrapper final : public DataSourceSurface {
   RefPtr<SharedMemoryBasic> mBuf;
   SurfaceFormat mFormat;
   base::ProcessId mCreatorPid;
+  bool mCreatorRef;
 };
 
 /**
@@ -104,9 +115,7 @@ class SourceSurfaceSharedData final : public DataSourceSurface {
   SourceSurfaceSharedData()
       : mMutex("SourceSurfaceSharedData"),
         mStride(0),
-        mMapCount(0),
         mHandleCount(0),
-        mInvalidations(0),
         mFormat(SurfaceFormat::UNKNOWN),
         mClosed(false),
         mFinalized(false),
@@ -135,8 +144,8 @@ class SourceSurfaceSharedData final : public DataSourceSurface {
   void GuaranteePersistance() override;
 
   void AddSizeOfExcludingThis(MallocSizeOf aMallocSizeOf, size_t& aHeapSizeOut,
-                              size_t& aNonHeapSizeOut,
-                              size_t& aExtHandlesOut) const override;
+                              size_t& aNonHeapSizeOut, size_t& aExtHandlesOut,
+                              uint64_t& aExtIdOut) const override;
 
   bool OnHeap() const override { return false; }
 
@@ -222,20 +231,32 @@ class SourceSurfaceSharedData final : public DataSourceSurface {
   }
 
   /**
-   * Indicates how many times the surface has been invalidated.
+   * Yields a dirty rect of what has changed since it was last called.
    */
-  int32_t Invalidations() const override {
+  Maybe<IntRect> TakeDirtyRect() override {
     MutexAutoLock lock(mMutex);
-    return mInvalidations;
+    if (mDirtyRect) {
+      Maybe<IntRect> ret = std::move(mDirtyRect);
+      return ret;
+    }
+    return Nothing();
   }
 
   /**
    * Increment the invalidation counter.
    */
-  void Invalidate() override {
+  void Invalidate(const IntRect& aDirtyRect) override {
     MutexAutoLock lock(mMutex);
-    ++mInvalidations;
-    MOZ_ASSERT(mInvalidations >= 0);
+    if (!aDirtyRect.IsEmpty()) {
+      if (mDirtyRect) {
+        mDirtyRect->UnionRect(mDirtyRect.ref(), aDirtyRect);
+      } else {
+        mDirtyRect = Some(aDirtyRect);
+      }
+    } else {
+      mDirtyRect = Some(IntRect(IntPoint(0, 0), mSize));
+    }
+    MOZ_ASSERT_IF(mDirtyRect, !mDirtyRect->IsEmpty());
   }
 
   /**
@@ -258,7 +279,7 @@ class SourceSurfaceSharedData final : public DataSourceSurface {
  private:
   friend class SourceSurfaceSharedDataWrapper;
 
-  ~SourceSurfaceSharedData() override { MOZ_ASSERT(mMapCount == 0); }
+  virtual ~SourceSurfaceSharedData() = default;
 
   void LockHandle() {
     MutexAutoLock lock(mMutex);
@@ -291,9 +312,8 @@ class SourceSurfaceSharedData final : public DataSourceSurface {
 
   mutable Mutex mMutex;
   int32_t mStride;
-  int32_t mMapCount;
   int32_t mHandleCount;
-  int32_t mInvalidations;
+  Maybe<IntRect> mDirtyRect;
   IntSize mSize;
   RefPtr<SharedMemoryBasic> mBuf;
   RefPtr<SharedMemoryBasic> mOldBuf;

@@ -14,8 +14,7 @@ namespace mozilla {
 static nscoord SpaceToFill(WritingMode aWM, const LogicalSize& aSize,
                            nscoord aMargin, LogicalAxis aAxis,
                            nscoord aCBSize) {
-  nscoord size =
-      aAxis == eLogicalAxisBlock ? aSize.BSize(aWM) : aSize.ISize(aWM);
+  nscoord size = aSize.Size(aAxis, aWM);
   return aCBSize - (size + aMargin);
 }
 
@@ -31,8 +30,8 @@ nscoord CSSAlignUtils::AlignJustifySelf(uint8_t aAlignment, LogicalAxis aAxis,
       "caller should map that to the corresponding START/END");
 
   // Promote aFlags to convenience bools:
-  const bool isOverflowSafe = !!(aFlags & AlignJustifyFlags::eOverflowSafe);
-  const bool isSameSide = !!(aFlags & AlignJustifyFlags::eSameSide);
+  const bool isOverflowSafe = !!(aFlags & AlignJustifyFlags::OverflowSafe);
+  const bool isSameSide = !!(aFlags & AlignJustifyFlags::SameSide);
 
   // Map some alignment values to 'start' / 'end'.
   switch (aAlignment) {
@@ -83,16 +82,16 @@ nscoord CSSAlignUtils::AlignJustifySelf(uint8_t aAlignment, LogicalAxis aAxis,
   const auto& styleMargin = aRI.mStyleMargin->mMargin;
   bool hasAutoMarginStart;
   bool hasAutoMarginEnd;
-  if (aFlags & AlignJustifyFlags::eIgnoreAutoMargins) {
+  if (aFlags & AlignJustifyFlags::IgnoreAutoMargins) {
     // (Note: ReflowInput will have treated "auto" margins as 0, so we
     // don't need to do anything special to avoid expanding them.)
     hasAutoMarginStart = hasAutoMarginEnd = false;
   } else if (aAxis == eLogicalAxisBlock) {
-    hasAutoMarginStart = styleMargin.GetBStartUnit(wm) == eStyleUnit_Auto;
-    hasAutoMarginEnd = styleMargin.GetBEndUnit(wm) == eStyleUnit_Auto;
+    hasAutoMarginStart = styleMargin.GetBStart(wm).IsAuto();
+    hasAutoMarginEnd = styleMargin.GetBEnd(wm).IsAuto();
   } else { /* aAxis == eLogicalAxisInline */
-    hasAutoMarginStart = styleMargin.GetIStartUnit(wm) == eStyleUnit_Auto;
-    hasAutoMarginEnd = styleMargin.GetIEndUnit(wm) == eStyleUnit_Auto;
+    hasAutoMarginStart = styleMargin.GetIStart(wm).IsAuto();
+    hasAutoMarginEnd = styleMargin.GetIEnd(wm).IsAuto();
   }
 
   // https://drafts.csswg.org/css-align-3/#overflow-values
@@ -126,8 +125,7 @@ nscoord CSSAlignUtils::AlignJustifySelf(uint8_t aAlignment, LogicalAxis aAxis,
       if (MOZ_LIKELY(isSameSide == (aAlignment == NS_STYLE_ALIGN_BASELINE))) {
         offset = marginStart + aBaselineAdjust;
       } else {
-        nscoord size = aAxis == eLogicalAxisBlock ? aChildSize.BSize(wm)
-                                                  : aChildSize.ISize(wm);
+        nscoord size = aChildSize.Size(aAxis, wm);
         offset = aCBSize - (size + marginEnd) - aBaselineAdjust;
       }
       break;
@@ -137,14 +135,12 @@ nscoord CSSAlignUtils::AlignJustifySelf(uint8_t aAlignment, LogicalAxis aAxis,
       offset = marginStart;
       break;
     case NS_STYLE_ALIGN_END: {
-      nscoord size = aAxis == eLogicalAxisBlock ? aChildSize.BSize(wm)
-                                                : aChildSize.ISize(wm);
+      nscoord size = aChildSize.Size(aAxis, wm);
       offset = aCBSize - (size + marginEnd);
       break;
     }
     case NS_STYLE_ALIGN_CENTER: {
-      nscoord size = aAxis == eLogicalAxisBlock ? aChildSize.BSize(wm)
-                                                : aChildSize.ISize(wm);
+      nscoord size = aChildSize.Size(aAxis, wm);
       offset = (aCBSize - size + marginStart - marginEnd) / 2;
       break;
     }

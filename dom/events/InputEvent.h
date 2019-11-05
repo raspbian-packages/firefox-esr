@@ -14,15 +14,14 @@
 namespace mozilla {
 namespace dom {
 
+class DataTransfer;
+
 class InputEvent : public UIEvent {
  public:
   InputEvent(EventTarget* aOwner, nsPresContext* aPresContext,
              InternalEditorInputEvent* aEvent);
 
   NS_INLINE_DECL_REFCOUNTING_INHERITED(InputEvent, UIEvent)
-
-  // Forward to base class
-  NS_FORWARD_TO_UIEVENT
 
   static already_AddRefed<InputEvent> Constructor(const GlobalObject& aGlobal,
                                                   const nsAString& aType,
@@ -31,13 +30,21 @@ class InputEvent : public UIEvent {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return InputEventBinding::Wrap(aCx, this, aGivenProto);
+    return InputEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
+  void GetInputType(nsAString& aInputType);
+  void GetData(nsAString& aData, CallerType aCallerType = CallerType::System);
+  already_AddRefed<DataTransfer> GetDataTransfer(
+      CallerType aCallerType = CallerType::System);
   bool IsComposing();
 
  protected:
   ~InputEvent() {}
+
+  // mInputTypeValue stores inputType attribute value if the instance is
+  // created by script and not initialized with known inputType value.
+  nsString mInputTypeValue;
 };
 
 }  // namespace dom

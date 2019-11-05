@@ -7,7 +7,7 @@
 #ifndef __mozilla_layers_TouchActionHelper_h__
 #define __mozilla_layers_TouchActionHelper_h__
 
-#include "mozilla/layers/APZUtils.h"  // for TouchBehaviorFlags
+#include "mozilla/layers/LayersTypes.h"  // for TouchBehaviorFlags
 
 class nsIFrame;
 class nsIWidget;
@@ -20,11 +20,6 @@ namespace layers {
  * the touch-action spec.
  */
 class TouchActionHelper {
- private:
-  static void UpdateAllowedBehavior(uint32_t aTouchActionValue,
-                                    bool aConsiderPanning,
-                                    TouchBehaviorFlags& aOutBehavior);
-
  public:
   /*
    * Performs hit testing on content, finds frame that corresponds to the aPoint

@@ -6,10 +6,6 @@
 #include "nsIConsoleService.h"
 #include "nsIScriptError.h"
 
-#ifndef __FUNCTION__
-#define __FUNCTION__ __func__
-#endif
-
 // Call a method on each observer in a category cache, then call the same
 // method on the observer array.
 #define NOTIFY_OBSERVERS(canFire, array, type, method) \
@@ -23,7 +19,7 @@
   PR_BEGIN_MACRO                                                   \
   if (canFire) {                                                   \
     for (uint32_t idx = 0; idx < array.Length(); ++idx) {          \
-      const nsCOMPtr<nsINavBookmarkObserver> &e =                  \
+      const nsCOMPtr<nsINavBookmarkObserver>& e =                  \
           array.ElementAt(idx).GetValue();                         \
       if (e) {                                                     \
         if (skipIf(e)) continue;                                   \
@@ -34,7 +30,7 @@
   PR_END_MACRO;
 
 #define PLACES_FACTORY_SINGLETON_IMPLEMENTATION(_className, _sInstance)     \
-  _className *_className::_sInstance = nullptr;                             \
+  _className* _className::_sInstance = nullptr;                             \
                                                                             \
   already_AddRefed<_className> _className::GetSingleton() {                 \
     if (_sInstance) {                                                       \
@@ -51,21 +47,3 @@
     }                                                                       \
     return ret.forget();                                                    \
   }
-
-#define PLACES_WARN_DEPRECATED()                                               \
-  PR_BEGIN_MACRO                                                               \
-  nsCString msg(__FUNCTION__);                                                 \
-  msg.AppendLiteral(                                                           \
-      " is deprecated and will be removed in the next version.");              \
-  NS_WARNING(msg.get());                                                       \
-  nsCOMPtr<nsIConsoleService> cs =                                             \
-      do_GetService(NS_CONSOLESERVICE_CONTRACTID);                             \
-  if (cs) {                                                                    \
-    nsCOMPtr<nsIScriptError> e = do_CreateInstance(NS_SCRIPTERROR_CONTRACTID); \
-    if (e && NS_SUCCEEDED(e->Init(NS_ConvertUTF8toUTF16(msg), EmptyString(),   \
-                                  EmptyString(), 0, 0,                         \
-                                  nsIScriptError::errorFlag, "Places"))) {     \
-      cs->LogMessage(e);                                                       \
-    }                                                                          \
-  }                                                                            \
-  PR_END_MACRO

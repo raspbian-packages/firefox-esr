@@ -43,8 +43,6 @@ InterceptedChannelBase::InterceptedChannelBase(
       mClosed(false),
       mSynthesizedOrReset(Invalid) {}
 
-InterceptedChannelBase::~InterceptedChannelBase() {}
-
 void InterceptedChannelBase::EnsureSynthesizedResponse() {
   if (mSynthesizedResponseHead.isNothing()) {
     mSynthesizedResponseHead.emplace(new nsHttpResponseHead());
@@ -123,6 +121,12 @@ InterceptedChannelBase::SetReleaseHandle(nsISupports* aHandle) {
 NS_IMETHODIMP
 InterceptedChannelBase::SaveTimeStamps() {
   MOZ_ASSERT(NS_IsMainThread());
+
+  // If we were not able to start the fetch event for some reason (like
+  // corrupted scripts), then just do nothing here.
+  if (mHandleFetchEventStart.IsNull()) {
+    return NS_OK;
+  }
 
   nsCOMPtr<nsIChannel> underlyingChannel;
   nsresult rv = GetChannel(getter_AddRefs(underlyingChannel));
@@ -369,13 +373,9 @@ InterceptedChannelContent::GetInternalContentPolicyType(
     nsContentPolicyType* aPolicyType) {
   NS_ENSURE_ARG(aPolicyType);
 
-  nsCOMPtr<nsILoadInfo> loadInfo;
-  nsresult rv = mChannel->GetLoadInfo(getter_AddRefs(loadInfo));
-  NS_ENSURE_SUCCESS(rv, rv);
+  nsCOMPtr<nsILoadInfo> loadInfo = mChannel->LoadInfo();
 
-  if (loadInfo) {
-    *aPolicyType = loadInfo->InternalContentPolicyType();
-  }
+  *aPolicyType = loadInfo->InternalContentPolicyType();
   return NS_OK;
 }
 

@@ -11,7 +11,7 @@
 #include "mozilla/layers/CompositorTypes.h"
 #include "nsISupportsImpl.h"
 #if defined(MOZ_WIDGET_ANDROID)
-#include "mozilla/layers/UiCompositorControllerChild.h"
+#  include "mozilla/layers/UiCompositorControllerChild.h"
 #endif  // defined(MOZ_WIDGET_ANDROID)
 
 class nsIWidget;
@@ -67,7 +67,7 @@ class CompositorSession {
   }
 
   // Return the id of the root layer tree.
-  uint64_t RootLayerTreeId() const { return mRootLayerTreeId; }
+  LayersId RootLayerTreeId() const { return mRootLayerTreeId; }
 
 #if defined(MOZ_WIDGET_ANDROID)
   // Set the UiCompositorControllerChild after Session creation so the Session
@@ -84,13 +84,13 @@ class CompositorSession {
  protected:
   CompositorSession(CompositorWidgetDelegate* aDelegate,
                     CompositorBridgeChild* aChild,
-                    const uint64_t& aRootLayerTreeId);
+                    const LayersId& aRootLayerTreeId);
   virtual ~CompositorSession();
 
  protected:
   CompositorWidgetDelegate* mCompositorWidgetDelegate;
   RefPtr<CompositorBridgeChild> mCompositorBridgeChild;
-  uint64_t mRootLayerTreeId;
+  LayersId mRootLayerTreeId;
 #if defined(MOZ_WIDGET_ANDROID)
   RefPtr<UiCompositorControllerChild> mUiCompositorControllerChild;
 #endif  // defined(MOZ_WIDGET_ANDROID)

@@ -7,19 +7,11 @@
 function test() {
   waitForExplicitFinish();
 
-  getChromeActors((client, response) => {
-    let options = {
-      form: response,
-      client: client,
-      chrome: true
-    };
-
-    TargetFactory.forRemoteTab(options).then(target => {
-      target.on("close", () => {
-        ok(true, "Target was closed");
-        finish();
-      });
-      client.close();
+  getParentProcessActors((client, target) => {
+    target.on("close", () => {
+      ok(true, "Target was closed");
+      finish();
     });
+    client.close();
   });
 }

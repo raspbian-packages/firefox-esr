@@ -38,7 +38,8 @@ class OriginAttributes;
 
 interface nsIURI;
 interface nsIContentSecurityPolicy;
-interface nsIDOMDocument;
+
+webidl Document;
 
 [ptr] native JSContext(JSContext);
 [ptr] native JSPrincipals(JSPrincipals);
@@ -68,13 +69,13 @@ interface nsIPrincipal : nsISerializable
     /**
      * Returns a hash value for the principal.
      */
-    [noscript] readonly attribute unsigned long hashValue;
+    [notxpcom, nostdcall] readonly attribute unsigned long hashValue;
 
     /**
      * The codebase URI to which this principal pertains.  This is
      * generally the document URI.
      */
-    readonly attribute nsIURI URI;
+    [infallible] readonly attribute nsIURI URI;
 
     /**
      * The domain URI to which this principal pertains.
@@ -150,12 +151,13 @@ interface nsIPrincipal : nsISerializable
                       in boolean allowIfInheritsPrincipal);
 
     /**
-     * A Content Security Policy associated with this principal.
-     * Use this function to query the associated CSP with this principal.
-     * Please *only* use this function to *set* a CSP when you know exactly what you are doing.
+     * A Content Security Policy associated with this principal. Use this function to
+     * query the associated CSP with this principal, but please *only* use this
+     * function to *set* a CSP when you know exactly what you are doing.
      * Most likely you want to call ensureCSP instead of setCSP.
      */
-    [noscript] attribute nsIContentSecurityPolicy csp;
+    readonly attribute nsIContentSecurityPolicy csp;
+    [noscript] void setCsp(in nsIContentSecurityPolicy aCsp);
 
     /*
      * Use this function to query a CSP associated with this principal.
@@ -165,7 +167,7 @@ interface nsIPrincipal : nsISerializable
      * Please note if aDocument is null, then setRequestContext on the
      * CSP object is called using the current principal.
      */
-    [noscript] nsIContentSecurityPolicy ensureCSP(in nsIDOMDocument aDocument);
+    [noscript] nsIContentSecurityPolicy ensureCSP(in Document aDocument);
 
     /**
      * A speculative Content Security Policy associated with this
@@ -186,7 +188,7 @@ interface nsIPrincipal : nsISerializable
      * Please note if aDocument is null, then setRequestContext on the
      * speculative CSP object is called using the current principal.
      */
-    [noscript] nsIContentSecurityPolicy ensurePreloadCSP(in nsIDOMDocument aDocument);
+    [noscript] nsIContentSecurityPolicy ensurePreloadCSP(in Document aDocument);
 
     /**
      * The CSP of the principal in JSON notation.
@@ -245,29 +247,25 @@ interface nsIPrincipal : nsISerializable
     readonly attribute AUTF8String originSuffix;
 
     /**
+     * A canonical representation of the site-origin for this principal.
+     * This string has the same format as |origin| (see above). Two principals
+     * with differing |siteOrigin| values will never compare equal, even when
+     * considering domain mutations.
+     *
+     * For most principals, |siteOrigin| matches |origin| precisely. Only
+     * principals which allow mutating |domain|, such as ContentPrincipal,
+     * override the default implementation in BasePrincipal.
+     *
+     * TODO(nika): Use this in DocGroup.
+     */
+    readonly attribute ACString siteOrigin;
+
+    /**
      * The base domain of the codebase URI to which this principal pertains
      * (generally the document URI), handling null principals and
      * non-hierarchical schemes correctly.
      */
     readonly attribute ACString baseDomain;
-
-    /**
-     * Gets the id of the app this principal is inside.  If this principal is
-     * not inside an app, returns nsIScriptSecurityManager::NO_APP_ID.
-     *
-     * Note that this principal does not necessarily have the permissions of
-     * the app identified by appId.  For example, this principal might
-     * correspond to an iframe whose origin differs from that of the app frame
-     * containing it.  In this case, the iframe will have the appId of its
-     * containing app frame, but the iframe must not run with the app's
-     * permissions.
-     *
-     * Similarly, this principal might correspond to an <iframe mozbrowser>
-     * inside an app frame; in this case, the content inside the iframe should
-     * not have any of the app's permissions, even if the iframe is at the same
-     * origin as the app.
-     */
-    [infallible] readonly attribute unsigned long appId;
 
     /**
      * Gets the ID of the add-on this principal belongs to.
@@ -316,9 +314,24 @@ interface nsIPrincipal : nsISerializable
     [infallible] readonly attribute boolean isExpandedPrincipal;
 
     /**
-     * Returns true iff this is the system principal.
+     * Returns true iff this is the system principal.  C++ callers should use
+     * IsSystemPrincipal() instead of this scriptable accessor.
      */
-    [infallible] readonly attribute boolean isSystemPrincipal;
+    readonly attribute boolean isSystemPrincipal;
+
+    /**
+     * Faster and nicer version callable from C++.  Callers must include
+     * BasePrincipal.h, where it's implemented.
+     */
+    %{C++
+      inline bool IsSystemPrincipal() const;
+    %}
+
+    /**
+     * Returns true iff the principal is either an addon principal or
+     * an expanded principal, which contains at least one addon principal.
+     */
+    [infallible] readonly attribute boolean isAddonOrExpandedAddonPrincipal;
 };
 
 /**
@@ -341,11 +354,11 @@ interface nsIExpandedPrincipal : nsISupports
    * When an expanded principal is used as a triggering principal for a
    * request that inherits a security context, one of its constitutent
    * principals is inherited rather than the expanded principal itself. The
-   * last principal in the whitelist is the default principal to inherit.
+   * last principal in the allowlist is the default principal to inherit.
    *
    * Note: this list is not reference counted, it is shared, so
    * should not be changed and should only be used ephemerally.
    */
   [noscript, notxpcom, nostdcall]
-  PrincipalArray WhiteList();
+  PrincipalArray AllowList();
 };

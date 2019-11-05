@@ -19,14 +19,13 @@
 
 class mozIDOMWindowProxy;
 class nsIDocShellTreeItem;
-class nsIDocument;
 class nsPIDOMWindowOuter;
 
 namespace mozilla {
 class AbstractThread;
-class ThrottledEventQueue;
 namespace dom {
-class TabChild;
+class Document;
+class BrowserChild;
 
 // Two browsing contexts are considered "related" if they are reachable from one
 // another through window.opener, window.parent, or window.frames. This is the
@@ -44,9 +43,10 @@ class TabChild;
 // window.opener. A DocGroup is a member of exactly one TabGroup.
 
 class DocGroup;
-class TabChild;
+class BrowserChild;
 
-class TabGroup final : public SchedulerGroup {
+class TabGroup final : public SchedulerGroup,
+                       public LinkedListElement<TabGroup> {
  private:
   class HashEntry : public nsCStringHashKey {
    public:
@@ -67,11 +67,11 @@ class TabGroup final : public SchedulerGroup {
 
   static TabGroup* GetChromeTabGroup();
 
-  // Checks if the TabChild already has a TabGroup assigned to it in
+  // Checks if the BrowserChild already has a TabGroup assigned to it in
   // IPDL. Returns this TabGroup if it does. This could happen if the parent
   // process created the PBrowser and we needed to assign a TabGroup immediately
   // upon receiving the IPDL message. This method is main thread only.
-  static TabGroup* GetFromActor(TabChild* aTabChild);
+  static TabGroup* GetFromActor(BrowserChild* aBrowserChild);
 
   static TabGroup* GetFromWindow(mozIDOMWindowProxy* aWindow);
 
@@ -82,7 +82,7 @@ class TabGroup final : public SchedulerGroup {
   already_AddRefed<DocGroup> GetDocGroup(const nsACString& aKey);
 
   already_AddRefed<DocGroup> AddDocument(const nsACString& aKey,
-                                         nsIDocument* aDocument);
+                                         Document* aDocument);
 
   // Join the specified TabGroup, returning a reference to it. If aTabGroup is
   // nullptr, create a new tabgroup to join.
@@ -92,6 +92,11 @@ class TabGroup final : public SchedulerGroup {
   void Leave(nsPIDOMWindowOuter* aWindow);
 
   Iterator Iter() { return mDocGroups.Iter(); }
+
+  // Returns the size of the set of "similar-origin" DocGroups. To
+  // only consider DocGroups with at least one active document, call
+  // Count with 'aActiveOnly' = true
+  uint32_t Count(bool aActiveOnly = false) const;
 
   // Returns the nsIDocShellTreeItem with the given name, searching each of the
   // docShell trees which are within this TabGroup. It will pass itself as
@@ -131,6 +136,13 @@ class TabGroup final : public SchedulerGroup {
     return mNumOfIndexedDBDatabases;
   }
 
+  static LinkedList<TabGroup>* GetTabGroupList() { return sTabGroups; }
+
+  // This returns true if all the window objects in all the TabGroups are
+  // either inactive (for example in bfcache) or are in background tabs which
+  // can be throttled.
+  static bool HasOnlyThrottableTabs();
+
  private:
   virtual AbstractThread* AbstractMainThreadForImpl(
       TaskCategory aCategory) override;
@@ -152,6 +164,8 @@ class TabGroup final : public SchedulerGroup {
   DocGroupMap mDocGroups;
   nsTArray<nsPIDOMWindowOuter*> mWindows;
   uint32_t mForegroundCount;
+
+  static LinkedList<TabGroup>* sTabGroups;
 };
 
 }  // namespace dom

@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 with Files('**'):
-    BUG_COMPONENT = ('Core', 'Layout: View Rendering')
+    BUG_COMPONENT = ('Core', 'Web Painting')
 
 EXPORTS += [
     'ActiveLayerTracker.h',
@@ -14,6 +14,7 @@ EXPORTS += [
     'DisplayListClipState.h',
     'FrameLayerBuilder.h',
     'LayerState.h',
+    'MatrixStack.h',
     'nsCSSRenderingBorders.h',
     'nsCSSRenderingGradients.h',
     'nsDisplayItemTypes.h',
@@ -22,6 +23,8 @@ EXPORTS += [
     'nsDisplayListInvalidation.h',
     'nsImageRenderer.h',
     'RetainedDisplayListBuilder.h',
+    'RetainedDisplayListHelpers.h',
+    'TransformClipNode.h',
 ]
 
 EXPORTS.mozilla += [
@@ -64,11 +67,6 @@ LOCAL_INCLUDES += [
 FINAL_LIBRARY = 'xul'
 
 CXXFLAGS += CONFIG['MOZ_CAIRO_CFLAGS']
-
-if CONFIG['CC_TYPE'] in ('msvc', 'clang-cl'):
-    # This is intended as a temporary hack to support building with VS2015.
-    # 'type cast': conversion from 'unsigned int' to 'void *' of greater size
-    CXXFLAGS += ['-wd4312']
 
 if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
     CXXFLAGS += ['-Wno-error=shadow']

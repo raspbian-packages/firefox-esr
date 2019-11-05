@@ -60,16 +60,11 @@
 <!ENTITY cmd.context_new_folder.accesskey "N">
 <!ENTITY cmd.new_separator.label "Nuovo separatore">
 <!ENTITY cmd.new_separator.accesskey "u">
-<!ENTITY cmd.reloadLivebookmark.label "Ricarica segnalibro Live">
-<!ENTITY cmd.reloadLivebookmark.accesskey "R">
-<!ENTITY cmd.moveBookmarks.label "Sposta…">
-<!ENTITY cmd.moveBookmarks.accesskey "o">
 <!ENTITY col.name.label "Nome">
 <!ENTITY col.tags.label "Etichette">
 <!ENTITY col.url.label "Indirizzo">
 <!ENTITY col.mostrecentvisit.label "Visita più recente">
 <!ENTITY col.visitcount.label "Numero visite">
-<!ENTITY col.description.label "Descrizione">
 <!ENTITY col.dateadded.label "Data inserimento">
 <!ENTITY col.lastmodified.label "Ultima modifica">
 <!ENTITY historySearch.placeholder "Cerca nella cronologia">
@@ -78,12 +73,8 @@
 <!ENTITY maintenance.label "Importa e salva">
 <!ENTITY maintenance.accesskey "m">
 <!ENTITY maintenance.tooltip "Importa e salva i segnalibri">
-<!ENTITY backButton.tooltip "Vai indietro">
+<!ENTITY backButton.tooltip "Torna indietro">
 <!ENTITY forwardButton.tooltip "Vai avanti">
-<!ENTITY detailsPane.more.label "Altri dati">
-<!ENTITY detailsPane.more.accesskey "a">
-<!ENTITY detailsPane.less.label "Meno dati">
-<!ENTITY detailsPane.less.accesskey "a">
 <!ENTITY detailsPane.selectAnItemText.description "Selezionare un elemento per visualizzarne e modificarne le proprietà">
 <!ENTITY view.label "Visualizza">
 <!ENTITY view.accesskey "z">

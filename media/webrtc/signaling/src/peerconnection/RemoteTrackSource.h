@@ -19,15 +19,13 @@ class RemoteTrackSource : public dom::MediaStreamTrackSource {
     return dom::MediaSourceEnum::Other;
   }
 
-  already_AddRefed<PledgeVoid> ApplyConstraints(
-      nsPIDOMWindowInner* aWindow,
+  RefPtr<ApplyConstraintsPromise> ApplyConstraints(
       const dom::MediaTrackConstraints& aConstraints,
       dom::CallerType aCallerType) override {
-    RefPtr<PledgeVoid> p = new PledgeVoid();
-    p->Reject(new dom::MediaStreamError(
-        aWindow, NS_LITERAL_STRING("OverconstrainedError"),
-        NS_LITERAL_STRING("")));
-    return p.forget();
+    return ApplyConstraintsPromise::CreateAndReject(
+        MakeRefPtr<MediaMgrError>(MediaStreamError::Name::OverconstrainedError,
+                                  NS_LITERAL_STRING("")),
+        __func__);
   }
 
   void Stop() override {

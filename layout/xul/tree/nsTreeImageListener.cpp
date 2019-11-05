@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsTreeImageListener.h"
-#include "nsITreeBoxObject.h"
+#include "XULTreeElement.h"
 #include "imgIRequest.h"
 #include "imgIContainer.h"
 #include "nsIContent.h"
+#include "nsTreeColumns.h"
 
 NS_IMPL_ISUPPORTS(nsTreeImageListener, imgINotificationObserver)
 
@@ -31,6 +32,15 @@ nsTreeImageListener::Notify(imgIRequest* aRequest, int32_t aType,
     // corresponding call to Decrement for this. This Increment will be
     // 'cleaned up' by the Request when it is destroyed, but only then.
     aRequest->IncrementAnimationConsumers();
+
+    if (mTreeFrame) {
+      nsCOMPtr<imgIContainer> image;
+      aRequest->GetImage(getter_AddRefs(image));
+      if (image) {
+        nsPresContext* presContext = mTreeFrame->PresContext();
+        image->SetAnimationMode(presContext->ImageAnimationMode());
+      }
+    }
   }
 
   if (aType == imgINotificationObserver::FRAME_UPDATE) {
@@ -40,7 +50,7 @@ nsTreeImageListener::Notify(imgIRequest* aRequest, int32_t aType,
   return NS_OK;
 }
 
-void nsTreeImageListener::AddCell(int32_t aIndex, nsITreeColumn* aCol) {
+void nsTreeImageListener::AddCell(int32_t aIndex, nsTreeColumn* aCol) {
   if (!mInvalidationArea) {
     mInvalidationArea = new InvalidationArea(aCol);
     mInvalidationArea->AddRow(aIndex);
@@ -70,7 +80,8 @@ void nsTreeImageListener::Invalidate() {
       // this image.
       for (int32_t i = currArea->GetMin(); i <= currArea->GetMax(); ++i) {
         if (mTreeFrame) {
-          nsITreeBoxObject* tree = mTreeFrame->GetTreeBoxObject();
+          RefPtr<XULTreeElement> tree =
+              XULTreeElement::FromNodeOrNull(mTreeFrame->GetBaseElement());
           if (tree) {
             tree->InvalidateCell(i, currArea->GetCol());
           }
@@ -80,7 +91,7 @@ void nsTreeImageListener::Invalidate() {
   }
 }
 
-nsTreeImageListener::InvalidationArea::InvalidationArea(nsITreeColumn* aCol)
+nsTreeImageListener::InvalidationArea::InvalidationArea(nsTreeColumn* aCol)
     : mCol(aCol),
       mMin(-1),  // min should start out "undefined"
       mMax(0),

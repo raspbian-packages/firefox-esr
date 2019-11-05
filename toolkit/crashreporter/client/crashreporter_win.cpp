@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ifdef WIN32_LEAN_AND_MEAN
-#undef WIN32_LEAN_AND_MEAN
+#  undef WIN32_LEAN_AND_MEAN
 #endif
 
 #include "crashreporter.h"
@@ -257,7 +257,8 @@ static string FormatLastError() {
     }
   } else {
     char buf[64];
-    sprintf(buf, "Unknown error, error code: 0x%08x", err);
+    sprintf(buf, "Unknown error, error code: 0x%08x",
+            static_cast<unsigned int>(err));
     message += buf;
   }
   return message;
@@ -316,17 +317,6 @@ static void SetDlgItemVisible(HWND hwndDlg, UINT item, bool visible) {
   HWND hwnd = GetDlgItem(hwndDlg, item);
 
   ShowWindow(hwnd, visible ? SW_SHOW : SW_HIDE);
-}
-
-static void SetDlgItemDisabled(HWND hwndDlg, UINT item, bool disabled) {
-  HWND hwnd = GetDlgItem(hwndDlg, item);
-  LONG style = GetWindowLong(hwnd, GWL_STYLE);
-  if (!disabled)
-    style |= WS_DISABLED;
-  else
-    style &= ~WS_DISABLED;
-
-  SetWindowLong(hwnd, GWL_STYLE, style);
 }
 
 /* === Crash Reporting Dialog === */

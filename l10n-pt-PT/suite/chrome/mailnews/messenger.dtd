@@ -218,7 +218,7 @@
 <!ENTITY bodyMenuFeed.accesskey "f">
 <!ENTITY viewFeedWebPage.label "Página Web">
 <!ENTITY viewFeedWebPage.accesskey "w">
-<!ENTITY viewFeedSummary.label "Resumo">
+<!ENTITY viewFeedSummary.label "Sumário">
 <!ENTITY viewFeedSummary.accesskey "m">
 <!ENTITY viewFeedSummaryFeedPropsPref.label "Formato pré-definido">
 <!ENTITY viewFeedSummaryFeedPropsPref.accesskey "d">
@@ -367,11 +367,11 @@
 <!ENTITY markAsNotPhishCmd.key "p">
 <!ENTITY openFeedMessage.label "Abrir mensagem da fonte">
 <!ENTITY openFeedMessage.accesskey "o">
-<!ENTITY openFeedWebPageInWindow.label "Página Web em nova janela">
+<!ENTITY openFeedWebPageInWindow.label "Página Web numa nova janela">
 <!ENTITY openFeedWebPageInWindow.accesskey "w">
-<!ENTITY openFeedSummaryInWindow.label "Resumo em nova janela">
+<!ENTITY openFeedSummaryInWindow.label "Sumário numa nova janela">
 <!ENTITY openFeedSummaryInWindow.accesskey "s">
-<!ENTITY openFeedWebPageInMP.label "Alternar página Web e resumo no painel de mensagens">
+<!ENTITY openFeedWebPageInMP.label "Alternar página Web e sumário no painel de mensagens">
 <!ENTITY openFeedWebPageInMP.accesskey "t">
 
 <!-- Tools Menu -->
@@ -455,7 +455,7 @@
 <!ENTITY statusText.label "Feito">
 
 <!-- Thread Pane Context Menu -->
-<!ENTITY contextOpenNewWindow.label "Abrir mensagem em nova janela">
+<!ENTITY contextOpenNewWindow.label "Abrir mensagem numa nova janela">
 <!ENTITY contextOpenNewWindow.accesskey "A">
 <!ENTITY contextOpenNewTab.label "Abrir mensagem num novo separador">
 <!ENTITY contextOpenNewTab.accesskey "s">
@@ -483,6 +483,8 @@
 <!ENTITY contextCopyMsgMenu.accesskey "C">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Recente">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "R">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Favoritos">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "F">
 <!ENTITY contextSaveAs.label "Guardar como...">
 <!ENTITY contextSaveAs.accesskey "u">
 <!ENTITY contextPrint.label "Imprimir…">
@@ -493,7 +495,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Obter mensagens da conta">
 <!ENTITY folderContextGetMessages.accesskey "O">
-<!ENTITY folderContextOpenNewWindow.label "Abrir em nova janela de correio">
+<!ENTITY folderContextOpenNewWindow.label "Abrir numa nova janela de correio">
 <!ENTITY folderContextOpenNewWindow.accesskey "j">
 <!ENTITY folderContextOpenNewTab.label "Abrir num novo separador">
 <!ENTITY folderContextOpenNewTab.accesskey "s">

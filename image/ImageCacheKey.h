@@ -15,13 +15,10 @@
 #include "mozilla/RefPtr.h"
 #include "PLDHashTable.h"
 
-class nsIDocument;
 class nsIURI;
 
 namespace mozilla {
 namespace image {
-
-class ImageURL;
 
 /**
  * An ImageLib cache entry key.
@@ -34,18 +31,25 @@ class ImageURL;
 class ImageCacheKey final {
  public:
   ImageCacheKey(nsIURI* aURI, const OriginAttributes& aAttrs,
-                nsIDocument* aDocument, nsresult& aRv);
-  ImageCacheKey(ImageURL* aURI, const OriginAttributes& aAttrs,
-                nsIDocument* aDocument);
+                dom::Document* aDocument);
 
   ImageCacheKey(const ImageCacheKey& aOther);
   ImageCacheKey(ImageCacheKey&& aOther);
 
   bool operator==(const ImageCacheKey& aOther) const;
-  PLDHashNumber Hash() const { return mHash; }
+  PLDHashNumber Hash() const {
+    if (MOZ_UNLIKELY(mHash.isNothing())) {
+      EnsureHash();
+    }
+    return mHash.value();
+  }
 
-  /// A weak pointer to the URI spec for this cache entry. For logging only.
-  const char* Spec() const;
+  /// A weak pointer to the URI.
+  nsIURI* URI() const { return mURI; }
+
+  const OriginAttributes& OriginAttributesRef() const {
+    return mOriginAttributes;
+  }
 
   /// Is this cache entry for a chrome image?
   bool IsChrome() const { return mIsChrome; }
@@ -55,23 +59,29 @@ class ImageCacheKey final {
   void* ControlledDocument() const { return mControlledDocument; }
 
  private:
-  static PLDHashNumber ComputeHash(ImageURL* aURI,
-                                   const Maybe<uint64_t>& aBlobSerial,
-                                   const OriginAttributes& aAttrs,
-                                   void* aControlledDocument,
-                                   bool aIsStyloEnabled);
-  static void* GetControlledDocumentToken(nsIDocument* aDocument);
+  bool SchemeIs(const char* aScheme);
 
-  RefPtr<ImageURL> mURI;
+  // For ServiceWorker we need to use the document as
+  // token for the key. All those exceptions are handled by this method.
+  static void* GetSpecialCaseDocumentToken(dom::Document* aDocument,
+                                           nsIURI* aURI);
+
+  // For anti-tracking we need to use the top-level document's base domain for
+  // the key. This is handled by this method.
+  static nsCString GetTopLevelBaseDomain(dom::Document* aDocument,
+                                         nsIURI* aURI);
+
+  void EnsureHash() const;
+  void EnsureBlobRef() const;
+
+  nsCOMPtr<nsIURI> mURI;
   Maybe<uint64_t> mBlobSerial;
+  mutable nsCString mBlobRef;
   OriginAttributes mOriginAttributes;
   void* mControlledDocument;
-  PLDHashNumber mHash;
+  nsCString mTopLevelBaseDomain;
+  mutable Maybe<PLDHashNumber> mHash;
   bool mIsChrome;
-  // To prevent the reftests of styloVsGecko taking the same image cache after
-  // refreshing, we need to store different caches of stylo and gecko. So, we
-  // also consider the info of StyloEnabled() in ImageCacheKey.
-  bool mIsStyloEnabled;
 };
 
 }  // namespace image

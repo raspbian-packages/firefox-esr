@@ -263,6 +263,39 @@ nsPrintSettingsWin::GetEffectivePageSize(double* aWidth, double* aHeight) {
   return NS_OK;
 }
 
+void nsPrintSettingsWin::InitUnwriteableMargin(HDC aHdc) {
+  int32_t pixelsPerInchY = GetDeviceCaps(aHdc, LOGPIXELSY);
+  int32_t pixelsPerInchX = GetDeviceCaps(aHdc, LOGPIXELSX);
+
+  int32_t marginLeft = GetDeviceCaps(aHdc, PHYSICALOFFSETX);
+  int32_t marginTop = GetDeviceCaps(aHdc, PHYSICALOFFSETY);
+
+  double marginLeftInch = double(marginLeft) / pixelsPerInchX;
+  double marginTopInch = double(marginTop) / pixelsPerInchY;
+
+  int32_t printableAreaWidth = GetDeviceCaps(aHdc, HORZRES);
+  int32_t printableAreaHeight = GetDeviceCaps(aHdc, VERTRES);
+
+  double printableAreaWidthInch = double(printableAreaWidth) / pixelsPerInchX;
+  double printableAreaHeightInch = double(printableAreaHeight) / pixelsPerInchY;
+
+  int32_t physicalWidth = GetDeviceCaps(aHdc, PHYSICALWIDTH);
+  int32_t physicalHeight = GetDeviceCaps(aHdc, PHYSICALHEIGHT);
+
+  double physicalWidthInch = double(physicalWidth) / pixelsPerInchX;
+  double physicalHeightInch = double(physicalHeight) / pixelsPerInchY;
+
+  double marginBottomInch =
+      physicalHeightInch - printableAreaHeightInch - marginTopInch;
+  double marginRightInch =
+      physicalWidthInch - printableAreaWidthInch - marginLeftInch;
+
+  mUnwriteableMargin.SizeTo(NS_INCHES_TO_INT_TWIPS(marginTopInch),
+                            NS_INCHES_TO_INT_TWIPS(marginRightInch),
+                            NS_INCHES_TO_INT_TWIPS(marginBottomInch),
+                            NS_INCHES_TO_INT_TWIPS(marginLeftInch));
+}
+
 void nsPrintSettingsWin::CopyFromNative(HDC aHdc, DEVMODEW* aDevMode) {
   MOZ_ASSERT(aHdc);
   MOZ_ASSERT(aDevMode);
@@ -298,6 +331,8 @@ void nsPrintSettingsWin::CopyFromNative(HDC aHdc, DEVMODEW* aDevMode) {
     mPaperData = -1;
   }
 
+  InitUnwriteableMargin(aHdc);
+
   // The length and width in DEVMODE are always in tenths of a millimeter.
   double sizeUnitToTenthsOfAmm =
       10L * (mPaperSizeUnit == kPaperSizeInches ? MM_PER_INCH_FLOAT : 1L);
@@ -313,14 +348,10 @@ void nsPrintSettingsWin::CopyFromNative(HDC aHdc, DEVMODEW* aDevMode) {
     mPaperWidth = -1l;
   }
 
-  // On Windows we currently create a surface using the printable area of the
-  // page and don't set the unwriteable [sic] margins. Using the unwriteable
-  // margins doesn't appear to work on Windows, but I am not sure if this is a
-  // bug elsewhere in our code or a Windows quirk.
   // Note: we only scale the printing using the LOGPIXELSY, so we use that
   // when calculating the surface width as well as the height.
-  int32_t printableWidthInDots = GetDeviceCaps(aHdc, HORZRES);
-  int32_t printableHeightInDots = GetDeviceCaps(aHdc, VERTRES);
+  int32_t printableWidthInDots = GetDeviceCaps(aHdc, PHYSICALWIDTH);
+  int32_t printableHeightInDots = GetDeviceCaps(aHdc, PHYSICALHEIGHT);
   int32_t heightDPI = GetDeviceCaps(aHdc, LOGPIXELSY);
 
   // Keep these values in portrait format, so we can reflect our own changes
@@ -426,8 +457,8 @@ nsresult nsPrintSettingsWin::_Assign(nsIPrintSettings* aPS) {
 // This define turns on the testing module below
 // so at start up it writes and reads the prefs.
 #ifdef DEBUG_rodsX
-#include "nsIPrintSettingsService.h"
-#include "nsIServiceManager.h"
+#  include "nsIPrintSettingsService.h"
+#  include "nsIServiceManager.h"
 class Tester {
  public:
   Tester();

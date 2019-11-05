@@ -9,8 +9,9 @@
 #include "Rule.h"
 
 #include "mozilla/css/GroupRule.h"
+#include "mozilla/dom/DocumentOrShadowRoot.h"
 #include "nsCCUncollectableMarker.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsWrapperCacheInlines.h"
 
 using namespace mozilla;
@@ -41,12 +42,12 @@ bool Rule::IsKnownLive() const {
     return false;
   }
 
-  if (!sheet->IsOwnedByDocument()) {
+  if (!sheet->IsKeptAliveByDocument()) {
     return false;
   }
 
   return nsCCUncollectableMarker::InGeneration(
-      sheet->GetAssociatedDocument()->GetMarkedCCGeneration());
+      GetComposedDoc()->GetMarkedCCGeneration());
 }
 
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_BEGIN(Rule)
@@ -64,12 +65,8 @@ NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_THIS_BEGIN(Rule)
   return tmp->IsCCLeaf() || tmp->IsKnownLive();
 NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_THIS_END
 
-/* virtual */ void Rule::SetStyleSheet(StyleSheet* aSheet) {
-  // We don't reference count this up reference. The style sheet
-  // will tell us when it's going away or when we're detached from
-  // it.
-  mSheet = aSheet;
-}
+/* virtual */
+void Rule::DropSheetReference() { mSheet = nullptr; }
 
 void Rule::SetCssText(const nsAString& aCssText) {
   // We used to throw for some rule types, but not all.  Specifically, we did
@@ -77,6 +74,14 @@ void Rule::SetCssText(const nsAString& aCssText) {
 }
 
 Rule* Rule::GetParentRule() const { return mParentRule; }
+
+bool Rule::IsReadOnly() const {
+  MOZ_ASSERT(!mSheet || !mParentRule ||
+                 mSheet->IsReadOnly() == mParentRule->IsReadOnly(),
+             "a parent rule should be read only iff the owning sheet is "
+             "read only");
+  return mSheet && mSheet->IsReadOnly();
+}
 
 }  // namespace css
 }  // namespace mozilla

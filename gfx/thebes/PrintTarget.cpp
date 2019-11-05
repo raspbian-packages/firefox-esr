@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,10 +7,10 @@
 
 #include "cairo.h"
 #ifdef CAIRO_HAS_QUARTZ_SURFACE
-#include "cairo-quartz.h"
+#  include "cairo-quartz.h"
 #endif
 #ifdef CAIRO_HAS_WIN32_SURFACE
-#include "cairo-win32.h"
+#  include "cairo-win32.h"
 #endif
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/HelpersCairo.h"
@@ -44,10 +44,10 @@ PrintTarget::PrintTarget(cairo_surface_t* aCairoSurface, const IntSize& aSize)
              "valid cairo_surface_t*");
 #endif
 
-// CreateOrNull factory methods hand over ownership of aCairoSurface,
-// so we don't call cairo_surface_reference(aSurface) here.
+  // CreateOrNull factory methods hand over ownership of aCairoSurface,
+  // so we don't call cairo_surface_reference(aSurface) here.
 
-// This code was copied from gfxASurface::Init:
+  // This code was copied from gfxASurface::Init:
 #ifdef MOZ_TREE_CAIRO
   if (mCairoSurface &&
       cairo_surface_get_content(mCairoSurface) != CAIRO_CONTENT_COLOR) {
@@ -163,9 +163,9 @@ void PrintTarget::AdjustPrintJobNameForIPP(const nsAString& aJobName,
   CopyUTF8toUTF16(jobName, aAdjustedJobName);
 }
 
-/* static */ already_AddRefed<DrawTarget>
-PrintTarget::CreateWrapAndRecordDrawTarget(DrawEventRecorder* aRecorder,
-                                           DrawTarget* aDrawTarget) {
+/* static */
+already_AddRefed<DrawTarget> PrintTarget::CreateWrapAndRecordDrawTarget(
+    DrawEventRecorder* aRecorder, DrawTarget* aDrawTarget) {
   MOZ_ASSERT(aRecorder);
   MOZ_ASSERT(aDrawTarget);
 
@@ -197,7 +197,7 @@ void PrintTarget::Finish() {
 
 void PrintTarget::RegisterPageDoneCallback(PageDoneCallback&& aCallback) {
   MOZ_ASSERT(aCallback && !IsSyncPagePrinting());
-  mPageDoneCallback = Move(aCallback);
+  mPageDoneCallback = std::move(aCallback);
 }
 
 void PrintTarget::UnregisterPageDoneCallback() { mPageDoneCallback = nullptr; }

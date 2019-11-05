@@ -15,16 +15,20 @@
  */
 
 #include "mozilla/Assertions.h"
+#include "mozilla/StaticPrefs.h"
 
 #include "GeckoProfiler.h"
 #include "jsapi.h"
 #include "jsfriendapi.h"
 #include "js/Conversions.h"
+#include "js/SourceText.h"
+#include "js/StableStringChars.h"
 #include "nsString.h"
 
 class nsIScriptContext;
 class nsIScriptElement;
 class nsIScriptGlobalObject;
+class nsXBLPrototypeBinding;
 
 namespace mozilla {
 namespace dom {
@@ -42,10 +46,6 @@ class nsJSUtils {
                                  uint32_t* aLineno = nullptr,
                                  uint32_t* aColumn = nullptr);
 
-  static nsIScriptGlobalObject* GetStaticScriptGlobal(JSObject* aObj);
-
-  static nsIScriptContext* GetStaticScriptContext(JSObject* aObj);
-
   /**
    * Retrieve the inner window ID based on the given JSContext.
    *
@@ -57,7 +57,7 @@ class nsJSUtils {
   static uint64_t GetCurrentlyRunningCodeInnerWindowID(JSContext* aContext);
 
   static nsresult CompileFunction(mozilla::dom::AutoJSAPI& jsapi,
-                                  JS::AutoObjectVector& aScopeChain,
+                                  JS::HandleVector<JSObject*> aScopeChain,
                                   JS::CompileOptions& aOptions,
                                   const nsACString& aName, uint32_t aArgCount,
                                   const char** aArgArray,
@@ -73,14 +73,17 @@ class nsJSUtils {
 
     JSContext* mCx;
 
-    // Handles switching to our global's compartment.
-    JSAutoCompartment mCompartment;
+    // Handles switching to our global's realm.
+    JSAutoRealm mRealm;
 
     // Set to a valid handle if a return value is expected.
     JS::Rooted<JS::Value> mRetValue;
 
     // Scope chain in which the execution takes place.
-    JS::AutoObjectVector mScopeChain;
+    JS::RootedVector<JSObject*> mScopeChain;
+
+    // The compiled script.
+    JS::Rooted<JSScript*> mScript;
 
     // returned value forwarded when we have to interupt the execution eagerly
     // with mSkip.
@@ -101,20 +104,25 @@ class nsJSUtils {
     bool mWantsReturnValue;
 
     bool mExpectScopeChain;
+
+    bool mScriptUsed;
 #endif
 
    public:
     // Enter compartment in which the code would be executed.  The JSContext
-    // must come from an AutoEntryScript that has had
-    // TakeOwnershipOfErrorReporting() called on it.
+    // must come from an AutoEntryScript.
     ExecutionContext(JSContext* aCx, JS::Handle<JSObject*> aGlobal);
 
     ExecutionContext(const ExecutionContext&) = delete;
     ExecutionContext(ExecutionContext&&) = delete;
 
     ~ExecutionContext() {
-      // This flag is resetted, when the returned value is extracted.
-      MOZ_ASSERT(!mWantsReturnValue);
+      // This flag is reset when the returned value is extracted.
+      MOZ_ASSERT_IF(!mSkip, !mWantsReturnValue);
+
+      // If encoding was started we expect the script to have been
+      // used when ending the encoding.
+      MOZ_ASSERT_IF(mEncodeBytecode && mScript && mRv == NS_OK, mScriptUsed);
     }
 
     // The returned value would be converted to a string if the
@@ -134,49 +142,70 @@ class nsJSUtils {
     }
 
     // Set the scope chain in which the code should be executed.
-    void SetScopeChain(const JS::AutoObjectVector& aScopeChain);
+    void SetScopeChain(JS::HandleVector<JSObject*> aScopeChain);
 
-    // Copy the returned value in the mutable handle argument, in case of a
+    // After getting a notification that an off-thread compilation terminated,
+    // this function will take the result of the parser and move it to the main
+    // thread.
+    MOZ_MUST_USE nsresult JoinCompile(JS::OffThreadToken** aOffThreadToken);
+
+    // Compile a script contained in a SourceText.
+    nsresult Compile(JS::CompileOptions& aCompileOptions,
+                     JS::SourceText<char16_t>& aSrcBuf);
+
+    // Compile a script contained in a string.
+    nsresult Compile(JS::CompileOptions& aCompileOptions,
+                     const nsAString& aScript);
+
+    // Decode a script contained in a buffer.
+    nsresult Decode(JS::CompileOptions& aCompileOptions,
+                    mozilla::Vector<uint8_t>& aBytecodeBuf,
+                    size_t aBytecodeIndex);
+
+    // After getting a notification that an off-thread decoding terminated, this
+    // function will get the result of the decoder and move it to the main
+    // thread.
+    nsresult JoinDecode(JS::OffThreadToken** aOffThreadToken);
+
+    nsresult JoinDecodeBinAST(JS::OffThreadToken** aOffThreadToken);
+
+    // Decode a BinAST encoded script contained in a buffer.
+    nsresult DecodeBinAST(JS::CompileOptions& aCompileOptions,
+                          const uint8_t* aBuf, size_t aLength);
+
+    // Get a successfully compiled script.
+    JSScript* GetScript();
+
+    // Get the compiled script if present, or nullptr.
+    JSScript* MaybeGetScript();
+
+    // Execute the compiled script and ignore the return value.
+    MOZ_MUST_USE nsresult ExecScript();
+
+    // Execute the compiled script a get the return value.
+    //
+    // Copy the returned value into the mutable handle argument. In case of a
     // evaluation failure either during the execution or the conversion of the
-    // result to a string, the nsresult would be set to the corresponding result
-    // code, and the mutable handle argument would remain unchanged.
+    // result to a string, the nsresult is be set to the corresponding result
+    // code and the mutable handle argument remains unchanged.
     //
     // The value returned in the mutable handle argument is part of the
     // compartment given as argument to the ExecutionContext constructor. If the
     // caller is in a different compartment, then the out-param value should be
     // wrapped by calling |JS_WrapValue|.
-    MOZ_MUST_USE nsresult
-    ExtractReturnValue(JS::MutableHandle<JS::Value> aRetValue);
-
-    // After getting a notification that an off-thread compilation terminated,
-    // this function will take the result of the parser by moving it to the main
-    // thread before starting the execution of the script.
-    //
-    // The compiled script would be returned in the |aScript| out-param.
-    MOZ_MUST_USE nsresult JoinAndExec(void** aOffThreadToken,
-                                      JS::MutableHandle<JSScript*> aScript);
-
-    // Compile a script contained in a SourceBuffer, and execute it.
-    nsresult CompileAndExec(JS::CompileOptions& aCompileOptions,
-                            JS::SourceBufferHolder& aSrcBuf,
-                            JS::MutableHandle<JSScript*> aScript);
-
-    // Compile a script contained in a string, and execute it.
-    nsresult CompileAndExec(JS::CompileOptions& aCompileOptions,
-                            const nsAString& aScript);
-
-    // Decode a script contained in a buffer, and execute it.
-    MOZ_MUST_USE nsresult DecodeAndExec(JS::CompileOptions& aCompileOptions,
-                                        mozilla::Vector<uint8_t>& aBytecodeBuf,
-                                        size_t aBytecodeIndex);
-
-    // After getting a notification that an off-thread decoding terminated, this
-    // function will get the result of the decoder by moving it to the main
-    // thread before starting the execution of the script.
-    MOZ_MUST_USE nsresult DecodeJoinAndExec(void** aOffThreadToken);
+    MOZ_MUST_USE nsresult ExecScript(JS::MutableHandle<JS::Value> aRetValue);
   };
 
-  static nsresult CompileModule(JSContext* aCx, JS::SourceBufferHolder& aSrcBuf,
+  static bool BinASTEncodingEnabled() {
+#ifdef JS_BUILD_BINAST
+    return mozilla::StaticPrefs::dom_script_loader_binast_encoding_enabled();
+#else
+    return false;
+#endif
+  }
+
+  static nsresult CompileModule(JSContext* aCx,
+                                JS::SourceText<char16_t>& aSrcBuf,
                                 JS::Handle<JSObject*> aEvaluationGlobal,
                                 JS::CompileOptions& aCompileOptions,
                                 JS::MutableHandle<JSObject*> aModule);
@@ -192,17 +221,28 @@ class nsJSUtils {
 
   // Returns false if an exception got thrown on aCx.  Passing a null
   // aElement is allowed; that wil produce an empty aScopeChain.
-  static bool GetScopeChainForElement(JSContext* aCx,
-                                      mozilla::dom::Element* aElement,
-                                      JS::AutoObjectVector& aScopeChain);
+  static bool GetScopeChainForElement(
+      JSContext* aCx, mozilla::dom::Element* aElement,
+      JS::MutableHandleVector<JSObject*> aScopeChain);
+
+  // Returns a scope chain suitable for XBL execution.
+  //
+  // This is by default GetScopeChainForElemenet, but will be different if the
+  // <binding> element had the simpleScopeChain attribute.
+  //
+  // This is to prevent footguns like bug 1446342.
+  static bool GetScopeChainForXBL(
+      JSContext* aCx, mozilla::dom::Element* aBoundElement,
+      const nsXBLPrototypeBinding& aProtoBinding,
+      JS::MutableHandleVector<JSObject*> aScopeChain);
 
   static void ResetTimeZone();
 };
 
 template <typename T>
 inline bool AssignJSString(JSContext* cx, T& dest, JSString* s) {
-  size_t len = js::GetStringLength(s);
-  static_assert(js::MaxStringLength < (1 << 28),
+  size_t len = JS::GetStringLength(s);
+  static_assert(js::MaxStringLength < (1 << 30),
                 "Shouldn't overflow here or in SetCapacity");
   if (MOZ_UNLIKELY(!dest.SetLength(len, mozilla::fallible))) {
     JS_ReportOutOfMemory(cx);
@@ -213,7 +253,7 @@ inline bool AssignJSString(JSContext* cx, T& dest, JSString* s) {
 
 inline void AssignJSFlatString(nsAString& dest, JSFlatString* s) {
   size_t len = js::GetFlatStringLength(s);
-  static_assert(js::MaxStringLength < (1 << 28),
+  static_assert(js::MaxStringLength < (1 << 30),
                 "Shouldn't overflow here or in SetCapacity");
   dest.SetLength(len);
   js::CopyFlatStringChars(dest.BeginWriting(), s, len);

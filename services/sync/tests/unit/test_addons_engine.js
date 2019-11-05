@@ -3,24 +3,42 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://services-common/async.js");
-ChromeUtils.import("resource://services-sync/addonsreconciler.js");
-ChromeUtils.import("resource://services-sync/engines/addons.js");
-ChromeUtils.import("resource://services-sync/service.js");
-ChromeUtils.import("resource://services-sync/util.js");
-ChromeUtils.defineModuleGetter(this, "Preferences", "resource://gre/modules/Preferences.jsm");
+const { AddonManager } = ChromeUtils.import(
+  "resource://gre/modules/AddonManager.jsm"
+);
+const { CHANGE_INSTALLED } = ChromeUtils.import(
+  "resource://services-sync/addonsreconciler.js"
+);
+const { AddonsEngine } = ChromeUtils.import(
+  "resource://services-sync/engines/addons.js"
+);
+const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+const { Preferences } = ChromeUtils.import(
+  "resource://gre/modules/Preferences.jsm"
+);
 
 const prefs = new Preferences();
-prefs.set("extensions.getAddons.get.url",
-          "http://localhost:8888/search/guid:%IDS%");
+prefs.set(
+  "extensions.getAddons.get.url",
+  "http://localhost:8888/search/guid:%IDS%"
+);
 prefs.set("extensions.install.requireSecureOrigin", false);
 
 let engine;
+let syncID;
 let reconciler;
 let tracker;
+
+AddonTestUtils.init(this);
+
+const ADDON_ID = "addon1@tests.mozilla.org";
+const XPI = AddonTestUtils.createTempWebExtensionFile({
+  manifest: {
+    name: "Test 1",
+    description: "Test Description",
+    applications: { gecko: { id: ADDON_ID } },
+  },
+});
 
 async function resetReconciler() {
   reconciler._addons = {};
@@ -32,11 +50,18 @@ async function resetReconciler() {
 }
 
 add_task(async function setup() {
-  loadAddonTestFunctions();
-  startupManager();
+  AddonTestUtils.createAppInfo(
+    "xpcshell@tests.mozilla.org",
+    "XPCShell",
+    "1",
+    "1.9.2"
+  );
+  AddonTestUtils.overrideCertDB();
+  await AddonTestUtils.promiseStartupManager();
 
   await Service.engineManager.register(AddonsEngine);
   engine = Service.engineManager.get("addons");
+  syncID = await engine.resetLocalSyncID();
   reconciler = engine._reconciler;
   tracker = engine._tracker;
 
@@ -54,10 +79,10 @@ add_task(async function setup() {
 add_task(async function test_addon_install() {
   _("Ensure basic add-on APIs work as expected.");
 
-  let install = await getAddonInstall("test_bootstrap1_1");
+  let install = await AddonManager.getInstallForFile(XPI);
   Assert.notEqual(install, null);
   Assert.equal(install.type, "extension");
-  Assert.equal(install.name, "Test Bootstrap 1");
+  Assert.equal(install.name, "Test 1");
 
   await resetReconciler();
 });
@@ -69,14 +94,14 @@ add_task(async function test_find_dupe() {
   // test, so we do it manually.
   await engine._refreshReconcilerState();
 
-  let addon = await installAddon("test_bootstrap1_1", reconciler);
+  let addon = await installAddon(XPI, reconciler);
 
   let record = {
-    id:            Utils.makeGUID(),
-    addonID:       addon.id,
-    enabled:       true,
+    id: Utils.makeGUID(),
+    addonID: ADDON_ID,
+    enabled: true,
     applicationID: Services.appinfo.ID,
-    source:        "amo"
+    source: "amo",
   };
 
   let dupe = await engine._findDupe(record);
@@ -102,7 +127,7 @@ add_task(async function test_get_changed_ids() {
 
   _("Ensure getChangedIDs() returns an empty object by default.");
   let changes = await engine.getChangedIDs();
-  Assert.equal("object", typeof(changes));
+  Assert.equal("object", typeof changes);
   Assert.equal(0, Object.keys(changes).length);
 
   _("Ensure tracker changes are populated.");
@@ -112,7 +137,7 @@ add_task(async function test_get_changed_ids() {
   await tracker.addChangedID(guid1, changeTime);
 
   changes = await engine.getChangedIDs();
-  Assert.equal("object", typeof(changes));
+  Assert.equal("object", typeof changes);
   Assert.equal(1, Object.keys(changes).length);
   Assert.ok(guid1 in changes);
   Assert.equal(changeTime, changes[guid1]);
@@ -120,13 +145,15 @@ add_task(async function test_get_changed_ids() {
   await tracker.clearChangedIDs();
 
   _("Ensure reconciler changes are populated.");
-  let addon = await installAddon("test_bootstrap1_1", reconciler);
+  let addon = await installAddon(XPI, reconciler);
   await tracker.clearChangedIDs(); // Just in case.
   changes = await engine.getChangedIDs();
-  Assert.equal("object", typeof(changes));
+  Assert.equal("object", typeof changes);
   Assert.equal(1, Object.keys(changes).length);
   Assert.ok(addon.syncGUID in changes);
-  _("Change time: " + changeTime + ", addon change: " + changes[addon.syncGUID]);
+  _(
+    "Change time: " + changeTime + ", addon change: " + changes[addon.syncGUID]
+  );
   Assert.ok(changes[addon.syncGUID] >= changeTime);
 
   let oldTime = changes[addon.syncGUID];
@@ -138,17 +165,17 @@ add_task(async function test_get_changed_ids() {
   Assert.ok(changes[guid2] > oldTime);
 
   _("Ensure non-syncable add-ons aren't picked up by reconciler changes.");
-  reconciler._addons  = {};
+  reconciler._addons = {};
   reconciler._changes = [];
   let record = {
-    id:             "DUMMY",
-    guid:           Utils.makeGUID(),
-    enabled:        true,
-    installed:      true,
-    modified:       new Date(),
-    type:           "UNSUPPORTED",
-    scope:          0,
-    foreignInstall: false
+    id: "DUMMY",
+    guid: Utils.makeGUID(),
+    enabled: true,
+    installed: true,
+    modified: new Date(),
+    type: "UNSUPPORTED",
+    scope: 0,
+    foreignInstall: false,
   };
   reconciler.addons.DUMMY = record;
   await reconciler._addChange(record.modified, CHANGE_INSTALLED, record);
@@ -166,9 +193,8 @@ add_task(async function test_disabled_install_semantics() {
   // This is essentially a test for bug 712542, which snuck into the original
   // add-on sync drop. It ensures that when an add-on is installed that the
   // disabled state and incoming syncGUID is preserved, even on the next sync.
-  const USER       = "foo";
-  const PASSWORD   = "password";
-  const ADDON_ID   = "addon1@tests.mozilla.org";
+  const USER = "foo";
+  const PASSWORD = "password";
 
   let server = new SyncServer();
   server.start();
@@ -177,21 +203,23 @@ add_task(async function test_disabled_install_semantics() {
   await generateNewKeys(Service.collectionKeys);
 
   let contents = {
-    meta: {global: {engines: {addons: {version: engine.version,
-                                      syncID:  engine.syncID}}}},
+    meta: {
+      global: { engines: { addons: { version: engine.version, syncID } } },
+    },
     crypto: {},
-    addons: {}
+    addons: {},
   };
 
   server.registerUser(USER, "password");
   server.createContents(USER, contents);
 
   let amoServer = new HttpServer();
-  amoServer.registerFile("/search/guid:addon1%40tests.mozilla.org",
-                         do_get_file("addon1-search.json"));
+  amoServer.registerFile(
+    "/search/guid:addon1%40tests.mozilla.org",
+    do_get_file("addon1-search.json")
+  );
 
-  let installXPI = ExtensionsTestPath("/addons/test_install1.xpi");
-  amoServer.registerFile("/addon1.xpi", do_get_file(installXPI));
+  amoServer.registerFile("/addon1.xpi", XPI);
   amoServer.start(8888);
 
   // Insert an existing record into the server.
@@ -201,10 +229,10 @@ add_task(async function test_disabled_install_semantics() {
   let record = encryptPayload({
     id,
     applicationID: Services.appinfo.ID,
-    addonID:       ADDON_ID,
-    enabled:       false,
-    deleted:       false,
-    source:        "amo",
+    addonID: ADDON_ID,
+    enabled: false,
+    deleted: false,
+    source: "amo",
   });
   let wbo = new ServerWBO(id, record, now - 2);
   server.insertWBO(USER, "addons", wbo);
@@ -224,7 +252,7 @@ add_task(async function test_disabled_install_semantics() {
 
   // We fake an app restart and perform another sync, just to make sure things
   // are sane.
-  restartManager();
+  await AddonTestUtils.promiseRestartManager();
 
   let collection = server.getCollection(USER, "addons");
   engine.lastModified = collection.timestamp;

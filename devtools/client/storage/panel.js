@@ -6,12 +6,9 @@
 
 "use strict";
 
-const EventEmitter = require("devtools/shared/old-event-emitter");
+const EventEmitter = require("devtools/shared/event-emitter");
 
-loader.lazyRequireGetter(this, "StorageFront",
-                         "devtools/shared/fronts/storage", true);
-loader.lazyRequireGetter(this, "StorageUI",
-                         "devtools/client/storage/ui", true);
+loader.lazyRequireGetter(this, "StorageUI", "devtools/client/storage/ui", true);
 
 class StoragePanel {
   constructor(panelWin, toolbox) {
@@ -35,29 +32,20 @@ class StoragePanel {
   /**
    * open is effectively an asynchronous constructor
    */
-  open() {
-    let targetPromise;
-    // We always interact with the target as if it were remote
-    if (!this.target.isRemote) {
-      targetPromise = this.target.makeRemote();
-    } else {
-      targetPromise = Promise.resolve(this.target);
-    }
+  async open() {
+    this.target.on("close", this.destroy);
+    this._front = await this.target.getFront("storage");
 
-    return targetPromise.then(() => {
-      this.target.on("close", this.destroy);
-      this._front = new StorageFront(this.target.client, this.target.form);
+    this.UI = new StorageUI(
+      this._front,
+      this._target,
+      this._panelWin,
+      this._toolbox
+    );
+    this.isReady = true;
+    this.emit("ready");
 
-      this.UI = new StorageUI(this._front, this._target,
-                              this._panelWin, this._toolbox);
-      this.isReady = true;
-      this.emit("ready");
-
-      return this;
-    }).catch(e => {
-      console.log("error while opening storage panel", e);
-      this.destroy();
-    });
+    return this;
   }
 
   /**

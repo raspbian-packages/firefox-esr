@@ -2,9 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-languages-window =
-    .title = 언어
-    .style = width: 30em
+webpage-languages-window =
+    .title = 웹페이지 언어 설정
+    .style = width: 40em
 languages-close-key =
     .key = w
 languages-description = 일부 웹 사이트 내용에 여러 가지 언어가 함께 포함 있는 경우가 있습니다. 이 때 웹 페이지를 표시할 언어를 선호도 순으로 선택하십시오
@@ -24,3 +24,32 @@ languages-customize-select-language =
 languages-customize-add =
     .label = 추가
     .accesskey = A
+# The pattern used to generate strings presented to the user in the
+# locale selection list.
+#
+# Example:
+#   Icelandic [is]
+#   Spanish (Chile) [es-CL]
+#
+# Variables:
+#   $locale (String) - A name of the locale (for example: "Icelandic", "Spanish (Chile)")
+#   $code (String) - Locale code of the locale (for example: "is", "es-CL")
+languages-code-format =
+    .label = { $locale }  [{ $code }]
+languages-active-code-format =
+    .value = { languages-code-format.label }
+browser-languages-window =
+    .title = { -brand-short-name } 언어 설정
+    .style = width: 40em
+browser-languages-description = { -brand-short-name }가 첫번째 언어를 기본 언어로 표시하고 필요한 경우 순서대로 대체 언어를 표시 합니다.
+browser-languages-search = 다른 언어 검색 ...
+browser-languages-searching =
+    .label = 언어 검색중…
+browser-languages-downloading =
+    .label = 다운로드 중…
+browser-languages-select-language =
+    .label = 추가할 언어 선택…
+    .placeholder = 추가할 언어 선택…
+browser-languages-installed-label = 설치된 언어
+browser-languages-available-label = 사용 가능한 언어
+browser-languages-error = { -brand-short-name }가 지금 언어를 업데이트 할 수 없습니다. 인터넷에 연결되어 있는지 확인하고 다시 시도해 주세요.

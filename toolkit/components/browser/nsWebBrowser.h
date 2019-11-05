@@ -16,7 +16,6 @@
 #include "nsCycleCollectionParticipant.h"
 
 // Interfaces needed
-#include "nsCWebBrowser.h"
 #include "nsIBaseWindow.h"
 #include "nsIDocShell.h"
 #include "nsIDocShellTreeItem.h"
@@ -24,22 +23,19 @@
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIScrollable.h"
 #include "nsISHistory.h"
-#include "nsITextScroll.h"
 #include "nsIWidget.h"
 #include "nsIWebProgress.h"
 #include "nsISecureBrowserUI.h"
 #include "nsIWebBrowser.h"
 #include "nsIWebNavigation.h"
-#include "nsIWebBrowserSetup.h"
 #include "nsIWebBrowserPersist.h"
-#include "nsIWebBrowserFocus.h"
 #include "nsIWindowWatcher.h"
 #include "nsIPrintSettings.h"
 #include "nsIWidgetListener.h"
 
 #include "mozilla/BasePrincipal.h"
 #include "nsTArray.h"
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 
 class nsWebBrowserInitInfo {
  public:
@@ -49,18 +45,7 @@ class nsWebBrowserInitInfo {
   int32_t cx;
   int32_t cy;
   bool visible;
-  nsCOMPtr<nsISHistory> sessionHistory;
   nsString name;
-};
-
-class nsWebBrowserListenerState {
- public:
-  bool Equals(nsIWeakReference* aListener, const nsIID& aID) {
-    return mWeakPtr.get() == aListener && mID.Equals(aID);
-  }
-
-  nsWeakPtr mWeakPtr;
-  nsIID mID;
 };
 
 //  {cda5863a-aa9c-411e-be49-ea0d525ab4b5} -
@@ -71,16 +56,15 @@ class nsWebBrowserListenerState {
     }                                                \
   }
 
+class mozIDOMWindowProxy;
+
 class nsWebBrowser final : public nsIWebBrowser,
                            public nsIWebNavigation,
-                           public nsIWebBrowserSetup,
                            public nsIDocShellTreeItem,
                            public nsIBaseWindow,
                            public nsIScrollable,
-                           public nsITextScroll,
                            public nsIInterfaceRequestor,
                            public nsIWebBrowserPersist,
-                           public nsIWebBrowserFocus,
                            public nsIWebProgressListener,
                            public nsSupportsWeakReference {
   friend class nsDocShellTreeOwner;
@@ -104,8 +88,6 @@ class nsWebBrowser final : public nsIWebBrowser,
     nsWebBrowser* mWebBrowser;
   };
 
-  nsWebBrowser();
-
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_CLASS_AMBIGUOUS(nsWebBrowser, nsIWebBrowser)
 
@@ -113,14 +95,21 @@ class nsWebBrowser final : public nsIWebBrowser,
   NS_DECL_NSIDOCSHELLTREEITEM
   NS_DECL_NSIINTERFACEREQUESTOR
   NS_DECL_NSISCROLLABLE
-  NS_DECL_NSITEXTSCROLL
   NS_DECL_NSIWEBBROWSER
   NS_DECL_NSIWEBNAVIGATION
-  NS_DECL_NSIWEBBROWSERSETUP
   NS_DECL_NSIWEBBROWSERPERSIST
   NS_DECL_NSICANCELABLE
-  NS_DECL_NSIWEBBROWSERFOCUS
   NS_DECL_NSIWEBPROGRESSLISTENER
+
+  void SetAllowDNSPrefetch(bool aAllowPrefetch);
+  void FocusActivate();
+  void FocusDeactivate();
+
+  static already_AddRefed<nsWebBrowser> Create(
+      nsIWebBrowserChrome* aContainerWindow, nsIWidget* aParentWidget,
+      const mozilla::OriginAttributes& aOriginAttributes,
+      mozilla::dom::BrowsingContext* aBrowsingContext,
+      bool aDisableHistory = false);
 
  protected:
   virtual ~nsWebBrowser();
@@ -129,15 +118,17 @@ class nsWebBrowser final : public nsIWebBrowser,
   // XXXbz why are these NS_IMETHOD?  They're not interface methods!
   NS_IMETHOD SetDocShell(nsIDocShell* aDocShell);
   NS_IMETHOD EnsureDocShellTreeOwner();
-  NS_IMETHOD BindListener(nsISupports* aListener, const nsIID& aIID);
-  NS_IMETHOD UnBindListener(nsISupports* aListener, const nsIID& aIID);
   NS_IMETHOD EnableGlobalHistory(bool aEnable);
+
+  nsIWidget* EnsureWidget();
 
   // nsIWidgetListener methods for WidgetListenerDelegate.
   MOZ_CAN_RUN_SCRIPT void WindowActivated();
   MOZ_CAN_RUN_SCRIPT void WindowDeactivated();
   MOZ_CAN_RUN_SCRIPT bool PaintWindow(nsIWidget* aWidget,
                                       mozilla::LayoutDeviceIntRegion aRegion);
+
+  explicit nsWebBrowser(int aItemType);
 
  protected:
   RefPtr<nsDocShellTreeOwner> mDocShellTreeOwner;
@@ -146,13 +137,11 @@ class nsWebBrowser final : public nsIWebBrowser,
   nsCOMPtr<nsIBaseWindow> mDocShellAsWin;
   nsCOMPtr<nsIWebNavigation> mDocShellAsNav;
   nsCOMPtr<nsIScrollable> mDocShellAsScrollable;
-  nsCOMPtr<nsITextScroll> mDocShellAsTextScroll;
   mozilla::OriginAttributes mOriginAttributes;
 
   nsCOMPtr<nsIWidget> mInternalWidget;
   nsCOMPtr<nsIWindowWatcher> mWWatch;
-  nsAutoPtr<nsWebBrowserInitInfo> mInitInfo;
-  uint32_t mContentType;
+  const uint32_t mContentType;
   bool mActivating;
   bool mShouldEnableHistory;
   bool mIsActive;
@@ -175,7 +164,6 @@ class nsWebBrowser final : public nsIWebBrowser,
 
   // Weak Reference interfaces...
   nsIWidget* mParentWidget;
-  nsAutoPtr<nsTArray<nsWebBrowserListenerState> > mListenerArray;
 };
 
 #endif /* nsWebBrowser_h__ */

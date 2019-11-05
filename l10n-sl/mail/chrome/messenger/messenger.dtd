@@ -28,7 +28,7 @@
 <!ENTITY newOtherAccountsCmd.accesskey "r">
 <!ENTITY newCreateEmailAccountCmd.label "Odpri nov poštni račun …">
 <!ENTITY newCreateEmailAccountCmd.accesskey "n">
-<!ENTITY newExistingEmailAccountCmd.label "Obstoječi poštni račun …">
+<!ENTITY newExistingEmailAccountCmd.label "Poveži obstoječ poštni račun …">
 <!ENTITY newExistingEmailAccountCmd.accesskey "b">
 <!ENTITY newIMAccountCmd.label "Račun za klepet …">
 <!ENTITY newIMAccountCmd.accesskey "e">
@@ -36,6 +36,12 @@
 <!ENTITY newFeedAccountCmd.accesskey "v">
 <!ENTITY newIMContactCmd.label "Stik za klepet …">
 <!ENTITY newIMContactCmd.accesskey "z">
+<!ENTITY  newMessageCmd2.key "N">
+<!ENTITY  newMessageCmd.key "M">
+<!ENTITY  newMessageCmd.label "Sporočilo">
+<!ENTITY  newMessageCmd.accesskey "S">
+<!ENTITY  newContactCmd.label "Stik iz imenika …">
+<!ENTITY  newContactCmd.accesskey "t">
 <!ENTITY openMessageFileCmd.label "Odpri shranjeno sporočilo …">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "Shrani kot">
@@ -317,7 +323,6 @@
 <!ENTITY goBackCmd.commandKey "[">
 <!ENTITY goChatCmd.label "Klepet">
 <!ENTITY goChatCmd.accesskey "K">
-<!ENTITY goChatCmd.key "I">
 <!ENTITY goChatCmd2.key "H">
 <!ENTITY prevStarredMsgCmd.label "Sporočilo z zvezdico">
 <!ENTITY prevStarredMsgCmd.accesskey "z">
@@ -346,7 +351,7 @@
 <!ENTITY replySenderCmd.label "Odgovori samo pošiljatelju">
 <!ENTITY replySenderCmd.accesskey "š">
 <!ENTITY replyNewsgroupCmd2.label "Nadaljuj za novičarsko skupino">
-<!ENTITY replyNewsgroupCmd2.accesskey "g">
+<!ENTITY replyNewsgroupCmd2.accesskey "v">
 <!ENTITY replyToAllMsgCmd.label "Odgovori vsem">
 <!ENTITY replyToAllMsgCmd.accesskey "e">
 <!ENTITY replyToAllMsgCmd.key "r">
@@ -435,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Odpri sporočilo">
 <!ENTITY openMessageWindowCmd.accesskey "O">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Odpri kot pogovor">
-<!ENTITY openConversationCmd.accesskey "g">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Odpri kot pogovor">
+<!ENTITY openInConversationCmd.accesskey "g">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Priponke">
 <!ENTITY openAttachmentListCmd.accesskey "r">
 <!ENTITY openFeedMessage1.label "Med odpiranjem sporočil vira">
@@ -510,8 +515,6 @@
 <!ENTITY devToolboxCmd.label "Orodjarna za razvijalce">
 <!ENTITY devToolboxCmd.accesskey "O">
 <!ENTITY devToolboxCmd.commandkey "i">
-<!ENTITY addonDebugCmd.label "Razhroščevalnik dodatkov">
-<!ENTITY addonDebugCmd.accesskey "d">
 <!ENTITY debugAddonsCmd.label "Razhrošči dodatke">
 <!ENTITY debugAddonsCmd.accesskey "R">
 <!ENTITY tabsDebugCmd.label "Razhroščevalnik vsebinskega okvirja">
@@ -603,6 +606,8 @@
 <!ENTITY compactButton.tooltip "Odstrani izbrisana sporočila iz izbrane mape">
 <!ENTITY appmenuButton1.tooltip "Prikaži &brandShortName;ov meni">
 
+<!ENTITY addonsButton.tooltip "Upravljajte svoje dodatke">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Posreduj v besedilu">
 <!ENTITY buttonMenuForwardAsAttachment.label "Posreduj kot priponko">
@@ -646,6 +651,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Prejmi sporočila">
 <!ENTITY folderContextGetMessages.accesskey "P">
+<!ENTITY folderContextMarkAllFoldersRead.label "Označi vse mape kot prebrane">
 <!ENTITY folderContextPauseAllUpdates.label "Ustavi vse posodobitve">
 <!ENTITY folderContextPauseUpdates.label "Ustavi posodobitve">
 <!ENTITY folderContextPauseUpdates.accesskey "U">
@@ -788,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "m">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Nedavno">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "N">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Priljubljene">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "P">
 <!ENTITY contextCopyMsgMenu.label "Kopiraj v">
 <!ENTITY contextCopyMsgMenu.accesskey "K">
 <!ENTITY contextKillThreadMenu.label "Prezri nit">
@@ -807,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Predogled tiskanja">
 <!ENTITY contextPrintPreview.accesskey "P">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Ponastavi stolpce na privzeto">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -853,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "To mapo">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Predvajaj">
 <!ENTITY contextPlay.accesskey "P">
@@ -871,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them
@@ -963,7 +964,7 @@
 <!ENTITY hideOtherAppsCmdMac.label      "Skrij ostale">
 <!ENTITY hideOtherAppsCmdMac.commandkey "H">
 <!ENTITY hideOtherAppsCmdMac.modifiers  "accel,alt">
-<!ENTITY showAllAppsCmdMac.label        "Pokaži vse">
+<!ENTITY showAllAppsCmdMac.label        "Prikaži vse">
 
 <!-- Mac OS X Dock Icon pop-up menu -->
 <!ENTITY dockOptions.label              "Možnosti ikone programa …">

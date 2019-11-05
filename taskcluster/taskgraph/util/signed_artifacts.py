@@ -24,7 +24,7 @@ def generate_specifications_of_artifacts_to_sign(
             'artifacts': [
                 get_artifact_path(task, 'source.tar.xz')
             ],
-            'formats': ['gpg'],
+            'formats': ['autograph_gpg'],
         }]
     elif 'android' in build_platform:
         artifacts_specifications = [{
@@ -64,7 +64,7 @@ def generate_specifications_of_artifacts_to_sign(
     elif 'linux' in build_platform:
         artifacts_specifications = [{
             'artifacts': [get_artifact_path(task, '{locale}/target.tar.bz2')],
-            'formats': ['gpg', 'widevine'],
+            'formats': ['autograph_gpg', 'widevine'],
         }]
     else:
         raise Exception("Platform not implemented for signing")
@@ -99,16 +99,19 @@ def _strip_widevine_for_partners(artifacts_specifications):
     return artifacts_specifications
 
 
-def get_signed_artifacts(input, formats):
+def get_signed_artifacts(input, formats, behavior=None):
     """
     Get the list of signed artifacts for the given input and formats.
     """
     artifacts = set()
     if input.endswith('.dmg'):
-        artifacts.add(input.replace('.dmg', '.tar.gz'))
+        if behavior != "mac_pkg":
+            artifacts.add(input.replace('.dmg', '.tar.gz'))
+        if behavior and behavior != "mac_sign":
+            artifacts.add(input.replace('.dmg', '.pkg'))
     else:
         artifacts.add(input)
-    if 'gpg' in formats:
+    if 'autograph_gpg' in formats:
         artifacts.add('{}.asc'.format(input))
 
     return artifacts

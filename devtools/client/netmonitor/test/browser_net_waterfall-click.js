@@ -7,26 +7,27 @@
  * Test that clicking on the waterfall opens the timing sidebar panel.
  */
 
-add_task(async function () {
-  let { tab, monitor } = await initNetMonitor(CONTENT_TYPE_WITHOUT_CACHE_URL);
-  let { document } = monitor.panelWin;
+add_task(async function() {
+  const { tab, monitor } = await initNetMonitor(CONTENT_TYPE_WITHOUT_CACHE_URL);
+  const { document } = monitor.panelWin;
 
-  let onAllEvents = waitForNetworkEvents(monitor, CONTENT_TYPE_WITHOUT_CACHE_REQUESTS);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests();
-  });
-  await onAllEvents;
+  // Execute requests.
+  await performRequests(monitor, tab, CONTENT_TYPE_WITHOUT_CACHE_REQUESTS);
 
   info("Clicking waterfall and waiting for panel update.");
-  let wait = waitForDOM(document, "#timings-panel");
+  const wait = waitForDOM(document, "#timings-panel");
 
-  EventUtils.sendMouseEvent({ type: "mousedown" },
-    document.querySelectorAll(".requests-list-timings")[0]);
+  EventUtils.sendMouseEvent(
+    { type: "mousedown" },
+    document.querySelectorAll(".requests-list-timings")[0]
+  );
 
   await wait;
 
-  ok(document.querySelector("#timings-tab[aria-selected=true]"),
-     "Timings tab is selected.");
+  ok(
+    document.querySelector("#timings-tab[aria-selected=true]"),
+    "Timings tab is selected."
+  );
 
   return teardown(monitor);
 });

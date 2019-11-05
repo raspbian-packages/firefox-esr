@@ -20,7 +20,7 @@ class SVGDefsElement final : public SVGGraphicsElement {
   friend nsresult(::NS_NewSVGDefsElement(
       nsIContent** aResult,
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
-  explicit SVGDefsElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit SVGDefsElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
   virtual JSObject* WrapNode(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
@@ -28,8 +28,12 @@ class SVGDefsElement final : public SVGGraphicsElement {
   // nsIContent
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  // defs elements are not focusable.
+  bool IsFocusableInternal(int32_t* aTabIndex, bool aWithMouse) override {
+    return nsIContent::IsFocusableInternal(aTabIndex, aWithMouse);
+  }
+
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 };
 
 }  // namespace dom

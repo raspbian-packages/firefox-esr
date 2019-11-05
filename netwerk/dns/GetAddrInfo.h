@@ -11,9 +11,9 @@
 #include "nscore.h"
 
 #if defined(XP_WIN)
-#define DNSQUERY_AVAILABLE 1
+#  define DNSQUERY_AVAILABLE 1
 #else
-#undef DNSQUERY_AVAILABLE
+#  undef DNSQUERY_AVAILABLE
 #endif
 
 namespace mozilla {
@@ -36,9 +36,8 @@ class AddrInfo;
  * @param aGetTtl[in] If true, the TTL will be retrieved if DNS provides the
  *     answers..
  */
-nsresult GetAddrInfo(const char* aHost, uint16_t aAddressFamily,
-                     uint16_t aFlags, const char* aNetworkInterface,
-                     AddrInfo** aAddrInfo, bool aGetTtl);
+nsresult GetAddrInfo(const nsACString& aHost, uint16_t aAddressFamily,
+                     uint16_t aFlags, AddrInfo** aAddrInfo, bool aGetTtl);
 
 /**
  * Initialize the GetAddrInfo module.

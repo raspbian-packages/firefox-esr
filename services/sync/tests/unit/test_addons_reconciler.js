@@ -3,15 +3,34 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
-ChromeUtils.import("resource://services-common/async.js");
-ChromeUtils.import("resource://services-sync/addonsreconciler.js");
-ChromeUtils.import("resource://services-sync/engines/addons.js");
-ChromeUtils.import("resource://services-sync/service.js");
-ChromeUtils.import("resource://services-sync/util.js");
+const {
+  AddonsReconciler,
+  CHANGE_INSTALLED,
+  CHANGE_UNINSTALLED,
+} = ChromeUtils.import("resource://services-sync/addonsreconciler.js");
+const { AddonsEngine } = ChromeUtils.import(
+  "resource://services-sync/engines/addons.js"
+);
+const { Service } = ChromeUtils.import("resource://services-sync/service.js");
 
-loadAddonTestFunctions();
-startupManager();
+AddonTestUtils.init(this);
+AddonTestUtils.createAppInfo(
+  "xpcshell@tests.mozilla.org",
+  "XPCShell",
+  "1",
+  "1.9.2"
+);
+AddonTestUtils.overrideCertDB();
+AddonTestUtils.awaitPromise(AddonTestUtils.promiseStartupManager());
+
+const ADDON_ID = "addon1@tests.mozilla.org";
+const XPI = AddonTestUtils.createTempWebExtensionFile({
+  manifest: {
+    name: "Test 1",
+    description: "Test Description",
+    applications: { gecko: { id: ADDON_ID } },
+  },
+});
 
 function makeAddonsReconciler() {
   const log = Service.engineManager.get("addons")._log;
@@ -31,7 +50,7 @@ add_task(async function test_defaults() {
   await reconciler.ensureStateLoaded();
 
   Assert.ok(!reconciler._listening);
-  Assert.equal("object", typeof(reconciler.addons));
+  Assert.equal("object", typeof reconciler.addons);
   Assert.equal(0, Object.keys(reconciler.addons).length);
   Assert.equal(0, reconciler._changes.length);
   Assert.equal(0, reconciler._listeners.length);
@@ -46,7 +65,7 @@ add_task(async function test_load_state_empty_file() {
   let loaded = await reconciler.loadState();
   Assert.ok(!loaded);
 
-  Assert.equal("object", typeof(reconciler.addons));
+  Assert.equal("object", typeof reconciler.addons);
   Assert.equal(0, Object.keys(reconciler.addons).length);
   Assert.equal(0, reconciler._changes.length);
 });
@@ -59,15 +78,23 @@ add_task(async function test_install_detection() {
   reconciler.startListening();
 
   let before = new Date();
-  let addon = await installAddon("test_bootstrap1_1");
+  let addon = await installAddon(XPI);
   let after = new Date();
 
   Assert.equal(1, Object.keys(reconciler.addons).length);
   Assert.ok(addon.id in reconciler.addons);
-  let record = reconciler.addons[addon.id];
+  let record = reconciler.addons[ADDON_ID];
 
-  const KEYS = ["id", "guid", "enabled", "installed", "modified", "type",
-                "scope", "foreignInstall"];
+  const KEYS = [
+    "id",
+    "guid",
+    "enabled",
+    "installed",
+    "modified",
+    "type",
+    "scope",
+    "foreignInstall",
+  ];
   for (let key of KEYS) {
     Assert.ok(key in record);
     Assert.notEqual(null, record[key]);
@@ -100,7 +127,7 @@ add_task(async function test_uninstall_detection() {
   reconciler._addons = {};
   reconciler._changes = [];
 
-  let addon = await installAddon("test_bootstrap1_1");
+  let addon = await installAddon(XPI);
   let id = addon.id;
 
   reconciler._changes = [];
@@ -127,7 +154,7 @@ add_task(async function test_load_state_future_version() {
   await reconciler.ensureStateLoaded();
 
   // First we populate our new file.
-  let state = {version: 100, addons: {foo: {}}, changes: [[1, 1, "foo"]]};
+  let state = { version: 100, addons: { foo: {} }, changes: [[1, 1, "foo"]] };
 
   // jsonSave() expects an object with ._log, so we give it a reconciler
   // instance.
@@ -136,7 +163,7 @@ add_task(async function test_load_state_future_version() {
   let loaded = await reconciler.loadState(FILENAME);
   Assert.ok(!loaded);
 
-  Assert.equal("object", typeof(reconciler.addons));
+  Assert.equal("object", typeof reconciler.addons);
   Assert.equal(0, Object.keys(reconciler.addons).length);
   Assert.equal(0, reconciler._changes.length);
 });

@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsHtml5SVGLoadDispatcher.h"
-#include "nsPresContext.h"
-#include "nsIPresShell.h"
 #include "mozilla/BasicEvents.h"
 #include "mozilla/EventDispatcher.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
+#include "mozilla/dom/DocumentInlines.h"
+#include "nsPresContext.h"
 
 using namespace mozilla;
 

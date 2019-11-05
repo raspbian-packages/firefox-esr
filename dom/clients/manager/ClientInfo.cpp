@@ -33,15 +33,19 @@ ClientInfo& ClientInfo::operator=(const ClientInfo& aRight) {
   return *this;
 }
 
-ClientInfo::ClientInfo(ClientInfo&& aRight) : mData(Move(aRight.mData)) {}
+ClientInfo::ClientInfo(ClientInfo&& aRight) : mData(std::move(aRight.mData)) {}
 
 ClientInfo& ClientInfo::operator=(ClientInfo&& aRight) {
   mData.reset();
-  mData = Move(aRight.mData);
+  mData = std::move(aRight.mData);
   return *this;
 }
 
 ClientInfo::~ClientInfo() {}
+
+bool ClientInfo::operator==(const ClientInfo& aRight) const {
+  return *mData == *aRight.mData;
+}
 
 const nsID& ClientInfo::Id() const { return mData->id(); }
 
@@ -90,7 +94,7 @@ bool ClientInfo::IsPrivateBrowsing() const {
 nsCOMPtr<nsIPrincipal> ClientInfo::GetPrincipal() const {
   MOZ_ASSERT(NS_IsMainThread());
   nsCOMPtr<nsIPrincipal> ref = PrincipalInfoToPrincipal(PrincipalInfo());
-  return Move(ref);
+  return ref;
 }
 
 }  // namespace dom

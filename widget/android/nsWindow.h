@@ -1,5 +1,5 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
- * vim: set sw=4 ts=4 expandtab:
+/* -*- Mode: c++; c-basic-offset: 2; tab-width: 20; indent-tabs-mode: nil; -*-
+ * vim: set sw=2 ts=4 expandtab:
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -38,6 +38,10 @@ class GeckoEditableSupport;
 namespace ipc {
 class Shmem;
 }  // namespace ipc
+
+namespace a11y {
+class SessionAccessibility;
+}
 }  // namespace mozilla
 
 class nsWindow final : public nsBaseWidget {
@@ -77,6 +81,7 @@ class nsWindow final : public nsBaseWidget {
   template <class Impl>
   class NativePtr final {
     friend WindowPtr<Impl>;
+    friend nsWindow;
 
     static const char sName[];
 
@@ -84,11 +89,11 @@ class nsWindow final : public nsBaseWidget {
     Impl* mImpl;
     mozilla::Mutex mImplLock;
 
-   public:
-    class Locked;
-
     NativePtr() : mPtr(nullptr), mImpl(nullptr), mImplLock(sName) {}
     ~NativePtr() { MOZ_ASSERT(!mPtr); }
+
+   public:
+    class Locked;
 
     operator Impl*() const {
       MOZ_ASSERT(NS_IsMainThread());
@@ -97,9 +102,11 @@ class nsWindow final : public nsBaseWidget {
 
     Impl* operator->() const { return operator Impl*(); }
 
-    template <class Instance, typename... Args>
-    void Attach(Instance aInstance, nsWindow* aWindow, Args&&... aArgs);
-    void Detach();
+    template <class Cls, typename... Args>
+    void Attach(const mozilla::jni::LocalRef<Cls>& aInstance, nsWindow* aWindow,
+                Args&&... aArgs);
+    template <class Cls, typename T>
+    void Detach(const mozilla::jni::Ref<Cls, T>& aInstance);
   };
 
   template <class Impl>
@@ -115,7 +122,7 @@ class nsWindow final : public nsBaseWidget {
       nsWindow* const mWindow;
 
      public:
-      Locked(WindowPtr<Impl>& aPtr)
+      explicit Locked(WindowPtr<Impl>& aPtr)
           : mozilla::MutexAutoLock(aPtr.mWindowLock), mWindow(aPtr.mWindow) {}
 
       operator nsWindow*() const { return mWindow; }
@@ -156,7 +163,7 @@ class nsWindow final : public nsBaseWidget {
 
     NS_FORWARD_NSIANDROIDEVENTDISPATCHER(mEventDispatcher->)
 
-    mozilla::java::GeckoBundle::GlobalRef mSettings;
+    mozilla::java::GeckoBundle::GlobalRef mInitData;
   };
 
   RefPtr<AndroidView> mAndroidView;
@@ -176,6 +183,10 @@ class nsWindow final : public nsBaseWidget {
   NativePtr<mozilla::widget::GeckoEditableSupport> mEditableSupport;
   mozilla::jni::Object::GlobalRef mEditableParent;
 
+  // Object that implements native SessionAccessibility calls.
+  // Strong referenced by the Java instance.
+  NativePtr<mozilla::a11y::SessionAccessibility> mSessionAccessibility;
+
   class GeckoViewSupport;
   // Object that implements native GeckoView calls and associated states.
   // nullptr for nsWindows that were not opened from GeckoView.
@@ -186,6 +197,9 @@ class nsWindow final : public nsBaseWidget {
   mozilla::Atomic<bool, mozilla::ReleaseAcquire> mContentDocumentDisplayed;
 
  public:
+  static already_AddRefed<nsWindow> From(nsPIDOMWindowOuter* aDOMWindow);
+  static already_AddRefed<nsWindow> From(nsIWidget* aWidget);
+
   static nsWindow* TopWindow();
 
   static mozilla::Modifiers GetModifiers(int32_t aMetaState);
@@ -198,6 +212,13 @@ class nsWindow final : public nsBaseWidget {
 
   void UpdateOverscrollVelocity(const float aX, const float aY);
   void UpdateOverscrollOffset(const float aX, const float aY);
+
+  mozilla::widget::EventDispatcher* GetEventDispatcher() const {
+    if (mAndroidView) {
+      return mAndroidView->mEventDispatcher;
+    }
+    return nullptr;
+  }
 
   //
   // nsIWidget
@@ -237,12 +258,8 @@ class nsWindow final : public nsBaseWidget {
   virtual already_AddRefed<nsIScreen> GetWidgetScreen() override;
   virtual nsresult MakeFullScreen(bool aFullScreen,
                                   nsIScreen* aTargetScreen = nullptr) override;
-
-  virtual void SetCursor(nsCursor aCursor) override {}
-  virtual nsresult SetCursor(imgIContainer* aCursor, uint32_t aHotspotX,
-                             uint32_t aHotspotY) override {
-    return NS_ERROR_NOT_IMPLEMENTED;
-  }
+  void SetCursor(nsCursor aDefaultCursor, imgIContainer* aImageCursor,
+                 uint32_t aHotspotX, uint32_t aHotspotY) override {}
   void* GetNativeData(uint32_t aDataType) override;
   void SetNativeData(uint32_t aDataType, uintptr_t aVal) override;
   virtual nsresult SetTitle(const nsAString& aTitle) override { return NS_OK; }
@@ -255,7 +272,6 @@ class nsWindow final : public nsBaseWidget {
                                const InputContextAction& aAction) override;
   virtual InputContext GetInputContext() override;
 
-  void SetSelectionDragState(bool aState);
   LayerManager* GetLayerManager(
       PLayerTransactionChild* aShadowManager = nullptr,
       LayersBackend aBackendHint = mozilla::layers::LayersBackend::LAYERS_NONE,
@@ -268,7 +284,7 @@ class nsWindow final : public nsBaseWidget {
   virtual uint32_t GetMaxTouchPoints() const override;
 
   void UpdateZoomConstraints(
-      const uint32_t& aPresShellId, const FrameMetrics::ViewID& aViewId,
+      const uint32_t& aPresShellId, const ScrollableLayerGuid::ViewID& aViewId,
       const mozilla::Maybe<ZoomConstraints>& aConstraints) override;
 
   nsresult SynthesizeNativeTouchPoint(uint32_t aPointerId,
@@ -295,11 +311,18 @@ class nsWindow final : public nsBaseWidget {
 
   mozilla::jni::Object::Ref& GetEditableParent() { return mEditableParent; }
 
+  mozilla::a11y::SessionAccessibility* GetSessionAccessibility() {
+    return mSessionAccessibility;
+  }
+
   void RecvToolbarAnimatorMessageFromCompositor(int32_t aMessage) override;
   void UpdateRootFrameMetrics(const ScreenPoint& aScrollOffset,
                               const CSSToScreenScale& aZoom) override;
   void RecvScreenPixels(mozilla::ipc::Shmem&& aMem,
                         const ScreenIntSize& aSize) override;
+
+  nsresult SetPrefersReducedMotionOverrideForTest(bool aValue) override;
+  nsresult ResetPrefersReducedMotionOverrideForTest() override;
 
  protected:
   void BringToFront();
@@ -330,10 +353,10 @@ class nsWindow final : public nsBaseWidget {
   static void LogWindow(nsWindow* win, int index, int indent);
 
  private:
-  void CreateLayerManager(int aCompositorWidth, int aCompositorHeight);
+  void CreateLayerManager();
   void RedrawAll();
 
-  int64_t GetRootLayerId() const;
+  mozilla::layers::LayersId GetRootLayerId() const;
   RefPtr<mozilla::layers::UiCompositorControllerChild>
   GetUiCompositorControllerChild();
 };
@@ -343,6 +366,8 @@ template <>
 const char nsWindow::NativePtr<nsWindow::LayerViewSupport>::sName[];
 template <>
 const char nsWindow::NativePtr<mozilla::widget::GeckoEditableSupport>::sName[];
+template <>
+const char nsWindow::NativePtr<mozilla::a11y::SessionAccessibility>::sName[];
 template <>
 const char nsWindow::NativePtr<nsWindow::NPZCSupport>::sName[];
 

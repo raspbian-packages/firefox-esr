@@ -5,12 +5,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 with Files("**"):
-    BUG_COMPONENT = ("Core", "DOM: Device Interfaces")
+    BUG_COMPONENT = ("Core", "DOM: Web Authentication")
 
 EXPORTS.mozilla.dom += [
     'U2F.h',
     'U2FAuthenticator.h',
-    'U2FUtil.h',
 ]
 
 UNIFIED_SOURCES += [
@@ -26,8 +25,6 @@ LOCAL_INCLUDES += [
     '/dom/crypto',
     '/dom/webauthn',
     '/security/manager/ssl',
-    '/security/pkix/include',
-    '/security/pkix/lib',
 ]
 
 MOCHITEST_MANIFESTS += ['tests/mochitest.ini']

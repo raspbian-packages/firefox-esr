@@ -14,9 +14,9 @@ namespace dom {
 
 class AudioTrack : public MediaTrack {
  public:
-  AudioTrack(const nsAString& aId, const nsAString& aKind,
-             const nsAString& aLabel, const nsAString& aLanguage,
-             bool aEnabled);
+  AudioTrack(nsIGlobalObject* aOwnerGlobal, const nsAString& aId,
+             const nsAString& aKind, const nsAString& aLabel,
+             const nsAString& aLanguage, bool aEnabled);
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override;

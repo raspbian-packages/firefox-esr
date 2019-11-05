@@ -7,14 +7,14 @@
 #include "AudioNodeEngine.h"
 
 #include "mozilla/AbstractThread.h"
-#ifdef BUILD_ARM_NEON
-#include "mozilla/arm.h"
-#include "AudioNodeEngineNEON.h"
+#ifdef USE_NEON
+#  include "mozilla/arm.h"
+#  include "AudioNodeEngineNEON.h"
 #endif
 #ifdef USE_SSE2
-#include "mozilla/SSE.h"
-#include "AlignmentUtils.h"
-#include "AudioNodeEngineSSE2.h"
+#  include "mozilla/SSE.h"
+#  include "AlignmentUtils.h"
+#  include "AudioNodeEngineSSE2.h"
 #endif
 #include "AudioBlock.h"
 
@@ -62,7 +62,7 @@ void AudioBufferCopyWithScale(const float* aInput, float aScale, float* aOutput,
 
 void AudioBufferAddWithScale(const float* aInput, float aScale, float* aOutput,
                              uint32_t aSize) {
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
   if (mozilla::supports_neon()) {
     AudioBufferAddWithScale_NEON(aInput, aScale, aOutput, aSize);
     return;
@@ -122,7 +122,7 @@ void AudioBlockCopyChannelWithScale(const float* aInput, float aScale,
   if (aScale == 1.0f) {
     memcpy(aOutput, aInput, WEBAUDIO_BLOCK_SIZE * sizeof(float));
   } else {
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
     if (mozilla::supports_neon()) {
       AudioBlockCopyChannelWithScale_NEON(aInput, aScale, aOutput);
       return;
@@ -177,7 +177,7 @@ float AudioBufferPeakValue(const float* aInput, uint32_t aSize) {
 void AudioBlockCopyChannelWithScale(const float aInput[WEBAUDIO_BLOCK_SIZE],
                                     const float aScale[WEBAUDIO_BLOCK_SIZE],
                                     float aOutput[WEBAUDIO_BLOCK_SIZE]) {
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
   if (mozilla::supports_neon()) {
     AudioBlockCopyChannelWithScale_NEON(aInput, aScale, aOutput);
     return;
@@ -200,11 +200,16 @@ void AudioBlockInPlaceScale(float aBlock[WEBAUDIO_BLOCK_SIZE], float aScale) {
   AudioBufferInPlaceScale(aBlock, aScale, WEBAUDIO_BLOCK_SIZE);
 }
 
+void AudioBlockInPlaceScale(float aBlock[WEBAUDIO_BLOCK_SIZE],
+                            float aScale[WEBAUDIO_BLOCK_SIZE]) {
+  AudioBufferInPlaceScale(aBlock, aScale, WEBAUDIO_BLOCK_SIZE);
+}
+
 void AudioBufferInPlaceScale(float* aBlock, float aScale, uint32_t aSize) {
   if (aScale == 1.0f) {
     return;
   }
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
   if (mozilla::supports_neon()) {
     AudioBufferInPlaceScale_NEON(aBlock, aScale, aSize);
     return;
@@ -220,6 +225,26 @@ void AudioBufferInPlaceScale(float* aBlock, float aScale, uint32_t aSize) {
 
   for (uint32_t i = 0; i < aSize; ++i) {
     *aBlock++ *= aScale;
+  }
+}
+
+void AudioBufferInPlaceScale(float* aBlock, float* aScale, uint32_t aSize) {
+#ifdef USE_NEON
+  if (mozilla::supports_neon()) {
+    AudioBufferInPlaceScale_NEON(aBlock, aScale, aSize);
+    return;
+  }
+#endif
+
+#ifdef USE_SSE2
+  if (mozilla::supports_sse2()) {
+    AudioBufferInPlaceScale_SSE(aBlock, aScale, aSize);
+    return;
+  }
+#endif
+
+  for (uint32_t i = 0; i < aSize; ++i) {
+    *aBlock++ *= *aScale++;
   }
 }
 
@@ -245,7 +270,7 @@ void AudioBlockPanStereoToStereo(const float aInputL[WEBAUDIO_BLOCK_SIZE],
                                  float aGainL, float aGainR, bool aIsOnTheLeft,
                                  float aOutputL[WEBAUDIO_BLOCK_SIZE],
                                  float aOutputR[WEBAUDIO_BLOCK_SIZE]) {
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
   if (mozilla::supports_neon()) {
     AudioBlockPanStereoToStereo_NEON(aInputL, aInputR, aGainL, aGainR,
                                      aIsOnTheLeft, aOutputL, aOutputR);
@@ -283,7 +308,7 @@ void AudioBlockPanStereoToStereo(const float aInputL[WEBAUDIO_BLOCK_SIZE],
                                  bool aIsOnTheLeft[WEBAUDIO_BLOCK_SIZE],
                                  float aOutputL[WEBAUDIO_BLOCK_SIZE],
                                  float aOutputR[WEBAUDIO_BLOCK_SIZE]) {
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
   if (mozilla::supports_neon()) {
     AudioBlockPanStereoToStereo_NEON(aInputL, aInputR, aGainL, aGainR,
                                      aIsOnTheLeft, aOutputL, aOutputR);
@@ -342,8 +367,9 @@ AudioNodeEngine::AudioNodeEngine(dom::AudioNode* aNode)
       mNodeType(aNode ? aNode->NodeType() : nullptr),
       mInputCount(aNode ? aNode->NumberOfInputs() : 1),
       mOutputCount(aNode ? aNode->NumberOfOutputs() : 0),
-      mAbstractMainThread(aNode ? aNode->AbstractMainThread()
-                                : AbstractThread::MainThread()) {
+      mAbstractMainThread(aNode && aNode->GetAbstractMainThread()
+                              ? aNode->GetAbstractMainThread()
+                              : AbstractThread::MainThread()) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_COUNT_CTOR(AudioNodeEngine);
 }

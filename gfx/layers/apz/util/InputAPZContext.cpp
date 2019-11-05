@@ -12,56 +12,53 @@ namespace layers {
 ScrollableLayerGuid InputAPZContext::sGuid;
 uint64_t InputAPZContext::sBlockId = 0;
 nsEventStatus InputAPZContext::sApzResponse = nsEventStatus_eIgnore;
-bool InputAPZContext::sRoutedToChildProcess = false;
 bool InputAPZContext::sPendingLayerization = false;
+bool InputAPZContext::sRoutedToChildProcess = false;
 
-/*static*/ ScrollableLayerGuid InputAPZContext::GetTargetLayerGuid() {
-  return sGuid;
-}
+/*static*/
+ScrollableLayerGuid InputAPZContext::GetTargetLayerGuid() { return sGuid; }
 
-/*static*/ uint64_t InputAPZContext::GetInputBlockId() { return sBlockId; }
+/*static*/
+uint64_t InputAPZContext::GetInputBlockId() { return sBlockId; }
 
-/*static*/ nsEventStatus InputAPZContext::GetApzResponse() {
-  return sApzResponse;
-}
+/*static*/
+nsEventStatus InputAPZContext::GetApzResponse() { return sApzResponse; }
 
-/*static*/ void InputAPZContext::SetRoutedToChildProcess() {
-  sRoutedToChildProcess = true;
-}
+/*static*/
+bool InputAPZContext::HavePendingLayerization() { return sPendingLayerization; }
 
-/*static*/ void InputAPZContext::SetPendingLayerization() {
-  sPendingLayerization = true;
+/*static*/
+bool InputAPZContext::WasRoutedToChildProcess() {
+  return sRoutedToChildProcess;
 }
 
 InputAPZContext::InputAPZContext(const ScrollableLayerGuid& aGuid,
                                  const uint64_t& aBlockId,
-                                 const nsEventStatus& aApzResponse)
+                                 const nsEventStatus& aApzResponse,
+                                 bool aPendingLayerization)
     : mOldGuid(sGuid),
       mOldBlockId(sBlockId),
       mOldApzResponse(sApzResponse),
-      mOldRoutedToChildProcess(sRoutedToChildProcess),
-      mOldPendingLayerization(sPendingLayerization) {
+      mOldPendingLayerization(sPendingLayerization),
+      mOldRoutedToChildProcess(sRoutedToChildProcess) {
   sGuid = aGuid;
   sBlockId = aBlockId;
   sApzResponse = aApzResponse;
+  sPendingLayerization = aPendingLayerization;
   sRoutedToChildProcess = false;
-  sPendingLayerization = false;
 }
 
 InputAPZContext::~InputAPZContext() {
   sGuid = mOldGuid;
   sBlockId = mOldBlockId;
   sApzResponse = mOldApzResponse;
-  sRoutedToChildProcess = mOldRoutedToChildProcess;
   sPendingLayerization = mOldPendingLayerization;
+  sRoutedToChildProcess = mOldRoutedToChildProcess;
 }
 
-/*static*/ bool InputAPZContext::WasRoutedToChildProcess() {
-  return sRoutedToChildProcess;
-}
-
-/*static*/ bool InputAPZContext::HavePendingLayerization() {
-  return sPendingLayerization;
+/*static*/
+void InputAPZContext::SetRoutedToChildProcess() {
+  sRoutedToChildProcess = true;
 }
 
 }  // namespace layers

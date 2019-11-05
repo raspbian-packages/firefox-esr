@@ -6,6 +6,8 @@
 
 #include "MutableBlobStreamListener.h"
 #include "MutableBlobStorage.h"
+#include "nsIInputStream.h"
+#include "nsThreadUtils.h"
 
 namespace mozilla {
 namespace dom {
@@ -37,8 +39,7 @@ NS_IMPL_ISUPPORTS(MutableBlobStreamListener, nsIStreamListener,
                   nsIThreadRetargetableStreamListener, nsIRequestObserver)
 
 NS_IMETHODIMP
-MutableBlobStreamListener::OnStartRequest(nsIRequest* aRequest,
-                                          nsISupports* aContext) {
+MutableBlobStreamListener::OnStartRequest(nsIRequest* aRequest) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!mStorage);
   MOZ_ASSERT(mEventTarget);
@@ -49,7 +50,6 @@ MutableBlobStreamListener::OnStartRequest(nsIRequest* aRequest,
 
 NS_IMETHODIMP
 MutableBlobStreamListener::OnStopRequest(nsIRequest* aRequest,
-                                         nsISupports* aContext,
                                          nsresult aStatus) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(mStorage);
@@ -70,7 +70,6 @@ MutableBlobStreamListener::OnStopRequest(nsIRequest* aRequest,
 
 NS_IMETHODIMP
 MutableBlobStreamListener::OnDataAvailable(nsIRequest* aRequest,
-                                           nsISupports* aContext,
                                            nsIInputStream* aStream,
                                            uint64_t aSourceOffset,
                                            uint32_t aCount) {

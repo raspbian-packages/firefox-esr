@@ -18,8 +18,6 @@ extern "C" {
 #include "signaling/src/sdp/sipcc/sdp.h"
 }
 
-#include "signaling/src/common/PtrVector.h"
-
 namespace mozilla {
 
 class SipccSdpParser;
@@ -38,7 +36,7 @@ class SipccSdp final : public Sdp {
   virtual uint32_t GetBandwidth(const std::string& type) const override;
 
   virtual size_t GetMediaSectionCount() const override {
-    return mMediaSections.values.size();
+    return mMediaSections.size();
   }
 
   virtual const SdpAttributeList& GetAttributeList() const override {
@@ -71,7 +69,7 @@ class SipccSdp final : public Sdp {
   SdpOrigin mOrigin;
   SipccSdpBandwidths mBandwidths;
   SipccSdpAttributeList mAttributeList;
-  PtrVector<SipccSdpMediaSection> mMediaSections;
+  std::vector<UniquePtr<SipccSdpMediaSection>> mMediaSections;
 };
 
 }  // namespace mozilla

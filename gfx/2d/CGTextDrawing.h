@@ -19,8 +19,8 @@
 namespace mozilla {
 namespace gfx {
 
-typedef void (*CGContextSetFontSmoothingBackgroundColorFunc)(
-    CGContextRef cgContext, CGColorRef color);
+typedef void (*CGContextSetFontSmoothingBackgroundColorFunc)(CGContextRef cgContext,
+                                                             CGColorRef color);
 
 static CGContextSetFontSmoothingBackgroundColorFunc
 GetCGContextSetFontSmoothingBackgroundColorFunc() {
@@ -34,21 +34,18 @@ GetCGContextSetFontSmoothingBackgroundColorFunc() {
   return func;
 }
 
-static CGColorRef ColorToCGColor(CGColorSpaceRef aColorSpace,
-                                 const Color& aColor) {
+static CGColorRef ColorToCGColor(CGColorSpaceRef aColorSpace, const Color& aColor) {
   CGFloat components[4] = {aColor.r, aColor.g, aColor.b, aColor.a};
   return CGColorCreate(aColorSpace, components);
 }
 
-static bool SetFontSmoothingBackgroundColor(
-    CGContextRef aCGContext, CGColorSpaceRef aColorSpace,
-    const Color& aFontSmoothingBackgroundColor) {
+static bool SetFontSmoothingBackgroundColor(CGContextRef aCGContext, CGColorSpaceRef aColorSpace,
+                                            const Color& aFontSmoothingBackgroundColor) {
   if (aFontSmoothingBackgroundColor.a > 0) {
     CGContextSetFontSmoothingBackgroundColorFunc setFontSmoothingBGColorFunc =
         GetCGContextSetFontSmoothingBackgroundColorFunc();
     if (setFontSmoothingBGColorFunc) {
-      CGColorRef color =
-          ColorToCGColor(aColorSpace, aFontSmoothingBackgroundColor);
+      CGColorRef color = ColorToCGColor(aColorSpace, aFontSmoothingBackgroundColor);
       setFontSmoothingBGColorFunc(aCGContext, color);
       CGColorRelease(color);
       return true;
@@ -74,14 +71,13 @@ static bool SetFontSmoothingBackgroundColor(
 static void EnsureValidPremultipliedData(CGContextRef aContext,
                                          CGRect aTextBounds = CGRectInfinite) {
   if (CGBitmapContextGetBitsPerPixel(aContext) != 32 ||
-      CGBitmapContextGetAlphaInfo(aContext) !=
-          kCGImageAlphaPremultipliedFirst) {
+      CGBitmapContextGetAlphaInfo(aContext) != kCGImageAlphaPremultipliedFirst) {
     return;
   }
 
   uint8_t* bitmapData = (uint8_t*)CGBitmapContextGetData(aContext);
-  CGRect bitmapBounds = CGRectMake(0, 0, CGBitmapContextGetWidth(aContext),
-                                   CGBitmapContextGetHeight(aContext));
+  CGRect bitmapBounds =
+      CGRectMake(0, 0, CGBitmapContextGetWidth(aContext), CGBitmapContextGetHeight(aContext));
   int stride = CGBitmapContextGetBytesPerRow(aContext);
 
   CGRect bounds = CGRectIntersection(bitmapBounds, aTextBounds);
@@ -92,8 +88,7 @@ static void EnsureValidPremultipliedData(CGContextRef aContext,
   // CGRect assume that our origin is the bottom left.
   // The data assumes that the origin is the top left.
   // Have to switch the Y axis so that our coordinates are correct
-  int startY =
-      bitmapBounds.size.height - (bounds.origin.y + bounds.size.height);
+  int startY = bitmapBounds.size.height - (bounds.origin.y + bounds.size.height);
   int endY = startY + bounds.size.height;
   MOZ_ASSERT(endY <= (int)CGBitmapContextGetHeight(aContext));
 
@@ -109,8 +104,7 @@ static void EnsureValidPremultipliedData(CGContextRef aContext,
   }
 }
 
-static CGRect ComputeGlyphsExtents(CGRect* bboxes, CGPoint* positions,
-                                   CFIndex count, float scale) {
+static CGRect ComputeGlyphsExtents(CGRect* bboxes, CGPoint* positions, CFIndex count, float scale) {
   CGFloat x1, x2, y1, y2;
   if (count < 1) return CGRectZero;
 
@@ -123,10 +117,8 @@ static CGRect ComputeGlyphsExtents(CGRect* bboxes, CGPoint* positions,
   for (int i = 1; i < count; i++) {
     x1 = std::min(x1, bboxes[i].origin.x + positions[i].x);
     y1 = std::min(y1, bboxes[i].origin.y + positions[i].y);
-    x2 = std::max(
-        x2, bboxes[i].origin.x + positions[i].x + scale * bboxes[i].size.width);
-    y2 = std::max(y2, bboxes[i].origin.y + positions[i].y +
-                          scale * bboxes[i].size.height);
+    x2 = std::max(x2, bboxes[i].origin.x + positions[i].x + scale * bboxes[i].size.width);
+    y2 = std::max(y2, bboxes[i].origin.y + positions[i].y + scale * bboxes[i].size.height);
   }
 
   CGRect extents = {{x1, y1}, {x2 - x1, y2 - y1}};

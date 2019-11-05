@@ -10,48 +10,54 @@ const testCases = [
   {
     location: ["cookies", "https://sectest1.example.org"],
     sidebarHidden: true,
-    toggleButtonVisible: false
+    toggleButtonVisible: false,
   },
   {
     location: getCookieId("cs2", ".example.org", "/"),
     sidebarHidden: false,
-    toggleButtonVisible: true
+    toggleButtonVisible: true,
   },
   {
-    clickToggle: true
+    clickToggle: true,
   },
   {
     location: getCookieId("cs2", ".example.org", "/"),
-    sidebarHidden: true
-  }
+    sidebarHidden: true,
+  },
 ];
 
-add_task(function* () {
-  yield openTabAndSetupStorage(MAIN_DOMAIN + "storage-listings.html");
+add_task(async function() {
+  await openTabAndSetupStorage(MAIN_DOMAIN + "storage-listings.html");
 
-  for (let test of testCases) {
-    let { location, sidebarHidden, clickToggle, toggleButtonVisible } = test;
+  for (const test of testCases) {
+    const { location, sidebarHidden, clickToggle, toggleButtonVisible } = test;
 
     info("running " + JSON.stringify(test));
 
     if (Array.isArray(location)) {
-      yield selectTreeItem(location);
+      await selectTreeItem(location);
     } else if (location) {
-      yield selectTableItem(location);
+      await selectTableItem(location);
     }
 
     if (clickToggle) {
       toggleSidebar();
     } else if (typeof toggleButtonHidden !== "undefined") {
-      is(sidebarToggleVisible(), toggleButtonVisible,
-         "correct visibility state of toggle button");
+      is(
+        sidebarToggleVisible(),
+        toggleButtonVisible,
+        "correct visibility state of toggle button"
+      );
     } else {
-      is(gUI.sidebar.hidden, sidebarHidden,
-        "correct visibility state of sidebar.");
+      is(
+        gUI.sidebar.hidden,
+        sidebarHidden,
+        "correct visibility state of sidebar."
+      );
     }
 
     info("-".repeat(80));
   }
 
-  yield finishTests();
+  await finishTests();
 });

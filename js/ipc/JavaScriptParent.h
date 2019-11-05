@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=4 sw=4 et tw=80:
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: set ts=4 sw=2 et tw=80:
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,10 +16,9 @@ namespace jsipc {
 
 class JavaScriptParent : public JavaScriptBase<PJavaScriptParent> {
  public:
-  JavaScriptParent() : savedNextCPOWNumber_(1) {}
+  JavaScriptParent();
   virtual ~JavaScriptParent();
 
-  bool init();
   void trace(JSTracer* trc);
 
   void drop(JSObject* obj);

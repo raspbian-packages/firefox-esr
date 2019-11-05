@@ -54,8 +54,6 @@ class nsICSSDeclaration : public nsISupports, public nsWrapperCache {
 
   NS_IMETHOD GetPropertyValue(const nsAString& aPropName,
                               nsAString& aValue) = 0;
-  virtual already_AddRefed<mozilla::dom::CSSValue> GetPropertyCSSValue(
-      const nsAString& aPropertyName, mozilla::ErrorResult& aRv) = 0;
   NS_IMETHOD RemoveProperty(const nsAString& aPropertyName,
                             nsAString& aReturn) = 0;
   NS_IMETHOD SetProperty(const nsAString& aPropertyName,
@@ -67,6 +65,12 @@ class nsICSSDeclaration : public nsISupports, public nsWrapperCache {
     if (!found) {
       aReturn.Truncate();
     }
+  }
+
+  virtual void GetCSSImageURLs(const nsAString& aPropertyName,
+                               nsTArray<nsString>& aImageURLs,
+                               mozilla::ErrorResult& aRv) {
+    aRv.Throw(NS_ERROR_NOT_IMPLEMENTED);
   }
 
   // WebIDL interface for CSSStyleDeclaration
@@ -96,6 +100,9 @@ class nsICSSDeclaration : public nsISupports, public nsWrapperCache {
     rv = RemoveProperty(aPropName, aRetval);
   }
   virtual mozilla::css::Rule* GetParentRule() = 0;
+
+ protected:
+  bool IsReadOnly();
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsICSSDeclaration, NS_ICSSDECLARATION_IID)

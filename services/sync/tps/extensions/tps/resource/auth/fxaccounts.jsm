@@ -4,27 +4,37 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "Authentication",
-];
+var EXPORTED_SYMBOLS = ["Authentication"];
 
-ChromeUtils.import("resource://gre/modules/Log.jsm");
-ChromeUtils.import("resource://gre/modules/Timer.jsm");
-ChromeUtils.import("resource://gre/modules/FxAccounts.jsm");
-ChromeUtils.import("resource://gre/modules/FxAccountsClient.jsm");
-ChromeUtils.import("resource://gre/modules/FxAccountsConfig.jsm");
-ChromeUtils.import("resource://services-sync/main.js");
-ChromeUtils.import("resource://tps/logger.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "Services", "resource://gre/modules/Services.jsm");
+const { Log } = ChromeUtils.import("resource://gre/modules/Log.jsm");
+const { clearTimeout, setTimeout } = ChromeUtils.import(
+  "resource://gre/modules/Timer.jsm"
+);
+const { fxAccounts } = ChromeUtils.import(
+  "resource://gre/modules/FxAccounts.jsm"
+);
+const { FxAccountsClient } = ChromeUtils.import(
+  "resource://gre/modules/FxAccountsClient.jsm"
+);
+const { FxAccountsConfig } = ChromeUtils.import(
+  "resource://gre/modules/FxAccountsConfig.jsm"
+);
+const { Logger } = ChromeUtils.import("resource://tps/logger.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "Services",
+  "resource://gre/modules/Services.jsm"
+);
 
-Cu.importGlobalProperties(["fetch"]);
+XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
 /**
  * Helper object for Firefox Accounts authentication
  */
 var Authentication = {
-
   /**
    * Check if an user has been logged in
    */
@@ -55,8 +65,7 @@ var Authentication = {
       }, ms);
     });
     await Promise.race([
-      fxAccounts.whenVerified(userData)
-                .finally(() => clearTimeout(timeoutID)),
+      fxAccounts.whenVerified(userData).finally(() => clearTimeout(timeoutID)),
       timeoutPromise,
     ]);
     userData = await this.getSignedInUser();
@@ -65,24 +74,28 @@ var Authentication = {
 
   async _openVerificationPage(uri) {
     let mainWindow = Services.wm.getMostRecentWindow("navigator:browser");
-    let newtab = mainWindow.getBrowser().addTab(uri);
-    let win = mainWindow.getBrowser().getBrowserForTab(newtab);
+    let newtab = mainWindow.gBrowser.addWebTab(uri);
+    let win = mainWindow.gBrowser.getBrowserForTab(newtab);
     await new Promise(resolve => {
       win.addEventListener("loadend", resolve, { once: true });
     });
     let didVerify = await this.shortWaitForVerification(10000);
-    mainWindow.getBrowser().removeTab(newtab);
+    mainWindow.gBrowser.removeTab(newtab);
     return didVerify;
   },
 
   async _completeVerification(user) {
     let username = this._getRestmailUsername(user);
     if (!username) {
-      Logger.logInfo(`Username "${user}" isn't a restmail username so can't complete verification`);
+      Logger.logInfo(
+        `Username "${user}" isn't a restmail username so can't complete verification`
+      );
       return false;
     }
     Logger.logInfo("Fetching mail (from restmail) for user " + username);
-    let restmailURI = `https://www.restmail.net/mail/${encodeURIComponent(username)}`;
+    let restmailURI = `https://www.restmail.net/mail/${encodeURIComponent(
+      username
+    )}`;
     let triedAlready = new Set();
     const tries = 10;
     const normalWait = 2000;
@@ -104,7 +117,10 @@ var Authentication = {
             return true;
           }
         } catch (e) {
-          Logger.logInfo("Warning: Failed to follow confirmation link: " + Log.exceptionStr(e));
+          Logger.logInfo(
+            "Warning: Failed to follow confirmation link: " +
+              Log.exceptionStr(e)
+          );
         }
       }
       if (i === 0) {
@@ -126,16 +142,24 @@ var Authentication = {
       return false;
     }
     Logger.logInfo("Deleting mail (from restmail) for user " + username);
-    let restmailURI = `https://www.restmail.net/mail/${encodeURIComponent(username)}`;
+    let restmailURI = `https://www.restmail.net/mail/${encodeURIComponent(
+      username
+    )}`;
     try {
       // Clean up after ourselves.
       let deleteResult = await fetch(restmailURI, { method: "DELETE" });
       if (!deleteResult.ok) {
-        Logger.logInfo(`Warning: Got non-success status ${deleteResult.status} when deleting emails`);
+        Logger.logInfo(
+          `Warning: Got non-success status ${
+            deleteResult.status
+          } when deleting emails`
+        );
         return false;
       }
     } catch (e) {
-      Logger.logInfo("Warning: Failed to delete old emails: " + Log.exceptionStr(e));
+      Logger.logInfo(
+        "Warning: Failed to delete old emails: " + Log.exceptionStr(e)
+      );
       return false;
     }
     return true;
@@ -148,9 +172,11 @@ var Authentication = {
    */
   async getSignedInUser() {
     try {
-      return (await fxAccounts.getSignedInUser());
+      return await fxAccounts.getSignedInUser();
     } catch (error) {
-      Logger.logError("getSignedInUser() failed with: " + JSON.stringify(error));
+      Logger.logError(
+        "getSignedInUser() failed with: " + JSON.stringify(error)
+      );
       throw error;
     }
   },
@@ -176,14 +202,16 @@ var Authentication = {
       await FxAccountsConfig.ensureConfigured();
 
       let client = new FxAccountsClient();
-      let credentials = await client.signIn(account.username, account.password, true);
+      let credentials = await client.signIn(
+        account.username,
+        account.password,
+        true
+      );
       await fxAccounts.setSignedInUser(credentials);
-      await this._completeVerification(account.username);
-
-      if (Weave.Status.login !== Weave.LOGIN_SUCCEEDED) {
-        Logger.logInfo("Logging into Weave.");
-        await Weave.Service.login();
+      if (!credentials.verified) {
+        await this._completeVerification(account.username);
       }
+
       return true;
     } catch (error) {
       throw new Error("signIn() failed with: " + error.message);
@@ -191,24 +219,12 @@ var Authentication = {
   },
 
   /**
-   * Sign out of Firefox Accounts. It also clears out the device ID, if we find one.
+   * Sign out of Firefox Accounts.
    */
   async signOut() {
     if (await Authentication.isLoggedIn()) {
-      let user = await Authentication.getSignedInUser();
-      if (!user) {
-        throw new Error("Failed to get signed in user!");
-      }
-      let fxc = new FxAccountsClient();
-      let { sessionToken, deviceId } = user;
-      if (deviceId) {
-        Logger.logInfo("Destroying device " + deviceId);
-        await fxAccounts.deleteDeviceRegistration(sessionToken, deviceId);
-        await fxAccounts.signOut(true);
-      } else {
-        Logger.logError("No device found.");
-        await fxc.signOut(sessionToken, { service: "sync" });
-      }
+      // Note: This will clean up the device ID.
+      await fxAccounts.signOut();
     }
-  }
+  },
 };

@@ -9,10 +9,8 @@ const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const {
   getResponseHeader,
-  fetchNetworkUpdatePacket
+  fetchNetworkUpdatePacket,
 } = require("../utils/request-utils");
-
-const { div } = dom;
 
 /**
  * Renders a response header column in the requests list.  The actual
@@ -28,12 +26,12 @@ class RequestListColumnResponseHeader extends Component {
   }
 
   componentDidMount() {
-    let { item, connector } = this.props;
+    const { item, connector } = this.props;
     fetchNetworkUpdatePacket(connector.requestData, item, ["responseHeaders"]);
   }
 
   componentWillReceiveProps(nextProps) {
-    let { item, connector } = nextProps;
+    const { item, connector } = nextProps;
     fetchNetworkUpdatePacket(connector.requestData, item, ["responseHeaders"]);
   }
 
@@ -44,14 +42,13 @@ class RequestListColumnResponseHeader extends Component {
   }
 
   render() {
-    let header = getResponseHeader(this.props.item, this.props.header);
-    return (
-      div({
+    const header = getResponseHeader(this.props.item, this.props.header);
+    return dom.td(
+      {
         className: "requests-list-column requests-list-response-header",
-        title: header
+        title: header,
       },
-        header
-      )
+      header
     );
   }
 }

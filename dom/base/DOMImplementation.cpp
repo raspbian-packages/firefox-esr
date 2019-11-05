@@ -10,9 +10,7 @@
 #include "mozilla/dom/DOMImplementationBinding.h"
 #include "nsContentCreatorFunctions.h"
 #include "nsContentUtils.h"
-#include "nsDOMClassInfoID.h"
-#include "nsIDOMDocument.h"
-#include "DocumentType.h"
+#include "mozilla/dom/DocumentType.h"
 #include "nsTextNode.h"
 
 namespace mozilla {
@@ -31,7 +29,7 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(DOMImplementation)
 
 JSObject* DOMImplementation::WrapObject(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return DOMImplementationBinding::Wrap(aCx, this, aGivenProto);
+  return DOMImplementation_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<DocumentType> DOMImplementation::CreateDocumentType(
@@ -55,14 +53,14 @@ already_AddRefed<DocumentType> DOMImplementation::CreateDocumentType(
 
   // Indicate that there is no internal subset (not just an empty one)
   RefPtr<DocumentType> docType = NS_NewDOMDocumentType(
-      mOwner->NodeInfoManager(), name, aPublicId, aSystemId, VoidString(), aRv);
+      mOwner->NodeInfoManager(), name, aPublicId, aSystemId, VoidString());
   return docType.forget();
 }
 
 nsresult DOMImplementation::CreateDocument(const nsAString& aNamespaceURI,
                                            const nsAString& aQualifiedName,
-                                           nsIDOMDocumentType* aDoctype,
-                                           nsIDocument** aDocument) {
+                                           DocumentType* aDoctype,
+                                           Document** aDocument) {
   *aDocument = nullptr;
 
   nsresult rv;
@@ -85,10 +83,10 @@ nsresult DOMImplementation::CreateDocument(const nsAString& aNamespaceURI,
 
   NS_ENSURE_STATE(!mScriptObject || scriptHandlingObject);
 
-  nsCOMPtr<nsIDOMDocument> document;
+  nsCOMPtr<Document> doc;
 
-  rv = NS_NewDOMDocument(getter_AddRefs(document), aNamespaceURI,
-                         aQualifiedName, aDoctype, mDocumentURI, mBaseURI,
+  rv = NS_NewDOMDocument(getter_AddRefs(doc), aNamespaceURI, aQualifiedName,
+                         aDoctype, mDocumentURI, mBaseURI,
                          mOwner->NodePrincipal(), true, scriptHandlingObject,
                          DocumentFlavorLegacyGuess);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -96,7 +94,6 @@ nsresult DOMImplementation::CreateDocument(const nsAString& aNamespaceURI,
   // When DOMImplementation's createDocument method is invoked with
   // namespace set to HTML Namespace use the registry of the associated
   // document to the new instance.
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(document);
 
   if (aNamespaceURI.EqualsLiteral("http://www.w3.org/1999/xhtml")) {
     doc->SetContentType(NS_LITERAL_STRING("application/xhtml+xml"));
@@ -106,49 +103,46 @@ nsresult DOMImplementation::CreateDocument(const nsAString& aNamespaceURI,
     doc->SetContentType(NS_LITERAL_STRING("application/xml"));
   }
 
-  doc->SetReadyStateInternal(nsIDocument::READYSTATE_COMPLETE);
+  doc->SetReadyStateInternal(Document::READYSTATE_COMPLETE);
 
   doc.forget(aDocument);
   return NS_OK;
 }
 
-already_AddRefed<nsIDocument> DOMImplementation::CreateDocument(
+already_AddRefed<Document> DOMImplementation::CreateDocument(
     const nsAString& aNamespaceURI, const nsAString& aQualifiedName,
-    nsIDOMDocumentType* aDoctype, ErrorResult& aRv) {
-  nsCOMPtr<nsIDocument> document;
+    DocumentType* aDoctype, ErrorResult& aRv) {
+  nsCOMPtr<Document> document;
   aRv = CreateDocument(aNamespaceURI, aQualifiedName, aDoctype,
                        getter_AddRefs(document));
   return document.forget();
 }
 
 nsresult DOMImplementation::CreateHTMLDocument(const nsAString& aTitle,
-                                               nsIDocument** aDocument) {
+                                               Document** aDocument) {
   *aDocument = nullptr;
 
   NS_ENSURE_STATE(mOwner);
 
-  nsCOMPtr<nsIDOMDocumentType> doctype;
   // Indicate that there is no internal subset (not just an empty one)
-  nsresult rv =
-      NS_NewDOMDocumentType(getter_AddRefs(doctype), mOwner->NodeInfoManager(),
+  RefPtr<DocumentType> doctype =
+      NS_NewDOMDocumentType(mOwner->NodeInfoManager(),
                             nsGkAtoms::html,  // aName
                             EmptyString(),    // aPublicId
                             EmptyString(),    // aSystemId
                             VoidString());    // aInternalSubset
-  NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsIGlobalObject> scriptHandlingObject =
       do_QueryReferent(mScriptObject);
 
   NS_ENSURE_STATE(!mScriptObject || scriptHandlingObject);
 
-  nsCOMPtr<nsIDOMDocument> document;
-  rv = NS_NewDOMDocument(getter_AddRefs(document), EmptyString(), EmptyString(),
-                         doctype, mDocumentURI, mBaseURI,
-                         mOwner->NodePrincipal(), true, scriptHandlingObject,
-                         DocumentFlavorLegacyGuess);
+  nsCOMPtr<Document> doc;
+  nsresult rv = NS_NewDOMDocument(
+      getter_AddRefs(doc), EmptyString(), EmptyString(), doctype, mDocumentURI,
+      mBaseURI, mOwner->NodePrincipal(), true, scriptHandlingObject,
+      DocumentFlavorLegacyGuess);
   NS_ENSURE_SUCCESS(rv, rv);
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(document);
 
   nsCOMPtr<Element> root =
       doc->CreateElem(NS_LITERAL_STRING("html"), nullptr, kNameSpaceID_XHTML);
@@ -178,15 +172,15 @@ nsresult DOMImplementation::CreateHTMLDocument(const nsAString& aTitle,
   rv = root->AppendChildTo(body, false);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  doc->SetReadyStateInternal(nsIDocument::READYSTATE_COMPLETE);
+  doc->SetReadyStateInternal(Document::READYSTATE_COMPLETE);
 
   doc.forget(aDocument);
   return NS_OK;
 }
 
-already_AddRefed<nsIDocument> DOMImplementation::CreateHTMLDocument(
+already_AddRefed<Document> DOMImplementation::CreateHTMLDocument(
     const Optional<nsAString>& aTitle, ErrorResult& aRv) {
-  nsCOMPtr<nsIDocument> document;
+  nsCOMPtr<Document> document;
   aRv = CreateHTMLDocument(aTitle.WasPassed() ? aTitle.Value() : VoidString(),
                            getter_AddRefs(document));
   return document.forget();

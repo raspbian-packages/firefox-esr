@@ -6,6 +6,7 @@
 #ifndef mozilla_EditorUtils_h
 #define mozilla_EditorUtils_h
 
+#include "mozilla/ContentIterator.h"
 #include "mozilla/dom/Selection.h"
 #include "mozilla/EditAction.h"
 #include "mozilla/EditorBase.h"
@@ -13,14 +14,10 @@
 #include "mozilla/GuardObjects.h"
 #include "nsCOMPtr.h"
 #include "nsDebug.h"
-#include "nsIDOMNode.h"
 #include "nsIEditor.h"
 #include "nscore.h"
 
 class nsAtom;
-class nsIContentIterator;
-class nsIDOMDocument;
-class nsIDOMEvent;
 class nsISimpleEnumerator;
 class nsITransferable;
 class nsRange;
@@ -28,6 +25,11 @@ class nsRange;
 namespace mozilla {
 template <class T>
 class OwningNonNull;
+
+namespace dom {
+class Element;
+class Text;
+}  // namespace dom
 
 /***************************************************************************
  * EditActionResult is useful to return multiple results of an editor
@@ -45,6 +47,8 @@ class MOZ_STACK_CLASS EditActionResult final {
   nsresult Rv() const { return mRv; }
   bool Canceled() const { return mCanceled; }
   bool Handled() const { return mHandled; }
+  bool Ignored() const { return !mCanceled && !mHandled; }
+  bool EditorDestroyed() const { return mRv == NS_ERROR_EDITOR_DESTROYED; }
 
   EditActionResult SetResult(nsresult aRv) {
     mRv = aRv;
@@ -69,8 +73,13 @@ class MOZ_STACK_CLASS EditActionResult final {
     if (mRv == aOther.mRv) {
       return *this;
     }
+    // If one of the result is NS_ERROR_EDITOR_DESTROYED, use it since it's
+    // the most important error code for editor.
+    if (EditorDestroyed() || aOther.EditorDestroyed()) {
+      mRv = NS_ERROR_EDITOR_DESTROYED;
+    }
     // If one of the results is error, use NS_ERROR_FAILURE.
-    if (Failed() || aOther.Failed()) {
+    else if (Failed() || aOther.Failed()) {
       mRv = NS_ERROR_FAILURE;
     } else {
       // Otherwise, use generic success code, NS_OK.
@@ -120,7 +129,54 @@ inline EditActionResult EditActionCanceled(nsresult aRv = NS_OK) {
 }
 
 /***************************************************************************
- * SplitNodeResult is a simple class for EditorBase::SplitNodeDeep().
+ * CreateNodeResultBase is a simple class for CreateSomething() methods
+ * which want to return new node.
+ */
+template <typename NodeType>
+class CreateNodeResultBase;
+
+typedef CreateNodeResultBase<dom::Element> CreateElementResult;
+
+template <typename NodeType>
+class MOZ_STACK_CLASS CreateNodeResultBase final {
+  typedef CreateNodeResultBase<NodeType> SelfType;
+
+ public:
+  bool Succeeded() const { return NS_SUCCEEDED(mRv); }
+  bool Failed() const { return NS_FAILED(mRv); }
+  nsresult Rv() const { return mRv; }
+  NodeType* GetNewNode() const { return mNode; }
+
+  CreateNodeResultBase() = delete;
+
+  explicit CreateNodeResultBase(nsresult aRv) : mRv(aRv) {
+    MOZ_DIAGNOSTIC_ASSERT(NS_FAILED(mRv));
+  }
+
+  explicit CreateNodeResultBase(NodeType* aNode)
+      : mNode(aNode), mRv(aNode ? NS_OK : NS_ERROR_FAILURE) {}
+
+  explicit CreateNodeResultBase(already_AddRefed<NodeType>&& aNode)
+      : mNode(aNode), mRv(mNode.get() ? NS_OK : NS_ERROR_FAILURE) {}
+
+  CreateNodeResultBase(const SelfType& aOther) = delete;
+  SelfType& operator=(const SelfType& aOther) = delete;
+  CreateNodeResultBase(SelfType&& aOther) = default;
+  SelfType& operator=(SelfType&& aOther) = default;
+
+  already_AddRefed<NodeType> forget() {
+    mRv = NS_ERROR_NOT_INITIALIZED;
+    return mNode.forget();
+  }
+
+ private:
+  RefPtr<NodeType> mNode;
+  nsresult mRv;
+};
+
+/***************************************************************************
+ * SplitNodeResult is a simple class for
+ * EditorBase::SplitNodeDeepWithTransaction().
  * This makes the callers' code easier to read.
  */
 class MOZ_STACK_CLASS SplitNodeResult final {
@@ -178,23 +234,23 @@ class MOZ_STACK_CLASS SplitNodeResult final {
   /**
    * SplitPoint() returns the split point in the container.
    * This is useful when callers insert an element at split point with
-   * EditorBase::CreateNode() or something similar methods.
+   * EditorBase::CreateNodeWithTransaction() or something similar methods.
    *
    * Note that the result is EditorRawDOMPoint but the nodes are grabbed
    * by this instance.  Therefore, the life time of both container node
    * and child node are guaranteed while using the result temporarily.
    */
-  EditorRawDOMPoint SplitPoint() const {
+  EditorDOMPoint SplitPoint() const {
     if (Failed()) {
-      return EditorRawDOMPoint();
+      return EditorDOMPoint();
     }
     if (mGivenSplitPoint.IsSet()) {
-      return mGivenSplitPoint.AsRaw();
+      return EditorDOMPoint(mGivenSplitPoint);
     }
     if (!mPreviousNode) {
-      return EditorRawDOMPoint(mNextNode);
+      return EditorDOMPoint(mNextNode);
     }
-    EditorRawDOMPoint point(mPreviousNode);
+    EditorDOMPoint point(mPreviousNode);
     DebugOnly<bool> advanced = point.AdvanceOffset();
     NS_WARNING_ASSERTION(advanced,
                          "Failed to advance offset to after previous node");
@@ -258,153 +314,112 @@ class MOZ_STACK_CLASS SplitNodeResult final {
 };
 
 /***************************************************************************
- * stack based helper class for batching a collection of transactions inside a
- * placeholder transaction.
+ * SplitRangeOffFromNodeResult class is a simple class for methods which split a
+ * node at 2 points for making part of the node split off from the node.
  */
-class MOZ_RAII AutoPlaceholderBatch final {
- private:
-  RefPtr<EditorBase> mEditorBase;
-  MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
-
+class MOZ_STACK_CLASS SplitRangeOffFromNodeResult final {
  public:
-  explicit AutoPlaceholderBatch(
-      EditorBase* aEditorBase MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
-      : mEditorBase(aEditorBase) {
-    MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-    BeginPlaceholderTransaction(nullptr);
-  }
-  AutoPlaceholderBatch(EditorBase* aEditorBase,
-                       nsAtom* aTransactionName MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
-      : mEditorBase(aEditorBase) {
-    MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-    BeginPlaceholderTransaction(aTransactionName);
-  }
-  ~AutoPlaceholderBatch() {
-    if (mEditorBase) {
-      mEditorBase->EndPlaceholderTransaction();
-    }
-  }
-
- private:
-  void BeginPlaceholderTransaction(nsAtom* aTransactionName) {
-    if (mEditorBase) {
-      mEditorBase->BeginPlaceholderTransaction(aTransactionName);
-    }
-  }
-};
-
-/***************************************************************************
- * stack based helper class for saving/restoring selection.  Note that this
- * assumes that the nodes involved are still around afterwards!
- */
-class MOZ_RAII AutoSelectionRestorer final {
- private:
-  // Ref-counted reference to the selection that we are supposed to restore.
-  RefPtr<dom::Selection> mSelection;
-  EditorBase* mEditorBase;  // Non-owning ref to EditorBase.
-  MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
-
- public:
-  /**
-   * Constructor responsible for remembering all state needed to restore
-   * aSelection.
-   */
-  AutoSelectionRestorer(dom::Selection* aSelection,
-                        EditorBase* aEditorBase
-                            MOZ_GUARD_OBJECT_NOTIFIER_PARAM);
+  bool Succeeded() const { return NS_SUCCEEDED(mRv); }
+  bool Failed() const { return NS_FAILED(mRv); }
+  nsresult Rv() const { return mRv; }
 
   /**
-   * Destructor restores mSelection to its former state
+   * GetLeftContent() returns new created node before the part of quarried out.
+   * This may return nullptr if the method didn't split at start edge of
+   * the node.
    */
-  ~AutoSelectionRestorer();
+  nsIContent* GetLeftContent() const { return mLeftContent; }
+  dom::Element* GetLeftContentAsElement() const {
+    return Element::FromNodeOrNull(mLeftContent);
+  }
 
   /**
-   * Abort() cancels to restore the selection.
+   * GetMiddleContent() returns new created node between left node and right
+   * node.  I.e., this is quarried out from the node.  This may return nullptr
+   * if the method unwrapped the middle node.
    */
-  void Abort();
+  nsIContent* GetMiddleContent() const { return mMiddleContent; }
+  dom::Element* GetMiddleContentAsElement() const {
+    return Element::FromNodeOrNull(mMiddleContent);
+  }
+
+  /**
+   * GetRightContent() returns the right node after the part of quarried out.
+   * This may return nullptr it the method didn't split at end edge of the
+   * node.
+   */
+  nsIContent* GetRightContent() const { return mRightContent; }
+  dom::Element* GetRightContentAsElement() const {
+    return Element::FromNodeOrNull(mRightContent);
+  }
+
+  SplitRangeOffFromNodeResult(nsIContent* aLeftContent,
+                              nsIContent* aMiddleContent,
+                              nsIContent* aRightContent)
+      : mLeftContent(aLeftContent),
+        mMiddleContent(aMiddleContent),
+        mRightContent(aRightContent),
+        mRv(NS_OK) {}
+
+  SplitRangeOffFromNodeResult(SplitNodeResult& aSplitResultAtLeftOfMiddleNode,
+                              SplitNodeResult& aSplitResultAtRightOfMiddleNode)
+      : mRv(NS_OK) {
+    if (aSplitResultAtLeftOfMiddleNode.Succeeded()) {
+      mLeftContent = aSplitResultAtLeftOfMiddleNode.GetPreviousNode();
+    }
+    if (aSplitResultAtRightOfMiddleNode.Succeeded()) {
+      mRightContent = aSplitResultAtRightOfMiddleNode.GetNextNode();
+      mMiddleContent = aSplitResultAtRightOfMiddleNode.GetPreviousNode();
+    }
+    if (!mMiddleContent && aSplitResultAtLeftOfMiddleNode.Succeeded()) {
+      mMiddleContent = aSplitResultAtLeftOfMiddleNode.GetNextNode();
+    }
+  }
+
+  explicit SplitRangeOffFromNodeResult(nsresult aRv) : mRv(aRv) {
+    MOZ_DIAGNOSTIC_ASSERT(NS_FAILED(mRv));
+  }
+
+  SplitRangeOffFromNodeResult(const SplitRangeOffFromNodeResult& aOther) =
+      delete;
+  SplitRangeOffFromNodeResult& operator=(
+      const SplitRangeOffFromNodeResult& aOther) = delete;
+  SplitRangeOffFromNodeResult(SplitRangeOffFromNodeResult&& aOther) = default;
+  SplitRangeOffFromNodeResult& operator=(SplitRangeOffFromNodeResult&& aOther) =
+      default;
+
+ private:
+  nsCOMPtr<nsIContent> mLeftContent;
+  nsCOMPtr<nsIContent> mMiddleContent;
+  nsCOMPtr<nsIContent> mRightContent;
+
+  nsresult mRv;
+
+  SplitRangeOffFromNodeResult() = delete;
 };
 
 /***************************************************************************
- * stack based helper class for StartOperation()/EndOperation() sandwich
- */
-class MOZ_RAII AutoRules final {
+ * stack based helper class for calling EditorBase::EndTransaction() after
+ * EditorBase::BeginTransaction().  This shouldn't be used in editor classes
+ * or helper classes while an edit action is being handled.  Use
+ * AutoTransactionBatch in such cases since it uses non-virtual internal
+ * methods.
+ ***************************************************************************/
+class MOZ_RAII AutoTransactionBatchExternal final {
  public:
-  AutoRules(EditorBase* aEditorBase, EditAction aAction,
-            nsIEditor::EDirection aDirection MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
-      : mEditorBase(aEditorBase), mDoNothing(false) {
-    MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-    // mAction will already be set if this is nested call
-    if (mEditorBase && !mEditorBase->mAction) {
-      mEditorBase->StartOperation(aAction, aDirection);
-    } else {
-      mDoNothing = true;  // nested calls will end up here
-    }
-  }
-
-  ~AutoRules() {
-    if (mEditorBase && !mDoNothing) {
-      mEditorBase->EndOperation();
-    }
-  }
-
- protected:
-  EditorBase* mEditorBase;
-  bool mDoNothing;
-  MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
-};
-
-/***************************************************************************
- * stack based helper class for turning off active selection adjustment
- * by low level transactions
- */
-class MOZ_RAII AutoTransactionsConserveSelection final {
- public:
-  explicit AutoTransactionsConserveSelection(
-      EditorBase* aEditorBase MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
-      : mEditorBase(aEditorBase), mOldState(true) {
-    MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-    if (mEditorBase) {
-      mOldState = mEditorBase->GetShouldTxnSetSelection();
-      mEditorBase->SetShouldTxnSetSelection(false);
-    }
-  }
-
-  ~AutoTransactionsConserveSelection() {
-    if (mEditorBase) {
-      mEditorBase->SetShouldTxnSetSelection(mOldState);
-    }
-  }
-
- protected:
-  EditorBase* mEditorBase;
-  bool mOldState;
-  MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
-};
-
-/***************************************************************************
- * stack based helper class for batching reflow and paint requests.
- */
-class MOZ_RAII AutoUpdateViewBatch final {
- public:
-  explicit AutoUpdateViewBatch(
-      EditorBase* aEditorBase MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
+  MOZ_CAN_RUN_SCRIPT explicit AutoTransactionBatchExternal(
+      EditorBase& aEditorBase MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
       : mEditorBase(aEditorBase) {
     MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-    NS_ASSERTION(mEditorBase, "null mEditorBase pointer!");
-
-    if (mEditorBase) {
-      mEditorBase->BeginUpdateViewBatch();
-    }
+    mEditorBase.BeginTransaction();
   }
 
-  ~AutoUpdateViewBatch() {
-    if (mEditorBase) {
-      mEditorBase->EndUpdateViewBatch();
-    }
+  MOZ_CAN_RUN_SCRIPT ~AutoTransactionBatchExternal() {
+    MOZ_KnownLive(mEditorBase).EndTransaction();
   }
 
- protected:
-  EditorBase* mEditorBase;
+ private:
+  EditorBase& mEditorBase;
   MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
 };
 
@@ -437,7 +452,7 @@ class MOZ_RAII DOMIterator {
   explicit DOMIterator(MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM);
 
   explicit DOMIterator(nsINode& aNode MOZ_GUARD_OBJECT_NOTIFIER_PARAM);
-  virtual ~DOMIterator();
+  virtual ~DOMIterator() = default;
 
   nsresult Init(nsRange& aRange);
 
@@ -446,16 +461,22 @@ class MOZ_RAII DOMIterator {
       nsTArray<mozilla::OwningNonNull<nsINode>>& arrayOfNodes) const;
 
  protected:
-  nsCOMPtr<nsIContentIterator> mIter;
+  ContentIteratorBase* mIter;
+  PostContentIterator mPostOrderIter;
   MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
 };
 
 class MOZ_RAII DOMSubtreeIterator final : public DOMIterator {
  public:
   explicit DOMSubtreeIterator(MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM);
-  virtual ~DOMSubtreeIterator();
+  virtual ~DOMSubtreeIterator() = default;
 
   nsresult Init(nsRange& aRange);
+
+ private:
+  ContentSubtreeIterator mSubtreeIter;
+  explicit DOMSubtreeIterator(nsINode& aNode MOZ_GUARD_OBJECT_NOTIFIER_PARAM) =
+      delete;
 };
 
 class TrivialFunctor final : public BoolDomIterFunctor {
@@ -476,16 +497,6 @@ class EditorUtils final {
                              EditorRawDOMPoint* aOutPoint = nullptr);
   static bool IsDescendantOf(const nsINode& aNode, const nsINode& aParent,
                              EditorDOMPoint* aOutPoint);
-};
-
-class EditorHookUtils final {
- public:
-  static bool DoInsertionHook(nsIDOMDocument* aDoc, nsIDOMEvent* aEvent,
-                              nsITransferable* aTrans);
-
- private:
-  static nsresult GetHookEnumeratorFromDocument(
-      nsIDOMDocument* aDoc, nsISimpleEnumerator** aEnumerator);
 };
 
 }  // namespace mozilla

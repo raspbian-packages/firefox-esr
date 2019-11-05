@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -37,8 +37,6 @@ class GLContextEAGL : public GLContext {
     return static_cast<GLContextEAGL*>(gl);
   }
 
-  bool Init() override;
-
   bool AttachToWindow(nsIWidget* aWidget);
 
   EAGLContext* GetEAGLContext() const { return mContext; }
@@ -47,7 +45,7 @@ class GLContextEAGL : public GLContext {
 
   virtual bool IsCurrentImpl() const override;
 
-  virtual bool SetupLookupFunction() override;
+  Maybe<SymbolLoader> GetSymbolLoader() const override;
 
   virtual bool IsDoubleBuffered() const override;
 
@@ -63,10 +61,10 @@ class GLContextEAGL : public GLContext {
   }
 
  private:
-  GLuint mBackbufferRB;
-  GLuint mBackbufferFB;
+  GLuint mBackbufferRB = 0;
+  GLuint mBackbufferFB = 0;
 
-  void* mLayer;
+  void* mLayer = nullptr;
 
   bool RecreateRB();
 };

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -191,17 +191,6 @@ nsresult txStylesheetCompiler::startElementInternal(
       }
     }
 
-    // xml:base
-    if (attr->mNamespaceID == kNameSpaceID_XML &&
-        attr->mLocalName == nsGkAtoms::base && !attr->mValue.IsEmpty()) {
-      rv = ensureNewElementContext();
-      NS_ENSURE_SUCCESS(rv, rv);
-
-      nsAutoString uri;
-      URIUtils::resolveHref(attr->mValue, mElementContext->mBaseURI, uri);
-      mElementContext->mBaseURI = uri;
-    }
-
     // extension-element-prefixes
     if ((attr->mNamespaceID == kNameSpaceID_XSLT &&
          attr->mLocalName == nsGkAtoms::extensionElementPrefixes &&
@@ -308,7 +297,7 @@ nsresult txStylesheetCompiler::endElement() {
     txInScopeVariable* var = mInScopeVariables[i];
     if (!--(var->mLevel)) {
       nsAutoPtr<txInstruction> instr(new txRemoveVariable(var->mName));
-      rv = addInstruction(Move(instr));
+      rv = addInstruction(std::move(instr));
       NS_ENSURE_SUCCESS(rv, rv);
 
       mInScopeVariables.RemoveElementAt(i);
@@ -435,7 +424,7 @@ nsresult txStylesheetCompiler::ensureNewElementContext() {
   NS_ENSURE_SUCCESS(rv, rv);
 
   mElementContext.forget();
-  mElementContext = Move(context);
+  mElementContext = std::move(context);
 
   return NS_OK;
 }
@@ -476,9 +465,11 @@ txStylesheetCompilerState::txStylesheetCompilerState(
       mDisAllowed(0),
       mObserver(aObserver),
       mEmbedStatus(eNoEmbed),
+      mIsTopCompiler(false),
       mDoneWithThisStylesheet(false),
       mNextInstrPtr(nullptr),
-      mToplevelIterator(nullptr) {
+      mToplevelIterator(nullptr),
+      mReferrerPolicy(mozilla::net::RP_Unset) {
   // Embedded stylesheets have another handler, which is set in
   // txStylesheetCompiler::init if the baseURI has a fragment identifier.
   mHandlerTable = gTxRootHandler;
@@ -627,7 +618,7 @@ nsresult txStylesheetCompilerState::addToplevelItem(txToplevelItem* aItem) {
 
 nsresult txStylesheetCompilerState::openInstructionContainer(
     txInstructionContainer* aContainer) {
-  NS_PRECONDITION(!mNextInstrPtr, "can't nest instruction-containers");
+  MOZ_ASSERT(!mNextInstrPtr, "can't nest instruction-containers");
 
   mNextInstrPtr = aContainer->mFirstInstruction.StartAssignment();
   return NS_OK;
@@ -641,7 +632,7 @@ void txStylesheetCompilerState::closeInstructionContainer() {
 
 nsresult txStylesheetCompilerState::addInstruction(
     nsAutoPtr<txInstruction>&& aInstruction) {
-  NS_PRECONDITION(mNextInstrPtr, "adding instruction outside container");
+  MOZ_ASSERT(mNextInstrPtr, "adding instruction outside container");
 
   txInstruction* newInstr = aInstruction;
 
@@ -792,14 +783,12 @@ bool txErrorFunctionCall::isSensitiveTo(ContextSensitivity aContext) {
 }
 
 #ifdef TX_TO_STRING
-nsresult txErrorFunctionCall::getNameAtom(nsAtom** aAtom) {
-  NS_IF_ADDREF(*aAtom = mName);
-
-  return NS_OK;
+void txErrorFunctionCall::appendName(nsAString& aDest) {
+  aDest.Append(mName->GetUTF16String());
 }
 #endif
 
-static nsresult TX_ConstructXSLTFunction(nsAtom* aName, int32_t aNamespaceID,
+static nsresult TX_ConstructXSLTFunction(nsAtom* aName,
                                          txStylesheetCompilerState* aState,
                                          FunctionCall** aFunction) {
   if (aName == nsGkAtoms::document) {
@@ -838,105 +827,18 @@ static nsresult TX_ConstructXSLTFunction(nsAtom* aName, int32_t aNamespaceID,
   return NS_OK;
 }
 
-typedef nsresult (*txFunctionFactory)(nsAtom* aName, int32_t aNamespaceID,
-                                      txStylesheetCompilerState* aState,
-                                      FunctionCall** aResult);
-struct txFunctionFactoryMapping {
-  const char* const mNamespaceURI;
-  int32_t mNamespaceID;
-  txFunctionFactory mFactory;
-};
-
 extern nsresult TX_ConstructEXSLTFunction(nsAtom* aName, int32_t aNamespaceID,
                                           txStylesheetCompilerState* aState,
                                           FunctionCall** aResult);
 
-static txFunctionFactoryMapping kExtensionFunctions[] = {
-    {"", kNameSpaceID_Unknown, TX_ConstructXSLTFunction},
-    {"http://exslt.org/common", kNameSpaceID_Unknown,
-     TX_ConstructEXSLTFunction},
-    {"http://exslt.org/sets", kNameSpaceID_Unknown, TX_ConstructEXSLTFunction},
-    {"http://exslt.org/strings", kNameSpaceID_Unknown,
-     TX_ConstructEXSLTFunction},
-    {"http://exslt.org/math", kNameSpaceID_Unknown, TX_ConstructEXSLTFunction},
-    {"http://exslt.org/dates-and-times", kNameSpaceID_Unknown,
-     TX_ConstructEXSLTFunction}};
-
-extern nsresult TX_ResolveFunctionCallXPCOM(const nsCString& aContractID,
-                                            int32_t aNamespaceID, nsAtom* aName,
-                                            nsISupports* aState,
-                                            FunctionCall** aFunction);
-
-struct txXPCOMFunctionMapping {
-  int32_t mNamespaceID;
-  nsCString mContractID;
-};
-
-static nsTArray<txXPCOMFunctionMapping>* sXPCOMFunctionMappings = nullptr;
-
 static nsresult findFunction(nsAtom* aName, int32_t aNamespaceID,
                              txStylesheetCompilerState* aState,
                              FunctionCall** aResult) {
-  if (kExtensionFunctions[0].mNamespaceID == kNameSpaceID_Unknown) {
-    uint32_t i;
-    for (i = 0; i < ArrayLength(kExtensionFunctions); ++i) {
-      txFunctionFactoryMapping& mapping = kExtensionFunctions[i];
-      NS_ConvertASCIItoUTF16 namespaceURI(mapping.mNamespaceURI);
-      mapping.mNamespaceID = txNamespaceManager::getNamespaceID(namespaceURI);
-    }
+  if (aNamespaceID == kNameSpaceID_None) {
+    return TX_ConstructXSLTFunction(aName, aState, aResult);
   }
 
-  uint32_t i;
-  for (i = 0; i < ArrayLength(kExtensionFunctions); ++i) {
-    const txFunctionFactoryMapping& mapping = kExtensionFunctions[i];
-    if (mapping.mNamespaceID == aNamespaceID) {
-      return mapping.mFactory(aName, aNamespaceID, aState, aResult);
-    }
-  }
-
-  if (!sXPCOMFunctionMappings) {
-    sXPCOMFunctionMappings = new nsTArray<txXPCOMFunctionMapping>;
-  }
-
-  txXPCOMFunctionMapping* map = nullptr;
-  uint32_t count = sXPCOMFunctionMappings->Length();
-  for (i = 0; i < count; ++i) {
-    map = &sXPCOMFunctionMappings->ElementAt(i);
-    if (map->mNamespaceID == aNamespaceID) {
-      break;
-    }
-  }
-
-  if (i == count) {
-    nsresult rv;
-    nsCOMPtr<nsICategoryManager> catman =
-        do_GetService(NS_CATEGORYMANAGER_CONTRACTID, &rv);
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    nsAutoString namespaceURI;
-    rv = txNamespaceManager::getNamespaceURI(aNamespaceID, namespaceURI);
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    nsCString contractID;
-    rv = catman->GetCategoryEntry("XSLT-extension-functions",
-                                  NS_ConvertUTF16toUTF8(namespaceURI).get(),
-                                  getter_Copies(contractID));
-    if (rv == NS_ERROR_NOT_AVAILABLE) {
-      return NS_ERROR_XPATH_UNKNOWN_FUNCTION;
-    }
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    map = sXPCOMFunctionMappings->AppendElement();
-    if (!map) {
-      return NS_ERROR_OUT_OF_MEMORY;
-    }
-
-    map->mNamespaceID = aNamespaceID;
-    map->mContractID = contractID;
-  }
-
-  return TX_ResolveFunctionCallXPCOM(map->mContractID, aNamespaceID, aName,
-                                     nullptr, aResult);
+  return TX_ConstructEXSLTFunction(aName, aNamespaceID, aState, aResult);
 }
 
 extern bool TX_XSLTFunctionAvailable(nsAtom* aName, int32_t aNameSpaceID) {
@@ -968,12 +870,6 @@ bool txStylesheetCompilerState::caseInsensitiveNameTests() { return false; }
 
 void txStylesheetCompilerState::SetErrorOffset(uint32_t aOffset) {
   // XXX implement me
-}
-
-/* static */
-void txStylesheetCompilerState::shutdown() {
-  delete sXPCOMFunctionMappings;
-  sXPCOMFunctionMappings = nullptr;
 }
 
 txElementContext::txElementContext(const nsAString& aBaseURI)

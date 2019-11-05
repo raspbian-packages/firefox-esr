@@ -1,4 +1,4 @@
-/* Copied from devtools/client/debugger/new/debugger.css on 2017-04-03 */
+/* Copied from devtools/client/debugger/debugger.css on 2017-04-03 */
 
 .landing-page {
   flex: 1;
@@ -2278,7 +2278,7 @@ html[dir="rtl"] .editor-mount {
 
 .expression-container .close-btn {
   position: absolute;
-  offset-inline-end: 6px;
+  inset-inline-end: 6px;
   top: 6px;
 }
 
@@ -2411,7 +2411,7 @@ html .breakpoints-list .breakpoint.paused {
 
 .breakpoint .close-btn {
   position: absolute;
-  offset-inline-end: 6px;
+  inset-inline-end: 6px;
   top: 12px;
 }
 

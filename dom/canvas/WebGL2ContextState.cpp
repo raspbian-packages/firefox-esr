@@ -18,6 +18,7 @@ namespace mozilla {
 
 JS::Value WebGL2Context::GetParameter(JSContext* cx, GLenum pname,
                                       ErrorResult& rv) {
+  const FuncScope funcScope(*this, "getParameter");
   // The following cases are handled in WebGLContext::GetParameter():
   //     case LOCAL_GL_MAX_COLOR_ATTACHMENTS:
   //     case LOCAL_GL_MAX_DRAW_BUFFERS:
@@ -146,10 +147,8 @@ JS::Value WebGL2Context::GetParameter(JSContext* cx, GLenum pname,
     case LOCAL_GL_PIXEL_UNPACK_BUFFER_BINDING:
       return WebGLObjectAsJSValue(cx, mBoundPixelUnpackBuffer.get(), rv);
 
-    case LOCAL_GL_TRANSFORM_FEEDBACK_BUFFER_BINDING: {
-      const auto& tf = mBoundTransformFeedback;
-      return WebGLObjectAsJSValue(cx, tf->mGenericBufferBinding.get(), rv);
-    }
+    case LOCAL_GL_TRANSFORM_FEEDBACK_BUFFER_BINDING:
+      return WebGLObjectAsJSValue(cx, mBoundTransformFeedbackBuffer.get(), rv);
 
     case LOCAL_GL_UNIFORM_BUFFER_BINDING:
       return WebGLObjectAsJSValue(cx, mBoundUniformBuffer.get(), rv);

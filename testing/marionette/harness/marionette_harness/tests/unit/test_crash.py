@@ -6,11 +6,13 @@ from __future__ import absolute_import
 
 import glob
 import os
+import platform
 import shutil
+import unittest
 
 from marionette_driver import Wait
 from marionette_driver.errors import (
-    MarionetteException,
+    InvalidSessionIdException,
     NoSuchWindowException,
     TimeoutException
 )
@@ -84,41 +86,32 @@ class BaseCrashTestCase(MarionetteTestCase):
 
         super(BaseCrashTestCase, self).tearDown()
 
-    def crash(self, chrome=True):
-        context = 'chrome' if chrome else 'content'
-        sandbox = None if chrome else 'system'
-
+    def crash(self, parent=True):
         socket_timeout = self.marionette.client.socket_timeout
         self.marionette.client.socket_timeout = self.socket_timeout
 
-        self.marionette.set_context(context)
+        self.marionette.set_context("content")
         try:
-            self.marionette.execute_script("""
-              // Copied from crash me simple
-              Components.utils.import("resource://gre/modules/ctypes.jsm");
-
-              // ctypes checks for NULL pointer derefs, so just go near-NULL.
-              var zero = new ctypes.intptr_t(8);
-              var badptr = ctypes.cast(zero, ctypes.PointerType(ctypes.int32_t));
-              var crash = badptr.contents;
-            """, sandbox=sandbox)
+            self.marionette.navigate("about:crash{}".format("parent" if parent else "content"))
         finally:
             self.marionette.client.socket_timeout = socket_timeout
 
 
 class TestCrash(BaseCrashTestCase):
 
+    @unittest.skipIf(platform.machine() == "ARM64" and platform.system() == "Windows",
+                     "Bug 1540784 - crashreporter related issues on Windows 10 aarch64. ")
     def test_crash_chrome_process(self):
         self.assertRaisesRegexp(IOError, "Process crashed",
-                                self.crash, chrome=True)
+                                self.crash, parent=True)
 
         # A crash results in a non zero exit code
         self.assertNotIn(self.marionette.instance.runner.returncode, (None, 0))
 
         self.assertEqual(self.marionette.crashed, 1)
         self.assertIsNone(self.marionette.session)
-        self.assertRaisesRegexp(MarionetteException, 'Please start a session',
-                                self.marionette.get_url)
+        with self.assertRaisesRegexp(InvalidSessionIdException, 'Please start a session'):
+            self.marionette.get_url()
 
         self.marionette.start_session()
         self.assertNotEqual(self.marionette.process_id, self.pid)
@@ -126,13 +119,15 @@ class TestCrash(BaseCrashTestCase):
         self.marionette.get_url()
 
     @run_if_e10s("Content crashes only exist in e10s mode")
+    @unittest.skipIf(platform.machine() == "ARM64" and platform.system() == "Windows",
+                     "Bug 1540784 - crashreporter related issues on Windows 10 aarch64. ")
     def test_crash_content_process(self):
         # For a content process crash and MOZ_CRASHREPORTER_SHUTDOWN set the top
         # browsing context will be gone first. As such the raised NoSuchWindowException
         # has to be ignored. To check for the IOError, further commands have to
         # be executed until the process is gone.
         with self.assertRaisesRegexp(IOError, "Content process crashed"):
-            self.crash(chrome=False)
+            self.crash(parent=False)
             Wait(self.marionette, timeout=self.socket_timeout,
                  ignored_exceptions=NoSuchWindowException).until(
                 lambda _: self.marionette.get_url(),
@@ -145,8 +140,8 @@ class TestCrash(BaseCrashTestCase):
 
         self.assertEqual(self.marionette.crashed, 1)
         self.assertIsNone(self.marionette.session)
-        self.assertRaisesRegexp(MarionetteException, 'Please start a session',
-                                self.marionette.get_url)
+        with self.assertRaisesRegexp(InvalidSessionIdException, 'Please start a session'):
+            self.marionette.get_url()
 
         self.marionette.start_session()
         self.assertNotEqual(self.marionette.process_id, self.pid)
@@ -154,7 +149,7 @@ class TestCrash(BaseCrashTestCase):
 
     @expectedFailure
     def test_unexpected_crash(self):
-        self.crash(chrome=True)
+        self.crash(parent=True)
 
 
 class TestCrashInSetUp(BaseCrashTestCase):
@@ -163,7 +158,7 @@ class TestCrashInSetUp(BaseCrashTestCase):
         super(TestCrashInSetUp, self).setUp()
 
         self.assertRaisesRegexp(IOError, "Process crashed",
-                                self.crash, chrome=True)
+                                self.crash, parent=True)
 
         # A crash results in a non zero exit code
         self.assertNotIn(self.marionette.instance.runner.returncode, (None, 0))
@@ -171,6 +166,8 @@ class TestCrashInSetUp(BaseCrashTestCase):
         self.assertEqual(self.marionette.crashed, 1)
         self.assertIsNone(self.marionette.session)
 
+    @unittest.skipIf(platform.machine() == "ARM64" and platform.system() == "Windows",
+                     "Bug 1540784 - crashreporter related issues on Windows 10 aarch64. ")
     def test_crash_in_setup(self):
         self.marionette.start_session()
         self.assertNotEqual(self.marionette.process_id, self.pid)
@@ -181,7 +178,7 @@ class TestCrashInTearDown(BaseCrashTestCase):
     def tearDown(self):
         try:
             self.assertRaisesRegexp(IOError, "Process crashed",
-                                    self.crash, chrome=True)
+                                    self.crash, parent=True)
 
             # A crash results in a non zero exit code
             self.assertNotIn(self.marionette.instance.runner.returncode, (None, 0))
@@ -192,5 +189,7 @@ class TestCrashInTearDown(BaseCrashTestCase):
         finally:
             super(TestCrashInTearDown, self).tearDown()
 
+    @unittest.skipIf(platform.machine() == "ARM64" and platform.system() == "Windows",
+                     "Bug 1540784 - crashreporter related issues on Windows 10 aarch64. ")
     def test_crash_in_teardown(self):
         pass

@@ -83,10 +83,10 @@ class GenericRefCounted : public GenericRefCountedBase {
     detail::RefCountLogger::logRelease(ptr, cnt, type);
 #endif
     if (0 == cnt) {
-    // Because we have atomically decremented the refcount above, only
-    // one thread can get a 0 count here, so as long as we can assume that
-    // everything else in the system is accessing this object through
-    // RefPtrs, it's safe to access |this| here.
+      // Because we have atomically decremented the refcount above, only
+      // one thread can get a 0 count here, so as long as we can assume that
+      // everything else in the system is accessing this object through
+      // RefPtrs, it's safe to access |this| here.
 #ifdef DEBUG
       refCnt = detail::DEAD;
 #endif

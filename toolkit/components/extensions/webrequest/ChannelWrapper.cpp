@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,17 +10,19 @@
 #include "xpcpublic.h"
 
 #include "mozilla/BasePrincipal.h"
-#include "SystemPrincipal.h"
+#include "mozilla/SystemPrincipal.h"
 
 #include "NSSErrorsService.h"
 #include "nsITransportSecurityInfo.h"
 
 #include "mozilla/AddonManagerWebAPI.h"
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/ErrorNames.h"
 #include "mozilla/ResultExtensions.h"
 #include "mozilla/Unused.h"
+#include "mozilla/dom/Element.h"
 #include "mozilla/dom/Event.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "nsIContentPolicy.h"
 #include "nsIHttpChannelInternal.h"
 #include "nsIHttpHeaderVisitor.h"
@@ -31,6 +33,7 @@
 #include "nsIProxiedChannel.h"
 #include "nsIProxyInfo.h"
 #include "nsITraceableChannel.h"
+#include "nsIWritablePropertyBag.h"
 #include "nsIWritablePropertyBag2.h"
 #include "nsNetUtil.h"
 #include "nsProxyRelease.h"
@@ -46,11 +49,68 @@ namespace extensions {
   NS_LITERAL_STRING("ChannelWrapper::CachedInstance")
 
 /*****************************************************************************
+ * Lifetimes
+ *****************************************************************************/
+
+namespace {
+class ChannelListHolder : public LinkedList<ChannelWrapper> {
+ public:
+  ChannelListHolder() : LinkedList<ChannelWrapper>() {}
+
+  ~ChannelListHolder();
+};
+
+}  // anonymous namespace
+
+ChannelListHolder::~ChannelListHolder() {
+  while (ChannelWrapper* wrapper = popFirst()) {
+    wrapper->Die();
+  }
+}
+
+static LinkedList<ChannelWrapper>& ChannelList() {
+  static UniquePtr<ChannelListHolder> sChannelList;
+  if (!sChannelList) {
+    sChannelList.reset(new ChannelListHolder());
+    ClearOnShutdown(&sChannelList, ShutdownPhase::Shutdown);
+  }
+  return *sChannelList;
+}
+
+NS_IMPL_CYCLE_COLLECTING_ADDREF(ChannelWrapper::ChannelWrapperStub)
+NS_IMPL_CYCLE_COLLECTING_RELEASE(ChannelWrapper::ChannelWrapperStub)
+
+NS_IMPL_CYCLE_COLLECTION(ChannelWrapper::ChannelWrapperStub, mChannelWrapper)
+
+NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(ChannelWrapper::ChannelWrapperStub)
+  NS_INTERFACE_MAP_ENTRY_TEAROFF(ChannelWrapper, mChannelWrapper)
+  NS_INTERFACE_MAP_ENTRY(nsISupports)
+NS_INTERFACE_MAP_END
+
+/*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-/* static */
+ChannelWrapper::ChannelWrapper(nsISupports* aParent, nsIChannel* aChannel)
+    : ChannelHolder(aChannel), mParent(aParent) {
+  mStub = new ChannelWrapperStub(this);
 
+  ChannelList().insertBack(this);
+}
+
+ChannelWrapper::~ChannelWrapper() {
+  if (LinkedListElement<ChannelWrapper>::isInList()) {
+    LinkedListElement<ChannelWrapper>::remove();
+  }
+}
+
+void ChannelWrapper::Die() {
+  if (mStub) {
+    mStub->mChannelWrapper = nullptr;
+  }
+}
+
+/* static */
 already_AddRefed<ChannelWrapper> ChannelWrapper::Get(const GlobalObject& global,
                                                      nsIChannel* channel) {
   RefPtr<ChannelWrapper> wrapper;
@@ -70,28 +130,48 @@ already_AddRefed<ChannelWrapper> ChannelWrapper::Get(const GlobalObject& global,
   if (!wrapper) {
     wrapper = new ChannelWrapper(global.GetAsSupports(), channel);
     if (props) {
-      Unused << props->SetPropertyAsInterface(CHANNELWRAPPER_PROP_KEY, wrapper);
+      Unused << props->SetPropertyAsInterface(CHANNELWRAPPER_PROP_KEY,
+                                              wrapper->mStub);
     }
   }
 
   return wrapper.forget();
 }
 
+already_AddRefed<ChannelWrapper> ChannelWrapper::GetRegisteredChannel(
+    const GlobalObject& global, uint64_t aChannelId,
+    const WebExtensionPolicy& aAddon, nsIRemoteTab* aBrowserParent) {
+  ContentParent* contentParent = nullptr;
+  if (BrowserParent* parent = static_cast<BrowserParent*>(aBrowserParent)) {
+    contentParent = parent->Manager();
+  }
+
+  auto& webreq = WebRequestService::GetSingleton();
+
+  nsCOMPtr<nsITraceableChannel> channel =
+      webreq.GetTraceableChannel(aChannelId, aAddon.Id(), contentParent);
+  if (!channel) {
+    return nullptr;
+  }
+  nsCOMPtr<nsIChannel> chan(do_QueryInterface(channel));
+  return ChannelWrapper::Get(global, chan);
+}
+
 void ChannelWrapper::SetChannel(nsIChannel* aChannel) {
   detail::ChannelHolder::SetChannel(aChannel);
   ClearCachedAttributes();
-  ChannelWrapperBinding::ClearCachedFinalURIValue(this);
-  ChannelWrapperBinding::ClearCachedFinalURLValue(this);
+  ChannelWrapper_Binding::ClearCachedFinalURIValue(this);
+  ChannelWrapper_Binding::ClearCachedFinalURLValue(this);
   mFinalURLInfo.reset();
-  ChannelWrapperBinding::ClearCachedProxyInfoValue(this);
+  ChannelWrapper_Binding::ClearCachedProxyInfoValue(this);
 }
 
 void ChannelWrapper::ClearCachedAttributes() {
-  ChannelWrapperBinding::ClearCachedRemoteAddressValue(this);
-  ChannelWrapperBinding::ClearCachedStatusCodeValue(this);
-  ChannelWrapperBinding::ClearCachedStatusLineValue(this);
+  ChannelWrapper_Binding::ClearCachedRemoteAddressValue(this);
+  ChannelWrapper_Binding::ClearCachedStatusCodeValue(this);
+  ChannelWrapper_Binding::ClearCachedStatusLineValue(this);
   if (!mFiredErrorEvent) {
-    ChannelWrapperBinding::ClearCachedErrorStringValue(this);
+    ChannelWrapper_Binding::ClearCachedErrorStringValue(this);
   }
 }
 
@@ -300,9 +380,9 @@ already_AddRefed<nsILoadContext> ChannelWrapper::GetLoadContext() const {
   return nullptr;
 }
 
-already_AddRefed<nsIDOMElement> ChannelWrapper::GetBrowserElement() const {
+already_AddRefed<Element> ChannelWrapper::GetBrowserElement() const {
   if (nsCOMPtr<nsILoadContext> ctxt = GetLoadContext()) {
-    nsCOMPtr<nsIDOMElement> elem;
+    RefPtr<Element> elem;
     if (NS_SUCCEEDED(ctxt->GetTopFrameElement(getter_AddRefs(elem)))) {
       return elem.forget();
     }
@@ -441,7 +521,19 @@ bool ChannelWrapper::Matches(
     return false;
   }
 
+  nsCOMPtr<nsILoadInfo> loadInfo = GetLoadInfo();
+  bool isPrivate =
+      loadInfo && loadInfo->GetOriginAttributes().mPrivateBrowsingId > 0;
+  if (!aFilter.mIncognito.IsNull() && aFilter.mIncognito.Value() != isPrivate) {
+    return false;
+  }
+
   if (aExtension) {
+    // Verify extension access to private requests
+    if (isPrivate && !aExtension->PrivateBrowsingAllowed()) {
+      return false;
+    }
+
     bool isProxy =
         aOptions.mIsProxy && aExtension->HasPermission(nsGkAtoms::proxy);
     // Proxies are allowed access to all urls, including restricted urls.
@@ -574,14 +666,14 @@ nsresult ChannelWrapper::GetFrameAncestors(
  *****************************************************************************/
 
 void ChannelWrapper::RegisterTraceableChannel(const WebExtensionPolicy& aAddon,
-                                              nsITabParent* aTabParent) {
+                                              nsIRemoteTab* aBrowserParent) {
   // We can't attach new listeners after the response has started, so don't
   // bother registering anything.
   if (mResponseStarted || !CanModify()) {
     return;
   }
 
-  mAddonEntries.Put(aAddon.Id(), aTabParent);
+  mAddonEntries.Put(aAddon.Id(), aBrowserParent);
   if (!mChannelEntry) {
     mChannelEntry = WebRequestService::GetSingleton().RegisterChannel(this);
     CheckEventListeners();
@@ -589,13 +681,13 @@ void ChannelWrapper::RegisterTraceableChannel(const WebExtensionPolicy& aAddon,
 }
 
 already_AddRefed<nsITraceableChannel> ChannelWrapper::GetTraceableChannel(
-    nsAtom* aAddonId, dom::nsIContentParent* aContentParent) const {
-  nsCOMPtr<nsITabParent> tabParent;
-  if (mAddonEntries.Get(aAddonId, getter_AddRefs(tabParent))) {
-    nsIContentParent* contentParent = nullptr;
-    if (tabParent) {
-      contentParent = static_cast<nsIContentParent*>(
-          static_cast<TabParent*>(tabParent.get())->Manager());
+    nsAtom* aAddonId, dom::ContentParent* aContentParent) const {
+  nsCOMPtr<nsIRemoteTab> browserParent;
+  if (mAddonEntries.Get(aAddonId, getter_AddRefs(browserParent))) {
+    ContentParent* contentParent = nullptr;
+    if (browserParent) {
+      contentParent =
+          static_cast<BrowserParent*>(browserParent.get())->Manager();
     }
 
     if (contentParent == aContentParent) {
@@ -655,6 +747,8 @@ MozContentPolicyType GetContentPolicyType(uint32_t aType) {
       return MozContentPolicyType::Imageset;
     case nsIContentPolicy::TYPE_WEB_MANIFEST:
       return MozContentPolicyType::Web_manifest;
+    case nsIContentPolicy::TYPE_SPECULATIVE:
+      return MozContentPolicyType::Speculative;
     default:
       return MozContentPolicyType::Other;
   }
@@ -730,6 +824,9 @@ nsresult FillProxyInfo(MozProxyInfo& aDict, nsIProxyInfo* aProxyInfo) {
   MOZ_TRY(aProxyInfo->GetPort(&aDict.mPort));
   MOZ_TRY(aProxyInfo->GetType(aDict.mType));
   MOZ_TRY(aProxyInfo->GetUsername(aDict.mUsername));
+  MOZ_TRY(
+      aProxyInfo->GetProxyAuthorizationHeader(aDict.mProxyAuthorizationHeader));
+  MOZ_TRY(aProxyInfo->GetConnectionIsolationKey(aDict.mConnectionIsolationKey));
   MOZ_TRY(aProxyInfo->GetFailoverTimeout(&aDict.mFailoverTimeout.Construct()));
 
   uint32_t flags;
@@ -752,7 +849,7 @@ void ChannelWrapper::GetProxyInfo(dom::Nullable<MozProxyInfo>& aRetVal,
     if (NS_FAILED(rv)) {
       aRv.Throw(rv);
     } else {
-      aRetVal.SetValue(Move(result));
+      aRetVal.SetValue(std::move(result));
     }
   }
 }
@@ -774,7 +871,8 @@ void ChannelWrapper::GetErrorString(nsString& aRetVal) const {
     Unused << chan->GetSecurityInfo(getter_AddRefs(securityInfo));
     if (nsCOMPtr<nsITransportSecurityInfo> tsi =
             do_QueryInterface(securityInfo)) {
-      auto errorCode = tsi->GetErrorCode();
+      int32_t errorCode = 0;
+      tsi->GetErrorCode(&errorCode);
       if (psm::IsNSSErrorCode(errorCode)) {
         nsCOMPtr<nsINSSErrorsService> nsserr =
             do_GetService(NS_NSS_ERRORS_SERVICE_CONTRACTID);
@@ -806,7 +904,7 @@ void ChannelWrapper::ErrorCheck() {
     if (error.Length()) {
       mChannelEntry = nullptr;
       mFiredErrorEvent = true;
-      ChannelWrapperBinding::ClearCachedErrorStringValue(this);
+      ChannelWrapper_Binding::ClearCachedErrorStringValue(this);
       FireEvent(NS_LITERAL_STRING("error"));
     }
   }
@@ -832,8 +930,7 @@ nsresult ChannelWrapper::RequestListener::Init() {
 }
 
 NS_IMETHODIMP
-ChannelWrapper::RequestListener::OnStartRequest(nsIRequest* request,
-                                                nsISupports* aCtxt) {
+ChannelWrapper::RequestListener::OnStartRequest(nsIRequest* request) {
   MOZ_ASSERT(mOrigStreamListener, "Should have mOrigStreamListener");
 
   mChannelWrapper->mChannelEntry = nullptr;
@@ -841,12 +938,11 @@ ChannelWrapper::RequestListener::OnStartRequest(nsIRequest* request,
   mChannelWrapper->ErrorCheck();
   mChannelWrapper->FireEvent(NS_LITERAL_STRING("start"));
 
-  return mOrigStreamListener->OnStartRequest(request, aCtxt);
+  return mOrigStreamListener->OnStartRequest(request);
 }
 
 NS_IMETHODIMP
 ChannelWrapper::RequestListener::OnStopRequest(nsIRequest* request,
-                                               nsISupports* aCtxt,
                                                nsresult aStatus) {
   MOZ_ASSERT(mOrigStreamListener, "Should have mOrigStreamListener");
 
@@ -854,18 +950,17 @@ ChannelWrapper::RequestListener::OnStopRequest(nsIRequest* request,
   mChannelWrapper->ErrorCheck();
   mChannelWrapper->FireEvent(NS_LITERAL_STRING("stop"));
 
-  return mOrigStreamListener->OnStopRequest(request, aCtxt, aStatus);
+  return mOrigStreamListener->OnStopRequest(request, aStatus);
 }
 
 NS_IMETHODIMP
 ChannelWrapper::RequestListener::OnDataAvailable(nsIRequest* request,
-                                                 nsISupports* aCtxt,
                                                  nsIInputStream* inStr,
                                                  uint64_t sourceOffset,
                                                  uint32_t count) {
   MOZ_ASSERT(mOrigStreamListener, "Should have mOrigStreamListener");
-  return mOrigStreamListener->OnDataAvailable(request, aCtxt, inStr,
-                                              sourceOffset, count);
+  return mOrigStreamListener->OnDataAvailable(request, inStr, sourceOffset,
+                                              count);
 }
 
 NS_IMETHODIMP
@@ -892,8 +987,7 @@ void ChannelWrapper::FireEvent(const nsAString& aType) {
   RefPtr<Event> event = Event::Constructor(this, aType, init);
   event->SetTrusted(true);
 
-  bool defaultPrevented;
-  DispatchEvent(event, &defaultPrevented);
+  DispatchEvent(*event);
 }
 
 void ChannelWrapper::CheckEventListeners() {
@@ -921,7 +1015,7 @@ void ChannelWrapper::EventListenerRemoved(nsAtom* aType) {
  *****************************************************************************/
 
 JSObject* ChannelWrapper::WrapObject(JSContext* aCx, HandleObject aGivenProto) {
-  return ChannelWrapperBinding::Wrap(aCx, this, aGivenProto);
+  return ChannelWrapper_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(ChannelWrapper)
@@ -933,11 +1027,13 @@ NS_INTERFACE_MAP_END_INHERITING(DOMEventTargetHelper)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(ChannelWrapper,
                                                 DOMEventTargetHelper)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mParent)
+  NS_IMPL_CYCLE_COLLECTION_UNLINK(mStub)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(ChannelWrapper,
                                                   DOMEventTargetHelper)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mParent)
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mStub)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
 NS_IMPL_CYCLE_COLLECTION_TRACE_BEGIN_INHERITED(ChannelWrapper,

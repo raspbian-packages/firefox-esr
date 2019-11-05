@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -26,7 +26,7 @@ class SimpleChannel : public nsBaseChannel {
   explicit SimpleChannel(UniquePtr<SimpleChannelCallbacks>&& aCallbacks);
 
  protected:
-  virtual ~SimpleChannel() {}
+  virtual ~SimpleChannel() = default;
 
   virtual nsresult OpenContentStream(bool async, nsIInputStream** streamOut,
                                      nsIChannel** channel) override;
@@ -39,7 +39,7 @@ class SimpleChannel : public nsBaseChannel {
 };
 
 SimpleChannel::SimpleChannel(UniquePtr<SimpleChannelCallbacks>&& aCallbacks)
-    : mCallbacks(Move(aCallbacks)) {
+    : mCallbacks(std::move(aCallbacks)) {
   EnableSynthesizedProgressEvents(true);
 }
 
@@ -96,7 +96,7 @@ NS_IMPL_ISUPPORTS_INHERITED(SimpleChannelChild, SimpleChannel, nsIChildChannel)
 
 SimpleChannelChild::SimpleChannelChild(
     UniquePtr<SimpleChannelCallbacks>&& aCallbacks)
-    : SimpleChannel(Move(aCallbacks)), mIPDLRef(nullptr) {}
+    : SimpleChannel(std::move(aCallbacks)), mIPDLRef(nullptr) {}
 
 NS_IMETHODIMP
 SimpleChannelChild::ConnectParent(uint32_t aId) {
@@ -124,12 +124,8 @@ SimpleChannelChild::CompleteRedirectSetup(nsIStreamListener* aListener,
   }
 
   nsresult rv;
-  if (mLoadInfo && mLoadInfo->GetEnforceSecurity()) {
-    MOZ_ASSERT(!aContext, "aContext should be null!");
-    rv = AsyncOpen2(aListener);
-  } else {
-    rv = AsyncOpen(aListener, aContext);
-  }
+  MOZ_ASSERT(!aContext, "aContext should be null!");
+  rv = AsyncOpen(aListener);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -150,9 +146,9 @@ already_AddRefed<nsIChannel> NS_NewSimpleChannelInternal(
     UniquePtr<SimpleChannelCallbacks>&& aCallbacks) {
   RefPtr<SimpleChannel> chan;
   if (IsNeckoChild()) {
-    chan = new SimpleChannelChild(Move(aCallbacks));
+    chan = new SimpleChannelChild(std::move(aCallbacks));
   } else {
-    chan = new SimpleChannel(Move(aCallbacks));
+    chan = new SimpleChannel(std::move(aCallbacks));
   }
 
   chan->SetURI(aURI);

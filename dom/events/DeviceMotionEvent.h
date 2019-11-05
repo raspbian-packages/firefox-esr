@@ -27,7 +27,7 @@ class DeviceRotationRate final : public nsWrapperCache {
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override {
-    return DeviceRotationRateBinding::Wrap(aCx, this, aGivenProto);
+    return DeviceRotationRate_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   Nullable<double> GetAlpha() const { return mAlpha; }
@@ -54,7 +54,7 @@ class DeviceAcceleration final : public nsWrapperCache {
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override {
-    return DeviceAccelerationBinding::Wrap(aCx, this, aGivenProto);
+    return DeviceAcceleration_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   Nullable<double> GetX() const { return mX; }
@@ -77,14 +77,11 @@ class DeviceMotionEvent final : public Event {
 
   NS_DECL_ISUPPORTS_INHERITED
 
-  // Forward to Event
-  NS_FORWARD_TO_EVENT
-
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(DeviceMotionEvent, Event)
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return DeviceMotionEventBinding::Wrap(aCx, this, aGivenProto);
+    return DeviceMotionEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   DeviceAcceleration* GetAcceleration() const { return mAcceleration; }

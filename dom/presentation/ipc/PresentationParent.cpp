@@ -179,9 +179,9 @@ bool PresentationParent::DeallocPPresentationRequestParent(
 
 PPresentationBuilderParent* PresentationParent::AllocPPresentationBuilderParent(
     const nsString& aSessionId, const uint8_t& aRole) {
-  NS_NOTREACHED(
-      "We should never be manually allocating AllocPPresentationBuilderParent "
-      "actors");
+  MOZ_ASSERT_UNREACHABLE(
+      "We should never be manually allocating "
+      "AllocPPresentationBuilderParent actors");
   return nullptr;
 }
 
@@ -357,12 +357,12 @@ nsresult PresentationRequestParent::DoRequest(
 
   mSessionId = aRequest.sessionId();
 
-  nsCOMPtr<nsIDOMEventTarget> eventTarget;
+  RefPtr<EventTarget> eventTarget;
   ContentProcessManager* cpm = ContentProcessManager::GetSingleton();
-  RefPtr<TabParent> tp =
-      cpm->GetTopLevelTabParentByProcessAndTabId(mChildId, aRequest.tabId());
+  RefPtr<BrowserParent> tp = cpm->GetTopLevelBrowserParentByProcessAndTabId(
+      mChildId, aRequest.tabId());
   if (tp) {
-    eventTarget = do_QueryInterface(tp->GetOwnerElement());
+    eventTarget = tp->GetOwnerElement();
   }
 
   RefPtr<PresentationParent> parent =

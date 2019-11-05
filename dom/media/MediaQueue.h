@@ -4,16 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #if !defined(MediaQueue_h_)
-#define MediaQueue_h_
+#  define MediaQueue_h_
 
-#include "mozilla/RecursiveMutex.h"
-#include "mozilla/TaskQueue.h"
+#  include "mozilla/RecursiveMutex.h"
+#  include "mozilla/TaskQueue.h"
 
-#include "nsDeque.h"
-#include "MediaEventSource.h"
-#include "TimeUnits.h"
+#  include "nsDeque.h"
+#  include "MediaEventSource.h"
+#  include "TimeUnits.h"
 
 namespace mozilla {
+
+class AudioData;
 
 // Thread and type safe wrapper around nsDeque.
 template <class T>
@@ -40,26 +42,41 @@ class MediaQueue : private nsDeque {
 
   inline void Push(T* aItem) {
     RecursiveMutexAutoLock lock(mRecursiveMutex);
-    MOZ_ASSERT(!mEndOfStream);
-    MOZ_ASSERT(aItem);
+    MOZ_DIAGNOSTIC_ASSERT(aItem);
     NS_ADDREF(aItem);
     MOZ_ASSERT(aItem->GetEndTime() >= aItem->mTime);
     nsDeque::Push(aItem);
     mPushEvent.Notify(RefPtr<T>(aItem));
+    // Pushing new data after queue has ended means that the stream is active
+    // again, so we should not mark it as ended.
+    if (mEndOfStream) {
+      mEndOfStream = false;
+    }
   }
 
   inline already_AddRefed<T> PopFront() {
     RecursiveMutexAutoLock lock(mRecursiveMutex);
     RefPtr<T> rv = dont_AddRef(static_cast<T*>(nsDeque::PopFront()));
     if (rv) {
-      mPopEvent.Notify(rv);
+      mPopFrontEvent.Notify(rv);
     }
+    return rv.forget();
+  }
+
+  inline already_AddRefed<T> PopBack() {
+    RecursiveMutexAutoLock lock(mRecursiveMutex);
+    RefPtr<T> rv = dont_AddRef(static_cast<T*>(nsDeque::Pop()));
     return rv.forget();
   }
 
   inline RefPtr<T> PeekFront() const {
     RecursiveMutexAutoLock lock(mRecursiveMutex);
     return static_cast<T*>(nsDeque::PeekFront());
+  }
+
+  inline RefPtr<T> PeekBack() const {
+    RecursiveMutexAutoLock lock(mRecursiveMutex);
+    return static_cast<T*>(nsDeque::Peek());
   }
 
   void Reset() {
@@ -138,17 +155,19 @@ class MediaQueue : private nsDeque {
     }
   }
 
-  uint32_t FrameCount() {
+  uint32_t AudioFramesCount() {
+    static_assert(mozilla::IsSame<T, AudioData>::value,
+                  "Only usable with MediaQueue<AudioData>");
     RecursiveMutexAutoLock lock(mRecursiveMutex);
     uint32_t frames = 0;
     for (size_t i = 0; i < GetSize(); ++i) {
       T* v = static_cast<T*>(ObjectAt(i));
-      frames += v->mFrames;
+      frames += v->Frames();
     }
     return frames;
   }
 
-  MediaEventSource<RefPtr<T>>& PopEvent() { return mPopEvent; }
+  MediaEventSource<RefPtr<T>>& PopFrontEvent() { return mPopFrontEvent; }
 
   MediaEventSource<RefPtr<T>>& PushEvent() { return mPushEvent; }
 
@@ -156,7 +175,7 @@ class MediaQueue : private nsDeque {
 
  private:
   mutable RecursiveMutex mRecursiveMutex;
-  MediaEventProducer<RefPtr<T>> mPopEvent;
+  MediaEventProducer<RefPtr<T>> mPopFrontEvent;
   MediaEventProducer<RefPtr<T>> mPushEvent;
   MediaEventProducer<void> mFinishEvent;
   // True when we've decoded the last frame of data in the

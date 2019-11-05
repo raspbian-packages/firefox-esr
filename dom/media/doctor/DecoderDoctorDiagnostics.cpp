@@ -11,17 +11,16 @@
 #include "mozilla/Preferences.h"
 #include "nsContentUtils.h"
 #include "nsGkAtoms.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIObserverService.h"
 #include "nsIScriptError.h"
 #include "nsITimer.h"
-#include "nsIWeakReference.h"
 #include "nsPluginHost.h"
 #include "nsPrintfCString.h"
 #include "VideoUtils.h"
 
 #if defined(MOZ_FFMPEG)
-#include "FFmpegRuntimeLinker.h"
+#  include "FFmpegRuntimeLinker.h"
 #endif
 
 static mozilla::LazyLogModule sDecoderDoctorLog("DecoderDoctor");
@@ -45,7 +44,7 @@ namespace mozilla {
 class DecoderDoctorDocumentWatcher : public nsITimerCallback, public nsINamed {
  public:
   static already_AddRefed<DecoderDoctorDocumentWatcher> RetrieveOrCreate(
-      nsIDocument* aDocument);
+      dom::Document* aDocument);
 
   NS_DECL_ISUPPORTS
   NS_DECL_NSITIMERCALLBACK
@@ -55,7 +54,7 @@ class DecoderDoctorDocumentWatcher : public nsITimerCallback, public nsINamed {
                       const char* aCallSite);
 
  private:
-  explicit DecoderDoctorDocumentWatcher(nsIDocument* aDocument);
+  explicit DecoderDoctorDocumentWatcher(dom::Document* aDocument);
   virtual ~DecoderDoctorDocumentWatcher();
 
   // This will prevent further work from happening, watcher will deregister
@@ -74,7 +73,7 @@ class DecoderDoctorDocumentWatcher : public nsITimerCallback, public nsINamed {
 
   void SynthesizeAnalysis();
 
-  // Raw pointer to an nsIDocument.
+  // Raw pointer to a Document.
   // Must be non-null during construction.
   // Nulled when we want to stop watching, because either:
   // 1. The document has been destroyed (notified through
@@ -83,15 +82,17 @@ class DecoderDoctorDocumentWatcher : public nsITimerCallback, public nsINamed {
   //    period, so we just stop watching.
   // Once nulled, no more actual work will happen, and the watcher will be
   // destroyed soon.
-  nsIDocument* mDocument;
+  dom::Document* mDocument;
 
   struct Diagnostics {
     Diagnostics(DecoderDoctorDiagnostics&& aDiagnostics, const char* aCallSite)
-        : mDecoderDoctorDiagnostics(Move(aDiagnostics)), mCallSite(aCallSite) {}
+        : mDecoderDoctorDiagnostics(std::move(aDiagnostics)),
+          mCallSite(aCallSite) {}
     Diagnostics(const Diagnostics&) = delete;
     Diagnostics(Diagnostics&& aOther)
-        : mDecoderDoctorDiagnostics(Move(aOther.mDecoderDoctorDiagnostics)),
-          mCallSite(Move(aOther.mCallSite)) {}
+        : mDecoderDoctorDiagnostics(
+              std::move(aOther.mDecoderDoctorDiagnostics)),
+          mCallSite(std::move(aOther.mCallSite)) {}
 
     const DecoderDoctorDiagnostics mDecoderDoctorDiagnostics;
     const nsCString mCallSite;
@@ -107,7 +108,7 @@ NS_IMPL_ISUPPORTS(DecoderDoctorDocumentWatcher, nsITimerCallback, nsINamed)
 
 // static
 already_AddRefed<DecoderDoctorDocumentWatcher>
-DecoderDoctorDocumentWatcher::RetrieveOrCreate(nsIDocument* aDocument) {
+DecoderDoctorDocumentWatcher::RetrieveOrCreate(dom::Document* aDocument) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aDocument);
   RefPtr<DecoderDoctorDocumentWatcher> watcher =
@@ -132,7 +133,7 @@ DecoderDoctorDocumentWatcher::RetrieveOrCreate(nsIDocument* aDocument) {
 }
 
 DecoderDoctorDocumentWatcher::DecoderDoctorDocumentWatcher(
-    nsIDocument* aDocument)
+    dom::Document* aDocument)
     : mDocument(aDocument) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(mDocument);
@@ -180,7 +181,7 @@ void DecoderDoctorDocumentWatcher::DestroyPropertyCallback(
       static_cast<DecoderDoctorDocumentWatcher*>(aPropertyValue);
   MOZ_ASSERT(watcher);
 #ifdef DEBUG
-  nsIDocument* document = static_cast<nsIDocument*>(aObject);
+  auto* document = static_cast<dom::Document*>(aObject);
   MOZ_ASSERT(watcher->mDocument == document);
 #endif
   DD_DEBUG(
@@ -341,7 +342,7 @@ static void DispatchNotification(
   }
 }
 
-static void ReportToConsole(nsIDocument* aDocument,
+static void ReportToConsole(dom::Document* aDocument,
                             const char* aConsoleStringId,
                             nsTArray<const char16_t*>& aParams) {
   MOZ_ASSERT(NS_IsMainThread());
@@ -406,8 +407,9 @@ static bool AllowDecodeIssue(const MediaResult& aDecodeIssue,
 }
 
 static void ReportAnalysis(
-    nsIDocument* aDocument, const NotificationAndReportStringId& aNotification,
-    bool aIsSolved, const nsAString& aFormats = NS_LITERAL_STRING(""),
+    dom::Document* aDocument,
+    const NotificationAndReportStringId& aNotification, bool aIsSolved,
+    const nsAString& aFormats = NS_LITERAL_STRING(""),
     const MediaResult& aDecodeIssue = NS_OK, bool aDecodeIssueIsError = true,
     const nsACString& aDocURL = NS_LITERAL_CSTRING(""),
     const nsAString& aResourceURL = NS_LITERAL_STRING("")) {
@@ -647,8 +649,8 @@ void DecoderDoctorDocumentWatcher::SynthesizeAnalysis() {
   if (!unplayableFormats.IsEmpty()) {
     // Some requested formats cannot be played.
     if (playableFormats.IsEmpty()) {
-    // No requested formats can be played. See if we can help the user, by
-    // going through expected decoders from most to least desirable.
+      // No requested formats can be played. See if we can help the user, by
+      // going through expected decoders from most to least desirable.
 #if defined(XP_WIN)
       if (!formatsRequiringWMF.IsEmpty()) {
         DD_INFO(
@@ -764,7 +766,7 @@ void DecoderDoctorDocumentWatcher::AddDiagnostics(
       "doc=%p]::AddDiagnostics(DecoderDoctorDiagnostics{%s}, call site '%s')",
       this, mDocument, aDiagnostics.GetDescription().Data(), aCallSite);
   mDiagnosticsSequence.AppendElement(
-      Diagnostics(Move(aDiagnostics), aCallSite));
+      Diagnostics(std::move(aDiagnostics), aCallSite));
   EnsureTimerIsStarted();
 }
 
@@ -805,11 +807,11 @@ DecoderDoctorDocumentWatcher::Notify(nsITimer* timer) {
 
 NS_IMETHODIMP
 DecoderDoctorDocumentWatcher::GetName(nsACString& aName) {
-  aName.AssignASCII("DecoderDoctorDocumentWatcher_timer");
+  aName.AssignLiteral("DecoderDoctorDocumentWatcher_timer");
   return NS_OK;
 }
 
-void DecoderDoctorDiagnostics::StoreFormatDiagnostics(nsIDocument* aDocument,
+void DecoderDoctorDiagnostics::StoreFormatDiagnostics(dom::Document* aDocument,
                                                       const nsAString& aFormat,
                                                       bool aCanPlay,
                                                       const char* aCallSite) {
@@ -820,14 +822,14 @@ void DecoderDoctorDiagnostics::StoreFormatDiagnostics(nsIDocument* aDocument,
 
   if (NS_WARN_IF(!aDocument)) {
     DD_WARN(
-        "DecoderDoctorDiagnostics[%p]::StoreFormatDiagnostics(nsIDocument* "
+        "DecoderDoctorDiagnostics[%p]::StoreFormatDiagnostics(Document* "
         "aDocument=nullptr, format='%s', can-play=%d, call site '%s')",
         this, NS_ConvertUTF16toUTF8(aFormat).get(), aCanPlay, aCallSite);
     return;
   }
   if (NS_WARN_IF(aFormat.IsEmpty())) {
     DD_WARN(
-        "DecoderDoctorDiagnostics[%p]::StoreFormatDiagnostics(nsIDocument* "
+        "DecoderDoctorDiagnostics[%p]::StoreFormatDiagnostics(Document* "
         "aDocument=%p, format=<empty>, can-play=%d, call site '%s')",
         this, aDocument, aCanPlay, aCallSite);
     return;
@@ -838,7 +840,7 @@ void DecoderDoctorDiagnostics::StoreFormatDiagnostics(nsIDocument* aDocument,
 
   if (NS_WARN_IF(!watcher)) {
     DD_WARN(
-        "DecoderDoctorDiagnostics[%p]::StoreFormatDiagnostics(nsIDocument* "
+        "DecoderDoctorDiagnostics[%p]::StoreFormatDiagnostics(Document* "
         "aDocument=%p, format='%s', can-play=%d, call site '%s') - Could not "
         "create document watcher",
         this, aDocument, NS_ConvertUTF16toUTF8(aFormat).get(), aCanPlay,
@@ -850,15 +852,15 @@ void DecoderDoctorDiagnostics::StoreFormatDiagnostics(nsIDocument* aDocument,
   mCanPlay = aCanPlay;
 
   // StoreDiagnostics should only be called once, after all data is available,
-  // so it is safe to Move() from this object.
-  watcher->AddDiagnostics(Move(*this), aCallSite);
+  // so it is safe to std::move() from this object.
+  watcher->AddDiagnostics(std::move(*this), aCallSite);
   // Even though it's moved-from, the type should stay set
   // (Only used to ensure that we do store only once.)
   MOZ_ASSERT(mDiagnosticsType == eFormatSupportCheck);
 }
 
 void DecoderDoctorDiagnostics::StoreMediaKeySystemAccess(
-    nsIDocument* aDocument, const nsAString& aKeySystem, bool aIsSupported,
+    dom::Document* aDocument, const nsAString& aKeySystem, bool aIsSupported,
     const char* aCallSite) {
   MOZ_ASSERT(NS_IsMainThread());
   // Make sure we only store once.
@@ -867,14 +869,14 @@ void DecoderDoctorDiagnostics::StoreMediaKeySystemAccess(
 
   if (NS_WARN_IF(!aDocument)) {
     DD_WARN(
-        "DecoderDoctorDiagnostics[%p]::StoreMediaKeySystemAccess(nsIDocument* "
+        "DecoderDoctorDiagnostics[%p]::StoreMediaKeySystemAccess(Document* "
         "aDocument=nullptr, keysystem='%s', supported=%d, call site '%s')",
         this, NS_ConvertUTF16toUTF8(aKeySystem).get(), aIsSupported, aCallSite);
     return;
   }
   if (NS_WARN_IF(aKeySystem.IsEmpty())) {
     DD_WARN(
-        "DecoderDoctorDiagnostics[%p]::StoreMediaKeySystemAccess(nsIDocument* "
+        "DecoderDoctorDiagnostics[%p]::StoreMediaKeySystemAccess(Document* "
         "aDocument=%p, keysystem=<empty>, supported=%d, call site '%s')",
         this, aDocument, aIsSupported, aCallSite);
     return;
@@ -885,7 +887,7 @@ void DecoderDoctorDiagnostics::StoreMediaKeySystemAccess(
 
   if (NS_WARN_IF(!watcher)) {
     DD_WARN(
-        "DecoderDoctorDiagnostics[%p]::StoreMediaKeySystemAccess(nsIDocument* "
+        "DecoderDoctorDiagnostics[%p]::StoreMediaKeySystemAccess(Document* "
         "aDocument=%p, keysystem='%s', supported=%d, call site '%s') - Could "
         "not create document watcher",
         this, aDocument, NS_ConvertUTF16toUTF8(aKeySystem).get(), aIsSupported,
@@ -897,14 +899,14 @@ void DecoderDoctorDiagnostics::StoreMediaKeySystemAccess(
   mIsKeySystemSupported = aIsSupported;
 
   // StoreMediaKeySystemAccess should only be called once, after all data is
-  // available, so it is safe to Move() from this object.
-  watcher->AddDiagnostics(Move(*this), aCallSite);
+  // available, so it is safe to std::move() from this object.
+  watcher->AddDiagnostics(std::move(*this), aCallSite);
   // Even though it's moved-from, the type should stay set
   // (Only used to ensure that we do store only once.)
   MOZ_ASSERT(mDiagnosticsType == eMediaKeySystemAccessRequest);
 }
 
-void DecoderDoctorDiagnostics::StoreEvent(nsIDocument* aDocument,
+void DecoderDoctorDiagnostics::StoreEvent(dom::Document* aDocument,
                                           const DecoderDoctorEvent& aEvent,
                                           const char* aCallSite) {
   MOZ_ASSERT(NS_IsMainThread());
@@ -915,13 +917,13 @@ void DecoderDoctorDiagnostics::StoreEvent(nsIDocument* aDocument,
 
   if (NS_WARN_IF(!aDocument)) {
     DD_WARN(
-        "DecoderDoctorDiagnostics[%p]::StoreEvent(nsIDocument* "
+        "DecoderDoctorDiagnostics[%p]::StoreEvent(Document* "
         "aDocument=nullptr, aEvent=%s, call site '%s')",
         this, GetDescription().get(), aCallSite);
     return;
   }
 
-    // Don't keep events for later processing, just handle them now.
+  // Don't keep events for later processing, just handle them now.
 #ifdef MOZ_PULSEAUDIO
   switch (aEvent.mDomain) {
     case DecoderDoctorEvent::eAudioSinkStartup:
@@ -945,7 +947,7 @@ void DecoderDoctorDiagnostics::StoreEvent(nsIDocument* aDocument,
 #endif  // MOZ_PULSEAUDIO
 }
 
-void DecoderDoctorDiagnostics::StoreDecodeError(nsIDocument* aDocument,
+void DecoderDoctorDiagnostics::StoreDecodeError(dom::Document* aDocument,
                                                 const MediaResult& aError,
                                                 const nsString& aMediaSrc,
                                                 const char* aCallSite) {
@@ -957,7 +959,7 @@ void DecoderDoctorDiagnostics::StoreDecodeError(nsIDocument* aDocument,
   if (NS_WARN_IF(!aDocument)) {
     DD_WARN(
         "DecoderDoctorDiagnostics[%p]::StoreDecodeError("
-        "nsIDocument* aDocument=nullptr, aError=%s,"
+        "Document* aDocument=nullptr, aError=%s,"
         " aMediaSrc=<provided>, call site '%s')",
         this, aError.Description().get(), aCallSite);
     return;
@@ -969,7 +971,7 @@ void DecoderDoctorDiagnostics::StoreDecodeError(nsIDocument* aDocument,
   if (NS_WARN_IF(!watcher)) {
     DD_WARN(
         "DecoderDoctorDiagnostics[%p]::StoreDecodeError("
-        "nsIDocument* aDocument=%p, aError='%s', aMediaSrc=<provided>,"
+        "Document* aDocument=%p, aError='%s', aMediaSrc=<provided>,"
         " call site '%s') - Could not create document watcher",
         this, aDocument, aError.Description().get(), aCallSite);
     return;
@@ -979,14 +981,14 @@ void DecoderDoctorDiagnostics::StoreDecodeError(nsIDocument* aDocument,
   mDecodeIssueMediaSrc = aMediaSrc;
 
   // StoreDecodeError should only be called once, after all data is
-  // available, so it is safe to Move() from this object.
-  watcher->AddDiagnostics(Move(*this), aCallSite);
+  // available, so it is safe to std::move() from this object.
+  watcher->AddDiagnostics(std::move(*this), aCallSite);
   // Even though it's moved-from, the type should stay set
   // (Only used to ensure that we do store only once.)
   MOZ_ASSERT(mDiagnosticsType == eDecodeError);
 }
 
-void DecoderDoctorDiagnostics::StoreDecodeWarning(nsIDocument* aDocument,
+void DecoderDoctorDiagnostics::StoreDecodeWarning(dom::Document* aDocument,
                                                   const MediaResult& aWarning,
                                                   const nsString& aMediaSrc,
                                                   const char* aCallSite) {
@@ -998,7 +1000,7 @@ void DecoderDoctorDiagnostics::StoreDecodeWarning(nsIDocument* aDocument,
   if (NS_WARN_IF(!aDocument)) {
     DD_WARN(
         "DecoderDoctorDiagnostics[%p]::StoreDecodeWarning("
-        "nsIDocument* aDocument=nullptr, aWarning=%s,"
+        "Document* aDocument=nullptr, aWarning=%s,"
         " aMediaSrc=<provided>, call site '%s')",
         this, aWarning.Description().get(), aCallSite);
     return;
@@ -1010,7 +1012,7 @@ void DecoderDoctorDiagnostics::StoreDecodeWarning(nsIDocument* aDocument,
   if (NS_WARN_IF(!watcher)) {
     DD_WARN(
         "DecoderDoctorDiagnostics[%p]::StoreDecodeWarning("
-        "nsIDocument* aDocument=%p, aWarning='%s', aMediaSrc=<provided>,"
+        "Document* aDocument=%p, aWarning='%s', aMediaSrc=<provided>,"
         " call site '%s') - Could not create document watcher",
         this, aDocument, aWarning.Description().get(), aCallSite);
     return;
@@ -1020,8 +1022,8 @@ void DecoderDoctorDiagnostics::StoreDecodeWarning(nsIDocument* aDocument,
   mDecodeIssueMediaSrc = aMediaSrc;
 
   // StoreDecodeWarning should only be called once, after all data is
-  // available, so it is safe to Move() from this object.
-  watcher->AddDiagnostics(Move(*this), aCallSite);
+  // available, so it is safe to std::move() from this object.
+  watcher->AddDiagnostics(std::move(*this), aCallSite);
   // Even though it's moved-from, the type should stay set
   // (Only used to ensure that we do store only once.)
   MOZ_ASSERT(mDiagnosticsType == eDecodeWarning);

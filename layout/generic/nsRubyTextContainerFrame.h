@@ -11,12 +11,16 @@
 
 #include "nsBlockFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 /**
  * Factory function.
  * @return a newly allocated nsRubyTextContainerFrame (infallible)
  */
-nsContainerFrame* NS_NewRubyTextContainerFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext);
+nsContainerFrame* NS_NewRubyTextContainerFrame(mozilla::PresShell* aPresShell,
+                                               mozilla::ComputedStyle* aStyle);
 
 class nsRubyTextContainerFrame final : public nsContainerFrame {
  public:
@@ -48,10 +52,11 @@ class nsRubyTextContainerFrame final : public nsContainerFrame {
 
  protected:
   friend nsContainerFrame* NS_NewRubyTextContainerFrame(
-      nsIPresShell* aPresShell, nsStyleContext* aContext);
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
 
-  explicit nsRubyTextContainerFrame(nsStyleContext* aContext)
-      : nsContainerFrame(aContext, kClassID), mISize(0) {}
+  explicit nsRubyTextContainerFrame(ComputedStyle* aStyle,
+                                    nsPresContext* aPresContext)
+      : nsContainerFrame(aStyle, aPresContext, kClassID), mISize(0) {}
 
   void UpdateSpanFlag();
 

@@ -19,6 +19,8 @@
 #include "nsIScriptError.h"
 #include "nsString.h"
 
+class nsGlobalWindowInner;
+
 class nsScriptErrorNote final : public nsIScriptErrorNote {
  public:
   nsScriptErrorNote();
@@ -27,14 +29,16 @@ class nsScriptErrorNote final : public nsIScriptErrorNote {
   NS_DECL_NSISCRIPTERRORNOTE
 
   void Init(const nsAString& message, const nsAString& sourceName,
-            uint32_t lineNumber, uint32_t columnNumber);
+            uint32_t sourceId, uint32_t lineNumber, uint32_t columnNumber);
 
  private:
   virtual ~nsScriptErrorNote();
 
   nsString mMessage;
   nsString mSourceName;
+  nsString mCssSelectors;
   nsString mSourceLine;
+  uint32_t mSourceId;
   uint32_t mLineNumber;
   uint32_t mColumnNumber;
 };
@@ -48,6 +52,10 @@ class nsScriptErrorBase : public nsIScriptError {
   NS_DECL_NSISCRIPTERROR
 
   void AddNote(nsIScriptErrorNote* note);
+
+  static bool ComputeIsFromPrivateWindow(nsGlobalWindowInner* aWindow);
+
+  static bool ComputeIsFromChromeContext(nsGlobalWindowInner* aWindow);
 
  protected:
   virtual ~nsScriptErrorBase();
@@ -64,6 +72,8 @@ class nsScriptErrorBase : public nsIScriptError {
   nsString mMessage;
   nsString mMessageName;
   nsString mSourceName;
+  nsString mCssSelectors;
+  uint32_t mSourceId;
   uint32_t mLineNumber;
   nsString mSourceLine;
   uint32_t mColumnNumber;
@@ -73,10 +83,12 @@ class nsScriptErrorBase : public nsIScriptError {
   uint64_t mOuterWindowID;
   uint64_t mInnerWindowID;
   int64_t mTimeStamp;
-  // mInitializedOnMainThread and mIsFromPrivateWindow are set on the main
-  // thread from InitializeOnMainThread().
+  uint64_t mTimeWarpTarget;
+  // mInitializedOnMainThread, mIsFromPrivateWindow and mIsFromChromeContext are
+  // set on the main thread from InitializeOnMainThread().
   mozilla::Atomic<bool> mInitializedOnMainThread;
   bool mIsFromPrivateWindow;
+  bool mIsFromChromeContext;
 };
 
 class nsScriptError final : public nsScriptErrorBase {
@@ -90,24 +102,23 @@ class nsScriptError final : public nsScriptErrorBase {
 
 class nsScriptErrorWithStack : public nsScriptErrorBase {
  public:
-  explicit nsScriptErrorWithStack(JS::HandleObject);
+  nsScriptErrorWithStack(JS::HandleObject aStack,
+                         JS::HandleObject aStackGlobal);
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(nsScriptErrorWithStack)
 
-  NS_IMETHOD Init(const nsAString& message, const nsAString& sourceName,
-                  const nsAString& sourceLine, uint32_t lineNumber,
-                  uint32_t columnNumber, uint32_t flags,
-                  const char* category) override;
-
   NS_IMETHOD GetStack(JS::MutableHandleValue) override;
+  NS_IMETHOD GetStackGlobal(JS::MutableHandleValue) override;
   NS_IMETHOD ToString(nsACString& aResult) override;
 
  private:
   virtual ~nsScriptErrorWithStack();
   // Complete stackframe where the error happened.
-  // Must be SavedFrame object.
+  // Must be a (possibly wrapped) SavedFrame object.
   JS::Heap<JSObject*> mStack;
+  // Global object that must be same-compartment with mStack.
+  JS::Heap<JSObject*> mStackGlobal;
 };
 
 #endif /* mozilla_dom_nsScriptError_h */

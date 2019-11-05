@@ -8,9 +8,9 @@ include('../templates.mozbuild')
 
 DIRS += [
     'aboutdebugging',
-    'animationinspector',
-    'canvasdebugger',
-    'commandline',
+    'aboutdebugging-new',
+    'accessibility',
+    'application',
     'debugger',
     'dom',
     'framework',
@@ -24,15 +24,13 @@ DIRS += [
     'preferences',
     'responsive.html',
     'scratchpad',
-    'shadereditor',
     'shared',
-    'sourceeditor',
     'storage',
     'styleeditor',
     'themes',
-    'webaudioeditor',
     'webconsole',
     'webide',
+    'webreplay',
 ]
 
 JAR_MANIFESTS += ['jar.mn']
@@ -43,4 +41,4 @@ DevToolsModules(
 )
 
 with Files('**'):
-    BUG_COMPONENT = ('Firefox', 'Developer Tools')
+    BUG_COMPONENT = ('DevTools', 'General')

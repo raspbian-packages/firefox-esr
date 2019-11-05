@@ -16,7 +16,6 @@
 #include "nsPresContext.h"
 #include "nsCOMPtr.h"
 #include "nsIContent.h"
-#include "nsIPresShell.h"
 #include "nsContainerFrame.h"
 #include "nsBoxFrame.h"
 #include "StackArena.h"
@@ -24,12 +23,6 @@
 #include <algorithm>
 
 nsBoxLayout* nsSprocketLayout::gInstance = nullptr;
-
-//#define DEBUG_GROW
-
-#define DEBUG_SPRING_SIZE 8
-#define DEBUG_BORDER_SIZE 2
-#define COIL_SIZE 8
 
 nsresult NS_NewSprocketLayout(nsCOMPtr<nsBoxLayout>& aNewLayout) {
   if (!nsSprocketLayout::gInstance) {
@@ -41,7 +34,8 @@ nsresult NS_NewSprocketLayout(nsCOMPtr<nsBoxLayout>& aNewLayout) {
   return NS_OK;
 }
 
-/*static*/ void nsSprocketLayout::Shutdown() { NS_IF_RELEASE(gInstance); }
+/*static*/
+void nsSprocketLayout::Shutdown() { NS_IF_RELEASE(gInstance); }
 
 nsSprocketLayout::nsSprocketLayout() {}
 
@@ -62,8 +56,8 @@ static void HandleBoxPack(nsIFrame* aBox, const nsFrameState& aFrameState,
                           const nsRect& aClientRect) {
   // In the normal direction we lay out our kids in the positive direction
   // (e.g., |x| will get bigger for a horizontal box, and |y| will get bigger
-  // for a vertical box).  In the reverse direction, the opposite is true.
-  // We'll be laying out each child at a smaller |x| or |y|.
+  // for a vertical box).  In the reverse direction, the opposite is true. We'll
+  // be laying out each child at a smaller |x| or |y|.
   uint8_t frameDirection = GetFrameDirection(aBox);
 
   if (aFrameState & NS_STATE_IS_HORIZONTAL) {
@@ -286,7 +280,7 @@ nsSprocketLayout::XULLayout(nsIFrame* aBox, nsBoxLayoutState& aState) {
       // If for some reason, our lists are not the same length, we guard
       // by bailing out of the loop.
       if (childBoxSize == nullptr) {
-        NS_NOTREACHED("Lists not the same length.");
+        MOZ_ASSERT_UNREACHABLE("Lists not the same length.");
         break;
       }
 
@@ -464,7 +458,6 @@ nsSprocketLayout::XULLayout(nsIFrame* aBox, nsBoxLayoutState& aState) {
 
       if (!newChildRect.IsEqualInterior(childRect)) {
 #ifdef DEBUG_GROW
-        child->XULDumpBox(stdout);
         printf(" GREW from (%d,%d) -> (%d,%d)\n", childRect.width,
                childRect.height, newChildRect.width, newChildRect.height);
 #endif
@@ -622,9 +615,6 @@ void nsSprocketLayout::PopulateBoxSizes(nsIFrame* aBox,
 
   nsFrameState frameState = nsFrameState(0);
   GetFrameState(aBox, frameState);
-
-  // if (frameState & NS_STATE_CURRENTLY_IN_DEBUG)
-  //   printf("In debug\n");
 
   aMinSize = 0;
   aMaxSize = NS_INTRINSICSIZE;
@@ -871,8 +861,8 @@ void nsSprocketLayout::AlignChildren(nsIFrame* aBox, nsBoxLayoutState& aState) {
   nsRect clientRect;
   aBox->GetXULClientRect(clientRect);
 
-  NS_PRECONDITION(!(frameState & NS_STATE_AUTO_STRETCH),
-                  "Only AlignChildren() with non-stretch alignment");
+  MOZ_ASSERT(!(frameState & NS_STATE_AUTO_STRETCH),
+             "Only AlignChildren() with non-stretch alignment");
 
   // These are only calculated if needed
   nsIFrame::Halignment halign;

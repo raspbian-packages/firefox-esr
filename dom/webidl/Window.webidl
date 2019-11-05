@@ -15,30 +15,29 @@
  * http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html
  * https://w3c.github.io/webappsec-secure-contexts/#monkey-patching-global-object
  * https://w3c.github.io/requestidlecallback/
- * https://webaudio.github.io/web-audio-api/#widl-Window-audioWorklet
  * https://drafts.css-houdini.org/css-paint-api-1/#dom-window-paintworklet
+ * https://wicg.github.io/visual-viewport/#the-visualviewport-interface
  */
 
-interface ApplicationCache;
-interface IID;
 interface nsIBrowserDOMWindow;
-interface nsIMessageBroadcaster;
 interface XULControllers;
+interface nsIDOMWindowUtils;
+
+typedef OfflineResourceList ApplicationCache;
 
 // http://www.whatwg.org/specs/web-apps/current-work/
 [PrimaryGlobal, LegacyUnenumerableNamedProperties, NeedResolve]
 /*sealed*/ interface Window : EventTarget {
   // the current browsing context
   [Unforgeable, Constant, StoreInSlot,
-   CrossOriginReadable] readonly attribute Window window;
+   CrossOriginReadable] readonly attribute WindowProxy window;
   [Replaceable, Constant, StoreInSlot,
-   CrossOriginReadable] readonly attribute Window self;
+   CrossOriginReadable] readonly attribute WindowProxy self;
   [Unforgeable, StoreInSlot, Pure] readonly attribute Document? document;
   [Throws] attribute DOMString name;
-  [PutForwards=href, Unforgeable, BinaryName="getLocation",
-   CrossOriginReadable, CrossOriginWritable] readonly attribute Location location;
+  [PutForwards=href, Unforgeable, CrossOriginReadable,
+   CrossOriginWritable] readonly attribute Location location;
   [Throws] readonly attribute History history;
-  [Func="CustomElementRegistry::IsCustomElementEnabled"]
   readonly attribute CustomElementRegistry customElements;
   [Replaceable, Throws] readonly attribute BarProp locationbar;
   [Replaceable, Throws] readonly attribute BarProp menubar;
@@ -47,11 +46,12 @@ interface XULControllers;
   [Replaceable, Throws] readonly attribute BarProp statusbar;
   [Replaceable, Throws] readonly attribute BarProp toolbar;
   [Throws] attribute DOMString status;
-  [Throws, CrossOriginCallable] void close();
+  [Throws, CrossOriginCallable, NeedsCallerType] void close();
   [Throws, CrossOriginReadable] readonly attribute boolean closed;
   [Throws] void stop();
   [Throws, CrossOriginCallable] void focus();
   [Throws, CrossOriginCallable] void blur();
+  [Replaceable, Pref="dom.window.event.enabled"] readonly attribute any event;
 
   // other browsing contexts
   [Replaceable, Throws, CrossOriginReadable] readonly attribute WindowProxy frames;
@@ -63,7 +63,7 @@ interface XULControllers;
   [Replaceable, Throws, CrossOriginReadable] readonly attribute WindowProxy? parent;
   [Throws, NeedsSubjectPrincipal] readonly attribute Element? frameElement;
   //[Throws] WindowProxy? open(optional USVString url = "about:blank", optional DOMString target = "_blank", [TreatNullAs=EmptyString] optional DOMString features = "");
-  [Throws] WindowProxy? open(optional DOMString url = "", optional DOMString target = "", [TreatNullAs=EmptyString] optional DOMString features = "");
+  [Throws] WindowProxy? open(optional DOMString url = "", optional DOMString target = "", optional [TreatNullAs=EmptyString] DOMString features = "");
   getter object (DOMString name);
 
   // the user agent
@@ -83,6 +83,8 @@ interface XULControllers;
 
   [Throws, CrossOriginCallable, NeedsSubjectPrincipal]
   void postMessage(any message, DOMString targetOrigin, optional sequence<object> transfer = []);
+  [Throws, CrossOriginCallable, NeedsSubjectPrincipal]
+  void postMessage(any message, optional WindowPostMessageOptions options);
 
   // also has obsolete members
 };
@@ -186,6 +188,10 @@ partial interface Window {
   [Replaceable, Throws] readonly attribute double scrollY;
   [Replaceable, Throws] readonly attribute double pageYOffset;
 
+  // Aliases for screenX / screenY.
+  [Replaceable, Throws, NeedsCallerType] readonly attribute double screenLeft;
+  [Replaceable, Throws, NeedsCallerType] readonly attribute double screenTop;
+
   // client
   // These are writable because we allow chrome to write them.  And they need
   // to use 'any' as the type, because non-chrome writing them needs to act
@@ -254,6 +260,8 @@ partial interface Window {
 
   [ChromeOnly, Throws] readonly attribute Element? realFrameElement;
 
+  [ChromeOnly] readonly attribute nsIDocShell? docShell;
+
   [Throws, NeedsCallerType]
   readonly attribute float mozInnerScreenX;
   [Throws, NeedsCallerType]
@@ -269,10 +277,6 @@ partial interface Window {
   [Replaceable, Throws] readonly attribute long   scrollMaxY;
 
   [Throws] attribute boolean fullScreen;
-
-  [Throws, ChromeOnly] void back();
-  [Throws, ChromeOnly] void forward();
-  [Throws, ChromeOnly, NeedsSubjectPrincipal] void home();
 
   // XXX Should this be in nsIDOMChromeWindow?
   void                      updateCommands(DOMString action,
@@ -335,7 +339,7 @@ partial interface Window {
    NonEnumerable, Replaceable, Throws, NeedsCallerType]
   readonly attribute object? content;
 
-  [Throws, ChromeOnly] any getInterface(IID iid);
+  [Throws, ChromeOnly] any getInterface(any iid);
 
   /**
    * Same as nsIDOMWindow.windowRoot, useful for event listener targeting.
@@ -349,6 +353,26 @@ partial interface Window {
    */
   [ChromeOnly]
   boolean shouldReportForServiceWorkerScope(USVString aScope);
+
+  /**
+   * InstallTrigger is used for extension installs.  Ideally it would
+   * be something like a WebIDL namespace, but we don't support
+   * JS-implemented static things yet.  See bug 863952.
+   */
+  [Replaceable]
+  readonly attribute InstallTriggerImpl? InstallTrigger;
+
+  /**
+   * Get the nsIDOMWindowUtils for this window.
+   */
+  [Constant, Throws, ChromeOnly]
+  readonly attribute nsIDOMWindowUtils windowUtils;
+
+  [ChromeOnly]
+  readonly attribute boolean hasOpenerForInitialContentBrowser;
+
+  [ChromeOnly]
+  WindowGlobalChild getWindowGlobalChild();
 };
 
 Window implements TouchEventHandlers;
@@ -367,11 +391,12 @@ partial interface Window {
 #ifdef HAVE_SIDEBAR
 // Mozilla extension
 partial interface Window {
-  [Replaceable, Throws, UseCounter]
+  [Replaceable, Throws, UseCounter, Pref="dom.sidebar.enabled"]
   readonly attribute (External or WindowProxy) sidebar;
 };
 #endif
 
+[MOZ_CAN_RUN_SCRIPT_BOUNDARY]
 callback PromiseDocumentFlushedCallback = any ();
 
 // Mozilla extensions for Chrome windows.
@@ -423,28 +448,15 @@ partial interface Window {
   [Throws, Func="nsGlobalWindowInner::IsPrivilegedChromeWindow"]
   void notifyDefaultButtonLoaded(Element defaultButton);
 
-  [Throws, Func="nsGlobalWindowInner::IsPrivilegedChromeWindow"]
-  readonly attribute nsIMessageBroadcaster messageManager;
+  [Func="nsGlobalWindowInner::IsPrivilegedChromeWindow"]
+  readonly attribute ChromeMessageBroadcaster messageManager;
 
   /**
    * Returns the message manager identified by the given group name that
    * manages all frame loaders belonging to that group.
    */
-  [Throws, Func="nsGlobalWindowInner::IsPrivilegedChromeWindow"]
-  nsIMessageBroadcaster getGroupMessageManager(DOMString aGroup);
-
-  /**
-   * On some operating systems, we must allow the window manager to
-   * handle window dragging. This function tells the window manager to
-   * start dragging the window. This function will fail unless called
-   * while the left mouse button is held down, callers must check this.
-   *
-   * The optional panel argument should be set when moving a panel.
-   *
-   * Throws NS_ERROR_NOT_IMPLEMENTED if the OS doesn't support this.
-   */
-  [Throws, Func="nsGlobalWindowInner::IsPrivilegedChromeWindow"]
-  void beginWindowMove(Event mouseDownEvent, optional Element? panel = null);
+  [Func="nsGlobalWindowInner::IsPrivilegedChromeWindow"]
+  ChromeMessageBroadcaster getGroupMessageManager(DOMString aGroup);
 
   /**
    * Calls the given function as soon as a style or layout flush for the
@@ -454,6 +466,11 @@ partial interface Window {
    * In the event that the window goes away before a flush can occur, the
    * callback will still be called and the Promise resolved as the window
    * tears itself down.
+   *
+   * The callback _must not modify the DOM for any window in any way_. If it
+   * does, after finishing executing, the Promise returned by
+   * promiseDocumentFlushed will reject with
+   * NS_ERROR_DOM_NO_MODIFICATION_ALLOWED_ERR.
    *
    * Note that the callback can be called either synchronously or asynchronously
    * depending on whether or not flushes are pending:
@@ -469,6 +486,21 @@ partial interface Window {
    * be fired first (and in the order that they were queued) and then the
    * Promise resolution handlers will all be invoked later on during the
    * next microtask checkpoint.
+   *
+   * Using window.top.promiseDocumentFlushed in combination with a callback
+   * that is querying items in a window that might be swapped out via
+   * nsFrameLoader::SwapWithOtherLoader is highly discouraged. For example:
+   *
+   *   let result = await window.top.promiseDocumentFlushed(() => {
+   *     return window.document.body.getBoundingClientRect();
+   *   });
+   *
+   *   If "window" might get swapped out via nsFrameLoader::SwapWithOtherLoader
+   *   at any time, then the callback might get called when the new host window
+   *   will still incur layout flushes, since it's only the original host window
+   *   that's being monitored via window.top.promiseDocumentFlushed.
+   *
+   *   See bug 1519407 for further details.
    *
    * promiseDocumentFlushed does not support re-entrancy - so calling it from
    * within a promiseDocumentFlushed callback will result in the inner call
@@ -502,12 +534,6 @@ partial interface Window {
   attribute EventHandler onvrdisplaydeactivate;
   [Pref="dom.vr.enabled"]
   attribute EventHandler onvrdisplaypresentchange;
-};
-
-// https://webaudio.github.io/web-audio-api/#widl-Window-audioWorklet
-partial interface Window {
-  [Pref="dom.audioWorklet.enabled", Throws]
-  readonly attribute Worklet audioWorklet;
 };
 
 // https://drafts.css-houdini.org/css-paint-api-1/#dom-window-paintworklet
@@ -548,13 +574,42 @@ partial interface Window {
    *
    * Example: ["en-US", "de", "pl", "sr-Cyrl", "zh-Hans-HK"]
    */
-  [Func="IsChromeOrXBL"]
+  [Func="IsChromeOrXBLOrUAWidget"]
   sequence<DOMString> getRegionalPrefsLocales();
+
+  /**
+   * Returns a list of locales that the web content would know from the user.
+   *
+   * One of the fingerprinting technique is to recognize users from their locales
+   * exposed to web content. For those components that would be fingerprintable
+   * from the locale should call this API instead of |getRegionalPrefsLocales()|.
+   *
+   * If the pref is set to spoof locale setting, this function will return the
+   * spoofed locale, otherwise it returns what |getRegionalPrefsLocales()| returns.
+   *
+   * This API always returns at least one locale.
+   *
+   * Example: ["en-US"]
+   */
+  [Func="IsChromeOrXBLOrUAWidget"]
+  sequence<DOMString> getWebExposedLocales();
 
   /**
    * Getter funcion for IntlUtils, which provides helper functions for
    * localization.
    */
-  [Throws, Func="IsChromeOrXBL"]
+  [Throws, Func="IsChromeOrXBLOrUAWidget"]
   readonly attribute IntlUtils intlUtils;
+};
+
+Window implements WebGPUProvider;
+
+partial interface Window {
+  [SameObject, Pref="dom.visualviewport.enabled", Replaceable]
+  readonly attribute VisualViewport visualViewport;
+
+};
+
+dictionary WindowPostMessageOptions : PostMessageOptions {
+  USVString targetOrigin = "/";
 };

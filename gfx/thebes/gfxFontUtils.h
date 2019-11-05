@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,9 +10,11 @@
 #include "gfxPlatform.h"
 #include "nsComponentManagerUtils.h"
 #include "nsTArray.h"
-#include "mozilla/Likely.h"
+#include "ipc/IPCMessageUtils.h"
+#include "mozilla/Casting.h"
 #include "mozilla/Encoding.h"
 #include "mozilla/EndianUtils.h"
+#include "mozilla/Likely.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/UniquePtr.h"
 
@@ -21,17 +23,25 @@
 
 /* Bug 341128 - w32api defines min/max which causes problems with <bitset> */
 #ifdef __MINGW32__
-#undef min
-#undef max
+#  undef min
+#  undef max
 #endif
+
+#undef ERROR /* defined by Windows.h, conflicts with some generated bindings \
+                code when this gets indirectly included via shared font list \
+              */
 
 typedef struct hb_blob_t hb_blob_t;
 
+class SharedBitSet;
+
 class gfxSparseBitSet {
  private:
+  friend class SharedBitSet;
+
   enum { BLOCK_SIZE = 32 };  // ==> 256 codepoints per block
   enum { BLOCK_SIZE_BITS = BLOCK_SIZE * 8 };
-  enum { BLOCK_INDEX_SHIFT = 8 };
+  enum { NO_BLOCK = 0xffff };  // index value indicating missing (empty) block
 
   struct Block {
     Block(const Block& aBlock) { memcpy(mBits, aBlock.mBits, sizeof(mBits)); }
@@ -44,31 +54,26 @@ class gfxSparseBitSet {
  public:
   gfxSparseBitSet() {}
   gfxSparseBitSet(const gfxSparseBitSet& aBitset) {
-    uint32_t len = aBitset.mBlocks.Length();
-    mBlocks.AppendElements(len);
-    for (uint32_t i = 0; i < len; ++i) {
-      Block* block = aBitset.mBlocks[i].get();
-      if (block) {
-        mBlocks[i] = mozilla::MakeUnique<Block>(*block);
-      }
-    }
+    mBlockIndex.AppendElements(aBitset.mBlockIndex);
+    mBlocks.AppendElements(aBitset.mBlocks);
   }
 
   bool Equals(const gfxSparseBitSet* aOther) const {
-    if (mBlocks.Length() != aOther->mBlocks.Length()) {
+    if (mBlockIndex.Length() != aOther->mBlockIndex.Length()) {
       return false;
     }
-    size_t n = mBlocks.Length();
+    size_t n = mBlockIndex.Length();
     for (size_t i = 0; i < n; ++i) {
-      const Block* b1 = mBlocks[i].get();
-      const Block* b2 = aOther->mBlocks[i].get();
-      if (!b1 != !b2) {
+      uint32_t b1 = mBlockIndex[i];
+      uint32_t b2 = aOther->mBlockIndex[i];
+      if ((b1 == NO_BLOCK) != (b2 == NO_BLOCK)) {
         return false;
       }
-      if (!b1) {
+      if (b1 == NO_BLOCK) {
         continue;
       }
-      if (memcmp(&b1->mBits, &b2->mBits, BLOCK_SIZE) != 0) {
+      if (memcmp(&mBlocks[b1].mBits, &aOther->mBlocks[b2].mBits, BLOCK_SIZE) !=
+          0) {
         return false;
       }
     }
@@ -76,16 +81,12 @@ class gfxSparseBitSet {
   }
 
   bool test(uint32_t aIndex) const {
-    NS_ASSERTION(mBlocks.DebugGetHeader(), "mHdr is null, this is bad");
-    uint32_t blockIndex = aIndex / BLOCK_SIZE_BITS;
-    if (blockIndex >= mBlocks.Length()) {
+    uint32_t i = aIndex / BLOCK_SIZE_BITS;
+    if (i >= mBlockIndex.Length() || mBlockIndex[i] == NO_BLOCK) {
       return false;
     }
-    const Block* block = mBlocks[blockIndex].get();
-    if (!block) {
-      return false;
-    }
-    return ((block->mBits[(aIndex >> 3) & (BLOCK_SIZE - 1)]) &
+    const Block& block = mBlocks[mBlockIndex[i]];
+    return ((block.mBits[(aIndex >> 3) & (BLOCK_SIZE - 1)]) &
             (1 << (aIndex & 0x7))) != 0;
   }
 
@@ -93,37 +94,34 @@ class gfxSparseBitSet {
   void Dump(const char* aPrefix, eGfxLog aWhichLog) const;
 
   bool TestRange(uint32_t aStart, uint32_t aEnd) {
-    uint32_t startBlock, endBlock, blockLen;
-
     // start point is beyond the end of the block array? return false
     // immediately
-    startBlock = aStart >> BLOCK_INDEX_SHIFT;
-    blockLen = mBlocks.Length();
-    if (startBlock >= blockLen) return false;
+    uint32_t startBlock = aStart / BLOCK_SIZE_BITS;
+    uint32_t blockLen = mBlockIndex.Length();
+    if (startBlock >= blockLen) {
+      return false;
+    }
 
     // check for blocks in range, if none, return false
-    uint32_t blockIndex;
     bool hasBlocksInRange = false;
-
-    endBlock = aEnd >> BLOCK_INDEX_SHIFT;
-    for (blockIndex = startBlock; blockIndex <= endBlock; blockIndex++) {
-      if (blockIndex < blockLen && mBlocks[blockIndex]) {
+    uint32_t endBlock = aEnd / BLOCK_SIZE_BITS;
+    for (uint32_t bi = startBlock; bi <= endBlock; bi++) {
+      if (bi < blockLen && mBlockIndex[bi] != NO_BLOCK) {
         hasBlocksInRange = true;
+        break;
       }
     }
     if (!hasBlocksInRange) {
       return false;
     }
 
-    Block* block;
-    uint32_t i, start, end;
-
     // first block, check bits
-    if ((block = mBlocks[startBlock].get())) {
-      start = aStart;
-      end = std::min(aEnd, ((startBlock + 1) << BLOCK_INDEX_SHIFT) - 1);
-      for (i = start; i <= end; i++) {
-        if ((block->mBits[(i >> 3) & (BLOCK_SIZE - 1)]) & (1 << (i & 0x7))) {
+    if (mBlockIndex[startBlock] != NO_BLOCK) {
+      const Block& block = mBlocks[mBlockIndex[startBlock]];
+      uint32_t start = aStart;
+      uint32_t end = std::min(aEnd, ((startBlock + 1) * BLOCK_SIZE_BITS) - 1);
+      for (uint32_t i = start; i <= end; i++) {
+        if ((block.mBits[(i >> 3) & (BLOCK_SIZE - 1)]) & (1 << (i & 0x7))) {
           return true;
         }
       }
@@ -133,25 +131,25 @@ class gfxSparseBitSet {
     }
 
     // [2..n-1] blocks check bytes
-    for (blockIndex = startBlock + 1; blockIndex < endBlock; blockIndex++) {
-      uint32_t index;
-
-      if (blockIndex >= blockLen || !(block = mBlocks[blockIndex].get())) {
+    for (uint32_t i = startBlock + 1; i < endBlock; i++) {
+      if (i >= blockLen || mBlockIndex[i] == NO_BLOCK) {
         continue;
       }
-      for (index = 0; index < BLOCK_SIZE; index++) {
-        if (block->mBits[index]) {
+      const Block& block = mBlocks[mBlockIndex[i]];
+      for (uint32_t index = 0; index < BLOCK_SIZE; index++) {
+        if (block.mBits[index]) {
           return true;
         }
       }
     }
 
     // last block, check bits
-    if (endBlock < blockLen && (block = mBlocks[endBlock].get())) {
-      start = endBlock << BLOCK_INDEX_SHIFT;
-      end = aEnd;
-      for (i = start; i <= end; i++) {
-        if ((block->mBits[(i >> 3) & (BLOCK_SIZE - 1)]) & (1 << (i & 0x7))) {
+    if (endBlock < blockLen && mBlockIndex[endBlock] != NO_BLOCK) {
+      const Block& block = mBlocks[mBlockIndex[endBlock]];
+      uint32_t start = endBlock * BLOCK_SIZE_BITS;
+      uint32_t end = aEnd;
+      for (uint32_t i = start; i <= end; i++) {
+        if ((block.mBits[(i >> 3) & (BLOCK_SIZE - 1)]) & (1 << (i & 0x7))) {
           return true;
         }
       }
@@ -161,91 +159,89 @@ class gfxSparseBitSet {
   }
 
   void set(uint32_t aIndex) {
-    uint32_t blockIndex = aIndex / BLOCK_SIZE_BITS;
-    if (blockIndex >= mBlocks.Length()) {
-      mBlocks.AppendElements(blockIndex + 1 - mBlocks.Length());
+    uint32_t i = aIndex / BLOCK_SIZE_BITS;
+    while (i >= mBlockIndex.Length()) {
+      mBlockIndex.AppendElement(NO_BLOCK);
     }
-    Block* block = mBlocks[blockIndex].get();
-    if (!block) {
-      block = new Block;
-      mBlocks[blockIndex].reset(block);
+    if (mBlockIndex[i] == NO_BLOCK) {
+      mBlocks.AppendElement();
+      MOZ_ASSERT(mBlocks.Length() < 0xffff, "block index overflow!");
+      mBlockIndex[i] = static_cast<uint16_t>(mBlocks.Length() - 1);
     }
-    block->mBits[(aIndex >> 3) & (BLOCK_SIZE - 1)] |= 1 << (aIndex & 0x7);
+    Block& block = mBlocks[mBlockIndex[i]];
+    block.mBits[(aIndex >> 3) & (BLOCK_SIZE - 1)] |= 1 << (aIndex & 0x7);
   }
 
   void set(uint32_t aIndex, bool aValue) {
-    if (aValue)
+    if (aValue) {
       set(aIndex);
-    else
+    } else {
       clear(aIndex);
+    }
   }
 
   void SetRange(uint32_t aStart, uint32_t aEnd) {
     const uint32_t startIndex = aStart / BLOCK_SIZE_BITS;
     const uint32_t endIndex = aEnd / BLOCK_SIZE_BITS;
 
-    if (endIndex >= mBlocks.Length()) {
-      uint32_t numNewBlocks = endIndex + 1 - mBlocks.Length();
-      mBlocks.AppendElements(numNewBlocks);
+    while (endIndex >= mBlockIndex.Length()) {
+      mBlockIndex.AppendElement(NO_BLOCK);
     }
 
     for (uint32_t i = startIndex; i <= endIndex; ++i) {
       const uint32_t blockFirstBit = i * BLOCK_SIZE_BITS;
       const uint32_t blockLastBit = blockFirstBit + BLOCK_SIZE_BITS - 1;
 
-      Block* block = mBlocks[i].get();
-      if (!block) {
+      if (mBlockIndex[i] == NO_BLOCK) {
         bool fullBlock = (aStart <= blockFirstBit && aEnd >= blockLastBit);
-
-        block = new Block(fullBlock ? 0xFF : 0);
-        mBlocks[i].reset(block);
-
+        mBlocks.AppendElement(Block(fullBlock ? 0xFF : 0));
+        MOZ_ASSERT(mBlocks.Length() < 0xffff, "block index overflow!");
+        mBlockIndex[i] = static_cast<uint16_t>(mBlocks.Length() - 1);
         if (fullBlock) {
           continue;
         }
       }
 
+      Block& block = mBlocks[mBlockIndex[i]];
       const uint32_t start =
           aStart > blockFirstBit ? aStart - blockFirstBit : 0;
       const uint32_t end =
           std::min<uint32_t>(aEnd - blockFirstBit, BLOCK_SIZE_BITS - 1);
 
       for (uint32_t bit = start; bit <= end; ++bit) {
-        block->mBits[bit >> 3] |= 1 << (bit & 0x7);
+        block.mBits[bit >> 3] |= 1 << (bit & 0x7);
       }
     }
   }
 
   void clear(uint32_t aIndex) {
-    uint32_t blockIndex = aIndex / BLOCK_SIZE_BITS;
-    if (blockIndex >= mBlocks.Length()) {
-      mBlocks.AppendElements(blockIndex + 1 - mBlocks.Length());
-    }
-    Block* block = mBlocks[blockIndex].get();
-    if (!block) {
+    uint32_t i = aIndex / BLOCK_SIZE_BITS;
+    if (i >= mBlockIndex.Length()) {
       return;
     }
-    block->mBits[(aIndex >> 3) & (BLOCK_SIZE - 1)] &= ~(1 << (aIndex & 0x7));
+    if (mBlockIndex[i] == NO_BLOCK) {
+      mBlocks.AppendElement();
+      MOZ_ASSERT(mBlocks.Length() < 0xffff, "block index overflow!");
+      mBlockIndex[i] = static_cast<uint16_t>(mBlocks.Length() - 1);
+    }
+    Block& block = mBlocks[mBlockIndex[i]];
+    block.mBits[(aIndex >> 3) & (BLOCK_SIZE - 1)] &= ~(1 << (aIndex & 0x7));
   }
 
   void ClearRange(uint32_t aStart, uint32_t aEnd) {
     const uint32_t startIndex = aStart / BLOCK_SIZE_BITS;
     const uint32_t endIndex = aEnd / BLOCK_SIZE_BITS;
 
-    if (endIndex >= mBlocks.Length()) {
-      uint32_t numNewBlocks = endIndex + 1 - mBlocks.Length();
-      mBlocks.AppendElements(numNewBlocks);
-    }
-
     for (uint32_t i = startIndex; i <= endIndex; ++i) {
-      const uint32_t blockFirstBit = i * BLOCK_SIZE_BITS;
-
-      Block* block = mBlocks[i].get();
-      if (!block) {
-        // any nonexistent block is implicitly all clear,
-        // so there's no need to even create it
+      if (i >= mBlockIndex.Length()) {
+        return;
+      }
+      if (mBlockIndex[i] == NO_BLOCK) {
         continue;
       }
+
+      const uint32_t blockFirstBit = i * BLOCK_SIZE_BITS;
+      Block& block = mBlocks[mBlockIndex[i]];
 
       const uint32_t start =
           aStart > blockFirstBit ? aStart - blockFirstBit : 0;
@@ -253,19 +249,14 @@ class gfxSparseBitSet {
           std::min<uint32_t>(aEnd - blockFirstBit, BLOCK_SIZE_BITS - 1);
 
       for (uint32_t bit = start; bit <= end; ++bit) {
-        block->mBits[bit >> 3] &= ~(1 << (bit & 0x7));
+        block.mBits[bit >> 3] &= ~(1 << (bit & 0x7));
       }
     }
   }
 
   size_t SizeOfExcludingThis(mozilla::MallocSizeOf aMallocSizeOf) const {
-    size_t total = mBlocks.ShallowSizeOfExcludingThis(aMallocSizeOf);
-    for (uint32_t i = 0; i < mBlocks.Length(); i++) {
-      if (mBlocks[i]) {
-        total += aMallocSizeOf(mBlocks[i].get());
-      }
-    }
-    return total;
+    return mBlocks.ShallowSizeOfExcludingThis(aMallocSizeOf) +
+           mBlockIndex.ShallowSizeOfExcludingThis(aMallocSizeOf);
   }
 
   size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const {
@@ -274,58 +265,251 @@ class gfxSparseBitSet {
 
   // clear out all blocks in the array
   void reset() {
-    uint32_t i;
-    for (i = 0; i < mBlocks.Length(); i++) {
-      mBlocks[i] = nullptr;
-    }
+    mBlocks.Clear();
+    mBlockIndex.Clear();
   }
 
   // set this bitset to the union of its current contents and another
   void Union(const gfxSparseBitSet& aBitset) {
     // ensure mBlocks is large enough
-    uint32_t blockCount = aBitset.mBlocks.Length();
-    if (blockCount > mBlocks.Length()) {
-      uint32_t needed = blockCount - mBlocks.Length();
-      mBlocks.AppendElements(needed);
+    uint32_t blockCount = aBitset.mBlockIndex.Length();
+    while (blockCount > mBlockIndex.Length()) {
+      mBlockIndex.AppendElement(NO_BLOCK);
     }
     // for each block that may be present in aBitset...
     for (uint32_t i = 0; i < blockCount; ++i) {
       // if it is missing (implicitly empty), just skip
-      if (!aBitset.mBlocks[i]) {
+      if (aBitset.mBlockIndex[i] == NO_BLOCK) {
         continue;
       }
       // if the block is missing in this set, just copy the other
-      if (!mBlocks[i]) {
-        mBlocks[i] = mozilla::MakeUnique<Block>(*aBitset.mBlocks[i]);
+      if (mBlockIndex[i] == NO_BLOCK) {
+        mBlocks.AppendElement(aBitset.mBlocks[aBitset.mBlockIndex[i]]);
+        MOZ_ASSERT(mBlocks.Length() < 0xffff, "block index overflow!");
+        mBlockIndex[i] = static_cast<uint16_t>(mBlocks.Length() - 1);
         continue;
       }
       // else set existing block to the union of both
-      uint32_t* dst = reinterpret_cast<uint32_t*>(mBlocks[i]->mBits);
-      const uint32_t* src =
-          reinterpret_cast<const uint32_t*>(aBitset.mBlocks[i]->mBits);
+      uint32_t* dst =
+          reinterpret_cast<uint32_t*>(&mBlocks[mBlockIndex[i]].mBits);
+      const uint32_t* src = reinterpret_cast<const uint32_t*>(
+          &aBitset.mBlocks[aBitset.mBlockIndex[i]].mBits);
       for (uint32_t j = 0; j < BLOCK_SIZE / 4; ++j) {
         dst[j] |= src[j];
       }
     }
   }
 
-  void Compact() { mBlocks.Compact(); }
+  inline void Union(const SharedBitSet& aBitset);
+
+  void Compact() {
+    // TODO: Discard any empty blocks, and adjust index accordingly.
+    // (May not be worth doing, though, because we so rarely clear bits
+    // that were previously set.)
+    mBlocks.Compact();
+    mBlockIndex.Compact();
+  }
 
   uint32_t GetChecksum() const {
-    uint32_t check = adler32(0, Z_NULL, 0);
-    for (uint32_t i = 0; i < mBlocks.Length(); i++) {
-      if (mBlocks[i]) {
-        const Block* block = mBlocks[i].get();
-        check = adler32(check, (uint8_t*)(&i), 4);
-        check = adler32(check, (uint8_t*)block, sizeof(Block));
-      }
-    }
+    uint32_t check =
+        adler32(0, reinterpret_cast<const uint8_t*>(mBlockIndex.Elements()),
+                mBlockIndex.Length() * sizeof(uint16_t));
+    check = adler32(check, reinterpret_cast<const uint8_t*>(mBlocks.Elements()),
+                    mBlocks.Length() * sizeof(Block));
     return check;
   }
 
  private:
-  nsTArray<mozilla::UniquePtr<Block>> mBlocks;
+  friend struct IPC::ParamTraits<gfxSparseBitSet>;
+  friend struct IPC::ParamTraits<gfxSparseBitSet::Block>;
+  nsTArray<uint16_t> mBlockIndex;
+  nsTArray<Block> mBlocks;
 };
+
+namespace IPC {
+template <>
+struct ParamTraits<gfxSparseBitSet> {
+  typedef gfxSparseBitSet paramType;
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mBlockIndex);
+    WriteParam(aMsg, aParam.mBlocks);
+  }
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return ReadParam(aMsg, aIter, &aResult->mBlockIndex) &&
+           ReadParam(aMsg, aIter, &aResult->mBlocks);
+  }
+};
+
+template <>
+struct ParamTraits<gfxSparseBitSet::Block> {
+  typedef gfxSparseBitSet::Block paramType;
+  static void Write(Message* aMsg, const paramType& aParam) {
+    aMsg->WriteBytes(&aParam, sizeof(aParam));
+  }
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return aMsg->ReadBytesInto(aIter, aResult, sizeof(*aResult));
+  }
+};
+}  // namespace IPC
+
+/**
+ * SharedBitSet is a version of gfxSparseBitSet that is intended to be used
+ * in a shared-memory block, and can be used regardless of the address at which
+ * the block has been mapped. The SharedBitSet cannot be modified once it has
+ * been created.
+ *
+ * Max size of a SharedBitSet = 4352 * 32  ; blocks
+ *                              + 4352 * 2 ; index
+ *                              + 4        ; counts
+ *   = 147972 bytes
+ *
+ * Therefore, SharedFontList must be able to allocate a contiguous block of at
+ * least this size.
+ */
+class SharedBitSet {
+ private:
+  // We use the same Block type as gfxSparseBitSet.
+  typedef gfxSparseBitSet::Block Block;
+
+  enum { BLOCK_SIZE = gfxSparseBitSet::BLOCK_SIZE };
+  enum { BLOCK_SIZE_BITS = gfxSparseBitSet::BLOCK_SIZE_BITS };
+  enum { NO_BLOCK = gfxSparseBitSet::NO_BLOCK };
+
+ public:
+  static const size_t kMaxSize = 147972;  // see above
+
+  // Returns the size needed for a SharedBitSet version of the given
+  // gfxSparseBitSet.
+  static size_t RequiredSize(const gfxSparseBitSet& aBitset) {
+    size_t total = sizeof(SharedBitSet);
+    size_t len = aBitset.mBlockIndex.Length();
+    total += len * sizeof(uint16_t);  // add size for index array
+    // add size for blocks, excluding any missing ones
+    for (uint16_t i = 0; i < len; i++) {
+      if (aBitset.mBlockIndex[i] != NO_BLOCK) {
+        total += sizeof(Block);
+      }
+    }
+    MOZ_ASSERT(total <= kMaxSize);
+    return total;
+  }
+
+  // Create a SharedBitSet in the provided buffer, initializing it with the
+  // contents of aBitset.
+  static SharedBitSet* Create(void* aBuffer, size_t aBufSize,
+                              const gfxSparseBitSet& aBitset) {
+    MOZ_ASSERT(aBufSize >= RequiredSize(aBitset));
+    return new (aBuffer) SharedBitSet(aBitset);
+  }
+
+  bool test(uint32_t aIndex) const {
+    const auto i = static_cast<uint16_t>(aIndex / BLOCK_SIZE_BITS);
+    if (i >= mBlockIndexCount) {
+      return false;
+    }
+    const uint16_t* const blockIndex =
+        reinterpret_cast<const uint16_t*>(this + 1);
+    if (blockIndex[i] == NO_BLOCK) {
+      return false;
+    }
+    const Block* const blocks =
+        reinterpret_cast<const Block*>(blockIndex + mBlockIndexCount);
+    const Block& block = blocks[blockIndex[i]];
+    return ((block.mBits[(aIndex >> 3) & (BLOCK_SIZE - 1)]) &
+            (1 << (aIndex & 0x7))) != 0;
+  }
+
+  bool Equals(const gfxSparseBitSet* aOther) const {
+    if (mBlockIndexCount != aOther->mBlockIndex.Length()) {
+      return false;
+    }
+    const uint16_t* const blockIndex =
+        reinterpret_cast<const uint16_t*>(this + 1);
+    const Block* const blocks =
+        reinterpret_cast<const Block*>(blockIndex + mBlockIndexCount);
+    for (uint16_t i = 0; i < mBlockIndexCount; ++i) {
+      uint16_t index = blockIndex[i];
+      uint16_t otherIndex = aOther->mBlockIndex[i];
+      if ((index == NO_BLOCK) != (otherIndex == NO_BLOCK)) {
+        return false;
+      }
+      if (index == NO_BLOCK) {
+        continue;
+      }
+      const Block& b1 = blocks[index];
+      const Block& b2 = aOther->mBlocks[otherIndex];
+      if (memcmp(&b1.mBits, &b2.mBits, BLOCK_SIZE) != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+ private:
+  friend class gfxSparseBitSet;
+  SharedBitSet() = delete;
+
+  explicit SharedBitSet(const gfxSparseBitSet& aBitset)
+      : mBlockIndexCount(
+            mozilla::AssertedCast<uint16_t>(aBitset.mBlockIndex.Length())),
+        mBlockCount(0) {
+    uint16_t* blockIndex = reinterpret_cast<uint16_t*>(this + 1);
+    Block* blocks = reinterpret_cast<Block*>(blockIndex + mBlockIndexCount);
+    for (uint16_t i = 0; i < mBlockIndexCount; i++) {
+      if (aBitset.mBlockIndex[i] != NO_BLOCK) {
+        const Block& srcBlock = aBitset.mBlocks[aBitset.mBlockIndex[i]];
+        std::memcpy(&blocks[mBlockCount], &srcBlock, sizeof(Block));
+        blockIndex[i] = mBlockCount;
+        mBlockCount++;
+      } else {
+        blockIndex[i] = NO_BLOCK;
+      }
+    }
+  }
+
+  // We never manage SharedBitSet as a "normal" object, it's a view onto a
+  // buffer of shared memory. So we should never be trying to call this.
+  ~SharedBitSet() = delete;
+
+  uint16_t mBlockIndexCount;
+  uint16_t mBlockCount;
+
+  // After the two "header" fields above, we have a block index array
+  // of uint16_t[mBlockIndexCount], followed by mBlockCount Block records.
+};
+
+// Union the contents of a SharedBitSet with the target gfxSparseBitSet
+inline void gfxSparseBitSet::Union(const SharedBitSet& aBitset) {
+  // ensure mBlockIndex is large enough
+  while (mBlockIndex.Length() < aBitset.mBlockIndexCount) {
+    mBlockIndex.AppendElement(NO_BLOCK);
+  }
+  auto blockIndex = reinterpret_cast<const uint16_t*>(&aBitset + 1);
+  auto blocks = reinterpret_cast<const Block*>(blockIndex + aBitset.mBlockIndexCount);
+  for (uint32_t i = 0; i < aBitset.mBlockIndexCount; ++i) {
+    // if it is missing (implicitly empty) in source, just skip
+    if (blockIndex[i] == NO_BLOCK) {
+      continue;
+    }
+    // if the block is missing, just copy from source bitset
+    if (mBlockIndex[i] == NO_BLOCK) {
+      mBlocks.AppendElement(blocks[blockIndex[i]]);
+      MOZ_ASSERT(mBlocks.Length() < 0xffff, "block index overflow");
+      mBlockIndex[i] = uint16_t(mBlocks.Length() - 1);
+      continue;
+    }
+    // else set existing target block to the union of both
+    uint32_t* dst = reinterpret_cast<uint32_t*>(
+        &mBlocks[mBlockIndex[i]].mBits);
+    const uint32_t* src = reinterpret_cast<const uint32_t*>(
+        &blocks[blockIndex[i]].mBits);
+    for (uint32_t j = 0; j < BLOCK_SIZE / 4; ++j) {
+      dst[j] |= src[j];
+    }
+  }
+}
 
 #define TRUETYPE_TAG(a, b, c, d) ((a) << 24 | (b) << 16 | (c) << 8 | (d))
 
@@ -476,14 +660,14 @@ struct HeadTable {
 
   AutoSwap_PRUint32 tableVersionNumber;  // Fixed, 0x00010000 for version 1.0.
   AutoSwap_PRUint32 fontRevision;        // Set by font manufacturer.
-  AutoSwap_PRUint32 checkSumAdjustment;  // To compute: set it to 0, sum the
-                                         // entire font as ULONG, then store
-                                         // 0xB1B0AFBA - sum.
-  AutoSwap_PRUint32 magicNumber;         // Set to 0x5F0F3CF5.
+  AutoSwap_PRUint32
+      checkSumAdjustment;  // To compute: set it to 0, sum the entire font as
+                           // ULONG, then store 0xB1B0AFBA - sum.
+  AutoSwap_PRUint32 magicNumber;  // Set to 0x5F0F3CF5.
   AutoSwap_PRUint16 flags;
-  AutoSwap_PRUint16 unitsPerEm;  // Valid range is from 16 to 16384. This value
-                                 // should be a power of 2 for fonts that have
-                                 // TrueType outlines.
+  AutoSwap_PRUint16
+      unitsPerEm;  // Valid range is from 16 to 16384. This value should be a
+                   // power of 2 for fonts that have TrueType outlines.
   AutoSwap_PRUint64 created;  // Number of seconds since 12:00 midnight, January
                               // 1, 1904. 64-bit integer
   AutoSwap_PRUint64 modified;       // Number of seconds since 12:00 midnight,
@@ -728,11 +912,10 @@ class gfxFontUtils {
 
   // name table has a header, followed by name records, followed by string data
   struct NameHeader {
-    mozilla::AutoSwap_PRUint16 format;  // Format selector (=0).
-    mozilla::AutoSwap_PRUint16 count;   // Number of name records.
-    mozilla::AutoSwap_PRUint16
-        stringOffset;  // Offset to start of string storage
-                       // (from start of table)
+    mozilla::AutoSwap_PRUint16 format;        // Format selector (=0).
+    mozilla::AutoSwap_PRUint16 count;         // Number of name records.
+    mozilla::AutoSwap_PRUint16 stringOffset;  // Offset to start of string
+                                              // storage (from start of table)
   };
 
   struct NameRecord {
@@ -748,13 +931,13 @@ class gfxFontUtils {
   // for reading big-endian font data on either big or little-endian platforms
 
   static inline uint16_t ReadShortAt(const uint8_t* aBuf, uint32_t aIndex) {
-    return (aBuf[aIndex] << 8) | aBuf[aIndex + 1];
+    return static_cast<uint16_t>(aBuf[aIndex] << 8) | aBuf[aIndex + 1];
   }
 
   static inline uint16_t ReadShortAt16(const uint16_t* aBuf, uint32_t aIndex) {
     const uint8_t* buf = reinterpret_cast<const uint8_t*>(aBuf);
     uint32_t index = aIndex << 1;
-    return (buf[index] << 8) | buf[index + 1];
+    return static_cast<uint16_t>(buf[index] << 8) | buf[index + 1];
   }
 
   static inline uint32_t ReadUint24At(const uint8_t* aBuf, uint32_t aIndex) {
@@ -789,7 +972,8 @@ class gfxFontUtils {
                            gfxSparseBitSet& aCharacterMap,
                            uint32_t& aUVSOffset);
 
-  static uint32_t MapCharToGlyphFormat4(const uint8_t* aBuf, char16_t aCh);
+  static uint32_t MapCharToGlyphFormat4(const uint8_t* aBuf, uint32_t aLength,
+                                        char16_t aCh);
 
   static uint32_t MapCharToGlyphFormat10(const uint8_t* aBuf, uint32_t aCh);
 
@@ -824,16 +1008,16 @@ class gfxFontUtils {
   // This is called with sfnt data that has already been validated,
   // so it should always succeed in finding the name table.
   static nsresult GetFullNameFromSFNT(const uint8_t* aFontData,
-                                      uint32_t aLength, nsAString& aFullName);
+                                      uint32_t aLength, nsACString& aFullName);
 
   // helper to get fullname from name table, constructing from family+style
   // if no explicit fullname is present
   static nsresult GetFullNameFromTable(hb_blob_t* aNameTable,
-                                       nsAString& aFullName);
+                                       nsACString& aFullName);
 
   // helper to get family name from name table
   static nsresult GetFamilyNameFromTable(hb_blob_t* aNameTable,
-                                         nsAString& aFamilyName);
+                                         nsACString& aFamilyName);
 
   // Find the table directory entry for a given table tag, in a (validated)
   // buffer of 'sfnt' data. Returns null if the tag is not present.
@@ -858,22 +1042,22 @@ class gfxFontUtils {
   // read all names matching aNameID, returning in aNames array
   static nsresult ReadNames(const char* aNameData, uint32_t aDataLen,
                             uint32_t aNameID, int32_t aPlatformID,
-                            nsTArray<nsString>& aNames);
+                            nsTArray<nsCString>& aNames);
 
   // reads English or first name matching aNameID, returning in aName
   // platform based on OS
   static nsresult ReadCanonicalName(hb_blob_t* aNameTable, uint32_t aNameID,
-                                    nsString& aName);
+                                    nsCString& aName);
 
   static nsresult ReadCanonicalName(const char* aNameData, uint32_t aDataLen,
-                                    uint32_t aNameID, nsString& aName);
+                                    uint32_t aNameID, nsCString& aName);
 
   // convert a name from the raw name table data into an nsString,
   // provided we know how; return true if successful, or false
   // if we can't handle the encoding
   static bool DecodeFontName(const char* aBuf, int32_t aLength,
                              uint32_t aPlatformCode, uint32_t aScriptCode,
-                             uint32_t aLangCode, nsAString& dest);
+                             uint32_t aLangCode, nsACString& dest);
 
   static inline bool IsJoinCauser(uint32_t ch) { return (ch == 0x200D); }
 
@@ -949,16 +1133,16 @@ class gfxFontUtils {
 
   // parse a simple list of font family names into
   // an array of strings
-  static void ParseFontList(const nsAString& aFamilyList,
-                            nsTArray<nsString>& aFontList);
+  static void ParseFontList(const nsACString& aFamilyList,
+                            nsTArray<nsCString>& aFontList);
 
   // for a given font list pref name, append list of font names
   static void AppendPrefsFontList(const char* aPrefName,
-                                  nsTArray<nsString>& aFontList);
+                                  nsTArray<nsCString>& aFontList);
 
   // for a given font list pref name, initialize a list of font names
   static void GetPrefsFontList(const char* aPrefName,
-                               nsTArray<nsString>& aFontList);
+                               nsTArray<nsCString>& aFontList);
 
   // generate a unique font name
   static nsresult MakeUniqueUserFontName(nsAString& aName);
@@ -979,27 +1163,19 @@ class gfxFontUtils {
   static void GetVariationInstances(
       gfxFontEntry* aFontEntry, nsTArray<gfxFontVariationInstance>& aInstances);
 
-  // Merge a list of font-variation-settings from a font entry and a list
-  // from a gfxFontStyle, to get a combined collection of settings that can
-  // be used to instantiate a font.
-  static void MergeVariations(const nsTArray<gfxFontVariation>& aEntrySettings,
-                              const nsTArray<gfxFontVariation>& aStyleSettings,
-                              nsTArray<gfxFontVariation>* aMerged);
-
-  // Helper used by MergeVariations, and other code that wants to check
-  // whether an array of variation settings includes a particular tag.
-  struct VariationTagComparator {
-    bool Equals(const gfxFontVariation& aVariation, uint32_t aTag) const {
-      return aVariation.mTag == aTag;
-    }
-  };
+  // Helper method for reading localized family names from the name table
+  // of a single face.
+  static void ReadOtherFamilyNamesForFace(
+      const nsACString& aFamilyName, const char* aNameData,
+      uint32_t aDataLength, nsTArray<nsCString>& aOtherFamilyNames,
+      bool useFullName);
 
  protected:
   friend struct MacCharsetMappingComparator;
 
   static nsresult ReadNames(const char* aNameData, uint32_t aDataLen,
                             uint32_t aNameID, int32_t aLangID,
-                            int32_t aPlatformID, nsTArray<nsString>& aNames);
+                            int32_t aPlatformID, nsTArray<nsCString>& aNames);
 
   // convert opentype name-table platform/encoding/language values to an
   // Encoding object we can use to convert the name data to unicode
@@ -1021,5 +1197,245 @@ class gfxFontUtils {
   static const mozilla::Encoding* gISOFontNameCharsets[];
   static const mozilla::Encoding* gMSFontNameCharsets[];
 };
+
+// style distance ==> [0,500]
+static inline double StyleDistance(const mozilla::SlantStyleRange& aRange,
+                                   mozilla::FontSlantStyle aTargetStyle) {
+  const mozilla::FontSlantStyle minStyle = aRange.Min();
+  if (aTargetStyle == minStyle) {
+    return 0.0;  // styles match exactly ==> 0
+  }
+
+  // bias added to angle difference when searching in the non-preferred
+  // direction from a target angle
+  const double kReverse = 100.0;
+
+  // bias added when we've crossed from positive to negative angles or
+  // vice versa
+  const double kNegate = 200.0;
+
+  if (aTargetStyle.IsNormal()) {
+    if (minStyle.IsOblique()) {
+      // to distinguish oblique 0deg from normal, we add 1.0 to the angle
+      const double minAngle = minStyle.ObliqueAngle();
+      if (minAngle >= 0.0) {
+        return 1.0 + minAngle;
+      }
+      const mozilla::FontSlantStyle maxStyle = aRange.Max();
+      const double maxAngle = maxStyle.ObliqueAngle();
+      if (maxAngle >= 0.0) {
+        // [min,max] range includes 0.0, so just return our minimum
+        return 1.0;
+      }
+      // negative oblique is even worse than italic
+      return kNegate - maxAngle;
+    }
+    // must be italic, which is worse than any non-negative oblique;
+    // treat as a match in the wrong search direction
+    MOZ_ASSERT(minStyle.IsItalic());
+    return kReverse;
+  }
+
+  const double kDefaultAngle =
+      mozilla::FontSlantStyle::Oblique().ObliqueAngle();
+
+  if (aTargetStyle.IsItalic()) {
+    if (minStyle.IsOblique()) {
+      const double minAngle = minStyle.ObliqueAngle();
+      if (minAngle >= kDefaultAngle) {
+        return 1.0 + (minAngle - kDefaultAngle);
+      }
+      const mozilla::FontSlantStyle maxStyle = aRange.Max();
+      const double maxAngle = maxStyle.ObliqueAngle();
+      if (maxAngle >= kDefaultAngle) {
+        return 1.0;
+      }
+      if (maxAngle > 0.0) {
+        // wrong direction but still > 0, add bias of 100
+        return kReverse + (kDefaultAngle - maxAngle);
+      }
+      // negative oblique angle, add bias of 300
+      return kReverse + kNegate + (kDefaultAngle - maxAngle);
+    }
+    // normal is worse than oblique > 0, but better than oblique <= 0
+    MOZ_ASSERT(minStyle.IsNormal());
+    return kNegate;
+  }
+
+  // target is oblique <angle>: four different cases depending on
+  // the value of the <angle>, which determines the preferred direction
+  // of search
+  const double targetAngle = aTargetStyle.ObliqueAngle();
+  if (targetAngle >= kDefaultAngle) {
+    if (minStyle.IsOblique()) {
+      const double minAngle = minStyle.ObliqueAngle();
+      if (minAngle >= targetAngle) {
+        return minAngle - targetAngle;
+      }
+      const mozilla::FontSlantStyle maxStyle = aRange.Max();
+      const double maxAngle = maxStyle.ObliqueAngle();
+      if (maxAngle >= targetAngle) {
+        return 0.0;
+      }
+      if (maxAngle > 0.0) {
+        return kReverse + (targetAngle - maxAngle);
+      }
+      return kReverse + kNegate + (targetAngle - maxAngle);
+    }
+    if (minStyle.IsItalic()) {
+      return kReverse + kNegate;
+    }
+    return kReverse + kNegate + 1.0;
+  }
+
+  if (targetAngle <= -kDefaultAngle) {
+    if (minStyle.IsOblique()) {
+      const mozilla::FontSlantStyle maxStyle = aRange.Max();
+      const double maxAngle = maxStyle.ObliqueAngle();
+      if (maxAngle <= targetAngle) {
+        return targetAngle - maxAngle;
+      }
+      const double minAngle = minStyle.ObliqueAngle();
+      if (minAngle <= targetAngle) {
+        return 0.0;
+      }
+      if (minAngle < 0.0) {
+        return kReverse + (minAngle - targetAngle);
+      }
+      return kReverse + kNegate + (minAngle - targetAngle);
+    }
+    if (minStyle.IsItalic()) {
+      return kReverse + kNegate;
+    }
+    return kReverse + kNegate + 1.0;
+  }
+
+  if (targetAngle >= 0.0) {
+    if (minStyle.IsOblique()) {
+      const double minAngle = minStyle.ObliqueAngle();
+      if (minAngle > targetAngle) {
+        return kReverse + (minAngle - targetAngle);
+      }
+      const mozilla::FontSlantStyle maxStyle = aRange.Max();
+      const double maxAngle = maxStyle.ObliqueAngle();
+      if (maxAngle >= targetAngle) {
+        return 0.0;
+      }
+      if (maxAngle > 0.0) {
+        return targetAngle - maxAngle;
+      }
+      return kReverse + kNegate + (targetAngle - maxAngle);
+    }
+    if (minStyle.IsItalic()) {
+      return kReverse + kNegate - 2.0;
+    }
+    return kReverse + kNegate - 1.0;
+  }
+
+  // last case: (targetAngle < 0.0 && targetAngle > kDefaultAngle)
+  if (minStyle.IsOblique()) {
+    const mozilla::FontSlantStyle maxStyle = aRange.Max();
+    const double maxAngle = maxStyle.ObliqueAngle();
+    if (maxAngle < targetAngle) {
+      return kReverse + (targetAngle - maxAngle);
+    }
+    const double minAngle = minStyle.ObliqueAngle();
+    if (minAngle <= targetAngle) {
+      return 0.0;
+    }
+    if (minAngle < 0.0) {
+      return minAngle - targetAngle;
+    }
+    return kReverse + kNegate + (minAngle - targetAngle);
+  }
+  if (minStyle.IsItalic()) {
+    return kReverse + kNegate - 2.0;
+  }
+  return kReverse + kNegate - 1.0;
+}
+
+// stretch distance ==> [0,2000]
+static inline double StretchDistance(const mozilla::StretchRange& aRange,
+                                     mozilla::FontStretch aTargetStretch) {
+  const double kReverseDistance = 1000.0;
+
+  mozilla::FontStretch minStretch = aRange.Min();
+  mozilla::FontStretch maxStretch = aRange.Max();
+
+  // The stretch value is a (non-negative) percentage; currently we support
+  // values in the range 0 .. 1000. (If the upper limit is ever increased,
+  // the kReverseDistance value used here may need to be adjusted.)
+  // If aTargetStretch is >100, we prefer larger values if available;
+  // if <=100, we prefer smaller values if available.
+  if (aTargetStretch < minStretch) {
+    if (aTargetStretch > mozilla::FontStretch::Normal()) {
+      return minStretch - aTargetStretch;
+    }
+    return (minStretch - aTargetStretch) + kReverseDistance;
+  }
+  if (aTargetStretch > maxStretch) {
+    if (aTargetStretch <= mozilla::FontStretch::Normal()) {
+      return aTargetStretch - maxStretch;
+    }
+    return (aTargetStretch - maxStretch) + kReverseDistance;
+  }
+  return 0.0;
+}
+
+// Calculate weight distance with values in the range (0..1000). In general,
+// heavier weights match towards even heavier weights while lighter weights
+// match towards even lighter weights. Target weight values in the range
+// [400..500] are special, since they will first match up to 500, then down
+// towards 0, then up again towards 999.
+//
+// Example: with target 600 and font weight 800, distance will be 200. With
+// target 300 and font weight 600, distance will be 900, since heavier
+// weights are farther away than lighter weights. If the target is 5 and the
+// font weight 995, the distance would be 1590 for the same reason.
+
+// weight distance ==> [0,1600]
+static inline double WeightDistance(const mozilla::WeightRange& aRange,
+                                    mozilla::FontWeight aTargetWeight) {
+  const double kNotWithinCentralRange = 100.0;
+  const double kReverseDistance = 600.0;
+
+  mozilla::FontWeight minWeight = aRange.Min();
+  mozilla::FontWeight maxWeight = aRange.Max();
+
+  if (aTargetWeight >= minWeight && aTargetWeight <= maxWeight) {
+    // Target is within the face's range, so it's a perfect match
+    return 0.0;
+  }
+
+  if (aTargetWeight < mozilla::FontWeight(400)) {
+    // Requested a lighter-than-400 weight
+    if (maxWeight < aTargetWeight) {
+      return aTargetWeight - maxWeight;
+    }
+    // Add reverse-search penalty for bolder faces
+    return (minWeight - aTargetWeight) + kReverseDistance;
+  }
+
+  if (aTargetWeight > mozilla::FontWeight(500)) {
+    // Requested a bolder-than-500 weight
+    if (minWeight > aTargetWeight) {
+      return minWeight - aTargetWeight;
+    }
+    // Add reverse-search penalty for lighter faces
+    return (aTargetWeight - maxWeight) + kReverseDistance;
+  }
+
+  // Special case for requested weight in the [400..500] range
+  if (minWeight > aTargetWeight) {
+    if (minWeight <= mozilla::FontWeight(500)) {
+      // Bolder weight up to 500 is first choice
+      return minWeight - aTargetWeight;
+    }
+    // Other bolder weights get a reverse-search penalty
+    return (minWeight - aTargetWeight) + kReverseDistance;
+  }
+  // Lighter weights are not as good as bolder ones within [400..500]
+  return (aTargetWeight - maxWeight) + kNotWithinCentralRange;
+}
 
 #endif /* GFX_FONT_UTILS_H */

@@ -21,25 +21,39 @@ const TEST_URI = `
   <div id="shape"></div>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let {inspector, view} = yield openRuleView();
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { inspector, view } = await openRuleView();
 
-  yield selectNode("#shape", inspector);
-  let container = getRuleViewProperty(view, "#shape", "clip-path").valueSpan;
-  let shapeToggle = container.querySelector(".ruleview-shapeswatch");
-  let shapeToggleStyle = getComputedStyle(shapeToggle);
-  let overriddenContainer = getRuleViewProperty(view, "div", "clip-path").valueSpan;
-  let overriddenShapeToggle = overriddenContainer.querySelector(".ruleview-shapeswatch");
-  let overriddenShapeToggleStyle = getComputedStyle(overriddenShapeToggle);
+  await selectNode("#shape", inspector);
+  const container = getRuleViewProperty(view, "#shape", "clip-path").valueSpan;
+  const shapeToggle = container.querySelector(".ruleview-shapeswatch");
+  const shapeToggleStyle = getComputedStyle(shapeToggle);
+  const overriddenContainer = getRuleViewProperty(view, "div", "clip-path")
+    .valueSpan;
+  const overriddenShapeToggle = overriddenContainer.querySelector(
+    ".ruleview-shapeswatch"
+  );
+  const overriddenShapeToggleStyle = getComputedStyle(overriddenShapeToggle);
 
-  ok(shapeToggle && overriddenShapeToggle,
-    "Shapes highlighter toggles exist in the DOM.");
-  ok(!shapeToggle.classList.contains("active") &&
-    !overriddenShapeToggle.classList.contains("active"),
-    "Shapes highlighter toggle buttons are not active.");
+  ok(
+    shapeToggle && overriddenShapeToggle,
+    "Shapes highlighter toggles exist in the DOM."
+  );
+  ok(
+    !shapeToggle.classList.contains("active") &&
+      !overriddenShapeToggle.classList.contains("active"),
+    "Shapes highlighter toggle buttons are not active."
+  );
 
-  isnot(shapeToggleStyle.display, "none", "Shape highlighter toggle is not hidden");
-  is(overriddenShapeToggleStyle.display, "none",
-    "Overwritten shape highlighter toggle is not visible");
+  isnot(
+    shapeToggleStyle.display,
+    "none",
+    "Shape highlighter toggle is not hidden"
+  );
+  is(
+    overriddenShapeToggleStyle.display,
+    "none",
+    "Overwritten shape highlighter toggle is not visible"
+  );
 });

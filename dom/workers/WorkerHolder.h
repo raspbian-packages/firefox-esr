@@ -18,19 +18,17 @@ class WorkerPrivate;
  * Use this chart to help figure out behavior during each of the closing
  * statuses. Details below.
  *
- * +=============================================+
- * |             Closing Statuses                |
- * +=============+=============+=================+
- * |    status   | clear queue | abort execution |
- * +=============+=============+=================+
- * |   Closing   |     yes     |       no        |
- * +-------------+-------------+-----------------+
- * | Terminating |     yes     |       yes       |
- * +-------------+-------------+-----------------+
- * |  Canceling  |     yes     |       yes       |
- * +-------------+-------------+-----------------+
- * |   Killing   |     yes     |       yes       |
- * +-------------+-------------+-----------------+
+ * +========================================================+
+ * |                     Closing Statuses                   |
+ * +=============+=============+=================+==========+
+ * |    status   | clear queue | abort execution | notified |
+ * +=============+=============+=================+==========+
+ * |   Closing   |     yes     |       no        |    no    |
+ * +-------------+-------------+-----------------+----------+
+ * |  Canceling  |     yes     |       yes       |   yes    |
+ * +-------------+-------------+-----------------+----------+
+ * |   Killing   |     yes     |       yes       |   yes    |
+ * +-------------+-------------+-----------------+----------+
  */
 
 enum WorkerStatus {
@@ -42,13 +40,10 @@ enum WorkerStatus {
 
   // Inner script called close() on the worker global scope. Setting this
   // status causes the worker to clear its queue of events but does not abort
-  // the currently running script.
+  // the currently running script. WorkerHolder/WorkerRef objects are not going
+  // to be notified because the behavior of APIs/Components should not change
+  // during this status yet.
   Closing,
-
-  // Outer script called terminate() on the worker or the worker object was
-  // garbage collected in its outer script. Setting this status causes the
-  // worker to abort immediately and clear its queue of events.
-  Terminating,
 
   // Either the user navigated away from the owning page or the owning page fell
   // out of bfcache. Setting this status causes the worker to abort immediately.

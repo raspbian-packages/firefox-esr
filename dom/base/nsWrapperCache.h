@@ -16,12 +16,12 @@
 
 namespace mozilla {
 namespace dom {
-class TabChildGlobal;
-class ProcessGlobal;
+class ContentProcessMessageManager;
+class InProcessBrowserChildMessageManager;
+class BrowserChildMessageManager;
 }  // namespace dom
 }  // namespace mozilla
 class SandboxPrivate;
-class nsInProcessTabChildGlobal;
 class nsWindowRoot;
 
 #define NS_WRAPPERCACHE_IID                          \
@@ -44,9 +44,9 @@ class nsWindowRoot;
 // This may waste space for some other nsWrapperCache-derived objects that have
 // a 32-bit field as their first member, but those objects are unlikely to be as
 // numerous or performance-critical as DOM nodes.
-#if defined(_M_X64) || defined(__LP64__)
+#ifdef HAVE_64BIT_BUILD
 static_assert(sizeof(void*) == 8, "These architectures should be 64-bit");
-#define BOOL_FLAGS_ON_WRAPPER_CACHE
+#  define BOOL_FLAGS_ON_WRAPPER_CACHE
 #else
 static_assert(sizeof(void*) == 4, "Only support 32-bit and 64-bit");
 #endif
@@ -66,13 +66,8 @@ static_assert(sizeof(void*) == 4, "Only support 32-bit and 64-bit");
  * collected and we want to preserve this state we actually store the state
  * object in the cache.
  *
- * The cache can store 2 types of objects:
- *
- *  If WRAPPER_IS_NOT_DOM_BINDING is set (IsDOMBinding() returns false):
- *    - the JSObject of an XPCWrappedNative wrapper
- *
- *  If WRAPPER_IS_NOT_DOM_BINDING is not set (IsDOMBinding() returns true):
- *    - a DOM binding object (regular JS object or proxy)
+ * The cache can store 3 types of objects: a DOM binding object (regular JS
+ * object or proxy), an nsOuterWindowProxy or an XPCWrappedNative wrapper.
  *
  * The finalizer for the wrapper clears the cache.
  *
@@ -87,6 +82,10 @@ static_assert(sizeof(void*) == 4, "Only support 32-bit and 64-bit");
  * A number of the methods are implemented in nsWrapperCacheInlines.h because we
  * have to include some JS headers that don't play nicely with the rest of the
  * codebase. Include nsWrapperCacheInlines.h if you need to call those methods.
+ *
+ * When recording or replaying an execution, wrapper caches are instrumented so
+ * that they behave consistently even if the GC executes at different points
+ * and collects different objects.
  */
 
 class nsWrapperCache {
@@ -103,6 +102,10 @@ class nsWrapperCache {
   {
   }
   ~nsWrapperCache() {
+    // Clear any JS root associated with this cache while replaying.
+    if (mozilla::recordreplay::IsReplaying()) {
+      mozilla::recordreplay::SetWeakPointerJSRoot(this, nullptr);
+    }
     MOZ_ASSERT(!PreservingWrapper(),
                "Destroying cache with a preserved wrapper!");
   }
@@ -138,7 +141,26 @@ class nsWrapperCache {
    * anywhere or pass it into JSAPI functions that may cause the value to
    * escape.
    */
-  JSObject* GetWrapperMaybeDead() const { return mWrapper; }
+  JSObject* GetWrapperMaybeDead() const {
+    // Keep track of accesses on the cache when recording or replaying an
+    // execution. Accesses during a GC (when thread events are disallowed)
+    // fetch the underlying object without making sure the returned value
+    // is consistent between recording and replay.
+    if (mozilla::recordreplay::IsRecordingOrReplaying() &&
+        !mozilla::recordreplay::AreThreadEventsDisallowed() &&
+        !mozilla::recordreplay::HasDivergedFromRecording()) {
+      bool success = mozilla::recordreplay::RecordReplayValue(!!mWrapper);
+      if (mozilla::recordreplay::IsReplaying()) {
+        if (success) {
+          MOZ_RELEASE_ASSERT(mWrapper);
+        } else {
+          const_cast<nsWrapperCache*>(this)->ClearWrapper();
+        }
+      }
+    }
+
+    return mWrapper;
+  }
 
 #ifdef DEBUG
  private:
@@ -190,10 +212,6 @@ class nsWrapperCache {
 
   bool PreservingWrapper() const {
     return HasWrapperFlag(WRAPPER_BIT_PRESERVED);
-  }
-
-  bool IsDOMBinding() const {
-    return !HasWrapperFlag(WRAPPER_IS_NOT_DOM_BINDING);
   }
 
   /**
@@ -322,20 +340,6 @@ class nsWrapperCache {
   }
 
  private:
-  // Friend declarations for things that need to be able to call
-  // SetIsNotDOMBinding().  The goal is to get rid of all of these, and
-  // SetIsNotDOMBinding() too.
-  friend class mozilla::dom::TabChildGlobal;
-  friend class mozilla::dom::ProcessGlobal;
-  friend class SandboxPrivate;
-  friend class nsInProcessTabChildGlobal;
-  friend class nsWindowRoot;
-  void SetIsNotDOMBinding() {
-    MOZ_ASSERT(!mWrapper && !(GetWrapperFlags() & ~WRAPPER_IS_NOT_DOM_BINDING),
-               "This flag should be set before creating any wrappers.");
-    SetWrapperFlags(WRAPPER_IS_NOT_DOM_BINDING);
-  }
-
   void SetWrapperJSObject(JSObject* aWrapper);
 
   FlagsType GetWrapperFlags() const { return mFlags & kWrapperFlagsMask; }
@@ -379,15 +383,7 @@ class nsWrapperCache {
    */
   enum { WRAPPER_BIT_PRESERVED = 1 << 0 };
 
-  /**
-   * If this bit is set then the wrapper for the native object is not a DOM
-   * binding.
-   */
-  enum { WRAPPER_IS_NOT_DOM_BINDING = 1 << 1 };
-
-  enum {
-    kWrapperFlagsMask = (WRAPPER_BIT_PRESERVED | WRAPPER_IS_NOT_DOM_BINDING)
-  };
+  enum { kWrapperFlagsMask = WRAPPER_BIT_PRESERVED };
 
   JSObject* mWrapper;
   FlagsType mFlags;
@@ -398,7 +394,7 @@ class nsWrapperCache {
 #endif
 };
 
-enum { WRAPPER_CACHE_FLAGS_BITS_USED = 2 };
+enum { WRAPPER_CACHE_FLAGS_BITS_USED = 1 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsWrapperCache, NS_WRAPPERCACHE_IID)
 
@@ -443,6 +439,19 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsWrapperCache, NS_WRAPPERCACHE_IID)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(_class)          \
     NS_IMPL_CYCLE_COLLECTION_TRAVERSE(__VA_ARGS__)         \
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END                    \
+  NS_IMPL_CYCLE_COLLECTION_TRACE_WRAPPERCACHE(_class)
+
+// This is used for wrapper cached classes that inherit from cycle
+// collected non-wrapper cached classes.
+#define NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_INHERITED(_class, _base, ...) \
+  NS_IMPL_CYCLE_COLLECTION_CLASS(_class)                                    \
+  NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(_class, _base)            \
+    NS_IMPL_CYCLE_COLLECTION_UNLINK(__VA_ARGS__)                            \
+    NS_IMPL_CYCLE_COLLECTION_UNLINK_PRESERVED_WRAPPER                       \
+  NS_IMPL_CYCLE_COLLECTION_UNLINK_END                                       \
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(_class, _base)          \
+    NS_IMPL_CYCLE_COLLECTION_TRAVERSE(__VA_ARGS__)                          \
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END                                     \
   NS_IMPL_CYCLE_COLLECTION_TRACE_WRAPPERCACHE(_class)
 
 #endif /* nsWrapperCache_h___ */

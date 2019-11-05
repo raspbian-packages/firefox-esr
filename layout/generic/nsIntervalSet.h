@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 // vim:cindent:ts=8:et:sw=4:
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +11,9 @@
 
 #include "nsCoord.h"
 
-class nsIPresShell;
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
 
 /*
  * A list-based class (hopefully tree-based when I get around to it)
@@ -21,7 +23,7 @@ class nsIntervalSet {
  public:
   typedef nscoord coord_type;
 
-  explicit nsIntervalSet(nsIPresShell *aPresShell);
+  explicit nsIntervalSet(mozilla::PresShell* aPresShell);
   ~nsIntervalSet();
 
   /*
@@ -56,15 +58,15 @@ class nsIntervalSet {
 
     coord_type mBegin;
     coord_type mEnd;
-    Interval *mPrev;
-    Interval *mNext;
+    Interval* mPrev;
+    Interval* mNext;
   };
 
-  void *AllocateInterval();
-  void FreeInterval(Interval *aInterval);
+  void* AllocateInterval();
+  void FreeInterval(Interval* aInterval);
 
-  Interval *mList;
-  nsIPresShell *mPresShell;
+  Interval* mList;
+  mozilla::PresShell* mPresShell;
 };
 
 #endif  // !defined(nsIntervalSet_h___)

@@ -152,42 +152,43 @@ nsresult TableUpdateV2::NewMissPrefix(const Prefix& aPrefix) {
   return NS_OK;
 }
 
-void TableUpdateV4::NewPrefixes(int32_t aSize, std::string& aPrefixes) {
+void TableUpdateV4::NewPrefixes(int32_t aSize, const nsACString& aPrefixes) {
   NS_ENSURE_TRUE_VOID(aSize >= 4 && aSize <= COMPLETE_SIZE);
-  NS_ENSURE_TRUE_VOID(aPrefixes.size() % aSize == 0);
+  NS_ENSURE_TRUE_VOID(aPrefixes.Length() % aSize == 0);
   NS_ENSURE_TRUE_VOID(!mPrefixesMap.Get(aSize));
 
-  int numOfPrefixes = aPrefixes.size() / aSize;
+  int numOfPrefixes = aPrefixes.Length() / aSize;
 
   if (aSize > 4) {
-  // TODO Bug 1364043 we may have a better API to record multiple samples into
-  // histograms with one call
+    // TODO Bug 1364043 we may have a better API to record multiple samples into
+    // histograms with one call
 #ifdef NIGHTLY_BUILD
     for (int i = 0; i < std::min(20, numOfPrefixes); i++) {
       Telemetry::Accumulate(Telemetry::URLCLASSIFIER_VLPS_LONG_PREFIXES, aSize);
     }
 #endif
   } else if (LOG_ENABLED()) {
-    uint32_t* p = (uint32_t*)aPrefixes.c_str();
+    const uint32_t* p =
+        reinterpret_cast<const uint32_t*>(ToNewCString(aPrefixes));
 
     // Dump the first/last 10 fixed-length prefixes for debugging.
     LOG(("* The first 10 (maximum) fixed-length prefixes: "));
     for (int i = 0; i < std::min(10, numOfPrefixes); i++) {
-      uint8_t* c = (uint8_t*)&p[i];
+      const uint8_t* c = reinterpret_cast<const uint8_t*>(&p[i]);
       LOG(("%.2X%.2X%.2X%.2X", c[0], c[1], c[2], c[3]));
     }
 
     LOG(("* The last 10 (maximum) fixed-length prefixes: "));
     for (int i = std::max(0, numOfPrefixes - 10); i < numOfPrefixes; i++) {
-      uint8_t* c = (uint8_t*)&p[i];
+      const uint8_t* c = reinterpret_cast<const uint8_t*>(&p[i]);
       LOG(("%.2X%.2X%.2X%.2X", c[0], c[1], c[2], c[3]));
     }
 
-    LOG(("---- %zu fixed-length prefixes in total.", aPrefixes.size() / aSize));
+    LOG(("---- %u fixed-length prefixes in total.",
+         aPrefixes.Length() / aSize));
   }
 
-  PrefixStdString* prefix = new PrefixStdString(aPrefixes);
-  mPrefixesMap.Put(aSize, prefix);
+  mPrefixesMap.Put(aSize, new nsCString(aPrefixes));
 }
 
 nsresult TableUpdateV4::NewRemovalIndices(const uint32_t* aIndices,
@@ -205,12 +206,12 @@ nsresult TableUpdateV4::NewRemovalIndices(const uint32_t* aIndices,
   return NS_OK;
 }
 
-void TableUpdateV4::NewChecksum(const std::string& aChecksum) {
-  mChecksum.Assign(aChecksum.data(), aChecksum.size());
+void TableUpdateV4::SetSHA256(const std::string& aSHA256) {
+  mSHA256.Assign(aSHA256.data(), aSHA256.size());
 }
 
-nsresult TableUpdateV4::NewFullHashResponse(const Prefix& aPrefix,
-                                            CachedFullHashResponse& aResponse) {
+nsresult TableUpdateV4::NewFullHashResponse(
+    const Prefix& aPrefix, const CachedFullHashResponse& aResponse) {
   CachedFullHashResponse* response =
       mFullHashResponseMap.LookupOrAdd(aPrefix.ToUint32());
   if (!response) {
@@ -218,6 +219,11 @@ nsresult TableUpdateV4::NewFullHashResponse(const Prefix& aPrefix,
   }
   *response = aResponse;
   return NS_OK;
+}
+
+void TableUpdateV4::Clear() {
+  mPrefixesMap.Clear();
+  mRemovalIndiceArray.Clear();
 }
 
 HashStore::HashStore(const nsACString& aTableName, const nsACString& aProvider,
@@ -260,13 +266,12 @@ nsresult HashStore::CheckChecksum(uint32_t aFileSize) {
   // comparing the stored checksum to actual checksum of data
   nsAutoCString hash;
   nsAutoCString compareHash;
-  char* data;
   uint32_t read;
 
   nsresult rv = CalculateChecksum(hash, aFileSize, true);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  compareHash.GetMutableData(&data, hash.Length());
+  compareHash.SetLength(hash.Length());
 
   if (hash.Length() > aFileSize) {
     NS_WARNING("SafeBrowing file not long enough to store its hash");
@@ -276,7 +281,7 @@ nsresult HashStore::CheckChecksum(uint32_t aFileSize) {
   rv = seekIn->Seek(nsISeekableStream::NS_SEEK_SET, aFileSize - hash.Length());
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = mInputStream->Read(data, hash.Length(), &read);
+  rv = mInputStream->Read(compareHash.BeginWriting(), hash.Length(), &read);
   NS_ENSURE_SUCCESS(rv, rv);
   NS_ASSERTION(read == hash.Length(), "Could not read hash bytes");
 
@@ -345,7 +350,7 @@ nsresult HashStore::ReadHeader() {
   return NS_OK;
 }
 
-nsresult HashStore::SanityCheck() {
+nsresult HashStore::SanityCheck() const {
   if (mHeader.magic != STORE_MAGIC || mHeader.version != CURRENT_VERSION) {
     NS_WARNING("Unexpected header data in the store.");
     return NS_ERROR_FAILURE;
@@ -526,7 +531,7 @@ nsresult HashStore::BeginUpdate() {
 
 template <class T>
 static nsresult Merge(ChunkSet* aStoreChunks, FallibleTArray<T>* aStorePrefixes,
-                      ChunkSet& aUpdateChunks,
+                      const ChunkSet& aUpdateChunks,
                       FallibleTArray<T>& aUpdatePrefixes,
                       bool aAllowMerging = false) {
   EntrySort(aUpdatePrefixes);
@@ -570,35 +575,32 @@ static nsresult Merge(ChunkSet* aStoreChunks, FallibleTArray<T>* aStorePrefixes,
   return NS_OK;
 }
 
-nsresult HashStore::ApplyUpdate(TableUpdate& aUpdate) {
-  auto updateV2 = TableUpdate::Cast<TableUpdateV2>(&aUpdate);
-  NS_ENSURE_TRUE(updateV2, NS_ERROR_FAILURE);
+nsresult HashStore::ApplyUpdate(RefPtr<TableUpdateV2> aUpdate) {
+  MOZ_ASSERT(mTableName.Equals(aUpdate->TableName()));
 
-  TableUpdateV2& update = *updateV2;
-
-  nsresult rv = mAddExpirations.Merge(update.AddExpirations());
+  nsresult rv = mAddExpirations.Merge(aUpdate->AddExpirations());
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = mSubExpirations.Merge(update.SubExpirations());
+  rv = mSubExpirations.Merge(aUpdate->SubExpirations());
   NS_ENSURE_SUCCESS(rv, rv);
 
   rv = Expire();
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = Merge(&mAddChunks, &mAddPrefixes, update.AddChunks(),
-             update.AddPrefixes());
+  rv = Merge(&mAddChunks, &mAddPrefixes, aUpdate->AddChunks(),
+             aUpdate->AddPrefixes());
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = Merge(&mAddChunks, &mAddCompletes, update.AddChunks(),
-             update.AddCompletes(), true);
+  rv = Merge(&mAddChunks, &mAddCompletes, aUpdate->AddChunks(),
+             aUpdate->AddCompletes(), true);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = Merge(&mSubChunks, &mSubPrefixes, update.SubChunks(),
-             update.SubPrefixes());
+  rv = Merge(&mSubChunks, &mSubPrefixes, aUpdate->SubChunks(),
+             aUpdate->SubPrefixes());
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = Merge(&mSubChunks, &mSubCompletes, update.SubChunks(),
-             update.SubCompletes(), true);
+  rv = Merge(&mSubChunks, &mSubCompletes, aUpdate->SubChunks(),
+             aUpdate->SubCompletes(), true);
   NS_ENSURE_SUCCESS(rv, rv);
 
   return NS_OK;
@@ -1149,7 +1151,7 @@ SubCompleteArray& HashStore::SubCompletes() {
   return mSubCompletes;
 }
 
-bool HashStore::AlreadyReadChunkNumbers() {
+bool HashStore::AlreadyReadChunkNumbers() const {
   // If there are chunks but chunk set not yet contains any data
   // Then we haven't read chunk numbers.
   if ((mHeader.numAddChunks != 0 && mAddChunks.Length() == 0) ||
@@ -1159,7 +1161,7 @@ bool HashStore::AlreadyReadChunkNumbers() {
   return true;
 }
 
-bool HashStore::AlreadyReadCompletions() {
+bool HashStore::AlreadyReadCompletions() const {
   // If there are completions but completion set not yet contains any data
   // Then we haven't read completions.
   if ((mHeader.numAddCompletes != 0 && mAddCompletes.Length() == 0) ||

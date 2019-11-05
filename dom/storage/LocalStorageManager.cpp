@@ -21,6 +21,7 @@
 #include "nsIObserverService.h"
 #include "mozilla/Services.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/dom/LocalStorageCommon.h"
 
 // Only allow relatively small amounts of data since performance of
 // the synchronous IO is very bad.
@@ -52,9 +53,12 @@ uint32_t LocalStorageManager::GetQuota() {
   return gQuotaLimit * 1024;  // pref is in kBs
 }
 
-NS_IMPL_ISUPPORTS(LocalStorageManager, nsIDOMStorageManager)
+NS_IMPL_ISUPPORTS(LocalStorageManager, nsIDOMStorageManager,
+                  nsILocalStorageManager)
 
-LocalStorageManager::LocalStorageManager() : mCaches(8), mLowDiskSpace(false) {
+LocalStorageManager::LocalStorageManager() : mCaches(8) {
+  MOZ_ASSERT(!NextGenLocalStorageEnabled());
+
   StorageObserver* observer = StorageObserver::Self();
   NS_ASSERTION(
       observer,
@@ -123,8 +127,8 @@ nsresult CreateQuotaDBKey(nsIPrincipal* aPrincipal, nsACString& aKey) {
 }  // namespace
 
 // static
-nsCString LocalStorageManager::CreateOrigin(const nsACString& aOriginSuffix,
-                                            const nsACString& aOriginNoSuffix) {
+nsAutoCString LocalStorageManager::CreateOrigin(
+    const nsACString& aOriginSuffix, const nsACString& aOriginNoSuffix) {
   // Note: some hard-coded sqlite statements are dependent on the format this
   // method returns.  Changing this without updating those sqlite statements
   // will cause malfunction.
@@ -194,7 +198,8 @@ void LocalStorageManager::DropCache(LocalStorageCache* aCache) {
 
 nsresult LocalStorageManager::GetStorageInternal(
     CreateMode aCreateMode, mozIDOMWindow* aWindow, nsIPrincipal* aPrincipal,
-    const nsAString& aDocumentURI, bool aPrivate, nsIDOMStorage** aRetval) {
+    nsIPrincipal* aStoragePrincipal, const nsAString& aDocumentURI,
+    bool aPrivate, Storage** aRetval) {
   nsAutoCString originAttrSuffix;
   nsAutoCString originKey;
 
@@ -228,6 +233,7 @@ nsresult LocalStorageManager::GetStorageInternal(
       }
     }
 
+#if !defined(MOZ_WIDGET_ANDROID)
     PBackgroundChild* backgroundActor =
         BackgroundChild::GetOrCreateForCurrentThread();
     if (NS_WARN_IF(!backgroundActor)) {
@@ -245,11 +251,13 @@ nsresult LocalStorageManager::GetStorageInternal(
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
+#endif
 
     // There is always a single instance of a cache per scope
     // in a single instance of a DOM storage manager.
     cache = PutCache(originAttrSuffix, originKey, aPrincipal);
 
+#if !defined(MOZ_WIDGET_ANDROID)
     LocalStorageCacheChild* actor = new LocalStorageCacheChild(cache);
 
     MOZ_ALWAYS_TRUE(
@@ -257,13 +265,15 @@ nsresult LocalStorageManager::GetStorageInternal(
             actor, principalInfo, originKey, privateBrowsingId));
 
     cache->SetActor(actor);
+#endif
   }
 
   if (aRetval) {
     nsCOMPtr<nsPIDOMWindowInner> inner = nsPIDOMWindowInner::From(aWindow);
 
-    nsCOMPtr<nsIDOMStorage> storage = new LocalStorage(
-        inner, this, cache, aDocumentURI, aPrincipal, aPrivate);
+    RefPtr<Storage> storage =
+        new LocalStorage(inner, this, cache, aDocumentURI, aPrincipal,
+                         aStoragePrincipal, aPrivate);
     storage.forget(aRetval);
   }
 
@@ -272,68 +282,77 @@ nsresult LocalStorageManager::GetStorageInternal(
 
 NS_IMETHODIMP
 LocalStorageManager::PrecacheStorage(nsIPrincipal* aPrincipal,
-                                     nsIDOMStorage** aRetval) {
+                                     Storage** aRetval) {
   return GetStorageInternal(CreateMode::CreateIfShouldPreload, nullptr,
-                            aPrincipal, EmptyString(), false, aRetval);
+                            aPrincipal, aPrincipal, EmptyString(), false,
+                            aRetval);
 }
 
 NS_IMETHODIMP
 LocalStorageManager::CreateStorage(mozIDOMWindow* aWindow,
                                    nsIPrincipal* aPrincipal,
+                                   nsIPrincipal* aStoragePrincipal,
                                    const nsAString& aDocumentURI, bool aPrivate,
-                                   nsIDOMStorage** aRetval) {
+                                   Storage** aRetval) {
   return GetStorageInternal(CreateMode::CreateAlways, aWindow, aPrincipal,
-                            aDocumentURI, aPrivate, aRetval);
+                            aStoragePrincipal, aDocumentURI, aPrivate, aRetval);
 }
 
 NS_IMETHODIMP
 LocalStorageManager::GetStorage(mozIDOMWindow* aWindow,
-                                nsIPrincipal* aPrincipal, bool aPrivate,
-                                nsIDOMStorage** aRetval) {
+                                nsIPrincipal* aPrincipal,
+                                nsIPrincipal* aStoragePrincipal, bool aPrivate,
+                                Storage** aRetval) {
   return GetStorageInternal(CreateMode::UseIfExistsNeverCreate, aWindow,
-                            aPrincipal, EmptyString(), aPrivate, aRetval);
+                            aPrincipal, aStoragePrincipal, EmptyString(),
+                            aPrivate, aRetval);
 }
 
 NS_IMETHODIMP
-LocalStorageManager::CloneStorage(nsIDOMStorage* aStorage) {
+LocalStorageManager::CloneStorage(Storage* aStorage) {
   // Cloning is supported only for sessionStorage
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
-LocalStorageManager::CheckStorage(nsIPrincipal* aPrincipal,
-                                  nsIDOMStorage* aStorage, bool* aRetval) {
-  nsresult rv;
+LocalStorageManager::CheckStorage(nsIPrincipal* aPrincipal, Storage* aStorage,
+                                  bool* aRetval) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aPrincipal);
+  MOZ_ASSERT(aStorage);
+  MOZ_ASSERT(aRetval);
 
-  RefPtr<LocalStorage> storage = static_cast<LocalStorage*>(aStorage);
-  if (!storage) {
-    return NS_ERROR_UNEXPECTED;
-  }
+  // Only used by sessionStorage.
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
 
-  *aRetval = false;
+NS_IMETHODIMP
+LocalStorageManager::GetNextGenLocalStorageEnabled(bool* aResult) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aResult);
 
-  if (!aPrincipal) {
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-
-  nsAutoCString suffix;
-  nsAutoCString origin;
-  rv = GenerateOriginKey(aPrincipal, suffix, origin);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
-  LocalStorageCache* cache = GetCache(suffix, origin);
-  if (cache != storage->GetCache()) {
-    return NS_OK;
-  }
-
-  if (!storage->PrincipalEquals(aPrincipal)) {
-    return NS_OK;
-  }
-
-  *aRetval = true;
+  *aResult = NextGenLocalStorageEnabled();
   return NS_OK;
+}
+
+NS_IMETHODIMP
+LocalStorageManager::Preload(nsIPrincipal* aPrincipal, JSContext* aContext,
+                             nsISupports** _retval) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aPrincipal);
+  MOZ_ASSERT(_retval);
+
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP
+LocalStorageManager::IsPreloaded(nsIPrincipal* aPrincipal, JSContext* aContext,
+                                 nsISupports** _retval) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aPrincipal);
+  MOZ_ASSERT(_retval);
+
+  return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 void LocalStorageManager::ClearCaches(uint32_t aUnloadFlags,
@@ -382,17 +401,15 @@ nsresult LocalStorageManager::Observe(const char* aTopic,
     return NS_OK;
   }
 
+  if (!strcmp(aTopic, "browser:purge-sessionStorage")) {
+    // This is only meant for SessionStorageManager.
+    return NS_OK;
+  }
+
   // Clear from caches everything that has been stored
   // while in session-only mode
   if (!strcmp(aTopic, "session-only-cleared")) {
     ClearCaches(LocalStorageCache::kUnloadSession, pattern, aOriginScope);
-    return NS_OK;
-  }
-
-  // Clear everything (including so and pb data) from caches and database
-  // for the gived domain and subdomains.
-  if (!strcmp(aTopic, "domain-data-cleared")) {
-    ClearCaches(LocalStorageCache::kUnloadComplete, pattern, aOriginScope);
     return NS_OK;
   }
 
@@ -412,16 +429,6 @@ nsresult LocalStorageManager::Observe(const char* aTopic,
     // For case caches are still referenced - clear them completely
     ClearCaches(LocalStorageCache::kUnloadComplete, pattern, EmptyCString());
     mCaches.Clear();
-    return NS_OK;
-  }
-
-  if (!strcmp(aTopic, "low-disk-space")) {
-    mLowDiskSpace = true;
-    return NS_OK;
-  }
-
-  if (!strcmp(aTopic, "no-low-disk-space")) {
-    mLowDiskSpace = false;
     return NS_OK;
   }
 
@@ -449,7 +456,16 @@ nsresult LocalStorageManager::Observe(const char* aTopic,
   return NS_ERROR_UNEXPECTED;
 }
 
+// static
+LocalStorageManager* LocalStorageManager::Self() {
+  MOZ_ASSERT(!NextGenLocalStorageEnabled());
+
+  return sSelf;
+}
+
 LocalStorageManager* LocalStorageManager::Ensure() {
+  MOZ_ASSERT(!NextGenLocalStorageEnabled());
+
   if (sSelf) {
     return sSelf;
   }

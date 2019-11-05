@@ -4,18 +4,18 @@
 
 #include "MediaKeySystemAccessManager.h"
 #include "DecoderDoctorDiagnostics.h"
-#include "MediaPrefs.h"
 #include "mozilla/EMEUtils.h"
 #include "nsServiceManagerUtils.h"
 #include "nsComponentManagerUtils.h"
 #include "nsIObserverService.h"
 #include "mozilla/Services.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/DetailedPromise.h"
 #ifdef XP_WIN
-#include "mozilla/WindowsVersion.h"
+#  include "mozilla/WindowsVersion.h"
 #endif
 #ifdef XP_MACOSX
-#include "nsCocoaFeatures.h"
+#  include "nsCocoaFeatures.h"
 #endif
 #include "nsPrintfCString.h"
 #include "nsContentUtils.h"
@@ -101,7 +101,7 @@ void MediaKeySystemAccessManager::Request(
     return;
   }
 
-  if (!MediaPrefs::EMEEnabled() && !IsClearkeyKeySystem(aKeySystem)) {
+  if (!StaticPrefs::MediaEmeEnabled() && !IsClearkeyKeySystem(aKeySystem)) {
     // EME disabled by user, send notification to chrome so UI can inform user.
     // Clearkey is allowed even when EME is disabled because we want the pref
     // "media.eme.enabled" only taking effect on proprietary DRMs.
@@ -162,7 +162,7 @@ void MediaKeySystemAccessManager::Request(
     return;
   }
 
-  nsCOMPtr<nsIDocument> doc = mWindow->GetExtantDoc();
+  nsCOMPtr<Document> doc = mWindow->GetExtantDoc();
   nsDataHashtable<nsCharPtrHashKey, bool> warnings;
   std::function<void(const char*)> deprecationWarningLogFn =
       [&](const char* aMsgName) {
@@ -309,7 +309,7 @@ nsresult MediaKeySystemAccessManager::Observe(nsISupports* aSubject,
         continue;
       }
       // Status has changed, retry request.
-      requests.AppendElement(Move(request));
+      requests.AppendElement(std::move(request));
       mRequests.RemoveElementAt(i);
     }
     // Retry all pending requests, but this time fail if the CDM is not
@@ -350,7 +350,7 @@ bool MediaKeySystemAccessManager::EnsureObserversAdded() {
 
 void MediaKeySystemAccessManager::Shutdown() {
   EME_LOG("MediaKeySystemAccessManager::Shutdown");
-  nsTArray<PendingRequest> requests(Move(mRequests));
+  nsTArray<PendingRequest> requests(std::move(mRequests));
   for (PendingRequest& request : requests) {
     // Cancel all requests; we're shutting down.
     request.CancelTimer();

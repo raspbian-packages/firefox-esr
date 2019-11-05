@@ -7,16 +7,15 @@
 #include "mozilla/dom/HTMLFrameElement.h"
 #include "mozilla/dom/HTMLFrameElementBinding.h"
 
-class nsIDOMDocument;
-
 NS_IMPL_NS_NEW_HTML_ELEMENT_CHECK_PARSER(Frame)
 
 namespace mozilla {
 namespace dom {
 
 HTMLFrameElement::HTMLFrameElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, FromParser aFromParser)
-    : nsGenericHTMLFrameElement(aNodeInfo, aFromParser) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+    FromParser aFromParser)
+    : nsGenericHTMLFrameElement(std::move(aNodeInfo), aFromParser) {}
 
 HTMLFrameElement::~HTMLFrameElement() {}
 
@@ -50,7 +49,7 @@ bool HTMLFrameElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
 
 JSObject* HTMLFrameElement::WrapNode(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return HTMLFrameElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLFrameElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

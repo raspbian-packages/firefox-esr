@@ -11,14 +11,18 @@
 #include "nsStringFwd.h"
 #include "mozilla/Attributes.h"
 
-class nsIDocument;
 class nsINode;
 class nsIRequest;
-class nsISelection;
 class nsISupports;
 class nsIWebProgress;
 
 namespace mozilla {
+
+namespace dom {
+class Document;
+class Selection;
+}  // namespace dom
+
 namespace a11y {
 
 class AccEvent;
@@ -70,7 +74,7 @@ bool IsEnabled(const nsAString& aModules);
  */
 void DocLoad(const char* aMsg, nsIWebProgress* aWebProgress,
              nsIRequest* aRequest, uint32_t aStateFlags);
-void DocLoad(const char* aMsg, nsIDocument* aDocumentNode);
+void DocLoad(const char* aMsg, dom::Document* aDocumentNode);
 void DocCompleteLoad(DocAccessible* aDocument, bool aIsLoadEventTarget);
 
 /**
@@ -86,13 +90,13 @@ void DocLoadEventHandled(AccEvent* aEvent);
 /**
  * Log the document was created.
  */
-void DocCreate(const char* aMsg, nsIDocument* aDocumentNode,
+void DocCreate(const char* aMsg, dom::Document* aDocumentNode,
                DocAccessible* aDocument = nullptr);
 
 /**
  * Log the document was destroyed.
  */
-void DocDestroy(const char* aMsg, nsIDocument* aDocumentNode,
+void DocDestroy(const char* aMsg, dom::Document* aDocumentNode,
                 DocAccessible* aDocument = nullptr);
 
 /**
@@ -128,7 +132,7 @@ void FocusDispatched(Accessible* aTarget);
 /**
  * Log the selection change.
  */
-void SelChange(nsISelection* aSelection, DocAccessible* aDocument,
+void SelChange(dom::Selection* aSelection, DocAccessible* aDocument,
                int16_t aReason);
 
 /**

@@ -21,7 +21,13 @@ namespace dom {
 namespace cache {
 
 struct SavedRequest {
-  SavedRequest() : mHasBodyId(false) { mValue.body() = void_t(); }
+  SavedRequest() : mHasBodyId(false), mCacheId(0) {
+    mBodyId.m0 = 0;
+    mBodyId.m1 = 0;
+    mBodyId.m2 = 0;
+    memset(mBodyId.m3, 0, sizeof(mBodyId.m3));
+    mValue.body() = Nothing();
+  }
   CacheRequest mValue;
   bool mHasBodyId;
   nsID mBodyId;
@@ -29,7 +35,13 @@ struct SavedRequest {
 };
 
 struct SavedResponse {
-  SavedResponse() : mHasBodyId(false) { mValue.body() = void_t(); }
+  SavedResponse() : mHasBodyId(false), mCacheId(0) {
+    mBodyId.m0 = 0;
+    mBodyId.m1 = 0;
+    mBodyId.m2 = 0;
+    memset(mBodyId.m3, 0, sizeof(mBodyId.m3));
+    mValue.body() = Nothing();
+  }
   CacheResponse mValue;
   bool mHasBodyId;
   nsID mBodyId;

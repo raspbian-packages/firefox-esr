@@ -134,7 +134,7 @@ nsresult ChunkSet::Remove(const ChunkSet& aOther) {
 
 void ChunkSet::Clear() { mRanges.Clear(); }
 
-nsresult ChunkSet::Write(nsIOutputStream* aOut) {
+nsresult ChunkSet::Write(nsIOutputStream* aOut) const {
   nsTArray<uint32_t> chunks(IO_BUFFER_SIZE);
 
   for (const Range& range : mRanges) {

@@ -12,7 +12,7 @@
 <!ENTITY forwardMsg.accesskey                 "θ">
 <!ENTITY inline.label                         "Εντός μηνύματος">
 <!ENTITY asAttachment.label                   "Ως συνημμένο">
-<!ENTITY addExtension.label                   "προσθήκη επέκτασης στο όνομα αρχείου">
+<!ENTITY addExtension.label                   "Προσθήκη επέκτασης στο όνομα αρχείου">
 <!ENTITY addExtension.accesskey               "χ">
 
 <!ENTITY htmlComposeHeader.label              "HTML">
@@ -20,6 +20,10 @@
 <!ENTITY font.accesskey                       "ρ">
 <!ENTITY size.label                           "Μέγεθος:">
 <!ENTITY size.accesskey                       "θ">
+<!ENTITY fontSize.label                       "Μέγεθος:">
+<!ENTITY fontSize.accesskey                   "γ">
+<!ENTITY useReaderDefaults.label              "Να χρησιμοποιηθούν τα προκαθορισμένα χρώματα αναγνώστη">
+<!ENTITY useReaderDefaults.accesskey          "π">
 <!ENTITY fontColor.label                      "Χρώμα κειμένου:">
 <!ENTITY fontColor.accesskey                  "Χ">
 <!ENTITY bgColor.label                        "Χρώμα φόντου:">
@@ -54,7 +58,7 @@
 <!ENTITY directoriesNone.label                 "Κανένας">
 <!ENTITY editDirectories.label                 "Επεξεργασία καταλόγων…">
 <!ENTITY editDirectories.accesskey             "Ε">
-<!ENTITY showAsDefault.label                   "Προκαθορισμένος κατάλογος εκκίνησης στο παράθυρο του βιβλίου διευθύνσεων:">
+<!ENTITY showAsDefault.label                   "Προεπιλεγμένος κατάλογος εκκίνησης στο παράθυρο του ευρετηρίου διευθύνσεων:">
 <!ENTITY showAsDefault.accesskey               "Ρ">
 <!ENTITY showAsDefaultLast.label               "Τελευταία χρησιμοποιημένος κατάλογος">
 

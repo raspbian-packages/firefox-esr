@@ -14,37 +14,33 @@
 #include "gfxContext.h"
 #include "nsSplitterFrame.h"
 #include "nsGkAtoms.h"
-#include "nsIDOMElement.h"
 #include "nsXULElement.h"
 #include "nsPresContext.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsNameSpaceManager.h"
 #include "nsScrollbarButtonFrame.h"
 #include "nsIDOMEventListener.h"
-#include "nsIDOMMouseEvent.h"
-#include "nsIPresShell.h"
 #include "nsFrameList.h"
 #include "nsHTMLParts.h"
-#include "nsStyleContext.h"
+#include "mozilla/ComputedStyle.h"
 #include "nsBoxLayoutState.h"
 #include "nsIServiceManager.h"
 #include "nsContainerFrame.h"
 #include "nsContentCID.h"
-#ifdef MOZ_OLD_STYLE
-#include "mozilla/GeckoStyleContext.h"
-#endif
-#include "mozilla/StyleSetHandle.h"
-#include "mozilla/StyleSetHandleInlines.h"
 #include "nsLayoutUtils.h"
 #include "nsDisplayList.h"
 #include "nsContentUtils.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/Event.h"
+#include "mozilla/dom/MouseEvent.h"
 #include "mozilla/MouseEvents.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/UniquePtr.h"
 #include "nsBindingManager.h"
 
 using namespace mozilla;
+
+using mozilla::dom::Event;
 
 class nsSplitterInfo {
  public:
@@ -65,16 +61,24 @@ class nsSplitterFrameInner final : public nsIDOMEventListener {
   NS_DECL_ISUPPORTS
   NS_DECL_NSIDOMEVENTLISTENER
 
-  explicit nsSplitterFrameInner(nsSplitterFrame* aSplitter) {
+  explicit nsSplitterFrameInner(nsSplitterFrame* aSplitter)
+      : mDidDrag(false),
+        mDragStart(0),
+        mParentBox(nullptr),
+        mChildInfosBeforeCount(0),
+        mChildInfosAfterCount(0),
+        mState(Open),
+        mSplitterPos(0),
+        mDragging(false) {
     mOuter = aSplitter;
     mPressed = false;
   }
 
   void Disconnect() { mOuter = nullptr; }
 
-  nsresult MouseDown(nsIDOMEvent* aMouseEvent);
-  nsresult MouseUp(nsIDOMEvent* aMouseEvent);
-  nsresult MouseMove(nsIDOMEvent* aMouseEvent);
+  nsresult MouseDown(Event* aMouseEvent);
+  nsresult MouseUp(Event* aMouseEvent);
+  nsresult MouseMove(Event* aMouseEvent);
 
   void MouseDrag(nsPresContext* aPresContext, WidgetGUIEvent* aEvent);
   void MouseUp(nsPresContext* aPresContext, WidgetGUIEvent* aEvent);
@@ -114,7 +118,6 @@ class nsSplitterFrameInner final : public nsIDOMEventListener {
   nsSplitterFrame* mOuter;
   bool mDidDrag;
   nscoord mDragStart;
-  nscoord mCurrentPos;
   nsIFrame* mParentBox;
   bool mPressed;
   UniquePtr<nsSplitterInfo[]> mChildInfosBefore;
@@ -133,8 +136,8 @@ class nsSplitterFrameInner final : public nsIDOMEventListener {
 NS_IMPL_ISUPPORTS(nsSplitterFrameInner, nsIDOMEventListener)
 
 nsSplitterFrameInner::ResizeType nsSplitterFrameInner::GetResizeBefore() {
-  static Element::AttrValuesArray strings[] = {&nsGkAtoms::farthest,
-                                               &nsGkAtoms::flex, nullptr};
+  static Element::AttrValuesArray strings[] = {nsGkAtoms::farthest,
+                                               nsGkAtoms::flex, nullptr};
   switch (SplitterElement()->FindAttrValueIn(
       kNameSpaceID_None, nsGkAtoms::resizebefore, strings, eCaseMatters)) {
     case 0:
@@ -149,7 +152,7 @@ nsSplitterFrameInner::~nsSplitterFrameInner() {}
 
 nsSplitterFrameInner::ResizeType nsSplitterFrameInner::GetResizeAfter() {
   static Element::AttrValuesArray strings[] = {
-      &nsGkAtoms::farthest, &nsGkAtoms::flex, &nsGkAtoms::grow, nullptr};
+      nsGkAtoms::farthest, nsGkAtoms::flex, nsGkAtoms::grow, nullptr};
   switch (SplitterElement()->FindAttrValueIn(
       kNameSpaceID_None, nsGkAtoms::resizeafter, strings, eCaseMatters)) {
     case 0:
@@ -163,10 +166,10 @@ nsSplitterFrameInner::ResizeType nsSplitterFrameInner::GetResizeAfter() {
 }
 
 nsSplitterFrameInner::State nsSplitterFrameInner::GetState() {
-  static Element::AttrValuesArray strings[] = {&nsGkAtoms::dragging,
-                                               &nsGkAtoms::collapsed, nullptr};
+  static Element::AttrValuesArray strings[] = {nsGkAtoms::dragging,
+                                               nsGkAtoms::collapsed, nullptr};
   static Element::AttrValuesArray strings_substate[] = {
-      &nsGkAtoms::before, &nsGkAtoms::after, nullptr};
+      nsGkAtoms::before, nsGkAtoms::after, nullptr};
   switch (SplitterElement()->FindAttrValueIn(
       kNameSpaceID_None, nsGkAtoms::state, strings, eCaseMatters)) {
     case 0:
@@ -192,15 +195,15 @@ nsSplitterFrameInner::State nsSplitterFrameInner::GetState() {
 //
 // Creates a new Toolbar frame and returns it
 //
-nsIFrame* NS_NewSplitterFrame(nsIPresShell* aPresShell,
-                              nsStyleContext* aContext) {
-  return new (aPresShell) nsSplitterFrame(aContext);
+nsIFrame* NS_NewSplitterFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsSplitterFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsSplitterFrame)
 
-nsSplitterFrame::nsSplitterFrame(nsStyleContext* aContext)
-    : nsBoxFrame(aContext, kClassID), mInner(0) {}
+nsSplitterFrame::nsSplitterFrame(ComputedStyle* aStyle,
+                                 nsPresContext* aPresContext)
+    : nsBoxFrame(aStyle, aPresContext, kClassID), mInner(0) {}
 
 void nsSplitterFrame::DestroyFrom(nsIFrame* aDestructRoot,
                                   PostDestroyData& aPostDestroyData) {
@@ -213,33 +216,12 @@ void nsSplitterFrame::DestroyFrom(nsIFrame* aDestructRoot,
   nsBoxFrame::DestroyFrom(aDestructRoot, aPostDestroyData);
 }
 
-nsresult nsSplitterFrame::GetCursor(const nsPoint& aPoint,
-                                    nsIFrame::Cursor& aCursor) {
-  return nsBoxFrame::GetCursor(aPoint, aCursor);
-
-  /*
-    if (IsXULHorizontal())
-      aCursor = NS_STYLE_CURSOR_N_RESIZE;
-    else
-      aCursor = NS_STYLE_CURSOR_W_RESIZE;
-
-    return NS_OK;
-  */
-}
-
 nsresult nsSplitterFrame::AttributeChanged(int32_t aNameSpaceID,
                                            nsAtom* aAttribute,
                                            int32_t aModType) {
   nsresult rv =
       nsBoxFrame::AttributeChanged(aNameSpaceID, aAttribute, aModType);
-  // if the alignment changed. Let the grippy know
-  if (aAttribute == nsGkAtoms::align) {
-    // tell the slider its attribute changed so it can
-    // update itself
-    nsIFrame* grippy = nullptr;
-    nsScrollbarButtonFrame::GetChildWithTag(nsGkAtoms::grippy, this, grippy);
-    if (grippy) grippy->AttributeChanged(aNameSpaceID, aAttribute, aModType);
-  } else if (aAttribute == nsGkAtoms::state) {
+  if (aAttribute == nsGkAtoms::state) {
     mInner->UpdateState();
   }
 
@@ -256,8 +238,6 @@ void nsSplitterFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
   mInner = new nsSplitterFrameInner(this);
 
   mInner->AddRef();
-  mInner->mState = nsSplitterFrameInner::Open;
-  mInner->mDragging = false;
 
   // determine orientation of parent, and if vertical, set orient to vertical
   // on splitter content, then re-resolve style
@@ -269,21 +249,6 @@ void nsSplitterFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
                                            nsGkAtoms::orient)) {
         aContent->AsElement()->SetAttr(kNameSpaceID_None, nsGkAtoms::orient,
                                        NS_LITERAL_STRING("vertical"), false);
-        if (StyleContext()->IsGecko()) {
-#ifdef MOZ_OLD_STYLE
-          // FIXME(emilio): Even if we did this in Servo, this just won't
-          // work, and we'd need a specific "really re-resolve the style" API...
-          GeckoStyleContext* parentStyleContext =
-              StyleContext()->AsGecko()->GetParent();
-          RefPtr<nsStyleContext> newContext =
-              PresContext()->StyleSet()->ResolveStyleFor(
-                  aContent->AsElement(), parentStyleContext,
-                  LazyComputeBehavior::Allow);
-          SetStyleContextWithoutNotification(newContext);
-#else
-          MOZ_CRASH("old style system disabled");
-#endif
-        }
       }
     }
   }
@@ -348,8 +313,7 @@ void nsSplitterFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
   // if the mouse is captured always return us as the frame.
   if (mInner->mDragging && aBuilder->IsForEventDelivery()) {
     // XXX It's probably better not to check visibility here, right?
-    aLists.Outlines()->AppendToTop(
-        MakeDisplayItem<nsDisplayEventReceiver>(aBuilder, this));
+    aLists.Outlines()->AppendNewToTop<nsDisplayEventReceiver>(aBuilder, this);
     return;
   }
 }
@@ -370,7 +334,7 @@ nsresult nsSplitterFrame::HandleEvent(nsPresContext* aPresContext,
       break;
 
     case eMouseUp:
-      if (aEvent->AsMouseEvent()->button == WidgetMouseEvent::eLeftButton) {
+      if (aEvent->AsMouseEvent()->mButton == MouseButton::eLeft) {
         inner->MouseUp(aPresContext, aEvent);
       }
       break;
@@ -388,8 +352,7 @@ void nsSplitterFrameInner::MouseUp(nsPresContext* aPresContext,
   if (mDragging && mOuter) {
     AdjustChildren(aPresContext);
     AddListener();
-    nsIPresShell::SetCapturingContent(nullptr,
-                                      0);  // XXXndeakin is this needed?
+    PresShell::ReleaseCapturingContent();  // XXXndeakin is this needed?
     mDragging = false;
     State newState = GetState();
     // if the state is dragging then make it Open.
@@ -403,7 +366,7 @@ void nsSplitterFrameInner::MouseUp(nsPresContext* aPresContext,
     // if we dragged then fire a command event.
     if (mDidDrag) {
       RefPtr<nsXULElement> element =
-          nsXULElement::FromContent(mOuter->GetContent());
+          nsXULElement::FromNode(mOuter->GetContent());
       element->DoCommand();
     }
 
@@ -525,7 +488,7 @@ void nsSplitterFrameInner::AddListener() {
 }
 
 void nsSplitterFrameInner::RemoveListener() {
-  ENSURE_TRUE(mOuter);
+  NS_ENSURE_TRUE_VOID(mOuter);
   mOuter->GetContent()->RemoveEventListener(NS_LITERAL_STRING("mouseup"), this,
                                             false);
   mOuter->GetContent()->RemoveEventListener(NS_LITERAL_STRING("mousedown"),
@@ -536,7 +499,7 @@ void nsSplitterFrameInner::RemoveListener() {
                                             false);
 }
 
-nsresult nsSplitterFrameInner::HandleEvent(nsIDOMEvent* aEvent) {
+nsresult nsSplitterFrameInner::HandleEvent(dom::Event* aEvent) {
   nsAutoString eventType;
   aEvent->GetType(eventType);
   if (eventType.EqualsLiteral("mouseup")) return MouseUp(aEvent);
@@ -549,25 +512,24 @@ nsresult nsSplitterFrameInner::HandleEvent(nsIDOMEvent* aEvent) {
   return NS_OK;
 }
 
-nsresult nsSplitterFrameInner::MouseUp(nsIDOMEvent* aMouseEvent) {
+nsresult nsSplitterFrameInner::MouseUp(Event* aMouseEvent) {
   NS_ENSURE_TRUE(mOuter, NS_OK);
   mPressed = false;
 
-  nsIPresShell::SetCapturingContent(nullptr, 0);
+  PresShell::ReleaseCapturingContent();
 
   return NS_OK;
 }
 
-nsresult nsSplitterFrameInner::MouseDown(nsIDOMEvent* aMouseEvent) {
+nsresult nsSplitterFrameInner::MouseDown(Event* aMouseEvent) {
   NS_ENSURE_TRUE(mOuter, NS_OK);
-  nsCOMPtr<nsIDOMMouseEvent> mouseEvent(do_QueryInterface(aMouseEvent));
-  if (!mouseEvent) return NS_OK;
-
-  int16_t button = 0;
-  mouseEvent->GetButton(&button);
+  dom::MouseEvent* mouseEvent = aMouseEvent->AsMouseEvent();
+  if (!mouseEvent) {
+    return NS_OK;
+  }
 
   // only if left button
-  if (button != 0) return NS_OK;
+  if (mouseEvent->Button() != 0) return NS_OK;
 
   if (SplitterElement()->AttrValueIs(kNameSpaceID_None, nsGkAtoms::disabled,
                                      nsGkAtoms::_true, eCaseMatters))
@@ -591,7 +553,6 @@ nsresult nsSplitterFrameInner::MouseDown(nsIDOMEvent* aMouseEvent) {
   RefPtr<gfxContext> rc =
       outerPresContext->PresShell()->CreateReferenceRenderingContext();
   nsBoxLayoutState state(outerPresContext, rc);
-  mCurrentPos = 0;
   mPressed = true;
 
   mDidDrag = false;
@@ -612,23 +573,20 @@ nsresult nsSplitterFrameInner::MouseDown(nsIDOMEvent* aMouseEvent) {
 
   nsIFrame* childBox = nsBox::GetChildXULBox(mParentBox);
 
-  while (nullptr != childBox) {
+  while (childBox) {
     nsIContent* content = childBox->GetContent();
-    nsIDocument* doc = content->OwnerDoc();
-    int32_t dummy;
-    nsAtom* atom = doc->BindingManager()->ResolveTag(content, &dummy);
 
     // skip over any splitters
-    if (atom != nsGkAtoms::splitter) {
+    if (content->NodeInfo()->NameAtom() != nsGkAtoms::splitter) {
       nsSize prefSize = childBox->GetXULPrefSize(state);
       nsSize minSize = childBox->GetXULMinSize(state);
       nsSize maxSize =
           nsBox::BoundsCheckMinMax(minSize, childBox->GetXULMaxSize(state));
       prefSize = nsBox::BoundsCheck(minSize, prefSize, maxSize);
 
-      mOuter->AddMargin(childBox, minSize);
-      mOuter->AddMargin(childBox, prefSize);
-      mOuter->AddMargin(childBox, maxSize);
+      nsSplitterFrame::AddMargin(childBox, minSize);
+      nsSplitterFrame::AddMargin(childBox, prefSize);
+      nsSplitterFrame::AddMargin(childBox, maxSize);
 
       nscoord flex = childBox->GetXULFlex();
 
@@ -706,8 +664,8 @@ nsresult nsSplitterFrameInner::MouseDown(nsIDOMEvent* aMouseEvent) {
   if (resizeAfter == Grow) mChildInfosAfterCount = 0;
 
   int32_t c;
-  nsPoint pt = nsLayoutUtils::GetDOMEventCoordinatesRelativeTo(
-      mouseEvent->AsEvent(), mParentBox);
+  nsPoint pt =
+      nsLayoutUtils::GetDOMEventCoordinatesRelativeTo(mouseEvent, mParentBox);
   if (isHorizontal) {
     c = pt.x;
     mSplitterPos = mOuter->mRect.x;
@@ -720,13 +678,13 @@ nsresult nsSplitterFrameInner::MouseDown(nsIDOMEvent* aMouseEvent) {
 
   // printf("Pressed mDragStart=%d\n",mDragStart);
 
-  nsIPresShell::SetCapturingContent(mOuter->GetContent(),
-                                    CAPTURE_IGNOREALLOWED);
+  PresShell::SetCapturingContent(mOuter->GetContent(),
+                                 CaptureFlags::IgnoreAllowedState);
 
   return NS_OK;
 }
 
-nsresult nsSplitterFrameInner::MouseMove(nsIDOMEvent* aMouseEvent) {
+nsresult nsSplitterFrameInner::MouseMove(Event* aMouseEvent) {
   NS_ENSURE_TRUE(mOuter, NS_OK);
   if (!mPressed) return NS_OK;
 
@@ -748,13 +706,13 @@ void nsSplitterFrameInner::Reverse(UniquePtr<nsSplitterInfo[]>& aChildInfos,
 
   for (int i = 0; i < aCount; i++) infos[i] = aChildInfos[aCount - 1 - i];
 
-  aChildInfos = Move(infos);
+  aChildInfos = std::move(infos);
 }
 
 bool nsSplitterFrameInner::SupportsCollapseDirection(
     nsSplitterFrameInner::CollapseDirection aDirection) {
   static Element::AttrValuesArray strings[] = {
-      &nsGkAtoms::before, &nsGkAtoms::after, &nsGkAtoms::both, nullptr};
+      nsGkAtoms::before, nsGkAtoms::after, nsGkAtoms::both, nullptr};
 
   switch (SplitterElement()->FindAttrValueIn(
       kNameSpaceID_None, nsGkAtoms::collapse, strings, eCaseMatters)) {
@@ -928,8 +886,8 @@ void nsSplitterFrameInner::SetPreferredSize(nsBoxLayoutState& aState,
 
   AutoWeakFrame weakBox(aChildBox);
   content->AsElement()->SetAttr(kNameSpaceID_None, attribute, prefValue, true);
-  ENSURE_TRUE(weakBox.IsAlive());
-  aState.PresShell()->FrameNeedsReflow(aChildBox, nsIPresShell::eStyleChange,
+  NS_ENSURE_TRUE_VOID(weakBox.IsAlive());
+  aState.PresShell()->FrameNeedsReflow(aChildBox, IntrinsicDirty::StyleChange,
                                        NS_FRAME_IS_DIRTY);
 }
 

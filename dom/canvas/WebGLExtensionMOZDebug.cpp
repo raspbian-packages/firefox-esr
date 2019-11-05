@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -21,6 +21,8 @@ void WebGLExtensionMOZDebug::GetParameter(JSContext* cx, GLenum pname,
                                           JS::MutableHandle<JS::Value> retval,
                                           ErrorResult& er) const {
   if (mIsLost || !mContext) return;
+  const WebGLContext::FuncScope funcScope(*mContext, "MOZ_debug.getParameter");
+  MOZ_ASSERT(!mContext->IsContextLost());
 
   const auto& gl = mContext->gl;
 
@@ -53,16 +55,19 @@ void WebGLExtensionMOZDebug::GetParameter(JSContext* cx, GLenum pname,
       return;
     }
 
-    case 0x10000:  // "WSI_INFO"
-    {
+    case dom::MOZ_debug_Binding::WSI_INFO: {
       nsCString info;
       gl->GetWSIInfo(&info);
       retval.set(StringValue(cx, NS_ConvertUTF8toUTF16(info), er));
       return;
     }
 
+    case dom::MOZ_debug_Binding::DOES_INDEX_VALIDATION:
+      retval.set(JS::BooleanValue(mContext->mNeedsIndexValidation));
+      return;
+
     default:
-      mContext->ErrorInvalidEnumArg("MOZ_debug.getParameter", "pname", pname);
+      mContext->ErrorInvalidEnumInfo("pname", pname);
       retval.set(JS::NullValue());
       return;
   }

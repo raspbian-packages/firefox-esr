@@ -9,25 +9,24 @@
 #include "nsInlineFrame.h"
 
 #include "gfxContext.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/Likely.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/RestyleManager.h"
+#include "mozilla/ServoStyleSet.h"
 #include "nsLineLayout.h"
 #include "nsBlockFrame.h"
 #include "nsPlaceholderFrame.h"
 #include "nsGkAtoms.h"
-#include "nsStyleContext.h"
 #include "nsPresContext.h"
+#include "nsPresContextInlines.h"
 #include "nsCSSAnonBoxes.h"
-#include "mozilla/RestyleManager.h"
-#include "mozilla/RestyleManagerInlines.h"
 #include "nsDisplayList.h"
-#include "mozilla/Likely.h"
 #include "SVGTextFrame.h"
 #include "nsStyleChangeList.h"
-#include "mozilla/StyleSetHandle.h"
-#include "mozilla/StyleSetHandleInlines.h"
-#include "mozilla/ServoStyleSet.h"
 
 #ifdef DEBUG
-#undef NOISY_PUSHING
+#  undef NOISY_PUSHING
 #endif
 
 using namespace mozilla;
@@ -37,15 +36,14 @@ using namespace mozilla::layout;
 
 // Basic nsInlineFrame methods
 
-nsInlineFrame* NS_NewInlineFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext) {
-  return new (aPresShell) nsInlineFrame(aContext);
+nsInlineFrame* NS_NewInlineFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsInlineFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsInlineFrame)
 
 NS_QUERYFRAME_HEAD(nsInlineFrame)
-NS_QUERYFRAME_ENTRY(nsInlineFrame)
+  NS_QUERYFRAME_ENTRY(nsInlineFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 #ifdef DEBUG_FRAME_DUMP
@@ -54,33 +52,37 @@ nsresult nsInlineFrame::GetFrameName(nsAString& aResult) const {
 }
 #endif
 
-void nsInlineFrame::InvalidateFrame(uint32_t aDisplayItemKey) {
+void nsInlineFrame::InvalidateFrame(uint32_t aDisplayItemKey,
+                                    bool aRebuildDisplayItems) {
   if (nsSVGUtils::IsInSVGTextSubtree(this)) {
     nsIFrame* svgTextFrame = nsLayoutUtils::GetClosestFrameOfType(
         GetParent(), LayoutFrameType::SVGText);
     svgTextFrame->InvalidateFrame();
     return;
   }
-  nsContainerFrame::InvalidateFrame(aDisplayItemKey);
+  nsContainerFrame::InvalidateFrame(aDisplayItemKey, aRebuildDisplayItems);
 }
 
 void nsInlineFrame::InvalidateFrameWithRect(const nsRect& aRect,
-                                            uint32_t aDisplayItemKey) {
+                                            uint32_t aDisplayItemKey,
+                                            bool aRebuildDisplayItems) {
   if (nsSVGUtils::IsInSVGTextSubtree(this)) {
     nsIFrame* svgTextFrame = nsLayoutUtils::GetClosestFrameOfType(
         GetParent(), LayoutFrameType::SVGText);
     svgTextFrame->InvalidateFrame();
     return;
   }
-  nsContainerFrame::InvalidateFrameWithRect(aRect, aDisplayItemKey);
+  nsContainerFrame::InvalidateFrameWithRect(aRect, aDisplayItemKey,
+                                            aRebuildDisplayItems);
 }
 
-static inline bool IsMarginZero(const nsStyleCoord& aCoord) {
-  return aCoord.GetUnit() == eStyleUnit_Auto ||
-         nsLayoutUtils::IsMarginZero(aCoord);
+static inline bool IsMarginZero(const LengthPercentageOrAuto& aLength) {
+  return aLength.IsAuto() ||
+         nsLayoutUtils::IsMarginZero(aLength.AsLengthPercentage());
 }
 
-/* virtual */ bool nsInlineFrame::IsSelfEmpty() {
+/* virtual */
+bool nsInlineFrame::IsSelfEmpty() {
 #if 0
   // I used to think inline frames worked this way, but it seems they
   // don't.  At least not in our codebase.
@@ -96,23 +98,21 @@ static inline bool IsMarginZero(const nsStyleCoord& aCoord) {
   // ZeroEffectiveSpanBox, anymore, so what should this really be?
   WritingMode wm = GetWritingMode();
   bool haveStart, haveEnd;
+
+  auto HaveSide = [&](mozilla::Side aSide) -> bool {
+    return border->GetComputedBorderWidth(aSide) != 0 ||
+           !nsLayoutUtils::IsPaddingZero(padding->mPadding.Get(aSide)) ||
+           !IsMarginZero(margin->mMargin.Get(aSide));
+  };
   // Initially set up haveStart and haveEnd in terms of visual (LTR/TTB)
   // coordinates; we'll exchange them later if bidi-RTL is in effect to
   // get logical start and end flags.
   if (wm.IsVertical()) {
-    haveStart = border->GetComputedBorderWidth(eSideTop) != 0 ||
-                !nsLayoutUtils::IsPaddingZero(padding->mPadding.GetTop()) ||
-                !IsMarginZero(margin->mMargin.GetTop());
-    haveEnd = border->GetComputedBorderWidth(eSideBottom) != 0 ||
-              !nsLayoutUtils::IsPaddingZero(padding->mPadding.GetBottom()) ||
-              !IsMarginZero(margin->mMargin.GetBottom());
+    haveStart = HaveSide(eSideTop);
+    haveEnd = HaveSide(eSideBottom);
   } else {
-    haveStart = border->GetComputedBorderWidth(eSideLeft) != 0 ||
-                !nsLayoutUtils::IsPaddingZero(padding->mPadding.GetLeft()) ||
-                !IsMarginZero(margin->mMargin.GetLeft());
-    haveEnd = border->GetComputedBorderWidth(eSideRight) != 0 ||
-              !nsLayoutUtils::IsPaddingZero(padding->mPadding.GetRight()) ||
-              !IsMarginZero(margin->mMargin.GetRight());
+    haveStart = HaveSide(eSideLeft);
+    haveEnd = HaveSide(eSideRight);
   }
   if (haveStart || haveEnd) {
     // We skip this block and return false for box-decoration-break:clone since
@@ -228,13 +228,15 @@ void nsInlineFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
 //////////////////////////////////////////////////////////////////////
 // Reflow methods
 
-/* virtual */ void nsInlineFrame::AddInlineMinISize(
-    gfxContext* aRenderingContext, nsIFrame::InlineMinISizeData* aData) {
+/* virtual */
+void nsInlineFrame::AddInlineMinISize(gfxContext* aRenderingContext,
+                                      nsIFrame::InlineMinISizeData* aData) {
   DoInlineIntrinsicISize(aRenderingContext, aData, nsLayoutUtils::MIN_ISIZE);
 }
 
-/* virtual */ void nsInlineFrame::AddInlinePrefISize(
-    gfxContext* aRenderingContext, nsIFrame::InlinePrefISizeData* aData) {
+/* virtual */
+void nsInlineFrame::AddInlinePrefISize(gfxContext* aRenderingContext,
+                                       nsIFrame::InlinePrefISizeData* aData) {
   DoInlineIntrinsicISize(aRenderingContext, aData, nsLayoutUtils::PREF_ISIZE);
   aData->mLineIsEmpty = false;
 }
@@ -251,7 +253,7 @@ LogicalSize nsInlineFrame::ComputeSize(
 
 nsRect nsInlineFrame::ComputeTightBounds(DrawTarget* aDrawTarget) const {
   // be conservative
-  if (StyleContext()->HasTextDecorationLines()) {
+  if (Style()->HasTextDecorationLines()) {
     return GetVisualOverflowRect();
   }
   return ComputeSimpleTightBounds(aDrawTarget);
@@ -264,7 +266,7 @@ static void ReparentChildListStyle(nsPresContext* aPresContext,
 
   for (nsFrameList::Enumerator e(aFrames); !e.AtEnd(); e.Next()) {
     NS_ASSERTION(e.get()->GetParent() == aParentFrame, "Bogus parentage");
-    restyleManager->ReparentStyleContext(e.get());
+    restyleManager->ReparentComputedStyleForFirstLine(e.get());
     nsLayoutUtils::MarkDescendantsDirty(e.get());
   }
 }
@@ -318,9 +320,9 @@ void nsInlineFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
         const nsFrameList::Slice& newFrames =
             mFrames.InsertFrames(this, nullptr, *prevOverflowFrames);
         // If our prev in flow was under the first continuation of a first-line
-        // frame then we need to reparent the style contexts to remove the
+        // frame then we need to reparent the ComputedStyles to remove the
         // the special first-line styling. In the lazilySetParentPointer case
-        // we reparent the style contexts when we set their parents in
+        // we reparent the ComputedStyles when we set their parents in
         // nsInlineFrame::ReflowFrames and nsInlineFrame::ReflowInlineFrame.
         if (aReflowInput.mLineLayout->GetInFirstLine()) {
           ReparentChildListStyle(aPresContext, newFrames, this);
@@ -329,7 +331,7 @@ void nsInlineFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
     }
   }
 
-    // It's also possible that we have an overflow list for ourselves
+  // It's also possible that we have an overflow list for ourselves
 #ifdef DEBUG
   if (GetStateBits() & NS_FRAME_FIRST_REFLOW) {
     // If it's our initial reflow, then we should not have an overflow list.
@@ -341,15 +343,10 @@ void nsInlineFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
   }
 #endif
   if (!(GetStateBits() & NS_FRAME_FIRST_REFLOW)) {
-    DrainFlags flags =
-        lazilySetParentPointer ? eDontReparentFrames : DrainFlags(0);
-    if (aReflowInput.mLineLayout->GetInFirstLine()) {
-      flags = DrainFlags(flags | eInFirstLine);
-    }
-    DrainSelfOverflowListInternal(flags);
+    DrainSelfOverflowListInternal(aReflowInput.mLineLayout->GetInFirstLine());
   }
 
-  // Set our own reflow state (additional state above and beyond aReflowInput).
+  // Set our own reflow input (additional state above and beyond aReflowInput).
   InlineReflowInput irs;
   irs.mPrevFrame = nullptr;
   irs.mLineContainer = aReflowInput.mLineLayout->LineContainerFrame();
@@ -360,8 +357,7 @@ void nsInlineFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
   if (mFrames.IsEmpty()) {
     // Try to pull over one frame before starting so that we know
     // whether we have an anonymous block or not.
-    bool complete;
-    (void)PullOneFrame(aPresContext, irs, &complete);
+    Unused << PullOneFrame(aPresContext, irs);
   }
 
   ReflowFrames(aPresContext, aReflowInput, irs, aMetrics, aStatus);
@@ -393,51 +389,51 @@ nsresult nsInlineFrame::AttributeChanged(int32_t aNameSpaceID,
   return NS_OK;
 }
 
-bool nsInlineFrame::DrainSelfOverflowListInternal(DrainFlags aFlags) {
+bool nsInlineFrame::DrainSelfOverflowListInternal(bool aInFirstLine) {
   AutoFrameListPtr overflowFrames(PresContext(), StealOverflowFrames());
-  if (overflowFrames) {
-    // The frames on our own overflowlist may have been pushed by a
-    // previous lazilySetParentPointer Reflow so we need to ensure the
-    // correct parent pointer.  This is sometimes skipped by Reflow.
-    if (!(aFlags & eDontReparentFrames)) {
-      nsIFrame* firstChild = overflowFrames->FirstChild();
-      const bool doReparentSC = (aFlags & eInFirstLine);
-      RestyleManager* restyleManager = PresContext()->RestyleManager();
-      for (nsIFrame* f = firstChild; f; f = f->GetNextSibling()) {
-        f->SetParent(this);
-        if (doReparentSC) {
-          restyleManager->ReparentStyleContext(f);
-          nsLayoutUtils::MarkDescendantsDirty(f);
-        }
-      }
-    }
-    bool result = !overflowFrames->IsEmpty();
-    mFrames.AppendFrames(nullptr, *overflowFrames);
-    return result;
+  if (!overflowFrames || overflowFrames->IsEmpty()) {
+    return false;
   }
-  return false;
+
+  // The frames on our own overflowlist may have been pushed by a
+  // previous lazilySetParentPointer Reflow so we need to ensure the
+  // correct parent pointer.  This is sometimes skipped by Reflow.
+  nsIFrame* firstChild = overflowFrames->FirstChild();
+  RestyleManager* restyleManager = PresContext()->RestyleManager();
+  for (nsIFrame* f = firstChild; f; f = f->GetNextSibling()) {
+    f->SetParent(this);
+    if (MOZ_UNLIKELY(aInFirstLine)) {
+      restyleManager->ReparentComputedStyleForFirstLine(f);
+      nsLayoutUtils::MarkDescendantsDirty(f);
+    }
+  }
+  mFrames.AppendFrames(nullptr, *overflowFrames);
+  return true;
 }
 
-/* virtual */ bool nsInlineFrame::DrainSelfOverflowList() {
+/* virtual */
+bool nsInlineFrame::DrainSelfOverflowList() {
   nsIFrame* lineContainer = nsLayoutUtils::FindNearestBlockAncestor(this);
   // Add the eInFirstLine flag if we have a ::first-line ancestor frame.
   // No need to look further than the nearest line container though.
-  DrainFlags flags = DrainFlags(0);
+  bool inFirstLine = false;
   for (nsIFrame* p = GetParent(); p != lineContainer; p = p->GetParent()) {
     if (p->IsLineFrame()) {
-      flags = DrainFlags(flags | eInFirstLine);
+      inFirstLine = true;
       break;
     }
   }
-  return DrainSelfOverflowListInternal(flags);
+  return DrainSelfOverflowListInternal(inFirstLine);
 }
 
-/* virtual */ bool nsInlineFrame::CanContinueTextRun() const {
+/* virtual */
+bool nsInlineFrame::CanContinueTextRun() const {
   // We can continue a text run through an inline frame
   return true;
 }
 
-/* virtual */ void nsInlineFrame::PullOverflowsFromPrevInFlow() {
+/* virtual */
+void nsInlineFrame::PullOverflowsFromPrevInFlow() {
   nsInlineFrame* prevInFlow = static_cast<nsInlineFrame*>(GetPrevInFlow());
   if (prevInFlow) {
     nsPresContext* presContext = PresContext();
@@ -494,7 +490,7 @@ void nsInlineFrame::ReflowFrames(nsPresContext* aPresContext,
       do {
         child->SetParent(this);
         if (inFirstLine) {
-          restyleManager->ReparentStyleContext(child);
+          restyleManager->ReparentComputedStyleForFirstLine(child);
           nsLayoutUtils::MarkDescendantsDirty(child);
         }
         // We also need to do the same for |frame|'s next-in-flows that are in
@@ -527,7 +523,7 @@ void nsInlineFrame::ReflowFrames(nsPresContext* aPresContext,
             if (mFrames.ContainsFrame(nextInFlow)) {
               nextInFlow->SetParent(this);
               if (inFirstLine) {
-                restyleManager->ReparentStyleContext(nextInFlow);
+                restyleManager->ReparentComputedStyleForFirstLine(nextInFlow);
                 nsLayoutUtils::MarkDescendantsDirty(nextInFlow);
               }
             } else {
@@ -573,19 +569,14 @@ void nsInlineFrame::ReflowFrames(nsPresContext* aPresContext,
   if (!done && GetNextInFlow()) {
     while (true) {
       bool reflowingFirstLetter = lineLayout->GetFirstLetterStyleOK();
-      bool isComplete;
       if (!frame) {  // Could be non-null if we pulled a first-letter frame and
                      // it created a continuation, since we don't push those.
-        frame = PullOneFrame(aPresContext, irs, &isComplete);
+        frame = PullOneFrame(aPresContext, irs);
       }
 #ifdef NOISY_PUSHING
       printf("%p pulled up %p\n", this, frame);
 #endif
-      if (nullptr == frame) {
-        if (!isComplete) {
-          aStatus.Reset();
-          aStatus.SetIncomplete();
-        }
+      if (!frame) {
         break;
       }
       ReflowInlineFrame(aPresContext, aReflowInput, irs, frame, aStatus);
@@ -655,6 +646,23 @@ void nsInlineFrame::ReflowFrames(nsPresContext* aPresContext,
 #endif
 }
 
+// Returns whether there's any remaining frame to pull.
+/* static */
+bool nsInlineFrame::HasFramesToPull(nsInlineFrame* aNextInFlow) {
+  while (aNextInFlow) {
+    if (!aNextInFlow->mFrames.IsEmpty()) {
+      return true;
+    }
+    if (const nsFrameList* overflow = aNextInFlow->GetOverflowFrames()) {
+      if (!overflow->IsEmpty()) {
+        return true;
+      }
+    }
+    aNextInFlow = static_cast<nsInlineFrame*>(aNextInFlow->GetNextInFlow());
+  }
+  return false;
+}
+
 void nsInlineFrame::ReflowInlineFrame(nsPresContext* aPresContext,
                                       const ReflowInput& aReflowInput,
                                       InlineReflowInput& irs, nsIFrame* aFrame,
@@ -695,13 +703,8 @@ void nsInlineFrame::ReflowInlineFrame(nsPresContext* aPresContext,
     } else {
       // We must return an incomplete status if there are more child
       // frames remaining in a next-in-flow that follows this frame.
-      nsInlineFrame* nextInFlow = static_cast<nsInlineFrame*>(GetNextInFlow());
-      while (nextInFlow) {
-        if (nextInFlow->mFrames.NotEmpty()) {
-          aStatus.SetIncomplete();
-          break;
-        }
-        nextInFlow = static_cast<nsInlineFrame*>(nextInFlow->GetNextInFlow());
+      if (HasFramesToPull(static_cast<nsInlineFrame*>(GetNextInFlow()))) {
+        aStatus.SetIncomplete();
       }
     }
     return;
@@ -716,12 +719,14 @@ void nsInlineFrame::ReflowInlineFrame(nsPresContext* aPresContext,
 }
 
 nsIFrame* nsInlineFrame::PullOneFrame(nsPresContext* aPresContext,
-                                      InlineReflowInput& irs,
-                                      bool* aIsComplete) {
-  bool isComplete = true;
-
+                                      InlineReflowInput& irs) {
   nsIFrame* frame = nullptr;
   nsInlineFrame* nextInFlow = irs.mNextInFlow;
+
+#ifdef DEBUG
+  bool willPull = HasFramesToPull(nextInFlow);
+#endif
+
   while (nextInFlow) {
     frame = nextInFlow->mFrames.FirstChild();
     if (!frame) {
@@ -751,13 +756,13 @@ nsIFrame* nsInlineFrame::PullOneFrame(nsPresContext* aPresContext,
         // The blockChildren.ContainsFrame check performed by
         // ReparentFloatsForInlineChild will be fast because frame's ancestor
         // will be the first child of its containing block.
-        ReparentFloatsForInlineChild(irs.mLineContainer, frame, false);
+        ReparentFloatsForInlineChild(irs.mLineContainer, frame, false,
+                                     ReparentingDirection::Backwards);
       }
       nextInFlow->mFrames.RemoveFirstChild();
-      // nsFirstLineFrame::PullOneFrame calls ReparentStyleContext.
+      // nsFirstLineFrame::PullOneFrame calls ReparentComputedStyle.
 
       mFrames.InsertFrame(this, irs.mPrevFrame, frame);
-      isComplete = false;
       if (irs.mLineLayout) {
         irs.mLineLayout->SetDirtyNextLine();
       }
@@ -768,7 +773,7 @@ nsIFrame* nsInlineFrame::PullOneFrame(nsPresContext* aPresContext,
     irs.mNextInFlow = nextInFlow;
   }
 
-  *aIsComplete = isComplete;
+  MOZ_ASSERT(!!frame == willPull);
   return frame;
 }
 
@@ -850,11 +855,8 @@ nscoord nsInlineFrame::GetLogicalBaseline(
 
 #ifdef ACCESSIBILITY
 a11y::AccType nsInlineFrame::AccessibleType() {
-  // Broken image accessibles are created here, because layout
-  // replaces the image or image control frame with an inline frame
-  if (mContent->IsHTMLElement(
-          nsGkAtoms::input))  // Broken <input type=image ... />
-    return a11y::eHTMLButtonType;
+  // FIXME(emilio): This is broken, if the image has its default `display` value
+  // overridden. Should be somewhere else.
   if (mContent->IsHTMLElement(
           nsGkAtoms::img))  // Create accessible for broken <img>
     return a11y::eHyperTextType;
@@ -881,15 +883,15 @@ void nsInlineFrame::UpdateStyleOfOwnedAnonBoxesForIBSplit(
   MOZ_ASSERT(blockFrame, "Why did we have an IB split?");
 
   // The later inlines need to get our style.
-  ServoStyleContext* ourStyle = StyleContext()->AsServo();
+  ComputedStyle* ourStyle = Style();
 
   // The anonymous block's style inherits from ours, and we already have our new
-  // style context.
-  RefPtr<ServoStyleContext> newContext =
+  // ComputedStyle.
+  RefPtr<ComputedStyle> newContext =
       aRestyleState.StyleSet().ResolveInheritingAnonymousBoxStyle(
-          nsCSSAnonBoxes::mozBlockInsideInlineWrapper, ourStyle);
+          PseudoStyleType::mozBlockInsideInlineWrapper, ourStyle);
 
-  // We're guaranteed that newContext only differs from the old style context on
+  // We're guaranteed that newContext only differs from the old ComputedStyle on
   // the block in things they might inherit from us.  And changehint processing
   // guarantees walking the continuation and ib-sibling chains, so our existing
   // changehint being in aChangeList is good enough.  So we don't need to touch
@@ -899,16 +901,13 @@ void nsInlineFrame::UpdateStyleOfOwnedAnonBoxesForIBSplit(
     MOZ_ASSERT(!blockFrame->GetPrevContinuation(),
                "Must be first continuation");
 
-    MOZ_ASSERT(blockFrame->StyleContext()->GetPseudo() ==
-                   nsCSSAnonBoxes::mozBlockInsideInlineWrapper,
-               "Unexpected kind of style context");
+    MOZ_ASSERT(blockFrame->Style()->GetPseudoType() ==
+                   PseudoStyleType::mozBlockInsideInlineWrapper,
+               "Unexpected kind of ComputedStyle");
 
-    // We don't want to just walk through using GetNextContinuationWithSameStyle
-    // here, because we want to set updated style contexts on both our
-    // ib-sibling blocks and inlines.
     for (nsIFrame* cont = blockFrame; cont;
          cont = cont->GetNextContinuation()) {
-      cont->SetStyleContext(newContext);
+      cont->SetComputedStyle(newContext);
     }
 
     nsIFrame* nextInline = blockFrame->GetProperty(nsIFrame::IBSplitSibling());
@@ -923,7 +922,7 @@ void nsInlineFrame::UpdateStyleOfOwnedAnonBoxesForIBSplit(
 
     for (nsIFrame* cont = nextInline; cont;
          cont = cont->GetNextContinuation()) {
-      cont->SetStyleContext(ourStyle);
+      cont->SetComputedStyle(ourStyle);
     }
     blockFrame = nextInline->GetProperty(nsIFrame::IBSplitSibling());
   }
@@ -933,9 +932,10 @@ void nsInlineFrame::UpdateStyleOfOwnedAnonBoxesForIBSplit(
 
 // nsLineFrame implementation
 
-nsFirstLineFrame* NS_NewFirstLineFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext) {
-  return new (aPresShell) nsFirstLineFrame(aContext);
+nsFirstLineFrame* NS_NewFirstLineFrame(PresShell* aPresShell,
+                                       ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsFirstLineFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsFirstLineFrame)
@@ -944,28 +944,27 @@ void nsFirstLineFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
                             nsIFrame* aPrevInFlow) {
   nsInlineFrame::Init(aContent, aParent, aPrevInFlow);
   if (!aPrevInFlow) {
-    MOZ_ASSERT(StyleContext()->GetPseudo() == nsCSSPseudoElements::firstLine);
+    MOZ_ASSERT(Style()->GetPseudoType() == PseudoStyleType::firstLine);
     return;
   }
 
-  // This frame is a continuation - fixup the style context if aPrevInFlow
+  // This frame is a continuation - fixup the computed style if aPrevInFlow
   // is the first-in-flow (the only one with a ::first-line pseudo).
-  if (aPrevInFlow->StyleContext()->GetPseudo() ==
-      nsCSSPseudoElements::firstLine) {
+  if (aPrevInFlow->Style()->GetPseudoType() == PseudoStyleType::firstLine) {
     MOZ_ASSERT(FirstInFlow() == aPrevInFlow);
-    // Create a new style context that is a child of the parent
-    // style context thus removing the ::first-line style. This way
+    // Create a new ComputedStyle that is a child of the parent
+    // ComputedStyle thus removing the ::first-line style. This way
     // we behave as if an anonymous (unstyled) span was the child
     // of the parent frame.
-    nsStyleContext* parentContext = aParent->StyleContext();
-    RefPtr<nsStyleContext> newSC =
+    ComputedStyle* parentContext = aParent->Style();
+    RefPtr<ComputedStyle> newSC =
         PresContext()->StyleSet()->ResolveInheritingAnonymousBoxStyle(
-            nsCSSAnonBoxes::mozLineFrame, parentContext);
-    SetStyleContext(newSC);
+            PseudoStyleType::mozLineFrame, parentContext);
+    SetComputedStyle(newSC);
   } else {
     MOZ_ASSERT(FirstInFlow() != aPrevInFlow);
-    MOZ_ASSERT(aPrevInFlow->StyleContext()->GetPseudo() ==
-               nsCSSAnonBoxes::mozLineFrame);
+    MOZ_ASSERT(aPrevInFlow->Style()->GetPseudoType() ==
+               PseudoStyleType::mozLineFrame);
   }
 }
 
@@ -976,14 +975,13 @@ nsresult nsFirstLineFrame::GetFrameName(nsAString& aResult) const {
 #endif
 
 nsIFrame* nsFirstLineFrame::PullOneFrame(nsPresContext* aPresContext,
-                                         InlineReflowInput& irs,
-                                         bool* aIsComplete) {
-  nsIFrame* frame = nsInlineFrame::PullOneFrame(aPresContext, irs, aIsComplete);
+                                         InlineReflowInput& irs) {
+  nsIFrame* frame = nsInlineFrame::PullOneFrame(aPresContext, irs);
   if (frame && !GetPrevInFlow()) {
     // We are a first-line frame. Fixup the child frames
     // style-context that we just pulled.
     NS_ASSERTION(frame->GetParent() == this, "Incorrect parent?");
-    aPresContext->RestyleManager()->ReparentStyleContext(frame);
+    aPresContext->RestyleManager()->ReparentComputedStyleForFirstLine(frame);
     nsLayoutUtils::MarkDescendantsDirty(frame);
   }
   return frame;
@@ -1006,7 +1004,7 @@ void nsFirstLineFrame::Reflow(nsPresContext* aPresContext,
     AutoFrameListPtr prevOverflowFrames(aPresContext,
                                         prevInFlow->StealOverflowFrames());
     if (prevOverflowFrames) {
-      // Reparent the new frames and their style contexts.
+      // Reparent the new frames and their ComputedStyles.
       const nsFrameList::Slice& newFrames =
           mFrames.InsertFrames(this, nullptr, *prevOverflowFrames);
       ReparentChildListStyle(aPresContext, newFrames, this);
@@ -1016,7 +1014,7 @@ void nsFirstLineFrame::Reflow(nsPresContext* aPresContext,
   // It's also possible that we have an overflow list for ourselves.
   DrainSelfOverflowList();
 
-  // Set our own reflow state (additional state above and beyond aReflowInput).
+  // Set our own reflow input (additional state above and beyond aReflowInput).
   InlineReflowInput irs;
   irs.mPrevFrame = nullptr;
   irs.mLineContainer = aReflowInput.mLineLayout->LineContainerFrame();
@@ -1027,8 +1025,7 @@ void nsFirstLineFrame::Reflow(nsPresContext* aPresContext,
   if (wasEmpty) {
     // Try to pull over one frame before starting so that we know
     // whether we have an anonymous block or not.
-    bool complete;
-    PullOneFrame(aPresContext, irs, &complete);
+    PullOneFrame(aPresContext, irs);
   }
 
   if (nullptr == GetPrevInFlow()) {
@@ -1040,8 +1037,7 @@ void nsFirstLineFrame::Reflow(nsPresContext* aPresContext,
     // All of this is so that text-runs reflow properly.
     irs.mPrevFrame = mFrames.LastChild();
     for (;;) {
-      bool complete;
-      nsIFrame* frame = PullOneFrame(aPresContext, irs, &complete);
+      nsIFrame* frame = PullOneFrame(aPresContext, irs);
       if (!frame) {
         break;
       }
@@ -1061,7 +1057,8 @@ void nsFirstLineFrame::Reflow(nsPresContext* aPresContext,
   // Note: the line layout code will properly compute our overflow state for us
 }
 
-/* virtual */ void nsFirstLineFrame::PullOverflowsFromPrevInFlow() {
+/* virtual */
+void nsFirstLineFrame::PullOverflowsFromPrevInFlow() {
   nsFirstLineFrame* prevInFlow =
       static_cast<nsFirstLineFrame*>(GetPrevInFlow());
   if (prevInFlow) {
@@ -1077,7 +1074,8 @@ void nsFirstLineFrame::Reflow(nsPresContext* aPresContext,
   }
 }
 
-/* virtual */ bool nsFirstLineFrame::DrainSelfOverflowList() {
+/* virtual */
+bool nsFirstLineFrame::DrainSelfOverflowList() {
   AutoFrameListPtr overflowFrames(PresContext(), StealOverflowFrames());
   if (overflowFrames) {
     bool result = !overflowFrames->IsEmpty();

@@ -6,6 +6,8 @@
 
 #include "SlicedInputStream.h"
 #include "mozilla/ipc/InputStreamUtils.h"
+#include "mozilla/CheckedInt.h"
+#include "mozilla/ScopeExit.h"
 #include "nsISeekableStream.h"
 #include "nsStreamUtils.h"
 
@@ -25,10 +27,19 @@ NS_INTERFACE_MAP_BEGIN(SlicedInputStream)
       mWeakIPCSerializableInputStream || !mInputStream)
   NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsISeekableStream,
                                      mWeakSeekableInputStream || !mInputStream)
+  NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsITellableStream,
+                                     mWeakTellableInputStream || !mInputStream)
   NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsIAsyncInputStream,
                                      mWeakAsyncInputStream || !mInputStream)
   NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsIInputStreamCallback,
                                      mWeakAsyncInputStream || !mInputStream)
+  NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsIInputStreamLength,
+                                     mWeakInputStreamLength || !mInputStream)
+  NS_INTERFACE_MAP_ENTRY_CONDITIONAL(
+      nsIAsyncInputStreamLength, mWeakAsyncInputStreamLength || !mInputStream)
+  NS_INTERFACE_MAP_ENTRY_CONDITIONAL(
+      nsIInputStreamLengthCallback,
+      mWeakAsyncInputStreamLength || !mInputStream)
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIInputStream)
 NS_INTERFACE_MAP_END
 
@@ -38,14 +49,18 @@ SlicedInputStream::SlicedInputStream(
     : mWeakCloneableInputStream(nullptr),
       mWeakIPCSerializableInputStream(nullptr),
       mWeakSeekableInputStream(nullptr),
+      mWeakTellableInputStream(nullptr),
       mWeakAsyncInputStream(nullptr),
+      mWeakInputStreamLength(nullptr),
+      mWeakAsyncInputStreamLength(nullptr),
       mStart(aStart),
       mLength(aLength),
       mCurPos(0),
       mClosed(false),
       mAsyncWaitFlags(0),
-      mAsyncWaitRequestedCount(0) {
-  nsCOMPtr<nsIInputStream> inputStream = mozilla::Move(aInputStream);
+      mAsyncWaitRequestedCount(0),
+      mMutex("SlicedInputStream::mMutex") {
+  nsCOMPtr<nsIInputStream> inputStream = std::move(aInputStream);
   SetSourceStream(inputStream.forget());
 }
 
@@ -53,13 +68,15 @@ SlicedInputStream::SlicedInputStream()
     : mWeakCloneableInputStream(nullptr),
       mWeakIPCSerializableInputStream(nullptr),
       mWeakSeekableInputStream(nullptr),
+      mWeakTellableInputStream(nullptr),
       mWeakAsyncInputStream(nullptr),
       mStart(0),
       mLength(0),
       mCurPos(0),
       mClosed(false),
       mAsyncWaitFlags(0),
-      mAsyncWaitRequestedCount(0) {}
+      mAsyncWaitRequestedCount(0),
+      mMutex("SlicedInputStream::mMutex") {}
 
 SlicedInputStream::~SlicedInputStream() {}
 
@@ -67,7 +84,7 @@ void SlicedInputStream::SetSourceStream(
     already_AddRefed<nsIInputStream> aInputStream) {
   MOZ_ASSERT(!mInputStream);
 
-  mInputStream = mozilla::Move(aInputStream);
+  mInputStream = std::move(aInputStream);
 
   nsCOMPtr<nsICloneableInputStream> cloneableStream =
       do_QueryInterface(mInputStream);
@@ -86,12 +103,47 @@ void SlicedInputStream::SetSourceStream(
     mWeakSeekableInputStream = seekableStream;
   }
 
+  nsCOMPtr<nsITellableStream> tellableStream = do_QueryInterface(mInputStream);
+  if (tellableStream && SameCOMIdentity(mInputStream, tellableStream)) {
+    mWeakTellableInputStream = tellableStream;
+  }
+
   nsCOMPtr<nsIAsyncInputStream> asyncInputStream =
       do_QueryInterface(mInputStream);
   if (asyncInputStream && SameCOMIdentity(mInputStream, asyncInputStream)) {
     mWeakAsyncInputStream = asyncInputStream;
   }
+
+  nsCOMPtr<nsIInputStreamLength> streamLength = do_QueryInterface(mInputStream);
+  if (streamLength && SameCOMIdentity(mInputStream, streamLength)) {
+    mWeakInputStreamLength = streamLength;
+  }
+
+  nsCOMPtr<nsIAsyncInputStreamLength> asyncStreamLength =
+      do_QueryInterface(mInputStream);
+  if (asyncStreamLength && SameCOMIdentity(mInputStream, asyncStreamLength)) {
+    mWeakAsyncInputStreamLength = asyncStreamLength;
+  }
 }
+
+uint64_t SlicedInputStream::AdjustRange(uint64_t aRange) {
+  CheckedUint64 range(aRange);
+  range += mCurPos;
+
+  // Let's remove extra length from the end.
+  if (range.isValid() && range.value() > mStart + mLength) {
+    aRange -= XPCOM_MIN((uint64_t)aRange, range.value() - (mStart + mLength));
+  }
+
+  // Let's remove extra length from the begin.
+  if (mCurPos < mStart) {
+    aRange -= XPCOM_MIN((uint64_t)aRange, mStart - mCurPos);
+  }
+
+  return aRange;
+}
+
+// nsIInputStream interface
 
 NS_IMETHODIMP
 SlicedInputStream::Close() {
@@ -100,8 +152,6 @@ SlicedInputStream::Close() {
   mClosed = true;
   return mInputStream->Close();
 }
-
-// nsIInputStream interface
 
 NS_IMETHODIMP
 SlicedInputStream::Available(uint64_t* aLength) {
@@ -121,16 +171,7 @@ SlicedInputStream::Available(uint64_t* aLength) {
     return rv;
   }
 
-  // Let's remove extra length from the end.
-  if (*aLength + mCurPos > mStart + mLength) {
-    *aLength -= XPCOM_MIN(*aLength, (*aLength + mCurPos) - (mStart + mLength));
-  }
-
-  // Let's remove extra length from the begin.
-  if (mCurPos < mStart) {
-    *aLength -= XPCOM_MIN(*aLength, mStart - mCurPos);
-  }
-
+  *aLength = AdjustRange(*aLength);
   return NS_OK;
 }
 
@@ -256,39 +297,44 @@ SlicedInputStream::AsyncWait(nsIInputStreamCallback* aCallback, uint32_t aFlags,
   NS_ENSURE_STATE(mInputStream);
   NS_ENSURE_STATE(mWeakAsyncInputStream);
 
-  if (mAsyncWaitCallback && aCallback) {
-    return NS_ERROR_FAILURE;
-  }
+  nsCOMPtr<nsIInputStreamCallback> callback = aCallback ? this : nullptr;
 
-  mAsyncWaitCallback = aCallback;
+  uint32_t flags = aFlags;
+  uint32_t requestedCount = aRequestedCount;
 
-  if (!mAsyncWaitCallback) {
-    return NS_OK;
-  }
+  {
+    MutexAutoLock lock(mMutex);
 
-  // If we haven't started retrieving data, let's see if we can seek.
-  // If we cannot seek, we will do consecutive reads.
-  if (mCurPos < mStart && mWeakSeekableInputStream) {
-    nsresult rv =
-        mWeakSeekableInputStream->Seek(nsISeekableStream::NS_SEEK_SET, mStart);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
+    if (mAsyncWaitCallback && aCallback) {
+      return NS_ERROR_FAILURE;
     }
 
-    mCurPos = mStart;
+    mAsyncWaitCallback = aCallback;
+
+    // If we haven't started retrieving data, let's see if we can seek.
+    // If we cannot seek, we will do consecutive reads.
+    if (mCurPos < mStart && mWeakSeekableInputStream) {
+      nsresult rv = mWeakSeekableInputStream->Seek(
+          nsISeekableStream::NS_SEEK_SET, mStart);
+      if (NS_WARN_IF(NS_FAILED(rv))) {
+        return rv;
+      }
+
+      mCurPos = mStart;
+    }
+
+    mAsyncWaitFlags = aFlags;
+    mAsyncWaitRequestedCount = aRequestedCount;
+    mAsyncWaitEventTarget = aEventTarget;
+
+    // If we are not at the right position, let's do an asyncWait just internal.
+    if (mCurPos < mStart) {
+      flags = 0;
+      requestedCount = mStart - mCurPos;
+    }
   }
 
-  mAsyncWaitFlags = aFlags;
-  mAsyncWaitRequestedCount = aRequestedCount;
-  mAsyncWaitEventTarget = aEventTarget;
-
-  // If we are not at the right position, let's do an asyncWait just internal.
-  if (mCurPos < mStart) {
-    return mWeakAsyncInputStream->AsyncWait(this, 0, mStart - mCurPos,
-                                            aEventTarget);
-  }
-
-  return mWeakAsyncInputStream->AsyncWait(this, aFlags, aRequestedCount,
+  return mWeakAsyncInputStream->AsyncWait(callback, flags, requestedCount,
                                           aEventTarget);
 }
 
@@ -300,61 +346,128 @@ SlicedInputStream::OnInputStreamReady(nsIAsyncInputStream* aStream) {
   MOZ_ASSERT(mWeakAsyncInputStream);
   MOZ_ASSERT(mWeakAsyncInputStream == aStream);
 
-  // We have been canceled in the meanwhile.
-  if (!mAsyncWaitCallback) {
-    return NS_OK;
-  }
+  nsCOMPtr<nsIInputStreamCallback> callback;
+  uint32_t asyncWaitFlags = 0;
+  uint32_t asyncWaitRequestedCount = 0;
+  nsCOMPtr<nsIEventTarget> asyncWaitEventTarget;
 
-  if (mCurPos < mStart) {
-    char buf[4096];
-    while (mCurPos < mStart) {
-      uint32_t bytesRead;
-      uint64_t bufCount = XPCOM_MIN(mStart - mCurPos, (uint64_t)sizeof(buf));
-      nsresult rv = mInputStream->Read(buf, bufCount, &bytesRead);
-      if (NS_SUCCEEDED(rv) && bytesRead == 0) {
-        mClosed = true;
-        return RunAsyncWaitCallback();
-      }
+  {
+    MutexAutoLock lock(mMutex);
 
-      if (rv == NS_BASE_STREAM_WOULD_BLOCK) {
-        return mWeakAsyncInputStream->AsyncWait(this, 0, mStart - mCurPos,
-                                                mAsyncWaitEventTarget);
-      }
-
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        return RunAsyncWaitCallback();
-      }
-
-      mCurPos += bytesRead;
+    // We have been canceled in the meanwhile.
+    if (!mAsyncWaitCallback) {
+      return NS_OK;
     }
 
-    // Now we are ready to do the 'real' asyncWait.
-    return mWeakAsyncInputStream->AsyncWait(
-        this, mAsyncWaitFlags, mAsyncWaitRequestedCount, mAsyncWaitEventTarget);
+    auto raii = MakeScopeExit([&] {
+      mMutex.AssertCurrentThreadOwns();
+      mAsyncWaitCallback = nullptr;
+      mAsyncWaitEventTarget = nullptr;
+    });
+
+    asyncWaitFlags = mAsyncWaitFlags;
+    asyncWaitRequestedCount = mAsyncWaitRequestedCount;
+    asyncWaitEventTarget = mAsyncWaitEventTarget;
+
+    // If at the end of this locked block, the callback is not null, it will be
+    // executed, otherwise, we are going to exec another AsyncWait().
+    callback = mAsyncWaitCallback;
+
+    if (mCurPos < mStart) {
+      char buf[4096];
+      nsresult rv = NS_OK;
+      while (mCurPos < mStart) {
+        uint32_t bytesRead;
+        uint64_t bufCount = XPCOM_MIN(mStart - mCurPos, (uint64_t)sizeof(buf));
+        rv = mInputStream->Read(buf, bufCount, &bytesRead);
+        if (NS_SUCCEEDED(rv) && bytesRead == 0) {
+          mClosed = true;
+          break;
+        }
+
+        if (rv == NS_BASE_STREAM_WOULD_BLOCK) {
+          asyncWaitFlags = 0;
+          asyncWaitRequestedCount = mStart - mCurPos;
+          // Here we want to exec another AsyncWait().
+          callback = nullptr;
+          break;
+        }
+
+        if (NS_WARN_IF(NS_FAILED(rv))) {
+          break;
+        }
+
+        mCurPos += bytesRead;
+      }
+
+      // Now we are ready to do the 'real' asyncWait.
+      if (mCurPos >= mStart) {
+        // We don't want to nullify the callback now, because it will be needed
+        // at the next ::OnInputStreamReady.
+        raii.release();
+        callback = nullptr;
+      }
+    }
   }
 
-  return RunAsyncWaitCallback();
-}
+  if (callback) {
+    return callback->OnInputStreamReady(this);
+  }
 
-nsresult SlicedInputStream::RunAsyncWaitCallback() {
-  nsCOMPtr<nsIInputStreamCallback> callback = mAsyncWaitCallback;
-
-  mAsyncWaitCallback = nullptr;
-  mAsyncWaitEventTarget = nullptr;
-
-  return callback->OnInputStreamReady(this);
+  return mWeakAsyncInputStream->AsyncWait(
+      this, asyncWaitFlags, asyncWaitRequestedCount, asyncWaitEventTarget);
 }
 
 // nsIIPCSerializableInputStream
 
 void SlicedInputStream::Serialize(mozilla::ipc::InputStreamParams& aParams,
-                                  FileDescriptorArray& aFileDescriptors) {
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  mozilla::dom::ContentChild* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void SlicedInputStream::Serialize(mozilla::ipc::InputStreamParams& aParams,
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  mozilla::ipc::PBackgroundChild* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void SlicedInputStream::Serialize(mozilla::ipc::InputStreamParams& aParams,
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  mozilla::dom::ContentParent* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void SlicedInputStream::Serialize(mozilla::ipc::InputStreamParams& aParams,
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  mozilla::ipc::PBackgroundParent* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+template <typename M>
+void SlicedInputStream::SerializeInternal(
+    mozilla::ipc::InputStreamParams& aParams,
+    FileDescriptorArray& aFileDescriptors, bool aDelayedStart,
+    uint32_t aMaxSize, uint32_t* aSizeUsed, M* aManager) {
   MOZ_ASSERT(mInputStream);
   MOZ_ASSERT(mWeakIPCSerializableInputStream);
 
   SlicedInputStreamParams params;
   InputStreamHelper::SerializeInputStream(mInputStream, params.stream(),
-                                          aFileDescriptors);
+                                          aFileDescriptors, aDelayedStart,
+                                          aMaxSize, aSizeUsed, aManager);
   params.start() = mStart;
   params.length() = mLength;
   params.curPos() = mCurPos;
@@ -391,14 +504,6 @@ bool SlicedInputStream::Deserialize(
   mClosed = params.closed();
 
   return true;
-}
-
-mozilla::Maybe<uint64_t> SlicedInputStream::ExpectedSerializedLength() {
-  if (!mInputStream || !mWeakIPCSerializableInputStream) {
-    return mozilla::Nothing();
-  }
-
-  return mWeakIPCSerializableInputStream->ExpectedSerializedLength();
 }
 
 // nsISeekableStream
@@ -452,13 +557,24 @@ SlicedInputStream::Seek(int32_t aWhence, int64_t aOffset) {
 }
 
 NS_IMETHODIMP
-SlicedInputStream::Tell(int64_t* aResult) {
+SlicedInputStream::SetEOF() {
   NS_ENSURE_STATE(mInputStream);
   NS_ENSURE_STATE(mWeakSeekableInputStream);
 
+  mClosed = true;
+  return mWeakSeekableInputStream->SetEOF();
+}
+
+// nsITellableStream
+
+NS_IMETHODIMP
+SlicedInputStream::Tell(int64_t* aResult) {
+  NS_ENSURE_STATE(mInputStream);
+  NS_ENSURE_STATE(mWeakTellableInputStream);
+
   int64_t tell = 0;
 
-  nsresult rv = mWeakSeekableInputStream->Tell(&tell);
+  nsresult rv = mWeakTellableInputStream->Tell(&tell);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -476,13 +592,75 @@ SlicedInputStream::Tell(int64_t* aResult) {
   return NS_OK;
 }
 
-NS_IMETHODIMP
-SlicedInputStream::SetEOF() {
-  NS_ENSURE_STATE(mInputStream);
-  NS_ENSURE_STATE(mWeakSeekableInputStream);
+// nsIInputStreamLength
 
-  mClosed = true;
-  return mWeakSeekableInputStream->SetEOF();
+NS_IMETHODIMP
+SlicedInputStream::Length(int64_t* aLength) {
+  NS_ENSURE_STATE(mInputStream);
+  NS_ENSURE_STATE(mWeakInputStreamLength);
+
+  nsresult rv = mWeakInputStreamLength->Length(aLength);
+  if (rv == NS_BASE_STREAM_CLOSED) {
+    mClosed = true;
+    return rv;
+  }
+
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  if (*aLength == -1) {
+    return NS_OK;
+  }
+
+  *aLength = (int64_t)AdjustRange((uint64_t)*aLength);
+  return NS_OK;
+}
+
+// nsIAsyncInputStreamLength
+
+NS_IMETHODIMP
+SlicedInputStream::AsyncLengthWait(nsIInputStreamLengthCallback* aCallback,
+                                   nsIEventTarget* aEventTarget) {
+  NS_ENSURE_STATE(mInputStream);
+  NS_ENSURE_STATE(mWeakAsyncInputStreamLength);
+
+  nsCOMPtr<nsIInputStreamLengthCallback> callback = aCallback ? this : nullptr;
+  {
+    MutexAutoLock lock(mMutex);
+    mAsyncWaitLengthCallback = aCallback;
+  }
+
+  return mWeakAsyncInputStreamLength->AsyncLengthWait(callback, aEventTarget);
+}
+
+// nsIInputStreamLengthCallback
+
+NS_IMETHODIMP
+SlicedInputStream::OnInputStreamLengthReady(nsIAsyncInputStreamLength* aStream,
+                                            int64_t aLength) {
+  MOZ_ASSERT(mInputStream);
+  MOZ_ASSERT(mWeakAsyncInputStreamLength);
+  MOZ_ASSERT(mWeakAsyncInputStreamLength == aStream);
+
+  nsCOMPtr<nsIInputStreamLengthCallback> callback;
+  {
+    MutexAutoLock lock(mMutex);
+
+    // We have been canceled in the meanwhile.
+    if (!mAsyncWaitLengthCallback) {
+      return NS_OK;
+    }
+
+    callback.swap(mAsyncWaitLengthCallback);
+  }
+
+  if (aLength != -1) {
+    aLength = (int64_t)AdjustRange((uint64_t)aLength);
+  }
+
+  MOZ_ASSERT(callback);
+  return callback->OnInputStreamLengthReady(this, aLength);
 }
 
 }  // namespace mozilla

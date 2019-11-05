@@ -161,7 +161,7 @@ bool gfxPattern::IsOpaque() {
   return false;
 }
 
-void gfxPattern::SetSamplingFilter(gfx::SamplingFilter filter) {
+void gfxPattern::SetSamplingFilter(mozilla::gfx::SamplingFilter filter) {
   if (mGfxPattern.GetPattern()->GetType() != PatternType::SURFACE) {
     return;
   }
@@ -172,7 +172,7 @@ void gfxPattern::SetSamplingFilter(gfx::SamplingFilter filter) {
 
 SamplingFilter gfxPattern::SamplingFilter() const {
   if (mGfxPattern.GetPattern()->GetType() != PatternType::SURFACE) {
-    return gfx::SamplingFilter::GOOD;
+    return mozilla::gfx::SamplingFilter::GOOD;
   }
   return static_cast<const SurfacePattern*>(mGfxPattern.GetPattern())
       ->mSamplingFilter;

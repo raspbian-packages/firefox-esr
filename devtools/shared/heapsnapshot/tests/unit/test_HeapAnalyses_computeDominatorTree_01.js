@@ -4,7 +4,7 @@
 
 // Test the HeapAnalyses{Client,Worker} "computeDominatorTree" request.
 
-add_task(async function () {
+add_task(async function() {
   const client = new HeapAnalysesClient();
 
   const snapshotFilePath = saveNewHeapSnapshot();
@@ -12,8 +12,11 @@ add_task(async function () {
   ok(true, "Should have read the heap snapshot");
 
   const dominatorTreeId = await client.computeDominatorTree(snapshotFilePath);
-  equal(typeof dominatorTreeId, "number",
-        "should get a dominator tree id, and it should be a number");
+  equal(
+    typeof dominatorTreeId,
+    "number",
+    "should get a dominator tree id, and it should be a number"
+  );
 
   client.destroy();
 });

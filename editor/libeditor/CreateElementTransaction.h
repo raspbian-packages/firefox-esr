@@ -28,8 +28,9 @@ class Element;
 
 class CreateElementTransaction final : public EditTransactionBase {
  protected:
+  template <typename PT, typename CT>
   CreateElementTransaction(EditorBase& aEditorBase, nsAtom& aTag,
-                           const EditorRawDOMPoint& aPointToInsert);
+                           const EditorDOMPointBase<PT, CT>& aPointToInsert);
 
  public:
   /**
@@ -43,9 +44,10 @@ class CreateElementTransaction final : public EditTransactionBase {
    *                        or after, the new node will be appended to the
    *                        container.
    */
+  template <typename PT, typename CT>
   static already_AddRefed<CreateElementTransaction> Create(
       EditorBase& aEditorBase, nsAtom& aTag,
-      const EditorRawDOMPoint& aPointToInsert);
+      const EditorDOMPointBase<PT, CT>& aPointToInsert);
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(CreateElementTransaction,

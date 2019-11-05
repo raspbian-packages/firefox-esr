@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,15 +12,8 @@
 #include "nsAppStartupNotifier.h"
 #include "nsISimpleEnumerator.h"
 
-NS_IMPL_ISUPPORTS(nsAppStartupNotifier, nsIObserver)
-
-nsAppStartupNotifier::nsAppStartupNotifier() {}
-
-nsAppStartupNotifier::~nsAppStartupNotifier() = default;
-
-NS_IMETHODIMP nsAppStartupNotifier::Observe(nsISupports *aSubject,
-                                            const char *aTopic,
-                                            const char16_t *someData) {
+/* static */
+nsresult nsAppStartupNotifier::NotifyObservers(const char* aTopic) {
   NS_ENSURE_ARG(aTopic);
   nsresult rv;
 
@@ -29,8 +22,10 @@ NS_IMETHODIMP nsAppStartupNotifier::Observe(nsISupports *aSubject,
       do_GetService(NS_CATEGORYMANAGER_CONTRACTID, &rv);
   NS_ENSURE_SUCCESS(rv, rv);
 
+  nsDependentCString topic(aTopic);
+
   nsCOMPtr<nsISimpleEnumerator> enumerator;
-  rv = categoryManager->EnumerateCategory(aTopic, getter_AddRefs(enumerator));
+  rv = categoryManager->EnumerateCategory(topic, getter_AddRefs(enumerator));
   if (NS_FAILED(rv)) return rv;
 
   nsCOMPtr<nsISupports> entry;
@@ -42,8 +37,7 @@ NS_IMETHODIMP nsAppStartupNotifier::Observe(nsISupports *aSubject,
       rv = category->GetData(categoryEntry);
 
       nsCString contractId;
-      categoryManager->GetCategoryEntry(aTopic, categoryEntry.get(),
-                                        getter_Copies(contractId));
+      categoryManager->GetCategoryEntry(topic, categoryEntry, contractId);
 
       if (NS_SUCCEEDED(rv)) {
         // If we see the word "service," in the beginning

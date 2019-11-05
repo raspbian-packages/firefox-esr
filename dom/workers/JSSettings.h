@@ -7,7 +7,11 @@
 #ifndef mozilla_dom_workerinternals_JSSettings_h
 #define mozilla_dom_workerinternals_JSSettings_h
 
+#include <stdint.h>
+
 #include "jsapi.h"
+#include "js/ContextOptions.h"
+#include "js/GCAPI.h"
 #include "mozilla/Maybe.h"
 #include "nsString.h"
 #include "nsTArray.h"
@@ -53,10 +57,10 @@ struct JSSettings {
 
   // Settings that change based on chrome/content context.
   struct JSContentChromeSettings {
-    JS::CompartmentOptions compartmentOptions;
+    JS::RealmOptions realmOptions;
     int32_t maxScriptRuntime;
 
-    JSContentChromeSettings() : compartmentOptions(), maxScriptRuntime(0) {}
+    JSContentChromeSettings() : realmOptions(), maxScriptRuntime(0) {}
   };
 
   JSContentChromeSettings chrome;

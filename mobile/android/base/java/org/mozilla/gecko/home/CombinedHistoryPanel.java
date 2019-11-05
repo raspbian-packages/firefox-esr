@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.UiThread;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -64,8 +65,8 @@ public class CombinedHistoryPanel extends HomeFragment implements RemoteClientsD
     private static final String LOGTAG = "GeckoCombinedHistoryPnl";
 
     private static final String[] STAGES_TO_SYNC_ON_REFRESH = new String[] { "clients", "tabs" };
-    private final int LOADER_ID_HISTORY = 0;
-    private final int LOADER_ID_REMOTE = 1;
+    private static final int LOADER_ID_HISTORY = 0;
+    private static final int LOADER_ID_REMOTE = 1;
 
     // String placeholders to mark formatting.
     private final static String FORMAT_S1 = "%1$s";
@@ -111,6 +112,15 @@ public class CombinedHistoryPanel extends HomeFragment implements RemoteClientsD
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
+
+        // BrowserApp's super.onCreate() as a FragmentActivity would dispatchCreate()
+        // for all fragments in it's savedInstanceState. This Fragment will be created.
+        // When BrowserApp does not complete it's onCreate() - like when finishing early and restarting
+        // our onCreate would try to access not yet initialized resources and would get a NPE.
+        final FragmentActivity parent = getActivity();
+        if (parent != null && parent.isFinishing()) {
+            return;
+        }
 
         int cachedRecentTabsCount = 0;
         if (mPanelStateChangeListener != null ) {

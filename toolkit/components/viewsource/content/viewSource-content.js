@@ -4,13 +4,18 @@
 
 /* eslint-env mozilla/frame-script */
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-ChromeUtils.defineModuleGetter(this, "DeferredTask",
-  "resource://gre/modules/DeferredTask.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "DeferredTask",
+  "resource://gre/modules/DeferredTask.jsm"
+);
 
-Cu.importGlobalProperties(["NodeFilter"]);
+XPCOMUtils.defineLazyGlobalGetters(this, ["NodeFilter"]);
 
 const NS_XHTML = "http://www.w3.org/1999/xhtml";
 const BUNDLE_URL = "chrome://global/locale/viewSource.properties";
@@ -50,8 +55,7 @@ var ViewSourceContent = {
 
   get isViewSource() {
     let uri = content.document.documentURI;
-    return uri.startsWith("view-source:") ||
-           (uri.startsWith("data:") && uri.includes("MathML"));
+    return uri.startsWith("view-source:");
   },
 
   get isAboutBlank() {
@@ -63,7 +67,7 @@ var ViewSourceContent = {
    * This should be called as soon as this frame script has loaded.
    */
   init() {
-    this.messages.forEach((msgName) => {
+    this.messages.forEach(msgName => {
       addMessageListener(msgName, this);
     });
 
@@ -79,7 +83,7 @@ var ViewSourceContent = {
    * and the browser is tearing down.
    */
   uninit() {
-    this.messages.forEach((msgName) => {
+    this.messages.forEach(msgName => {
       removeMessageListener(msgName, this);
     });
 
@@ -102,11 +106,19 @@ var ViewSourceContent = {
     let data = msg.data;
     switch (msg.name) {
       case "ViewSource:LoadSource":
-        this.viewSource(data.URL, data.outerWindowID, data.lineNumber,
-                        data.shouldWrap);
+        this.viewSource(
+          data.URL,
+          data.outerWindowID,
+          data.lineNumber,
+          data.shouldWrap
+        );
         break;
       case "ViewSource:LoadSourceWithSelection":
-        this.viewSourceWithSelection(data.URL, data.drawSelection, data.baseURI);
+        this.viewSourceWithSelection(
+          data.URL,
+          data.drawSelection,
+          data.baseURI
+        );
         break;
       case "ViewSource:GoToLine":
         this.goToLine(data.lineNumber);
@@ -154,17 +166,19 @@ var ViewSourceContent = {
    * A shortcut to the nsISelectionController for the content.
    */
   get selectionController() {
-    return docShell.QueryInterface(Ci.nsIInterfaceRequestor)
-                   .getInterface(Ci.nsISelectionDisplay)
-                   .QueryInterface(Ci.nsISelectionController);
+    return docShell
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsISelectionDisplay)
+      .QueryInterface(Ci.nsISelectionController);
   },
 
   /**
    * A shortcut to the nsIWebBrowserFind for the content.
    */
   get webBrowserFind() {
-    return docShell.QueryInterface(Ci.nsIInterfaceRequestor)
-                   .getInterface(Ci.nsIWebBrowserFind);
+    return docShell
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsIWebBrowserFind);
   },
 
   /**
@@ -185,21 +199,19 @@ var ViewSourceContent = {
 
     if (outerWindowID) {
       let contentWindow = Services.wm.getOuterWindowWithId(outerWindowID);
-      let requestor = contentWindow.QueryInterface(Ci.nsIInterfaceRequestor);
+      let otherDocShell = contentWindow.docShell;
 
       try {
-        let otherWebNav = requestor.getInterface(Ci.nsIWebNavigation);
-        pageDescriptor = otherWebNav.QueryInterface(Ci.nsIWebPageDescriptor)
-                                    .currentDescriptor;
+        pageDescriptor = otherDocShell.QueryInterface(Ci.nsIWebPageDescriptor)
+          .currentDescriptor;
       } catch (e) {
         // We couldn't get the page descriptor, so we'll probably end up re-retrieving
         // this document off of the network.
       }
 
-      let utils = requestor.getInterface(Ci.nsIDOMWindowUtils);
+      let utils = contentWindow.windowUtils;
       let doc = contentWindow.document;
-      forcedCharSet = utils.docCharsetIsForced ? doc.characterSet
-                                               : null;
+      forcedCharSet = utils.docCharsetIsForced ? doc.characterSet : null;
     }
 
     this.loadSource(URL, pageDescriptor, lineNumber, forcedCharSet);
@@ -227,14 +239,15 @@ var ViewSourceContent = {
     if (forcedCharSet) {
       try {
         docShell.charset = forcedCharSet;
-      } catch (e) { /* invalid charset */ }
+      } catch (e) {
+        /* invalid charset */
+      }
     }
 
     if (lineNumber && lineNumber > 0) {
-      let doneLoading = (event) => {
+      let doneLoading = event => {
         // Ignore possible initial load of about:blank
-        if (this.isAboutBlank ||
-            !content.document.body) {
+        if (this.isAboutBlank || !content.document.body) {
           return;
         }
         this.goToLine(lineNumber);
@@ -251,8 +264,10 @@ var ViewSourceContent = {
 
     try {
       let pageLoader = docShell.QueryInterface(Ci.nsIWebPageDescriptor);
-      pageLoader.loadPage(pageDescriptor,
-                          Ci.nsIWebPageDescriptor.DISPLAY_AS_SOURCE);
+      pageLoader.loadPage(
+        pageDescriptor,
+        Ci.nsIWebPageDescriptor.DISPLAY_AS_SOURCE
+      );
     } catch (e) {
       // We were not able to load the source from the network cache.
       this.loadSourceFromURL(viewSrcURL);
@@ -260,18 +275,18 @@ var ViewSourceContent = {
     }
 
     let shEntrySource = pageDescriptor.QueryInterface(Ci.nsISHEntry);
-    let shEntry = Cc["@mozilla.org/browser/session-history-entry;1"]
-                    .createInstance(Ci.nsISHEntry);
-    shEntry.setURI(Services.io.newURI(viewSrcURL));
-    shEntry.setTitle(viewSrcURL);
+    let shEntry = Cc[
+      "@mozilla.org/browser/session-history-entry;1"
+    ].createInstance(Ci.nsISHEntry);
+    shEntry.URI = Services.io.newURI(viewSrcURL);
+    shEntry.title = viewSrcURL;
     let systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
     shEntry.triggeringPrincipal = systemPrincipal;
-    shEntry.loadType = Ci.nsIDocShellLoadInfo.loadHistory;
+    shEntry.setLoadTypeAsHistory();
     shEntry.cacheKey = shEntrySource.cacheKey;
-    docShell.QueryInterface(Ci.nsIWebNavigation)
-            .sessionHistory
-            .QueryInterface(Ci.nsISHistoryInternal)
-            .addEntry(shEntry, true);
+    docShell
+      .QueryInterface(Ci.nsIWebNavigation)
+      .sessionHistory.legacySHistory.addEntry(shEntry, true);
   },
 
   /**
@@ -283,7 +298,11 @@ var ViewSourceContent = {
   loadSourceFromURL(URL) {
     let loadFlags = Ci.nsIWebNavigation.LOAD_FLAGS_NONE;
     let webNav = docShell.QueryInterface(Ci.nsIWebNavigation);
-    webNav.loadURI(URL, loadFlags, null, null, null);
+    let loadURIOptions = {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      loadFlags,
+    };
+    webNav.loadURI(URL, loadURIOptions);
   },
 
   /**
@@ -306,8 +325,9 @@ var ViewSourceContent = {
     }
 
     // Don't trust synthetic events
-    if (!event.isTrusted || event.target.localName != "button")
+    if (!event.isTrusted || event.target.localName != "button") {
       return;
+    }
 
     let errorDoc = target.ownerDocument;
 
@@ -332,8 +352,10 @@ var ViewSourceContent = {
 
     // If we need to draw the selection, wait until an actual view source page
     // has loaded, instead of about:blank.
-    if (this.needsDrawSelection &&
-        content.document.documentURI.startsWith("view-source:")) {
+    if (
+      this.needsDrawSelection &&
+      content.document.documentURI.startsWith("view-source:")
+    ) {
       this.needsDrawSelection = false;
       this.drawSelection();
     }
@@ -429,8 +451,7 @@ var ViewSourceContent = {
     // In our case, the range's startOffset is after "\n" on the previous line.
     // Tune the selection at the beginning of the next line and do some tweaking
     // to position the focusNode and the caret at the beginning of the line.
-    selection.QueryInterface(Ci.nsISelectionPrivate)
-      .interlinePosition = true;
+    selection.interlinePosition = true;
 
     selection.addRange(result.range);
 
@@ -447,7 +468,9 @@ var ViewSourceContent = {
         // to focus a safe point because there are edgy cases such as
         // <span>...\n</span><span>...</span> vs.
         // <span>...\n<span>...</span></span><span>...</span>
-        node = node.nextSibling ? node.nextSibling : node.parentNode.nextSibling;
+        node = node.nextSibling
+          ? node.nextSibling
+          : node.parentNode.nextSibling;
         selection.extend(node, 0);
       }
     }
@@ -460,11 +483,11 @@ var ViewSourceContent = {
     selCon.scrollSelectionIntoView(
       Ci.nsISelectionController.SELECTION_NORMAL,
       Ci.nsISelectionController.SELECTION_FOCUS_REGION,
-      true);
+      true
+    );
 
     sendAsyncMessage("ViewSource:GoToLine:Success", { lineNumber });
   },
-
 
   /**
    * Some old code from the original view source implementation. Original
@@ -481,9 +504,8 @@ var ViewSourceContent = {
   findLocation(pre, lineNumber, node, offset, interlinePosition, result) {
     if (node && !pre) {
       // Look upwards to find the current pre element.
-      for (pre = node;
-           pre.nodeName != "PRE";
-           pre = pre.parentNode);
+      // eslint-disable-next-line no-empty
+      for (pre = node; pre.nodeName != "PRE"; pre = pre.parentNode) {}
     }
 
     // The source document is made up of a number of pre elements with
@@ -494,23 +516,27 @@ var ViewSourceContent = {
     let curLine = pre.id ? parseInt(pre.id.substring(4)) : 1;
 
     // Walk through each of the text nodes and count newlines.
-    let treewalker = content.document
-        .createTreeWalker(pre, NodeFilter.SHOW_TEXT, null);
+    let treewalker = content.document.createTreeWalker(
+      pre,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
 
     // The column number of the first character in the current text node.
     let firstCol = 1;
 
     let found = false;
-    for (let textNode = treewalker.firstChild();
-         textNode && !found;
-         textNode = treewalker.nextNode()) {
-
+    for (
+      let textNode = treewalker.firstChild();
+      textNode && !found;
+      textNode = treewalker.nextNode()
+    ) {
       // \r is not a valid character in the DOM, so we only check for \n.
       let lineArray = textNode.data.split(/\n/);
       let lastLineInNode = curLine + lineArray.length - 1;
 
       // Check if we can skip the text node without further inspection.
-      if (node ? (textNode != node) : (lastLineInNode < lineNumber)) {
+      if (node ? textNode != node : lastLineInNode < lineNumber) {
         if (lineArray.length > 1) {
           firstCol = 1;
         }
@@ -521,10 +547,11 @@ var ViewSourceContent = {
 
       // curPos is the offset within the current text node of the first
       // character in the current line.
-      for (var i = 0, curPos = 0;
-           i < lineArray.length;
-           curPos += lineArray[i++].length + 1) {
-
+      for (
+        var i = 0, curPos = 0;
+        i < lineArray.length;
+        curPos += lineArray[i++].length + 1
+      ) {
         if (i > 0) {
           curLine++;
         }
@@ -547,7 +574,6 @@ var ViewSourceContent = {
 
             break;
           }
-
         } else if (curLine == lineNumber && !("range" in result)) {
           result.range = content.document.createRange();
           result.range.setStart(textNode, curPos);
@@ -556,7 +582,6 @@ var ViewSourceContent = {
           // the very last line in the file (this is the only line that does
           // not end with \n).
           result.range.setEndAfter(pre.lastChild);
-
         } else if (curLine == lineNumber + 1) {
           result.range.setEnd(textNode, curPos - 1);
           found = true;
@@ -565,7 +590,7 @@ var ViewSourceContent = {
       }
     }
 
-    return found || ("range" in result);
+    return found || "range" in result;
   },
 
   /**
@@ -602,12 +627,13 @@ var ViewSourceContent = {
 
     // all our content is held by the data:URI and URIs are internally stored as utf-8 (see nsIURI.idl)
     let loadFlags = Ci.nsIWebNavigation.LOAD_FLAGS_NONE;
-    let referrerPolicy = Ci.nsIHttpChannel.REFERRER_POLICY_UNSET;
     let webNav = docShell.QueryInterface(Ci.nsIWebNavigation);
-    webNav.loadURIWithOptions(uri, loadFlags,
-                              null, referrerPolicy, // referrer
-                              null, null, // postData, headers
-                              Services.io.newURI(baseURI));
+    let loadURIOptions = {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      loadFlags,
+      baseURI: Services.io.newURI(baseURI),
+    };
+    webNav.loadURI(uri, loadURIOptions);
   },
 
   /**
@@ -616,26 +642,29 @@ var ViewSourceContent = {
    * selected on the inflated view-source DOM.
    */
   drawSelection() {
-    content.document.title =
-      this.bundle.GetStringFromName("viewSelectionSourceTitle");
+    content.document.title = this.bundle.GetStringFromName(
+      "viewSelectionSourceTitle"
+    );
 
     // find the special selection markers that we added earlier, and
     // draw the selection between the two...
     var findService = null;
     try {
       // get the find service which stores the global find state
-      findService = Cc["@mozilla.org/find/find_service;1"]
-                    .getService(Ci.nsIFindService);
-    } catch (e) { }
-    if (!findService)
+      findService = Cc["@mozilla.org/find/find_service;1"].getService(
+        Ci.nsIFindService
+      );
+    } catch (e) {}
+    if (!findService) {
       return;
+    }
 
     // cache the current global find state
-    var matchCase     = findService.matchCase;
-    var entireWord    = findService.entireWord;
-    var wrapFind      = findService.wrapFind;
+    var matchCase = findService.matchCase;
+    var entireWord = findService.entireWord;
+    var wrapFind = findService.wrapFind;
     var findBackwards = findService.findBackwards;
-    var searchString  = findService.searchString;
+    var searchString = findService.searchString;
     var replaceString = findService.replaceString;
 
     // setup our find instance
@@ -651,8 +680,9 @@ var ViewSourceContent = {
     findInst.findNext();
 
     var selection = content.getSelection();
-    if (!selection.rangeCount)
+    if (!selection.rangeCount) {
       return;
+    }
 
     var range = selection.getRangeAt(0);
 
@@ -673,8 +703,9 @@ var ViewSourceContent = {
     // delete the special markers now...
     endContainer.deleteData(endOffset, endLength);
     startContainer.deleteData(startOffset, startLength);
-    if (startContainer == endContainer)
-      endOffset -= startLength; // has shrunk if on same text node...
+    if (startContainer == endContainer) {
+      endOffset -= startLength;
+    } // has shrunk if on same text node...
     range.setEnd(endContainer, endOffset);
 
     // show the selection and scroll it into view
@@ -684,24 +715,25 @@ var ViewSourceContent = {
     // to scroll at the beginning. So we override the default behavior here
     try {
       this.selectionController.scrollSelectionIntoView(
-                                 Ci.nsISelectionController.SELECTION_NORMAL,
-                                 Ci.nsISelectionController.SELECTION_ANCHOR_REGION,
-                                 true);
-    } catch (e) { }
+        Ci.nsISelectionController.SELECTION_NORMAL,
+        Ci.nsISelectionController.SELECTION_ANCHOR_REGION,
+        true
+      );
+    } catch (e) {}
 
     // restore the current find state
-    findService.matchCase     = matchCase;
-    findService.entireWord    = entireWord;
-    findService.wrapFind      = wrapFind;
+    findService.matchCase = matchCase;
+    findService.entireWord = entireWord;
+    findService.wrapFind = wrapFind;
     findService.findBackwards = findBackwards;
-    findService.searchString  = searchString;
+    findService.searchString = searchString;
     findService.replaceString = replaceString;
 
-    findInst.matchCase     = matchCase;
-    findInst.entireWord    = entireWord;
-    findInst.wrapFind      = wrapFind;
+    findInst.matchCase = matchCase;
+    findInst.entireWord = entireWord;
+    findInst.wrapFind = wrapFind;
     findInst.findBackwards = findBackwards;
-    findInst.searchString  = searchString;
+    findInst.searchString = searchString;
   },
 
   /**
@@ -713,7 +745,7 @@ var ViewSourceContent = {
       accesskey: true,
       handler() {
         sendAsyncMessage("ViewSource:PromptAndGoToLine");
-      }
+      },
     },
     {
       id: "wrapLongLines",
@@ -722,7 +754,7 @@ var ViewSourceContent = {
       },
       handler() {
         this.toggleWrapping();
-      }
+      },
     },
     {
       id: "highlightSyntax",
@@ -731,7 +763,7 @@ var ViewSourceContent = {
       },
       handler() {
         this.toggleSyntaxHighlighting();
-      }
+      },
     },
   ],
 
@@ -758,8 +790,10 @@ var ViewSourceContent = {
       }
       if (itemSpec.accesskey) {
         let accesskeyName = `context_${itemSpec.id}_accesskey`;
-        item.setAttribute("accesskey",
-                          this.bundle.GetStringFromName(accesskeyName));
+        item.setAttribute(
+          "accesskey",
+          this.bundle.GetStringFromName(accesskeyName)
+        );
       }
       menu.appendChild(item);
     });

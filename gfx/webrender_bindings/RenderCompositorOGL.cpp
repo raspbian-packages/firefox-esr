@@ -13,21 +13,23 @@
 namespace mozilla {
 namespace wr {
 
-/* static */ UniquePtr<RenderCompositor> RenderCompositorOGL::Create(
+/* static */
+UniquePtr<RenderCompositor> RenderCompositorOGL::Create(
     RefPtr<widget::CompositorWidget>&& aWidget) {
   RefPtr<gl::GLContext> gl;
-  gl = gl::GLContextProvider::CreateForCompositorWidget(aWidget, true);
+  gl = gl::GLContextProvider::CreateForCompositorWidget(
+      aWidget, /* aWebRender */ true, /* aForceAccelerated */ true);
   if (!gl || !gl->MakeCurrent()) {
     gfxCriticalNote << "Failed GL context creation for WebRender: "
                     << gfx::hexa(gl.get());
     return nullptr;
   }
-  return MakeUnique<RenderCompositorOGL>(Move(gl), Move(aWidget));
+  return MakeUnique<RenderCompositorOGL>(std::move(gl), std::move(aWidget));
 }
 
 RenderCompositorOGL::RenderCompositorOGL(
     RefPtr<gl::GLContext>&& aGL, RefPtr<widget::CompositorWidget>&& aWidget)
-    : RenderCompositor(Move(aWidget)), mGL(aGL) {
+    : RenderCompositor(std::move(aWidget)), mGL(aGL) {
   MOZ_ASSERT(mGL);
 }
 
@@ -43,27 +45,11 @@ bool RenderCompositorOGL::BeginFrame() {
 
 void RenderCompositorOGL::EndFrame() { mGL->SwapBuffers(); }
 
-void RenderCompositorOGL::Pause() {
-#ifdef MOZ_WIDGET_ANDROID
-  if (!mGL || mGL->IsDestroyed()) {
-    return;
-  }
-  // ReleaseSurface internally calls MakeCurrent.
-  mGL->ReleaseSurface();
-#endif
-}
+void RenderCompositorOGL::WaitForGPU() {}
 
-bool RenderCompositorOGL::Resume() {
-#ifdef MOZ_WIDGET_ANDROID
-  if (!mGL || mGL->IsDestroyed()) {
-    return false;
-  }
-  // RenewSurface internally calls MakeCurrent.
-  return mGL->RenewSurface(mWidget);
-#else
-  return true;
-#endif
-}
+void RenderCompositorOGL::Pause() {}
+
+bool RenderCompositorOGL::Resume() { return true; }
 
 LayoutDeviceIntSize RenderCompositorOGL::GetBufferSize() {
   return mWidget->GetClientSize();

@@ -5,11 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(CubebUtils_h_)
-#define CubebUtils_h_
+#  define CubebUtils_h_
 
-#include "cubeb/cubeb.h"
-#include "mozilla/dom/AudioDeviceInfo.h"
-#include "mozilla/Maybe.h"
+#  include "cubeb/cubeb.h"
+#  include "nsString.h"
+#  include "mozilla/RefPtr.h"
+
+class AudioDeviceInfo;
+
+MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(cubeb_stream_prefs)
 
 namespace mozilla {
 namespace CubebUtils {
@@ -30,9 +34,6 @@ uint32_t MaxNumberOfChannels();
 // Get the sample rate the hardware/mixer runs at. Thread safe.
 uint32_t PreferredSampleRate();
 
-// Get the bit mask of the connected audio device's preferred layout.
-uint32_t PreferredChannelMap(uint32_t aChannels);
-
 enum Side { Input, Output };
 
 double GetVolumeScale();
@@ -43,18 +44,22 @@ void ReportCubebBackendUsed();
 uint32_t GetCubebPlaybackLatencyInMilliseconds();
 uint32_t GetCubebMSGLatencyInFrames(cubeb_stream_params* params);
 bool CubebLatencyPrefSet();
-cubeb_channel_layout ConvertChannelMapToCubebLayout(uint32_t aChannelMap);
 void GetCurrentBackend(nsAString& aBackend);
-void GetPreferredChannelLayout(nsAString& aLayout);
-void GetDeviceCollection(nsTArray<RefPtr<AudioDeviceInfo>>& aDeviceInfos,
-                         Side aSide);
-cubeb_channel_layout GetPreferredChannelLayoutOrSMPTE(cubeb* context,
-                                                      uint32_t aChannels);
+cubeb_stream_prefs GetDefaultStreamPrefs();
+char* GetForcedOutputDevice();
+// No-op on all platforms but Android, where it tells the device's AudioManager
+// to switch to "communication mode", which might change audio routing,
+// bluetooth communication type, etc.
+void SetInCommunication(bool aInCommunication);
 
-#ifdef MOZ_WIDGET_ANDROID
+#  ifdef MOZ_WIDGET_ANDROID
 uint32_t AndroidGetAudioOutputSampleRate();
 uint32_t AndroidGetAudioOutputFramesPerBuffer();
-#endif
+#  endif
+
+#  ifdef ENABLE_SET_CUBEB_BACKEND
+void ForceSetCubebContext(cubeb* aCubebContext);
+#  endif
 }  // namespace CubebUtils
 }  // namespace mozilla
 

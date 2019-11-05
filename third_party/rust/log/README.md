@@ -5,6 +5,9 @@ A Rust library providing a lightweight logging *facade*.
 
 [![Build Status](https://travis-ci.org/rust-lang-nursery/log.svg?branch=master)](https://travis-ci.org/rust-lang-nursery/log)
 [![Build status](https://ci.appveyor.com/api/projects/status/nopdjmmjt45xcrki?svg=true)](https://ci.appveyor.com/project/alexcrichton/log)
+[![Latest version](https://img.shields.io/crates/v/log.svg)](https://crates.io/crates/log)
+[![Documentation](https://docs.rs/log/badge.svg)](https://docs.rs/log)
+![License](https://img.shields.io/crates/l/log.svg)
 
 * [`log` documentation](https://docs.rs/log)
 
@@ -29,7 +32,7 @@ log = "0.4"
 #[macro_use]
 extern crate log;
 
-pub fn shave_the_yak(yak: &Yak) {
+pub fn shave_the_yak(yak: &mut Yak) {
     trace!("Commencing yak shaving");
 
     loop {
@@ -44,6 +47,16 @@ pub fn shave_the_yak(yak: &Yak) {
             }
         }
     }
+}
+```
+
+If you use Rust 2018, you can use instead the following code to import the crate macros:
+
+```rust
+use log::{info, trace, warn};
+
+pub fn shave_the_yak(yak: &mut Yak) {
+    // …
 }
 ```
 
@@ -65,6 +78,7 @@ There are many available implementations to chose from, here are some of the mos
 * Adaptors for other facilities:
     * [`syslog`](https://docs.rs/syslog/*/syslog/)
     * [`slog-stdlog`](https://docs.rs/slog-stdlog/*/slog_stdlog/)
+    * [`android_log`](https://docs.rs/android_log/*/android_log/)
 
 Executables should choose a logger implementation and initialize it early in the
 runtime of the program. Logger implementations will typically include a

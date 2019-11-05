@@ -9,6 +9,7 @@
 #include "mozilla/DebugOnly.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/SharedThreadPool.h"
+#include "mozilla/Unused.h"
 #include "nsComponentManagerUtils.h"
 #include "nsThreadUtils.h"
 #include <math.h>
@@ -20,7 +21,6 @@ NS_IMPL_RELEASE_WITH_DESTROY(MediaTimer, DispatchDestroy())
 
 MediaTimer::MediaTimer(bool aFuzzy)
     : mMonitor("MediaTimer Monitor"),
-      mTimer(NS_NewTimer()),
       mCreationTimeStamp(TimeStamp::Now()),
       mUpdateScheduled(false),
       mFuzzy(aFuzzy) {
@@ -31,7 +31,7 @@ MediaTimer::MediaTimer(bool aFuzzy)
   RefPtr<SharedThreadPool> threadPool(
       SharedThreadPool::Get(NS_LITERAL_CSTRING("MediaTimer"), 1));
   mThread = threadPool.get();
-  mTimer->SetTarget(mThread);
+  mTimer = NS_NewTimer(mThread);
 }
 
 void MediaTimer::DispatchDestroy() {
@@ -168,7 +168,8 @@ void MediaTimer::Reject() {
  * that we never fire against a dangling closure.
  */
 
-/* static */ void MediaTimer::TimerCallback(nsITimer* aTimer, void* aClosure) {
+/* static */
+void MediaTimer::TimerCallback(nsITimer* aTimer, void* aClosure) {
   static_cast<MediaTimer*>(aClosure)->TimerFired();
 }
 

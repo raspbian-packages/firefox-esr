@@ -26,7 +26,7 @@
 #include "nsPromiseFlatString.h"
 #include "nsTHashtable.h"
 #include "nsThreadUtils.h"
-#include "pkix/Input.h"
+#include "mozpkix/Input.h"
 #include "prtime.h"
 
 NS_IMPL_ISUPPORTS(CertBlocklist, nsICertBlocklist)
@@ -36,7 +36,8 @@ using namespace mozilla::pkix;
 
 #define PREF_BACKGROUND_UPDATE_TIMER \
   "app.update.lastUpdateTime.blocklist-background-update-timer"
-#define PREF_BLOCKLIST_ONECRL_CHECKED "services.blocklist.onecrl.checked"
+#define PREF_BLOCKLIST_ONECRL_CHECKED \
+  "services.settings.security.onecrl.checked"
 #define PREF_MAX_STALENESS_IN_SECONDS \
   "security.onecrl.maximum_staleness_in_seconds"
 
@@ -481,43 +482,50 @@ CertBlocklist::SaveEntries() {
 }
 
 NS_IMETHODIMP
-CertBlocklist::IsCertRevoked(const uint8_t* aIssuer, uint32_t aIssuerLength,
-                             const uint8_t* aSerial, uint32_t aSerialLength,
-                             const uint8_t* aSubject, uint32_t aSubjectLength,
-                             const uint8_t* aPubKey, uint32_t aPubKeyLength,
-                             bool* _retval) {
+CertBlocklist::IsCertRevoked(const nsACString& aIssuerString,
+                             const nsACString& aSerialNumberString,
+                             const nsACString& aSubjectString,
+                             const nsACString& aPubKeyString, bool* _retval) {
   MutexAutoLock lock(mMutex);
+  MOZ_LOG(gCertBlockPRLog, LogLevel::Warning, ("CertBlocklist::IsCertRevoked"));
 
-  MOZ_LOG(gCertBlockPRLog, LogLevel::Warning,
-          ("CertBlocklist::IsCertRevoked?"));
-  nsresult rv = EnsureBackingFileInitialized(lock);
+  nsCString decodedIssuer;
+  nsCString decodedSerial;
+  nsCString decodedSubject;
+  nsCString decodedPubKey;
+
+  nsresult rv = Base64Decode(aIssuerString, decodedIssuer);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+  rv = Base64Decode(aSerialNumberString, decodedSerial);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+  rv = Base64Decode(aSubjectString, decodedSubject);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+  rv = Base64Decode(aPubKeyString, decodedPubKey);
   if (NS_FAILED(rv)) {
     return rv;
   }
 
-  Input issuer;
-  Input serial;
-  if (issuer.Init(aIssuer, aIssuerLength) != Success) {
-    return NS_ERROR_FAILURE;
-  }
-  if (serial.Init(aSerial, aSerialLength) != Success) {
-    return NS_ERROR_FAILURE;
-  }
-
-  CertBlocklistItem issuerSerial(aIssuer, aIssuerLength, aSerial, aSerialLength,
-                                 BlockByIssuerAndSerial);
-
-  nsAutoCString encDN;
-  nsAutoCString encOther;
-
-  issuerSerial.ToBase64(encDN, encOther);
+  rv = EnsureBackingFileInitialized(lock);
   if (NS_FAILED(rv)) {
     return rv;
   }
 
+  CertBlocklistItem issuerSerial(
+      BitwiseCast<const uint8_t*, const char*>(decodedIssuer.get()),
+      decodedIssuer.Length(),
+      BitwiseCast<const uint8_t*, const char*>(decodedSerial.get()),
+      decodedSerial.Length(), BlockByIssuerAndSerial);
+
   MOZ_LOG(gCertBlockPRLog, LogLevel::Warning,
-          ("CertBlocklist::IsCertRevoked issuer %s - serial %s", encDN.get(),
-           encOther.get()));
+          ("CertBlocklist::IsCertRevoked issuer %s - serial %s",
+           PromiseFlatCString(aIssuerString).get(),
+           PromiseFlatCString(aSerialNumberString).get()));
 
   *_retval = mBlocklist.Contains(issuerSerial);
 
@@ -535,7 +543,9 @@ CertBlocklist::IsCertRevoked(const uint8_t* aIssuer, uint32_t aIssuerLength,
     return rv;
   }
 
-  rv = crypto->Update(aPubKey, aPubKeyLength);
+  rv = crypto->Update(
+      BitwiseCast<const uint8_t*, const char*>(decodedPubKey.get()),
+      decodedPubKey.Length());
   if (NS_FAILED(rv)) {
     return rv;
   }
@@ -547,18 +557,23 @@ CertBlocklist::IsCertRevoked(const uint8_t* aIssuer, uint32_t aIssuerLength,
   }
 
   CertBlocklistItem subjectPubKey(
-      aSubject, static_cast<size_t>(aSubjectLength),
+      BitwiseCast<const uint8_t*, const char*>(decodedSubject.get()),
+      decodedSubject.Length(),
       BitwiseCast<const uint8_t*, const char*>(hashString.get()),
       hashString.Length(), BlockBySubjectAndPubKey);
 
-  rv = subjectPubKey.ToBase64(encDN, encOther);
+  nsCString encodedHash;
+  rv = Base64Encode(hashString, encodedHash);
   if (NS_FAILED(rv)) {
     return rv;
   }
 
-  MOZ_LOG(gCertBlockPRLog, LogLevel::Warning,
-          ("CertBlocklist::IsCertRevoked subject %s - pubKey hash %s",
-           encDN.get(), encOther.get()));
+  MOZ_LOG(
+      gCertBlockPRLog, LogLevel::Warning,
+      ("CertBlocklist::IsCertRevoked subject %s - pubKeyHash %s (pubKey %s)",
+       PromiseFlatCString(aSubjectString).get(),
+       PromiseFlatCString(encodedHash).get(),
+       PromiseFlatCString(aPubKeyString).get()));
   *_retval = mBlocklist.Contains(subjectPubKey);
 
   MOZ_LOG(gCertBlockPRLog, LogLevel::Warning,
@@ -594,11 +609,11 @@ CertBlocklist::IsBlocklistFresh(bool* _retval) {
 }
 
 /* static */
-void CertBlocklist::PreferenceChanged(const char* aPref, void* aClosure)
+void CertBlocklist::PreferenceChanged(const char* aPref,
+                                      CertBlocklist* aBlocklist)
 
 {
-  auto blocklist = static_cast<CertBlocklist*>(aClosure);
-  MutexAutoLock lock(blocklist->mMutex);
+  MutexAutoLock lock(aBlocklist->mMutex);
 
   MOZ_LOG(gCertBlockPRLog, LogLevel::Warning,
           ("CertBlocklist::PreferenceChanged %s changed", aPref));

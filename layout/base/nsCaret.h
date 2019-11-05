@@ -21,13 +21,12 @@
 class nsDisplayListBuilder;
 class nsFrameSelection;
 class nsIContent;
-class nsIDOMNode;
 class nsIFrame;
 class nsINode;
-class nsIPresShell;
 class nsITimer;
 
 namespace mozilla {
+class PresShell;
 namespace gfx {
 class DrawTarget;
 }  // namespace gfx
@@ -48,11 +47,11 @@ class nsCaret final : public nsISelectionListener {
 
   typedef mozilla::CaretAssociationHint CaretAssociationHint;
 
-  nsresult Init(nsIPresShell* inPresShell);
+  nsresult Init(mozilla::PresShell* aPresShell);
   void Terminate();
 
-  void SetSelection(nsISelection* aDOMSel);
-  nsISelection* GetSelection();
+  void SetSelection(mozilla::dom::Selection* aDOMSel);
+  mozilla::dom::Selection* GetSelection();
 
   /**
    * Sets whether the caret should only be visible in nodes that are not
@@ -74,7 +73,7 @@ class nsCaret final : public nsISelectionListener {
    *  It does not take account of blinking or the caret being hidden
    *  because we're in non-editable/disabled content.
    */
-  bool IsVisible(nsISelection* aSelection = nullptr) {
+  bool IsVisible(mozilla::dom::Selection* aSelection = nullptr) {
     if (!mVisible || mHideCount) {
       return false;
     }
@@ -82,9 +81,9 @@ class nsCaret final : public nsISelectionListener {
     if (!mShowDuringSelection) {
       mozilla::dom::Selection* selection;
       if (aSelection) {
-        selection = static_cast<mozilla::dom::Selection*>(aSelection);
+        selection = aSelection;
       } else {
-        selection = GetSelectionInternal();
+        selection = GetSelection();
       }
       if (!selection || !selection->IsCollapsed()) {
         return false;
@@ -128,13 +127,13 @@ class nsCaret final : public nsISelectionListener {
    * instead of tracking its selection.
    * Passing null for aNode would set the caret to track its selection again.
    **/
-  void SetCaretPosition(nsIDOMNode* aNode, int32_t aOffset);
+  void SetCaretPosition(nsINode* aNode, int32_t aOffset);
 
   /**
    * Schedule a repaint for the frame where the caret would appear.
    * Does not check visibility etc.
    */
-  void SchedulePaint(nsISelection* aSelection = nullptr);
+  void SchedulePaint(mozilla::dom::Selection* aSelection = nullptr);
 
   /**
    * Returns a frame to paint in, and the bounds of the painted caret
@@ -171,11 +170,13 @@ class nsCaret final : public nsISelectionListener {
    * This rect does not include any extra decorations for bidi.
    * @param aRect must be non-null
    */
-  static nsIFrame* GetGeometry(nsISelection* aSelection, nsRect* aRect);
+  static nsIFrame* GetGeometry(mozilla::dom::Selection* aSelection,
+                               nsRect* aRect);
   static nsresult GetCaretFrameForNodeOffset(
       nsFrameSelection* aFrameSelection, nsIContent* aContentNode,
       int32_t aOffset, CaretAssociationHint aFrameHint, uint8_t aBidiLevel,
-      nsIFrame** aReturnFrame, int32_t* aReturnOffset);
+      nsIFrame** aReturnFrame, nsIFrame** aReturnUnadjustedFrame,
+      int32_t* aReturnOffset);
   static nsRect GetGeometryForFrame(nsIFrame* aFrame, int32_t aFrameOffset,
                                     nscoord* aBidiIndicatorSize);
 
@@ -183,11 +184,14 @@ class nsCaret final : public nsISelectionListener {
   // of aSelection. If aOverrideNode and aOverride are provided, use them
   // instead.
   // @param aFrameOffset return the frame offset if non-null.
+  // @param aUnadjustedFrame return the original frame that the selection is
+  // targeting, without any adjustment for painting.
   // @return the frame of the focus node.
   static nsIFrame* GetFrameAndOffset(mozilla::dom::Selection* aSelection,
                                      nsINode* aOverrideNode,
                                      int32_t aOverrideOffset,
-                                     int32_t* aFrameOffset);
+                                     int32_t* aFrameOffset,
+                                     nsIFrame** aUnadjustedFrame = nullptr);
 
   size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;
 
@@ -202,8 +206,6 @@ class nsCaret final : public nsISelectionListener {
 
   void ResetBlinking();
   void StopBlinking();
-
-  mozilla::dom::Selection* GetSelectionInternal();
 
   struct Metrics {
     nscoord mBidiIndicatorSize;  // width and height of bidi indicator
@@ -223,7 +225,7 @@ class nsCaret final : public nsISelectionListener {
   bool IsMenuPopupHidingCaret();
 
   nsWeakPtr mPresShell;
-  nsWeakPtr mDomSelectionWeak;
+  mozilla::WeakPtr<mozilla::dom::Selection> mDomSelectionWeak;
 
   nsCOMPtr<nsITimer> mBlinkTimer;
 

@@ -3,9 +3,8 @@
 <head>
   <title>WebExtension test</title>
   <meta charset="utf-8">
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/SpawnTask.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -19,6 +18,7 @@ let expectedBackgroundApisTargetSpecific = [
   "tabs.MutedInfoReason",
   "tabs.TAB_ID_NONE",
   "tabs.TabStatus",
+  "tabs.UpdatePropertyName",
   "tabs.WindowType",
   "tabs.ZoomSettingsMode",
   "tabs.ZoomSettingsScope",
@@ -32,8 +32,10 @@ let expectedBackgroundApisTargetSpecific = [
   "tabs.getCurrent",
   "tabs.getZoom",
   "tabs.getZoomSettings",
+  "tabs.highlight",
   "tabs.insertCSS",
   "tabs.move",
+  "tabs.moveInSuccession",
   "tabs.onActivated",
   "tabs.onAttached",
   "tabs.onCreated",

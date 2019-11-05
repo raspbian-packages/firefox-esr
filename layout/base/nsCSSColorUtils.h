@@ -19,9 +19,8 @@
   int32_t(mozilla::Abs(NS_GetLuminosity(a | 0xff000000) - \
                        NS_GetLuminosity(b | 0xff000000)))
 
-// To determine colors based on the background brightness and border color
-void NS_GetSpecial3DColors(nscolor aResult[2], nscolor aBackgroundColor,
-                           nscolor aBorderColor);
+// To determine 3D colors for groove / ridge borders based on the border color
+void NS_GetSpecial3DColors(nscolor aResult[2], nscolor aBorderColor);
 
 // Determins brightness for a specific color
 int NS_GetBrightness(uint8_t aRed, uint8_t aGreen, uint8_t aBlue);
@@ -31,11 +30,11 @@ int NS_GetBrightness(uint8_t aRed, uint8_t aGreen, uint8_t aBlue);
 int32_t NS_GetLuminosity(nscolor aColor);
 
 // function to convert from RGBA color space to HSVA color space
-void NS_RGB2HSV(nscolor aColor, uint16_t &aHue, uint16_t &aSat,
-                uint16_t &aValue, uint8_t &aAlpha);
+void NS_RGB2HSV(nscolor aColor, uint16_t& aHue, uint16_t& aSat,
+                uint16_t& aValue, uint8_t& aAlpha);
 
 // function to convert from HSVA color space to RGBA color space
-void NS_HSV2RGB(nscolor &aColor, uint16_t aHue, uint16_t aSat, uint16_t aValue,
+void NS_HSV2RGB(nscolor& aColor, uint16_t aHue, uint16_t aSat, uint16_t aValue,
                 uint8_t aAlpha);
 
 #endif

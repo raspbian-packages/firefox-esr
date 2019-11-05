@@ -17,13 +17,13 @@
 #include "mozilla/Sprintf.h"
 
 #ifdef XP_WIN
-#include <io.h>
-#include <windows.h>
-#include "mozilla/UniquePtr.h"
+#  include <io.h>
+#  include <windows.h>
+#  include "mozilla/UniquePtr.h"
 #endif
 
 #ifdef ANDROID
-#include <android/log.h>
+#  include <android/log.h>
 #endif
 
 using namespace mozilla;
@@ -110,31 +110,28 @@ int NS_strncmp(const char16_t* aStrA, const char16_t* aStrB, size_t aLen) {
   return aLen ? *aStrA != '\0' : 0;
 }
 
-char16_t* NS_strdup(const char16_t* aString) {
+char16_t* NS_xstrdup(const char16_t* aString) {
   uint32_t len = NS_strlen(aString);
-  return NS_strndup(aString, len);
+  return NS_xstrndup(aString, len);
 }
 
 template <typename CharT>
-CharT* NS_strndup(const CharT* aString, uint32_t aLen) {
+CharT* NS_xstrndup(const CharT* aString, uint32_t aLen) {
   auto newBuf = (CharT*)moz_xmalloc((aLen + 1) * sizeof(CharT));
-  if (newBuf) {
-    memcpy(newBuf, aString, aLen * sizeof(CharT));
-    newBuf[aLen] = '\0';
-  }
+  memcpy(newBuf, aString, aLen * sizeof(CharT));
+  newBuf[aLen] = '\0';
   return newBuf;
 }
 
-template char16_t* NS_strndup<char16_t>(const char16_t* aString, uint32_t aLen);
-template char* NS_strndup<char>(const char* aString, uint32_t aLen);
+template char16_t* NS_xstrndup<char16_t>(const char16_t* aString,
+                                         uint32_t aLen);
+template char* NS_xstrndup<char>(const char* aString, uint32_t aLen);
 
-char* NS_strdup(const char* aString) {
+char* NS_xstrdup(const char* aString) {
   uint32_t len = strlen(aString);
   char* str = (char*)moz_xmalloc(len + 1);
-  if (str) {
-    memcpy(str, aString, len);
-    str[len] = '\0';
-  }
+  memcpy(str, aString, len);
+  str[len] = '\0';
   return str;
 }
 
@@ -200,53 +197,10 @@ bool NS_IsLower(char aChar) {
   return aChar != (char)nsLowerUpperUtils::kLower2Upper[(unsigned char)aChar];
 }
 
-bool NS_IsAscii(char16_t aChar) { return (0x0080 > aChar); }
-
-bool NS_IsAscii(const char16_t* aString) {
-  while (*aString) {
-    if (0x0080 <= *aString) {
-      return false;
-    }
-    aString++;
-  }
-  return true;
-}
-
-bool NS_IsAscii(const char* aString) {
-  while (*aString) {
-    if (0x80 & *aString) {
-      return false;
-    }
-    aString++;
-  }
-  return true;
-}
-
-bool NS_IsAscii(const char* aString, uint32_t aLength) {
-  const char* end = aString + aLength;
-  while (aString < end) {
-    if (0x80 & *aString) {
-      return false;
-    }
-    ++aString;
-  }
-  return true;
-}
-
-bool NS_IsAsciiAlpha(char16_t aChar) {
-  return (aChar >= 'A' && aChar <= 'Z') || (aChar >= 'a' && aChar <= 'z');
-}
-
-bool NS_IsAsciiWhitespace(char16_t aChar) {
-  return aChar == ' ' || aChar == '\r' || aChar == '\n' || aChar == '\t';
-}
-
-bool NS_IsAsciiDigit(char16_t aChar) { return aChar >= '0' && aChar <= '9'; }
-
 #ifndef XPCOM_GLUE_AVOID_NSPR
 
 void NS_MakeRandomString(char* aBuf, int32_t aBufLen) {
-#define TABLE_SIZE 36
+#  define TABLE_SIZE 36
   static const char table[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
                                'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
                                's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0',
@@ -257,9 +211,9 @@ void NS_MakeRandomString(char* aBuf, int32_t aBufLen) {
   static unsigned int seed = 0;
   if (seed == 0) {
     double fpTime = double(PR_Now());
-    seed = (unsigned int)(fpTime * 1e-6 + 0.5);  // use 1e-6, granularity of
-                                                 // PR_Now() on the mac is
-                                                 // seconds
+    seed =
+        (unsigned int)(fpTime * 1e-6 + 0.5);  // use 1e-6, granularity of
+                                              // PR_Now() on the mac is seconds
     srand(seed);
   }
 
@@ -273,11 +227,11 @@ void NS_MakeRandomString(char* aBuf, int32_t aBufLen) {
 #endif
 
 #ifdef HAVE_VA_COPY
-#define VARARGS_ASSIGN(foo, bar) VA_COPY(foo, bar)
+#  define VARARGS_ASSIGN(foo, bar) VA_COPY(foo, bar)
 #elif defined(HAVE_VA_LIST_AS_ARRAY)
-#define VARARGS_ASSIGN(foo, bar) foo[0] = bar[0]
+#  define VARARGS_ASSIGN(foo, bar) foo[0] = bar[0]
 #else
-#define VARARGS_ASSIGN(foo, bar) (foo) = (bar)
+#  define VARARGS_ASSIGN(foo, bar) (foo) = (bar)
 #endif
 
 #if defined(XP_WIN)

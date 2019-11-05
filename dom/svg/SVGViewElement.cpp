@@ -6,40 +6,36 @@
 
 #include "mozilla/dom/SVGViewElement.h"
 #include "mozilla/dom/SVGViewElementBinding.h"
-#include "DOMSVGStringList.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(View)
+NS_IMPL_NS_NEW_SVG_ELEMENT(View)
 
 namespace mozilla {
 namespace dom {
 
-using namespace SVGViewElementBinding;
+using namespace SVGViewElement_Binding;
 
 JSObject* SVGViewElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SVGViewElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGViewElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::StringListInfo SVGViewElement::sStringListInfo[1] = {
-    {&nsGkAtoms::viewTarget}};
-
-nsSVGEnumMapping SVGViewElement::sZoomAndPanMap[] = {
-    {&nsGkAtoms::disable, SVG_ZOOMANDPAN_DISABLE},
-    {&nsGkAtoms::magnify, SVG_ZOOMANDPAN_MAGNIFY},
+SVGEnumMapping SVGViewElement::sZoomAndPanMap[] = {
+    {nsGkAtoms::disable, SVG_ZOOMANDPAN_DISABLE},
+    {nsGkAtoms::magnify, SVG_ZOOMANDPAN_MAGNIFY},
     {nullptr, 0}};
 
-nsSVGElement::EnumInfo SVGViewElement::sEnumInfo[1] = {
-    {&nsGkAtoms::zoomAndPan, sZoomAndPanMap, SVG_ZOOMANDPAN_MAGNIFY}};
+SVGElement::EnumInfo SVGViewElement::sEnumInfo[1] = {
+    {nsGkAtoms::zoomAndPan, sZoomAndPanMap, SVG_ZOOMANDPAN_MAGNIFY}};
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGViewElement::SVGViewElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGViewElementBase(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGViewElementBase(std::move(aNodeInfo)) {}
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGViewElement)
 
@@ -65,28 +61,17 @@ SVGViewElement::PreserveAspectRatio() {
 }
 
 //----------------------------------------------------------------------
+// SVGElement methods
 
-already_AddRefed<DOMSVGStringList> SVGViewElement::ViewTarget() {
-  return DOMSVGStringList::GetDOMWrapper(&mStringListAttributes[VIEW_TARGET],
-                                         this, false, VIEW_TARGET);
-}
-
-//----------------------------------------------------------------------
-// nsSVGElement methods
-
-nsSVGElement::EnumAttributesInfo SVGViewElement::GetEnumInfo() {
+SVGElement::EnumAttributesInfo SVGViewElement::GetEnumInfo() {
   return EnumAttributesInfo(mEnumAttributes, sEnumInfo, ArrayLength(sEnumInfo));
 }
 
-nsSVGViewBox* SVGViewElement::GetViewBox() { return &mViewBox; }
+SVGAnimatedViewBox* SVGViewElement::GetAnimatedViewBox() { return &mViewBox; }
 
-SVGAnimatedPreserveAspectRatio* SVGViewElement::GetPreserveAspectRatio() {
+SVGAnimatedPreserveAspectRatio*
+SVGViewElement::GetAnimatedPreserveAspectRatio() {
   return &mPreserveAspectRatio;
-}
-
-nsSVGElement::StringListAttributesInfo SVGViewElement::GetStringListInfo() {
-  return StringListAttributesInfo(mStringListAttributes, sStringListInfo,
-                                  ArrayLength(sStringListInfo));
 }
 
 }  // namespace dom

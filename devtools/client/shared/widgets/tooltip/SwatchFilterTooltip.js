@@ -4,7 +4,9 @@
 
 "use strict";
 
-const {CSSFilterEditorWidget} = require("devtools/client/shared/widgets/FilterWidget");
+const {
+  CSSFilterEditorWidget,
+} = require("devtools/client/shared/widgets/FilterWidget");
 const SwatchBasedEditorTooltip = require("devtools/client/shared/widgets/tooltip/SwatchBasedEditorTooltip");
 
 const XHTML_NS = "http://www.w3.org/1999/xhtml";
@@ -42,12 +44,14 @@ class SwatchFilterTooltip extends SwatchBasedEditorTooltip {
    */
 
   setFilterContent(filter) {
-    let { doc } = this.tooltip;
+    const { doc } = this.tooltip;
+    this.tooltip.panel.innerHTML = "";
 
-    let container = doc.createElementNS(XHTML_NS, "div");
+    const container = doc.createElementNS(XHTML_NS, "div");
     container.id = "filter-container";
 
-    this.tooltip.setContent(container, { width: 510, height: 200 });
+    this.tooltip.panel.appendChild(container);
+    this.tooltip.setContentSize({ width: 510, height: 200 });
 
     return new CSSFilterEditorWidget(container, filter, this._cssIsValid);
   }
@@ -76,7 +80,11 @@ class SwatchFilterTooltip extends SwatchBasedEditorTooltip {
     while (this.currentFilterValue.firstChild) {
       this.currentFilterValue.firstChild.remove();
     }
-    let node = this._parser.parseCssProperty("filter", filters, this._options);
+    const node = this._parser.parseCssProperty(
+      "filter",
+      filters,
+      this._options
+    );
     this.currentFilterValue.appendChild(node);
 
     this.preview();

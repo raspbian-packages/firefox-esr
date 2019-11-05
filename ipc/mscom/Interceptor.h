@@ -174,7 +174,7 @@ inline HRESULT CreateInterceptor(STAUniquePtr<InterfaceT> aTargetInterface,
   REFIID iidTarget = __uuidof(InterfaceT);
 
   STAUniquePtr<IUnknown> targetUnknown(aTargetInterface.release());
-  return Interceptor::Create(Move(targetUnknown), aEventSink, iidTarget,
+  return Interceptor::Create(std::move(targetUnknown), aEventSink, iidTarget,
                              (void**)aOutInterface);
 }
 

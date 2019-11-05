@@ -18,22 +18,23 @@ class HeadlessThemeGTK final : private nsNativeTheme, public nsITheme {
 
   HeadlessThemeGTK() = default;
   NS_IMETHOD DrawWidgetBackground(gfxContext* aContext, nsIFrame* aFrame,
-                                  uint8_t aWidgetType, const nsRect& aRect,
+                                  StyleAppearance aAppearance,
+                                  const nsRect& aRect,
                                   const nsRect& aDirtyRect) override;
 
-  NS_IMETHOD GetWidgetBorder(nsDeviceContext* aContext, nsIFrame* aFrame,
-                             uint8_t aWidgetType,
-                             nsIntMargin* aResult) override;
+  MOZ_MUST_USE LayoutDeviceIntMargin
+  GetWidgetBorder(nsDeviceContext* aContext, nsIFrame* aFrame,
+                  StyleAppearance aAppearance) override;
 
-  virtual bool GetWidgetPadding(nsDeviceContext* aContext, nsIFrame* aFrame,
-                                uint8_t aWidgetType,
-                                nsIntMargin* aResult) override;
+  bool GetWidgetPadding(nsDeviceContext* aContext, nsIFrame* aFrame,
+                        StyleAppearance aAppearance,
+                        LayoutDeviceIntMargin* aResult) override;
   NS_IMETHOD GetMinimumWidgetSize(nsPresContext* aPresContext, nsIFrame* aFrame,
-                                  uint8_t aWidgetType,
+                                  StyleAppearance aAppearance,
                                   mozilla::LayoutDeviceIntSize* aResult,
                                   bool* aIsOverridable) override;
 
-  NS_IMETHOD WidgetStateChanged(nsIFrame* aFrame, uint8_t aWidgetType,
+  NS_IMETHOD WidgetStateChanged(nsIFrame* aFrame, StyleAppearance aAppearance,
                                 nsAtom* aAttribute, bool* aShouldRepaint,
                                 const nsAttrValue* aOldValue) override;
 
@@ -41,11 +42,12 @@ class HeadlessThemeGTK final : private nsNativeTheme, public nsITheme {
 
   NS_IMETHOD_(bool)
   ThemeSupportsWidget(nsPresContext* aPresContext, nsIFrame* aFrame,
-                      uint8_t aWidgetType) override;
+                      StyleAppearance aAppearance) override;
 
-  NS_IMETHOD_(bool) WidgetIsContainer(uint8_t aWidgetType) override;
+  NS_IMETHOD_(bool) WidgetIsContainer(StyleAppearance aAppearance) override;
 
-  NS_IMETHOD_(bool) ThemeDrawsFocusForWidget(uint8_t aWidgetType) override;
+  NS_IMETHOD_(bool)
+  ThemeDrawsFocusForWidget(StyleAppearance aAppearance) override;
 
   virtual bool ThemeNeedsComboboxDropmarker() override;
 

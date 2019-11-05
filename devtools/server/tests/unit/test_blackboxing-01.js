@@ -15,12 +15,15 @@ function run_test() {
   initTestDebuggerServer();
   gDebuggee = addTestGlobal("test-black-box");
   gClient = new DebuggerClient(DebuggerServer.connectPipe());
-  gClient.connect().then(function () {
-    attachTestTabAndResume(gClient, "test-black-box",
-                           function (response, tabClient, threadClient) {
-                             gThreadClient = threadClient;
-                             testBlackBox();
-                           });
+  gClient.connect().then(function() {
+    attachTestTabAndResume(gClient, "test-black-box", function(
+      response,
+      targetFront,
+      threadClient
+    ) {
+      gThreadClient = threadClient;
+      testBlackBox();
+    });
   });
   do_test_pending();
 }
@@ -28,64 +31,86 @@ function run_test() {
 const BLACK_BOXED_URL = "http://example.com/blackboxme.js";
 const SOURCE_URL = "http://example.com/source.js";
 
-const testBlackBox = async function () {
-  let packet = await executeOnNextTickAndWaitForPause(evalCode, gClient);
-  let source = gThreadClient.source(packet.frame.where.source);
+const testBlackBox = async function() {
+  const packet = await executeOnNextTickAndWaitForPause(evalCode, gClient);
 
-  await setBreakpoint(source, {
-    line: 2
-  });
+  const bpSource = await getSourceById(gThreadClient, packet.frame.where.actor);
+
+  await setBreakpoint(gThreadClient, { sourceUrl: bpSource.url, line: 2 });
   await resume(gThreadClient);
 
-  const { sources } = await getSources(gThreadClient);
-  let sourceClient = gThreadClient.source(
-    sources.filter(s => s.url == BLACK_BOXED_URL)[0]);
-  Assert.ok(!sourceClient.isBlackBoxed,
-            "By default the source is not black boxed.");
+  let sourceForm = await getSourceForm(gThreadClient, BLACK_BOXED_URL);
+
+  Assert.ok(
+    !sourceForm.isBlackBoxed,
+    "By default the source is not black boxed."
+  );
 
   // Test that we can step into `doStuff` when we are not black boxed.
   await runTest(
-    function onSteppedLocation(location) {
-      Assert.equal(location.source.url, BLACK_BOXED_URL);
+    async function onSteppedLocation(location) {
+      const source = await getSourceFormById(gThreadClient, location.actor);
+      Assert.equal(source.url, BLACK_BOXED_URL);
       Assert.equal(location.line, 2);
     },
-    function onDebuggerStatementFrames(frames) {
-      Assert.ok(!frames.some(f => f.where.source.isBlackBoxed));
+    async function onDebuggerStatementFrames(frames) {
+      for (const frame of frames) {
+        const source = await getSourceFormById(
+          gThreadClient,
+          frame.where.actor
+        );
+        Assert.ok(!source.isBlackBoxed);
+      }
     }
   );
 
-  await blackBox(sourceClient);
-  Assert.ok(sourceClient.isBlackBoxed);
+  const blackboxedSource = await getSource(gThreadClient, BLACK_BOXED_URL);
+  await blackBox(blackboxedSource);
+  sourceForm = await getSourceForm(gThreadClient, BLACK_BOXED_URL);
+  Assert.ok(sourceForm.isBlackBoxed);
 
   // Test that we step through `doStuff` when we are black boxed and its frame
   // doesn't show up.
   await runTest(
-    function onSteppedLocation(location) {
-      Assert.equal(location.source.url, SOURCE_URL);
+    async function onSteppedLocation(location) {
+      const source = await getSourceFormById(gThreadClient, location.actor);
+      Assert.equal(source.url, SOURCE_URL);
       Assert.equal(location.line, 4);
     },
-    function onDebuggerStatementFrames(frames) {
-      for (let f of frames) {
-        if (f.where.source.url == BLACK_BOXED_URL) {
-          Assert.ok(f.where.source.isBlackBoxed);
+    async function onDebuggerStatementFrames(frames) {
+      for (const frame of frames) {
+        const source = await getSourceFormById(
+          gThreadClient,
+          frame.where.actor
+        );
+        if (source.url == BLACK_BOXED_URL) {
+          Assert.ok(source.isBlackBoxed);
         } else {
-          Assert.ok(!f.where.source.isBlackBoxed);
+          Assert.ok(!source.isBlackBoxed);
         }
       }
     }
   );
 
-  await unBlackBox(sourceClient);
-  Assert.ok(!sourceClient.isBlackBoxed);
+  await unBlackBox(blackboxedSource);
+  sourceForm = await getSourceForm(gThreadClient, BLACK_BOXED_URL);
+  Assert.ok(!sourceForm.isBlackBoxed);
 
   // Test that we can step into `doStuff` again.
   await runTest(
-    function onSteppedLocation(location) {
-      Assert.equal(location.source.url, BLACK_BOXED_URL);
+    async function onSteppedLocation(location) {
+      const source = await getSourceFormById(gThreadClient, location.actor);
+      Assert.equal(source.url, BLACK_BOXED_URL);
       Assert.equal(location.line, 2);
     },
-    function onDebuggerStatementFrames(frames) {
-      Assert.ok(!frames.some(f => f.where.source.isBlackBoxed));
+    async function onDebuggerStatementFrames(frames) {
+      for (const frame of frames) {
+        const source = await getSourceFormById(
+          gThreadClient,
+          frame.where.actor
+        );
+        Assert.ok(!source.isBlackBoxed);
+      }
     }
   );
 
@@ -122,26 +147,28 @@ function evalCode() {
   /* eslint-enable */
 }
 
-const runTest = async function (onSteppedLocation, onDebuggerStatementFrames) {
-  let packet = await executeOnNextTickAndWaitForPause(gDebuggee.runTest,
-                                                      gClient);
+const runTest = async function(onSteppedLocation, onDebuggerStatementFrames) {
+  let packet = await executeOnNextTickAndWaitForPause(
+    gDebuggee.runTest,
+    gClient
+  );
   Assert.equal(packet.why.type, "breakpoint");
 
   await stepIn(gClient, gThreadClient);
 
   const location = await getCurrentLocation();
-  onSteppedLocation(location);
+  await onSteppedLocation(location);
 
   packet = await resumeAndWaitForPause(gClient, gThreadClient);
   Assert.equal(packet.why.type, "debuggerStatement");
 
-  let { frames } = await getFrames(gThreadClient, 0, 100);
-  onDebuggerStatementFrames(frames);
+  const { frames } = await getFrames(gThreadClient, 0, 100);
+  await onDebuggerStatementFrames(frames);
 
   return resume(gThreadClient);
 };
 
-const getCurrentLocation = async function () {
+const getCurrentLocation = async function() {
   const response = await getFrames(gThreadClient, 0, 1);
   return response.frames[0].where;
 };

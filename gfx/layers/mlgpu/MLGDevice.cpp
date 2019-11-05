@@ -32,7 +32,7 @@ bool MLGSwapChain::ApplyNewInvalidRegion(
   // We clamp the invalid region to the backbuffer size, otherwise the present
   // can fail.
   IntRect bounds(IntPoint(0, 0), GetSize());
-  nsIntRegion invalid = Move(aRegion);
+  nsIntRegion invalid = std::move(aRegion);
   invalid.AndWith(bounds);
   if (invalid.IsEmpty()) {
     return false;
@@ -63,6 +63,7 @@ bool MLGSwapChain::ApplyNewInvalidRegion(
 
 MLGDevice::MLGDevice()
     : mTopology(MLGPrimitiveTopology::Unknown),
+      mInitialized(false),
       mIsValid(false),
       mCanUseClearView(false),
       mCanUseConstantBufferOffsetBinding(false),
@@ -260,13 +261,32 @@ RefPtr<MLGBuffer> MLGDevice::GetBufferForColorSpace(YUVColorSpace aColorSpace) {
   return resource;
 }
 
+RefPtr<MLGBuffer> MLGDevice::GetBufferForColorDepthCoefficient(
+    ColorDepth aColorDepth) {
+  if (mColorDepthBuffers[aColorDepth]) {
+    return mColorDepthBuffers[aColorDepth];
+  }
+
+  YCbCrColorDepthConstants buffer;
+  buffer.coefficient = gfx::RescalingFactorForColorDepth(aColorDepth);
+
+  RefPtr<MLGBuffer> resource = CreateBuffer(
+      MLGBufferType::Constant, sizeof(buffer), MLGUsage::Immutable, &buffer);
+  if (!resource) {
+    return nullptr;
+  }
+
+  mColorDepthBuffers[aColorDepth] = resource;
+  return resource;
+}
+
 bool MLGDevice::Synchronize() { return true; }
 
 void MLGDevice::PrepareClearRegion(ClearRegionHelper* aOut,
                                    nsTArray<gfx::IntRect>&& aRects,
                                    const Maybe<int32_t>& aSortIndex) {
   if (CanUseClearView() && !aSortIndex) {
-    aOut->mRects = Move(aRects);
+    aOut->mRects = std::move(aRects);
     return;
   }
 

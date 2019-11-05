@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set tw=80 ts=4 sts=4 sw=4 et cin: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set tw=80 ts=4 sts=2 sw=2 et cin: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,6 +8,8 @@
 
 #include "prprf.h"
 #include "mozilla/Logging.h"
+#include "mozilla/NullPrincipal.h"
+#include "mozilla/TextUtils.h"
 #include "prtime.h"
 
 #include "nsIOService.h"
@@ -29,7 +31,6 @@
 #include "nsIStreamListenerTee.h"
 #include "nsIPrefService.h"
 #include "nsIPrefBranch.h"
-#include "nsIStringBundle.h"
 #include "nsAuthInformationHolder.h"
 #include "nsIProtocolProxyService.h"
 #include "nsICancelable.h"
@@ -42,7 +43,6 @@
 #include "nsIURI.h"
 #include "nsIURIMutator.h"
 #include "nsILoadInfo.h"
-#include "NullPrincipal.h"
 #include "nsIAuthPrompt2.h"
 #include "nsIFTPChannelParentInternal.h"
 
@@ -54,7 +54,7 @@ extern LazyLogModule gFTPLog;
 #define LOG_INFO(args) MOZ_LOG(gFTPLog, mozilla::LogLevel::Info, args)
 
 // remove FTP parameters (starting with ";") from the path
-static void removeParamsFromPath(nsCString &path) {
+static void removeParamsFromPath(nsCString& path) {
   int32_t index = path.FindChar(';');
   if (index >= 0) {
     path.SetLength(index);
@@ -70,6 +70,7 @@ nsFtpState::nsFtpState()
       mState(FTP_INIT),
       mNextState(FTP_S_USER),
       mKeepRunning(true),
+      mResponseCode(0),
       mReceivedControlData(false),
       mTryingCachedControl(false),
       mRETRFailed(false),
@@ -88,10 +89,12 @@ nsFtpState::nsFtpState()
       mUseUTF8(false),
       mControlStatus(NS_OK),
       mDeferredCallbackPending(false) {
+  this->mServerAddress.raw.family = 0;
+  this->mServerAddress.inet = {};
   LOG_INFO(("FTP:(%p) nsFtpState created", this));
 
   // make sure handler stays around
-  NS_ADDREF(gFtpHandler);
+  mHandler = gFtpHandler;
 }
 
 nsFtpState::~nsFtpState() {
@@ -100,13 +103,12 @@ nsFtpState::~nsFtpState() {
   if (mProxyRequest) mProxyRequest->Cancel(NS_ERROR_FAILURE);
 
   // release reference to handler
-  nsFtpProtocolHandler *handler = gFtpHandler;
-  NS_RELEASE(handler);
+  mHandler = nullptr;
 }
 
 // nsIInputStreamCallback implementation
 NS_IMETHODIMP
-nsFtpState::OnInputStreamReady(nsIAsyncInputStream *aInStream) {
+nsFtpState::OnInputStreamReady(nsIAsyncInputStream* aInStream) {
   LOG(("FTP:(%p) data stream ready\n", this));
 
   // We are receiving a notification from our data stream, so just forward it
@@ -116,7 +118,7 @@ nsFtpState::OnInputStreamReady(nsIAsyncInputStream *aInStream) {
   return NS_OK;
 }
 
-void nsFtpState::OnControlDataAvailable(const char *aData, uint32_t aDataLen) {
+void nsFtpState::OnControlDataAvailable(const char* aData, uint32_t aDataLen) {
   LOG(("FTP:(%p) control data available [%u]\n", this, aDataLen));
   mControlConnection->WaitData(this);  // queue up another call
 
@@ -137,7 +139,7 @@ void nsFtpState::OnControlDataAvailable(const char *aData, uint32_t aDataLen) {
 
   buffer.Append(aData, aDataLen);
 
-  const char *currLine = buffer.get();
+  const char* currLine = buffer.get();
   while (*currLine && mKeepRunning) {
     int32_t eolLength = strcspn(currLine, CRLF);
     int32_t currLineLength = strlen(currLine);
@@ -168,8 +170,8 @@ void nsFtpState::OnControlDataAvailable(const char *aData, uint32_t aDataLen) {
     line.Assign(currLine, eolLength + crlfLength);
 
     // Does this start with a response code?
-    bool startNum = (line.Length() >= 3 && isdigit(line[0]) &&
-                     isdigit(line[1]) && isdigit(line[2]));
+    bool startNum = (line.Length() >= 3 && IsAsciiDigit(line[0]) &&
+                     IsAsciiDigit(line[1]) && IsAsciiDigit(line[2]));
 
     if (mResponseMsg.IsEmpty()) {
       // If we get here, then we know that we have a complete line, and
@@ -659,7 +661,7 @@ nsresult nsFtpState::S_user() {
         return NS_ERROR_FAILURE;
 
       nsCOMPtr<nsIAuthPrompt2> prompter;
-      NS_QueryAuthPrompt2(static_cast<nsIChannel *>(mChannel),
+      NS_QueryAuthPrompt2(static_cast<nsIChannel*>(mChannel),
                           getter_AddRefs(prompter));
       if (!prompter) return NS_ERROR_NOT_INITIALIZED;
 
@@ -741,7 +743,7 @@ nsresult nsFtpState::S_pass() {
         return NS_ERROR_FAILURE;
 
       nsCOMPtr<nsIAuthPrompt2> prompter;
-      NS_QueryAuthPrompt2(static_cast<nsIChannel *>(mChannel),
+      NS_QueryAuthPrompt2(static_cast<nsIChannel*>(mChannel),
                           getter_AddRefs(prompter));
       if (!prompter) return NS_ERROR_NOT_INITIALIZED;
 
@@ -846,33 +848,8 @@ nsFtpState::R_syst() {
       mServerType = FTP_VMS_TYPE;
     } else {
       NS_ERROR("Server type list format unrecognized.");
-      // Guessing causes crashes.
-      // (Of course, the parsing code should be more robust...)
-      nsCOMPtr<nsIStringBundleService> bundleService =
-          do_GetService(NS_STRINGBUNDLE_CONTRACTID);
-      if (!bundleService) return FTP_ERROR;
 
-      nsCOMPtr<nsIStringBundle> bundle;
-      nsresult rv =
-          bundleService->CreateBundle(NECKO_MSGS_URL, getter_AddRefs(bundle));
-      if (NS_FAILED(rv)) return FTP_ERROR;
-
-      char16_t *ucs2Response = ToNewUnicode(mResponseMsg);
-      const char16_t *formatStrings[1] = {ucs2Response};
-
-      nsAutoString formattedString;
-      rv = bundle->FormatStringFromName("UnsupportedFTPServer", formatStrings,
-                                        1, formattedString);
-      free(ucs2Response);
-      if (NS_FAILED(rv)) return FTP_ERROR;
-
-      // TODO(darin): this code should not be dictating UI like this!
-      nsCOMPtr<nsIPrompt> prompter;
-      mChannel->GetCallback(prompter);
-      if (prompter) prompter->Alert(nullptr, formattedString.get());
-
-      // since we just alerted the user, clear mResponseMsg,
-      // which is displayed to the user.
+      // clear mResponseMsg, which is displayed to the user.
       mResponseMsg = "";
       return FTP_ERROR;
     }
@@ -1070,7 +1047,7 @@ nsresult nsFtpState::S_list() {
 
   mChannel->SetEntityID(EmptyCString());
 
-  const char *listString;
+  const char* listString;
   if (mServerType == FTP_VMS_TYPE) {
     listString = "LIST *.*;0" CRLF;
   } else {
@@ -1212,7 +1189,7 @@ nsresult nsFtpState::S_pasv() {
     mServerAddress.inet.ip = htonl(INADDR_ANY);
     mServerAddress.inet.port = htons(0);
 
-    nsITransport *controlSocket = mControlConnection->Transport();
+    nsITransport* controlSocket = mControlConnection->Transport();
     if (!controlSocket)
       // XXX Invalid cast of FTP_STATE to nsresult -- FTP_ERROR has
       // value < 0x80000000 and will pass NS_SUCCEEDED() (bug 778109)
@@ -1243,7 +1220,7 @@ nsresult nsFtpState::S_pasv() {
     }
   }
 
-  const char *string;
+  const char* string;
   if (mServerIsIPv6) {
     string = "EPSV" CRLF;
   } else {
@@ -1261,9 +1238,9 @@ nsFtpState::R_pasv() {
   int32_t port;
 
   nsAutoCString responseCopy(mResponseMsg);
-  char *response = responseCopy.BeginWriting();
+  char* response = responseCopy.BeginWriting();
 
-  char *ptr = response;
+  char* ptr = response;
 
   // Make sure to ignore the address in the PASV response (bug 370559)
 
@@ -1338,7 +1315,10 @@ nsFtpState::R_pasv() {
     if (newDataConn) {
       mDataTransport->Close(NS_ERROR_ABORT);
       mDataTransport = nullptr;
-      mDataStream = nullptr;
+      if (mDataStream) {
+        mDataStream->CloseWithStatus(NS_ERROR_ABORT);
+        mDataStream = nullptr;
+      }
     }
   }
 
@@ -1467,7 +1447,7 @@ nsFtpState::R_opts() {
 ////////////////////////////////////////////////////////////////////////////////
 // nsIRequest methods:
 
-nsresult nsFtpState::Init(nsFtpChannel *channel) {
+nsresult nsFtpState::Init(nsFtpChannel* channel) {
   // parameter validation
   NS_ASSERTION(channel, "FTP: needs a channel");
 
@@ -1513,7 +1493,7 @@ nsresult nsFtpState::Init(nsFtpChannel *channel) {
   }
 
   // Skip leading slash
-  char *fwdPtr = path.BeginWriting();
+  char* fwdPtr = path.BeginWriting();
   if (!fwdPtr) return NS_ERROR_OUT_OF_MEMORY;
   if (*fwdPtr == '/') fwdPtr++;
   if (*fwdPtr != '\0') {
@@ -1561,7 +1541,7 @@ nsresult nsFtpState::Init(nsFtpChannel *channel) {
       do_GetService(NS_PROTOCOLPROXYSERVICE_CONTRACTID);
 
   if (pps && !mChannel->ProxyInfo()) {
-    pps->AsyncResolve(static_cast<nsIChannel *>(mChannel), 0, this, nullptr,
+    pps->AsyncResolve(static_cast<nsIChannel*>(mChannel), 0, this, nullptr,
                       getter_AddRefs(mProxyRequest));
   }
 
@@ -1622,29 +1602,6 @@ void nsFtpState::KillControlConnection() {
   mControlConnection = nullptr;
 }
 
-class nsFtpAsyncAlert : public Runnable {
- public:
-  nsFtpAsyncAlert(nsIPrompt *aPrompter, nsString aResponseMsg)
-      : mozilla::Runnable("nsFtpAsyncAlert"),
-        mPrompter(aPrompter),
-        mResponseMsg(aResponseMsg) {}
-
- protected:
-  virtual ~nsFtpAsyncAlert() {}
-
- public:
-  NS_IMETHOD Run() override {
-    if (mPrompter) {
-      mPrompter->Alert(nullptr, mResponseMsg.get());
-    }
-    return NS_OK;
-  }
-
- private:
-  nsCOMPtr<nsIPrompt> mPrompter;
-  nsString mResponseMsg;
-};
-
 nsresult nsFtpState::StopProcessing() {
   // Only do this function once.
   if (!mKeepRunning) return NS_OK;
@@ -1653,23 +1610,7 @@ nsresult nsFtpState::StopProcessing() {
   LOG_INFO(("FTP:(%p) nsFtpState stopping", this));
 
   if (NS_FAILED(mInternalError) && !mResponseMsg.IsEmpty()) {
-    // check to see if the control status is bad.
-    // web shell wont throw an alert.  we better:
-
-    // XXX(darin): this code should not be dictating UI like this!
-    nsCOMPtr<nsIPrompt> prompter;
-    mChannel->GetCallback(prompter);
-    if (prompter) {
-      nsCOMPtr<nsIRunnable> alertEvent;
-      if (mUseUTF8) {
-        alertEvent =
-            new nsFtpAsyncAlert(prompter, NS_ConvertUTF8toUTF16(mResponseMsg));
-      } else {
-        alertEvent =
-            new nsFtpAsyncAlert(prompter, NS_ConvertASCIItoUTF16(mResponseMsg));
-      }
-      NS_DispatchToMainThread(alertEvent);
-    }
+    // check to see if the control status is bad, forward the error message.
     nsCOMPtr<nsIFTPChannelParentInternal> ftpChanP;
     mChannel->GetCallback(ftpChanP);
     if (ftpChanP) {
@@ -1692,7 +1633,7 @@ nsresult nsFtpState::StopProcessing() {
   return NS_OK;
 }
 
-nsresult nsFtpState::SendFTPCommand(const nsACString &command) {
+nsresult nsFtpState::SendFTPCommand(const nsACString& command) {
   NS_ASSERTION(mControlConnection, "null control connection");
 
   // we don't want to log the password:
@@ -1714,7 +1655,7 @@ nsresult nsFtpState::SendFTPCommand(const nsACString &command) {
 // Convert a unix-style filespec to VMS format
 // /foo/fred/barney/file.txt -> foo:[fred.barney]file.txt
 // /foo/file.txt -> foo:[000000]file.txt
-void nsFtpState::ConvertFilespecToVMS(nsCString &fileString) {
+void nsFtpState::ConvertFilespecToVMS(nsCString& fileString) {
   int ntok = 1;
   char *t, *nextToken;
   nsAutoCString fileStringCopy;
@@ -1795,7 +1736,7 @@ void nsFtpState::ConvertFilespecToVMS(nsCString &fileString) {
 // /foo/fred -> foo:[fred]
 // /foo -> foo:[000000]
 // (null) -> (null)
-void nsFtpState::ConvertDirspecToVMS(nsCString &dirSpec) {
+void nsFtpState::ConvertDirspecToVMS(nsCString& dirSpec) {
   LOG(("FTP:(%p) ConvertDirspecToVMS from: \"%s\"\n", this, dirSpec.get()));
   if (!dirSpec.IsEmpty()) {
     if (dirSpec.Last() != '/') dirSpec.Append('/');
@@ -1808,7 +1749,7 @@ void nsFtpState::ConvertDirspecToVMS(nsCString &dirSpec) {
 }
 
 // Convert an absolute VMS style dirspec to UNIX format
-void nsFtpState::ConvertDirspecFromVMS(nsCString &dirSpec) {
+void nsFtpState::ConvertDirspecFromVMS(nsCString& dirSpec) {
   LOG(("FTP:(%p) ConvertDirspecFromVMS from: \"%s\"\n", this, dirSpec.get()));
   if (dirSpec.IsEmpty()) {
     dirSpec.Insert('.', 0);
@@ -1824,7 +1765,7 @@ void nsFtpState::ConvertDirspecFromVMS(nsCString &dirSpec) {
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsFtpState::OnTransportStatus(nsITransport *transport, nsresult status,
+nsFtpState::OnTransportStatus(nsITransport* transport, nsresult status,
                               int64_t progress, int64_t progressMax) {
   // Mix signals from both the control and data connections.
 
@@ -1854,14 +1795,13 @@ nsFtpState::OnTransportStatus(nsITransport *transport, nsresult status,
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsFtpState::OnStartRequest(nsIRequest *request, nsISupports *context) {
+nsFtpState::OnStartRequest(nsIRequest* request) {
   mStorReplyReceived = false;
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsFtpState::OnStopRequest(nsIRequest *request, nsISupports *context,
-                          nsresult status) {
+nsFtpState::OnStopRequest(nsIRequest* request, nsresult status) {
   mUploadRequest = nullptr;
 
   // Close() will be called when reply to STOR command is received
@@ -1876,15 +1816,15 @@ nsFtpState::OnStopRequest(nsIRequest *request, nsISupports *context,
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsFtpState::Available(uint64_t *result) {
+nsFtpState::Available(uint64_t* result) {
   if (mDataStream) return mDataStream->Available(result);
 
   return nsBaseContentStream::Available(result);
 }
 
 NS_IMETHODIMP
-nsFtpState::ReadSegments(nsWriteSegmentFun writer, void *closure,
-                         uint32_t count, uint32_t *result) {
+nsFtpState::ReadSegments(nsWriteSegmentFun writer, void* closure,
+                         uint32_t count, uint32_t* result) {
   // Insert a thunk here so that the input stream passed to the writer is this
   // input stream instead of mDataStream.
 
@@ -1920,13 +1860,16 @@ nsFtpState::CloseWithStatus(nsresult status) {
     mDataTransport = nullptr;
   }
 
-  mDataStream = nullptr;
+  if (mDataStream) {
+    mDataStream->CloseWithStatus(NS_ERROR_ABORT);
+    mDataStream = nullptr;
+  }
 
   return nsBaseContentStream::CloseWithStatus(status);
 }
 
-static nsresult CreateHTTPProxiedChannel(nsIChannel *channel, nsIProxyInfo *pi,
-                                         nsIChannel **newChannel) {
+static nsresult CreateHTTPProxiedChannel(nsIChannel* channel, nsIProxyInfo* pi,
+                                         nsIChannel** newChannel) {
   nsresult rv;
   nsCOMPtr<nsIIOService> ioService = do_GetIOService(&rv);
   if (NS_FAILED(rv)) return rv;
@@ -1941,15 +1884,14 @@ static nsresult CreateHTTPProxiedChannel(nsIChannel *channel, nsIProxyInfo *pi,
   nsCOMPtr<nsIURI> uri;
   channel->GetURI(getter_AddRefs(uri));
 
-  nsCOMPtr<nsILoadInfo> loadInfo;
-  channel->GetLoadInfo(getter_AddRefs(loadInfo));
+  nsCOMPtr<nsILoadInfo> loadInfo = channel->LoadInfo();
 
-  return pph->NewProxiedChannel2(uri, pi, 0, nullptr, loadInfo, newChannel);
+  return pph->NewProxiedChannel(uri, pi, 0, nullptr, loadInfo, newChannel);
 }
 
 NS_IMETHODIMP
-nsFtpState::OnProxyAvailable(nsICancelable *request, nsIChannel *channel,
-                             nsIProxyInfo *pi, nsresult status) {
+nsFtpState::OnProxyAvailable(nsICancelable* request, nsIChannel* channel,
+                             nsIProxyInfo* pi, nsresult status) {
   mProxyRequest = nullptr;
 
   // failed status code just implies DIRECT processing

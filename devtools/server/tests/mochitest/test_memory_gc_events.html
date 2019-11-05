@@ -6,7 +6,7 @@ Bug 1137527 - Test receiving GC events from the memory actor.
 <head>
   <meta charset="utf-8">
   <title>Memory monitoring actor test</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -15,16 +15,16 @@ Bug 1137527 - Test receiving GC events from the memory actor.
 <script>
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
 
-  let EventEmitter = require("devtools/shared/event-emitter");
+  const EventEmitter = require("devtools/shared/event-emitter");
 
-  (async function () {
-    let { memory, client } = await startServerAndGetSelectedTabMemory();
+  (async function() {
+    const { memory, target } = await startServerAndGetSelectedTabMemory();
     await memory.attach();
 
-    let gotGcEvent = new Promise(resolve => {
+    const gotGcEvent = new Promise(resolve => {
       EventEmitter.on(memory, "garbage-collection", gcData => {
         ok(gcData, "Got GC data");
         resolve();
@@ -35,7 +35,7 @@ window.onload = function () {
     await gotGcEvent;
 
     await memory.detach();
-    destroyServerAndFinish(client);
+    destroyServerAndFinish(target);
   })();
 };
 </script>

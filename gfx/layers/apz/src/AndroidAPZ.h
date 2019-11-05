@@ -22,13 +22,21 @@ class AndroidSpecificState : public PlatformSpecificStateBase {
     return this;
   }
 
+  virtual AsyncPanZoomAnimation* CreateFlingAnimation(
+      AsyncPanZoomController& aApzc, const FlingHandoffState& aHandoffState,
+      float aPLPPI) override;
+  virtual UniquePtr<VelocityTracker> CreateVelocityTracker(
+      Axis* aAxis) override;
+
+  static void InitializeGlobalState();
+
   java::StackScroller::GlobalRef mOverScroller;
   TimeStamp mLastFling;
 };
 
-class AndroidFlingAnimation : public AsyncPanZoomAnimation {
+class StackScrollerFlingAnimation : public AsyncPanZoomAnimation {
  public:
-  AndroidFlingAnimation(
+  StackScrollerFlingAnimation(
       AsyncPanZoomController& aApzc,
       PlatformSpecificStateBase* aPlatformSpecificState,
       const RefPtr<const OverscrollHandoffChain>& aOverscrollHandoffChain,

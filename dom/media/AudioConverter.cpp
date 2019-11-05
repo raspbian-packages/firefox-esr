@@ -29,7 +29,7 @@ AudioConverter::AudioConverter(const AudioConfig& aIn, const AudioConfig& aOut)
       "Only down/upmixing to mono or stereo is supported at this stage");
   MOZ_DIAGNOSTIC_ASSERT(aOut.Interleaved(),
                         "planar audio format not supported");
-  mIn.Layout().MappingTable(mOut.Layout(), mChannelOrderMap);
+  mIn.Layout().MappingTable(mOut.Layout(), &mChannelOrderMap);
   if (aIn.Rate() != aOut.Rate()) {
     RecreateResampler();
   }
@@ -80,8 +80,8 @@ template <class AudioDataType>
 void _ReOrderInterleavedChannels(AudioDataType* aOut, const AudioDataType* aIn,
                                  uint32_t aFrames, uint32_t aChannels,
                                  const uint8_t* aChannelOrderMap) {
-  MOZ_DIAGNOSTIC_ASSERT(aChannels <= MAX_AUDIO_CHANNELS);
-  AudioDataType val[MAX_AUDIO_CHANNELS];
+  MOZ_DIAGNOSTIC_ASSERT(aChannels <= AudioConfig::ChannelLayout::MAX_CHANNELS);
+  AudioDataType val[AudioConfig::ChannelLayout::MAX_CHANNELS];
   for (uint32_t i = 0; i < aFrames; i++) {
     for (uint32_t j = 0; j < aChannels; j++) {
       val[j] = aIn[aChannelOrderMap[j]];
@@ -97,10 +97,12 @@ void _ReOrderInterleavedChannels(AudioDataType* aOut, const AudioDataType* aIn,
 void AudioConverter::ReOrderInterleavedChannels(void* aOut, const void* aIn,
                                                 size_t aFrames) const {
   MOZ_DIAGNOSTIC_ASSERT(mIn.Channels() == mOut.Channels());
+  MOZ_DIAGNOSTIC_ASSERT(CanReorderAudio());
 
-  if (mOut.Channels() == 1 || mOut.Layout() == mIn.Layout()) {
-    // If channel count is 1, planar and non-planar formats are the same and
-    // there's nothing to reorder.
+  if (mChannelOrderMap.IsEmpty() || mOut.Channels() == 1 ||
+      mOut.Layout() == mIn.Layout()) {
+    // If channel count is 1, planar and non-planar formats are the same or
+    // there's nothing to reorder, or if we don't know how to re-order.
     if (aOut != aIn) {
       memmove(aOut, aIn, FramesOutToBytes(aFrames));
     }
@@ -111,16 +113,16 @@ void AudioConverter::ReOrderInterleavedChannels(void* aOut, const void* aIn,
   switch (bits) {
     case 8:
       _ReOrderInterleavedChannels((uint8_t*)aOut, (const uint8_t*)aIn, aFrames,
-                                  mIn.Channels(), mChannelOrderMap);
+                                  mIn.Channels(), mChannelOrderMap.Elements());
       break;
     case 16:
       _ReOrderInterleavedChannels((int16_t*)aOut, (const int16_t*)aIn, aFrames,
-                                  mIn.Channels(), mChannelOrderMap);
+                                  mIn.Channels(), mChannelOrderMap.Elements());
       break;
     default:
       MOZ_DIAGNOSTIC_ASSERT(AudioConfig::SampleSize(mOut.Format()) == 4);
       _ReOrderInterleavedChannels((int32_t*)aOut, (const int32_t*)aIn, aFrames,
-                                  mIn.Channels(), mChannelOrderMap);
+                                  mIn.Channels(), mChannelOrderMap.Elements());
       break;
   }
 }
@@ -129,14 +131,29 @@ static inline int16_t clipTo15(int32_t aX) {
   return aX < -32768 ? -32768 : aX <= 32767 ? aX : 32767;
 }
 
+template <typename TYPE>
+static void dumbUpDownMix(TYPE* aOut, int32_t aOutChannels, const TYPE* aIn,
+                          int32_t aInChannels, int32_t aFrames) {
+  if (aIn == aOut) {
+    return;
+  }
+  int32_t commonChannels = std::min(aInChannels, aOutChannels);
+
+  for (int32_t i = 0; i < aFrames; i++) {
+    for (int32_t j = 0; j < commonChannels; j++) {
+      aOut[i * aOutChannels + j] = aIn[i * aInChannels + j];
+    }
+    for (int32_t j = 0; j < aInChannels - aOutChannels; j++) {
+      aOut[i * aOutChannels + j] = 0;
+    }
+  }
+}
+
 size_t AudioConverter::DownmixAudio(void* aOut, const void* aIn,
                                     size_t aFrames) const {
   MOZ_DIAGNOSTIC_ASSERT(mIn.Format() == AudioConfig::FORMAT_S16 ||
                         mIn.Format() == AudioConfig::FORMAT_FLT);
   MOZ_DIAGNOSTIC_ASSERT(mIn.Channels() >= mOut.Channels());
-  MOZ_DIAGNOSTIC_ASSERT(
-      mIn.Layout() == AudioConfig::ChannelLayout(mIn.Channels()),
-      "Can only downmix input data in SMPTE layout");
   MOZ_DIAGNOSTIC_ASSERT(mOut.Layout() == AudioConfig::ChannelLayout(2) ||
                         mOut.Layout() == AudioConfig::ChannelLayout(1));
 
@@ -150,6 +167,23 @@ size_t AudioConverter::DownmixAudio(void* aOut, const void* aIn,
     return aFrames;
   }
 
+  if (!mIn.Layout().IsValid() || !mOut.Layout().IsValid()) {
+    // Dumb copy dropping extra channels.
+    if (mIn.Format() == AudioConfig::FORMAT_FLT) {
+      dumbUpDownMix(static_cast<float*>(aOut), outChannels,
+                    static_cast<const float*>(aIn), inChannels, aFrames);
+    } else if (mIn.Format() == AudioConfig::FORMAT_S16) {
+      dumbUpDownMix(static_cast<int16_t*>(aOut), outChannels,
+                    static_cast<const int16_t*>(aIn), inChannels, aFrames);
+    } else {
+      MOZ_DIAGNOSTIC_ASSERT(false, "Unsupported data type");
+    }
+    return aFrames;
+  }
+
+  MOZ_ASSERT(
+      mIn.Layout() == AudioConfig::ChannelLayout::SMPTEDefault(mIn.Layout()),
+      "Can only downmix input data in SMPTE layout");
   if (inChannels > 2) {
     if (mIn.Format() == AudioConfig::FORMAT_FLT) {
       // Downmix matrix. Per-row normalization 1 for rows 3,4 and 2 for rows
@@ -361,8 +395,19 @@ size_t AudioConverter::UpmixAudio(void* aOut, const void* aIn,
   MOZ_ASSERT(mIn.Channels() == 1, "Can only upmix mono for now");
   MOZ_ASSERT(mOut.Channels() == 2, "Can only upmix to stereo for now");
 
-  if (mOut.Channels() != 2) {
-    return 0;
+  if (!mIn.Layout().IsValid() || !mOut.Layout().IsValid() ||
+      mOut.Channels() != 2) {
+    // Dumb copy the channels and insert silence for the extra channels.
+    if (mIn.Format() == AudioConfig::FORMAT_FLT) {
+      dumbUpDownMix(static_cast<float*>(aOut), mOut.Channels(),
+                    static_cast<const float*>(aIn), mIn.Channels(), aFrames);
+    } else if (mIn.Format() == AudioConfig::FORMAT_S16) {
+      dumbUpDownMix(static_cast<int16_t*>(aOut), mOut.Channels(),
+                    static_cast<const int16_t*>(aIn), mIn.Channels(), aFrames);
+    } else {
+      MOZ_DIAGNOSTIC_ASSERT(false, "Unsupported data type");
+    }
+    return aFrames;
   }
 
   // Upmix mono to stereo.

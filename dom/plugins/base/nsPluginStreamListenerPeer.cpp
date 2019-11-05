@@ -6,7 +6,6 @@
 #include "nsPluginStreamListenerPeer.h"
 #include "nsIContentPolicy.h"
 #include "nsContentPolicyUtils.h"
-#include "nsIDOMElement.h"
 #include "nsIStreamConverterService.h"
 #include "nsIStreamLoader.h"
 #include "nsIHttpChannel.h"
@@ -24,7 +23,7 @@
 #include "nsIInputStreamTee.h"
 #include "nsPrintfCString.h"
 #include "nsIScriptGlobalObject.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIWebNavigation.h"
 #include "nsContentUtils.h"
 #include "nsNetUtil.h"
@@ -32,7 +31,7 @@
 #include "GeckoProfiler.h"
 #include "nsPluginInstanceOwner.h"
 #include "nsDataHashtable.h"
-#include "NullPrincipal.h"
+#include "mozilla/NullPrincipal.h"
 
 // nsPluginStreamListenerPeer
 
@@ -41,7 +40,7 @@ NS_IMPL_ISUPPORTS(nsPluginStreamListenerPeer, nsIStreamListener,
                   nsISupportsWeakReference, nsIInterfaceRequestor,
                   nsIChannelEventSink)
 
-nsPluginStreamListenerPeer::nsPluginStreamListenerPeer() {
+nsPluginStreamListenerPeer::nsPluginStreamListenerPeer() : mLength(0) {
   mStreamType = NP_NORMAL;
   mStartBinding = false;
   mRequestFailed = false;
@@ -106,8 +105,7 @@ nsresult nsPluginStreamListenerPeer::Initialize(
 }
 
 NS_IMETHODIMP
-nsPluginStreamListenerPeer::OnStartRequest(nsIRequest* request,
-                                           nsISupports* aContext) {
+nsPluginStreamListenerPeer::OnStartRequest(nsIRequest* request) {
   nsresult rv = NS_OK;
   AUTO_PROFILER_LABEL("nsPluginStreamListenerPeer::OnStartRequest", OTHER);
 
@@ -168,24 +166,10 @@ nsPluginStreamListenerPeer::OnStartRequest(nsIRequest* request,
   if (NS_FAILED(rv)) return rv;
 
   // Check ShouldProcess with content policy
-  RefPtr<nsPluginInstanceOwner> owner;
-  if (mPluginInstance) {
-    owner = mPluginInstance->GetOwner();
-  }
-  nsCOMPtr<nsIDOMElement> element;
-  nsCOMPtr<nsIDocument> doc;
-  if (owner) {
-    owner->GetDOMElement(getter_AddRefs(element));
-    owner->GetDocument(getter_AddRefs(doc));
-  }
-  nsCOMPtr<nsIPrincipal> principal = doc ? doc->NodePrincipal() : nullptr;
+  nsCOMPtr<nsILoadInfo> loadInfo = channel->LoadInfo();
 
   int16_t shouldLoad = nsIContentPolicy::ACCEPT;
-  rv = NS_CheckContentProcessPolicy(nsIContentPolicy::TYPE_OBJECT_SUBREQUEST,
-                                    mURL,
-                                    principal,  // loading principal
-                                    principal,  // triggering principal
-                                    element, contentType, nullptr, &shouldLoad);
+  rv = NS_CheckContentProcessPolicy(mURL, loadInfo, contentType, &shouldLoad);
   if (NS_FAILED(rv) || NS_CP_REJECTED(shouldLoad)) {
     mRequestFailed = true;
     return NS_ERROR_CONTENT_BLOCKED;
@@ -281,50 +265,6 @@ nsresult nsPluginStreamListenerPeer::GetURL(const char** result) {
   return NS_OK;
 }
 
-// XXX: Converting the channel within nsPluginStreamListenerPeer
-// to use asyncOpen2() and do not want to touch the fragile logic
-// of byte range requests. Hence we just introduce this lightweight
-// wrapper to proxy the context.
-class PluginContextProxy final : public nsIStreamListener {
- public:
-  NS_DECL_ISUPPORTS
-
-  PluginContextProxy(nsIStreamListener* aListener, nsISupports* aContext)
-      : mListener(aListener), mContext(aContext) {
-    MOZ_ASSERT(aListener);
-    MOZ_ASSERT(aContext);
-  }
-
-  NS_IMETHOD
-  OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
-                  nsIInputStream* aIStream, uint64_t aSourceOffset,
-                  uint32_t aLength) override {
-    // Proxy OnDataAvailable using the internal context
-    return mListener->OnDataAvailable(aRequest, mContext, aIStream,
-                                      aSourceOffset, aLength);
-  }
-
-  NS_IMETHOD
-  OnStartRequest(nsIRequest* aRequest, nsISupports* aContext) override {
-    // Proxy OnStartRequest using the internal context
-    return mListener->OnStartRequest(aRequest, mContext);
-  }
-
-  NS_IMETHOD
-  OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
-                nsresult aStatusCode) override {
-    // Proxy OnStopRequest using the inernal context
-    return mListener->OnStopRequest(aRequest, mContext, aStatusCode);
-  }
-
- private:
-  ~PluginContextProxy() {}
-  nsCOMPtr<nsIStreamListener> mListener;
-  nsCOMPtr<nsISupports> mContext;
-};
-
-NS_IMPL_ISUPPORTS(PluginContextProxy, nsIStreamListener)
-
 nsresult nsPluginStreamListenerPeer::GetStreamOffset(int32_t* result) {
   *result = mStreamOffset;
   return NS_OK;
@@ -336,8 +276,8 @@ nsresult nsPluginStreamListenerPeer::SetStreamOffset(int32_t value) {
 }
 
 NS_IMETHODIMP nsPluginStreamListenerPeer::OnDataAvailable(
-    nsIRequest* request, nsISupports* aContext, nsIInputStream* aIStream,
-    uint64_t sourceOffset, uint32_t aLength) {
+    nsIRequest* request, nsIInputStream* aIStream, uint64_t sourceOffset,
+    uint32_t aLength) {
   if (mRequests.IndexOfObject(request) == -1) {
     MOZ_ASSERT(false, "Received OnDataAvailable for untracked request.");
     return NS_ERROR_UNEXPECTED;
@@ -370,7 +310,6 @@ NS_IMETHODIMP nsPluginStreamListenerPeer::OnDataAvailable(
 }
 
 NS_IMETHODIMP nsPluginStreamListenerPeer::OnStopRequest(nsIRequest* request,
-                                                        nsISupports* aContext,
                                                         nsresult aStatus) {
   nsresult rv = NS_OK;
 
@@ -547,7 +486,7 @@ nsresult nsPluginStreamListenerPeer::GetInterfaceGlobal(const nsIID& aIID,
     return NS_ERROR_FAILURE;
   }
 
-  nsCOMPtr<nsIDocument> doc;
+  nsCOMPtr<Document> doc;
   nsresult rv = owner->GetDocument(getter_AddRefs(doc));
   if (NS_FAILED(rv) || !doc) {
     return NS_ERROR_FAILURE;

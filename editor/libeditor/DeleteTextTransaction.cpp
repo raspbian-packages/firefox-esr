@@ -22,7 +22,7 @@ using namespace dom;
 
 // static
 already_AddRefed<DeleteTextTransaction> DeleteTextTransaction::MaybeCreate(
-    EditorBase& aEditorBase, nsGenericDOMDataNode& aCharData, uint32_t aOffset,
+    EditorBase& aEditorBase, CharacterData& aCharData, uint32_t aOffset,
     uint32_t aLengthToDelete) {
   RefPtr<DeleteTextTransaction> transaction = new DeleteTextTransaction(
       aEditorBase, aCharData, aOffset, aLengthToDelete);
@@ -31,9 +31,9 @@ already_AddRefed<DeleteTextTransaction> DeleteTextTransaction::MaybeCreate(
 
 // static
 already_AddRefed<DeleteTextTransaction>
-DeleteTextTransaction::MaybeCreateForPreviousCharacter(
-    EditorBase& aEditorBase, nsGenericDOMDataNode& aCharData,
-    uint32_t aOffset) {
+DeleteTextTransaction::MaybeCreateForPreviousCharacter(EditorBase& aEditorBase,
+                                                       CharacterData& aCharData,
+                                                       uint32_t aOffset) {
   if (NS_WARN_IF(!aOffset)) {
     return nullptr;
   }
@@ -57,9 +57,9 @@ DeleteTextTransaction::MaybeCreateForPreviousCharacter(
 
 // static
 already_AddRefed<DeleteTextTransaction>
-DeleteTextTransaction::MaybeCreateForNextCharacter(
-    EditorBase& aEditorBase, nsGenericDOMDataNode& aCharData,
-    uint32_t aOffset) {
+DeleteTextTransaction::MaybeCreateForNextCharacter(EditorBase& aEditorBase,
+                                                   CharacterData& aCharData,
+                                                   uint32_t aOffset) {
   nsAutoString data;
   aCharData.GetData(data);
   if (NS_WARN_IF(aOffset >= data.Length()) || NS_WARN_IF(data.IsEmpty())) {
@@ -76,7 +76,7 @@ DeleteTextTransaction::MaybeCreateForNextCharacter(
 }
 
 DeleteTextTransaction::DeleteTextTransaction(EditorBase& aEditorBase,
-                                             nsGenericDOMDataNode& aCharData,
+                                             CharacterData& aCharData,
                                              uint32_t aOffset,
                                              uint32_t aLengthToDelete)
     : mEditorBase(&aEditorBase),
@@ -97,7 +97,7 @@ bool DeleteTextTransaction::CanDoIt() const {
   if (NS_WARN_IF(!mCharData) || NS_WARN_IF(!mEditorBase)) {
     return false;
   }
-  return mEditorBase->IsModifiableNode(mCharData);
+  return mEditorBase->IsModifiableNode(*mCharData);
 }
 
 NS_IMETHODIMP
@@ -107,30 +107,33 @@ DeleteTextTransaction::DoTransaction() {
   }
 
   // Get the text that we're about to delete
-  nsresult rv =
-      mCharData->SubstringData(mOffset, mLengthToDelete, mDeletedText);
-  MOZ_ASSERT(NS_SUCCEEDED(rv));
-  rv = mCharData->DeleteData(mOffset, mLengthToDelete);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
+  ErrorResult err;
+  mCharData->SubstringData(mOffset, mLengthToDelete, mDeletedText, err);
+  if (NS_WARN_IF(err.Failed())) {
+    return err.StealNSResult();
+  }
+
+  mCharData->DeleteData(mOffset, mLengthToDelete, err);
+  if (NS_WARN_IF(err.Failed())) {
+    return err.StealNSResult();
   }
 
   mEditorBase->RangeUpdaterRef().SelAdjDeleteText(mCharData, mOffset,
                                                   mLengthToDelete);
 
-  // Only set selection to deletion point if editor gives permission
-  if (mEditorBase->GetShouldTxnSetSelection()) {
-    RefPtr<Selection> selection = mEditorBase->GetSelection();
-    if (NS_WARN_IF(!selection)) {
-      return NS_ERROR_FAILURE;
-    }
-    ErrorResult error;
-    selection->Collapse(EditorRawDOMPoint(mCharData, mOffset), error);
-    if (NS_WARN_IF(error.Failed())) {
-      return error.StealNSResult();
-    }
+  if (!mEditorBase->AllowsTransactionsToChangeSelection()) {
+    return NS_OK;
   }
-  // Else do nothing - DOM Range gravity will adjust selection
+
+  RefPtr<Selection> selection = mEditorBase->GetSelection();
+  if (NS_WARN_IF(!selection)) {
+    return NS_ERROR_FAILURE;
+  }
+  ErrorResult error;
+  selection->Collapse(EditorRawDOMPoint(mCharData, mOffset), error);
+  if (NS_WARN_IF(error.Failed())) {
+    return error.StealNSResult();
+  }
   return NS_OK;
 }
 
@@ -141,7 +144,9 @@ DeleteTextTransaction::UndoTransaction() {
   if (NS_WARN_IF(!mCharData)) {
     return NS_ERROR_NOT_INITIALIZED;
   }
-  return mCharData->InsertData(mOffset, mDeletedText);
+  ErrorResult rv;
+  mCharData->InsertData(mOffset, mDeletedText, rv);
+  return rv.StealNSResult();
 }
 
 }  // namespace mozilla

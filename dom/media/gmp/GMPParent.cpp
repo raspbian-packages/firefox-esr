@@ -21,12 +21,11 @@
 #include "nsIObserverService.h"
 #include "GMPTimerParent.h"
 #include "runnable_utils.h"
-#if defined(XP_LINUX) && defined(MOZ_GMP_SANDBOX)
-#include "mozilla/SandboxInfo.h"
+#if defined(XP_LINUX) && defined(MOZ_SANDBOX)
+#  include "mozilla/SandboxInfo.h"
 #endif
 #include "CDMStorageIdProvider.h"
 #include "GMPContentParent.h"
-#include "MediaPrefs.h"
 #include "VideoUtils.h"
 
 using mozilla::ipc::GeckoChildProcessHost;
@@ -37,7 +36,7 @@ using CrashReporter::GetIDFromMinidump;
 #include "mozilla/Telemetry.h"
 
 #ifdef XP_WIN
-#include "WMFDecoderModule.h"
+#  include "WMFDecoderModule.h"
 #endif
 
 #include "mozilla/dom/WidevineCDMManifestBinding.h"
@@ -55,7 +54,7 @@ extern LogModule* GetGMPLog();
       mChildPid, ##__VA_ARGS__)
 
 #ifdef __CLASS__
-#undef __CLASS__
+#  undef __CLASS__
 #endif
 #define __CLASS__ "GMPParent"
 
@@ -393,7 +392,7 @@ bool GMPCapability::Supports(const nsTArray<GMPCapability>& aCapabilities,
         // file, but uses Windows Media Foundation to decode. That's not present
         // on Windows XP, and on some Vista, Windows N, and KN variants without
         // certain services packs.
-        if (tag.Equals(kEMEKeySystemClearkey)) {
+        if (tag.EqualsLiteral(EME_KEY_SYSTEM_CLEARKEY)) {
           if (capabilities.mAPIName.EqualsLiteral(GMP_API_VIDEO_DECODER)) {
             if (!WMFDecoderModule::HasH264()) {
               continue;
@@ -421,21 +420,24 @@ bool GMPParent::EnsureProcessLoaded() {
   return NS_SUCCEEDED(rv);
 }
 
-void GMPParent::WriteExtraDataForMinidump() {
-  mCrashReporter->AddNote(NS_LITERAL_CSTRING("GMPPlugin"),
-                          NS_LITERAL_CSTRING("1"));
-  mCrashReporter->AddNote(NS_LITERAL_CSTRING("PluginFilename"),
-                          NS_ConvertUTF16toUTF8(mName));
-  mCrashReporter->AddNote(NS_LITERAL_CSTRING("PluginName"), mDisplayName);
-  mCrashReporter->AddNote(NS_LITERAL_CSTRING("PluginVersion"), mVersion);
+void GMPParent::AddCrashAnnotations() {
+  mCrashReporter->AddAnnotation(CrashReporter::Annotation::GMPPlugin, true);
+  mCrashReporter->AddAnnotation(CrashReporter::Annotation::PluginFilename,
+                                NS_ConvertUTF16toUTF8(mName));
+  mCrashReporter->AddAnnotation(CrashReporter::Annotation::PluginName,
+                                mDisplayName);
+  mCrashReporter->AddAnnotation(CrashReporter::Annotation::PluginVersion,
+                                mVersion);
 }
 
 bool GMPParent::GetCrashID(nsString& aResult) {
   if (!mCrashReporter) {
+    CrashReporter::FinalizeOrphanedMinidump(OtherPid(),
+                                            GeckoProcessType_GMPlugin);
     return false;
   }
 
-  WriteExtraDataForMinidump();
+  AddCrashAnnotations();
   if (!mCrashReporter->GenerateCrashReport(OtherPid())) {
     return false;
   }
@@ -640,7 +642,7 @@ RefPtr<GenericPromise> GMPParent::ReadGMPInfoFile(nsIFile* aFile) {
       }
     }
 
-    mCapabilities.AppendElement(Move(cap));
+    mCapabilities.AppendElement(std::move(cap));
   }
 
   if (mCapabilities.IsEmpty()) {
@@ -691,7 +693,7 @@ RefPtr<GenericPromise> GMPParent::ParseChromiumManifest(
   mDescription = NS_ConvertUTF16toUTF8(m.mDescription);
   mVersion = NS_ConvertUTF16toUTF8(m.mVersion);
 
-#if defined(XP_LINUX) && defined(MOZ_GMP_SANDBOX)
+#if defined(XP_LINUX) && defined(MOZ_SANDBOX)
   if (!mozilla::SandboxInfo::Get().CanSandboxMedia()) {
     nsPrintfCString msg(
         "GMPParent::ParseChromiumManifest: Plugin \"%s\" is an EME CDM"
@@ -708,20 +710,20 @@ RefPtr<GenericPromise> GMPParent::ParseChromiumManifest(
   // We hard code a few of the settings because they can't be stored in the
   // widevine manifest without making our API different to widevine's.
   if (mDisplayName.EqualsASCII("clearkey")) {
-    kEMEKeySystem = kEMEKeySystemClearkey;
+    kEMEKeySystem.AssignLiteral(EME_KEY_SYSTEM_CLEARKEY);
 #if XP_WIN
     mLibs = NS_LITERAL_CSTRING(
         "dxva2.dll, msmpeg2vdec.dll, evr.dll, mfh264dec.dll, mfplat.dll");
 #endif
   } else if (mDisplayName.EqualsASCII("WidevineCdm")) {
-    kEMEKeySystem = kEMEKeySystemWidevine;
+    kEMEKeySystem.AssignLiteral(EME_KEY_SYSTEM_WIDEVINE);
 #if XP_WIN
     // psapi.dll added for GetMappedFileNameW, which could possibly be avoided
     // in future versions, see bug 1383611 for details.
     mLibs = NS_LITERAL_CSTRING("dxva2.dll, psapi.dll");
 #endif
   } else if (mDisplayName.EqualsASCII("fake")) {
-    kEMEKeySystem = NS_LITERAL_CSTRING("fake");
+    kEMEKeySystem.AssignLiteral("fake");
 #if XP_WIN
     mLibs = NS_LITERAL_CSTRING("dxva2.dll");
 #endif
@@ -755,7 +757,7 @@ RefPtr<GenericPromise> GMPParent::ParseChromiumManifest(
   video.mAPIName = NS_LITERAL_CSTRING(CHROMIUM_CDM_API);
   mAdapter = NS_LITERAL_STRING("chromium");
 
-  mCapabilities.AppendElement(Move(video));
+  mCapabilities.AppendElement(std::move(video));
 
   return GenericPromise::CreateAndResolve(true, __func__);
 }
@@ -812,7 +814,7 @@ bool GMPParent::OpenPGMPContent() {
     return false;
   }
 
-  if (!SendInitGMPContentChild(Move(child))) {
+  if (!SendInitGMPContentChild(std::move(child))) {
     return false;
   }
 
@@ -840,7 +842,7 @@ void GMPParent::GetGMPContentParent(
         new GMPContentParent::CloseBlocker(mGMPContentParent));
     aPromiseHolder->Resolve(blocker, __func__);
   } else {
-    mGetContentParentPromises.AppendElement(Move(aPromiseHolder));
+    mGetContentParentPromises.AppendElement(std::move(aPromiseHolder));
     // If we don't have a GMPContentParent and we try to get one for the first
     // time (mGetContentParentPromises.Length() == 1) then call
     // PGMPContent::Open. If more calls to GetGMPContentParent happen before
@@ -862,7 +864,7 @@ void GMPParent::GetGMPContentParent(
 
 already_AddRefed<GMPContentParent> GMPParent::ForgetGMPContentParent() {
   MOZ_ASSERT(mGetContentParentPromises.IsEmpty());
-  return Move(mGMPContentParent.forget());
+  return mGMPContentParent.forget();
 }
 
 bool GMPParent::EnsureProcessLoaded(base::ProcessId* aID) {

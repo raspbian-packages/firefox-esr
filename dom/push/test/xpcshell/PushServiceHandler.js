@@ -2,10 +2,14 @@
 // process for handling push notifications with scope "chrome://test-scope"
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-let pushService = Cc["@mozilla.org/push/Service;1"].getService(Ci.nsIPushService);
+let pushService = Cc["@mozilla.org/push/Service;1"].getService(
+  Ci.nsIPushService
+);
 
 function PushServiceHandler() {
   // So JS code can reach into us.
@@ -19,11 +23,11 @@ function PushServiceHandler() {
 
 PushServiceHandler.prototype = {
   classID: Components.ID("{bb7c5199-c0f7-4976-9f6d-1306e32c5591}"),
-  QueryInterface: XPCOMUtils.generateQI([]),
+  QueryInterface: ChromeUtils.generateQI([]),
 
   observe(subject, topic, data) {
     this.observed.push({ subject, topic, data });
   },
-}
+};
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([PushServiceHandler]);

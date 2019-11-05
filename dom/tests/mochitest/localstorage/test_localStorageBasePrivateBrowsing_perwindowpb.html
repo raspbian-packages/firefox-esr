@@ -2,7 +2,7 @@
 <head>
 <title>localStorage basic test, while in sesison only mode</title>
 
-<script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+<script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
 <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css"?>
 
 <script type="text/javascript">
@@ -15,12 +15,7 @@ prefBranch.setIntPref("browser.startup.page", 0);
 prefBranch.setCharPref("browser.startup.homepage_override.mstone", "ignore");
 
 function startTest() {
-  mainWindow = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                      .getInterface(Ci.nsIWebNavigation)
-                      .QueryInterface(Ci.nsIDocShellTreeItem)
-                      .rootTreeItem
-                      .QueryInterface(Ci.nsIInterfaceRequestor)
-                      .getInterface(Ci.nsIDOMWindow);
+  mainWindow = window.docShell.rootTreeItem.domWindow;
 
   doTest();
 }

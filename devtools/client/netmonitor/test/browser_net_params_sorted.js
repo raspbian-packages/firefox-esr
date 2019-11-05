@@ -6,37 +6,72 @@
 /**
  * Tests whether keys in Params panel are sorted.
  */
-
-add_task(async function () {
-  let { tab, monitor } = await initNetMonitor(POST_DATA_URL);
+add_task(async function() {
+  const { tab, monitor } = await initNetMonitor(POST_ARRAY_DATA_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
 
   store.dispatch(Actions.batchEnable(false));
 
-  let wait = waitForNetworkEvents(monitor, 2);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests();
-  });
-  await wait;
+  // Execute requests.
+  await performRequests(monitor, tab, 1);
 
   wait = waitForDOM(document, ".headers-overview");
-  EventUtils.sendMouseEvent({ type: "mousedown" },
-    document.querySelectorAll(".request-list-item")[0]);
+  EventUtils.sendMouseEvent(
+    { type: "mousedown" },
+    document.querySelectorAll(".request-list-item")[0]
+  );
   await wait;
 
-  EventUtils.sendMouseEvent({ type: "click" },
-    document.querySelector("#params-tab"));
+  EventUtils.sendMouseEvent(
+    { type: "click" },
+    document.querySelector("#params-tab")
+  );
 
-  let actualKeys = document.querySelectorAll(".treeLabel");
-  let expectedKeys = ["Query string", "baz", "foo", "type",
-                      "Form data", "baz", "foo"];
+  // The Params panel should render the following
+  // POSTed JSON data structure:
+  //
+  // ▼ JSON
+  //   ▼ watches: […]
+  //       0: hello
+  //       1: how
+  //       2: are
+  //       3: you
+  //     ▼ 4: {…}
+  //         a: 10
+  //       ▼ b: […]
+  //           0: "a"
+  //           1: "c"
+  //           2: "b"
+  //         c: 15
+  const actualKeys = document.querySelectorAll(".treeTable .treeRow");
+  const expectedKeys = [
+    "JSON",
+    "watches: [...]",
+    "0: hello",
+    "1: how",
+    "2: are",
+    "3: you",
+    "4: {...}",
+    "a: 10",
+    "b: [...]",
+    "0: a",
+    "1: c",
+    "2: b",
+    "c: 15",
+  ];
 
   for (let i = 0; i < actualKeys.length; i++) {
-    is(actualKeys[i].innerText, expectedKeys[i],
-      "Actual value " + actualKeys[i].innerText + " is equal to the " +
-      "expected value " + expectedKeys[i]);
+    is(
+      actualKeys[i].innerText,
+      expectedKeys[i],
+      "Actual value " +
+        actualKeys[i].innerText +
+        " is equal to the " +
+        "expected value " +
+        expectedKeys[i]
+    );
   }
 });

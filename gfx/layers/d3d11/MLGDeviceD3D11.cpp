@@ -234,7 +234,7 @@ bool MLGSwapChainD3D11::Initialize(CompositorWidget* aWidget) {
   RefPtr<IDXGIFactory2> dxgiFactory2;
   if (gfxPrefs::Direct3D11UseDoubleBuffering() &&
       SUCCEEDED(dxgiFactory->QueryInterface(dxgiFactory2.StartAssignment())) &&
-      dxgiFactory2 && IsWin10OrLater()) {
+      dxgiFactory2 && IsWin10OrLater() && XRE_IsGPUProcess()) {
     // DXGI_SCALING_NONE is not available on Windows 7 with the Platform Update:
     // This looks awful for things like the awesome bar and browser window
     // resizing, so we don't use a flip buffer chain here. (Note when using
@@ -243,6 +243,9 @@ bool MLGSwapChainD3D11::Initialize(CompositorWidget* aWidget) {
     // We choose not to run this on platforms earlier than Windows 10 because
     // it appears sometimes this breaks our ability to test ASAP compositing,
     // which breaks Talos.
+    //
+    // When the GPU process is disabled we don't have a compositor window which
+    // can lead to issues with Window re-use so we don't use this.
     DXGI_SWAP_CHAIN_DESC1 desc;
     ::ZeroMemory(&desc, sizeof(desc));
     desc.Width = 0;
@@ -375,6 +378,8 @@ void MLGSwapChainD3D11::UpdateBackBufferContents(ID3D11Texture2D* aBack) {
 }
 
 bool MLGSwapChainD3D11::ResizeBuffers(const IntSize& aSize) {
+  mWidget->AsWindows()->UpdateCompositorWndSizeIfNecessary();
+
   // We have to clear all references to the old backbuffer before resizing.
   mRT = nullptr;
 
@@ -625,9 +630,12 @@ MLGTextureD3D11::MLGTextureD3D11(ID3D11Texture2D* aTexture)
   mSize.height = desc.Height;
 }
 
-/* static */ RefPtr<MLGTextureD3D11> MLGTextureD3D11::Create(
-    ID3D11Device* aDevice, const gfx::IntSize& aSize,
-    gfx::SurfaceFormat aFormat, MLGUsage aUsage, MLGTextureFlags aFlags) {
+/* static */
+RefPtr<MLGTextureD3D11> MLGTextureD3D11::Create(ID3D11Device* aDevice,
+                                                const gfx::IntSize& aSize,
+                                                gfx::SurfaceFormat aFormat,
+                                                MLGUsage aUsage,
+                                                MLGTextureFlags aFlags) {
   D3D11_TEXTURE2D_DESC desc;
   ::ZeroMemory(&desc, sizeof(desc));
   desc.Width = aSize.width;
@@ -795,7 +803,7 @@ bool MLGDeviceD3D11::Initialize() {
     }
   }
 
-    // Define pixel shaders.
+  // Define pixel shaders.
 #define LAZY_PS(cxxName, enumName) \
   mLazyPixelShaders[PixelShaderID::enumName] = &s##cxxName;
   LAZY_PS(TexturedVertexRGB, TexturedVertexRGB);
@@ -855,7 +863,7 @@ bool MLGDeviceD3D11::Initialize() {
     return Fail("FEATURE_FAILURE_CRITICAL_SHADER_FAILURE");
   }
 
-    // Common unit quad layout: vPos, vRect, vLayerIndex, vDepth
+  // Common unit quad layout: vPos, vRect, vLayerIndex, vDepth
 #define BASE_UNIT_QUAD_LAYOUT                                                  \
   {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, \
    0},                                                                         \
@@ -874,7 +882,7 @@ bool MLGDeviceD3D11::Initialize() {
         D3D11_INPUT_PER_INSTANCE_DATA, 1                                       \
   }
 
-    // Common unit triangle layout: vUnitPos, vPos1-3, vLayerIndex, vDepth
+  // Common unit triangle layout: vUnitPos, vPos1-3, vLayerIndex, vDepth
 #define BASE_UNIT_TRIANGLE_LAYOUT                    \
   {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,       \
    0,          0, D3D11_INPUT_PER_VERTEX_DATA,       \
@@ -1528,6 +1536,7 @@ void MLGDeviceD3D11::SetPrimitiveTopology(MLGPrimitiveTopology aTopology) {
       break;
     default:
       MOZ_ASSERT_UNREACHABLE("Unknown topology");
+      topology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
       break;
   }
 
@@ -1674,7 +1683,9 @@ void MLGDeviceD3D11::MaybeLockTexture(ID3D11Texture2D* aTexture) {
 
 void MLGDeviceD3D11::SetPSTexturesNV12(uint32_t aSlot,
                                        TextureSource* aTexture) {
-  MOZ_ASSERT(aTexture->GetFormat() == SurfaceFormat::NV12);
+  MOZ_ASSERT(aTexture->GetFormat() == SurfaceFormat::NV12 ||
+             aTexture->GetFormat() == SurfaceFormat::P010 ||
+             aTexture->GetFormat() == SurfaceFormat::P016);
 
   TextureSourceD3D11* source = aTexture->AsSourceD3D11();
   if (!source) {
@@ -1690,9 +1701,12 @@ void MLGDeviceD3D11::SetPSTexturesNV12(uint32_t aSlot,
 
   MaybeLockTexture(texture);
 
+  const bool isNV12 = aTexture->GetFormat() == SurfaceFormat::NV12;
+
   RefPtr<ID3D11ShaderResourceView> views[2];
   D3D11_SHADER_RESOURCE_VIEW_DESC desc = CD3D11_SHADER_RESOURCE_VIEW_DESC(
-      D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8_UNORM);
+      D3D11_SRV_DIMENSION_TEXTURE2D,
+      isNV12 ? DXGI_FORMAT_R8_UNORM : DXGI_FORMAT_R16_UNORM);
 
   HRESULT hr = mDevice->CreateShaderResourceView(texture, &desc,
                                                  getter_AddRefs(views[0]));
@@ -1702,10 +1716,10 @@ void MLGDeviceD3D11::SetPSTexturesNV12(uint32_t aSlot,
     return;
   }
 
-  desc.Format = DXGI_FORMAT_R8G8_UNORM;
+  desc.Format = isNV12 ? DXGI_FORMAT_R8G8_UNORM : DXGI_FORMAT_R16G16_UNORM;
   hr = mDevice->CreateShaderResourceView(texture, &desc,
                                          getter_AddRefs(views[1]));
-  if (FAILED(hr) || !views[0]) {
+  if (FAILED(hr) || !views[1]) {
     gfxWarning() << "Could not bind an SRV for CbCr plane of NV12 texture: "
                  << hexa(hr);
     return;
@@ -1777,7 +1791,7 @@ void MLGDeviceD3D11::InsertPresentWaitQuery() {
 void MLGDeviceD3D11::WaitForPreviousPresentQuery() {
   if (mWaitForPresentQuery) {
     BOOL result;
-    WaitForGPUQuery(mDevice, mCtx, mWaitForPresentQuery, &result);
+    WaitForFrameGPUQuery(mDevice, mCtx, mWaitForPresentQuery, &result);
   }
   mWaitForPresentQuery = mNextWaitForPresentQuery.forget();
 }

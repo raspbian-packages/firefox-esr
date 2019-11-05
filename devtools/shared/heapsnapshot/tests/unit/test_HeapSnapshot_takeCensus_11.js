@@ -20,13 +20,13 @@ function doLiveAndOfflineCensus(g, dbg, opts) {
 
   return {
     live: dbg.memory.takeCensus(opts),
-    offline: saveHeapSnapshotAndTakeCensus(dbg, opts)
+    offline: saveHeapSnapshotAndTakeCensus(dbg, opts),
   };
 }
 
 function run_test() {
-  let g = newGlobal();
-  let dbg = new Debugger(g);
+  const g = newGlobal();
+  const dbg = new Debugger(g);
 
   g.eval("this.markers = []");
   const markerSize = byteSize(allocationMarker());
@@ -39,8 +39,7 @@ function run_test() {
 
   for (let i = 0; i < 10; i++) {
     const { live, offline } = doLiveAndOfflineCensus(g, dbg, {
-      breakdown: { by: "objectClass",
-                   then: { by: "count"} }
+      breakdown: { by: "objectClass", then: { by: "count" } },
     });
 
     equal(live.AllocationMarker.count, offline.AllocationMarker.count);
@@ -56,8 +55,7 @@ function run_test() {
   // those allocation stacks match up.
 
   const { live, offline } = doLiveAndOfflineCensus(g, dbg, {
-    breakdown: { by: "objectClass",
-                 then: { by: "allocationStack"} }
+    breakdown: { by: "objectClass", then: { by: "allocationStack" } },
   });
 
   equal(live.AllocationMarker.size, offline.AllocationMarker.size);
@@ -73,7 +71,9 @@ function run_test() {
   const liveEntries = [];
   live.AllocationMarker.forEach((v, k) => {
     dumpn("Allocation stack:");
-    k.toString().split(/\n/g).forEach(s => dumpn(s));
+    k.toString()
+      .split(/\n/g)
+      .forEach(s => dumpn(s));
 
     equal(k.functionDisplayName, "unsafeAtAnySpeed");
     equal(k.line, 4);
@@ -84,7 +84,9 @@ function run_test() {
   const offlineEntries = [];
   offline.AllocationMarker.forEach((v, k) => {
     dumpn("Allocation stack:");
-    k.toString().split(/\n/g).forEach(s => dumpn(s));
+    k.toString()
+      .split(/\n/g)
+      .forEach(s => dumpn(s));
 
     equal(k.functionDisplayName, "unsafeAtAnySpeed");
     equal(k.line, 4);

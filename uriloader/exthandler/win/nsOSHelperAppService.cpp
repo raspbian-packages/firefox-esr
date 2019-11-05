@@ -185,8 +185,9 @@ nsresult nsOSHelperAppService::GetMIMEInfoFromRegistry(const nsString& fileType,
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Looks up the type for the extension aExt and compares it to aType
-/* static */ bool nsOSHelperAppService::typeFromExtEquals(const char16_t* aExt,
-                                                          const char* aType) {
+/* static */
+bool nsOSHelperAppService::typeFromExtEquals(const char16_t* aExt,
+                                             const char* aType) {
   if (!aType) return false;
   nsAutoString fileExtToUse;
   if (aExt[0] != char16_t('.')) fileExtToUse = char16_t('.');
@@ -375,8 +376,10 @@ already_AddRefed<nsMIMEInfoWin> nsOSHelperAppService::GetByExtension(
   return mimeInfo.forget();
 }
 
-already_AddRefed<nsIMIMEInfo> nsOSHelperAppService::GetMIMEInfoFromOS(
-    const nsACString& aMIMEType, const nsACString& aFileExt, bool* aFound) {
+NS_IMETHODIMP
+nsOSHelperAppService::GetMIMEInfoFromOS(const nsACString& aMIMEType,
+                                        const nsACString& aFileExt,
+                                        bool* aFound, nsIMIMEInfo** aMIMEInfo) {
   *aFound = true;
 
   const nsCString& flatType = PromiseFlatCString(aMIMEType);
@@ -429,9 +432,13 @@ already_AddRefed<nsIMIMEInfo> nsOSHelperAppService::GetMIMEInfoFromOS(
     RefPtr<nsMIMEInfoWin> miByExt =
         GetByExtension(NS_ConvertUTF8toUTF16(aFileExt), flatType.get());
     LOG(("Ext. lookup for '%s' found 0x%p\n", flatExt.get(), miByExt.get()));
-    if (!miByExt && mi) return mi.forget();
+    if (!miByExt && mi) {
+      mi.forget(aMIMEInfo);
+      return NS_OK;
+    }
     if (miByExt && !mi) {
-      return miByExt.forget();
+      miByExt.forget(aMIMEInfo);
+      return NS_OK;
     }
     if (!miByExt && !mi) {
       *aFound = false;
@@ -440,7 +447,8 @@ already_AddRefed<nsIMIMEInfo> nsOSHelperAppService::GetMIMEInfoFromOS(
         mi->AppendExtension(aFileExt);
       }
 
-      return mi.forget();
+      mi.forget(aMIMEInfo);
+      return NS_OK;
     }
 
     // if we get here, mi has no default app. copy from extension lookup.
@@ -450,7 +458,8 @@ already_AddRefed<nsIMIMEInfo> nsOSHelperAppService::GetMIMEInfoFromOS(
 
     mi->SetDefaultDescription(desc);
   }
-  return mi.forget();
+  mi.forget(aMIMEInfo);
+  return NS_OK;
 }
 
 NS_IMETHODIMP

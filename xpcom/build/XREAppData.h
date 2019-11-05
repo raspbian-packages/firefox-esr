@@ -55,7 +55,7 @@ class XREAppData {
 
     CharPtr& operator=(const char* v) {
       if (v) {
-        mValue.reset(NS_strdup(v));
+        mValue.reset(NS_xstrdup(v));
       } else {
         mValue = nullptr;
       }
@@ -173,6 +173,11 @@ class XREAppData {
    */
   CharPtr UAName;
 
+  /**
+   * The URL to the source revision for this build of the application.
+   */
+  CharPtr sourceURL;
+
 #if defined(XP_WIN) && defined(MOZ_SANDBOX)
   /**
    * Chromium sandbox BrokerServices.
@@ -213,6 +218,7 @@ struct StaticXREAppData {
   const char* crashReporterURL;
   const char* profile;
   const char* UAName;
+  const char* sourceURL;
 };
 
 }  // namespace mozilla

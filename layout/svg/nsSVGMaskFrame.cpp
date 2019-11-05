@@ -11,15 +11,16 @@
 #include "AutoReferenceChainGuard.h"
 #include "gfx2DGlue.h"
 #include "gfxContext.h"
-#include "mozilla/gfx/2D.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/RefPtr.h"
-#include "SVGObserverUtils.h"
 #include "mozilla/dom/SVGMaskElement.h"
 #include "mozilla/dom/SVGUnitTypesBinding.h"
+#include "mozilla/gfx/2D.h"
+#include "SVGObserverUtils.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
-using namespace mozilla::dom::SVGUnitTypesBinding;
+using namespace mozilla::dom::SVGUnitTypes_Binding;
 using namespace mozilla::gfx;
 using namespace mozilla::image;
 
@@ -36,9 +37,8 @@ static LuminanceType GetLuminanceType(uint8_t aNSMaskType) {
   }
 }
 
-nsIFrame* NS_NewSVGMaskFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext) {
-  return new (aPresShell) nsSVGMaskFrame(aContext);
+nsIFrame* NS_NewSVGMaskFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsSVGMaskFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsSVGMaskFrame)
@@ -75,21 +75,25 @@ already_AddRefed<SourceSurface> nsSVGMaskFrame::GetMaskForMaskedFrame(
   }
 
   uint8_t maskType;
-  if (aParams.maskMode == NS_STYLE_MASK_MODE_MATCH_SOURCE) {
+  if (aParams.maskMode == StyleMaskMode::MatchSource) {
     maskType = StyleSVGReset()->mMaskType;
   } else {
-    maskType = aParams.maskMode == NS_STYLE_MASK_MODE_LUMINANCE
+    maskType = aParams.maskMode == StyleMaskMode::Luminance
                    ? NS_STYLE_MASK_TYPE_LUMINANCE
                    : NS_STYLE_MASK_TYPE_ALPHA;
   }
 
   RefPtr<DrawTarget> maskDT;
   if (maskType == NS_STYLE_MASK_TYPE_LUMINANCE) {
-    maskDT = context->GetDrawTarget()->CreateSimilarDrawTarget(
-        maskSurfaceSize, SurfaceFormat::B8G8R8A8);
+    maskDT = context->GetDrawTarget()->CreateClippedDrawTarget(
+        maskSurfaceSize,
+        Matrix::Translation(maskSurfaceRect.x, maskSurfaceRect.y),
+        SurfaceFormat::B8G8R8A8);
   } else {
-    maskDT = context->GetDrawTarget()->CreateSimilarDrawTarget(
-        maskSurfaceSize, SurfaceFormat::A8);
+    maskDT = context->GetDrawTarget()->CreateClippedDrawTarget(
+        maskSurfaceSize,
+        Matrix::Translation(maskSurfaceRect.x, maskSurfaceRect.y),
+        SurfaceFormat::A8);
   }
 
   if (!maskDT || !maskDT->IsValid()) {
@@ -108,16 +112,15 @@ already_AddRefed<SourceSurface> nsSVGMaskFrame::GetMaskForMaskedFrame(
       GetMaskTransform(aParams.maskedFrame) * aParams.toUserSpace;
 
   for (nsIFrame* kid = mFrames.FirstChild(); kid; kid = kid->GetNextSibling()) {
+    gfxMatrix m = mMatrixForChildren;
+
     // The CTM of each frame referencing us can be different
     nsSVGDisplayableFrame* SVGFrame = do_QueryFrame(kid);
     if (SVGFrame) {
       SVGFrame->NotifySVGChanged(nsSVGDisplayableFrame::TRANSFORM_CHANGED);
+      m = nsSVGUtils::GetTransformMatrixInUserSpace(kid) * m;
     }
-    gfxMatrix m = mMatrixForChildren;
-    if (kid->GetContent()->IsSVGElement()) {
-      m = static_cast<nsSVGElement*>(kid->GetContent())
-              ->PrependLocalTransformsTo(m, eUserSpaceToParent);
-    }
+
     nsSVGUtils::PaintFrameWithEffects(kid, *tmpCtx, m, aParams.imgParams);
   }
 
@@ -205,7 +208,7 @@ gfxMatrix nsSVGMaskFrame::GetCanvasTM() { return mMatrixForChildren; }
 gfxMatrix nsSVGMaskFrame::GetMaskTransform(nsIFrame* aMaskedFrame) {
   SVGMaskElement* content = static_cast<SVGMaskElement*>(GetContent());
 
-  nsSVGEnum* maskContentUnits =
+  SVGAnimatedEnumeration* maskContentUnits =
       &content->mEnumAttributes[SVGMaskElement::MASKCONTENTUNITS];
 
   uint32_t flags = nsSVGUtils::eBBoxIncludeFillGeometry |

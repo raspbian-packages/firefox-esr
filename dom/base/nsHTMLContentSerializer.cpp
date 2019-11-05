@@ -12,9 +12,8 @@
 
 #include "nsHTMLContentSerializer.h"
 
-#include "nsIDOMElement.h"
 #include "nsIContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsElementTable.h"
 #include "nsNameSpaceManager.h"
 #include "nsString.h"
@@ -48,7 +47,7 @@ nsHTMLContentSerializer::nsHTMLContentSerializer() { mIsHTMLSerializer = true; }
 nsHTMLContentSerializer::~nsHTMLContentSerializer() {}
 
 NS_IMETHODIMP
-nsHTMLContentSerializer::AppendDocumentStart(nsIDocument* aDocument,
+nsHTMLContentSerializer::AppendDocumentStart(Document* aDocument,
                                              nsAString& aStr) {
   return NS_OK;
 }
@@ -57,6 +56,8 @@ bool nsHTMLContentSerializer::SerializeHTMLAttributes(
     Element* aElement, Element* aOriginalElement, nsAString& aTagPrefix,
     const nsAString& aTagNamespaceURI, nsAtom* aTagName, int32_t aNamespace,
     nsAString& aStr) {
+  MaybeSerializeIsValue(aElement, aStr);
+
   int32_t count = aElement->GetAttrCount();
   if (!count) return true;
 
@@ -218,8 +219,8 @@ nsHTMLContentSerializer::AppendElementStart(Element* aElement,
       nsresult rv = NS_OK;
       startAttrVal = start.ToInteger(&rv);
       // If OL has "start" attribute, first LI element has to start with that
-      // value  Therefore subtracting 1 as all the LI elements are incrementing
-      // it before using it;  In failure of ToInteger(), default StartAttrValue
+      // value Therefore subtracting 1 as all the LI elements are incrementing
+      // it before using it; In failure of ToInteger(), default StartAttrValue
       // to 0.
       if (NS_SUCCEEDED(rv))
         startAttrVal--;
@@ -300,7 +301,7 @@ nsHTMLContentSerializer::AppendElementEnd(Element* aElement, nsAString& aStr) {
     /* Though at this point we must always have an state to be deleted as all
     the OL opening tags are supposed to push an olState object to the stack*/
     if (!mOLStateStack.IsEmpty()) {
-      mOLStateStack.RemoveElementAt(mOLStateStack.Length() - 1);
+      mOLStateStack.RemoveLastElement();
     }
   }
 
@@ -416,21 +417,6 @@ static const char* const kEntityStrings[] = {
     /* 4 */ "&gt;",
     /* 5 */ "&nbsp;"};
 
-uint32_t FindNextBasicEntity(const nsAString& aStr, const uint32_t aLen,
-                             uint32_t aIndex, const uint8_t* aEntityTable,
-                             const char** aEntity) {
-  for (; aIndex < aLen; ++aIndex) {
-    // for each character in this chunk, check if it
-    // needs to be replaced
-    char16_t val = aStr[aIndex];
-    if (val <= kValNBSP && aEntityTable[val]) {
-      *aEntity = kEntityStrings[aEntityTable[val]];
-      return aIndex;
-    }
-  }
-  return aIndex;
-}
-
 bool nsHTMLContentSerializer::AppendAndTranslateEntities(
     const nsAString& aStr, nsAString& aOutputStr) {
   if (mBodyOnly && !mInBody) {
@@ -442,30 +428,25 @@ bool nsHTMLContentSerializer::AppendAndTranslateEntities(
   }
 
   if (mFlags & (nsIDocumentEncoder::OutputEncodeBasicEntities)) {
-    const uint8_t* entityTable = mInAttribute ? kAttrEntities : kEntities;
-    uint32_t start = 0;
-    const uint32_t len = aStr.Length();
-    for (uint32_t i = 0; i < len; ++i) {
-      const char* entity = nullptr;
-      i = FindNextBasicEntity(aStr, len, i, entityTable, &entity);
-      uint32_t normalTextLen = i - start;
-      if (normalTextLen) {
-        NS_ENSURE_TRUE(aOutputStr.Append(Substring(aStr, start, normalTextLen),
-                                         mozilla::fallible),
-                       false);
-      }
-      if (entity) {
-        NS_ENSURE_TRUE(aOutputStr.AppendASCII(entity, mozilla::fallible),
-                       false);
-        start = i + 1;
-      }
+    // Per the API documentation, encode &nbsp;, &amp;, &lt;, &gt;, and &quot;
+    if (mInAttribute) {
+      return nsXMLContentSerializer::AppendAndTranslateEntities<kValNBSP>(
+          aStr, aOutputStr, kAttrEntities, kEntityStrings);
     }
-    return true;
-  } else {
-    NS_ENSURE_TRUE(
-        nsXMLContentSerializer::AppendAndTranslateEntities(aStr, aOutputStr),
-        false);
+
+    return nsXMLContentSerializer::AppendAndTranslateEntities<kValNBSP>(
+        aStr, aOutputStr, kEntities, kEntityStrings);
   }
 
-  return true;
+  // We don't want to call into our superclass 2-arg version of
+  // AppendAndTranslateEntities, because it wants to encode more characters
+  // than we do.  Use our tables, but avoid encoding &nbsp; by passing in a
+  // smaller max index.  This will only encode &amp;, &lt;, &gt;, and &quot;.
+  if (mInAttribute) {
+    return nsXMLContentSerializer::AppendAndTranslateEntities<kGTVal>(
+        aStr, aOutputStr, kAttrEntities, kEntityStrings);
+  }
+
+  return nsXMLContentSerializer::AppendAndTranslateEntities<kGTVal>(
+      aStr, aOutputStr, kEntities, kEntityStrings);
 }

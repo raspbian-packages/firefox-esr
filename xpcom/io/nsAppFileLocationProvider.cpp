@@ -11,31 +11,31 @@
 #include "nsAtom.h"
 #include "nsIFile.h"
 #include "nsString.h"
-#include "nsISimpleEnumerator.h"
+#include "nsSimpleEnumerator.h"
 #include "prenv.h"
 #include "nsCRT.h"
 #if defined(MOZ_WIDGET_COCOA)
-#include <Carbon/Carbon.h>
-#include "nsILocalFileMac.h"
+#  include <Carbon/Carbon.h>
+#  include "nsILocalFileMac.h"
 #elif defined(XP_WIN)
-#include <windows.h>
-#include <shlobj.h>
+#  include <windows.h>
+#  include <shlobj.h>
 #elif defined(XP_UNIX)
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/param.h>
+#  include <unistd.h>
+#  include <stdlib.h>
+#  include <sys/param.h>
 #endif
 
 // WARNING: These hard coded names need to go away. They need to
 // come from localizable resources
 
 #if defined(MOZ_WIDGET_COCOA)
-#define APP_REGISTRY_NAME NS_LITERAL_CSTRING("Application Registry")
-#define ESSENTIAL_FILES NS_LITERAL_CSTRING("Essential Files")
+#  define APP_REGISTRY_NAME NS_LITERAL_CSTRING("Application Registry")
+#  define ESSENTIAL_FILES NS_LITERAL_CSTRING("Essential Files")
 #elif defined(XP_WIN)
-#define APP_REGISTRY_NAME NS_LITERAL_CSTRING("registry.dat")
+#  define APP_REGISTRY_NAME NS_LITERAL_CSTRING("registry.dat")
 #else
-#define APP_REGISTRY_NAME NS_LITERAL_CSTRING("appreg")
+#  define APP_REGISTRY_NAME NS_LITERAL_CSTRING("appreg")
 #endif
 
 // define default product directory
@@ -46,10 +46,10 @@
 #define NS_USER_PLUGINS_DIR "UserPlugins"
 
 #ifdef MOZ_WIDGET_COCOA
-#define NS_MACOSX_USER_PLUGIN_DIR "OSXUserPlugins"
-#define NS_MACOSX_LOCAL_PLUGIN_DIR "OSXLocalPlugins"
+#  define NS_MACOSX_USER_PLUGIN_DIR "OSXUserPlugins"
+#  define NS_MACOSX_LOCAL_PLUGIN_DIR "OSXLocalPlugins"
 #elif XP_UNIX
-#define NS_SYSTEM_PLUGINS_DIR "SysPlugins"
+#  define NS_SYSTEM_PLUGINS_DIR "SysPlugins"
 #endif
 
 #define DEFAULTS_DIR_NAME NS_LITERAL_CSTRING("defaults")
@@ -162,33 +162,33 @@ nsAppFileLocationProvider::GetFile(const char* aProp, bool* aPersistent,
       rv = NS_NewNativeLocalFile(nsDependentCString(pathVar), true,
                                  getter_AddRefs(localFile));
   } else if (nsCRT::strcmp(aProp, NS_USER_PLUGINS_DIR) == 0) {
-#ifdef ENABLE_SYSTEM_EXTENSION_DIRS
+#  ifdef ENABLE_SYSTEM_EXTENSION_DIRS
     rv = GetProductDirectory(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv)) {
       rv = localFile->AppendRelativeNativePath(PLUGINS_DIR_NAME);
     }
-#else
+#  else
     rv = NS_ERROR_FAILURE;
-#endif
+#  endif
   }
-#ifdef XP_UNIX
+#  ifdef XP_UNIX
   else if (nsCRT::strcmp(aProp, NS_SYSTEM_PLUGINS_DIR) == 0) {
-#ifdef ENABLE_SYSTEM_EXTENSION_DIRS
+#    ifdef ENABLE_SYSTEM_EXTENSION_DIRS
     static const char* const sysLPlgDir =
-#if defined(HAVE_USR_LIB64_DIR) && defined(__LP64__)
+#      if defined(HAVE_USR_LIB64_DIR) && defined(__LP64__)
         "/usr/lib64/mozilla/plugins";
-#elif defined(__OpenBSD__) || defined(__FreeBSD__)
+#      elif defined(__OpenBSD__) || defined(__FreeBSD__)
         "/usr/local/lib/mozilla/plugins";
-#else
+#      else
         "/usr/lib/mozilla/plugins";
-#endif
+#      endif
     rv = NS_NewNativeLocalFile(nsDependentCString(sysLPlgDir), false,
                                getter_AddRefs(localFile));
-#else
+#    else
     rv = NS_ERROR_FAILURE;
-#endif
+#    endif
   }
-#endif
+#  endif
 #endif
   else if (nsCRT::strcmp(aProp, NS_APP_INSTALL_CLEANUP_DIR) == 0) {
     // This is cloned so that embeddors will have a hook to override
@@ -297,7 +297,7 @@ nsresult nsAppFileLocationProvider::GetProductDirectory(nsIFile** aLocalFile,
     return rv;
   }
 #else
-#error dont_know_how_to_get_product_dir_on_your_platform
+#  error dont_know_how_to_get_product_dir_on_your_platform
 #endif
 
   rv = localDir->AppendRelativeNativePath(DEFAULT_PRODUCT_DIR);
@@ -367,10 +367,8 @@ nsresult nsAppFileLocationProvider::GetDefaultUserProfileRoot(
 // nsAppFileLocationProvider::nsIDirectoryServiceProvider2
 //*****************************************************************************
 
-class nsAppDirectoryEnumerator : public nsISimpleEnumerator {
+class nsAppDirectoryEnumerator : public nsSimpleEnumerator {
  public:
-  NS_DECL_ISUPPORTS
-
   /**
    * aKeyList is a null-terminated list of properties which are provided by
    * aProvider They do not need to be publicly defined keys.
@@ -378,6 +376,8 @@ class nsAppDirectoryEnumerator : public nsISimpleEnumerator {
   nsAppDirectoryEnumerator(nsIDirectoryServiceProvider* aProvider,
                            const char* aKeyList[])
       : mProvider(aProvider), mCurrentKey(aKeyList) {}
+
+  const nsID& DefaultInterface() override { return NS_GET_IID(nsIFile); }
 
   NS_IMETHOD HasMoreElements(bool* aResult) override {
     while (!mNext && *mCurrentKey) {
@@ -418,21 +418,15 @@ class nsAppDirectoryEnumerator : public nsISimpleEnumerator {
   nsCOMPtr<nsIDirectoryServiceProvider> mProvider;
   const char** mCurrentKey;
   nsCOMPtr<nsIFile> mNext;
-
-  // Virtual destructor since subclass nsPathsDirectoryEnumerator
-  // does not re-implement Release()
-  virtual ~nsAppDirectoryEnumerator() {}
 };
-
-NS_IMPL_ISUPPORTS(nsAppDirectoryEnumerator, nsISimpleEnumerator)
 
 /* nsPathsDirectoryEnumerator and PATH_SEPARATOR
  * are not used on MacOS/X. */
 
 #if defined(XP_WIN) /* Win32 */
-#define PATH_SEPARATOR ';'
+#  define PATH_SEPARATOR ';'
 #else
-#define PATH_SEPARATOR ':'
+#  define PATH_SEPARATOR ':'
 #endif
 
 class nsPathsDirectoryEnumerator final : public nsAppDirectoryEnumerator {
@@ -504,14 +498,14 @@ nsAppFileLocationProvider::GetFiles(const char* aProp,
                                  NS_MACOSX_LOCAL_PLUGIN_DIR, nullptr};
     *aResult = new nsAppDirectoryEnumerator(this, keys);
 #else
-#ifdef XP_UNIX
+#  ifdef XP_UNIX
     static const char* keys[] = {nullptr, NS_USER_PLUGINS_DIR,
                                  NS_APP_PLUGINS_DIR, NS_SYSTEM_PLUGINS_DIR,
                                  nullptr};
-#else
+#  else
     static const char* keys[] = {nullptr, NS_USER_PLUGINS_DIR,
                                  NS_APP_PLUGINS_DIR, nullptr};
-#endif
+#  endif
     if (!keys[0] && !(keys[0] = PR_GetEnv("MOZ_PLUGIN_PATH"))) {
       static const char nullstr = 0;
       keys[0] = &nullstr;

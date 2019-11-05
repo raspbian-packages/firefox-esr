@@ -2,38 +2,50 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// This file is a chrome-API-free version of the module
+// devtools/client/netmonitor/src/utils/firefox/open-request-in-tab.js, so that
+// it can be used in Chrome-API-free applications, such as the Launchpad. But
+// because of this, it cannot take advantage of utilizing chrome APIs and should
+// implement the similar functionalities on its own.
+//
+// Please keep in mind that if the feature in this file has changed, don't
+// forget to also change that accordingly in
+// devtools/client/netmonitor/src/utils/firefox/open-request-in-tab.js.
+
 "use strict";
 
-const Services = require("Services");
-const { gDevTools } = require("devtools/client/framework/devtools");
+loader.lazyRequireGetter(
+  this,
+  "openContentLink",
+  "devtools/client/shared/link",
+  true
+);
 
 /**
  * Opens given request in a new tab.
+ *
+ * For POST request supports application/x-www-form-urlencoded content-type only.
  */
-function openRequestInTab(request) {
-  let win = Services.wm.getMostRecentWindow(gDevTools.chromeWindowType);
-  if (request.method.toLowerCase() !== "get") {
-    win.openUILinkIn(this.selectedRequest.url, "tab", {
-      relatedToCurrent: true
-    });
+function openRequestInTab(url, requestHeaders, requestPostData) {
+  if (!requestPostData) {
+    openContentLink(url, { relatedToCurrent: true });
   } else {
-    openRequestInTabHelper({
-      url: request.url,
-      method: request.method,
-      data: request.requestPostData ? request.requestPostData.postData : null,
+    openPostRequestInTabHelper({
+      url,
+      data: requestPostData.postData,
     });
   }
 }
 
-function openRequestInTabHelper({url, method, data}) {
-  let form = document.createElement("form");
+function openPostRequestInTabHelper({ url, data }) {
+  const form = document.createElement("form");
   form.target = "_blank";
   form.action = url;
-  form.method = method;
+  form.method = "post";
 
   if (data) {
-    for (let key in data) {
-      let input = document.createElement("input");
+    for (const key in data) {
+      const input = document.createElement("input");
       input.name = key;
       input.value = data[key];
       form.appendChild(input);

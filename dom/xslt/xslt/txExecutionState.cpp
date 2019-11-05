@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -57,6 +57,7 @@ txExecutionState::txExecutionState(txStylesheet* aStylesheet,
                                    bool aDisableLoads)
     : mOutputHandler(nullptr),
       mResultHandler(nullptr),
+      mOutputHandlerFactory(nullptr),
       mStylesheet(aStylesheet),
       mNextInstruction(nullptr),
       mLocalVariables(nullptr),
@@ -359,8 +360,8 @@ void txExecutionState::pushTemplateRule(txStylesheet::ImportFrame* aFrame,
 }
 
 void txExecutionState::popTemplateRule() {
-  NS_PRECONDITION(!mTemplateRules.IsEmpty(), "No rules to pop");
-  mTemplateRules.RemoveElementAt(mTemplateRules.Length() - 1);
+  MOZ_ASSERT(!mTemplateRules.IsEmpty(), "No rules to pop");
+  mTemplateRules.RemoveLastElement();
 }
 
 txIEvalContext* txExecutionState::getEvalContext() { return mEvalContext; }
@@ -410,7 +411,7 @@ nsresult txExecutionState::getKeyNodes(const txExpandedName& aKeyName,
 }
 
 txExecutionState::TemplateRule* txExecutionState::getCurrentTemplateRule() {
-  NS_PRECONDITION(!mTemplateRules.IsEmpty(), "No current rule!");
+  MOZ_ASSERT(!mTemplateRules.IsEmpty(), "No current rule!");
   return &mTemplateRules[mTemplateRules.Length() - 1];
 }
 
@@ -471,8 +472,7 @@ void txExecutionState::pushParamMap(txParameterMap* aParams) {
 
 already_AddRefed<txParameterMap> txExecutionState::popParamMap() {
   RefPtr<txParameterMap> oldParams = mTemplateParams.forget();
-  mTemplateParams = mParamStack.LastElement();
-  mParamStack.RemoveElementAt(mParamStack.Length() - 1);
+  mTemplateParams = mParamStack.PopLastElement();
 
   return oldParams.forget();
 }

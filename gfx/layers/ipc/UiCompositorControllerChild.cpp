@@ -13,10 +13,11 @@
 #include "mozilla/gfx/GPUProcessManager.h"
 #include "mozilla/StaticPtr.h"
 #include "nsBaseWidget.h"
+#include "nsProxyRelease.h"
 #include "nsThreadUtils.h"
 
 #if defined(MOZ_WIDGET_ANDROID)
-#include "mozilla/widget/AndroidUiThread.h"
+#  include "mozilla/widget/AndroidUiThread.h"
 
 static RefPtr<nsThread> GetUiThread() { return mozilla::GetAndroidUiThread(); }
 #else
@@ -34,9 +35,10 @@ namespace mozilla {
 namespace layers {
 
 // public:
-/* static */ RefPtr<UiCompositorControllerChild>
+/* static */
+RefPtr<UiCompositorControllerChild>
 UiCompositorControllerChild::CreateForSameProcess(
-    const int64_t& aRootLayerTreeId) {
+    const LayersId& aRootLayerTreeId) {
   RefPtr<UiCompositorControllerChild> child =
       new UiCompositorControllerChild(0);
   child->mParent = new UiCompositorControllerParent(aRootLayerTreeId);
@@ -48,7 +50,8 @@ UiCompositorControllerChild::CreateForSameProcess(
   return child;
 }
 
-/* static */ RefPtr<UiCompositorControllerChild>
+/* static */
+RefPtr<UiCompositorControllerChild>
 UiCompositorControllerChild::CreateForGPUProcess(
     const uint64_t& aProcessToken,
     Endpoint<PUiCompositorControllerChild>&& aEndpoint) {
@@ -58,7 +61,8 @@ UiCompositorControllerChild::CreateForGPUProcess(
   RefPtr<nsIRunnable> task =
       NewRunnableMethod<Endpoint<PUiCompositorControllerChild>&&>(
           "layers::UiCompositorControllerChild::OpenForGPUProcess", child,
-          &UiCompositorControllerChild::OpenForGPUProcess, Move(aEndpoint));
+          &UiCompositorControllerChild::OpenForGPUProcess,
+          std::move(aEndpoint));
 
   GetUiThread()->Dispatch(task.forget(), nsIThread::DISPATCH_NORMAL);
   return child;
@@ -78,14 +82,16 @@ bool UiCompositorControllerChild::Resume() {
   return SendResume();
 }
 
-bool UiCompositorControllerChild::ResumeAndResize(const int32_t& aWidth,
+bool UiCompositorControllerChild::ResumeAndResize(const int32_t& aX,
+                                                  const int32_t& aY,
+                                                  const int32_t& aWidth,
                                                   const int32_t& aHeight) {
   if (!mIsOpen) {
-    mResize = Some(gfx::IntSize(aWidth, aHeight));
+    mResize = Some(gfx::IntRect(aX, aY, aWidth, aHeight));
     // Since we are caching these values, pretend the call succeeded.
     return true;
   }
-  return SendResumeAndResize(aWidth, aHeight);
+  return SendResumeAndResize(aX, aY, aWidth, aHeight);
 }
 
 bool UiCompositorControllerChild::InvalidateAndRender() {
@@ -102,6 +108,10 @@ bool UiCompositorControllerChild::SetMaxToolbarHeight(const int32_t& aHeight) {
     return true;
   }
   return SendMaxToolbarHeight(aHeight);
+}
+
+bool UiCompositorControllerChild::SetFixedBottomOffset(int32_t aOffset) {
+  return SendFixedBottomOffset(aOffset);
 }
 
 bool UiCompositorControllerChild::SetPinned(const bool& aPinned,
@@ -161,7 +171,7 @@ bool UiCompositorControllerChild::ToolbarPixelsToCompositor(
     return false;
   }
 
-  return SendToolbarPixelsToCompositor(aMem, aSize);
+  return SendToolbarPixelsToCompositor(std::move(aMem), aSize);
 }
 
 void UiCompositorControllerChild::Destroy() {
@@ -171,6 +181,14 @@ void UiCompositorControllerChild::Destroy() {
                           &UiCompositorControllerChild::Destroy),
         nsIThread::DISPATCH_SYNC);
     return;
+  }
+
+  if (mWidget) {
+    // Dispatch mWidget to main thread to prevent it from being destructed by
+    // the ui thread.
+    RefPtr<nsIWidget> widget = mWidget.forget();
+    NS_ReleaseOnMainThreadSystemGroup("UiCompositorControllerChild::mWidget",
+                                      widget.forget());
   }
 
   if (mIsOpen) {
@@ -218,9 +236,8 @@ void UiCompositorControllerChild::ProcessingError(Result aCode,
                      "Processing error in UiCompositorControllerChild");
 }
 
-void UiCompositorControllerChild::HandleFatalError(const char* aName,
-                                                   const char* aMsg) const {
-  dom::ContentChild::FatalErrorIfNotUsingGPUProcess(aName, aMsg, OtherPid());
+void UiCompositorControllerChild::HandleFatalError(const char* aMsg) const {
+  dom::ContentChild::FatalErrorIfNotUsingGPUProcess(aMsg, OtherPid());
 }
 
 mozilla::ipc::IPCResult
@@ -250,7 +267,7 @@ mozilla::ipc::IPCResult UiCompositorControllerChild::RecvScreenPixels(
     ipc::Shmem&& aMem, const ScreenIntSize& aSize) {
 #if defined(MOZ_WIDGET_ANDROID)
   if (mWidget) {
-    mWidget->RecvScreenPixels(Move(aMem), aSize);
+    mWidget->RecvScreenPixels(std::move(aMem), aSize);
   }
 #endif  // defined(MOZ_WIDGET_ANDROID)
 
@@ -307,7 +324,8 @@ void UiCompositorControllerChild::OpenForGPUProcess(
 void UiCompositorControllerChild::SendCachedValues() {
   MOZ_ASSERT(mIsOpen);
   if (mResize) {
-    SendResumeAndResize(mResize.ref().width, mResize.ref().height);
+    SendResumeAndResize(mResize.ref().x, mResize.ref().y, mResize.ref().width,
+                        mResize.ref().height);
     mResize.reset();
   }
   if (mMaxToolbarHeight) {

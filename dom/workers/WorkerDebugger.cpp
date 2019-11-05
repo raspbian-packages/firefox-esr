@@ -8,6 +8,7 @@
 
 #include "mozilla/dom/MessageEvent.h"
 #include "mozilla/dom/MessageEventBinding.h"
+#include "mozilla/PerformanceUtils.h"
 #include "nsProxyRelease.h"
 #include "nsQueryObject.h"
 #include "nsThreadUtils.h"
@@ -17,6 +18,11 @@
 #include "WorkerPrivate.h"
 #include "WorkerRunnable.h"
 #include "WorkerScope.h"
+#if defined(XP_WIN)
+#  include <processthreadsapi.h>  // for GetCurrentProcessId()
+#else
+#  include <unistd.h>  // for getpid()
+#endif                 // defined(XP_WIN)
 
 namespace mozilla {
 namespace dom {
@@ -48,15 +54,12 @@ class DebuggerMessageEventRunnable : public WorkerDebuggerRunnable {
     RefPtr<MessageEvent> event =
         new MessageEvent(globalScope, nullptr, nullptr);
     event->InitMessageEvent(nullptr, NS_LITERAL_STRING("message"),
-                            false,  // canBubble
-                            true,   // cancelable
-                            data, EmptyString(), EmptyString(), nullptr,
+                            CanBubble::eNo, Cancelable::eYes, data,
+                            EmptyString(), EmptyString(), nullptr,
                             Sequence<OwningNonNull<MessagePort>>());
     event->SetTrusted(true);
 
-    nsCOMPtr<nsIDOMEvent> domEvent = do_QueryObject(event);
-    bool dummy;
-    globalScope->DispatchEvent(domEvent, &dummy);
+    globalScope->DispatchEvent(*event);
     return true;
   }
 };
@@ -85,12 +88,21 @@ class CompileDebuggerScriptRunnable final : public WorkerDebuggerRunnable {
       return false;
     }
 
+    if (NS_WARN_IF(!aWorkerPrivate->EnsureCSPEventListener())) {
+      return false;
+    }
+
+    // Initialize performance state which might be used on the main thread, as
+    // in CompileScriptRunnable. This runnable might execute first.
+    aWorkerPrivate->EnsurePerformanceStorage();
+    aWorkerPrivate->EnsurePerformanceCounter();
+
     JS::Rooted<JSObject*> global(aCx, globalScope->GetWrapper());
 
     ErrorResult rv;
-    JSAutoCompartment ac(aCx, global);
-    workerinternals::LoadMainScript(aWorkerPrivate, mScriptURL, DebuggerScript,
-                                    rv);
+    JSAutoRealm ar(aCx, global);
+    workerinternals::LoadMainScript(aWorkerPrivate, nullptr, mScriptURL,
+                                    DebuggerScript, rv);
     rv.WouldReportJSException();
     // Explicitly ignore NS_BINDING_ABORTED on rv.  Or more precisely, still
     // return false and don't SetWorkerScriptExecutedSuccessfully() in that
@@ -304,6 +316,18 @@ WorkerDebugger::GetServiceWorkerID(uint32_t* aResult) {
 }
 
 NS_IMETHODIMP
+WorkerDebugger::GetId(nsAString& aResult) {
+  AssertIsOnMainThread();
+
+  if (!mWorkerPrivate) {
+    return NS_ERROR_UNEXPECTED;
+  }
+
+  aResult = mWorkerPrivate->Id();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 WorkerDebugger::Initialize(const nsAString& aURL) {
   AssertIsOnMainThread();
 
@@ -365,6 +389,11 @@ WorkerDebugger::RemoveListener(nsIWorkerDebuggerListener* aListener) {
   return NS_OK;
 }
 
+NS_IMETHODIMP
+WorkerDebugger::SetDebuggerReady(bool aReady) {
+  return mWorkerPrivate->SetIsDebuggerReady(aReady);
+}
+
 void WorkerDebugger::Close() {
   MOZ_ASSERT(mWorkerPrivate);
   mWorkerPrivate = nullptr;
@@ -380,7 +409,8 @@ void WorkerDebugger::PostMessageToDebugger(const nsAString& aMessage) {
 
   RefPtr<PostDebuggerMessageRunnable> runnable =
       new PostDebuggerMessageRunnable(this, aMessage);
-  if (NS_FAILED(mWorkerPrivate->DispatchToMainThread(runnable.forget()))) {
+  if (NS_FAILED(mWorkerPrivate->DispatchToMainThreadForMessaging(
+          runnable.forget()))) {
     NS_WARNING("Failed to post message to debugger on main thread!");
   }
 }
@@ -402,7 +432,8 @@ void WorkerDebugger::ReportErrorToDebugger(const nsAString& aFilename,
 
   RefPtr<ReportDebuggerErrorRunnable> runnable =
       new ReportDebuggerErrorRunnable(this, aFilename, aLineno, aMessage);
-  if (NS_FAILED(mWorkerPrivate->DispatchToMainThread(runnable.forget()))) {
+  if (NS_FAILED(mWorkerPrivate->DispatchToMainThreadForMessaging(
+          runnable.forget()))) {
     NS_WARNING("Failed to report error to debugger on main thread!");
   }
 }
@@ -416,10 +447,105 @@ void WorkerDebugger::ReportErrorToDebuggerOnMainThread(
     listeners[index]->OnError(aFilename, aLineno, aMessage);
   }
 
+  // We need a JSContext to be able to read any stack associated with the error.
+  // This will not run any scripts.
+  AutoJSAPI jsapi;
+  DebugOnly<bool> ok = jsapi.Init(xpc::UnprivilegedJunkScope());
+  MOZ_ASSERT(ok, "UnprivilegedJunkScope should exist");
+
   WorkerErrorReport report;
   report.mMessage = aMessage;
   report.mFilename = aFilename;
-  WorkerErrorReport::LogErrorToConsole(report, 0);
+  WorkerErrorReport::LogErrorToConsole(jsapi.cx(), report, 0);
+}
+
+RefPtr<PerformanceInfoPromise> WorkerDebugger::ReportPerformanceInfo() {
+  AssertIsOnMainThread();
+  nsCOMPtr<nsPIDOMWindowOuter> top;
+  RefPtr<WorkerDebugger> self = this;
+
+#if defined(XP_WIN)
+  uint32_t pid = GetCurrentProcessId();
+#else
+  uint32_t pid = getpid();
+#endif
+  bool isTopLevel = false;
+  uint64_t windowID = mWorkerPrivate->WindowID();
+  PerformanceMemoryInfo memoryInfo;
+
+  // Walk up to our containing page and its window
+  WorkerPrivate* wp = mWorkerPrivate;
+  while (wp->GetParent()) {
+    wp = wp->GetParent();
+  }
+  nsPIDOMWindowInner* win = wp->GetWindow();
+  if (win) {
+    nsPIDOMWindowOuter* outer = win->GetOuterWindow();
+    if (outer) {
+      top = outer->GetTop();
+      if (top) {
+        windowID = top->WindowID();
+        isTopLevel = outer->IsTopLevelWindow();
+      }
+    }
+  }
+
+  // getting the worker URL
+  RefPtr<nsIURI> scriptURI = mWorkerPrivate->GetResolvedScriptURI();
+  if (NS_WARN_IF(!scriptURI)) {
+    // This can happen at shutdown, let's stop here.
+    return PerformanceInfoPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+  }
+  nsCString url = scriptURI->GetSpecOrDefault();
+
+  // Workers only produce metrics for a single category -
+  // DispatchCategory::Worker. We still return an array of CategoryDispatch so
+  // the PerformanceInfo struct is common to all performance counters throughout
+  // Firefox.
+  FallibleTArray<CategoryDispatch> items;
+  uint64_t duration = 0;
+  uint16_t count = 0;
+  uint64_t perfId = 0;
+
+  RefPtr<PerformanceCounter> perf = mWorkerPrivate->GetPerformanceCounter();
+  if (perf) {
+    perfId = perf->GetID();
+    count = perf->GetTotalDispatchCount();
+    duration = perf->GetExecutionDuration();
+    CategoryDispatch item =
+        CategoryDispatch(DispatchCategory::Worker.GetValue(), count);
+    if (!items.AppendElement(item, fallible)) {
+      NS_ERROR("Could not complete the operation");
+    }
+  }
+
+  if (!isTopLevel) {
+    return PerformanceInfoPromise::CreateAndResolve(
+        PerformanceInfo(url, pid, windowID, duration, perfId, true, isTopLevel,
+                        memoryInfo, items),
+        __func__);
+  }
+
+  // We need to keep a ref on workerPrivate, passed to the promise,
+  // to make sure it's still aloive when collecting the info.
+  RefPtr<WorkerPrivate> workerRef = mWorkerPrivate;
+  RefPtr<AbstractThread> mainThread =
+      SystemGroup::AbstractMainThreadFor(TaskCategory::Performance);
+
+  return CollectMemoryInfo(top, mainThread)
+      ->Then(
+          mainThread, __func__,
+          [workerRef, url, pid, perfId, windowID, duration, isTopLevel,
+           items](const PerformanceMemoryInfo& aMemoryInfo) {
+            return PerformanceInfoPromise::CreateAndResolve(
+                PerformanceInfo(url, pid, windowID, duration, perfId, true,
+                                isTopLevel, aMemoryInfo, items),
+                __func__);
+          },
+          [workerRef]() {
+            return PerformanceInfoPromise::CreateAndReject(NS_ERROR_FAILURE,
+                                                           __func__);
+          });
 }
 
 }  // namespace dom

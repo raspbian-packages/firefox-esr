@@ -3,20 +3,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 /* eslint no-unused-vars: [2, {"vars": "local", "args": "none"}] */
 /* import-globals-from shared-head.js */
+/* import-globals-from telemetry-test-helpers.js */
 
 "use strict";
 
 // shared-head.js handles imports, constants, and utility functions
-Services.scriptloader.loadSubScript("chrome://mochitests/content/browser/devtools/client/shared/test/shared-head.js", this);
+Services.scriptloader.loadSubScript(
+  "chrome://mochitests/content/browser/devtools/client/shared/test/shared-head.js",
+  this
+);
 
-const {DOMHelpers} = ChromeUtils.import("resource://devtools/client/shared/DOMHelpers.jsm", {});
-const {Hosts} = require("devtools/client/framework/toolbox-hosts");
+const { DOMHelpers } = ChromeUtils.import(
+  "resource://devtools/client/shared/DOMHelpers.jsm"
+);
+const { Hosts } = require("devtools/client/framework/toolbox-hosts");
 
 const TEST_URI_ROOT = "http://example.com/browser/devtools/client/shared/test/";
-const OPTIONS_VIEW_URL = TEST_URI_ROOT + "doc_options-view.xul";
+const OPTIONS_VIEW_URL = CHROME_URL_ROOT + "doc_options-view.xul";
+
+const EXAMPLE_URL =
+  "chrome://mochitests/content/browser/devtools/client/shared/test/";
 
 function catchFail(func) {
-  return function () {
+  return function() {
     try {
       return func.apply(null, arguments);
     } catch (ex) {
@@ -58,26 +67,24 @@ function catchFail(func) {
  *        the |options| object and the last value returned by |validator|.
  */
 function waitForValue(options) {
-  let start = Date.now();
-  let timeout = options.timeout || 5000;
+  const start = Date.now();
+  const timeout = options.timeout || 5000;
   let lastValue;
 
   function wait(validatorFn, successFn, failureFn) {
-    if ((Date.now() - start) > timeout) {
+    if (Date.now() - start > timeout) {
       // Log the failure.
       ok(false, "Timed out while waiting for: " + options.name);
-      let expected = "value" in options ?
-                     "'" + options.value + "'" :
-                     "a trueish value";
+      const expected =
+        "value" in options ? "'" + options.value + "'" : "a trueish value";
       info("timeout info :: got '" + lastValue + "', expected " + expected);
       failureFn(options, lastValue);
       return;
     }
 
     lastValue = validatorFn(options, lastValue);
-    let successful = "value" in options ?
-                      lastValue == options.value :
-                      lastValue;
+    const successful =
+      "value" in options ? lastValue == options.value : lastValue;
     if (successful) {
       ok(true, options.name);
       successFn(options, lastValue);
@@ -92,8 +99,8 @@ function waitForValue(options) {
 }
 
 function oneTimeObserve(name, callback) {
-  return new Promise((resolve) => {
-    let func = function () {
+  return new Promise(resolve => {
+    const func = function() {
       Services.obs.removeObserver(func, name);
       if (callback) {
         callback();
@@ -104,49 +111,21 @@ function oneTimeObserve(name, callback) {
   });
 }
 
-let createHost =
-Task.async(function* (type = "bottom", src = CHROME_URL_ROOT + "dummy.html") {
-  let host = new Hosts[type](gBrowser.selectedTab);
-  let iframe = yield host.create();
+const createHost = async function(
+  type = "bottom",
+  src = CHROME_URL_ROOT + "dummy.html"
+) {
+  const host = new Hosts[type](gBrowser.selectedTab);
+  const iframe = await host.create();
 
-  yield new Promise(resolve => {
-    let domHelper = new DOMHelpers(iframe.contentWindow);
+  await new Promise(resolve => {
+    const domHelper = new DOMHelpers(iframe.contentWindow);
     iframe.setAttribute("src", src);
     domHelper.onceDOMReady(resolve);
   });
 
   return [host, iframe.contentWindow, iframe.contentDocument];
-});
-
-/**
- * Check the correctness of the data recorded in Telemetry after
- * loadTelemetryAndRecordLogs was called.
- */
-function checkTelemetryResults(Telemetry) {
-  let result = Telemetry.prototype.telemetryInfo;
-
-  for (let histId in result) {
-    let value = result[histId];
-
-    if (histId.endsWith("OPENED_COUNT")) {
-      ok(value.length > 1, histId + " has more than one entry");
-
-      let okay = value.every(function (element) {
-        return element === true;
-      });
-
-      ok(okay, "All " + histId + " entries are === true");
-    } else if (histId.endsWith("TIME_ACTIVE_SECONDS")) {
-      ok(value.length > 1, histId + " has more than one entry");
-
-      let okay = value.every(function (element) {
-        return element > 0;
-      });
-
-      ok(okay, "All " + histId + " entries have time > 0");
-    }
-  }
-}
+};
 
 /**
  * Open and close the toolbox in the current browser tab, several times, waiting
@@ -155,17 +134,17 @@ function checkTelemetryResults(Telemetry) {
  * @param {Number} usageTime in milliseconds
  * @param {String} toolId
  */
-function* openAndCloseToolbox(nbOfTimes, usageTime, toolId) {
+async function openAndCloseToolbox(nbOfTimes, usageTime, toolId) {
   for (let i = 0; i < nbOfTimes; i++) {
     info("Opening toolbox " + (i + 1));
-    let target = TargetFactory.forTab(gBrowser.selectedTab);
-    yield gDevTools.showToolbox(target, toolId);
+    const target = await TargetFactory.forTab(gBrowser.selectedTab);
+    const toolbox = await gDevTools.showToolbox(target, toolId);
 
     // We use a timeout to check the toolbox's active time
-    yield new Promise(resolve => setTimeout(resolve, usageTime));
+    await new Promise(resolve => setTimeout(resolve, usageTime));
 
     info("Closing toolbox " + (i + 1));
-    yield gDevTools.closeToolbox(target);
+    await toolbox.destroy();
   }
 }
 
@@ -177,14 +156,17 @@ function synthesizeProfileForTest(samples) {
 
   samples.unshift({
     time: 0,
-    frames: []
+    frames: [],
   });
 
-  let uniqueStacks = new RecordingUtils.UniqueStacks();
-  return RecordingUtils.deflateThread({
-    samples: samples,
-    markers: []
-  }, uniqueStacks);
+  const uniqueStacks = new RecordingUtils.UniqueStacks();
+  return RecordingUtils.deflateThread(
+    {
+      samples: samples,
+      markers: [],
+    },
+    uniqueStacks
+  );
 }
 
 /**
@@ -200,7 +182,7 @@ function waitUntil(predicate, interval = 10) {
     return Promise.resolve(true);
   }
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       waitUntil(predicate).then(() => resolve(true));
     }, interval);
   });
@@ -212,7 +194,7 @@ function waitUntil(predicate, interval = 10) {
  * @return {Promise}
  */
 function showFilterPopupPresets(widget) {
-  let onRender = widget.once("render");
+  const onRender = widget.once("render");
   widget._togglePresets();
   return onRender;
 }
@@ -224,21 +206,24 @@ function showFilterPopupPresets(widget) {
  * @param  {string} value
  * @return {Promise}
  */
-let showFilterPopupPresetsAndCreatePreset =
-Task.async(function* (widget, name, value) {
-  yield showFilterPopupPresets(widget);
+const showFilterPopupPresetsAndCreatePreset = async function(
+  widget,
+  name,
+  value
+) {
+  await showFilterPopupPresets(widget);
 
   let onRender = widget.once("render");
   widget.setCssValue(value);
-  yield onRender;
+  await onRender;
 
-  let footer = widget.el.querySelector(".presets-list .footer");
+  const footer = widget.el.querySelector(".presets-list .footer");
   footer.querySelector("input").value = name;
 
   onRender = widget.once("render");
   widget._savePreset({
-    preventDefault: () => {}
+    preventDefault: () => {},
   });
 
-  yield onRender;
-});
+  await onRender;
+};

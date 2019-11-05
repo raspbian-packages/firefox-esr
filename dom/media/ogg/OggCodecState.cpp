@@ -95,8 +95,8 @@ bool OggCodecState::IsValidVorbisTagName(nsCString& aName) {
   return true;
 }
 
-bool OggCodecState::AddVorbisComment(MetadataTags* aTags, const char* aComment,
-                                     uint32_t aLength) {
+bool OggCodecState::AddVorbisComment(UniquePtr<MetadataTags>& aTags,
+                                     const char* aComment, uint32_t aLength) {
   const char* div = (const char*)memchr(aComment, '=', aLength);
   if (!div) {
     LOG(LogLevel::Debug, ("Skipping comment: no separator"));
@@ -256,12 +256,12 @@ nsresult OggCodecState::PacketOutUntilGranulepos(bool& aFoundGranulepos) {
       OggPacketPtr clone = Clone(&packet);
       if (IsHeader(&packet)) {
         // Header packets go straight into the packet queue.
-        mPackets.Append(Move(clone));
+        mPackets.Append(std::move(clone));
       } else {
         // We buffer data packets until we encounter a granulepos. We'll
         // then use the granulepos to figure out the granulepos of the
         // preceeding packets.
-        mUnstamped.AppendElement(Move(clone));
+        mUnstamped.AppendElement(std::move(clone));
         aFoundGranulepos = packet.granulepos > 0;
       }
     }
@@ -332,7 +332,7 @@ nsresult TheoraState::Reset() {
 
 bool TheoraState::DecodeHeader(OggPacketPtr aPacket) {
   ogg_packet* packet = aPacket.get();  // Will be owned by mHeaders.
-  mHeaders.Append(Move(aPacket));
+  mHeaders.Append(std::move(aPacket));
   mPacketCount++;
   int ret = th_decode_headerin(&mTheoraInfo, &mComment, &mSetup, packet);
 
@@ -458,13 +458,13 @@ nsresult TheoraState::PageIn(ogg_page* aPage) {
     // and initialized our decoder. Determine granulepos of buffered packets.
     ReconstructTheoraGranulepos();
     for (uint32_t i = 0; i < mUnstamped.Length(); ++i) {
-      OggPacketPtr packet = Move(mUnstamped[i]);
+      OggPacketPtr packet = std::move(mUnstamped[i]);
 #ifdef DEBUG
       NS_ASSERTION(!IsHeader(packet.get()),
                    "Don't try to recover header packet gp");
       NS_ASSERTION(packet->granulepos != -1, "Packet must have gp by now");
 #endif
-      mPackets.Append(Move(packet));
+      mPackets.Append(std::move(packet));
     }
     mUnstamped.Clear();
   }
@@ -596,7 +596,7 @@ VorbisState::~VorbisState() {
 
 bool VorbisState::DecodeHeader(OggPacketPtr aPacket) {
   ogg_packet* packet = aPacket.get();  // Will be owned by mHeaders.
-  mHeaders.Append(Move(aPacket));
+  mHeaders.Append(std::move(aPacket));
   mPacketCount++;
   int ret = vorbis_synthesis_headerin(&mVorbisInfo, &mComment, packet);
   // We must determine when we've read the last header packet.
@@ -712,11 +712,10 @@ bool VorbisState::IsHeader(ogg_packet* aPacket) {
   return aPacket->bytes > 0 ? (aPacket->packet[0] & 0x1) : false;
 }
 
-MetadataTags* VorbisState::GetTags() {
-  MetadataTags* tags;
+UniquePtr<MetadataTags> VorbisState::GetTags() {
   NS_ASSERTION(mComment.user_comments, "no vorbis comment strings!");
   NS_ASSERTION(mComment.comment_lengths, "no vorbis comment lengths!");
-  tags = new MetadataTags;
+  auto tags = MakeUnique<MetadataTags>();
   for (int i = 0; i < mComment.comments; i++) {
     AddVorbisComment(tags, mComment.user_comments[i],
                      mComment.comment_lengths[i]);
@@ -741,12 +740,12 @@ nsresult VorbisState::PageIn(ogg_page* aPage) {
     // and initialized our decoder. Determine granulepos of buffered packets.
     ReconstructVorbisGranulepos();
     for (uint32_t i = 0; i < mUnstamped.Length(); ++i) {
-      OggPacketPtr packet = Move(mUnstamped[i]);
+      OggPacketPtr packet = std::move(mUnstamped[i]);
       AssertHasRecordedPacketSamples(packet.get());
       NS_ASSERTION(!IsHeader(packet.get()),
                    "Don't try to recover header packet gp");
       NS_ASSERTION(packet->granulepos != -1, "Packet must have gp by now");
-      mPackets.Append(Move(packet));
+      mPackets.Append(std::move(packet));
     }
     mUnstamped.Clear();
   }
@@ -945,7 +944,7 @@ bool OpusState::DecodeHeader(OggPacketPtr aPacket) {
       if (!mParser->DecodeHeader(aPacket->packet, aPacket->bytes)) {
         return false;
       }
-      mHeaders.Append(Move(aPacket));
+      mHeaders.Append(std::move(aPacket));
       break;
 
     // Parse the metadata header.
@@ -960,17 +959,15 @@ bool OpusState::DecodeHeader(OggPacketPtr aPacket) {
     default:
       mDoneReadingHeaders = true;
       // Put it back on the queue so we can decode it.
-      mPackets.PushFront(Move(aPacket));
+      mPackets.PushFront(std::move(aPacket));
       break;
   }
   return true;
 }
 
 /* Construct and return a tags hashmap from our internal array */
-MetadataTags* OpusState::GetTags() {
-  MetadataTags* tags;
-
-  tags = new MetadataTags;
+UniquePtr<MetadataTags> OpusState::GetTags() {
+  auto tags = MakeUnique<MetadataTags>();
   for (uint32_t i = 0; i < mParser->mTags.Length(); i++) {
     AddVorbisComment(tags, mParser->mTags[i].Data(),
                      mParser->mTags[i].Length());
@@ -1020,10 +1017,10 @@ nsresult OpusState::PageIn(ogg_page* aPage) {
     return NS_ERROR_FAILURE;
   }
   for (uint32_t i = 0; i < mUnstamped.Length(); i++) {
-    OggPacketPtr packet = Move(mUnstamped[i]);
+    OggPacketPtr packet = std::move(mUnstamped[i]);
     NS_ASSERTION(!IsHeader(packet.get()), "Don't try to play a header packet");
     NS_ASSERTION(packet->granulepos != -1, "Packet should have a granulepos");
-    mPackets.Append(Move(packet));
+    mPackets.Append(std::move(packet));
   }
   mUnstamped.Clear();
   return NS_OK;
@@ -1216,11 +1213,11 @@ nsresult FlacState::PageIn(ogg_page* aPage) {
     // and initialized our decoder. Determine granulepos of buffered packets.
     ReconstructFlacGranulepos();
     for (uint32_t i = 0; i < mUnstamped.Length(); ++i) {
-      OggPacketPtr packet = Move(mUnstamped[i]);
+      OggPacketPtr packet = std::move(mUnstamped[i]);
       NS_ASSERTION(!IsHeader(packet.get()),
                    "Don't try to recover header packet gp");
       NS_ASSERTION(packet->granulepos != -1, "Packet must have gp by now");
-      mPackets.Append(Move(packet));
+      mPackets.Append(std::move(packet));
     }
     mUnstamped.Clear();
   }
@@ -1228,7 +1225,7 @@ nsresult FlacState::PageIn(ogg_page* aPage) {
 }
 
 // Return a hash table with tag metadata.
-MetadataTags* FlacState::GetTags() { return mParser.GetTags(); }
+UniquePtr<MetadataTags> FlacState::GetTags() { return mParser.GetTags(); }
 
 const TrackInfo* FlacState::GetInfo() const { return &mParser.mInfo; }
 

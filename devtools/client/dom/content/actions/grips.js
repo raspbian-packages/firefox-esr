@@ -3,7 +3,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
- /* globals DomProvider */
+/* globals DomProvider */
 "use strict";
 
 const constants = require("../constants");
@@ -16,7 +16,7 @@ function requestProperties(grip) {
     grip: grip,
     type: constants.FETCH_PROPERTIES,
     status: "start",
-    error: false
+    error: false,
   };
 }
 
@@ -29,7 +29,7 @@ function receiveProperties(grip, response, error) {
     type: constants.FETCH_PROPERTIES,
     status: "end",
     response: response,
-    error: error
+    error: error,
   };
 }
 

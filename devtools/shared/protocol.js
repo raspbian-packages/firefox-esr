@@ -4,13 +4,29 @@
 
 "use strict";
 
-var promise = require("promise");
-var defer = require("devtools/shared/defer");
 const { extend } = require("devtools/shared/extend");
 var EventEmitter = require("devtools/shared/event-emitter");
-var {getStack, callFunctionWithAsyncStack} = require("devtools/shared/platform/stack");
-var {settleAll} = require("devtools/shared/DevToolsUtils");
-var {lazyLoadSpec, lazyLoadFront} = require("devtools/shared/specs/index");
+var {
+  getStack,
+  callFunctionWithAsyncStack,
+} = require("devtools/shared/platform/stack");
+var { settleAll } = require("devtools/shared/DevToolsUtils");
+var { lazyLoadSpec, lazyLoadFront } = require("devtools/shared/specs/index");
+
+// Bug 1454373: devtools/shared/defer still uses Promise.jsm which is slower
+// than DOM Promises. So implement our own copy of `defer` based on DOM Promises.
+function defer() {
+  let resolve, reject;
+  const promise = new Promise(function() {
+    resolve = arguments[0];
+    reject = arguments[1];
+  });
+  return {
+    resolve: resolve,
+    reject: reject,
+    promise: promise,
+  };
+}
 
 /**
  * Types: named marshallers/demarshallers.
@@ -30,8 +46,8 @@ var {lazyLoadSpec, lazyLoadFront} = require("devtools/shared/specs/index");
 var types = Object.create(null);
 exports.types = types;
 
-var registeredTypes = types.registeredTypes = new Map();
-var registeredLifetimes = types.registeredLifetimes = new Map();
+var registeredTypes = (types.registeredTypes = new Map());
+var registeredLifetimes = (types.registeredLifetimes = new Map());
 
 /**
  * Return the type object associated with a given typestring.
@@ -51,12 +67,12 @@ var registeredLifetimes = types.registeredLifetimes = new Map();
  *
  * @returns a type object.
  */
-types.getType = function (type) {
+types.getType = function(type) {
   if (!type) {
     return types.Primitive;
   }
 
-  if (typeof (type) !== "string") {
+  if (typeof type !== "string") {
     return type;
   }
 
@@ -77,10 +93,10 @@ types.getType = function (type) {
   }
 
   // New type, see if it's a collection/lifetime type:
-  let sep = type.indexOf(":");
+  const sep = type.indexOf(":");
   if (sep >= 0) {
-    let collection = type.substring(0, sep);
-    let subtype = types.getType(type.substring(sep + 1));
+    const collection = type.substring(0, sep);
+    const subtype = types.getType(type.substring(sep + 1));
 
     if (collection === "array") {
       return types.addArrayType(subtype);
@@ -96,8 +112,13 @@ types.getType = function (type) {
   }
 
   // Not a collection, might be actor detail
-  let pieces = type.split("#", 2);
+  const pieces = type.split("#", 2);
   if (pieces.length > 1) {
+    if (pieces[1] != "actorid") {
+      throw new Error(
+        "Unsupported detail, only support 'actorid', got: " + pieces[1]
+      );
+    }
     return types.addActorDetail(type, pieces[0], pieces[1]);
   }
 
@@ -114,7 +135,7 @@ function identityWrite(v) {
   }
   // This has to handle iterator->array conversion because arrays of
   // primitive types pass through here.
-  if (v && typeof (v) === "object" && Symbol.iterator in v) {
+  if (v && typeof v.next === "function") {
     return [...v];
   }
   return v;
@@ -143,20 +164,23 @@ function identityWrite(v) {
  *
  * @returns a type object that can be used in protocol definitions.
  */
-types.addType = function (name, typeObject = {}, options = {}) {
+types.addType = function(name, typeObject = {}, options = {}) {
   if (registeredTypes.has(name)) {
     throw Error("Type '" + name + "' already exists.");
   }
 
-  let type = Object.assign({
-    toString() {
-      return "[protocol type:" + name + "]";
+  const type = Object.assign(
+    {
+      toString() {
+        return "[protocol type:" + name + "]";
+      },
+      name: name,
+      primitive: !(typeObject.read || typeObject.write),
+      read: identityWrite,
+      write: identityWrite,
     },
-    name: name,
-    primitive: !(typeObject.read || typeObject.write),
-    read: identityWrite,
-    write: identityWrite
-  }, typeObject);
+    typeObject
+  );
 
   registeredTypes.set(name, type);
 
@@ -167,15 +191,15 @@ types.addType = function (name, typeObject = {}, options = {}) {
  * Remove a type previously registered with the system.
  * Primarily useful for types registered by addons.
  */
-types.removeType = function (name) {
+types.removeType = function(name) {
   // This type may still be referenced by other types, make sure
   // those references don't work.
-  let type = registeredTypes.get(name);
+  const type = registeredTypes.get(name);
 
   type.name = "DEFUNCT:" + name;
   type.category = "defunct";
   type.primitive = false;
-  type.read = type.write = function () {
+  type.read = type.write = function() {
     throw new Error("Using defunct type: " + name);
   };
 
@@ -191,10 +215,10 @@ types.removeType = function (name) {
  * @param type subtype
  *    The subtype to be held by the array.
  */
-types.addArrayType = function (subtype) {
+types.addArrayType = function(subtype) {
   subtype = types.getType(subtype);
 
-  let name = "array:" + subtype.name;
+  const name = "array:" + subtype.name;
 
   // Arrays of primitive types are primitive types themselves.
   if (subtype.primitive) {
@@ -202,8 +226,18 @@ types.addArrayType = function (subtype) {
   }
   return types.addType(name, {
     category: "array",
-    read: (v, ctx) => [...v].map(i => subtype.read(i, ctx)),
-    write: (v, ctx) => [...v].map(i => subtype.write(i, ctx))
+    read: (v, ctx) => {
+      if (v && typeof v.next === "function") {
+        v = [...v];
+      }
+      return v.map(i => subtype.read(i, ctx));
+    },
+    write: (v, ctx) => {
+      if (v && typeof v.next === "function") {
+        v = [...v];
+      }
+      return v.map(i => subtype.write(i, ctx));
+    },
   });
 };
 
@@ -217,15 +251,28 @@ types.addArrayType = function (subtype) {
  * @param object specializations
  *    A dict of property names => type
  */
-types.addDictType = function (name, specializations) {
+types.addDictType = function(name, specializations) {
+  const specTypes = {};
+  for (const prop in specializations) {
+    try {
+      specTypes[prop] = types.getType(specializations[prop]);
+    } catch (e) {
+      // Types may not be defined yet. Sometimes, we define the type *after* using it, but
+      // also, we have cyclic definitions on types. So lazily load them when they are not
+      // immediately available.
+      loader.lazyGetter(specTypes, prop, () => {
+        return types.getType(specializations[prop]);
+      });
+    }
+  }
   return types.addType(name, {
     category: "dict",
-    specializations: specializations,
+    specializations,
     read: (v, ctx) => {
-      let ret = {};
-      for (let prop in v) {
-        if (prop in specializations) {
-          ret[prop] = types.getType(specializations[prop]).read(v[prop], ctx);
+      const ret = {};
+      for (const prop in v) {
+        if (prop in specTypes) {
+          ret[prop] = specTypes[prop].read(v[prop], ctx);
         } else {
           ret[prop] = v[prop];
         }
@@ -234,16 +281,16 @@ types.addDictType = function (name, specializations) {
     },
 
     write: (v, ctx) => {
-      let ret = {};
-      for (let prop in v) {
-        if (prop in specializations) {
-          ret[prop] = types.getType(specializations[prop]).write(v[prop], ctx);
+      const ret = {};
+      for (const prop in v) {
+        if (prop in specTypes) {
+          ret[prop] = specTypes[prop].write(v[prop], ctx);
         } else {
           ret[prop] = v[prop];
         }
       }
       return ret;
-    }
+    },
   });
 };
 
@@ -264,7 +311,7 @@ types.addDictType = function (name, specializations) {
  * @param string name
  *    The typestring to register.
  */
-types.addActorType = function (name) {
+types.addActorType = function(name) {
   // We call addActorType from:
   //   FrontClassWithSpec when registering front synchronously,
   //   generateActorSpec when defining specs,
@@ -272,7 +319,7 @@ types.addActorType = function (name) {
   if (registeredTypes.has(name)) {
     return registeredTypes.get(name);
   }
-  let type = types.addType(name, {
+  const type = types.addType(name, {
     _actor: true,
     category: "actor",
     read: (v, ctx, detail) => {
@@ -285,10 +332,10 @@ types.addActorType = function (name) {
       // Reading a response on the client side, check for an
       // existing front on the connection, and create the front
       // if it isn't found.
-      let actorID = typeof (v) === "string" ? v : v.actor;
+      const actorID = typeof v === "string" ? v : v.actor;
       let front = ctx.conn.getActor(actorID);
       if (!front) {
-        // If front isn't instanciated yet, create one.
+        // If front isn't instantiated yet, create one.
 
         // Try lazy loading front if not already loaded.
         // The front module will synchronously call `FrontClassWithSpec` and
@@ -297,13 +344,20 @@ types.addActorType = function (name) {
           lazyLoadFront(name);
         }
 
-        front = new type.frontClass(ctx.conn); // eslint-disable-line new-cap
+        // Use intermediate Class variable to please eslint requiring
+        // a capital letter for all constructors.
+        const Class = type.frontClass;
+        front = new Class(ctx.conn);
         front.actorID = actorID;
         ctx.marshallPool().manage(front);
       }
 
-      v = type.formType(detail).read(v, front, detail);
-      front.form(v, detail, ctx);
+      // When the type `${name}#actorid` is used, `v` is a string refering to the
+      // actor ID. We only set the actorID just before and so do not need anything else.
+      if (detail != "actorid") {
+        v = identityWrite(v);
+        front.form(v, ctx);
+      }
 
       return front;
     },
@@ -314,33 +368,20 @@ types.addActorType = function (name) {
         if (!v.actorID) {
           ctx.marshallPool().manage(v);
         }
-        return type.formType(detail).write(v.form(detail), ctx, detail);
+        if (detail == "actorid") {
+          return v.actorID;
+        }
+        return identityWrite(v.form(detail));
       }
 
       // Writing a request from the client side, just send the actor id.
       return v.actorID;
     },
-    formType: (detail) => {
-      if (!("formType" in type.actorSpec)) {
-        return types.Primitive;
-      }
-
-      let formAttr = "formType";
-      if (detail) {
-        formAttr += "#" + detail;
-      }
-
-      if (!(formAttr in type.actorSpec)) {
-        throw new Error("No type defined for " + formAttr);
-      }
-
-      return type.actorSpec[formAttr];
-    }
   });
   return type;
 };
 
-types.addNullableType = function (subtype) {
+types.addNullableType = function(subtype) {
   subtype = types.getType(subtype);
   return types.addType("nullable:" + subtype.name, {
     category: "nullable",
@@ -355,7 +396,7 @@ types.addNullableType = function (subtype) {
         return value;
       }
       return subtype.write(value, ctx);
-    }
+    },
   });
 };
 
@@ -373,17 +414,19 @@ types.addNullableType = function (subtype) {
  * @param string detail
  *   The detail to pass.
  */
-types.addActorDetail = function (name, actorType, detail) {
+types.addActorDetail = function(name, actorType, detail) {
   actorType = types.getType(actorType);
   if (!actorType._actor) {
-    throw Error(`Details only apply to actor types, tried to add detail '${detail}' ` +
-                `to ${actorType.name}`);
+    throw Error(
+      `Details only apply to actor types, tried to add detail '${detail}' ` +
+        `to ${actorType.name}`
+    );
   }
   return types.addType(name, {
     _actor: true,
     category: "detail",
     read: (v, ctx) => actorType.read(v, ctx, detail),
-    write: (v, ctx) => actorType.write(v, ctx, detail)
+    write: (v, ctx) => actorType.write(v, ctx, detail),
   });
 };
 
@@ -396,7 +439,7 @@ types.addActorDetail = function (name, actorType, detail) {
  * @param string prop
  *    The property of the actor that holds the parent that should be used.
  */
-types.addLifetime = function (name, prop) {
+types.addLifetime = function(name, prop) {
   if (registeredLifetimes.has(name)) {
     throw Error("Lifetime '" + name + "' already registered.");
   }
@@ -407,7 +450,7 @@ types.addLifetime = function (name, prop) {
  * Remove a previously-registered lifetime.  Useful for lifetimes registered
  * in addons.
  */
-types.removeLifetime = function (name) {
+types.removeLifetime = function(name) {
   registeredLifetimes.delete(name);
 };
 
@@ -423,17 +466,19 @@ types.removeLifetime = function (name) {
  * @param type subtype
  *    An actor type
  */
-types.addLifetimeType = function (lifetime, subtype) {
+types.addLifetimeType = function(lifetime, subtype) {
   subtype = types.getType(subtype);
   if (!subtype._actor) {
-    throw Error(`Lifetimes only apply to actor types, tried to apply ` +
-                `lifetime '${lifetime}' to ${subtype.name}`);
+    throw Error(
+      `Lifetimes only apply to actor types, tried to apply ` +
+        `lifetime '${lifetime}' to ${subtype.name}`
+    );
   }
-  let prop = registeredLifetimes.get(lifetime);
+  const prop = registeredLifetimes.get(lifetime);
   return types.addType(lifetime + ":" + subtype.name, {
     category: "lifetime",
     read: (value, ctx) => subtype.read(value, ctx[prop]),
-    write: (value, ctx) => subtype.write(value, ctx[prop])
+    write: (value, ctx) => subtype.write(value, ctx[prop]),
   });
 };
 
@@ -465,33 +510,33 @@ types.JSON = types.addType("json");
  *    The argument should be marshalled as this type.
  * @constructor
  */
-var Arg = function (index, type) {
+var Arg = function(index, type) {
   this.index = index;
   // Prevent force loading all Arg types by accessing it only when needed
-  loader.lazyGetter(this, "type", function () {
+  loader.lazyGetter(this, "type", function() {
     return types.getType(type);
   });
 };
 
 Arg.prototype = {
-  write: function (arg, ctx) {
+  write: function(arg, ctx) {
     return this.type.write(arg, ctx);
   },
 
-  read: function (v, ctx, outArgs) {
+  read: function(v, ctx, outArgs) {
     outArgs[this.index] = this.type.read(v, ctx);
   },
 
-  describe: function () {
+  describe: function() {
     return {
       _arg: this.index,
       type: this.type.name,
     };
-  }
+  },
 };
 
 // Outside of protocol.js, Arg is called as factory method, without the new keyword.
-exports.Arg = function (index, type) {
+exports.Arg = function(index, type) {
   return new Arg(index, type);
 };
 
@@ -512,20 +557,20 @@ exports.Arg = function (index, type) {
  *    The argument should be marshalled as this type.
  * @constructor
  */
-var Option = function (index, type) {
+var Option = function(index, type) {
   Arg.call(this, index, type);
 };
 
 Option.prototype = extend(Arg.prototype, {
-  write: function (arg, ctx, name) {
+  write: function(arg, ctx, name) {
     // Ignore if arg is undefined or null; allow other falsy values
     if (arg == undefined || arg[name] == undefined) {
       return undefined;
     }
-    let v = arg[name];
+    const v = arg[name];
     return this.type.write(v, ctx);
   },
-  read: function (v, ctx, outArgs, name) {
+  read: function(v, ctx, outArgs, name) {
     if (outArgs[this.index] === undefined) {
       outArgs[this.index] = {};
     }
@@ -535,16 +580,16 @@ Option.prototype = extend(Arg.prototype, {
     outArgs[this.index][name] = this.type.read(v, ctx);
   },
 
-  describe: function () {
+  describe: function() {
     return {
       _option: this.index,
       type: this.type.name,
     };
-  }
+  },
 });
 
 // Outside of protocol.js, Option is called as factory method, without the new keyword.
-exports.Option = function (index, type) {
+exports.Option = function(index, type) {
   return new Option(index, type);
 };
 
@@ -554,31 +599,31 @@ exports.Option = function (index, type) {
  * @param type type
  *    The return value should be marshalled as this type.
  */
-var RetVal = function (type) {
+var RetVal = function(type) {
   // Prevent force loading all RetVal types by accessing it only when needed
-  loader.lazyGetter(this, "type", function () {
+  loader.lazyGetter(this, "type", function() {
     return types.getType(type);
   });
 };
 
 RetVal.prototype = {
-  write: function (v, ctx) {
+  write: function(v, ctx) {
     return this.type.write(v, ctx);
   },
 
-  read: function (v, ctx) {
+  read: function(v, ctx) {
     return this.type.read(v, ctx);
   },
 
-  describe: function () {
+  describe: function() {
     return {
-      _retval: this.type.name
+      _retval: this.type.name,
     };
-  }
+  },
 };
 
 // Outside of protocol.js, RetVal is called as factory method, without the new keyword.
-exports.RetVal = function (type) {
+exports.RetVal = function(type) {
   return new RetVal(type);
 };
 
@@ -588,7 +633,7 @@ exports.RetVal = function (type) {
  * Get the value at a given path, or undefined if not found.
  */
 function getPath(obj, path) {
-  for (let name of path) {
+  for (const name of path) {
     if (!(name in obj)) {
       return undefined;
     }
@@ -602,7 +647,7 @@ function getPath(obj, path) {
  * paths.
  */
 function findPlaceholders(template, constructor, path = [], placeholders = []) {
-  if (!template || typeof (template) != "object") {
+  if (!template || typeof template != "object") {
     return placeholders;
   }
 
@@ -611,7 +656,7 @@ function findPlaceholders(template, constructor, path = [], placeholders = []) {
     return placeholders;
   }
 
-  for (let name in template) {
+  for (const name in template) {
     path.push(name);
     findPlaceholders(template[name], constructor, path, placeholders);
     path.pop();
@@ -621,12 +666,14 @@ function findPlaceholders(template, constructor, path = [], placeholders = []) {
 }
 
 function describeTemplate(template) {
-  return JSON.parse(JSON.stringify(template, (key, value) => {
-    if (value.describe) {
-      return value.describe();
-    }
-    return value;
-  }));
+  return JSON.parse(
+    JSON.stringify(template, (key, value) => {
+      if (value.describe) {
+        return value.describe();
+      }
+      return value;
+    })
+  );
 }
 
 /**
@@ -636,7 +683,7 @@ function describeTemplate(template) {
  *    The request template.
  * @construcor
  */
-var Request = function (template = {}) {
+var Request = function(template = {}) {
   this.type = template.type;
   this.template = template;
   this.args = findPlaceholders(template, Arg);
@@ -652,15 +699,25 @@ Request.prototype = {
    *    The object making the request.
    * @returns a request packet.
    */
-  write: function (fnArgs, ctx) {
-    let str = JSON.stringify(this.template, (key, value) => {
+  write: function(fnArgs, ctx) {
+    const ret = {};
+    for (const key in this.template) {
+      const value = this.template[key];
       if (value instanceof Arg) {
-        return value.write(value.index in fnArgs ? fnArgs[value.index] : undefined,
-                           ctx, key);
+        ret[key] = value.write(
+          value.index in fnArgs ? fnArgs[value.index] : undefined,
+          ctx,
+          key
+        );
+      } else if (key == "type") {
+        ret[key] = value;
+      } else {
+        throw new Error(
+          "Request can only an object with `Arg` or `Option` properties"
+        );
       }
-      return value;
-    });
-    return JSON.parse(str);
+    }
+    return ret;
   },
 
   /**
@@ -672,20 +729,20 @@ Request.prototype = {
    *    The object making the request.
    * @returns an arguments array
    */
-  read: function (packet, ctx) {
-    let fnArgs = [];
-    for (let templateArg of this.args) {
-      let arg = templateArg.placeholder;
-      let path = templateArg.path;
-      let name = path[path.length - 1];
+  read: function(packet, ctx) {
+    const fnArgs = [];
+    for (const templateArg of this.args) {
+      const arg = templateArg.placeholder;
+      const path = templateArg.path;
+      const name = path[path.length - 1];
       arg.read(getPath(packet, path), ctx, fnArgs, name);
     }
     return fnArgs;
   },
 
-  describe: function () {
+  describe: function() {
     return describeTemplate(this.template);
-  }
+  },
 };
 
 /**
@@ -695,13 +752,13 @@ Request.prototype = {
  *    The response template.
  * @construcor
  */
-var Response = function (template = {}) {
+var Response = function(template = {}) {
   this.template = template;
-  let placeholders = findPlaceholders(template, RetVal);
+  const placeholders = findPlaceholders(template, RetVal);
   if (placeholders.length > 1) {
     throw Error("More than one RetVal specified in response");
   }
-  let placeholder = placeholders.shift();
+  const placeholder = placeholders.shift();
   if (placeholder) {
     this.retVal = placeholder.placeholder;
     this.path = placeholder.path;
@@ -717,13 +774,25 @@ Response.prototype = {
    * @param object ctx
    *    The object writing the response.
    */
-  write: function (ret, ctx) {
-    return JSON.parse(JSON.stringify(this.template, function (key, value) {
+  write: function(ret, ctx) {
+    // Consider that `template` is either directly a `RetVal`,
+    // or a dictionary with may be one `RetVal`.
+    if (this.template instanceof RetVal) {
+      return this.template.write(ret, ctx);
+    }
+    const result = {};
+    for (const key in this.template) {
+      const value = this.template[key];
       if (value instanceof RetVal) {
-        return value.write(ret, ctx);
+        result[key] = value.write(ret, ctx);
+      } else {
+        throw new Error(
+          "Response can only be a `RetVal` instance or an object " +
+            "with one property being a `RetVal` instance."
+        );
       }
-      return value;
-    }));
+    }
+    return result;
   },
 
   /**
@@ -734,17 +803,17 @@ Response.prototype = {
    * @param object ctx
    *    The object reading the response.
    */
-  read: function (packet, ctx) {
+  read: function(packet, ctx) {
     if (!this.retVal) {
       return undefined;
     }
-    let v = getPath(packet, this.path);
+    const v = getPath(packet, this.path);
     return this.retVal.read(v, ctx);
   },
 
-  describe: function () {
+  describe: function() {
     return describeTemplate(this.template);
-  }
+  },
 };
 
 /**
@@ -761,34 +830,40 @@ Response.prototype = {
  *   conn can be null if the subclass provides a conn property.
  * @constructor
  */
-var Pool = function (conn) {
-  if (conn) {
-    this.conn = conn;
-  }
-};
+class Pool extends EventEmitter {
+  constructor(conn) {
+    super();
 
-Pool.prototype = extend(EventEmitter.prototype, {
+    if (conn) {
+      this.conn = conn;
+    }
+    this.__poolMap = null;
+  }
+
   /**
    * Return the parent pool for this client.
    */
-  parent: function () {
+  parent() {
     return this.conn.poolFor(this.actorID);
-  },
+  }
+
+  poolFor(actorID) {
+    return this.conn.poolFor(actorID);
+  }
 
   /**
    * Override this if you want actors returned by this actor
    * to belong to a different actor by default.
    */
-  marshallPool: function () {
+  marshallPool() {
     return this;
-  },
+  }
 
   /**
    * Pool is the base class for all actors, even leaf nodes.
    * If the child map is actually referenced, go ahead and create
    * the stuff needed by the pool.
    */
-  __poolMap: null,
   get _poolMap() {
     if (this.__poolMap) {
       return this.__poolMap;
@@ -796,80 +871,95 @@ Pool.prototype = extend(EventEmitter.prototype, {
     this.__poolMap = new Map();
     this.conn.addActorPool(this);
     return this.__poolMap;
-  },
+  }
 
   /**
    * Add an actor as a child of this pool.
    */
-  manage: function (actor) {
+  manage(actor) {
     if (!actor.actorID) {
       actor.actorID = this.conn.allocID(actor.actorPrefix || actor.typeName);
-    }
+    } else {
+      // If the actor is already registerd in a pool, remove it without destroying it.
+      // This happens for example when an addon is reloaded. To see this behavior, take a
+      // look at devtools/server/tests/unit/test_addon_reload.js
 
+      // TODO: not all actors have been moved to protocol.js, so they do not all have
+      // a parent field. Remove the check for the parent once the conversion is finished
+      const parent = this.poolFor(actor.actorID);
+      if (parent) {
+        parent.unmanage(actor);
+      }
+    }
     this._poolMap.set(actor.actorID, actor);
-    return actor;
-  },
+  }
 
   /**
    * Remove an actor as a child of this pool.
    */
-  unmanage: function (actor) {
+  unmanage(actor) {
     this.__poolMap && this.__poolMap.delete(actor.actorID);
-  },
+  }
 
   // true if the given actor ID exists in the pool.
-  has: function (actorID) {
+  has(actorID) {
     return this.__poolMap && this._poolMap.has(actorID);
-  },
+  }
 
   // The actor for a given actor id stored in this pool
-  actor: function (actorID) {
-    return this.__poolMap ? this._poolMap.get(actorID) : null;
-  },
+  actor(actorID) {
+    if (this.__poolMap) {
+      return this._poolMap.get(actorID);
+    }
+    return null;
+  }
 
   // Same as actor, should update debugger connection to use 'actor'
   // and then remove this.
-  get: function (actorID) {
-    return this.__poolMap ? this._poolMap.get(actorID) : null;
-  },
+  get(actorID) {
+    if (this.__poolMap) {
+      return this._poolMap.get(actorID);
+    }
+    return null;
+  }
 
   // True if this pool has no children.
-  isEmpty: function () {
+  isEmpty() {
     return !this.__poolMap || this._poolMap.size == 0;
-  },
+  }
 
   // Generator that yields each non-self child of the pool.
-  poolChildren: function* () {
+  *poolChildren() {
     if (!this.__poolMap) {
       return;
     }
-    for (let actor of this.__poolMap.values()) {
+    for (const actor of this.__poolMap.values()) {
       // Self-owned actors are ok, but don't need visiting twice.
       if (actor === this) {
         continue;
       }
       yield actor;
     }
-  },
+  }
 
   /**
    * Destroy this item, removing it from a parent if it has one,
    * and destroying all children if necessary.
    */
-  destroy: function () {
-    let parent = this.parent();
+  destroy() {
+    const parent = this.parent();
     if (parent) {
       parent.unmanage(this);
     }
     if (!this.__poolMap) {
       return;
     }
-    for (let actor of this.__poolMap.values()) {
+    for (const actor of this.__poolMap.values()) {
       // Self-owned actors are ok, but don't need destroying twice.
       if (actor === this) {
         continue;
       }
-      let destroy = actor.destroy;
+      const destroy = actor.destroy;
       if (destroy) {
         // Disconnect destroy while we're destroying in case of (misbehaving)
         // circular ownership.
@@ -881,17 +971,24 @@ Pool.prototype = extend(EventEmitter.prototype, {
     this.conn.removeActorPool(this, true);
     this.__poolMap.clear();
     this.__poolMap = null;
-  },
+  }
 
   /**
    * For getting along with the debugger server pools, should be removable
    * eventually.
    */
-  cleanup: function () {
+  cleanup() {
     this.destroy();
   }
-});
+}
 exports.Pool = Pool;
+
+/**
+ * Keep track of which actorSpecs have been created. If a replica of a spec
+ * is created, it can be caught, and specs which inherit from other specs will
+ * not overwrite eachother.
+ */
+var actorSpecs = new WeakMap();
 
 /**
  * An actor in the actor tree.
@@ -902,38 +999,42 @@ exports.Pool = Pool;
  *   conn can be null if the subclass provides a conn property.
  * @constructor
  */
-var Actor = function (conn) {
-  Pool.call(this, conn);
+class Actor extends Pool {
+  // Existing Actors extending this class expect initialize to contain constructor logic.
+  initialize(conn) {
+    // Repeat Pool.constructor here as we can't call it from initialize
+    // This is to be removed once actors switch to es classes and are able to call
+    // Actor's contructor.
+    if (conn) {
+      this.conn = conn;
+    }
 
-  // Forward events to the connection.
-  if (this._actorSpec && this._actorSpec.events) {
-    for (let key of this._actorSpec.events.keys()) {
-      let name = key;
-      let sendEvent = this._sendEvent.bind(this, name);
-      this.on(name, (...args) => {
-        sendEvent.apply(null, args);
-      });
+    // Will contain the actor's ID
+    this.actorID = null;
+
+    this._actorSpec = actorSpecs.get(Object.getPrototypeOf(this));
+    // Forward events to the connection.
+    if (this._actorSpec && this._actorSpec.events) {
+      for (const [name, request] of this._actorSpec.events.entries()) {
+        this.on(name, (...args) => {
+          this._sendEvent(name, request, ...args);
+        });
+      }
     }
   }
-};
 
-Actor.prototype = extend(Pool.prototype, {
-  // Will contain the actor's ID
-  actorID: null,
-
-  // Existing Actors extending this class expect initialize to contain constructor logic.
-  initialize: Actor,
-
-  toString: function () {
+  toString() {
     return "[Actor " + this.typeName + "/" + this.actorID + "]";
-  },
+  }
 
-  _sendEvent: function (name, ...args) {
-    if (!this._actorSpec.events.has(name)) {
-      // It's ok to emit events that don't go over the wire.
+  _sendEvent(name, request, ...args) {
+    if (!this.actorID) {
+      console.error(
+        `Tried to send a '${name}' event on an already destroyed actor` +
+          ` '${this.typeName}'`
+      );
       return;
     }
-    let request = this._actorSpec.events.get(name);
     let packet;
     try {
       packet = request.write(args, this);
@@ -943,12 +1044,12 @@ Actor.prototype = extend(Pool.prototype, {
     }
     packet.from = packet.from || this.actorID;
     this.conn.send(packet);
-  },
+  }
 
-  destroy: function () {
-    Pool.prototype.destroy.call(this);
+  destroy() {
+    super.destroy();
     this.actorID = null;
-  },
+  }
 
   /**
    * Override this method in subclasses to serialize the actor.
@@ -956,28 +1057,46 @@ Actor.prototype = extend(Pool.prototype, {
    *   Optional string to customize the form.
    * @returns A jsonable object.
    */
-  form: function (hint) {
+  form(hint) {
     return { actor: this.actorID };
-  },
+  }
 
-  writeError: function (error) {
-    console.error(error);
+  writeError(error, typeName, method) {
+    console.error(
+      `Error while calling actor '${typeName}'s method '${method}'`,
+      error.message
+    );
     if (error.stack) {
-      dump(error.stack);
+      console.error(error.stack);
     }
     this.conn.send({
       from: this.actorID,
       error: error.error || "unknownError",
-      message: error.message
+      message: error.message,
     });
-  },
+  }
 
-  _queueResponse: function (create) {
-    let pending = this._pendingResponse || promise.resolve(null);
-    let response = create(pending);
+  _queueResponse(create) {
+    const pending = this._pendingResponse || Promise.resolve(null);
+    const response = create(pending);
     this._pendingResponse = response;
   }
-});
+
+  /**
+   * Throw an error with the passed message and attach an `error` property to the Error
+   * object so it can be consumed by the writeError function.
+   * @param {String} error: A string (usually a single word serving as an id) that will
+   *                        be assign to error.error.
+   * @param {String} message: The string that will be passed to the Error constructor.
+   * @throws This always throw.
+   */
+  throwError(error, message) {
+    const err = new Error(message);
+    err.error = error;
+    throw err;
+  }
+}
+
 exports.Actor = Actor;
 
 /**
@@ -991,7 +1110,7 @@ exports.Actor = Actor;
  *      response (object): a response template.
  *      oneway (bool): 'true' if no response should be sent.
  */
-exports.method = function (fn, spec = {}) {
+exports.method = function(fn, spec = {}) {
   fn._methodSpec = Object.freeze(spec);
   if (spec.request) {
     Object.freeze(spec.request);
@@ -1005,36 +1124,26 @@ exports.method = function (fn, spec = {}) {
 /**
  * Generates an actor specification from an actor description.
  */
-var generateActorSpec = function (actorDesc) {
-  let actorSpec = {
+var generateActorSpec = function(actorDesc) {
+  const actorSpec = {
     typeName: actorDesc.typeName,
-    methods: []
+    methods: [],
   };
 
   // Find method and form specifications attached to properties.
-  for (let name of Object.getOwnPropertyNames(actorDesc)) {
-    let desc = Object.getOwnPropertyDescriptor(actorDesc, name);
+  for (const name of Object.getOwnPropertyNames(actorDesc)) {
+    const desc = Object.getOwnPropertyDescriptor(actorDesc, name);
     if (!desc.value) {
       continue;
     }
 
-    if (name.startsWith("formType")) {
-      if (typeof (desc.value) === "string") {
-        actorSpec[name] = types.getType(desc.value);
-      } else if (desc.value.name && registeredTypes.has(desc.value.name)) {
-        actorSpec[name] = desc.value;
-      } else {
-        // Shorthand for a newly-registered DictType.
-        actorSpec[name] = types.addDictType(actorDesc.typeName + "__" + name, desc.value);
-      }
-    }
-
     if (desc.value._methodSpec) {
-      let methodSpec = desc.value._methodSpec;
-      let spec = {};
+      const methodSpec = desc.value._methodSpec;
+      const spec = {};
       spec.name = methodSpec.name || name;
-      spec.request = new Request(Object.assign({type: spec.name},
-                                          methodSpec.request || undefined));
+      spec.request = new Request(
+        Object.assign({ type: spec.name }, methodSpec.request || undefined)
+      );
       spec.response = new Response(methodSpec.response || undefined);
       spec.release = methodSpec.release;
       spec.oneway = methodSpec.oneway;
@@ -1045,13 +1154,14 @@ var generateActorSpec = function (actorDesc) {
 
   // Find additional method specifications
   if (actorDesc.methods) {
-    for (let name in actorDesc.methods) {
-      let methodSpec = actorDesc.methods[name];
-      let spec = {};
+    for (const name in actorDesc.methods) {
+      const methodSpec = actorDesc.methods[name];
+      const spec = {};
 
       spec.name = methodSpec.name || name;
-      spec.request = new Request(Object.assign({type: spec.name},
-                                          methodSpec.request || undefined));
+      spec.request = new Request(
+        Object.assign({ type: spec.name }, methodSpec.request || undefined)
+      );
       spec.response = new Response(methodSpec.response || undefined);
       spec.release = methodSpec.release;
       spec.oneway = methodSpec.oneway;
@@ -1063,10 +1173,13 @@ var generateActorSpec = function (actorDesc) {
   // Find event specifications
   if (actorDesc.events) {
     actorSpec.events = new Map();
-    for (let name in actorDesc.events) {
-      let eventRequest = actorDesc.events[name];
+    for (const name in actorDesc.events) {
+      const eventRequest = actorDesc.events[name];
       Object.freeze(eventRequest);
-      actorSpec.events.set(name, new Request(Object.assign({type: name}, eventRequest)));
+      actorSpec.events.set(
+        name,
+        new Request(Object.assign({ type: name }, eventRequest))
+      );
     }
   }
 
@@ -1083,17 +1196,13 @@ exports.generateActorSpec = generateActorSpec;
  * Generates request handlers as described by the given actor specification on
  * the given actor prototype. Returns the actor prototype.
  */
-var generateRequestHandlers = function (actorSpec, actorProto) {
-  if (actorProto._actorSpec) {
-    throw new Error("actorProto called twice on the same actor prototype!");
-  }
-
+var generateRequestHandlers = function(actorSpec, actorProto) {
   actorProto.typeName = actorSpec.typeName;
 
   // Generate request handlers for each method definition
   actorProto.requestTypes = Object.create(null);
   actorSpec.methods.forEach(spec => {
-    let handler = function (packet, conn) {
+    const handler = function(packet, conn) {
       try {
         let args;
         try {
@@ -1103,9 +1212,15 @@ var generateRequestHandlers = function (actorSpec, actorProto) {
           throw ex;
         }
 
-        let ret = this[spec.name].apply(this, args);
+        if (!this[spec.name]) {
+          throw new Error(
+            `Spec for '${actorProto.typeName}' specifies a '${spec.name}'` +
+              ` method that isn't implemented by the actor`
+          );
+        }
+        const ret = this[spec.name].apply(this, args);
 
-        let sendReturn = (retToSend) => {
+        const sendReturn = retToSend => {
           if (spec.oneway) {
             // No need to send a response.
             return;
@@ -1124,7 +1239,7 @@ var generateRequestHandlers = function (actorSpec, actorProto) {
             try {
               this.destroy();
             } catch (e) {
-              this.writeError(e);
+              this.writeError(e, actorProto.typeName, spec.name);
               return;
             }
           }
@@ -1136,19 +1251,19 @@ var generateRequestHandlers = function (actorSpec, actorProto) {
           return p
             .then(() => ret)
             .then(sendReturn)
-            .catch(this.writeError.bind(this));
+            .catch(e => this.writeError(e, actorProto.typeName, spec.name));
         });
       } catch (e) {
         this._queueResponse(p => {
-          return p.then(() => this.writeError(e));
+          return p.then(() =>
+            this.writeError(e, actorProto.typeName, spec.name)
+          );
         });
       }
     };
 
     actorProto.requestTypes[spec.request.type] = handler;
   });
-
-  actorProto._actorSpec = actorSpec;
 
   return actorProto;
 };
@@ -1162,18 +1277,23 @@ var generateRequestHandlers = function (actorSpec, actorProto) {
  *    The actor prototype. Should have method definitions, can have event
  *    definitions.
  */
-var ActorClassWithSpec = function (actorSpec, actorProto) {
+var ActorClassWithSpec = function(actorSpec, actorProto) {
   if (!actorSpec.typeName) {
     throw Error("Actor specification must have a typeName member.");
   }
 
   // Existing Actors are relying on the initialize instead of constructor methods.
-  let cls = function () {
-    let instance = Object.create(cls.prototype);
+  const cls = function() {
+    const instance = Object.create(cls.prototype);
     instance.initialize.apply(instance, arguments);
     return instance;
   };
-  cls.prototype = extend(Actor.prototype, generateRequestHandlers(actorSpec, actorProto));
+  cls.prototype = extend(
+    Actor.prototype,
+    generateRequestHandlers(actorSpec, actorProto)
+  );
+
+  actorSpecs.set(cls.prototype, actorSpec);
 
   return cls;
 };
@@ -1186,92 +1306,127 @@ exports.ActorClassWithSpec = ActorClassWithSpec;
  *   Either a DebuggerServerConnection or a DebuggerClient.  Must have
  *   addActorPool, removeActorPool, and poolFor.
  *   conn can be null if the subclass provides a conn property.
- * @param optional form
- *   The json form provided by the server.
  * @constructor
  */
-var Front = function (conn = null, form = null, detail = null, context = null) {
-  Pool.call(this, conn);
-  this._requests = [];
+class Front extends Pool {
+  constructor(conn = null) {
+    super(conn);
+    this.actorID = null;
+    this._requests = [];
 
-  // protocol.js no longer uses this data in the constructor, only external
-  // uses do.  External usage of manually-constructed fronts will be
-  // drastically reduced if we convert the root and tab actors to
-  // protocol.js, in which case this can probably go away.
-  if (form) {
-    this.actorID = form.actor;
-    form = types.getType(this.typeName).formType(detail).read(form, this, detail);
-    this.form(form, detail, context);
+    // Front listener functions registered via `onFront` get notified
+    // of new fronts via this dedicated EventEmitter object.
+    this._frontListeners = new EventEmitter();
+
+    // List of optional listener for each event, that is processed immediatly on packet
+    // receival, before emitting event via EventEmitter on the Front.
+    // These listeners are register via Front.before function.
+    // Map(Event Name[string] => Event Listener[function])
+    this._beforeListeners = new Map();
   }
-};
 
-Front.prototype = extend(Pool.prototype, {
-  actorID: null,
-
-  // Existing Fronts extending this class expect initialize to contain constructor logic.
-  initialize: Front,
-
-  destroy: function () {
+  destroy() {
     // Reject all outstanding requests, they won't make sense after
     // the front is destroyed.
     while (this._requests && this._requests.length > 0) {
-      let { deferred, to, type, stack } = this._requests.shift();
-      let msg = "Connection closed, pending request to " + to +
-                ", type " + type + " failed" +
-                "\n\nRequest stack:\n" + stack.formattedStack;
+      const { deferred, to, type, stack } = this._requests.shift();
+      const msg =
+        "Connection closed, pending request to " +
+        to +
+        ", type " +
+        type +
+        " failed" +
+        "\n\nRequest stack:\n" +
+        stack.formattedStack;
       deferred.reject(new Error(msg));
     }
-    Pool.prototype.destroy.call(this);
+    super.destroy();
+    this.clearEvents();
     this.actorID = null;
-  },
+    this._frontListeners = null;
+    this._beforeListeners = null;
+  }
 
-  manage: function (front) {
+  manage(front) {
     if (!front.actorID) {
-      throw new Error("Can't manage front without an actor ID.\n" +
-                      "Ensure server supports " + front.typeName + ".");
+      throw new Error(
+        "Can't manage front without an actor ID.\n" +
+          "Ensure server supports " +
+          front.typeName +
+          "."
+      );
     }
-    return Pool.prototype.manage.call(this, front);
-  },
+    super.manage(front);
+
+    // Call listeners registered via `onFront` method
+    this._frontListeners.emit(front.typeName, front);
+  }
+
+  // Run callback on every front of this type that currently exists, and on every
+  // instantiation of front type in the future.
+  onFront(typeName, callback) {
+    // First fire the callback on already instantiated fronts
+    for (const front of this.poolChildren()) {
+      if (front.typeName == typeName) {
+        callback(front);
+      }
+    }
+    // Then register the callback for fronts instantiated in the future
+    this._frontListeners.on(typeName, callback);
+  }
 
   /**
-   * @returns a promise that will resolve to the actorID this front
-   * represents.
+   * Register an event listener that will be called immediately on packer receival.
+   * The given callback is going to be called before emitting the event via EventEmitter
+   * API on the Front. Event emitting will be delayed if the callback is async.
+   * Only one such listener can be registered per type of event.
+   *
+   * @param String type
+   *   Event emitted by the actor to intercept.
+   * @param Function callback
+   *   Function that will process the event.
    */
-  actor: function () {
-    return promise.resolve(this.actorID);
-  },
+  before(type, callback) {
+    if (this._beforeListeners.has(type)) {
+      throw new Error(
+        `Can't register multiple before listeners for "${type}".`
+      );
+    }
+    this._beforeListeners.set(type, callback);
+  }
 
-  toString: function () {
+  toString() {
     return "[Front for " + this.typeName + "/" + this.actorID + "]";
-  },
+  }
 
   /**
    * Update the actor from its representation.
    * Subclasses should override this.
    */
-  form: function (form) {},
+  form(form) {}
 
   /**
    * Send a packet on the connection.
    */
-  send: function (packet) {
+  send(packet) {
     if (packet.to) {
       this.conn._transport.send(packet);
     } else {
-      this.actor().then(actorID => {
-        packet.to = actorID;
+      packet.to = this.actorID;
+      // The connection might be closed during the promise resolution
+      if (this.conn._transport) {
         this.conn._transport.send(packet);
-      }).catch(console.error);
+      }
     }
-  },
+  }
 
   /**
    * Send a two-way request on the connection.
    */
-  request: function (packet) {
-    let deferred = defer();
+  request(packet) {
+    const deferred = defer();
     // Save packet basics for debugging
-    let { to, type } = packet;
+    const { to, type } = packet;
     this._requests.push({
       deferred,
       to: to || this.actorID,
@@ -1280,16 +1435,16 @@ Front.prototype = extend(Pool.prototype, {
     });
     this.send(packet);
     return deferred.promise;
-  },
+  }
 
   /**
    * Handler for incoming packets from the client's actor.
    */
-  onPacket: function (packet) {
+  onPacket(packet) {
     // Pick off event packets
-    let type = packet.type || undefined;
+    const type = packet.type || undefined;
     if (this._clientSpec.events && this._clientSpec.events.has(type)) {
-      let event = this._clientSpec.events.get(packet.type);
+      const event = this._clientSpec.events.get(packet.type);
       let args;
       try {
         args = event.request.read(packet, this);
@@ -1298,52 +1453,61 @@ Front.prototype = extend(Pool.prototype, {
         console.exception(ex);
         throw ex;
       }
-      if (event.pre) {
-        let results = event.pre.map(pre => pre.apply(this, args));
-
-        // Check to see if any of the preEvents returned a promise -- if so,
+      // Check for "pre event" callback to be processed before emitting events on fronts
+      // Use event.name instead of packet.type to use specific event name instead of RDP
+      // packet's type.
+      const beforeEvent = this._beforeListeners.get(event.name);
+      if (beforeEvent) {
+        const result = beforeEvent.apply(this, args);
+        // Check to see if the beforeEvent returned a promise -- if so,
         // wait for their resolution before emitting. Otherwise, emit synchronously.
-        if (results.some(result => result && typeof result.then === "function")) {
-          promise.all(results).then(() => {
-            return EventEmitter.emit.apply(null, [this, event.name].concat(args));
+        if (result && typeof result.then == "function") {
+          result.then(() => {
+            super.emit(event.name, ...args);
           });
           return;
         }
       }
 
-      EventEmitter.emit.apply(null, [this, event.name].concat(args));
+      super.emit(event.name, ...args);
       return;
     }
 
     // Remaining packets must be responses.
     if (this._requests.length === 0) {
-      let msg = "Unexpected packet " + this.actorID + ", " + JSON.stringify(packet);
-      let err = Error(msg);
+      const msg =
+        "Unexpected packet " + this.actorID + ", " + JSON.stringify(packet);
+      const err = Error(msg);
       console.error(err);
       throw err;
     }
 
-    let { deferred, stack } = this._requests.shift();
-    callFunctionWithAsyncStack(() => {
-      if (packet.error) {
-        // "Protocol error" is here to avoid TBPL heuristics. See also
-        // https://dxr.mozilla.org/webtools-central/source/tbpl/php/inc/GeneralErrorFilter.php
-        let message;
-        if (packet.error && packet.message) {
-          message = "Protocol error (" + packet.error + "): " + packet.message;
+    const { deferred, stack } = this._requests.shift();
+    callFunctionWithAsyncStack(
+      () => {
+        if (packet.error) {
+          // "Protocol error" is here to avoid TBPL heuristics. See also
+          // https://dxr.mozilla.org/webtools-central/source/tbpl/php/inc/GeneralErrorFilter.php
+          let message;
+          if (packet.error && packet.message) {
+            message =
+              "Protocol error (" + packet.error + "): " + packet.message;
+          } else {
+            message = packet.error;
+          }
+          deferred.reject(message);
         } else {
-          message = packet.error;
+          deferred.resolve(packet);
         }
-        deferred.reject(message);
-      } else {
-        deferred.resolve(packet);
-      }
-    }, stack, "DevTools RDP");
-  },
+      },
+      stack,
+      "DevTools RDP"
+    );
+  }
 
   hasRequests() {
     return !!this._requests.length;
-  },
+  }
 
   /**
    * Wait for all current requests from this front to settle.  This is especially useful
@@ -1355,41 +1519,16 @@ Front.prototype = extend(Pool.prototype, {
    */
   waitForRequestsToSettle() {
     return settleAll(this._requests.map(({ deferred }) => deferred.promise));
-  },
-});
+  }
+}
 
 exports.Front = Front;
-
-/**
- * A method tagged with preEvent will be called after recieving a packet
- * for that event, and before the front emits the event.
- */
-exports.preEvent = function (eventName, fn) {
-  fn._preEvent = eventName;
-  return fn;
-};
-
-/**
- * Mark a method as a custom front implementation, replacing the generated
- * front method.
- *
- * @param function fn
- *    The front implementation, will be returned.
- * @param object options
- *    Options object:
- *      impl (string): If provided, the generated front method will be
- *        stored as this property on the prototype.
- */
-exports.custom = function (fn, options = {}) {
-  fn._customFront = options;
-  return fn;
-};
 
 /**
  * Generates request methods as described by the given actor specification on
  * the given front prototype. Returns the front prototype.
  */
-var generateRequestMethods = function (actorSpec, frontProto) {
+var generateRequestMethods = function(actorSpec, frontProto) {
   if (frontProto._actorSpec) {
     throw new Error("frontProto called twice on the same front prototype!");
   }
@@ -1397,26 +1536,21 @@ var generateRequestMethods = function (actorSpec, frontProto) {
   frontProto.typeName = actorSpec.typeName;
 
   // Generate request methods.
-  let methods = actorSpec.methods;
+  const methods = actorSpec.methods;
   methods.forEach(spec => {
-    let name = spec.name;
+    const name = spec.name;
 
-    // If there's already a property by this name in the front, it must
-    // be a custom front method.
-    if (name in frontProto) {
-      let custom = frontProto[spec.name]._customFront;
-      if (custom === undefined) {
-        throw Error(`Existing method for ${spec.name} not marked customFront while ` +
-                    ` processing ${actorSpec.typeName}.`);
+    frontProto[name] = function(...args) {
+      // If this.actorID are not available, the request will not be able to complete.
+      // The front was probably destroyed earlier.
+      if (!this.actorID) {
+        throw new Error(
+          `Can not send request because front '${
+            this.typeName
+          }' is already destroyed.`
+        );
       }
-      // If the user doesn't need the impl don't generate it.
-      if (!custom.impl) {
-        return;
-      }
-      name = custom.impl;
-    }
 
-    frontProto[name] = function (...args) {
       let packet;
       try {
         packet = spec.request.write(args, this);
@@ -1435,7 +1569,7 @@ var generateRequestMethods = function (actorSpec, frontProto) {
         try {
           ret = spec.response.read(response, this);
         } catch (ex) {
-          console.error("Error reading response to: " + name);
+          console.error("Error reading response to: " + name + "\n" + ex);
           throw ex;
         }
         return ret;
@@ -1444,8 +1578,8 @@ var generateRequestMethods = function (actorSpec, frontProto) {
 
     // Release methods should call the destroy function on return.
     if (spec.release) {
-      let fn = frontProto[name];
-      frontProto[name] = function (...args) {
+      const fn = frontProto[name];
+      frontProto[name] = function(...args) {
         return fn.apply(this, args).then(result => {
           this.destroy();
           return result;
@@ -1457,36 +1591,14 @@ var generateRequestMethods = function (actorSpec, frontProto) {
   // Process event specifications
   frontProto._clientSpec = {};
 
-  let actorEvents = actorSpec.events;
+  const actorEvents = actorSpec.events;
   if (actorEvents) {
-    // This actor has events, scan the prototype for preEvent handlers...
-    let preHandlers = new Map();
-    for (let name of Object.getOwnPropertyNames(frontProto)) {
-      let desc = Object.getOwnPropertyDescriptor(frontProto, name);
-      if (!desc.value) {
-        continue;
-      }
-      if (desc.value._preEvent) {
-        let preEvent = desc.value._preEvent;
-        if (!actorEvents.has(preEvent)) {
-          throw Error("preEvent for event that doesn't exist: " + preEvent);
-        }
-        let handlers = preHandlers.get(preEvent);
-        if (!handlers) {
-          handlers = [];
-          preHandlers.set(preEvent, handlers);
-        }
-        handlers.push(desc.value);
-      }
-    }
-
     frontProto._clientSpec.events = new Map();
 
-    for (let [name, request] of actorEvents) {
+    for (const [name, request] of actorEvents) {
       frontProto._clientSpec.events.set(request.type, {
-        name: name,
-        request: request,
-        pre: preHandlers.get(name)
+        name,
+        request,
       });
     }
   }
@@ -1505,45 +1617,42 @@ var generateRequestMethods = function (actorSpec, frontProto) {
  *    The object prototype.  Must have a 'typeName' property,
  *    should have method definitions, can have event definitions.
  */
-var FrontClassWithSpec = function (actorSpec, frontProto) {
-  // Existing Fronts are relying on the initialize instead of constructor methods.
-  let cls = function () {
-    let instance = Object.create(cls.prototype);
-    instance.initialize.apply(instance, arguments);
-    return instance;
-  };
-  cls.prototype = extend(Front.prototype, generateRequestMethods(actorSpec, frontProto));
-
-  if (!registeredTypes.has(actorSpec.typeName)) {
-    types.addActorType(actorSpec.typeName);
-  }
-  registeredTypes.get(actorSpec.typeName).frontClass = cls;
-
-  return cls;
+var FrontClassWithSpec = function(actorSpec) {
+  class OneFront extends Front {}
+  generateRequestMethods(actorSpec, OneFront.prototype);
+  return OneFront;
 };
 exports.FrontClassWithSpec = FrontClassWithSpec;
 
-exports.dumpActorSpec = function (type) {
-  let actorSpec = type.actorSpec;
-  let ret = {
+exports.registerFront = function(cls) {
+  const { typeName } = cls.prototype;
+  if (!registeredTypes.has(typeName)) {
+    types.addActorType(typeName);
+  }
+  registeredTypes.get(typeName).frontClass = cls;
+};
+
+exports.dumpActorSpec = function(type) {
+  const actorSpec = type.actorSpec;
+  const ret = {
     category: "actor",
     typeName: type.name,
     methods: [],
-    events: {}
+    events: {},
   };
 
-  for (let method of actorSpec.methods) {
+  for (const method of actorSpec.methods) {
     ret.methods.push({
       name: method.name,
       release: method.release || undefined,
       oneway: method.oneway || undefined,
       request: method.request.describe(),
-      response: method.response.describe()
+      response: method.response.describe(),
     });
   }
 
   if (actorSpec.events) {
-    for (let [name, request] of actorSpec.events) {
+    for (const [name, request] of actorSpec.events) {
       ret.events[name] = request.describe();
     }
   }
@@ -1553,20 +1662,20 @@ exports.dumpActorSpec = function (type) {
   return ret;
 };
 
-exports.dumpProtocolSpec = function () {
-  let ret = {
+exports.dumpProtocolSpec = function() {
+  const ret = {
     types: {},
   };
 
   for (let [name, type] of registeredTypes) {
     // Force lazy instantiation if needed.
     type = types.getType(name);
-    let category = type.category || undefined;
+    const category = type.category || undefined;
     if (category === "dict") {
       ret.types[name] = {
         category: "dict",
         typeName: name,
-        specializations: type.specializations
+        specializations: type.specializations,
       };
     } else if (category === "actor") {
       ret.types[name] = exports.dumpActorSpec(type);
@@ -1575,3 +1684,53 @@ exports.dumpProtocolSpec = function () {
 
   return ret;
 };
+
+/**
+ * Instantiate a global (preference, device) or target-scoped (webconsole, inspector)
+ * front of the given type by picking its actor ID out of either the target or root
+ * front's form.
+ *
+ * @param DebuggerClient client
+ *    The DebuggerClient instance to use.
+ * @param string typeName
+ *    The type name of the front to instantiate. This is defined in its specifiation.
+ * @param json form
+ *    If we want to instantiate a global actor's front, this is the root front's form,
+ *    otherwise we are instantiating a target-scoped front from the target front's form.
+ */
+function getFront(client, typeName, form) {
+  const type = types.getType(typeName);
+  if (!type) {
+    throw new Error(`No spec for front type '${typeName}'.`);
+  }
+  if (!type.frontClass) {
+    lazyLoadFront(typeName);
+  }
+  // Use intermediate Class variable to please eslint requiring
+  // a capital letter for all constructors.
+  const Class = type.frontClass;
+  const instance = new Class(client);
+  const { formAttributeName } = instance;
+  if (!formAttributeName) {
+    throw new Error(`Can't find the form attribute name for ${typeName}`);
+  }
+  // Retrive the actor ID from root or target actor's form
+  instance.actorID = form[formAttributeName];
+  if (!instance.actorID) {
+    throw new Error(
+      `Can't find the actor ID for ${typeName} from root or target` +
+        ` actor's form.`
+    );
+  }
+  // Historically, all global and target scoped front were the first protocol.js in the
+  // hierarchy of fronts. So that they have to self-own themself. But now, Root and Target
+  // are fronts and should own them. The only issue here is that we should manage the
+  // front *before* calling initialize which is going to try managing child fronts.
+  instance.manage(instance);
+
+  if (typeof instance.initialize == "function") {
+    return instance.initialize().then(() => instance);
+  }
+  return instance;
+}
+exports.getFront = getFront;

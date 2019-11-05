@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,10 +6,8 @@
 #include "txRtfHandler.h"
 #include "mozilla/Move.h"
 
-using mozilla::Move;
-
 txResultTreeFragment::txResultTreeFragment(nsAutoPtr<txResultBuffer>&& aBuffer)
-    : txAExprResult(nullptr), mBuffer(Move(aBuffer)) {}
+    : txAExprResult(nullptr), mBuffer(std::move(aBuffer)) {}
 
 short txResultTreeFragment::getResultType() { return RESULT_TREE_FRAGMENT; }
 
@@ -44,7 +42,7 @@ nsresult txResultTreeFragment::flushToHandler(txAXMLEventHandler* aHandler) {
 }
 
 nsresult txRtfHandler::getAsRTF(txAExprResult** aResult) {
-  *aResult = new txResultTreeFragment(Move(mBuffer));
+  *aResult = new txResultTreeFragment(std::move(mBuffer));
   NS_ADDREF(*aResult);
   return NS_OK;
 }

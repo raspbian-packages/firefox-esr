@@ -61,12 +61,16 @@ class JsepTransport {
 
   JsepTransport(const JsepTransport& orig) { *this = orig; }
 
+  ~JsepTransport() {}
+
   JsepTransport& operator=(const JsepTransport& orig) {
     if (this != &orig) {
       mIce.reset(orig.mIce ? new JsepIceTransport(*orig.mIce) : nullptr);
       mDtls.reset(orig.mDtls ? new JsepDtlsTransport(*orig.mDtls) : nullptr);
       mTransportId = orig.mTransportId;
       mComponents = orig.mComponents;
+      mLocalUfrag = orig.mLocalUfrag;
+      mLocalPwd = orig.mLocalPwd;
     }
     return *this;
   }
@@ -76,6 +80,8 @@ class JsepTransport {
     mTransportId.clear();
     mIce.reset();
     mDtls.reset();
+    mLocalUfrag.clear();
+    mLocalPwd.clear();
   }
 
   // Unique identifier for this transport within this call. Group?
@@ -87,11 +93,8 @@ class JsepTransport {
 
   // Number of required components.
   size_t mComponents;
-
-  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(JsepTransport);
-
- protected:
-  ~JsepTransport() {}
+  std::string mLocalUfrag;
+  std::string mLocalPwd;
 };
 
 }  // namespace mozilla

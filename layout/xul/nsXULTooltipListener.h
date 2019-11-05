@@ -8,27 +8,32 @@
 #define nsXULTooltipListener_h__
 
 #include "nsIDOMEventListener.h"
-#include "nsIDOMMouseEvent.h"
-#include "nsIDOMElement.h"
 #include "nsITimer.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
 #ifdef MOZ_XUL
-#include "nsITreeBoxObject.h"
-#include "nsITreeColumns.h"
+#  include "XULTreeElement.h"
 #endif
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 #include "mozilla/Attributes.h"
 
 class nsIContent;
+class nsTreeColumn;
+
+namespace mozilla {
+namespace dom {
+class Event;
+class MouseEvent;
+}  // namespace dom
+}  // namespace mozilla
 
 class nsXULTooltipListener final : public nsIDOMEventListener {
  public:
   NS_DECL_ISUPPORTS
   NS_DECL_NSIDOMEVENTLISTENER
 
-  void MouseOut(nsIDOMEvent* aEvent);
-  void MouseMove(nsIDOMEvent* aEvent);
+  void MouseOut(mozilla::dom::Event* aEvent);
+  void MouseMove(mozilla::dom::Event* aEvent);
 
   void AddTooltipSupport(nsIContent* aNode);
   void RemoveTooltipSupport(nsIContent* aNode);
@@ -47,8 +52,8 @@ class nsXULTooltipListener final : public nsIDOMEventListener {
   void KillTooltipTimer();
 
 #ifdef MOZ_XUL
-  void CheckTreeBodyMove(nsIDOMMouseEvent* aMouseEvent);
-  nsresult GetSourceTreeBoxObject(nsITreeBoxObject** aBoxObject);
+  void CheckTreeBodyMove(mozilla::dom::MouseEvent* aMouseEvent);
+  mozilla::dom::XULTreeElement* GetSourceTree();
 #endif
 
   nsresult ShowTooltip();
@@ -91,7 +96,7 @@ class nsXULTooltipListener final : public nsIDOMEventListener {
   bool mIsSourceTree;
   bool mNeedTitletip;
   int32_t mLastTreeRow;
-  nsCOMPtr<nsITreeColumn> mLastTreeCol;
+  RefPtr<nsTreeColumn> mLastTreeCol;
 #endif
 };
 

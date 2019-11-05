@@ -10,8 +10,7 @@
 #include "nsDataHashtable.h"
 #include "nsHashKeys.h"
 #include "nsAtom.h"
-#include "nsIDocument.h"
-#include "nsIObserver.h"
+#include "mozilla/dom/Document.h"
 #include "nsStringFwd.h"
 #include "nsTArray.h"
 
@@ -31,12 +30,14 @@
  *
  */
 
-class nsNameSpaceManager final : public nsIObserver {
+class nsNameSpaceManager final {
  public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIOBSERVER
+  NS_INLINE_DECL_REFCOUNTING(nsNameSpaceManager)
+
   virtual nsresult RegisterNameSpace(const nsAString& aURI,
                                      int32_t& aNameSpaceID);
+  nsresult RegisterNameSpace(already_AddRefed<nsAtom> aURI,
+                             int32_t& aNameSpaceID);
 
   virtual nsresult GetNameSpaceURI(int32_t aNameSpaceID, nsAString& aURI);
 
@@ -62,6 +63,8 @@ class nsNameSpaceManager final : public nsIObserver {
   bool mSVGDisabled;
 
  private:
+  void PrefChanged(const char* aPref);
+
   bool Init();
   nsresult AddNameSpace(already_AddRefed<nsAtom> aURI,
                         const int32_t aNameSpaceID);

@@ -18,6 +18,9 @@
 #include "mozilla/layers/LayerAttributes.h"
 #include "mozilla/layers/LayersMessageUtils.h"
 #include "mozilla/layers/FocusTarget.h"
+#include "mozilla/layers/RenderRootBoundary.h"
+#include "mozilla/layers/WebRenderMessageUtils.h"
+#include "mozilla/webrender/WebRenderTypes.h"
 #include "mozilla/Maybe.h"
 #include "nsTArrayForwardDeclare.h"
 
@@ -30,13 +33,14 @@ struct ActiveScrolledRoot;
 namespace layers {
 
 class Layer;
+class WebRenderLayerManager;
 class WebRenderScrollData;
 
 // Data needed by APZ, per layer. One instance of this class is created for
 // each layer in the layer tree and sent over PWebRenderBridge to the APZ code.
 // Each WebRenderLayerScrollData is conceptually associated with an "owning"
 // WebRenderScrollData.
-class WebRenderLayerScrollData {
+class WebRenderLayerScrollData final {
  public:
   WebRenderLayerScrollData();  // needed for IPC purposes
   ~WebRenderLayerScrollData();
@@ -44,7 +48,9 @@ class WebRenderLayerScrollData {
   void InitializeRoot(int32_t aDescendantCount);
   void Initialize(WebRenderScrollData& aOwner, nsDisplayItem* aItem,
                   int32_t aDescendantCount,
-                  const ActiveScrolledRoot* aStopAtAsr);
+                  const ActiveScrolledRoot* aStopAtAsr,
+                  const Maybe<gfx::Matrix4x4>& aAncestorTransform,
+                  wr::RenderRoot aRenderRoot);
 
   int32_t GetDescendantCount() const;
   size_t GetScrollMetadataCount() const;
@@ -58,6 +64,7 @@ class WebRenderLayerScrollData {
   const ScrollMetadata& GetScrollMetadata(const WebRenderScrollData& aOwner,
                                           size_t aIndex) const;
 
+  gfx::Matrix4x4 GetAncestorTransform() const { return mAncestorTransform; }
   void SetTransform(const gfx::Matrix4x4& aTransform) {
     mTransform = aTransform;
   }
@@ -68,10 +75,7 @@ class WebRenderLayerScrollData {
   }
   bool GetTransformIsPerspective() const { return mTransformIsPerspective; }
 
-  void AddEventRegions(const EventRegions& aRegions) {
-    mEventRegions.OrWith(aRegions);
-  }
-  EventRegions GetEventRegions() const { return mEventRegions; }
+  EventRegions GetEventRegions() const { return EventRegions(); }
   void SetEventRegionsOverride(const EventRegionsOverride& aOverride) {
     mEventRegionsOverride = aOverride;
   }
@@ -79,39 +83,44 @@ class WebRenderLayerScrollData {
     return mEventRegionsOverride;
   }
 
+  void SetVisibleRegion(const LayerIntRegion& aRegion) {
+    mVisibleRegion = aRegion;
+  }
   const LayerIntRegion& GetVisibleRegion() const { return mVisibleRegion; }
-  void SetReferentId(uint64_t aReferentId) { mReferentId = Some(aReferentId); }
-  Maybe<uint64_t> GetReferentId() const { return mReferentId; }
+  void SetReferentId(LayersId aReferentId) { mReferentId = Some(aReferentId); }
+  Maybe<LayersId> GetReferentId() const { return mReferentId; }
 
-  void SetScrollThumbData(const ScrollThumbData& aData) {
-    mScrollThumbData = aData;
+  void SetReferentRenderRoot(RenderRootBoundary aBoundary) {
+    mReferentRenderRoot = Some(aBoundary);
   }
-  const ScrollThumbData& GetScrollThumbData() const { return mScrollThumbData; }
+  Maybe<RenderRootBoundary> GetReferentRenderRoot() const {
+    return mReferentRenderRoot;
+  }
+  void SetBoundaryRoot(RenderRootBoundary aBoundary) {
+    mBoundaryRoot = Some(aBoundary);
+  }
+  Maybe<RenderRootBoundary> GetBoundaryRoot() const { return mBoundaryRoot; }
+
+  void SetScrollbarData(const ScrollbarData& aData) { mScrollbarData = aData; }
+  const ScrollbarData& GetScrollbarData() const { return mScrollbarData; }
   void SetScrollbarAnimationId(const uint64_t& aId) {
-    mScrollbarAnimationId = aId;
+    mScrollbarAnimationId = Some(aId);
   }
-  const uint64_t& GetScrollbarAnimationId() const {
+  Maybe<uint64_t> GetScrollbarAnimationId() const {
     return mScrollbarAnimationId;
   }
-  void SetScrollbarTargetContainerId(FrameMetrics::ViewID aId) {
-    mScrollbarTargetContainerId = aId;
-  }
-  FrameMetrics::ViewID GetScrollbarTargetContainerId() const {
-    return mScrollbarTargetContainerId;
-  }
-  void SetScrollbarContainerDirection(ScrollDirection aDirection) {
-    mScrollbarContainerDirection = Some(aDirection);
-  }
-  Maybe<ScrollDirection> GetScrollbarContainerDirection() const {
-    return mScrollbarContainerDirection;
-  }
 
-  void SetFixedPositionScrollContainerId(FrameMetrics::ViewID aId) {
+  void SetFixedPositionScrollContainerId(ScrollableLayerGuid::ViewID aId) {
     mFixedPosScrollContainerId = aId;
   }
-  FrameMetrics::ViewID GetFixedPositionScrollContainerId() const {
+  ScrollableLayerGuid::ViewID GetFixedPositionScrollContainerId() const {
     return mFixedPosScrollContainerId;
   }
+
+  wr::RenderRoot GetRenderRoot() { return mRenderRoot; }
+
+  void SetZoomAnimationId(const uint64_t& aId) { mZoomAnimationId = Some(aId); }
+  Maybe<uint64_t> GetZoomAnimationId() const { return mZoomAnimationId; }
 
   void Dump(const WebRenderScrollData& aOwner) const;
 
@@ -133,28 +142,29 @@ class WebRenderLayerScrollData {
   // Various data that we collect from the Layer in Initialize(), serialize
   // over IPC, and use on the parent side in APZ.
 
+  gfx::Matrix4x4 mAncestorTransform;
   gfx::Matrix4x4 mTransform;
   bool mTransformIsPerspective;
-  EventRegions mEventRegions;
   LayerIntRegion mVisibleRegion;
-  Maybe<uint64_t> mReferentId;
+  Maybe<LayersId> mReferentId;
+  Maybe<RenderRootBoundary> mReferentRenderRoot;
+  Maybe<RenderRootBoundary> mBoundaryRoot;
   EventRegionsOverride mEventRegionsOverride;
-  ScrollThumbData mScrollThumbData;
-  uint64_t mScrollbarAnimationId;
-  FrameMetrics::ViewID mScrollbarTargetContainerId;
-  Maybe<ScrollDirection> mScrollbarContainerDirection;
-  FrameMetrics::ViewID mFixedPosScrollContainerId;
+  ScrollbarData mScrollbarData;
+  Maybe<uint64_t> mScrollbarAnimationId;
+  ScrollableLayerGuid::ViewID mFixedPosScrollContainerId;
+  wr::RenderRoot mRenderRoot;
+  Maybe<uint64_t> mZoomAnimationId;
 };
 
 // Data needed by APZ, for the whole layer tree. One instance of this class
 // is created for each transaction sent over PWebRenderBridge. It is populated
 // with information from the WebRender layer tree on the client side and the
 // information is used by APZ on the parent side.
-class WebRenderScrollData {
+class WebRenderScrollData final {
  public:
   WebRenderScrollData();
   explicit WebRenderScrollData(WebRenderLayerManager* aManager);
-  ~WebRenderScrollData();
 
   WebRenderLayerManager* GetManager() const;
 
@@ -172,19 +182,25 @@ class WebRenderScrollData {
   const WebRenderLayerScrollData* GetLayerData(size_t aIndex) const;
 
   const ScrollMetadata& GetScrollMetadata(size_t aIndex) const;
-  Maybe<size_t> HasMetadataFor(const FrameMetrics::ViewID& aScrollId) const;
-
-  const FocusTarget& GetFocusTarget() const { return mFocusTarget; }
-  void SetFocusTarget(const FocusTarget& aFocusTarget);
+  Maybe<size_t> HasMetadataFor(
+      const ScrollableLayerGuid::ViewID& aScrollId) const;
 
   void SetIsFirstPaint();
   bool IsFirstPaint() const;
   void SetPaintSequenceNumber(uint32_t aPaintSequenceNumber);
   uint32_t GetPaintSequenceNumber() const;
 
+  void ApplyUpdates(const ScrollUpdatesMap& aUpdates,
+                    uint32_t aPaintSequenceNumber);
+
   friend struct IPC::ParamTraits<WebRenderScrollData>;
 
   void Dump() const;
+
+ private:
+  // This is called by the ParamTraits implementation to rebuild mScrollIdMap
+  // based on mScrollMetadatas
+  bool RepopulateMap();
 
  private:
   // Pointer back to the layer manager; if this is non-null, it will always be
@@ -193,12 +209,12 @@ class WebRenderScrollData {
   WebRenderLayerManager* MOZ_NON_OWNING_REF mManager;
 
   // Internal data structure used to maintain uniqueness of mScrollMetadatas.
-  // This is not serialized/deserialized over IPC because there's no need for
-  // it, as the parent side doesn't need this at all. Also because we don't have
-  // any IPC-friendly hashtable implementation lying around. The key into this
-  // map is the scrollId of a ScrollMetadata, and the value is an index into the
-  // mScrollMetadatas array.
-  std::map<FrameMetrics::ViewID, size_t> mScrollIdMap;
+  // This is not serialized/deserialized over IPC, but it is rebuilt on the
+  // parent side when mScrollMetadatas is deserialized. So it should always be
+  // valid on both the child and parent.
+  // The key into this map is the scrollId of a ScrollMetadata, and the value is
+  // an index into the mScrollMetadatas array.
+  std::map<ScrollableLayerGuid::ViewID, size_t> mScrollIdMap;
 
   // A list of all the unique ScrollMetadata objects from the layer tree. Each
   // ScrollMetadata in this list must have a unique scroll id.
@@ -212,9 +228,6 @@ class WebRenderScrollData {
   // the other side.
   nsTArray<WebRenderLayerScrollData> mLayerScrollData;
 
-  // The focus information for this layer tree
-  FocusTarget mFocusTarget;
-
   bool mIsFirstPaint;
   uint32_t mPaintSequenceNumber;
 };
@@ -224,15 +237,19 @@ class WebRenderScrollData {
 
 namespace IPC {
 
-// When ScrollThumbData is stored on the layer tree, it's part of
+template <>
+struct ParamTraits<mozilla::layers::RenderRootBoundary>
+    : public PlainOldDataSerializer<mozilla::layers::RenderRootBoundary> {};
+
+// When ScrollbarData is stored on the layer tree, it's part of
 // SimpleAttributes which itself uses PlainOldDataSerializer, so
-// we don't need a ParamTraits specialization for ScrollThumbData
-// separately. Here, however, ScrollThumbData is stored as part
+// we don't need a ParamTraits specialization for ScrollbarData
+// separately. Here, however, ScrollbarData is stored as part
 // of WebRenderLayerScrollData whose fields are serialized
 // individually, so we do.
 template <>
-struct ParamTraits<mozilla::layers::ScrollThumbData>
-    : public PlainOldDataSerializer<mozilla::layers::ScrollThumbData> {};
+struct ParamTraits<mozilla::layers::ScrollbarData>
+    : public PlainOldDataSerializer<mozilla::layers::ScrollbarData> {};
 
 template <>
 struct ParamTraits<mozilla::layers::WebRenderLayerScrollData> {
@@ -241,34 +258,38 @@ struct ParamTraits<mozilla::layers::WebRenderLayerScrollData> {
   static void Write(Message* aMsg, const paramType& aParam) {
     WriteParam(aMsg, aParam.mDescendantCount);
     WriteParam(aMsg, aParam.mScrollIds);
+    WriteParam(aMsg, aParam.mAncestorTransform);
     WriteParam(aMsg, aParam.mTransform);
     WriteParam(aMsg, aParam.mTransformIsPerspective);
-    WriteParam(aMsg, aParam.mEventRegions);
     WriteParam(aMsg, aParam.mVisibleRegion);
     WriteParam(aMsg, aParam.mReferentId);
+    WriteParam(aMsg, aParam.mReferentRenderRoot);
+    WriteParam(aMsg, aParam.mBoundaryRoot);
     WriteParam(aMsg, aParam.mEventRegionsOverride);
-    WriteParam(aMsg, aParam.mScrollThumbData);
+    WriteParam(aMsg, aParam.mScrollbarData);
     WriteParam(aMsg, aParam.mScrollbarAnimationId);
-    WriteParam(aMsg, aParam.mScrollbarTargetContainerId);
-    WriteParam(aMsg, aParam.mScrollbarContainerDirection);
     WriteParam(aMsg, aParam.mFixedPosScrollContainerId);
+    WriteParam(aMsg, aParam.mRenderRoot);
+    WriteParam(aMsg, aParam.mZoomAnimationId);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
     return ReadParam(aMsg, aIter, &aResult->mDescendantCount) &&
            ReadParam(aMsg, aIter, &aResult->mScrollIds) &&
+           ReadParam(aMsg, aIter, &aResult->mAncestorTransform) &&
            ReadParam(aMsg, aIter, &aResult->mTransform) &&
            ReadParam(aMsg, aIter, &aResult->mTransformIsPerspective) &&
-           ReadParam(aMsg, aIter, &aResult->mEventRegions) &&
            ReadParam(aMsg, aIter, &aResult->mVisibleRegion) &&
            ReadParam(aMsg, aIter, &aResult->mReferentId) &&
+           ReadParam(aMsg, aIter, &aResult->mReferentRenderRoot) &&
+           ReadParam(aMsg, aIter, &aResult->mBoundaryRoot) &&
            ReadParam(aMsg, aIter, &aResult->mEventRegionsOverride) &&
-           ReadParam(aMsg, aIter, &aResult->mScrollThumbData) &&
+           ReadParam(aMsg, aIter, &aResult->mScrollbarData) &&
            ReadParam(aMsg, aIter, &aResult->mScrollbarAnimationId) &&
-           ReadParam(aMsg, aIter, &aResult->mScrollbarTargetContainerId) &&
-           ReadParam(aMsg, aIter, &aResult->mScrollbarContainerDirection) &&
-           ReadParam(aMsg, aIter, &aResult->mFixedPosScrollContainerId);
+           ReadParam(aMsg, aIter, &aResult->mFixedPosScrollContainerId) &&
+           ReadParam(aMsg, aIter, &aResult->mRenderRoot) &&
+           ReadParam(aMsg, aIter, &aResult->mZoomAnimationId);
   }
 };
 
@@ -279,7 +300,6 @@ struct ParamTraits<mozilla::layers::WebRenderScrollData> {
   static void Write(Message* aMsg, const paramType& aParam) {
     WriteParam(aMsg, aParam.mScrollMetadatas);
     WriteParam(aMsg, aParam.mLayerScrollData);
-    WriteParam(aMsg, aParam.mFocusTarget);
     WriteParam(aMsg, aParam.mIsFirstPaint);
     WriteParam(aMsg, aParam.mPaintSequenceNumber);
   }
@@ -288,9 +308,9 @@ struct ParamTraits<mozilla::layers::WebRenderScrollData> {
                    paramType* aResult) {
     return ReadParam(aMsg, aIter, &aResult->mScrollMetadatas) &&
            ReadParam(aMsg, aIter, &aResult->mLayerScrollData) &&
-           ReadParam(aMsg, aIter, &aResult->mFocusTarget) &&
            ReadParam(aMsg, aIter, &aResult->mIsFirstPaint) &&
-           ReadParam(aMsg, aIter, &aResult->mPaintSequenceNumber);
+           ReadParam(aMsg, aIter, &aResult->mPaintSequenceNumber) &&
+           aResult->RepopulateMap();
   }
 };
 

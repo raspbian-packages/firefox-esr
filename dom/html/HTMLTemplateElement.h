@@ -17,16 +17,17 @@ namespace dom {
 class HTMLTemplateElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLTemplateElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
 
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLTemplateElement, _template);
+
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLTemplateElement,
                                            nsGenericHTMLElement)
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   DocumentFragment* Content() { return mContent; }
 

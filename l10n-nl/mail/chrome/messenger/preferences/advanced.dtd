@@ -12,6 +12,7 @@
 <!ENTITY enableGlodaSearch.label       "Globaal zoeken en indexer activeren">
 <!ENTITY enableGlodaSearch.accesskey   "G">
 <!ENTITY dateTimeFormatting.label      "Datum- en tijdopmaak">
+<!ENTITY languageSelector.label        "Taal">
 <!ENTITY allowHWAccel.label            "Hardwareversnelling gebruiken wanneer beschikbaar">
 <!ENTITY allowHWAccel.accesskey        "v">
 <!ENTITY storeType.label               "Type berichtenopslag voor nieuwe accounts:">
@@ -66,17 +67,18 @@
  -->
 <!ENTITY updateApp.version.pre           "Versie ">
 <!ENTITY updateApp.version.post          "">
+<!ENTITY updateAppAllow.description      "&brandShortName; mag">
 <!ENTITY updateAuto.label                "Updates automatisch installeren (aanbevolen: verbeterde beveiliging)">
 <!ENTITY updateAuto.accesskey            "U">
 <!ENTITY updateCheck.label               "Controleren op updates, maar mij laten kiezen of ik deze wil installeren">
 <!ENTITY updateCheck.accesskey           "C">
-<!ENTITY updateManual.label              "Nooit controleren op updates (niet aanbevolen: beveiligingsrisico)">
-<!ENTITY updateManual.accesskey          "N">
 <!ENTITY updateHistory.label             "Updategeschiedenis tonen">
 <!ENTITY updateHistory.accesskey         "d">
 
 <!ENTITY useService.label                "Een achtergrondservice gebruiken om updates te installeren">
 <!ENTITY useService.accesskey            "a">
+
+<!ENTITY updateCrossUserSettingWarning.description "Deze instelling is van toepassing op alle Windows-accounts en &brandShortName;-profielen die deze installatie van &brandShortName; gebruiken.">
 
 <!-- Networking and Disk Space -->
 <!ENTITY showSettings.label            "Instellingen…">

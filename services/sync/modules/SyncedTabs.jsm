@@ -6,22 +6,22 @@
 
 var EXPORTED_SYMBOLS = ["SyncedTabs"];
 
-
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Log.jsm");
-ChromeUtils.import("resource://services-sync/main.js");
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { Log } = ChromeUtils.import("resource://gre/modules/Log.jsm");
+const { Weave } = ChromeUtils.import("resource://services-sync/main.js");
+const { Preferences } = ChromeUtils.import(
+  "resource://gre/modules/Preferences.jsm"
+);
 
 // The Sync XPCOM service
 XPCOMUtils.defineLazyGetter(this, "weaveXPCService", function() {
-  return Cc["@mozilla.org/weave/service;1"]
-           .getService(Ci.nsISupports)
-           .wrappedJSObject;
+  return Cc["@mozilla.org/weave/service;1"].getService(
+    Ci.nsISupports
+  ).wrappedJSObject;
 });
-
-ChromeUtils.defineModuleGetter(this, "PlacesUtils",
-                               "resource://gre/modules/PlacesUtils.jsm");
 
 // from MDN...
 function escapeRegExp(string) {
@@ -53,15 +53,13 @@ let SyncedTabsInternal = {
       icon = tab.icon;
     }
     if (!icon) {
-      try {
-        icon = (await PlacesUtils.promiseFaviconLinkUrl(url)).spec;
-      } catch (ex) { /* no favicon avaiable */ }
-    }
-    if (!icon) {
-      icon = "";
+      // By not specifying a size the favicon service will pick the default,
+      // that is usually set through setDefaultIconURIPreferredSize by the
+      // first browser window. Commonly it's 16px at current dpi.
+      icon = "page-icon:" + url;
     }
     return {
-      type:  "tab",
+      type: "tab",
       title: tab.title || url,
       url,
       icon,
@@ -76,9 +74,9 @@ let SyncedTabsInternal = {
       id: client.id,
       type: "client",
       name: Weave.Service.clientsEngine.getClientName(client.id),
-      isMobile: Weave.Service.clientsEngine.isMobile(client.id),
+      clientType: Weave.Service.clientsEngine.getClientType(client.id),
       lastModified: client.lastModified * 1000, // sec to ms
-      tabs: []
+      tabs: [],
     };
   },
 
@@ -98,7 +96,10 @@ let SyncedTabsInternal = {
     }
 
     // A boolean that controls whether we should show the icon from the remote tab.
-    const showRemoteIcons = Preferences.get("services.sync.syncedTabs.showRemoteIcons", true);
+    const showRemoteIcons = Preferences.get(
+      "services.sync.syncedTabs.showRemoteIcons",
+      true
+    );
 
     let engine = Weave.Service.engineManager.get("tabs");
 
@@ -153,7 +154,7 @@ let SyncedTabsInternal = {
     // Ask Sync to just do the tabs engine if it can.
     try {
       log.info("Doing a tab sync.");
-      await Weave.Service.sync({why: "tabs", engines: ["tabs"]});
+      await Weave.Service.sync({ why: "tabs", engines: ["tabs"] });
       return true;
     } catch (ex) {
       log.error("Sync failed", ex);
@@ -171,7 +172,10 @@ let SyncedTabsInternal = {
         // The tabs engine just finished syncing
         // Set our lastTabFetch pref here so it tracks both explicit sync calls
         // and normally scheduled ones.
-        Preferences.set("services.sync.lastTabFetch", Math.floor(Date.now() / 1000));
+        Preferences.set(
+          "services.sync.lastTabFetch",
+          Math.floor(Date.now() / 1000)
+        );
         Services.obs.notifyObservers(null, TOPIC_TABS_CHANGED);
         break;
       case "weave:service:start-over":

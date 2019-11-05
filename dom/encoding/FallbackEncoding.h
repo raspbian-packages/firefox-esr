@@ -8,14 +8,16 @@
 #define mozilla_dom_FallbackEncoding_h_
 
 #include "mozilla/NotNull.h"
+#include "mozilla/StaticPtr.h"
 #include "nsIObserver.h"
 #include "nsString.h"
+#include "nsWeakReference.h"
 
 namespace mozilla {
 class Encoding;
 namespace dom {
 
-class FallbackEncoding : public nsIObserver {
+class FallbackEncoding : public nsIObserver, nsSupportsWeakReference {
  public:
   NS_DECL_ISUPPORTS
   NS_DECL_NSIOBSERVER
@@ -24,11 +26,6 @@ class FallbackEncoding : public nsIObserver {
    * Whether FromTopLevelDomain() should be used.
    */
   static bool sGuessFallbackFromTopLevelDomain;
-
-  /**
-   * Whether UTF-8 should be used for file URLs.
-   */
-  static bool sFallbackToUTF8ForFile;
 
   /**
    * Gets the locale-dependent fallback encoding for legacy HTML and plain
@@ -73,7 +70,7 @@ class FallbackEncoding : public nsIObserver {
   /**
    * The fallback cache.
    */
-  static FallbackEncoding* sInstance;
+  static StaticRefPtr<FallbackEncoding> sInstance;
 
   FallbackEncoding();
   virtual ~FallbackEncoding(){};

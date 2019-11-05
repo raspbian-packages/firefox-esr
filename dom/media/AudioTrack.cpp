@@ -12,14 +12,15 @@
 namespace mozilla {
 namespace dom {
 
-AudioTrack::AudioTrack(const nsAString& aId, const nsAString& aKind,
-                       const nsAString& aLabel, const nsAString& aLanguage,
-                       bool aEnabled)
-    : MediaTrack(aId, aKind, aLabel, aLanguage), mEnabled(aEnabled) {}
+AudioTrack::AudioTrack(nsIGlobalObject* aOwnerGlobal, const nsAString& aId,
+                       const nsAString& aKind, const nsAString& aLabel,
+                       const nsAString& aLanguage, bool aEnabled)
+    : MediaTrack(aOwnerGlobal, aId, aKind, aLabel, aLanguage),
+      mEnabled(aEnabled) {}
 
 JSObject* AudioTrack::WrapObject(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return AudioTrackBinding::Wrap(aCx, this, aGivenProto);
+  return AudioTrack_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void AudioTrack::SetEnabled(bool aEnabled) {

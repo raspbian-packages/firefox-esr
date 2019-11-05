@@ -13,7 +13,7 @@ permissions-block =
     .label = నిరోధించు
     .accesskey = B
 permissions-session =
-    .label = భాగము కొరకు అనుమతించు
+    .label = ఈ సెషనుకి అనుమతించు
     .accesskey = S
 permissions-allow =
     .label = అనుమతించు
@@ -26,7 +26,7 @@ permissions-remove =
     .label = వెబ్‌సైటును తీసివేయి
     .accesskey = R
 permissions-remove-all =
-    .label = అన్ని వెబ్‌సైట్లను తీసివేయి
+    .label = వెబ్‌సైట్లన్నీ తీసివేయి
     .accesskey = e
 permissions-button-cancel =
     .label = రద్దుచేయి
@@ -36,3 +36,98 @@ permissions-button-ok =
     .accesskey = S
 permissions-searchbox =
     .placeholder = వెబ్‌సైట్లను వెతకండి
+permissions-capabilities-allow =
+    .label = అనుమతించు
+permissions-capabilities-block =
+    .label = నిరోధించు
+permissions-capabilities-prompt =
+    .label = ఎల్లప్పుడూ అడుగు
+permissions-capabilities-listitem-allow =
+    .value = అనుమతించు
+permissions-capabilities-listitem-block =
+    .value = నిరోధించు
+permissions-capabilities-listitem-allow-first-party =
+    .value = మొదటి పార్టీ మాత్రమే అనుమతించు
+permissions-capabilities-listitem-allow-session =
+    .value = సెషనుకి అనుమతించు
+
+## Invalid Hostname Dialog
+
+permissions-invalid-uri-title = చెల్లని హోస్టుపేరును ఇచ్చారు
+permissions-invalid-uri-label = దయచేసి సరైన హోస్టుపేరును ఇవ్వండి
+
+## Exceptions - Tracking Protection
+
+permissions-exceptions-tracking-protection-window =
+    .title = మినహాయింపులు - ట్రాకింగ్ సంరక్షణ
+    .style = { permissions-window.style }
+permissions-exceptions-tracking-protection-desc = ఈ వెబ్‌సైట్లలో మీరు ట్రాకింగ్ సంరక్షణను అచేతనించారు.
+permissions-exceptions-content-blocking-window =
+    .title = మినహాయింపులు - విషయ నిరోధం
+    .style = { permissions-window.style }
+permissions-exceptions-content-blocking-desc = ఈ వెబ్‌సైట్లలో మీకు విషయ నిరోధాన్ని అచేతనం చేసారు.
+
+## Exceptions - Cookies
+
+permissions-exceptions-cookie-window =
+    .title = మినహాయింపులు - కుకీలు, సైటు డేటా
+    .style = { permissions-window.style }
+
+## Exceptions - Pop-ups
+
+permissions-exceptions-popup-window =
+    .title = అనుమతించిన వెబ్‌సైట్లు - పాప్అప్‌లు
+    .style = { permissions-window.style }
+permissions-exceptions-popup-desc = పాప్‌అప్ విండోలను తెరుచుటకు ఏ వెబ్ సైటులను అనుమతించాలో మీరు వివరించవచ్చు. మీరు అనుమతించాలనుకున్న వెబ్ సైటు ఖచ్చితమైన చిరునామా తెలిపి అప్పుడు అనుమతించుని నొక్కండి.
+
+## Exceptions - Saved Logins
+
+permissions-exceptions-saved-logins-window =
+    .title = మినహాయింపులు - భద్రపరిచన ప్రవేశాలు
+    .style = { permissions-window.style }
+permissions-exceptions-saved-logins-desc = ఈ క్రింది వెబ్‌సైట్ల ప్రవేశాలు భద్రపరచబడవు
+
+## Exceptions - Add-ons
+
+permissions-exceptions-addons-window =
+    .title = అనుమతించబడిన సైట్లు - పొడిగింతల స్థాపన
+    .style = { permissions-window.style }
+permissions-exceptions-addons-desc = పొడిగింతలను స్థాపించుటకు ఏయే వెబ్ సైట్లను అనుమతించాలో మీరు పేర్కొనవచ్చు. మీరు అనుమతించాలనుకున్న వెబ్ సైటు ఖచ్చితమైన చిరునామాను ఇచ్చి అనుమతించు బొత్తాన్ని నొక్కండి.
+
+## Exceptions - Autoplay Media
+
+permissions-exceptions-autoplay-media-window2 =
+    .title = మినహాయింపులు - స్వీయారంభం
+    .style = { permissions-window.style }
+
+## Site Permissions - Notifications
+
+permissions-site-notification-window =
+    .title = అమరికలు - గమనింపుల అనుమతులు
+    .style = { permissions-window.style }
+permissions-site-notification-disable-label =
+    .label = గమనింపులను అనుమతించమని అడిగే అభ్యర్థనలను నిరోధించు
+
+## Site Permissions - Location
+
+permissions-site-location-window =
+    .title = అమరికలు - స్థాన అనుమతులు
+    .style = { permissions-window.style }
+permissions-site-location-disable-label =
+    .label = మీ స్థాన సమాచారం గురించి వచ్చే కొత్త అభ్యర్థనలను తిరస్కరించు
+
+## Site Permissions - Camera
+
+permissions-site-camera-window =
+    .title = అమరికలు - కెమెరా అనుమతులు
+    .style = { permissions-window.style }
+permissions-site-camera-disable-label =
+    .label = మీ కెమేరాను వాడుటకై వచ్చే కొత్త అభ్యర్థనలను తిరస్కరించు
+
+## Site Permissions - Microphone
+
+permissions-site-microphone-window =
+    .title = అమరికలు - మైక్రోఫోన్ అనుమతులు
+    .style = { permissions-window.style }
+permissions-site-microphone-disable-label =
+    .label = మీ మైక్రోఫోనును వాడుటకై వచ్చే కొత్త అభ్యర్థనలను తిరస్కరించు

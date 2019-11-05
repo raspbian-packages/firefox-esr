@@ -1,16 +1,8 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 #[cfg(feature = "fold")]
 pub mod fold {
-    use punctuated::{Pair, Punctuated};
     use fold::Fold;
     use proc_macro2::Span;
+    use punctuated::{Pair, Punctuated};
 
     pub trait FoldHelper {
         type Item;
@@ -84,10 +76,7 @@ pub mod visit {
     use proc_macro2::Span;
     use visit::Visit;
 
-    pub fn tokens_helper<'ast, V: Visit<'ast> + ?Sized, S: Spans>(
-        visitor: &mut V,
-        spans: &'ast S,
-    ) {
+    pub fn tokens_helper<'ast, V: Visit<'ast> + ?Sized, S: Spans>(visitor: &mut V, spans: &'ast S) {
         spans.visit(visitor);
     }
 

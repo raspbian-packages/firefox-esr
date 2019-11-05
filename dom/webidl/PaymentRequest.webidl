@@ -4,7 +4,11 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * The origin of this WebIDL file is
- *   https://www.w3.org/TR/payment-request/#paymentrequest-interface
+ *   https://w3c.github.io/payment-request/#paymentrequest-interface
+ *   https://w3c.github.io/payment-request/#idl-index
+ *
+ * Copyright © 2018 W3C® (MIT, ERCIM, Keio), All Rights Reserved. W3C
+ * liability, trademark and document use rules apply.
  */
 
 dictionary PaymentMethodData {
@@ -15,18 +19,12 @@ dictionary PaymentMethodData {
 dictionary PaymentCurrencyAmount {
   required DOMString currency;
   required DOMString value;
-           DOMString currencySystem = "urn:iso:std:iso:4217";
-};
-
-enum PaymentItemType {
-  "tax"
 };
 
 dictionary PaymentItem {
   required DOMString             label;
   required PaymentCurrencyAmount amount;
            boolean               pending = false;
-           PaymentItemType       type;
 };
 
 dictionary PaymentShippingOption {
@@ -54,6 +52,41 @@ dictionary PaymentDetailsInit : PaymentDetailsBase {
   required PaymentItem total;
 };
 
+dictionary AddressErrors {
+  DOMString addressLine;
+  DOMString city;
+  DOMString country;
+  DOMString dependentLocality;
+  DOMString organization;
+  DOMString phone;
+  DOMString postalCode;
+  DOMString recipient;
+  DOMString region;
+  DOMString regionCode;
+  DOMString sortingCode;
+};
+
+dictionary PaymentValidationErrors {
+  PayerErrors payer;
+  AddressErrors shippingAddress;
+  DOMString error;
+  object paymentMethod;
+};
+
+dictionary PayerErrors {
+  DOMString email;
+  DOMString name;
+  DOMString phone;
+};
+
+dictionary PaymentDetailsUpdate : PaymentDetailsBase {
+  DOMString     error;
+  AddressErrors shippingAddressErrors;
+  PayerErrors payerErrors;
+  object paymentMethodErrors;
+  PaymentItem   total;
+};
+
 enum PaymentShippingType {
   "shipping",
   "delivery",
@@ -65,6 +98,7 @@ dictionary PaymentOptions {
   boolean             requestPayerEmail = false;
   boolean             requestPayerPhone = false;
   boolean             requestShipping = false;
+  boolean             requestBillingAddress = false;
   PaymentShippingType shippingType = "shipping";
 };
 
@@ -74,7 +108,7 @@ dictionary PaymentOptions {
  Func="mozilla::dom::PaymentRequest::PrefEnabled"]
 interface PaymentRequest : EventTarget {
   [NewObject]
-  Promise<PaymentResponse> show();
+  Promise<PaymentResponse> show(optional Promise<PaymentDetailsUpdate> detailsPromise);
   [NewObject]
   Promise<void>            abort();
   [NewObject]
@@ -85,6 +119,8 @@ interface PaymentRequest : EventTarget {
   readonly attribute DOMString?           shippingOption;
   readonly attribute PaymentShippingType? shippingType;
 
+           attribute EventHandler         onmerchantvalidation;
            attribute EventHandler         onshippingaddresschange;
            attribute EventHandler         onshippingoptionchange;
+           attribute EventHandler         onpaymentmethodchange;
 };

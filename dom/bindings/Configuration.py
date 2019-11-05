@@ -104,14 +104,16 @@ class Configuration(DescriptorProvider):
                             "%s" %
                             (partialIface.location, iface.location))
                 if not (iface.getExtendedAttribute("ChromeOnly") or
+                        iface.getExtendedAttribute("Func") == ["IsChromeOrXBL"] or
+                        iface.getExtendedAttribute("Func") == ["nsContentUtils::IsCallerChromeOrFuzzingEnabled"] or
                         not (iface.hasInterfaceObject() or
                              iface.isNavigatorProperty()) or
                         isInWebIDLRoot(iface.filename())):
                     raise TypeError(
                         "Interfaces which are exposed to the web may only be "
                         "defined in a DOM WebIDL root %r. Consider marking "
-                        "the interface [ChromeOnly] if you do not want it "
-                        "exposed to the web.\n"
+                        "the interface [ChromeOnly] or [Func='IsChromeOrXBL'] "
+                        "if you do not want it exposed to the web.\n"
                         "%s" %
                         (webRoots, iface.location))
             self.interfaces[iface.identifier.name] = iface
@@ -248,8 +250,6 @@ class Configuration(DescriptorProvider):
                 getter = lambda x: x.interface.isExposedInWorkerDebugger()
             elif key == 'isExposedInAnyWorklet':
                 getter = lambda x: x.interface.isExposedInAnyWorklet()
-            elif key == 'isExposedInSystemGlobals':
-                getter = lambda x: x.interface.isExposedInSystemGlobals()
             elif key == 'isExposedInWindow':
                 getter = lambda x: x.interface.isExposedInWindow()
             else:
@@ -399,8 +399,6 @@ class Descriptor(DescriptorProvider):
         self.notflattened = desc.get('notflattened', False)
         self.register = desc.get('register', True)
 
-        self.hasXPConnectImpls = desc.get('hasXPConnectImpls', False)
-
         # If we're concrete, we need to crawl our ancestor interfaces and mark
         # them as having a concrete descendant.
         self.concrete = (not self.interface.isExternal() and
@@ -419,10 +417,11 @@ class Descriptor(DescriptorProvider):
             'NamedDeleter': None,
             'Stringifier': None,
             'LegacyCaller': None,
-            'Jsonifier': None
             }
 
-        # Stringifiers and jsonifiers need to be set up whether an interface is
+        self.hasDefaultToJSON = False
+
+        # Stringifiers need to be set up whether an interface is
         # concrete or not, because they're actually prototype methods and hence
         # can apply to instances of descendant interfaces.  Legacy callers and
         # named/indexed operations only need to be set up on concrete
@@ -438,8 +437,8 @@ class Descriptor(DescriptorProvider):
             for m in self.interface.members:
                 if m.isMethod() and m.isStringifier():
                     addOperation('Stringifier', m)
-                if m.isMethod() and m.isJsonifier():
-                    addOperation('Jsonifier', m)
+                if m.isMethod() and m.isDefaultToJSON():
+                    self.hasDefaultToJSON = True
 
         if self.concrete:
             self.proxy = False
@@ -485,9 +484,19 @@ class Descriptor(DescriptorProvider):
             self.proxy = (self.supportsIndexedProperties() or
                           (self.supportsNamedProperties() and
                            not self.hasNamedPropertiesObject) or
-                          self.hasNonOrdinaryGetPrototypeOf())
+                          self.isMaybeCrossOriginObject())
 
             if self.proxy:
+                if (self.isMaybeCrossOriginObject() and
+                    (self.supportsIndexedProperties() or
+                     self.supportsNamedProperties())):
+                    raise TypeError("We don't support named or indexed "
+                                    "properties on maybe-cross-origin objects. "
+                                    "This lets us assume that their proxy "
+                                    "hooks are never called via Xrays.  "
+                                    "Fix %s.\n%s" %
+                                    (self.interface, self.interface.location))
+                    
                 if (not self.operations['IndexedGetter'] and
                     (self.operations['IndexedSetter'] or
                      self.operations['IndexedDeleter'])):
@@ -709,8 +718,10 @@ class Descriptor(DescriptorProvider):
         namedGetter = self.operations['NamedGetter']
         return namedGetter.getExtendedAttribute("NeedsCallerType")
 
-    def hasNonOrdinaryGetPrototypeOf(self):
-        return self.interface.getExtendedAttribute("NonOrdinaryGetPrototypeOf")
+    def isMaybeCrossOriginObject(self):
+        # If we're isGlobal and have cross-origin members, we're a Window, and
+        # that's not a cross-origin object.  The WindowProxy is.
+        return self.interface.hasCrossOriginMembers and not self.isGlobal()
 
     def needsHeaderInclude(self):
         """
@@ -756,16 +767,6 @@ class Descriptor(DescriptorProvider):
                                                        "HTMLEmbedElement"])
     def needsXrayNamedDeleterHook(self):
         return self.operations["NamedDeleter"] is not None
-
-    def needsSpecialGenericOps(self):
-        """
-        Returns true if this descriptor requires generic ops other than
-        GenericBindingMethod/GenericBindingGetter/GenericBindingSetter.
-
-        In practice we need to do this if our this value might be an XPConnect
-        object or if we need to coerce null/undefined to the global.
-        """
-        return self.hasXPConnectImpls or self.interface.isOnGlobalProtoChain()
 
     def isGlobal(self):
         """

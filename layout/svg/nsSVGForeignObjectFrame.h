@@ -8,22 +8,23 @@
 #define NSSVGFOREIGNOBJECTFRAME_H__
 
 #include "mozilla/Attributes.h"
+#include "mozilla/PresShellForwards.h"
 #include "nsAutoPtr.h"
 #include "nsContainerFrame.h"
-#include "nsIPresShell.h"
 #include "nsSVGDisplayableFrame.h"
 #include "nsRegion.h"
 #include "nsSVGUtils.h"
 
 class gfxContext;
 
-class nsSVGForeignObjectFrame : public nsContainerFrame,
-                                public nsSVGDisplayableFrame {
+class nsSVGForeignObjectFrame final : public nsContainerFrame,
+                                      public nsSVGDisplayableFrame {
   friend nsContainerFrame* NS_NewSVGForeignObjectFrame(
-      nsIPresShell* aPresShell, nsStyleContext* aContext);
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
 
  protected:
-  explicit nsSVGForeignObjectFrame(nsStyleContext* aContext);
+  explicit nsSVGForeignObjectFrame(ComputedStyle* aStyle,
+                                   nsPresContext* aPresContext);
 
  public:
   NS_DECL_QUERYFRAME
@@ -49,6 +50,10 @@ class nsSVGForeignObjectFrame : public nsContainerFrame,
                                 const nsDisplayListSet& aLists) override;
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsContainerFrame::IsFrameOfType(
         aFlags & ~(nsIFrame::eSVG | nsIFrame::eSVGForeignObject));
   }
@@ -83,7 +88,7 @@ class nsSVGForeignObjectFrame : public nsContainerFrame,
  protected:
   // implementation helpers:
   void DoReflow();
-  void RequestReflow(nsIPresShell::IntrinsicDirty aType);
+  void RequestReflow(mozilla::IntrinsicDirty aType);
 
   // If width or height is less than or equal to zero we must disable rendering
   bool IsDisabled() const { return mRect.width <= 0 || mRect.height <= 0; }

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,6 +12,7 @@
 #include "nsISupportsImpl.h"  // NS_INLINE_DECL_CYCLE_COLLECTING_NATIVE_REFCOUNTING
 #include "nsString.h"
 #include "nsWrapperCache.h"
+#include "WebGLTypes.h"
 
 namespace mozilla {
 
@@ -39,6 +40,7 @@ class WebGLActiveInfo final : public nsWrapperCache {
   const bool mIsArray;
   const uint8_t mElemSize;
   const nsCString mBaseMappedName;  // Without any final "[0]".
+  const webgl::AttribBaseType mBaseType = webgl::AttribBaseType::Float;
 
   bool IsSampler() const;
 

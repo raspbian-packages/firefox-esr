@@ -8,83 +8,96 @@
 
 // Test deleting all storage items
 
-add_task(function* () {
-  yield openTabAndSetupStorage(MAIN_DOMAIN + "storage-listings.html");
+add_task(async function() {
+  await openTabAndSetupStorage(MAIN_DOMAIN + "storage-listings.html");
 
-  let contextMenu = gPanelWindow.document.getElementById("storage-table-popup");
-  let menuDeleteAllItem = contextMenu.querySelector(
-    "#storage-table-popup-delete-all");
+  const contextMenu = gPanelWindow.document.getElementById(
+    "storage-table-popup"
+  );
+  const menuDeleteAllItem = contextMenu.querySelector(
+    "#storage-table-popup-delete-all"
+  );
 
   info("test state before delete");
   const beforeState = [
-    [["localStorage", "http://test1.example.org"],
-      ["ls1", "ls2"]],
-    [["localStorage", "http://sectest1.example.org"],
-      ["iframe-u-ls1"]],
-    [["localStorage", "https://sectest1.example.org"],
-      ["iframe-s-ls1"]],
-    [["sessionStorage", "http://test1.example.org"],
-      ["ss1"]],
-    [["sessionStorage", "http://sectest1.example.org"],
-      ["iframe-u-ss1", "iframe-u-ss2"]],
-    [["sessionStorage", "https://sectest1.example.org"],
-      ["iframe-s-ss1"]],
-    [["indexedDB", "http://test1.example.org", "idb1 (default)", "obj1"],
-      [1, 2, 3]],
-    [["Cache", "http://test1.example.org", "plop"],
-      [MAIN_DOMAIN + "404_cached_file.js", MAIN_DOMAIN + "browser_storage_basic.js"]],
+    [["localStorage", "http://test1.example.org"], ["key", "ls1", "ls2"]],
+    [["localStorage", "http://sectest1.example.org"], ["iframe-u-ls1"]],
+    [["localStorage", "https://sectest1.example.org"], ["iframe-s-ls1"]],
+    [["sessionStorage", "http://test1.example.org"], ["key", "ss1"]],
+    [
+      ["sessionStorage", "http://sectest1.example.org"],
+      ["iframe-u-ss1", "iframe-u-ss2"],
+    ],
+    [["sessionStorage", "https://sectest1.example.org"], ["iframe-s-ss1"]],
+    [
+      ["indexedDB", "http://test1.example.org", "idb1 (default)", "obj1"],
+      [1, 2, 3],
+    ],
+    [
+      ["Cache", "http://test1.example.org", "plop"],
+      [
+        MAIN_DOMAIN + "404_cached_file.js",
+        MAIN_DOMAIN + "browser_storage_basic.js",
+      ],
+    ],
   ];
 
-  yield checkState(beforeState);
+  await checkState(beforeState);
 
   info("do the delete");
   const deleteHosts = [
     [["localStorage", "https://sectest1.example.org"], "iframe-s-ls1", "name"],
-    [["sessionStorage", "https://sectest1.example.org"], "iframe-s-ss1", "name"],
-    [["indexedDB", "http://test1.example.org", "idb1 (default)", "obj1"], 1, "name"],
-    [["Cache", "http://test1.example.org", "plop"],
-     MAIN_DOMAIN + "404_cached_file.js", "url"],
+    [
+      ["sessionStorage", "https://sectest1.example.org"],
+      "iframe-s-ss1",
+      "name",
+    ],
+    [
+      ["indexedDB", "http://test1.example.org", "idb1 (default)", "obj1"],
+      1,
+      "name",
+    ],
+    [
+      ["Cache", "http://test1.example.org", "plop"],
+      MAIN_DOMAIN + "404_cached_file.js",
+      "url",
+    ],
   ];
 
-  for (let [store, rowName, cellToClick] of deleteHosts) {
-    let storeName = store.join(" > ");
+  for (const [store, rowName, cellToClick] of deleteHosts) {
+    const storeName = store.join(" > ");
 
-    yield selectTreeItem(store);
+    await selectTreeItem(store);
 
-    let eventWait = gUI.once("store-objects-cleared");
+    const eventWait = gUI.once("store-objects-cleared");
 
-    let cell = getRowCells(rowName)[cellToClick];
-    yield waitForContextMenu(contextMenu, cell, () => {
+    const cell = getRowCells(rowName)[cellToClick];
+    await waitForContextMenu(contextMenu, cell, () => {
       info(`Opened context menu in ${storeName}, row '${rowName}'`);
       menuDeleteAllItem.click();
     });
 
-    yield eventWait;
+    await eventWait;
   }
 
   info("test state after delete");
   const afterState = [
     // iframes from the same host, one secure, one unsecure, are independent
     // from each other. Delete all in one doesn't touch the other one.
-    [["localStorage", "http://test1.example.org"],
-      ["ls1", "ls2"]],
-    [["localStorage", "http://sectest1.example.org"],
-      ["iframe-u-ls1"]],
-    [["localStorage", "https://sectest1.example.org"],
-      []],
-    [["sessionStorage", "http://test1.example.org"],
-      ["ss1"]],
-    [["sessionStorage", "http://sectest1.example.org"],
-      ["iframe-u-ss1", "iframe-u-ss2"]],
-    [["sessionStorage", "https://sectest1.example.org"],
-      []],
-    [["indexedDB", "http://test1.example.org", "idb1 (default)", "obj1"],
-      []],
-    [["Cache", "http://test1.example.org", "plop"],
-      []],
+    [["localStorage", "http://test1.example.org"], ["key", "ls1", "ls2"]],
+    [["localStorage", "http://sectest1.example.org"], ["iframe-u-ls1"]],
+    [["localStorage", "https://sectest1.example.org"], []],
+    [["sessionStorage", "http://test1.example.org"], ["key", "ss1"]],
+    [
+      ["sessionStorage", "http://sectest1.example.org"],
+      ["iframe-u-ss1", "iframe-u-ss2"],
+    ],
+    [["sessionStorage", "https://sectest1.example.org"], []],
+    [["indexedDB", "http://test1.example.org", "idb1 (default)", "obj1"], []],
+    [["Cache", "http://test1.example.org", "plop"], []],
   ];
 
-  yield checkState(afterState);
+  await checkState(afterState);
 
-  yield finishTests();
+  await finishTests();
 });

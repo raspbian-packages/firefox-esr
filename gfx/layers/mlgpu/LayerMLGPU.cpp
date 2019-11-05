@@ -18,9 +18,13 @@ using namespace gfx;
 uint64_t LayerMLGPU::sFrameKey = 0;
 
 LayerMLGPU::LayerMLGPU(LayerManagerMLGPU* aManager)
-    : HostLayer(aManager), mFrameKey(0), mPrepared(false) {}
+    : HostLayer(aManager),
+      mFrameKey(0),
+      mComputedOpacity(0.0),
+      mPrepared(false) {}
 
-/* static */ void LayerMLGPU::BeginFrame() { sFrameKey++; }
+/* static */
+void LayerMLGPU::BeginFrame() { sFrameKey++; }
 
 LayerManagerMLGPU* LayerMLGPU::GetManager() {
   return static_cast<LayerManagerMLGPU*>(mCompositorManager);
@@ -64,13 +68,13 @@ bool LayerMLGPU::PrepareToRender(FrameBuilder* aBuilder,
 
 void LayerMLGPU::AssignToView(FrameBuilder* aBuilder, RenderViewMLGPU* aView,
                               Maybe<gfx::Polygon>&& aGeometry) {
-  AddBoundsToView(aBuilder, aView, Move(aGeometry));
+  AddBoundsToView(aBuilder, aView, std::move(aGeometry));
 }
 
 void LayerMLGPU::AddBoundsToView(FrameBuilder* aBuilder, RenderViewMLGPU* aView,
                                  Maybe<gfx::Polygon>&& aGeometry) {
   IntRect bounds = GetClippedBoundingBox(aView, aGeometry);
-  aView->AddItem(this, bounds, Move(aGeometry));
+  aView->AddItem(this, bounds, std::move(aGeometry));
 }
 
 IntRect LayerMLGPU::GetClippedBoundingBox(
@@ -102,7 +106,7 @@ void LayerMLGPU::MarkPrepared() {
 bool LayerMLGPU::IsContentOpaque() { return GetLayer()->IsOpaque(); }
 
 void LayerMLGPU::SetRenderRegion(LayerIntRegion&& aRegion) {
-  mRenderRegion = Move(aRegion);
+  mRenderRegion = std::move(aRegion);
 }
 
 void LayerMLGPU::SetLayerManager(HostLayerManager* aManager) {

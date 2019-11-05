@@ -11,7 +11,6 @@
 #include "nsIAnonymousContentCreator.h"
 
 class nsContainerFrame;
-class nsStyleContext;
 
 namespace mozilla {
 
@@ -25,7 +24,7 @@ class DetailsFrame final : public nsBlockFrame,
   NS_DECL_FRAMEARENA_HELPERS(DetailsFrame)
   NS_DECL_QUERYFRAME
 
-  explicit DetailsFrame(nsStyleContext* aContext);
+  explicit DetailsFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
 
   virtual ~DetailsFrame();
 

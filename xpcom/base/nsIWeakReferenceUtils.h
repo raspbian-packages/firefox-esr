@@ -20,8 +20,8 @@ typedef nsCOMPtr<nsIWeakReference> nsWeakPtr;
 // T must inherit from nsIWeakReference, but the cast may be ambiguous.
 template <class T, class DestinationType>
 inline nsresult CallQueryReferent(T* aSource, DestinationType** aDestination) {
-  NS_PRECONDITION(aSource, "null parameter");
-  NS_PRECONDITION(aDestination, "null parameter");
+  MOZ_ASSERT(aSource, "null parameter");
+  MOZ_ASSERT(aDestination, "null parameter");
 
   return aSource->QueryReferent(NS_GET_TEMPLATE_IID(DestinationType),
                                 reinterpret_cast<void**>(aDestination));

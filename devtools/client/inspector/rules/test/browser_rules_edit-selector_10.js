@@ -23,33 +23,37 @@ const TEST_URI = `
   </div>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let {inspector, view} = yield openRuleView();
-  yield selectNode(".pickme", inspector);
-  yield testEditSelector(view);
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { inspector, view } = await openRuleView();
+  await selectNode(".pickme", inspector);
+  await testEditSelector(view);
 });
 
-function* testEditSelector(view) {
+async function testEditSelector(view) {
   let ruleEditor = getRuleViewRuleEditor(view, 1);
-  let editor = yield focusEditableField(view, ruleEditor.selectorText);
+  const editor = await focusEditableField(view, ruleEditor.selectorText);
 
   editor.input.value = "#testid span";
-  let onRuleViewChanged = once(view, "ruleview-changed");
+  const onRuleViewChanged = once(view, "ruleview-changed");
   EventUtils.synthesizeKey("KEY_Enter");
-  yield onRuleViewChanged;
+  await onRuleViewChanged;
 
   // Escape the new property editor after editing the selector
-  let onBlur = once(view.styleDocument.activeElement, "blur");
+  const onBlur = once(view.styleDocument.activeElement, "blur");
   EventUtils.synthesizeKey("KEY_Escape", {}, view.styleWindow);
-  yield onBlur;
+  await onBlur;
 
   // Get the new rule editor that replaced the original
   ruleEditor = getRuleViewRuleEditor(view, 1);
 
   info("Check that the correct rules are visible");
   is(view._elementStyle.rules.length, 3, "Should have 3 rules.");
-  is(ruleEditor.element.getAttribute("unmatched"), "false", "Rule editor is matched.");
+  is(
+    ruleEditor.element.getAttribute("unmatched"),
+    "false",
+    "Rule editor is matched."
+  );
 
   let props = ruleEditor.rule.textProps;
   is(props.length, 1, "Rule has correct number of properties");

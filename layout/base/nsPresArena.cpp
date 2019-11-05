@@ -12,24 +12,18 @@
 #include "mozilla/Poison.h"
 #include "nsDebug.h"
 #include "nsPrintfCString.h"
-#ifdef MOZ_OLD_STYLE
-#include "GeckoStyleContext.h"
-#endif
 #include "FrameLayerBuilder.h"
 #include "mozilla/ArrayUtils.h"
-#include "nsStyleContext.h"
-#include "nsStyleContextInlines.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/ComputedStyleInlines.h"
 #include "nsWindowSizes.h"
 
 #include <inttypes.h>
 
 using namespace mozilla;
 
-nsPresArena::nsPresArena() {}
-
-nsPresArena::~nsPresArena() {
-  ClearArenaRefPtrs();
-
+template <size_t ArenaSize>
+nsPresArena<ArenaSize>::~nsPresArena<ArenaSize>() {
 #if defined(MOZ_HAVE_MEM_CHECKS)
   for (FreeList* entry = mFreeLists; entry != ArrayEnd(mFreeLists); ++entry) {
     nsTArray<void*>::index_type len;
@@ -42,43 +36,9 @@ nsPresArena::~nsPresArena() {
 #endif
 }
 
-/* inline */ void nsPresArena::ClearArenaRefPtrWithoutDeregistering(
-    void* aPtr, ArenaObjectID aObjectID) {
-  switch (aObjectID) {
-    // We use ArenaRefPtr<nsStyleContext>, which can be ServoStyleContext
-    // or GeckoStyleContext. GeckoStyleContext is actually arena managed,
-    // but ServoStyleContext isn't.
-    case eArenaObjectID_GeckoStyleContext:
-      static_cast<ArenaRefPtr<nsStyleContext>*>(aPtr)
-          ->ClearWithoutDeregistering();
-      return;
-    default:
-      MOZ_ASSERT(false, "unexpected ArenaObjectID value");
-      break;
-  }
-}
-
-void nsPresArena::ClearArenaRefPtrs() {
-  for (auto iter = mArenaRefPtrs.Iter(); !iter.Done(); iter.Next()) {
-    void* ptr = iter.Key();
-    ArenaObjectID id = iter.UserData();
-    ClearArenaRefPtrWithoutDeregistering(ptr, id);
-  }
-  mArenaRefPtrs.Clear();
-}
-
-void nsPresArena::ClearArenaRefPtrs(ArenaObjectID aObjectID) {
-  for (auto iter = mArenaRefPtrs.Iter(); !iter.Done(); iter.Next()) {
-    void* ptr = iter.Key();
-    ArenaObjectID id = iter.UserData();
-    if (id == aObjectID) {
-      ClearArenaRefPtrWithoutDeregistering(ptr, id);
-      iter.Remove();
-    }
-  }
-}
-
-void* nsPresArena::Allocate(uint32_t aCode, size_t aSize) {
+template <size_t ArenaSize>
+void* nsPresArena<ArenaSize>::Allocate(uint32_t aCode, size_t aSize) {
+  MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aSize > 0, "PresArena cannot allocate zero bytes");
   MOZ_ASSERT(aCode < ArrayLength(mFreeLists));
 
@@ -140,7 +100,9 @@ void* nsPresArena::Allocate(uint32_t aCode, size_t aSize) {
   return mPool.Allocate(aSize);
 }
 
-void nsPresArena::Free(uint32_t aCode, void* aPtr) {
+template <size_t ArenaSize>
+void nsPresArena<ArenaSize>::Free(uint32_t aCode, void* aPtr) {
+  MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aCode < ArrayLength(mFreeLists));
 
   // Try to recycle this entry.
@@ -153,7 +115,9 @@ void nsPresArena::Free(uint32_t aCode, void* aPtr) {
   list->mEntries.AppendElement(aPtr);
 }
 
-void nsPresArena::AddSizeOfExcludingThis(nsWindowSizes& aSizes) const {
+template <size_t ArenaSize>
+void nsPresArena<ArenaSize>::AddSizeOfExcludingThis(
+    nsWindowSizes& aSizes) const {
   // We do a complicated dance here because we want to measure the
   // space taken up by the different kinds of objects in the arena,
   // but we don't have pointers to those objects.  And even if we did,
@@ -191,21 +155,6 @@ void nsPresArena::AddSizeOfExcludingThis(nsWindowSizes& aSizes) const {
       case eArenaObjectID_nsLineBox:
         aSizes.mArenaSizes.mLineBoxes += totalSize;
         break;
-      case eArenaObjectID_nsRuleNode:
-        aSizes.mArenaSizes.mRuleNodes += totalSize;
-        break;
-      case eArenaObjectID_GeckoStyleContext:
-        aSizes.mArenaSizes.mStyleContexts += totalSize;
-        break;
-#define STYLE_STRUCT(name_, cb_)                                       \
-  case eArenaObjectID_nsStyle##name_:                                  \
-    aSizes.mArenaSizes.mGeckoStyleSizes.NS_STYLE_SIZES_FIELD(name_) += \
-        totalSize;                                                     \
-    break;
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
-#include "nsStyleStructList.h"
-#undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
       default:
         continue;
     }
@@ -215,3 +164,8 @@ void nsPresArena::AddSizeOfExcludingThis(nsWindowSizes& aSizes) const {
 
   aSizes.mLayoutPresShellSize += mallocSize - totalSizeInFreeLists;
 }
+
+// Explicitly instantiate templates for the used nsPresArena allocator sizes.
+// This is needed because nsPresArena definition is split across multiple files.
+template class nsPresArena<8192>;
+template class nsPresArena<32768>;

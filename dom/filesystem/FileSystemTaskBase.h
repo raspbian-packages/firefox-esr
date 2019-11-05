@@ -99,6 +99,8 @@ class FileSystemParams;
  *   (8) Call [HandlerCallback] to send the task result to the content page.
  */
 class FileSystemTaskChildBase : public PFileSystemRequestChild {
+  friend class PFileSystemRequestChild;
+
  public:
   NS_INLINE_DECL_REFCOUNTING(FileSystemTaskChildBase)
 
@@ -154,7 +156,7 @@ class FileSystemTaskChildBase : public PFileSystemRequestChild {
 
   // Overrides PFileSystemRequestChild
   virtual mozilla::ipc::IPCResult Recv__delete__(
-      const FileSystemResponseValue& value) override;
+      const FileSystemResponseValue& value) final;
 
   nsresult mErrorValue;
   RefPtr<FileSystemBase> mFileSystem;
@@ -174,7 +176,9 @@ class FileSystemTaskChildBase : public PFileSystemRequestChild {
 // world.
 class FileSystemTaskParentBase : public Runnable {
  public:
-  FileSystemTaskParentBase() : Runnable("FileSystemTaskParentBase") {}
+  FileSystemTaskParentBase()
+      : Runnable("FileSystemTaskParentBase"),
+        mErrorValue(NS_ERROR_NOT_INITIALIZED) {}
 
   /*
    * Start the task. This must be called from the PBackground thread only.

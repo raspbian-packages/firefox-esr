@@ -15,7 +15,6 @@
 #include "nsCOMPtr.h"
 #include "nsGkAtoms.h"
 #include "nsIContent.h"
-#include "nsIDOMNode.h"
 #include "nsINode.h"
 
 namespace mozilla {
@@ -77,7 +76,8 @@ class EditorDOMPointBase final {
   EditorDOMPointBase()
       : mParent(nullptr), mChild(nullptr), mIsChildInitialized(false) {}
 
-  EditorDOMPointBase(nsINode* aContainer, int32_t aOffset)
+  template <typename ContainerType>
+  EditorDOMPointBase(ContainerType aContainer, int32_t aOffset)
       : mParent(aContainer),
         mChild(nullptr),
         mOffset(mozilla::Some(aOffset)),
@@ -88,12 +88,6 @@ class EditorDOMPointBase final {
     if (!mParent) {
       mOffset.reset();
     }
-  }
-
-  EditorDOMPointBase(nsIDOMNode* aDOMContainer, int32_t aOffset)
-      : mIsChildInitialized(false) {
-    nsCOMPtr<nsINode> container = do_QueryInterface(aDOMContainer);
-    this->Set(container, aOffset);
   }
 
   /**
@@ -115,25 +109,17 @@ class EditorDOMPointBase final {
                          "Initializing RangeBoundary with invalid value");
   }
 
-  explicit EditorDOMPointBase(nsIDOMNode* aDOMPointedNode)
-      : mIsChildInitialized(false) {
-    nsCOMPtr<nsIContent> child = do_QueryInterface(aDOMPointedNode);
-    if (NS_WARN_IF(!child)) {
-      return;
-    }
-    this->Set(child);
-  }
-
   EditorDOMPointBase(nsINode* aContainer, nsIContent* aPointedNode,
                      int32_t aOffset)
       : mParent(aContainer),
         mChild(aPointedNode),
         mOffset(mozilla::Some(aOffset)),
         mIsChildInitialized(true) {
-    MOZ_RELEASE_ASSERT(
+    MOZ_DIAGNOSTIC_ASSERT(
         aContainer, "This constructor shouldn't be used when pointing nowhere");
     MOZ_ASSERT(mOffset.value() <= mParent->Length());
-    MOZ_ASSERT(mChild || mParent->Length() == mOffset.value());
+    MOZ_ASSERT(mChild || mParent->Length() == mOffset.value() ||
+               !mParent->IsContainerNode());
     MOZ_ASSERT(!mChild || mParent == mChild->GetParentNode());
     MOZ_ASSERT(mParent->GetChildAt_Deprecated(mOffset.value()) == mChild);
   }
@@ -166,15 +152,11 @@ class EditorDOMPointBase final {
   }
 
   dom::Element* GetContainerAsElement() const {
-    return mParent && mParent->IsElement() ? mParent->AsElement() : nullptr;
+    return Element::FromNodeOrNull(mParent);
   }
 
   dom::Text* GetContainerAsText() const {
     return mParent ? mParent->GetAsText() : nullptr;
-  }
-
-  nsIDOMNode* GetContainerAsDOMNode() const {
-    return mParent ? mParent->AsDOMNode() : nullptr;
   }
 
   /**
@@ -190,16 +172,12 @@ class EditorDOMPointBase final {
    * IsInDataNode() returns true if the container node is a data node including
    * text node.
    */
-  bool IsInDataNode() const {
-    return mParent && mParent->IsNodeOfType(nsINode::eDATA_NODE);
-  }
+  bool IsInDataNode() const { return mParent && mParent->IsCharacterData(); }
 
   /**
    * IsInTextNode() returns true if the container node is a text node.
    */
-  bool IsInTextNode() const {
-    return mParent && mParent->IsNodeOfType(nsINode::eTEXT);
-  }
+  bool IsInTextNode() const { return mParent && mParent->IsText(); }
 
   /**
    * IsInNativeAnonymousSubtree() returns true if the container is in
@@ -592,12 +570,6 @@ class EditorDOMPointBase final {
     return mChild->IsHTMLElement(nsGkAtoms::br);
   }
 
-  // Convenience methods for switching between the two types
-  // of EditorDOMPointBase.
-  EditorDOMPointBase<nsINode*, nsIContent*> AsRaw() const {
-    return EditorRawDOMPoint(*this);
-  }
-
   template <typename A, typename B>
   EditorDOMPointBase& operator=(const RangeBoundaryBase<A, B>& aOther) {
     mParent = aOther.mParent;
@@ -695,8 +667,8 @@ class EditorDOMPointBase final {
       return RawRangeBoundary(mParent, mOffset.value());
     }
     if (mIsChildInitialized && mOffset.isSome()) {
-    // If we've already set both child and offset, we should create
-    // RangeBoundary with offset after validation.
+      // If we've already set both child and offset, we should create
+      // RangeBoundary with offset after validation.
 #ifdef DEBUG
       if (mChild) {
         MOZ_ASSERT(mParent == mChild->GetParentNode());

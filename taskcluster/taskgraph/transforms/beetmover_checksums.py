@@ -7,23 +7,24 @@ Transform the checksums signing task into an actual task description.
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+
 from taskgraph.loader.single_dep import schema
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.transforms.beetmover import craft_release_properties
 from taskgraph.util.attributes import copy_attributes_from_dependent_job
-from taskgraph.util.scriptworker import (get_beetmover_bucket_scope,
+from taskgraph.util.scriptworker import (generate_beetmover_artifact_map,
+                                         generate_beetmover_upstream_artifacts,
                                          get_beetmover_action_scope,
-                                         get_worker_type_for_scope)
+                                         get_beetmover_bucket_scope,
+                                         get_worker_type_for_scope,
+                                         should_use_artifact_map)
 from voluptuous import Optional, Required
 from taskgraph.util.treeherder import replace_group
 from taskgraph.transforms.task import task_description_schema
 
-# Voluptuous uses marker objects as dictionary *keys*, but they are not
-# comparable, so we cast all of the keys back to regular strings
-task_description_schema = {str(k): v for k, v in task_description_schema.schema.iteritems()}
-
 beetmover_checksums_description_schema = schema.extend({
     Required('depname', default='build'): basestring,
+    Required('attributes'): {basestring: object},
     Optional('label'): basestring,
     Optional('treeherder'): task_description_schema['treeherder'],
     Optional('locale'): basestring,
@@ -50,7 +51,10 @@ def make_beetmover_checksums_description(config, jobs):
             'treeherder', {}).get('machine', {}).get('platform', '')
         treeherder.setdefault('platform',
                               "{}/opt".format(dep_th_platform))
-        treeherder.setdefault('tier', 1)
+        treeherder.setdefault(
+            'tier',
+            dep_job.task.get('extra', {}).get('treeherder', {}).get('tier', 1)
+        )
         treeherder.setdefault('kind', 'build')
 
         label = job['label']
@@ -73,17 +77,21 @@ def make_beetmover_checksums_description(config, jobs):
         else:
             extra['product'] = 'firefox'
 
-        dependent_kind = str(dep_job.kind)
-        dependencies = {dependent_kind: dep_job.label}
+        dependencies = {dep_job.kind: dep_job.label}
 
         attributes = copy_attributes_from_dependent_job(dep_job)
+        attributes.update(job.get('attributes', {}))
 
         if dep_job.attributes.get('locale'):
             treeherder['symbol'] = 'BMcs({})'.format(dep_job.attributes.get('locale'))
             attributes['locale'] = dep_job.attributes.get('locale')
 
-        bucket_scope = get_beetmover_bucket_scope(config)
-        action_scope = get_beetmover_action_scope(config)
+        bucket_scope = get_beetmover_bucket_scope(
+            config, job_release_type=attributes.get('release-type')
+        )
+        action_scope = get_beetmover_action_scope(
+            config, job_release_type=attributes.get('release-type')
+        )
 
         task = {
             'label': label,
@@ -139,10 +147,23 @@ def make_beetmover_checksums_worker(config, jobs):
         worker = {
             'implementation': 'beetmover',
             'release-properties': craft_release_properties(config, job),
-            'upstream-artifacts': generate_upstream_artifacts(
-                refs, platform, locale
-            ),
         }
+
+        if should_use_artifact_map(platform):
+            upstream_artifacts = generate_beetmover_upstream_artifacts(
+                config, job, platform, locale
+            )
+            worker['artifact-map'] = generate_beetmover_artifact_map(
+                config, job, platform=platform, locale=locale)
+        else:
+            upstream_artifacts = generate_upstream_artifacts(
+                refs, platform, locale
+            )
+            # Clean up un-used artifact map, to avoid confusion
+            if job['attributes'].get('artifact_map'):
+                del job['attributes']['artifact_map']
+
+        worker['upstream-artifacts'] = upstream_artifacts
 
         if locale:
             worker["locale"] = locale

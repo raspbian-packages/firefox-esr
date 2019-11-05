@@ -11,9 +11,8 @@
 #include "mozilla/Unused.h"
 #include "mozilla/net/NeckoCommon.h"
 #include "mozilla/net/PNeckoParent.h"
-#include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/ScriptSettings.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "mozilla/HoldDropJSObjects.h"
 #include "nsISocketTransportService.h"
 #include "nsISocketTransport.h"
@@ -40,10 +39,14 @@ extern LazyLogModule gTCPSocketLog;
 #define TCPSOCKET_LOG_ENABLED() MOZ_LOG_TEST(gTCPSocketLog, LogLevel::Debug)
 }  // namespace net
 
+using namespace net;
+
 namespace dom {
 
-static void FireInteralError(mozilla::net::PTCPSocketParent* aActor,
+static void FireInteralError(TCPSocketParent* aActor,
                              uint32_t aLineNo) {
+  MOZ_ASSERT(aActor->IPCOpen());
+
   mozilla::Unused << aActor->SendCallback(
       NS_LITERAL_STRING("onerror"),
       TCPError(NS_LITERAL_STRING("InvalidStateError"),
@@ -227,7 +230,10 @@ mozilla::ipc::IPCResult TCPSocketParent::RecvData(
       bool ok = IPC::DeserializeArrayBuffer(autoCx, buffer, &val);
       NS_ENSURE_TRUE(ok, IPC_OK());
       RootedSpiderMonkeyInterface<ArrayBuffer> data(autoCx);
-      data.Init(&val.toObject());
+      if (!data.Init(&val.toObject())) {
+        TCPSOCKET_LOG(("%s: Failed to allocate memory", __FUNCTION__));
+        return IPC_FAIL_NO_REASON(this);
+      }
       Optional<uint32_t> byteLength(buffer.Length());
       mSocket->SendWithTrackingNumber(autoCx, data, 0, byteLength,
                                       aTrackingNumber, rv);

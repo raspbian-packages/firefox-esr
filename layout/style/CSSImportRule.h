@@ -10,29 +10,43 @@
 #include "mozilla/css/Rule.h"
 
 namespace mozilla {
+
+class StyleSheet;
+
 namespace dom {
 
-class CSSImportRule : public css::Rule {
- protected:
-  using Rule::Rule;
-  virtual ~CSSImportRule() {}
-
+class CSSImportRule final : public css::Rule {
  public:
+  CSSImportRule(RefPtr<RawServoImportRule> aRawRule, StyleSheet* aSheet,
+                css::Rule* aParentRule, uint32_t aLine, uint32_t aColumn);
+
+  NS_DECL_ISUPPORTS_INHERITED
+  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(CSSImportRule, css::Rule)
+
   bool IsCCLeaf() const final;
 
-  int32_t GetType() const final { return css::Rule::IMPORT_RULE; }
+#ifdef DEBUG
+  void List(FILE* out = stdout, int32_t aIndent = 0) const final;
+#endif
 
   size_t SizeOfIncludingThis(
-      mozilla::MallocSizeOf aMallocSizeOf) const override = 0;
+      mozilla::MallocSizeOf aMallocSizeOf) const override;
 
   // WebIDL interface
-  uint16_t Type() const final { return CSSRuleBinding::IMPORT_RULE; }
-  virtual void GetHref(nsAString& aHref) const = 0;
-  virtual dom::MediaList* GetMedia() const = 0;
-  virtual StyleSheet* GetStyleSheet() const = 0;
+  uint16_t Type() const final { return CSSRule_Binding::IMPORT_RULE; }
+  void GetCssText(nsAString& aCssText) const override;
+  void GetHref(nsAString& aHref) const;
+  dom::MediaList* GetMedia() const;
+  StyleSheet* GetStyleSheet() const { return mChildSheet; }
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override;
+
+ private:
+  ~CSSImportRule();
+
+  RefPtr<RawServoImportRule> mRawRule;
+  RefPtr<StyleSheet> mChildSheet;
 };
 
 }  // namespace dom

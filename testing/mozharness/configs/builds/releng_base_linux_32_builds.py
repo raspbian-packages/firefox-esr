@@ -16,9 +16,6 @@ config = {
     ],
     'app_ini_path': '%(obj_dir)s/dist/bin/application.ini',
     'secret_files': [
-        {'filename': '/builds/gapi.data',
-         'secret_name': 'project/releng/gecko/build/level-%(scm-level)s/gapi.data',
-         'min_scm_level': 1},
         {'filename': '/builds/gls-gapi.data',
          'secret_name': 'project/releng/gecko/build/level-%(scm-level)s/gls-gapi.data',
          'min_scm_level': 1},
@@ -36,7 +33,6 @@ config = {
          'min_scm_level': 2, 'default': 'try-build-has-no-secrets'},
     ],
     'vcs_share_base': '/builds/hg-shared',
-    'enable_count_ctors': True,
     #########################################################################
 
 

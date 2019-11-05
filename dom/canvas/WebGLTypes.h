@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,8 +6,11 @@
 #ifndef WEBGLTYPES_H_
 #define WEBGLTYPES_H_
 
+#include <limits>
+
 // Most WebIDL typedefs are identical to their OpenGL counterparts.
 #include "GLTypes.h"
+#include "mozilla/Casting.h"
 
 // Manual reflection of WebIDL typedefs that are different from their
 // OpenGL counterparts.
@@ -15,39 +18,67 @@ typedef int64_t WebGLsizeiptr;
 typedef int64_t WebGLintptr;
 typedef bool WebGLboolean;
 
+// -
+
 namespace mozilla {
 namespace gl {
 class GLContext;  // This is going to be needed a lot.
 }  // namespace gl
 
-/*
- * WebGLTextureFakeBlackStatus is an enum to track what needs to use a dummy 1x1
- * black texture, which we refer to as a 'fake black' texture.
- *
- * There are two things that can cause us to use such 'fake black' textures:
- *
- *   (1) OpenGL ES rules on sampling incomplete textures specify that they
- *       must be sampled as RGBA(0, 0, 0, 1) (opaque black). We have to
- * implement these rules ourselves, if only because we do not always run on
- * OpenGL ES, and also because this is dangerously close to the kind of
- * case where we don't want to trust the driver with corner cases of
- * texture memory accesses.
- *
- *   (2) OpenGL has cases where a renderbuffer, or a texture image, can contain
- *       uninitialized image data. See below the comment about
- * WebGLImageDataStatus. WebGL must never have access to uninitialized image
- * data. The WebGL 1 spec, section 4.1 'Resource Restrictions', specifies
- * that in any such case, the uninitialized image data must be exposed to
- * WebGL as if it were filled with zero bytes, which means it's either
- * opaque or transparent black depending on whether the image format has
- * alpha.
- */
+// -
+// Prevent implicit conversions into calloc and malloc. (mozilla namespace
+// only!)
 
-enum class FakeBlackType : uint8_t {
-  None,
-  RGBA0001,  // Incomplete textures and uninitialized no-alpha color textures.
-  RGBA0000,  // Uninitialized with-alpha color textures.
+template <typename DestT>
+class ForbidNarrowing final {
+  DestT mVal;
+
+ public:
+  template <typename SrcT>
+  MOZ_IMPLICIT ForbidNarrowing(SrcT val) : mVal(val) {
+    static_assert(
+        std::numeric_limits<SrcT>::min() >= std::numeric_limits<DestT>::min(),
+        "SrcT must be narrower than DestT.");
+    static_assert(
+        std::numeric_limits<SrcT>::max() <= std::numeric_limits<DestT>::max(),
+        "SrcT must be narrower than DestT.");
+  }
+
+  explicit operator DestT() const { return mVal; }
 };
+
+inline void* malloc(const ForbidNarrowing<size_t> s) {
+  return ::malloc(size_t(s));
+}
+
+inline void* calloc(const ForbidNarrowing<size_t> n,
+                    const ForbidNarrowing<size_t> size) {
+  return ::calloc(size_t(n), size_t(size));
+}
+
+// -
+
+namespace detail {
+
+template <typename From>
+class AutoAssertCastT final {
+  const From mVal;
+
+ public:
+  explicit AutoAssertCastT(const From val) : mVal(val) {}
+
+  template <typename To>
+  operator To() const {
+    return AssertedCast<To>(mVal);
+  }
+};
+
+}  // namespace detail
+
+template <typename From>
+inline auto AutoAssertCast(const From val) {
+  return detail::AutoAssertCastT<From>(val);
+}
 
 /*
  * Implementing WebGL (or OpenGL ES 2.0) on top of desktop OpenGL requires
@@ -61,24 +92,6 @@ enum class WebGLVertexAttrib0Status : uint8_t {
                                // contents may be left uninitialized
   EmulatedInitializedArray  // need an artificial attrib 0 array, and contents
                             // must be initialized
-};
-
-/*
- * Enum to track the status of image data (renderbuffer or texture image)
- * presence and initialization.
- *
- * - NoImageData is the initial state before any image data is allocated.
- * - InitializedImageData is the state after image data is allocated and
- * initialized.
- * - UninitializedImageData is an intermediate state where data is allocated but
- * not initialized. It is the state that renderbuffers are in after a
- * renderbufferStorage call, and it is the state that texture images are in
- * after a texImage2D call with null data.
- */
-enum class WebGLImageDataStatus : uint8_t {
-  NoImageData,
-  UninitializedImageData,
-  InitializedImageData
 };
 
 /*
@@ -148,13 +161,17 @@ enum class WebGLExtensionID : uint8_t {
   EXT_blend_minmax,
   EXT_color_buffer_float,
   EXT_color_buffer_half_float,
-  EXT_frag_depth,
-  EXT_sRGB,
-  EXT_shader_texture_lod,
-  EXT_texture_filter_anisotropic,
   EXT_disjoint_timer_query,
+  EXT_float_blend,
+  EXT_frag_depth,
+  EXT_shader_texture_lod,
+  EXT_sRGB,
+  EXT_texture_compression_bptc,
+  EXT_texture_compression_rgtc,
+  EXT_texture_filter_anisotropic,
   MOZ_debug,
   OES_element_index_uint,
+  OES_fbo_render_mipmap,
   OES_standard_derivatives,
   OES_texture_float,
   OES_texture_float_linear,
@@ -163,7 +180,6 @@ enum class WebGLExtensionID : uint8_t {
   OES_vertex_array_object,
   WEBGL_color_buffer_float,
   WEBGL_compressed_texture_astc,
-  WEBGL_compressed_texture_atc,
   WEBGL_compressed_texture_etc,
   WEBGL_compressed_texture_etc1,
   WEBGL_compressed_texture_pvrtc,
@@ -174,8 +190,7 @@ enum class WebGLExtensionID : uint8_t {
   WEBGL_depth_texture,
   WEBGL_draw_buffers,
   WEBGL_lose_context,
-  Max,
-  Unknown
+  Max
 };
 
 class UniqueBuffer {
@@ -211,9 +226,33 @@ class UniqueBuffer {
 
   void* get() const { return mBuffer; }
 
-  UniqueBuffer(const UniqueBuffer& other) = delete;  // construct using Move()!
-  void operator=(const UniqueBuffer& other) = delete;  // assign using Move()!
+  UniqueBuffer(const UniqueBuffer& other) =
+      delete;  // construct using std::move()!
+  void operator=(const UniqueBuffer& other) =
+      delete;  // assign using std::move()!
 };
+
+namespace webgl {
+struct FormatUsageInfo;
+
+struct SampleableInfo final {
+  const char* incompleteReason = nullptr;
+  uint32_t levels = 0;
+  const webgl::FormatUsageInfo* usage = nullptr;
+  bool isDepthTexCompare = false;
+
+  bool IsComplete() const { return bool(levels); }
+};
+
+enum class AttribBaseType : uint8_t {
+  Int,
+  UInt,
+  Float,    // Also includes NormU?Int
+  Boolean,  // Can convert from anything.
+};
+const char* ToString(AttribBaseType);
+
+}  // namespace webgl
 
 }  // namespace mozilla
 

@@ -12,11 +12,8 @@
 #ifndef nsMappedAttributes_h___
 #define nsMappedAttributes_h___
 
-#include "nsAttrAndChildArray.h"
+#include "AttrArray.h"
 #include "nsMappedAttributeElement.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsIStyleRule.h"
-#endif
 #include "mozilla/Attributes.h"
 #include "mozilla/ServoBindingTypes.h"
 #include "mozilla/MemoryReporting.h"
@@ -24,11 +21,7 @@
 class nsAtom;
 class nsHTMLStyleSheet;
 
-class nsMappedAttributes final
-#ifdef MOZ_OLD_STYLE
-    : public nsIStyleRule
-#endif
-{
+class nsMappedAttributes final {
  public:
   nsMappedAttributes(nsHTMLStyleSheet* aSheet,
                      nsMapRuleToAttributesFunc aMapRuleFunc);
@@ -37,15 +30,11 @@ class nsMappedAttributes final
   void* operator new(size_t size, uint32_t aAttrCount = 1) CPP_THROW_NEW;
   nsMappedAttributes* Clone(bool aWillAddAttr);
 
-#ifdef MOZ_OLD_STYLE
-  NS_DECL_ISUPPORTS
-#else
   NS_INLINE_DECL_REFCOUNTING_WITH_DESTROY(nsMappedAttributes, LastRelease())
-#endif
 
   void SetAndSwapAttr(nsAtom* aAttrName, nsAttrValue& aValue,
                       bool* aValueWasSet);
-  const nsAttrValue* GetAttr(nsAtom* aAttrName) const;
+  const nsAttrValue* GetAttr(const nsAtom* aAttrName) const;
   const nsAttrValue* GetAttr(const nsAString& aAttrName) const;
 
   uint32_t Count() const { return mAttrCount; }
@@ -56,6 +45,10 @@ class nsMappedAttributes final
   void DropStyleSheetReference() { mSheet = nullptr; }
   void SetStyleSheet(nsHTMLStyleSheet* aSheet);
   nsHTMLStyleSheet* GetStyleSheet() { return mSheet; }
+
+  void SetRuleMapper(nsMapRuleToAttributesFunc aRuleMapper) {
+    mRuleMapper = aRuleMapper;
+  }
 
   const nsAttrName* NameAt(uint32_t aPos) const {
     NS_ASSERTION(aPos < mAttrCount, "out-of-bounds");
@@ -69,11 +62,11 @@ class nsMappedAttributes final
   // aValue; any value that was already in aValue is destroyed.
   void RemoveAttrAt(uint32_t aPos, nsAttrValue& aValue);
   const nsAttrName* GetExistingAttrNameFromQName(const nsAString& aName) const;
-  int32_t IndexOfAttr(nsAtom* aLocalName) const;
+  int32_t IndexOfAttr(const nsAtom* aLocalName) const;
 
   // Apply the contained mapper to the contained set of servo rules,
   // unless the servo rules have already been initialized.
-  void LazilyResolveServoDeclaration(nsIDocument* aDocument);
+  void LazilyResolveServoDeclaration(mozilla::dom::Document* aDocument);
 
   // Obtain the contained servo declaration block
   // May return null if called before the inner block
@@ -86,17 +79,6 @@ class nsMappedAttributes final
     MOZ_ASSERT(NS_IsMainThread());
     mServoStyle = nullptr;
   }
-
-#ifdef MOZ_OLD_STYLE
-  // nsIStyleRule
-  virtual void MapRuleInfoInto(nsRuleData* aRuleData) override;
-  virtual bool MightMapInheritedStyleData() override;
-  virtual bool GetDiscretelyAnimatedCSSValue(nsCSSPropertyID aProperty,
-                                             nsCSSValue* aValue) override;
-#ifdef DEBUG
-  virtual void List(FILE* out = stdout, int32_t aIndent = 0) const override;
-#endif
-#endif
 
   size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;
 

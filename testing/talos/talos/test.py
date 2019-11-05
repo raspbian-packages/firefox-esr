@@ -37,6 +37,8 @@ class Test(object):
     filters = filter.ignore_first.prepare(1) + filter.median.prepare()
     lower_is_better = True
     alert_threshold = 2.0
+    perfherder_framework = 'talos'
+    subtest_alerts = False
 
     @classmethod
     def name(cls):
@@ -106,6 +108,7 @@ class TsBase(Test):
         'tpmozafterpaint',
         'fnbpaint',
         'tphero',
+        'tpmanifest',
         'profile',
         'firstpaint',
         'userready',
@@ -167,6 +170,14 @@ class ts_paint_flex(ts_paint):
 
 
 @register_test()
+class startup_about_home_paint(ts_paint):
+    url = None
+    cycles = 20
+    extensions = ['${talos}/startup_test/startup_about_home_paint/addon']
+    tpmanifest = '${talos}/startup_test/startup_about_home_paint/startup_about_home_paint.manifest'
+
+
+@register_test()
 class sessionrestore(TsBase):
     """
     A start up test measuring the time it takes to load a sessionstore.js file.
@@ -175,7 +186,7 @@ class sessionrestore(TsBase):
     2. Launch Firefox.
     3. Measure the delta between firstPaint and sessionRestored.
     """
-    extensions = ['${talos}/pageloader', '${talos}/startup_test/sessionrestore/addon']
+    extensions = ['${talos}/startup_test/sessionrestore/addon']
     cycles = 10
     timeout = 900
     gecko_profile_startup = True
@@ -198,7 +209,10 @@ class sessionrestore_no_auto_restore(sessionrestore):
     2. Launch Firefox.
     3. Measure the delta between firstPaint and sessionRestored.
     """
-    preferences = {'browser.startup.page': 1}
+    preferences = {
+        'browser.startup.page': 1,
+        'talos.sessionrestore.norestore': True,
+    }
 
 
 @register_test()
@@ -211,22 +225,6 @@ class sessionrestore_many_windows(sessionrestore):
     3. Measure the delta between firstPaint and sessionRestored.
     """
     profile_path = '${talos}/startup_test/sessionrestore/profile-manywindows'
-
-
-@register_test()
-class tresize(TsBase):
-    """
-    This test does some resize thing.
-    """
-    extensions = ['${talos}/startup_test/tresize/addon']
-    cycles = 20
-    url = 'startup_test/tresize/addon/content/tresize-test.html'
-    timeout = 150
-    gecko_profile_interval = 2
-    gecko_profile_entries = 1000000
-    tpmozafterpaint = True
-    filters = filter.ignore_first.prepare(5) + filter.median.prepare()
-    unit = 'ms'
 
 
 # pageloader tests(tp5, etc)
@@ -245,6 +243,7 @@ class PageloaderTest(Test):
     tpcycles = 1  # number of time to run each page
     cycles = None
     timeout = None
+
     keys = ['tpmanifest', 'tpcycles', 'tppagecycles', 'tprender', 'tpchrome',
             'tpmozafterpaint', 'fnbpaint', 'tphero', 'tploadnocache', 'firstpaint',
             'userready', 'testeventmap', 'base_vs_ref', 'mainthread', 'resolution',
@@ -253,7 +252,8 @@ class PageloaderTest(Test):
             'tpscrolltest', 'xperf_counters', 'timeout', 'responsiveness',
             'profile_path', 'xperf_providers', 'xperf_user_providers', 'xperf_stackwalk',
             'format_pagename', 'filters', 'preferences', 'extensions', 'setup', 'cleanup',
-            'lower_is_better', 'alert_threshold', 'unit', 'webextensions', 'profile']
+            'lower_is_better', 'alert_threshold', 'unit', 'webextensions', 'profile',
+            'subtest_alerts', 'perfherder_framework']
 
 
 class QuantumPageloadTest(PageloaderTest):
@@ -271,15 +271,15 @@ class QuantumPageloadTest(PageloaderTest):
 
 
 @register_test()
-class tpaint(PageloaderTest):
+class twinopen(PageloaderTest):
     """
-    Tests the amount of time it takes the open a new window. This test does
-    not include startup time. Multiple test windows are opened in succession,
-    results reported are the average amount of time required to create and
-    display a window in the running instance of the browser.
+    Tests the amount of time it takes an open browser to open a new browser
+    window and paint the browser chrome. This test does not include startup
+    time. Multiple test windows are opened in succession.
     (Measures ctrl-n performance.)
     """
-    tpmanifest = '${talos}/tests/tpaint/tpaint.manifest'
+    extensions = ['${talos}/pageloader', '${talos}/tests/twinopen']
+    tpmanifest = '${talos}/tests/twinopen/twinopen.manifest'
     tppagecycles = 20
     timeout = 300
     gecko_profile_interval = 1
@@ -287,7 +287,9 @@ class tpaint(PageloaderTest):
     tpmozafterpaint = True
     filters = filter.ignore_first.prepare(5) + filter.median.prepare()
     unit = 'ms'
-    preferences = {'security.data_uri.block_toplevel_data_uri_navigations': False}
+    preferences = {
+        'browser.startup.homepage': 'about:blank'
+    }
 
 
 @register_test()
@@ -297,7 +299,7 @@ class cpstartup(PageloaderTest):
     initialize it to the point where it can start processing incoming URLs
     to load.
     """
-    extensions = ['${talos}/tests/cpstartup', '${talos}/pageloader']
+    extensions = ['${talos}/pageloader', '${talos}/tests/cpstartup/extension']
     tpmanifest = '${talos}/tests/cpstartup/cpstartup.manifest'
     tppagecycles = 20
     gecko_profile_entries = 1000000
@@ -334,16 +336,17 @@ class tabpaint(PageloaderTest):
         # and http://kb.mozillazine.org/Browser.link.open_newwindow.restriction
         'browser.link.open_newwindow': 3,
         'browser.link.open_newwindow.restriction': 2,
+        'browser.newtab.preload': False,
     }
 
 
 @register_test()
-class tps(PageloaderTest):
+class tabswitch(PageloaderTest):
     """
     Tests the amount of time it takes to switch between tabs
     """
     extensions = ['${talos}/tests/tabswitch', '${talos}/pageloader']
-    tpmanifest = '${talos}/tests/tabswitch/tps.manifest'
+    tpmanifest = '${talos}/tests/tabswitch/tabswitch.manifest'
     tppagecycles = 5
     gecko_profile_entries = 5000000
     tploadnocache = True
@@ -423,12 +426,14 @@ class damp(PageloaderTest):
     tploadnocache = True
     tpmozafterpaint = False
     gecko_profile_interval = 10
-    gecko_profile_entries = 1000000
+    gecko_profile_entries = 2000000
     win_counters = w7_counters = linux_counters = mac_counters = None
     filters = filter.ignore_first.prepare(1) + filter.median.prepare()
     preferences = {'devtools.memory.enabled': True,
                    'addon.test.damp.webserver': '${webserver}'}
     unit = 'ms'
+    subtest_alerts = True
+    perfherder_framework = 'devtools'
 
 
 @register_test()
@@ -494,7 +499,7 @@ class tp5n(PageloaderTest):
     tppagecycles = 1
     cycles = 1
     tpmozafterpaint = True
-    tptimeout = 5000
+    tptimeout = 10000
     mainthread = True
     w7_counters = []
     win_counters = []
@@ -505,7 +510,9 @@ class tp5n(PageloaderTest):
                       'nonmain_startup_fileio', 'nonmain_normal_fileio',
                       'nonmain_normal_netio', 'mainthread_readcount',
                       'mainthread_readbytes', 'mainthread_writecount',
-                      'mainthread_writebytes']
+                      'mainthread_writebytes',
+                      'time_to_session_store_window_restored_ms',
+                      ]
     xperf_providers = ['PROC_THREAD', 'LOADER', 'HARD_FAULTS', 'FILENAME',
                        'FILE_IO', 'FILE_IO_INIT']
     xperf_user_providers = ['Mozilla Generic Provider',
@@ -566,7 +573,8 @@ class tp5o_scroll(PageloaderTest):
     tpmozafterpaint = False
     preferences = {'layout.frame_rate': 0,
                    'docshell.event_starvation_delay_hint': 1,
-                   'dom.send_after_paint_to_content': False,
+                   'dom.send_after_paint_to_content': True,
+                   'apz.paint_skipping.enabled': False,
                    'layout.css.scroll-behavior.spring-constant': "'10'",
                    'toolkit.framesRecording.bufferSize': 10000}
     filters = filter.ignore_first.prepare(1) + filter.median.prepare()
@@ -675,6 +683,22 @@ class dromaeo_dom(dromaeo):
 
 
 @register_test()
+class tresize(PageloaderTest):
+    """
+    This test does some resize thing.
+    """
+    tpmanifest = '${talos}/tests/tresize/tresize.manifest'
+    extensions = ['${talos}/pageloader', '${talos}/tests/tresize/addon']
+    tppagecycles = 20
+    timeout = 900
+    gecko_profile_interval = 2
+    gecko_profile_entries = 1000000
+    tpmozafterpaint = True
+    filters = filter.ignore_first.prepare(5) + filter.median.prepare()
+    unit = 'ms'
+
+
+@register_test()
 class tsvgm(PageloaderTest):
     """
     An svg-only number that measures SVG rendering performance
@@ -764,7 +788,8 @@ class tscrollx(PageloaderTest):
     """ ASAP mode """
     preferences = {'layout.frame_rate': 0,
                    'docshell.event_starvation_delay_hint': 1,
-                   'dom.send_after_paint_to_content': False,
+                   'dom.send_after_paint_to_content': True,
+                   'apz.paint_skipping.enabled': False,
                    'layout.css.scroll-behavior.spring-constant': "'10'",
                    'toolkit.framesRecording.bufferSize': 10000}
     filters = filter.ignore_first.prepare(5) + filter.median.prepare()

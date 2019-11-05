@@ -32,6 +32,9 @@
 #include "mozilla/layers/LayerTransactionChild.h"
 #include "mozilla/layers/PTextureChild.h"
 #include "mozilla/layers/SyncObject.h"
+#ifdef XP_DARWIN
+#  include "mozilla/layers/TextureSync.h"
+#endif
 #include "ShadowLayerUtils.h"
 #include "mozilla/layers/TextureClient.h"  // for TextureClient
 #include "mozilla/mozalloc.h"              // for operator new, etc
@@ -56,18 +59,17 @@ typedef nsTArray<SurfaceDescriptor> BufferArray;
 typedef nsTArray<Edit> EditVector;
 typedef nsTHashtable<nsPtrHashKey<ShadowableLayer>> ShadowableLayerSet;
 typedef nsTArray<OpDestroy> OpDestroyVector;
-typedef nsTArray<ReadLockInit> ReadLockVector;
 
 class Transaction {
  public:
   Transaction()
-      : mReadLockSequenceNumber(0),
-        mTargetRotation(ROTATION_0),
+      : mTargetRotation(ROTATION_0),
+        mTargetOrientation(hal::eScreenOrientation_None),
         mOpen(false),
         mRotationChanged(false) {}
 
   void Begin(const gfx::IntRect& aTargetBounds, ScreenRotation aRotation,
-             dom::ScreenOrientationInternal aOrientation) {
+             hal::ScreenOrientation aOrientation) {
     mOpen = true;
     mTargetBounds = aTargetBounds;
     if (aRotation != mTargetRotation) {
@@ -79,8 +81,6 @@ class Transaction {
     }
     mTargetRotation = aRotation;
     mTargetOrientation = aOrientation;
-    mReadLockSequenceNumber = 0;
-    mReadLocks.AppendElement();
   }
   void AddEdit(const Edit& aEdit) {
     MOZ_ASSERT(!Finished(), "forgot BeginTransaction?");
@@ -100,22 +100,12 @@ class Transaction {
     MOZ_ASSERT(!Finished(), "forgot BeginTransaction?");
     mSimpleMutants.PutEntry(aLayer);
   }
-  ReadLockHandle AddReadLock(const ReadLockDescriptor& aReadLock) {
-    ReadLockHandle handle(++mReadLockSequenceNumber);
-    if (mReadLocks.LastElement().Length() >=
-        CompositableForwarder::GetMaxFileDescriptorsPerMessage()) {
-      mReadLocks.AppendElement();
-    }
-    mReadLocks.LastElement().AppendElement(ReadLockInit(aReadLock, handle));
-    return handle;
-  }
   void End() {
     mCset.Clear();
     mPaints.Clear();
     mMutants.Clear();
     mSimpleMutants.Clear();
     mDestroyedActors.Clear();
-    mReadLocks.Clear();
     mOpen = false;
     mRotationChanged = false;
   }
@@ -134,11 +124,9 @@ class Transaction {
   OpDestroyVector mDestroyedActors;
   ShadowableLayerSet mMutants;
   ShadowableLayerSet mSimpleMutants;
-  nsTArray<ReadLockVector> mReadLocks;
-  uint64_t mReadLockSequenceNumber;
   gfx::IntRect mTargetBounds;
   ScreenRotation mTargetRotation;
-  dom::ScreenOrientationInternal mTargetOrientation;
+  hal::ScreenOrientation mTargetOrientation;
 
  private:
   bool mOpen;
@@ -148,7 +136,7 @@ class Transaction {
   Transaction(const Transaction&);
   Transaction& operator=(const Transaction&);
 };
-struct AutoTxnEnd {
+struct AutoTxnEnd final {
   explicit AutoTxnEnd(Transaction* aTxn) : mTxn(aTxn) {}
   ~AutoTxnEnd() { mTxn->End(); }
   Transaction* mTxn;
@@ -220,7 +208,7 @@ struct ReleaseOnMainThreadTask : public Runnable {
   UniquePtr<T> mObj;
 
   explicit ReleaseOnMainThreadTask(UniquePtr<T>& aObj)
-      : Runnable("layers::ReleaseOnMainThreadTask"), mObj(Move(aObj)) {}
+      : Runnable("layers::ReleaseOnMainThreadTask"), mObj(std::move(aObj)) {}
 
   NS_IMETHOD Run() override {
     mObj = nullptr;
@@ -263,7 +251,7 @@ ShadowLayerForwarder::~ShadowLayerForwarder() {
 
 void ShadowLayerForwarder::BeginTransaction(
     const gfx::IntRect& aTargetBounds, ScreenRotation aRotation,
-    dom::ScreenOrientationInternal aOrientation) {
+    hal::ScreenOrientation aOrientation) {
   MOZ_ASSERT(IPCOpen(), "no manager to forward to");
   MOZ_ASSERT(mTxn->Finished(), "uncommitted txn?");
   UpdateFwdTransactionId();
@@ -290,9 +278,6 @@ void ShadowLayerForwarder::CreatedImageLayer(ShadowableLayer* aImage) {
 }
 void ShadowLayerForwarder::CreatedColorLayer(ShadowableLayer* aColor) {
   CreatedLayer<OpCreateColorLayer>(mTxn, aColor);
-}
-void ShadowLayerForwarder::CreatedBorderLayer(ShadowableLayer* aBorder) {
-  CreatedLayer<OpCreateBorderLayer>(mTxn, aBorder);
 }
 void ShadowLayerForwarder::CreatedCanvasLayer(ShadowableLayer* aCanvas) {
   CreatedLayer<OpCreateCanvasLayer>(mTxn, aCanvas);
@@ -419,7 +404,8 @@ void ShadowLayerForwarder::UpdateTextureRegion(
 
 void ShadowLayerForwarder::UseTextures(
     CompositableClient* aCompositable,
-    const nsTArray<TimedTextureClient>& aTextures) {
+    const nsTArray<TimedTextureClient>& aTextures,
+    const Maybe<wr::RenderRoot>& aRenderRoot) {
   MOZ_ASSERT(aCompositable);
 
   if (!aCompositable->IsConnected()) {
@@ -498,7 +484,8 @@ bool ShadowLayerForwarder::DestroyInTransaction(
 }
 
 void ShadowLayerForwarder::RemoveTextureFromCompositable(
-    CompositableClient* aCompositable, TextureClient* aTexture) {
+    CompositableClient* aCompositable, TextureClient* aTexture,
+    const Maybe<wr::RenderRoot>& aRenderRoot) {
   MOZ_ASSERT(aCompositable);
   MOZ_ASSERT(aTexture);
   MOZ_ASSERT(aTexture->GetIPDLActor());
@@ -533,7 +520,7 @@ void ShadowLayerForwarder::StorePluginWidgetConfigurations(
   }
 }
 
-void ShadowLayerForwarder::SendPaintTime(uint64_t aId,
+void ShadowLayerForwarder::SendPaintTime(TransactionId aId,
                                          TimeDuration aPaintTime) {
   if (!IPCOpen() || !mShadowManager->SendPaintTime(aId, aPaintTime)) {
     NS_WARNING("Could not send paint times over IPC");
@@ -541,9 +528,14 @@ void ShadowLayerForwarder::SendPaintTime(uint64_t aId,
 }
 
 bool ShadowLayerForwarder::EndTransaction(
-    const nsIntRegion& aRegionToClear, uint64_t aId, bool aScheduleComposite,
-    uint32_t aPaintSequenceNumber, bool aIsRepeatTransaction,
-    const mozilla::TimeStamp& aTransactionStart, bool* aSent) {
+    const nsIntRegion& aRegionToClear, TransactionId aId,
+    bool aScheduleComposite, uint32_t aPaintSequenceNumber,
+    bool aIsRepeatTransaction, const mozilla::VsyncId& aVsyncId,
+    const mozilla::TimeStamp& aVsyncStart,
+    const mozilla::TimeStamp& aRefreshStart,
+    const mozilla::TimeStamp& aTransactionStart, bool aContainsSVG,
+    const nsCString& aURL, bool* aSent,
+    const InfallibleTArray<CompositionPayload>& aPayload) {
   *aSent = false;
 
   TransactionInfo info;
@@ -560,7 +552,7 @@ bool ShadowLayerForwarder::EndTransaction(
 
   GetCompositorBridgeChild()->WillEndTransaction();
 
-  MOZ_ASSERT(aId);
+  MOZ_ASSERT(aId.IsValid());
 
   AUTO_PROFILER_LABEL("ShadowLayerForwarder::EndTransaction", GRAPHICS);
 
@@ -670,10 +662,10 @@ bool ShadowLayerForwarder::EndTransaction(
 
   mWindowOverlayChanged = false;
 
-  info.cset() = Move(mTxn->mCset);
-  info.setSimpleAttrs() = Move(setSimpleAttrs);
-  info.setAttrs() = Move(setAttrs);
-  info.paints() = Move(mTxn->mPaints);
+  info.cset() = std::move(mTxn->mCset);
+  info.setSimpleAttrs() = std::move(setSimpleAttrs);
+  info.setAttrs() = std::move(setAttrs);
+  info.paints() = std::move(mTxn->mPaints);
   info.toDestroy() = mTxn->mDestroyedActors;
   info.fwdTransactionId() = GetFwdTransactionId();
   info.id() = aId;
@@ -683,10 +675,16 @@ bool ShadowLayerForwarder::EndTransaction(
   info.scheduleComposite() = aScheduleComposite;
   info.paintSequenceNumber() = aPaintSequenceNumber;
   info.isRepeatTransaction() = aIsRepeatTransaction;
+  info.vsyncId() = aVsyncId;
+  info.vsyncStart() = aVsyncStart;
+  info.refreshStart() = aRefreshStart;
   info.transactionStart() = aTransactionStart;
+  info.url() = aURL;
+  info.containsSVG() = aContainsSVG;
 #if defined(ENABLE_FRAME_LATENCY_LOG)
   info.fwdTime() = TimeStamp::Now();
 #endif
+  info.payload() = aPayload;
 
   TargetConfig targetConfig(mTxn->mTargetBounds, mTxn->mTargetRotation,
                             mTxn->mTargetOrientation, aRegionToClear);
@@ -701,16 +699,6 @@ bool ShadowLayerForwarder::EndTransaction(
     mPaintTiming.serializeMs() =
         (TimeStamp::Now() - startTime.value()).ToMilliseconds();
     startTime = Some(TimeStamp::Now());
-  }
-
-  for (ReadLockVector& locks : mTxn->mReadLocks) {
-    if (locks.Length()) {
-      if (!mShadowManager->SendInitReadLocks(locks)) {
-        MOZ_LAYERS_LOG(
-            ("[LayersForwarder] WARNING: sending read locks failed!"));
-        return false;
-      }
-    }
   }
 
   // We delay at the last possible minute, to give the paint thread a chance to
@@ -730,6 +718,10 @@ bool ShadowLayerForwarder::EndTransaction(
     mShadowManager->SendRecordPaintTimes(mPaintTiming);
   }
 
+  if (recordreplay::IsRecordingOrReplaying()) {
+    recordreplay::child::NotifyPaintStart();
+  }
+
   *aSent = true;
   mIsFirstPaint = false;
   mFocusTarget = FocusTarget();
@@ -746,11 +738,39 @@ RefPtr<CompositableClient> ShadowLayerForwarder::FindCompositable(
   return client;
 }
 
-void ShadowLayerForwarder::SetLayerObserverEpoch(uint64_t aLayerObserverEpoch) {
+void ShadowLayerForwarder::SetLayersObserverEpoch(LayersObserverEpoch aEpoch) {
   if (!IPCOpen()) {
     return;
   }
-  Unused << mShadowManager->SendSetLayerObserverEpoch(aLayerObserverEpoch);
+  Unused << mShadowManager->SendSetLayersObserverEpoch(aEpoch);
+}
+
+void ShadowLayerForwarder::UpdateTextureLocks() {
+#ifdef XP_DARWIN
+  if (!IPCOpen()) {
+    return;
+  }
+
+  auto compositorBridge = GetCompositorBridgeChild();
+  if (compositorBridge) {
+    auto pid = compositorBridge->OtherPid();
+    TextureSync::UpdateTextureLocks(pid);
+  }
+#endif
+}
+
+void ShadowLayerForwarder::SyncTextures(const nsTArray<uint64_t>& aSerials) {
+#ifdef XP_DARWIN
+  if (!IPCOpen()) {
+    return;
+  }
+
+  auto compositorBridge = GetCompositorBridgeChild();
+  if (compositorBridge) {
+    auto pid = compositorBridge->OtherPid();
+    TextureSync::WaitForTextures(pid, aSerials);
+  }
+#endif
 }
 
 void ShadowLayerForwarder::ReleaseLayer(const LayerHandle& aHandle) {
@@ -775,7 +795,8 @@ LayerHandle ShadowLayerForwarder::ConstructShadowFor(ShadowableLayer* aLayer) {
 
 #if !defined(MOZ_HAVE_PLATFORM_SPECIFIC_LAYER_BUFFERS)
 
-/*static*/ void ShadowLayerForwarder::PlatformSyncBeforeUpdate() {}
+/*static*/
+void ShadowLayerForwarder::PlatformSyncBeforeUpdate() {}
 
 #endif  // !defined(MOZ_HAVE_PLATFORM_SPECIFIC_LAYER_BUFFERS)
 
@@ -945,7 +966,7 @@ bool ShadowLayerForwarder::AllocSurfaceDescriptorWithCaps(
       return false;
     }
 
-    bufferDesc = shmem;
+    bufferDesc = std::move(shmem);
   }
 
   // Use an intermediate buffer by default. Skipping the intermediate buffer is
@@ -958,7 +979,8 @@ bool ShadowLayerForwarder::AllocSurfaceDescriptorWithCaps(
   return true;
 }
 
-/* static */ bool ShadowLayerForwarder::IsShmem(SurfaceDescriptor* aSurface) {
+/* static */
+bool ShadowLayerForwarder::IsShmem(SurfaceDescriptor* aSurface) {
   return aSurface &&
          (aSurface->type() == SurfaceDescriptor::TSurfaceDescriptorBuffer) &&
          (aSurface->get_SurfaceDescriptorBuffer().data().type() ==

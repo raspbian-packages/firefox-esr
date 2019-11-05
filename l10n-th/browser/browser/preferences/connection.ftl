@@ -63,7 +63,28 @@ connection-proxy-reload =
 connection-proxy-autologin =
     .label = ไม่ต้องถามสำหรับการรับรองความถูกต้องหากรหัสผ่านถูกบันทึกไว้
     .accesskey = ถ
-    .tooltip = ตัวเลือกนี้จะรับรองความถูกต้องของคุณไปยังพร็อกซีโดยอัตโนมัติเมื่อคุณได้บันทึกหนังสือรับรองไว้ คุณจะได้รับการแจ้งหากการรับรองความถูกต้องล้มเหลว
+    .tooltip = ตัวเลือกนี้จะรับรองความถูกต้องของคุณไปยังพร็อกซีโดยอัตโนมัติเมื่อคุณได้บันทึกข้อมูลรับรองไว้ คุณจะได้รับการแจ้งหากการรับรองความถูกต้องล้มเหลว
 connection-proxy-socks-remote-dns =
     .label = DNS แบบพร็อกซีเมื่อใช้ SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = เปิดใช้งาน DNS ผ่าน HTTPS
+    .accesskey = ป
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = ใช้ค่าเริ่มต้น ({ $url })
+    .accesskey = ช
+    .tooltiptext = ใช้ URL เริ่มต้นสำหรับแปลงที่อยู่ DNS ผ่าน HTTPS
+connection-dns-over-https-url-resolver = ใช้ผู้ให้บริการ
+    .accesskey = ช
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (ค่าเริ่มต้น)
+    .tooltiptext = ใช้ URL เริ่มต้นสำหรับแปลงที่อยู่ DNS ผ่าน HTTPS
+connection-dns-over-https-url-custom =
+    .label = กำหนดเอง
+    .accesskey = ก
+    .tooltiptext = ป้อน URL ที่คุณต้องการสำหรับแปลงที่อยู่ DNS ผ่าน HTTPS
+connection-dns-over-https-custom-label = กำหนดเอง

@@ -6,6 +6,9 @@
 
 #include "AccessibleOrProxy.h"
 
+namespace mozilla {
+namespace a11y {
+
 AccessibleOrProxy AccessibleOrProxy::Parent() const {
   if (IsAccessible()) {
     return AsAccessible()->Parent();
@@ -23,3 +26,6 @@ AccessibleOrProxy AccessibleOrProxy::Parent() const {
   // Otherwise this should be the proxy for the tab's top level document.
   return proxy->OuterDocOfRemoteBrowser();
 }
+
+}  // namespace a11y
+}  // namespace mozilla

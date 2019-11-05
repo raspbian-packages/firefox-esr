@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,17 +16,17 @@
 #include <stack>
 
 #ifdef DEBUG
-#include <string.h>
+#  include <string.h>
 #endif
 
 #ifdef GetClassName
-#undef GetClassName
+#  undef GetClassName
 #endif
 
 // Define MOZ_GL_DEBUG unconditionally to enable GL debugging in opt
 // builds.
 #ifdef DEBUG
-#define MOZ_GL_DEBUG 1
+#  define MOZ_GL_DEBUG 1
 #endif
 
 #include "../../mfbt/RefPtr.h"
@@ -45,10 +45,6 @@
 #include "mozilla/WeakPtr.h"
 #include "gfx2DGlue.h"
 #include "GeckoProfiler.h"
-
-namespace android {
-class GraphicBuffer;
-}  // namespace android
 
 namespace mozilla {
 namespace gfx {
@@ -132,6 +128,8 @@ enum class GLFeature {
   texture_3D,
   texture_3D_compressed,
   texture_3D_copy,
+  texture_compression_bptc,
+  texture_compression_rgtc,
   texture_float,
   texture_float_linear,
   texture_half_float,
@@ -189,14 +187,13 @@ enum class GLRenderer {
   Other
 };
 
-class GLContext : public GLLibraryLoader,
-                  public GenericAtomicRefCounted,
+class GLContext : public GenericAtomicRefCounted,
                   public SupportsWeakPtr<GLContext> {
  public:
   MOZ_DECLARE_WEAKREFERENCE_TYPENAME(GLContext)
   static MOZ_THREAD_LOCAL(uintptr_t) sCurrentContext;
 
-  bool mImplicitMakeCurrent;
+  bool mImplicitMakeCurrent = false;
   bool mUseTLSIsCurrent;
 
   class TlsScope final {
@@ -288,6 +285,11 @@ class GLContext : public GLLibraryLoader,
 
   bool IsContextLost() const { return mContextLost; }
 
+  bool CheckContextLost() const {
+    mTopError = GetError();
+    return IsContextLost();
+  }
+
   bool HasPBOState() const { return (!IsGLES() || Version() >= 300); }
 
   /**
@@ -315,19 +317,18 @@ class GLContext : public GLLibraryLoader,
 
  protected:
   bool mIsOffscreen;
-  mutable bool mContextLost;
 
   /**
    * mVersion store the OpenGL's version, multiplied by 100. For example, if
    * the context is an OpenGL 2.1 context, mVersion value will be 210.
    */
-  uint32_t mVersion;
-  ContextProfile mProfile;
+  uint32_t mVersion = 0;
+  ContextProfile mProfile = ContextProfile::Unknown;
 
-  uint32_t mShadingLanguageVersion;
+  uint32_t mShadingLanguageVersion = 0;
 
-  GLVendor mVendor;
-  GLRenderer mRenderer;
+  GLVendor mVendor = GLVendor::Other;
+  GLRenderer mRenderer = GLRenderer::Other;
 
   // -----------------------------------------------------------------------------
   // Extensions management
@@ -356,6 +357,7 @@ class GLContext : public GLLibraryLoader,
     ANGLE_texture_compression_dxt5,
     ANGLE_timer_query,
     APPLE_client_storage,
+    APPLE_fence,
     APPLE_framebuffer_multisample,
     APPLE_sync,
     APPLE_texture_range,
@@ -385,6 +387,8 @@ class GLContext : public GLLibraryLoader,
     ARB_shader_texture_lod,
     ARB_sync,
     ARB_texture_compression,
+    ARB_texture_compression_bptc,
+    ARB_texture_compression_rgtc,
     ARB_texture_float,
     ARB_texture_non_power_of_two,
     ARB_texture_rectangle,
@@ -395,6 +399,8 @@ class GLContext : public GLLibraryLoader,
     ARB_transform_feedback2,
     ARB_uniform_buffer_object,
     ARB_vertex_array_object,
+    CHROMIUM_color_buffer_float_rgb,
+    CHROMIUM_color_buffer_float_rgba,
     EXT_bgra,
     EXT_blend_minmax,
     EXT_color_buffer_float,
@@ -405,12 +411,14 @@ class GLContext : public GLLibraryLoader,
     EXT_draw_buffers2,
     EXT_draw_instanced,
     EXT_draw_range_elements,
+    EXT_float_blend,
     EXT_frag_depth,
     EXT_framebuffer_blit,
     EXT_framebuffer_multisample,
     EXT_framebuffer_object,
     EXT_framebuffer_sRGB,
     EXT_gpu_shader4,
+    EXT_map_buffer_range,
     EXT_multisampled_render_to_texture,
     EXT_occlusion_query_boolean,
     EXT_packed_depth_stencil,
@@ -420,7 +428,9 @@ class GLContext : public GLLibraryLoader,
     EXT_sRGB_write_control,
     EXT_shader_texture_lod,
     EXT_texture3D,
+    EXT_texture_compression_bptc,
     EXT_texture_compression_dxt1,
+    EXT_texture_compression_rgtc,
     EXT_texture_compression_s3tc,
     EXT_texture_compression_s3tc_srgb,
     EXT_texture_filter_anisotropic,
@@ -456,6 +466,7 @@ class GLContext : public GLLibraryLoader,
     OES_depth32,
     OES_depth_texture,
     OES_element_index_uint,
+    OES_fbo_render_mipmap,
     OES_framebuffer_object,
     OES_packed_depth_stencil,
     OES_rgb8_rgba8,
@@ -519,94 +530,59 @@ class GLContext : public GLLibraryLoader,
    */
   bool IsFeatureProvidedByCoreSymbols(GLFeature feature);
 
- public:
   // -----------------------------------------------------------------------------
   // Error handling
-  static const char* GLErrorToString(GLenum aError) {
-    switch (aError) {
-      case LOCAL_GL_INVALID_ENUM:
-        return "GL_INVALID_ENUM";
-      case LOCAL_GL_INVALID_VALUE:
-        return "GL_INVALID_VALUE";
-      case LOCAL_GL_INVALID_OPERATION:
-        return "GL_INVALID_OPERATION";
-      case LOCAL_GL_STACK_OVERFLOW:
-        return "GL_STACK_OVERFLOW";
-      case LOCAL_GL_STACK_UNDERFLOW:
-        return "GL_STACK_UNDERFLOW";
-      case LOCAL_GL_OUT_OF_MEMORY:
-        return "GL_OUT_OF_MEMORY";
-      case LOCAL_GL_TABLE_TOO_LARGE:
-        return "GL_TABLE_TOO_LARGE";
-      case LOCAL_GL_INVALID_FRAMEBUFFER_OPERATION:
-        return "GL_INVALID_FRAMEBUFFER_OPERATION";
-      default:
-        return "";
-    }
-  }
 
  private:
-  mutable GLenum mTopError;
+  mutable bool mContextLost = false;
+  mutable GLenum mTopError = 0;
 
-  GLenum RawGetError() const { return mSymbols.fGetError(); }
+ protected:
+  void OnContextLostError() const;
 
-  GLenum RawGetErrorAndClear() const {
-    GLenum err = RawGetError();
+ public:
+  static std::string GLErrorToString(GLenum aError);
 
-    if (err)
-      while (RawGetError()) {
-      }
-
-    return err;
+  static bool IsBadCallError(const GLenum err) {
+    return !(err == 0 || err == LOCAL_GL_CONTEXT_LOST);
   }
 
-  GLenum FlushErrors() const {
-    GLenum err = RawGetErrorAndClear();
-    if (!mTopError) mTopError = err;
-    return err;
-  }
+  class LocalErrorScope;
+
+ private:
+  mutable std::stack<const LocalErrorScope*> mLocalErrorScopeStack;
+  mutable UniquePtr<LocalErrorScope> mDebugErrorScope;
 
   ////////////////////////////////////
   // Use this safer option.
 
  public:
-  class LocalErrorScope;
-
- private:
-  std::stack<const LocalErrorScope*> mLocalErrorScopeStack;
-
- public:
   class LocalErrorScope {
-    GLContext& mGL;
+    const GLContext& mGL;
     GLenum mOldTop;
     bool mHasBeenChecked;
 
    public:
-    explicit LocalErrorScope(GLContext& gl) : mGL(gl), mHasBeenChecked(false) {
+    explicit LocalErrorScope(const GLContext& gl)
+        : mGL(gl), mHasBeenChecked(false) {
       mGL.mLocalErrorScopeStack.push(this);
-
-      mGL.FlushErrors();
-
-      mOldTop = mGL.mTopError;
-      mGL.mTopError = LOCAL_GL_NO_ERROR;
+      mOldTop = mGL.GetError();
     }
 
+    /// Never returns CONTEXT_LOST.
     GLenum GetError() {
       MOZ_ASSERT(!mHasBeenChecked);
       mHasBeenChecked = true;
 
-      const GLenum ret = mGL.fGetError();
-
-      while (mGL.fGetError()) {
-      }
-
+      const auto ret = mGL.GetError();
+      if (ret == LOCAL_GL_CONTEXT_LOST) return 0;
       return ret;
     }
 
     ~LocalErrorScope() {
       MOZ_ASSERT(mHasBeenChecked);
 
-      MOZ_ASSERT(mGL.fGetError() == LOCAL_GL_NO_ERROR);
+      MOZ_ASSERT(!IsBadCallError(mGL.GetError()));
 
       MOZ_ASSERT(mGL.mLocalErrorScopeStack.top() == this);
       mGL.mLocalErrorScopeStack.pop();
@@ -614,6 +590,8 @@ class GLContext : public GLLibraryLoader,
       mGL.mTopError = mOldTop;
     }
   };
+
+  // -
 
   bool GetPotentialInteger(GLenum pname, GLint* param) {
     LocalErrorScope localError(*this);
@@ -638,22 +616,22 @@ class GLContext : public GLLibraryLoader,
   // MOZ_GL_DEBUG implementation
  private:
 #ifndef MOZ_FUNCTION_NAME
-#ifdef __GNUC__
-#define MOZ_FUNCTION_NAME __PRETTY_FUNCTION__
-#elif defined(_MSC_VER)
-#define MOZ_FUNCTION_NAME __FUNCTION__
-#else
-#define MOZ_FUNCTION_NAME \
-  __func__  // defined in C99, supported in various C++ compilers. Just raw
-            // function name.
-#endif
+#  ifdef __GNUC__
+#    define MOZ_FUNCTION_NAME __PRETTY_FUNCTION__
+#  elif defined(_MSC_VER)
+#    define MOZ_FUNCTION_NAME __FUNCTION__
+#  else
+#    define MOZ_FUNCTION_NAME \
+      __func__  // defined in C99, supported in various C++ compilers. Just raw
+                // function name.
+#  endif
 #endif
 
 #ifdef MOZ_WIDGET_ANDROID
 // Record the name of the GL call for better hang stacks on Android.
-#define ANDROID_ONLY_PROFILER_LABEL AUTO_PROFILER_LABEL(__func__, GRAPHICS);
+#  define ANDROID_ONLY_PROFILER_LABEL AUTO_PROFILER_LABEL(__func__, GRAPHICS);
 #else
-#define ANDROID_ONLY_PROFILER_LABEL
+#  define ANDROID_ONLY_PROFILER_LABEL
 #endif
 
 #define BEFORE_GL_CALL                               \
@@ -675,20 +653,22 @@ class GLContext : public GLLibraryLoader,
   bool BeforeGLCall(const char* const funcName) const {
     if (mImplicitMakeCurrent) {
       if (MOZ_UNLIKELY(!MakeCurrent())) {
-        OnImplicitMakeCurrentFailure(funcName);
+        if (!mContextLost) {
+          OnImplicitMakeCurrentFailure(funcName);
+        }
         return false;
       }
     }
-    MOZ_ASSERT(IsCurrentImpl());
+    MOZ_GL_ASSERT(this, IsCurrentImpl());
 
-    if (mDebugFlags) {
+    if (MOZ_UNLIKELY(mDebugFlags)) {
       BeforeGLCall_Debug(funcName);
     }
     return true;
   }
 
   void AfterGLCall(const char* const funcName) const {
-    if (mDebugFlags) {
+    if (MOZ_UNLIKELY(mDebugFlags)) {
       AfterGLCall_Debug(funcName);
     }
   }
@@ -703,35 +683,36 @@ class GLContext : public GLLibraryLoader,
 
 #ifdef MOZ_GL_DEBUG
 
-#define TRACKING_CONTEXT(a) \
-  do {                      \
-    TrackingContext()->a;   \
-  } while (0)
+#  define TRACKING_CONTEXT(a) \
+    do {                      \
+      TrackingContext()->a;   \
+    } while (0)
 
-#define ASSERT_NOT_PASSING_STACK_BUFFER_TO_GL(ptr) \
-  AssertNotPassingStackBufferToTheGL(ptr)
+#  define ASSERT_NOT_PASSING_STACK_BUFFER_TO_GL(ptr) \
+    AssertNotPassingStackBufferToTheGL(ptr)
 
-#define ASSERT_SYMBOL_PRESENT(func)                                            \
-  do {                                                                         \
-    MOZ_ASSERT(strstr(MOZ_FUNCTION_NAME, #func) != nullptr,                    \
-               "Mismatched symbol check.");                                    \
-    if (MOZ_UNLIKELY(!mSymbols.func)) {                                        \
-      printf_stderr("RUNTIME ASSERT: Uninitialized GL function: %s\n", #func); \
-      MOZ_CRASH("GFX: Uninitialized GL function");                             \
-    }                                                                          \
-  } while (0)
+#  define ASSERT_SYMBOL_PRESENT(func)                                    \
+    do {                                                                 \
+      MOZ_ASSERT(strstr(MOZ_FUNCTION_NAME, #func) != nullptr,            \
+                 "Mismatched symbol check.");                            \
+      if (MOZ_UNLIKELY(!mSymbols.func)) {                                \
+        printf_stderr("RUNTIME ASSERT: Uninitialized GL function: %s\n", \
+                      #func);                                            \
+        MOZ_CRASH("GFX: Uninitialized GL function");                     \
+      }                                                                  \
+    } while (0)
 
 #else  // ifdef MOZ_GL_DEBUG
 
-#define TRACKING_CONTEXT(a) \
-  do {                      \
-  } while (0)
-#define ASSERT_NOT_PASSING_STACK_BUFFER_TO_GL(ptr) \
-  do {                                             \
-  } while (0)
-#define ASSERT_SYMBOL_PRESENT(func) \
-  do {                              \
-  } while (0)
+#  define TRACKING_CONTEXT(a) \
+    do {                      \
+    } while (0)
+#  define ASSERT_NOT_PASSING_STACK_BUFFER_TO_GL(ptr) \
+    do {                                             \
+    } while (0)
+#  define ASSERT_SYMBOL_PRESENT(func) \
+    do {                              \
+    } while (0)
 
 #endif  // ifdef MOZ_GL_DEBUG
 
@@ -763,17 +744,15 @@ class GLContext : public GLLibraryLoader,
  public:
   // We smash all errors together, so you never have to loop on this. We
   // guarantee that immediately after this call, there are no errors left.
-  GLenum fGetError() {
-    GLenum err = LOCAL_GL_CONTEXT_LOST;
-    BEFORE_GL_CALL;
+  // Always returns the top-most error, except if followed by CONTEXT_LOST, then
+  // return that instead.
+  GLenum GetError() const;
 
-    FlushErrors();
-    err = mTopError;
-    mTopError = LOCAL_GL_NO_ERROR;
+  GLenum fGetError() { return GetError(); }
 
-    AFTER_GL_CALL;
-    return err;
-  }
+  GLenum fGetGraphicsResetStatus() const;
+
+  // -
 
   void fActiveTexture(GLenum texture) {
     BEFORE_GL_CALL;
@@ -2339,16 +2318,6 @@ class GLContext : public GLLibraryLoader,
     TRACKING_CONTEXT(DeletedTextures(this, n, names));
   }
 
-  GLenum fGetGraphicsResetStatus() {
-    GLenum ret = 0;
-    BEFORE_GL_CALL;
-    ASSERT_SYMBOL_PRESENT(fGetGraphicsResetStatus);
-    ret = mSymbols.fGetGraphicsResetStatus();
-    OnSyncCall();
-    AFTER_GL_CALL;
-    return ret;
-  }
-
   // -----------------------------------------------------------------------------
   // Extension ARB_sync (GL)
  public:
@@ -3303,6 +3272,25 @@ class GLContext : public GLLibraryLoader,
   }
 
   // -----------------------------------------------------------------------------
+  // APPLE_fence
+
+  void fFinishObjectAPPLE(GLenum object, GLint name) {
+    BEFORE_GL_CALL;
+    ASSERT_SYMBOL_PRESENT(fFinishObjectAPPLE);
+    mSymbols.fFinishObjectAPPLE(object, name);
+    AFTER_GL_CALL;
+  }
+
+  realGLboolean fTestObjectAPPLE(GLenum object, GLint name) {
+    realGLboolean ret = false;
+    BEFORE_GL_CALL;
+    ASSERT_SYMBOL_PRESENT(fTestObjectAPPLE);
+    ret = mSymbols.fTestObjectAPPLE(object, name);
+    AFTER_GL_CALL;
+    return ret;
+  }
+
+  // -----------------------------------------------------------------------------
   // prim_restart
 
   void fPrimitiveRestartIndex(GLuint index) {
@@ -3334,21 +3322,20 @@ class GLContext : public GLLibraryLoader,
   // the GL function pointers!
   void MarkDestroyed();
 
+ protected:
+  virtual void OnMarkDestroyed() {}
+
   // -----------------------------------------------------------------------------
   // Everything that isn't standard GL APIs
  protected:
   typedef gfx::SurfaceFormat SurfaceFormat;
 
  public:
-  virtual bool Init() = 0;
-
-  virtual bool SetupLookupFunction() = 0;
-
   virtual void ReleaseSurface() {}
 
   bool IsDestroyed() const {
     // MarkDestroyed will mark all these as null.
-    return mSymbols.fUseProgram == nullptr;
+    return mContextLost && mSymbols.fUseProgram == nullptr;
   }
 
   GLContext* GetSharedContext() { return mSharedContext; }
@@ -3378,6 +3365,8 @@ class GLContext : public GLLibraryLoader,
    */
   virtual bool ReleaseTexImage() { return false; }
 
+  virtual Maybe<SymbolLoader> GetSymbolLoader() const = 0;
+
   // Before reads from offscreen texture
   void GuaranteeResolve();
 
@@ -3402,7 +3391,7 @@ class GLContext : public GLLibraryLoader,
 
   void BindFB(GLuint fb) {
     fBindFramebuffer(LOCAL_GL_FRAMEBUFFER, fb);
-    MOZ_ASSERT(!fb || fIsFramebuffer(fb));
+    MOZ_GL_ASSERT(this, !fb || fIsFramebuffer(fb));
   }
 
   void BindDrawFB(GLuint fb) {
@@ -3461,8 +3450,6 @@ class GLContext : public GLLibraryLoader,
   static bool ListHasExtension(const GLubyte* extensions,
                                const char* extension);
 
-  GLint GetMaxTextureImageSize() { return mMaxTextureImageSize; }
-
  public:
   std::map<GLuint, SharedSurface*> mFBOMapping;
 
@@ -3473,6 +3460,7 @@ class GLContext : public GLLibraryLoader,
   };
 
   const uint8_t mDebugFlags;
+  static uint8_t ChooseDebugFlags(CreateContextFlags createFlags);
 
  protected:
   RefPtr<GLContext> mSharedContext;
@@ -3480,7 +3468,7 @@ class GLContext : public GLLibraryLoader,
   // The thread id which this context was created.
   PlatformThreadId mOwningThreadId;
 
-  GLContextSymbols mSymbols;
+  GLContextSymbols mSymbols = {};
 
   UniquePtr<GLBlitHelper> mBlitHelper;
   UniquePtr<GLReadTexImageHelper> mReadTexImageHelper;
@@ -3547,7 +3535,7 @@ class GLContext : public GLLibraryLoader,
   friend class GLScreenBuffer;
   UniquePtr<GLScreenBuffer> mScreen;
 
-  SharedSurface* mLockedSurface;
+  SharedSurface* mLockedSurface = nullptr;
 
  public:
   void LockSurface(SharedSurface* surf) {
@@ -3572,36 +3560,34 @@ class GLContext : public GLLibraryLoader,
 
   bool IsOffscreenSizeAllowed(const gfx::IntSize& aSize) const;
 
- protected:
-  bool InitWithPrefix(const char* prefix, bool trygl);
+  virtual bool Init();
 
  private:
-  bool InitWithPrefixImpl(const char* prefix, bool trygl);
-  void LoadMoreSymbols(const char* prefix, bool trygl);
-  bool LoadExtSymbols(const char* prefix, bool trygl, const SymLoadStruct* list,
+  bool InitImpl();
+  void LoadMoreSymbols(const SymbolLoader& loader);
+  bool LoadExtSymbols(const SymbolLoader& loader, const SymLoadStruct* list,
                       GLExtensions ext);
-  bool LoadFeatureSymbols(const char* prefix, bool trygl,
-                          const SymLoadStruct* list, GLFeature feature);
+  bool LoadFeatureSymbols(const SymbolLoader& loader, const SymLoadStruct* list,
+                          GLFeature feature);
 
  protected:
   void InitExtensions();
 
-  GLint mViewportRect[4];
-  GLint mScissorRect[4];
+  GLint mViewportRect[4] = {};
+  GLint mScissorRect[4] = {};
 
   uint32_t mMaxTexOrRbSize = 0;
-  GLint mMaxTextureSize;
-  GLint mMaxCubeMapTextureSize;
-  GLint mMaxTextureImageSize;
-  GLint mMaxRenderbufferSize;
-  GLint mMaxViewportDims[2];
-  GLsizei mMaxSamples;
-  bool mNeedsTextureSizeChecks;
-  bool mNeedsFlushBeforeDeleteFB;
-  bool mTextureAllocCrashesOnMapFailure;
-  bool mNeedsCheckAfterAttachTextureToFb;
-  bool mWorkAroundDriverBugs;
-  mutable uint64_t mSyncGLCallCount;
+  GLint mMaxTextureSize = 0;
+  GLint mMaxCubeMapTextureSize = 0;
+  GLint mMaxRenderbufferSize = 0;
+  GLint mMaxViewportDims[2] = {};
+  GLsizei mMaxSamples = 0;
+  bool mNeedsTextureSizeChecks = false;
+  bool mNeedsFlushBeforeDeleteFB = false;
+  bool mTextureAllocCrashesOnMapFailure = false;
+  bool mNeedsCheckAfterAttachTextureToFb = false;
+  const bool mWorkAroundDriverBugs;
+  mutable uint64_t mSyncGLCallCount = 0;
 
   bool IsTextureSizeSafeToPassToDriver(GLenum target, GLsizei width,
                                        GLsizei height) const {
@@ -3682,7 +3668,7 @@ class GLContext : public GLLibraryLoader,
 #endif
 
  protected:
-  bool mHeavyGLCallsSinceLastFlush;
+  bool mHeavyGLCallsSinceLastFlush = false;
 
  public:
   void FlushIfHeavyGLCallsSinceLastFlush();

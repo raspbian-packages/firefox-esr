@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,6 +8,11 @@
 
 #include "base/string_util.h"
 #include "base/process_util.h"
+
+#include "nsAppDirectoryServiceDefs.h"
+#include "nsDirectoryServiceDefs.h"
+#include "nsIProperties.h"
+#include "nsServiceManagerUtils.h"
 
 #include "mozilla/ipc/BrowserProcessSubThread.h"
 #include "mozilla/plugins/PluginMessageUtils.h"
@@ -54,12 +59,19 @@ bool PluginProcessParent::Launch(
     mozilla::UniquePtr<LaunchCompleteTask> aLaunchCompleteTask,
     int32_t aSandboxLevel, bool aIsSandboxLoggingEnabled) {
 #if (defined(XP_WIN) || defined(XP_MACOSX)) && defined(MOZ_SANDBOX)
-// At present, the Mac Flash plugin sandbox does not support different
-// levels and is enabled via a boolean pref or environment variable.
-// On Mac, when |aSandboxLevel| is positive, we enable the sandbox.
-#if defined(XP_WIN)
+  // At present, the Mac Flash plugin sandbox does not support different
+  // levels and is enabled via a boolean pref or environment variable.
+  // On Mac, when |aSandboxLevel| is positive, we enable the sandbox.
+#  if defined(XP_WIN)
   mSandboxLevel = aSandboxLevel;
-#endif  // XP_WIN
+
+  // The sandbox process sometimes needs read access to the plugin file.
+  if (aSandboxLevel >= 3) {
+    std::wstring pluginFile(
+        NS_ConvertUTF8toUTF16(mPluginFilePath.c_str()).get());
+    mAllowedFilesRead.push_back(pluginFile);
+  }
+#  endif  // XP_WIN
 #else
   if (aSandboxLevel != 0) {
     MOZ_ASSERT(false,
@@ -67,18 +79,51 @@ bool PluginProcessParent::Launch(
   }
 #endif
 
-  mLaunchCompleteTask = mozilla::Move(aLaunchCompleteTask);
+  mLaunchCompleteTask = std::move(aLaunchCompleteTask);
 
   vector<string> args;
   args.push_back(MungePluginDsoPath(mPluginFilePath));
 
 #if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
   if (aSandboxLevel > 0) {
-    args.push_back("-flashSandbox");
+    args.push_back("-flashSandboxLevel");
+    args.push_back(std::to_string(aSandboxLevel));
     if (aIsSandboxLoggingEnabled) {
       args.push_back("-flashSandboxLogging");
     }
   }
+#elif defined(XP_WIN) && defined(MOZ_SANDBOX)
+  nsresult rv;
+  nsCOMPtr<nsIProperties> dirSvc =
+      do_GetService(NS_DIRECTORY_SERVICE_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) {
+    MOZ_ASSERT(false, "Failed to get directory service.");
+    return false;
+  }
+
+  nsCOMPtr<nsIFile> dir;
+  rv = dirSvc->Get(NS_APP_PLUGIN_PROCESS_TEMP_DIR, NS_GET_IID(nsIFile),
+                   getter_AddRefs(dir));
+  if (NS_FAILED(rv)) {
+    NS_WARNING("Failed to get plugin process temp directory.");
+    return false;
+  }
+
+  nsAutoString tempDir;
+  MOZ_ALWAYS_SUCCEEDS(dir->GetPath(tempDir));
+  args.push_back(NS_ConvertUTF16toUTF8(tempDir).get());
+
+  rv =
+      dirSvc->Get(NS_WIN_APPDATA_DIR, NS_GET_IID(nsIFile), getter_AddRefs(dir));
+  if (NS_FAILED(rv)) {
+    NS_WARNING("Failed to get appdata directory.");
+    return false;
+  }
+
+  nsAutoString appdataDir;
+  MOZ_ALWAYS_SUCCEEDS(dir->GetPath(appdataDir));
+  appdataDir.Append(L"\\Adobe\\");
+  args.push_back(NS_ConvertUTF16toUTF8(appdataDir).get());
 #endif
 
   bool result = AsyncLaunch(args);
@@ -86,20 +131,6 @@ bool PluginProcessParent::Launch(
     mLaunchCompleteTask = nullptr;
   }
   return result;
-}
-
-void PluginProcessParent::Delete() {
-  MessageLoop* currentLoop = MessageLoop::current();
-  MessageLoop* ioLoop = XRE_GetIOMessageLoop();
-
-  if (currentLoop == ioLoop) {
-    delete this;
-    return;
-  }
-
-  ioLoop->PostTask(
-      NewNonOwningRunnableMethod("plugins::PluginProcessParent::Delete", this,
-                                 &PluginProcessParent::Delete));
 }
 
 /**

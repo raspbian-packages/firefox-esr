@@ -5,18 +5,27 @@
 
 "use strict";
 
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "asyncHistory",
+  "@mozilla.org/browser/history;1",
+  "mozIAsyncHistory"
+);
+
 add_task(async function test_embed_visit() {
   let place = {
     uri: NetUtil.newURI("http://places.test/"),
     visits: [
-      { transitionType: PlacesUtils.history.TRANSITIONS.EMBED,
-        visitDate: PlacesUtils.toPRTime(new Date()) }
+      {
+        transitionType: PlacesUtils.history.TRANSITIONS.EMBED,
+        visitDate: PlacesUtils.toPRTime(new Date()),
+      },
     ],
   };
   let errors = 0;
   let results = 0;
   let updated = await new Promise(resolve => {
-    PlacesUtils.asyncHistory.updatePlaces(place, {
+    asyncHistory.updatePlaces(place, {
       ignoreErrors: true,
       ignoreResults: true,
       handleError(aResultCode, aPlace) {
@@ -27,7 +36,7 @@ add_task(async function test_embed_visit() {
       },
       handleCompletion(resultCount) {
         resolve(resultCount);
-      }
+      },
     });
   });
   Assert.equal(errors, 0, "There should be no error callback");
@@ -39,16 +48,20 @@ add_task(async function test_misc_visits() {
   let place = {
     uri: NetUtil.newURI("http://places.test/"),
     visits: [
-      { transitionType: PlacesUtils.history.TRANSITIONS.EMBED,
-        visitDate: PlacesUtils.toPRTime(new Date()) },
-      { transitionType: PlacesUtils.history.TRANSITIONS.LINK,
-        visitDate: PlacesUtils.toPRTime(new Date()) }
+      {
+        transitionType: PlacesUtils.history.TRANSITIONS.EMBED,
+        visitDate: PlacesUtils.toPRTime(new Date()),
+      },
+      {
+        transitionType: PlacesUtils.history.TRANSITIONS.LINK,
+        visitDate: PlacesUtils.toPRTime(new Date()),
+      },
     ],
   };
   let errors = 0;
   let results = 0;
   let updated = await new Promise(resolve => {
-    PlacesUtils.asyncHistory.updatePlaces(place, {
+    asyncHistory.updatePlaces(place, {
       ignoreErrors: true,
       ignoreResults: true,
       handleError(aResultCode, aPlace) {
@@ -59,7 +72,7 @@ add_task(async function test_misc_visits() {
       },
       handleCompletion(resultCount) {
         resolve(resultCount);
-      }
+      },
     });
   });
   Assert.equal(errors, 0, "There should be no error callback");

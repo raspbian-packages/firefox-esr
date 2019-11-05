@@ -13,12 +13,13 @@
 #include "mozilla/WeakPtr.h"
 
 #ifdef XP_WIN
-#undef PostMessage
+#  undef PostMessage
 #endif
 
 namespace mozilla {
 namespace dom {
 
+struct PostMessageOptions;
 struct WorkerOptions;
 class WorkerPrivate;
 
@@ -39,6 +40,9 @@ class Worker : public DOMEventTargetHelper, public SupportsWeakPtr<Worker> {
 
   void PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
                    const Sequence<JSObject*>& aTransferable, ErrorResult& aRv);
+
+  void PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
+                   const PostMessageOptions& aOptions, ErrorResult& aRv);
 
   void Terminate();
 

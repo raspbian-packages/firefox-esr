@@ -3,13 +3,13 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <!ENTITY junkSettings.label "ჯართის პარამეტრები">
-<!ENTITY trainingDescription.label "თუ ჩართულია, ჯერ &brandShortName; უნდა გაავრჯიშოთ კჯართის მითითებით ჯართის პულტის ღილაკის საშუალებით. უნდ ამიუთითოთ ორივე, ჯართისა და არა ჯართის წერილები. ამის შემდეგ &brandShortName; ჯართს ავტომატურად მონიშნავს.">
+<!ENTITY trainingDescription.label "თუ ჩართულია, ჯერ &brandShortName; უნდა გაავარჯიშოთ ჯართის ამოცნობაში, არასასურველი წერილების მონიშვნით, ჯართის სამართავ ზოლში არსებული ღილაკით. უნდა მიუთითოთ ორივე, არასასურველი და საჭირო წერილები. ამის შემდეგ &brandShortName; ჯართს თავად აღნიშნავს.">
 <!ENTITY level.label "ჯართის მოქნილი კონტროლის ჩართვა ამ ანგარიშისთვის">
 <!ENTITY level.accesskey "E">
 
 <!ENTITY move.label "ჯართის წერილების გადატანა:">
 <!ENTITY move.accesskey "M">
-<!ENTITY junkFolderOn.label "&quot;ჯართის&quot; დასტაში აქ:">
+<!ENTITY junkFolderOn.label "&quot;ჯართის&quot; საქაღალდეში აქ:">
 <!ENTITY junkFolderOn.accesskey "J">
 <!ENTITY otherFolder.label "სხვაგან:">
 <!ENTITY otherFolder.accesskey "O">
@@ -25,7 +25,7 @@
 <!ENTITY ispHeaders.accesskey "T">
 
 <!ENTITY junkClassification.label "მონიშნული">
-<!ENTITY junkActions.label "სამიზნე დასტა და პირობები">
+<!ENTITY junkActions.label "სამიზნე საქაღალდე და პირობები">
 
 <!ENTITY globalJunkPrefs.label "Global Junk პარამეტრები…">
 <!ENTITY globalJunkPrefs.accesskey "G">

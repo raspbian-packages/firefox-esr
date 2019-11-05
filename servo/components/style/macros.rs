@@ -1,22 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Various macro helpers.
 
 macro_rules! exclusive_value {
     (($value:ident, $set:expr) => $ident:path) => {
         if $value.intersects($set) {
-            return Err(())
+            return Err(());
         } else {
             $ident
         }
-    }
+    };
 }
 
 #[cfg(feature = "gecko")]
 macro_rules! impl_gecko_keyword_conversions {
-    ($name: ident, $utype: ty) => {
+    ($name:ident, $utype:ty) => {
         impl From<$utype> for $name {
             fn from(bits: $utype) -> $name {
                 $name::from_gecko_keyword(bits)
@@ -44,10 +44,10 @@ macro_rules! trivial_to_computed_value {
                 other.clone()
             }
         }
-    }
+    };
 }
 
-/// A macro to parse an identifier, or return an `UnexpectedIndent` error
+/// A macro to parse an identifier, or return an `UnexpectedIdent` error
 /// otherwise.
 ///
 /// FIXME(emilio): The fact that `UnexpectedIdent` is a `SelectorParseError`
@@ -66,10 +66,23 @@ macro_rules! try_match_ident_ignore_ascii_case {
 }
 
 macro_rules! define_keyword_type {
-    ($name: ident, $css: expr) => {
+    ($name:ident, $css:expr) => {
         #[allow(missing_docs)]
-        #[derive(Animate, Clone, ComputeSquaredDistance, Copy, MallocSizeOf)]
-        #[derive(PartialEq, ToAnimatedValue, ToAnimatedZero, ToComputedValue, ToCss)]
+        #[derive(
+            Animate,
+            Clone,
+            ComputeSquaredDistance,
+            Copy,
+            MallocSizeOf,
+            PartialEq,
+            SpecifiedValueInfo,
+            ToAnimatedValue,
+            ToAnimatedZero,
+            ToComputedValue,
+            ToCss,
+            ToResolvedValue,
+            ToShmem,
+        )]
         pub struct $name;
 
         impl fmt::Debug for $name {
@@ -81,27 +94,43 @@ macro_rules! define_keyword_type {
         impl $crate::parser::Parse for $name {
             fn parse<'i, 't>(
                 _context: &$crate::parser::ParserContext,
-                input: &mut ::cssparser::Parser<'i, 't>
+                input: &mut ::cssparser::Parser<'i, 't>,
             ) -> Result<$name, ::style_traits::ParseError<'i>> {
-                input.expect_ident_matching($css).map(|_| $name).map_err(|e| e.into())
+                input
+                    .expect_ident_matching($css)
+                    .map(|_| $name)
+                    .map_err(|e| e.into())
             }
         }
     };
 }
 
-#[cfg(feature = "gecko")]
-macro_rules! impl_bitflags_conversions {
-    ($name: ident) => {
-        impl From<u8> for $name {
-            fn from(bits: u8) -> $name {
-                $name::from_bits(bits).expect("bits contain valid flag")
+/// Place a Gecko profiler label on the stack.
+///
+/// The `label_type` argument must be the name of a variant of `ProfilerLabel`.
+#[cfg(feature = "gecko_profiler")]
+#[macro_export]
+macro_rules! profiler_label {
+    ($label_type:ident) => {
+        let mut _profiler_label: $crate::gecko_bindings::structs::AutoProfilerLabel = unsafe {
+            ::std::mem::uninitialized()
+        };
+        let _profiler_label = if $crate::gecko::profiler::profiler_is_active() {
+            unsafe {
+                Some($crate::gecko::profiler::AutoProfilerLabel::new(
+                    &mut _profiler_label,
+                    $crate::gecko::profiler::ProfilerLabel::$label_type,
+                ))
             }
-        }
+        } else {
+            None
+        };
+    }
+}
 
-        impl From<$name> for u8 {
-            fn from(v: $name) -> u8 {
-                v.bits()
-            }
-        }
-    };
+/// No-op when the Gecko profiler is not available.
+#[cfg(not(feature = "gecko_profiler"))]
+#[macro_export]
+macro_rules! profiler_label {
+    ($label_type:ident) => {}
 }

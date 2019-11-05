@@ -175,5 +175,5 @@ already_AddRefed<SourceSurface> CreateSourceSurfaceFromMacIOSurface(
   return result.forget();
 }
 
-}  // namespace gfx
+}  // namespace layers
 }  // namespace mozilla

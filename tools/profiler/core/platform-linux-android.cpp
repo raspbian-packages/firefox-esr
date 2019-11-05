@@ -53,13 +53,14 @@
 #include <unistd.h>     // sysconf
 #include <semaphore.h>
 #ifdef __GLIBC__
-#include <execinfo.h>  // backtrace, backtrace_symbols
-#endif                 // def __GLIBC__
-#include <strings.h>   // index
+#  include <execinfo.h>  // backtrace, backtrace_symbols
+#endif                   // def __GLIBC__
+#include <strings.h>     // index
 #include <errno.h>
 #include <stdarg.h>
 
 #include "prenv.h"
+#include "mozilla/LinuxSignal.h"
 #include "mozilla/PodOperations.h"
 #include "mozilla/DebugOnly.h"
 
@@ -68,7 +69,16 @@
 
 using namespace mozilla;
 
-/* static */ int Thread::GetCurrentId() { return gettid(); }
+int profiler_current_process_id() { return getpid(); }
+
+int profiler_current_thread_id() {
+  // glibc doesn't provide a wrapper for gettid().
+#if defined(__GLIBC__)
+  return static_cast<int>(static_cast<pid_t>(syscall(SYS_gettid)));
+#else
+  return static_cast<int>(gettid());
+#endif
+}
 
 void* GetStackTop(void* aGuess) { return aGuess; }
 
@@ -92,7 +102,7 @@ static void PopulateRegsFromContext(Registers& aRegs, ucontext_t* aContext) {
   aRegs.mSP = reinterpret_cast<Address>(mcontext.arm_sp);
   aRegs.mFP = reinterpret_cast<Address>(mcontext.arm_fp);
   aRegs.mLR = reinterpret_cast<Address>(mcontext.arm_lr);
-#elif defined(GP_ARCH_aarch64)
+#elif defined(GP_ARCH_arm64)
   aRegs.mPC = reinterpret_cast<Address>(mcontext.pc);
   aRegs.mSP = reinterpret_cast<Address>(mcontext.sp);
   aRegs.mFP = reinterpret_cast<Address>(mcontext.regs[29]);
@@ -103,12 +113,12 @@ static void PopulateRegsFromContext(Registers& aRegs, ucontext_t* aContext) {
   aRegs.mFP = reinterpret_cast<Address>(mcontext.gregs[30]);
 
 #else
-#error "bad platform"
+#  error "bad platform"
 #endif
 }
 
 #if defined(GP_OS_android)
-#define SYS_tgkill __NR_tgkill
+#  define SYS_tgkill __NR_tgkill
 #endif
 
 int tgkill(pid_t tgid, pid_t tid, int signalno) {
@@ -235,7 +245,7 @@ static void SigprofHandler(int aSignal, siginfo_t* aInfo, void* aContext) {
 }
 
 Sampler::Sampler(PSLockRef aLock)
-    : mMyPid(getpid())
+    : mMyPid(profiler_current_process_id())
       // We don't know what the sampler thread's ID will be until it runs, so
       // set mSamplerTid to a dummy value and fill it in for real in
       // SuspendAndSampleAndResumeThread().
@@ -252,7 +262,7 @@ Sampler::Sampler(PSLockRef aLock)
 
   // Request profiling signals.
   struct sigaction sa;
-  sa.sa_sigaction = SigprofHandler;
+  sa.sa_sigaction = MOZ_SIGNAL_TRAMPOLINE(SigprofHandler);
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART | SA_SIGINFO;
   if (sigaction(SIGPROF, &sa, &mOldSigprofHandler) != 0) {
@@ -275,7 +285,7 @@ void Sampler::SuspendAndSampleAndResumeThread(
   MOZ_ASSERT(!sSigHandlerCoordinator);
 
   if (mSamplerTid == -1) {
-    mSamplerTid = gettid();
+    mSamplerTid = profiler_current_thread_id();
   }
   int sampleeTid = aRegisteredThread.Info()->ThreadId();
   MOZ_RELEASE_ASSERT(sampleeTid != mSamplerTid);
@@ -435,8 +445,8 @@ void SamplerThread::Stop(PSLockRef aLock) {
   Sampler::Disable(aLock);
 }
 
-  // END SamplerThread target specifics
-  ////////////////////////////////////////////////////////////////////////
+// END SamplerThread target specifics
+////////////////////////////////////////////////////////////////////////
 
 #if defined(GP_OS_linux)
 

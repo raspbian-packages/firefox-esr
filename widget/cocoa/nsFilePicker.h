@@ -33,8 +33,7 @@ class nsFilePicker : public nsBaseFilePicker {
   NS_IMETHOD GetFile(nsIFile** aFile) override;
   NS_IMETHOD GetFileURL(nsIURI** aFileURL) override;
   NS_IMETHOD GetFiles(nsISimpleEnumerator** aFiles) override;
-  NS_IMETHOD AppendFilter(const nsAString& aTitle,
-                          const nsAString& aFilter) override;
+  NS_IMETHOD AppendFilter(const nsAString& aTitle, const nsAString& aFilter) override;
 
   /**
    * Returns the current filter list in the format used by Cocoa's NSSavePanel
@@ -53,11 +52,9 @@ class nsFilePicker : public nsBaseFilePicker {
   // aFile is an existing but unspecified file. These functions must specify it.
   //
   // will return |returnCancel| or |returnOK| as result.
-  int16_t GetLocalFiles(const nsString& inTitle, bool inAllowMultiple,
-                        nsCOMArray<nsIFile>& outFiles);
-  int16_t GetLocalFolder(const nsString& inTitle, nsIFile** outFile);
-  int16_t PutLocalFile(const nsString& inTitle, const nsString& inDefaultName,
-                       nsIFile** outFile);
+  int16_t GetLocalFiles(bool inAllowMultiple, nsCOMArray<nsIFile>& outFiles);
+  int16_t GetLocalFolder(nsIFile** outFile);
+  int16_t PutLocalFile(nsIFile** outFile);
 
   void SetDialogTitle(const nsString& inTitle, id aDialog);
   NSString* PanelDefaultDirectory();
@@ -65,7 +62,7 @@ class nsFilePicker : public nsBaseFilePicker {
 
   nsString mTitle;
   nsCOMArray<nsIFile> mFiles;
-  nsString mDefault;
+  nsString mDefaultFilename;
 
   nsTArray<nsString> mFilters;
   nsTArray<nsString> mTitles;

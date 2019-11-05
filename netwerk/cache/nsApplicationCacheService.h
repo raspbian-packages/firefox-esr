@@ -20,7 +20,7 @@ class nsApplicationCacheService final : public nsIApplicationCacheService {
   static void AppClearDataObserverInit();
 
  private:
-  ~nsApplicationCacheService();
+  ~nsApplicationCacheService() = default;
   RefPtr<nsCacheService> mCacheService;
 };
 

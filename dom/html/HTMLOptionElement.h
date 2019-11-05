@@ -19,20 +19,19 @@ class HTMLSelectElement;
 class HTMLOptionElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLOptionElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   static already_AddRefed<HTMLOptionElement> Option(
       const GlobalObject& aGlobal, const nsAString& aText,
       const Optional<nsAString>& aValue, bool aDefaultSelected, bool aSelected,
       ErrorResult& aError);
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLOptionElement, option)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLOptionElement, option)
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLOptionElement, nsGenericHTMLElement)
 
   using mozilla::dom::Element::GetText;
-  using mozilla::dom::Element::SetText;
 
   bool Selected() const { return mIsSelected; }
   void SetSelected(bool aValue);
@@ -66,19 +65,17 @@ class HTMLOptionElement final : public nsGenericHTMLElement {
    */
   void UpdateDisabledState(bool aNotify);
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
   // nsIContent
   virtual EventStates IntrinsicState() const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
-  nsresult CopyInnerTo(mozilla::dom::Element* aDest, bool aPreallocateChildren);
+  nsresult CopyInnerTo(mozilla::dom::Element* aDest);
 
   bool Disabled() const { return GetBoolAttr(nsGkAtoms::disabled); }
 

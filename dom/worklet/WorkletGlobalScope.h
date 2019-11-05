@@ -9,7 +9,9 @@
 
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
+#include "mozilla/TimeStamp.h"
 #include "mozilla/dom/BindingDeclarations.h"
+#include "nsDOMNavigationTiming.h"
 #include "nsIGlobalObject.h"
 #include "nsWrapperCache.h"
 
@@ -20,10 +22,10 @@
     }                                                \
   }
 
-class nsIPrincipal;
-class nsPIDOMWindowInner;
-
 namespace mozilla {
+
+class WorkletImpl;
+
 namespace dom {
 
 class Console;
@@ -35,27 +37,39 @@ class WorkletGlobalScope : public nsIGlobalObject, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(WorkletGlobalScope)
 
-  explicit WorkletGlobalScope(nsPIDOMWindowInner* aWindow);
+  WorkletGlobalScope();
 
   nsIGlobalObject* GetParentObject() const { return nullptr; }
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
-  virtual bool WrapGlobalObject(JSContext* aCx, nsIPrincipal* aPrincipal,
+  virtual bool WrapGlobalObject(JSContext* aCx,
                                 JS::MutableHandle<JSObject*> aReflector) = 0;
 
-  virtual JSObject* GetGlobalJSObject() override { return GetWrapper(); }
+  JSObject* GetGlobalJSObject() override { return GetWrapper(); }
+  JSObject* GetGlobalJSObjectPreserveColor() const override {
+    return GetWrapperPreserveColor();
+  }
 
   already_AddRefed<Console> GetConsole(JSContext* aCx, ErrorResult& aRv);
 
+  virtual WorkletImpl* Impl() const = 0;
+
   void Dump(const Optional<nsAString>& aString) const;
+
+  DOMHighResTimeStamp TimeStampToDOMHighRes(const TimeStamp& aTimeStamp) const {
+    MOZ_ASSERT(!aTimeStamp.IsNull());
+    TimeDuration duration = aTimeStamp - mCreationTimeStamp;
+    return duration.ToMilliseconds();
+  }
 
  protected:
   ~WorkletGlobalScope();
+  ;
 
  private:
-  nsCOMPtr<nsPIDOMWindowInner> mWindow;
+  TimeStamp mCreationTimeStamp;
   RefPtr<Console> mConsole;
 };
 

@@ -62,11 +62,13 @@ bool IsSearchbox() const;
 
 nsAtom* LandmarkRole() const;
 
-nsAtom* ARIARoleAtom() const;
+nsStaticAtom* ARIARoleAtom() const;
 
 int32_t GetLevelInternal();
 void ScrollTo(uint32_t aScrollType);
 void ScrollToPoint(uint32_t aScrollType, int32_t aX, int32_t aY);
+
+void Announce(const nsString& aAnnouncement, uint16_t aPriority);
 
 int32_t CaretLineNumber();
 int32_t CaretOffset();
@@ -247,6 +249,7 @@ ProxyAccessible* FocusedChild();
 ProxyAccessible* ChildAtPoint(int32_t aX, int32_t aY,
                               Accessible::EWhichChildAtPoint aWhichChild);
 nsIntRect Bounds();
+nsIntRect BoundsInCSSPixels();
 
 void Language(nsString& aLocale);
 void DocType(nsString& aType);

@@ -3,16 +3,29 @@
 "use strict";
 
 XPCOMUtils.defineLazyGetter(this, "Management", () => {
-  const {Management} = ChromeUtils.import("resource://gre/modules/Extension.jsm", {});
+  // eslint-disable-next-line no-shadow
+  const { Management } = ChromeUtils.import(
+    "resource://gre/modules/Extension.jsm",
+    null
+  );
   return Management;
 });
 
-ChromeUtils.defineModuleGetter(this, "AddonManager",
-                               "resource://gre/modules/AddonManager.jsm");
-ChromeUtils.defineModuleGetter(this, "ExtensionPreferencesManager",
-                               "resource://gre/modules/ExtensionPreferencesManager.jsm");
-ChromeUtils.defineModuleGetter(this, "Preferences",
-                               "resource://gre/modules/Preferences.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "AddonManager",
+  "resource://gre/modules/AddonManager.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "ExtensionPreferencesManager",
+  "resource://gre/modules/ExtensionPreferencesManager.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "Preferences",
+  "resource://gre/modules/Preferences.jsm"
+);
 
 const {
   createAppInfo,
@@ -39,7 +52,7 @@ function awaitEvent(eventName) {
 
 function awaitPrefChange(prefName) {
   return new Promise(resolve => {
-    let listener = (args) => {
+    let listener = args => {
       Preferences.ignore(prefName, listener);
       resolve();
     };
@@ -79,7 +92,9 @@ add_task(async function test_disable() {
       let msg = `${pref} set correctly.`;
       let expectedValue = expected ? PREFS[pref] : !PREFS[pref];
       if (pref === "network.http.speculative-parallel-limit") {
-        expectedValue = expected ? ExtensionPreferencesManager.getDefaultValue(pref) : 0;
+        expectedValue = expected
+          ? ExtensionPreferencesManager.getDefaultValue(pref)
+          : 0;
       }
       equal(Preferences.get(pref), expectedValue, msg);
     }
@@ -88,12 +103,15 @@ add_task(async function test_disable() {
   async function background() {
     browser.test.onMessage.addListener(async (msg, data) => {
       await browser.privacy.network.networkPredictionEnabled.set(data);
-      let settingData = await browser.privacy.network.networkPredictionEnabled.get({});
+      let settingData = await browser.privacy.network.networkPredictionEnabled.get(
+        {}
+      );
       browser.test.sendMessage("privacyData", settingData);
     });
   }
 
-  // Create an array of extensions to install.
+  await promiseStartupManager();
+
   let testExtensions = [
     ExtensionTestUtils.loadExtension({
       background,
@@ -122,19 +140,17 @@ add_task(async function test_disable() {
     }),
   ];
 
-  await promiseStartupManager();
-
   for (let extension of testExtensions) {
     await extension.startup();
   }
 
   // Set the value to true for the older extension.
-  testExtensions[0].sendMessage("set", {value: true});
+  testExtensions[0].sendMessage("set", { value: true });
   let data = await testExtensions[0].awaitMessage("privacyData");
   ok(data.value, "Value set to true for the older extension.");
 
   // Set the value to false for the newest extension.
-  testExtensions[1].sendMessage("set", {value: false});
+  testExtensions[1].sendMessage("set", { value: false });
   data = await testExtensions[1].awaitMessage("privacyData");
   ok(!data.value, "Value set to false for the newest extension.");
 
@@ -144,7 +160,7 @@ add_task(async function test_disable() {
   // Disable the newest extension.
   let disabledPromise = awaitPrefChange(PREF_TO_WATCH);
   let newAddon = await AddonManager.getAddonByID(NEW_ID);
-  newAddon.userDisabled = true;
+  await newAddon.disable();
   await disabledPromise;
 
   // Verify the prefs have been set to match the "true" setting.
@@ -153,7 +169,7 @@ add_task(async function test_disable() {
   // Disable the older extension.
   disabledPromise = awaitPrefChange(PREF_TO_WATCH);
   let oldAddon = await AddonManager.getAddonByID(OLD_ID);
-  oldAddon.userDisabled = true;
+  await oldAddon.disable();
   await disabledPromise;
 
   // Verify the prefs have reverted back to their initial values.
@@ -163,7 +179,7 @@ add_task(async function test_disable() {
 
   // Re-enable the newest extension.
   let enabledPromise = awaitEvent("ready");
-  newAddon.userDisabled = false;
+  await newAddon.enable();
   await enabledPromise;
 
   // Verify the prefs have been set to match the "false" setting.
@@ -171,7 +187,7 @@ add_task(async function test_disable() {
 
   // Re-enable the older extension.
   enabledPromise = awaitEvent("ready");
-  oldAddon.userDisabled = false;
+  await oldAddon.enable();
   await enabledPromise;
 
   // Verify the prefs have remained set to match the "false" setting.

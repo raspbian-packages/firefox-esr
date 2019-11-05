@@ -3,10 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 extern crate base64;
-extern crate crypto;
+extern crate sha2;
 extern crate u2fhid;
-use crypto::digest::Digest;
-use crypto::sha2::Sha256;
+use sha2::{Digest, Sha256};
 use std::io;
 use std::sync::mpsc::channel;
 use u2fhid::{AuthenticatorTransports, KeyHandle, RegisterFlags, SignFlags, U2FManager};
@@ -17,13 +16,15 @@ extern crate log;
 macro_rules! try_or {
     ($val:expr, $or:expr) => {
         match $val {
-            Ok(v) => { v }
-            Err(e) => { return $or(e); }
+            Ok(v) => v,
+            Err(e) => {
+                return $or(e);
+            }
         }
-    }
+    };
 }
 
-fn u2f_get_key_handle_from_register_response(register_response: &Vec<u8>) -> io::Result<Vec<u8>> {
+fn u2f_get_key_handle_from_register_response(register_response: &[u8]) -> io::Result<Vec<u8>> {
     if register_response[0] != 0x05 {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -32,7 +33,7 @@ fn u2f_get_key_handle_from_register_response(register_response: &Vec<u8>) -> io:
     }
 
     let key_handle_len = register_response[66] as usize;
-    let mut public_key = register_response.clone();
+    let mut public_key = register_response.to_owned();
     let mut key_handle = public_key.split_off(67);
     let _attestation = key_handle.split_off(key_handle_len);
 
@@ -40,21 +41,21 @@ fn u2f_get_key_handle_from_register_response(register_response: &Vec<u8>) -> io:
 }
 
 fn main() {
-    env_logger::init().expect("Cannot start logger");
+    env_logger::init();
 
     println!("Asking a security key to register now...");
-    let challenge_str = format!("{}{}",
+    let challenge_str = format!(
+        "{}{}",
         r#"{"challenge": "1vQ9mxionq0ngCnjD-wTsv1zUSrGRtFqG2xP09SbZ70","#,
-        r#" "version": "U2F_V2", "appId": "http://demo.yubico.com"}"#);
-    let mut challenge = Sha256::new();
-    challenge.input_str(&challenge_str);
-    let mut chall_bytes: Vec<u8> = vec![0; challenge.output_bytes()];
-    challenge.result(&mut chall_bytes);
+        r#" "version": "U2F_V2", "appId": "http://demo.yubico.com"}"#
+    );
+    let mut challenge = Sha256::default();
+    challenge.input(challenge_str.as_bytes());
+    let chall_bytes = challenge.result().to_vec();
 
-    let mut application = Sha256::new();
-    application.input_str("http://demo.yubico.com");
-    let mut app_bytes: Vec<u8> = vec![0; application.output_bytes()];
-    application.result(&mut app_bytes);
+    let mut application = Sha256::default();
+    application.input(b"http://demo.yubico.com");
+    let app_bytes = application.result().to_vec();
 
     let manager = U2FManager::new().unwrap();
     let flags = RegisterFlags::empty();
@@ -70,8 +71,7 @@ fn main() {
             move |rv| {
                 tx.send(rv.unwrap()).unwrap();
             },
-        )
-        .unwrap();
+        ).unwrap();
 
     let register_data = try_or!(rx.recv(), |_| {
         panic!("Problem receiving, unable to continue");
@@ -96,8 +96,7 @@ fn main() {
             move |rv| {
                 tx.send(rv.unwrap()).unwrap();
             },
-        )
-        .unwrap();
+        ).unwrap();
 
     let (_, handle_used, sign_data) = try_or!(rx.recv(), |_| {
         println!("Problem receiving");

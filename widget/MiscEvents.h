@@ -11,6 +11,7 @@
 #include "mozilla/BasicEvents.h"
 #include "nsCOMPtr.h"
 #include "nsAtom.h"
+#include "nsGkAtoms.h"
 #include "nsITransferable.h"
 
 namespace mozilla {
@@ -91,6 +92,7 @@ class WidgetCommandEvent : public WidgetGUIEvent {
  public:
   virtual WidgetCommandEvent* AsCommandEvent() override { return this; }
 
+ protected:
   WidgetCommandEvent(bool aIsTrusted, nsAtom* aEventType, nsAtom* aCommand,
                      nsIWidget* aWidget)
       : WidgetGUIEvent(aIsTrusted, eUnidentifiedEvent, aWidget,
@@ -98,6 +100,20 @@ class WidgetCommandEvent : public WidgetGUIEvent {
         mCommand(aCommand) {
     mSpecifiedEventType = aEventType;
   }
+
+ public:
+  /**
+   * Constructor to initialize an app command.  This is the only case to
+   * initialize this class as a command in C++ stack.
+   */
+  WidgetCommandEvent(bool aIsTrusted, nsAtom* aCommand, nsIWidget* aWidget)
+      : WidgetCommandEvent(aIsTrusted, nsGkAtoms::onAppCommand, aCommand,
+                           aWidget) {}
+
+  /**
+   * Constructor to initialize as internal event of dom::CommandEvent.
+   */
+  WidgetCommandEvent() : WidgetCommandEvent(false, nullptr, nullptr, nullptr) {}
 
   virtual WidgetEvent* Duplicate() const override {
     MOZ_ASSERT(mClass == eCommandEventClass,
@@ -163,7 +179,7 @@ class WidgetPluginEvent : public WidgetGUIEvent {
   }
 
  protected:
-  WidgetPluginEvent() {}
+  WidgetPluginEvent() : mRetargetToFocusedDocument(false) {}
 };
 
 }  // namespace mozilla

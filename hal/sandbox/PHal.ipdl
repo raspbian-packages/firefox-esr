@@ -9,9 +9,8 @@ include protocol PBrowser;
 
 include "mozilla/GfxMessageUtils.h";
 
-using mozilla::dom::ScreenOrientationInternal from "mozilla/dom/ScreenOrientation.h";
+using hal::ScreenOrientation from "mozilla/HalScreenConfiguration.h";
 using mozilla::hal::SensorType from "mozilla/HalSensor.h";
-using mozilla::hal::SensorAccuracyType from "mozilla/HalSensor.h";
 using mozilla::hal::WakeLockControl from "mozilla/HalTypes.h";
 using mozilla::hal::ProcessPriority from "mozilla/HalTypes.h";
 using nsIntRect from "nsRect.h";
@@ -30,7 +29,6 @@ struct SensorData {
   SensorType sensor;
   PRTime timestamp;
   float[] values;
-  SensorAccuracyType accuracy;
 };
 
 struct NetworkInformation {
@@ -48,17 +46,10 @@ struct WakeLockInformation {
 
 struct ScreenConfiguration {
   nsIntRect rect;
-  ScreenOrientationInternal orientation;
+  ScreenOrientation orientation;
   uint16_t angle;
   uint32_t colorDepth;
   uint32_t pixelDepth;
-};
-
-struct SystemTimezoneChangeInformation {
-  // These timezone offsets are relative to UTC in minutes and
-  // have already taken daylight saving time (DST) into account.
-  int32_t oldTimezoneOffsetMinutes;
-  int32_t newTimezoneOffsetMinutes;
 };
 
 } // namespace hal
@@ -73,8 +64,6 @@ child:
     async NotifyNetworkChange(NetworkInformation aNetworkInfo);
     async NotifyWakeLockChange(WakeLockInformation aWakeLockInfo);
     async NotifyScreenConfigurationChange(ScreenConfiguration aScreenOrientation);
-    async NotifySystemClockChange(int64_t aClockDeltaMS); 
-    async NotifySystemTimezoneChange(SystemTimezoneChangeInformation aSystemTimezoneChangeInfo); 
 
 parent:
     async Vibrate(uint32_t[] pattern, uint64_t[] id, PBrowser browser);
@@ -90,12 +79,6 @@ parent:
     sync GetCurrentNetworkInformation()
       returns (NetworkInformation aNetworkInfo);
 
-    async AdjustSystemClock(int64_t aDeltaMilliseconds);
-    async EnableSystemClockChangeNotifications();
-    async DisableSystemClockChangeNotifications();
-    async EnableSystemTimezoneChangeNotifications();
-    async DisableSystemTimezoneChangeNotifications();
-
     async ModifyWakeLock(nsString aTopic,
                          WakeLockControl aLockAdjust,
                          WakeLockControl aHiddenAdjust,
@@ -107,10 +90,10 @@ parent:
 
     async EnableScreenConfigurationNotifications();
     async DisableScreenConfigurationNotifications();
-    sync LockScreenOrientation(ScreenOrientationInternal aOrientation)
+    sync LockScreenOrientation(ScreenOrientation aOrientation)
       returns (bool allowed);
     async UnlockScreenOrientation();
- 
+
 child:
     async NotifySensorChange(SensorData aSensorData);
 

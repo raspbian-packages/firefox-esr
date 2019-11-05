@@ -7,36 +7,42 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+#![cfg_attr(feature = "cargo-clippy", allow(just_underscores_and_digits))]
+
 use super::{UnknownUnit, Angle};
+#[cfg(feature = "mint")]
+use mint;
 use num::{One, Zero};
 use point::TypedPoint2D;
 use vector::{TypedVector2D, vec2};
 use rect::TypedRect;
 use transform3d::TypedTransform3D;
-use std::ops::{Add, Mul, Div, Sub, Neg};
-use std::marker::PhantomData;
+use core::ops::{Add, Mul, Div, Sub, Neg};
+use core::marker::PhantomData;
 use approxeq::ApproxEq;
 use trig::Trig;
-use std::fmt;
+use core::fmt;
 use num_traits::NumCast;
 
-define_matrix! {
-    /// A 2d transform stored as a 3 by 2 matrix in row-major order in memory.
-    ///
-    /// Transforms can be parametrized over the source and destination units, to describe a
-    /// transformation from a space to another.
-    /// For example, `TypedTransform2D<f32, WorldSpace, ScreenSpace>::transform_point4d`
-    /// takes a `TypedPoint2D<f32, WorldSpace>` and returns a `TypedPoint2D<f32, ScreenSpace>`.
-    ///
-    /// Transforms expose a set of convenience methods for pre- and post-transformations.
-    /// A pre-transformation corresponds to adding an operation that is applied before
-    /// the rest of the transformation, while a post-transformation adds an operation
-    /// that is applied after.
-    pub struct TypedTransform2D<T, Src, Dst> {
-        pub m11: T, pub m12: T,
-        pub m21: T, pub m22: T,
-        pub m31: T, pub m32: T,
-    }
+/// A 2d transform stored as a 3 by 2 matrix in row-major order in memory.
+///
+/// Transforms can be parametrized over the source and destination units, to describe a
+/// transformation from a space to another.
+/// For example, `TypedTransform2D<f32, WorldSpace, ScreenSpace>::transform_point4d`
+/// takes a `TypedPoint2D<f32, WorldSpace>` and returns a `TypedPoint2D<f32, ScreenSpace>`.
+///
+/// Transforms expose a set of convenience methods for pre- and post-transformations.
+/// A pre-transformation corresponds to adding an operation that is applied before
+/// the rest of the transformation, while a post-transformation adds an operation
+/// that is applied after.
+#[repr(C)]
+#[derive(EuclidMatrix)]
+pub struct TypedTransform2D<T, Src, Dst> {
+    pub m11: T, pub m12: T,
+    pub m21: T, pub m22: T,
+    pub m31: T, pub m32: T,
+    #[doc(hidden)]
+    pub _unit: PhantomData<(Src, Dst)>,
 }
 
 /// The default 2d transform type with no units.
@@ -46,9 +52,9 @@ impl<T: Copy, Src, Dst> TypedTransform2D<T, Src, Dst> {
     /// Create a transform specifying its matrix elements in row-major order.
     pub fn row_major(m11: T, m12: T, m21: T, m22: T, m31: T, m32: T) -> Self {
         TypedTransform2D {
-            m11: m11, m12: m12,
-            m21: m21, m22: m22,
-            m31: m31, m32: m32,
+            m11, m12,
+            m21, m22,
+            m31, m32,
             _unit: PhantomData,
         }
     }
@@ -56,9 +62,9 @@ impl<T: Copy, Src, Dst> TypedTransform2D<T, Src, Dst> {
     /// Create a transform specifying its matrix elements in column-major order.
     pub fn column_major(m11: T, m21: T, m31: T, m12: T, m22: T, m32: T) -> Self {
         TypedTransform2D {
-            m11: m11, m12: m12,
-            m21: m21, m22: m22,
-            m31: m31, m32: m32,
+            m11, m12,
+            m21, m22,
+            m31, m32,
             _unit: PhantomData,
         }
     }
@@ -132,16 +138,23 @@ impl<T: Copy, Src, Dst> TypedTransform2D<T, Src, Dst> {
 
 impl<T0: NumCast + Copy, Src, Dst> TypedTransform2D<T0, Src, Dst> {
     /// Cast from one numeric representation to another, preserving the units.
-    pub fn cast<T1: NumCast + Copy>(&self) -> Option<TypedTransform2D<T1, Src, Dst>> {
+    pub fn cast<T1: NumCast + Copy>(&self) -> TypedTransform2D<T1, Src, Dst> {
+        self.try_cast().unwrap()
+    }
+
+    /// Fallible cast from one numeric representation to another, preserving the units.
+    pub fn try_cast<T1: NumCast + Copy>(&self) -> Option<TypedTransform2D<T1, Src, Dst>> {
         match (NumCast::from(self.m11), NumCast::from(self.m12),
                NumCast::from(self.m21), NumCast::from(self.m22),
                NumCast::from(self.m31), NumCast::from(self.m32)) {
             (Some(m11), Some(m12),
              Some(m21), Some(m22),
              Some(m31), Some(m32)) => {
-                Some(TypedTransform2D::row_major(m11, m12,
-                                                 m21, m22,
-                                                 m31, m32))
+                Some(TypedTransform2D::row_major(
+                    m11, m12,
+                    m21, m22,
+                    m31, m32
+                ))
             },
             _ => None
         }
@@ -347,7 +360,7 @@ where T: Copy + Clone +
             self.m21, self.m22,
             self.m31, self.m32,
         )
-    }   
+    }
 }
 
 impl <T, Src, Dst> TypedTransform2D<T, Src, Dst>
@@ -365,6 +378,14 @@ where T: Copy + Clone +
         TypedTransform3D::row_major_2d(self.m11, self.m12, self.m21, self.m22, self.m31, self.m32)
     }
 
+}
+
+impl <T, Src, Dst> Default for TypedTransform2D<T, Src, Dst>
+    where T: Copy + PartialEq + One + Zero
+{
+    fn default() -> Self {
+        Self::identity()
+    }
 }
 
 impl<T: ApproxEq<T>, Src, Dst> TypedTransform2D<T, Src, Dst> {
@@ -388,14 +409,39 @@ where T: Copy + fmt::Debug +
     }
 }
 
+#[cfg(feature = "mint")]
+impl<T, Src, Dst> From<mint::RowMatrix3x2<T>> for TypedTransform2D<T, Src, Dst> {
+    fn from(m: mint::RowMatrix3x2<T>) -> Self {
+        TypedTransform2D {
+            m11: m.x.x, m12: m.x.y,
+            m21: m.y.x, m22: m.y.y,
+            m31: m.z.x, m32: m.z.y,
+            _unit: PhantomData,
+        }
+    }
+}
+#[cfg(feature = "mint")]
+impl<T, Src, Dst> Into<mint::RowMatrix3x2<T>> for TypedTransform2D<T, Src, Dst> {
+    fn into(self) -> mint::RowMatrix3x2<T> {
+        mint::RowMatrix3x2 {
+            x: mint::Vector2 { x: self.m11, y: self.m12 },
+            y: mint::Vector2 { x: self.m21, y: self.m22 },
+            z: mint::Vector2 { x: self.m31, y: self.m32 },
+        }
+    }
+}
+
+
 #[cfg(test)]
 mod test {
     use super::*;
     use approxeq::ApproxEq;
     use point::Point2D;
     use Angle;
+    #[cfg(feature = "mint")]
+    use mint;
 
-    use std::f32::consts::FRAC_PI_2;
+    use core::f32::consts::FRAC_PI_2;
 
     type Mat = Transform2D<f32>;
 
@@ -502,7 +548,7 @@ mod test {
 
     #[test]
     fn test_size_of() {
-        use std::mem::size_of;
+        use core::mem::size_of;
         assert_eq!(size_of::<Transform2D<f32>>(), 6*size_of::<f32>());
         assert_eq!(size_of::<Transform2D<f64>>(), 6*size_of::<f64>());
     }
@@ -521,5 +567,15 @@ mod test {
         let m1 = Mat::create_translation(1.0, 1.0);
         let v1 = vec2(10.0, -10.0);
         assert_eq!(v1, m1.transform_vector(&v1));
+    }
+
+    #[cfg(feature = "mint")]
+    #[test]
+    pub fn test_mint() {
+        let m1 = Mat::create_rotation(rad(FRAC_PI_2));
+        let mm: mint::RowMatrix3x2<_> = m1.into();
+        let m2 = Mat::from(mm);
+
+        assert_eq!(m1, m2);
     }
 }

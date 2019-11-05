@@ -12,20 +12,21 @@
 #include "mozilla/dom/EventTarget.h"
 #include "mozilla/dom/EventTargetBinding.h"
 #include "nsPresContext.h"
-#include "nsCSSParser.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 
 #define ONCHANGE_STRING NS_LITERAL_STRING("change")
 
 namespace mozilla {
 namespace dom {
 
-MediaQueryList::MediaQueryList(nsIDocument* aDocument,
+MediaQueryList::MediaQueryList(Document* aDocument,
                                const nsAString& aMediaQueryList,
                                CallerType aCallerType)
-    : mDocument(aDocument), mMatches(false), mMatchesValid(false) {
-  mMediaList = MediaList::Create(aDocument->GetStyleBackendType(),
-                                 aMediaQueryList, aCallerType);
+    : DOMEventTargetHelper(aDocument->GetInnerWindow()),
+      mDocument(aDocument),
+      mMatches(false),
+      mMatchesValid(false) {
+  mMediaList = MediaList::Create(aMediaQueryList, aCallerType);
 
   KeepAliveIfHasListenersFor(ONCHANGE_STRING);
 }
@@ -42,7 +43,7 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(MediaQueryList,
                                                 DOMEventTargetHelper)
   if (tmp->mDocument) {
-    tmp->remove();
+    static_cast<LinkedListElement<MediaQueryList>*>(tmp)->remove();
     NS_IMPL_CYCLE_COLLECTION_UNLINK(mDocument)
   }
   tmp->Disconnect();
@@ -80,18 +81,14 @@ void MediaQueryList::AddListener(EventListener* aListener, ErrorResult& aRv) {
   AddEventListener(ONCHANGE_STRING, aListener, options, false, aRv);
 }
 
-void MediaQueryList::AddEventListener(
-    const nsAString& aType, EventListener* aCallback,
-    const AddEventListenerOptionsOrBoolean& aOptions,
-    const dom::Nullable<bool>& aWantsUntrusted, ErrorResult& aRv) {
-  if (!mMatchesValid) {
-    MOZ_ASSERT(!HasListeners(),
-               "when listeners present, must keep mMatches current");
+void MediaQueryList::EventListenerAdded(nsAtom* aType) {
+  // HasListeners() might still be false if the added thing wasn't a
+  // listener we care about.
+  if (!mMatchesValid && HasListeners()) {
     RecomputeMatches();
   }
 
-  DOMEventTargetHelper::AddEventListener(aType, aCallback, aOptions,
-                                         aWantsUntrusted, aRv);
+  DOMEventTargetHelper::EventListenerAdded(aType);
 }
 
 void MediaQueryList::RemoveListener(EventListener* aListener,
@@ -121,32 +118,17 @@ void MediaQueryList::RecomputeMatches() {
     return;
   }
 
-  if (mDocument->GetParentDocument()) {
-    // Flush frames on the parent so our prescontext will get
-    // recreated as needed.
-    mDocument->GetParentDocument()->FlushPendingNotifications(
-        FlushType::Frames);
-    // That might have killed our document, so recheck that.
-    if (!mDocument) {
-      return;
-    }
-  }
-
-  nsPresContext* presContext = mDocument->GetPresContext();
-  if (!presContext) {
-    // XXXbz What's the right behavior here?  Spec doesn't say.
-    return;
-  }
-
-  mMatches = mMediaList->Matches(presContext);
+  mMatches = mMediaList->Matches(*mDocument);
   mMatchesValid = true;
 }
 
-nsISupports* MediaQueryList::GetParentObject() const { return mDocument; }
+nsISupports* MediaQueryList::GetParentObject() const {
+  return ToSupports(mDocument);
+}
 
 JSObject* MediaQueryList::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return MediaQueryListBinding::Wrap(aCx, this, aGivenProto);
+  return MediaQueryList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void MediaQueryList::MaybeNotify() {
@@ -174,8 +156,15 @@ void MediaQueryList::MaybeNotify() {
       MediaQueryListEvent::Constructor(this, ONCHANGE_STRING, init);
   event->SetTrusted(true);
 
-  bool dummy;
-  DispatchEvent(event, &dummy);
+  DispatchEvent(*event);
+}
+
+size_t MediaQueryList::SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const {
+  size_t n = 0;
+  // mMediaList is reference counted, but it's created and primarily owned
+  // by this MediaQueryList object.
+  n += mMediaList->SizeOfIncludingThis(aMallocSizeOf);
+  return n;
 }
 
 }  // namespace dom

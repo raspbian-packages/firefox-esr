@@ -10,11 +10,15 @@
 #include "nsITableCellLayout.h"
 #include "nscore.h"
 #include "nsContainerFrame.h"
-#include "nsStyleContext.h"
+#include "mozilla/ComputedStyle.h"
 #include "nsIPercentBSizeObserver.h"
 #include "nsTArray.h"
 #include "nsTableRowFrame.h"
 #include "mozilla/WritingModes.h"
+
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
 
 /**
  * nsTableCellFrame
@@ -33,12 +37,12 @@ class nsTableCellFrame : public nsContainerFrame,
   typedef mozilla::gfx::DrawTarget DrawTarget;
   typedef mozilla::image::ImgDrawResult ImgDrawResult;
 
-  friend nsTableCellFrame* NS_NewTableCellFrame(nsIPresShell* aPresShell,
-                                                nsStyleContext* aContext,
+  friend nsTableCellFrame* NS_NewTableCellFrame(mozilla::PresShell* aPresShell,
+                                                ComputedStyle* aStyle,
                                                 nsTableFrame* aTableFrame);
 
-  nsTableCellFrame(nsStyleContext* aContext, nsTableFrame* aTableFrame)
-      : nsTableCellFrame(aContext, aTableFrame, kClassID) {}
+  nsTableCellFrame(ComputedStyle* aStyle, nsTableFrame* aTableFrame)
+      : nsTableCellFrame(aStyle, aTableFrame, kClassID) {}
 
  protected:
   typedef mozilla::WritingMode WritingMode;
@@ -72,8 +76,8 @@ class nsTableCellFrame : public nsContainerFrame,
   virtual nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
                                     int32_t aModType) override;
 
-  /** @see nsIFrame::DidSetStyleContext */
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  /** @see nsIFrame::DidSetComputedStyle */
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
 #ifdef DEBUG
   // Our anonymous block frame is the content insertion frame so these
@@ -104,7 +108,8 @@ class nsTableCellFrame : public nsContainerFrame,
 
   virtual nscoord GetMinISize(gfxContext* aRenderingContext) override;
   virtual nscoord GetPrefISize(gfxContext* aRenderingContext) override;
-  virtual IntrinsicISizeOffsetData IntrinsicISizeOffsets() override;
+  IntrinsicISizeOffsetData IntrinsicISizeOffsets(
+      nscoord aPercentageBasis = NS_UNCONSTRAINEDSIZE) override;
 
   virtual void Reflow(nsPresContext* aPresContext, ReflowOutput& aDesiredSize,
                       const ReflowInput& aReflowInput,
@@ -119,12 +124,12 @@ class nsTableCellFrame : public nsContainerFrame,
   /*
    * Get the value of vertical-align adjusted for CSS 2's rules for a
    * table cell, which means the result is always
-   * NS_STYLE_VERTICAL_ALIGN_{TOP,MIDDLE,BOTTOM,BASELINE}.
+   * StyleVerticalAlignKeyword::{Top,Middle,Bottom,Baseline}.
    */
-  virtual uint8_t GetVerticalAlign() const;
+  virtual mozilla::StyleVerticalAlignKeyword GetVerticalAlign() const;
 
   bool HasVerticalAlignBaseline() const {
-    return GetVerticalAlign() == NS_STYLE_VERTICAL_ALIGN_BASELINE;
+    return GetVerticalAlign() == mozilla::StyleVerticalAlignKeyword::Baseline;
   }
 
   bool CellHasVisibleContent(nscoord aBSize, nsTableFrame* tableFrame,
@@ -230,9 +235,11 @@ class nsTableCellFrame : public nsContainerFrame,
     return nsContainerFrame::IsFrameOfType(aFlags & ~(nsIFrame::eTablePart));
   }
 
-  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0) override;
-  virtual void InvalidateFrameWithRect(const nsRect& aRect,
-                                       uint32_t aDisplayItemKey = 0) override;
+  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0,
+                               bool aRebuildDisplayItems = true) override;
+  virtual void InvalidateFrameWithRect(
+      const nsRect& aRect, uint32_t aDisplayItemKey = 0,
+      bool aRebuildDisplayItems = true) override;
   virtual void InvalidateFrameForRemoval() override {
     InvalidateFrameSubtree();
   }
@@ -242,7 +249,7 @@ class nsTableCellFrame : public nsContainerFrame,
   bool ShouldPaintBackground(nsDisplayListBuilder* aBuilder);
 
  protected:
-  nsTableCellFrame(nsStyleContext* aContext, nsTableFrame* aTableFrame,
+  nsTableCellFrame(ComputedStyle* aStyle, nsTableFrame* aTableFrame,
                    ClassID aID);
   ~nsTableCellFrame();
 
@@ -314,7 +321,7 @@ class nsBCTableCellFrame final : public nsTableCellFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsBCTableCellFrame)
 
-  nsBCTableCellFrame(nsStyleContext* aContext, nsTableFrame* aTableFrame);
+  nsBCTableCellFrame(ComputedStyle* aStyle, nsTableFrame* aTableFrame);
 
   ~nsBCTableCellFrame();
 

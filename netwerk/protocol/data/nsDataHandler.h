@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,7 +11,7 @@
 
 class nsDataHandler : public nsIProtocolHandler,
                       public nsSupportsWeakReference {
-  virtual ~nsDataHandler();
+  virtual ~nsDataHandler() = default;
 
  public:
   NS_DECL_ISUPPORTS
@@ -20,7 +20,10 @@ class nsDataHandler : public nsIProtocolHandler,
   NS_DECL_NSIPROTOCOLHANDLER
 
   // nsDataHandler methods:
-  nsDataHandler();
+  nsDataHandler() = default;
+
+  static nsresult CreateNewURI(const nsACString& aSpec, const char* aCharset,
+                               nsIURI* aBaseURI, nsIURI** result);
 
   // Define a Create method to be used with a factory:
   static MOZ_MUST_USE nsresult Create(nsISupports* aOuter, const nsIID& aIID,

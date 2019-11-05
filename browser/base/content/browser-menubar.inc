@@ -7,12 +7,12 @@
                 onpopupshowing="if (event.target.parentNode.parentNode == this &amp;&amp;
                                     !('@mozilla.org/widget/nativemenuservice;1' in Cc))
                                   this.setAttribute('openedwithkey',
-                                                    event.target.parentNode.openedWithKey);"
-                style="border:0px;padding:0px;margin:0px;-moz-appearance:none">
+                                                    event.target.parentNode.openedWithKey);">
             <menu id="file-menu" label="&fileMenu.label;"
                   accesskey="&fileMenu.accesskey;">
               <menupopup id="menu_FilePopup"
-                         onpopupshowing="updateUserContextUIVisibility();">
+                         onpopupshowing="updateFileMenuUserContextUIVisibility('menu_newUserContext');
+                                         updateFileMenuImportUIVisibility('cmd_importFromAnotherBrowser');">
                 <menuitem id="menu_newNavigatorTab"
                           label="&tabCmd.label;"
                           command="cmd_newNavigatorTab"
@@ -34,12 +34,11 @@
                           accesskey="&newPrivateWindow.accesskey;"
                           command="Tools:PrivateBrowsing"
                           key="key_privatebrowsing"/>
-#ifdef MAC_NON_BROWSER_WINDOW
                 <menuitem id="menu_openLocation"
+                          hidden="true"
                           label="&openLocationCmd.label;"
                           command="Browser:OpenLocation"
                           key="focusURLBar"/>
-#endif
                 <menuitem id="menu_openFile"
                           label="&openFileCmd.label;"
                           command="Browser:OpenFile"
@@ -87,27 +86,27 @@
                           key="printKb"
                           command="cmd_print"/>
                 <menuseparator/>
+                <menuitem id="menu_importFromAnotherBrowser"
+                          label="&importFromAnotherBrowserCmd.label;"
+                          accesskey="&importFromAnotherBrowserCmd.accesskey;"
+                          command="cmd_importFromAnotherBrowser"/>
+                <menuseparator/>
                 <menuitem id="goOfflineMenuitem"
                           label="&goOfflineCmd.label;"
                           accesskey="&goOfflineCmd.accesskey;"
                           type="checkbox"
-                          observes="workOfflineMenuitemState"
-                          oncommand="BrowserOffline.toggleOfflineStatus();"/>
+                          command="cmd_toggleOfflineStatus"/>
                 <menuitem id="menu_FileQuitItem"
 #ifdef XP_WIN
                           label="&quitApplicationCmdWin2.label;"
                           accesskey="&quitApplicationCmdWin2.accesskey;"
-#else
-#ifdef XP_MACOSX
+#elifdef XP_MACOSX
                           label="&quitApplicationCmdMac2.label;"
 #else
                           label="&quitApplicationCmd.label;"
                           accesskey="&quitApplicationCmd.accesskey;"
 #endif
-#ifdef XP_UNIX
                           key="key_quitApplication"
-#endif
-#endif
                           command="cmd_quitApplication"/>
               </menupopup>
             </menu>
@@ -179,7 +178,7 @@
                 <menuitem id="menu_preferences"
                           label="&preferencesCmdUnix.label;"
                           accesskey="&preferencesCmdUnix.accesskey;"
-                          oncommand="openPreferences(undefined, {origin: 'menubar'});"/>
+                          oncommand="openPreferences(undefined);"/>
 #endif
 #endif
               </menupopup>
@@ -205,15 +204,19 @@
                       accesskey="&viewSidebarMenu.accesskey;">
                   <menupopup id="viewSidebarMenu">
                     <menuitem id="menu_bookmarksSidebar"
+                              type="checkbox"
                               key="viewBookmarksSidebarKb"
-                              observes="viewBookmarksSidebar"/>
+                              oncommand="SidebarUI.toggle('viewBookmarksSidebar');"
+                              label="&bookmarksButton.label;"/>
                     <menuitem id="menu_historySidebar"
+                              type="checkbox"
                               key="key_gotoHistory"
-                              observes="viewHistorySidebar"
+                              oncommand="SidebarUI.toggle('viewHistorySidebar');"
                               label="&historyButton.label;"/>
                     <menuitem id="menu_tabsSidebar"
+                              type="checkbox"
                               class="sync-ui-item"
-                              observes="viewTabsSidebar"
+                              oncommand="SidebarUI.toggle('viewTabsSidebar');"
                               label="&syncedTabs.sidebar.label;"/>
                   </menupopup>
                 </menu>
@@ -248,7 +251,7 @@
                   </menupopup>
                 </menu>
                 <menu id="pageStyleMenu" label="&pageStyleMenu.label;"
-                      accesskey="&pageStyleMenu.accesskey;" observes="isImage">
+                      accesskey="&pageStyleMenu.accesskey;">
                   <menupopup onpopupshowing="gPageStyleMenu.fillPopup(this);">
                     <menuitem id="menu_pageStyleNoStyle"
                               label="&pageStyleNoStyle.label;"
@@ -343,15 +346,17 @@
                           command="Tools:Sanitize"/>
                 <menuseparator id="sanitizeSeparator"/>
                 <menuitem id="sync-tabs-menuitem"
-                          class="syncTabsMenuItem"
                           label="&syncTabsMenu3.label;"
-                          oncommand="BrowserOpenSyncTabs();"
+                          oncommand="gSync.openSyncedTabsPanel();"
                           hidden="true"/>
                 <menuitem id="historyRestoreLastSession"
                           label="&historyRestoreLastSession.label;"
                           command="Browser:RestoreLastSession"/>
+                <menuitem id="hiddenTabsMenu"
+                          label="&hiddenTabs.label;"
+                          oncommand="gTabsPanel.showHiddenTabsPanel();"
+                          hidden="true"/>
                 <menu id="historyUndoMenu"
-                      class="recentlyClosedTabsMenu"
                       label="&historyUndoMenu.label;"
                       disabled="true">
                   <menupopup id="historyUndoPopup"
@@ -361,7 +366,6 @@
                              onpopupshowing="document.getElementById('history-menu')._placesView.populateUndoSubmenu();"/>
                 </menu>
                 <menu id="historyUndoWindowMenu"
-                      class="recentlyClosedWindowsMenu"
                       label="&historyUndoWindowMenu.label;"
                       disabled="true">
                   <menupopup id="historyUndoWindowPopup"
@@ -392,7 +396,7 @@
                onclick="BookmarksEventHandler.onClick(event, this.parentNode._placesView);"
                onpopupshowing="BookmarkingUI.onMainMenuPopupShowing(event);
                                if (!this.parentNode._placesView)
-                                 new PlacesMenu(event, 'place:folder=BOOKMARKS_MENU');"
+                                 new PlacesMenu(event, `place:parent=${PlacesUtils.bookmarks.menuGuid}`);"
                tooltip="bhTooltip" popupsinherittooltip="true">
       <menuitem id="bookmarksShowAll"
                 label="&showAllBookmarks2.label;"
@@ -401,27 +405,7 @@
       <menuseparator id="organizeBookmarksSeparator"/>
       <menuitem id="menu_bookmarkThisPage"
                 command="Browser:AddBookmarkAs"
-                observes="bookmarkThisPageBroadcaster"
                 key="addBookmarkAsKb"/>
-      <menuitem id="subscribeToPageMenuitem"
-#ifndef XP_MACOSX
-                class="menuitem-iconic"
-#endif
-                label="&subscribeToPageMenuitem.label;"
-                oncommand="return FeedHandler.subscribeToFeed(null, event);"
-                onclick="checkForMiddleClick(this, event);"
-                observes="singleFeedMenuitemState"/>
-      <menu id="subscribeToPageMenupopup"
-#ifndef XP_MACOSX
-            class="menu-iconic"
-#endif
-            label="&subscribeToPageMenupopup.label;"
-            observes="multipleFeedsMenuState">
-        <menupopup id="subscribeToPageSubmenuMenupopup"
-                   onpopupshowing="return FeedHandler.buildFeedList(event.target);"
-                   oncommand="return FeedHandler.subscribeToFeed(null, event);"
-                   onclick="checkForMiddleClick(this, event);"/>
-      </menu>
       <menuitem id="menu_bookmarkAllTabs"
                 label="&addCurPagesCmd.label;"
                 class="show-only-for-keyboard"
@@ -438,7 +422,7 @@
 #endif
                    context="placesContext"
                    onpopupshowing="if (!this.parentNode._placesView)
-                                     new PlacesMenu(event, 'place:folder=TOOLBAR');"/>
+                                     new PlacesMenu(event, `place:parent=${PlacesUtils.bookmarks.toolbarGuid}`);"/>
       </menu>
       <menu id="menu_unsortedBookmarks"
             class="menu-iconic bookmark-item"
@@ -450,7 +434,7 @@
 #endif
                    context="placesContext"
                    onpopupshowing="if (!this.parentNode._placesView)
-                                     new PlacesMenu(event, 'place:folder=UNFILED_BOOKMARKS');"/>
+                                     new PlacesMenu(event, `place:parent=${PlacesUtils.bookmarks.unfiledGuid}`);"/>
       </menu>
       <menu id="menu_mobileBookmarks"
             class="menu-iconic bookmark-item"
@@ -463,7 +447,7 @@
 #endif
                    context="placesContext"
                    onpopupshowing="if (!this.parentNode._placesView)
-                                     new PlacesMenu(event, 'place:folder=MOBILE_BOOKMARKS');"/>
+                                     new PlacesMenu(event, `place:parent=${PlacesUtils.bookmarks.mobileGuid}`);"/>
       </menu>
       <menuseparator id="bookmarksMenuItemsSeparator"/>
       <!-- Bookmarks menu items -->
@@ -490,25 +474,25 @@
                         class="sync-ui-item"
                         label="&syncSignIn.label;"
                         accesskey="&syncSignIn.accesskey;"
-                        observes="sync-setup-state"
+                        hidden="true"
                         oncommand="gSync.openPrefs('menubar')"/>
               <menuitem id="sync-unverifieditem"
                         class="sync-ui-item"
                         label="&syncSignIn.label;"
                         accesskey="&syncSignIn.accesskey;"
-                        observes="sync-unverified-state"
+                        hidden="true"
                         oncommand="gSync.openPrefs('menubar')"/>
               <menuitem id="sync-syncnowitem"
                         class="sync-ui-item"
                         label="&syncSyncNowItem.label;"
                         accesskey="&syncSyncNowItem.accesskey;"
-                        observes="sync-syncnow-state"
+                        hidden="true"
                         oncommand="gSync.doSync(event);"/>
               <menuitem id="sync-reauthitem"
                         class="sync-ui-item"
                         label="&syncReAuthItem.label;"
                         accesskey="&syncReAuthItem.accesskey;"
-                        observes="sync-reauth-state"
+                        hidden="true"
                         oncommand="gSync.openSignInAgainPage('menubar');"/>
               <menuseparator id="devToolsSeparator"/>
               <menu id="webDeveloperMenu"
@@ -516,7 +500,9 @@
                     accesskey="&webDeveloperMenu.accesskey;">
                 <menupopup id="menuWebDeveloperPopup">
                   <menuitem id="menu_pageSource"
-                            observes="devtoolsMenuBroadcaster_PageSource"
+                            label="&pageSourceCmd.label;"
+                            key="key_viewSource"
+                            command="View:PageSource"
                             accesskey="&pageSourceCmd.accesskey;"/>
                 </menupopup>
               </menu>
@@ -532,17 +518,18 @@
               <menuitem id="menu_preferences"
                         label="&preferencesCmd2.label;"
                         accesskey="&preferencesCmd2.accesskey;"
-                        oncommand="openPreferences(undefined, {origin: 'menubar'});"/>
+                        oncommand="openPreferences(undefined);"/>
 #endif
 #ifdef MOZ_DEBUG
-              <menuitem label="&ldbCmd.label;"
+              <menuitem id="menu_layout_debugger"
+                        label="&ldbCmd.label;"
                         accesskey="&ldbCmd.accesskey;"
                         oncommand="toOpenWindowByType('mozapp:layoutdebug',
                                           'chrome://layoutdebug/content/');"/>
 #endif
 #ifdef XP_MACOSX
 <!-- nsMenuBarX hides these and uses them to build the Application menu. -->
-              <menuitem id="menu_preferences" label="&preferencesCmdMac.label;" key="key_preferencesCmdMac" oncommand="openPreferences(undefined, {origin: 'commandLineLegacy'});"/>
+              <menuitem id="menu_preferences" label="&preferencesCmdMac.label;" key="key_preferencesCmdMac" oncommand="openPreferences(undefined);"/>
               <menuitem id="menu_mac_services" label="&servicesMenuMac.label;"/>
               <menuitem id="menu_mac_hide_app" label="&hideThisAppCmdMac2.label;" key="key_hideThisAppCmdMac"/>
               <menuitem id="menu_mac_hide_others" label="&hideOtherAppsCmdMac.label;" key="key_hideOtherAppsCmdMac"/>
@@ -614,14 +601,12 @@
                 <menuitem id="menu_HelpPopup_reportPhishingtoolmenu"
                           label="&reportDeceptiveSiteMenu.title;"
                           accesskey="&reportDeceptiveSiteMenu.accesskey;"
-                          observes="reportPhishingBroadcaster"
-                          oncommand="openUILink(gSafeBrowsing.getReportURL('Phish'), event);"
+                          disabled="true"
+                          oncommand="openUILink(gSafeBrowsing.getReportURL('Phish'), event, {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})});"
                           onclick="checkForMiddleClick(this, event);"
                           hidden="true"/>
                 <menuitem id="menu_HelpPopup_reportPhishingErrortoolmenu"
-                          label="&safeb.palm.notdeceptive.label;"
-                          accesskey="&safeb.palm.notdeceptive.accesskey;"
-                          observes="reportPhishingErrorBroadcaster"
+                          disabled="true"
                           oncommand="ReportFalseDeceptiveSite();"
                           onclick="checkForMiddleClick(this, event);"
                           hidden="true"/>
@@ -629,7 +614,7 @@
                           hidden="true"/>
                 <menuitem id="helpPolicySupport"
                           hidden="true"
-                          oncommand="openUILink(this.getAttribute('href'), event, {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})});"
+                          oncommand="openUILinkIn(Services.policies.getSupportMenu().URL.href, 'tab', {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})});"
                           onclick="checkForMiddleClick(this, event);"/>
                 <menuseparator id="aboutSeparator"/>
                 <menuitem id="aboutName"

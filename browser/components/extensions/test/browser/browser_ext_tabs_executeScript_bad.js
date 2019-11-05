@@ -4,27 +4,17 @@ async function testHasNoPermission(params) {
   let contentSetup = params.contentSetup || (() => Promise.resolve());
 
   async function background(contentSetup) {
-    browser.runtime.onMessage.addListener((msg, sender) => {
-      browser.test.assertEq(msg, "second script ran", "second script ran");
-      browser.test.notifyPass("executeScript");
-    });
-
     browser.test.onMessage.addListener(async msg => {
       browser.test.assertEq(msg, "execute-script");
 
-      let tabs = await browser.tabs.query({currentWindow: true});
-      await browser.test.assertRejects(browser.tabs.executeScript({
-        file: "script.js",
-      }), /Missing host permission for the tab/);
+      await browser.test.assertRejects(
+        browser.tabs.executeScript({
+          file: "script.js",
+        }),
+        /Missing host permission for the tab/
+      );
 
-      // TODO bug 1457115: Remove the executeScript call below.
-
-      // Execute a script we know we have permissions for in the
-      // second tab, in the hopes that it will execute after the
-      // first one.
-      browser.tabs.executeScript(tabs[1].id, {
-        file: "second-script.js",
-      });
+      browser.test.notifyPass("executeScript");
     });
 
     await contentSetup();
@@ -40,10 +30,6 @@ async function testHasNoPermission(params) {
     files: {
       "script.js": function() {
         browser.runtime.sendMessage("first script ran");
-      },
-
-      "second-script.js": function() {
-        browser.runtime.sendMessage("second script ran");
       },
     },
   });
@@ -62,27 +48,29 @@ async function testHasNoPermission(params) {
 }
 
 add_task(async function testBadPermissions() {
-  let tab1 = await BrowserTestUtils.openNewForegroundTab(gBrowser, "http://example.com/");
-  let tab2 = await BrowserTestUtils.openNewForegroundTab(gBrowser, "http://mochi.test:8888/");
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "http://mochi.test:8888/"
+  );
 
   info("Test no special permissions");
   await testHasNoPermission({
-    manifest: {"permissions": ["http://example.com/"]},
+    manifest: { permissions: [] },
   });
 
   info("Test tabs permissions");
   await testHasNoPermission({
-    manifest: {"permissions": ["http://example.com/", "tabs"]},
+    manifest: { permissions: ["tabs"] },
   });
 
   info("Test no special permissions, commands, key press");
   await testHasNoPermission({
     manifest: {
-      "permissions": ["http://example.com/"],
-      "commands": {
+      permissions: [],
+      commands: {
         "test-tabs-executeScript": {
-          "suggested_key": {
-            "default": "Alt+Shift+K",
+          suggested_key: {
+            default: "Alt+Shift+K",
           },
         },
       },
@@ -96,7 +84,7 @@ add_task(async function testBadPermissions() {
       return Promise.resolve();
     },
     setup: async function(extension) {
-      await EventUtils.synthesizeKey("k", {altKey: true, shiftKey: true});
+      await EventUtils.synthesizeKey("k", { altKey: true, shiftKey: true });
       await extension.awaitMessage("tabs-command-key-pressed");
     },
   });
@@ -104,12 +92,12 @@ add_task(async function testBadPermissions() {
   info("Test no special permissions, _execute_browser_action command");
   await testHasNoPermission({
     manifest: {
-      "permissions": ["http://example.com/"],
-      "browser_action": {},
-      "commands": {
-        "_execute_browser_action": {
-          "suggested_key": {
-            "default": "Alt+Shift+K",
+      permissions: [],
+      browser_action: {},
+      commands: {
+        _execute_browser_action: {
+          suggested_key: {
+            default: "Alt+Shift+K",
           },
         },
       },
@@ -121,7 +109,7 @@ add_task(async function testBadPermissions() {
       return Promise.resolve();
     },
     setup: async function(extension) {
-      await EventUtils.synthesizeKey("k", {altKey: true, shiftKey: true});
+      await EventUtils.synthesizeKey("k", { altKey: true, shiftKey: true });
       await extension.awaitMessage("tabs-command-key-pressed");
     },
   });
@@ -129,12 +117,12 @@ add_task(async function testBadPermissions() {
   info("Test no special permissions, _execute_page_action command");
   await testHasNoPermission({
     manifest: {
-      "permissions": ["http://example.com/"],
-      "page_action": {},
-      "commands": {
-        "_execute_page_action": {
-          "suggested_key": {
-            "default": "Alt+Shift+K",
+      permissions: [],
+      page_action: {},
+      commands: {
+        _execute_page_action: {
+          suggested_key: {
+            default: "Alt+Shift+K",
           },
         },
       },
@@ -143,11 +131,14 @@ add_task(async function testBadPermissions() {
       browser.pageAction.onClicked.addListener(() => {
         browser.test.sendMessage("tabs-command-key-pressed");
       });
-      let [tab] = await browser.tabs.query({active: true, currentWindow: true});
+      let [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
       await browser.pageAction.show(tab.id);
     },
     setup: async function(extension) {
-      await EventUtils.synthesizeKey("k", {altKey: true, shiftKey: true});
+      await EventUtils.synthesizeKey("k", { altKey: true, shiftKey: true });
       await extension.awaitMessage("tabs-command-key-pressed");
     },
   });
@@ -155,11 +146,11 @@ add_task(async function testBadPermissions() {
   info("Test active tab, commands, no key press");
   await testHasNoPermission({
     manifest: {
-      "permissions": ["http://example.com/", "activeTab"],
-      "commands": {
+      permissions: ["activeTab"],
+      commands: {
         "test-tabs-executeScript": {
-          "suggested_key": {
-            "default": "Alt+Shift+K",
+          suggested_key: {
+            default: "Alt+Shift+K",
           },
         },
       },
@@ -169,32 +160,34 @@ add_task(async function testBadPermissions() {
   info("Test active tab, browser action, no click");
   await testHasNoPermission({
     manifest: {
-      "permissions": ["http://example.com/", "activeTab"],
-      "browser_action": {},
+      permissions: ["activeTab"],
+      browser_action: {},
     },
   });
 
   info("Test active tab, page action, no click");
   await testHasNoPermission({
     manifest: {
-      "permissions": ["http://example.com/", "activeTab"],
-      "page_action": {},
+      permissions: ["activeTab"],
+      page_action: {},
     },
     contentSetup: async function() {
-      let [tab] = await browser.tabs.query({active: true, currentWindow: true});
+      let [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
       await browser.pageAction.show(tab.id);
     },
   });
 
-  await BrowserTestUtils.removeTab(tab2);
-  await BrowserTestUtils.removeTab(tab1);
+  BrowserTestUtils.removeTab(tab);
 });
 
 add_task(async function testMatchDataURI() {
   // allow top level data: URI navigations, otherwise
   // window.location.href = data: would be blocked
   await SpecialPowers.pushPrefEnv({
-    "set": [["security.data_uri.block_toplevel_data_uri_navigations", false]],
+    set: [["security.data_uri.block_toplevel_data_uri_navigations", false]],
   });
 
   const target = ExtensionTestUtils.loadExtension({
@@ -214,7 +207,10 @@ add_task(async function testMatchDataURI() {
       },
     },
     background() {
-      browser.tabs.create({active: true, url: browser.runtime.getURL("page.html")});
+      browser.tabs.create({
+        active: true,
+        url: browser.runtime.getURL("page.html"),
+      });
     },
   });
 
@@ -223,7 +219,7 @@ add_task(async function testMatchDataURI() {
       permissions: ["<all_urls>", "webNavigation"],
     },
     background() {
-      browser.webNavigation.onCompleted.addListener(({url, frameId}) => {
+      browser.webNavigation.onCompleted.addListener(({ url, frameId }) => {
         browser.test.log(`Document loading complete: ${url}`);
         if (frameId === 0) {
           browser.test.sendMessage("tab-ready", url);
@@ -240,7 +236,8 @@ add_task(async function testMatchDataURI() {
             allFrames: true,
           }),
           /Missing host permission/,
-          "Should not execute in `data:` frame");
+          "Should not execute in `data:` frame"
+        );
 
         browser.test.sendMessage("done");
       });
@@ -267,7 +264,7 @@ add_task(async function testMatchDataURI() {
   scripts.sendMessage("execute");
   await scripts.awaitMessage("done");
 
-  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
+  BrowserTestUtils.removeTab(gBrowser.selectedTab);
   await scripts.unload();
   await target.unload();
 });
@@ -276,47 +273,66 @@ add_task(async function testBadURL() {
   async function background() {
     let promises = [
       new Promise(resolve => {
-        browser.tabs.executeScript({
+        browser.tabs.executeScript(
+          {
+            file: "http://example.com/script.js",
+          },
+          result => {
+            browser.test.assertEq(undefined, result, "Result value");
+
+            browser.test.assertTrue(
+              browser.extension.lastError instanceof Error,
+              "runtime.lastError is Error"
+            );
+
+            browser.test.assertTrue(
+              browser.runtime.lastError instanceof Error,
+              "runtime.lastError is Error"
+            );
+
+            browser.test.assertEq(
+              "Files to be injected must be within the extension",
+              browser.extension.lastError &&
+                browser.extension.lastError.message,
+              "extension.lastError value"
+            );
+
+            browser.test.assertEq(
+              "Files to be injected must be within the extension",
+              browser.runtime.lastError && browser.runtime.lastError.message,
+              "runtime.lastError value"
+            );
+
+            resolve();
+          }
+        );
+      }),
+
+      browser.tabs
+        .executeScript({
           file: "http://example.com/script.js",
-        }, result => {
-          browser.test.assertEq(undefined, result, "Result value");
+        })
+        .catch(error => {
+          browser.test.assertTrue(error instanceof Error, "Error is Error");
 
-          browser.test.assertTrue(browser.extension.lastError instanceof Error,
-                                  "runtime.lastError is Error");
+          browser.test.assertEq(
+            null,
+            browser.extension.lastError,
+            "extension.lastError value"
+          );
 
-          browser.test.assertTrue(browser.runtime.lastError instanceof Error,
-                                  "runtime.lastError is Error");
+          browser.test.assertEq(
+            null,
+            browser.runtime.lastError,
+            "runtime.lastError value"
+          );
 
           browser.test.assertEq(
             "Files to be injected must be within the extension",
-            browser.extension.lastError && browser.extension.lastError.message,
-            "extension.lastError value");
-
-          browser.test.assertEq(
-            "Files to be injected must be within the extension",
-            browser.runtime.lastError && browser.runtime.lastError.message,
-            "runtime.lastError value");
-
-          resolve();
-        });
-      }),
-
-      browser.tabs.executeScript({
-        file: "http://example.com/script.js",
-      }).catch(error => {
-        browser.test.assertTrue(error instanceof Error, "Error is Error");
-
-        browser.test.assertEq(null, browser.extension.lastError,
-                              "extension.lastError value");
-
-        browser.test.assertEq(null, browser.runtime.lastError,
-                              "runtime.lastError value");
-
-        browser.test.assertEq(
-          "Files to be injected must be within the extension",
-          error && error.message,
-          "error value");
-      }),
+            error && error.message,
+            "error value"
+          );
+        }),
     ];
 
     await Promise.all(promises);
@@ -326,7 +342,7 @@ add_task(async function testBadURL() {
 
   let extension = ExtensionTestUtils.loadExtension({
     manifest: {
-      "permissions": ["<all_urls>"],
+      permissions: ["<all_urls>"],
     },
 
     background,

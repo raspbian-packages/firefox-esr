@@ -15,13 +15,14 @@
 namespace mozilla {
 namespace dom {
 
-/* virtual */ JSObject* RadioNodeList::WrapObject(
-    JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return RadioNodeListBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* RadioNodeList::WrapObject(JSContext* aCx,
+                                    JS::Handle<JSObject*> aGivenProto) {
+  return RadioNodeList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 HTMLInputElement* GetAsRadio(nsIContent* node) {
-  HTMLInputElement* el = HTMLInputElement::FromContent(node);
+  HTMLInputElement* el = HTMLInputElement::FromNode(node);
   if (el && el->ControlType() == NS_FORM_INPUT_RADIO) {
     return el;
   }

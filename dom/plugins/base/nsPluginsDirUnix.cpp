@@ -1,11 +1,10 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsNPAPIPlugin.h"
 #include "nsNPAPIPluginInstance.h"
-#include "nsIMemory.h"
 #include "nsPluginsDir.h"
 #include "nsPluginsDirUtils.h"
 #include "prenv.h"
@@ -19,24 +18,24 @@
 
 #define LOCAL_PLUGIN_DLL_SUFFIX ".so"
 #if defined(__hpux)
-#define DEFAULT_X11_PATH "/usr/lib/X11R6/"
-#undef LOCAL_PLUGIN_DLL_SUFFIX
-#define LOCAL_PLUGIN_DLL_SUFFIX ".sl"
-#define LOCAL_PLUGIN_DLL_ALT_SUFFIX ".so"
+#  define DEFAULT_X11_PATH "/usr/lib/X11R6/"
+#  undef LOCAL_PLUGIN_DLL_SUFFIX
+#  define LOCAL_PLUGIN_DLL_SUFFIX ".sl"
+#  define LOCAL_PLUGIN_DLL_ALT_SUFFIX ".so"
 #elif defined(_AIX)
-#define DEFAULT_X11_PATH "/usr/lib"
-#define LOCAL_PLUGIN_DLL_ALT_SUFFIX ".a"
+#  define DEFAULT_X11_PATH "/usr/lib"
+#  define LOCAL_PLUGIN_DLL_ALT_SUFFIX ".a"
 #elif defined(SOLARIS)
-#define DEFAULT_X11_PATH "/usr/openwin/lib/"
+#  define DEFAULT_X11_PATH "/usr/openwin/lib/"
 #elif defined(LINUX)
-#define DEFAULT_X11_PATH "/usr/X11R6/lib/"
+#  define DEFAULT_X11_PATH "/usr/X11R6/lib/"
 #elif defined(__APPLE__)
-#define DEFAULT_X11_PATH "/usr/X11R6/lib"
-#undef LOCAL_PLUGIN_DLL_SUFFIX
-#define LOCAL_PLUGIN_DLL_SUFFIX ".dylib"
-#define LOCAL_PLUGIN_DLL_ALT_SUFFIX ".so"
+#  define DEFAULT_X11_PATH "/usr/X11R6/lib"
+#  undef LOCAL_PLUGIN_DLL_SUFFIX
+#  define LOCAL_PLUGIN_DLL_SUFFIX ".dylib"
+#  define LOCAL_PLUGIN_DLL_ALT_SUFFIX ".so"
 #else
-#define DEFAULT_X11_PATH ""
+#  define DEFAULT_X11_PATH ""
 #endif
 
 /* nsPluginsDir implementation */

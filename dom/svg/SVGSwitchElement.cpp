@@ -13,14 +13,14 @@
 
 class nsIFrame;
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Switch)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Switch)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGSwitchElement::WrapNode(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return SVGSwitchElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGSwitchElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
@@ -39,10 +39,8 @@ NS_INTERFACE_MAP_END_INHERITING(SVGSwitchElementBase)
 // Implementation
 
 SVGSwitchElement::SVGSwitchElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGSwitchElementBase(aNodeInfo) {}
-
-SVGSwitchElement::~SVGSwitchElement() {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGSwitchElementBase(std::move(aNodeInfo)) {}
 
 void SVGSwitchElement::MaybeInvalidate() {
   // We must not change mActiveChild until after
@@ -57,7 +55,7 @@ void SVGSwitchElement::MaybeInvalidate() {
 
   nsIFrame* frame = GetPrimaryFrame();
   if (frame) {
-    nsLayoutUtils::PostRestyleEvent(this, nsRestyleHint(0),
+    nsLayoutUtils::PostRestyleEvent(this, RestyleHint{0},
                                     nsChangeHint_InvalidateRenderingObservers);
     nsSVGUtils::ScheduleReflowSVG(frame);
   }
@@ -66,7 +64,7 @@ void SVGSwitchElement::MaybeInvalidate() {
 }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGSwitchElement)
 
@@ -82,22 +80,6 @@ nsresult SVGSwitchElement::InsertChildBefore(nsIContent* aKid,
     MaybeInvalidate();
   }
   return rv;
-}
-
-nsresult SVGSwitchElement::InsertChildAt_Deprecated(nsIContent* aKid,
-                                                    uint32_t aIndex,
-                                                    bool aNotify) {
-  nsresult rv =
-      SVGSwitchElementBase::InsertChildAt_Deprecated(aKid, aIndex, aNotify);
-  if (NS_SUCCEEDED(rv)) {
-    MaybeInvalidate();
-  }
-  return rv;
-}
-
-void SVGSwitchElement::RemoveChildAt_Deprecated(uint32_t aIndex, bool aNotify) {
-  SVGSwitchElementBase::RemoveChildAt_Deprecated(aIndex, aNotify);
-  MaybeInvalidate();
 }
 
 void SVGSwitchElement::RemoveChildNode(nsIContent* aKid, bool aNotify) {

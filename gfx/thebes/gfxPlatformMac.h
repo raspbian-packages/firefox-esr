@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -27,8 +27,9 @@ class gfxPlatformMac : public gfxPlatform {
   }
 
   bool UsesTiling() const override;
+  bool ContentUsesTiling() const override;
 
-  virtual already_AddRefed<gfxASurface> CreateOffscreenSurface(
+  already_AddRefed<gfxASurface> CreateOffscreenSurface(
       const IntSize& aSize, gfxImageFormat aFormat) override;
 
   gfxFontGroup* CreateFontGroup(const mozilla::FontFamilyList& aFontFamilyList,
@@ -37,25 +38,23 @@ class gfxPlatformMac : public gfxPlatform {
                                 gfxUserFontSet* aUserFontSet,
                                 gfxFloat aDevToCssSize) override;
 
-  virtual gfxPlatformFontList* CreatePlatformFontList() override;
+  gfxPlatformFontList* CreatePlatformFontList() override;
 
   void ReadSystemFontList(
       InfallibleTArray<mozilla::dom::SystemFontListEntry>* aFontList) override;
 
   bool IsFontFormatSupported(uint32_t aFormatFlags) override;
 
-  virtual void GetCommonFallbackFonts(
-      uint32_t aCh, uint32_t aNextCh, Script aRunScript,
-      nsTArray<const char*>& aFontList) override;
+  void GetCommonFallbackFonts(uint32_t aCh, uint32_t aNextCh, Script aRunScript,
+                              nsTArray<const char*>& aFontList) override;
 
   // lookup the system font for a particular system font type and set
   // the name and style characteristics
   static void LookupSystemFont(mozilla::LookAndFeel::FontID aSystemFontID,
-                               nsAString& aSystemFontName,
-                               gfxFontStyle& aFontStyle,
-                               float aDevPixPerCSSPixel);
+                               nsACString& aSystemFontName,
+                               gfxFontStyle& aFontStyle);
 
-  virtual bool SupportsApzWheelInput() const override { return true; }
+  bool SupportsApzWheelInput() const override { return true; }
 
   bool RespectsFontStyleSmoothing() const override {
     // gfxMacFont respects the font smoothing hint.
@@ -69,8 +68,8 @@ class gfxPlatformMac : public gfxPlatform {
     return true;
   }
 
-  virtual already_AddRefed<mozilla::gfx::VsyncSource>
-  CreateHardwareVsyncSource() override;
+  already_AddRefed<mozilla::gfx::VsyncSource> CreateHardwareVsyncSource()
+      override;
 
   // lower threshold on font anti-aliasing
   uint32_t GetAntiAliasingThreshold() { return mFontAntiAliasingThreshold; }
@@ -78,8 +77,12 @@ class gfxPlatformMac : public gfxPlatform {
  protected:
   bool AccelerateLayersByDefault() override;
 
+  BackendPrefsData GetBackendPrefs() const override;
+
+  bool CheckVariationFontSupport() override;
+
  private:
-  virtual void GetPlatformCMSOutputProfile(void*& mem, size_t& size) override;
+  void GetPlatformCMSOutputProfile(void*& mem, size_t& size) override;
 
   // read in the pref value for the lower threshold on font anti-aliasing
   static uint32_t ReadAntiAliasingThreshold();

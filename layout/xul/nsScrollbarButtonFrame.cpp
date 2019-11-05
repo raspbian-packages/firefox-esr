@@ -23,6 +23,7 @@
 #include "nsRepeatService.h"
 #include "mozilla/LookAndFeel.h"
 #include "mozilla/MouseEvents.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/Telemetry.h"
 
 using namespace mozilla;
@@ -32,9 +33,10 @@ using namespace mozilla;
 //
 // Creates a new Toolbar frame and returns it
 //
-nsIFrame* NS_NewScrollbarButtonFrame(nsIPresShell* aPresShell,
-                                     nsStyleContext* aContext) {
-  return new (aPresShell) nsScrollbarButtonFrame(aContext);
+nsIFrame* NS_NewScrollbarButtonFrame(PresShell* aPresShell,
+                                     ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsScrollbarButtonFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsScrollbarButtonFrame)
@@ -84,12 +86,12 @@ bool nsScrollbarButtonFrame::HandleButtonPress(nsPresContext* aPresContext,
                                                nsEventStatus* aEventStatus) {
   // Get the desired action for the scrollbar button.
   LookAndFeel::IntID tmpAction;
-  uint16_t button = aEvent->AsMouseEvent()->button;
-  if (button == WidgetMouseEvent::eLeftButton) {
+  uint16_t button = aEvent->AsMouseEvent()->mButton;
+  if (button == MouseButton::eLeft) {
     tmpAction = LookAndFeel::eIntID_ScrollButtonLeftMouseButtonAction;
-  } else if (button == WidgetMouseEvent::eMiddleButton) {
+  } else if (button == MouseButton::eMiddle) {
     tmpAction = LookAndFeel::eIntID_ScrollButtonMiddleMouseButtonAction;
-  } else if (button == WidgetMouseEvent::eRightButton) {
+  } else if (button == MouseButton::eRight) {
     tmpAction = LookAndFeel::eIntID_ScrollButtonRightMouseButtonAction;
   } else {
     return false;
@@ -107,8 +109,8 @@ bool nsScrollbarButtonFrame::HandleButtonPress(nsPresContext* aPresContext,
 
   if (scrollbar == nullptr) return false;
 
-  static Element::AttrValuesArray strings[] = {&nsGkAtoms::increment,
-                                               &nsGkAtoms::decrement, nullptr};
+  static Element::AttrValuesArray strings[] = {nsGkAtoms::increment,
+                                               nsGkAtoms::decrement, nullptr};
   int32_t index = mContent->AsElement()->FindAttrValueIn(
       kNameSpaceID_None, nsGkAtoms::type, strings, eCaseMatters);
   int32_t direction;
@@ -125,7 +127,7 @@ bool nsScrollbarButtonFrame::HandleButtonPress(nsPresContext* aPresContext,
   mContent->AsElement()->SetAttr(kNameSpaceID_None, nsGkAtoms::active,
                                  NS_LITERAL_STRING("true"), true);
 
-  nsIPresShell::SetCapturingContent(mContent, CAPTURE_IGNOREALLOWED);
+  PresShell::SetCapturingContent(mContent, CaptureFlags::IgnoreAllowedState);
 
   if (!weakFrame.IsAlive()) {
     return false;
@@ -180,7 +182,7 @@ NS_IMETHODIMP
 nsScrollbarButtonFrame::HandleRelease(nsPresContext* aPresContext,
                                       WidgetGUIEvent* aEvent,
                                       nsEventStatus* aEventStatus) {
-  nsIPresShell::SetCapturingContent(nullptr, 0);
+  PresShell::ReleaseCapturingContent();
   // we're not active anymore
   mContent->AsElement()->UnsetAttr(kNameSpaceID_None, nsGkAtoms::active, true);
   StopRepeat();
@@ -213,11 +215,6 @@ void nsScrollbarButtonFrame::Notify() {
       }
     }
   }
-}
-
-void nsScrollbarButtonFrame::MouseClicked(WidgetGUIEvent* aEvent) {
-  nsButtonBoxFrame::MouseClicked(aEvent);
-  // MouseClicked();
 }
 
 nsresult nsScrollbarButtonFrame::GetChildWithTag(nsAtom* atom, nsIFrame* start,

@@ -24,11 +24,11 @@
 #include "nsIFile.h"
 #include "nsIURI.h"
 #include "nsCOMPtr.h"
+#include "nsContentUtils.h"
 #include "nsAutoPtr.h"
 #include "nsNetCID.h"
 #include "nsNetUtil.h"
 #include "nsServiceManagerUtils.h"
-#include "nsWeakReference.h"
 #include "nsXULAppAPI.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/DebugOnly.h"
@@ -40,9 +40,11 @@ namespace net {
 
 namespace {
 
-void AppendMemoryStorageID(nsAutoCString& key) {
-  key.Append('/');
-  key.Append('M');
+void AppendMemoryStorageTag(nsAutoCString& key) {
+  // Using DEL as the very last ascii-7 character we can use in the list of
+  // attributes
+  key.Append('\x7f');
+  key.Append(',');
 }
 
 }  // namespace
@@ -55,7 +57,7 @@ typedef nsClassHashtable<nsCStringHashKey, CacheEntryTable> GlobalEntryTables;
 /**
  * Keeps tables of entries.  There is one entries table for each distinct load
  * context type.  The distinction is based on following load context info
- * states: <isPrivate|isAnon|appId|inIsolatedMozBrowser> which builds a mapping
+ * states: <isPrivate|isAnon|inIsolatedMozBrowser> which builds a mapping
  * key.
  *
  * Thread-safe to access, protected by the service mutex.
@@ -83,15 +85,27 @@ CacheStorageService::MemoryPool::~MemoryPool() {
 }
 
 uint32_t CacheStorageService::MemoryPool::Limit() const {
+  uint32_t limit = 0;
+
   switch (mType) {
     case DISK:
-      return CacheObserver::MetadataMemoryLimit();
+      limit = CacheObserver::MetadataMemoryLimit();
+      break;
     case MEMORY:
-      return CacheObserver::MemoryCacheCapacity();
+      limit = CacheObserver::MemoryCacheCapacity();
+      break;
+    default:
+      MOZ_CRASH("Bad pool type");
   }
 
-  MOZ_CRASH("Bad pool type");
-  return 0;
+  static const uint32_t kMaxLimit = 0x3FFFFF;
+  if (limit > kMaxLimit) {
+    LOG(("  a memory limit (%u) is unexpectedly high, clipping to %u", limit,
+         kMaxLimit));
+    limit = kMaxLimit;
+  }
+
+  return limit << 10;
 }
 
 NS_IMPL_ISUPPORTS(CacheStorageService, nsICacheStorageService,
@@ -258,9 +272,11 @@ class WalkMemoryCacheRunnable : public WalkCacheRunnable {
       if (mNotifyStorage) {
         LOG(("  storage"));
 
+        uint64_t capacity = CacheObserver::MemoryCacheCapacity();
+        capacity <<= 10;  // kilobytes to bytes
+
         // Second, notify overall storage info
-        mCallback->OnCacheStorageInfo(mEntryArray.Length(), mSize,
-                                      CacheObserver::MemoryCacheCapacity(),
+        mCallback->OnCacheStorageInfo(mEntryArray.Length(), mSize, capacity,
                                       nullptr);
         if (!mVisitEntries) return NS_OK;  // done
 
@@ -322,7 +338,7 @@ class WalkMemoryCacheRunnable : public WalkCacheRunnable {
 
  private:
   nsCString mContextKey;
-  nsTArray<RefPtr<CacheEntry> > mEntryArray;
+  nsTArray<RefPtr<CacheEntry>> mEntryArray;
 };
 
 // WalkDiskCacheRunnable
@@ -333,7 +349,8 @@ class WalkDiskCacheRunnable : public WalkCacheRunnable {
                         nsICacheStorageVisitor* aVisitor)
       : WalkCacheRunnable(aVisitor, aVisitEntries),
         mLoadInfo(aLoadInfo),
-        mPass(COLLECT_STATS) {}
+        mPass(COLLECT_STATS),
+        mCount(0) {}
 
   nsresult Walk() {
     // TODO, bug 998693
@@ -357,7 +374,12 @@ class WalkDiskCacheRunnable : public WalkCacheRunnable {
    public:
     explicit OnCacheEntryInfoRunnable(WalkDiskCacheRunnable* aWalker)
         : Runnable("net::WalkDiskCacheRunnable::OnCacheEntryInfoRunnable"),
-          mWalker(aWalker) {}
+          mWalker(aWalker),
+          mDataSize(0),
+          mFetchCount(0),
+          mLastModifiedTime(0),
+          mExpirationTime(0),
+          mPinned(false) {}
 
     NS_IMETHOD Run() override {
       MOZ_ASSERT(NS_IsMainThread());
@@ -452,8 +474,9 @@ class WalkDiskCacheRunnable : public WalkCacheRunnable {
       if (mNotifyStorage) {
         nsCOMPtr<nsIFile> dir;
         CacheFileIOManager::GetCacheDirectory(getter_AddRefs(dir));
-        mCallback->OnCacheStorageInfo(mCount, mSize,
-                                      CacheObserver::DiskCacheCapacity(), dir);
+        uint64_t capacity = CacheObserver::DiskCacheCapacity();
+        capacity <<= 10;  // kilobytes to bytes
+        mCallback->OnCacheStorageInfo(mCount, mSize, capacity, dir);
         mNotifyStorage = false;
       } else {
         mCallback->OnCacheEntryVisitCompleted();
@@ -541,7 +564,7 @@ class CleaupCacheDirectoriesRunnable : public Runnable {
 #endif
   }
 
-  virtual ~CleaupCacheDirectoriesRunnable() {}
+  virtual ~CleaupCacheDirectoriesRunnable() = default;
   nsCOMPtr<nsIFile> mCache1Dir, mCache2Dir;
 #if defined(MOZ_WIDGET_ANDROID)
   nsCOMPtr<nsIFile> mCache2Profileless;
@@ -734,7 +757,111 @@ NS_IMETHODIMP CacheStorageService::Clear() {
 
   // Passing null as a load info means to evict all contexts.
   // EvictByContext() respects the entry pinning.  EvictAll() does not.
-  rv = CacheFileIOManager::EvictByContext(nullptr, false);
+  rv = CacheFileIOManager::EvictByContext(nullptr, false, EmptyString());
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP CacheStorageService::ClearOrigin(nsIPrincipal* aPrincipal) {
+  nsresult rv;
+
+  if (NS_WARN_IF(!aPrincipal)) {
+    return NS_ERROR_FAILURE;
+  }
+
+  nsAutoString origin;
+  rv = nsContentUtils::GetUTFOrigin(aPrincipal, origin);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  rv = ClearOriginInternal(origin, aPrincipal->OriginAttributesRef(), true);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  rv = ClearOriginInternal(origin, aPrincipal->OriginAttributesRef(), false);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  return NS_OK;
+}
+
+static bool RemoveExactEntry(CacheEntryTable* aEntries, nsACString const& aKey,
+                             CacheEntry* aEntry, bool aOverwrite) {
+  RefPtr<CacheEntry> existingEntry;
+  if (!aEntries->Get(aKey, getter_AddRefs(existingEntry))) {
+    LOG(("RemoveExactEntry [entry=%p already gone]", aEntry));
+    return false;  // Already removed...
+  }
+
+  if (!aOverwrite && existingEntry != aEntry) {
+    LOG(("RemoveExactEntry [entry=%p already replaced]", aEntry));
+    return false;  // Already replaced...
+  }
+
+  LOG(("RemoveExactEntry [entry=%p removed]", aEntry));
+  aEntries->Remove(aKey);
+  return true;
+}
+
+nsresult CacheStorageService::ClearOriginInternal(
+    const nsAString& aOrigin, const OriginAttributes& aOriginAttributes,
+    bool aAnonymous) {
+  nsresult rv;
+
+  RefPtr<LoadContextInfo> info =
+      GetLoadContextInfo(aAnonymous, aOriginAttributes);
+  if (NS_WARN_IF(!info)) {
+    return NS_ERROR_FAILURE;
+  }
+
+  mozilla::MutexAutoLock lock(mLock);
+
+  if (sGlobalEntryTables) {
+    for (auto iter = sGlobalEntryTables->Iter(); !iter.Done(); iter.Next()) {
+      bool matches = false;
+      rv =
+          CacheFileUtils::KeyMatchesLoadContextInfo(iter.Key(), info, &matches);
+      NS_ENSURE_SUCCESS(rv, rv);
+      if (!matches) {
+        continue;
+      }
+
+      CacheEntryTable* table = iter.UserData();
+      MOZ_ASSERT(table);
+
+      nsTArray<RefPtr<CacheEntry>> entriesToDelete;
+
+      for (auto entryIter = table->Iter(); !entryIter.Done();
+           entryIter.Next()) {
+        CacheEntry* entry = entryIter.UserData();
+
+        nsCOMPtr<nsIURI> uri;
+        rv = NS_NewURI(getter_AddRefs(uri), entry->GetURI());
+        NS_ENSURE_SUCCESS(rv, rv);
+
+        nsAutoString origin;
+        rv = nsContentUtils::GetUTFOrigin(uri, origin);
+        NS_ENSURE_SUCCESS(rv, rv);
+
+        if (origin != aOrigin) {
+          continue;
+        }
+
+        entriesToDelete.AppendElement(entry);
+      }
+
+      for (RefPtr<CacheEntry>& entry : entriesToDelete) {
+        nsAutoCString entryKey;
+        rv = entry->HashingKey(entryKey);
+        if (NS_FAILED(rv)) {
+          NS_ERROR("aEntry->HashingKey() failed?");
+          return rv;
+        }
+
+        RemoveExactEntry(table, entryKey, entry, false /* don't overwrite */);
+      }
+    }
+  }
+
+  rv = CacheFileIOManager::EvictByContext(info, false /* pinned */, aOrigin);
   NS_ENSURE_SUCCESS(rv, rv);
 
   return NS_OK;
@@ -899,24 +1026,6 @@ static bool AddExactEntry(CacheEntryTable* aEntries, nsACString const& aKey,
   return true;
 }
 
-static bool RemoveExactEntry(CacheEntryTable* aEntries, nsACString const& aKey,
-                             CacheEntry* aEntry, bool aOverwrite) {
-  RefPtr<CacheEntry> existingEntry;
-  if (!aEntries->Get(aKey, getter_AddRefs(existingEntry))) {
-    LOG(("RemoveExactEntry [entry=%p already gone]", aEntry));
-    return false;  // Already removed...
-  }
-
-  if (!aOverwrite && existingEntry != aEntry) {
-    LOG(("RemoveExactEntry [entry=%p already replaced]", aEntry));
-    return false;  // Already replaced...
-  }
-
-  LOG(("RemoveExactEntry [entry=%p removed]", aEntry));
-  aEntries->Remove(aKey);
-  return true;
-}
-
 bool CacheStorageService::RemoveEntry(CacheEntry* aEntry,
                                       bool aOnlyUnreferenced) {
   LOG(("CacheStorageService::RemoveEntry [entry=%p]", aEntry));
@@ -953,7 +1062,7 @@ bool CacheStorageService::RemoveEntry(CacheEntry* aEntry,
     RemoveExactEntry(entries, entryKey, aEntry, false /* don't overwrite */);
 
   nsAutoCString memoryStorageID(aEntry->GetStorageID());
-  AppendMemoryStorageID(memoryStorageID);
+  AppendMemoryStorageTag(memoryStorageID);
 
   if (sGlobalEntryTables->Get(memoryStorageID, &entries))
     RemoveExactEntry(entries, entryKey, aEntry, false /* don't overwrite */);
@@ -992,7 +1101,7 @@ void CacheStorageService::RecordMemoryOnlyEntry(CacheEntry* aEntry,
 
   CacheEntryTable* entries = nullptr;
   nsAutoCString memoryStorageID(aEntry->GetStorageID());
-  AppendMemoryStorageID(memoryStorageID);
+  AppendMemoryStorageTag(memoryStorageID);
 
   if (!sGlobalEntryTables->Get(memoryStorageID, &entries)) {
     if (!aOnlyInMemory) {
@@ -1421,7 +1530,7 @@ nsresult CacheStorageService::CheckStorageEntry(CacheStorage const* aStorage,
   CacheFileUtils::AppendKeyPrefix(aStorage->LoadInfo(), contextKey);
 
   if (!aStorage->WriteToDisk()) {
-    AppendMemoryStorageID(contextKey);
+    AppendMemoryStorageTag(contextKey);
   }
 
   LOG(("CacheStorageService::CheckStorageEntry [uri=%s, eid=%s, contextKey=%s]",
@@ -1514,7 +1623,7 @@ class CacheEntryDoomByKeyCallback : public CacheFileIOListener,
   NS_DECL_NSIRUNNABLE
 
   explicit CacheEntryDoomByKeyCallback(nsICacheEntryDoomCallback* aCallback)
-      : mCallback(aCallback) {}
+      : mCallback(aCallback), mResult(NS_ERROR_NOT_INITIALIZED) {}
 
  private:
   virtual ~CacheEntryDoomByKeyCallback();
@@ -1694,7 +1803,7 @@ nsresult CacheStorageService::DoomStorageEntries(
   NS_ENSURE_TRUE(!mShutdown, NS_ERROR_NOT_INITIALIZED);
 
   nsAutoCString memoryStorageID(aContextKey);
-  AppendMemoryStorageID(memoryStorageID);
+  AppendMemoryStorageTag(memoryStorageID);
 
   if (aDiskStorage) {
     LOG(("  dooming disk+memory storage of %s", aContextKey.BeginReading()));
@@ -1719,7 +1828,7 @@ nsresult CacheStorageService::DoomStorageEntries(
 
     if (aContext && !aContext->IsPrivate()) {
       LOG(("  dooming disk entries"));
-      CacheFileIOManager::EvictByContext(aContext, aPinned);
+      CacheFileIOManager::EvictByContext(aContext, aPinned, EmptyString());
     }
   } else {
     LOG(("  dooming memory-only storage of %s", aContextKey.BeginReading()));
@@ -2017,6 +2126,7 @@ size_t CacheStorageService::SizeOfExcludingThis(
   if (sGlobalEntryTables) {
     n += sGlobalEntryTables->ShallowSizeOfIncludingThis(mallocSizeOf);
   }
+  n += mPurgeTimeStamps.SizeOfExcludingThis(mallocSizeOf);
 
   return n;
 }

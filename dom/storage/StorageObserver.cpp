@@ -59,19 +59,16 @@ nsresult StorageObserver::Init() {
   obs->AddObserver(sSelf, kStartupTopic, true);
   obs->AddObserver(sSelf, "cookie-changed", true);
   obs->AddObserver(sSelf, "perm-changed", true);
-  obs->AddObserver(sSelf, "browser:purge-domain-data", true);
   obs->AddObserver(sSelf, "last-pb-context-exited", true);
   obs->AddObserver(sSelf, "clear-origin-attributes-data", true);
   obs->AddObserver(sSelf, "extension:purge-localStorage", true);
+  obs->AddObserver(sSelf, "browser:purge-sessionStorage", true);
 
   // Shutdown
   obs->AddObserver(sSelf, "profile-after-change", true);
   if (XRE_IsParentProcess()) {
     obs->AddObserver(sSelf, "profile-before-change", true);
   }
-
-  // Observe low device storage notifications.
-  obs->AddObserver(sSelf, "disk-space-watcher", true);
 
   // Testing
 #ifdef DOM_STORAGE_TESTS
@@ -138,8 +135,8 @@ void StorageObserver::NoteBackgroundThread(nsIEventTarget* aBackgroundThread) {
   mBackgroundThread = aBackgroundThread;
 }
 
-nsresult StorageObserver::ClearMatchingOrigin(const char16_t* aData,
-                                              nsACString& aOriginScope) {
+nsresult StorageObserver::GetOriginScope(const char16_t* aData,
+                                         nsACString& aOriginScope) {
   nsresult rv;
 
   NS_ConvertUTF16toUTF8 domain(aData);
@@ -165,15 +162,6 @@ nsresult StorageObserver::ClearMatchingOrigin(const char16_t* aData,
     return rv;
   }
 
-  if (XRE_IsParentProcess()) {
-    StorageDBChild* storageChild = StorageDBChild::GetOrCreate();
-    if (NS_WARN_IF(!storageChild)) {
-      return NS_ERROR_FAILURE;
-    }
-
-    storageChild->SendClearMatchingOrigin(originScope);
-  }
-
   aOriginScope = originScope;
   return NS_OK;
 }
@@ -187,6 +175,10 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
   if (!strcmp(aTopic, kStartupTopic)) {
     MOZ_ASSERT(XRE_IsParentProcess());
 
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
+
     nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
     obs->RemoveObserver(this, kStartupTopic);
 
@@ -198,6 +190,7 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
   // Timer callback used to start the database a short timer after startup
   if (!strcmp(aTopic, NS_TIMER_CALLBACK_TOPIC)) {
     MOZ_ASSERT(XRE_IsParentProcess());
+    MOZ_ASSERT(!NextGenLocalStorageEnabled());
 
     nsCOMPtr<nsITimer> timer = do_QueryInterface(aSubject);
     if (!timer) {
@@ -224,15 +217,17 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
       return NS_OK;
     }
 
-    StorageDBChild* storageChild = StorageDBChild::GetOrCreate();
-    if (NS_WARN_IF(!storageChild)) {
-      return NS_ERROR_FAILURE;
-    }
+    if (!NextGenLocalStorageEnabled()) {
+      StorageDBChild* storageChild = StorageDBChild::GetOrCreate();
+      if (NS_WARN_IF(!storageChild)) {
+        return NS_ERROR_FAILURE;
+      }
 
-    storageChild->AsyncClearAll();
+      storageChild->AsyncClearAll();
 
-    if (XRE_IsParentProcess()) {
-      storageChild->SendClearAll();
+      if (XRE_IsParentProcess()) {
+        storageChild->SendClearAll();
+      }
     }
 
     Notify("cookie-cleared");
@@ -295,13 +290,27 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
   }
 
   if (!strcmp(aTopic, "extension:purge-localStorage")) {
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
+
     const char topic[] = "extension:purge-localStorage-caches";
 
     if (aData) {
       nsCString originScope;
-      rv = ClearMatchingOrigin(aData, originScope);
+
+      rv = GetOriginScope(aData, originScope);
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
+      }
+
+      if (XRE_IsParentProcess()) {
+        StorageDBChild* storageChild = StorageDBChild::GetOrCreate();
+        if (NS_WARN_IF(!storageChild)) {
+          return NS_ERROR_FAILURE;
+        }
+
+        storageChild->SendClearMatchingOrigin(originScope);
       }
 
       Notify(topic, EmptyString(), originScope);
@@ -323,22 +332,28 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
     return NS_OK;
   }
 
-  // Clear everything (including so and pb data) from caches and database
-  // for the given domain and subdomains.
-  if (!strcmp(aTopic, "browser:purge-domain-data")) {
-    nsCString originScope;
-    rv = ClearMatchingOrigin(aData, originScope);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
-    }
+  if (!strcmp(aTopic, "browser:purge-sessionStorage")) {
+    if (aData) {
+      nsCString originScope;
+      rv = GetOriginScope(aData, originScope);
+      if (NS_WARN_IF(NS_FAILED(rv))) {
+        return rv;
+      }
 
-    Notify("domain-data-cleared", EmptyString(), originScope);
+      Notify(aTopic, EmptyString(), originScope);
+    } else {
+      Notify(aTopic, EmptyString(), EmptyCString());
+    }
 
     return NS_OK;
   }
 
   // Clear all private-browsing caches
   if (!strcmp(aTopic, "last-pb-context-exited")) {
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
+
     Notify("private-browsing-data-cleared");
 
     return NS_OK;
@@ -347,6 +362,10 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
   // Clear data of the origins whose prefixes will match the suffix.
   if (!strcmp(aTopic, "clear-origin-attributes-data")) {
     MOZ_ASSERT(XRE_IsParentProcess());
+
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
 
     OriginAttributesPattern pattern;
     if (!pattern.Init(nsDependentString(aData))) {
@@ -375,6 +394,10 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
   if (!strcmp(aTopic, "profile-before-change")) {
     MOZ_ASSERT(XRE_IsParentProcess());
 
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
+
     if (mBackgroundThread) {
       bool done = false;
 
@@ -391,18 +414,12 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
     return NS_OK;
   }
 
-  if (!strcmp(aTopic, "disk-space-watcher")) {
-    if (NS_LITERAL_STRING("full").Equals(aData)) {
-      Notify("low-disk-space");
-    } else if (NS_LITERAL_STRING("free").Equals(aData)) {
-      Notify("no-low-disk-space");
-    }
-
-    return NS_OK;
-  }
-
 #ifdef DOM_STORAGE_TESTS
   if (!strcmp(aTopic, "domstorage-test-flush-force")) {
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
+
     StorageDBChild* storageChild = StorageDBChild::GetOrCreate();
     if (NS_WARN_IF(!storageChild)) {
       return NS_ERROR_FAILURE;
@@ -414,6 +431,10 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
   }
 
   if (!strcmp(aTopic, "domstorage-test-flushed")) {
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
+
     // Only used to propagate to IPC children
     Notify("test-flushed");
 
@@ -421,6 +442,10 @@ StorageObserver::Observe(nsISupports* aSubject, const char* aTopic,
   }
 
   if (!strcmp(aTopic, "domstorage-test-reload")) {
+    if (NextGenLocalStorageEnabled()) {
+      return NS_OK;
+    }
+
     Notify("test-reload");
 
     return NS_OK;

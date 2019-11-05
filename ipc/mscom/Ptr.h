@@ -16,6 +16,8 @@
 #include "nsThreadUtils.h"
 #include "nsXULAppAPI.h"
 
+#include <objidl.h>
+
 /**
  * The glue code in mozilla::mscom often needs to pass around interface pointers
  * belonging to a different apartment from the current one. We must not touch
@@ -197,7 +199,7 @@ template <typename T, typename U>
 inline STAUniquePtr<T> ToSTAUniquePtr(const InterceptorTargetPtr<U>& aTarget) {
   MOZ_ASSERT(NS_IsMainThread());
   RefPtr<T> newRef(static_cast<T*>(aTarget.get()));
-  return ToSTAUniquePtr(Move(newRef));
+  return ToSTAUniquePtr(std::move(newRef));
 }
 
 template <typename T>

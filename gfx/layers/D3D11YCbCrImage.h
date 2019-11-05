@@ -22,21 +22,34 @@ class ImageContainer;
 class DXGIYCbCrTextureClient;
 class DXGIYCbCrTextureData;
 
+class MOZ_RAII DXGIYCbCrTextureAllocationHelper
+    : public ITextureClientAllocationHelper {
+ public:
+  DXGIYCbCrTextureAllocationHelper(const PlanarYCbCrData& aData,
+                                   TextureFlags aTextureFlags,
+                                   ID3D11Device* aDevice);
+
+  bool IsCompatible(TextureClient* aTextureClient) override;
+
+  already_AddRefed<TextureClient> Allocate(
+      KnowsCompositor* aAllocator) override;
+
+ protected:
+  const PlanarYCbCrData& mData;
+  RefPtr<ID3D11Device> mDevice;
+};
+
 class D3D11YCbCrRecycleAllocator : public TextureClientRecycleAllocator {
  public:
-  explicit D3D11YCbCrRecycleAllocator(KnowsCompositor* aAllocator,
-                                      ID3D11Device* aDevice)
-      : TextureClientRecycleAllocator(aAllocator), mDevice(aDevice) {}
+  explicit D3D11YCbCrRecycleAllocator(KnowsCompositor* aAllocator)
+      : TextureClientRecycleAllocator(aAllocator) {}
 
-  ID3D11Device* GetDevice() const { return mDevice; }
   KnowsCompositor* GetAllocator() const { return mSurfaceAllocator; }
 
  protected:
   already_AddRefed<TextureClient> Allocate(
       gfx::SurfaceFormat aFormat, gfx::IntSize aSize, BackendSelector aSelector,
       TextureFlags aTextureFlags, TextureAllocationFlags aAllocFlags) override;
-
-  RefPtr<ID3D11Device> mDevice;
 };
 
 class D3D11YCbCrImage : public Image {
@@ -65,7 +78,8 @@ class D3D11YCbCrImage : public Image {
   gfx::IntSize mYSize;
   gfx::IntSize mCbCrSize;
   gfx::IntRect mPictureRect;
-  YUVColorSpace mColorSpace;
+  gfx::ColorDepth mColorDepth;
+  gfx::YUVColorSpace mColorSpace;
   RefPtr<TextureClient> mTextureClient;
 };
 

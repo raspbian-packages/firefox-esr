@@ -13,14 +13,14 @@ using namespace mozilla::dom;
 already_AddRefed<ChromeNodeList> ChromeNodeList::Constructor(
     const GlobalObject& aGlobal, ErrorResult& aRv) {
   nsCOMPtr<nsPIDOMWindowInner> win = do_QueryInterface(aGlobal.GetAsSupports());
-  nsIDocument* root = win ? win->GetExtantDoc() : nullptr;
+  Document* root = win ? win->GetExtantDoc() : nullptr;
   RefPtr<ChromeNodeList> list = new ChromeNodeList(root);
   return list.forget();
 }
 
 JSObject* ChromeNodeList::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return ChromeNodeListBinding::Wrap(aCx, this, aGivenProto);
+  return ChromeNodeList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void ChromeNodeList::Append(nsINode& aNode, ErrorResult& aError) {

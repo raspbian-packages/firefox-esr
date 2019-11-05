@@ -4,6 +4,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/ExtensionPolicyService.h"
+#include "mozilla/extensions/DocumentObserver.h"
 #include "mozilla/extensions/WebExtensionContentScript.h"
 #include "mozilla/extensions/WebExtensionPolicy.h"
 
@@ -11,24 +12,38 @@
 #include "mozilla/Preferences.h"
 #include "mozilla/ResultExtensions.h"
 #include "mozilla/Services.h"
+#include "mozilla/SimpleEnumerator.h"
 #include "mozilla/dom/ContentChild.h"
+#include "mozilla/dom/ContentFrameMessageManager.h"
 #include "mozilla/dom/ContentParent.h"
+#include "mozilla/dom/Promise.h"
+#include "mozilla/dom/Promise-inl.h"
 #include "mozIExtensionProcessScript.h"
+#include "nsDocShell.h"
 #include "nsEscape.h"
 #include "nsGkAtoms.h"
 #include "nsIChannel.h"
 #include "nsIContentPolicy.h"
-#include "nsIDOMDocument.h"
-#include "nsIDocument.h"
+#include "nsIDocShell.h"
+#include "mozilla/dom/Document.h"
+#include "nsGlobalWindowOuter.h"
 #include "nsILoadInfo.h"
 #include "nsIXULRuntime.h"
+#include "nsImportModule.h"
 #include "nsNetUtil.h"
+#include "nsPrintfCString.h"
 #include "nsPIDOMWindow.h"
 #include "nsXULAppAPI.h"
+#include "nsQueryObject.h"
 
 namespace mozilla {
 
 using namespace extensions;
+
+using dom::AutoJSAPI;
+using dom::ContentFrameMessageManager;
+using dom::Document;
+using dom::Promise;
 
 #define DEFAULT_BASE_CSP                                          \
   "script-src 'self' https://* moz-extension: blob: filesystem: " \
@@ -40,12 +55,17 @@ using namespace extensions;
 #define OBS_TOPIC_PRELOAD_SCRIPT "web-extension-preload-content-script"
 #define OBS_TOPIC_LOAD_SCRIPT "web-extension-load-content-script"
 
+static const char kDocElementInserted[] = "initial-document-element-inserted";
+
 static mozIExtensionProcessScript& ProcessScript() {
   static nsCOMPtr<mozIExtensionProcessScript> sProcessScript;
 
   if (MOZ_UNLIKELY(!sProcessScript)) {
-    sProcessScript =
-        do_GetService("@mozilla.org/webextensions/extension-process-script;1");
+    nsCOMPtr<mozIExtensionProcessScriptJSM> jsm =
+        do_ImportModule("resource://gre/modules/ExtensionProcessScript.jsm");
+    MOZ_RELEASE_ASSERT(jsm);
+
+    Unused << jsm->GetExtensionProcessScript(getter_AddRefs(sProcessScript));
     MOZ_RELEASE_ASSERT(sProcessScript);
     ClearOnShutdown(&sProcessScript);
   }
@@ -56,7 +76,8 @@ static mozIExtensionProcessScript& ProcessScript() {
  * ExtensionPolicyService
  *****************************************************************************/
 
-/* static */ bool ExtensionPolicyService::sRemoteExtensions;
+/* static */
+bool ExtensionPolicyService::sRemoteExtensions;
 
 /* static */ ExtensionPolicyService& ExtensionPolicyService::GetSingleton() {
   static RefPtr<ExtensionPolicyService> sExtensionPolicyService;
@@ -139,6 +160,24 @@ bool ExtensionPolicyService::UnregisterExtension(WebExtensionPolicy& aPolicy) {
   return true;
 }
 
+bool ExtensionPolicyService::RegisterObserver(DocumentObserver& aObserver) {
+  if (mObservers.GetWeak(&aObserver)) {
+    return false;
+  }
+
+  mObservers.Put(&aObserver, &aObserver);
+  return true;
+}
+
+bool ExtensionPolicyService::UnregisterObserver(DocumentObserver& aObserver) {
+  if (!mObservers.GetWeak(&aObserver)) {
+    return false;
+  }
+
+  mObservers.Remove(&aObserver);
+  return true;
+}
+
 void ExtensionPolicyService::BaseCSP(nsAString& aBaseCSP) const {
   nsresult rv;
 
@@ -199,16 +238,16 @@ ExtensionPolicyService::CollectReports(nsIHandleReportCallback* aHandleReport,
  *****************************************************************************/
 
 void ExtensionPolicyService::RegisterObservers() {
-  mObs->AddObserver(this, "content-document-global-created", false);
-  mObs->AddObserver(this, "document-element-inserted", false);
+  mObs->AddObserver(this, kDocElementInserted, false);
+  mObs->AddObserver(this, "tab-content-frameloader-created", false);
   if (XRE_IsContentProcess()) {
     mObs->AddObserver(this, "http-on-opening-request", false);
   }
 }
 
 void ExtensionPolicyService::UnregisterObservers() {
-  mObs->RemoveObserver(this, "content-document-global-created");
-  mObs->RemoveObserver(this, "document-element-inserted");
+  mObs->RemoveObserver(this, kDocElementInserted);
+  mObs->RemoveObserver(this, "tab-content-frameloader-created");
   if (XRE_IsContentProcess()) {
     mObs->RemoveObserver(this, "http-on-opening-request");
   }
@@ -217,13 +256,8 @@ void ExtensionPolicyService::UnregisterObservers() {
 nsresult ExtensionPolicyService::Observe(nsISupports* aSubject,
                                          const char* aTopic,
                                          const char16_t* aData) {
-  if (!strcmp(aTopic, "content-document-global-created")) {
-    nsCOMPtr<nsPIDOMWindowOuter> win = do_QueryInterface(aSubject);
-    if (win) {
-      CheckWindow(win);
-    }
-  } else if (!strcmp(aTopic, "document-element-inserted")) {
-    nsCOMPtr<nsIDocument> doc = do_QueryInterface(aSubject);
+  if (!strcmp(aTopic, kDocElementInserted)) {
+    nsCOMPtr<Document> doc = do_QueryInterface(aSubject);
     if (doc) {
       CheckDocument(doc);
     }
@@ -232,6 +266,130 @@ nsresult ExtensionPolicyService::Observe(nsISupports* aSubject,
     if (chan) {
       CheckRequest(chan);
     }
+  } else if (!strcmp(aTopic, "tab-content-frameloader-created")) {
+    RefPtr<ContentFrameMessageManager> mm = do_QueryObject(aSubject);
+    NS_ENSURE_TRUE(mm, NS_ERROR_UNEXPECTED);
+
+    mMessageManagers.PutEntry(mm);
+
+    mm->AddSystemEventListener(NS_LITERAL_STRING("unload"), this, false, false);
+  }
+  return NS_OK;
+}
+
+nsresult ExtensionPolicyService::HandleEvent(dom::Event* aEvent) {
+  RefPtr<ContentFrameMessageManager> mm = do_QueryObject(aEvent->GetTarget());
+  MOZ_ASSERT(mm);
+  if (mm) {
+    mMessageManagers.RemoveEntry(mm);
+  }
+  return NS_OK;
+}
+
+nsresult ForEachDocShell(
+    nsIDocShell* aDocShell,
+    const std::function<nsresult(nsIDocShell*)>& aCallback) {
+  nsCOMPtr<nsISimpleEnumerator> iter;
+  MOZ_TRY(aDocShell->GetDocShellEnumerator(nsIDocShell::typeContent,
+                                           nsIDocShell::ENUMERATE_FORWARDS,
+                                           getter_AddRefs(iter)));
+
+  for (auto& docShell : SimpleEnumerator<nsIDocShell>(iter)) {
+    MOZ_TRY(aCallback(docShell));
+  }
+  return NS_OK;
+}
+
+already_AddRefed<Promise> ExtensionPolicyService::ExecuteContentScript(
+    nsPIDOMWindowInner* aWindow, WebExtensionContentScript& aScript) {
+  if (!aWindow->IsCurrentInnerWindow()) {
+    return nullptr;
+  }
+
+  RefPtr<Promise> promise;
+  ProcessScript().LoadContentScript(&aScript, aWindow, getter_AddRefs(promise));
+  return promise.forget();
+}
+
+RefPtr<Promise> ExtensionPolicyService::ExecuteContentScripts(
+    JSContext* aCx, nsPIDOMWindowInner* aWindow,
+    const nsTArray<RefPtr<WebExtensionContentScript>>& aScripts) {
+  AutoTArray<RefPtr<Promise>, 8> promises;
+
+  for (auto& script : aScripts) {
+    if (RefPtr<Promise> promise = ExecuteContentScript(aWindow, *script)) {
+      promises.AppendElement(std::move(promise));
+    }
+  }
+
+  RefPtr<Promise> promise = Promise::All(aCx, promises, IgnoreErrors());
+  MOZ_RELEASE_ASSERT(promise);
+  return promise;
+}
+
+nsresult ExtensionPolicyService::InjectContentScripts(
+    WebExtensionPolicy* aExtension) {
+  AutoJSAPI jsapi;
+  MOZ_ALWAYS_TRUE(jsapi.Init(xpc::PrivilegedJunkScope()));
+
+  for (auto iter = mMessageManagers.ConstIter(); !iter.Done(); iter.Next()) {
+    ContentFrameMessageManager* mm = iter.Get()->GetKey();
+
+    nsCOMPtr<nsIDocShell> docShell = mm->GetDocShell(IgnoreErrors());
+    NS_ENSURE_TRUE(docShell, NS_ERROR_UNEXPECTED);
+
+    auto result =
+        ForEachDocShell(docShell, [&](nsIDocShell* aDocShell) -> nsresult {
+          nsCOMPtr<nsPIDOMWindowOuter> win = aDocShell->GetWindow();
+          if (!win->GetDocumentURI()) {
+            return NS_OK;
+          }
+          DocInfo docInfo(win);
+
+          using RunAt = dom::ContentScriptRunAt;
+          using Scripts = AutoTArray<RefPtr<WebExtensionContentScript>, 8>;
+
+          constexpr uint8_t n = uint8_t(RunAt::EndGuard_);
+          Scripts scripts[n];
+
+          auto GetScripts = [&](RunAt aRunAt) -> Scripts&& {
+            return std::move(scripts[uint8_t(aRunAt)]);
+          };
+
+          for (const auto& script : aExtension->ContentScripts()) {
+            if (script->Matches(docInfo)) {
+              GetScripts(script->RunAt()).AppendElement(script);
+            }
+          }
+
+          nsCOMPtr<nsPIDOMWindowInner> inner = win->GetCurrentInnerWindow();
+
+          MOZ_TRY(ExecuteContentScripts(jsapi.cx(), inner,
+                                        GetScripts(RunAt::Document_start))
+                      ->ThenWithCycleCollectedArgs(
+                          [](JSContext* aCx, JS::HandleValue aValue,
+                             ExtensionPolicyService* aSelf,
+                             nsPIDOMWindowInner* aInner, Scripts&& aScripts) {
+                            return aSelf
+                                ->ExecuteContentScripts(aCx, aInner, aScripts)
+                                .forget();
+                          },
+                          this, inner, GetScripts(RunAt::Document_end))
+                      .andThen([&](auto aPromise) {
+                        return aPromise->ThenWithCycleCollectedArgs(
+                            [](JSContext* aCx, JS::HandleValue aValue,
+                               ExtensionPolicyService* aSelf,
+                               nsPIDOMWindowInner* aInner, Scripts&& aScripts) {
+                              return aSelf
+                                  ->ExecuteContentScripts(aCx, aInner, aScripts)
+                                  .forget();
+                            },
+                            this, inner, GetScripts(RunAt::Document_idle));
+                      }));
+
+          return NS_OK;
+        });
+    MOZ_TRY(result);
   }
   return NS_OK;
 }
@@ -239,11 +397,7 @@ nsresult ExtensionPolicyService::Observe(nsISupports* aSubject,
 // Checks a request for matching content scripts, and begins pre-loading them
 // if necessary.
 void ExtensionPolicyService::CheckRequest(nsIChannel* aChannel) {
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->GetLoadInfo();
-  if (!loadInfo) {
-    return;
-  }
-
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
   auto loadType = loadInfo->GetExternalContentPolicyType();
   if (loadType != nsIContentPolicy::TYPE_DOCUMENT &&
       loadType != nsIContentPolicy::TYPE_SUBDOCUMENT) {
@@ -258,12 +412,55 @@ void ExtensionPolicyService::CheckRequest(nsIChannel* aChannel) {
   CheckContentScripts({uri.get(), loadInfo}, true);
 }
 
+static bool CheckParentFrames(nsPIDOMWindowOuter* aWindow,
+                              WebExtensionPolicy& aPolicy) {
+  nsCOMPtr<nsIURI> aboutAddons;
+  if (NS_FAILED(NS_NewURI(getter_AddRefs(aboutAddons), "about:addons"))) {
+    return false;
+  }
+  nsCOMPtr<nsIURI> htmlAboutAddons;
+  if (NS_FAILED(
+          NS_NewURI(getter_AddRefs(htmlAboutAddons),
+                    "chrome://mozapps/content/extensions/aboutaddons.html"))) {
+    return false;
+  }
+
+  auto* piWin = aWindow;
+  while ((piWin = piWin->GetScriptableParentOrNull())) {
+    auto* win = nsGlobalWindowOuter::Cast(piWin);
+
+    auto* principal = BasePrincipal::Cast(win->GetPrincipal());
+    if (nsContentUtils::IsSystemPrincipal(principal)) {
+      // The add-on manager is a special case, since it contains extension
+      // options pages in same-type <browser> frames.
+      nsIURI* uri = win->GetDocumentURI();
+      bool equals;
+      if ((NS_SUCCEEDED(uri->Equals(aboutAddons, &equals)) && equals) ||
+          (NS_SUCCEEDED(uri->Equals(htmlAboutAddons, &equals)) && equals)) {
+        return true;
+      }
+    }
+
+    if (principal->AddonPolicy() != &aPolicy) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 // Checks a document, just after the document element has been inserted, for
 // matching content scripts or extension principals, and loads them if
 // necessary.
-void ExtensionPolicyService::CheckDocument(nsIDocument* aDocument) {
+void ExtensionPolicyService::CheckDocument(Document* aDocument) {
   nsCOMPtr<nsPIDOMWindowOuter> win = aDocument->GetWindow();
   if (win) {
+    nsIDocShell* docShell = win->GetDocShell();
+    RefPtr<ContentFrameMessageManager> mm = docShell->GetMessageManager();
+    if (!mm || !mMessageManagers.Contains(mm)) {
+      return;
+    }
+
     if (win->GetDocumentURI()) {
       CheckContentScripts(win.get(), false);
     }
@@ -273,33 +470,11 @@ void ExtensionPolicyService::CheckDocument(nsIDocument* aDocument) {
     RefPtr<WebExtensionPolicy> policy =
         BasePrincipal::Cast(principal)->AddonPolicy();
     if (policy) {
-      nsCOMPtr<nsIDOMDocument> doc = do_QueryInterface(aDocument);
-      ProcessScript().InitExtensionDocument(policy, doc);
+      bool privileged = IsExtensionProcess() && CheckParentFrames(win, *policy);
+
+      ProcessScript().InitExtensionDocument(policy, aDocument, privileged);
     }
   }
-}
-
-// Checks for loads of about:blank into new window globals, and loads any
-// matching content scripts. about:blank loads do not trigger document element
-// inserted events, so they're the only load type that are special cased this
-// way.
-void ExtensionPolicyService::CheckWindow(nsPIDOMWindowOuter* aWindow) {
-  // We only care about non-initial document loads here. The initial
-  // about:blank document will usually be re-used to load another document.
-  nsCOMPtr<nsIDocument> doc = aWindow->GetExtantDoc();
-  if (!doc || doc->IsInitialDocument() ||
-      doc->GetReadyStateEnum() == nsIDocument::READYSTATE_UNINITIALIZED) {
-    return;
-  }
-
-  nsCOMPtr<nsIURI> docUri = doc->GetDocumentURI();
-  nsCOMPtr<nsIURI> uri;
-  if (!docUri || NS_FAILED(docUri->CloneIgnoringRef(getter_AddRefs(uri))) ||
-      !NS_IsAboutBlank(uri)) {
-    return;
-  }
-
-  CheckContentScripts(aWindow, false);
 }
 
 void ExtensionPolicyService::CheckContentScripts(const DocInfo& aDocInfo,
@@ -320,7 +495,23 @@ void ExtensionPolicyService::CheckContentScripts(const DocInfo& aDocInfo,
           if (!win->IsCurrentInnerWindow()) {
             break;
           }
-          ProcessScript().LoadContentScript(script, aDocInfo.GetWindow());
+          RefPtr<Promise> promise;
+          ProcessScript().LoadContentScript(script, win,
+                                            getter_AddRefs(promise));
+        }
+      }
+    }
+  }
+
+  for (auto iter = mObservers.Iter(); !iter.Done(); iter.Next()) {
+    RefPtr<DocumentObserver> observer = iter.Data();
+
+    for (auto& matcher : observer->Matchers()) {
+      if (matcher->Matches(aDocInfo)) {
+        if (aIsPreload) {
+          observer->NotifyMatch(*matcher, aDocInfo.GetLoadInfo());
+        } else {
+          observer->NotifyMatch(*matcher, aDocInfo.GetWindow());
         }
       }
     }
@@ -415,11 +606,13 @@ nsresult ExtensionPolicyService::ExtensionURIToAddonId(nsIURI* aURI,
   return NS_OK;
 }
 
-NS_IMPL_CYCLE_COLLECTION(ExtensionPolicyService, mExtensions, mExtensionHosts)
+NS_IMPL_CYCLE_COLLECTION(ExtensionPolicyService, mExtensions, mExtensionHosts,
+                         mObservers)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(ExtensionPolicyService)
   NS_INTERFACE_MAP_ENTRY(nsIAddonPolicyService)
   NS_INTERFACE_MAP_ENTRY(nsIObserver)
+  NS_INTERFACE_MAP_ENTRY(nsIDOMEventListener)
   NS_INTERFACE_MAP_ENTRY(nsIMemoryReporter)
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIAddonPolicyService)
 NS_INTERFACE_MAP_END

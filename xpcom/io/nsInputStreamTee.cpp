@@ -20,7 +20,7 @@
 using namespace mozilla;
 
 #ifdef LOG
-#undef LOG
+#  undef LOG
 #endif
 
 static LazyLogModule sTeeLog("nsInputStreamTee");
@@ -127,7 +127,8 @@ class nsInputStreamTeeWriteEvent : public Runnable {
   RefPtr<nsInputStreamTee> mTee;
 };
 
-nsInputStreamTee::nsInputStreamTee() : mLock(nullptr), mSinkIsValid(true) {}
+nsInputStreamTee::nsInputStreamTee()
+    : mWriter(nullptr), mClosure(nullptr), mLock(nullptr), mSinkIsValid(true) {}
 
 bool nsInputStreamTee::SinkIsValid() {
   MutexAutoLock lock(*mLock);

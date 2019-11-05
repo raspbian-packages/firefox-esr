@@ -8,14 +8,13 @@
 #define CustomEvent_h__
 
 #include "mozilla/dom/Event.h"
-#include "nsIDOMCustomEvent.h"
 
 namespace mozilla {
 namespace dom {
 
 struct CustomEventInit;
 
-class CustomEvent final : public Event, public nsIDOMCustomEvent {
+class CustomEvent final : public Event {
  private:
   virtual ~CustomEvent();
 
@@ -28,8 +27,6 @@ class CustomEvent final : public Event, public nsIDOMCustomEvent {
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_INHERITED(CustomEvent, Event)
-  NS_FORWARD_TO_EVENT
-  NS_DECL_NSIDOMCUSTOMEVENT
 
   static already_AddRefed<CustomEvent> Constructor(
       const GlobalObject& aGlobal, const nsAString& aType,
@@ -38,11 +35,12 @@ class CustomEvent final : public Event, public nsIDOMCustomEvent {
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
 
+  CustomEvent* AsCustomEvent() override { return this; }
+
   void GetDetail(JSContext* aCx, JS::MutableHandle<JS::Value> aRetval);
 
   void InitCustomEvent(JSContext* aCx, const nsAString& aType, bool aCanBubble,
-                       bool aCancelable, JS::Handle<JS::Value> aDetail,
-                       ErrorResult& aRv);
+                       bool aCancelable, JS::Handle<JS::Value> aDetail);
 };
 
 }  // namespace dom

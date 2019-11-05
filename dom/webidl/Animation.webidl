@@ -10,16 +10,15 @@
  * liability, trademark and document use rules apply.
  */
 
-enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
+enum AnimationPlayState { "idle", "running", "paused", "finished" };
 
-[Func="nsDocument::IsElementAnimateEnabled",
- Constructor (optional AnimationEffectReadOnly? effect = null,
+[Constructor (optional AnimationEffect? effect = null,
               optional AnimationTimeline? timeline)]
 interface Animation : EventTarget {
   attribute DOMString id;
-  [Func="nsDocument::IsWebAnimationsEnabled", Pure]
-  attribute AnimationEffectReadOnly? effect;
-  [Func="nsDocument::IsWebAnimationsEnabled"]
+  [Func="Document::IsWebAnimationsEnabled", Pure]
+  attribute AnimationEffect? effect;
+  [Func="Document::AreWebAnimationsTimelinesEnabled"]
   attribute AnimationTimeline? timeline;
   [BinaryName="startTimeAsDouble"]
   attribute double? startTime;
@@ -29,11 +28,11 @@ interface Animation : EventTarget {
            attribute double             playbackRate;
   [BinaryName="playStateFromJS"]
   readonly attribute AnimationPlayState playState;
-  [Pref="dom.animations-api.pending-member.enabled", BinaryName="pendingFromJS"]
+  [BinaryName="pendingFromJS"]
   readonly attribute boolean            pending;
-  [Func="nsDocument::IsWebAnimationsEnabled", Throws]
+  [Func="Document::IsWebAnimationsEnabled", Throws]
   readonly attribute Promise<Animation> ready;
-  [Func="nsDocument::IsWebAnimationsEnabled", Throws]
+  [Func="Document::IsWebAnimationsEnabled", Throws]
   readonly attribute Promise<Animation> finished;
            attribute EventHandler       onfinish;
            attribute EventHandler       oncancel;

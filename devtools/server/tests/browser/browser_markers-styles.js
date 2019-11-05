@@ -6,25 +6,23 @@
  */
 "use strict";
 
-const { PerformanceFront } = require("devtools/shared/fronts/performance");
 const MARKER_NAME = "Styles";
 
-add_task(async function () {
-  await addTab(MAIN_DOMAIN + "doc_perf.html");
+add_task(async function() {
+  const target = await addTabTarget(MAIN_DOMAIN + "doc_perf.html");
 
-  initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
-  let form = await connectDebuggerClient(client);
-  let front = PerformanceFront(client, form);
-  await front.connect();
-  let rec = await front.startRecording({ withMarkers: true });
+  const front = await target.getFront("performance");
+  const rec = await front.startRecording({ withMarkers: true });
 
-  let markers = await waitForMarkerType(front, MARKER_NAME);
+  const markers = await waitForMarkerType(front, MARKER_NAME);
 
   await front.stopRecording(rec);
 
-  ok(markers.some(m => m.name === MARKER_NAME), `got some ${MARKER_NAME} markers`);
+  ok(
+    markers.some(m => m.name === MARKER_NAME),
+    `got some ${MARKER_NAME} markers`
+  );
 
-  await client.close();
+  await target.destroy();
   gBrowser.removeCurrentTab();
 });

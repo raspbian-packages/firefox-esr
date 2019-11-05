@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=4 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,6 +14,7 @@
 #include <gtk/gtk.h>
 
 class nsWindow;
+class nsWaylandDragContext;
 
 namespace mozilla {
 namespace gfx {
@@ -22,23 +23,23 @@ class SourceSurface;
 }  // namespace mozilla
 
 #ifndef HAVE_NSGOBJECTREFTRAITS
-#define HAVE_NSGOBJECTREFTRAITS
+#  define HAVE_NSGOBJECTREFTRAITS
 template <class T>
 class nsGObjectRefTraits : public nsPointerRefTraits<T> {
  public:
-  static void Release(T *aPtr) { g_object_unref(aPtr); }
-  static void AddRef(T *aPtr) { g_object_ref(aPtr); }
+  static void Release(T* aPtr) { g_object_unref(aPtr); }
+  static void AddRef(T* aPtr) { g_object_ref(aPtr); }
 };
 #endif
 
 #ifndef HAVE_NSAUTOREFTRAITS_GTKWIDGET
-#define HAVE_NSAUTOREFTRAITS_GTKWIDGET
+#  define HAVE_NSAUTOREFTRAITS_GTKWIDGET
 template <>
 class nsAutoRefTraits<GtkWidget> : public nsGObjectRefTraits<GtkWidget> {};
 #endif
 
 #ifndef HAVE_NSAUTOREFTRAITS_GDKDRAGCONTEXT
-#define HAVE_NSAUTOREFTRAITS_GDKDRAGCONTEXT
+#  define HAVE_NSAUTOREFTRAITS_GDKDRAGCONTEXT
 template <>
 class nsAutoRefTraits<GdkDragContext>
     : public nsGObjectRefTraits<GdkDragContext> {};
@@ -57,27 +58,27 @@ class nsDragService final : public nsBaseDragService, public nsIObserver {
   NS_DECL_NSIOBSERVER
 
   // nsBaseDragService
-  virtual nsresult InvokeDragSessionImpl(nsIArray *anArrayTransferables,
-                                         nsIScriptableRegion *aRegion,
-                                         uint32_t aActionType) override;
+  MOZ_CAN_RUN_SCRIPT virtual nsresult InvokeDragSessionImpl(
+      nsIArray* anArrayTransferables,
+      const mozilla::Maybe<mozilla::CSSIntRegion>& aRegion,
+      uint32_t aActionType) override;
   // nsIDragService
-  NS_IMETHOD InvokeDragSession(nsIDOMNode *aDOMNode,
-                               const nsACString &aPrincipalURISpec,
-                               nsIArray *anArrayTransferables,
-                               nsIScriptableRegion *aRegion,
-                               uint32_t aActionType,
-                               nsContentPolicyType aContentPolicyType) override;
+  MOZ_CAN_RUN_SCRIPT NS_IMETHOD
+  InvokeDragSession(nsINode* aDOMNode, nsIPrincipal* aPrincipal,
+                    nsIArray* anArrayTransferables, uint32_t aActionType,
+                    nsContentPolicyType aContentPolicyType) override;
   NS_IMETHOD StartDragSession() override;
-  NS_IMETHOD EndDragSession(bool aDoneDrag, uint32_t aKeyModifiers) override;
+  MOZ_CAN_RUN_SCRIPT NS_IMETHOD EndDragSession(bool aDoneDrag,
+                                               uint32_t aKeyModifiers) override;
 
   // nsIDragSession
   NS_IMETHOD SetCanDrop(bool aCanDrop) override;
-  NS_IMETHOD GetCanDrop(bool *aCanDrop) override;
-  NS_IMETHOD GetNumDropItems(uint32_t *aNumItems) override;
-  NS_IMETHOD GetData(nsITransferable *aTransferable,
+  NS_IMETHOD GetCanDrop(bool* aCanDrop) override;
+  NS_IMETHOD GetNumDropItems(uint32_t* aNumItems) override;
+  NS_IMETHOD GetData(nsITransferable* aTransferable,
                      uint32_t aItemIndex) override;
-  NS_IMETHOD IsDataFlavorSupported(const char *aDataFlavor,
-                                   bool *_retval) override;
+  NS_IMETHOD IsDataFlavorSupported(const char* aDataFlavor,
+                                   bool* _retval) override;
 
   NS_IMETHOD UpdateDragEffect() override;
 
@@ -86,19 +87,21 @@ class nsDragService final : public nsBaseDragService, public nsIObserver {
 
   static already_AddRefed<nsDragService> GetInstance();
 
-  void TargetDataReceived(GtkWidget *aWidget, GdkDragContext *aContext, gint aX,
-                          gint aY, GtkSelectionData *aSelection_data,
+  void TargetDataReceived(GtkWidget* aWidget, GdkDragContext* aContext, gint aX,
+                          gint aY, GtkSelectionData* aSelection_data,
                           guint aInfo, guint32 aTime);
 
-  gboolean ScheduleMotionEvent(nsWindow *aWindow, GdkDragContext *aDragContext,
+  gboolean ScheduleMotionEvent(nsWindow* aWindow, GdkDragContext* aDragContext,
+                               nsWaylandDragContext* aPendingWaylandDragContext,
                                mozilla::LayoutDeviceIntPoint aWindowPoint,
                                guint aTime);
   void ScheduleLeaveEvent();
-  gboolean ScheduleDropEvent(nsWindow *aWindow, GdkDragContext *aDragContext,
+  gboolean ScheduleDropEvent(nsWindow* aWindow, GdkDragContext* aDragContext,
+                             nsWaylandDragContext* aPendingWaylandDragContext,
                              mozilla::LayoutDeviceIntPoint aWindowPoint,
                              guint aTime);
 
-  nsWindow *GetMostRecentDestWindow() {
+  nsWindow* GetMostRecentDestWindow() {
     return mScheduledTask == eDragTaskNone ? mTargetWindow : mPendingWindow;
   }
 
@@ -107,12 +110,14 @@ class nsDragService final : public nsBaseDragService, public nsIObserver {
   // These methods are public only so that they can be called from functions
   // with C calling conventions.  They are called for drags started with the
   // invisible widget.
-  void SourceEndDragSession(GdkDragContext *aContext, gint aResult);
-  void SourceDataGet(GtkWidget *widget, GdkDragContext *context,
-                     GtkSelectionData *selection_data, guint32 aTime);
+  void SourceEndDragSession(GdkDragContext* aContext, gint aResult);
+  void SourceDataGet(GtkWidget* widget, GdkDragContext* context,
+                     GtkSelectionData* selection_data, guint32 aTime);
+
+  void SourceBeginDrag(GdkDragContext* aContext);
 
   // set the drag icon during drag-begin
-  void SetDragIcon(GdkDragContext *aContext);
+  void SetDragIcon(GdkDragContext* aContext);
 
  protected:
   virtual ~nsDragService();
@@ -144,6 +149,9 @@ class nsDragService final : public nsBaseDragService, public nsIObserver {
   RefPtr<nsWindow> mPendingWindow;
   mozilla::LayoutDeviceIntPoint mPendingWindowPoint;
   nsCountedRef<GdkDragContext> mPendingDragContext;
+#ifdef MOZ_WAYLAND
+  RefPtr<nsWaylandDragContext> mPendingWaylandDragContext;
+#endif
   guint mPendingTime;
 
   // mTargetWindow and mTargetWindowPoint record the position of the last
@@ -155,9 +163,15 @@ class nsDragService final : public nsBaseDragService, public nsIObserver {
   // motion or drop events.  mTime records the corresponding timestamp.
   nsCountedRef<GtkWidget> mTargetWidget;
   nsCountedRef<GdkDragContext> mTargetDragContext;
+#ifdef MOZ_WAYLAND
+  RefPtr<nsWaylandDragContext> mTargetWaylandDragContext;
+#endif
   // mTargetDragContextForRemote is set while waiting for a reply from
   // a child process.
   nsCountedRef<GdkDragContext> mTargetDragContextForRemote;
+#ifdef MOZ_WAYLAND
+  RefPtr<nsWaylandDragContext> mTargetWaylandDragContextForRemote;
+#endif
   guint mTargetTime;
 
   // is it OK to drop on us?
@@ -166,7 +180,7 @@ class nsDragService final : public nsBaseDragService, public nsIObserver {
   // have we received our drag data?
   bool mTargetDragDataReceived;
   // last data received and its length
-  void *mTargetDragData;
+  void* mTargetDragData;
   uint32_t mTargetDragDataLen;
   // is the current target drag context contain a list?
   bool IsTargetContextList(void);
@@ -179,31 +193,33 @@ class nsDragService final : public nsBaseDragService, public nsIObserver {
   // source side vars
 
   // the source of our drags
-  GtkWidget *mHiddenWidget;
+  GtkWidget* mHiddenWidget;
   // our source data items
   nsCOMPtr<nsIArray> mSourceDataItems;
 
-  nsCOMPtr<nsIScriptableRegion> mSourceRegion;
-
   // get a list of the sources in gtk's format
-  GtkTargetList *GetSourceList(void);
+  GtkTargetList* GetSourceList(void);
 
   // attempts to create a semi-transparent drag image. Returns TRUE if
   // successful, FALSE if not
-  bool SetAlphaPixmap(SourceSurface *aPixbuf, GdkDragContext *aContext,
+  bool SetAlphaPixmap(SourceSurface* aPixbuf, GdkDragContext* aContext,
                       int32_t aXOffset, int32_t aYOffset,
-                      const mozilla::LayoutDeviceIntRect &dragRect);
+                      const mozilla::LayoutDeviceIntRect& dragRect);
 
-  gboolean Schedule(DragTask aTask, nsWindow *aWindow,
-                    GdkDragContext *aDragContext,
+  gboolean Schedule(DragTask aTask, nsWindow* aWindow,
+                    GdkDragContext* aDragContext,
+                    nsWaylandDragContext* aPendingWaylandDragContext,
                     mozilla::LayoutDeviceIntPoint aWindowPoint, guint aTime);
 
   // Callback for g_idle_add_full() to run mScheduledTask.
-  static gboolean TaskDispatchCallback(gpointer data);
-  gboolean RunScheduledTask();
+  MOZ_CAN_RUN_SCRIPT static gboolean TaskDispatchCallback(gpointer data);
+  MOZ_CAN_RUN_SCRIPT gboolean RunScheduledTask();
   void UpdateDragAction();
-  void DispatchMotionEvents();
-  void ReplyToDragMotion(GdkDragContext *aDragContext);
+  MOZ_CAN_RUN_SCRIPT void DispatchMotionEvents();
+  void ReplyToDragMotion(GdkDragContext* aDragContext);
+#ifdef MOZ_WAYLAND
+  void ReplyToDragMotion(nsWaylandDragContext* aDragContext);
+#endif
   gboolean DispatchDropEvent();
   static uint32_t GetCurrentModifiers();
 };

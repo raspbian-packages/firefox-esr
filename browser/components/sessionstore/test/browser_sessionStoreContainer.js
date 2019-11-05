@@ -6,7 +6,9 @@
 
 add_task(async function() {
   for (let i = 0; i < 3; ++i) {
-    let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com/", { userContextId: i });
+    let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com/", {
+      userContextId: i,
+    });
     let browser = tab.linkedBrowser;
 
     await promiseBrowserLoaded(browser);
@@ -18,17 +20,22 @@ add_task(async function() {
 
     await ContentTask.spawn(browser2, { expectedId: i }, async function(args) {
       let loadContext = docShell.QueryInterface(Ci.nsILoadContext);
-      Assert.equal(loadContext.originAttributes.userContextId,
-        args.expectedId, "The docShell has the correct userContextId");
+      Assert.equal(
+        loadContext.originAttributes.userContextId,
+        args.expectedId,
+        "The docShell has the correct userContextId"
+      );
     });
 
-    await promiseRemoveTab(tab);
-    await promiseRemoveTab(tab2);
+    BrowserTestUtils.removeTab(tab);
+    BrowserTestUtils.removeTab(tab2);
   }
 });
 
 add_task(async function() {
-  let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com/", { userContextId: 1 });
+  let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com/", {
+    userContextId: 1,
+  });
   let browser = tab.linkedBrowser;
 
   await promiseBrowserLoaded(browser);
@@ -40,17 +47,21 @@ add_task(async function() {
   await promiseTabRestored(tab2);
 
   await ContentTask.spawn(browser2, { expectedId: 1 }, async function(args) {
-    Assert.equal(docShell.getOriginAttributes().userContextId,
-                 args.expectedId,
-                 "The docShell has the correct userContextId");
+    Assert.equal(
+      docShell.getOriginAttributes().userContextId,
+      args.expectedId,
+      "The docShell has the correct userContextId"
+    );
   });
 
-  await promiseRemoveTab(tab);
-  await promiseRemoveTab(tab2);
+  BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab2);
 });
 
 add_task(async function() {
-  let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com/", { userContextId: 1 });
+  let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com/", {
+    userContextId: 1,
+  });
   let browser = tab.linkedBrowser;
 
   await promiseBrowserLoaded(browser);
@@ -60,20 +71,26 @@ add_task(async function() {
   let tab2 = ss.undoCloseTab(window, 0);
   Assert.equal(tab2.getAttribute("usercontextid"), 1);
   await promiseTabRestored(tab2);
-  await ContentTask.spawn(tab2.linkedBrowser, { expectedId: 1 }, async function(args) {
-    Assert.equal(docShell.getOriginAttributes().userContextId,
-                 args.expectedId,
-                 "The docShell has the correct userContextId");
+  await ContentTask.spawn(tab2.linkedBrowser, { expectedId: 1 }, async function(
+    args
+  ) {
+    Assert.equal(
+      docShell.getOriginAttributes().userContextId,
+      args.expectedId,
+      "The docShell has the correct userContextId"
+    );
   });
 
-  await promiseRemoveTab(tab2);
+  BrowserTestUtils.removeTab(tab2);
 });
 
 // Opens "uri" in a new tab with the provided userContextId and focuses it.
 // Returns the newly opened tab.
 async function openTabInUserContext(userContextId) {
   // Open the tab in the correct userContextId.
-  let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com", { userContextId });
+  let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com", {
+    userContextId,
+  });
 
   // Select tab and make sure its browser is focused.
   gBrowser.selectedTab = tab;
@@ -96,18 +113,15 @@ function waitForNewCookie() {
 }
 
 add_task(async function test() {
-  const USER_CONTEXTS = [
-    "default",
-    "personal",
-    "work",
-  ];
+  const USER_CONTEXTS = ["default", "personal", "work"];
 
-  const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
-  const { TabStateFlusher } = ChromeUtils.import("resource:///modules/sessionstore/TabStateFlusher.jsm", {});
+  const { TabStateFlusher } = ChromeUtils.import(
+    "resource:///modules/sessionstore/TabStateFlusher.jsm"
+  );
 
   // Make sure userContext is enabled.
   await SpecialPowers.pushPrefEnv({
-    "set": [ [ "privacy.userContext.enabled", true ] ]
+    set: [["privacy.userContext.enabled", true]],
   });
 
   Services.cookies.removeAll();
@@ -122,8 +136,11 @@ add_task(async function test() {
 
     await Promise.all([
       waitForNewCookie(),
-      ContentTask.spawn(browser, cookie,
-        passedCookie => content.document.cookie = passedCookie)
+      ContentTask.spawn(
+        browser,
+        cookie,
+        passedCookie => (content.document.cookie = passedCookie)
+      ),
     ]);
 
     // Ensure the tab's session history is up-to-date.
@@ -133,7 +150,10 @@ add_task(async function test() {
     gBrowser.removeTab(tab);
   }
 
-  let state = JSON.parse(ss.getBrowserState());
-  is(state.cookies.length, USER_CONTEXTS.length,
-    "session restore should have each container's cookie");
+  let state = JSON.parse(SessionStore.getBrowserState());
+  is(
+    state.cookies.length,
+    USER_CONTEXTS.length,
+    "session restore should have each container's cookie"
+  );
 });

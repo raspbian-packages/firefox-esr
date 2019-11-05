@@ -1,11 +1,3 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 ast_enum! {
     /// A binary operator: `+`, `+=`, `&`.
     ///
@@ -91,82 +83,97 @@ ast_enum! {
 #[cfg(feature = "parsing")]
 pub mod parsing {
     use super::*;
-    use synom::Synom;
 
-    impl BinOp {
-        named!(pub parse_binop -> Self, alt!(
-            punct!(&&) => { BinOp::And }
-            |
-            punct!(||) => { BinOp::Or }
-            |
-            punct!(<<) => { BinOp::Shl }
-            |
-            punct!(>>) => { BinOp::Shr }
-            |
-            punct!(==) => { BinOp::Eq }
-            |
-            punct!(<=) => { BinOp::Le }
-            |
-            punct!(!=) => { BinOp::Ne }
-            |
-            punct!(>=) => { BinOp::Ge }
-            |
-            punct!(+) => { BinOp::Add }
-            |
-            punct!(-) => { BinOp::Sub }
-            |
-            punct!(*) => { BinOp::Mul }
-            |
-            punct!(/) => { BinOp::Div }
-            |
-            punct!(%) => { BinOp::Rem }
-            |
-            punct!(^) => { BinOp::BitXor }
-            |
-            punct!(&) => { BinOp::BitAnd }
-            |
-            punct!(|) => { BinOp::BitOr }
-            |
-            punct!(<) => { BinOp::Lt }
-            |
-            punct!(>) => { BinOp::Gt }
-        ));
+    use parse::{Parse, ParseStream, Result};
 
-        #[cfg(feature = "full")]
-        named!(pub parse_assign_op -> Self, alt!(
-            punct!(+=) => { BinOp::AddEq }
-            |
-            punct!(-=) => { BinOp::SubEq }
-            |
-            punct!(*=) => { BinOp::MulEq }
-            |
-            punct!(/=) => { BinOp::DivEq }
-            |
-            punct!(%=) => { BinOp::RemEq }
-            |
-            punct!(^=) => { BinOp::BitXorEq }
-            |
-            punct!(&=) => { BinOp::BitAndEq }
-            |
-            punct!(|=) => { BinOp::BitOrEq }
-            |
-            punct!(<<=) => { BinOp::ShlEq }
-            |
-            punct!(>>=) => { BinOp::ShrEq }
-        ));
+    fn parse_binop(input: ParseStream) -> Result<BinOp> {
+        if input.peek(Token![&&]) {
+            input.parse().map(BinOp::And)
+        } else if input.peek(Token![||]) {
+            input.parse().map(BinOp::Or)
+        } else if input.peek(Token![<<]) {
+            input.parse().map(BinOp::Shl)
+        } else if input.peek(Token![>>]) {
+            input.parse().map(BinOp::Shr)
+        } else if input.peek(Token![==]) {
+            input.parse().map(BinOp::Eq)
+        } else if input.peek(Token![<=]) {
+            input.parse().map(BinOp::Le)
+        } else if input.peek(Token![!=]) {
+            input.parse().map(BinOp::Ne)
+        } else if input.peek(Token![>=]) {
+            input.parse().map(BinOp::Ge)
+        } else if input.peek(Token![+]) {
+            input.parse().map(BinOp::Add)
+        } else if input.peek(Token![-]) {
+            input.parse().map(BinOp::Sub)
+        } else if input.peek(Token![*]) {
+            input.parse().map(BinOp::Mul)
+        } else if input.peek(Token![/]) {
+            input.parse().map(BinOp::Div)
+        } else if input.peek(Token![%]) {
+            input.parse().map(BinOp::Rem)
+        } else if input.peek(Token![^]) {
+            input.parse().map(BinOp::BitXor)
+        } else if input.peek(Token![&]) {
+            input.parse().map(BinOp::BitAnd)
+        } else if input.peek(Token![|]) {
+            input.parse().map(BinOp::BitOr)
+        } else if input.peek(Token![<]) {
+            input.parse().map(BinOp::Lt)
+        } else if input.peek(Token![>]) {
+            input.parse().map(BinOp::Gt)
+        } else {
+            Err(input.error("expected binary operator"))
+        }
     }
 
-    impl Synom for UnOp {
-        named!(parse -> Self, alt!(
-            punct!(*) => { UnOp::Deref }
-            |
-            punct!(!) => { UnOp::Not }
-            |
-            punct!(-) => { UnOp::Neg }
-        ));
+    impl Parse for BinOp {
+        #[cfg(not(feature = "full"))]
+        fn parse(input: ParseStream) -> Result<Self> {
+            parse_binop(input)
+        }
 
-        fn description() -> Option<&'static str> {
-            Some("unary operator: `*`, `!`, or `-`")
+        #[cfg(feature = "full")]
+        fn parse(input: ParseStream) -> Result<Self> {
+            if input.peek(Token![+=]) {
+                input.parse().map(BinOp::AddEq)
+            } else if input.peek(Token![-=]) {
+                input.parse().map(BinOp::SubEq)
+            } else if input.peek(Token![*=]) {
+                input.parse().map(BinOp::MulEq)
+            } else if input.peek(Token![/=]) {
+                input.parse().map(BinOp::DivEq)
+            } else if input.peek(Token![%=]) {
+                input.parse().map(BinOp::RemEq)
+            } else if input.peek(Token![^=]) {
+                input.parse().map(BinOp::BitXorEq)
+            } else if input.peek(Token![&=]) {
+                input.parse().map(BinOp::BitAndEq)
+            } else if input.peek(Token![|=]) {
+                input.parse().map(BinOp::BitOrEq)
+            } else if input.peek(Token![<<=]) {
+                input.parse().map(BinOp::ShlEq)
+            } else if input.peek(Token![>>=]) {
+                input.parse().map(BinOp::ShrEq)
+            } else {
+                parse_binop(input)
+            }
+        }
+    }
+
+    impl Parse for UnOp {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let lookahead = input.lookahead1();
+            if lookahead.peek(Token![*]) {
+                input.parse().map(UnOp::Deref)
+            } else if lookahead.peek(Token![!]) {
+                input.parse().map(UnOp::Not)
+            } else if lookahead.peek(Token![-]) {
+                input.parse().map(UnOp::Neg)
+            } else {
+                Err(lookahead.error())
+            }
         }
     }
 }
@@ -174,10 +181,11 @@ pub mod parsing {
 #[cfg(feature = "printing")]
 mod printing {
     use super::*;
-    use quote::{ToTokens, Tokens};
+    use proc_macro2::TokenStream;
+    use quote::ToTokens;
 
     impl ToTokens for BinOp {
-        fn to_tokens(&self, tokens: &mut Tokens) {
+        fn to_tokens(&self, tokens: &mut TokenStream) {
             match *self {
                 BinOp::Add(ref t) => t.to_tokens(tokens),
                 BinOp::Sub(ref t) => t.to_tokens(tokens),
@@ -212,7 +220,7 @@ mod printing {
     }
 
     impl ToTokens for UnOp {
-        fn to_tokens(&self, tokens: &mut Tokens) {
+        fn to_tokens(&self, tokens: &mut TokenStream) {
             match *self {
                 UnOp::Deref(ref t) => t.to_tokens(tokens),
                 UnOp::Not(ref t) => t.to_tokens(tokens),

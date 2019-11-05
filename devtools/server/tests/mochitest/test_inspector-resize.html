@@ -7,16 +7,13 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1222409
 <head>
   <meta charset="utf-8">
   <title>Test for Bug 1222409</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript" src="inspector-helpers.js"></script>
   <script type="application/javascript">
 "use strict";
 
-window.onload = function () {
-  const {require} = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
-  const {InspectorFront} = require("devtools/shared/fronts/inspector");
-
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
 
   let win = null;
@@ -25,30 +22,24 @@ window.onload = function () {
   addAsyncTest(async function setup() {
     info("Setting up inspector and walker actors.");
 
-    let url = document.getElementById("inspectorContent").href;
+    const url = document.getElementById("inspectorContent").href;
 
-    // eslint-disable-next-line new-cap
-    await new Promise(resolve => {
-      attachURL(url, function (err, client, tab, doc) {
-        win = doc.defaultView;
-        inspector = InspectorFront(client, tab);
-        resolve();
-      });
-    });
-
+    const { target, doc } = await attachURL(url);
+    inspector = await target.getInspector();
+    win = doc.defaultView;
     runNextTest();
   });
 
-  addAsyncTest(async function () {
-    let walker = await inspector.getWalker();
+  addAsyncTest(async function() {
+    const walker = inspector.walker;
 
     // We can't receive events from the walker if we haven't first executed a
     // method on the actor to initialize it.
     await walker.querySelector(walker.rootNode, "img");
 
-    let {outerWidth, outerHeight} = win;
+    const {outerWidth, outerHeight} = win;
     // eslint-disable-next-line new-cap
-    let onResize = new Promise(resolve => {
+    const onResize = new Promise(resolve => {
       walker.once("resize", () => {
         resolve();
       });

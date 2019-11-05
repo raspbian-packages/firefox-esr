@@ -10,24 +10,24 @@
 // Keep others in (case-insensitive) order:
 #include "gfxUtils.h"
 #include "mozilla/Preferences.h"
-#include "nsContentUtils.h"
 #include "nsIFrame.h"
 #include "nsPresContext.h"
 #include "nsStyleStruct.h"
 
 namespace mozilla {
 
-/* static */ void SVGImageContext::MaybeStoreContextPaint(
-    Maybe<SVGImageContext>& aContext, nsIFrame* aFromFrame,
-    imgIContainer* aImgContainer) {
-  return MaybeStoreContextPaint(aContext, aFromFrame->StyleContext(),
-                                aImgContainer);
+/* static */
+void SVGImageContext::MaybeStoreContextPaint(Maybe<SVGImageContext>& aContext,
+                                             nsIFrame* aFromFrame,
+                                             imgIContainer* aImgContainer) {
+  return MaybeStoreContextPaint(aContext, aFromFrame->Style(), aImgContainer);
 }
 
-/* static */ void SVGImageContext::MaybeStoreContextPaint(
-    Maybe<SVGImageContext>& aContext, nsStyleContext* aFromStyleContext,
-    imgIContainer* aImgContainer) {
-  const nsStyleSVG* style = aFromStyleContext->StyleSVG();
+/* static */
+void SVGImageContext::MaybeStoreContextPaint(Maybe<SVGImageContext>& aContext,
+                                             ComputedStyle* aFromComputedStyle,
+                                             imgIContainer* aImgContainer) {
+  const nsStyleSVG* style = aFromComputedStyle->StyleSVG();
 
   if (!style->ExposesContextProperties()) {
     // Content must have '-moz-context-properties' set to the names of the
@@ -45,21 +45,21 @@ namespace mozilla {
   RefPtr<SVGEmbeddingContextPaint> contextPaint =
       new SVGEmbeddingContextPaint();
 
-  if ((style->mContextPropsBits & NS_STYLE_CONTEXT_PROPERTY_FILL) &&
+  if ((style->mMozContextProperties.bits & StyleContextPropertyBits_FILL) &&
       style->mFill.Type() == eStyleSVGPaintType_Color) {
     haveContextPaint = true;
-    contextPaint->SetFill(style->mFill.GetColor());
+    contextPaint->SetFill(style->mFill.GetColor(aFromComputedStyle));
   }
-  if ((style->mContextPropsBits & NS_STYLE_CONTEXT_PROPERTY_STROKE) &&
+  if ((style->mMozContextProperties.bits & StyleContextPropertyBits_STROKE) &&
       style->mStroke.Type() == eStyleSVGPaintType_Color) {
     haveContextPaint = true;
-    contextPaint->SetStroke(style->mStroke.GetColor());
+    contextPaint->SetStroke(style->mStroke.GetColor(aFromComputedStyle));
   }
-  if (style->mContextPropsBits & NS_STYLE_CONTEXT_PROPERTY_FILL_OPACITY) {
+  if (style->mMozContextProperties.bits & StyleContextPropertyBits_FILL_OPACITY) {
     haveContextPaint = true;
     contextPaint->SetFillOpacity(style->mFillOpacity);
   }
-  if (style->mContextPropsBits & NS_STYLE_CONTEXT_PROPERTY_STROKE_OPACITY) {
+  if (style->mMozContextProperties.bits & StyleContextPropertyBits_STROKE_OPACITY) {
     haveContextPaint = true;
     contextPaint->SetStrokeOpacity(style->mStrokeOpacity);
   }

@@ -17,13 +17,17 @@
     }                                                \
   }
 
-class nsIContent;
+namespace mozilla {
+namespace dom {
+class Element;
+}  // namespace dom
+}  // namespace mozilla
 
 class nsPIBoxObject : public nsIBoxObject {
  public:
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_PIBOXOBJECT_IID)
 
-  virtual nsresult Init(nsIContent* aContent) = 0;
+  virtual nsresult Init(mozilla::dom::Element* aElement) = 0;
 
   // Drop the weak ref to the content node as needed
   virtual void Clear() = 0;

@@ -10,11 +10,33 @@
 namespace mozilla {
 namespace wr {
 
-RenderTextureHost::RenderTextureHost() { MOZ_COUNT_CTOR(RenderTextureHost); }
+void ActivateBindAndTexParameteri(gl::GLContext* aGL, GLenum aActiveTexture,
+                                  GLenum aBindTarget, GLuint aBindTexture,
+                                  wr::ImageRendering aRendering) {
+  aGL->fActiveTexture(aActiveTexture);
+  aGL->fBindTexture(aBindTarget, aBindTexture);
+  aGL->fTexParameteri(aBindTarget, LOCAL_GL_TEXTURE_MIN_FILTER,
+                      aRendering == wr::ImageRendering::Pixelated
+                          ? LOCAL_GL_NEAREST
+                          : LOCAL_GL_LINEAR);
+  aGL->fTexParameteri(aBindTarget, LOCAL_GL_TEXTURE_MAG_FILTER,
+                      aRendering == wr::ImageRendering::Pixelated
+                          ? LOCAL_GL_NEAREST
+                          : LOCAL_GL_LINEAR);
+}
+
+RenderTextureHost::RenderTextureHost()
+    : mCachedRendering(wr::ImageRendering::Auto) {
+  MOZ_COUNT_CTOR(RenderTextureHost);
+}
 
 RenderTextureHost::~RenderTextureHost() {
   MOZ_ASSERT(RenderThread::IsInRenderThread());
   MOZ_COUNT_DTOR(RenderTextureHost);
+}
+
+bool RenderTextureHost::IsFilterUpdateNecessary(wr::ImageRendering aRendering) {
+  return mCachedRendering != aRendering;
 }
 
 }  // namespace wr

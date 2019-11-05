@@ -6,7 +6,7 @@ const CC = Components.Constructor;
 
 const TEST_DOMAIN = "http://example.net/";
 
-const {Sanitizer} = ChromeUtils.import("resource:///modules/Sanitizer.jsm", {});
+const { Sanitizer } = ChromeUtils.import("resource:///modules/Sanitizer.jsm");
 
 function setCookies(aBrowser) {
   ContentTask.spawn(aBrowser, null, function() {
@@ -25,12 +25,7 @@ function cacheDataForContext(loadContextInfo) {
       onCacheEntryVisitCompleted() {
         resolve(cachedURIs);
       },
-      QueryInterface(iid) {
-        if (iid.equals(Ci.nsICacheStorageVisitor))
-          return this;
-
-        throw Cr.NS_ERROR_NO_INTERFACE;
-      }
+      QueryInterface: ChromeUtils.generateQI(["nsICacheStorageVisitor"]),
     };
     // Visiting the disk cache also visits memory storage so we do not
     // need to use Services.cache2.memoryCacheStorage() here.
@@ -41,8 +36,11 @@ function cacheDataForContext(loadContextInfo) {
 
 function checkCookiesSanitized(aBrowser) {
   ContentTask.spawn(aBrowser, null, function() {
-    is(content.document.cookie, "",
-       "Cookies of all origin attributes should be cleared.");
+    is(
+      content.document.cookie,
+      "",
+      "Cookies of all origin attributes should be cleared."
+    );
   });
 }
 
@@ -52,14 +50,25 @@ function checkCacheExists(aShouldExist) {
       Services.loadContextInfo.default,
       Services.loadContextInfo.custom(false, { userContextId: 1 }),
       Services.loadContextInfo.custom(false, { userContextId: 2 }),
-      Services.loadContextInfo.custom(false, { firstPartyDomain: "example.com" }),
-      Services.loadContextInfo.custom(false, { firstPartyDomain: "example.org" }),
+      Services.loadContextInfo.custom(false, {
+        firstPartyDomain: "example.com",
+      }),
+      Services.loadContextInfo.custom(false, {
+        firstPartyDomain: "example.org",
+      }),
     ];
     let i = 0;
     for (let loadContextInfo of loadContextInfos) {
       let cacheURIs = await cacheDataForContext(loadContextInfo);
-      is(cacheURIs.includes(TEST_DOMAIN), aShouldExist, TEST_DOMAIN + " should "
-        + (aShouldExist ? "not " : "") + "be cached for all origin attributes." + i++);
+      is(
+        cacheURIs.includes(TEST_DOMAIN),
+        aShouldExist,
+        TEST_DOMAIN +
+          " should " +
+          (aShouldExist ? "not " : "") +
+          "be cached for all origin attributes." +
+          i++
+      );
     }
   };
 }

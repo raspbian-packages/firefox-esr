@@ -38,7 +38,7 @@ namespace script {
 static nsresult TestingDispatchEvent(nsIScriptElement* aScriptElement,
                                      const nsAString& aEventType);
 
-}  // script namespace
+}  // namespace script
 }  // namespace dom
 }  // namespace mozilla
 

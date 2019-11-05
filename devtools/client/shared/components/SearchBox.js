@@ -6,24 +6,43 @@
 
 "use strict";
 
-const { Component, createFactory } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  createRef,
+  PureComponent,
+} = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
-const KeyShortcuts = require("devtools/client/shared/key-shortcuts");
-const AutocompletePopup = createFactory(require("devtools/client/shared/components/AutoCompletePopup"));
 
-class SearchBox extends Component {
+loader.lazyGetter(this, "AutocompletePopup", function() {
+  return createFactory(
+    require("devtools/client/shared/components/AutoCompletePopup")
+  );
+});
+loader.lazyGetter(this, "MDNLink", function() {
+  return createFactory(require("./MdnLink"));
+});
+
+loader.lazyRequireGetter(
+  this,
+  "KeyShortcuts",
+  "devtools/client/shared/key-shortcuts"
+);
+
+class SearchBox extends PureComponent {
   static get propTypes() {
     return {
+      autocompleteProvider: PropTypes.func,
       delay: PropTypes.number,
       keyShortcut: PropTypes.string,
-      onChange: PropTypes.func,
-      onFocus: PropTypes.func,
+      learnMoreTitle: PropTypes.string,
+      learnMoreUrl: PropTypes.string,
       onBlur: PropTypes.func,
+      onChange: PropTypes.func.isRequired,
+      onFocus: PropTypes.func,
       onKeyDown: PropTypes.func,
-      placeholder: PropTypes.string,
-      type: PropTypes.string,
-      autocompleteProvider: PropTypes.func,
+      placeholder: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
     };
   }
 
@@ -35,10 +54,13 @@ class SearchBox extends Component {
       focused: false,
     };
 
+    this.autocompleteRef = createRef();
+    this.inputRef = createRef();
+
+    this.onBlur = this.onBlur.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onClearButtonClick = this.onClearButtonClick.bind(this);
     this.onFocus = this.onFocus.bind(this);
-    this.onBlur = this.onBlur.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
   }
 
@@ -48,11 +70,11 @@ class SearchBox extends Component {
     }
 
     this.shortcuts = new KeyShortcuts({
-      window
+      window,
     });
     this.shortcuts.on(this.props.keyShortcut, event => {
       event.preventDefault();
-      this.refs.input.focus();
+      this.inputRef.current.focus();
     });
   }
 
@@ -68,10 +90,10 @@ class SearchBox extends Component {
   }
 
   onChange() {
-    if (this.state.value !== this.refs.input.value) {
+    if (this.state.value !== this.inputRef.current.value) {
       this.setState({
         focused: true,
-        value: this.refs.input.value,
+        value: this.inputRef.current.value,
       });
     }
 
@@ -94,7 +116,7 @@ class SearchBox extends Component {
   }
 
   onClearButtonClick() {
-    this.refs.input.value = "";
+    this.setState({ value: "" });
     this.onChange();
   }
 
@@ -119,7 +141,7 @@ class SearchBox extends Component {
       this.props.onKeyDown();
     }
 
-    let { autocomplete } = this.refs;
+    const autocomplete = this.autocompleteRef.current;
     if (!autocomplete || autocomplete.state.list.length <= 0) {
       return;
     }
@@ -156,45 +178,52 @@ class SearchBox extends Component {
   }
 
   render() {
-    let {
-      type = "search",
-      placeholder,
+    const {
       autocompleteProvider,
+      learnMoreTitle,
+      learnMoreUrl,
+      placeholder,
+      type = "search",
     } = this.props;
-    let { value } = this.state;
-    let divClassList = ["devtools-searchbox", "has-clear-btn"];
-    let inputClassList = [`devtools-${type}input`];
-    let showAutocomplete = autocompleteProvider && this.state.focused && value !== "";
+    const { value } = this.state;
+    const showAutocomplete =
+      autocompleteProvider && this.state.focused && value !== "";
+    const showLearnMoreLink = learnMoreUrl && value === "";
 
-    if (value !== "") {
-      inputClassList.push("filled");
-    }
+    const inputClassList = [`devtools-${type}input`];
+
     return dom.div(
-      { className: divClassList.join(" ") },
+      { className: "devtools-searchbox" },
       dom.input({
         className: inputClassList.join(" "),
+        onBlur: this.onBlur,
         onChange: this.onChange,
         onFocus: this.onFocus,
-        onBlur: this.onBlur,
         onKeyDown: this.onKeyDown,
         placeholder,
-        ref: "input",
+        ref: this.inputRef,
         value,
       }),
+      showLearnMoreLink &&
+        MDNLink({
+          title: learnMoreTitle,
+          url: learnMoreUrl,
+        }),
       dom.button({
         className: "devtools-searchinput-clear",
-        hidden: value == "",
-        onClick: this.onClearButtonClick
+        hidden: value === "",
+        onClick: this.onClearButtonClick,
       }),
-      showAutocomplete && AutocompletePopup({
-        autocompleteProvider,
-        filter: value,
-        ref: "autocomplete",
-        onItemSelected: (itemValue) => {
-          this.setState({ value: itemValue });
-          this.onChange();
-        }
-      })
+      showAutocomplete &&
+        AutocompletePopup({
+          autocompleteProvider,
+          filter: value,
+          onItemSelected: itemValue => {
+            this.setState({ value: itemValue });
+            this.onChange();
+          },
+          ref: this.autocompleteRef,
+        })
     );
   }
 }

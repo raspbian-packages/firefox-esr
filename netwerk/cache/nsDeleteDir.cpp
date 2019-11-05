@@ -31,7 +31,7 @@ class nsBlockOnBackgroundThreadEvent : public Runnable {
   }
 };
 
-nsDeleteDir *nsDeleteDir::gInstance = nullptr;
+nsDeleteDir* nsDeleteDir::gInstance = nullptr;
 
 nsDeleteDir::nsDeleteDir()
     : mLock("nsDeleteDir.mLock"),
@@ -69,8 +69,8 @@ nsresult nsDeleteDir::Shutdown(bool finishDeleting) {
       nsCOMPtr<nsITimer> timer = gInstance->mTimers[i - 1];
       gInstance->mTimers.RemoveObjectAt(i - 1);
 
-      nsCOMArray<nsIFile> *arg;
-      timer->GetClosure((reinterpret_cast<void **>(&arg)));
+      nsCOMArray<nsIFile>* arg;
+      timer->GetClosure((reinterpret_cast<void**>(&arg)));
       timer->Cancel();
 
       if (finishDeleting) dirsToRemove.AppendObjects(*arg);
@@ -133,7 +133,7 @@ void nsDeleteDir::DestroyThread() {
   mThread = nullptr;
 }
 
-void nsDeleteDir::TimerCallback(nsITimer *aTimer, void *arg) {
+void nsDeleteDir::TimerCallback(nsITimer* aTimer, void* arg) {
   Telemetry::AutoTimer<Telemetry::NETWORK_DISK_CACHE_DELETEDIR> timer;
   {
     MutexAutoLock lock(gInstance->mLock);
@@ -148,7 +148,7 @@ void nsDeleteDir::TimerCallback(nsITimer *aTimer, void *arg) {
   }
 
   nsAutoPtr<nsCOMArray<nsIFile> > dirList;
-  dirList = static_cast<nsCOMArray<nsIFile> *>(arg);
+  dirList = static_cast<nsCOMArray<nsIFile>*>(arg);
 
   bool shuttingDown = false;
 
@@ -169,7 +169,7 @@ void nsDeleteDir::TimerCallback(nsITimer *aTimer, void *arg) {
   }
 }
 
-nsresult nsDeleteDir::DeleteDir(nsIFile *dirIn, bool moveToTrash,
+nsresult nsDeleteDir::DeleteDir(nsIFile* dirIn, bool moveToTrash,
                                 uint32_t delay) {
   Telemetry::AutoTimer<Telemetry::NETWORK_DISK_CACHE_TRASHRENAME> timer;
 
@@ -237,11 +237,11 @@ nsresult nsDeleteDir::DeleteDir(nsIFile *dirIn, bool moveToTrash,
   return NS_OK;
 }
 
-nsresult nsDeleteDir::GetTrashDir(nsIFile *target, nsCOMPtr<nsIFile> *result) {
+nsresult nsDeleteDir::GetTrashDir(nsIFile* target, nsCOMPtr<nsIFile>* result) {
   nsresult rv;
 #if defined(MOZ_WIDGET_ANDROID)
   // Try to use the app cache folder for cache trash on Android
-  char *cachePath = getenv("CACHE_DIRECTORY");
+  char* cachePath = getenv("CACHE_DIRECTORY");
   if (cachePath) {
     rv = NS_NewNativeLocalFile(nsDependentCString(cachePath), true,
                                getter_AddRefs(*result));
@@ -266,7 +266,7 @@ nsresult nsDeleteDir::GetTrashDir(nsIFile *target, nsCOMPtr<nsIFile> *result) {
   return (*result)->SetNativeLeafName(leaf);
 }
 
-nsresult nsDeleteDir::RemoveOldTrashes(nsIFile *cacheDir) {
+nsresult nsDeleteDir::RemoveOldTrashes(nsIFile* cacheDir) {
   if (!gInstance) return NS_ERROR_NOT_INITIALIZED;
 
   nsresult rv;
@@ -287,21 +287,14 @@ nsresult nsDeleteDir::RemoveOldTrashes(nsIFile *cacheDir) {
 #endif
   if (NS_FAILED(rv)) return rv;
 
-  nsCOMPtr<nsISimpleEnumerator> iter;
+  nsCOMPtr<nsIDirectoryEnumerator> iter;
   rv = parent->GetDirectoryEntries(getter_AddRefs(iter));
   if (NS_FAILED(rv)) return rv;
 
-  bool more;
-  nsCOMPtr<nsISupports> elem;
   nsAutoPtr<nsCOMArray<nsIFile> > dirList;
 
-  while (NS_SUCCEEDED(iter->HasMoreElements(&more)) && more) {
-    rv = iter->GetNext(getter_AddRefs(elem));
-    if (NS_FAILED(rv)) continue;
-
-    nsCOMPtr<nsIFile> file = do_QueryInterface(elem);
-    if (!file) continue;
-
+  nsCOMPtr<nsIFile> file;
+  while (NS_SUCCEEDED(iter->GetNextFile(getter_AddRefs(file))) && file) {
     nsAutoString leafName;
     rv = file->GetLeafName(leafName);
     if (NS_FAILED(rv)) continue;
@@ -323,7 +316,7 @@ nsresult nsDeleteDir::RemoveOldTrashes(nsIFile *cacheDir) {
   return NS_OK;
 }
 
-nsresult nsDeleteDir::PostTimer(void *arg, uint32_t delay) {
+nsresult nsDeleteDir::PostTimer(void* arg, uint32_t delay) {
   nsresult rv;
 
   MutexAutoLock lock(mLock);
@@ -341,7 +334,7 @@ nsresult nsDeleteDir::PostTimer(void *arg, uint32_t delay) {
   return NS_OK;
 }
 
-nsresult nsDeleteDir::RemoveDir(nsIFile *file, bool *stopDeleting) {
+nsresult nsDeleteDir::RemoveDir(nsIFile* file, bool* stopDeleting) {
   nsresult rv;
   bool isLink;
 
@@ -353,25 +346,12 @@ nsresult nsDeleteDir::RemoveDir(nsIFile *file, bool *stopDeleting) {
   if (NS_FAILED(rv)) return rv;
 
   if (isDir) {
-    nsCOMPtr<nsISimpleEnumerator> iter;
+    nsCOMPtr<nsIDirectoryEnumerator> iter;
     rv = file->GetDirectoryEntries(getter_AddRefs(iter));
     if (NS_FAILED(rv)) return rv;
 
-    bool more;
-    nsCOMPtr<nsISupports> elem;
-    while (NS_SUCCEEDED(iter->HasMoreElements(&more)) && more) {
-      rv = iter->GetNext(getter_AddRefs(elem));
-      if (NS_FAILED(rv)) {
-        NS_WARNING("Unexpected failure in nsDeleteDir::RemoveDir");
-        continue;
-      }
-
-      nsCOMPtr<nsIFile> file2 = do_QueryInterface(elem);
-      if (!file2) {
-        NS_WARNING("Unexpected failure in nsDeleteDir::RemoveDir");
-        continue;
-      }
-
+    nsCOMPtr<nsIFile> file2;
+    while (NS_SUCCEEDED(iter->GetNextFile(getter_AddRefs(file2))) && file2) {
       RemoveDir(file2, stopDeleting);
       // No check for errors to remove as much as possible
 

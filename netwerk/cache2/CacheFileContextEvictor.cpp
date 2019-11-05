@@ -16,6 +16,7 @@
 #include "nsIDirectoryEnumerator.h"
 #include "mozilla/Base64.h"
 #include "mozilla/IntegerPrintfMacros.h"
+#include "mozilla/net/MozURL.h"
 
 namespace mozilla {
 namespace net {
@@ -35,7 +36,7 @@ CacheFileContextEvictor::~CacheFileContextEvictor() {
   LOG(("CacheFileContextEvictor::~CacheFileContextEvictor() [this=%p]", this));
 }
 
-nsresult CacheFileContextEvictor::Init(nsIFile *aCacheDirectory) {
+nsresult CacheFileContextEvictor::Init(nsIFile* aCacheDirectory) {
   LOG(("CacheFileContextEvictor::Init()"));
 
   nsresult rv;
@@ -82,7 +83,8 @@ uint32_t CacheFileContextEvictor::ContextsCount() {
 }
 
 nsresult CacheFileContextEvictor::AddContext(
-    nsILoadContextInfo *aLoadContextInfo, bool aPinned) {
+    nsILoadContextInfo* aLoadContextInfo, bool aPinned,
+    const nsAString& aOrigin) {
   LOG(
       ("CacheFileContextEvictor::AddContext() [this=%p, loadContextInfo=%p, "
        "pinned=%d]",
@@ -92,11 +94,12 @@ nsresult CacheFileContextEvictor::AddContext(
 
   MOZ_ASSERT(CacheFileIOManager::IsOnIOThread());
 
-  CacheFileContextEvictorEntry *entry = nullptr;
+  CacheFileContextEvictorEntry* entry = nullptr;
   if (aLoadContextInfo) {
     for (uint32_t i = 0; i < mEntries.Length(); ++i) {
       if (mEntries[i]->mInfo && mEntries[i]->mInfo->Equals(aLoadContextInfo) &&
-          mEntries[i]->mPinned == aPinned) {
+          mEntries[i]->mPinned == aPinned &&
+          mEntries[i]->mOrigin.Equals(aOrigin)) {
         entry = mEntries[i];
         break;
       }
@@ -108,7 +111,8 @@ nsresult CacheFileContextEvictor::AddContext(
     for (uint32_t i = mEntries.Length(); i > 0;) {
       --i;
       if (mEntries[i]->mInfo && mEntries[i]->mPinned == aPinned) {
-        RemoveEvictInfoFromDisk(mEntries[i]->mInfo, mEntries[i]->mPinned);
+        RemoveEvictInfoFromDisk(mEntries[i]->mInfo, mEntries[i]->mPinned,
+                                mEntries[i]->mOrigin);
         mEntries.RemoveElementAt(i);
       }
     }
@@ -118,12 +122,13 @@ nsresult CacheFileContextEvictor::AddContext(
     entry = new CacheFileContextEvictorEntry();
     entry->mInfo = aLoadContextInfo;
     entry->mPinned = aPinned;
+    entry->mOrigin = aOrigin;
     mEntries.AppendElement(entry);
   }
 
   entry->mTimeStamp = PR_Now() / PR_USEC_PER_MSEC;
 
-  PersistEvictionInfoToDisk(aLoadContextInfo, aPinned);
+  PersistEvictionInfoToDisk(aLoadContextInfo, aPinned, aOrigin);
 
   if (mIndexIsUpToDate) {
     // Already existing context could be added again, in this case the iterator
@@ -196,10 +201,10 @@ nsresult CacheFileContextEvictor::CacheIndexStateChanged() {
   return NS_OK;
 }
 
-nsresult CacheFileContextEvictor::WasEvicted(const nsACString &aKey,
-                                             nsIFile *aFile,
-                                             bool *aEvictedAsPinned,
-                                             bool *aEvictedAsNonPinned) {
+nsresult CacheFileContextEvictor::WasEvicted(const nsACString& aKey,
+                                             nsIFile* aFile,
+                                             bool* aEvictedAsPinned,
+                                             bool* aEvictedAsNonPinned) {
   LOG(("CacheFileContextEvictor::WasEvicted() [key=%s]",
        PromiseFlatCString(aKey).get()));
 
@@ -218,7 +223,7 @@ nsresult CacheFileContextEvictor::WasEvicted(const nsACString &aKey,
   }
 
   for (uint32_t i = 0; i < mEntries.Length(); ++i) {
-    CacheFileContextEvictorEntry *entry = mEntries[i];
+    CacheFileContextEvictorEntry* entry = mEntries[i];
 
     if (entry->mInfo && !info->Equals(entry->mInfo)) {
       continue;
@@ -255,7 +260,8 @@ nsresult CacheFileContextEvictor::WasEvicted(const nsACString &aKey,
 }
 
 nsresult CacheFileContextEvictor::PersistEvictionInfoToDisk(
-    nsILoadContextInfo *aLoadContextInfo, bool aPinned) {
+    nsILoadContextInfo* aLoadContextInfo, bool aPinned,
+    const nsAString& aOrigin) {
   LOG(
       ("CacheFileContextEvictor::PersistEvictionInfoToDisk() [this=%p, "
        "loadContextInfo=%p]",
@@ -266,14 +272,14 @@ nsresult CacheFileContextEvictor::PersistEvictionInfoToDisk(
   MOZ_ASSERT(CacheFileIOManager::IsOnIOThread());
 
   nsCOMPtr<nsIFile> file;
-  rv = GetContextFile(aLoadContextInfo, aPinned, getter_AddRefs(file));
+  rv = GetContextFile(aLoadContextInfo, aPinned, aOrigin, getter_AddRefs(file));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
   nsCString path = file->HumanReadablePath();
 
-  PRFileDesc *fd;
+  PRFileDesc* fd;
   rv =
       file->OpenNSPRFileDesc(PR_RDWR | PR_CREATE_FILE | PR_TRUNCATE, 0600, &fd);
   if (NS_WARN_IF(NS_FAILED(rv))) {
@@ -295,7 +301,8 @@ nsresult CacheFileContextEvictor::PersistEvictionInfoToDisk(
 }
 
 nsresult CacheFileContextEvictor::RemoveEvictInfoFromDisk(
-    nsILoadContextInfo *aLoadContextInfo, bool aPinned) {
+    nsILoadContextInfo* aLoadContextInfo, bool aPinned,
+    const nsAString& aOrigin) {
   LOG(
       ("CacheFileContextEvictor::RemoveEvictInfoFromDisk() [this=%p, "
        "loadContextInfo=%p]",
@@ -306,7 +313,7 @@ nsresult CacheFileContextEvictor::RemoveEvictInfoFromDisk(
   MOZ_ASSERT(CacheFileIOManager::IsOnIOThread());
 
   nsCOMPtr<nsIFile> file;
-  rv = GetContextFile(aLoadContextInfo, aPinned, getter_AddRefs(file));
+  rv = GetContextFile(aLoadContextInfo, aPinned, aOrigin, getter_AddRefs(file));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -339,13 +346,8 @@ nsresult CacheFileContextEvictor::LoadEvictInfoFromDisk() {
 
   sDiskAlreadySearched = true;
 
-  nsCOMPtr<nsISimpleEnumerator> enumerator;
-  rv = mCacheDirectory->GetDirectoryEntries(getter_AddRefs(enumerator));
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
-  nsCOMPtr<nsIDirectoryEnumerator> dirEnum = do_QueryInterface(enumerator, &rv);
+  nsCOMPtr<nsIDirectoryEnumerator> dirEnum;
+  rv = mCacheDirectory->GetDirectoryEntries(getter_AddRefs(dirEnum));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -400,6 +402,16 @@ nsresult CacheFileContextEvictor::LoadEvictInfoFromDisk() {
       decoded = Substring(decoded, 1);
     }
 
+    // Let's see if we have an origin.
+    nsAutoCString origin;
+    if (decoded.Contains('\t')) {
+      auto split = decoded.Split('\t');
+      MOZ_ASSERT(decoded.CountChar('\t') == 2);
+
+      origin = split.Get(0);
+      decoded = split.Get(1);
+    }
+
     nsCOMPtr<nsILoadContextInfo> info;
     if (!NS_LITERAL_CSTRING("*").Equals(decoded)) {
       // "*" is indication of 'delete all', info left null will pass
@@ -421,9 +433,10 @@ nsresult CacheFileContextEvictor::LoadEvictInfoFromDisk() {
       continue;
     }
 
-    CacheFileContextEvictorEntry *entry = new CacheFileContextEvictorEntry();
+    CacheFileContextEvictorEntry* entry = new CacheFileContextEvictorEntry();
     entry->mInfo = info;
     entry->mPinned = pinned;
+    CopyUTF8toUTF16(origin, entry->mOrigin);
     entry->mTimeStamp = lastModifiedTime;
     mEntries.AppendElement(entry);
   }
@@ -432,7 +445,8 @@ nsresult CacheFileContextEvictor::LoadEvictInfoFromDisk() {
 }
 
 nsresult CacheFileContextEvictor::GetContextFile(
-    nsILoadContextInfo *aLoadContextInfo, bool aPinned, nsIFile **_retval) {
+    nsILoadContextInfo* aLoadContextInfo, bool aPinned,
+    const nsAString& aOrigin, nsIFile** _retval) {
   nsresult rv;
 
   nsAutoCString leafName;
@@ -448,6 +462,10 @@ nsresult CacheFileContextEvictor::GetContextFile(
     CacheFileUtils::AppendKeyPrefix(aLoadContextInfo, keyPrefix);
   } else {
     keyPrefix.Append('*');
+  }
+  if (!aOrigin.IsEmpty()) {
+    keyPrefix.Append('\t');
+    keyPrefix.Append(NS_ConvertUTF16toUTF8(aOrigin));
   }
 
   nsAutoCString data64;
@@ -516,7 +534,7 @@ void CacheFileContextEvictor::StartEvicting() {
   MOZ_ASSERT(CacheFileIOManager::IsOnIOThread());
 
   if (mEvicting) {
-    LOG(("CacheFileContextEvictor::StartEvicting() - already evicintg."));
+    LOG(("CacheFileContextEvictor::StartEvicting() - already evicting."));
     return;
   }
 
@@ -595,7 +613,8 @@ nsresult CacheFileContextEvictor::EvictEntries() {
           ("CacheFileContextEvictor::EvictEntries() - No more entries left in "
            "iterator. [iterator=%p, info=%p]",
            mEntries[0]->mIterator.get(), mEntries[0]->mInfo.get()));
-      RemoveEvictInfoFromDisk(mEntries[0]->mInfo, mEntries[0]->mPinned);
+      RemoveEvictInfoFromDisk(mEntries[0]->mInfo, mEntries[0]->mPinned,
+                              mEntries[0]->mOrigin);
       mEntries.RemoveElementAt(0);
       continue;
     } else if (NS_FAILED(rv)) {
@@ -629,7 +648,7 @@ nsresult CacheFileContextEvictor::EvictEntries() {
 
     CacheIndex::EntryStatus status;
     bool pinned = false;
-    auto callback = [&pinned](const CacheIndexEntry *aEntry) {
+    auto callback = [&pinned](const CacheIndexEntry* aEntry) {
       pinned = aEntry->IsPinned();
     };
     rv = CacheIndex::HasEntry(hash, &status, callback);
@@ -644,6 +663,51 @@ nsresult CacheFileContextEvictor::EvictEntries() {
            "doesn't match [evicting pinned=%d, entry pinned=%d]",
            mEntries[0]->mPinned, pinned));
       continue;
+    }
+
+    if (!mEntries[0]->mOrigin.IsEmpty()) {
+      nsCOMPtr<nsIFile> file;
+      CacheFileIOManager::gInstance->GetFile(&hash, getter_AddRefs(file));
+
+      // Read metadata from the file synchronously
+      RefPtr<CacheFileMetadata> metadata = new CacheFileMetadata();
+      rv = metadata->SyncReadMetadata(file);
+      if (NS_WARN_IF(NS_FAILED(rv))) {
+        continue;
+      }
+
+      // Now get the context + enhance id + URL from the key.
+      nsAutoCString key;
+      metadata->GetKey(key);
+
+      nsAutoCString uriSpec;
+
+      RefPtr<nsILoadContextInfo> info =
+          CacheFileUtils::ParseKey(key, nullptr, &uriSpec);
+      MOZ_ASSERT(info);
+      if (!info) {
+        continue;
+      }
+
+      RefPtr<MozURL> url;
+      rv = MozURL::Init(getter_AddRefs(url), uriSpec);
+      if (NS_FAILED(rv)) {
+        LOG(
+            ("CacheFileContextEvictor::EvictEntries() - Skipping entry since "
+             "MozURL "
+             "fails in the parsing of the uriSpec"));
+        continue;
+      }
+
+      nsAutoCString urlOrigin;
+      url->Origin(urlOrigin);
+      if (urlOrigin.Equals(NS_ConvertUTF16toUTF8(mEntries[0]->mOrigin))) {
+        LOG(
+            ("CacheFileContextEvictor::EvictEntries() - Skipping entry since "
+             "origin "
+             "doesn't match"));
+        continue;
+      }
     }
 
     nsAutoCString leafName;
@@ -678,7 +742,7 @@ nsresult CacheFileContextEvictor::EvictEntries() {
     CacheIndex::RemoveEntry(&hash);
   }
 
-  NS_NOTREACHED("We should never get here");
+  MOZ_ASSERT_UNREACHABLE("We should never get here");
   return NS_OK;
 }
 

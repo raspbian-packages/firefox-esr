@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -137,8 +137,8 @@ GLuint GLReadTexImageHelper::TextureImageProgramFor(GLenum aTextureTarget,
 bool GLReadTexImageHelper::DidGLErrorOccur(const char* str) {
   GLenum error = mGL->fGetError();
   if (error != LOCAL_GL_NO_ERROR) {
-    printf_stderr("GL ERROR: %s (0x%04x) %s\n", mGL->GLErrorToString(error),
-                  error, str);
+    printf_stderr("GL ERROR: %s %s\n",
+                  GLContext::GLErrorToString(error).c_str(), str);
     return true;
   }
 
@@ -328,7 +328,9 @@ void ReadPixelsIntoDataSurface(GLContext* gl, DataSourceSurface* dest) {
         readFormatGFX = SurfaceFormat::R5G6B5_UINT16;
         break;
       }
-      default: { MOZ_CRASH("GFX: Bad read format, read format."); }
+      default: {
+        MOZ_CRASH("GFX: Bad read format, read format.");
+      }
     }
 
     switch (readType) {
@@ -347,7 +349,9 @@ void ReadPixelsIntoDataSurface(GLContext* gl, DataSourceSurface* dest) {
         readAlignment = 2;
         break;
       }
-      default: { MOZ_CRASH("GFX: Bad read type, read type."); }
+      default: {
+        MOZ_CRASH("GFX: Bad read type, read type.");
+      }
     }
 
     int32_t stride = dest->GetSize().width * BytesPerPixel(readFormatGFX);

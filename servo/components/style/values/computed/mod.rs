@@ -1,86 +1,95 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Computed values.
 
-use Atom;
-#[cfg(feature = "servo")]
-use Prefix;
-use context::QuirksMode;
-use euclid::Size2D;
-use font_metrics::{FontMetricsProvider, get_metrics_provider_for_product};
-use media_queries::Device;
+use self::transform::DirectionVector;
+use super::animated::ToAnimatedValue;
+use super::generics::grid::GridTemplateComponent as GenericGridTemplateComponent;
+use super::generics::grid::{GridLine as GenericGridLine, TrackBreadth as GenericTrackBreadth};
+use super::generics::grid::{TrackList as GenericTrackList, TrackSize as GenericTrackSize};
+use super::generics::transform::IsParallelTo;
+use super::generics::{self, GreaterThanOrEqualToOne, NonNegative};
+use super::specified;
+use super::{CSSFloat, CSSInteger};
+use crate::context::QuirksMode;
+use crate::font_metrics::{get_metrics_provider_for_product, FontMetricsProvider};
+use crate::media_queries::Device;
 #[cfg(feature = "gecko")]
-use properties;
-use properties::{ComputedValues, LonghandId, StyleBuilder};
-use rule_cache::RuleCacheConditions;
+use crate::properties;
+use crate::properties::{ComputedValues, LonghandId, StyleBuilder};
+use crate::rule_cache::RuleCacheConditions;
+use crate::Atom;
+#[cfg(feature = "servo")]
+use crate::Prefix;
+use euclid::Size2D;
 use std::cell::RefCell;
 use std::cmp;
 use std::f32;
-use std::fmt::{self, Write};
-use style_traits::{CssWriter, ToCss};
-use style_traits::cursor::CursorKind;
-use super::{CSSFloat, CSSInteger};
-use super::animated::ToAnimatedValue;
-use super::generics::{GreaterThanOrEqualToOne, NonNegative};
-use super::generics::grid::{GridLine as GenericGridLine, TrackBreadth as GenericTrackBreadth};
-use super::generics::grid::{TrackSize as GenericTrackSize, TrackList as GenericTrackList};
-use super::generics::grid::GridTemplateComponent as GenericGridTemplateComponent;
-use super::specified;
 
-pub use app_units::Au;
-pub use properties::animated_properties::TransitionProperty;
 #[cfg(feature = "gecko")]
-pub use self::align::{AlignItems, AlignContent, JustifyContent, SelfAlignment, JustifyItems};
+pub use self::align::{AlignContent, AlignItems, JustifyContent, JustifyItems, SelfAlignment};
 #[cfg(feature = "gecko")]
 pub use self::align::{AlignSelf, JustifySelf};
 pub use self::angle::Angle;
-pub use self::background::{BackgroundSize, BackgroundRepeat};
-pub use self::border::{BorderImageRepeat, BorderImageSlice, BorderImageWidth, BorderImageSideWidth};
-pub use self::border::{BorderRadius, BorderCornerRadius, BorderSpacing};
-pub use self::font::{FontSize, FontSizeAdjust, FontSynthesis, FontWeight, FontVariantAlternates};
-pub use self::font::{FontFamily, FontLanguageOverride, FontVariationSettings, FontVariantEastAsian};
-pub use self::font::{FontVariantLigatures, FontVariantNumeric, FontFeatureSettings};
-pub use self::font::{MozScriptLevel, MozScriptMinSize, MozScriptSizeMultiplier, XTextZoom, XLang};
-pub use self::box_::{AnimationIterationCount, AnimationName, Contain, Display};
-pub use self::box_::{OverflowClipBox, OverscrollBehavior, Perspective};
-pub use self::box_::{ScrollSnapType, TouchAction, VerticalAlign, WillChange};
-pub use self::color::{Color, ColorPropertyValue, RGBAColor};
+pub use self::background::{BackgroundRepeat, BackgroundSize};
+pub use self::basic_shape::FillRule;
+pub use self::border::{BorderCornerRadius, BorderRadius, BorderSpacing};
+pub use self::border::{BorderImageRepeat, BorderImageSideWidth};
+pub use self::border::{BorderImageSlice, BorderImageWidth};
+pub use self::box_::{AnimationIterationCount, AnimationName, Contain};
+pub use self::box_::{Appearance, BreakBetween, BreakWithin, Clear, Float};
+pub use self::box_::{Display, Overflow, OverflowAnchor, TransitionProperty};
+pub use self::box_::{OverflowClipBox, OverscrollBehavior, Perspective, Resize};
+pub use self::box_::{ScrollSnapAlign, ScrollSnapAxis, ScrollSnapStrictness, ScrollSnapType};
+pub use self::box_::{TouchAction, VerticalAlign, WillChange};
+pub use self::color::{Color, ColorOrAuto, ColorPropertyValue};
 pub use self::column::ColumnCount;
-pub use self::counters::{Content, ContentItem, CounterIncrement, CounterReset};
+pub use self::counters::{Content, ContentItem, CounterIncrement, CounterSetOrReset};
+pub use self::easing::TimingFunction;
 pub use self::effects::{BoxShadow, Filter, SimpleShadow};
 pub use self::flex::FlexBasis;
-pub use self::image::{Gradient, GradientItem, Image, ImageLayer, LineDirection, MozImageRect};
-pub use self::inherited_box::{Orientation, ImageOrientation};
+pub use self::font::{FontFamily, FontLanguageOverride, FontStyle};
+pub use self::font::{FontFeatureSettings, FontVariantLigatures, FontVariantNumeric};
+pub use self::font::{FontSize, FontSizeAdjust, FontStretch, FontSynthesis};
+pub use self::font::{FontVariantAlternates, FontWeight};
+pub use self::font::{FontVariantEastAsian, FontVariationSettings};
+pub use self::font::{MozScriptLevel, MozScriptMinSize, MozScriptSizeMultiplier, XLang, XTextZoom};
 #[cfg(feature = "gecko")]
 pub use self::gecko::ScrollSnapPoint;
-pub use self::rect::LengthOrNumberRect;
-pub use super::{Auto, Either, None_};
-pub use super::specified::{BorderStyle, TextDecorationLine};
-pub use self::length::{CalcLengthOrPercentage, Length, LengthOrNumber, LengthOrPercentage};
-pub use self::length::{LengthOrPercentageOrAuto, LengthOrPercentageOrNone, MaxLength, MozLength};
-pub use self::length::{CSSPixelLength, ExtremumLength, NonNegativeLength, NonNegativeLengthOrPercentage};
-pub use self::list::{ListStyleImage, Quotes};
+pub use self::image::{Gradient, GradientItem, Image, ImageLayer, LineDirection, MozImageRect};
+pub use self::length::{CSSPixelLength, ExtremumLength, NonNegativeLength};
+pub use self::length::{Length, LengthOrNumber, LengthPercentage, NonNegativeLengthOrNumber};
+pub use self::length::{LengthOrAuto, LengthPercentageOrAuto, MaxSize, Size};
+pub use self::length::{NonNegativeLengthPercentage, NonNegativeLengthPercentageOrAuto};
 #[cfg(feature = "gecko")]
 pub use self::list::ListStyleType;
+pub use self::list::MozListReversed;
+pub use self::list::{QuotePair, Quotes};
+pub use self::motion::OffsetPath;
 pub use self::outline::OutlineStyle;
-pub use self::percentage::Percentage;
-pub use self::pointing::{CaretColor, Cursor};
-#[cfg(feature = "gecko")]
-pub use self::pointing::CursorImage;
+pub use self::percentage::{NonNegativePercentage, Percentage};
 pub use self::position::{GridAutoFlow, GridTemplateAreas, Position, ZIndex};
+pub use self::rect::NonNegativeLengthOrNumberRect;
+pub use self::resolution::Resolution;
+pub use self::svg::MozContextProperties;
 pub use self::svg::{SVGLength, SVGOpacity, SVGPaint, SVGPaintKind};
 pub use self::svg::{SVGPaintOrder, SVGStrokeDashArray, SVGWidth};
-pub use self::svg::MozContextProperties;
 pub use self::table::XSpan;
-pub use self::text::{InitialLetter, LetterSpacing, LineHeight, MozTabSize};
-pub use self::text::{TextAlign, TextEmphasisStyle, TextOverflow, WordSpacing};
+pub use self::text::{InitialLetter, LetterSpacing, LineHeight};
+pub use self::text::{OverflowWrap, TextOverflow, WordBreak, WordSpacing};
+pub use self::text::{TextAlign, TextEmphasisPosition, TextEmphasisStyle};
 pub use self::time::Time;
-pub use self::transform::{Rotate, Scale, TimingFunction, Transform, TransformOperation};
+pub use self::transform::{Rotate, Scale, Transform, TransformOperation};
 pub use self::transform::{TransformOrigin, TransformStyle, Translate};
-pub use self::ui::MozForceBrokenImageIcon;
-pub use self::url::{ComputedUrl, ComputedImageUrl};
+#[cfg(feature = "gecko")]
+pub use self::ui::CursorImage;
+pub use self::ui::{Cursor, MozForceBrokenImageIcon, UserSelect};
+pub use super::specified::TextTransform;
+pub use super::specified::{BorderStyle, TextDecorationLine};
+pub use super::{Auto, Either, None_};
+pub use app_units::Au;
 
 #[cfg(feature = "gecko")]
 pub mod align;
@@ -93,34 +102,28 @@ pub mod box_;
 pub mod color;
 pub mod column;
 pub mod counters;
+pub mod easing;
 pub mod effects;
 pub mod flex;
 pub mod font;
-pub mod image;
-pub mod inherited_box;
 #[cfg(feature = "gecko")]
 pub mod gecko;
+pub mod image;
 pub mod length;
 pub mod list;
+pub mod motion;
 pub mod outline;
 pub mod percentage;
-pub mod pointing;
 pub mod position;
 pub mod rect;
+pub mod resolution;
 pub mod svg;
 pub mod table;
 pub mod text;
 pub mod time;
 pub mod transform;
 pub mod ui;
-
-/// Common handling for the computed value CSS url() values.
-pub mod url {
-#[cfg(feature = "servo")]
-pub use ::servo::url::{ComputedUrl, ComputedImageUrl};
-#[cfg(feature = "gecko")]
-pub use ::gecko::url::{ComputedUrl, ComputedImageUrl};
-}
+pub mod url;
 
 /// A `Context` is all the data a specified value could ever need to compute
 /// itself and be transformed to a computed value.
@@ -178,13 +181,9 @@ impl<'a> Context<'a> {
     /// Creates a suitable context for media query evaluation, in which
     /// font-relative units compute against the system_font, and executes `f`
     /// with it.
-    pub fn for_media_query_evaluation<F, R>(
-        device: &Device,
-        quirks_mode: QuirksMode,
-        f: F,
-    ) -> R
+    pub fn for_media_query_evaluation<F, R>(device: &Device, quirks_mode: QuirksMode, f: F) -> R
     where
-        F: FnOnce(&Context) -> R
+        F: FnOnce(&Context) -> R,
     {
         let mut conditions = RuleCacheConditions::default();
         let provider = get_metrics_provider_for_product();
@@ -216,7 +215,9 @@ impl<'a> Context<'a> {
 
     /// The current viewport size, used to resolve viewport units.
     pub fn viewport_size_for_viewport_unit_resolution(&self) -> Size2D<Au> {
-        self.builder.device.au_viewport_size_for_viewport_unit_resolution()
+        self.builder
+            .device
+            .au_viewport_size_for_viewport_unit_resolution()
     }
 
     /// The default computed style we're getting our reset style from.
@@ -266,7 +267,9 @@ impl<'a, 'cx, 'cx_a: 'cx, S: ToComputedValue + 'a> ComputedVecIter<'a, 'cx, 'cx_
     }
 }
 
-impl<'a, 'cx, 'cx_a: 'cx, S: ToComputedValue + 'a> ExactSizeIterator for ComputedVecIter<'a, 'cx, 'cx_a, S> {
+impl<'a, 'cx, 'cx_a: 'cx, S: ToComputedValue + 'a> ExactSizeIterator
+    for ComputedVecIter<'a, 'cx, 'cx_a, S>
+{
     fn len(&self) -> usize {
         self.values.len()
     }
@@ -315,7 +318,9 @@ pub trait ToComputedValue {
 }
 
 impl<A, B> ToComputedValue for (A, B)
-    where A: ToComputedValue, B: ToComputedValue,
+where
+    A: ToComputedValue,
+    B: ToComputedValue,
 {
     type ComputedValue = (
         <A as ToComputedValue>::ComputedValue,
@@ -324,17 +329,24 @@ impl<A, B> ToComputedValue for (A, B)
 
     #[inline]
     fn to_computed_value(&self, context: &Context) -> Self::ComputedValue {
-        (self.0.to_computed_value(context), self.1.to_computed_value(context))
+        (
+            self.0.to_computed_value(context),
+            self.1.to_computed_value(context),
+        )
     }
 
     #[inline]
     fn from_computed_value(computed: &Self::ComputedValue) -> Self {
-        (A::from_computed_value(&computed.0), B::from_computed_value(&computed.1))
+        (
+            A::from_computed_value(&computed.0),
+            B::from_computed_value(&computed.1),
+        )
     }
 }
 
 impl<T> ToComputedValue for Option<T>
-    where T: ToComputedValue
+where
+    T: ToComputedValue,
 {
     type ComputedValue = Option<<T as ToComputedValue>::ComputedValue>;
 
@@ -350,7 +362,8 @@ impl<T> ToComputedValue for Option<T>
 }
 
 impl<T> ToComputedValue for Size2D<T>
-    where T: ToComputedValue
+where
+    T: ToComputedValue,
 {
     type ComputedValue = Size2D<<T as ToComputedValue>::ComputedValue>;
 
@@ -372,13 +385,16 @@ impl<T> ToComputedValue for Size2D<T>
 }
 
 impl<T> ToComputedValue for Vec<T>
-    where T: ToComputedValue
+where
+    T: ToComputedValue,
 {
     type ComputedValue = Vec<<T as ToComputedValue>::ComputedValue>;
 
     #[inline]
     fn to_computed_value(&self, context: &Context) -> Self::ComputedValue {
-        self.iter().map(|item| item.to_computed_value(context)).collect()
+        self.iter()
+            .map(|item| item.to_computed_value(context))
+            .collect()
     }
 
     #[inline]
@@ -388,7 +404,8 @@ impl<T> ToComputedValue for Vec<T>
 }
 
 impl<T> ToComputedValue for Box<T>
-    where T: ToComputedValue
+where
+    T: ToComputedValue,
 {
     type ComputedValue = Box<<T as ToComputedValue>::ComputedValue>;
 
@@ -404,18 +421,48 @@ impl<T> ToComputedValue for Box<T>
 }
 
 impl<T> ToComputedValue for Box<[T]>
-    where T: ToComputedValue
+where
+    T: ToComputedValue,
 {
     type ComputedValue = Box<[<T as ToComputedValue>::ComputedValue]>;
 
     #[inline]
     fn to_computed_value(&self, context: &Context) -> Self::ComputedValue {
-        self.iter().map(|item| item.to_computed_value(context)).collect::<Vec<_>>().into_boxed_slice()
+        self.iter()
+            .map(|item| item.to_computed_value(context))
+            .collect::<Vec<_>>()
+            .into_boxed_slice()
     }
 
     #[inline]
     fn from_computed_value(computed: &Self::ComputedValue) -> Self {
-        computed.iter().map(T::from_computed_value).collect::<Vec<_>>().into_boxed_slice()
+        computed
+            .iter()
+            .map(T::from_computed_value)
+            .collect::<Vec<_>>()
+            .into_boxed_slice()
+    }
+}
+
+impl<T> ToComputedValue for crate::OwnedSlice<T>
+where
+    T: ToComputedValue,
+{
+    type ComputedValue = crate::OwnedSlice<<T as ToComputedValue>::ComputedValue>;
+
+    #[inline]
+    fn to_computed_value(&self, context: &Context) -> Self::ComputedValue {
+        self.iter()
+            .map(|item| item.to_computed_value(context))
+            .collect()
+    }
+
+    #[inline]
+    fn from_computed_value(computed: &Self::ComputedValue) -> Self {
+        computed
+            .iter()
+            .map(T::from_computed_value)
+            .collect()
     }
 }
 
@@ -427,7 +474,6 @@ trivial_to_computed_value!(u8);
 trivial_to_computed_value!(u16);
 trivial_to_computed_value!(u32);
 trivial_to_computed_value!(Atom);
-trivial_to_computed_value!(CursorKind);
 #[cfg(feature = "servo")]
 trivial_to_computed_value!(Prefix);
 trivial_to_computed_value!(String);
@@ -435,6 +481,19 @@ trivial_to_computed_value!(Box<str>);
 
 /// A `<number>` value.
 pub type Number = CSSFloat;
+
+impl IsParallelTo for (Number, Number, Number) {
+    fn is_parallel_to(&self, vector: &DirectionVector) -> bool {
+        use euclid::approxeq::ApproxEq;
+        // If a and b is parallel, the angle between them is 0deg, so
+        // a x b = |a|*|b|*sin(0)*n = 0 * n, |a x b| == 0.
+        let self_vector = DirectionVector::new(self.0, self.1, self.2);
+        self_vector
+            .cross(*vector)
+            .square_length()
+            .approx_eq(&0.0f32)
+    }
+}
 
 /// A wrapper of Number, but the value >= 0.
 pub type NonNegativeNumber = NonNegative<CSSFloat>;
@@ -499,10 +558,24 @@ impl From<GreaterThanOrEqualToOneNumber> for CSSFloat {
 }
 
 #[allow(missing_docs)]
-#[derive(Clone, ComputeSquaredDistance, Copy, Debug, MallocSizeOf, PartialEq, ToCss)]
+#[derive(
+    Clone, ComputeSquaredDistance, Copy, Debug, MallocSizeOf, PartialEq, ToCss, ToResolvedValue,
+)]
+#[repr(C, u8)]
 pub enum NumberOrPercentage {
     Percentage(Percentage),
     Number(Number),
+}
+
+impl NumberOrPercentage {
+    fn clamp_to_non_negative(self) -> Self {
+        match self {
+            NumberOrPercentage::Percentage(p) => {
+                NumberOrPercentage::Percentage(p.clamp_to_non_negative())
+            },
+            NumberOrPercentage::Number(n) => NumberOrPercentage::Number(n.max(0.)),
+        }
+    }
 }
 
 impl ToComputedValue for specified::NumberOrPercentage {
@@ -511,20 +584,51 @@ impl ToComputedValue for specified::NumberOrPercentage {
     #[inline]
     fn to_computed_value(&self, context: &Context) -> NumberOrPercentage {
         match *self {
-            specified::NumberOrPercentage::Percentage(percentage) =>
-                NumberOrPercentage::Percentage(percentage.to_computed_value(context)),
-            specified::NumberOrPercentage::Number(number) =>
-                NumberOrPercentage::Number(number.to_computed_value(context)),
+            specified::NumberOrPercentage::Percentage(percentage) => {
+                NumberOrPercentage::Percentage(percentage.to_computed_value(context))
+            },
+            specified::NumberOrPercentage::Number(number) => {
+                NumberOrPercentage::Number(number.to_computed_value(context))
+            },
         }
     }
     #[inline]
     fn from_computed_value(computed: &NumberOrPercentage) -> Self {
         match *computed {
-            NumberOrPercentage::Percentage(percentage) =>
-                specified::NumberOrPercentage::Percentage(ToComputedValue::from_computed_value(&percentage)),
-            NumberOrPercentage::Number(number) =>
-                specified::NumberOrPercentage::Number(ToComputedValue::from_computed_value(&number)),
+            NumberOrPercentage::Percentage(percentage) => {
+                specified::NumberOrPercentage::Percentage(ToComputedValue::from_computed_value(
+                    &percentage,
+                ))
+            },
+            NumberOrPercentage::Number(number) => {
+                specified::NumberOrPercentage::Number(ToComputedValue::from_computed_value(&number))
+            },
         }
+    }
+}
+
+/// A non-negative <number-percentage>.
+pub type NonNegativeNumberOrPercentage = NonNegative<NumberOrPercentage>;
+
+impl NonNegativeNumberOrPercentage {
+    /// Returns the `100%` value.
+    #[inline]
+    pub fn hundred_percent() -> Self {
+        NonNegative(NumberOrPercentage::Percentage(Percentage::hundred()))
+    }
+}
+
+impl ToAnimatedValue for NonNegativeNumberOrPercentage {
+    type AnimatedValue = NumberOrPercentage;
+
+    #[inline]
+    fn to_animated_value(self) -> Self::AnimatedValue {
+        self.0
+    }
+
+    #[inline]
+    fn from_animated_value(animated: Self::AnimatedValue) -> Self {
+        NonNegative(animated.clamp_to_non_negative())
     }
 }
 
@@ -558,71 +662,30 @@ impl From<CSSInteger> for PositiveInteger {
     }
 }
 
-#[allow(missing_docs)]
-#[cfg_attr(feature = "servo", derive(MallocSizeOf))]
-#[derive(Clone, ComputeSquaredDistance, Copy, Debug, PartialEq)]
-/// A computed cliprect for clip and image-region
-pub struct ClipRect {
-    pub top: Option<Length>,
-    pub right: Option<Length>,
-    pub bottom: Option<Length>,
-    pub left: Option<Length>,
-}
+/// A computed positive `<integer>` value or `none`.
+pub type PositiveIntegerOrNone = Either<PositiveInteger, None_>;
 
-impl ToCss for ClipRect {
-    fn to_css<W>(&self, dest: &mut CssWriter<W>) -> fmt::Result
-    where
-        W: Write,
-    {
-        dest.write_str("rect(")?;
-        if let Some(top) = self.top {
-            top.to_css(dest)?;
-            dest.write_str(", ")?;
-        } else {
-            dest.write_str("auto, ")?;
-        }
-
-        if let Some(right) = self.right {
-            right.to_css(dest)?;
-            dest.write_str(", ")?;
-        } else {
-            dest.write_str("auto, ")?;
-        }
-
-        if let Some(bottom) = self.bottom {
-            bottom.to_css(dest)?;
-            dest.write_str(", ")?;
-        } else {
-            dest.write_str("auto, ")?;
-        }
-
-        if let Some(left) = self.left {
-            left.to_css(dest)?;
-        } else {
-            dest.write_str("auto")?;
-        }
-        dest.write_str(")")
-    }
-}
+/// rect(...)
+pub type ClipRect = generics::ClipRect<LengthOrAuto>;
 
 /// rect(...) | auto
 pub type ClipRectOrAuto = Either<ClipRect, Auto>;
 
 /// The computed value of a grid `<track-breadth>`
-pub type TrackBreadth = GenericTrackBreadth<LengthOrPercentage>;
+pub type TrackBreadth = GenericTrackBreadth<LengthPercentage>;
 
 /// The computed value of a grid `<track-size>`
-pub type TrackSize = GenericTrackSize<LengthOrPercentage>;
+pub type TrackSize = GenericTrackSize<LengthPercentage>;
 
 /// The computed value of a grid `<track-list>`
 /// (could also be `<auto-track-list>` or `<explicit-track-list>`)
-pub type TrackList = GenericTrackList<LengthOrPercentage, Integer>;
+pub type TrackList = GenericTrackList<LengthPercentage, Integer>;
 
 /// The computed value of a `<grid-line>`.
 pub type GridLine = GenericGridLine<Integer>;
 
 /// `<grid-template-rows> | <grid-template-columns>`
-pub type GridTemplateComponent = GenericGridTemplateComponent<LengthOrPercentage, Integer>;
+pub type GridTemplateComponent = GenericGridTemplateComponent<LengthPercentage, Integer>;
 
 impl ClipRectOrAuto {
     /// Return an auto (default for clip-rect and image-region) value
@@ -634,13 +697,7 @@ impl ClipRectOrAuto {
     pub fn is_auto(&self) -> bool {
         match *self {
             Either::Second(_) => true,
-            _ => false
+            _ => false,
         }
     }
 }
-
-/// <url> | <none>
-pub type UrlOrNone = Either<ComputedUrl, None_>;
-
-/// <url> | <none> for image
-pub type ImageUrlOrNone = Either<ComputedImageUrl, None_>;

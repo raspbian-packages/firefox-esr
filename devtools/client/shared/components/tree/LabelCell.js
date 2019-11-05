@@ -6,7 +6,7 @@
 "use strict";
 
 // Make this available to both AMD and CJS environments
-define(function (require, exports, module) {
+define(function(require, exports, module) {
   const { Component } = require("devtools/client/shared/vendor/react");
   const dom = require("devtools/client/shared/vendor/react-dom-factories");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
@@ -20,22 +20,16 @@ define(function (require, exports, module) {
     static get propTypes() {
       return {
         id: PropTypes.string.isRequired,
-        member: PropTypes.object.isRequired
+        member: PropTypes.object.isRequired,
       };
     }
 
     render() {
-      let id = this.props.id;
-      let member = this.props.member;
-      let level = member.level || 0;
+      const id = this.props.id;
+      const member = this.props.member;
+      const level = member.level || 0;
 
-      // Compute indentation dynamically. The deeper the item is
-      // inside the hierarchy, the bigger is the left padding.
-      let rowStyle = {
-        "paddingInlineStart": (level * 16) + "px",
-      };
-
-      let iconClassList = ["treeIcon"];
+      const iconClassList = ["treeIcon"];
       if (member.hasChildren && member.loading) {
         iconClassList.push("devtools-throbber");
       } else if (member.hasChildren) {
@@ -45,21 +39,28 @@ define(function (require, exports, module) {
         iconClassList.push("open");
       }
 
-      return (
-        dom.td({
+      return dom.td(
+        {
           className: "treeLabelCell",
+          style: {
+            // Compute indentation dynamically. The deeper the item is
+            // inside the hierarchy, the bigger is the left padding.
+            "--tree-label-cell-indent": `${level * 16}px`,
+          },
           key: "default",
-          style: rowStyle,
-          role: "presentation"},
-          dom.span({
-            className: iconClassList.join(" "),
-            role: "presentation"
-          }),
-          dom.span({
+          role: "presentation",
+        },
+        dom.span({
+          className: iconClassList.join(" "),
+          role: "presentation",
+        }),
+        dom.span(
+          {
             className: "treeLabel " + member.type + "Label",
             "aria-labelledby": id,
-            "data-level": level
-          }, member.name)
+            "data-level": level,
+          },
+          member.name
         )
       );
     }

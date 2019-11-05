@@ -119,12 +119,16 @@ update {
   color: #990000;
 }
 
-#historyItems {
-  -moz-appearance: listbox;
-  height: 200px;
-  margin: 1px 5px 4px 5px;
+.update-status-value,
+.update-installedOn-value {
+  margin-inline-start: 1ch;
 }
 
-#historyItems > scrollbox {
-  margin-bottom: 1px;
+#historyItems {
+  height: 200px;
+  margin: 1px 5px 5px 5px;
+}
+
+#historyItems .update {
+  padding: 5px;
 }

@@ -22,10 +22,10 @@ class nsHttpAuthManager : public nsIHttpAuthManager {
   MOZ_MUST_USE nsresult Init();
 
  protected:
-  virtual ~nsHttpAuthManager();
+  virtual ~nsHttpAuthManager() = default;
 
-  nsHttpAuthCache *mAuthCache;
-  nsHttpAuthCache *mPrivateAuthCache;
+  nsHttpAuthCache* mAuthCache;
+  nsHttpAuthCache* mPrivateAuthCache;
 };
 
 }  // namespace net

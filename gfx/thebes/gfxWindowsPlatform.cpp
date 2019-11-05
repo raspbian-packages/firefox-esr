@@ -1,8 +1,10 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#define INITGUID  // set before devguid.h
 
 #include "gfxWindowsPlatform.h"
 
@@ -41,6 +43,7 @@
 #include "gfxGDIFont.h"
 
 #include "mozilla/layers/CompositorThread.h"
+#include "mozilla/layers/PaintThread.h"
 #include "mozilla/layers/ReadbackManagerD3D11.h"
 
 #include "gfxDWriteFontList.h"
@@ -80,6 +83,11 @@
 #include "mozilla/layers/DeviceAttachmentsD3D11.h"
 #include "D3D11Checks.h"
 
+#include <devguid.h>   // for GUID_DEVCLASS_BATTERY
+#include <setupapi.h>  // for SetupDi*
+#include <winioctl.h>  // for IOCTL_*
+#include <batclass.h>  // for BATTERY_*
+
 using namespace mozilla;
 using namespace mozilla::gfx;
 using namespace mozilla::layers;
@@ -87,33 +95,10 @@ using namespace mozilla::widget;
 using namespace mozilla::image;
 using namespace mozilla::unicode;
 
-DCFromDrawTarget::DCFromDrawTarget(DrawTarget& aDrawTarget) {
-  mDC = nullptr;
-  if (aDrawTarget.GetBackendType() == BackendType::CAIRO) {
-    cairo_t* ctx = static_cast<cairo_t*>(
-        aDrawTarget.GetNativeSurface(NativeSurfaceType::CAIRO_CONTEXT));
-    if (ctx) {
-      cairo_surface_t* surf = cairo_get_group_target(ctx);
-      if (surf) {
-        cairo_surface_type_t surfaceType = cairo_surface_get_type(surf);
-        if (surfaceType == CAIRO_SURFACE_TYPE_WIN32 ||
-            surfaceType == CAIRO_SURFACE_TYPE_WIN32_PRINTING) {
-          mDC = cairo_win32_surface_get_dc(surf);
-          mNeedsRelease = false;
-          SaveDC(mDC);
-          cairo_scaled_font_t* scaled = cairo_get_scaled_font(ctx);
-          cairo_win32_scaled_font_select_font(scaled, mDC);
-        }
-      }
-    }
-  }
-
-  if (!mDC) {
-    // Get the whole screen DC:
-    mDC = GetDC(nullptr);
-    SetGraphicsMode(mDC, GM_ADVANCED);
-    mNeedsRelease = true;
-  }
+DCForMetrics::DCForMetrics() {
+  // Get the whole screen DC:
+  mDC = GetDC(nullptr);
+  SetGraphicsMode(mDC, GM_ADVANCED);
 }
 
 class GfxD2DVramReporter final : public nsIMemoryReporter {
@@ -331,22 +316,121 @@ static void UpdateANGLEConfig() {
   }
 }
 
+bool gfxWindowsPlatform::HasBattery() {
+  // Helper classes to manage lifetimes of Windows structs.
+  class MOZ_STACK_CLASS HDevInfoHolder final {
+   public:
+    explicit HDevInfoHolder(HDEVINFO aHandle) : mHandle(aHandle) {}
+
+    ~HDevInfoHolder() { ::SetupDiDestroyDeviceInfoList(mHandle); }
+
+   private:
+    HDEVINFO mHandle;
+  };
+
+  class MOZ_STACK_CLASS HandleHolder final {
+   public:
+    explicit HandleHolder(HANDLE aHandle) : mHandle(aHandle) {}
+
+    ~HandleHolder() { ::CloseHandle(mHandle); }
+
+   private:
+    HANDLE mHandle;
+  };
+
+  HDEVINFO hdev =
+      ::SetupDiGetClassDevs(&GUID_DEVCLASS_BATTERY, nullptr, nullptr,
+                            DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+  if (hdev == INVALID_HANDLE_VALUE) {
+    return true;
+  }
+
+  HDevInfoHolder hdevHolder(hdev);
+
+  DWORD i = 0;
+  SP_DEVICE_INTERFACE_DATA did = {0};
+  did.cbSize = sizeof(did);
+
+  while (::SetupDiEnumDeviceInterfaces(hdev, nullptr, &GUID_DEVCLASS_BATTERY, i,
+                                       &did)) {
+    DWORD bufferSize = 0;
+    ::SetupDiGetDeviceInterfaceDetail(hdev, &did, nullptr, 0, &bufferSize,
+                                      nullptr);
+    if (::GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+      return true;
+    }
+
+    UniquePtr<uint8_t[]> buffer(new (std::nothrow) uint8_t[bufferSize]);
+    if (!buffer) {
+      return true;
+    }
+
+    PSP_DEVICE_INTERFACE_DETAIL_DATA pdidd =
+        reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA>(buffer.get());
+    pdidd->cbSize = sizeof(*pdidd);
+    if (!::SetupDiGetDeviceInterfaceDetail(hdev, &did, pdidd, bufferSize,
+                                           &bufferSize, nullptr)) {
+      return true;
+    }
+
+    HANDLE hbat = ::CreateFile(pdidd->DevicePath, GENERIC_READ | GENERIC_WRITE,
+                               FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                               OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hbat == INVALID_HANDLE_VALUE) {
+      return true;
+    }
+
+    HandleHolder hbatHolder(hbat);
+
+    BATTERY_QUERY_INFORMATION bqi = {0};
+    DWORD dwWait = 0;
+    DWORD dwOut;
+
+    // We need the tag to query the information below.
+    if (!::DeviceIoControl(hbat, IOCTL_BATTERY_QUERY_TAG, &dwWait,
+                           sizeof(dwWait), &bqi.BatteryTag,
+                           sizeof(bqi.BatteryTag), &dwOut, nullptr) ||
+        !bqi.BatteryTag) {
+      return true;
+    }
+
+    BATTERY_INFORMATION bi = {0};
+    bqi.InformationLevel = BatteryInformation;
+
+    if (!::DeviceIoControl(hbat, IOCTL_BATTERY_QUERY_INFORMATION, &bqi,
+                           sizeof(bqi), &bi, sizeof(bi), &dwOut, nullptr)) {
+      return true;
+    }
+
+    // If a battery intended for general use (i.e. system use) is not a UPS
+    // (i.e. short term), then we know for certain we have a battery.
+    if ((bi.Capabilities & BATTERY_SYSTEM_BATTERY) &&
+        !(bi.Capabilities & BATTERY_IS_SHORT_TERM)) {
+      return true;
+    }
+
+    // Otherwise we check the next battery.
+    ++i;
+  }
+
+  // If we fail to enumerate because there are no more batteries to check, then
+  // we can safely say there are indeed no system batteries.
+  return ::GetLastError() != ERROR_NO_MORE_ITEMS;
+}
+
 void gfxWindowsPlatform::InitAcceleration() {
   gfxPlatform::InitAcceleration();
-
-  // Set up the D3D11 feature levels we can ask for.
-  if (IsWin8OrLater()) {
-    mFeatureLevels.AppendElement(D3D_FEATURE_LEVEL_11_1);
-  }
-  mFeatureLevels.AppendElement(D3D_FEATURE_LEVEL_11_0);
-  mFeatureLevels.AppendElement(D3D_FEATURE_LEVEL_10_1);
-  mFeatureLevels.AppendElement(D3D_FEATURE_LEVEL_10_0);
-  mFeatureLevels.AppendElement(D3D_FEATURE_LEVEL_9_3);
 
   DeviceManagerDx::Init();
 
   InitializeConfig();
-  InitializeDevices();
+  // Ensure devices initialization. SharedSurfaceANGLE and
+  // SharedSurfaceD3D11Interop use them. The devices are lazily initialized
+  // with WebRender to reduce memory usage.
+  // Initialize them now when running non-e10s.
+  if (!BrowserTabsRemoteAutostart()) {
+    EnsureDevicesInitialized();
+  }
   UpdateANGLEConfig();
   UpdateRenderMode();
 
@@ -354,10 +438,16 @@ void gfxWindowsPlatform::InitAcceleration() {
   if (!DWriteEnabled() && GetDefaultContentBackend() == BackendType::SKIA) {
     InitDWriteSupport();
   }
+  // We need to listen for font setting changes even if DWrite is not used.
+  Factory::SetSystemTextQuality(gfxVars::SystemTextQuality());
+  gfxVars::SetSystemTextQualityListener(
+      gfxDWriteFont::SystemTextQualityChanged);
 
   // CanUseHardwareVideoDecoding depends on DeviceManagerDx state,
   // so update the cached value now.
   UpdateCanUseHardwareVideoDecoding();
+
+  RecordStartupTelemetry();
 }
 
 void gfxWindowsPlatform::InitWebRenderConfig() {
@@ -416,24 +506,49 @@ bool gfxWindowsPlatform::HandleDeviceReset() {
   gfxConfig::Reset(Feature::DIRECT2D);
 
   InitializeConfig();
-  InitializeDevices();
+  if (mInitializedDevices) {
+    InitializeDevices();
+  }
   UpdateANGLEConfig();
   return true;
 }
 
-void gfxWindowsPlatform::UpdateBackendPrefs() {
-  uint32_t canvasMask =
+BackendPrefsData gfxWindowsPlatform::GetBackendPrefs() const {
+  BackendPrefsData data;
+
+  data.mCanvasBitmask =
       BackendTypeBit(BackendType::CAIRO) | BackendTypeBit(BackendType::SKIA);
-  uint32_t contentMask =
+  data.mContentBitmask =
       BackendTypeBit(BackendType::CAIRO) | BackendTypeBit(BackendType::SKIA);
-  BackendType defaultBackend = BackendType::SKIA;
-  if (gfxConfig::IsEnabled(Feature::DIRECT2D) && Factory::HasD2D1Device() &&
-      !gfxVars::UseWebRender()) {
-    contentMask |= BackendTypeBit(BackendType::DIRECT2D1_1);
-    canvasMask |= BackendTypeBit(BackendType::DIRECT2D1_1);
-    defaultBackend = BackendType::DIRECT2D1_1;
+  data.mCanvasDefault = BackendType::SKIA;
+  data.mContentDefault = BackendType::SKIA;
+
+  if (gfxConfig::IsEnabled(Feature::DIRECT2D)) {
+    data.mCanvasBitmask |= BackendTypeBit(BackendType::DIRECT2D1_1);
+    data.mCanvasDefault = BackendType::DIRECT2D1_1;
+    // We do not use d2d for content when WebRender is used.
+    if (!gfxVars::UseWebRender()) {
+      data.mContentBitmask |= BackendTypeBit(BackendType::DIRECT2D1_1);
+      data.mContentDefault = BackendType::DIRECT2D1_1;
+    }
   }
-  InitBackendPrefs(canvasMask, defaultBackend, contentMask, defaultBackend);
+  return data;
+}
+
+void gfxWindowsPlatform::UpdateBackendPrefs() {
+  BackendPrefsData data = GetBackendPrefs();
+  // Remove DIRECT2D1 preference if D2D1Device does not exist.
+  if (!Factory::HasD2D1Device()) {
+    data.mCanvasBitmask &= ~BackendTypeBit(BackendType::DIRECT2D1_1);
+    data.mContentBitmask &= ~BackendTypeBit(BackendType::DIRECT2D1_1);
+    if (data.mCanvasDefault == BackendType::DIRECT2D1_1) {
+      data.mCanvasDefault = BackendType::SKIA;
+    }
+    if (data.mContentDefault == BackendType::DIRECT2D1_1) {
+      data.mContentDefault = BackendType::SKIA;
+    }
+  }
+  InitBackendPrefs(std::move(data));
 }
 
 bool gfxWindowsPlatform::IsDirect2DBackend() {
@@ -444,6 +559,10 @@ void gfxWindowsPlatform::UpdateRenderMode() {
   bool didReset = HandleDeviceReset();
 
   UpdateBackendPrefs();
+
+  if (PaintThread::Get()) {
+    PaintThread::Get()->UpdateRenderMode();
+  }
 
   if (didReset) {
     mScreenReferenceDrawTarget = CreateOffscreenContentDrawTarget(
@@ -518,6 +637,10 @@ gfxPlatformFontList* gfxWindowsPlatform::CreatePlatformFontList() {
                NS_LITERAL_CSTRING("FEATURE_FAILURE_FONT_FAIL"));
   }
 
+  // Ensure this is false, even if the Windows version was recent enough to
+  // permit it, as we're using GDI fonts.
+  mHasVariationFontSupport = false;
+
   pfl = new gfxGDIFontList();
 
   if (NS_SUCCEEDED(pfl->InitFontList())) {
@@ -570,7 +693,6 @@ static const char kFontCambriaMath[] = "Cambria Math";
 static const char kFontEbrima[] = "Ebrima";
 static const char kFontEstrangeloEdessa[] = "Estrangelo Edessa";
 static const char kFontEuphemia[] = "Euphemia";
-static const char kFontEmojiOneMozilla[] = "EmojiOne Mozilla";
 static const char kFontGabriola[] = "Gabriola";
 static const char kFontJavaneseText[] = "Javanese Text";
 static const char kFontKhmerUI[] = "Khmer UI";
@@ -597,6 +719,7 @@ static const char kFontSegoeUIEmoji[] = "Segoe UI Emoji";
 static const char kFontSegoeUISymbol[] = "Segoe UI Symbol";
 static const char kFontSylfaen[] = "Sylfaen";
 static const char kFontTraditionalArabic[] = "Traditional Arabic";
+static const char kFontTwemojiMozilla[] = "Twemoji Mozilla";
 static const char kFontUtsaah[] = "Utsaah";
 static const char kFontYuGothic[] = "Yu Gothic";
 
@@ -610,7 +733,7 @@ void gfxWindowsPlatform::GetCommonFallbackFonts(
          emoji == EmojiPresentation::EmojiDefault)) {
       // if char is followed by VS16, try for a color emoji glyph
       aFontList.AppendElement(kFontSegoeUIEmoji);
-      aFontList.AppendElement(kFontEmojiOneMozilla);
+      aFontList.AppendElement(kFontTwemojiMozilla);
     }
   }
 
@@ -830,8 +953,7 @@ BOOL CALLBACK InvalidateWindowForDeviceReset(HWND aWnd, LPARAM aMsg) {
 }
 
 void gfxWindowsPlatform::SchedulePaintIfDeviceReset() {
-  AUTO_PROFILER_LABEL("gfxWindowsPlatform::SchedulePaintIfDeviceReset",
-                      GRAPHICS);
+  AUTO_PROFILER_LABEL("gfxWindowsPlatform::SchedulePaintIfDeviceReset", OTHER);
 
   DeviceResetReason resetReason = DeviceResetReason::OK;
   if (!DidRenderingDeviceReset(&resetReason)) {
@@ -899,12 +1021,12 @@ void gfxWindowsPlatform::GetPlatformCMSOutputProfile(void*& mem,
 #ifdef _WIN32
   qcms_data_from_unicode_path(str, &mem, &mem_size);
 
-#ifdef DEBUG_tor
+#  ifdef DEBUG_tor
   if (mem_size > 0)
     fprintf(stderr, "ICM profile read from %s successfully\n",
             NS_ConvertUTF16toUTF8(str).get());
-#endif  // DEBUG_tor
-#endif  // _WIN32
+#  endif  // DEBUG_tor
+#endif    // _WIN32
 }
 
 void gfxWindowsPlatform::GetDLLVersion(char16ptr_t aDLLPath,
@@ -946,95 +1068,42 @@ void gfxWindowsPlatform::GetDLLVersion(char16ptr_t aDLLPath,
   aVersion.Assign(NS_ConvertUTF8toUTF16(buf));
 }
 
+static BOOL CALLBACK AppendClearTypeParams(HMONITOR aMonitor, HDC, LPRECT,
+                                           LPARAM aContext) {
+  MONITORINFOEXW monitorInfo;
+  monitorInfo.cbSize = sizeof(MONITORINFOEXW);
+  if (!GetMonitorInfoW(aMonitor, &monitorInfo)) {
+    return TRUE;
+  }
+
+  ClearTypeParameterInfo ctinfo;
+  ctinfo.displayName.Assign(monitorInfo.szDevice);
+
+  RefPtr<IDWriteRenderingParams> renderingParams;
+  HRESULT hr = Factory::GetDWriteFactory()->CreateMonitorRenderingParams(
+      aMonitor, getter_AddRefs(renderingParams));
+  if (FAILED(hr)) {
+    return TRUE;
+  }
+
+  ctinfo.gamma = renderingParams->GetGamma() * 1000;
+  ctinfo.pixelStructure = renderingParams->GetPixelGeometry();
+  ctinfo.clearTypeLevel = renderingParams->GetClearTypeLevel() * 100;
+  ctinfo.enhancedContrast = renderingParams->GetEnhancedContrast() * 100;
+
+  auto* params = reinterpret_cast<nsTArray<ClearTypeParameterInfo>*>(aContext);
+  params->AppendElement(ctinfo);
+  return TRUE;
+}
+
 void gfxWindowsPlatform::GetCleartypeParams(
     nsTArray<ClearTypeParameterInfo>& aParams) {
-  HKEY hKey, subKey;
-  DWORD i, rv, size, type;
-  WCHAR displayName[256], subkeyName[256];
-
   aParams.Clear();
-
-  // construct subkeys based on HKLM subkeys, assume they are same for HKCU
-  rv =
-      RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Avalon.Graphics",
-                    0, KEY_READ, &hKey);
-
-  if (rv != ERROR_SUCCESS) {
+  if (!DWriteEnabled()) {
     return;
   }
-
-  // enumerate over subkeys
-  for (i = 0, rv = ERROR_SUCCESS; rv != ERROR_NO_MORE_ITEMS; i++) {
-    size = ArrayLength(displayName);
-    rv = RegEnumKeyExW(hKey, i, displayName, &size, nullptr, nullptr, nullptr,
-                       nullptr);
-    if (rv != ERROR_SUCCESS) {
-      continue;
-    }
-
-    ClearTypeParameterInfo ctinfo;
-    ctinfo.displayName.Assign(displayName);
-
-    DWORD subrv, value;
-    bool foundData = false;
-
-    swprintf_s(subkeyName, ArrayLength(subkeyName),
-               L"Software\\Microsoft\\Avalon.Graphics\\%s", displayName);
-
-    // subkey for gamma, pixel structure
-    subrv = RegOpenKeyExW(HKEY_LOCAL_MACHINE, subkeyName, 0, KEY_QUERY_VALUE,
-                          &subKey);
-
-    if (subrv == ERROR_SUCCESS) {
-      size = sizeof(value);
-      subrv = RegQueryValueExW(subKey, L"GammaLevel", nullptr, &type,
-                               (LPBYTE)&value, &size);
-      if (subrv == ERROR_SUCCESS && type == REG_DWORD) {
-        foundData = true;
-        ctinfo.gamma = value;
-      }
-
-      size = sizeof(value);
-      subrv = RegQueryValueExW(subKey, L"PixelStructure", nullptr, &type,
-                               (LPBYTE)&value, &size);
-      if (subrv == ERROR_SUCCESS && type == REG_DWORD) {
-        foundData = true;
-        ctinfo.pixelStructure = value;
-      }
-
-      RegCloseKey(subKey);
-    }
-
-    // subkey for cleartype level, enhanced contrast
-    subrv = RegOpenKeyExW(HKEY_CURRENT_USER, subkeyName, 0, KEY_QUERY_VALUE,
-                          &subKey);
-
-    if (subrv == ERROR_SUCCESS) {
-      size = sizeof(value);
-      subrv = RegQueryValueExW(subKey, L"ClearTypeLevel", nullptr, &type,
-                               (LPBYTE)&value, &size);
-      if (subrv == ERROR_SUCCESS && type == REG_DWORD) {
-        foundData = true;
-        ctinfo.clearTypeLevel = value;
-      }
-
-      size = sizeof(value);
-      subrv = RegQueryValueExW(subKey, L"EnhancedContrastLevel", nullptr, &type,
-                               (LPBYTE)&value, &size);
-      if (subrv == ERROR_SUCCESS && type == REG_DWORD) {
-        foundData = true;
-        ctinfo.enhancedContrast = value;
-      }
-
-      RegCloseKey(subKey);
-    }
-
-    if (foundData) {
-      aParams.AppendElement(ctinfo);
-    }
-  }
-
-  RegCloseKey(hKey);
+  EnumDisplayMonitors(nullptr, nullptr, AppendClearTypeParams,
+                      reinterpret_cast<LPARAM>(&aParams));
 }
 
 void gfxWindowsPlatform::FontsPrefsChanged(const char* aPref) {
@@ -1160,6 +1229,8 @@ void gfxWindowsPlatform::SetupClearTypeParams() {
       dwriteGeometry = defaultRenderingParams->GetPixelGeometry();
     }
 
+    Factory::SetBGRSubpixelOrder(dwriteGeometry == DWRITE_PIXEL_GEOMETRY_BGR);
+
     if (renderMode < DWRITE_RENDERING_MODE_DEFAULT ||
         renderMode > DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC) {
       renderMode = defaultRenderingParams->GetRenderingMode();
@@ -1205,15 +1276,17 @@ bool gfxWindowsPlatform::IsOptimus() {
   }
   return knowIsOptimus;
 }
-
-static inline bool IsWARPStable() {
+/*
+static inline bool
+IsWARPStable()
+{
   // It seems like nvdxgiwrap makes a mess of WARP. See bug 1154703.
   if (!IsWin8OrLater() || GetModuleHandleA("nvdxgiwrap.dll")) {
     return false;
   }
   return true;
 }
-
+*/
 static void InitializeANGLEConfig() {
   FeatureState& d3d11ANGLE = gfxConfig::GetFeature(Feature::D3D11_HW_ANGLE);
 
@@ -1304,7 +1377,8 @@ void gfxWindowsPlatform::InitializeD3D11Config() {
   InitializeAdvancedLayersConfig();
 }
 
-/* static */ void gfxWindowsPlatform::InitializeAdvancedLayersConfig() {
+/* static */
+void gfxWindowsPlatform::InitializeAdvancedLayersConfig() {
   // Only enable Advanced Layers if D3D11 succeeded.
   if (!gfxConfig::IsEnabled(Feature::D3D11_COMPOSITING)) {
     return;
@@ -1338,7 +1412,8 @@ void gfxWindowsPlatform::InitializeD3D11Config() {
   }
 }
 
-/* static */ void gfxWindowsPlatform::RecordContentDeviceFailure(
+/* static */
+void gfxWindowsPlatform::RecordContentDeviceFailure(
     TelemetryDeviceCode aDevice) {
   // If the parent process fails to acquire a device, we record this
   // normally as part of the environment. The exceptional case we're
@@ -1352,7 +1427,40 @@ void gfxWindowsPlatform::InitializeD3D11Config() {
                         uint32_t(aDevice));
 }
 
+void gfxWindowsPlatform::RecordStartupTelemetry() {
+  if (!XRE_IsParentProcess()) {
+    return;
+  }
+
+  DeviceManagerDx* dx = DeviceManagerDx::Get();
+  nsTArray<DXGI_OUTPUT_DESC1> outputs = dx->EnumerateOutputs();
+
+  uint32_t allSupportedColorSpaces = 0;
+  for (auto& output : outputs) {
+    uint32_t colorSpace = 1 << output.ColorSpace;
+    allSupportedColorSpaces |= colorSpace;
+  }
+
+  Telemetry::ScalarSet(
+      Telemetry::ScalarID::GFX_HDR_WINDOWS_DISPLAY_COLORSPACE_BITFIELD,
+      allSupportedColorSpaces);
+}
+
+// Supports lazy device initialization on Windows, so that WebRender can avoid
+// initializing GPU state and allocating swap chains for most non-GPU processes.
+void gfxWindowsPlatform::EnsureDevicesInitialized() {
+  if (!mInitializedDevices) {
+    mInitializedDevices = true;
+    InitializeDevices();
+    UpdateBackendPrefs();
+  }
+}
+
+bool gfxWindowsPlatform::DevicesInitialized() { return mInitializedDevices; }
+
 void gfxWindowsPlatform::InitializeDevices() {
+  MOZ_ASSERT(NS_IsMainThread());
+
   if (XRE_IsParentProcess()) {
     // If we're the UI process, and the GPU process is enabled, then we don't
     // initialize any DirectX devices. We do leave them enabled in gfxConfig
@@ -1816,7 +1924,7 @@ class D3DVsyncSource final : public VsyncSource {
   virtual Display& GetGlobalDisplay() override { return *mPrimaryDisplay; }
 
  private:
-  virtual ~D3DVsyncSource() {}
+  virtual ~D3DVsyncSource() = default;
   RefPtr<D3DVsyncDisplay> mPrimaryDisplay;
 };  // end D3DVsyncSource
 
@@ -1857,7 +1965,7 @@ void gfxWindowsPlatform::ImportGPUDeviceData(
 
   DeviceManagerDx* dm = DeviceManagerDx::Get();
   if (gfxConfig::IsEnabled(Feature::D3D11_COMPOSITING)) {
-    dm->ImportDeviceInfo(aData.gpuDevice().get_D3D11DeviceStatus());
+    dm->ImportDeviceInfo(aData.gpuDevice().ref());
   } else {
     // There should be no devices, so this just takes away the device status.
     dm->ResetDevices();
@@ -1914,9 +2022,18 @@ void gfxWindowsPlatform::BuildContentDeviceData(ContentDeviceData* aOut) {
 }
 
 bool gfxWindowsPlatform::SupportsPluginDirectDXGIDrawing() {
+  // Ensure devices initialization for plugin's DXGISurface. The devices are
+  // lazily initialized with WebRender to reduce memory usage.
+  EnsureDevicesInitialized();
+
   DeviceManagerDx* dm = DeviceManagerDx::Get();
   if (!dm->GetContentDevice() || !dm->TextureSharingWorks()) {
     return false;
   }
   return true;
+}
+
+bool gfxWindowsPlatform::CheckVariationFontSupport() {
+  // Variation font support is only available on Fall Creators Update or later.
+  return IsWin10FallCreatorsUpdateOrLater();
 }

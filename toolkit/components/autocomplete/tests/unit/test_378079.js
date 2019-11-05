@@ -9,8 +9,6 @@
  * more than one AutoCompleteSearch is used.
  */
 
-
-
 /**
  * Dummy nsIAutoCompleteInput source that returns
  * the given list of AutoCompleteSearch names.
@@ -51,26 +49,12 @@ AutoCompleteInput.prototype = {
     invalidate() {},
 
     // nsISupports implementation
-    QueryInterface(iid) {
-      if (iid.equals(Ci.nsISupports) ||
-          iid.equals(Ci.nsIAutoCompletePopup))
-        return this;
-
-      throw Cr.NS_ERROR_NO_INTERFACE;
-    }
+    QueryInterface: ChromeUtils.generateQI(["nsIAutoCompletePopup"]),
   },
 
   // nsISupports implementation
-  QueryInterface(iid) {
-    if (iid.equals(Ci.nsISupports) ||
-        iid.equals(Ci.nsIAutoCompleteInput))
-      return this;
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  }
+  QueryInterface: ChromeUtils.generateQI(["nsIAutoCompleteInput"]),
 };
-
-
 
 /**
  * nsIAutoCompleteResult implementation
@@ -83,7 +67,7 @@ function AutoCompleteResult(aValues, aComments, aStyles) {
   if (this._values.length > 0) {
     this.searchResult = Ci.nsIAutoCompleteResult.RESULT_SUCCESS;
   } else {
-    this.searchResult = Ci.nsIAutoCompleteResult.NOMATCH;
+    this.searchResult = Ci.nsIAutoCompleteResult.RESULT_NOMATCH;
   }
 }
 AutoCompleteResult.prototype = {
@@ -130,16 +114,8 @@ AutoCompleteResult.prototype = {
   removeValueAt(aRowIndex, aRemoveFromDb) {},
 
   // nsISupports implementation
-  QueryInterface(iid) {
-    if (iid.equals(Ci.nsISupports) ||
-        iid.equals(Ci.nsIAutoCompleteResult))
-      return this;
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  }
+  QueryInterface: ChromeUtils.generateQI(["nsIAutoCompleteResult"]),
 };
-
-
 
 /**
  * nsIAutoCompleteSearch implementation that always returns
@@ -158,36 +134,26 @@ AutoCompleteSearch.prototype = {
   // AutoCompleteResult
   _result: null,
 
-
   /**
    * Return the same result set for every search
    */
-  startSearch(aSearchString,
-                        aSearchParam,
-                        aPreviousResult,
-                        aListener) {
+  startSearch(aSearchString, aSearchParam, aPreviousResult, aListener) {
     aListener.onSearchResult(this, this._result);
   },
 
   stopSearch() {},
 
   // nsISupports implementation
-  QueryInterface(iid) {
-    if (iid.equals(Ci.nsISupports) ||
-        iid.equals(Ci.nsIFactory) ||
-        iid.equals(Ci.nsIAutoCompleteSearch))
-      return this;
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  },
+  QueryInterface: ChromeUtils.generateQI([
+    "nsIFactory",
+    "nsIAutoCompleteSearch",
+  ]),
 
   // nsIFactory implementation
   createInstance(outer, iid) {
     return this.QueryInterface(iid);
-  }
+  },
 };
-
-
 
 /**
  * Helper to register an AutoCompleteSearch with the given name.
@@ -196,53 +162,56 @@ AutoCompleteSearch.prototype = {
 function registerAutoCompleteSearch(aSearch) {
   var name = "@mozilla.org/autocomplete/search;1?name=" + aSearch.name;
 
-  var uuidGenerator = Cc["@mozilla.org/uuid-generator;1"].
-                      getService(Ci.nsIUUIDGenerator);
+  var uuidGenerator = Cc["@mozilla.org/uuid-generator;1"].getService(
+    Ci.nsIUUIDGenerator
+  );
   var cid = uuidGenerator.generateUUID();
 
   var desc = "Test AutoCompleteSearch";
 
-  var componentManager = Components.manager
-                                   .QueryInterface(Ci.nsIComponentRegistrar);
+  var componentManager = Components.manager.QueryInterface(
+    Ci.nsIComponentRegistrar
+  );
   componentManager.registerFactory(cid, desc, name, aSearch);
 
   // Keep the id on the object so we can unregister later
   aSearch.cid = cid;
 }
 
-
-
 /**
  * Helper to unregister an AutoCompleteSearch.
  */
 function unregisterAutoCompleteSearch(aSearch) {
-  var componentManager = Components.manager
-                                   .QueryInterface(Ci.nsIComponentRegistrar);
+  var componentManager = Components.manager.QueryInterface(
+    Ci.nsIComponentRegistrar
+  );
   componentManager.unregisterFactory(aSearch.cid, aSearch);
 }
-
-
 
 /**
  * Test AutoComplete with multiple AutoCompleteSearch sources.
  */
 function run_test() {
-
   // Make an AutoCompleteSearch that always returns nothing
-  var emptySearch = new AutoCompleteSearch("test-empty-search",
-                             new AutoCompleteResult([], [], []));
+  var emptySearch = new AutoCompleteSearch(
+    "test-empty-search",
+    new AutoCompleteResult([], [], [])
+  );
 
   // Make an AutoCompleteSearch that returns two values
   var expectedValues = ["test1", "test2"];
-  var regularSearch = new AutoCompleteSearch("test-regular-search",
-                             new AutoCompleteResult(expectedValues, [], []));
+  var regularSearch = new AutoCompleteSearch(
+    "test-regular-search",
+    new AutoCompleteResult(expectedValues, [], [])
+  );
 
   // Register searches so AutoCompleteController can find them
   registerAutoCompleteSearch(emptySearch);
   registerAutoCompleteSearch(regularSearch);
 
-  var controller = Cc["@mozilla.org/autocomplete/controller;1"].
-                   getService(Ci.nsIAutoCompleteController);
+  var controller = Cc["@mozilla.org/autocomplete/controller;1"].getService(
+    Ci.nsIAutoCompleteController
+  );
 
   // Make an AutoCompleteInput that uses our searches
   // and confirms results on search complete
@@ -255,11 +224,12 @@ function run_test() {
   };
 
   input.onSearchComplete = function() {
-
     Assert.equal(numSearchesStarted, 1);
 
-    Assert.equal(controller.searchStatus,
-                 Ci.nsIAutoCompleteController.STATUS_COMPLETE_MATCH);
+    Assert.equal(
+      controller.searchStatus,
+      Ci.nsIAutoCompleteController.STATUS_COMPLETE_MATCH
+    );
     Assert.equal(controller.matchCount, 2);
 
     // Confirm expected result values
@@ -281,4 +251,3 @@ function run_test() {
 
   controller.startSearch("test");
 }
-

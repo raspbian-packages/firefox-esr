@@ -45,16 +45,21 @@ function run_test() {
   baz();
   bang();
 
-  const REPORT = new Map(stacks.map((s, i) => {
-    return [s, {
-      count: i + 1,
-      bytes: (i + 1) * 10
-    }];
-  }));
+  const REPORT = new Map(
+    stacks.map((s, i) => {
+      return [
+        s,
+        {
+          count: i + 1,
+          bytes: (i + 1) * 10,
+        },
+      ];
+    })
+  );
 
   const tree = censusReportToCensusTreeNode(BREAKDOWN, REPORT, {
     filter: "baz",
-    invert: true
+    invert: true,
   });
 
   dumpn("tree = " + JSON.stringify(tree, savedFrameReplacer, 4));
@@ -62,11 +67,11 @@ function run_test() {
   (function assertSortedBySelf(node) {
     if (node.children) {
       let lastSelfBytes = Infinity;
-      for (let child of node.children) {
+      for (const child of node.children) {
         ok(child.bytes <= lastSelfBytes, `${child.bytes} <= ${lastSelfBytes}`);
         lastSelfBytes = child.bytes;
         assertSortedBySelf(child);
       }
     }
-  }(tree));
+  })(tree);
 }

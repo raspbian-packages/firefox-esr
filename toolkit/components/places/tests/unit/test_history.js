@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Get history services
-var histsvc = Cc["@mozilla.org/browser/nav-history-service;1"].
-              getService(Ci.nsINavHistoryService);
+var histsvc = Cc["@mozilla.org/browser/nav-history-service;1"].getService(
+  Ci.nsINavHistoryService
+);
 
 /**
  * Checks to see that a URI is in the database.
@@ -26,7 +27,7 @@ function uri_in_db(aURI) {
   root.containerOpen = true;
   var cc = root.childCount;
   root.containerOpen = false;
-  return (cc == 1);
+  return cc == 1;
 }
 
 // main
@@ -117,10 +118,10 @@ add_task(async function test_execute() {
   result.root.containerOpen = false;
 
   // test annotation-based queries
-  var annos = Cc["@mozilla.org/browser/annotation-service;1"].
-              getService(Ci.nsIAnnotationService);
-  annos.setPageAnnotation(uri("http://mozilla.com/"), "testAnno", 0, 0,
-                          Ci.nsIAnnotationService.EXPIRE_NEVER);
+  await PlacesUtils.history.update({
+    url: "http://mozilla.com/",
+    annotations: new Map([["testAnno", 123]]),
+  });
   query.annotation = "testAnno";
   result = histsvc.executeQuery(query, options);
   result.root.containerOpen = true;
@@ -140,7 +141,10 @@ add_task(async function test_execute() {
   Assert.ok(!histsvc.historyDisabled);
 
   // test getPageTitle
-  await PlacesTestUtils.addVisits({ uri: uri("http://example.com"), title: "title" });
+  await PlacesTestUtils.addVisits({
+    uri: uri("http://example.com"),
+    title: "title",
+  });
   let placeInfo = await PlacesUtils.history.fetch("http://example.com");
   Assert.equal(placeInfo.title, "title");
 
@@ -149,11 +153,11 @@ add_task(async function test_execute() {
 
   // test for schema changes in bug 373239
   // get direct db connection
-  var db = histsvc.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
+  var db = histsvc.DBConnection;
   var q = "SELECT id FROM moz_bookmarks";
   var statement;
   try {
-     statement = db.createStatement(q);
+    statement = db.createStatement(q);
   } catch (ex) {
     do_throw("bookmarks table does not have id field, schema is too old!");
   } finally {

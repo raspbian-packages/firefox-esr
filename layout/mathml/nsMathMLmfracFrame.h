@@ -10,6 +10,10 @@
 #include "mozilla/Attributes.h"
 #include "nsMathMLContainerFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <mfrac> -- form a fraction from two subexpressions
 //
@@ -50,12 +54,12 @@ environment, but can be set explicitly only on the <mstyle>
 element.
 */
 
-class nsMathMLmfracFrame : public nsMathMLContainerFrame {
+class nsMathMLmfracFrame final : public nsMathMLContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmfracFrame)
 
-  friend nsIFrame* NS_NewMathMLmfracFrame(nsIPresShell* aPresShell,
-                                          nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmfracFrame(mozilla::PresShell* aPresShell,
+                                          ComputedStyle* aStyle);
 
   virtual eMathMLFrameType GetMathMLFrameType() override;
 
@@ -79,7 +83,7 @@ class nsMathMLmfracFrame : public nsMathMLContainerFrame {
 
   // helper to translate the thickness attribute into a usable form
   static nscoord CalcLineThickness(nsPresContext* aPresContext,
-                                   nsStyleContext* aStyleContext,
+                                   ComputedStyle* aComputedStyle,
                                    nsString& aThicknessAttribute,
                                    nscoord onePixel,
                                    nscoord aDefaultRuleThickness,
@@ -88,8 +92,9 @@ class nsMathMLmfracFrame : public nsMathMLContainerFrame {
   uint8_t ScriptIncrement(nsIFrame* aFrame) override;
 
  protected:
-  explicit nsMathMLmfracFrame(nsStyleContext* aContext)
-      : nsMathMLContainerFrame(aContext, kClassID),
+  explicit nsMathMLmfracFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext)
+      : nsMathMLContainerFrame(aStyle, aPresContext, kClassID),
         mLineRect(),
         mSlashChar(nullptr),
         mLineThickness(0),

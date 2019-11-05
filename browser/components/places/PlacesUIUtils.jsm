@@ -5,26 +5,36 @@
 
 var EXPORTED_SYMBOLS = ["PlacesUIUtils"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/Timer.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { clearTimeout, setTimeout } = ChromeUtils.import(
+  "resource://gre/modules/Timer.jsm"
+);
+
+XPCOMUtils.defineLazyGlobalGetters(this, ["Element"]);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  AppConstants: "resource://gre/modules/AppConstants.jsm",
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.jsm",
   OpenInTabsUtils: "resource:///modules/OpenInTabsUtils.jsm",
+  PlacesTransactions: "resource://gre/modules/PlacesTransactions.jsm",
   PlacesUtils: "resource://gre/modules/PlacesUtils.jsm",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
-  RecentWindow: "resource:///modules/RecentWindow.jsm",
   PromiseUtils: "resource://gre/modules/PromiseUtils.jsm",
-  PlacesTransactions: "resource://gre/modules/PlacesTransactions.jsm",
   Weave: "resource://services-sync/main.js",
 });
 
 XPCOMUtils.defineLazyGetter(this, "bundle", function() {
-  return Services.strings.createBundle("chrome://browser/locale/places/places.properties");
+  return Services.strings.createBundle(
+    "chrome://browser/locale/places/places.properties"
+  );
 });
 
-const gInContentProcess = Services.appinfo.processType == Ci.nsIXULRuntime.PROCESS_TYPE_CONTENT;
+const gInContentProcess =
+  Services.appinfo.processType == Ci.nsIXULRuntime.PROCESS_TYPE_CONTENT;
 const FAVICON_REQUEST_TIMEOUT = 60 * 1000;
 // Map from windows to arrays of data about pending favicon loads.
 let gFaviconLoadDataMap = new Map();
@@ -33,7 +43,8 @@ const ITEM_CHANGED_BATCH_NOTIFICATION_THRESHOLD = 10;
 
 // copied from utilityOverlay.js
 const TAB_DROP_TYPE = "application/x-moz-tabbrowser-tab";
-const PREF_LOAD_BOOKMARKS_IN_BACKGROUND = "browser.tabs.loadBookmarksInBackground";
+const PREF_LOAD_BOOKMARKS_IN_BACKGROUND =
+  "browser.tabs.loadBookmarksInBackground";
 const PREF_LOAD_BOOKMARKS_IN_TABS = "browser.tabs.loadBookmarksInTabs";
 
 let InternalFaviconLoader = {
@@ -50,7 +61,7 @@ let InternalFaviconLoader = {
   /**
    * Actually cancel the request, and clear the timeout for cancelling it.
    */
-  _cancelRequest({uri, innerWindowID, timerID, callback}, reason) {
+  _cancelRequest({ uri, innerWindowID, timerID, callback }, reason) {
     // Break cycle
     let request = callback.request;
     delete callback.request;
@@ -59,7 +70,13 @@ let InternalFaviconLoader = {
     try {
       request.cancel();
     } catch (ex) {
-      Cu.reportError("When cancelling a request for " + uri.spec + " because " + reason + ", it was already canceled!");
+      Cu.reportError(
+        "When cancelling a request for " +
+          uri.spec +
+          " because " +
+          reason +
+          ", it was already canceled!"
+      );
     }
   },
 
@@ -71,7 +88,10 @@ let InternalFaviconLoader = {
       let newLoadDataForWindow = loadDataForWindow.filter(loadData => {
         let innerWasDestroyed = loadData.innerWindowID == innerID;
         if (innerWasDestroyed) {
-          this._cancelRequest(loadData, "the inner window was destroyed or a new favicon was loaded for it");
+          this._cancelRequest(
+            loadData,
+            "the inner window was destroyed or a new favicon was loaded for it"
+          );
         }
         // Keep the items whose inner is still alive.
         return !innerWasDestroyed;
@@ -108,13 +128,15 @@ let InternalFaviconLoader = {
    *
    * @return the loadData object we removed, or null if we didn't find any.
    */
-  _removeLoadDataFromWindowMap(win, {innerWindowID, uri, callback}) {
+  _removeLoadDataFromWindowMap(win, { innerWindowID, uri, callback }) {
     let loadDataForWindow = gFaviconLoadDataMap.get(win);
     if (loadDataForWindow) {
       let itemIndex = loadDataForWindow.findIndex(loadData => {
-        return loadData.innerWindowID == innerWindowID &&
-               loadData.uri.equals(uri) &&
-               loadData.callback.request == callback.request;
+        return (
+          loadData.innerWindowID == innerWindowID &&
+          loadData.uri.equals(uri) &&
+          loadData.callback.request == callback.request
+        );
       });
       if (itemIndex != -1) {
         let loadData = loadDataForWindow[itemIndex];
@@ -160,9 +182,9 @@ let InternalFaviconLoader = {
     });
   },
 
-  loadFavicon(browser, principal, uri, requestContextID) {
+  loadFavicon(browser, principal, pageURI, uri, expiration, iconURI) {
     this.ensureInitialized();
-    let win = browser.ownerGlobal;
+    let { ownerGlobal: win, innerWindowID } = browser;
     if (!gFaviconLoadDataMap.has(win)) {
       gFaviconLoadDataMap.set(win, []);
       let unloadHandler = event => {
@@ -176,16 +198,30 @@ let InternalFaviconLoader = {
       win.addEventListener("unload", unloadHandler, true);
     }
 
-    let {innerWindowID, currentURI} = browser;
-
     // First we do the actual setAndFetch call:
     let loadType = PrivateBrowsingUtils.isWindowPrivate(win)
       ? PlacesUtils.favicons.FAVICON_LOAD_PRIVATE
       : PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE;
     let callback = this._makeCompletionCallback(win, innerWindowID);
-    let request = PlacesUtils.favicons.setAndFetchFaviconForPage(currentURI, uri, false,
-                                                                 loadType, callback, principal,
-                                                                 requestContextID);
+
+    if (iconURI && iconURI.schemeIs("data")) {
+      expiration = PlacesUtils.toPRTime(expiration);
+      PlacesUtils.favicons.replaceFaviconDataFromDataURL(
+        uri,
+        iconURI.spec,
+        expiration,
+        principal
+      );
+    }
+
+    let request = PlacesUtils.favicons.setAndFetchFaviconForPage(
+      pageURI,
+      uri,
+      false,
+      loadType,
+      callback,
+      principal
+    );
 
     // Now register the result so we can cancel it if/when necessary.
     if (!request) {
@@ -195,7 +231,7 @@ let InternalFaviconLoader = {
       return;
     }
     callback.request = request;
-    let loadData = {innerWindowID, uri, callback};
+    let loadData = { innerWindowID, uri, callback };
     loadData.timerID = setTimeout(() => {
       this._cancelRequest(loadData, "it timed out");
       this._removeLoadDataFromWindowMap(win, loadData);
@@ -206,12 +242,7 @@ let InternalFaviconLoader = {
 };
 
 var PlacesUIUtils = {
-  ORGANIZER_LEFTPANE_VERSION: 8,
-  ORGANIZER_FOLDER_ANNO: "PlacesOrganizer/OrganizerFolder",
-  ORGANIZER_QUERY_ANNO: "PlacesOrganizer/OrganizerQuery",
-
-  LOAD_IN_SIDEBAR_ANNO: "bookmarkProperties/loadInSidebar",
-  DESCRIPTION_ANNO: "bookmarkProperties/description",
+  LAST_USED_FOLDERS_META_KEY: "bookmarks/lastusedfolders",
 
   /**
    * Makes a URI from a spec, and do fixup
@@ -220,7 +251,10 @@ var PlacesUIUtils = {
    * @return A URI object for the spec.
    */
   createFixedURI: function PUIU_createFixedURI(aSpec) {
-    return Services.uriFixup.createFixupURI(aSpec, Ci.nsIURIFixup.FIXUP_FLAG_NONE);
+    return Services.uriFixup.createFixupURI(
+      aSpec,
+      Ci.nsIURIFixup.FIXUP_FLAG_NONE
+    );
   },
 
   getFormattedString: function PUIU_getFormattedString(key, params) {
@@ -266,18 +300,18 @@ var PlacesUIUtils = {
    *        Owner window for the new dialog.
    *
    * @see documentation at the top of bookmarkProperties.js
-   * @return true if any transaction has been performed, false otherwise.
+   * @return The guid of the item that was created or edited, undefined otherwise.
    */
   showBookmarkDialog(aInfo, aParentWindow) {
     // Preserve size attributes differently based on the fact the dialog has
     // a folder picker or not, since it needs more horizontal space than the
     // other controls.
-    let hasFolderPicker = !("hiddenRows" in aInfo) ||
-                          !aInfo.hiddenRows.includes("folderPicker");
+    let hasFolderPicker =
+      !("hiddenRows" in aInfo) || !aInfo.hiddenRows.includes("folderPicker");
     // Use a different chrome url to persist different sizes.
-    let dialogURL = hasFolderPicker ?
-                    "chrome://browser/content/places/bookmarkProperties2.xul" :
-                    "chrome://browser/content/places/bookmarkProperties.xul";
+    let dialogURL = hasFolderPicker
+      ? "chrome://browser/content/places/bookmarkProperties2.xul"
+      : "chrome://browser/content/places/bookmarkProperties.xul";
 
     let features = "centerscreen,chrome,modal,resizable=yes";
 
@@ -293,29 +327,46 @@ var PlacesUIUtils = {
 
     aParentWindow.openDialog(dialogURL, "", features, aInfo);
 
-    let performed = ("performed" in aInfo && aInfo.performed);
+    let bookmarkGuid =
+      ("bookmarkGuid" in aInfo && aInfo.bookmarkGuid) || undefined;
 
     batchBlockingDeferred.resolve();
 
-    if (!performed &&
-        topUndoEntry != PlacesTransactions.topUndoEntry) {
+    if (!bookmarkGuid && topUndoEntry != PlacesTransactions.topUndoEntry) {
       PlacesTransactions.undo().catch(Cu.reportError);
     }
 
-    return performed;
+    return bookmarkGuid;
   },
 
   /**
    * set and fetch a favicon. Can only be used from the parent process.
-   * @param browser   {Browser}   The XUL browser element for which we're fetching a favicon.
-   * @param principal {Principal} The loading principal to use for the fetch.
-   * @param uri       {URI}       The URI to fetch.
+   * @param browser    {Browser}   The XUL browser element for which we're fetching a favicon.
+   * @param principal  {Principal} The loading principal to use for the fetch.
+   * @pram pageURI     {URI}       The page URI associated to this favicon load.
+   * @param uri        {URI}       The URI to fetch.
+   * @param expiration {Number}    An optional expiration time.
+   * @param iconURI    {URI}       An optional data: URI holding the icon's data.
    */
-  loadFavicon(browser, principal, uri, requestContextID) {
+  loadFavicon(
+    browser,
+    principal,
+    pageURI,
+    uri,
+    expiration = 0,
+    iconURI = null
+  ) {
     if (gInContentProcess) {
       throw new Error("Can't track loads from within the child process!");
     }
-    InternalFaviconLoader.loadFavicon(browser, principal, uri, requestContextID);
+    InternalFaviconLoader.loadFavicon(
+      browser,
+      principal,
+      pageURI,
+      uri,
+      expiration,
+      iconURI
+    );
   },
 
   /**
@@ -333,15 +384,24 @@ var PlacesUIUtils = {
 
     // The view for a <menu> of which its associated menupopup is a places
     // view, is the menupopup.
-    if (node.localName == "menu" && !node._placesNode &&
-        node.lastChild._placesView)
+    if (
+      node.localName == "menu" &&
+      !node._placesNode &&
+      node.lastChild._placesView
+    ) {
       return node.lastChild._placesView;
+    }
 
-    while (node instanceof Ci.nsIDOMElement) {
-      if (node._placesView)
+    while (Element.isInstance(node)) {
+      if (node._placesView) {
         return node._placesView;
-      if (node.localName == "tree" && node.getAttribute("type") == "places")
+      }
+      if (
+        node.localName == "tree" &&
+        node.getAttribute("is") == "places-tree"
+      ) {
         return node;
+      }
 
       node = node.parentNode;
     }
@@ -368,14 +428,16 @@ var PlacesUIUtils = {
     }
     if (popupNode) {
       let view = this.getViewForNode(popupNode);
-      if (view && view._contextMenuShown)
+      if (view && view._contextMenuShown) {
         return view.controllers.getControllerForCommand(command);
+      }
     }
 
     // When we're not building a context menu, only focusable views
     // are possible.  Thus, we can safely use the command dispatcher.
-    let controller = win.top.document.commandDispatcher
-                        .getControllerForCommand(command);
+    let controller = win.top.document.commandDispatcher.getControllerForCommand(
+      command
+    );
     return controller || null;
   },
 
@@ -403,8 +465,10 @@ var PlacesUIUtils = {
       "placesCmd_paste",
       "placesCmd_delete",
     ]) {
-      win.goSetCommandEnabled(command,
-                              controller && controller.isCommandEnabled(command));
+      win.goSetCommandEnabled(
+        command,
+        controller && controller.isCommandEnabled(command)
+      );
     }
   },
 
@@ -416,8 +480,9 @@ var PlacesUIUtils = {
    */
   doCommand(win, command) {
     let controller = this.getControllerForCommand(win, command);
-    if (controller && controller.isCommandEnabled(command))
+    if (controller && controller.isCommandEnabled(command)) {
       controller.doCommand(command);
+    }
   },
 
   /**
@@ -454,6 +519,32 @@ var PlacesUIUtils = {
   },
 
   /**
+   * Sets the character-set for a page. The character set will not be saved
+   * if the window is determined to be a private browsing window.
+   *
+   * @param {string|URL|nsIURI} url The URL of the page to set the charset on.
+   * @param {String} charset character-set value.
+   * @param {window} window The window that the charset is being set from.
+   * @return {Promise}
+   */
+  async setCharsetForPage(url, charset, window) {
+    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+      return;
+    }
+
+    // UTF-8 is the default. If we are passed the value then set it to null,
+    // to ensure any charset is removed from the database.
+    if (charset.toLowerCase() == "utf-8") {
+      charset = null;
+    }
+
+    await PlacesUtils.history.update({
+      url,
+      annotations: new Map([[PlacesUtils.CHARSET_ANNO, charset]]),
+    });
+  },
+
+  /**
    * Allows opening of javascript/data URI only if the given node is
    * bookmarked (see bug 224521).
    * @param aURINode
@@ -464,15 +555,16 @@ var PlacesUIUtils = {
    *
    */
   checkURLSecurity: function PUIU_checkURLSecurity(aURINode, aWindow) {
-    if (PlacesUtils.nodeIsBookmark(aURINode))
+    if (PlacesUtils.nodeIsBookmark(aURINode)) {
       return true;
+    }
 
     var uri = Services.io.newURI(aURINode.uri);
     if (uri.schemeIs("javascript") || uri.schemeIs("data")) {
       const BRANDING_BUNDLE_URI = "chrome://branding/locale/brand.properties";
-      var brandShortName = Services.strings.
-                           createBundle(BRANDING_BUNDLE_URI).
-                           GetStringFromName("brandShortName");
+      var brandShortName = Services.strings
+        .createBundle(BRANDING_BUNDLE_URI)
+        .GetStringFromName("brandShortName");
 
       var errorStr = this.getString("load-js-data-url-error");
       Services.prompt.alert(aWindow, brandShortName, errorStr);
@@ -482,48 +574,14 @@ var PlacesUIUtils = {
   },
 
   /**
-   * Get the description associated with a document, as specified in a <META>
-   * element.
-   * @param   doc
-   *          A DOM Document to get a description for
-   * @return A description string if a META element was discovered with a
-   *         "description" or "httpequiv" attribute, empty string otherwise.
-   */
-  getDescriptionFromDocument: function PUIU_getDescriptionFromDocument(doc) {
-    var metaElements = doc.getElementsByTagName("META");
-    for (var i = 0; i < metaElements.length; ++i) {
-      if (metaElements[i].name.toLowerCase() == "description" ||
-          metaElements[i].httpEquiv.toLowerCase() == "description") {
-        return metaElements[i].content;
-      }
-    }
-    return "";
-  },
-
-  /**
-   * Retrieve the description of an item
-   * @param aItemId
-   *        item identifier
-   * @return the description of the given item, or an empty string if it is
-   * not set.
-   */
-  getItemDescription: function PUIU_getItemDescription(aItemId) {
-    if (PlacesUtils.annotations.itemHasAnnotation(aItemId, this.DESCRIPTION_ANNO))
-      return PlacesUtils.annotations.getItemAnnotation(aItemId, this.DESCRIPTION_ANNO);
-    return "";
-  },
-
-  /**
    * Check whether or not the given node represents a removable entry (either in
    * history or in bookmarks).
    *
    * @param aNode
    *        a node, except the root node of a query.
-   * @param aView
-   *        The view originating the request.
    * @return true if the aNode represents a removable entry, false otherwise.
    */
-  canUserRemove(aNode, aView) {
+  canUserRemove(aNode) {
     let parentNode = aNode.parent;
     if (!parentNode) {
       // canUserRemove doesn't accept root nodes.
@@ -531,30 +589,27 @@ var PlacesUIUtils = {
     }
 
     // Is it a query pointing to one of the special root folders?
-    if (PlacesUtils.nodeIsQuery(parentNode) && PlacesUtils.nodeIsFolder(aNode)) {
-      let guid = PlacesUtils.getConcreteItemGuid(aNode);
-      // If the parent folder is not a folder, it must be a query, and so this node
-      // cannot be removed.
-      if (PlacesUtils.isRootItem(guid)) {
+    if (PlacesUtils.nodeIsQuery(parentNode)) {
+      if (PlacesUtils.nodeIsFolder(aNode)) {
+        let guid = PlacesUtils.getConcreteItemGuid(aNode);
+        // If the parent folder is not a folder, it must be a query, and so this node
+        // cannot be removed.
+        if (PlacesUtils.isRootItem(guid)) {
+          return false;
+        }
+      } else if (PlacesUtils.isVirtualLeftPaneItem(aNode.bookmarkGuid)) {
+        // If the item is a left-pane top-level item, it can't be removed.
         return false;
       }
     }
 
-    // If it's not a bookmark, we can remove it unless it's a child of a
-    // livemark.
-    if (aNode.itemId == -1) {
-      // Rather than executing a db query, checking the existence of the feedURI
-      // annotation, detect livemark children by the fact that they are the only
-      // direct non-bookmark children of bookmark folders.
-      return !PlacesUtils.nodeIsFolder(parentNode);
+    // If it's not a bookmark, or it's child of a query, we can remove it.
+    if (aNode.itemId == -1 || PlacesUtils.nodeIsQuery(parentNode)) {
+      return true;
     }
 
-    // Generally it's always possible to remove children of a query.
-    if (PlacesUtils.nodeIsQuery(parentNode))
-      return true;
-
     // Otherwise it has to be a child of an editable folder.
-    return !this.isFolderReadOnly(parentNode, aView);
+    return !this.isFolderReadOnly(parentNode);
   },
 
   /**
@@ -572,82 +627,64 @@ var PlacesUIUtils = {
    *
    * @param placesNode
    *        any folder result node.
-   * @param view
-   *        The view originating the request.
    * @throws if placesNode is not a folder result node or views is invalid.
-   * @note livemark "folders" are considered read-only (but see bug 1072833).
    * @return true if placesNode is a read-only folder, false otherwise.
    */
-  isFolderReadOnly(placesNode, view) {
-    if (typeof placesNode != "object" || !PlacesUtils.nodeIsFolder(placesNode)) {
+  isFolderReadOnly(placesNode) {
+    if (
+      typeof placesNode != "object" ||
+      !PlacesUtils.nodeIsFolder(placesNode)
+    ) {
       throw new Error("invalid value for placesNode");
     }
-    if (!view || typeof view != "object") {
-      throw new Error("invalid value for aView");
-    }
-    let itemId = PlacesUtils.getConcreteItemId(placesNode);
-    if (itemId == PlacesUtils.placesRootId ||
-        view.controller.hasCachedLivemarkInfo(placesNode))
-      return true;
 
-    // leftPaneFolderId is a lazy getter
-    // performing at least a synchronous DB query (and on its very first call
-    // in a fresh profile, it also creates the entire structure).
-    // Therefore we don't want to this function, which is called very often by
-    // isCommandEnabled, to ever be the one that invokes it first, especially
-    // because isCommandEnabled may be called way before the left pane folder is
-    // even created (for example, if the user only uses the bookmarks menu or
-    // toolbar for managing bookmarks).  To do so, we avoid comparing to those
-    // special folder if the lazy getter is still in place.  This is safe merely
-    // because the only way to access the left pane contents goes through
-    // "resolving" the leftPaneFolderId getter.
-    if (typeof Object.getOwnPropertyDescriptor(this, "leftPaneFolderId").get == "function") {
-      return false;
-    }
-    return itemId == this.leftPaneFolderId;
+    return (
+      PlacesUtils.getConcreteItemId(placesNode) == PlacesUtils.placesRootId
+    );
   },
 
   /** aItemsToOpen needs to be an array of objects of the form:
-    * {uri: string, isBookmark: boolean}
-    */
+   * {uri: string, isBookmark: boolean}
+   */
   _openTabset: function PUIU__openTabset(aItemsToOpen, aEvent, aWindow) {
-    if (!aItemsToOpen.length)
+    if (!aItemsToOpen.length) {
       return;
+    }
 
-    // Prefer the caller window if it's a browser window, otherwise use
-    // the top browser window.
-    var browserWindow = null;
-    browserWindow =
-      aWindow && aWindow.document.documentElement.getAttribute("windowtype") == "navigator:browser" ?
-      aWindow : RecentWindow.getMostRecentBrowserWindow();
-
+    let browserWindow = getBrowserWindow(aWindow);
     var urls = [];
-    let skipMarking = browserWindow && PrivateBrowsingUtils.isWindowPrivate(browserWindow);
+    let skipMarking =
+      browserWindow && PrivateBrowsingUtils.isWindowPrivate(browserWindow);
     for (let item of aItemsToOpen) {
       urls.push(item.uri);
       if (skipMarking) {
         continue;
       }
 
-      if (item.isBookmark)
+      if (item.isBookmark) {
         this.markPageAsFollowedBookmark(item.uri);
-      else
+      } else {
         this.markPageAsTyped(item.uri);
+      }
     }
 
     // whereToOpenLink doesn't return "window" when there's no browser window
     // open (Bug 630255).
-    var where = browserWindow ?
-                browserWindow.whereToOpenLink(aEvent, false, true) : "window";
+    var where = browserWindow
+      ? browserWindow.whereToOpenLink(aEvent, false, true)
+      : "window";
     if (where == "window") {
       // There is no browser window open, thus open a new one.
       var uriList = PlacesUtils.toISupportsString(urls.join("|"));
-      var args = Cc["@mozilla.org/array;1"].
-                  createInstance(Ci.nsIMutableArray);
+      var args = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
       args.appendElement(uriList);
-      browserWindow = Services.ww.openWindow(aWindow,
-                                             "chrome://browser/content/browser.xul",
-                                             null, "chrome,dialog=no,all", args);
+      browserWindow = Services.ww.openWindow(
+        aWindow,
+        AppConstants.BROWSER_CHROME_URL,
+        null,
+        "chrome,dialog=no,all",
+        args
+      );
       return;
     }
 
@@ -662,50 +699,44 @@ var PlacesUIUtils = {
     });
   },
 
-  openLiveMarkNodesInTabs:
-  function PUIU_openLiveMarkNodesInTabs(aNode, aEvent, aView) {
-    let window = aView.ownerWindow;
-
-    PlacesUtils.livemarks.getLivemark({id: aNode.itemId})
-      .then(aLivemark => {
-        let urlsToOpen = [];
-
-        let nodes = aLivemark.getNodesForContainer(aNode);
-        for (let node of nodes) {
-          urlsToOpen.push({uri: node.uri, isBookmark: false});
-        }
-
-        if (OpenInTabsUtils.confirmOpenInTabs(urlsToOpen.length, window)) {
-          this._openTabset(urlsToOpen, aEvent, window);
-        }
-      }, Cu.reportError);
-  },
-
-  openContainerNodeInTabs:
-  function PUIU_openContainerInTabs(aNode, aEvent, aView) {
-    let window = aView.ownerWindow;
-
-    let urlsToOpen = PlacesUtils.getURLsForContainerNode(aNode);
-    if (OpenInTabsUtils.confirmOpenInTabs(urlsToOpen.length, window)) {
-      this._openTabset(urlsToOpen, aEvent, window);
-    }
-  },
-
-  openURINodesInTabs: function PUIU_openURINodesInTabs(aNodes, aEvent, aView) {
-    let window = aView.ownerWindow;
-
+  /**
+   * Loads a selected node's or nodes' URLs in tabs,
+   * warning the user when lots of URLs are being opened
+   *
+   * @param {object|array} nodeOrNodes
+   *          Contains the node or nodes that we're opening in tabs
+   * @param {event} event
+   *          The DOM mouse/key event with modifier keys set that track the
+   *          user's preferred destination window or tab.
+   * @param {object} view
+   *          The current view that contains the node or nodes selected for
+   *          opening
+   */
+  openMultipleLinksInTabs(nodeOrNodes, event, view) {
+    let window = view.ownerWindow;
     let urlsToOpen = [];
-    for (var i = 0; i < aNodes.length; i++) {
-      // Skip over separators and folders.
-      if (PlacesUtils.nodeIsURI(aNodes[i]))
-        urlsToOpen.push({uri: aNodes[i].uri, isBookmark: PlacesUtils.nodeIsBookmark(aNodes[i])});
+
+    if (PlacesUtils.nodeIsContainer(nodeOrNodes)) {
+      urlsToOpen = PlacesUtils.getURLsForContainerNode(nodeOrNodes);
+    } else {
+      for (var i = 0; i < nodeOrNodes.length; i++) {
+        // Skip over separators and folders.
+        if (PlacesUtils.nodeIsURI(nodeOrNodes[i])) {
+          urlsToOpen.push({
+            uri: nodeOrNodes[i].uri,
+            isBookmark: PlacesUtils.nodeIsBookmark(nodeOrNodes[i]),
+          });
+        }
+      }
     }
-    this._openTabset(urlsToOpen, aEvent, window);
+    if (OpenInTabsUtils.confirmOpenInTabs(urlsToOpen.length, window)) {
+      this._openTabset(urlsToOpen, event, window);
+    }
   },
 
   /**
-   * Loads the node's URL in the appropriate tab or window or as a web
-   * panel given the user's preference specified by modifier keys tracked by a
+   * Loads the node's URL in the appropriate tab or window given the
+   * user's preference specified by modifier keys tracked by a
    * DOM mouse/key event.
    * @param   aNode
    *          An uri result node.
@@ -713,26 +744,26 @@ var PlacesUIUtils = {
    *          The DOM mouse/key event with modifier keys set that track the
    *          user's preferred destination window or tab.
    */
-  openNodeWithEvent:
-  function PUIU_openNodeWithEvent(aNode, aEvent) {
+  openNodeWithEvent: function PUIU_openNodeWithEvent(aNode, aEvent) {
     let window = aEvent.target.ownerGlobal;
 
+    let browserWindow = getBrowserWindow(window);
+
     let where = window.whereToOpenLink(aEvent, false, true);
-    if (where == "current" && this.loadBookmarksInTabs &&
-        PlacesUtils.nodeIsBookmark(aNode) && !aNode.uri.startsWith("javascript:")) {
-      where = "tab";
+    if (this.loadBookmarksInTabs && PlacesUtils.nodeIsBookmark(aNode)) {
+      if (where == "current" && !aNode.uri.startsWith("javascript:")) {
+        where = "tab";
+      }
+      if (where == "tab" && browserWindow.gBrowser.selectedTab.isEmpty) {
+        where = "current";
+      }
     }
 
     this._openNodeIn(aNode, where, window);
-    let view = this.getViewForNode(aEvent.target);
-    if (view && view.controller.hasCachedLivemarkInfo(aNode.parent)) {
-      Services.telemetry.scalarAdd("browser.feeds.livebookmark_item_opened", 1);
-    }
   },
 
   /**
-   * Loads the node's URL in the appropriate tab or window or as a
-   * web panel.
+   * Loads the node's URL in the appropriate tab or window.
    * see also openUILinkIn
    */
   openNodeIn: function PUIU_openNodeIn(aNode, aWhere, aView, aPrivate) {
@@ -740,34 +771,32 @@ var PlacesUIUtils = {
     this._openNodeIn(aNode, aWhere, window, aPrivate);
   },
 
-  _openNodeIn: function PUIU__openNodeIn(aNode, aWhere, aWindow, aPrivate = false) {
-    if (aNode && PlacesUtils.nodeIsURI(aNode) &&
-        this.checkURLSecurity(aNode, aWindow)) {
+  _openNodeIn: function PUIU__openNodeIn(
+    aNode,
+    aWhere,
+    aWindow,
+    aPrivate = false
+  ) {
+    if (
+      aNode &&
+      PlacesUtils.nodeIsURI(aNode) &&
+      this.checkURLSecurity(aNode, aWindow)
+    ) {
       let isBookmark = PlacesUtils.nodeIsBookmark(aNode);
 
       if (!PrivateBrowsingUtils.isWindowPrivate(aWindow)) {
-        if (isBookmark)
+        if (isBookmark) {
           this.markPageAsFollowedBookmark(aNode.uri);
-        else
+        } else {
           this.markPageAsTyped(aNode.uri);
-      }
-
-      // Check whether the node is a bookmark which should be opened as
-      // a web panel
-      if (aWhere == "current" && isBookmark) {
-        if (PlacesUtils.annotations
-                       .itemHasAnnotation(aNode.itemId, this.LOAD_IN_SIDEBAR_ANNO)) {
-          let browserWin = RecentWindow.getMostRecentBrowserWindow();
-          if (browserWin) {
-            browserWin.openWebPanel(aNode.title, aNode.uri);
-            return;
-          }
         }
       }
 
-      aWindow.openUILinkIn(aNode.uri, aWhere, {
-        allowPopups: aNode.uri.startsWith("javascript:"),
+      const isJavaScriptURL = aNode.uri.startsWith("javascript:");
+      aWindow.openTrustedLinkIn(aNode.uri, aWhere, {
+        allowPopups: isJavaScriptURL,
         inBackground: this.loadBookmarksInBackground,
+        allowInheritPrincipal: isJavaScriptURL,
         private: aPrivate,
       });
     }
@@ -777,14 +806,12 @@ var PlacesUIUtils = {
    * Helper for guessing scheme from an url string.
    * Used to avoid nsIURI overhead in frequently called UI functions.
    *
-   * @param aUrlString the url to guess the scheme from.
-   *
+   * @param {string} href The url to guess the scheme from.
    * @return guessed scheme for this url string.
-   *
    * @note this is not supposed be perfect, so use it only for UI purposes.
    */
-  guessUrlSchemeForUI: function PUIU_guessUrlSchemeForUI(aUrlString) {
-    return aUrlString.substr(0, aUrlString.indexOf(":"));
+  guessUrlSchemeForUI(href) {
+    return href.substr(0, href.indexOf(":"));
   },
 
   getBestTitle: function PUIU_getBestTitle(aNode, aDoNotCutTitle) {
@@ -800,278 +827,27 @@ var PlacesUIUtils = {
         if (aDoNotCutTitle) {
           title = host + uri.pathQueryRef;
         } else {
-          title = host + (fileName ?
-                           (host ? "/" + this.ellipsis + "/" : "") + fileName :
-                           uri.pathQueryRef);
+          title =
+            host +
+            (fileName
+              ? (host ? "/" + this.ellipsis + "/" : "") + fileName
+              : uri.pathQueryRef);
         }
       } catch (e) {
         // Use (no title) for non-standard URIs (data:, javascript:, ...)
         title = "";
       }
-    } else
+    } else {
       title = aNode.title;
+    }
 
     return title || this.getString("noTitle");
   },
 
-  get leftPaneQueries() {
-    // build the map
-    this.leftPaneFolderId;
-    return this.leftPaneQueries;
-  },
-
-  get leftPaneFolderId() {
-    delete this.leftPaneFolderId;
-    return this.leftPaneFolderId = this.maybeRebuildLeftPane();
-  },
-
-  // Get the folder id for the organizer left-pane folder.
-  maybeRebuildLeftPane() {
-    let leftPaneRoot = -1;
-
-    // Shortcuts to services.
-    let bs = PlacesUtils.bookmarks;
-    let as = PlacesUtils.annotations;
-
-    // This is the list of the left pane queries.
-    let queries = {
-      "PlacesRoot": { title: "" },
-      "History": { title: this.getString("OrganizerQueryHistory") },
-      "Downloads": { title: this.getString("OrganizerQueryDownloads") },
-      "Tags": { title: this.getString("OrganizerQueryTags") },
-      "AllBookmarks": { title: this.getString("OrganizerQueryAllBookmarks") },
-    };
-    // All queries but PlacesRoot.
-    const EXPECTED_QUERY_COUNT = 4;
-
-    // Removes an item and associated annotations, ignoring eventual errors.
-    function safeRemoveItem(aItemId) {
-      try {
-        if (as.itemHasAnnotation(aItemId, PlacesUIUtils.ORGANIZER_QUERY_ANNO) &&
-            !(as.getItemAnnotation(aItemId, PlacesUIUtils.ORGANIZER_QUERY_ANNO) in queries)) {
-          // Some extension annotated their roots with our query annotation,
-          // so we should not delete them.
-          return;
-        }
-        // removeItemAnnotation does not check if item exists, nor the anno,
-        // so this is safe to do.
-        as.removeItemAnnotation(aItemId, PlacesUIUtils.ORGANIZER_FOLDER_ANNO);
-        as.removeItemAnnotation(aItemId, PlacesUIUtils.ORGANIZER_QUERY_ANNO);
-        // This will throw if the annotation is an orphan.
-        bs.removeItem(aItemId);
-      } catch (e) { /* orphan anno */ }
-    }
-
-    // Returns true if item really exists, false otherwise.
-    function itemExists(aItemId) {
-      try {
-        bs.getFolderIdForItem(aItemId);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-
-    // Get all items marked as being the left pane folder.
-    let items = as.getItemsWithAnnotation(this.ORGANIZER_FOLDER_ANNO);
-    if (items.length > 1) {
-      // Something went wrong, we cannot have more than one left pane folder,
-      // remove all left pane folders and continue.  We will create a new one.
-      items.forEach(safeRemoveItem);
-    } else if (items.length == 1 && items[0] != -1) {
-      leftPaneRoot = items[0];
-      // Check that organizer left pane root is valid.
-      let version = as.getItemAnnotation(leftPaneRoot, this.ORGANIZER_FOLDER_ANNO);
-      if (version != this.ORGANIZER_LEFTPANE_VERSION ||
-          !itemExists(leftPaneRoot)) {
-        // Invalid root, we must rebuild the left pane.
-        safeRemoveItem(leftPaneRoot);
-        leftPaneRoot = -1;
-      }
-    }
-
-    if (leftPaneRoot != -1) {
-      // A valid left pane folder has been found.
-      // Build the leftPaneQueries Map.  This is used to quickly access them,
-      // associating a mnemonic name to the real item ids.
-      delete this.leftPaneQueries;
-      this.leftPaneQueries = {};
-
-      let queryItems = as.getItemsWithAnnotation(this.ORGANIZER_QUERY_ANNO);
-      // While looping through queries we will also check for their validity.
-      let queriesCount = 0;
-      let corrupt = false;
-      for (let i = 0; i < queryItems.length; i++) {
-        let queryName = as.getItemAnnotation(queryItems[i], this.ORGANIZER_QUERY_ANNO);
-
-        // Some extension did use our annotation to decorate their items
-        // with icons, so we should check only our elements, to avoid dataloss.
-        if (!(queryName in queries))
-          continue;
-
-        let query = queries[queryName];
-        query.itemId = queryItems[i];
-
-        if (!itemExists(query.itemId)) {
-          // Orphan annotation, bail out and create a new left pane root.
-          corrupt = true;
-          break;
-        }
-
-        // Check that all queries have valid parents.
-        let parentId = bs.getFolderIdForItem(query.itemId);
-        if (!queryItems.includes(parentId) && parentId != leftPaneRoot) {
-          // The parent is not part of the left pane, bail out and create a new
-          // left pane root.
-          corrupt = true;
-          break;
-        }
-
-        // Titles could have been corrupted or the user could have changed his
-        // locale.  Check title and eventually fix it.
-        if (bs.getItemTitle(query.itemId) != query.title)
-          bs.setItemTitle(query.itemId, query.title);
-        if ("concreteId" in query) {
-          if (bs.getItemTitle(query.concreteId) != query.concreteTitle)
-            bs.setItemTitle(query.concreteId, query.concreteTitle);
-        }
-
-        // Add the query to our cache.
-        this.leftPaneQueries[queryName] = query.itemId;
-        queriesCount++;
-      }
-
-      // Note: it's not enough to just check for queriesCount, since we may
-      // find an invalid query just after accounting for a sufficient number of
-      // valid ones.  As well as we can't just rely on corrupt since we may find
-      // less valid queries than expected.
-      if (corrupt || queriesCount != EXPECTED_QUERY_COUNT) {
-        // Queries number is wrong, so the left pane must be corrupt.
-        // Note: we can't just remove the leftPaneRoot, because some query could
-        // have a bad parent, so we have to remove all items one by one.
-        queryItems.forEach(safeRemoveItem);
-        safeRemoveItem(leftPaneRoot);
-      } else {
-        // Everything is fine, return the current left pane folder.
-        return leftPaneRoot;
-      }
-    }
-
-    // Create a new left pane folder.
-    var callback = {
-      // Helper to create an organizer special query.
-      create_query: function CB_create_query(aQueryName, aParentId, aQueryUrl) {
-        let itemId = bs.insertBookmark(aParentId,
-                                       Services.io.newURI(aQueryUrl),
-                                       bs.DEFAULT_INDEX,
-                                       queries[aQueryName].title);
-        // Mark as special organizer query.
-        as.setItemAnnotation(itemId, PlacesUIUtils.ORGANIZER_QUERY_ANNO, aQueryName,
-                             0, as.EXPIRE_NEVER);
-        // We should never backup this, since it changes between profiles.
-        as.setItemAnnotation(itemId, PlacesUtils.EXCLUDE_FROM_BACKUP_ANNO, 1,
-                             0, as.EXPIRE_NEVER);
-        // Add to the queries map.
-        PlacesUIUtils.leftPaneQueries[aQueryName] = itemId;
-        return itemId;
-      },
-
-      // Helper to create an organizer special folder.
-      create_folder: function CB_create_folder(aFolderName, aParentId, aIsRoot) {
-              // Left Pane Root Folder.
-        let folderId = bs.createFolder(aParentId,
-                                       queries[aFolderName].title,
-                                       bs.DEFAULT_INDEX);
-        // We should never backup this, since it changes between profiles.
-        as.setItemAnnotation(folderId, PlacesUtils.EXCLUDE_FROM_BACKUP_ANNO, 1,
-                             0, as.EXPIRE_NEVER);
-
-        if (aIsRoot) {
-          // Mark as special left pane root.
-          as.setItemAnnotation(folderId, PlacesUIUtils.ORGANIZER_FOLDER_ANNO,
-                               PlacesUIUtils.ORGANIZER_LEFTPANE_VERSION,
-                               0, as.EXPIRE_NEVER);
-        } else {
-          // Mark as special organizer folder.
-          as.setItemAnnotation(folderId, PlacesUIUtils.ORGANIZER_QUERY_ANNO, aFolderName,
-                           0, as.EXPIRE_NEVER);
-          PlacesUIUtils.leftPaneQueries[aFolderName] = folderId;
-        }
-        return folderId;
-      },
-
-      runBatched: function CB_runBatched(aUserData) {
-        delete PlacesUIUtils.leftPaneQueries;
-        PlacesUIUtils.leftPaneQueries = { };
-
-        // Left Pane Root Folder.
-        leftPaneRoot = this.create_folder("PlacesRoot", bs.placesRoot, true);
-
-        // History Query.
-        this.create_query("History", leftPaneRoot,
-                          "place:type=" +
-                          Ci.nsINavHistoryQueryOptions.RESULTS_AS_DATE_QUERY +
-                          "&sort=" +
-                          Ci.nsINavHistoryQueryOptions.SORT_BY_DATE_DESCENDING);
-
-        // Downloads.
-        this.create_query("Downloads", leftPaneRoot,
-                          "place:transition=" +
-                          Ci.nsINavHistoryService.TRANSITION_DOWNLOAD +
-                          "&sort=" +
-                          Ci.nsINavHistoryQueryOptions.SORT_BY_DATE_DESCENDING);
-
-        // Tags Query.
-        this.create_query("Tags", leftPaneRoot,
-                          "place:type=" +
-                          Ci.nsINavHistoryQueryOptions.RESULTS_AS_TAG_QUERY +
-                          "&sort=" +
-                          Ci.nsINavHistoryQueryOptions.SORT_BY_TITLE_ASCENDING);
-
-        // All Bookmarks Folder.
-        this.create_query("AllBookmarks", leftPaneRoot,
-                          "place:type=" +
-                          Ci.nsINavHistoryQueryOptions.RESULTS_AS_ROOTS_QUERY);
-      }
-    };
-    bs.runInBatchMode(callback, null);
-
-    return leftPaneRoot;
-  },
-
-  /**
-   * If an item is a left-pane query, returns the name of the query
-   * or an empty string if not.
-   *
-   * @param aItemId id of a container
-   * @return the name of the query, or empty string if not a left-pane query
-   */
-  getLeftPaneQueryNameFromId: function PUIU_getLeftPaneQueryNameFromId(aItemId) {
-    var queryName = "";
-    // If the let pane hasn't been built, use the annotation service
-    // directly, to avoid building the left pane too early.
-    if (Object.getOwnPropertyDescriptor(this, "leftPaneFolderId").value === undefined) {
-      try {
-        queryName = PlacesUtils.annotations.
-                                getItemAnnotation(aItemId, this.ORGANIZER_QUERY_ANNO);
-      } catch (ex) {
-        // doesn't have the annotation
-        queryName = "";
-      }
-    } else {
-      // If the left pane has already been built, use the name->id map
-      // cached in PlacesUIUtils.
-      for (let [name, id] of Object.entries(this.leftPaneQueries)) {
-        if (aItemId == id)
-          queryName = name;
-      }
-    }
-    return queryName;
-  },
-
   shouldShowTabsFromOtherComputersMenuitem() {
-    let weaveOK = Weave.Status.checkSetup() != Weave.CLIENT_NOT_CONFIGURED &&
-                  Weave.Svc.Prefs.get("firstSync", "") != "notReady";
+    let weaveOK =
+      Weave.Status.checkSetup() != Weave.CLIENT_NOT_CONFIGURED &&
+      Weave.Svc.Prefs.get("firstSync", "") != "notReady";
     return weaveOK;
   },
 
@@ -1089,23 +865,21 @@ var PlacesUIUtils = {
   isFolderShortcutQueryString(queryString) {
     // Based on GetSimpleBookmarksQueryFolder in nsNavHistory.cpp.
 
-    let queriesParam = { }, optionsParam = { };
-    PlacesUtils.history.queryStringToQueries(queryString,
-                                             queriesParam,
-                                             { },
-                                             optionsParam);
-    let queries = queries.value;
-    if (queries.length == 0)
-      throw new Error(`Invalid place: uri: ${queryString}`);
-    return queries.length == 1 &&
-           queries[0].folderCount == 1 &&
-           !queries[0].hasBeginTime &&
-           !queries[0].hasEndTime &&
-           !queries[0].hasDomain &&
-           !queries[0].hasURI &&
-           !queries[0].hasSearchTerms &&
-           !queries[0].tags.length == 0 &&
-           optionsParam.value.maxResults == 0;
+    let query = {},
+      options = {};
+    PlacesUtils.history.queryStringToQuery(queryString, query, options);
+    query = query.value;
+    options = options.value;
+    return (
+      query.folderCount == 1 &&
+      !query.hasBeginTime &&
+      !query.hasEndTime &&
+      !query.hasDomain &&
+      !query.hasURI &&
+      !query.hasSearchTerms &&
+      !query.tags.length == 0 &&
+      options.maxResults == 0
+    );
   },
 
   /**
@@ -1121,13 +895,14 @@ var PlacesUIUtils = {
    * @throws if aFetchInfo is representing a separator.
    */
   async promiseNodeLikeFromFetchInfo(aFetchInfo) {
-    if (aFetchInfo.itemType == PlacesUtils.bookmarks.TYPE_SEPARATOR)
+    if (aFetchInfo.itemType == PlacesUtils.bookmarks.TYPE_SEPARATOR) {
       throw new Error("promiseNodeLike doesn't support separators");
+    }
 
     let parent = {
       itemId: await PlacesUtils.promiseItemId(aFetchInfo.parentGuid),
       bookmarkGuid: aFetchInfo.parentGuid,
-      type: Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER
+      type: Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER,
     };
 
     return Object.freeze({
@@ -1137,15 +912,18 @@ var PlacesUIUtils = {
       uri: aFetchInfo.url !== undefined ? aFetchInfo.url.href : "",
 
       get type() {
-        if (aFetchInfo.itemType == PlacesUtils.bookmarks.TYPE_FOLDER)
+        if (aFetchInfo.itemType == PlacesUtils.bookmarks.TYPE_FOLDER) {
           return Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER;
+        }
 
-        if (this.uri.length == 0)
+        if (this.uri.length == 0) {
           throw new Error("Unexpected item type");
+        }
 
         if (/^place:/.test(this.uri)) {
-          if (this.isFolderShortcutQueryString(this.uri))
+          if (this.isFolderShortcutQueryString(this.uri)) {
             return Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER_SHORTCUT;
+          }
 
           return Ci.nsINavHistoryResultNode.RESULT_TYPE_QUERY;
         }
@@ -1155,7 +933,7 @@ var PlacesUIUtils = {
 
       get parent() {
         return parent;
-      }
+      },
     });
   },
 
@@ -1194,61 +972,6 @@ var PlacesUIUtils = {
   },
 
   /**
-   * Constructs a Places Transaction for the drop or paste of a blob of data
-   * into a container.
-   *
-   * @param   aData
-   *          The unwrapped data blob of dropped or pasted data.
-   * @param   aNewParentGuid
-   *          GUID of the container the data was dropped or pasted into.
-   * @param   aIndex
-   *          The index within the container the item was dropped or pasted at.
-   * @param   aCopy
-   *          The drag action was copy, so don't move folders or links.
-   *
-   * @return  a Places Transaction that can be transacted for performing the
-   *          move/insert command.
-   */
-  getTransactionForData(aData, aNewParentGuid, aIndex, aCopy) {
-    if (!this.SUPPORTED_FLAVORS.includes(aData.type))
-      throw new Error(`Unsupported '${aData.type}' data type`);
-
-    if ("itemGuid" in aData && "instanceId" in aData &&
-        aData.instanceId == PlacesUtils.instanceId) {
-      if (!this.PLACES_FLAVORS.includes(aData.type))
-        throw new Error(`itemGuid unexpectedly set on ${aData.type} data`);
-
-      let info = { guid: aData.itemGuid,
-                   newParentGuid: aNewParentGuid,
-                   newIndex: aIndex };
-      if (aCopy) {
-        info.excludingAnnotation = "Places/SmartBookmark";
-        return PlacesTransactions.Copy(info);
-      }
-      return PlacesTransactions.Move(info);
-    }
-
-    // Since it's cheap and harmless, we allow the paste of separators and
-    // bookmarks from builds that use legacy transactions (i.e. when itemGuid
-    // was not set on PLACES_FLAVORS data). Containers are a different story,
-    // and thus disallowed.
-    if (aData.type == PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER)
-      throw new Error("Can't copy a container from a legacy-transactions build");
-
-    if (aData.type == PlacesUtils.TYPE_X_MOZ_PLACE_SEPARATOR) {
-      return PlacesTransactions.NewSeparator({ parentGuid: aNewParentGuid,
-                                               index: aIndex });
-    }
-
-    let title = aData.type != PlacesUtils.TYPE_UNICODE ? aData.title
-                                                       : aData.uri;
-    return PlacesTransactions.NewBookmark({ url: Services.io.newURI(aData.uri),
-                                            title,
-                                            parentGuid: aNewParentGuid,
-                                            index: aIndex });
-  },
-
-  /**
    * Processes a set of transfer items that have been dropped or pasted.
    * Batching will be applied where necessary.
    *
@@ -1266,12 +989,18 @@ var PlacesUIUtils = {
     if (insertionPoint.isTag) {
       let urls = items.filter(item => "uri" in item).map(item => item.uri);
       itemsCount = urls.length;
-      transactions = [PlacesTransactions.Tag({ urls, tag: insertionPoint.tagName })];
+      transactions = [
+        PlacesTransactions.Tag({ urls, tag: insertionPoint.tagName }),
+      ];
     } else {
       let insertionIndex = await insertionPoint.getIndex();
       itemsCount = items.length;
-      transactions = await getTransactionsForTransferItems(
-        items, insertionIndex, insertionPoint.guid, doCopy);
+      transactions = getTransactionsForTransferItems(
+        items,
+        insertionIndex,
+        insertionPoint.guid,
+        !doCopy
+      );
     }
 
     // Check if we actually have something to add, if we don't it probably wasn't
@@ -1290,10 +1019,8 @@ var PlacesUIUtils = {
       // If we're not a tag, then we need to get the ids of the items to select.
       batchingItem = async () => {
         for (let transaction of transactions) {
-          let guid = await transaction.transact();
-          if (guid) {
-            guidsToSelect.push(guid);
-          }
+          let result = await transaction.transact();
+          guidsToSelect = guidsToSelect.concat(result);
         }
       };
     }
@@ -1304,35 +1031,145 @@ var PlacesUIUtils = {
 
     return guidsToSelect;
   },
+
+  onSidebarTreeClick(event) {
+    // right-clicks are not handled here
+    if (event.button == 2) {
+      return;
+    }
+
+    let tree = event.target.parentNode;
+    let cell = tree.getCellAt(event.clientX, event.clientY);
+    if (cell.row == -1 || cell.childElt == "twisty") {
+      return;
+    }
+
+    // getCoordsForCellItem returns the x coordinate in logical coordinates
+    // (i.e., starting from the left and right sides in LTR and RTL modes,
+    // respectively.)  Therefore, we make sure to exclude the blank area
+    // before the tree item icon (that is, to the left or right of it in
+    // LTR and RTL modes, respectively) from the click target area.
+    let win = tree.ownerGlobal;
+    let rect = tree.getCoordsForCellItem(cell.row, cell.col, "image");
+    let isRTL = win.getComputedStyle(tree).direction == "rtl";
+    let mouseInGutter = isRTL ? event.clientX > rect.x : event.clientX < rect.x;
+
+    let metaKey =
+      AppConstants.platform === "macosx" ? event.metaKey : event.ctrlKey;
+    let modifKey = metaKey || event.shiftKey;
+    let isContainer = tree.view.isContainer(cell.row);
+    let openInTabs =
+      isContainer &&
+      (event.button == 1 || (event.button == 0 && modifKey)) &&
+      PlacesUtils.hasChildURIs(tree.view.nodeForTreeIndex(cell.row));
+
+    if (event.button == 0 && isContainer && !openInTabs) {
+      tree.view.toggleOpenState(cell.row);
+    } else if (
+      !mouseInGutter &&
+      openInTabs &&
+      event.originalTarget.localName == "treechildren"
+    ) {
+      tree.view.selection.select(cell.row);
+      this.openMultipleLinksInTabs(tree.selectedNode, event, tree);
+    } else if (
+      !mouseInGutter &&
+      !isContainer &&
+      event.originalTarget.localName == "treechildren"
+    ) {
+      // Clear all other selection since we're loading a link now. We must
+      // do this *before* attempting to load the link since openURL uses
+      // selection as an indication of which link to load.
+      tree.view.selection.select(cell.row);
+      this.openNodeWithEvent(tree.selectedNode, event);
+    }
+  },
+
+  onSidebarTreeKeyPress(event) {
+    let node = event.target.selectedNode;
+    if (node) {
+      if (event.keyCode == event.DOM_VK_RETURN) {
+        this.openNodeWithEvent(node, event);
+      }
+    }
+  },
+
+  /**
+   * The following function displays the URL of a node that is being
+   * hovered over.
+   */
+  onSidebarTreeMouseMove(event) {
+    let treechildren = event.target;
+    if (treechildren.localName != "treechildren") {
+      return;
+    }
+
+    let tree = treechildren.parentNode;
+    let cell = tree.getCellAt(event.clientX, event.clientY);
+
+    // cell.row is -1 when the mouse is hovering an empty area within the tree.
+    // To avoid showing a URL from a previously hovered node for a currently
+    // hovered non-url node, we must clear the moused-over URL in these cases.
+    if (cell.row != -1) {
+      let node = tree.view.nodeForTreeIndex(cell.row);
+      if (PlacesUtils.nodeIsURI(node)) {
+        this.setMouseoverURL(node.uri, tree.ownerGlobal);
+        return;
+      }
+    }
+    this.setMouseoverURL("", tree.ownerGlobal);
+  },
+
+  setMouseoverURL(url, win) {
+    // When the browser window is closed with an open sidebar, the sidebar
+    // unload event happens after the browser's one.  In this case
+    // top.XULBrowserWindow has been nullified already.
+    if (win.top.XULBrowserWindow) {
+      win.top.XULBrowserWindow.setOverLink(url, null);
+    }
+  },
 };
 
 // These are lazy getters to avoid importing PlacesUtils immediately.
 XPCOMUtils.defineLazyGetter(PlacesUIUtils, "PLACES_FLAVORS", () => {
-  return [PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER,
-          PlacesUtils.TYPE_X_MOZ_PLACE_SEPARATOR,
-          PlacesUtils.TYPE_X_MOZ_PLACE];
+  return [
+    PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER,
+    PlacesUtils.TYPE_X_MOZ_PLACE_SEPARATOR,
+    PlacesUtils.TYPE_X_MOZ_PLACE,
+  ];
 });
 XPCOMUtils.defineLazyGetter(PlacesUIUtils, "URI_FLAVORS", () => {
-  return [PlacesUtils.TYPE_X_MOZ_URL,
-          TAB_DROP_TYPE,
-          PlacesUtils.TYPE_UNICODE];
+  return [PlacesUtils.TYPE_X_MOZ_URL, TAB_DROP_TYPE, PlacesUtils.TYPE_UNICODE];
 });
 XPCOMUtils.defineLazyGetter(PlacesUIUtils, "SUPPORTED_FLAVORS", () => {
-  return [...PlacesUIUtils.PLACES_FLAVORS,
-          ...PlacesUIUtils.URI_FLAVORS];
+  return [...PlacesUIUtils.PLACES_FLAVORS, ...PlacesUIUtils.URI_FLAVORS];
 });
 
 XPCOMUtils.defineLazyGetter(PlacesUIUtils, "ellipsis", function() {
-  return Services.prefs.getComplexValue("intl.ellipsis",
-                                        Ci.nsIPrefLocalizedString).data;
+  return Services.prefs.getComplexValue(
+    "intl.ellipsis",
+    Ci.nsIPrefLocalizedString
+  ).data;
 });
 
-XPCOMUtils.defineLazyPreferenceGetter(PlacesUIUtils, "loadBookmarksInBackground",
-                                      PREF_LOAD_BOOKMARKS_IN_BACKGROUND, false);
-XPCOMUtils.defineLazyPreferenceGetter(PlacesUIUtils, "loadBookmarksInTabs",
-                                      PREF_LOAD_BOOKMARKS_IN_TABS, false);
-XPCOMUtils.defineLazyPreferenceGetter(PlacesUIUtils, "openInTabClosesMenu",
-  "browser.bookmarks.openInTabClosesMenu", false);
+XPCOMUtils.defineLazyPreferenceGetter(
+  PlacesUIUtils,
+  "loadBookmarksInBackground",
+  PREF_LOAD_BOOKMARKS_IN_BACKGROUND,
+  false
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  PlacesUIUtils,
+  "loadBookmarksInTabs",
+  PREF_LOAD_BOOKMARKS_IN_TABS,
+  false
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  PlacesUIUtils,
+  "openInTabClosesMenu",
+  "browser.bookmarks.openInTabClosesMenu",
+  false
+);
 
 /**
  * Determines if an unwrapped node can be moved.
@@ -1342,26 +1179,21 @@ XPCOMUtils.defineLazyPreferenceGetter(PlacesUIUtils, "openInTabClosesMenu",
  * @return True if the node can be moved, false otherwise.
  */
 function canMoveUnwrappedNode(unwrappedNode) {
-  if ((unwrappedNode.concreteGuid && PlacesUtils.isRootItem(unwrappedNode.concreteGuid)) ||
-      unwrappedNode.id <= 0 || PlacesUtils.isRootItem(unwrappedNode.id)) {
+  if (
+    (unwrappedNode.concreteGuid &&
+      PlacesUtils.isRootItem(unwrappedNode.concreteGuid)) ||
+    (unwrappedNode.guid && PlacesUtils.isRootItem(unwrappedNode.guid))
+  ) {
     return false;
   }
 
   let parentGuid = unwrappedNode.parentGuid;
   // If there's no parent Guid, this was likely a virtual query that returns
   // bookmarks, such as a tags query.
-  if (!parentGuid ||
-      parentGuid == PlacesUtils.bookmarks.rootGuid) {
+  if (!parentGuid || parentGuid == PlacesUtils.bookmarks.rootGuid) {
     return false;
   }
-  // leftPaneFolderId and allBookmarksFolderId are lazy getters running
-  // at least a synchronous DB query. Therefore we don't want to invoke
-  // them first, especially because isCommandEnabled may be called way
-  // before the left pane folder is even necessary.
-  if (typeof Object.getOwnPropertyDescriptor(PlacesUIUtils, "leftPaneFolderId").get != "function" &&
-      (unwrappedNode.parent == PlacesUIUtils.leftPaneFolderId)) {
-    return false;
-  }
+
   return true;
 }
 
@@ -1376,10 +1208,15 @@ function canMoveUnwrappedNode(unwrappedNode) {
  *                  if one could not be found.
  */
 function getResultForBatching(viewOrElement) {
-  if (viewOrElement && viewOrElement instanceof Ci.nsIDOMElement &&
-      viewOrElement.id === "placesList") {
+  if (
+    viewOrElement &&
+    Element.isInstance(viewOrElement) &&
+    viewOrElement.id === "placesList"
+  ) {
     // Note: fall back to the existing item if we can't find the right-hane pane.
-    viewOrElement = viewOrElement.ownerDocument.getElementById("placeContent") || viewOrElement;
+    viewOrElement =
+      viewOrElement.ownerDocument.getElementById("placeContent") ||
+      viewOrElement;
   }
 
   if (viewOrElement && viewOrElement.result) {
@@ -1397,53 +1234,132 @@ function getResultForBatching(viewOrElement) {
  * @param {Integer} insertionIndex The requested index for insertion.
  * @param {String} insertionParentGuid The guid of the parent folder to insert
  *                                     or move the items to.
- * @param {Boolean} doCopy Set to true to copy the items, false will move them
- *                         if possible.
+ * @param {Boolean} doMove Set to true to MOVE the items if possible, false will
+ *                         copy them.
  * @return {Array} Returns an array of created PlacesTransactions.
  */
-async function getTransactionsForTransferItems(items, insertionIndex,
-                                               insertionParentGuid, doCopy) {
+function getTransactionsForTransferItems(
+  items,
+  insertionIndex,
+  insertionParentGuid,
+  doMove
+) {
+  let canMove = true;
+  for (let item of items) {
+    if (!PlacesUIUtils.SUPPORTED_FLAVORS.includes(item.type)) {
+      throw new Error(`Unsupported '${item.type}' data type`);
+    }
+
+    // Work out if this is data from the same app session we're running in.
+    if (!("instanceId" in item) || item.instanceId != PlacesUtils.instanceId) {
+      if (item.type == PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER) {
+        throw new Error(
+          "Can't copy a container from a legacy-transactions build"
+        );
+      }
+      // Only log if this is one of "our" types as external items, e.g. drag from
+      // url bar to toolbar, shouldn't complain.
+      if (PlacesUIUtils.PLACES_FLAVORS.includes(item.type)) {
+        Cu.reportError(
+          "Tried to move an unmovable Places " +
+            "node, reverting to a copy operation."
+        );
+      }
+
+      // We can never move from an external copy.
+      canMove = false;
+    }
+
+    if (doMove && canMove) {
+      canMove = canMoveUnwrappedNode(item);
+    }
+  }
+
+  if (doMove && !canMove) {
+    doMove = false;
+  }
+
+  if (doMove) {
+    // Move is simple, we pass the transaction a list of GUIDs and where to move
+    // them to.
+    return [
+      PlacesTransactions.Move({
+        guids: items.map(item => item.itemGuid),
+        newParentGuid: insertionParentGuid,
+        newIndex: insertionIndex,
+      }),
+    ];
+  }
+
+  return getTransactionsForCopy(items, insertionIndex, insertionParentGuid);
+}
+
+/**
+ * Processes a set of transfer items and returns an array of transactions.
+ *
+ * @param {Array} items A list of unwrapped nodes to get transactions for.
+ * @param {Integer} insertionIndex The requested index for insertion.
+ * @param {String} insertionParentGuid The guid of the parent folder to insert
+ *                                     or move the items to.
+ * @return {Array} Returns an array of created PlacesTransactions.
+ */
+function getTransactionsForCopy(items, insertionIndex, insertionParentGuid) {
   let transactions = [];
   let index = insertionIndex;
 
   for (let item of items) {
-    if (index != -1 && item.itemGuid) {
-      // Note: we use the parent from the existing bookmark as the sidebar
-      // gives us an unwrapped.parent that is actually a query and not the real
-      // parent.
-      let existingBookmark = await PlacesUtils.bookmarks.fetch(item.itemGuid);
+    let transaction;
+    let guid = item.itemGuid;
 
-      // If we're dropping on the same folder, then we may need to adjust
-      // the index to insert at the correct place.
-      if (existingBookmark && insertionParentGuid == existingBookmark.parentGuid) {
-        if (index > existingBookmark.index) {
-          // If we're dragging down, we need to go one lower to insert at
-          // the real point as moving the element changes the index of
-          // everything below by 1.
-          index--;
-        } else if (index == existingBookmark.index) {
-          // This isn't moving so we skip it.
-          continue;
-        }
-      }
+    if (
+      PlacesUIUtils.PLACES_FLAVORS.includes(item.type) &&
+      // For anything that is comming from within this session, we do a
+      // direct copy, otherwise we fallback and form a new item below.
+      "instanceId" in item &&
+      item.instanceId == PlacesUtils.instanceId &&
+      // If the Item doesn't have a guid, this could be a virtual tag query or
+      // other item, so fallback to inserting a new bookmark with the URI.
+      guid &&
+      // For virtual root items, we fallback to creating a new bookmark, as
+      // we want a shortcut to be created, not a full tree copy.
+      !PlacesUtils.bookmarks.isVirtualRootItem(guid) &&
+      !PlacesUtils.isVirtualLeftPaneItem(guid)
+    ) {
+      transaction = PlacesTransactions.Copy({
+        guid,
+        newIndex: index,
+        newParentGuid: insertionParentGuid,
+      });
+    } else if (item.type == PlacesUtils.TYPE_X_MOZ_PLACE_SEPARATOR) {
+      transaction = PlacesTransactions.NewSeparator({
+        index,
+        parentGuid: insertionParentGuid,
+      });
+    } else {
+      let title = item.type != PlacesUtils.TYPE_UNICODE ? item.title : item.uri;
+      transaction = PlacesTransactions.NewBookmark({
+        index,
+        parentGuid: insertionParentGuid,
+        title,
+        url: item.uri,
+      });
     }
 
-    // If this is not a copy, check for safety that we can move the
-    // source, otherwise report an error and fallback to a copy.
-    if (!doCopy && !canMoveUnwrappedNode(item)) {
-      Cu.reportError("Tried to move an unmovable Places " +
-                     "node, reverting to a copy operation.");
-      doCopy = true;
-    }
-    transactions.push(
-      PlacesUIUtils.getTransactionForData(item,
-                                          insertionParentGuid,
-                                          index,
-                                          doCopy));
+    transactions.push(transaction);
 
-    if (index != -1 && item.itemGuid) {
+    if (index != -1) {
       index++;
     }
   }
   return transactions;
+}
+
+function getBrowserWindow(aWindow) {
+  // Prefer the caller window if it's a browser window, otherwise use
+  // the top browser window.
+  return aWindow &&
+    aWindow.document.documentElement.getAttribute("windowtype") ==
+      "navigator:browser"
+    ? aWindow
+    : BrowserWindowTracker.getTopWindow();
 }

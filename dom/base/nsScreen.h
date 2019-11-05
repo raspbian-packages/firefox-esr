@@ -7,27 +7,27 @@
 #define nsScreen_h___
 
 #include "mozilla/Attributes.h"
+#include "mozilla/dom/ScreenBinding.h"
+#include "mozilla/dom/ScreenLuminance.h"
 #include "mozilla/dom/ScreenOrientation.h"
 #include "mozilla/DOMEventTargetHelper.h"
 #include "mozilla/ErrorResult.h"
-#include "nsIDOMScreen.h"
+#include "mozilla/StaticPrefs.h"
 #include "nsCOMPtr.h"
 #include "nsRect.h"
 
 class nsDeviceContext;
 
 // Script "screen" object
-class nsScreen : public mozilla::DOMEventTargetHelper, public nsIDOMScreen {
+class nsScreen : public mozilla::DOMEventTargetHelper {
   typedef mozilla::ErrorResult ErrorResult;
 
  public:
   static already_AddRefed<nsScreen> Create(nsPIDOMWindowInner* aWindow);
 
   NS_DECL_ISUPPORTS_INHERITED
-  NS_DECL_NSIDOMSCREEN
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(nsScreen,
                                            mozilla::DOMEventTargetHelper)
-  NS_REALLY_FORWARD_NSIDOMEVENTTARGET(mozilla::DOMEventTargetHelper)
 
   nsPIDOMWindowInner* GetParentObject() const { return GetOwner(); }
 
@@ -99,6 +99,21 @@ class nsScreen : public mozilla::DOMEventTargetHelper, public nsIDOMScreen {
     aRv = GetAvailRect(rect);
     return rect.Height();
   }
+
+  // Media Capabilities extension
+  mozilla::dom::ScreenColorGamut ColorGamut() const {
+    return mozilla::dom::ScreenColorGamut::Srgb;
+  }
+
+  already_AddRefed<mozilla::dom::ScreenLuminance> GetLuminance() const {
+    return nullptr;
+  }
+
+  static bool MediaCapabilitiesEnabled(JSContext* aCx, JSObject* aGlobal) {
+    return mozilla::StaticPrefs::MediaCapabilitiesScreenEnabled();
+  }
+
+  IMPL_EVENT_HANDLER(change);
 
   // Deprecated
   void GetMozOrientation(nsString& aOrientation,

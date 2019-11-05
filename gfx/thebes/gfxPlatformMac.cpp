@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,6 +18,7 @@
 #include "nsTArray.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/VsyncDispatcher.h"
+#include "nsCocoaFeatures.h"
 #include "nsUnicodeProperties.h"
 #include "qcms.h"
 #include "gfx2DGlue.h"
@@ -73,34 +74,35 @@ gfxPlatformMac::gfxPlatformMac() {
   DisableFontActivation();
   mFontAntiAliasingThreshold = ReadAntiAliasingThreshold();
 
-  uint32_t canvasMask = BackendTypeBit(BackendType::SKIA);
-  uint32_t contentMask = BackendTypeBit(BackendType::SKIA);
-  InitBackendPrefs(canvasMask, BackendType::SKIA, contentMask,
-                   BackendType::SKIA);
-
-  // XXX: Bug 1036682 - we run out of fds on Mac when using tiled layers because
-  // with 256x256 tiles we can easily hit the soft limit of 800 when using
-  // double buffered tiles in e10s, so let's bump the soft limit to the hard
-  // limit for the OS up to a new cap of OPEN_MAX.
-  struct rlimit limits;
-  if (getrlimit(RLIMIT_NOFILE, &limits) == 0) {
-    limits.rlim_cur = std::min(rlim_t(OPEN_MAX), limits.rlim_max);
-    if (setrlimit(RLIMIT_NOFILE, &limits) != 0) {
-      NS_WARNING(
-          "Unable to bump RLIMIT_NOFILE to the maximum number on this OS");
-    }
-  }
+  InitBackendPrefs(GetBackendPrefs());
 
   MacIOSurfaceLib::LoadLibrary();
+
+  if (nsCocoaFeatures::OnHighSierraOrLater()) {
+    mHasNativeColrFontSupport = true;
+  }
 }
 
 gfxPlatformMac::~gfxPlatformMac() { gfxCoreTextShaper::Shutdown(); }
+
+BackendPrefsData gfxPlatformMac::GetBackendPrefs() const {
+  BackendPrefsData data;
+
+  data.mCanvasBitmask = BackendTypeBit(BackendType::SKIA);
+  data.mContentBitmask = BackendTypeBit(BackendType::SKIA);
+  data.mCanvasDefault = BackendType::SKIA;
+  data.mContentDefault = BackendType::SKIA;
+
+  return data;
+}
 
 bool gfxPlatformMac::UsesTiling() const {
   // The non-tiling ContentClient requires CrossProcessSemaphore which
   // isn't implemented for OSX.
   return true;
 }
+
+bool gfxPlatformMac::ContentUsesTiling() const { return UsesTiling(); }
 
 gfxPlatformFontList* gfxPlatformMac::CreatePlatformFontList() {
   gfxPlatformFontList* list = new gfxMacPlatformFontList();
@@ -317,12 +319,12 @@ void gfxPlatformMac::GetCommonFallbackFonts(uint32_t aCh, uint32_t aNextCh,
   aFontList.AppendElement(kFontArialUnicodeMS);
 }
 
-/*static*/ void gfxPlatformMac::LookupSystemFont(
-    mozilla::LookAndFeel::FontID aSystemFontID, nsAString& aSystemFontName,
-    gfxFontStyle& aFontStyle, float aDevPixPerCSSPixel) {
+/*static*/
+void gfxPlatformMac::LookupSystemFont(
+    mozilla::LookAndFeel::FontID aSystemFontID, nsACString& aSystemFontName,
+    gfxFontStyle& aFontStyle) {
   gfxMacPlatformFontList* pfl = gfxMacPlatformFontList::PlatformFontList();
-  return pfl->LookupSystemFont(aSystemFontID, aSystemFontName, aFontStyle,
-                               aDevPixPerCSSPixel);
+  return pfl->LookupSystemFont(aSystemFontID, aSystemFontName, aFontStyle);
 }
 
 uint32_t gfxPlatformMac::ReadAntiAliasingThreshold() {
@@ -373,7 +375,7 @@ class OSXVsyncSource final : public VsyncSource {
       mTimer = NS_NewTimer();
     }
 
-    ~OSXDisplay() override { MOZ_ASSERT(NS_IsMainThread()); }
+    virtual ~OSXDisplay() { MOZ_ASSERT(NS_IsMainThread()); }
 
     static void RetryEnableVsync(nsITimer* aTimer, void* aOsxDisplay) {
       MOZ_ASSERT(NS_IsMainThread());
@@ -393,8 +395,23 @@ class OSXVsyncSource final : public VsyncSource {
       // in multi-monitor situations. According to the docs, it is compatible
       // with all displays running on the computer But if we have different
       // monitors at different display rates, we may hit issues.
-      if (CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink) !=
-          kCVReturnSuccess) {
+      CVReturn retval = CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink);
+
+      // Workaround for bug 1201401: CVDisplayLinkCreateWithCGDisplays()
+      // (called by CVDisplayLinkCreateWithActiveCGDisplays()) sometimes
+      // creates a CVDisplayLinkRef with an uninitialized (nulled) internal
+      // pointer. If we continue to use this CVDisplayLinkRef, we will
+      // eventually crash in CVCGDisplayLink::getDisplayTimes(), where the
+      // internal pointer is dereferenced. Fortunately, when this happens
+      // another internal variable is also left uninitialized (zeroed),
+      // which is accessible via CVDisplayLinkGetCurrentCGDisplay(). In
+      // normal conditions the current display is never zero.
+      if ((retval == kCVReturnSuccess) &&
+          (CVDisplayLinkGetCurrentCGDisplay(mDisplayLink) == 0)) {
+        retval = kCVReturnInvalidDisplay;
+      }
+
+      if (retval != kCVReturnSuccess) {
         NS_WARNING(
             "Could not create a display link with all active displays. "
             "Retrying");
@@ -491,7 +508,7 @@ class OSXVsyncSource final : public VsyncSource {
   };  // OSXDisplay
 
  private:
-  ~OSXVsyncSource() override = default;
+  virtual ~OSXVsyncSource() = default;
 
   OSXDisplay mGlobalDisplay;
 };  // OSXVsyncSource
@@ -578,4 +595,12 @@ void gfxPlatformMac::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
   }
 
   ::CFRelease(iccp);
+}
+
+bool gfxPlatformMac::CheckVariationFontSupport() {
+  // We don't allow variation fonts to be enabled before 10.13,
+  // as although the Core Text APIs existed, they are known to be
+  // fairly buggy.
+  // (Note that Safari also requires 10.13 for variation-font support.)
+  return nsCocoaFeatures::OnHighSierraOrLater();
 }

@@ -10,6 +10,10 @@
 #include "mozilla/Attributes.h"
 #include "nsMathMLContainerFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // Base class to handle token elements
 //
@@ -18,8 +22,8 @@ class nsMathMLTokenFrame : public nsMathMLContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLTokenFrame)
 
-  friend nsIFrame* NS_NewMathMLTokenFrame(nsIPresShell* aPresShell,
-                                          nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLTokenFrame(mozilla::PresShell* aPresShell,
+                                          ComputedStyle* aStyle);
 
   NS_IMETHOD
   TransmitAutomaticData() override {
@@ -53,8 +57,10 @@ class nsMathMLTokenFrame : public nsMathMLContainerFrame {
                          ReflowOutput& aDesiredSize) override;
 
  protected:
-  explicit nsMathMLTokenFrame(nsStyleContext* aContext, ClassID aID = kClassID)
-      : nsMathMLContainerFrame(aContext, aID) {}
+  explicit nsMathMLTokenFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext,
+                              ClassID aID = kClassID)
+      : nsMathMLContainerFrame(aStyle, aPresContext, aID) {}
   virtual ~nsMathMLTokenFrame();
 
   void MarkTextFramesAsTokenMathML();

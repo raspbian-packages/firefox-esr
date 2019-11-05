@@ -6,8 +6,7 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="Accessible XUL button hierarchy tests">
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
 
   <script type="application/javascript"
           src="../common.js" />
@@ -53,7 +52,7 @@
     <body xmlns="http://www.w3.org/1999/xhtml">
       <a target="_blank"
          href="https://bugzilla.mozilla.org/show_bug.cgi?id=249292"
-         title="Ensure accessible children for toolbarbutton types 'menu' and 'menu-button'">
+         title="Ensure accessible children for toolbarbutton types 'menu'">
         Mozilla Bug 249292
       </a><br/>
       <p id="display"></p>

@@ -2,17 +2,26 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
+
+    "3rdparty": {
+      "type": "object",
+      "properties": {
+        "Extensions" : {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "type": "JSON"
+            }
+          }
+        }
+      }
+    },
+
     "AppUpdateURL": {
-      "description": "Sets custom app update server URL.",
-      "machine_only": true,
       "type": "URL"
     },
 
     "Authentication": {
-      "description": "Sites that support integrated authentication. See https://developer.mozilla.org/en-US/docs/Mozilla/Integrated_authentication",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "object",
       "properties": {
         "SPNEGO" : {
@@ -44,42 +53,39 @@
               "type": "boolean"
             }
           }
+        },
+        "AllowProxies": {
+          "type": "object",
+          "properties": {
+            "SPNEGO": {
+              "type": "boolean"
+            },
+
+            "NTLM": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
 
     "BlockAboutAddons": {
-      "description": "Block access to the Add-ons Mananger (about:addons).",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "BlockAboutConfig": {
-      "description": "Blocks access to the about:config page.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "BlockAboutProfiles": {
-      "description": "Blocks access to the about:profiles page.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "BlockAboutSupport": {
-      "description": "Blocks access to the about:support page.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "Bookmarks": {
-      "description": "Allows the creation of bookmarks in the Bookmarks bar, Bookmarks menu, or a specified folder inside them.",
-      "first_available": "60.0",
-
       "type": "array",
       "items": {
         "type": "object",
@@ -114,9 +120,6 @@
     },
 
     "Certificates": {
-      "description": "Whether or not to use built in certs. This policy is Windows only at this time.",
-      "first_available": "60.0",
-
       "type": "object",
       "properties": {
         "ImportEnterpriseRoots": {
@@ -132,13 +135,11 @@
     },
 
     "Cookies": {
-      "description": "Allow or deny websites to set cookies.",
-      "first_available": "60.0",
-
       "type": "object",
       "properties": {
         "Allow": {
           "type": "array",
+          "strict": false,
           "items": {
             "type": "origin"
           }
@@ -146,6 +147,7 @@
 
         "Block": {
           "type": "array",
+          "strict": false,
           "items": {
             "type": "origin"
           }
@@ -160,6 +162,10 @@
           "enum": ["always", "never", "from-visited"]
         },
 
+        "RejectTracker": {
+          "type": "boolean"
+        },
+
         "ExpireAtSessionEnd": {
           "type": "boolean"
         },
@@ -170,116 +176,71 @@
       }
     },
 
-    "DisableAppUpdate": {
-      "description": "Prevent the browser from updating.",
-      "first_available": "60.0",
-      "enterprise_only": true,
+    "DefaultDownloadDirectory": {
+      "type": "string"
+    },
 
+    "DisableAppUpdate": {
       "type": "boolean"
     },
 
     "DisableBuiltinPDFViewer": {
-      "description": "Disables PDF.js, which displays PDFs within Firefox.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableDeveloperTools": {
-      "description": "Prevents access to developer tools.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableFeedbackCommands": {
-      "description": "Prevents ability to send feedback from the help menu (\"Submit Feedback\" and \"Report Deceptive Site\").",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableFirefoxAccounts": {
-      "description": "Disables Firefox Account based services, including Sync.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableFirefoxScreenshots": {
-      "description": "Prevents usage of the Firefox Screenshots feature.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableFirefoxStudies": {
-      "description": "Prevents Firefox from running studies.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableForgetButton": {
-      "description": "Prevents access to the \"Forget\" button.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableFormHistory": {
-      "description": "Don't remember search and form history.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableMasterPasswordCreation": {
-      "description": "If true, removes access to create a master password.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisablePocket": {
-      "description": "Prevents ability to save webpages to Pocket.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisablePrivateBrowsing": {
-      "description": "Disables private browsing.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableProfileImport": {
-      "description": "Disables the Firefox \"Import data from another browser\" button",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableProfileRefresh": {
-      "description": "Disables the \"Refresh Firefox\" button in about:support",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableSafeMode": {
-      "description": "Prevents ability to restart in safe mode. You can only prevent the Shift key by using GPO on Windows.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableSecurityBypass": {
-      "description": "Prevents the user from bypassing certain security warnings.",
-      "first_available": "60.0",
-
       "type": "object",
       "properties": {
         "InvalidCertificate": {
@@ -293,53 +254,61 @@
     },
 
     "DisableSetDesktopBackground": {
-      "description": "Prevents usage of the \"Set Image as Desktop Background\" feature.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisableSystemAddonUpdate": {
-      "description": "Prevent the browser from installing and updating system addons.",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "boolean"
     },
 
     "DisableTelemetry": {
-      "description": "Turns off telemetry.",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "boolean"
     },
 
     "DisplayBookmarksToolbar": {
-      "description": "Causes the bookmarks toolbar to be displayed by default.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "DisplayMenuBar": {
-      "description": "Causes the menu bar to be displayed by default.",
-      "first_available": "60.0",
-
       "type": "boolean"
+    },
+
+    "DNSOverHTTPS": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "ProviderURL": {
+          "type": "URLorEmpty"
+        },
+        "AllowProxies": {
+          "type": "object",
+          "properties": {
+            "SPNEGO": {
+              "type": "boolean"
+            },
+
+            "NTLM": {
+              "type": "boolean"
+            }
+          }
+        },
+        "Locked": {
+          "type": "boolean"
+        }
+      }
     },
 
     "DontCheckDefaultBrowser": {
-      "description": "Don't check for the default browser on startup.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
-    "EnableTrackingProtection": {
-      "description": "Enables or disables tracking protection and optionally locks it.",
-      "first_available": "60.0",
+    "DownloadDirectory": {
+      "type": "string"
+    },
 
+    "EnableTrackingProtection": {
       "type": "object",
       "properties": {
         "Value": {
@@ -347,16 +316,17 @@
         },
         "Locked": {
           "type": "boolean"
+        },
+        "Cryptomining": {
+          "type": "boolean"
+        },
+        "Fingerprinting": {
+          "type": "boolean"
         }
-      },
-      "required": ["Value"]
+      }
     },
 
     "Extensions": {
-      "description": "Install, uninstall or lock extensions. The Install option takes URLs or paths as parameters. The Uninstall and Locked options take extension IDs.",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "object",
       "properties": {
         "Install" : {
@@ -380,18 +350,88 @@
       }
     },
 
+    "ExtensionSettings": {
+      "type": ["JSON", "object"],
+      "properties": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "installation_mode": {
+              "type": "string",
+              "enum": ["allowed", "blocked"]
+            },
+            "allowed_types": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["extension", "dictionary", "locale", "theme"]
+              }
+            },
+            "blocked_install_message": {
+              "type": "string"
+            },
+            "install_sources": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "properties": {
+            "installation_mode": {
+              "type": "string",
+              "enum": ["allowed", "blocked", "force_installed", "normal_installed"]
+            },
+            "install_url": {
+              "type": "string"
+            },
+            "blocked_install_message": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+
     "ExtensionUpdate": {
       "type": "boolean"
     },
 
-    "FlashPlugin": {
-      "description": "Allow or deny flash plugin usage.",
-      "first_available": "60.0",
+    "FirefoxHome": {
+      "type": "object",
+      "properties": {
+        "Search": {
+          "type": "boolean"
+        },
+        "TopSites": {
+          "type": "boolean"
+        },
+        "Highlights": {
+          "type": "boolean"
+        },
+        "Pocket": {
+          "type": "boolean"
+        },
+        "Snippets": {
+          "type": "boolean"
+        },
+        "Locked": {
+          "type": "boolean"
+        }
+      }
+    },
 
+    "FlashPlugin": {
       "type": "object",
       "properties": {
         "Allow": {
           "type": "array",
+          "strict": false,
           "items": {
             "type": "origin"
           }
@@ -399,6 +439,7 @@
 
         "Block": {
           "type": "array",
+          "strict": false,
           "items": {
             "type": "origin"
           }
@@ -415,17 +456,10 @@
     },
 
     "HardwareAcceleration": {
-      "description": "If false, prevents ability to turn on hardware acceleration.",
-      "first_available": "60.0",
-
       "type": "boolean"
     },
 
     "Homepage": {
-      "description": "Set and optionally lock the homepage.",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "object",
       "properties": {
         "URL": {
@@ -436,6 +470,7 @@
         },
         "Additional": {
           "type": "array",
+          "strict": false,
           "items": {
             "type": "URL"
           }
@@ -448,13 +483,11 @@
     },
 
     "InstallAddonsPermission": {
-      "description": "Allow webites to install add-ons.",
-      "first_available": "60.0",
-
       "type": "object",
       "properties": {
         "Allow": {
           "type": "array",
+          "strict": false,
           "items": {
             "type": "origin"
           }
@@ -465,44 +498,50 @@
       }
     },
 
+    "LegacyProfiles": {
+      "type": "boolean"
+    },
+
+    "LocalFileLinks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+
     "NetworkPrediction": {
       "type": "boolean"
     },
 
-    "NoDefaultBookmarks": {
-      "description": "Don't create the default bookmarks bundled with Firefox, nor the Smart Bookmarks (Most Visited, Recent Tags). Note: this policy is only effective if used before the first run of the profile.",
-      "first_available": "60.0",
+    "NewTabPage": {
+      "type": "boolean"
+    },
 
+    "NoDefaultBookmarks": {
       "type": "boolean"
     },
 
     "OfferToSaveLogins": {
-      "description": "Enforces the setting to allow Firefox to offer to remember saved logins and passwords. Both true and false values are accepted.",
-      "first_available": "60.0",
+      "type": "boolean"
+    },
 
+    "OfferToSaveLoginsDefault": {
       "type": "boolean"
     },
 
     "OverrideFirstRunPage": {
-      "description": "Override the first run page. Set this policy to blank if you want to disable the first run page.",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "URLorEmpty"
     },
 
     "OverridePostUpdatePage": {
-      "description": "Override the post-update \"What's New\" page. Set this policy to blank if you want to disable the post-update page.",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "URLorEmpty"
     },
 
-    "Permissions": {
-      "description": "Configure permissions for camera, microphone, location and notifications.",
-      "first_available": "60.0",
+    "PasswordManagerEnabled": {
+      "type": "boolean"
+    },
 
+    "Permissions": {
       "type": "object",
       "properties": {
         "Camera": {
@@ -510,6 +549,7 @@
           "properties": {
             "Allow": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -517,6 +557,7 @@
 
             "Block": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -537,6 +578,7 @@
           "properties": {
             "Allow": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -544,6 +586,7 @@
 
             "Block": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -564,6 +607,7 @@
           "properties": {
             "Allow": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -571,6 +615,7 @@
 
             "Block": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -591,6 +636,7 @@
           "properties": {
             "Allow": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -598,6 +644,7 @@
 
             "Block": {
               "type": "array",
+              "strict": false,
               "items": {
                 "type": "origin"
               }
@@ -616,13 +663,11 @@
     },
 
     "PopupBlocking": {
-      "description": "Allow or deny popup usage.",
-      "first_available": "60.0",
-
       "type": "object",
       "properties": {
         "Allow": {
           "type": "array",
+          "strict": false,
           "items": {
             "type": "origin"
           }
@@ -638,10 +683,141 @@
       }
     },
 
-    "Proxy": {
-      "description": "Configure Proxy settings.",
-      "first_available": "60.0",
+    "Preferences": {
+      "type": "object",
+      "properties": {
+        "accessibility.force_disabled": {
+          "type": "number",
+          "enum": [-1, 0, 1]
+        },
+        "app.update.auto": {
+          "type": "boolean"
+        },
+        "browser.bookmarks.autoExportHTML": {
+          "type": "boolean"
+        },
+        "browser.bookmarks.file": {
+          "type": "string"
+        },
+        "browser.places.importBookmarksHTML": {
+          "type": "boolean"
+        },
+        "browser.bookmarks.restore_default_bookmarks": {
+          "type": "boolean"
+        },
+        "browser.cache.disk.enable": {
+          "type": "boolean"
+        },
+        "browser.fixup.dns_first_for_single_words": {
+          "type": "boolean"
+        },
+        "browser.safebrowsing.phishing.enabled": {
+          "type": "boolean"
+        },
+        "browser.safebrowsing.malware.enabled": {
+          "type": "boolean"
+        },
+        "browser.search.update": {
+          "type": "boolean"
+        },
+        "browser.tabs.warnOnClose": {
+          "type": "boolean"
+        },
+        "browser.cache.disk.parent_directory": {
+          "type": "string"
+        },
+        "browser.slowStartup.notificationDisabled": {
+          "type": "boolean"
+        },
+        "browser.taskbar.previews.enable": {
+          "type": "boolean"
+        },
+        "browser.urlbar.suggest.bookmark": {
+          "type": "boolean"
+        },
+        "browser.urlbar.suggest.openpage": {
+          "type": "boolean"
+        },
+        "browser.urlbar.suggest.history": {
+          "type": "boolean"
+        },
+        "datareporting.policy.dataSubmissionPolicyBypassNotification": {
+          "type": "boolean"
+        },
+        "dom.allow_scripts_to_close_windows": {
+          "type": "boolean"
+        },
+        "dom.disable_window_flip": {
+          "type": "boolean"
+        },
+        "dom.disable_window_move_resize": {
+          "type": "boolean"
+        },
+        "dom.event.contextmenu.enabled": {
+          "type": "boolean"
+        },
+        "dom.keyboardevent.keypress.hack.dispatch_non_printable_keys.addl": {
+          "type": "string"
+        },
+        "dom.keyboardevent.keypress.hack.use_legacy_keycode_and_charcode.addl": {
+          "type": "string"
+        },
+        "extensions.blocklist.enabled": {
+          "type": "boolean"
+        },
+        "extensions.getAddons.showPane": {
+          "type": "boolean"
+        },
+        "geo.enabled": {
+          "type": "boolean"
+        },
+        "intl.accept_languages": {
+          "type": "string"
+        },
+        "media.eme.enabled": {
+          "type": "boolean"
+        },
+        "media.gmp-gmpopenh264.enabled": {
+          "type": "boolean"
+        },
+        "media.gmp-widevinecdm.enabled": {
+          "type": "boolean"
+        },
+        "network.dns.disableIPv6": {
+          "type": "boolean"
+        },
+        "network.IDN_show_punycode": {
+          "type": "boolean"
+        },
+        "places.history.enabled": {
+          "type": "boolean"
+        },
+        "print.save_print_settings": {
+          "type": "boolean"
+        },
+        "privacy.file_unique_origin": {
+          "type": "boolean"
+        },
+        "security.default_personal_cert": {
+          "type": "string"
+        },
+        "security.ssl.errorReporting.enabled": {
+          "type": "boolean"
+        },
+        "security.mixed_content.block_active_content": {
+          "type": "boolean"
+        },
+        "ui.key.menuAccessKeyFocuses": {
+          "type": "boolean"
+        }
+      }
+    },
 
+    "PromptForDownloadLocation": {
+      "type": "boolean"
+    },
+
+    "Proxy": {
       "type": "object",
       "properties": {
         "Mode": {
@@ -697,31 +873,48 @@
     },
 
     "RequestedLocales": {
-      "type": "array",
+      "type": ["string", "array"],
       "items": {
         "type": "string"
       }
     },
 
     "SanitizeOnShutdown": {
-      "description": "Clears ALL browser data on shutdown.",
-      "first_available": "60.0",
-
-      "type": "boolean"
+      "type": ["boolean", "object"],
+      "properties": {
+        "Cache": {
+          "type": "boolean"
+        },
+        "Cookies": {
+          "type": "boolean"
+        },
+        "Downloads": {
+          "type": "boolean"
+        },
+        "FormData": {
+          "type": "boolean"
+        },
+        "History": {
+          "type": "boolean"
+        },
+        "Sessions": {
+          "type": "boolean"
+        },
+        "SiteSettings": {
+          "type": "boolean"
+        },
+        "OfflineApps": {
+          "type": "boolean"
+        }
+      }
     },
 
     "SearchBar": {
-      "description": "Sets the default location of the search bar. Only applies on firtrun, but can be changed.",
-      "first_available": "60.0",
-      "enterprise_only": true,
-
       "type": "string",
       "enum": ["unified", "separate"]
     },
 
     "SearchEngines": {
-      "description": "Modifies the list of search engines built into Firefox",
-      "first_available": "60.0",
       "enterprise_only": true,
 
       "type": "object",
@@ -752,6 +945,9 @@
               "URLTemplate": {
                 "type": "string"
               },
+              "PostData": {
+                "type": "string"
+              },
               "SuggestURLTemplate": {
                 "type": "string"
               }
@@ -771,6 +967,10 @@
           }
         }
       }
+    },
+
+    "SearchSuggestEnabled": {
+      "type": "boolean"
     },
 
     "SecurityDevices": {
@@ -807,10 +1007,6 @@
     },
 
     "WebsiteFilter": {
-      "description": "Blocks websites from being visited. The parameters take an array of Match Patterns, as documented in https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Match_patterns. Only http/https accesses are supported at the moment. The arrays are limited to 1000 entries each.",
-      "first_available": "60.0",
-      "enterprise_only": "true",
-
       "type": "object",
       "properties": {
         "Block": {
@@ -830,3 +1026,4 @@
     }
   }
 }
+

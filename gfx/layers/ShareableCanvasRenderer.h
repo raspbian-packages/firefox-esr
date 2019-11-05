@@ -16,6 +16,10 @@ namespace gl {
 class SurfaceFactory;
 }  // namespace gl
 
+namespace gfx {
+class DrawTarget;
+}  // namespace gfx
+
 namespace layers {
 
 class ShareableCanvasRenderer : public CopyableCanvasRenderer {
@@ -35,7 +39,8 @@ class ShareableCanvasRenderer : public CopyableCanvasRenderer {
   void ClearCachedResources() override;
   void Destroy() override;
 
-  void UpdateCompositableClient();
+  void UpdateCompositableClient(
+      wr::RenderRoot aRenderRoot = wr::RenderRoot::Default);
 
   const TextureFlags& Flags() const { return mFlags; }
 

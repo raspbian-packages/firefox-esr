@@ -7,7 +7,9 @@
 
 // There are shutdown issues for which multiple rejections are left uncaught.
 // See bug 1018184 for resolving these issues.
-const { PromiseTestUtils } = scopedCuImport("resource://testing-common/PromiseTestUtils.jsm");
+const { PromiseTestUtils } = ChromeUtils.import(
+  "resource://testing-common/PromiseTestUtils.jsm"
+);
 PromiseTestUtils.whitelistRejectionsGlobally(/this\.worker is null/);
 PromiseTestUtils.whitelistRejectionsGlobally(/Component not initialized/);
 
@@ -17,24 +19,22 @@ const PAGE_URL = `${TEST_ROOT}doc_empty-tab-01.html`;
 const JS_URL = `${TEST_ROOT}code_inline_bundle.js`;
 const ORIGINAL_URL = "webpack:///code_inline_original.js";
 
-add_task(function* () {
-  yield pushPref("devtools.debugger.new-debugger-frontend", true);
-
-  const toolbox = yield openNewTabAndToolbox(PAGE_URL, "jsdebugger");
+add_task(async function() {
+  const toolbox = await openNewTabAndToolbox(PAGE_URL, "jsdebugger");
   const service = toolbox.sourceMapURLService;
 
   // Inject JS script
-  let sourceSeen = waitForSourceLoad(toolbox, JS_URL);
-  yield createScript(JS_URL);
-  yield sourceSeen;
+  const sourceSeen = waitForSourceLoad(toolbox, JS_URL);
+  await createScript(JS_URL);
+  await sourceSeen;
 
   info(`checking original location for ${JS_URL}:84`);
-  let newLoc = yield service.originalPositionFor(JS_URL, 84);
+  const newLoc = await service.originalPositionFor(JS_URL, 84);
 
   is(newLoc.sourceUrl, ORIGINAL_URL, "check mapped URL");
   is(newLoc.line, 11, "check mapped line number");
 
-  yield toolbox.destroy();
+  await toolbox.destroy();
   gBrowser.removeCurrentTab();
   finish();
 });

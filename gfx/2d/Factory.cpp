@@ -8,50 +8,49 @@
 #include "Swizzle.h"
 
 #ifdef USE_CAIRO
-#include "DrawTargetCairo.h"
-#include "ScaledFontCairo.h"
-#include "SourceSurfaceCairo.h"
+#  include "DrawTargetCairo.h"
+#  include "SourceSurfaceCairo.h"
 #endif
 
 #ifdef USE_SKIA
-#include "DrawTargetSkia.h"
-#include "ScaledFontBase.h"
-#ifdef MOZ_ENABLE_FREETYPE
-#define USE_SKIA_FREETYPE
-#include "ScaledFontCairo.h"
-#endif
+#  include "DrawTargetSkia.h"
+#  include "ScaledFontBase.h"
 #endif
 
 #if defined(WIN32)
-#include "ScaledFontWin.h"
-#include "NativeFontResourceGDI.h"
-#include "UnscaledFontGDI.h"
+#  include "ScaledFontWin.h"
+#  include "NativeFontResourceGDI.h"
+#  include "UnscaledFontGDI.h"
 #endif
 
 #ifdef XP_DARWIN
-#include "ScaledFontMac.h"
-#include "NativeFontResourceMac.h"
+#  include "ScaledFontMac.h"
+#  include "NativeFontResourceMac.h"
 #endif
 
 #ifdef MOZ_WIDGET_GTK
-#include "ScaledFontFontconfig.h"
-#include "NativeFontResourceFontconfig.h"
-#include "UnscaledFontFreeType.h"
+#  include "ScaledFontFontconfig.h"
+#  include "NativeFontResourceFreeType.h"
+#  include "UnscaledFontFreeType.h"
+#endif
+
+#ifdef MOZ_WIDGET_ANDROID
+#  include "ScaledFontFreeType.h"
+#  include "NativeFontResourceFreeType.h"
 #endif
 
 #ifdef WIN32
-#include "DrawTargetD2D1.h"
-#include "ScaledFontDWrite.h"
-#include "NativeFontResourceDWrite.h"
-#include <d3d10_1.h>
-#include "HelpersD2D.h"
-#include "HelpersWinFonts.h"
-#include "mozilla/Mutex.h"
+#  include "DrawTargetD2D1.h"
+#  include "ScaledFontDWrite.h"
+#  include "NativeFontResourceDWrite.h"
+#  include <d3d10_1.h>
+#  include "HelpersD2D.h"
 #endif
 
 #include "DrawTargetCapture.h"
 #include "DrawTargetDual.h"
 #include "DrawTargetTiled.h"
+#include "DrawTargetOffset.h"
 #include "DrawTargetWrapAndRecord.h"
 #include "DrawTargetRecording.h"
 
@@ -64,10 +63,8 @@
 #include "mozilla/CheckedInt.h"
 
 #ifdef MOZ_ENABLE_FREETYPE
-#include "ft2build.h"
-#include FT_FREETYPE_H
-
-#include "mozilla/Mutex.h"
+#  include "ft2build.h"
+#  include FT_FREETYPE_H
 #endif
 #include "MainThreadUtils.h"
 
@@ -84,10 +81,11 @@ enum CPUIDRegister { eax = 0, ebx = 1, ecx = 2, edx = 3 };
 
 #ifdef HAVE_CPUID_H
 
-#if !(defined(__SSE2__) || defined(_M_X64) || \
-      (defined(_M_IX86_FP) && _M_IX86_FP >= 2))
+#  if !(defined(__SSE2__) || defined(_M_X64) ||      \
+        (defined(_M_IX86_FP) && _M_IX86_FP >= 2)) || \
+      !defined(__SSE4__)
 // cpuid.h is available on gcc 4.3 and higher on i386 and x86_64
-#include <cpuid.h>
+#    include <cpuid.h>
 
 static inline bool HasCPUIDBit(unsigned int level, CPUIDRegister reg,
                                unsigned int bit) {
@@ -95,20 +93,20 @@ static inline bool HasCPUIDBit(unsigned int level, CPUIDRegister reg,
   return __get_cpuid(level, &regs[0], &regs[1], &regs[2], &regs[3]) &&
          (regs[reg] & bit);
 }
-#endif
+#  endif
 
-#define HAVE_CPU_DETECTION
+#  define HAVE_CPU_DETECTION
 #else
 
-#if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_AMD64))
+#  if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_AMD64))
 // MSVC 2005 or later supports __cpuid by intrin.h
-#include <intrin.h>
+#    include <intrin.h>
 
-#define HAVE_CPU_DETECTION
-#elif defined(__SUNPRO_CC) && (defined(__i386) || defined(__x86_64__))
+#    define HAVE_CPU_DETECTION
+#  elif defined(__SUNPRO_CC) && (defined(__i386) || defined(__x86_64__))
 
 // Define a function identical to MSVC function.
-#ifdef __i386
+#    ifdef __i386
 static void __cpuid(int CPUInfo[4], int InfoType) {
   asm("xchg %esi, %ebx\n"
       "cpuid\n"
@@ -122,7 +120,7 @@ static void __cpuid(int CPUInfo[4], int InfoType) {
         "D"(CPUInfo)    // %edi
       : "%ecx", "%edx", "%esi");
 }
-#else
+#    else
 static void __cpuid(int CPUInfo[4], int InfoType) {
   asm("xchg %rsi, %rbx\n"
       "cpuid\n"
@@ -137,11 +135,11 @@ static void __cpuid(int CPUInfo[4], int InfoType) {
       : "%ecx", "%edx", "%rsi");
 }
 
-#define HAVE_CPU_DETECTION
-#endif
-#endif
+#      define HAVE_CPU_DETECTION
+#    endif
+#  endif
 
-#ifdef HAVE_CPU_DETECTION
+#  ifdef HAVE_CPU_DETECTION
 static inline bool HasCPUIDBit(unsigned int level, CPUIDRegister reg,
                                unsigned int bit) {
   // Check that the level in question is supported.
@@ -151,7 +149,7 @@ static inline bool HasCPUIDBit(unsigned int level, CPUIDRegister reg,
   __cpuid((int*)regs, level);
   return !!(unsigned(regs[reg]) & bit);
 }
-#endif
+#  endif
 #endif
 
 #ifdef MOZ_ENABLE_FREETYPE
@@ -172,6 +170,11 @@ void mozilla_ReleaseFTFace(FT_Face aFace) {
   mozilla::gfx::Factory::ReleaseFTFace(aFace);
 }
 
+FT_Error mozilla_LoadFTGlyph(FT_Face aFace, uint32_t aGlyphIndex,
+                             int32_t aFlags) {
+  return mozilla::gfx::Factory::LoadFTGlyph(aFace, aGlyphIndex, aFlags);
+}
+
 void mozilla_LockFTLibrary(FT_Library aFTLibrary) {
   mozilla::gfx::Factory::LockFTLibrary(aFTLibrary);
 }
@@ -190,7 +193,7 @@ int32_t LoggingPrefs::sGfxLogLevel = LOG_DEFAULT;
 
 #ifdef MOZ_ENABLE_FREETYPE
 FT_Library Factory::mFTLibrary = nullptr;
-Mutex* Factory::mFTLock = nullptr;
+StaticMutex Factory::mFTLock;
 #endif
 
 #ifdef WIN32
@@ -199,10 +202,15 @@ static uint32_t mDeviceSeq = 0;
 StaticRefPtr<ID3D11Device> Factory::mD3D11Device;
 StaticRefPtr<ID2D1Device> Factory::mD2D1Device;
 StaticRefPtr<IDWriteFactory> Factory::mDWriteFactory;
+StaticRefPtr<ID2D1DeviceContext> Factory::mMTDC;
+StaticRefPtr<ID2D1DeviceContext> Factory::mOffMTDC;
 bool Factory::mDWriteFactoryInitialized = false;
+StaticRefPtr<IDWriteFontCollection> Factory::mDWriteSystemFonts;
 StaticMutex Factory::mDeviceLock;
 StaticMutex Factory::mDTDependencyLock;
 #endif
+
+bool Factory::mBGRSubpixelOrder = false;
 
 DrawEventRecorder* Factory::mRecorder;
 
@@ -211,10 +219,6 @@ mozilla::gfx::Config* Factory::sConfig = nullptr;
 void Factory::Init(const Config& aConfig) {
   MOZ_ASSERT(!sConfig);
   sConfig = new Config(aConfig);
-
-#ifdef MOZ_ENABLE_FREETYPE
-  mFTLock = new Mutex("Factory::mFTLock");
-#endif
 }
 
 void Factory::ShutDown() {
@@ -226,10 +230,6 @@ void Factory::ShutDown() {
 
 #ifdef MOZ_ENABLE_FREETYPE
   mFTLibrary = nullptr;
-  if (mFTLock) {
-    delete mFTLock;
-    mFTLock = nullptr;
-  }
 #endif
 }
 
@@ -250,6 +250,27 @@ bool Factory::HasSSE2() {
     sDetectionState = HasCPUIDBit(1u, edx, (1u << 26)) ? HAS_SSE2 : NO_SSE2;
   }
   return sDetectionState == HAS_SSE2;
+#else
+  return false;
+#endif
+}
+
+bool Factory::HasSSE4() {
+#if defined(__SSE4__)
+  // gcc with -msse2 (default on OSX and x86-64)
+  // cl.exe with -arch:SSE2 (default on x64 compiler)
+  return true;
+#elif defined(HAVE_CPU_DETECTION)
+  static enum {
+    UNINITIALIZED,
+    NO_SSE4,
+    HAS_SSE4
+  } sDetectionState = UNINITIALIZED;
+
+  if (sDetectionState == UNINITIALIZED) {
+    sDetectionState = HasCPUIDBit(1u, ecx, (1u << 19)) ? HAS_SSE4 : NO_SSE4;
+  }
+  return sDetectionState == HAS_SSE4;
 #else
   return false;
 #endif
@@ -382,6 +403,11 @@ already_AddRefed<DrawTarget> Factory::CreateRecordingDrawTarget(
   return MakeAndAddRef<DrawTargetRecording>(aRecorder, aDT, aSize);
 }
 
+already_AddRefed<DrawTargetCapture> Factory::CreateCaptureDrawTargetForTarget(
+    gfx::DrawTarget* aTarget, size_t aFlushBytes) {
+  return MakeAndAddRef<DrawTargetCaptureImpl>(aTarget, aFlushBytes);
+}
+
 already_AddRefed<DrawTargetCapture> Factory::CreateCaptureDrawTarget(
     BackendType aBackend, const IntSize& aSize, SurfaceFormat aFormat) {
   return MakeAndAddRef<DrawTargetCaptureImpl>(aBackend, aSize, aFormat);
@@ -466,11 +492,23 @@ already_AddRefed<DrawTarget> Factory::CreateTiledDrawTarget(
   return dt.forget();
 }
 
+already_AddRefed<DrawTarget> Factory::CreateOffsetDrawTarget(
+    DrawTarget* aDrawTarget, IntPoint aTileOrigin) {
+  RefPtr<DrawTargetOffset> dt = new DrawTargetOffset();
+
+  if (!dt->Init(aDrawTarget, aTileOrigin)) {
+    return nullptr;
+  }
+
+  return dt.forget();
+}
+
 bool Factory::DoesBackendSupportDataDrawtarget(BackendType aType) {
   switch (aType) {
     case BackendType::DIRECT2D:
     case BackendType::DIRECT2D1_1:
     case BackendType::RECORDING:
+    case BackendType::CAPTURE:
     case BackendType::NONE:
     case BackendType::BACKEND_LAST:
     case BackendType::WEBRENDER_TEXT:
@@ -502,33 +540,31 @@ uint32_t Factory::GetMaxSurfaceSize(BackendType aType) {
 
 already_AddRefed<ScaledFont> Factory::CreateScaledFontForNativeFont(
     const NativeFont& aNativeFont, const RefPtr<UnscaledFont>& aUnscaledFont,
-    Float aSize) {
+    Float aSize, cairo_scaled_font_t* aScaledFont) {
   switch (aNativeFont.mType) {
 #ifdef WIN32
-    case NativeFontType::DWRITE_FONT_FACE: {
-      return MakeAndAddRef<ScaledFontDWrite>(
-          static_cast<IDWriteFontFace*>(aNativeFont.mFont), aUnscaledFont,
-          aSize);
-    }
-#if defined(USE_CAIRO) || defined(USE_SKIA)
-    case NativeFontType::GDI_FONT_FACE: {
-      return MakeAndAddRef<ScaledFontWin>(
+    case NativeFontType::GDI_LOGFONT: {
+      RefPtr<ScaledFontWin> font = MakeAndAddRef<ScaledFontWin>(
           static_cast<LOGFONT*>(aNativeFont.mFont), aUnscaledFont, aSize);
+#  ifdef USE_CAIRO
+      if (aScaledFont) {
+        font->SetCairoScaledFont(aScaledFont);
+      } else {
+        font->PopulateCairoScaledFont();
+      }
+#  endif
+      return font.forget();
     }
-#endif
-#endif
-#ifdef XP_DARWIN
-    case NativeFontType::MAC_FONT_FACE: {
-      return MakeAndAddRef<ScaledFontMac>(
-          static_cast<CGFontRef>(aNativeFont.mFont), aUnscaledFont, aSize);
-    }
-#endif
-#if defined(USE_CAIRO) || defined(USE_SKIA_FREETYPE)
-    case NativeFontType::CAIRO_FONT_FACE: {
-      return MakeAndAddRef<ScaledFontCairo>(
-          static_cast<cairo_scaled_font_t*>(aNativeFont.mFont), aUnscaledFont,
+#elif defined(MOZ_WIDGET_GTK)
+    case NativeFontType::FONTCONFIG_PATTERN:
+      return MakeAndAddRef<ScaledFontFontconfig>(
+          aScaledFont, static_cast<FcPattern*>(aNativeFont.mFont),
+          aUnscaledFont, aSize);
+#elif defined(MOZ_WIDGET_ANDROID)
+    case NativeFontType::FREETYPE_FACE:
+      return MakeAndAddRef<ScaledFontFreeType>(
+          aScaledFont, static_cast<FT_Face>(aNativeFont.mFont), aUnscaledFont,
           aSize);
-    }
 #endif
     default:
       gfxWarning() << "Invalid native font type specified.";
@@ -542,18 +578,23 @@ already_AddRefed<NativeFontResource> Factory::CreateNativeFontResource(
   switch (aFontType) {
 #ifdef WIN32
     case FontType::DWRITE: {
-      bool needsCairo = aBackendType == BackendType::CAIRO ||
-                        aBackendType == BackendType::SKIA;
+      bool needsCairo = aBackendType == BackendType::CAIRO;
       return NativeFontResourceDWrite::Create(aData, aSize, needsCairo);
     }
     case FontType::GDI:
       return NativeFontResourceGDI::Create(aData, aSize);
 #elif defined(XP_DARWIN)
-    case FontType::MAC:
-      return NativeFontResourceMac::Create(aData, aSize);
+    case FontType::MAC: {
+      bool needsCairo = aBackendType == BackendType::CAIRO;
+      return NativeFontResourceMac::Create(aData, aSize, needsCairo);
+    }
 #elif defined(MOZ_WIDGET_GTK)
     case FontType::FONTCONFIG:
       return NativeFontResourceFontconfig::Create(
+          aData, aSize, static_cast<FT_Library>(aFontContext));
+#elif defined(MOZ_WIDGET_ANDROID)
+    case FontType::FREETYPE:
+      return NativeFontResourceFreeType::Create(
           aData, aSize, static_cast<FT_Library>(aFontContext));
 #endif
     default:
@@ -583,32 +624,6 @@ already_AddRefed<UnscaledFont> Factory::CreateUnscaledFontFromFontDescriptor(
   }
 }
 
-already_AddRefed<ScaledFont> Factory::CreateScaledFontWithCairo(
-    const NativeFont& aNativeFont, const RefPtr<UnscaledFont>& aUnscaledFont,
-    Float aSize, cairo_scaled_font_t* aScaledFont) {
-#ifdef USE_CAIRO
-  // In theory, we could pull the NativeFont out of the cairo_scaled_font_t*,
-  // but that would require a lot of code that would be otherwise repeated in
-  // various backends.
-  // Therefore, we just reuse CreateScaledFontForNativeFont's implementation.
-  RefPtr<ScaledFont> font =
-      CreateScaledFontForNativeFont(aNativeFont, aUnscaledFont, aSize);
-  static_cast<ScaledFontBase*>(font.get())->SetCairoScaledFont(aScaledFont);
-  return font.forget();
-#else
-  return nullptr;
-#endif
-}
-
-#ifdef MOZ_WIDGET_GTK
-already_AddRefed<ScaledFont> Factory::CreateScaledFontForFontconfigFont(
-    cairo_scaled_font_t* aScaledFont, FcPattern* aPattern,
-    const RefPtr<UnscaledFont>& aUnscaledFont, Float aSize) {
-  return MakeAndAddRef<ScaledFontFontconfig>(aScaledFont, aPattern,
-                                             aUnscaledFont, aSize);
-}
-#endif
-
 #ifdef XP_DARWIN
 already_AddRefed<ScaledFont> Factory::CreateScaledFontForMacFont(
     CGFontRef aCGFont, const RefPtr<UnscaledFont>& aUnscaledFont, Float aSize,
@@ -635,6 +650,19 @@ already_AddRefed<DrawTarget> Factory::CreateDualDrawTarget(
   return retVal.forget();
 }
 
+already_AddRefed<SourceSurface> Factory::CreateDualSourceSurface(
+    SourceSurface* sourceA, SourceSurface* sourceB) {
+  MOZ_ASSERT(sourceA && sourceB);
+
+  RefPtr<SourceSurface> newSource = new SourceSurfaceDual(sourceA, sourceB);
+
+  return newSource.forget();
+}
+
+void Factory::SetBGRSubpixelOrder(bool aBGR) { mBGRSubpixelOrder = aBGR; }
+
+bool Factory::GetBGRSubpixelOrder() { return mBGRSubpixelOrder; }
+
 #ifdef MOZ_ENABLE_FREETYPE
 void Factory::SetFTLibrary(FT_Library aFTLibrary) { mFTLibrary = aFTLibrary; }
 
@@ -655,20 +683,13 @@ void Factory::ReleaseFTLibrary(FT_Library aFTLibrary) {
   FT_Done_FreeType(aFTLibrary);
 }
 
-void Factory::LockFTLibrary(FT_Library aFTLibrary) {
-  MOZ_ASSERT(mFTLock);
-  mFTLock->Lock();
-}
+void Factory::LockFTLibrary(FT_Library aFTLibrary) { mFTLock.Lock(); }
 
-void Factory::UnlockFTLibrary(FT_Library aFTLibrary) {
-  MOZ_ASSERT(mFTLock);
-  mFTLock->Unlock();
-}
+void Factory::UnlockFTLibrary(FT_Library aFTLibrary) { mFTLock.Unlock(); }
 
 FT_Face Factory::NewFTFace(FT_Library aFTLibrary, const char* aFileName,
                            int aFaceIndex) {
-  MOZ_ASSERT(mFTLock);
-  MutexAutoLock lock(*mFTLock);
+  StaticMutexAutoLock lock(mFTLock);
   if (!aFTLibrary) {
     aFTLibrary = mFTLibrary;
   }
@@ -681,8 +702,7 @@ FT_Face Factory::NewFTFace(FT_Library aFTLibrary, const char* aFileName,
 
 FT_Face Factory::NewFTFaceFromData(FT_Library aFTLibrary, const uint8_t* aData,
                                    size_t aDataSize, int aFaceIndex) {
-  MOZ_ASSERT(mFTLock);
-  MutexAutoLock lock(*mFTLock);
+  StaticMutexAutoLock lock(mFTLock);
   if (!aFTLibrary) {
     aFTLibrary = mFTLibrary;
   }
@@ -695,16 +715,14 @@ FT_Face Factory::NewFTFaceFromData(FT_Library aFTLibrary, const uint8_t* aData,
 }
 
 void Factory::ReleaseFTFace(FT_Face aFace) {
-  // May be called during shutdown when the lock is already destroyed.
-  // However, there are no other threads using the face by this point,
-  // so it is safe to skip locking if the lock is not around.
-  if (mFTLock) {
-    mFTLock->Lock();
-  }
+  StaticMutexAutoLock lock(mFTLock);
   FT_Done_Face(aFace);
-  if (mFTLock) {
-    mFTLock->Unlock();
-  }
+}
+
+FT_Error Factory::LoadFTGlyph(FT_Face aFace, uint32_t aGlyphIndex,
+                              int32_t aFlags) {
+  StaticMutexAutoLock lock(mFTLock);
+  return FT_Load_Glyph(aFace, aGlyphIndex, aFlags);
 }
 #endif
 
@@ -745,6 +763,8 @@ bool Factory::SetDirect3D11Device(ID3D11Device* aDevice) {
 
   if (mD2D1Device) {
     mD2D1Device = nullptr;
+    mMTDC = nullptr;
+    mOffMTDC = nullptr;
   }
 
   if (!aDevice) {
@@ -820,13 +840,68 @@ RefPtr<IDWriteFactory> Factory::EnsureDWriteFactory() {
   return mDWriteFactory;
 }
 
+RefPtr<IDWriteFontCollection> Factory::GetDWriteSystemFonts(bool aUpdate) {
+  StaticMutexAutoLock lock(mDeviceLock);
+
+  if (mDWriteSystemFonts && !aUpdate) {
+    return mDWriteSystemFonts;
+  }
+
+  if (!mDWriteFactory) {
+    return nullptr;
+  }
+
+  RefPtr<IDWriteFontCollection> systemFonts;
+  HRESULT hr =
+      mDWriteFactory->GetSystemFontCollection(getter_AddRefs(systemFonts));
+  if (FAILED(hr)) {
+    gfxWarning() << "Failed to create DWrite system font collection";
+    return nullptr;
+  }
+  mDWriteSystemFonts = systemFonts;
+
+  return mDWriteSystemFonts;
+}
+
+RefPtr<ID2D1DeviceContext> Factory::GetD2DDeviceContext() {
+  StaticRefPtr<ID2D1DeviceContext>* ptr;
+
+  if (NS_IsMainThread()) {
+    ptr = &mMTDC;
+  } else {
+    ptr = &mOffMTDC;
+  }
+
+  if (*ptr) {
+    return *ptr;
+  }
+
+  RefPtr<ID2D1Device> device = GetD2D1Device();
+
+  if (!device) {
+    return nullptr;
+  }
+
+  RefPtr<ID2D1DeviceContext> dc;
+  HRESULT hr = device->CreateDeviceContext(
+      D2D1_DEVICE_CONTEXT_OPTIONS_ENABLE_MULTITHREADED_OPTIMIZATIONS,
+      getter_AddRefs(dc));
+
+  if (FAILED(hr)) {
+    gfxCriticalError() << "Failed to create global device context";
+    return nullptr;
+  }
+
+  *ptr = dc;
+
+  return *ptr;
+}
+
 bool Factory::SupportsD2D1() { return !!D2DFactory(); }
 
 BYTE sSystemTextQuality = CLEARTYPE_QUALITY;
-void Factory::UpdateSystemTextQuality() {
-#ifdef WIN32
-  gfx::UpdateSystemTextQuality();
-#endif
+void Factory::SetSystemTextQuality(uint8_t aQuality) {
+  sSystemTextQuality = aQuality;
 }
 
 uint64_t Factory::GetD2DVRAMUsageDrawTarget() {
@@ -855,19 +930,7 @@ already_AddRefed<ScaledFont> Factory::CreateScaledFontForDWriteFont(
                                          aParams, aGamma, aContrast, aStyle);
 }
 
-#endif  // XP_WIN
-
-#ifdef USE_SKIA_GPU
-already_AddRefed<DrawTarget> Factory::CreateDrawTargetSkiaWithGrContext(
-    GrContext* aGrContext, const IntSize& aSize, SurfaceFormat aFormat) {
-  RefPtr<DrawTarget> newTarget = new DrawTargetSkia();
-  if (!newTarget->InitWithGrContext(aGrContext, aSize, aFormat)) {
-    return nullptr;
-  }
-  return newTarget.forget();
-}
-
-#endif  // USE_SKIA_GPU
+#endif  // WIN32
 
 #ifdef USE_SKIA
 already_AddRefed<DrawTarget> Factory::CreateDrawTargetWithSkCanvas(
@@ -1043,6 +1106,18 @@ void CriticalLogger::CrashAction(LogReason aReason) {
     Factory::GetLogForwarder()->CrashAction(aReason);
   }
 }
+
+#ifdef WIN32
+void LogWStr(const wchar_t* aWStr, std::stringstream& aOut) {
+  int n =
+      WideCharToMultiByte(CP_ACP, 0, aWStr, -1, nullptr, 0, nullptr, nullptr);
+  if (n > 1) {
+    std::vector<char> str(n);
+    WideCharToMultiByte(CP_ACP, 0, aWStr, -1, str.data(), n, nullptr, nullptr);
+    aOut << str.data();
+  }
+}
+#endif
 
 }  // namespace gfx
 }  // namespace mozilla

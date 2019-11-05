@@ -83,7 +83,7 @@ struct CacheEntry {
 
   // Takes possession of buf
   CacheEntry(UniquePtr<char[]> buf, uint32_t len)
-      : data(Move(buf)), size(len) {}
+      : data(std::move(buf)), size(len) {}
 
   ~CacheEntry() {}
 
@@ -118,7 +118,7 @@ class StartupCache : public nsIMemoryReporter {
                      uint32_t length);
 
   // Removes the cache file.
-  void InvalidateCache();
+  void InvalidateCache(bool memoryOnly = false);
 
   // Signal that data should not be loaded from the cache file
   static void IgnoreDiskCache();

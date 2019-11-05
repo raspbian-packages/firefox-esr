@@ -7,6 +7,13 @@
 var gDebuggee;
 var gClient;
 var gThreadClient;
+const EnvironmentClient = require("devtools/shared/client/environment-client");
+
+Services.prefs.setBoolPref("security.allow_eval_with_system_principal", true);
+
+registerCleanupFunction(() => {
+  Services.prefs.clearUserPref("security.allow_eval_with_system_principal");
+});
 
 // Test that the EnvironmentClient's getBindings() method works as expected.
 function run_test() {
@@ -14,50 +21,58 @@ function run_test() {
   gDebuggee = addTestGlobal("test-bindings");
 
   gClient = new DebuggerClient(DebuggerServer.connectPipe());
-  gClient.connect().then(function () {
-    attachTestTabAndResume(gClient, "test-bindings",
-                           function (response, tabClient, threadClient) {
-                             gThreadClient = threadClient;
-                             test_banana_environment();
-                           });
+  gClient.connect().then(function() {
+    attachTestTabAndResume(gClient, "test-bindings", function(
+      response,
+      targetFront,
+      threadClient
+    ) {
+      gThreadClient = threadClient;
+      test_banana_environment();
+    });
   });
   do_test_pending();
 }
 
 function test_banana_environment() {
-  gThreadClient.addOneTimeListener("paused", function (event, packet) {
-    let environment = packet.frame.environment;
+  gThreadClient.addOneTimeListener("paused", function(event, packet) {
+    const environment = packet.frame.environment;
     Assert.equal(environment.type, "function");
 
-    let parent = environment.parent;
+    const parent = environment.parent;
     Assert.equal(parent.type, "block");
 
-    let grandpa = parent.parent;
+    const grandpa = parent.parent;
     Assert.equal(grandpa.type, "function");
 
-    let envClient = gThreadClient.environment(environment);
+    const envClient = new EnvironmentClient(gThreadClient, environment);
     envClient.getBindings(response => {
       Assert.equal(response.bindings.arguments[0].z.value, "z");
 
-      let parentClient = gThreadClient.environment(parent);
+      const parentClient = new EnvironmentClient(gThreadClient, parent);
       parentClient.getBindings(response => {
-        Assert.equal(response.bindings.variables.banana3.value.class, "Function");
+        Assert.equal(
+          response.bindings.variables.banana3.value.class,
+          "Function"
+        );
 
-        let grandpaClient = gThreadClient.environment(grandpa);
+        const grandpaClient = new EnvironmentClient(gThreadClient, grandpa);
         grandpaClient.getBindings(response => {
           Assert.equal(response.bindings.arguments[0].y.value, "y");
-          gThreadClient.resume(() => finishClient(gClient));
+          gThreadClient.resume().then(() => finishClient(gClient));
         });
       });
     });
   });
 
-  gDebuggee.eval("function banana(x) {\n" +
-                 "  return function banana2(y) {\n" +
-                 "    return function banana3(z) {\n" +
-                 "      debugger;\n" +
-                 "    };\n" +
-                 "  };\n" +
-                 "}\n" +
-                 "banana('x')('y')('z');\n");
+  gDebuggee.eval(
+    "function banana(x) {\n" +
+      "  return function banana2(y) {\n" +
+      "    return function banana3(z) {\n" +
+      "      debugger;\n" +
+      "    };\n" +
+      "  };\n" +
+      "}\n" +
+      "banana('x')('y')('z');\n"
+  );
 }

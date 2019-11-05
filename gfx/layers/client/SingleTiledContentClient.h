@@ -24,7 +24,7 @@ class ClientLayerManager;
  */
 class ClientSingleTiledLayerBuffer : public ClientTiledLayerBuffer,
                                      public TextureClientAllocator {
-  virtual ~ClientSingleTiledLayerBuffer() {}
+  virtual ~ClientSingleTiledLayerBuffer() = default;
 
  public:
   ClientSingleTiledLayerBuffer(ClientTiledPaintedLayer& aPaintedLayer,
@@ -57,7 +57,6 @@ class ClientSingleTiledLayerBuffer : public ClientTiledLayerBuffer,
   }
 
   void ResetPaintedAndValidState() override {
-    mPaintedRegion.SetEmpty();
     mValidRegion.SetEmpty();
     mTile.DiscardBuffers();
   }
@@ -72,14 +71,11 @@ class ClientSingleTiledLayerBuffer : public ClientTiledLayerBuffer,
 
   SurfaceDescriptorTiles GetSurfaceDescriptorTiles();
 
-  void ClearPaintedRegion() { mPaintedRegion.SetEmpty(); }
-
  private:
   TileClient mTile;
 
   RefPtr<ClientLayerManager> mManager;
 
-  nsIntRegion mPaintedRegion;
   nsIntRegion mValidRegion;
   bool mWasLastPaintProgressive;
 
@@ -113,14 +109,12 @@ class SingleTiledContentClient : public TiledContentClient {
   static bool ClientSupportsLayerSize(const gfx::IntSize& aSize,
                                       ClientLayerManager* aManager);
 
-  virtual void ClearCachedResources() override;
+  void ClearCachedResources() override;
 
-  virtual void UpdatedBuffer(TiledBufferType aType) override;
+  void UpdatedBuffer(TiledBufferType aType) override;
 
-  virtual ClientTiledLayerBuffer* GetTiledBuffer() override {
-    return mTiledBuffer;
-  }
-  virtual ClientTiledLayerBuffer* GetLowPrecisionTiledBuffer() override {
+  ClientTiledLayerBuffer* GetTiledBuffer() override { return mTiledBuffer; }
+  ClientTiledLayerBuffer* GetLowPrecisionTiledBuffer() override {
     return nullptr;
   }
 

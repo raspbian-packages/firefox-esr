@@ -27,20 +27,15 @@ class HTMLUnknownElement final : public nsGenericHTMLElement {
   NS_DECL_ISUPPORTS_INHERITED
 
   explicit HTMLUnknownElement(
-      already_AddRefed<mozilla::dom::NodeInfo> &aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {
-    if (NodeInfo()->Equals(nsGkAtoms::bdi)) {
-      AddStatesSilently(NS_EVENT_STATE_DIR_ATTR_LIKE_AUTO);
-    }
-  }
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo *aNodeInfo, nsINode **aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual ~HTMLUnknownElement() {}
-  virtual JSObject *WrapNode(JSContext *aCx,
-                             JS::Handle<JSObject *> aGivenProto) override;
+  virtual JSObject* WrapNode(JSContext* aCx,
+                             JS::Handle<JSObject*> aGivenProto) override;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(HTMLUnknownElement, NS_HTMLUNKNOWNELEMENT_IID)

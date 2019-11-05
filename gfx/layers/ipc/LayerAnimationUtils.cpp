@@ -12,7 +12,8 @@
 namespace mozilla {
 namespace layers {
 
-/* static */ Maybe<ComputedTimingFunction>
+/* static */
+Maybe<ComputedTimingFunction>
 AnimationUtils::TimingFunctionToComputedTimingFunction(
     const TimingFunction& aTimingFunction) {
   switch (aTimingFunction.type()) {
@@ -25,14 +26,8 @@ AnimationUtils::TimingFunctionToComputedTimingFunction(
     }
     case TimingFunction::TStepFunction: {
       StepFunction sf = aTimingFunction.get_StepFunction();
-      nsTimingFunction::Type type = sf.type() == 1
-                                        ? nsTimingFunction::Type::StepStart
-                                        : nsTimingFunction::Type::StepEnd;
-      return Some(ComputedTimingFunction::Steps(type, sf.steps()));
-    }
-    case TimingFunction::TFramesFunction: {
-      FramesFunction ff = aTimingFunction.get_FramesFunction();
-      return Some(ComputedTimingFunction::Frames(ff.frames()));
+      StyleStepPosition pos = static_cast<StyleStepPosition>(sf.type());
+      return Some(ComputedTimingFunction::Steps(sf.steps(), pos));
     }
     default:
       MOZ_ASSERT_UNREACHABLE("Function must be null, bezier, step or frames");

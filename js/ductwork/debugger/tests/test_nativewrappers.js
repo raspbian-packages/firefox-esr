@@ -1,6 +1,13 @@
 function run_test()
 {
-  ChromeUtils.import("resource://gre/modules/jsdebugger.jsm");
+  const {addDebuggerToGlobal} = ChromeUtils.import("resource://gre/modules/jsdebugger.jsm");
+  const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+
+  Services.prefs.setBoolPref("security.allow_eval_with_system_principal", true);
+  registerCleanupFunction(() => {
+    Services.prefs.clearUserPref("security.allow_eval_with_system_principal");
+  });
+
   addDebuggerToGlobal(this);
   var g = testGlobal("test1");
 
@@ -21,7 +28,8 @@ function run_test()
   g2 = testGlobal("test2");
   g2.g = g;
   g2.eval("(" + function createBadEvent() {
-    let parser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
+    Cu.importGlobalProperties(["DOMParser"]);
+    let parser = new DOMParser();
     let doc = parser.parseFromString("<foo></foo>", "text/xml");
     g.stopMe(doc.createEvent("MouseEvent"));
   } + ")()");

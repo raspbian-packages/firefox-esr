@@ -67,7 +67,10 @@ class nsCORSListenerProxy final : public nsIStreamListener,
   // When CORS blocks a request, log the message to the web console, or the
   // browser console if no valid inner window ID is found.
   static void LogBlockedCORSRequest(uint64_t aInnerWindowID,
-                                    const nsAString& aMessage);
+                                    bool aPrivateBrowsing,
+                                    bool aFromChromeContext,
+                                    const nsAString& aMessage,
+                                    const nsACString& aCategory);
 
  private:
   // Only HttpChannelParent can call RemoveFromCorsPreflightCache
@@ -81,7 +84,7 @@ class nsCORSListenerProxy final : public nsIStreamListener,
       nsIChannel* aRequestChannel, nsICorsPreflightCallback* aCallback,
       nsTArray<nsCString>& aACUnsafeHeaders, nsIChannel** aPreflightChannel);
 
-  ~nsCORSListenerProxy();
+  ~nsCORSListenerProxy() = default;
 
   MOZ_MUST_USE nsresult UpdateChannel(nsIChannel* aChannel,
                                       DataURIHandling aAllowDataURI,

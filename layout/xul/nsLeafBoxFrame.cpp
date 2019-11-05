@@ -11,12 +11,13 @@
 // See documentation in associated header file
 //
 
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "nsLeafBoxFrame.h"
 #include "nsBoxFrame.h"
 #include "nsCOMPtr.h"
 #include "nsGkAtoms.h"
 #include "nsPresContext.h"
-#include "nsStyleContext.h"
 #include "nsIContent.h"
 #include "nsNameSpaceManager.h"
 #include "nsBoxLayoutState.h"
@@ -33,16 +34,11 @@ using namespace mozilla;
 //
 // Creates a new Toolbar frame and returns it
 //
-nsIFrame* NS_NewLeafBoxFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext) {
-  return new (aPresShell) nsLeafBoxFrame(aContext);
+nsIFrame* NS_NewLeafBoxFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsLeafBoxFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsLeafBoxFrame)
-
-#ifdef DEBUG_LAYOUT
-void nsLeafBoxFrame::GetBoxName(nsAutoString& aName) { GetFrameName(aName); }
-#endif
 
 /**
  * Initialize us. This is a good time to get the alignment of the box
@@ -70,8 +66,8 @@ nsresult nsLeafBoxFrame::AttributeChanged(int32_t aNameSpaceID,
 }
 
 void nsLeafBoxFrame::UpdateMouseThrough() {
-  static Element::AttrValuesArray strings[] = {&nsGkAtoms::never,
-                                               &nsGkAtoms::always, nullptr};
+  static Element::AttrValuesArray strings[] = {nsGkAtoms::never,
+                                               nsGkAtoms::always, nullptr};
   switch (mContent->AsElement()->FindAttrValueIn(
       kNameSpaceID_None, nsGkAtoms::mousethrough, strings, eCaseMatters)) {
     case 0:
@@ -97,24 +93,22 @@ void nsLeafBoxFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
   // leaf boxes continue to receive events in the foreground layer.
   DisplayBorderBackgroundOutline(aBuilder, aLists);
 
-  if (!aBuilder->IsForEventDelivery() || !IsVisibleForPainting(aBuilder))
-    return;
+  if (!aBuilder->IsForEventDelivery() || !IsVisibleForPainting()) return;
 
-  aLists.Content()->AppendToTop(
-      MakeDisplayItem<nsDisplayEventReceiver>(aBuilder, this));
+  aLists.Content()->AppendNewToTop<nsDisplayEventReceiver>(aBuilder, this);
 }
 
-/* virtual */ nscoord nsLeafBoxFrame::GetMinISize(
-    gfxContext* aRenderingContext) {
+/* virtual */
+nscoord nsLeafBoxFrame::GetMinISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_MIN_WIDTH(this, result);
+  DISPLAY_MIN_INLINE_SIZE(this, result);
   nsBoxLayoutState state(PresContext(), aRenderingContext);
 
   WritingMode wm = GetWritingMode();
   LogicalSize minSize(wm, GetXULMinSize(state));
 
   // GetXULMinSize returns border-box size, and we want to return content
-  // inline-size.  Since Reflow uses the reflow state's border and padding, we
+  // inline-size.  Since Reflow uses the reflow input's border and padding, we
   // actually just want to subtract what GetXULMinSize added, which is the
   // result of GetXULBorderAndPadding.
   nsMargin bp;
@@ -125,17 +119,17 @@ void nsLeafBoxFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
   return result;
 }
 
-/* virtual */ nscoord nsLeafBoxFrame::GetPrefISize(
-    gfxContext* aRenderingContext) {
+/* virtual */
+nscoord nsLeafBoxFrame::GetPrefISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_PREF_WIDTH(this, result);
+  DISPLAY_PREF_INLINE_SIZE(this, result);
   nsBoxLayoutState state(PresContext(), aRenderingContext);
 
   WritingMode wm = GetWritingMode();
   LogicalSize prefSize(wm, GetXULPrefSize(state));
 
   // GetXULPrefSize returns border-box size, and we want to return content
-  // inline-size.  Since Reflow uses the reflow state's border and padding, we
+  // inline-size.  Since Reflow uses the reflow input's border and padding, we
   // actually just want to subtract what GetXULPrefSize added, which is the
   // result of GetXULBorderAndPadding.
   nsMargin bp;
@@ -256,7 +250,7 @@ void nsLeafBoxFrame::Reflow(nsPresContext* aPresContext,
     computedSize.height += m.top + m.bottom;
   }
 
-  // handle reflow state min and max sizes
+  // handle reflow input min and max sizes
   // XXXbz the width handling here seems to be wrong, since
   // mComputedMin/MaxWidth is a content-box size, whole
   // computedSize.width is a border-box size...
@@ -317,30 +311,27 @@ nsresult nsLeafBoxFrame::CharacterDataChanged(
   return nsLeafFrame::CharacterDataChanged(aInfo);
 }
 
-/* virtual */ nsSize nsLeafBoxFrame::GetXULPrefSize(nsBoxLayoutState& aState) {
+/* virtual */
+nsSize nsLeafBoxFrame::GetXULPrefSize(nsBoxLayoutState& aState) {
   return nsBox::GetXULPrefSize(aState);
 }
 
-/* virtual */ nsSize nsLeafBoxFrame::GetXULMinSize(nsBoxLayoutState& aState) {
+/* virtual */
+nsSize nsLeafBoxFrame::GetXULMinSize(nsBoxLayoutState& aState) {
   return nsBox::GetXULMinSize(aState);
 }
 
-/* virtual */ nsSize nsLeafBoxFrame::GetXULMaxSize(nsBoxLayoutState& aState) {
+/* virtual */
+nsSize nsLeafBoxFrame::GetXULMaxSize(nsBoxLayoutState& aState) {
   return nsBox::GetXULMaxSize(aState);
 }
 
-/* virtual */ nscoord nsLeafBoxFrame::GetXULFlex() {
-  return nsBox::GetXULFlex();
-}
+/* virtual */
+nscoord nsLeafBoxFrame::GetXULFlex() { return nsBox::GetXULFlex(); }
 
-/* virtual */ nscoord nsLeafBoxFrame::GetXULBoxAscent(
-    nsBoxLayoutState& aState) {
+/* virtual */
+nscoord nsLeafBoxFrame::GetXULBoxAscent(nsBoxLayoutState& aState) {
   return nsBox::GetXULBoxAscent(aState);
-}
-
-/* virtual */ void nsLeafBoxFrame::MarkIntrinsicISizesDirty() {
-  // Don't call base class method, since everything it does is within an
-  // IsXULBoxWrapped check.
 }
 
 NS_IMETHODIMP

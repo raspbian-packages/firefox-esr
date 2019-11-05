@@ -10,7 +10,6 @@
 #include "mozilla/Attributes.h"
 #include "nsITextControlElement.h"
 #include "nsIControllers.h"
-#include "nsIDOMNSEditableElement.h"
 #include "nsCOMPtr.h"
 #include "nsGenericHTMLElement.h"
 #include "nsStubMutationObserver.h"
@@ -23,15 +22,14 @@
 #include "nsTextEditorState.h"
 
 class nsIControllers;
-class nsIDocument;
 class nsPresContext;
-class nsPresState;
 
 namespace mozilla {
 
 class EventChainPostVisitor;
 class EventChainPreVisitor;
 class EventStates;
+class PresState;
 
 namespace dom {
 
@@ -39,20 +37,19 @@ class HTMLFormSubmission;
 
 class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
                                   public nsITextControlElement,
-                                  public nsIDOMNSEditableElement,
                                   public nsStubMutationObserver,
                                   public nsIConstraintValidation {
  public:
   using nsIConstraintValidation::GetValidationMessage;
 
   explicit HTMLTextAreaElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
       FromParser aFromParser = NOT_FROM_PARSER);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLTextAreaElement, textarea)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLTextAreaElement, textarea)
 
   virtual int32_t TabIndexDefault() override;
 
@@ -61,20 +58,13 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
     return true;
   }
 
-  // nsIDOMNSEditableElement
-  NS_IMETHOD GetEditor(nsIEditor** aEditor) override {
-    nsCOMPtr<nsIEditor> editor = GetEditor();
-    editor.forget(aEditor);
-    return NS_OK;
-  }
-  NS_IMETHOD SetUserInput(const nsAString& aInput) override;
-
   // nsIFormControl
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   NS_IMETHOD Reset() override;
   NS_IMETHOD SubmitNamesValues(HTMLFormSubmission* aFormSubmission) override;
   NS_IMETHOD SaveState() override;
-  virtual bool RestoreState(nsPresState* aState) override;
-  virtual bool IsDisabledForEvents(EventMessage aMessage) override;
+  virtual bool RestoreState(PresState* aState) override;
+  virtual bool IsDisabledForEvents(WidgetEvent* aEvent) override;
 
   virtual void FieldSetDisabledChanged(bool aNotify) override;
 
@@ -93,14 +83,14 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
   NS_IMETHOD_(void)
   GetTextEditorValue(nsAString& aValue, bool aIgnoreWrap) const override;
   NS_IMETHOD_(mozilla::TextEditor*) GetTextEditor() override;
+  NS_IMETHOD_(mozilla::TextEditor*) GetTextEditorWithoutCreation() override;
   NS_IMETHOD_(nsISelectionController*) GetSelectionController() override;
   NS_IMETHOD_(nsFrameSelection*) GetConstFrameSelection() override;
   NS_IMETHOD BindToFrame(nsTextControlFrame* aFrame) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   NS_IMETHOD_(void) UnbindFromFrame(nsTextControlFrame* aFrame) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   NS_IMETHOD CreateEditor() override;
-  NS_IMETHOD_(Element*) GetRootEditorNode() override;
-  NS_IMETHOD_(Element*) GetPlaceholderNode() override;
-  NS_IMETHOD_(Element*) GetPreviewNode() override;
   NS_IMETHOD_(void) UpdateOverlayTextVisibility(bool aNotify) override;
   NS_IMETHOD_(bool) GetPlaceholderVisibility() override;
   NS_IMETHOD_(bool) GetPreviewVisibility() override;
@@ -109,16 +99,15 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
   NS_IMETHOD_(void) EnablePreview() override;
   NS_IMETHOD_(bool) IsPreviewEnabled() override;
   NS_IMETHOD_(void) InitializeKeyboardEventListeners() override;
-  NS_IMETHOD_(void)
-  OnValueChanged(bool aNotify, bool aWasInteractiveUserChange) override;
+  NS_IMETHOD_(void) OnValueChanged(bool aNotify, ValueChangeKind) override;
   virtual void GetValueFromSetRangeText(nsAString& aValue) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual nsresult SetValueFromSetRangeText(const nsAString& aValue) override;
   NS_IMETHOD_(bool) HasCachedSelection() override;
 
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
@@ -131,8 +120,7 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
                                               int32_t aModType) const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
   virtual nsresult PreHandleEvent(EventChainVisitor& aVisitor) override;
   virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
 
@@ -142,10 +130,10 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
   virtual void DoneAddingChildren(bool aHaveNotified) override;
   virtual bool IsDoneAddingChildren() override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
-  nsresult CopyInnerTo(Element* aDest, bool aPreallocateChildren);
+  nsresult CopyInnerTo(Element* aDest);
 
   /**
    * Called when an attribute is about to be changed
@@ -162,12 +150,6 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
 
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLTextAreaElement,
                                            nsGenericHTMLFormElementWithState)
-
-  virtual already_AddRefed<nsITextControlElement> GetAsTextControlElement()
-      override {
-    nsCOMPtr<nsITextControlElement> txt = this;
-    return txt.forget();
-  }
 
   // nsIConstraintValidation
   bool IsTooLong();
@@ -255,6 +237,7 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
   void GetDefaultValue(nsAString& aDefaultValue, ErrorResult& aError);
   void SetDefaultValue(const nsAString& aDefaultValue, ErrorResult& aError);
   void GetValue(nsAString& aValue);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void SetValue(const nsAString& aValue, ErrorResult& aError);
 
   uint32_t GetTextLength();
@@ -280,6 +263,11 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
   nsresult GetControllers(nsIControllers** aResult);
 
   nsIEditor* GetEditor() { return mState.GetTextEditor(); }
+
+  bool IsInputEventTarget() const { return true; }
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  void SetUserInput(const nsAString& aValue, nsIPrincipal& aSubjectPrincipal);
 
  protected:
   virtual ~HTMLTextAreaElement() {}
@@ -336,6 +324,7 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
    * @param aValue      String to set.
    * @param aFlags      See nsTextEditorState::SetValueFlags.
    */
+  MOZ_CAN_RUN_SCRIPT
   nsresult SetValueInternal(const nsAString& aValue, uint32_t aFlags);
 
   /**
@@ -393,7 +382,7 @@ class HTMLTextAreaElement final : public nsGenericHTMLFormElementWithState,
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

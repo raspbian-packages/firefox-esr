@@ -20,9 +20,11 @@ class nsCocoaFeatures {
   static int32_t OSXVersionBugFix();
   static bool OnYosemiteOrLater();
   static bool OnElCapitanOrLater();
+  static bool OnSierraExactly();
   static bool OnSierraOrLater();
   static bool OnHighSierraOrLater();
   static bool OnMojaveOrLater();
+  static bool OnCatalinaOrLater();
 
   static bool IsAtLeastVersion(int32_t aMajor, int32_t aMinor,
                                int32_t aBugFix = 0);
@@ -32,7 +34,7 @@ class nsCocoaFeatures {
   // GetVersion actually adjusts to the lowest supported OS, so it will always
   // return a "supported" version.  GetSystemVersion does not make any
   // modifications.
-  static void GetSystemVersion(int &aMajor, int &aMinor, int &aBugFix);
+  static void GetSystemVersion(int& aMajor, int& aMinor, int& aBugFix);
   static int32_t GetVersion(int32_t aMajor, int32_t aMinor, int32_t aBugFix);
   static int32_t ExtractMajorVersion(int32_t aVersion);
   static int32_t ExtractMinorVersion(int32_t aVersion);
@@ -44,9 +46,10 @@ class nsCocoaFeatures {
   static int32_t mOSXVersion;
 };
 
-// C-callable helper for cairo-quartz-font.c
+// C-callable helper for cairo-quartz-font.c and SkFontHost_mac.cpp
 extern "C" {
-bool Gecko_OnSierraOrLater();
+bool Gecko_OnSierraExactly();
+bool Gecko_OnHighSierraOrLater();
 }
 
 #endif  // nsCocoaFeatures_h_

@@ -20,7 +20,7 @@
 #include "mozilla/net/WebSocketFrame.h"
 #include "mozilla/TimeStamp.h"
 #ifdef XP_WIN
-#include "mozilla/TimeStamp_windows.h"
+#  include "mozilla/TimeStamp_windows.h"
 #endif
 #include "mozilla/TypeTraits.h"
 #include "mozilla/IntegerTypeTraits.h"
@@ -30,16 +30,19 @@
 #include <type_traits>
 
 #include "nsExceptionHandler.h"
+#include "nsHashKeys.h"
 #include "nsID.h"
+#include "nsILoadInfo.h"
 #include "nsIWidget.h"
 #include "nsMemory.h"
 #include "nsString.h"
 #include "nsTArray.h"
+#include "nsTHashtable.h"
 #include "js/StructuredClone.h"
 #include "nsCSSPropertyID.h"
 
 #ifdef _MSC_VER
-#pragma warning(disable : 4800)
+#  pragma warning(disable : 4800)
 #endif
 
 #if !defined(OS_POSIX)
@@ -81,7 +84,7 @@ struct SerializedStructuredCloneBuffer final {
       const SerializedStructuredCloneBuffer& aOther) {
     data.Clear();
     data.initScope(aOther.data.scope());
-    data.Append(aOther.data);
+    MOZ_RELEASE_ASSERT(data.Append(aOther.data), "out of memory");
     return *this;
   }
 
@@ -99,11 +102,6 @@ struct SerializedStructuredCloneBuffer final {
 }  // namespace mozilla
 
 namespace IPC {
-
-/**
- * Maximum size, in bytes, of a single IPC message.
- */
-static const uint32_t MAX_MESSAGE_SIZE = 65536;
 
 /**
  * Generic enum serializer.
@@ -134,12 +132,12 @@ struct EnumSerializer {
     uintParamType value;
     if (!ReadParam(aMsg, aIter, &value)) {
       CrashReporter::AnnotateCrashReport(
-          NS_LITERAL_CSTRING("IPCReadErrorReason"),
+          CrashReporter::Annotation::IPCReadErrorReason,
           NS_LITERAL_CSTRING("Bad iter"));
       return false;
     } else if (!EnumValidator::IsLegalValue(paramType(value))) {
       CrashReporter::AnnotateCrashReport(
-          NS_LITERAL_CSTRING("IPCReadErrorReason"),
+          CrashReporter::Annotation::IPCReadErrorReason,
           NS_LITERAL_CSTRING("Illegal value"));
       return false;
     }
@@ -371,6 +369,9 @@ struct ParamTraits<nsACString> {
     if (!ReadParam(aMsg, aIter, &length)) {
       return false;
     }
+    if (!aMsg->HasBytesAvailable(aIter, length)) {
+      return false;
+    }
     aResult->SetLength(length);
 
     return aMsg->ReadBytesInto(aIter, aResult->BeginWriting(), length);
@@ -416,13 +417,14 @@ struct ParamTraits<nsAString> {
       return false;
     }
 
-    aResult->SetLength(length);
-
     mozilla::CheckedInt<uint32_t> byteLength =
         mozilla::CheckedInt<uint32_t>(length) * sizeof(char16_t);
-    if (!byteLength.isValid()) {
+    if (!byteLength.isValid() ||
+        !aMsg->HasBytesAvailable(aIter, byteLength.value())) {
       return false;
     }
+
+    aResult->SetLength(length);
 
     return aMsg->ReadBytesInto(aIter, aResult->BeginWriting(),
                                byteLength.value());
@@ -492,6 +494,37 @@ struct ParamTraits<nsAutoString> : ParamTraits<nsString> {
 
 #endif  // MOZILLA_INTERNAL_API
 
+template <>
+struct ParamTraits<nsTHashtable<nsUint64HashKey>> {
+  typedef nsTHashtable<nsUint64HashKey> paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    uint32_t count = aParam.Count();
+    WriteParam(aMsg, count);
+    for (auto iter = aParam.ConstIter(); !iter.Done(); iter.Next()) {
+      WriteParam(aMsg, iter.Get()->GetKey());
+    }
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    uint32_t count;
+    if (!ReadParam(aMsg, aIter, &count)) {
+      return false;
+    }
+    paramType table(count);
+    for (uint32_t i = 0; i < count; ++i) {
+      uint64_t key;
+      if (!ReadParam(aMsg, aIter, &key)) {
+        return false;
+      }
+      table.PutEntry(key);
+    }
+    *aResult = std::move(table);
+    return true;
+  }
+};
+
 // Pickle::ReadBytes and ::WriteBytes take the length in ints, so we must
 // ensure there is no overflow. This returns |false| if it would overflow.
 // Otherwise, it returns |true| and places the byte length in |aByteLength|.
@@ -548,6 +581,13 @@ struct ParamTraits<nsTArray<E>> {
       E* elements = aResult->AppendElements(length);
       return aMsg->ReadBytesInto(aIter, elements, pickledLength);
     } else {
+      // Each ReadParam<E> may read more than 1 byte each; this is an attempt
+      // to minimally validate that the length isn't much larger than what's
+      // actually available in aMsg.
+      if (!aMsg->HasBytesAvailable(aIter, length)) {
+        return false;
+      }
+
       aResult->SetCapacity(length);
 
       for (uint32_t index = 0; index < length; index++) {
@@ -711,15 +751,41 @@ struct ParamTraits<mozilla::TimeStampValue> {
   static void Write(Message* aMsg, const paramType& aParam) {
     WriteParam(aMsg, aParam.mGTC);
     WriteParam(aMsg, aParam.mQPC);
-    WriteParam(aMsg, aParam.mHasQPC);
+    WriteParam(aMsg, aParam.mUsedCanonicalNow);
     WriteParam(aMsg, aParam.mIsNull);
+    WriteParam(aMsg, aParam.mHasQPC);
   }
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
     return (ReadParam(aMsg, aIter, &aResult->mGTC) &&
             ReadParam(aMsg, aIter, &aResult->mQPC) &&
-            ReadParam(aMsg, aIter, &aResult->mHasQPC) &&
-            ReadParam(aMsg, aIter, &aResult->mIsNull));
+            ReadParam(aMsg, aIter, &aResult->mUsedCanonicalNow) &&
+            ReadParam(aMsg, aIter, &aResult->mIsNull) &&
+            ReadParam(aMsg, aIter, &aResult->mHasQPC));
+  }
+};
+
+#else
+
+template <>
+struct ParamTraits<mozilla::TimeStamp63Bit> {
+  typedef mozilla::TimeStamp63Bit paramType;
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mUsedCanonicalNow);
+    WriteParam(aMsg, aParam.mTimeStamp);
+  }
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    bool success = true;
+    uint64_t result;
+
+    success &= ReadParam(aMsg, aIter, &result);
+    aResult->mUsedCanonicalNow = result & 0x01;
+
+    success &= ReadParam(aMsg, aIter, &result);
+    aResult->mTimeStamp = result & 0x7FFFFFFFFFFFFFFF;
+
+    return success;
   }
 };
 
@@ -798,7 +864,7 @@ struct ParamTraits<JSStructuredCloneData> {
     }
 
     *aResult = JSStructuredCloneData(
-        Move(out), JS::StructuredCloneScope::DifferentProcess);
+        std::move(out), JS::StructuredCloneScope::DifferentProcess);
 
     return true;
   }
@@ -851,7 +917,7 @@ struct ParamTraits<mozilla::Maybe<T>> {
       if (!ReadParam(msg, iter, &tmp)) {
         return false;
       }
-      *result = mozilla::Some(mozilla::Move(tmp));
+      *result = mozilla::Some(std::move(tmp));
     } else {
       *result = mozilla::Nothing();
     }
@@ -859,10 +925,10 @@ struct ParamTraits<mozilla::Maybe<T>> {
   }
 };
 
-template <typename T>
-struct ParamTraits<mozilla::EnumSet<T>> {
-  typedef mozilla::EnumSet<T> paramType;
-  typedef typename mozilla::EnumSet<T>::serializedType serializedType;
+template <typename T, typename U>
+struct ParamTraits<mozilla::EnumSet<T, U>> {
+  typedef mozilla::EnumSet<T, U> paramType;
+  typedef U serializedType;
 
   static void Write(Message* msg, const paramType& param) {
     MOZ_RELEASE_ASSERT(IsLegalValue(param.serialize()));
@@ -905,18 +971,9 @@ struct ParamTraits<mozilla::Variant<Ts...>> {
   typedef mozilla::Variant<Ts...> paramType;
   using Tag = typename mozilla::detail::VariantTag<Ts...>::Type;
 
-  struct VariantWriter {
-    Message* msg;
-
-    template <class T>
-    void match(const T& t) {
-      WriteParam(msg, t);
-    }
-  };
-
   static void Write(Message* msg, const paramType& param) {
     WriteParam(msg, param.tag);
-    param.match(VariantWriter{msg});
+    param.match([msg](const auto& t) { WriteParam(msg, t); });
   }
 
   // Because VariantReader is a nested struct, we need the dummy template
@@ -1002,6 +1059,34 @@ struct ParamTraits<mozilla::dom::Optional<T>> {
     return true;
   }
 };
+
+struct CrossOriginOpenerPolicyValidator {
+  static bool IsLegalValue(nsILoadInfo::CrossOriginOpenerPolicy e) {
+    return e == nsILoadInfo::OPENER_POLICY_NULL ||
+           e == nsILoadInfo::OPENER_POLICY_SAME_ORIGIN ||
+           e == nsILoadInfo::OPENER_POLICY_SAME_SITE ||
+           e == nsILoadInfo::OPENER_POLICY_SAME_ORIGIN_ALLOW_OUTGOING ||
+           e == nsILoadInfo::OPENER_POLICY_SAME_SITE_ALLOW_OUTGOING;
+  }
+};
+
+template <>
+struct ParamTraits<nsILoadInfo::CrossOriginOpenerPolicy>
+    : EnumSerializer<nsILoadInfo::CrossOriginOpenerPolicy,
+                     CrossOriginOpenerPolicyValidator> {};
+
+struct CrossOriginPolicyValidator {
+  static bool IsLegalValue(nsILoadInfo::CrossOriginPolicy e) {
+    return e == nsILoadInfo::CROSS_ORIGIN_POLICY_NULL ||
+           e == nsILoadInfo::CROSS_ORIGIN_POLICY_ANONYMOUS ||
+           e == nsILoadInfo::CROSS_ORIGIN_POLICY_USE_CREDENTIALS;
+  }
+};
+
+template <>
+struct ParamTraits<nsILoadInfo::CrossOriginPolicy>
+    : EnumSerializer<nsILoadInfo::CrossOriginPolicy,
+                     CrossOriginPolicyValidator> {};
 
 } /* namespace IPC */
 

@@ -8,11 +8,11 @@
  * checked in the second request.
  */
 
-ChromeUtils.import("resource://services-common/utils.js");
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-ChromeUtils.import("resource://gre/modules/ClientID.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/LightweightThemeManager.jsm", this);
+const { CommonUtils } = ChromeUtils.import(
+  "resource://services-common/utils.js"
+);
+const { ClientID } = ChromeUtils.import("resource://gre/modules/ClientID.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", this);
 ChromeUtils.import("resource://gre/modules/TelemetryController.jsm", this);
 ChromeUtils.import("resource://gre/modules/TelemetrySession.jsm", this);
@@ -21,8 +21,9 @@ ChromeUtils.import("resource://gre/modules/TelemetryEnvironment.jsm", this);
 ChromeUtils.import("resource://gre/modules/TelemetrySend.jsm", this);
 ChromeUtils.import("resource://gre/modules/TelemetryUtils.jsm", this);
 ChromeUtils.import("resource://gre/modules/TelemetryReportingPolicy.jsm", this);
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
-ChromeUtils.import("resource://gre/modules/osfile.jsm", this);
+const { Preferences } = ChromeUtils.import(
+  "resource://gre/modules/Preferences.jsm"
+);
 
 const PING_FORMAT_VERSION = 4;
 const PING_TYPE_MAIN = "main";
@@ -55,8 +56,8 @@ const RW_OWNER = parseInt("0600", 8);
 const NUMBER_OF_THREADS_TO_LAUNCH = 30;
 var gNumberOfThreadsLaunched = 0;
 
-const MS_IN_ONE_HOUR  = 60 * 60 * 1000;
-const MS_IN_ONE_DAY   = 24 * MS_IN_ONE_HOUR;
+const MS_IN_ONE_HOUR = 60 * 60 * 1000;
+const MS_IN_ONE_DAY = 24 * MS_IN_ONE_HOUR;
 
 const DATAREPORTING_DIR = "datareporting";
 const ABORTED_PING_FILE_NAME = "aborted-session-ping";
@@ -80,18 +81,23 @@ function sendPing() {
 }
 
 function fakeGenerateUUID(sessionFunc, subsessionFunc) {
-  let session = ChromeUtils.import("resource://gre/modules/TelemetrySession.jsm", {});
+  let session = ChromeUtils.import(
+    "resource://gre/modules/TelemetrySession.jsm",
+    null
+  );
   session.Policy.generateSessionUUID = sessionFunc;
   session.Policy.generateSubsessionUUID = subsessionFunc;
 }
 
 function fakeIdleNotification(topic) {
-  let session = ChromeUtils.import("resource://gre/modules/TelemetrySession.jsm", {});
-  return session.TelemetryScheduler.observe(null, topic, null);
+  let scheduler = ChromeUtils.import(
+    "resource://gre/modules/TelemetryScheduler.jsm",
+    null
+  );
+  return scheduler.TelemetryScheduler.observe(null, topic, null);
 }
 
 function setupTestData() {
-
   Services.startup.interrupted = true;
   let h2 = Telemetry.getHistogramById("TELEMETRY_TEST_COUNT");
   h2.add();
@@ -112,15 +118,19 @@ function getSavedPingFile(basename) {
   registerCleanupFunction(function() {
     try {
       pingFile.remove(true);
-    } catch (e) {
-    }
+    } catch (e) {}
   });
   return pingFile;
 }
 
 function checkPingFormat(aPing, aType, aHasClientId, aHasEnvironment) {
   const MANDATORY_PING_FIELDS = [
-    "type", "id", "creationDate", "version", "application", "payload"
+    "type",
+    "id",
+    "creationDate",
+    "version",
+    "application",
+    "payload",
   ];
 
   const APPLICATION_TEST_DATA = {
@@ -138,35 +148,58 @@ function checkPingFormat(aPing, aType, aHasClientId, aHasEnvironment) {
   }
 
   Assert.equal(aPing.type, aType, "The ping must have the correct type.");
-  Assert.equal(aPing.version, PING_FORMAT_VERSION, "The ping must have the correct version.");
+  Assert.equal(
+    aPing.version,
+    PING_FORMAT_VERSION,
+    "The ping must have the correct version."
+  );
 
   // Test the application section.
   for (let f in APPLICATION_TEST_DATA) {
-    Assert.equal(aPing.application[f], APPLICATION_TEST_DATA[f],
-                 f + " must have the correct value.");
+    Assert.equal(
+      aPing.application[f],
+      APPLICATION_TEST_DATA[f],
+      f + " must have the correct value."
+    );
   }
 
   // We can't check the values for channel and architecture. Just make
   // sure they are in.
-  Assert.ok("architecture" in aPing.application,
-            "The application section must have an architecture field.");
-  Assert.ok("channel" in aPing.application,
-            "The application section must have a channel field.");
+  Assert.ok(
+    "architecture" in aPing.application,
+    "The application section must have an architecture field."
+  );
+  Assert.ok(
+    "channel" in aPing.application,
+    "The application section must have a channel field."
+  );
 
   // Check the clientId and environment fields, as needed.
   Assert.equal("clientId" in aPing, aHasClientId);
   Assert.equal("environment" in aPing, aHasEnvironment);
 }
 
-function checkPayloadInfo(data) {
+function checkPayloadInfo(data, reason) {
   const ALLOWED_REASONS = [
-    "environment-change", "shutdown", "daily", "saved-session", "test-ping"
+    "environment-change",
+    "shutdown",
+    "daily",
+    "saved-session",
+    "test-ping",
   ];
-  let numberCheck = arg => { return (typeof arg == "number"); };
-  let positiveNumberCheck = arg => { return numberCheck(arg) && (arg >= 0); };
-  let stringCheck = arg => { return (typeof arg == "string") && (arg != ""); };
+  let numberCheck = arg => {
+    return typeof arg == "number";
+  };
+  let positiveNumberCheck = arg => {
+    return numberCheck(arg) && arg >= 0;
+  };
+  let stringCheck = arg => {
+    return typeof arg == "string" && arg != "";
+  };
   let revisionCheck = arg => {
-    return (AppConstants.MOZILLA_OFFICIAL) ? stringCheck(arg) : (typeof arg == "string");
+    return AppConstants.MOZILLA_OFFICIAL
+      ? stringCheck(arg)
+      : typeof arg == "string";
   };
   let uuidCheck = arg => {
     return UUID_REGEX.test(arg);
@@ -175,8 +208,11 @@ function checkPayloadInfo(data) {
     // We expect use of this version of the ISO format:
     // 2015-04-12T18:51:19.1+00:00
     const isoDateRegEx = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}$/;
-    return stringCheck(arg) && !Number.isNaN(Date.parse(arg)) &&
-           isoDateRegEx.test(arg);
+    return (
+      stringCheck(arg) &&
+      !Number.isNaN(Date.parse(arg)) &&
+      isoDateRegEx.test(arg)
+    );
   };
 
   const EXPECTED_INFO_FIELDS_TYPES = {
@@ -186,8 +222,12 @@ function checkPayloadInfo(data) {
     sessionId: uuidCheck,
     subsessionId: uuidCheck,
     // Special cases: previousSessionId and previousSubsessionId are null on first run.
-    previousSessionId: (arg) => { return (arg) ? uuidCheck(arg) : true; },
-    previousSubsessionId: (arg) => { return (arg) ? uuidCheck(arg) : true; },
+    previousSessionId: arg => {
+      return arg ? uuidCheck(arg) : true;
+    },
+    previousSubsessionId: arg => {
+      return arg ? uuidCheck(arg) : true;
+    },
     subsessionCounter: positiveNumberCheck,
     profileSubsessionCounter: positiveNumberCheck,
     sessionStartDate: isoDateCheck,
@@ -199,8 +239,16 @@ function checkPayloadInfo(data) {
     Assert.ok(f in data, f + " must be available.");
 
     let checkFunc = EXPECTED_INFO_FIELDS_TYPES[f];
-    Assert.ok(checkFunc(data[f]),
-              f + " must have the correct type and valid data " + data[f]);
+    Assert.ok(
+      checkFunc(data[f]),
+      f + " must have the correct type and valid data " + data[f]
+    );
+  }
+
+  // Check for a valid revision.
+  if (data.revision != "") {
+    const revisionUrlRegEx = /^http[s]?:\/\/hg.mozilla.org(\/[a-z\S]+)+(\/rev\/[0-9a-z]+)$/g;
+    Assert.ok(revisionUrlRegEx.test(data.revision));
   }
 
   // Previous buildId is not mandatory.
@@ -208,42 +256,72 @@ function checkPayloadInfo(data) {
     Assert.ok(stringCheck(data.previousBuildId));
   }
 
-  Assert.ok(ALLOWED_REASONS.find(r => r == data.reason),
-            "Payload must contain an allowed reason.");
+  Assert.ok(
+    ALLOWED_REASONS.find(r => r == data.reason),
+    "Payload must contain an allowed reason."
+  );
+  Assert.equal(data.reason, reason, "Payload reason must match expected.");
 
-  Assert.ok(Date.parse(data.subsessionStartDate) >= Date.parse(data.sessionStartDate));
+  Assert.ok(
+    Date.parse(data.subsessionStartDate) >= Date.parse(data.sessionStartDate)
+  );
   Assert.ok(data.profileSubsessionCounter >= data.subsessionCounter);
-  Assert.ok(data.timezoneOffset >= -12 * 60, "The timezone must be in a valid range.");
-  Assert.ok(data.timezoneOffset <= 12 * 60, "The timezone must be in a valid range.");
+  Assert.ok(
+    data.timezoneOffset >= -12 * 60,
+    "The timezone must be in a valid range."
+  );
+  Assert.ok(
+    data.timezoneOffset <= 12 * 60,
+    "The timezone must be in a valid range."
+  );
 }
 
 function checkScalars(processes) {
   // Check that the scalars section is available in the ping payload.
   const parentProcess = processes.parent;
-  Assert.ok("scalars" in parentProcess, "The scalars section must be available in the parent process.");
-  Assert.ok("keyedScalars" in parentProcess, "The keyedScalars section must be available in the parent process.");
-  Assert.equal(typeof parentProcess.scalars, "object", "The scalars entry must be an object.");
-  Assert.equal(typeof parentProcess.keyedScalars, "object", "The keyedScalars entry must be an object.");
+  Assert.ok(
+    "scalars" in parentProcess,
+    "The scalars section must be available in the parent process."
+  );
+  Assert.ok(
+    "keyedScalars" in parentProcess,
+    "The keyedScalars section must be available in the parent process."
+  );
+  Assert.equal(
+    typeof parentProcess.scalars,
+    "object",
+    "The scalars entry must be an object."
+  );
+  Assert.equal(
+    typeof parentProcess.keyedScalars,
+    "object",
+    "The keyedScalars entry must be an object."
+  );
 
   let checkScalar = function(scalar) {
     // Check if the value is of a supported type.
-    const valueType = typeof(scalar);
+    const valueType = typeof scalar;
     switch (valueType) {
       case "string":
-        Assert.ok(scalar.length <= 50,
-                  "String values can't have more than 50 characters");
-      break;
+        Assert.ok(
+          scalar.length <= 50,
+          "String values can't have more than 50 characters"
+        );
+        break;
       case "number":
-        Assert.ok(scalar >= 0,
-                  "We only support unsigned integer values in scalars.");
-      break;
+        Assert.ok(
+          scalar >= 0,
+          "We only support unsigned integer values in scalars."
+        );
+        break;
       case "boolean":
-        Assert.ok(true,
-                  "Boolean scalar found.");
-      break;
+        Assert.ok(true, "Boolean scalar found.");
+        break;
       default:
-        Assert.ok(false,
-                  name + " contains an unsupported value type (" + valueType + ")");
+        Assert.ok(
+          false,
+          name + " contains an unsupported value type (" + valueType + ")"
+        );
     }
   };
 
@@ -258,91 +336,54 @@ function checkScalars(processes) {
   const keyedScalars = parentProcess.keyedScalars;
   for (let name in keyedScalars) {
     Assert.equal(typeof name, "string", "Scalar names must be strings.");
-    Assert.ok(Object.keys(keyedScalars[name]).length,
-              "The reported keyed scalars must contain at least 1 key.");
+    Assert.ok(
+      Object.keys(keyedScalars[name]).length,
+      "The reported keyed scalars must contain at least 1 key."
+    );
     for (let key in keyedScalars[name]) {
       Assert.equal(typeof key, "string", "Keyed scalar keys must be strings.");
-      Assert.ok(key.length <= 70, "Keyed scalar keys can't have more than 70 characters.");
+      Assert.ok(
+        key.length <= 70,
+        "Keyed scalar keys can't have more than 70 characters."
+      );
       checkScalar(scalars[name][key]);
     }
   }
 }
 
-function checkEvents(processes) {
-  // Check that the events section is available in the ping payload.
-  const parent = processes.parent;
-  Assert.ok("events" in parent, "The events section must be available in the parent process.");
-
-  // Check that the events section has the right format.
-  Assert.ok(Array.isArray(parent.events), "The events entry must be an array.");
-  for (let [ts, category, method, object, value, extra] of parent.events) {
-    Assert.equal(typeof(ts), "number", "Timestamp field should be a number.");
-    Assert.greaterOrEqual(ts, 0, "Timestamp should be >= 0.");
-
-    Assert.equal(typeof(category), "string", "Category should have the right type.");
-    Assert.lessOrEqual(category.length, 100, "Category should have the right string length.");
-
-    Assert.equal(typeof(method), "string", "Method should have the right type.");
-    Assert.lessOrEqual(method.length, 40, "Method should have the right string length.");
-
-    Assert.equal(typeof(object), "string", "Object should have the right type.");
-    Assert.lessOrEqual(object.length, 40, "Object should have the right string length.");
-
-    Assert.ok(value === null || typeof(value) === "string",
-              "Value should be null or a string.");
-    if (value) {
-      Assert.lessOrEqual(value.length, 100, "Value should have the right string length.");
-    }
-
-    Assert.ok(extra === null || typeof(extra) === "object",
-              "Extra should be null or an object.");
-    if (extra) {
-      let keys = Object.keys(extra);
-      let keyTypes = keys.map(k => typeof(k));
-      Assert.lessOrEqual(keys.length, 20, "Should not have too many extra keys.");
-      Assert.ok(keyTypes.every(t => t === "string"),
-                "All extra keys should be strings.");
-      Assert.ok(keys.every(k => k.length <= 20),
-                "All extra keys should have the right string length.");
-
-      let values = Object.values(extra);
-      let valueTypes = values.map(v => typeof(v));
-      Assert.ok(valueTypes.every(t => t === "string"),
-                "All extra values should be strings.");
-      Assert.ok(values.every(v => v.length <= 100),
-                "All extra values should have the right string length.");
-    }
-  }
-}
-
-function checkPayload(payload, reason, successfulPings, savedPings) {
+function checkPayload(payload, reason, successfulPings) {
   Assert.ok("info" in payload, "Payload must contain an info section.");
-  checkPayloadInfo(payload.info);
+  checkPayloadInfo(payload.info, reason);
 
   Assert.ok(payload.simpleMeasurements.totalTime >= 0);
-  Assert.ok(payload.simpleMeasurements.uptime >= 0);
   Assert.equal(payload.simpleMeasurements.startupInterrupted, 1);
   Assert.equal(payload.simpleMeasurements.shutdownDuration, SHUTDOWN_TIME);
-  Assert.equal(payload.simpleMeasurements.savedPings, savedPings);
   Assert.ok("maximalNumberOfConcurrentThreads" in payload.simpleMeasurements);
-  Assert.ok(payload.simpleMeasurements.maximalNumberOfConcurrentThreads >= gNumberOfThreadsLaunched);
+  Assert.ok(
+    payload.simpleMeasurements.maximalNumberOfConcurrentThreads >=
+      gNumberOfThreadsLaunched
+  );
 
   let activeTicks = payload.simpleMeasurements.activeTicks;
   Assert.ok(activeTicks >= 0);
 
   if ("browser.timings.last_shutdown" in payload.processes.parent.scalars) {
-    Assert.equal(payload.processes.parent.scalars["browser.timings.last_shutdown"], SHUTDOWN_TIME);
+    Assert.equal(
+      payload.processes.parent.scalars["browser.timings.last_shutdown"],
+      SHUTDOWN_TIME
+    );
   }
 
-  Assert.equal(payload.simpleMeasurements.failedProfileLockCount,
-              FAILED_PROFILE_LOCK_ATTEMPTS);
+  Assert.equal(
+    payload.simpleMeasurements.failedProfileLockCount,
+    FAILED_PROFILE_LOCK_ATTEMPTS
+  );
   let profileDirectory = Services.dirsvc.get("ProfD", Ci.nsIFile);
   let failedProfileLocksFile = profileDirectory.clone();
   failedProfileLocksFile.append("Telemetry.FailedProfileLocks.txt");
   Assert.ok(!failedProfileLocksFile.exists());
 
-
-  let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
+  let isWindows = "@mozilla.org/windows-registry-key;1" in Cc;
   if (isWindows) {
     Assert.ok(payload.simpleMeasurements.startupSessionRestoreReadBytes > 0);
     Assert.ok(payload.simpleMeasurements.startupSessionRestoreWriteBytes > 0);
@@ -368,22 +409,22 @@ function checkPayload(payload, reason, successfulPings, savedPings) {
     range: [1, 2],
     bucket_count: 3,
     histogram_type: 3,
-    values: {0: 1, 1: 0},
-    sum: 0
+    values: { 0: 1, 1: 0 },
+    sum: 0,
   };
   let flag = payload.histograms[TELEMETRY_TEST_FLAG];
-  Assert.equal(uneval(flag), uneval(expected_flag));
+  Assert.deepEqual(flag, expected_flag);
 
   // We should have a test count.
   const expected_count = {
     range: [1, 2],
     bucket_count: 3,
     histogram_type: 4,
-    values: {0: 1, 1: 0},
+    values: { 0: 1, 1: 0 },
     sum: 1,
   };
   let count = payload.histograms[TELEMETRY_TEST_COUNT];
-  Assert.equal(uneval(count), uneval(expected_count));
+  Assert.deepEqual(count, expected_count);
 
   // There should be one successful report from the previous telemetry ping.
   if (successfulPings > 0) {
@@ -391,11 +432,11 @@ function checkPayload(payload, reason, successfulPings, savedPings) {
       range: [1, 2],
       bucket_count: 3,
       histogram_type: 2,
-      values: {0: 2, 1: successfulPings, 2: 0},
-      sum: successfulPings
+      values: { 0: 2, 1: successfulPings, 2: 0 },
+      sum: successfulPings,
     };
     let tc = payload.histograms[TELEMETRY_SUCCESS];
-    Assert.equal(uneval(tc), uneval(expected_tc));
+    Assert.deepEqual(tc, expected_tc);
   }
 
   // The ping should include data from memory reporters.  We can't check that
@@ -403,19 +444,23 @@ function checkPayload(payload, reason, successfulPings, savedPings) {
   // memory reporters.  But we can at least check that the data is there.
   //
   // It's important to check for the presence of reporters with a mix of units,
-  // because TelemetryController has separate logic for each one.  But we can't
+  // because MemoryTelemetry has separate logic for each one.  But we can't
   // currently check UNITS_COUNT_CUMULATIVE or UNITS_PERCENTAGE because
   // Telemetry doesn't touch a memory reporter with these units that's
   // available on all platforms.
 
+  Assert.ok("MEMORY_TOTAL" in payload.histograms); // UNITS_BYTES
   Assert.ok("MEMORY_JS_GC_HEAP" in payload.histograms); // UNITS_BYTES
   Assert.ok("MEMORY_JS_COMPARTMENTS_SYSTEM" in payload.histograms); // UNITS_COUNT
 
-  Assert.ok(("mainThread" in payload.slowSQL) &&
-                ("otherThreads" in payload.slowSQL));
+  Assert.ok(
+    "mainThread" in payload.slowSQL && "otherThreads" in payload.slowSQL
+  );
 
-  Assert.ok(("IceCandidatesStats" in payload.webrtc) &&
-                ("webrtc" in payload.webrtc.IceCandidatesStats));
+  Assert.ok(
+    "IceCandidatesStats" in payload.webrtc &&
+      "webrtc" in payload.webrtc.IceCandidatesStats
+  );
 
   // Check keyed histogram payload.
 
@@ -425,34 +470,48 @@ function checkPayload(payload, reason, successfulPings, savedPings) {
   Assert.ok(TELEMETRY_TEST_KEYED_COUNT in keyedHistograms);
 
   const expected_keyed_count = {
-    "a": {
+    a: {
       range: [1, 2],
       bucket_count: 3,
       histogram_type: 4,
-      values: {0: 2, 1: 0},
+      values: { 0: 2, 1: 0 },
       sum: 2,
     },
-    "b": {
+    b: {
       range: [1, 2],
       bucket_count: 3,
       histogram_type: 4,
-      values: {0: 1, 1: 0},
+      values: { 0: 1, 1: 0 },
       sum: 1,
     },
   };
-  Assert.deepEqual(expected_keyed_count, keyedHistograms[TELEMETRY_TEST_KEYED_COUNT]);
+  Assert.deepEqual(
+    expected_keyed_count,
+    keyedHistograms[TELEMETRY_TEST_KEYED_COUNT]
+  );
 
-  Assert.ok("processes" in payload, "The payload must have a processes section.");
-  Assert.ok("parent" in payload.processes, "There must be at least a parent process.");
+  Assert.ok(
+    "processes" in payload,
+    "The payload must have a processes section."
+  );
+  Assert.ok(
+    "parent" in payload.processes,
+    "There must be at least a parent process."
+  );
+
   checkScalars(payload.processes);
-  checkEvents(payload.processes);
 }
 
 function writeStringToFile(file, contents) {
-  let ostream = Cc["@mozilla.org/network/safe-file-output-stream;1"]
-                .createInstance(Ci.nsIFileOutputStream);
-  ostream.init(file, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE,
-               RW_OWNER, ostream.DEFER_OPEN);
+  let ostream = Cc[
+    "@mozilla.org/network/safe-file-output-stream;1"
+  ].createInstance(Ci.nsIFileOutputStream);
+  ostream.init(
+    file,
+    PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE,
+    RW_OWNER,
+    ostream.DEFER_OPEN
+  );
   ostream.write(contents, contents.length);
   ostream.QueryInterface(Ci.nsISafeOutputStream).finish();
   ostream.close();
@@ -479,6 +538,7 @@ add_task(async function test_setup() {
   do_get_profile();
   loadAddonManager(APP_ID, APP_NAME, APP_VERSION, PLATFORM_VERSION);
   finishAddonManagerStartup();
+  fakeIntlReady();
   // Make sure we don't generate unexpected pings due to pref changes.
   await setEmptyPrefWatchlist();
 
@@ -504,7 +564,9 @@ add_task(async function test_setup() {
   }
   gNumberOfThreadsLaunched = threads.length;
 
-  Assert.ok(Telemetry.maximalNumberOfConcurrentThreads >= gNumberOfThreadsLaunched);
+  Assert.ok(
+    Telemetry.maximalNumberOfConcurrentThreads >= gNumberOfThreadsLaunched
+  );
 
   registerCleanupFunction(function() {
     threads.forEach(function(thread) {
@@ -513,7 +575,8 @@ add_task(async function test_setup() {
   });
 
   await new Promise(resolve =>
-    Telemetry.asyncFetchTelemetryData(wrapWithExceptionHandler(resolve)));
+    Telemetry.asyncFetchTelemetryData(wrapWithExceptionHandler(resolve))
+  );
 });
 
 add_task(async function asyncSetup() {
@@ -524,12 +587,14 @@ add_task(async function asyncSetup() {
 
 // Ensures that expired histograms are not part of the payload.
 add_task(async function test_expiredHistogram() {
-
   let dummy = Telemetry.getHistogramById("TELEMETRY_TEST_EXPIRED");
 
   dummy.add(1);
 
-  Assert.equal(TelemetrySession.getPayload().histograms.TELEMETRY_TEST_EXPIRED, undefined);
+  Assert.equal(
+    TelemetrySession.getPayload().histograms.TELEMETRY_TEST_EXPIRED,
+    undefined
+  );
 });
 
 // Sends a ping to a non existing server. If we remove this test, we won't get
@@ -548,7 +613,10 @@ add_task(async function test_noServerPing() {
 add_task(async function test_simplePing() {
   await TelemetryStorage.testClearPendingPings();
   PingServer.start();
-  Preferences.set(TelemetryUtils.Preferences.Server, "http://localhost:" + PingServer.port);
+  Preferences.set(
+    TelemetryUtils.Preferences.Server,
+    "http://localhost:" + PingServer.port
+  );
 
   let now = new Date(2020, 1, 1, 12, 5, 6);
   let expectedDate = new Date(2020, 1, 1, 12, 0, 0);
@@ -564,7 +632,9 @@ add_task(async function test_simplePing() {
   // now fake the session duration.
   const SESSION_DURATION_IN_MINUTES = 15;
   fakeNow(new Date(2020, 1, 1, 12, SESSION_DURATION_IN_MINUTES, 0));
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + SESSION_DURATION_IN_MINUTES * 60 * 1000);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + SESSION_DURATION_IN_MINUTES * 60 * 1000
+  );
 
   await sendPing();
   let ping = await PingServer.promiseNextPing();
@@ -605,8 +675,11 @@ add_task(async function test_saveLoadPing() {
   const requests = await PingServer.promiseNextRequests(2);
 
   for (let req of requests) {
-    Assert.equal(req.getHeader("content-type"), "application/json; charset=UTF-8",
-                 "The request must have the correct content-type.");
+    Assert.equal(
+      req.getHeader("content-type"),
+      "application/json; charset=UTF-8",
+      "The request must have the correct content-type."
+    );
   }
 
   // We decode both requests to check for the |reason|.
@@ -619,9 +692,9 @@ add_task(async function test_saveLoadPing() {
   }
 
   checkPingFormat(pings[0], PING_TYPE_MAIN, true, true);
-  checkPayload(pings[0].payload, REASON_TEST_PING, 0, 1);
+  checkPayload(pings[0].payload, REASON_TEST_PING, 0);
   checkPingFormat(pings[1], PING_TYPE_SAVED_SESSION, true, true);
-  checkPayload(pings[1].payload, REASON_SAVED_SESSION, 0, 0);
+  checkPayload(pings[1].payload, REASON_SAVED_SESSION, 0);
 
   await TelemetryController.testShutdown();
 });
@@ -649,29 +722,41 @@ add_task(async function test_checkSubsessionScalars() {
   let classic = TelemetrySession.getPayload();
   let subsession = TelemetrySession.getPayload("environment-change", true);
 
-  const TEST_SCALARS = [ UINT_SCALAR, STRING_SCALAR ];
+  const TEST_SCALARS = [UINT_SCALAR, STRING_SCALAR];
   for (let name of TEST_SCALARS) {
     // Scalar must be reported in subsession pings (e.g. main).
-    Assert.ok(name in subsession.processes.parent.scalars,
-              name + " must be reported in a subsession ping.");
+    Assert.ok(
+      name in subsession.processes.parent.scalars,
+      name + " must be reported in a subsession ping."
+    );
   }
   // No scalar must be reported in classic pings (e.g. saved-session).
-  Assert.ok(Object.keys(classic.processes.parent.scalars).length == 0,
-            "Scalars must not be reported in a classic ping.");
+  Assert.ok(
+    Object.keys(classic.processes.parent.scalars).length == 0,
+    "Scalars must not be reported in a classic ping."
+  );
 
   // And make sure that we're getting the right values in the
   // subsession ping.
-  Assert.equal(subsession.processes.parent.scalars[UINT_SCALAR], expectedUint,
-               UINT_SCALAR + " must contain the expected value.");
-  Assert.equal(subsession.processes.parent.scalars[STRING_SCALAR], expectedString,
-               STRING_SCALAR + " must contain the expected value.");
+  Assert.equal(
+    subsession.processes.parent.scalars[UINT_SCALAR],
+    expectedUint,
+    UINT_SCALAR + " must contain the expected value."
+  );
+  Assert.equal(
+    subsession.processes.parent.scalars[STRING_SCALAR],
+    expectedString,
+    STRING_SCALAR + " must contain the expected value."
+  );
 
   // Since we cleared the subsession in the last getPayload(), check that
   // breaking subsessions clears the scalars.
   subsession = TelemetrySession.getPayload("environment-change");
   for (let name of TEST_SCALARS) {
-    Assert.ok(!(name in subsession.processes.parent.scalars),
-              name + " must be cleared with the new subsession.");
+    Assert.ok(
+      !(name in subsession.processes.parent.scalars),
+      name + " must be cleared with the new subsession."
+    );
   }
 
   // Check if setting the scalars again works as expected.
@@ -680,309 +765,16 @@ add_task(async function test_checkSubsessionScalars() {
   Telemetry.scalarSet(UINT_SCALAR, expectedUint);
   Telemetry.scalarSet(STRING_SCALAR, expectedString);
   subsession = TelemetrySession.getPayload("environment-change");
-  Assert.equal(subsession.processes.parent.scalars[UINT_SCALAR], expectedUint,
-               UINT_SCALAR + " must contain the expected value.");
-  Assert.equal(subsession.processes.parent.scalars[STRING_SCALAR], expectedString,
-               STRING_SCALAR + " must contain the expected value.");
-
-  await TelemetryController.testShutdown();
-});
-
-add_task(async function test_checkSubsessionEvents() {
-  if (gIsAndroid) {
-    // We don't support subsessions yet on Android.
-    return;
-  }
-
-  // Clear the events.
-  Telemetry.clearEvents();
-  await TelemetryController.testReset();
-
-  // Enable recording for the test events.
-  Telemetry.setEventRecordingEnabled("telemetry.test", true);
-
-  // Record some events.
-  let expected = [
-    ["telemetry.test", "test1", "object1", "a", null],
-    ["telemetry.test", "test1", "object1", null, {key1: "value"}],
-  ];
-  for (let event of expected) {
-    Telemetry.recordEvent(...event);
-  }
-
-  // Strip off trailing null values to match the serialized events.
-  for (let e of expected) {
-    while ((e.length >= 3) && (e[e.length - 1] === null)) {
-      e.pop();
-    }
-  }
-
-  // Check that events are not available in classic pings but are in subsession
-  // pings. Also clear the subsession.
-  let classic = TelemetrySession.getPayload();
-  let subsession = TelemetrySession.getPayload("environment-change", true);
-
-  Assert.ok("events" in classic.processes.parent, "Should have an events field in classic payload.");
-  Assert.ok("events" in subsession.processes.parent, "Should have an events field in subsession payload.");
-
-  // They should be empty in the classic payload.
-  Assert.deepEqual(classic.processes.parent.events, [], "Events in classic payload should be empty.");
-
-  // In the subsession payload, they should contain the recorded test events.
-  let events = subsession.processes.parent.events.filter(e => e[1] === "telemetry.test");
-  Assert.equal(events.length, expected.length, "Should have the right amount of events in the payload.");
-  for (let i = 0; i < expected.length; ++i) {
-    Assert.deepEqual(events[i].slice(1), expected[i],
-                     "Should have the right event data in the ping.");
-  }
-
-  // As we cleared the subsession above, the events entry should now be empty.
-  subsession = TelemetrySession.getPayload("environment-change", false);
-  Assert.ok("events" in subsession.processes.parent, "Should have an events field in subsession payload.");
-  events = subsession.processes.parent.events.filter(e => e[1] === "telemetry.test");
-  Assert.equal(events.length, 0, "Should have no test events in the subsession payload now.");
-
-  await TelemetryController.testShutdown();
-});
-
-add_task(async function test_checkSubsessionHistograms() {
-  if (gIsAndroid) {
-    // We don't support subsessions yet on Android.
-    return;
-  }
-
-  let now = new Date(2020, 1, 1, 12, 0, 0);
-  let expectedDate = new Date(2020, 1, 1, 12, 0, 0);
-  fakeNow(now);
-  await TelemetryController.testReset();
-
-  const COUNT_ID = "TELEMETRY_TEST_COUNT";
-  const KEYED_ID = "TELEMETRY_TEST_KEYED_COUNT";
-  const count = Telemetry.getHistogramById(COUNT_ID);
-  const keyed = Telemetry.getKeyedHistogramById(KEYED_ID);
-
-  const stableHistograms = new Set([
-    "TELEMETRY_TEST_FLAG",
-    "TELEMETRY_TEST_COUNT",
-    "TELEMETRY_TEST_RELEASE_OPTOUT",
-    "TELEMETRY_TEST_RELEASE_OPTIN",
-    "STARTUP_CRASH_DETECTED",
-  ]);
-
-  const stableKeyedHistograms = new Set([
-    "TELEMETRY_TEST_KEYED_FLAG",
-    "TELEMETRY_TEST_KEYED_COUNT",
-    "TELEMETRY_TEST_KEYED_RELEASE_OPTIN",
-    "TELEMETRY_TEST_KEYED_RELEASE_OPTOUT",
-  ]);
-
-  // List of prefixes of histograms that could anomalously be present in
-  // the subsession snapshot but not the session snapshot.
-  // If you add something to this list, please reference a bug#
-  const possibleAnomalyPrefixes = [
-    "CYCLE_COLLECTOR_WORKER", // non-MT CC can happen between payload gathering - bug 1398431
-  ];
-
-  // Compare the two sets of histograms.
-  // The "subsession" histograms should match the registered
-  // "classic" histograms. However, histograms can change
-  // between us collecting the different payloads, so we only
-  // check for deep equality on known stable histograms.
-  let checkHistograms = (classic, subsession, message) => {
-    for (let id of Object.keys(subsession)) {
-      if (possibleAnomalyPrefixes.some(prefix => id.startsWith(prefix))) {
-        continue;
-      }
-      Assert.ok(id in classic, message + ` (${id})`);
-      if (stableHistograms.has(id)) {
-        Assert.deepEqual(classic[id],
-                         subsession[id], message);
-      } else {
-        Assert.equal(classic[id].histogram_type,
-                     subsession[id].histogram_type, message);
-      }
-    }
-  };
-
-  // Same as above, except for keyed histograms.
-  let checkKeyedHistograms = (classic, subsession, message) => {
-    for (let id of Object.keys(subsession)) {
-      Assert.ok(id in classic, message);
-      if (stableKeyedHistograms.has(id)) {
-        Assert.deepEqual(classic[id],
-                         subsession[id], message);
-      }
-    }
-  };
-
-  // Both classic and subsession payload histograms should start the same.
-  // The payloads should be identical for now except for the reason.
-  count.clear();
-  keyed.clear();
-  let classic = TelemetrySession.getPayload();
-  let subsession = TelemetrySession.getPayload("environment-change");
-
-  Assert.equal(classic.info.reason, "gather-payload");
-  Assert.equal(subsession.info.reason, "environment-change");
-  Assert.ok(!(COUNT_ID in classic.histograms));
-  Assert.ok(!(COUNT_ID in subsession.histograms));
-  Assert.ok(!(KEYED_ID in classic.keyedHistograms));
-  Assert.ok(!(KEYED_ID in subsession.keyedHistograms));
-
-  checkHistograms(classic.histograms, subsession.histograms, "Should start the same");
-  checkKeyedHistograms(classic.keyedHistograms, subsession.keyedHistograms, "Keyed should start the same");
-
-  // Adding values should get picked up in both.
-  count.add(1);
-  keyed.add("a", 1);
-  keyed.add("b", 1);
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change");
-
-  Assert.ok(COUNT_ID in classic.histograms);
-  Assert.ok(COUNT_ID in subsession.histograms);
-  Assert.ok(KEYED_ID in classic.keyedHistograms);
-  Assert.ok(KEYED_ID in subsession.keyedHistograms);
-  Assert.equal(classic.histograms[COUNT_ID].sum, 1);
-  Assert.equal(classic.keyedHistograms[KEYED_ID].a.sum, 1);
-  Assert.equal(classic.keyedHistograms[KEYED_ID].b.sum, 1);
-
-  checkHistograms(classic.histograms, subsession.histograms, "Added values should be picked up");
-  checkKeyedHistograms(classic.keyedHistograms, subsession.keyedHistograms, "Added values should be picked up by keyed");
-
-  // Values should still reset properly.
-  count.clear();
-  keyed.clear();
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change");
-
-  Assert.ok(!(COUNT_ID in classic.histograms));
-  Assert.ok(!(COUNT_ID in subsession.histograms));
-  Assert.ok(!(KEYED_ID in classic.keyedHistograms));
-  Assert.ok(!(KEYED_ID in subsession.keyedHistograms));
-
-  checkHistograms(classic.histograms, subsession.histograms, "Values should reset");
-  checkKeyedHistograms(classic.keyedHistograms, subsession.keyedHistograms, "Keyed values should reset");
-
-  // Adding values should get picked up in both.
-  count.add(1);
-  keyed.add("a", 1);
-  keyed.add("b", 1);
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change");
-
-  Assert.ok(COUNT_ID in classic.histograms);
-  Assert.ok(COUNT_ID in subsession.histograms);
-  Assert.ok(KEYED_ID in classic.keyedHistograms);
-  Assert.ok(KEYED_ID in subsession.keyedHistograms);
-  Assert.equal(classic.histograms[COUNT_ID].sum, 1);
-  Assert.equal(classic.keyedHistograms[KEYED_ID].a.sum, 1);
-  Assert.equal(classic.keyedHistograms[KEYED_ID].b.sum, 1);
-
-  checkHistograms(classic.histograms, subsession.histograms, "Adding values should be picked up again");
-  checkKeyedHistograms(classic.keyedHistograms, subsession.keyedHistograms, "Adding values should be picked up by keyed again");
-
-  // We should be able to reset only the subsession histograms.
-  // First check that "snapshot and clear" still returns the old state...
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change", true);
-
-  let subsessionStartDate = new Date(classic.info.subsessionStartDate);
-  Assert.equal(subsessionStartDate.toISOString(), expectedDate.toISOString());
-  subsessionStartDate = new Date(subsession.info.subsessionStartDate);
-  Assert.equal(subsessionStartDate.toISOString(), expectedDate.toISOString());
-  checkHistograms(classic.histograms, subsession.histograms, "Should be able to reset subsession");
-  checkKeyedHistograms(classic.keyedHistograms, subsession.keyedHistograms, "Should be able to reset subsession keyed");
-
-  // ... then check that the next snapshot shows the subsession
-  // histograms got reset.
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change");
-
-  Assert.ok(COUNT_ID in classic.histograms);
-  Assert.ok(!(COUNT_ID in subsession.histograms));
-  Assert.equal(classic.histograms[COUNT_ID].sum, 1);
-
-  Assert.ok(KEYED_ID in classic.keyedHistograms);
-  Assert.ok(!(KEYED_ID in subsession.keyedHistograms));
-  Assert.equal(classic.keyedHistograms[KEYED_ID].a.sum, 1);
-  Assert.equal(classic.keyedHistograms[KEYED_ID].b.sum, 1);
-
-  // Adding values should get picked up in both again.
-  count.add(1);
-  keyed.add("a", 1);
-  keyed.add("b", 1);
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change");
-
-  Assert.ok(COUNT_ID in classic.histograms);
-  Assert.ok(COUNT_ID in subsession.histograms);
-  Assert.equal(classic.histograms[COUNT_ID].sum, 2);
-  Assert.equal(subsession.histograms[COUNT_ID].sum, 1);
-
-  Assert.ok(KEYED_ID in classic.keyedHistograms);
-  Assert.ok(KEYED_ID in subsession.keyedHistograms);
-  Assert.equal(classic.keyedHistograms[KEYED_ID].a.sum, 2);
-  Assert.equal(classic.keyedHistograms[KEYED_ID].b.sum, 2);
-  Assert.equal(subsession.keyedHistograms[KEYED_ID].a.sum, 1);
-  Assert.equal(subsession.keyedHistograms[KEYED_ID].b.sum, 1);
-
-  await TelemetryController.testShutdown();
-});
-
-add_task(async function test_checkSubsessionData() {
-  if (gIsAndroid) {
-    // We don't support subsessions yet on Android.
-    return;
-  }
-
-  // Keep track of the active ticks count if the session recorder is available.
-  let getActiveTicks = () => TelemetrySession.getPayload().simpleMeasurements.activeTicks;
-  let activeTicksAtSubsessionStart = getActiveTicks();
-  let expectedActiveTicks = activeTicksAtSubsessionStart;
-
-  let incrementActiveTicks = () => {
-    TelemetrySession.observe(null, "user-interaction-active");
-    ++expectedActiveTicks;
-  };
-
-  await TelemetryController.testReset();
-
-  // Both classic and subsession payload data should be the same on the first subsession.
-  incrementActiveTicks();
-  let classic = TelemetrySession.getPayload();
-  let subsession = TelemetrySession.getPayload("environment-change");
-  Assert.equal(classic.simpleMeasurements.activeTicks, expectedActiveTicks,
-    "Classic pings must count active ticks (in simpleMeasurements) since the beginning of the session.");
-  Assert.equal(subsession.simpleMeasurements.activeTicks, expectedActiveTicks,
-    "Subsessions must count active ticks (in simpleMeasurements) as classic pings on the first subsession.");
-  Assert.equal(subsession.processes.parent.scalars["browser.engagement.active_ticks"], expectedActiveTicks,
-    "Subsessions must count active ticks (in scalars) as classic pings on the first subsession.");
-
-  // Start a new subsession and check that the active ticks are correctly reported.
-  incrementActiveTicks();
-  activeTicksAtSubsessionStart = getActiveTicks();
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change", true);
-  Assert.equal(classic.simpleMeasurements.activeTicks, expectedActiveTicks,
-    "Classic pings must count active ticks (in simpleMeasurements) since the beginning of the session.");
-  Assert.equal(subsession.simpleMeasurements.activeTicks, expectedActiveTicks,
-    "Pings must not lose the tick count when starting a new subsession.");
-  Assert.equal(subsession.processes.parent.scalars["browser.engagement.active_ticks"], expectedActiveTicks,
-    "Active ticks (in scalars) must not lose count for a previous subsession when starting a new subsession.");
-
-  // Get a new subsession payload without clearing the subsession.
-  incrementActiveTicks();
-  classic = TelemetrySession.getPayload();
-  subsession = TelemetrySession.getPayload("environment-change");
-  Assert.equal(classic.simpleMeasurements.activeTicks, expectedActiveTicks,
-    "Classic pings must count active ticks (in simpleMeasurements) since the beginning of the session.");
-  Assert.equal(subsession.simpleMeasurements.activeTicks,
-    expectedActiveTicks - activeTicksAtSubsessionStart,
-    "Subsessions must count active ticks (in simpleMeasurements) since the last new subsession.");
-  Assert.equal(subsession.processes.parent.scalars["browser.engagement.active_ticks"],
-    expectedActiveTicks - activeTicksAtSubsessionStart,
-    "Subsessions must count active ticks (in scalars) since the last new subsession.");
+  Assert.equal(
+    subsession.processes.parent.scalars[UINT_SCALAR],
+    expectedUint,
+    UINT_SCALAR + " must contain the expected value."
+  );
+  Assert.equal(
+    subsession.processes.parent.scalars[STRING_SCALAR],
+    expectedString,
+    STRING_SCALAR + " must contain the expected value."
+  );
 
   await TelemetryController.testShutdown();
 });
@@ -1002,7 +794,7 @@ add_task(async function test_dailyCollection() {
   fakeNow(now);
 
   // Fake scheduler functions to control daily collection flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
 
   // Init and check timer.
   await TelemetryStorage.testClearPendingPings();
@@ -1104,7 +896,7 @@ add_task(async function test_dailyDuplication() {
   let now = new Date(2030, 1, 1, 0, 0, 0);
   fakeNow(now);
   // Fake scheduler functions to control daily collection flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryController.testReset();
 
   // Make sure the daily ping gets triggered at midnight.
@@ -1126,7 +918,10 @@ add_task(async function test_dailyDuplication() {
 
   // We don't expect to receive any other daily ping in this test, so assert if we do.
   PingServer.registerPingHandler((req, res) => {
-    Assert.ok(false, "No more daily pings should be sent/received in this test.");
+    Assert.ok(
+      false,
+      "No more daily pings should be sent/received in this test."
+    );
   });
 
   // Set the current time to a bit after midnight.
@@ -1154,7 +949,7 @@ add_task(async function test_dailyOverdue() {
   let now = new Date(2030, 1, 1, 11, 0, 0);
   fakeNow(now);
   // Fake scheduler functions to control daily collection flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryStorage.testClearPendingPings();
   await TelemetryController.testReset();
 
@@ -1205,19 +1000,21 @@ add_task(async function test_environmentChange() {
   PingServer.clearRequests();
 
   let now = fakeNow(2040, 1, 1, 12, 0, 0);
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
 
   const PREF_TEST = "toolkit.telemetry.test.pref1";
   Preferences.reset(PREF_TEST);
 
   const PREFS_TO_WATCH = new Map([
-    [PREF_TEST, {what: TelemetryEnvironment.RECORD_PREF_VALUE}],
+    [PREF_TEST, { what: TelemetryEnvironment.RECORD_PREF_VALUE }],
   ]);
 
   // Setup.
   await TelemetryController.testReset();
   TelemetrySend.setServer("http://localhost:" + PingServer.port);
-  TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
+  await TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
 
   // Set histograms to expected state.
   const COUNT_ID = "TELEMETRY_TEST_COUNT";
@@ -1232,7 +1029,9 @@ add_task(async function test_environmentChange() {
   keyed.add("b", 1);
 
   // Trigger and collect environment-change ping.
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
   let startHour = TelemetryUtils.truncateToHours(now);
   now = fakeNow(futureDate(now, 10 * MILLISECONDS_PER_MINUTE));
 
@@ -1251,7 +1050,9 @@ add_task(async function test_environmentChange() {
 
   // Trigger and collect another ping. The histograms should be reset.
   startHour = TelemetryUtils.truncateToHours(now);
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
   now = fakeNow(futureDate(now, 10 * MILLISECONDS_PER_MINUTE));
 
   Preferences.set(PREF_TEST, 2);
@@ -1266,6 +1067,13 @@ add_task(async function test_environmentChange() {
 
   Assert.ok(!(COUNT_ID in ping.payload.histograms));
   Assert.ok(!(KEYED_ID in ping.payload.keyedHistograms));
+
+  // Trigger and collect another ping. The histograms should be reset.
+  startHour = TelemetryUtils.truncateToHours(now);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
+  now = fakeNow(futureDate(now, 10 * MILLISECONDS_PER_MINUTE));
 
   await TelemetryController.testShutdown();
 });
@@ -1285,7 +1093,9 @@ add_task(async function test_experimentAnnotations_subsession() {
   PingServer.clearRequests();
 
   let now = fakeNow(2040, 1, 1, 12, 0, 0);
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
 
   // Setup.
   await TelemetryController.testReset();
@@ -1293,7 +1103,9 @@ add_task(async function test_experimentAnnotations_subsession() {
   Assert.equal(TelemetrySession.getPayload().info.subsessionCounter, 1);
 
   // Trigger a subsession split with a telemetry annotation.
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
   let futureTestDate = futureDate(now, 10 * MILLISECONDS_PER_MINUTE);
   now = fakeNow(futureTestDate);
   TelemetryEnvironment.setExperimentActive(EXPERIMENT1, EXPERIMENT1_BRANCH);
@@ -1301,41 +1113,71 @@ add_task(async function test_experimentAnnotations_subsession() {
   let ping = await PingServer.promiseNextPing();
   Assert.ok(!!ping, "A ping must be received.");
 
-  Assert.equal(ping.type, PING_TYPE_MAIN, "The received ping must be a 'main' ping.");
-  Assert.equal(ping.payload.info.reason, REASON_ENVIRONMENT_CHANGE,
-               "The 'main' ping must be triggered by a change in the environment.");
+  Assert.equal(
+    ping.type,
+    PING_TYPE_MAIN,
+    "The received ping must be a 'main' ping."
+  );
+  Assert.equal(
+    ping.payload.info.reason,
+    REASON_ENVIRONMENT_CHANGE,
+    "The 'main' ping must be triggered by a change in the environment."
+  );
   // We expect the current experiments to be reported in the next ping, not this
   // one.
-  Assert.ok(!("experiments" in ping.environment),
-            "The old environment must contain no active experiments.");
+  Assert.ok(
+    !("experiments" in ping.environment),
+    "The old environment must contain no active experiments."
+  );
   // Since this change wasn't throttled, the subsession counter must increase.
-  Assert.equal(TelemetrySession.getPayload().info.subsessionCounter, 2,
-               "The experiment annotation must trigger a new subsession.");
+  Assert.equal(
+    TelemetrySession.getPayload().info.subsessionCounter,
+    2,
+    "The experiment annotation must trigger a new subsession."
+  );
 
   // Add another annotation to the environment. We're not advancing the fake
   // timer, so no subsession split should happen due to throttling.
   TelemetryEnvironment.setExperimentActive(EXPERIMENT2, EXPERIMENT2_BRANCH);
-  Assert.equal(TelemetrySession.getPayload().info.subsessionCounter, 2,
-               "The experiment annotation must not trigger a new subsession " +
-               "if throttling happens.");
+  Assert.equal(
+    TelemetrySession.getPayload().info.subsessionCounter,
+    2,
+    "The experiment annotation must not trigger a new subsession " +
+      "if throttling happens."
+  );
   let oldExperiments = TelemetryEnvironment.getActiveExperiments();
 
   // Fake the timer and remove an annotation, we expect a new subsession split.
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
   now = fakeNow(futureDate(now, 10 * MILLISECONDS_PER_MINUTE));
   TelemetryEnvironment.setExperimentInactive(EXPERIMENT1, EXPERIMENT1_BRANCH);
 
   ping = await PingServer.promiseNextPing();
   Assert.ok(!!ping, "A ping must be received.");
 
-  Assert.equal(ping.type, PING_TYPE_MAIN, "The received ping must be a 'main' ping.");
-  Assert.equal(ping.payload.info.reason, REASON_ENVIRONMENT_CHANGE,
-               "The 'main' ping must be triggered by a change in the environment.");
+  Assert.equal(
+    ping.type,
+    PING_TYPE_MAIN,
+    "The received ping must be a 'main' ping."
+  );
+  Assert.equal(
+    ping.payload.info.reason,
+    REASON_ENVIRONMENT_CHANGE,
+    "The 'main' ping must be triggered by a change in the environment."
+  );
   // We expect both experiments to be in this environment.
-  Assert.deepEqual(ping.environment.experiments, oldExperiments,
-                   "The environment must contain both the experiments.");
-  Assert.equal(TelemetrySession.getPayload().info.subsessionCounter, 3,
-               "The removing an experiment annotation must trigger a new subsession.");
+  Assert.deepEqual(
+    ping.environment.experiments,
+    oldExperiments,
+    "The environment must contain both the experiments."
+  );
+  Assert.equal(
+    TelemetrySession.getPayload().info.subsessionCounter,
+    3,
+    "The removing an experiment annotation must trigger a new subsession."
+  );
 
   await TelemetryController.testShutdown();
 });
@@ -1343,36 +1185,31 @@ add_task(async function test_experimentAnnotations_subsession() {
 add_task(async function test_savedPingsOnShutdown() {
   await TelemetryController.testReset();
 
-  // On desktop, we expect both "saved-session" and "shutdown" pings. We only expect
-  // the former on Android.
-  const expectedPingCount = (gIsAndroid) ? 1 : 2;
   // Assure that we store the ping properly when saving sessions on shutdown.
   // We make the TelemetryController shutdown to trigger a session save.
   const dir = TelemetryStorage.pingDirectoryPath;
-  await OS.File.removeDir(dir, {ignoreAbsent: true});
+  await OS.File.removeDir(dir, { ignoreAbsent: true });
   await OS.File.makeDir(dir);
   await TelemetryController.testShutdown();
 
   PingServer.clearRequests();
   await TelemetryController.testReset();
 
-  const pings = await PingServer.promiseNextPings(expectedPingCount);
+  const ping = await PingServer.promiseNextPing();
 
-  for (let ping of pings) {
-    Assert.ok("type" in ping);
+  let expectedType = gIsAndroid ? PING_TYPE_SAVED_SESSION : PING_TYPE_MAIN;
+  let expectedReason = gIsAndroid ? REASON_SAVED_SESSION : REASON_SHUTDOWN;
 
-    let expectedReason =
-      (ping.type == PING_TYPE_SAVED_SESSION) ? REASON_SAVED_SESSION : REASON_SHUTDOWN;
-
-    checkPingFormat(ping, ping.type, true, true);
-    Assert.equal(ping.payload.info.reason, expectedReason);
-    Assert.equal(ping.clientId, gClientID);
-  }
+  checkPingFormat(ping, expectedType, true, true);
+  Assert.equal(ping.payload.info.reason, expectedReason);
+  Assert.equal(ping.clientId, gClientID);
 });
 
 add_task(async function test_sendShutdownPing() {
-  if (gIsAndroid ||
-      (AppConstants.platform == "linux" && OS.Constants.Sys.bits == 32)) {
+  if (
+    gIsAndroid ||
+    (AppConstants.platform == "linux" && OS.Constants.Sys.bits == 32)
+  ) {
     // We don't support the pingsender on Android, yet, see bug 1335917.
     // We also don't suppor the pingsender testing on Treeherder for
     // Linux 32 bit (due to missing libraries). So skip it there too.
@@ -1382,20 +1219,17 @@ add_task(async function test_sendShutdownPing() {
 
   let checkPendingShutdownPing = async function() {
     let pendingPings = await TelemetryStorage.loadPendingPingList();
-    Assert.equal(pendingPings.length, 2,
-                 "We expect 2 pending pings: shutdown and saved-session.");
+    Assert.equal(pendingPings.length, 1, "We expect 1 pending ping: shutdown.");
     // Load the pings off the disk.
-    const pings = [
-      await TelemetryStorage.loadPendingPing(pendingPings[0].id),
-      await TelemetryStorage.loadPendingPing(pendingPings[1].id)
-    ];
-    // Find the shutdown main ping and check that it contains the right data.
-    const shutdownPing = pings.find(p => p.type == "main");
+    const shutdownPing = await TelemetryStorage.loadPendingPing(
+      pendingPings[0].id
+    );
     Assert.ok(shutdownPing, "The 'shutdown' ping must be saved to disk.");
-    Assert.ok(pings.find(p => p.type == "saved-session"),
-              "The 'saved-session' ping must be saved to disk.");
-    Assert.equal("shutdown", shutdownPing.payload.info.reason,
-                 "The 'shutdown' ping must be saved to disk.");
+    Assert.equal(
+      "shutdown",
+      shutdownPing.payload.info.reason,
+      "The 'shutdown' ping must be saved to disk."
+    );
   };
 
   Preferences.set(TelemetryUtils.Preferences.ShutdownPingSender, true);
@@ -1416,7 +1250,9 @@ add_task(async function test_sendShutdownPing() {
   Assert.equal(ping.clientId, gClientID);
   // Try again, this time disable ping upload. The PingSender
   // should not be sending any ping!
-  PingServer.registerPingHandler(() => Assert.ok(false, "Telemetry must not send pings if not allowed to."));
+  PingServer.registerPingHandler(() =>
+    Assert.ok(false, "Telemetry must not send pings if not allowed to.")
+  );
   Preferences.set(TelemetryUtils.Preferences.FhrUploadEnabled, false);
   await TelemetryController.testReset();
   await TelemetryController.testShutdown();
@@ -1430,6 +1266,8 @@ add_task(async function test_sendShutdownPing() {
   await TelemetryController.testReset();
   Services.obs.notifyObservers(null, "quit-application-forced");
   await TelemetryController.testShutdown();
+  // After re-enabling FHR, wait for the new client ID
+  gClientID = await ClientID.getClientID();
 
   // Check that the "shutdown" ping was correctly saved to disk.
   await checkPendingShutdownPing();
@@ -1439,7 +1277,11 @@ add_task(async function test_sendShutdownPing() {
   Telemetry.clearScalars();
 
   await TelemetryController.testReset();
-  Services.obs.notifyObservers(null, "quit-application-granted", "syncShutdown");
+  Services.obs.notifyObservers(
+    null,
+    "quit-application-granted",
+    "syncShutdown"
+  );
   await TelemetryController.testShutdown();
   await checkPendingShutdownPing();
 
@@ -1475,7 +1317,10 @@ add_task(async function test_sendShutdownPing() {
 
   // Check that we're able to send the shutdown ping using the pingsender
   // from the first session if the related pref is on.
-  Preferences.set(TelemetryUtils.Preferences.ShutdownPingSenderFirstSession, true);
+  Preferences.set(
+    TelemetryUtils.Preferences.ShutdownPingSenderFirstSession,
+    true
+  );
   Preferences.set(TelemetryUtils.Preferences.FirstRun, true);
   TelemetryReportingPolicy.testUpdateFirstRun();
 
@@ -1491,14 +1336,19 @@ add_task(async function test_sendShutdownPing() {
 
   // Reset the pref and restart Telemetry.
   Preferences.set(TelemetryUtils.Preferences.ShutdownPingSender, false);
-  Preferences.set(TelemetryUtils.Preferences.ShutdownPingSenderFirstSession, false);
+  Preferences.set(
+    TelemetryUtils.Preferences.ShutdownPingSenderFirstSession,
+    false
+  );
   Preferences.reset(TelemetryUtils.Preferences.FirstRun);
   PingServer.resetPingHandler();
 });
 
 add_task(async function test_sendFirstShutdownPing() {
-  if (gIsAndroid ||
-      (AppConstants.platform == "linux" && OS.Constants.Sys.bits == 32)) {
+  if (
+    gIsAndroid ||
+    (AppConstants.platform == "linux" && OS.Constants.Sys.bits == 32)
+  ) {
     // We don't support the pingsender on Android, yet, see bug 1335917.
     // We also don't suppor the pingsender testing on Treeherder for
     // Linux 32 bit (due to missing libraries). So skip it there too.
@@ -1509,7 +1359,7 @@ add_task(async function test_sendFirstShutdownPing() {
   let storageContainsFirstShutdown = async function() {
     let pendingPings = await TelemetryStorage.loadPendingPingList();
     let pings = await Promise.all(
-      pendingPings.map(async (p) => {
+      pendingPings.map(async p => {
         return TelemetryStorage.loadPendingPing(p.id);
       })
     );
@@ -1524,7 +1374,10 @@ add_task(async function test_sendFirstShutdownPing() {
     // Assert failure if we recive a ping.
     PingServer.registerPingHandler((req, res) => {
       const receivedPing = decodeRequestPayload(req);
-      Assert.ok(false, `No ping should be received in this test (got ${receivedPing.id}).`);
+      Assert.ok(
+        false,
+        `No ping should be received in this test (got ${receivedPing.id}).`
+      );
     });
 
     // Assert that pings are sent on first run, forcing a forced application
@@ -1535,8 +1388,10 @@ add_task(async function test_sendFirstShutdownPing() {
     await TelemetryController.testReset();
     Services.obs.notifyObservers(null, "quit-application-forced");
     await TelemetryController.testShutdown();
-    Assert.ok(await storageContainsFirstShutdown(),
-              "The 'first-shutdown' ping must be saved to disk.");
+    Assert.ok(
+      await storageContainsFirstShutdown(),
+      "The 'first-shutdown' ping must be saved to disk."
+    );
 
     await TelemetryStorage.testClearPendingPings();
 
@@ -1547,8 +1402,10 @@ add_task(async function test_sendFirstShutdownPing() {
     await TelemetryController.testReset();
     Services.obs.notifyObservers(null, "quit-application-forced");
     await TelemetryController.testShutdown();
-    Assert.ok(!(await storageContainsFirstShutdown()),
-              "The 'first-shutdown' ping should only be written during first run.");
+    Assert.ok(
+      !(await storageContainsFirstShutdown()),
+      "The 'first-shutdown' ping should only be written during first run."
+    );
 
     await TelemetryStorage.testClearPendingPings();
 
@@ -1559,8 +1416,10 @@ add_task(async function test_sendFirstShutdownPing() {
 
     await TelemetryController.testReset();
     await TelemetryController.testShutdown();
-    Assert.ok(!(await storageContainsFirstShutdown()),
-              "The 'first-shutdown' ping should only be written if enabled");
+    Assert.ok(
+      !(await storageContainsFirstShutdown()),
+      "The 'first-shutdown' ping should only be written if enabled"
+    );
 
     await TelemetryStorage.testClearPendingPings();
 
@@ -1572,8 +1431,10 @@ add_task(async function test_sendFirstShutdownPing() {
 
     await TelemetryController.testReset();
     await TelemetryController.testShutdown();
-    Assert.ok(!(await storageContainsFirstShutdown()),
-              "The 'first-shutdown' ping should only be written if ping-sender is enabled");
+    Assert.ok(
+      !(await storageContainsFirstShutdown()),
+      "The 'first-shutdown' ping should only be written if ping-sender is enabled"
+    );
 
     // Clear the state and prepare for the next test.
     await TelemetryStorage.testClearPendingPings();
@@ -1588,7 +1449,10 @@ add_task(async function test_sendFirstShutdownPing() {
 
   // Set testing invariants for FirstShutdownPingEnabled
   Preferences.set(TelemetryUtils.Preferences.ShutdownPingSender, true);
-  Preferences.set(TelemetryUtils.Preferences.ShutdownPingSenderFirstSession, false);
+  Preferences.set(
+    TelemetryUtils.Preferences.ShutdownPingSenderFirstSession,
+    false
+  );
 
   // Set primary conditions of the 'first-shutdown' ping
   Preferences.set(TelemetryUtils.Preferences.FirstShutdownPingEnabled, true);
@@ -1610,7 +1474,10 @@ add_task(async function test_sendFirstShutdownPing() {
 
   // Reset the pref and restart Telemetry.
   Preferences.set(TelemetryUtils.Preferences.ShutdownPingSender, false);
-  Preferences.set(TelemetryUtils.Preferences.ShutdownPingSenderFirstSession, false);
+  Preferences.set(
+    TelemetryUtils.Preferences.ShutdownPingSenderFirstSession,
+    false
+  );
   Preferences.set(TelemetryUtils.Preferences.FirstShutdownPingEnabled, false);
   Preferences.reset(TelemetryUtils.Preferences.FirstRun);
   PingServer.resetPingHandler();
@@ -1636,7 +1503,7 @@ add_task(async function test_savedSessionData() {
   const PREF_TEST = "toolkit.telemetry.test.pref1";
   Preferences.reset(PREF_TEST);
   const PREFS_TO_WATCH = new Map([
-    [PREF_TEST, {what: TelemetryEnvironment.RECORD_PREF_VALUE}],
+    [PREF_TEST, { what: TelemetryEnvironment.RECORD_PREF_VALUE }],
   ]);
 
   // We expect one new subsession when starting TelemetrySession and one after triggering
@@ -1659,11 +1526,14 @@ add_task(async function test_savedSessionData() {
 
   // Watch a test preference, trigger and environment change and wait for it to propagate.
   // _watchPreferences triggers a subsession notification
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
   fakeNow(new Date(2050, 1, 1, 12, 0, 0));
-  TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
+  await TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
   let changePromise = new Promise(resolve =>
-    TelemetryEnvironment.registerChangeListener("test_fake_change", resolve));
+    TelemetryEnvironment.registerChangeListener("test_fake_change", resolve)
+  );
   Preferences.set(PREF_TEST, 1);
   await changePromise;
   TelemetryEnvironment.unregisterChangeListener("test_fake_change");
@@ -1688,7 +1558,10 @@ add_task(async function test_sessionData_ShortSession() {
     return;
   }
 
-  const SESSION_STATE_PATH = OS.Path.join(DATAREPORTING_PATH, "session-state.json");
+  const SESSION_STATE_PATH = OS.Path.join(
+    DATAREPORTING_PATH,
+    "session-state.json"
+  );
 
   // Remove the session state file.
   await OS.File.remove(SESSION_STATE_PATH, { ignoreAbsent: true });
@@ -1739,8 +1612,10 @@ add_task(async function test_invalidSessionData() {
   // Write test data to the session data file. This should fail to parse.
   const dataFilePath = OS.Path.join(DATAREPORTING_PATH, "session-state.json");
   const unparseableData = "{asdf:@äü";
-  OS.File.writeAtomic(dataFilePath, unparseableData,
-                      {encoding: "utf-8", tmpPath: dataFilePath + ".tmp"});
+  OS.File.writeAtomic(dataFilePath, unparseableData, {
+    encoding: "utf-8",
+    tmpPath: dataFilePath + ".tmp",
+  });
 
   // Start TelemetryController so that it loads the session data file.
   await TelemetryController.testReset();
@@ -1800,11 +1675,13 @@ add_task(async function test_abortedSession() {
   let now = new Date(2040, 1, 1, 0, 0, 0);
   fakeNow(now);
   // Fake scheduler functions to control aborted-session flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryController.testReset();
 
-  Assert.ok((await OS.File.exists(DATAREPORTING_PATH)),
-            "Telemetry must create the aborted session directory when starting.");
+  Assert.ok(
+    await OS.File.exists(DATAREPORTING_PATH),
+    "Telemetry must create the aborted session directory when starting."
+  );
 
   // Fake now again so that the scheduled aborted-session save takes place.
   now = futureDate(now, ABORTED_SESSION_UPDATE_INTERVAL_MS);
@@ -1814,8 +1691,10 @@ add_task(async function test_abortedSession() {
   // Execute one scheduler tick.
   await schedulerTickCallback();
   // Check that the aborted session is due at the correct time.
-  Assert.ok((await OS.File.exists(ABORTED_FILE)),
-            "There must be an aborted session ping.");
+  Assert.ok(
+    await OS.File.exists(ABORTED_FILE),
+    "There must be an aborted session ping."
+  );
 
   // This ping is not yet in the pending pings folder, so we can't access it using
   // TelemetryStorage.popPendingPings().
@@ -1834,13 +1713,21 @@ add_task(async function test_abortedSession() {
   pingContent = await OS.File.read(ABORTED_FILE, { encoding: "utf-8" });
   let updatedAbortedSessionPing = JSON.parse(pingContent);
   checkPingFormat(updatedAbortedSessionPing, PING_TYPE_MAIN, true, true);
-  Assert.equal(updatedAbortedSessionPing.payload.info.reason, REASON_ABORTED_SESSION);
+  Assert.equal(
+    updatedAbortedSessionPing.payload.info.reason,
+    REASON_ABORTED_SESSION
+  );
   Assert.notEqual(abortedSessionPing.id, updatedAbortedSessionPing.id);
-  Assert.notEqual(abortedSessionPing.creationDate, updatedAbortedSessionPing.creationDate);
+  Assert.notEqual(
+    abortedSessionPing.creationDate,
+    updatedAbortedSessionPing.creationDate
+  );
 
   await TelemetryController.testShutdown();
-  Assert.ok(!(await OS.File.exists(ABORTED_FILE)),
-            "No aborted session ping must be available after a shutdown.");
+  Assert.ok(
+    !(await OS.File.exists(ABORTED_FILE)),
+    "No aborted session ping must be available after a shutdown."
+  );
 });
 
 add_task(async function test_abortedSession_Shutdown() {
@@ -1854,11 +1741,13 @@ add_task(async function test_abortedSession_Shutdown() {
   let schedulerTickCallback = null;
   let now = fakeNow(2040, 1, 1, 0, 0, 0);
   // Fake scheduler functions to control aborted-session flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryController.testReset();
 
-  Assert.ok((await OS.File.exists(DATAREPORTING_PATH)),
-            "Telemetry must create the aborted session directory when starting.");
+  Assert.ok(
+    await OS.File.exists(DATAREPORTING_PATH),
+    "Telemetry must create the aborted session directory when starting."
+  );
 
   // Fake now again so that the scheduled aborted-session save takes place.
   fakeNow(futureDate(now, ABORTED_SESSION_UPDATE_INTERVAL_MS));
@@ -1867,7 +1756,10 @@ add_task(async function test_abortedSession_Shutdown() {
   // Execute one scheduler tick.
   await schedulerTickCallback();
   // Check that the aborted session is due at the correct time.
-  Assert.ok((await OS.File.exists(ABORTED_FILE)), "There must be an aborted session ping.");
+  Assert.ok(
+    await OS.File.exists(ABORTED_FILE),
+    "There must be an aborted session ping."
+  );
 
   // Remove the aborted session file and then shut down to make sure exceptions (e.g file
   // not found) do not compromise the shutdown.
@@ -1894,13 +1786,15 @@ add_task(async function test_abortedDailyCoalescing() {
   fakeNow(nowDate);
 
   // Fake scheduler functions to control aborted-session flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryStorage.testClearPendingPings();
   PingServer.clearRequests();
   await TelemetryController.testReset();
 
-  Assert.ok((await OS.File.exists(DATAREPORTING_PATH)),
-            "Telemetry must create the aborted session directory when starting.");
+  Assert.ok(
+    await OS.File.exists(DATAREPORTING_PATH),
+    "Telemetry must create the aborted session directory when starting."
+  );
 
   // Delay the callback around midnight so that the aborted-session ping gets merged with the
   // daily ping.
@@ -1916,15 +1810,23 @@ add_task(async function test_abortedDailyCoalescing() {
   Assert.equal(dailyPing.payload.info.reason, REASON_DAILY);
 
   // Check that an aborted session ping was also written to disk.
-  Assert.ok((await OS.File.exists(ABORTED_FILE)),
-            "There must be an aborted session ping.");
+  Assert.ok(
+    await OS.File.exists(ABORTED_FILE),
+    "There must be an aborted session ping."
+  );
 
   // Read aborted session ping and check that the session/subsession ids equal the
   // ones in the daily ping.
   let pingContent = await OS.File.read(ABORTED_FILE, { encoding: "utf-8" });
   let abortedSessionPing = JSON.parse(pingContent);
-  Assert.equal(abortedSessionPing.payload.info.sessionId, dailyPing.payload.info.sessionId);
-  Assert.equal(abortedSessionPing.payload.info.subsessionId, dailyPing.payload.info.subsessionId);
+  Assert.equal(
+    abortedSessionPing.payload.info.sessionId,
+    dailyPing.payload.info.sessionId
+  );
+  Assert.equal(
+    abortedSessionPing.payload.info.subsessionId,
+    dailyPing.payload.info.subsessionId
+  );
 
   await TelemetryController.testShutdown();
 });
@@ -1948,7 +1850,7 @@ add_task(async function test_schedulerComputerSleep() {
   // Set a fake current date and start Telemetry.
   let nowDate = fakeNow(2009, 10, 18, 0, 0, 0);
   let schedulerTickCallback = null;
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryController.testReset();
 
   // Set the current time 3 days in the future at midnight, before running the callback.
@@ -1958,13 +1860,21 @@ add_task(async function test_schedulerComputerSleep() {
   await schedulerTickCallback();
 
   let dailyPing = await PingServer.promiseNextPing();
-  Assert.equal(dailyPing.payload.info.reason, REASON_DAILY,
-               "The wake notification should have triggered a daily ping.");
-  Assert.equal(dailyPing.creationDate, nowDate.toISOString(),
-               "The daily ping date should be correct.");
+  Assert.equal(
+    dailyPing.payload.info.reason,
+    REASON_DAILY,
+    "The wake notification should have triggered a daily ping."
+  );
+  Assert.equal(
+    dailyPing.creationDate,
+    nowDate.toISOString(),
+    "The daily ping date should be correct."
+  );
 
-  Assert.ok((await OS.File.exists(ABORTED_FILE)),
-            "There must be an aborted session ping.");
+  Assert.ok(
+    await OS.File.exists(ABORTED_FILE),
+    "There must be an aborted session ping."
+  );
 
   // Now also test if we are sending a daily ping if we wake up on the next
   // day even when the timer doesn't trigger.
@@ -1979,10 +1889,16 @@ add_task(async function test_schedulerComputerSleep() {
   Services.obs.notifyObservers(null, "wake_notification");
 
   dailyPing = await PingServer.promiseNextPing();
-  Assert.equal(dailyPing.payload.info.reason, REASON_DAILY,
-               "The wake notification should have triggered a daily ping.");
-  Assert.equal(dailyPing.creationDate, nowDate.toISOString(),
-               "The daily ping date should be correct.");
+  Assert.equal(
+    dailyPing.payload.info.reason,
+    REASON_DAILY,
+    "The wake notification should have triggered a daily ping."
+  );
+  Assert.equal(
+    dailyPing.creationDate,
+    nowDate.toISOString(),
+    "The daily ping date should be correct."
+  );
 
   await TelemetryController.testShutdown();
 });
@@ -1997,7 +1913,7 @@ add_task(async function test_schedulerEnvironmentReschedules() {
   const PREF_TEST = "toolkit.telemetry.test.pref1";
   Preferences.reset(PREF_TEST);
   const PREFS_TO_WATCH = new Map([
-    [PREF_TEST, {what: TelemetryEnvironment.RECORD_PREF_VALUE}],
+    [PREF_TEST, { what: TelemetryEnvironment.RECORD_PREF_VALUE }],
   ]);
 
   await TelemetryController.testReset();
@@ -2007,15 +1923,19 @@ add_task(async function test_schedulerEnvironmentReschedules() {
 
   // Set a fake current date and start Telemetry.
   let nowDate = fakeNow(2060, 10, 18, 0, 0, 0);
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
   let schedulerTickCallback = null;
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryController.testReset();
-  TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
+  await TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
 
   // Set the current time at midnight.
   fakeNow(futureDate(nowDate, MS_IN_ONE_DAY));
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
 
   // Trigger the environment change.
   Preferences.set(PREF_TEST, 1);
@@ -2026,7 +1946,10 @@ add_task(async function test_schedulerEnvironmentReschedules() {
   // We don't expect to receive any daily ping in this test, so assert if we do.
   PingServer.registerPingHandler((req, res) => {
     const receivedPing = decodeRequestPayload(req);
-    Assert.ok(false, `No ping should be received in this test (got ${receivedPing.id}).`);
+    Assert.ok(
+      false,
+      `No ping should be received in this test (got ${receivedPing.id}).`
+    );
   });
 
   // Execute one scheduler tick. It should not trigger a daily ping.
@@ -2051,7 +1974,10 @@ add_task(async function test_schedulerNothingDue() {
   // We don't expect to receive any ping in this test, so assert if we do.
   PingServer.registerPingHandler((req, res) => {
     const receivedPing = decodeRequestPayload(req);
-    Assert.ok(false, `No ping should be received in this test (got ${receivedPing.id}).`);
+    Assert.ok(
+      false,
+      `No ping should be received in this test (got ${receivedPing.id}).`
+    );
   });
 
   // Set a current date/time away from midnight, so that the daily ping doesn't get
@@ -2059,11 +1985,14 @@ add_task(async function test_schedulerNothingDue() {
   let nowDate = new Date(2009, 10, 18, 11, 0, 0);
   fakeNow(nowDate);
   let schedulerTickCallback = null;
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryController.testReset();
 
   // Delay the callback execution to a time when no ping should be due.
-  let nothingDueDate = futureDate(nowDate, ABORTED_SESSION_UPDATE_INTERVAL_MS / 2);
+  let nothingDueDate = futureDate(
+    nowDate,
+    ABORTED_SESSION_UPDATE_INTERVAL_MS / 2
+  );
   fakeNow(nothingDueDate);
   Assert.ok(!!schedulerTickCallback);
   // Execute one scheduler tick.
@@ -2078,8 +2007,12 @@ add_task(async function test_schedulerNothingDue() {
 
 add_task(async function test_pingExtendedStats() {
   const EXTENDED_PAYLOAD_FIELDS = [
-    "chromeHangs", "log", "slowSQL", "fileIOReports", "lateWrites",
-    "addonDetails", "webrtc"
+    "log",
+    "slowSQL",
+    "fileIOReports",
+    "lateWrites",
+    "addonDetails",
+    "webrtc",
   ];
 
   if (AppConstants.platform == "android") {
@@ -2099,19 +2032,28 @@ add_task(async function test_pingExtendedStats() {
 
   // Check that the payload does not contain extended statistics fields.
   for (let f in EXTENDED_PAYLOAD_FIELDS) {
-    Assert.ok(!(EXTENDED_PAYLOAD_FIELDS[f] in ping.payload),
-              EXTENDED_PAYLOAD_FIELDS[f] + " must not be in the payload if the extended set is off.");
+    Assert.ok(
+      !(EXTENDED_PAYLOAD_FIELDS[f] in ping.payload),
+      EXTENDED_PAYLOAD_FIELDS[f] +
+        " must not be in the payload if the extended set is off."
+    );
   }
 
   // We check this one separately so that we can reuse EXTENDED_PAYLOAD_FIELDS below, since
   // slowSQLStartup might not be there.
-  Assert.ok(!("slowSQLStartup" in ping.payload),
-            "slowSQLStartup must not be sent if the extended set is off");
+  Assert.ok(
+    !("slowSQLStartup" in ping.payload),
+    "slowSQLStartup must not be sent if the extended set is off"
+  );
 
-  Assert.ok(!("addonManager" in ping.payload.simpleMeasurements),
-            "addonManager must not be sent if the extended set is off.");
-  Assert.ok(!("UITelemetry" in ping.payload.simpleMeasurements),
-            "UITelemetry must not be sent if the extended set is off.");
+  Assert.ok(
+    !("addonManager" in ping.payload.simpleMeasurements),
+    "addonManager must not be sent if the extended set is off."
+  );
+  Assert.ok(
+    !("UITelemetry" in ping.payload.simpleMeasurements),
+    "UITelemetry must not be sent."
+  );
 
   // Restore the preference.
   Telemetry.canRecordExtended = true;
@@ -2123,14 +2065,21 @@ add_task(async function test_pingExtendedStats() {
 
   // Check that the payload now contains extended statistics fields.
   for (let f in EXTENDED_PAYLOAD_FIELDS) {
-    Assert.ok(EXTENDED_PAYLOAD_FIELDS[f] in ping.payload,
-              EXTENDED_PAYLOAD_FIELDS[f] + " must be in the payload if the extended set is on.");
+    Assert.ok(
+      EXTENDED_PAYLOAD_FIELDS[f] in ping.payload,
+      EXTENDED_PAYLOAD_FIELDS[f] +
+        " must be in the payload if the extended set is on."
+    );
   }
 
-  Assert.ok("addonManager" in ping.payload.simpleMeasurements,
-            "addonManager must be sent if the extended set is on.");
-  Assert.ok("UITelemetry" in ping.payload.simpleMeasurements,
-            "UITelemetry must be sent if the extended set is on.");
+  Assert.ok(
+    "addonManager" in ping.payload.simpleMeasurements,
+    "addonManager must be sent if the extended set is on."
+  );
+  Assert.ok(
+    !("UITelemetry" in ping.payload.simpleMeasurements),
+    "UITelemetry must not be sent."
+  );
 
   await TelemetryController.testShutdown();
 });
@@ -2148,9 +2097,12 @@ add_task(async function test_schedulerUserIdle() {
   fakeNow(now);
 
   let schedulerTimeout = 0;
-  fakeSchedulerTimer((callback, timeout) => {
-    schedulerTimeout = timeout;
-  }, () => {});
+  fakeSchedulerTimer(
+    (callback, timeout) => {
+      schedulerTimeout = timeout;
+    },
+    () => {}
+  );
   await TelemetryController.testReset();
   await TelemetryStorage.testClearPendingPings();
   PingServer.clearRequests();
@@ -2202,7 +2154,7 @@ add_task(async function test_DailyDueAndIdle() {
   let now = new Date(2030, 1, 1, 0, 0, 0);
   fakeNow(now);
   // Fake scheduler functions to control daily collection flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryController.testReset();
 
   // Trigger the daily ping.
@@ -2248,7 +2200,7 @@ add_task(async function test_userIdleAndSchedlerTick() {
   let now = new Date(2030, 1, 1, 0, 0, 0);
   fakeNow(now);
   // Fake scheduler functions to control daily collection flow in tests.
-  fakeSchedulerTimer(callback => schedulerTickCallback = callback, () => {});
+  fakeSchedulerTimer(callback => (schedulerTickCallback = callback), () => {});
   await TelemetryStorage.testClearPendingPings();
   await TelemetryController.testReset();
   PingServer.clearRequests();
@@ -2292,17 +2244,19 @@ add_task(async function test_changeThrottling() {
 
   const PREF_TEST = "toolkit.telemetry.test.pref1";
   const PREFS_TO_WATCH = new Map([
-    [PREF_TEST, {what: TelemetryEnvironment.RECORD_PREF_STATE}],
+    [PREF_TEST, { what: TelemetryEnvironment.RECORD_PREF_STATE }],
   ]);
   Preferences.reset(PREF_TEST);
 
   let now = fakeNow(2050, 1, 2, 0, 0, 0);
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 10 * MILLISECONDS_PER_MINUTE
+  );
   await TelemetryController.testReset();
   Assert.equal(getSubsessionCount(), 1);
 
   // Set the Environment preferences to watch.
-  TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
+  await TelemetryEnvironment.testWatchPreferences(PREFS_TO_WATCH);
 
   // The first pref change should not trigger a notification.
   Preferences.set(PREF_TEST, 1);
@@ -2310,7 +2264,9 @@ add_task(async function test_changeThrottling() {
 
   // We should get a change notification after the 5min throttling interval.
   fakeNow(futureDate(now, 5 * MILLISECONDS_PER_MINUTE + 1));
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 5 * MILLISECONDS_PER_MINUTE + 1);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 5 * MILLISECONDS_PER_MINUTE + 1
+  );
   Preferences.set(PREF_TEST, 2);
   Assert.equal(getSubsessionCount(), 2);
 
@@ -2322,7 +2278,9 @@ add_task(async function test_changeThrottling() {
 
   // ... for 5min.
   now = fakeNow(futureDate(now, 4 * MILLISECONDS_PER_MINUTE + 1));
-  gMonotonicNow = fakeMonotonicNow(gMonotonicNow + 4 * MILLISECONDS_PER_MINUTE + 1);
+  gMonotonicNow = fakeMonotonicNow(
+    gMonotonicNow + 4 * MILLISECONDS_PER_MINUTE + 1
+  );
   Preferences.set(PREF_TEST, 4);
   Assert.equal(getSubsessionCount(), 3);
 

@@ -48,6 +48,7 @@ class CompositableParentManager;
 class WebRenderImageHost;
 class ContentHost;
 class ContentHostTexture;
+class HostLayerManager;
 struct EffectChain;
 
 struct ImageCompositeNotificationInfo {
@@ -124,7 +125,7 @@ class CompositableHost {
     return nullptr;
   }
 
-  virtual gfx::IntSize GetImageSize() const {
+  virtual gfx::IntSize GetImageSize() {
     MOZ_ASSERT(false, "Should have been overridden");
     return gfx::IntSize();
   }
@@ -233,6 +234,8 @@ class CompositableHost {
   virtual void CleanupResources() {}
 
   virtual void BindTextureSource() {}
+
+  virtual uint32_t GetDroppedFrames() { return 0; }
 
  protected:
   HostLayerManager* GetLayerManager() const;

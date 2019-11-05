@@ -5,21 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(PlatformDecoderModule_h_)
-#define PlatformDecoderModule_h_
+#  define PlatformDecoderModule_h_
 
-#include "DecoderDoctorLogger.h"
-#include "GMPCrashHelper.h"
-#include "MediaEventSource.h"
-#include "MediaInfo.h"
-#include "MediaResult.h"
-#include "mozilla/EnumSet.h"
-#include "mozilla/MozPromise.h"
-#include "mozilla/RefPtr.h"
-#include "mozilla/TaskQueue.h"
-#include "mozilla/layers/KnowsCompositor.h"
-#include "mozilla/layers/LayersTypes.h"
-#include "nsTArray.h"
-#include <queue>
+#  include "DecoderDoctorLogger.h"
+#  include "GMPCrashHelper.h"
+#  include "MediaEventSource.h"
+#  include "MediaInfo.h"
+#  include "MediaResult.h"
+#  include "mozilla/EnumSet.h"
+#  include "mozilla/EnumTypeTraits.h"
+#  include "mozilla/MozPromise.h"
+#  include "mozilla/RefPtr.h"
+#  include "mozilla/TaskQueue.h"
+#  include "mozilla/layers/KnowsCompositor.h"
+#  include "mozilla/layers/LayersTypes.h"
+#  include "nsTArray.h"
+#  include <queue>
 
 namespace mozilla {
 class TrackInfo;
@@ -32,11 +33,9 @@ namespace layers {
 class ImageContainer;
 }  // namespace layers
 
-namespace dom {
-class RemoteDecoderModule;
-}
-
+class GpuDecoderModule;
 class MediaDataDecoder;
+class RemoteDecoderModule;
 class TaskQueue;
 class CDMProxy;
 
@@ -48,6 +47,14 @@ struct MOZ_STACK_CLASS CreateDecoderParams final {
   enum class Option {
     Default,
     LowLatency,
+    HardwareDecoderNotAllowed,
+    FullH264Parsing,
+    ErrorIfNoInitializationData,  // By default frames delivered before
+                                  // initialization data are dropped. Pass this
+                                  // option to raise an error if frames are
+                                  // delivered before initialization data.
+
+    SENTINEL  // one past the last valid value
   };
   using OptionSet = EnumSet<Option>;
 
@@ -55,6 +62,14 @@ struct MOZ_STACK_CLASS CreateDecoderParams final {
     UseNullDecoder() = default;
     explicit UseNullDecoder(bool aUseNullDecoder) : mUse(aUseNullDecoder) {}
     bool mUse = false;
+  };
+
+  // Do not wrap H264 decoder in a H264Converter.
+  struct NoWrapper {
+    NoWrapper() = default;
+    explicit NoWrapper(bool aDontUseWrapper)
+        : mDontUseWrapper(aDontUseWrapper) {}
+    bool mDontUseWrapper = false;
   };
 
   struct VideoFrameRate {
@@ -66,7 +81,7 @@ struct MOZ_STACK_CLASS CreateDecoderParams final {
   template <typename T1, typename... Ts>
   CreateDecoderParams(const TrackInfo& aConfig, T1&& a1, Ts&&... args)
       : mConfig(aConfig) {
-    Set(mozilla::Forward<T1>(a1), mozilla::Forward<Ts>(args)...);
+    Set(std::forward<T1>(a1), std::forward<Ts>(args)...);
   }
 
   const VideoInfo& VideoConfig() const {
@@ -94,6 +109,7 @@ struct MOZ_STACK_CLASS CreateDecoderParams final {
   RefPtr<layers::KnowsCompositor> mKnowsCompositor;
   RefPtr<GMPCrashHelper> mCrashHelper;
   UseNullDecoder mUseNullDecoder;
+  NoWrapper mNoWrapper;
   TrackInfo::TrackType mType = TrackInfo::kUndefinedTrack;
   MediaEventProducer<TrackInfo::TrackType>* mOnWaitingForKeyEvent = nullptr;
   OptionSet mOptions = OptionSet(Option::Default);
@@ -112,6 +128,7 @@ struct MOZ_STACK_CLASS CreateDecoderParams final {
   void Set(UseNullDecoder aUseNullDecoder) {
     mUseNullDecoder = aUseNullDecoder;
   }
+  void Set(NoWrapper aNoWrapper) { mNoWrapper = aNoWrapper; }
   void Set(OptionSet aOptions) { mOptions = aOptions; }
   void Set(VideoFrameRate aRate) { mRate = aRate; }
   void Set(layers::KnowsCompositor* aKnowsCompositor) {
@@ -126,9 +143,17 @@ struct MOZ_STACK_CLASS CreateDecoderParams final {
   }
   template <typename T1, typename T2, typename... Ts>
   void Set(T1&& a1, T2&& a2, Ts&&... args) {
-    Set(mozilla::Forward<T1>(a1));
-    Set(mozilla::Forward<T2>(a2), mozilla::Forward<Ts>(args)...);
+    Set(std::forward<T1>(a1));
+    Set(std::forward<T2>(a2), std::forward<Ts>(args)...);
   }
+};
+
+// Used for IPDL serialization.
+// The 'value' have to be the biggest enum from CreateDecoderParams::Option.
+template <>
+struct MaxEnumValue<::mozilla::CreateDecoderParams::Option> {
+  static constexpr unsigned int value =
+      static_cast<unsigned int>(CreateDecoderParams::Option::SENTINEL);
 };
 
 // The PlatformDecoderModule interface is used by the MediaFormatReader to
@@ -164,23 +189,26 @@ class PlatformDecoderModule {
       return false;
     }
     const auto videoInfo = aTrackInfo.GetAsVideoInfo();
-    return !videoInfo || SupportsBitDepth(videoInfo->mBitDepth, aDiagnostics);
+    return !videoInfo ||
+           SupportsColorDepth(videoInfo->mColorDepth, aDiagnostics);
   }
 
  protected:
   PlatformDecoderModule() {}
   virtual ~PlatformDecoderModule() {}
 
-  friend class H264Converter;
+  friend class MediaChangeMonitor;
   friend class PDMFactory;
-  friend class dom::RemoteDecoderModule;
+  friend class GpuDecoderModule;
   friend class EMEDecoderModule;
+  friend class RemoteDecoderModule;
 
-  // Indicates if the PlatformDecoderModule supports decoding of aBitDepth.
-  // Should override this method when the platform can support bitDepth != 8.
-  virtual bool SupportsBitDepth(const uint8_t aBitDepth,
-                                DecoderDoctorDiagnostics* aDiagnostics) const {
-    return aBitDepth == 8;
+  // Indicates if the PlatformDecoderModule supports decoding of aColorDepth.
+  // Should override this method when the platform can support color depth != 8.
+  virtual bool SupportsColorDepth(
+      gfx::ColorDepth aColorDepth,
+      DecoderDoctorDiagnostics* aDiagnostics) const {
+    return aColorDepth == gfx::ColorDepth::COLOR_8;
   }
 
   // Creates a Video decoder. The layers backend is passed in so that
@@ -298,7 +326,8 @@ class MediaDataDecoder : public DecoderDoctorLifeLogger<MediaDataDecoder> {
 
   // Set a hint of seek target time to decoder. Decoder will drop any decoded
   // data which pts is smaller than this value. This threshold needs to be clear
-  // after reset decoder.
+  // after reset decoder. To clear it explicitly, call this method with
+  // TimeUnit::Invalid().
   // Decoder may not honor this value. However, it'd be better that
   // video decoder implements this API to improve seek performance.
   // Note: it should be called before Input() or after Flush().

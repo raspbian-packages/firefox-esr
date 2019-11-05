@@ -37,6 +37,7 @@ class AtomicRefCountedWithFinalize {
  protected:
   explicit AtomicRefCountedWithFinalize(const char* aName)
       : mRecycleCallback(nullptr),
+        mClosure(nullptr),
         mRefCount(0)
 #ifdef DEBUG
         ,

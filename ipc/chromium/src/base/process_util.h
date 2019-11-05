@@ -13,35 +13,32 @@
 #include "base/basictypes.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
-#include <tlhelp32.h>
-#include <io.h>
-#ifndef STDOUT_FILENO
-#define STDOUT_FILENO 1
-#endif
+#  include <windows.h>
+#  include <tlhelp32.h>
+#  include <io.h>
+#  ifndef STDOUT_FILENO
+#    define STDOUT_FILENO 1
+#  endif
 #elif defined(OS_LINUX) || defined(__GLIBC__)
-#include <dirent.h>
-#include <limits.h>
-#include <sys/types.h>
+#  include <dirent.h>
+#  include <limits.h>
+#  include <sys/types.h>
 #elif defined(OS_MACOSX)
-#include <mach/mach.h>
+#  include <mach/mach.h>
 #endif
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
 #ifndef OS_WIN
-#include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #include "base/command_line.h"
 #include "base/process.h"
-
-#if defined(OS_POSIX)
-#include "base/file_descriptor_shuffle.h"
-#endif
 
 #include "mozilla/UniquePtr.h"
 #include "mozilla/ipc/EnvironmentMap.h"
@@ -86,16 +83,11 @@ void CloseProcessHandle(ProcessHandle process);
 ProcessId GetProcId(ProcessHandle process);
 
 #if defined(OS_POSIX)
-// Sets all file descriptors to close on exec except for stdin, stdout
-// and stderr.
-// TODO(agl): remove this function
-// WARNING: do not use. It's inherently race-prone in the face of
-// multi-threading.
-void SetAllFDsToCloseOnExec();
-// Close all file descriptors, expect those which are a destination in the
-// given multimap. Only call this function in a child process where you know
-// that there aren't any other threads.
-void CloseSuperfluousFds(const base::InjectiveMultimap& saved_map);
+// Close all file descriptors, except for std{in,out,err} and those
+// for which the given function returns true.  Only call this function
+// in a child process where you know that there aren't any other
+// threads.
+void CloseSuperfluousFds(void* aCtx, bool (*aShouldPreserve)(void*, int));
 
 typedef std::vector<std::pair<int, int> > file_handle_mapping_vector;
 typedef std::map<std::string, std::string> environment_map;
@@ -123,13 +115,14 @@ struct LaunchOptions {
   file_handle_mapping_vector fds_to_remap;
 #endif
 
-#if defined(OS_LINUX) || defined(OS_SOLARIS)
+#if defined(OS_LINUX)
   struct ForkDelegate {
     virtual ~ForkDelegate() {}
     virtual pid_t Fork() = 0;
   };
 
   // If non-null, the fork delegate will be called instead of fork().
+  // It is not required to call pthread_atfork hooks.
   mozilla::UniquePtr<ForkDelegate> fork_delegate = nullptr;
 #endif
 };
@@ -165,7 +158,7 @@ struct FreeEnvVarsArray {
   void operator()(char** array);
 };
 
-typedef mozilla::UniquePtr<char* [], FreeEnvVarsArray> EnvironmentArray;
+typedef mozilla::UniquePtr<char*[], FreeEnvVarsArray> EnvironmentArray;
 
 // Merge an environment map with the current environment.
 // Existing variables are overwritten by env_vars_to_set.
@@ -236,11 +229,13 @@ class EnvironmentLog {
 
 #if defined(OS_WIN)
 // Undo the windows.h damage
-#undef GetMessage
-#undef CreateEvent
-#undef GetClassName
-#undef GetBinaryType
-#undef RemoveDirectory
+#  undef GetMessage
+#  undef CreateEvent
+#  undef GetClassName
+#  undef GetBinaryType
+#  undef RemoveDirectory
+#  undef LoadImage
+#  undef LoadIcon
 #endif
 
 #endif  // BASE_PROCESS_UTIL_H_

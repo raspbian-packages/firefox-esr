@@ -5,7 +5,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=764481
 -->
 <head>
   <title>Test for Bug 764481</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
 <body>
@@ -20,14 +20,6 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=764481
 
   var testData = [
     {
-      prefs: [["dom.forms.number", false]],
-      inputType: "number",
-      expectedType: "text"
-    }, {
-      prefs: [["dom.forms.number", true]],
-      inputType: "number",
-      expectedType: "number"
-    }, {
       prefs: [["dom.forms.color", false]],
       inputType: "color",
       expectedType: "text"

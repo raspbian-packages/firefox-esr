@@ -9,13 +9,14 @@
 
 #include "mozilla/Maybe.h"
 #include "mozilla/SVGContextPaint.h"
-#include "SVGPreserveAspectRatio.h"
+#include "mozilla/SVGPreserveAspectRatio.h"
 #include "Units.h"
 
 class nsIFrame;
-class nsStyleContext;
 
 namespace mozilla {
+
+class ComputedStyle;
 
 // SVG image-specific rendering context. For imgIContainer::Draw.
 // Used to pass information such as
@@ -24,7 +25,7 @@ namespace mozilla {
 // to the image's internal SVG document when it's drawn.
 class SVGImageContext {
  public:
-  SVGImageContext() {}
+  SVGImageContext() = default;
 
   /**
    * Currently it seems that the aViewportSize parameter ends up being used
@@ -53,7 +54,7 @@ class SVGImageContext {
                                      imgIContainer* aImgContainer);
 
   static void MaybeStoreContextPaint(Maybe<SVGImageContext>& aContext,
-                                     nsStyleContext* aFromStyleContext,
+                                     ComputedStyle* aFromComputedStyle,
                                      imgIContainer* aImgContainer);
 
   const Maybe<CSSIntSize>& GetViewportSize() const { return mViewportSize; }

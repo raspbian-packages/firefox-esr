@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,7 +20,7 @@ class nsIStreamListener;
 class nsInputStreamPump final : public nsIInputStreamPump,
                                 public nsIInputStreamCallback,
                                 public nsIThreadRetargetableRequest {
-  ~nsInputStreamPump();
+  ~nsInputStreamPump() = default;
 
  public:
   typedef mozilla::RecursiveMutexAutoLock RecursiveMutexAutoLock;
@@ -33,12 +33,12 @@ class nsInputStreamPump final : public nsIInputStreamPump,
 
   nsInputStreamPump();
 
-  static nsresult Create(nsInputStreamPump **result, nsIInputStream *stream,
+  static nsresult Create(nsInputStreamPump** result, nsIInputStream* stream,
                          uint32_t segsize = 0, uint32_t segcount = 0,
                          bool closeWhenDone = false,
-                         nsIEventTarget *mainThreadTarget = nullptr);
+                         nsIEventTarget* mainThreadTarget = nullptr);
 
-  typedef void (*PeekSegmentFun)(void *closure, const uint8_t *buf,
+  typedef void (*PeekSegmentFun)(void* closure, const uint8_t* buf,
                                  uint32_t bufLen);
   /**
    * Peek into the first chunk of data that's in the stream. Note that this
@@ -50,7 +50,7 @@ class nsInputStreamPump final : public nsIInputStreamPump,
    *
    * Do not call before asyncRead. Do not call after onStopRequest.
    */
-  nsresult PeekStream(PeekSegmentFun callback, void *closure);
+  nsresult PeekStream(PeekSegmentFun callback, void* closure);
 
   /**
    * Dispatched (to the main thread) by OnStateStop if it's called off main
@@ -70,7 +70,6 @@ class nsInputStreamPump final : public nsIInputStreamPump,
   uint32_t mState;
   nsCOMPtr<nsILoadGroup> mLoadGroup;
   nsCOMPtr<nsIStreamListener> mListener;
-  nsCOMPtr<nsISupports> mListenerContext;
   nsCOMPtr<nsIEventTarget> mTargetThread;
   nsCOMPtr<nsIEventTarget> mLabeledMainThreadTarget;
   nsCOMPtr<nsIInputStream> mStream;

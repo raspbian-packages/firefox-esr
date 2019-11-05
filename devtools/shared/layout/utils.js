@@ -8,14 +8,22 @@ const { Ci, Cc } = require("chrome");
 const nodeFilterConstants = require("devtools/shared/dom-node-filter-constants");
 
 const SHEET_TYPE = {
-  "agent": "AGENT_SHEET",
-  "user": "USER_SHEET",
-  "author": "AUTHOR_SHEET"
+  agent: "AGENT_SHEET",
+  user: "USER_SHEET",
+  author: "AUTHOR_SHEET",
 };
 
-loader.lazyRequireGetter(this, "setIgnoreLayoutChanges", "devtools/server/actors/reflow", true);
+// eslint-disable-next-line no-unused-vars
+loader.lazyRequireGetter(
+  this,
+  "setIgnoreLayoutChanges",
+  "devtools/server/actors/reflow",
+  true
+);
 exports.setIgnoreLayoutChanges = (...args) =>
   this.setIgnoreLayoutChanges(...args);
+
+const ReplayInspector = require("devtools/server/actors/replay/inspector");
 
 /**
  * Returns the `DOMWindowUtils` for the window given.
@@ -25,9 +33,10 @@ exports.setIgnoreLayoutChanges = (...args) =>
  */
 const utilsCache = new WeakMap();
 function utilsFor(win) {
+  // XXXbz Given that we now have a direct getter for the DOMWindowUtils, is
+  // this weakmap cache path any faster than just calling the getter?
   if (!utilsCache.has(win)) {
-    utilsCache.set(win, win.QueryInterface(Ci.nsIInterfaceRequestor)
-                           .getInterface(Ci.nsIDOMWindowUtils));
+    utilsCache.set(win, win.windowUtils);
   }
   return utilsCache.get(win);
 }
@@ -39,20 +48,15 @@ function utilsFor(win) {
  * @return {DOMWindow}
  */
 function getTopWindow(win) {
-  let docShell = win.QueryInterface(Ci.nsIInterfaceRequestor)
-                    .getInterface(Ci.nsIWebNavigation)
-                    .QueryInterface(Ci.nsIDocShell);
+  const docShell = win.docShell;
 
   if (!docShell.isMozBrowser) {
     return win.top;
   }
 
-  let topDocShell =
-    docShell.getSameTypeRootTreeItemIgnoreBrowserBoundaries();
+  const topDocShell = docShell.getSameTypeRootTreeItemIgnoreBrowserBoundaries();
 
-  return topDocShell
-          ? topDocShell.contentViewer.DOMDocument.defaultView
-          : null;
+  return topDocShell ? topDocShell.contentViewer.DOMDocument.defaultView : null;
 }
 
 exports.getTopWindow = getTopWindow;
@@ -68,18 +72,18 @@ const isTopWindow = win => win && getTopWindow(win) === win;
 exports.isTopWindow = isTopWindow;
 
 /**
-   * Check a window is part of the boundary window given.
-   *
-   * @param {DOMWindow} boundaryWindow
-   * @param {DOMWindow} win
-   * @return {Boolean}
-   */
+ * Check a window is part of the boundary window given.
+ *
+ * @param {DOMWindow} boundaryWindow
+ * @param {DOMWindow} win
+ * @return {Boolean}
+ */
 function isWindowIncluded(boundaryWindow, win) {
   if (win === boundaryWindow) {
     return true;
   }
 
-  let parent = getParentWindow(win);
+  const parent = getParentWindow(win);
 
   if (!parent || parent === win) {
     return false;
@@ -100,20 +104,17 @@ function getParentWindow(win) {
     return null;
   }
 
-  let docShell = win.QueryInterface(Ci.nsIInterfaceRequestor)
-                 .getInterface(Ci.nsIWebNavigation)
-                 .QueryInterface(Ci.nsIDocShell);
+  const docShell = win.docShell;
 
   if (!docShell.isMozBrowser) {
     return win.parent;
   }
 
-  let parentDocShell =
-    docShell.getSameTypeParentIgnoreBrowserBoundaries();
+  const parentDocShell = docShell.getSameTypeParentIgnoreBrowserBoundaries();
 
   return parentDocShell
-          ? parentDocShell.contentViewer.DOMDocument.defaultView
-          : null;
+    ? parentDocShell.contentViewer.DOMDocument.defaultView
+    : null;
 }
 
 exports.getParentWindow = getParentWindow;
@@ -126,7 +127,7 @@ exports.getParentWindow = getParentWindow;
  * @return {DOMNode}
  *         The element in which the window is embedded.
  */
-const getFrameElement = (win) =>
+const getFrameElement = win =>
   isTopWindow(win) ? null : utilsFor(win).containerElement;
 exports.getFrameElement = getFrameElement;
 
@@ -147,7 +148,7 @@ function getFrameOffsets(boundaryWindow, node) {
   let yOffset = 0;
 
   let frameWin = getWindowFor(node);
-  let scale = getCurrentZoom(node);
+  const scale = getCurrentZoom(node);
 
   if (boundaryWindow === null) {
     boundaryWindow = getTopWindow(frameWin);
@@ -156,7 +157,7 @@ function getFrameOffsets(boundaryWindow, node) {
   }
 
   while (frameWin !== boundaryWindow) {
-    let frameElement = getFrameElement(frameWin);
+    const frameElement = getFrameElement(frameWin);
     if (!frameElement) {
       break;
     }
@@ -164,9 +165,9 @@ function getFrameOffsets(boundaryWindow, node) {
     // We are in an iframe.
     // We take into account the parent iframe position and its
     // offset (borders and padding).
-    let frameRect = frameElement.getBoundingClientRect();
+    const frameRect = frameElement.getBoundingClientRect();
 
-    let [offsetTop, offsetLeft] = getFrameContentOffset(frameElement);
+    const [offsetTop, offsetLeft] = getFrameContentOffset(frameElement);
 
     xOffset += frameRect.left + offsetLeft;
     yOffset += frameRect.top + offsetTop;
@@ -181,6 +182,11 @@ exports.getFrameOffsets = getFrameOffsets;
 /**
  * Get box quads adjusted for iframes and zoom level.
  *
+ * Warning: this function returns things that look like DOMQuad objects but
+ * aren't (they resemble an old version of the spec). Unlike the return value
+ * of node.getBoxQuads, they have a .bounds property and not a .getBounds()
+ * method.
+ *
  * @param {DOMWindow} boundaryWindow
  *        The window where to stop to iterate. If `null` is given, the top
  *        window is used.
@@ -190,67 +196,70 @@ exports.getFrameOffsets = getFrameOffsets;
  * @param {String} region
  *        The box model region to return: "content", "padding", "border" or
  *        "margin".
+ * @param {Object} [options.ignoreZoom=false]
+ *        Ignore zoom used in the context of e.g. canvas.
  * @return {Array}
  *        An array of objects that have the same structure as quads returned by
  *        getBoxQuads. An empty array if the node has no quads or is invalid.
  */
-function getAdjustedQuads(boundaryWindow, node, region) {
+function getAdjustedQuads(boundaryWindow, node, region, { ignoreZoom } = {}) {
   if (!node || !node.getBoxQuads) {
     return [];
   }
 
-  let quads = node.getBoxQuads({
-    box: region
+  const quads = node.getBoxQuads({
+    box: region,
+    relativeTo: boundaryWindow.document,
   });
 
   if (!quads.length) {
     return [];
   }
 
-  let [xOffset, yOffset] = getFrameOffsets(boundaryWindow, node);
-  let scale = getCurrentZoom(node);
-  let { scrollX, scrollY } = boundaryWindow;
+  const scale = ignoreZoom ? 1 : getCurrentZoom(node);
+  const { scrollX, scrollY } = boundaryWindow;
 
-  xOffset += scrollX * scale;
-  yOffset += scrollY * scale;
+  const xOffset = scrollX * scale;
+  const yOffset = scrollY * scale;
 
-  let adjustedQuads = [];
-  for (let quad of quads) {
+  const adjustedQuads = [];
+  for (const quad of quads) {
+    const bounds = quad.getBounds();
     adjustedQuads.push({
       p1: {
         w: quad.p1.w * scale,
         x: quad.p1.x * scale + xOffset,
         y: quad.p1.y * scale + yOffset,
-        z: quad.p1.z * scale
+        z: quad.p1.z * scale,
       },
       p2: {
         w: quad.p2.w * scale,
         x: quad.p2.x * scale + xOffset,
         y: quad.p2.y * scale + yOffset,
-        z: quad.p2.z * scale
+        z: quad.p2.z * scale,
       },
       p3: {
         w: quad.p3.w * scale,
         x: quad.p3.x * scale + xOffset,
         y: quad.p3.y * scale + yOffset,
-        z: quad.p3.z * scale
+        z: quad.p3.z * scale,
       },
       p4: {
         w: quad.p4.w * scale,
         x: quad.p4.x * scale + xOffset,
         y: quad.p4.y * scale + yOffset,
-        z: quad.p4.z * scale
+        z: quad.p4.z * scale,
       },
       bounds: {
-        bottom: quad.bounds.bottom * scale + yOffset,
-        height: quad.bounds.height * scale,
-        left: quad.bounds.left * scale + xOffset,
-        right: quad.bounds.right * scale + xOffset,
-        top: quad.bounds.top * scale + yOffset,
-        width: quad.bounds.width * scale,
-        x: quad.bounds.x * scale + xOffset,
-        y: quad.bounds.y * scale + yOffset
-      }
+        bottom: bounds.bottom * scale + yOffset,
+        height: bounds.height * scale,
+        left: bounds.left * scale + xOffset,
+        right: bounds.right * scale + xOffset,
+        top: bounds.top * scale + yOffset,
+        width: bounds.width * scale,
+        x: bounds.x * scale + xOffset,
+        y: bounds.y * scale + yOffset,
+      },
     });
   }
 
@@ -274,7 +283,7 @@ exports.getAdjustedQuads = getAdjustedQuads;
  */
 function getRect(boundaryWindow, node, contentWindow) {
   let frameWin = node.ownerDocument.defaultView;
-  let clientRect = node.getBoundingClientRect();
+  const clientRect = node.getBoundingClientRect();
 
   if (boundaryWindow === null) {
     boundaryWindow = getTopWindow(frameWin);
@@ -284,16 +293,16 @@ function getRect(boundaryWindow, node, contentWindow) {
 
   // Go up in the tree of frames to determine the correct rectangle.
   // clientRect is read-only, we need to be able to change properties.
-  let rect = {
+  const rect = {
     top: clientRect.top + contentWindow.pageYOffset,
     left: clientRect.left + contentWindow.pageXOffset,
     width: clientRect.width,
-    height: clientRect.height
+    height: clientRect.height,
   };
 
   // We iterate through all the parent windows.
   while (frameWin !== boundaryWindow) {
-    let frameElement = getFrameElement(frameWin);
+    const frameElement = getFrameElement(frameWin);
     if (!frameElement) {
       break;
     }
@@ -301,9 +310,9 @@ function getRect(boundaryWindow, node, contentWindow) {
     // We are in an iframe.
     // We take into account the parent iframe position and its
     // offset (borders and padding).
-    let frameRect = frameElement.getBoundingClientRect();
+    const frameRect = frameElement.getBoundingClientRect();
 
-    let [offsetTop, offsetLeft] = getFrameContentOffset(frameElement);
+    const [offsetTop, offsetLeft] = getFrameContentOffset(frameElement);
 
     rect.top += frameRect.top + offsetTop;
     rect.left += frameRect.left + offsetLeft;
@@ -330,8 +339,8 @@ function getNodeBounds(boundaryWindow, node) {
   if (!node) {
     return null;
   }
-  let { scrollX, scrollY } = boundaryWindow;
-  let scale = getCurrentZoom(node);
+  const { scrollX, scrollY } = boundaryWindow;
+  const scale = getCurrentZoom(node);
 
   // Find out the offset of the node in its current frame
   let offsetLeft = 0;
@@ -361,20 +370,20 @@ function getNodeBounds(boundaryWindow, node) {
   yOffset += (offsetTop + scrollY) * scale;
 
   // Get the width and height
-  let width = node.offsetWidth * scale;
-  let height = node.offsetHeight * scale;
+  const width = node.offsetWidth * scale;
+  const height = node.offsetHeight * scale;
 
   return {
-    p1: {x: xOffset, y: yOffset},
-    p2: {x: xOffset + width, y: yOffset},
-    p3: {x: xOffset + width, y: yOffset + height},
-    p4: {x: xOffset, y: yOffset + height},
+    p1: { x: xOffset, y: yOffset },
+    p2: { x: xOffset + width, y: yOffset },
+    p3: { x: xOffset + width, y: yOffset + height },
+    p4: { x: xOffset, y: yOffset + height },
     top: yOffset,
     right: xOffset + width,
     bottom: yOffset + height,
     left: xOffset,
     width,
-    height
+    height,
   };
 }
 exports.getNodeBounds = getNodeBounds;
@@ -392,14 +401,15 @@ function safelyGetContentWindow(frame) {
     return frame.contentWindow;
   }
 
-  let walker = Cc["@mozilla.org/inspector/deep-tree-walker;1"]
-               .createInstance(Ci.inIDeepTreeWalker);
+  const walker = Cc["@mozilla.org/inspector/deep-tree-walker;1"].createInstance(
+    Ci.inIDeepTreeWalker
+  );
   walker.showSubDocuments = true;
   walker.showDocumentsAsNodes = true;
   walker.init(frame, nodeFilterConstants.SHOW_ALL);
   walker.currentNode = frame;
 
-  let document = walker.nextNode();
+  const document = walker.nextNode();
   if (!document || !document.defaultView) {
     throw new Error("Couldn't get the content window inside frame " + frame);
   }
@@ -422,18 +432,18 @@ function safelyGetContentWindow(frame) {
  *         of the content document.
  */
 function getFrameContentOffset(frame) {
-  let style = safelyGetContentWindow(frame).getComputedStyle(frame);
+  const style = safelyGetContentWindow(frame).getComputedStyle(frame);
 
   // In some cases, the computed style is null
   if (!style) {
     return [0, 0];
   }
 
-  let paddingTop = parseInt(style.getPropertyValue("padding-top"), 10);
-  let paddingLeft = parseInt(style.getPropertyValue("padding-left"), 10);
+  const paddingTop = parseInt(style.getPropertyValue("padding-top"), 10);
+  const paddingLeft = parseInt(style.getPropertyValue("padding-left"), 10);
 
-  let borderTop = parseInt(style.getPropertyValue("border-top-width"), 10);
-  let borderLeft = parseInt(style.getPropertyValue("border-left-width"), 10);
+  const borderTop = parseInt(style.getPropertyValue("border-top-width"), 10);
+  const borderLeft = parseInt(style.getPropertyValue("border-left-width"), 10);
 
   return [borderTop + paddingTop, borderLeft + paddingLeft];
 }
@@ -451,8 +461,10 @@ function isNodeConnected(node) {
   }
 
   try {
-    return !(node.compareDocumentPosition(node.ownerDocument.documentElement) &
-             node.DOCUMENT_POSITION_DISCONNECTED);
+    return !(
+      node.compareDocumentPosition(node.ownerDocument.documentElement) &
+      node.DOCUMENT_POSITION_DISCONNECTED
+    );
   } catch (e) {
     // "can't access dead object" error
     return false;
@@ -473,7 +485,7 @@ exports.isNodeConnected = isNodeConnected;
  */
 function getRootBindingParent(node) {
   let parent;
-  let doc = node.ownerDocument;
+  const doc = node.ownerDocument;
   if (!doc) {
     return node;
   }
@@ -485,13 +497,13 @@ function getRootBindingParent(node) {
 exports.getRootBindingParent = getRootBindingParent;
 
 function getBindingParent(node) {
-  let doc = node.ownerDocument;
+  const doc = node.ownerDocument;
   if (!doc) {
     return null;
   }
 
   // If there is no binding parent then it is not anonymous.
-  let parent = doc.getBindingParent(node);
+  const parent = doc.getBindingParent(node);
   if (!parent) {
     return null;
   }
@@ -508,7 +520,7 @@ exports.getBindingParent = getBindingParent;
  * @return {Boolean}
  *
  */
-const isAnonymous = (node) => getRootBindingParent(node) !== node;
+const isAnonymous = node => getRootBindingParent(node) !== node;
 exports.isAnonymous = isAnonymous;
 
 /**
@@ -518,7 +530,7 @@ exports.isAnonymous = isAnonymous;
  * @return {Boolean}
  *
  */
-const hasBindingParent = (node) => !!getBindingParent(node);
+const hasBindingParent = node => !!getBindingParent(node);
 
 /**
  * Determine whether a node is native anonymous content (as opposed
@@ -530,7 +542,7 @@ const hasBindingParent = (node) => !!getBindingParent(node);
  * @return {Boolean}
  *
  */
-const isNativeAnonymous = (node) =>
+const isNativeAnonymous = node =>
   hasBindingParent(node) && !(isXBLAnonymous(node) || isShadowAnonymous(node));
 
 exports.isNativeAnonymous = isNativeAnonymous;
@@ -545,17 +557,12 @@ exports.isNativeAnonymous = isNativeAnonymous;
  *
  */
 function isXBLAnonymous(node) {
-  let parent = getBindingParent(node);
+  const parent = getBindingParent(node);
   if (!parent) {
     return false;
   }
 
-  // Shadow nodes also show up in getAnonymousNodes, so return false.
-  if (parent.shadowRoot && parent.shadowRoot.contains(node)) {
-    return false;
-  }
-
-  let anonNodes = [...node.ownerDocument.getAnonymousNodes(parent) || []];
+  const anonNodes = [...(node.ownerDocument.getAnonymousNodes(parent) || [])];
   return anonNodes.indexOf(node) > -1;
 }
 exports.isXBLAnonymous = isXBLAnonymous;
@@ -568,21 +575,133 @@ exports.isXBLAnonymous = isXBLAnonymous;
  * @return {Boolean}
  */
 function isShadowAnonymous(node) {
-  let parent = getBindingParent(node);
+  const parent = getBindingParent(node);
   if (!parent) {
     return false;
   }
 
   // If there is a shadowRoot and this is part of it then this
   // is not native anonymous
-  return parent.shadowRoot && parent.shadowRoot.contains(node);
+  return (
+    parent.openOrClosedShadowRoot &&
+    parent.openOrClosedShadowRoot.contains(node)
+  );
 }
 exports.isShadowAnonymous = isShadowAnonymous;
+
+/**
+ * Determine whether a node is a template element.
+ *
+ * @param {DOMNode} node
+ * @return {Boolean}
+ */
+function isTemplateElement(node) {
+  return (
+    node.ownerGlobal && node instanceof node.ownerGlobal.HTMLTemplateElement
+  );
+}
+exports.isTemplateElement = isTemplateElement;
+
+/**
+ * Determine whether a node is a shadow root.
+ *
+ * @param {DOMNode} node
+ * @return {Boolean}
+ */
+function isShadowRoot(node) {
+  const isFragment = node.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
+  return isFragment && !!node.host;
+}
+exports.isShadowRoot = isShadowRoot;
+
+/*
+ * Gets the shadow root mode (open or closed).
+ *
+ * @param {DOMNode} node
+ * @return {String|null}
+ */
+function getShadowRootMode(node) {
+  return isShadowRoot(node) ? node.mode : null;
+}
+exports.getShadowRootMode = getShadowRootMode;
+
+/**
+ * Determine whether a node is a shadow host, ie. an element that has a shadowRoot
+ * attached to itself.
+ *
+ * @param {DOMNode} node
+ * @return {Boolean}
+ */
+function isShadowHost(node) {
+  const shadowRoot = node.openOrClosedShadowRoot;
+  return shadowRoot && shadowRoot.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
+}
+exports.isShadowHost = isShadowHost;
+
+/**
+ * Determine whether a node is a child of a shadow host. Even if the element has been
+ * assigned to a slot in the attached shadow DOM, the parent node for this element is
+ * still considered to be the "host" element, and we need to walk them differently.
+ *
+ * @param {DOMNode} node
+ * @return {Boolean}
+ */
+function isDirectShadowHostChild(node) {
+  // Pseudo elements and native anonymous elements are always part of the anonymous tree.
+  if (
+    isMarkerPseudoElement(node) ||
+    isBeforePseudoElement(node) ||
+    isAfterPseudoElement(node) ||
+    isNativeAnonymous(node)
+  ) {
+    return false;
+  }
+
+  const parentNode = node.parentNode;
+  return parentNode && !!parentNode.openOrClosedShadowRoot;
+}
+exports.isDirectShadowHostChild = isDirectShadowHostChild;
+
+/**
+ * Determine whether a node is a ::marker pseudo.
+ *
+ * @param {DOMNode} node
+ * @return {Boolean}
+ */
+function isMarkerPseudoElement(node) {
+  return node.nodeName === "_moz_generated_content_marker";
+}
+exports.isMarkerPseudoElement = isMarkerPseudoElement;
+
+/**
+ * Determine whether a node is a ::before pseudo.
+ *
+ * @param {DOMNode} node
+ * @return {Boolean}
+ */
+function isBeforePseudoElement(node) {
+  return node.nodeName === "_moz_generated_content_before";
+}
+exports.isBeforePseudoElement = isBeforePseudoElement;
+
+/**
+ * Determine whether a node is a ::after pseudo.
+ *
+ * @param {DOMNode} node
+ * @return {Boolean}
+ */
+function isAfterPseudoElement(node) {
+  return node.nodeName === "_moz_generated_content_after";
+}
+exports.isAfterPseudoElement = isAfterPseudoElement;
 
 /**
  * Get the current zoom factor applied to the container window of a given node.
  * Container windows are used as a weakmap key to store the corresponding
  * nsIDOMWindowUtils instance to avoid querying it every time.
+ *
+ * XXXbz Given that we now have a direct getter for the DOMWindowUtils, is
+ * this weakmap cache path any faster than just calling the getter?
  *
  * @param {DOMNode|DOMWindow}
  *        The node for which the zoom factor should be calculated, or its
@@ -590,7 +709,7 @@ exports.isShadowAnonymous = isShadowAnonymous;
  * @return {Number}
  */
 function getCurrentZoom(node) {
-  let win = getWindowFor(node);
+  const win = getWindowFor(node);
 
   if (!win) {
     throw new Error("Unable to get the zoom from the given argument.");
@@ -612,7 +731,7 @@ exports.getCurrentZoom = getCurrentZoom;
  * @return {Number}
  */
 function getDisplayPixelRatio(node) {
-  let win = getWindowFor(node);
+  const win = getWindowFor(node);
   return win.devicePixelRatio / utilsFor(win).fullZoom;
 }
 exports.getDisplayPixelRatio = getDisplayPixelRatio;
@@ -625,7 +744,7 @@ exports.getDisplayPixelRatio = getDisplayPixelRatio;
  */
 function getWindowDimensions(window) {
   // First we'll try without flushing layout, because it's way faster.
-  let windowUtils = utilsFor(window);
+  const windowUtils = utilsFor(window);
   let { width, height } = windowUtils.getRootBounds();
 
   if (!width || !height) {
@@ -633,8 +752,8 @@ function getWindowDimensions(window) {
     width = window.innerWidth + window.scrollMaxX - window.scrollMinX;
     height = window.innerHeight + window.scrollMaxY - window.scrollMinY;
 
-    let scrollbarHeight = {};
-    let scrollbarWidth = {};
+    const scrollbarHeight = {};
+    const scrollbarWidth = {};
     windowUtils.getScrollbarSize(false, scrollbarWidth, scrollbarHeight);
     width -= scrollbarWidth.value;
     height -= scrollbarHeight.value;
@@ -651,14 +770,14 @@ exports.getWindowDimensions = getWindowDimensions;
  * number of pixels for the viewport's size.
  */
 function getViewportDimensions(window) {
-  let windowUtils = utilsFor(window);
+  const windowUtils = utilsFor(window);
 
-  let scrollbarHeight = {};
-  let scrollbarWidth = {};
+  const scrollbarHeight = {};
+  const scrollbarWidth = {};
   windowUtils.getScrollbarSize(false, scrollbarWidth, scrollbarHeight);
 
-  let width = window.innerWidth - scrollbarWidth.value;
-  let height = window.innerHeight - scrollbarHeight.value;
+  const width = window.innerWidth - scrollbarWidth.value;
+  const height = window.innerHeight - scrollbarHeight.value;
 
   return { width, height };
 }
@@ -673,7 +792,14 @@ exports.getViewportDimensions = getViewportDimensions;
  * @return {DOMWindow}
  */
 function getWindowFor(node) {
-  if (node instanceof Ci.nsIDOMNode) {
+  // Check if we are replaying, as the tests below don't work when inspecting
+  // nodes in another process.
+  if (isReplaying) {
+    // Multiple windows are not supported yet when replaying, so return the
+    // global window.
+    return ReplayInspector.window;
+  }
+  if (Node.isInstance(node)) {
     if (node.nodeType === node.DOCUMENT_NODE) {
       return node.defaultView;
     }
@@ -699,7 +825,7 @@ function loadSheet(window, url, type = "agent") {
     type = "agent";
   }
 
-  let windowUtils = utilsFor(window);
+  const windowUtils = utilsFor(window);
   try {
     windowUtils.loadSheetUsingURIString(url, windowUtils[SHEET_TYPE[type]]);
   } catch (e) {
@@ -721,7 +847,7 @@ function removeSheet(window, url, type = "agent") {
     type = "agent";
   }
 
-  let windowUtils = utilsFor(window);
+  const windowUtils = utilsFor(window);
   try {
     windowUtils.removeSheetUsingURIString(url, windowUtils[SHEET_TYPE[type]]);
   } catch (e) {
@@ -729,3 +855,130 @@ function removeSheet(window, url, type = "agent") {
   }
 }
 exports.removeSheet = removeSheet;
+
+/**
+ * Get the untransformed coordinates for a node.
+ *
+ * @param  {DOMNode} node
+ *         The node for which the DOMQuad is to be returned.
+ * @param  {String} region
+ *         The box model region to return: "content", "padding", "border" or
+ *         "margin".
+ * @return {DOMQuad}
+ *         A DOMQuad representation of the node.
+ */
+function getUntransformedQuad(node, region = "border") {
+  // Get the inverse transformation matrix for the node.
+  const matrix = node.getTransformToViewport();
+  const inverse = matrix.inverse();
+  const win = node.ownerGlobal;
+
+  // Get the adjusted quads for the node (including scroll offsets).
+  const quads = getAdjustedQuads(win, node, region, {
+    ignoreZoom: true,
+  });
+
+  // Create DOMPoints from the transformed node position.
+  const p1 = new DOMPoint(quads[0].p1.x, quads[0].p1.y);
+  const p2 = new DOMPoint(quads[0].p2.x, quads[0].p2.y);
+  const p3 = new DOMPoint(quads[0].p3.x, quads[0].p3.y);
+  const p4 = new DOMPoint(quads[0].p4.x, quads[0].p4.y);
+
+  // Apply the inverse transformation matrix to the points to get the
+  // untransformed points.
+  const ip1 = inverse.transformPoint(p1);
+  const ip2 = inverse.transformPoint(p2);
+  const ip3 = inverse.transformPoint(p3);
+  const ip4 = inverse.transformPoint(p4);
+
+  // Save the results in a DOMQuad.
+  const quad = new DOMQuad(
+    { x: ip1.x, y: ip1.y },
+    { x: ip2.x, y: ip2.y },
+    { x: ip3.x, y: ip3.y },
+    { x: ip4.x, y: ip4.y }
+  );
+
+  // Remove the border offsets because we include them when calculating
+  // offsets in the while loop.
+  const style = win.getComputedStyle(node);
+  const leftAdjustment = parseInt(style.borderLeftWidth, 10) || 0;
+  const topAdjustment = parseInt(style.borderTopWidth, 10) || 0;
+
+  quad.p1.x -= leftAdjustment;
+  quad.p2.x -= leftAdjustment;
+  quad.p3.x -= leftAdjustment;
+  quad.p4.x -= leftAdjustment;
+  quad.p1.y -= topAdjustment;
+  quad.p2.y -= topAdjustment;
+  quad.p3.y -= topAdjustment;
+  quad.p4.y -= topAdjustment;
+
+  // Calculate offsets.
+  while (node) {
+    const nodeStyle = win.getComputedStyle(node);
+    const borderLeftWidth = parseInt(nodeStyle.borderLeftWidth, 10) || 0;
+    const borderTopWidth = parseInt(nodeStyle.borderTopWidth, 10) || 0;
+    const leftOffset = node.offsetLeft - node.scrollLeft + borderLeftWidth;
+    const topOffset = node.offsetTop - node.scrollTop + borderTopWidth;
+
+    quad.p1.x += leftOffset;
+    quad.p2.x += leftOffset;
+    quad.p3.x += leftOffset;
+    quad.p4.x += leftOffset;
+    quad.p1.y += topOffset;
+    quad.p2.y += topOffset;
+    quad.p3.y += topOffset;
+    quad.p4.y += topOffset;
+
+    node = node.offsetParent;
+  }
+
+  return quad;
+}
+exports.getUntransformedQuad = getUntransformedQuad;
+
+/**
+ * Calculate the total of the node and all of its ancestor's scrollTop and
+ * scrollLeft values.
+ *
+ * @param  {DOMNode} node
+ *         The node for which the absolute scroll offsets should be calculated.
+ * @return {Object} object
+ *         An object containing scrollTop and scrollLeft values.
+ * @return {Number} object.scrollLeft
+ *         The total scrollLeft values of the node and all of its ancestors.
+ * @return {Number} object.scrollTop
+ *         The total scrollTop values of the node and all of its ancestors.
+ */
+function getAbsoluteScrollOffsetsForNode(node) {
+  const doc = node.ownerDocument;
+
+  // Our walker will only iterate up to document.body so we start by saving the
+  // scroll values for `document.documentElement`.
+  let scrollTop = doc.documentElement.scrollTop;
+  let scrollLeft = doc.documentElement.scrollLeft;
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT);
+  walker.currentNode = node;
+  let currentNode = walker.currentNode;
+
+  // Iterate from `node` up the tree to `document.body` adding scroll offsets
+  // as we go.
+  while (currentNode) {
+    const nodeScrollTop = currentNode.scrollTop;
+    const nodeScrollLeft = currentNode.scrollLeft;
+
+    if (nodeScrollTop || nodeScrollLeft) {
+      scrollTop += nodeScrollTop;
+      scrollLeft += nodeScrollLeft;
+    }
+
+    currentNode = walker.parentNode();
+  }
+
+  return {
+    scrollLeft,
+    scrollTop,
+  };
+}
+exports.getAbsoluteScrollOffsetsForNode = getAbsoluteScrollOffsetsForNode;

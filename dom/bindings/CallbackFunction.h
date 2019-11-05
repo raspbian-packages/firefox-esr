@@ -26,14 +26,16 @@ class CallbackFunction : public CallbackObject {
  public:
   // See CallbackObject for an explanation of the arguments.
   explicit CallbackFunction(JSContext* aCx, JS::Handle<JSObject*> aCallable,
+                            JS::Handle<JSObject*> aCallableGlobal,
                             nsIGlobalObject* aIncumbentGlobal)
-      : CallbackObject(aCx, aCallable, aIncumbentGlobal) {}
+      : CallbackObject(aCx, aCallable, aCallableGlobal, aIncumbentGlobal) {}
 
   // See CallbackObject for an explanation of the arguments.
-  explicit CallbackFunction(JS::Handle<JSObject*> aCallable,
-                            JS::Handle<JSObject*> aAsyncStack,
+  explicit CallbackFunction(JSObject* aCallable, JSObject* aCallableGlobal,
+                            JSObject* aAsyncStack,
                             nsIGlobalObject* aIncumbentGlobal)
-      : CallbackObject(aCallable, aAsyncStack, aIncumbentGlobal) {}
+      : CallbackObject(aCallable, aCallableGlobal, aAsyncStack,
+                       aIncumbentGlobal) {}
 
   JS::Handle<JSObject*> CallableOrNull() const { return CallbackOrNull(); }
 
@@ -41,19 +43,14 @@ class CallbackFunction : public CallbackObject {
     return CallbackPreserveColor();
   }
 
-  bool HasGrayCallable() const {
-    // Play it safe in case this gets called after unlink.
-    return mCallback && JS::ObjectIsMarkedGray(mCallback);
-  }
-
  protected:
   explicit CallbackFunction(CallbackFunction* aCallbackFunction)
       : CallbackObject(aCallbackFunction) {}
 
   // See CallbackObject for an explanation of the arguments.
-  CallbackFunction(JS::Handle<JSObject*> aCallable,
+  CallbackFunction(JSObject* aCallable, JSObject* aCallableGlobal,
                    const FastCallbackConstructor&)
-      : CallbackObject(aCallable, FastCallbackConstructor()) {}
+      : CallbackObject(aCallable, aCallableGlobal, FastCallbackConstructor()) {}
 };
 
 }  // namespace dom

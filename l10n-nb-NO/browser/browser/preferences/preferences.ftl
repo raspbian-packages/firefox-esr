@@ -4,8 +4,8 @@
 
 do-not-track-description = Send nettsider et «Ikke spor»-signal om at du ikke vil bli sporet
 do-not-track-learn-more = Les mer
-do-not-track-option-default =
-    .label = Bare når du bruker sporingsbeskyttelse
+do-not-track-option-default-content-blocking-known =
+    .label = Bare når { -brand-short-name } er satt til å blokkere kjente sporere
 do-not-track-option-always =
     .label = Alltid
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Innstillinger
            *[other] Innstillinger
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Din organisasjon har slått av muligheten til å endre visse innstillinger.
        *[other] Din organisasjon har slått av muligheten til å endre visse innstillinger.
     }
+managed-notice = Nettleseren din administreres av organisasjonen din.
 pane-general-title = Generelt
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Personvern og sikkerhet
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox-konto
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = { -brand-short-name } brukerstøtte
+addons-button-label = Utvidelser og tema
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Start { -brand-short-name } på nytt
 should-restart-ok = Start { -brand-short-name } på nytt nå
 cancel-no-restart-button = Avbryt
 restart-later = Start på nytt senere
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = En utvidelse, <img data-l10n-name="icon"/> { $name }, styrer din startside.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = En utvidelse, <img data-l10n-name="icon"/> { $name }, styrer din ny fane-side.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = En utvidelse, <img data-l10n-name="icon"/> { $name }, kontrollerer denne innstillingen.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = En utvidelse, <img data-l10n-name="icon"/> { $name }, har endret din standardsøkemotor.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = En utvidelse, <img data-l10n-name="icon"/> { $name }, krever innholdsfaner.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = En utvidelse, <img data-l10n-name="icon"/> { $name }, styrer denne innstillingen.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = En utvidelse, <img data-l10n-name="icon"/> { $name }, styrer hvordan { -brand-short-name } kobler seg til internett.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = For å aktivere utvidelsen, gå til <img data-l10n-name="addons-icon"/> Utvidelser i menyen <img data-l10n-name="menu-icon"/>.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } er ikke valgt som standard nettleser
 set-as-my-default-browser =
     .label = Bruk som standard…
     .accesskey = s
-startup-page = Når { -brand-short-name } starter
-    .accesskey = s
-startup-user-homepage =
-    .label = Vis startside
-startup-blank-page =
-    .label = Vis tom side
-startup-prev-session =
-    .label = Vis vinduer og faner som ble brukt sist
+startup-restore-previous-session =
+    .label = Gjenopprett forrige programøkt
+    .accesskey = r
+startup-restore-warn-on-quit =
+    .label = Advarer når du avslutter nettleseren
 disable-extension =
     .label = Slå av utvidelse
-home-page-header = Startside
 tabs-group-header = Faner
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab veksler mellom faner i nylig brukt-rekkefølge
@@ -181,6 +208,12 @@ choose-language-description = Velg foretrukket språk på nettsider
 choose-button =
     .label = Velg …
     .accesskey = V
+choose-browser-language-description = Velg språkene som brukes til å vise menyer, meldinger og varsler fra { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Velg alternativer…
+    .accesskey = l
+confirm-browser-language-change-description = Start om { -brand-short-name } for å bruke disse endringene
+confirm-browser-language-change-button = Bruk og start om
 translate-web-pages =
     .label = Oversett webinnhold
     .accesskey = O
@@ -232,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Les mer
 update-application-title = { -brand-short-name }-oppdateringer
 update-application-description = Hold { -brand-short-name } oppdatert for beste ytelse, stabilitet og sikkerhet.
-update-application-info = Versjon { $version } <a>Hva er nytt</a>
 update-application-version = Versjon { $version } <a data-l10n-name="learn-more">Hva er nytt</a>
 update-history =
     .label = Vis oppdateringshistorikk…
@@ -247,12 +279,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Se aldri etter oppdateringer (anbefales ikke)
     .accesskey = s
+update-application-warning-cross-user-setting = Denne innstillingen gjelder for alle Windows-kontoer og { -brand-short-name }-profiler som bruker denne installasjonen av { -brand-short-name }.
 update-application-use-service =
     .label = Bruk en bakgrunnstjeneste for å installere oppdateringer
     .accesskey = B
 update-enable-search-update =
     .label = Oppdater søkemotorer automatisk
     .accesskey = e
+update-pref-write-failure-title = Skrivfeil
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Kan ikke lagre innstillinger. Kunne ikke skrive til filen: { $path }
+update-setting-write-failure-title = Kunne ikke lagre oppdateringsinnstillinger
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } oppdaget en feil og lagret ikke denne endringen. Merk, for å kunne lagre endringen av denne oppdateringsinnstillingen, kreves det tillatelse til å skrive til filen nedenfor. Du eller en systemadministrator kan muligens løse feilen ved å gi gruppen Brukere full tilgang til denne filen.
+    
+    Kunne ikke skrive til filen: { $path }
+update-in-progress-title = Oppdatering pågår
+update-in-progress-message = Vil du at { -brand-short-name } skal fortsette med denne oppdateringen?
+update-in-progress-ok-button = &Avvis
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Fortsett
 
 ## General Section - Performance
 
@@ -268,7 +320,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Grense for innholdsprosesser
     .accesskey = G
 performance-limit-content-process-enabled-desc = Ytterligere innholdsprosesser kan forbedre ytelsen når du bruker flere faner, men vil også bruke mer minne.
-performance-limit-content-process-disabled-desc = Endring av antall innholdsprosesser kan bare gjøres med multiprosess { -brand-short-name }. <a>Lær hvordan du kontrollerer om multiprosess er slått på</a>
 performance-limit-content-process-blocked-desc = Endring av antall innholdsprosesser kan bare gjøres med multiprosess { -brand-short-name }. <a data-l10n-name="learn-more">Lær hvordan du kontrollerer om multiprosess er slått på</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -293,10 +344,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Søk etter tekst når jeg begynner å skrive
     .accesskey = k
+browsing-cfr-recommendations =
+    .label = Anbefal utvidelser mens du surfer
+    .accesskey = r
+browsing-cfr-features =
+    .label = Anbefal funksjoner mens du surfer
+    .accesskey = f
+browsing-cfr-recommendations-learn-more = Les mer
 
 ## General Section - Proxy
 
-network-proxy-title = Nettverksproxy
+network-settings-title = Nettverksinnstillinger
+network-proxy-connection-description = Konfigurer hvordan { -brand-short-name } kobler seg til internett.
 network-proxy-connection-learn-more = Les mer
 network-proxy-connection-settings =
     .label = Innstillinger …
@@ -338,9 +397,6 @@ use-current-pages =
 choose-bookmark =
     .label = Bruk bokmerke …
     .accesskey = u
-restore-default =
-    .label = Bruk standard
-    .accesskey = s
 
 ## Search Section
 
@@ -484,8 +540,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Lagre
     .accesskey = L
-sync-mobilepromo-single = Koble til en annen enhet
-sync-mobilepromo-multi = Administrer enheter
+sync-connect-another-device = Koble til en annen enhet
+sync-manage-devices = Administrer enheter
+sync-fxa-begin-pairing = Tilknytt en enhet
 sync-tos-link = Tjenestevilkår
 sync-fxa-privacy-notice = Personvernbestemmelser
 
@@ -495,13 +552,16 @@ privacy-header = Nettleserpersonvern
 
 ## Privacy Section - Forms
 
-forms-header = Skjema og passord
+logins-header = Innlogginger og passord
 forms-ask-to-save-logins =
     .label = Spør om å lagre brukernavn og passord for nettsteder
     .accesskey = r
 forms-exceptions =
     .label = Unntak …
     .accesskey = n
+forms-generate-passwords =
+    .label = Foreslå og generer sterke passord
+    .accesskey = o
 forms-saved-logins =
     .label = Lagrede innlogginger …
     .accesskey = L
@@ -537,9 +597,9 @@ history-dontremember-description = { -brand-short-name } vil bruke de samme inns
 history-private-browsing-permanent =
     .label = Alltid bruk privat nettlesing-modus
     .accesskey = A
-history-remember-option =
+history-remember-browser-option =
     .label = Husk nettleser- og nedlastingshistorikk
-    .accesskey = d
+    .accesskey = n
 history-remember-search-option =
     .label = Husk søke- og skjemahistorikk
     .accesskey = ø
@@ -556,36 +616,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Infokapsler og nettstedsdata
+sitedata-total-size-calculating = Regner ut størrelse på nettstedsdata og hurtiglager…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Dine lagrede infokapsler, nettstedsdata og hurtiglager bruker for øyeblikket { $value } { $unit } diskplass.
 sitedata-learn-more = Les mer
-sitedata-accept-cookies-option =
-    .label = Tillat infokapsler og nettsidedata fra nettsteder (anbefalt)
+sitedata-delete-on-close =
+    .label = Slett infokapsler og nettsteddata når { -brand-short-name } stenger
+    .accesskey = S
+sitedata-delete-on-close-private-browsing = I permanent privat nettlesingsmodus vil infokapsler og nettstedsdata alltid bli slettet når { -brand-short-name } er avsluttet.
+sitedata-allow-cookies-option =
+    .label = Tillat infokapsler og nettstedsdata
     .accesskey = a
-sitedata-block-cookies-option =
-    .label = Blokker infokapsler og nettstedsdata fra nettsteder
+sitedata-disallow-cookies-option =
+    .label = Blokker infokapsler og nettstedsdata
     .accesskey = B
-sitedata-keep-until = Behold inntil
-    .accesskey = e
-sitedata-keep-until-expire =
-    .label = De utgår
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } er lukket
-sitedata-accept-third-party-desc = Tillat tredjeparts infokapsler og nettstedsdata fra nettsteder
-    .accesskey = e
-sitedata-accept-third-party-always-option =
-    .label = Alltid
-sitedata-accept-third-party-visited-option =
-    .label = Fra besøkte
-sitedata-accept-third-party-never-option =
-    .label = Aldri
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Type blokkert
+    .accesskey = T
+sitedata-option-block-trackers =
+    .label = Tredjeparts-sporere
+sitedata-option-block-unvisited =
+    .label = Infokapsler fra ubesøkte nettsteder
+sitedata-option-block-all-third-party =
+    .label = Alle tredjeparts infokapsler (kan føre til feil på nettsteder)
+sitedata-option-block-all =
+    .label = Alle infokapsler (vil føre til feil på nettsteder)
 sitedata-clear =
     .label = Tøm data…
     .accesskey = a
 sitedata-settings =
     .label = Behandle data…
     .accesskey = B
-sitedata-cookies-exceptions =
-    .label = Unntak …
-    .accesskey = U
+sitedata-cookies-permissions =
+    .label = Behandle tillatelser…
+    .accesskey = B
 
 ## Privacy Section - Address Bar
 
@@ -602,30 +669,73 @@ addressbar-locbar-openpage-option =
     .accesskey = f
 addressbar-suggestions-settings = Endre innstillinger for søkeforslag
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Innholdsblokkering
+content-blocking-description = Blokker tredjepartsinnhold som sporer deg på nettet. Kontroller hvor mye av din internett-aktivitet som blir lagret og delt mellom nettsteder.
+content-blocking-section-description = Beskytt personvernet ditt mens du surfer. Blokker usynlig innhold som sporer nettsidene du besøker og profilerer deg. Blokkering av noe av dette innholdet kan gjøre nettsider raskere å laste.
+content-blocking-learn-more = Les mer
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Standard
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = Streng
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Tilpasset
+    .accesskey = p
+content-blocking-standard-description = Blokker kun kjente sporere i private vindu.
+content-blocking-standard-desc = Balansert for beskyttelse og ytelse. Tillater noen sporere slik at nettsteder fungerer som de skal.
+content-blocking-strict-desc = Blokkerer alle sporere { -brand-short-name } oppdager. Dette kan begrense funksjonaliteten på visse nettsteder, eller gjøre at nettstedene ikke fungerer.
+content-blocking-strict-description = Sterkere beskyttelse, men kan forhindre noen nettsteder fra å fungere.
+content-blocking-custom-desc = Velg hva du vil blokkere.
+content-blocking-private-trackers = Kjente sporere bare i Private vindu
+content-blocking-third-party-cookies = Tredjeparts sporingsinfokapsler
+content-blocking-all-cookies = Alle infokapsler
+content-blocking-unvisited-cookies = Infokapsler fra ubesøkte nettsteder
+content-blocking-all-windows-trackers = Kjente sporere i alle vinduer
+content-blocking-all-third-party-cookies = Alle tredjeparts infokapsler
+content-blocking-cryptominers = Kryptominere
+content-blocking-fingerprinters = Nettleseravtrykk
+content-blocking-warning-title = Se opp!
+content-blocking-warning-description = Blokkering av innhold kan føre til at noen nettsteder slutter å fungere. Det er enkelt å deaktivere blokkering for nettsteder du stoler på.
+content-blocking-learn-how = Finn ut hvordan
+content-blocking-reload-description = Du må oppdatere fanene dine for å kunne bruke disse endringene.
+content-blocking-reload-tabs-button =
+    .label = Last inn alle faner på nytt
+    .accesskey = L
+content-blocking-trackers-label =
+    .label = Sporere
+    .accesskey = S
+content-blocking-tracking-protection-option-all-windows =
+    .label = I alle vindu
+    .accesskey = a
+content-blocking-option-private =
+    .label = Bare i private vindu
+    .accesskey = p
+content-blocking-tracking-protection-change-block-list = Endre blokkeringsliste
+content-blocking-cookies-label =
+    .label = Infokapsler
+    .accesskey = k
+content-blocking-expand-section =
+    .tooltiptext = Mer informasjon
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Kryptominere
+    .accesskey = y
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Nettleseravtrykk
+    .accesskey = N
+
 ## Privacy Section - Tracking
 
-tracking-header = Sporingsbeskyttelse
-tracking-desc = Sporingsbeskyttelse blokkerer sporere på nettet som samler nettleserdataene dine på flere nettsteder. <a data-l10n-name="learn-more">Les mer om sporingsbeskyttelse og ditt personvern</a>
-tracking-mode-label = Bruk sporingsbeskyttelse for å blokkere kjente sporere
-tracking-mode-always =
-    .label = Alltid
-    .accesskey = l
-tracking-mode-private =
-    .label = Bare i private vinduer
-    .accesskey = B
-tracking-mode-never =
-    .label = Aldri
-    .accesskey = A
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Bruk sporingsbeskyttelse i privat nettlesing for å blokkere kjente sporere
-    .accesskey = v
-tracking-exceptions =
-    .label = Unntak …
-    .accesskey = U
-tracking-change-block-list =
-    .label = Endre blokkeringsliste…
-    .accesskey = b
+tracking-manage-exceptions =
+    .label = Behandle unntak…
+    .accesskey = u
 
 ## Privacy Section - Permissions
 
@@ -650,6 +760,16 @@ permissions-notification-link = Les mer
 permissions-notification-pause =
     .label = Sett varsler på pause til { -brand-short-name } starter på nytt
     .accesskey = n
+permissions-block-autoplay-media2 =
+    .label = Blokker nettsteder fra å automatisk spille av lyd
+    .accesskey = B
+permissions-block-autoplay-media-exceptions =
+    .label = Unntak…
+    .accesskey = U
+permissions-autoplay = Automatisk avspilling
+permissions-autoplay-settings =
+    .label = Innstillinger…
+    .accesskey = t
 permissions-block-popups =
     .label = Blokker sprettoppvinduer
     .accesskey = B
@@ -676,13 +796,15 @@ collection-health-report =
     .label = Tillat { -brand-short-name } å sende teknisk- og interaksjonsdata til { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Les mer
+collection-studies =
+    .label = Tillat { -brand-short-name } å installere og kjøre studier
+collection-studies-link = Vis { -brand-short-name }-studier
+addon-recommendations =
+    .label = Tillat { -brand-short-name } å komme med tilpassede utvidelsesanbefalinger
+addon-recommendations-link = Les mer
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Datarapportering er deaktivert for denne byggekonfigurasjonen
-collection-browser-errors =
-    .label = Tillat { -brand-short-name } å sende feilrapporter (inkludert feilmeldinger) til { -vendor-short-name }
-    .accesskey = f
-collection-browser-errors-link = Les mer
 collection-backlogged-crash-reports =
     .label = Tillat { -brand-short-name } å sende etterslepne krasjrapporter på dine vegner
     .accesskey = s
@@ -725,3 +847,36 @@ certs-view =
 certs-devices =
     .label = Sikkerhetsenheter…
     .accesskey = e
+space-alert-learn-more-button =
+    .label = Les mer
+    .accesskey = L
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Åpne innstillinger
+           *[other] Åpne innstillinger
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] p
+           *[other] p
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } er i ferd med å gå tom for plass på disken. Det kan hende at innholdet på nettstedet ikke vises ordentlig. Du kan tømme lagret data i Innstillinger > Personern og sikkerhet > Infokapsler og nettstedsdata.
+       *[other] { -brand-short-name } er i ferd med å gå tom for plass på disken. Det kan hende at innholdet på nettstedet ikke vises ordentlig. Du kan tømme lagret data i Innstillinger > Personern og sikkerhet > Infokapsler og nettstedsdata.
+    }
+space-alert-under-5gb-ok-button =
+    .label = OK, jeg skjønner
+    .accesskey = K
+space-alert-under-5gb-message = { -brand-short-name } er i ferd med å gå tom for plass på disken. Det kan hende at innholdet på nettsiden ikke vises ordentlig. Gå til «Les mer» for å optimalisere diskbruken din for en bedre nettleseropplevelse.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Skrivebord
+downloads-folder-name = Nedlastinger
+choose-download-folder-title = Velg nedlastingsmappe:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Lagre filer til { $service-name }

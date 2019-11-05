@@ -13,11 +13,5 @@
 #include "nsIDivertableChannel.h"
 
 namespace mozilla {
-namespace net {
-
-ChannelDiverterChild::ChannelDiverterChild() {}
-
-ChannelDiverterChild::~ChannelDiverterChild() {}
-
-}  // namespace net
+namespace net {}  // namespace net
 }  // namespace mozilla

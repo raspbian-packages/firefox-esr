@@ -9,6 +9,7 @@ with Files('**'):
 
 XPIDL_SOURCES += [
     'nsIBackgroundChannelRegistrar.idl',
+    'nsIChildProcessChannelListener.idl',
     'nsIHttpActivityObserver.idl',
     'nsIHttpAuthenticableChannel.idl',
     'nsIHttpAuthenticator.idl',
@@ -37,6 +38,10 @@ EXPORTS += [
 EXPORTS.mozilla.net += [
     'AltDataOutputStreamChild.h',
     'AltDataOutputStreamParent.h',
+    'BackgroundChannelRegistrar.h',
+    'ClassifierDummyChannel.h',
+    'ClassifierDummyChannelChild.h',
+    'ClassifierDummyChannelParent.h',
     'HttpAuthUtils.h',
     'HttpBackgroundChannelChild.h',
     'HttpBackgroundChannelParent.h',
@@ -62,7 +67,11 @@ UNIFIED_SOURCES += [
     'ASpdySession.cpp',
     'BackgroundChannelRegistrar.cpp',
     'CacheControlParser.cpp',
+    'ClassifierDummyChannel.cpp',
+    'ClassifierDummyChannelChild.cpp',
+    'ClassifierDummyChannelParent.cpp',
     'ConnectionDiagnostics.cpp',
+    'DelayHttpChannelQueue.cpp',
     'Http2Compression.cpp',
     'Http2Push.cpp',
     'Http2Session.cpp',
@@ -75,6 +84,7 @@ UNIFIED_SOURCES += [
     'HttpChannelParent.cpp',
     'HttpChannelParentListener.cpp',
     'HttpInfo.cpp',
+    'HttpTrafficAnalyzer.cpp',
     'InterceptedChannel.cpp',
     'InterceptedHttpChannel.cpp',
     'nsCORSListenerProxy.cpp',
@@ -107,6 +117,7 @@ SOURCES += [
 
 IPDL_SOURCES += [
     'PAltDataOutputStream.ipdl',
+    'PClassifierDummyChannel.ipdl',
     'PHttpBackgroundChannel.ipdl',
     'PHttpChannel.ipdl',
 ]
@@ -122,16 +133,19 @@ FINAL_LIBRARY = 'xul'
 
 LOCAL_INCLUDES += [
     '/dom/base',
+    '/extensions/auth',
     '/netwerk/base',
     '/netwerk/cookie',
-    '/security/pkix/include',
+    '/netwerk/url-classifier',
 ]
 
-EXTRA_COMPONENTS += [
-    'UAOverridesBootstrapper.js',
-    'UAOverridesBootstrapper.manifest',
-    'WellKnownOpportunisticUtils.js',
-    'WellKnownOpportunisticUtils.manifest',
+EXTRA_JS_MODULES += [
+    'UAOverridesBootstrapper.jsm',
+    'WellKnownOpportunisticUtils.jsm',
+]
+
+XPCOM_MANIFESTS += [
+    'components.conf',
 ]
 
 if CONFIG['OS_TARGET'] == 'Darwin':

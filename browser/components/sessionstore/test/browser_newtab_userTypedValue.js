@@ -10,7 +10,10 @@ requestLongerTimeout(4);
 add_task(async function() {
   let win = await BrowserTestUtils.openNewBrowserWindow();
   await BrowserTestUtils.openNewForegroundTab(win.gBrowser, "about:logo");
-  let tabOpenedAndSwitchedTo = BrowserTestUtils.switchTab(win.gBrowser, () => {});
+  let tabOpenedAndSwitchedTo = BrowserTestUtils.switchTab(
+    win.gBrowser,
+    () => {}
+  );
 
   // This opens about:newtab:
   win.BrowserOpenTab();
@@ -18,7 +21,10 @@ add_task(async function() {
   is(win.gURLBar.value, "", "URL bar should be empty");
   is(tab.linkedBrowser.userTypedValue, null, "userTypedValue should be null");
   let state = JSON.parse(SessionStore.getTabState(tab));
-  ok(!state.userTypedValue, "userTypedValue should be undefined on the tab's state");
+  ok(
+    !state.userTypedValue,
+    "userTypedValue should be undefined on the tab's state"
+  );
   tab = null;
 
   await BrowserTestUtils.closeWindow(win);
@@ -28,8 +34,10 @@ add_task(async function() {
   await forceSaveState();
 
   win = SessionStore.undoCloseWindow(0);
-  await TestUtils.topicObserved("sessionstore-single-window-restored",
-                                subject => subject == win);
+  await TestUtils.topicObserved(
+    "sessionstore-single-window-restored",
+    subject => subject == win
+  );
   // Don't wait for load here because it's about:newtab and we may have swapped in
   // a preloaded browser.
   await TabStateFlusher.flush(win.gBrowser.selectedBrowser);
@@ -38,9 +46,12 @@ add_task(async function() {
   tab = win.gBrowser.selectedTab;
   is(tab.linkedBrowser.userTypedValue, null, "userTypedValue should be null");
   state = JSON.parse(SessionStore.getTabState(tab));
-  ok(!state.userTypedValue, "userTypedValue should be undefined on the tab's state");
+  ok(
+    !state.userTypedValue,
+    "userTypedValue should be undefined on the tab's state"
+  );
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 
   for (let url of gInitialPages) {
     if (url == BROWSER_NEW_TAB_URL) {
@@ -55,8 +66,10 @@ add_task(async function() {
     await forceSaveState();
 
     win = SessionStore.undoCloseWindow(0);
-    await TestUtils.topicObserved("sessionstore-single-window-restored",
-                                  subject => subject == win);
+    await TestUtils.topicObserved(
+      "sessionstore-single-window-restored",
+      subject => subject == win
+    );
     await BrowserTestUtils.browserLoaded(win.gBrowser.selectedBrowser);
     await TabStateFlusher.flush(win.gBrowser.selectedBrowser);
 
@@ -64,10 +77,13 @@ add_task(async function() {
     tab = win.gBrowser.selectedTab;
     is(tab.linkedBrowser.userTypedValue, null, "userTypedValue should be null");
     state = JSON.parse(SessionStore.getTabState(tab));
-    ok(!state.userTypedValue, "userTypedValue should be undefined on the tab's state");
+    ok(
+      !state.userTypedValue,
+      "userTypedValue should be undefined on the tab's state"
+    );
 
     info("Removing tab - " + new Date());
-    await BrowserTestUtils.removeTab(tab);
+    BrowserTestUtils.removeTab(tab);
     info("Finished removing tab - " + new Date());
   }
   info("Removing window - " + new Date());

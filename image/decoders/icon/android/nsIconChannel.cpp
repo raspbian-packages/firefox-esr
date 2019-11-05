@@ -1,10 +1,11 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <stdlib.h>
 #include "mozilla/dom/ContentChild.h"
+#include "mozilla/NullPrincipal.h"
 #include "nsMimeTypes.h"
 #include "nsIURL.h"
 #include "nsXULAppAPI.h"
@@ -13,7 +14,6 @@
 #include "nsIStringStream.h"
 #include "nsNetUtil.h"
 #include "nsComponentManagerUtils.h"
-#include "NullPrincipal.h"
 
 NS_IMPL_ISUPPORTS(nsIconChannel, nsIRequest, nsIChannel)
 
@@ -67,7 +67,6 @@ static nsresult moz_icon_to_channel(nsIURI* aURI, const nsACString& aFileExt,
   const int channels = 4;
   long int buf_size = 2 + channels * height * width;
   uint8_t* const buf = (uint8_t*)moz_xmalloc(buf_size);
-  NS_ENSURE_TRUE(buf, NS_ERROR_OUT_OF_MEMORY);
   uint8_t* out = buf;
 
   *(out++) = width;
@@ -105,10 +104,11 @@ static nsresult moz_icon_to_channel(nsIURI* aURI, const nsACString& aFileExt,
   rv = stream->AdoptData((char*)buf, buf_size);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // nsIconProtocolHandler::NewChannel2 will provide the correct loadInfo for
+  // nsIconProtocolHandler::NewChannel will provide the correct loadInfo for
   // this iconChannel. Use the most restrictive security settings for the
   // temporary loadInfo to make sure the channel can not be openend.
-  nsCOMPtr<nsIPrincipal> nullPrincipal = NullPrincipal::Create();
+  nsCOMPtr<nsIPrincipal> nullPrincipal =
+      NullPrincipal::CreateWithoutOriginAttributes();
   return NS_NewInputStreamChannel(
       aChannel, aURI, stream.forget(), nullPrincipal,
       nsILoadInfo::SEC_REQUIRE_SAME_ORIGIN_DATA_IS_BLOCKED,

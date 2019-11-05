@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Posredniški DNS, kadar se uporablja SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Omogoči DNS preko HTTPS
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Uporabi privzeto ({ $url })
+    .accesskey = U
+    .tooltiptext = Uporabi privzeti URL za razreševanje DNS preko HTTPS
+connection-dns-over-https-url-resolver = Uporabi ponudnika
+    .accesskey = U
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (privzet)
+    .tooltiptext = Uporabi privzeti URL za razreševanje DNS preko HTTPS
+connection-dns-over-https-url-custom =
+    .label = Po meri
+    .accesskey = P
+    .tooltiptext = Vnesite želeni URL za razreševanje DNS preko HTTPS
+connection-dns-over-https-custom-label = Po meri

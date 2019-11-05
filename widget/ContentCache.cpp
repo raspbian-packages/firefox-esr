@@ -14,7 +14,7 @@
 #include "mozilla/RefPtr.h"
 #include "mozilla/TextComposition.h"
 #include "mozilla/TextEvents.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "nsExceptionHandler.h"
 #include "nsIWidget.h"
 
@@ -280,7 +280,7 @@ bool ContentCacheInChild::QueryCharRectArray(nsIWidget* aWidget,
     aCharRectArray.Clear();
     return false;
   }
-  aCharRectArray = Move(textRects.mReply.mRectArray);
+  aCharRectArray = std::move(textRects.mReply.mRectArray);
   return true;
 }
 
@@ -479,9 +479,9 @@ void ContentCacheInChild::SetSelection(nsIWidget* aWidget,
  * mozilla::ContentCacheInParent
  *****************************************************************************/
 
-ContentCacheInParent::ContentCacheInParent(TabParent& aTabParent)
+ContentCacheInParent::ContentCacheInParent(BrowserParent& aBrowserParent)
     : ContentCache(),
-      mTabParent(aTabParent),
+      mBrowserParent(aBrowserParent),
       mCommitStringByRequest(nullptr),
       mPendingEventsNeedingAck(0),
       mCompositionStartInChild(UINT32_MAX),
@@ -1297,11 +1297,12 @@ bool ContentCacheInParent::RequestIMEToCommitComposition(
       ("0x%p RequestToCommitComposition(aWidget=%p, "
        "aCancel=%s), mPendingCompositionCount=%" PRIu8 ", "
        "mPendingCommitCount=%" PRIu8 ", mIsChildIgnoringCompositionEvents=%s, "
-       "IMEStateManager::DoesTabParentHaveIMEFocus(&mTabParent)=%s, "
+       "IMEStateManager::DoesBrowserParentHaveIMEFocus(&mBrowserParent)=%s, "
        "mWidgetHasComposition=%s, mCommitStringByRequest=%p",
        this, aWidget, GetBoolName(aCancel), mPendingCompositionCount,
        mPendingCommitCount, GetBoolName(mIsChildIgnoringCompositionEvents),
-       GetBoolName(IMEStateManager::DoesTabParentHaveIMEFocus(&mTabParent)),
+       GetBoolName(
+           IMEStateManager::DoesBrowserParentHaveIMEFocus(&mBrowserParent)),
        GetBoolName(mWidgetHasComposition), mCommitStringByRequest));
 
   MOZ_ASSERT(!mCommitStringByRequest);
@@ -1337,14 +1338,14 @@ bool ContentCacheInParent::RequestIMEToCommitComposition(
     return false;
   }
 
-  // If TabParent which has IME focus was already changed to different one, the
-  // request shouldn't be sent to IME because it's too late.
-  if (!IMEStateManager::DoesTabParentHaveIMEFocus(&mTabParent)) {
-  // Use the latest composition string which may not be handled in the
-  // remote process for avoiding data loss.
+  // If BrowserParent which has IME focus was already changed to different one,
+  // the request shouldn't be sent to IME because it's too late.
+  if (!IMEStateManager::DoesBrowserParentHaveIMEFocus(&mBrowserParent)) {
+    // Use the latest composition string which may not be handled in the
+    // remote process for avoiding data loss.
 #if MOZ_DIAGNOSTIC_ASSERT_ENABLED
     mRequestIMEToCommitCompositionResults.AppendElement(
-        RequestIMEToCommitCompositionResult::eReceivedAfterTabParentBlur);
+        RequestIMEToCommitCompositionResult::eReceivedAfterBrowserParentBlur);
 #endif  // #if MOZ_DIAGNOSTIC_ASSERT_ENABLED
     aCommittedString = mCompositionString;
     // After we return true from here, i.e., without actually requesting IME
@@ -1388,15 +1389,15 @@ bool ContentCacheInParent::RequestIMEToCommitComposition(
        composition->Destroyed() ? "WAS" : "has NOT been"));
 
   if (!composition->Destroyed()) {
-  // When the composition isn't committed synchronously, the remote process's
-  // TextComposition instance will synthesize commit events and wait to
-  // receive delayed composition events.  When TextComposition instances both
-  // in this process and the remote process will be destroyed when delayed
-  // composition events received. TextComposition instance in the parent
-  // process will dispatch following composition events and be destroyed
-  // normally. On the other hand, TextComposition instance in the remote
-  // process won't dispatch following composition events and will be
-  // destroyed by IMEStateManager::DispatchCompositionEvent().
+    // When the composition isn't committed synchronously, the remote process's
+    // TextComposition instance will synthesize commit events and wait to
+    // receive delayed composition events.  When TextComposition instances both
+    // in this process and the remote process will be destroyed when delayed
+    // composition events received. TextComposition instance in the parent
+    // process will dispatch following composition events and be destroyed
+    // normally. On the other hand, TextComposition instance in the remote
+    // process won't dispatch following composition events and will be
+    // destroyed by IMEStateManager::DispatchCompositionEvent().
 #if MOZ_DIAGNOSTIC_ASSERT_ENABLED
     mRequestIMEToCommitCompositionResults.AppendElement(
         RequestIMEToCommitCompositionResult::eHandledAsynchronously);
@@ -1404,12 +1405,12 @@ bool ContentCacheInParent::RequestIMEToCommitComposition(
     return false;
   }
 
-    // When the composition is committed synchronously, the commit string will
-    // be returned to the remote process.  Then, PuppetWidget will dispatch
-    // eCompositionCommit event with the returned commit string (i.e., the value
-    // is aCommittedString of this method) and that causes destroying
-    // TextComposition instance in the remote process (Note that TextComposition
-    // instance in this process was already destroyed).
+  // When the composition is committed synchronously, the commit string will be
+  // returned to the remote process.  Then, PuppetWidget will dispatch
+  // eCompositionCommit event with the returned commit string (i.e., the value
+  // is aCommittedString of this method) and that causes destroying
+  // TextComposition instance in the remote process (Note that TextComposition
+  // instance in this process was already destroyed).
 #if MOZ_DIAGNOSTIC_ASSERT_ENABLED
   mRequestIMEToCommitCompositionResults.AppendElement(
       RequestIMEToCommitCompositionResult::eHandledSynchronously);
@@ -1420,7 +1421,7 @@ bool ContentCacheInParent::RequestIMEToCommitComposition(
 void ContentCacheInParent::MaybeNotifyIME(
     nsIWidget* aWidget, const IMENotification& aNotification) {
   if (!mPendingEventsNeedingAck) {
-    IMEStateManager::NotifyIME(aNotification, aWidget, &mTabParent);
+    IMEStateManager::NotifyIME(aNotification, aWidget, &mBrowserParent);
     return;
   }
 
@@ -1446,7 +1447,7 @@ void ContentCacheInParent::MaybeNotifyIME(
 void ContentCacheInParent::FlushPendingNotifications(nsIWidget* aWidget) {
   MOZ_ASSERT(!mPendingEventsNeedingAck);
 
-  // If the TabParent's widget has already gone, this can do nothing since
+  // If the BrowserParent's widget has already gone, this can do nothing since
   // widget is necessary to notify IME of something.
   if (!aWidget) {
     return;
@@ -1465,7 +1466,7 @@ void ContentCacheInParent::FlushPendingNotifications(nsIWidget* aWidget) {
     IMENotification notification(mPendingTextChange);
     if (!widget->Destroyed()) {
       mPendingTextChange.Clear();
-      IMEStateManager::NotifyIME(notification, widget, &mTabParent);
+      IMEStateManager::NotifyIME(notification, widget, &mBrowserParent);
     }
   }
 
@@ -1473,7 +1474,7 @@ void ContentCacheInParent::FlushPendingNotifications(nsIWidget* aWidget) {
     IMENotification notification(mPendingSelectionChange);
     if (!widget->Destroyed()) {
       mPendingSelectionChange.Clear();
-      IMEStateManager::NotifyIME(notification, widget, &mTabParent);
+      IMEStateManager::NotifyIME(notification, widget, &mBrowserParent);
     }
   }
 
@@ -1483,7 +1484,7 @@ void ContentCacheInParent::FlushPendingNotifications(nsIWidget* aWidget) {
     IMENotification notification(mPendingLayoutChange);
     if (!widget->Destroyed()) {
       mPendingLayoutChange.Clear();
-      IMEStateManager::NotifyIME(notification, widget, &mTabParent);
+      IMEStateManager::NotifyIME(notification, widget, &mBrowserParent);
     }
   }
 
@@ -1493,7 +1494,7 @@ void ContentCacheInParent::FlushPendingNotifications(nsIWidget* aWidget) {
     IMENotification notification(mPendingCompositionUpdate);
     if (!widget->Destroyed()) {
       mPendingCompositionUpdate.Clear();
-      IMEStateManager::NotifyIME(notification, widget, &mTabParent);
+      IMEStateManager::NotifyIME(notification, widget, &mBrowserParent);
     }
   }
 
@@ -1556,7 +1557,7 @@ void ContentCacheInParent::RemoveUnnecessaryEventMessageLog() {
          i--) {
       if (mRequestIMEToCommitCompositionResults[i - 1] ==
               RequestIMEToCommitCompositionResult::
-                  eReceivedAfterTabParentBlur ||
+                  eReceivedAfterBrowserParentBlur ||
           mRequestIMEToCommitCompositionResults[i - 1] ==
               RequestIMEToCommitCompositionResult::eHandledSynchronously) {
         --numberOfCompositionCommitRequestHandled;

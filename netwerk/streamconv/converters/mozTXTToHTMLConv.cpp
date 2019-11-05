@@ -3,9 +3,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozilla/TextUtils.h"
 #include "mozTXTToHTMLConv.h"
 #include "nsNetUtil.h"
 #include "nsUnicharUtils.h"
+#include "nsUnicodeProperties.h"
 #include "nsCRT.h"
 #include "nsIExternalProtocolHandler.h"
 #include "nsIIOService.h"
@@ -14,9 +16,11 @@
 #include <algorithm>
 
 #ifdef DEBUG_BenB_Perf
-#include "prtime.h"
-#include "prinrval.h"
+#  include "prtime.h"
+#  include "prinrval.h"
 #endif
+
+using mozilla::IsAscii;
 
 const double growthRate = 1.2;
 
@@ -31,7 +35,7 @@ static inline bool IsSpace(const char16_t aChar) {
 // Escape Char will take ch, escape it and append the result to
 // aStringToAppendTo
 void mozTXTToHTMLConv::EscapeChar(const char16_t ch,
-                                  nsString& aStringToAppendTo,
+                                  nsAString& aStringToAppendTo,
                                   bool inAttribute) {
   switch (ch) {
     case '<':
@@ -170,8 +174,8 @@ bool mozTXTToHTMLConv::FindURLStart(const char16_t* aInString,
       if (!NS_strncmp(&aInString[std::max(int32_t(pos - 4), 0)], u"<URL:", 5)) {
         start = pos + 1;
         return true;
-      } else
-        return false;
+      }
+      return false;
     }
     case RFC2396E: {
       nsString temp(aInString, aInLength);
@@ -180,24 +184,24 @@ bool mozTXTToHTMLConv::FindURLStart(const char16_t* aInString,
           (temp[uint32_t(i)] == '<' || temp[uint32_t(i)] == '"')) {
         start = uint32_t(++i);
         return start < pos;
-      } else
-        return false;
+      }
+      return false;
     }
     case freetext: {
       int32_t i = pos - 1;
       for (; i >= 0 &&
-             (nsCRT::IsAsciiAlpha(aInString[uint32_t(i)]) ||
-              nsCRT::IsAsciiDigit(aInString[uint32_t(i)]) ||
+             (IsAsciiAlpha(aInString[uint32_t(i)]) ||
+              IsAsciiDigit(aInString[uint32_t(i)]) ||
               aInString[uint32_t(i)] == '+' || aInString[uint32_t(i)] == '-' ||
               aInString[uint32_t(i)] == '.');
            i--)
         ;
       if (++i >= 0 && uint32_t(i) < pos &&
-          nsCRT::IsAsciiAlpha(aInString[uint32_t(i)])) {
+          IsAsciiAlpha(aInString[uint32_t(i)])) {
         start = uint32_t(i);
         return true;
-      } else
-        return false;
+      }
+      return false;
     }
     case abbreviated: {
       int32_t i = pos - 1;
@@ -212,16 +216,17 @@ bool mozTXTToHTMLConv::FindURLStart(const char16_t* aInString,
              aInString[uint32_t(i)] != '[' && aInString[uint32_t(i)] != '(' &&
              aInString[uint32_t(i)] != '|' && aInString[uint32_t(i)] != '\\' &&
              !IsSpace(aInString[uint32_t(i)]) &&
-             (!isEmail || nsCRT::IsAscii(aInString[uint32_t(i)]));
+             (!isEmail || IsAscii(aInString[uint32_t(i)])) &&
+             (!isEmail || aInString[uint32_t(i)] != ')');
            i--)
         ;
       if (++i >= 0 && uint32_t(i) < pos &&
-          (nsCRT::IsAsciiAlpha(aInString[uint32_t(i)]) ||
-           nsCRT::IsAsciiDigit(aInString[uint32_t(i)]))) {
+          (IsAsciiAlpha(aInString[uint32_t(i)]) ||
+           IsAsciiDigit(aInString[uint32_t(i)]))) {
         start = uint32_t(i);
         return true;
-      } else
-        return false;
+      }
+      return false;
     }
     default:
       return false;
@@ -267,7 +272,7 @@ bool mozTXTToHTMLConv::FindURLEnd(const char16_t* aInString,
         // Disallow non-ascii-characters for email.
         // Currently correct, but revisit later after standards changed.
         if (isEmail && (aInString[i] == '(' || aInString[i] == '\'' ||
-                        !nsCRT::IsAscii(aInString[i])))
+                        !IsAscii(aInString[i])))
           break;
         if (aInString[i] == '(') seenOpeningParenthesis = true;
         if (aInString[i] == '[') seenOpeningSquareBracket = true;
@@ -327,7 +332,7 @@ void mozTXTToHTMLConv::CalculateURLBoundaries(
 
   // FIX ME
   nsAutoString temp2;
-  ScanTXT(&aInString[descstart], pos - descstart,
+  ScanTXT(nsDependentSubstring(&aInString[descstart], pos - descstart),
           ~kURLs /*prevents loop*/ & whathasbeendone, temp2);
   replaceBefore = temp2.Length();
 }
@@ -338,6 +343,10 @@ bool mozTXTToHTMLConv::ShouldLinkify(const nsCString& aURL) {
   nsAutoCString scheme;
   nsresult rv = mIOService->ExtractScheme(aURL, scheme);
   if (NS_FAILED(rv)) return false;
+
+  if (scheme == "http" || scheme == "https" || scheme == "mailto") {
+    return true;
+  }
 
   // Get the handler for this scheme.
   nsCOMPtr<nsIProtocolHandler> handler;
@@ -406,8 +415,8 @@ bool mozTXTToHTMLConv::CheckURLAndCreateHTML(const nsString& txtURL,
     outputHTML += desc;
     outputHTML.AppendLiteral("</a>");
     return true;
-  } else
-    return false;
+  }
+  return false;
 }
 
 NS_IMETHODIMP mozTXTToHTMLConv::FindURLInPlaintext(const char16_t* aInString,
@@ -503,6 +512,14 @@ bool mozTXTToHTMLConv::FindURL(const char16_t* aInString, int32_t aInLength,
   return state[check] == success;
 }
 
+static inline bool IsAlpha(const uint32_t aChar) {
+  return mozilla::unicode::GetGenCategory(aChar) == nsUGenCategory::kLetter;
+}
+
+static inline bool IsDigit(const uint32_t aChar) {
+  return mozilla::unicode::GetGenCategory(aChar) == nsUGenCategory::kNumber;
+}
+
 bool mozTXTToHTMLConv::ItMatchesDelimited(const char16_t* aInString,
                                           int32_t aInLength,
                                           const char16_t* rep, int32_t aRepLen,
@@ -521,21 +538,37 @@ bool mozTXTToHTMLConv::ItMatchesDelimited(const char16_t* aInString,
        textLen < aRepLen + 2))
     return false;
 
-  char16_t text0 = aInString[0];
-  char16_t textAfterPos = aInString[aRepLen + (before == LT_IGNORE ? 0 : 1)];
+  uint32_t text0 = aInString[0];
+  if (NS_IS_HIGH_SURROGATE(text0) && aInLength > 1 &&
+      NS_IS_LOW_SURROGATE(aInString[1])) {
+    text0 = SURROGATE_TO_UCS4(text0, aInString[1]);
+  }
+  // find length of the char/cluster to be ignored
+  int32_t ignoreLen = before == LT_IGNORE ? 0 : 1;
+  if (ignoreLen) {
+    mozilla::unicode::ClusterIterator ci(aInString, aInLength);
+    ci.Next();
+    ignoreLen = ci - aInString;
+  }
 
-  if ((before == LT_ALPHA && !nsCRT::IsAsciiAlpha(text0)) ||
-      (before == LT_DIGIT && !nsCRT::IsAsciiDigit(text0)) ||
+  int32_t afterIndex = aRepLen + ignoreLen;
+  uint32_t textAfterPos = aInString[afterIndex];
+  if (NS_IS_HIGH_SURROGATE(textAfterPos) && aInLength > afterIndex + 1 &&
+      NS_IS_LOW_SURROGATE(aInString[afterIndex + 1])) {
+    textAfterPos = SURROGATE_TO_UCS4(textAfterPos, aInString[afterIndex + 1]);
+  }
+
+  if ((before == LT_ALPHA && !IsAlpha(text0)) ||
+      (before == LT_DIGIT && !IsDigit(text0)) ||
       (before == LT_DELIMITER &&
-       (nsCRT::IsAsciiAlpha(text0) || nsCRT::IsAsciiDigit(text0) ||
-        text0 == *rep)) ||
-      (after == LT_ALPHA && !nsCRT::IsAsciiAlpha(textAfterPos)) ||
-      (after == LT_DIGIT && !nsCRT::IsAsciiDigit(textAfterPos)) ||
+       (IsAlpha(text0) || IsDigit(text0) || text0 == *rep)) ||
+      (after == LT_ALPHA && !IsAlpha(textAfterPos)) ||
+      (after == LT_DIGIT && !IsDigit(textAfterPos)) ||
       (after == LT_DELIMITER &&
-       (nsCRT::IsAsciiAlpha(textAfterPos) ||
-        nsCRT::IsAsciiDigit(textAfterPos) || textAfterPos == *rep)) ||
-      !Substring(Substring(aInString, aInString + aInLength),
-                 (before == LT_IGNORE ? 0 : 1), aRepLen)
+       (IsAlpha(textAfterPos) || IsDigit(textAfterPos) ||
+        textAfterPos == *rep)) ||
+      !Substring(Substring(aInString, aInString + aInLength), ignoreLen,
+                 aRepLen)
            .Equals(Substring(rep, rep + aRepLen),
                    nsCaseInsensitiveStringComparator()))
     return false;
@@ -549,11 +582,12 @@ uint32_t mozTXTToHTMLConv::NumberOfMatches(const char16_t* aInString,
                                            LIMTYPE before, LIMTYPE after) {
   uint32_t result = 0;
 
-  for (int32_t i = 0; i < aInStringLength; i++) {
-    const char16_t* indexIntoString = &aInString[i];
-    if (ItMatchesDelimited(indexIntoString, aInStringLength - i, rep, aRepLen,
-                           before, after))
+  const char16_t* end = aInString + aInStringLength;
+  for (mozilla::unicode::ClusterIterator ci(aInString, aInStringLength);
+       !ci.AtEnd(); ci.Next()) {
+    if (ItMatchesDelimited(ci, end - ci, rep, aRepLen, before, after)) {
       result++;
+    }
   }
   return result;
 }
@@ -563,7 +597,7 @@ uint32_t mozTXTToHTMLConv::NumberOfMatches(const char16_t* aInString,
 bool mozTXTToHTMLConv::StructPhraseHit(
     const char16_t* aInString, int32_t aInStringLength, bool col0,
     const char16_t* tagTXT, int32_t aTagTXTLen, const char* tagHTML,
-    const char* attributeHTML, nsString& aOutString, uint32_t& openTags) {
+    const char* attributeHTML, nsAString& aOutString, uint32_t& openTags) {
   /* We're searching for the following pattern:
      LT_DELIMITER - "*" - ALPHA -
      [ some text (maybe more "*"-pairs) - ALPHA ] "*" - LT_DELIMITER.
@@ -641,11 +675,11 @@ bool mozTXTToHTMLConv::SmilyHit(const char16_t* aInString, int32_t aLength,
     }
 
     outputHTML.AppendLiteral("<span class=\"");  // <span class="
-    AppendASCIItoUTF16(imageName, outputHTML);   // e.g. smiley-frown
+    outputHTML.AppendASCII(imageName);           // e.g. smiley-frown
     outputHTML.AppendLiteral("\" title=\"");     // " title="
-    AppendASCIItoUTF16(tagTXT, outputHTML);      // smiley tooltip
+    outputHTML.AppendASCII(tagTXT);              // smiley tooltip
     outputHTML.AppendLiteral("\"><span>");       // "><span>
-    AppendASCIItoUTF16(tagTXT, outputHTML);      // original text
+    outputHTML.AppendASCII(tagTXT);              // original text
     outputHTML.AppendLiteral("</span></span>");  // </span></span>
     glyphTextLen = (col0 ? 0 : 1) + tagLen;
     return true;
@@ -656,7 +690,7 @@ bool mozTXTToHTMLConv::SmilyHit(const char16_t* aInString, int32_t aLength,
 
 // the glyph is appended to aOutputString instead of the original string...
 bool mozTXTToHTMLConv::GlyphHit(const char16_t* aInString, int32_t aInLength,
-                                bool col0, nsString& aOutputString,
+                                bool col0, nsAString& aOutputString,
                                 int32_t& glyphTextLen) {
   char16_t text0 = aInString[0];
   char16_t text1 = aInString[1];
@@ -801,21 +835,20 @@ bool mozTXTToHTMLConv::GlyphHit(const char16_t* aInString, int32_t aInLength,
   // x^2  =>  x<sup>2</sup>,   also handle powers x^-2,  x^0.5
   // implement regular expression /[\dA-Za-z\)\]}]\^-?\d+(\.\d+)*[^\dA-Za-z]/
   if (text1 == '^' &&
-      (nsCRT::IsAsciiDigit(text0) || nsCRT::IsAsciiAlpha(text0) ||
-       text0 == ')' || text0 == ']' || text0 == '}') &&
-      ((2 < aInLength && nsCRT::IsAsciiDigit(aInString[2])) ||
-       (3 < aInLength && aInString[2] == '-' &&
-        nsCRT::IsAsciiDigit(aInString[3])))) {
+      (IsAsciiDigit(text0) || IsAsciiAlpha(text0) || text0 == ')' ||
+       text0 == ']' || text0 == '}') &&
+      ((2 < aInLength && IsAsciiDigit(aInString[2])) ||
+       (3 < aInLength && aInString[2] == '-' && IsAsciiDigit(aInString[3])))) {
     // Find first non-digit
     int32_t delimPos = 3;  // skip "^" and first digit (or '-')
     for (; delimPos < aInLength &&
-           (nsCRT::IsAsciiDigit(aInString[delimPos]) ||
+           (IsAsciiDigit(aInString[delimPos]) ||
             (aInString[delimPos] == '.' && delimPos + 1 < aInLength &&
-             nsCRT::IsAsciiDigit(aInString[delimPos + 1])));
+             IsAsciiDigit(aInString[delimPos + 1])));
          delimPos++)
       ;
 
-    if (delimPos < aInLength && nsCRT::IsAsciiAlpha(aInString[delimPos])) {
+    if (delimPos < aInLength && IsAsciiAlpha(aInString[delimPos])) {
       return false;
     }
 
@@ -853,10 +886,6 @@ bool mozTXTToHTMLConv::GlyphHit(const char16_t* aInString, int32_t aInLength,
   Library-internal Interface
 ****************************************************************************/
 
-mozTXTToHTMLConv::mozTXTToHTMLConv() {}
-
-mozTXTToHTMLConv::~mozTXTToHTMLConv() {}
-
 NS_IMPL_ISUPPORTS(mozTXTToHTMLConv, mozITXTToHTMLConv, nsIStreamConverter,
                   nsIStreamListener, nsIRequestObserver)
 
@@ -886,7 +915,7 @@ int32_t mozTXTToHTMLConv::CiteLevelTXT(const char16_t* line,
 #ifdef QUOTE_RECOGNITION_AGGRESSIVE
     for (; int32_t(i) < lineLength && IsSpace(line[i]); i++)
       ;
-    for (; int32_t(i) < lineLength && nsCRT::IsAsciiAlpha(line[i]) &&
+    for (; int32_t(i) < lineLength && IsAsciiAlpha(line[i]) &&
            nsCRT::IsUpper(line[i]);
          i++)
       ;
@@ -918,9 +947,19 @@ int32_t mozTXTToHTMLConv::CiteLevelTXT(const char16_t* line,
   return result;
 }
 
-void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
-                               int32_t aInStringLength, uint32_t whattodo,
-                               nsString& aOutString) {
+NS_IMETHODIMP
+mozTXTToHTMLConv::ScanTXT(const nsAString& aInString, uint32_t whattodo,
+                          nsAString& aOutString) {
+  if (aInString.Length() == 0) {
+    aOutString.Truncate();
+    return NS_OK;
+  }
+
+  if (!aOutString.SetCapacity(uint32_t(aInString.Length() * growthRate),
+                              mozilla::fallible)) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
   bool doURLs = 0 != (whattodo & kURLs);
   bool doGlyphSubstitution = 0 != (whattodo & kGlyphSubstitution);
   bool doStructPhrase = 0 != (whattodo & kStructPhrase);
@@ -930,25 +969,37 @@ void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
   uint32_t structPhrase_italic = 0;
   uint32_t structPhrase_code = 0;
 
+  uint32_t endOfLastURLOutput = 0;
+
   nsAutoString outputHTML;  // moved here for performance increase
 
-  for (uint32_t i = 0; int32_t(i) < aInStringLength;) {
+  const char16_t* rawInputString = aInString.BeginReading();
+  uint32_t inLength = aInString.Length();
+
+  for (mozilla::unicode::ClusterIterator ci(rawInputString, inLength);
+       !ci.AtEnd();) {
+    uint32_t i = ci - rawInputString;
     if (doGlyphSubstitution) {
       int32_t glyphTextLen;
-      if (GlyphHit(&aInString[i], aInStringLength - i, i == 0, aOutString,
+      if (GlyphHit(&rawInputString[i], inLength - i, i == 0, aOutString,
                    glyphTextLen)) {
         i += glyphTextLen;
+        while (ci < rawInputString + i) {
+          ci.Next();
+        }
         continue;
       }
     }
 
     if (doStructPhrase) {
-      const char16_t* newOffset = aInString;
-      int32_t newLength = aInStringLength;
+      const char16_t* newOffset = rawInputString;
+      int32_t newLength = aInString.Length();
       if (i > 0)  // skip the first element?
       {
-        newOffset = &aInString[i - 1];
-        newLength = aInStringLength - i + 1;
+        mozilla::unicode::ClusterReverseIterator ri(rawInputString, i);
+        ri.Next();
+        newOffset = ri;
+        newLength = aInString.Length() - (ri - rawInputString);
       }
 
       switch (aInString[i])  // Performance increase
@@ -957,7 +1008,7 @@ void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
           if (StructPhraseHit(newOffset, newLength, i == 0, u"*", 1, "b",
                               "class=\"moz-txt-star\"", aOutString,
                               structPhrase_strong)) {
-            i++;
+            ci.Next();
             continue;
           }
           break;
@@ -965,7 +1016,7 @@ void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
           if (StructPhraseHit(newOffset, newLength, i == 0, u"/", 1, "i",
                               "class=\"moz-txt-slash\"", aOutString,
                               structPhrase_italic)) {
-            i++;
+            ci.Next();
             continue;
           }
           break;
@@ -974,7 +1025,7 @@ void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
                               "span" /* <u> is deprecated */,
                               "class=\"moz-txt-underscore\"", aOutString,
                               structPhrase_underline)) {
-            i++;
+            ci.Next();
             continue;
           }
           break;
@@ -982,7 +1033,7 @@ void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
           if (StructPhraseHit(newOffset, newLength, i == 0, u"|", 1, "code",
                               "class=\"moz-txt-verticalline\"", aOutString,
                               structPhrase_code)) {
-            i++;
+            ci.Next();
             continue;
           }
           break;
@@ -995,20 +1046,29 @@ void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
         case '@':
         case '.':
           if ((i == 0 || ((i > 0) && aInString[i - 1] != ' ')) &&
-              aInString[i + 1] != ' ')  // Performance increase
+              ((i == aInString.Length() - 1) ||
+               (aInString[i + 1] != ' ')))  // Performance increase
           {
             int32_t replaceBefore;
             int32_t replaceAfter;
-            if (FindURL(aInString, aInStringLength, i, whattodo, outputHTML,
-                        replaceBefore, replaceAfter) &&
+            if (FindURL(rawInputString, aInString.Length(), i, whattodo,
+                        outputHTML, replaceBefore, replaceAfter) &&
                 structPhrase_strong + structPhrase_italic +
                         structPhrase_underline + structPhrase_code ==
                     0
                 /* workaround for bug #19445 */) {
+              // Don't cut into previously inserted HTML (bug 1509493)
+              if (aOutString.Length() - replaceBefore < endOfLastURLOutput) {
+                break;
+              }
               aOutString.Cut(aOutString.Length() - replaceBefore,
                              replaceBefore);
               aOutString += outputHTML;
+              endOfLastURLOutput = aOutString.Length();
               i += replaceAfter + 1;
+              while (ci < rawInputString + i) {
+                ci.Next();
+              }
               continue;
             }
           }
@@ -1022,19 +1082,29 @@ void mozTXTToHTMLConv::ScanTXT(const char16_t* aInString,
       case '>':
       case '&':
         EscapeChar(aInString[i], aOutString, false);
-        i++;
+        ci.Next();
         break;
       // Normal characters
-      default:
-        aOutString += aInString[i];
-        i++;
+      default: {
+        const char16_t* start = ci;
+        ci.Next();
+        aOutString += Substring(start, (const char16_t*)ci);
         break;
+      }
     }
   }
+  return NS_OK;
 }
 
-void mozTXTToHTMLConv::ScanHTML(nsString& aInString, uint32_t whattodo,
-                                nsString& aOutString) {
+NS_IMETHODIMP
+mozTXTToHTMLConv::ScanHTML(const nsAString& input, uint32_t whattodo,
+                           nsAString& aOutString) {
+  const nsPromiseFlatString& aInString = PromiseFlatString(input);
+  if (!aOutString.SetCapacity(uint32_t(aInString.Length() * growthRate),
+                              mozilla::fallible)) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
   // some common variables we were recalculating
   // every time inside the for loop...
   int32_t lengthOfInString = aInString.Length();
@@ -1120,7 +1190,7 @@ void mozTXTToHTMLConv::ScanHTML(nsString& aInString, uint32_t whattodo,
       nsString tempString;
       tempString.SetCapacity(uint32_t((uint32_t(i) - start) * growthRate));
       UnescapeStr(uniBuffer, start, uint32_t(i) - start, tempString);
-      ScanTXT(tempString.get(), tempString.Length(), whattodo, aOutString);
+      ScanTXT(tempString, whattodo, aOutString);
     }
   }
 
@@ -1128,6 +1198,7 @@ void mozTXTToHTMLConv::ScanHTML(nsString& aInString, uint32_t whattodo,
   printf("ScanHTML time:    %d ms\n",
          PR_IntervalToMilliseconds(PR_IntervalNow() - parsing_start));
 #endif
+  return NS_OK;
 }
 
 /****************************************************************************
@@ -1149,20 +1220,18 @@ mozTXTToHTMLConv::AsyncConvertData(const char* aFromType, const char* aToType,
 }
 
 NS_IMETHODIMP
-mozTXTToHTMLConv::OnDataAvailable(nsIRequest* request, nsISupports* ctxt,
-                                  nsIInputStream* inStr, uint64_t sourceOffset,
-                                  uint32_t count) {
+mozTXTToHTMLConv::OnDataAvailable(nsIRequest* request, nsIInputStream* inStr,
+                                  uint64_t sourceOffset, uint32_t count) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
-mozTXTToHTMLConv::OnStartRequest(nsIRequest* request, nsISupports* ctxt) {
+mozTXTToHTMLConv::OnStartRequest(nsIRequest* request) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
-mozTXTToHTMLConv::OnStopRequest(nsIRequest* request, nsISupports* ctxt,
-                                nsresult aStatus) {
+mozTXTToHTMLConv::OnStopRequest(nsIRequest* request, nsresult aStatus) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -1174,48 +1243,8 @@ mozTXTToHTMLConv::CiteLevelTXT(const char16_t* line, uint32_t* logLineStart,
   return NS_OK;
 }
 
-NS_IMETHODIMP
-mozTXTToHTMLConv::ScanTXT(const char16_t* text, uint32_t whattodo,
-                          char16_t** _retval) {
-  NS_ENSURE_ARG(text);
-
-  // FIX ME!!!
-  nsString outString;
-  int32_t inLength = NS_strlen(text);
-  // by setting a large capacity up front, we save time
-  // when appending characters to the output string because we don't
-  // need to reallocate and re-copy the characters already in the out String.
-  NS_ASSERTION(inLength, "ScanTXT passed 0 length string");
-  if (inLength == 0) {
-    *_retval = NS_strdup(text);
-    return NS_OK;
-  }
-
-  outString.SetCapacity(uint32_t(inLength * growthRate));
-  ScanTXT(text, inLength, whattodo, outString);
-
-  *_retval = ToNewUnicode(outString);
-  return *_retval ? NS_OK : NS_ERROR_OUT_OF_MEMORY;
-}
-
-NS_IMETHODIMP
-mozTXTToHTMLConv::ScanHTML(const char16_t* text, uint32_t whattodo,
-                           char16_t** _retval) {
-  NS_ENSURE_ARG(text);
-
-  // FIX ME!!!
-  nsString outString;
-  nsString inString(
-      text);  // look at this nasty extra copy of the entire input buffer!
-  outString.SetCapacity(uint32_t(inString.Length() * growthRate));
-
-  ScanHTML(inString, whattodo, outString);
-  *_retval = ToNewUnicode(outString);
-  return *_retval ? NS_OK : NS_ERROR_OUT_OF_MEMORY;
-}
-
 nsresult MOZ_NewTXTToHTMLConv(mozTXTToHTMLConv** aConv) {
-  NS_PRECONDITION(aConv != nullptr, "null ptr");
+  MOZ_ASSERT(aConv != nullptr, "null ptr");
   if (!aConv) return NS_ERROR_NULL_POINTER;
 
   *aConv = new mozTXTToHTMLConv();

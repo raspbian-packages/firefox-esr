@@ -9,16 +9,15 @@
 #include "mozilla/dom/HTMLEmbedElementBinding.h"
 #include "mozilla/dom/ElementInlines.h"
 
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIPluginDocument.h"
-#include "nsIDOMDocument.h"
 #include "nsThreadUtils.h"
 #include "nsIScriptError.h"
 #include "nsIWidget.h"
 #include "nsContentUtils.h"
 #ifdef XP_MACOSX
-#include "mozilla/EventDispatcher.h"
-#include "mozilla/dom/Event.h"
+#  include "mozilla/EventDispatcher.h"
+#  include "mozilla/dom/Event.h"
 #endif
 #include "mozilla/dom/HTMLObjectElement.h"
 
@@ -28,8 +27,9 @@ namespace mozilla {
 namespace dom {
 
 HTMLEmbedElement::HTMLEmbedElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, FromParser aFromParser)
-    : nsGenericHTMLElement(aNodeInfo) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+    FromParser aFromParser)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {
   RegisterActivityObserver();
   SetIsNetworkCreated(aFromParser == FROM_PARSER_NETWORK);
 
@@ -54,7 +54,7 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
 NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED(
     HTMLEmbedElement, nsGenericHTMLElement, nsIRequestObserver,
-    nsIStreamListener, nsIFrameLoaderOwner, nsIObjectLoadingContent,
+    nsIStreamListener, nsFrameLoaderOwner, nsIObjectLoadingContent,
     imgINotificationObserver, nsIImageLoadingContent, nsIChannelEventSink)
 
 NS_IMPL_ELEMENT_CLONE(HTMLEmbedElement)
@@ -73,16 +73,13 @@ void HTMLEmbedElement::AsyncEventRunning(AsyncEventDispatcher* aEvent) {
   nsImageLoadingContent::AsyncEventRunning(aEvent);
 }
 
-nsresult HTMLEmbedElement::BindToTree(nsIDocument* aDocument,
-                                      nsIContent* aParent,
-                                      nsIContent* aBindingParent,
-                                      bool aCompileEventHandlers) {
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+nsresult HTMLEmbedElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                      nsIContent* aBindingParent) {
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = nsObjectLoadingContent::BindToTree(aDocument, aParent, aBindingParent,
-                                          aCompileEventHandlers);
+  rv = nsObjectLoadingContent::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Don't kick off load from being bound to a plugin document - the plugin
@@ -101,7 +98,7 @@ nsresult HTMLEmbedElement::BindToTree(nsIDocument* aDocument,
 
 void HTMLEmbedElement::UnbindFromTree(bool aDeep, bool aNullParent) {
 #ifdef XP_MACOSX
-  // When a page is reloaded (when an nsIDocument's content is removed), the
+  // When a page is reloaded (when an Document's content is removed), the
   // focused element isn't necessarily sent an eBlur event. See
   // nsFocusManager::ContentRemoved(). This means that a widget may think it
   // still contains a focused plugin when it doesn't -- which in turn can
@@ -199,23 +196,24 @@ bool HTMLEmbedElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
 }
 
 static void MapAttributesIntoRuleBase(const nsMappedAttributes* aAttributes,
-                                      GenericSpecifiedValues* aData) {
-  nsGenericHTMLElement::MapImageBorderAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapImageMarginAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapImageSizeAttributesInto(aAttributes, aData);
-  nsGenericHTMLElement::MapImageAlignAttributeInto(aAttributes, aData);
+                                      MappedDeclarations& aDecls) {
+  nsGenericHTMLElement::MapImageBorderAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapImageMarginAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapImageSizeAttributesInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapImageAlignAttributeInto(aAttributes, aDecls);
 }
 
 static void MapAttributesIntoRuleExceptHidden(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  MapAttributesIntoRuleBase(aAttributes, aData);
-  nsGenericHTMLElement::MapCommonAttributesIntoExceptHidden(aAttributes, aData);
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  MapAttributesIntoRuleBase(aAttributes, aDecls);
+  nsGenericHTMLElement::MapCommonAttributesIntoExceptHidden(aAttributes,
+                                                            aDecls);
 }
 
 void HTMLEmbedElement::MapAttributesIntoRule(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  MapAttributesIntoRuleBase(aAttributes, aData);
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  MapAttributesIntoRuleBase(aAttributes, aDecls);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
@@ -261,13 +259,12 @@ void HTMLEmbedElement::DestroyContent() {
   nsGenericHTMLElement::DestroyContent();
 }
 
-nsresult HTMLEmbedElement::CopyInnerTo(Element* aDest,
-                                       bool aPreallocateChildren) {
-  nsresult rv = nsGenericHTMLElement::CopyInnerTo(aDest, aPreallocateChildren);
+nsresult HTMLEmbedElement::CopyInnerTo(HTMLEmbedElement* aDest) {
+  nsresult rv = nsGenericHTMLElement::CopyInnerTo(aDest);
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (aDest->OwnerDoc()->IsStaticDocument()) {
-    CreateStaticClone(static_cast<HTMLEmbedElement*>(aDest));
+    CreateStaticClone(aDest);
   }
 
   return rv;
@@ -276,7 +273,7 @@ nsresult HTMLEmbedElement::CopyInnerTo(Element* aDest,
 JSObject* HTMLEmbedElement::WrapNode(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
   JSObject* obj;
-  obj = HTMLEmbedElementBinding::Wrap(aCx, this, aGivenProto);
+  obj = HTMLEmbedElement_Binding::Wrap(aCx, this, aGivenProto);
 
   if (!obj) {
     return nullptr;

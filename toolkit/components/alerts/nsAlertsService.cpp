@@ -18,12 +18,11 @@
 #include "nsToolkitCompsCID.h"
 
 #ifdef MOZ_PLACES
-#include "mozIAsyncFavicons.h"
-#include "nsIFaviconService.h"
+#  include "nsIFaviconService.h"
 #endif  // MOZ_PLACES
 
 #ifdef XP_WIN
-#include <shellapi.h>
+#  include <shellapi.h>
 #endif
 
 using namespace mozilla;
@@ -97,7 +96,7 @@ nsresult ShowWithIconBackend(nsIAlertsService* aBackend,
     return NS_ERROR_NOT_IMPLEMENTED;
   }
 
-  nsCOMPtr<mozIAsyncFavicons> favicons(
+  nsCOMPtr<nsIFaviconService> favicons(
       do_GetService("@mozilla.org/browser/favicon-service;1"));
   NS_ENSURE_TRUE(favicons, NS_ERROR_FAILURE);
 

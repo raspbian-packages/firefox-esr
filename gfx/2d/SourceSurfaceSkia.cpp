@@ -18,7 +18,11 @@ namespace mozilla {
 namespace gfx {
 
 SourceSurfaceSkia::SourceSurfaceSkia()
-    : mDrawTarget(nullptr), mChangeMutex("SourceSurfaceSkia::mChangeMutex") {}
+    : mFormat(SurfaceFormat::UNKNOWN),
+      mStride(0),
+      mDrawTarget(nullptr),
+      mChangeMutex("SourceSurfaceSkia::mChangeMutex"),
+      mIsMapped(false) {}
 
 SourceSurfaceSkia::~SourceSurfaceSkia() {}
 
@@ -121,16 +125,6 @@ uint8_t* SourceSurfaceSkia::GetData() {
   if (!mImage) {
     return nullptr;
   }
-#ifdef USE_SKIA_GPU
-  if (mImage->isTextureBacked()) {
-    if (sk_sp<SkImage> raster =
-            ReadSkImage(mImage, MakeSkiaImageInfo(mSize, mFormat), mStride)) {
-      mImage = raster;
-    } else {
-      gfxCriticalError() << "Failed making Skia raster image for GPU surface";
-    }
-  }
-#endif
   SkPixmap pixmap;
   if (!mImage->peekPixels(&pixmap)) {
     gfxCriticalError() << "Failed accessing pixels for Skia raster image";
@@ -143,16 +137,17 @@ bool SourceSurfaceSkia::Map(MapType, MappedSurface* aMappedSurface) {
   aMappedSurface->mData = GetData();
   aMappedSurface->mStride = Stride();
   mIsMapped = !!aMappedSurface->mData;
+  bool isMapped = mIsMapped;
   if (!mIsMapped) {
     mChangeMutex.Unlock();
   }
-  return mIsMapped;
+  return isMapped;
 }
 
 void SourceSurfaceSkia::Unmap() {
-  mChangeMutex.Unlock();
   MOZ_ASSERT(mIsMapped);
   mIsMapped = false;
+  mChangeMutex.Unlock();
 }
 
 void SourceSurfaceSkia::DrawTargetWillChange() {

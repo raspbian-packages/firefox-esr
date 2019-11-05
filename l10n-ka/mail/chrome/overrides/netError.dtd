@@ -65,10 +65,10 @@
 <!ENTITY notCached.title "დოკუმენტი ვადაგასულია">
 <!ENTITY notCached.longDesc "<p>მოთხოვნილი დოკუმენტი მიუწვდომელია &brandShortName;-ის ბუფერში.</p><ul><li>უსაფრთხოების უზრუნველსაყოფად, &brandShortName; ხელმეორედ არ მოითხოვს მნიშვნელოვან დოკუმენტებს.</li><li>Click სცადეთ დოკუმენტის ხელახლა მოთხოვნა ვებსაიტიდან.</li></ul>">
 
-<!ENTITY netOffline.title "ავტონომიური რეჟიმი">
+<!ENTITY netOffline.title "კავშირგარეშე რეჟიმი">
 <!ENTITY netOffline.longDesc2 "
 <ul>
-  <li>ამორთეთ &quot;ავტონომიური რეჟიმი&quot; ფაილის მენიუდან და კვლავ სცადეთ.</li>
+  <li>დააჭირეთ „კვლავ სცადეთ“ ღილაკს კავშირზე გასასვლელად და გვერდის ხელახლა გასახსნელად.</li>
 </ul>
 ">
 
@@ -79,7 +79,7 @@
 </ul>
 ">
 
-<!ENTITY unsafeContentType.title "ფაილის სახიფათი ტიპი">
+<!ENTITY unsafeContentType.title "სახიფათო სახის ფაილი">
 <!ENTITY unsafeContentType.longDesc "
 <ul>
   <li>ამ პრობლემასთნა დაკავშირებით გთხოვთ ვებ საიტის მფლობელებს დაუკავშირდეთ.</li>
@@ -89,13 +89,13 @@
 <!ENTITY netReset.title "კავშირი გაწყდა">
 <!ENTITY netReset.longDesc "&sharedLongDesc;">
 
-<!ENTITY netTimeout.title "კავშირის ვადა გავიდა">
+<!ENTITY netTimeout.title "კავშირის დრო ამოიწურა">
 <!ENTITY netTimeout.longDesc "&sharedLongDesc;">
 
 <!ENTITY unknownProtocolFound.title "მისამართი გაუგებარი იყო">
 <!ENTITY unknownProtocolFound.longDesc "
 <ul>
-  <li>ამ მისამართის გასახსნელად შესაძლოა სხვა პროგრამის დაყენება იყოს საჭირო.</li>
+  <li>ამ მისამართის გასახსნელად, შესაძლოა სხვა პროგრამის დაყენება იყოს საჭირო.</li>
 </ul>
 ">
 
@@ -103,7 +103,7 @@
 <!ENTITY proxyConnectFailure.longDesc "
 <ul>
   <li>გადაამოწმეთ პროქსის პარამეტრები და დარწმუნდით მათ მართებულობაში.</li>
-  <li>დაუკავშირდით ქსელის ადმინისტრატორს და დარწმუნდით, რომ პროქსი სერვერი
+  <li>დაუკავშირდით ქსელის მმართველს და დარწმუნდით, რომ პროქსი სერვერი
     მუშაობს.</li>
 </ul>
 ">
@@ -121,8 +121,8 @@
 <!ENTITY redirectLoop.title "ეს გვერდი არამართებულად გადამისამართდა">
 <!ENTITY redirectLoop.longDesc "
 <ul>
-  <li>ეს პრობლემა ზოგჯერ წარმოიქმნება ნაჭდევების მიღების ამორთვის ან უარყოფის
-    დროს.</li>
+  <li>ამ ხარვეზს, ზოგჯერ იწვევს უარყოფა, ან გამორთვა
+    ფუნთუშების.</li>
 </ul>
 ">
 
@@ -194,3 +194,6 @@ functionality specific to thunderbird. -->
 <!ENTITY inadequateSecurityError.longDesc "<p><span class='hostname'></span> იყენებს უსაფრთხოების ისეთ ტექნოლოგიას, რომელიც მოძველებული და დაუცველია. თავდამსხმელმა შესაძლოა მარტივად მიიღოს იმ მონაცემებზე წვდომა, რომელიც დაცულად მიგაჩნიათ. საიტზე შესვლამდე, აუცილებელია მისმა ხელმძღვანელობამ ეს ხარვეზი აღმოფხვრას.</p><p>შეცდომის კოდი: NS_ERROR_NET_INADEQUATE_SECURITY</p>">
 
 <!ENTITY blockedByPolicy.title "შეზღუდული გვერდი">
+
+<!ENTITY networkProtocolError.title "ქსელის ოქმის შეცდომა">
+<!ENTITY networkProtocolError.longDesc "<p>გვერდი რომლის მონახულებასაც ცდილობთ ვერ გამოჩნდება, ვინაიდან ქსელის ოქმში აღმოჩენილია შეცდომა.</p><ul><li>გთხოვთ, დაუკავშირდეთ საიტის მფლობელებს და აცნობოთ ამ ხარვეზის შესახებ.</li></ul>">

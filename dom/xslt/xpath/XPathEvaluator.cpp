@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,8 +14,7 @@
 #include "txExprParser.h"
 #include "nsError.h"
 #include "txURIUtils.h"
-#include "nsIDocument.h"
-#include "nsIDOMDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsDOMString.h"
 #include "nsNameSpaceManager.h"
 #include "nsContentUtils.h"
@@ -56,7 +55,7 @@ class XPathEvaluatorParseContext : public txIParseContext {
   bool mIsCaseSensitive;
 };
 
-XPathEvaluator::XPathEvaluator(nsIDocument* aDocument)
+XPathEvaluator::XPathEvaluator(Document* aDocument)
     : mDocument(do_GetWeakReference(aDocument)) {}
 
 XPathEvaluator::~XPathEvaluator() {}
@@ -64,7 +63,7 @@ XPathEvaluator::~XPathEvaluator() {}
 XPathExpression* XPathEvaluator::CreateExpression(const nsAString& aExpression,
                                                   XPathNSResolver* aResolver,
                                                   ErrorResult& aRv) {
-  nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument);
+  nsCOMPtr<Document> doc = do_QueryReferent(mDocument);
   XPathEvaluatorParseContext pContext(aResolver,
                                       !(doc && doc->IsHTMLDocument()));
   return CreateExpression(aExpression, &pContext, doc, aRv);
@@ -73,7 +72,7 @@ XPathExpression* XPathEvaluator::CreateExpression(const nsAString& aExpression,
 XPathExpression* XPathEvaluator::CreateExpression(const nsAString& aExpression,
                                                   nsINode* aResolver,
                                                   ErrorResult& aRv) {
-  nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument);
+  nsCOMPtr<Document> doc = do_QueryReferent(mDocument);
   XPathEvaluatorParseContext pContext(aResolver,
                                       !(doc && doc->IsHTMLDocument()));
   return CreateExpression(aExpression, &pContext, doc, aRv);
@@ -81,7 +80,7 @@ XPathExpression* XPathEvaluator::CreateExpression(const nsAString& aExpression,
 
 XPathExpression* XPathEvaluator::CreateExpression(const nsAString& aExpression,
                                                   txIParseContext* aContext,
-                                                  nsIDocument* aDocument,
+                                                  Document* aDocument,
                                                   ErrorResult& aRv) {
   if (!mRecycler) {
     mRecycler = new txResultRecycler;
@@ -99,17 +98,18 @@ XPathExpression* XPathEvaluator::CreateExpression(const nsAString& aExpression,
     return nullptr;
   }
 
-  return new XPathExpression(Move(expression), mRecycler, aDocument);
+  return new XPathExpression(std::move(expression), mRecycler, aDocument);
 }
 
 bool XPathEvaluator::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto,
                                 JS::MutableHandle<JSObject*> aReflector) {
-  return dom::XPathEvaluatorBinding::Wrap(aCx, this, aGivenProto, aReflector);
+  return dom::XPathEvaluator_Binding::Wrap(aCx, this, aGivenProto, aReflector);
 }
 
-/* static */ XPathEvaluator* XPathEvaluator::Constructor(
-    const GlobalObject& aGlobal, ErrorResult& rv) {
+/* static */
+XPathEvaluator* XPathEvaluator::Constructor(const GlobalObject& aGlobal,
+                                            ErrorResult& rv) {
   return new XPathEvaluator(nullptr);
 }
 

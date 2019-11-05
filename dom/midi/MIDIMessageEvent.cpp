@@ -49,7 +49,7 @@ MIDIMessageEvent::~MIDIMessageEvent() {
 
 JSObject* MIDIMessageEvent::WrapObjectInternal(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return MIDIMessageEventBinding::Wrap(aCx, this, aGivenProto);
+  return MIDIMessageEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 MIDIMessageEvent* MIDIMessageEvent::AsMIDIMessageEvent() { return this; }
@@ -99,7 +99,6 @@ void MIDIMessageEvent::GetData(JSContext* cx,
       return;
     }
     mRawData.Clear();
-    JS::ExposeObjectToActiveJS(mData);
   }
   aData.set(mData);
 }

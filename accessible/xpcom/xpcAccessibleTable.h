@@ -8,7 +8,7 @@
 #define mozilla_a11y_xpcAccessibleTable_h_
 
 #include "nsIAccessibleTable.h"
-#include "xpcAccessibleGeneric.h"
+#include "xpcAccessibleHyperText.h"
 
 namespace mozilla {
 namespace a11y {
@@ -16,14 +16,14 @@ namespace a11y {
 /**
  * XPCOM wrapper around TableAccessible class.
  */
-class xpcAccessibleTable : public xpcAccessibleGeneric,
+class xpcAccessibleTable : public xpcAccessibleHyperText,
                            public nsIAccessibleTable {
  public:
   explicit xpcAccessibleTable(Accessible* aIntl)
-      : xpcAccessibleGeneric(aIntl) {}
+      : xpcAccessibleHyperText(aIntl) {}
 
   xpcAccessibleTable(ProxyAccessible* aProxy, uint32_t aInterfaces)
-      : xpcAccessibleGeneric(aProxy, aInterfaces) {}
+      : xpcAccessibleHyperText(aProxy, aInterfaces) {}
 
   NS_DECL_ISUPPORTS_INHERITED
 
@@ -55,12 +55,9 @@ class xpcAccessibleTable : public xpcAccessibleGeneric,
   NS_IMETHOD GetSelectedColumnCount(uint32_t* aSelectedColumnCount) final;
   NS_IMETHOD GetSelectedRowCount(uint32_t* aSelectedRowCount) final;
   NS_IMETHOD GetSelectedCells(nsIArray** aSelectedCell) final;
-  NS_IMETHOD GetSelectedCellIndices(uint32_t* aCellsArraySize,
-                                    int32_t** aCellsArray) final;
-  NS_IMETHOD GetSelectedColumnIndices(uint32_t* aColsArraySize,
-                                      int32_t** aColsArray) final;
-  NS_IMETHOD GetSelectedRowIndices(uint32_t* aRowsArraySize,
-                                   int32_t** aRowsArray) final;
+  NS_IMETHOD GetSelectedCellIndices(nsTArray<uint32_t>& aCellsArray) final;
+  NS_IMETHOD GetSelectedColumnIndices(nsTArray<uint32_t>& aColsArray) final;
+  NS_IMETHOD GetSelectedRowIndices(nsTArray<uint32_t>& aRowsArray) final;
   NS_IMETHOD SelectColumn(int32_t aColIdx) final;
   NS_IMETHOD SelectRow(int32_t aRowIdx) final;
   NS_IMETHOD UnselectColumn(int32_t aColIdx) final;

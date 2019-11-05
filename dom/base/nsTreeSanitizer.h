@@ -5,9 +5,6 @@
 #ifndef nsTreeSanitizer_h_
 #define nsTreeSanitizer_h_
 
-#ifdef MOZ_OLD_STYLE
-#include "mozilla/css/StyleRule.h"
-#endif
 #include "nsIPrincipal.h"
 #include "mozilla/dom/Element.h"
 
@@ -31,12 +28,10 @@ class MOZ_STACK_CLASS nsTreeSanitizer {
 
   /**
    * Sanitizes a disconnected DOM fragment freshly obtained from a parser.
-   * The argument must be of type nsINode::eDOCUMENT_FRAGMENT and,
-   * consequently, must not be in the document. Furthermore, the fragment
-   * must have just come from a parser so that it can't have mutation
-   * event listeners set on it.
+   * The fragment must have just come from a parser so that it can't have
+   * mutation event listeners set on it.
    */
-  void Sanitize(nsIContent* aFragment);
+  void Sanitize(mozilla::dom::DocumentFragment* aFragment);
 
   /**
    * Sanitizes a disconnected (not in a docshell) document freshly obtained
@@ -44,7 +39,7 @@ class MOZ_STACK_CLASS nsTreeSanitizer {
    * not have had a chance to get mutation event listeners attached to it.
    * The root element must be <html>.
    */
-  void Sanitize(nsIDocument* aDocument);
+  void Sanitize(mozilla::dom::Document* aDocument);
 
  private:
   /**
@@ -87,6 +82,21 @@ class MOZ_STACK_CLASS nsTreeSanitizer {
    */
   bool mLogRemovals;
 
+  /**
+   * We have various tables of static atoms for elements and attributes.
+   */
+  class AtomsTable : public nsTHashtable<nsPtrHashKey<const nsStaticAtom>> {
+   public:
+    explicit AtomsTable(uint32_t aLength)
+        : nsTHashtable<nsPtrHashKey<const nsStaticAtom>>(aLength) {}
+
+    bool Contains(nsAtom* aAtom) {
+      // Because this table only contains static atoms, if aAtom isn't
+      // static we can immediately fail.
+      return aAtom->IsStatic() && GetEntry(aAtom->AsStatic());
+    }
+  };
+
   void SanitizeChildren(nsINode* aRoot);
 
   /**
@@ -116,7 +126,23 @@ class MOZ_STACK_CLASS nsTreeSanitizer {
    * @param aLocalName the name to search on the list
    * @return true if aLocalName is on the aURLs list and false otherwise
    */
-  bool IsURL(nsStaticAtom** const* aURLs, nsAtom* aLocalName);
+  bool IsURL(const nsStaticAtom* const* aURLs, nsAtom* aLocalName);
+
+  /**
+   * Struct for what attributes and their values are allowed.
+   */
+  struct AllowedAttributes {
+    // The whitelist of permitted local names to use.
+    AtomsTable* mNames = nullptr;
+    // The local names of URL-valued attributes for URL checking.
+    const nsStaticAtom* const* mURLs = nullptr;
+    // Whether XLink attributes are allowed.
+    bool mXLink = false;
+    // Whether the style attribute is allowed.
+    bool mStyle = false;
+    // Whether to leave the value of the src attribute unsanitized.
+    bool mDangerousSrc = false;
+  };
 
   /**
    * Removes dangerous attributes from the element. If the style attribute
@@ -125,17 +151,10 @@ class MOZ_STACK_CLASS nsTreeSanitizer {
    * potentially dangerous.
    *
    * @param aElement the element whose attributes should be sanitized
-   * @param aAllowed the whitelist of permitted local names to use
-   * @param aURLs the local names of URL-valued attributes
-   * @param aAllowXLink whether XLink attributes are allowed
-   * @param aAllowStyle whether the style attribute is allowed
-   * @param aAllowDangerousSrc whether to leave the value of the src
-   *                           attribute unsanitized
+   * @param aAllowed options for sanitizing attributes
    */
   void SanitizeAttributes(mozilla::dom::Element* aElement,
-                          nsTHashtable<nsRefPtrHashKey<nsAtom>>* aAllowed,
-                          nsStaticAtom** const* aURLs, bool aAllowXLink,
-                          bool aAllowStyle, bool aAllowDangerousSrc);
+                          AllowedAttributes aAllowed);
 
   /**
    * Remove the named URL attribute from the element if the URL fails a
@@ -171,7 +190,7 @@ class MOZ_STACK_CLASS nsTreeSanitizer {
    *              otherwise
    */
   bool SanitizeStyleSheet(const nsAString& aOriginal, nsAString& aSanitized,
-                          nsIDocument* aDocument, nsIURI* aBaseURI);
+                          mozilla::dom::Document* aDocument, nsIURI* aBaseURI);
 
   /**
    * Removes all attributes from an element node.
@@ -189,43 +208,43 @@ class MOZ_STACK_CLASS nsTreeSanitizer {
    * @param aElement   optional, the element being removed or modified.
    * @param aAttribute optional, the attribute being removed or modified.
    */
-  void LogMessage(const char* aMessage, nsIDocument* aDoc,
+  void LogMessage(const char* aMessage, mozilla::dom::Document* aDoc,
                   Element* aElement = nullptr, nsAtom* aAttr = nullptr);
 
   /**
    * The whitelist of HTML elements.
    */
-  static nsTHashtable<nsRefPtrHashKey<nsAtom>>* sElementsHTML;
+  static AtomsTable* sElementsHTML;
 
   /**
    * The whitelist of non-presentational HTML attributes.
    */
-  static nsTHashtable<nsRefPtrHashKey<nsAtom>>* sAttributesHTML;
+  static AtomsTable* sAttributesHTML;
 
   /**
    * The whitelist of presentational HTML attributes.
    */
-  static nsTHashtable<nsRefPtrHashKey<nsAtom>>* sPresAttributesHTML;
+  static AtomsTable* sPresAttributesHTML;
 
   /**
    * The whitelist of SVG elements.
    */
-  static nsTHashtable<nsRefPtrHashKey<nsAtom>>* sElementsSVG;
+  static AtomsTable* sElementsSVG;
 
   /**
    * The whitelist of SVG attributes.
    */
-  static nsTHashtable<nsRefPtrHashKey<nsAtom>>* sAttributesSVG;
+  static AtomsTable* sAttributesSVG;
 
   /**
    * The whitelist of SVG elements.
    */
-  static nsTHashtable<nsRefPtrHashKey<nsAtom>>* sElementsMathML;
+  static AtomsTable* sElementsMathML;
 
   /**
    * The whitelist of MathML attributes.
    */
-  static nsTHashtable<nsRefPtrHashKey<nsAtom>>* sAttributesMathML;
+  static AtomsTable* sAttributesMathML;
 
   /**
    * Reusable null principal for URL checks.

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,21 +14,21 @@
  */
 
 #ifdef NS_BUILD_REFCNT_LOGGING
-#define LOG_CHUNK_MOVE(_start, _new_start, _count)         \
-  {                                                        \
-    txXPathNode* start = const_cast<txXPathNode*>(_start); \
-    while (start < _start + _count) {                      \
-      NS_LogDtor(start, "txXPathNode", sizeof(*start));    \
-      ++start;                                             \
-    }                                                      \
-    start = const_cast<txXPathNode*>(_new_start);          \
-    while (start < _new_start + _count) {                  \
-      NS_LogCtor(start, "txXPathNode", sizeof(*start));    \
-      ++start;                                             \
-    }                                                      \
-  }
+#  define LOG_CHUNK_MOVE(_start, _new_start, _count)         \
+    {                                                        \
+      txXPathNode* start = const_cast<txXPathNode*>(_start); \
+      while (start < _start + _count) {                      \
+        NS_LogDtor(start, "txXPathNode", sizeof(*start));    \
+        ++start;                                             \
+      }                                                      \
+      start = const_cast<txXPathNode*>(_new_start);          \
+      while (start < _new_start + _count) {                  \
+        NS_LogCtor(start, "txXPathNode", sizeof(*start));    \
+        ++start;                                             \
+      }                                                      \
+    }
 #else
-#define LOG_CHUNK_MOVE(_start, _new_start, _count)
+#  define LOG_CHUNK_MOVE(_start, _new_start, _count)
 #endif
 
 static const int32_t kTxNodeSetMinSize = 4;
@@ -483,9 +483,6 @@ bool txNodeSet::ensureGrowSize(int32_t aSize) {
 
   txXPathNode* newArr =
       static_cast<txXPathNode*>(moz_xmalloc(newLength * sizeof(txXPathNode)));
-  if (!newArr) {
-    return false;
-  }
 
   txXPathNode* dest = newArr;
   if (mDirection == kReversed) {

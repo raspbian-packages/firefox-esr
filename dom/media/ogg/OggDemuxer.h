@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #if !defined(OggDemuxer_h_)
-#define OggDemuxer_h_
+#  define OggDemuxer_h_
 
-#include "nsTArray.h"
-#include "MediaDataDemuxer.h"
-#include "OggCodecState.h"
-#include "OggCodecStore.h"
-#include "MediaMetadataManager.h"
+#  include "nsTArray.h"
+#  include "MediaDataDemuxer.h"
+#  include "OggCodecState.h"
+#  include "OggCodecStore.h"
+#  include "MediaMetadataManager.h"
 
 namespace mozilla {
 
@@ -194,7 +194,7 @@ class OggDemuxer : public MediaDataDemuxer,
   void SetupTarget(OggCodecState** aSavedState, OggCodecState* aNewState);
   void SetupTargetSkeleton();
   void SetupMediaTracksInfo(const nsTArray<uint32_t>& aSerials);
-  void FillTags(TrackInfo* aInfo, MetadataTags* aTags);
+  void FillTags(TrackInfo* aInfo, UniquePtr<MetadataTags>&& aTags);
 
   // Compute an ogg page's checksum
   ogg_uint32_t GetPageChecksum(ogg_page* aPage);

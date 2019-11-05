@@ -10,9 +10,6 @@
 #include "nsXBLService.h"
 #include "nsCOMPtr.h"
 #include "nsINodeList.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsIStyleRuleProcessor.h"
-#endif
 #include "nsClassHashtable.h"
 #include "nsTArray.h"
 #include "nsCycleCollectionParticipant.h"
@@ -22,15 +19,12 @@
 class nsXBLPrototypeBinding;
 class nsIContent;
 class nsAtom;
-class nsIDocument;
 struct RawServoAuthorStyles;
 
 namespace mozilla {
 namespace dom {
-
-class ShadowRoot;
+class Document;
 class XBLChildrenElement;
-
 }  // namespace dom
 }  // namespace mozilla
 
@@ -42,8 +36,6 @@ class nsAnonymousContentList;
 class nsXBLBinding final {
  public:
   explicit nsXBLBinding(nsXBLPrototypeBinding* aProtoBinding);
-  nsXBLBinding(mozilla::dom::ShadowRoot* aShadowRoot,
-               nsXBLPrototypeBinding* aProtoBinding);
 
   /**
    * XBLBindings are refcounted.  They are held onto in 3 ways:
@@ -100,14 +92,11 @@ class nsXBLBinding final {
   void MarkForDeath();
   bool MarkedForDeath() const { return mMarkedForDeath; }
 
-  bool HasStyleSheets() const;
-  bool InheritsStyle() const;
   bool ImplementsInterface(REFNSIID aIID) const;
 
   void GenerateAnonymousContent();
-  void BindAnonymousContent(nsIContent* aAnonParent, nsIContent* aElement,
-                            bool aNativeAnon);
-  static void UnbindAnonymousContent(nsIDocument* aDocument,
+  void BindAnonymousContent(nsIContent* aAnonParent, nsIContent* aElement);
+  static void UnbindAnonymousContent(mozilla::dom::Document* aDocument,
                                      nsIContent* aAnonParent,
                                      bool aNullParent = true);
   void InstallEventHandlers();
@@ -117,7 +106,6 @@ class nsXBLBinding final {
   void ExecuteDetachedHandler();
   void UnhookEventHandlers();
 
-  nsAtom* GetBaseTag(int32_t* aNameSpaceID);
   nsXBLBinding* RootBinding();
 
   // Resolve all the fields for this binding and all ancestor bindings on the
@@ -127,11 +115,8 @@ class nsXBLBinding final {
   void AttributeChanged(nsAtom* aAttribute, int32_t aNameSpaceID,
                         bool aRemoveFlag, bool aNotify);
 
-  void ChangeDocument(nsIDocument* aOldDocument, nsIDocument* aNewDocument);
-
-#ifdef MOZ_OLD_STYLE
-  void WalkRules(nsIStyleRuleProcessor::EnumFunc aFunc, void* aData);
-#endif
+  void ChangeDocument(mozilla::dom::Document* aOldDocument,
+                      mozilla::dom::Document* aNewDocument);
 
   const RawServoAuthorStyles* GetServoStyles() const;
 
@@ -163,8 +148,6 @@ class nsXBLBinding final {
   // MEMBER VARIABLES
  protected:
   bool mMarkedForDeath;
-  bool mUsingContentXBLScope;
-  bool mIsShadowRootBinding;
 
   nsXBLPrototypeBinding*
       mPrototypeBinding;  // Weak, but we're holding a ref to the docinfo

@@ -7,38 +7,40 @@
 #ifndef mozilla_layers_APZCTreeManagerChild_h
 #define mozilla_layers_APZCTreeManagerChild_h
 
+#include "mozilla/layers/APZInputBridge.h"
 #include "mozilla/layers/IAPZCTreeManager.h"
 #include "mozilla/layers/PAPZCTreeManagerChild.h"
 
 namespace mozilla {
 namespace layers {
 
+class APZInputBridgeChild;
 class RemoteCompositorSession;
 
 class APZCTreeManagerChild : public IAPZCTreeManager,
                              public PAPZCTreeManagerChild {
+  friend class PAPZCTreeManagerChild;
+
  public:
   APZCTreeManagerChild();
 
   void SetCompositorSession(RemoteCompositorSession* aSession);
-
-  nsEventStatus ReceiveInputEvent(InputData& aEvent,
-                                  ScrollableLayerGuid* aOutTargetGuid,
-                                  uint64_t* aOutInputBlockId) override;
+  void SetInputBridge(APZInputBridgeChild* aInputBridge);
+  void Destroy();
 
   void SetKeyboardMap(const KeyboardMap& aKeyboardMap) override;
 
-  void ZoomToRect(const ScrollableLayerGuid& aGuid, const CSSRect& aRect,
+  void ZoomToRect(const SLGuidAndRenderRoot& aGuid, const CSSRect& aRect,
                   const uint32_t aFlags = DEFAULT_BEHAVIOR) override;
 
   void ContentReceivedInputBlock(uint64_t aInputBlockId,
                                  bool aPreventDefault) override;
 
   void SetTargetAPZC(uint64_t aInputBlockId,
-                     const nsTArray<ScrollableLayerGuid>& aTargets) override;
+                     const nsTArray<SLGuidAndRenderRoot>& aTargets) override;
 
   void UpdateZoomConstraints(
-      const ScrollableLayerGuid& aGuid,
+      const SLGuidAndRenderRoot& aGuid,
       const Maybe<ZoomConstraints>& aConstraints) override;
 
   void SetDPI(float aDpiValue) override;
@@ -47,44 +49,43 @@ class APZCTreeManagerChild : public IAPZCTreeManager,
       uint64_t aInputBlockId,
       const nsTArray<TouchBehaviorFlags>& aValues) override;
 
-  void StartScrollbarDrag(const ScrollableLayerGuid& aGuid,
+  void StartScrollbarDrag(const SLGuidAndRenderRoot& aGuid,
                           const AsyncDragMetrics& aDragMetrics) override;
 
-  bool StartAutoscroll(const ScrollableLayerGuid& aGuid,
+  bool StartAutoscroll(const SLGuidAndRenderRoot& aGuid,
                        const ScreenPoint& aAnchorLocation) override;
 
-  void StopAutoscroll(const ScrollableLayerGuid& aGuid) override;
+  void StopAutoscroll(const SLGuidAndRenderRoot& aGuid) override;
 
   void SetLongTapEnabled(bool aTapGestureEnabled) override;
 
-  void ProcessTouchVelocity(uint32_t aTimestampMs, float aSpeedY) override;
+  APZInputBridge* InputBridge() override;
 
-  void ProcessUnhandledEvent(LayoutDeviceIntPoint* aRefPoint,
-                             ScrollableLayerGuid* aOutTargetGuid,
-                             uint64_t* aOutFocusSequenceNumber) override;
-
-  void UpdateWheelTransaction(LayoutDeviceIntPoint aRefPoint,
-                              EventMessage aEventMessage) override;
+  void AddIPDLReference();
+  void ReleaseIPDLReference();
+  void ActorDestroy(ActorDestroyReason aWhy) override;
 
  protected:
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   mozilla::ipc::IPCResult RecvHandleTap(const TapType& aType,
                                         const LayoutDevicePoint& aPoint,
                                         const Modifiers& aModifiers,
                                         const ScrollableLayerGuid& aGuid,
-                                        const uint64_t& aInputBlockId) override;
+                                        const uint64_t& aInputBlockId);
 
   mozilla::ipc::IPCResult RecvNotifyPinchGesture(
       const PinchGestureType& aType, const ScrollableLayerGuid& aGuid,
-      const LayoutDeviceCoord& aSpanChange,
-      const Modifiers& aModifiers) override;
+      const LayoutDeviceCoord& aSpanChange, const Modifiers& aModifiers);
 
   mozilla::ipc::IPCResult RecvCancelAutoscroll(
-      const FrameMetrics::ViewID& aScrollId) override;
+      const ScrollableLayerGuid::ViewID& aScrollId);
 
-  virtual ~APZCTreeManagerChild() {}
+  virtual ~APZCTreeManagerChild();
 
  private:
   MOZ_NON_OWNING_REF RemoteCompositorSession* mCompositorSession;
+  RefPtr<APZInputBridgeChild> mInputBridge;
+  bool mIPCOpen;
 };
 
 }  // namespace layers

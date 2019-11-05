@@ -41,7 +41,7 @@ SpeechSynthesisUtterance::~SpeechSynthesisUtterance() {}
 
 JSObject* SpeechSynthesisUtterance::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return SpeechSynthesisUtteranceBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechSynthesisUtterance_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* SpeechSynthesisUtterance::GetParentObject() const {

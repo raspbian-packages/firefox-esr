@@ -66,7 +66,6 @@ typedef enum {
   BorderColorStyleDark
 } BorderColorStyle;
 
-class nsIDocument;
 class nsPresContext;
 
 class nsCSSBorderRenderer final {
@@ -86,12 +85,13 @@ class nsCSSBorderRenderer final {
   friend class nsDisplayButtonForeground;
 
  public:
-  nsCSSBorderRenderer(nsPresContext* aPresContext, const nsIDocument* aDocument,
+  nsCSSBorderRenderer(nsPresContext* aPresContext,
+                      const mozilla::dom::Document* aDocument,
                       DrawTarget* aDrawTarget, const Rect& aDirtyRect,
-                      Rect& aOuterRect, const uint8_t* aBorderStyles,
+                      Rect& aOuterRect,
+                      const mozilla::StyleBorderStyle* aBorderStyles,
                       const Float* aBorderWidths, RectCornerRadii& aBorderRadii,
-                      const nscolor* aBorderColors, nscolor aBackgroundColor,
-                      bool aBackfaceIsVisible,
+                      const nscolor* aBorderColors, bool aBackfaceIsVisible,
                       const mozilla::Maybe<Rect>& aClipRect);
 
   // draw the entire border
@@ -122,7 +122,7 @@ class nsCSSBorderRenderer final {
 
   // Target document to report warning
   nsPresContext* mPresContext;
-  const nsIDocument* mDocument;
+  const mozilla::dom::Document* mDocument;
 
   // destination DrawTarget and dirty rect
   DrawTarget* mDrawTarget;
@@ -133,15 +133,12 @@ class nsCSSBorderRenderer final {
   Rect mInnerRect;
 
   // the style and size of the border
-  uint8_t mBorderStyles[4];
+  mozilla::StyleBorderStyle mBorderStyles[4];
   Float mBorderWidths[4];
   RectCornerRadii mBorderRadii;
 
   // the colors for 'border-top-color' et. al.
   nscolor mBorderColors[4];
-
-  // the background color
-  nscolor mBackgroundColor;
 
   // calculated values
   bool mAllBordersSameStyle;
@@ -157,14 +154,15 @@ class nsCSSBorderRenderer final {
   bool AreBorderSideFinalStylesSame(uint8_t aSides);
 
   // For the given style, is the given corner a solid color?
-  bool IsSolidCornerStyle(uint8_t aStyle, mozilla::Corner aCorner);
+  bool IsSolidCornerStyle(mozilla::StyleBorderStyle aStyle,
+                          mozilla::Corner aCorner);
 
   // For the given corner, is the given corner mergeable into one dot?
   bool IsCornerMergeable(mozilla::Corner aCorner);
 
   // For the given solid corner, what color style should be used?
-  BorderColorStyle BorderColorStyleForSolidCorner(uint8_t aStyle,
-                                                  mozilla::Corner aCorner);
+  BorderColorStyle BorderColorStyleForSolidCorner(
+      mozilla::StyleBorderStyle aStyle, mozilla::Corner aCorner);
 
   //
   // Path generation functions
@@ -272,12 +270,12 @@ class nsCSSBorderImageRenderer final {
                                                 gfxContext& aRenderingContext,
                                                 nsIFrame* aForFrame,
                                                 const nsRect& aDirtyRect);
-  void CreateWebRenderCommands(
+  mozilla::image::ImgDrawResult CreateWebRenderCommands(
       nsDisplayItem* aItem, nsIFrame* aForFrame,
       mozilla::wr::DisplayListBuilder& aBuilder,
       mozilla::wr::IpcResourceUpdateQueue& aResources,
       const mozilla::layers::StackingContextHelper& aSc,
-      mozilla::layers::WebRenderLayerManager* aManager,
+      mozilla::layers::RenderRootStateManager* aManager,
       nsDisplayListBuilder* aDisplayListBuilder);
 
   nsCSSBorderImageRenderer(const nsCSSBorderImageRenderer& aRhs);
@@ -298,7 +296,7 @@ class nsCSSBorderImageRenderer final {
   nsRect mClip;
   mozilla::StyleBorderImageRepeat mRepeatModeHorizontal;
   mozilla::StyleBorderImageRepeat mRepeatModeVertical;
-  uint8_t mFill;
+  bool mFill;
 
   friend class nsDisplayBorder;
   friend struct nsCSSRendering;
@@ -306,7 +304,7 @@ class nsCSSBorderImageRenderer final {
 
 namespace mozilla {
 #ifdef DEBUG_NEW_BORDERS
-#include <stdarg.h>
+#  include <stdarg.h>
 
 static inline void PrintAsString(const mozilla::gfx::Point& p) {
   fprintf(stderr, "[%f,%f]", p.x, p.y);

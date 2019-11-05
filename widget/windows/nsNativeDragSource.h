@@ -6,11 +6,16 @@
 #define _nsNativeDragSource_h_
 
 #include "nscore.h"
-#include "nsIDOMDataTransfer.h"
-#include "nsCOMPtr.h"
 #include <ole2.h>
 #include <oleidl.h>
 #include "mozilla/Attributes.h"
+#include "mozilla/RefPtr.h"
+
+namespace mozilla {
+namespace dom {
+class DataTransfer;
+}  // namespace dom
+}  // namespace mozilla
 
 // class nsIDragSource;
 
@@ -22,7 +27,7 @@ class nsNativeDragSource final : public IDropSource {
  public:
   // construct an nsNativeDragSource referencing adapter
   // nsNativeDragSource(nsIDragSource * adapter);
-  explicit nsNativeDragSource(nsIDOMDataTransfer* aDataTransfer);
+  explicit nsNativeDragSource(mozilla::dom::DataTransfer* aDataTransfer);
   ~nsNativeDragSource();
 
   // IUnknown methods - see iunknown.h for documentation
@@ -51,7 +56,7 @@ class nsNativeDragSource final : public IDropSource {
   ULONG m_cRef;
 
   // Data object, hold information about cursor state
-  nsCOMPtr<nsIDOMDataTransfer> mDataTransfer;
+  RefPtr<mozilla::dom::DataTransfer> mDataTransfer;
 
   // Custom drag cursor
   HCURSOR m_hCursor;

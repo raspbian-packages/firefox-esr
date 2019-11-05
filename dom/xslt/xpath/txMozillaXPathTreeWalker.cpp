@@ -1,14 +1,10 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "txXPathTreeWalker.h"
 #include "nsAtom.h"
-#include "nsIAttribute.h"
-#include "nsIDOMDocument.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMProcessingInstruction.h"
 #include "nsINode.h"
 #include "nsPrintfCString.h"
 #include "nsReadableUtils.h"
@@ -20,6 +16,7 @@
 #include "nsAttrName.h"
 #include "nsTArray.h"
 #include "mozilla/dom/Attr.h"
+#include "mozilla/dom/CharacterData.h"
 #include "mozilla/dom/Element.h"
 #include <stdint.h>
 #include <algorithm>
@@ -37,7 +34,7 @@ void txXPathTreeWalker::moveToRoot() {
     return;
   }
 
-  nsIDocument* root = mPosition.mNode->GetUncomposedDoc();
+  Document* root = mPosition.mNode->GetUncomposedDoc();
   if (root) {
     mPosition.mIndex = txXPathNode::eDocument;
     mPosition.mNode = root;
@@ -56,7 +53,7 @@ bool txXPathTreeWalker::moveToElementById(const nsAString& aID) {
     return false;
   }
 
-  nsIDocument* doc = mPosition.mNode->GetUncomposedDoc();
+  Document* doc = mPosition.mNode->GetUncomposedDoc();
 
   nsCOMPtr<nsIContent> content;
   if (doc) {
@@ -271,7 +268,7 @@ already_AddRefed<nsAtom> txXPathNodeUtils::getLocalName(
       return localName.forget();
     }
 
-    if (aNode.mNode->IsNodeOfType(nsINode::ePROCESSING_INSTRUCTION)) {
+    if (aNode.mNode->IsProcessingInstruction()) {
       return NS_Atomize(aNode.mNode->NodeName());
     }
 
@@ -315,7 +312,7 @@ void txXPathNodeUtils::getLocalName(const txXPathNode& aNode,
       return;
     }
 
-    if (aNode.mNode->IsNodeOfType(nsINode::ePROCESSING_INSTRUCTION)) {
+    if (aNode.mNode->IsProcessingInstruction()) {
       // PIs don't have a nodeinfo but do have a name
       // XXXbz Not actually true, but this function looks like it wants
       // different things from elements and PIs for "local name"...
@@ -425,14 +422,15 @@ void txXPathNodeUtils::appendNodeValue(const txXPathNode& aNode,
   }
 
   if (aNode.isDocument() || aNode.mNode->IsElement() ||
-      aNode.mNode->IsNodeOfType(nsINode::eDOCUMENT_FRAGMENT)) {
+      aNode.mNode->IsDocumentFragment()) {
     nsContentUtils::AppendNodeTextContent(aNode.mNode, true, aResult,
                                           mozilla::fallible);
 
     return;
   }
 
-  aNode.Content()->AppendTextTo(aResult);
+  MOZ_ASSERT(aNode.mNode->IsCharacterData());
+  static_cast<CharacterData*>(aNode.Content())->AppendTextTo(aResult);
 }
 
 /* static */
@@ -492,8 +490,8 @@ int txXPathNodeUtils::comparePosition(const txXPathNode& aNode,
   }
 
   // Get document for both nodes.
-  nsIDocument* document = aNode.mNode->GetUncomposedDoc();
-  nsIDocument* otherDocument = aOtherNode.mNode->GetUncomposedDoc();
+  Document* document = aNode.mNode->GetUncomposedDoc();
+  Document* otherDocument = aOtherNode.mNode->GetUncomposedDoc();
 
   // If the nodes have different current documents, compare the document
   // pointers.
@@ -589,12 +587,10 @@ txXPathNode* txXPathNativeNode::createXPathNode(nsINode* aNode,
                                                 bool aKeepRootAlive) {
   uint16_t nodeType = aNode->NodeType();
   if (nodeType == nsINode::ATTRIBUTE_NODE) {
-    nsCOMPtr<nsIAttribute> attr = do_QueryInterface(aNode);
-    NS_ASSERTION(attr, "doesn't implement nsIAttribute");
+    auto* attr = static_cast<Attr*>(aNode);
 
-    mozilla::dom::NodeInfo* nodeInfo = attr->NodeInfo();
-    mozilla::dom::Element* parent =
-        static_cast<Attr*>(attr.get())->GetElement();
+    NodeInfo* nodeInfo = attr->NodeInfo();
+    Element* parent = attr->GetElement();
     if (!parent) {
       return nullptr;
     }
@@ -630,9 +626,8 @@ txXPathNode* txXPathNativeNode::createXPathNode(nsINode* aNode,
 }
 
 /* static */
-txXPathNode* txXPathNativeNode::createXPathNode(nsIDOMDocument* aDocument) {
-  nsCOMPtr<nsIDocument> document = do_QueryInterface(aDocument);
-  return new txXPathNode(document);
+txXPathNode* txXPathNativeNode::createXPathNode(Document* aDocument) {
+  return new txXPathNode(aDocument);
 }
 
 /* static */
@@ -662,8 +657,8 @@ nsIContent* txXPathNativeNode::getContent(const txXPathNode& aNode) {
 }
 
 /* static */
-nsIDocument* txXPathNativeNode::getDocument(const txXPathNode& aNode) {
+Document* txXPathNativeNode::getDocument(const txXPathNode& aNode) {
   NS_ASSERTION(aNode.isDocument(),
-               "Only call getDocument on nsIDocument wrappers!");
+               "Only call getDocument on Document wrappers!");
   return aNode.Document();
 }

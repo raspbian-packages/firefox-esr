@@ -27,12 +27,6 @@
 <!ENTITY firstrun_button_next "ಮುಂದೆ">
 
 <!ENTITY firstrun_tabqueue_title "ಕೊಂಡಿಗಳು">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "ಟ್ಯಾಬ್ ಸರತಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು">
-<!ENTITY firstrun_tabqueue_subtext_off "ಬೇರೆ ಆಪ್‌ಗಳಲ್ಲಿ ಕೊಂಡಿಗಳ ಮೇಲೆ ಟ್ಯಾಪ್‌ ಮಾಡಿದಾಗ &brandShortName; ನೋಡಲು ಅವನ್ನು ಉಳಿಸು.">
-
-<!ENTITY firstrun_tabqueue_message_on "ಯಶಸ್ವಿಯಾಗಿದೆ!">
-<!ENTITY firstrun_tabqueue_subtext_on "ಇದನ್ನು ನೀವು ಯಾವಾಗಬೇಕಿದ್ದರೂ &pref_category_general; ನಲ್ಲಿರುವ &settings;ಯಲ್ಲಿ ಆಫ್‌ ಮಾಡಬಹುದು.">
 
 <!ENTITY firstrun_readerview_title "ಲೇಖನಗಳು">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -69,6 +63,20 @@
 <!ENTITY  crash_restart_label "&brandShortName; ಅನ್ನು ಮರಳಿ ಆರಂಭಿಸು">
 
 <!ENTITY url_bar_default_text2 "ಹುಡುಕಿ ಅಥವಾ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "ಅಂತರ್ಜಾಲವನ್ನು ಹುಡುಕಿ">
+<!ENTITY search_widget_default_cropped_text "ಹುಡುಕು">
+<!ENTITY search_widget_logo_description "&brandShortName; ನೊಂದಿಗೆ ಜಾಲವನ್ನು ಹುಡುಕಿ;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "ವಿಳಾಸ ಹುಡುಕಲು ಅಥವಾ ಸೇರಿಸಲು ನಿಮ್ಮ ‍QR ಓದುಗ ಬಳಸಿ">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "‍‍‍‍‍‍‍‍‍‍‍‍‍‍ವಿಳಾಸ ಹುಡುಕಲು ಅಥವಾ ಸೇರಿಸಲು ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಬಳಸಿ">
 
 <!ENTITY bookmark "ಪುಟ ಗುರುತು">
 <!ENTITY bookmark_remove "ಪುಟ ಗುರುತು ತೆಗೆ">
@@ -206,7 +214,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "ಟ್ಯಾಬ್‌ಗಳನ್ನು, ದತ್ತಾಂಶ ಉಳಿಕೆ, ಡೆವೆಲಪರ್ ಸಲಕರಣೆಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ">
 <!ENTITY pref_category_notifications "ಸೂಚನೆಗಳು">
-<!ENTITY pref_category_notifications_summary "ಹೊಸ ವೈಶಿಷ್ಟ್ಯತೆಗಳು, ಜಾಲತಾಣ ಪರಿಷ್ಕರಣೆಗಳು">
+<!ENTITY pref_category_notifications_summary2 "‍‍ಹೊಸ ಸವಲತ್ತುಗಳು, ಉತ್ಪನ್ನ ಸಲಹೆಗಳು">
 <!ENTITY pref_developer_remotedebugging_usb "ರಿಮೋಟ್ ಡೀಬಗ್ಗಿಂಗ್ USB ಮೂಲಕ">
 <!ENTITY pref_developer_remotedebugging_wifi "ರಿಮೋಟ್ ಡೀಬಗ್ಗಿಂಗ್ Wi-Fi ಮೂಲಕ">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "ವೈ-ಫೈ ಡೀಬಗಿಂಗ್‌ಗೆ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ‌QR ಕೋಡ್ ರೀಡರ್ ಅಪ್ ಸ್ಥಾಪಿತಗೊಂಡಿರಬೇಕು.">
@@ -282,6 +290,19 @@
 <!ENTITY pref_whats_new_notification "&brandShortName; ನಲ್ಲಿ ಹೊಸತೇನಿದೆ">
 <!ENTITY pref_whats_new_notification_summary "ಪರಿಷ್ಕರಣೆಯ ನಂತರ ಹೊಸ ವೈಶಿಷ್ಟ್ಯತೆಗಳ ಬಗ್ಗೆ ತಿಳಿಯಿರಿ">
 
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "‍ಉತ್ಪನ್ನ ಮತ್ತು ಸವಲತ್ತು ಸೂಚನೆಗಳು">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "‍‍&brandShortName; ಮತ್ತು ಇತರೆ &vendorShortName; ಉತ್ಪನ್ನಗಳನ್ನು ಬಳಸುವ ಬಗ್ಗೆ ತಿಳಿಯಿರಿ">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(ಈ ಆಯ್ಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, &pref_feature_tips_notification_enabling_path; ಗಳನ್ನು ಈಗಾಗಲೇ ಸಕ್ರಿಯಗೊಳಿಸಿರಬೇಕು.)">
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "ಪ್ರಯೋಗಾತ್ಮಕ ವೈಶಿಷ್ಟ್ಯಗಳು">
@@ -320,6 +341,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "ಸಂಯೋಜನೆಗಳಿಗೆ ತೆರಳು">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "ಹೊಸ ಟ್ಯಾಬ್ ಸರದಿಗೆ ಸೇರಿಸಲಾಗುತ್ತಿದೆ &#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -354,7 +378,8 @@
 <!ENTITY pref_use_system_font_size_summary "ಗಣಕ ವ್ಯವಸ್ಥೆಯ ಅಕ್ಷರ ಶೈಲಿ ಪ್ರಕಾರ ಜಾಲಪುಟದ  ಹಿಗ್ಗಿಸು ಅಥವಾ ಕುಗ್ಗಿಸು">
 
 <!ENTITY pref_media_autoplay_enabled "ಆಟೋ ಪ್ಲೇ ಅನುಮತಿಸು">
-<!ENTITY pref_media_autoplay_enabled_summary "ಜಾಲತಾಣಗಳು ಸ್ವಯಂ ವೀಡಿಯೊ ಮತ್ತು ಇತರೆ ಮೀಡಿಯಾ ವಿಷಯಗಳನ್ನು ಪ್ಲೇ ಮಾಡುತ್ತಿದ್ದಲ್ಲಿ ನಿಯಂತ್ರಿಸಿ">
+<!ENTITY pref_media_autoplay_allow "ಆಟೋ ಪ್ಲೇ ಅನುಮತಿಸು">
+<!ENTITY pref_media_autoplay_block "ಆಟೋ ಪ್ಲೇ ನಿರ್ಬಂಧಿಸು">
 <!ENTITY pref_zoom_force_enabled "ಜೂಮ್‌ ಅನ್ನು ಯಾವಾಗಲೂ ಸಕ್ರಿಯವಾಗಿರಿಸು">
 <!ENTITY pref_zoom_force_enabled_summary "ಯಾವುದೇ ಪುಟವನ್ನು ಜೂಮ್ ಮಾಡುವಂತಾಗಲು ಆದೇಶವನ್ನು ದಾಟಿ">
 <!ENTITY pref_voice_input "‍‍ಧ್ವನಿಯ ಇನ್‌ಪುಟ್">
@@ -377,7 +402,6 @@
 <!ENTITY pref_private_data_searchHistory "ಇತಿಹಾಸವನ್ನು ಹುಡುಕು">
 <!ENTITY pref_private_data_formdata2 "ಇತಿಹಾಸದಿಂದ">
 <!ENTITY pref_private_data_cookies2 "ಕುಕೀಗಳು &amp; ಸಕ್ರಿಯ ಖಾತೆಗೆಳು">
-<!ENTITY pref_private_data_passwords2 "ಉಳಿಸಿದ ಲಾಗಿನ್‌ಗಳು">
 <!ENTITY pref_private_data_cache "ಶೀಘ್ರ ಸ್ಮೃತಿಕೋಶ">
 <!ENTITY pref_private_data_offlineApps "ಆಫ್‌ಲೈನ್‌ ಜಾಲತಾಣದ ದತ್ತಾಂಶ">
 <!ENTITY pref_private_data_siteSettings2 "ತಾಣದ ಸಿದ್ಧತೆಗಳು">
@@ -422,7 +446,6 @@
      crashReporterDesc.label). -->
 <!ENTITY datareporting_fhr_title "&brandShortName; ಆರೋಗ್ಯ ವರದಿ">
 <!ENTITY datareporting_fhr_summary2 "ನಿಮ್ಮ ಬ್ರೌಸರಿನ ಸ್ಥಿತಿ ಮತ್ತು ನಿರ್ವಹಣೆಯನ್ನು ತಿಳಿಯಲು &vendorShortName; ದೊಂದಿಗೆ ಮಾಹಿತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದು">
-<!ENTITY datareporting_abouthr_title "ನನ್ನ ಆರೋಗ್ಯ ವರದಿ ನೋಡು">
 <!ENTITY datareporting_telemetry_title "ಟೆಲಿಮೆಟ್ರಿ">
 <!ENTITY datareporting_telemetry_summary "&brandShortName; ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಕಾರ್ಯನಿರ್ವಹಣೆ, ಬಳಕೆ, ಯಂತ್ರಾಂಶ ಮತ್ತು ದತ್ತಾಂಶ ಅಗತ್ಯಾನುಗುಣಗೊಳಿಕೆಯ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು &vendorShortName; ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ">
 <!ENTITY datareporting_crashreporter_summary "ನಿಮ್ಮ ಜಾಲವೀಕ್ಷಕವನ್ನು ಹೆಚ್ಚು ಸ್ಥಿರ ಮತ್ತು ಸುರಕ್ಷಿತವಾಗಿಸಲು &brandShortName; ಕುಸಿತ ವರದಿಗಳನ್ನು &vendorShortName; ಗೆ ಕಳುಹಿಸುತ್ತದೆ">
@@ -431,6 +454,11 @@
 <!ENTITY datareporting_crashreporter_title_short "ಕ್ರಿಯಾವೈಫಲ್ಯ ವರದಿಗಾರ">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName; ಸ್ಥಳಾಧಾರಿತ ಸೇವೆಗಳು">
 <!ENTITY datareporting_wifi_geolocation_summary4 "ವಿಶ್ವವನ್ನು ಅಳೆಯಲು &vendorShortName; ಗೆ ಸಹಾಯ ಮಾಡಿ! ನಮ್ಮ ಜಿಯೋಲೊಕೇಷನ್ ಸೇವೆಯನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ನಿಮ್ಮ ಸಾಧನದ ಅಂದಾಜು Wi-Fi ಮತ್ತು ಸೆಲ್ಯುಲರ್ ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; ಸ್ಥಳಾಧಾರಿತ ಸೇವೆಗಳು">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -537,7 +565,7 @@
 <!ENTITY pref_compact_tabs_summary2 "‍ಪೋಟ್ರೈಟ್ ಸ್ಥಿತಿಯಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎರಡು ಲಂಬಸಾಲುಗಳಲ್ಲಿ ಜೋಡಿಸು">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "ಪುಟವನ್ನು ತೆಗೆಯಲಾಗಿದೆ">
 <!ENTITY folder_removed "ಕಡತಕೋಶದ ಹೆಸರು">
@@ -752,7 +780,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "ಕಡೆಗೆ ಸಿಂಕ್ ಆದದ್ದು: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "ಕೊನೆಗೆ ಸಿಂಕ್‌ಆದದ್ದು: ಎಂದಿಗೂ ಇಲ್ಲ">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -813,15 +841,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "&brandShortName; ಅನ್ನು ತೆರೆಯಲು ಆಗುತ್ತಿಲ್ಲ. ದಯವಿಟ್ಟು ಮರು-ಸ್ಥಾಪಿಸಿ ಮತ್ತು ಮರಳಿ ಪ್ರಯತ್ನಿಸಿ.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; ಇನ್ಮುಂದೆ ಪರಿಷ್ಕರಣೆಗೊಳ್ಳುವುದಿಲ್ಲ">
-<!ENTITY eol_notification_summary "ಹೆಚ್ಚು ಕಲಿಯಲು ಮೆಲ್ಲನೆ ತಟ್ಟಿ">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; ನವೀಕರಣಗೊಂಡಿದೆ">
 <!ENTITY whatsnew_notification_summary "ಈ ಆವೃತ್ತಿಯಲ್ಲಿ ಹೊಸತೇನಿದೆ ಹುಡುಕಿ ನೋಡಿ">
-
-<!ENTITY promotion_add_page_shortcut "ಪುಟಕ್ಕೆ ಶಾರ್ಟ-ಕಟ್ಅನ್ನು ಸೇರಿಸಿ">
 
 <!ENTITY helper_first_offline_bookmark_title "ಆಫ್‍‌‍ಲೈನ್ ಓದು">
 <!ENTITY helper_first_offline_bookmark_message "ಆಫ್‌ಲೈನ್ ಇದ್ದಾಗ್ಯೂ, ನಿಮ್ಮ ಪುಟಗುರುತುಗಳಲ್ಲಿನ ಓದುಗ ನೋಟದ ಅಂಶಗಳನ್ನು ಹುಡುಕಿರಿ.">
@@ -872,3 +895,23 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "ಮುಖಪುಟ ಪರದೆಗೆ ಸೇರಿಸಿ">
 <!ENTITY pwa_continue_to_website "ಜಾಲತಾಣಕ್ಕೆ ಮುಂದುವರೆಯಿರಿ">
 <!ENTITY pwa_onboarding_sumo "ನೀವು ಸುಲಭವಾಗಿ ಈ ಜಾಲತಾಣವನ್ನು ನಿಮ್ಮ ಮುಖ್ಯ ಪರದೆಗೆ ಸೇರಿಸಿ ತಕ್ಷಣದ ಪ್ರವೇಶ ಪಡೆಯಬಹುದು ಮತ್ತು ಆಪ್‍ನಲ್ಲಿಯೇ ಶೀಘ್ರವಾಗಿ ಜಾಲಾಡುವ ಅನುಭವ ಪಡೆಯಬಹುದು.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "ಪ್ಲೇ">
+<!ENTITY pip_play_button_description "ಪ್ಲೇ ಮುಂದುವರೆಸು">
+<!ENTITY pip_pause_button_title "ವಿರಾಮ">
+<!ENTITY pip_pause_button_description "ಪ್ಲೇ ವಿರಮಿಸು">
+
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "ಬ್ರೌಸರ್">
+<!ENTITY mls_notification_channel "&vendorShortName; ಸ್ಥಳಾಧಾರಿತ ಸೇವೆಗಳು">
+<!ENTITY download_notification_channel "ಡೌನ್‌ಲೋಡ್‌ಗಳು">
+<!ENTITY media_notification_channel2 "ಧ್ವನಿ ಮತ್ತು ವಿಡಿಯೋ">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; ಸಲಹೆಗಳು ಮತ್ತು ತಂತ್ರಗಳನ್ನು">
+<!ENTITY updater_notification_channel "ಅನ್ವಯ ಪರಿಷ್ಕರಣೆಗಳು">
+<!ENTITY synced_tabs_notification_channel "ಸಿಂಕ್ ಮಾಡಿದ ಹಾಳೆಗಳು">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "ತಾಣದ ಸೂಚನೆಗಳು">

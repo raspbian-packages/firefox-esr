@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(MediaMetadataManager_h__)
-#define MediaMetadataManager_h__
+#  define MediaMetadataManager_h__
 
-#include "mozilla/AbstractThread.h"
-#include "mozilla/LinkedList.h"
+#  include "mozilla/AbstractThread.h"
+#  include "mozilla/LinkedList.h"
 
-#include "nsAutoPtr.h"
-#include "MediaEventSource.h"
-#include "TimeUnits.h"
-#include "VideoUtils.h"
+#  include "nsAutoPtr.h"
+#  include "MediaEventSource.h"
+#  include "TimeUnits.h"
+#  include "VideoUtils.h"
 
 namespace mozilla {
 
@@ -26,21 +26,23 @@ typedef MediaEventSourceExc<TimedMetadata> TimedMetadataEventSource;
 class TimedMetadata : public LinkedListElement<TimedMetadata> {
  public:
   TimedMetadata(const media::TimeUnit& aPublishTime,
-                nsAutoPtr<MetadataTags>&& aTags, nsAutoPtr<MediaInfo>&& aInfo)
-      : mPublishTime(aPublishTime), mTags(Move(aTags)), mInfo(Move(aInfo)) {}
+                UniquePtr<MetadataTags>&& aTags, nsAutoPtr<MediaInfo>&& aInfo)
+      : mPublishTime(aPublishTime),
+        mTags(std::move(aTags)),
+        mInfo(std::move(aInfo)) {}
 
   // Define our move constructor because we don't want to move the members of
   // LinkedListElement to change the list.
   TimedMetadata(TimedMetadata&& aOther)
       : mPublishTime(aOther.mPublishTime),
-        mTags(Move(aOther.mTags)),
-        mInfo(Move(aOther.mInfo)) {}
+        mTags(std::move(aOther.mTags)),
+        mInfo(std::move(aOther.mInfo)) {}
 
   // The time, in microseconds, at which those metadata should be available.
   media::TimeUnit mPublishTime;
   // The metadata. The ownership is transfered to the element when dispatching
   // to the main threads.
-  nsAutoPtr<MetadataTags> mTags;
+  UniquePtr<MetadataTags> mTags;
   // The media info, including the info of audio tracks and video tracks.
   // The ownership is transfered to MediaDecoder when dispatching to the
   // main thread.
@@ -75,7 +77,7 @@ class MediaMetadataManager {
     TimedMetadata* metadata = mMetadataQueue.getFirst();
     while (metadata && aCurrentTime >= metadata->mPublishTime) {
       // Our listener will figure out what to do with TimedMetadata.
-      mTimedMetadataEvent.Notify(Move(*metadata));
+      mTimedMetadataEvent.Notify(std::move(*metadata));
       delete mMetadataQueue.popFirst();
       metadata = mMetadataQueue.getFirst();
     }
@@ -83,7 +85,7 @@ class MediaMetadataManager {
 
  protected:
   void OnMetadataQueued(TimedMetadata&& aMetadata) {
-    mMetadataQueue.insertBack(new TimedMetadata(Move(aMetadata)));
+    mMetadataQueue.insertBack(new TimedMetadata(std::move(aMetadata)));
   }
 
   LinkedList<TimedMetadata> mMetadataQueue;

@@ -13,6 +13,8 @@
 #include "mozilla/gfx/Logging.h"
 #include "mozilla/gfx/GPUChild.h"
 #include "mozilla/gfx/GPUProcessManager.h"
+#include "VRProcessManager.h"
+#include "VRChild.h"
 
 using namespace mozilla;
 
@@ -77,6 +79,13 @@ void gfxPrefs::Pref::OnChange() {
       Unused << gpu->SendUpdatePref(gfx::GfxPrefSetting(mIndex, value));
     }
   }
+  if (auto vpm = gfx::VRProcessManager::Get()) {
+    if (gfx::VRChild* vr = vpm->GetVRChild()) {
+      GfxPrefValue value;
+      GetLiveValue(&value);
+      Unused << vr->SendUpdatePref(gfx::GfxPrefSetting(mIndex, value));
+    }
+  }
   FireChangeCallback();
 }
 
@@ -109,55 +118,57 @@ void gfxPrefs::Pref::SetChangeCallback(ChangeCallback aCallback) {
 // On lightweight processes such as for GMP and GPU, XPCOM is not initialized,
 // and therefore we don't have access to Preferences. When XPCOM is not
 // available we rely on manual synchronization of gfxPrefs values over IPC.
-/* static */ bool gfxPrefs::IsPrefsServiceAvailable() {
+/* static */
+bool gfxPrefs::IsPrefsServiceAvailable() {
   return Preferences::IsServiceAvailable();
 }
 
-/* static */ bool gfxPrefs::IsParentProcess() { return XRE_IsParentProcess(); }
+/* static */
+bool gfxPrefs::IsParentProcess() { return XRE_IsParentProcess(); }
 
-void gfxPrefs::PrefAddVarCache(bool* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(bool* aVariable, const nsACString& aPref,
                                bool aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
   Preferences::AddBoolVarCache(aVariable, aPref, aDefault);
 }
 
-void gfxPrefs::PrefAddVarCache(int32_t* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(int32_t* aVariable, const nsACString& aPref,
                                int32_t aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
   Preferences::AddIntVarCache(aVariable, aPref, aDefault);
 }
 
-void gfxPrefs::PrefAddVarCache(uint32_t* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(uint32_t* aVariable, const nsACString& aPref,
                                uint32_t aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
   Preferences::AddUintVarCache(aVariable, aPref, aDefault);
 }
 
-void gfxPrefs::PrefAddVarCache(float* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(float* aVariable, const nsACString& aPref,
                                float aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
   Preferences::AddFloatVarCache(aVariable, aPref, aDefault);
 }
 
-void gfxPrefs::PrefAddVarCache(std::string* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(std::string* aVariable, const nsCString& aPref,
                                std::string aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
-  Preferences::SetCString(aPref, aVariable->c_str());
+  Preferences::SetCString(aPref.get(), aVariable->c_str());
 }
 
-void gfxPrefs::PrefAddVarCache(AtomicBool* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(AtomicBool* aVariable, const nsACString& aPref,
                                bool aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
   Preferences::AddAtomicBoolVarCache(aVariable, aPref, aDefault);
 }
 
-void gfxPrefs::PrefAddVarCache(AtomicInt32* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(AtomicInt32* aVariable, const nsACString& aPref,
                                int32_t aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
   Preferences::AddAtomicIntVarCache(aVariable, aPref, aDefault);
 }
 
-void gfxPrefs::PrefAddVarCache(AtomicUint32* aVariable, const char* aPref,
+void gfxPrefs::PrefAddVarCache(AtomicUint32* aVariable, const nsACString& aPref,
                                uint32_t aDefault) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
   Preferences::AddAtomicUintVarCache(aVariable, aPref, aDefault);
@@ -221,19 +232,22 @@ void gfxPrefs::PrefSet(const char* aPref, std::string aValue) {
   Preferences::SetCString(aPref, aValue.c_str());
 }
 
-static void OnGfxPrefChanged(const char* aPrefname, void* aClosure) {
-  reinterpret_cast<gfxPrefs::Pref*>(aClosure)->OnChange();
+static void OnGfxPrefChanged(const char* aPrefname, gfxPrefs::Pref* aPref) {
+  aPref->OnChange();
 }
 
 void gfxPrefs::WatchChanges(const char* aPrefname, Pref* aPref) {
   MOZ_ASSERT(IsPrefsServiceAvailable());
-  Preferences::RegisterCallback(OnGfxPrefChanged, aPrefname, aPref);
+  nsCString name;
+  name.AssignLiteral(aPrefname, strlen(aPrefname));
+  Preferences::RegisterCallback(OnGfxPrefChanged, name, aPref);
 }
 
 void gfxPrefs::UnwatchChanges(const char* aPrefname, Pref* aPref) {
   // The Preferences service can go offline before gfxPrefs is destroyed.
   if (IsPrefsServiceAvailable()) {
-    Preferences::UnregisterCallback(OnGfxPrefChanged, aPrefname, aPref);
+    Preferences::UnregisterCallback(OnGfxPrefChanged,
+                                    nsDependentCString(aPrefname), aPref);
   }
 }
 

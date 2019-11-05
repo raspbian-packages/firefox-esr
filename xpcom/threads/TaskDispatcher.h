@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(TaskDispatcher_h_)
-#define TaskDispatcher_h_
+#  define TaskDispatcher_h_
 
-#include "mozilla/AbstractThread.h"
-#include "mozilla/Maybe.h"
-#include "mozilla/UniquePtr.h"
-#include "mozilla/Unused.h"
+#  include "mozilla/AbstractThread.h"
+#  include "mozilla/Maybe.h"
+#  include "mozilla/UniquePtr.h"
+#  include "mozilla/Unused.h"
 
-#include "nsISupportsImpl.h"
-#include "nsTArray.h"
-#include "nsThreadUtils.h"
+#  include "nsISupportsImpl.h"
+#  include "nsTArray.h"
+#  include "nsThreadUtils.h"
 
-#include <queue>
+#  include <queue>
 
 namespace mozilla {
 
@@ -84,7 +84,7 @@ class AutoTaskDispatcher : public TaskDispatcher {
     MOZ_ASSERT(!HaveDirectTasks());
 
     for (size_t i = 0; i < mTaskGroups.Length(); ++i) {
-      DispatchTaskGroup(Move(mTaskGroups[i]));
+      DispatchTaskGroup(std::move(mTaskGroups[i]));
     }
   }
 
@@ -104,7 +104,7 @@ class AutoTaskDispatcher : public TaskDispatcher {
     if (mDirectTasks.isNothing()) {
       mDirectTasks.emplace();
     }
-    mDirectTasks->push(Move(aRunnable));
+    mDirectTasks->push(std::move(aRunnable));
   }
 
   void AddStateChangeTask(AbstractThread* aThread,
@@ -144,7 +144,7 @@ class AutoTaskDispatcher : public TaskDispatcher {
     // Dispatch all groups that match |aThread|.
     for (size_t i = 0; i < mTaskGroups.Length(); ++i) {
       if (mTaskGroups[i]->mThread == aThread) {
-        nsresult rv2 = DispatchTaskGroup(Move(mTaskGroups[i]));
+        nsresult rv2 = DispatchTaskGroup(std::move(mTaskGroups[i]));
 
         if (NS_WARN_IF(NS_FAILED(rv2)) && NS_SUCCEEDED(rv)) {
           // We should try our best to call DispatchTaskGroup() as much as
@@ -178,7 +178,7 @@ class AutoTaskDispatcher : public TaskDispatcher {
    public:
     explicit TaskGroupRunnable(UniquePtr<PerThreadTaskGroup>&& aTasks)
         : Runnable("AutoTaskDispatcher::TaskGroupRunnable"),
-          mTasks(Move(aTasks)) {}
+          mTasks(std::move(aTasks)) {}
 
     NS_IMETHOD Run() override {
       // State change tasks get run all together before any code is run, so
@@ -241,7 +241,7 @@ class AutoTaskDispatcher : public TaskDispatcher {
     AbstractThread::DispatchReason reason =
         mIsTailDispatcher ? AbstractThread::TailDispatch
                           : AbstractThread::NormalDispatch;
-    nsCOMPtr<nsIRunnable> r = new TaskGroupRunnable(Move(aGroup));
+    nsCOMPtr<nsIRunnable> r = new TaskGroupRunnable(std::move(aGroup));
     return thread->Dispatch(r.forget(), reason);
   }
 

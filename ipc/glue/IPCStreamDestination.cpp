@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "IPCStreamDestination.h"
+#include "mozilla/InputStreamLengthWrapper.h"
 #include "mozilla/Mutex.h"
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"
@@ -240,7 +241,14 @@ NS_INTERFACE_MAP_END
 // IPCStreamDestination
 
 IPCStreamDestination::IPCStreamDestination()
-    : mOwningThread(NS_GetCurrentThread()), mDelayedStart(false) {}
+    : mOwningThread(NS_GetCurrentThread()),
+      mDelayedStart(false)
+#ifdef MOZ_DEBUG
+      ,
+      mLengthSet(false)
+#endif
+{
+}
 
 IPCStreamDestination::~IPCStreamDestination() {}
 
@@ -268,6 +276,22 @@ nsresult IPCStreamDestination::Initialize() {
 
 void IPCStreamDestination::SetDelayedStart(bool aDelayedStart) {
   mDelayedStart = aDelayedStart;
+}
+
+void IPCStreamDestination::SetLength(int64_t aLength) {
+  MOZ_ASSERT(mReader);
+  MOZ_ASSERT(!mLengthSet);
+
+#ifdef DEBUG
+  mLengthSet = true;
+#endif
+
+  if (aLength != -1) {
+    nsCOMPtr<nsIInputStream> finalStream;
+    finalStream = new InputStreamLengthWrapper(mReader.forget(), aLength);
+    mReader = do_QueryInterface(finalStream);
+    MOZ_ASSERT(mReader);
+  }
 }
 
 already_AddRefed<nsIInputStream> IPCStreamDestination::TakeReader() {

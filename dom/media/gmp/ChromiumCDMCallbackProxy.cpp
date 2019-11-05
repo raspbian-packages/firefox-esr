@@ -16,8 +16,8 @@ void ChromiumCDMCallbackProxy::DispatchToMainThread(const char* const aLabel,
                                                     Args&&... aArgs) {
   mMainThread->Dispatch(
       // Use Decay to ensure all the types are passed by value not by reference.
-      NewRunnableMethod<typename Decay<Args>::Type...>(aLabel, mProxy, aFunc,
-                                                       Forward<Args>(aArgs)...),
+      NewRunnableMethod<typename Decay<Args>::Type...>(
+          aLabel, mProxy, aFunc, std::forward<Args>(aArgs)...),
       NS_DISPATCH_NORMAL);
 }
 
@@ -69,7 +69,7 @@ void ChromiumCDMCallbackProxy::SessionMessage(const nsACString& aSessionId,
   DispatchToMainThread("ChromiumCDMProxy::OnSessionMessage",
                        &ChromiumCDMProxy::OnSessionMessage,
                        NS_ConvertUTF8toUTF16(aSessionId),
-                       ToDOMMessageType(aMessageType), Move(aMessage));
+                       ToDOMMessageType(aMessageType), std::move(aMessage));
 }
 
 static dom::MediaKeyStatus ToDOMMediaKeyStatus(uint32_t aStatus) {

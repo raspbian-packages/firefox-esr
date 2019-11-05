@@ -11,29 +11,27 @@
 #include "mozilla/EventForwards.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/UniquePtr.h"
+#include "mozilla/dom/CharacterData.h"
 #include "nsFrame.h"
 #include "nsFrameSelection.h"
-#include "nsGenericDOMDataNode.h"
 #include "nsSplittableFrame.h"
 #include "nsLineBox.h"
 #include "gfxSkipChars.h"
 #include "gfxTextRun.h"
 #include "nsDisplayList.h"
+#include "nsFontMetrics.h"
 #include "JustificationUtils.h"
 #include "RubyUtils.h"
 
 // Undo the windows.h damage
 #if defined(XP_WIN) && defined(DrawText)
-#undef DrawText
+#  undef DrawText
 #endif
 
 class nsTextPaintStyle;
 class PropertyProvider;
 struct SelectionDetails;
 class nsTextFragment;
-
-class nsDisplayTextGeometry;
-class nsDisplayText;
 
 namespace mozilla {
 class SVGContextPaint;
@@ -51,8 +49,9 @@ class nsTextFrame : public nsFrame {
   typedef gfxTextRun::Range Range;
 
  public:
-  explicit nsTextFrame(nsStyleContext* aContext, ClassID aID = kClassID)
-      : nsFrame(aContext, aID),
+  explicit nsTextFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                       ClassID aID = kClassID)
+      : nsFrame(aStyle, aPresContext, aID),
         mNextContinuation(nullptr),
         mContentOffset(0),
         mContentLengthHint(0),
@@ -61,15 +60,13 @@ class nsTextFrame : public nsFrame {
   NS_DECL_FRAMEARENA_HELPERS(nsTextFrame)
 
   friend class nsContinuingTextFrame;
-  friend class nsDisplayTextGeometry;
-  friend class nsDisplayText;
 
   // nsQueryFrame
   NS_DECL_QUERYFRAME
 
   // nsIFrame
   void BuildDisplayList(nsDisplayListBuilder* aBuilder,
-                        const nsDisplayListSet& aLists) override;
+                        const nsDisplayListSet& aLists) final;
 
   void Init(nsIContent* aContent, nsContainerFrame* aParent,
             nsIFrame* aPrevInFlow) override;
@@ -77,7 +74,7 @@ class nsTextFrame : public nsFrame {
   void DestroyFrom(nsIFrame* aDestructRoot,
                    PostDestroyData& aPostDestroyData) override;
 
-  nsresult GetCursor(const nsPoint& aPoint, nsIFrame::Cursor& aCursor) override;
+  mozilla::Maybe<Cursor> GetCursor(const nsPoint&) final;
 
   nsresult CharacterDataChanged(const CharacterDataChangeInfo&) final;
 
@@ -99,7 +96,7 @@ class nsTextFrame : public nsFrame {
       GetContent()->UnsetFlags(NS_HAS_FLOWLENGTH_PROPERTY);
     }
   }
-  nsIFrame* GetNextInFlowVirtual() const override { return GetNextInFlow(); }
+  nsIFrame* GetNextInFlowVirtual() const final { return GetNextInFlow(); }
   nsTextFrame* GetNextInFlow() const {
     return mNextContinuation && (mNextContinuation->GetStateBits() &
                                  NS_FRAME_IS_FLUID_CONTINUATION)
@@ -129,10 +126,6 @@ class nsTextFrame : public nsFrame {
   nsTextFrame* LastInFlow() const final;
   nsTextFrame* LastContinuation() const final;
 
-  nsSplittableType GetSplittableType() const final {
-    return NS_FRAME_SPLITTABLE;
-  }
-
   bool IsFrameOfType(uint32_t aFlags) const final {
     // Set the frame state bit for text frames to mark them as replaced.
     // XXX kipp: temporary
@@ -148,22 +141,23 @@ class nsTextFrame : public nsFrame {
     if (mozilla::RubyUtils::IsRubyContentBox(GetParent()->Type())) {
       return true;
     }
-    return StyleContext()->ShouldSuppressLineBreak();
+    return Style()->ShouldSuppressLineBreak();
   }
 
-  void InvalidateFrame(uint32_t aDisplayItemKey = 0) override;
+  void InvalidateFrame(uint32_t aDisplayItemKey = 0,
+                       bool aRebuildDisplayItems = true) final;
   void InvalidateFrameWithRect(const nsRect& aRect,
-                               uint32_t aDisplayItemKey = 0) override;
+                               uint32_t aDisplayItemKey = 0,
+                               bool aRebuildDisplayItems = true) final;
 
 #ifdef DEBUG_FRAME_DUMP
   void List(FILE* out = stderr, const char* aPrefix = "",
-            uint32_t aFlags = 0) const override;
-  nsresult GetFrameName(nsAString& aResult) const override;
+            uint32_t aFlags = 0) const final;
+  nsresult GetFrameName(nsAString& aResult) const final;
   void ToCString(nsCString& aBuf, int32_t* aTotalContentLength) const;
 #endif
 
-  ContentOffsets CalcContentOffsetsFromFramePoint(
-      const nsPoint& aPoint) override;
+  ContentOffsets CalcContentOffsetsFromFramePoint(const nsPoint& aPoint) final;
   ContentOffsets GetCharacterOffsetAtFramePoint(const nsPoint& aPoint);
 
   /**
@@ -178,19 +172,18 @@ class nsTextFrame : public nsFrame {
   void SetSelectedRange(uint32_t aStart, uint32_t aEnd, bool aSelected,
                         SelectionType aSelectionType);
 
-  FrameSearchResult PeekOffsetNoAmount(bool aForward,
-                                       int32_t* aOffset) override;
+  FrameSearchResult PeekOffsetNoAmount(bool aForward, int32_t* aOffset) final;
   FrameSearchResult PeekOffsetCharacter(
       bool aForward, int32_t* aOffset,
-      PeekOffsetCharacterOptions aOptions =
-          PeekOffsetCharacterOptions()) override;
+      PeekOffsetCharacterOptions aOptions = PeekOffsetCharacterOptions()) final;
   FrameSearchResult PeekOffsetWord(bool aForward, bool aWordSelectEatSpace,
                                    bool aIsKeyboardSelect, int32_t* aOffset,
-                                   PeekWordState* aState) override;
+                                   PeekWordState* aState,
+                                   bool aTrimSpaces) final;
 
   nsresult CheckVisibility(nsPresContext* aContext, int32_t aStartIndex,
                            int32_t aEndIndex, bool aRecurse, bool* aFinished,
-                           bool* _retval) override;
+                           bool* _retval) final;
 
   // Flags for aSetLengthFlags
   enum { ALLOW_FRAME_CREATION_AND_DESTRUCTION = 0x01 };
@@ -199,25 +192,23 @@ class nsTextFrame : public nsFrame {
   void SetLength(int32_t aLength, nsLineLayout* aLineLayout,
                  uint32_t aSetLengthFlags = 0);
 
-  nsresult GetOffsets(int32_t& start, int32_t& end) const override;
+  nsresult GetOffsets(int32_t& start, int32_t& end) const final;
 
-  void AdjustOffsetsForBidi(int32_t start, int32_t end) override;
+  void AdjustOffsetsForBidi(int32_t start, int32_t end) final;
 
-  nsresult GetPointFromOffset(int32_t inOffset, nsPoint* outPoint) override;
+  nsresult GetPointFromOffset(int32_t inOffset, nsPoint* outPoint) final;
   nsresult GetCharacterRectsInRange(int32_t aInOffset, int32_t aLength,
-                                    nsTArray<nsRect>& aRects) override;
+                                    nsTArray<nsRect>& aRects) final;
 
   nsresult GetChildFrameContainingOffset(int32_t inContentOffset, bool inHint,
                                          int32_t* outFrameContentOffset,
-                                         nsIFrame** outChildFrame) override;
+                                         nsIFrame** outChildFrame) final;
 
-  bool IsVisibleInSelection(nsISelection* aSelection) override;
-
-  bool IsEmpty() override;
-  bool IsSelfEmpty() override { return IsEmpty(); }
+  bool IsEmpty() final;
+  bool IsSelfEmpty() final { return IsEmpty(); }
   nscoord GetLogicalBaseline(mozilla::WritingMode aWritingMode) const final;
 
-  bool HasSignificantTerminalNewline() const override;
+  bool HasSignificantTerminalNewline() const final;
 
   /**
    * Returns true if this text frame is logically adjacent to the end of the
@@ -234,7 +225,7 @@ class nsTextFrame : public nsFrame {
   }
 
 #ifdef ACCESSIBILITY
-  mozilla::a11y::AccType AccessibleType() override;
+  mozilla::a11y::AccType AccessibleType() final;
 #endif
 
   float GetFontSizeInflation() const;
@@ -244,9 +235,9 @@ class nsTextFrame : public nsFrame {
   }
   void SetFontSizeInflation(float aInflation);
 
-  void MarkIntrinsicISizesDirty() override;
-  nscoord GetMinISize(gfxContext* aRenderingContext) override;
-  nscoord GetPrefISize(gfxContext* aRenderingContext) override;
+  void MarkIntrinsicISizesDirty() final;
+  nscoord GetMinISize(gfxContext* aRenderingContext) final;
+  nscoord GetPrefISize(gfxContext* aRenderingContext) final;
   void AddInlineMinISize(gfxContext* aRenderingContext,
                          InlineMinISizeData* aData) override;
   void AddInlinePrefISize(gfxContext* aRenderingContext,
@@ -255,14 +246,13 @@ class nsTextFrame : public nsFrame {
       gfxContext* aRenderingContext, mozilla::WritingMode aWritingMode,
       const mozilla::LogicalSize& aCBSize, nscoord aAvailableISize,
       const mozilla::LogicalSize& aMargin, const mozilla::LogicalSize& aBorder,
-      const mozilla::LogicalSize& aPadding, ComputeSizeFlags aFlags) override;
-  nsRect ComputeTightBounds(DrawTarget* aDrawTarget) const override;
+      const mozilla::LogicalSize& aPadding, ComputeSizeFlags aFlags) final;
+  nsRect ComputeTightBounds(DrawTarget* aDrawTarget) const final;
   nsresult GetPrefWidthTightBounds(gfxContext* aContext, nscoord* aX,
-                                   nscoord* aXMost) override;
+                                   nscoord* aXMost) final;
   void Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
-              const ReflowInput& aReflowInput,
-              nsReflowStatus& aStatus) override;
-  bool CanContinueTextRun() const override;
+              const ReflowInput& aReflowInput, nsReflowStatus& aStatus) final;
+  bool CanContinueTextRun() const final;
   // Method that is called for a text frame that is logically
   // adjacent to the end of the line (i.e. followed only by empty text frames,
   // placeholders or inlines containing such).
@@ -276,11 +266,12 @@ class nsTextFrame : public nsFrame {
   TrimOutput TrimTrailingWhiteSpace(DrawTarget* aDrawTarget);
   RenderedText GetRenderedText(
       uint32_t aStartOffset = 0, uint32_t aEndOffset = UINT32_MAX,
-      TextOffsetType aOffsetType = TextOffsetType::OFFSETS_IN_CONTENT_TEXT,
+      TextOffsetType aOffsetType = TextOffsetType::OffsetsInContentText,
       TrailingWhitespace aTrimTrailingWhitespace =
-          TrailingWhitespace::TRIM_TRAILING_WHITESPACE) override;
+          TrailingWhitespace::Trim) final;
 
-  nsOverflowAreas RecomputeOverflow(nsIFrame* aBlockFrame);
+  nsOverflowAreas RecomputeOverflow(nsIFrame* aBlockFrame,
+                                    bool aIncludeShadows = true);
 
   enum TextRunType {
     // Anything in reflow (but not intrinsic width calculation) or
@@ -412,20 +403,17 @@ class nsTextFrame : public nsFrame {
     mozilla::SVGContextPaint* contextPaint = nullptr;
     DrawPathCallbacks* callbacks = nullptr;
     enum {
-      PaintText,         // Normal text painting.
-      PaintTextBGColor,  // Only paint background color of the selected text
-                         // range in this state.
-      GenerateTextMask   // To generate a mask from a text frame. Should
-                         // only paint text itself with opaque color.
-                         // Text shadow, text selection color and text
-                         // decoration are all discarded in this state.
+      PaintText,        // Normal text painting.
+      GenerateTextMask  // To generate a mask from a text frame. Should
+                        // only paint text itself with opaque color.
+                        // Text shadow, text selection color and text
+                        // decoration are all discarded in this state.
     };
     uint8_t state = PaintText;
     explicit PaintTextParams(gfxContext* aContext) : context(aContext) {}
 
     bool IsPaintText() const { return state == PaintText; }
     bool IsGenerateTextMask() const { return state == GenerateTextMask; }
-    bool IsPaintBGColor() const { return state == PaintTextBGColor; }
   };
 
   struct PaintTextSelectionParams : PaintTextParams {
@@ -454,7 +442,7 @@ class nsTextFrame : public nsFrame {
     mozilla::gfx::Point framePt;
     LayoutDeviceRect dirtyRect;
     const nsTextPaintStyle* textStyle = nullptr;
-    const nsCharClipDisplayItem::ClipEdges* clipEdges = nullptr;
+    const nsDisplayText::ClipEdges* clipEdges = nullptr;
     const nscolor* decorationOverrideColor = nullptr;
     explicit DrawTextParams(gfxContext* aContext)
         : DrawTextRunParams(aContext) {}
@@ -464,14 +452,14 @@ class nsTextFrame : public nsFrame {
   // to generate paths rather than paint the frame's text by passing a callback
   // object.  The private DrawText() is what applies the text to a graphics
   // context.
-  void PaintText(const PaintTextParams& aParams,
-                 const nsCharClipDisplayItem& aItem, float aOpacity = 1.0f);
+  void PaintText(const PaintTextParams& aParams, const nscoord aVisIStartEdge,
+                 const nscoord aVisIEndEdge, const nsPoint& aToReferenceFrame,
+                 const bool aIsSelected, float aOpacity = 1.0f);
   // helper: paint text frame when we're impacted by at least one selection.
   // Return false if the text was not painted and we should continue with
   // the fast path.
-  bool PaintTextWithSelection(
-      const PaintTextSelectionParams& aParams,
-      const nsCharClipDisplayItem::ClipEdges& aClipEdges);
+  bool PaintTextWithSelection(const PaintTextSelectionParams& aParams,
+                              const nsDisplayText::ClipEdges& aClipEdges);
   // helper: paint text with foreground and background colors determined
   // by selection(s). Also computes a mask of all selection types applying to
   // our text, returned in aAllSelectionTypeMask.
@@ -481,7 +469,7 @@ class nsTextFrame : public nsFrame {
       const PaintTextSelectionParams& aParams,
       const mozilla::UniquePtr<SelectionDetails>& aDetails,
       SelectionTypeMask* aAllSelectionTypeMask,
-      const nsCharClipDisplayItem::ClipEdges& aClipEdges);
+      const nsDisplayText::ClipEdges& aClipEdges);
   // helper: paint text decorations for text selected by aSelectionType
   void PaintTextSelectionDecorations(
       const PaintTextSelectionParams& aParams,
@@ -494,7 +482,7 @@ class nsTextFrame : public nsFrame {
                          const nscolor* aDecorationOverrideColor,
                          PropertyProvider* aProvider);
 
-  nscolor GetCaretColorAt(int32_t aOffset) override;
+  nscolor GetCaretColorAt(int32_t aOffset) final;
 
   int16_t GetSelectionStatus(int16_t* aSelectionFlags);
 
@@ -582,8 +570,15 @@ class nsTextFrame : public nsFrame {
     int32_t mLength;
     int32_t GetEnd() const { return mStart + mLength; }
   };
-  TrimmedOffsets GetTrimmedOffsets(const nsTextFragment* aFrag, bool aTrimAfter,
-                                   bool aPostReflow = true) const;
+  enum class TrimmedOffsetFlags : uint8_t {
+    Default = 0,
+    NotPostReflow = 1 << 0,
+    NoTrimAfter = 1 << 1,
+    NoTrimBefore = 1 << 2
+  };
+  TrimmedOffsets GetTrimmedOffsets(
+      const nsTextFragment* aFrag,
+      TrimmedOffsetFlags aFlags = TrimmedOffsetFlags::Default) const;
 
   // Similar to Reflow(), but for use from nsLineLayout
   void ReflowText(nsLineLayout& aLineLayout, nscoord aAvailableWidth,
@@ -594,16 +589,38 @@ class nsTextFrame : public nsFrame {
 
   bool IsInitialLetterChild() const;
 
-  bool ComputeCustomOverflow(nsOverflowAreas& aOverflowAreas) override;
+  bool ComputeCustomOverflow(nsOverflowAreas& aOverflowAreas) final;
+  bool ComputeCustomOverflowInternal(nsOverflowAreas& aOverflowAreas,
+                                     bool aIncludeShadows);
 
   void AssignJustificationGaps(const mozilla::JustificationAssignment& aAssign);
   mozilla::JustificationAssignment GetJustificationAssignment() const;
 
   uint32_t CountGraphemeClusters() const;
 
+  bool HasAnyNoncollapsedCharacters() final;
+
+  /**
+   * Call this after you have manually changed the text node contents without
+   * notifying that change.  This behaves as if all the text contents changed.
+   * (You should only use this for native anonymous content.)
+   */
+  void NotifyNativeAnonymousTextnodeChange(uint32_t aOldLength);
+
+  void SetInflatedFontMetrics(nsFontMetrics* aMetrics) {
+    mFontMetrics = aMetrics;
+  }
+  nsFontMetrics* InflatedFontMetrics() const { return mFontMetrics; }
+
+  nsRect WebRenderBounds();
+
  protected:
   virtual ~nsTextFrame();
 
+  friend class nsDisplayTextGeometry;
+  friend class nsDisplayText;
+
+  RefPtr<nsFontMetrics> mFontMetrics;
   RefPtr<gfxTextRun> mTextRun;
   nsTextFrame* mNextContinuation;
   // The key invariant here is that mContentOffset never decreases along
@@ -627,14 +644,15 @@ class nsTextFrame : public nsFrame {
    * Return true if the frame is part of a Selection.
    * Helper method to implement the public IsSelected() API.
    */
-  bool IsFrameSelected() const override;
+  bool IsFrameSelected() const final;
 
   mozilla::UniquePtr<SelectionDetails> GetSelectionDetails();
 
   void UnionAdditionalOverflow(nsPresContext* aPresContext, nsIFrame* aBlock,
                                PropertyProvider& aProvider,
                                nsRect* aVisualOverflowRect,
-                               bool aIncludeTextDecorations);
+                               bool aIncludeTextDecorations,
+                               bool aIncludeShadows);
 
   // Update information of emphasis marks, and return the visial
   // overflow rect of the emphasis marks.
@@ -648,7 +666,7 @@ class nsTextFrame : public nsFrame {
     mozilla::gfx::Point textBaselinePt;
     gfxContext* context;
     nscolor foregroundColor = NS_RGBA(0, 0, 0, 0);
-    const nsCharClipDisplayItem::ClipEdges* clipEdges = nullptr;
+    const nsDisplayText::ClipEdges* clipEdges = nullptr;
     PropertyProvider* provider = nullptr;
     nscoord leftSideOffset = 0;
     explicit PaintShadowParams(const PaintTextParams& aParams)
@@ -658,10 +676,10 @@ class nsTextFrame : public nsFrame {
   };
 
   void PaintOneShadow(const PaintShadowParams& aParams,
-                      nsCSSShadowItem* aShadowDetails, gfxRect& aBoundingBox,
-                      uint32_t aBlurFlags);
+                      const mozilla::StyleSimpleShadow& aShadowDetails,
+                      gfxRect& aBoundingBox, uint32_t aBlurFlags);
 
-  void PaintShadows(nsCSSShadowArray* aShadow,
+  void PaintShadows(mozilla::Span<const mozilla::StyleSimpleShadow>,
                     const PaintShadowParams& aParams);
 
   struct LineDecoration {
@@ -746,7 +764,7 @@ class nsTextFrame : public nsFrame {
       const TextRangeStyle& aRangeStyle, const Point& aPt,
       gfxFloat aICoordInFrame, gfxFloat aWidth, gfxFloat aAscent,
       const gfxFont::Metrics& aFontMetrics, DrawPathCallbacks* aCallbacks,
-      bool aVertical, uint8_t aDecoration);
+      bool aVertical, mozilla::StyleTextDecorationLine aDecoration);
 
   struct PaintDecorationLineParams;
   void PaintDecorationLine(const PaintDecorationLineParams& aParams);
@@ -783,9 +801,9 @@ class nsTextFrame : public nsFrame {
   ContentOffsets GetCharacterOffsetAtFramePointInternal(
       const nsPoint& aPoint, bool aForInsertionPoint);
 
-  void ClearFrameOffsetCache();
+  static float GetTextCombineScaleFactor(nsTextFrame* aFrame);
 
-  bool HasAnyNoncollapsedCharacters() override;
+  void ClearFrameOffsetCache();
 
   void ClearMetrics(ReflowOutput& aMetrics);
 
@@ -801,5 +819,7 @@ class nsTextFrame : public nsFrame {
   nsPoint GetPointFromIterator(const gfxSkipCharsIterator& aIter,
                                PropertyProvider& aProperties);
 };
+
+MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(nsTextFrame::TrimmedOffsetFlags)
 
 #endif

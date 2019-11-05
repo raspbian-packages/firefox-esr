@@ -30,21 +30,21 @@ class JsepTransceiver {
       : mJsDirection(jsDirection),
         mSendTrack(type, sdp::kSend),
         mRecvTrack(type, sdp::kRecv),
-        mTransport(*(new JsepTransport)),
         mLevel(SIZE_MAX),
         mBundleLevel(SIZE_MAX),
         mAddTrackMagic(false),
         mWasCreatedBySetRemote(false),
         mStopped(false),
         mRemoved(false),
-        mNegotiated(false) {}
+        mNegotiated(false),
+        mCanRecycle(false) {}
 
   // Can't use default copy c'tor because of the refcount members. Ugh.
   JsepTransceiver(const JsepTransceiver& orig)
       : mJsDirection(orig.mJsDirection),
         mSendTrack(orig.mSendTrack),
         mRecvTrack(orig.mRecvTrack),
-        mTransport(*(new JsepTransport(orig.mTransport))),
+        mTransport(orig.mTransport),
         mMid(orig.mMid),
         mLevel(orig.mLevel),
         mBundleLevel(orig.mBundleLevel),
@@ -52,20 +52,25 @@ class JsepTransceiver {
         mWasCreatedBySetRemote(orig.mWasCreatedBySetRemote),
         mStopped(orig.mStopped),
         mRemoved(orig.mRemoved),
-        mNegotiated(orig.mNegotiated) {}
+        mNegotiated(orig.mNegotiated),
+        mCanRecycle(orig.mCanRecycle) {}
 
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(JsepTransceiver);
 
-  void Rollback(JsepTransceiver& oldTransceiver) {
-    *mTransport = *oldTransceiver.mTransport;
-    mLevel = oldTransceiver.mLevel;
-    mBundleLevel = oldTransceiver.mBundleLevel;
+  void Rollback(JsepTransceiver& oldTransceiver, bool rollbackLevel) {
+    MOZ_ASSERT(oldTransceiver.GetMediaType() == GetMediaType());
+    MOZ_ASSERT(!oldTransceiver.IsNegotiated() || !oldTransceiver.HasLevel() ||
+               !HasLevel() || oldTransceiver.GetLevel() == GetLevel());
+    mTransport = oldTransceiver.mTransport;
+    if (rollbackLevel) {
+      mLevel = oldTransceiver.mLevel;
+      mBundleLevel = oldTransceiver.mBundleLevel;
+    }
     mRecvTrack = oldTransceiver.mRecvTrack;
 
-    // stop() caused by a disabled m-section in a remote offer cannot be
-    // rolled back.
-    if (!IsStopped()) {
-      mMid = oldTransceiver.mMid;
+    // Don't allow rollback to re-associate a transceiver.
+    if (!oldTransceiver.IsAssociated()) {
+      Disassociate();
     }
   }
 
@@ -94,7 +99,6 @@ class JsepTransceiver {
   }
 
   void ClearLevel() {
-    MOZ_ASSERT(mStopped);
     MOZ_ASSERT(!IsAssociated());
     mLevel = SIZE_MAX;
   }
@@ -107,6 +111,11 @@ class JsepTransceiver {
   void Stop() { mStopped = true; }
 
   bool IsStopped() const { return mStopped; }
+
+  void RestartDatachannelTransceiver() {
+    MOZ_RELEASE_ASSERT(GetMediaType() == SdpMediaSection::kApplication);
+    mStopped = false;
+  }
 
   void SetRemoved() { mRemoved = true; }
 
@@ -150,9 +159,22 @@ class JsepTransceiver {
 
   bool IsNegotiated() const { return mNegotiated; }
 
+  void SetCanRecycle() { mCanRecycle = true; }
+
+  bool CanRecycle() const { return mCanRecycle; }
+
   // Convenience function
   SdpMediaSection::MediaType GetMediaType() const {
+    MOZ_ASSERT(mRecvTrack.GetMediaType() == mSendTrack.GetMediaType());
     return mRecvTrack.GetMediaType();
+  }
+
+  bool HasOwnTransport() const {
+    if (mTransport.mComponents &&
+        (!HasBundleLevel() || (GetLevel() == BundleLevel()))) {
+      return true;
+    }
+    return false;
   }
 
   // This is the direction JS wants. It might not actually happen.
@@ -160,7 +182,7 @@ class JsepTransceiver {
 
   JsepTrack mSendTrack;
   JsepTrack mRecvTrack;
-  OwningNonNull<JsepTransport> mTransport;
+  JsepTransport mTransport;
 
  private:
   // Stuff that is not negotiated
@@ -175,6 +197,7 @@ class JsepTransceiver {
   bool mStopped;
   bool mRemoved;
   bool mNegotiated;
+  bool mCanRecycle;
 };
 
 }  // namespace mozilla

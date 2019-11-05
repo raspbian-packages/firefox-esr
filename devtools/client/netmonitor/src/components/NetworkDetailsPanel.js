@@ -7,15 +7,17 @@
 const { createFactory } = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
-const { connect } = require("devtools/client/shared/redux/visibility-handler-connect");
+const {
+  connect,
+} = require("devtools/client/shared/redux/visibility-handler-connect");
 const Actions = require("../actions/index");
 const { getSelectedRequest } = require("../selectors/index");
 
 // Components
-loader.lazyGetter(this, "CustomRequestPanel", function () {
+loader.lazyGetter(this, "CustomRequestPanel", function() {
   return createFactory(require("./CustomRequestPanel"));
 });
-loader.lazyGetter(this, "TabboxPanel", function () {
+loader.lazyGetter(this, "TabboxPanel", function() {
   return createFactory(require("./TabboxPanel"));
 });
 
@@ -31,16 +33,18 @@ function NetworkDetailsPanel({
   request,
   selectTab,
   sourceMapService,
+  toggleNetworkDetails,
+  openNetworkDetails,
   openLink,
 }) {
   if (!request) {
     return null;
   }
 
-  return (
-    div({ className: "network-details-panel" },
-      !request.isCustom ?
-        TabboxPanel({
+  return div(
+    { className: "network-details-panel" },
+    !request.isCustom
+      ? TabboxPanel({
           activeTabId,
           cloneSelectedRequest,
           connector,
@@ -48,12 +52,13 @@ function NetworkDetailsPanel({
           request,
           selectTab,
           sourceMapService,
-        }) :
-        CustomRequestPanel({
+          toggleNetworkDetails,
+          openNetworkDetails,
+        })
+      : CustomRequestPanel({
           connector,
           request,
         })
-    )
   );
 }
 
@@ -67,16 +72,19 @@ NetworkDetailsPanel.propTypes = {
   request: PropTypes.object,
   selectTab: PropTypes.func.isRequired,
   sourceMapService: PropTypes.object,
+  toggleNetworkDetails: PropTypes.func.isRequired,
   openLink: PropTypes.func,
 };
 
 module.exports = connect(
-  (state) => ({
+  state => ({
     activeTabId: state.ui.detailsPanelSelectedTab,
     request: getSelectedRequest(state),
   }),
-  (dispatch) => ({
+  dispatch => ({
     cloneSelectedRequest: () => dispatch(Actions.cloneSelectedRequest()),
-    selectTab: (tabId) => dispatch(Actions.selectDetailsPanelTab(tabId)),
-  }),
+    selectTab: tabId => dispatch(Actions.selectDetailsPanelTab(tabId)),
+    toggleNetworkDetails: () => dispatch(Actions.toggleNetworkDetails()),
+    openNetworkDetails: open => dispatch(Actions.openNetworkDetails(open)),
+  })
 )(NetworkDetailsPanel);

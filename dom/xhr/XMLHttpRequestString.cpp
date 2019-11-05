@@ -28,6 +28,11 @@ class XMLHttpRequestStringBuffer final {
 
   uint32_t UnsafeLength() const { return mData.Length(); }
 
+  mozilla::BulkWriteHandle<char16_t> UnsafeBulkWrite(uint32_t aCapacity,
+                                                     nsresult& aRv) {
+    return mData.BulkWrite(aCapacity, UnsafeLength(), false, aRv);
+  }
+
   void Append(const nsAString& aString) {
     NS_ASSERT_OWNINGTHREAD(XMLHttpRequestStringBuffer);
 
@@ -167,17 +172,13 @@ XMLHttpRequestStringWriterHelper::XMLHttpRequestStringWriterHelper(
     XMLHttpRequestString& aString)
     : mBuffer(aString.mBuffer), mLock(aString.mBuffer->mMutex) {}
 
-bool XMLHttpRequestStringWriterHelper::AddCapacity(int32_t aCapacity) {
-  return mBuffer->UnsafeData().SetCapacity(mBuffer->UnsafeLength() + aCapacity,
-                                           fallible);
+uint32_t XMLHttpRequestStringWriterHelper::Length() const {
+  return mBuffer->UnsafeLength();
 }
 
-char16_t* XMLHttpRequestStringWriterHelper::EndOfExistingData() {
-  return mBuffer->UnsafeData().BeginWriting() + mBuffer->UnsafeLength();
-}
-
-void XMLHttpRequestStringWriterHelper::AddLength(int32_t aLength) {
-  mBuffer->UnsafeData().SetLength(mBuffer->UnsafeLength() + aLength);
+mozilla::BulkWriteHandle<char16_t> XMLHttpRequestStringWriterHelper::BulkWrite(
+    uint32_t aCapacity, nsresult& aRv) {
+  return mBuffer->UnsafeBulkWrite(aCapacity, aRv);
 }
 
 // ---------------------------------------------------------------------------

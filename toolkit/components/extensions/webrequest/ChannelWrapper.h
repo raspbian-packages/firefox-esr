@@ -15,6 +15,7 @@
 #include "mozilla/extensions/WebExtensionPolicy.h"
 
 #include "mozilla/Attributes.h"
+#include "mozilla/LinkedList.h"
 #include "mozilla/Maybe.h"
 #include "mozilla/UniquePtr.h"
 #include "mozilla/WeakPtr.h"
@@ -25,11 +26,11 @@
 #include "nsIChannel.h"
 #include "nsIHttpChannel.h"
 #include "nsIStreamListener.h"
-#include "nsITabParent.h"
+#include "nsIRemoteTab.h"
 #include "nsIThreadRetargetableStreamListener.h"
 #include "nsPointerHashKeys.h"
 #include "nsInterfaceHashtable.h"
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsWrapperCache.h"
 
 #define NS_CHANNELWRAPPER_IID                        \
@@ -39,14 +40,14 @@
     }                                                \
   }
 
-class nsIDOMElement;
 class nsILoadContext;
 class nsITraceableChannel;
 
 namespace mozilla {
 namespace dom {
-class nsIContentParent;
-}
+class ContentParent;
+class Element;
+}  // namespace dom
 namespace extensions {
 
 namespace detail {
@@ -110,6 +111,7 @@ class WebRequestChannelEntry;
 
 class ChannelWrapper final : public DOMEventTargetHelper,
                              public SupportsWeakPtr<ChannelWrapper>,
+                             public LinkedListElement<ChannelWrapper>,
                              private detail::ChannelHolder {
  public:
   MOZ_DECLARE_WEAKREFERENCE_TYPENAME(ChannelWrapper)
@@ -119,8 +121,13 @@ class ChannelWrapper final : public DOMEventTargetHelper,
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_CHANNELWRAPPER_IID)
 
+  void Die();
+
   static already_AddRefed<extensions::ChannelWrapper> Get(
       const dom::GlobalObject& global, nsIChannel* channel);
+  static already_AddRefed<extensions::ChannelWrapper> GetRegisteredChannel(
+      const dom::GlobalObject& global, uint64_t aChannelId,
+      const WebExtensionPolicy& aAddon, nsIRemoteTab* aBrowserParent);
 
   uint64_t Id() const { return mId; }
 
@@ -141,10 +148,10 @@ class ChannelWrapper final : public DOMEventTargetHelper,
   void SetContentType(const nsACString& aContentType);
 
   void RegisterTraceableChannel(const WebExtensionPolicy& aAddon,
-                                nsITabParent* aTabParent);
+                                nsIRemoteTab* aBrowserParent);
 
   already_AddRefed<nsITraceableChannel> GetTraceableChannel(
-      nsAtom* aAddonId, dom::nsIContentParent* aContentParent) const;
+      nsAtom* aAddonId, dom::ContentParent* aContentParent) const;
 
   void GetMethod(nsCString& aRetVal) const;
 
@@ -173,7 +180,7 @@ class ChannelWrapper final : public DOMEventTargetHelper,
   already_AddRefed<nsILoadInfo> GetLoadInfo() const {
     nsCOMPtr<nsIChannel> chan = MaybeChannel();
     if (chan) {
-      return chan->GetLoadInfo();
+      return chan->LoadInfo();
     }
     return nullptr;
   }
@@ -198,7 +205,7 @@ class ChannelWrapper final : public DOMEventTargetHelper,
 
   already_AddRefed<nsILoadContext> GetLoadContext() const;
 
-  already_AddRefed<nsIDOMElement> GetBrowserElement() const;
+  already_AddRefed<dom::Element> GetBrowserElement() const;
 
   bool CanModify() const;
   bool GetCanModify(ErrorResult& aRv) const { return CanModify(); }
@@ -230,11 +237,10 @@ class ChannelWrapper final : public DOMEventTargetHelper,
   JSObject* WrapObject(JSContext* aCx, JS::HandleObject aGivenProto) override;
 
  protected:
-  ~ChannelWrapper() = default;
+  ~ChannelWrapper();
 
  private:
-  ChannelWrapper(nsISupports* aParent, nsIChannel* aChannel)
-      : ChannelHolder(aChannel), mParent(aParent) {}
+  ChannelWrapper(nsISupports* aParent, nsIChannel* aChannel);
 
   void ClearCachedAttributes();
 
@@ -264,6 +270,25 @@ class ChannelWrapper final : public DOMEventTargetHelper,
 
   void CheckEventListeners();
 
+  class ChannelWrapperStub final : public nsISupports {
+   public:
+    NS_DECL_CYCLE_COLLECTING_ISUPPORTS
+    NS_DECL_CYCLE_COLLECTION_CLASS(ChannelWrapperStub)
+
+    explicit ChannelWrapperStub(ChannelWrapper* aChannelWrapper)
+        : mChannelWrapper(aChannelWrapper) {}
+
+   private:
+    friend class ChannelWrapper;
+
+    RefPtr<ChannelWrapper> mChannelWrapper;
+
+   protected:
+    ~ChannelWrapperStub() = default;
+  };
+
+  RefPtr<ChannelWrapperStub> mStub;
+
   mutable Maybe<URLInfo> mFinalURLInfo;
   mutable Maybe<URLInfo> mDocumentURLInfo;
 
@@ -280,7 +305,7 @@ class ChannelWrapper final : public DOMEventTargetHelper,
   bool mSuspended = false;
   bool mResponseStarted = false;
 
-  nsInterfaceHashtable<nsPtrHashKey<const nsAtom>, nsITabParent> mAddonEntries;
+  nsInterfaceHashtable<nsPtrHashKey<const nsAtom>, nsIRemoteTab> mAddonEntries;
 
   class RequestListener final : public nsIStreamListener,
                                 public nsIThreadRetargetableStreamListener {

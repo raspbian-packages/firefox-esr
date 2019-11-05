@@ -16,7 +16,7 @@ ChromeUtils.import("resource://testing-common/MockRegistrar.jsm", this);
 add_task(async function test_setup() {
   // Save downloads to disk without showing the dialog.
   let cid = MockRegistrar.register("@mozilla.org/helperapplauncherdialog;1", {
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIHelperAppLauncherDialog]),
+    QueryInterface: ChromeUtils.generateQI([Ci.nsIHelperAppLauncherDialog]),
     show(launcher) {
       launcher.saveToDisk(null, false);
     },
@@ -38,8 +38,10 @@ add_task(async function test_download_privatebrowsing() {
 
   let win = await BrowserTestUtils.openNewBrowserWindow({ private: true });
   try {
-    let tab = await BrowserTestUtils.openNewForegroundTab(win.gBrowser,
-      `data:text/html,<a download href="data:text/plain,">download</a>`);
+    let tab = await BrowserTestUtils.openNewForegroundTab(
+      win.gBrowser,
+      `data:text/html,<a download href="data:text/plain,">download</a>`
+    );
 
     let promiseNextPrivateDownload = new Promise(resolve => {
       privateList.addView({

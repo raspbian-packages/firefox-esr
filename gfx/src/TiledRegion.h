@@ -54,7 +54,7 @@ class TiledRegion {
 
   TiledRegion(TiledRegion&& aOther)
       : mBounds(aOther.mBounds),
-        mImpl(Move(aOther.mImpl)),
+        mImpl(std::move(aOther.mImpl)),
         mCoversBounds(false) {}
 
   RegionT GetRegion() const {

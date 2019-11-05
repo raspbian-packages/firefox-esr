@@ -12,54 +12,82 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "LoginHelper",
-];
+var EXPORTED_SYMBOLS = ["LoginHelper"];
 
 // Globals
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-
-// LoginHelper
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 /**
  * Contains functions shared by different Login Manager components.
  */
 var LoginHelper = {
-  /**
-   * Warning: these only update if a logger was created.
-   */
-  debug: Services.prefs.getBoolPref("signon.debug"),
-  formlessCaptureEnabled: Services.prefs.getBoolPref("signon.formlessCapture.enabled"),
-  schemeUpgrades: Services.prefs.getBoolPref("signon.schemeUpgrades"),
-  insecureAutofill: Services.prefs.getBoolPref("signon.autofillForms.http"),
-  showInsecureFieldWarning: Services.prefs.getBoolPref("security.insecure_field_warning.contextual.enabled"),
+  debug: null,
+  enabled: null,
+  formlessCaptureEnabled: null,
+  insecureAutofill: null,
+  managementURI: null,
+  privateBrowsingCaptureEnabled: null,
+  schemeUpgrades: null,
+  showAutoCompleteFooter: null,
+
+  init() {
+    // Watch for pref changes to update cached pref values.
+    Services.prefs.addObserver("signon.", () => this.updateSignonPrefs());
+    this.updateSignonPrefs();
+    Services.telemetry.setEventRecordingEnabled("pwmgr", true);
+  },
+
+  updateSignonPrefs() {
+    this.autofillForms = Services.prefs.getBoolPref("signon.autofillForms");
+    this.autofillAutocompleteOff = Services.prefs.getBoolPref(
+      "signon.autofillForms.autocompleteOff"
+    );
+    this.debug = Services.prefs.getBoolPref("signon.debug");
+    this.enabled = Services.prefs.getBoolPref("signon.rememberSignons");
+    this.formlessCaptureEnabled = Services.prefs.getBoolPref(
+      "signon.formlessCapture.enabled"
+    );
+    this.insecureAutofill = Services.prefs.getBoolPref(
+      "signon.autofillForms.http"
+    );
+    this.managementURI = Services.prefs.getStringPref(
+      "signon.management.overrideURI",
+      null
+    );
+    this.privateBrowsingCaptureEnabled = Services.prefs.getBoolPref(
+      "signon.privateBrowsingCapture.enabled"
+    );
+    this.schemeUpgrades = Services.prefs.getBoolPref("signon.schemeUpgrades");
+    this.showAutoCompleteFooter = Services.prefs.getBoolPref(
+      "signon.showAutoCompleteFooter"
+    );
+    this.storeWhenAutocompleteOff = Services.prefs.getBoolPref(
+      "signon.storeWhenAutocompleteOff"
+    );
+  },
 
   createLogger(aLogPrefix) {
     let getMaxLogLevel = () => {
-      return this.debug ? "debug" : "warn";
+      return this.debug ? "Debug" : "Warn";
     };
 
     // Create a new instance of the ConsoleAPI so we can control the maxLogLevel with a pref.
-    let ConsoleAPI = ChromeUtils.import("resource://gre/modules/Console.jsm", {}).ConsoleAPI;
     let consoleOptions = {
       maxLogLevel: getMaxLogLevel(),
       prefix: aLogPrefix,
     };
-    let logger = new ConsoleAPI(consoleOptions);
+    let logger = console.createInstance(consoleOptions);
 
     // Watch for pref changes and update this.debug and the maxLogLevel for created loggers
-    Services.prefs.addObserver("signon.", () => {
+    Services.prefs.addObserver("signon.debug", () => {
       this.debug = Services.prefs.getBoolPref("signon.debug");
-      this.formlessCaptureEnabled = Services.prefs.getBoolPref("signon.formlessCapture.enabled");
-      this.schemeUpgrades = Services.prefs.getBoolPref("signon.schemeUpgrades");
-      this.insecureAutofill = Services.prefs.getBoolPref("signon.autofillForms.http");
-      logger.maxLogLevel = getMaxLogLevel();
-    });
-
-    Services.prefs.addObserver("security.insecure_field_warning.", () => {
-      this.showInsecureFieldWarning = Services.prefs.getBoolPref("security.insecure_field_warning.contextual.enabled");
+      if (logger) {
+        logger.maxLogLevel = getMaxLogLevel();
+      }
     });
 
     return logger;
@@ -76,10 +104,12 @@ var LoginHelper = {
     // Nulls are invalid, as they don't round-trip well.  Newlines are also
     // invalid for any field stored as plaintext, and a hostname made of a
     // single dot cannot be stored in the legacy format.
-    if (aHostname == "." ||
-        aHostname.includes("\r") ||
-        aHostname.includes("\n") ||
-        aHostname.includes("\0")) {
+    if (
+      aHostname == "." ||
+      aHostname.includes("\r") ||
+      aHostname.includes("\n") ||
+      aHostname.includes("\0")
+    ) {
       throw new Error("Invalid hostname");
     }
   },
@@ -93,11 +123,13 @@ var LoginHelper = {
    */
   checkLoginValues(aLogin) {
     function badCharacterPresent(l, c) {
-      return ((l.formSubmitURL && l.formSubmitURL.includes(c)) ||
-              (l.httpRealm && l.httpRealm.includes(c)) ||
-                                  l.hostname.includes(c) ||
-                                  l.usernameField.includes(c) ||
-                                  l.passwordField.includes(c));
+      return (
+        (l.formSubmitURL && l.formSubmitURL.includes(c)) ||
+        (l.httpRealm && l.httpRealm.includes(c)) ||
+        l.hostname.includes(c) ||
+        l.usernameField.includes(c) ||
+        l.passwordField.includes(c)
+      );
     }
 
     // Nulls are invalid, as they don't round-trip well.
@@ -110,20 +142,20 @@ var LoginHelper = {
     // values, but nsISecretDecoderRing doesn't use nsStrings, so the
     // nulls cause truncation. Check for them here just to avoid
     // unexpected round-trip surprises.
-    if (aLogin.username.includes("\0") ||
-        aLogin.password.includes("\0")) {
+    if (aLogin.username.includes("\0") || aLogin.password.includes("\0")) {
       throw new Error("login values can't contain nulls");
     }
 
     // Newlines are invalid for any field stored as plaintext.
-    if (badCharacterPresent(aLogin, "\r") ||
-        badCharacterPresent(aLogin, "\n")) {
+    if (
+      badCharacterPresent(aLogin, "\r") ||
+      badCharacterPresent(aLogin, "\n")
+    ) {
       throw new Error("login values can't contain newlines");
     }
 
     // A line with just a "." can have special meaning.
-    if (aLogin.usernameField == "." ||
-        aLogin.formSubmitURL == ".") {
+    if (aLogin.usernameField == "." || aLogin.formSubmitURL == ".") {
       throw new Error("login values can't be periods");
     }
 
@@ -146,27 +178,81 @@ var LoginHelper = {
    *         nsIWritablePropertyBag2, nsIPropertyBag, and nsIPropertyBag2.
    */
   newPropertyBag(aProperties) {
-    let propertyBag = Cc["@mozilla.org/hash-property-bag;1"]
-                      .createInstance(Ci.nsIWritablePropertyBag);
+    let propertyBag = Cc["@mozilla.org/hash-property-bag;1"].createInstance(
+      Ci.nsIWritablePropertyBag
+    );
     if (aProperties) {
       for (let [name, value] of Object.entries(aProperties)) {
         propertyBag.setProperty(name, value);
       }
     }
-    return propertyBag.QueryInterface(Ci.nsIPropertyBag)
-                      .QueryInterface(Ci.nsIPropertyBag2)
-                      .QueryInterface(Ci.nsIWritablePropertyBag2);
+    return propertyBag
+      .QueryInterface(Ci.nsIPropertyBag)
+      .QueryInterface(Ci.nsIPropertyBag2)
+      .QueryInterface(Ci.nsIWritablePropertyBag2);
   },
 
   /**
-   * Helper to avoid the `count` argument and property bags when calling
+   * Helper to avoid the property bags when calling
    * Services.logins.searchLogins from JS.
    *
    * @param {Object} aSearchOptions - A regular JS object to copy to a property bag before searching
    * @return {nsILoginInfo[]} - The result of calling searchLogins.
    */
   searchLoginsWithObject(aSearchOptions) {
-    return Services.logins.searchLogins({}, this.newPropertyBag(aSearchOptions));
+    return Services.logins.searchLogins(this.newPropertyBag(aSearchOptions));
+  },
+
+  /**
+   * @param {string} aURL
+   * @returns {string} which is the hostPort of aURL if supported by the scheme
+   *                   otherwise, returns the original aURL.
+   */
+  maybeGetHostPortForURL(aURL) {
+    try {
+      let uri = Services.io.newURI(aURL);
+      return uri.hostPort;
+    } catch (ex) {
+      // No need to warn for javascript:/data:/about:/chrome:/etc.
+    }
+    return aURL;
+  },
+
+  /**
+   * Get the parts of the URL we want for identification.
+   * Strip out things like the userPass portion and handle javascript:.
+   */
+  getLoginOrigin(uriString, allowJS) {
+    let realm = "";
+    try {
+      let uri = Services.io.newURI(uriString);
+
+      if (allowJS && uri.scheme == "javascript") {
+        return "javascript:";
+      }
+
+      // Build this manually instead of using prePath to avoid including the userPass portion.
+      realm = uri.scheme + "://" + uri.displayHostPort;
+    } catch (e) {
+      // bug 159484 - disallow url types that don't support a hostPort.
+      // (although we handle "javascript:..." as a special case above.)
+      log.warn("Couldn't parse origin for", uriString, e);
+      realm = null;
+    }
+
+    return realm;
+  },
+
+  getFormActionOrigin(form) {
+    let uriString = form.action;
+
+    // A blank or missing action submits to where it came from.
+    if (uriString == "") {
+      // ala bug 297761
+      uriString = form.baseURI;
+    }
+
+    return this.getLoginOrigin(uriString, true);
   },
 
   /**
@@ -180,9 +266,14 @@ var LoginHelper = {
    *                                         match for the origin we're looking
    *                                         for (aSearchOrigin).
    */
-  isOriginMatching(aLoginOrigin, aSearchOrigin, aOptions = {
-    schemeUpgrades: false,
-  }) {
+  isOriginMatching(
+    aLoginOrigin,
+    aSearchOrigin,
+    aOptions = {
+      schemeUpgrades: false,
+      acceptWildcardMatch: false,
+    }
+  ) {
     if (aLoginOrigin == aSearchOrigin) {
       return true;
     }
@@ -191,12 +282,19 @@ var LoginHelper = {
       return false;
     }
 
+    if (aOptions.acceptWildcardMatch && aLoginOrigin == "") {
+      return true;
+    }
+
     if (aOptions.schemeUpgrades) {
       try {
         let loginURI = Services.io.newURI(aLoginOrigin);
         let searchURI = Services.io.newURI(aSearchOrigin);
-        if (loginURI.scheme == "http" && searchURI.scheme == "https" &&
-            loginURI.hostPort == searchURI.hostPort) {
+        if (
+          loginURI.scheme == "http" &&
+          searchURI.scheme == "https" &&
+          loginURI.hostPort == searchURI.hostPort
+        ) {
           return true;
         }
       } catch (ex) {
@@ -208,35 +306,50 @@ var LoginHelper = {
     return false;
   },
 
-  doLoginsMatch(aLogin1, aLogin2, {
-    ignorePassword = false,
-    ignoreSchemes = false,
-  }) {
-    if (aLogin1.httpRealm != aLogin2.httpRealm ||
-        aLogin1.username != aLogin2.username)
+  doLoginsMatch(
+    aLogin1,
+    aLogin2,
+    { ignorePassword = false, ignoreSchemes = false }
+  ) {
+    if (
+      aLogin1.httpRealm != aLogin2.httpRealm ||
+      aLogin1.username != aLogin2.username
+    ) {
       return false;
+    }
 
-    if (!ignorePassword && aLogin1.password != aLogin2.password)
+    if (!ignorePassword && aLogin1.password != aLogin2.password) {
       return false;
+    }
 
     if (ignoreSchemes) {
-      let hostname1URI = Services.io.newURI(aLogin1.hostname);
-      let hostname2URI = Services.io.newURI(aLogin2.hostname);
-      if (hostname1URI.hostPort != hostname2URI.hostPort)
+      let login1HostPort = this.maybeGetHostPortForURL(aLogin1.hostname);
+      let login2HostPort = this.maybeGetHostPortForURL(aLogin2.hostname);
+      if (login1HostPort != login2HostPort) {
         return false;
+      }
 
-      if (aLogin1.formSubmitURL != "" && aLogin2.formSubmitURL != "" &&
-          Services.io.newURI(aLogin1.formSubmitURL).hostPort !=
-          Services.io.newURI(aLogin2.formSubmitURL).hostPort)
+      if (
+        aLogin1.formSubmitURL != "" &&
+        aLogin2.formSubmitURL != "" &&
+        this.maybeGetHostPortForURL(aLogin1.formSubmitURL) !=
+          this.maybeGetHostPortForURL(aLogin2.formSubmitURL)
+      ) {
         return false;
+      }
     } else {
-      if (aLogin1.hostname != aLogin2.hostname)
+      if (aLogin1.hostname != aLogin2.hostname) {
         return false;
+      }
 
       // If either formSubmitURL is blank (but not null), then match.
-      if (aLogin1.formSubmitURL != "" && aLogin2.formSubmitURL != "" &&
-          aLogin1.formSubmitURL != aLogin2.formSubmitURL)
+      if (
+        aLogin1.formSubmitURL != "" &&
+        aLogin2.formSubmitURL != "" &&
+        aLogin1.formSubmitURL != aLogin2.formSubmitURL
+      ) {
         return false;
+      }
     }
 
     // The .usernameField and .passwordField values are ignored.
@@ -262,7 +375,7 @@ var LoginHelper = {
       try {
         aNewLoginData.getProperty(aPropName);
         return true;
-      } catch (ex) { }
+      } catch (ex) {}
       return false;
     }
 
@@ -273,10 +386,15 @@ var LoginHelper = {
       // Clone the existing login to get its nsILoginMetaInfo, then init it
       // with the replacement nsILoginInfo data from the new login.
       newLogin = aOldStoredLogin.clone();
-      newLogin.init(aNewLoginData.hostname,
-                    aNewLoginData.formSubmitURL, aNewLoginData.httpRealm,
-                    aNewLoginData.username, aNewLoginData.password,
-                    aNewLoginData.usernameField, aNewLoginData.passwordField);
+      newLogin.init(
+        aNewLoginData.hostname,
+        aNewLoginData.formSubmitURL,
+        aNewLoginData.httpRealm,
+        aNewLoginData.username,
+        aNewLoginData.password,
+        aNewLoginData.usernameField,
+        aNewLoginData.passwordField
+      );
       newLogin.QueryInterface(Ci.nsILoginMetaInfo);
 
       // Automatically update metainfo when password is changed.
@@ -298,9 +416,7 @@ var LoginHelper = {
         }
       }
 
-      let propEnum = aNewLoginData.enumerator;
-      while (propEnum.hasMoreElements()) {
-        let prop = propEnum.getNext().QueryInterface(Ci.nsIProperty);
+      for (let prop of aNewLoginData.enumerator) {
         switch (prop.name) {
           // nsILoginInfo
           case "hostname":
@@ -350,16 +466,22 @@ var LoginHelper = {
     if (newLogin.formSubmitURL || newLogin.formSubmitURL == "") {
       // We have a form submit URL. Can't have a HTTP realm.
       if (newLogin.httpRealm != null) {
-        throw new Error("Can't add a login with both a httpRealm and formSubmitURL.");
+        throw new Error(
+          "Can't add a login with both a httpRealm and formSubmitURL."
+        );
       }
     } else if (newLogin.httpRealm) {
       // We have a HTTP realm. Can't have a form submit URL.
       if (newLogin.formSubmitURL != null) {
-        throw new Error("Can't add a login with both a httpRealm and formSubmitURL.");
+        throw new Error(
+          "Can't add a login with both a httpRealm and formSubmitURL."
+        );
       }
     } else {
       // Need one or the other!
-      throw new Error("Can't add a login without a httpRealm or formSubmitURL.");
+      throw new Error(
+        "Can't add a login without a httpRealm or formSubmitURL."
+      );
     }
 
     // Throws if there are bogus values.
@@ -386,17 +508,27 @@ var LoginHelper = {
    *        String representing the origin to use for preferring one login over
    *        another when they are dupes. This is used with "scheme" for
    *        `resolveBy` so the scheme from this origin will be preferred.
+   * @param {string} [preferredFormActionOrigin = undefined]
+   *        String representing the action origin to use for preferring one login over
+   *        another when they are dupes. This is used with "actionOrigin" for
+   *        `resolveBy` so the scheme from this action origin will be preferred.
    *
    * @returns {nsILoginInfo[]} list of unique logins.
    */
-  dedupeLogins(logins, uniqueKeys = ["username", "password"],
-               resolveBy = ["timeLastUsed"],
-               preferredOrigin = undefined) {
+  dedupeLogins(
+    logins,
+    uniqueKeys = ["username", "password"],
+    resolveBy = ["timeLastUsed"],
+    preferredOrigin = undefined,
+    preferredFormActionOrigin = undefined
+  ) {
     const KEY_DELIMITER = ":";
 
     if (!preferredOrigin && resolveBy.includes("scheme")) {
-      throw new Error("dedupeLogins: `preferredOrigin` is required in order to " +
-                      "prefer schemes which match it.");
+      throw new Error(
+        "dedupeLogins: `preferredOrigin` is required in order to " +
+          "prefer schemes which match it."
+      );
     }
 
     let preferredOriginScheme;
@@ -409,8 +541,10 @@ var LoginHelper = {
     }
 
     if (!preferredOriginScheme && resolveBy.includes("scheme")) {
-      log.warn("dedupeLogins: Deduping with a scheme preference but couldn't " +
-               "get the preferred origin scheme.");
+      log.warn(
+        "dedupeLogins: Deduping with a scheme preference but couldn't " +
+          "get the preferred origin scheme."
+      );
     }
 
     // We use a Map to easily lookup logins by their unique keys.
@@ -418,7 +552,10 @@ var LoginHelper = {
 
     // Generate a unique key string from a login.
     function getKey(login, uniqueKeys) {
-      return uniqueKeys.reduce((prev, key) => prev + KEY_DELIMITER + login[key], "");
+      return uniqueKeys.reduce(
+        (prev, key) => prev + KEY_DELIMITER + login[key],
+        ""
+      );
     }
 
     /**
@@ -436,6 +573,26 @@ var LoginHelper = {
 
       for (let preference of resolveBy) {
         switch (preference) {
+          case "actionOrigin": {
+            if (!preferredFormActionOrigin) {
+              break;
+            }
+            if (
+              LoginHelper.isOriginMatching(
+                existingLogin.formSubmitURL,
+                preferredFormActionOrigin,
+                { schemeUpgrades: LoginHelper.schemeUpgrades }
+              ) &&
+              !LoginHelper.isOriginMatching(
+                login.formSubmitURL,
+                preferredFormActionOrigin,
+                { schemeUpgrades: LoginHelper.schemeUpgrades }
+              )
+            ) {
+              return false;
+            }
+            break;
+          }
           case "scheme": {
             if (!preferredOriginScheme) {
               break;
@@ -447,26 +604,37 @@ var LoginHelper = {
               let loginURI = Services.io.newURI(login.hostname);
               // If the schemes of the two logins are the same or neither match the
               // preferredOriginScheme then we have no preference and look at the next resolveBy.
-              if (loginURI.scheme == existingLoginURI.scheme ||
-                  (loginURI.scheme != preferredOriginScheme &&
-                   existingLoginURI.scheme != preferredOriginScheme)) {
+              if (
+                loginURI.scheme == existingLoginURI.scheme ||
+                (loginURI.scheme != preferredOriginScheme &&
+                  existingLoginURI.scheme != preferredOriginScheme)
+              ) {
                 break;
               }
 
               return loginURI.scheme == preferredOriginScheme;
             } catch (ex) {
               // Some URLs aren't valid nsIURI (e.g. chrome://FirefoxAccounts)
-              log.debug("dedupeLogins/shouldReplaceExisting: Error comparing schemes:",
-                        existingLogin.hostname, login.hostname,
-                        "preferredOrigin:", preferredOrigin, ex);
+              log.debug(
+                "dedupeLogins/shouldReplaceExisting: Error comparing schemes:",
+                existingLogin.hostname,
+                login.hostname,
+                "preferredOrigin:",
+                preferredOrigin,
+                ex
+              );
             }
             break;
           }
           case "timeLastUsed":
           case "timePasswordChanged": {
             // If we find a more recent login for the same key, replace the existing one.
-            let loginDate = login.QueryInterface(Ci.nsILoginMetaInfo)[preference];
-            let storedLoginDate = existingLogin.QueryInterface(Ci.nsILoginMetaInfo)[preference];
+            let loginDate = login.QueryInterface(Ci.nsILoginMetaInfo)[
+              preference
+            ];
+            let storedLoginDate = existingLogin.QueryInterface(
+              Ci.nsILoginMetaInfo
+            )[preference];
             if (loginDate == storedLoginDate) {
               break;
             }
@@ -474,7 +642,9 @@ var LoginHelper = {
             return loginDate > storedLoginDate;
           }
           default: {
-            throw new Error("dedupeLogins: Invalid resolveBy preference: " + preference);
+            throw new Error(
+              "dedupeLogins: Invalid resolveBy preference: " + preference
+            );
           }
         }
       }
@@ -504,18 +674,35 @@ var LoginHelper = {
    * @param {Window} window
    *                 the window from where we want to open the dialog
    *
-   * @param {string} [filterString=""]
-   *                 the filterString parameter to pass to the login manager dialog
+   * @param {object?} args
+   *                  params for opening the password manager
+   * @param {string} [args.filterString=""]
+   *                 the domain (not origin) to pass to the login manager dialog
+   *                 to pre-filter the results
+   * @param {string} args.entryPoint
+   *                 The name of the entry point, used for telemetry
    */
-  openPasswordManager(window, filterString = "") {
+  openPasswordManager(window, { filterString = "", entryPoint = "" } = {}) {
+    Services.telemetry.recordEvent("pwmgr", "open_management", entryPoint);
+    if (this.managementURI && window.openTrustedLinkIn) {
+      let managementURL = this.managementURI.replace(
+        "%DOMAIN%",
+        window.encodeURIComponent(filterString)
+      );
+      window.openTrustedLinkIn(managementURL, "tab");
+      return;
+    }
     let win = Services.wm.getMostRecentWindow("Toolkit:PasswordManager");
     if (win) {
       win.setFilter(filterString);
       win.focus();
     } else {
-      window.openDialog("chrome://passwordmgr/content/passwordManager.xul",
-                        "Toolkit:PasswordManager", "",
-                        {filterString});
+      window.openDialog(
+        "chrome://passwordmgr/content/passwordManager.xul",
+        "Toolkit:PasswordManager",
+        "",
+        { filterString }
+      );
     }
   },
 
@@ -529,20 +716,47 @@ var LoginHelper = {
    *                    of the username types.
    */
   isUsernameFieldType(element) {
-    if (!(element instanceof Ci.nsIDOMHTMLInputElement))
+    if (ChromeUtils.getClassName(element) !== "HTMLInputElement") {
       return false;
+    }
 
-    let fieldType = (element.hasAttribute("type") ?
-                     element.getAttribute("type").toLowerCase() :
-                     element.type);
-    if (fieldType == "text" ||
+    if (!element.isConnected) {
+      // If the element isn't connected then it isn't visible to the user so
+      // shouldn't be considered. It must have been connected in the past.
+      return false;
+    }
+
+    let fieldType = element.hasAttribute("type")
+      ? element.getAttribute("type").toLowerCase()
+      : element.type;
+    if (
+      !(
+        fieldType == "text" ||
         fieldType == "email" ||
         fieldType == "url" ||
         fieldType == "tel" ||
-        fieldType == "number") {
-      return true;
+        fieldType == "number"
+      )
+    ) {
+      return false;
     }
-    return false;
+
+    let acFieldName = element.getAutocompleteInfo().fieldName;
+    if (
+      !(
+        acFieldName == "username" ||
+        // Bug 1540154: Some sites use tel/email on their username fields.
+        acFieldName == "email" ||
+        acFieldName == "tel" ||
+        acFieldName == "tel-national" ||
+        acFieldName == "off" ||
+        acFieldName == "on" ||
+        acFieldName == ""
+      )
+    ) {
+      return false;
+    }
+    return true;
   },
 
   /**
@@ -557,19 +771,25 @@ var LoginHelper = {
     let loginMap = new Map();
     for (let loginData of loginDatas) {
       // create a new login
-      let login = Cc["@mozilla.org/login-manager/loginInfo;1"].createInstance(Ci.nsILoginInfo);
-      login.init(loginData.hostname,
-                 loginData.formSubmitURL || (typeof(loginData.httpRealm) == "string" ? null : ""),
-                 typeof(loginData.httpRealm) == "string" ? loginData.httpRealm : null,
-                 loginData.username,
-                 loginData.password,
-                 loginData.usernameElement || "",
-                 loginData.passwordElement || "");
+      let login = Cc["@mozilla.org/login-manager/loginInfo;1"].createInstance(
+        Ci.nsILoginInfo
+      );
+      login.init(
+        loginData.hostname,
+        loginData.formSubmitURL ||
+          (typeof loginData.httpRealm == "string" ? null : ""),
+        typeof loginData.httpRealm == "string" ? loginData.httpRealm : null,
+        loginData.username,
+        loginData.password,
+        loginData.usernameElement || "",
+        loginData.passwordElement || ""
+      );
 
       login.QueryInterface(Ci.nsILoginMetaInfo);
       login.timeCreated = loginData.timeCreated;
       login.timeLastUsed = loginData.timeLastUsed || loginData.timeCreated;
-      login.timePasswordChanged = loginData.timePasswordChanged || loginData.timeCreated;
+      login.timePasswordChanged =
+        loginData.timePasswordChanged || loginData.timeCreated;
       login.timesUsed = loginData.timesUsed || 1;
 
       try {
@@ -596,8 +816,10 @@ var LoginHelper = {
           if (login.username == newLogin.username) {
             foundMatchingNewLogin = true;
             newLogin.QueryInterface(Ci.nsILoginMetaInfo);
-            if (login.password != newLogin.password &
-                login.timePasswordChanged > newLogin.timePasswordChanged) {
+            if (
+              (login.password != newLogin.password) &
+              (login.timePasswordChanged > newLogin.timePasswordChanged)
+            ) {
               // if a login with the same username and different password already exists and it's older
               // than the current one, update its password and timestamp.
               newLogin.password = login.password;
@@ -613,12 +835,16 @@ var LoginHelper = {
 
       // While here we're passing formSubmitURL and httpRealm, they could be empty/null and get
       // ignored in that case, leading to multiple logins for the same username.
-      let existingLogins = Services.logins.findLogins({}, login.hostname,
-                                                      login.formSubmitURL,
-                                                      login.httpRealm);
+      let existingLogins = Services.logins.findLogins(
+        login.hostname,
+        login.formSubmitURL,
+        login.httpRealm
+      );
       // Check for an existing login that matches *including* the password.
       // If such a login exists, we do not need to add a new login.
-      if (existingLogins.some(l => login.matches(l, false /* ignorePassword */))) {
+      if (
+        existingLogins.some(l => login.matches(l, false /* ignorePassword */))
+      ) {
         continue;
       }
       // Now check for a login with the same username, where it may be that we have an
@@ -628,14 +854,20 @@ var LoginHelper = {
         if (login.username == existingLogin.username) {
           foundMatchingLogin = true;
           existingLogin.QueryInterface(Ci.nsILoginMetaInfo);
-          if (login.password != existingLogin.password &
-             login.timePasswordChanged > existingLogin.timePasswordChanged) {
+          if (
+            (login.password != existingLogin.password) &
+            (login.timePasswordChanged > existingLogin.timePasswordChanged)
+          ) {
             // if a login with the same username and different password already exists and it's older
             // than the current one, update its password and timestamp.
-            let propBag = Cc["@mozilla.org/hash-property-bag;1"].
-                          createInstance(Ci.nsIWritablePropertyBag);
+            let propBag = Cc["@mozilla.org/hash-property-bag;1"].createInstance(
+              Ci.nsIWritablePropertyBag
+            );
             propBag.setProperty("password", login.password);
-            propBag.setProperty("timePasswordChanged", login.timePasswordChanged);
+            propBag.setProperty(
+              "timePasswordChanged",
+              login.timePasswordChanged
+            );
             Services.logins.modifyLogin(existingLogin, propBag);
           }
         }
@@ -682,15 +914,27 @@ var LoginHelper = {
    * Convert an object received from IPC into an nsILoginInfo (with guid).
    */
   vanillaObjectToLogin(login) {
-    let formLogin = Cc["@mozilla.org/login-manager/loginInfo;1"].
-                    createInstance(Ci.nsILoginInfo);
-    formLogin.init(login.hostname, login.formSubmitURL,
-                   login.httpRealm, login.username,
-                   login.password, login.usernameField,
-                   login.passwordField);
+    let formLogin = Cc["@mozilla.org/login-manager/loginInfo;1"].createInstance(
+      Ci.nsILoginInfo
+    );
+    formLogin.init(
+      login.hostname,
+      login.formSubmitURL,
+      login.httpRealm,
+      login.username,
+      login.password,
+      login.usernameField,
+      login.passwordField
+    );
 
     formLogin.QueryInterface(Ci.nsILoginMetaInfo);
-    for (let prop of ["guid", "timeCreated", "timeLastUsed", "timePasswordChanged", "timesUsed"]) {
+    for (let prop of [
+      "guid",
+      "timeCreated",
+      "timeLastUsed",
+      "timePasswordChanged",
+      "timesUsed",
+    ]) {
       formLogin[prop] = login[prop];
     }
     return formLogin;
@@ -703,39 +947,13 @@ var LoginHelper = {
     return logins.map(this.vanillaObjectToLogin);
   },
 
-  removeLegacySignonFiles() {
-    const {Constants, Path, File} = ChromeUtils.import("resource://gre/modules/osfile.jsm").OS;
-
-    const profileDir = Constants.Path.profileDir;
-    const defaultSignonFilePrefs = new Map([
-      ["signon.SignonFileName", "signons.txt"],
-      ["signon.SignonFileName2", "signons2.txt"],
-      ["signon.SignonFileName3", "signons3.txt"]
-    ]);
-    const toDeletes = new Set();
-
-    for (let [pref, val] of defaultSignonFilePrefs.entries()) {
-      toDeletes.add(Path.join(profileDir, val));
-
-      try {
-        let signonFile = Services.prefs.getCharPref(pref);
-
-        toDeletes.add(Path.join(profileDir, signonFile));
-        Services.prefs.clearUserPref(pref);
-      } catch (e) {}
-    }
-
-    for (let file of toDeletes) {
-      File.remove(file);
-    }
-  },
-
   /**
    * Returns true if the user has a master password set and false otherwise.
    */
   isMasterPasswordSet() {
-    let tokenDB = Cc["@mozilla.org/security/pk11tokendb;1"]
-                    .getService(Ci.nsIPK11TokenDB);
+    let tokenDB = Cc["@mozilla.org/security/pk11tokendb;1"].getService(
+      Ci.nsIPK11TokenDB
+    );
     let token = tokenDB.getInternalKeyToken();
     return token.hasPassword;
   },
@@ -747,19 +965,33 @@ var LoginHelper = {
     let dataObject = data;
     // Can't pass a raw JS string or array though notifyObservers(). :-(
     if (Array.isArray(data)) {
-      dataObject = Cc["@mozilla.org/array;1"].
-                   createInstance(Ci.nsIMutableArray);
+      dataObject = Cc["@mozilla.org/array;1"].createInstance(
+        Ci.nsIMutableArray
+      );
       for (let i = 0; i < data.length; i++) {
         dataObject.appendElement(data[i]);
       }
-    } else if (typeof(data) == "string") {
-      dataObject = Cc["@mozilla.org/supports-string;1"].
-                   createInstance(Ci.nsISupportsString);
+    } else if (typeof data == "string") {
+      dataObject = Cc["@mozilla.org/supports-string;1"].createInstance(
+        Ci.nsISupportsString
+      );
       dataObject.data = data;
     }
-    Services.obs.notifyObservers(dataObject, "passwordmgr-storage-changed", changeType);
-  }
+    Services.obs.notifyObservers(
+      dataObject,
+      "passwordmgr-storage-changed",
+      changeType
+    );
+  },
 };
+
+LoginHelper.init();
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  LoginHelper,
+  "showInsecureFieldWarning",
+  "security.insecure_field_warning.contextual.enabled"
+);
 
 XPCOMUtils.defineLazyGetter(this, "log", () => {
   let logger = LoginHelper.createLogger("LoginHelper");

@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = K'exel DNS toq nawokisaj SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Titzij DNS chuwäch HTTPS
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Tokisäx ri k'o wi ({ $url })
+    .accesskey = T
+    .tooltiptext = Tawokisaj ri URL k'o wi richin nisol DNS rik'in HTTPS
+connection-dns-over-https-url-resolver = Tokisäx Ya'öl
+    .accesskey = Y
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (K'o wi)
+    .tooltiptext = Tokisäx ri URL k'o wi richin yesol taq DNS rik'in HTTPS
+connection-dns-over-https-url-custom =
+    .label = Ichinan
+    .accesskey = I
+    .tooltiptext = Tatz'ib'aj ri ajowanel URL richin nisol DNS chi rij HTTPS
+connection-dns-over-https-custom-label = Ichinan

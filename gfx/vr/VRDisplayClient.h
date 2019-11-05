@@ -9,6 +9,7 @@
 
 #include "nsIScreen.h"
 #include "nsCOMPtr.h"
+#include "mozilla/Attributes.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/dom/VRDisplayBinding.h"
 
@@ -25,11 +26,11 @@ class VRDisplayClient {
 
   explicit VRDisplayClient(const VRDisplayInfo& aDisplayInfo);
 
-  void UpdateDisplayInfo(const VRDisplayInfo& aDisplayInfo);
+  MOZ_CAN_RUN_SCRIPT void UpdateDisplayInfo(const VRDisplayInfo& aDisplayInfo);
   void UpdateSubmitFrameResult(const VRSubmitFrameResultInfo& aResult);
 
   const VRDisplayInfo& GetDisplayInfo() const { return mDisplayInfo; }
-  virtual VRHMDSensorState GetSensorState();
+  virtual const VRHMDSensorState& GetSensorState() const;
   void GetSubmitFrameResult(VRSubmitFrameResultInfo& aResult);
 
   virtual void ZeroSensor();
@@ -46,10 +47,14 @@ class VRDisplayClient {
   bool IsPresentationGenerationCurrent() const;
   void MakePresentationGenerationCurrent();
 
+  void StartVRNavigation();
+  void StopVRNavigation(const TimeDuration& aTimeout);
+
  protected:
   virtual ~VRDisplayClient();
 
-  void FireEvents();
+  MOZ_CAN_RUN_SCRIPT void FireEvents();
+  void FireGamepadEvents();
 
   VRDisplayInfo mDisplayInfo;
 
@@ -59,6 +64,11 @@ class VRDisplayClient {
   int mPresentationCount;
   uint64_t mLastEventFrameId;
   uint32_t mLastPresentingGeneration;
+
+  // Difference between mDisplayInfo.mControllerState and
+  // mLastEventControllerState determines what gamepad events to fire when
+  // updated.
+  VRControllerState mLastEventControllerState[kVRControllerMaxCount];
 
  private:
   VRSubmitFrameResultInfo mSubmitFrameResult;

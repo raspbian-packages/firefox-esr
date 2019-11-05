@@ -5,10 +5,12 @@
 // Test startup and restart when no add-ons are installed
 // bug 944006
 
-
 // Load XPI Provider to get schema version ID
-var XPIScope = ChromeUtils.import("resource://gre/modules/addons/XPIProvider.jsm", {});
-const DB_SCHEMA = XPIScope.DB_SCHEMA;
+var XPIScope = ChromeUtils.import(
+  "resource://gre/modules/addons/XPIProvider.jsm",
+  null
+);
+const { DB_SCHEMA } = XPIScope.XPIInternal;
 
 createAppInfo("xpcshell@tests.mozilla.org", "XPCShell", "1", "1.9.2");
 
@@ -23,7 +25,10 @@ function checkPending() {
 
 // Make sure all our extension state is empty/nonexistent
 function check_empty_state() {
-  Assert.equal(Services.prefs.getIntPref("extensions.databaseSchema"), DB_SCHEMA);
+  Assert.equal(
+    Services.prefs.getIntPref("extensions.databaseSchema"),
+    DB_SCHEMA
+  );
   checkPending();
 }
 
@@ -35,16 +40,14 @@ function check_empty_state() {
 // add-on directory state preference is an empty array
 // no pending operations
 add_task(async function first_run() {
-  startupManager();
+  await promiseStartupManager();
   check_empty_state();
   await true;
 });
 
 // Now do something that causes a DB load, and re-check
 async function trigger_db_load() {
-  let addonList = await new Promise(resolve => {
-    AddonManager.getAddonsByTypes(["extension"], resolve);
-  });
+  let addonList = await AddonManager.getAddonsByTypes(["extension"]);
 
   Assert.equal(addonList.length, 0);
   check_empty_state();
@@ -55,7 +58,7 @@ add_task(trigger_db_load);
 
 // Now restart the manager and check again
 add_task(async function restart_and_recheck() {
-  restartManager();
+  await promiseRestartManager();
   check_empty_state();
   await true;
 });
@@ -65,11 +68,14 @@ add_task(trigger_db_load);
 
 // When we start up with no DB and an old database schema, we should update the
 // schema number but not create a database
-add_task(function upgrade_schema_version() {
-  shutdownManager();
+add_task(async function upgrade_schema_version() {
+  await promiseShutdownManager();
   Services.prefs.setIntPref("extensions.databaseSchema", 1);
 
-  startupManager();
-  Assert.equal(Services.prefs.getIntPref("extensions.databaseSchema"), DB_SCHEMA);
+  await promiseStartupManager();
+  Assert.equal(
+    Services.prefs.getIntPref("extensions.databaseSchema"),
+    DB_SCHEMA
+  );
   check_empty_state();
 });

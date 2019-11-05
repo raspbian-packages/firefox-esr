@@ -26,6 +26,14 @@ nsXPCTestParams::~nsXPCTestParams() {}
     return NS_OK;          \
   }
 
+#define SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP)                        \
+  {                                                                 \
+    _retval.SwapElements(b);                                        \
+    b = a;                                                          \
+    for (uint32_t i = 0; i < b.Length(); ++i) TAKE_OWNERSHIP(b[i]); \
+    return NS_OK;                                                   \
+  }
+
 #define TAKE_OWNERSHIP_NOOP(val) \
   {}
 #define TAKE_OWNERSHIP_INTERFACE(val) \
@@ -53,14 +61,12 @@ nsXPCTestParams::~nsXPCTestParams() {}
     /* Copy b into rv. */                                                      \
     *rvLength = *bLength;                                                      \
     *rv = static_cast<type*>(moz_xmalloc(elemSize * (*bLength + padding)));    \
-    if (!*rv) return NS_ERROR_OUT_OF_MEMORY;                                   \
     memcpy(*rv, *b, elemSize*(*bLength + padding));                            \
                                                                                \
     /* Copy a into b. */                                                       \
     *bLength = aLength;                                                        \
     free(*b);                                                                  \
     *b = static_cast<type*>(moz_xmalloc(elemSize * (aLength + padding)));      \
-    if (!*b) return NS_ERROR_OUT_OF_MEMORY;                                    \
     memcpy(*b, a, elemSize*(aLength + padding));                               \
                                                                                \
     /* We need to take ownership of the data we got from a,                    \
@@ -154,11 +160,6 @@ NS_IMETHODIMP nsXPCTestParams::TestWstring(const char16_t* a, char16_t** b,
   return NS_OK;
 }
 
-NS_IMETHODIMP nsXPCTestParams::TestDOMString(const nsAString& a, nsAString& b,
-                                             nsAString& _retval) {
-  STRING_METHOD_IMPL;
-}
-
 NS_IMETHODIMP nsXPCTestParams::TestAString(const nsAString& a, nsAString& b,
                                            nsAString& _retval) {
   STRING_METHOD_IMPL;
@@ -215,6 +216,13 @@ NS_IMETHODIMP nsXPCTestParams::TestInterfaceArray(
   BUFFER_METHOD_IMPL(nsIXPCTestInterfaceA*, 0, TAKE_OWNERSHIP_INTERFACE);
 }
 
+NS_IMETHODIMP nsXPCTestParams::TestJsvalArray(uint32_t aLength, JS::Value* a,
+                                              uint32_t* bLength, JS::Value** b,
+                                              uint32_t* rvLength,
+                                              JS::Value** rv) {
+  BUFFER_METHOD_IMPL(JS::Value, 0, TAKE_OWNERSHIP_NOOP);
+}
+
 NS_IMETHODIMP nsXPCTestParams::TestSizedString(uint32_t aLength, const char* a,
                                                uint32_t* bLength, char** b,
                                                uint32_t* rvLength, char** rv) {
@@ -246,7 +254,6 @@ NS_IMETHODIMP nsXPCTestParams::TestInterfaceIs(const nsIID* aIID, void* a,
   // rvIID is out-only, so nobody allocated an IID buffer for us. Do that now,
   // and store b's IID in the new buffer.
   *rvIID = static_cast<nsIID*>(moz_xmalloc(sizeof(nsID)));
-  if (!*rvIID) return NS_ERROR_OUT_OF_MEMORY;
   **rvIID = **bIID;
 
   // Copy the interface pointer from a to b. Since a is in-only, XPConnect will
@@ -266,7 +273,6 @@ NS_IMETHODIMP nsXPCTestParams::TestInterfaceIsArray(
   // Transfer the IIDs. See the comments in TestInterfaceIs (above) for an
   // explanation of what we're doing.
   *rvIID = static_cast<nsIID*>(moz_xmalloc(sizeof(nsID)));
-  if (!*rvIID) return NS_ERROR_OUT_OF_MEMORY;
   **rvIID = **bIID;
   **bIID = *aIID;
 
@@ -290,5 +296,74 @@ NS_IMETHODIMP nsXPCTestParams::TestStringArrayOptionalSize(const char** a,
     out.Append(a[i]);
   }
 
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestShortSequence(const nsTArray<short>& a, nsTArray<short>& b,
+                                   nsTArray<short>& _retval) {
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_NOOP);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestDoubleSequence(const nsTArray<double>& a,
+                                    nsTArray<double>& b,
+                                    nsTArray<double>& _retval) {
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_NOOP);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestInterfaceSequence(
+    const nsTArray<RefPtr<nsIXPCTestInterfaceA>>& a,
+    nsTArray<RefPtr<nsIXPCTestInterfaceA>>& b,
+    nsTArray<RefPtr<nsIXPCTestInterfaceA>>& _retval) {
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_NOOP);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestAStringSequence(const nsTArray<nsString>& a,
+                                     nsTArray<nsString>& b,
+                                     nsTArray<nsString>& _retval) {
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_NOOP);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestACStringSequence(const nsTArray<nsCString>& a,
+                                      nsTArray<nsCString>& b,
+                                      nsTArray<nsCString>& _retval) {
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_NOOP);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestJsvalSequence(const nsTArray<JS::Value>& a,
+                                   nsTArray<JS::Value>& b,
+                                   nsTArray<JS::Value>& _retval) {
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_NOOP);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestSequenceSequence(const nsTArray<nsTArray<short>>& a,
+                                      nsTArray<nsTArray<short>>& b,
+                                      nsTArray<nsTArray<short>>& _retval) {
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_NOOP);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestInterfaceIsSequence(const nsIID* aIID,
+                                         const nsTArray<void*>& a, nsIID** bIID,
+                                         nsTArray<void*>& b, nsIID** rvIID,
+                                         nsTArray<void*>& _retval) {
+  // Shuffle around our nsIIDs
+  *rvIID = (*bIID)->Clone();
+  *bIID = aIID->Clone();
+
+  // Perform the generic sequence shuffle.
+  SEQUENCE_METHOD_IMPL(TAKE_OWNERSHIP_INTERFACE);
+}
+
+NS_IMETHODIMP
+nsXPCTestParams::TestOptionalSequence(const nsTArray<uint8_t>& aInArr,
+                                      nsTArray<uint8_t>& aReturnArr) {
+  aReturnArr = aInArr;
   return NS_OK;
 }

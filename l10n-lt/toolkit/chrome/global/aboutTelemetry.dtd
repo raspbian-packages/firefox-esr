@@ -12,7 +12,6 @@
 <!ENTITY aboutTelemetry.optionGroupToday "Šiandien">
 <!ENTITY aboutTelemetry.optionGroupYesterday "Vakar">
 <!ENTITY aboutTelemetry.optionGroupOlder "Senesni">
-<!ENTITY aboutTelemetry.payloadChoiceHeader "  Turinys">
 <!-- LOCALIZATION NOTE(aboutTelemetry.previousPing, aboutTelemetry.nextPing):
 	These strings are displayed when selecting Archived pings, and they’re
 	used to move to the next or previous ping. -->
@@ -24,6 +23,8 @@
 <!ENTITY aboutTelemetry.firefoxDataDoc "<a>„Firefox“ duomenų dokumentacijoje</a> rasite pagalbos apie tai, kaip dirbti su mūsų duomenų įrankiais.">
 <!ENTITY aboutTelemetry.telemetryClientDoc "<a>„Firefox“ telemetrijos kliento dokumentacijoje</a> rasite sąvokų apibrėžimus, API dokumentaciją bei duomenų rodyklę.">
 <!ENTITY aboutTelemetry.telemetryDashboard "<a>Telemetrijos skydeliai</a> leidžia jums aiškiai matyti „Mozillai“ siunčiamus duomenis.">
+
+<!ENTITY aboutTelemetry.telemetryProbeDictionary "<a>Zondų žodynas</a> pateikia telemetrijos surinktų zondų informaciją ir aprašus.">
 
 <!ENTITY aboutTelemetry.showInFirefoxJsonViewer "Atverti JSON žiūrykle">
 
@@ -37,15 +38,13 @@
 <!ENTITY aboutTelemetry.keyedHistogramsSection "  Raktinės histogramos">
 <!ENTITY aboutTelemetry.eventsSection "  Įvykiai">
 <!ENTITY aboutTelemetry.simpleMeasurementsSection "  Paprasti matavimai">
-<!ENTITY aboutTelemetry.telemetryLogSection "  Telemetrijos žurnalas">
 <!ENTITY aboutTelemetry.slowSqlSection "  Lėti SQL sakiniai">
-<!ENTITY aboutTelemetry.chromeHangsSection "  Naršyklės strigtys">
 <!ENTITY aboutTelemetry.addonDetailsSection "  Priedų duomenys">
 <!ENTITY aboutTelemetry.capturedStacksSection "  Įrašyti dėklai">
 <!ENTITY aboutTelemetry.lateWritesSection "  Vėlavę įrašymai">
 <!ENTITY aboutTelemetry.rawPayloadSection "Neapdorotas turinys">
 <!ENTITY aboutTelemetry.raw "Pirminis JSON">
 
-<!ENTITY aboutTelemetry.fullSqlWarning "  PASTABA: Įjungtas lėtų SQL sakinių derinimas. Žemiau gali būti rodomi pilni SQL sakiniai, tačiau jie nebus pateikiami telemetrijai.">
+<!ENTITY aboutTelemetry.fullSqlWarning "PASTABA: Įjungtas lėtų SQL sakinių derinimas. Žemiau gali būti rodomi pilni SQL sakiniai, tačiau jie nebus pateikiami telemetrijai.">
 <!ENTITY aboutTelemetry.fetchStackSymbols "  Rinkti funkcijų vardus dėklams">
 <!ENTITY aboutTelemetry.hideStackSymbols "  Rodyti neapdorotus dėklų duomenis">

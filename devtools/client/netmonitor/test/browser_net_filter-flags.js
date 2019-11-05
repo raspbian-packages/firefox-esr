@@ -9,9 +9,14 @@ requestLongerTimeout(2);
  * Test different text filtering flags
  */
 const REQUESTS = [
-  { url: "sjs_content-type-test-server.sjs?fmt=html&res=undefined&text=Sample" },
-  { url: "sjs_content-type-test-server.sjs?fmt=html&res=undefined&text=Sample" +
-         "&cookies=1" },
+  {
+    url: "sjs_content-type-test-server.sjs?fmt=html&res=undefined&text=Sample",
+  },
+  {
+    url:
+      "sjs_content-type-test-server.sjs?fmt=html&res=undefined&text=Sample" +
+      "&cookies=1",
+  },
   { url: "sjs_content-type-test-server.sjs?fmt=css&text=sample" },
   { url: "sjs_content-type-test-server.sjs?fmt=js&text=sample" },
   { url: "sjs_content-type-test-server.sjs?fmt=font" },
@@ -31,8 +36,8 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "html",
-      fullMimeType: "text/html; charset=utf-8"
-    }
+      fullMimeType: "text/html; charset=utf-8",
+    },
   },
   {
     method: "GET",
@@ -42,8 +47,8 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "html",
-      fullMimeType: "text/html; charset=utf-8"
-    }
+      fullMimeType: "text/html; charset=utf-8",
+    },
   },
   {
     method: "GET",
@@ -53,8 +58,8 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "css",
-      fullMimeType: "text/css; charset=utf-8"
-    }
+      fullMimeType: "text/css; charset=utf-8",
+    },
   },
   {
     method: "GET",
@@ -64,8 +69,8 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "js",
-      fullMimeType: "application/javascript; charset=utf-8"
-    }
+      fullMimeType: "application/javascript; charset=utf-8",
+    },
   },
   {
     method: "GET",
@@ -75,8 +80,8 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "woff",
-      fullMimeType: "font/woff"
-    }
+      fullMimeType: "font/woff",
+    },
   },
   {
     method: "GET",
@@ -86,8 +91,8 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "png",
-      fullMimeType: "image/png"
-    }
+      fullMimeType: "image/png",
+    },
   },
   {
     method: "GET",
@@ -97,8 +102,8 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "ogg",
-      fullMimeType: "audio/ogg"
-    }
+      fullMimeType: "audio/ogg",
+    },
   },
   {
     method: "GET",
@@ -108,7 +113,7 @@ const EXPECTED_REQUESTS = [
       status: 200,
       statusText: "OK",
       type: "webm",
-      fullMimeType: "video/webm"
+      fullMimeType: "video/webm",
     },
   },
   {
@@ -120,8 +125,8 @@ const EXPECTED_REQUESTS = [
       statusText: "OK",
       displayedStatus: "200",
       type: "plain",
-      fullMimeType: "text/plain"
-    }
+      fullMimeType: "text/plain",
+    },
   },
   {
     method: "GET",
@@ -131,24 +136,23 @@ const EXPECTED_REQUESTS = [
       statusText: "Not Modified",
       displayedStatus: "304",
       type: "plain",
-      fullMimeType: "text/plain; charset=utf-8"
-    }
+      fullMimeType: "text/plain; charset=utf-8",
+    },
   },
 ];
 
-add_task(async function () {
-  let { monitor } = await initNetMonitor(FILTERING_URL);
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let {
-    getDisplayedRequests,
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+add_task(async function() {
+  const { monitor } = await initNetMonitor(FILTERING_URL);
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { getDisplayedRequests, getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
   function type(string) {
-    for (let ch of string) {
+    for (const ch of string) {
       EventUtils.synthesizeKey(ch, {}, monitor.panelWin);
     }
   }
@@ -157,7 +161,7 @@ add_task(async function () {
   // (fetching requestHeaders & responseHeaders for filtering WS & XHR)
   // Lazy fetching will be executed when user focuses on filter box.
   function setFreetextFilter(value) {
-    let filterBox = document.querySelector(".devtools-filterinput");
+    const filterBox = document.querySelector(".devtools-filterinput");
     filterBox.focus();
     filterBox.value = "";
     type(value);
@@ -165,7 +169,7 @@ add_task(async function () {
 
   info("Starting test... ");
 
-  let waitNetwork = waitForNetworkEvents(monitor, REQUESTS.length);
+  const waitNetwork = waitForNetworkEvents(monitor, REQUESTS.length);
   loadFrameScriptUtils();
   await performRequestsInContent(REQUESTS);
   await waitNetwork;
@@ -368,7 +372,7 @@ add_task(async function () {
   await teardown(monitor);
 
   async function testContents(visibility) {
-    let items = getSortedRequests(store.getState());
+    const items = getSortedRequests(store.getState());
     let visibleItems = getDisplayedRequests(store.getState());
 
     // Filter results will be updated asynchronously, so we should wait until
@@ -378,14 +382,20 @@ add_task(async function () {
       return visibleItems.size === visibility.filter(e => e).length;
     });
 
-    is(items.size, visibility.length,
-      "There should be a specific amount of items in the requests menu.");
-    is(visibleItems.size, visibility.filter(e => e).length,
-      "There should be a specific amount of visible items in the requests menu.");
+    is(
+      items.size,
+      visibility.length,
+      "There should be a specific amount of items in the requests menu."
+    );
+    is(
+      visibleItems.size,
+      visibility.filter(e => e).length,
+      "There should be a specific amount of visible items in the requests menu."
+    );
 
     for (let i = 0; i < visibility.length; i++) {
-      let itemId = items.get(i).id;
-      let shouldBeVisible = !!visibility[i];
+      const itemId = items.get(i).id;
+      const shouldBeVisible = !!visibility[i];
       let isThere = visibleItems.some(r => r.id == itemId);
 
       // Filter results will be updated asynchronously, so we should wait until
@@ -396,24 +406,27 @@ add_task(async function () {
         return isThere === shouldBeVisible;
       });
 
-      is(isThere, shouldBeVisible,
-        `The item at index ${i} has visibility=${shouldBeVisible}`);
+      is(
+        isThere,
+        shouldBeVisible,
+        `The item at index ${i} has visibility=${shouldBeVisible}`
+      );
     }
 
     // Fake mouse over the status column only after the list is fully updated
-    let requestItems = document.querySelectorAll(".request-list-item");
-    for (let requestItem of requestItems) {
+    const requestItems = document.querySelectorAll(".request-list-item");
+    for (const requestItem of requestItems) {
       requestItem.scrollIntoView();
-      let requestsListStatus = requestItem.querySelector(".requests-list-status");
+      const requestsListStatus = requestItem.querySelector(".status-code");
       EventUtils.sendMouseEvent({ type: "mouseover" }, requestsListStatus);
       await waitUntil(() => requestsListStatus.title);
     }
 
     for (let i = 0; i < visibility.length; i++) {
-      let shouldBeVisible = !!visibility[i];
+      const shouldBeVisible = !!visibility[i];
 
       if (shouldBeVisible) {
-        let { method, url, data } = EXPECTED_REQUESTS[i];
+        const { method, url, data } = EXPECTED_REQUESTS[i];
         verifyRequestItemTarget(
           document,
           getDisplayedRequests(store.getState()),

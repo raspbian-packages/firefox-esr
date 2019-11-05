@@ -6,7 +6,7 @@ Bug 1068144 - Test getting the timestamps for allocations.
 <head>
   <meta charset="utf-8">
   <title>Memory monitoring actor test</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -15,14 +15,14 @@ Bug 1068144 - Test getting the timestamps for allocations.
 <script>
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
 
-  (async function () {
-    let { memory, client } = await startServerAndGetSelectedTabMemory();
+  (async function() {
+    const { memory, target } = await startServerAndGetSelectedTabMemory();
     await memory.attach();
 
-    let allocs = [];
+    const allocs = [];
     function allocator() {
       allocs.push(new Object());
     }
@@ -31,7 +31,7 @@ window.onload = function () {
     // test our timestamps and results in intermittent failures. Instead, we
     // actually spin an empty loop for a whole millisecond.
     function actuallyWaitOneWholeMillisecond() {
-      let start = window.performance.now();
+      const start = window.performance.now();
       // eslint-disable-next-line curly
       while (window.performance.now() - start < 1.000);
     }
@@ -44,22 +44,22 @@ window.onload = function () {
     actuallyWaitOneWholeMillisecond();
     allocator();
 
-    let response = await memory.getAllocations();
+    const response = await memory.getAllocations();
     await memory.stopRecordingAllocations();
 
     ok(response.allocationsTimestamps, "The response should have timestamps.");
     is(response.allocationsTimestamps.length, response.allocations.length,
        "There should be a timestamp for every allocation.");
 
-    let allocatorIndices = response.allocations
-      .map(function (a, idx) {
-        let frame = response.frames[a];
+    const allocatorIndices = response.allocations
+      .map(function(a, idx) {
+        const frame = response.frames[a];
         if (frame && frame.functionDisplayName === "allocator") {
           return idx;
         }
         return null;
       })
-      .filter(function (idx) {
+      .filter(function(idx) {
         return idx !== null;
       });
 
@@ -68,12 +68,12 @@ window.onload = function () {
 
     let lastTimestamp;
     for (let i = 0; i < 3; i++) {
-      let timestamp = response.allocationsTimestamps[allocatorIndices[i]];
+      const timestamp = response.allocationsTimestamps[allocatorIndices[i]];
       info("timestamp", timestamp);
       ok(timestamp, "We should have a timestamp for the `allocator` allocation.");
 
       if (lastTimestamp) {
-        let delta = timestamp - lastTimestamp;
+        const delta = timestamp - lastTimestamp;
         info("delta since last timestamp", delta);
         // ms
         ok(delta >= 1,
@@ -84,7 +84,7 @@ window.onload = function () {
     }
 
     await memory.detach();
-    destroyServerAndFinish(client);
+    destroyServerAndFinish(target);
   })();
 };
 </script>

@@ -9,10 +9,8 @@
 #include "city.h"
 #include "imgIContainer.h"
 #include "imgIRequest.h"
-#include "mozilla/gfx/2D.h"
 #include "mozilla/RefPtr.h"
 #include "nsIContent.h"
-#include "nsIDOMElement.h"
 #include "nsIImageLoadingContent.h"
 #include "nsIOutputStream.h"
 #include "nsIPrefService.h"
@@ -24,7 +22,6 @@
 #include "nsShellService.h"
 #include "nsIProcess.h"
 #include "nsICategoryManager.h"
-#include "nsBrowserCompsCID.h"
 #include "nsDirectoryServiceUtils.h"
 #include "nsAppDirectoryServiceDefs.h"
 #include "nsDirectoryServiceDefs.h"
@@ -33,12 +30,13 @@
 #include "nsIURLFormatter.h"
 #include "nsXULAppAPI.h"
 #include "mozilla/WindowsVersion.h"
+#include "mozilla/dom/Element.h"
 
 #include "windows.h"
 #include "shellapi.h"
 
 #ifdef _WIN32_WINNT
-#undef _WIN32_WINNT
+#  undef _WIN32_WINNT
 #endif
 #define _WIN32_WINNT 0x0600
 #define INITGUID
@@ -46,6 +44,7 @@
 #define NTDDI_VERSION NTDDI_WIN8
 // Needed for access to IApplicationActivationManager
 #include <shlobj.h>
+#include "WinUtils.h"
 
 #include <mbstring.h>
 #include <shlwapi.h>
@@ -54,7 +53,7 @@
 #undef ACCESS_READ
 
 #ifndef MAX_BUF
-#define MAX_BUF 4096
+#  define MAX_BUF 4096
 #endif
 
 #define REG_SUCCEEDED(val) (val == ERROR_SUCCESS)
@@ -65,9 +64,9 @@
 
 using mozilla::IsWin8OrLater;
 using namespace mozilla;
-using namespace mozilla::gfx;
 
-NS_IMPL_ISUPPORTS(nsWindowsShellService, nsIShellService)
+NS_IMPL_ISUPPORTS(nsWindowsShellService, nsIToolkitShellService,
+                  nsIShellService)
 
 static nsresult OpenKeyForReading(HKEY aKeyRoot, const nsAString& aKeyName,
                                   HKEY* aKey) {
@@ -200,10 +199,8 @@ static nsresult GetAppRegName(nsAutoString& aAppRegName) {
 }
 
 NS_IMETHODIMP
-nsWindowsShellService::IsDefaultBrowser(bool aStartupCheck, bool aForAllTypes,
+nsWindowsShellService::IsDefaultBrowser(bool aForAllTypes,
                                         bool* aIsDefaultBrowser) {
-  mozilla::Unused << aStartupCheck;
-
   *aIsDefaultBrowser = false;
 
   RefPtr<IApplicationAssociationRegistration> pAAR;
@@ -455,7 +452,7 @@ nsWindowsShellService::SetDefaultBrowser(bool aClaimAllTypes,
 static nsresult WriteBitmap(nsIFile* aFile, imgIContainer* aImage) {
   nsresult rv;
 
-  RefPtr<SourceSurface> surface = aImage->GetFrame(
+  RefPtr<gfx::SourceSurface> surface = aImage->GetFrame(
       imgIContainer::FRAME_FIRST, imgIContainer::FLAG_SYNC_DECODE);
   NS_ENSURE_TRUE(surface, NS_ERROR_FAILURE);
 
@@ -463,10 +460,10 @@ static nsresult WriteBitmap(nsIFile* aFile, imgIContainer* aImage) {
   // of the BITMAPINFOHEADER struct to 32, below. For that value the bitmap
   // format defines that the A8/X8 WORDs in the bitmap byte stream be ignored
   // for the BI_RGB value we use for the biCompression member.
-  MOZ_ASSERT(surface->GetFormat() == SurfaceFormat::B8G8R8A8 ||
-             surface->GetFormat() == SurfaceFormat::B8G8R8X8);
+  MOZ_ASSERT(surface->GetFormat() == gfx::SurfaceFormat::B8G8R8A8 ||
+             surface->GetFormat() == gfx::SurfaceFormat::B8G8R8X8);
 
-  RefPtr<DataSourceSurface> dataSurface = surface->GetDataSurface();
+  RefPtr<gfx::DataSourceSurface> dataSurface = surface->GetDataSurface();
   NS_ENSURE_TRUE(dataSurface, NS_ERROR_FAILURE);
 
   int32_t width = dataSurface->GetSize().width;
@@ -501,8 +498,8 @@ static nsresult WriteBitmap(nsIFile* aFile, imgIContainer* aImage) {
   rv = NS_NewLocalFileOutputStream(getter_AddRefs(stream), aFile);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  DataSourceSurface::MappedSurface map;
-  if (!dataSurface->Map(DataSourceSurface::MapType::READ, &map)) {
+  gfx::DataSourceSurface::MappedSurface map;
+  if (!dataSurface->Map(gfx::DataSourceSurface::MapType::READ, &map)) {
     return NS_ERROR_FAILURE;
   }
 
@@ -539,11 +536,10 @@ static nsresult WriteBitmap(nsIFile* aFile, imgIContainer* aImage) {
 }
 
 NS_IMETHODIMP
-nsWindowsShellService::SetDesktopBackground(nsIDOMElement* aElement,
+nsWindowsShellService::SetDesktopBackground(dom::Element* aElement,
                                             int32_t aPosition,
                                             const nsACString& aImageName) {
-  nsCOMPtr<nsIContent> content(do_QueryInterface(aElement));
-  if (!content || !content->IsHTMLElement(nsGkAtoms::img)) {
+  if (!aElement || !aElement->IsHTMLElement(nsGkAtoms::img)) {
     // XXX write background loading stuff!
     return NS_ERROR_NOT_AVAILABLE;
   }
@@ -593,7 +589,8 @@ nsWindowsShellService::SetDesktopBackground(nsIDOMElement* aElement,
   rv = file->GetPath(path);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // write the bitmap to a file in the profile directory
+  // write the bitmap to a file in the profile directory.
+  // We have to write old bitmap format for Windows 7 wallpapar support.
   rv = WriteBitmap(file, container);
 
   // if the file was written successfully, set it as the system wallpaper
@@ -630,6 +627,10 @@ nsWindowsShellService::SetDesktopBackground(nsIDOMElement* aElement,
         style.Assign('6');
         tile.Assign('0');
         break;
+      case BACKGROUND_SPAN:
+        style.AssignLiteral("22");
+        tile.Assign('0');
+        break;
     }
 
     rv = regKey->WriteStringValue(NS_LITERAL_STRING("TileWallpaper"), tile);
@@ -664,8 +665,7 @@ nsWindowsShellService::OpenApplication(int32_t aApplication) {
   //        \Mail\(default) = Client Subkey Name
   //             \Client Subkey Name
   //             \Client Subkey Name\shell\open\command\
-  //             \Client Subkey Name\shell\open\command\(default) = path to
-  //             exe
+  //             \Client Subkey Name\shell\open\command\(default) = path to exe
   //
 
   // Find the default application for this class.
@@ -795,47 +795,4 @@ nsWindowsShellService::OpenApplicationWithURI(nsIFile* aApplication,
   const nsCString spec(aURI);
   const char* specStr = spec.get();
   return process->Run(false, &specStr, 1);
-}
-
-NS_IMETHODIMP
-nsWindowsShellService::GetDefaultFeedReader(nsIFile** _retval) {
-  *_retval = nullptr;
-
-  nsresult rv;
-  nsCOMPtr<nsIWindowsRegKey> regKey =
-      do_CreateInstance("@mozilla.org/windows-registry-key;1", &rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  rv = regKey->Open(nsIWindowsRegKey::ROOT_KEY_CLASSES_ROOT,
-                    NS_LITERAL_STRING("feed\\shell\\open\\command"),
-                    nsIWindowsRegKey::ACCESS_READ);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  nsAutoString path;
-  rv = regKey->ReadStringValue(EmptyString(), path);
-  NS_ENSURE_SUCCESS(rv, rv);
-  if (path.IsEmpty()) return NS_ERROR_FAILURE;
-
-  if (path.First() == '"') {
-    // Everything inside the quotes
-    path = Substring(path, 1, path.FindChar('"', 1) - 1);
-  } else {
-    // Everything up to the first space
-    path = Substring(path, 0, path.FindChar(' '));
-  }
-
-  nsCOMPtr<nsIFile> defaultReader =
-      do_CreateInstance("@mozilla.org/file/local;1", &rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  rv = defaultReader->InitWithPath(path);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  bool exists;
-  rv = defaultReader->Exists(&exists);
-  NS_ENSURE_SUCCESS(rv, rv);
-  if (!exists) return NS_ERROR_FAILURE;
-
-  NS_ADDREF(*_retval = defaultReader);
-  return NS_OK;
 }

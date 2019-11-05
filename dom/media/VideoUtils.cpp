@@ -4,14 +4,19 @@
 
 #include "VideoUtils.h"
 
+#include <functional>
+#include <stdint.h>
+
+#include "CubebUtils.h"
 #include "ImageContainer.h"
 #include "MediaContainerType.h"
-#include "MediaPrefs.h"
 #include "MediaResource.h"
 #include "TimeUnits.h"
 #include "VorbisUtils.h"
 #include "mozilla/Base64.h"
+#include "mozilla/dom/ContentChild.h"
 #include "mozilla/SharedThreadPool.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/SystemGroup.h"
 #include "mozilla/TaskCategory.h"
 #include "mozilla/TaskQueue.h"
@@ -19,27 +24,28 @@
 #include "nsCharSeparatedTokenizer.h"
 #include "nsContentTypeParser.h"
 #include "nsIConsoleService.h"
+#include "nsINetworkLinkService.h"
 #include "nsIRandomGenerator.h"
 #include "nsIServiceManager.h"
 #include "nsMathUtils.h"
+#include "nsNetCID.h"
 #include "nsServiceManagerUtils.h"
 #include "nsThreadUtils.h"
 
-#include <functional>
-#include <stdint.h>
-
 namespace mozilla {
-
-NS_NAMED_LITERAL_CSTRING(kEMEKeySystemClearkey, "org.w3.clearkey");
-NS_NAMED_LITERAL_CSTRING(kEMEKeySystemWidevine, "com.widevine.alpha");
 
 using layers::PlanarYCbCrImage;
 using media::TimeUnit;
 
-CheckedInt64 SaferMultDiv(int64_t aValue, uint32_t aMul, uint32_t aDiv) {
-  int64_t major = aValue / aDiv;
-  int64_t remainder = aValue % aDiv;
-  return CheckedInt64(remainder) * aMul / aDiv + CheckedInt64(major) * aMul;
+CheckedInt64 SaferMultDiv(int64_t aValue, uint64_t aMul, uint64_t aDiv) {
+  if (aMul > INT64_MAX || aDiv > INT64_MAX) {
+    return CheckedInt64(INT64_MAX) + 1;  // Return an invalid checked int.
+  }
+  int64_t mul = aMul;
+  int64_t div = aDiv;
+  int64_t major = aValue / div;
+  int64_t remainder = aValue % div;
+  return CheckedInt64(remainder) * mul / div + CheckedInt64(major) * mul;
 }
 
 // Converts from number of audio frames to microseconds, given the specified
@@ -63,7 +69,8 @@ CheckedInt64 UsecsToFrames(int64_t aUsecs, uint32_t aRate) {
 
 // Format TimeUnit as number of frames at given rate.
 CheckedInt64 TimeUnitToFrames(const TimeUnit& aTime, uint32_t aRate) {
-  return UsecsToFrames(aTime.ToMicroseconds(), aRate);
+  return aTime.IsValid() ? UsecsToFrames(aTime.ToMicroseconds(), aRate)
+                         : CheckedInt64(INT64_MAX) + 1;
 }
 
 nsresult SecondsToUsecs(double aSeconds, int64_t& aOutUsecs) {
@@ -150,6 +157,22 @@ void DownmixStereoToMono(mozilla::AudioDataValue* aBuffer, uint32_t aFrames) {
   }
 }
 
+uint32_t DecideAudioPlaybackChannels(const AudioInfo& info) {
+  if (StaticPrefs::accessibility_monoaudio_enable()) {
+    return 1;
+  }
+
+  if (StaticPrefs::MediaForcestereoEnabled()) {
+    return 2;
+  }
+
+  return info.mChannels;
+}
+
+bool IsDefaultPlaybackDeviceMono() {
+  return CubebUtils::MaxNumberOfChannels() == 1;
+}
+
 bool IsVideoContentType(const nsCString& aContentType) {
   NS_NAMED_LITERAL_CSTRING(video, "video");
   if (FindInReadable(video, aContentType)) {
@@ -201,8 +224,20 @@ already_AddRefed<SharedThreadPool> GetMediaThreadPool(MediaThreadType aType) {
   }
 
   static const uint32_t kMediaThreadPoolDefaultCount = 4;
-  return SharedThreadPool::Get(nsDependentCString(name),
-                               kMediaThreadPoolDefaultCount);
+  RefPtr<SharedThreadPool> pool = SharedThreadPool::Get(
+      nsDependentCString(name), kMediaThreadPoolDefaultCount);
+
+  // Ensure a larger stack for platform decoder threads
+  if (aType == MediaThreadType::PLATFORM_DECODER) {
+    const uint32_t minStackSize = 512 * 1024;
+    uint32_t stackSize;
+    MOZ_ALWAYS_SUCCEEDS(pool->GetThreadStackSize(&stackSize));
+    if (stackSize < minStackSize) {
+      MOZ_ALWAYS_SUCCEEDS(pool->SetThreadStackSize(minStackSize));
+    }
+  }
+
+  return pool.forget();
 }
 
 bool ExtractVPXCodecDetails(const nsAString& aCodec, uint8_t& aProfile,
@@ -368,10 +403,10 @@ bool ExtractVPXCodecDetails(const nsAString& aCodec, uint8_t& aProfile,
   return rangeId <= 1;
 }
 
-bool ExtractH264CodecDetails(const nsAString& aCodec, int16_t& aProfile,
-                             int16_t& aLevel) {
+bool ExtractH264CodecDetails(const nsAString& aCodec, uint8_t& aProfile,
+                             uint8_t& aConstraint, uint8_t& aLevel) {
   // H.264 codecs parameters have a type defined as avcN.PPCCLL, where
-  // N = avc type. avc3 is avcc with SPS & PPS implicit (within stream)
+  // N = avc type. avc3 is avcc with SPS & PPS implicit (within stream)
   // PP = profile_idc, CC = constraint_set flags, LL = level_idc.
   // We ignore the constraint_set flags, as it's not clear from any
   // documentation what constraints the platform decoders support.
@@ -388,9 +423,14 @@ bool ExtractH264CodecDetails(const nsAString& aCodec, int16_t& aProfile,
     return false;
   }
 
-  // Extract the profile_idc and level_idc.
+  // Extract the profile_idc, constraint_flags and level_idc.
   nsresult rv = NS_OK;
   aProfile = PromiseFlatString(Substring(aCodec, 5, 2)).ToInteger(&rv, 16);
+  NS_ENSURE_SUCCESS(rv, false);
+
+  // Constraint flags are stored on the 6 most significant bits, first two bits
+  // are reserved_zero_2bits.
+  aConstraint = PromiseFlatString(Substring(aCodec, 7, 2)).ToInteger(&rv, 16);
   NS_ENSURE_SUCCESS(rv, false);
 
   aLevel = PromiseFlatString(Substring(aCodec, 9, 2)).ToInteger(&rv, 16);
@@ -402,15 +442,10 @@ bool ExtractH264CodecDetails(const nsAString& aCodec, int16_t& aProfile,
     aLevel *= 10;
   }
 
-  // Capture the constraint_set flag value for the purpose of Telemetry.
-  // We don't NS_ENSURE_SUCCESS here because ExtractH264CodecDetails doesn't
-  // care about this, but we make sure constraints is above 4
-  // (constraint_set5_flag) otherwise collect 0 for unknown.
-  uint8_t constraints =
-      PromiseFlatString(Substring(aCodec, 7, 2)).ToInteger(&rv, 16);
+  // We only make sure constraints is above 4 for collection perspective
+  // otherwise collect 0 for unknown.
   Telemetry::Accumulate(Telemetry::VIDEO_CANPLAYTYPE_H264_CONSTRAINT_SET_FLAG,
-                        constraints >= 4 ? constraints : 0);
-
+                        aConstraint >= 4 ? aConstraint : 0);
   // 244 is the highest meaningful profile value (High 4:4:4 Intra Profile)
   // that can be represented as single hex byte, otherwise collect 0 for
   // unknown.
@@ -593,9 +628,10 @@ static bool StartsWith(const nsACString& string, const char (&prefix)[N]) {
 }
 
 bool IsH264CodecString(const nsAString& aCodec) {
-  int16_t profile = 0;
-  int16_t level = 0;
-  return ExtractH264CodecDetails(aCodec, profile, level);
+  uint8_t profile = 0;
+  uint8_t constraint = 0;
+  uint8_t level = 0;
+  return ExtractH264CodecDetails(aCodec, profile, constraint, level);
 }
 
 bool IsAACCodecString(const nsAString& aCodec) {
@@ -627,6 +663,11 @@ bool IsVP9CodecString(const nsAString& aCodec) {
           ExtractVPXCodecDetails(aCodec, profile, level, bitDepth));
 }
 
+bool IsAV1CodecString(const nsAString& aCodec) {
+  return aCodec.EqualsLiteral("av1") ||
+         StartsWith(NS_ConvertUTF16toUTF8(aCodec), "av01");
+}
+
 UniquePtr<TrackInfo> CreateTrackInfoWithMIMEType(
     const nsACString& aCodecMIMEType) {
   UniquePtr<TrackInfo> trackInfo;
@@ -650,14 +691,70 @@ UniquePtr<TrackInfo> CreateTrackInfoWithMIMETypeAndContainerTypeExtraParameters(
       Maybe<int32_t> maybeWidth = aContainerType.ExtendedType().GetWidth();
       if (maybeWidth && *maybeWidth > 0) {
         videoInfo->mImage.width = *maybeWidth;
+        videoInfo->mDisplay.width = *maybeWidth;
       }
       Maybe<int32_t> maybeHeight = aContainerType.ExtendedType().GetHeight();
       if (maybeHeight && *maybeHeight > 0) {
         videoInfo->mImage.height = *maybeHeight;
+        videoInfo->mDisplay.height = *maybeHeight;
+      }
+    } else if (trackInfo->GetAsAudioInfo()) {
+      AudioInfo* audioInfo = trackInfo->GetAsAudioInfo();
+      Maybe<int32_t> maybeChannels =
+          aContainerType.ExtendedType().GetChannels();
+      if (maybeChannels && *maybeChannels > 0) {
+        audioInfo->mChannels = *maybeChannels;
+      }
+      Maybe<int32_t> maybeSamplerate =
+          aContainerType.ExtendedType().GetSamplerate();
+      if (maybeSamplerate && *maybeSamplerate > 0) {
+        audioInfo->mRate = *maybeSamplerate;
       }
     }
   }
   return trackInfo;
+}
+
+bool OnCellularConnection() {
+  uint32_t linkType = nsINetworkLinkService::LINK_TYPE_UNKNOWN;
+  if (XRE_IsContentProcess()) {
+    mozilla::dom::ContentChild* cpc =
+        mozilla::dom::ContentChild::GetSingleton();
+    if (!cpc) {
+      NS_WARNING("Can't get ContentChild singleton in content process!");
+      return false;
+    }
+    linkType = cpc->NetworkLinkType();
+  } else {
+    nsresult rv;
+    nsCOMPtr<nsINetworkLinkService> nls =
+        do_GetService(NS_NETWORK_LINK_SERVICE_CONTRACTID, &rv);
+    if (NS_FAILED(rv)) {
+      NS_WARNING("Can't get nsINetworkLinkService.");
+      return false;
+    }
+
+    rv = nls->GetLinkType(&linkType);
+    if (NS_FAILED(rv)) {
+      NS_WARNING("Can't get network link type.");
+      return false;
+    }
+  }
+
+  switch (linkType) {
+    case nsINetworkLinkService::LINK_TYPE_UNKNOWN:
+    case nsINetworkLinkService::LINK_TYPE_ETHERNET:
+    case nsINetworkLinkService::LINK_TYPE_USB:
+    case nsINetworkLinkService::LINK_TYPE_WIFI:
+      return false;
+    case nsINetworkLinkService::LINK_TYPE_WIMAX:
+    case nsINetworkLinkService::LINK_TYPE_2G:
+    case nsINetworkLinkService::LINK_TYPE_3G:
+    case nsINetworkLinkService::LINK_TYPE_4G:
+      return true;
+  }
+
+  return false;
 }
 
 }  // end namespace mozilla

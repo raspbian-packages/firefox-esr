@@ -16,7 +16,8 @@
 #include "mozilla/dom/indexedDB/ActorsParent.h"
 #include "mozilla/dom/indexedDB/PBackgroundIDBDatabaseParent.h"
 #include "mozilla/dom/IPCBlobUtils.h"
-#include "mozilla/dom/ipc/PendingIPCBlobParent.h"
+#include "mozilla/dom/PendingIPCBlobParent.h"
+#include "mozilla/dom/quota/MemoryOutputStream.h"
 #include "nsAutoPtr.h"
 #include "nsComponentManagerUtils.h"
 #include "nsDebug.h"
@@ -40,16 +41,17 @@
 #define DISABLE_ASSERTS_FOR_FUZZING 0
 
 #if DISABLE_ASSERTS_FOR_FUZZING
-#define ASSERT_UNLESS_FUZZING(...) \
-  do {                             \
-  } while (0)
+#  define ASSERT_UNLESS_FUZZING(...) \
+    do {                             \
+    } while (0)
 #else
-#define ASSERT_UNLESS_FUZZING(...) MOZ_ASSERT(false, __VA_ARGS__)
+#  define ASSERT_UNLESS_FUZZING(...) MOZ_ASSERT(false, __VA_ARGS__)
 #endif
 
 namespace mozilla {
 namespace dom {
 
+using namespace mozilla::dom::quota;
 using namespace mozilla::ipc;
 
 namespace {
@@ -501,8 +503,6 @@ class GetMetadataOp : public NormalFileHandleOp {
 class ReadOp final : public CopyFileHandleOp {
   friend class FileHandle;
 
-  class MemoryOutputStream;
-
   const FileRequestReadParams mParams;
 
  private:
@@ -514,24 +514,6 @@ class ReadOp final : public CopyFileHandleOp {
   virtual bool Init(FileHandle* aFileHandle) override;
 
   virtual void GetResponse(FileRequestResponse& aResponse) override;
-};
-
-class ReadOp::MemoryOutputStream final : public nsIOutputStream {
-  nsCString mData;
-  uint64_t mOffset;
-
- public:
-  static already_AddRefed<MemoryOutputStream> Create(uint64_t aSize);
-
-  const nsCString& Data() const { return mData; }
-
- private:
-  MemoryOutputStream() : mOffset(0) {}
-
-  virtual ~MemoryOutputStream() {}
-
-  NS_DECL_THREADSAFE_ISUPPORTS
-  NS_DECL_NSIOUTPUTSTREAM
 };
 
 class WriteOp final : public CopyFileHandleOp {
@@ -737,7 +719,7 @@ void FileHandleThreadPool::WaitForDirectoriesToComplete(
   MOZ_ASSERT(aCallback);
 
   nsAutoPtr<StoragesCompleteCallback> callback(
-      new StoragesCompleteCallback(Move(aDirectoryIds), aCallback));
+      new StoragesCompleteCallback(std::move(aDirectoryIds), aCallback));
 
   if (!MaybeFireCallback(callback)) {
     mCompleteCallbacks.AppendElement(callback.forget());
@@ -1048,7 +1030,7 @@ auto FileHandleThreadPool::DirectoryInfo::CreateDelayedEnqueueInfo(
 
 FileHandleThreadPool::StoragesCompleteCallback::StoragesCompleteCallback(
     nsTArray<nsCString>&& aDirectoryIds, nsIRunnable* aCallback)
-    : mDirectoryIds(Move(aDirectoryIds)), mCallback(aCallback) {
+    : mDirectoryIds(std::move(aDirectoryIds)), mCallback(aCallback) {
   AssertIsOnBackgroundThread();
   MOZ_ASSERT(!mDirectoryIds.IsEmpty());
   MOZ_ASSERT(aCallback);
@@ -2006,9 +1988,9 @@ nsresult GetMetadataOp::DoFileWork(FileHandle* aFileHandle) {
       return NS_ERROR_FAILURE;
     }
 
-    mMetadata.size() = uint64_t(size);
+    mMetadata.size() = Some(uint64_t(size));
   } else {
-    mMetadata.size() = void_t();
+    mMetadata.size() = Nothing();
   }
 
   if (mParams.lastModified()) {
@@ -2018,9 +2000,9 @@ nsresult GetMetadataOp::DoFileWork(FileHandle* aFileHandle) {
       return rv;
     }
 
-    mMetadata.lastModified() = lastModified;
+    mMetadata.lastModified() = Some(lastModified);
   } else {
-    mMetadata.lastModified() = void_t();
+    mMetadata.lastModified() = Nothing();
   }
 
   return NS_OK;
@@ -2064,82 +2046,6 @@ void ReadOp::GetResponse(FileRequestResponse& aResponse) {
   auto* stream = static_cast<MemoryOutputStream*>(mBufferStream.get());
 
   aResponse = FileRequestReadResponse(stream->Data());
-}
-
-// static
-already_AddRefed<ReadOp::MemoryOutputStream> ReadOp::MemoryOutputStream::Create(
-    uint64_t aSize) {
-  MOZ_ASSERT(aSize, "Passed zero size!");
-
-  if (NS_WARN_IF(aSize > UINT32_MAX)) {
-    return nullptr;
-  }
-
-  RefPtr<MemoryOutputStream> stream = new MemoryOutputStream();
-
-  char* dummy;
-  uint32_t length = stream->mData.GetMutableData(&dummy, aSize, fallible);
-  if (NS_WARN_IF(length != aSize)) {
-    return nullptr;
-  }
-
-  return stream.forget();
-}
-
-NS_IMPL_ISUPPORTS(ReadOp::MemoryOutputStream, nsIOutputStream)
-
-NS_IMETHODIMP
-ReadOp::MemoryOutputStream::Close() {
-  mData.Truncate(mOffset);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-ReadOp::MemoryOutputStream::Write(const char* aBuf, uint32_t aCount,
-                                  uint32_t* _retval) {
-  return WriteSegments(NS_CopySegmentToBuffer, (char*)aBuf, aCount, _retval);
-}
-
-NS_IMETHODIMP
-ReadOp::MemoryOutputStream::Flush() { return NS_OK; }
-
-NS_IMETHODIMP
-ReadOp::MemoryOutputStream::WriteFrom(nsIInputStream* aFromStream,
-                                      uint32_t aCount, uint32_t* _retval) {
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-NS_IMETHODIMP
-ReadOp::MemoryOutputStream::WriteSegments(nsReadSegmentFun aReader,
-                                          void* aClosure, uint32_t aCount,
-                                          uint32_t* _retval) {
-  NS_ASSERTION(mData.Length() >= mOffset, "Bad stream state!");
-
-  uint32_t maxCount = mData.Length() - mOffset;
-  if (maxCount == 0) {
-    *_retval = 0;
-    return NS_OK;
-  }
-
-  if (aCount > maxCount) {
-    aCount = maxCount;
-  }
-
-  nsresult rv = aReader(this, aClosure, mData.BeginWriting() + mOffset, 0,
-                        aCount, _retval);
-  if (NS_SUCCEEDED(rv)) {
-    NS_ASSERTION(*_retval <= aCount,
-                 "Reader should not read more than we asked it to read!");
-    mOffset += *_retval;
-  }
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-ReadOp::MemoryOutputStream::IsNonBlocking(bool* _retval) {
-  *_retval = false;
-  return NS_OK;
 }
 
 WriteOp::WriteOp(FileHandle* aFileHandle, const FileRequestParams& aParams)

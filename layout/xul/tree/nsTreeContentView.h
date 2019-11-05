@@ -10,14 +10,11 @@
 #include "nsCycleCollectionParticipant.h"
 #include "nsTArray.h"
 #include "nsStubDocumentObserver.h"
-#include "nsITreeBoxObject.h"
 #include "nsITreeView.h"
-#include "nsITreeContentView.h"
 #include "nsITreeSelection.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/UniquePtr.h"
 
-class nsIDocument;
 class nsSelection;
 class nsTreeColumn;
 class Row;
@@ -25,16 +22,19 @@ class Row;
 namespace mozilla {
 namespace dom {
 class DataTransfer;
-class TreeBoxObject;
+class Document;
+class Element;
+class XULTreeElement;
 }  // namespace dom
 }  // namespace mozilla
 
 nsresult NS_NewTreeContentView(nsITreeView** aResult);
 
 class nsTreeContentView final : public nsITreeView,
-                                public nsITreeContentView,
                                 public nsStubDocumentObserver,
                                 public nsWrapperCache {
+  typedef mozilla::dom::Element Element;
+
  public:
   nsTreeContentView(void);
 
@@ -75,16 +75,14 @@ class nsTreeContentView final : public nsITreeView,
                     mozilla::ErrorResult& aError);
   void GetCellText(int32_t aRow, nsTreeColumn& aColumn, nsAString& aText,
                    mozilla::ErrorResult& aError);
-  void SetTree(mozilla::dom::TreeBoxObject* aTree,
+  void SetTree(mozilla::dom::XULTreeElement* aTree,
                mozilla::ErrorResult& aError);
   void ToggleOpenState(int32_t aRow, mozilla::ErrorResult& aError);
   void CycleHeader(nsTreeColumn& aColumn, mozilla::ErrorResult& aError);
-  // XPCOM SelectionChanged() is OK
+  void SelectionChanged() {}
   void CycleCell(int32_t aRow, nsTreeColumn& aColumn) {}
   bool IsEditable(int32_t aRow, nsTreeColumn& aColumn,
                   mozilla::ErrorResult& aError);
-  bool IsSelectable(int32_t aRow, nsTreeColumn& aColumn,
-                    mozilla::ErrorResult& aError);
   void SetCellValue(int32_t aRow, nsTreeColumn& aColumn,
                     const nsAString& aValue, mozilla::ErrorResult& aError);
   void SetCellText(int32_t aRow, nsTreeColumn& aColumn, const nsAString& aText,
@@ -93,13 +91,10 @@ class nsTreeContentView final : public nsITreeView,
   void PerformActionOnRow(const nsAString& aAction, int32_t aRow) {}
   void PerformActionOnCell(const nsAString& aAction, int32_t aRow,
                            nsTreeColumn& aColumn) {}
-  mozilla::dom::Element* GetItemAtIndex(int32_t aRow,
-                                        mozilla::ErrorResult& aError);
-  int32_t GetIndexOfItem(mozilla::dom::Element* aItem);
+  Element* GetItemAtIndex(int32_t aRow, mozilla::ErrorResult& aError);
+  int32_t GetIndexOfItem(Element* aItem);
 
   NS_DECL_NSITREEVIEW
-
-  NS_DECL_NSITREECONTENTVIEW
 
   // nsIDocumentObserver
   NS_DECL_NSIMUTATIONOBSERVER_ATTRIBUTECHANGED
@@ -150,17 +145,20 @@ class nsTreeContentView final : public nsITreeView,
 
   void UpdateParentIndexes(int32_t aIndex, int32_t aSkip, int32_t aCount);
 
+  bool CanDrop(int32_t aRow, int32_t aOrientation,
+               mozilla::ErrorResult& aError);
+  void Drop(int32_t aRow, int32_t aOrientation, mozilla::ErrorResult& aError);
+
   // Content helpers.
-  mozilla::dom::Element* GetCell(nsIContent* aContainer, nsTreeColumn& aCol);
+  Element* GetCell(nsIContent* aContainer, nsTreeColumn& aCol);
 
  private:
   bool IsValidRowIndex(int32_t aRowIndex);
 
-  nsCOMPtr<nsITreeBoxObject> mBoxObject;
+  RefPtr<mozilla::dom::XULTreeElement> mTree;
   nsCOMPtr<nsITreeSelection> mSelection;
-  nsCOMPtr<nsIContent> mRoot;
   nsCOMPtr<nsIContent> mBody;
-  nsIDocument* mDocument;  // WEAK
+  mozilla::dom::Document* mDocument;  // WEAK
   nsTArray<mozilla::UniquePtr<Row>> mRows;
 };
 

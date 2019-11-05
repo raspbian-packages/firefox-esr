@@ -159,10 +159,12 @@ contents of the <button> tags. It uses strings already defined above. The
 button is included here (instead of netError.xhtml) because it exposes
 functionality specific to thunderbird. -->
 
-<!ENTITY securityOverride.warningContent "<p>Izjem ne dodajajte, če uporabljate internetne povezave, ki jim ne zaupate povsem, ali če za ta strežnik ne pričakujete opozoril.</p> 
- 
-<button id='getMeOutOfHereButton'>&securityOverride.getMeOutOfHereButton;</button> 
-<button id='exceptionDialogButton'>&securityOverride.exceptionButtonLabel;</button>">
+<!ENTITY securityOverride.warningContent "
+<p>Ne dodajajte izjeme, če uporabljate povezavo, ki ji ne zaupate popolnoma, ali če od tega strežnika običajno ne prejemate takšnih opozoril.</p>
+
+<button id='getMeOutOfHereButton'>&securityOverride.getMeOutOfHereButton;</button>
+<button id='exceptionDialogButton'>&securityOverride.exceptionButtonLabel;</button>
+">
 
 <!ENTITY remoteXUL.title "Oddaljeni XUL">
 <!ENTITY remoteXUL.longDesc "<p><ul><li>O napaki obvestite lastnike spletne strani.</li></ul></p>">
@@ -173,3 +175,6 @@ functionality specific to thunderbird. -->
 <!ENTITY inadequateSecurityError.longDesc "<p><span class='hostname'></span> uporablja varnostno tehnologijo, ki je zastarela in ranljiva na napade. Napadalec lahko enostavno razkrije podatke, ki naj bi bili zaščiteni. Skrbnik spletne strani bo moral najprej popraviti strežnik, preden lahko obiščete stran.</p><p>Koda napake: NS_ERROR_NET_INADEQUATE_SECURITY</p>">
 
 <!ENTITY blockedByPolicy.title "Zavrnjena stran">
+
+<!ENTITY networkProtocolError.title "Napaka omrežnega protokola">
+<!ENTITY networkProtocolError.longDesc "<p>Strani, ki si jo poskušate ogledati, ni mogoče prikazati, ker je bila zaznana napaka omrežnega protokola.</p><ul><li>O napaki obvestite lastnike spletne strani.</li></ul>">

@@ -13,17 +13,20 @@
 #include "gfxUtils.h"
 #include "nsWindow.h"
 #include "nsWindowDefs.h"
+#include "InputDeviceUtils.h"
 #include "KeyboardLayout.h"
-#include "nsIDOMMouseEvent.h"
 #include "mozilla/ArrayUtils.h"
+#include "mozilla/BackgroundHangMonitor.h"
+#include "mozilla/ClearOnShutdown.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/DataSurfaceHelpers.h"
-#include "mozilla/HangMonitor.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/WindowsVersion.h"
 #include "mozilla/Unused.h"
 #include "nsIContentPolicy.h"
+#include "nsIWindowsUIUtils.h"
 #include "nsContentUtils.h"
 
 #include "mozilla/Logging.h"
@@ -37,7 +40,7 @@
 #include "nsNetCID.h"
 #include "prtime.h"
 #ifdef MOZ_PLACES
-#include "mozIAsyncFavicons.h"
+#  include "nsIFaviconService.h"
 #endif
 #include "nsIIconURI.h"
 #include "nsIDownloader.h"
@@ -52,8 +55,8 @@
 #include "nsWindowsHelpers.h"
 
 #ifdef NS_ENABLE_TSF
-#include <textstor.h>
-#include "TSFTextStore.h"
+#  include <textstor.h>
+#  include "TSFTextStore.h"
 #endif  // #ifdef NS_ENABLE_TSF
 
 #include <shlobj.h>
@@ -412,7 +415,6 @@ NS_IMPL_ISUPPORTS(myDownloadObserver, nsIDownloadObserver)
 NS_IMPL_ISUPPORTS(AsyncFaviconDataReady, nsIFaviconDataCallback)
 #endif
 NS_IMPL_ISUPPORTS(AsyncEncodeAndWriteIcon, nsIRunnable)
-NS_IMPL_ISUPPORTS(AsyncDeleteIconFromDisk, nsIRunnable)
 NS_IMPL_ISUPPORTS(AsyncDeleteAllFaviconsFromDisk, nsIRunnable)
 
 const char FaviconHelper::kJumpListCacheDir[] = "jumpListCache";
@@ -428,6 +430,7 @@ struct CoTaskMemFreePolicy {
 
 SetThreadDpiAwarenessContextProc WinUtils::sSetThreadDpiAwarenessContext = NULL;
 EnableNonClientDpiScalingProc WinUtils::sEnableNonClientDpiScaling = NULL;
+GetSystemMetricsForDpiProc WinUtils::sGetSystemMetricsForDpi = NULL;
 
 /* static */
 void WinUtils::Initialize() {
@@ -452,6 +455,9 @@ void WinUtils::Initialize() {
             (SetThreadDpiAwarenessContextProc)::GetProcAddress(
                 user32Dll, "SetThreadDpiAwarenessContext");
       }
+
+      sGetSystemMetricsForDpi = (GetSystemMetricsForDpiProc)::GetProcAddress(
+          user32Dll, "GetSystemMetricsForDpi");
     }
   }
 }
@@ -596,7 +602,8 @@ static bool SlowIsPerMonitorDPIAware() {
          dpiAwareness == PROCESS_PER_MONITOR_DPI_AWARE;
 }
 
-/* static */ bool WinUtils::IsPerMonitorDPIAware() {
+/* static */
+bool WinUtils::IsPerMonitorDPIAware() {
   static bool perMonitorDPIAware = SlowIsPerMonitorDPIAware();
   return perMonitorDPIAware;
 }
@@ -644,6 +651,21 @@ WinUtils::MonitorFromRect(const gfx::Rect& rect) {
                              NSToIntRound(dpiScale * (rect.YMost()))};
 
   return ::MonitorFromRect(&globalWindowBounds, MONITOR_DEFAULTTONEAREST);
+}
+
+/* static */
+bool WinUtils::HasSystemMetricsForDpi() {
+  return (sGetSystemMetricsForDpi != NULL);
+}
+
+/* static */
+int WinUtils::GetSystemMetricsForDpi(int nIndex, UINT dpi) {
+  if (HasSystemMetricsForDpi()) {
+    return sGetSystemMetricsForDpi(nIndex, dpi);
+  } else {
+    double scale = IsPerMonitorDPIAware() ? dpi / SystemDPI() : 1.0;
+    return NSToIntRound(::GetSystemMetrics(nIndex) * scale);
+  }
 }
 
 #ifdef ACCESSIBILITY
@@ -729,7 +751,7 @@ void WinUtils::WaitForMessage(DWORD aTimeoutMs) {
         // We executed an APC that would have woken up the hang monitor. Since
         // there are no more APCs pending and we are now going to sleep again,
         // we should notify the hang monitor.
-        mozilla::HangMonitor::Suspend();
+        mozilla::BackgroundHangMonitor().NotifyWait();
       }
       continue;
     }
@@ -760,7 +782,7 @@ void WinUtils::WaitForMessage(DWORD aTimeoutMs) {
 bool WinUtils::GetRegistryKey(HKEY aRoot, char16ptr_t aKeyName,
                               char16ptr_t aValueName, wchar_t* aBuffer,
                               DWORD aBufferLength) {
-  NS_PRECONDITION(aKeyName, "The key name is NULL");
+  MOZ_ASSERT(aKeyName, "The key name is NULL");
 
   HKEY key;
   LONG result =
@@ -1001,12 +1023,12 @@ UINT WinUtils::GetNativeMessage(UINT aInternalMessage) {
 
 /* static */
 uint16_t WinUtils::GetMouseInputSource() {
-  int32_t inputSource = nsIDOMMouseEvent::MOZ_SOURCE_MOUSE;
+  int32_t inputSource = dom::MouseEvent_Binding::MOZ_SOURCE_MOUSE;
   LPARAM lParamExtraInfo = ::GetMessageExtraInfo();
   if ((lParamExtraInfo & TABLET_INK_SIGNATURE) == TABLET_INK_CHECK) {
     inputSource = (lParamExtraInfo & TABLET_INK_TOUCH)
-                      ? nsIDOMMouseEvent::MOZ_SOURCE_TOUCH
-                      : nsIDOMMouseEvent::MOZ_SOURCE_PEN;
+                      ? dom::MouseEvent_Binding::MOZ_SOURCE_TOUCH
+                      : dom::MouseEvent_Binding::MOZ_SOURCE_PEN;
   }
   return static_cast<uint16_t>(inputSource);
 }
@@ -1131,7 +1153,7 @@ nsresult AsyncFaviconDataReady::OnFaviconDataNotAvailable(void) {
   rv = NS_NewDownloader(getter_AddRefs(listener), downloadObserver, icoFile);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  return channel->AsyncOpen2(listener);
+  return channel->AsyncOpen(listener);
 }
 
 NS_IMETHODIMP
@@ -1172,10 +1194,11 @@ AsyncFaviconDataReady::OnComplete(nsIURI* aFaviconURI, uint32_t aDataLen,
   RefPtr<DataSourceSurface> dataSurface;
   IntSize size;
 
-  if (mURLShortcut) {
-    // Create a 48x48 surface and paint the icon into the central 16x16 rect.
-    size.width = 48;
-    size.height = 48;
+  if (mURLShortcut &&
+      (surface->GetSize().width < 48 || surface->GetSize().height < 48)) {
+    // Create a 48x48 surface and paint the icon into the central rect.
+    size.width = std::max(surface->GetSize().width, 48);
+    size.height = std::max(surface->GetSize().height, 48);
     dataSurface =
         Factory::CreateDataSourceSurface(size, SurfaceFormat::B8G8R8A8);
     NS_ENSURE_TRUE(dataSurface, NS_ERROR_FAILURE);
@@ -1195,7 +1218,12 @@ AsyncFaviconDataReady::OnComplete(nsIURI* aFaviconURI, uint32_t aDataLen,
     }
     dt->FillRect(Rect(0, 0, size.width, size.height),
                  ColorPattern(Color(1.0f, 1.0f, 1.0f, 1.0f)));
-    dt->DrawSurface(surface, Rect(16, 16, 16, 16),
+    IntPoint point;
+    point.x = (size.width - surface->GetSize().width) / 2;
+    point.y = (size.height - surface->GetSize().height) / 2;
+    dt->DrawSurface(surface,
+                    Rect(point.x, point.y, surface->GetSize().width,
+                         surface->GetSize().height),
                     Rect(Point(0, 0), Size(surface->GetSize().width,
                                            surface->GetSize().height)));
 
@@ -1224,7 +1252,7 @@ AsyncFaviconDataReady::OnComplete(nsIURI* aFaviconURI, uint32_t aDataLen,
 
   // AsyncEncodeAndWriteIcon takes ownership of the heap allocated buffer
   nsCOMPtr<nsIRunnable> event = new AsyncEncodeAndWriteIcon(
-      path, Move(data), stride, size.width, size.height, mURLShortcut);
+      path, std::move(data), stride, size.width, size.height, mURLShortcut);
   mIOThread->Dispatch(event, NS_DISPATCH_NORMAL);
 
   return NS_OK;
@@ -1238,14 +1266,13 @@ AsyncEncodeAndWriteIcon::AsyncEncodeAndWriteIcon(
     uint32_t aWidth, uint32_t aHeight, const bool aURLShortcut)
     : mURLShortcut(aURLShortcut),
       mIconPath(aIconPath),
-      mBuffer(Move(aBuffer)),
+      mBuffer(std::move(aBuffer)),
       mStride(aStride),
       mWidth(aWidth),
       mHeight(aHeight) {}
 
 NS_IMETHODIMP AsyncEncodeAndWriteIcon::Run() {
-  NS_PRECONDITION(!NS_IsMainThread(),
-                  "Should not be called on the main thread.");
+  MOZ_ASSERT(!NS_IsMainThread(), "Should not be called on the main thread.");
 
   // Note that since we're off the main thread we can't use
   // gfxPlatform::GetPlatform()->ScreenReferenceDrawTarget()
@@ -1253,13 +1280,12 @@ NS_IMETHODIMP AsyncEncodeAndWriteIcon::Run() {
       mBuffer.get(), mStride, IntSize(mWidth, mHeight),
       SurfaceFormat::B8G8R8A8);
 
-  FILE* file = fopen(NS_ConvertUTF16toUTF8(mIconPath).get(), "wb");
+  FILE* file = _wfopen(mIconPath.get(), L"wb");
   if (!file) {
     // Maybe the directory doesn't exist; try creating it, then fopen again.
     nsresult rv = NS_ERROR_FAILURE;
     nsCOMPtr<nsIFile> comFile = do_CreateInstance("@mozilla.org/file/local;1");
     if (comFile) {
-      // NS_ConvertUTF8toUTF16 utf16path(mIconPath);
       rv = comFile->InitWithPath(mIconPath);
       if (NS_SUCCEEDED(rv)) {
         nsCOMPtr<nsIFile> dirPath;
@@ -1267,7 +1293,7 @@ NS_IMETHODIMP AsyncEncodeAndWriteIcon::Run() {
         if (dirPath) {
           rv = dirPath->Create(nsIFile::DIRECTORY_TYPE, 0777);
           if (NS_SUCCEEDED(rv) || rv == NS_ERROR_FILE_ALREADY_EXISTS) {
-            file = fopen(NS_ConvertUTF16toUTF8(mIconPath).get(), "wb");
+            file = _wfopen(mIconPath.get(), L"wb");
             if (!file) {
               rv = NS_ERROR_FAILURE;
             }
@@ -1280,8 +1306,7 @@ NS_IMETHODIMP AsyncEncodeAndWriteIcon::Run() {
     }
   }
   nsresult rv = gfxUtils::EncodeSourceSurface(
-      surface, NS_LITERAL_CSTRING("image/vnd.microsoft.icon"), EmptyString(),
-      gfxUtils::eBinaryEncode, file);
+      surface, ImageType::ICO, EmptyString(), gfxUtils::eBinaryEncode, file);
   fclose(file);
   NS_ENSURE_SUCCESS(rv, rv);
 
@@ -1293,36 +1318,6 @@ NS_IMETHODIMP AsyncEncodeAndWriteIcon::Run() {
 }
 
 AsyncEncodeAndWriteIcon::~AsyncEncodeAndWriteIcon() {}
-
-AsyncDeleteIconFromDisk::AsyncDeleteIconFromDisk(const nsAString& aIconPath)
-    : mIconPath(aIconPath) {}
-
-NS_IMETHODIMP AsyncDeleteIconFromDisk::Run() {
-  // Construct the parent path of the passed in path
-  nsCOMPtr<nsIFile> icoFile = do_CreateInstance("@mozilla.org/file/local;1");
-  NS_ENSURE_TRUE(icoFile, NS_ERROR_FAILURE);
-  nsresult rv = icoFile->InitWithPath(mIconPath);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  // Check if the cached ICO file exists
-  bool exists;
-  rv = icoFile->Exists(&exists);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  // Check that we aren't deleting some arbitrary file that is not an icon
-  if (StringTail(mIconPath, 4).LowerCaseEqualsASCII(".ico")) {
-    // Check if the cached ICO file exists
-    bool exists;
-    if (NS_FAILED(icoFile->Exists(&exists)) || !exists) return NS_ERROR_FAILURE;
-
-    // We found an ICO file that exists, so we should remove it
-    icoFile->Remove(false);
-  }
-
-  return NS_OK;
-}
-
-AsyncDeleteIconFromDisk::~AsyncDeleteIconFromDisk() {}
 
 AsyncDeleteAllFaviconsFromDisk::AsyncDeleteAllFaviconsFromDisk(
     bool aIgnoreRecent)
@@ -1345,19 +1340,17 @@ NS_IMETHODIMP AsyncDeleteAllFaviconsFromDisk::Run() {
   nsresult rv = mJumpListCacheDir->AppendNative(
       nsDependentCString(FaviconHelper::kJumpListCacheDir));
   NS_ENSURE_SUCCESS(rv, rv);
-  nsCOMPtr<nsISimpleEnumerator> entries;
+
+  nsCOMPtr<nsIDirectoryEnumerator> entries;
   rv = mJumpListCacheDir->GetDirectoryEntries(getter_AddRefs(entries));
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Loop through each directory entry and remove all ICO files found
   do {
-    bool hasMore = false;
-    if (NS_FAILED(entries->HasMoreElements(&hasMore)) || !hasMore) break;
+    nsCOMPtr<nsIFile> currFile;
+    if (NS_FAILED(entries->GetNextFile(getter_AddRefs(currFile))) || !currFile)
+      break;
 
-    nsCOMPtr<nsISupports> supp;
-    if (NS_FAILED(entries->GetNext(getter_AddRefs(supp)))) break;
-
-    nsCOMPtr<nsIFile> currFile(do_QueryInterface(supp));
     nsAutoString path;
     if (NS_FAILED(currFile->GetPath(path))) continue;
 
@@ -1511,7 +1504,7 @@ nsresult FaviconHelper::CacheIconFileFromFaviconURIAsync(
     nsCOMPtr<nsIThread>& aIOThread, bool aURLShortcut) {
 #ifdef MOZ_PLACES
   // Obtain the favicon service and get the favicon for the specified page
-  nsCOMPtr<mozIAsyncFavicons> favIconSvc(
+  nsCOMPtr<nsIFaviconService> favIconSvc(
       do_GetService("@mozilla.org/browser/favicon-service;1"));
   NS_ENSURE_TRUE(favIconSvc, NS_ERROR_FAILURE);
 
@@ -1607,17 +1600,148 @@ bool WinUtils::IsIMEEnabled(IMEState::Enabled aIMEState) {
 
 /* static */
 void WinUtils::SetupKeyModifiersSequence(nsTArray<KeyPair>* aArray,
-                                         uint32_t aModifiers) {
-  for (uint32_t i = 0; i < ArrayLength(sModifierKeyMap); ++i) {
-    const uint32_t* map = sModifierKeyMap[i];
-    if (aModifiers & map[0]) {
-      aArray->AppendElement(KeyPair(map[1], map[2]));
+                                         uint32_t aModifiers, UINT aMessage) {
+  MOZ_ASSERT(!(aModifiers & nsIWidget::ALTGRAPH) ||
+             !(aModifiers & (nsIWidget::CTRL_L | nsIWidget::ALT_R)));
+  if (aMessage == WM_KEYUP) {
+    // If AltGr is released, ControlLeft key is released first, then,
+    // AltRight key is released.
+    if (aModifiers & nsIWidget::ALTGRAPH) {
+      aArray->AppendElement(
+          KeyPair(VK_CONTROL, VK_LCONTROL, ScanCode::eControlLeft));
+      aArray->AppendElement(KeyPair(VK_MENU, VK_RMENU, ScanCode::eAltRight));
+    }
+    for (uint32_t i = ArrayLength(sModifierKeyMap); i; --i) {
+      const uint32_t* map = sModifierKeyMap[i - 1];
+      if (aModifiers & map[0]) {
+        aArray->AppendElement(KeyPair(map[1], map[2], map[3]));
+      }
+    }
+  } else {
+    for (uint32_t i = 0; i < ArrayLength(sModifierKeyMap); ++i) {
+      const uint32_t* map = sModifierKeyMap[i];
+      if (aModifiers & map[0]) {
+        aArray->AppendElement(KeyPair(map[1], map[2], map[3]));
+      }
+    }
+    // If AltGr is pressed, ControlLeft key is pressed first, then,
+    // AltRight key is pressed.
+    if (aModifiers & nsIWidget::ALTGRAPH) {
+      aArray->AppendElement(
+          KeyPair(VK_CONTROL, VK_LCONTROL, ScanCode::eControlLeft));
+      aArray->AppendElement(KeyPair(VK_MENU, VK_RMENU, ScanCode::eAltRight));
     }
   }
 }
 
 /* static */
-bool WinUtils::ShouldHideScrollbars() { return false; }
+nsresult WinUtils::WriteBitmap(nsIFile* aFile, imgIContainer* aImage) {
+  RefPtr<SourceSurface> surface = aImage->GetFrame(
+      imgIContainer::FRAME_FIRST, imgIContainer::FLAG_SYNC_DECODE);
+  NS_ENSURE_TRUE(surface, NS_ERROR_FAILURE);
+
+  return WriteBitmap(aFile, surface);
+}
+
+/* static */
+nsresult WinUtils::WriteBitmap(nsIFile* aFile, SourceSurface* surface) {
+  nsresult rv;
+
+  // For either of the following formats we want to set the biBitCount member
+  // of the BITMAPINFOHEADER struct to 32, below. For that value the bitmap
+  // format defines that the A8/X8 WORDs in the bitmap byte stream be ignored
+  // for the BI_RGB value we use for the biCompression member.
+  MOZ_ASSERT(surface->GetFormat() == SurfaceFormat::B8G8R8A8 ||
+             surface->GetFormat() == SurfaceFormat::B8G8R8X8);
+
+  RefPtr<DataSourceSurface> dataSurface = surface->GetDataSurface();
+  NS_ENSURE_TRUE(dataSurface, NS_ERROR_FAILURE);
+
+  int32_t width = dataSurface->GetSize().width;
+  int32_t height = dataSurface->GetSize().height;
+  int32_t bytesPerPixel = 4 * sizeof(uint8_t);
+  uint32_t bytesPerRow = bytesPerPixel * width;
+  bool hasAlpha = surface->GetFormat() == SurfaceFormat::B8G8R8A8;
+
+  // initialize these bitmap structs which we will later
+  // serialize directly to the head of the bitmap file
+  BITMAPV4HEADER bmi;
+  memset(&bmi, 0, sizeof(BITMAPV4HEADER));
+  bmi.bV4Size = sizeof(BITMAPV4HEADER);
+  bmi.bV4Width = width;
+  bmi.bV4Height = height;
+  bmi.bV4Planes = 1;
+  bmi.bV4BitCount = (WORD)bytesPerPixel * 8;
+  bmi.bV4V4Compression = hasAlpha ? BI_BITFIELDS : BI_RGB;
+  bmi.bV4SizeImage = bytesPerRow * height;
+  bmi.bV4CSType = LCS_sRGB;
+  if (hasAlpha) {
+    bmi.bV4RedMask = 0x00FF0000;
+    bmi.bV4GreenMask = 0x0000FF00;
+    bmi.bV4BlueMask = 0x000000FF;
+    bmi.bV4AlphaMask = 0xFF000000;
+  }
+
+  BITMAPFILEHEADER bf;
+  DWORD colormask[3];
+  bf.bfType = 0x4D42;  // 'BM'
+  bf.bfReserved1 = 0;
+  bf.bfReserved2 = 0;
+  bf.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPV4HEADER) +
+                 (hasAlpha ? sizeof(colormask) : 0);
+  bf.bfSize = bf.bfOffBits + bmi.bV4SizeImage;
+
+  // get a file output stream
+  nsCOMPtr<nsIOutputStream> stream;
+  rv = NS_NewLocalFileOutputStream(getter_AddRefs(stream), aFile);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  DataSourceSurface::MappedSurface map;
+  if (!dataSurface->Map(DataSourceSurface::MapType::READ, &map)) {
+    return NS_ERROR_FAILURE;
+  }
+
+  // write the bitmap headers and rgb pixel data to the file
+  rv = NS_ERROR_FAILURE;
+  if (stream) {
+    uint32_t written;
+    stream->Write((const char*)&bf, sizeof(BITMAPFILEHEADER), &written);
+    if (written == sizeof(BITMAPFILEHEADER)) {
+      stream->Write((const char*)&bmi, sizeof(BITMAPV4HEADER), &written);
+      if (written == sizeof(BITMAPV4HEADER)) {
+        if (hasAlpha) {
+          // color mask
+          colormask[0] = 0x00FF0000;
+          colormask[1] = 0x0000FF00;
+          colormask[2] = 0x000000FF;
+
+          stream->Write((const char*)colormask, sizeof(colormask), &written);
+        }
+        if (!hasAlpha || written == sizeof(colormask)) {
+          // write out the image data backwards because the desktop won't
+          // show bitmaps with negative heights for top-to-bottom
+          uint32_t i = map.mStride * height;
+          do {
+            i -= map.mStride;
+            stream->Write(((const char*)map.mData) + i, bytesPerRow, &written);
+            if (written == bytesPerRow) {
+              rv = NS_OK;
+            } else {
+              rv = NS_ERROR_FAILURE;
+              break;
+            }
+          } while (i != 0);
+        }
+      }
+    }
+
+    stream->Close();
+  }
+
+  dataSurface->Unmap();
+
+  return rv;
+}
 
 // This is in use here and in dom/events/TouchEvent.cpp
 /* static */
@@ -1633,6 +1757,140 @@ uint32_t WinUtils::GetMaxTouchPoints() {
     return GetSystemMetrics(SM_MAXIMUMTOUCHES);
   }
   return 0;
+}
+
+/* static */
+POWER_PLATFORM_ROLE
+WinUtils::GetPowerPlatformRole() {
+  typedef POWER_PLATFORM_ROLE(WINAPI *
+                              PowerDeterminePlatformRoleEx)(ULONG Version);
+  static PowerDeterminePlatformRoleEx power_determine_platform_role =
+      reinterpret_cast<PowerDeterminePlatformRoleEx>(::GetProcAddress(
+          ::LoadLibraryW(L"PowrProf.dll"), "PowerDeterminePlatformRoleEx"));
+
+  POWER_PLATFORM_ROLE powerPlatformRole = PlatformRoleUnspecified;
+  if (!power_determine_platform_role) {
+    return powerPlatformRole;
+  }
+
+  return power_determine_platform_role(POWER_PLATFORM_ROLE_V2);
+}
+
+static bool IsWindows10TabletMode() {
+  nsCOMPtr<nsIWindowsUIUtils> uiUtils(
+      do_GetService("@mozilla.org/windows-ui-utils;1"));
+  if (NS_WARN_IF(!uiUtils)) {
+    return false;
+  }
+  bool isInTabletMode = false;
+  uiUtils->GetInTabletMode(&isInTabletMode);
+  return isInTabletMode;
+}
+
+static bool CallGetAutoRotationState(AR_STATE* aRotationState) {
+  typedef BOOL(WINAPI * GetAutoRotationStateFunc)(PAR_STATE pState);
+  static GetAutoRotationStateFunc get_auto_rotation_state_func =
+      reinterpret_cast<GetAutoRotationStateFunc>(::GetProcAddress(
+          GetModuleHandleW(L"user32.dll"), "GetAutoRotationState"));
+  if (get_auto_rotation_state_func) {
+    ZeroMemory(aRotationState, sizeof(AR_STATE));
+    return get_auto_rotation_state_func(aRotationState);
+  }
+  return false;
+}
+
+static bool IsTabletDevice() {
+  // Guarantees that:
+  // - The device has a touch screen.
+  // - It is used as a tablet which means that it has no keyboard connected.
+  // On Windows 10 it means that it is verifying with ConvertibleSlateMode.
+
+  if (!IsWin8OrLater()) {
+    return false;
+  }
+
+  if (IsWindows10TabletMode()) {
+    return true;
+  }
+
+  if (!GetSystemMetrics(SM_MAXIMUMTOUCHES)) {
+    return false;
+  }
+
+  // If the device is docked, the user is treating the device as a PC.
+  if (GetSystemMetrics(SM_SYSTEMDOCKED)) {
+    return false;
+  }
+
+  // If the device is not supporting rotation, it's unlikely to be a tablet,
+  // a convertible or a detachable. See:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/dn629263(v=vs.85).aspx
+  AR_STATE rotation_state;
+  if (CallGetAutoRotationState(&rotation_state) &&
+      (rotation_state & (AR_NOT_SUPPORTED | AR_LAPTOP | AR_NOSENSOR))) {
+    return false;
+  }
+
+  // PlatformRoleSlate was added in Windows 8+.
+  POWER_PLATFORM_ROLE role = WinUtils::GetPowerPlatformRole();
+  if (role == PlatformRoleMobile || role == PlatformRoleSlate) {
+    return !GetSystemMetrics(SM_CONVERTIBLESLATEMODE);
+  }
+  return false;
+}
+
+static bool IsMousePresent() {
+  if (!::GetSystemMetrics(SM_MOUSEPRESENT)) {
+    return false;
+  }
+
+  DWORD count = InputDeviceUtils::CountMouseDevices();
+  if (!count) {
+    return false;
+  }
+
+  // If there is a mouse device and if this machine is a tablet or has a
+  // digitizer, that's counted as the mouse device.
+  // FIXME: Bug 1495938:  We should drop this heuristic way once we find out a
+  // reliable way to tell there is no mouse or not.
+  if (count == 1 &&
+      (WinUtils::IsTouchDeviceSupportPresent() || IsTabletDevice())) {
+    return false;
+  }
+
+  return true;
+}
+
+/* static */
+PointerCapabilities WinUtils::GetPrimaryPointerCapabilities() {
+  if (IsTabletDevice()) {
+    return PointerCapabilities::Coarse;
+  }
+
+  if (IsMousePresent()) {
+    return PointerCapabilities::Fine | PointerCapabilities::Hover;
+  }
+
+  if (IsTouchDeviceSupportPresent()) {
+    return PointerCapabilities::Coarse;
+  }
+
+  return PointerCapabilities::None;
+}
+
+/* static */
+PointerCapabilities WinUtils::GetAllPointerCapabilities() {
+  PointerCapabilities result = PointerCapabilities::None;
+
+  if (IsTabletDevice() || IsTouchDeviceSupportPresent()) {
+    result |= PointerCapabilities::Coarse;
+  }
+
+  if (IsMousePresent()) {
+    result |= PointerCapabilities::Fine | PointerCapabilities::Hover;
+  }
+
+  return result;
 }
 
 /* static */
@@ -1697,25 +1955,87 @@ bool WinUtils::ResolveJunctionPointsAndSymLinks(nsIFile* aPath) {
 }
 
 /* static */
-bool WinUtils::SanitizePath(const wchar_t* aInputPath, nsAString& aOutput) {
-  aOutput.Truncate();
-  wchar_t buffer[MAX_PATH + 1] = {0};
-  if (!PathCanonicalizeW(buffer, aInputPath)) {
+bool WinUtils::RunningFromANetworkDrive() {
+  wchar_t exePath[MAX_PATH];
+  if (!::GetModuleFileNameW(nullptr, exePath, MAX_PATH)) {
     return false;
   }
-  wchar_t longBuffer[MAX_PATH + 1] = {0};
-  DWORD longResult = GetLongPathNameW(buffer, longBuffer, MAX_PATH);
-  if (longResult == 0 || longResult > MAX_PATH - 1) {
+
+  std::wstring exeString(exePath);
+  if (!widget::WinUtils::ResolveJunctionPointsAndSymLinks(exeString)) {
     return false;
   }
-  aOutput.SetLength(MAX_PATH + 1);
-  wchar_t* output = reinterpret_cast<wchar_t*>(aOutput.BeginWriting());
-  if (!PathUnExpandEnvStringsW(longBuffer, output, MAX_PATH)) {
+
+  wchar_t volPath[MAX_PATH];
+  if (!::GetVolumePathNameW(exeString.c_str(), volPath, MAX_PATH)) {
     return false;
   }
-  // Truncate to correct length
-  aOutput.Truncate(wcslen(char16ptr_t(aOutput.BeginReading())));
-  MOZ_ASSERT(aOutput.Length() <= MAX_PATH);
+
+  return (::GetDriveTypeW(volPath) == DRIVE_REMOTE);
+}
+
+/* static */
+bool WinUtils::GetModuleFullPath(HMODULE aModuleHandle, nsAString& aPath) {
+  size_t bufferSize = MAX_PATH;
+  size_t len = 0;
+  while (true) {
+    aPath.SetLength(bufferSize);
+    len = (size_t)::GetModuleFileNameW(
+        aModuleHandle, (char16ptr_t)aPath.BeginWriting(), bufferSize);
+    if (!len) {
+      return false;
+    }
+    if (len == bufferSize && ::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+      bufferSize *= 2;
+      continue;
+    }
+    aPath.Truncate(len);
+    break;
+  }
+  return true;
+}
+
+/* static */
+bool WinUtils::CanonicalizePath(nsAString& aPath) {
+  wchar_t tempPath[MAX_PATH + 1];
+  if (!PathCanonicalizeW(tempPath,
+                         (char16ptr_t)PromiseFlatString(aPath).get())) {
+    return false;
+  }
+  aPath = tempPath;
+  MOZ_ASSERT(aPath.Length() <= MAX_PATH);
+  return true;
+}
+
+/* static */
+bool WinUtils::MakeLongPath(nsAString& aPath) {
+  wchar_t tempPath[MAX_PATH + 1];
+  DWORD longResult =
+      GetLongPathNameW((char16ptr_t)PromiseFlatString(aPath).get(), tempPath,
+                       ArrayLength(tempPath));
+  if (longResult > ArrayLength(tempPath)) {
+    // Our buffer is too short, and we're guaranteeing <= MAX_PATH results.
+    return false;
+  } else if (longResult) {
+    // Success.
+    aPath = tempPath;
+    MOZ_ASSERT(aPath.Length() <= MAX_PATH);
+  }
+  // GetLongPathNameW returns 0 if the path is not found or is not rooted,
+  // but we shouldn't consider that a failure condition.
+  return true;
+}
+
+/* static */
+bool WinUtils::UnexpandEnvVars(nsAString& aPath) {
+  wchar_t tempPath[MAX_PATH + 1];
+  // PathUnExpandEnvStringsW returns false if it doesn't make any
+  // substitutions. Silently continue using the unaltered path.
+  if (PathUnExpandEnvStringsW((char16ptr_t)PromiseFlatString(aPath).get(),
+                              tempPath, ArrayLength(tempPath))) {
+    aPath = tempPath;
+    MOZ_ASSERT(aPath.Length() <= MAX_PATH);
+  }
   return true;
 }
 
@@ -1728,16 +2048,26 @@ bool WinUtils::SanitizePath(const wchar_t* aInputPath, nsAString& aOutput) {
  * necessary. Otherwise, the consumer should replace the system path with the
  * substitution.
  *
- * @see GetAppInitDLLs for an example of its usage.
+ * @see PreparePathForTelemetry for an example of its usage.
  */
 /* static */
-void WinUtils::GetWhitelistedPaths(
-    nsTArray<mozilla::Pair<nsString, nsDependentString>>& aOutput) {
-  aOutput.Clear();
-  aOutput.AppendElement(mozilla::MakePair(
+const nsTArray<mozilla::Pair<nsString, nsDependentString>>&
+WinUtils::GetWhitelistedPaths() {
+  // We know the maximum number of items this array will hold, so avoid a heap
+  // allocation by using AutoTArray<T,N>
+  static const size_t kMaxWhitelistedItems = 2;
+  static StaticAutoPtr<
+      AutoTArray<Pair<nsString, nsDependentString>, kMaxWhitelistedItems>>
+      sWhitelist;
+  if (sWhitelist) {
+    return *sWhitelist;
+  }
+  sWhitelist =
+      new AutoTArray<Pair<nsString, nsDependentString>, kMaxWhitelistedItems>();
+  sWhitelist->AppendElement(mozilla::MakePair(
       nsString(NS_LITERAL_STRING("%ProgramFiles%")), nsDependentString()));
   // When no substitution is required, set the void flag
-  aOutput.LastElement().second().SetIsVoid(true);
+  sWhitelist->LastElement().second().SetIsVoid(true);
   wchar_t tmpPath[MAX_PATH + 1] = {0};
   if (GetTempPath(MAX_PATH, tmpPath)) {
     // GetTempPath's result always ends with a backslash, which we don't want
@@ -1745,12 +2075,18 @@ void WinUtils::GetWhitelistedPaths(
     if (tmpPathLen) {
       tmpPath[tmpPathLen - 1] = 0;
     }
-    nsAutoString cleanTmpPath;
-    if (SanitizePath(tmpPath, cleanTmpPath)) {
-      aOutput.AppendElement(mozilla::MakePair(nsString(cleanTmpPath),
-                                              nsDependentString(L"%TEMP%")));
+    nsAutoString cleanTmpPath(tmpPath);
+    if (UnexpandEnvVars(cleanTmpPath)) {
+      sWhitelist->AppendElement(mozilla::MakePair(
+          nsString(cleanTmpPath), nsDependentString(L"%TEMP%")));
     }
   }
+  ClearOnShutdown(&sWhitelist);
+
+  // If we add more items to the whitelist, ensure we still don't invoke an
+  // unnecessary heap allocation.
+  MOZ_ASSERT(sWhitelist->Length() <= kMaxWhitelistedItems);
+  return *sWhitelist;
 }
 
 /**
@@ -1798,52 +2134,72 @@ bool WinUtils::GetAppInitDLLs(nsAString& aOutput) {
   if (status != ERROR_SUCCESS) {
     return false;
   }
-  nsTArray<mozilla::Pair<nsString, nsDependentString>> whitelistedPaths;
-  GetWhitelistedPaths(whitelistedPaths);
   // For each token, split up the filename components and then check the
   // name of the file.
   const wchar_t kDelimiters[] = L", ";
   wchar_t* tokenContext = nullptr;
   wchar_t* token = wcstok_s(data.get(), kDelimiters, &tokenContext);
   while (token) {
-    nsAutoString cleanPath;
+    nsAutoString cleanPath(token);
     // Since these paths are short paths originating from the registry, we need
     // to canonicalize them, lengthen them, and sanitize them before we can
     // check them against the whitelist
-    if (SanitizePath(token, cleanPath)) {
-      bool needsStrip = true;
-      for (uint32_t i = 0; i < whitelistedPaths.Length(); ++i) {
-        const nsString& testPath = whitelistedPaths[i].first();
-        const nsDependentString& substitution = whitelistedPaths[i].second();
-        if (StringBeginsWith(cleanPath, testPath,
-                             nsCaseInsensitiveStringComparator())) {
-          if (!substitution.IsVoid()) {
-            cleanPath.Replace(0, testPath.Length(), substitution);
-          }
-          // Whitelisted paths may be used as-is provided that they have been
-          // previously sanitized.
-          needsStrip = false;
-          break;
-        }
-      }
+    if (PreparePathForTelemetry(cleanPath)) {
       if (!aOutput.IsEmpty()) {
         aOutput += L";";
       }
-      // For non-whitelisted paths, we strip the path component and just leave
-      // the filename.
-      if (needsStrip) {
-        // nsLocalFile doesn't like non-absolute paths. Since these paths might
-        // contain environment variables instead of roots, we can't use it.
-        wchar_t tmpPath[MAX_PATH + 1] = {0};
-        wcsncpy(tmpPath, cleanPath.get(), cleanPath.Length());
-        PathStripPath(tmpPath);
-        aOutput += tmpPath;
-      } else {
-        aOutput += cleanPath;
-      }
+      aOutput += cleanPath;
     }
     token = wcstok_s(nullptr, kDelimiters, &tokenContext);
   }
+  return true;
+}
+
+/* static */
+bool WinUtils::PreparePathForTelemetry(nsAString& aPath,
+                                       PathTransformFlags aFlags) {
+  if (aFlags & PathTransformFlags::Canonicalize) {
+    if (!CanonicalizePath(aPath)) {
+      return false;
+    }
+  }
+  if (aFlags & PathTransformFlags::Lengthen) {
+    if (!MakeLongPath(aPath)) {
+      return false;
+    }
+  }
+  if (aFlags & PathTransformFlags::UnexpandEnvVars) {
+    if (!UnexpandEnvVars(aPath)) {
+      return false;
+    }
+  }
+
+  const nsTArray<Pair<nsString, nsDependentString>>& whitelistedPaths =
+      GetWhitelistedPaths();
+
+  for (uint32_t i = 0; i < whitelistedPaths.Length(); ++i) {
+    const nsString& testPath = whitelistedPaths[i].first();
+    const nsDependentString& substitution = whitelistedPaths[i].second();
+    if (StringBeginsWith(aPath, testPath,
+                         nsCaseInsensitiveStringComparator())) {
+      if (!substitution.IsVoid()) {
+        aPath.Replace(0, testPath.Length(), substitution);
+      }
+      return true;
+    }
+  }
+
+  // For non-whitelisted paths, we strip the path component and just leave
+  // the filename. We can't use nsLocalFile to do this because these paths may
+  // begin with environment variables, and nsLocalFile doesn't like
+  // non-absolute paths.
+  MOZ_ASSERT(aPath.Length() <= MAX_PATH);
+  wchar_t tmpPath[MAX_PATH + 1] = {0};
+  if (wcsncpy_s(tmpPath, ArrayLength(tmpPath),
+                (char16ptr_t)aPath.BeginReading(), aPath.Length())) {
+    return false;
+  }
+  aPath.Assign((char16ptr_t)::PathFindFileNameW(tmpPath));
   return true;
 }
 

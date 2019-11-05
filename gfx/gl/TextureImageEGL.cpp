@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -143,8 +143,9 @@ void TextureImageEGL::Resize(const gfx::IntSize& aSize) {
 bool TextureImageEGL::BindTexImage() {
   if (mBound && !ReleaseTexImage()) return false;
 
-  EGLBoolean success = sEGLLibrary.fBindTexImage(
-      EGL_DISPLAY(), (EGLSurface)mSurface, LOCAL_EGL_BACK_BUFFER);
+  auto* egl = gl::GLLibraryEGL::Get();
+  EGLBoolean success = egl->fBindTexImage(EGL_DISPLAY(), (EGLSurface)mSurface,
+                                          LOCAL_EGL_BACK_BUFFER);
 
   if (success == LOCAL_EGL_FALSE) return false;
 
@@ -155,7 +156,8 @@ bool TextureImageEGL::BindTexImage() {
 bool TextureImageEGL::ReleaseTexImage() {
   if (!mBound) return true;
 
-  EGLBoolean success = sEGLLibrary.fReleaseTexImage(
+  auto* egl = gl::GLLibraryEGL::Get();
+  EGLBoolean success = egl->fReleaseTexImage(
       EGL_DISPLAY(), (EGLSurface)mSurface, LOCAL_EGL_BACK_BUFFER);
 
   if (success == LOCAL_EGL_FALSE) return false;
@@ -167,7 +169,8 @@ bool TextureImageEGL::ReleaseTexImage() {
 void TextureImageEGL::DestroyEGLSurface(void) {
   if (!mSurface) return;
 
-  sEGLLibrary.fDestroySurface(EGL_DISPLAY(), mSurface);
+  auto* egl = gl::GLLibraryEGL::Get();
+  egl->fDestroySurface(EGL_DISPLAY(), mSurface);
   mSurface = nullptr;
 }
 

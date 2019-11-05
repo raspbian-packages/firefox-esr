@@ -13,8 +13,9 @@
 
 #include "nsCoord.h"
 #include "DisplayItemClip.h"
-#include "ScrollbarStyles.h"
 #include "mozilla/Maybe.h"
+#include "mozilla/ScrollStyles.h"
+#include "mozilla/ScrollTypes.h"
 #include "mozilla/gfx/Point.h"
 #include "nsIScrollbarMediator.h"
 #include "Units.h"
@@ -35,9 +36,13 @@ class nsDisplayListBuilder;
 namespace mozilla {
 struct ContainerLayerParameters;
 namespace layers {
+struct ScrollMetadata;
 class Layer;
 class LayerManager;
 }  // namespace layers
+namespace layout {
+class ScrollAnchorContainer;
+}  // namespace layout
 }  // namespace mozilla
 
 /**
@@ -49,8 +54,9 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
  public:
   typedef mozilla::CSSIntPoint CSSIntPoint;
   typedef mozilla::ContainerLayerParameters ContainerLayerParameters;
-  typedef mozilla::layers::FrameMetrics FrameMetrics;
   typedef mozilla::layers::ScrollSnapInfo ScrollSnapInfo;
+  typedef mozilla::layout::ScrollAnchorContainer ScrollAnchorContainer;
+  typedef mozilla::ScrollMode ScrollMode;
 
   NS_DECL_QUERYFRAME_TARGET(nsIScrollableFrame)
 
@@ -61,11 +67,11 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
   virtual nsIFrame* GetScrolledFrame() const = 0;
 
   /**
-   * Get the styles (NS_STYLE_OVERFLOW_SCROLL, NS_STYLE_OVERFLOW_HIDDEN,
-   * or NS_STYLE_OVERFLOW_AUTO) governing the horizontal and vertical
+   * Get the styles (StyleOverflow::Scroll, StyleOverflow::Hidden,
+   * or StyleOverflow::Auto) governing the horizontal and vertical
    * scrollbars for this frame.
    */
-  virtual mozilla::ScrollbarStyles GetScrollbarStyles() const = 0;
+  virtual mozilla::ScrollStyles GetScrollStyles() const = 0;
 
   enum { HORIZONTAL = 0x01, VERTICAL = 0x02 };
   /**
@@ -107,6 +113,15 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
       nsPresContext* aPresContext, gfxContext* aRC,
       mozilla::WritingMode aWM) = 0;
   /**
+   * Get the layout size of this frame.
+   * Note that this is a value which is not expanded by the minimum scale size.
+   * For scroll frames other than the root content document's scroll frame, this
+   * value will be the same as GetScrollPortRect().Size().
+   *
+   * This value is used for Element.clientWidth and clientHeight.
+   */
+  virtual nsSize GetLayoutSize() const = 0;
+  /**
    * GetScrolledRect is designed to encapsulate deciding which
    * directions of overflow should be reachable by scrolling and which
    * should not.  Callers should NOT depend on it having any particular
@@ -138,6 +153,12 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    */
   virtual nsPoint GetLogicalScrollPosition() const = 0;
   /**
+   * Get the latest scroll position that the main thread has sent or received
+   * from APZ.
+   */
+  virtual nsPoint GetApzScrollPosition() const = 0;
+
+  /**
    * Get the area that must contain the scroll position. Typically
    * (but not always, e.g. for RTL content) x and y will be 0, and
    * width or height will be nonzero if the content can be scrolled in
@@ -147,10 +168,19 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    */
   virtual nsRect GetScrollRange() const = 0;
   /**
-   * Get the size of the scroll port to use when clamping the scroll
+   * Get the size of the view port to use when clamping the scroll
    * position.
    */
-  virtual nsSize GetScrollPositionClampingScrollPortSize() const = 0;
+  virtual nsSize GetVisualViewportSize() const = 0;
+  /**
+   * Returns the offset of the visual viewport relative to
+   * the origin of the scrolled content. Note that only the RCD-RSF
+   * has a distinct visual viewport; for other scroll frames, the
+   * visual viewport always coincides with the layout viewport, and
+   * consequently the offset this function returns is equal to
+   * GetScrollPosition().
+   */
+  virtual nsPoint GetVisualViewportOffset() const = 0;
   /**
    * Return how much we would try to scroll by in each direction if
    * asked to scroll by one "line" vertically and horizontally.
@@ -163,33 +193,9 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
   virtual nsSize GetPageScrollAmount() const = 0;
 
   /**
-   * When a scroll operation is requested, we ask for instant, smooth,
-   * smooth msd, or normal scrolling.
-   *
-   * SMOOTH scrolls have a symmetrical acceleration and deceleration curve
-   * modeled with a set of splines that guarantee that the destination will be
-   * reached over a fixed time interval.  SMOOTH will only be smooth if smooth
-   * scrolling is actually enabled.  This behavior is utilized by keyboard and
-   * mouse wheel scrolling events.
-   *
-   * SMOOTH_MSD implements a physically based model that approximates the
-   * behavior of a mass-spring-damper system.  SMOOTH_MSD scrolls have a
-   * non-symmetrical acceleration and deceleration curve, can potentially
-   * overshoot the destination on intermediate frames, and complete over a
-   * variable time interval.  SMOOTH_MSD will only be smooth if cssom-view
-   * smooth-scrolling is enabled.
-   *
-   * INSTANT is always synchronous, NORMAL can be asynchronous.
-   *
-   * If an INSTANT scroll request happens while a SMOOTH or async scroll is
-   * already in progress, the async scroll is interrupted and we instantly
-   * scroll to the destination.
-   *
-   * If an INSTANT or SMOOTH scroll request happens while a SMOOTH_MSD scroll
-   * is already in progress, the SMOOTH_MSD scroll is interrupted without
-   * first scrolling to the destination.
+   * Return scroll-padding value of this frame.
    */
-  enum ScrollMode { INSTANT, SMOOTH, SMOOTH_MSD, NORMAL };
+  virtual nsMargin GetScrollPadding() const = 0;
   /**
    * Some platforms (OSX) may generate additional scrolling events even
    * after the user has stopped scrolling, simulating a momentum scrolling
@@ -228,10 +234,15 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    * range and / or moving in any direction; GetScrollPositionCSSPixels will be
    * exactly aScrollPosition at the end of the scroll animation unless the
    * SMOOTH_MSD animation is interrupted.
+   *
+   * FIXME: Drop |aSnap| argument once after we finished the migration to the
+   * Scroll Snap Module v1. We should alway use ENABLE_SNAP.
    */
-  virtual void ScrollToCSSPixels(
-      const CSSIntPoint& aScrollPosition,
-      nsIScrollableFrame::ScrollMode aMode = nsIScrollableFrame::INSTANT) = 0;
+  virtual void ScrollToCSSPixels(const CSSIntPoint& aScrollPosition,
+                                 ScrollMode aMode = ScrollMode::Instant,
+                                 nsIScrollbarMediator::ScrollSnapMode aSnap =
+                                     nsIScrollbarMediator::DEFAULT,
+                                 nsAtom* aOrigin = nullptr) = 0;
   /**
    * @note This method might destroy the frame, pres shell and other objects.
    * Scrolls to a particular position in float CSS pixels.
@@ -268,6 +279,16 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
                         ScrollMomentum aMomentum = NOT_MOMENTUM,
                         nsIScrollbarMediator::ScrollSnapMode aSnap =
                             nsIScrollbarMediator::DISABLE_SNAP) = 0;
+
+  /**
+   * FIXME: Drop |aSnap| argument once after we finished the migration to the
+   * Scroll Snap Module v1. We should alway use ENABLE_SNAP.
+   */
+  virtual void ScrollByCSSPixels(const CSSIntPoint& aDelta,
+                                 ScrollMode aMode = ScrollMode::Instant,
+                                 nsAtom* aOrigin = nullptr,
+                                 nsIScrollbarMediator::ScrollSnapMode aSnap =
+                                     nsIScrollbarMediator::DEFAULT) = 0;
 
   /**
    * Perform scroll snapping, possibly resulting in a smooth scroll to
@@ -351,6 +372,11 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    */
   virtual void ClearDidHistoryRestore() = 0;
   /**
+   * Mark the frame as having been scrolled at least once, so that it remains
+   * active and we can also start storing its scroll position when saving state.
+   */
+  virtual void MarkEverScrolled() = 0;
+  /**
    * Determine if the passed in rect is nearly visible according to the frame
    * visibility heuristics for how close it is to the visible scrollport.
    */
@@ -366,15 +392,6 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    * latest instant scroll.
    */
   virtual nsAtom* LastScrollOrigin() = 0;
-  /**
-   * Sets a flag on the scrollframe that indicates the current scroll origin
-   * has been sent over in a layers transaction, and subsequent changes to
-   * the scroll position by "weaker" origins are permitted to overwrite the
-   * the scroll origin. Scroll origins that
-   * nsLayoutUtils::CanScrollOriginClobberApz returns false for are considered
-   * "weaker" than scroll origins for which that function returns true.
-   */
-  virtual void AllowScrollOriginDowngrade() = 0;
   /**
    * Returns the origin that triggered the last smooth scroll.
    * Will equal nsGkAtoms::apz when the compositor's replica frame
@@ -412,21 +429,19 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    */
   virtual bool WantAsyncScroll() const = 0;
   /**
-   * aLayer's animated geometry root is this frame. Returns the ScrollMetadata
-   * contributed by this frame, if there is one.
-   * If aClip is non-null, then aLayer must also be non-null.
+   * Returns the ScrollMetadata contributed by this frame, if there is one.
    */
   virtual mozilla::Maybe<mozilla::layers::ScrollMetadata> ComputeScrollMetadata(
-      mozilla::layers::Layer* aLayer,
       mozilla::layers::LayerManager* aLayerManager,
       const nsIFrame* aContainerReferenceFrame,
-      const ContainerLayerParameters& aParameters,
+      const mozilla::Maybe<ContainerLayerParameters>& aParameters,
       const mozilla::DisplayItemClip* aClip) const = 0;
-
   /**
-   * If this scroll frame is ignoring viewporting clipping
+   * Ensure's aLayer is clipped to the display port.
    */
-  virtual bool IsIgnoringViewportClipping() const = 0;
+  virtual void ClipLayerToDisplayPort(
+      mozilla::layers::Layer* aLayer, const mozilla::DisplayItemClip* aClip,
+      const ContainerLayerParameters& aParameters) const = 0;
 
   /**
    * Mark the scrollbar frames for reflow.
@@ -477,6 +492,22 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
                                      bool aSetBase) = 0;
 
   /**
+   * Notify the scrollframe that the current scroll offset and origin have been
+   * sent over in a layers transaction.
+   *
+   * This sets a flag on the scrollframe that indicates subsequent changes
+   * to the scroll position by "weaker" origins are permitted to overwrite the
+   * the scroll origin. Scroll origins that
+   * nsLayoutUtils::CanScrollOriginClobberApz returns false for are considered
+   * "weaker" than scroll origins for which that function returns true.
+   *
+   * This function must be called for a scrollframe after all calls to
+   * ComputeScrollMetadata in a layers transaction have been completed.
+   *
+   */
+  virtual void NotifyApzTransaction() = 0;
+
+  /**
    * Notification that this scroll frame is getting its frame visibility
    * updated. aIgnoreDisplayPort indicates that the display port was ignored
    * (because there was no suitable base rect)
@@ -512,6 +543,8 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    */
   virtual bool DragScroll(mozilla::WidgetEvent* aEvent) = 0;
 
+  virtual void AsyncScrollbarDragInitiated(
+      uint64_t aDragBlockId, mozilla::layers::ScrollDirection aDirection) = 0;
   virtual void AsyncScrollbarDragRejected() = 0;
 
   /**
@@ -520,6 +553,17 @@ class nsIScrollableFrame : public nsIScrollbarMediator {
    * all (ie XUL documents) even though they may contain other scroll frames.
    */
   virtual bool IsRootScrollFrameOfDocument() const = 0;
+
+  /**
+   * Returns the scroll anchor associated with this scrollable frame. This is
+   * never null.
+   */
+  virtual const ScrollAnchorContainer* Anchor() const = 0;
+  virtual ScrollAnchorContainer* Anchor() = 0;
+
+  virtual bool SmoothScrollVisual(
+      const nsPoint& aVisualViewportOffset,
+      mozilla::layers::FrameMetrics::ScrollOffsetUpdateType aUpdateType) = 0;
 };
 
 #endif

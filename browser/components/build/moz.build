@@ -5,14 +5,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 with Files("**"):
-    BUG_COMPONENT = ("Firefox", "Build Config")
+    BUG_COMPONENT = ("Firefox Build System", "General")
 
-EXPORTS += [
-    'nsBrowserCompsCID.h',
-]
-
-SOURCES += [
-    'nsModule.cpp',
+XPCOM_MANIFESTS += [
+    'components.conf',
 ]
 
 Library('browsercomps')
@@ -21,7 +17,6 @@ FINAL_LIBRARY = 'xul'
 LOCAL_INCLUDES += [
     '../about',
     '../dirprovider',
-    '../feeds',
     '../migration',
     '../sessionstore',
     '../shell',

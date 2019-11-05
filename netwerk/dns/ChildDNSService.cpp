@@ -48,80 +48,25 @@ ChildDNSService::ChildDNSService()
   MOZ_ASSERT(IsNeckoChild());
 }
 
-ChildDNSService::~ChildDNSService() {}
-
 void ChildDNSService::GetDNSRecordHashKey(
-    const nsACString &aHost, const OriginAttributes &aOriginAttributes,
-    uint32_t aFlags, const nsACString &aNetworkInterface,
-    nsIDNSListener *aListener, nsACString &aHashKey) {
+    const nsACString& aHost, uint16_t aType,
+    const OriginAttributes& aOriginAttributes, uint32_t aFlags,
+    nsIDNSListener* aListener, nsACString& aHashKey) {
   aHashKey.Assign(aHost);
+  aHashKey.AppendInt(aType);
 
   nsAutoCString originSuffix;
   aOriginAttributes.CreateSuffix(originSuffix);
-  aHashKey.Assign(originSuffix);
+  aHashKey.Append(originSuffix);
 
   aHashKey.AppendInt(aFlags);
-  if (!aNetworkInterface.IsEmpty()) {
-    aHashKey.Append(aNetworkInterface);
-  }
   aHashKey.AppendPrintf("%p", aListener);
 }
 
-//-----------------------------------------------------------------------------
-// ChildDNSService::nsIDNSService
-//-----------------------------------------------------------------------------
-
-NS_IMETHODIMP
-ChildDNSService::AsyncResolve(const nsACString &hostname, uint32_t flags,
-                              nsIDNSListener *listener, nsIEventTarget *target_,
-                              JS::HandleValue aOriginAttributes, JSContext *aCx,
-                              uint8_t aArgc, nsICancelable **result) {
-  OriginAttributes attrs;
-
-  if (aArgc == 1) {
-    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
-      return NS_ERROR_INVALID_ARG;
-    }
-  }
-
-  return AsyncResolveExtendedNative(hostname, flags, EmptyCString(), listener,
-                                    target_, attrs, result);
-}
-
-NS_IMETHODIMP
-ChildDNSService::AsyncResolveNative(const nsACString &hostname, uint32_t flags,
-                                    nsIDNSListener *listener,
-                                    nsIEventTarget *target_,
-                                    const OriginAttributes &aOriginAttributes,
-                                    nsICancelable **result) {
-  return AsyncResolveExtendedNative(hostname, flags, EmptyCString(), listener,
-                                    target_, aOriginAttributes, result);
-}
-
-NS_IMETHODIMP
-ChildDNSService::AsyncResolveExtended(
-    const nsACString &aHostname, uint32_t flags,
-    const nsACString &aNetworkInterface, nsIDNSListener *listener,
-    nsIEventTarget *target_, JS::HandleValue aOriginAttributes, JSContext *aCx,
-    uint8_t aArgc, nsICancelable **result) {
-  OriginAttributes attrs;
-
-  if (aArgc == 1) {
-    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
-      return NS_ERROR_INVALID_ARG;
-    }
-  }
-
-  return AsyncResolveExtendedNative(aHostname, flags, aNetworkInterface,
-                                    listener, target_, attrs, result);
-}
-
-NS_IMETHODIMP
-ChildDNSService::AsyncResolveExtendedNative(
-    const nsACString &hostname, uint32_t flags,
-    const nsACString &aNetworkInterface, nsIDNSListener *listener,
-    nsIEventTarget *target_, const OriginAttributes &aOriginAttributes,
-    nsICancelable **result) {
+nsresult ChildDNSService::AsyncResolveInternal(
+    const nsACString& hostname, uint16_t type, uint32_t flags,
+    nsIDNSListener* listener, nsIEventTarget* target_,
+    const OriginAttributes& aOriginAttributes, nsICancelable** result) {
   NS_ENSURE_TRUE(gNeckoChild != nullptr, NS_ERROR_FAILURE);
 
   if (mDisablePrefetch && (flags & RESOLVE_SPECULATE)) {
@@ -138,7 +83,7 @@ ChildDNSService::AsyncResolveExtendedNative(
   }
 
   // We need original listener for the pending requests hash.
-  nsIDNSListener *originalListener = listener;
+  nsIDNSListener* originalListener = listener;
 
   // make sure JS callers get notification on the main thread
   nsCOMPtr<nsIEventTarget> target = target_;
@@ -153,20 +98,22 @@ ChildDNSService::AsyncResolveExtendedNative(
   }
 
   RefPtr<DNSRequestChild> childReq = new DNSRequestChild(
-      hostname, aOriginAttributes, flags, aNetworkInterface, listener, target);
+      hostname, type, aOriginAttributes, flags, listener, target);
 
   {
     MutexAutoLock lock(mPendingRequestsLock);
     nsCString key;
-    GetDNSRecordHashKey(hostname, aOriginAttributes, originalFlags,
-                        aNetworkInterface, originalListener, key);
-    nsTArray<RefPtr<DNSRequestChild>> *hashEntry;
-    if (mPendingRequests.Get(key, &hashEntry)) {
-      hashEntry->AppendElement(childReq);
+    GetDNSRecordHashKey(hostname, type, aOriginAttributes, originalFlags,
+                        originalListener, key);
+    auto entry = mPendingRequests.LookupForAdd(key);
+    if (entry) {
+      entry.Data()->AppendElement(childReq);
     } else {
-      hashEntry = new nsTArray<RefPtr<DNSRequestChild>>();
-      hashEntry->AppendElement(childReq);
-      mPendingRequests.Put(key, hashEntry);
+      entry.OrInsert([&]() {
+        auto* hashEntry = new nsTArray<RefPtr<DNSRequestChild>>();
+        hashEntry->AppendElement(childReq);
+        return hashEntry;
+      });
     }
   }
 
@@ -176,66 +123,19 @@ ChildDNSService::AsyncResolveExtendedNative(
   return NS_OK;
 }
 
-NS_IMETHODIMP
-ChildDNSService::CancelAsyncResolve(const nsACString &aHostname,
-                                    uint32_t aFlags, nsIDNSListener *aListener,
-                                    nsresult aReason,
-                                    JS::HandleValue aOriginAttributes,
-                                    JSContext *aCx, uint8_t aArgc) {
-  OriginAttributes attrs;
-
-  if (aArgc == 1) {
-    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
-      return NS_ERROR_INVALID_ARG;
-    }
-  }
-
-  return CancelAsyncResolveExtendedNative(aHostname, aFlags, EmptyCString(),
-                                          aListener, aReason, attrs);
-}
-
-NS_IMETHODIMP
-ChildDNSService::CancelAsyncResolveNative(
-    const nsACString &aHostname, uint32_t aFlags, nsIDNSListener *aListener,
-    nsresult aReason, const OriginAttributes &aOriginAttributes) {
-  return CancelAsyncResolveExtendedNative(
-      aHostname, aFlags, EmptyCString(), aListener, aReason, aOriginAttributes);
-}
-
-NS_IMETHODIMP
-ChildDNSService::CancelAsyncResolveExtended(const nsACString &aHostname,
-                                            uint32_t aFlags,
-                                            const nsACString &aNetworkInterface,
-                                            nsIDNSListener *aListener,
-                                            nsresult aReason,
-                                            JS::HandleValue aOriginAttributes,
-                                            JSContext *aCx, uint8_t aArgc) {
-  OriginAttributes attrs;
-
-  if (aArgc == 1) {
-    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
-      return NS_ERROR_INVALID_ARG;
-    }
-  }
-
-  return CancelAsyncResolveExtendedNative(aHostname, aFlags, aNetworkInterface,
-                                          aListener, aReason, attrs);
-}
-
-NS_IMETHODIMP
-ChildDNSService::CancelAsyncResolveExtendedNative(
-    const nsACString &aHostname, uint32_t aFlags,
-    const nsACString &aNetworkInterface, nsIDNSListener *aListener,
-    nsresult aReason, const OriginAttributes &aOriginAttributes) {
+nsresult ChildDNSService::CancelAsyncResolveInternal(
+    const nsACString& aHostname, uint16_t aType, uint32_t aFlags,
+    nsIDNSListener* aListener, nsresult aReason,
+    const OriginAttributes& aOriginAttributes) {
   if (mDisablePrefetch && (aFlags & RESOLVE_SPECULATE)) {
     return NS_ERROR_DNS_LOOKUP_QUEUE_FULL;
   }
 
   MutexAutoLock lock(mPendingRequestsLock);
-  nsTArray<RefPtr<DNSRequestChild>> *hashEntry;
+  nsTArray<RefPtr<DNSRequestChild>>* hashEntry;
   nsCString key;
-  GetDNSRecordHashKey(aHostname, aOriginAttributes, aFlags, aNetworkInterface,
-                      aListener, key);
+  GetDNSRecordHashKey(aHostname, aType, aOriginAttributes, aFlags, aListener,
+                      key);
   if (mPendingRequests.Get(key, &hashEntry)) {
     // We cancel just one.
     hashEntry->ElementAt(0)->Cancel(aReason);
@@ -244,25 +144,141 @@ ChildDNSService::CancelAsyncResolveExtendedNative(
   return NS_OK;
 }
 
+//-----------------------------------------------------------------------------
+// ChildDNSService::nsIDNSService
+//-----------------------------------------------------------------------------
+
 NS_IMETHODIMP
-ChildDNSService::Resolve(const nsACString &hostname, uint32_t flags,
-                         JS::HandleValue aOriginAttributes, JSContext *aCx,
-                         uint8_t aArgc, nsIDNSRecord **result) {
+ChildDNSService::AsyncResolve(const nsACString& hostname, uint32_t flags,
+                              nsIDNSListener* listener, nsIEventTarget* target_,
+                              JS::HandleValue aOriginAttributes, JSContext* aCx,
+                              uint8_t aArgc, nsICancelable** result) {
+  OriginAttributes attrs;
+
+  if (aArgc == 1) {
+    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
+      return NS_ERROR_INVALID_ARG;
+    }
+  }
+
+  return AsyncResolveInternal(hostname, nsIDNSService::RESOLVE_TYPE_DEFAULT,
+                              flags, listener, target_, attrs, result);
+}
+
+NS_IMETHODIMP
+ChildDNSService::AsyncResolveNative(const nsACString& hostname, uint32_t flags,
+                                    nsIDNSListener* listener,
+                                    nsIEventTarget* target_,
+                                    const OriginAttributes& aOriginAttributes,
+                                    nsICancelable** result) {
+  return AsyncResolveInternal(hostname, nsIDNSService::RESOLVE_TYPE_DEFAULT,
+                              flags, listener, target_, aOriginAttributes,
+                              result);
+}
+
+NS_IMETHODIMP
+ChildDNSService::AsyncResolveByType(const nsACString& hostname, uint16_t type,
+                                    uint32_t flags, nsIDNSListener* listener,
+                                    nsIEventTarget* target_,
+                                    JS::HandleValue aOriginAttributes,
+                                    JSContext* aCx, uint8_t aArgc,
+                                    nsICancelable** result) {
+  OriginAttributes attrs;
+
+  if (aArgc == 1) {
+    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
+      return NS_ERROR_INVALID_ARG;
+    }
+  }
+
+  return AsyncResolveInternal(hostname, type, flags, listener, target_, attrs,
+                              result);
+}
+
+NS_IMETHODIMP
+ChildDNSService::AsyncResolveByTypeNative(
+    const nsACString& hostname, uint16_t type, uint32_t flags,
+    nsIDNSListener* listener, nsIEventTarget* target_,
+    const OriginAttributes& aOriginAttributes, nsICancelable** result) {
+  return AsyncResolveInternal(hostname, type, flags, listener, target_,
+                              aOriginAttributes, result);
+}
+
+NS_IMETHODIMP
+ChildDNSService::CancelAsyncResolve(const nsACString& aHostname,
+                                    uint32_t aFlags, nsIDNSListener* aListener,
+                                    nsresult aReason,
+                                    JS::HandleValue aOriginAttributes,
+                                    JSContext* aCx, uint8_t aArgc) {
+  OriginAttributes attrs;
+
+  if (aArgc == 1) {
+    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
+      return NS_ERROR_INVALID_ARG;
+    }
+  }
+
+  return CancelAsyncResolveInternal(aHostname,
+                                    nsIDNSService::RESOLVE_TYPE_DEFAULT, aFlags,
+                                    aListener, aReason, attrs);
+}
+
+NS_IMETHODIMP
+ChildDNSService::CancelAsyncResolveNative(
+    const nsACString& aHostname, uint32_t aFlags, nsIDNSListener* aListener,
+    nsresult aReason, const OriginAttributes& aOriginAttributes) {
+  return CancelAsyncResolveInternal(aHostname,
+                                    nsIDNSService::RESOLVE_TYPE_DEFAULT, aFlags,
+                                    aListener, aReason, aOriginAttributes);
+}
+
+NS_IMETHODIMP
+ChildDNSService::CancelAsyncResolveByType(const nsACString& aHostname,
+                                          uint16_t aType, uint32_t aFlags,
+                                          nsIDNSListener* aListener,
+                                          nsresult aReason,
+                                          JS::HandleValue aOriginAttributes,
+                                          JSContext* aCx, uint8_t aArgc) {
+  OriginAttributes attrs;
+
+  if (aArgc == 1) {
+    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
+      return NS_ERROR_INVALID_ARG;
+    }
+  }
+
+  return CancelAsyncResolveInternal(aHostname, aType, aFlags, aListener,
+                                    aReason, attrs);
+}
+
+NS_IMETHODIMP
+ChildDNSService::CancelAsyncResolveByTypeNative(
+    const nsACString& aHostname, uint16_t aType, uint32_t aFlags,
+    nsIDNSListener* aListener, nsresult aReason,
+    const OriginAttributes& aOriginAttributes) {
+  return CancelAsyncResolveInternal(aHostname, aType, aFlags, aListener,
+                                    aReason, aOriginAttributes);
+}
+
+NS_IMETHODIMP
+ChildDNSService::Resolve(const nsACString& hostname, uint32_t flags,
+                         JS::HandleValue aOriginAttributes, JSContext* aCx,
+                         uint8_t aArgc, nsIDNSRecord** result) {
   // not planning to ever support this, since sync IPDL is evil.
   return NS_ERROR_NOT_AVAILABLE;
 }
 
 NS_IMETHODIMP
-ChildDNSService::ResolveNative(const nsACString &hostname, uint32_t flags,
-                               const OriginAttributes &aOriginAttributes,
-                               nsIDNSRecord **result) {
+ChildDNSService::ResolveNative(const nsACString& hostname, uint32_t flags,
+                               const OriginAttributes& aOriginAttributes,
+                               nsIDNSRecord** result) {
   // not planning to ever support this, since sync IPDL is evil.
   return NS_ERROR_NOT_AVAILABLE;
 }
 
 NS_IMETHODIMP
 ChildDNSService::GetDNSCacheEntries(
-    nsTArray<mozilla::net::DNSCacheEntries> *args) {
+    nsTArray<mozilla::net::DNSCacheEntries>* args) {
   // Only used by networking dashboard, so may not ever need this in child.
   // (and would provide a way to spy on what hosts other apps are connecting to,
   // unless we start keeping per-app DNS caches).
@@ -270,12 +286,15 @@ ChildDNSService::GetDNSCacheEntries(
 }
 
 NS_IMETHODIMP
-ChildDNSService::GetMyHostName(nsACString &result) {
+ChildDNSService::ClearCache(bool aTrrToo) { return NS_ERROR_NOT_AVAILABLE; }
+
+NS_IMETHODIMP
+ChildDNSService::GetMyHostName(nsACString& result) {
   // TODO: get value from parent during PNecko construction?
   return NS_ERROR_NOT_AVAILABLE;
 }
 
-void ChildDNSService::NotifyRequestDone(DNSRequestChild *aDnsRequest) {
+void ChildDNSService::NotifyRequestDone(DNSRequestChild* aDnsRequest) {
   // We need the original flags and listener for the pending requests hash.
   uint32_t originalFlags = aDnsRequest->mFlags & ~RESOLVE_OFFLINE;
   nsCOMPtr<nsIDNSListener> originalListener = aDnsRequest->mListener;
@@ -291,15 +310,15 @@ void ChildDNSService::NotifyRequestDone(DNSRequestChild *aDnsRequest) {
   MutexAutoLock lock(mPendingRequestsLock);
 
   nsCString key;
-  GetDNSRecordHashKey(aDnsRequest->mHost, aDnsRequest->mOriginAttributes,
-                      originalFlags, aDnsRequest->mNetworkInterface,
+  GetDNSRecordHashKey(aDnsRequest->mHost, aDnsRequest->mType,
+                      aDnsRequest->mOriginAttributes, originalFlags,
                       originalListener, key);
 
-  nsTArray<RefPtr<DNSRequestChild>> *hashEntry;
+  nsTArray<RefPtr<DNSRequestChild>>* hashEntry;
 
   if (mPendingRequests.Get(key, &hashEntry)) {
-    int idx;
-    if ((idx = hashEntry->IndexOf(aDnsRequest))) {
+    auto idx = hashEntry->IndexOf(aDnsRequest);
+    if (idx != nsTArray<RefPtr<DNSRequestChild>>::NoIndex) {
       hashEntry->RemoveElementAt(idx);
       if (hashEntry->IsEmpty()) {
         mPendingRequests.Remove(key);
@@ -344,7 +363,7 @@ nsresult ChildDNSService::Init() {
 nsresult ChildDNSService::Shutdown() { return NS_OK; }
 
 NS_IMETHODIMP
-ChildDNSService::GetPrefetchEnabled(bool *outVal) {
+ChildDNSService::GetPrefetchEnabled(bool* outVal) {
   *outVal = !mDisablePrefetch;
   return NS_OK;
 }
@@ -369,8 +388,8 @@ bool ChildDNSService::GetOffline() const {
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-ChildDNSService::Observe(nsISupports *subject, const char *topic,
-                         const char16_t *data) {
+ChildDNSService::Observe(nsISupports* subject, const char* topic,
+                         const char16_t* data) {
   // we are only getting called if a preference has changed.
   NS_ASSERTION(strcmp(topic, NS_PREFBRANCH_PREFCHANGE_TOPIC_ID) == 0,
                "unexpected observe call");

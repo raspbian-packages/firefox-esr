@@ -28,7 +28,7 @@ class MOZ_STACK_CLASS BaseIter {
 
   PropertyType begin() const {
     PropertyType elem(Self());
-    return Move(elem);
+    return std::move(elem);
   }
 
   PropertyType end() const {
@@ -88,7 +88,7 @@ class MOZ_STACK_CLASS BaseIterElem {
   SelfType End() const {
     SelfType end(mIter);
     end.mIndex = Length();
-    return Move(end);
+    return std::move(end);
   }
 
   void* Context() const { return mIter.Context(); }

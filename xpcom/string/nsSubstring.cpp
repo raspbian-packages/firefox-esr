@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ifdef DEBUG
-#define ENABLE_STRING_STATS
+#  define ENABLE_STRING_STATS
 #endif
 
 #include "mozilla/Atomics.h"
 #include "mozilla/MemoryReporting.h"
 
 #ifdef ENABLE_STRING_STATS
-#include <stdio.h>
+#  include <stdio.h>
 #endif
 
 #include <stdlib.h>
@@ -23,31 +23,30 @@
 #include "nsPrintfCString.h"
 #include "nsMemory.h"
 #include "prprf.h"
-#include "nsStaticAtom.h"
 #include "nsCOMPtr.h"
 
 #include "mozilla/IntegerPrintfMacros.h"
 #ifdef XP_WIN
-#include <windows.h>
-#include <process.h>
-#define getpid() _getpid()
-#define pthread_self() GetCurrentThreadId()
+#  include <windows.h>
+#  include <process.h>
+#  define getpid() _getpid()
+#  define pthread_self() GetCurrentThreadId()
 #else
-#include <pthread.h>
-#include <unistd.h>
+#  include <pthread.h>
+#  include <unistd.h>
 #endif
 
 #ifdef STRING_BUFFER_CANARY
-#define CHECK_STRING_BUFFER_CANARY(c)                      \
-  do {                                                     \
-    if ((c) != CANARY_OK) {                                \
-      MOZ_CRASH_UNSAFE_PRINTF("Bad canary value 0x%x", c); \
-    }                                                      \
-  } while (0)
+#  define CHECK_STRING_BUFFER_CANARY(c)                      \
+    do {                                                     \
+      if ((c) != CANARY_OK) {                                \
+        MOZ_CRASH_UNSAFE_PRINTF("Bad canary value 0x%x", c); \
+      }                                                      \
+    } while (0)
 #else
-#define CHECK_STRING_BUFFER_CANARY(c) \
-  do {                                \
-  } while (0)
+#  define CHECK_STRING_BUFFER_CANARY(c) \
+    do {                                \
+    } while (0)
 #endif
 
 using mozilla::Atomic;
@@ -98,23 +97,27 @@ class nsStringStats {
            uintptr_t(getpid()), uintptr_t(pthread_self()));
   }
 
-  Atomic<int32_t> mAllocCount;
-  Atomic<int32_t> mReallocCount;
-  Atomic<int32_t> mFreeCount;
-  Atomic<int32_t> mShareCount;
-  Atomic<int32_t> mAdoptCount;
-  Atomic<int32_t> mAdoptFreeCount;
+  typedef Atomic<int32_t, mozilla::SequentiallyConsistent,
+                 mozilla::recordreplay::Behavior::DontPreserve>
+      AtomicInt;
+
+  AtomicInt mAllocCount;
+  AtomicInt mReallocCount;
+  AtomicInt mFreeCount;
+  AtomicInt mShareCount;
+  AtomicInt mAdoptCount;
+  AtomicInt mAdoptFreeCount;
 };
 static nsStringStats gStringStats;
-#define STRING_STAT_INCREMENT(_s) (gStringStats.m##_s##Count)++
+#  define STRING_STAT_INCREMENT(_s) (gStringStats.m##_s##Count)++
 #else
-#define STRING_STAT_INCREMENT(_s)
+#  define STRING_STAT_INCREMENT(_s)
 #endif
 
 // ---------------------------------------------------------------------------
 
 void ReleaseData(void* aData, nsAString::DataFlags aFlags) {
-  if (aFlags & nsAString::DataFlags::SHARED) {
+  if (aFlags & nsAString::DataFlags::REFCOUNTED) {
     nsStringBuffer::FromData(aData)->Release();
   } else if (aFlags & nsAString::DataFlags::OWNED) {
     free(aData);
@@ -163,14 +166,14 @@ class nsACStringAccessor : public nsACString {
 // ---------------------------------------------------------------------------
 
 void nsStringBuffer::AddRef() {
-// Memory synchronization is not required when incrementing a
-// reference count.  The first increment of a reference count on a
-// thread is not important, since the first use of the object on a
-// thread can happen before it.  What is important is the transfer
-// of the pointer to that thread, which may happen prior to the
-// first increment on that thread.  The necessary memory
-// synchronization is done by the mechanism that transfers the
-// pointer between threads.
+  // Memory synchronization is not required when incrementing a
+  // reference count.  The first increment of a reference count on a
+  // thread is not important, since the first use of the object on a
+  // thread can happen before it.  What is important is the transfer
+  // of the pointer to that thread, which may happen prior to the
+  // first increment on that thread.  The necessary memory
+  // synchronization is done by the mechanism that transfers the
+  // pointer between threads.
 #ifdef NS_BUILD_REFCNT_LOGGING
   uint32_t count =
 #endif
@@ -260,7 +263,7 @@ nsStringBuffer* nsStringBuffer::FromString(const nsAString& aStr) {
   const nsAStringAccessor* accessor =
       static_cast<const nsAStringAccessor*>(&aStr);
 
-  if (!(accessor->flags() & nsAString::DataFlags::SHARED)) {
+  if (!(accessor->flags() & nsAString::DataFlags::REFCOUNTED)) {
     return nullptr;
   }
 
@@ -271,7 +274,7 @@ nsStringBuffer* nsStringBuffer::FromString(const nsACString& aStr) {
   const nsACStringAccessor* accessor =
       static_cast<const nsACStringAccessor*>(&aStr);
 
-  if (!(accessor->flags() & nsACString::DataFlags::SHARED)) {
+  if (!(accessor->flags() & nsACString::DataFlags::REFCOUNTED)) {
     return nullptr;
   }
 
@@ -287,7 +290,7 @@ void nsStringBuffer::ToString(uint32_t aLen, nsAString& aStr,
                         "data should be null terminated");
 
   nsAString::DataFlags flags =
-      nsAString::DataFlags::SHARED | nsAString::DataFlags::TERMINATED;
+      nsAString::DataFlags::REFCOUNTED | nsAString::DataFlags::TERMINATED;
 
   if (!aMoveOwnership) {
     AddRef();
@@ -304,7 +307,7 @@ void nsStringBuffer::ToString(uint32_t aLen, nsACString& aStr,
                         "data should be null terminated");
 
   nsACString::DataFlags flags =
-      nsACString::DataFlags::SHARED | nsACString::DataFlags::TERMINATED;
+      nsACString::DataFlags::REFCOUNTED | nsACString::DataFlags::TERMINATED;
 
   if (!aMoveOwnership) {
     AddRef();
@@ -353,7 +356,7 @@ void Gecko_AssignCString(nsACString* aThis, const nsACString* aOther) {
 }
 
 void Gecko_TakeFromCString(nsACString* aThis, nsACString* aOther) {
-  aThis->Assign(mozilla::Move(*aOther));
+  aThis->Assign(std::move(*aOther));
 }
 
 void Gecko_AppendCString(nsACString* aThis, const nsACString* aOther) {
@@ -369,7 +372,7 @@ bool Gecko_FallibleAssignCString(nsACString* aThis, const nsACString* aOther) {
 }
 
 bool Gecko_FallibleTakeFromCString(nsACString* aThis, nsACString* aOther) {
-  return aThis->Assign(mozilla::Move(*aOther), mozilla::fallible);
+  return aThis->Assign(std::move(*aOther), mozilla::fallible);
 }
 
 bool Gecko_FallibleAppendCString(nsACString* aThis, const nsACString* aOther) {
@@ -388,6 +391,13 @@ char* Gecko_FallibleBeginWritingCString(nsACString* aThis) {
   return aThis->BeginWriting(mozilla::fallible);
 }
 
+uint32_t Gecko_StartBulkWriteCString(nsACString* aThis, uint32_t aCapacity,
+                                     uint32_t aUnitsToPreserve,
+                                     bool aAllowShrinking) {
+  return aThis->StartBulkWriteImpl(aCapacity, aUnitsToPreserve, aAllowShrinking)
+      .unwrapOr(UINT32_MAX);
+}
+
 void Gecko_FinalizeString(nsAString* aThis) { aThis->~nsAString(); }
 
 void Gecko_AssignString(nsAString* aThis, const nsAString* aOther) {
@@ -395,7 +405,7 @@ void Gecko_AssignString(nsAString* aThis, const nsAString* aOther) {
 }
 
 void Gecko_TakeFromString(nsAString* aThis, nsAString* aOther) {
-  aThis->Assign(mozilla::Move(*aOther));
+  aThis->Assign(std::move(*aOther));
 }
 
 void Gecko_AppendString(nsAString* aThis, const nsAString* aOther) {
@@ -411,7 +421,7 @@ bool Gecko_FallibleAssignString(nsAString* aThis, const nsAString* aOther) {
 }
 
 bool Gecko_FallibleTakeFromString(nsAString* aThis, nsAString* aOther) {
-  return aThis->Assign(mozilla::Move(*aOther), mozilla::fallible);
+  return aThis->Assign(std::move(*aOther), mozilla::fallible);
 }
 
 bool Gecko_FallibleAppendString(nsAString* aThis, const nsAString* aOther) {
@@ -428,6 +438,13 @@ char16_t* Gecko_BeginWritingString(nsAString* aThis) {
 
 char16_t* Gecko_FallibleBeginWritingString(nsAString* aThis) {
   return aThis->BeginWriting(mozilla::fallible);
+}
+
+uint32_t Gecko_StartBulkWriteString(nsAString* aThis, uint32_t aCapacity,
+                                    uint32_t aUnitsToPreserve,
+                                    bool aAllowShrinking) {
+  return aThis->StartBulkWriteImpl(aCapacity, aUnitsToPreserve, aAllowShrinking)
+      .unwrapOr(UINT32_MAX);
 }
 
 }  // extern "C"

@@ -298,8 +298,6 @@ class NotifyIconObservers final : public Runnable {
   nsMainThreadPtrHandle<nsIFaviconDataCallback> mCallback;
   IconData mIcon;
   PageData mPage;
-
-  void SendGlobalNotifications(nsIURI* aIconURI);
 };
 
 /**

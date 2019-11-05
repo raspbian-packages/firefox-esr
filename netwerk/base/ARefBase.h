@@ -19,8 +19,8 @@ namespace net {
 
 class ARefBase {
  public:
-  ARefBase() {}
-  virtual ~ARefBase() {}
+  ARefBase() = default;
+  virtual ~ARefBase() = default;
 
   NS_INLINE_DECL_PURE_VIRTUAL_REFCOUNTING
 };

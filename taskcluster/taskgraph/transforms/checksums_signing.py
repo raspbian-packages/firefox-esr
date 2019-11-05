@@ -13,15 +13,10 @@ from taskgraph.util.attributes import copy_attributes_from_dependent_job
 from taskgraph.util.scriptworker import (
     get_signing_cert_scope,
     get_worker_type_for_scope,
-    add_scope_prefix,
 )
 from taskgraph.util.treeherder import replace_group
 from taskgraph.transforms.task import task_description_schema
 from voluptuous import Required, Optional
-
-# Voluptuous uses marker objects as dictionary *keys*, but they are not
-# comparable, so we cast all of the keys back to regular strings
-task_description_schema = {str(k): v for k, v in task_description_schema.schema.iteritems()}
 
 checksums_signing_description_schema = schema.extend({
     Required('depname', default='beetmover'): basestring,
@@ -50,7 +45,10 @@ def make_checksums_signing_description(config, jobs):
             'treeherder', {}).get('machine', {}).get('platform', '')
         treeherder.setdefault('platform',
                               "{}/opt".format(dep_th_platform))
-        treeherder.setdefault('tier', 1)
+        treeherder.setdefault(
+            'tier',
+            dep_job.task.get('extra', {}).get('treeherder', {}).get('tier', 1)
+        )
         treeherder.setdefault('kind', 'build')
 
         label = job['label']
@@ -76,7 +74,7 @@ def make_checksums_signing_description(config, jobs):
             "paths": [
                 "public/target.checksums",
             ],
-            "formats": ["gpg"]
+            "formats": ["autograph_gpg"]
         }]
 
         signing_cert_scope = get_signing_cert_scope(config)
@@ -89,7 +87,6 @@ def make_checksums_signing_description(config, jobs):
                        'max-run-time': 3600},
             'scopes': [
                 signing_cert_scope,
-                add_scope_prefix(config, 'signing:format:gpg'),
             ],
             'dependencies': dependencies,
             'attributes': attributes,

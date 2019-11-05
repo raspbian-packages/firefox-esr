@@ -12,7 +12,7 @@ connection-window =
 connection-close-key =
     .key = w
 connection-disable-extension =
-    .label = Kiterjesztés letiltása
+    .label = Kiegészítő letiltása
 connection-proxy-configure = Proxy beállítása az internet eléréséhez
 connection-proxy-option-no =
     .label = Nincs proxy
@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = DNS proxyzása SOCKS v5 használatakor
     .accesskey = d
+connection-dns-over-https =
+    .label = HTTPS-en keresztüli DNS engedélyezése
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Alapértelmezett használata ({ $url })
+    .accesskey = A
+    .tooltiptext = Az alapértelmezett URL használata a HTTPS feletti DNS feloldáshoz
+connection-dns-over-https-url-resolver = Szolgáltató használata
+    .accesskey = o
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (alapértelmezett)
+    .tooltiptext = Az alapértelmezett URL használata a HTTPS feletti DNS feloldáshoz
+connection-dns-over-https-url-custom =
+    .label = Egyéni
+    .accesskey = E
+    .tooltiptext = Adja meg az előnyben részesített URL-t a HTTPS feletti DNS feloldáshoz
+connection-dns-over-https-custom-label = Egyéni

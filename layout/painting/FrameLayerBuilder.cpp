@@ -11,6 +11,7 @@
 #include "gfxContext.h"
 #include "mozilla/LookAndFeel.h"
 #include "mozilla/Maybe.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/dom/ProfileTimelineMarkerBinding.h"
 #include "mozilla/gfx/Matrix.h"
 #include "ActiveLayerTracker.h"
@@ -20,6 +21,7 @@
 #include "LayerTreeInvalidation.h"
 #include "Layers.h"
 #include "LayerUserData.h"
+#include "MatrixStack.h"
 #include "MaskLayerImageCache.h"
 #include "UnitTransforms.h"
 #include "Units.h"
@@ -40,6 +42,7 @@
 #include "mozilla/LayerTimelineMarker.h"
 
 #include "mozilla/EffectCompositor.h"
+#include "mozilla/LayerAnimationInfo.h"
 #include "mozilla/Move.h"
 #include "mozilla/ReverseIterator.h"
 #include "mozilla/gfx/2D.h"
@@ -47,6 +50,7 @@
 #include "mozilla/layers/ShadowLayers.h"
 #include "mozilla/layers/TextureClient.h"
 #include "mozilla/layers/TextureWrapperImage.h"
+#include "mozilla/layers/WebRenderUserData.h"
 #include "mozilla/Unused.h"
 #include "GeckoProfiler.h"
 #include "LayersLogging.h"
@@ -54,9 +58,14 @@
 
 #include <algorithm>
 #include <functional>
+#include <deque>
 
 using namespace mozilla::layers;
 using namespace mozilla::gfx;
+
+// PaintedLayerData::mAssignedDisplayItems is a std::vector, which is
+// non-memmovable
+DECLARE_USE_COPY_CONSTRUCTORS(mozilla::PaintedLayerData);
 
 namespace mozilla {
 
@@ -116,6 +125,98 @@ static inline MaskLayerImageCache* GetMaskLayerImageCache() {
   return gMaskLayerImageCache;
 }
 
+struct DisplayItemEntry {
+  DisplayItemEntry(nsDisplayItem* aItem, DisplayItemEntryType aType)
+      : mItem(aItem), mType(aType) {}
+
+  nsDisplayItem* mItem;
+  DisplayItemEntryType mType;
+};
+
+/**
+ * Returns true if the given |aType| is an effect start marker.
+ */
+static bool IsEffectStartMarker(DisplayItemEntryType aType) {
+  return aType == DisplayItemEntryType::PushOpacity ||
+         aType == DisplayItemEntryType::PushOpacityWithBg ||
+         aType == DisplayItemEntryType::PushTransform;
+}
+
+/**
+ * Returns true if the given |aType| is an effect end marker.
+ */
+static bool IsEffectEndMarker(DisplayItemEntryType aType) {
+  return aType == DisplayItemEntryType::PopOpacity ||
+         aType == DisplayItemEntryType::PopTransform;
+}
+
+enum class MarkerType { StartMarker, EndMarker };
+
+/**
+ * Returns true if the given nsDisplayOpacity |aItem| has had opacity applied
+ * to its children and can be flattened away.
+ */
+static bool IsOpacityAppliedToChildren(nsDisplayItem* aItem) {
+  MOZ_ASSERT(aItem->GetType() == DisplayItemType::TYPE_OPACITY);
+  return static_cast<nsDisplayOpacity*>(aItem)->OpacityAppliedToChildren();
+}
+
+/**
+ * Returns true if the given display item type supports flattening with markers.
+ */
+static bool SupportsFlatteningWithMarkers(const DisplayItemType& aType) {
+  return aType == DisplayItemType::TYPE_OPACITY ||
+         aType == DisplayItemType::TYPE_TRANSFORM;
+}
+
+/**
+ * Adds the effect marker to |aMarkers| based on the type of |aItem| and whether
+ * |markerType| is a start or end marker.
+ */
+template <MarkerType markerType>
+static bool AddMarkerIfNeeded(nsDisplayItem* aItem,
+                              std::deque<DisplayItemEntry>& aMarkers) {
+  const DisplayItemType type = aItem->GetType();
+  if (!SupportsFlatteningWithMarkers(type)) {
+    return false;
+  }
+
+  DisplayItemEntryType marker;
+
+// Just a fancy way to avoid writing two separate functions to select between
+// PUSH and POP markers. This is done during compile time based on |markerType|.
+#define GET_MARKER(start_marker, end_marker)                      \
+  std::conditional<                                               \
+      markerType == MarkerType::StartMarker,                      \
+      std::integral_constant<DisplayItemEntryType, start_marker>, \
+      std::integral_constant<DisplayItemEntryType, end_marker>>::type::value;
+
+  switch (type) {
+    case DisplayItemType::TYPE_OPACITY:
+      if (IsOpacityAppliedToChildren(aItem)) {
+        // TODO(miko): I am not a fan of this. The more correct solution would
+        // be to return an enum from nsDisplayItem::ShouldFlattenAway(), so that
+        // we could distinguish between different flattening methods and avoid
+        // entering this function when markers are not needed.
+        return false;
+      }
+
+      marker = GET_MARKER(DisplayItemEntryType::PushOpacity,
+                          DisplayItemEntryType::PopOpacity);
+      break;
+    case DisplayItemType::TYPE_TRANSFORM:
+      marker = GET_MARKER(DisplayItemEntryType::PushTransform,
+                          DisplayItemEntryType::PopTransform);
+      break;
+    default:
+      MOZ_ASSERT_UNREACHABLE("Invalid display item type!");
+      break;
+  }
+
+  aMarkers.emplace_back(aItem, marker);
+  return true;
+}
+
 DisplayItemData::DisplayItemData(LayerManagerData* aParent, uint32_t aKey,
                                  Layer* aLayer, nsIFrame* aFrame)
 
@@ -126,8 +227,7 @@ DisplayItemData::DisplayItemData(LayerManagerData* aParent, uint32_t aKey,
       mItem(nullptr),
       mUsed(true),
       mIsInvalid(false),
-      mReusedItem(false),
-      mDisconnected(false) {
+      mReusedItem(false) {
   MOZ_COUNT_CTOR(DisplayItemData);
 
   if (!sAliveDisplayItemDatas) {
@@ -144,6 +244,7 @@ DisplayItemData::DisplayItemData(LayerManagerData* aParent, uint32_t aKey,
 
 void DisplayItemData::AddFrame(nsIFrame* aFrame) {
   MOZ_RELEASE_ASSERT(mLayer);
+  MOZ_RELEASE_ASSERT(!mFrameList.Contains(aFrame));
   mFrameList.AppendElement(aFrame);
 
   SmallPointerArray<DisplayItemData>& array = aFrame->DisplayItemData();
@@ -161,10 +262,10 @@ void DisplayItemData::RemoveFrame(nsIFrame* aFrame) {
 
 void DisplayItemData::EndUpdate() {
   MOZ_RELEASE_ASSERT(mLayer);
-  mItem = nullptr;
   mIsInvalid = false;
   mUsed = false;
   mReusedItem = false;
+  mOldTransform = nullptr;
 }
 
 void DisplayItemData::EndUpdate(nsAutoPtr<nsDisplayItemGeometry> aGeometry) {
@@ -178,18 +279,27 @@ void DisplayItemData::EndUpdate(nsAutoPtr<nsDisplayItemGeometry> aGeometry) {
   mClip = mItem->GetClip();
   mChangedFrameInvalidations.SetEmpty();
 
-  mItem = nullptr;
   EndUpdate();
 }
 
 void DisplayItemData::BeginUpdate(Layer* aLayer, LayerState aState,
-                                  nsDisplayItem* aItem /* = nullptr */) {
-  BeginUpdate(aLayer, aState, aItem, aItem ? aItem->IsReused() : false,
-              aItem ? aItem->HasMergedFrames() : false);
+                                  bool aFirstUpdate,
+                                  nsPaintedDisplayItem* aItem /* = nullptr */) {
+  bool isReused = false;
+  bool isMerged = false;
+
+  if (aItem) {
+    isReused = !aFirstUpdate ? aItem->IsReused() : false;
+
+    const nsDisplayWrapList* wraplist = aItem->AsDisplayWrapList();
+    isMerged = wraplist && wraplist->HasMergedFrames();
+  }
+
+  BeginUpdate(aLayer, aState, aItem, isReused, isMerged);
 }
 
 void DisplayItemData::BeginUpdate(Layer* aLayer, LayerState aState,
-                                  nsDisplayItem* aItem, bool aIsReused,
+                                  nsPaintedDisplayItem* aItem, bool aIsReused,
                                   bool aIsMerged) {
   MOZ_RELEASE_ASSERT(mLayer);
   MOZ_RELEASE_ASSERT(aLayer);
@@ -200,7 +310,11 @@ void DisplayItemData::BeginUpdate(Layer* aLayer, LayerState aState,
   mUsed = true;
 
   if (aLayer->AsPaintedLayer()) {
-    mItem = aItem;
+    if (aItem != mItem) {
+      aItem->SetDisplayItemData(this, aLayer->Manager());
+    } else {
+      MOZ_ASSERT(aItem->GetDisplayItemData() == this);
+    }
     mReusedItem = aIsReused;
   }
 
@@ -222,27 +336,43 @@ void DisplayItemData::BeginUpdate(Layer* aLayer, LayerState aState,
                                   aItem->Frame()->GetVisualOverflowRect());
   }
 
-  AutoTArray<nsIFrame*, 4> mergedFrames;
-  aItem->GetMergedFrames(&mergedFrames);
-  for (uint32_t i = 0; i < mergedFrames.Length(); ++i) {
-    if (!copy.RemoveElement(mergedFrames[i])) {
-      AddFrame(mergedFrames[i]);
-      mChangedFrameInvalidations.Or(mChangedFrameInvalidations,
-                                    mergedFrames[i]->GetVisualOverflowRect());
+  if (aIsMerged) {
+    MOZ_ASSERT(aItem->AsDisplayWrapList());
+
+    for (nsIFrame* frame : aItem->AsDisplayWrapList()->GetMergedFrames()) {
+      if (!copy.RemoveElement(frame)) {
+        AddFrame(frame);
+        mChangedFrameInvalidations.Or(mChangedFrameInvalidations,
+                                      frame->GetVisualOverflowRect());
+      }
     }
   }
 
-  for (uint32_t i = 0; i < copy.Length(); i++) {
-    RemoveFrame(copy[i]);
+  for (nsIFrame* frame : copy) {
+    RemoveFrame(frame);
     mChangedFrameInvalidations.Or(mChangedFrameInvalidations,
-                                  copy[i]->GetVisualOverflowRect());
+                                  frame->GetVisualOverflowRect());
   }
 }
 
 static const nsIFrame* sDestroyedFrame = nullptr;
 DisplayItemData::~DisplayItemData() {
   MOZ_COUNT_DTOR(DisplayItemData);
-  Disconnect();
+
+  if (mItem) {
+    MOZ_ASSERT(mItem->GetDisplayItemData() == this);
+    mItem->SetDisplayItemData(nullptr, nullptr);
+  }
+
+  for (uint32_t i = 0; i < mFrameList.Length(); i++) {
+    nsIFrame* frame = mFrameList[i];
+    if (frame == sDestroyedFrame) {
+      continue;
+    }
+
+    SmallPointerArray<DisplayItemData>& array = frame->DisplayItemData();
+    array.RemoveElement(this);
+  }
 
   MOZ_RELEASE_ASSERT(sAliveDisplayItemDatas);
   nsPtrHashKey<mozilla::DisplayItemData>* entry =
@@ -257,39 +387,24 @@ DisplayItemData::~DisplayItemData() {
   }
 }
 
-void DisplayItemData::Disconnect() {
-  if (mDisconnected) {
+void DisplayItemData::ClearAnimationCompositorState() {
+  if (mDisplayItemKey > static_cast<uint8_t>(DisplayItemType::TYPE_MAX)) {
+    // This is sort of a hack. The display item key has higher bits set, which
+    // means that it is not the only display item for the frame.
+    // This branch skips separator transforms.
     return;
   }
-  mDisconnected = true;
 
-  for (uint32_t i = 0; i < mFrameList.Length(); i++) {
-    nsIFrame* frame = mFrameList[i];
-    if (frame == sDestroyedFrame) {
-      continue;
-    }
-    SmallPointerArray<DisplayItemData>& array = frame->DisplayItemData();
-    array.RemoveElement(this);
-  }
+  const DisplayItemType type = GetDisplayItemTypeFromKey(mDisplayItemKey);
 
-  mLayer = nullptr;
-  mOptLayer = nullptr;
-}
-
-void DisplayItemData::ClearAnimationCompositorState() {
-  if (mDisplayItemKey !=
-          static_cast<uint32_t>(DisplayItemType::TYPE_TRANSFORM) &&
-      mDisplayItemKey != static_cast<uint32_t>(DisplayItemType::TYPE_OPACITY)) {
+  // FIXME: Bug 1530857: Add background_color.
+  if (type != DisplayItemType::TYPE_TRANSFORM &&
+      type != DisplayItemType::TYPE_OPACITY) {
     return;
   }
 
   for (nsIFrame* frame : mFrameList) {
-    nsCSSPropertyID prop =
-        mDisplayItemKey ==
-                static_cast<uint32_t>(DisplayItemType::TYPE_TRANSFORM)
-            ? eCSSProperty_transform
-            : eCSSProperty_opacity;
-    EffectCompositor::ClearIsRunningOnCompositor(frame, prop);
+    EffectCompositor::ClearIsRunningOnCompositor(frame, type);
   }
 }
 
@@ -312,52 +427,42 @@ DisplayItemData* DisplayItemData::AssertDisplayItemData(
 class LayerManagerData : public LayerUserData {
  public:
   explicit LayerManagerData(LayerManager* aManager)
-      : mLayerManager(aManager)
+      : mLayerManager(aManager),
 #ifdef DEBUG_DISPLAY_ITEM_DATA
-        ,
-        mParent(nullptr)
+        mParent(nullptr),
 #endif
-        ,
         mInvalidateAllLayers(false) {
     MOZ_COUNT_CTOR(LayerManagerData);
   }
-  ~LayerManagerData() {
-    MOZ_COUNT_DTOR(LayerManagerData);
-
-    for (auto iter = mDisplayItems.Iter(); !iter.Done(); iter.Next()) {
-      iter.Get()->GetKey()->Disconnect();
-    }
-  }
+  ~LayerManagerData() override { MOZ_COUNT_DTOR(LayerManagerData); }
 
 #ifdef DEBUG_DISPLAY_ITEM_DATA
   void Dump(const char* aPrefix = "") {
     printf_stderr("%sLayerManagerData %p\n", aPrefix, this);
 
-    for (auto iter = mDisplayItems.Iter(); !iter.Done(); iter.Next()) {
-      FrameLayerBuilder::DisplayItemData* data = iter.Get()->GetKey();
-
+    for (auto& data : mDisplayItems) {
       nsAutoCString prefix;
       prefix += aPrefix;
       prefix += "  ";
 
       const char* layerState;
       switch (data->mLayerState) {
-        case LAYER_NONE:
+        case LayerState::LAYER_NONE:
           layerState = "LAYER_NONE";
           break;
-        case LAYER_INACTIVE:
+        case LayerState::LAYER_INACTIVE:
           layerState = "LAYER_INACTIVE";
           break;
-        case LAYER_ACTIVE:
+        case LayerState::LAYER_ACTIVE:
           layerState = "LAYER_ACTIVE";
           break;
-        case LAYER_ACTIVE_FORCE:
+        case LayerState::LAYER_ACTIVE_FORCE:
           layerState = "LAYER_ACTIVE_FORCE";
           break;
-        case LAYER_ACTIVE_EMPTY:
+        case LayerState::LAYER_ACTIVE_EMPTY:
           layerState = "LAYER_ACTIVE_EMPTY";
           break;
-        case LAYER_SVG_EFFECTS:
+        case LayerState::LAYER_SVG_EFFECTS:
           layerState = "LAYER_SVG_EFFECTS";
           break;
       }
@@ -401,14 +506,30 @@ class LayerManagerData : public LayerUserData {
 #ifdef DEBUG_DISPLAY_ITEM_DATA
   LayerManagerData* mParent;
 #endif
-  nsTHashtable<nsRefPtrHashKey<DisplayItemData>> mDisplayItems;
+  std::vector<RefPtr<DisplayItemData>> mDisplayItems;
   bool mInvalidateAllLayers;
 };
 
-/* static */ void FrameLayerBuilder::DestroyDisplayItemDataFor(
-    nsIFrame* aFrame) {
+/* static */
+void FrameLayerBuilder::DestroyDisplayItemDataFor(nsIFrame* aFrame) {
   RemoveFrameFromLayerManager(aFrame, aFrame->DisplayItemData());
   aFrame->DisplayItemData().Clear();
+
+  // Destroying a WebRenderUserDataTable can cause destruction of other objects
+  // which can remove frame properties in their destructor. If we delete a frame
+  // property it runs the destructor of the stored object in the middle of
+  // updating the frame property table, so if the destruction of that object
+  // causes another update to the frame property table it would leave the frame
+  // property table in an inconsistent state. So we remove it from the table and
+  // then destroy it. (bug 1530657)
+  WebRenderUserDataTable* userDataTable =
+      aFrame->RemoveProperty(WebRenderUserDataProperty::Key());
+  if (userDataTable) {
+    for (auto iter = userDataTable->Iter(); !iter.Done(); iter.Next()) {
+      iter.UserData()->RemoveFromTable();
+    }
+    delete userDataTable;
+  }
 }
 
 /**
@@ -425,6 +546,7 @@ class PaintedLayerData {
   PaintedLayerData()
       : mAnimatedGeometryRoot(nullptr),
         mASR(nullptr),
+        mClipChain(nullptr),
         mReferenceFrame(nullptr),
         mLayer(nullptr),
         mSolidColor(NS_RGBA(0, 0, 0, 0)),
@@ -433,13 +555,22 @@ class PaintedLayerData {
         mForceTransparentSurface(false),
         mHideAllLayersBelow(false),
         mOpaqueForAnimatedGeometryRootParent(false),
-        mDisableFlattening(false),
         mBackfaceHidden(false),
         mShouldPaintOnContentSide(false),
         mDTCRequiresTargetConfirmation(false),
         mImage(nullptr),
-        mCommonClipCount(-1),
-        mNewChildLayersIndex(-1) {}
+        mItemClip(nullptr),
+        mNewChildLayersIndex(-1)
+#ifdef DEBUG
+        ,
+        mTransformLevel(0)
+#endif
+  {
+  }
+
+  PaintedLayerData(PaintedLayerData&& aRhs) = default;
+
+  ~PaintedLayerData() { MOZ_ASSERT(mTransformLevel == 0); }
 
 #ifdef MOZ_DUMP_PAINTING
   /**
@@ -447,14 +578,23 @@ class PaintedLayerData {
    */
   nsCString mLog;
 
-#define FLB_LOG_PAINTED_LAYER_DECISION(pld, ...) \
-  if (gfxPrefs::LayersDumpDecision()) {          \
-    pld->mLog.AppendPrintf("\t\t\t\t");          \
-    pld->mLog.AppendPrintf(__VA_ARGS__);         \
-  }
+#  define FLB_LOG_PAINTED_LAYER_DECISION(pld, ...) \
+    if (gfxPrefs::LayersDumpDecision()) {          \
+      pld->mLog.AppendPrintf("\t\t\t\t");          \
+      pld->mLog.AppendPrintf(__VA_ARGS__);         \
+    }
 #else
-#define FLB_LOG_PAINTED_LAYER_DECISION(...)
+#  define FLB_LOG_PAINTED_LAYER_DECISION(...)
 #endif
+
+  /**
+   * Disables component alpha for |aItem| if the component alpha bounds are not
+   * contained in |mOpaqueRegion|. Alternatively if possible, sets
+   * |mNeedComponentAlpha| to true for this PaintedLayerData.
+   */
+  bool SetupComponentAlpha(ContainerState* aState, nsPaintedDisplayItem* aItem,
+                           const nsIntRect& aVisibleRect,
+                           const TransformClipNode* aTransform);
 
   /**
    * Record that an item has been added to the PaintedLayer, so we
@@ -463,9 +603,23 @@ class PaintedLayerData {
    * @param aSolidColor if non-null, the visible area of the item is
    * a constant color given by *aSolidColor
    */
-  void Accumulate(ContainerState* aState, nsDisplayItem* aItem,
-                  const nsIntRect& aVisibleRect, const DisplayItemClip& aClip,
-                  LayerState aLayerState, nsDisplayList* aList);
+  void Accumulate(ContainerState* aState, nsPaintedDisplayItem* aItem,
+                  const nsIntRect& aVisibleRect, const nsRect& aContentRect,
+                  const DisplayItemClip& aClip, LayerState aLayerState,
+                  nsDisplayList* aList, DisplayItemEntryType aType,
+                  nsTArray<size_t>& aOpacityIndices,
+                  const RefPtr<TransformClipNode>& aTransform);
+
+  UniquePtr<InactiveLayerData> CreateInactiveLayerData(
+      ContainerState* aState, nsPaintedDisplayItem* aItem,
+      DisplayItemData* aData);
+
+  /**
+   * Updates the status of |mTransform| and |aOpacityIndices|, based on |aType|.
+   */
+  void UpdateEffectStatus(DisplayItemEntryType aType,
+                          nsTArray<size_t>& aOpacityIndices);
+
   AnimatedGeometryRoot* GetAnimatedGeometryRoot() {
     return mAnimatedGeometryRoot;
   }
@@ -476,17 +630,13 @@ class PaintedLayerData {
   nsRegion CombinedTouchActionRegion();
 
   /**
-   * Add the given hit regions to the hit regions for this PaintedLayer.
+   * Add the given hit test info to the hit regions for this PaintedLayer.
    */
-  void AccumulateEventRegions(ContainerState* aState,
-                              nsDisplayLayerEventRegions* aEventRegions);
+  void AccumulateHitTestItem(ContainerState* aState, nsDisplayItem* aItem,
+                             const DisplayItemClip& aClip,
+                             TransformClipNode* aTransform);
 
-  /**
-   * Similar to AccumulateEventRegions() but uses different display item to
-   * track hit regions.
-   */
-  void AccumulateHitTestInfo(ContainerState* aState,
-                             nsDisplayCompositorHitTestInfo* aItem);
+  void HitRegionsUpdated();
 
   /**
    * If this represents only a nsDisplayImage, and the image type supports being
@@ -508,6 +658,11 @@ class PaintedLayerData {
   bool VisibleRegionIntersects(const nsIntRegion& aRegion) const {
     return !mVisibleRegion.Intersect(aRegion).IsEmpty();
   }
+
+  /**
+   * The owning ContainerState that created this PaintedLayerData.
+   */
+  ContainerState* mState;
 
   /**
    * The region of visible content in the layer, relative to the
@@ -553,6 +708,8 @@ class PaintedLayerData {
    * mDispatchToContentHitRegion.
    */
   nsRegion mVerticalPanRegion;
+
+  bool mCollapsedTouchActions = false;
   /**
    * Scaled versions of the bounds of mHitRegion and mMaybeHitRegion.
    * We store these because FindPaintedLayerFor() needs to consume them
@@ -616,10 +773,6 @@ class PaintedLayerData {
    */
   bool mOpaqueForAnimatedGeometryRootParent;
   /**
-   * Set if there is content in the layer that must avoid being flattened.
-   */
-  bool mDisableFlattening;
-  /**
    * Set if the backface of this region is hidden to the user.
    * Content that backface is hidden should not be draw on the layer
    * with visible backface.
@@ -650,25 +803,11 @@ class PaintedLayerData {
    * by PaintedDisplayItemLayerUserData::GetCommonClipCount() - which may even
    * be no part at all.
    */
-  DisplayItemClip mItemClip;
-  /**
-   * The first mCommonClipCount rounded rectangle clips are identical for
-   * all items in the layer.
-   * -1 if there are no items in the layer; must be >=0 by the time that this
-   * data is popped from the stack.
-   */
-  int32_t mCommonClipCount;
+  const DisplayItemClip* mItemClip;
   /**
    * Index of this layer in mNewChildLayers.
    */
   int32_t mNewChildLayersIndex;
-  /*
-   * Updates mCommonClipCount by checking for rounded rect clips in common
-   * between the clip on a new item (aCurrentClip) and the common clips
-   * on items already in the layer (the first mCommonClipCount rounded rects
-   * in mItemClip).
-   */
-  void UpdateCommonClipCount(const DisplayItemClip& aCurrentClip);
   /**
    * The region of visible content above the layer and below the
    * next PaintedLayerData currently in the stack, if any.
@@ -679,7 +818,14 @@ class PaintedLayerData {
    * All the display items that have been assigned to this painted layer.
    * These items get added by Accumulate().
    */
-  nsTArray<AssignedDisplayItem> mAssignedDisplayItems;
+  std::vector<AssignedDisplayItem> mAssignedDisplayItems;
+
+#ifdef DEBUG
+  /**
+   * Tracks the level of transform to ensure balanced PUSH/POP markers.
+   */
+  int mTransformLevel;
+#endif
 };
 
 struct NewLayerEntry {
@@ -689,7 +835,7 @@ struct NewLayerEntry {
         mClipChain(nullptr),
         mScrollMetadataASR(nullptr),
         mLayerContentsVisibleRect(0, 0, -1, -1),
-        mLayerState(LAYER_INACTIVE),
+        mLayerState(LayerState::LAYER_INACTIVE),
         mHideAllLayersBelow(false),
         mOpaqueForAnimatedGeometryRootParent(false),
         mPropagateComponentAlphaFlattening(true),
@@ -1077,7 +1223,8 @@ class ContainerState {
         mContainerCompositorASR(aContainerCompositorASR),
         mParameters(aParameters),
         mPaintedLayerDataTree(*this, aBackgroundColor),
-        mLastDisplayPortAGR(nullptr) {
+        mLastDisplayPortAGR(nullptr),
+        mContainerItem(aContainerItem) {
     nsPresContext* presContext = aContainerFrame->PresContext();
     mAppUnitsPerDevPixel = presContext->AppUnitsPerDevPixel();
     mContainerReferenceFrame = const_cast<nsIFrame*>(
@@ -1125,25 +1272,16 @@ class ContainerState {
     return aRect.ScaleToNearestPixels(mParameters.mXScale, mParameters.mYScale,
                                       mAppUnitsPerDevPixel);
   }
-  nsIntRegion ScaleRegionToNearestPixels(const nsRegion& aRegion) const {
-    return aRegion.ScaleToNearestPixels(
-        mParameters.mXScale, mParameters.mYScale, mAppUnitsPerDevPixel);
-  }
   nsIntRect ScaleToOutsidePixels(const nsRect& aRect,
                                  bool aSnap = false) const {
+    if (aRect.IsEmpty()) {
+      return nsIntRect();
+    }
     if (aSnap && mSnappingEnabled) {
       return ScaleToNearestPixels(aRect);
     }
     return aRect.ScaleToOutsidePixels(mParameters.mXScale, mParameters.mYScale,
                                       mAppUnitsPerDevPixel);
-  }
-  nsIntRegion ScaleToOutsidePixels(const nsRegion& aRegion,
-                                   bool aSnap = false) const {
-    if (aSnap && mSnappingEnabled) {
-      return ScaleRegionToNearestPixels(aRegion);
-    }
-    return aRegion.ScaleToOutsidePixels(
-        mParameters.mXScale, mParameters.mYScale, mAppUnitsPerDevPixel);
   }
   nsIntRect ScaleToInsidePixels(const nsRect& aRect, bool aSnap = false) const {
     if (aSnap && mSnappingEnabled) {
@@ -1152,7 +1290,10 @@ class ContainerState {
     return aRect.ScaleToInsidePixels(mParameters.mXScale, mParameters.mYScale,
                                      mAppUnitsPerDevPixel);
   }
-
+  nsIntRegion ScaleRegionToNearestPixels(const nsRegion& aRegion) const {
+    return aRegion.ScaleToNearestPixels(
+        mParameters.mXScale, mParameters.mYScale, mAppUnitsPerDevPixel);
+  }
   nsIntRegion ScaleRegionToInsidePixels(const nsRegion& aRegion,
                                         bool aSnap = false) const {
     if (aSnap && mSnappingEnabled) {
@@ -1164,6 +1305,9 @@ class ContainerState {
 
   nsIntRegion ScaleRegionToOutsidePixels(const nsRegion& aRegion,
                                          bool aSnap = false) const {
+    if (aRegion.IsEmpty()) {
+      return nsIntRegion();
+    }
     if (aSnap && mSnappingEnabled) {
       return ScaleRegionToNearestPixels(aRegion);
     }
@@ -1173,6 +1317,7 @@ class ContainerState {
 
   nsIFrame* GetContainerFrame() const { return mContainerFrame; }
   nsDisplayListBuilder* Builder() const { return mBuilder; }
+  FrameLayerBuilder* LayerBuilder() const { return mLayerBuilder; }
 
   /**
    * Check if we are currently inside an inactive layer.
@@ -1218,6 +1363,7 @@ class ContainerState {
 
  protected:
   friend class PaintedLayerData;
+  friend class FLBDisplayListIterator;
 
   LayerManager::PaintedLayerCreationHint GetLayerCreationHint(
       AnimatedGeometryRoot* aAnimatedGeometryRoot);
@@ -1372,12 +1518,8 @@ class ContainerState {
    * aLayer is the layer to be clipped.
    * relative to the container reference frame
    * aRoundedRectClipCount is used when building mask layers for PaintedLayers,
-   * SetupMaskLayer will build a mask layer for only the first
-   * aRoundedRectClipCount rounded rects in aClip
-   * Returns the number of rounded rects included in the mask layer.
    */
-  uint32_t SetupMaskLayer(Layer* aLayer, const DisplayItemClip& aClip,
-                          uint32_t aRoundedRectClipCount = UINT32_MAX);
+  void SetupMaskLayer(Layer* aLayer, const DisplayItemClip& aClip);
 
   /**
    * If |aClip| has rounded corners, create a mask layer for them, and
@@ -1389,16 +1531,16 @@ class ContainerState {
   Maybe<size_t> SetupMaskLayerForScrolledClip(Layer* aLayer,
                                               const DisplayItemClip& aClip);
 
-  /*
+  /**
    * Create/find a mask layer with suitable size for aMaskItem to paint
    * css-positioned-masking onto.
    */
-  void SetupMaskLayerForCSSMask(Layer* aLayer, nsDisplayMask* aMaskItem);
+  void SetupMaskLayerForCSSMask(Layer* aLayer,
+                                nsDisplayMasksAndClipPaths* aMaskItem);
 
   already_AddRefed<Layer> CreateMaskLayer(
       Layer* aLayer, const DisplayItemClip& aClip,
-      const Maybe<size_t>& aForAncestorMaskLayer,
-      uint32_t aRoundedRectClipCount = UINT32_MAX);
+      const Maybe<size_t>& aForAncestorMaskLayer);
 
   /**
    * Get the display port for an AGR.
@@ -1478,14 +1620,124 @@ class ContainerState {
   // thing repeatly.
   AnimatedGeometryRoot* mLastDisplayPortAGR;
   nsRect mLastDisplayPortRect;
+
+  nsDisplayItem* mContainerItem;
+
+  // Cache ScrollMetadata so it doesn't need recomputed if the ASR and clip are
+  // unchanged. If mASR == nullptr then mMetadata is not valid.
+  struct CachedScrollMetadata {
+    const ActiveScrolledRoot* mASR;
+    const DisplayItemClip* mClip;
+    Maybe<ScrollMetadata> mMetadata;
+
+    CachedScrollMetadata() : mASR(nullptr), mClip(nullptr) {}
+  };
+  CachedScrollMetadata mCachedScrollMetadata;
+};
+
+class FLBDisplayListIterator : public FlattenedDisplayListIterator {
+ public:
+  FLBDisplayListIterator(nsDisplayListBuilder* aBuilder, nsDisplayList* aList,
+                         ContainerState* aState)
+      : FlattenedDisplayListIterator(aBuilder, aList, false), mState(aState) {
+    MOZ_ASSERT(mState);
+
+    if (mState->mContainerItem) {
+      // Add container item hit test information for processing, if needed.
+      AddHitTestMarkerIfNeeded(mState->mContainerItem);
+    }
+
+    ResolveFlattening();
+  }
+
+  DisplayItemEntry GetNextEntry() {
+    if (!mMarkers.empty()) {
+      DisplayItemEntry entry = mMarkers.front();
+      mMarkers.pop_front();
+      return entry;
+    }
+
+    return DisplayItemEntry{GetNextItem(), DisplayItemEntryType::Item};
+  }
+
+  bool HasNext() const override {
+    return FlattenedDisplayListIterator::HasNext() || !mMarkers.empty();
+  }
+
+ private:
+  void AddHitTestMarkerIfNeeded(nsDisplayItem* aItem) {
+    if (aItem->HasHitTestInfo()) {
+      mMarkers.emplace_back(aItem, DisplayItemEntryType::HitTestInfo);
+    }
+  }
+
+  bool ShouldFlattenNextItem() override {
+    if (!FlattenedDisplayListIterator::ShouldFlattenNextItem()) {
+      return false;
+    }
+
+    nsDisplayItem* next = PeekNext();
+    const DisplayItemType type = next->GetType();
+
+    if (type == DisplayItemType::TYPE_SVG_WRAPPER) {
+      // We mark SetContainsSVG for the CONTENT_FRAME_TIME_WITH_SVG metric
+      if (RefPtr<LayerManager> lm = mState->mBuilder->GetWidgetLayerManager()) {
+        lm->SetContainsSVG(true);
+      }
+    }
+
+    if (!SupportsFlatteningWithMarkers(type)) {
+      return true;
+    }
+
+    if (type == DisplayItemType::TYPE_OPACITY &&
+        IsOpacityAppliedToChildren(next)) {
+      // This is the previous opacity flattening path, where the opacity has
+      // been applied to children.
+      return true;
+    }
+
+    if (mState->IsInInactiveLayer() || !ItemWantsInactiveLayer(next)) {
+      // Do not flatten nested inactive display items, or display items that
+      // want an active layer.
+      return false;
+    }
+
+    // If we reach here, we will emit an effect start marker for
+    // nsDisplayTransform or nsDisplayOpacity.
+    MOZ_ASSERT(type == DisplayItemType::TYPE_TRANSFORM ||
+               !IsOpacityAppliedToChildren(next));
+    return true;
+  }
+
+  void EnterChildList(nsDisplayItem* aContainerItem) override {
+    mFlattenedLists.AppendElement(aContainerItem);
+    AddMarkerIfNeeded<MarkerType::StartMarker>(aContainerItem, mMarkers);
+    AddHitTestMarkerIfNeeded(aContainerItem);
+  }
+
+  void ExitChildList() override {
+    MOZ_ASSERT(!mFlattenedLists.IsEmpty());
+    nsDisplayItem* aContainerItem = mFlattenedLists.PopLastElement();
+    AddMarkerIfNeeded<MarkerType::EndMarker>(aContainerItem, mMarkers);
+  }
+
+  bool ItemWantsInactiveLayer(nsDisplayItem* aItem) {
+    const LayerState layerState = aItem->GetLayerState(
+        mState->mBuilder, mState->mManager, mState->mParameters);
+
+    return layerState == LayerState::LAYER_INACTIVE;
+  }
+
+  std::deque<DisplayItemEntry> mMarkers;
+  AutoTArray<nsDisplayItem*, 16> mFlattenedLists;
+  ContainerState* mState;
 };
 
 class PaintedDisplayItemLayerUserData : public LayerUserData {
  public:
   PaintedDisplayItemLayerUserData()
-      : mMaskClipCount(0),
-        mLastCommonClipCount(0),
-        mForcedBackgroundColor(NS_RGBA(0, 0, 0, 0)),
+      : mForcedBackgroundColor(NS_RGBA(0, 0, 0, 0)),
         mXScale(1.f),
         mYScale(1.f),
         mAppUnitsPerDevPixel(0),
@@ -1493,22 +1745,10 @@ class PaintedDisplayItemLayerUserData : public LayerUserData {
         mAnimatedGeometryRootPosition(0, 0),
         mLastItemCount(0),
         mContainerLayerFrame(nullptr),
-        mHasExplicitLastPaintOffset(false) {}
+        mHasExplicitLastPaintOffset(false),
+        mDisabledAlpha(false) {}
 
   NS_INLINE_DECL_REFCOUNTING(PaintedDisplayItemLayerUserData);
-
-  /**
-   * Record the number of clips in the PaintedLayer's mask layer.
-   * Should not be reset when the layer is recycled since it is used to track
-   * changes in the use of mask layers.
-   */
-  uint32_t mMaskClipCount;
-
-  /**
-   * Records the number of clips in the PaintedLayer's mask layer during
-   * the previous paint. Used for invalidation.
-   */
-  uint32_t mLastCommonClipCount;
 
   /**
    * A color that should be painted over the bounds of the layer's visible
@@ -1564,6 +1804,10 @@ class PaintedDisplayItemLayerUserData : public LayerUserData {
   // DrawPaintedLayer, for example when progressive paint is enabled.
   nsIntRegion mVisibilityComputedRegion;
 
+  // The area for which we called RecomputeVisibilityForItems on the
+  // previous paint.
+  nsRect mPreviousRecomputeVisibilityRect;
+
   // The number of items assigned to this layer on the previous paint.
   size_t mLastItemCount;
 
@@ -1574,7 +1818,7 @@ class PaintedDisplayItemLayerUserData : public LayerUserData {
   // Temporary state only valid during the FrameLayerBuilder's lifetime.
   // FLB's mPaintedLayerItems is responsible for cleaning these up when
   // we finish painting to avoid dangling pointers.
-  nsTArray<AssignedDisplayItem> mItems;
+  std::vector<AssignedDisplayItem> mItems;
   nsIFrame* mContainerLayerFrame;
 
   bool mHasExplicitLastPaintOffset;
@@ -1585,11 +1829,12 @@ class PaintedDisplayItemLayerUserData : public LayerUserData {
   bool mDisabledAlpha;
 
  protected:
-  ~PaintedDisplayItemLayerUserData() = default;
+  ~PaintedDisplayItemLayerUserData() override = default;
 };
 
 FrameLayerBuilder::FrameLayerBuilder()
     : mRetainingManager(nullptr),
+      mDisplayListBuilder(nullptr),
       mContainingPaintedLayer(nullptr),
       mInactiveLayerClip(nullptr),
       mInvalidateAllLayers(false),
@@ -1601,7 +1846,7 @@ FrameLayerBuilder::FrameLayerBuilder()
 FrameLayerBuilder::~FrameLayerBuilder() {
   GetMaskLayerImageCache()->Sweep();
   for (PaintedDisplayItemLayerUserData* userData : mPaintedLayerItems) {
-    userData->mItems.Clear();
+    userData->mItems.clear();
     userData->mContainerLayerFrame = nullptr;
   }
   MOZ_COUNT_DTOR(FrameLayerBuilder);
@@ -1618,15 +1863,13 @@ void FrameLayerBuilder::AddPaintedLayerItemsEntry(
 struct MaskLayerUserData : public LayerUserData {
   MaskLayerUserData()
       : mScaleX(-1.0f), mScaleY(-1.0f), mAppUnitsPerDevPixel(-1) {}
-  MaskLayerUserData(const DisplayItemClip& aClip,
-                    uint32_t aRoundedRectClipCount,
-                    int32_t aAppUnitsPerDevPixel,
+  MaskLayerUserData(const DisplayItemClip& aClip, int32_t aAppUnitsPerDevPixel,
                     const ContainerLayerParameters& aParams)
       : mScaleX(aParams.mXScale),
         mScaleY(aParams.mYScale),
         mOffset(aParams.mOffset),
         mAppUnitsPerDevPixel(aAppUnitsPerDevPixel) {
-    aClip.AppendRoundedRects(&mRoundedClipRects, aRoundedRectClipCount);
+    aClip.AppendRoundedRects(&mRoundedClipRects);
   }
 
   void operator=(MaskLayerUserData&& aOther) {
@@ -1671,7 +1914,7 @@ struct CSSMaskLayerUserData : public LayerUserData {
 
   void operator=(CSSMaskLayerUserData&& aOther) {
     mMaskBounds = aOther.mMaskBounds;
-    mMaskStyle = Move(aOther.mMaskStyle);
+    mMaskStyle = std::move(aOther.mMaskStyle);
     mMaskLayerOffset = aOther.mMaskLayerOffset;
   }
 
@@ -1755,7 +1998,7 @@ class MaskImageData {
   }
 
   already_AddRefed<ImageContainer> CreateImageAndImageContainer() {
-    RefPtr<ImageContainer> container = mLayerManager->CreateImageContainer();
+    RefPtr<ImageContainer> container = LayerManager::CreateImageContainer();
     RefPtr<Image> image = CreateImage();
 
     if (!image) {
@@ -1802,7 +2045,8 @@ static PaintedDisplayItemLayerUserData* GetPaintedDisplayItemLayerUserData(
       aLayer->GetUserData(&gPaintedDisplayItemLayerUserData));
 }
 
-/* static */ void FrameLayerBuilder::Shutdown() {
+/* static */
+void FrameLayerBuilder::Shutdown() {
   if (gMaskLayerImageCache) {
     delete gMaskLayerImageCache;
     gMaskLayerImageCache = nullptr;
@@ -1837,7 +2081,7 @@ DisplayItemData* FrameLayerBuilder::GetDisplayItemData(nsIFrame* aFrame,
   for (uint32_t i = 0; i < array.Length(); i++) {
     DisplayItemData* item =
         DisplayItemData::AssertDisplayItemData(array.ElementAt(i));
-    if (item->mDisplayItemKey == aKey &&
+    if (item->mDisplayItemKey == aKey && item->FirstFrame() == aFrame &&
         item->mLayer->Manager() == mRetainingManager) {
       return item;
     }
@@ -1879,6 +2123,7 @@ static void InvalidatePostTransformRegion(PaintedLayer* aLayer,
   // (relative to the snapped top-left of the display list reference frame)
   // to the PaintedLayer's own coordinates
   nsIntRegion rgn = aRegion;
+
   rgn.MoveBy(-aTranslation);
   aLayer->InvalidateRegion(rgn);
 #ifdef MOZ_DUMP_PAINTING
@@ -1890,18 +2135,24 @@ static void InvalidatePostTransformRegion(PaintedLayer* aLayer,
 #endif
 }
 
-static void InvalidatePostTransformRegion(PaintedLayer* aLayer,
-                                          const nsRect& aRect,
-                                          const DisplayItemClip& aClip,
-                                          const nsIntPoint& aTranslation) {
+static void InvalidatePreTransformRect(PaintedLayer* aLayer,
+                                       const nsRect& aRect,
+                                       const DisplayItemClip& aClip,
+                                       const nsIntPoint& aTranslation,
+                                       TransformClipNode* aTransform) {
   PaintedDisplayItemLayerUserData* data =
       static_cast<PaintedDisplayItemLayerUserData*>(
           aLayer->GetUserData(&gPaintedDisplayItemLayerUserData));
 
   nsRect rect = aClip.ApplyNonRoundedIntersection(aRect);
 
+  if (aTransform) {
+    rect = aTransform->TransformRect(rect, data->mAppUnitsPerDevPixel);
+  }
+
   nsIntRect pixelRect = rect.ScaleToOutsidePixels(data->mXScale, data->mYScale,
                                                   data->mAppUnitsPerDevPixel);
+
   InvalidatePostTransformRegion(aLayer, pixelRect, aTranslation);
 }
 
@@ -1930,7 +2181,8 @@ static nsIntPoint GetTranslationForPaintedLayer(PaintedLayer* aLayer) {
  * Cache the destroyed frame pointer here so we can avoid crashing in this case.
  */
 
-/* static */ void FrameLayerBuilder::RemoveFrameFromLayerManager(
+/* static */
+void FrameLayerBuilder::RemoveFrameFromLayerManager(
     const nsIFrame* aFrame, SmallPointerArray<DisplayItemData>& aArray) {
   MOZ_RELEASE_ASSERT(!sDestroyedFrame);
   sDestroyedFrame = aFrame;
@@ -1960,19 +2212,30 @@ static nsIntPoint GetTranslationForPaintedLayer(PaintedLayer* aLayer) {
           static_cast<PaintedDisplayItemLayerUserData*>(
               t->GetUserData(&gPaintedDisplayItemLayerUserData));
       if (paintedData && data->mGeometry) {
-        nsRegion old = data->mGeometry->ComputeInvalidationRegion();
-        nsIntRegion rgn =
-            old.ScaleToOutsidePixels(paintedData->mXScale, paintedData->mYScale,
-                                     paintedData->mAppUnitsPerDevPixel);
-        rgn.MoveBy(-GetTranslationForPaintedLayer(t));
+        const int32_t appUnitsPerDevPixel = paintedData->mAppUnitsPerDevPixel;
+        nsRegion rgn = data->mGeometry->ComputeInvalidationRegion();
+        nsIntRegion pixelRgn = rgn.ToOutsidePixels(appUnitsPerDevPixel);
+
+        if (data->mTransform) {
+          pixelRgn = data->mTransform->TransformRegion(pixelRgn);
+        }
+
+        pixelRgn =
+            pixelRgn.ScaleRoundOut(paintedData->mXScale, paintedData->mYScale);
+
+        pixelRgn.MoveBy(-GetTranslationForPaintedLayer(t));
+
         paintedData->mRegionToInvalidate.Or(paintedData->mRegionToInvalidate,
-                                            rgn);
+                                            pixelRgn);
         paintedData->mRegionToInvalidate.SimplifyOutward(8);
       }
     }
 
-    data->Disconnect();
-    data->mParent->mDisplayItems.RemoveEntry(data);
+    auto it = std::find(data->mParent->mDisplayItems.begin(),
+                        data->mParent->mDisplayItems.end(), data);
+    MOZ_ASSERT(it != data->mParent->mDisplayItems.end());
+    std::iter_swap(it, data->mParent->mDisplayItems.end() - 1);
+    data->mParent->mDisplayItems.pop_back();
   }
 
   arrayCopy.Clear();
@@ -2007,48 +2270,61 @@ void FrameLayerBuilder::WillEndTransaction() {
   NS_ASSERTION(data, "Must have data!");
 
   // Update all the frames that used to have layers.
-  for (auto iter = data->mDisplayItems.Iter(); !iter.Done(); iter.Next()) {
-    DisplayItemData* data = iter.Get()->GetKey();
-    if (!data->mUsed) {
+  auto iter = data->mDisplayItems.begin();
+  while (iter != data->mDisplayItems.end()) {
+    DisplayItemData* did = iter->get();
+    if (!did->mUsed) {
       // This item was visible, but isn't anymore.
-      PaintedLayer* t = data->mLayer->AsPaintedLayer();
-      if (t && data->mGeometry) {
+      PaintedLayer* t = did->mLayer->AsPaintedLayer();
+      if (t && did->mGeometry) {
 #ifdef MOZ_DUMP_PAINTING
         if (nsLayoutUtils::InvalidationDebuggingIsEnabled()) {
           printf_stderr(
-              "Invalidating unused display item (%i) belonging to frame %p "
-              "from layer %p\n",
-              data->mDisplayItemKey, data->mFrameList[0], t);
+              "Invalidating unused display item (%i) belonging to "
+              "frame %p from layer %p\n",
+              did->mDisplayItemKey, did->mFrameList[0], t);
         }
 #endif
-        InvalidatePostTransformRegion(
-            t, data->mGeometry->ComputeInvalidationRegion(), data->mClip,
-            GetLastPaintOffset(t));
+        InvalidatePreTransformRect(
+            t, did->mGeometry->ComputeInvalidationRegion(), did->mClip,
+            GetLastPaintOffset(t), did->mTransform);
       }
 
-      data->ClearAnimationCompositorState();
-      data->Disconnect();
-      iter.Remove();
+      did->ClearAnimationCompositorState();
+
+      // Remove this item. Swapping it with the last element first is
+      // quicker than erasing from the middle.
+      if (iter != data->mDisplayItems.end() - 1) {
+        std::iter_swap(iter, data->mDisplayItems.end() - 1);
+        data->mDisplayItems.pop_back();
+      } else {
+        data->mDisplayItems.pop_back();
+        break;
+      }
+
+      // Don't increment iter because we still need to process the item which
+      // was moved.
+
     } else {
-      ComputeGeometryChangeForItem(data);
+      ComputeGeometryChangeForItem(did);
+      iter++;
     }
   }
 
   data->mInvalidateAllLayers = false;
 }
 
-/* static */ DisplayItemData* FrameLayerBuilder::GetDisplayItemDataForManager(
-    nsDisplayItem* aItem, LayerManager* aManager) {
-  const SmallPointerArray<DisplayItemData>& array =
-      aItem->Frame()->DisplayItemData();
-  for (uint32_t i = 0; i < array.Length(); i++) {
-    DisplayItemData* item =
-        DisplayItemData::AssertDisplayItemData(array.ElementAt(i));
-    if (item->mDisplayItemKey == aItem->GetPerFrameKey() &&
-        item->mLayer->Manager() == aManager) {
-      return item;
+/* static */
+DisplayItemData* FrameLayerBuilder::GetDisplayItemDataForManager(
+    nsPaintedDisplayItem* aItem, LayerManager* aManager) {
+  for (DisplayItemData* did : aItem->Frame()->DisplayItemData()) {
+    DisplayItemData* data = DisplayItemData::AssertDisplayItemData(did);
+    if (data->mDisplayItemKey == aItem->GetPerFrameKey() &&
+        data->mLayer->Manager() == aManager) {
+      return data;
     }
   }
+
   return nullptr;
 }
 
@@ -2061,34 +2337,34 @@ bool FrameLayerBuilder::HasRetainedDataFor(nsIFrame* aFrame,
       return true;
     }
   }
-  if (auto userDataTable =
-          aFrame->GetProperty(nsIFrame::WebRenderUserDataProperty())) {
-    RefPtr<WebRenderUserData> data = userDataTable->Get(aDisplayItemKey);
-    if (data) {
-      return true;
-    }
+  if (RefPtr<WebRenderUserData> data =
+          GetWebRenderUserData<WebRenderFallbackData>(aFrame,
+                                                      aDisplayItemKey)) {
+    return true;
   }
   return false;
 }
 
 DisplayItemData* FrameLayerBuilder::GetOldLayerForFrame(
     nsIFrame* aFrame, uint32_t aDisplayItemKey,
-    DisplayItemData* aOldData /* = nullptr */) {
+    DisplayItemData* aOldData, /* = nullptr */
+    LayerManager* aOldLayerManager /* = nullptr */) {
   // If we need to build a new layer tree, then just refuse to recycle
   // anything.
   if (!mRetainingManager || mInvalidateAllLayers) return nullptr;
 
+  MOZ_ASSERT(!aOldData || aOldLayerManager,
+             "You must provide aOldLayerManager to check aOldData's validity.");
+  MOZ_ASSERT_IF(aOldData, aOldLayerManager == aOldData->mLayer->Manager());
+
   DisplayItemData* data = aOldData;
-  if (!data || data->Disconnected() ||
-      data->mLayer->Manager() != mRetainingManager) {
+  if (!data || aOldLayerManager != mRetainingManager) {
     data = GetDisplayItemData(aFrame, aDisplayItemKey);
   }
+
   MOZ_ASSERT(data == GetDisplayItemData(aFrame, aDisplayItemKey));
 
-  if (data && data->mLayer->Manager() == mRetainingManager) {
-    return data;
-  }
-  return nullptr;
+  return data;
 }
 
 Layer* FrameLayerBuilder::GetOldLayerFor(nsDisplayItem* aItem,
@@ -2111,8 +2387,8 @@ Layer* FrameLayerBuilder::GetOldLayerFor(nsDisplayItem* aItem,
   return nullptr;
 }
 
-/* static */ DisplayItemData* FrameLayerBuilder::GetOldDataFor(
-    nsDisplayItem* aItem) {
+/* static */
+DisplayItemData* FrameLayerBuilder::GetOldDataFor(nsDisplayItem* aItem) {
   const SmallPointerArray<DisplayItemData>& array =
       aItem->Frame()->DisplayItemData();
 
@@ -2313,7 +2589,7 @@ already_AddRefed<PaintedLayer> ContainerState::AttemptToRecyclePaintedLayer(
   return layer.forget();
 }
 
-void ReleaseLayerUserData(void* aData) {
+static void ReleaseLayerUserData(void* aData) {
   PaintedDisplayItemLayerUserData* userData =
       static_cast<PaintedDisplayItemLayerUserData*>(aData);
   userData->Release();
@@ -2415,7 +2691,6 @@ void ContainerState::PreparePaintedLayerForUse(
 
   aData->mLastPaintOffset = GetTranslationForPaintedLayer(aLayer);
   aData->mHasExplicitLastPaintOffset = true;
-  aData->mLastCommonClipCount = aData->mMaskClipCount;
 
   // Set up transform so that 0,0 in the PaintedLayer corresponds to the
   // (pixel-snapped) top-left of the aAnimatedGeometryRoot.
@@ -2456,7 +2731,7 @@ void ContainerState::PreparePaintedLayerForUse(
     return;
   }
 
-    // FIXME: Temporary workaround for bug 681192 and bug 724786.
+  // FIXME: Temporary workaround for bug 681192 and bug 724786.
 #ifndef MOZ_WIDGET_ANDROID
   // If it has changed, then we need to invalidate the entire layer since the
   // pixels in the layer buffer have the content at a (subpixel) offset
@@ -2523,8 +2798,8 @@ static void SetOuterVisibleRegion(
                       outerRect.height);
     transform.Invert();
 
-    Rect layerContentsVisible(-float(INT32_MAX) / 2, -float(INT32_MAX) / 2,
-                              float(INT32_MAX), float(INT32_MAX));
+    Rect layerContentsVisible = Rect::MaxIntRect();
+
     if (aLayerContentsVisibleRect) {
       NS_ASSERTION(aLayerContentsVisibleRect->width >= 0 &&
                        aLayerContentsVisibleRect->height >= 0,
@@ -2536,15 +2811,18 @@ static void SetOuterVisibleRegion(
           aLayerContentsVisibleRect->x, aLayerContentsVisibleRect->y,
           aLayerContentsVisibleRect->width, aLayerContentsVisibleRect->height);
     }
-    gfxRect layerVisible = ThebesRect(
-        transform.ProjectRectBounds(outerVisible, layerContentsVisible));
+
+    Rect layerVisible =
+        transform.ProjectRectBounds(outerVisible, layerContentsVisible);
+
     layerVisible.RoundOut();
-    nsIntRect visRect;
-    if (gfxUtils::GfxRectToIntRect(layerVisible, &visRect)) {
-      *aOuterVisibleRegion = visRect;
-    } else {
-      aOuterVisibleRegion->SetEmpty();
+
+    IntRect intRect;
+    if (!layerVisible.ToIntRect(&intRect)) {
+      intRect = IntRect::MaxIntRect();
     }
+
+    *aOuterVisibleRegion = intRect;
   }
 
   aLayer->SetVisibleRegion(
@@ -2574,6 +2852,18 @@ nscolor ContainerState::FindOpaqueBackgroundColorInLayer(
   appUnitRect.ScaleInverseRoundOut(mParameters.mXScale, mParameters.mYScale);
 
   for (auto& assignedItem : Reversed(aData->mAssignedDisplayItems)) {
+    if (assignedItem.HasOpacity() || assignedItem.HasTransform()) {
+      // We cannot easily calculate the opaque background color for items inside
+      // a flattened effect.
+      continue;
+    }
+
+    if (IsEffectEndMarker(assignedItem.mType)) {
+      // An optimization: the underlying display item for effect markers is the
+      // same for both start and end markers. Skip the effect end markers.
+      continue;
+    }
+
     nsDisplayItem* item = assignedItem.mItem;
     bool snap;
     nsRect bounds = item->GetBounds(mBuilder, &snap);
@@ -2595,14 +2885,18 @@ nscolor ContainerState::FindOpaqueBackgroundColorInLayer(
       continue;
     }
 
-    if (assignedItem.mClip.IsRectAffectedByClip(deviceRect, mParameters.mXScale,
-                                                mParameters.mYScale,
-                                                mAppUnitsPerDevPixel)) {
+    if (item->GetClip().IsRectAffectedByClip(deviceRect, mParameters.mXScale,
+                                             mParameters.mYScale,
+                                             mAppUnitsPerDevPixel)) {
       return NS_RGBA(0, 0, 0, 0);
     }
 
+    MOZ_ASSERT(!assignedItem.HasOpacity() && !assignedItem.HasTransform());
     Maybe<nscolor> color = item->IsUniform(mBuilder);
-    if (color && NS_GET_A(*color) == 255) return *color;
+
+    if (color && NS_GET_A(*color) == 255) {
+      return *color;
+    }
 
     return NS_RGBA(0, 0, 0, 0);
   }
@@ -2677,17 +2971,6 @@ nscolor PaintedLayerDataNode::FindOpaqueBackgroundColorInParentNode() const {
   return mTree.UniformBackgroundColor();
 }
 
-void PaintedLayerData::UpdateCommonClipCount(
-    const DisplayItemClip& aCurrentClip) {
-  if (mCommonClipCount >= 0) {
-    mCommonClipCount =
-        mItemClip.GetCommonRoundedRectCount(aCurrentClip, mCommonClipCount);
-  } else {
-    // first item in the layer
-    mCommonClipCount = aCurrentClip.GetRoundedRectCount();
-  }
-}
-
 bool PaintedLayerData::CanOptimizeToImageLayer(nsDisplayListBuilder* aBuilder) {
   if (!mImage) {
     return false;
@@ -2728,7 +3011,7 @@ PaintedLayerDataNode* PaintedLayerDataNode::AddChildNodeFor(
   MOZ_ASSERT(aAnimatedGeometryRoot->mParentAGR == mAnimatedGeometryRoot);
   UniquePtr<PaintedLayerDataNode> child =
       MakeUnique<PaintedLayerDataNode>(mTree, this, aAnimatedGeometryRoot);
-  mChildren.AppendElement(Move(child));
+  mChildren.AppendElement(std::move(child));
   return mChildren.LastElement().get();
 }
 
@@ -2766,7 +3049,9 @@ PaintedLayerData* PaintedLayerDataNode::FindPaintedLayerFor(
       // use this painted layer.
       if (data.mVisibleRegion.Intersects(aVisibleRect)) {
         break;
-      } else if (gfxPrefs::LayoutSmallerPaintedLayers()) {
+      }
+
+      if (gfxPrefs::LayoutSmallerPaintedLayers()) {
         lowestUsableLayer = nullptr;
       }
     }
@@ -3059,9 +3344,9 @@ already_AddRefed<Layer> ContainerState::PrepareImageLayer(
   aData->mImage->ConfigureLayer(imageLayer, mParameters);
   imageLayer->SetPostScale(mParameters.mXScale, mParameters.mYScale);
 
-  if (aData->mItemClip.HasClip()) {
+  if (aData->mItemClip->HasClip()) {
     ParentLayerIntRect clip = ViewAs<ParentLayerPixel>(
-        ScaleToNearestPixels(aData->mItemClip.GetClipRect()));
+        ScaleToNearestPixels(aData->mItemClip->GetClipRect()));
     clip.MoveBy(ViewAs<ParentLayerPixel>(mParameters.mOffset));
     imageLayer->SetClipRect(Some(clip));
   } else {
@@ -3124,7 +3409,7 @@ void ContainerState::FinishPaintedLayerData(
   PaintedDisplayItemLayerUserData* userData =
       GetPaintedDisplayItemLayerUserData(data->mLayer);
   NS_ASSERTION(userData, "where did our user data go?");
-  userData->mLastItemCount = data->mAssignedDisplayItems.Length();
+  userData->mLastItemCount = data->mAssignedDisplayItems.size();
 
   NewLayerEntry* newLayerEntry = &mNewChildLayers[data->mNewChildLayersIndex];
 
@@ -3181,12 +3466,15 @@ void ContainerState::FinishPaintedLayerData(
 
   for (auto& item : data->mAssignedDisplayItems) {
     MOZ_ASSERT(item.mItem->GetType() !=
-               DisplayItemType::TYPE_LAYER_EVENT_REGIONS);
-    MOZ_ASSERT(item.mItem->GetType() !=
                DisplayItemType::TYPE_COMPOSITOR_HITTEST_INFO);
 
+    if (IsEffectEndMarker(item.mType)) {
+      // Do not invalidate for end markers.
+      continue;
+    }
+
     InvalidateForLayerChange(item.mItem, data->mLayer, item.mDisplayItemData);
-    mLayerBuilder->AddPaintedDisplayItem(data, item, *this, layer);
+    mLayerBuilder->AddPaintedDisplayItem(data, item, layer);
     item.mDisplayItemData = nullptr;
   }
 
@@ -3230,13 +3518,13 @@ void ContainerState::FinishPaintedLayerData(
 
     // Store the background color
     if (userData->mForcedBackgroundColor != backgroundColor) {
-    // Invalidate the entire target PaintedLayer since we're changing
-    // the background color
+      // Invalidate the entire target PaintedLayer since we're changing
+      // the background color
 #ifdef MOZ_DUMP_PAINTING
       if (nsLayoutUtils::InvalidationDebuggingIsEnabled()) {
         printf_stderr(
-            "Forced background color has changed from #%08X to #%08X on layer "
-            "%p\n",
+            "Forced background color has changed from #%08X to #%08X "
+            "on layer %p\n",
             userData->mForcedBackgroundColor, backgroundColor, data->mLayer);
         nsAutoCString str;
         AppendToString(str, data->mLayer->GetValidRegion());
@@ -3246,26 +3534,9 @@ void ContainerState::FinishPaintedLayerData(
       data->mLayer->InvalidateWholeLayer();
     }
     userData->mForcedBackgroundColor = backgroundColor;
-
-    // use a mask layer for rounded rect clipping.
-    // data->mCommonClipCount may be -1 if we haven't put any actual
-    // drawable items in this layer (i.e. it's only catching events).
-    uint32_t commonClipCount;
-    commonClipCount = std::max(0, data->mCommonClipCount);
-
-    // if the number of clips we are going to mask has decreased, then aLayer
-    // might have cached graphics which assume the existence of a soon-to-be
-    // non-existent mask layer in that case, invalidate the whole layer.
-    if (commonClipCount < userData->mMaskClipCount) {
-      PaintedLayer* painted = layer->AsPaintedLayer();
-      painted->InvalidateWholeLayer();
-    }
-
-    userData->mMaskClipCount =
-        SetupMaskLayer(layer, data->mItemClip, commonClipCount);
   } else {
     // mask layer for image and color layers
-    SetupMaskLayer(layer, data->mItemClip);
+    SetupMaskLayer(layer, *data->mItemClip);
   }
 
   uint32_t flags = 0;
@@ -3280,12 +3551,9 @@ void ContainerState::FinishPaintedLayerData(
   } else if (data->mNeedComponentAlpha && !hidpi) {
     flags |= Layer::CONTENT_COMPONENT_ALPHA;
   }
-  if (data->mDisableFlattening) {
-    flags |= Layer::CONTENT_DISABLE_FLATTENING;
-  }
   layer->SetContentFlags(flags);
 
-  userData->mItems = Move(data->mAssignedDisplayItems);
+  userData->mItems = std::move(data->mAssignedDisplayItems);
   userData->mContainerLayerFrame = GetContainerFrame();
 
   PaintedLayerData* containingPaintedLayerData =
@@ -3311,6 +3579,8 @@ void ContainerState::FinishPaintedLayerData(
       }
       containingPaintedLayerData->mDispatchToContentHitRegion.Or(
           containingPaintedLayerData->mDispatchToContentHitRegion, rect);
+      containingPaintedLayerData->mDispatchToContentHitRegion.SimplifyOutward(
+          8);
       if (data->mDTCRequiresTargetConfirmation) {
         containingPaintedLayerData->mDTCRequiresTargetConfirmation = true;
       }
@@ -3361,6 +3631,7 @@ void ContainerState::FinishPaintedLayerData(
       containingPaintedLayerData->mDispatchToContentHitRegion.OrWith(
           containingPaintedLayerData->CombinedTouchActionRegion());
     }
+    containingPaintedLayerData->HitRegionsUpdated();
   } else {
     EventRegions regions(
         ScaleRegionToOutsidePixels(data->mHitRegion),
@@ -3401,36 +3672,185 @@ static bool IsItemAreaInWindowOpaqueRegion(
   return aBuilder->GetWindowOpaqueRegion().Contains(aComponentAlphaBounds);
 }
 
-void PaintedLayerData::Accumulate(ContainerState* aState, nsDisplayItem* aItem,
-                                  const nsIntRect& aVisibleRect,
-                                  const DisplayItemClip& aClip,
-                                  LayerState aLayerState,
-                                  nsDisplayList* aList) {
+void PaintedLayerData::UpdateEffectStatus(DisplayItemEntryType aType,
+                                          nsTArray<size_t>& aOpacityIndices) {
+  switch (aType) {
+    case DisplayItemEntryType::PushOpacity:
+      // The index of the new assigned display item in |mAssignedDisplayItems|
+      // array will be the current length of the array.
+      aOpacityIndices.AppendElement(mAssignedDisplayItems.size());
+      break;
+    case DisplayItemEntryType::PopOpacity:
+      MOZ_ASSERT(!aOpacityIndices.IsEmpty());
+      aOpacityIndices.RemoveLastElement();
+      break;
+#ifdef DEBUG
+    case DisplayItemEntryType::PopTransform:
+      MOZ_ASSERT(mTransformLevel >= 0);
+      mTransformLevel--;
+      break;
+    case DisplayItemEntryType::PushTransform:
+      mTransformLevel++;
+      break;
+#endif
+    default:
+      break;
+  }
+}
+
+bool PaintedLayerData::SetupComponentAlpha(
+    ContainerState* aState, nsPaintedDisplayItem* aItem,
+    const nsIntRect& aVisibleRect, const TransformClipNode* aTransform) {
+  nsRect componentAlphaBounds =
+      aItem->GetComponentAlphaBounds(aState->mBuilder);
+
+  if (componentAlphaBounds.IsEmpty()) {
+    // The item does not require component alpha, nothing do do here.
+    return false;
+  }
+
+  if (aTransform) {
+    componentAlphaBounds = aTransform->TransformRect(
+        componentAlphaBounds, aState->mAppUnitsPerDevPixel);
+  }
+
+  const nsIntRect pixelBounds =
+      aState->ScaleToOutsidePixels(componentAlphaBounds, false);
+
+  const nsIntRect visibleRect = pixelBounds.Intersect(aVisibleRect);
+
+  if (!mOpaqueRegion.Contains(visibleRect)) {
+    nsRect buildingRect = aItem->GetBuildingRect();
+
+    if (aTransform) {
+      buildingRect =
+          aTransform->TransformRect(buildingRect, aState->mAppUnitsPerDevPixel);
+    }
+
+    const nsRect tightBounds = componentAlphaBounds.Intersect(buildingRect);
+
+    if (IsItemAreaInWindowOpaqueRegion(aState->mBuilder, aItem, tightBounds)) {
+      mNeedComponentAlpha = true;
+    } else {
+      // There is no opaque background below the item, disable component alpha.
+      aItem->DisableComponentAlpha();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+UniquePtr<InactiveLayerData> PaintedLayerData::CreateInactiveLayerData(
+    ContainerState* aState, nsPaintedDisplayItem* aItem,
+    DisplayItemData* aData) {
+  RefPtr<BasicLayerManager> tempManager;
+  if (aData) {
+    tempManager = aData->InactiveManager();
+  }
+  if (!tempManager) {
+    tempManager = new BasicLayerManager(BasicLayerManager::BLM_INACTIVE);
+  }
+  UniquePtr<InactiveLayerData> data = MakeUnique<InactiveLayerData>();
+  data->mLayerManager = tempManager;
+
+  FrameLayerBuilder* layerBuilder = new FrameLayerBuilder();
+  // Ownership of layerBuilder is passed to tempManager.
+  layerBuilder->Init(aState->Builder(), tempManager, this, true,
+                            &aItem->GetClip());
+
+  tempManager->BeginTransaction();
+  if (aState->LayerBuilder()->GetRetainingLayerManager()) {
+    layerBuilder->DidBeginRetainedLayerTransaction(tempManager);
+  }
+
+  data->mProps = LayerProperties::CloneFrom(tempManager->GetRoot());
+  data->mLayer = aItem->BuildLayer(aState->Builder(), tempManager,
+                                   ContainerLayerParameters());
+  return data;
+}
+
+void PaintedLayerData::Accumulate(
+    ContainerState* aState, nsPaintedDisplayItem* aItem,
+    const nsIntRect& aVisibleRect, const nsRect& aContentRect,
+    const DisplayItemClip& aClip, LayerState aLayerState, nsDisplayList* aList,
+    DisplayItemEntryType aType, nsTArray<size_t>& aOpacityIndices,
+    const RefPtr<TransformClipNode>& aTransform) {
+  // If aItem is nullptr, the cast to nsPaintedDisplayItem failed.
+  MOZ_ASSERT(aItem, "Can only accumulate display items that are painted!");
+
   FLB_LOG_PAINTED_LAYER_DECISION(
       this, "Accumulating dp=%s(%p), f=%p against pld=%p\n", aItem->Name(),
       aItem, aItem->Frame(), this);
 
+  const bool hasOpacity = aOpacityIndices.Length() > 0;
+  UpdateEffectStatus(aType, aOpacityIndices);
+
+  const DisplayItemClip* oldClip = mItemClip;
+  mItemClip = &aClip;
+
+  const bool isMerged = aItem->AsDisplayWrapList() &&
+                        aItem->AsDisplayWrapList()->HasMergedFrames();
+
+  if (IsEffectEndMarker(aType)) {
+    mAssignedDisplayItems.emplace_back(aItem, aLayerState, nullptr,
+                                       aContentRect, aType, hasOpacity,
+                                       aTransform, isMerged);
+    return;
+  }
+
+  bool clipMatches =
+      (oldClip == mItemClip) || (oldClip && *oldClip == *mItemClip);
+
+  DisplayItemData* currentData =
+      isMerged ? nullptr : aItem->GetDisplayItemData();
+
+  DisplayItemData* oldData = aState->mLayerBuilder->GetOldLayerForFrame(
+      aItem->Frame(), aItem->GetPerFrameKey(), currentData,
+      aItem->GetDisplayItemDataLayerManager());
+
+  mAssignedDisplayItems.emplace_back(aItem, aLayerState, oldData, aContentRect,
+                                     aType, hasOpacity, aTransform, isMerged);
+
+  if (aLayerState != LayerState::LAYER_NONE) {
+    FLB_LOG_PAINTED_LAYER_DECISION(this, "Creating nested FLB for item %p\n",
+                                   aItem);
+    mAssignedDisplayItems.back().mInactiveLayerData =
+        CreateInactiveLayerData(aState, aItem, oldData);
+  }
+
   if (aState->mBuilder->NeedToForceTransparentSurfaceForItem(aItem)) {
     mForceTransparentSurface = true;
   }
+
   if (aState->mParameters.mDisableSubpixelAntialiasingInDescendants) {
     // Disable component alpha.
     // Note that the transform (if any) on the PaintedLayer is always an integer
     // translation so we don't have to factor that in here.
     aItem->DisableComponentAlpha();
+  } else {
+    const bool needsComponentAlpha =
+        SetupComponentAlpha(aState, aItem, aVisibleRect, aTransform);
+
+    if (needsComponentAlpha) {
+      // This display item needs background copy when pushing opacity group.
+      for (size_t i : aOpacityIndices) {
+        AssignedDisplayItem& item = mAssignedDisplayItems[i];
+        MOZ_ASSERT(item.mType == DisplayItemEntryType::PushOpacity ||
+                   item.mType == DisplayItemEntryType::PushOpacityWithBg);
+        item.mType = DisplayItemEntryType::PushOpacityWithBg;
+      }
+    }
   }
-
-  bool clipMatches = mItemClip == aClip;
-  mItemClip = aClip;
-
-  DisplayItemData* oldData = aState->mLayerBuilder->GetOldLayerForFrame(
-      aItem->Frame(), aItem->GetPerFrameKey(),
-      aItem->HasMergedFrames() ? nullptr : aItem->GetDisplayItemData());
-  mAssignedDisplayItems.AppendElement(
-      AssignedDisplayItem(aItem, aClip, aLayerState, oldData));
 
   if (aItem->MustPaintOnContentSide()) {
     mShouldPaintOnContentSide = true;
+  }
+
+  if (aTransform && aType == DisplayItemEntryType::Item) {
+    // Bounds transformed with axis-aligned transforms could be included in the
+    // opaque region calculations. For simplicity, this is currently not done.
+    return;
   }
 
   if (!mIsSolidColorInVisibleRegion && mOpaqueRegion.Contains(aVisibleRect) &&
@@ -3446,10 +3866,15 @@ void PaintedLayerData::Accumulate(ContainerState* aState, nsDisplayItem* aItem,
     return;
   }
 
-  nsIntRegion opaquePixels = aState->ComputeOpaqueRect(
-      aItem, mAnimatedGeometryRoot, mASR, aClip, aList, &mHideAllLayersBelow,
-      &mOpaqueForAnimatedGeometryRootParent);
-  opaquePixels.AndWith(aVisibleRect);
+  nsIntRegion opaquePixels;
+
+  // Active opacity means no opaque pixels.
+  if (!hasOpacity) {
+    opaquePixels = aState->ComputeOpaqueRect(
+        aItem, mAnimatedGeometryRoot, mASR, aClip, aList, &mHideAllLayersBelow,
+        &mOpaqueForAnimatedGeometryRootParent);
+    opaquePixels.AndWith(aVisibleRect);
+  }
 
   /* Mark as available for conversion to image layer if this is a nsDisplayImage
    * and it's the only thing visible in this layer.
@@ -3467,7 +3892,10 @@ void PaintedLayerData::Accumulate(ContainerState* aState, nsDisplayItem* aItem,
 
   bool isFirstVisibleItem = mVisibleRegion.IsEmpty();
 
-  Maybe<nscolor> uniformColor = aItem->IsUniform(aState->mBuilder);
+  Maybe<nscolor> uniformColor;
+  if (!hasOpacity) {
+    uniformColor = aItem->IsUniform(aState->mBuilder);
+  }
 
   // Some display items have to exist (so they can set forceTransparentSurface
   // below) but don't draw anything. They'll return true for isUniform but
@@ -3525,37 +3953,9 @@ void PaintedLayerData::Accumulate(ContainerState* aState, nsDisplayItem* aItem,
       // transparent are always added to the opaque region. This helps ensure
       // that we get as much subpixel-AA as possible in the chrome.
       if (tmp.GetNumRects() <= 4 || aItem->Frame()->PresContext()->IsChrome()) {
-        mOpaqueRegion = Move(tmp);
+        mOpaqueRegion = std::move(tmp);
       }
     }
-  }
-
-  if (!aState->mParameters.mDisableSubpixelAntialiasingInDescendants) {
-    nsRect componentAlpha = aItem->GetComponentAlphaBounds(aState->mBuilder);
-    if (!componentAlpha.IsEmpty()) {
-      nsIntRect componentAlphaRect =
-          aState->ScaleToOutsidePixels(componentAlpha, false)
-              .Intersect(aVisibleRect);
-      if (!mOpaqueRegion.Contains(componentAlphaRect)) {
-        if (IsItemAreaInWindowOpaqueRegion(
-                aState->mBuilder, aItem,
-                componentAlpha.Intersect(aItem->GetVisibleRect()))) {
-          mNeedComponentAlpha = true;
-        } else {
-          aItem->DisableComponentAlpha();
-        }
-      }
-    }
-  }
-
-  // Ensure animated text does not get flattened, even if it forces other
-  // content in the container to be layerized. The content backend might
-  // not support subpixel positioning of text that animated transforms can
-  // generate. bug 633097
-  if (aState->mParameters.mInActiveTransformedSubtree &&
-      (mNeedComponentAlpha ||
-       !aItem->GetComponentAlphaBounds(aState->mBuilder).IsEmpty())) {
-    mDisableFlattening = true;
   }
 }
 
@@ -3566,56 +3966,42 @@ nsRegion PaintedLayerData::CombinedTouchActionRegion() {
   return result;
 }
 
-void PaintedLayerData::AccumulateEventRegions(
-    ContainerState* aState, nsDisplayLayerEventRegions* aEventRegions) {
+void PaintedLayerData::AccumulateHitTestItem(ContainerState* aState,
+                                             nsDisplayItem* aItem,
+                                             const DisplayItemClip& aClip,
+                                             TransformClipNode* aTransform) {
+  MOZ_ASSERT(aItem->HasHitTestInfo());
+  auto* item = static_cast<nsDisplayHitTestInfoItem*>(aItem);
+
+  const HitTestInfo& info = item->GetHitTestInfo();
+
+  nsRect area = info.mArea;
+  const CompositorHitTestInfo& flags = info.mFlags;
+
   FLB_LOG_PAINTED_LAYER_DECISION(
-      this, "Accumulating event regions %p against pld=%p\n", aEventRegions,
-      this);
+      this,
+      "Accumulating hit test info %p against pld=%p, "
+      "area: [%d, %d, %d, %d], flags: 0x%x]\n",
+      item, this, area.x, area.y, area.width, area.height, flags.serialize());
 
-  mHitRegion.OrWith(aEventRegions->HitRegion());
-  mMaybeHitRegion.OrWith(aEventRegions->MaybeHitRegion());
-  mDispatchToContentHitRegion.OrWith(
-      aEventRegions->DispatchToContentHitRegion());
+  area = aClip.ApplyNonRoundedIntersection(area);
 
-  // See the comment in nsDisplayList::AddFrame, where the touch action regions
-  // are handled. The same thing applies here.
-  bool alreadyHadRegions = !mNoActionRegion.IsEmpty() ||
-                           !mHorizontalPanRegion.IsEmpty() ||
-                           !mVerticalPanRegion.IsEmpty();
-  mNoActionRegion.OrWith(aEventRegions->NoActionRegion());
-  mHorizontalPanRegion.OrWith(aEventRegions->HorizontalPanRegion());
-  mVerticalPanRegion.OrWith(aEventRegions->VerticalPanRegion());
-  if (alreadyHadRegions) {
-    mDispatchToContentHitRegion.OrWith(CombinedTouchActionRegion());
+  if (aTransform) {
+    area = aTransform->TransformRect(area, aState->mAppUnitsPerDevPixel);
   }
 
-  // Avoid quadratic performance as a result of the region growing to include
-  // and arbitrarily large number of rects, which can happen on some pages.
-  mMaybeHitRegion.SimplifyOutward(8);
+  if (area.IsEmpty()) {
+    FLB_LOG_PAINTED_LAYER_DECISION(
+        this, "Discarded empty hit test info %p for pld=%p\n", item, this);
+    return;
+  }
 
-  // Calculate scaled versions of the bounds of mHitRegion and mMaybeHitRegion
-  // for quick access in FindPaintedLayerFor().
-  mScaledHitRegionBounds = aState->ScaleToOutsidePixels(mHitRegion.GetBounds());
-  mScaledMaybeHitRegionBounds =
-      aState->ScaleToOutsidePixels(mMaybeHitRegion.GetBounds());
-}
-
-void PaintedLayerData::AccumulateHitTestInfo(
-    ContainerState* aState, nsDisplayCompositorHitTestInfo* aItem) {
-  FLB_LOG_PAINTED_LAYER_DECISION(
-      this, "Accumulating hit test info %p against pld=%p\n", aItem, this);
-
-  const mozilla::DisplayItemClip& clip = aItem->GetClip();
-  const nsRect area = clip.ApplyNonRoundedIntersection(aItem->Area());
-  const mozilla::gfx::CompositorHitTestInfo hitTestInfo = aItem->HitTestInfo();
-
-  bool hasRoundedCorners = clip.GetRoundedRectCount() > 0;
+  bool hasRoundedCorners = aClip.GetRoundedRectCount() > 0;
 
   // use the NS_FRAME_SIMPLE_EVENT_REGIONS to avoid calling the slightly
   // expensive HasNonZeroCorner function if we know from a previous run that
   // the frame has zero corners.
-  nsIFrame* frame = aItem->Frame();
-
+  nsIFrame* frame = item->Frame();
   bool simpleRegions = frame->HasAnyStateBits(NS_FRAME_SIMPLE_EVENT_REGIONS);
   if (!simpleRegions) {
     if (nsLayoutUtils::HasNonZeroCorner(frame->StyleBorder()->mBorderRadius)) {
@@ -3631,19 +4017,26 @@ void PaintedLayerData::AccumulateHitTestInfo(
     mHitRegion.OrWith(area);
   }
 
-  if (aItem->HitTestInfo() & CompositorHitTestInfo::eDispatchToContent) {
+  const auto dtcFlags = flags & CompositorHitTestDispatchToContent;
+  if (!dtcFlags.isEmpty()) {
     mDispatchToContentHitRegion.OrWith(area);
 
-    if (aItem->HitTestInfo() &
-        CompositorHitTestInfo::eRequiresTargetConfirmation) {
+    if (flags.contains(CompositorHitTestFlags::eRequiresTargetConfirmation)) {
       mDTCRequiresTargetConfirmation = true;
     }
   }
 
-  auto touchFlags = hitTestInfo & CompositorHitTestInfo::eTouchActionMask;
-  if (touchFlags) {
-    // something was disabled
-    if (touchFlags == CompositorHitTestInfo::eTouchActionMask) {
+  const auto touchFlags = flags & CompositorHitTestTouchActionMask;
+  if (!touchFlags.isEmpty()) {
+    // If there are multiple touch-action areas, there are multiple elements
+    // with touch-action properties. We don't know what the relationship is
+    // between those elements in terms of DOM ancestry, and so we don't know how
+    // to combine the regions properly. Instead, we just add all the areas to
+    // the dispatch-to-content region, so that the APZ knows to check with the
+    // main thread. See bug 1286957.
+    if (mCollapsedTouchActions) {
+      mDispatchToContentHitRegion.OrWith(area);
+    } else if (touchFlags == CompositorHitTestTouchActionMask) {
       // everything was disabled, so touch-action:none
       mNoActionRegion.OrWith(area);
     } else {
@@ -3663,12 +4056,12 @@ void PaintedLayerData::AccumulateHitTestInfo(
       // together. Or add another region to the event regions to fix this
       // properly.
       if (touchFlags !=
-          CompositorHitTestInfo::eTouchActionDoubleTapZoomDisabled) {
-        if (!(hitTestInfo & CompositorHitTestInfo::eTouchActionPanXDisabled)) {
+          CompositorHitTestFlags::eTouchActionDoubleTapZoomDisabled) {
+        if (!flags.contains(CompositorHitTestFlags::eTouchActionPanXDisabled)) {
           // pan-x is allowed
           mHorizontalPanRegion.OrWith(area);
         }
-        if (!(hitTestInfo & CompositorHitTestInfo::eTouchActionPanYDisabled)) {
+        if (!flags.contains(CompositorHitTestFlags::eTouchActionPanYDisabled)) {
           // pan-y is allowed
           mVerticalPanRegion.OrWith(area);
         }
@@ -3680,29 +4073,40 @@ void PaintedLayerData::AccumulateHitTestInfo(
     }
   }
 
-  // If there are multiple touch-action areas, there are multiple elements with
-  // touch-action properties. We don't know what the relationship is between
-  // those elements in terms of DOM ancestry, and so we don't know how to
-  // combine the regions properly. Instead, we just add all the areas to the
-  // dispatch-to-content region, so that the APZ knows to check with the
-  // main thread. See bug 1286957.
-  const int alreadyHadRegions = mNoActionRegion.GetNumRects() +
-                                mHorizontalPanRegion.GetNumRects() +
-                                mVerticalPanRegion.GetNumRects();
+  if (!mCollapsedTouchActions) {
+    // If there are multiple touch-action areas, there are multiple elements
+    // with touch-action properties. We don't know what the relationship is
+    // between those elements in terms of DOM ancestry, and so we don't know how
+    // to combine the regions properly. Instead, we just add all the areas to
+    // the dispatch-to-content region, so that the APZ knows to check with the
+    // main thread. See bug 1286957.
+    const int alreadyHadRegions = mNoActionRegion.GetNumRects() +
+                                  mHorizontalPanRegion.GetNumRects() +
+                                  mVerticalPanRegion.GetNumRects();
 
-  if (alreadyHadRegions > 1) {
-    mDispatchToContentHitRegion.OrWith(CombinedTouchActionRegion());
+    if (alreadyHadRegions > 1) {
+      mDispatchToContentHitRegion.OrWith(CombinedTouchActionRegion());
+      mNoActionRegion.SetEmpty();
+      mHorizontalPanRegion.SetEmpty();
+      mVerticalPanRegion.SetEmpty();
+      mCollapsedTouchActions = true;
+    }
   }
 
   // Avoid quadratic performance as a result of the region growing to include
   // and arbitrarily large number of rects, which can happen on some pages.
   mMaybeHitRegion.SimplifyOutward(8);
+  mDispatchToContentHitRegion.SimplifyOutward(8);
 
+  HitRegionsUpdated();
+}
+
+void PaintedLayerData::HitRegionsUpdated() {
   // Calculate scaled versions of the bounds of mHitRegion and mMaybeHitRegion
   // for quick access in FindPaintedLayerFor().
-  mScaledHitRegionBounds = aState->ScaleToOutsidePixels(mHitRegion.GetBounds());
+  mScaledHitRegionBounds = mState->ScaleToOutsidePixels(mHitRegion.GetBounds());
   mScaledMaybeHitRegionBounds =
-      aState->ScaleToOutsidePixels(mMaybeHitRegion.GetBounds());
+      mState->ScaleToOutsidePixels(mMaybeHitRegion.GetBounds());
 }
 
 void ContainerState::NewPaintedLayerData(
@@ -3710,6 +4114,7 @@ void ContainerState::NewPaintedLayerData(
     const ActiveScrolledRoot* aASR, const DisplayItemClipChain* aClipChain,
     const ActiveScrolledRoot* aScrollMetadataASR, const nsPoint& aTopLeft,
     const nsIFrame* aReferenceFrame, const bool aBackfaceHidden) {
+  aData->mState = this;
   aData->mAnimatedGeometryRoot = aAnimatedGeometryRoot;
   aData->mASR = aASR;
   aData->mClipChain = aClipChain;
@@ -3753,7 +4158,7 @@ static void PaintInactiveLayer(nsDisplayListBuilder* aBuilder,
 #ifdef MOZ_DUMP_PAINTING
   int32_t appUnitsPerDevPixel = AppUnitsPerDevPixel(aItem);
   nsIntRect itemVisibleRect =
-      aItem->GetVisibleRect().ToOutsidePixels(appUnitsPerDevPixel);
+      aItem->GetPaintRect().ToOutsidePixels(appUnitsPerDevPixel);
 
   RefPtr<DrawTarget> tempDT;
   if (gfxEnv::DumpPaint()) {
@@ -3776,12 +4181,13 @@ static void PaintInactiveLayer(nsDisplayListBuilder* aBuilder,
   basic->SetTarget(context);
 
   if (aItem->GetType() == DisplayItemType::TYPE_MASK) {
-    static_cast<nsDisplayMask*>(aItem)->PaintAsLayer(aBuilder, aCtx, basic);
+    static_cast<nsDisplayMasksAndClipPaths*>(aItem)->PaintAsLayer(aBuilder,
+                                                                  aCtx, basic);
     if (basic->InTransaction()) {
       basic->AbortTransaction();
     }
   } else if (aItem->GetType() == DisplayItemType::TYPE_FILTER) {
-    static_cast<nsDisplayFilter*>(aItem)->PaintAsLayer(aBuilder, aCtx, basic);
+    static_cast<nsDisplayFilters*>(aItem)->PaintAsLayer(aBuilder, aCtx, basic);
     if (basic->InTransaction()) {
       basic->AbortTransaction();
     }
@@ -3889,8 +4295,8 @@ Maybe<size_t> ContainerState::SetupMaskLayerForScrolledClip(
     Layer* aLayer, const DisplayItemClip& aClip) {
   if (aClip.GetRoundedRectCount() > 0) {
     Maybe<size_t> maskLayerIndex = Some(aLayer->GetAncestorMaskLayerCount());
-    if (RefPtr<Layer> maskLayer = CreateMaskLayer(
-            aLayer, aClip, maskLayerIndex, aClip.GetRoundedRectCount())) {
+    if (RefPtr<Layer> maskLayer =
+            CreateMaskLayer(aLayer, aClip, maskLayerIndex)) {
       aLayer->AddAncestorMaskLayer(maskLayer);
       return maskLayerIndex;
     }
@@ -3926,8 +4332,8 @@ static void SetCSSMaskLayerUserData(Layer* aMaskLayer) {
   aMaskLayer->SetUserData(&gCSSMaskLayerUserData, new CSSMaskLayerUserData());
 }
 
-void ContainerState::SetupMaskLayerForCSSMask(Layer* aLayer,
-                                              nsDisplayMask* aMaskItem) {
+void ContainerState::SetupMaskLayerForCSSMask(
+    Layer* aLayer, nsDisplayMasksAndClipPaths* aMaskItem) {
   RefPtr<ImageLayer> maskLayer = CreateOrRecycleMaskImageLayerFor(
       MaskLayerKey(aLayer, Nothing()), GetCSSMaskLayerUserData,
       SetCSSMaskLayerUserData);
@@ -3987,7 +4393,7 @@ void ContainerState::SetupMaskLayerForCSSMask(Layer* aLayer,
   maskLayer->SetContainer(imgContainer);
 
   if (isPaintFinished) {
-    *oldUserData = Move(newUserData);
+    *oldUserData = std::move(newUserData);
   }
   aLayer->SetMaskLayer(maskLayer);
 }
@@ -3997,6 +4403,23 @@ static bool IsScrollThumbLayer(nsDisplayItem* aItem) {
          static_cast<nsDisplayOwnLayer*>(aItem)->IsScrollThumbLayer();
 }
 
+template <typename ClearFn, typename SelectFn>
+static void ProcessDisplayItemMarker(DisplayItemEntryType aMarker,
+                                     ClearFn ClearLayerSelectionIfNeeded,
+                                     SelectFn SelectLayerIfNeeded) {
+  switch (aMarker) {
+    case DisplayItemEntryType::PushTransform:
+    case DisplayItemEntryType::PushOpacity:
+      SelectLayerIfNeeded();
+      break;
+    case DisplayItemEntryType::PopTransform:
+    case DisplayItemEntryType::PopOpacity:
+      ClearLayerSelectionIfNeeded();
+      break;
+    default:
+      break;
+  }
+}
 /*
  * Iterate through the non-clip items in aList and its descendants.
  * For each item we compute the effective clip rect. Each item is assigned
@@ -4012,17 +4435,13 @@ static bool IsScrollThumbLayer(nsDisplayItem* aItem) {
  * of ContainerState::Finish.
  */
 void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
-  AUTO_PROFILER_LABEL("ContainerState::ProcessDisplayItems", GRAPHICS);
+  AUTO_PROFILER_LABEL("ContainerState::ProcessDisplayItems",
+                      GRAPHICS_LayerBuilding);
 
   nsPoint topLeft(0, 0);
 
   int32_t maxLayers = gfxPrefs::MaxActiveLayers();
   int layerCount = 0;
-
-#ifdef DEBUG
-  bool hadLayerEventRegions = false;
-  bool hadCompositorHitTestInfo = false;
-#endif
 
   if (!mManager->IsWidgetLayerManager()) {
     mPaintedLayerDataTree.InitializeForInactiveLayer(
@@ -4031,65 +4450,38 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
 
   AnimatedGeometryRoot* lastAnimatedGeometryRoot = nullptr;
   nsPoint lastTopLeft;
-  FlattenedDisplayItemIterator iter(mBuilder, aList);
-  while (nsDisplayItem* i = iter.GetNext()) {
-    nsDisplayItem* item = i;
-    MOZ_ASSERT(item);
 
+  // Tracks the PaintedLayerData that the item will be accumulated in, if it is
+  // non-null.
+  PaintedLayerData* selectedLayer = nullptr;
+  AutoTArray<size_t, 2> opacityIndices;
+
+  // AGR and ASR for the container item that was flattened.
+  AnimatedGeometryRoot* containerAGR = nullptr;
+  const ActiveScrolledRoot* containerASR = nullptr;
+  nsIFrame* containerReferenceFrame = nullptr;
+  RefPtr<TransformClipNode> transformNode = nullptr;
+
+  const auto InTransform = [&]() { return transformNode; };
+
+  const auto InOpacity = [&]() {
+    return selectedLayer && opacityIndices.Length() > 0;
+  };
+
+  FLBDisplayListIterator iter(mBuilder, aList, this);
+  while (iter.HasNext()) {
+    DisplayItemEntry e = iter.GetNextEntry();
+    DisplayItemEntryType marker = e.mType;
+    nsDisplayItem* item = e.mItem;
+    MOZ_ASSERT(item);
     DisplayItemType itemType = item->GetType();
 
-    // If the item is a event regions item, but is empty (has no regions in it)
-    // then we should just throw it out
-    if (itemType == DisplayItemType::TYPE_LAYER_EVENT_REGIONS) {
-#ifdef DEBUG
-      hadLayerEventRegions = true;
-#endif
-      nsDisplayLayerEventRegions* eventRegions =
-          static_cast<nsDisplayLayerEventRegions*>(item);
-
-      if (eventRegions->IsEmpty()) {
-        continue;
-      }
-    }
-
     if (itemType == DisplayItemType::TYPE_COMPOSITOR_HITTEST_INFO) {
-#ifdef DEBUG
-      hadCompositorHitTestInfo = true;
-#endif
-      nsDisplayCompositorHitTestInfo* hitTestInfo =
-          static_cast<nsDisplayCompositorHitTestInfo*>(item);
-
-      if (hitTestInfo->Area().IsEmpty()) {
-        continue;
-      }
+      // Override the marker for nsDisplayCompositorHitTestInfo items.
+      marker = DisplayItemEntryType::HitTestInfo;
     }
 
-    // Only allow either LayerEventRegions or CompositorHitTestInfo items.
-    MOZ_ASSERT(!(hadLayerEventRegions && hadCompositorHitTestInfo));
-
-    // Peek ahead to the next item and see if it can be merged with the current
-    // item. We create a list of consecutive items that can be merged together.
-    AutoTArray<nsDisplayItem*, 1> mergedItems;
-    mergedItems.AppendElement(item);
-    while (nsDisplayItem* peek = iter.PeekNext()) {
-      if (!item->CanMerge(peek)) {
-        break;
-      }
-
-      mergedItems.AppendElement(peek);
-
-      // Move the iterator forward since we will merge this item.
-      i = iter.GetNext();
-    }
-
-    if (mergedItems.Length() > 1) {
-      // We have items that can be merged together. Merge them into a temporary
-      // item and process that item immediately.
-      item = mBuilder->MergeItems(mergedItems);
-      MOZ_ASSERT(item && itemType == item->GetType());
-    }
-
-    MOZ_ASSERT(item->GetType() != DisplayItemType::TYPE_WRAP_LIST);
+    const bool inEffect = InTransform() || InOpacity();
 
     NS_ASSERTION(mAppUnitsPerDevPixel == AppUnitsPerDevPixel(item),
                  "items in a container layer should all have the same app "
@@ -4099,28 +4491,46 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       aList->SetNeedsTransparentSurface();
     }
 
-    if (mParameters.mForEventsAndPluginsOnly && !item->GetChildren() &&
-        (itemType != DisplayItemType::TYPE_LAYER_EVENT_REGIONS &&
-         itemType != DisplayItemType::TYPE_COMPOSITOR_HITTEST_INFO &&
-         itemType != DisplayItemType::TYPE_PLUGIN)) {
-      continue;
+    LayerState layerState = LayerState::LAYER_NONE;
+    if (marker == DisplayItemEntryType::Item) {
+      layerState = item->GetLayerState(mBuilder, mManager, mParameters);
+
+      if (layerState == LayerState::LAYER_INACTIVE &&
+          nsDisplayItem::ForceActiveLayers()) {
+        layerState = LayerState::LAYER_ACTIVE;
+      }
     }
 
-    LayerState layerState =
-        item->GetLayerState(mBuilder, mManager, mParameters);
-    if (layerState == LAYER_INACTIVE && nsDisplayItem::ForceActiveLayers()) {
-      layerState = LAYER_ACTIVE;
-    }
-
-    bool forceInactive = false;
-    AnimatedGeometryRoot* animatedGeometryRoot;
+    AnimatedGeometryRoot* itemAGR = nullptr;
     const ActiveScrolledRoot* itemASR = nullptr;
     const DisplayItemClipChain* layerClipChain = nullptr;
+    const DisplayItemClipChain* itemClipChain = nullptr;
+    const DisplayItemClip* itemClipPtr = nullptr;
 
-    if (mManager->IsWidgetLayerManager()) {
-      animatedGeometryRoot = item->GetAnimatedGeometryRoot();
+    bool snap = false;
+    nsRect itemContent;
+
+    if (marker == DisplayItemEntryType::HitTestInfo) {
+      const auto& hitTestInfo =
+          static_cast<nsDisplayHitTestInfoItem*>(item)->GetHitTestInfo();
+
+      // Override the layer selection hints for items that have hit test
+      // information. This is needed because container items may have different
+      // clipping, AGR, or ASR than the child items in them.
+      itemAGR = hitTestInfo.mAGR;
+      itemASR = hitTestInfo.mASR;
+      itemClipChain = hitTestInfo.mClipChain;
+      itemClipPtr = hitTestInfo.mClip;
+      itemContent = hitTestInfo.mArea;
+    } else {
+      itemAGR = item->GetAnimatedGeometryRoot();
       itemASR = item->GetActiveScrolledRoot();
-      const DisplayItemClipChain* itemClipChain = item->GetClipChain();
+      itemClipChain = item->GetClipChain();
+      itemClipPtr = &item->GetClip();
+      itemContent = item->GetBounds(mBuilder, &snap);
+    }
+
+    if (mManager->IsWidgetLayerManager() && !inEffect) {
       if (itemClipChain && itemClipChain->mASR == itemASR &&
           itemType != DisplayItemType::TYPE_STICKY_POSITION) {
         layerClipChain = itemClipChain->mParent;
@@ -4128,20 +4538,57 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
         layerClipChain = itemClipChain;
       }
     } else {
-      // For inactive layer subtrees, splitting content into PaintedLayers
-      // based on animated geometry roots is pointless. It's more efficient
-      // to build the minimum number of layers.
-      animatedGeometryRoot = mContainerAnimatedGeometryRoot;
-      itemASR = mContainerASR;
-      item->FuseClipChainUpTo(mBuilder, mContainerASR);
+      // Inside a flattened effect or inactive layer, use container AGR and ASR.
+      itemAGR = inEffect ? containerAGR : mContainerAnimatedGeometryRoot;
+      itemASR = inEffect ? containerASR : mContainerASR;
+
+      if (marker == DisplayItemEntryType::HitTestInfo) {
+        // Items with hit test info are processed twice, once with ::HitTestInfo
+        // marker and then with ::Item marker.
+        // With ::HitTestInfo markers, fuse the clip chain of hit test struct,
+        // and with ::Item markers, fuse the clip chain of the actual item.
+        itemClipChain = mBuilder->FuseClipChainUpTo(itemClipChain, itemASR);
+      } else if (!IsEffectEndMarker(marker)) {
+        // No need to fuse clip chain for effect end markers, since it was
+        // already done for effect start markers.
+        item->FuseClipChainUpTo(mBuilder, itemASR);
+        itemClipChain = item->GetClipChain();
+      }
+
+      itemClipPtr = itemClipChain ? &itemClipChain->mClip : nullptr;
     }
-    if (animatedGeometryRoot == lastAnimatedGeometryRoot) {
+
+    const DisplayItemClip& itemClip =
+        itemClipPtr ? *itemClipPtr : DisplayItemClip::NoClip();
+
+    if (inEffect && marker == DisplayItemEntryType::HitTestInfo) {
+      // Fast-path for hit test items inside flattened inactive layers.
+      MOZ_ASSERT(selectedLayer);
+      selectedLayer->AccumulateHitTestItem(this, item, itemClip, transformNode);
+      continue;
+    }
+
+    if (inEffect && marker == DisplayItemEntryType::Item) {
+      // Fast-path for items inside flattened inactive layers. This works
+      // because the layer state of the item cannot be active, otherwise the
+      // parent item would not have been flattened.
+      MOZ_ASSERT(selectedLayer);
+      selectedLayer->Accumulate(this, item->AsPaintedDisplayItem(), nsIntRect(),
+                                nsRect(), itemClip, layerState, aList, marker,
+                                opacityIndices, transformNode);
+      continue;
+    }
+
+    // Items outside of flattened effects and non-item markers inside flattened
+    // effects are processed here.
+    MOZ_ASSERT(!inEffect || (marker != DisplayItemEntryType::Item));
+
+    if (itemAGR == lastAnimatedGeometryRoot) {
       topLeft = lastTopLeft;
     } else {
       lastTopLeft = topLeft =
-          (*animatedGeometryRoot)
-              ->GetOffsetToCrossDoc(mContainerReferenceFrame);
-      lastAnimatedGeometryRoot = animatedGeometryRoot;
+          (*itemAGR)->GetOffsetToCrossDoc(mContainerReferenceFrame);
+      lastAnimatedGeometryRoot = itemAGR;
     }
 
     const ActiveScrolledRoot* scrollMetadataASR =
@@ -4149,80 +4596,96 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
             ? ActiveScrolledRoot::PickDescendant(itemASR, layerClipChain->mASR)
             : itemASR;
 
-    bool snap;
-    nsRect itemContent = item->GetBounds(mBuilder, &snap);
-    if (itemType == DisplayItemType::TYPE_LAYER_EVENT_REGIONS) {
-      nsDisplayLayerEventRegions* eventRegions =
-          static_cast<nsDisplayLayerEventRegions*>(item);
-      itemContent = eventRegions->GetHitRegionBounds(mBuilder, &snap);
-    }
-
-    if (itemType == DisplayItemType::TYPE_COMPOSITOR_HITTEST_INFO) {
-      nsDisplayCompositorHitTestInfo* eventRegions =
-          static_cast<nsDisplayCompositorHitTestInfo*>(item);
-      itemContent = eventRegions->Area();
-    }
-
-    nsIntRect itemDrawRect = ScaleToOutsidePixels(itemContent, snap);
-    bool prerenderedTransform =
+    const bool prerenderedTransform =
         itemType == DisplayItemType::TYPE_TRANSFORM &&
         static_cast<nsDisplayTransform*>(item)->MayBeAnimated(mBuilder);
+
+    nsIntRect itemDrawRect = ScaleToOutsidePixels(itemContent, snap);
     ParentLayerIntRect clipRect;
-    const DisplayItemClip& itemClip = item->GetClip();
     if (itemClip.HasClip()) {
-      itemContent.IntersectRect(itemContent, itemClip.GetClipRect());
-      clipRect = ViewAs<ParentLayerPixel>(
-          ScaleToNearestPixels(itemClip.GetClipRect()));
+      const nsRect& itemClipRect = itemClip.GetClipRect();
+      itemContent.IntersectRect(itemContent, itemClipRect);
+      clipRect = ViewAs<ParentLayerPixel>(ScaleToNearestPixels(itemClipRect));
+
       if (!prerenderedTransform && !IsScrollThumbLayer(item)) {
         itemDrawRect.IntersectRect(itemDrawRect, clipRect.ToUnknownRect());
       }
+
       clipRect.MoveBy(ViewAs<ParentLayerPixel>(mParameters.mOffset));
     }
+
+    if (marker == DisplayItemEntryType::PopTransform) {
+      MOZ_ASSERT(transformNode);
+      transformNode = transformNode->Parent();
+    }
+
+    if (transformNode) {
+      // If we are within transform, transform itemContent and itemDrawRect.
+      MOZ_ASSERT(transformNode);
+
+      itemContent =
+          transformNode->TransformRect(itemContent, mAppUnitsPerDevPixel);
+
+      itemDrawRect = transformNode->TransformRect(itemDrawRect);
+    }
+
 #ifdef DEBUG
     nsRect bounds = itemContent;
 
-    if (itemType == DisplayItemType::TYPE_LAYER_EVENT_REGIONS ||
-        itemType == DisplayItemType::TYPE_COMPOSITOR_HITTEST_INFO) {
+    if (marker == DisplayItemEntryType::HitTestInfo || inEffect) {
       bounds.SetEmpty();
     }
 
-    if (!bounds.IsEmpty()) {
-      if (itemASR != mContainerASR) {
-        if (Maybe<nsRect> clip =
-                item->GetClipWithRespectToASR(mBuilder, mContainerASR)) {
-          bounds = clip.ref();
-        }
+    if (!bounds.IsEmpty() && itemASR != mContainerASR) {
+      if (Maybe<nsRect> clip =
+              item->GetClipWithRespectToASR(mBuilder, mContainerASR)) {
+        bounds = clip.ref();
       }
     }
+
     ((nsRect&)mAccumulatedChildBounds)
         .UnionRect(mAccumulatedChildBounds, bounds);
 #endif
 
     nsIntRect itemVisibleRect = itemDrawRect;
-    // We haven't computed visibility at this point, so item->GetVisibleRect()
-    // is just the dirty rect that item was initialized with. We intersect it
-    // with the clipped item bounds to get a tighter visible rect.
+
+    // We intersect the building rect with the clipped item bounds to get a
+    // tighter visible rect.
     if (!prerenderedTransform) {
+      nsRect itemBuildingRect = item->GetBuildingRect();
+
+      if (transformNode) {
+        itemBuildingRect = transformNode->TransformRect(itemBuildingRect,
+                                                        mAppUnitsPerDevPixel);
+      }
+
       itemVisibleRect = itemVisibleRect.Intersect(
-          ScaleToOutsidePixels(item->GetVisibleRect(), false));
+          ScaleToOutsidePixels(itemBuildingRect, false));
     }
 
-    if (maxLayers != -1 && layerCount >= maxLayers) {
-      forceInactive = true;
-    }
+    const bool forceInactive = maxLayers != -1 && layerCount >= maxLayers;
 
     // Assign the item to a layer
-    if (layerState == LAYER_ACTIVE_FORCE ||
-        (layerState == LAYER_INACTIVE && !mManager->IsWidgetLayerManager()) ||
-        (!forceInactive &&
-         (layerState == LAYER_ACTIVE_EMPTY || layerState == LAYER_ACTIVE))) {
+    bool treatInactiveItemAsActive =
+        (layerState == LayerState::LAYER_INACTIVE &&
+         mLayerBuilder->GetContainingPaintedLayerData());
+    if (layerState == LayerState::LAYER_ACTIVE_FORCE ||
+        treatInactiveItemAsActive ||
+        (!forceInactive && (layerState == LayerState::LAYER_ACTIVE_EMPTY ||
+                            layerState == LayerState::LAYER_ACTIVE))) {
       layerCount++;
 
-      // LAYER_ACTIVE_EMPTY means the layer is created just for its metadata.
-      // We should never see an empty layer with any visible content!
+      // Currently we do not support flattening effects within nested inactive
+      // layer trees.
+      MOZ_ASSERT(selectedLayer == nullptr);
+      MOZ_ASSERT(marker == DisplayItemEntryType::Item);
+
+      // LayerState::LAYER_ACTIVE_EMPTY means the layer is created just for its
+      // metadata. We should never see an empty layer with any visible content!
       NS_ASSERTION(
-          layerState != LAYER_ACTIVE_EMPTY || itemVisibleRect.IsEmpty(),
-          "State is LAYER_ACTIVE_EMPTY but visible rect is not.");
+          layerState != LayerState::LAYER_ACTIVE_EMPTY ||
+              itemVisibleRect.IsEmpty(),
+          "State is LayerState::LAYER_ACTIVE_EMPTY but visible rect is not.");
 
       // As long as the new layer isn't going to be a PaintedLayer,
       // InvalidateForLayerChange doesn't need the new layer pointer.
@@ -4232,21 +4695,11 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
           item->Frame(), item->GetPerFrameKey());
       InvalidateForLayerChange(item, nullptr, oldData);
 
-      // If the item would have its own layer but is invisible, just hide it.
-      // Note that items without their own layers can't be skipped this
-      // way, since their PaintedLayer may decide it wants to draw them
-      // into its buffer even if they're currently covered.
-      if (itemVisibleRect.IsEmpty() &&
-          !item->ShouldBuildLayerEvenIfInvisible(mBuilder)) {
-        continue;
-      }
-
       // 3D-transformed layers don't necessarily draw in the order in which
       // they're added to their parent container layer.
-      bool mayDrawOutOfOrder =
-          itemType == DisplayItemType::TYPE_TRANSFORM &&
-          (item->Frame()->Combines3DTransformWithAncestors() ||
-           item->Frame()->Extend3DContext());
+      bool mayDrawOutOfOrder = itemType == DisplayItemType::TYPE_TRANSFORM &&
+                               (item->Combines3DTransformWithAncestors() ||
+                                item->Frame()->Extend3DContext());
 
       // Let mPaintedLayerDataTree know about this item, so that
       // FindPaintedLayerFor and FindOpaqueBackgroundColor are aware of this
@@ -4285,8 +4738,7 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
         mPaintedLayerDataTree.AddingOwnLayer(clipAGR, &scrolledClipRect,
                                              uniformColorPtr);
       } else if (item->ShouldFixToViewport(mBuilder) && itemClip.HasClip() &&
-                 item->AnimatedGeometryRootForScrollMetadata() !=
-                     animatedGeometryRoot &&
+                 item->AnimatedGeometryRootForScrollMetadata() != itemAGR &&
                  !nsLayoutUtils::UsesAsyncScrolling(item->Frame())) {
         // This is basically the same as the case above, but for the non-APZ
         // case. At the moment, when APZ is off, there is only the root ASR
@@ -4302,34 +4754,37 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       } else if (IsScrollThumbLayer(item) && mManager->IsWidgetLayerManager()) {
         // For scrollbar thumbs, the clip we care about is the clip added by the
         // slider frame.
-        mPaintedLayerDataTree.AddingOwnLayer(animatedGeometryRoot->mParentAGR,
-                                             clipPtr, uniformColorPtr);
+        mPaintedLayerDataTree.AddingOwnLayer(itemAGR->mParentAGR, clipPtr,
+                                             uniformColorPtr);
       } else if (prerenderedTransform && mManager->IsWidgetLayerManager()) {
-        if (animatedGeometryRoot->mParentAGR) {
-          mPaintedLayerDataTree.AddingOwnLayer(animatedGeometryRoot->mParentAGR,
-                                               clipPtr, uniformColorPtr);
+        if (itemAGR->mParentAGR) {
+          mPaintedLayerDataTree.AddingOwnLayer(itemAGR->mParentAGR, clipPtr,
+                                               uniformColorPtr);
         } else {
-          mPaintedLayerDataTree.AddingOwnLayer(animatedGeometryRoot, nullptr,
+          mPaintedLayerDataTree.AddingOwnLayer(itemAGR, nullptr,
                                                uniformColorPtr);
         }
       } else {
         // Using itemVisibleRect here isn't perfect. itemVisibleRect can be
         // larger or smaller than the potential bounds of item's contents in
-        // animatedGeometryRoot: It's too large if there's a clipped display
+        // itemAGR: It's too large if there's a clipped display
         // port somewhere among item's contents (see bug 1147673), and it can
         // be too small if the contents can move, because it only looks at the
         // contents' current bounds and doesn't anticipate any animations.
         // Time will tell whether this is good enough, or whether we need to do
         // something more sophisticated here.
-        mPaintedLayerDataTree.AddingOwnLayer(animatedGeometryRoot,
-                                             &itemVisibleRect, uniformColorPtr);
+        mPaintedLayerDataTree.AddingOwnLayer(itemAGR, &itemVisibleRect,
+                                             uniformColorPtr);
       }
 
       ContainerLayerParameters params = mParameters;
       params.mBackgroundColor = uniformColor;
-      params.mLayerCreationHint = GetLayerCreationHint(animatedGeometryRoot);
-      params.mScrollMetadataASR = ActiveScrolledRoot::PickDescendant(
-          mContainerScrollMetadataASR, scrollMetadataASR);
+      params.mLayerCreationHint = GetLayerCreationHint(itemAGR);
+      params.mScrollMetadataASR =
+          ActiveScrolledRoot::IsAncestor(scrollMetadataASR,
+                                         mContainerScrollMetadataASR)
+              ? mContainerScrollMetadataASR
+              : scrollMetadataASR;
       params.mCompositorASR =
           params.mScrollMetadataASR != mContainerScrollMetadataASR
               ? params.mScrollMetadataASR
@@ -4347,8 +4802,9 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
         // frame's FrameMetrics on our child transform ContainerLayer instead.
         // It's worth investigating whether this ASR adjustment can be done at
         // display item creation time.
-        scrollMetadataASR =
-            GetASRForPerspective(scrollMetadataASR, item->Frame());
+        scrollMetadataASR = GetASRForPerspective(
+            scrollMetadataASR,
+            item->Frame()->GetContainingBlock(nsIFrame::SKIP_SCROLLED_FRAME));
         params.mScrollMetadataASR = scrollMetadataASR;
         itemASR = scrollMetadataASR;
       }
@@ -4359,7 +4815,47 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       // item->BuildLayer, this will be set to a proper rect.
       nsIntRect layerContentsVisibleRect(0, 0, -1, -1);
       params.mLayerContentsVisibleRect = &layerContentsVisibleRect;
-      RefPtr<Layer> ownLayer = item->BuildLayer(mBuilder, mManager, params);
+
+      // If this display item wants to build inactive layers but we are treating
+      // it as active because we are already inside an inactive layer tree,
+      // we need to make sure that the display item's clip is reflected in
+      // FrameLayerBuilder::mInactiveLayerClip (which is normally set in
+      // AddPaintedDisplayItem() when entering an inactive layer tree).
+      // We intersect the display item's clip into any existing inactive layer
+      // clip.
+      const DisplayItemClip* originalInactiveClip = nullptr;
+      DisplayItemClip combinedInactiveClip;
+      if (treatInactiveItemAsActive) {
+        originalInactiveClip = mLayerBuilder->GetInactiveLayerClip();
+        if (originalInactiveClip) {
+          combinedInactiveClip = *originalInactiveClip;
+        }
+        DisplayItemClip nestedClip = item->GetClip();
+        if (nestedClip.HasClip()) {
+          nsRect nestedClipRect = nestedClip.NonRoundedIntersection();
+
+          // Transform the nested clip to be relative to the same reference
+          // frame as the existing mInactiveLayerClip, so that we can intersect
+          // them below.
+          nestedClipRect = nsLayoutUtils::TransformFrameRectToAncestor(
+              item->ReferenceFrame(), nestedClipRect,
+              mLayerBuilder->GetContainingPaintedLayerData()->mReferenceFrame);
+
+          nestedClip.SetTo(nestedClipRect);
+          combinedInactiveClip.IntersectWith(nestedClip);
+          mLayerBuilder->SetInactiveLayerClip(&combinedInactiveClip);
+        }
+      }
+
+      RefPtr<Layer> ownLayer =
+          item->AsPaintedDisplayItem()->BuildLayer(mBuilder, mManager, params);
+
+      // If above we combined a nested clip into mInactiveLayerClip, restore
+      // the original inactive layer clip here.
+      if (treatInactiveItemAsActive) {
+        mLayerBuilder->SetInactiveLayerClip(originalInactiveClip);
+      }
+
       if (!ownLayer) {
         continue;
       }
@@ -4423,14 +4919,15 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       if (item->GetType() == DisplayItemType::TYPE_MASK) {
         MOZ_ASSERT(itemClip.GetRoundedRectCount() == 0);
 
-        nsDisplayMask* maskItem = static_cast<nsDisplayMask*>(item);
+        nsDisplayMasksAndClipPaths* maskItem =
+            static_cast<nsDisplayMasksAndClipPaths*>(item);
         SetupMaskLayerForCSSMask(ownLayer, maskItem);
 
         if (iter.PeekNext() && iter.PeekNext()->GetType() ==
                                    DisplayItemType::TYPE_SCROLL_INFO_LAYER) {
           // Since we do build a layer for mask, there is no need for this
           // scroll info layer anymore.
-          i = iter.GetNext();
+          iter.GetNextItem();
         }
       }
 
@@ -4439,7 +4936,8 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       nsIntRegion itemVisibleRegion = itemVisibleRect;
       nsRegion tightBounds = item->GetTightBounds(mBuilder, &snap);
       if (!tightBounds.IsEmpty()) {
-        itemVisibleRegion.AndWith(ScaleToOutsidePixels(tightBounds, snap));
+        itemVisibleRegion.AndWith(
+            ScaleRegionToOutsidePixels(tightBounds, snap));
       }
 
       ContainerLayer* oldContainer = ownLayer->GetParent();
@@ -4451,7 +4949,7 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
 
       NewLayerEntry* newLayerEntry = mNewChildLayers.AppendElement();
       newLayerEntry->mLayer = ownLayer;
-      newLayerEntry->mAnimatedGeometryRoot = animatedGeometryRoot;
+      newLayerEntry->mAnimatedGeometryRoot = itemAGR;
       newLayerEntry->mASR = itemASR;
       newLayerEntry->mScrollMetadataASR = scrollMetadataASR;
       newLayerEntry->mClipChain = layerClipChain;
@@ -4466,7 +4964,7 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       // Don't attempt to flatten compnent alpha layers that are within
       // a forced active layer, or an active transform;
       if (itemType == DisplayItemType::TYPE_TRANSFORM ||
-          layerState == LAYER_ACTIVE_FORCE) {
+          layerState == LayerState::LAYER_ACTIVE_FORCE) {
         newLayerEntry->mPropagateComponentAlphaFlattening = false;
       }
 
@@ -4486,20 +4984,20 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
         newLayerEntry->mLayerContentsVisibleRect = layerContentsVisibleRect;
         if (itemType == DisplayItemType::TYPE_PERSPECTIVE ||
             (itemType == DisplayItemType::TYPE_TRANSFORM &&
-             (item->Frame()->Extend3DContext() ||
-              item->Frame()->Combines3DTransformWithAncestors() ||
+             (item->Combines3DTransformWithAncestors() ||
+              item->Frame()->Extend3DContext() ||
               item->Frame()->HasPerspective()))) {
           // Give untransformed visible region as outer visible region
           // to avoid failure caused by singular transforms.
           newLayerEntry->mUntransformedVisibleRegion = true;
           newLayerEntry->mVisibleRegion =
-              item->GetVisibleRectForChildren().ScaleToOutsidePixels(
+              item->GetBuildingRectForChildren().ScaleToOutsidePixels(
                   contentXScale, contentYScale, mAppUnitsPerDevPixel);
         } else {
           newLayerEntry->mVisibleRegion = itemVisibleRegion;
         }
         newLayerEntry->mOpaqueRegion = ComputeOpaqueRect(
-            item, animatedGeometryRoot, itemASR, itemClip, aList,
+            item, itemAGR, itemASR, itemClip, aList,
             &newLayerEntry->mHideAllLayersBelow,
             &newLayerEntry->mOpaqueForAnimatedGeometryRootParent);
       } else {
@@ -4508,7 +5006,7 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
                                    item->Frame()->HasPerspective());
         const nsIntRegion& visible =
             useChildrenVisible
-                ? item->GetVisibleRectForChildren().ScaleToOutsidePixels(
+                ? item->GetBuildingRectForChildren().ScaleToOutsidePixels(
                       contentXScale, contentYScale, mAppUnitsPerDevPixel)
                 : itemVisibleRegion;
 
@@ -4540,48 +5038,54 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       if (ownLayer->Manager() == mLayerBuilder->GetRetainingLayerManager()) {
         oldData = mLayerBuilder->GetOldLayerForFrame(item->Frame(),
                                                      item->GetPerFrameKey());
-        mLayerBuilder->StoreDataForFrame(item, ownLayer, layerState, oldData);
+
+        mLayerBuilder->StoreDataForFrame(item->AsPaintedDisplayItem(), ownLayer,
+                                         layerState, oldData);
       }
     } else {
       const bool backfaceHidden = item->In3DContextAndBackfaceIsHidden();
-      const nsIFrame* referenceFrame = item->ReferenceFrame();
 
-      PaintedLayerData* paintedLayerData =
-          mPaintedLayerDataTree.FindPaintedLayerFor(
-              animatedGeometryRoot, itemASR, layerClipChain, itemVisibleRect,
-              backfaceHidden, [&](PaintedLayerData* aData) {
-                NewPaintedLayerData(aData, animatedGeometryRoot, itemASR,
-                                    layerClipChain, scrollMetadataASR, topLeft,
-                                    referenceFrame, backfaceHidden);
-              });
+      // When container item hit test info is processed, we need to use the same
+      // reference frame as the container children.
+      const nsIFrame* referenceFrame = item == mContainerItem
+                                           ? mContainerReferenceFrame
+                                           : item->ReferenceFrame();
 
-      if (itemType == DisplayItemType::TYPE_LAYER_EVENT_REGIONS) {
-        nsDisplayLayerEventRegions* eventRegions =
-            static_cast<nsDisplayLayerEventRegions*>(item);
-        paintedLayerData->AccumulateEventRegions(this, eventRegions);
-      } else if (itemType == DisplayItemType::TYPE_COMPOSITOR_HITTEST_INFO) {
-        nsDisplayCompositorHitTestInfo* hitTestInfo =
-            static_cast<nsDisplayCompositorHitTestInfo*>(item);
-        paintedLayerData->AccumulateHitTestInfo(this, hitTestInfo);
+      MOZ_ASSERT(item != mContainerItem ||
+                 marker == DisplayItemEntryType::HitTestInfo);
+
+      PaintedLayerData* paintedLayerData = selectedLayer;
+
+      if (!paintedLayerData) {
+        paintedLayerData = mPaintedLayerDataTree.FindPaintedLayerFor(
+            itemAGR, itemASR, layerClipChain, itemVisibleRect, backfaceHidden,
+            [&](PaintedLayerData* aData) {
+              NewPaintedLayerData(aData, itemAGR, itemASR, layerClipChain,
+                                  scrollMetadataASR, topLeft, referenceFrame,
+                                  backfaceHidden);
+            });
+      }
+      MOZ_ASSERT(paintedLayerData);
+
+      if (marker == DisplayItemEntryType::HitTestInfo) {
+        MOZ_ASSERT(!transformNode);
+        paintedLayerData->AccumulateHitTestItem(this, item, itemClip, nullptr);
       } else {
-        // check to see if the new item has rounded rect clips in common with
-        // other items in the layer
-        if (mManager->IsWidgetLayerManager()) {
-          paintedLayerData->UpdateCommonClipCount(itemClip);
-        }
-        paintedLayerData->Accumulate(this, item, itemVisibleRect, itemClip,
-                                     layerState, aList);
+        paintedLayerData->Accumulate(
+            this, item->AsPaintedDisplayItem(), itemVisibleRect, itemContent,
+            itemClip, layerState, aList, marker, opacityIndices, transformNode);
 
         if (!paintedLayerData->mLayer) {
           // Try to recycle the old layer of this display item.
           RefPtr<PaintedLayer> layer = AttemptToRecyclePaintedLayer(
-              animatedGeometryRoot, item, topLeft, referenceFrame);
+              itemAGR, item, topLeft,
+              inEffect ? containerReferenceFrame : referenceFrame);
           if (layer) {
             paintedLayerData->mLayer = layer;
 
             PaintedDisplayItemLayerUserData* userData =
                 GetPaintedDisplayItemLayerUserData(layer);
-            paintedLayerData->mAssignedDisplayItems.SetCapacity(
+            paintedLayerData->mAssignedDisplayItems.reserve(
                 userData->mLastItemCount);
 
             NS_ASSERTION(FindIndexOfLayerIn(mNewChildLayers, layer) < 0,
@@ -4591,6 +5095,41 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
           }
         }
       }
+
+      const auto ClearLayerSelectionIfNeeded = [&]() {
+        if (!InOpacity() && !InTransform()) {
+          selectedLayer = nullptr;
+          containerAGR = nullptr;
+          containerASR = nullptr;
+          containerReferenceFrame = nullptr;
+        }
+      };
+
+      const auto SelectLayerIfNeeded = [&]() {
+        if (!selectedLayer) {
+          selectedLayer = paintedLayerData;
+          containerAGR = itemAGR;
+          containerASR = itemASR;
+          containerReferenceFrame = const_cast<nsIFrame*>(referenceFrame);
+        }
+      };
+
+      if (marker == DisplayItemEntryType::PushTransform) {
+        nsDisplayTransform* transform = static_cast<nsDisplayTransform*>(item);
+
+        const Matrix4x4Flagged& matrix = transform->GetTransformForRendering();
+
+        Maybe<gfx::IntRect> clip;
+        if (itemClip.HasClip()) {
+          const nsRect nonRoundedClip = itemClip.NonRoundedIntersection();
+          clip.emplace(nonRoundedClip.ToNearestPixels(mAppUnitsPerDevPixel));
+        }
+
+        transformNode = new TransformClipNode(transformNode, matrix, clip);
+      }
+
+      ProcessDisplayItemMarker(marker, ClearLayerSelectionIfNeeded,
+                               SelectLayerIfNeeded);
     }
 
     nsDisplayList* childItems = item->GetSameCoordinateSystemChildren();
@@ -4598,6 +5137,8 @@ void ContainerState::ProcessDisplayItems(nsDisplayList* aList) {
       aList->SetNeedsTransparentSurface();
     }
   }
+
+  MOZ_ASSERT(selectedLayer == nullptr);
 }
 
 void ContainerState::InvalidateForLayerChange(nsDisplayItem* aItem,
@@ -4612,23 +5153,37 @@ void ContainerState::InvalidateForLayerChange(nsDisplayItem* aItem,
     // layer.
     PaintedLayer* t = oldLayer->AsPaintedLayer();
     if (t && aData->mGeometry) {
-    // Note that whenever the layer's scale changes, we invalidate the whole
-    // thing, so it doesn't matter whether we are using the old scale at last
-    // paint or a new scale here
+      // Note that whenever the layer's scale changes, we invalidate the whole
+      // thing, so it doesn't matter whether we are using the old scale at last
+      // paint or a new scale here
 #ifdef MOZ_DUMP_PAINTING
       if (nsLayoutUtils::InvalidationDebuggingIsEnabled()) {
         printf_stderr("Display item type %s(%p) changed layers %p to %p!\n",
                       aItem->Name(), aItem->Frame(), t, aNewLayer);
       }
 #endif
-      InvalidatePostTransformRegion(
+      InvalidatePreTransformRect(
           t, aData->mGeometry->ComputeInvalidationRegion(), aData->mClip,
-          mLayerBuilder->GetLastPaintOffset(t));
+          mLayerBuilder->GetLastPaintOffset(t), aData->mTransform);
     }
     // Clear the old geometry so that invalidation thinks the item has been
     // added this paint.
     aData->mGeometry = nullptr;
   }
+}
+
+static nsRect GetInvalidationRect(nsDisplayItemGeometry* aGeometry,
+                                  const DisplayItemClip& aClip,
+                                  TransformClipNode* aTransform,
+                                  const int32_t aA2D) {
+  const nsRect& rect = aGeometry->ComputeInvalidationRegion();
+  const nsRect clipped = aClip.ApplyNonRoundedIntersection(rect);
+
+  if (aTransform) {
+    return aTransform->TransformRect(clipped, aA2D);
+  }
+
+  return clipped;
 }
 
 void FrameLayerBuilder::ComputeGeometryChangeForItem(DisplayItemData* aData) {
@@ -4658,18 +5213,24 @@ void FrameLayerBuilder::ComputeGeometryChangeForItem(DisplayItemData* aData) {
                   layerData->mLastAnimatedGeometryRootOrigin;
 
   const DisplayItemClip& clip = item->GetClip();
+  const int32_t appUnitsPerDevPixel = layerData->mAppUnitsPerDevPixel;
 
   // If the frame is marked as invalidated, and didn't specify a rect to
   // invalidate then we want to invalidate both the old and new bounds,
   // otherwise we only want to invalidate the changed areas. If we do get an
   // invalid rect, then we want to add this on top of the change areas.
   nsRect invalid;
-  nsRegion combined;
+  nsIntRegion invalidPixels;
+
   if (!aData->mGeometry) {
     // This item is being added for the first time, invalidate its entire area.
     geometry = item->AllocateGeometry(mDisplayListBuilder);
-    combined =
-        clip.ApplyNonRoundedIntersection(geometry->ComputeInvalidationRegion());
+
+    const nsRect bounds = GetInvalidationRect(geometry, clip, aData->mTransform,
+                                              appUnitsPerDevPixel);
+
+    invalidPixels = bounds.ScaleToOutsidePixels(
+        layerData->mXScale, layerData->mYScale, appUnitsPerDevPixel);
 #ifdef MOZ_DUMP_PAINTING
     if (nsLayoutUtils::InvalidationDebuggingIsEnabled()) {
       printf_stderr("Display item type %s(%p) added to layer %p!\n",
@@ -4681,26 +5242,42 @@ void FrameLayerBuilder::ComputeGeometryChangeForItem(DisplayItemData* aData) {
     // Layout marked item/frame as needing repainting (without an explicit
     // rect), invalidate the entire old and new areas.
     geometry = item->AllocateGeometry(mDisplayListBuilder);
-    combined = aData->mClip.ApplyNonRoundedIntersection(
-        aData->mGeometry->ComputeInvalidationRegion());
-    combined.MoveBy(shift);
-    combined.Or(combined, clip.ApplyNonRoundedIntersection(
-                              geometry->ComputeInvalidationRegion()));
+
+    nsRect oldArea =
+        GetInvalidationRect(aData->mGeometry, aData->mClip,
+                            aData->mOldTransform, appUnitsPerDevPixel);
+    oldArea.MoveBy(shift);
+
+    nsRect newArea = GetInvalidationRect(geometry, clip, aData->mTransform,
+                                         appUnitsPerDevPixel);
+
+    nsRegion combined;
+    combined.Or(oldArea, newArea);
+    invalidPixels = combined.ScaleToOutsidePixels(
+        layerData->mXScale, layerData->mYScale, appUnitsPerDevPixel);
 #ifdef MOZ_DUMP_PAINTING
     if (nsLayoutUtils::InvalidationDebuggingIsEnabled()) {
       printf_stderr(
-          "Display item type %s(%p) (in layer %p) belongs to an invalidated "
-          "frame!\n",
+          "Display item type %s(%p) (in layer %p) belongs to an "
+          "invalidated frame!\n",
           item->Name(), item->Frame(), aData->mLayer.get());
     }
 #endif
   } else {
     // Let the display item check for geometry changes and decide what needs to
     // be repainted.
-
     const nsRegion& changedFrameInvalidations =
         aData->GetChangedFrameInvalidations();
+
+    if (aData->mTransform) {
+      // If this display item is inside a flattened transform the offset is
+      // already included in the root transform, so there is no need to shift.
+      shift = nsPoint();
+    }
+
     aData->mGeometry->MoveBy(shift);
+
+    nsRegion combined;
     item->ComputeInvalidationRegion(mDisplayListBuilder, aData->mGeometry,
                                     &combined);
 
@@ -4709,13 +5286,14 @@ void FrameLayerBuilder::ComputeGeometryChangeForItem(DisplayItemData* aData) {
     // inactive layers, since these types don't implement
     // ComputeInvalidateRegion (and rely on the ComputeDifferences call in
     // AddPaintedDisplayItem instead).
-    if (!combined.IsEmpty() || aData->mLayerState == LAYER_INACTIVE) {
+    if (!combined.IsEmpty() ||
+        aData->mLayerState == LayerState::LAYER_INACTIVE ||
+        item->NeedsGeometryUpdates()) {
       geometry = item->AllocateGeometry(mDisplayListBuilder);
     }
+
     aData->mClip.AddOffsetAndComputeDifference(
-        layerData->mMaskClipCount, shift,
-        aData->mGeometry->ComputeInvalidationRegion(), clip,
-        layerData->mLastCommonClipCount,
+        shift, aData->mGeometry->ComputeInvalidationRegion(), clip,
         geometry ? geometry->ComputeInvalidationRegion()
                  : aData->mGeometry->ComputeInvalidationRegion(),
         &combined);
@@ -4729,6 +5307,15 @@ void FrameLayerBuilder::ComputeGeometryChangeForItem(DisplayItemData* aData) {
     if (clip.ComputeRegionInClips(&aData->mClip, shift, &clipRegion)) {
       combined.And(combined, clipRegion);
     }
+
+    invalidPixels = combined.ToOutsidePixels(appUnitsPerDevPixel);
+
+    if (aData->mTransform) {
+      invalidPixels = aData->mTransform->TransformRegion(invalidPixels);
+    }
+
+    invalidPixels.ScaleRoundOut(layerData->mXScale, layerData->mYScale);
+
 #ifdef MOZ_DUMP_PAINTING
     if (nsLayoutUtils::InvalidationDebuggingIsEnabled()) {
       if (!combined.IsEmpty()) {
@@ -4739,12 +5326,10 @@ void FrameLayerBuilder::ComputeGeometryChangeForItem(DisplayItemData* aData) {
     }
 #endif
   }
-  if (!combined.IsEmpty()) {
-    InvalidatePostTransformRegion(
-        paintedLayer,
-        combined.ScaleToOutsidePixels(layerData->mXScale, layerData->mYScale,
-                                      layerData->mAppUnitsPerDevPixel),
-        layerData->mTranslation);
+
+  if (!invalidPixels.IsEmpty()) {
+    InvalidatePostTransformRegion(paintedLayer, invalidPixels,
+                                  layerData->mTranslation);
   }
 
   aData->EndUpdate(geometry);
@@ -4752,36 +5337,11 @@ void FrameLayerBuilder::ComputeGeometryChangeForItem(DisplayItemData* aData) {
 
 void FrameLayerBuilder::AddPaintedDisplayItem(PaintedLayerData* aLayerData,
                                               AssignedDisplayItem& aItem,
-                                              ContainerState& aContainerState,
                                               Layer* aLayer) {
   PaintedLayer* layer = aLayerData->mLayer;
   PaintedDisplayItemLayerUserData* paintedData =
       static_cast<PaintedDisplayItemLayerUserData*>(
           layer->GetUserData(&gPaintedDisplayItemLayerUserData));
-  RefPtr<BasicLayerManager> tempManager;
-  nsIntRect intClip;
-  bool hasClip = false;
-  if (aItem.mLayerState != LAYER_NONE) {
-    if (aItem.mDisplayItemData) {
-      tempManager = aItem.mDisplayItemData->mInactiveManager;
-
-      // We need to grab these before updating the DisplayItemData because it
-      // will overwrite them.
-      nsRegion clip;
-      if (aItem.mClip.ComputeRegionInClips(
-              &aItem.mDisplayItemData->GetClip(),
-              aLayerData->mAnimatedGeometryRootOffset -
-                  paintedData->mLastAnimatedGeometryRootOrigin,
-              &clip)) {
-        intClip = clip.GetBounds().ScaleToOutsidePixels(
-            paintedData->mXScale, paintedData->mYScale,
-            paintedData->mAppUnitsPerDevPixel);
-      }
-    }
-    if (!tempManager) {
-      tempManager = new BasicLayerManager(BasicLayerManager::BLM_INACTIVE);
-    }
-  }
 
   if (layer->Manager() == mRetainingManager) {
     DisplayItemData* data = aItem.mDisplayItemData;
@@ -4793,35 +5353,29 @@ void FrameLayerBuilder::AddPaintedDisplayItem(PaintedLayerData* aLayerData,
         // If the DID has already been used (by a previously merged frame,
         // which is not merged this paint) we must create a new DID for the
         // item.
-        aItem.mItem->SetDisplayItemData(nullptr);
+        aItem.mItem->SetDisplayItemData(nullptr, nullptr);
       }
       data = StoreDataForFrame(aItem.mItem, layer, aItem.mLayerState, nullptr);
     }
-    data->mInactiveManager = tempManager;
+    data->mInactiveManager = aItem.mInactiveLayerData
+                                 ? aItem.mInactiveLayerData->mLayerManager
+                                 : nullptr;
     // We optimized this PaintedLayer into a ColorLayer/ImageLayer. Store the
     // optimized layer here.
     if (aLayer != layer) {
       data->mOptLayer = aLayer;
-      data->mItem = nullptr;
     }
+
+    data->mOldTransform = data->mTransform;
+    data->mTransform = aItem.mTransform;
   }
 
-  if (tempManager) {
-    FLB_LOG_PAINTED_LAYER_DECISION(
-        aLayerData, "Creating nested FLB for item %p\n", aItem.mItem);
-    FrameLayerBuilder* layerBuilder = new FrameLayerBuilder();
-    layerBuilder->Init(mDisplayListBuilder, tempManager, aLayerData, true,
-                       &aItem.mClip);
+  if (aItem.mInactiveLayerData) {
+    RefPtr<BasicLayerManager> tempManager =
+        aItem.mInactiveLayerData->mLayerManager;
+    FrameLayerBuilder* layerBuilder = tempManager->GetLayerBuilder();
+    Layer* tmpLayer = aItem.mInactiveLayerData->mLayer;
 
-    tempManager->BeginTransaction();
-    if (mRetainingManager) {
-      layerBuilder->DidBeginRetainedLayerTransaction(tempManager);
-    }
-
-    UniquePtr<LayerProperties> props(
-        LayerProperties::CloneFrom(tempManager->GetRoot()));
-    RefPtr<Layer> tmpLayer = aItem.mItem->BuildLayer(
-        mDisplayListBuilder, tempManager, ContainerLayerParameters());
     // We have no easy way of detecting if this transaction will ever actually
     // get finished. For now, I've just silenced the warning with nested
     // transactions in BasicLayers.cpp
@@ -4833,7 +5387,7 @@ void FrameLayerBuilder::AddPaintedDisplayItem(PaintedLayerData* aLayerData,
     }
 
     bool snap;
-    nsRect visibleRect = aItem.mItem->GetVisibleRect().Intersect(
+    nsRect visibleRect = aItem.mItem->GetBuildingRect().Intersect(
         aItem.mItem->GetBounds(mDisplayListBuilder, &snap));
     nsIntRegion rgn =
         visibleRect.ToOutsidePixels(paintedData->mAppUnitsPerDevPixel);
@@ -4848,6 +5402,7 @@ void FrameLayerBuilder::AddPaintedDisplayItem(PaintedLayerData* aLayerData,
     }
     SetOuterVisibleRegion(tmpLayer, &rgn);
 
+    DisplayItemData* data = nullptr;
     // If BuildLayer didn't call BuildContainerLayerFor, then our new layer
     // won't have been stored in layerBuilder. Manually add it now.
     if (mRetainingManager) {
@@ -4858,17 +5413,18 @@ void FrameLayerBuilder::AddPaintedDisplayItem(PaintedLayerData* aLayerData,
           tempManager->GetUserData(&gLayerManagerUserData));
       lmd->mParent = parentLmd;
 #endif
-      DisplayItemData* data =
+      data =
           layerBuilder->GetDisplayItemDataForManager(aItem.mItem, tempManager);
-      layerBuilder->StoreDataForFrame(aItem.mItem, tmpLayer, LAYER_ACTIVE,
-                                      data);
+      data = layerBuilder->StoreDataForFrame(aItem.mItem, tmpLayer,
+                                             LayerState::LAYER_ACTIVE, data);
+      data->mOldTransform = data->mTransform;
+      data->mTransform = aItem.mTransform;
     }
 
     tempManager->SetRoot(tmpLayer);
     layerBuilder->WillEndTransaction();
     tempManager->AbortTransaction();
 
-#ifdef MOZ_DUMP_PAINTING
     if (gfxUtils::DumpDisplayList() || gfxEnv::DumpPaint()) {
       fprintf_stderr(
           gfxUtils::sDumpPaintFile,
@@ -4880,19 +5436,19 @@ void FrameLayerBuilder::AddPaintedDisplayItem(PaintedLayerData* aLayerData,
           gfxUtils::sDumpPaintFile,
           stream);  // not a typo, fprint_stderr declared in LayersLogging.h
     }
-#endif
 
     nsIntPoint offset =
         GetLastPaintOffset(layer) - GetTranslationForPaintedLayer(layer);
-    props->MoveBy(-offset);
+    aItem.mInactiveLayerData->mProps->MoveBy(-offset);
     // Effective transforms are needed by ComputeDifferences().
     tmpLayer->ComputeEffectiveTransforms(Matrix4x4());
     nsIntRegion invalid;
-    if (!props->ComputeDifferences(tmpLayer, invalid, nullptr)) {
+    if (!aItem.mInactiveLayerData->mProps->ComputeDifferences(tmpLayer, invalid,
+                                                              nullptr)) {
       nsRect visible = aItem.mItem->Frame()->GetVisualOverflowRect();
       invalid = visible.ToOutsidePixels(paintedData->mAppUnitsPerDevPixel);
     }
-    if (aItem.mLayerState == LAYER_SVG_EFFECTS) {
+    if (aItem.mLayerState == LayerState::LAYER_SVG_EFFECTS) {
       invalid = nsSVGIntegrationUtils::AdjustInvalidAreaForSVGEffects(
           aItem.mItem->Frame(), aItem.mItem->ToReferenceFrame(), invalid);
     }
@@ -4900,32 +5456,33 @@ void FrameLayerBuilder::AddPaintedDisplayItem(PaintedLayerData* aLayerData,
 #ifdef MOZ_DUMP_PAINTING
       if (nsLayoutUtils::InvalidationDebuggingIsEnabled()) {
         printf_stderr(
-            "Inactive LayerManager(%p) for display item %s(%p) has an invalid "
-            "region - invalidating layer %p\n",
+            "Inactive LayerManager(%p) for display item %s(%p) has "
+            "an invalid region - invalidating layer %p\n",
             tempManager.get(), aItem.mItem->Name(), aItem.mItem->Frame(),
             layer);
       }
 #endif
-      invalid.ScaleRoundOut(paintedData->mXScale, paintedData->mYScale);
 
-      if (hasClip) {
-        invalid.And(invalid, intClip);
+      if (data && data->mTransform) {
+        invalid = data->mTransform->TransformRegion(invalid);
       }
+
+      invalid.ScaleRoundOut(paintedData->mXScale, paintedData->mYScale);
 
       InvalidatePostTransformRegion(layer, invalid,
                                     GetTranslationForPaintedLayer(layer));
     }
   }
-  aItem.mInactiveLayerManager = tempManager;
 }
 
-DisplayItemData* FrameLayerBuilder::StoreDataForFrame(nsDisplayItem* aItem,
-                                                      Layer* aLayer,
-                                                      LayerState aState,
-                                                      DisplayItemData* aData) {
+DisplayItemData* FrameLayerBuilder::StoreDataForFrame(
+    nsPaintedDisplayItem* aItem, Layer* aLayer, LayerState aState,
+    DisplayItemData* aData) {
+  MOZ_ASSERT(aItem);
+
   if (aData) {
     if (!aData->mUsed) {
-      aData->BeginUpdate(aLayer, aState, aItem);
+      aData->BeginUpdate(aLayer, aState, false, aItem);
     }
     return aData;
   }
@@ -4936,13 +5493,9 @@ DisplayItemData* FrameLayerBuilder::StoreDataForFrame(nsDisplayItem* aItem,
   RefPtr<DisplayItemData> data = new (aItem->Frame()->PresContext())
       DisplayItemData(lmd, aItem->GetPerFrameKey(), aLayer);
 
-  if (!data->HasMergedFrames()) {
-    aItem->SetDisplayItemData(data);
-  }
+  data->BeginUpdate(aLayer, aState, true, aItem);
 
-  data->BeginUpdate(aLayer, aState, aItem);
-
-  lmd->mDisplayItems.PutEntry(data);
+  lmd->mDisplayItems.push_back(data);
   return data;
 }
 
@@ -4951,7 +5504,7 @@ void FrameLayerBuilder::StoreDataForFrame(nsIFrame* aFrame,
                                           Layer* aLayer, LayerState aState) {
   DisplayItemData* oldData = GetDisplayItemData(aFrame, aDisplayItemKey);
   if (oldData && oldData->mFrameList.Length() == 1) {
-    oldData->BeginUpdate(aLayer, aState);
+    oldData->BeginUpdate(aLayer, aState, false);
     return;
   }
 
@@ -4961,25 +5514,30 @@ void FrameLayerBuilder::StoreDataForFrame(nsIFrame* aFrame,
   RefPtr<DisplayItemData> data = new (aFrame->PresContext())
       DisplayItemData(lmd, aDisplayItemKey, aLayer, aFrame);
 
-  data->BeginUpdate(aLayer, aState);
+  data->BeginUpdate(aLayer, aState, true);
 
-  lmd->mDisplayItems.PutEntry(data);
+  lmd->mDisplayItems.push_back(data);
 }
 
-AssignedDisplayItem::AssignedDisplayItem(nsDisplayItem* aItem,
-                                         const DisplayItemClip& aClip,
-                                         LayerState aLayerState,
-                                         DisplayItemData* aData)
+AssignedDisplayItem::AssignedDisplayItem(
+    nsPaintedDisplayItem* aItem, LayerState aLayerState, DisplayItemData* aData,
+    const nsRect& aContentRect, DisplayItemEntryType aType,
+    const bool aHasOpacity, const RefPtr<TransformClipNode>& aTransform,
+    const bool aIsMerged)
     : mItem(aItem),
-      mClip(aClip),
-      mLayerState(aLayerState),
       mDisplayItemData(aData),
+      mTransform(aTransform),
+      mContentRect(aContentRect),
+      mLayerState(aLayerState),
+      mType(aType),
       mReused(aItem->IsReused()),
-      mMerged(aItem->HasMergedFrames()) {}
+      mMerged(aIsMerged),
+      mHasOpacity(aHasOpacity),
+      mHasPaintRect(aItem->HasPaintRect()) {}
 
-AssignedDisplayItem::~AssignedDisplayItem() {
-  if (mInactiveLayerManager) {
-    mInactiveLayerManager->SetUserData(&gLayerManagerLayerBuilder, nullptr);
+InactiveLayerData::~InactiveLayerData() {
+  if (mLayerManager) {
+    mLayerManager->SetUserData(&gLayerManagerLayerBuilder, nullptr);
   }
 }
 
@@ -5206,9 +5764,22 @@ void ContainerState::SetupScrollingMetadata(NewLayerEntry* aEntry) {
                                       ? &clipChain->mClip
                                       : nullptr;
 
-    Maybe<ScrollMetadata> metadata = scrollFrame->ComputeScrollMetadata(
-        aEntry->mLayer, aEntry->mLayer->Manager(), mContainerReferenceFrame,
-        mParameters, clip);
+    scrollFrame->ClipLayerToDisplayPort(aEntry->mLayer, clip, mParameters);
+
+    Maybe<ScrollMetadata> metadata;
+    if (mCachedScrollMetadata.mASR == asr &&
+        mCachedScrollMetadata.mClip == clip) {
+      metadata = mCachedScrollMetadata.mMetadata;
+    } else {
+      metadata = scrollFrame->ComputeScrollMetadata(aEntry->mLayer->Manager(),
+                                                    mContainerReferenceFrame,
+                                                    Some(mParameters), clip);
+      scrollFrame->NotifyApzTransaction();
+      mCachedScrollMetadata.mASR = asr;
+      mCachedScrollMetadata.mClip = clip;
+      mCachedScrollMetadata.mMetadata = metadata;
+    }
+
     if (!metadata) {
       continue;
     }
@@ -5219,8 +5790,8 @@ void ContainerState::SetupScrollingMetadata(NewLayerEntry* aEntry) {
       // the APZC associated with this FrameMetrics, we attach the mask
       // layer as an additional, separate clip.
       Maybe<size_t> nextIndex = Some(maskLayers.Length());
-      RefPtr<Layer> maskLayer = CreateMaskLayer(
-          aEntry->mLayer, *clip, nextIndex, clip->GetRoundedRectCount());
+      RefPtr<Layer> maskLayer =
+          CreateMaskLayer(aEntry->mLayer, *clip, nextIndex);
       if (maskLayer) {
         MOZ_ASSERT(metadata->HasScrollClip());
         metadata->ScrollClip().SetMaskLayerIndex(nextIndex);
@@ -5342,8 +5913,7 @@ void ContainerState::Finish(uint32_t* aTextContentFlags,
                             nsDisplayList* aChildItems) {
   mPaintedLayerDataTree.Finish();
 
-  if (!mParameters.mForEventsAndPluginsOnly &&
-      !gfxPrefs::LayoutUseContainersForRootFrames()) {
+  if (!gfxPrefs::LayoutUseContainersForRootFrames()) {
     // Bug 1336544 tracks re-enabling this assertion in the
     // gfxPrefs::LayoutUseContainersForRootFrames() case.
     NS_ASSERTION(mContainerBounds.IsEqualInterior(mAccumulatedChildBounds),
@@ -5441,9 +6011,86 @@ static nsSize ComputeDesiredDisplaySizeForAnimation(nsIFrame* aContainerFrame) {
   if (widget) {
     return LayoutDevicePixel::ToAppUnits(widget->GetClientSize(),
                                          presContext->AppUnitsPerDevPixel());
-  } else {
-    return presContext->GetVisibleArea().Size();
   }
+
+  return presContext->GetVisibleArea().Size();
+}
+
+/* static */
+Size FrameLayerBuilder::ChooseScale(nsIFrame* aContainerFrame,
+                                    nsDisplayItem* aContainerItem,
+                                    const nsRect& aVisibleRect, float aXScale,
+                                    float aYScale, const Matrix& aTransform2d,
+                                    bool aCanDraw2D) {
+  Size scale;
+  // XXX Should we do something for 3D transforms?
+  if (aCanDraw2D && !aContainerFrame->Combines3DTransformWithAncestors() &&
+      !aContainerFrame->HasPerspective()) {
+    // If the container's transform is animated off main thread, fix a suitable
+    // scale size for animation
+    if (aContainerItem &&
+        aContainerItem->GetType() == DisplayItemType::TYPE_TRANSFORM &&
+        // FIXME: What we need is only transform, rotate, and scale, not
+        // translate, so it's be better to use a property set, instead of
+        // display item type here.
+        EffectCompositor::HasAnimationsForCompositor(
+            aContainerFrame, DisplayItemType::TYPE_TRANSFORM)) {
+      nsSize displaySize =
+          ComputeDesiredDisplaySizeForAnimation(aContainerFrame);
+      // compute scale using the animation on the container, taking ancestors in
+      // to account
+      nsSize scaledVisibleSize = nsSize(aVisibleRect.Width() * aXScale,
+                                        aVisibleRect.Height() * aYScale);
+      scale = nsLayoutUtils::ComputeSuitableScaleForAnimation(
+          aContainerFrame, scaledVisibleSize, displaySize);
+      // multiply by the scale inherited from ancestors--we use a uniform
+      // scale factor to prevent blurring when the layer is rotated.
+      float incomingScale = std::max(aXScale, aYScale);
+      scale.width *= incomingScale;
+      scale.height *= incomingScale;
+    } else {
+      // Scale factors are normalized to a power of 2 to reduce the number of
+      // resolution changes
+      scale = aTransform2d.ScaleFactors(true);
+      // For frames with a changing scale transform round scale factors up to
+      // nearest power-of-2 boundary so that we don't keep having to redraw
+      // the content as it scales up and down. Rounding up to nearest
+      // power-of-2 boundary ensures we never scale up, only down --- avoiding
+      // jaggies. It also ensures we never scale down by more than a factor of
+      // 2, avoiding bad downscaling quality.
+      Matrix frameTransform;
+      if (ActiveLayerTracker::IsScaleSubjectToAnimation(aContainerFrame)) {
+        scale.width = gfxUtils::ClampToScaleFactor(scale.width);
+        scale.height = gfxUtils::ClampToScaleFactor(scale.height);
+
+        // Limit animated scale factors to not grow excessively beyond the
+        // display size.
+        nsSize maxScale(4, 4);
+        if (!aVisibleRect.IsEmpty()) {
+          nsSize displaySize =
+              ComputeDesiredDisplaySizeForAnimation(aContainerFrame);
+          maxScale = Max(maxScale, displaySize / aVisibleRect.Size());
+        }
+        if (scale.width > maxScale.width) {
+          scale.width = gfxUtils::ClampToScaleFactor(maxScale.width, true);
+        }
+        if (scale.height > maxScale.height) {
+          scale.height = gfxUtils::ClampToScaleFactor(maxScale.height, true);
+        }
+      } else {
+        // XXX Do we need to move nearly-integer values to integers here?
+      }
+    }
+    // If the scale factors are too small, just use 1.0. The content is being
+    // scaled out of sight anyway.
+    if (fabs(scale.width) < 1e-8 || fabs(scale.height) < 1e-8) {
+      scale = Size(1.0, 1.0);
+    }
+  } else {
+    scale = Size(1.0, 1.0);
+  }
+
+  return scale;
 }
 
 static bool ChooseScaleAndSetTransform(
@@ -5497,79 +6144,17 @@ static bool ChooseScaleAndSetTransform(
   }
 
   bool canDraw2D = transform.CanDraw2D(&transform2d);
-  Size scale;
-  // XXX Should we do something for 3D transforms?
-  if (canDraw2D && !aContainerFrame->Combines3DTransformWithAncestors() &&
-      !aContainerFrame->HasPerspective()) {
-    // If the container's transform is animated off main thread, fix a suitable
-    // scale size for animation
-    if (aContainerItem &&
-        aContainerItem->GetType() == DisplayItemType::TYPE_TRANSFORM &&
-        EffectCompositor::HasAnimationsForCompositor(aContainerFrame,
-                                                     eCSSProperty_transform)) {
-      nsSize displaySize =
-          ComputeDesiredDisplaySizeForAnimation(aContainerFrame);
-      // compute scale using the animation on the container, taking ancestors in
-      // to account
-      nsSize scaledVisibleSize =
-          nsSize(aVisibleRect.Width() * aIncomingScale.mXScale,
-                 aVisibleRect.Height() * aIncomingScale.mYScale);
-      scale = nsLayoutUtils::ComputeSuitableScaleForAnimation(
-          aContainerFrame, scaledVisibleSize, displaySize);
-      // multiply by the scale inherited from ancestors--we use a uniform
-      // scale factor to prevent blurring when the layer is rotated.
-      float incomingScale =
-          std::max(aIncomingScale.mXScale, aIncomingScale.mYScale);
-      scale.width *= incomingScale;
-      scale.height *= incomingScale;
-    } else {
-      // Scale factors are normalized to a power of 2 to reduce the number of
-      // resolution changes
-      scale = transform2d.ScaleFactors(true);
-      // For frames with a changing scale transform round scale factors up to
-      // nearest power-of-2 boundary so that we don't keep having to redraw
-      // the content as it scales up and down. Rounding up to nearest
-      // power-of-2 boundary ensures we never scale up, only down --- avoiding
-      // jaggies. It also ensures we never scale down by more than a factor of
-      // 2, avoiding bad downscaling quality.
-      Matrix frameTransform;
-      if (ActiveLayerTracker::IsScaleSubjectToAnimation(aContainerFrame)) {
-        scale.width = gfxUtils::ClampToScaleFactor(scale.width);
-        scale.height = gfxUtils::ClampToScaleFactor(scale.height);
+  Size scale = FrameLayerBuilder::ChooseScale(
+      aContainerFrame, aContainerItem, aVisibleRect, aIncomingScale.mXScale,
+      aIncomingScale.mYScale, transform2d, canDraw2D);
 
-        // Limit animated scale factors to not grow excessively beyond the
-        // display size.
-        nsSize maxScale(4, 4);
-        if (!aVisibleRect.IsEmpty()) {
-          nsSize displaySize =
-              ComputeDesiredDisplaySizeForAnimation(aContainerFrame);
-          maxScale = Max(maxScale, displaySize / aVisibleRect.Size());
-        }
-        if (scale.width > maxScale.width) {
-          scale.width = gfxUtils::ClampToScaleFactor(maxScale.width, true);
-        }
-        if (scale.height > maxScale.height) {
-          scale.height = gfxUtils::ClampToScaleFactor(maxScale.height, true);
-        }
-      } else {
-        // XXX Do we need to move nearly-integer values to integers here?
-      }
-    }
-    // If the scale factors are too small, just use 1.0. The content is being
-    // scaled out of sight anyway.
-    if (fabs(scale.width) < 1e-8 || fabs(scale.height) < 1e-8) {
-      scale = Size(1.0, 1.0);
-    }
-    // If this is a transform container layer, then pre-rendering might
-    // mean we try render a layer bigger than the max texture size. If we have
-    // tiling, that's not a problem, since we'll automatically choose a tiled
-    // layer for layers of that size. If not, we need to apply clamping to
-    // prevent this.
-    if (aTransform && !gfxPrefs::LayersTilesEnabled()) {
-      RestrictScaleToMaxLayerSize(scale, aVisibleRect, aContainerFrame, aLayer);
-    }
-  } else {
-    scale = Size(1.0, 1.0);
+  // If this is a transform container layer, then pre-rendering might
+  // mean we try render a layer bigger than the max texture size. If we have
+  // tiling, that's not a problem, since we'll automatically choose a tiled
+  // layer for layers of that size. If not, we need to apply clamping to
+  // prevent this.
+  if (aTransform && !gfxPrefs::LayersTilesEnabled()) {
+    RestrictScaleToMaxLayerSize(scale, aVisibleRect, aContainerFrame, aLayer);
   }
 
   // Store the inverse of our resolution-scale on the layer
@@ -5581,8 +6166,8 @@ static bool ChooseScaleAndSetTransform(
                                             aIncomingScale);
   if (aTransform) {
     aOutgoingScale.mInTransformedSubtree = true;
-    if (ActiveLayerTracker::IsStyleAnimated(
-            aDisplayListBuilder, aContainerFrame, eCSSProperty_transform)) {
+    if (ActiveLayerTracker::IsTransformAnimated(aDisplayListBuilder,
+                                                aContainerFrame)) {
       aOutgoingScale.mInActiveTransformedSubtree = true;
     }
   }
@@ -5677,7 +6262,7 @@ already_AddRefed<ContainerLayer> FrameLayerBuilder::BuildContainerLayerFor(
   nsRect bounds =
       aChildren->GetClippedBoundsWithRespectToASR(aBuilder, containerASR);
   nsRect childrenVisible =
-      aContainerItem ? aContainerItem->GetVisibleRectForChildren()
+      aContainerItem ? aContainerItem->GetBuildingRectForChildren()
                      : aContainerFrame->GetVisualOverflowRectRelativeToSelf();
   if (!ChooseScaleAndSetTransform(
           this, aBuilder, aContainerFrame, aContainerItem,
@@ -5688,12 +6273,15 @@ already_AddRefed<ContainerLayer> FrameLayerBuilder::BuildContainerLayerFor(
 
   if (mRetainingManager) {
     if (aContainerItem) {
+      nsPaintedDisplayItem* item = aContainerItem->AsPaintedDisplayItem();
+      MOZ_ASSERT(item, "Only painted display items should build layers");
+
       DisplayItemData* data =
-          GetDisplayItemDataForManager(aContainerItem, mRetainingManager);
-      StoreDataForFrame(aContainerItem, containerLayer, LAYER_ACTIVE, data);
+          GetDisplayItemDataForManager(item, mRetainingManager);
+      StoreDataForFrame(item, containerLayer, LayerState::LAYER_ACTIVE, data);
     } else {
       StoreDataForFrame(aContainerFrame, containerDisplayItemKey,
-                        containerLayer, LAYER_ACTIVE);
+                        containerLayer, LayerState::LAYER_ACTIVE);
     }
   }
 
@@ -5770,8 +6358,8 @@ Layer* FrameLayerBuilder::GetLeafLayerFor(nsDisplayListBuilder* aBuilder,
   return layer;
 }
 
-/* static */ void FrameLayerBuilder::InvalidateAllLayers(
-    LayerManager* aManager) {
+/* static */
+void FrameLayerBuilder::InvalidateAllLayers(LayerManager* aManager) {
   LayerManagerData* data = static_cast<LayerManagerData*>(
       aManager->GetUserData(&gLayerManagerUserData));
   if (data) {
@@ -5779,8 +6367,8 @@ Layer* FrameLayerBuilder::GetLeafLayerFor(nsDisplayListBuilder* aBuilder,
   }
 }
 
-/* static */ void FrameLayerBuilder::InvalidateAllLayersForFrame(
-    nsIFrame* aFrame) {
+/* static */
+void FrameLayerBuilder::InvalidateAllLayersForFrame(nsIFrame* aFrame) {
   const SmallPointerArray<DisplayItemData>& array = aFrame->DisplayItemData();
 
   for (uint32_t i = 0; i < array.Length(); i++) {
@@ -5822,6 +6410,72 @@ Layer* FrameLayerBuilder::GetDedicatedLayer(nsIFrame* aFrame,
   return nullptr;
 }
 
+/* static */
+void FrameLayerBuilder::EnumerateGenerationForDedicatedLayers(
+    const nsIFrame* aFrame, const AnimationGenerationCallback& aCallback) {
+  std::bitset<static_cast<uint32_t>(DisplayItemType::TYPE_MAX)> notFoundTypes;
+  for (auto displayItemType : LayerAnimationInfo::sDisplayItemTypes) {
+    notFoundTypes.set(static_cast<uint32_t>(displayItemType));
+  }
+
+  for (auto displayItemType : LayerAnimationInfo::sDisplayItemTypes) {
+    // For transform animations, the animation is on the primary frame but
+    // |aFrame| is the style frame.
+    const nsIFrame* frameToQuery =
+        displayItemType == DisplayItemType::TYPE_TRANSFORM
+            ? nsLayoutUtils::GetPrimaryFrameFromStyleFrame(aFrame)
+            : aFrame;
+    const nsIFrame::DisplayItemDataArray& displayItemDataArray =
+        frameToQuery->DisplayItemData();
+
+    for (uint32_t i = 0; i < displayItemDataArray.Length(); i++) {
+      DisplayItemData* element = DisplayItemData::AssertDisplayItemData(
+          displayItemDataArray.ElementAt(i));
+      if (!element->mParent->mLayerManager->IsWidgetLayerManager()) {
+        continue;
+      }
+
+      if (GetDisplayItemTypeFromKey(element->mDisplayItemKey) !=
+          displayItemType) {
+        continue;
+      }
+
+      notFoundTypes.reset(static_cast<uint32_t>(displayItemType));
+
+      Maybe<uint64_t> generation;
+      if (element->mOptLayer) {
+        generation = element->mOptLayer->GetAnimationGeneration();
+      } else if (!element->mLayer->HasUserData(&gColorLayerUserData) &&
+                 !element->mLayer->HasUserData(&gImageLayerUserData) &&
+                 !element->mLayer->HasUserData(
+                     &gPaintedDisplayItemLayerUserData)) {
+        generation = element->mLayer->GetAnimationGeneration();
+      }
+
+      if (!aCallback(generation, displayItemType)) {
+        return;
+      }
+
+      break;
+    }
+  }
+
+  // Bail out if we have already enumerated all possible layers for the given
+  // display item types.
+  if (notFoundTypes.none()) {
+    return;
+  }
+
+  // If there are any display item types that the nsIFrame doesn't have, we need
+  // to call the callback function for them respectively.
+  for (auto displayItemType : LayerAnimationInfo::sDisplayItemTypes) {
+    if (notFoundTypes[static_cast<uint32_t>(displayItemType)] &&
+        !aCallback(Nothing(), displayItemType)) {
+      return;
+    }
+  }
+}
+
 gfxSize FrameLayerBuilder::GetPaintedLayerScaleForFrame(nsIFrame* aFrame) {
   MOZ_ASSERT(aFrame, "need a frame");
 
@@ -5854,14 +6508,19 @@ gfxSize FrameLayerBuilder::GetPaintedLayerScaleForFrame(nsIFrame* aFrame) {
 
 #ifdef MOZ_DUMP_PAINTING
 static void DebugPaintItem(DrawTarget& aDrawTarget, nsPresContext* aPresContext,
-                           nsDisplayItem* aItem,
+                           nsPaintedDisplayItem* aItem,
                            nsDisplayListBuilder* aBuilder) {
   bool snap;
   Rect bounds = NSRectToRect(aItem->GetBounds(aBuilder, &snap),
                              aPresContext->AppUnitsPerDevPixel());
 
-  RefPtr<DrawTarget> tempDT = aDrawTarget.CreateSimilarDrawTarget(
-      IntSize::Truncate(bounds.width, bounds.height), SurfaceFormat::B8G8R8A8);
+  const IntSize size = IntSize::Truncate(bounds.width, bounds.height);
+  if (size.IsEmpty()) {
+    return;
+  }
+
+  RefPtr<DrawTarget> tempDT =
+      aDrawTarget.CreateSimilarDrawTarget(size, SurfaceFormat::B8G8R8A8);
   RefPtr<gfxContext> context = gfxContext::CreateOrNull(tempDT);
   if (!context) {
     // Leave this as crash, it's in the debugging code, we want to know
@@ -5881,11 +6540,12 @@ static void DebugPaintItem(DrawTarget& aDrawTarget, nsPresContext* aPresContext,
 }
 #endif
 
-/* static */ void FrameLayerBuilder::RecomputeVisibilityForItems(
-    nsTArray<AssignedDisplayItem>& aItems, nsDisplayListBuilder* aBuilder,
-    const nsIntRegion& aRegionToDraw, const nsIntPoint& aOffset,
-    int32_t aAppUnitsPerDevPixel, float aXScale, float aYScale) {
-  uint32_t i;
+/* static */
+void FrameLayerBuilder::RecomputeVisibilityForItems(
+    std::vector<AssignedDisplayItem>& aItems, nsDisplayListBuilder* aBuilder,
+    const nsIntRegion& aRegionToDraw, nsRect& aPreviousRectToDraw,
+    const nsIntPoint& aOffset, int32_t aAppUnitsPerDevPixel, float aXScale,
+    float aYScale) {
   // Update visible regions. We perform visibility analysis to take account
   // of occlusion culling.
   nsRegion visible = aRegionToDraw.ToAppUnits(aAppUnitsPerDevPixel);
@@ -5893,11 +6553,33 @@ static void DebugPaintItem(DrawTarget& aDrawTarget, nsPresContext* aPresContext,
                  NSIntPixelsToAppUnits(aOffset.y, aAppUnitsPerDevPixel));
   visible.ScaleInverseRoundOut(aXScale, aYScale);
 
-  for (i = aItems.Length(); i > 0; --i) {
+  // We're going to read from previousRectToDraw for every iteration, let's do
+  // that on the stack, and just update the heap allocated one now. By the end
+  // of this function {visible} will have been modified by occlusion culling.
+  nsRect previousRectToDraw = aPreviousRectToDraw;
+  aPreviousRectToDraw = visible.GetBounds();
+
+  for (uint32_t i = aItems.size(); i > 0; --i) {
     AssignedDisplayItem* cdi = &aItems[i - 1];
     if (!cdi->mItem) {
       continue;
     }
+
+    if (cdi->mHasPaintRect &&
+        !cdi->mContentRect.Intersects(visible.GetBounds()) &&
+        !cdi->mContentRect.Intersects(previousRectToDraw)) {
+      continue;
+    }
+
+    if (IsEffectEndMarker(cdi->mType) || cdi->HasOpacity() ||
+        cdi->HasTransform()) {
+      // The visibility calculations are skipped when the item is an effect end
+      // marker, or when the display item is within a flattened effect group.
+      // This is because RecomputeVisibility has already been called for the
+      // group item, and all the children.
+      continue;
+    }
+
     const DisplayItemClip& clip = cdi->mItem->GetClip();
 
     NS_ASSERTION(AppUnitsPerDevPixel(cdi->mItem) == aAppUnitsPerDevPixel,
@@ -5926,18 +6608,273 @@ static void DebugPaintItem(DrawTarget& aDrawTarget, nsPresContext* aPresContext,
       newVisible.Sub(visible, removed);
       // Don't let the visible region get too complex.
       if (newVisible.GetNumRects() <= 15) {
-        visible = newVisible;
+        visible = std::move(newVisible);
       }
     }
   }
 }
 
-void FrameLayerBuilder::PaintItems(nsTArray<AssignedDisplayItem>& aItems,
+/**
+ * Tracks and caches the item clip.
+ */
+struct ItemClipTracker {
+  explicit ItemClipTracker(gfxContext* aContext,
+                           const int32_t aAppUnitsPerDevPixel)
+      : mContext(aContext),
+        mHasClip(false),
+        mAppUnitsPerDevPixel(aAppUnitsPerDevPixel) {}
+
+  /**
+   * Returns true if a clip is set.
+   */
+  bool HasClip() const { return mHasClip; }
+
+  /**
+   * Returns true if the given |aClip| is set.
+   */
+  bool HasClip(const DisplayItemClip* aClip) const {
+    MOZ_ASSERT(aClip && aClip->HasClip());
+    return mHasClip && mCurrentClip == *aClip;
+  }
+
+  /**
+   * Removes the clip, if there is one.
+   */
+  void Restore() {
+    if (mCurrentClip.HasClip()) {
+      mCurrentClip = DisplayItemClip::NoClip();
+    }
+
+    if (!HasClip()) {
+      return;
+    }
+
+    mContext->Restore();
+    mHasClip = false;
+  };
+
+  /**
+   * Sets the clip to |aClip|, if it is not set already.
+   */
+  void ChangeClipIfNeeded(const DisplayItemClip* aClip) {
+    MOZ_ASSERT(aClip && aClip->HasClip());
+
+    if (HasClip(aClip)) {
+      // Reuse the old clip.
+      return;
+    }
+
+    // Remove the previous clip and save the current state.
+    Restore();
+    mContext->Save();
+
+    // Apply the new clip.
+    mHasClip = true;
+    mCurrentClip = *aClip;
+    mCurrentClip.ApplyTo(mContext, mAppUnitsPerDevPixel);
+    mContext->NewPath();
+  }
+
+ private:
+  gfxContext* mContext;
+  bool mHasClip;
+  const int32_t mAppUnitsPerDevPixel;
+
+  DisplayItemClip mCurrentClip;
+};
+
+/**
+ * Tracks clips managed by |PushClip()| and |PopClip()|.
+ * If allowed by the caller, the top clip may be reused when a new clip that
+ * matches the previous one is pushed to the stack.
+ */
+struct ClipStack {
+  explicit ClipStack(gfxContext* aContext, const int32_t aAppUnitsPerDevPixel)
+      : mContext(aContext),
+        mAppUnitsPerDevPixel(aAppUnitsPerDevPixel),
+        mDeferredPopClip(false) {}
+
+  ~ClipStack() {
+    MOZ_ASSERT(!mDeferredPopClip);
+    MOZ_ASSERT(!HasClips());
+  }
+
+  /**
+   * Returns true if there are clips set.
+   */
+  bool HasClips() const { return mClips.Length() > 0; }
+
+  /**
+   * Returns the clip at the top of the stack.
+   */
+  const DisplayItemClip& TopClip() const {
+    MOZ_ASSERT(HasClips());
+    return mClips.LastElement();
+  }
+
+  /**
+   * Returns true if the top clip matches the given |aClip|.
+   */
+  bool TopClipMatches(const DisplayItemClip& aClip) {
+    return HasClips() && TopClip() == aClip;
+  }
+
+  /**
+   * Pops the current top clip. If |aDeferPopClip| is true, the top clip will
+   * not be popped before the next call to |PopClip(false)|.
+   * This allows the previously set clip to be reused during the next
+   * |PushClip()| call, if the new clip is identical with the top clip.
+   */
+  void PopClip(bool aDeferPopClip) {
+    MOZ_ASSERT(HasClips());
+
+    if (aDeferPopClip) {
+      // Do not allow reusing clip with nested effects.
+      MOZ_ASSERT(!mDeferredPopClip);
+      mDeferredPopClip = true;
+      return;
+    }
+
+    if (TopClip().HasClip()) {
+      mContext->Restore();
+    }
+
+    mClips.RemoveLastElement();
+    mDeferredPopClip = false;
+  }
+
+  /**
+   * Pops the clip, if a call to |PopClip()| has been deferred.
+   */
+  void PopDeferredClip() {
+    if (mDeferredPopClip) {
+      PopClip(false);
+    }
+  }
+
+  /**
+   * Pushes the given |aClip| to the stack.
+   */
+  void PushClip(const DisplayItemClip& aClip) {
+    if (mDeferredPopClip && TopClipMatches(aClip)) {
+      // Reuse this clip. Defer the decision to reuse it again until the next
+      // call to PopClip().
+      mDeferredPopClip = false;
+      return;
+    }
+
+    PopDeferredClip();
+
+    mClips.AppendElement(aClip);
+
+    // Save the current state and apply new clip, if needed.
+    if (aClip.HasClip()) {
+      mContext->Save();
+      aClip.ApplyTo(mContext, mAppUnitsPerDevPixel);
+      mContext->NewPath();
+    }
+  }
+
+ private:
+  gfxContext* mContext;
+  const int32_t mAppUnitsPerDevPixel;
+  AutoTArray<DisplayItemClip, 2> mClips;
+  bool mDeferredPopClip;
+};
+
+/**
+ * Returns a clip for the given |aItem|. If the clip can be simplified to not
+ * include rounded rects, |aOutClip| is used to store the simplified clip.
+ */
+static const DisplayItemClip* GetItemClip(const nsDisplayItem* aItem,
+                                          DisplayItemClip& aOutClip) {
+  const DisplayItemClip& clip = aItem->GetClip();
+
+  if (!clip.HasClip()) {
+    return nullptr;
+  }
+
+  if (clip.GetRoundedRectCount() > 0 &&
+      !clip.IsRectClippedByRoundedCorner(aItem->GetPaintRect())) {
+    aOutClip.SetTo(clip.GetClipRect());
+    return &aOutClip;
+  }
+
+  return &clip;
+}
+
+/**
+ * Pushes a new opacity group for |aContext| based on |aItem|.
+ */
+static void PushOpacity(gfxContext* aContext, AssignedDisplayItem& aItem) {
+  MOZ_ASSERT(aItem.mType == DisplayItemEntryType::PushOpacity ||
+             aItem.mType == DisplayItemEntryType::PushOpacityWithBg);
+  MOZ_ASSERT(aItem.mItem->GetType() == DisplayItemType::TYPE_OPACITY);
+  nsDisplayOpacity* item = static_cast<nsDisplayOpacity*>(aItem.mItem);
+
+  const float opacity = item->GetOpacity();
+  if (aItem.mType == DisplayItemEntryType::PushOpacityWithBg) {
+    aContext->PushGroupAndCopyBackground(gfxContentType::COLOR_ALPHA, opacity);
+  } else {
+    aContext->PushGroupForBlendBack(gfxContentType::COLOR_ALPHA, opacity);
+  }
+}
+
+/**
+ * Pushes the transformation matrix of |aItem| into |aMatrixStack| and sets the
+ * accumulated transform as the current transformation matrix for |aContext|.
+ */
+static void PushTransform(gfxContext* aContext, AssignedDisplayItem& aItem,
+                          nsDisplayListBuilder* aBuilder,
+                          MatrixStack4x4& aMatrixStack,
+                          const Matrix4x4Flagged& aBaseMatrix) {
+  MOZ_ASSERT(aItem.mType == DisplayItemEntryType::PushTransform);
+  MOZ_ASSERT(aItem.mItem->GetType() == DisplayItemType::TYPE_TRANSFORM);
+
+  nsDisplayTransform* item = static_cast<nsDisplayTransform*>(aItem.mItem);
+  if (item->ShouldSkipTransform(aBuilder)) {
+    aMatrixStack.Push(Matrix4x4Flagged());
+  } else {
+    aMatrixStack.Push(item->GetTransformForRendering());
+  }
+
+  gfx::Matrix4x4Flagged matrix = aMatrixStack.CurrentMatrix() * aBaseMatrix;
+  gfx::Matrix matrix2d;
+  DebugOnly<bool> ok = matrix.CanDraw2D(&matrix2d);
+  MOZ_ASSERT(ok);
+
+  aContext->SetMatrix(matrix2d);
+}
+
+static void UpdateEffectTracking(int& aOpacityLevel, int& aTransformLevel,
+                                 const DisplayItemEntryType aType) {
+  switch (aType) {
+    case DisplayItemEntryType::PushOpacity:
+    case DisplayItemEntryType::PushOpacityWithBg:
+      aOpacityLevel++;
+      break;
+    case DisplayItemEntryType::PopOpacity:
+      aOpacityLevel--;
+      break;
+    case DisplayItemEntryType::PushTransform:
+      aTransformLevel++;
+      break;
+    case DisplayItemEntryType::PopTransform:
+      aTransformLevel--;
+      break;
+    default:
+      break;
+  }
+
+  MOZ_ASSERT(aOpacityLevel >= 0 && aTransformLevel >= 0);
+}
+
+void FrameLayerBuilder::PaintItems(std::vector<AssignedDisplayItem>& aItems,
                                    const nsIntRect& aRect, gfxContext* aContext,
                                    nsDisplayListBuilder* aBuilder,
                                    nsPresContext* aPresContext,
                                    const nsIntPoint& aOffset, float aXScale,
-                                   float aYScale, int32_t aCommonClipCount) {
+                                   float aYScale) {
   DrawTarget& aDrawTarget = *aContext->GetDrawTarget();
 
   int32_t appUnitsPerDevPixel = aPresContext->AppUnitsPerDevPixel();
@@ -5946,77 +6883,215 @@ void FrameLayerBuilder::PaintItems(nsTArray<AssignedDisplayItem>& aItems,
                    NSIntPixelsToAppUnits(aOffset.y, appUnitsPerDevPixel));
   boundRect.ScaleInverseRoundOut(aXScale, aYScale);
 
-  DisplayItemClip currentClip;
-  bool currentClipIsSetInContext = false;
-  DisplayItemClip tmpClip;
+  if (boundRect.IsEmpty()) {
+    // Hack! This can happen if the conversion of |aRect| to scaled and offset
+    // app units overflowed. Ideally the conversion would detect this and handle
+    // such situations gracefully. For now, do nothing.
+    return;
+  }
 
-  for (uint32_t i = 0; i < aItems.Length(); ++i) {
-    AssignedDisplayItem* cdi = &aItems[i];
-    if (!cdi->mItem) {
+#ifdef DEBUG
+  // Tracks effect nesting level. These are used to track that every effect
+  // start marker has a corresponding end marker.
+  int opacityLevel = 0;
+  int transformLevel = 0;
+#endif
+
+  // Tracks effect nesting level for skipping items between effect markers,
+  // when the effect display item does not intersect with the invalidated area.
+  int emptyEffectLevel = 0;
+
+  // Stores a simplified version of the item clip, if needed.
+  DisplayItemClip temporaryClip;
+
+  // Two types of clips are used during PaintItems(): clips for items and clips
+  // for effects. Item clips are always the most recent clip set, and they are
+  // never nested. The previous item clip is reused, if the next item has the
+  // same clip. Item clips are removed when an effect starts or ends.
+  ItemClipTracker itemClipTracker(aContext, appUnitsPerDevPixel);
+
+  // Since effects can be nested, the effect clips need to be nested as well.
+  // They are pushed for effect start marker, and popped for effect end marker.
+  // Effect clips are tracked by |effectClipStack|. If there are consecutive
+  // effects with the same clip, |effectClipStack| defers popping the clip for
+  // the first end marker, and tries to reuse the previously set clip, when
+  // processing the start marker for the next effect.
+  ClipStack effectClipStack(aContext, appUnitsPerDevPixel);
+
+  MatrixStack4x4 matrixStack;
+  const Matrix4x4Flagged base = Matrix4x4::From2D(aContext->CurrentMatrix());
+
+  for (uint32_t i = 0; i < aItems.size(); ++i) {
+    AssignedDisplayItem& cdi = aItems[i];
+    nsDisplayItem* item = cdi.mItem;
+
+    const auto NextItemStartsEffect = [&]() {
+      const uint32_t next = i + 1;
+      return next < aItems.size() && IsEffectStartMarker(aItems[next].mType);
+    };
+
+    if (!item) {
+      MOZ_ASSERT(cdi.mType == DisplayItemEntryType::Item);
       continue;
     }
 
-    nsRect paintRect = cdi->mItem->GetVisibleRect().Intersect(boundRect);
-    if (paintRect.IsEmpty()) continue;
+    nsRect visibleRect = item->GetPaintRect();
+
+    if (matrixStack.HasTransform()) {
+      MOZ_ASSERT(transformLevel > 0);
+
+      if (IsEffectEndMarker(cdi.mType)) {
+        // Always process the effect end markers.
+        visibleRect = boundRect;
+      } else {
+        const Matrix4x4Flagged& matrix = matrixStack.CurrentMatrix();
+        visibleRect = nsLayoutUtils::MatrixTransformRect(visibleRect, matrix,
+                                                         appUnitsPerDevPixel);
+      }
+    }
+
+    const nsRect paintRect = visibleRect.Intersect(boundRect);
+
+    if (paintRect.IsEmpty() || emptyEffectLevel > 0) {
+      // In order for this branch to be hit, either this item has an empty paint
+      // rect and nothing would be drawn, or an effect marker before this
+      // item had an empty paint rect. In the latter case, the items are skipped
+      // until effect POP markers bring |emptyEffectLevel| back to 0.
+      UpdateEffectTracking(emptyEffectLevel, emptyEffectLevel, cdi.mType);
+
+      // Sometimes the item that was going to reuse the previous clip is culled.
+      // Since |PushClip()| is never called for culled items, pop the clip now.
+      effectClipStack.PopDeferredClip();
+      continue;
+    }
 
 #ifdef MOZ_DUMP_PAINTING
-    AUTO_PROFILER_LABEL_DYNAMIC_CSTR("FrameLayerBuilder::PaintItems", GRAPHICS,
-                                     cdi->mItem->Name());
+    AUTO_PROFILER_LABEL_DYNAMIC_CSTR("FrameLayerBuilder::PaintItems",
+                                     GRAPHICS_Rasterization, item->Name());
 #else
-    AUTO_PROFILER_LABEL("FrameLayerBuilder::PaintItems", GRAPHICS);
+    AUTO_PROFILER_LABEL("FrameLayerBuilder::PaintItems",
+                        GRAPHICS_Rasterization);
 #endif
 
-    // If the new desired clip state is different from the current state,
-    // update the clip.
-    const DisplayItemClip* clip = &cdi->mItem->GetClip();
-    if (clip->GetRoundedRectCount() > 0 &&
-        !clip->IsRectClippedByRoundedCorner(cdi->mItem->GetVisibleRect())) {
-      tmpClip = *clip;
-      tmpClip.RemoveRoundedCorners();
-      clip = &tmpClip;
+    MOZ_ASSERT((opacityLevel == 0 && !cdi.HasOpacity()) ||
+               (opacityLevel > 0 && cdi.HasOpacity()) ||
+               (transformLevel == 0 && !cdi.HasTransform()) ||
+               (transformLevel > 0 && cdi.HasTransform()));
+
+    if (cdi.mType != DisplayItemEntryType::Item) {
+      // If we are processing an effect marker, remove the current item clip, if
+      // there is one.
+      itemClipTracker.Restore();
     }
-    if (currentClipIsSetInContext != clip->HasClip() ||
-        (clip->HasClip() && *clip != currentClip)) {
-      if (currentClipIsSetInContext) {
-        aContext->Restore();
-      }
-      currentClipIsSetInContext = clip->HasClip();
-      if (currentClipIsSetInContext) {
-        currentClip = *clip;
-        aContext->Save();
-        NS_ASSERTION(aCommonClipCount < 100,
-                     "Maybe you really do have more than a hundred clipping "
-                     "rounded rects, or maybe something has gone wrong.");
-        currentClip.ApplyTo(aContext, aPresContext->AppUnitsPerDevPixel(),
-                            aCommonClipCount);
-        aContext->NewPath();
+
+    if (cdi.mType == DisplayItemEntryType::PushOpacity ||
+        cdi.mType == DisplayItemEntryType::PushOpacityWithBg) {
+      // To avoid pushing large temporary surfaces, it is important to clip
+      // opacity group with both the paint rect and the actual opacity clip.
+      DisplayItemClip effectClip;
+      effectClip.SetTo(item->GetPaintRect());
+      effectClip.IntersectWith(item->GetClip());
+      effectClipStack.PushClip(effectClip);
+      PushOpacity(aContext, cdi);
+    }
+
+    if (cdi.mType == DisplayItemEntryType::PopOpacity) {
+      MOZ_ASSERT(opacityLevel > 0);
+      aContext->PopGroupAndBlend();
+    }
+
+    if (cdi.mType == DisplayItemEntryType::PushTransform) {
+      effectClipStack.PushClip(item->GetClip());
+      aContext->Save();
+      PushTransform(aContext, cdi, aBuilder, matrixStack, base);
+    }
+
+    if (cdi.mType == DisplayItemEntryType::PopTransform) {
+      MOZ_ASSERT(transformLevel > 0);
+      matrixStack.Pop();
+      aContext->Restore();
+    }
+
+    if (IsEffectEndMarker(cdi.mType)) {
+      // Pop the clip for the effect.
+      MOZ_ASSERT(effectClipStack.HasClips());
+
+      // If the next item starts an effect, defer popping the current clip, and
+      // try to reuse it during the next call to |PushClip()|. Trying to reuse
+      // clips between nested effects would be difficult, for example due to
+      // possibly different coordinate system, so this optimization is limited
+      // to consecutive effects.
+      effectClipStack.PopClip(NextItemStartsEffect());
+    }
+
+    if (cdi.mType != DisplayItemEntryType::Item) {
+#ifdef DEBUG
+      UpdateEffectTracking(opacityLevel, transformLevel, cdi.mType);
+#endif
+      // Nothing more to do with effect markers.
+      continue;
+    }
+
+    const bool paintAsLayer = cdi.mInactiveLayerData.get();
+    nsPaintedDisplayItem* paintedItem = item->AsPaintedDisplayItem();
+    MOZ_ASSERT(paintAsLayer || paintedItem,
+               "The display item does not support painting");
+
+    const DisplayItemClip* itemClip = GetItemClip(item, temporaryClip);
+    bool itemPaintsOwnClip = false;
+
+    if (itemClip && !itemClipTracker.HasClip(itemClip)) {
+      // The clip has changed. Remove the previous clip.
+      itemClipTracker.Restore();
+
+      // Check if the item supports painting with clip.
+      itemPaintsOwnClip =
+          paintAsLayer ? false : paintedItem->CanPaintWithClip(*itemClip);
+
+      if (!itemPaintsOwnClip) {
+        // Item does not support painting with clip, set the clip.
+        itemClipTracker.ChangeClipIfNeeded(itemClip);
       }
     }
 
-    if (cdi->mInactiveLayerManager) {
+    if (!itemClip) {
+      // Item does not need clipping, remove the clip if there is one.
+      itemClipTracker.Restore();
+    }
+
+    if (paintAsLayer) {
       bool saved = aDrawTarget.GetPermitSubpixelAA();
-      PaintInactiveLayer(aBuilder, cdi->mInactiveLayerManager, cdi->mItem,
+      PaintInactiveLayer(aBuilder, cdi.mInactiveLayerData->mLayerManager, item,
                          aContext, aContext);
       aDrawTarget.SetPermitSubpixelAA(saved);
-    } else {
-      nsIFrame* frame = cdi->mItem->Frame();
-      if (aBuilder->IsPaintingToWindow()) {
-        frame->AddStateBits(NS_FRAME_PAINTED_THEBES);
-      }
+      continue;
+    }
+
+    nsIFrame* frame = item->Frame();
+    if (aBuilder->IsPaintingToWindow()) {
+      frame->AddStateBits(NS_FRAME_PAINTED_THEBES);
+    }
+
 #ifdef MOZ_DUMP_PAINTING
-      if (gfxEnv::DumpPaintItems()) {
-        DebugPaintItem(aDrawTarget, aPresContext, cdi->mItem, aBuilder);
-      } else
+    if (gfxEnv::DumpPaintItems()) {
+      DebugPaintItem(aDrawTarget, aPresContext, paintedItem, aBuilder);
+      continue;
+    }
 #endif
-      {
-        cdi->mItem->Paint(aBuilder, aContext);
-      }
+
+    if (itemPaintsOwnClip) {
+      MOZ_ASSERT(itemClip);
+      paintedItem->PaintWithClip(aBuilder, aContext, *itemClip);
+    } else {
+      paintedItem->Paint(aBuilder, aContext);
     }
   }
 
-  if (currentClipIsSetInContext) {
-    aContext->Restore();
-  }
+  itemClipTracker.Restore();
+
+  MOZ_ASSERT(opacityLevel == 0);
+  MOZ_ASSERT(transformLevel == 0);
+  MOZ_ASSERT(emptyEffectLevel == 0);
 }
 
 /**
@@ -6071,14 +7146,18 @@ static void DrawForcedBackgroundColor(DrawTarget& aDrawTarget,
  * always falls within the visible region we computed.
  */
 
-/* static */ void FrameLayerBuilder::DrawPaintedLayer(
-    PaintedLayer* aLayer, gfxContext* aContext,
-    const nsIntRegion& aRegionToDraw, const nsIntRegion& aDirtyRegion,
-    DrawRegionClip aClip, const nsIntRegion& aRegionToInvalidate,
-    void* aCallbackData) {
+/* static */
+void FrameLayerBuilder::DrawPaintedLayer(PaintedLayer* aLayer,
+                                         gfxContext* aContext,
+                                         const nsIntRegion& aRegionToDraw,
+                                         const nsIntRegion& aDirtyRegion,
+                                         DrawRegionClip aClip,
+                                         const nsIntRegion& aRegionToInvalidate,
+                                         void* aCallbackData) {
   DrawTarget& aDrawTarget = *aContext->GetDrawTarget();
 
-  AUTO_PROFILER_LABEL("FrameLayerBuilder::DrawPaintedLayer", GRAPHICS);
+  AUTO_PROFILER_LABEL("FrameLayerBuilder::DrawPaintedLayer",
+                      GRAPHICS_Rasterization);
 
   nsDisplayListBuilder* builder =
       static_cast<nsDisplayListBuilder*>(aCallbackData);
@@ -6120,8 +7199,9 @@ static void DrawForcedBackgroundColor(DrawTarget& aDrawTarget,
     // PaintedLayers. If aDirtyRegion has not changed since the previous call
     // then we can skip this.
     int32_t appUnitsPerDevPixel = presContext->AppUnitsPerDevPixel();
-    RecomputeVisibilityForItems(userData->mItems, builder, aDirtyRegion, offset,
-                                appUnitsPerDevPixel, userData->mXScale,
+    RecomputeVisibilityForItems(userData->mItems, builder, aDirtyRegion,
+                                userData->mPreviousRecomputeVisibilityRect,
+                                offset, appUnitsPerDevPixel, userData->mXScale,
                                 userData->mYScale);
     userData->mVisibilityComputedRegion = aDirtyRegion;
   }
@@ -6148,7 +7228,7 @@ static void DrawForcedBackgroundColor(DrawTarget& aDrawTarget,
 
       layerBuilder->PaintItems(userData->mItems, iterRect, aContext, builder,
                                presContext, offset, userData->mXScale,
-                               userData->mYScale, userData->mMaskClipCount);
+                               userData->mYScale);
       if (gfxPrefs::GfxLoggingPaintedPixelCountEnabled()) {
         aLayer->Manager()->AddPaintedPixelCount(iterRect.Area());
       }
@@ -6165,8 +7245,7 @@ static void DrawForcedBackgroundColor(DrawTarget& aDrawTarget,
 
     layerBuilder->PaintItems(userData->mItems, aRegionToDraw.GetBounds(),
                              aContext, builder, presContext, offset,
-                             userData->mXScale, userData->mYScale,
-                             userData->mMaskClipCount);
+                             userData->mXScale, userData->mYScale);
     if (gfxPrefs::GfxLoggingPaintedPixelCountEnabled()) {
       aLayer->Manager()->AddPaintedPixelCount(aRegionToDraw.GetBounds().Area());
     }
@@ -6190,7 +7269,7 @@ static void DrawForcedBackgroundColor(DrawTarget& aDrawTarget,
 
     if (timelines && timelines->HasConsumer(docShell)) {
       timelines->AddMarkerForDocShell(
-          docShell, Move(MakeUnique<LayerTimelineMarker>(aRegionToDraw)));
+          docShell, MakeUnique<LayerTimelineMarker>(aRegionToDraw));
     }
   }
 
@@ -6199,8 +7278,10 @@ static void DrawForcedBackgroundColor(DrawTarget& aDrawTarget,
   }
 }
 
-/* static */ void FrameLayerBuilder::DumpRetainedLayerTree(
-    LayerManager* aManager, std::stringstream& aStream, bool aDumpHtml) {
+/* static */
+void FrameLayerBuilder::DumpRetainedLayerTree(LayerManager* aManager,
+                                              std::stringstream& aStream,
+                                              bool aDumpHtml) {
   aManager->Dump(aStream, "", aDumpHtml);
 }
 
@@ -6209,22 +7290,32 @@ nsDisplayItemGeometry* FrameLayerBuilder::GetMostRecentGeometry(
   typedef SmallPointerArray<DisplayItemData> DataArray;
 
   // Retrieve the array of DisplayItemData associated with our frame.
-  const DataArray& dataArray = aItem->Frame()->DisplayItemData();
+  DataArray& dataArray = aItem->Frame()->DisplayItemData();
 
   // Find our display item data, if it exists, and return its geometry.
+  // We first check for ones with an inactive manager, since items that
+  // create inactive layers will create two DisplayItemData entries,
+  // and we want the outer one.
+  DisplayItemData* firstMatching = nullptr;
   uint32_t itemPerFrameKey = aItem->GetPerFrameKey();
-  for (uint32_t i = 0; i < dataArray.Length(); i++) {
-    DisplayItemData* data =
-        DisplayItemData::AssertDisplayItemData(dataArray.ElementAt(i));
+  for (DisplayItemData* data : dataArray) {
+    DisplayItemData::AssertDisplayItemData(data);
     if (data->GetDisplayItemKey() == itemPerFrameKey) {
-      return data->GetGeometry();
+      if (data->InactiveManager()) {
+        return data->GetGeometry();
+      }
+      if (!firstMatching) {
+        firstMatching = data;
+      }
     }
   }
-  if (auto userDataTable =
-          aItem->Frame()->GetProperty(nsIFrame::WebRenderUserDataProperty())) {
-    if (RefPtr<WebRenderUserData> data = userDataTable->Get(itemPerFrameKey)) {
-      return data->GetGeometry();
-    }
+  if (firstMatching) {
+    return firstMatching->GetGeometry();
+  }
+  if (RefPtr<WebRenderFallbackData> data =
+          GetWebRenderUserData<WebRenderFallbackData>(aItem->Frame(),
+                                                      itemPerFrameKey)) {
+    return data->GetGeometry();
   }
 
   return nullptr;
@@ -6241,23 +7332,20 @@ static gfx::Rect CalculateBounds(
   return gfx::Rect(bounds.ToNearestPixels(aAppUnitsPerDevPixel));
 }
 
-uint32_t ContainerState::SetupMaskLayer(Layer* aLayer,
-                                        const DisplayItemClip& aClip,
-                                        uint32_t aRoundedRectClipCount) {
+void ContainerState::SetupMaskLayer(Layer* aLayer,
+                                    const DisplayItemClip& aClip) {
   // don't build an unnecessary mask
-  if (aClip.GetRoundedRectCount() == 0 || aRoundedRectClipCount == 0) {
-    return 0;
+  if (aClip.GetRoundedRectCount() == 0) {
+    return;
   }
 
-  RefPtr<Layer> maskLayer =
-      CreateMaskLayer(aLayer, aClip, Nothing(), aRoundedRectClipCount);
+  RefPtr<Layer> maskLayer = CreateMaskLayer(aLayer, aClip, Nothing());
 
   if (!maskLayer) {
-    return 0;
+    return;
   }
 
   aLayer->SetMaskLayer(maskLayer);
-  return aRoundedRectClipCount;
 }
 
 static MaskLayerUserData* GetMaskLayerUserData(Layer* aMaskLayer) {
@@ -6277,11 +7365,10 @@ static void SetMaskLayerUserData(Layer* aMaskLayer) {
 
 already_AddRefed<Layer> ContainerState::CreateMaskLayer(
     Layer* aLayer, const DisplayItemClip& aClip,
-    const Maybe<size_t>& aForAncestorMaskLayer,
-    uint32_t aRoundedRectClipCount) {
-  // aLayer will never be the container layer created by an nsDisplayMask
-  // because nsDisplayMask propagates the DisplayItemClip to its contents
-  // and is not clipped itself.
+    const Maybe<size_t>& aForAncestorMaskLayer) {
+  // aLayer will never be the container layer created by an
+  // nsDisplayMasksAndClipPaths because nsDisplayMasksAndClipPaths propagates
+  // the DisplayItemClip to its contents and is not clipped itself.
   // This assertion will fail if that ever stops being the case.
   MOZ_ASSERT(!aLayer->GetUserData(&gCSSMaskLayerUserData),
              "A layer contains round clips should not have css-mask on it.");
@@ -6293,7 +7380,7 @@ already_AddRefed<Layer> ContainerState::CreateMaskLayer(
   MaskLayerUserData* userData = GetMaskLayerUserData(maskLayer.get());
 
   int32_t A2D = mContainerFrame->PresContext()->AppUnitsPerDevPixel();
-  MaskLayerUserData newData(aClip, aRoundedRectClipCount, A2D, mParameters);
+  MaskLayerUserData newData(aClip, A2D, mParameters);
   if (*userData == newData) {
     return maskLayer.forget();
   }
@@ -6374,8 +7461,7 @@ already_AddRefed<Layer> ContainerState::CreateMaskLayer(
 
     // paint the clipping rects with alpha to create the mask
     aClip.FillIntersectionOfRoundedRectClips(context, Color(1.f, 1.f, 1.f, 1.f),
-                                             newData.mAppUnitsPerDevPixel, 0,
-                                             aRoundedRectClipCount);
+                                             newData.mAppUnitsPerDevPixel);
 
     // build the image and container
     MOZ_ASSERT(aLayer->Manager() == mManager);
@@ -6397,7 +7483,7 @@ already_AddRefed<Layer> ContainerState::CreateMaskLayer(
   maskLayer->SetBaseTransform(matrix);
 
   // save the details of the clip in user data
-  *userData = Move(newData);
+  *userData = std::move(newData);
   userData->mImageKey.Reset(lookupKey);
 
   return maskLayer.forget();

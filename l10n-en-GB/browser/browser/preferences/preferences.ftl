@@ -4,8 +4,8 @@
 
 do-not-track-description = Send web sites a “Do Not Track” signal that you don’t want to be tracked
 do-not-track-learn-more = Learn more
-do-not-track-option-default =
-    .label = Only when using Tracking Protection
+do-not-track-option-default-content-blocking-known =
+    .label = Only when { -brand-short-name } is set to block known trackers
 do-not-track-option-always =
     .label = Always
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Options
            *[other] Preferences
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Your organisation has disabled the ability to change some options.
        *[other] Your organisation has disabled the ability to change some preferences.
     }
+managed-notice = Your browser is being managed by your organisation.
 pane-general-title = General
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Privacy & Security
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox Account
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = { -brand-short-name } Support
+addons-button-label = Extensions & Themes
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Restart { -brand-short-name }
 should-restart-ok = Restart { -brand-short-name } now
 cancel-no-restart-button = Cancel
 restart-later = Restart Later
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = An extension, <img data-l10n-name="icon"/> { $name }, is controlling your home page.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = An extension, <img data-l10n-name="icon"/> { $name }, is controlling your New Tab page.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = An extension, <img data-l10n-name="icon"/> { $name }, is controlling this setting.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = An extension, <img data-l10n-name="icon"/> { $name }, has set your default search engine.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = An extension, <img data-l10n-name="icon"/> { $name }, requires Container Tabs.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = An extension, <img data-l10n-name="icon"/> { $name }, is controlling this setting.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = An extension, <img data-l10n-name="icon"/> { $name }, is controlling how { -brand-short-name } connects to the internet.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = To enable the extension go to <img data-l10n-name="addons-icon"/> Add-ons in the <img data-l10n-name="menu-icon"/> menu.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } is not your default browser
 set-as-my-default-browser =
     .label = Make Default…
     .accesskey = D
-startup-page = When { -brand-short-name } starts
+startup-restore-previous-session =
+    .label = Restore previous session
     .accesskey = s
-startup-user-homepage =
-    .label = Show your home page
-startup-blank-page =
-    .label = Show a blank page
-startup-prev-session =
-    .label = Show your windows and tabs from last time
+startup-restore-warn-on-quit =
+    .label = Warn you when quitting the browser
 disable-extension =
     .label = Disable Extension
-home-page-header = Home Page
 tabs-group-header = Tabs
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab cycles through tabs in recently used order
@@ -165,7 +192,7 @@ containers-remove-cancel-button = Don’t remove this Container
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Language and Appearance
-fonts-and-colors-header = Fonts & Colours
+fonts-and-colors-header = Fonts and Colours
 default-font = Default font
     .accesskey = D
 default-font-size = Size
@@ -181,6 +208,12 @@ choose-language-description = Choose your preferred language for displaying page
 choose-button =
     .label = Choose…
     .accesskey = o
+choose-browser-language-description = Choose the languages used to display menus, messages, and notifications from { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Set Alternatives…
+    .accesskey = l
+confirm-browser-language-change-description = Restart { -brand-short-name } to apply these changes
+confirm-browser-language-change-button = Apply and Restart
 translate-web-pages =
     .label = Translate web content
     .accesskey = T
@@ -232,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Learn more
 update-application-title = { -brand-short-name } Updates
 update-application-description = Keep { -brand-short-name } up to date for the best performance, stability, and security.
-update-application-info = Version { $version } <a>What's new</a>
 update-application-version = Version { $version } <a data-l10n-name="learn-more">What's new</a>
 update-history =
     .label = Show Update History…
@@ -247,12 +279,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Never check for updates (not recommended)
     .accesskey = N
+update-application-warning-cross-user-setting = This setting will apply to all Windows accounts and { -brand-short-name } profiles using this installation of { -brand-short-name }.
 update-application-use-service =
     .label = Use a background service to install updates
     .accesskey = b
 update-enable-search-update =
     .label = Automatically update search engines
     .accesskey = e
+update-pref-write-failure-title = Write Failure
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Unable to save preference. Could not write to file: { $path }
+update-setting-write-failure-title = Error saving Update preferences
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } encountered an error and didn’t save this change. Note that setting this update preference requires permission to write to the file below. You or a system administrator may be able resolve the error by granting the Users group full control to this file.
+    
+    Could not write to file: { $path }
+update-in-progress-title = Update In Progress
+update-in-progress-message = Do you want { -brand-short-name } to continue with this update?
+update-in-progress-ok-button = &Discard
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Continue
 
 ## General Section - Performance
 
@@ -268,7 +320,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Content process limit
     .accesskey = L
 performance-limit-content-process-enabled-desc = Additional content processes can improve performance when using multiple tabs, but will also use more memory.
-performance-limit-content-process-disabled-desc = Modifying the number of content processes is only possible with multiprocess { -brand-short-name }. <a>Learn how to check if multiprocess is enabled</a>
 performance-limit-content-process-blocked-desc = Modifying the number of content processes is only possible with multiprocess { -brand-short-name }. <a data-l10n-name="learn-more">Learn how to check if multiprocess is enabled</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -293,10 +344,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Search for text when you start typing
     .accesskey = x
+browsing-cfr-recommendations =
+    .label = Recommend extensions as you browse
+    .accesskey = R
+browsing-cfr-features =
+    .label = Recommend features as you browse
+    .accesskey = f
+browsing-cfr-recommendations-learn-more = Learn more
 
 ## General Section - Proxy
 
-network-proxy-title = Network Proxy
+network-settings-title = Network Settings
+network-proxy-connection-description = Configure how { -brand-short-name } connects to the internet.
 network-proxy-connection-learn-more = Learn More
 network-proxy-connection-settings =
     .label = Settings…
@@ -305,6 +364,7 @@ network-proxy-connection-settings =
 ## Home Section
 
 home-new-windows-tabs-header = New Windows and Tabs
+home-new-windows-tabs-description2 = Choose what you see when you open your homepage, new windows, and new tabs.
 
 ## Home Section - Home Page Customization
 
@@ -337,9 +397,6 @@ use-current-pages =
 choose-bookmark =
     .label = Use Bookmark…
     .accesskey = B
-restore-default =
-    .label = Restore to Default
-    .accesskey = R
 
 ## Search Section
 
@@ -483,8 +540,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Save
     .accesskey = v
-sync-mobilepromo-single = Connect another device
-sync-mobilepromo-multi = Manage devices
+sync-connect-another-device = Connect another device
+sync-manage-devices = Manage devices
+sync-fxa-begin-pairing = Pair a device
 sync-tos-link = Terms of Service
 sync-fxa-privacy-notice = Privacy Notice
 
@@ -494,7 +552,10 @@ privacy-header = Browser Privacy
 
 ## Privacy Section - Forms
 
-forms-header = Forms & Passwords
+logins-header = Logins and Passwords
+forms-ask-to-save-logins =
+    .label = Ask to save logins and passwords for web sites
+    .accesskey = r
 forms-exceptions =
     .label = Exceptions…
     .accesskey = x
@@ -528,13 +589,13 @@ history-remember-option-never =
     .label = Never remember history
 history-remember-option-custom =
     .label = Use custom settings for history
-history-remember-description = { -brand-short-name } will remember your browsing, download, form and search history.
+history-remember-description = { -brand-short-name } will remember your browsing, download, form, and search history.
 history-dontremember-description = { -brand-short-name } will use the same settings as private browsing, and will not remember any history as you browse the Web.
 history-private-browsing-permanent =
     .label = Always use private browsing mode
     .accesskey = p
-history-remember-option =
-    .label = Remember my browsing and download history
+history-remember-browser-option =
+    .label = Remember browsing and download history
     .accesskey = b
 history-remember-search-option =
     .label = Remember search and form history
@@ -552,32 +613,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookies and Site Data
+sitedata-total-size-calculating = Calculating site data and cache size…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Your stored cookies, site data, and cache are currently using { $value } { $unit } of disc space.
 sitedata-learn-more = Learn more
-sitedata-accept-cookies-option =
-    .label = Accept cookies and site data from web sites (recommended)
+sitedata-delete-on-close =
+    .label = Delete cookies and site data when { -brand-short-name } is closed
+    .accesskey = c
+sitedata-delete-on-close-private-browsing = In permanent private browsing mode, cookies and site data will always be cleared when { -brand-short-name } is closed.
+sitedata-allow-cookies-option =
+    .label = Accept cookies and site data
     .accesskey = A
-sitedata-block-cookies-option =
-    .label = Block cookies and site data (may cause web sites to break)
+sitedata-disallow-cookies-option =
+    .label = Block cookies and site data
     .accesskey = B
-sitedata-keep-until = Keep until
-    .accesskey = u
-sitedata-accept-third-party-desc = Accept third-party cookies and site data
-    .accesskey = y
-sitedata-accept-third-party-always-option =
-    .label = Always
-sitedata-accept-third-party-visited-option =
-    .label = From visited
-sitedata-accept-third-party-never-option =
-    .label = Never
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Type blocked
+    .accesskey = T
+sitedata-option-block-trackers =
+    .label = Third-party trackers
+sitedata-option-block-unvisited =
+    .label = Cookies from unvisited web sites
+sitedata-option-block-all-third-party =
+    .label = All third-party cookies (may cause web sites to break)
+sitedata-option-block-all =
+    .label = All cookies (will cause web sites to break)
 sitedata-clear =
     .label = Clear Data…
     .accesskey = l
 sitedata-settings =
     .label = Manage Data…
     .accesskey = M
-sitedata-cookies-exceptions =
-    .label = Exceptions…
-    .accesskey = E
+sitedata-cookies-permissions =
+    .label = Manage Permissions…
+    .accesskey = P
 
 ## Privacy Section - Address Bar
 
@@ -594,30 +666,73 @@ addressbar-locbar-openpage-option =
     .accesskey = O
 addressbar-suggestions-settings = Change preferences for search engine suggestions
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Content Blocking
+content-blocking-description = Block third-party content that tracks you around the web. Control how much of your online activity gets stored and shared between web sites.
+content-blocking-section-description = Protect your privacy while you browse. Block invisible content that tracks the sites you visit and profiles you. Blocking some of this content may make pages load faster.
+content-blocking-learn-more = Learn more
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Standard
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = Strict
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Custom
+    .accesskey = C
+content-blocking-standard-description = Only blocks known trackers in Private Windows.
+content-blocking-standard-desc = Balanced for protection and performance. Allows some trackers so web sites function properly.
+content-blocking-strict-desc = Blocks all trackers { -brand-short-name } detects. May cause some sites to break.
+content-blocking-strict-description = Stronger protection, may cause some sites to break.
+content-blocking-custom-desc = Choose what to block.
+content-blocking-private-trackers = Known trackers only in Private Windows
+content-blocking-third-party-cookies = Third-party tracking cookies
+content-blocking-all-cookies = All cookies
+content-blocking-unvisited-cookies = Cookies from unvisited sites
+content-blocking-all-windows-trackers = Known trackers in all windows
+content-blocking-all-third-party-cookies = All third-party cookies
+content-blocking-cryptominers = Cryptominers
+content-blocking-fingerprinters = Fingerprinters
+content-blocking-warning-title = Heads up!
+content-blocking-warning-description = Blocking content can cause some web sites to break. It’s easy to disable blocking for sites you trust.
+content-blocking-learn-how = Learn how
+content-blocking-reload-description = You will need to reload your tabs to apply these changes.
+content-blocking-reload-tabs-button =
+    .label = Reload All Tabs
+    .accesskey = R
+content-blocking-trackers-label =
+    .label = Trackers
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = In all windows
+    .accesskey = a
+content-blocking-option-private =
+    .label = Only in Private Windows
+    .accesskey = P
+content-blocking-tracking-protection-change-block-list = Change block list
+content-blocking-cookies-label =
+    .label = Cookies
+    .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = More information
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Cryptominers
+    .accesskey = y
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Fingerprinters
+    .accesskey = F
+
 ## Privacy Section - Tracking
 
-tracking-header = Tracking Protection
-tracking-desc = Tracking Protection blocks online trackers that collect your browsing data across multiple web sites. <a data-l10n-name="learn-more">Learn more about Tracking Protection and your privacy</a>
-tracking-mode-label = Use Tracking Protection to block known trackers
-tracking-mode-always =
-    .label = Always
-    .accesskey = y
-tracking-mode-private =
-    .label = Only in private windows
-    .accesskey = l
-tracking-mode-never =
-    .label = Never
-    .accesskey = n
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Use Tracking Protection in Private Browsing to block known trackers
-    .accesskey = v
-tracking-exceptions =
-    .label = Exceptions…
+tracking-manage-exceptions =
+    .label = Manage Exceptions…
     .accesskey = x
-tracking-change-block-list =
-    .label = Change Block List…
-    .accesskey = C
 
 ## Privacy Section - Permissions
 
@@ -642,6 +757,16 @@ permissions-notification-link = Learn more
 permissions-notification-pause =
     .label = Pause notifications until { -brand-short-name } restarts
     .accesskey = n
+permissions-block-autoplay-media2 =
+    .label = Block web sites from automatically playing sound
+    .accesskey = B
+permissions-block-autoplay-media-exceptions =
+    .label = Exceptions…
+    .accesskey = E
+permissions-autoplay = Autoplay
+permissions-autoplay-settings =
+    .label = Settings...
+    .accesskey = t
 permissions-block-popups =
     .label = Block pop-up windows
     .accesskey = B
@@ -668,13 +793,15 @@ collection-health-report =
     .label = Allow { -brand-short-name } to send technical and interaction data to { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Learn More
+collection-studies =
+    .label = Allow { -brand-short-name } to install and run studies
+collection-studies-link = View { -brand-short-name } studies
+addon-recommendations =
+    .label = Allow { -brand-short-name } to make personalised extension recommendations
+addon-recommendations-link = Learn more
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Data reporting is disabled for this build configuration
-collection-browser-errors =
-    .label = Allow { -brand-short-name } to send browser error reports (including error messages) to { -vendor-short-name }
-    .accesskey = b
-collection-browser-errors-link = Learn more
 collection-backlogged-crash-reports =
     .label = Allow { -brand-short-name } to send backlogged crash reports on your behalf
     .accesskey = c
@@ -717,3 +844,36 @@ certs-view =
 certs-devices =
     .label = Security Devices…
     .accesskey = D
+space-alert-learn-more-button =
+    .label = Learn More
+    .accesskey = L
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Open Options
+           *[other] Open Preferences
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] O
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } is running out of disc space. Web site contents may not display properly. You can clear stored data in Options > Privacy & Security > Cookies and Site Data.
+       *[other] { -brand-short-name } is running out of disc space. Web site contents may not display properly. You can clear stored data in Preferences > Privacy & Security > Cookies and Site Data.
+    }
+space-alert-under-5gb-ok-button =
+    .label = OK, Got it
+    .accesskey = K
+space-alert-under-5gb-message = { -brand-short-name } is running out of disc space. Web site contents may not display properly. Visit “Learn More” to optimise your disc usage for better browsing experience.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Desktop
+downloads-folder-name = Downloads
+choose-download-folder-title = Choose Download Folder:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Save files to { $service-name }

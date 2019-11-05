@@ -148,19 +148,19 @@ class InterceptedHttpChannel final
   GetSecurityInfo(nsISupports** aSecurityInfo) override;
 
   NS_IMETHOD
-  AsyncOpen(nsIStreamListener* aListener, nsISupports* aContext) override;
+  AsyncOpen(nsIStreamListener* aListener) override;
 
   NS_IMETHOD
-  AsyncOpen2(nsIStreamListener* aListener) override;
+  LogBlockedCORSRequest(const nsAString& aMessage,
+                        const nsACString& aCategory) override;
 
   NS_IMETHOD
-  LogBlockedCORSRequest(const nsAString& aMessage) override;
+  LogMimeTypeMismatch(const nsACString& aMessageName, bool aWarning,
+                      const nsAString& aURL,
+                      const nsAString& aContentType) override;
 
   NS_IMETHOD
   SetupFallbackChannel(const char* aFallbackKey) override;
-
-  NS_IMETHOD
-  GetResponseSynthesized(bool* aResponseSynthesized) override;
 
   NS_IMETHOD
   SetPriority(int32_t aPriority) override;
@@ -178,6 +178,8 @@ class InterceptedHttpChannel final
   ResumeAt(uint64_t startPos, const nsACString& entityID) override;
 
   void DoNotifyListenerCleanup() override;
+
+  void DoAsyncAbort(nsresult aStatus) override;
 };
 
 }  // namespace net

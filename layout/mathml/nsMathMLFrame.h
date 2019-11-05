@@ -90,13 +90,12 @@ class nsMathMLFrame : public nsIMathMLFrame {
 
   bool IsMrowLike() override { return false; }
 
-  // helper to give a style context suitable for doing the stretching to the
-  // MathMLChar. Frame classes that use this should make the extra style
-  // contexts accessible to the Style System via Get/Set AdditionalStyleContext.
-  static void ResolveMathMLCharStyle(nsPresContext* aPresContext,
-                                     nsIContent* aContent,
-                                     nsStyleContext* aParenStyleContext,
-                                     nsMathMLChar* aMathMLChar);
+  // helper to give a ComputedStyle suitable for doing the stretching to the
+  // MathMLChar. Frame classes that use this should make the extra ComputedStyle
+  // accessible to the Style System via Get/Set AdditionalmComputedStyle.
+  static void ResolveMathMLCharStyle(
+      nsPresContext* aPresContext, nsIContent* aContent,
+      mozilla::ComputedStyle* aParenComputedStyle, nsMathMLChar* aMathMLChar);
 
   // helper to get the mEmbellishData of a frame
   // The MathML REC precisely defines an "embellished operator" as:
@@ -128,11 +127,11 @@ class nsMathMLFrame : public nsIMathMLFrame {
   // @post aLengthValue is the length value computed from the attribute.
   static void ParseNumericValue(const nsString& aString, nscoord* aLengthValue,
                                 uint32_t aFlags, nsPresContext* aPresContext,
-                                nsStyleContext* aStyleContext,
+                                mozilla::ComputedStyle* aComputedStyle,
                                 float aFontSizeInflation);
 
   static nscoord CalcLength(nsPresContext* aPresContext,
-                            nsStyleContext* aStyleContext,
+                            mozilla::ComputedStyle* aComputedStyle,
                             const nsCSSValue& aCSSValue,
                             float aFontSizeInflation);
 

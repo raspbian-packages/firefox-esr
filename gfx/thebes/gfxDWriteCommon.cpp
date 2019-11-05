@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,10 +8,14 @@
 #include <unordered_map>
 
 #include "mozilla/Atomics.h"
+#include "mozilla/StaticMutex.h"
 #include "mozilla/gfx/Logging.h"
 
-static mozilla::Atomic<uint64_t> sNextFontFileKey;
-static std::unordered_map<uint64_t, IDWriteFontFileStream*> sFontFileStreams;
+class gfxDWriteFontFileStream;
+
+static mozilla::StaticMutex sFontFileStreamsMutex;
+static uint64_t sNextFontFileKey = 0;
+static std::unordered_map<uint64_t, gfxDWriteFontFileStream*> sFontFileStreams;
 
 IDWriteFontFileLoader* gfxDWriteFontFileLoader::mInstance = nullptr;
 
@@ -43,19 +47,23 @@ class gfxDWriteFontFileStream final : public IDWriteFontFileStream {
   }
 
   IFACEMETHOD_(ULONG, AddRef)() {
-    NS_PRECONDITION(int32_t(mRefCnt) >= 0, "illegal refcnt");
-    ++mRefCnt;
-    return mRefCnt;
+    MOZ_ASSERT(int32_t(mRefCnt) >= 0, "illegal refcnt");
+    return ++mRefCnt;
   }
 
   IFACEMETHOD_(ULONG, Release)() {
-    NS_PRECONDITION(0 != mRefCnt, "dup release");
-    --mRefCnt;
-    if (mRefCnt == 0) {
+    MOZ_ASSERT(0 != mRefCnt, "dup release");
+    uint32_t count = --mRefCnt;
+    if (count == 0) {
+      // Avoid locking unless necessary. Verify the refcount hasn't changed
+      // while locked. Delete within the scope of the lock when zero.
+      mozilla::StaticMutexAutoLock lock(sFontFileStreamsMutex);
+      if (0 != mRefCnt) {
+        return mRefCnt;
+      }
       delete this;
-      return 0;
     }
-    return mRefCnt;
+    return count;
   }
 
   // IDWriteFontFileStream methods
@@ -69,9 +77,17 @@ class gfxDWriteFontFileStream final : public IDWriteFontFileStream {
 
   virtual HRESULT STDMETHODCALLTYPE GetLastWriteTime(OUT UINT64* lastWriteTime);
 
+  size_t SizeOfExcludingThis(mozilla::MallocSizeOf mallocSizeOf) const {
+    return mData.ShallowSizeOfExcludingThis(mallocSizeOf);
+  }
+
+  size_t SizeOfIncludingThis(mozilla::MallocSizeOf mallocSizeOf) const {
+    return mallocSizeOf(this) + SizeOfExcludingThis(mallocSizeOf);
+  }
+
  private:
   FallibleTArray<uint8_t> mData;
-  nsAutoRefCnt mRefCnt;
+  mozilla::Atomic<uint32_t> mRefCnt;
   uint64_t mFontFileKey;
 };
 
@@ -124,6 +140,7 @@ HRESULT STDMETHODCALLTYPE gfxDWriteFontFileLoader::CreateStreamFromKey(
     return E_POINTER;
   }
 
+  mozilla::StaticMutexAutoLock lock(sFontFileStreamsMutex);
   uint64_t fontFileKey = *static_cast<const uint64_t*>(fontFileReferenceKey);
   auto found = sFontFileStreams.find(fontFileKey);
   if (found == sFontFileStreams.end()) {
@@ -151,10 +168,12 @@ gfxDWriteFontFileLoader::CreateCustomFontFile(
     return E_FAIL;
   }
 
+  sFontFileStreamsMutex.Lock();
   uint64_t fontFileKey = sNextFontFileKey++;
-  RefPtr<IDWriteFontFileStream> ffsRef =
+  RefPtr<gfxDWriteFontFileStream> ffsRef =
       new gfxDWriteFontFileStream(aFontData, aLength, fontFileKey);
   sFontFileStreams[fontFileKey] = ffsRef;
+  sFontFileStreamsMutex.Unlock();
 
   RefPtr<IDWriteFontFile> fontFile;
   HRESULT hr = factory->CreateCustomFontFileReference(
@@ -168,4 +187,18 @@ gfxDWriteFontFileLoader::CreateCustomFontFile(
   ffsRef.forget(aFontFileStream);
 
   return S_OK;
+}
+
+size_t gfxDWriteFontFileLoader::SizeOfIncludingThis(
+    mozilla::MallocSizeOf mallocSizeOf) const {
+  size_t sizes = mallocSizeOf(this);
+
+  // We are a singleton type that is effective owner of sFontFileStreams.
+  MOZ_ASSERT(this == mInstance);
+  for (const auto& entry : sFontFileStreams) {
+    gfxDWriteFontFileStream* fileStream = entry.second;
+    sizes += fileStream->SizeOfIncludingThis(mallocSizeOf);
+  }
+
+  return sizes;
 }

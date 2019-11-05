@@ -1,15 +1,16 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! A rust helper to ease the use of Gecko's refcounted types.
 
-use gecko_bindings::structs;
-use gecko_bindings::sugar::ownership::HasArcFFI;
+use crate::gecko_bindings::sugar::ownership::HasArcFFI;
+use crate::gecko_bindings::{bindings, structs};
+use crate::Atom;
 use servo_arc::Arc;
-use std::{fmt, mem, ptr};
 use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut};
+use std::{fmt, mem, ptr};
 
 /// Trait for all objects that have Addref() and Release
 /// methods and can be placed inside RefPtr<T>
@@ -77,15 +78,6 @@ impl<T: RefCounted> RefPtr<T> {
         ret
     }
 
-    /// Create a reference to RefPtr from a reference to pointer.
-    ///
-    /// The pointer must be valid and non null.
-    ///
-    /// This method doesn't touch refcount.
-    pub unsafe fn from_ptr_ref(ptr: &*mut T) -> &Self {
-        mem::transmute(ptr)
-    }
-
     /// Produces an FFI-compatible RefPtr that can be stored in style structs.
     ///
     /// structs::RefPtr does not have a destructor, so this may leak
@@ -105,7 +97,9 @@ impl<T: RefCounted> RefPtr<T> {
 
     /// Addref the inner data, obviously leaky on its own.
     pub fn addref(&self) {
-        unsafe { (*self.ptr).addref(); }
+        unsafe {
+            (*self.ptr).addref();
+        }
     }
 
     /// Release the inner data.
@@ -208,16 +202,33 @@ impl<T: RefCounted> structs::RefPtr<T> {
     /// `self` must be valid, possibly null.
     pub fn set_move(&mut self, other: RefPtr<T>) {
         if !self.mRawPtr.is_null() {
-            unsafe { (*self.mRawPtr).release(); }
+            unsafe {
+                (*self.mRawPtr).release();
+            }
         }
         *self = other.forget();
     }
 }
 
 impl<T> structs::RefPtr<T> {
+    /// Sets the contents to an `Arc<T>`, releasing the old value in `self` if
+    /// necessary.
+    pub fn set_arc<U>(&mut self, other: Arc<U>)
+    where
+        U: HasArcFFI<FFIType = T>,
+    {
+        unsafe {
+            U::release_opt(self.mRawPtr.as_ref());
+        }
+        self.set_arc_leaky(other);
+    }
+
     /// Sets the contents to an Arc<T>
     /// will leak existing contents
-    pub fn set_arc_leaky<U>(&mut self, other: Arc<U>) where U: HasArcFFI<FFIType = T> {
+    pub fn set_arc_leaky<U>(&mut self, other: Arc<U>)
+    where
+        U: HasArcFFI<FFIType = T>,
+    {
         *self = unsafe { mem::transmute(Arc::into_raw_offset(other)) };
     }
 }
@@ -248,52 +259,63 @@ unsafe impl<T: ThreadSafeRefCounted> Send for RefPtr<T> {}
 unsafe impl<T: ThreadSafeRefCounted> Sync for RefPtr<T> {}
 
 macro_rules! impl_refcount {
-    ($t:ty, $addref:ident, $release:ident) => (
+    ($t:ty, $addref:path, $release:path) => {
         unsafe impl RefCounted for $t {
+            #[inline]
             fn addref(&self) {
-                unsafe { ::gecko_bindings::bindings::$addref(self as *const _ as *mut _) }
+                unsafe { $addref(self as *const _ as *mut _) }
             }
+
+            #[inline]
             unsafe fn release(&self) {
-                ::gecko_bindings::bindings::$release(self as *const _ as *mut _)
+                $release(self as *const _ as *mut _)
             }
         }
-    );
+    };
 }
-
-impl_refcount!(::gecko_bindings::structs::nsCSSFontFaceRule,
-               Gecko_CSSFontFaceRule_AddRef, Gecko_CSSFontFaceRule_Release);
-impl_refcount!(::gecko_bindings::structs::nsCSSCounterStyleRule,
-               Gecko_CSSCounterStyleRule_AddRef, Gecko_CSSCounterStyleRule_Release);
 
 // Companion of NS_DECL_THREADSAFE_FFI_REFCOUNTING.
 //
 // Gets you a free RefCounted impl implemented via FFI.
 macro_rules! impl_threadsafe_refcount {
-    ($t:ty, $addref:ident, $release:ident) => (
+    ($t:ty, $addref:path, $release:path) => {
         impl_refcount!($t, $addref, $release);
         unsafe impl ThreadSafeRefCounted for $t {}
-    );
+    };
 }
 
-impl_threadsafe_refcount!(::gecko_bindings::structs::RawGeckoURLExtraData,
-                          Gecko_AddRefURLExtraDataArbitraryThread,
-                          Gecko_ReleaseURLExtraDataArbitraryThread);
-impl_threadsafe_refcount!(::gecko_bindings::structs::nsStyleQuoteValues,
-                          Gecko_AddRefQuoteValuesArbitraryThread,
-                          Gecko_ReleaseQuoteValuesArbitraryThread);
-impl_threadsafe_refcount!(::gecko_bindings::structs::nsCSSValueSharedList,
-                          Gecko_AddRefCSSValueSharedListArbitraryThread,
-                          Gecko_ReleaseCSSValueSharedListArbitraryThread);
-impl_threadsafe_refcount!(::gecko_bindings::structs::mozilla::css::URLValue,
-                          Gecko_AddRefCSSURLValueArbitraryThread,
-                          Gecko_ReleaseCSSURLValueArbitraryThread);
-impl_threadsafe_refcount!(::gecko_bindings::structs::mozilla::css::GridTemplateAreasValue,
-                          Gecko_AddRefGridTemplateAreasValueArbitraryThread,
-                          Gecko_ReleaseGridTemplateAreasValueArbitraryThread);
-impl_threadsafe_refcount!(::gecko_bindings::structs::ImageValue,
-                          Gecko_AddRefImageValueArbitraryThread,
-                          Gecko_ReleaseImageValueArbitraryThread);
-impl_threadsafe_refcount!(::gecko_bindings::structs::SharedFontList,
-                          Gecko_AddRefSharedFontListArbitraryThread,
-                          Gecko_ReleaseSharedFontListArbitraryThread);
+impl_threadsafe_refcount!(
+    structs::mozilla::URLExtraData,
+    bindings::Gecko_AddRefURLExtraDataArbitraryThread,
+    bindings::Gecko_ReleaseURLExtraDataArbitraryThread
+);
+impl_threadsafe_refcount!(
+    structs::mozilla::css::URLValue,
+    bindings::Gecko_AddRefCSSURLValueArbitraryThread,
+    bindings::Gecko_ReleaseCSSURLValueArbitraryThread
+);
+impl_threadsafe_refcount!(
+    structs::mozilla::css::GridTemplateAreasValue,
+    bindings::Gecko_AddRefGridTemplateAreasValueArbitraryThread,
+    bindings::Gecko_ReleaseGridTemplateAreasValueArbitraryThread
+);
+impl_threadsafe_refcount!(
+    structs::SharedFontList,
+    bindings::Gecko_AddRefSharedFontListArbitraryThread,
+    bindings::Gecko_ReleaseSharedFontListArbitraryThread
+);
+impl_threadsafe_refcount!(
+    structs::SheetLoadDataHolder,
+    bindings::Gecko_AddRefSheetLoadDataHolderArbitraryThread,
+    bindings::Gecko_ReleaseSheetLoadDataHolderArbitraryThread
+);
 
+#[inline]
+unsafe fn addref_atom(atom: *mut structs::nsAtom) {
+    mem::forget(Atom::from_raw(atom));
+}
+#[inline]
+unsafe fn release_atom(atom: *mut structs::nsAtom) {
+    let _ = Atom::from_addrefed(atom);
+}
+impl_threadsafe_refcount!(structs::nsAtom, addref_atom, release_atom);

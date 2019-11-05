@@ -5,38 +5,49 @@
 
 // There are shutdown issues for which multiple rejections are left uncaught.
 // See bug 1018184 for resolving these issues.
-const { PromiseTestUtils } = scopedCuImport("resource://testing-common/PromiseTestUtils.jsm");
+const { PromiseTestUtils } = ChromeUtils.import(
+  "resource://testing-common/PromiseTestUtils.jsm"
+);
 PromiseTestUtils.whitelistRejectionsGlobally(/Component not initialized/);
 
 /**
  * Tests if on clicking the stack frame, UI switches to the Debugger panel.
  */
-add_task(async function () {
+add_task(async function() {
   // Set a higher panel height in order to get full CodeMirror content
   await pushPref("devtools.toolbox.footer.height", 400);
 
-  let { tab, monitor, toolbox } = await initNetMonitor(POST_DATA_URL);
+  // Async stacks aren't on by default in all builds
+  await pushPref("javascript.options.asyncstack", true);
+
+  const { tab, monitor, toolbox } = await initNetMonitor(POST_DATA_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
   store.dispatch(Actions.batchEnable(false));
 
-  let waitForContentRequests = waitForNetworkEvents(monitor, 2);
-  await ContentTask.spawn(tab.linkedBrowser, {},
-    () => content.wrappedJSObject.performRequests());
-  await waitForContentRequests;
+  // Execute requests.
+  await performRequests(monitor, tab, 2);
 
   info("Clicking stack-trace tab and waiting for stack-trace panel to open");
-  let wait = waitForDOM(document, "#stack-trace-panel .frame-link", 4);
+  const waitForTab = waitForDOM(document, "#stack-trace-tab");
   // Click on the first request
-  EventUtils.sendMouseEvent({ type: "mousedown" },
-    document.querySelector(".request-list-item"));
+  EventUtils.sendMouseEvent(
+    { type: "mousedown" },
+    document.querySelector(".request-list-item")
+  );
+  await waitForTab;
+  const waitForPanel = waitForDOM(
+    document,
+    "#stack-trace-panel .frame-link",
+    5
+  );
   // Open the stack-trace tab for that request
   document.getElementById("stack-trace-tab").click();
-  await wait;
+  await waitForPanel;
 
-  let frameLinkNode = document.querySelector(".frame-link");
+  const frameLinkNode = document.querySelector(".frame-link");
   await checkClickOnNode(toolbox, frameLinkNode);
 
   await teardown(monitor);
@@ -48,10 +59,10 @@ add_task(async function () {
 async function checkClickOnNode(toolbox, frameLinkNode) {
   info("checking click on node location");
 
-  let url = frameLinkNode.getAttribute("data-url");
+  const url = frameLinkNode.getAttribute("data-url");
   ok(url, `source url found ("${url}")`);
 
-  let line = frameLinkNode.getAttribute("data-line");
+  const line = frameLinkNode.getAttribute("data-line");
   ok(line, `source line found ("${line}")`);
 
   // create the promise
@@ -61,11 +72,11 @@ async function checkClickOnNode(toolbox, frameLinkNode) {
   // wait for the promise to resolve
   await onJsDebuggerSelected;
 
-  let dbg = toolbox.getPanel("jsdebugger");
+  const dbg = await toolbox.getPanelWhenReady("jsdebugger");
+  await waitUntil(() => dbg._selectors.getSelectedSource(dbg._getState()));
   is(
-    dbg._selectors.getSelectedSource(dbg._getState()).get("url"),
+    dbg._selectors.getSelectedSource(dbg._getState()).url,
     url,
     "expected source url"
   );
 }
-

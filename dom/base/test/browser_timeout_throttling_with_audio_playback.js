@@ -32,8 +32,12 @@ async function runTest(url) {
   let newBrowser = gBrowser.getBrowserForTab(newTab);
 
   // Wait for the UI to indicate that audio is being played back.
-  let promise = BrowserTestUtils.waitForAttribute("soundplaying", newTab, "true");
-  newBrowser.loadURI(url);
+  let promise = BrowserTestUtils.waitForAttribute(
+    "soundplaying",
+    newTab,
+    "true"
+  );
+  BrowserTestUtils.loadURI(newBrowser, url);
   await promise;
 
   // Put the tab in the background.
@@ -51,13 +55,13 @@ async function runTest(url) {
   ok(timeout <= kMinTimeoutBackground, `Got the correct timeout (${timeout})`);
 
   // All done.
-  await BrowserTestUtils.removeTab(newTab);
+  BrowserTestUtils.removeTab(newTab);
 }
 
 add_task(async function setup() {
-  await SpecialPowers.pushPrefEnv({"set": [
-    ["dom.min_background_timeout_value", kMinTimeoutBackground],
-  ]});
+  await SpecialPowers.pushPrefEnv({
+    set: [["dom.min_background_timeout_value", kMinTimeoutBackground]],
+  });
 });
 
 add_task(async function test() {

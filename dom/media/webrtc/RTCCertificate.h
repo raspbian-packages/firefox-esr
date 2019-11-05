@@ -19,11 +19,11 @@
 #include "mozilla/RefPtr.h"
 #include "mozilla/dom/CryptoKey.h"
 #include "mozilla/dom/RTCCertificateBinding.h"
-#include "mtransport/dtlsidentity.h"
 #include "js/StructuredClone.h"
 #include "js/TypeDecls.h"
 
 namespace mozilla {
+class DtlsIdentity;
 namespace dom {
 
 class ObjectOrString;
@@ -36,7 +36,7 @@ class RTCCertificate final : public nsISupports, public nsWrapperCache {
   // WebIDL method that implements RTCPeerConnection.generateCertificate.
   static already_AddRefed<Promise> GenerateCertificate(
       const GlobalObject& aGlobal, const ObjectOrString& aOptions,
-      ErrorResult& aRv, JSCompartment* aCompartment = nullptr);
+      ErrorResult& aRv, JS::Compartment* aCompartment = nullptr);
 
   explicit RTCCertificate(nsIGlobalObject* aGlobal);
   RTCCertificate(nsIGlobalObject* aGlobal, SECKEYPrivateKey* aPrivateKey,

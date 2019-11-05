@@ -1,18 +1,26 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
- * vim: set sw=4 ts=4 expandtab:
+/* -*- Mode: c++; c-basic-offset: 2; tab-width: 20; indent-tabs-mode: nil; -*-
+ * vim: set sw=2 ts=4 expandtab:
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "EventDispatcher.h"
 
+#include "JavaBuiltins.h"
 #include "nsAppShell.h"
 #include "nsIXPConnect.h"
 #include "nsJSUtils.h"
+#include "js/Warnings.h"  // JS::WarnUTF8
 #include "xpcpublic.h"
 
 #include "mozilla/ScopeExit.h"
 #include "mozilla/dom/ScriptSettings.h"
+
+// Disable the C++ 2a warning. See bug #1509926
+#if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wc++2a-compat"
+#endif
 
 namespace mozilla {
 namespace widget {
@@ -257,11 +265,12 @@ nsresult BoxValue(JSContext* aCx, JS::HandleValue aData,
   if (aData.isNullOrUndefined()) {
     aOut = nullptr;
   } else if (aData.isBoolean()) {
-    aOut = java::GeckoBundle::Box(aData.toBoolean());
+    aOut = aData.toBoolean() ? java::sdk::Boolean::TRUE()
+                             : java::sdk::Boolean::FALSE();
   } else if (aData.isInt32()) {
-    aOut = java::GeckoBundle::Box(aData.toInt32());
+    aOut = java::sdk::Integer::ValueOf(aData.toInt32());
   } else if (aData.isNumber()) {
-    aOut = java::GeckoBundle::Box(aData.toNumber());
+    aOut = java::sdk::Double::New(aData.toNumber());
   } else if (aData.isString()) {
     return BoxString(aCx, aData, aOut);
   } else if (aData.isObject()) {
@@ -288,7 +297,7 @@ nsresult BoxData(const nsAString& aEvent, JSContext* aCx, JS::HandleValue aData,
 
   NS_ConvertUTF16toUTF8 event(aEvent);
   if (JS_IsExceptionPending(aCx)) {
-    JS_ReportWarningUTF8(aCx, "Error dispatching %s", event.get());
+    JS::WarnUTF8(aCx, "Error dispatching %s", event.get());
   } else {
     JS_ReportErrorUTF8(aCx, "Invalid event data for %s", event.get());
   }
@@ -395,7 +404,7 @@ nsresult UnboxArrayPrimitive(JSContext* aCx, const jni::Object::LocalRef& aData,
   JNIEnv* const env = aData.Env();
   const ArrayType jarray = ArrayType(aData.Get());
   JNIType* const array = (env->*GetElements)(jarray, nullptr);
-  JS::AutoValueVector elements(aCx);
+  JS::RootedVector<JS::Value> elements(aCx);
 
   if (NS_WARN_IF(!array)) {
     env->ExceptionClear();
@@ -458,24 +467,56 @@ nsresult UnboxArrayObject(JSContext* aCx, const jni::Object::LocalRef& aData,
   return NS_OK;
 }
 
+template <class T>
+jfieldID GetValueFieldID(const char* aType) {
+  MOZ_ASSERT(NS_IsMainThread());
+  JNIEnv* const env = jni::GetGeckoThreadEnv();
+  const jfieldID id = env->GetFieldID(
+      typename T::Context(env, nullptr).ClassRef(), "value", aType);
+  env->ExceptionClear();
+  return id;
+}
+
 nsresult UnboxValue(JSContext* aCx, const jni::Object::LocalRef& aData,
                     JS::MutableHandleValue aOut) {
+  static jfieldID booleanValueField = GetValueFieldID<java::sdk::Boolean>("Z");
+  static jfieldID intValueField = GetValueFieldID<java::sdk::Integer>("I");
+  static jfieldID doubleValueField = GetValueFieldID<java::sdk::Double>("D");
+
   if (!aData) {
     aOut.setNull();
   } else if (aData.IsInstanceOf<jni::Boolean>()) {
-    aOut.setBoolean(java::GeckoBundle::UnboxBoolean(aData));
-  } else if (aData.IsInstanceOf<jni::Integer>() ||
-             aData.IsInstanceOf<jni::Byte>() ||
+    if (booleanValueField) {
+      aOut.setBoolean(aData.Env()->GetBooleanField(
+                          aData.Get(), booleanValueField) != JNI_FALSE);
+      MOZ_CATCH_JNI_EXCEPTION(aData.Env());
+    } else {
+      aOut.setBoolean(java::sdk::Boolean::Ref::From(aData)->BooleanValue());
+    }
+  } else if (aData.IsInstanceOf<jni::Integer>()) {
+    if (intValueField) {
+      aOut.setInt32(aData.Env()->GetIntField(aData.Get(), intValueField));
+      MOZ_CATCH_JNI_EXCEPTION(aData.Env());
+    } else {
+      aOut.setInt32(java::sdk::Number::Ref::From(aData)->IntValue());
+    }
+  } else if (aData.IsInstanceOf<jni::Byte>() ||
              aData.IsInstanceOf<jni::Short>()) {
-    aOut.setInt32(java::GeckoBundle::UnboxInteger(aData));
-  } else if (aData.IsInstanceOf<jni::Double>() ||
-             aData.IsInstanceOf<jni::Float>() ||
+    aOut.setInt32(java::sdk::Number::Ref::From(aData)->IntValue());
+  } else if (aData.IsInstanceOf<jni::Double>()) {
+    if (doubleValueField) {
+      aOut.setNumber(
+          aData.Env()->GetDoubleField(aData.Get(), doubleValueField));
+    } else {
+      aOut.setNumber(java::sdk::Number::Ref::From(aData)->DoubleValue());
+    }
+  } else if (aData.IsInstanceOf<jni::Float>() ||
              aData.IsInstanceOf<jni::Long>()) {
-    aOut.setNumber(java::GeckoBundle::UnboxDouble(aData));
+    aOut.setNumber(java::sdk::Number::Ref::From(aData)->DoubleValue());
   } else if (aData.IsInstanceOf<jni::String>()) {
     return UnboxString(aCx, aData, aOut);
   } else if (aData.IsInstanceOf<jni::Character>()) {
-    return UnboxString(aCx, java::GeckoBundle::UnboxString(aData), aOut);
+    return UnboxString(aCx, java::sdk::String::ValueOf(aData), aOut);
   } else if (aData.IsInstanceOf<java::GeckoBundle>()) {
     return UnboxBundle(aCx, aData, aOut);
 
@@ -526,7 +567,7 @@ nsresult UnboxData(jni::String::Param aEvent, JSContext* aCx,
 
   nsCString event = aEvent->ToCString();
   if (JS_IsExceptionPending(aCx)) {
-    JS_ReportWarningUTF8(aCx, "Error dispatching %s", event.get());
+    JS::WarnUTF8(aCx, "Error dispatching %s", event.get());
   } else {
     JS_ReportErrorUTF8(aCx, "Invalid event data for %s", event.get());
   }
@@ -534,38 +575,38 @@ nsresult UnboxData(jni::String::Param aEvent, JSContext* aCx,
 }
 
 class JavaCallbackDelegate final : public nsIAndroidEventCallback {
-  java::EventCallback::GlobalRef mCallback;
+  const java::EventCallback::GlobalRef mCallback;
 
   virtual ~JavaCallbackDelegate() {}
 
-  NS_IMETHOD Call(JS::HandleValue aData,
+  NS_IMETHOD Call(JSContext* aCx, JS::HandleValue aData,
                   void (java::EventCallback::*aCall)(jni::Object::Param)
                       const) {
     MOZ_ASSERT(NS_IsMainThread());
-    AutoJSContext cx;
 
     jni::Object::LocalRef data(jni::GetGeckoThreadEnv());
-    nsresult rv = BoxData(NS_LITERAL_STRING("callback"), cx, aData, data,
+    nsresult rv = BoxData(NS_LITERAL_STRING("callback"), aCx, aData, data,
                           /* ObjectOnly */ false);
-    NS_ENSURE_SUCCESS(rv, JS_IsExceptionPending(cx) ? NS_OK : rv);
+    NS_ENSURE_SUCCESS(rv, rv);
 
     dom::AutoNoJSAPI nojsapi;
+
     (java::EventCallback(*mCallback).*aCall)(data);
     return NS_OK;
   }
 
  public:
-  JavaCallbackDelegate(java::EventCallback::Param aCallback)
+  explicit JavaCallbackDelegate(java::EventCallback::Param aCallback)
       : mCallback(jni::GetGeckoThreadEnv(), aCallback) {}
 
   NS_DECL_ISUPPORTS
 
-  NS_IMETHOD OnSuccess(JS::HandleValue aData) override {
-    return Call(aData, &java::EventCallback::SendSuccess);
+  NS_IMETHOD OnSuccess(JS::HandleValue aData, JSContext* aCx) override {
+    return Call(aCx, aData, &java::EventCallback::SendSuccess);
   }
 
-  NS_IMETHOD OnError(JS::HandleValue aData) override {
-    return Call(aData, &java::EventCallback::SendError);
+  NS_IMETHOD OnError(JS::HandleValue aData, JSContext* aCx) override {
+    return Call(aCx, aData, &java::EventCallback::SendError);
   }
 };
 
@@ -578,32 +619,25 @@ class NativeCallbackDelegateSupport final
   using Base = CallbackDelegate::Natives<NativeCallbackDelegateSupport>;
 
   const nsCOMPtr<nsIAndroidEventCallback> mCallback;
-  const nsCOMPtr<nsPIDOMWindowOuter> mWindow;
+  const nsCOMPtr<nsIAndroidEventFinalizer> mFinalizer;
+  const nsCOMPtr<nsIGlobalObject> mGlobalObject;
 
   void Call(jni::Object::Param aData,
-            nsresult (nsIAndroidEventCallback::*aCall)(JS::HandleValue)) {
+            nsresult (nsIAndroidEventCallback::*aCall)(JS::HandleValue,
+                                                       JSContext*)) {
     MOZ_ASSERT(NS_IsMainThread());
 
-    // Use the same compartment as the wrapped JS object if possible,
-    // otherwise use either the attached window's compartment or a default
-    // compartment.
-    nsCOMPtr<nsIXPConnectWrappedJS> wrappedJS(do_QueryInterface(mCallback));
+    // Use either the attached window's realm or a default realm.
 
     dom::AutoJSAPI jsapi;
-    if (!wrappedJS && mWindow) {
-      NS_ENSURE_TRUE_VOID(jsapi.Init(mWindow->GetCurrentInnerWindow()));
-    } else {
-      NS_ENSURE_TRUE_VOID(jsapi.Init(wrappedJS ? wrappedJS->GetJSObject()
-                                               : xpc::PrivilegedJunkScope()));
-    }
+    NS_ENSURE_TRUE_VOID(jsapi.Init(mGlobalObject));
 
     JS::RootedValue data(jsapi.cx());
     nsresult rv = UnboxData(NS_LITERAL_STRING("callback"), jsapi.cx(), aData,
                             &data, /* BundleOnly */ false);
     NS_ENSURE_SUCCESS_VOID(rv);
 
-    dom::AutoNoJSAPI nojsapi;
-    rv = (mCallback->*aCall)(data);
+    rv = (mCallback->*aCall)(data, jsapi.cx());
     NS_ENSURE_SUCCESS_VOID(rv);
   }
 
@@ -617,7 +651,7 @@ class NativeCallbackDelegateSupport final
       return aCall();
     }
     NS_DispatchToMainThread(
-        NS_NewRunnableFunction("OnNativeCall", Move(aCall)));
+        NS_NewRunnableFunction("OnNativeCall", std::move(aCall)));
   }
 
   static void Finalize(const CallbackDelegate::LocalRef& aInstance) {
@@ -625,8 +659,17 @@ class NativeCallbackDelegateSupport final
   }
 
   NativeCallbackDelegateSupport(nsIAndroidEventCallback* callback,
-                                nsPIDOMWindowOuter* domWindow)
-      : mCallback(callback), mWindow(domWindow) {}
+                                nsIAndroidEventFinalizer* finalizer,
+                                nsIGlobalObject* globalObject)
+      : mCallback(callback),
+        mFinalizer(finalizer),
+        mGlobalObject(globalObject) {}
+
+  ~NativeCallbackDelegateSupport() {
+    if (mFinalizer) {
+      mFinalizer->OnFinalize();
+    }
+  }
 
   void SendSuccess(jni::Object::Param aData) {
     Call(aData, &nsIAndroidEventCallback::OnSuccess);
@@ -637,11 +680,39 @@ class NativeCallbackDelegateSupport final
   }
 };
 
+class FinalizingCallbackDelegate final : public nsIAndroidEventCallback {
+  const nsCOMPtr<nsIAndroidEventCallback> mCallback;
+  const nsCOMPtr<nsIAndroidEventFinalizer> mFinalizer;
+
+  virtual ~FinalizingCallbackDelegate() {
+    if (mFinalizer) {
+      mFinalizer->OnFinalize();
+    }
+  }
+
+ public:
+  FinalizingCallbackDelegate(nsIAndroidEventCallback* aCallback,
+                             nsIAndroidEventFinalizer* aFinalizer)
+      : mCallback(aCallback), mFinalizer(aFinalizer) {}
+
+  NS_DECL_ISUPPORTS
+  NS_FORWARD_NSIANDROIDEVENTCALLBACK(mCallback->);
+};
+
+NS_IMPL_ISUPPORTS(FinalizingCallbackDelegate, nsIAndroidEventCallback)
+
 }  // namespace detail
 
 using namespace detail;
 
 NS_IMPL_ISUPPORTS(EventDispatcher, nsIAndroidEventDispatcher)
+
+nsIGlobalObject* EventDispatcher::GetGlobalObject() {
+  if (mDOMWindow) {
+    return nsGlobalWindowInner::Cast(mDOMWindow->GetCurrentInnerWindow());
+  }
+  return xpc::NativeGlobal(xpc::PrivilegedJunkScope());
+}
 
 nsresult EventDispatcher::DispatchOnGecko(ListenersList* list,
                                           const nsAString& aEvent,
@@ -680,22 +751,36 @@ nsresult EventDispatcher::DispatchOnGecko(ListenersList* list,
 }
 
 java::EventDispatcher::NativeCallbackDelegate::LocalRef
-EventDispatcher::WrapCallback(nsIAndroidEventCallback* aCallback) {
-  java::EventDispatcher::NativeCallbackDelegate::LocalRef callback(
-      jni::GetGeckoThreadEnv());
-
-  if (aCallback) {
-    callback = java::EventDispatcher::NativeCallbackDelegate::New();
-    NativeCallbackDelegateSupport::AttachNative(
-        callback,
-        MakeUnique<NativeCallbackDelegateSupport>(aCallback, mDOMWindow));
+EventDispatcher::WrapCallback(nsIAndroidEventCallback* aCallback,
+                              nsIAndroidEventFinalizer* aFinalizer) {
+  if (!aCallback) {
+    return java::EventDispatcher::NativeCallbackDelegate::LocalRef(
+        jni::GetGeckoThreadEnv());
   }
+
+  java::EventDispatcher::NativeCallbackDelegate::LocalRef callback =
+      java::EventDispatcher::NativeCallbackDelegate::New();
+  NativeCallbackDelegateSupport::AttachNative(
+      callback, MakeUnique<NativeCallbackDelegateSupport>(aCallback, aFinalizer,
+                                                          GetGlobalObject()));
   return callback;
+}
+
+bool EventDispatcher::HasListener(const char16_t* aEvent) {
+  java::EventDispatcher::LocalRef dispatcher(mDispatcher);
+  if (!dispatcher) {
+    return false;
+  }
+
+  nsDependentString event(aEvent);
+  return dispatcher->HasListener(event);
 }
 
 NS_IMETHODIMP
 EventDispatcher::Dispatch(JS::HandleValue aEvent, JS::HandleValue aData,
-                          nsIAndroidEventCallback* aCallback, JSContext* aCx) {
+                          nsIAndroidEventCallback* aCallback,
+                          nsIAndroidEventFinalizer* aFinalizer,
+                          JSContext* aCx) {
   MOZ_ASSERT(NS_IsMainThread());
 
   if (!aEvent.isString()) {
@@ -712,19 +797,30 @@ EventDispatcher::Dispatch(JS::HandleValue aEvent, JS::HandleValue aData,
 
   ListenersList* list = mListenersMap.Get(event);
   if (list) {
-    return DispatchOnGecko(list, event, aData, aCallback);
+    if (!aCallback || !aFinalizer) {
+      return DispatchOnGecko(list, event, aData, aCallback);
+    }
+    nsCOMPtr<nsIAndroidEventCallback> callback(
+        new FinalizingCallbackDelegate(aCallback, aFinalizer));
+    return DispatchOnGecko(list, event, aData, callback);
   }
 
-  if (!mDispatcher) {
+  java::EventDispatcher::LocalRef dispatcher(mDispatcher);
+  if (!dispatcher) {
     return NS_OK;
   }
 
   jni::Object::LocalRef data(jni::GetGeckoThreadEnv());
   nsresult rv = BoxData(event, aCx, aData, data, /* ObjectOnly */ true);
+  // Keep XPConnect from overriding the JSContext exception with one
+  // based on the nsresult.
+  //
+  // XXXbz Does xpconnect still do that?  Needs to be checked/tested.
   NS_ENSURE_SUCCESS(rv, JS_IsExceptionPending(aCx) ? NS_OK : rv);
 
   dom::AutoNoJSAPI nojsapi;
-  mDispatcher->DispatchToThreads(event, data, WrapCallback(aCallback));
+  dispatcher->DispatchToThreads(event, data,
+                                WrapCallback(aCallback, aFinalizer));
   return NS_OK;
 }
 
@@ -736,6 +832,7 @@ nsresult EventDispatcher::Dispatch(const char16_t* aEvent,
   ListenersList* list = mListenersMap.Get(event);
   if (list) {
     dom::AutoJSAPI jsapi;
+    NS_ENSURE_TRUE(jsapi.Init(GetGlobalObject()), NS_ERROR_FAILURE);
     JS::RootedValue data(jsapi.cx());
     nsresult rv = UnboxData(/* Event */ nullptr, jsapi.cx(), aData, &data,
                             /* BundleOnly */ true);
@@ -743,11 +840,12 @@ nsresult EventDispatcher::Dispatch(const char16_t* aEvent,
     return DispatchOnGecko(list, event, data, aCallback);
   }
 
-  if (!mDispatcher) {
+  java::EventDispatcher::LocalRef dispatcher(mDispatcher);
+  if (!dispatcher) {
     return NS_OK;
   }
 
-  mDispatcher->DispatchToThreads(event, aData, WrapCallback(aCallback));
+  dispatcher->DispatchToThreads(event, aData, WrapCallback(aCallback));
   return NS_OK;
 }
 
@@ -862,51 +960,39 @@ void EventDispatcher::Attach(java::EventDispatcher::Param aDispatcher,
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aDispatcher);
 
-  if (mDispatcher) {
-    if (mDispatcher == aDispatcher) {
+  java::EventDispatcher::LocalRef dispatcher(mDispatcher);
+
+  if (dispatcher) {
+    if (dispatcher == aDispatcher) {
       // Only need to update the window.
       mDOMWindow = aDOMWindow;
       return;
     }
-    mAttachCount--;
-    mDispatcher->SetAttachedToGecko(java::EventDispatcher::REATTACHING);
+    dispatcher->SetAttachedToGecko(java::EventDispatcher::REATTACHING);
   }
 
-  java::EventDispatcher::LocalRef dispatcher(aDispatcher);
-
+  dispatcher = java::EventDispatcher::LocalRef(aDispatcher);
   NativesBase::AttachNative(dispatcher, this);
   mDispatcher = dispatcher;
   mDOMWindow = aDOMWindow;
 
   dispatcher->SetAttachedToGecko(java::EventDispatcher::ATTACHED);
-  mAttachCount++;
 }
 
 void EventDispatcher::Detach() {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(mDispatcher);
 
-  // SetAttachedToGecko will call disposeNative for us. disposeNative will be
-  // called later on the Gecko thread to make sure all pending
-  // dispatchToGecko calls have completed.
-  mAttachCount--;
-  mDispatcher->SetAttachedToGecko(java::EventDispatcher::DETACHED);
+  java::EventDispatcher::GlobalRef dispatcher(mDispatcher);
+
+  // SetAttachedToGecko will call disposeNative for us later on the Gecko
+  // thread to make sure all pending dispatchToGecko calls have completed.
+  if (dispatcher) {
+    dispatcher->SetAttachedToGecko(java::EventDispatcher::DETACHED);
+  }
+
   mDispatcher = nullptr;
   mDOMWindow = nullptr;
-}
-
-void EventDispatcher::DisposeNative(
-    const java::EventDispatcher::LocalRef& aInstance) {
-  JNIEnv* const env = jni::GetGeckoThreadEnv();
-  const auto natives = reinterpret_cast<RefPtr<EventDispatcher>*>(
-      jni::GetNativeHandle(env, aInstance.Get()));
-  MOZ_CATCH_JNI_EXCEPTION(env);
-
-  if (!(*natives)->mAttachCount) {
-    // Only actually dispose if we haven't attached again between calling
-    // Detach() and calling DisposeNative().
-    NativesBase::DisposeNative(aInstance);
-  }
 }
 
 bool EventDispatcher::HasGeckoListener(jni::String::Param aEvent) {
@@ -932,11 +1018,7 @@ void EventDispatcher::DispatchToGecko(jni::String::Param aEvent,
   // Use the same compartment as the attached window if possible, otherwise
   // use a default compartment.
   dom::AutoJSAPI jsapi;
-  if (mDOMWindow) {
-    NS_ENSURE_TRUE_VOID(jsapi.Init(mDOMWindow->GetCurrentInnerWindow()));
-  } else {
-    NS_ENSURE_TRUE_VOID(jsapi.Init(xpc::PrivilegedJunkScope()));
-  }
+  NS_ENSURE_TRUE_VOID(jsapi.Init(GetGlobalObject()));
 
   JS::RootedValue data(jsapi.cx());
   nsresult rv = UnboxData(aEvent, jsapi.cx(), aData, &data,
@@ -960,3 +1042,7 @@ nsresult EventDispatcher::UnboxBundle(JSContext* aCx, jni::Object::Param aData,
 
 }  // namespace widget
 }  // namespace mozilla
+
+#if defined(__clang__)
+#  pragma clang diagnostic pop
+#endif

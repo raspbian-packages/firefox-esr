@@ -8,13 +8,17 @@ Transform the beetmover task into an actual task description.
 from __future__ import absolute_import, print_function, unicode_literals
 
 from voluptuous import Optional, Required
+
 from taskgraph.loader.single_dep import schema
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.transforms.task import task_description_schema
 from taskgraph.util.attributes import copy_attributes_from_dependent_job
-from taskgraph.util.scriptworker import (get_beetmover_bucket_scope,
+from taskgraph.util.scriptworker import (generate_beetmover_artifact_map,
+                                         generate_beetmover_upstream_artifacts,
+                                         get_beetmover_bucket_scope,
                                          get_beetmover_action_scope,
-                                         get_worker_type_for_scope)
+                                         get_worker_type_for_scope,
+                                         should_use_artifact_map)
 from taskgraph.util.taskcluster import get_artifact_prefix
 from taskgraph.util.treeherder import replace_group
 
@@ -24,19 +28,19 @@ from taskgraph.util.treeherder import replace_group
 # See example in bug 1348286
 _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_EN_US = [
     "en-US/buildhub.json",
-    "en-US/target.common.tests.zip",
-    "en-US/target.cppunittest.tests.zip",
+    "en-US/target.common.tests.tar.gz",
+    "en-US/target.cppunittest.tests.tar.gz",
     "en-US/target.crashreporter-symbols.zip",
     "en-US/target.json",
-    "en-US/target.mochitest.tests.zip",
+    "en-US/target.mochitest.tests.tar.gz",
     "en-US/target.mozinfo.json",
-    "en-US/target.reftest.tests.zip",
-    "en-US/target.talos.tests.zip",
-    "en-US/target.awsy.tests.zip",
+    "en-US/target.reftest.tests.tar.gz",
+    "en-US/target.talos.tests.tar.gz",
+    "en-US/target.awsy.tests.tar.gz",
     "en-US/target.test_packages.json",
     "en-US/target.txt",
     "en-US/target.web-platform.tests.tar.gz",
-    "en-US/target.xpcshell.tests.zip",
+    "en-US/target.xpcshell.tests.tar.gz",
     "en-US/target_info.txt",
     "en-US/mozharness.zip",
     "en-US/robocop.apk",
@@ -77,9 +81,11 @@ _MOBILE_UPSTREAM_ARTIFACTS_SIGNED_MULTI = [
 # See example in bug 1348286
 UPSTREAM_ARTIFACT_UNSIGNED_PATHS = {
     'android-x86-nightly': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_EN_US,
+    'android-x86_64-nightly': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_EN_US,
     'android-aarch64-nightly': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_EN_US,
     'android-api-16-nightly': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_EN_US,
     'android-x86-nightly-multi': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_MULTI,
+    'android-x86_64-nightly-multi': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_MULTI,
     'android-aarch64-nightly-multi': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_MULTI,
     'android-api-16-nightly-l10n': [],
     'android-api-16-nightly-multi': _MOBILE_UPSTREAM_ARTIFACTS_UNSIGNED_MULTI,
@@ -90,9 +96,11 @@ UPSTREAM_ARTIFACT_UNSIGNED_PATHS = {
 # See example in bug 1348286
 UPSTREAM_ARTIFACT_SIGNED_PATHS = {
     'android-x86-nightly': ["en-US/target.apk"],
+    'android-x86_64-nightly': ["en-US/target.apk"],
     'android-aarch64-nightly': ["en-US/target.apk"],
     'android-api-16-nightly': ["en-US/target.apk"],
     'android-x86-nightly-multi': ["target.apk"],
+    'android-x86_64-nightly-multi': ["target.apk"],
     'android-aarch64-nightly-multi': ["target.apk"],
     'android-api-16-nightly-l10n': ["target.apk"],
     'android-api-16-nightly-multi': ["target.apk"],
@@ -105,10 +113,6 @@ UPSTREAM_SOURCE_ARTIFACTS = [
     "source.tar.xz",
     "source.tar.xz.asc",
 ]
-
-# Voluptuous uses marker objects as dictionary *keys*, but they are not
-# comparable, so we cast all of the keys back to regular strings
-task_description_schema = {str(k): v for k, v in task_description_schema.schema.iteritems()}
 
 transforms = TransformSequence()
 
@@ -129,6 +133,7 @@ beetmover_description_schema = schema.extend({
 
     Required('shipping-phase'): task_description_schema['shipping-phase'],
     Optional('shipping-product'): task_description_schema['shipping-product'],
+    Optional('attributes'): task_description_schema['attributes'],
 })
 
 
@@ -150,7 +155,10 @@ def make_task_description(config, jobs):
             'treeherder', {}).get('machine', {}).get('platform', '')
         treeherder.setdefault('platform',
                               "{}/opt".format(dep_th_platform))
-        treeherder.setdefault('tier', 1)
+        treeherder.setdefault(
+            'tier',
+            dep_job.task.get('extra', {}).get('treeherder', {}).get('tier', 1)
+        )
         treeherder.setdefault('kind', 'build')
         label = job['label']
         description = (
@@ -162,22 +170,28 @@ def make_task_description(config, jobs):
             )
         )
 
-        dependent_kind = str(dep_job.kind)
-        dependencies = {dependent_kind: dep_job.label}
+        dependencies = {dep_job.kind: dep_job.label}
 
-        if len(dep_job.dependencies) > 1:
+        # XXX release snap-repackage has a variable number of dependencies, depending on how many
+        # "post-beetmover-dummy" jobs there are in the graph.
+        if dep_job.kind != 'release-snap-repackage' and len(dep_job.dependencies) > 1:
             raise NotImplementedError(
                 "Can't beetmove a signing task with multiple dependencies")
         signing_dependencies = dep_job.dependencies
         dependencies.update(signing_dependencies)
 
         attributes = copy_attributes_from_dependent_job(dep_job)
+        attributes.update(job.get('attributes', {}))
 
         if job.get('locale'):
             attributes['locale'] = job['locale']
 
-        bucket_scope = get_beetmover_bucket_scope(config)
-        action_scope = get_beetmover_action_scope(config)
+        bucket_scope = get_beetmover_bucket_scope(
+            config, job_release_type=attributes.get('release-type')
+        )
+        action_scope = get_beetmover_action_scope(
+            config, job_release_type=attributes.get('release-type')
+        )
 
         task = {
             'label': label,
@@ -189,6 +203,7 @@ def make_task_description(config, jobs):
             'run-on-projects': dep_job.attributes.get('run_on_projects'),
             'treeherder': treeherder,
             'shipping-phase': job['shipping-phase'],
+            'shipping-product': job.get('shipping-product'),
         }
 
         yield task
@@ -244,7 +259,7 @@ def generate_upstream_artifacts(job, signing_task_ref, build_task_ref, platform,
             "paths": ["{}/{}".format(artifact_prefix, p)
                       for p in build_mapping[multi_platform]],
             "locale": "multi",
-            }, {
+        }, {
             "taskId": {"task-reference": signing_task_ref},
             "taskType": "signing",
             "paths": ["{}/{}".format(artifact_prefix, p)
@@ -259,6 +274,7 @@ def craft_release_properties(config, job):
     params = config.params
     build_platform = job['attributes']['build_platform']
     build_platform = build_platform.replace('-nightly', '')
+    build_platform = build_platform.replace('-shippable', '')
     if build_platform.endswith("-source"):
         build_platform = build_platform.replace('-source', '-release')
 
@@ -286,7 +302,9 @@ def make_task_worker(config, jobs):
     for job in jobs:
         valid_beetmover_job = (len(job["dependencies"]) == 2 and
                                any(['signing' in j for j in job['dependencies']]))
-        if not valid_beetmover_job:
+        # XXX release snap-repackage has a variable number of dependencies, depending on how many
+        # "post-beetmover-dummy" jobs there are in the graph.
+        if '-snap-' not in job['label'] and not valid_beetmover_job:
             raise NotImplementedError("Beetmover must have two dependencies.")
 
         locale = job["attributes"].get("locale")
@@ -302,13 +320,23 @@ def make_task_worker(config, jobs):
         signing_task_ref = "<" + str(signing_task) + ">"
         build_task_ref = "<" + str(build_task) + ">"
 
+        if should_use_artifact_map(platform):
+            upstream_artifacts = generate_beetmover_upstream_artifacts(
+                config, job, platform, locale
+            )
+        else:
+            upstream_artifacts = generate_upstream_artifacts(
+                job, signing_task_ref, build_task_ref, platform, locale
+            )
         worker = {
             'implementation': 'beetmover',
             'release-properties': craft_release_properties(config, job),
-            'upstream-artifacts': generate_upstream_artifacts(
-                job, signing_task_ref, build_task_ref, platform, locale
-            )
+            'upstream-artifacts': upstream_artifacts,
         }
+
+        if should_use_artifact_map(platform):
+            worker['artifact-map'] = generate_beetmover_artifact_map(
+                config, job, platform=platform, locale=locale)
 
         if locale:
             worker["locale"] = locale

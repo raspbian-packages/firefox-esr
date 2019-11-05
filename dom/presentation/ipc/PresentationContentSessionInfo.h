@@ -40,7 +40,7 @@ class PresentationContentSessionInfo final
 
   nsresult SendBinaryMsg(const nsACString& aData);
 
-  nsresult SendBlob(nsIDOMBlob* aBlob);
+  nsresult SendBlob(Blob* aBlob);
 
   nsresult Close(nsresult aReason);
 

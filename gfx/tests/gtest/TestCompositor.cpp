@@ -161,11 +161,11 @@ static bool CompositeAndCompare(RefPtr<LayerManagerComposite> layerManager,
   return true;
 }
 
-TEST(Gfx, CompositorConstruct) {
-  auto layerManagers = GetLayerManagers(GetPlatformBackends());
-}
+TEST(Gfx, CompositorConstruct)
+{ auto layerManagers = GetLayerManagers(GetPlatformBackends()); }
 
-TEST(Gfx, CompositorSimpleTree) {
+TEST(Gfx, CompositorSimpleTree)
+{
   auto layerManagers = GetLayerManagers(GetPlatformBackends());
   for (size_t i = 0; i < layerManagers.size(); i++) {
     RefPtr<LayerManagerComposite> layerManager = layerManagers[i].mLayerManager;
@@ -184,21 +184,21 @@ TEST(Gfx, CompositorSimpleTree) {
       ColorLayer* colorLayer = layers[1]->AsColorLayer();
       colorLayer->SetColor(Color(1.f, 0.f, 1.f, 1.f));
       colorLayer->SetBounds(
-          colorLayer->GetVisibleRegion().ToUnknownRegion().GetBounds());
+          colorLayer->GetVisibleRegion().GetBounds().ToUnknownRect());
     }
 
     {
       ColorLayer* colorLayer = layers[2]->AsColorLayer();
       colorLayer->SetColor(Color(1.f, 0.f, 0.f, 1.f));
       colorLayer->SetBounds(
-          colorLayer->GetVisibleRegion().ToUnknownRegion().GetBounds());
+          colorLayer->GetVisibleRegion().GetBounds().ToUnknownRect());
     }
 
     {
       ColorLayer* colorLayer = layers[3]->AsColorLayer();
       colorLayer->SetColor(Color(0.f, 0.f, 1.f, 1.f));
       colorLayer->SetBounds(
-          colorLayer->GetVisibleRegion().ToUnknownRegion().GetBounds());
+          colorLayer->GetVisibleRegion().GetBounds().ToUnknownRect());
     }
 
     RefPtr<DrawTarget> refDT = CreateDT();

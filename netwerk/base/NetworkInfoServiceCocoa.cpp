@@ -76,7 +76,7 @@ static nsresult ListInterfaceAddresses(int aFd, const char* aInterface,
     case AF_INET:
     case AF_INET6:
       getnameinfo(&ifreq.ifr_addr, sizeof(ifreq.ifr_addr), host, sizeof(host),
-                  0, 0, NI_NUMERICHOST);
+                  nullptr, 0, NI_NUMERICHOST);
       break;
     case AF_UNSPEC:
       return NS_OK;

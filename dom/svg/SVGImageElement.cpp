@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozilla/dom/SVGImageElement.h"
+
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/EventStateManager.h"
 #include "mozilla/EventStates.h"
-
-#include "mozilla/dom/SVGImageElement.h"
 #include "mozilla/gfx/2D.h"
 #include "nsCOMPtr.h"
 #include "nsIURI.h"
@@ -18,7 +18,7 @@
 #include "mozilla/dom/SVGLengthBinding.h"
 #include "nsContentUtils.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Image)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Image)
 
 using namespace mozilla::gfx;
 
@@ -27,37 +27,36 @@ namespace dom {
 
 JSObject* SVGImageElement::WrapNode(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return SVGImageElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGImageElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::LengthInfo SVGImageElement::sLengthInfo[4] = {
-    {&nsGkAtoms::x, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+SVGElement::LengthInfo SVGImageElement::sLengthInfo[4] = {
+    {nsGkAtoms::x, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::y, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::y, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
-    {&nsGkAtoms::width, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::width, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::height, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::height, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
 };
 
-nsSVGElement::StringInfo SVGImageElement::sStringInfo[2] = {
-    {&nsGkAtoms::href, kNameSpaceID_None, true},
-    {&nsGkAtoms::href, kNameSpaceID_XLink, true}};
+SVGElement::StringInfo SVGImageElement::sStringInfo[2] = {
+    {nsGkAtoms::href, kNameSpaceID_None, true},
+    {nsGkAtoms::href, kNameSpaceID_XLink, true}};
 
 //----------------------------------------------------------------------
 // nsISupports methods
 
-NS_IMPL_ISUPPORTS_INHERITED(SVGImageElement, SVGImageElementBase, nsIDOMNode,
-                            nsIDOMElement, imgINotificationObserver,
-                            nsIImageLoadingContent)
+NS_IMPL_ISUPPORTS_INHERITED(SVGImageElement, SVGImageElementBase,
+                            imgINotificationObserver, nsIImageLoadingContent)
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGImageElement::SVGImageElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGImageElementBase(aNodeInfo) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGImageElementBase(std::move(aNodeInfo)) {
   // We start out broken
   AddStatesSilently(NS_EVENT_STATE_BROKEN);
 }
@@ -65,25 +64,25 @@ SVGImageElement::SVGImageElement(
 SVGImageElement::~SVGImageElement() { DestroyImageLoadingContent(); }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGImageElement)
 
 //----------------------------------------------------------------------
 
-already_AddRefed<SVGAnimatedLength> SVGImageElement::X() {
+already_AddRefed<DOMSVGAnimatedLength> SVGImageElement::X() {
   return mLengthAttributes[ATTR_X].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGImageElement::Y() {
+already_AddRefed<DOMSVGAnimatedLength> SVGImageElement::Y() {
   return mLengthAttributes[ATTR_Y].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGImageElement::Width() {
+already_AddRefed<DOMSVGAnimatedLength> SVGImageElement::Width() {
   return mLengthAttributes[ATTR_WIDTH].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGImageElement::Height() {
+already_AddRefed<DOMSVGAnimatedLength> SVGImageElement::Height() {
   return mLengthAttributes[ATTR_HEIGHT].ToDOMAnimatedLength(this);
 }
 
@@ -92,10 +91,18 @@ SVGImageElement::PreserveAspectRatio() {
   return mPreserveAspectRatio.ToDOMAnimatedPreserveAspectRatio(this);
 }
 
-already_AddRefed<SVGAnimatedString> SVGImageElement::Href() {
+already_AddRefed<DOMSVGAnimatedString> SVGImageElement::Href() {
   return mStringAttributes[HREF].IsExplicitlySet()
              ? mStringAttributes[HREF].ToDOMAnimatedString(this)
              : mStringAttributes[XLINK_HREF].ToDOMAnimatedString(this);
+}
+
+void SVGImageElement::GetDecoding(nsAString& aValue) {
+  GetEnumAttr(nsGkAtoms::decoding, kDecodingTableDefault->tag, aValue);
+}
+
+already_AddRefed<Promise> SVGImageElement::Decode(ErrorResult& aRv) {
+  return nsImageLoadingContent::QueueDecodeAsync(aRv);
 }
 
 //----------------------------------------------------------------------
@@ -131,6 +138,21 @@ void SVGImageElement::AsyncEventRunning(AsyncEventDispatcher* aEvent) {
 //----------------------------------------------------------------------
 // nsIContent methods:
 
+bool SVGImageElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
+                                     const nsAString& aValue,
+                                     nsIPrincipal* aMaybeScriptedPrincipal,
+                                     nsAttrValue& aResult) {
+  if (aNamespaceID == kNameSpaceID_None) {
+    if (aAttribute == nsGkAtoms::decoding) {
+      return aResult.ParseEnumValue(aValue, kDecodingTable, false,
+                                    kDecodingTableDefault);
+    }
+  }
+
+  return SVGImageElementBase::ParseAttribute(aNamespaceID, aAttribute, aValue,
+                                             aMaybeScriptedPrincipal, aResult);
+}
+
 nsresult SVGImageElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
                                        const nsAttrValue* aValue,
                                        const nsAttrValue* aOldValue,
@@ -143,6 +165,12 @@ nsresult SVGImageElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
     } else {
       CancelImageRequests(aNotify);
     }
+  } else if (aName == nsGkAtoms::decoding &&
+             aNamespaceID == kNameSpaceID_None) {
+    // Request sync or async image decoding.
+    SetSyncDecodingHint(
+        aValue && static_cast<ImageDecodingType>(aValue->GetEnumValue()) ==
+                      ImageDecodingType::Sync);
   }
   return SVGImageElementBase::AfterSetAttr(
       aNamespaceID, aName, aValue, aOldValue, aSubjectPrincipal, aNotify);
@@ -156,23 +184,16 @@ void SVGImageElement::MaybeLoadSVGImage() {
   }
 }
 
-nsresult SVGImageElement::BindToTree(nsIDocument* aDocument,
-                                     nsIContent* aParent,
-                                     nsIContent* aBindingParent,
-                                     bool aCompileEventHandlers) {
-  nsresult rv = SVGImageElementBase::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+nsresult SVGImageElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                     nsIContent* aBindingParent) {
+  nsresult rv =
+      SVGImageElementBase::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsImageLoadingContent::BindToTree(aDocument, aParent, aBindingParent,
-                                    aCompileEventHandlers);
+  nsImageLoadingContent::BindToTree(aDocument, aParent, aBindingParent);
 
   if (mStringAttributes[HREF].IsExplicitlySet() ||
       mStringAttributes[XLINK_HREF].IsExplicitlySet()) {
-    // FIXME: Bug 660963 it would be nice if we could just have
-    // ClearBrokenState update our state and do it fast...
-    ClearBrokenState();
-    RemoveStatesSilently(NS_EVENT_STATE_BROKEN);
     nsContentUtils::AddScriptRunner(
         NewRunnableMethod("dom::SVGImageElement::MaybeLoadSVGImage", this,
                           &SVGImageElement::MaybeLoadSVGImage));
@@ -243,35 +264,36 @@ already_AddRefed<Path> SVGImageElement::BuildPath(PathBuilder* aBuilder) {
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-/* virtual */ bool SVGImageElement::HasValidDimensions() const {
+/* virtual */
+bool SVGImageElement::HasValidDimensions() const {
   return mLengthAttributes[ATTR_WIDTH].IsExplicitlySet() &&
          mLengthAttributes[ATTR_WIDTH].GetAnimValInSpecifiedUnits() > 0 &&
          mLengthAttributes[ATTR_HEIGHT].IsExplicitlySet() &&
          mLengthAttributes[ATTR_HEIGHT].GetAnimValInSpecifiedUnits() > 0;
 }
 
-nsSVGElement::LengthAttributesInfo SVGImageElement::GetLengthInfo() {
+SVGElement::LengthAttributesInfo SVGImageElement::GetLengthInfo() {
   return LengthAttributesInfo(mLengthAttributes, sLengthInfo,
                               ArrayLength(sLengthInfo));
 }
 
-SVGAnimatedPreserveAspectRatio* SVGImageElement::GetPreserveAspectRatio() {
+SVGAnimatedPreserveAspectRatio*
+SVGImageElement::GetAnimatedPreserveAspectRatio() {
   return &mPreserveAspectRatio;
 }
 
-nsSVGElement::StringAttributesInfo SVGImageElement::GetStringInfo() {
+SVGElement::StringAttributesInfo SVGImageElement::GetStringInfo() {
   return StringAttributesInfo(mStringAttributes, sStringInfo,
                               ArrayLength(sStringInfo));
 }
 
-nsresult SVGImageElement::CopyInnerTo(Element* aDest,
-                                      bool aPreallocateChildren) {
+nsresult SVGImageElement::CopyInnerTo(Element* aDest) {
   if (aDest->OwnerDoc()->IsStaticDocument()) {
     CreateStaticImageClone(static_cast<SVGImageElement*>(aDest));
   }
-  return SVGImageElementBase::CopyInnerTo(aDest, aPreallocateChildren);
+  return SVGImageElementBase::CopyInnerTo(aDest);
 }
 
 }  // namespace dom

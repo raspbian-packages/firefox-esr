@@ -13,7 +13,7 @@ public class StringHelper {
     private static StringHelper instance;
 
     // This needs to be accessed statically, before an instance of StringHelper can be created.
-    public static String STATIC_ABOUT_HOME_URL = "about:home";
+    public static final String STATIC_ABOUT_HOME_URL = "about:home";
 
     public final String OK;
     public final String CANCEL;
@@ -33,6 +33,9 @@ public class StringHelper {
 
     // About pages' titles
     public final String ABOUT_HOME_TITLE = "";
+
+    // To be kept in sync with 'addons.browseRecommended' from 'aboutAddons.properties'
+    public final String ABOUT_ADDONS_AMO_TITLE = "Browse Firefox’s Recommended Extensions";
 
     // Context Menu item strings
     public final String CONTEXT_MENU_BOOKMARK_LINK = "Bookmark Link";
@@ -420,17 +423,11 @@ public class StringHelper {
         DONT_RESTORE_QUIT = res.getString(R.string.pref_restore_quit);
     }
 
-    public static void initialize(Resources res) {
+    public static StringHelper initialize(Resources res) {
         if (instance != null) {
             throw new IllegalStateException(StringHelper.class.getSimpleName() + " already Initialized");
         }
         instance = new StringHelper(res);
-    }
-
-    public static StringHelper get() {
-        if (instance == null) {
-            throw new IllegalStateException(StringHelper.class.getSimpleName() + " instance is not yet initialized. Use StringHelper.initialize(Resources) first.");
-        }
         return instance;
     }
 

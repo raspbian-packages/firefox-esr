@@ -25,6 +25,9 @@ class LocalRef;
 // Wrapped global reference that inherits from Ref.
 template <class Cls>
 class GlobalRef;
+// Wrapped weak reference that inherits from Ref.
+template <class Cls>
+class WeakRef;
 // Wrapped dangling reference that's owned by someone else.
 template <class Cls>
 class DependentRef;
@@ -84,7 +87,7 @@ class Ref {
     JNIEnv* const mEnv;
     Type mInstance;
 
-    AutoLock(Type aInstance)
+    explicit AutoLock(Type aInstance)
         : mEnv(FindEnv()), mInstance(mEnv->NewLocalRef(aInstance)) {
       mEnv->MonitorEnter(mInstance);
       MOZ_CATCH_JNI_EXCEPTION(mEnv);
@@ -208,8 +211,8 @@ class Context : public Ref<Cls, Type> {
 
   bool operator==(const Ref& other) const {
     // Treat two references of the same object as being the same.
-    return Ref::mInstance == other.mInstance ||
-           JNI_FALSE != mEnv->IsSameObject(Ref::mInstance, other.mInstance);
+    return Ref::mInstance == other.Get() ||
+           JNI_FALSE != mEnv->IsSameObject(Ref::mInstance, other.Get());
   }
 
   bool operator!=(const Ref& other) const { return !operator==(other); }
@@ -243,6 +246,7 @@ class ObjectBase {
   using Context = jni::Context<Cls, Type>;
   using LocalRef = jni::LocalRef<Cls>;
   using GlobalRef = jni::GlobalRef<Cls>;
+  using WeakRef = jni::WeakRef<Cls>;
   using Param = const Ref&;
 
   static const CallingThread callingThread = CallingThread::ANY;
@@ -477,13 +481,13 @@ class LocalRef : public Cls::Context {
   }
 
   LocalRef<Cls>& operator=(LocalRef<GenericObject>&& ref) & {
-    LocalRef<Cls> newRef(mozilla::Move(ref));
+    LocalRef<Cls> newRef(std::move(ref));
     return swap(newRef);
   }
 
   template <class C>
   LocalRef<Cls>& operator=(GenericLocalRef<C>&& ref) & {
-    LocalRef<Cls> newRef(mozilla::Move(ref));
+    LocalRef<Cls> newRef(std::move(ref));
     return swap(newRef);
   }
 
@@ -570,11 +574,90 @@ class GlobalRef : public Cls::Ref {
 };
 
 template <class Cls>
+class WeakRef : public Ref<Cls, jweak> {
+  using Ref = Ref<Cls, jweak>;
+  using JNIType = typename Ref::JNIType;
+
+  static JNIType NewWeakRef(JNIEnv* env, JNIType instance) {
+    return JNIType(instance ? env->NewWeakGlobalRef(instance) : nullptr);
+  }
+
+  WeakRef& swap(WeakRef& other) {
+    auto instance = other.mInstance;
+    other.mInstance = Ref::mInstance;
+    Ref::mInstance = instance;
+    return *this;
+  }
+
+ public:
+  WeakRef() : Ref(nullptr) {}
+
+  // Copy constructor
+  WeakRef(const WeakRef& ref)
+      : Ref(NewWeakRef(GetEnvForThread(), ref.mInstance)) {}
+
+  // Move constructor
+  WeakRef(WeakRef&& ref) : Ref(ref.mInstance) { ref.mInstance = nullptr; }
+
+  MOZ_IMPLICIT WeakRef(const Ref& ref)
+      : Ref(NewWeakRef(GetEnvForThread(), ref.Get())) {}
+
+  WeakRef(JNIEnv* env, const Ref& ref) : Ref(NewWeakRef(env, ref.Get())) {}
+
+  MOZ_IMPLICIT WeakRef(const LocalRef<Cls>& ref)
+      : Ref(NewWeakRef(ref.Env(), ref.Get())) {}
+
+  // Implicitly converts nullptr to WeakRef.
+  MOZ_IMPLICIT WeakRef(decltype(nullptr)) : Ref(nullptr) {}
+
+  ~WeakRef() {
+    if (Ref::mInstance) {
+      Clear(GetEnvForThread());
+    }
+  }
+
+  // Get the raw JNI reference that can be used as a return value.
+  // Returns the same JNI type (jobject, jstring, etc.) as the underlying Ref.
+  typename Ref::JNIType Forget() {
+    const auto obj = Ref::Get();
+    Ref::mInstance = nullptr;
+    return obj;
+  }
+
+  void Clear(JNIEnv* env) {
+    if (Ref::mInstance) {
+      env->DeleteWeakGlobalRef(Ref::mInstance);
+      Ref::mInstance = nullptr;
+    }
+  }
+
+  WeakRef<Cls>& operator=(WeakRef<Cls> ref) & { return swap(ref); }
+
+  WeakRef<Cls>& operator=(const Ref& ref) & {
+    WeakRef<Cls> newRef(ref);
+    return swap(newRef);
+  }
+
+  WeakRef<Cls>& operator=(const LocalRef<Cls>& ref) & {
+    WeakRef<Cls> newRef(ref);
+    return swap(newRef);
+  }
+
+  WeakRef<Cls>& operator=(decltype(nullptr)) & {
+    WeakRef<Cls> newRef(nullptr);
+    return swap(newRef);
+  }
+
+  void operator->() const = delete;
+  void operator*() const = delete;
+};
+
+template <class Cls>
 class DependentRef : public Cls::Ref {
   using Ref = typename Cls::Ref;
 
  public:
-  DependentRef(typename Ref::JNIType instance) : Ref(instance) {}
+  explicit DependentRef(typename Ref::JNIType instance) : Ref(instance) {}
 
   DependentRef(const DependentRef& ref) : Ref(ref.Get()) {}
 };
@@ -627,6 +710,9 @@ class StringParam : public String::Ref {
   static jstring GetString(JNIEnv* env, const nsAString& str) {
     const jstring result = env->NewString(
         reinterpret_cast<const jchar*>(str.BeginReading()), str.Length());
+    if (!result) {
+      NS_ABORT_OOM(str.Length() * sizeof(char16_t));
+    }
     MOZ_CATCH_JNI_EXCEPTION(env);
     return result;
   }
@@ -872,7 +958,7 @@ class ReturnToLocal {
 
   ~ReturnToLocal() {
     if (objRef) {
-      *localRef = mozilla::Move(objRef);
+      *localRef = std::move(objRef);
     }
   }
 };
@@ -900,7 +986,7 @@ class ReturnToGlobal {
 
   ~ReturnToGlobal() {
     if (objRef) {
-      *globalRef = (clsRef = mozilla::Move(objRef));
+      *globalRef = (clsRef = std::move(objRef));
     } else if (clsRef) {
       *globalRef = clsRef;
     }

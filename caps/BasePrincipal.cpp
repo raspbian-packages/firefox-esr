@@ -12,16 +12,18 @@
 #include "nsIObjectOutputStream.h"
 #include "nsIStandardURL.h"
 
-#include "ContentPrincipal.h"
 #include "ExpandedPrincipal.h"
 #include "nsNetUtil.h"
-#include "nsIURIWithPrincipal.h"
-#include "NullPrincipal.h"
+#include "nsIURIWithSpecialOrigin.h"
 #include "nsScriptSecurityManager.h"
 #include "nsServiceManagerUtils.h"
 
+#include "mozilla/ContentPrincipal.h"
+#include "mozilla/NullPrincipal.h"
+#include "mozilla/dom/BlobURLProtocolHandler.h"
 #include "mozilla/dom/ChromeUtils.h"
 #include "mozilla/dom/CSPDictionariesBinding.h"
+#include "mozilla/dom/nsCSPContext.h"
 #include "mozilla/dom/ToJSValue.h"
 
 namespace mozilla {
@@ -50,6 +52,12 @@ BasePrincipal::GetOriginNoSuffix(nsACString& aOrigin) {
   MOZ_ASSERT(mInitialized);
   mOriginNoSuffix->ToUTF8String(aOrigin);
   return NS_OK;
+}
+
+NS_IMETHODIMP
+BasePrincipal::GetSiteOrigin(nsACString& aSiteOrigin) {
+  MOZ_ASSERT(mInitialized);
+  return GetOrigin(aSiteOrigin);
 }
 
 bool BasePrincipal::Subsumes(nsIPrincipal* aOther,
@@ -148,8 +156,9 @@ BasePrincipal::CheckMayLoad(nsIURI* aURI, bool aReport,
     nsCOMPtr<nsIURI> prinURI;
     rv = GetURI(getter_AddRefs(prinURI));
     if (NS_SUCCEEDED(rv) && prinURI) {
-      nsScriptSecurityManager::ReportError(nullptr, "CheckSameOriginError",
-                                           prinURI, aURI);
+      nsScriptSecurityManager::ReportError(
+          "CheckSameOriginError", prinURI, aURI,
+          mOriginAttributes.mPrivateBrowsingId > 0);
     }
   }
 
@@ -177,7 +186,7 @@ BasePrincipal::SetCsp(nsIContentSecurityPolicy* aCsp) {
 }
 
 NS_IMETHODIMP
-BasePrincipal::EnsureCSP(nsIDOMDocument* aDocument,
+BasePrincipal::EnsureCSP(dom::Document* aDocument,
                          nsIContentSecurityPolicy** aCSP) {
   if (mCSP) {
     // if there is a CSP already associated with this principal
@@ -205,7 +214,7 @@ BasePrincipal::GetPreloadCsp(nsIContentSecurityPolicy** aPreloadCSP) {
 }
 
 NS_IMETHODIMP
-BasePrincipal::EnsurePreloadCSP(nsIDOMDocument* aDocument,
+BasePrincipal::EnsurePreloadCSP(dom::Document* aDocument,
                                 nsIContentSecurityPolicy** aPreloadCSP) {
   if (mPreloadCSP) {
     // if there is a speculative CSP already associated with this principal
@@ -258,7 +267,13 @@ BasePrincipal::GetIsExpandedPrincipal(bool* aResult) {
 
 NS_IMETHODIMP
 BasePrincipal::GetIsSystemPrincipal(bool* aResult) {
-  *aResult = Kind() == eSystemPrincipal;
+  *aResult = IsSystemPrincipal();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+BasePrincipal::GetIsAddonOrExpandedAddonPrincipal(bool* aResult) {
+  *aResult = AddonPolicy() || ContentScriptAddonPolicy();
   return NS_OK;
 }
 
@@ -275,18 +290,6 @@ NS_IMETHODIMP
 BasePrincipal::GetOriginSuffix(nsACString& aOriginAttributes) {
   MOZ_ASSERT(mOriginSuffix);
   mOriginSuffix->ToUTF8String(aOriginAttributes);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-BasePrincipal::GetAppId(uint32_t* aAppId) {
-  if (AppId() == nsIScriptSecurityManager::UNKNOWN_APP_ID) {
-    MOZ_ASSERT(false);
-    *aAppId = nsIScriptSecurityManager::NO_APP_ID;
-    return NS_OK;
-  }
-
-  *aAppId = AppId();
   return NS_OK;
 }
 
@@ -310,7 +313,8 @@ BasePrincipal::GetIsInIsolatedMozBrowserElement(
 }
 
 nsresult BasePrincipal::GetAddonPolicy(nsISupports** aResult) {
-  *aResult = AddonPolicy();
+  RefPtr<extensions::WebExtensionPolicy> policy(AddonPolicy());
+  policy.forget(aResult);
   return NS_OK;
 }
 
@@ -368,15 +372,28 @@ already_AddRefed<BasePrincipal> BasePrincipal::CreateCodebasePrincipal(
   }
 
   // Check whether the URI knows what its principal is supposed to be.
-  nsCOMPtr<nsIURIWithPrincipal> uriPrinc = do_QueryInterface(aURI);
-  if (uriPrinc) {
-    nsCOMPtr<nsIPrincipal> principal;
-    uriPrinc->GetPrincipal(getter_AddRefs(principal));
-    if (!principal) {
-      return NullPrincipal::Create(aAttrs);
+#if defined(MOZ_THUNDERBIRD) || defined(MOZ_SUITE)
+  nsCOMPtr<nsIURIWithSpecialOrigin> uriWithSpecialOrigin =
+      do_QueryInterface(aURI);
+  if (uriWithSpecialOrigin) {
+    nsCOMPtr<nsIURI> origin;
+    rv = uriWithSpecialOrigin->GetOrigin(getter_AddRefs(origin));
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return nullptr;
     }
-    RefPtr<BasePrincipal> concrete = Cast(principal);
-    return concrete.forget();
+    MOZ_ASSERT(origin);
+    OriginAttributes attrs;
+    RefPtr<BasePrincipal> principal = CreateCodebasePrincipal(origin, attrs);
+    return principal.forget();
+  }
+#endif
+
+  nsCOMPtr<nsIPrincipal> blobPrincipal;
+  if (dom::BlobURLProtocolHandler::GetBlobURLPrincipal(
+          aURI, getter_AddRefs(blobPrincipal))) {
+    MOZ_ASSERT(blobPrincipal);
+    RefPtr<BasePrincipal> principal = Cast(blobPrincipal);
+    return principal.forget();
   }
 
   // Mint a codebase principal.
@@ -397,7 +414,7 @@ already_AddRefed<BasePrincipal> BasePrincipal::CreateCodebasePrincipal(
              "CreateCodebasePrincipal does not support NullPrincipal");
 
   nsAutoCString originNoSuffix;
-  mozilla::OriginAttributes attrs;
+  OriginAttributes attrs;
   if (!attrs.PopulateFromOrigin(aOrigin, originNoSuffix)) {
     return nullptr;
   }
@@ -409,25 +426,57 @@ already_AddRefed<BasePrincipal> BasePrincipal::CreateCodebasePrincipal(
   return BasePrincipal::CreateCodebasePrincipal(uri, attrs);
 }
 
-already_AddRefed<BasePrincipal>
-BasePrincipal::CloneStrippingUserContextIdAndFirstPartyDomain() {
+already_AddRefed<BasePrincipal> BasePrincipal::CloneForcingFirstPartyDomain(
+    nsIURI* aURI) {
+  if (NS_WARN_IF(!IsCodebasePrincipal())) {
+    return nullptr;
+  }
+
   OriginAttributes attrs = OriginAttributesRef();
-  attrs.StripAttributes(OriginAttributes::STRIP_USER_CONTEXT_ID |
-                        OriginAttributes::STRIP_FIRST_PARTY_DOMAIN);
+  // XXX this is slow. Maybe we should consider to make it faster.
+  attrs.SetFirstPartyDomain(false, aURI, true /* aForced */);
+
+  return CloneForcingOriginAttributes(attrs);
+}
+
+already_AddRefed<BasePrincipal> BasePrincipal::CloneForcingOriginAttributes(
+    const OriginAttributes& aOriginAttributes) {
+  if (NS_WARN_IF(!IsCodebasePrincipal())) {
+    return nullptr;
+  }
 
   nsAutoCString originNoSuffix;
   nsresult rv = GetOriginNoSuffix(originNoSuffix);
   NS_ENSURE_SUCCESS(rv, nullptr);
 
-  nsCOMPtr<nsIURI> uri;
-  rv = NS_NewURI(getter_AddRefs(uri), originNoSuffix);
+  nsIURI* uri = static_cast<ContentPrincipal*>(this)->mCodebase;
+  RefPtr<ContentPrincipal> copy = new ContentPrincipal();
+  rv = copy->Init(uri, aOriginAttributes, originNoSuffix);
   NS_ENSURE_SUCCESS(rv, nullptr);
 
-  return BasePrincipal::CreateCodebasePrincipal(uri, attrs);
+  return copy.forget();
+}
+
+extensions::WebExtensionPolicy* BasePrincipal::ContentScriptAddonPolicy() {
+  if (!Is<ExpandedPrincipal>()) {
+    return nullptr;
+  }
+
+  auto expanded = As<ExpandedPrincipal>();
+  for (auto& prin : expanded->AllowList()) {
+    if (auto policy = BasePrincipal::Cast(prin)->AddonPolicy()) {
+      return policy;
+    }
+  }
+
+  return nullptr;
 }
 
 bool BasePrincipal::AddonAllowsLoad(nsIURI* aURI,
                                     bool aExplicit /* = false */) {
+  if (Is<ExpandedPrincipal>()) {
+    return As<ExpandedPrincipal>()->AddonAllowsLoad(aURI, aExplicit);
+  }
   if (auto policy = AddonPolicy()) {
     return policy->CanAccessURI(aURI, aExplicit);
   }
@@ -446,6 +495,40 @@ void BasePrincipal::FinishInit(const nsACString& aOriginNoSuffix,
 
   MOZ_ASSERT(!aOriginNoSuffix.IsEmpty());
   mOriginNoSuffix = NS_Atomize(aOriginNoSuffix);
+}
+
+void BasePrincipal::FinishInit(BasePrincipal* aOther,
+                               const OriginAttributes& aOriginAttributes) {
+  mInitialized = true;
+  mOriginAttributes = aOriginAttributes;
+
+  // First compute the origin suffix since it's infallible.
+  nsAutoCString originSuffix;
+  mOriginAttributes.CreateSuffix(originSuffix);
+  mOriginSuffix = NS_Atomize(originSuffix);
+
+  mOriginNoSuffix = aOther->mOriginNoSuffix;
+  mHasExplicitDomain = aOther->mHasExplicitDomain;
+
+  if (aOther->mPreloadCSP) {
+    mPreloadCSP = do_CreateInstance("@mozilla.org/cspcontext;1");
+    nsCSPContext* preloadCSP = static_cast<nsCSPContext*>(mPreloadCSP.get());
+    preloadCSP->InitFromOther(
+        static_cast<nsCSPContext*>(aOther->mPreloadCSP.get()), nullptr, this);
+  }
+
+  if (aOther->mCSP) {
+    mCSP = do_CreateInstance("@mozilla.org/cspcontext;1");
+    nsCSPContext* csp = static_cast<nsCSPContext*>(mCSP.get());
+    csp->InitFromOther(static_cast<nsCSPContext*>(aOther->mCSP.get()), nullptr,
+                       this);
+  }
+}
+
+bool SiteIdentifier::Equals(const SiteIdentifier& aOther) const {
+  MOZ_ASSERT(IsInitialized());
+  MOZ_ASSERT(aOther.IsInitialized());
+  return mPrincipal->FastEquals(aOther.mPrincipal);
 }
 
 }  // namespace mozilla

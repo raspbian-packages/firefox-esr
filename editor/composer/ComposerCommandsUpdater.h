@@ -14,14 +14,13 @@
 #include "nsISupportsImpl.h"         // for NS_DECL_ISUPPORTS
 #include "nsITimer.h"                // for NS_DECL_NSITIMERCALLBACK, etc
 #include "nsITransactionListener.h"  // for nsITransactionListener
-#include "nsIWeakReferenceUtils.h"   // for nsWeakPtr
 #include "nscore.h"                  // for NS_IMETHOD, nsresult, etc
 
+class nsCommandManager;
 class nsIDocShell;
 class nsITransaction;
 class nsITransactionManager;
 class nsPIDOMWindowOuter;
-class nsPICommandUpdater;
 
 namespace mozilla {
 
@@ -70,7 +69,7 @@ class ComposerCommandsUpdater final : public nsIDocumentStateListener,
   nsresult UpdateOneCommand(const char* aCommand);
   nsresult UpdateCommandGroup(const nsAString& aCommandGroup);
 
-  already_AddRefed<nsPICommandUpdater> GetCommandUpdater();
+  nsCommandManager* GetCommandManager();
 
   nsresult PrimeUpdateTimer();
   void TimerCallback();

@@ -6,12 +6,14 @@
 
 #include "LayersLogging.h"
 #include <stdint.h>              // for uint8_t
+#include "FrameMetrics.h"        // for FrameMetrics, etc
 #include "ImageTypes.h"          // for ImageFormat
 #include "mozilla/gfx/Matrix.h"  // for Matrix4x4, Matrix
 #include "mozilla/gfx/Point.h"   // for IntSize
 #include "nsDebug.h"             // for NS_ERROR
 #include "nsPoint.h"             // for nsPoint
 #include "nsRect.h"              // for nsRect
+#include "nsRectAbsolute.h"      // for nsRectAbsolute
 #include "base/basictypes.h"
 
 using namespace mozilla::gfx;
@@ -26,7 +28,7 @@ void AppendToString(std::stringstream& aStream, const void* p, const char* pfx,
   aStream << sfx;
 }
 
-void AppendToString(std::stringstream& aStream, FrameMetrics::ViewID n,
+void AppendToString(std::stringstream& aStream, ScrollableLayerGuid::ViewID n,
                     const char* pfx, const char* sfx) {
   aStream << pfx;
   aStream << n;
@@ -54,6 +56,15 @@ void AppendToString(std::stringstream& aStream, const nsRect& r,
   aStream << pfx;
   aStream << nsPrintfCString("(x=%d, y=%d, w=%d, h=%d)", r.X(), r.Y(),
                              r.Width(), r.Height())
+                 .get();
+  aStream << sfx;
+}
+
+void AppendToString(std::stringstream& aStream, const nsRectAbsolute& r,
+                    const char* pfx, const char* sfx) {
+  aStream << pfx;
+  aStream << nsPrintfCString("(l=%d, t=%d, r=%d, b=%d)", r.Left(), r.Top(),
+                             r.Right(), r.Bottom())
                  .get();
   aStream << sfx;
 }
@@ -173,7 +184,7 @@ void AppendToString(std::stringstream& aStream, const ScrollMetadata& m,
   aStream << pfx;
   AppendToString(aStream, m.GetMetrics(), "{ [metrics=");
   AppendToString(aStream, m.GetBackgroundColor(), "] [color=");
-  if (m.GetScrollParentId() != FrameMetrics::NULL_SCROLL_ID) {
+  if (m.GetScrollParentId() != ScrollableLayerGuid::NULL_SCROLL_ID) {
     AppendToString(aStream, m.GetScrollParentId(), "] [scrollParent=");
   }
   if (m.HasScrollClip()) {
@@ -217,9 +228,8 @@ void AppendToString(std::stringstream& aStream, const FrameMetrics& m,
     AppendToString(aStream, m.GetZoom(), "] [z=", "] }");
   } else {
     AppendToString(aStream, m.GetDisplayPortMargins(), " [dpm=");
-    aStream << nsPrintfCString("] um=%d", m.GetUseDisplayPortMargins()).get();
     AppendToString(aStream, m.GetRootCompositionSize(), "] [rcs=");
-    AppendToString(aStream, m.GetViewport(), "] [v=");
+    AppendToString(aStream, m.GetLayoutViewport(), "] [v=");
     aStream << nsPrintfCString("] [z=(ld=%.3f r=%.3f",
                                m.GetDevPixelsPerCSSPixel().scale,
                                m.GetPresShellResolution())
@@ -243,9 +253,16 @@ void AppendToString(std::stringstream& aStream, const ScrollableLayerGuid& s,
                     const char* pfx, const char* sfx) {
   aStream << pfx
           << nsPrintfCString("{ l=0x%" PRIx64 ", p=%u, v=%" PRIu64 " }",
-                             s.mLayersId, s.mPresShellId, s.mScrollId)
+                             uint64_t(s.mLayersId), s.mPresShellId, s.mScrollId)
                  .get()
           << sfx;
+}
+
+void AppendToString(std::stringstream& aStream, const SLGuidAndRenderRoot& s,
+                    const char* pfx, const char* sfx) {
+  aStream << pfx << "{ ";
+  AppendToString(aStream, s.mScrollableLayerGuid, "s=");
+  aStream << nsPrintfCString(", r=%d }", (int)s.mRenderRoot).get() << sfx;
 }
 
 void AppendToString(std::stringstream& aStream, const ZoomConstraints& z,
@@ -359,6 +376,12 @@ void AppendToString(std::stringstream& aStream,
       break;
     case SurfaceFormat::NV12:
       aStream << "SurfaceFormat::NV12";
+      break;
+    case SurfaceFormat::P010:
+      aStream << "SurfaceFormat::P010";
+      break;
+    case SurfaceFormat::P016:
+      aStream << "SurfaceFormat::P016";
       break;
     case SurfaceFormat::YUV422:
       aStream << "SurfaceFormat::YUV422";

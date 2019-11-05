@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,6 +6,7 @@
 #ifndef GFX_PLATFORM_H
 #define GFX_PLATFORM_H
 
+#include "mozilla/FontPropertyTypes.h"
 #include "mozilla/Logging.h"
 #include "mozilla/gfx/Types.h"
 #include "nsTArray.h"
@@ -25,6 +26,7 @@
 #include "GfxInfoCollector.h"
 
 #include "mozilla/layers/CompositorTypes.h"
+#include "mozilla/layers/MemoryPressureObserver.h"
 
 class gfxASurface;
 class gfxFont;
@@ -42,9 +44,9 @@ class gfxTextPerfMetrics;
 typedef struct FT_LibraryRec_* FT_Library;
 
 namespace mozilla {
-namespace gl {
-class SkiaGLGlue;
-}  // namespace gl
+namespace layers {
+class FrameStats;
+}
 namespace gfx {
 class DrawTarget;
 class SourceSurface;
@@ -112,6 +114,8 @@ inline const char* GetBackendName(mozilla::gfx::BackendType aBackend) {
       return "direct2d 1.1";
     case mozilla::gfx::BackendType::WEBRENDER_TEXT:
       return "webrender text";
+    case mozilla::gfx::BackendType::CAPTURE:
+      return "capture";
     case mozilla::gfx::BackendType::NONE:
       return "none";
     case mozilla::gfx::BackendType::BACKEND_LAST:
@@ -138,10 +142,20 @@ enum class ForcedDeviceResetReason {
   COMPOSITOR_UPDATED,
 };
 
-class gfxPlatform {
+struct BackendPrefsData {
+  uint32_t mCanvasBitmask = 0;
+  mozilla::gfx::BackendType mCanvasDefault = mozilla::gfx::BackendType::NONE;
+  uint32_t mContentBitmask = 0;
+  mozilla::gfx::BackendType mContentDefault = mozilla::gfx::BackendType::NONE;
+};
+
+class gfxPlatform : public mozilla::layers::MemoryPressureListener {
   friend class SRGBOverrideObserver;
 
  public:
+  typedef mozilla::StretchRange StretchRange;
+  typedef mozilla::SlantStyleRange SlantStyleRange;
+  typedef mozilla::WeightRange WeightRange;
   typedef mozilla::gfx::Color Color;
   typedef mozilla::gfx::DataSourceSurface DataSourceSurface;
   typedef mozilla::gfx::DrawTarget DrawTarget;
@@ -259,25 +273,17 @@ class gfxPlatform {
     return BackendTypeBit(aType) & mContentBackendBitmask;
   }
 
-  /// This function also lets us know if the current preferences/platform
-  /// combination allows for both accelerated and not accelerated canvas
-  /// implementations.  If it does, and other relevant preferences are
-  /// asking for it, we will examine the commands in the first few seconds
-  /// of the canvas usage, and potentially change to accelerated or
-  /// non-accelerated canvas.
-  bool AllowOpenGLCanvas();
-  virtual void InitializeSkiaCacheLimits();
-
   static bool AsyncPanZoomEnabled();
 
   virtual void GetAzureBackendInfo(mozilla::widget::InfoObject& aObj);
   void GetApzSupportInfo(mozilla::widget::InfoObject& aObj);
   void GetTilesSupportInfo(mozilla::widget::InfoObject& aObj);
+  void GetFrameStats(mozilla::widget::InfoObject& aObj);
 
   // Get the default content backend that will be used with the default
   // compositor. If the compositor is known when calling this function,
   // GetContentBackendFor() should be called instead.
-  mozilla::gfx::BackendType GetDefaultContentBackend() {
+  mozilla::gfx::BackendType GetDefaultContentBackend() const {
     return mContentBackend;
   }
 
@@ -297,12 +303,10 @@ class gfxPlatform {
   mozilla::gfx::BackendType GetFallbackCanvasBackend() {
     return mFallbackCanvasBackend;
   }
+
   /*
    * Font bits
    */
-
-  virtual void SetupClusterBoundaries(gfxTextRun* aTextRun,
-                                      const char16_t* aString);
 
   /**
    * Fill aListOfFonts with the results of querying the list of font names
@@ -332,9 +336,9 @@ class gfxPlatform {
    * of gfxPlatformFontList *and* to call its InitFontList() method.
    */
   virtual gfxPlatformFontList* CreatePlatformFontList() {
-    NS_NOTREACHED(
-        "oops, this platform doesn't have a gfxPlatformFontList "
-        "implementation");
+    MOZ_ASSERT_UNREACHABLE(
+        "oops, this platform doesn't have a "
+        "gfxPlatformFontList implementation");
     return nullptr;
   }
 
@@ -343,8 +347,8 @@ class gfxPlatform {
    * GetFontList(). If the name doesn't in the system, aFamilyName will be empty
    * string, but not failed.
    */
-  virtual nsresult GetStandardFamilyName(const nsAString& aFontName,
-                                         nsAString& aFamilyName);
+  void GetStandardFamilyName(const nsCString& aFontName,
+                             nsACString& aFamilyName);
 
   /**
    * Returns default font name (localized family name) for aLangGroup and
@@ -353,8 +357,8 @@ class gfxPlatform {
    * available in the system, this may return second or later font in the
    * pref.  If there are no available fonts in the pref, returns empty string.
    */
-  nsString GetDefaultFontName(const nsACString& aLangGroup,
-                              const nsACString& aGenericFamily);
+  nsAutoCString GetDefaultFontName(const nsACString& aLangGroup,
+                                   const nsACString& aGenericFamily);
 
   /**
    * Create the appropriate platform font group
@@ -370,9 +374,10 @@ class gfxPlatform {
    * Ownership of the returned gfxFontEntry is passed to the caller,
    * who must either AddRef() or delete.
    */
-  virtual gfxFontEntry* LookupLocalFont(const nsAString& aFontName,
-                                        uint16_t aWeight, int16_t aStretch,
-                                        uint8_t aStyle);
+  gfxFontEntry* LookupLocalFont(const nsACString& aFontName,
+                                WeightRange aWeightForEntry,
+                                StretchRange aStretchForEntry,
+                                SlantStyleRange aStyleForEntry);
 
   /**
    * Activate a platform font.  (Needed to support @font-face src url().)
@@ -382,11 +387,11 @@ class gfxPlatform {
    * Ownership of the returned gfxFontEntry is passed to the caller,
    * who must either AddRef() or delete.
    */
-  virtual gfxFontEntry* MakePlatformFont(const nsAString& aFontName,
-                                         uint16_t aWeight, int16_t aStretch,
-                                         uint8_t aStyle,
-                                         const uint8_t* aFontData,
-                                         uint32_t aLength);
+  gfxFontEntry* MakePlatformFont(const nsACString& aFontName,
+                                 WeightRange aWeightForEntry,
+                                 StretchRange aStretchForEntry,
+                                 SlantStyleRange aStyleForEntry,
+                                 const uint8_t* aFontData, uint32_t aLength);
 
   /**
    * Whether to allow downloadable fonts via @font-face rules
@@ -572,7 +577,16 @@ class gfxPlatform {
     return mozilla::gfx::SurfaceFormat::X8R8G8B8_UINT32;
   }
 
+  /**
+   * Returns whether the current process should use tiling for layers.
+   */
   virtual bool UsesTiling() const;
+
+  /**
+   * Returns whether the content process will use tiling for layers. This is
+   * only used by about:support.
+   */
+  virtual bool ContentUsesTiling() const;
 
   /**
    * Returns a logger if one is available and logging is enabled
@@ -587,13 +601,9 @@ class gfxPlatform {
    */
   mozilla::layers::DiagnosticTypes GetLayerDiagnosticTypes();
 
-  mozilla::gl::SkiaGLGlue* GetSkiaGLGlue();
-  void PurgeSkiaGPUCache();
   static void PurgeSkiaFontCache();
 
   static bool UsesOffMainThreadCompositing();
-
-  bool HasEnoughTotalSystemMemoryForSkiaGL();
 
   /**
    * Get the hardware vsync source for each platform.
@@ -601,7 +611,8 @@ class gfxPlatform {
    */
   virtual mozilla::gfx::VsyncSource* GetHardwareVsync() {
     MOZ_ASSERT(mVsyncSource != nullptr);
-    MOZ_ASSERT(XRE_IsParentProcess());
+    MOZ_ASSERT(XRE_IsParentProcess() ||
+               mozilla::recordreplay::IsRecordingOrReplaying());
     return mVsyncSource;
   }
 
@@ -613,19 +624,24 @@ class gfxPlatform {
   static bool IsInLayoutAsapMode();
 
   /**
-   * Returns the software vsync rate to use.
-   */
-  static int GetSoftwareVsyncRate();
-
-  /**
    * Returns whether or not a custom vsync rate is set.
    */
   static bool ForceSoftwareVsync();
 
   /**
+   * Returns the software vsync rate to use.
+   */
+  static int GetSoftwareVsyncRate();
+
+  /**
    * Returns the default frame rate for the refresh driver / software vsync.
    */
   static int GetDefaultFrameRate();
+
+  /**
+   * Update the frame rate (called e.g. after pref changes).
+   */
+  static void ReInitFrameRate();
 
   /**
    * Used to test which input types are handled via APZ.
@@ -697,14 +713,30 @@ class gfxPlatform {
 
   virtual FT_Library GetFTLibrary() { return nullptr; }
 
+  bool HasVariationFontSupport() const { return mHasVariationFontSupport; }
+
+  bool HasNativeColrFontSupport() const { return mHasNativeColrFontSupport; }
+
   // you probably want to use gfxVars::UseWebRender() instead of this
   static bool WebRenderPrefEnabled();
   // you probably want to use gfxVars::UseWebRender() instead of this
   static bool WebRenderEnvvarEnabled();
 
+  void NotifyFrameStats(nsTArray<mozilla::layers::FrameStats>&& aFrameStats);
+
+  virtual void OnMemoryPressure(
+      mozilla::layers::MemoryPressureReason aWhy) override;
+
+  virtual void EnsureDevicesInitialized(){};
+  virtual bool DevicesInitialized() { return true; };
+
+  static uint32_t TargetFrameRate();
+
  protected:
   gfxPlatform();
   virtual ~gfxPlatform();
+
+  virtual bool HasBattery() { return false; }
 
   virtual void InitAcceleration();
   virtual void InitWebRenderConfig();
@@ -729,16 +761,16 @@ class gfxPlatform {
   virtual void GetAcceleratedCompositorBackends(
       nsTArray<mozilla::layers::LayersBackend>& aBackends);
 
+  // Returns preferences of canvas and content backends.
+  virtual BackendPrefsData GetBackendPrefs() const;
+
   /**
    * Initialise the preferred and fallback canvas backends
    * aBackendBitmask specifies the backends which are acceptable to the caller.
    * The backend used is determined by aBackendBitmask and the order specified
    * by the gfx.canvas.azure.backends pref.
    */
-  void InitBackendPrefs(uint32_t aCanvasBitmask,
-                        mozilla::gfx::BackendType aCanvasDefault,
-                        uint32_t aContentBitmask,
-                        mozilla::gfx::BackendType aContentDefault);
+  void InitBackendPrefs(BackendPrefsData&& aPrefsData);
 
   /**
    * Content-process only. Requests device preferences from the parent process
@@ -782,6 +814,8 @@ class gfxPlatform {
 
   virtual bool CanUseHardwareVideoDecoding();
 
+  virtual bool CheckVariationFontSupport() = 0;
+
   int8_t mAllowDownloadableFonts;
   int8_t mGraphiteShapingEnabled;
   int8_t mOpenTypeSVGEnabled;
@@ -791,6 +825,13 @@ class gfxPlatform {
   // whether to always search font cmaps globally
   // when doing system font fallback
   int8_t mFallbackUsesCmaps;
+
+  // Whether the platform supports rendering OpenType font variations
+  bool mHasVariationFontSupport;
+
+  // Whether the platform font APIs have native support for COLR fonts.
+  // Set to true during initialization on platforms that implement this.
+  bool mHasNativeColrFontSupport = false;
 
   // max character limit for words in word cache
   int32_t mWordCacheCharLimit;
@@ -839,11 +880,12 @@ class gfxPlatform {
 
   static bool IsDXInterop2Blocked();
   static bool IsDXNV12Blocked();
+  static bool IsDXP010Blocked();
+  static bool IsDXP016Blocked();
 
   RefPtr<gfxASurface> mScreenReferenceSurface;
   nsCOMPtr<nsIObserver> mSRGBOverrideObserver;
-  nsCOMPtr<nsIObserver> mFontPrefsObserver;
-  nsCOMPtr<nsIObserver> mMemoryPressureObserver;
+  RefPtr<mozilla::layers::MemoryPressureObserver> mMemoryPressureObserver;
 
   // The preferred draw target backend to use for canvas
   mozilla::gfx::BackendType mPreferredCanvasBackend;
@@ -860,9 +902,11 @@ class gfxPlatform {
   mozilla::widget::GfxInfoCollector<gfxPlatform> mAzureCanvasBackendCollector;
   mozilla::widget::GfxInfoCollector<gfxPlatform> mApzSupportCollector;
   mozilla::widget::GfxInfoCollector<gfxPlatform> mTilesInfoCollector;
+  mozilla::widget::GfxInfoCollector<gfxPlatform> mFrameStatsCollector;
+
+  nsTArray<mozilla::layers::FrameStats> mFrameStats;
 
   RefPtr<mozilla::gfx::DrawEventRecorder> mRecorder;
-  RefPtr<mozilla::gl::SkiaGLGlue> mSkiaGlue;
 
   // Backend that we are compositing with. NONE, if no compositor has been
   // created yet.

@@ -20,8 +20,11 @@
 
 class nsICategoryManager;
 class nsIMemoryReporter;
-class nsIPresShell;
 class nsISimpleEnumerator;
+
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
 
 #define NS_STYLESHEETSERVICE_CID                     \
   {                                                  \
@@ -46,18 +49,12 @@ class nsStyleSheetService final : public nsIStyleSheetService,
 
   nsresult Init();
 
-  SheetArray* AgentStyleSheets(mozilla::StyleBackendType aType) {
-    return &Sheets(aType)[AGENT_SHEET];
-  }
-  SheetArray* UserStyleSheets(mozilla::StyleBackendType aType) {
-    return &Sheets(aType)[USER_SHEET];
-  }
-  SheetArray* AuthorStyleSheets(mozilla::StyleBackendType aType) {
-    return &Sheets(aType)[AUTHOR_SHEET];
-  }
+  SheetArray* AgentStyleSheets() { return &mSheets[AGENT_SHEET]; }
+  SheetArray* UserStyleSheets() { return &mSheets[USER_SHEET]; }
+  SheetArray* AuthorStyleSheets() { return &mSheets[AUTHOR_SHEET]; }
 
-  void RegisterPresShell(nsIPresShell* aPresShell);
-  void UnregisterPresShell(nsIPresShell* aPresShell);
+  void RegisterPresShell(mozilla::PresShell* aPresShell);
+  void UnregisterPresShell(mozilla::PresShell* aPresShell);
 
   size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;
 
@@ -72,32 +69,17 @@ class nsStyleSheetService final : public nsIStyleSheetService,
                               nsISimpleEnumerator* aEnumerator,
                               uint32_t aSheetType);
 
-  int32_t FindSheetByURI(mozilla::StyleBackendType aBackendType,
-                         uint32_t aSheetType, nsIURI* aSheetURI);
+  int32_t FindSheetByURI(uint32_t aSheetType, nsIURI* aSheetURI);
 
   // Like LoadAndRegisterSheet, but doesn't notify.  If successful, the
   // new sheet will be the last sheet in mSheets[aSheetType].
   nsresult LoadAndRegisterSheetInternal(nsIURI* aSheetURI, uint32_t aSheetType);
 
-  mozilla::Array<SheetArray, 3>& Sheets(mozilla::StyleBackendType aType) {
-#ifdef MOZ_OLD_STYLE
-    if (aType == mozilla::StyleBackendType::Gecko) {
-      return mGeckoSheets;
-    }
-#else
-    MOZ_ASSERT(aType == mozilla::StyleBackendType::Servo);
-#endif
-    return mServoSheets;
-  }
-
-#ifdef MOZ_OLD_STYLE
-  mozilla::Array<SheetArray, 3> mGeckoSheets;
-#endif
-  mozilla::Array<SheetArray, 3> mServoSheets;
+  mozilla::Array<SheetArray, 3> mSheets;
 
   // Registered PresShells that will be notified when sheets are added and
   // removed from the style sheet service.
-  nsTArray<nsCOMPtr<nsIPresShell>> mPresShells;
+  nsTArray<RefPtr<mozilla::PresShell>> mPresShells;
 };
 
 #endif

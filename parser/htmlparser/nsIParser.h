@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=2 sw=2 et tw=78: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -204,16 +204,24 @@ class nsIParser : public nsParserBase {
 
   /**
    * Call immediately before starting to evaluate a parser-inserted script or
-   * in general when the spec says to define an insertion point.
+   * in general when the spec says to increment the script nesting level.
    */
-  virtual void PushDefinedInsertionPoint() = 0;
+  virtual void IncrementScriptNestingLevel() = 0;
 
   /**
    * Call immediately after having evaluated a parser-inserted script or
    * generally want to restore to the state before the last
-   * PushDefinedInsertionPoint call.
+   * IncrementScriptNestingLevel call.
    */
-  virtual void PopDefinedInsertionPoint() = 0;
+  virtual void DecrementScriptNestingLevel() = 0;
+
+  /**
+   * True if this is an HTML5 parser whose script nesting level (in
+   * the sense of
+   * <https://html.spec.whatwg.org/multipage/parsing.html#script-nesting-level>)
+   * is nonzero.
+   */
+  virtual bool HasNonzeroScriptNestingLevel() const = 0;
 
   /**
    * Marks the HTML5 parser as not a script-created parser.

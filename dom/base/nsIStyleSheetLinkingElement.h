@@ -8,8 +8,11 @@
 
 #include "nsISupports.h"
 #include "mozilla/StyleSheet.h"
+#include "mozilla/Result.h"
 
+class nsIContent;
 class nsICSSLoaderObserver;
+class nsIPrincipal;
 class nsIURI;
 
 #define NS_ISTYLESHEETLINKINGELEMENT_IID             \
@@ -21,6 +24,95 @@ class nsIURI;
 
 class nsIStyleSheetLinkingElement : public nsISupports {
  public:
+  enum class ForceUpdate : uint8_t {
+    No,
+    Yes,
+  };
+
+  enum class Completed : uint8_t {
+    No,
+    Yes,
+  };
+
+  enum class HasAlternateRel : uint8_t {
+    No,
+    Yes,
+  };
+
+  enum class IsAlternate : uint8_t {
+    No,
+    Yes,
+  };
+
+  enum class IsInline : uint8_t {
+    No,
+    Yes,
+  };
+
+  enum class IsExplicitlyEnabled : uint8_t {
+    No,
+    Yes,
+  };
+
+  enum class MediaMatched : uint8_t {
+    Yes,
+    No,
+  };
+
+  struct Update {
+   private:
+    bool mWillNotify;
+    bool mIsAlternate;
+    bool mMediaMatched;
+
+   public:
+    Update() : mWillNotify(false), mIsAlternate(false), mMediaMatched(false) {}
+
+    Update(Completed aCompleted, IsAlternate aIsAlternate,
+           MediaMatched aMediaMatched)
+        : mWillNotify(aCompleted == Completed::No),
+          mIsAlternate(aIsAlternate == IsAlternate::Yes),
+          mMediaMatched(aMediaMatched == MediaMatched::Yes) {}
+
+    bool WillNotify() const { return mWillNotify; }
+
+    bool ShouldBlock() const {
+      if (!mWillNotify) {
+        return false;
+      }
+
+      return !mIsAlternate && mMediaMatched;
+    }
+  };
+
+  struct MOZ_STACK_CLASS SheetInfo {
+    nsIContent* mContent;
+    // FIXME(emilio): do these really need to be strong refs?
+    nsCOMPtr<nsIURI> mURI;
+
+    // The principal of the scripted caller that initiated the load, if
+    // available. Otherwise null.
+    nsCOMPtr<nsIPrincipal> mTriggeringPrincipal;
+    mozilla::net::ReferrerPolicy mReferrerPolicy;
+    mozilla::CORSMode mCORSMode;
+    nsString mTitle;
+    nsString mMedia;
+    nsString mIntegrity;
+
+    bool mHasAlternateRel;
+    bool mIsInline;
+    IsExplicitlyEnabled mIsExplicitlyEnabled;
+
+    SheetInfo(const mozilla::dom::Document&, nsIContent*,
+              already_AddRefed<nsIURI> aURI,
+              already_AddRefed<nsIPrincipal> aTriggeringPrincipal,
+              mozilla::net::ReferrerPolicy aReferrerPolicy, mozilla::CORSMode,
+              const nsAString& aTitle, const nsAString& aMedia, HasAlternateRel,
+              IsInline, IsExplicitlyEnabled);
+
+    ~SheetInfo();
+  };
+
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISTYLESHEETLINKINGELEMENT_IID)
 
   /**
@@ -52,20 +144,9 @@ class nsIStyleSheetLinkingElement : public nsISupports {
    *
    * @param aObserver    observer to notify once the stylesheet is loaded.
    *                     This will be passed to the CSSLoader
-   * @param [out] aWillNotify whether aObserver will be notified when the sheet
-   *                          loads.  If this is false, then either we didn't
-   *                          start the sheet load at all, the load failed, or
-   *                          this was an inline sheet that completely finished
-   *                          loading.  In the case when the load failed the
-   *                          failure code will be returned.
-   * @param [out] whether the sheet is an alternate sheet.  This value is only
-   *              meaningful if aWillNotify is true.
-   * @param aForceUpdate whether we wand to force the update, flushing the
-   *                     cached version if any.
    */
-  virtual nsresult UpdateStyleSheet(nsICSSLoaderObserver* aObserver,
-                                    bool* aWillNotify, bool* aIsAlternate,
-                                    bool aForceUpdate = false) = 0;
+  virtual mozilla::Result<Update, nsresult> UpdateStyleSheet(
+      nsICSSLoaderObserver* aObserver) = 0;
 
   /**
    * Tells this element whether to update the stylesheet when the
@@ -105,6 +186,19 @@ class nsIStyleSheetLinkingElement : public nsISupports {
    *         was set
    */
   virtual uint32_t GetLineNumber() = 0;
+
+  // This doesn't entirely belong here since they only make sense for
+  // some types of linking elements, but it's a better place than
+  // anywhere else.
+  virtual void SetColumnNumber(uint32_t aColumnNumber) = 0;
+
+  /**
+   * Get the column number, as previously set by SetColumnNumber.
+   *
+   * @return the column number of this element; or 1 if no column number
+   *         was set
+   */
+  virtual uint32_t GetColumnNumber() = 0;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIStyleSheetLinkingElement,

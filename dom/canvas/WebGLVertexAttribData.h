@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,6 +7,7 @@
 #define WEBGL_VERTEX_ATTRIB_DATA_H_
 
 #include "GLDefs.h"
+#include "WebGLFormats.h"
 #include "WebGLObjectModel.h"
 
 namespace mozilla {
@@ -26,7 +27,7 @@ class WebGLVertexAttribData final {
 
  private:
   GLenum mType;
-  GLenum mBaseType;
+  webgl::AttribBaseType mBaseType = webgl::AttribBaseType::Float;
   uint8_t mSize;  // num of mType vals per vert
   uint8_t mBytesPerVertex;
   bool mNormalized;
@@ -51,7 +52,17 @@ class WebGLVertexAttribData final {
 #undef GETTER
 
   // note that these initial values are what GL initializes vertex attribs to
-  WebGLVertexAttribData() : mDivisor(0), mEnabled(false) {
+  WebGLVertexAttribData()
+      : mDivisor(0),
+        mEnabled(false),
+        mIntegerFunc(false),
+        mType(0),
+        mSize(0),
+        mBytesPerVertex(0),
+        mNormalized(false),
+        mStride(0),
+        mExplicitStride(0),
+        mByteOffset(0) {
     VertexAttribPointer(false, nullptr, 4, LOCAL_GL_FLOAT, false, 0, 0);
   }
 

@@ -5,8 +5,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=780847
 -->
 <head>
   <title>Test radii for mouse events</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="application/javascript" src="/tests/SimpleTest/EventUtils.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/EventUtils.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <style>
   .target { position:absolute; left:100px; top:100px; width:100px; height:100px; background:blue; }
@@ -133,10 +133,10 @@ function runTest() {
 function test2() {
   testMouseClick("t", 100 + 11*mm, 10, "body", "disabled for mouse input");
   testMouseClick("t", 100 + 11*mm, 10, "t", "enabled for touch input", {
-    inputSource: SpecialPowers.Ci.nsIDOMMouseEvent.MOZ_SOURCE_TOUCH
+    inputSource: MouseEvent.MOZ_SOURCE_TOUCH
   });
   testMouseClick("t", 100 + 13*mm, 10, "body", "basic functionality for touch", {
-    inputSource: SpecialPowers.Ci.nsIDOMMouseEvent.MOZ_SOURCE_TOUCH
+    inputSource: MouseEvent.MOZ_SOURCE_TOUCH
   });
   SpecialPowers.pushPrefEnv({"set": [["ui.mouse.radius.inputSource.touchOnly", false]]}, test3);
 }
@@ -245,7 +245,7 @@ function test3() {
   var rect = document.getElementById("t8").getBoundingClientRect();
   testMouseClick("t8", rect.left + 1, rect.top + 1, "t8", "content editable enabled for mouse input");
   testMouseClick("t8", rect.left + 1, rect.top + 1, "t8", "content editable enabled for touch input", {
-    inputSource: SpecialPowers.Ci.nsIDOMMouseEvent.MOZ_SOURCE_TOUCH
+    inputSource: MouseEvent.MOZ_SOURCE_TOUCH
   });
   setShowing("t8", false);
 
@@ -254,7 +254,7 @@ function test3() {
   var rect = document.getElementById("t9").getBoundingClientRect();
   testMouseClick("t9", rect.left + 1, rect.top + 1, "t9", "div enabled with mouse input");
   testMouseClick("t9", rect.left + 1, rect.top + 1, "t9", "div enabled with touch input", {
-    inputSource: SpecialPowers.Ci.nsIDOMMouseEvent.MOZ_SOURCE_TOUCH
+    inputSource: MouseEvent.MOZ_SOURCE_TOUCH
   });
   setShowing("t9", false);
 

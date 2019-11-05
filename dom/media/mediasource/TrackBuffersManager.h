@@ -11,7 +11,7 @@
 #include "mozilla/Maybe.h"
 #include "mozilla/Mutex.h"
 #include "mozilla/NotNull.h"
-#include "AutoTaskQueue.h"
+#include "mozilla/TaskQueue.h"
 
 #include "MediaContainerType.h"
 #include "MediaData.h"
@@ -46,7 +46,7 @@ class SourceBufferTaskQueue {
     if (!mQueue.Length()) {
       return nullptr;
     }
-    RefPtr<SourceBufferTask> task = Move(mQueue[0]);
+    RefPtr<SourceBufferTask> task = std::move(mQueue[0]);
     mQueue.RemoveElementAt(0);
     return task.forget();
   }
@@ -108,6 +108,9 @@ class TrackBuffersManager
   // and if still more space is needed remove from the end.
   EvictDataResult EvictData(const media::TimeUnit& aPlaybackTime,
                             int64_t aSize);
+
+  // Queue a task to run ChangeType
+  void ChangeType(const MediaContainerType& aType);
 
   // Returns the buffered range currently managed.
   // This may be called on any thread.
@@ -203,10 +206,11 @@ class TrackBuffersManager
   // on both the main thread and the task queue.
   Atomic<bool> mBufferFull;
   bool mFirstInitializationSegmentReceived;
+  bool mChangeTypeReceived;
   // Set to true once a new segment is started.
   bool mNewMediaSegmentStarted;
   bool mActiveTrack;
-  const MediaContainerType mType;
+  MediaContainerType mType;
 
   // ContainerParser objects and methods.
   // Those are used to parse the incoming input buffer.
@@ -390,8 +394,13 @@ class TrackBuffersManager
   // Remove all frames and their dependencies contained in aIntervals.
   // Return the index at which frames were first removed or 0 if no frames
   // removed.
+  enum class RemovalMode {
+    kRemoveFrame,
+    kTruncateFrame,
+  };
   uint32_t RemoveFrames(const media::TimeIntervals& aIntervals,
-                        TrackData& aTrackData, uint32_t aStartIndex);
+                        TrackData& aTrackData, uint32_t aStartIndex,
+                        RemovalMode aMode);
   // Recalculate track's evictable amount.
   void ResetEvictionIndex(TrackData& aTrackData);
   void UpdateEvictionIndex(TrackData& aTrackData, uint32_t aCurrentIndex);
@@ -433,13 +442,13 @@ class TrackBuffersManager
   TrackData mAudioTracks;
 
   // TaskQueue methods and objects.
-  RefPtr<AutoTaskQueue> GetTaskQueueSafe() const {
+  RefPtr<TaskQueue> GetTaskQueueSafe() const {
     MutexAutoLock mut(mMutex);
     return mTaskQueue;
   }
   NotNull<AbstractThread*> TaskQueueFromTaskQueue() const {
 #ifdef DEBUG
-    RefPtr<AutoTaskQueue> taskQueue = GetTaskQueueSafe();
+    RefPtr<TaskQueue> taskQueue = GetTaskQueueSafe();
     MOZ_ASSERT(taskQueue && taskQueue->IsCurrentThreadIn());
 #endif
     return WrapNotNull(mTaskQueue.get());
@@ -497,7 +506,7 @@ class TrackBuffersManager
   // mTaskQueue is only ever written after construction on the task queue.
   // As such, it can be accessed while on task queue without the need for the
   // mutex.
-  RefPtr<AutoTaskQueue> mTaskQueue;
+  RefPtr<TaskQueue> mTaskQueue;
   // Stable audio and video track time ranges.
   media::TimeIntervals mVideoBufferedRanges;
   media::TimeIntervals mAudioBufferedRanges;

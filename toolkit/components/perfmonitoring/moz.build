@@ -7,31 +7,22 @@
 with Files('**'):
     BUG_COMPONENT = ('Toolkit', 'Performance Monitoring')
 
-BROWSER_CHROME_MANIFESTS += ['tests/browser/browser.ini']
-
-XPIDL_MODULE = 'toolkit_perfmonitoring'
-
-EXTRA_JS_MODULES += [
-    'PerformanceStats-content.js',
-    'PerformanceStats.jsm',
-    'PerformanceWatcher-content.js',
-    'PerformanceWatcher.jsm',
-]
-
-XPIDL_SOURCES += [
-    'nsIPerformanceStats.idl',
-]
 
 UNIFIED_SOURCES += [
-    'nsPerformanceStats.cpp'
+    'PerformanceMetricsCollector.cpp',
+    'PerformanceUtils.cpp'
 ]
 
-EXPORTS += [
-    'nsPerformanceStats.h'
+EXPORTS.mozilla += [
+    'PerformanceMetricsCollector.h',
+    'PerformanceTypes.h',
+    'PerformanceUtils.h'
 ]
 
 LOCAL_INCLUDES += [
-    '/dom/base',
+    '/dom/base'
 ]
 
 FINAL_LIBRARY = 'xul'
+
+include('/ipc/chromium/chromium-config.mozbuild')

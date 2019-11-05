@@ -24,6 +24,7 @@
 #include "nsIWidgetListener.h"
 #include "nsPIDOMWindow.h"
 #include "nsWeakReference.h"
+
 #include <algorithm>
 
 #if defined(XP_WIN)
@@ -125,6 +126,7 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   typedef mozilla::layers::CompositorBridgeParent CompositorBridgeParent;
   typedef mozilla::layers::IAPZCTreeManager IAPZCTreeManager;
   typedef mozilla::layers::GeckoContentController GeckoContentController;
+  typedef mozilla::layers::SLGuidAndRenderRoot SLGuidAndRenderRoot;
   typedef mozilla::layers::ScrollableLayerGuid ScrollableLayerGuid;
   typedef mozilla::layers::APZEventState APZEventState;
   typedef mozilla::layers::SetAllowedTouchBehaviorCallback
@@ -167,9 +169,8 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
 
   virtual bool IsFullyOccluded() const override { return mIsFullyOccluded; }
 
-  virtual void SetCursor(nsCursor aCursor) override;
-  virtual nsresult SetCursor(imgIContainer* aCursor, uint32_t aHotspotX,
-                             uint32_t aHotspotY) override;
+  virtual void SetCursor(nsCursor aDefaultCursor, imgIContainer* aCursor,
+                         uint32_t aHotspotX, uint32_t aHotspotY) override;
   virtual void ClearCachedCursor() override { mUpdateCursor = true; }
   virtual void SetTransparencyMode(nsTransparencyMode aMode) override;
   virtual nsTransparencyMode GetTransparencyMode() override;
@@ -238,6 +239,9 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   mozilla::DesktopToLayoutDeviceScale GetDesktopToDeviceScale() override {
     return mozilla::DesktopToLayoutDeviceScale(1.0);
   }
+  mozilla::DesktopToLayoutDeviceScale GetDesktopToDeviceScaleByScreen()
+      override;
+
   virtual void ConstrainPosition(bool aAllowSlop, int32_t* aX,
                                  int32_t* aY) override {}
   virtual void MoveClient(double aX, double aY) override;
@@ -260,17 +264,12 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   }
   virtual bool HasPendingInputEvent() override;
   virtual void SetIcon(const nsAString& aIconSpec) override {}
-  virtual void SetWindowTitlebarColor(nscolor aColor, bool aActive) override {}
   virtual void SetDrawsInTitlebar(bool aState) override {}
   virtual bool ShowsResizeIndicator(LayoutDeviceIntRect* aResizerRect) override;
   virtual void FreeNativeData(void* data, uint32_t aDataType) override {}
   virtual MOZ_MUST_USE nsresult BeginResizeDrag(mozilla::WidgetGUIEvent* aEvent,
                                                 int32_t aHorizontal,
                                                 int32_t aVertical) override {
-    return NS_ERROR_NOT_IMPLEMENTED;
-  }
-  virtual MOZ_MUST_USE nsresult
-  BeginMoveDrag(mozilla::WidgetMouseEvent* aEvent) override {
     return NS_ERROR_NOT_IMPLEMENTED;
   }
   virtual nsresult ActivateNativeMenuItemAt(
@@ -311,11 +310,12 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   virtual nsIWidgetListener* GetPreviouslyAttachedWidgetListener() override;
   virtual void SetPreviouslyAttachedWidgetListener(
       nsIWidgetListener* aListener) override;
+  virtual NativeIMEContext GetNativeIMEContext() override;
   TextEventDispatcher* GetTextEventDispatcher() final;
   virtual TextEventDispatcherListener* GetNativeTextEventDispatcherListener()
       override;
   virtual void ZoomToRect(const uint32_t& aPresShellId,
-                          const FrameMetrics::ViewID& aViewId,
+                          const ScrollableLayerGuid::ViewID& aViewId,
                           const CSSRect& aRect,
                           const uint32_t& aFlags) override;
   // Dispatch an event that must be first be routed through APZ.
@@ -324,10 +324,10 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
 
   void SetConfirmedTargetAPZC(
       uint64_t aInputBlockId,
-      const nsTArray<ScrollableLayerGuid>& aTargets) const override;
+      const nsTArray<SLGuidAndRenderRoot>& aTargets) const override;
 
   void UpdateZoomConstraints(
-      const uint32_t& aPresShellId, const FrameMetrics::ViewID& aViewId,
+      const uint32_t& aPresShellId, const ScrollableLayerGuid::ViewID& aViewId,
       const mozilla::Maybe<ZoomConstraints>& aConstraints) override;
 
   bool AsyncPanZoomEnabled() const override;
@@ -381,9 +381,9 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
       const AsyncDragMetrics& aDragMetrics) override;
 
   virtual bool StartAsyncAutoscroll(const ScreenPoint& aAnchorLocation,
-                                    const ScrollableLayerGuid& aGuid) override;
+                                    const SLGuidAndRenderRoot& aGuid) override;
 
-  virtual void StopAsyncAutoscroll(const ScrollableLayerGuid& aGuid) override;
+  virtual void StopAsyncAutoscroll(const SLGuidAndRenderRoot& aGuid) override;
 
   /**
    * Use this when GetLayerManager() returns a BasicLayerManager
@@ -413,6 +413,8 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   static nsIRollupListener* GetActiveRollupListener();
 
   void Shutdown();
+
+  void QuitIME();
 
 #if defined(XP_WIN)
   uint64_t CreateScrollCaptureContainer() override;
@@ -548,9 +550,7 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   void StoreWindowClipRegion(const nsTArray<LayoutDeviceIntRect>& aRects);
 
   virtual already_AddRefed<nsIWidget> AllocateChildPopupWidget() {
-    static NS_DEFINE_IID(kCPopUpCID, NS_CHILD_CID);
-    nsCOMPtr<nsIWidget> widget = do_CreateInstance(kCPopUpCID);
-    return widget.forget();
+    return nsIWidget::CreateChildWindow();
   }
 
   LayerManager* CreateBasicLayerManager();
@@ -588,7 +588,7 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   virtual void WindowUsesOMTC() {}
   virtual void RegisterTouchWindow() {}
 
-  nsIDocument* GetDocument() const;
+  mozilla::dom::Document* GetDocument() const;
 
   void EnsureTextEventDispatcher();
 
@@ -693,19 +693,20 @@ class nsBaseWidget : public nsIWidget, public nsSupportsWeakReference {
   bool mUpdateCursor;
   bool mUseAttachedEvents;
   bool mIMEHasFocus;
+  bool mIMEHasQuit;
   bool mIsFullyOccluded;
   static nsIRollupListener* gRollupListener;
 
   struct InitialZoomConstraints {
     InitialZoomConstraints(const uint32_t& aPresShellID,
-                           const FrameMetrics::ViewID& aViewID,
+                           const ScrollableLayerGuid::ViewID& aViewID,
                            const ZoomConstraints& aConstraints)
         : mPresShellID(aPresShellID),
           mViewID(aViewID),
           mConstraints(aConstraints) {}
 
     uint32_t mPresShellID;
-    FrameMetrics::ViewID mViewID;
+    ScrollableLayerGuid::ViewID mViewID;
     ZoomConstraints mConstraints;
   };
 

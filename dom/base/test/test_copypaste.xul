@@ -6,7 +6,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=888839
 -->
 <window title="Mozilla Bug 888839"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
 
   <script type="application/javascript"><![CDATA[
 
@@ -19,9 +19,7 @@ function runTest() {
 
   let expected = "\n    hello\n    world\n  ";
   SimpleTest.waitForClipboard(expected, function() {
-    let webnav = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                       .getInterface(Ci.nsIWebNavigation);
-    webnav.QueryInterface(Ci.nsIDocShell)
+    window.docShell
           .contentViewer
           .QueryInterface(Ci.nsIContentViewerEdit)
           .copySelection();

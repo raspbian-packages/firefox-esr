@@ -8,27 +8,32 @@
 #include "gfxPrefs.h"
 #include "gfxVR.h"
 #include "ipc/VRLayerParent.h"
+#include "mozilla/layers/CompositorThread.h"  // for CompositorThreadHolder
 #include "mozilla/layers/TextureHost.h"
 #include "mozilla/dom/GamepadBinding.h"  // For GamepadMappingType
 #include "VRThread.h"
 
 #if defined(XP_WIN)
 
-#include <d3d11.h>
-#include "gfxWindowsPlatform.h"
-#include "../layers/d3d11/CompositorD3D11.h"
-#include "mozilla/gfx/DeviceManagerDx.h"
-#include "mozilla/layers/TextureD3D11.h"
+#  include <d3d11.h>
+#  include "gfxWindowsPlatform.h"
+#  include "../layers/d3d11/CompositorD3D11.h"
+#  include "mozilla/gfx/DeviceManagerDx.h"
+#  include "mozilla/layers/TextureD3D11.h"
 
 #elif defined(XP_MACOSX)
 
-#include "mozilla/gfx/MacIOSurface.h"
+#  include "mozilla/gfx/MacIOSurface.h"
 
 #endif
 
-#if defined(MOZ_ANDROID_GOOGLE_VR)
-#include "mozilla/layers/CompositorThread.h"
-#endif  // defined(MOZ_ANDROID_GOOGLE_VR)
+#if defined(MOZ_WIDGET_ANDROID)
+#  include "mozilla/layers/CompositorThread.h"
+// Max frame duration on Android before the watchdog submits a new one.
+// Probably we can get rid of this when we enforce that SubmitFrame can only be
+// called in a VRDisplay loop.
+#  define ANDROID_MAX_FRAME_DURATION 4000
+#endif  // defined(MOZ_WIDGET_ANDROID)
 
 using namespace mozilla;
 using namespace mozilla::gfx;
@@ -61,22 +66,41 @@ VRDisplayHost::AutoRestoreRenderState::~AutoRestoreRenderState() {
 bool VRDisplayHost::AutoRestoreRenderState::IsSuccess() { return mSuccess; }
 
 VRDisplayHost::VRDisplayHost(VRDeviceType aType)
-    : mDisplayInfo{}, mLastUpdateDisplayInfo{}, mFrameStarted(false) {
+    : mDisplayInfo{},
+      mLastUpdateDisplayInfo{},
+      mCurrentSubmitTaskMonitor("CurrentSubmitTaskMonitor"),
+      mCurrentSubmitTask(nullptr),
+      mFrameStarted(false) {
   MOZ_COUNT_CTOR(VRDisplayHost);
   mDisplayInfo.mType = aType;
   mDisplayInfo.mDisplayID = VRSystemManager::AllocateDisplayID();
   mDisplayInfo.mPresentingGroups = 0;
   mDisplayInfo.mGroupMask = kVRGroupContent;
   mDisplayInfo.mFrameId = 0;
-  mDisplayInfo.mPresentingGeneration = 0;
+  mDisplayInfo.mDisplayState.presentingGeneration = 0;
+  mDisplayInfo.mDisplayState.displayName[0] = '\0';
+
+#if defined(MOZ_WIDGET_ANDROID)
+  mLastSubmittedFrameId = 0;
+  mLastStartedFrame = 0;
+#endif  // defined(MOZ_WIDGET_ANDROID)
 }
 
 VRDisplayHost::~VRDisplayHost() {
+  CancelCurrentSubmitTask();
+
   if (mSubmitThread) {
     mSubmitThread->Shutdown();
     mSubmitThread = nullptr;
   }
   MOZ_COUNT_DTOR(VRDisplayHost);
+}
+
+void VRDisplayHost::ShutdownSubmitThread() {
+  if (mSubmitThread) {
+    mSubmitThread->Shutdown();
+    mSubmitThread = nullptr;
+  }
 }
 
 #if defined(XP_WIN)
@@ -132,7 +156,9 @@ void VRDisplayHost::SetGroupMask(uint32_t aGroupMask) {
   mDisplayInfo.mGroupMask = aGroupMask;
 }
 
-bool VRDisplayHost::GetIsConnected() { return mDisplayInfo.mIsConnected; }
+bool VRDisplayHost::GetIsConnected() {
+  return mDisplayInfo.mDisplayState.isConnected;
+}
 
 void VRDisplayHost::AddLayer(VRLayerParent* aLayer) {
   mLayers.AppendElement(aLayer);
@@ -162,16 +188,49 @@ void VRDisplayHost::RemoveLayer(VRLayerParent* aLayer) {
 }
 
 void VRDisplayHost::StartFrame() {
-  AUTO_PROFILER_TRACING("VR", "GetSensorState");
+  AUTO_PROFILER_TRACING("VR", "GetSensorState", OTHER);
 
-  mLastFrameStart = TimeStamp::Now();
+  TimeStamp now = TimeStamp::Now();
+#if defined(MOZ_WIDGET_ANDROID)
+  const TimeStamp lastFrameStart =
+      mLastFrameStart[mDisplayInfo.mFrameId % kVRMaxLatencyFrames];
+  const bool isPresenting = mLastUpdateDisplayInfo.GetPresentingGroups() != 0;
+  double duration =
+      lastFrameStart.IsNull() ? 0.0 : (now - lastFrameStart).ToMilliseconds();
+  /**
+   * Do not start more VR frames until the last submitted frame is already
+   * processed.
+   */
+  if (isPresenting && mLastStartedFrame > 0 &&
+      mDisplayInfo.mDisplayState.lastSubmittedFrameId < mLastStartedFrame &&
+      duration < (double)ANDROID_MAX_FRAME_DURATION) {
+    return;
+  }
+#endif  // !defined(MOZ_WIDGET_ANDROID)
+
   ++mDisplayInfo.mFrameId;
-  mDisplayInfo.mLastSensorState[mDisplayInfo.mFrameId % kVRMaxLatencyFrames] =
-      GetSensorState();
+  size_t bufferIndex = mDisplayInfo.mFrameId % kVRMaxLatencyFrames;
+  mDisplayInfo.mLastSensorState[bufferIndex] = GetSensorState();
+  mLastFrameStart[bufferIndex] = now;
   mFrameStarted = true;
+#if defined(MOZ_WIDGET_ANDROID)
+  mLastStartedFrame = mDisplayInfo.mFrameId;
+#endif  // !defined(MOZ_WIDGET_ANDROID)
 }
 
 void VRDisplayHost::NotifyVSync() {
+  /**
+   * If this display isn't presenting, refresh the sensors and trigger
+   * VRDisplay.requestAnimationFrame at the normal 2d display refresh rate.
+   */
+  if (mDisplayInfo.mPresentingGroups == 0) {
+    VRManager* vm = VRManager::Get();
+    MOZ_ASSERT(vm);
+    vm->NotifyVRVsync(mDisplayInfo.mDisplayID);
+  }
+}
+
+void VRDisplayHost::CheckWatchDog() {
   /**
    * We will trigger a new frame immediately after a successful frame texture
    * submission.  If content fails to call VRDisplay.submitFrame after
@@ -201,20 +260,16 @@ void VRDisplayHost::NotifyVSync() {
    */
   bool bShouldStartFrame = false;
 
-  if (mDisplayInfo.mPresentingGroups == 0) {
-    // If this display isn't presenting, refresh the sensors and trigger
-    // VRDisplay.requestAnimationFrame at the normal 2d display refresh rate.
+  // If content fails to call VRDisplay.submitFrame, we must eventually
+  // time-out and trigger a new frame.
+  TimeStamp lastFrameStart =
+      mLastFrameStart[mDisplayInfo.mFrameId % kVRMaxLatencyFrames];
+  if (lastFrameStart.IsNull()) {
     bShouldStartFrame = true;
   } else {
-    // If content fails to call VRDisplay.submitFrame, we must eventually
-    // time-out and trigger a new frame.
-    if (mLastFrameStart.IsNull()) {
+    TimeDuration duration = TimeStamp::Now() - lastFrameStart;
+    if (duration.ToMilliseconds() > gfxPrefs::VRDisplayRafMaxDuration()) {
       bShouldStartFrame = true;
-    } else {
-      TimeDuration duration = TimeStamp::Now() - mLastFrameStart;
-      if (duration.ToMilliseconds() > gfxPrefs::VRDisplayRafMaxDuration()) {
-        bShouldStartFrame = true;
-      }
     }
   }
 
@@ -225,92 +280,35 @@ void VRDisplayHost::NotifyVSync() {
   }
 }
 
+void VRDisplayHost::Run1msTasks(double aDeltaTime) {
+  // To override in children
+}
+
+void VRDisplayHost::Run10msTasks() { CheckWatchDog(); }
+
+void VRDisplayHost::Run100msTasks() {
+  // to override in children
+}
+
 void VRDisplayHost::SubmitFrameInternal(
     const layers::SurfaceDescriptor& aTexture, uint64_t aFrameId,
     const gfx::Rect& aLeftEyeRect, const gfx::Rect& aRightEyeRect) {
-#if !defined(MOZ_ANDROID_GOOGLE_VR)
+#if !defined(MOZ_WIDGET_ANDROID)
   MOZ_ASSERT(mSubmitThread->GetThread() == NS_GetCurrentThread());
-#endif  // !defined(MOZ_ANDROID_GOOGLE_VR)
-  AUTO_PROFILER_TRACING("VR", "SubmitFrameAtVRDisplayHost");
+#endif  // !defined(MOZ_WIDGET_ANDROID)
+  AUTO_PROFILER_TRACING("VR", "SubmitFrameAtVRDisplayHost", OTHER);
 
-  mFrameStarted = false;
-  switch (aTexture.type()) {
-#if defined(XP_WIN)
-    case SurfaceDescriptor::TSurfaceDescriptorD3D10: {
-      if (!CreateD3DObjects()) {
-        return;
-      }
-      const SurfaceDescriptorD3D10& surf =
-          aTexture.get_SurfaceDescriptorD3D10();
-      RefPtr<ID3D11Texture2D> dxTexture;
-      HRESULT hr = mDevice->OpenSharedResource(
-          (HANDLE)surf.handle(), __uuidof(ID3D11Texture2D),
-          (void**)(ID3D11Texture2D**)getter_AddRefs(dxTexture));
-      if (FAILED(hr) || !dxTexture) {
-        NS_WARNING("Failed to open shared texture");
-        return;
-      }
+  {  // scope lock
+    MonitorAutoLock lock(mCurrentSubmitTaskMonitor);
 
-      // Similar to LockD3DTexture in TextureD3D11.cpp
-      RefPtr<IDXGIKeyedMutex> mutex;
-      dxTexture->QueryInterface((IDXGIKeyedMutex**)getter_AddRefs(mutex));
-      if (mutex) {
-        HRESULT hr = mutex->AcquireSync(0, 1000);
-        if (hr == WAIT_TIMEOUT) {
-          gfxDevCrash(LogReason::D3DLockTimeout) << "D3D lock mutex timeout";
-        } else if (hr == WAIT_ABANDONED) {
-          gfxCriticalNote << "GFX: D3D11 lock mutex abandoned";
-        }
-        if (FAILED(hr)) {
-          NS_WARNING("Failed to lock the texture");
-          return;
-        }
-      }
-      bool success =
-          SubmitFrame(dxTexture, surf.size(), aLeftEyeRect, aRightEyeRect);
-      if (mutex) {
-        HRESULT hr = mutex->ReleaseSync(0);
-        if (FAILED(hr)) {
-          NS_WARNING("Failed to unlock the texture");
-        }
-      }
-      if (!success) {
-        return;
-      }
-      break;
-    }
-#elif defined(XP_MACOSX)
-    case SurfaceDescriptor::TSurfaceDescriptorMacIOSurface: {
-      const auto& desc = aTexture.get_SurfaceDescriptorMacIOSurface();
-      RefPtr<MacIOSurface> surf = MacIOSurface::LookupSurface(
-          desc.surfaceId(), desc.scaleFactor(), !desc.isOpaque());
-      if (!surf) {
-        NS_WARNING("VRDisplayHost::SubmitFrame failed to get a MacIOSurface");
-        return;
-      }
-      IntSize texSize = gfx::IntSize(surf->GetDevicePixelWidth(),
-                                     surf->GetDevicePixelHeight());
-      if (!SubmitFrame(surf, texSize, aLeftEyeRect, aRightEyeRect)) {
-        return;
-      }
-      break;
-    }
-#elif defined(MOZ_ANDROID_GOOGLE_VR)
-    case SurfaceDescriptor::TEGLImageDescriptor: {
-      const EGLImageDescriptor& desc = aTexture.get_EGLImageDescriptor();
-      if (!SubmitFrame(&desc, aLeftEyeRect, aRightEyeRect)) {
-        return;
-      }
-      break;
-    }
-#endif
-    default: {
-      NS_WARNING("Unsupported SurfaceDescriptor type for VR layer texture");
+    if (!SubmitFrame(aTexture, aFrameId, aLeftEyeRect, aRightEyeRect)) {
+      mCurrentSubmitTask = nullptr;
       return;
     }
+    mCurrentSubmitTask = nullptr;
   }
 
-#if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_ANDROID_GOOGLE_VR)
+#if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_WIDGET_ANDROID)
 
   /**
    * Trigger the next VSync immediately after we are successfully
@@ -323,7 +321,7 @@ void VRDisplayHost::SubmitFrameInternal(
    * succeeds again.
    */
   VRManager* vm = VRManager::Get();
-  MessageLoop* loop = VRListenerThreadHolder::Loop();
+  MessageLoop* loop = CompositorThreadHolder::Loop();
 
   loop->PostTask(NewRunnableMethod<const uint32_t>(
       "gfx::VRManager::NotifyVRVsync", vm, &VRManager::NotifyVRVsync,
@@ -336,12 +334,7 @@ void VRDisplayHost::SubmitFrame(VRLayerParent* aLayer,
                                 uint64_t aFrameId,
                                 const gfx::Rect& aLeftEyeRect,
                                 const gfx::Rect& aRightEyeRect) {
-#if !defined(MOZ_ANDROID_GOOGLE_VR)
-  if (!mSubmitThread) {
-    mSubmitThread = new VRThread(NS_LITERAL_CSTRING("VR_SubmitFrame"));
-  }
-#endif  // !defined(MOZ_ANDROID_GOOGLE_VR)
-
+  MonitorAutoLock lock(mCurrentSubmitTaskMonitor);
   if ((mDisplayInfo.mGroupMask & aLayer->GetGroup()) == 0) {
     // Suppress layers hidden by the group mask
     return;
@@ -352,19 +345,50 @@ void VRDisplayHost::SubmitFrame(VRLayerParent* aLayer,
     return;
   }
 
-  RefPtr<Runnable> submit =
-      NewRunnableMethod<StoreCopyPassByConstLRef<layers::SurfaceDescriptor>,
-                        uint64_t, StoreCopyPassByConstLRef<gfx::Rect>,
-                        StoreCopyPassByConstLRef<gfx::Rect>>(
-          "gfx::VRDisplayHost::SubmitFrameInternal", this,
-          &VRDisplayHost::SubmitFrameInternal, aTexture, aFrameId, aLeftEyeRect,
-          aRightEyeRect);
-#if !defined(MOZ_ANDROID_GOOGLE_VR)
-  mSubmitThread->Start();
-  mSubmitThread->PostTask(submit.forget());
+#if defined(MOZ_WIDGET_ANDROID)
+  /**
+   * Do not queue more submit frames until the last submitted frame is already
+   * processed and the new WebGL texture is ready.
+   */
+  if (mLastSubmittedFrameId > 0 &&
+      mLastSubmittedFrameId !=
+          mDisplayInfo.mDisplayState.lastSubmittedFrameId) {
+    mLastStartedFrame = 0;
+    return;
+  }
+
+  mLastSubmittedFrameId = aFrameId;
+#endif  // !defined(MOZ_WIDGET_ANDROID)
+
+  mFrameStarted = false;
+
+  RefPtr<CancelableRunnable> task = NewCancelableRunnableMethod<
+      StoreCopyPassByConstLRef<layers::SurfaceDescriptor>, uint64_t,
+      StoreCopyPassByConstLRef<gfx::Rect>, StoreCopyPassByConstLRef<gfx::Rect>>(
+      "gfx::VRDisplayHost::SubmitFrameInternal", this,
+      &VRDisplayHost::SubmitFrameInternal, aTexture, aFrameId, aLeftEyeRect,
+      aRightEyeRect);
+
+  if (!mCurrentSubmitTask) {
+    mCurrentSubmitTask = task;
+#if !defined(MOZ_WIDGET_ANDROID)
+    if (!mSubmitThread) {
+      mSubmitThread = new VRThread(NS_LITERAL_CSTRING("VR_SubmitFrame"));
+    }
+    mSubmitThread->Start();
+    mSubmitThread->PostTask(task.forget());
 #else
-  CompositorThreadHolder::Loop()->PostTask(submit.forget());
-#endif  // defined(MOZ_ANDROID_GOOGLE_VR)
+    CompositorThreadHolder::Loop()->PostTask(task.forget());
+#endif  // defined(MOZ_WIDGET_ANDROID)
+  }
+}
+
+void VRDisplayHost::CancelCurrentSubmitTask() {
+  MonitorAutoLock lock(mCurrentSubmitTaskMonitor);
+  if (mCurrentSubmitTask) {
+    mCurrentSubmitTask->Cancel();
+    mCurrentSubmitTask = nullptr;
+  }
 }
 
 bool VRDisplayHost::CheckClearDisplayInfoDirty() {
@@ -375,12 +399,16 @@ bool VRDisplayHost::CheckClearDisplayInfoDirty() {
   return true;
 }
 
+void VRDisplayHost::StartVRNavigation() {}
+
+void VRDisplayHost::StopVRNavigation(const TimeDuration& aTimeout) {}
+
 VRControllerHost::VRControllerHost(VRDeviceType aType, dom::GamepadHand aHand,
                                    uint32_t aDisplayID)
-    : mButtonPressed(0), mButtonTouched(0), mVibrateIndex(0) {
+    : mControllerInfo{}, mVibrateIndex(0) {
   MOZ_COUNT_CTOR(VRControllerHost);
   mControllerInfo.mType = aType;
-  mControllerInfo.mHand = aHand;
+  mControllerInfo.mControllerState.hand = aHand;
   mControllerInfo.mMappingType = dom::GamepadMappingType::_empty;
   mControllerInfo.mDisplayID = aDisplayID;
   mControllerInfo.mControllerID = VRSystemManager::AllocateControllerID();
@@ -393,16 +421,20 @@ const VRControllerInfo& VRControllerHost::GetControllerInfo() const {
 }
 
 void VRControllerHost::SetButtonPressed(uint64_t aBit) {
-  mButtonPressed = aBit;
+  mControllerInfo.mControllerState.buttonPressed = aBit;
 }
 
-uint64_t VRControllerHost::GetButtonPressed() { return mButtonPressed; }
+uint64_t VRControllerHost::GetButtonPressed() {
+  return mControllerInfo.mControllerState.buttonPressed;
+}
 
 void VRControllerHost::SetButtonTouched(uint64_t aBit) {
-  mButtonTouched = aBit;
+  mControllerInfo.mControllerState.buttonTouched = aBit;
 }
 
-uint64_t VRControllerHost::GetButtonTouched() { return mButtonTouched; }
+uint64_t VRControllerHost::GetButtonTouched() {
+  return mControllerInfo.mControllerState.buttonTouched;
+}
 
 void VRControllerHost::SetPose(const dom::GamepadPoseState& aPose) {
   mPose = aPose;
@@ -410,7 +442,9 @@ void VRControllerHost::SetPose(const dom::GamepadPoseState& aPose) {
 
 const dom::GamepadPoseState& VRControllerHost::GetPose() { return mPose; }
 
-dom::GamepadHand VRControllerHost::GetHand() { return mControllerInfo.mHand; }
+dom::GamepadHand VRControllerHost::GetHand() {
+  return mControllerInfo.mControllerState.hand;
+}
 
 void VRControllerHost::SetVibrateIndex(uint64_t aIndex) {
   mVibrateIndex = aIndex;

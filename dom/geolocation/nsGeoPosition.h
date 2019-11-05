@@ -47,15 +47,13 @@ class nsGeoPosition final : public nsIDOMGeoPosition {
 
   nsGeoPosition(double aLat, double aLong, double aAlt, double aHError,
                 double aVError, double aHeading, double aSpeed,
-                long long aTimestamp);
-
-  nsGeoPosition(nsIDOMGeoPositionCoords* aCoords, long long aTimestamp);
+                DOMTimeStamp aTimestamp);
 
   nsGeoPosition(nsIDOMGeoPositionCoords* aCoords, DOMTimeStamp aTimestamp);
 
  private:
   ~nsGeoPosition();
-  long long mTimestamp;
+  DOMTimeStamp mTimestamp;
   RefPtr<nsIDOMGeoPositionCoords> mCoords;
 };
 

@@ -13,13 +13,13 @@ ifndef PACKAGER_NO_LIBS
 libs:: make-package
 endif
 
+ifdef MOZ_AUTOMATION
+RUN_FIND_DUPES ?= $(MOZ_AUTOMATION)
+endif
+
 export USE_ELF_HACK ELF_HACK_FLAGS
 
-# Override the value of OMNIJAR_NAME from config.status with the value
-# set earlier in this file.
-
 stage-package: multilocale.txt locale-manifest.in $(MOZ_PKG_MANIFEST) $(MOZ_PKG_MANIFEST_DEPS)
-	OMNIJAR_NAME=$(OMNIJAR_NAME) \
 	NO_PKG_FILES="$(NO_PKG_FILES)" \
 	$(PYTHON) $(MOZILLA_DIR)/toolkit/mozapps/installer/packager.py $(DEFINES) $(ACDEFINES) \
 		--format $(MOZ_PACKAGER_FORMAT) \
@@ -29,12 +29,13 @@ stage-package: multilocale.txt locale-manifest.in $(MOZ_PKG_MANIFEST) $(MOZ_PKG_
 		$(if $(MOZ_PACKAGER_MINIFY_JS),--minify-js \
 		  $(addprefix --js-binary ,$(JS_BINARY)) \
 		) \
-		$(if $(JARLOG_DIR),$(addprefix --jarlog ,$(wildcard $(JARLOG_FILE_AB_CD)))) \
-		$(if $(OPTIMIZEJARS),--optimizejars) \
+		$(addprefix --jarlog ,$(wildcard $(JARLOG_FILE_AB_CD))) \
 		$(addprefix --compress ,$(JAR_COMPRESSION)) \
 		$(MOZ_PKG_MANIFEST) '$(DIST)' '$(DIST)'/$(MOZ_PKG_DIR)$(if $(MOZ_PKG_MANIFEST),,$(_BINPATH)) \
 		$(if $(filter omni,$(MOZ_PACKAGER_FORMAT)),$(if $(NON_OMNIJAR_FILES),--non-resource $(NON_OMNIJAR_FILES)))
+ifdef RUN_FIND_DUPES
 	$(PYTHON) $(MOZILLA_DIR)/toolkit/mozapps/installer/find-dupes.py $(DEFINES) $(ACDEFINES) $(MOZ_PKG_DUPEFLAGS) $(DIST)/$(MOZ_PKG_DIR)
+endif # RUN_FIND_DUPES
 ifndef MOZ_IS_COMM_TOPDIR
 	# Package mozharness
 	$(call py_action,test_archive, \
@@ -47,12 +48,19 @@ ifdef MOZ_PACKAGE_JSSHELL
 	$(RM) $(PKG_JSSHELL)
 	$(MAKE_JSSHELL)
 endif # MOZ_PACKAGE_JSSHELL
+ifdef MOZ_AUTOMATION
 ifdef MOZ_ARTIFACT_BUILD_SYMBOLS
 	@echo 'Packaging existing crashreporter symbols from artifact build...'
 	$(NSINSTALL) -D $(DIST)/$(PKG_PATH)
 	cd $(DIST)/crashreporter-symbols && \
           zip -r5D '../$(PKG_PATH)$(SYMBOL_ARCHIVE_BASENAME).zip' . -i '*.sym' -i '*.txt'
+ifeq ($(MOZ_ARTIFACT_BUILD_SYMBOLS),full)
+	$(NSINSTALL) -D $(DIST)/$(PKG_PATH)
+	cd $(DIST)/crashreporter-symbols && \
+          zip -r5D '../$(PKG_PATH)$(SYMBOL_FULL_ARCHIVE_BASENAME).zip' .
+endif
 endif # MOZ_ARTIFACT_BUILD_SYMBOLS
+endif # MOZ_AUTOMATION
 ifdef MOZ_CODE_COVERAGE
 	@echo 'Generating chrome-map for coverage data...'
 	$(topsrcdir)/mach build-backend -b ChromeMap
@@ -70,6 +78,13 @@ ifdef ENABLE_MOZSEARCH_PLUGIN
 	$(RM) $(MOZSEARCH_RUST_ANALYSIS_BASENAME).zip
 	cd $(topobjdir)/ && \
           find . -type d -name save-analysis | xargs zip -r5D '$(ABS_DIST)/$(PKG_PATH)$(MOZSEARCH_RUST_ANALYSIS_BASENAME).zip'
+	@echo 'Generating mozsearch rust stdlib analysis tarball ($(RUST_TARGET))...'
+	$(RM) $(MOZSEARCH_RUST_STDLIB_BASENAME).zip
+	cd $(topsrcdir)/rustc/lib && \
+          zip -r5D '$(ABS_DIST)/$(PKG_PATH)$(MOZSEARCH_RUST_STDLIB_BASENAME).zip' \
+          rustlib/$(RUST_TARGET)/analysis/ rustlib/src/
+	@echo 'Generating mozsearch distinclude map...'
+	cd $(topobjdir)/ && cp _build_manifests/install/dist_include '$(ABS_DIST)/$(PKG_PATH)$(MOZSEARCH_INCLUDEMAP_BASENAME).map'
 endif
 ifeq (Darwin, $(OS_ARCH))
 ifdef MOZ_ASAN
@@ -77,13 +92,6 @@ ifdef MOZ_ASAN
 	$(PYTHON) $(MOZILLA_DIR)/build/unix/rewrite_asan_dylib.py $(DIST)/$(MOZ_PKG_DIR)$(_BINPATH)
 endif # MOZ_ASAN
 endif # Darwin
-ifdef MOZ_STYLO
-ifndef MOZ_ARTIFACT_BUILDS
-	@echo 'Packing stylo binding files...'
-	cd '$(DIST)/rust_bindings/style' && \
-		zip -r5D '$(ABS_DIST)/$(PKG_PATH)$(STYLO_BINDINGS_PACKAGE)' .
-endif # MOZ_ARTIFACT_BUILDS
-endif # MOZ_STYLO
 
 prepare-package: stage-package
 
@@ -132,23 +140,17 @@ endif
 	$(RM) -f $(DESTDIR)$(bindir)/$(MOZ_APP_NAME)
 	ln -s $(installdir)/$(MOZ_APP_NAME) $(DESTDIR)$(bindir)
 
-checksum:
+upload:
+	$(PYTHON) -u $(MOZILLA_DIR)/build/upload.py --base-path $(DIST) $(UPLOAD_FILES)
 	mkdir -p `dirname $(CHECKSUM_FILE)`
 	@$(PYTHON) $(MOZILLA_DIR)/build/checksums.py \
 		-o $(CHECKSUM_FILE) \
 		$(CHECKSUM_ALGORITHM_PARAM) \
-		-s $(call QUOTED_WILDCARD,$(DIST)) \
-		$(UPLOAD_FILES)
+		$(UPLOAD_PATH)
 	@echo 'CHECKSUM FILE START'
 	@cat $(CHECKSUM_FILE)
 	@echo 'CHECKSUM FILE END'
-	$(SIGN_CHECKSUM_CMD)
-
-
-upload: checksum
-	$(PYTHON) -u $(MOZILLA_DIR)/build/upload.py --base-path $(DIST) \
-		$(UPLOAD_FILES) \
-		$(CHECKSUM_FILES)
+	$(PYTHON) -u $(MOZILLA_DIR)/build/upload.py --base-path $(DIST) $(CHECKSUM_FILES)
 
 # source-package creates a source tarball from the files in MOZ_PKG_SRCDIR,
 # which is either set to a clean checkout or defaults to $topsrcdir
@@ -191,14 +193,14 @@ endif
 # and places it in dist/bin/res - it should be used when packaging a build.
 multilocale.txt: LOCALES?=$(MOZ_CHROME_MULTILOCALE)
 multilocale.txt:
-	$(call py_action,file_generate,$(MOZILLA_DIR)/toolkit/locales/gen_multilocale.py main '$(MULTILOCALE_DIR)/multilocale.txt' $(MDDEPDIR)/multilocale.txt.pp $(ALL_LOCALES))
+	$(call py_action,file_generate,$(MOZILLA_DIR)/toolkit/locales/gen_multilocale.py main '$(MULTILOCALE_DIR)/multilocale.txt' $(MDDEPDIR)/multilocale.txt.pp '$(MULTILOCALE_DIR)/multilocale.txt' $(ALL_LOCALES))
 
 # This version of the target uses AB_CD to build multilocale.txt and places it
 # in the $(XPI_NAME)/res dir - it should be used when repackaging a build.
 multilocale.txt-%: LOCALES?=$(AB_CD)
 multilocale.txt-%: MULTILOCALE_DIR=$(DIST)/xpi-stage/$(XPI_NAME)/res
 multilocale.txt-%:
-	$(call py_action,file_generate,$(MOZILLA_DIR)/toolkit/locales/gen_multilocale.py main '$(MULTILOCALE_DIR)/multilocale.txt' $(MDDEPDIR)/multilocale.txt.pp $(ALL_LOCALES))
+	$(call py_action,file_generate,$(MOZILLA_DIR)/toolkit/locales/gen_multilocale.py main '$(MULTILOCALE_DIR)/multilocale.txt' $(MDDEPDIR)/multilocale.txt.pp '$(MULTILOCALE_DIR)/multilocale.txt' $(ALL_LOCALES))
 
 locale-manifest.in: LOCALES?=$(MOZ_CHROME_MULTILOCALE)
 locale-manifest.in: $(GLOBAL_DEPS) FORCE

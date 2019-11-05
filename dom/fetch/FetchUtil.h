@@ -14,13 +14,16 @@
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/FormData.h"
 
+#define WASM_CONTENT_TYPE "application/wasm"
+#define WASM_ALT_DATA_TYPE_V1 "wasm/machine-code/1"
+
 class nsIPrincipal;
-class nsIDocument;
 class nsIHttpChannel;
 
 namespace mozilla {
 namespace dom {
 
+class Document;
 class InternalRequest;
 class WorkerPrivate;
 
@@ -46,8 +49,7 @@ class FetchUtil final {
                             nsCString& aHeaderName, nsCString& aHeaderValue,
                             bool* aWasEmptyHeader);
 
-  static nsresult SetRequestReferrer(nsIPrincipal* aPrincipal,
-                                     nsIDocument* aDoc,
+  static nsresult SetRequestReferrer(nsIPrincipal* aPrincipal, Document* aDoc,
                                      nsIHttpChannel* aChannel,
                                      InternalRequest* aRequest);
 
@@ -61,6 +63,14 @@ class FetchUtil final {
                                  JS::MimeType aMimeType,
                                  JS::StreamConsumer* aConsumer,
                                  WorkerPrivate* aMaybeWorker);
+
+  /**
+   * Called by JS to report (i.e., throw) an error that was passed to the
+   * JS::StreamConsumer::streamError() method on a random stream thread.
+   * This method is passed by function pointer to the JS engine hence the
+   * untyped 'size_t' instead of Gecko 'nsresult'.
+   */
+  static void ReportJSStreamError(JSContext* aCx, size_t aErrorCode);
 };
 
 }  // namespace dom

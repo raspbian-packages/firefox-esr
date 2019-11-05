@@ -46,7 +46,7 @@ inline bool NodeInfo::Equals(const nsAString& aName, const nsAString& aPrefix,
          (mInner.mPrefix ? mInner.mPrefix->Equals(aPrefix) : aPrefix.IsEmpty());
 }
 
-inline bool NodeInfo::QualifiedNameEquals(nsAtom* aNameAtom) const {
+inline bool NodeInfo::QualifiedNameEquals(const nsAtom* aNameAtom) const {
   MOZ_ASSERT(aNameAtom, "Must have name atom");
   if (!GetPrefixAtom()) {
     return Equals(aNameAtom);
@@ -58,8 +58,8 @@ inline bool NodeInfo::QualifiedNameEquals(nsAtom* aNameAtom) const {
 }  // namespace dom
 }  // namespace mozilla
 
-inline void CheckValidNodeInfo(uint16_t aNodeType, nsAtom* aName,
-                               int32_t aNamespaceID, nsAtom* aExtraName) {
+inline void CheckValidNodeInfo(uint16_t aNodeType, const nsAtom* aName,
+                               int32_t aNamespaceID, const nsAtom* aExtraName) {
   MOZ_ASSERT(aNodeType == nsINode::ELEMENT_NODE ||
                  aNodeType == nsINode::ATTRIBUTE_NODE ||
                  aNodeType == nsINode::TEXT_NODE ||

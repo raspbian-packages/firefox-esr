@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -135,11 +135,6 @@ class gfxContext final {
   void MoveTo(const gfxPoint& pt);
 
   /**
-   * Returns the current point in the current path.
-   */
-  gfxPoint CurrentPoint();
-
-  /**
    * Draws a line from the current point to pt.
    *
    * @see MoveTo
@@ -155,11 +150,14 @@ class gfxContext final {
 
   /**
    * Draws the rectangle given by rect.
-   * @param snapToPixels ?
    */
-  void Rectangle(const gfxRect& rect, bool snapToPixels = false);
+  void Rectangle(const gfxRect& rect) { return Rectangle(rect, false); }
   void SnappedRectangle(const gfxRect& rect) { return Rectangle(rect, true); }
 
+ private:
+  void Rectangle(const gfxRect& rect, bool snapToPixels);
+
+ public:
   /**
    ** Transformation Matrix manipulation
    **/
@@ -265,6 +263,14 @@ class gfxContext final {
   bool GetDeviceColor(mozilla::gfx::Color& aColorOut);
 
   /**
+   * Returns true if color is neither opaque nor transparent (i.e. alpha is not
+   * 0 or 1), and false otherwise. If true, aColorOut is set on output.
+   */
+  bool HasNonOpaqueNonTransparentColor(mozilla::gfx::Color& aColorOut) {
+    return GetDeviceColor(aColorOut) && 0.f < aColorOut.a && aColorOut.a < 1.f;
+  }
+
+  /**
    * Set a solid color in the sRGB color space to use for drawing.
    * If CMS is not enabled, the color is treated as a device-space color
    * and this call is identical to SetDeviceColor().
@@ -315,8 +321,6 @@ class gfxContext final {
   // context is in an error state.  |offset| can be nullptr to mean
   // "don't care".
   bool CurrentDash(FallibleTArray<Float>& dashes, Float* offset) const;
-  // Returns 0.0 if dashing isn't enabled.
-  Float CurrentDashOffset() const;
 
   /**
    * Sets the line width that's used for line drawing.
@@ -373,7 +377,8 @@ class gfxContext final {
    * Any current path will be destroyed by these functions!
    */
   void Clip(const Rect& rect);
-  void Clip(const gfxRect& rect);  // will clip to a rect
+  void Clip(const gfxRect& rect);         // will clip to a rect
+  void SnappedClip(const gfxRect& rect);  // snap rect and clip to the result
   void Clip(Path* aPath);
 
   void PopClip();
@@ -426,6 +431,7 @@ class gfxContext final {
   void PopGroupAndBlend();
 
   mozilla::gfx::Point GetDeviceOffset() const;
+  void SetDeviceOffset(const mozilla::gfx::Point& aOffset);
 
 #ifdef MOZ_DUMP_PAINTING
   /**
@@ -519,7 +525,6 @@ class gfxContext final {
   void ChangeTransform(const mozilla::gfx::Matrix& aNewMatrix,
                        bool aUpdatePatternTransform = true);
   Rect GetAzureDeviceSpaceClipBounds() const;
-  Matrix GetDeviceTransform() const;
   Matrix GetDTTransform() const;
 
   bool mPathIsRect;
@@ -627,7 +632,8 @@ class DrawTargetAutoDisableSubpixelAntialiasing {
  public:
   typedef mozilla::gfx::DrawTarget DrawTarget;
 
-  DrawTargetAutoDisableSubpixelAntialiasing(DrawTarget* aDT, bool aDisable) {
+  DrawTargetAutoDisableSubpixelAntialiasing(DrawTarget* aDT, bool aDisable)
+      : mSubpixelAntialiasingEnabled(false) {
     if (aDisable) {
       mDT = aDT;
       mSubpixelAntialiasingEnabled = mDT->GetPermitSubpixelAA();

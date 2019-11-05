@@ -32,22 +32,16 @@ class AutoClose {
     return mPtr.forget();
   }
 
-  void takeOver(nsCOMPtr<T> &rhs) {
-    already_AddRefed<T> other = rhs.forget();
-    TakeOverInternal(&other);
-  }
+  void takeOver(nsCOMPtr<T>& rhs) { TakeOverInternal(rhs.forget()); }
 
   void CloseAndRelease() { TakeOverInternal(nullptr); }
 
  private:
-  void TakeOverInternal(already_AddRefed<T> *aOther) {
-    nsCOMPtr<T> ptr;
+  void TakeOverInternal(already_AddRefed<T>&& aOther) {
+    nsCOMPtr<T> ptr(std::move(aOther));
     {
       MutexAutoLock lock(mMutex);
       ptr.swap(mPtr);
-      if (aOther) {
-        mPtr = *aOther;
-      }
     }
 
     if (ptr) {
@@ -55,8 +49,8 @@ class AutoClose {
     }
   }
 
-  void operator=(const AutoClose<T> &) = delete;
-  AutoClose(const AutoClose<T> &) = delete;
+  void operator=(const AutoClose<T>&) = delete;
+  AutoClose(const AutoClose<T>&) = delete;
 
   nsCOMPtr<T> mPtr;
   Mutex mMutex;

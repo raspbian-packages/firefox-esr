@@ -35,13 +35,12 @@ NS_INTERFACE_MAP_END
 
 JSObject* DataTransferItemList::WrapObject(JSContext* aCx,
                                            JS::Handle<JSObject*> aGivenProto) {
-  return DataTransferItemListBinding::Wrap(aCx, this, aGivenProto);
+  return DataTransferItemList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<DataTransferItemList> DataTransferItemList::Clone(
     DataTransfer* aDataTransfer) const {
-  RefPtr<DataTransferItemList> list =
-      new DataTransferItemList(aDataTransfer, mIsExternal);
+  RefPtr<DataTransferItemList> list = new DataTransferItemList(aDataTransfer);
 
   // We need to clone the mItems and mIndexedItems lists while keeping the same
   // correspondences between the mIndexedItems and mItems lists (namely, if an
@@ -87,7 +86,6 @@ void DataTransferItemList::Remove(uint32_t aIndex,
   }
 
   if (aIndex >= Length()) {
-    aRv.Throw(NS_ERROR_DOM_INDEX_SIZE_ERR);
     return;
   }
 
@@ -141,7 +139,8 @@ DataTransferItem* DataTransferItemList::Add(const nsAString& aData,
     return nullptr;
   }
 
-  nsCOMPtr<nsIVariant> data(new storage::TextVariant(aData));
+  RefPtr<nsVariantCC> data(new nsVariantCC());
+  data->SetAsAString(aData);
 
   nsAutoString format;
   mDataTransfer->GetRealFormat(aType, format);
@@ -173,7 +172,7 @@ DataTransferItem* DataTransferItemList::Add(File& aData,
   }
 
   nsCOMPtr<nsISupports> supports = do_QueryObject(&aData);
-  nsCOMPtr<nsIWritableVariant> data = new nsVariant();
+  nsCOMPtr<nsIWritableVariant> data = new nsVariantCC();
   data->SetAsISupports(supports);
 
   nsAutoString type;
@@ -222,13 +221,13 @@ already_AddRefed<FileList> DataTransferItemList::Files(
   // advanced caching mechanism for the FileList objects will be required.
   RefPtr<FileList> files;
   if (nsContentUtils::IsSystemPrincipal(aPrincipal)) {
-    files = new FileList(static_cast<nsIDOMDataTransfer*>(mDataTransfer));
+    files = new FileList(mDataTransfer);
     GenerateFiles(files, aPrincipal);
     return files.forget();
   }
 
   if (!mFiles) {
-    mFiles = new FileList(static_cast<nsIDOMDataTransfer*>(mDataTransfer));
+    mFiles = new FileList(mDataTransfer);
     mFilesPrincipal = aPrincipal;
     RegenerateFiles();
   }
@@ -337,10 +336,8 @@ already_AddRefed<DataTransferItem> DataTransferItemList::SetDataWithPrincipal(
 
         DataTransferItem::eKind oldKind = item->Kind();
         item->SetData(aData);
-        if (oldKind != item->Kind()) {
-          // Types list may have changed, even if aIndex == 0.
-          mDataTransfer->TypesListMayHaveChanged();
-        }
+
+        mDataTransfer->TypesListMayHaveChanged();
 
         if (aIndex != 0) {
           // If the item changes from being a file to not a file or vice-versa,

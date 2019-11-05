@@ -11,11 +11,13 @@
 #include "nsIPermissionManager.h"
 #include "PermissionObserver.h"
 #include "PermissionUtils.h"
+#include "nsPermission.h"
 
 namespace mozilla {
 namespace dom {
 
-/* static */ already_AddRefed<PermissionStatus> PermissionStatus::Create(
+/* static */
+already_AddRefed<PermissionStatus> PermissionStatus::Create(
     nsPIDOMWindowInner* aWindow, PermissionName aName, ErrorResult& aRv) {
   RefPtr<PermissionStatus> status = new PermissionStatus(aWindow, aName);
   aRv = status->Init();
@@ -30,7 +32,9 @@ PermissionStatus::PermissionStatus(nsPIDOMWindowInner* aWindow,
                                    PermissionName aName)
     : DOMEventTargetHelper(aWindow),
       mName(aName),
-      mState(PermissionState::Denied) {}
+      mState(PermissionState::Denied) {
+  KeepAliveIfHasListenersFor(NS_LITERAL_STRING("change"));
+}
 
 nsresult PermissionStatus::Init() {
   mObserver = PermissionObserver::GetInstance();
@@ -56,7 +60,7 @@ PermissionStatus::~PermissionStatus() {
 
 JSObject* PermissionStatus::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return PermissionStatusBinding::Wrap(aCx, this, aGivenProto);
+  return PermissionStatus_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsresult PermissionStatus::UpdateState() {
@@ -87,14 +91,13 @@ already_AddRefed<nsIPrincipal> PermissionStatus::GetPrincipal() const {
     return nullptr;
   }
 
-  nsIDocument* doc = window->GetExtantDoc();
+  Document* doc = window->GetExtantDoc();
   if (NS_WARN_IF(!doc)) {
     return nullptr;
   }
 
   nsCOMPtr<nsIPrincipal> principal =
-      mozilla::BasePrincipal::Cast(doc->NodePrincipal())
-          ->CloneStrippingUserContextIdAndFirstPartyDomain();
+      nsPermission::ClonePrincipalForPermission(doc->NodePrincipal());
   NS_ENSURE_TRUE(principal, nullptr);
 
   return principal.forget();
@@ -104,10 +107,21 @@ void PermissionStatus::PermissionChanged() {
   auto oldState = mState;
   UpdateState();
   if (mState != oldState) {
-    RefPtr<AsyncEventDispatcher> eventDispatcher =
-        new AsyncEventDispatcher(this, NS_LITERAL_STRING("change"), false);
+    RefPtr<AsyncEventDispatcher> eventDispatcher = new AsyncEventDispatcher(
+        this, NS_LITERAL_STRING("change"), CanBubble::eNo);
     eventDispatcher->PostDOMEvent();
   }
+}
+
+void PermissionStatus::DisconnectFromOwner() {
+  IgnoreKeepAliveIfHasListenersFor(NS_LITERAL_STRING("change"));
+
+  if (mObserver) {
+    mObserver->RemoveSink(this);
+    mObserver = nullptr;
+  }
+
+  DOMEventTargetHelper::DisconnectFromOwner();
 }
 
 }  // namespace dom

@@ -38,6 +38,7 @@ XPIDL_SOURCES += [
     'nsIDashboard.idl',
     'nsIDashboardEventNotifier.idl',
     'nsIDeprecationWarner.idl',
+    'nsIDHCPClient.idl',
     'nsIDivertableChannel.idl',
     'nsIDownloader.idl',
     'nsIEncodedChannel.idl',
@@ -62,13 +63,12 @@ XPIDL_SOURCES += [
     'nsINestedURI.idl',
     'nsINetAddr.idl',
     'nsINetUtil.idl',
-    'nsINetworkActivityData.idl',
+    'nsINetworkConnectivityService.idl',
     'nsINetworkInfoService.idl',
     'nsINetworkInterceptController.idl',
     'nsINetworkLinkService.idl',
     'nsINetworkPredictor.idl',
     'nsINetworkPredictorVerifier.idl',
-    'nsINetworkProperties.idl',
     'nsINullChannel.idl',
     'nsIParentChannel.idl',
     'nsIParentRedirectingChannel.idl',
@@ -96,8 +96,6 @@ XPIDL_SOURCES += [
     'nsIResumableChannel.idl',
     'nsISecCheckWrapChannel.idl',
     'nsISecureBrowserUI.idl',
-    'nsISecurityEventSink.idl',
-    'nsISecurityInfoProvider.idl',
     'nsISensitiveInfoHiddenURI.idl',
     'nsISerializationHelper.idl',
     'nsIServerSocket.idl',
@@ -121,24 +119,15 @@ XPIDL_SOURCES += [
     'nsITraceableChannel.idl',
     'nsITransport.idl',
     'nsIUDPSocket.idl',
-    'nsIUnicharStreamLoader.idl',
     'nsIUploadChannel.idl',
     'nsIUploadChannel2.idl',
     'nsIURI.idl',
-    'nsIURIClassifier.idl',
     'nsIURIMutator.idl',
-    'nsIURIWithBlobImpl.idl',
-    'nsIURIWithPrincipal.idl',
+    'nsIURIWithSpecialOrigin.idl',
     'nsIURL.idl',
     'nsIURLParser.idl',
-    'nsPILoadGroupInternal.idl',
     'nsPISocketTransportService.idl',
 ]
-
-if CONFIG['MOZ_TOOLKIT_SEARCH']:
-    XPIDL_SOURCES += [
-        'nsIBrowserSearchService.idl',
-    ]
 
 XPIDL_MODULE = 'necko'
 
@@ -154,6 +143,7 @@ EXPORTS += [
     'nsSerializationHelper.h',
     'nsSimpleNestedURI.h',
     'nsSimpleURI.h',
+    'nsStandardURL.h',
     'nsStreamListenerWrapper.h',
     'nsURIHashKey.h',
     'nsURLHelper.h',
@@ -174,12 +164,16 @@ EXPORTS.mozilla.net += [
     'ChannelDiverterParent.h',
     'Dashboard.h',
     'DashboardTypes.h',
+    'IOActivityMonitor.h',
     'MemoryDownloader.h',
-    'MozURL.h',
+    'NetworkConnectivityService.h',
     'PartiallySeekableInputStream.h',
     'Predictor.h',
+    'RedirectChannelRegistrar.h',
     'ReferrerPolicy.h',
+    'RequestContextService.h',
     'SimpleChannelParent.h',
+    'SSLTokensCache.h',
     'TCPFastOpen.h',
 ]
 
@@ -191,11 +185,12 @@ UNIFIED_SOURCES += [
     'ChannelDiverterParent.cpp',
     'Dashboard.cpp',
     'EventTokenBucket.cpp',
+    'FuzzyLayer.cpp',
+    'IOActivityMonitor.cpp',
     'LoadContextInfo.cpp',
     'LoadInfo.cpp',
     'MemoryDownloader.cpp',
-    'MozURL.cpp',
-    'NetworkActivityMonitor.cpp',
+    'NetworkConnectivityService.cpp',
     'nsAsyncRedirectVerifyHelper.cpp',
     'nsAsyncStreamCopier.cpp',
     'nsAuthInformationHolder.cpp',
@@ -203,7 +198,6 @@ UNIFIED_SOURCES += [
     'nsBaseChannel.cpp',
     'nsBaseContentStream.cpp',
     'nsBufferedStreams.cpp',
-    'nsChannelClassifier.cpp',
     'nsDirectoryIndexStream.cpp',
     'nsDNSPrefetch.cpp',
     'nsDownloader.cpp',
@@ -215,7 +209,6 @@ UNIFIED_SOURCES += [
     'nsIOService.cpp',
     'nsIURIMutatorUtils.cpp',
     'nsLoadGroup.cpp',
-    'nsMediaFragmentURIParser.cpp',
     'nsMIMEInputStream.cpp',
     'nsNetAddr.cpp',
     'nsNetUtil.cpp',
@@ -225,7 +218,6 @@ UNIFIED_SOURCES += [
     'nsProxyInfo.cpp',
     'nsRedirectHistoryEntry.cpp',
     'nsRequestObserverProxy.cpp',
-    'nsSecCheckWrapChannel.cpp',
     'nsSerializationHelper.cpp',
     'nsServerSocket.cpp',
     'nsSimpleNestedURI.cpp',
@@ -241,9 +233,6 @@ UNIFIED_SOURCES += [
     'nsSyncStreamListener.cpp',
     'nsTransportUtils.cpp',
     'nsUDPSocket.cpp',
-    'nsUnicharStreamLoader.cpp',
-    'nsURLHelper.cpp',
-    'nsURLParsers.cpp',
     'PartiallySeekableInputStream.cpp',
     'PollableEvent.cpp',
     'Predictor.cpp',
@@ -253,11 +242,30 @@ UNIFIED_SOURCES += [
     'SimpleBuffer.cpp',
     'SimpleChannel.cpp',
     'SimpleChannelParent.cpp',
+    'SSLTokensCache.cpp',
     'TCPFastOpenLayer.cpp',
     'ThrottleQueue.cpp',
     'Tickler.cpp',
     'TLSServerSocket.cpp',
 ]
+
+if CONFIG['FUZZING_INTERFACES'] and CONFIG['LIBFUZZER']:
+    include('/tools/fuzzing/libfuzzer-flags.mozbuild')
+    SOURCES += [
+        'nsMediaFragmentURIParser.cpp',
+        'nsURLHelper.cpp',
+        'nsURLParsers.cpp',
+    ]
+    SOURCES['nsMediaFragmentURIParser.cpp'].flags += libfuzzer_flags
+    SOURCES['nsURLHelper.cpp'].flags += libfuzzer_flags
+    SOURCES['nsURLParsers.cpp'].flags += libfuzzer_flags
+else:
+    UNIFIED_SOURCES += [
+        'nsMediaFragmentURIParser.cpp',
+        'nsURLHelper.cpp',
+        'nsURLParsers.cpp',
+    ]
+
 
 if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'windows':
     SOURCES += [
@@ -294,6 +302,8 @@ EXTRA_JS_MODULES += [
     'NetUtil.jsm',
 ]
 
+DIRS += [ 'mozurl' ]
+
 include('/ipc/chromium/chromium-config.mozbuild')
 
 FINAL_LIBRARY = 'xul'
@@ -303,7 +313,7 @@ LOCAL_INCLUDES += [
     '/dom/base',
     '/netwerk/protocol/http',
     '/netwerk/socket',
-    '/security/pkix/include'
+    '/netwerk/url-classifier',
 ]
 
 if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':

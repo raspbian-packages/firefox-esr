@@ -31,9 +31,6 @@
 // returned from the gethash server. They are not serialized,
 // only cached until the next update.
 
-// Name of the persistent PrefixSet storage
-#define PREFIXSET_SUFFIX ".pset"
-
 #define V2_CACHE_DURATION_SEC (15 * 60)
 
 // MOZ_LOG=UrlClassifierDbService:5
@@ -45,6 +42,8 @@ extern mozilla::LazyLogModule gUrlClassifierDbServiceLog;
 
 namespace mozilla {
 namespace safebrowsing {
+
+const uint32_t LookupCache::MAX_BUFFER_SIZE = 64 * 1024;
 
 const int CacheResultV2::VER = CacheResult::V2;
 const int CacheResultV4::VER = CacheResult::V4;
@@ -66,7 +65,8 @@ static void CStringToHexString(const nsACString& aIn, nsACString& aOut) {
 }
 
 LookupCache::LookupCache(const nsACString& aTableName,
-                         const nsACString& aProvider, nsIFile* aRootStoreDir)
+                         const nsACString& aProvider,
+                         nsCOMPtr<nsIFile>& aRootStoreDir)
     : mPrimed(false),
       mTableName(aTableName),
       mProvider(aProvider),
@@ -82,7 +82,8 @@ nsresult LookupCache::Open() {
   return NS_OK;
 }
 
-nsresult LookupCache::UpdateRootDirHandle(nsIFile* aNewRootStoreDirectory) {
+nsresult LookupCache::UpdateRootDirHandle(
+    nsCOMPtr<nsIFile>& aNewRootStoreDirectory) {
   nsresult rv;
 
   if (aNewRootStoreDirectory != mRootStoreDirectory) {
@@ -118,7 +119,7 @@ nsresult LookupCache::WriteFile() {
   nsresult rv = mStoreDirectory->Clone(getter_AddRefs(psFile));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = psFile->AppendNative(mTableName + NS_LITERAL_CSTRING(PREFIXSET_SUFFIX));
+  rv = psFile->AppendNative(mTableName + GetPrefixSetSuffix());
   NS_ENSURE_SUCCESS(rv, rv);
 
   rv = StoreToFile(psFile);
@@ -220,7 +221,7 @@ void LookupCache::ClearAll() {
   mPrimed = false;
 }
 
-void LookupCache::GetCacheInfo(nsIUrlClassifierCacheInfo** aCache) {
+void LookupCache::GetCacheInfo(nsIUrlClassifierCacheInfo** aCache) const {
   MOZ_ASSERT(aCache);
 
   RefPtr<nsUrlClassifierCacheInfo> info = new nsUrlClassifierCacheInfo;
@@ -258,10 +259,11 @@ void LookupCache::GetCacheInfo(nsIUrlClassifierCacheInfo** aCache) {
         static_cast<nsIUrlClassifierCacheEntry*>(entry));
   }
 
-  NS_ADDREF(*aCache = info);
+  info.forget(aCache);
 }
 
-/* static */ bool LookupCache::IsCanonicalizedIP(const nsACString& aHost) {
+/* static */
+bool LookupCache::IsCanonicalizedIP(const nsACString& aHost) {
   // The canonicalization process will have left IP addresses in dotted
   // decimal with no surprises.
   uint32_t i1, i2, i3, i4;
@@ -274,8 +276,9 @@ void LookupCache::GetCacheInfo(nsIUrlClassifierCacheInfo** aCache) {
   return false;
 }
 
-/* static */ nsresult LookupCache::GetLookupFragments(
-    const nsACString& aSpec, nsTArray<nsCString>* aFragments)
+/* static */
+nsresult LookupCache::GetLookupFragments(const nsACString& aSpec,
+                                         nsTArray<nsCString>* aFragments)
 
 {
   aFragments->Clear();
@@ -368,7 +371,6 @@ void LookupCache::GetCacheInfo(nsIUrlClassifierCacheInfo** aCache) {
       key.Assign(hosts[hostIndex]);
       key.Append('/');
       key.Append(paths[pathIndex]);
-      LOG(("Checking fragment %s", key.get()));
 
       aFragments->AppendElement(key);
     }
@@ -377,8 +379,9 @@ void LookupCache::GetCacheInfo(nsIUrlClassifierCacheInfo** aCache) {
   return NS_OK;
 }
 
-/* static */ nsresult LookupCache::GetHostKeys(const nsACString& aSpec,
-                                               nsTArray<nsCString>* aHostKeys) {
+/* static */
+nsresult LookupCache::GetHostKeys(const nsACString& aSpec,
+                                  nsTArray<nsCString>* aHostKeys) {
   nsACString::const_iterator begin, end, iter;
   aSpec.BeginReading(begin);
   aSpec.EndReading(end);
@@ -434,7 +437,7 @@ nsresult LookupCache::LoadPrefixSet() {
   nsresult rv = mStoreDirectory->Clone(getter_AddRefs(psFile));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = psFile->AppendNative(mTableName + NS_LITERAL_CSTRING(PREFIXSET_SUFFIX));
+  rv = psFile->AppendNative(mTableName + GetPrefixSetSuffix());
   NS_ENSURE_SUCCESS(rv, rv);
 
   bool exists;
@@ -449,7 +452,14 @@ nsresult LookupCache::LoadPrefixSet() {
     }
     mPrimed = true;
   } else {
-    LOG(("no (usable) stored PrefixSet found"));
+    // The only scenario we load the old .pset file is when we haven't received
+    // a SafeBrowsng update before. After receiving an update, new .vlpset will
+    // be stored while old .pset will be removed.
+    if (NS_SUCCEEDED(LoadLegacyFile())) {
+      mPrimed = true;
+    } else {
+      LOG(("no (usable) stored PrefixSet found"));
+    }
   }
 
 #ifdef DEBUG
@@ -472,7 +482,7 @@ static nsCString GetFormattedTimeString(int64_t aCurTimeSec) {
                          pret.tm_min, pret.tm_sec);
 }
 
-void LookupCache::DumpCache() {
+void LookupCache::DumpCache() const {
   if (!LOG_ENABLED()) {
     return;
   }
@@ -547,13 +557,10 @@ nsresult LookupCacheV2::Has(const Completion& aCompletion, bool* aHas,
     rv = CheckCache(aCompletion, aHas, aConfirmed);
   }
 
-  LOG(("Probe in %s: %X, has %d, confirmed %d", mTableName.get(), prefix, *aHas,
-       *aConfirmed));
-
   return rv;
 }
 
-bool LookupCacheV2::IsEmpty() {
+bool LookupCacheV2::IsEmpty() const {
   bool isEmpty;
   mPrefixSet->IsEmpty(&isEmpty);
   return isEmpty;
@@ -593,9 +600,9 @@ nsresult LookupCacheV2::GetPrefixes(FallibleTArray<uint32_t>& aAddPrefixes) {
   return mPrefixSet->GetPrefixesNative(aAddPrefixes);
 }
 
-void LookupCacheV2::AddGethashResultToCache(AddCompleteArray& aAddCompletes,
-                                            MissPrefixArray& aMissPrefixes,
-                                            int64_t aExpirySec) {
+void LookupCacheV2::AddGethashResultToCache(
+    const AddCompleteArray& aAddCompletes, const MissPrefixArray& aMissPrefixes,
+    int64_t aExpirySec) {
   int64_t defaultExpirySec = PR_Now() / PR_USEC_PER_SEC + V2_CACHE_DURATION_SEC;
   if (aExpirySec != 0) {
     defaultExpirySec = aExpirySec;
@@ -645,16 +652,84 @@ nsresult LookupCacheV2::ClearPrefixes() {
   return mPrefixSet->SetPrefixes(nullptr, 0);
 }
 
-nsresult LookupCacheV2::StoreToFile(nsIFile* aFile) {
-  return mPrefixSet->StoreToFile(aFile);
+nsresult LookupCacheV2::StoreToFile(nsCOMPtr<nsIFile>& aFile) {
+  nsCOMPtr<nsIOutputStream> localOutFile;
+  nsresult rv =
+      NS_NewLocalFileOutputStream(getter_AddRefs(localOutFile), aFile,
+                                  PR_WRONLY | PR_TRUNCATE | PR_CREATE_FILE);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  uint32_t fileSize;
+
+  // Preallocate the file storage
+  {
+    nsCOMPtr<nsIFileOutputStream> fos(do_QueryInterface(localOutFile));
+    Telemetry::AutoTimer<Telemetry::URLCLASSIFIER_PS_FALLOCATE_TIME> timer;
+
+    fileSize = mPrefixSet->CalculatePreallocateSize();
+
+    // Ignore failure, the preallocation is a hint and we write out the entire
+    // file later on
+    Unused << fos->Preallocate(fileSize);
+  }
+
+  // Convert to buffered stream
+  nsCOMPtr<nsIOutputStream> out;
+  rv = NS_NewBufferedOutputStream(getter_AddRefs(out), localOutFile.forget(),
+                                  std::min(fileSize, MAX_BUFFER_SIZE));
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  rv = mPrefixSet->WritePrefixes(out);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  LOG(("[%s] Storing PrefixSet successful", mTableName.get()));
+  return NS_OK;
 }
 
-nsresult LookupCacheV2::LoadFromFile(nsIFile* aFile) {
-  return mPrefixSet->LoadFromFile(aFile);
+nsresult LookupCacheV2::LoadLegacyFile() { return NS_ERROR_NOT_IMPLEMENTED; }
+
+nsresult LookupCacheV2::LoadFromFile(nsCOMPtr<nsIFile>& aFile) {
+  Telemetry::AutoTimer<Telemetry::URLCLASSIFIER_PS_FILELOAD_TIME> timer;
+
+  nsCOMPtr<nsIInputStream> localInFile;
+  nsresult rv = NS_NewLocalFileInputStream(getter_AddRefs(localInFile), aFile,
+                                           PR_RDONLY | nsIFile::OS_READAHEAD);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  // Calculate how big the file is, make sure our read buffer isn't bigger
+  // than the file itself which is just wasting memory.
+  int64_t fileSize;
+  rv = aFile->GetFileSize(&fileSize);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  if (fileSize < 0 || fileSize > UINT32_MAX) {
+    return NS_ERROR_FAILURE;
+  }
+
+  uint32_t bufferSize =
+      std::min<uint32_t>(static_cast<uint32_t>(fileSize), MAX_BUFFER_SIZE);
+
+  // Convert to buffered stream
+  nsCOMPtr<nsIInputStream> in;
+  rv = NS_NewBufferedInputStream(getter_AddRefs(in), localInFile.forget(),
+                                 bufferSize);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  rv = mPrefixSet->LoadPrefixes(in);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  mPrimed = true;
+  LOG(("[%s] Loading PrefixSet successful", mTableName.get()));
+
+  return NS_OK;
 }
 
-size_t LookupCacheV2::SizeOfPrefixSet() {
+size_t LookupCacheV2::SizeOfPrefixSet() const {
   return mPrefixSet->SizeOfIncludingThis(moz_malloc_size_of);
+}
+
+nsCString LookupCacheV2::GetPrefixSetSuffix() const {
+  return NS_LITERAL_CSTRING(".pset");
 }
 
 #ifdef DEBUG
@@ -710,7 +785,7 @@ nsresult LookupCacheV2::ConstructPrefixSet(AddPrefixArray& aAddPrefixes) {
 }
 
 #if defined(DEBUG)
-void LookupCacheV2::DumpCompletions() {
+void LookupCacheV2::DumpCompletions() const {
   if (!LOG_ENABLED()) return;
 
   for (uint32_t i = 0; i < mUpdateCompletions.Length(); i++) {

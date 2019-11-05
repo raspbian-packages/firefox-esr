@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Test for PaintWorklet</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <script type="application/javascript" src="common.js"></script>
 </head>
@@ -39,7 +39,7 @@ function configureTest() {
 
 // This function is called into an iframe.
 function runTestInIframe() {
-  paintWorklet.import("worklet_paintWorklet.js")
+  paintWorklet.addModule("worklet_paintWorklet.js")
 }
 </script>
 </body>

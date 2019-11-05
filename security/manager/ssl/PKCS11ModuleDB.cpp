@@ -10,6 +10,7 @@
 #include "mozilla/Telemetry.h"
 #include "nsCRTGlue.h"
 #include "nsIMutableArray.h"
+#include "nsNSSCertHelper.h"
 #include "nsNSSComponent.h"
 #include "nsNativeCharsetUtils.h"
 #include "nsPKCS11Slot.h"
@@ -20,6 +21,26 @@ namespace psm {
 
 NS_IMPL_ISUPPORTS(PKCS11ModuleDB, nsIPKCS11ModuleDB)
 
+// Convert the UTF16 name of the module as it appears to the user to the
+// internal representation. For most modules this just involves converting from
+// UTF16 to UTF8. For the builtin root module, it also involves mapping from the
+// localized name to the internal, non-localized name.
+static nsresult NormalizeModuleNameIn(const nsAString& moduleNameIn,
+                                      nsCString& moduleNameOut) {
+  nsAutoString localizedRootModuleName;
+  nsresult rv =
+      GetPIPNSSBundleString("RootCertModuleName", localizedRootModuleName);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+  if (moduleNameIn.Equals(localizedRootModuleName)) {
+    moduleNameOut.Assign(kRootModuleName);
+    return NS_OK;
+  }
+  moduleNameOut.Assign(NS_ConvertUTF16toUTF8(moduleNameIn));
+  return NS_OK;
+}
+
 // Delete a PKCS11 module from the user's profile.
 NS_IMETHODIMP
 PKCS11ModuleDB::DeleteModule(const nsAString& aModuleName) {
@@ -27,10 +48,14 @@ PKCS11ModuleDB::DeleteModule(const nsAString& aModuleName) {
     return NS_ERROR_INVALID_ARG;
   }
 
-  NS_ConvertUTF16toUTF8 moduleName(aModuleName);
+  nsAutoCString moduleNameNormalized;
+  nsresult rv = NormalizeModuleNameIn(aModuleName, moduleNameNormalized);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
   // modType is an output variable. We ignore it.
   int32_t modType;
-  SECStatus srv = SECMOD_DeleteModule(moduleName.get(), &modType);
+  SECStatus srv = SECMOD_DeleteModule(moduleNameNormalized.get(), &modType);
   if (srv != SECSuccess) {
     return NS_ERROR_FAILURE;
   }
@@ -51,13 +76,13 @@ void GetModuleNameForTelemetry(/*in*/ const SECMODModule* module,
                                /*out*/ nsString& result) {
   result.Truncate();
   if (module->dllName) {
-    CopyASCIItoUTF16(module->dllName, result);
+    result.AssignASCII(module->dllName);
     int32_t separatorIndex = result.RFind(FILE_PATH_SEPARATOR);
     if (separatorIndex != kNotFound) {
       result = Substring(result, separatorIndex + 1);
     }
   } else {
-    CopyASCIItoUTF16(module->commonName, result);
+    result.AssignASCII(module->commonName);
   }
   if (result.Length() >= 70) {
     result.Truncate(69);
@@ -75,11 +100,11 @@ PKCS11ModuleDB::AddModule(const nsAString& aModuleName,
 
   // "Root Certs" is the name some NSS command-line utilities will give the
   // roots module if they decide to load it when there happens to be a
-  // `DLL_PREFIX "nssckbi" DLL_SUFFIX` file in the directory being operated on.
-  // This causes failures, so as a workaround, the PSM initialization code will
-  // unconditionally remove any module named "Root Certs". We should prevent the
-  // user from adding an unrelated module named "Root Certs" in the first place
-  // so PSM doesn't delete it. See bug 1406396.
+  // `MOZ_DLL_PREFIX "nssckbi" MOZ_DLL_SUFFIX` file in the directory being
+  // operated on.  This causes failures, so as a workaround, the PSM
+  // initialization code will unconditionally remove any module named "Root
+  // Certs". We should prevent the user from adding an unrelated module named
+  // "Root Certs" in the first place so PSM doesn't delete it. See bug 1406396.
   if (aModuleName.EqualsLiteral("Root Certs")) {
     return NS_ERROR_ILLEGAL_VALUE;
   }
@@ -91,19 +116,23 @@ PKCS11ModuleDB::AddModule(const nsAString& aModuleName,
     return rv;
   }
 
-  NS_ConvertUTF16toUTF8 moduleName(aModuleName);
+  nsAutoCString moduleNameNormalized;
+  rv = NormalizeModuleNameIn(aModuleName, moduleNameNormalized);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
   nsCString fullPath;
   // NSS doesn't support Unicode path.  Use native charset
   NS_CopyUnicodeToNative(aLibraryFullPath, fullPath);
   uint32_t mechFlags = SECMOD_PubMechFlagstoInternal(aCryptoMechanismFlags);
   uint32_t cipherFlags = SECMOD_PubCipherFlagstoInternal(aCipherFlags);
-  SECStatus srv = SECMOD_AddNewModule(moduleName.get(), fullPath.get(),
-                                      mechFlags, cipherFlags);
+  SECStatus srv = SECMOD_AddNewModule(moduleNameNormalized.get(),
+                                      fullPath.get(), mechFlags, cipherFlags);
   if (srv != SECSuccess) {
     return NS_ERROR_FAILURE;
   }
 
-  UniqueSECMODModule module(SECMOD_FindModule(moduleName.get()));
+  UniqueSECMODModule module(SECMOD_FindModule(moduleNameNormalized.get()));
   if (!module) {
     return NS_ERROR_FAILURE;
   }
@@ -119,26 +148,6 @@ PKCS11ModuleDB::AddModule(const nsAString& aModuleName,
     Telemetry::ScalarSet(Telemetry::ScalarID::SECURITY_PKCS11_MODULES_LOADED,
                          scalarKey, true);
   }
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-PKCS11ModuleDB::FindModuleByName(const nsACString& name,
-                                 /*out*/ nsIPKCS11Module** _retval) {
-  NS_ENSURE_ARG_POINTER(_retval);
-
-  nsresult rv = BlockUntilLoadableRootsLoaded();
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-
-  UniqueSECMODModule mod(SECMOD_FindModule(PromiseFlatCString(name).get()));
-  if (!mod) {
-    return NS_ERROR_FAILURE;
-  }
-
-  nsCOMPtr<nsIPKCS11Module> module = new nsPKCS11Module(mod.get());
-  module.forget(_retval);
   return NS_OK;
 }
 
@@ -177,7 +186,7 @@ PKCS11ModuleDB::ListModules(nsISimpleEnumerator** _retval) {
     }
   }
 
-  return array->Enumerate(_retval);
+  return array->Enumerate(_retval, NS_GET_IID(nsIPKCS11Module));
 }
 
 NS_IMETHODIMP

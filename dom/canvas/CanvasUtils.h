@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -50,7 +50,8 @@ void DoDrawImageSecurityCheck(dom::HTMLCanvasElement* aCanvasElement,
 bool HasDrawWindowPrivilege(JSContext* aCx, JSObject* aObj);
 
 // Check site-specific permission and display prompt if appropriate.
-bool IsImageExtractionAllowed(nsIDocument* aDocument, JSContext* aCx);
+bool IsImageExtractionAllowed(dom::Document* aDocument, JSContext* aCx,
+                              nsIPrincipal& aPrincipal);
 
 // Make a double out of |v|, treating undefined values as 0.0 (for
 // the sake of sparse arrays).  Return true iff coercion

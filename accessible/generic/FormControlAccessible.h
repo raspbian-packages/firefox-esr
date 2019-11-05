@@ -12,36 +12,32 @@ namespace mozilla {
 namespace a11y {
 
 /**
- * Generic class used for progress meters.
+ * Checkbox accessible.
  */
-template <int Max>
-class ProgressMeterAccessible : public LeafAccessible {
+class CheckboxAccessible : public LeafAccessible {
  public:
-  ProgressMeterAccessible(nsIContent* aContent, DocAccessible* aDoc)
+  enum { eAction_Click = 0 };
+
+  CheckboxAccessible(nsIContent* aContent, DocAccessible* aDoc)
       : LeafAccessible(aContent, aDoc) {
-    // Ignore 'ValueChange' DOM event in lieu of @value attribute change
-    // notifications.
-    mStateFlags |= eHasNumericValue | eIgnoreDOMUIEvent;
-    mType = eProgressType;
+    // Ignore "CheckboxStateChange" DOM event in lieu of document observer
+    // state change notification.
+    if (aContent->IsHTMLElement()) {
+      mStateFlags |= eIgnoreDOMUIEvent;
+    }
   }
 
   // Accessible
-  virtual void Value(nsString& aValue) override;
-  virtual mozilla::a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
+  virtual mozilla::a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
 
-  // Value
-  virtual double MaxValue() const override;
-  virtual double MinValue() const override;
-  virtual double CurValue() const override;
-  virtual double Step() const override;
-  virtual bool SetCurValue(double aValue) override;
+  // ActionAccessible
+  virtual uint8_t ActionCount() const override;
+  virtual void ActionNameAt(uint8_t aIndex, nsAString& aName) override;
+  virtual bool DoAction(uint8_t aIndex) const override;
 
   // Widgets
   virtual bool IsWidget() const override;
-
- protected:
-  virtual ~ProgressMeterAccessible() {}
 };
 
 /**
@@ -52,12 +48,12 @@ class RadioButtonAccessible : public LeafAccessible {
   RadioButtonAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual mozilla::a11y::role NativeRole() override;
+  virtual mozilla::a11y::role NativeRole() const override;
 
   // ActionAccessible
-  virtual uint8_t ActionCount() override;
+  virtual uint8_t ActionCount() const override;
   virtual void ActionNameAt(uint8_t aIndex, nsAString& aName) override;
-  virtual bool DoAction(uint8_t aIndex) override;
+  virtual bool DoAction(uint8_t aIndex) const override;
 
   enum { eAction_Click = 0 };
 

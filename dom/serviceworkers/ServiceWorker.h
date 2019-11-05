@@ -10,15 +10,19 @@
 #include "mozilla/DOMEventTargetHelper.h"
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/dom/ServiceWorkerDescriptor.h"
+#include "mozilla/dom/ServiceWorkerUtils.h"
 
 #ifdef XP_WIN
-#undef PostMessage
+#  undef PostMessage
 #endif
 
 class nsIGlobalObject;
 
 namespace mozilla {
 namespace dom {
+
+struct PostMessageOptions;
+class ServiceWorkerCloneData;
 
 #define NS_DOM_SERVICEWORKER_IID                     \
   {                                                  \
@@ -52,16 +56,21 @@ class ServiceWorker final : public DOMEventTargetHelper {
     // destroyed and drops its ref to the Inner object.
     virtual void RemoveServiceWorker(ServiceWorker* aWorker) = 0;
 
-    virtual void PostMessage(nsIGlobalObject* aGlobal, JSContext* aCx,
-                             JS::Handle<JS::Value> aMessage,
-                             const Sequence<JSObject*>& aTransferable,
-                             ErrorResult& aRv) = 0;
+    // Get the associated registration for this ServiceWorker.  The success
+    // callback should always be called asynchronously.
+    virtual void GetRegistration(ServiceWorkerRegistrationCallback&& aSuccessCB,
+                                 ServiceWorkerFailureCallback&& aFailureCB) = 0;
+
+    virtual void PostMessage(RefPtr<ServiceWorkerCloneData>&& aData,
+                             const ClientInfo& aClientInfo,
+                             const ClientState& aClientState) = 0;
 
     NS_INLINE_DECL_PURE_VIRTUAL_REFCOUNTING
   };
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_DOM_SERVICEWORKER_IID)
   NS_DECL_ISUPPORTS_INHERITED
+  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(ServiceWorker, DOMEventTargetHelper)
 
   IMPL_EVENT_HANDLER(statechange)
   IMPL_EVENT_HANDLER(error)
@@ -76,10 +85,15 @@ class ServiceWorker final : public DOMEventTargetHelper {
 
   void SetState(ServiceWorkerState aState);
 
+  void MaybeDispatchStateChangeEvent();
+
   void GetScriptURL(nsString& aURL) const;
 
   void PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
                    const Sequence<JSObject*>& aTransferable, ErrorResult& aRv);
+
+  void PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
+                   const PostMessageOptions& aOptions, ErrorResult& aRv);
 
   const ServiceWorkerDescriptor& Descriptor() const;
 
@@ -92,13 +106,13 @@ class ServiceWorker final : public DOMEventTargetHelper {
   // This class is reference-counted and will be destroyed from Release().
   ~ServiceWorker();
 
+  void MaybeAttachToRegistration(ServiceWorkerRegistration* aRegistration);
+
   ServiceWorkerDescriptor mDescriptor;
 
-  // Hold a strong reference to the inner service worker object.  This will
-  // create a ref-cycle.  The cycle is broken when either DisconnectFromOwner()
-  // is called due to the global tearing down or when the underlying service
-  // worker transitions to the redundant state.
   RefPtr<Inner> mInner;
+  RefPtr<ServiceWorkerRegistration> mRegistration;
+  ServiceWorkerState mLastNotifiedState;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(ServiceWorker, NS_DOM_SERVICEWORKER_IID)

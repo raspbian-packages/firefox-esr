@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* ex: set tabstop=8 softtabstop=4 shiftwidth=4 expandtab: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,10 +24,9 @@ bool nsCUPSShim::Init() {
   if (!mCupsLib) return false;
 
   // List of symbol pointers. Must match gSymName[] defined above.
-  void **symAddr[] = {
-      (void **)&mCupsAddOption, (void **)&mCupsFreeDests,
-      (void **)&mCupsGetDest,   (void **)&mCupsGetDests,
-      (void **)&mCupsPrintFile, (void **)&mCupsTempFd,
+  void** symAddr[] = {
+      (void**)&mCupsAddOption, (void**)&mCupsFreeDests, (void**)&mCupsGetDest,
+      (void**)&mCupsGetDests,  (void**)&mCupsPrintFile, (void**)&mCupsTempFd,
   };
 
   for (int i = gSymNameCt; i--;) {

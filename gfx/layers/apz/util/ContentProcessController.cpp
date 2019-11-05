@@ -6,7 +6,8 @@
 
 #include "ContentProcessController.h"
 
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/layers/APZCCallbackHelper.h"
 #include "mozilla/layers/APZChild.h"
 #include "nsIContentInlines.h"
@@ -17,15 +18,21 @@ namespace mozilla {
 namespace layers {
 
 ContentProcessController::ContentProcessController(
-    const RefPtr<dom::TabChild>& aBrowser)
+    const RefPtr<dom::BrowserChild>& aBrowser)
     : mBrowser(aBrowser) {
   MOZ_ASSERT(mBrowser);
 }
 
+void ContentProcessController::NotifyLayerTransforms(
+    const nsTArray<MatrixMessage>& aTransforms) {
+  // This should never get called
+  MOZ_ASSERT(false);
+}
+
 void ContentProcessController::RequestContentRepaint(
-    const FrameMetrics& aFrameMetrics) {
+    const RepaintRequest& aRequest) {
   if (mBrowser) {
-    mBrowser->UpdateFrame(aFrameMetrics);
+    mBrowser->UpdateFrame(aRequest);
   }
 }
 
@@ -53,7 +60,7 @@ void ContentProcessController::NotifyAPZStateChange(
 }
 
 void ContentProcessController::NotifyMozMouseScrollEvent(
-    const FrameMetrics::ViewID& aScrollId, const nsString& aEvent) {
+    const ScrollableLayerGuid::ViewID& aScrollId, const nsString& aEvent) {
   if (mBrowser) {
     APZCCallbackHelper::NotifyMozMouseScrollEvent(aScrollId, aEvent);
   }
@@ -61,21 +68,25 @@ void ContentProcessController::NotifyMozMouseScrollEvent(
 
 void ContentProcessController::NotifyFlushComplete() {
   if (mBrowser) {
-    nsCOMPtr<nsIPresShell> shell;
-    if (nsCOMPtr<nsIDocument> doc = mBrowser->GetDocument()) {
-      shell = doc->GetShell();
-    }
-    APZCCallbackHelper::NotifyFlushComplete(shell.get());
+    RefPtr<PresShell> presShell = mBrowser->GetTopLevelPresShell();
+    APZCCallbackHelper::NotifyFlushComplete(presShell);
   }
 }
 
+void ContentProcessController::NotifyAsyncScrollbarDragInitiated(
+    uint64_t aDragBlockId, const ScrollableLayerGuid::ViewID& aScrollId,
+    ScrollDirection aDirection) {
+  APZCCallbackHelper::NotifyAsyncScrollbarDragInitiated(aDragBlockId, aScrollId,
+                                                        aDirection);
+}
+
 void ContentProcessController::NotifyAsyncScrollbarDragRejected(
-    const FrameMetrics::ViewID& aScrollId) {
+    const ScrollableLayerGuid::ViewID& aScrollId) {
   APZCCallbackHelper::NotifyAsyncScrollbarDragRejected(aScrollId);
 }
 
 void ContentProcessController::NotifyAsyncAutoscrollRejected(
-    const FrameMetrics::ViewID& aScrollId) {
+    const ScrollableLayerGuid::ViewID& aScrollId) {
   APZCCallbackHelper::NotifyAsyncAutoscrollRejected(aScrollId);
 }
 
@@ -95,7 +106,7 @@ bool ContentProcessController::IsRepaintThread() { return NS_IsMainThread(); }
 
 void ContentProcessController::DispatchToRepaintThread(
     already_AddRefed<Runnable> aTask) {
-  NS_DispatchToMainThread(Move(aTask));
+  NS_DispatchToMainThread(std::move(aTask));
 }
 
 }  // namespace layers

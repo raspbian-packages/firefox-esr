@@ -13,19 +13,19 @@
 #include "nsCOMPtr.h"
 
 namespace mozilla {
-enum class CSSPseudoElementType : uint8_t;
+enum class PseudoStyleType : uint8_t;
 }  // namespace mozilla
 
 class nsProgressFrame final : public nsContainerFrame,
                               public nsIAnonymousContentCreator {
-  typedef mozilla::CSSPseudoElementType CSSPseudoElementType;
+  typedef mozilla::PseudoStyleType PseudoStyleType;
   typedef mozilla::dom::Element Element;
 
  public:
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsProgressFrame)
 
-  explicit nsProgressFrame(nsStyleContext* aContext);
+  explicit nsProgressFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
   virtual ~nsProgressFrame();
 
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
@@ -71,8 +71,6 @@ class nsProgressFrame final : public nsContainerFrame,
    * Returns whether the frame and its child should use the native style.
    */
   bool ShouldUseNativeStyle() const;
-
-  virtual Element* GetPseudoElement(CSSPseudoElementType aType) override;
 
  protected:
   // Helper function to reflow a child frame.

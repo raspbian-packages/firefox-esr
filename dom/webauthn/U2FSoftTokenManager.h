@@ -22,8 +22,8 @@ class U2FSoftTokenManager final : public U2FTokenTransport {
  public:
   explicit U2FSoftTokenManager(uint32_t aCounter);
 
-  RefPtr<U2FRegisterPromise> Register(
-      const WebAuthnMakeCredentialInfo& aInfo) override;
+  RefPtr<U2FRegisterPromise> Register(const WebAuthnMakeCredentialInfo& aInfo,
+                                      bool aForceNoneAttestation) override;
 
   RefPtr<U2FSignPromise> Sign(const WebAuthnGetAssertionInfo& aInfo) override;
 

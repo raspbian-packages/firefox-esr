@@ -4,5 +4,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 DevToolsModules(
+    'Description.js',
+    'DirectoryPicker.js',
     'Perf.js',
+    'Range.js',
+    'RecordingButton.js',
+    'Settings.js',
 )

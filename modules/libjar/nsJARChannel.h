@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,6 +9,7 @@
 #include "mozilla/net/MemoryDownloader.h"
 #include "nsIJARChannel.h"
 #include "nsIJARURI.h"
+#include "nsIEventTarget.h"
 #include "nsIInputStreamPump.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsIProgressEventSink.h"
@@ -32,7 +33,6 @@ class nsInputStreamPump;
 //-----------------------------------------------------------------------------
 
 class nsJARChannel final : public nsIJARChannel,
-                           public mozilla::net::MemoryDownloader::IObserver,
                            public nsIStreamListener,
                            public nsIThreadRetargetableRequest,
                            public nsIThreadRetargetableStreamListener,
@@ -49,22 +49,21 @@ class nsJARChannel final : public nsIJARChannel,
 
   nsJARChannel();
 
-  nsresult Init(nsIURI *uri);
+  nsresult Init(nsIURI* uri);
 
-  void SetFile(nsIFile *file);
+  void SetFile(nsIFile* file);
 
  private:
   virtual ~nsJARChannel();
 
-  nsresult CreateJarInput(nsIZipReaderCache *, nsJARInputThunk **);
-  nsresult LookupFile(bool aAllowAsync);
+  nsresult CreateJarInput(nsIZipReaderCache*, nsJARInputThunk**);
+  nsresult LookupFile();
   nsresult OpenLocalFile();
+  nsresult ContinueOpenLocalFile(nsJARInputThunk* aInput, bool aIsSyncCall);
+  nsresult OnOpenLocalFileComplete(nsresult aResult, bool aIsSyncCall);
+  nsresult CheckPendingEvents();
   void NotifyError(nsresult aError);
   void FireOnProgress(uint64_t aProgress);
-  virtual void OnDownloadComplete(
-      mozilla::net::MemoryDownloader *aDownloader, nsIRequest *aRequest,
-      nsISupports *aCtxt, nsresult aStatus,
-      mozilla::net::MemoryDownloader::Data aData) override;
 
   nsCString mSpec;
 
@@ -80,20 +79,20 @@ class nsJARChannel final : public nsIJARChannel,
   nsCOMPtr<nsIProgressEventSink> mProgressSink;
   nsCOMPtr<nsILoadGroup> mLoadGroup;
   nsCOMPtr<nsIStreamListener> mListener;
-  nsCOMPtr<nsISupports> mListenerContext;
   nsCString mContentType;
   nsCString mContentCharset;
-  nsCString mContentDispositionHeader;
-  /* mContentDisposition is uninitialized if mContentDispositionHeader is
-   * empty */
-  uint32_t mContentDisposition;
   int64_t mContentLength;
   uint32_t mLoadFlags;
   nsresult mStatus;
-  bool mIsPending;
-  bool mIsUnsafe;
+  bool mIsPending;  // the AsyncOpen is in progress.
 
-  mozilla::net::MemoryDownloader::Data mTempMem;
+  bool mEnableOMT;
+  // |Cancel()|, |Suspend()|, and |Resume()| might be called during AsyncOpen.
+  struct {
+    bool isCanceled;
+    uint32_t suspendCount;
+  } mPendingEvent;
+
   nsCOMPtr<nsIInputStreamPump> mPump;
   // mRequest is only non-null during OnStartRequest, so we'll have a pointer
   // to the request if we get called back via RetargetDeliveryTo.
@@ -105,8 +104,8 @@ class nsJARChannel final : public nsIJARChannel,
   nsCString mJarEntry;
   nsCString mInnerJarEntry;
 
-  // True if this channel should not download any remote files.
-  bool mBlockRemoteFiles;
+  // use StreamTransportService as background thread
+  nsCOMPtr<nsIEventTarget> mWorker;
 };
 
 #endif  // nsJARChannel_h__

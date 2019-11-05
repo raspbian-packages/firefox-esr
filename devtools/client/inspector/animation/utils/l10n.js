@@ -5,8 +5,12 @@
 "use strict";
 
 const { LocalizationHelper } = require("devtools/shared/l10n");
-const L10N =
-  new LocalizationHelper("devtools/client/locales/animationinspector.properties");
+const L10N = new LocalizationHelper(
+  "devtools/client/locales/animationinspector.properties"
+);
+const INSPECTOR_L10N = new LocalizationHelper(
+  "devtools/client/locales/inspector.properties"
+);
 
 /**
  * Get a formatted title for this animation. This will be either:
@@ -36,6 +40,7 @@ function getFormattedTitle(state) {
 module.exports = {
   getFormatStr: (...args) => L10N.getFormatStr(...args),
   getFormattedTitle,
+  getInspectorStr: (...args) => INSPECTOR_L10N.getStr(...args),
   getStr: (...args) => L10N.getStr(...args),
   numberWithDecimals: (...args) => L10N.numberWithDecimals(...args),
 };

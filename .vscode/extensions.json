@@ -4,15 +4,15 @@
     "recommendations": [
         // Trim only touched lines.
         "NathanRidley.autotrim",
-        // JS Babel ES6/ES7 syntax hilight.
-        "dzannotti.vscode-babel-coloring",
         // ESLint support.
         "dbaeumer.vscode-eslint",
         // C/C++ language support.
         "ms-vscode.cpptools",
         // Rust language support.
-        "kalitaalexey.vscode-rust",
+        "rust-lang.rust",
         // CSS support for HTML documents.
-        "ecmel.vscode-html-css"
+        "ecmel.vscode-html-css",
+        // IDL language support
+        "mythmon.idl"
     ]
 }

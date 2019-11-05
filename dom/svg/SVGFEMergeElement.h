@@ -7,7 +7,7 @@
 #ifndef mozilla_dom_SVGFEMergeElement_h
 #define mozilla_dom_SVGFEMergeElement_h
 
-#include "nsSVGFilters.h"
+#include "SVGFilters.h"
 
 nsresult NS_NewSVGFEMergeElement(
     nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
@@ -15,7 +15,7 @@ nsresult NS_NewSVGFEMergeElement(
 namespace mozilla {
 namespace dom {
 
-typedef nsSVGFE SVGFEMergeElementBase;
+typedef SVGFE SVGFEMergeElementBase;
 
 class SVGFEMergeElement : public SVGFEMergeElementBase {
   friend nsresult(::NS_NewSVGFEMergeElement(
@@ -24,8 +24,8 @@ class SVGFEMergeElement : public SVGFEMergeElementBase {
 
  protected:
   explicit SVGFEMergeElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : SVGFEMergeElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : SVGFEMergeElementBase(std::move(aNodeInfo)) {}
   virtual JSObject* WrapNode(JSContext* cx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
@@ -34,21 +34,19 @@ class SVGFEMergeElement : public SVGFEMergeElementBase {
       nsSVGFilterInstance* aInstance, const IntRect& aFilterSubregion,
       const nsTArray<bool>& aInputsAreTainted,
       nsTArray<RefPtr<SourceSurface>>& aInputImages) override;
-  virtual nsSVGString& GetResultImageName() override {
+  virtual SVGAnimatedString& GetResultImageName() override {
     return mStringAttributes[RESULT];
   }
-  virtual void GetSourceImageNames(
-      nsTArray<nsSVGStringInfo>& aSources) override;
+  virtual void GetSourceImageNames(nsTArray<SVGStringInfo>& aSources) override;
 
   // nsIContent
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual StringAttributesInfo GetStringInfo() override;
 
   enum { RESULT };
-  nsSVGString mStringAttributes[1];
+  SVGAnimatedString mStringAttributes[1];
   static StringInfo sStringInfo[1];
 };
 

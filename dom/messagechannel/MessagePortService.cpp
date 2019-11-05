@@ -63,14 +63,16 @@ class MessagePortService::MessagePortServiceData final {
   bool mNextStepCloseAll;
 };
 
-/* static */ MessagePortService* MessagePortService::Get() {
+/* static */
+MessagePortService* MessagePortService::Get() {
   AssertIsInMainProcess();
   AssertIsOnBackgroundThread();
 
   return gInstance;
 }
 
-/* static */ MessagePortService* MessagePortService::GetOrCreate() {
+/* static */
+MessagePortService* MessagePortService::GetOrCreate() {
   AssertIsInMainProcess();
   AssertIsOnBackgroundThread();
 
@@ -133,7 +135,7 @@ bool MessagePortService::RequestEntangling(MessagePortParent* aParent,
     // Move to initialize things swapped and do it before we declare `array` so
     // that reverse destruction order works for us.
     FallibleTArray<RefPtr<SharedMessagePortMessage>> messages(
-        Move(data->mMessages));
+        std::move(data->mMessages));
     FallibleTArray<ClonedMessageData> array;
     if (!SharedMessagePortMessage::FromSharedToMessagesParent(aParent, messages,
                                                               array)) {

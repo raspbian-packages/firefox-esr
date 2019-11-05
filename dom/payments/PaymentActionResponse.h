@@ -54,7 +54,11 @@ class BasicCardResponseData final : public nsIBasicCardResponseData,
  private:
   ~BasicCardResponseData() = default;
 
-  nsString mData;
+  nsString mCardholderName;
+  nsString mCardNumber;
+  nsString mExpiryMonth;
+  nsString mExpiryYear;
+  nsString mCardSecurityCode;
   nsCOMPtr<nsIPaymentAddress> mBillingAddress;
 };
 
@@ -102,7 +106,7 @@ class PaymentShowActionResponse final : public nsIPaymentShowActionResponse,
 
   uint32_t mAcceptStatus;
   nsString mMethodName;
-  nsString mData;
+  nsCOMPtr<nsIPaymentResponseData> mData;
   nsString mPayerName;
   nsString mPayerEmail;
   nsString mPayerPhone;
@@ -137,6 +141,49 @@ class PaymentCompleteActionResponse final
   ~PaymentCompleteActionResponse() = default;
 
   uint32_t mCompleteStatus;
+};
+
+class MethodChangeDetails : public nsIMethodChangeDetails {
+ public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIMETHODCHANGEDETAILS
+
+  MethodChangeDetails() = default;
+
+ protected:
+  virtual ~MethodChangeDetails() = default;
+
+  uint32_t mType;
+};
+
+class GeneralMethodChangeDetails final : public MethodChangeDetails,
+                                         public nsIGeneralChangeDetails {
+ public:
+  NS_DECL_ISUPPORTS_INHERITED
+  NS_FORWARD_NSIMETHODCHANGEDETAILS(MethodChangeDetails::)
+  NS_DECL_NSIGENERALCHANGEDETAILS
+
+  GeneralMethodChangeDetails();
+
+ private:
+  ~GeneralMethodChangeDetails() = default;
+
+  nsString mDetails;
+};
+
+class BasicCardMethodChangeDetails final : public MethodChangeDetails,
+                                           public nsIBasicCardChangeDetails {
+ public:
+  NS_DECL_ISUPPORTS_INHERITED
+  NS_FORWARD_NSIMETHODCHANGEDETAILS(MethodChangeDetails::)
+  NS_DECL_NSIBASICCARDCHANGEDETAILS
+
+  BasicCardMethodChangeDetails();
+
+ private:
+  ~BasicCardMethodChangeDetails() = default;
+
+  nsCOMPtr<nsIPaymentAddress> mBillingAddress;
 };
 
 }  // namespace dom

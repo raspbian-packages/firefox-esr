@@ -49,6 +49,9 @@ static gboolean GetRowSpanCB(AtkTableCell* aCell) {
 static gboolean GetPositionCB(AtkTableCell* aCell, gint* aRow, gint* aCol) {
   if (AccessibleWrap* accWrap = GetAccessibleWrap(ATK_OBJECT(aCell))) {
     TableCellAccessible* cell = accWrap->AsTableCell();
+    if (!cell) {
+      return false;
+    }
     *aRow = cell->RowIdx();
     *aCol = cell->ColIdx();
     return true;
@@ -69,6 +72,9 @@ static gboolean GetColumnRowSpanCB(AtkTableCell* aCell, gint* aCol, gint* aRow,
                                    gint* aColExtent, gint* aRowExtent) {
   if (AccessibleWrap* accWrap = GetAccessibleWrap(ATK_OBJECT(aCell))) {
     TableCellAccessible* cellAcc = accWrap->AsTableCell();
+    if (!cellAcc) {
+      return false;
+    }
     *aCol = cellAcc->ColIdx();
     *aRow = cellAcc->RowIdx();
     *aColExtent = cellAcc->ColExtent();

@@ -11,6 +11,10 @@
 #include "mozilla/EnumSet.h"
 #include "nsMathMLContainerFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <menclose> -- enclose content with a stretching symbol such
 // as a long division sign.
@@ -46,8 +50,8 @@ class nsMathMLmencloseFrame : public nsMathMLContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmencloseFrame)
 
-  friend nsIFrame* NS_NewMathMLmencloseFrame(nsIPresShell* aPresShell,
-                                             nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmencloseFrame(mozilla::PresShell* aPresShell,
+                                             ComputedStyle* aStyle);
 
   virtual nsresult Place(DrawTarget* aDrawTarget, bool aPlaceOrigin,
                          ReflowOutput& aDesiredSize) override;
@@ -58,9 +62,9 @@ class nsMathMLmencloseFrame : public nsMathMLContainerFrame {
   virtual nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
                                     int32_t aModType) override;
 
-  virtual void SetAdditionalStyleContext(
-      int32_t aIndex, nsStyleContext* aStyleContext) override;
-  virtual nsStyleContext* GetAdditionalStyleContext(
+  virtual void SetAdditionalComputedStyle(
+      int32_t aIndex, ComputedStyle* aComputedStyle) override;
+  virtual ComputedStyle* GetAdditionalComputedStyle(
       int32_t aIndex) const override;
 
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
@@ -79,7 +83,8 @@ class nsMathMLmencloseFrame : public nsMathMLContainerFrame {
   }
 
  protected:
-  explicit nsMathMLmencloseFrame(nsStyleContext* aContext,
+  explicit nsMathMLmencloseFrame(ComputedStyle* aStyle,
+                                 nsPresContext* aPresContext,
                                  ClassID aID = kClassID);
   virtual ~nsMathMLmencloseFrame();
 

@@ -14,10 +14,10 @@ nsGenericHTMLElement* NS_NewHTMLDialogElement(
     already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
     mozilla::dom::FromParser aFromParser) {
   if (!mozilla::dom::HTMLDialogElement::IsDialogEnabled()) {
-    return new mozilla::dom::HTMLUnknownElement(aNodeInfo);
+    return new mozilla::dom::HTMLUnknownElement(std::move(aNodeInfo));
   }
 
-  return new mozilla::dom::HTMLDialogElement(aNodeInfo);
+  return new mozilla::dom::HTMLDialogElement(std::move(aNodeInfo));
 }
 
 namespace mozilla {
@@ -51,8 +51,8 @@ void HTMLDialogElement::Close(
   ErrorResult ignored;
   SetOpen(false, ignored);
   ignored.SuppressException();
-  RefPtr<AsyncEventDispatcher> eventDispatcher =
-      new AsyncEventDispatcher(this, NS_LITERAL_STRING("close"), false);
+  RefPtr<AsyncEventDispatcher> eventDispatcher = new AsyncEventDispatcher(
+      this, NS_LITERAL_STRING("close"), CanBubble::eNo);
   eventDispatcher->PostDOMEvent();
 }
 
@@ -77,7 +77,7 @@ void HTMLDialogElement::ShowModal(ErrorResult& aError) {
 
 JSObject* HTMLDialogElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return HTMLDialogElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLDialogElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

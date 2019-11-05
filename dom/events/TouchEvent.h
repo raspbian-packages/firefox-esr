@@ -51,6 +51,8 @@ class TouchList final : public nsISupports, public nsWrapperCache {
     return mPoints[aIndex];
   }
 
+  void Clear() { mPoints.Clear(); }
+
  protected:
   ~TouchList() {}
 
@@ -68,14 +70,17 @@ class TouchEvent : public UIEvent {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return TouchEventBinding::Wrap(aCx, this, aGivenProto);
+    return TouchEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   already_AddRefed<TouchList> CopyTouches(
       const Sequence<OwningNonNull<Touch>>& aTouches);
 
   TouchList* Touches();
+  // TargetTouches() populates mTargetTouches from widget event's touch list.
   TouchList* TargetTouches();
+  // GetExistingTargetTouches just returns the existing target touches list.
+  TouchList* GetExistingTargetTouches() { return mTargetTouches; }
   TouchList* ChangedTouches();
 
   bool AltKey();
@@ -89,16 +94,21 @@ class TouchEvent : public UIEvent {
                       bool aMetaKey, TouchList* aTouches,
                       TouchList* aTargetTouches, TouchList* aChangedTouches);
 
+  static bool PlatformSupportsTouch();
   static bool PrefEnabled(JSContext* aCx, JSObject* aGlobal);
   static bool PrefEnabled(nsIDocShell* aDocShell);
+  static bool LegacyAPIEnabled(JSContext* aCx, JSObject* aGlobal);
+  static bool LegacyAPIEnabled(nsIDocShell* aDocShell, bool aCallerIsSystem);
 
-  static already_AddRefed<Event> Constructor(const GlobalObject& aGlobal,
-                                             const nsAString& aType,
-                                             const TouchEventInit& aParam,
-                                             ErrorResult& aRv);
+  static already_AddRefed<TouchEvent> Constructor(const GlobalObject& aGlobal,
+                                                  const nsAString& aType,
+                                                  const TouchEventInit& aParam,
+                                                  ErrorResult& aRv);
 
  protected:
   ~TouchEvent() {}
+
+  void AssignTouchesToWidgetEvent(TouchList* aList, bool aCheckDuplicates);
 
   RefPtr<TouchList> mTouches;
   RefPtr<TouchList> mTargetTouches;

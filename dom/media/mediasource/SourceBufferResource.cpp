@@ -25,7 +25,7 @@ mozilla::LogModule* GetSourceBufferResourceLog() {
 namespace mozilla {
 
 nsresult SourceBufferResource::Close() {
-  MOZ_ASSERT(OnTaskQueue());
+  MOZ_ASSERT(OnThread());
   SBR_DEBUG("Close");
   mClosed = true;
   return NS_OK;
@@ -41,7 +41,7 @@ nsresult SourceBufferResource::ReadAt(int64_t aOffset, char* aBuffer,
 nsresult SourceBufferResource::ReadAtInternal(int64_t aOffset, char* aBuffer,
                                               uint32_t aCount,
                                               uint32_t* aBytes) {
-  MOZ_ASSERT(OnTaskQueue());
+  MOZ_ASSERT(OnThread());
 
   if (mClosed || aOffset < 0 || uint64_t(aOffset) < mInputBuffer.GetOffset() ||
       aOffset > GetLength()) {
@@ -80,7 +80,7 @@ nsresult SourceBufferResource::ReadFromCache(char* aBuffer, int64_t aOffset,
 
 uint32_t SourceBufferResource::EvictData(uint64_t aPlaybackOffset,
                                          int64_t aThreshold, ErrorResult& aRv) {
-  MOZ_ASSERT(OnTaskQueue());
+  MOZ_ASSERT(OnThread());
   SBR_DEBUG("EvictData(aPlaybackOffset=%" PRIu64
             ","
             "aThreshold=%" PRId64 ")",
@@ -90,20 +90,20 @@ uint32_t SourceBufferResource::EvictData(uint64_t aPlaybackOffset,
 }
 
 void SourceBufferResource::EvictBefore(uint64_t aOffset, ErrorResult& aRv) {
-  MOZ_ASSERT(OnTaskQueue());
+  MOZ_ASSERT(OnThread());
   SBR_DEBUG("EvictBefore(aOffset=%" PRIu64 ")", aOffset);
 
   mInputBuffer.EvictBefore(aOffset, aRv);
 }
 
 uint32_t SourceBufferResource::EvictAll() {
-  MOZ_ASSERT(OnTaskQueue());
+  MOZ_ASSERT(OnThread());
   SBR_DEBUG("EvictAll()");
   return mInputBuffer.EvictAll();
 }
 
 void SourceBufferResource::AppendData(MediaByteBuffer* aData) {
-  MOZ_ASSERT(OnTaskQueue());
+  MOZ_ASSERT(OnThread());
   SBR_DEBUG("AppendData(aData=%p, aLength=%zu)", aData->Elements(),
             aData->Length());
   mInputBuffer.AppendItem(aData);
@@ -111,7 +111,7 @@ void SourceBufferResource::AppendData(MediaByteBuffer* aData) {
 }
 
 void SourceBufferResource::Ended() {
-  MOZ_ASSERT(OnTaskQueue());
+  MOZ_ASSERT(OnThread());
   SBR_DEBUG("");
   mEnded = true;
 }
@@ -120,18 +120,18 @@ SourceBufferResource::~SourceBufferResource() { SBR_DEBUG(""); }
 
 SourceBufferResource::SourceBufferResource()
 #if defined(DEBUG)
-    : mTaskQueue(AbstractThread::GetCurrent()->AsTaskQueue())
+    : mThread(AbstractThread::GetCurrent())
 #endif
 {
   SBR_DEBUG("");
 }
 
 #if defined(DEBUG)
-AbstractThread* SourceBufferResource::GetTaskQueue() const {
-  return mTaskQueue;
+const AbstractThread* SourceBufferResource::GetThread() const {
+  return mThread;
 }
-bool SourceBufferResource::OnTaskQueue() const {
-  return !GetTaskQueue() || GetTaskQueue()->IsCurrentThreadIn();
+bool SourceBufferResource::OnThread() const {
+  return !GetThread() || GetThread()->IsCurrentThreadIn();
 }
 #endif
 

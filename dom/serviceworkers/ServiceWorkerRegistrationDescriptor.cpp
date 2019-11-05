@@ -13,43 +13,45 @@
 namespace mozilla {
 namespace dom {
 
+using mozilla::ipc::PrincipalInfo;
+using mozilla::ipc::PrincipalInfoToPrincipal;
+
 Maybe<IPCServiceWorkerDescriptor>
 ServiceWorkerRegistrationDescriptor::NewestInternal() const {
   Maybe<IPCServiceWorkerDescriptor> result;
-  if (mData->installing().type() !=
-      OptionalIPCServiceWorkerDescriptor::Tvoid_t) {
-    result.emplace(mData->installing().get_IPCServiceWorkerDescriptor());
-  } else if (mData->waiting().type() !=
-             OptionalIPCServiceWorkerDescriptor::Tvoid_t) {
-    result.emplace(mData->waiting().get_IPCServiceWorkerDescriptor());
-  } else if (mData->active().type() !=
-             OptionalIPCServiceWorkerDescriptor::Tvoid_t) {
-    result.emplace(mData->active().get_IPCServiceWorkerDescriptor());
+  if (mData->installing().isSome()) {
+    result.emplace(mData->installing().ref());
+  } else if (mData->waiting().isSome()) {
+    result.emplace(mData->waiting().ref());
+  } else if (mData->active().isSome()) {
+    result.emplace(mData->active().ref());
   }
-  return Move(result);
+  return result;
 }
 
 ServiceWorkerRegistrationDescriptor::ServiceWorkerRegistrationDescriptor(
-    uint64_t aId, nsIPrincipal* aPrincipal, const nsACString& aScope,
-    ServiceWorkerUpdateViaCache aUpdateViaCache)
+    uint64_t aId, uint64_t aVersion, nsIPrincipal* aPrincipal,
+    const nsACString& aScope, ServiceWorkerUpdateViaCache aUpdateViaCache)
     : mData(MakeUnique<IPCServiceWorkerRegistrationDescriptor>()) {
   MOZ_ALWAYS_SUCCEEDS(
       PrincipalToPrincipalInfo(aPrincipal, &mData->principalInfo()));
 
   mData->id() = aId;
+  mData->version() = aVersion;
   mData->scope() = aScope;
   mData->updateViaCache() = aUpdateViaCache;
-  mData->installing() = void_t();
-  mData->waiting() = void_t();
-  mData->active() = void_t();
+  mData->installing() = Nothing();
+  mData->waiting() = Nothing();
+  mData->active() = Nothing();
 }
 
 ServiceWorkerRegistrationDescriptor::ServiceWorkerRegistrationDescriptor(
-    uint64_t aId, const mozilla::ipc::PrincipalInfo& aPrincipalInfo,
-    const nsACString& aScope, ServiceWorkerUpdateViaCache aUpdateViaCache)
+    uint64_t aId, uint64_t aVersion,
+    const mozilla::ipc::PrincipalInfo& aPrincipalInfo, const nsACString& aScope,
+    ServiceWorkerUpdateViaCache aUpdateViaCache)
     : mData(MakeUnique<IPCServiceWorkerRegistrationDescriptor>(
-          aId, aPrincipalInfo, nsCString(aScope), aUpdateViaCache, void_t(),
-          void_t(), void_t())) {}
+          aId, aVersion, aPrincipalInfo, nsCString(aScope), aUpdateViaCache,
+          Nothing(), Nothing(), Nothing())) {}
 
 ServiceWorkerRegistrationDescriptor::ServiceWorkerRegistrationDescriptor(
     const IPCServiceWorkerRegistrationDescriptor& aDescriptor)
@@ -78,14 +80,14 @@ operator=(const ServiceWorkerRegistrationDescriptor& aRight) {
 
 ServiceWorkerRegistrationDescriptor::ServiceWorkerRegistrationDescriptor(
     ServiceWorkerRegistrationDescriptor&& aRight)
-    : mData(Move(aRight.mData)) {
+    : mData(std::move(aRight.mData)) {
   MOZ_DIAGNOSTIC_ASSERT(IsValid());
 }
 
 ServiceWorkerRegistrationDescriptor& ServiceWorkerRegistrationDescriptor::
 operator=(ServiceWorkerRegistrationDescriptor&& aRight) {
   mData.reset();
-  mData = Move(aRight.mData);
+  mData = std::move(aRight.mData);
   MOZ_DIAGNOSTIC_ASSERT(IsValid());
   return *this;
 }
@@ -101,6 +103,10 @@ bool ServiceWorkerRegistrationDescriptor::operator==(
 
 uint64_t ServiceWorkerRegistrationDescriptor::Id() const { return mData->id(); }
 
+uint64_t ServiceWorkerRegistrationDescriptor::Version() const {
+  return mData->version();
+}
+
 ServiceWorkerUpdateViaCache
 ServiceWorkerRegistrationDescriptor::UpdateViaCache() const {
   return mData->updateViaCache();
@@ -111,6 +117,13 @@ ServiceWorkerRegistrationDescriptor::PrincipalInfo() const {
   return mData->principalInfo();
 }
 
+nsCOMPtr<nsIPrincipal> ServiceWorkerRegistrationDescriptor::GetPrincipal()
+    const {
+  AssertIsOnMainThread();
+  nsCOMPtr<nsIPrincipal> ref = PrincipalInfoToPrincipal(mData->principalInfo());
+  return ref;
+}
+
 const nsCString& ServiceWorkerRegistrationDescriptor::Scope() const {
   return mData->scope();
 }
@@ -119,37 +132,33 @@ Maybe<ServiceWorkerDescriptor>
 ServiceWorkerRegistrationDescriptor::GetInstalling() const {
   Maybe<ServiceWorkerDescriptor> result;
 
-  if (mData->installing().type() !=
-      OptionalIPCServiceWorkerDescriptor::Tvoid_t) {
-    result.emplace(ServiceWorkerDescriptor(
-        mData->installing().get_IPCServiceWorkerDescriptor()));
+  if (mData->installing().isSome()) {
+    result.emplace(ServiceWorkerDescriptor(mData->installing().ref()));
   }
 
-  return Move(result);
+  return result;
 }
 
 Maybe<ServiceWorkerDescriptor> ServiceWorkerRegistrationDescriptor::GetWaiting()
     const {
   Maybe<ServiceWorkerDescriptor> result;
 
-  if (mData->waiting().type() != OptionalIPCServiceWorkerDescriptor::Tvoid_t) {
-    result.emplace(ServiceWorkerDescriptor(
-        mData->waiting().get_IPCServiceWorkerDescriptor()));
+  if (mData->waiting().isSome()) {
+    result.emplace(ServiceWorkerDescriptor(mData->waiting().ref()));
   }
 
-  return Move(result);
+  return result;
 }
 
 Maybe<ServiceWorkerDescriptor> ServiceWorkerRegistrationDescriptor::GetActive()
     const {
   Maybe<ServiceWorkerDescriptor> result;
 
-  if (mData->active().type() != OptionalIPCServiceWorkerDescriptor::Tvoid_t) {
-    result.emplace(ServiceWorkerDescriptor(
-        mData->active().get_IPCServiceWorkerDescriptor()));
+  if (mData->active().isSome()) {
+    result.emplace(ServiceWorkerDescriptor(mData->active().ref()));
   }
 
-  return Move(result);
+  return result;
 }
 
 Maybe<ServiceWorkerDescriptor> ServiceWorkerRegistrationDescriptor::Newest()
@@ -159,19 +168,29 @@ Maybe<ServiceWorkerDescriptor> ServiceWorkerRegistrationDescriptor::Newest()
   if (newest.isSome()) {
     result.emplace(ServiceWorkerDescriptor(newest.ref()));
   }
-  return Move(result);
+  return result;
+}
+
+bool ServiceWorkerRegistrationDescriptor::HasWorker(
+    const ServiceWorkerDescriptor& aDescriptor) const {
+  Maybe<ServiceWorkerDescriptor> installing = GetInstalling();
+  Maybe<ServiceWorkerDescriptor> waiting = GetWaiting();
+  Maybe<ServiceWorkerDescriptor> active = GetActive();
+  return (installing.isSome() && installing.ref().Matches(aDescriptor)) ||
+         (waiting.isSome() && waiting.ref().Matches(aDescriptor)) ||
+         (active.isSome() && active.ref().Matches(aDescriptor));
 }
 
 namespace {
 
 bool IsValidWorker(
-    const OptionalIPCServiceWorkerDescriptor& aWorker, const nsACString& aScope,
+    const Maybe<IPCServiceWorkerDescriptor>& aWorker, const nsACString& aScope,
     const mozilla::ipc::ContentPrincipalInfo& aContentPrincipal) {
-  if (aWorker.type() == OptionalIPCServiceWorkerDescriptor::Tvoid_t) {
+  if (aWorker.isNothing()) {
     return true;
   }
 
-  auto& worker = aWorker.get_IPCServiceWorkerDescriptor();
+  auto& worker = aWorker.ref();
   if (worker.scope() != aScope) {
     return false;
   }
@@ -219,34 +238,32 @@ void ServiceWorkerRegistrationDescriptor::SetWorkers(
     ServiceWorkerInfo* aInstalling, ServiceWorkerInfo* aWaiting,
     ServiceWorkerInfo* aActive) {
   if (aInstalling) {
-    mData->installing() = aInstalling->Descriptor().ToIPC();
+    aInstalling->SetRegistrationVersion(Version());
+    mData->installing() = Some(aInstalling->Descriptor().ToIPC());
   } else {
-    mData->installing() = void_t();
+    mData->installing() = Nothing();
   }
 
   if (aWaiting) {
-    mData->waiting() = aWaiting->Descriptor().ToIPC();
+    aWaiting->SetRegistrationVersion(Version());
+    mData->waiting() = Some(aWaiting->Descriptor().ToIPC());
   } else {
-    mData->waiting() = void_t();
+    mData->waiting() = Nothing();
   }
 
   if (aActive) {
-    mData->active() = aActive->Descriptor().ToIPC();
+    aActive->SetRegistrationVersion(Version());
+    mData->active() = Some(aActive->Descriptor().ToIPC());
   } else {
-    mData->active() = void_t();
+    mData->active() = Nothing();
   }
 
   MOZ_DIAGNOSTIC_ASSERT(IsValid());
 }
 
-void ServiceWorkerRegistrationDescriptor::SetWorkers(
-    const OptionalIPCServiceWorkerDescriptor& aInstalling,
-    const OptionalIPCServiceWorkerDescriptor& aWaiting,
-    const OptionalIPCServiceWorkerDescriptor& aActive) {
-  mData->installing() = aInstalling;
-  mData->waiting() = aWaiting;
-  mData->active() = aActive;
-  MOZ_DIAGNOSTIC_ASSERT(IsValid());
+void ServiceWorkerRegistrationDescriptor::SetVersion(uint64_t aVersion) {
+  MOZ_DIAGNOSTIC_ASSERT(aVersion > mData->version());
+  mData->version() = aVersion;
 }
 
 const IPCServiceWorkerRegistrationDescriptor&

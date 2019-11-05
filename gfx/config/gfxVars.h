@@ -36,14 +36,20 @@ class gfxVarReceiver;
   _(PDMWMFDisableD3D9Dlls, nsCString, nsCString())                 \
   _(DXInterop2Blocked, bool, false)                                \
   _(DXNV12Blocked, bool, false)                                    \
+  _(DXP010Blocked, bool, false)                                    \
+  _(DXP016Blocked, bool, false)                                    \
   _(UseWebRender, bool, false)                                     \
   _(UseWebRenderANGLE, bool, false)                                \
-  _(UseWebRenderProgramBinary, bool, false)                        \
+  _(UseWebRenderDCompWin, bool, false)                             \
+  _(UseWebRenderDCompWinTripleBuffering, bool, false)              \
+  _(UseWebRenderProgramBinaryDisk, bool, false)                    \
   _(WebRenderDebugFlags, int32_t, 0)                               \
   _(ScreenDepth, int32_t, 0)                                       \
   _(GREDirectory, nsString, nsString())                            \
+  _(ProfDirectory, nsString, nsString())                           \
   _(UseOMTP, bool, false)                                          \
-  _(AllowD3D11KeyedMutex, bool, false)
+  _(AllowD3D11KeyedMutex, bool, false)                             \
+  _(SystemTextQuality, int32_t, 5 /* CLEARTYPE_QUALITY */)
 
 /* Add new entries above this line. */
 
@@ -99,7 +105,12 @@ class gfxVars final {
   class VarImpl final : public VarBase {
    public:
     VarImpl() : mValue(Default()) {}
-    void SetValue(const GfxVarValue& aValue) override { aValue.get(&mValue); }
+    void SetValue(const GfxVarValue& aValue) override {
+      aValue.get(&mValue);
+      if (mListener) {
+        mListener();
+      }
+    }
     void GetValue(GfxVarValue* aOutValue) override {
       *aOutValue = GfxVarValue(mValue);
     }
@@ -112,30 +123,42 @@ class gfxVars final {
         return false;
       }
       mValue = aValue;
+      if (mListener) {
+        mListener();
+      }
       return true;
+    }
+
+    void SetListener(const std::function<void()>& aListener) {
+      mListener = aListener;
     }
 
    private:
     T mValue;
+    std::function<void()> mListener;
   };
 
-#define GFX_VAR_DECL(CxxName, DataType, DefaultValue)                         \
- private:                                                                     \
-  static DataType Get##CxxName##Default() { return DefaultValue; }            \
-  VarImpl<DataType, Get##CxxName##Default> mVar##CxxName;                     \
-                                                                              \
- public:                                                                      \
-  static const DataType& CxxName() { return sInstance->mVar##CxxName.Get(); } \
-  static DataType Get##CxxName##OrDefault() {                                 \
-    if (!sInstance) {                                                         \
-      return DefaultValue;                                                    \
-    }                                                                         \
-    return sInstance->mVar##CxxName.Get();                                    \
-  }                                                                           \
-  static void Set##CxxName(const DataType& aValue) {                          \
-    if (sInstance->mVar##CxxName.Set(aValue)) {                               \
-      sInstance->NotifyReceivers(&sInstance->mVar##CxxName);                  \
-    }                                                                         \
+#define GFX_VAR_DECL(CxxName, DataType, DefaultValue)                          \
+ private:                                                                      \
+  static DataType Get##CxxName##Default() { return DefaultValue; }             \
+  VarImpl<DataType, Get##CxxName##Default> mVar##CxxName;                      \
+                                                                               \
+ public:                                                                       \
+  static const DataType& CxxName() { return sInstance->mVar##CxxName.Get(); }  \
+  static DataType Get##CxxName##OrDefault() {                                  \
+    if (!sInstance) {                                                          \
+      return DefaultValue;                                                     \
+    }                                                                          \
+    return sInstance->mVar##CxxName.Get();                                     \
+  }                                                                            \
+  static void Set##CxxName(const DataType& aValue) {                           \
+    if (sInstance->mVar##CxxName.Set(aValue)) {                                \
+      sInstance->NotifyReceivers(&sInstance->mVar##CxxName);                   \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  static void Set##CxxName##Listener(const std::function<void()>& aListener) { \
+    sInstance->mVar##CxxName.SetListener(aListener);                           \
   }
 
   GFX_VARS_LIST(GFX_VAR_DECL)

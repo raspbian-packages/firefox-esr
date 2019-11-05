@@ -16,10 +16,110 @@
 #include "nsNativeCharsetUtils.h"
 #include "nsUTF8Utils.h"
 #include "nsArray.h"
+#include "nsLocalFileCommon.h"
 
 #ifdef XP_WIN
-#include <string.h>
+#  include <string.h>
 #endif
+
+// Extensions that should be considered 'executable', ie will not allow users
+// to open immediately without first saving to disk, and potentially provoke
+// other warnings. PLEASE read the longer comment in
+// toolkit/components/reputationservice/ApplicationReputation.h
+// before modifying this list!
+/* static */
+const char* const sExecutableExts[] = {
+    // clang-format off
+  ".ad",
+  ".ade",         // access project extension
+  ".adp",
+  ".air",         // Adobe AIR installer
+  ".app",         // executable application
+  ".application", // from bug 348763
+  ".asp",
+  ".bas",
+  ".bat",
+  ".chm",
+  ".cmd",
+  ".com",
+  ".cpl",
+  ".crt",
+  ".exe",
+  ".fxp",         // FoxPro compiled app
+  ".hlp",
+  ".hta",
+  ".inf",
+  ".ins",
+  ".isp",
+  ".jar",         // java application bundle
+  ".js",
+  ".jse",
+  ".lnk",
+  ".mad",         // Access Module Shortcut
+  ".maf",         // Access
+  ".mag",         // Access Diagram Shortcut
+  ".mam",         // Access Macro Shortcut
+  ".maq",         // Access Query Shortcut
+  ".mar",         // Access Report Shortcut
+  ".mas",         // Access Stored Procedure
+  ".mat",         // Access Table Shortcut
+  ".mau",         // Media Attachment Unit
+  ".mav",         // Access View Shortcut
+  ".maw",         // Access Data Access Page
+  ".mda",         // Access Add-in, MDA Access 2 Workgroup
+  ".mdb",
+  ".mde",
+  ".mdt",         // Access Add-in Data
+  ".mdw",         // Access Workgroup Information
+  ".mdz",         // Access Wizard Template
+  ".msc",
+  ".msh",         // Microsoft Shell
+  ".msh1",        // Microsoft Shell
+  ".msh1xml",     // Microsoft Shell
+  ".msh2",        // Microsoft Shell
+  ".msh2xml",     // Microsoft Shell
+  ".mshxml",      // Microsoft Shell
+  ".msi",
+  ".msp",
+  ".mst",
+  ".ops",         // Office Profile Settings
+  ".pcd",
+  ".pif",
+  ".plg",         // Developer Studio Build Log
+  ".prf",         // windows system file
+  ".prg",
+  ".pst",
+  ".reg",
+  ".scf",         // Windows explorer command
+  ".scr",
+  ".sct",
+  ".settingcontent-ms",
+  ".shb",
+  ".shs",
+  ".url",
+  ".vb",
+  ".vbe",
+  ".vbs",
+  ".vdx",
+  ".vsd",
+  ".vsdm",
+  ".vsdx",
+  ".vsmacros",    // Visual Studio .NET Binary-based Macro Project
+  ".vss",
+  ".vssm",
+  ".vssx",
+  ".vst",
+  ".vstm",
+  ".vstx",
+  ".vsw",
+  ".vsx",
+  ".vtx",
+  ".ws",
+  ".wsc",
+  ".wsf",
+  ".wsh"
+    // clang-format on
+};
 
 #if !defined(MOZ_WIDGET_COCOA) && !defined(XP_WIN)
 NS_IMETHODIMP
@@ -141,7 +241,7 @@ nsLocalFile::CreateUnique(uint32_t aType, uint32_t aAttributes) {
   }
 
   for (int indx = 1; indx < 10000; ++indx) {
-  // start with "Picture-1.jpg" after "Picture.jpg" exists
+    // start with "Picture-1.jpg" after "Picture.jpg" exists
 #ifdef XP_WIN
     SetLeafName(rootName +
                 NS_ConvertASCIItoUTF16(nsPrintfCString("-%d", indx)) + suffix);
@@ -163,7 +263,7 @@ static const char16_t kPathSeparatorChar = '\\';
 #elif defined(XP_UNIX)
 static const char16_t kPathSeparatorChar = '/';
 #else
-#error Need to define file path separator for your platform
+#  error Need to define file path separator for your platform
 #endif
 
 static void SplitPath(char16_t* aPath, nsTArray<char16_t*>& aNodeArray) {
@@ -214,10 +314,8 @@ nsLocalFile::GetRelativeDescriptor(nsIFile* aFromFile, nsACString& aResult) {
   }
 
   // get raw pointer to mutable string buffer
-  char16_t* thisPathPtr;
-  thisPath.BeginWriting(thisPathPtr);
-  char16_t* fromPathPtr;
-  fromPath.BeginWriting(fromPathPtr);
+  char16_t* thisPathPtr = thisPath.BeginWriting();
+  char16_t* fromPathPtr = fromPath.BeginWriting();
 
   SplitPath(thisPathPtr, thisNodes);
   SplitPath(fromPathPtr, fromNodes);

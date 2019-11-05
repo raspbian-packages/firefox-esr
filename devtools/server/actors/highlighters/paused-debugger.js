@@ -4,7 +4,10 @@
 
 "use strict";
 
-const { CanvasFrameAnonymousContentHelper, createNode } = require("./utils/markup");
+const {
+  CanvasFrameAnonymousContentHelper,
+  createNode,
+} = require("./utils/markup");
 
 /**
  * The PausedDebuggerOverlay is a class that displays a semi-transparent mask on top of
@@ -15,8 +18,10 @@ const { CanvasFrameAnonymousContentHelper, createNode } = require("./utils/marku
  */
 function PausedDebuggerOverlay(highlighterEnv) {
   this.env = highlighterEnv;
-  this.markup = new CanvasFrameAnonymousContentHelper(highlighterEnv,
-    this._buildMarkup.bind(this));
+  this.markup = new CanvasFrameAnonymousContentHelper(
+    highlighterEnv,
+    this._buildMarkup.bind(this)
+  );
 }
 
 PausedDebuggerOverlay.prototype = {
@@ -25,42 +30,42 @@ PausedDebuggerOverlay.prototype = {
   ID_CLASS_PREFIX: "paused-dbg-",
 
   _buildMarkup() {
-    let { window } = this.env;
-    let prefix = this.ID_CLASS_PREFIX;
+    const { window } = this.env;
+    const prefix = this.ID_CLASS_PREFIX;
 
-    let container = createNode(window, {
-      attributes: {"class": "highlighter-container"}
+    const container = createNode(window, {
+      attributes: { class: "highlighter-container" },
     });
 
     // Wrapper element.
-    let wrapper = createNode(window, {
+    const wrapper = createNode(window, {
       parent: container,
       attributes: {
-        "id": "root",
-        "class": "root",
-        "hidden": "true",
-        "overlay": "true"
+        id: "root",
+        class: "root",
+        hidden: "true",
+        overlay: "true",
       },
-      prefix
+      prefix,
     });
 
-    let toolbar = createNode(window, {
+    const toolbar = createNode(window, {
       parent: wrapper,
       attributes: {
-        "id": "toolbar",
-        "class": "toolbar"
+        id: "toolbar",
+        class: "toolbar",
       },
-      prefix
+      prefix,
     });
 
     createNode(window, {
       nodeType: "span",
       parent: toolbar,
       attributes: {
-        "id": "reason",
-        "class": "reason"
+        id: "reason",
+        class: "reason",
       },
-      prefix
+      prefix,
     });
 
     return container;
@@ -82,7 +87,7 @@ PausedDebuggerOverlay.prototype = {
     }
 
     // Show the highlighter's root element.
-    let root = this.getElement("root");
+    const root = this.getElement("root");
     root.removeAttribute("hidden");
 
     // The page overlay is only shown upon request. Sometimes we just want the toolbar.
@@ -93,7 +98,7 @@ PausedDebuggerOverlay.prototype = {
     }
 
     // Set the text to appear in the toolbar.
-    let toolbar = this.getElement("toolbar");
+    const toolbar = this.getElement("toolbar");
     if (options.reason) {
       this.getElement("reason").setTextContent(options.reason);
       toolbar.removeAttribute("hidden");
@@ -111,6 +116,6 @@ PausedDebuggerOverlay.prototype = {
 
     // Hide the overlay.
     this.getElement("root").setAttribute("hidden", "true");
-  }
+  },
 };
 exports.PausedDebuggerOverlay = PausedDebuggerOverlay;

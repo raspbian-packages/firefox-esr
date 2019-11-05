@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set et sw=4 ts=4: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set et sw=2 ts=4: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -36,14 +36,14 @@ class nsNotifyAddrListener : public nsINetworkLinkService,
   class ChangeEvent : public mozilla::Runnable {
    public:
     NS_DECL_NSIRUNNABLE
-    ChangeEvent(nsINetworkLinkService *aService, const char *aEventID)
+    ChangeEvent(nsINetworkLinkService* aService, const char* aEventID)
         : Runnable("nsNotifyAddrListener::ChangeEvent"),
           mService(aService),
           mEventID(aEventID) {}
 
    private:
     nsCOMPtr<nsINetworkLinkService> mService;
-    const char *mEventID;
+    const char* mEventID;
   };
 
   bool mLinkUp;
@@ -51,7 +51,7 @@ class nsNotifyAddrListener : public nsINetworkLinkService,
   bool mCheckAttempted;
 
   nsresult Shutdown(void);
-  nsresult SendEvent(const char *aEventID);
+  nsresult SendEvent(const char* aEventID);
 
   DWORD CheckAdaptersAddresses(void);
 
@@ -70,7 +70,7 @@ class nsNotifyAddrListener : public nsINetworkLinkService,
 
   // Figure out the current network identification
   void calculateNetworkId(void);
-  bool findMac(char *gateway);
+  bool findMac(char* gateway);
   nsCString mNetworkId;
 
   HANDLE mCheckEvent;

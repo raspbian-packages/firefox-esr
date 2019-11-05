@@ -7,7 +7,6 @@
 XPIDL_SOURCES += [
     'nsIArray.idl',
     'nsIArrayExtensions.idl',
-    'nsIHashable.idl',
     'nsIINIParser.idl',
     'nsIMutableArray.idl',
     'nsIObserver.idl',
@@ -38,7 +37,13 @@ if CONFIG['OS_ARCH'] == 'WINNT':
 
 XPIDL_MODULE = 'xpcom_ds'
 
+XPCOM_MANIFESTS += [
+    'components.conf',
+]
+
 EXPORTS += [
+    '!nsGkAtomConsts.h',
+    '!nsGkAtomList.h',
     'nsArray.h',
     'nsArrayEnumerator.h',
     'nsArrayUtils.h',
@@ -53,15 +58,19 @@ EXPORTS += [
     'nsDeque.h',
     'nsEnumeratorUtils.h',
     'nsExpirationTracker.h',
+    'nsGkAtoms.h',
     'nsHashKeys.h',
     'nsHashPropertyBag.h',
     'nsInterfaceHashtable.h',
     'nsJSThingHashtable.h',
     'nsMathUtils.h',
+    'nsPersistentProperties.h',
     'nsPointerHashKeys.h',
+    'nsProperties.h',
     'nsQuickSort.h',
     'nsRefPtrHashtable.h',
-    'nsStaticAtom.h',
+    'nsSimpleEnumerator.h',
+    'nsStaticAtomUtils.h',
     'nsStaticNameTable.h',
     'nsStringEnumerator.h',
     'nsSupportsPrimitives.h',
@@ -83,7 +92,10 @@ EXPORTS.mozilla += [
     'AtomArray.h',
     'Dafsa.h',
     'IncrementalTokenizer.h',
+    'MruCache.h',
     'Observer.h',
+    'PerfectHash.h',
+    'SimpleEnumerator.h',
     'StickyTimeDuration.h',
     'Tokenizer.h',
 ]
@@ -99,6 +111,7 @@ UNIFIED_SOURCES += [
     'nsCRT.cpp',
     'nsDeque.cpp',
     'nsEnumeratorUtils.cpp',
+    'nsGkAtoms.cpp',
     'nsHashPropertyBag.cpp',
     'nsINIParserImpl.cpp',
     'nsObserverList.cpp',
@@ -106,6 +119,7 @@ UNIFIED_SOURCES += [
     'nsPersistentProperties.cpp',
     'nsProperties.cpp',
     'nsQuickSort.cpp',
+    'nsSimpleEnumerator.cpp',
     'nsStaticNameTable.cpp',
     'nsStringEnumerator.cpp',
     'nsSupportsPrimitives.cpp',
@@ -116,13 +130,16 @@ UNIFIED_SOURCES += [
     'Tokenizer.cpp',
 ]
 
-EXTRA_COMPONENTS += [
-    'nsINIProcessor.js',
-    'nsINIProcessor.manifest',
-]
-
 LOCAL_INCLUDES += [
     '../io',
 ]
+
+GENERATED_FILES += ['nsGkAtomList.h']
+GENERATED_FILES['nsGkAtomList.h'].script = 'StaticAtoms.py:generate_nsgkatomlist_h'
+GENERATED_FILES['nsGkAtomList.h'].inputs = ['Atom.py', 'HTMLAtoms.py']
+
+GENERATED_FILES += ['nsGkAtomConsts.h']
+GENERATED_FILES['nsGkAtomConsts.h'].script = 'StaticAtoms.py:generate_nsgkatomconsts_h'
+GENERATED_FILES['nsGkAtomConsts.h'].inputs = ['Atom.py', 'HTMLAtoms.py']
 
 FINAL_LIBRARY = 'xul'

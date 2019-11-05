@@ -173,8 +173,8 @@ void IDBFileHandle::OnRequestFinished(bool aActorDestroyedNormally) {
         SendAbort();
       }
     } else {
-    // Don't try to send any more messages to the parent if the request actor
-    // was killed.
+      // Don't try to send any more messages to the parent if the request actor
+      // was killed.
 #ifdef DEBUG
       MOZ_ASSERT(!mSentFinishOrAbort);
       mSentFinishOrAbort = true;
@@ -193,7 +193,7 @@ void IDBFileHandle::FireCompleteOrAbortEvents(bool aAborted) {
   mFiredCompleteOrAbort = true;
 #endif
 
-  nsCOMPtr<nsIDOMEvent> event;
+  RefPtr<Event> event;
   if (aAborted) {
     event = CreateGenericEvent(this, nsDependentString(kAbortEventType),
                                eDoesBubble, eNotCancelable);
@@ -205,8 +205,9 @@ void IDBFileHandle::FireCompleteOrAbortEvents(bool aAborted) {
     return;
   }
 
-  bool dummy;
-  if (NS_FAILED(DispatchEvent(event, &dummy))) {
+  IgnoredErrorResult rv;
+  DispatchEvent(*event, rv);
+  if (rv.Failed()) {
     NS_WARNING("DispatchEvent failed!");
   }
 }
@@ -720,12 +721,11 @@ IDBFileHandle::Run() {
   return NS_OK;
 }
 
-nsresult IDBFileHandle::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
+void IDBFileHandle::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   AssertIsOnOwningThread();
 
   aVisitor.mCanHandle = true;
   aVisitor.SetParentTarget(mMutableFile, false);
-  return NS_OK;
 }
 
 // virtual
@@ -733,7 +733,7 @@ JSObject* IDBFileHandle::WrapObject(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
   AssertIsOnOwningThread();
 
-  return IDBFileHandleBinding::Wrap(aCx, this, aGivenProto);
+  return IDBFileHandle_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

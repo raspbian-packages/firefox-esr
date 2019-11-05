@@ -17,7 +17,7 @@ function registerConverter() {
   TestStreamConverter.prototype = {
     classID: Components.ID("{5f01d6ef-c090-45a4-b3e5-940d64713eb7}"),
     contractID: "@mozilla.org/streamconv;1?from=test/content&to=*/*",
-    QueryInterface: XPCOMUtils.generateQI([
+    QueryInterface: ChromeUtils.generateQI([
       Ci.nsIRequestObserver,
       Ci.nsIStreamListener,
       Ci.nsIStreamConverter,
@@ -32,19 +32,21 @@ function registerConverter() {
     },
 
     // nsIRequestObserver
-    onStartRequest(aRequest, aContext) {
+    onStartRequest(aRequest) {
       let channel = NetUtil.newChannel({
         uri: "resource://testing-common/form_basic.html",
         loadUsingSystemPrincipal: true,
       });
       channel.originalURI = aRequest.QueryInterface(Ci.nsIChannel).URI;
       channel.loadGroup = aRequest.loadGroup;
-      channel.owner = Services.scriptSecurityManager
-                              .createCodebasePrincipal(channel.URI, {});
+      channel.owner = Services.scriptSecurityManager.createCodebasePrincipal(
+        channel.URI,
+        {}
+      );
       // In this test, we pass the new channel to the listener but don't fire a
       // redirect notification, even if it would be required. This keeps the
       // test code simpler and doesn't impact the principal check we're testing.
-      channel.asyncOpen2(this.listener);
+      channel.asyncOpen(this.listener);
     },
 
     // nsIRequestObserver
@@ -56,8 +58,12 @@ function registerConverter() {
 
   let factory = XPCOMUtils._getFactory(TestStreamConverter);
   let registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
-  registrar.registerFactory(TestStreamConverter.prototype.classID, "",
-                            TestStreamConverter.prototype.contractID, factory);
+  registrar.registerFactory(
+    TestStreamConverter.prototype.classID,
+    "",
+    TestStreamConverter.prototype.contractID,
+    factory
+  );
   this.cleanupFunction = function() {
     registrar.unregisterFactory(TestStreamConverter.prototype.classID, factory);
   };
@@ -68,8 +74,12 @@ function registerConverter() {
  * on the given browser element.
  */
 function waitForInsecureLoginFormsStateChange(browser, count) {
-  return BrowserTestUtils.waitForEvent(browser, "InsecureLoginFormsStateChange",
-                                       false, () => --count == 0);
+  return BrowserTestUtils.waitForEvent(
+    browser,
+    "InsecureLoginFormsStateChange",
+    false,
+    () => --count == 0
+  );
 }
 
 /**
@@ -81,9 +91,12 @@ add_task(async function test_streamConverter() {
 
   await ContentTask.spawn(originalBrowser, null, registerConverter);
 
-  let tab = BrowserTestUtils.addTab(gBrowser, "http://example.com/browser/toolkit/components/" +
-                                   "passwordmgr/test/browser/streamConverter_content.sjs",
-                                   { sameProcessAsFrameLoader: originalBrowser.frameLoader });
+  let tab = BrowserTestUtils.addTab(
+    gBrowser,
+    "http://example.com/browser/toolkit/components/" +
+      "passwordmgr/test/browser/streamConverter_content.sjs",
+    { sameProcessAsFrameLoader: originalBrowser.frameLoader }
+  );
   let browser = tab.linkedBrowser;
   await Promise.all([
     BrowserTestUtils.switchTab(gBrowser, tab),
@@ -94,7 +107,7 @@ add_task(async function test_streamConverter() {
 
   Assert.ok(!LoginManagerParent.hasInsecureLoginForms(browser));
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 
   await ContentTask.spawn(originalBrowser, null, async function() {
     this.cleanupFunction();

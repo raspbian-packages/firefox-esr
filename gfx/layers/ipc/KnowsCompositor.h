@@ -41,7 +41,7 @@ class ActiveResourceTracker : public nsExpirationTracker<ActiveResource, 3> {
                         nsIEventTarget* aEventTarget)
       : nsExpirationTracker(aExpirationCycle, aName, aEventTarget) {}
 
-  virtual void NotifyExpired(ActiveResource* aResource) override {
+  void NotifyExpired(ActiveResource* aResource) override {
     RemoveObject(aResource);
     aResource->NotifyInactive();
   }
@@ -56,7 +56,7 @@ class KnowsCompositor {
   NS_INLINE_DECL_PURE_VIRTUAL_REFCOUNTING
 
   KnowsCompositor();
-  ~KnowsCompositor();
+  virtual ~KnowsCompositor();
 
   void IdentifyTextureHost(const TextureFactoryIdentifier& aIdentifier);
 
@@ -95,6 +95,10 @@ class KnowsCompositor {
     return mTextureFactoryIdentifier.mSupportsComponentAlpha;
   }
 
+  bool SupportsTextureDirectMapping() const {
+    return mTextureFactoryIdentifier.mSupportsTextureDirectMapping;
+  }
+
   bool SupportsD3D11() const {
     return GetCompositorBackendType() == layers::LayersBackend::LAYERS_D3D11 ||
            (GetCompositorBackendType() == layers::LayersBackend::LAYERS_WR &&
@@ -103,6 +107,10 @@ class KnowsCompositor {
 
   bool GetCompositorUseANGLE() const {
     return mTextureFactoryIdentifier.mCompositorUseANGLE;
+  }
+
+  bool GetCompositorUseDComp() const {
+    return mTextureFactoryIdentifier.mCompositorUseDComp;
   }
 
   const TextureFactoryIdentifier& GetTextureFactoryIdentifier() const {
@@ -161,13 +169,13 @@ class KnowsCompositorMediaProxy : public KnowsCompositor {
   explicit KnowsCompositorMediaProxy(
       const TextureFactoryIdentifier& aIdentifier);
 
-  virtual TextureForwarder* GetTextureForwarder() override;
+  TextureForwarder* GetTextureForwarder() override;
 
-  virtual LayersIPCActor* GetLayersIPCActor() override;
+  LayersIPCActor* GetLayersIPCActor() override;
 
-  virtual ActiveResourceTracker* GetActiveResourceTracker() override;
+  ActiveResourceTracker* GetActiveResourceTracker() override;
 
-  virtual void SyncWithCompositor() override;
+  void SyncWithCompositor() override;
 
  protected:
   virtual ~KnowsCompositorMediaProxy();

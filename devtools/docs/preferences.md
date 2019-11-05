@@ -21,7 +21,7 @@ preferences:
 * `String`
 
 Choose the appropriate type depending on the data you need to store. If you need to store
-a JavaSript object or array, the recommended way is to:
+a JavaScript object or array, the recommended way is to:
 * use a `String` type preference
 * use JSON.stringify to save
 * use JSON.parse to read
@@ -40,7 +40,7 @@ this service at:
 
 If you are using Launchpad, note that only a subset of nsIPrefService methods are
 implemented (addObserver and removeObserver). Launchpad relies on a Services shim file
-provided by devtools-module ([code on GitHub](https://github.com/devtools-html/devtools-core/blob/master/packages/devtools-modules/src/Services.js)).
+provided by devtools-module ([code on GitHub](https://github.com/firefox-devtools/devtools-core/blob/master/packages/devtools-modules/src/Services.js)).
 
 ### Requiring Services.pref
 
@@ -70,20 +70,23 @@ These APIs are very similar for each preference type.
 
 To create a new preference, it should be assigned a default value. Default preferences are
 defined in preferences files such as:
-- devtools/client/preferences/devtools.js
+- devtools/client/preferences/devtools-client.js
 - devtools/client/preferences/debugger.js
-- devtools/shim/devtools-startup-prefs.js
+- devtools/shared/preferences/devtools-shared.js
+- devtools/startup/preferences/devtools-startup.js
 
-Most new preferences should go in devtools/client/preferences/devtools.js. Debugger
-specific preferences should go in devtools/client/preferences/debugger.js. Finally if a
-preference needs to be available very early during the Firefox startup sequence, it should
-go in devtools/shim/devtools-startup-prefs.js.
+Most new preferences should go in devtools/client/preferences/devtools-client.js. Debugger
+specific preferences should go in devtools/client/preferences/debugger.js. If a preference
+should be available even when the client for DevTools is not shipped (for instance on
+Fennec) the preference should go to devtools/shared/preferences/devtools-shared.js.
+Finally if a preference needs to be available very early during the Firefox startup
+sequence, it should go in devtools/startup/preferences/devtools-startup.js.
 
 ### Projects using Launchpad
 
 At the time of writing this doc, projects using Launchpad have to duplicate the default
 definition of a preference.
-* debugger.html: update [src/utils/prefs.js](https://github.com/devtools-html/debugger.html/blob/master/src/utils/prefs.js)
+* debugger.html: update [src/utils/prefs.js](https://github.com/firefox-devtools/debugger.html/blob/master/src/utils/prefs.js)
 * netmonitor: update [index.js](http://searchfox.org/mozilla-central/source/devtools/client/netmonitor/index.js)
 * webconsole: update [local-dev/index.js](http://searchfox.org/mozilla-central/source/devtools/client/webconsole/local-dev/index.js)
 

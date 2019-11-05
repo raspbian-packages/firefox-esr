@@ -5,15 +5,8 @@
 
 package org.mozilla.gecko.tabqueue;
 
-import org.mozilla.gecko.AppConstants;
-import org.mozilla.gecko.EventDispatcher;
-import org.mozilla.gecko.GeckoProfile;
-import org.mozilla.gecko.GeckoSharedPrefs;
-import org.mozilla.gecko.R;
-import org.mozilla.gecko.preferences.GeckoPreferences;
-import org.mozilla.gecko.util.GeckoBundle;
-import org.mozilla.gecko.util.ThreadUtils;
-
+import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -30,6 +24,15 @@ import android.view.WindowManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.mozilla.gecko.AppConstants;
+import org.mozilla.gecko.EventDispatcher;
+import org.mozilla.gecko.GeckoProfile;
+import org.mozilla.gecko.GeckoSharedPrefs;
+import org.mozilla.gecko.R;
+import org.mozilla.gecko.notifications.NotificationHelper;
+import org.mozilla.gecko.preferences.GeckoPreferences;
+import org.mozilla.gecko.util.GeckoBundle;
+import org.mozilla.gecko.util.ThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +81,9 @@ public class TabQueueHelper {
 
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
                 1, 1,
-                WindowManager.LayoutParams.TYPE_PHONE,
+                AppConstants.Versions.preO ?
+                        WindowManager.LayoutParams.TYPE_PHONE :
+                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT);
 
@@ -218,6 +223,7 @@ public class TabQueueHelper {
      * @param context
      * @param tabsQueued
      */
+    @SuppressWarnings("NewApi")
     public static void showNotification(final Context context, final int tabsQueued, final List<String> urls) {
         ThreadUtils.assertNotOnUiThread();
 
@@ -251,8 +257,43 @@ public class TabQueueHelper {
                                                      .setNumber(tabsQueued)
                                                      .setContentIntent(pendingIntent);
 
+        if (!AppConstants.Versions.preO) {
+            builder.setChannelId(NotificationHelper.getInstance(context)
+                    .getNotificationChannel(NotificationHelper.Channel.DEFAULT).getId());
+        }
+
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(TabQueueHelper.TAB_QUEUE_NOTIFICATION_ID, builder.build());
+    }
+
+    /**
+     * Displays a foreground service notification used from Android O prompting the user that a tab
+     * is being added to the queue.
+     *
+     * @param context
+     * @return startupNotification
+     */
+    @TargetApi(Build.VERSION_CODES.O)
+    public static Notification getStartupNotification(final Context context) {
+        final Resources resources = context.getResources();
+
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle(resources.getString(R.string.tab_queue_notification_prompt));
+        inboxStyle.setSummaryText(resources.getString(R.string.tab_queue_notification_title));
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_status_logo)
+                .setContentTitle(resources.getString(R.string.tab_queue_notification_prompt))
+                .setContentText(resources.getString(R.string.tab_queue_notification_title))
+                .setStyle(inboxStyle)
+                .setColor(ContextCompat.getColor(context, R.color.fennec_ui_accent));
+
+        if (!AppConstants.Versions.preO) {
+            builder.setChannelId(NotificationHelper.getInstance(context)
+                    .getNotificationChannel(NotificationHelper.Channel.DEFAULT).getId());
+        }
+
+        return builder.build();
     }
 
     public static boolean shouldOpenTabQueueUrls(final Context context) {

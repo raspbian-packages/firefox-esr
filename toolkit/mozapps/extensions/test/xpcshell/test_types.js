@@ -6,15 +6,14 @@
 
 createAppInfo("xpcshell@tests.mozilla.org", "XPCShell", "1", "1.9.2");
 
-function run_test() {
-  startupManager();
+add_task(async function setup() {
+  await promiseStartupManager();
 
   Assert.equal(false, "test" in AddonManager.addonTypes);
   let types = AddonManager.addonTypes;
 
   // The dumbest provider possible
-  var provider = {
-  };
+  var provider = {};
 
   var expectedAdd = "test";
   var expectedRemove = null;
@@ -28,18 +27,21 @@ function run_test() {
     onTypeRemoved(aType) {
       Assert.equal(aType.id, expectedRemove);
       expectedRemove = null;
-    }
+    },
   });
 
-  AddonManagerPrivate.registerProvider(provider, [{
-    id: "test",
-    name: "Test",
-    uiPriority: 1
-  }, {
-    id: "t$e%st",
-    name: "Test",
-    uiPriority: 1
-  }]);
+  AddonManagerPrivate.registerProvider(provider, [
+    {
+      id: "test",
+      name: "Test",
+      uiPriority: 1,
+    },
+    {
+      id: "t$e%st",
+      name: "Test",
+      uiPriority: 1,
+    },
+  ]);
 
   Assert.equal(expectedAdd, null);
 
@@ -62,4 +64,4 @@ function run_test() {
   Assert.equal(false, "test" in AddonManager.addonTypes);
   // The cached reference to addonTypes is live
   Assert.equal(false, "test" in types);
-}
+});

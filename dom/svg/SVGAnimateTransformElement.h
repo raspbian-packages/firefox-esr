@@ -9,7 +9,7 @@
 
 #include "mozilla/Attributes.h"
 #include "mozilla/dom/SVGAnimationElement.h"
-#include "nsSMILAnimationFunction.h"
+#include "mozilla/SMILAnimationFunction.h"
 
 nsresult NS_NewSVGAnimateTransformElement(
     nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
@@ -20,9 +20,9 @@ namespace dom {
 class SVGAnimateTransformElement final : public SVGAnimationElement {
  protected:
   explicit SVGAnimateTransformElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
-  nsSMILAnimationFunction mAnimationFunction;
+  SMILAnimationFunction mAnimationFunction;
   friend nsresult(::NS_NewSVGAnimateTransformElement(
       nsIContent** aResult,
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
@@ -31,9 +31,8 @@ class SVGAnimateTransformElement final : public SVGAnimationElement {
                              JS::Handle<JSObject*> aGivenProto) override;
 
  public:
-  // nsIDOMNode specializations
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  // nsINode specializations
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // Element specializations
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
@@ -42,7 +41,7 @@ class SVGAnimateTransformElement final : public SVGAnimationElement {
                               nsAttrValue& aResult) override;
 
   // SVGAnimationElement
-  virtual nsSMILAnimationFunction& AnimationFunction() override;
+  virtual SMILAnimationFunction& AnimationFunction() override;
 };
 
 }  // namespace dom

@@ -7,15 +7,16 @@
 #ifndef mozilla_layers_InputBlockState_h
 #define mozilla_layers_InputBlockState_h
 
-#include "InputData.h"                // for MultiTouchInput
-#include "mozilla/RefCounted.h"       // for RefCounted
-#include "mozilla/RefPtr.h"           // for RefPtr
-#include "mozilla/gfx/Matrix.h"       // for Matrix4x4
-#include "mozilla/layers/APZUtils.h"  // for TouchBehaviorFlags
+#include "InputData.h"           // for MultiTouchInput
+#include "mozilla/RefCounted.h"  // for RefCounted
+#include "mozilla/RefPtr.h"      // for RefPtr
+#include "mozilla/gfx/Matrix.h"  // for Matrix4x4
+#include "mozilla/layers/APZUtils.h"
+#include "mozilla/layers/LayersTypes.h"  // for TouchBehaviorFlags
 #include "mozilla/layers/AsyncDragMetrics.h"
+#include "mozilla/layers/TouchCounter.h"
 #include "mozilla/TimeStamp.h"  // for TimeStamp
 #include "nsTArray.h"           // for nsTArray
-#include "TouchCounter.h"
 
 namespace mozilla {
 namespace layers {
@@ -48,9 +49,9 @@ class InputBlockState : public RefCounted<InputBlockState> {
     eConfirmed
   };
 
-  explicit InputBlockState(const RefPtr<AsyncPanZoomController>& aTargetApzc,
-                           TargetConfirmationFlags aFlags);
-  virtual ~InputBlockState() {}
+  InputBlockState(const RefPtr<AsyncPanZoomController>& aTargetApzc,
+                  TargetConfirmationFlags aFlags);
+  virtual ~InputBlockState() = default;
 
   virtual CancelableBlockState* AsCancelableBlock() { return nullptr; }
   virtual TouchBlockState* AsTouchBlock() { return nullptr; }
@@ -399,6 +400,12 @@ class TouchBlockState : public CancelableBlockState {
       nsTArray<TouchBehaviorFlags>& aOutBehaviors) const;
 
   /**
+   * Returns true if the allowed touch behaviours have been set, or if touch
+   * action is disabled.
+   */
+  bool HasAllowedTouchBehaviors() const;
+
+  /**
    * Copy various properties from another block.
    */
   void CopyPropertiesFrom(const TouchBlockState& aOther);
@@ -465,6 +472,14 @@ class TouchBlockState : public CancelableBlockState {
    */
   bool UpdateSlopState(const MultiTouchInput& aInput,
                        bool aApzcCanConsumeEvents);
+
+  /**
+   * Based on the slop origin and the given input event, return a best guess
+   * as to the pan direction of this touch block. Returns Nothing() if no guess
+   * can be made.
+   */
+  Maybe<ScrollDirection> GetBestGuessPanDirection(
+      const MultiTouchInput& aInput);
 
   /**
    * Returns the number of touch points currently active.

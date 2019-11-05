@@ -13,32 +13,41 @@
 #include "nsIObserverService.h"
 #include "nsISupportsPrimitives.h"
 #include "nsDirectoryServiceDefs.h"
+#include "nsThreadUtils.h"
+#include "xpcpublic.h"
 
+#include "mozilla/dom/Promise.h"
+#include "mozilla/LazyIdleThread.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Services.h"
 
 #define PREF_BDM_ADDTORECENTDOCS "browser.download.manager.addToRecentDocs"
 
+// The amount of time, in milliseconds, that our IO thread will stay alive after
+// the last event it processes.
+#define DEFAULT_THREAD_TIMEOUT_MS 10000
+
 #ifdef XP_WIN
-#include <shlobj.h>
-#include <urlmon.h>
-#include "nsILocalFileWin.h"
+#  include <shlobj.h>
+#  include <urlmon.h>
+#  include "nsILocalFileWin.h"
 #endif
 
 #ifdef XP_MACOSX
-#include <CoreFoundation/CoreFoundation.h>
-#include "../../../xpcom/io/CocoaFileUtils.h"
+#  include <CoreFoundation/CoreFoundation.h>
+#  include "../../../xpcom/io/CocoaFileUtils.h"
 #endif
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "FennecJNIWrappers.h"
+#  include "FennecJNIWrappers.h"
 #endif
 
 #ifdef MOZ_WIDGET_GTK
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 #endif
 
 using namespace mozilla;
+using dom::Promise;
 
 DownloadPlatform* DownloadPlatform::gDownloadPlatformService = nullptr;
 
@@ -64,10 +73,10 @@ static void gio_set_metadata_done(GObject* source_obj, GAsyncResult* res,
   GError* err = nullptr;
   g_file_set_attributes_finish(G_FILE(source_obj), res, nullptr, &err);
   if (err) {
-#ifdef DEBUG
+#  ifdef DEBUG
     NS_DebugBreak(NS_DEBUG_WARNING, "Set file metadata failed: ", err->message,
                   __FILE__, __LINE__);
-#endif
+#  endif
     g_error_free(err);
   }
 }
@@ -95,29 +104,52 @@ CFURLRef CreateCFURLFromNSIURI(nsIURI* aURI) {
 }
 #endif
 
+DownloadPlatform::DownloadPlatform() {
+  mIOThread = new LazyIdleThread(DEFAULT_THREAD_TIMEOUT_MS,
+                                 NS_LITERAL_CSTRING("DownloadPlatform"));
+}
+
 nsresult DownloadPlatform::DownloadDone(nsIURI* aSource, nsIURI* aReferrer,
                                         nsIFile* aTarget,
                                         const nsACString& aContentType,
-                                        bool aIsPrivate) {
+                                        bool aIsPrivate, JSContext* aCx,
+                                        Promise** aPromise) {
+  nsIGlobalObject* globalObject =
+      xpc::NativeGlobal(JS::CurrentGlobalOrNull(aCx));
+
+  if (NS_WARN_IF(!globalObject)) {
+    return NS_ERROR_FAILURE;
+  }
+
+  ErrorResult result;
+  RefPtr<Promise> promise = Promise::Create(globalObject, result);
+
+  if (NS_WARN_IF(result.Failed())) {
+    return result.StealNSResult();
+  }
+
+  nsresult rv = NS_OK;
+  bool pendingAsyncOperations = false;
+
 #if defined(XP_WIN) || defined(XP_MACOSX) || defined(MOZ_WIDGET_ANDROID) || \
     defined(MOZ_WIDGET_GTK)
 
   nsAutoString path;
   if (aTarget && NS_SUCCEEDED(aTarget->GetPath(path))) {
-#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK) || defined(MOZ_WIDGET_ANDROID)
+#  if defined(XP_WIN) || defined(MOZ_WIDGET_GTK) || defined(MOZ_WIDGET_ANDROID)
     // On Windows and Gtk, add the download to the system's "recent documents"
     // list, with a pref to disable.
     {
       bool addToRecentDocs = Preferences::GetBool(PREF_BDM_ADDTORECENTDOCS);
-#ifdef MOZ_WIDGET_ANDROID
+#    ifdef MOZ_WIDGET_ANDROID
       if (jni::IsFennec() && addToRecentDocs) {
         java::DownloadsIntegration::ScanMedia(path, aContentType);
       }
-#else
+#    else
       if (addToRecentDocs && !aIsPrivate) {
-#ifdef XP_WIN
+#      ifdef XP_WIN
         ::SHAddToRecentDocs(SHARD_PATHW, path.get());
-#elif defined(MOZ_WIDGET_GTK)
+#      elif defined(MOZ_WIDGET_GTK)
         GtkRecentManager* manager = gtk_recent_manager_get_default();
 
         gchar* uri = g_filename_to_uri(NS_ConvertUTF16toUTF8(path).get(),
@@ -126,10 +158,10 @@ nsresult DownloadPlatform::DownloadDone(nsIURI* aSource, nsIURI* aReferrer,
           gtk_recent_manager_add_item(manager, uri);
           g_free(uri);
         }
-#endif
+#      endif
       }
-#endif
-#ifdef MOZ_WIDGET_GTK
+#    endif
+#    ifdef MOZ_WIDGET_GTK
       // Use GIO to store the source URI for later display in the file manager.
       GFile* gio_file = g_file_new_for_path(NS_ConvertUTF16toUTF8(path).get());
       nsCString source_uri;
@@ -143,11 +175,11 @@ nsresult DownloadPlatform::DownloadDone(nsIURI* aSource, nsIURI* aReferrer,
                                   gio_set_metadata_done, nullptr);
       g_object_unref(file_info);
       g_object_unref(gio_file);
-#endif
+#    endif
     }
-#endif
+#  endif
 
-#ifdef XP_MACOSX
+#  ifdef XP_MACOSX
     // On OS X, make the downloads stack bounce.
     CFStringRef observedObject = ::CFStringCreateWithCString(
         kCFAllocatorDefault, NS_ConvertUTF16toUTF8(path).get(),
@@ -167,29 +199,53 @@ nsresult DownloadPlatform::DownloadDone(nsIURI* aSource, nsIURI* aReferrer,
     }
     if (pathCFStr && !aIsPrivate) {
       bool isFromWeb = IsURLPossiblyFromWeb(aSource);
+      nsCOMPtr<nsIURI> source(aSource);
+      nsCOMPtr<nsIURI> referrer(aReferrer);
 
-      CFURLRef sourceCFURL = CreateCFURLFromNSIURI(aSource);
-      CFURLRef referrerCFURL = CreateCFURLFromNSIURI(aReferrer);
+      rv = mIOThread->Dispatch(NS_NewRunnableFunction(
+          "DownloadPlatform::DownloadDone",
+          [pathCFStr, isFromWeb, source, referrer, promise]() mutable {
+            CFURLRef sourceCFURL = CreateCFURLFromNSIURI(source);
+            CFURLRef referrerCFURL = CreateCFURLFromNSIURI(referrer);
 
-      CocoaFileUtils::AddOriginMetadataToFile(pathCFStr, sourceCFURL,
-                                              referrerCFURL);
-      CocoaFileUtils::AddQuarantineMetadataToFile(pathCFStr, sourceCFURL,
-                                                  referrerCFURL, isFromWeb);
+            CocoaFileUtils::AddOriginMetadataToFile(pathCFStr, sourceCFURL,
+                                                    referrerCFURL);
+            CocoaFileUtils::AddQuarantineMetadataToFile(
+                pathCFStr, sourceCFURL, referrerCFURL, isFromWeb);
+            ::CFRelease(pathCFStr);
+            if (sourceCFURL) {
+              ::CFRelease(sourceCFURL);
+            }
+            if (referrerCFURL) {
+              ::CFRelease(referrerCFURL);
+            }
 
-      ::CFRelease(pathCFStr);
-      if (sourceCFURL) {
-        ::CFRelease(sourceCFURL);
-      }
-      if (referrerCFURL) {
-        ::CFRelease(referrerCFURL);
+            DebugOnly<nsresult> rv = NS_DispatchToMainThread(
+                NS_NewRunnableFunction("DownloadPlatform::DownloadDoneResolve",
+                                       [promise = std::move(promise)]() {
+                                         promise->MaybeResolveWithUndefined();
+                                       }));
+            MOZ_ASSERT(NS_SUCCEEDED(rv));
+            // In non-debug builds, if we've for some reason failed to dispatch
+            // a runnable to the main thread to resolve the Promise, then it's
+            // unlikely we can reject it either. At that point, the Promise
+            // is going to remain in pending limbo until its global goes away.
+          }));
+
+      if (NS_SUCCEEDED(rv)) {
+        pendingAsyncOperations = true;
       }
     }
-#endif
+#  endif
   }
 
 #endif
 
-  return NS_OK;
+  if (!pendingAsyncOperations) {
+    promise->MaybeResolveWithUndefined();
+  }
+  promise.forget(aPromise);
+  return rv;
 }
 
 nsresult DownloadPlatform::MapUrlToZone(const nsAString& aURL,

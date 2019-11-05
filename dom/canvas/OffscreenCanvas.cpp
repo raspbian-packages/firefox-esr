@@ -16,6 +16,7 @@
 #include "mozilla/Telemetry.h"
 #include "CanvasRenderingContext2D.h"
 #include "CanvasUtils.h"
+#include "GLContext.h"
 #include "GLScreenBuffer.h"
 #include "WebGL1Context.h"
 #include "WebGL2Context.h"
@@ -52,10 +53,11 @@ OffscreenCanvas::~OffscreenCanvas() { ClearResources(); }
 
 JSObject* OffscreenCanvas::WrapObject(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return OffscreenCanvasBinding::Wrap(aCx, this, aGivenProto);
+  return OffscreenCanvas_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-/* static */ already_AddRefed<OffscreenCanvas> OffscreenCanvas::Constructor(
+/* static */
+already_AddRefed<OffscreenCanvas> OffscreenCanvas::Constructor(
     const GlobalObject& aGlobal, uint32_t aWidth, uint32_t aHeight,
     ErrorResult& aRv) {
   nsCOMPtr<nsIGlobalObject> global = do_QueryInterface(aGlobal.GetAsSupports());
@@ -108,9 +110,8 @@ already_AddRefed<nsISupports> OffscreenCanvas::GetContext(
     return nullptr;
   }
 
-  already_AddRefed<nsISupports> result =
-      CanvasRenderingContextHelper::GetContext(aCx, aContextId, aContextOptions,
-                                               aRv);
+  RefPtr<nsISupports> result = CanvasRenderingContextHelper::GetContext(
+      aCx, aContextId, aContextOptions, aRv);
 
   if (!mCurrentContext) {
     return nullptr;
@@ -141,12 +142,12 @@ already_AddRefed<nsISupports> OffscreenCanvas::GetContext(
         UniquePtr<gl::SurfaceFactory> factory =
             gl::GLScreenBuffer::CreateFactory(gl, caps, forwarder, flags);
 
-        if (factory) screen->Morph(Move(factory));
+        if (factory) screen->Morph(std::move(factory));
       }
     }
   }
 
-  return result;
+  return result.forget();
 }
 
 already_AddRefed<nsICanvasRenderingContextInternal>
@@ -250,11 +251,17 @@ already_AddRefed<Promise> OffscreenCanvas::ToBlob(JSContext* aCx,
 
   RefPtr<EncodeCompleteCallback> callback = new EncodeCallback(global, promise);
 
-  // TODO: Can we obtain the context and document here somehow
-  // so that we can decide when usePlaceholder should be true/false?
-  // See https://trac.torproject.org/18599
-  // For now, we always return a placeholder if fingerprinting resistance is on.
-  bool usePlaceholder = nsContentUtils::ShouldResistFingerprinting();
+  bool usePlaceholder;
+  if (NS_IsMainThread()) {
+    nsCOMPtr<nsPIDOMWindowInner> window = do_QueryInterface(GetGlobalObject());
+    Document* doc = window->GetExtantDoc();
+    usePlaceholder =
+        doc ? nsContentUtils::ShouldResistFingerprinting(doc) : false;
+  } else {
+    dom::WorkerPrivate* workerPrivate = dom::GetCurrentThreadWorkerPrivate();
+    usePlaceholder = nsContentUtils::ShouldResistFingerprinting(
+        workerPrivate->GetPrincipal());
+  }
   CanvasRenderingContextHelper::ToBlob(aCx, global, callback, aType, aParams,
                                        usePlaceholder, aRv);
 
@@ -279,9 +286,9 @@ nsCOMPtr<nsIGlobalObject> OffscreenCanvas::GetGlobalObject() {
   return workerPrivate->GlobalScope();
 }
 
-/* static */ already_AddRefed<OffscreenCanvas>
-OffscreenCanvas::CreateFromCloneData(nsIGlobalObject* aGlobal,
-                                     OffscreenCanvasCloneData* aData) {
+/* static */
+already_AddRefed<OffscreenCanvas> OffscreenCanvas::CreateFromCloneData(
+    nsIGlobalObject* aGlobal, OffscreenCanvasCloneData* aData) {
   MOZ_ASSERT(aData);
   RefPtr<OffscreenCanvas> wc =
       new OffscreenCanvas(aGlobal, aData->mWidth, aData->mHeight,
@@ -292,13 +299,14 @@ OffscreenCanvas::CreateFromCloneData(nsIGlobalObject* aGlobal,
   return wc.forget();
 }
 
-/* static */ bool OffscreenCanvas::PrefEnabledOnWorkerThread(JSContext* aCx,
-                                                             JSObject* aObj) {
+/* static */
+bool OffscreenCanvas::PrefEnabledOnWorkerThread(JSContext* aCx,
+                                                JSObject* aObj) {
   if (NS_IsMainThread()) {
     return true;
   }
 
-  return DOMPrefs::OffscreenCanvasEnabled(aCx, aObj);
+  return DOMPrefs::gfx_offscreencanvas_enabled(aCx, aObj);
 }
 
 NS_IMPL_CYCLE_COLLECTION_INHERITED(OffscreenCanvas, DOMEventTargetHelper,

@@ -4,17 +4,14 @@
 
 XULMAP_TYPE(browser, OuterDocAccessible)
 XULMAP_TYPE(button, XULButtonAccessible)
-XULMAP_TYPE(checkbox, XULCheckboxAccessible)
+XULMAP_TYPE(checkbox, CheckboxAccessible)
 XULMAP_TYPE(description, XULLabelAccessible)
 XULMAP_TYPE(dropMarker, XULDropmarkerAccessible)
 XULMAP_TYPE(editor, OuterDocAccessible)
 XULMAP_TYPE(findbar, XULToolbarAccessible)
 XULMAP_TYPE(groupbox, XULGroupboxAccessible)
 XULMAP_TYPE(iframe, OuterDocAccessible)
-XULMAP_TYPE(listbox, XULListboxAccessibleWrap)
-XULMAP_TYPE(listhead, XULColumAccessible)
-XULMAP_TYPE(listheader, XULColumnItemAccessible)
-XULMAP_TYPE(listitem, XULListitemAccessible)
+XULMAP_TYPE(listheader, XULColumAccessible)
 XULMAP_TYPE(menu, XULMenuitemAccessibleWrap)
 XULMAP_TYPE(menubar, XULMenubarAccessible)
 XULMAP_TYPE(menucaption, XULMenuitemAccessibleWrap)
@@ -22,12 +19,10 @@ XULMAP_TYPE(menuitem, XULMenuitemAccessibleWrap)
 XULMAP_TYPE(menulist, XULComboboxAccessible)
 XULMAP_TYPE(menuseparator, XULMenuSeparatorAccessible)
 XULMAP_TYPE(notification, XULAlertAccessible)
-XULMAP_TYPE(progressmeter, XULProgressMeterAccessible)
 XULMAP_TYPE(radio, XULRadioButtonAccessible)
 XULMAP_TYPE(radiogroup, XULRadioGroupAccessible)
 XULMAP_TYPE(richlistbox, XULListboxAccessibleWrap)
 XULMAP_TYPE(richlistitem, XULListitemAccessible)
-XULMAP_TYPE(scale, XULSliderAccessible)
 XULMAP_TYPE(statusbar, XULStatusBarAccessible)
 XULMAP_TYPE(tab, XULTabAccessible)
 XULMAP_TYPE(tabpanels, XULTabpanelsAccessible)
@@ -42,127 +37,77 @@ XULMAP_TYPE(toolbar, XULToolbarAccessible)
 XULMAP_TYPE(toolbarbutton, XULToolbarButtonAccessible)
 XULMAP_TYPE(tooltip, XULTooltipAccessible)
 
-XULMAP(colorpicker,
-       [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
-         if (aContent->IsElement() && aContent->AsElement()->AttrValueIs(
-                                          kNameSpaceID_None, nsGkAtoms::type,
-                                          nsGkAtoms::button, eIgnoreCase)) {
-           return new XULColorPickerAccessible(aContent, aContext->Document());
-         }
-         return nullptr;
-       })
-
-XULMAP(label, [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
-  if (aContent->IsElement() && aContent->AsElement()->ClassList()->Contains(
-                                   NS_LITERAL_STRING("text-link"))) {
-    return new XULLinkAccessible(aContent, aContext->Document());
+XULMAP(label, [](Element* aElement, Accessible* aContext) -> Accessible* {
+  if (aElement->ClassList()->Contains(NS_LITERAL_STRING("text-link"))) {
+    return new XULLinkAccessible(aElement, aContext->Document());
   }
-  return new XULLabelAccessible(aContent, aContext->Document());
+  return new XULLabelAccessible(aElement, aContext->Document());
 })
 
-XULMAP(image, [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
-  if (!aContent->IsElement()) {
-    return nullptr;
-  }
-
-  if (aContent->AsElement()->HasAttr(kNameSpaceID_None, nsGkAtoms::onclick)) {
-    return new XULToolbarButtonAccessible(aContent, aContext->Document());
-  }
-
-  if (aContent->AsElement()->ClassList()->Contains(
-          NS_LITERAL_STRING("colorpickertile"))) {
-    return new XULColorPickerTileAccessible(aContent, aContext->Document());
+XULMAP(image, [](Element* aElement, Accessible* aContext) -> Accessible* {
+  if (aElement->HasAttr(kNameSpaceID_None, nsGkAtoms::onclick)) {
+    return new XULToolbarButtonAccessible(aElement, aContext->Document());
   }
 
   // Don't include nameless images in accessible tree.
-  if (!aContent->AsElement()->HasAttr(kNameSpaceID_None,
-                                      nsGkAtoms::tooltiptext)) {
+  if (!aElement->HasAttr(kNameSpaceID_None, nsGkAtoms::tooltiptext)) {
     return nullptr;
   }
 
-  return new ImageAccessibleWrap(aContent, aContext->Document());
+  return new ImageAccessibleWrap(aElement, aContext->Document());
 })
 
-XULMAP(listcell, [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
-  // Only create cells if there's more than one per row.
-  nsIContent* listItem = aContent->GetParent();
-  if (!listItem) {
-    return nullptr;
-  }
-
-  for (nsIContent* child = listItem->GetFirstChild(); child;
-       child = child->GetNextSibling()) {
-    if (child->IsXULElement(nsGkAtoms::listcell) && child != aContent) {
-      return new XULListCellAccessibleWrap(aContent, aContext->Document());
-    }
-  }
-
-  return nullptr;
+XULMAP(menupopup, [](Element* aElement, Accessible* aContext) {
+  return CreateMenupopupAccessible(aElement, aContext);
 })
 
-XULMAP(menupopup, [](nsIContent* aContent, Accessible* aContext) {
-  return CreateMenupopupAccessible(aContent, aContext);
-})
-
-XULMAP(panel, [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
+XULMAP(panel, [](Element* aElement, Accessible* aContext) -> Accessible* {
   static const Element::AttrValuesArray sIgnoreTypeVals[] = {
-      &nsGkAtoms::autocomplete_richlistbox, &nsGkAtoms::autocomplete, nullptr};
+      nsGkAtoms::autocomplete_richlistbox, nsGkAtoms::autocomplete, nullptr};
 
-  if (!aContent->IsElement() || aContent->AsElement()->FindAttrValueIn(
-                                    kNameSpaceID_None, nsGkAtoms::type,
-                                    sIgnoreTypeVals, eIgnoreCase) >= 0) {
+  if (aElement->FindAttrValueIn(kNameSpaceID_None, nsGkAtoms::type,
+                                sIgnoreTypeVals, eIgnoreCase) >= 0) {
     return nullptr;
   }
 
-  if (aContent->AsElement()->AttrValueIs(kNameSpaceID_None,
-                                         nsGkAtoms::noautofocus,
-                                         nsGkAtoms::_true, eCaseMatters)) {
-    return new XULAlertAccessible(aContent, aContext->Document());
+  if (aElement->AttrValueIs(kNameSpaceID_None, nsGkAtoms::noautofocus,
+                            nsGkAtoms::_true, eCaseMatters)) {
+    return new XULAlertAccessible(aElement, aContext->Document());
   }
 
-  return new EnumRoleAccessible<roles::PANE>(aContent, aContext->Document());
+  return new EnumRoleAccessible<roles::PANE>(aElement, aContext->Document());
 })
 
-XULMAP(popup, [](nsIContent* aContent, Accessible* aContext) {
-  return CreateMenupopupAccessible(aContent, aContext);
+XULMAP(popup, [](Element* aElement, Accessible* aContext) {
+  return CreateMenupopupAccessible(aElement, aContext);
 })
 
-XULMAP(textbox, [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
-  if (aContent->IsElement() && aContent->AsElement()->AttrValueIs(
-                                   kNameSpaceID_None, nsGkAtoms::type,
-                                   nsGkAtoms::autocomplete, eIgnoreCase)) {
-    return new XULComboboxAccessible(aContent, aContext->Document());
+XULMAP(textbox, [](Element* aElement, Accessible* aContext) -> Accessible* {
+  if (aElement->AttrValueIs(kNameSpaceID_None, nsGkAtoms::type,
+                            nsGkAtoms::autocomplete, eIgnoreCase)) {
+    return new XULComboboxAccessible(aElement, aContext->Document());
   }
 
-  return new EnumRoleAccessible<roles::SECTION>(aContent, aContext->Document());
+  return new EnumRoleAccessible<roles::SECTION>(aElement, aContext->Document());
 })
 
-XULMAP(thumb, [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
-  if (aContent->IsElement() && aContent->AsElement()->ClassList()->Contains(
-                                   NS_LITERAL_STRING("scale-thumb"))) {
-    return new XULThumbAccessible(aContent, aContext->Document());
-  }
-  return nullptr;
-})
-
-XULMAP(tree, [](nsIContent* aContent, Accessible* aContext) -> Accessible* {
+XULMAP(tree, [](Element* aElement, Accessible* aContext) -> Accessible* {
   nsIContent* child =
-      nsTreeUtils::GetDescendantChild(aContent, nsGkAtoms::treechildren);
+      nsTreeUtils::GetDescendantChild(aElement, nsGkAtoms::treechildren);
   if (!child) return nullptr;
 
   nsTreeBodyFrame* treeFrame = do_QueryFrame(child->GetPrimaryFrame());
   if (!treeFrame) return nullptr;
 
   RefPtr<nsTreeColumns> treeCols = treeFrame->Columns();
-  int32_t count = 0;
-  treeCols->GetCount(&count);
+  uint32_t count = treeCols->Count();
 
   // Outline of list accessible.
   if (count == 1) {
-    return new XULTreeAccessible(aContent, aContext->Document(), treeFrame);
+    return new XULTreeAccessible(aElement, aContext->Document(), treeFrame);
   }
 
   // Table or tree table accessible.
-  return new XULTreeGridAccessibleWrap(aContent, aContext->Document(),
+  return new XULTreeGridAccessibleWrap(aElement, aContext->Document(),
                                        treeFrame);
 })

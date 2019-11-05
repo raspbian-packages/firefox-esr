@@ -7,6 +7,7 @@
 
 interface nsIInputStream;
 interface nsIOutputStream;
+interface nsIAsyncOutputStream;
 interface nsICacheEntryDoomCallback;
 
 interface nsICacheListener;
@@ -17,6 +18,20 @@ interface nsILoadContextInfo;
 [scriptable, uuid(607c2a2c-0a48-40b9-a956-8cf2bb9857cf)]
 interface nsICacheEntry : nsISupports
 {
+  const unsigned long CONTENT_TYPE_UNKNOWN = 0;
+  const unsigned long CONTENT_TYPE_OTHER = 1;
+  const unsigned long CONTENT_TYPE_JAVASCRIPT = 2;
+  const unsigned long CONTENT_TYPE_IMAGE = 3;
+  const unsigned long CONTENT_TYPE_MEDIA = 4;
+  const unsigned long CONTENT_TYPE_STYLESHEET = 5;
+  const unsigned long CONTENT_TYPE_WASM = 6;
+  /**
+   * Content type that is used internally to check whether the value parsed
+   * from disk is within allowed limits. Don't pass CONTENT_TYPE_LAST to
+   * setContentType method.
+   */
+  const unsigned long CONTENT_TYPE_LAST = 7;
+
   /**
    * Placeholder for the initial value of expiration time.
    */
@@ -80,6 +95,19 @@ interface nsICacheEntry : nsISupports
   void setNetworkTimes(in uint64_t onStartTime, in uint64_t onStopTime);
 
   /**
+   * Set content type. Available types are defined at the begining of this file.
+   * The content type is used internally for cache partitioning and telemetry
+   * purposes so there is no getter.
+   */
+  void setContentType(in uint8_t contentType);
+
+  /**
+   * Stores information about an access from site identified by unique siteID.
+   * It's used for first party cache isolation telemetry.
+   */
+  void addBaseDomainAccess(in uint32_t siteID);
+
+  /**
    * This method is intended to override the per-spec cache validation
    * decisions for a duration specified in seconds. The current state can
    * be examined with isForcedValid (see below). This value is not persisted,
@@ -128,18 +156,15 @@ interface nsICacheEntry : nsISupports
    * @param offset
    *        write starting from this offset into the cached data.  an offset
    *        beyond the end of the stream has undefined consequences.
+   * @param predictedSize
+   *        Predicted size of the data that will be written. It's used to decide
+   *        whether the resulting entry would exceed size limit, in which case
+   *        an error is thrown. If the size isn't known in advance, -1 should be
+   *        passed.
    *
    * @return blocking, buffered output stream.
    */
-  nsIOutputStream openOutputStream(in long long offset);
-
-  /**
-    * Stores the Content-Length specified in the HTTP header for this
-    * entry. Checked before we write to the cache entry, to prevent ever
-    * taking up space in the cache for an entry that we know up front
-    * is going to have to be evicted anyway. See bug 588507.
-    */
-  attribute int64_t predictedDataSize;
+  nsIOutputStream openOutputStream(in long long offset, in long long predictedSize);
 
   /**
    * Get/set security info on the cache entry for this descriptor.
@@ -243,8 +268,24 @@ interface nsICacheEntry : nsISupports
   readonly attribute long long altDataSize;
 
   /**
+  * Returns the type of the saved alt data.
+  * @throws
+  *    - NS_ERROR_NOT_AVAILABLE if alt data does not exist.
+  */
+  readonly attribute ACString altDataType;
+
+  /**
    * Opens and returns an output stream that a consumer may use to save an
    * alternate representation of the data.
+   *
+   * @param type
+   *        type of the alternative data representation
+   * @param predictedSize
+   *        Predicted size of the data that will be written. It's used to decide
+   *        whether the resulting entry would exceed size limit, in which case
+   *        an error is thrown. If the size isn't known in advance, -1 should be
+   *        passed.
+   *
    * @throws
    *    - NS_ERROR_NOT_AVAILABLE if the real data hasn't been written.
    *    - NS_ERROR_IN_PROGRESS when the writing regular content or alt-data to
@@ -252,7 +293,7 @@ interface nsICacheEntry : nsISupports
    *
    * If there is alt-data already saved, it will be overwritten.
    */
-  nsIOutputStream openAlternativeOutputStream(in ACString type);
+  nsIAsyncOutputStream openAlternativeOutputStream(in ACString type, in long long predictedSize);
 
   /**
    * Opens and returns an input stream that can be used to read the alternative

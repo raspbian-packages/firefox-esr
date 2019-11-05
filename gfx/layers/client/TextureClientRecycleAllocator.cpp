@@ -16,8 +16,8 @@ namespace layers {
 
 // Used to keep TextureClient's reference count stable as not to disrupt
 // recycling.
-class TextureClientHolder {
-  ~TextureClientHolder() {}
+class TextureClientHolder final {
+  ~TextureClientHolder() = default;
 
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(TextureClientHolder)
@@ -38,7 +38,7 @@ class TextureClientHolder {
   bool mWillRecycle;
 };
 
-class DefaultTextureClientAllocationHelper
+class MOZ_RAII DefaultTextureClientAllocationHelper
     : public ITextureClientAllocationHelper {
  public:
   DefaultTextureClientAllocationHelper(
@@ -85,8 +85,8 @@ bool YCbCrTextureClientAllocationHelper::IsCompatible(
       bufferData->GetCbCrSize().ref() != mData.mCbCrSize ||
       bufferData->GetYUVColorSpace().isNothing() ||
       bufferData->GetYUVColorSpace().ref() != mData.mYUVColorSpace ||
-      bufferData->GetBitDepth().isNothing() ||
-      bufferData->GetBitDepth().ref() != mData.mBitDepth ||
+      bufferData->GetColorDepth().isNothing() ||
+      bufferData->GetColorDepth().ref() != mData.mColorDepth ||
       bufferData->GetStereoMode().isNothing() ||
       bufferData->GetStereoMode().ref() != mData.mStereoMode) {
     return false;
@@ -98,8 +98,8 @@ already_AddRefed<TextureClient> YCbCrTextureClientAllocationHelper::Allocate(
     KnowsCompositor* aAllocator) {
   return TextureClient::CreateForYCbCr(aAllocator, mData.mYSize, mData.mYStride,
                                        mData.mCbCrSize, mData.mCbCrStride,
-                                       mData.mStereoMode, mData.mYUVColorSpace,
-                                       mData.mBitDepth, mTextureFlags);
+                                       mData.mStereoMode, mData.mColorDepth,
+                                       mData.mYUVColorSpace, mTextureFlags);
 }
 
 TextureClientRecycleAllocator::TextureClientRecycleAllocator(
@@ -226,9 +226,9 @@ void TextureClientRecycleAllocator::RecycleTextureClient(
   {
     MutexAutoLock lock(mLock);
     if (mInUseClients.find(aClient) != mInUseClients.end()) {
-      textureHolder = mInUseClients[aClient];  // Keep reference count of
-                                               // TextureClientHolder within
-                                               // lock.
+      textureHolder =
+          mInUseClients[aClient];  // Keep reference count of
+                                   // TextureClientHolder within lock.
       if (textureHolder->WillRecycle() && !mIsDestroyed &&
           mPooledClients.size() < mMaxPooledSize) {
         mPooledClients.push(textureHolder);

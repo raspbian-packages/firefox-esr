@@ -14,8 +14,11 @@ namespace dom {
 
 class HTMLDivElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLDivElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+  explicit HTMLDivElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {
+    MOZ_ASSERT(mNodeInfo->Equals(nsGkAtoms::div),
+               "HTMLDivElement should be a div");
+  }
 
   void GetAlign(DOMString& aAlign) { GetHTMLAttr(nsGkAtoms::align, aAlign); }
   void SetAlign(const nsAString& aAlign, mozilla::ErrorResult& aError) {
@@ -29,8 +32,7 @@ class HTMLDivElement final : public nsGenericHTMLElement {
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual ~HTMLDivElement();
@@ -40,7 +42,7 @@ class HTMLDivElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

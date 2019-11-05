@@ -4,19 +4,24 @@
 
 "use strict";
 
-const { Component, createFactory } = require("devtools/client/shared/vendor/react");
+const {
+  Component,
+  createFactory,
+} = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
-const { connect } = require("devtools/client/shared/redux/visibility-handler-connect");
+const {
+  connect,
+} = require("devtools/client/shared/redux/visibility-handler-connect");
 
 // Components
-loader.lazyGetter(this, "MonitorPanel", function () {
+loader.lazyGetter(this, "MonitorPanel", function() {
   return createFactory(require("./MonitorPanel"));
 });
-loader.lazyGetter(this, "StatisticsPanel", function () {
+loader.lazyGetter(this, "StatisticsPanel", function() {
   return createFactory(require("./StatisticsPanel"));
 });
-loader.lazyGetter(this, "DropHarHandler", function () {
+loader.lazyGetter(this, "DropHarHandler", function() {
   return createFactory(require("./DropHarHandler"));
 });
 
@@ -47,7 +52,7 @@ class App extends Component {
   // Rendering
 
   render() {
-    let {
+    const {
       actions,
       connector,
       openLink,
@@ -56,28 +61,31 @@ class App extends Component {
       statisticsOpen,
     } = this.props;
 
-    return (
-      div({className: "network-monitor"},
-        !statisticsOpen ?
-          DropHarHandler({
-            actions,
-            openSplitConsole,
-          },
+    return div(
+      { className: "network-monitor" },
+      !statisticsOpen
+        ? DropHarHandler(
+            {
+              actions,
+              openSplitConsole,
+            },
             MonitorPanel({
+              actions,
               connector,
+              openSplitConsole,
               sourceMapService,
               openLink,
             })
-          ) : StatisticsPanel({
-            connector
-          }),
-      )
+          )
+        : StatisticsPanel({
+            connector,
+          })
     );
   }
 }
 
 // Exports
 
-module.exports = connect(
-  (state) => ({ statisticsOpen: state.ui.statisticsOpen }),
-)(App);
+module.exports = connect(state => ({
+  statisticsOpen: state.ui.statisticsOpen,
+}))(App);

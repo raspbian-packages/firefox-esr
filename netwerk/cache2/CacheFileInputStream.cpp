@@ -16,7 +16,7 @@ namespace net {
 NS_IMPL_ADDREF(CacheFileInputStream)
 NS_IMETHODIMP_(MozExternalRefCountType)
 CacheFileInputStream::Release() {
-  NS_PRECONDITION(0 != mRefCnt, "dup release");
+  MOZ_ASSERT(0 != mRefCnt, "dup release");
   nsrefcnt count = --mRefCnt;
   NS_LOG_RELEASE(this, count, "CacheFileInputStream");
 
@@ -37,12 +37,13 @@ NS_INTERFACE_MAP_BEGIN(CacheFileInputStream)
   NS_INTERFACE_MAP_ENTRY(nsIInputStream)
   NS_INTERFACE_MAP_ENTRY(nsIAsyncInputStream)
   NS_INTERFACE_MAP_ENTRY(nsISeekableStream)
+  NS_INTERFACE_MAP_ENTRY(nsITellableStream)
   NS_INTERFACE_MAP_ENTRY(mozilla::net::CacheFileChunkListener)
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIInputStream)
 NS_INTERFACE_MAP_END
 
-CacheFileInputStream::CacheFileInputStream(CacheFile *aFile,
-                                           nsISupports *aEntry,
+CacheFileInputStream::CacheFileInputStream(CacheFile* aFile,
+                                           nsISupports* aEntry,
                                            bool aAlternativeData)
     : mFile(aFile),
       mPos(0),
@@ -74,7 +75,7 @@ CacheFileInputStream::Close() {
 }
 
 NS_IMETHODIMP
-CacheFileInputStream::Available(uint64_t *_retval) {
+CacheFileInputStream::Available(uint64_t* _retval) {
   CacheFileAutoLock lock(mFile);
 
   if (mClosed) {
@@ -116,14 +117,14 @@ CacheFileInputStream::Available(uint64_t *_retval) {
 }
 
 NS_IMETHODIMP
-CacheFileInputStream::Read(char *aBuf, uint32_t aCount, uint32_t *_retval) {
+CacheFileInputStream::Read(char* aBuf, uint32_t aCount, uint32_t* _retval) {
   LOG(("CacheFileInputStream::Read() [this=%p, count=%d]", this, aCount));
   return ReadSegments(NS_CopySegmentToBuffer, aBuf, aCount, _retval);
 }
 
 NS_IMETHODIMP
-CacheFileInputStream::ReadSegments(nsWriteSegmentFun aWriter, void *aClosure,
-                                   uint32_t aCount, uint32_t *_retval) {
+CacheFileInputStream::ReadSegments(nsWriteSegmentFun aWriter, void* aClosure,
+                                   uint32_t aCount, uint32_t* _retval) {
   CacheFileAutoLock lock(mFile);
 
   LOG(("CacheFileInputStream::ReadSegments() [this=%p, count=%d]", this,
@@ -153,6 +154,10 @@ CacheFileInputStream::ReadSegments(nsWriteSegmentFun aWriter, void *aClosure,
     return NS_OK;
   }
 
+  if (aCount == 0) {
+    return NS_OK;
+  }
+
   EnsureCorrectChunk(false);
 
   while (true) {
@@ -161,13 +166,8 @@ CacheFileInputStream::ReadSegments(nsWriteSegmentFun aWriter, void *aClosure,
     if (!mChunk) {
       if (mListeningForChunk == -1) {
         return NS_OK;
-      } else {
-        return NS_BASE_STREAM_WOULD_BLOCK;
       }
-    }
-
-    if (aCount == 0) {
-      break;
+      return NS_BASE_STREAM_WOULD_BLOCK;
     }
 
     CacheFileChunkReadHandle hnd = mChunk->GetReadHandle();
@@ -183,7 +183,7 @@ CacheFileInputStream::ReadSegments(nsWriteSegmentFun aWriter, void *aClosure,
     } else if (canRead > 0) {
       uint32_t toRead = std::min(static_cast<uint32_t>(canRead), aCount);
       uint32_t read;
-      const char *buf = hnd.Buf() + (mPos - hnd.Offset());
+      const char* buf = hnd.Buf() + (mPos - hnd.Offset());
 
       mInReadSegments = true;
       lock.Unlock();
@@ -237,7 +237,7 @@ CacheFileInputStream::ReadSegments(nsWriteSegmentFun aWriter, void *aClosure,
 }
 
 NS_IMETHODIMP
-CacheFileInputStream::IsNonBlocking(bool *_retval) {
+CacheFileInputStream::IsNonBlocking(bool* _retval) {
   *_retval = true;
   return NS_OK;
 }
@@ -296,9 +296,9 @@ void CacheFileInputStream::CleanUp() {
 }
 
 NS_IMETHODIMP
-CacheFileInputStream::AsyncWait(nsIInputStreamCallback *aCallback,
+CacheFileInputStream::AsyncWait(nsIInputStreamCallback* aCallback,
                                 uint32_t aFlags, uint32_t aRequestedCount,
-                                nsIEventTarget *aEventTarget) {
+                                nsIEventTarget* aEventTarget) {
   CacheFileAutoLock lock(mFile);
 
   LOG(
@@ -389,7 +389,14 @@ CacheFileInputStream::Seek(int32_t whence, int64_t offset) {
 }
 
 NS_IMETHODIMP
-CacheFileInputStream::Tell(int64_t *_retval) {
+CacheFileInputStream::SetEOF() {
+  MOZ_ASSERT(false, "Don't call SetEOF on cache input stream");
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+// nsITellableStream
+NS_IMETHODIMP
+CacheFileInputStream::Tell(int64_t* _retval) {
   CacheFileAutoLock lock(mFile);
 
   if (mClosed) {
@@ -408,28 +415,22 @@ CacheFileInputStream::Tell(int64_t *_retval) {
   return NS_OK;
 }
 
-NS_IMETHODIMP
-CacheFileInputStream::SetEOF() {
-  MOZ_ASSERT(false, "Don't call SetEOF on cache input stream");
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
 // CacheFileChunkListener
 nsresult CacheFileInputStream::OnChunkRead(nsresult aResult,
-                                           CacheFileChunk *aChunk) {
+                                           CacheFileChunk* aChunk) {
   MOZ_CRASH("CacheFileInputStream::OnChunkRead should not be called!");
   return NS_ERROR_UNEXPECTED;
 }
 
 nsresult CacheFileInputStream::OnChunkWritten(nsresult aResult,
-                                              CacheFileChunk *aChunk) {
+                                              CacheFileChunk* aChunk) {
   MOZ_CRASH("CacheFileInputStream::OnChunkWritten should not be called!");
   return NS_ERROR_UNEXPECTED;
 }
 
 nsresult CacheFileInputStream::OnChunkAvailable(nsresult aResult,
                                                 uint32_t aChunkIdx,
-                                                CacheFileChunk *aChunk) {
+                                                CacheFileChunk* aChunk) {
   CacheFileAutoLock lock(mFile);
 
   LOG(("CacheFileInputStream::OnChunkAvailable() [this=%p, result=0x%08" PRIx32
@@ -483,7 +484,7 @@ nsresult CacheFileInputStream::OnChunkAvailable(nsresult aResult,
   return NS_OK;
 }
 
-nsresult CacheFileInputStream::OnChunkUpdated(CacheFileChunk *aChunk) {
+nsresult CacheFileInputStream::OnChunkUpdated(CacheFileChunk* aChunk) {
   CacheFileAutoLock lock(mFile);
 
   LOG(("CacheFileInputStream::OnChunkUpdated() [this=%p, idx=%d]", this,
@@ -496,9 +497,9 @@ nsresult CacheFileInputStream::OnChunkUpdated(CacheFileChunk *aChunk) {
          this));
 
     return NS_OK;
-  } else {
-    mWaitingForUpdate = false;
   }
+
+  mWaitingForUpdate = false;
 
   MOZ_ASSERT(mChunk == aChunk);
 
@@ -554,9 +555,8 @@ void CacheFileInputStream::EnsureCorrectChunk(bool aReleaseOnly) {
            this, chunkIdx));
 
       return;
-    } else {
-      ReleaseChunk();
     }
+    ReleaseChunk();
   }
 
   MOZ_ASSERT(!mWaitingForUpdate);
@@ -597,7 +597,7 @@ void CacheFileInputStream::EnsureCorrectChunk(bool aReleaseOnly) {
   MaybeNotifyListener();
 }
 
-int64_t CacheFileInputStream::CanRead(CacheFileChunkReadHandle *aHandle) {
+int64_t CacheFileInputStream::CanRead(CacheFileChunkReadHandle* aHandle) {
   mFile->AssertOwnsLock();
 
   MOZ_ASSERT(mChunk);

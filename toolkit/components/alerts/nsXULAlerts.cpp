@@ -66,8 +66,9 @@ nsXULAlertObserver::Observe(nsISupports* aSubject, const char* aTopic,
 NS_IMPL_ISUPPORTS(nsXULAlerts, nsIAlertsService, nsIAlertsDoNotDisturb,
                   nsIAlertsIconURI)
 
-/* static */ already_AddRefed<nsXULAlerts> nsXULAlerts::GetInstance() {
-// Gecko on Android does not fully support XUL windows.
+/* static */
+already_AddRefed<nsXULAlerts> nsXULAlerts::GetInstance() {
+  // Gecko on Android does not fully support XUL windows.
 #ifndef MOZ_WIDGET_ANDROID
   if (!gXULAlerts) {
     gXULAlerts = new nsXULAlerts();

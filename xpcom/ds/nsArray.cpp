@@ -71,8 +71,19 @@ nsArrayBase::IndexOf(uint32_t aStartIndex, nsISupports* aElement,
 }
 
 NS_IMETHODIMP
-nsArrayBase::Enumerate(nsISimpleEnumerator** aResult) {
+nsArrayBase::ScriptedEnumerate(const nsIID& aElemIID, uint8_t aArgc,
+                               nsISimpleEnumerator** aResult) {
+  if (aArgc > 0) {
+    return NS_NewArrayEnumerator(aResult, static_cast<nsIArray*>(this),
+                                 aElemIID);
+  }
   return NS_NewArrayEnumerator(aResult, static_cast<nsIArray*>(this));
+}
+
+NS_IMETHODIMP
+nsArrayBase::EnumerateImpl(const nsID& aElemIID,
+                           nsISimpleEnumerator** aResult) {
+  return NS_NewArrayEnumerator(aResult, static_cast<nsIArray*>(this), aElemIID);
 }
 
 // nsIMutableArray implementation

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,9 +14,10 @@
 
 #include <gdk/gdk.h>
 #ifdef MOZ_WAYLAND
-#include <gdk/gdkwayland.h>
+#  include <gdk/gdkwayland.h>
 #endif
 #include <X11/Xlib.h>  // for Window, Display, Visual, etc.
+#include "X11UndefineNone.h"
 
 class nsWindow;
 
@@ -39,7 +40,7 @@ class WindowSurfaceProvider final {
    * while WindowSurfaceProvider is used.
    */
   void Initialize(Display* aDisplay, Window aWindow, Visual* aVisual,
-                  int aDepth);
+                  int aDepth, bool aIsShaped);
 
 #ifdef MOZ_WAYLAND
   void Initialize(nsWindow* aWidget);
@@ -70,6 +71,7 @@ class WindowSurfaceProvider final {
 #ifdef MOZ_WAYLAND
   nsWindow* mWidget;
 #endif
+  bool mIsShaped;
 };
 
 }  // namespace widget

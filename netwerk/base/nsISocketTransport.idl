@@ -66,13 +66,6 @@ interface nsISocketTransport : nsITransport
     void binarySetOriginAttributes(in const_OriginAttributesRef aOriginAttrs);
 
     /**
-     * The platform-specific network interface id that this socket
-     * associated with. Note that this attribute can be only accessed
-     * in the socket thread.
-     */
-    attribute ACString networkInterfaceId;
-
-    /**
      * Returns the IP address of the socket connection peer. This
      * attribute is defined only once a connection has been established.
      */
@@ -130,6 +123,13 @@ interface nsISocketTransport : nsITransport
      */
     unsigned long getTimeout(in unsigned long aType);
     void          setTimeout(in unsigned long aType, in unsigned long aValue);
+
+    /**
+     * Sets the SO_LINGER option with the specified values for the l_onoff and
+     * l_linger parameters. This applies PR_SockOpt_Linger before PR_Close and
+     * can be used with a timeout of zero to send an RST packet when closing.
+     */
+    void setLinger(in boolean aPolarity, in short aTimeout);
 
     /**
      * True to set addr and port reuse socket options.
@@ -254,6 +254,18 @@ interface nsISocketTransport : nsITransport
     const unsigned long REFRESH_CACHE = (1 << 9);
 
     /**
+     * If this flag is set then it means that if connecting the preferred ip
+     * family has failed, retry with the oppsite one once more.
+     */
+    const unsigned long RETRY_WITH_DIFFERENT_IP_FAMILY = (1 << 10);
+
+    /**
+     * If we know that a server speaks only tls <1.3 there is no need to try
+     * to use esni and query dns for esni keys.
+     */
+    const unsigned long DONT_TRY_ESNI = (1 << 11);
+
+    /**
      * An opaque flags for non-standard behavior of the TLS system.
      * It is unlikely this will need to be set outside of telemetry studies
      * relating to the TLS implementation.
@@ -289,4 +301,22 @@ interface nsISocketTransport : nsITransport
     [noscript] void setFastOpenCallback(in TCPFastOpenPtr aFastOpen);
 
     readonly attribute nsresult firstRetryError;
+
+    /**
+     * If true, this socket transport has found out the prefered family
+     * according it's connection flags could not be used to establish
+     * connections any more.  Hence, the preference should be reset.
+     */
+    readonly attribute boolean resetIPFamilyPreference;
+
+    /**
+     * This attribute holds information whether esni has been used.
+     * The value is set after PR_Connect is called.
+     */
+   readonly attribute boolean esniUsed;
+
+    /**
+     * IP address resolved using TRR.
+     */
+    bool resolvedByTRR();
 };

@@ -4,32 +4,60 @@
 
 "use strict";
 
-const {Ci} = require("chrome");
-const Services = require("Services");
+const { Ci } = require("chrome");
 const defer = require("devtools/shared/defer");
 const protocol = require("devtools/shared/protocol");
-const {LongStringActor} = require("devtools/server/actors/string");
-const {fetch} = require("devtools/shared/DevToolsUtils");
-const {mediaRuleSpec, styleSheetSpec,
-       styleSheetsSpec} = require("devtools/shared/specs/stylesheets");
+const { LongStringActor } = require("devtools/server/actors/string");
+const { fetch } = require("devtools/shared/DevToolsUtils");
 const {
-  addPseudoClassLock, removePseudoClassLock } = require("devtools/server/actors/highlighters/utils/markup");
+  mediaRuleSpec,
+  styleSheetSpec,
+  styleSheetsSpec,
+} = require("devtools/shared/specs/stylesheets");
 const InspectorUtils = require("InspectorUtils");
 
-loader.lazyRequireGetter(this, "CssLogic", "devtools/shared/inspector/css-logic");
-loader.lazyRequireGetter(this, "addPseudoClassLock",
-  "devtools/server/actors/highlighters/utils/markup", true);
-loader.lazyRequireGetter(this, "removePseudoClassLock",
-  "devtools/server/actors/highlighters/utils/markup", true);
-loader.lazyRequireGetter(this, "loadSheet", "devtools/shared/layout/utils", true);
+loader.lazyRequireGetter(
+  this,
+  "CssLogic",
+  "devtools/shared/inspector/css-logic"
+);
+loader.lazyRequireGetter(
+  this,
+  "addPseudoClassLock",
+  "devtools/server/actors/highlighters/utils/markup",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "removePseudoClassLock",
+  "devtools/server/actors/highlighters/utils/markup",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "loadSheet",
+  "devtools/shared/layout/utils",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "ReplayDebugger",
+  "devtools/server/actors/replay/debugger"
+);
+loader.lazyRequireGetter(
+  this,
+  "ReplayInspector",
+  "devtools/server/actors/replay/inspector"
+);
 
 var TRANSITION_PSEUDO_CLASS = ":-moz-styleeditor-transitioning";
 var TRANSITION_DURATION_MS = 500;
 var TRANSITION_BUFFER_MS = 1000;
-var TRANSITION_RULE_SELECTOR =
-`:root${TRANSITION_PSEUDO_CLASS}, :root${TRANSITION_PSEUDO_CLASS} *`;
+var TRANSITION_RULE_SELECTOR = `:root${TRANSITION_PSEUDO_CLASS}, :root${TRANSITION_PSEUDO_CLASS} *`;
 
-var TRANSITION_SHEET = "data:text/css;charset=utf-8," + encodeURIComponent(`
+var TRANSITION_SHEET =
+  "data:text/css;charset=utf-8," +
+  encodeURIComponent(`
   ${TRANSITION_RULE_SELECTOR} {
     transition-duration: ${TRANSITION_DURATION_MS}ms !important;
     transition-delay: 0ms !important;
@@ -52,7 +80,7 @@ exports.UPDATE_GENERAL = UPDATE_GENERAL;
 // and then reopened, the edited text will be available.  A weak map
 // is used so that navigation by the user will eventually cause the
 // edited text to be collected.
-let modifiedStyleSheets = new WeakMap();
+const modifiedStyleSheets = new WeakMap();
 
 /**
  * A MediaRuleActor lives on the server and provides access to properties
@@ -71,7 +99,7 @@ var MediaRuleActor = protocol.ActorClassWithSpec(mediaRuleSpec, {
     return this.mql ? this.mql.matches : null;
   },
 
-  initialize: function (mediaRule, parentActor) {
+  initialize: function(mediaRule, parentActor) {
     protocol.Actor.prototype.initialize.call(this, null);
 
     this.rawRule = mediaRule;
@@ -94,7 +122,7 @@ var MediaRuleActor = protocol.ActorClassWithSpec(mediaRuleSpec, {
     }
   },
 
-  destroy: function () {
+  destroy: function() {
     if (this.mql) {
       this.mql.removeListener(this._matchesChange);
     }
@@ -102,34 +130,136 @@ var MediaRuleActor = protocol.ActorClassWithSpec(mediaRuleSpec, {
     protocol.Actor.prototype.destroy.call(this);
   },
 
-  form: function (detail) {
-    if (detail === "actorid") {
-      return this.actorID;
-    }
-
-    let form = {
-      actor: this.actorID,  // actorID is set when this is added to a pool
+  form: function() {
+    const form = {
+      actor: this.actorID, // actorID is set when this is added to a pool
       mediaText: this.rawRule.media.mediaText,
       conditionText: this.rawRule.conditionText,
       matches: this.matches,
       line: this.line,
       column: this.column,
-      parentStyleSheet: this.parentActor.actorID
+      parentStyleSheet: this.parentActor.actorID,
     };
 
     return form;
   },
 
-  _matchesChange: function () {
+  _matchesChange: function() {
     this.emit("matches-change", this.matches);
-  }
+  },
 });
+
+function getSheetText(sheet, consoleActor) {
+  const cssText = modifiedStyleSheets.get(sheet);
+  if (cssText !== undefined) {
+    return Promise.resolve(cssText);
+  }
+
+  if (!sheet.href) {
+    // this is an inline <style> sheet
+    const content = sheet.ownerNode.textContent;
+    return Promise.resolve(content);
+  }
+
+  return fetchStylesheet(sheet, consoleActor).then(({ content }) => content);
+}
+
+exports.getSheetText = getSheetText;
+
+/**
+ * Get the charset of the stylesheet.
+ */
+function getCSSCharset(sheet) {
+  if (sheet) {
+    // charset attribute of <link> or <style> element, if it exists
+    if (sheet.ownerNode && sheet.ownerNode.getAttribute) {
+      const linkCharset = sheet.ownerNode.getAttribute("charset");
+      if (linkCharset != null) {
+        return linkCharset;
+      }
+    }
+
+    // charset of referring document.
+    if (sheet.ownerNode && sheet.ownerNode.ownerDocument.characterSet) {
+      return sheet.ownerNode.ownerDocument.characterSet;
+    }
+  }
+
+  return "UTF-8";
+}
+
+/**
+ * Fetch a stylesheet at the provided URL. Returns a promise that will resolve the
+ * result of the fetch command.
+ *
+ * @return {Promise} a promise that resolves with an object with the following members
+ *         on success:
+ *           - content: the document at that URL, as a string,
+ *           - contentType: the content type of the document
+ *         If an error occurs, the promise is rejected with that error.
+ */
+async function fetchStylesheet(sheet, consoleActor) {
+  const href = sheet.href;
+
+  let result;
+  if (consoleActor) {
+    result = await consoleActor.getRequestContentForURL(href);
+    if (result) {
+      return result;
+    }
+  }
+
+  // When replaying, fetch the stylesheets from the replaying process, so that
+  // we get the same sheets which were used when recording.
+  if (isReplaying) {
+    const dbg = new ReplayDebugger();
+    return dbg.replayingContent(href);
+  }
+
+  const options = {
+    loadFromCache: true,
+    policy: Ci.nsIContentPolicy.TYPE_INTERNAL_STYLESHEET,
+    charset: getCSSCharset(sheet),
+  };
+
+  // Bug 1282660 - We use the system principal to load the default internal
+  // stylesheets instead of the content principal since such stylesheets
+  // require system principal to load. At meanwhile, we strip the loadGroup
+  // for preventing the assertion of the userContextId mismatching.
+
+  // chrome|file|resource|moz-extension protocols rely on the system principal.
+  const excludedProtocolsRe = /^(chrome|file|resource|moz-extension):\/\//;
+  if (!excludedProtocolsRe.test(href)) {
+    // Stylesheets using other protocols should use the content principal.
+    if (sheet.ownerNode) {
+      // eslint-disable-next-line mozilla/use-ownerGlobal
+      options.window = sheet.ownerNode.ownerDocument.defaultView;
+      options.principal = sheet.ownerNode.ownerDocument.nodePrincipal;
+    }
+  }
+
+  try {
+    result = await fetch(href, options);
+  } catch (e) {
+    // The list of excluded protocols can be missing some protocols, try to use the
+    // system principal if the first fetch failed.
+    console.error(
+      `stylesheets actor: fetch failed for ${href},` +
+        ` using system principal instead.`
+    );
+    options.window = undefined;
+    options.principal = undefined;
+    result = await fetch(href, options);
+  }
+
+  return result;
+}
 
 /**
  * A StyleSheetActor represents a stylesheet on the server.
  */
 var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
-  toString: function () {
+  toString: function() {
     return "[StyleSheetActor " + this.actorID + "]";
   },
 
@@ -137,7 +267,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * Window of target
    */
   get window() {
-    return this.parentActor.window;
+    return isReplaying ? ReplayInspector.window : this.parentActor.window;
   },
 
   /**
@@ -174,8 +304,10 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
     if (!href) {
       if (this.ownerNode.nodeType == this.ownerNode.DOCUMENT_NODE) {
         href = this.ownerNode.location.href;
-      } else if (this.ownerNode.ownerDocument &&
-                 this.ownerNode.ownerDocument.location) {
+      } else if (
+        this.ownerNode.ownerDocument &&
+        this.ownerNode.ownerDocument.location
+      ) {
         href = this.ownerNode.ownerDocument.location.href;
       }
     }
@@ -189,8 +321,9 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    */
   get styleSheetIndex() {
     if (this._styleSheetIndex == -1) {
-      for (let i = 0; i < this.document.styleSheets.length; i++) {
-        if (this.document.styleSheets[i] == this.rawSheet) {
+      const styleSheets = InspectorUtils.getAllStyleSheets(this.document, true);
+      for (let i = 0; i < styleSheets.length; i++) {
+        if (styleSheets[i] == this.rawSheet) {
           this._styleSheetIndex = i;
           break;
         }
@@ -199,15 +332,17 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
     return this._styleSheetIndex;
   },
 
-  destroy: function () {
+  destroy: function() {
     if (this._transitionTimeout && this.window) {
       this.window.clearTimeout(this._transitionTimeout);
       removePseudoClassLock(
-                   this.document.documentElement, TRANSITION_PSEUDO_CLASS);
+        this.document.documentElement,
+        TRANSITION_PSEUDO_CLASS
+      );
     }
   },
 
-  initialize: function (styleSheet, parentActor) {
+  initialize: function(styleSheet, parentActor) {
     protocol.Actor.prototype.initialize.call(this, null);
 
     this.rawSheet = styleSheet;
@@ -225,7 +360,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
       parentStyleSheet = parentStyleSheet.parentStyleSheet;
     }
     // When the style is injected via nsIDOMWindowUtils.loadSheet, even
-    // the parent style sheet has no owner, so default back to tab actor
+    // the parent style sheet has no owner, so default back to target actor
     // document
     if (parentStyleSheet.ownerNode) {
       this.ownerDocument = parentStyleSheet.ownerNode.ownerDocument;
@@ -238,7 +373,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * Test whether this sheet has been modified by CSSOM.
    * @return {Boolean} true if changed by CSSOM.
    */
-  hasRulesModifiedByCSSOM: function () {
+  hasRulesModifiedByCSSOM: function() {
     return InspectorUtils.hasRulesModifiedByCSSOM(this.rawSheet);
   },
 
@@ -248,7 +383,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * @return {Promise}
    *         Promise that resolves with a CSSRuleList
    */
-  getCSSRules: function () {
+  getCSSRules: function() {
     let rules;
     try {
       rules = this.rawSheet.cssRules;
@@ -268,9 +403,9 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
       return this._cssRules;
     }
 
-    let deferred = defer();
+    const deferred = defer();
 
-    let onSheetLoaded = (event) => {
+    const onSheetLoaded = event => {
       this.ownerNode.removeEventListener("load", onSheetLoaded);
 
       deferred.resolve(this.rawSheet.cssRules);
@@ -291,27 +426,26 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    *         With properties of the underlying stylesheet, plus 'text',
    *        'styleSheetIndex' and 'parentActor' if it's @imported
    */
-  form: function (detail) {
-    if (detail === "actorid") {
-      return this.actorID;
-    }
-
+  form: function() {
     let docHref;
     if (this.ownerNode) {
       if (this.ownerNode.nodeType == this.ownerNode.DOCUMENT_NODE) {
         docHref = this.ownerNode.location.href;
-      } else if (this.ownerNode.ownerDocument && this.ownerNode.ownerDocument.location) {
+      } else if (
+        this.ownerNode.ownerDocument &&
+        this.ownerNode.ownerDocument.location
+      ) {
         docHref = this.ownerNode.ownerDocument.location.href;
       }
     }
 
-    let form = {
-      actor: this.actorID,  // actorID is set when this actor is added to a pool
+    const form = {
+      actor: this.actorID, // actorID is set when this actor is added to a pool
       href: this.href,
       nodeHref: docHref,
       disabled: this.rawSheet.disabled,
       title: this.rawSheet.title,
-      system: !CssLogic.isContentStylesheet(this.rawSheet),
+      system: !CssLogic.isAuthorStylesheet(this.rawSheet),
       styleSheetIndex: this.styleSheetIndex,
       sourceMapURL: this.rawSheet.sourceMapURL,
     };
@@ -333,7 +467,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * @return {object}
    *         'disabled' - the disabled state after toggling.
    */
-  toggleDisabled: function () {
+  toggleDisabled: function() {
     this.rawSheet.disabled = !this.rawSheet.disabled;
     this._notifyPropertyChanged("disabled");
 
@@ -347,15 +481,15 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * @param  {string} property
    *         Name of the changed property
    */
-  _notifyPropertyChanged: function (property) {
+  _notifyPropertyChanged: function(property) {
     this.emit("property-change", property, this.form()[property]);
   },
 
   /**
    * Protocol method to get the text of this stylesheet.
    */
-  getText: function () {
-    return this._getText().then((text) => {
+  getText: function() {
+    return this._getText().then(text => {
       return new LongStringActor(this.conn, text || "");
     });
   },
@@ -367,136 +501,34 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * @return {Promise}
    *         Promise that resolves with a string text of the stylesheet.
    */
-  _getText: function () {
+  _getText: function() {
     if (typeof this.text === "string") {
       return Promise.resolve(this.text);
     }
 
-    let cssText = modifiedStyleSheets.get(this.rawSheet);
-    if (cssText !== undefined) {
-      this.text = cssText;
-      return Promise.resolve(cssText);
-    }
-
-    if (!this.href) {
-      // this is an inline <style> sheet
-      let content = this.ownerNode.textContent;
-      this.text = content;
-      return Promise.resolve(content);
-    }
-
-    return this.fetchStylesheet(this.href).then(({ content }) => {
-      this.text = content;
-      return content;
+    return getSheetText(this.rawSheet, this._consoleActor).then(text => {
+      this.text = text;
+      return text;
     });
   },
 
   /**
-   * Fetch a stylesheet at the provided URL. Returns a promise that will resolve the
-   * result of the fetch command.
-   *
-   * @param  {String} href
-   *         The href of the stylesheet to retrieve.
-   * @return {Promise} a promise that resolves with an object with the following members
-   *         on success:
-   *           - content: the document at that URL, as a string,
-   *           - contentType: the content type of the document
-   *         If an error occurs, the promise is rejected with that error.
-   */
-  async fetchStylesheet(href) {
-    // Check if network monitor observed this load, and if so, use that.
-    let result = this.fetchStylesheetFromNetworkMonitor(href);
-    if (result) {
-      return result;
-    }
-
-    let options = {
-      loadFromCache: true,
-      policy: Ci.nsIContentPolicy.TYPE_INTERNAL_STYLESHEET,
-      charset: this._getCSSCharset()
-    };
-
-    // Bug 1282660 - We use the system principal to load the default internal
-    // stylesheets instead of the content principal since such stylesheets
-    // require system principal to load. At meanwhile, we strip the loadGroup
-    // for preventing the assertion of the userContextId mismatching.
-
-    // chrome|file|resource|moz-extension protocols rely on the system principal.
-    let excludedProtocolsRe = /^(chrome|file|resource|moz-extension):\/\//;
-    if (!excludedProtocolsRe.test(this.href)) {
-      // Stylesheets using other protocols should use the content principal.
-      options.window = this.ownerWindow;
-      options.principal = this.ownerDocument.nodePrincipal;
-    }
-
-    try {
-      result = await fetch(this.href, options);
-    } catch (e) {
-      // The list of excluded protocols can be missing some protocols, try to use the
-      // system principal if the first fetch failed.
-      console.error(`stylesheets actor: fetch failed for ${this.href},` +
-        ` using system principal instead.`);
-      options.window = undefined;
-      options.principal = undefined;
-      result = await fetch(this.href, options);
-    }
-
-    return result;
-  },
-
-  /**
    * Try to locate the console actor if it exists via our parent actor (the tab).
+   *
+   * Keep this in sync with the BrowsingContextTargetActor version.
    */
   get _consoleActor() {
     if (this.parentActor.exited) {
       return null;
     }
-    let form = this.parentActor.form();
+    const form = this.parentActor.form();
     return this.conn._getOrCreateActor(form.consoleActor);
-  },
-
-  /**
-   * Try to fetch the stylesheet text from the network monitor.  If it was enabled during
-   * the load, it should have a copy of the text saved.
-   *
-   * @param string href
-   *        The URL of the sheet to fetch.
-   */
-  fetchStylesheetFromNetworkMonitor(href) {
-    let consoleActor = this._consoleActor;
-    if (!consoleActor) {
-      return null;
-    }
-    let request = consoleActor.getNetworkEventActorForURL(href);
-    if (!request) {
-      return null;
-    }
-    let content = request._response.content;
-    if (request._discardResponseBody || request._truncated || !content) {
-      return null;
-    }
-    if (content.text.type != "longString") {
-      // For short strings, the text is available directly.
-      return {
-        content: content.text,
-        contentType: content.mimeType,
-      };
-    }
-    // For long strings, look up the actor that holds the full text.
-    let longStringActor = this.conn._getOrCreateActor(content.text.actor);
-    if (!longStringActor) {
-      return null;
-    }
-    return {
-      content: longStringActor.rawValue(),
-      contentType: content.mimeType,
-    };
   },
 
   /**
    * Protocol method to get the media rules for the stylesheet.
    */
-  getMediaRules: function () {
+  getMediaRules: function() {
     return this._getMediaRules();
   },
 
@@ -506,64 +538,21 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * @return {promise}
    *         A promise that resolves with an array of MediaRuleActors.
    */
-  _getMediaRules: function () {
-    return this.getCSSRules().then((rules) => {
-      let mediaRules = [];
+  _getMediaRules: function() {
+    return this.getCSSRules().then(rules => {
+      const mediaRules = [];
       for (let i = 0; i < rules.length; i++) {
-        let rule = rules[i];
+        const rule = rules[i];
         if (rule.type != CSSRule.MEDIA_RULE) {
           continue;
         }
-        let actor = new MediaRuleActor(rule, this);
+        const actor = new MediaRuleActor(rule, this);
         this.manage(actor);
 
         mediaRules.push(actor);
       }
       return mediaRules;
     });
-  },
-
-  /**
-   * Get the charset of the stylesheet according to the character set rules
-   * defined in <http://www.w3.org/TR/CSS2/syndata.html#charset>.
-   * Note that some of the algorithm is implemented in DevToolsUtils.fetch.
-   */
-  _getCSSCharset: function () {
-    let sheet = this.rawSheet;
-    if (sheet) {
-      // Do we have a @charset rule in the stylesheet?
-      // step 2 of syndata.html (without the BOM check).
-      if (sheet.cssRules) {
-        let rules = sheet.cssRules;
-        if (rules.length
-            && rules.item(0).type == CSSRule.CHARSET_RULE) {
-          return rules.item(0).encoding;
-        }
-      }
-
-      // step 3: charset attribute of <link> or <style> element, if it exists
-      if (sheet.ownerNode && sheet.ownerNode.getAttribute) {
-        let linkCharset = sheet.ownerNode.getAttribute("charset");
-        if (linkCharset != null) {
-          return linkCharset;
-        }
-      }
-
-      // step 4 (1 of 2): charset of referring stylesheet.
-      let parentSheet = sheet.parentStyleSheet;
-      if (parentSheet && parentSheet.cssRules &&
-          parentSheet.cssRules[0].type == CSSRule.CHARSET_RULE) {
-        return parentSheet.cssRules[0].encoding;
-      }
-
-      // step 4 (2 of 2): charset of referring document.
-      if (sheet.ownerNode && sheet.ownerNode.ownerDocument.characterSet) {
-        return sheet.ownerNode.ownerDocument.characterSet;
-      }
-    }
-
-    // step 5: default to utf-8.
-    return "UTF-8";
   },
 
   /**
@@ -574,7 +563,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    *         'transition' - whether to do CSS transition for change.
    *         'kind' - either UPDATE_PRESERVING_RULES or UPDATE_GENERAL
    */
-  update: function (text, transition, kind = UPDATE_GENERAL) {
+  update: function(text, transition, kind = UPDATE_GENERAL) {
     InspectorUtils.parseStyleSheet(this.rawSheet, text);
 
     modifiedStyleSheets.set(this.rawSheet, text);
@@ -591,7 +580,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
       this.emit("style-applied", kind, this);
     }
 
-    this._getMediaRules().then((rules) => {
+    this._getMediaRules().then(rules => {
       this.emit("media-rules-changed", rules);
     });
   },
@@ -600,7 +589,7 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
    * Insert a catch-all transition sheet into the document. Set a timeout
    * to remove the transition after a certain time.
    */
-  _startTransition: function (kind) {
+  _startTransition: function(kind) {
     if (!this._transitionSheetLoaded) {
       this._transitionSheetLoaded = true;
       // We don't remove this sheet. It uses an internal selector that
@@ -616,18 +605,22 @@ var StyleSheetActor = protocol.ActorClassWithSpec(styleSheetSpec, {
     this.window.clearTimeout(this._transitionTimeout);
     this._transitionTimeout = this.window.setTimeout(
       this._onTransitionEnd.bind(this, kind),
-      TRANSITION_DURATION_MS + TRANSITION_BUFFER_MS);
+      TRANSITION_DURATION_MS + TRANSITION_BUFFER_MS
+    );
   },
 
   /**
    * This cleans up class and rule added for transition effect and then
    * notifies that the style has been applied.
    */
-  _onTransitionEnd: function (kind) {
+  _onTransitionEnd: function(kind) {
     this._transitionTimeout = null;
-    removePseudoClassLock(this.document.documentElement, TRANSITION_PSEUDO_CLASS);
+    removePseudoClassLock(
+      this.document.documentElement,
+      TRANSITION_PSEUDO_CLASS
+    );
     this.emit("style-applied", kind, this);
-  }
+  },
 });
 
 exports.StyleSheetActor = StyleSheetActor;
@@ -651,14 +644,14 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
     return this.window.document;
   },
 
-  form: function () {
+  form: function() {
     return { actor: this.actorID };
   },
 
-  initialize: function (conn, tabActor) {
+  initialize: function(conn, targetActor) {
     protocol.Actor.prototype.initialize.call(this, null);
 
-    this.parentActor = tabActor;
+    this.parentActor = targetActor;
 
     this._onNewStyleSheetActor = this._onNewStyleSheetActor.bind(this);
     this._onSheetAdded = this._onSheetAdded.bind(this);
@@ -673,8 +666,11 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
     // rules are ready.  Using the former (with a check to ensure that
     // the sheet is enabled) ensures that the sheet is ready before we
     // try to make an actor for it.
-    this.parentActor.chromeEventHandler
-      .addEventListener("StyleSheetApplicableStateChanged", this._onSheetAdded, true);
+    this.parentActor.chromeEventHandler.addEventListener(
+      "StyleSheetApplicableStateChanged",
+      this._onSheetAdded,
+      true
+    );
 
     // This is used when creating a new style sheet, so that we can
     // pass the correct flag when emitting our stylesheet-added event.
@@ -682,8 +678,8 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
     this._nextStyleSheetIsNew = false;
   },
 
-  destroy: function () {
-    for (let win of this.parentActor.windows) {
+  destroy: function() {
+    for (const win of this.parentActor.windows) {
       // This flag only exists for devtools, so we are free to clear
       // it when we're done.
       win.document.styleSheetChangeEventsEnabled = false;
@@ -692,29 +688,32 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
     this.parentActor.off("stylesheet-added", this._onNewStyleSheetActor);
     this.parentActor.off("window-ready", this._onWindowReady);
 
-    this.parentActor.chromeEventHandler.removeEventListener("StyleSheetAdded",
-                                                            this._onSheetAdded, true);
+    this.parentActor.chromeEventHandler.removeEventListener(
+      "StyleSheetApplicableStateChanged",
+      this._onSheetAdded,
+      true
+    );
 
     protocol.Actor.prototype.destroy.call(this);
   },
 
   /**
-   * Event handler that is called when a the tab actor emits window-ready.
+   * Event handler that is called when a the target actor emits window-ready.
    *
    * @param {Event} evt
    *        The triggering event.
    */
-  _onWindowReady: function (evt) {
+  _onWindowReady: function(evt) {
     this._addStyleSheets(evt.window);
   },
 
   /**
-   * Event handler that is called when a the tab actor emits stylesheet-added.
+   * Event handler that is called when a the target actor emits stylesheet-added.
    *
    * @param {StyleSheetActor} actor
    *        The new style sheet actor.
    */
-  _onNewStyleSheetActor: function (actor) {
+  _onNewStyleSheetActor: function(actor) {
     // Forward it to the client side.
     this.emit("stylesheet-added", actor, this._nextStyleSheetIsNew);
     this._nextStyleSheetIsNew = false;
@@ -727,8 +726,11 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
   async getStyleSheets() {
     let actors = [];
 
-    for (let win of this.parentActor.windows) {
-      let sheets = await this._addStyleSheets(win);
+    const windows = isReplaying
+      ? [ReplayInspector.window]
+      : this.parentActor.windows;
+    for (const win of windows) {
+      const sheets = await this._addStyleSheets(win);
       actors = actors.concat(sheets);
     }
     return actors;
@@ -743,11 +745,14 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
    * @return boolean
    *         Whether the stylesheet should be listed.
    */
-  _shouldListSheet: function (sheet) {
+  _shouldListSheet: function(sheet) {
     // Special case about:PreferenceStyleSheet, as it is generated on the
     // fly and the URI is not registered with the about: handler.
     // https://bugzilla.mozilla.org/show_bug.cgi?id=935803#c37
-    if (sheet.href && sheet.href.toLowerCase() == "about:preferencestylesheet") {
+    if (
+      sheet.href &&
+      sheet.href.toLowerCase() == "about:preferencestylesheet"
+    ) {
       return false;
     }
 
@@ -763,8 +768,8 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
    * @param {Event} evt
    *        The triggering event.
    */
-  _onSheetAdded: function (evt) {
-    let sheet = evt.stylesheet;
+  _onSheetAdded: function(evt) {
+    const sheet = evt.stylesheet;
     if (this._shouldListSheet(sheet) && !this._haveAncestorWithSameURL(sheet)) {
       this.parentActor.createStyleSheetActor(sheet);
     }
@@ -780,32 +785,32 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
    * @return {Promise}
    *         Promise that resolves to an array of StyleSheetActors
    */
-  _addStyleSheets: function (win) {
-    return (async function () {
-      let doc = win.document;
+  _addStyleSheets: function(win) {
+    return async function() {
+      const doc = win.document;
       // We have to set this flag in order to get the
       // StyleSheetApplicableStateChanged events.  See Document.webidl.
       doc.styleSheetChangeEventsEnabled = true;
 
-      let isChrome = Services.scriptSecurityManager.isSystemPrincipal(doc.nodePrincipal);
-      let styleSheets =
-        isChrome ? InspectorUtils.getAllStyleSheets(doc) : doc.styleSheets;
+      const documentOnly = !doc.nodePrincipal.isSystemPrincipal;
+      const styleSheets = InspectorUtils.getAllStyleSheets(doc, documentOnly);
+
       let actors = [];
       for (let i = 0; i < styleSheets.length; i++) {
-        let sheet = styleSheets[i];
+        const sheet = styleSheets[i];
         if (!this._shouldListSheet(sheet)) {
           continue;
         }
 
-        let actor = this.parentActor.createStyleSheetActor(sheet);
+        const actor = this.parentActor.createStyleSheetActor(sheet);
         actors.push(actor);
 
         // Get all sheets, including imported ones
-        let imports = await this._getImported(doc, actor);
+        const imports = await this._getImported(doc, actor);
         actors = actors.concat(imports);
       }
       return actors;
-    }.bind(this))();
+    }.bind(this)();
   },
 
   /**
@@ -818,29 +823,32 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
    * @return {Promise}
    *         A promise that resolves with an array of StyleSheetActors
    */
-  _getImported: function (doc, styleSheet) {
-    return (async function () {
-      let rules = await styleSheet.getCSSRules();
+  _getImported: function(doc, styleSheet) {
+    return async function() {
+      const rules = await styleSheet.getCSSRules();
       let imported = [];
 
       for (let i = 0; i < rules.length; i++) {
-        let rule = rules[i];
+        const rule = rules[i];
         if (rule.type == CSSRule.IMPORT_RULE) {
           // With the Gecko style system, the associated styleSheet may be null
           // if it has already been seen because an import cycle for the same
           // URL.  With Stylo, the styleSheet will exist (which is correct per
           // the latest CSSOM spec), so we also need to check ancestors for the
           // same URL to avoid cycles.
-          let sheet = rule.styleSheet;
-          if (!sheet || this._haveAncestorWithSameURL(sheet) ||
-              !this._shouldListSheet(sheet)) {
+          const sheet = rule.styleSheet;
+          if (
+            !sheet ||
+            this._haveAncestorWithSameURL(sheet) ||
+            !this._shouldListSheet(sheet)
+          ) {
             continue;
           }
-          let actor = this.parentActor.createStyleSheetActor(rule.styleSheet);
+          const actor = this.parentActor.createStyleSheetActor(rule.styleSheet);
           imported.push(actor);
 
           // recurse imports in this stylesheet as well
-          let children = await this._getImported(doc, actor);
+          const children = await this._getImported(doc, actor);
           imported = imported.concat(children);
         } else if (rule.type != CSSRule.CHARSET_RULE) {
           // @import rules must precede all others except @charset
@@ -849,7 +857,7 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
       }
 
       return imported;
-    }.bind(this))();
+    }.bind(this)();
   },
 
   /**
@@ -859,7 +867,7 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
    * @param {DOMStyleSheet} sheet
    */
   _haveAncestorWithSameURL(sheet) {
-    let sheetHref = sheet.href;
+    const sheetHref = sheet.href;
     while (sheet.parentStyleSheet) {
       if (sheet.parentStyleSheet.href == sheetHref) {
         return true;
@@ -878,7 +886,7 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
    * @return {object}
    *         Object with 'styelSheet' property for form on new actor.
    */
-  addStyleSheet: function (text) {
+  addStyleSheet: function(text) {
     // This is a bit convoluted.  The style sheet actor may be created
     // by a notification from platform.  In this case, we can't easily
     // pass the "new" flag through to createStyleSheetActor, so we set
@@ -886,8 +894,11 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
     // client.  See |_onNewStyleSheetActor|.
     this._nextStyleSheetIsNew = true;
 
-    let parent = this.document.documentElement;
-    let style = this.document.createElementNS("http://www.w3.org/1999/xhtml", "style");
+    const parent = this.document.documentElement;
+    const style = this.document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "style"
+    );
     style.setAttribute("type", "text/css");
 
     if (text) {
@@ -895,9 +906,9 @@ var StyleSheetsActor = protocol.ActorClassWithSpec(styleSheetsSpec, {
     }
     parent.appendChild(style);
 
-    let actor = this.parentActor.createStyleSheetActor(style.sheet);
+    const actor = this.parentActor.createStyleSheetActor(style.sheet);
     return actor;
-  }
+  },
 });
 
 exports.StyleSheetsActor = StyleSheetsActor;

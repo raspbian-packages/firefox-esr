@@ -16,9 +16,7 @@ class AnimationName extends PureComponent {
   }
 
   render() {
-    const {
-      animation,
-    } = this.props;
+    const { animation } = this.props;
 
     return dom.svg(
       {
@@ -27,7 +25,7 @@ class AnimationName extends PureComponent {
       dom.text(
         {
           y: "50%",
-          x: "100%"
+          x: "100%",
         },
         animation.state.name
       )

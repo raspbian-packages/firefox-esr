@@ -70,7 +70,7 @@ class HLSDemuxer::HLSDemuxerCallbacksSupport
   using NativeCallbacks::AttachNative;
   using NativeCallbacks::DisposeNative;
 
-  HLSDemuxerCallbacksSupport(HLSDemuxer* aDemuxer)
+  explicit HLSDemuxerCallbacksSupport(HLSDemuxer* aDemuxer)
       : mMutex("HLSDemuxerCallbacksSupport"), mDemuxer(aDemuxer) {
     MOZ_ASSERT(mDemuxer);
   }
@@ -125,9 +125,8 @@ class HLSDemuxer::HLSDemuxerCallbacksSupport
 };
 
 HLSDemuxer::HLSDemuxer(int aPlayerId)
-    : mTaskQueue(
-          new AutoTaskQueue(GetMediaThreadPool(MediaThreadType::PLAYBACK),
-                            /* aSupportsTailDispatch = */ false)) {
+    : mTaskQueue(new TaskQueue(GetMediaThreadPool(MediaThreadType::PLAYBACK),
+                               /* aSupportsTailDispatch = */ false)) {
   MOZ_ASSERT(NS_IsMainThread());
   HLSDemuxerCallbacksSupport::Init();
   mJavaCallbacks = GeckoHLSDemuxerWrapper::Callbacks::New();
@@ -232,7 +231,7 @@ HLSTrackDemuxer::HLSTrackDemuxer(HLSDemuxer* aParent,
     : mParent(aParent),
       mType(aType),
       mMutex("HLSTrackDemuxer"),
-      mTrackInfo(Move(aTrackInfo)) {
+      mTrackInfo(std::move(aTrackInfo)) {
   // Only support audio and video track currently.
   MOZ_ASSERT(mType == TrackInfo::kVideoTrack ||
              mType == TrackInfo::kAudioTrack);
@@ -311,7 +310,7 @@ RefPtr<HLSTrackDemuxer::SamplesPromise> HLSTrackDemuxer::DoGetSamples(
   }
 
   for (auto&& demuxedSample : sampleObjectArray) {
-    java::GeckoHLSSample::LocalRef sample(Move(demuxedSample));
+    java::GeckoHLSSample::LocalRef sample(std::move(demuxedSample));
     if (sample->IsEOS()) {
       HLS_DEBUG("HLSTrackDemuxer", "Met BUFFER_FLAG_END_OF_STREAM.");
       if (samples->mSamples.IsEmpty()) {
@@ -348,7 +347,7 @@ void HLSTrackDemuxer::UpdateMediaInfo(int index) {
     auto* audioInfo = mTrackInfo->GetAsAudioInfo();
     if (infoObj && audioInfo) {
       HLS_DEBUG("HLSTrackDemuxer", "Update audio info (%d)", index);
-      java::GeckoAudioInfo::LocalRef audioInfoObj(Move(infoObj));
+      java::GeckoAudioInfo::LocalRef audioInfoObj(std::move(infoObj));
       audioInfo->mRate = audioInfoObj->Rate();
       audioInfo->mChannels = audioInfoObj->Channels();
       audioInfo->mProfile = audioInfoObj->Profile();
@@ -357,16 +356,19 @@ void HLSTrackDemuxer::UpdateMediaInfo(int index) {
           NS_ConvertUTF16toUTF8(audioInfoObj->MimeType()->ToString());
       audioInfo->mDuration =
           TimeUnit::FromMicroseconds(audioInfoObj->Duration());
-      auto&& csd = audioInfoObj->CodecSpecificData()->GetElements();
-      audioInfo->mCodecSpecificConfig->Clear();
-      audioInfo->mCodecSpecificConfig->AppendElements(
-          reinterpret_cast<uint8_t*>(&csd[0]), csd.Length());
+      jni::ByteArray::LocalRef csdBytes = audioInfoObj->CodecSpecificData();
+      if (csdBytes) {
+        auto&& csd = csdBytes->GetElements();
+        audioInfo->mCodecSpecificConfig->Clear();
+        audioInfo->mCodecSpecificConfig->AppendElements(
+            reinterpret_cast<uint8_t*>(&csd[0]), csd.Length());
+      }
     }
   } else {
     infoObj = mParent->mHLSDemuxerWrapper->GetVideoInfo(index);
     auto* videoInfo = mTrackInfo->GetAsVideoInfo();
     if (infoObj && videoInfo) {
-      java::GeckoVideoInfo::LocalRef videoInfoObj(Move(infoObj));
+      java::GeckoVideoInfo::LocalRef videoInfoObj(std::move(infoObj));
       videoInfo->mStereoMode = getStereoMode(videoInfoObj->StereoMode());
       videoInfo->mRotation = getVideoInfoRotation(videoInfoObj->Rotation());
       videoInfo->mImage.width = videoInfoObj->DisplayWidth();
@@ -395,13 +397,20 @@ CryptoSample HLSTrackDemuxer::ExtractCryptoSample(
   char const* msg = "";
   do {
     HLS_DEBUG("HLSTrackDemuxer", "Sample has Crypto Info");
-    crypto.mValid = true;
+
     int32_t mode = 0;
     if (NS_FAILED(aCryptoInfo->Mode(&mode))) {
       msg = "Error when extracting encryption mode.";
       break;
     }
-    crypto.mMode = mode;
+    // We currently only handle ctr mode.
+    if (mode != java::sdk::MediaCodec::CRYPTO_MODE_AES_CTR) {
+      msg = "Error: unexpected encryption mode.";
+      break;
+    }
+
+    crypto.mCryptoScheme = CryptoScheme::Cenc;
+
     mozilla::jni::ByteArray::LocalRef ivData;
     if (NS_FAILED(aCryptoInfo->Iv(&ivData))) {
       msg = "Error when extracting encryption IV.";
@@ -552,7 +561,7 @@ HLSTrackDemuxer::DoSkipToNextRandomAccessPoint(const TimeUnit& aTimeThreshold) {
       break;
     }
     parsed++;
-    java::GeckoHLSSample::LocalRef sample(Move(sampleObjectArray[0]));
+    java::GeckoHLSSample::LocalRef sample(std::move(sampleObjectArray[0]));
     if (sample->IsEOS()) {
       result = NS_ERROR_DOM_MEDIA_END_OF_STREAM;
       break;

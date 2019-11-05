@@ -6,8 +6,7 @@
 
 // Get database connection
 try {
-  var mDBConn = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase)
-                                   .DBConnection;
+  var mDBConn = PlacesUtils.history.DBConnection;
 } catch (ex) {
   do_throw("Could not get database connection\n");
 }
@@ -22,7 +21,7 @@ const ITEM_URL = "http://test.mozilla.org";
 
 function validateResults(expectedValidItemsCount) {
   var query = PlacesUtils.history.getNewQuery();
-  query.setFolders([PlacesUtils.bookmarks.toolbarFolder], 1);
+  query.setParents([PlacesUtils.bookmarks.toolbarGuid]);
   var options = PlacesUtils.history.getNewQueryOptions();
   var result = PlacesUtils.history.executeQuery(query, options);
 
@@ -78,8 +77,10 @@ add_task(async function() {
 
   // restore json file
   try {
-    await BookmarkJSONUtils.importFromFile(jsonFile, true);
-  } catch (ex) { do_throw("couldn't import the exported file: " + ex); }
+    await BookmarkJSONUtils.importFromFile(jsonFile, { replace: true });
+  } catch (ex) {
+    do_throw("couldn't import the exported file: " + ex);
+  }
 
   // validate
   validateResults(1);

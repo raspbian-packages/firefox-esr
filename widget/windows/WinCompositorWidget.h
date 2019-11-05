@@ -3,14 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef widget_windows_CompositorWidgetParent_h
-#define widget_windows_CompositorWidgetParent_h
+#ifndef widget_windows_WinCompositorWidget_h
+#define widget_windows_WinCompositorWidget_h
 
 #include "CompositorWidget.h"
 #include "gfxASurface.h"
 #include "mozilla/gfx/CriticalSection.h"
 #include "mozilla/gfx/Point.h"
 #include "mozilla/Mutex.h"
+#include "mozilla/widget/WinCompositorWindowThread.h"
 #include "nsIWidget.h"
 
 class nsWindow;
@@ -32,6 +33,9 @@ class PlatformCompositorWidgetDelegate : public CompositorWidgetDelegate {
   // If in-process and using software rendering, return the backing transparent
   // DC.
   virtual HDC GetTransparentDC() const = 0;
+  virtual void SetParentWnd(const HWND aParentWnd) {}
+  virtual void UpdateCompositorWnd(const HWND aCompositorWnd,
+                                   const HWND aParentWnd) {}
 
   // CompositorWidgetDelegate Overrides
 
@@ -51,6 +55,7 @@ class WinCompositorWidget : public CompositorWidget,
  public:
   WinCompositorWidget(const WinCompositorWidgetInitData& aInitData,
                       const layers::CompositorOptions& aOptions);
+  ~WinCompositorWidget() override;
 
   // CompositorWidget Overrides
 
@@ -84,12 +89,22 @@ class WinCompositorWidget : public CompositorWidget,
   RefPtr<gfxASurface> EnsureTransparentSurface();
 
   HDC GetTransparentDC() const override { return mMemoryDC; }
-  HWND GetHwnd() const { return mWnd; }
+  HWND GetHwnd() const {
+    return mCompositorWnds.mCompositorWnd ? mCompositorWnds.mCompositorWnd
+                                          : mWnd;
+  }
+
+  HWND GetCompositorHwnd() const { return mCompositorWnds.mCompositorWnd; }
+
+  void EnsureCompositorWindow();
+  void DestroyCompositorWindow();
+  void UpdateCompositorWndSizeIfNecessary();
 
   mozilla::Mutex& GetTransparentSurfaceLock() {
     return mTransparentSurfaceLock;
   }
 
+ protected:
  private:
   HDC GetWindowSurface();
   void FreeWindowSurface(HDC dc);
@@ -99,6 +114,10 @@ class WinCompositorWidget : public CompositorWidget,
  private:
   uintptr_t mWidgetKey;
   HWND mWnd;
+
+  WinCompositorWnds mCompositorWnds;
+  LayoutDeviceIntSize mLastCompositorWndSize;
+
   gfx::CriticalSection mPresentLock;
 
   // Transparency handling.
@@ -117,4 +136,4 @@ class WinCompositorWidget : public CompositorWidget,
 }  // namespace widget
 }  // namespace mozilla
 
-#endif  // widget_windows_CompositorWidgetParent_h
+#endif  // widget_windows_WinCompositorWidget_h

@@ -36,6 +36,12 @@
 <!ENTITY newFeedAccountCmd.accesskey "b">
 <!ENTITY newIMContactCmd.label "Neach-aithne cabadaich…">
 <!ENTITY newIMContactCmd.accesskey "h">
+<!ENTITY  newMessageCmd2.key "N">
+<!ENTITY  newMessageCmd.key "M">
+<!ENTITY  newMessageCmd.label "Teachdaireachd">
+<!ENTITY  newMessageCmd.accesskey "m">
+<!ENTITY  newContactCmd.label "Neach-aithne ann an leabhar nan seòladh…">
+<!ENTITY  newContactCmd.accesskey "C">
 <!ENTITY openMessageFileCmd.label "Fosgail teachdaireachd a chaidh a shàbhaladh…">
 <!ENTITY openMessageFileCmd.accesskey "o">
 <!ENTITY saveAsMenu.label "Sàbhail mar">
@@ -434,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Fosgail an teachdaireachd">
 <!ENTITY openMessageWindowCmd.accesskey "o">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Fosgail ann an còmhradh">
-<!ENTITY openConversationCmd.accesskey "s">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Fosgail ann an còmhradh">
+<!ENTITY openInConversationCmd.accesskey "s">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Ceanglachain">
 <!ENTITY openAttachmentListCmd.accesskey "h">
 <!ENTITY openFeedMessage1.label "Nuair a dh'fhosglar teachdaireachd inbhir">
@@ -509,8 +515,6 @@
 <!ENTITY devToolboxCmd.label "Acainnean an luchd-leasachaidh">
 <!ENTITY devToolboxCmd.accesskey "l">
 <!ENTITY devToolboxCmd.commandkey "i">
-<!ENTITY addonDebugCmd.label "Dì-bhugadair nan tuilleadan">
-<!ENTITY addonDebugCmd.accesskey "a">
 <!ENTITY debugAddonsCmd.label "Dì-bhugaich na tuilleadain">
 <!ENTITY debugAddonsCmd.accesskey "a">
 <!ENTITY tabsDebugCmd.label "Dì-bhugadair frèam na susbaint">
@@ -602,6 +606,8 @@
 <!ENTITY compactButton.tooltip "Thoir air falbh na teachdaireachdan a chaidh an sguabadh às on phasgan a thagh thu">
 <!ENTITY appmenuButton1.tooltip "Seall clàr-taice &brandShortName;">
 
+<!ENTITY addonsButton.tooltip "Stiùirich na tuilleadain agad">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Sìn air adhart am broinn na loidhne">
 <!ENTITY buttonMenuForwardAsAttachment.label "Sin air adhart mar cheanglachan">
@@ -645,6 +651,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Faigh teachdaireachdan">
 <!ENTITY folderContextGetMessages.accesskey "g">
+<!ENTITY folderContextMarkAllFoldersRead.label "Cuir comharra gun deach a h-uile pasgan a leughadh">
 <!ENTITY folderContextPauseAllUpdates.label "Cuir gach ùrachadh ’na stad">
 <!ENTITY folderContextPauseUpdates.label "Cuir na h-ùrachaidhean ’na stad">
 <!ENTITY folderContextPauseUpdates.accesskey "u">
@@ -787,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "G">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "O chionn ghoirid">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "r">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Annsachdan">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "F">
 <!ENTITY contextCopyMsgMenu.label "Cuir lethbhreac gu">
 <!ENTITY contextCopyMsgMenu.accesskey "C">
 <!ENTITY contextKillThreadMenu.label "Leig seachad an snàithlean">
@@ -806,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Ro-shealladh clò-bhualaidh">
 <!ENTITY contextPrintPreview.accesskey "R">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Aisig roghainnean bunaiteach nan colbhan">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -852,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "Am pasgan seo">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Cluich">
 <!ENTITY contextPlay.accesskey "C">
@@ -870,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

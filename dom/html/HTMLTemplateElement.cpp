@@ -7,7 +7,7 @@
 #include "mozilla/dom/HTMLTemplateElement.h"
 #include "mozilla/dom/HTMLTemplateElementBinding.h"
 
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsGkAtoms.h"
 #include "nsStyleConsts.h"
 #include "nsAtom.h"
@@ -18,11 +18,11 @@ namespace mozilla {
 namespace dom {
 
 HTMLTemplateElement::HTMLTemplateElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {
   SetHasWeirdParserInsertionMode();
 
-  nsIDocument* contentsOwner = OwnerDoc()->GetTemplateContentsOwner();
+  Document* contentsOwner = OwnerDoc()->GetTemplateContentsOwner();
   if (!contentsOwner) {
     MOZ_CRASH("There should always be a template contents owner.");
   }
@@ -59,7 +59,7 @@ NS_IMPL_ELEMENT_CLONE(HTMLTemplateElement)
 
 JSObject* HTMLTemplateElement::WrapNode(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return HTMLTemplateElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLTemplateElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

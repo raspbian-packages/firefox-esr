@@ -36,7 +36,7 @@ class Request final : public nsISupports,
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override {
-    return RequestBinding::Wrap(aCx, this, aGivenProto);
+    return Request_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   void GetUrl(nsAString& aUrl) const {
@@ -61,7 +61,7 @@ class Request final : public nsISupports,
 
   bool MozErrors() const { return mRequest->MozErrors(); }
 
-  RequestContext Context() const { return mRequest->Context(); }
+  RequestDestination Destination() const { return mRequest->Destination(); }
 
   void OverrideContentPolicyType(nsContentPolicyType aContentPolicyType) {
     mRequest->OverrideContentPolicyType(aContentPolicyType);
@@ -91,6 +91,16 @@ class Request final : public nsISupports,
     mRequest->SetBody(aStream, aBodyLength);
   }
 
+  using FetchBody::BodyBlobURISpec;
+
+  const nsACString& BodyBlobURISpec() const {
+    return mRequest->BodyBlobURISpec();
+  }
+
+  using FetchBody::BodyLocalPath;
+
+  const nsAString& BodyLocalPath() const { return mRequest->BodyLocalPath(); }
+
   static already_AddRefed<Request> Constructor(const GlobalObject& aGlobal,
                                                const RequestOrUSVString& aInput,
                                                const RequestInit& aInit,
@@ -108,8 +118,8 @@ class Request final : public nsISupports,
 
   AbortSignal* GetOrCreateSignal();
 
-  // This can return a null AbortSignal.
-  AbortSignal* GetSignal() const override;
+  // This can return a null AbortSignalImpl.
+  AbortSignalImpl* GetSignalImpl() const override;
 
  private:
   ~Request();

@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,13 +13,17 @@
 
 #include "jsapi.h"
 #include "jsfriendapi.h"
+#include "js/CompilationAndEvaluation.h"
+#include "js/SourceText.h"
 #include "js/Utility.h"
 
+#include "mozilla/Attributes.h"
 #include "mozilla/dom/ChromeUtils.h"
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/ScriptLoader.h"
 #include "mozilla/HoldDropJSObjects.h"
 #include "mozilla/SystemGroup.h"
+#include "nsCCUncollectableMarker.h"
 #include "nsCycleCollectionParticipant.h"
 
 using namespace JS;
@@ -37,23 +41,20 @@ class AsyncScriptCompiler final : public nsIIncrementalStreamLoaderObserver,
   NS_DECL_NSIRUNNABLE
 
   AsyncScriptCompiler(JSContext* aCx, nsIGlobalObject* aGlobal,
-                      const nsACString& aURL,
-                      const CompileScriptOptionsDictionary& aOptions,
-                      Promise* aPromise)
+                      const nsACString& aURL, Promise* aPromise)
       : mozilla::Runnable("AsyncScriptCompiler"),
         mOptions(aCx),
         mURL(aURL),
         mGlobalObject(aGlobal),
         mPromise(aPromise),
-        mCharset(aOptions.mCharset) {
-    mOptions.setNoScriptRval(!aOptions.mHasReturnValue)
-        .setCanLazilyParse(aOptions.mLazilyParse)
-        .setFile(aCx, mURL.get());
-  }
+        mToken(nullptr),
+        mScriptLength(0) {}
 
-  nsresult Start(nsIPrincipal* aPrincipal);
+  MOZ_MUST_USE nsresult Start(JSContext* aCx,
+                              const CompileScriptOptionsDictionary& aOptions,
+                              nsIPrincipal* aPrincipal);
 
-  inline void SetToken(void* aToken) { mToken = aToken; }
+  inline void SetToken(JS::OffThreadToken* aToken) { mToken = aToken; }
 
  protected:
   virtual ~AsyncScriptCompiler() {
@@ -75,7 +76,7 @@ class AsyncScriptCompiler final : public nsIIncrementalStreamLoaderObserver,
   nsCOMPtr<nsIGlobalObject> mGlobalObject;
   RefPtr<Promise> mPromise;
   nsString mCharset;
-  void* mToken;
+  JS::OffThreadToken* mToken;
   UniqueTwoByteChars mScriptText;
   size_t mScriptLength;
 };
@@ -85,7 +86,18 @@ NS_IMPL_QUERY_INTERFACE_INHERITED(AsyncScriptCompiler, Runnable,
 NS_IMPL_ADDREF_INHERITED(AsyncScriptCompiler, Runnable)
 NS_IMPL_RELEASE_INHERITED(AsyncScriptCompiler, Runnable)
 
-nsresult AsyncScriptCompiler::Start(nsIPrincipal* aPrincipal) {
+nsresult AsyncScriptCompiler::Start(
+    JSContext* aCx, const CompileScriptOptionsDictionary& aOptions,
+    nsIPrincipal* aPrincipal) {
+  mCharset = aOptions.mCharset;
+
+  mOptions.setNoScriptRval(!aOptions.mHasReturnValue)
+      .setCanLazilyParse(aOptions.mLazilyParse);
+
+  if (NS_WARN_IF(!mOptions.setFile(aCx, mURL.get()))) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
   nsCOMPtr<nsIURI> uri;
   nsresult rv = NS_NewURI(getter_AddRefs(uri), mURL);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -100,10 +112,11 @@ nsresult AsyncScriptCompiler::Start(nsIPrincipal* aPrincipal) {
   rv = NS_NewIncrementalStreamLoader(getter_AddRefs(loader), this);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  return channel->AsyncOpen2(loader);
+  return channel->AsyncOpen(loader);
 }
 
-static void OffThreadScriptLoaderCallback(void* aToken, void* aCallbackData) {
+static void OffThreadScriptLoaderCallback(JS::OffThreadToken* aToken,
+                                          void* aCallbackData) {
   RefPtr<AsyncScriptCompiler> scriptCompiler =
       dont_AddRef(static_cast<AsyncScriptCompiler*>(aCallbackData));
 
@@ -115,8 +128,13 @@ static void OffThreadScriptLoaderCallback(void* aToken, void* aCallbackData) {
 bool AsyncScriptCompiler::StartCompile(JSContext* aCx) {
   Rooted<JSObject*> global(aCx, mGlobalObject->GetGlobalJSObject());
 
+  JS::SourceText<char16_t> srcBuf;
+  if (!srcBuf.init(aCx, std::move(mScriptText), mScriptLength)) {
+    return false;
+  }
+
   if (JS::CanCompileOffThread(aCx, mOptions, mScriptLength)) {
-    if (!JS::CompileOffThread(aCx, mOptions, mScriptText.get(), mScriptLength,
+    if (!JS::CompileOffThread(aCx, mOptions, srcBuf,
                               OffThreadScriptLoaderCallback,
                               static_cast<void*>(this))) {
       return false;
@@ -126,8 +144,8 @@ bool AsyncScriptCompiler::StartCompile(JSContext* aCx) {
     return true;
   }
 
-  Rooted<JSScript*> script(aCx);
-  if (!JS::Compile(aCx, mOptions, mScriptText.get(), mScriptLength, &script)) {
+  Rooted<JSScript*> script(aCx, JS::Compile(aCx, mOptions, srcBuf));
+  if (!script) {
     return false;
   }
 
@@ -171,7 +189,7 @@ void AsyncScriptCompiler::Reject(JSContext* aCx) {
   if (JS_GetPendingException(aCx, &value)) {
     JS_ClearPendingException(aCx);
   }
-  mPromise->MaybeReject(aCx, value);
+  mPromise->MaybeReject(value);
 }
 
 void AsyncScriptCompiler::Reject(JSContext* aCx, const char* aMsg) {
@@ -231,7 +249,8 @@ AsyncScriptCompiler::OnStreamComplete(nsIIncrementalStreamLoader* aLoader,
 namespace mozilla {
 namespace dom {
 
-/* static */ already_AddRefed<Promise> ChromeUtils::CompileScript(
+/* static */
+already_AddRefed<Promise> ChromeUtils::CompileScript(
     GlobalObject& aGlobal, const nsAString& aURL,
     const CompileScriptOptionsDictionary& aOptions, ErrorResult& aRv) {
   nsCOMPtr<nsIGlobalObject> global = do_QueryInterface(aGlobal.GetAsSupports());
@@ -243,10 +262,11 @@ namespace dom {
   }
 
   NS_ConvertUTF16toUTF8 url(aURL);
-  RefPtr<AsyncScriptCompiler> compiler = new AsyncScriptCompiler(
-      aGlobal.Context(), global, url, aOptions, promise);
+  RefPtr<AsyncScriptCompiler> compiler =
+      new AsyncScriptCompiler(aGlobal.Context(), global, url, promise);
 
-  nsresult rv = compiler->Start(aGlobal.GetSubjectPrincipal());
+  nsresult rv = compiler->Start(aGlobal.Context(), aOptions,
+                                aGlobal.GetSubjectPrincipal());
   if (NS_FAILED(rv)) {
     promise->MaybeReject(rv);
   }
@@ -274,7 +294,7 @@ void PrecompiledScript::ExecuteInGlobal(JSContext* aCx, HandleObject aGlobal,
                                         ErrorResult& aRv) {
   {
     RootedObject targetObj(aCx, JS_FindCompilationScope(aCx, aGlobal));
-    JSAutoCompartment ac(aCx, targetObj);
+    JSAutoRealm ar(aCx, targetObj);
 
     Rooted<JSScript*> script(aCx, mScript);
     if (!JS::CloneAndExecuteScript(aCx, script, aRval)) {
@@ -292,7 +312,12 @@ bool PrecompiledScript::HasReturnValue() { return mHasReturnValue; }
 
 JSObject* PrecompiledScript::WrapObject(JSContext* aCx,
                                         HandleObject aGivenProto) {
-  return PrecompiledScriptBinding::Wrap(aCx, this, aGivenProto);
+  return PrecompiledScript_Binding::Wrap(aCx, this, aGivenProto);
+}
+
+bool PrecompiledScript::IsBlackForCC(bool aTracingNeeded) {
+  return (nsCCUncollectableMarker::sGeneration && HasKnownLiveWrapper() &&
+          (!aTracingNeeded || HasNothingToTrace(this)));
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(PrecompiledScript)
@@ -317,6 +342,21 @@ NS_IMPL_CYCLE_COLLECTION_TRACE_BEGIN(PrecompiledScript)
   NS_IMPL_CYCLE_COLLECTION_TRACE_JS_MEMBER_CALLBACK(mScript)
   NS_IMPL_CYCLE_COLLECTION_TRACE_PRESERVED_WRAPPER
 NS_IMPL_CYCLE_COLLECTION_TRACE_END
+
+NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_BEGIN(PrecompiledScript)
+  if (tmp->IsBlackForCC(false)) {
+    tmp->mScript.exposeToActiveJS();
+    return true;
+  }
+NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_END
+
+NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_IN_CC_BEGIN(PrecompiledScript)
+  return tmp->IsBlackForCC(true);
+NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_IN_CC_END
+
+NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_THIS_BEGIN(PrecompiledScript)
+  return tmp->IsBlackForCC(false);
+NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_THIS_END
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(PrecompiledScript)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(PrecompiledScript)

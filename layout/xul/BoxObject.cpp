@@ -6,20 +6,14 @@
 
 #include "mozilla/dom/BoxObject.h"
 #include "nsCOMPtr.h"
-#include "nsIDocument.h"
-#include "nsIPresShell.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/Document.h"
 #include "nsPresContext.h"
 #include "nsIContent.h"
 #include "nsContainerFrame.h"
 #include "nsIDocShell.h"
 #include "nsReadableUtils.h"
-#include "nsDOMClassInfoID.h"
 #include "nsView.h"
-#ifdef MOZ_XUL
-#include "nsIDOMXULElement.h"
-#else
-#include "nsIDOMElement.h"
-#endif
 #include "nsLayoutUtils.h"
 #include "nsISupportsPrimitives.h"
 #include "nsSupportsPrimitives.h"
@@ -27,8 +21,7 @@
 #include "nsComponentManagerUtils.h"
 #include "mozilla/dom/BoxObjectBinding.h"
 
-// Implementation
-// /////////////////////////////////////////////////////////////////
+// Implementation /////////////////////////////////////////////////////////////
 
 namespace mozilla {
 namespace dom {
@@ -69,20 +62,16 @@ BoxObject::BoxObject() : mContent(nullptr) {}
 BoxObject::~BoxObject() {}
 
 NS_IMETHODIMP
-BoxObject::GetElement(nsIDOMElement** aResult) {
-  if (mContent) {
-    return CallQueryInterface(mContent, aResult);
-  }
-
-  *aResult = nullptr;
+BoxObject::GetElement(Element** aResult) {
+  RefPtr<Element> element = mContent;
+  element.forget(aResult);
   return NS_OK;
 }
 
-// nsPIBoxObject
-// //////////////////////////////////////////////////////////////////////////
+// nsPIBoxObject //////////////////////////////////////////////////////////////
 
-nsresult BoxObject::Init(nsIContent* aContent) {
-  mContent = aContent;
+nsresult BoxObject::Init(Element* aElement) {
+  mContent = aElement;
   return NS_OK;
 }
 
@@ -93,17 +82,24 @@ void BoxObject::Clear() {
 
 void BoxObject::ClearCachedValues() {}
 
-nsIFrame* BoxObject::GetFrame(bool aFlushLayout) {
-  nsIPresShell* shell = GetPresShell(aFlushLayout);
-  if (!shell) return nullptr;
-
-  if (!aFlushLayout) {
-    // If we didn't flush layout when getting the presshell, we should at least
-    // flush to make sure our frame model is up to date.
-    // XXXbz should flush on document, no?  Except people call this from
-    // frame code, maybe?
-    shell->FlushPendingNotifications(FlushType::Frames);
+nsIFrame* BoxObject::GetFrame() const {
+  if (!GetPresShell() || !mContent) {
+    return nullptr;
   }
+  return mContent->GetPrimaryFrame();
+}
+
+nsIFrame* BoxObject::GetFrameWithFlushPendingNotifications() {
+  RefPtr<PresShell> presShell = GetPresShellWithFlushPendingNotifications();
+  if (!presShell) {
+    return nullptr;
+  }
+
+  // If we didn't flush layout when getting the presshell, we should at least
+  // flush to make sure our frame model is up to date.
+  // XXXbz should flush on document, no?  Except people call this from
+  // frame code, maybe?
+  presShell->FlushPendingNotifications(FlushType::Frames);
 
   // The flush might have killed mContent.
   if (!mContent) {
@@ -113,21 +109,32 @@ nsIFrame* BoxObject::GetFrame(bool aFlushLayout) {
   return mContent->GetPrimaryFrame();
 }
 
-nsIPresShell* BoxObject::GetPresShell(bool aFlushLayout) {
+PresShell* BoxObject::GetPresShell() const {
   if (!mContent) {
     return nullptr;
   }
 
-  nsCOMPtr<nsIDocument> doc = mContent->GetUncomposedDoc();
+  Document* doc = mContent->GetComposedDoc();
   if (!doc) {
     return nullptr;
   }
 
-  if (aFlushLayout) {
-    doc->FlushPendingNotifications(FlushType::Layout);
+  return doc->GetPresShell();
+}
+
+PresShell* BoxObject::GetPresShellWithFlushPendingNotifications() {
+  if (!mContent) {
+    return nullptr;
   }
 
-  return doc->GetShell();
+  RefPtr<Document> doc = mContent->GetComposedDoc();
+  if (!doc) {
+    return nullptr;
+  }
+
+  doc->FlushPendingNotifications(FlushType::Layout);
+
+  return doc->GetPresShell();
 }
 
 nsresult BoxObject::GetOffsetRect(nsIntRect& aRect) {
@@ -136,7 +143,7 @@ nsresult BoxObject::GetOffsetRect(nsIntRect& aRect) {
   if (!mContent) return NS_ERROR_NOT_INITIALIZED;
 
   // Get the Frame for our content
-  nsIFrame* frame = GetFrame(true);
+  nsIFrame* frame = GetFrameWithFlushPendingNotifications();
   if (frame) {
     // Get its origin
     nsPoint origin = frame->GetPositionIgnoringScrolling();
@@ -193,7 +200,7 @@ nsresult BoxObject::GetScreenPosition(nsIntPoint& aPoint) {
 
   if (!mContent) return NS_ERROR_NOT_INITIALIZED;
 
-  nsIFrame* frame = GetFrame(true);
+  nsIFrame* frame = GetFrameWithFlushPendingNotifications();
   if (frame) {
     CSSIntRect rect = frame->GetScreenRect();
     aPoint.x = rect.x;
@@ -331,67 +338,86 @@ BoxObject::RemoveProperty(const char16_t* aPropertyName) {
   return NS_OK;
 }
 
-NS_IMETHODIMP
-BoxObject::GetParentBox(nsIDOMElement** aParentBox) {
-  *aParentBox = nullptr;
-  nsIFrame* frame = GetFrame(false);
-  if (!frame) return NS_OK;
+Element* BoxObject::GetParentBox() {
+  nsIFrame* frame = GetFrame();
+  if (!frame) {
+    return nullptr;
+  }
+
   nsIFrame* parent = frame->GetParent();
-  if (!parent) return NS_OK;
+  if (!parent) {
+    return nullptr;
+  }
 
-  nsCOMPtr<nsIDOMElement> el = do_QueryInterface(parent->GetContent());
-  *aParentBox = el;
-  NS_IF_ADDREF(*aParentBox);
-  return NS_OK;
+  nsIContent* parentContent = parent->GetContent();
+  // In theory parent could be viewport, and then parentContent is null.
+  if (parentContent && parentContent->IsElement()) {
+    return parentContent->AsElement();
+  }
+
+  return nullptr;
 }
 
-NS_IMETHODIMP
-BoxObject::GetFirstChild(nsIDOMElement** aFirstVisibleChild) {
-  *aFirstVisibleChild = nullptr;
-  nsIFrame* frame = GetFrame(false);
-  if (!frame) return NS_OK;
+Element* BoxObject::GetFirstChild() {
+  nsIFrame* frame = GetFrame();
+  if (!frame) {
+    return nullptr;
+  }
+
   nsIFrame* firstFrame = frame->PrincipalChildList().FirstChild();
-  if (!firstFrame) return NS_OK;
-  // get the content for the box and query to a dom element
-  nsCOMPtr<nsIDOMElement> el = do_QueryInterface(firstFrame->GetContent());
-  el.swap(*aFirstVisibleChild);
-  return NS_OK;
+  if (!firstFrame) {
+    return nullptr;
+  }
+
+  nsIContent* content = firstFrame->GetContent();
+  if (content->IsElement()) {
+    return content->AsElement();
+  }
+
+  return nullptr;
 }
 
-NS_IMETHODIMP
-BoxObject::GetLastChild(nsIDOMElement** aLastVisibleChild) {
-  *aLastVisibleChild = nullptr;
-  nsIFrame* frame = GetFrame(false);
-  if (!frame) return NS_OK;
-  return GetPreviousSibling(frame, nullptr, aLastVisibleChild);
+Element* BoxObject::GetLastChild() {
+  nsIFrame* frame = GetFrame();
+  if (!frame) {
+    return nullptr;
+  }
+  return GetPreviousSibling(frame, nullptr);
 }
 
-NS_IMETHODIMP
-BoxObject::GetNextSibling(nsIDOMElement** aNextOrdinalSibling) {
-  *aNextOrdinalSibling = nullptr;
-  nsIFrame* frame = GetFrame(false);
-  if (!frame) return NS_OK;
+Element* BoxObject::GetNextSibling() {
+  nsIFrame* frame = GetFrame();
+  if (!frame) {
+    return nullptr;
+  }
+
   nsIFrame* nextFrame = frame->GetNextSibling();
-  if (!nextFrame) return NS_OK;
-  // get the content for the box and query to a dom element
-  nsCOMPtr<nsIDOMElement> el = do_QueryInterface(nextFrame->GetContent());
-  el.swap(*aNextOrdinalSibling);
-  return NS_OK;
+  if (!nextFrame) {
+    return nullptr;
+  }
+
+  nsIContent* content = nextFrame->GetContent();
+  if (content->IsElement()) {
+    return content->AsElement();
+  }
+
+  return nullptr;
 }
 
-NS_IMETHODIMP
-BoxObject::GetPreviousSibling(nsIDOMElement** aPreviousOrdinalSibling) {
-  *aPreviousOrdinalSibling = nullptr;
-  nsIFrame* frame = GetFrame(false);
-  if (!frame) return NS_OK;
+Element* BoxObject::GetPreviousSibling() {
+  nsIFrame* frame = GetFrame();
+  if (!frame) {
+    return nullptr;
+  }
   nsIFrame* parentFrame = frame->GetParent();
-  if (!parentFrame) return NS_OK;
-  return GetPreviousSibling(parentFrame, frame, aPreviousOrdinalSibling);
+  if (!parentFrame) {
+    return nullptr;
+  }
+  return GetPreviousSibling(parentFrame, frame);
 }
 
-nsresult BoxObject::GetPreviousSibling(nsIFrame* aParentFrame, nsIFrame* aFrame,
-                                       nsIDOMElement** aResult) {
-  *aResult = nullptr;
+Element* BoxObject::GetPreviousSibling(nsIFrame* aParentFrame,
+                                       nsIFrame* aFrame) {
   nsIFrame* nextFrame = aParentFrame->PrincipalChildList().FirstChild();
   nsIFrame* prevFrame = nullptr;
   while (nextFrame) {
@@ -400,23 +426,26 @@ nsresult BoxObject::GetPreviousSibling(nsIFrame* aParentFrame, nsIFrame* aFrame,
     nextFrame = nextFrame->GetNextSibling();
   }
 
-  if (!prevFrame) return NS_OK;
-  // get the content for the box and query to a dom element
-  nsCOMPtr<nsIDOMElement> el = do_QueryInterface(prevFrame->GetContent());
-  el.swap(*aResult);
-  return NS_OK;
+  if (!prevFrame) {
+    return nullptr;
+  }
+
+  nsIContent* content = prevFrame->GetContent();
+  if (!content->IsElement()) {
+    return nullptr;
+  }
+
+  return content->AsElement();
 }
 
-nsIContent* BoxObject::GetParentObject() const { return mContent; }
+Element* BoxObject::GetParentObject() const { return mContent; }
 
 JSObject* BoxObject::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return BoxObjectBinding::Wrap(aCx, this, aGivenProto);
+  return BoxObject_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-Element* BoxObject::GetElement() const {
-  return mContent && mContent->IsElement() ? mContent->AsElement() : nullptr;
-}
+Element* BoxObject::GetElement() const { return mContent; }
 
 int32_t BoxObject::X() {
   int32_t ret = 0;
@@ -493,50 +522,5 @@ void BoxObject::RemoveProperty(const nsAString& propertyName) {
   RemoveProperty(PromiseFlatString(propertyName).get());
 }
 
-already_AddRefed<Element> BoxObject::GetParentBox() {
-  nsCOMPtr<nsIDOMElement> el;
-  GetParentBox(getter_AddRefs(el));
-  nsCOMPtr<Element> ret(do_QueryInterface(el));
-  return ret.forget();
-}
-
-already_AddRefed<Element> BoxObject::GetFirstChild() {
-  nsCOMPtr<nsIDOMElement> el;
-  GetFirstChild(getter_AddRefs(el));
-  nsCOMPtr<Element> ret(do_QueryInterface(el));
-  return ret.forget();
-}
-
-already_AddRefed<Element> BoxObject::GetLastChild() {
-  nsCOMPtr<nsIDOMElement> el;
-  GetLastChild(getter_AddRefs(el));
-  nsCOMPtr<Element> ret(do_QueryInterface(el));
-  return ret.forget();
-}
-
-already_AddRefed<Element> BoxObject::GetNextSibling() {
-  nsCOMPtr<nsIDOMElement> el;
-  GetNextSibling(getter_AddRefs(el));
-  nsCOMPtr<Element> ret(do_QueryInterface(el));
-  return ret.forget();
-}
-
-already_AddRefed<Element> BoxObject::GetPreviousSibling() {
-  nsCOMPtr<nsIDOMElement> el;
-  GetPreviousSibling(getter_AddRefs(el));
-  nsCOMPtr<Element> ret(do_QueryInterface(el));
-  return ret.forget();
-}
-
 }  // namespace dom
 }  // namespace mozilla
-
-// Creation Routine
-// ///////////////////////////////////////////////////////////////////////
-
-using namespace mozilla::dom;
-
-nsresult NS_NewBoxObject(nsIBoxObject** aResult) {
-  NS_ADDREF(*aResult = new BoxObject());
-  return NS_OK;
-}

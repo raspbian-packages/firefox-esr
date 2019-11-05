@@ -8,7 +8,9 @@
 #define nsASCIIMask_h_
 
 #include <array>
-#include "mozilla/IndexSequence.h"
+#include <utility>
+
+#include "mozilla/Attributes.h"
 
 typedef std::array<bool, 128> ASCIIMaskArray;
 
@@ -52,14 +54,14 @@ class ASCIIMask {
 namespace details {
 template <typename F, size_t... Indices>
 constexpr std::array<bool, 128> CreateASCIIMask(
-    F fun, mozilla::IndexSequence<Indices...>) {
+    F fun, std::index_sequence<Indices...>) {
   return {{fun(Indices)...}};
 }
 }  // namespace details
 
 template <typename F>
 constexpr std::array<bool, 128> CreateASCIIMask(F fun) {
-  return details::CreateASCIIMask(fun, mozilla::MakeIndexSequence<128>::Type{});
+  return details::CreateASCIIMask(fun, std::make_index_sequence<128>{});
 }
 
 }  // namespace mozilla

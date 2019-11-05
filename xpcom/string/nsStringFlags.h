@@ -26,8 +26,8 @@ enum class StringDataFlags : uint16_t {
   //                         external code to ensure the lifetime of the
   //                         dependent buffer.
   //
-  //   "shared buffer"       A shared buffer is one that the string class
-  //                         allocates.  When it allocates a shared string
+  //   "refcounted buffer"   A refcounted buffer is one that the string class
+  //                         allocates.  When it allocates a refcounted string
   //                         buffer, it allocates some additional space at
   //                         the beginning of the buffer for additional
   //                         fields, including a reference count and a
@@ -39,17 +39,17 @@ enum class StringDataFlags : uint16_t {
   //
   // Some comments about the string data flags:
   //
-  //   SHARED, OWNED, and INLINE are all mutually exlusive.  They
+  //   REFCOUNTED, OWNED, and INLINE are all mutually exlusive.  They
   //   indicate the allocation type of mData.  If none of these flags
   //   are set, then the string buffer is dependent.
   //
-  //   SHARED, OWNED, or INLINE imply TERMINATED.  This is because
+  //   REFCOUNTED, OWNED, or INLINE imply TERMINATED.  This is because
   //   the string classes always allocate null-terminated buffers, and
   //   non-terminated substrings are always dependent.
   //
   //   VOIDED implies TERMINATED, and moreover it implies that mData
   //   points to char_traits::sEmptyBuffer.  Therefore, VOIDED is
-  //   mutually exclusive with SHARED, OWNED, and INLINE.
+  //   mutually exclusive with REFCOUNTED, OWNED, and INLINE.
 
   // IsTerminated returns true
   TERMINATED = 1 << 0,
@@ -57,8 +57,8 @@ enum class StringDataFlags : uint16_t {
   // IsVoid returns true
   VOIDED = 1 << 1,
 
-  // mData points to a heap-allocated, shared buffer
-  SHARED = 1 << 2,
+  // mData points to a heap-allocated, shareable, refcounted buffer
+  REFCOUNTED = 1 << 2,
 
   // mData points to a heap-allocated, raw buffer
   OWNED = 1 << 3,

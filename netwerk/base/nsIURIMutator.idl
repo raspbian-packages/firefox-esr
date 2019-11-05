@@ -32,6 +32,11 @@ class BaseURIMutator
 // in order to avoid code duplication
 // Class type T should be the type of the class that implements nsIURI
 protected:
+  virtual T* Create()
+  {
+    return new T();
+  }
+
   MOZ_MUST_USE nsresult InitFromURI(T* aURI)
   {
     nsCOMPtr<nsIURI> clone;
@@ -45,8 +50,8 @@ protected:
 
   MOZ_MUST_USE nsresult InitFromInputStream(nsIObjectInputStream* aStream)
   {
-    RefPtr<T> uri = new T();
-    nsresult rv = uri->Read(aStream);
+    RefPtr<T> uri = Create();
+    nsresult rv = uri->ReadPrivate(aStream);
     if (NS_FAILED(rv)) {
       return rv;
     }
@@ -56,7 +61,7 @@ protected:
 
   MOZ_MUST_USE nsresult InitFromIPCParams(const mozilla::ipc::URIParams& aParams)
   {
-    RefPtr<T> uri = new T();
+    RefPtr<T> uri = Create();
     bool ret = uri->Deserialize(aParams);
     if (!ret) {
       return NS_ERROR_FAILURE;
@@ -73,7 +78,7 @@ protected:
       // This only works because all other Init methods create a new object
       mURI.swap(uri);
     } else {
-      uri = new T();
+      uri = Create();
     }
 
     rv = uri->SetSpecInternal(aSpec);
@@ -98,12 +103,6 @@ protected:
   }                                                                           \
                                                                               \
   MOZ_MUST_USE NS_IMETHOD                                                     \
-  Read(nsIObjectInputStream* aStream) override                                \
-  {                                                                           \
-    return InitFromInputStream(aStream);                                      \
-  }                                                                           \
-                                                                              \
-  MOZ_MUST_USE NS_IMETHOD                                                     \
   Finalize(nsIURI** aURI) override                                            \
   {                                                                           \
     mURI.forget(aURI); return NS_OK;                                          \
@@ -115,6 +114,39 @@ protected:
     if (aMutator) NS_ADDREF(*aMutator = this);                                \
     return InitFromSpec(aSpec);                                               \
   }                                                                           \
+
+// Implements AddRef, Release and QueryInterface for the mutator
+#define NS_IMPL_NSIURIMUTATOR_ISUPPORTS(aClass, ...)                          \
+  NS_IMPL_ADDREF(aClass)                                                      \
+  NS_IMPL_RELEASE(aClass)                                                     \
+  NS_IMPL_NSIURIMUTATOR_QUERY_INTERFACE(aClass, __VA_ARGS__)                  \
+
+// The list of interfaces is queried and an AddRef-ed pointer is returned if
+// there is a match. Otherwise, we call QueryInterface on mURI and return.
+// The reason for this specialized QueryInterface implementation is that we
+// we want to be able to instantiate the mutator for a given CID of a
+// nsIURI implementation, call nsISerializable.Read() on the mutator to
+// deserialize the URI then QueryInterface the mutator to an nsIURI interface.
+// See bug 1442239.
+// If you QueryInterface a mutator to an interface of the URI
+// implementation this is similar to calling Finalize.
+#define NS_IMPL_NSIURIMUTATOR_QUERY_INTERFACE(aClass, ...)                    \
+  static_assert(MOZ_ARG_COUNT(__VA_ARGS__) > 0,                               \
+                "Need more arguments");                                       \
+  NS_INTERFACE_MAP_BEGIN(aClass)                                              \
+    nsCOMPtr<nsIURI> uri;                                                     \
+    NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIURIMutator)              \
+    MOZ_FOR_EACH(NS_INTERFACE_MAP_ENTRY, (), (__VA_ARGS__))                   \
+    if (aIID.Equals(NS_GET_IID(nsIClassInfo))) {                              \
+      foundInterface = nullptr;                                               \
+    } else                                                                    \
+    if (mURI &&                                                               \
+        NS_SUCCEEDED(mURI->QueryInterface(aIID, getter_AddRefs(uri)))) {      \
+        mURI = nullptr;                                                       \
+        foundInterface = uri.get();                                           \
+    } else                                                                    \
+  NS_INTERFACE_MAP_END                                                        \
+
 %}
 
 [ptr] native Encoding(const mozilla::Encoding);
@@ -253,16 +285,8 @@ interface nsIURISetters : nsIURISetSpec
 interface nsIURIMutator : nsIURISetters
 {
   /**
-   * Initializes the URI by reading from the input stream.
-   * The input stream must contain the serialization of the same object type.
-   * See nsISerializable.
-   */
-  [must_use]
-  void read(in nsIObjectInputStream aInputStream);
-
-  /**
    * Initalizes the URI by reading IPC URIParams.
-   * See nsIIPCSerializableURI.
+   * See nsIURI.
    */
   [noscript, notxpcom, must_use]
   nsresult deserialize(in const_URIParams_ref aParams);
@@ -310,7 +334,7 @@ NS_MutatorMethod(Method aMethod, Args ...aArgs)
     nsCOMPtr<Interface> target = do_QueryInterface(aMutator, &rv);
     NS_ENSURE_SUCCESS(rv, rv);
     rv = (target->*aMethod)(aArgs...);
-    NS_ENSURE_SUCCESS(rv, rv);
+    if (NS_FAILED(rv)) return rv;
     return NS_OK;
   };
 }
@@ -335,7 +359,6 @@ public:
       return *this;
     }
     mStatus = mMutator->SetSpec(aSpec, nullptr);
-    NS_ENSURE_SUCCESS(mStatus, *this);
     return *this;
   }
   NS_MutateURI& SetScheme(const nsACString& aScheme)
@@ -469,7 +492,6 @@ public:
       return *this;
     }
     mStatus = aFunction(mMutator);
-    NS_ENSURE_SUCCESS(mStatus, *this);
     return *this;
   }
 
@@ -492,7 +514,7 @@ public:
   // Overload for nsIURI to avoid query interface.
   MOZ_MUST_USE nsresult Finalize(nsCOMPtr<nsIURI>& aURI)
   {
-    NS_ENSURE_SUCCESS(mStatus, mStatus);
+    if (NS_FAILED(mStatus)) return mStatus;
     mStatus = mMutator->Finalize(getter_AddRefs(aURI));
     NS_ENSURE_SUCCESS(mStatus, mStatus);
 
@@ -519,7 +541,7 @@ public:
 
   MOZ_MUST_USE nsresult Finalize(nsIURI** aURI)
   {
-    NS_ENSURE_SUCCESS(mStatus, mStatus);
+    if (NS_FAILED(mStatus)) return mStatus;
     mStatus = mMutator->Finalize(aURI);
     NS_ENSURE_SUCCESS(mStatus, mStatus);
 

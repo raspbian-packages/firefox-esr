@@ -15,8 +15,9 @@
 #include "nsIObserver.h"
 #include "nsIObserverService.h"
 #include "nsIThreadManager.h"
+#include "nsThreadPool.h"
 #ifdef XP_WIN
-#include "ThreadPoolCOMListener.h"
+#  include "ThreadPoolCOMListener.h"
 #endif
 
 namespace mozilla {
@@ -46,6 +47,21 @@ SharedThreadPoolShutdownObserver::Observe(nsISupports* aSubject,
                                           const char* aTopic,
                                           const char16_t* aData) {
   MOZ_RELEASE_ASSERT(!strcmp(aTopic, "xpcom-shutdown-threads"));
+#ifdef EARLY_BETA_OR_EARLIER
+  {
+    ReentrantMonitorAutoEnter mon(*sMonitor);
+    if (!sPools->Iter().Done()) {
+      nsAutoCString str;
+      for (auto i = sPools->Iter(); !i.Done(); i.Next()) {
+        str.AppendPrintf("\"%s\" ", nsAutoCString(i.Key()).get());
+      }
+      printf_stderr(
+          "SharedThreadPool in xpcom-shutdown-threads. Waiting for "
+          "pools %s\n",
+          str.get());
+    }
+  }
+#endif
   SharedThreadPool::SpinUntilEmpty();
   sMonitor = nullptr;
   sPools = nullptr;
@@ -82,7 +98,7 @@ already_AddRefed<SharedThreadPool> SharedThreadPool::Get(
     const nsCString& aName, uint32_t aThreadLimit) {
   MOZ_ASSERT(sMonitor && sPools);
   ReentrantMonitorAutoEnter mon(*sMonitor);
-  SharedThreadPool* pool = nullptr;
+  RefPtr<SharedThreadPool> pool;
   nsresult rv;
 
   if (auto entry = sPools->LookupForAdd(aName)) {
@@ -115,12 +131,10 @@ already_AddRefed<SharedThreadPool> SharedThreadPool::Get(
       return nullptr;
     }
 
-    entry.OrInsert([pool]() { return pool; });
+    entry.OrInsert([pool]() { return pool.get(); });
   }
 
-  MOZ_ASSERT(pool);
-  RefPtr<SharedThreadPool> instance(pool);
-  return instance.forget();
+  return pool.forget();
 }
 
 NS_IMETHODIMP_(MozExternalRefCountType) SharedThreadPool::AddRef(void) {
@@ -161,7 +175,7 @@ NS_IMPL_QUERY_INTERFACE(SharedThreadPool, nsIThreadPool, nsIEventTarget)
 
 SharedThreadPool::SharedThreadPool(const nsCString& aName, nsIThreadPool* aPool)
     : mName(aName), mPool(aPool), mRefCnt(0) {
-  mEventTarget = do_QueryInterface(aPool);
+  mEventTarget = aPool;
 }
 
 SharedThreadPool::~SharedThreadPool() {}
@@ -196,12 +210,9 @@ nsresult SharedThreadPool::EnsureThreadLimitIsAtLeast(uint32_t aLimit) {
 
 static already_AddRefed<nsIThreadPool> CreateThreadPool(
     const nsCString& aName) {
-  nsresult rv;
-  nsCOMPtr<nsIThreadPool> pool =
-      do_CreateInstance(NS_THREADPOOL_CONTRACTID, &rv);
-  NS_ENSURE_SUCCESS(rv, nullptr);
+  nsCOMPtr<nsIThreadPool> pool = new nsThreadPool();
 
-  rv = pool->SetName(aName);
+  nsresult rv = pool->SetName(aName);
   NS_ENSURE_SUCCESS(rv, nullptr);
 
   rv = pool->SetThreadStackSize(nsIThreadManager::kThreadPoolStackSize);

@@ -35,6 +35,8 @@ class IPCStreamDestination {
 
   void SetDelayedStart(bool aDelayedStart);
 
+  void SetLength(int64_t aLength);
+
   already_AddRefed<nsIInputStream> TakeReader();
 
   bool IsOnOwningThread() const;
@@ -79,6 +81,10 @@ class IPCStreamDestination {
 
   nsCOMPtr<nsIThread> mOwningThread;
   bool mDelayedStart;
+
+#ifdef MOZ_DEBUG
+  bool mLengthSet;
+#endif
 };
 
 }  // namespace ipc

@@ -7,20 +7,24 @@ function createTestState() {
     host: "http://example.com",
     path: "/",
     name: `name${r}`,
-    value: `value${r}`
+    value: `value${r}`,
   };
 
   let state = {
-    windows: [{
-      tabs: [{entries: [{url: "about:robots", triggeringPrincipal_base64}]}],
-      cookies: [cookie]
-    }]
+    windows: [
+      {
+        tabs: [
+          { entries: [{ url: "about:robots", triggeringPrincipal_base64 }] },
+        ],
+        cookies: [cookie],
+      },
+    ],
   };
 
   return [state, cookie];
 }
 
-function waitForNewCookie({host, name, value}) {
+function waitForNewCookie({ host, name, value }) {
   info(`waiting for cookie ${name}=${value} from ${host}...`);
 
   return new Promise(resolve => {

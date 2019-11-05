@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = DNS ndërmjetësi kur përdoret SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Aktivizo DNS përmes HTTPS-je
+    .accesskey = A
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Përdor parazgjedhjen ({ $url })
+    .accesskey = P
+    .tooltiptext = Për ftillim DNS-je përmes HTTPS-së, përdor URL-në parazghjedhje
+connection-dns-over-https-url-resolver = Përdor Furnizues
+    .accesskey = P
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (Parazgjedhje)
+    .tooltiptext = Për ftillim DNS-je përmes HTTPS-je përdor URL-në parazgjedhje
+connection-dns-over-https-url-custom =
+    .label = Vetjake
+    .accesskey = V
+    .tooltiptext = Jepni URL-në tuaj të parapëlqyer për ftillim DNS-je për HTTPS-së
+connection-dns-over-https-custom-label = Vetjake

@@ -17,14 +17,6 @@ pref-page =
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
 # Please keep the placeholder string short to avoid truncation.
 #
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
@@ -37,6 +29,11 @@ search-input-box =
             [windows] Pronađi u Opcijama
            *[other] Pronađi u Postavkama
         }
+policies-notice =
+    { PLATFORM() ->
+        [windows] Vaša organizacija je onemogućila mogućnost promjene nekih opcija.
+       *[other] Vaša organizacija je onemogućila mogućnost promjene nekih postavki.
+    }
 pane-general-title = Opće
 category-general =
     .tooltiptext = { pane-general-title }
@@ -63,6 +60,41 @@ feature-disable-requires-restart = { -brand-short-name } se mora restartovati ka
 should-restart-title = Restartuj { -brand-short-name }
 should-restart-ok = Restartuj { -brand-short-name } odmah
 restart-later = Restartuj kasnije
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Ekstenzija, <img data-l10n-name="icon"/> { $name }, kontroliše vašu početnu stranicu.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Ekstenzija, <img data-l10n-name="icon"/> { $name }, kotroliše vašu stranicu novog taba.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Ekstenzija, <img data-l10n-name="icon"/> { $name }, je podesila vaš glavni pretraživač.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Ekstenzija, <img data-l10n-name="icon"/> { $name }, zahtijeva Container tabove.
+# This string is shown to notify the user that their tracking protection preferences
+# are being controlled by an extension.
+extension-controlled-websites-tracking-protection-mode = Proširenje, <img data-l10n-name="icon"/> { $name }, kontroliše zaštitu od praćenja.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Ekstenzija, <img data-l10n-name="icon"/> { $name }, upravlja kako se { -brand-short-name } konektuje na internet.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Da omogućite ekstenziju posjetite <img data-l10n-name="addons-icon"/> Add-oni u meniju <img data-l10n-name="menu-icon"/>.
 
 ## Preferences UI Search Results
 
@@ -93,17 +125,11 @@ is-not-default = { -brand-short-name } trenutno nije vaš glavni browser
 set-as-my-default-browser =
     .label = Učini glavnim…
     .accesskey = G
-startup-page = Kada se { -brand-short-name } pokrene
+startup-restore-previous-session =
+    .label = Vrati prethodnu sesiju
     .accesskey = s
-startup-user-homepage =
-    .label = Prikazati vašu početnu stranicu
-startup-blank-page =
-    .label = Prikaži praznu stranicu
-startup-prev-session =
-    .label = Prikazati vaše prozore i tabove od zadnjeg puta
 disable-extension =
     .label = Onemogući ekstenziju
-home-page-header = Početna stranica
 tabs-group-header = Tabovi
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab prolazi kroz tabove u redosljedu nedavnog korištenja
@@ -226,7 +252,6 @@ play-drm-content =
 play-drm-content-learn-more = Saznajte više
 update-application-title = { -brand-short-name } nadogradnje
 update-application-description = Nadograđuj { -brand-short-name } radi najboljih performansi, stabilnosti i sigurnosti.
-update-application-info = Verzija { $version } <a>Šta je novo</a>
 update-application-version = Verzija { $version } <a data-l10n-name="learn-more">Šta je novo</a>
 update-history =
     .label = Prikaži historijat nadogradnji…
@@ -262,7 +287,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Limit procesa sadržaja
     .accesskey = L
 performance-limit-content-process-enabled-desc = Dodatni procesi sadržaja mogu unaprijediti performanse kada koristite više tabova, ali će koristiti više memorije.
-performance-limit-content-process-disabled-desc = Promjena broja procesa sadržaja je moguća samo sa multiprocesnim { -brand-short-name }om. <a>Saznajte kako provjeriti da li su multiprocesi omogućeni</a>
 performance-limit-content-process-blocked-desc = Promjena broja procesa sadržaja je moguća samo sa multiprocesnim { -brand-short-name }om. <a data-l10n-name="learn-more">Saznajte kako provjeriti da li su multiprocesi omogućeni</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -290,7 +314,7 @@ browsing-search-on-start-typing =
 
 ## General Section - Proxy
 
-network-proxy-title = Mrežni proxy
+network-proxy-connection-description = Konfigurišite kako se { -brand-short-name } konektuje na internet.
 network-proxy-connection-learn-more = Saznajte više
 network-proxy-connection-settings =
     .label = Postavke…
@@ -298,9 +322,15 @@ network-proxy-connection-settings =
 
 ## Home Section
 
+home-new-windows-tabs-description2 = Izaberite šta želite vidjeti kada otvorite svoju početnu stranicu, nove prozore i nove tabove.
 
 ## Home Section - Home Page Customization
 
+home-homepage-mode-label = Početna stranica i novi prozori
+# "Firefox" should be treated as a brand and kept in English,
+# while "Home" and "(Default)" can be localized.
+home-mode-choice-default =
+    .label = Firefox Home (Izvorno)
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -315,9 +345,6 @@ use-current-pages =
 choose-bookmark =
     .label = Koristi zabilješku…
     .accesskey = b
-restore-default =
-    .label = Vrati na izvorne vrijednosti
-    .accesskey = r
 
 ## Search Section
 
@@ -409,6 +436,9 @@ sync-signedin-login-failure = Prijavite se za ponovno povezivanje { $email }
 sync-resend-verification =
     .label = Ponovo pošalji verifikaciju
     .accesskey = v
+sync-remove-account =
+    .label = Ukloni račun
+    .accesskey = r
 sync-sign-in =
     .label = Prijava
     .accesskey = a
@@ -470,6 +500,9 @@ privacy-header = Privatnost browsera
 ## Privacy Section - Forms
 
 forms-header = Forme & lozinke
+forms-ask-to-save-logins =
+    .label = Pitaj za pamćenje prijava i lozinki za web stranice
+    .accesskey = r
 forms-exceptions =
     .label = Izuzeci…
     .accesskey = I
@@ -503,34 +536,40 @@ history-remember-option-never =
     .label = Nemoj nikad pamtiti historiju
 history-remember-option-custom =
     .label = Koristiti korisničke postavke za historiju
+history-remember-description = { -brand-short-name } će pamtiti vašu historiju surfanja, preuzimanja, formi i pretraga.
 history-dontremember-description = { -brand-short-name } će koristiti iste postavke kao za privatno surfanje, i neće pamtiti bilo kakvu historiju dok pregledate Web.
 history-private-browsing-permanent =
     .label = Uvijek koristi režim privatnog surfanja
     .accesskey = p
-history-remember-option =
-    .label = Pamti moju historiju surfanja i preuzimanja
-    .accesskey = b
 history-remember-search-option =
     .label = Pamti historiju formi i pretrage
     .accesskey = f
 history-clear-on-close-option =
-    .label = Očisti historiju kada se { -brand-short-name } zatvori
+    .label = Obriši historiju kada se { -brand-short-name } zatvori
     .accesskey = r
 history-clear-on-close-settings =
     .label = Postavke…
     .accesskey = t
+history-clear-button =
+    .label = Obriši historiju…
+    .accesskey = s
 
 ## Privacy Section - Site Data
 
+sitedata-total-size-calculating = Računam veličinu podataka web stranica i keš memorije…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Vaši pohranjeni kolačići, podaci o stranicama i keš trenutno zauzimaju { $value } { $unit } prostora na disku.
 sitedata-learn-more = Saznajte više
 sitedata-keep-until = Čuvaj do
     .accesskey = u
-sitedata-accept-third-party-always-option =
-    .label = Uvijek
-sitedata-accept-third-party-visited-option =
-    .label = Od posjećenih
-sitedata-accept-third-party-never-option =
-    .label = Nikad
+sitedata-clear =
+    .label = Obriši podatke…
+    .accesskey = i
+sitedata-settings =
+    .label = Upravljanje podacima…
+    .accesskey = m
 sitedata-cookies-exceptions =
     .label = Izuzeci…
     .accesskey = I
@@ -550,6 +589,9 @@ addressbar-locbar-openpage-option =
     .accesskey = O
 addressbar-suggestions-settings = Promijenite postavke prijedloga pretraživača
 
+## Privacy Section - Content Blocking
+
+
 ## Privacy Section - Tracking
 
 tracking-header = Zaštita od praćenja
@@ -564,10 +606,6 @@ tracking-mode-private =
 tracking-mode-never =
     .label = Nikad
     .accesskey = N
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Koristi Zaštitu od praćenja u Privatnom režimu radi blokiranja poznatih pratilaca
-    .accesskey = v
 tracking-exceptions =
     .label = Izuzeci…
     .accesskey = I
@@ -624,6 +662,9 @@ collection-health-report =
     .label = Omogući { -brand-short-name }u da šalje tehničke i interakcijske podatke Mozilli
     .accesskey = r
 collection-health-report-link = Saznajte više
+collection-studies =
+    .label = Dozvoli { -brand-short-name }u da instalira i pokreće studije
+collection-studies-link = Prikaži { -brand-short-name } studije
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Izvještaji s podacima su onemogućeni za ovu konfiguraciju
@@ -631,6 +672,9 @@ collection-browser-errors =
     .label = Dopusti da { -brand-short-name } šalje izvještaje Mozilli o greškama web browsera (uključujući i poruke o greškama)
     .accesskey = b
 collection-browser-errors-link = Saznajte više
+collection-backlogged-crash-reports =
+    .label = Dozvoli { -brand-short-name }u da šalje pohranjene izvještaje o rušenju u vaše ime
+    .accesskey = š
 collection-backlogged-crash-reports-link = Saznajte više
 
 ## Privacy Section - Security
@@ -670,3 +714,27 @@ certs-view =
 certs-devices =
     .label = Sigurnosni uređaji…
     .accesskey = U
+space-alert-learn-more-button =
+    .label = Saznajte više
+    .accesskey = j
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Otvori opcije
+           *[other] Otvori postavke
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] O
+        }
+space-alert-under-5gb-ok-button =
+    .label = OK, razumijem
+    .accesskey = K
+space-alert-under-5gb-message = { -brand-short-name }-u ponestaje prostora na disku. Sadržaj web stranica možda neće biti prikazan ispravno. Posjetite “Saznajte više” da optimizujete vašu upotrebu diska za bolje iskustvo surfanja.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Desktop
+downloads-folder-name = Preuzimanja
+choose-download-folder-title = Izaberite direktorij za preuzimanja:

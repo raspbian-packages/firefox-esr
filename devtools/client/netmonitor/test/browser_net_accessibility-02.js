@@ -7,36 +7,41 @@
  * Tests if keyboard and mouse navigation works in the network requests menu.
  */
 
-add_task(async function () {
-  let { tab, monitor } = await initNetMonitor(CUSTOM_GET_URL);
+add_task(async function() {
+  const { tab, monitor } = await initNetMonitor(CUSTOM_GET_URL);
   info("Starting test... ");
 
   // It seems that this test may be slow on Ubuntu builds running on ec2.
   requestLongerTimeout(2);
 
-  let { window, document, windowRequire, store } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { window, document, windowRequire, store } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
 
   store.dispatch(Actions.batchEnable(false));
 
   let count = 0;
   function check(selectedIndex, panelVisibility) {
-    info("Performing check " + (count++) + ".");
+    info("Performing check " + count++ + ".");
 
-    let requestItems = Array.from(document.querySelectorAll(".request-list-item"));
-    is(requestItems.findIndex((item) => item.matches(".selected")), selectedIndex,
-      "The selected item in the requests menu was incorrect.");
-    is(!!document.querySelector(".network-details-panel"), panelVisibility,
-      "The network details panel should render correctly.");
+    const requestItems = Array.from(
+      document.querySelectorAll(".request-list-item")
+    );
+    is(
+      requestItems.findIndex(item => item.matches(".selected")),
+      selectedIndex,
+      "The selected item in the requests menu was incorrect."
+    );
+    is(
+      !!document.querySelector(".network-details-panel"),
+      panelVisibility,
+      "The network details panel should render correctly."
+    );
   }
 
-  let wait = waitForNetworkEvents(monitor, 2);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests(2);
-  });
-  await wait;
+  // Execute requests.
+  await performRequests(monitor, tab, 2);
 
-  document.querySelector(".requests-list-contents").focus();
+  document.querySelector(".requests-list-row-group").focus();
 
   check(-1, false);
 
@@ -55,11 +60,8 @@ add_task(async function () {
   EventUtils.sendKey("HOME", window);
   check(0, true);
 
-  wait = waitForNetworkEvents(monitor, 18);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests(18);
-  });
-  await wait;
+  // Execute requests.
+  await performRequests(monitor, tab, 18);
 
   EventUtils.sendKey("DOWN", window);
   check(1, true);
@@ -123,8 +125,10 @@ add_task(async function () {
   EventUtils.sendKey("DOWN", window);
   check(19, true);
 
-  EventUtils.sendMouseEvent({ type: "mousedown" },
-    document.querySelector(".request-list-item"));
+  EventUtils.sendMouseEvent(
+    { type: "mousedown" },
+    document.querySelector(".request-list-item")
+  );
   check(0, true);
 
   await teardown(monitor);

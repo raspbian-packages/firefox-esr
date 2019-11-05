@@ -7,8 +7,17 @@
 #include "nsAboutRedirector.h"
 #include "nsNetUtil.h"
 #include "nsAboutProtocolUtils.h"
+#include "nsBaseChannel.h"
 #include "mozilla/ArrayUtils.h"
 #include "nsIProtocolHandler.h"
+
+#if defined(MOZ_WIDGET_ANDROID) && defined(RELEASE_OR_BETA)
+#  define ABOUT_CONFIG_BLOCKED_GV
+#endif
+
+#ifdef ABOUT_CONFIG_BLOCKED_GV
+#  include "mozilla/jni/Utils.h"  // for mozilla::jni::IsFennec()
+#endif
 
 NS_IMPL_ISUPPORTS(nsAboutRedirector, nsIAboutModule)
 
@@ -18,15 +27,41 @@ struct RedirEntry {
   uint32_t flags;
 };
 
+class CrashChannel final : public nsBaseChannel {
+ public:
+  explicit CrashChannel(nsIURI* aURI) { SetURI(aURI); }
+
+  nsresult OpenContentStream(bool async, nsIInputStream** stream,
+                             nsIChannel** channel) override {
+    nsAutoCString spec;
+    mURI->GetSpec(spec);
+
+    if (spec.EqualsASCII("about:crashparent") && XRE_IsParentProcess()) {
+      MOZ_CRASH("Crash via about:crashparent");
+    }
+
+    if (spec.EqualsASCII("about:crashcontent") && XRE_IsContentProcess()) {
+      MOZ_CRASH("Crash via about:crashcontent");
+    }
+
+    NS_WARNING("Unhandled about:crash* URI or wrong process");
+    return NS_ERROR_NOT_IMPLEMENTED;
+  }
+
+ protected:
+  virtual ~CrashChannel() = default;
+};
+
 /*
   Entries which do not have URI_SAFE_FOR_UNTRUSTED_CONTENT will run with chrome
   privileges. This is potentially dangerous. Please use
   URI_SAFE_FOR_UNTRUSTED_CONTENT in the third argument to each map item below
   unless your about: page really needs chrome privileges. Security review is
   required before adding new map entries without
-  URI_SAFE_FOR_UNTRUSTED_CONTENT.  Also note, however, that adding
-  URI_SAFE_FOR_UNTRUSTED_CONTENT will allow random web sites to link to that
-  URI.  Perhaps we should separate the two concepts out...
+  URI_SAFE_FOR_UNTRUSTED_CONTENT.
+
+  URI_SAFE_FOR_UNTRUSTED_CONTENT is not enough to let web pages load that page,
+  for that you need MAKE_LINKABLE.
  */
 static const RedirEntry kRedirMap[] = {
     {"about", "chrome://global/content/aboutAbout.xhtml", 0},
@@ -44,8 +79,7 @@ static const RedirEntry kRedirMap[] = {
     {"credits", "https://www.mozilla.org/credits/",
      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT},
     {"license", "chrome://global/content/license.html",
-     nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
-         nsIAboutModule::MAKE_LINKABLE},
+     nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT},
     {"logo", "chrome://branding/content/about.png",
      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
          // Linkable for testing reasons.
@@ -60,8 +94,6 @@ static const RedirEntry kRedirMap[] = {
          nsIAboutModule::HIDE_FROM_ABOUTABOUT},
     {"networking", "chrome://global/content/aboutNetworking.xhtml",
      nsIAboutModule::ALLOW_SCRIPT},
-    {"newaddon", "chrome://mozapps/content/extensions/newaddon.xul",
-     nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::HIDE_FROM_ABOUTABOUT},
     {"performance", "chrome://global/content/aboutPerformance.xhtml",
      nsIAboutModule::ALLOW_SCRIPT},
     {"plugins", "chrome://global/content/plugins.html",
@@ -91,7 +123,12 @@ static const RedirEntry kRedirMap[] = {
     {"printpreview", "about:blank",
      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
          nsIAboutModule::HIDE_FROM_ABOUTABOUT |
-         nsIAboutModule::URI_CAN_LOAD_IN_CHILD}};
+         nsIAboutModule::URI_CAN_LOAD_IN_CHILD},
+    {"crashparent", "about:blank", nsIAboutModule::HIDE_FROM_ABOUTABOUT},
+    {"crashcontent", "about:blank",
+     nsIAboutModule::HIDE_FROM_ABOUTABOUT |
+         nsIAboutModule::URI_CAN_LOAD_IN_CHILD |
+         nsIAboutModule::URI_MUST_LOAD_IN_CHILD}};
 static const int kRedirTotal = mozilla::ArrayLength(kRedirMap);
 
 NS_IMETHODIMP
@@ -107,6 +144,27 @@ nsAboutRedirector::NewChannel(nsIURI* aURI, nsILoadInfo* aLoadInfo,
 
   nsCOMPtr<nsIIOService> ioService = do_GetIOService(&rv);
   NS_ENSURE_SUCCESS(rv, rv);
+
+  if (path.EqualsASCII("crashparent") || path.EqualsASCII("crashcontent")) {
+    bool isExternal;
+    aLoadInfo->GetLoadTriggeredFromExternal(&isExternal);
+    if (isExternal) {
+      return NS_ERROR_NOT_AVAILABLE;
+    }
+
+    nsCOMPtr<nsIChannel> channel = new CrashChannel(aURI);
+    channel->SetLoadInfo(aLoadInfo);
+    channel.forget(aResult);
+    return NS_OK;
+  }
+
+#ifdef ABOUT_CONFIG_BLOCKED_GV
+  // We don't want to allow access to about:config from
+  // GeckoView on release or beta, but it's fine for Fennec.
+  if (path.EqualsASCII("config") && !mozilla::jni::IsFennec()) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+#endif
 
   for (int i = 0; i < kRedirTotal; i++) {
     if (!strcmp(path.get(), kRedirMap[i].id)) {

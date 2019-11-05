@@ -5,27 +5,34 @@
 
 "use strict";
 
-const {ELLIPSIS} = require("devtools/shared/l10n");
+const { ELLIPSIS } = require("devtools/shared/l10n");
 
-add_task(async function () {
+add_task(async function() {
   info("Test short URL linkification JSON started");
 
-  let url = "http://example.com/";
-  let tab = await addJsonViewTab("data:application/json," + JSON.stringify([url]));
-
+  const url = "http://example.com/";
+  const tab = await addJsonViewTab(
+    "data:application/json," + JSON.stringify([url])
+  );
   await testLinkNavigation({ browser: tab.linkedBrowser, url });
 
   info("Switch back to the JSONViewer");
   await BrowserTestUtils.switchTab(gBrowser, tab);
 
-  await testLinkNavigation({ browser: tab.linkedBrowser, url, clickLabel: true });
+  await testLinkNavigation({
+    browser: tab.linkedBrowser,
+    url,
+    clickLabel: true,
+  });
 });
 
-add_task(async function () {
+add_task(async function() {
   info("Test long URL linkification JSON started");
 
-  let url = "http://example.com/" + "a".repeat(100);
-  let tab = await addJsonViewTab("data:application/json," + JSON.stringify([url]));
+  const url = "http://example.com/" + "a".repeat(100);
+  const tab = await addJsonViewTab(
+    "data:application/json," + JSON.stringify([url])
+  );
 
   await testLinkNavigation({ browser: tab.linkedBrowser, url });
 
@@ -55,24 +62,28 @@ async function testLinkNavigation({
   browser,
   url,
   urlText,
-  clickLabel = false
+  clickLabel = false,
 }) {
-  let onTabLoaded = BrowserTestUtils.waitForNewTab(gBrowser, url);
+  const onTabLoaded = BrowserTestUtils.waitForNewTab(gBrowser, url);
 
-  ContentTask.spawn(browser, [urlText || url, clickLabel], (args) => {
-    const [expectedURL, shouldClickLabel] = args;
-    let {document} = content;
+  ContentTask.spawn(browser, [urlText || url, url, clickLabel], args => {
+    const [expectedURLText, expectedURL, shouldClickLabel] = args;
+    const { document } = content;
 
     if (shouldClickLabel === true) {
       document.querySelector(".jsonPanelBox .treeTable .treeLabel").click();
     }
 
-    let link = document.querySelector(".jsonPanelBox .treeTable .treeValueCell a");
-    is(link.textContent, expectedURL, "The expected URL is displayed.");
+    const link = document.querySelector(
+      ".jsonPanelBox .treeTable .treeValueCell a"
+    );
+    is(link.textContent, expectedURLText, "The expected URL is displayed.");
+    is(link.href, expectedURL, "The URL was linkified.");
+
     link.click();
   });
 
-  let newTab = await onTabLoaded;
+  const newTab = await onTabLoaded;
   // We only need to check that newTab is truthy since
   // BrowserTestUtils.waitForNewTab checks the URL.
   ok(newTab, "The expected tab was opened.");

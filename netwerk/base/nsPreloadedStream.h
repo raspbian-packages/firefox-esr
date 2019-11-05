@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -33,7 +33,7 @@ class nsPreloadedStream final : public nsIAsyncInputStream {
   NS_DECL_NSIINPUTSTREAM
   NS_DECL_NSIASYNCINPUTSTREAM
 
-  nsPreloadedStream(nsIAsyncInputStream *aStream, const char *data,
+  nsPreloadedStream(nsIAsyncInputStream* aStream, const char* data,
                     uint32_t datalen);
 
  private:
@@ -41,7 +41,7 @@ class nsPreloadedStream final : public nsIAsyncInputStream {
 
   nsCOMPtr<nsIAsyncInputStream> mStream;
 
-  char *mBuf;
+  char* mBuf;
   uint32_t mOffset;
   uint32_t mLen;
 };

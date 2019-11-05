@@ -10,6 +10,7 @@
 #include "Layers.h"
 #include "mozilla/layers/LayerManagerComposite.h"
 #include "LayerMLGPU.h"
+#include "mozilla/layers/MLGPUScreenshotGrabber.h"
 
 namespace mozilla {
 namespace layers {
@@ -30,13 +31,13 @@ struct LayerProperties;
 class LayerManagerMLGPU final : public HostLayerManager {
  public:
   explicit LayerManagerMLGPU(widget::CompositorWidget* aWidget);
-  ~LayerManagerMLGPU();
+  virtual ~LayerManagerMLGPU();
 
   bool Initialize();
   void Destroy() override;
 
   // LayerManager methods
-  bool BeginTransaction() override;
+  bool BeginTransaction(const nsCString& aURL) override;
   void BeginTransactionWithDrawTarget(gfx::DrawTarget* aTarget,
                                       const gfx::IntRect& aRect) override;
   void SetRoot(Layer* aLayer) override;
@@ -46,7 +47,6 @@ class LayerManagerMLGPU final : public HostLayerManager {
   already_AddRefed<ColorLayer> CreateColorLayer() override;
   already_AddRefed<CanvasLayer> CreateCanvasLayer() override;
   already_AddRefed<RefLayer> CreateRefLayer() override;
-  already_AddRefed<BorderLayer> CreateBorderLayer() override;
 
   bool AreComponentAlphaLayersEnabled() override;
   bool BlendingRequiresIntermediateSurface() override;
@@ -56,10 +56,6 @@ class LayerManagerMLGPU final : public HostLayerManager {
   TextureFactoryIdentifier GetTextureFactoryIdentifier() override;
   LayersBackend GetBackendType() override;
   void AddInvalidRegion(const nsIntRegion& aRegion) override;
-  void ClearApproximatelyVisibleRegions(
-      uint64_t aLayersId, const Maybe<uint32_t>& aPresShellId) override {}
-  void UpdateApproximatelyVisibleRegion(const ScrollableLayerGuid& aGuid,
-                                        const CSSIntRegion& aRegion) override {}
   void EndTransaction(const TimeStamp& aTimeStamp,
                       EndTransactionFlags aFlags) override;
   void EndTransaction(DrawPaintedLayerCallback aCallback, void* aCallbackData,
@@ -70,6 +66,10 @@ class LayerManagerMLGPU final : public HostLayerManager {
   void ClearCachedResources(Layer* aSubtree = nullptr) override;
   void NotifyShadowTreeTransaction() override;
   void UpdateRenderBounds(const gfx::IntRect& aRect) override;
+
+  void InvalidateAll() override {
+    AddInvalidRegion(nsIntRegion(mRenderBounds));
+  }
 
   LayerManagerMLGPU* AsLayerManagerMLGPU() override { return this; }
   const char* Name() const override { return ""; }
@@ -125,6 +125,9 @@ class LayerManagerMLGPU final : public HostLayerManager {
   // a frame in RenderDoc to spew in the console.
   uint32_t mDebugFrameNumber;
   RefPtr<MLGBuffer> mDiagnosticVertices;
+
+  // Screenshotting for the profiler.
+  MLGPUScreenshotGrabber mProfilerScreenshotGrabber;
 };
 
 }  // namespace layers

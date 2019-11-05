@@ -10,9 +10,8 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
 #include "mozilla/Maybe.h"
-#include "nsIDOMStorage.h"
 #include "nsCycleCollectionParticipant.h"
-#include "nsWeakReference.h"
+#include "nsCOMPtr.h"
 #include "nsWrapperCache.h"
 #include "nsISupports.h"
 
@@ -22,18 +21,20 @@ class nsPIDOMWindowInner;
 namespace mozilla {
 namespace dom {
 
-class Storage : public nsIDOMStorage, public nsWrapperCache {
+class Storage : public nsISupports, public nsWrapperCache {
  public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_AMBIGUOUS(Storage, nsIDOMStorage)
+  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(Storage)
 
-  Storage(nsPIDOMWindowInner* aWindow, nsIPrincipal* aPrincipal);
+  Storage(nsPIDOMWindowInner* aWindow, nsIPrincipal* aPrincipal,
+          nsIPrincipal* aStoragePrincipal);
 
   static bool StoragePrefIsEnabled();
 
   enum StorageType {
     eSessionStorage,
     eLocalStorage,
+    ePartitionedLocalStorage,
   };
 
   virtual StorageType Type() const = 0;
@@ -43,6 +44,8 @@ class Storage : public nsIDOMStorage, public nsWrapperCache {
   virtual int64_t GetOriginQuotaUsage() const = 0;
 
   nsIPrincipal* Principal() const { return mPrincipal; }
+
+  nsIPrincipal* StoragePrincipal() const { return mStoragePrincipal; }
 
   // WebIDL
   JSObject* WrapObject(JSContext* aCx,
@@ -90,11 +93,35 @@ class Storage : public nsIDOMStorage, public nsWrapperCache {
 
   bool IsSessionOnly() const { return mIsSessionOnly; }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Testing Methods:
+  //
+  // These methods are exposed on the `Storage` WebIDL interface behind a
+  // preference for the benefit of automated-tests.  They are not exposed to
+  // content.  See `Storage.webidl` for more details.
+
+  virtual void Open(nsIPrincipal& aSubjectPrincipal, ErrorResult& aRv) {}
+
+  virtual void Close(nsIPrincipal& aSubjectPrincipal, ErrorResult& aRv) {}
+
+  virtual void BeginExplicitSnapshot(nsIPrincipal& aSubjectPrincipal,
+                                     ErrorResult& aRv) {}
+
+  virtual void EndExplicitSnapshot(nsIPrincipal& aSubjectPrincipal,
+                                   ErrorResult& aRv) {}
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  // Dispatch storage notification events on all impacted pages in the current
+  // process as well as for consumption by devtools.  Pages receive the
+  // notification via StorageNotifierService (not observers like in the past),
+  // while devtools does receive the notification via the observer service.
+  //
   // aStorage can be null if this method is called by LocalStorageCacheChild.
   //
   // aImmediateDispatch is for use by child IPC code (LocalStorageCacheChild)
   // so that PBackground ordering can be maintained.  Without this, the event
-  // would be/ enqueued and run in a future turn of the event loop, potentially
+  // would be enqueued and run in a future turn of the event loop, potentially
   // allowing other PBackground Recv* methods to trigger script that wants to
   // assume our localstorage changes have already been applied.  This is the
   // case for message manager messages which are used by ContentTask testing
@@ -110,17 +137,14 @@ class Storage : public nsIDOMStorage, public nsWrapperCache {
   virtual ~Storage();
 
   // The method checks whether the caller can use a storage.
-  // CanUseStorage is called before any DOM initiated operation
-  // on a storage is about to happen and ensures that the storage's
-  // session-only flag is properly set according the current settings.
-  // It is an optimization since the privileges check and session only
-  // state determination are complex and share the code (comes hand in
-  // hand together).
   bool CanUseStorage(nsIPrincipal& aSubjectPrincipal);
+
+  virtual void LastRelease() {}
 
  private:
   nsCOMPtr<nsPIDOMWindowInner> mWindow;
   nsCOMPtr<nsIPrincipal> mPrincipal;
+  nsCOMPtr<nsIPrincipal> mStoragePrincipal;
 
   // Whether storage is set to persist data only per session, may change
   // dynamically and is set by CanUseStorage function that is called

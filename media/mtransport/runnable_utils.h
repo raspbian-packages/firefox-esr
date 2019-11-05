@@ -10,10 +10,11 @@
 #define runnable_utils_h__
 
 #include "nsThreadUtils.h"
-#include "mozilla/IndexSequence.h"
 #include "mozilla/Move.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/Tuple.h"
+
+#include <utility>
 
 // Abstract base class for all of our templates
 namespace mozilla {
@@ -40,7 +41,7 @@ template <typename R>
 struct RunnableFunctionCallHelper {
   template <typename FunType, typename... Args, size_t... Indices>
   static R apply(FunType func, Tuple<Args...>& args,
-                 IndexSequence<Indices...>) {
+                 std::index_sequence<Indices...>) {
     return func(Get<Indices>(args)...);
   }
 };
@@ -52,7 +53,7 @@ template <>
 struct RunnableFunctionCallHelper<void> {
   template <typename FunType, typename... Args, size_t... Indices>
   static void apply(FunType func, Tuple<Args...>& args,
-                    IndexSequence<Indices...>) {
+                    std::index_sequence<Indices...>) {
     func(Get<Indices>(args)...);
   }
 };
@@ -61,7 +62,7 @@ template <typename R>
 struct RunnableMethodCallHelper {
   template <typename Class, typename M, typename... Args, size_t... Indices>
   static R apply(Class obj, M method, Tuple<Args...>& args,
-                 IndexSequence<Indices...>) {
+                 std::index_sequence<Indices...>) {
     return ((*obj).*method)(Get<Indices>(args)...);
   }
 };
@@ -73,7 +74,7 @@ template <>
 struct RunnableMethodCallHelper<void> {
   template <typename Class, typename M, typename... Args, size_t... Indices>
   static void apply(Class obj, M method, Tuple<Args...>& args,
-                    IndexSequence<Indices...>) {
+                    std::index_sequence<Indices...>) {
     ((*obj).*method)(Get<Indices>(args)...);
   }
 };
@@ -86,11 +87,11 @@ class runnable_args_func : public detail::runnable_args_base<detail::NoResult> {
   // |explicit| to pacify static analysis when there are no |args|.
   template <typename... Arguments>
   explicit runnable_args_func(FunType f, Arguments&&... args)
-      : mFunc(f), mArgs(Forward<Arguments>(args)...) {}
+      : mFunc(f), mArgs(std::forward<Arguments>(args)...) {}
 
   NS_IMETHOD Run() override {
     detail::RunnableFunctionCallHelper<void>::apply(
-        mFunc, mArgs, typename IndexSequenceFor<Args...>::Type());
+        mFunc, mArgs, std::index_sequence_for<Args...>{});
     return NS_OK;
   }
 
@@ -104,7 +105,7 @@ runnable_args_func<FunType, typename mozilla::Decay<Args>::Type...>*
 WrapRunnableNM(FunType f, Args&&... args) {
   return new runnable_args_func<FunType,
                                 typename mozilla::Decay<Args>::Type...>(
-      f, Forward<Args>(args)...);
+      f, std::forward<Args>(args)...);
 }
 
 template <typename Ret, typename FunType, typename... Args>
@@ -113,11 +114,11 @@ class runnable_args_func_ret
  public:
   template <typename... Arguments>
   runnable_args_func_ret(Ret* ret, FunType f, Arguments&&... args)
-      : mReturn(ret), mFunc(f), mArgs(Forward<Arguments>(args)...) {}
+      : mReturn(ret), mFunc(f), mArgs(std::forward<Arguments>(args)...) {}
 
   NS_IMETHOD Run() override {
     *mReturn = detail::RunnableFunctionCallHelper<Ret>::apply(
-        mFunc, mArgs, typename IndexSequenceFor<Args...>::Type());
+        mFunc, mArgs, std::index_sequence_for<Args...>{});
     return NS_OK;
   }
 
@@ -132,7 +133,7 @@ runnable_args_func_ret<R, FunType, typename mozilla::Decay<Args>::Type...>*
 WrapRunnableNMRet(R* ret, FunType f, Args&&... args) {
   return new runnable_args_func_ret<R, FunType,
                                     typename mozilla::Decay<Args>::Type...>(
-      ret, f, Forward<Args>(args)...);
+      ret, f, std::forward<Args>(args)...);
 }
 
 template <typename Class, typename M, typename... Args>
@@ -141,11 +142,11 @@ class runnable_args_memfn
  public:
   template <typename... Arguments>
   runnable_args_memfn(Class obj, M method, Arguments&&... args)
-      : mObj(obj), mMethod(method), mArgs(Forward<Arguments>(args)...) {}
+      : mObj(obj), mMethod(method), mArgs(std::forward<Arguments>(args)...) {}
 
   NS_IMETHOD Run() override {
     detail::RunnableMethodCallHelper<void>::apply(
-        mObj, mMethod, mArgs, typename IndexSequenceFor<Args...>::Type());
+        mObj, mMethod, mArgs, std::index_sequence_for<Args...>{});
     return NS_OK;
   }
 
@@ -160,7 +161,7 @@ runnable_args_memfn<Class, M, typename mozilla::Decay<Args>::Type...>*
 WrapRunnable(Class obj, M method, Args&&... args) {
   return new runnable_args_memfn<Class, M,
                                  typename mozilla::Decay<Args>::Type...>(
-      obj, method, Forward<Args>(args)...);
+      obj, method, std::forward<Args>(args)...);
 }
 
 template <typename Ret, typename Class, typename M, typename... Args>
@@ -172,11 +173,11 @@ class runnable_args_memfn_ret
       : mReturn(ret),
         mObj(obj),
         mMethod(method),
-        mArgs(Forward<Arguments>(args)...) {}
+        mArgs(std::forward<Arguments>(args)...) {}
 
   NS_IMETHOD Run() override {
     *mReturn = detail::RunnableMethodCallHelper<Ret>::apply(
-        mObj, mMethod, mArgs, typename IndexSequenceFor<Args...>::Type());
+        mObj, mMethod, mArgs, std::index_sequence_for<Args...>{});
     return NS_OK;
   }
 
@@ -192,7 +193,7 @@ runnable_args_memfn_ret<R, Class, M, typename mozilla::Decay<Args>::Type...>*
 WrapRunnableRet(R* ret, Class obj, M method, Args&&... args) {
   return new runnable_args_memfn_ret<R, Class, M,
                                      typename mozilla::Decay<Args>::Type...>(
-      ret, obj, method, Forward<Args>(args)...);
+      ret, obj, method, std::forward<Args>(args)...);
 }
 
 static inline nsresult RUN_ON_THREAD(
@@ -210,18 +211,18 @@ static inline nsresult RUN_ON_THREAD(
 }
 
 #ifdef DEBUG
-#define ASSERT_ON_THREAD(t)           \
-  do {                                \
-    if (t) {                          \
-      bool on;                        \
-      nsresult rv;                    \
-      rv = t->IsOnCurrentThread(&on); \
-      MOZ_ASSERT(NS_SUCCEEDED(rv));   \
-      MOZ_ASSERT(on);                 \
-    }                                 \
-  } while (0)
+#  define ASSERT_ON_THREAD(t)           \
+    do {                                \
+      if (t) {                          \
+        bool on;                        \
+        nsresult rv;                    \
+        rv = t->IsOnCurrentThread(&on); \
+        MOZ_ASSERT(NS_SUCCEEDED(rv));   \
+        MOZ_ASSERT(on);                 \
+      }                                 \
+    } while (0)
 #else
-#define ASSERT_ON_THREAD(t)
+#  define ASSERT_ON_THREAD(t)
 #endif
 
 template <class T>

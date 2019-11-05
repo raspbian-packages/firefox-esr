@@ -8,24 +8,24 @@
 <!ENTITY  pageInfoWindow.dimensions  "width: 120ch; height: 40em;">
 
 <!ENTITY  copy.key               "C">
-<!ENTITY  copy.label             "კოპირება">
-<!ENTITY  copy.accesskey         "C">
+<!ENTITY  copy.label             "ასლი">
+<!ENTITY  copy.accesskey         "ლ">
 <!ENTITY  selectall.key          "A">
 <!ENTITY  selectall.label        "სრული მონიშვნა">
 <!ENTITY  selectall.accesskey    "A">
 <!ENTITY  openHelpMac.key        "?">
 <!ENTITY  closeWindow.key        "w">
-<!ENTITY  copyLinks.label           "ბმ(ებ)ის კოპირება">
-<!ENTITY  copyLinks.accesskey       "L">
+<!ENTITY  copyLinks.label           "ბმულ(ებ)ის ასლი">
+<!ENTITY  copyLinks.accesskey       "უ">
 <!ENTITY  openInNewTab.label        "გახსნა ახალ დფაზე">
 <!ENTITY  openInNewTab.accesskey    "T">
 <!ENTITY  openInNewWindow.label     "გახსნა ახალ სარკმელში">
 <!ENTITY  openInNewWindow.accesskey "W">
 
 <!ENTITY  generalTab            "ძირითადი">
-<!ENTITY  generalTab.accesskey  "G">
+<!ENTITY  generalTab.accesskey  "რ">
 <!ENTITY  generalURL            "მისამართი:">
-<!ENTITY  generalType           "ტიპი:">
+<!ENTITY  generalType           "სახეობა:">
 <!ENTITY  generalMode           "ასახვის რეჟიმი:">
 <!ENTITY  generalSize           "ზომა:">
 <!ENTITY  generalReferrer       "დამოწმება:">
@@ -35,7 +35,7 @@
 <!ENTITY  generalMetaName       "სახელი">
 <!ENTITY  generalMetaContent    "შიგთავსი">
 <!ENTITY  generalSecurityDetails           "დაწვრილებით">
-<!ENTITY  generalSecurityDetails.accesskey "D">
+<!ENTITY  generalSecurityDetails.accesskey "დ">
 
 <!ENTITY  formsTab              "ფორმები">
 <!ENTITY  formsTab.accesskey    "F">
@@ -47,14 +47,14 @@
 <!ENTITY  formFields            "ველები:">
 <!ENTITY  formLabel             "წარწერა">
 <!ENTITY  formFName             "ველის სახელი">
-<!ENTITY  formType              "ტიპი">
+<!ENTITY  formType              "სახეობა">
 <!ENTITY  formCValue            "მნიშვნელობა">
 
 <!ENTITY  linksTab              "ბმები">
 <!ENTITY  linksTab.accesskey    "L">
 <!ENTITY  linkName              "სახელი">
 <!ENTITY  linkAddress           "მისამართი">
-<!ENTITY  linkType              "ტიპი">
+<!ENTITY  linkType              "სახეობა">
 <!ENTITY  linkTarget            "სამიზნე">
 <!ENTITY  linkAccessKey         "წვდომის კლავიში">
 
@@ -64,7 +64,7 @@
 <!ENTITY  mediaAlt              "ალტერნატული ტექსტი:">
 <!ENTITY  mediaAltHeader        "ალტერნატული ტექსტი">
 <!ENTITY  mediaAddress          "მისამართი">
-<!ENTITY  mediaType             "ტიპი">
+<!ENTITY  mediaType             "სახეობა">
 <!ENTITY  mediaSize             "ზომა">
 <!ENTITY  mediaCount            "რაოდენობა">
 <!ENTITY  mediaDimensions       "მითითებული ზომები:">
@@ -79,13 +79,13 @@
 
 <!ENTITY  feedTab               "არხები">
 <!ENTITY  feedTab.accesskey     "F">
-<!ENTITY  feedSubscribe         "ხელმოწერა">
-<!ENTITY  feedSubscribe.accesskey "u">
+<!ENTITY  feedSubscribe         "გამოწერა">
+<!ENTITY  feedSubscribe.accesskey "ო">
 
 <!ENTITY  permTab               "უფლებები">
 <!ENTITY  permTab.accesskey     "P">
 <!ENTITY  permUseDefault        "ნაგულისხმების გამოყენება">
-<!ENTITY  permAskAlways         "ყოველთვის დამეკითხე">
+<!ENTITY  permAskAlways         "შეკითხვა ყოველ ჯერზე">
 <!ENTITY  permAllow             "დაშვება">
 <!ENTITY  permAllowSession      "დაშვება სეანსზე">
 <!ENTITY  permBlock             "დაბლოკვა">
@@ -94,13 +94,13 @@
 <!ENTITY  permPopup             "ჩამოშლადი სარკმლების გახსნა">
 <!ENTITY  permCookie            "ფუნთუშების მითითება">
 <!ENTITY  permNotifications     "შეტყობინებათა ჩვენება">
-<!ENTITY  permInstall           "პაკეტების ან თემების ჩადგმა">
+<!ENTITY  permInstall           "გაფართოებების ან თემების ჩადგმა">
 <!ENTITY  permGeo               "მდებარეობის გაზიარება">
 
 <!ENTITY  securityTab           "უსაფრთხოება">
 <!ENTITY  securityTab.accesskey "S">
 <!ENTITY  securityHeader        "უსაფრთხოების მონაცემები ამ გვერდისთვის">
-<!ENTITY  securityView.certView "სერთიფიკატის ჩვენება">
+<!ENTITY  securityView.certView "სერტიფიკატის ჩვენება">
 <!ENTITY  securityView.accesskey "V">
 <!ENTITY  securityView.unknown   "უცნობია">
 
@@ -112,7 +112,7 @@
 
 <!ENTITY  securityView.privacy.header                   "პირადულობა და ისტორია">
 <!ENTITY  securityView.privacy.history                  "ეს საიტი დღემდე გამიხსნია?">
-<!ENTITY  securityView.privacy.cookies                  "ინახავს ეს საიტი ჩემს კომპიუტერში მონაცემებს (ფუნთუშებს)?">
+<!ENTITY  securityView.privacy.cookies                  "ინახავს ეს საიტი ჩემს კომპიუტერში ინფორმაციას (ფუნთუშებს)?">
 <!ENTITY  securityView.privacy.viewCookies              "ფუნთუშების ნახვა">
 <!ENTITY  securityView.privacy.viewCookies.accessKey    "თ">
 <!ENTITY  securityView.privacy.passwords                "ამ საიტისთვის რაიმე პაროლი შენახული მაქვს?">

@@ -24,7 +24,6 @@
 
 #include "SpeechGrammarList.h"
 #include "SpeechRecognitionResultList.h"
-#include "SpeechStreamListener.h"
 #include "nsISpeechRecognitionService.h"
 #include "endpointer.h"
 
@@ -33,8 +32,6 @@
 
 namespace mozilla {
 
-class DOMMediaStream;
-
 namespace dom {
 
 #define SPEECH_RECOGNITION_TEST_EVENT_REQUEST_TOPIC \
@@ -42,7 +39,10 @@ namespace dom {
 #define SPEECH_RECOGNITION_TEST_END_TOPIC "SpeechRecognitionTest:End"
 
 class GlobalObject;
+class AudioStreamTrack;
+class SpeechRecognitionShutdownBlocker;
 class SpeechEvent;
+class SpeechTrackListener;
 
 LogModule* GetSpeechRecognitionLog();
 #define SR_LOG(...) \
@@ -50,6 +50,7 @@ LogModule* GetSpeechRecognitionLog();
 
 class SpeechRecognition final : public DOMEventTargetHelper,
                                 public nsIObserver,
+                                public DOMMediaStream::TrackListener,
                                 public SupportsWeakPtr<SpeechRecognition> {
  public:
   MOZ_DECLARE_WEAKREFERENCE_TYPENAME(SpeechRecognition)
@@ -126,6 +127,8 @@ class SpeechRecognition final : public DOMEventTargetHelper,
     EVENT_COUNT
   };
 
+  void NotifyTrackAdded(const RefPtr<MediaStreamTrack>& aTrack) override;
+
   void DispatchError(EventType aErrorType,
                      SpeechRecognitionErrorCode aErrorCode,
                      const nsAString& aMessage);
@@ -135,13 +138,13 @@ class SpeechRecognition final : public DOMEventTargetHelper,
                               nsTArray<RefPtr<SharedBuffer>>& aResult);
   AudioSegment* CreateAudioSegment(nsTArray<RefPtr<SharedBuffer>>& aChunks);
   void FeedAudioData(already_AddRefed<SharedBuffer> aSamples,
-                     uint32_t aDuration, MediaStreamListener* aProvider,
+                     uint32_t aDuration, MediaStreamTrackListener* aProvider,
                      TrackRate aTrackRate);
 
   friend class SpeechEvent;
 
  private:
-  virtual ~SpeechRecognition(){};
+  virtual ~SpeechRecognition();
 
   enum FSMState {
     STATE_IDLE,
@@ -159,35 +162,7 @@ class SpeechRecognition final : public DOMEventTargetHelper,
   bool SetRecognitionService(ErrorResult& aRv);
   bool ValidateAndSetGrammarList(ErrorResult& aRv);
 
-  class GetUserMediaSuccessCallback : public nsIDOMGetUserMediaSuccessCallback {
-   public:
-    NS_DECL_ISUPPORTS
-    NS_DECL_NSIDOMGETUSERMEDIASUCCESSCALLBACK
-
-    explicit GetUserMediaSuccessCallback(SpeechRecognition* aRecognition)
-        : mRecognition(aRecognition) {}
-
-   private:
-    virtual ~GetUserMediaSuccessCallback() {}
-
-    RefPtr<SpeechRecognition> mRecognition;
-  };
-
-  class GetUserMediaErrorCallback : public nsIDOMGetUserMediaErrorCallback {
-   public:
-    NS_DECL_ISUPPORTS
-    NS_DECL_NSIDOMGETUSERMEDIAERRORCALLBACK
-
-    explicit GetUserMediaErrorCallback(SpeechRecognition* aRecognition)
-        : mRecognition(aRecognition) {}
-
-   private:
-    virtual ~GetUserMediaErrorCallback() {}
-
-    RefPtr<SpeechRecognition> mRecognition;
-  };
-
-  NS_IMETHOD StartRecording(DOMMediaStream* aDOMStream);
+  NS_IMETHOD StartRecording(RefPtr<AudioStreamTrack>& aDOMStream);
   NS_IMETHOD StopRecording();
 
   uint32_t ProcessAudioSegment(AudioSegment* aSegment, TrackRate aTrackRate);
@@ -209,8 +184,10 @@ class SpeechRecognition final : public DOMEventTargetHelper,
   void AbortSilently(SpeechEvent* aEvent);
   void AbortError(SpeechEvent* aEvent);
 
-  RefPtr<DOMMediaStream> mDOMStream;
-  RefPtr<SpeechStreamListener> mSpeechListener;
+  RefPtr<DOMMediaStream> mStream;
+  RefPtr<AudioStreamTrack> mTrack;
+  RefPtr<SpeechTrackListener> mSpeechListener;
+  RefPtr<SpeechRecognitionShutdownBlocker> mShutdownBlocker;
   nsCOMPtr<nsISpeechRecognitionService> mRecognitionService;
 
   FSMState mCurrentState;
@@ -260,31 +237,21 @@ class SpeechRecognition final : public DOMEventTargetHelper,
                                const nsAString& aEventName);
 
   const char* GetName(FSMState aId);
-  const char* GetName(SpeechEvent* aId);
+  const char* GetName(SpeechEvent* aEvent);
 };
 
 class SpeechEvent : public Runnable {
  public:
   SpeechEvent(SpeechRecognition* aRecognition,
-              SpeechRecognition::EventType aType)
-      : Runnable("dom::SpeechEvent"),
-        mAudioSegment(0),
-        mRecognitionResultList(nullptr),
-        mError(nullptr),
-        mRecognition(aRecognition),
-        mType(aType),
-        mTrackRate(0) {}
+              SpeechRecognition::EventType aType);
 
   ~SpeechEvent();
 
   NS_IMETHOD Run() override;
   AudioSegment* mAudioSegment;
-  RefPtr<SpeechRecognitionResultList> mRecognitionResultList;  // TODO: make
-                                                               // this a session
-                                                               // being passed
-                                                               // which also has
-                                                               // index and
-                                                               // stuff
+  RefPtr<SpeechRecognitionResultList>
+      mRecognitionResultList;  // TODO: make this a session being passed which
+                               // also has index and stuff
   RefPtr<SpeechRecognitionError> mError;
 
   friend class SpeechRecognition;
@@ -293,10 +260,10 @@ class SpeechEvent : public Runnable {
   SpeechRecognition* mRecognition;
 
   // for AUDIO_DATA events, keep a reference to the provider
-  // of the data (i.e., the SpeechStreamListener) to ensure it
+  // of the data (i.e., the SpeechTrackListener) to ensure it
   // is kept alive (and keeps SpeechRecognition alive) until this
   // event gets processed.
-  RefPtr<MediaStreamListener> mProvider;
+  RefPtr<MediaStreamTrackListener> mProvider;
   SpeechRecognition::EventType mType;
   TrackRate mTrackRate;
 };

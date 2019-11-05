@@ -37,7 +37,7 @@ bool PaintedLayerMLGPU::OnPrepareToRender(FrameBuilder* aBuilder) {
 }
 
 void PaintedLayerMLGPU::SetRenderRegion(LayerIntRegion&& aRegion) {
-  mRenderRegion = Move(aRegion);
+  mRenderRegion = std::move(aRegion);
 
   LayerIntRect bounds(mRenderRegion.GetBounds().TopLeft(),
                       ViewAs<LayerPixel>(mTexture->GetSize()));
@@ -110,7 +110,7 @@ void PaintedLayerMLGPU::AssignToView(FrameBuilder* aBuilder,
   }
 
   // Fall through to the single texture case.
-  LayerMLGPU::AssignToView(aBuilder, aView, Move(aGeometry));
+  LayerMLGPU::AssignToView(aBuilder, aView, std::move(aGeometry));
 }
 
 void PaintedLayerMLGPU::AssignHighResTilesToView(
@@ -143,11 +143,11 @@ void PaintedLayerMLGPU::AssignTileBufferToView(
       continue;
     }
 
-    TileIntPoint pos = aTiles.GetPlacement().TilePosition(i);
+    TileCoordIntPoint coord = aTiles.GetPlacement().TileCoord(i);
     // A sanity check that catches a lot of mistakes.
-    MOZ_ASSERT(pos.x == tile.mTilePosition.x && pos.y == tile.mTilePosition.y);
+    MOZ_ASSERT(coord.x == tile.mTileCoord.x && coord.y == tile.mTileCoord.y);
 
-    IntPoint offset = aTiles.GetTileOffset(pos);
+    IntPoint offset = aTiles.GetTileOffset(coord);
 
     // Use LayerIntRect here so we don't have to keep re-allocating the region
     // to change the unit type.
@@ -179,12 +179,12 @@ void PaintedLayerMLGPU::AssignTileBufferToView(
     // tile, and we restore these properties after we've finished processing
     // all tiles.
     Maybe<Polygon> geometry = aGeometry;
-    LayerMLGPU::AssignToView(aBuilder, aView, Move(geometry));
+    LayerMLGPU::AssignToView(aBuilder, aView, std::move(geometry));
   }
 
   // Restore the computed opacity and visible region.
   mComputedOpacity = baseOpacity;
-  SetShadowVisibleRegion(Move(visible));
+  SetShadowVisibleRegion(std::move(visible));
 }
 
 void PaintedLayerMLGPU::CleanupResources() {

@@ -7,7 +7,7 @@
 #include "nsString.h"
 #include "nsIURI.h"
 #include "nsTArray.h"
-#include "nsIStringEnumerator.h"
+#include "nsStringEnumerator.h"
 #include "nsAutoPtr.h"
 #include "nsIMIMEInfo.h"
 #include "nsComponentManagerUtils.h"
@@ -18,8 +18,8 @@
 #include <gio/gio.h>
 #include <gtk/gtk.h>
 #ifdef MOZ_ENABLE_DBUS
-#include <dbus/dbus-glib.h>
-#include <dbus/dbus-glib-lowlevel.h>
+#  include <dbus/dbus-glib.h>
+#  include <dbus/dbus-glib-lowlevel.h>
 #endif
 
 // We use the same code as gtk_should_use_portal() to detect if we're in flatpak
@@ -38,7 +38,7 @@ static bool GetShouldUseFlatpakPortal() {
   return shouldUsePortal;
 }
 
-static bool ShouldUseFlatpakPortal() {
+static bool ShouldUseFlatpakPortalImpl() {
   static bool sShouldUseFlatpakPortal = GetShouldUseFlatpakPortal();
   return sShouldUseFlatpakPortal;
 }
@@ -250,7 +250,7 @@ nsGIOMimeApp::LaunchWithURI(nsIURI* aUri, nsIInterfaceRequestor* aRequestor) {
   return NS_OK;
 }
 
-class GIOUTF8StringEnumerator final : public nsIUTF8StringEnumerator {
+class GIOUTF8StringEnumerator final : public nsStringEnumeratorBase {
   ~GIOUTF8StringEnumerator() = default;
 
  public:
@@ -259,11 +259,14 @@ class GIOUTF8StringEnumerator final : public nsIUTF8StringEnumerator {
   NS_DECL_ISUPPORTS
   NS_DECL_NSIUTF8STRINGENUMERATOR
 
+  using nsStringEnumeratorBase::GetNext;
+
   nsTArray<nsCString> mStrings;
   uint32_t mIndex;
 };
 
-NS_IMPL_ISUPPORTS(GIOUTF8StringEnumerator, nsIUTF8StringEnumerator)
+NS_IMPL_ISUPPORTS(GIOUTF8StringEnumerator, nsIUTF8StringEnumerator,
+                  nsIStringEnumerator)
 
 NS_IMETHODIMP
 GIOUTF8StringEnumerator::HasMore(bool* aResult) {
@@ -419,7 +422,7 @@ nsGIOService::GetAppForURIScheme(const nsACString& aURIScheme,
   // Application in flatpak sandbox does not have access to the list
   // of installed applications on the system. We use generic
   // nsFlatpakHandlerApp which forwards launch call to the system.
-  if (ShouldUseFlatpakPortal()) {
+  if (ShouldUseFlatpakPortalImpl()) {
     nsFlatpakHandlerApp* mozApp = new nsFlatpakHandlerApp();
     NS_ADDREF(*aApp = mozApp);
     return NS_OK;
@@ -477,7 +480,7 @@ nsGIOService::GetAppForMimeType(const nsACString& aMimeType,
 
   // Flatpak does not reveal installed application to the sandbox,
   // we need to create generic system handler.
-  if (ShouldUseFlatpakPortal()) {
+  if (ShouldUseFlatpakPortalImpl()) {
     nsFlatpakHandlerApp* mozApp = new nsFlatpakHandlerApp();
     NS_ADDREF(*aApp = mozApp);
     return NS_OK;
@@ -486,6 +489,13 @@ nsGIOService::GetAppForMimeType(const nsACString& aMimeType,
   char* content_type =
       g_content_type_from_mime_type(PromiseFlatCString(aMimeType).get());
   if (!content_type) return NS_ERROR_FAILURE;
+
+  // GIO returns "unknown" appinfo for the application/octet-stream, which is
+  // useless. It's better to fallback to create appinfo from file extension
+  // later.
+  if (g_content_type_is_unknown(content_type)) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
 
   GAppInfo* app_info = g_app_info_get_default_for_type(content_type, false);
   if (app_info) {
@@ -701,5 +711,11 @@ nsGIOService::CreateAppFromCommand(nsACString const& cmd,
   nsGIOMimeApp* mozApp = new nsGIOMimeApp(app_info);
   NS_ENSURE_TRUE(mozApp, NS_ERROR_OUT_OF_MEMORY);
   NS_ADDREF(*appInfo = mozApp);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGIOService::ShouldUseFlatpakPortal(bool* aRes) {
+  *aRes = ShouldUseFlatpakPortalImpl();
   return NS_OK;
 }

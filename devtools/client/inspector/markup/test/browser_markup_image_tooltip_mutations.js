@@ -16,57 +16,67 @@ const UPDATED_SRC = URL_ROOT + "doc_markup_tooltip.png";
 const INITIAL_SRC_SIZE = "64" + " \u00D7 " + "64";
 const UPDATED_SRC_SIZE = "22" + " \u00D7 " + "23";
 
-add_task(function* () {
-  let { inspector } = yield openInspectorForURL(
-    "data:text/html,<p>markup view tooltip test</p><img>");
+add_task(async function() {
+  const { inspector } = await openInspectorForURL(
+    "data:text/html,<p>markup view tooltip test</p><img>"
+  );
 
   info("Retrieving NodeFront for the <img> element.");
-  let img = yield getNodeFront("img", inspector);
+  const img = await getNodeFront("img", inspector);
 
   info("Selecting the <img> element");
-  yield selectNode(img, inspector);
+  await selectNode(img, inspector);
 
   info("Adding src attribute to the image.");
-  yield updateImageSrc(img, INITIAL_SRC, inspector);
+  await updateImageSrc(img, INITIAL_SRC, inspector);
 
-  let container = getContainerForNodeFront(img, inspector);
+  const container = getContainerForNodeFront(img, inspector);
   ok(container, "Found markup container for the image.");
 
-  let target = container.editor.getAttributeElement("src")
-                               .querySelector(".link");
+  let target = container.editor
+    .getAttributeElement("src")
+    .querySelector(".link");
   ok(target, "Found the src attribute in the markup view.");
 
   info("Showing tooltip on the src link.");
-  yield assertTooltipShownOnHover(inspector.markup.imagePreviewTooltip, target);
+  await assertTooltipShownOnHover(inspector.markup.imagePreviewTooltip, target);
 
   checkImageTooltip(INITIAL_SRC_SIZE, inspector);
 
-  yield assertTooltipHiddenOnMouseOut(inspector.markup.imagePreviewTooltip, target);
+  await assertTooltipHiddenOnMouseOut(
+    inspector.markup.imagePreviewTooltip,
+    target
+  );
 
   info("Updating the image src.");
-  yield updateImageSrc(img, UPDATED_SRC, inspector);
+  await updateImageSrc(img, UPDATED_SRC, inspector);
 
   target = container.editor.getAttributeElement("src").querySelector(".link");
   ok(target, "Found the src attribute in the markup view after mutation.");
 
   info("Showing tooltip on the src link.");
-  yield assertTooltipShownOnHover(inspector.markup.imagePreviewTooltip, target);
+  await assertTooltipShownOnHover(inspector.markup.imagePreviewTooltip, target);
 
   info("Checking that the new image was shown.");
   checkImageTooltip(UPDATED_SRC_SIZE, inspector);
 
-  yield assertTooltipHiddenOnMouseOut(inspector.markup.imagePreviewTooltip, target);
+  await assertTooltipHiddenOnMouseOut(
+    inspector.markup.imagePreviewTooltip,
+    target
+  );
 });
 
 /**
  * Updates the src attribute of the image. Return a Promise.
  */
 function updateImageSrc(img, newSrc, inspector) {
-  let onMutated = inspector.once("markupmutation");
-  let onModified = img.modifyAttributes([{
-    attributeName: "src",
-    newValue: newSrc
-  }]);
+  const onMutated = inspector.once("markupmutation");
+  const onModified = img.modifyAttributes([
+    {
+      attributeName: "src",
+      newValue: newSrc,
+    },
+  ]);
 
   return Promise.all([onMutated, onModified]);
 }
@@ -75,12 +85,12 @@ function updateImageSrc(img, newSrc, inspector) {
  * Checks that the markup view tooltip contains an image element with the given
  * size.
  */
-function checkImageTooltip(size, {markup}) {
-  let panel = markup.imagePreviewTooltip.panel;
-  let images = panel.getElementsByTagName("img");
+function checkImageTooltip(size, { markup }) {
+  const panel = markup.imagePreviewTooltip.panel;
+  const images = panel.getElementsByTagName("img");
   is(images.length, 1, "Tooltip contains an image");
 
-  let label = panel.querySelector(".devtools-tooltip-caption");
+  const label = panel.querySelector(".devtools-tooltip-caption");
   is(label.textContent, size, "Tooltip label displays the right image size");
 
   markup.imagePreviewTooltip.hide();

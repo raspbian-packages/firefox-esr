@@ -16,7 +16,7 @@ class ExpandedPrincipal : public nsIExpandedPrincipal,
                           public mozilla::BasePrincipal {
  public:
   static already_AddRefed<ExpandedPrincipal> Create(
-      nsTArray<nsCOMPtr<nsIPrincipal>>& aWhiteList,
+      nsTArray<nsCOMPtr<nsIPrincipal>>& aAllowList,
       const mozilla::OriginAttributes& aAttrs);
 
   static PrincipalKind Kind() { return eExpandedPrincipal; }
@@ -35,7 +35,7 @@ class ExpandedPrincipal : public nsIExpandedPrincipal,
     return nsJSPrincipals::Release();
   };
   NS_IMETHOD QueryInterface(REFNSIID aIID, void** aInstancePtr) override;
-  NS_IMETHOD GetHashValue(uint32_t* aHashValue) override;
+  uint32_t GetHashValue() override;
   NS_IMETHOD GetURI(nsIURI** aURI) override;
   NS_IMETHOD GetDomain(nsIURI** aDomain) override;
   NS_IMETHOD SetDomain(nsIURI* aDomain) override;
@@ -44,12 +44,16 @@ class ExpandedPrincipal : public nsIExpandedPrincipal,
   virtual bool AddonHasPermission(const nsAtom* aPerm) override;
   virtual nsresult GetScriptLocation(nsACString& aStr) override;
 
+  bool AddonAllowsLoad(nsIURI* aURI, bool aExplicit = false);
+
   // Returns the principal to inherit when this principal requests the given
   // URL. See BasePrincipal::PrincipalToInherit.
   nsIPrincipal* PrincipalToInherit(nsIURI* aRequestedURI = nullptr);
 
+  nsresult GetSiteIdentifier(mozilla::SiteIdentifier& aSite) override;
+
  protected:
-  explicit ExpandedPrincipal(nsTArray<nsCOMPtr<nsIPrincipal>>& aWhiteList);
+  explicit ExpandedPrincipal(nsTArray<nsCOMPtr<nsIPrincipal>>& aAllowList);
 
   virtual ~ExpandedPrincipal();
 

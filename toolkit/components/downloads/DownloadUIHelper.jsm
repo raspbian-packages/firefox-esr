@@ -8,17 +8,21 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "DownloadUIHelper",
-];
+var EXPORTED_SYMBOLS = ["DownloadUIHelper"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
 
-ChromeUtils.defineModuleGetter(this, "OS",
-                               "resource://gre/modules/osfile.jsm");
-ChromeUtils.defineModuleGetter(this, "Services",
-                               "resource://gre/modules/Services.jsm");
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "Services",
+  "resource://gre/modules/Services.jsm"
+);
 
 const kStringBundleUrl =
   "chrome://mozapps/locale/downloads/downloads.properties";
@@ -29,7 +33,7 @@ const kStringsRequiringFormatting = {
   quitCancelDownloadsAlertMsgMultiple: true,
   quitCancelDownloadsAlertMsgMacMultiple: true,
   offlineCancelDownloadsAlertMsgMultiple: true,
-  leavePrivateBrowsingWindowsCancelDownloadsAlertMsgMultiple2: true
+  leavePrivateBrowsingWindowsCancelDownloadsAlertMsgMultiple2: true,
 };
 
 /**
@@ -63,16 +67,16 @@ var DownloadUIHelper = {
 XPCOMUtils.defineLazyGetter(DownloadUIHelper, "strings", function() {
   let strings = {};
   let sb = Services.strings.createBundle(kStringBundleUrl);
-  let enumerator = sb.getSimpleEnumeration();
-  while (enumerator.hasMoreElements()) {
-    let string = enumerator.getNext().QueryInterface(Ci.nsIPropertyElement);
+  for (let string of sb.getSimpleEnumeration()) {
     let stringName = string.key;
     if (stringName in kStringsRequiringFormatting) {
       strings[stringName] = function() {
         // Convert "arguments" to a real array before calling into XPCOM.
-        return sb.formatStringFromName(stringName,
-                                       Array.slice(arguments, 0),
-                                       arguments.length);
+        return sb.formatStringFromName(
+          stringName,
+          Array.from(arguments),
+          arguments.length
+        );
       };
     } else {
       strings[stringName] = string.value;
@@ -107,51 +111,36 @@ this.DownloadPrompter.prototype = {
 
   /**
    * Displays a warning message box that informs that the specified file is
-   * executable, and asks whether the user wants to launch it.  The user is
-   * given the option of disabling future instances of this warning.
+   * executable, and asks whether the user wants to launch it.
    *
-   * @param aPath
+   * @param path
    *        String containing the full path to the file to be opened.
    *
-   * @return {Promise}
    * @resolves Boolean indicating whether the launch operation can continue.
-   * @rejects JavaScript exception.
    */
-  confirmLaunchExecutable(aPath) {
-    const kPrefAlertOnEXEOpen = "browser.download.manager.alertOnEXEOpen";
+  async confirmLaunchExecutable(path) {
+    const kPrefSkipConfirm = "browser.download.skipConfirmLaunchExecutable";
+
+    // Always launch in case we have no prompter implementation.
+    if (!this._prompter) {
+      return true;
+    }
 
     try {
-      // Always launch in case we have no prompter implementation.
-      if (!this._prompter) {
-        return Promise.resolve(true);
+      if (Services.prefs.getBoolPref(kPrefSkipConfirm)) {
+        return true;
       }
-
-      try {
-        if (!Services.prefs.getBoolPref(kPrefAlertOnEXEOpen)) {
-          return Promise.resolve(true);
-        }
-      } catch (ex) {
-        // If the preference does not exist, continue with the prompt.
-      }
-
-      let leafName = OS.Path.basename(aPath);
-
-      let s = DownloadUIHelper.strings;
-      let checkState = { value: false };
-      let shouldLaunch = this._prompter.confirmCheck(
-                           s.fileExecutableSecurityWarningTitle,
-                           s.fileExecutableSecurityWarning(leafName, leafName),
-                           s.fileExecutableSecurityWarningDontAsk,
-                           checkState);
-
-      if (shouldLaunch) {
-        Services.prefs.setBoolPref(kPrefAlertOnEXEOpen, !checkState.value);
-      }
-
-      return Promise.resolve(shouldLaunch);
     } catch (ex) {
-      return Promise.reject(ex);
+      // If the preference does not exist, continue with the prompt.
     }
+
+    let leafName = OS.Path.basename(path);
+
+    let s = DownloadUIHelper.strings;
+    return this._prompter.confirm(
+      s.fileExecutableSecurityWarningTitle,
+      s.fileExecutableSecurityWarning(leafName, leafName)
+    );
   },
 
   /**
@@ -166,8 +155,10 @@ this.DownloadPrompter.prototype = {
    * @return False to cancel the downloads and continue, true to abort the
    *         operation.
    */
-  confirmCancelDownloads: function DP_confirmCancelDownload(aDownloadsCount,
-                                                            aPromptType) {
+  confirmCancelDownloads: function DP_confirmCancelDownload(
+    aDownloadsCount,
+    aPromptType
+  ) {
     // Always continue in case we have no prompter implementation, or if there
     // are no active downloads.
     if (!this._prompter || aDownloadsCount <= 0) {
@@ -175,45 +166,62 @@ this.DownloadPrompter.prototype = {
     }
 
     let s = DownloadUIHelper.strings;
-    let buttonFlags = (Ci.nsIPrompt.BUTTON_TITLE_IS_STRING * Ci.nsIPrompt.BUTTON_POS_0) +
-                      (Ci.nsIPrompt.BUTTON_TITLE_IS_STRING * Ci.nsIPrompt.BUTTON_POS_1);
-    let okButton = aDownloadsCount > 1 ? s.cancelDownloadsOKTextMultiple(aDownloadsCount)
-                                       : s.cancelDownloadsOKText;
+    let buttonFlags =
+      Ci.nsIPrompt.BUTTON_TITLE_IS_STRING * Ci.nsIPrompt.BUTTON_POS_0 +
+      Ci.nsIPrompt.BUTTON_TITLE_IS_STRING * Ci.nsIPrompt.BUTTON_POS_1;
+    let okButton =
+      aDownloadsCount > 1
+        ? s.cancelDownloadsOKTextMultiple(aDownloadsCount)
+        : s.cancelDownloadsOKText;
     let title, message, cancelButton;
 
     switch (aPromptType) {
       case this.ON_QUIT:
         title = s.quitCancelDownloadsAlertTitle;
         if (AppConstants.platform != "macosx") {
-          message = aDownloadsCount > 1
-                    ? s.quitCancelDownloadsAlertMsgMultiple(aDownloadsCount)
-                    : s.quitCancelDownloadsAlertMsg;
+          message =
+            aDownloadsCount > 1
+              ? s.quitCancelDownloadsAlertMsgMultiple(aDownloadsCount)
+              : s.quitCancelDownloadsAlertMsg;
           cancelButton = s.dontQuitButtonWin;
         } else {
-          message = aDownloadsCount > 1
-                    ? s.quitCancelDownloadsAlertMsgMacMultiple(aDownloadsCount)
-                    : s.quitCancelDownloadsAlertMsgMac;
+          message =
+            aDownloadsCount > 1
+              ? s.quitCancelDownloadsAlertMsgMacMultiple(aDownloadsCount)
+              : s.quitCancelDownloadsAlertMsgMac;
           cancelButton = s.dontQuitButtonMac;
         }
         break;
       case this.ON_OFFLINE:
         title = s.offlineCancelDownloadsAlertTitle;
-        message = aDownloadsCount > 1
-                  ? s.offlineCancelDownloadsAlertMsgMultiple(aDownloadsCount)
-                  : s.offlineCancelDownloadsAlertMsg;
+        message =
+          aDownloadsCount > 1
+            ? s.offlineCancelDownloadsAlertMsgMultiple(aDownloadsCount)
+            : s.offlineCancelDownloadsAlertMsg;
         cancelButton = s.dontGoOfflineButton;
         break;
       case this.ON_LEAVE_PRIVATE_BROWSING:
         title = s.leavePrivateBrowsingCancelDownloadsAlertTitle;
-        message = aDownloadsCount > 1
-                  ? s.leavePrivateBrowsingWindowsCancelDownloadsAlertMsgMultiple2(aDownloadsCount)
-                  : s.leavePrivateBrowsingWindowsCancelDownloadsAlertMsg2;
+        message =
+          aDownloadsCount > 1
+            ? s.leavePrivateBrowsingWindowsCancelDownloadsAlertMsgMultiple2(
+                aDownloadsCount
+              )
+            : s.leavePrivateBrowsingWindowsCancelDownloadsAlertMsg2;
         cancelButton = s.dontLeavePrivateBrowsingButton2;
         break;
     }
 
-    let rv = this._prompter.confirmEx(title, message, buttonFlags, okButton,
-                                      cancelButton, null, null, {});
-    return (rv == 1);
-  }
+    let rv = this._prompter.confirmEx(
+      title,
+      message,
+      buttonFlags,
+      okButton,
+      cancelButton,
+      null,
+      null,
+      {}
+    );
+    return rv == 1;
+  },
 };

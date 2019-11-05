@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include "mozilla/Attributes.h"
 #include "mozilla/Maybe.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/UniquePtr.h"
@@ -16,6 +17,8 @@
 #include "signaling/src/sdp/Sdp.h"
 
 #include "signaling/src/jsep/JsepTransceiver.h"
+
+#include "mozilla/dom/PeerConnectionObserverEnumsBinding.h"
 
 namespace mozilla {
 
@@ -54,6 +57,13 @@ struct JsepAnswerOptions : public JsepOAOptions {};
 
 enum JsepBundlePolicy { kBundleBalanced, kBundleMaxCompat, kBundleMaxBundle };
 
+enum JsepMediaType { kNone = 0, kAudio, kVideo, kAudioVideo };
+
+struct JsepExtmapMediaType {
+  JsepMediaType mMediaType;
+  SdpExtmapAttributeList::Extmap mExtmap;
+};
+
 class JsepSession {
  public:
   explicit JsepSession(const std::string& name)
@@ -68,13 +78,8 @@ class JsepSession {
   virtual uint32_t GetNegotiations() const { return mNegotiations; }
 
   // Set up the ICE And DTLS data.
-  virtual nsresult SetIceCredentials(const std::string& ufrag,
-                                     const std::string& pwd) = 0;
-  virtual const std::string& GetUfrag() const = 0;
-  virtual const std::string& GetPwd() const = 0;
   virtual nsresult SetBundlePolicy(JsepBundlePolicy policy) = 0;
   virtual bool RemoteIsIceLite() const = 0;
-  virtual bool RemoteIceIsRestarting() const = 0;
   virtual std::vector<std::string> GetIceOptions() const = 0;
 
   virtual nsresult AddDtlsFingerprint(const std::string& algorithm,
@@ -86,6 +91,9 @@ class JsepSession {
   virtual nsresult AddVideoRtpExtension(
       const std::string& extensionName,
       SdpDirectionAttribute::Direction direction) = 0;
+  virtual nsresult AddAudioVideoRtpExtension(
+      const std::string& extensionName,
+      SdpDirectionAttribute::Direction direction) = 0;
 
   // Kinda gross to be locking down the data structure type like this, but
   // returning by value is problematic due to the lack of stl move semantics in
@@ -93,7 +101,7 @@ class JsepSession {
   // alternative is writing a raft of accessor functions that allow arbitrary
   // manipulation (which will be unwieldy), or allowing functors to be injected
   // that manipulate the data structure (still pretty unwieldy).
-  virtual std::vector<JsepCodecDescription*>& Codecs() = 0;
+  virtual std::vector<UniquePtr<JsepCodecDescription>>& Codecs() = 0;
 
   template <class UnaryFunction>
   void ForEachCodec(UnaryFunction& function) {
@@ -118,35 +126,47 @@ class JsepSession {
   virtual std::vector<RefPtr<JsepTransceiver>>& GetTransceivers() = 0;
   virtual nsresult AddTransceiver(RefPtr<JsepTransceiver> transceiver) = 0;
 
+  class Result {
+   public:
+    Result() = default;
+    MOZ_IMPLICIT Result(dom::PCError aError) : mError(Some(aError)) {}
+    // TODO(bug 1527916): Need c'tor and members for handling RTCError.
+    Maybe<dom::PCError> mError;
+  };
+
   // Basic JSEP operations.
-  virtual nsresult CreateOffer(const JsepOfferOptions& options,
-                               std::string* offer) = 0;
-  virtual nsresult CreateAnswer(const JsepAnswerOptions& options,
-                                std::string* answer) = 0;
+  virtual Result CreateOffer(const JsepOfferOptions& options,
+                             std::string* offer) = 0;
+  virtual Result CreateAnswer(const JsepAnswerOptions& options,
+                              std::string* answer) = 0;
   virtual std::string GetLocalDescription(
       JsepDescriptionPendingOrCurrent type) const = 0;
   virtual std::string GetRemoteDescription(
       JsepDescriptionPendingOrCurrent type) const = 0;
-  virtual nsresult SetLocalDescription(JsepSdpType type,
-                                       const std::string& sdp) = 0;
-  virtual nsresult SetRemoteDescription(JsepSdpType type,
-                                        const std::string& sdp) = 0;
-  virtual nsresult AddRemoteIceCandidate(const std::string& candidate,
-                                         const std::string& mid,
-                                         uint16_t level) = 0;
+  virtual Result SetLocalDescription(JsepSdpType type,
+                                     const std::string& sdp) = 0;
+  virtual Result SetRemoteDescription(JsepSdpType type,
+                                      const std::string& sdp) = 0;
+  virtual Result AddRemoteIceCandidate(const std::string& candidate,
+                                       const std::string& mid,
+                                       const Maybe<uint16_t>& level,
+                                       const std::string& ufrag,
+                                       std::string* transportId) = 0;
   virtual nsresult AddLocalIceCandidate(const std::string& candidate,
-                                        uint16_t level, std::string* mid,
+                                        const std::string& transportId,
+                                        const std::string& ufrag,
+                                        uint16_t* level, std::string* mid,
                                         bool* skipped) = 0;
   virtual nsresult UpdateDefaultCandidate(
       const std::string& defaultCandidateAddr, uint16_t defaultCandidatePort,
       const std::string& defaultRtcpCandidateAddr,
-      uint16_t defaultRtcpCandidatePort, uint16_t level) = 0;
-  virtual nsresult EndOfLocalCandidates(uint16_t level) = 0;
+      uint16_t defaultRtcpCandidatePort, const std::string& transportId) = 0;
   virtual nsresult Close() = 0;
 
   // ICE controlling or controlled
   virtual bool IsIceControlling() const = 0;
   virtual bool IsOfferer() const = 0;
+  virtual bool IsIceRestarting() const = 0;
 
   virtual const std::string GetLastError() const { return "Error"; }
 
@@ -169,11 +189,13 @@ class JsepSession {
     memset(sending, 0, sizeof(sending));
 
     for (const auto& transceiver : GetTransceivers()) {
-      if (!transceiver->mRecvTrack.GetTrackId().empty()) {
+      if (!transceiver->mRecvTrack.GetActive() ||
+          transceiver->GetMediaType() == SdpMediaSection::kApplication) {
         receiving[transceiver->mRecvTrack.GetMediaType()]++;
       }
 
-      if (!transceiver->mSendTrack.GetTrackId().empty()) {
+      if (!transceiver->mSendTrack.GetActive() ||
+          transceiver->GetMediaType() == SdpMediaSection::kApplication) {
         sending[transceiver->mSendTrack.GetMediaType()]++;
       }
     }

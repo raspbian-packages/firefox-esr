@@ -9,7 +9,7 @@
 #include "DocAccessible.h"
 #include "mozilla/a11y/DocManager.h"
 #include "mozilla/dom/Element.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "mozilla/Unused.h"
 #include "mozilla/a11y/Platform.h"
 #include "RelationType.h"
@@ -63,7 +63,7 @@ nsTArray<ProxyAccessible*> ProxyAccessible::RelationByType(
     if (ProxyAccessible* proxy = mDoc->GetAccessible(targetIDs[i]))
       targets.AppendElement(proxy);
 
-  return Move(targets);
+  return targets;
 }
 
 void ProxyAccessible::Relations(
@@ -88,7 +88,7 @@ void ProxyAccessible::Relations(
 
     if (targets.IsEmpty()) continue;
 
-    aTargetSets->AppendElement(Move(targets));
+    aTargetSets->AppendElement(std::move(targets));
     aTypes->AppendElement(static_cast<RelationType>(type));
   }
 }
@@ -105,7 +105,7 @@ nsAtom* ProxyAccessible::LandmarkRole() const {
   return NS_GetStaticAtom(landmark);
 }
 
-nsAtom* ProxyAccessible::ARIARoleAtom() const {
+nsStaticAtom* ProxyAccessible::ARIARoleAtom() const {
   nsString role;
   Unused << mDoc->SendARIARoleAtom(mID, &role);
   return NS_GetStaticAtom(role);
@@ -124,6 +124,11 @@ void ProxyAccessible::ScrollTo(uint32_t aScrollType) {
 void ProxyAccessible::ScrollToPoint(uint32_t aScrollType, int32_t aX,
                                     int32_t aY) {
   Unused << mDoc->SendScrollToPoint(mID, aScrollType, aX, aY);
+}
+
+void ProxyAccessible::Announce(const nsString& aAnnouncement,
+                               uint16_t aPriority) {
+  Unused << mDoc->SendAnnounce(mID, aAnnouncement, aPriority);
 }
 
 int32_t ProxyAccessible::CaretLineNumber() {
@@ -774,6 +779,13 @@ nsIntRect ProxyAccessible::Bounds() {
   nsIntRect rect;
   Unused << mDoc->SendExtents(mID, false, &(rect.x), &(rect.y), &(rect.width),
                               &(rect.height));
+  return rect;
+}
+
+nsIntRect ProxyAccessible::BoundsInCSSPixels() {
+  nsIntRect rect;
+  Unused << mDoc->SendExtentsInCSSPixels(mID, &rect.x, &rect.y, &rect.width,
+                                         &rect.height);
   return rect;
 }
 

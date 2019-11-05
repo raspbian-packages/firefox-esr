@@ -60,7 +60,8 @@ already_AddRefed<Headers> Headers::Constructor(
   return Create(global, aInit, aRv);
 }
 
-/* static */ already_AddRefed<Headers> Headers::Create(
+/* static */
+already_AddRefed<Headers> Headers::Create(
     nsIGlobalObject* aGlobal,
     const OwningHeadersOrByteStringSequenceSequenceOrByteStringByteStringRecord&
         aInit,
@@ -85,7 +86,7 @@ already_AddRefed<Headers> Headers::Constructor(
 
 JSObject* Headers::WrapObject(JSContext* aCx,
                               JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::HeadersBinding::Wrap(aCx, this, aGivenProto);
+  return mozilla::dom::Headers_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 Headers::~Headers() {}

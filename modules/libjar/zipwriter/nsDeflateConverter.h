@@ -19,21 +19,24 @@
     }                                                \
   }
 
-#define ZIP_BUFLEN (4 * 1024 - 1)
-
 class nsDeflateConverter final : public nsIStreamConverter {
  public:
+  static constexpr size_t kZipBufLen = (4 * 1024 - 1);
+
   NS_DECL_ISUPPORTS
   NS_DECL_NSIREQUESTOBSERVER
   NS_DECL_NSISTREAMLISTENER
   NS_DECL_NSISTREAMCONVERTER
 
-  nsDeflateConverter() {
+  nsDeflateConverter() : mWrapMode(WRAP_NONE), mOffset(0), mZstream() {
     // 6 is Z_DEFAULT_COMPRESSION but we need the actual value
     mLevel = 6;
   }
 
-  explicit nsDeflateConverter(int32_t level) { mLevel = level; }
+  explicit nsDeflateConverter(int32_t level)
+      : mWrapMode(WRAP_NONE), mOffset(0), mZstream() {
+    mLevel = level;
+  }
 
  private:
   ~nsDeflateConverter() {}
@@ -46,10 +49,10 @@ class nsDeflateConverter final : public nsIStreamConverter {
   nsCOMPtr<nsIStreamListener> mListener;
   nsCOMPtr<nsISupports> mContext;
   z_stream mZstream;
-  unsigned char mWriteBuffer[ZIP_BUFLEN];
+  unsigned char mWriteBuffer[kZipBufLen];
 
   nsresult Init();
-  nsresult PushAvailableData(nsIRequest *aRequest, nsISupports *aContext);
+  nsresult PushAvailableData(nsIRequest* aRequest, nsISupports* aContext);
 };
 
 #endif

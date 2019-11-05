@@ -26,6 +26,8 @@ class nsITreeView;
 
 namespace mozilla {
 
+class PresShell;
+
 namespace dom {
 class DOMStringList;
 }
@@ -51,18 +53,19 @@ SelectionManager* SelectionMgr();
 ApplicationAccessible* ApplicationAcc();
 xpcAccessibleApplication* XPCApplicationAcc();
 
-typedef Accessible*(New_Accessible)(nsIContent* aContent, Accessible* aContext);
+typedef Accessible*(New_Accessible)(Element* aElement, Accessible* aContext);
 
+// These fields are not `nsStaticAtom* const` because MSVC doesn't like it.
 struct MarkupAttrInfo {
-  nsStaticAtom** name;
-  nsStaticAtom** value;
+  nsStaticAtom* name;
+  nsStaticAtom* value;
 
-  nsStaticAtom** DOMAttrName;
-  nsStaticAtom** DOMAttrValue;
+  nsStaticAtom* DOMAttrName;
+  nsStaticAtom* DOMAttrValue;
 };
 
 struct HTMLMarkupMapInfo {
-  nsStaticAtom** tag;
+  const nsStaticAtom* const tag;
   New_Accessible* new_func;
   a11y::role role;
   MarkupAttrInfo attrs[4];
@@ -70,7 +73,7 @@ struct HTMLMarkupMapInfo {
 
 #ifdef MOZ_XUL
 struct XULMarkupMapInfo {
-  nsStaticAtom** tag;
+  const nsStaticAtom* const tag;
   New_Accessible* new_func;
 };
 #endif
@@ -107,7 +110,7 @@ class nsAccessibilityService final : public mozilla::a11y::DocManager,
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_NSIOBSERVER
 
-  Accessible* GetRootDocumentAccessible(nsIPresShell* aPresShell,
+  Accessible* GetRootDocumentAccessible(mozilla::PresShell* aPresShell,
                                         bool aCanCreate);
   already_AddRefed<Accessible> CreatePluginAccessible(nsPluginFrame* aFrame,
                                                       nsIContent* aContent,
@@ -120,7 +123,7 @@ class nsAccessibilityService final : public mozilla::a11y::DocManager,
   Accessible* AddNativeRootAccessible(void* aAtkAccessible);
   void RemoveNativeRootAccessible(Accessible* aRootAccessible);
 
-  bool HasAccessible(nsIDOMNode* aDOMNode);
+  bool HasAccessible(nsINode* aDOMNode);
 
   /**
    * Get a string equivalent for an accessible role value.
@@ -155,38 +158,38 @@ class nsAccessibilityService final : public mozilla::a11y::DocManager,
    * Notification used to update the accessible tree when deck panel is
    * switched.
    */
-  void DeckPanelSwitched(nsIPresShell* aPresShell, nsIContent* aDeckNode,
+  void DeckPanelSwitched(mozilla::PresShell* aPresShell, nsIContent* aDeckNode,
                          nsIFrame* aPrevBoxFrame, nsIFrame* aCurrentBoxFrame);
 
   /**
    * Notification used to update the accessible tree when new content is
    * inserted.
    */
-  void ContentRangeInserted(nsIPresShell* aPresShell, nsIContent* aContainer,
+  void ContentRangeInserted(mozilla::PresShell* aPresShell,
                             nsIContent* aStartChild, nsIContent* aEndChild);
 
   /**
    * Notification used to update the accessible tree when content is removed.
    */
-  void ContentRemoved(nsIPresShell* aPresShell, nsIContent* aChild);
+  void ContentRemoved(mozilla::PresShell* aPresShell, nsIContent* aChild);
 
-  void UpdateText(nsIPresShell* aPresShell, nsIContent* aContent);
+  void UpdateText(mozilla::PresShell* aPresShell, nsIContent* aContent);
 
   /**
    * Update XUL:tree accessible tree when treeview is changed.
    */
-  void TreeViewChanged(nsIPresShell* aPresShell, nsIContent* aContent,
+  void TreeViewChanged(mozilla::PresShell* aPresShell, nsIContent* aContent,
                        nsITreeView* aView);
 
   /**
    * Notify of input@type="element" value change.
    */
-  void RangeValueChanged(nsIPresShell* aPresShell, nsIContent* aContent);
+  void RangeValueChanged(mozilla::PresShell* aPresShell, nsIContent* aContent);
 
   /**
    * Update list bullet accessible.
    */
-  void UpdateListBullet(nsIPresShell* aPresShell,
+  void UpdateListBullet(mozilla::PresShell* aPresShell,
                         nsIContent* aHTMLListItemContent, bool aHasBullet);
 
   /**
@@ -197,7 +200,7 @@ class nsAccessibilityService final : public mozilla::a11y::DocManager,
   /**
    * Update the label accessible tree when rendered @value is changed.
    */
-  void UpdateLabelValue(nsIPresShell* aPresShell, nsIContent* aLabelElm,
+  void UpdateLabelValue(mozilla::PresShell* aPresShell, nsIContent* aLabelElm,
                         const nsString& aNewValue);
 
   /**
@@ -209,12 +212,12 @@ class nsAccessibilityService final : public mozilla::a11y::DocManager,
   /**
    * Notify that presshell is activated.
    */
-  void PresShellActivated(nsIPresShell* aPresShell);
+  void PresShellActivated(mozilla::PresShell* aPresShell);
 
   /**
    * Recreate an accessible for the given content node in the presshell.
    */
-  void RecreateAccessible(nsIPresShell* aPresShell, nsIContent* aContent);
+  void RecreateAccessible(mozilla::PresShell* aPresShell, nsIContent* aContent);
 
   void FireAccessibleEvent(uint32_t aEvent, Accessible* aTarget);
 
@@ -463,6 +466,8 @@ static const char kEventTypeNames[][40] = {
     "object attribute changed",         // EVENT_OBJECT_ATTRIBUTE_CHANGED
     "virtual cursor changed",           // EVENT_VIRTUALCURSOR_CHANGED
     "text value change",                // EVENT_TEXT_VALUE_CHANGE
+    "scrolling",                        // EVENT_SCROLLING
+    "announcement",                     // EVENT_ANNOUNCEMENT
 };
 
 #endif

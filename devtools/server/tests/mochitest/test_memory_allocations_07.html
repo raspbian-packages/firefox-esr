@@ -6,7 +6,7 @@ Bug 1192335 - Test getting the byte sizes for allocations.
 <head>
   <meta charset="utf-8">
   <title>Memory monitoring actor test</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -15,14 +15,14 @@ Bug 1192335 - Test getting the byte sizes for allocations.
 <script>
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
 
-  (async function () {
-    let { memory, client } = await startServerAndGetSelectedTabMemory();
+  (async function() {
+    const { memory, target } = await startServerAndGetSelectedTabMemory();
     await memory.attach();
 
-    let allocs = [];
+    const allocs = [];
     function allocator() {
       allocs.push(new Object());
     }
@@ -33,7 +33,7 @@ window.onload = function () {
     allocator();
     allocator();
 
-    let response = await memory.getAllocations();
+    const response = await memory.getAllocations();
     await memory.stopRecordingAllocations();
 
     ok(response.allocationSizes, "The response should have bytesizes.");
@@ -45,7 +45,7 @@ window.onload = function () {
        "every bytesize is a positive number");
 
     await memory.detach();
-    destroyServerAndFinish(client);
+    destroyServerAndFinish(target);
   })();
 };
 

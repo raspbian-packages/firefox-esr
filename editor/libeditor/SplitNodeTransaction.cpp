@@ -17,16 +17,25 @@ namespace mozilla {
 
 using namespace dom;
 
+template already_AddRefed<SplitNodeTransaction> SplitNodeTransaction::Create(
+    EditorBase& aEditorBase, const EditorDOMPoint& aStartOfRightNode);
+template already_AddRefed<SplitNodeTransaction> SplitNodeTransaction::Create(
+    EditorBase& aEditorBase, const EditorRawDOMPoint& aStartOfRightNode);
+
 // static
+template <typename PT, typename CT>
 already_AddRefed<SplitNodeTransaction> SplitNodeTransaction::Create(
-    EditorBase& aEditorBase, const EditorRawDOMPoint& aStartOfRightNode) {
+    EditorBase& aEditorBase,
+    const EditorDOMPointBase<PT, CT>& aStartOfRightNode) {
   RefPtr<SplitNodeTransaction> transaction =
       new SplitNodeTransaction(aEditorBase, aStartOfRightNode);
   return transaction.forget();
 }
 
+template <typename PT, typename CT>
 SplitNodeTransaction::SplitNodeTransaction(
-    EditorBase& aEditorBase, const EditorRawDOMPoint& aStartOfRightNode)
+    EditorBase& aEditorBase,
+    const EditorDOMPointBase<PT, CT>& aStartOfRightNode)
     : mEditorBase(&aEditorBase), mStartOfRightNode(aStartOfRightNode) {
   MOZ_DIAGNOSTIC_ASSERT(aStartOfRightNode.IsSet());
   MOZ_DIAGNOSTIC_ASSERT(aStartOfRightNode.GetContainerAsContent());
@@ -62,7 +71,7 @@ SplitNodeTransaction::DoTransaction() {
     return NS_ERROR_UNEXPECTED;
   }
   mNewLeftNode = dont_AddRef(clone.forget().take()->AsContent());
-  mEditorBase->MarkNodeDirty(mStartOfRightNode.GetContainerAsDOMNode());
+  mEditorBase->MarkNodeDirty(mStartOfRightNode.GetContainer());
 
   // Get the parent node
   mParent = mStartOfRightNode.GetContainer()->GetParentNode();
@@ -71,30 +80,33 @@ SplitNodeTransaction::DoTransaction() {
   }
 
   // Insert the new node
-  mEditorBase->SplitNodeImpl(EditorDOMPoint(mStartOfRightNode), *mNewLeftNode,
-                             error);
-  // XXX Really odd.  The result of SplitNodeImpl() is respected only when
-  //     we shouldn't set selection.  Otherwise, it's overridden by the
-  //     result of Selection.Collapse().
-  if (mEditorBase->GetShouldTxnSetSelection()) {
-    NS_WARNING_ASSERTION(
-        !mEditorBase->Destroyed(),
-        "The editor has gone but SplitNodeTransaction keeps trying to modify "
-        "Selection");
-    RefPtr<Selection> selection = mEditorBase->GetSelection();
-    if (NS_WARN_IF(!selection)) {
-      return NS_ERROR_FAILURE;
-    }
-    if (NS_WARN_IF(error.Failed())) {
-      // XXX This must be a bug.
-      error.SuppressException();
-    }
-    MOZ_ASSERT(mStartOfRightNode.Offset() == mNewLeftNode->Length());
-    EditorRawDOMPoint atEndOfLeftNode;
-    atEndOfLeftNode.SetToEndOf(mNewLeftNode);
-    selection->Collapse(atEndOfLeftNode, error);
+  RefPtr<EditorBase> editorBase = mEditorBase;
+  nsCOMPtr<nsIContent> newLeftNode = mNewLeftNode;
+  editorBase->DoSplitNode(EditorDOMPoint(mStartOfRightNode), *newLeftNode,
+                          error);
+  if (NS_WARN_IF(error.Failed())) {
+    return error.StealNSResult();
   }
 
+  if (!editorBase->AllowsTransactionsToChangeSelection()) {
+    return NS_OK;
+  }
+
+  NS_WARNING_ASSERTION(
+      !editorBase->Destroyed(),
+      "The editor has gone but SplitNodeTransaction keeps trying to modify "
+      "Selection");
+  RefPtr<Selection> selection = editorBase->GetSelection();
+  if (NS_WARN_IF(!selection)) {
+    return NS_ERROR_FAILURE;
+  }
+  if (NS_WARN_IF(error.Failed())) {
+    // XXX This must be a bug.
+    error.SuppressException();
+  }
+  EditorRawDOMPoint atEndOfLeftNode;
+  atEndOfLeftNode.SetToEndOf(mNewLeftNode);
+  selection->Collapse(atEndOfLeftNode, error);
   if (NS_WARN_IF(error.Failed())) {
     return error.StealNSResult();
   }
@@ -111,8 +123,8 @@ SplitNodeTransaction::UndoTransaction() {
   // This assumes Do inserted the new node in front of the prior existing node
   // XXX Perhaps, we should reset mStartOfRightNode with current first child
   //     of the right node.
-  return mEditorBase->JoinNodesImpl(mStartOfRightNode.GetContainer(),
-                                    mNewLeftNode, mParent);
+  return mEditorBase->DoJoinNodes(mStartOfRightNode.GetContainer(),
+                                  mNewLeftNode, mParent);
 }
 
 /* Redo cannot simply resplit the right node, because subsequent transactions
@@ -130,9 +142,10 @@ SplitNodeTransaction::RedoTransaction() {
   if (mStartOfRightNode.IsInTextNode()) {
     Text* rightNodeAsText = mStartOfRightNode.GetContainerAsText();
     MOZ_DIAGNOSTIC_ASSERT(rightNodeAsText);
-    nsresult rv = rightNodeAsText->DeleteData(0, mStartOfRightNode.Offset());
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
+    ErrorResult rv;
+    rightNodeAsText->DeleteData(0, mStartOfRightNode.Offset(), rv);
+    if (NS_WARN_IF(rv.Failed())) {
+      return rv.StealNSResult();
     }
   } else {
     nsCOMPtr<nsIContent> child =

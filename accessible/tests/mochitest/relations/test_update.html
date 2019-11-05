@@ -5,8 +5,7 @@
   <link rel="stylesheet" type="text/css"
         href="chrome://mochikit/content/tests/SimpleTest/test.css" />
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
 
   <script type="application/javascript"
           src="../common.js"></script>
@@ -51,7 +50,7 @@
     function insertRelated(aHostRelAttr, aDependentID, aInsertHostFirst,
                            aHostRelation, aDependentRelation) {
       this.eventSeq = [
-        new invokerChecker(EVENT_REORDER, document)
+        new invokerChecker(EVENT_REORDER, document),
       ];
 
       this.invoke = function insertRelated_invoke() {
@@ -94,7 +93,7 @@
 
       this.eventSeq = [
         new invokerChecker(EVENT_HIDE, this.container),
-        new invokerChecker(EVENT_SHOW, this.containerNode)
+        new invokerChecker(EVENT_SHOW, this.containerNode),
       ];
 
       this.invoke = function recreateRelatives_invoke() {
@@ -171,7 +170,6 @@
       gQueue.push(new recreateRelatives("container", "label", "input"));
 
       gQueue.invoke(); // will call SimpleTest.finish()
-
     }
 
     SimpleTest.waitForExplicitFinish();

@@ -41,17 +41,18 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(PushNotifier)
 NS_IMETHODIMP
 PushNotifier::NotifyPushWithData(const nsACString& aScope,
                                  nsIPrincipal* aPrincipal,
-                                 const nsAString& aMessageId, uint32_t aDataLen,
-                                 uint8_t* aData) {
+                                 const nsAString& aMessageId,
+                                 const nsTArray<uint8_t>& aData) {
   NS_ENSURE_ARG(aPrincipal);
+  // We still need to do this copying business, if we want the copy to be
+  // fallible.  Just passing Some(aData) would do an infallible copy at the
+  // point where the Some() call happens.
   nsTArray<uint8_t> data;
-  if (!data.SetCapacity(aDataLen, fallible)) {
+  if (!data.AppendElements(aData, fallible)) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
-  if (!data.InsertElementsAt(0, aData, aDataLen, fallible)) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-  PushMessageDispatcher dispatcher(aScope, aPrincipal, aMessageId, Some(data));
+  PushMessageDispatcher dispatcher(aScope, aPrincipal, aMessageId,
+                                   Some(std::move(data)));
   return Dispatch(dispatcher);
 }
 
@@ -94,7 +95,7 @@ nsresult PushNotifier::Dispatch(PushDispatcher& aDispatcher) {
 
     nsTArray<ContentParent*> contentActors;
     ContentParent::GetAll(contentActors);
-    if (!contentActors.IsEmpty()) {
+    if (!contentActors.IsEmpty() && !ServiceWorkerParentInterceptEnabled()) {
       // At least one content process is active, so e10s must be enabled.
       // Broadcast a message to notify observers and service workers.
       for (uint32_t i = 0; i < contentActors.Length(); ++i) {
@@ -119,7 +120,8 @@ nsresult PushNotifier::Dispatch(PushDispatcher& aDispatcher) {
       return NS_OK;
     }
 
-    if (BrowserTabsRemoteAutostart()) {
+    if (BrowserTabsRemoteAutostart() &&
+        !ServiceWorkerParentInterceptEnabled()) {
       // e10s is enabled, but no content processes are active.
       return aDispatcher.HandleNoChildProcesses();
     }
@@ -193,23 +195,8 @@ PushData::Json(JSContext* aCx, JS::MutableHandle<JS::Value> aResult) {
 }
 
 NS_IMETHODIMP
-PushData::Binary(uint32_t* aDataLen, uint8_t** aData) {
-  NS_ENSURE_ARG_POINTER(aDataLen);
-  NS_ENSURE_ARG_POINTER(aData);
-
-  *aData = nullptr;
-  if (mData.IsEmpty()) {
-    *aDataLen = 0;
-    return NS_OK;
-  }
-  uint32_t length = mData.Length();
-  uint8_t* data = static_cast<uint8_t*>(moz_xmalloc(length * sizeof(uint8_t)));
-  if (!data) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-  memcpy(data, mData.Elements(), length * sizeof(uint8_t));
-  *aDataLen = length;
-  *aData = data;
+PushData::Binary(nsTArray<uint8_t>& aData) {
+  aData = mData;
   return NS_OK;
 }
 
@@ -263,11 +250,29 @@ bool PushDispatcher::ShouldNotifyWorkers() {
   if (NS_WARN_IF(!mPrincipal)) {
     return false;
   }
+
   // System subscriptions use observer notifications instead of service worker
   // events. The `testing.notifyWorkers` pref disables worker events for
   // non-system subscriptions.
-  return !nsContentUtils::IsSystemPrincipal(mPrincipal) &&
-         Preferences::GetBool("dom.push.testing.notifyWorkers", true);
+  if (nsContentUtils::IsSystemPrincipal(mPrincipal) ||
+      !Preferences::GetBool("dom.push.testing.notifyWorkers", true)) {
+    return false;
+  }
+
+  // If e10s is off, no need to worry about processes.
+  if (!BrowserTabsRemoteAutostart()) {
+    return true;
+  }
+
+  // If parent intercept is enabled, then we only want to notify in the parent
+  // process. Otherwise, we only want to notify in the child process.
+  bool isContentProcess = XRE_GetProcessType() == GeckoProcessType_Content;
+  bool parentInterceptEnabled = ServiceWorkerParentInterceptEnabled();
+  if (parentInterceptEnabled) {
+    return !isContentProcess;
+  }
+
+  return isContentProcess;
 }
 
 nsresult PushDispatcher::DoNotifyObservers(nsISupports* aSubject,
@@ -283,8 +288,7 @@ nsresult PushDispatcher::DoNotifyObservers(nsISupports* aSubject,
       do_GetService(NS_CATEGORYMANAGER_CONTRACTID);
   if (catMan) {
     nsCString contractId;
-    nsresult rv = catMan->GetCategoryEntry("push", mScope.BeginReading(),
-                                           getter_Copies(contractId));
+    nsresult rv = catMan->GetCategoryEntry("push", mScope, contractId);
     if (NS_SUCCEEDED(rv)) {
       // Ensure the service is created - we don't need to do anything with
       // it though - we assume the service constructor attaches a listener.
@@ -422,7 +426,8 @@ PushErrorDispatcher::~PushErrorDispatcher() {}
 nsresult PushErrorDispatcher::NotifyObservers() { return NS_OK; }
 
 nsresult PushErrorDispatcher::NotifyWorkers() {
-  if (!ShouldNotifyWorkers()) {
+  if (!ShouldNotifyWorkers() &&
+      (!mPrincipal || nsContentUtils::IsSystemPrincipal(mPrincipal))) {
     // For system subscriptions, log the error directly to the browser console.
     return nsContentUtils::ReportToConsoleNonLocalized(
         mMessage, mFlags, NS_LITERAL_CSTRING("Push"), nullptr, /* aDocument */
@@ -432,6 +437,7 @@ nsresult PushErrorDispatcher::NotifyWorkers() {
         0, /* aColumnNumber */
         nsContentUtils::eOMIT_LOCATION);
   }
+
   // For service worker subscriptions, report the error to all clients.
   RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
   if (swm) {
@@ -445,7 +451,10 @@ nsresult PushErrorDispatcher::NotifyWorkers() {
   return NS_OK;
 }
 
-bool PushErrorDispatcher::SendToParent(ContentChild*) { return true; }
+bool PushErrorDispatcher::SendToParent(ContentChild* aContentActor) {
+  return aContentActor->SendPushError(mScope, IPC::Principal(mPrincipal),
+                                      mMessage, mFlags);
+}
 
 bool PushErrorDispatcher::SendToChild(ContentParent* aContentActor) {
   return aContentActor->SendPushError(mScope, IPC::Principal(mPrincipal),

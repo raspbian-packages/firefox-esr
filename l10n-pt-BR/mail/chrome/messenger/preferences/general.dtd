@@ -7,7 +7,7 @@
 <!ENTITY enableStartPage.accesskey        "A">
 <!ENTITY location.label                   "Endereço:">
 <!ENTITY location1.accesskey               "E">
-<!ENTITY useDefault.label                 "Restaurar o padrão">
+<!ENTITY useDefault.label                 "Restaurar padrão">
 <!ENTITY useDefault.accesskey             "R">
 
 <!ENTITY changeDockIconOptions.label      "Mudar preferências do ícone">
@@ -38,3 +38,7 @@
 <!ENTITY browse.accesskey                 "P">
 
 <!ENTITY defaultSearchEngine.label        "Mecanismo de pesquisa padrão">
+<!ENTITY addSearchEngine.label            "Adicionar a partir de arquivo">
+<!ENTITY addSearchEngine.accesskey        "A">
+<!ENTITY removeSearchEngine.label         "Remover">
+<!ENTITY removeSearchEngine.accesskey     "v">

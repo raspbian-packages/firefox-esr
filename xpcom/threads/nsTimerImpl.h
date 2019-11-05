@@ -20,7 +20,7 @@
 #include "mozilla/Variant.h"
 
 #ifdef MOZ_TASK_TRACER
-#include "TracedTaskCommon.h"
+#  include "TracedTaskCommon.h"
 #endif
 
 extern mozilla::LogModule* GetTimerLog();
@@ -43,7 +43,7 @@ class nsTimerImpl {
  public:
   typedef mozilla::TimeStamp TimeStamp;
 
-  explicit nsTimerImpl(nsITimer* aTimer);
+  nsTimerImpl(nsITimer* aTimer, nsIEventTarget* aTarget);
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(nsTimerImpl)
   NS_DECL_NON_VIRTUAL_NSITIMER
 
@@ -222,11 +222,12 @@ class nsTimerImpl {
 };
 
 class nsTimer final : public nsITimer {
+  explicit nsTimer(nsIEventTarget* aTarget)
+      : mImpl(new nsTimerImpl(this, aTarget)) {}
+
   virtual ~nsTimer();
 
  public:
-  nsTimer() : mImpl(new nsTimerImpl(this)) {}
-
   friend class TimerThread;
   friend class nsTimerEvent;
 
@@ -235,6 +236,13 @@ class nsTimer final : public nsITimer {
 
   virtual size_t SizeOfIncludingThis(
       mozilla::MallocSizeOf aMallocSizeOf) const override;
+
+  // Create a timer targeting the given target.  nullptr indicates that the
+  // current thread should be used as the timer's target.
+  static RefPtr<nsTimer> WithEventTarget(nsIEventTarget* aTarget);
+
+  static nsresult XPCOMConstructor(nsISupports* aOuter, REFNSIID aIID,
+                                   void** aResult);
 
  private:
   // nsTimerImpl holds a strong ref to us. When our refcount goes to 1, we will

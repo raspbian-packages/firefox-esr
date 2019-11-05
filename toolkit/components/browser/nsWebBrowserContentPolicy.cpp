@@ -9,6 +9,7 @@
 #include "nsCOMPtr.h"
 #include "nsContentPolicyUtils.h"
 #include "nsIContentViewer.h"
+#include "nsNetUtil.h"
 
 nsWebBrowserContentPolicy::nsWebBrowserContentPolicy() {}
 
@@ -17,21 +18,21 @@ nsWebBrowserContentPolicy::~nsWebBrowserContentPolicy() {}
 NS_IMPL_ISUPPORTS(nsWebBrowserContentPolicy, nsIContentPolicy)
 
 NS_IMETHODIMP
-nsWebBrowserContentPolicy::ShouldLoad(
-    uint32_t aContentType, nsIURI* aContentLocation,
-    nsIURI* aRequestingLocation, nsISupports* aRequestingContext,
-    const nsACString& aMimeGuess, nsISupports* aExtra,
-    nsIPrincipal* aRequestPrincipal, int16_t* aShouldLoad) {
-  NS_PRECONDITION(aShouldLoad, "Null out param");
+nsWebBrowserContentPolicy::ShouldLoad(nsIURI* aContentLocation,
+                                      nsILoadInfo* aLoadInfo,
+                                      const nsACString& aMimeGuess,
+                                      int16_t* aShouldLoad) {
+  MOZ_ASSERT(aShouldLoad, "Null out param");
 
-  MOZ_ASSERT(
-      aContentType ==
-          nsContentUtils::InternalContentPolicyTypeToExternal(aContentType),
-      "We should only see external content policy types here.");
+  uint32_t contentType = aLoadInfo->GetExternalContentPolicyType();
+  MOZ_ASSERT(contentType == nsContentUtils::InternalContentPolicyTypeToExternal(
+                                contentType),
+             "We should only see external content policy types here.");
 
   *aShouldLoad = nsIContentPolicy::ACCEPT;
 
-  nsIDocShell* shell = NS_CP_GetDocShellFromContext(aRequestingContext);
+  nsCOMPtr<nsISupports> context = aLoadInfo->GetLoadingContext();
+  nsIDocShell* shell = NS_CP_GetDocShellFromContext(context);
   /* We're going to dereference shell, so make sure it isn't null */
   if (!shell) {
     return NS_OK;
@@ -40,7 +41,7 @@ nsWebBrowserContentPolicy::ShouldLoad(
   nsresult rv;
   bool allowed = true;
 
-  switch (aContentType) {
+  switch (contentType) {
     case nsIContentPolicy::TYPE_SCRIPT:
       rv = shell->GetAllowJavascript(&allowed);
       break;
@@ -62,35 +63,39 @@ nsWebBrowserContentPolicy::ShouldLoad(
   }
 
   if (NS_SUCCEEDED(rv) && !allowed) {
+    NS_SetRequestBlockingReason(
+        aLoadInfo, nsILoadInfo::BLOCKING_REASON_CONTENT_POLICY_WEB_BROWSER);
     *aShouldLoad = nsIContentPolicy::REJECT_TYPE;
   }
   return rv;
 }
 
 NS_IMETHODIMP
-nsWebBrowserContentPolicy::ShouldProcess(
-    uint32_t aContentType, nsIURI* aContentLocation,
-    nsIURI* aRequestingLocation, nsISupports* aRequestingContext,
-    const nsACString& aMimeGuess, nsISupports* aExtra,
-    nsIPrincipal* aRequestPrincipal, int16_t* aShouldProcess) {
-  NS_PRECONDITION(aShouldProcess, "Null out param");
+nsWebBrowserContentPolicy::ShouldProcess(nsIURI* aContentLocation,
+                                         nsILoadInfo* aLoadInfo,
+                                         const nsACString& aMimeGuess,
+                                         int16_t* aShouldProcess) {
+  MOZ_ASSERT(aShouldProcess, "Null out param");
 
-  MOZ_ASSERT(
-      aContentType ==
-          nsContentUtils::InternalContentPolicyTypeToExternal(aContentType),
-      "We should only see external content policy types here.");
+  uint32_t contentType = aLoadInfo->GetExternalContentPolicyType();
+  MOZ_ASSERT(contentType == nsContentUtils::InternalContentPolicyTypeToExternal(
+                                contentType),
+             "We should only see external content policy types here.");
 
   *aShouldProcess = nsIContentPolicy::ACCEPT;
 
   // Object tags will always open channels with TYPE_OBJECT, but may end up
   // loading with TYPE_IMAGE or TYPE_DOCUMENT as their final type, so we block
   // actual-plugins at the process stage
-  if (aContentType != nsIContentPolicy::TYPE_OBJECT) {
+  if (contentType != nsIContentPolicy::TYPE_OBJECT) {
     return NS_OK;
   }
 
-  nsIDocShell* shell = NS_CP_GetDocShellFromContext(aRequestingContext);
+  nsCOMPtr<nsISupports> context = aLoadInfo->GetLoadingContext();
+  nsIDocShell* shell = NS_CP_GetDocShellFromContext(context);
   if (shell && (!shell->PluginsAllowedInCurrentDoc())) {
+    NS_SetRequestBlockingReason(
+        aLoadInfo, nsILoadInfo::BLOCKING_REASON_CONTENT_POLICY_WEB_BROWSER);
     *aShouldProcess = nsIContentPolicy::REJECT_TYPE;
   }
 

@@ -5,21 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsMathMLmsqrtFrame.h"
+
+#include "mozilla/PresShell.h"
 #include "mozilla/gfx/2D.h"
 
 //
 // <msqrt> -- form a radical - implementation
 //
 
-nsIFrame* NS_NewMathMLmsqrtFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext) {
-  return new (aPresShell) nsMathMLmsqrtFrame(aContext);
+using namespace mozilla;
+
+nsIFrame* NS_NewMathMLmsqrtFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsMathMLmsqrtFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMathMLmsqrtFrame)
 
-nsMathMLmsqrtFrame::nsMathMLmsqrtFrame(nsStyleContext* aContext)
-    : nsMathMLmencloseFrame(aContext, kClassID) {}
+nsMathMLmsqrtFrame::nsMathMLmsqrtFrame(ComputedStyle* aStyle,
+                                       nsPresContext* aPresContext)
+    : nsMathMLmencloseFrame(aStyle, aPresContext, kClassID) {}
 
 nsMathMLmsqrtFrame::~nsMathMLmsqrtFrame() {}
 

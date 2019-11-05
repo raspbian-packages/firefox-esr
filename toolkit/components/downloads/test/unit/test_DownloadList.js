@@ -12,20 +12,19 @@
 // Globals
 
 /**
- * Returns a PRTime in the past usable to add expirable visits.
+ * Returns a Date in the past usable to add expirable visits.
  *
  * @note Expiration ignores any visit added in the last 7 days, but it's
  *       better be safe against DST issues, by going back one day more.
  */
-function getExpirablePRTime() {
+function getExpirableDate() {
   let dateObj = new Date();
   // Normalize to midnight
   dateObj.setHours(0);
   dateObj.setMinutes(0);
   dateObj.setSeconds(0);
   dateObj.setMilliseconds(0);
-  dateObj = new Date(dateObj.getTime() - 8 * 86400000);
-  return dateObj.getTime() * 1000;
+  return new Date(dateObj.getTime() - 8 * 86400000);
 }
 
 /**
@@ -39,26 +38,14 @@ function getExpirablePRTime() {
  * @rejects JavaScript exception.
  */
 function promiseExpirableDownloadVisit(aSourceUrl) {
-  return new Promise((resolve, reject) => {
-    PlacesUtils.asyncHistory.updatePlaces(
+  return PlacesUtils.history.insert({
+    url: aSourceUrl || httpUrl("source.txt"),
+    visits: [
       {
-        uri: NetUtil.newURI(aSourceUrl || httpUrl("source.txt")),
-        visits: [{
-          transitionType: Ci.nsINavHistoryService.TRANSITION_DOWNLOAD,
-          visitDate: getExpirablePRTime(),
-        }]
+        transition: PlacesUtils.history.TRANSITIONS.DOWNLOAD,
+        date: getExpirableDate(),
       },
-      {
-        handleError: function handleError(aResultCode, aPlaceInfo) {
-          let ex = new Components.Exception("Unexpected error in adding visits.",
-                                            aResultCode);
-          reject(ex);
-        },
-        handleResult() {},
-        handleCompletion: function handleCompletion() {
-          resolve();
-        }
-      });
+    ],
   });
 }
 
@@ -351,7 +338,8 @@ add_task(async function test_history_expiration() {
 
   // Force a history expiration.
   Cc["@mozilla.org/places/expiration;1"]
-    .getService(Ci.nsIObserver).observe(null, "places-debug-start-expiration", -1);
+    .getService(Ci.nsIObserver)
+    .observe(null, "places-debug-start-expiration", -1);
 
   // Wait for both downloads to be removed.
   await deferred.promise;
@@ -408,9 +396,11 @@ add_task(async function test_removeFinished() {
   let removeNotifications = 0;
   let downloadView = {
     onDownloadRemoved(aDownload) {
-      Assert.ok(aDownload == downloadOne ||
-                aDownload == downloadTwo ||
-                aDownload == downloadThree);
+      Assert.ok(
+        aDownload == downloadOne ||
+          aDownload == downloadTwo ||
+          aDownload == downloadThree
+      );
       Assert.ok(removeNotifications < 3);
       if (++removeNotifications == 3) {
         deferred.resolve();
@@ -454,16 +444,18 @@ add_task(async function test_DownloadSummary() {
   await publicList.add(succeededPublicDownload);
 
   // Add a public download that has been canceled midway.
-  let canceledPublicDownload =
-      await promiseNewDownload(httpUrl("interruptible.txt"));
+  let canceledPublicDownload = await promiseNewDownload(
+    httpUrl("interruptible.txt")
+  );
   canceledPublicDownload.start().catch(() => {});
   await promiseDownloadMidway(canceledPublicDownload);
   await canceledPublicDownload.cancel();
   await publicList.add(canceledPublicDownload);
 
   // Add a public download that is in progress.
-  let inProgressPublicDownload =
-      await promiseNewDownload(httpUrl("interruptible.txt"));
+  let inProgressPublicDownload = await promiseNewDownload(
+    httpUrl("interruptible.txt")
+  );
   inProgressPublicDownload.start().catch(() => {});
   await promiseDownloadMidway(inProgressPublicDownload);
   await publicList.add(inProgressPublicDownload);
@@ -493,7 +485,10 @@ add_task(async function test_DownloadSummary() {
 
   Assert.ok(!combinedSummary.allHaveStopped);
   Assert.equal(combinedSummary.progressTotalBytes, TEST_DATA_SHORT.length * 4);
-  Assert.equal(combinedSummary.progressCurrentBytes, TEST_DATA_SHORT.length * 2);
+  Assert.equal(
+    combinedSummary.progressCurrentBytes,
+    TEST_DATA_SHORT.length * 2
+  );
 
   await inProgressPublicDownload.cancel();
 

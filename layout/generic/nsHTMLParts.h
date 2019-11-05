@@ -17,16 +17,15 @@ class nsCheckboxRadioFrame;
 class nsAtom;
 class nsNodeInfoManager;
 class nsIContent;
-class nsIDocument;
+
 class nsIFrame;
 class nsIHTMLContentSink;
 class nsIFragmentContentSink;
-class nsStyleContext;
 class nsIURI;
-class nsIPresShell;
 class nsIChannel;
 class nsTableColFrame;
 namespace mozilla {
+class PresShell;
 class ViewportFrame;
 }  // namespace mozilla
 
@@ -35,22 +34,22 @@ class ViewportFrame;
 // NS_BLOCK_FLAGS_NON_INHERITED_MASK bits below.
 #define NS_BLOCK_FLAGS_MASK                                                    \
   (NS_BLOCK_FORMATTING_CONTEXT_STATE_BITS | NS_BLOCK_CLIP_PAGINATED_OVERFLOW | \
-   NS_BLOCK_HAS_FIRST_LETTER_STYLE | NS_BLOCK_FRAME_HAS_OUTSIDE_BULLET |       \
-   NS_BLOCK_HAS_FIRST_LETTER_CHILD | NS_BLOCK_FRAME_HAS_INSIDE_BULLET)
+   NS_BLOCK_HAS_FIRST_LETTER_STYLE | NS_BLOCK_FRAME_HAS_OUTSIDE_MARKER |       \
+   NS_BLOCK_HAS_FIRST_LETTER_CHILD | NS_BLOCK_FRAME_HAS_INSIDE_MARKER)
 
 // This is the subset of NS_BLOCK_FLAGS_MASK that is NOT inherited
 // by default.  They should only be set on the first-in-flow.
 // See nsBlockFrame::Init.
 #define NS_BLOCK_FLAGS_NON_INHERITED_MASK                                \
-  (NS_BLOCK_FRAME_HAS_OUTSIDE_BULLET | NS_BLOCK_HAS_FIRST_LETTER_CHILD | \
-   NS_BLOCK_FRAME_HAS_INSIDE_BULLET)
+  (NS_BLOCK_FRAME_HAS_OUTSIDE_MARKER | NS_BLOCK_HAS_FIRST_LETTER_CHILD | \
+   NS_BLOCK_FRAME_HAS_INSIDE_MARKER)
 
 // Factory methods for creating html layout objects
 
 // Create a frame that supports "display: block" layout behavior
 class nsBlockFrame;
-nsBlockFrame* NS_NewBlockFrame(nsIPresShell* aPresShell,
-                               nsStyleContext* aContext);
+nsBlockFrame* NS_NewBlockFrame(mozilla::PresShell* aPresShell,
+                               mozilla::ComputedStyle* aStyle);
 
 // Special Generated Content Node. It contains text taken from an
 // attribute of its *grandparent* content node.
@@ -62,126 +61,139 @@ nsresult NS_NewAttributeContent(nsNodeInfoManager* aNodeInfoManager,
 // return the option frame
 // By default, area frames will extend
 // their height to cover any children that "stick out".
-nsContainerFrame* NS_NewSelectsAreaFrame(nsIPresShell* aPresShell,
-                                         nsStyleContext* aContext,
+nsContainerFrame* NS_NewSelectsAreaFrame(mozilla::PresShell* aPresShell,
+                                         mozilla::ComputedStyle* aStyle,
                                          nsFrameState aFlags);
 
 // Create a block formatting context blockframe
-nsBlockFrame* NS_NewBlockFormattingContext(nsIPresShell* aPresShell,
-                                           nsStyleContext* aStyleContext);
+nsBlockFrame* NS_NewBlockFormattingContext(mozilla::PresShell* aPresShell,
+                                           mozilla::ComputedStyle* aStyle);
 
-nsIFrame* NS_NewBRFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
+nsIFrame* NS_NewBRFrame(mozilla::PresShell* aPresShell,
+                        mozilla::ComputedStyle* aStyle);
 
-nsIFrame* NS_NewCommentFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext);
+nsIFrame* NS_NewCommentFrame(mozilla::PresShell* aPresShell,
+                             mozilla::ComputedStyle* aStyle);
 
 // <frame> and <iframe>
-nsIFrame* NS_NewSubDocumentFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext);
+nsIFrame* NS_NewSubDocumentFrame(mozilla::PresShell* aPresShell,
+                                 mozilla::ComputedStyle* aStyle);
 // <frameset>
-nsIFrame* NS_NewHTMLFramesetFrame(nsIPresShell* aPresShell,
-                                  nsStyleContext* aContext);
+nsIFrame* NS_NewHTMLFramesetFrame(mozilla::PresShell* aPresShell,
+                                  mozilla::ComputedStyle* aStyle);
 
-mozilla::ViewportFrame* NS_NewViewportFrame(nsIPresShell* aPresShell,
-                                            nsStyleContext* aContext);
+mozilla::ViewportFrame* NS_NewViewportFrame(mozilla::PresShell* aPresShell,
+                                            mozilla::ComputedStyle* aStyle);
 class nsCanvasFrame;
-nsCanvasFrame* NS_NewCanvasFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext);
-nsIFrame* NS_NewImageFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
+nsCanvasFrame* NS_NewCanvasFrame(mozilla::PresShell* aPresShell,
+                                 mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewImageFrame(mozilla::PresShell* aPresShell,
+                           mozilla::ComputedStyle* aStyle);
 class nsInlineFrame;
-nsInlineFrame* NS_NewInlineFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext);
-nsIFrame* NS_NewObjectFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
-nsIFrame* NS_NewTextFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
-nsIFrame* NS_NewContinuingTextFrame(nsIPresShell* aPresShell,
-                                    nsStyleContext* aContext);
-nsIFrame* NS_NewEmptyFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
-inline nsIFrame* NS_NewWBRFrame(nsIPresShell* aPresShell,
-                                nsStyleContext* aContext) {
-  return NS_NewEmptyFrame(aPresShell, aContext);
+nsInlineFrame* NS_NewInlineFrame(mozilla::PresShell* aPresShell,
+                                 mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewObjectFrame(mozilla::PresShell* aPresShell,
+                            mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewTextFrame(mozilla::PresShell* aPresShell,
+                          mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewContinuingTextFrame(mozilla::PresShell* aPresShell,
+                                    mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewEmptyFrame(mozilla::PresShell* aPresShell,
+                           mozilla::ComputedStyle* aStyle);
+inline nsIFrame* NS_NewWBRFrame(mozilla::PresShell* aPresShell,
+                                mozilla::ComputedStyle* aStyle) {
+  return NS_NewEmptyFrame(aPresShell, aStyle);
 }
 
-nsContainerFrame* NS_NewColumnSetFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext,
+nsBlockFrame* NS_NewColumnSetWrapperFrame(mozilla::PresShell* aPresShell,
+                                          mozilla::ComputedStyle* aStyle,
+                                          nsFrameState aStateFlags);
+nsContainerFrame* NS_NewColumnSetFrame(mozilla::PresShell* aPresShell,
+                                       mozilla::ComputedStyle* aStyle,
                                        nsFrameState aStateFlags);
 
 class nsSimplePageSequenceFrame;
 nsSimplePageSequenceFrame* NS_NewSimplePageSequenceFrame(
-    nsIPresShell* aPresShell, nsStyleContext* aContext);
+    mozilla::PresShell* aPresShell, mozilla::ComputedStyle* aStyle);
 class nsPageFrame;
-nsPageFrame* NS_NewPageFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext);
+nsPageFrame* NS_NewPageFrame(mozilla::PresShell* aPresShell,
+                             mozilla::ComputedStyle* aStyle);
 class nsPageContentFrame;
-nsPageContentFrame* NS_NewPageContentFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext);
-nsIFrame* NS_NewPageBreakFrame(nsIPresShell* aPresShell,
-                               nsStyleContext* aContext);
+nsPageContentFrame* NS_NewPageContentFrame(mozilla::PresShell* aPresShell,
+                                           mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewPageBreakFrame(mozilla::PresShell* aPresShell,
+                               mozilla::ComputedStyle* aStyle);
 class nsFirstLetterFrame;
-nsFirstLetterFrame* NS_NewFirstLetterFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext);
+nsFirstLetterFrame* NS_NewFirstLetterFrame(mozilla::PresShell* aPresShell,
+                                           mozilla::ComputedStyle* aStyle);
 class nsFirstLineFrame;
-nsFirstLineFrame* NS_NewFirstLineFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext);
+nsFirstLineFrame* NS_NewFirstLineFrame(mozilla::PresShell* aPresShell,
+                                       mozilla::ComputedStyle* aStyle);
 
 // forms
-nsContainerFrame* NS_NewGfxButtonControlFrame(nsIPresShell* aPresShell,
-                                              nsStyleContext* aContext);
-nsCheckboxRadioFrame* NS_NewCheckboxRadioFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext);
-nsIFrame* NS_NewImageControlFrame(nsIPresShell* aPresShell,
-                                  nsStyleContext* aContext);
-nsContainerFrame* NS_NewHTMLButtonControlFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext);
-nsContainerFrame* NS_NewFieldSetFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext);
-nsIFrame* NS_NewFileControlFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext);
-nsIFrame* NS_NewColorControlFrame(nsIPresShell* aPresShell,
-                                  nsStyleContext* aContext);
-nsIFrame* NS_NewLegendFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
-nsIFrame* NS_NewTextControlFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext);
-nsContainerFrame* NS_NewListControlFrame(nsIPresShell* aPresShell,
-                                         nsStyleContext* aContext);
-nsComboboxControlFrame* NS_NewComboboxControlFrame(nsIPresShell* aPresShell,
-                                                   nsStyleContext* aContext,
-                                                   nsFrameState aFlags);
-nsIFrame* NS_NewProgressFrame(nsIPresShell* aPresShell,
-                              nsStyleContext* aContext);
-nsIFrame* NS_NewMeterFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
-nsIFrame* NS_NewRangeFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
-nsIFrame* NS_NewNumberControlFrame(nsIPresShell* aPresShell,
-                                   nsStyleContext* aContext);
-nsIFrame* NS_NewDateTimeControlFrame(nsIPresShell* aPresShell,
-                                     nsStyleContext* aContext);
-nsBlockFrame* NS_NewDetailsFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext);
+nsContainerFrame* NS_NewGfxButtonControlFrame(mozilla::PresShell* aPresShell,
+                                              mozilla::ComputedStyle* aStyle);
+nsCheckboxRadioFrame* NS_NewCheckboxRadioFrame(mozilla::PresShell* aPresShell,
+                                               mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewImageControlFrame(mozilla::PresShell* aPresShell,
+                                  mozilla::ComputedStyle* aStyle);
+nsContainerFrame* NS_NewHTMLButtonControlFrame(mozilla::PresShell* aPresShell,
+                                               mozilla::ComputedStyle* aStyle);
+nsContainerFrame* NS_NewFieldSetFrame(mozilla::PresShell* aPresShell,
+                                      mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewFileControlFrame(mozilla::PresShell* aPresShell,
+                                 mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewColorControlFrame(mozilla::PresShell* aPresShell,
+                                  mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewLegendFrame(mozilla::PresShell* aPresShell,
+                            mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewTextControlFrame(mozilla::PresShell* aPresShell,
+                                 mozilla::ComputedStyle* aStyle);
+nsContainerFrame* NS_NewListControlFrame(mozilla::PresShell* aPresShell,
+                                         mozilla::ComputedStyle* aStyle);
+nsComboboxControlFrame* NS_NewComboboxControlFrame(
+    mozilla::PresShell* aPresShell, mozilla::ComputedStyle* aStyle,
+    nsFrameState aFlags);
+nsIFrame* NS_NewProgressFrame(mozilla::PresShell* aPresShell,
+                              mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewMeterFrame(mozilla::PresShell* aPresShell,
+                           mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewRangeFrame(mozilla::PresShell* aPresShell,
+                           mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewNumberControlFrame(mozilla::PresShell* aPresShell,
+                                   mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewDateTimeControlFrame(mozilla::PresShell* aPresShell,
+                                     mozilla::ComputedStyle* aStyle);
+nsBlockFrame* NS_NewDetailsFrame(mozilla::PresShell* aPresShell,
+                                 mozilla::ComputedStyle* aStyle);
+nsIFrame* NS_NewBulletFrame(mozilla::PresShell* aPresShell,
+                            mozilla::ComputedStyle* aStyle);
 
 // Table frame factories
 class nsTableWrapperFrame;
-nsTableWrapperFrame* NS_NewTableWrapperFrame(nsIPresShell* aPresShell,
-                                             nsStyleContext* aContext);
+nsTableWrapperFrame* NS_NewTableWrapperFrame(mozilla::PresShell* aPresShell,
+                                             mozilla::ComputedStyle* aStyle);
 class nsTableFrame;
-nsTableFrame* NS_NewTableFrame(nsIPresShell* aPresShell,
-                               nsStyleContext* aContext);
-nsTableColFrame* NS_NewTableColFrame(nsIPresShell* aPresShell,
-                                     nsStyleContext* aContext);
+nsTableFrame* NS_NewTableFrame(mozilla::PresShell* aPresShell,
+                               mozilla::ComputedStyle* aStyle);
+nsTableColFrame* NS_NewTableColFrame(mozilla::PresShell* aPresShell,
+                                     mozilla::ComputedStyle* aStyle);
 class nsTableColGroupFrame;
-nsTableColGroupFrame* NS_NewTableColGroupFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext);
+nsTableColGroupFrame* NS_NewTableColGroupFrame(mozilla::PresShell* aPresShell,
+                                               mozilla::ComputedStyle* aStyle);
 class nsTableRowFrame;
-nsTableRowFrame* NS_NewTableRowFrame(nsIPresShell* aPresShell,
-                                     nsStyleContext* aContext);
+nsTableRowFrame* NS_NewTableRowFrame(mozilla::PresShell* aPresShell,
+                                     mozilla::ComputedStyle* aStyle);
 class nsTableRowGroupFrame;
-nsTableRowGroupFrame* NS_NewTableRowGroupFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext);
+nsTableRowGroupFrame* NS_NewTableRowGroupFrame(mozilla::PresShell* aPresShell,
+                                               mozilla::ComputedStyle* aStyle);
 class nsTableCellFrame;
-nsTableCellFrame* NS_NewTableCellFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext,
+nsTableCellFrame* NS_NewTableCellFrame(mozilla::PresShell* aPresShell,
+                                       mozilla::ComputedStyle* aStyle,
                                        nsTableFrame* aTableFrame);
 
 nsresult NS_NewHTMLContentSink(nsIHTMLContentSink** aInstancePtrResult,
-                               nsIDocument* aDoc, nsIURI* aURL,
+                               mozilla::dom::Document* aDoc, nsIURI* aURL,
                                nsISupports* aContainer,  // e.g. docshell
                                nsIChannel* aChannel);
 nsresult NS_NewHTMLFragmentContentSink(

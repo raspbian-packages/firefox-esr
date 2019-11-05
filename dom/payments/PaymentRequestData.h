@@ -10,7 +10,7 @@
 #include "nsIPaymentAddress.h"
 #include "nsIPaymentRequest.h"
 #include "nsCOMPtr.h"
-#include "mozilla/dom/PPaymentRequest.h"
+#include "mozilla/dom/PaymentRequestParent.h"
 
 namespace mozilla {
 namespace dom {
@@ -60,14 +60,13 @@ class PaymentItem final : public nsIPaymentItem {
 
  private:
   PaymentItem(const nsAString& aLabel, nsIPaymentCurrencyAmount* aAmount,
-              const bool aPending, const nsAString& aType);
+              const bool aPending);
 
   ~PaymentItem() = default;
 
   nsString mLabel;
   nsCOMPtr<nsIPaymentCurrencyAmount> mAmount;
   bool mPending;
-  nsString mType;
 };
 
 class PaymentDetailsModifier final : public nsIPaymentDetailsModifier {
@@ -120,11 +119,21 @@ class PaymentDetails final : public nsIPaymentDetails {
 
   static nsresult Create(const IPCPaymentDetails& aIPCDetails,
                          nsIPaymentDetails** aDetails);
+  nsresult Update(nsIPaymentDetails* aDetails, const bool aRequestShipping);
+  const nsString& GetShippingAddressErrors() const;
+  const nsString& GetPayerErrors() const;
+  const nsString& GetPaymentMethodErrors() const;
+  nsresult UpdateErrors(const nsAString& aError, const nsAString& aPayerErrors,
+                        const nsAString& aPaymentMethodErrors,
+                        const nsAString& aShippingAddressErrors);
 
  private:
   PaymentDetails(const nsAString& aId, nsIPaymentItem* aTotalItem,
                  nsIArray* aDisplayItems, nsIArray* aShippingOptions,
-                 nsIArray* aModifiers, const nsAString& aError);
+                 nsIArray* aModifiers, const nsAString& aError,
+                 const nsAString& aShippingAddressError,
+                 const nsAString& aPayerError,
+                 const nsAString& aPaymentMethodError);
 
   ~PaymentDetails() = default;
 
@@ -134,6 +143,9 @@ class PaymentDetails final : public nsIPaymentDetails {
   nsCOMPtr<nsIArray> mShippingOptions;
   nsCOMPtr<nsIArray> mModifiers;
   nsString mError;
+  nsString mShippingAddressErrors;
+  nsString mPayerErrors;
+  nsString mPaymentMethodErrors;
 };
 
 class PaymentOptions final : public nsIPaymentOptions {
@@ -147,6 +159,7 @@ class PaymentOptions final : public nsIPaymentOptions {
  private:
   PaymentOptions(const bool aRequestPayerName, const bool aRequestPayerEmail,
                  const bool aRequestPayerPhone, const bool aRequestShipping,
+                 const bool aRequestBillingAddress,
                  const nsAString& aShippintType);
   ~PaymentOptions() = default;
 
@@ -154,6 +167,7 @@ class PaymentOptions final : public nsIPaymentOptions {
   bool mRequestPayerEmail;
   bool mRequestPayerPhone;
   bool mRequestShipping;
+  bool mRequestBillingAddress;
   nsString mShippingType;
 };
 
@@ -162,20 +176,59 @@ class PaymentRequest final : public nsIPaymentRequest {
   NS_DECL_ISUPPORTS
   NS_DECL_NSIPAYMENTREQUEST
 
-  PaymentRequest(const uint64_t aTabId, const nsAString& aRequestId,
+  PaymentRequest(const uint64_t aTopOuterWindowId, const nsAString& aRequestId,
                  nsIPrincipal* aPrincipal, nsIArray* aPaymentMethods,
                  nsIPaymentDetails* aPaymentDetails,
-                 nsIPaymentOptions* aPaymentOptions);
+                 nsIPaymentOptions* aPaymentOptions,
+                 const nsAString& aShippingOption);
+
+  void SetIPC(PaymentRequestParent* aIPC) { mIPC = aIPC; }
+
+  PaymentRequestParent* GetIPC() const { return mIPC; }
+
+  nsresult UpdatePaymentDetails(nsIPaymentDetails* aPaymentDetails,
+                                const nsAString& aShippingOption);
+
+  void SetCompleteStatus(const nsAString& aCompleteStatus);
+
+  nsresult UpdateErrors(const nsAString& aError, const nsAString& aPayerErrors,
+                        const nsAString& aPaymentMethodErrors,
+                        const nsAString& aShippingAddressErrors);
+
+  // The state represents the PaymentRequest's state in the spec. The state is
+  // not synchronized between content and parent processes.
+  // eCreated     - the state means a PaymentRequest is created when new
+  //                PaymentRequest() is called. This is the initial state.
+  // eInteractive - When PaymentRequest is requested to show to users, the state
+  //                becomes eInteractive. Under eInteractive state, Payment UI
+  //                pop up and gather the user's information until the user
+  //                accepts or rejects the PaymentRequest.
+  // eClosed      - When the user accepts or rejects the PaymentRequest, the
+  //                state becomes eClosed. Under eClosed state, response from
+  //                Payment UI would not be accepted by PaymentRequestService
+  //                anymore, except the Complete response.
+  enum eState { eCreated, eInteractive, eClosed };
+
+  void SetState(const eState aState) { mState = aState; }
+
+  const eState& GetState() const { return mState; }
 
  private:
   ~PaymentRequest() = default;
 
-  uint64_t mTabId;
+  uint64_t mTopOuterWindowId;
   nsString mRequestId;
+  nsString mCompleteStatus;
   nsCOMPtr<nsIPrincipal> mTopLevelPrincipal;
   nsCOMPtr<nsIArray> mPaymentMethods;
   nsCOMPtr<nsIPaymentDetails> mPaymentDetails;
   nsCOMPtr<nsIPaymentOptions> mPaymentOptions;
+  nsString mShippingOption;
+
+  // IPC's life cycle should be controlled by IPC mechanism.
+  // PaymentRequest should not own the reference of it.
+  PaymentRequestParent* mIPC;
+  eState mState;
 };
 
 class PaymentAddress final : public nsIPaymentAddress {
@@ -191,11 +244,11 @@ class PaymentAddress final : public nsIPaymentAddress {
   nsString mCountry;
   nsCOMPtr<nsIArray> mAddressLine;
   nsString mRegion;
+  nsString mRegionCode;
   nsString mCity;
   nsString mDependentLocality;
   nsString mPostalCode;
   nsString mSortingCode;
-  nsString mLanguageCode;
   nsString mOrganization;
   nsString mRecipient;
   nsString mPhone;

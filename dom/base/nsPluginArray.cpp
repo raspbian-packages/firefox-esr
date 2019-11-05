@@ -22,7 +22,7 @@
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsContentUtils.h"
 #include "nsIPermissionManager.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIBlocklistService.h"
 
 using namespace mozilla;
@@ -47,7 +47,7 @@ nsPIDOMWindowInner* nsPluginArray::GetParentObject() const {
 
 JSObject* nsPluginArray::WrapObject(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return PluginArrayBinding::Wrap(aCx, this, aGivenProto);
+  return PluginArray_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(nsPluginArray)
@@ -224,14 +224,13 @@ nsPluginElement* nsPluginArray::NamedGetter(const nsAString& aName,
 void nsPluginArray::NotifyHiddenPluginTouched(nsPluginElement* aHiddenElement) {
   HiddenPluginEventInit init;
   init.mTag = aHiddenElement->PluginTag();
-  nsCOMPtr<nsIDocument> doc = aHiddenElement->GetParentObject()->GetDoc();
+  nsCOMPtr<Document> doc = aHiddenElement->GetParentObject()->GetDoc();
   RefPtr<HiddenPluginEvent> event = HiddenPluginEvent::Constructor(
       doc, NS_LITERAL_STRING("HiddenPlugin"), init);
   event->SetTarget(doc);
   event->SetTrusted(true);
   event->WidgetEventPtr()->mFlags.mOnlyChromeDispatch = true;
-  bool dummy;
-  doc->DispatchEvent(event, &dummy);
+  doc->DispatchEvent(*event);
 }
 
 uint32_t nsPluginArray::Length(CallerType aCallerType) {
@@ -274,7 +273,7 @@ bool nsPluginArray::AllowPlugins() const {
   if (!mWindow) {
     return false;
   }
-  nsCOMPtr<nsIDocument> doc = mWindow->GetDoc();
+  nsCOMPtr<Document> doc = mWindow->GetDoc();
   if (!doc) {
     return false;
   }
@@ -330,7 +329,7 @@ void nsPluginArray::EnsurePlugins() {
           nsresult rv =
               pluginHost->GetPermissionStringForTag(pluginTag, 0, permString);
           if (rv == NS_OK) {
-            nsCOMPtr<nsIDocument> currentDoc = mWindow->GetExtantDoc();
+            nsCOMPtr<Document> currentDoc = mWindow->GetExtantDoc();
 
             // The top-level content document gets the final say on whether or
             // not a plugin is going to be hidden or not, regardless of the
@@ -339,14 +338,14 @@ void nsPluginArray::EnsurePlugins() {
             // iframes attempt to access navigator.plugins after the user has
             // already expressed that the top-level document has this
             // permission.
-            nsCOMPtr<nsIDocument> topDoc =
+            nsCOMPtr<Document> topDoc =
                 currentDoc->GetTopLevelContentDocument();
 
             if (topDoc) {
               nsIPrincipal* principal = topDoc->NodePrincipal();
               nsCOMPtr<nsIPermissionManager> permMgr =
                   services::GetPermissionManager();
-              permMgr->TestPermissionFromPrincipal(principal, permString.get(),
+              permMgr->TestPermissionFromPrincipal(principal, permString,
                                                    &permission);
             }
           }
@@ -395,7 +394,7 @@ nsPIDOMWindowInner* nsPluginElement::GetParentObject() const {
 
 JSObject* nsPluginElement::WrapObject(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return PluginBinding::Wrap(aCx, this, aGivenProto);
+  return Plugin_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void nsPluginElement::GetDescription(nsString& retval) const {

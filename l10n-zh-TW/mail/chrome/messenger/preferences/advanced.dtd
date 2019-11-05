@@ -12,6 +12,7 @@
 <!ENTITY enableGlodaSearch.label       "開啟全域搜尋與索引器">
 <!ENTITY enableGlodaSearch.accesskey   "E">
 <!ENTITY dateTimeFormatting.label      "日期與時間格式">
+<!ENTITY languageSelector.label        "語言">
 <!ENTITY allowHWAccel.label            "可用時開啟硬體加速">
 <!ENTITY allowHWAccel.accesskey        "h">
 <!ENTITY storeType.label               "新帳號的訊息儲存方式:">
@@ -44,13 +45,13 @@
 <!ENTITY telemetryDesc.label             "分享您郵件軟體的效能、使用方式、硬體設備與自訂功能的資料給 &vendorShortName; 以幫助我們讓 &brandShortName; 變得更好">
 <!ENTITY enableTelemetry.label           "啟用 Telemetry">
 <!ENTITY enableTelemetry.accesskey       "T">
-<!ENTITY telemetryLearnMore.label        "更多資訊">
+<!ENTITY telemetryLearnMore.label        "了解更多">
 
 <!ENTITY crashReporterSection.label      "程式錯誤回報員">
 <!ENTITY crashReporterDesc.label         "&brandShortName; 會回傳錯誤報告給 &vendorShortName;，讓您的郵件軟體更穩定、更安全。">
 <!ENTITY enableCrashReporter.label       "啟用程式錯誤回報員">
 <!ENTITY enableCrashReporter.accesskey   "C">
-<!ENTITY crashReporterLearnMore.label    "更多資訊">
+<!ENTITY crashReporterLearnMore.label    "了解更多">
 
 <!-- Update -->
 <!-- LOCALIZATION NOTE (updateApp.label):
@@ -66,17 +67,18 @@
  -->
 <!ENTITY updateApp.version.pre           "">
 <!ENTITY updateApp.version.post          " 版">
+<!ENTITY updateAppAllow.description      "讓 &brandShortName;:">
 <!ENTITY updateAuto.label                "自動安裝更新（建議的，保持安全性）">
 <!ENTITY updateAuto.accesskey            "A">
 <!ENTITY updateCheck.label               "自動檢查更新，但讓我選擇要不要安裝">
 <!ENTITY updateCheck.accesskey           "C">
-<!ENTITY updateManual.label              "不要檢查更新（不建議，可能會有安全性風險）">
-<!ENTITY updateManual.accesskey          "N">
 <!ENTITY updateHistory.label             "顯示更新記錄">
 <!ENTITY updateHistory.accesskey         "p">
 
 <!ENTITY useService.label                "在背景服務當中安裝更新">
 <!ENTITY useService.accesskey            "b">
+
+<!ENTITY updateCrossUserSettingWarning.description "此設定將套用到本電腦上的所有 Windows 帳號及此份 &brandShortName; 的所有 &brandShortName; 設定檔。">
 
 <!-- Networking and Disk Space -->
 <!ENTITY showSettings.label            "設定…">

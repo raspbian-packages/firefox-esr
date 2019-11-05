@@ -97,7 +97,7 @@ mozilla::ipc::IPCResult SpeechSynthesisRequestChild::RecvOnEnd(
     mTask->DispatchEndImpl(aElapsedTime, aCharIndex);
   }
 
-  actor->Send__delete__(actor);
+  SpeechSynthesisRequestChild::Send__delete__(actor);
 
   return IPC_OK();
 }
@@ -134,7 +134,7 @@ mozilla::ipc::IPCResult SpeechSynthesisRequestChild::RecvOnMark(
 
 SpeechTaskChild::SpeechTaskChild(SpeechSynthesisUtterance* aUtterance,
                                  bool aIsChrome)
-    : nsSpeechTask(aUtterance, aIsChrome) {}
+    : nsSpeechTask(aUtterance, aIsChrome), mActor(nullptr) {}
 
 NS_IMETHODIMP
 SpeechTaskChild::Setup(nsISpeechTaskCallback* aCallback) {

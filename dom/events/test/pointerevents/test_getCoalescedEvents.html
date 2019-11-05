@@ -6,7 +6,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1303957
 <head>
   <meta charset="utf-8">
   <title>Test for Bug 1303957</title>
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <script type="text/javascript" src="apz_test_native_event_utils.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
@@ -45,13 +45,11 @@ function runTests() {
         is(coalescedEvent.cancelable, false, "getCoalescedEvents()[" + i + "].cancelable");
         is(coalescedEvent.bubbles, false, "getCoalescedEvents()[" + i + "].bubbles");
 
-        let offsetX = 20 - (length - i - 1) * 5;
-        let offsetY = 20 - (length - i - 1) * 5;
-        ok(coalescedEvent.offsetX > prevOffsetX, "getCoalescedEvents()[" + i + "].offsetX = " + coalescedEvent.offsetX);
+        ok(coalescedEvent.offsetX >= prevOffsetX, "getCoalescedEvents()[" + i + "].offsetX = " + coalescedEvent.offsetX);
         ok(coalescedEvent.offsetX == 5 || coalescedEvent.offsetX == 10 ||
            coalescedEvent.offsetX == 15 || coalescedEvent.offsetX == 20, "expected offsetX");
 
-        ok(coalescedEvent.offsetY > prevOffsetY, "getCoalescedEvents()[" + i + "].offsetY = " + coalescedEvent.offsetY);
+        ok(coalescedEvent.offsetY >= prevOffsetY, "getCoalescedEvents()[" + i + "].offsetY = " + coalescedEvent.offsetY);
         ok(coalescedEvent.offsetY == 5 || coalescedEvent.offsetY == 10 ||
            coalescedEvent.offsetY == 15 || coalescedEvent.offsetY == 20, "expected offsetY");
 

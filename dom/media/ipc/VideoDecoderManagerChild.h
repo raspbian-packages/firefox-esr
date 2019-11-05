@@ -1,22 +1,23 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=2 et sw=2 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-#ifndef include_dom_ipc_VideoDecoderManagerChild_h
-#define include_dom_ipc_VideoDecoderManagerChild_h
+#ifndef include_ipc_VideoDecoderManagerChild_h
+#define include_ipc_VideoDecoderManagerChild_h
 
 #include "mozilla/RefPtr.h"
-#include "mozilla/dom/PVideoDecoderManagerChild.h"
+#include "mozilla/PVideoDecoderManagerChild.h"
 
 namespace mozilla {
 namespace gfx {
 class SourceSurface;
 }
-namespace dom {
 
 class VideoDecoderManagerChild final : public PVideoDecoderManagerChild,
                                        public mozilla::ipc::IShmemAllocator {
+  friend class PVideoDecoderManagerChild;
+
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(VideoDecoderManagerChild)
 
@@ -68,14 +69,15 @@ class VideoDecoderManagerChild final : public PVideoDecoderManagerChild,
   void ActorDestroy(ActorDestroyReason aWhy) override;
   void DeallocPVideoDecoderManagerChild() override;
 
-  void HandleFatalError(const char* aName, const char* aMsg) const override;
+  void HandleFatalError(const char* aMsg) const override;
 
   PVideoDecoderChild* AllocPVideoDecoderChild(
       const VideoInfo& aVideoInfo, const float& aFramerate,
+      const CreateDecoderParams::OptionSet& aOptions,
       const layers::TextureFactoryIdentifier& aIdentifier, bool* aSuccess,
       nsCString* aBlacklistedD3D11Driver, nsCString* aBlacklistedD3D9Driver,
-      nsCString* aErrorDescription) override;
-  bool DeallocPVideoDecoderChild(PVideoDecoderChild* actor) override;
+      nsCString* aErrorDescription);
+  bool DeallocPVideoDecoderChild(PVideoDecoderChild* actor);
 
  private:
   // Main thread only
@@ -92,7 +94,6 @@ class VideoDecoderManagerChild final : public PVideoDecoderManagerChild,
   bool mCanSend;
 };
 
-}  // namespace dom
 }  // namespace mozilla
 
-#endif  // include_dom_ipc_VideoDecoderManagerChild_h
+#endif  // include_ipc_VideoDecoderManagerChild_h

@@ -7,6 +7,8 @@
 #ifndef MOZILLA_GFX_VR_VRMANAGERCHILD_H
 #define MOZILLA_GFX_VR_VRMANAGERCHILD_H
 
+#include "mozilla/Attributes.h"
+#include "mozilla/dom/WindowBinding.h"  // For FrameRequestCallback
 #include "mozilla/gfx/PVRManagerChild.h"
 #include "mozilla/ipc/SharedMemory.h"  // for SharedMemory, etc
 #include "ThreadSafeRefcountingWithMainThreadDestruction.h"
@@ -31,6 +33,8 @@ class VRLayerChild;
 class VRDisplayClient;
 
 class VRManagerChild : public PVRManagerChild {
+  friend class PVRManagerChild;
+
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(VRManagerChild);
 
@@ -40,6 +44,8 @@ class VRManagerChild : public PVRManagerChild {
   void AddListener(dom::VREventObserver* aObserver);
   // Indicate that an observer should no longer receive VR events.
   void RemoveListener(dom::VREventObserver* aObserver);
+  void StartActivity();
+  void StopActivity();
 
   bool GetVRDisplays(nsTArray<RefPtr<VRDisplayClient>>& aDisplays);
   bool RefreshVRDisplaysWithCallback(uint64_t aWindowId);
@@ -68,8 +74,11 @@ class VRManagerChild : public PVRManagerChild {
   nsresult ScheduleFrameRequestCallback(
       mozilla::dom::FrameRequestCallback& aCallback, int32_t* aHandle);
   void CancelFrameRequestCallback(int32_t aHandle);
+  MOZ_CAN_RUN_SCRIPT
   void RunFrameRequestCallbacks();
+  void NotifyPresentationGenerationChanged(uint32_t aDisplayID);
 
+  MOZ_CAN_RUN_SCRIPT
   void UpdateDisplayInfo(nsTArray<VRDisplayInfo>& aDisplayUpdates);
   void FireDOMVRDisplayMountedEvent(uint32_t aDisplayID);
   void FireDOMVRDisplayUnmountedEvent(uint32_t aDisplayID);
@@ -78,8 +87,7 @@ class VRManagerChild : public PVRManagerChild {
   void FireDOMVRDisplayPresentChangeEvent(uint32_t aDisplayID);
   void FireDOMVRDisplayConnectEventsForLoad(dom::VREventObserver* aObserver);
 
-  virtual void HandleFatalError(const char* aName,
-                                const char* aMsg) const override;
+  virtual void HandleFatalError(const char* aMsg) const override;
 
  protected:
   explicit VRManagerChild();
@@ -87,27 +95,29 @@ class VRManagerChild : public PVRManagerChild {
   void Destroy();
   static void DeferredDestroy(RefPtr<VRManagerChild> aVRManagerChild);
 
-  virtual PVRLayerChild* AllocPVRLayerChild(const uint32_t& aDisplayID,
-                                            const uint32_t& aGroup) override;
-  virtual bool DeallocPVRLayerChild(PVRLayerChild* actor) override;
+  PVRLayerChild* AllocPVRLayerChild(const uint32_t& aDisplayID,
+                                    const uint32_t& aGroup);
+  bool DeallocPVRLayerChild(PVRLayerChild* actor);
 
-  virtual mozilla::ipc::IPCResult RecvUpdateDisplayInfo(
-      nsTArray<VRDisplayInfo>&& aDisplayUpdates) override;
+  // MOZ_CAN_RUN_SCRIPT_BOUNDARY until we can mark ipdl-generated things as
+  // MOZ_CAN_RUN_SCRIPT.
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  mozilla::ipc::IPCResult RecvUpdateDisplayInfo(
+      nsTArray<VRDisplayInfo>&& aDisplayUpdates);
 
-  virtual mozilla::ipc::IPCResult RecvDispatchSubmitFrameResult(
-      const uint32_t& aDisplayID,
-      const VRSubmitFrameResultInfo& aResult) override;
-  virtual mozilla::ipc::IPCResult RecvGamepadUpdate(
-      const GamepadChangeEvent& aGamepadEvent) override;
-  virtual mozilla::ipc::IPCResult RecvReplyGamepadVibrateHaptic(
-      const uint32_t& aPromiseID) override;
+  mozilla::ipc::IPCResult RecvDispatchSubmitFrameResult(
+      const uint32_t& aDisplayID, const VRSubmitFrameResultInfo& aResult);
+  mozilla::ipc::IPCResult RecvGamepadUpdate(
+      const GamepadChangeEvent& aGamepadEvent);
+  mozilla::ipc::IPCResult RecvReplyGamepadVibrateHaptic(
+      const uint32_t& aPromiseID);
 
-  virtual mozilla::ipc::IPCResult RecvReplyCreateVRServiceTestDisplay(
+  mozilla::ipc::IPCResult RecvReplyCreateVRServiceTestDisplay(
       const nsCString& aID, const uint32_t& aPromiseID,
-      const uint32_t& aDeviceID) override;
-  virtual mozilla::ipc::IPCResult RecvReplyCreateVRServiceTestController(
+      const uint32_t& aDeviceID);
+  mozilla::ipc::IPCResult RecvReplyCreateVRServiceTestController(
       const nsCString& aID, const uint32_t& aPromiseID,
-      const uint32_t& aDeviceID) override;
+      const uint32_t& aDeviceID);
   bool IsSameProcess() const { return OtherPid() == base::GetCurrentProcId(); }
 
  private:
@@ -118,6 +128,7 @@ class VRManagerChild : public PVRManagerChild {
   void FireDOMVRDisplayPresentChangeEventInternal(uint32_t aDisplayID);
   void FireDOMVRDisplayConnectEventsForLoadInternal(
       uint32_t aDisplayID, dom::VREventObserver* aObserver);
+  void NotifyPresentationGenerationChangedInternal(uint32_t aDisplayID);
 
   nsTArray<RefPtr<VRDisplayClient>> mDisplays;
   bool mDisplaysInitialized;
@@ -142,6 +153,7 @@ class VRManagerChild : public PVRManagerChild {
   uint32_t mPromiseID;
   nsRefPtrHashtable<nsUint32HashKey, dom::Promise> mPromiseList;
   RefPtr<dom::VRMockDisplay> mVRMockDisplay;
+  VRControllerState mLastControllerState[kVRControllerMaxCount];
 
   DISALLOW_COPY_AND_ASSIGN(VRManagerChild);
 };

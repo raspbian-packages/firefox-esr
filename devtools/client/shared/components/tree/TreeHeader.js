@@ -6,7 +6,7 @@
 "use strict";
 
 // Make this available to both AMD and CJS environments
-define(function (require, exports, module) {
+define(function(require, exports, module) {
   const { Component } = require("devtools/client/shared/vendor/react");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
   const dom = require("devtools/client/shared/vendor/react-dom-factories");
@@ -25,15 +25,17 @@ define(function (require, exports, module) {
         // True if the header should be visible
         header: PropTypes.bool,
         // Array with column definition
-        columns: PropTypes.array
+        columns: PropTypes.array,
       };
     }
 
     static get defaultProps() {
       return {
-        columns: [{
-          id: "default"
-        }]
+        columns: [
+          {
+            id: "default",
+          },
+        ],
       };
     }
 
@@ -43,7 +45,7 @@ define(function (require, exports, module) {
     }
 
     getHeaderClass(colId) {
-      let decorator = this.props.decorator;
+      const decorator = this.props.decorator;
       if (!decorator || !decorator.getHeaderClass) {
         return [];
       }
@@ -62,13 +64,13 @@ define(function (require, exports, module) {
     }
 
     render() {
-      let cells = [];
-      let visible = this.props.header;
+      const cells = [];
+      const visible = this.props.header;
 
       // Render the rest of the columns (if any)
       this.props.columns.forEach(col => {
-        let cellStyle = {
-          "width": col.width ? col.width : "",
+        const cellStyle = {
+          width: col.width ? col.width : "",
         };
 
         let classNames = [];
@@ -79,28 +81,38 @@ define(function (require, exports, module) {
         }
 
         cells.push(
-          td({
-            className: classNames.join(" "),
-            style: cellStyle,
-            role: "presentation",
-            id: col.id,
-            key: col.id,
-          },
-            visible ? div({
-              className: "treeHeaderCellBox",
-              role: "presentation"
-            }, col.title) : null
+          td(
+            {
+              className: classNames.join(" "),
+              style: cellStyle,
+              role: "presentation",
+              id: col.id,
+              key: col.id,
+            },
+            visible
+              ? div(
+                  {
+                    className: "treeHeaderCellBox",
+                    role: "presentation",
+                  },
+                  col.title
+                )
+              : null
           )
         );
       });
 
-      return (
-        thead({
-          role: "presentation"
-        }, tr({
-          className: visible ? "treeHeaderRow" : "",
-          role: "presentation"
-        }, cells))
+      return thead(
+        {
+          role: "presentation",
+        },
+        tr(
+          {
+            className: visible ? "treeHeaderRow" : "",
+            role: "presentation",
+          },
+          cells
+        )
       );
     }
   }

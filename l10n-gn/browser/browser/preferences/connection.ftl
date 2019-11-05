@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS eipurúva SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Embojuruja DNS pe HTTPS ári
+    .accesskey = b
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Eipuru ypykuegua ({ $url })
+    .accesskey = U
+    .tooltiptext = Eipuru URL ypykuegua emoĩporã hag̃ua DNS HTTPS ári
+connection-dns-over-https-url-resolver = Eipuru Me'ẽha
+    .accesskey = P
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (ijypykue)
+    .tooltiptext = Eipuru URL ijypykuéva eike hag̃ua DNS-pe HTTPS rãngue
+connection-dns-over-https-url-custom =
+    .label = Momba'epyre
+    .accesskey = C
+    .tooltiptext = Ingresa tu URL preferida para resolver DNS sobre HTTPS
+connection-dns-over-https-custom-label = Ñemomba'epyre

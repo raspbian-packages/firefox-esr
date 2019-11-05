@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -141,7 +141,7 @@ nsresult txNodeSorter::sortNodeSet(txNodeSet* aNodes, txExecutionState* aEs,
   }
 
   auto indexes = MakeUniqueFallible<uint32_t[]>(len.value());
-  auto sortValues = MakeUniqueFallible<txObject* []>(numSortValues.value());
+  auto sortValues = MakeUniqueFallible<txObject*[]>(numSortValues.value());
   if (!indexes || !sortValues) {
     return NS_ERROR_OUT_OF_MEMORY;
   }

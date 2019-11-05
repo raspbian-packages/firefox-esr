@@ -4,8 +4,8 @@
 "use strict";
 
 const {
-  ConsoleAPIListener
-} = require("devtools/server/actors/webconsole/listeners");
+  ConsoleAPIListener,
+} = require("devtools/server/actors/webconsole/listeners/console-api");
 const EventEmitter = require("devtools/shared/event-emitter");
 const hasMethod = (target, method) =>
   method in target && typeof target[method] === "function";
@@ -20,20 +20,24 @@ const hasMethod = (target, method) =>
  */
 const TESTS = {
   testEventEmitterCreation() {
-    let emitter = getEventEmitter();
-    let isAnEmitter = emitter instanceof EventEmitter;
+    const emitter = getEventEmitter();
+    const isAnEmitter = emitter instanceof EventEmitter;
 
     ok(emitter, "We have an event emitter");
-    ok(hasMethod(emitter, "on") &&
-      hasMethod(emitter, "off") &&
-      hasMethod(emitter, "once") &&
-      !hasMethod(emitter, "decorate") &&
-      !hasMethod(emitter, "count"),
-    `Event Emitter ${isAnEmitter ? "instance" : "mixin"} has the expected methods.`);
+    ok(
+      hasMethod(emitter, "on") &&
+        hasMethod(emitter, "off") &&
+        hasMethod(emitter, "once") &&
+        !hasMethod(emitter, "decorate") &&
+        !hasMethod(emitter, "count"),
+      `Event Emitter ${
+        isAnEmitter ? "instance" : "mixin"
+      } has the expected methods.`
+    );
   },
 
   testEmittingEvents(done) {
-    let emitter = getEventEmitter();
+    const emitter = getEventEmitter();
 
     let beenHere1 = false;
     let beenHere2 = false;
@@ -56,7 +60,7 @@ const TESTS = {
     }
 
     function onlyOnce() {
-      ok(!beenHere2, "\"once\" listener has been called once");
+      ok(!beenHere2, '"once" listener has been called once');
       beenHere2 = true;
       emitter.emit("onlyonce");
 
@@ -68,14 +72,14 @@ const TESTS = {
   },
 
   testThrowingExceptionInListener(done) {
-    let emitter = getEventEmitter();
-    let listener = new ConsoleAPIListener(null, {
+    const emitter = getEventEmitter();
+    const listener = new ConsoleAPIListener(null, {
       onConsoleAPICall(message) {
         equal(message.level, "error");
         equal(message.arguments[0], "foo: bar");
         listener.destroy();
         done();
-      }
+      },
     });
 
     listener.init();
@@ -93,7 +97,7 @@ const TESTS = {
   },
 
   testKillItWhileEmitting(done) {
-    let emitter = getEventEmitter();
+    const emitter = getEventEmitter();
 
     const c1 = () => ok(true, "c1 called");
     const c2 = () => {
@@ -115,10 +119,10 @@ const TESTS = {
   },
 
   testOffAfterOnce() {
-    let emitter = getEventEmitter();
+    const emitter = getEventEmitter();
 
     let enteredC1 = false;
-    let c1 = () => (enteredC1 = true);
+    const c1 = () => (enteredC1 = true);
 
     emitter.once("oao", c1);
     emitter.off("oao", c1);
@@ -129,13 +133,13 @@ const TESTS = {
   },
 
   testPromise() {
-    let emitter = getEventEmitter();
-    let p = emitter.once("thing");
+    const emitter = getEventEmitter();
+    const p = emitter.once("thing");
 
     // Check that the promise is only resolved once event though we
     // emit("thing") more than once
     let firstCallbackCalled = false;
-    let check1 = p.then(arg => {
+    const check1 = p.then(arg => {
       equal(firstCallbackCalled, false, "first callback called only once");
       firstCallbackCalled = true;
       equal(arg, "happened", "correct arg in promise");
@@ -146,7 +150,7 @@ const TESTS = {
 
     // Check that the promise is resolved asynchronously
     let secondCallbackCalled = false;
-    let check2 = p.then(arg => {
+    const check2 = p.then(arg => {
       ok(true, "second callback called");
       equal(arg, "happened", "correct arg in promise");
       secondCallbackCalled = true;
@@ -159,10 +163,10 @@ const TESTS = {
 
     // Check that we can still separate events with different names
     // and that it works with no parameters
-    let pfoo = emitter.once("foo");
-    let pbar = emitter.once("bar");
+    const pfoo = emitter.once("foo");
+    const pbar = emitter.once("bar");
 
-    let check3 = pfoo.then(arg => {
+    const check3 = pfoo.then(arg => {
       ok(arg === undefined, "no arg for foo event");
       return "rval from c3";
     });
@@ -175,7 +179,7 @@ const TESTS = {
 
     equal(secondCallbackCalled, false, "second callback not called yet");
 
-    return Promise.all([ check1, check2, check3 ]).then(args => {
+    return Promise.all([check1, check2, check3]).then(args => {
       equal(args[0], "rval from c1", "callback 1 done good");
       equal(args[1], "rval from c2", "callback 2 done good");
       equal(args[2], "rval from c3", "callback 3 done good");
@@ -186,10 +190,10 @@ const TESTS = {
   // event-emitter.
   // !!! This API will be removed by Bug 1391261.
   testWildcard() {
-    let emitter = getEventEmitter();
+    const emitter = getEventEmitter();
 
-    let received = [];
-    let listener = (...args) => received.push(args);
+    const received = [];
+    const listener = (...args) => received.push(args);
 
     emitter.on("*", listener);
 
@@ -203,13 +207,21 @@ const TESTS = {
     emitter.emit("*", "wildcard");
 
     equal(received.length, 2, "the listener was only triggered once");
-    equal(received[1].length, 1, "the listener was called with only 1 argument");
+    equal(
+      received[1].length,
+      1,
+      "the listener was called with only 1 argument"
+    );
     equal(received[1][0], "wildcard", "first argument is the actual argument");
 
     emitter.emit("other", "arg1", "arg2");
 
     equal(received.length, 3, "the listener was triggered once");
-    equal(received[2].length, 3, "the listener was called with only 1 argument");
+    equal(
+      received[2].length,
+      3,
+      "the listener was called with only 1 argument"
+    );
     equal(received[2][0], "other", "first argument is the event name");
     equal(received[2][1], "arg1", "additional arguments are forwarded");
     equal(received[2][2], "arg2", "additional arguments are forwarded");
@@ -218,7 +230,30 @@ const TESTS = {
     emitter.emit("a");
     emitter.emit("*");
     equal(received.length, 3, "the listener was not called anymore");
-  }
+  },
+
+  testClearEvents() {
+    const emitter = getEventEmitter();
+
+    const received = [];
+    const listener = (...args) => received.push(args);
+
+    emitter.on("a", listener);
+    emitter.on("b", listener);
+    emitter.on("c", listener);
+
+    emitter.emit("a", 1);
+    emitter.emit("b", 1);
+    emitter.emit("c", 1);
+
+    equal(received.length, 3, "the listener was triggered three times");
+
+    emitter.clearEvents();
+    emitter.emit("a", 1);
+    emitter.emit("b", 1);
+    emitter.emit("c", 1);
+    equal(received.length, 3, "the listener was not called after clearEvents");
+  },
 };
 
 /**
@@ -227,16 +262,17 @@ const TESTS = {
  * @param {Object} tests
  *  The tests descriptor object, contains the tests to run.
  */
-const runnable = (tests) => (async function () {
-  for (let name of Object.keys(tests)) {
-    info(name);
-    if (tests[name].length === 1) {
-      await (new Promise(resolve => tests[name](resolve)));
-    } else {
-      await tests[name]();
+const runnable = tests =>
+  async function() {
+    for (const name of Object.keys(tests)) {
+      info(name);
+      if (tests[name].length === 1) {
+        await new Promise(resolve => tests[name](resolve));
+      } else {
+        await tests[name]();
+      }
     }
-  }
-});
+  };
 
 // We want to run the same tests for both an instance of `EventEmitter` and an object
 // decorate with EventEmitter; therefore we create two strategies (`createNewEmitter` and

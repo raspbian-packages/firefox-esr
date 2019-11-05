@@ -14,6 +14,7 @@
 #include "gfxPlatform.h"  // for gfxPlatform
 #include "GLReadTexImageHelper.h"
 #include "mozilla/gfx/BaseSize.h"  // for BaseSize
+#include "mozilla/gfx/gfxVars.h"
 #include "mozilla/layers/BufferTexture.h"
 #include "mozilla/layers/AsyncCanvasRenderer.h"
 #include "mozilla/layers/CompositableForwarder.h"
@@ -31,7 +32,8 @@ using namespace mozilla::gl;
 namespace mozilla {
 namespace layers {
 
-/* static */ already_AddRefed<CanvasClient> CanvasClient::CreateCanvasClient(
+/* static */
+already_AddRefed<CanvasClient> CanvasClient::CreateCanvasClient(
     CanvasClientType aType, CompositableForwarder* aForwarder,
     TextureFlags aFlags) {
   switch (aType) {
@@ -61,7 +63,8 @@ void CanvasClientBridge::UpdateAsync(AsyncCanvasRenderer* aRenderer) {
   mAsyncHandle = asyncID;
 }
 
-void CanvasClient2D::UpdateFromTexture(TextureClient* aTexture) {
+void CanvasClient2D::UpdateFromTexture(TextureClient* aTexture,
+                                       wr::RenderRoot aRenderRoot) {
   MOZ_ASSERT(aTexture);
 
   if (!aTexture->IsSharedWithCompositor()) {
@@ -80,15 +83,16 @@ void CanvasClient2D::UpdateFromTexture(TextureClient* aTexture) {
   t->mPictureRect = nsIntRect(nsIntPoint(0, 0), aTexture->GetSize());
   t->mFrameID = mFrameID;
 
-  GetForwarder()->UseTextures(this, textures);
+  GetForwarder()->UseTextures(this, textures, Some(aRenderRoot));
   aTexture->SyncWithObject(GetForwarder()->GetSyncObject());
 }
 
 void CanvasClient2D::Update(gfx::IntSize aSize,
-                            ShareableCanvasRenderer* aCanvasRenderer) {
+                            ShareableCanvasRenderer* aCanvasRenderer,
+                            wr::RenderRoot aRenderRoot) {
   mBufferProviderTexture = nullptr;
 
-  AutoRemoveTexture autoRemove(this);
+  AutoRemoveTexture autoRemove(this, aRenderRoot);
   if (mBackBuffer &&
       (mBackBuffer->IsReadLocked() || mBackBuffer->GetSize() != aSize)) {
     autoRemove.mTexture = mBackBuffer;
@@ -148,7 +152,7 @@ void CanvasClient2D::Update(gfx::IntSize aSize,
     t->mTextureClient = mBackBuffer;
     t->mPictureRect = nsIntRect(nsIntPoint(0, 0), mBackBuffer->GetSize());
     t->mFrameID = mFrameID;
-    GetForwarder()->UseTextures(this, textures);
+    GetForwarder()->UseTextures(this, textures, Some(aRenderRoot));
     mBackBuffer->SyncWithObject(GetForwarder()->GetSyncObject());
   }
 
@@ -236,6 +240,9 @@ class TexClientFactory {
     if (!areRGBAFormatsBroken) {
       gfx::SurfaceFormat format = mHasAlpha ? gfx::SurfaceFormat::R8G8B8A8
                                             : gfx::SurfaceFormat::R8G8B8X8;
+      if (gfxVars::UseWebRender() && format == gfx::SurfaceFormat::R8G8B8X8) {
+        MOZ_CRASH("R8G8B8X8 is not supported on WebRender");
+      }
       ret = Create(format);
     }
 
@@ -306,11 +313,12 @@ static already_AddRefed<TextureClient> TexClientFromReadback(
     // ReadPixels from the current FB into mapped.data.
     auto width = src->mSize.width;
     auto height = src->mSize.height;
+    auto stride = mapped.stride;
 
     {
       ScopedPackState scopedPackState(gl);
-
-      MOZ_ASSERT(mapped.stride / 4 == mapped.size.width);
+      bool handled = scopedPackState.SetForWidthAndStrideRGBA(width, stride);
+      MOZ_RELEASE_ASSERT(handled, "Unhandled stride");
       gl->raw_fReadPixels(0, 0, width, height, readFormat, readType,
                           mapped.data);
     }
@@ -353,8 +361,9 @@ static already_AddRefed<SharedSurfaceTextureClient> CloneSurface(
   return dest.forget();
 }
 
-void CanvasClientSharedSurface::Update(
-    gfx::IntSize aSize, ShareableCanvasRenderer* aCanvasRenderer) {
+void CanvasClientSharedSurface::Update(gfx::IntSize aSize,
+                                       ShareableCanvasRenderer* aCanvasRenderer,
+                                       wr::RenderRoot aRenderRoot) {
   Renderer renderer;
   renderer.construct<ShareableCanvasRenderer*>(aCanvasRenderer);
   UpdateRenderer(aSize, renderer);
@@ -378,19 +387,12 @@ void CanvasClientSharedSurface::UpdateRenderer(gfx::IntSize aSize,
     asyncRenderer = aRenderer.ref<AsyncCanvasRenderer*>();
     gl = asyncRenderer->mGLContext;
   }
-  gl->MakeCurrent();
+  if (!gl->MakeCurrent()) return;
 
   RefPtr<TextureClient> newFront;
 
   mShSurfClient = nullptr;
-  if (canvasRenderer && canvasRenderer->mGLFrontbuffer) {
-    mShSurfClient = CloneSurface(canvasRenderer->mGLFrontbuffer.get(),
-                                 canvasRenderer->mFactory.get());
-    if (!mShSurfClient) {
-      gfxCriticalError() << "Invalid canvas front buffer";
-      return;
-    }
-  } else if (gl->Screen()) {
+  if (gl->Screen()) {
     mShSurfClient = gl->Screen()->Front();
     if (mShSurfClient && mShSurfClient->GetAllocator() &&
         mShSurfClient->GetAllocator() !=
@@ -408,6 +410,11 @@ void CanvasClientSharedSurface::UpdateRenderer(gfx::IntSize aSize,
   newFront = mShSurfClient;
 
   SharedSurface* surf = mShSurfClient->Surf();
+
+  if (!surf->IsBufferAvailable()) {
+    NS_WARNING("SharedSurface buffer not available, skip update");
+    return;
+  }
 
   // Readback if needed.
   mReadbackClient = nullptr;
@@ -465,7 +472,7 @@ void CanvasClientSharedSurface::UpdateRenderer(gfx::IntSize aSize,
   mNewFront = newFront;
 }
 
-void CanvasClientSharedSurface::Updated() {
+void CanvasClientSharedSurface::Updated(wr::RenderRoot aRenderRoot) {
   if (!mNewFront) {
     return;
   }
@@ -485,7 +492,7 @@ void CanvasClientSharedSurface::Updated() {
   t->mTextureClient = mFront;
   t->mPictureRect = nsIntRect(nsIntPoint(0, 0), mFront->GetSize());
   t->mFrameID = mFrameID;
-  forwarder->UseTextures(this, textures);
+  forwarder->UseTextures(this, textures, Some(aRenderRoot));
 }
 
 void CanvasClientSharedSurface::OnDetach() { ClearSurfaces(); }

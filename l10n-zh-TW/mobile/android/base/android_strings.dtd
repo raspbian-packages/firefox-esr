@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "歡迎">
 <!ENTITY firstrun_urlbar_message2 "感謝選用 &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "歡迎使用 &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "來自 Mozilla 的現代行動瀏覽器。Mozilla 是一個致力於自由與開放 Web 的非營利組織。">
+<!ENTITY newfirstrun_urlbar_subtext "快速上網，確保隱私，永遠挺你。">
 <!ENTITY firstrun_panel_title_privacy "隱私權">
 <!ENTITY firstrun_privacy_message "隱私瀏覽不留痕跡">
 <!ENTITY firstrun_privacy_subtext "打開隱私分頁，不僅可阻擋追蹤廣告，也不會留下瀏覽紀錄，上網好安心。">
+<!ENTITY newfirstrun_privacy_subtext "隱私瀏覽模式，可封鎖會在網路上偷偷跟蹤您的廣告追蹤器。">
 <!ENTITY firstrun_panel_title_customize "自訂">
 <!ENTITY firstrun_customize_message "讓 &brandShortName; 有您的風格。">
 <!ENTITY firstrun_customize_subtext "使用附加元件自訂 &brandShortName;。您可封鎖廣告、新增功能，或選擇一套新的佈景主題來展現您的個性。">
@@ -18,21 +21,20 @@
 <!ENTITY firstrun_data_message "網路用得更少，幫您省得更多">
 <!ENTITY firstrun_data_subtext2 "關閉圖片載入，開啟網站時花費更少流量。">
 <!ENTITY firstrun_sync_title "Sync">
+<!ENTITY updatednewfirstrun_sync_title "帳號">
 <!ENTITY firstrun_sync_message2 "從結束的地方繼續。">
 <!ENTITY firstrun_sync_subtext2 "使用 Sync 來尋找您在任何裝置中，儲存到 &brandShortName; 的書籤、密碼，還有更多東西。">
+<!ENTITY newfirstrun_sync_subtext "將您在行動裝置存下的東西私密而安全地同步到 Firefox 桌面版。">
+<!ENTITY updatednewfirstrun_sync_subtext "請登入您的帳號，發揮 &brandShortName; 的最大威力">
 <!ENTITY firstrun_signin_message "開始連線使用">
 <!ENTITY firstrun_signin_button "登入至 Sync">
+<!ENTITY newfirstrun_signin_button "開啟同步">
+<!ENTITY updatednewfirstrun_signin_button "登入 &brandShortName;">
 <!ENTITY  onboard_start_button_browser "開始瀏覽">
 <!ENTITY firstrun_button_notnow "現在不要">
 <!ENTITY firstrun_button_next "下一步">
 
 <!ENTITY firstrun_tabqueue_title "鏈結">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "打開分頁佇列">
-<!ENTITY firstrun_tabqueue_subtext_off "當在其他應用程式內點擊鏈結時，會在 &brandShortName; 儲存以便稍後查看。">
-
-<!ENTITY firstrun_tabqueue_message_on "成功！">
-<!ENTITY firstrun_tabqueue_subtext_on "您可以在 &pref_category_general; 底下的 &settings; 關閉它。">
 
 <!ENTITY firstrun_readerview_title "文章">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -50,7 +52,7 @@
 <!ENTITY  bookmarks_title "行動書籤">
 <!ENTITY  history_title "瀏覽紀錄">
 
-<!ENTITY  switch_to_tab "切換到分頁">
+<!ENTITY  switch_to_tab "切換至該分頁">
 
 <!-- Localization note: Shown in a snackbar when tab is loaded from cache while device was offline. -->
 <!ENTITY  tab_offline_version "顯示離線版本">
@@ -68,7 +70,27 @@
 <!ENTITY  crash_close_label "關閉">
 <!ENTITY  crash_restart_label "重開 &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; 發生錯誤">
+<!ENTITY  crash_notification_message "點擊此處回報給 &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "忽略">
+
 <!ENTITY url_bar_default_text2 "搜尋或輸入網址">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "搜尋 Web">
+<!ENTITY search_widget_default_cropped_text "搜尋">
+<!ENTITY search_widget_logo_description "使用 &brandShortName; 搜尋 Web">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "請使用您的 QR Code 掃描器來搜尋或輸入網址">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "請使用您的麥克風來搜尋或輸入網址">
 
 <!ENTITY bookmark "加入書籤">
 <!ENTITY bookmark_remove "移除書籤">
@@ -96,6 +118,10 @@
 <!ENTITY bookmark_parent_folder "上層資料夾">
 <!ENTITY bookmark_add_folder "新增資料夾">
 
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "（無標題）">
+
 <!ENTITY reader_saved_offline "已儲存離線閱讀">
 <!-- Localization note (reader_switch_to_bookmarks) : This
      string is used as an action in a snackbar - it lets you
@@ -113,7 +139,7 @@
 <!ENTITY menu "選單">
 <!ENTITY back "上一頁">
 <!ENTITY stop "停止">
-<!ENTITY site_security "網站安全">
+<!ENTITY site_security "網站安全性">
 <!ENTITY edit_mode_cancel "取消">
 
 <!ENTITY close_tab "關閉分頁">
@@ -188,7 +214,7 @@
 <!ENTITY pref_category_vendor_summary2 "關於 &brandShortName;、常見問題、意見回饋">
 <!ENTITY pref_category_datareporting "回報資料">
 <!ENTITY pref_category_logins "登入資訊">
-<!ENTITY pref_learn_more "詳細資訊">
+<!ENTITY pref_learn_more "了解更多">
 <!ENTITY pref_category_installed_search_engines "已安裝的搜尋引擎">
 <!ENTITY pref_category_add_search_providers "新增更多搜尋引擎">
 <!ENTITY pref_category_search_restore_defaults "還原搜尋引擎">
@@ -206,7 +232,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "還原分頁、節省流量、開發者工具">
 <!ENTITY pref_category_notifications "通知">
-<!ENTITY pref_category_notifications_summary "新功能、網站更新">
+<!ENTITY pref_category_notifications_summary2 "新功能、產品小秘訣">
 <!ENTITY pref_developer_remotedebugging_usb "透過 USB 進行遠端除錯">
 <!ENTITY pref_developer_remotedebugging_wifi "透過 Wi-Fi 進行遠端除錯">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "您的裝置需要安裝 QR Code 掃描程式才能使用 Wi-Fi 除錯。">
@@ -288,6 +314,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "了解 &brandShortName; 與其他 &vendorShortName; 產品的更多資訊">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "（要開啟此選項，必須先開啟&pref_feature_tips_notification_enabling_path;）">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -327,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "開啟設定">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "已新增分頁至佇列&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "依照系統字型大小縮放網頁內容">
 
 <!ENTITY pref_media_autoplay_enabled "允許自動播放">
-<!ENTITY pref_media_autoplay_enabled_summary "控制網站是否能夠自動播放影片或其他媒體內容">
+<!ENTITY pref_media_autoplay_allow "允許自動播放">
+<!ENTITY pref_media_autoplay_block "封鎖自動播放">
 <!ENTITY pref_zoom_force_enabled "隨時啟用縮放">
 <!ENTITY pref_zoom_force_enabled_summary "強制讓所有網頁都能縮放大小">
 <!ENTITY pref_voice_input "語音輸入">
@@ -384,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "搜尋紀錄">
 <!ENTITY pref_private_data_formdata2 "表單填寫紀錄">
 <!ENTITY pref_private_data_cookies2 "Cookie 與目前的網站登入狀態">
-<!ENTITY pref_private_data_passwords2 "儲存的登入資訊">
 <!ENTITY pref_private_data_cache "快取">
 <!ENTITY pref_private_data_offlineApps "網站離線資料">
 <!ENTITY pref_private_data_siteSettings2 "網站設定">
 <!ENTITY pref_private_data_downloadFiles2 "下載項目">
 <!ENTITY pref_private_data_syncedTabs "同步的分頁">
 
-<!ENTITY pref_default_browser "設為預設瀏覽器">
+<!ENTITY pref_default_browser2 "將 &brandShortName; 設為您的預設瀏覽器">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "點擊「瀏覽器應用程式」並選擇 &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "前往 Mozilla 技術支援站">
 <!ENTITY pref_about_firefox "關於 &brandShortName;">
 <!ENTITY pref_vendor_faqs "常見問題">
@@ -437,6 +476,11 @@
 <!ENTITY datareporting_crashreporter_title_short "程式錯誤回報員">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName; Location Service">
 <!ENTITY datareporting_wifi_geolocation_summary4 "一起來幫忙 &vendorShortName; 畫出全世界的地圖！請分享您的裝置的大略 Wi-Fi 與行動基地台位置，以幫助我們改善地理位置定位服務">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; 定位服務執行中">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -460,7 +504,7 @@
 <!ENTITY share_image_failed "無法分享此圖片">
 <!ENTITY save_as_pdf "儲存為 PDF">
 <!ENTITY print "列印">
-<!ENTITY view_page_source "檢視頁面原始碼">
+<!ENTITY view_page_source "檢視原始碼">
 <!ENTITY find_in_page "在頁面中搜尋">
 <!ENTITY desktop_mode "開啟桌面版網站">
 <!ENTITY page "頁面">
@@ -481,6 +525,10 @@
 <!ENTITY find_prev "上一個">
 <!ENTITY find_next "下一個">
 <!ENTITY find_close "關閉">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "找不到指定文字">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -543,7 +591,7 @@
 <!ENTITY pref_compact_tabs_summary2 "垂直使用螢幕時，將分頁清單排成兩欄">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "已移除頁面">
 <!ENTITY folder_removed "已移除資料夾">
@@ -554,6 +602,8 @@
 <!ENTITY bookmark_edit_location "網址">
 <!ENTITY bookmark_edit_keyword "關鍵字">
 <!ENTITY bookmark_select_folder "選擇資料夾">
+
+<!ENTITY bookmark_edit_undo "復原">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -579,7 +629,7 @@
 <!ENTITY button_clear "清除">
 <!ENTITY button_copy "複製">
 
-<!ENTITY home_top_sites_title "最常瀏覽">
+<!ENTITY home_top_sites_title "熱門網站">
 <!-- Localization note (home_top_sites_add): This string is used as placeholder
      text underneath empty thumbnails in the Top Sites page on about:home. -->
 <!ENTITY home_top_sites_add "新增網站">
@@ -643,6 +693,8 @@
 <!ENTITY filepicker_image_title "選擇或拍攝一張照片">
 <!ENTITY filepicker_video_title "選擇或錄製一段影片">
 
+<!ENTITY filepicker_permission_denied "未取得必需權限，改用系統檔案選擇器。">
+
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "您已連線到">
 <!-- Localization note (identity_run_by) : This string appears between a
@@ -674,7 +726,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY doorhanger_tracking_message_disabled2 "此頁面中包含某些元素，可能會追蹤您的瀏覽行為。">
 
 <!-- Common mixed and tracking content strings in site identity popup -->
-<!ENTITY learn_more "更多資訊">
+<!ENTITY learn_more "了解更多">
 <!ENTITY enable_protection "啟用保護">
 <!ENTITY disable_protection "停用保護">
 
@@ -758,7 +810,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "最近同步: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "最近同步: 從未">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -819,15 +871,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "無法開啟 &brandShortName;，請重新安裝後再試一次。">
 
-<!ENTITY eol_notification_title2 "&brandShortName; 將不再更新">
-<!ENTITY eol_notification_summary "點擊以獲得更多資訊">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "已經是最新版本的 &brandShortName;">
 <!ENTITY whatsnew_notification_summary "看看這個版本有什麼新鮮事">
-
-<!ENTITY promotion_add_page_shortcut "新增頁面捷徑">
 
 <!ENTITY helper_first_offline_bookmark_title "離線閱讀">
 <!ENTITY helper_first_offline_bookmark_message "就算離線時，您的閱讀畫面項目也會保存在書籤當中。">
@@ -837,7 +884,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "將閱讀畫面項目加入書籤，以在離線時閱讀。">
 <!ENTITY helper_triple_readerview_open_button "加入書籤">
 
-<!ENTITY activity_stream_topsites "最常瀏覽">
+<!ENTITY activity_stream_topsites "熱門網站">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "&brandPocket; 推薦">
 <!ENTITY activity_stream_highlights "精選網站">
@@ -878,3 +925,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "新增至裝置主畫面">
 <!ENTITY pwa_continue_to_website "繼續前往網站">
 <!ENTITY pwa_onboarding_sumo "您可將此網站加入裝置主畫面，方便快速開啟，或是以類似 App 的方式使用。">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "播放">
+<!ENTITY pip_play_button_description "繼續播放">
+<!ENTITY pip_pause_button_title "暫停">
+<!ENTITY pip_pause_button_description "暫停播放">
+
+<!ENTITY pref_notification_settings_link "管理通知設定">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "網頁瀏覽器">
+<!ENTITY mls_notification_channel "&vendorShortName; Location Service">
+<!ENTITY download_notification_channel "下載項目">
+<!ENTITY media_notification_channel2 "聲音與影片">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; 使用秘訣">
+<!ENTITY updater_notification_channel "應用程式更新">
+<!ENTITY synced_tabs_notification_channel "已同步的分頁">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "網站通知">
+<!ENTITY crash_handler_notifications_channel "&brandShortName; 錯誤回報員">

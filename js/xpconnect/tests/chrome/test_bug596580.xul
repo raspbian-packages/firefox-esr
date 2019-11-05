@@ -4,8 +4,7 @@
                  type="text/css"?>
 <window title="Mozilla Bug 596580"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
 
   <!-- test results are displayed in the html:body -->
   <body xmlns="http://www.w3.org/1999/xhtml">
@@ -15,6 +14,8 @@
 
   <!-- test code goes here -->
   <script type="application/javascript"><![CDATA[
+    SpecialPowers.pushPrefEnv({"set": [["security.allow_eval_with_system_principal",
+                                        true]]});
     function init() {
       var f = new Function("let test = 'let is ok'; return test;");
       is(f(), 'let is ok', 'let should be ok');

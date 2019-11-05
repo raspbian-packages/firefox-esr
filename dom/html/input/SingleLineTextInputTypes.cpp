@@ -8,6 +8,7 @@
 
 #include "mozilla/dom/HTMLInputElement.h"
 #include "mozilla/dom/BindingDeclarations.h"
+#include "mozilla/TextUtils.h"
 #include "HTMLSplitOnSpacesTokenizer.h"
 #include "nsContentUtils.h"
 #include "nsCRTGlue.h"
@@ -15,6 +16,9 @@
 #include "nsIIOService.h"
 #include "nsNetCID.h"
 #include "nsNetUtil.h"
+
+using namespace mozilla;
+using namespace mozilla::dom;
 
 bool SingleLineTextInputTypeBase::IsMutable() const {
   return !mInputElement->IsDisabled() &&
@@ -78,7 +82,7 @@ bool SingleLineTextInputTypeBase::HasPatternMismatch() const {
     return false;
   }
 
-  nsIDocument* doc = mInputElement->OwnerDoc();
+  Document* doc = mInputElement->OwnerDoc();
 
   return !nsContentUtils::IsPatternMatching(value, pattern, doc);
 }
@@ -159,8 +163,8 @@ nsresult EmailInputType::GetBadInputMessage(nsAString& aMessage) {
       nsContentUtils::eDOM_PROPERTIES, "FormValidationInvalidEmail", aMessage);
 }
 
-/* static */ bool EmailInputType::IsValidEmailAddressList(
-    const nsAString& aValue) {
+/* static */
+bool EmailInputType::IsValidEmailAddressList(const nsAString& aValue) {
   HTMLSplitOnSpacesTokenizer tokenizer(aValue, ',');
 
   while (tokenizer.hasMoreTokens()) {
@@ -172,7 +176,8 @@ nsresult EmailInputType::GetBadInputMessage(nsAString& aMessage) {
   return !tokenizer.separatorAfterCurrentToken();
 }
 
-/* static */ bool EmailInputType::IsValidEmailAddress(const nsAString& aValue) {
+/* static */
+bool EmailInputType::IsValidEmailAddress(const nsAString& aValue) {
   // Email addresses can't be empty and can't end with a '.' or '-'.
   if (aValue.IsEmpty() || aValue.Last() == '.' || aValue.Last() == '-') {
     return false;
@@ -196,11 +201,11 @@ nsresult EmailInputType::GetBadInputMessage(nsAString& aMessage) {
     char16_t c = value[i];
 
     // The username characters have to be in this list to be valid.
-    if (!(nsCRT::IsAsciiAlpha(c) || nsCRT::IsAsciiDigit(c) || c == '.' ||
-          c == '!' || c == '#' || c == '$' || c == '%' || c == '&' ||
-          c == '\'' || c == '*' || c == '+' || c == '-' || c == '/' ||
-          c == '=' || c == '?' || c == '^' || c == '_' || c == '`' ||
-          c == '{' || c == '|' || c == '}' || c == '~')) {
+    if (!(IsAsciiAlpha(c) || IsAsciiDigit(c) || c == '.' || c == '!' ||
+          c == '#' || c == '$' || c == '%' || c == '&' || c == '\'' ||
+          c == '*' || c == '+' || c == '-' || c == '/' || c == '=' ||
+          c == '?' || c == '^' || c == '_' || c == '`' || c == '{' ||
+          c == '|' || c == '}' || c == '~')) {
       return false;
     }
   }
@@ -227,8 +232,7 @@ nsresult EmailInputType::GetBadInputMessage(nsAString& aMessage) {
       if (value[i - 1] == '.') {
         return false;
       }
-    } else if (!(nsCRT::IsAsciiAlpha(c) || nsCRT::IsAsciiDigit(c) ||
-                 c == '-')) {
+    } else if (!(IsAsciiAlpha(c) || IsAsciiDigit(c) || c == '-')) {
       // The domain characters have to be in this list to be valid.
       return false;
     }
@@ -237,9 +241,10 @@ nsresult EmailInputType::GetBadInputMessage(nsAString& aMessage) {
   return true;
 }
 
-/* static */ bool EmailInputType::PunycodeEncodeEmailAddress(
-    const nsAString& aEmail, nsAutoCString& aEncodedEmail,
-    uint32_t* aIndexOfAt) {
+/* static */
+bool EmailInputType::PunycodeEncodeEmailAddress(const nsAString& aEmail,
+                                                nsAutoCString& aEncodedEmail,
+                                                uint32_t* aIndexOfAt) {
   nsAutoCString value = NS_ConvertUTF16toUTF8(aEmail);
   *aIndexOfAt = (uint32_t)value.FindChar('@');
 

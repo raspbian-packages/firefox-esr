@@ -59,10 +59,14 @@ if toolkit == 'windows':
 elif toolkit == 'cocoa':
     XPIDL_SOURCES += [
         'nsIMacDockSupport.idl',
+        'nsIMacSharingService.idl',
         'nsIMacWebAppUtils.idl',
         'nsIStandaloneNativeMenu.idl',
         'nsISystemStatusBar.idl',
         'nsITaskbarProgress.idl',
+        'nsITouchBarHelper.idl',
+        'nsITouchBarInput.idl',
+        'nsITouchBarUpdater.idl',
     ]
     EXPORTS += [
         'nsINativeMenuService.h',
@@ -84,13 +88,16 @@ if 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:
     if CONFIG['MOZ_X11']:
         DIRS += ['gtkxtbin']
 
+    XPIDL_SOURCES += [
+        'nsIGtkTaskbarProgress.idl',
+        'nsITaskbarProgress.idl',
+    ]
+
 XPIDL_SOURCES += [
     'nsIAppShell.idl',
     'nsIBaseWindow.idl',
     'nsIBidiKeyboard.idl',
     'nsIClipboard.idl',
-    'nsIClipboardDragDropHookList.idl',
-    'nsIClipboardDragDropHooks.idl',
     'nsIClipboardHelper.idl',
     'nsIClipboardOwner.idl',
     'nsIColorPicker.idl',
@@ -120,9 +127,13 @@ EXPORTS += [
     'GfxInfoBase.h',
     'GfxInfoCollector.h',
     'InputData.h',
+    'nsBaseAppShell.h',
+    'nsBaseDragService.h',
+    'nsBaseFilePicker.h',
     'nsBaseScreen.h',
     'nsBaseWidget.h',
     'nsIDeviceContextSpec.h',
+    'nsIdleService.h',
     'nsIKeyEventInPluginCallback.h',
     'nsIPluginWidget.h',
     'nsIPrintDialogService.h',
@@ -146,6 +157,7 @@ EXPORTS.mozilla += [
     'LookAndFeel.h',
     'MiscEvents.h',
     'MouseEvents.h',
+    'ProcInfo.h',
     'TextEventDispatcher.h',
     'TextEventDispatcherListener.h',
     'TextEvents.h',
@@ -238,10 +250,8 @@ EXPORTS.ipc = ['nsGUIEventIPC.h']
 
 if CONFIG['MOZ_X11']:
     DIRS += ['x11']
-    UNIFIED_SOURCES += [
-        'GfxInfoX11.cpp'
-    ]
     SOURCES += [
+        'GfxInfoX11.cpp',
         'nsShmImage.cpp',
         'WindowSurfaceX11SHM.cpp',
     ]
@@ -286,6 +296,7 @@ LOCAL_INCLUDES += [
     '/layout/generic',
     '/layout/painting',
     '/layout/xul',
+    '/layout/xul/tree/',
     '/view',
     '/widget',
     '/widget/headless',

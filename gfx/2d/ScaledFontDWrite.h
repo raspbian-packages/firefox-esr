@@ -44,7 +44,8 @@ class ScaledFontDWrite final : public ScaledFontBase {
   void CopyGlyphsToBuilder(const GlyphBuffer& aBuffer, PathBuilder* aBuilder,
                            const Matrix* aTransformHint) override;
 
-  void CopyGlyphsToSink(const GlyphBuffer& aBuffer, ID2D1GeometrySink* aSink);
+  void CopyGlyphsToSink(const GlyphBuffer& aBuffer,
+                        ID2D1SimplifiedGeometrySink* aSink);
 
   void GetGlyphDesignMetrics(const uint16_t* aGlyphIndices, uint32_t aNumGlyphs,
                              GlyphMetrics* aGlyphMetrics) override;
@@ -64,7 +65,7 @@ class ScaledFontDWrite final : public ScaledFontBase {
   bool ForceGDIMode() { return mForceGDIMode; }
 
 #ifdef USE_SKIA
-  SkTypeface* GetSkTypeface() override;
+  SkTypeface* CreateSkTypeface() override;
   SkFontStyle mStyle;
 #endif
 
@@ -96,6 +97,9 @@ class ScaledFontDWrite final : public ScaledFontBase {
           mForceGDIMode(aScaledFont->mForceGDIMode),
           mGamma(aScaledFont->mGamma),
           mContrast(aScaledFont->mContrast) {}
+
+    InstanceData(const wr::FontInstanceOptions* aOptions,
+                 const wr::FontInstancePlatformOptions* aPlatformOptions);
 
     bool mUseEmbeddedBitmap;
     bool mForceGDIMode;

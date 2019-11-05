@@ -6,10 +6,6 @@
 #ifndef nsEditingSession_h__
 #define nsEditingSession_h__
 
-#ifndef nsWeakReference_h__
-#include "nsWeakReference.h"  // for nsSupportsWeakReference, etc
-#endif
-
 #include "nsCOMPtr.h"               // for nsCOMPtr
 #include "nsISupportsImpl.h"        // for NS_DECL_ISUPPORTS
 #include "nsIWeakReferenceUtils.h"  // for nsWeakPtr
@@ -17,27 +13,20 @@
 #include "nscore.h"                 // for nsresult
 
 #ifndef __gen_nsIWebProgressListener_h__
-#include "nsIWebProgressListener.h"
+#  include "nsIWebProgressListener.h"
 #endif
 
 #ifndef __gen_nsIEditingSession_h__
-#include "nsIEditingSession.h"  // for NS_DECL_NSIEDITINGSESSION, etc
+#  include "nsIEditingSession.h"  // for NS_DECL_NSIEDITINGSESSION, etc
 #endif
 
 #include "nsString.h"  // for nsCString
 
 class mozIDOMWindowProxy;
+class nsBaseCommandController;
 class nsIDOMWindow;
 class nsISupports;
 class nsITimer;
-
-#define NS_EDITINGSESSION_CID                        \
-  {                                                  \
-    0xbc26ff01, 0xf2bd, 0x11d4, {                    \
-      0xa7, 0x3c, 0xe5, 0xa4, 0xb5, 0xa8, 0xbd, 0xfc \
-    }                                                \
-  }
-
 class nsIChannel;
 class nsIControllers;
 class nsIDocShell;
@@ -67,10 +56,11 @@ class nsEditingSession final : public nsIEditingSession,
  protected:
   virtual ~nsEditingSession();
 
-  nsresult SetupEditorCommandController(const char* aControllerClassName,
-                                        mozIDOMWindowProxy* aWindow,
-                                        nsISupports* aContext,
-                                        uint32_t* aControllerId);
+  typedef already_AddRefed<nsBaseCommandController> (*ControllerCreatorFn)();
+
+  nsresult SetupEditorCommandController(
+      ControllerCreatorFn aControllerCreatorFn, mozIDOMWindowProxy* aWindow,
+      nsISupports* aContext, uint32_t* aControllerId);
 
   nsresult SetContextOnControllerById(nsIControllers* aControllers,
                                       nsISupports* aContext, uint32_t aID);
@@ -83,6 +73,7 @@ class nsEditingSession final : public nsIEditingSession,
   // progress load stuff
   nsresult StartDocumentLoad(nsIWebProgress* aWebProgress,
                              bool isToBeMadeEditable);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   nsresult EndDocumentLoad(nsIWebProgress* aWebProgress, nsIChannel* aChannel,
                            nsresult aStatus, bool isToBeMadeEditable);
   nsresult StartPageLoad(nsIChannel* aChannel);
@@ -96,6 +87,17 @@ class nsEditingSession final : public nsIEditingSession,
   void RestoreAnimationMode(nsPIDOMWindowOuter* aWindow);
   void RemoveListenersAndControllers(nsPIDOMWindowOuter* aWindow,
                                      mozilla::HTMLEditor* aHTMLEditor);
+
+  /**
+   * Disable scripts and plugins in aDocShell.
+   */
+  nsresult DisableJSAndPlugins(nsIDocShell& aDocShell);
+
+  /**
+   * Restore JS and plugins (enable/disable them) according to the state they
+   * were before the last call to disableJSAndPlugins.
+   */
+  nsresult RestoreJSAndPlugins(nsPIDOMWindowOuter* aWindow);
 
  protected:
   bool mDoneSetup;  // have we prepared for editing yet?

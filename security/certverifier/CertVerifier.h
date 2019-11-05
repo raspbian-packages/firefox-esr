@@ -10,24 +10,26 @@
 #include "BRNameMatchingPolicy.h"
 #include "CTPolicyEnforcer.h"
 #include "CTVerifyResult.h"
+#include "EnterpriseRoots.h"
 #include "OCSPCache.h"
+#include "RootCertificateTelemetryUtils.h"
 #include "ScopedNSSTypes.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/UniquePtr.h"
 #include "nsString.h"
-#include "pkix/pkixtypes.h"
+#include "mozpkix/pkixtypes.h"
 
 #if defined(_MSC_VER)
-#pragma warning(push)
+#  pragma warning(push)
 // Silence "RootingAPI.h(718): warning C4324: 'js::DispatchWrapper<T>':
 // structure was padded due to alignment specifier with [ T=void * ]"
-#pragma warning(disable : 4324)
+#  pragma warning(disable : 4324)
 #endif /* defined(_MSC_VER) */
 #include "mozilla/BasePrincipal.h"
 #if defined(_MSC_VER)
-#pragma warning(pop) /* popping the pragma in this file */
-#endif               /* defined(_MSC_VER) */
+#  pragma warning(pop) /* popping the pragma in this file */
+#endif                 /* defined(_MSC_VER) */
 
 namespace mozilla {
 namespace ct {
@@ -66,20 +68,28 @@ enum class SHA1ModeResult {
 
 // Whether or not we are enforcing one of our CA distrust policies. For context,
 // see Bug 1437754 and Bug 1409257.
-enum class DistrustedCAPolicy : uint32_t {
-  Permit = 0,
-  DistrustSymantecRoots = 1,
+enum DistrustedCAPolicy : uint32_t {
+  Permit = 0b0000,
+  DistrustSymantecRoots = 0b0001,
+  DistrustSymantecRootsRegardlessOfDate = 0b0010,
 };
+
+// Bitmask by nsNSSComponent to check for wholly-invalid values; be sure to
+// update this to account for new entries in DistrustedCAPolicy.
+const uint32_t DistrustedCAPolicyMaxAllowedValueMask = 0b0011;
 
 enum class NetscapeStepUpPolicy : uint32_t;
 
 class PinningTelemetryInfo {
  public:
-  PinningTelemetryInfo() { Reset(); }
+  PinningTelemetryInfo()
+      : certPinningResultBucket(0), rootBucket(ROOT_CERTIFICATE_UNKNOWN) {
+    Reset();
+  }
 
   // Should we accumulate pinning telemetry for the result?
   bool accumulateResult;
-  Telemetry::HistogramID certPinningResultHistogram;
+  Maybe<Telemetry::HistogramID> certPinningResultHistogram;
   int32_t certPinningResultBucket;
   // Should we accumulate telemetry for the root?
   bool accumulateForRoot;
@@ -93,7 +103,11 @@ class PinningTelemetryInfo {
 
 class CertificateTransparencyInfo {
  public:
-  CertificateTransparencyInfo() { Reset(); }
+  CertificateTransparencyInfo()
+      : enabled(false),
+        policyCompliance(mozilla::ct::CTPolicyCompliance::Unknown) {
+    Reset();
+  }
 
   // Was CT enabled?
   bool enabled;
@@ -180,28 +194,27 @@ class CertVerifier {
 
   enum OcspDownloadConfig { ocspOff = 0, ocspOn = 1, ocspEVOnly = 2 };
   enum OcspStrictConfig { ocspRelaxed = 0, ocspStrict };
-  enum OcspGetConfig { ocspGetDisabled = 0, ocspGetEnabled = 1 };
 
   enum class CertificateTransparencyMode {
     Disabled = 0,
     TelemetryOnly = 1,
   };
 
-  CertVerifier(OcspDownloadConfig odc, OcspStrictConfig osc, OcspGetConfig ogc,
+  CertVerifier(OcspDownloadConfig odc, OcspStrictConfig osc,
                mozilla::TimeDuration ocspTimeoutSoft,
                mozilla::TimeDuration ocspTimeoutHard,
                uint32_t certShortLifetimeInDays, PinningMode pinningMode,
                SHA1Mode sha1Mode, BRNameMatchingPolicy::Mode nameMatchingMode,
                NetscapeStepUpPolicy netscapeStepUpPolicy,
                CertificateTransparencyMode ctMode,
-               DistrustedCAPolicy distrustedCAPolicy);
+               DistrustedCAPolicy distrustedCAPolicy,
+               const Vector<EnterpriseCert>& thirdPartyCerts);
   ~CertVerifier();
 
   void ClearOCSPCache() { mOCSPCache.Clear(); }
 
   const OcspDownloadConfig mOCSPDownloadConfig;
   const bool mOCSPStrict;
-  const bool mOCSPGETEnabled;
   const mozilla::TimeDuration mOCSPTimeoutSoft;
   const mozilla::TimeDuration mOCSPTimeoutHard;
   const uint32_t mCertShortLifetimeInDays;
@@ -214,6 +227,13 @@ class CertVerifier {
 
  private:
   OCSPCache mOCSPCache;
+  // We keep a copy of the bytes of each third party root to own.
+  Vector<EnterpriseCert> mThirdPartyCerts;
+  // This is a reusable, precomputed list of Inputs corresponding to each root
+  // in mThirdPartyCerts that wasn't too long to make an Input out of.
+  Vector<mozilla::pkix::Input> mThirdPartyRootInputs;
+  // Similarly, but with intermediates.
+  Vector<mozilla::pkix::Input> mThirdPartyIntermediateInputs;
 
   // We only have a forward declarations of these classes (see above)
   // so we must allocate dynamically.

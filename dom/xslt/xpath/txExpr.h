@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -15,7 +15,7 @@
 #include "nsAtom.h"
 
 #ifdef DEBUG
-#define TX_TO_STRING
+#  define TX_TO_STRING
 #endif
 
 /*
@@ -125,11 +125,11 @@ class Expr {
 };  //-- Expr
 
 #ifdef TX_TO_STRING
-#define TX_DECL_TOSTRING void toString(nsAString& aDest) override;
-#define TX_DECL_GETNAMEATOM nsresult getNameAtom(nsAtom** aAtom) override;
+#  define TX_DECL_TOSTRING void toString(nsAString& aDest) override;
+#  define TX_DECL_APPENDNAME void appendName(nsAString& aDest) override;
 #else
-#define TX_DECL_TOSTRING
-#define TX_DECL_GETNAMEATOM
+#  define TX_DECL_TOSTRING
+#  define TX_DECL_APPENDNAME
 #endif
 
 #define TX_DECL_EXPR_BASE                                              \
@@ -149,7 +149,7 @@ class Expr {
   ExprType getType() override;
 
 #define TX_DECL_FUNCTION \
-  TX_DECL_GETNAMEATOM    \
+  TX_DECL_APPENDNAME     \
   TX_DECL_EXPR_BASE
 
 #define TX_IMPL_EXPR_STUBS_BASE(_class, _ReturnType) \
@@ -159,7 +159,7 @@ class Expr {
   TX_IMPL_EXPR_STUBS_BASE(_class, _ReturnType)                  \
   Expr* _class::getSubExprAt(uint32_t aPos) { return nullptr; } \
   void _class::setSubExprAt(uint32_t aPos, Expr* aExpr) {       \
-    NS_NOTREACHED("setting bad subexpression index");           \
+    MOZ_ASSERT_UNREACHABLE("setting bad subexpression index");  \
   }
 
 #define TX_IMPL_EXPR_STUBS_1(_class, _ReturnType, _Expr1)      \
@@ -269,9 +269,9 @@ class FunctionCall : public Expr {
 
 #ifdef TX_TO_STRING
   /*
-   * Returns the name of the function as an atom.
+   * Appends the name of the function to `aStr`.
    */
-  virtual nsresult getNameAtom(nsAtom** aAtom) = 0;
+  virtual void appendName(nsAString& aStr) = 0;
 #endif
 };
 

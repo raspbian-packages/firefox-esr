@@ -45,6 +45,7 @@ import org.mozilla.gecko.sync.NonObjectJSONException;
 import org.mozilla.gecko.sync.ThreadPool;
 import org.mozilla.gecko.sync.Utils;
 import org.mozilla.gecko.sync.setup.Constants;
+import org.mozilla.gecko.util.StringUtils;
 import org.mozilla.gecko.util.ThreadUtils;
 
 import java.io.IOException;
@@ -157,7 +158,7 @@ public class AndroidFxAccount {
 
   protected final Context context;
   private final AccountManager accountManager;
-  private final long neverSynced = -1;
+  private static final long neverSynced = -1;
 
   // This is really, really meant to be final. Only changed when account name changes.
   // See Bug 1368147.
@@ -495,11 +496,7 @@ public class AndroidFxAccount {
   public ExtendedJSONObject toJSONObject() {
     ExtendedJSONObject o = unbundle();
     o.put("email", account.name);
-    try {
-      o.put("emailUTF8", Utils.byte2Hex(account.name.getBytes("UTF-8")));
-    } catch (UnsupportedEncodingException e) {
-      // Ignore.
-    }
+    o.put("emailUTF8", Utils.byte2Hex(account.name.getBytes(StringUtils.UTF_8)));
     o.put("fxaDeviceId", getDeviceId());
     o.put("fxaDeviceRegistrationVersion", getDeviceRegistrationVersion());
     o.put("fxaDeviceRegistrationTimestamp", getDeviceRegistrationTimestamp());
@@ -819,12 +816,12 @@ public class AndroidFxAccount {
   }
 
   /**
-   * Populate an intent used for starting FxAccountDeletedService service.
+   * Populate and return an intent used for starting FxAccountDeletedService service.
    *
-   * @param intent Intent to populate with necessary extras
    * @return <code>Intent</code> with a deleted action and account/OAuth information extras
    */
-  /* package-private */ Intent populateDeletedAccountIntent(final Intent intent) {
+  /* package-private */ Intent getIntentToDeleteAccount() {
+    final Intent intent = new Intent();
     final List<String> tokens = new ArrayList<>();
 
     intent.putExtra(FxAccountConstants.ACCOUNT_DELETED_INTENT_VERSION_KEY,
@@ -972,11 +969,9 @@ public class AndroidFxAccount {
         }
 
         Logger.info(LOG_TAG, "Intent service launched to fetch profile.");
-        final Intent intent = new Intent(context, FxAccountProfileService.class);
-        intent.putExtra(FxAccountProfileService.KEY_AUTH_TOKEN, authToken);
-        intent.putExtra(FxAccountProfileService.KEY_PROFILE_SERVER_URI, getProfileServerURI());
-        intent.putExtra(FxAccountProfileService.KEY_RESULT_RECEIVER, new ProfileResultReceiver(new Handler()));
-        context.startService(intent);
+        final Intent fetchProfileIntent = FxAccountProfileService.getProfileFetchingIntent(
+                authToken, getProfileServerURI(), new ProfileResultReceiver(new Handler()));
+        FxAccountProfileService.enqueueWork(context, fetchProfileIntent);
       }
     });
   }
@@ -1082,12 +1077,15 @@ public class AndroidFxAccount {
           final String resultData = bundle.getString(FxAccountProfileService.KEY_RESULT_STRING);
           FxAccountUtils.pii(LOG_TAG, "Profile JSON fetch returned: " + resultData);
 
-          renameAccountIfNecessary(resultData, new Runnable() {
-            @Override
-            public void run() {
-              updateBundleValues(BUNDLE_KEY_PROFILE_JSON, resultData);
-              LocalBroadcastManager.getInstance(context).sendBroadcast(makeProfileJSONUpdatedIntent());
-            }
+          // We may get at this point due to a bad sync between states (e.g we sign in then we quickly sign out)
+          // Nothing else we can do but log an error.
+          if (!FirefoxAccounts.firefoxAccountsExist(context)) {
+            Logger.error(LOG_TAG, "ProfileResultReceiver: received result when no account exists!");
+            return;
+          }
+          renameAccountIfNecessary(resultData, () -> {
+            updateBundleValues(BUNDLE_KEY_PROFILE_JSON, resultData);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(makeProfileJSONUpdatedIntent());
           });
           break;
         case Activity.RESULT_CANCELED:

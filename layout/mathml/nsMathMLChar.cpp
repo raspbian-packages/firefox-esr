@@ -10,6 +10,7 @@
 #include "gfxTextRun.h"
 #include "gfxUtils.h"
 #include "mozilla/gfx/2D.h"
+#include "mozilla/ComputedStyle.h"
 #include "mozilla/MathAlgorithms.h"
 #include "mozilla/Unused.h"
 
@@ -20,7 +21,6 @@
 #include "nsIFrame.h"
 #include "nsLayoutUtils.h"
 #include "nsPresContext.h"
-#include "nsStyleContext.h"
 #include "nsUnicharUtils.h"
 
 #include "mozilla/Preferences.h"
@@ -56,13 +56,13 @@ static const float kLargeOpFactor = float(M_SQRT2);
 static const float kIntegralFactor = 2.0;
 
 static void NormalizeDefaultFont(nsFont& aFont, float aFontSizeInflation) {
-  if (aFont.fontlist.GetDefaultFontType() != eFamily_none) {
+  if (aFont.fontlist.GetDefaultFontType() != StyleGenericFontFamily::None) {
     nsTArray<FontFamilyName> names;
     names.AppendElements(aFont.fontlist.GetFontlist()->mNames);
     names.AppendElement(FontFamilyName(aFont.fontlist.GetDefaultFontType()));
 
-    aFont.fontlist.SetFontlist(Move(names));
-    aFont.fontlist.SetDefaultFontType(eFamily_none);
+    aFont.fontlist.SetFontlist(std::move(names));
+    aFont.fontlist.SetDefaultFontType(StyleGenericFontFamily::None);
   }
   aFont.size = NSToCoordRound(aFont.size * aFontSizeInflation);
 }
@@ -150,24 +150,24 @@ static void Clean(nsString& aValue) {
 }
 
 // helper to load a MathFont Property File
-static nsresult LoadProperties(const nsString& aName,
+static nsresult LoadProperties(const nsACString& aName,
                                nsCOMPtr<nsIPersistentProperties>& aProperties) {
-  nsAutoString uriStr;
+  nsAutoCString uriStr;
   uriStr.AssignLiteral("resource://gre/res/fonts/mathfont");
   uriStr.Append(aName);
   uriStr.StripWhitespace();  // that may come from aName
   uriStr.AppendLiteral(".properties");
   return NS_LoadPersistentPropertiesFromURISpec(getter_AddRefs(aProperties),
-                                                NS_ConvertUTF16toUTF8(uriStr));
+                                                uriStr);
 }
 
 class nsPropertiesTable final : public nsGlyphTable {
  public:
-  explicit nsPropertiesTable(const nsString& aPrimaryFontName)
+  explicit nsPropertiesTable(const nsACString& aPrimaryFontName)
       : mState(NS_TABLE_STATE_EMPTY) {
     MOZ_COUNT_CTOR(nsPropertiesTable);
-    mGlyphCodeFonts.AppendElement(
-        FontFamilyName(aPrimaryFontName, eUnquotedName));
+    mGlyphCodeFonts.AppendElement(FontFamilyName(
+        aPrimaryFontName, StyleFontFamilyNameSyntax::Identifiers));
   }
 
   ~nsPropertiesTable() { MOZ_COUNT_DTOR(nsPropertiesTable); }
@@ -257,13 +257,13 @@ nsGlyphCode nsPropertiesTable::ElementAt(DrawTarget* /* aDrawTarget */,
   if (mState == NS_TABLE_STATE_ERROR) return kNullGlyph;
   // Load glyph properties if this is the first time we have been here
   if (mState == NS_TABLE_STATE_EMPTY) {
-    nsAutoString primaryFontName;
+    nsAutoCString primaryFontName;
     mGlyphCodeFonts[0].AppendToString(primaryFontName);
     nsresult rv = LoadProperties(primaryFontName, mGlyphProperties);
 #ifdef DEBUG
     nsAutoCString uriStr;
     uriStr.AssignLiteral("resource://gre/res/fonts/mathfont");
-    LossyAppendUTF16toASCII(primaryFontName, uriStr);
+    uriStr.Append(primaryFontName);
     uriStr.StripWhitespace();  // that may come from mGlyphCodeFonts
     uriStr.AppendLiteral(".properties");
     printf("Loading %s ... %s\n", uriStr.get(),
@@ -285,8 +285,9 @@ nsGlyphCode nsPropertiesTable::ElementAt(DrawTarget* /* aDrawTarget */,
       if (NS_FAILED(rv)) break;
       Clean(value);
       mGlyphCodeFonts.AppendElement(FontFamilyName(
-          value,
-          eUnquotedName));  // i.e., mGlyphCodeFonts[i] holds this font name
+          NS_ConvertUTF16toUTF8(value),
+          StyleFontFamilyNameSyntax::Identifiers));  // i.e., mGlyphCodeFonts[i]
+                                                     // holds this font name
     }
   }
 
@@ -339,7 +340,7 @@ nsGlyphCode nsPropertiesTable::ElementAt(DrawTarget* /* aDrawTarget */,
           return kNullGlyph;
         }
         // The char cannot be handled if this font is not installed
-        if (!mGlyphCodeFonts[font].mName.Length()) {
+        if (!mGlyphCodeFonts[font].mName) {
           return kNullGlyph;
         }
       }
@@ -419,7 +420,9 @@ class nsOpenTypeTable final : public nsGlyphTable {
 
   explicit nsOpenTypeTable(gfxFont* aFont)
       : mFont(aFont),
-        mFontFamilyName(aFont->GetFontEntry()->FamilyName(), eUnquotedName) {
+        mFontFamilyName(aFont->GetFontEntry()->FamilyName(),
+                        StyleFontFamilyNameSyntax::Identifiers),
+        mGlyphID(0) {
     MOZ_COUNT_CTOR(nsOpenTypeTable);
   }
 
@@ -515,7 +518,7 @@ already_AddRefed<gfxTextRun> nsOpenTypeTable::MakeTextRun(
       gfxTextRun::Create(&params, 1, aFontGroup, gfx::ShapedTextFlags(),
                          nsTextFrameUtils::Flags());
   textRun->AddGlyphRun(aFontGroup->GetFirstValidFont(),
-                       gfxTextRange::kFontGroup, 0, false,
+                       FontMatchType::Kind::kFontGroup, 0, false,
                        gfx::ShapedTextFlags::TEXT_ORIENT_HORIZONTAL);
   // We don't care about CSS writing mode here;
   // math runs are assumed to be horizontal.
@@ -545,16 +548,16 @@ class nsGlyphTableList final : public nsIObserver {
 
   nsPropertiesTable mUnicodeTable;
 
-  nsGlyphTableList() : mUnicodeTable(NS_LITERAL_STRING("Unicode")) {}
+  nsGlyphTableList() : mUnicodeTable(NS_LITERAL_CSTRING("Unicode")) {}
 
   nsresult Initialize();
   nsresult Finalize();
 
   // Add a glyph table in the list, return the new table that was added
-  nsGlyphTable* AddGlyphTable(const nsString& aPrimaryFontName);
+  nsGlyphTable* AddGlyphTable(const nsACString& aPrimaryFontName);
 
   // Find the glyph table in the list corresponding to the given font family.
-  nsGlyphTable* GetGlyphTableFor(const nsAString& aFamily);
+  nsGlyphTable* GetGlyphTableFor(const nsACString& aFamily);
 
  private:
   ~nsGlyphTableList() {}
@@ -611,7 +614,7 @@ nsresult nsGlyphTableList::Finalize() {
 }
 
 nsGlyphTable* nsGlyphTableList::AddGlyphTable(
-    const nsString& aPrimaryFontName) {
+    const nsACString& aPrimaryFontName) {
   // See if there is already a special table for this family.
   nsGlyphTable* glyphTable = GetGlyphTableFor(aPrimaryFontName);
   if (glyphTable != &mUnicodeTable) return glyphTable;
@@ -621,15 +624,15 @@ nsGlyphTable* nsGlyphTableList::AddGlyphTable(
   return glyphTable;
 }
 
-nsGlyphTable* nsGlyphTableList::GetGlyphTableFor(const nsAString& aFamily) {
+nsGlyphTable* nsGlyphTableList::GetGlyphTableFor(const nsACString& aFamily) {
   for (int32_t i = 0; i < PropertiesTableCount(); i++) {
     nsPropertiesTable* glyphTable = PropertiesTableAt(i);
     const FontFamilyName& primaryFontName = glyphTable->PrimaryFontName();
-    nsAutoString primaryFontNameStr;
+    nsAutoCString primaryFontNameStr;
     primaryFontName.AppendToString(primaryFontNameStr);
     // TODO: would be nice to consider StripWhitespace and other aliasing
     if (primaryFontNameStr.Equals(aFamily,
-                                  nsCaseInsensitiveStringComparator())) {
+                                  nsCaseInsensitiveCStringComparator())) {
       return glyphTable;
     }
   }
@@ -656,7 +659,7 @@ static nsresult InitCharGlobals() {
   // observer and will be deleted at shutdown. We now add some private
   // per font-family tables for stretchy operators, in order of preference.
   // Do not include the Unicode table in this list.
-  if (!glyphTableList->AddGlyphTable(NS_LITERAL_STRING("STIXGeneral"))) {
+  if (!glyphTableList->AddGlyphTable(NS_LITERAL_CSTRING("STIXGeneral"))) {
     rv = NS_ERROR_OUT_OF_MEMORY;
   }
 
@@ -669,14 +672,14 @@ static nsresult InitCharGlobals() {
 
 nsMathMLChar::~nsMathMLChar() { MOZ_COUNT_DTOR(nsMathMLChar); }
 
-nsStyleContext* nsMathMLChar::GetStyleContext() const {
-  NS_ASSERTION(mStyleContext, "chars should always have style context");
-  return mStyleContext;
+ComputedStyle* nsMathMLChar::GetComputedStyle() const {
+  NS_ASSERTION(mComputedStyle, "chars should always have a ComputedStyle");
+  return mComputedStyle;
 }
 
-void nsMathMLChar::SetStyleContext(nsStyleContext* aStyleContext) {
-  MOZ_ASSERT(aStyleContext);
-  mStyleContext = aStyleContext;
+void nsMathMLChar::SetComputedStyle(ComputedStyle* aComputedStyle) {
+  MOZ_ASSERT(aComputedStyle);
+  mComputedStyle = aComputedStyle;
 }
 
 void nsMathMLChar::SetData(nsString& aData) {
@@ -724,9 +727,9 @@ void nsMathMLChar::SetData(nsString& aData) {
        be in different fonts. For eg., the base size for '(' should
        come from a normal ascii font if CMEX10 is used, since CMEX10
        only contains the stretched versions. Hence, there are two
-       style contexts in use throughout the process. The leaf style
+       ComputedStyles in use throughout the process. The leaf style
        context of the char holds fonts with which to try to stretch
-       the char. The parent style context of the char contains fonts
+       the char. The parent ComputedStyle of the char contains fonts
        for normal rendering. So the parent context is the one used
        to get the initial base size at the start of the pipeline.
     b) For operators that can be largeop's in display mode,
@@ -738,7 +741,7 @@ void nsMathMLChar::SetData(nsString& aData) {
  2) We search for the first larger variant of the char that fits the
     container' size.  We first search for larger variants using the glyph
     table corresponding to the first existing font specified in the list of
-    stretchy fonts held by the leaf style context (from -moz-math-stretchy in
+    stretchy fonts held by the leaf ComputedStyle (from -moz-math-stretchy in
     mathml.css).  Generic fonts are resolved by the preference
     "font.mathfont-family".
     Issues :
@@ -867,7 +870,7 @@ bool nsMathMLChar::SetFontFamily(nsPresContext* aPresContext,
   if (aGlyphCode.font) {
     nsTArray<FontFamilyName> names;
     names.AppendElement(aGlyphTable->FontNameFor(aGlyphCode));
-    glyphCodeFont.SetFontlist(Move(names));
+    glyphCodeFont.SetFontlist(std::move(names));
   }
 
   const FontFamilyList& familyList =
@@ -876,19 +879,20 @@ bool nsMathMLChar::SetFontFamily(nsPresContext* aPresContext,
   if (!*aFontGroup || !(aFont.fontlist == familyList)) {
     nsFont font = aFont;
     font.fontlist = familyList;
-    const nsStyleFont* styleFont = mStyleContext->StyleFont();
+    const nsStyleFont* styleFont = mComputedStyle->StyleFont();
     nsFontMetrics::Params params;
     params.language = styleFont->mLanguage;
     params.explicitLanguage = styleFont->mExplicitLanguage;
     params.userFontSet = aPresContext->GetUserFontSet();
     params.textPerf = aPresContext->GetTextPerfMetrics();
+    params.featureValueLookup = aPresContext->GetFontFeatureValuesLookup();
     RefPtr<nsFontMetrics> fm =
         aPresContext->DeviceContext()->GetMetricsFor(font, params);
     // Set the font if it is an unicode table
     // or if the same family name has been found
     gfxFont* firstFont = fm->GetThebesFontGroup()->GetFirstValidFont();
     FontFamilyList firstFontList(firstFont->GetFontEntry()->FamilyName(),
-                                 eUnquotedName);
+                                 StyleFontFamilyNameSyntax::Identifiers);
     if (aGlyphTable == &gGlyphTableList->mUnicodeTable ||
         firstFontList == familyList) {
       aFont.fontlist = familyList;
@@ -971,8 +975,8 @@ class nsMathMLChar::StretchEnumContext {
 bool nsMathMLChar::StretchEnumContext::TryVariants(
     nsGlyphTable* aGlyphTable, RefPtr<gfxFontGroup>* aFontGroup,
     const FontFamilyList& aFamilyList) {
-  // Use our stretchy style context now that stretching is in progress
-  nsStyleContext* sc = mChar->mStyleContext;
+  // Use our stretchy ComputedStyle now that stretching is in progress
+  ComputedStyle* sc = mChar->mComputedStyle;
   nsFont font = sc->StyleFont()->mFont;
   NormalizeDefaultFont(font, mFontSizeInflation);
 
@@ -1078,7 +1082,7 @@ bool nsMathMLChar::StretchEnumContext::TryVariants(
         mBoundingMetrics = bm;
         haveBetter = true;
         bestSize = charSize;
-        mChar->mGlyphs[0] = Move(textRun);
+        mChar->mGlyphs[0] = std::move(textRun);
         mChar->mDraw = DRAW_VARIANT;
       }
 #ifdef NOISY_SEARCH
@@ -1108,8 +1112,8 @@ bool nsMathMLChar::StretchEnumContext::TryVariants(
 bool nsMathMLChar::StretchEnumContext::TryParts(
     nsGlyphTable* aGlyphTable, RefPtr<gfxFontGroup>* aFontGroup,
     const FontFamilyList& aFamilyList) {
-  // Use our stretchy style context now that stretching is in progress
-  nsFont font = mChar->mStyleContext->StyleFont()->mFont;
+  // Use our stretchy ComputedStyle now that stretching is in progress
+  nsFont font = mChar->mComputedStyle->StyleFont()->mFont;
   NormalizeDefaultFont(font, mFontSizeInflation);
 
   // Compute the bounding metrics of all partial glyphs
@@ -1264,7 +1268,7 @@ bool nsMathMLChar::StretchEnumContext::TryParts(
   // reset
   mChar->mDraw = DRAW_PARTS;
   for (int32_t i = 0; i < 4; i++) {
-    mChar->mGlyphs[i] = Move(textRun[i]);
+    mChar->mGlyphs[i] = std::move(textRun[i]);
     mChar->mBmData[i] = bmdata[i];
   }
 
@@ -1278,17 +1282,17 @@ bool nsMathMLChar::StretchEnumContext::EnumCallback(
 
   // for comparisons, force use of unquoted names
   FontFamilyName unquotedFamilyName(aFamily);
-  if (unquotedFamilyName.mType == eFamily_named_quoted) {
-    unquotedFamilyName.mType = eFamily_named;
+  if (unquotedFamilyName.mSyntax == StyleFontFamilyNameSyntax::Quoted) {
+    unquotedFamilyName.mSyntax = StyleFontFamilyNameSyntax::Identifiers;
   }
 
   // Check font family if it is not a generic one
   // We test with the kNullGlyph
-  nsStyleContext* sc = context->mChar->mStyleContext;
+  ComputedStyle* sc = context->mChar->mComputedStyle;
   nsFont font = sc->StyleFont()->mFont;
   NormalizeDefaultFont(font, context->mFontSizeInflation);
   RefPtr<gfxFontGroup> fontGroup;
-  FontFamilyList family(unquotedFamilyName);
+  FontFamilyList family(nsTArray<FontFamilyName>{unquotedFamilyName});
   if (!aGeneric &&
       !context->mChar->SetFontFamily(context->mPresContext, nullptr, kNullGlyph,
                                      family, font, &fontGroup))
@@ -1308,7 +1312,7 @@ bool nsMathMLChar::StretchEnumContext::EnumCallback(
     } else {
       // Otherwise try to find a .properties file corresponding to that font
       // family or fallback to the Unicode table.
-      nsAutoString familyName;
+      nsAutoCString familyName;
       unquotedFamilyName.AppendToString(familyName);
       glyphTable = gGlyphTableList->GetGlyphTableFor(familyName);
     }
@@ -1339,16 +1343,17 @@ bool nsMathMLChar::StretchEnumContext::EnumCallback(
 }
 
 static void AppendFallbacks(nsTArray<FontFamilyName>& aNames,
-                            const nsTArray<nsString>& aFallbacks) {
-  for (const nsString& fallback : aFallbacks) {
-    aNames.AppendElement(FontFamilyName(fallback, eUnquotedName));
+                            const nsTArray<nsCString>& aFallbacks) {
+  for (const nsCString& fallback : aFallbacks) {
+    aNames.AppendElement(
+        FontFamilyName(fallback, StyleFontFamilyNameSyntax::Identifiers));
   }
 }
 
 // insert math fallback families just before the first generic or at the end
 // when no generic present
 static void InsertMathFallbacks(FontFamilyList& aFamilyList,
-                                nsTArray<nsString>& aFallbacks) {
+                                nsTArray<nsCString>& aFallbacks) {
   nsTArray<FontFamilyName> mergedList;
 
   bool inserted = false;
@@ -1363,7 +1368,7 @@ static void InsertMathFallbacks(FontFamilyList& aFamilyList,
   if (!inserted) {
     AppendFallbacks(mergedList, aFallbacks);
   }
-  aFamilyList.SetFontlist(Move(mergedList));
+  aFamilyList.SetFontlist(std::move(mergedList));
 }
 
 nsresult nsMathMLChar::StretchInternal(
@@ -1382,12 +1387,12 @@ nsresult nsMathMLChar::StretchInternal(
   nsStretchDirection direction = nsMathMLOperators::GetStretchyDirection(mData);
 
   // Set default font and get the default bounding metrics
-  // mStyleContext is a leaf context used only when stretching happens.
+  // mComputedStyle is a leaf context used only when stretching happens.
   // For the base size, the default font should come from the parent context
   nsFont font = aForFrame->StyleFont()->mFont;
   NormalizeDefaultFont(font, aFontSizeInflation);
 
-  const nsStyleFont* styleFont = mStyleContext->StyleFont();
+  const nsStyleFont* styleFont = mComputedStyle->StyleFont();
   nsFontMetrics::Params params;
   params.language = styleFont->mLanguage;
   params.explicitLanguage = styleFont->mExplicitLanguage;
@@ -1494,12 +1499,12 @@ nsresult nsMathMLChar::StretchInternal(
 
   if (!done) {  // normal case
     // Use the css font-family but add preferred fallback fonts.
-    font = mStyleContext->StyleFont()->mFont;
+    font = mComputedStyle->StyleFont()->mFont;
     NormalizeDefaultFont(font, aFontSizeInflation);
 
     // really shouldn't be doing things this way but for now
     // insert fallbacks into the list
-    AutoTArray<nsString, 16> mathFallbacks;
+    AutoTArray<nsCString, 16> mathFallbacks;
     gfxFontUtils::GetPrefsFontList("font.name.serif.x-math", mathFallbacks);
     gfxFontUtils::AppendPrefsFontList("font.name-list.serif.x-math",
                                       mathFallbacks);
@@ -1677,11 +1682,11 @@ nscoord nsMathMLChar::GetMaxWidth(nsIFrame* aForFrame, DrawTarget* aDrawTarget,
   return std::max(bm.width, bm.rightBearing) - std::min(0, bm.leftBearing);
 }
 
-class nsDisplayMathMLSelectionRect : public nsDisplayItem {
+class nsDisplayMathMLSelectionRect final : public nsPaintedDisplayItem {
  public:
   nsDisplayMathMLSelectionRect(nsDisplayListBuilder* aBuilder, nsIFrame* aFrame,
                                const nsRect& aRect)
-      : nsDisplayItem(aBuilder, aFrame), mRect(aRect) {
+      : nsPaintedDisplayItem(aBuilder, aFrame), mRect(aRect) {
     MOZ_COUNT_CTOR(nsDisplayMathMLSelectionRect);
   }
 #ifdef NS_BUILD_REFCNT_LOGGING
@@ -1704,16 +1709,16 @@ void nsDisplayMathMLSelectionRect::Paint(nsDisplayListBuilder* aBuilder,
                                   *drawTarget);
   // get color to use for selection from the look&feel object
   nscolor bgColor = LookAndFeel::GetColor(
-      LookAndFeel::eColorID_TextSelectBackground, NS_RGB(0, 0, 0));
+      LookAndFeel::ColorID::TextSelectBackground, NS_RGB(0, 0, 0));
   drawTarget->FillRect(rect, ColorPattern(ToDeviceColor(bgColor)));
 }
 
-class nsDisplayMathMLCharForeground : public nsDisplayItem {
+class nsDisplayMathMLCharForeground final : public nsPaintedDisplayItem {
  public:
   nsDisplayMathMLCharForeground(nsDisplayListBuilder* aBuilder,
                                 nsIFrame* aFrame, nsMathMLChar* aChar,
-                                uint32_t aIndex, bool aIsSelected)
-      : nsDisplayItem(aBuilder, aFrame),
+                                uint16_t aIndex, bool aIsSelected)
+      : nsPaintedDisplayItem(aBuilder, aFrame),
         mChar(aChar),
         mIndex(aIndex),
         mIsSelected(aIsSelected) {
@@ -1753,29 +1758,27 @@ class nsDisplayMathMLCharForeground : public nsDisplayItem {
     return GetBounds(aBuilder, &snap);
   }
 
-  virtual uint32_t GetPerFrameKey() const override {
-    return (mIndex << TYPE_BITS) | nsDisplayItem::GetPerFrameKey();
-  }
+  virtual uint16_t CalculatePerFrameKey() const override { return mIndex; }
 
  private:
   nsMathMLChar* mChar;
-  uint32_t mIndex;
+  uint16_t mIndex;
   bool mIsSelected;
 };
 
 #ifdef DEBUG
-class nsDisplayMathMLCharDebug : public nsDisplayItem {
+class nsDisplayMathMLCharDebug final : public nsPaintedDisplayItem {
  public:
   nsDisplayMathMLCharDebug(nsDisplayListBuilder* aBuilder, nsIFrame* aFrame,
                            const nsRect& aRect)
-      : nsDisplayItem(aBuilder, aFrame), mRect(aRect) {
+      : nsPaintedDisplayItem(aBuilder, aFrame), mRect(aRect) {
     MOZ_COUNT_CTOR(nsDisplayMathMLCharDebug);
   }
-#ifdef NS_BUILD_REFCNT_LOGGING
+#  ifdef NS_BUILD_REFCNT_LOGGING
   virtual ~nsDisplayMathMLCharDebug() {
     MOZ_COUNT_DTOR(nsDisplayMathMLCharDebug);
   }
-#endif
+#  endif
 
   virtual void Paint(nsDisplayListBuilder* aBuilder, gfxContext* aCtx) override;
   NS_DISPLAY_DECL_NAME("MathMLCharDebug", TYPE_MATHML_CHAR_DEBUG)
@@ -1789,66 +1792,66 @@ void nsDisplayMathMLCharDebug::Paint(nsDisplayListBuilder* aBuilder,
   // for visual debug
   Sides skipSides;
   nsPresContext* presContext = mFrame->PresContext();
-  nsStyleContext* styleContext = mFrame->StyleContext();
+  ComputedStyle* computedStyle = mFrame->Style();
   nsRect rect = mRect + ToReferenceFrame();
 
   PaintBorderFlags flags = aBuilder->ShouldSyncDecodeImages()
-                               ? PaintBorderFlags::SYNC_DECODE_IMAGES
+                               ? PaintBorderFlags::SyncDecodeImages
                                : PaintBorderFlags();
 
   // Since this is used only for debugging, we don't need to worry about
   // tracking the ImgDrawResult.
   Unused << nsCSSRendering::PaintBorder(presContext, *aCtx, mFrame,
-                                        mVisibleRect, rect, styleContext, flags,
-                                        skipSides);
+                                        GetPaintRect(), rect, computedStyle,
+                                        flags, skipSides);
 
-  nsCSSRendering::PaintOutline(presContext, *aCtx, mFrame, mVisibleRect, rect,
-                               styleContext);
+  nsCSSRendering::PaintOutline(presContext, *aCtx, mFrame, GetPaintRect(), rect,
+                               computedStyle);
 }
 #endif
 
 void nsMathMLChar::Display(nsDisplayListBuilder* aBuilder, nsIFrame* aForFrame,
                            const nsDisplayListSet& aLists, uint32_t aIndex,
                            const nsRect* aSelectedRect) {
-  nsStyleContext* parentContext = aForFrame->StyleContext();
-  nsStyleContext* styleContext = mStyleContext;
+  bool usingParentStyle = false;
+  ComputedStyle* computedStyle = mComputedStyle;
 
   if (mDraw == DRAW_NORMAL) {
     // normal drawing if there is nothing special about this char
-    // Set default context to the parent context
-    styleContext = parentContext;
+    // Use our parent element's style
+    usingParentStyle = true;
+    computedStyle = aForFrame->Style();
   }
 
-  if (!styleContext->StyleVisibility()->IsVisible()) return;
+  if (!computedStyle->StyleVisibility()->IsVisible()) return;
 
-  // if the leaf style context that we use for stretchy chars has a background
+  // if the leaf computed style that we use for stretchy chars has a background
   // color we use it -- this feature is mostly used for testing and debugging
   // purposes. Normally, users will set the background on the container frame.
   // paint the selection background -- beware MathML frames overlap a lot
   if (aSelectedRect && !aSelectedRect->IsEmpty()) {
-    aLists.BorderBackground()->AppendToTop(
-        MakeDisplayItem<nsDisplayMathMLSelectionRect>(aBuilder, aForFrame,
-                                                      *aSelectedRect));
+    aLists.BorderBackground()->AppendNewToTop<nsDisplayMathMLSelectionRect>(
+        aBuilder, aForFrame, *aSelectedRect);
   } else if (mRect.width && mRect.height) {
-    if (styleContext != parentContext &&
-        NS_GET_A(styleContext->StyleBackground()->BackgroundColor(
-            styleContext)) > 0) {
+    if (!usingParentStyle &&
+        NS_GET_A(computedStyle->StyleBackground()->BackgroundColor(
+            computedStyle)) > 0) {
       nsDisplayBackgroundImage::AppendBackgroundItemsToTop(
           aBuilder, aForFrame, mRect, aLists.BorderBackground(),
-          /* aAllowWillPaintBorderOptimization */ true, styleContext);
+          /* aAllowWillPaintBorderOptimization */ true, computedStyle);
     }
-      // else
-      //  our container frame will take care of painting its background
+    // else
+    //  our container frame will take care of painting its background
 
 #if defined(DEBUG) && defined(SHOW_BOUNDING_BOX)
     // for visual debug
-    aLists.BorderBackground()->AppendToTop(
-        MakeDisplayItem<nsDisplayMathMLCharDebug>(aBuilder, aForFrame, mRect));
+    aLists.BorderBackground()->AppendNewToTop<nsDisplayMathMLCharDebug>(
+        aBuilder, aForFrame, mRect);
 #endif
   }
-  aLists.Content()->AppendToTop(MakeDisplayItem<nsDisplayMathMLCharForeground>(
+  aLists.Content()->AppendNewToTop<nsDisplayMathMLCharForeground>(
       aBuilder, aForFrame, this, aIndex,
-      aSelectedRect && !aSelectedRect->IsEmpty()));
+      aSelectedRect && !aSelectedRect->IsEmpty());
 }
 
 void nsMathMLChar::ApplyTransforms(gfxContext* aThebesContext,
@@ -1879,22 +1882,21 @@ void nsMathMLChar::ApplyTransforms(gfxContext* aThebesContext,
 void nsMathMLChar::PaintForeground(nsIFrame* aForFrame,
                                    gfxContext& aRenderingContext, nsPoint aPt,
                                    bool aIsSelected) {
-  nsStyleContext* parentContext = aForFrame->StyleContext();
-  nsStyleContext* styleContext = mStyleContext;
+  ComputedStyle* computedStyle = mComputedStyle;
   nsPresContext* presContext = aForFrame->PresContext();
 
   if (mDraw == DRAW_NORMAL) {
     // normal drawing if there is nothing special about this char
-    // Set default context to the parent context
-    styleContext = parentContext;
+    // Use our parent element's style
+    computedStyle = aForFrame->Style();
   }
 
   // Set color ...
-  nscolor fgColor = styleContext->GetVisitedDependentColor(
+  nscolor fgColor = computedStyle->GetVisitedDependentColor(
       &nsStyleText::mWebkitTextFillColor);
   if (aIsSelected) {
     // get color to use for selection from the look&feel object
-    fgColor = LookAndFeel::GetColor(LookAndFeel::eColorID_TextSelectForeground,
+    fgColor = LookAndFeel::GetColor(LookAndFeel::ColorID::TextSelectForeground,
                                     fgColor);
   }
   aRenderingContext.SetColor(Color::FromABGR(fgColor));
@@ -1923,7 +1925,7 @@ void nsMathMLChar::PaintForeground(nsIFrame* aForFrame,
       break;
     }
     default:
-      NS_NOTREACHED("Unknown drawing method");
+      MOZ_ASSERT_UNREACHABLE("Unknown drawing method");
       break;
   }
 
@@ -1942,10 +1944,8 @@ class AutoPushClipRect {
                    const nsRect& aRect)
       : mThebesContext(aThebesContext) {
     mThebesContext->Save();
-    mThebesContext->NewPath();
     gfxRect clip = nsLayoutUtils::RectToGfxRect(aRect, aAppUnitsPerGfxUnit);
-    mThebesContext->SnappedRectangle(clip);
-    mThebesContext->Clip();
+    mThebesContext->SnappedClip(clip);
   }
   ~AutoPushClipRect() { mThebesContext->Restore(); }
 };
@@ -2025,7 +2025,7 @@ nsresult nsMathMLChar::PaintVertically(nsPresContext* aPresContext,
   unionRect.x += mBoundingMetrics.leftBearing;
   unionRect.width =
       mBoundingMetrics.rightBearing - mBoundingMetrics.leftBearing;
-  unionRect.Inflate(oneDevPixel, oneDevPixel);
+  unionRect.Inflate(oneDevPixel);
 
   gfxTextRun::DrawParams params(aThebesContext);
 
@@ -2187,7 +2187,7 @@ nsresult nsMathMLChar::PaintHorizontally(nsPresContext* aPresContext,
   }
 
   nsRect unionRect = aRect;
-  unionRect.Inflate(oneDevPixel, oneDevPixel);
+  unionRect.Inflate(oneDevPixel);
 
   gfxTextRun::DrawParams params(aThebesContext);
 

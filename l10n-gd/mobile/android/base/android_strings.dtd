@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Fàilte">
 <!ENTITY firstrun_urlbar_message2 "Mòran taing airson &brandShortName; a thaghadh">
+<!ENTITY newfirstrun_urlbar_message "Fàilte gu &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Brabhsair ùr-nòsach le Mozilla, am buidheann neo-phrothaideach a tha ag obair airson eadar-lìon saor is fosgailte.">
+<!ENTITY newfirstrun_urlbar_subtext "Luath, prìobhaideach is air do thaobh.">
 <!ENTITY firstrun_panel_title_privacy "Prìobhaideachd">
 <!ENTITY firstrun_privacy_message "Dèan brabhsadh mar nach eil duine am bith a’ cumail sùil ort">
 <!ENTITY firstrun_privacy_subtext "Ma nì thu brabhsadh prìobhaideach le dìon o thracadh, bacaidh seo na tracairean fhad ’s a bhios tu a’ brabhsadh agus cha chuimhnich e an eachdraidh brabhsaidh agad nuair a bhios tu deiseil.">
+<!ENTITY newfirstrun_privacy_subtext "Bacaidh brabhsadh prìobhaideach tracaichean sanasachd a tha airson do leantainn air loidhne.">
 <!ENTITY firstrun_panel_title_customize "Gnàthaich">
 <!ENTITY firstrun_customize_message "&brandShortName; a-rèir do thoil fhèin">
 <!ENTITY firstrun_customize_subtext "Gnàthaich &brandShortName; le tuilleadain. Bac sanasach, cuir gleusan ris no tagh ùrlar ùr a tha a’ còrdadh riut nas fhearr.">
@@ -27,12 +30,6 @@
 <!ENTITY firstrun_button_next "Air adhart">
 
 <!ENTITY firstrun_tabqueue_title "Ceanglaichean">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Cuir ciutha nan taba air">
-<!ENTITY firstrun_tabqueue_subtext_off "Sàbhail ceanglaichean ann am &brandShortName; nuair a nì thu gnogag orra ann an aplacaidean eile.">
-
-<!ENTITY firstrun_tabqueue_message_on "Soirbheas!">
-<!ENTITY firstrun_tabqueue_subtext_on "’S urrainn dhut seo a chur dheth sna &settings; for &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Artaigealan">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -69,6 +66,20 @@
 <!ENTITY  crash_restart_label "Ath-thòisich &brandShortName;">
 
 <!ENTITY url_bar_default_text2 "Lorg no cuir seòladh ann">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Lorg air an lìon">
+<!ENTITY search_widget_default_cropped_text "Lorg">
+<!ENTITY search_widget_logo_description "Lorg air an lìon le &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Cleachd an leughadair QR agad airson lorg a dhèanamh no cuir a-steach seòladh">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Cleachd micreofon agad airson lorg a dhèanamh no cuir a-steach seòladh">
 
 <!ENTITY bookmark "Comharra-lìn">
 <!ENTITY bookmark_remove "Thoir an comharra-lìn air falbh">
@@ -206,7 +217,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Aisig tabaichean, caomhnaiche dàta, innealan an luchd-leasachaidh">
 <!ENTITY pref_category_notifications "Brathan">
-<!ENTITY pref_category_notifications_summary "Gleusan ùra, ùrachaidhean làraichean-lìn">
+<!ENTITY pref_category_notifications_summary2 "Gleusan ùra, gliocasan mu bhathar">
 <!ENTITY pref_developer_remotedebugging_usb "Dì-bhugachadh cèin slighe USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Dì-bhugachadh cèin slighe WiFi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Feumaidh leughadair chòdaichean QR a bhith aig an uidheam agad mus obraich dì-bhugachadh slighe WiFi.">
@@ -282,6 +293,19 @@
 <!ENTITY pref_whats_new_notification "Na tha ùr ann am &brandShortName;">
 <!ENTITY pref_whats_new_notification_summary "Fàs eòlach air gleusan ùra an cois ùrachaidh">
 
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Gliocasan bathair is ghleusan">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "Faigh barrachd fiosrachaidh mu chleachdadh &brandShortName; is bathar &vendorShortName; eile">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; » &pref_category_datareporting; » &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Feumaidh &pref_feature_tips_notification_enabling_path; a bhith an comas mus urrainn dhut an roghainn seo a chur an comas.)">
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "Gleusan deuchainneach">
@@ -320,6 +344,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Rach gu na roghainnean">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "A’ cur taba ùr ris a’ chiutha&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -354,7 +381,8 @@
 <!ENTITY pref_use_system_font_size_summary "Sgèilich susbaint-lìn a-rèir meud cruth-clò an t-siostaim">
 
 <!ENTITY pref_media_autoplay_enabled "Ceadaich fèin-chluich">
-<!ENTITY pref_media_autoplay_enabled_summary "Cum smachd air dè na làraichean aig a bheil videothan is meadhanan eile a chluich gu fèin-obrachail">
+<!ENTITY pref_media_autoplay_allow "Ceadaich fèin-chluich">
+<!ENTITY pref_media_autoplay_block "Bac fèin-chluich">
 <!ENTITY pref_zoom_force_enabled "Cuir an sùmadh an comas an-còmhnaidh">
 <!ENTITY pref_zoom_force_enabled_summary "Tar-àithn e airson ’s gun urrainn dhut duilleag sam bith a shùmadh">
 <!ENTITY pref_voice_input "Ion-chur gutha">
@@ -377,14 +405,17 @@
 <!ENTITY pref_private_data_searchHistory "Eachdraidh nan lorg">
 <!ENTITY pref_private_data_formdata2 "Eachdraidh na foirm">
 <!ENTITY pref_private_data_cookies2 "Briosgaidean ⁊ clàraidhean beò">
-<!ENTITY pref_private_data_passwords2 "Clàraidhean a-steach sàbhailte">
 <!ENTITY pref_private_data_cache "An tasgadan">
 <!ENTITY pref_private_data_offlineApps "Dàta làraichean-lin far loidhne">
 <!ENTITY pref_private_data_siteSettings2 "Roghainnean nan làrach">
 <!ENTITY pref_private_data_downloadFiles2 "Luchdaidhean a-nuas">
 <!ENTITY pref_private_data_syncedTabs "Tabaichean sioncronaichte">
 
-<!ENTITY pref_default_browser "Cleachd mar am brabhsair bunaiteach">
+<!ENTITY pref_default_browser2 "Cleachd &brandShortName; mar bhrabhsair bunaiteach">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Thoir gnogag air aplacaid a’ bhrabhsair ⁊ tagh &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Tadhail air taic Mozilla">
 <!ENTITY pref_about_firefox "Mu &brandShortName;">
 <!ENTITY pref_vendor_faqs "CÀBHA">
@@ -422,7 +453,6 @@
      crashReporterDesc.label). -->
 <!ENTITY datareporting_fhr_title "Aithisg slàinte &brandShortName;">
 <!ENTITY datareporting_fhr_summary2 "Bheir seo dàta air slàinte a’ bhrabhsair agad dha &vendorShortName; agus bheir e dhut fiosrachadh air dèanadas a’ bhrabhsair agad">
-<!ENTITY datareporting_abouthr_title "Faic an aithisg slàinte agam">
 <!ENTITY datareporting_telemetry_title "Telemeatraidh">
 <!ENTITY datareporting_telemetry_summary "Nochd fiosrachadh air dèanadas, cleachdadh is gnàthachaidhean a’ bhrabhsair dha &vendorShortName; ach an urrainn dhuinn &brandShortName; a leasachadh">
 <!ENTITY datareporting_crashreporter_summary "Cuiridh &brandShortName; aithisgean tuislidh dha &vendorShortName; airson ’s gun urrainn dhuinn am brabhsair agad a dhèanamh nas seasmhaiche agus nas tèarainte">
@@ -431,6 +461,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Aithrisiche nan tuislidhean">
 <!ENTITY datareporting_wifi_title2 "Seirbheisean lorgadh &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Cuidich &vendorShortName; a’ mapadh an t-saoghail! Nochd ionad mu thuaiream a’ WiFi ’s an fhòn-làimhe agad ach an urrainn dhuinn an t-seirbheis geò-lorgadh againn a leasachadh.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "Tha seirbheis lorgadh &vendorShortName; a’ ruith">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -475,6 +510,10 @@
 <!ENTITY find_prev "Air ais">
 <!ENTITY find_next "Air adhart">
 <!ENTITY find_close "Dùin">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Cha deach an abairt a lorg">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -537,7 +576,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Cuir na tabaichean ann an dà cholbh sa mhodh phortraid">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Air a thoirt air falbh">
 <!ENTITY folder_removed "Chaidh am pasgan a thoirt air falbh">
@@ -636,6 +675,7 @@
 <!ENTITY filepicker_audio_title "Tagh fuaim no clàraich tè">
 <!ENTITY filepicker_image_title "Tagh dealbh no tog fear">
 <!ENTITY filepicker_video_title "Tagh video no clàraich fear">
+
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Tha thu co-cheangailte ri">
@@ -752,7 +792,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Sioncronachadh mu dheireadh: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Cha deach a shioncronachadh a-riamh">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -813,15 +853,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Cha b’ urrainn dhuinn &brandShortName; fhosgladh. Ath-stàlaich e is feuch ris a-rithist.">
 
-<!ENTITY eol_notification_title2 "Cha dèid &brandShortName; ùrachadh tuilleadh">
-<!ENTITY eol_notification_summary "Thoir gnogag airson barrachd fiosrachaidh">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "Tha &brandShortName; cho ùr \&apos;s a ghabhas">
 <!ENTITY whatsnew_notification_summary "Faigh a-mach dè tha ùr san tionndadh seo">
-
-<!ENTITY promotion_add_page_shortcut "Cuir ath-ghoirid duilleige ris">
 
 <!ENTITY helper_first_offline_bookmark_title "Leugh far loidhne">
 <!ENTITY helper_first_offline_bookmark_message "Faigh cothrom air na rudan san t-sealladh-leughaidh sna comharran-lìn agad, fiù far loidhne.">
@@ -872,3 +907,23 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Cuir ris an sgrìn mhòr">
 <!ENTITY pwa_continue_to_website "Lean air adhart gun làrach-lìn">
 <!ENTITY pwa_onboarding_sumo "Tha e furasta an duilleag seo a chur ris an duilleag-dhachaidh agad airson greim fhaighinn air gu luath.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Cluich">
+<!ENTITY pip_play_button_description "Lean air a’ chluich">
+<!ENTITY pip_pause_button_title "Cuir ’na stad">
+<!ENTITY pip_pause_button_description "Cuir ’na stad">
+
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Brabhsair">
+<!ENTITY mls_notification_channel "Seirbheisean lorgadh &vendorShortName;">
+<!ENTITY download_notification_channel "Luchdaidhean a-nuas">
+<!ENTITY media_notification_channel2 "Fuaim is video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "Gliocasan &vendorShortName;">
+<!ENTITY updater_notification_channel "Ùrachadh aplacaidean">
+<!ENTITY synced_tabs_notification_channel "Tabaichean sioncronaichte">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Brathan na làraich">

@@ -2,8 +2,18 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-const {AddonTestUtils} = ChromeUtils.import("resource://testing-common/AddonTestUtils.jsm", {});
-const {ExtensionParent} = ChromeUtils.import("resource://gre/modules/ExtensionParent.jsm", {});
+const { AddonTestUtils } = ChromeUtils.import(
+  "resource://testing-common/AddonTestUtils.jsm"
+);
+const { ExtensionParent } = ChromeUtils.import(
+  "resource://gre/modules/ExtensionParent.jsm"
+);
+
+// This test is testing XUL about:addons UI (the HTML about:addons options page
+// is tested by the testCardRerender test in browser_html_options_ui.js).
+SpecialPowers.pushPrefEnv({
+  set: [["extensions.htmlaboutaddons.enabled", false]],
+});
 
 // This test function helps to detect when an addon options browser have been inserted
 // in the about:addons page.
@@ -25,7 +35,7 @@ add_task(async function test_options_on_addon_reload() {
   const ID = "@test-options-on-addon-reload";
 
   function backgroundScript() {
-    const {browser} = window;
+    const { browser } = window;
     browser.runtime.openOptionsPage();
   }
 
@@ -33,12 +43,12 @@ add_task(async function test_options_on_addon_reload() {
     useAddonManager: "temporary",
 
     manifest: {
-      "options_ui": {
-        "page": "options.html",
+      options_ui: {
+        page: "options.html",
       },
-      "applications": {
-        "gecko": {
-          "id": ID,
+      applications: {
+        gecko: {
+          id: ID,
         },
       },
     },
@@ -64,16 +74,25 @@ add_task(async function test_options_on_addon_reload() {
 
   await extension.startup();
 
-  info("Wait the options_ui page XUL browser to be created");
+  info("Wait for the options_ui page XUL browser to be created");
   await onceOptionsBrowserInserted;
 
   const aboutAddonsDocument = gBrowser.selectedBrowser.contentDocument;
 
-  Assert.equal(aboutAddonsDocument.location.href, "about:addons",
-               "The about:addons page is the currently selected tab");
+  Assert.equal(
+    aboutAddonsDocument.location.href,
+    "about:addons",
+    "The about:addons page is the currently selected tab"
+  );
 
-  const optionsBrowsers = aboutAddonsDocument.querySelectorAll("#addon-options");
-  Assert.equal(optionsBrowsers.length, 1, "Got a single XUL browser for the addon options_ui page");
+  const optionsBrowsers = aboutAddonsDocument.querySelectorAll(
+    "#addon-options"
+  );
+  Assert.equal(
+    optionsBrowsers.length,
+    1,
+    "Got a single XUL browser for the addon options_ui page"
+  );
 
   // Reload the addon five times in a row, and then check that there is still one addon options browser.
 
@@ -81,25 +100,27 @@ add_task(async function test_options_on_addon_reload() {
 
   for (let i = 0; i < 5; i++) {
     const onceOptionsReloaded = Promise.all([
-      // Reloading the addon currently prevents the extension.awaitMessage test helper to be able
-      // to receive test messages from the reloaded extension, this test function helps to wait
-      // the extension has been restarted on addon reload.
       AddonTestUtils.promiseWebExtensionStartup(),
-      TestUtils.topicObserved(AddonManager.OPTIONS_NOTIFICATION_DISPLAYED,
-                              (subject, data) => data == extension.id),
+      waitOptionsBrowserInserted(),
     ]);
 
     await addon.reload();
 
-    info("Wait the new options_ui page XUL browser to be created");
+    info("Wait for the new options_ui page XUL browser to be created");
     await onceOptionsReloaded;
 
-    let optionsBrowsers = aboutAddonsDocument.querySelectorAll("#addon-options");
+    let optionsBrowsers = aboutAddonsDocument.querySelectorAll(
+      "#addon-options"
+    );
 
-    Assert.equal(optionsBrowsers.length, 1, "Got a single XUL browser for the addon options_ui page");
+    Assert.equal(
+      optionsBrowsers.length,
+      1,
+      "Got a single XUL browser for the addon options_ui page"
+    );
   }
 
-  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
+  BrowserTestUtils.removeTab(gBrowser.selectedTab);
 
   await extension.unload();
 });

@@ -17,15 +17,15 @@ class OriginAttributes : public dom::OriginAttributesDictionary {
  public:
   OriginAttributes() {}
 
-  OriginAttributes(uint32_t aAppId, bool aInIsolatedMozBrowser) {
-    mAppId = aAppId;
+  explicit OriginAttributes(bool aInIsolatedMozBrowser) {
     mInIsolatedMozBrowser = aInIsolatedMozBrowser;
   }
 
   explicit OriginAttributes(const OriginAttributesDictionary& aOther)
       : OriginAttributesDictionary(aOther) {}
 
-  void SetFirstPartyDomain(const bool aIsTopLevelDocument, nsIURI* aURI);
+  void SetFirstPartyDomain(const bool aIsTopLevelDocument, nsIURI* aURI,
+                           bool aForced = false);
   void SetFirstPartyDomain(const bool aIsTopLevelDocument,
                            const nsACString& aDomain);
 
@@ -45,8 +45,7 @@ class OriginAttributes : public dom::OriginAttributesDictionary {
   }
 
   bool operator==(const OriginAttributes& aOther) const {
-    return mAppId == aOther.mAppId &&
-           mInIsolatedMozBrowser == aOther.mInIsolatedMozBrowser &&
+    return mInIsolatedMozBrowser == aOther.mInIsolatedMozBrowser &&
            mUserContextId == aOther.mUserContextId &&
            mPrivateBrowsingId == aOther.mPrivateBrowsingId &&
            mFirstPartyDomain == aOther.mFirstPartyDomain;
@@ -54,6 +53,12 @@ class OriginAttributes : public dom::OriginAttributesDictionary {
 
   bool operator!=(const OriginAttributes& aOther) const {
     return !(*this == aOther);
+  }
+
+  MOZ_MUST_USE bool EqualsIgnoringFPD(const OriginAttributes& aOther) const {
+    return mInIsolatedMozBrowser == aOther.mInIsolatedMozBrowser &&
+           mUserContextId == aOther.mUserContextId &&
+           mPrivateBrowsingId == aOther.mPrivateBrowsingId;
   }
 
   // Serializes/Deserializes non-default values into the suffix format, i.e.
@@ -87,6 +92,12 @@ class OriginAttributes : public dom::OriginAttributesDictionary {
     return !sFirstPartyIsolation || sRestrictedOpenerAccess;
   }
 
+  // Check whether we block the postMessage across different FPDs when the
+  // targetOrigin is '*'.
+  static inline MOZ_MUST_USE bool IsBlockPostMessageForFPI() {
+    return sFirstPartyIsolation && sBlockPostMessageForFPI;
+  }
+
   // returns true if the originAttributes suffix has mPrivateBrowsingId value
   // different than 0.
   static bool IsPrivateBrowsing(const nsACString& aOrigin);
@@ -96,6 +107,7 @@ class OriginAttributes : public dom::OriginAttributesDictionary {
  private:
   static bool sFirstPartyIsolation;
   static bool sRestrictedOpenerAccess;
+  static bool sBlockPostMessageForFPI;
 };
 
 class OriginAttributesPattern : public dom::OriginAttributesPatternDictionary {
@@ -114,10 +126,6 @@ class OriginAttributesPattern : public dom::OriginAttributesPatternDictionary {
 
   // Performs a match of |aAttrs| against this pattern.
   bool Matches(const OriginAttributes& aAttrs) const {
-    if (mAppId.WasPassed() && mAppId.Value() != aAttrs.mAppId) {
-      return false;
-    }
-
     if (mInIsolatedMozBrowser.WasPassed() &&
         mInIsolatedMozBrowser.Value() != aAttrs.mInIsolatedMozBrowser) {
       return false;
@@ -142,11 +150,6 @@ class OriginAttributesPattern : public dom::OriginAttributesPatternDictionary {
   }
 
   bool Overlaps(const OriginAttributesPattern& aOther) const {
-    if (mAppId.WasPassed() && aOther.mAppId.WasPassed() &&
-        mAppId.Value() != aOther.mAppId.Value()) {
-      return false;
-    }
-
     if (mInIsolatedMozBrowser.WasPassed() &&
         aOther.mInIsolatedMozBrowser.WasPassed() &&
         mInIsolatedMozBrowser.Value() != aOther.mInIsolatedMozBrowser.Value()) {

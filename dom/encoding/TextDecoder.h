@@ -29,41 +29,43 @@ class TextDecoder final : public NonRefcountedDOMObject {
                                   const TextDecoderOptions& aOptions,
                                   ErrorResult& aRv) {
     nsAutoPtr<TextDecoder> txtDecoder(new TextDecoder());
-    txtDecoder->Init(aEncoding, aOptions.mFatal, aRv);
+    txtDecoder->Init(aEncoding, aOptions, aRv);
     if (aRv.Failed()) {
       return nullptr;
     }
     return txtDecoder.forget();
   }
 
-  TextDecoder() : mFatal(false) { MOZ_COUNT_CTOR(TextDecoder); }
+  TextDecoder() : mFatal(false), mIgnoreBOM(false) {
+    MOZ_COUNT_CTOR(TextDecoder);
+  }
 
   ~TextDecoder() { MOZ_COUNT_DTOR(TextDecoder); }
 
   bool WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto,
                   JS::MutableHandle<JSObject*> aReflector) {
-    return TextDecoderBinding::Wrap(aCx, this, aGivenProto, aReflector);
+    return TextDecoder_Binding::Wrap(aCx, this, aGivenProto, aReflector);
   }
 
   /**
    * Validates provided label and throws an exception if invalid label.
    *
    * @param aLabel       The encoding label (case insensitive) provided.
-   * @param aFatal       indicates whether to throw an 'EncodingError'
-   *                     exception or not when decoding.
+   * @param aOptions     The TextDecoderOptions to use.
    * @return aRv         EncodingError exception else null.
    */
-  void Init(const nsAString& aLabel, const bool aFatal, ErrorResult& aRv);
+  void Init(const nsAString& aLabel, const TextDecoderOptions& aOptions,
+            ErrorResult& aRv);
 
   /**
    * Performs initialization with a Gecko-canonical encoding name (as opposed
    * to a label.)
    *
    * @param aEncoding    An Encoding object
-   * @param aFatal       indicates whether to throw an 'EncodingError'
-   *                     exception or not when decoding.
+   * @param aOptions     The TextDecoderOptions to use.
    */
-  void InitWithEncoding(NotNull<const Encoding*> aEncoding, const bool aFatal);
+  void InitWithEncoding(NotNull<const Encoding*> aEncoding,
+                        const TextDecoderOptions& aOptions);
 
   /**
    * Return the encoding name.
@@ -97,10 +99,13 @@ class TextDecoder final : public NonRefcountedDOMObject {
 
   bool Fatal() const { return mFatal; }
 
+  bool IgnoreBOM() const { return mIgnoreBOM; }
+
  private:
   nsCString mEncoding;
   mozilla::UniquePtr<mozilla::Decoder> mDecoder;
   bool mFatal;
+  bool mIgnoreBOM;
 };
 
 }  // namespace dom

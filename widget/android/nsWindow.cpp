@@ -1,5 +1,5 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*-
- * vim: set sw=4 ts=4 expandtab:
+/* -*- Mode: c++; c-basic-offset: 2; tab-width: 4; indent-tabs-mode: nil; -*-
+ * vim: set sw=2 ts=4 expandtab:
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,6 +8,7 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include <math.h>
+#include <queue>
 #include <unistd.h>
 
 #include "mozilla/MiscEvents.h"
@@ -15,12 +16,17 @@
 #include "mozilla/TouchEvents.h"
 #include "mozilla/TypeTraits.h"
 #include "mozilla/WeakPtr.h"
+#include "mozilla/WheelHandlingHelper.h"  // for WheelDeltaAdjustmentStrategy
 
+#include "mozilla/a11y/SessionAccessibility.h"
 #include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/ContentChild.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/Unused.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/layers/RenderTrace.h"
+#include "mozilla/gfx/DataSurfaceHelpers.h"
+#include "mozilla/gfx/2D.h"
 #include <algorithm>
 
 using mozilla::Unused;
@@ -28,6 +34,9 @@ using mozilla::dom::ContentChild;
 using mozilla::dom::ContentParent;
 
 #include "nsWindow.h"
+
+#include "AndroidGraphics.h"
+#include "JavaExceptions.h"
 
 #include "nsIBaseWindow.h"
 #include "nsIBrowserDOMWindow.h"
@@ -57,6 +66,7 @@ using mozilla::dom::ContentParent;
 #include "mozilla/layers/LayerManagerComposite.h"
 #include "mozilla/layers/AsyncCompositionManager.h"
 #include "mozilla/layers/APZEventState.h"
+#include "mozilla/layers/APZInputBridge.h"
 #include "mozilla/layers/APZThreadUtils.h"
 #include "mozilla/layers/IAPZCTreeManager.h"
 #include "GLContext.h"
@@ -75,6 +85,7 @@ using mozilla::dom::ContentParent;
 #include "GeckoEditableSupport.h"
 #include "KeyEvent.h"
 #include "MotionEvent.h"
+#include "ScreenHelperAndroid.h"
 
 #include "imgIEncoder.h"
 
@@ -96,7 +107,6 @@ using namespace mozilla::ipc;
 #include "mozilla/layers/CompositorSession.h"
 #include "mozilla/layers/LayerTransactionParent.h"
 #include "mozilla/layers/UiCompositorControllerChild.h"
-#include "mozilla/Services.h"
 #include "nsThreadUtils.h"
 
 // All the toplevel windows that have been created; these are in
@@ -138,12 +148,12 @@ class nsWindow::WindowEvent : public Runnable {
  public:
   WindowEvent(Lambda&& aLambda, InstanceType&& aInstance)
       : Runnable("nsWindowEvent"),
-        mLambda(mozilla::Move(aLambda)),
-        mInstance(Forward<InstanceType>(aInstance)) {}
+        mLambda(std::move(aLambda)),
+        mInstance(std::forward<InstanceType>(aInstance)) {}
 
-  WindowEvent(Lambda&& aLambda)
+  explicit WindowEvent(Lambda&& aLambda)
       : Runnable("nsWindowEvent"),
-        mLambda(mozilla::Move(aLambda)),
+        mLambda(std::move(aLambda)),
         mInstance(mLambda.GetThisArg()) {}
 
   NS_IMETHOD Run() override {
@@ -174,7 +184,7 @@ CallAttachNative(Instance aInstance, Impl* aImpl) {
 template <class Lambda>
 bool DispatchToUiThread(const char* aName, Lambda&& aLambda) {
   if (RefPtr<nsThread> uiThread = GetAndroidUiThread()) {
-    uiThread->Dispatch(NS_NewRunnableFunction(aName, Move(aLambda)));
+    uiThread->Dispatch(NS_NewRunnableFunction(aName, std::move(aLambda)));
     return true;
   }
   return false;
@@ -182,25 +192,74 @@ bool DispatchToUiThread(const char* aName, Lambda&& aLambda) {
 }  // namespace
 
 template <class Impl>
-template <class Instance, typename... Args>
-void nsWindow::NativePtr<Impl>::Attach(Instance aInstance, nsWindow* aWindow,
-                                       Args&&... aArgs) {
+template <class Cls, typename... Args>
+void nsWindow::NativePtr<Impl>::Attach(const jni::LocalRef<Cls>& aInstance,
+                                       nsWindow* aWindow, Args&&... aArgs) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!mPtr && !mImpl);
 
-  Impl* const impl = new Impl(this, aWindow, mozilla::Forward<Args>(aArgs)...);
+  Impl* const impl = new Impl(this, aWindow, std::forward<Args>(aArgs)...);
   mImpl = impl;
 
   // CallAttachNative transfers ownership of impl.
-  CallAttachNative<Instance, Impl>(aInstance, impl);
+  CallAttachNative<>(aInstance, impl);
 }
 
 template <class Impl>
-void nsWindow::NativePtr<Impl>::Detach() {
+template <class Cls, typename T>
+void nsWindow::NativePtr<Impl>::Detach(const jni::Ref<Cls, T>& aInstance) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(mPtr && mImpl);
 
-  mImpl->OnDetach();
+  // nsIRunnable that takes care of disposing the native object attached to
+  // the Java object in a safe manner.
+  class ImplDisposer : public Runnable {
+    const typename Cls::GlobalRef mInstance;
+    const uintptr_t mOldImpl;
+
+   public:
+    explicit ImplDisposer(const typename Cls::LocalRef& aInstance)
+        : Runnable("nsWindow::NativePtr::Detach"),
+          mInstance(aInstance.Env(), aInstance),
+          mOldImpl(aInstance
+                       ? jni::GetNativeHandle(aInstance.Env(), aInstance.Get())
+                       : 0) {
+      MOZ_CATCH_JNI_EXCEPTION(aInstance.Env());
+    }
+
+    NS_IMETHOD Run() override {
+      if (!mInstance) {
+        return NS_OK;
+      }
+
+      if (!NS_IsMainThread()) {
+        NS_DispatchToMainThread(this);
+        return NS_OK;
+      }
+
+      typename Cls::LocalRef instance(jni::GetGeckoThreadEnv(), mInstance);
+      auto newImpl = jni::GetNativeHandle(instance.Env(), instance.Get());
+      MOZ_CATCH_JNI_EXCEPTION(instance.Env());
+
+      if (mOldImpl == newImpl) {
+        // Only dispose the object if the native object has not changed.
+        Impl::DisposeNative(instance);
+      }
+      return NS_OK;
+    }
+  };
+
+  // Objects that use nsWindow::NativePtr are expected to implement a public
+  // member function with signature "void OnDetach(
+  // already_AddRefed<Runnable> aDisposer)".  This function should perform
+  // necessary cleanups for the native/Java objects, as well as mark the Java
+  // object as being disposed, so no native methods are called after that
+  // point. After this disposal step, the function must call "aDisposer->
+  // Run()" to finish disposing the native object. The disposer is
+  // thread-safe and may be called on any thread as necessary.
+  mImpl->OnDetach(
+      do_AddRef(new ImplDisposer({jni::GetGeckoThreadEnv(), aInstance})));
+
   {
     Locked implLock(*this);
     mImpl = nullptr;
@@ -217,7 +276,7 @@ class nsWindow::NativePtr<Impl>::Locked final : private MutexAutoLock {
   Impl* const mImpl;
 
  public:
-  Locked(NativePtr<Impl>& aPtr)
+  explicit Locked(NativePtr<Impl>& aPtr)
       : MutexAutoLock(aPtr.mImplLock), mImpl(aPtr.mImpl) {}
 
   operator Impl*() const { return mImpl; }
@@ -228,7 +287,12 @@ class nsWindow::GeckoViewSupport final
     : public GeckoSession::Window::Natives<GeckoViewSupport>,
       public SupportsWeakPtr<GeckoViewSupport> {
   nsWindow& window;
-  GeckoSession::Window::GlobalRef mGeckoViewWindow;
+
+  // We hold a WeakRef because we want to allow the
+  // GeckoSession.Window to be garbage collected.
+  // Callers need to create a LocalRef from this
+  // before calling methods.
+  GeckoSession::Window::WeakRef mGeckoViewWindow;
 
  public:
   typedef GeckoSession::Window::Natives<GeckoViewSupport> Base;
@@ -238,7 +302,7 @@ class nsWindow::GeckoViewSupport final
 
   template <typename Functor>
   static void OnNativeCall(Functor&& aCall) {
-    NS_DispatchToMainThread(new WindowEvent<Functor>(mozilla::Move(aCall)));
+    NS_DispatchToMainThread(new WindowEvent<Functor>(std::move(aCall)));
   }
 
   GeckoViewSupport(nsWindow* aWindow,
@@ -263,9 +327,11 @@ class nsWindow::GeckoViewSupport final
   static void Open(const jni::Class::LocalRef& aCls,
                    GeckoSession::Window::Param aWindow,
                    jni::Object::Param aQueue, jni::Object::Param aCompositor,
-                   jni::Object::Param aDispatcher, jni::Object::Param aSettings,
-                   jni::String::Param aId, jni::String::Param aChromeURI,
-                   int32_t aScreenId, bool aPrivateMode);
+                   jni::Object::Param aDispatcher,
+                   jni::Object::Param aSessionAccessibility,
+                   jni::Object::Param aInitData, jni::String::Param aId,
+                   jni::String::Param aChromeURI, int32_t aScreenId,
+                   bool aPrivateMode);
 
   // Close and destroy the nsWindow.
   void Close();
@@ -273,44 +339,48 @@ class nsWindow::GeckoViewSupport final
   // Transfer this nsWindow to new GeckoSession objects.
   void Transfer(const GeckoSession::Window::LocalRef& inst,
                 jni::Object::Param aQueue, jni::Object::Param aCompositor,
-                jni::Object::Param aDispatcher, jni::Object::Param aSettings);
+                jni::Object::Param aDispatcher,
+                jni::Object::Param aSessionAccessibility,
+                jni::Object::Param aInitData);
 
   void AttachEditable(const GeckoSession::Window::LocalRef& inst,
-                      jni::Object::Param aEditableParent,
-                      jni::Object::Param aEditableChild);
+                      jni::Object::Param aEditableParent);
+
+  void AttachAccessibility(const GeckoSession::Window::LocalRef& inst,
+                           jni::Object::Param aSessionAccessibility);
 
   void OnReady(jni::Object::Param aQueue = nullptr);
 };
 
 /**
- * NativePanZoomController handles its native calls on the UI thread, so make
+ * PanZoomController handles its native calls on the UI thread, so make
  * it separate from GeckoViewSupport.
  */
 class nsWindow::NPZCSupport final
-    : public NativePanZoomController::Natives<NPZCSupport> {
+    : public PanZoomController::NativeProvider::Natives<NPZCSupport> {
   using LockedWindowPtr = WindowPtr<NPZCSupport>::Locked;
 
   static bool sNegateWheelScroll;
 
   WindowPtr<NPZCSupport> mWindow;
-  NativePanZoomController::GlobalRef mNPZC;
+  PanZoomController::NativeProvider::WeakRef mNPZC;
   int mPreviousButtons;
 
   template <typename Lambda>
   class InputEvent final : public nsAppShell::Event {
-    NativePanZoomController::GlobalRef mNPZC;
+    PanZoomController::NativeProvider::GlobalRef mNPZC;
     Lambda mLambda;
 
    public:
     InputEvent(const NPZCSupport* aNPZCSupport, Lambda&& aLambda)
-        : mNPZC(aNPZCSupport->mNPZC), mLambda(mozilla::Move(aLambda)) {}
+        : mNPZC(aNPZCSupport->mNPZC), mLambda(std::move(aLambda)) {}
 
     void Run() override {
       MOZ_ASSERT(NS_IsMainThread());
 
       JNIEnv* const env = jni::GetGeckoThreadEnv();
       NPZCSupport* npzcSupport =
-          GetNative(NativePanZoomController::LocalRef(env, mNPZC));
+          GetNative(PanZoomController::NativeProvider::LocalRef(env, mNPZC));
 
       if (!npzcSupport || !npzcSupport->mWindow) {
         // We already shut down.
@@ -323,23 +393,21 @@ class nsWindow::NPZCSupport final
       return mLambda(window);
     }
 
-    nsAppShell::Event::Type ActivityType() const override {
-      return nsAppShell::Event::Type::kUIActivity;
-    }
+    bool IsUIEvent() const override { return true; }
   };
 
   template <typename Lambda>
   void PostInputEvent(Lambda&& aLambda) {
     // Use priority queue for input events.
     nsAppShell::PostEvent(
-        MakeUnique<InputEvent<Lambda>>(this, mozilla::Move(aLambda)));
+        MakeUnique<InputEvent<Lambda>>(this, std::move(aLambda)));
   }
 
  public:
-  typedef NativePanZoomController::Natives<NPZCSupport> Base;
+  typedef PanZoomController::NativeProvider::Natives<NPZCSupport> Base;
 
   NPZCSupport(NativePtr<NPZCSupport>* aPtr, nsWindow* aWindow,
-              const NativePanZoomController::LocalRef& aNPZC)
+              const PanZoomController::NativeProvider::LocalRef& aNPZC)
       : mWindow(aPtr, aWindow), mNPZC(aNPZC), mPreviousButtons(0) {
     MOZ_ASSERT(mWindow);
 
@@ -356,7 +424,7 @@ class nsWindow::NPZCSupport final
   using Base::AttachNative;
   using Base::DisposeNative;
 
-  void OnDetach() {
+  void OnDetach(already_AddRefed<Runnable> aDisposer) {
     // There are several considerations when shutting down NPZC. 1) The
     // Gecko thread may destroy NPZC at any time when nsWindow closes. 2)
     // There may be pending events on the Gecko thread when NPZC is
@@ -389,22 +457,24 @@ class nsWindow::NPZCSupport final
     // release mWindow until the UI thread is done using it, thus avoiding
     // the race condition.
 
-    typedef NativePanZoomController::GlobalRef NPZCRef;
-    auto callDestroy = [](const NPZCRef& npzc) { npzc->SetAttached(false); };
+    if (RefPtr<nsThread> uiThread = GetAndroidUiThread()) {
+      auto npzc = PanZoomController::NativeProvider::GlobalRef(mNPZC);
+      if (!npzc) {
+        return;
+      }
 
-    NativePanZoomController::GlobalRef npzc = mNPZC;
-    RefPtr<nsThread> uiThread = GetAndroidUiThread();
-    if (!uiThread) {
-      return;
+      uiThread->Dispatch(NS_NewRunnableFunction(
+          "NPZCSupport::OnDetach",
+          [npzc, disposer = RefPtr<Runnable>(aDisposer)] {
+            npzc->SetAttached(false);
+            disposer->Run();
+          }));
     }
-    uiThread->Dispatch(
-        NewRunnableFunction("OnDetachRunnable",
-                            static_cast<void (*)(const NPZCRef&)>(callDestroy),
-                            mozilla::Move(npzc)),
-        nsIThread::DISPATCH_NORMAL);
   }
 
-  const NativePanZoomController::Ref& GetJavaNPZC() const { return mNPZC; }
+  const PanZoomController::NativeProvider::Ref& GetJavaNPZC() const {
+    return mNPZC;
+  }
 
  public:
   void SetIsLongpressEnabled(bool aIsLongpressEnabled) {
@@ -443,12 +513,18 @@ class nsWindow::NPZCSupport final
     ScrollWheelInput input(
         aTime, GetEventTimeStamp(aTime), GetModifiers(aMetaState),
         ScrollWheelInput::SCROLLMODE_SMOOTH,
-        ScrollWheelInput::SCROLLDELTA_PIXEL, origin, aHScroll, aVScroll, false);
+        ScrollWheelInput::SCROLLDELTA_PIXEL, origin, aHScroll, aVScroll, false,
+        // XXX Do we need to support auto-dir scrolling
+        // for Android widgets with a wheel device?
+        // Currently, I just leave it unimplemented. If
+        // we need to implement it, what's the extra work
+        // to do?
+        WheelDeltaAdjustmentStrategy::eNone);
 
     ScrollableLayerGuid guid;
     uint64_t blockId;
     nsEventStatus status =
-        controller->ReceiveInputEvent(input, &guid, &blockId);
+        controller->InputBridge()->ReceiveInputEvent(input, &guid, &blockId);
 
     if (status == nsEventStatus_eConsumeNoDefault) {
       return true;
@@ -487,19 +563,19 @@ class nsWindow::NPZCSupport final
     int16_t result = 0;
 
     if (buttons & java::sdk::MotionEvent::BUTTON_PRIMARY) {
-      result |= WidgetMouseEventBase::eLeftButtonFlag;
+      result |= MouseButtonsFlag::eLeftFlag;
     }
     if (buttons & java::sdk::MotionEvent::BUTTON_SECONDARY) {
-      result |= WidgetMouseEventBase::eRightButtonFlag;
+      result |= MouseButtonsFlag::eRightFlag;
     }
     if (buttons & java::sdk::MotionEvent::BUTTON_TERTIARY) {
-      result |= WidgetMouseEventBase::eMiddleButtonFlag;
+      result |= MouseButtonsFlag::eMiddleFlag;
     }
     if (buttons & java::sdk::MotionEvent::BUTTON_BACK) {
-      result |= WidgetMouseEventBase::e4thButtonFlag;
+      result |= MouseButtonsFlag::e4thFlag;
     }
     if (buttons & java::sdk::MotionEvent::BUTTON_FORWARD) {
-      result |= WidgetMouseEventBase::e5thButtonFlag;
+      result |= MouseButtonsFlag::e5thFlag;
     }
 
     return result;
@@ -555,14 +631,15 @@ class nsWindow::NPZCSupport final
 
     ScreenPoint origin = ScreenPoint(aX, aY);
 
-    MouseInput input(mouseType, buttonType, nsIDOMMouseEvent::MOZ_SOURCE_MOUSE,
+    MouseInput input(mouseType, buttonType,
+                     MouseEvent_Binding::MOZ_SOURCE_MOUSE,
                      ConvertButtons(buttons), origin, aTime,
                      GetEventTimeStamp(aTime), GetModifiers(aMetaState));
 
     ScrollableLayerGuid guid;
     uint64_t blockId;
     nsEventStatus status =
-        controller->ReceiveInputEvent(input, &guid, &blockId);
+        controller->InputBridge()->ReceiveInputEvent(input, &guid, &blockId);
 
     if (status == nsEventStatus_eConsumeNoDefault) {
       return true;
@@ -576,14 +653,13 @@ class nsWindow::NPZCSupport final
     return true;
   }
 
-  bool HandleMotionEvent(const NativePanZoomController::LocalRef& aInstance,
-                         int32_t aAction, int32_t aActionIndex, int64_t aTime,
-                         int32_t aMetaState, jni::IntArray::Param aPointerId,
-                         jni::FloatArray::Param aX, jni::FloatArray::Param aY,
-                         jni::FloatArray::Param aOrientation,
-                         jni::FloatArray::Param aPressure,
-                         jni::FloatArray::Param aToolMajor,
-                         jni::FloatArray::Param aToolMinor) {
+  bool HandleMotionEvent(
+      const PanZoomController::NativeProvider::LocalRef& aInstance,
+      int32_t aAction, int32_t aActionIndex, int64_t aTime, int32_t aMetaState,
+      float aScreenX, float aScreenY, jni::IntArray::Param aPointerId,
+      jni::FloatArray::Param aX, jni::FloatArray::Param aY,
+      jni::FloatArray::Param aOrientation, jni::FloatArray::Param aPressure,
+      jni::FloatArray::Param aToolMajor, jni::FloatArray::Param aToolMinor) {
     MOZ_ASSERT(AndroidBridge::IsJavaUiThread());
 
     RefPtr<IAPZCTreeManager> controller;
@@ -628,6 +704,8 @@ class nsWindow::NPZCSupport final
     MultiTouchInput input(type, aTime, GetEventTimeStamp(aTime), 0);
     input.modifiers = GetModifiers(aMetaState);
     input.mTouches.SetCapacity(endIndex - startIndex);
+    input.mScreenOffset =
+        ExternalIntPoint(int32_t(floorf(aScreenX)), int32_t(floorf(aScreenY)));
 
     nsTArray<float> x(aX->GetElements());
     nsTArray<float> y(aY->GetElements());
@@ -679,7 +757,7 @@ class nsWindow::NPZCSupport final
     ScrollableLayerGuid guid;
     uint64_t blockId;
     nsEventStatus status =
-        controller->ReceiveInputEvent(input, &guid, &blockId);
+        controller->InputBridge()->ReceiveInputEvent(input, &guid, &blockId);
 
     if (status == nsEventStatus_eConsumeNoDefault) {
       return true;
@@ -703,16 +781,14 @@ bool nsWindow::NPZCSupport::sNegateWheelScroll;
 NS_IMPL_ISUPPORTS(nsWindow::AndroidView, nsIAndroidEventDispatcher,
                   nsIAndroidView)
 
-nsresult nsWindow::AndroidView::GetSettings(JSContext* aCx,
+nsresult nsWindow::AndroidView::GetInitData(JSContext* aCx,
                                             JS::MutableHandleValue aOut) {
-  if (!mSettings) {
+  if (!mInitData) {
     aOut.setNull();
     return NS_OK;
   }
 
-  // Lock to prevent races with UI thread.
-  auto lock = mSettings.Lock();
-  return widget::EventDispatcher::UnboxBundle(aCx, mSettings, aOut);
+  return widget::EventDispatcher::UnboxBundle(aCx, mInitData, aOut);
 }
 
 /**
@@ -720,13 +796,14 @@ nsresult nsWindow::AndroidView::GetSettings(JSContext* aCx,
  * separate from GeckoViewSupport.
  */
 class nsWindow::LayerViewSupport final
-    : public LayerSession::Compositor::Natives<LayerViewSupport> {
+    : public GeckoSession::Compositor::Natives<LayerViewSupport> {
   using LockedWindowPtr = WindowPtr<LayerViewSupport>::Locked;
 
   WindowPtr<LayerViewSupport> mWindow;
-  LayerSession::Compositor::GlobalRef mCompositor;
+  GeckoSession::Compositor::WeakRef mCompositor;
   Atomic<bool, ReleaseAcquire> mCompositorPaused;
   jni::Object::GlobalRef mSurface;
+  std::queue<java::GeckoResult::GlobalRef> mCapturePixelsResults;
 
   // In order to use Event::HasSameTypeAs in PostTo(), we cannot make
   // LayerViewEvent a template because each template instantiation is
@@ -736,11 +813,11 @@ class nsWindow::LayerViewSupport final
 
    public:
     static UniquePtr<Event> MakeEvent(UniquePtr<Event>&& event) {
-      return MakeUnique<LayerViewEvent>(mozilla::Move(event));
+      return MakeUnique<LayerViewEvent>(std::move(event));
     }
 
-    LayerViewEvent(UniquePtr<Event>&& event)
-        : nsAppShell::ProxyEvent(mozilla::Move(event)) {}
+    explicit LayerViewEvent(UniquePtr<Event>&& event)
+        : nsAppShell::ProxyEvent(std::move(event)) {}
 
     void PostTo(LinkedList<Event>& queue) override {
       // Give priority to compositor events, but keep in order with
@@ -758,28 +835,15 @@ class nsWindow::LayerViewSupport final
   };
 
  public:
-  typedef LayerSession::Compositor::Natives<LayerViewSupport> Base;
-
-  template <class Functor>
-  static void OnNativeCall(Functor&& aCall) {
-    if (aCall.IsTarget(&LayerViewSupport::CreateCompositor)) {
-      // This call is blocking.
-      nsAppShell::SyncRunEvent(
-          nsAppShell::LambdaEvent<Functor>(mozilla::Move(aCall)),
-          &LayerViewEvent::MakeEvent);
-      return;
-    }
-
-    MOZ_CRASH("Unexpected call");
-  }
+  typedef GeckoSession::Compositor::Natives<LayerViewSupport> Base;
 
   static LayerViewSupport* FromNative(
-      const LayerSession::Compositor::LocalRef& instance) {
+      const GeckoSession::Compositor::LocalRef& instance) {
     return GetNative(instance);
   }
 
   LayerViewSupport(NativePtr<LayerViewSupport>* aPtr, nsWindow* aWindow,
-                   const LayerSession::Compositor::LocalRef& aInstance)
+                   const GeckoSession::Compositor::LocalRef& aInstance)
       : mWindow(aPtr, aWindow),
         mCompositor(aInstance),
         mCompositorPaused(true) {
@@ -791,16 +855,31 @@ class nsWindow::LayerViewSupport final
   using Base::AttachNative;
   using Base::DisposeNative;
 
-  void OnDetach() {
+  void OnDetach(already_AddRefed<Runnable> aDisposer) {
     if (RefPtr<nsThread> uiThread = GetAndroidUiThread()) {
-      LayerSession::Compositor::GlobalRef compositor(mCompositor);
+      GeckoSession::Compositor::GlobalRef compositor(mCompositor);
+      if (!compositor) {
+        return;
+      }
+
       uiThread->Dispatch(NS_NewRunnableFunction(
           "LayerViewSupport::OnDetach",
-          [compositor] { compositor->OnCompositorDetached(); }));
+          [compositor, disposer = RefPtr<Runnable>(aDisposer),
+           result = &mCapturePixelsResults] {
+            while (!result->empty()) {
+              result->front()->CompleteExceptionally(
+                  java::sdk::IllegalStateException::New(
+                      "The compositor has detached from the session")
+                      .Cast<jni::Throwable>());
+              result->pop();
+            }
+            compositor->OnCompositorDetached();
+            disposer->Run();
+          }));
     }
   }
 
-  const LayerSession::Compositor::Ref& GetJavaCompositor() const {
+  const GeckoSession::Compositor::Ref& GetJavaCompositor() const {
     return mCompositor;
   }
 
@@ -818,6 +897,27 @@ class nsWindow::LayerViewSupport final
     return child.forget();
   }
 
+  int8_t* FlipScreenPixels(Shmem& aMem, const ScreenIntSize& aSize) {
+    const IntSize size(aSize.width, aSize.height);
+    RefPtr<DataSourceSurface> image = gfx::CreateDataSourceSurfaceFromData(
+        size, SurfaceFormat::B8G8R8A8, aMem.get<uint8_t>(),
+        StrideForFormatAndWidth(SurfaceFormat::B8G8R8A8, aSize.width));
+    RefPtr<DrawTarget> drawTarget =
+        gfxPlatform::GetPlatform()->CreateOffscreenContentDrawTarget(
+            size, SurfaceFormat::B8G8R8A8);
+    drawTarget->SetTransform(Matrix::Scaling(1.0, -1.0) *
+                             Matrix::Translation(0, aSize.height));
+
+    gfx::Rect drawRect(0, 0, aSize.width, aSize.height);
+    drawTarget->DrawSurface(image, drawRect, drawRect);
+
+    RefPtr<SourceSurface> snapshot = drawTarget->Snapshot();
+    RefPtr<DataSourceSurface> data = snapshot->GetDataSurface();
+    DataSourceSurface::ScopedMap* smap =
+        new DataSourceSurface::ScopedMap(data, DataSourceSurface::READ);
+    return reinterpret_cast<int8_t*>(smap->GetData());
+  }
+
   /**
    * Compositor methods
    */
@@ -829,16 +929,23 @@ class nsWindow::LayerViewSupport final
     }
 
     MOZ_ASSERT(aNPZC);
-    MOZ_ASSERT(!mWindow->mNPZCSupport);
 
-    auto npzc = NativePanZoomController::LocalRef(
-        jni::GetGeckoThreadEnv(), NativePanZoomController::Ref::From(aNPZC));
+    // We can have this situation if we get two GeckoViewSupport::Transfer()
+    // called before the first AttachNPZC() gets here. Just detach the current
+    // instance since that's what happens in GeckoViewSupport::Transfer() as
+    // well.
+    if (mWindow->mNPZCSupport) {
+      mWindow->mNPZCSupport.Detach(mWindow->mNPZCSupport->GetJavaNPZC());
+    }
+
+    auto npzc = PanZoomController::NativeProvider::LocalRef(
+        jni::GetGeckoThreadEnv(),
+        PanZoomController::NativeProvider::Ref::From(aNPZC));
     mWindow->mNPZCSupport.Attach(npzc, mWindow, npzc);
 
     DispatchToUiThread("LayerViewSupport::AttachNPZC",
-                       [npzc = NativePanZoomController::GlobalRef(npzc)] {
-                         npzc->SetAttached(true);
-                       });
+                       [npzc = PanZoomController::NativeProvider::GlobalRef(
+                            npzc)] { npzc->SetAttached(true); });
   }
 
   void OnBoundsChanged(int32_t aLeft, int32_t aTop, int32_t aWidth,
@@ -849,19 +956,6 @@ class nsWindow::LayerViewSupport final
     }
 
     mWindow->Resize(aLeft, aTop, aWidth, aHeight, /* repaint */ false);
-  }
-
-  void CreateCompositor(int32_t aWidth, int32_t aHeight,
-                        jni::Object::Param aSurface) {
-    MOZ_ASSERT(NS_IsMainThread());
-    if (!mWindow) {
-      return;  // Already shut down.
-    }
-
-    mSurface = aSurface;
-    mWindow->CreateLayerManager(aWidth, aHeight);
-
-    mCompositorPaused = false;
   }
 
   void SyncPauseCompositor() {
@@ -885,32 +979,32 @@ class nsWindow::LayerViewSupport final
   }
 
   void SyncResumeResizeCompositor(
-      const LayerSession::Compositor::LocalRef& aObj, int32_t aWidth,
-      int32_t aHeight, jni::Object::Param aSurface) {
+      const GeckoSession::Compositor::LocalRef& aObj, int32_t aX, int32_t aY,
+      int32_t aWidth, int32_t aHeight, jni::Object::Param aSurface) {
     MOZ_ASSERT(AndroidBridge::IsJavaUiThread());
 
     mSurface = aSurface;
 
     if (RefPtr<UiCompositorControllerChild> child =
             GetUiCompositorControllerChild()) {
-      child->ResumeAndResize(aWidth, aHeight);
+      child->ResumeAndResize(aX, aY, aWidth, aHeight);
     }
 
     mCompositorPaused = false;
 
     class OnResumedEvent : public nsAppShell::Event {
-      LayerSession::Compositor::GlobalRef mCompositor;
+      GeckoSession::Compositor::GlobalRef mCompositor;
 
      public:
-      OnResumedEvent(LayerSession::Compositor::GlobalRef&& aCompositor)
-          : mCompositor(mozilla::Move(aCompositor)) {}
+      explicit OnResumedEvent(GeckoSession::Compositor::GlobalRef&& aCompositor)
+          : mCompositor(std::move(aCompositor)) {}
 
       void Run() override {
         MOZ_ASSERT(NS_IsMainThread());
 
         JNIEnv* const env = jni::GetGeckoThreadEnv();
         LayerViewSupport* const lvs =
-            GetNative(LayerSession::Compositor::LocalRef(env, mCompositor));
+            GetNative(GeckoSession::Compositor::LocalRef(env, mCompositor));
 
         if (!lvs || !lvs->mWindow) {
           env->ExceptionClear();
@@ -962,6 +1056,15 @@ class nsWindow::LayerViewSupport final
     }
   }
 
+  void SetFixedBottomOffset(int32_t aOffset) {
+    MOZ_ASSERT(AndroidBridge::IsJavaUiThread());
+
+    if (RefPtr<UiCompositorControllerChild> child =
+            GetUiCompositorControllerChild()) {
+      child->SetFixedBottomOffset(aOffset);
+    }
+  }
+
   void SetPinned(bool aPinned, int32_t aReason) {
     RefPtr<UiCompositorControllerChild> child =
         GetUiCompositorControllerChild();
@@ -1006,7 +1109,10 @@ class nsWindow::LayerViewSupport final
   }
 
   void RecvToolbarAnimatorMessage(int32_t aMessage) {
-    mCompositor->RecvToolbarAnimatorMessage(aMessage);
+    auto compositor = GeckoSession::Compositor::LocalRef(mCompositor);
+    if (compositor) {
+      compositor->RecvToolbarAnimatorMessage(aMessage);
+    }
   }
 
   void SetDefaultClearColor(int32_t aColor) {
@@ -1017,25 +1123,39 @@ class nsWindow::LayerViewSupport final
     }
   }
 
-  void RequestScreenPixels() {
+  void RequestScreenPixels(jni::Object::Param aResult) {
     MOZ_ASSERT(AndroidBridge::IsJavaUiThread());
-    if (RefPtr<UiCompositorControllerChild> child =
-            GetUiCompositorControllerChild()) {
-      child->RequestScreenPixels();
+    mCapturePixelsResults.push(
+        java::GeckoResult::GlobalRef(java::GeckoResult::LocalRef(aResult)));
+    if (mCapturePixelsResults.size() == 1) {
+      if (RefPtr<UiCompositorControllerChild> child =
+              GetUiCompositorControllerChild()) {
+        child->RequestScreenPixels();
+      }
     }
   }
 
   void RecvScreenPixels(Shmem&& aMem, const ScreenIntSize& aSize) {
     MOZ_ASSERT(AndroidBridge::IsJavaUiThread());
-
-    auto pixels =
-        mozilla::jni::IntArray::New(aMem.get<int>(), aMem.Size<int>());
-    mCompositor->RecvScreenPixels(aSize.width, aSize.height, pixels);
+    auto aResult = java::GeckoResult::LocalRef(mCapturePixelsResults.front());
+    if (aResult) {
+      auto pixels = mozilla::jni::ByteBuffer::New(FlipScreenPixels(aMem, aSize),
+                                                  aMem.Size<int8_t>());
+      auto bitmap = java::sdk::Bitmap::CreateBitmap(
+          aSize.width, aSize.height, java::sdk::Config::ARGB_8888());
+      bitmap->CopyPixelsFromBuffer(pixels);
+      aResult->Complete(bitmap);
+      mCapturePixelsResults.pop();
+    }
 
     // Pixels have been copied, so Dealloc Shmem
     if (RefPtr<UiCompositorControllerChild> child =
             GetUiCompositorControllerChild()) {
       child->DeallocPixelBuffer(aMem);
+
+      if (!mCapturePixelsResults.empty()) {
+        child->RequestScreenPixels();
+      }
     }
   }
 
@@ -1071,25 +1191,32 @@ const char nsWindow::NativePtr<nsWindow::LayerViewSupport>::sName[] =
 nsWindow::GeckoViewSupport::~GeckoViewSupport() {
   // Disassociate our GeckoEditable instance with our native object.
   if (window.mEditableSupport) {
-    window.mEditableSupport.Detach();
+    window.mEditableSupport.Detach(window.mEditableSupport->GetJavaEditable());
     window.mEditableParent = nullptr;
   }
 
   if (window.mNPZCSupport) {
-    window.mNPZCSupport.Detach();
+    window.mNPZCSupport.Detach(window.mNPZCSupport->GetJavaNPZC());
   }
 
   if (window.mLayerViewSupport) {
-    window.mLayerViewSupport.Detach();
+    window.mLayerViewSupport.Detach(
+        window.mLayerViewSupport->GetJavaCompositor());
+  }
+
+  if (window.mSessionAccessibility) {
+    window.mSessionAccessibility.Detach(
+        window.mSessionAccessibility->GetJavaAccessibility());
   }
 }
 
-/* static */ void nsWindow::GeckoViewSupport::Open(
+/* static */
+void nsWindow::GeckoViewSupport::Open(
     const jni::Class::LocalRef& aCls, GeckoSession::Window::Param aWindow,
     jni::Object::Param aQueue, jni::Object::Param aCompositor,
-    jni::Object::Param aDispatcher, jni::Object::Param aSettings,
-    jni::String::Param aId, jni::String::Param aChromeURI, int32_t aScreenId,
-    bool aPrivateMode) {
+    jni::Object::Param aDispatcher, jni::Object::Param aSessionAccessibility,
+    jni::Object::Param aInitData, jni::String::Param aId,
+    jni::String::Param aChromeURI, int32_t aScreenId, bool aPrivateMode) {
   MOZ_ASSERT(NS_IsMainThread());
 
   AUTO_PROFILER_LABEL("nsWindow::GeckoViewSupport::Open", OTHER);
@@ -1111,7 +1238,7 @@ nsWindow::GeckoViewSupport::~GeckoViewSupport() {
   RefPtr<AndroidView> androidView = new AndroidView();
   androidView->mEventDispatcher->Attach(
       java::EventDispatcher::Ref::From(aDispatcher), nullptr);
-  androidView->mSettings = java::GeckoBundle::Ref::From(aSettings);
+  androidView->mInitData = java::GeckoBundle::Ref::From(aInitData);
 
   nsAutoCString chromeFlags("chrome,dialog=0,resizable,scrollbars");
   if (aPrivateMode) {
@@ -1123,10 +1250,8 @@ nsWindow::GeckoViewSupport::~GeckoViewSupport() {
   MOZ_RELEASE_ASSERT(domWindow);
 
   nsCOMPtr<nsPIDOMWindowOuter> pdomWindow = nsPIDOMWindowOuter::From(domWindow);
-  nsCOMPtr<nsIWidget> widget = WidgetUtils::DOMWindowToWidget(pdomWindow);
-  MOZ_ASSERT(widget);
-
-  const auto window = static_cast<nsWindow*>(widget.get());
+  const RefPtr<nsWindow> window = nsWindow::From(pdomWindow);
+  MOZ_ASSERT(window);
   window->SetScreenId(aScreenId);
 
   // Attach a new GeckoView support object to the new window.
@@ -1138,7 +1263,8 @@ nsWindow::GeckoViewSupport::~GeckoViewSupport() {
 
   // Attach other session support objects.
   window->mGeckoViewSupport->Transfer(sessionWindow, aQueue, aCompositor,
-                                      aDispatcher, aSettings);
+                                      aDispatcher, aSessionAccessibility,
+                                      aInitData);
 
   if (window->mWidgetListener) {
     nsCOMPtr<nsIXULWindow> xulWindow(window->mWidgetListener->GetXULWindow());
@@ -1167,52 +1293,78 @@ void nsWindow::GeckoViewSupport::Close() {
 void nsWindow::GeckoViewSupport::Transfer(
     const GeckoSession::Window::LocalRef& inst, jni::Object::Param aQueue,
     jni::Object::Param aCompositor, jni::Object::Param aDispatcher,
-    jni::Object::Param aSettings) {
+    jni::Object::Param aSessionAccessibility, jni::Object::Param aInitData) {
   if (window.mNPZCSupport) {
     MOZ_ASSERT(window.mLayerViewSupport);
-    window.mNPZCSupport.Detach();
+    window.mNPZCSupport.Detach(window.mNPZCSupport->GetJavaNPZC());
   }
 
-  if (window.mLayerViewSupport) {
-    window.mLayerViewSupport.Detach();
+  auto compositor = GeckoSession::Compositor::LocalRef(
+      inst.Env(), GeckoSession::Compositor::Ref::From(aCompositor));
+  if (window.mLayerViewSupport &&
+      window.mLayerViewSupport->GetJavaCompositor() != compositor) {
+    window.mLayerViewSupport.Detach(
+        window.mLayerViewSupport->GetJavaCompositor());
   }
-
-  auto compositor = LayerSession::Compositor::LocalRef(
-      inst.Env(), LayerSession::Compositor::Ref::From(aCompositor));
-  window.mLayerViewSupport.Attach(compositor, &window, compositor);
+  if (!window.mLayerViewSupport) {
+    window.mLayerViewSupport.Attach(compositor, &window, compositor);
+  }
 
   MOZ_ASSERT(window.mAndroidView);
   window.mAndroidView->mEventDispatcher->Attach(
       java::EventDispatcher::Ref::From(aDispatcher), mDOMWindow);
-  window.mAndroidView->mSettings = java::GeckoBundle::Ref::From(aSettings);
+
+  if (window.mSessionAccessibility) {
+    window.mSessionAccessibility.Detach(
+        window.mSessionAccessibility->GetJavaAccessibility());
+  }
+  if (aSessionAccessibility) {
+    AttachAccessibility(inst, aSessionAccessibility);
+  }
 
   if (mIsReady) {
+    // We're in a transfer; update init-data and notify JS code.
+    window.mAndroidView->mInitData = java::GeckoBundle::Ref::From(aInitData);
     OnReady(aQueue);
+    window.mAndroidView->mEventDispatcher->Dispatch(
+        u"GeckoView:UpdateInitData");
   }
 
   DispatchToUiThread("GeckoViewSupport::Transfer",
-                     [compositor = LayerSession::Compositor::GlobalRef(
+                     [compositor = GeckoSession::Compositor::GlobalRef(
                           compositor)] { compositor->OnCompositorAttached(); });
-
-  // Set the first-paint flag so that we refresh viewports, etc.
-  if (RefPtr<CompositorBridgeChild> bridge =
-          window.GetCompositorBridgeChild()) {
-    bridge->SendForceIsFirstPaint();
-  }
 }
 
 void nsWindow::GeckoViewSupport::AttachEditable(
     const GeckoSession::Window::LocalRef& inst,
-    jni::Object::Param aEditableParent, jni::Object::Param aEditableChild) {
-  java::GeckoEditableChild::LocalRef editableChild(inst.Env());
-  editableChild = java::GeckoEditableChild::Ref::From(aEditableChild);
-
-  if (window.mEditableSupport) {
-    window.mEditableSupport.Detach();
+    jni::Object::Param aEditableParent) {
+  if (!window.mEditableSupport) {
+    auto editableChild = java::GeckoEditableChild::New(aEditableParent,
+                                                       /* default */ true);
+    window.mEditableSupport.Attach(editableChild, &window, editableChild);
+  } else {
+    window.mEditableSupport->TransferParent(aEditableParent);
   }
 
-  window.mEditableSupport.Attach(editableChild, &window, editableChild);
   window.mEditableParent = aEditableParent;
+}
+
+void nsWindow::GeckoViewSupport::AttachAccessibility(
+    const GeckoSession::Window::LocalRef& inst,
+    jni::Object::Param aSessionAccessibility) {
+  MOZ_ASSERT(!window.mSessionAccessibility);
+  java::SessionAccessibility::NativeProvider::LocalRef sessionAccessibility(
+      inst.Env());
+  sessionAccessibility = java::SessionAccessibility::NativeProvider::Ref::From(
+      aSessionAccessibility);
+
+  if (window.mSessionAccessibility) {
+    window.mSessionAccessibility.Detach(
+        window.mSessionAccessibility->GetJavaAccessibility());
+  }
+
+  window.mSessionAccessibility.Attach(sessionAccessibility, &window,
+                                      sessionAccessibility);
 }
 
 void nsWindow::InitNatives() {
@@ -1221,6 +1373,29 @@ void nsWindow::InitNatives() {
   nsWindow::NPZCSupport::Init();
 
   GeckoEditableSupport::Init();
+  a11y::SessionAccessibility::Init();
+}
+
+/* static */
+already_AddRefed<nsWindow> nsWindow::From(nsPIDOMWindowOuter* aDOMWindow) {
+  nsCOMPtr<nsIWidget> widget = WidgetUtils::DOMWindowToWidget(aDOMWindow);
+  return From(widget);
+}
+
+/* static */
+already_AddRefed<nsWindow> nsWindow::From(nsIWidget* aWidget) {
+  // `widget` may be one of several different types in the parent
+  // process, including the Android nsWindow, PuppetWidget, etc. To
+  // ensure that the cast to the Android nsWindow is valid, we check that the
+  // widget is a top-level window and that its NS_NATIVE_WIDGET value is
+  // non-null, which is not the case for non-native widgets like
+  // PuppetWidget.
+  if (aWidget && aWidget->WindowType() == nsWindowType::eWindowType_toplevel &&
+      aWidget->GetNativeData(NS_NATIVE_WIDGET) == aWidget) {
+    RefPtr<nsWindow> window = static_cast<nsWindow*>(aWidget);
+    return window.forget();
+  }
+  return nullptr;
 }
 
 nsWindow* nsWindow::TopWindow() {
@@ -1303,6 +1478,14 @@ nsresult nsWindow::Create(nsIWidget* aParent, nsNativeWidget aNativeParent,
     mParent = parent;
   }
 
+  // A default size of 1x1 confuses MobileViewportManager, so
+  // use 0x0 instead. This is also a little more fitting since
+  // we don't yet have a surface yet (and therefore a valid size)
+  // and 0x0 is usually recognized as invalid.
+  Resize(0, 0, false);
+
+  CreateLayerManager();
+
 #ifdef DEBUG_ANDROID_WIDGET
   DumpWindows();
 #endif
@@ -1370,8 +1553,9 @@ RefPtr<UiCompositorControllerChild> nsWindow::GetUiCompositorControllerChild() {
              : nullptr;
 }
 
-int64_t nsWindow::GetRootLayerId() const {
-  return mCompositorSession ? mCompositorSession->RootLayerTreeId() : 0;
+mozilla::layers::LayersId nsWindow::GetRootLayerId() const {
+  return mCompositorSession ? mCompositorSession->RootLayerTreeId()
+                            : mozilla::layers::LayersId{0};
 }
 
 void nsWindow::OnGeckoViewReady() {
@@ -1399,15 +1583,25 @@ void nsWindow::SetParent(nsIWidget* aNewParent) {
 nsIWidget* nsWindow::GetParent() { return mParent; }
 
 float nsWindow::GetDPI() {
-  if (AndroidBridge::Bridge()) return AndroidBridge::Bridge()->GetDPI();
-  return 160.0f;
+  float dpi = 160.0f;
+
+  nsCOMPtr<nsIScreen> screen = GetWidgetScreen();
+  if (screen) {
+    screen->GetDpi(&dpi);
+  }
+
+  return dpi;
 }
 
 double nsWindow::GetDefaultScaleInternal() {
+  double scale = 1.0f;
+
   nsCOMPtr<nsIScreen> screen = GetWidgetScreen();
-  MOZ_ASSERT(screen);
-  RefPtr<nsScreenAndroid> screenAndroid = (nsScreenAndroid*)screen.get();
-  return screenAndroid->GetDensity();
+  if (screen) {
+    screen->GetContentsScaleFactor(&scale);
+  }
+
+  return scale;
 }
 
 void nsWindow::Show(bool aState) {
@@ -1483,6 +1677,7 @@ void nsWindow::Resize(double aX, double aY, double aWidth, double aHeight,
   ALOG("nsWindow[%p]::Resize [%f %f %f %f] (repaint %d)", (void*)this, aX, aY,
        aWidth, aHeight, aRepaint);
 
+  bool needPositionDispatch = aX != mBounds.x || aY != mBounds.y;
   bool needSizeDispatch = aWidth != mBounds.width || aHeight != mBounds.height;
 
   mBounds.x = NSToIntRound(aX);
@@ -1492,6 +1687,10 @@ void nsWindow::Resize(double aX, double aY, double aWidth, double aHeight,
 
   if (needSizeDispatch) {
     OnSizeChanged(gfx::IntSize::Truncate(aWidth, aHeight));
+  }
+
+  if (needPositionDispatch) {
+    NotifyWindowMoved(mBounds.x, mBounds.y);
   }
 
   // Should we skip honoring aRepaint here?
@@ -1649,7 +1848,7 @@ mozilla::layers::LayerManager* nsWindow::GetLayerManager(
   return nullptr;
 }
 
-void nsWindow::CreateLayerManager(int aCompositorWidth, int aCompositorHeight) {
+void nsWindow::CreateLayerManager() {
   if (mLayerManager) {
     return;
   }
@@ -1664,7 +1863,8 @@ void nsWindow::CreateLayerManager(int aCompositorWidth, int aCompositorHeight) {
   gfxPlatform::GetPlatform();
 
   if (ShouldUseOffMainThreadCompositing()) {
-    CreateCompositor(aCompositorWidth, aCompositorHeight);
+    LayoutDeviceIntRect rect = GetBounds();
+    CreateCompositor(rect.Width(), rect.Height());
     if (mLayerManager) {
       return;
     }
@@ -1713,9 +1913,11 @@ void nsWindow::UpdateOverscrollVelocity(const float aX, const float aY) {
       return;
     }
 
-    DispatchToUiThread("nsWindow::UpdateOverscrollVelocity", [
-      compositor = LayerSession::Compositor::GlobalRef(compositor), aX, aY
-    ] { compositor->UpdateOverscrollVelocity(aX, aY); });
+    DispatchToUiThread(
+        "nsWindow::UpdateOverscrollVelocity",
+        [compositor = GeckoSession::Compositor::GlobalRef(compositor), aX, aY] {
+          compositor->UpdateOverscrollVelocity(aX, aY);
+        });
   }
 }
 
@@ -1727,23 +1929,12 @@ void nsWindow::UpdateOverscrollOffset(const float aX, const float aY) {
       return;
     }
 
-    DispatchToUiThread("nsWindow::UpdateOverscrollOffset", [
-      compositor = LayerSession::Compositor::GlobalRef(compositor), aX, aY
-    ] { compositor->UpdateOverscrollOffset(aX, aY); });
+    DispatchToUiThread(
+        "nsWindow::UpdateOverscrollOffset",
+        [compositor = GeckoSession::Compositor::GlobalRef(compositor), aX, aY] {
+          compositor->UpdateOverscrollOffset(aX, aY);
+        });
   }
-}
-
-void nsWindow::SetSelectionDragState(bool aState) {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  if (!mLayerViewSupport) {
-    return;
-  }
-
-  const auto& compositor = mLayerViewSupport->GetJavaCompositor();
-  DispatchToUiThread("nsWindow::SetSelectionDragState", [
-    compositor = LayerSession::Compositor::GlobalRef(compositor), aState
-  ] { compositor->OnSelectionCaretDrag(aState); });
 }
 
 void* nsWindow::GetNativeData(uint32_t aDataType) {
@@ -1788,11 +1979,11 @@ void nsWindow::DispatchHitTest(const WidgetTouchEvent& aEvent) {
                              WidgetMouseEvent::eReal);
     hittest.mRefPoint = aEvent.mTouches[0]->mRefPoint;
     hittest.mIgnoreRootScrollFrame = true;
-    hittest.inputSource = nsIDOMMouseEvent::MOZ_SOURCE_TOUCH;
+    hittest.mInputSource = MouseEvent_Binding::MOZ_SOURCE_TOUCH;
     nsEventStatus status;
     DispatchEvent(&hittest, status);
 
-    if (mAPZEventState && hittest.hitCluster) {
+    if (mAPZEventState && hittest.mHitCluster) {
       mAPZEventState->ProcessClusterHit();
     }
   }
@@ -1823,10 +2014,11 @@ TimeStamp nsWindow::GetEventTimeStamp(int64_t aEventTime) {
 }
 
 void nsWindow::GeckoViewSupport::OnReady(jni::Object::Param aQueue) {
-  if (!mGeckoViewWindow) {
+  GeckoSession::Window::LocalRef window(mGeckoViewWindow);
+  if (!window) {
     return;
   }
-  mGeckoViewWindow->OnReady(aQueue);
+  window->OnReady(aQueue);
   mIsReady = true;
 }
 
@@ -1919,13 +2111,14 @@ nsresult nsWindow::SynthesizeNativeTouchPoint(uint32_t aPointerId,
   aPoint.x -= bounds.x;
   aPoint.y -= bounds.y;
 
-  DispatchToUiThread("nsWindow::SynthesizeNativeTouchPoint", [
-    npzc = NativePanZoomController::GlobalRef(npzc), aPointerId, eventType,
-    aPoint, aPointerPressure, aPointerOrientation
-  ] {
-    npzc->SynthesizeNativeTouchPoint(aPointerId, eventType, aPoint.x, aPoint.y,
-                                     aPointerPressure, aPointerOrientation);
-  });
+  DispatchToUiThread(
+      "nsWindow::SynthesizeNativeTouchPoint",
+      [npzc = PanZoomController::NativeProvider::GlobalRef(npzc), aPointerId,
+       eventType, aPoint, aPointerPressure, aPointerOrientation] {
+        npzc->SynthesizeNativeTouchPoint(aPointerId, eventType, aPoint.x,
+                                         aPoint.y, aPointerPressure,
+                                         aPointerOrientation);
+      });
   return NS_OK;
 }
 
@@ -1941,9 +2134,12 @@ nsresult nsWindow::SynthesizeNativeMouseEvent(LayoutDeviceIntPoint aPoint,
   aPoint.x -= bounds.x;
   aPoint.y -= bounds.y;
 
-  DispatchToUiThread("nsWindow::SynthesizeNativeMouseEvent", [
-    npzc = NativePanZoomController::GlobalRef(npzc), aNativeMessage, aPoint
-  ] { npzc->SynthesizeNativeMouseEvent(aNativeMessage, aPoint.x, aPoint.y); });
+  DispatchToUiThread("nsWindow::SynthesizeNativeMouseEvent",
+                     [npzc = PanZoomController::NativeProvider::GlobalRef(npzc),
+                      aNativeMessage, aPoint] {
+                       npzc->SynthesizeNativeMouseEvent(aNativeMessage,
+                                                        aPoint.x, aPoint.y);
+                     });
   return NS_OK;
 }
 
@@ -1959,7 +2155,7 @@ nsresult nsWindow::SynthesizeNativeMouseMove(LayoutDeviceIntPoint aPoint,
 
   DispatchToUiThread(
       "nsWindow::SynthesizeNativeMouseMove",
-      [ npzc = NativePanZoomController::GlobalRef(npzc), aPoint ] {
+      [npzc = PanZoomController::NativeProvider::GlobalRef(npzc), aPoint] {
         npzc->SynthesizeNativeMouseEvent(sdk::MotionEvent::ACTION_HOVER_MOVE,
                                          aPoint.x, aPoint.y);
       });
@@ -2004,7 +2200,7 @@ uint32_t nsWindow::GetMaxTouchPoints() const {
 }
 
 void nsWindow::UpdateZoomConstraints(
-    const uint32_t& aPresShellId, const FrameMetrics::ViewID& aViewId,
+    const uint32_t& aPresShellId, const ScrollableLayerGuid::ViewID& aViewId,
     const mozilla::Maybe<ZoomConstraints>& aConstraints) {
   nsBaseWidget::UpdateZoomConstraints(aPresShellId, aViewId, aConstraints);
 }
@@ -2015,13 +2211,9 @@ CompositorBridgeChild* nsWindow::GetCompositorBridgeChild() const {
 }
 
 already_AddRefed<nsIScreen> nsWindow::GetWidgetScreen() {
-  nsCOMPtr<nsIScreenManager> screenMgr =
-      do_GetService("@mozilla.org/gfx/screenmanager;1");
-  MOZ_ASSERT(screenMgr, "Failed to get nsIScreenManager");
-
-  RefPtr<nsScreenManagerAndroid> screenMgrAndroid =
-      (nsScreenManagerAndroid*)screenMgr.get();
-  return screenMgrAndroid->ScreenForId(mScreenId);
+  RefPtr<nsIScreen> screen =
+      ScreenHelperAndroid::GetSingleton()->ScreenForId(mScreenId);
+  return screen.forget();
 }
 
 void nsWindow::SetContentDocumentDisplayed(bool aDisplayed) {
@@ -2053,6 +2245,29 @@ void nsWindow::UpdateRootFrameMetrics(const ScreenPoint& aScrollOffset,
 void nsWindow::RecvScreenPixels(Shmem&& aMem, const ScreenIntSize& aSize) {
   MOZ_ASSERT(AndroidBridge::IsJavaUiThread());
   if (NativePtr<LayerViewSupport>::Locked lvs{mLayerViewSupport}) {
-    lvs->RecvScreenPixels(mozilla::Move(aMem), aSize);
+    lvs->RecvScreenPixels(std::move(aMem), aSize);
   }
+}
+
+nsresult nsWindow::SetPrefersReducedMotionOverrideForTest(bool aValue) {
+  nsXPLookAndFeel::GetInstance()->SetPrefersReducedMotionOverrideForTest(
+      aValue);
+
+  java::GeckoSystemStateListener::NotifyPrefersReducedMotionChangedForTest();
+  return NS_OK;
+}
+
+nsresult nsWindow::ResetPrefersReducedMotionOverrideForTest() {
+  nsXPLookAndFeel::GetInstance()->ResetPrefersReducedMotionOverrideForTest();
+  return NS_OK;
+}
+
+already_AddRefed<nsIWidget> nsIWidget::CreateTopLevelWindow() {
+  nsCOMPtr<nsIWidget> window = new nsWindow();
+  return window.forget();
+}
+
+already_AddRefed<nsIWidget> nsIWidget::CreateChildWindow() {
+  nsCOMPtr<nsIWidget> window = new nsWindow();
+  return window.forget();
 }

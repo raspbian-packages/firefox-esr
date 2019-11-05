@@ -66,10 +66,10 @@ struct PolicyTest {
   char expectedResult[kMaxPolicyLength];
 };
 
-nsresult runTest(uint32_t aExpectedPolicyCount,  // this should be 0 for
-                                                 // policies which should fail
-                                                 // to parse
-                 const char* aPolicy, const char* aExpectedResult) {
+nsresult runTest(
+    uint32_t aExpectedPolicyCount,  // this should be 0 for policies which
+                                    // should fail to parse
+    const char* aPolicy, const char* aExpectedResult) {
   nsresult rv;
 
   // we init the csp with http://www.selfuri.com
@@ -176,7 +176,8 @@ nsresult runTestSuite(const PolicyTest* aPolicies, uint32_t aPolicyCount,
 
 // ============================= TestDirectives ========================
 
-TEST(CSPParser, Directives) {
+TEST(CSPParser, Directives)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "connect-src xn--mnchen-3ya.de",
@@ -209,10 +210,6 @@ TEST(CSPParser, Directives) {
       "script-src 'sha256-a'" },
     { "script-src 'sha256-siVR8vAcqP06h2ppeNwqgjr0yZ6yned4X2VF84j4GmI='",
       "script-src 'sha256-siVR8vAcqP06h2ppeNwqgjr0yZ6yned4X2VF84j4GmI='" },
-    { "referrer no-referrer",
-      "referrer no-referrer" },
-    { "require-sri-for script style",
-      "require-sri-for script style"},
     { "script-src 'nonce-foo' 'unsafe-inline' ",
       "script-src 'nonce-foo' 'unsafe-inline'" },
     { "script-src 'nonce-foo' 'strict-dynamic' 'unsafe-inline' https:  ",
@@ -232,11 +229,12 @@ TEST(CSPParser, Directives) {
 
 // ============================= TestKeywords ========================
 
-TEST(CSPParser, Keywords) {
+TEST(CSPParser, Keywords)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "script-src 'self'",
-      "script-src http://www.selfuri.com" },
+      "script-src 'self'" },
     { "script-src 'unsafe-inline'",
       "script-src 'unsafe-inline'" },
     { "script-src 'unsafe-eval'",
@@ -246,7 +244,7 @@ TEST(CSPParser, Keywords) {
     { "script-src 'none'",
       "script-src 'none'" },
     { "img-src 'none'; script-src 'unsafe-eval' 'unsafe-inline'; default-src 'self'",
-      "img-src 'none'; script-src 'unsafe-eval' 'unsafe-inline'; default-src http://www.selfuri.com" },
+      "img-src 'none'; script-src 'unsafe-eval' 'unsafe-inline'; default-src 'self'" },
       // clang-format on
   };
 
@@ -256,11 +254,12 @@ TEST(CSPParser, Keywords) {
 
 // =================== TestIgnoreUpperLowerCasePolicies ==============
 
-TEST(CSPParser, IgnoreUpperLowerCasePolicies) {
+TEST(CSPParser, IgnoreUpperLowerCasePolicies)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "script-src 'SELF'",
-      "script-src http://www.selfuri.com" },
+      "script-src 'self'" },
     { "sCriPt-src 'Unsafe-Inline'",
       "script-src 'unsafe-inline'" },
     { "SCRIPT-src 'unsafe-eval'",
@@ -270,7 +269,7 @@ TEST(CSPParser, IgnoreUpperLowerCasePolicies) {
     { "script-src 'NoNe'",
       "script-src 'none'" },
     { "img-sRc 'noNe'; scrIpt-src 'unsafe-EVAL' 'UNSAFE-inline'; deFAULT-src 'Self'",
-      "img-src 'none'; script-src 'unsafe-eval' 'unsafe-inline'; default-src http://www.selfuri.com" },
+      "img-src 'none'; script-src 'unsafe-eval' 'unsafe-inline'; default-src 'self'" },
     { "default-src HTTP://www.example.com",
       "default-src http://www.example.com" },
     { "default-src HTTP://WWW.EXAMPLE.COM",
@@ -285,14 +284,10 @@ TEST(CSPParser, IgnoreUpperLowerCasePolicies) {
       "script-src 'nonce-NONCENEEDSTOBEUPPERCASE'" },
     { "script-src 'SHA256-siVR8vAcqP06h2ppeNwqgjr0yZ6yned4X2VF84j4GmI='",
       "script-src 'sha256-siVR8vAcqP06h2ppeNwqgjr0yZ6yned4X2VF84j4GmI='" },
-    { "refERRer No-refeRRer",
-      "referrer no-referrer" },
     { "upgrade-INSECURE-requests",
       "upgrade-insecure-requests" },
     { "sanDBox alloW-foRMs",
       "sandbox allow-forms"},
-    { "require-SRI-for sCript stYle",
-      "require-sri-for script style"},
       // clang-format on
   };
 
@@ -302,7 +297,8 @@ TEST(CSPParser, IgnoreUpperLowerCasePolicies) {
 
 // ========================= TestPaths ===============================
 
-TEST(CSPParser, Paths) {
+TEST(CSPParser, Paths)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "script-src http://www.example.com",
@@ -400,7 +396,8 @@ TEST(CSPParser, Paths) {
 
 // ======================== TestSimplePolicies =======================
 
-TEST(CSPParser, SimplePolicies) {
+TEST(CSPParser, SimplePolicies)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "default-src *",
@@ -422,9 +419,9 @@ TEST(CSPParser, SimplePolicies) {
     { "script-src 'unsafe-eval' 'unsafe-inline' http://www.example.com",
       "script-src 'unsafe-eval' 'unsafe-inline' http://www.example.com" },
     { "object-src 'self'",
-      "object-src http://www.selfuri.com" },
+      "object-src 'self'" },
     { "style-src http://www.example.com 'self'",
-      "style-src http://www.example.com http://www.selfuri.com" },
+      "style-src http://www.example.com 'self'" },
     { "media-src http://www.example.com http://www.test.com",
       "media-src http://www.example.com http://www.test.com" },
     { "connect-src http://www.test.com example.com *.other.com;",
@@ -434,13 +431,13 @@ TEST(CSPParser, SimplePolicies) {
     { "style-src *.other.com example.com",
       "style-src http://*.other.com http://example.com"},
     { "default-src 'self'; img-src *;",
-      "default-src http://www.selfuri.com; img-src *" },
+      "default-src 'self'; img-src *" },
     { "object-src media1.example.com media2.example.com *.cdn.example.com;",
       "object-src http://media1.example.com http://media2.example.com http://*.cdn.example.com" },
     { "script-src trustedscripts.example.com",
       "script-src http://trustedscripts.example.com" },
     { "script-src 'self' ; default-src trustedscripts.example.com",
-      "script-src http://www.selfuri.com; default-src http://trustedscripts.example.com" },
+      "script-src 'self'; default-src http://trustedscripts.example.com" },
     { "default-src 'none'; report-uri http://localhost:49938/test",
       "default-src 'none'; report-uri http://localhost:49938/test" },
     { "   ;   default-src abc",
@@ -476,11 +473,12 @@ TEST(CSPParser, SimplePolicies) {
 
 // =================== TestPoliciesWithInvalidSrc ====================
 
-TEST(CSPParser, PoliciesWithInvalidSrc) {
+TEST(CSPParser, PoliciesWithInvalidSrc)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "script-src 'self'; SCRIPT-SRC http://www.example.com",
-      "script-src http://www.selfuri.com" },
+      "script-src 'self'" },
     { "script-src 'none' test.com; script-src example.com",
       "script-src http://test.com" },
     { "default-src **",
@@ -557,8 +555,6 @@ TEST(CSPParser, PoliciesWithInvalidSrc) {
       "connect-src 'none'" },
     { "script-src https://foo.com/%$",
       "script-src 'none'" },
-    { "require-SRI-for script elephants",
-      "require-sri-for script"},
     { "sandbox    foo",
       "sandbox"},
       // clang-format on
@@ -571,7 +567,8 @@ TEST(CSPParser, PoliciesWithInvalidSrc) {
 
 // ============================= TestBadPolicies =======================
 
-TEST(CSPParser, BadPolicies) {
+TEST(CSPParser, BadPolicies)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "script-sr 'self", "" },
@@ -580,12 +577,10 @@ TEST(CSPParser, BadPolicies) {
     { "defaut-src asdf", "" },
     { "default-src: aaa", "" },
     { "asdf http://test.com", ""},
-    { "referrer", ""},
-    { "referrer foo", ""},
-    { "require-sri-for", ""},
-    { "require-sri-for foo", ""},
     { "report-uri", ""},
     { "report-uri http://:foo", ""},
+    { "require-sri-for", ""},
+    { "require-sri-for style", ""},
       // clang-format on
   };
 
@@ -595,11 +590,12 @@ TEST(CSPParser, BadPolicies) {
 
 // ======================= TestGoodGeneratedPolicies =================
 
-TEST(CSPParser, GoodGeneratedPolicies) {
+TEST(CSPParser, GoodGeneratedPolicies)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "default-src 'self'; img-src *",
-      "default-src http://www.selfuri.com; img-src *" },
+      "default-src 'self'; img-src *" },
     { "report-uri /policy",
       "report-uri http://www.selfuri.com/policy"},
     { "img-src *",
@@ -701,7 +697,7 @@ TEST(CSPParser, GoodGeneratedPolicies) {
     { "default-src bar.com; script-src https://foo.com",
       "default-src http://bar.com; script-src https://foo.com" },
     { "default-src 'self'; script-src 'self' https://*:*",
-      "default-src http://www.selfuri.com; script-src http://www.selfuri.com https://*:*" },
+      "default-src 'self'; script-src 'self' https://*:*" },
     { "img-src http://self.com:34",
       "img-src http://self.com:34" },
     { "media-src http://subd.self.com:34",
@@ -763,7 +759,7 @@ TEST(CSPParser, GoodGeneratedPolicies) {
     { "font-src http://self.com/",
       "font-src http://self.com/" },
     { "script-src 'self'",
-      "script-src http://www.selfuri.com" },
+      "script-src 'self'" },
     { "default-src http://self.com/foo.png",
       "default-src http://self.com/foo.png" },
     { "script-src http://self.com/foo.js",
@@ -777,25 +773,25 @@ TEST(CSPParser, GoodGeneratedPolicies) {
     { "media-src http",
       "media-src http://http" },
     { "frame-src 'SELF'",
-      "frame-src http://www.selfuri.com" },
+      "frame-src 'self'" },
     { "DEFAULT-src 'self';",
-      "default-src http://www.selfuri.com" },
+      "default-src 'self'" },
     { "default-src 'self' http://FOO.COM",
-      "default-src http://www.selfuri.com http://foo.com" },
+      "default-src 'self' http://foo.com" },
     { "default-src 'self' HTTP://foo.com",
-      "default-src http://www.selfuri.com http://foo.com" },
+      "default-src 'self' http://foo.com" },
     { "default-src 'NONE'",
       "default-src 'none'" },
     { "script-src policy-uri ",
       "script-src http://policy-uri" },
     { "img-src 'self'; ",
-      "img-src http://www.selfuri.com" },
+      "img-src 'self'" },
     { "frame-ancestors foo-bar.com",
       "frame-ancestors http://foo-bar.com" },
     { "frame-ancestors http://a.com",
       "frame-ancestors http://a.com" },
     { "frame-ancestors 'self'",
-      "frame-ancestors http://www.selfuri.com" },
+      "frame-ancestors 'self'" },
     { "frame-ancestors http://self.com:88",
       "frame-ancestors http://self.com:88" },
     { "frame-ancestors http://a.b.c.d.e.f.g.h.i.j.k.l.x.com",
@@ -805,13 +801,13 @@ TEST(CSPParser, GoodGeneratedPolicies) {
     { "frame-ancestors http://sampleuser:samplepass@example.com",
       "frame-ancestors 'none'" },
     { "default-src 'none'; frame-ancestors 'self'",
-      "default-src 'none'; frame-ancestors http://www.selfuri.com" },
+      "default-src 'none'; frame-ancestors 'self'" },
     { "frame-ancestors http://self:80",
       "frame-ancestors http://self:80" },
     { "frame-ancestors http://self.com/bar",
       "frame-ancestors http://self.com/bar" },
     { "default-src 'self'; frame-ancestors 'self'",
-      "default-src http://www.selfuri.com; frame-ancestors http://www.selfuri.com" },
+      "default-src 'self'; frame-ancestors 'self'" },
     { "frame-ancestors http://bar.com/foo.png",
       "frame-ancestors http://bar.com/foo.png" },
       // clang-format on
@@ -823,7 +819,8 @@ TEST(CSPParser, GoodGeneratedPolicies) {
 
 // ==================== TestBadGeneratedPolicies ====================
 
-TEST(CSPParser, BadGeneratedPolicies) {
+TEST(CSPParser, BadGeneratedPolicies)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "foo.*.bar", ""},
@@ -849,7 +846,8 @@ TEST(CSPParser, BadGeneratedPolicies) {
 
 // ============ TestGoodGeneratedPoliciesForPathHandling =============
 
-TEST(CSPParser, GoodGeneratedPoliciesForPathHandling) {
+TEST(CSPParser, GoodGeneratedPoliciesForPathHandling)
+{
   // Once bug 808292 (Implement path-level host-source matching to CSP)
   // lands we have to update the expected output to include the parsed path
 
@@ -972,7 +970,8 @@ TEST(CSPParser, GoodGeneratedPoliciesForPathHandling) {
 
 // ============== TestBadGeneratedPoliciesForPathHandling ============
 
-TEST(CSPParser, BadGeneratedPoliciesForPathHandling) {
+TEST(CSPParser, BadGeneratedPoliciesForPathHandling)
+{
   static const PolicyTest policies[] = {
       // clang-format off
     { "img-src test1.example.com:88path-1/",
@@ -1001,7 +1000,8 @@ TEST(CSPParser, BadGeneratedPoliciesForPathHandling) {
 // Use a policy, eliminate one character at a time,
 // and feed it as input to the parser.
 
-TEST(CSPParser, ShorteningPolicies) {
+TEST(CSPParser, ShorteningPolicies)
+{
   char pol[] =
       "default-src http://www.sub1.sub2.example.com:88/path1/path2/ "
       "'unsafe-inline' 'none'";
@@ -1018,17 +1018,18 @@ TEST(CSPParser, ShorteningPolicies) {
   }
 }
 
-  // ============================= TestFuzzyPolicies ===================
+// ============================= TestFuzzyPolicies ===================
 
-  // We generate kFuzzyRuns inputs by (pseudo) randomly picking from the 128
-  // ASCII characters; feed them to the parser and verfy that the parser
-  // handles the input gracefully.
-  //
-  // Please note, that by using srand(0) we get deterministic results!
+// We generate kFuzzyRuns inputs by (pseudo) randomly picking from the 128
+// ASCII characters; feed them to the parser and verfy that the parser
+// handles the input gracefully.
+//
+// Please note, that by using srand(0) we get deterministic results!
 
 #if RUN_OFFLINE_TESTS
 
-TEST(CSPParser, FuzzyPolicies) {
+TEST(CSPParser, FuzzyPolicies)
+{
   // init srand with 0 so we get same results
   srand(0);
 
@@ -1052,15 +1053,16 @@ TEST(CSPParser, FuzzyPolicies) {
 
 #endif
 
-  // ======================= TestFuzzyPoliciesIncDir ===================
+// ======================= TestFuzzyPoliciesIncDir ===================
 
-  // In a similar fashion as in TestFuzzyPolicies, we again (pseudo) randomly
-  // generate input for the parser, but this time also include a valid directive
-  // followed by the random input.
+// In a similar fashion as in TestFuzzyPolicies, we again (pseudo) randomly
+// generate input for the parser, but this time also include a valid directive
+// followed by the random input.
 
 #if RUN_OFFLINE_TESTS
 
-TEST(CSPParser, FuzzyPoliciesIncDir) {
+TEST(CSPParser, FuzzyPoliciesIncDir)
+{
   // init srand with 0 so we get same results
   srand(0);
 
@@ -1091,14 +1093,15 @@ TEST(CSPParser, FuzzyPoliciesIncDir) {
 
 #endif
 
-  // ====================== TestFuzzyPoliciesIncDirLimASCII ============
+// ====================== TestFuzzyPoliciesIncDirLimASCII ============
 
-  // Same as TestFuzzyPoliciesIncDir() but using limited ASCII,
-  // which represents more likely input.
+// Same as TestFuzzyPoliciesIncDir() but using limited ASCII,
+// which represents more likely input.
 
 #if RUN_OFFLINE_TESTS
 
-TEST(CSPParser, FuzzyPoliciesIncDirLimASCII) {
+TEST(CSPParser, FuzzyPoliciesIncDirLimASCII)
+{
   char input[] =
       "1234567890"
       "abcdefghijklmnopqrstuvwxyz"

@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set ts=4 sw=4 sts=4 et: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=4 sw=2 sts=2 et: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -51,6 +51,10 @@
 #undef compress
 #include "mozilla/Compression.h"
 
+// Undo the damage done by X11
+#ifdef Status
+#  undef Status
+#endif
 // Protocol buffer (generated automatically)
 #include "protobuf/LayerScopePacket.pb.h"
 
@@ -143,7 +147,7 @@ class LayerScopeWebSocketManager {
     }
 
    private:
-    virtual ~SocketListener() {}
+    virtual ~SocketListener() = default;
   };
 
   /*
@@ -376,7 +380,7 @@ class DebugGLData : public LinkedListElement<DebugGLData> {
  public:
   explicit DebugGLData(Packet::DataType aDataType) : mDataType(aDataType) {}
 
-  virtual ~DebugGLData() {}
+  virtual ~DebugGLData() = default;
 
   virtual bool Write() = 0;
 
@@ -401,7 +405,7 @@ class DebugGLFrameStatusData final : public DebugGLData {
   explicit DebugGLFrameStatusData(Packet::DataType aDataType)
       : DebugGLData(aDataType), mFrameStamp(0) {}
 
-  virtual bool Write() override {
+  bool Write() override {
     Packet packet;
     packet.set_type(mDataType);
 
@@ -429,7 +433,7 @@ class DebugGLTextureData final : public DebugGLData {
         mContextAddress(reinterpret_cast<intptr_t>(cx)),
         mDatasize(0),
         mIsMask(aIsMask),
-        mPacket(Move(aPacket)) {
+        mPacket(std::move(aPacket)) {
     // pre-packing
     // DataSourceSurface may have locked buffer,
     // so we should compress now, and then it could
@@ -437,7 +441,7 @@ class DebugGLTextureData final : public DebugGLData {
     pack(img);
   }
 
-  virtual bool Write() override { return WriteToStream(*mPacket); }
+  bool Write() override { return WriteToStream(*mPacket); }
 
  private:
   void pack(DataSourceSurface* aImage) {
@@ -503,7 +507,7 @@ class DebugGLColorData final : public DebugGLData {
         mColor(color.ToABGR()),
         mSize(width, height) {}
 
-  virtual bool Write() override {
+  bool Write() override {
     Packet packet;
     packet.set_type(mDataType);
 
@@ -525,9 +529,9 @@ class DebugGLColorData final : public DebugGLData {
 class DebugGLLayersData final : public DebugGLData {
  public:
   explicit DebugGLLayersData(UniquePtr<Packet> aPacket)
-      : DebugGLData(Packet::LAYERS), mPacket(Move(aPacket)) {}
+      : DebugGLData(Packet::LAYERS), mPacket(std::move(aPacket)) {}
 
-  virtual bool Write() override {
+  bool Write() override {
     mPacket->set_type(mDataType);
     return WriteToStream(*mPacket);
   }
@@ -544,7 +548,7 @@ class DebugGLMetaData final : public DebugGLData {
   explicit DebugGLMetaData(Packet::DataType aDataType)
       : DebugGLData(aDataType), mComposedByHwc(false) {}
 
-  virtual bool Write() override {
+  bool Write() override {
     Packet packet;
     packet.set_type(mDataType);
 
@@ -577,7 +581,7 @@ class DebugGLDrawData final : public DebugGLData {
     }
   }
 
-  virtual bool Write() override {
+  bool Write() override {
     Packet packet;
     packet.set_type(mDataType);
 
@@ -636,7 +640,7 @@ class DebugDataSender {
     }
 
    private:
-    virtual ~AppendTask() {}
+    virtual ~AppendTask() = default;
 
     DebugGLData* mData;
     // Keep a strong reference to DebugDataSender to prevent this object
@@ -657,7 +661,7 @@ class DebugDataSender {
     }
 
    private:
-    virtual ~ClearTask() {}
+    virtual ~ClearTask() = default;
 
     RefPtr<DebugDataSender> mHost;
   };
@@ -687,7 +691,7 @@ class DebugDataSender {
     }
 
    private:
-    virtual ~SendTask() {}
+    virtual ~SendTask() = default;
 
     RefPtr<DebugDataSender> mHost;
   };
@@ -703,7 +707,7 @@ class DebugDataSender {
   void Send() { mThread->Dispatch(new SendTask(this), NS_DISPATCH_NORMAL); }
 
  protected:
-  virtual ~DebugDataSender() {}
+  virtual ~DebugDataSender() = default;
   void RemoveData() {
     MOZ_ASSERT(mThread->SerialEventTarget()->IsOnCurrentThread());
     if (mList.isEmpty()) return;
@@ -883,7 +887,7 @@ void SenderHelper::SendTextureSource(GLContext* aGLContext, void* aLayerRef,
                                                      shaderConfig, aFlipY);
   gLayerScopeManager.GetSocketManager()->AppendDebugData(
       new DebugGLTextureData(aGLContext, aLayerRef, textureTarget, texID, img,
-                             aIsMask, Move(aPacket)));
+                             aIsMask, std::move(aPacket)));
 
   sSentTextureIds.push_back(texID);
   gLayerScopeManager.CurrentSession().mTexIDs.push_back(texID);
@@ -899,7 +903,8 @@ void SenderHelper::SetAndSendTexture(GLContext* aGLContext, void* aLayerRef,
   texturePacket->set_mpremultiplied(aEffect->mPremultiplied);
   DumpFilter(texturePacket, aEffect->mSamplingFilter);
   DumpRect(texturePacket->mutable_mtexturecoords(), aEffect->mTextureCoords);
-  SendTextureSource(aGLContext, aLayerRef, aSource, false, false, Move(packet));
+  SendTextureSource(aGLContext, aLayerRef, aSource, false, false,
+                    std::move(packet));
 }
 
 void SenderHelper::SendTexturedEffect(GLContext* aGLContext, void* aLayerRef,
@@ -931,7 +936,8 @@ void SenderHelper::SendMaskEffect(GLContext* aGLContext, void* aLayerRef,
     mask->mutable_mmasktransform()->add_m(*element++);
   }
 
-  SendTextureSource(aGLContext, aLayerRef, source, false, true, Move(packet));
+  SendTextureSource(aGLContext, aLayerRef, source, false, true,
+                    std::move(packet));
 }
 
 void SenderHelper::SendYCbCrEffect(GLContext* aGLContext, void* aLayerRef,
@@ -1549,7 +1555,7 @@ void LayerScope::SendLayerDump(UniquePtr<Packet> aPacket) {
     return;
   }
   gLayerScopeManager.GetSocketManager()->AppendDebugData(
-      new DebugGLLayersData(Move(aPacket)));
+      new DebugGLLayersData(std::move(aPacket)));
 }
 
 /*static*/

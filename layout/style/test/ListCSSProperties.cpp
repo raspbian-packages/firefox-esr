@@ -10,24 +10,25 @@
 #include <stdlib.h>
 #include "mozilla/ArrayUtils.h"
 
+// Need an extra level of macro nesting to force expansion of method_
+// params before they get pasted.
+#define STRINGIFY_METHOD(method_) #method_
+
 struct PropertyInfo {
-  const char *propName;
-  const char *domName;
-  const char *pref;
+  const char* propName;
+  const char* domName;
+  const char* pref;
 };
 
 const PropertyInfo gLonghandProperties[] = {
 
 #define CSS_PROP_PUBLIC_OR_PRIVATE(publicname_, privatename_) publicname_
-#define CSS_PROP(name_, id_, method_, flags_, pref_, parsevariant_, kwtable_, \
-                 stylestruct_, stylestructoffset_, animtype_)                 \
-  {#name_, #method_, pref_},
-#define CSS_PROP_LIST_INCLUDE_LOGICAL
+#define CSS_PROP_LONGHAND(name_, id_, method_, flags_, pref_, ...) \
+  {#name_, STRINGIFY_METHOD(method_), pref_},
 
-#include "nsCSSPropList.h"
+#include "mozilla/ServoCSSPropList.h"
 
-#undef CSS_PROP_LIST_INCLUDE_LOGICAL
-#undef CSS_PROP
+#undef CSS_PROP_LONGHAND
 #undef CSS_PROP_PUBLIC_OR_PRIVATE
 
 };
@@ -37,18 +38,14 @@ const PropertyInfo gLonghandProperties[] = {
  * be used.  They're in the same order as the above list, with some
  * items skipped.
  */
-const char *gLonghandPropertiesWithDOMProp[] = {
+const char* gLonghandPropertiesWithDOMProp[] = {
 
 #define CSS_PROP_LIST_EXCLUDE_INTERNAL
-#define CSS_PROP(name_, id_, method_, flags_, pref_, parsevariant_, kwtable_, \
-                 stylestruct_, stylestructoffset_, animtype_)                 \
-  #name_,
-#define CSS_PROP_LIST_INCLUDE_LOGICAL
+#define CSS_PROP_LONGHAND(name_, ...) #name_,
 
-#include "nsCSSPropList.h"
+#include "mozilla/ServoCSSPropList.h"
 
-#undef CSS_PROP_LIST_INCLUDE_LOGICAL
-#undef CSS_PROP
+#undef CSS_PROP_LONGHAND
 #undef CSS_PROP_LIST_EXCLUDE_INTERNAL
 
 };
@@ -56,57 +53,47 @@ const char *gLonghandPropertiesWithDOMProp[] = {
 const PropertyInfo gShorthandProperties[] = {
 
 #define CSS_PROP_PUBLIC_OR_PRIVATE(publicname_, privatename_) publicname_
-// Need an extra level of macro nesting to force expansion of method_
-// params before they get pasted.
-#define LISTCSSPROPERTIES_INNER_MACRO(method_) #method_
 #define CSS_PROP_SHORTHAND(name_, id_, method_, flags_, pref_) \
-  {#name_, LISTCSSPROPERTIES_INNER_MACRO(method_), pref_},
-
-#include "nsCSSPropList.h"
-
-#undef CSS_PROP_SHORTHAND
-#undef LISTCSSPROPERTIES_INNER_MACRO
-#undef CSS_PROP_PUBLIC_OR_PRIVATE
-
+  {#name_, STRINGIFY_METHOD(method_), pref_},
 #define CSS_PROP_ALIAS(name_, aliasid_, id_, method_, pref_) \
   {#name_, #method_, pref_},
 
-#include "nsCSSPropAliasList.h"
+#include "mozilla/ServoCSSPropList.h"
 
 #undef CSS_PROP_ALIAS
+#undef CSS_PROP_SHORTHAND
+#undef CSS_PROP_PUBLIC_OR_PRIVATE
 
 };
 
 /* see gLonghandPropertiesWithDOMProp */
-const char *gShorthandPropertiesWithDOMProp[] = {
+const char* gShorthandPropertiesWithDOMProp[] = {
 
 #define CSS_PROP_LIST_EXCLUDE_INTERNAL
 #define CSS_PROP_SHORTHAND(name_, id_, method_, flags_, pref_) #name_,
+#define CSS_PROP_ALIAS(name_, aliasid_, id_, method_, pref_) #name_,
 
-#include "nsCSSPropList.h"
+#include "mozilla/ServoCSSPropList.h"
 
+#undef CSS_PROP_ALIAS
 #undef CSS_PROP_SHORTHAND
 #undef CSS_PROP_LIST_EXCLUDE_INTERNAL
 
-#define CSS_PROP_ALIAS(name_, aliasid_, id_, method_, pref_) #name_,
-
-#include "nsCSSPropAliasList.h"
-
-#undef CSS_PROP_ALIAS
-
 };
 
-const char *gInaccessibleProperties[] = {
+#undef STRINGIFY_METHOD
+
+const char* gInaccessibleProperties[] = {
     // Don't print the properties that aren't accepted by the parser, per
     // CSSParserImpl::ParseProperty
     "-x-cols",
     "-x-lang",
     "-x-span",
-    "-x-system-font",
     "-x-text-zoom",
     "-moz-context-properties",
     "-moz-control-character-visibility",
-    "-moz-script-level",  // parsed by UA sheets only
+    "-moz-list-reversed",  // parsed by UA sheets only
+    "-moz-script-level",   // parsed by UA sheets only
     "-moz-script-size-multiplier",
     "-moz-script-min-size",
     "-moz-math-variant",
@@ -120,22 +107,22 @@ const char *gInaccessibleProperties[] = {
     "-moz-window-shadow",                    // chrome-only internal properties
 };
 
-inline int is_inaccessible(const char *aPropName) {
+inline int is_inaccessible(const char* aPropName) {
   for (unsigned j = 0; j < MOZ_ARRAY_LENGTH(gInaccessibleProperties); ++j) {
     if (strcmp(aPropName, gInaccessibleProperties[j]) == 0) return 1;
   }
   return 0;
 }
 
-void print_array(const char *aName, const PropertyInfo *aProps,
-                 unsigned aPropsLength, const char *const *aDOMProps,
+void print_array(const char* aName, const PropertyInfo* aProps,
+                 unsigned aPropsLength, const char* const* aDOMProps,
                  unsigned aDOMPropsLength) {
   printf("var %s = [\n", aName);
 
   int first = 1;
   unsigned j = 0;  // index into DOM prop list
   for (unsigned i = 0; i < aPropsLength; ++i) {
-    const PropertyInfo *p = aProps + i;
+    const PropertyInfo* p = aProps + i;
 
     if (is_inaccessible(p->propName))
       // inaccessible properties never have DOM props, so don't

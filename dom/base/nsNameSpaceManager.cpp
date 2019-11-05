@@ -13,10 +13,11 @@
 
 #include "nscore.h"
 #include "mozilla/dom/NodeInfo.h"
+#include "nsAtom.h"
 #include "nsCOMArray.h"
 #include "nsContentCreatorFunctions.h"
 #include "nsGkAtoms.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsString.h"
 #include "mozilla/dom/NodeInfo.h"
 #include "mozilla/ClearOnShutdown.h"
@@ -29,11 +30,12 @@ using namespace mozilla::dom;
 
 static const char* kPrefSVGDisabled = "svg.disabled";
 static const char* kPrefMathMLDisabled = "mathml.disabled";
-static const char* kObservedPrefs[] = {kPrefMathMLDisabled, kPrefSVGDisabled,
-                                       nullptr};
+static const char* kObservedNSPrefs[] = {kPrefMathMLDisabled, kPrefSVGDisabled,
+                                         nullptr};
 StaticRefPtr<nsNameSpaceManager> nsNameSpaceManager::sInstance;
 
-/* static */ nsNameSpaceManager* nsNameSpaceManager::GetInstance() {
+/* static */
+nsNameSpaceManager* nsNameSpaceManager::GetInstance() {
   if (!sInstance) {
     sInstance = new nsNameSpaceManager();
     if (sInstance->Init()) {
@@ -57,9 +59,11 @@ bool nsNameSpaceManager::Init() {
   rv = AddDisabledNameSpace(dont_AddRef(uri), id); \
   NS_ENSURE_SUCCESS(rv, false)
 
-  mozilla::Preferences::AddStrongObservers(this, kObservedPrefs);
-  mMathMLDisabled = mozilla::Preferences::GetBool(kPrefMathMLDisabled);
-  mSVGDisabled = mozilla::Preferences::GetBool(kPrefSVGDisabled);
+  mozilla::Preferences::RegisterCallbacks(
+      PREF_CHANGE_METHOD(nsNameSpaceManager::PrefChanged), kObservedNSPrefs,
+      this);
+
+  PrefChanged(nullptr);
 
   // Need to be ordered according to ID.
   MOZ_ASSERT(mURIArray.IsEmpty());
@@ -86,14 +90,19 @@ bool nsNameSpaceManager::Init() {
 
 nsresult nsNameSpaceManager::RegisterNameSpace(const nsAString& aURI,
                                                int32_t& aNameSpaceID) {
-  if (aURI.IsEmpty()) {
-    aNameSpaceID = kNameSpaceID_None;  // xmlns="", see bug 75700 for details
+  RefPtr<nsAtom> atom = NS_Atomize(aURI);
+  return RegisterNameSpace(atom.forget(), aNameSpaceID);
+}
 
+nsresult nsNameSpaceManager::RegisterNameSpace(already_AddRefed<nsAtom> aURI,
+                                               int32_t& aNameSpaceID) {
+  RefPtr<nsAtom> atom = aURI;
+  nsresult rv = NS_OK;
+  if (atom == nsGkAtoms::_empty) {
+    aNameSpaceID = kNameSpaceID_None;  // xmlns="", see bug 75700 for details
     return NS_OK;
   }
 
-  RefPtr<nsAtom> atom = NS_Atomize(aURI);
-  nsresult rv = NS_OK;
   if (!mURIToIDTable.Get(atom, &aNameSpaceID)) {
     aNameSpaceID = mURIArray.Length();
 
@@ -110,7 +119,7 @@ nsresult nsNameSpaceManager::RegisterNameSpace(const nsAString& aURI,
 
 nsresult nsNameSpaceManager::GetNameSpaceURI(int32_t aNameSpaceID,
                                              nsAString& aURI) {
-  NS_PRECONDITION(aNameSpaceID >= 0, "Bogus namespace ID");
+  MOZ_ASSERT(aNameSpaceID >= 0, "Bogus namespace ID");
 
   // We have historically treated GetNameSpaceURI calls for kNameSpaceID_None
   // as erroneous.
@@ -161,13 +170,13 @@ nsresult NS_NewElement(Element** aResult,
                        FromParser aFromParser, const nsAString* aIs) {
   RefPtr<mozilla::dom::NodeInfo> ni = aNodeInfo;
   int32_t ns = ni->NamespaceID();
+  RefPtr<nsAtom> isAtom = aIs ? NS_AtomizeMainThread(*aIs) : nullptr;
   if (ns == kNameSpaceID_XHTML) {
-    RefPtr<nsAtom> isAtom = aIs ? NS_Atomize(*aIs) : nullptr;
     return NS_NewHTMLElement(aResult, ni.forget(), aFromParser, isAtom);
   }
 #ifdef MOZ_XUL
   if (ns == kNameSpaceID_XUL) {
-    return NS_NewXULElement(aResult, ni.forget(), aFromParser);
+    return NS_NewXULElement(aResult, ni.forget(), aFromParser, isAtom);
   }
 #endif
   if (ns == kNameSpaceID_MathML) {
@@ -242,14 +251,7 @@ nsresult nsNameSpaceManager::AddDisabledNameSpace(already_AddRefed<nsAtom> aURI,
   return NS_OK;
 }
 
-// nsISupports
-NS_IMPL_ISUPPORTS(nsNameSpaceManager, nsIObserver)
-
-// nsIObserver
-NS_IMETHODIMP
-nsNameSpaceManager::Observe(nsISupports* aObject, const char* aTopic,
-                            const char16_t* aMessage) {
+void nsNameSpaceManager::PrefChanged(const char* aPref) {
   mMathMLDisabled = mozilla::Preferences::GetBool(kPrefMathMLDisabled);
   mSVGDisabled = mozilla::Preferences::GetBool(kPrefSVGDisabled);
-  return NS_OK;
 }

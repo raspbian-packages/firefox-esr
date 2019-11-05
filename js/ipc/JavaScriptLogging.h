@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sw=4 et tw=80:
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: set ts=8 sw=2 et tw=80:
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -98,15 +98,12 @@ class Logging {
     if (local == incoming) {
       JS::RootedObject obj(cx);
       obj = shared->objects_.find(id);
-      if (obj) {
-        JSAutoCompartment ac(cx, obj);
-        objDesc = js::ObjectClassName(cx, obj);
-      } else {
-        objDesc = "<dead object>";
-      }
+      obj = js::UncheckedUnwrap(obj, true);
 
+      JSAutoRealm ar(cx, obj);
+      objDesc = js::ObjectClassName(cx, obj);
       side = shared->isParent() ? "parent" : "child";
-      ptr = js::UncheckedUnwrap(obj, true);
+      ptr = obj;
     } else {
       objDesc = "<cpow>";
       side = shared->isParent() ? "child" : "parent";
@@ -125,7 +122,9 @@ class Logging {
     nsAutoCString tmp;
     out.Truncate();
     for (size_t i = 0; i < values.Length(); i++) {
-      if (i) out.AppendLiteral(", ");
+      if (i) {
+        out.AppendLiteral(", ");
+      }
       if (values[i].type() == JSParam::Tvoid_t) {
         out.AppendLiteral("<void>");
       } else {
@@ -161,16 +160,17 @@ class Logging {
       }
       case JSVariant::TObjectVariant: {
         const ObjectVariant& ovar = value.get_ObjectVariant();
-        if (ovar.type() == ObjectVariant::TLocalObject)
-          formatObject(
-              incoming, true,
-              ObjectId::deserialize(ovar.get_LocalObject().serializedId()),
-              out);
-        else
-          formatObject(
-              incoming, false,
-              ObjectId::deserialize(ovar.get_RemoteObject().serializedId()),
-              out);
+        if (ovar.type() == ObjectVariant::TLocalObject) {
+          Maybe<ObjectId> objId(
+              ObjectId::deserialize(ovar.get_LocalObject().serializedId()));
+          MOZ_RELEASE_ASSERT(objId.isSome());
+          formatObject(incoming, true, objId.value(), out);
+        } else {
+          Maybe<ObjectId> objId(
+              ObjectId::deserialize(ovar.get_RemoteObject().serializedId()));
+          MOZ_RELEASE_ASSERT(objId.isSome());
+          formatObject(incoming, false, objId.value(), out);
+        }
         break;
       }
       case JSVariant::TSymbolVariant: {

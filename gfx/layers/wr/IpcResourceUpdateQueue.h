@@ -9,12 +9,17 @@
 
 #include "mozilla/layers/WebRenderMessages.h"
 #include "mozilla/layers/RefCountedShmem.h"
+#include "mozilla/layers/TextureClient.h"
 #include "mozilla/webrender/WebRenderTypes.h"
 
 namespace mozilla {
 namespace ipc {
 class IShmemAllocator;
 }
+namespace layers {
+class TextureClient;
+}
+
 namespace wr {
 
 /// ShmSegmentsWriter pushes bytes in a sequence of fixed size shmems for small
@@ -25,6 +30,12 @@ class ShmSegmentsWriter {
                     size_t aChunkSize);
   ~ShmSegmentsWriter();
 
+  ShmSegmentsWriter(ShmSegmentsWriter&& aOther) noexcept;
+  ShmSegmentsWriter& operator=(ShmSegmentsWriter&& aOther) noexcept;
+
+  ShmSegmentsWriter(const ShmSegmentsWriter& aOther) = delete;
+  ShmSegmentsWriter& operator=(const ShmSegmentsWriter& aOther) = delete;
+
   layers::OffsetRange Write(Range<uint8_t> aBytes);
 
   template <typename T>
@@ -34,17 +45,20 @@ class ShmSegmentsWriter {
   }
 
   void Flush(nsTArray<layers::RefCountedShmem>& aSmallAllocs,
-             nsTArray<ipc::Shmem>& aLargeAllocs);
+             nsTArray<mozilla::ipc::Shmem>& aLargeAllocs);
 
   void Clear();
   bool IsEmpty() const;
+
+  layers::WebRenderBridgeChild* WrBridge() const { return mShmAllocator; }
+  size_t ChunkSize() const { return mChunkSize; }
 
  protected:
   bool AllocChunk();
   layers::OffsetRange AllocLargeChunk(size_t aSize);
 
   nsTArray<layers::RefCountedShmem> mSmallAllocs;
-  nsTArray<ipc::Shmem> mLargeAllocs;
+  nsTArray<mozilla::ipc::Shmem> mLargeAllocs;
   layers::WebRenderBridgeChild* mShmAllocator;
   size_t mCursor;
   size_t mChunkSize;
@@ -53,7 +67,7 @@ class ShmSegmentsWriter {
 class ShmSegmentsReader {
  public:
   ShmSegmentsReader(const nsTArray<layers::RefCountedShmem>& aSmallShmems,
-                    const nsTArray<ipc::Shmem>& aLargeShmems);
+                    const nsTArray<mozilla::ipc::Shmem>& aLargeShmems);
 
   bool Read(const layers::OffsetRange& aRange, wr::Vec<uint8_t>& aInto);
 
@@ -61,7 +75,7 @@ class ShmSegmentsReader {
   bool ReadLarge(const layers::OffsetRange& aRange, wr::Vec<uint8_t>& aInto);
 
   const nsTArray<layers::RefCountedShmem>& mSmallAllocs;
-  const nsTArray<ipc::Shmem>& mLargeAllocs;
+  const nsTArray<mozilla::ipc::Shmem>& mLargeAllocs;
   size_t mChunkSize;
 };
 
@@ -73,29 +87,80 @@ class IpcResourceUpdateQueue {
   // we use here. The RefCountedShmem type used to allocate the chunks keeps a
   // 16 bytes header in the buffer which we account for here as well. So we pick
   // 64k - 2 * 4k - 16 = 57328 bytes as the default alloc size.
-  explicit IpcResourceUpdateQueue(layers::WebRenderBridgeChild* aAllocator,
-                                  size_t aChunkSize = 57328);
+  explicit IpcResourceUpdateQueue(
+      layers::WebRenderBridgeChild* aAllocator,
+      wr::RenderRoot aRenderRoot = wr::RenderRoot::Default,
+      size_t aChunkSize = 57328);
+
+  // Although resource updates don't belong to a particular document/render root
+  // in any concrete way, they still end up being tied to a render root because
+  // we need to know which WR document to generate a frame for when they change.
+  IpcResourceUpdateQueue& SubQueue(wr::RenderRoot aRenderRoot) {
+    MOZ_ASSERT(mRenderRoot == wr::RenderRoot::Default);
+    if (aRenderRoot == wr::RenderRoot::Default) {
+      MOZ_ASSERT(mRenderRoot == wr::RenderRoot::Default);
+      return *this;
+    }
+    if (!mSubQueues[aRenderRoot]) {
+      mSubQueues[aRenderRoot] = MakeUnique<IpcResourceUpdateQueue>(
+          mWriter.WrBridge(), aRenderRoot, mWriter.ChunkSize());
+    }
+    return *mSubQueues[aRenderRoot];
+  }
+
+  bool HasAnySubQueue() {
+    for (auto renderRoot : wr::kNonDefaultRenderRoots) {
+      if (mSubQueues[renderRoot]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool HasSubQueue(wr::RenderRoot aRenderRoot) {
+    return aRenderRoot == wr::RenderRoot::Default || !!mSubQueues[aRenderRoot];
+  }
+
+  wr::RenderRoot GetRenderRoot() { return mRenderRoot; }
+
+  IpcResourceUpdateQueue(IpcResourceUpdateQueue&& aOther) noexcept;
+  IpcResourceUpdateQueue& operator=(IpcResourceUpdateQueue&& aOther) noexcept;
+
+  IpcResourceUpdateQueue(const IpcResourceUpdateQueue& aOther) = delete;
+  IpcResourceUpdateQueue& operator=(const IpcResourceUpdateQueue& aOther) =
+      delete;
+
+  // Moves over everything but the subqueues
+  void ReplaceResources(IpcResourceUpdateQueue&& aOther);
 
   bool AddImage(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
                 Range<uint8_t> aBytes);
 
-  bool AddBlobImage(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
+  bool AddBlobImage(wr::BlobImageKey aKey, const ImageDescriptor& aDescriptor,
                     Range<uint8_t> aBytes);
 
   void AddExternalImage(wr::ExternalImageId aExtId, wr::ImageKey aKey);
 
+  void PushExternalImageForTexture(wr::ExternalImageId aExtId,
+                                   wr::ImageKey aKey,
+                                   layers::TextureClient* aTexture,
+                                   bool aIsUpdate);
+
   bool UpdateImageBuffer(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
                          Range<uint8_t> aBytes);
 
-  bool UpdateBlobImage(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
+  bool UpdateBlobImage(wr::BlobImageKey aKey,
+                       const ImageDescriptor& aDescriptor,
                        Range<uint8_t> aBytes, ImageIntRect aDirtyRect);
 
-  void UpdateExternalImage(ImageKey aKey, const ImageDescriptor& aDescriptor,
-                           ExternalImageId aExtID,
-                           wr::WrExternalImageBufferType aBufferType,
-                           uint8_t aChannelIndex = 0);
+  void UpdateExternalImage(ExternalImageId aExtID, ImageKey aKey,
+                           ImageIntRect aDirtyRect);
+
+  void SetBlobImageVisibleArea(BlobImageKey aKey, const ImageIntRect& aArea);
 
   void DeleteImage(wr::ImageKey aKey);
+
+  void DeleteBlobImage(wr::BlobImageKey aKey);
 
   bool AddRawFont(wr::FontKey aKey, Range<uint8_t> aBytes, uint32_t aIndex);
 
@@ -116,17 +181,20 @@ class IpcResourceUpdateQueue {
 
   void Flush(nsTArray<layers::OpUpdateResource>& aUpdates,
              nsTArray<layers::RefCountedShmem>& aSmallAllocs,
-             nsTArray<ipc::Shmem>& aLargeAllocs);
+             nsTArray<mozilla::ipc::Shmem>& aLargeAllocs);
 
   bool IsEmpty() const;
 
-  static void ReleaseShmems(ipc::IProtocol*,
-                            nsTArray<layers::RefCountedShmem>& aShmems);
-  static void ReleaseShmems(ipc::IProtocol*, nsTArray<ipc::Shmem>& aShmems);
+  static void ReleaseShmems(mozilla::ipc::IProtocol*,
+                            nsTArray<layers::RefCountedShmem>& aShms);
+  static void ReleaseShmems(mozilla::ipc::IProtocol*,
+                            nsTArray<mozilla::ipc::Shmem>& aShms);
 
  protected:
   ShmSegmentsWriter mWriter;
   nsTArray<layers::OpUpdateResource> mUpdates;
+  wr::NonDefaultRenderRootArray<UniquePtr<IpcResourceUpdateQueue>> mSubQueues;
+  wr::RenderRoot mRenderRoot;
 };
 
 }  // namespace wr

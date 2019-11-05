@@ -58,7 +58,7 @@ class InterceptedChannelBase : public nsIInterceptedChannel {
   TimeStamp mFinishResponseEnd;
   enum { Invalid = 0, Synthesized, Reset } mSynthesizedOrReset;
 
-  virtual ~InterceptedChannelBase();
+  virtual ~InterceptedChannelBase() = default;
 
  public:
   explicit InterceptedChannelBase(nsINetworkInterceptController* aController);

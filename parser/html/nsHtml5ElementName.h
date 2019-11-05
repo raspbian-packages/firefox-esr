@@ -75,8 +75,8 @@ class nsHtml5ElementName {
   static const int32_t OPTIONAL_END_TAG = (1 << 23);
 
  private:
-  nsAtom* name;
-  nsAtom* camelCaseName;
+  RefPtr<nsAtom> name;
+  RefPtr<nsAtom> camelCaseName;
   mozilla::dom::HTMLContentCreatorFunction htmlCreator;
   mozilla::dom::SVGContentCreatorFunction svgCreator;
 
@@ -191,6 +191,7 @@ class nsHtml5ElementName {
 
   static nsHtml5ElementName* ELT_ANNOTATION_XML;
   static nsHtml5ElementName* ELT_BIG;
+  static nsHtml5ElementName* ELT_BDI;
   static nsHtml5ElementName* ELT_BDO;
   static nsHtml5ElementName* ELT_COL;
   static nsHtml5ElementName* ELT_DEL;

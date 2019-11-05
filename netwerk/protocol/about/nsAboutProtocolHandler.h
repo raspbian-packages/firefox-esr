@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -28,10 +28,10 @@ class nsAboutProtocolHandler : public nsIProtocolHandlerWithDynamicFlags,
   NS_DECL_NSIPROTOCOLHANDLERWITHDYNAMICFLAGS
 
   // nsAboutProtocolHandler methods:
-  nsAboutProtocolHandler() {}
+  nsAboutProtocolHandler() = default;
 
  private:
-  virtual ~nsAboutProtocolHandler() {}
+  virtual ~nsAboutProtocolHandler() = default;
 };
 
 class nsSafeAboutProtocolHandler final : public nsIProtocolHandler,
@@ -43,23 +43,21 @@ class nsSafeAboutProtocolHandler final : public nsIProtocolHandler,
   NS_DECL_NSIPROTOCOLHANDLER
 
   // nsSafeAboutProtocolHandler methods:
-  nsSafeAboutProtocolHandler() {}
+  nsSafeAboutProtocolHandler() = default;
 
  private:
-  ~nsSafeAboutProtocolHandler() {}
+  ~nsSafeAboutProtocolHandler() = default;
 };
 
 // Class to allow us to propagate the base URI to about:blank correctly
 class nsNestedAboutURI final : public nsSimpleNestedURI {
- public:
+ private:
   nsNestedAboutURI(nsIURI* aInnerURI, nsIURI* aBaseURI)
       : nsSimpleNestedURI(aInnerURI), mBaseURI(aBaseURI) {}
-
-  // For use only from deserialization
   nsNestedAboutURI() : nsSimpleNestedURI() {}
+  virtual ~nsNestedAboutURI() = default;
 
-  virtual ~nsNestedAboutURI() {}
-
+ public:
   // Override QI so we can QI to our CID as needed
   NS_IMETHOD QueryInterface(REFNSIID aIID, void** aInstancePtr) override;
 
@@ -78,21 +76,29 @@ class nsNestedAboutURI final : public nsSimpleNestedURI {
 
  protected:
   nsCOMPtr<nsIURI> mBaseURI;
+  nsresult ReadPrivate(nsIObjectInputStream* stream);
 
  public:
   class Mutator final : public nsIURIMutator,
-                        public BaseURIMutator<nsNestedAboutURI> {
+                        public BaseURIMutator<nsNestedAboutURI>,
+                        public nsISerializable,
+                        public nsINestedAboutURIMutator {
     NS_DECL_ISUPPORTS
     NS_FORWARD_SAFE_NSIURISETTERS_RET(mURI)
 
-    explicit Mutator() {}
+    explicit Mutator() = default;
 
    private:
-    virtual ~Mutator() {}
+    virtual ~Mutator() = default;
 
     MOZ_MUST_USE NS_IMETHOD
     Deserialize(const mozilla::ipc::URIParams& aParams) override {
       return InitFromIPCParams(aParams);
+    }
+
+    NS_IMETHOD
+    Write(nsIObjectOutputStream* aOutputStream) override {
+      return NS_ERROR_NOT_IMPLEMENTED;
     }
 
     MOZ_MUST_USE NS_IMETHOD Read(nsIObjectInputStream* aStream) override {
@@ -111,6 +117,12 @@ class nsNestedAboutURI final : public nsSimpleNestedURI {
         NS_ADDREF(*aMutator = this);
       }
       return InitFromSpec(aSpec);
+    }
+
+    MOZ_MUST_USE NS_IMETHOD InitWithBase(nsIURI* aInnerURI,
+                                         nsIURI* aBaseURI) override {
+      mURI = new nsNestedAboutURI(aInnerURI, aBaseURI);
+      return NS_OK;
     }
 
     void ResetMutable() {

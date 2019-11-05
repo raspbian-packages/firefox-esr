@@ -25,8 +25,8 @@
 #include <guiddef.h>
 
 #ifndef __MINGW32__
-#pragma comment(lib, "mfuuid.lib")
-#pragma comment(lib, "wmcodecdspuuid")
+#  pragma comment(lib, "mfuuid.lib")
+#  pragma comment(lib, "wmcodecdspuuid")
 #endif
 
 void LOG(const char* format, ...) {
@@ -229,4 +229,4 @@ int32_t GetNumThreads(int32_t aCoreCount) {
   return aCoreCount > 4 ? -1 : (std::max)(aCoreCount - 1, 1);
 }
 
-}  // namespace
+}  // namespace wmf

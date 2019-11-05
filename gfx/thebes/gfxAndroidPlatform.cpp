@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,7 +17,6 @@
 #include "gfxFT2FontList.h"
 #include "gfxImageSurface.h"
 #include "gfxTextRun.h"
-#include "mozilla/dom/ContentChild.h"
 #include "nsXULAppAPI.h"
 #include "nsIScreen.h"
 #include "nsIScreenManager.h"
@@ -70,7 +69,8 @@ class FreetypeReporter final : public nsIMemoryReporter,
 NS_IMPL_ISUPPORTS(FreetypeReporter, nsIMemoryReporter)
 
 template <>
-Atomic<size_t> CountingAllocatorBase<FreetypeReporter>::sAmount(0);
+CountingAllocatorBase<FreetypeReporter>::AmountType
+    CountingAllocatorBase<FreetypeReporter>::sAmount(0);
 
 static FT_MemoryRec_ sFreetypeMemoryRecord;
 
@@ -165,10 +165,13 @@ void gfxAndroidPlatform::GetCommonFallbackFonts(
     uint8_t block = (aCh >> 8) & 0xff;
     switch (block) {
       case 0x05:
+        aFontList.AppendElement("Noto Sans Hebrew");
         aFontList.AppendElement("Droid Sans Hebrew");
+        aFontList.AppendElement("Noto Sans Armenian");
         aFontList.AppendElement("Droid Sans Armenian");
         break;
       case 0x06:
+        aFontList.AppendElement("Noto Sans Arabic");
         aFontList.AppendElement("Droid Sans Arabic");
         break;
       case 0x09:
@@ -185,11 +188,21 @@ void gfxAndroidPlatform::GetCommonFallbackFonts(
         break;
       case 0x10:
       case 0x2d:
+        aFontList.AppendElement("Noto Sans Georgian");
         aFontList.AppendElement("Droid Sans Georgian");
         break;
       case 0x12:
       case 0x13:
+        aFontList.AppendElement("Noto Sans Ethiopic");
         aFontList.AppendElement("Droid Sans Ethiopic");
+        break;
+      case 0x21:
+      case 0x23:
+      case 0x24:
+      case 0x26:
+      case 0x27:
+      case 0x29:
+        aFontList.AppendElement("Noto Sans Symbols");
         break;
       case 0xf9:
       case 0xfa:
@@ -237,8 +250,8 @@ gfxFontGroup* gfxAndroidPlatform::CreateFontGroup(
 FT_Library gfxAndroidPlatform::GetFTLibrary() { return gPlatformFTLibrary; }
 
 bool gfxAndroidPlatform::FontHintingEnabled() {
-// In "mobile" builds, we sometimes use non-reflow-zoom, so we
-// might not want hinting.  Let's see.
+  // In "mobile" builds, we sometimes use non-reflow-zoom, so we
+  // might not want hinting.  Let's see.
 
 #ifdef MOZ_WIDGET_ANDROID
   // On Android, we currently only use gecko to render web
@@ -253,7 +266,7 @@ bool gfxAndroidPlatform::FontHintingEnabled() {
   // Currently, we don't have any other targets, but if/when we do,
   // decide how to handle them here.
 
-  NS_NOTREACHED("oops, what platform is this?");
+  MOZ_ASSERT_UNREACHABLE("oops, what platform is this?");
   return gfxPlatform::FontHintingEnabled();
 }
 
@@ -267,7 +280,7 @@ bool gfxAndroidPlatform::RequiresLinearZoom() {
   return true;
 #endif
 
-  NS_NOTREACHED("oops, what platform is this?");
+  MOZ_ASSERT_UNREACHABLE("oops, what platform is this?");
   return gfxPlatform::RequiresLinearZoom();
 }
 
@@ -343,7 +356,7 @@ class AndroidVsyncSource final : public VsyncSource {
   Display& GetGlobalDisplay() final { return GetDisplayInstance(); }
 
  private:
-  virtual ~AndroidVsyncSource() {}
+  virtual ~AndroidVsyncSource() = default;
 
   static Display& GetDisplayInstance() {
     static Display globalDisplay;

@@ -7,11 +7,12 @@
 #ifndef __FFmpegDecoderModule_h__
 #define __FFmpegDecoderModule_h__
 
-#include "PlatformDecoderModule.h"
-#include "FFmpegLibWrapper.h"
 #include "FFmpegAudioDecoder.h"
+#include "FFmpegLibWrapper.h"
 #include "FFmpegVideoDecoder.h"
-#include "MediaPrefs.h"
+#include "PlatformDecoderModule.h"
+#include "VPXDecoder.h"
+#include "mozilla/StaticPrefs.h"
 
 namespace mozilla {
 
@@ -37,8 +38,12 @@ class FFmpegDecoderModule : public PlatformDecoderModule {
     if (aParams.VideoConfig().HasAlpha()) {
       return nullptr;
     }
-    if (aParams.mOptions.contains(CreateDecoderParams::Option::LowLatency) &&
-        !MediaPrefs::PDMFFmpegLowLatencyEnabled()) {
+    if (VPXDecoder::IsVPX(aParams.mConfig.mMimeType) &&
+        aParams.mOptions.contains(CreateDecoderParams::Option::LowLatency) &&
+        !StaticPrefs::MediaFfmpegLowLatencyEnabled()) {
+      // We refuse to create a decoder with low latency enabled if it's VP8 or
+      // VP9 unless specifically allowed: this will fallback to libvpx later.
+      // We do allow it for h264.
       return nullptr;
     }
     RefPtr<MediaDataDecoder> decoder = new FFmpegVideoDecoder<V>(
@@ -67,17 +72,13 @@ class FFmpegDecoderModule : public PlatformDecoderModule {
   }
 
  protected:
-  bool SupportsBitDepth(const uint8_t aBitDepth,
-                        DecoderDoctorDiagnostics* aDiagnostics) const override {
-  // We don't support bitDepth > 8 when compositor backend is D3D11.
-  // But we don't have KnowsCompositor or any object
-  // that we can ask for the layersbackend type.
-  // We should remove this restriction until
-  // we solve the D3D11 compositor backend issue.
-#if defined(XP_LINUX) || defined(XP_MACOSX)
-    return true;
+  bool SupportsColorDepth(
+      gfx::ColorDepth aColorDepth,
+      DecoderDoctorDiagnostics* aDiagnostics) const override {
+#if defined(MOZ_WIDGET_ANDROID)
+    return aColorDepth == gfx::ColorDepth::COLOR_8;
 #endif
-    return aBitDepth == 8;
+    return true;
   }
 
  private:

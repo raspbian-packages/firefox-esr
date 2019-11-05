@@ -13,39 +13,37 @@
 #define NS_MAPPEDATTRIBUTEELEMENT_H_
 
 #include "mozilla/Attributes.h"
-#include "mozilla/GenericSpecifiedValues.h"
 #include "nsStyledElement.h"
+
+namespace mozilla {
+class MappedDeclarations;
+}
 
 class nsMappedAttributes;
 struct nsRuleData;
 
-typedef void (*nsMapRuleToAttributesFunc)(
-    const nsMappedAttributes* aAttributes,
-    mozilla::GenericSpecifiedValues* aData);
+typedef void (*nsMapRuleToAttributesFunc)(const nsMappedAttributes* aAttributes,
+                                          mozilla::MappedDeclarations&);
 
 typedef nsStyledElement nsMappedAttributeElementBase;
 
 class nsMappedAttributeElement : public nsMappedAttributeElementBase {
  protected:
   explicit nsMappedAttributeElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsMappedAttributeElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsMappedAttributeElementBase(std::move(aNodeInfo)) {}
 
  public:
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction() const;
 
-  static void MapNoAttributesInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapNoAttributesInto(const nsMappedAttributes* aAttributes,
+                                  mozilla::MappedDeclarations&);
 
-#ifdef MOZ_OLD_STYLE
-  NS_IMETHOD WalkContentStyleRules(nsRuleWalker* aRuleWalker) override;
-#endif
   virtual bool SetAndSwapMappedAttribute(nsAtom* aName, nsAttrValue& aValue,
                                          bool* aValueWasSet,
                                          nsresult* aRetval) override;
 
-  virtual void NodeInfoChanged(nsIDocument* aOldDoc) override;
+  virtual void NodeInfoChanged(mozilla::dom::Document* aOldDoc) override;
 };
 
 #endif  // NS_MAPPEDATTRIBUTEELEMENT_H_

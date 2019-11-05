@@ -5,28 +5,31 @@
 include protocol PBackground;
 include protocol PChildToParentStream;
 include protocol PContent;
-include protocol PContentBridge;
 include protocol PFileDescriptorSet;
 include protocol PParentToChildStream;
 
 include IPCStream;
 
 namespace mozilla {
-namespace ipc {
+namespace dom {
 
 protocol PIPCBlobInputStream
 {
-  manager PBackground or PContent or PContentBridge;
+  manager PBackground or PContent;
 
 parent:
   async StreamNeeded();
+
+  async LengthNeeded();
 
   // When this is called, the parent releases the inputStream and sends a
   // __delete__.
   async Close();
 
 child:
-  async StreamReady(OptionalIPCStream aStream);
+  async StreamReady(IPCStream? aStream);
+
+  async LengthReady(int64_t aLength);
 
 both:
   // __delete__ can be called by parent and by child for 2 reasons:

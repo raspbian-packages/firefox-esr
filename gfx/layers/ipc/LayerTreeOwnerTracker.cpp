@@ -7,7 +7,6 @@
 #include "LayerTreeOwnerTracker.h"
 
 #include "mozilla/StaticPtr.h"              // for StaticAutoPtr
-#include "mozilla/dom/ContentParent.h"      // for ContentParent
 #include "mozilla/gfx/GPUChild.h"           // for GPUChild
 #include "mozilla/gfx/GPUProcessManager.h"  // for GPUProcessManager
 
@@ -31,7 +30,7 @@ void LayerTreeOwnerTracker::Shutdown() { sSingleton = nullptr; }
 
 LayerTreeOwnerTracker* LayerTreeOwnerTracker::Get() { return sSingleton; }
 
-void LayerTreeOwnerTracker::Map(uint64_t aLayersId,
+void LayerTreeOwnerTracker::Map(LayersId aLayersId,
                                 base::ProcessId aProcessId) {
   MutexAutoLock lock(mLayerIdsLock);
 
@@ -39,7 +38,7 @@ void LayerTreeOwnerTracker::Map(uint64_t aLayersId,
   mLayerIds[aLayersId] = aProcessId;
 }
 
-void LayerTreeOwnerTracker::Unmap(uint64_t aLayersId,
+void LayerTreeOwnerTracker::Unmap(LayersId aLayersId,
                                   base::ProcessId aProcessId) {
   MutexAutoLock lock(mLayerIdsLock);
 
@@ -47,7 +46,7 @@ void LayerTreeOwnerTracker::Unmap(uint64_t aLayersId,
   mLayerIds.erase(aLayersId);
 }
 
-bool LayerTreeOwnerTracker::IsMapped(uint64_t aLayersId,
+bool LayerTreeOwnerTracker::IsMapped(LayersId aLayersId,
                                      base::ProcessId aProcessId) {
   MutexAutoLock lock(mLayerIdsLock);
 
@@ -56,7 +55,7 @@ bool LayerTreeOwnerTracker::IsMapped(uint64_t aLayersId,
 }
 
 void LayerTreeOwnerTracker::Iterate(
-    const std::function<void(uint64_t aLayersId, base::ProcessId aProcessId)>&
+    const std::function<void(LayersId aLayersId, base::ProcessId aProcessId)>&
         aCallback) {
   MutexAutoLock lock(mLayerIdsLock);
 

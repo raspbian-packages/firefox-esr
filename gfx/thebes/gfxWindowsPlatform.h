@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,7 +7,7 @@
 #define GFX_WINDOWS_PLATFORM_H
 
 /**
- * XXX to get CAIRO_HAS_D2D_SURFACE, CAIRO_HAS_DWRITE_FONT
+ * XXX to get CAIRO_HAS_DWRITE_FONT
  * and cairo_win32_scaled_font_select_font
  */
 #include "cairo-win32.h"
@@ -37,9 +37,9 @@
 #include <d3dcommon.h>
 // Win 8.0 SDK types we'll need when building using older sdks.
 #if !defined(D3D_FEATURE_LEVEL_11_1)  // defined in the 8.0 SDK only
-#define D3D_FEATURE_LEVEL_11_1 static_cast<D3D_FEATURE_LEVEL>(0xb100)
-#define D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION 2048
-#define D3D_FL9_3_REQ_TEXTURE2D_U_OR_V_DIMENSION 4096
+#  define D3D_FEATURE_LEVEL_11_1 static_cast<D3D_FEATURE_LEVEL>(0xb100)
+#  define D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION 2048
+#  define D3D_FL9_3_REQ_TEXTURE2D_U_OR_V_DIMENSION 4096
 #endif
 
 namespace mozilla {
@@ -61,23 +61,16 @@ struct IDXGIAdapter1;
  * not backed by a HDC this will get the HDC for the screen device context
  * instead.
  */
-class MOZ_STACK_CLASS DCFromDrawTarget final {
+class MOZ_STACK_CLASS DCForMetrics final {
  public:
-  explicit DCFromDrawTarget(mozilla::gfx::DrawTarget& aDrawTarget);
+  explicit DCForMetrics();
 
-  ~DCFromDrawTarget() {
-    if (mNeedsRelease) {
-      ReleaseDC(nullptr, mDC);
-    } else {
-      RestoreDC(mDC, -1);
-    }
-  }
+  ~DCForMetrics() { ReleaseDC(nullptr, mDC); }
 
   operator HDC() { return mDC; }
 
  private:
   HDC mDC;
-  bool mNeedsRelease;
 };
 
 // ClearType parameters set by running ClearType tuner
@@ -112,7 +105,10 @@ class gfxWindowsPlatform : public gfxPlatform {
     return (gfxWindowsPlatform*)gfxPlatform::GetPlatform();
   }
 
-  virtual gfxPlatformFontList* CreatePlatformFontList() override;
+  void EnsureDevicesInitialized() override;
+  bool DevicesInitialized() override;
+
+  gfxPlatformFontList* CreatePlatformFontList() override;
 
   virtual already_AddRefed<gfxASurface> CreateOffscreenSurface(
       const IntSize& aSize, gfxImageFormat aFormat) override;
@@ -152,9 +148,8 @@ class gfxWindowsPlatform : public gfxPlatform {
    */
   void VerifyD2DDevice(bool aAttemptForce);
 
-  virtual void GetCommonFallbackFonts(
-      uint32_t aCh, uint32_t aNextCh, Script aRunScript,
-      nsTArray<const char*>& aFontList) override;
+  void GetCommonFallbackFonts(uint32_t aCh, uint32_t aNextCh, Script aRunScript,
+                              nsTArray<const char*>& aFontList) override;
 
   gfxFontGroup* CreateFontGroup(const mozilla::FontFamilyList& aFontFamilyList,
                                 const gfxFontStyle* aStyle,
@@ -162,9 +157,9 @@ class gfxWindowsPlatform : public gfxPlatform {
                                 gfxUserFontSet* aUserFontSet,
                                 gfxFloat aDevToCssSize) override;
 
-  virtual bool CanUseHardwareVideoDecoding() override;
+  bool CanUseHardwareVideoDecoding() override;
 
-  virtual void CompositorUpdated() override;
+  void CompositorUpdated() override;
 
   bool DidRenderingDeviceReset(
       DeviceResetReason* aResetReason = nullptr) override;
@@ -181,11 +176,11 @@ class gfxWindowsPlatform : public gfxPlatform {
   // returns ClearType tuning information for each display
   static void GetCleartypeParams(nsTArray<ClearTypeParameterInfo>& aParams);
 
-  virtual void FontsPrefsChanged(const char* aPref) override;
+  void FontsPrefsChanged(const char* aPref) override;
 
   void SetupClearTypeParams();
 
-  inline bool DWriteEnabled() const {
+  static inline bool DWriteEnabled() {
     return !!mozilla::gfx::Factory::GetDWriteFactory();
   }
   inline DWRITE_MEASURING_MODE DWriteMeasuringMode() { return mMeasuringMode; }
@@ -208,8 +203,8 @@ class gfxWindowsPlatform : public gfxPlatform {
   bool HandleDeviceReset();
   void UpdateBackendPrefs();
 
-  virtual already_AddRefed<mozilla::gfx::VsyncSource>
-  CreateHardwareVsyncSource() override;
+  already_AddRefed<mozilla::gfx::VsyncSource> CreateHardwareVsyncSource()
+      override;
   static mozilla::Atomic<size_t> sD3D11SharedTextures;
   static mozilla::Atomic<size_t> sD3D9SharedTextures;
 
@@ -223,17 +218,23 @@ class gfxWindowsPlatform : public gfxPlatform {
   bool AccelerateLayersByDefault() override { return true; }
   void GetAcceleratedCompositorBackends(
       nsTArray<mozilla::layers::LayersBackend>& aBackends) override;
-  virtual void GetPlatformCMSOutputProfile(void*& mem, size_t& size) override;
+  void GetPlatformCMSOutputProfile(void*& mem, size_t& size) override;
 
   void ImportGPUDeviceData(const mozilla::gfx::GPUDeviceData& aData) override;
   void ImportContentDeviceData(
       const mozilla::gfx::ContentDeviceData& aData) override;
   void BuildContentDeviceData(mozilla::gfx::ContentDeviceData* aOut) override;
 
+  BackendPrefsData GetBackendPrefs() const override;
+
+  bool CheckVariationFontSupport() override;
+
  protected:
   RenderMode mRenderMode;
 
  private:
+  bool HasBattery() override;
+
   void Init();
   void InitAcceleration() override;
   void InitWebRenderConfig() override;
@@ -254,12 +255,13 @@ class gfxWindowsPlatform : public gfxPlatform {
   void InitializeDirectDrawConfig();
   void InitializeAdvancedLayersConfig();
 
+  void RecordStartupTelemetry();
+
   RefPtr<IDWriteRenderingParams> mRenderingParams[TEXT_RENDERING_COUNT];
   DWRITE_MEASURING_MODE mMeasuringMode;
 
   RefPtr<mozilla::layers::ReadbackManagerD3D11> mD3D11ReadbackManager;
-
-  nsTArray<D3D_FEATURE_LEVEL> mFeatureLevels;
+  bool mInitializedDevices = false;
 };
 
 #endif /* GFX_WINDOWS_PLATFORM_H */

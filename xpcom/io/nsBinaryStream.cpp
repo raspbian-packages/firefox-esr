@@ -36,7 +36,10 @@
 #include "nsIURI.h"       // for NS_IURI_IID
 #include "nsIX509Cert.h"  // for NS_IX509CERT_IID
 
-#include "jsfriendapi.h"
+#include "js/ArrayBuffer.h"  // JS::{GetArrayBuffer{,ByteLength},IsArrayBufferObject}
+#include "js/GCAPI.h"        // JS::AutoCheckCannotGC
+#include "js/RootingAPI.h"  // JS::{Handle,Rooted}
+#include "js/Value.h"       // JS::Value
 
 using mozilla::MakeUnique;
 using mozilla::PodCopy;
@@ -91,14 +94,14 @@ nsBinaryOutputStream::Write(const char* aBuf, uint32_t aCount,
 NS_IMETHODIMP
 nsBinaryOutputStream::WriteFrom(nsIInputStream* aInStr, uint32_t aCount,
                                 uint32_t* aResult) {
-  NS_NOTREACHED("WriteFrom");
+  MOZ_ASSERT_UNREACHABLE("WriteFrom");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
 nsBinaryOutputStream::WriteSegments(nsReadSegmentFun aReader, void* aClosure,
                                     uint32_t aCount, uint32_t* aResult) {
-  NS_NOTREACHED("WriteSegments");
+  MOZ_ASSERT_UNREACHABLE("WriteSegments");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -639,7 +642,7 @@ static nsresult WriteSegmentToString(nsIInputStream* aStream, void* aClosure,
                                      const char* aFromSegment,
                                      uint32_t aToOffset, uint32_t aCount,
                                      uint32_t* aWriteCount) {
-  NS_PRECONDITION(aCount > 0, "Why are we being told to write 0 bytes?");
+  MOZ_ASSERT(aCount > 0, "Why are we being told to write 0 bytes?");
   static_assert(sizeof(char16_t) == 2, "We can't handle other sizes!");
 
   WriteStringClosure* closure = static_cast<WriteStringClosure*>(aClosure);
@@ -715,11 +718,8 @@ nsBinaryInputStream::ReadString(nsAString& aString) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
 
-  nsAString::iterator start;
-  aString.BeginWriting(start);
-
   WriteStringClosure closure;
-  closure.mWriteCursor = start.get();
+  closure.mWriteCursor = aString.BeginWriting();
   closure.mHasCarryoverByte = false;
 
   rv = ReadSegments(WriteSegmentToString, &closure, length * sizeof(char16_t),
@@ -774,12 +774,12 @@ nsBinaryInputStream::ReadArrayBuffer(uint32_t aLength,
   if (!aBuffer.isObject()) {
     return NS_ERROR_FAILURE;
   }
-  JS::RootedObject buffer(aCx, &aBuffer.toObject());
-  if (!JS_IsArrayBufferObject(buffer)) {
+  JS::Rooted<JSObject*> buffer(aCx, &aBuffer.toObject());
+  if (!JS::IsArrayBufferObject(buffer)) {
     return NS_ERROR_FAILURE;
   }
 
-  uint32_t bufferLength = JS_GetArrayBufferByteLength(buffer);
+  uint32_t bufferLength = JS::GetArrayBufferByteLength(buffer);
   if (bufferLength < aLength) {
     return NS_ERROR_FAILURE;
   }
@@ -807,13 +807,13 @@ nsBinaryInputStream::ReadArrayBuffer(uint32_t aLength,
 
     JS::AutoCheckCannotGC nogc;
     bool isShared;
-    if (bufferLength != JS_GetArrayBufferByteLength(buffer)) {
+    if (bufferLength != JS::GetArrayBufferByteLength(buffer)) {
       return NS_ERROR_FAILURE;
     }
 
-    char* data =
-        reinterpret_cast<char*>(JS_GetArrayBufferData(buffer, &isShared, nogc));
-    MOZ_ASSERT(!isShared);  // Implied by JS_GetArrayBufferData()
+    char* data = reinterpret_cast<char*>(
+        JS::GetArrayBufferData(buffer, &isShared, nogc));
+    MOZ_ASSERT(!isShared);  // Implied by JS::GetArrayBufferData()
     if (!data) {
       return NS_ERROR_FAILURE;
     }

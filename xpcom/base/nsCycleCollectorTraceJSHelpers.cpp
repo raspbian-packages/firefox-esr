@@ -24,7 +24,7 @@ void nsCycleCollectionParticipant::NoteJSChild(JS::GCCellPtr aGCThing,
   nsCycleCollectionTraversalCallback* cb =
       static_cast<nsCycleCollectionTraversalCallback*>(aClosure);
   NS_CYCLE_COLLECTION_NOTE_EDGE_NAME(*cb, aName);
-  if (mozilla::AddToCCKind(aGCThing.kind())) {
+  if (JS::IsCCTraceKind(aGCThing.kind())) {
     cb->NoteJSChild(aGCThing);
   }
 }

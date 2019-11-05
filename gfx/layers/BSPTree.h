@@ -27,12 +27,12 @@ struct LayerPolygon {
   explicit LayerPolygon(Layer* aLayer) : layer(aLayer) {}
 
   LayerPolygon(Layer* aLayer, gfx::Polygon&& aGeometry)
-      : layer(aLayer), geometry(Some(Move(aGeometry))) {}
+      : layer(aLayer), geometry(Some(std::move(aGeometry))) {}
 
   LayerPolygon(Layer* aLayer, nsTArray<gfx::Point4D>&& aPoints,
                const gfx::Point4D& aNormal)
       : layer(aLayer) {
-    geometry.emplace(Move(aPoints), aNormal);
+    geometry.emplace(std::move(aPoints), aNormal);
   }
 
   Layer* layer;
@@ -88,7 +88,7 @@ struct BSPTreeNode {
  * https://en.wikipedia.org/wiki/Binary_space_partitioning
  * ftp://ftp.sgi.com/other/bspfaq/faq/bspfaq.html
  */
-class BSPTree {
+class BSPTree final {
  public:
   /**
    * The constructor modifies layers in the given list.

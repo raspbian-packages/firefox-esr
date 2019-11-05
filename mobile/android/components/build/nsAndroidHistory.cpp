@@ -201,8 +201,8 @@ void nsAndroidHistory::SaveVisitURI(nsIURI* aURI) {
 }
 
 NS_IMETHODIMP
-nsAndroidHistory::VisitURI(nsIURI* aURI, nsIURI* aLastVisitedURI,
-                           uint32_t aFlags) {
+nsAndroidHistory::VisitURI(nsIWidget* aWidget, nsIURI* aURI,
+                           nsIURI* aLastVisitedURI, uint32_t aFlags) {
   if (!aURI) {
     return NS_OK;
   }
@@ -364,8 +364,8 @@ nsAndroidHistory::CanAddURI(nsIURI* aURI, bool* canAdd) {
       scheme.EqualsLiteral("news") || scheme.EqualsLiteral("mailbox") ||
       scheme.EqualsLiteral("moz-anno") || scheme.EqualsLiteral("view-source") ||
       scheme.EqualsLiteral("chrome") || scheme.EqualsLiteral("resource") ||
-      scheme.EqualsLiteral("data") || scheme.EqualsLiteral("wyciwyg") ||
-      scheme.EqualsLiteral("javascript") || scheme.EqualsLiteral("blob")) {
+      scheme.EqualsLiteral("data") || scheme.EqualsLiteral("javascript") ||
+      scheme.EqualsLiteral("blob")) {
     *canAdd = false;
     return NS_OK;
   }

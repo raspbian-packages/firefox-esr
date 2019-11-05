@@ -6,15 +6,14 @@
 
 #include "inLayoutUtils.h"
 
-#include "nsIDocument.h"
-#include "nsIDOMDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIContent.h"
 #include "nsIContentViewer.h"
 #include "nsPIDOMWindow.h"
 #include "nsIDocShell.h"
-#include "nsIPresShell.h"
 #include "nsPresContext.h"
 #include "mozilla/EventStateManager.h"
+#include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/Element.h"
 
 using namespace mozilla;
@@ -22,29 +21,26 @@ using namespace mozilla;
 ///////////////////////////////////////////////////////////////////////////////
 
 EventStateManager* inLayoutUtils::GetEventStateManagerFor(Element& aElement) {
-  nsIDocument* doc = aElement.OwnerDoc();
+  Document* doc = aElement.OwnerDoc();
   nsPresContext* presContext = doc->GetPresContext();
   if (!presContext) return nullptr;
 
   return presContext->EventStateManager();
 }
 
-nsIDOMDocument* inLayoutUtils::GetSubDocumentFor(nsIDOMNode* aNode) {
+Document* inLayoutUtils::GetSubDocumentFor(nsINode* aNode) {
   nsCOMPtr<nsIContent> content = do_QueryInterface(aNode);
   if (content) {
-    nsCOMPtr<nsIDocument> doc = content->GetComposedDoc();
+    nsCOMPtr<Document> doc = content->GetComposedDoc();
     if (doc) {
-      nsCOMPtr<nsIDOMDocument> domdoc(
-          do_QueryInterface(doc->GetSubDocumentFor(content)));
-
-      return domdoc;
+      return doc->GetSubDocumentFor(content);
     }
   }
 
   return nullptr;
 }
 
-nsINode* inLayoutUtils::GetContainerFor(const nsIDocument& aDoc) {
+nsINode* inLayoutUtils::GetContainerFor(const Document& aDoc) {
   nsPIDOMWindowOuter* pwin = aDoc.GetWindow();
   if (!pwin) {
     return nullptr;

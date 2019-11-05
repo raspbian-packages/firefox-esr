@@ -67,3 +67,19 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = SOCKS v5 वापरताना DNS ची प्रॉक्सी करा
     .accesskey = d
+connection-dns-over-https =
+    .label = HTTPS वरील DNS सक्षम करा
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = पूर्वनिर्धारित वापरा ({ $url })
+    .accesskey = U
+    .tooltiptext = HTTPS वरील DNS चे निराकरण करण्यासाठी ह्या URL चा वापरा करा
+connection-dns-over-https-url-resolver = प्रदाता वापरा
+    .accesskey = P
+connection-dns-over-https-url-custom =
+    .label = पसंतीचे
+    .accesskey = C
+    .tooltiptext = HTTPS वरील DNS चे निराकरण करण्यासाठी URL प्रविष्ट करा
+connection-dns-over-https-custom-label = स्वपसंत

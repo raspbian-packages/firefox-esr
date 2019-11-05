@@ -45,10 +45,10 @@ extern const char16_t* kUpgradeNeededEventType;
 extern const char16_t* kVersionChangeEventType;
 extern const char16_t* kCloseEventType;
 
-already_AddRefed<nsIDOMEvent> CreateGenericEvent(EventTarget* aOwner,
-                                                 const nsDependentString& aType,
-                                                 Bubbles aBubbles,
-                                                 Cancelable aCancelable);
+already_AddRefed<Event> CreateGenericEvent(EventTarget* aOwner,
+                                           const nsDependentString& aType,
+                                           Bubbles aBubbles,
+                                           Cancelable aCancelable);
 
 }  // namespace indexedDB
 
@@ -83,7 +83,6 @@ class IDBVersionChangeEvent final : public Event {
   NS_DECLARE_STATIC_IID_ACCESSOR(IDBVERSIONCHANGEEVENT_IID)
 
   NS_DECL_ISUPPORTS_INHERITED
-  NS_FORWARD_TO_EVENT
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;

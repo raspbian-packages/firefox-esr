@@ -9,7 +9,7 @@
 
 #include "base/message_pump_default.h"
 #if defined(XP_WIN)
-#include "base/message_pump_win.h"
+#  include "base/message_pump_win.h"
 #endif
 
 #include "base/time.h"
@@ -151,7 +151,7 @@ class MessagePumpForNonMainUIThreads final : public base::MessagePumpForUI,
  */
 class MessagePumpForAndroidUI : public base::MessagePump {
  public:
-  MessagePumpForAndroidUI(nsIEventTarget* aEventTarget)
+  explicit MessagePumpForAndroidUI(nsIEventTarget* aEventTarget)
       : mEventTarget(aEventTarget) {}
 
   virtual void Run(Delegate* delegate);

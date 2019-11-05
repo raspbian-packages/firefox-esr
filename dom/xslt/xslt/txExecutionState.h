@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -26,8 +26,10 @@ class txLoadedDocumentEntry : public nsStringHashKey {
  public:
   explicit txLoadedDocumentEntry(KeyTypePointer aStr)
       : nsStringHashKey(aStr), mLoadResult(NS_OK) {}
-  txLoadedDocumentEntry(const txLoadedDocumentEntry& aToCopy)
-      : nsStringHashKey(aToCopy) {
+  txLoadedDocumentEntry(txLoadedDocumentEntry&& aOther)
+      : nsStringHashKey(std::move(aOther)),
+        mDocument(std::move(aOther.mDocument)),
+        mLoadResult(std::move(aOther.mLoadResult)) {
     NS_ERROR("We're horked.");
   }
   ~txLoadedDocumentEntry() {

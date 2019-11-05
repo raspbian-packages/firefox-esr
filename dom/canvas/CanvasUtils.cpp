@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,8 +12,9 @@
 #include "nsICanvasRenderingContextInternal.h"
 #include "nsIHTMLCollection.h"
 #include "mozilla/dom/HTMLCanvasElement.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/EventStateManager.h"
+#include "mozilla/StaticPrefs.h"
 #include "nsIPrincipal.h"
 
 #include "nsGfxCIID.h"
@@ -24,6 +25,7 @@
 #include "mozilla/gfx/Matrix.h"
 #include "WebGL2Context.h"
 
+#include "nsIScriptError.h"
 #include "nsIScriptObjectPrincipal.h"
 #include "nsIPermissionManager.h"
 #include "nsIObserverService.h"
@@ -38,16 +40,17 @@
 #define TOPIC_CANVAS_PERMISSIONS_PROMPT "canvas-permissions-prompt"
 #define TOPIC_CANVAS_PERMISSIONS_PROMPT_HIDE_DOORHANGER \
   "canvas-permissions-prompt-hide-doorhanger"
-#define PERMISSION_CANVAS_EXTRACT_DATA "canvas"
+#define PERMISSION_CANVAS_EXTRACT_DATA NS_LITERAL_CSTRING("canvas")
 
 using namespace mozilla::gfx;
 
 namespace mozilla {
 namespace CanvasUtils {
 
-bool IsImageExtractionAllowed(nsIDocument* aDocument, JSContext* aCx) {
+bool IsImageExtractionAllowed(Document* aDocument, JSContext* aCx,
+                              nsIPrincipal& aPrincipal) {
   // Do the rest of the checks only if privacy.resistFingerprinting is on.
-  if (!nsContentUtils::ShouldResistFingerprinting()) {
+  if (!nsContentUtils::ShouldResistFingerprinting(aDocument)) {
     return true;
   }
 
@@ -56,15 +59,14 @@ bool IsImageExtractionAllowed(nsIDocument* aDocument, JSContext* aCx) {
     return false;
   }
 
-  // Documents with system principal can always extract canvas data.
-  nsPIDOMWindowOuter* win = aDocument->GetWindow();
-  nsCOMPtr<nsIScriptObjectPrincipal> sop(do_QueryInterface(win));
-  if (sop && nsContentUtils::IsSystemPrincipal(sop->GetPrincipal())) {
+  // The system principal can always extract canvas data.
+  if (nsContentUtils::IsSystemPrincipal(&aPrincipal)) {
     return true;
   }
 
-  // Always give permission to chrome scripts (e.g. Page Inspector).
-  if (nsContentUtils::ThreadsafeIsCallerChrome()) {
+  // Allow extension principals.
+  auto principal = BasePrincipal::Cast(&aPrincipal);
+  if (principal->AddonPolicy() || principal->ContentScriptAddonPolicy()) {
     return true;
   }
 
@@ -79,20 +81,14 @@ bool IsImageExtractionAllowed(nsIDocument* aDocument, JSContext* aCx) {
     return true;
   }
 
-  // Get calling script file and line for logging.
+  // Don't show canvas prompt for PDF.js
   JS::AutoFilename scriptFile;
-  unsigned scriptLine = 0;
-  bool isScriptKnown = false;
-  if (JS::DescribeScriptedCaller(aCx, &scriptFile, &scriptLine)) {
-    isScriptKnown = true;
-    // Don't show canvas prompt for PDF.js
-    if (scriptFile.get() &&
-        strcmp(scriptFile.get(), "resource://pdf.js/build/pdf.js") == 0) {
-      return true;
-    }
+  if (JS::DescribeScriptedCaller(aCx, &scriptFile) && scriptFile.get() &&
+      strcmp(scriptFile.get(), "resource://pdf.js/build/pdf.js") == 0) {
+    return true;
   }
 
-  nsIDocument* topLevelDocument = aDocument->GetTopLevelContentDocument();
+  Document* topLevelDocument = aDocument->GetTopLevelContentDocument();
   nsIURI* topLevelDocURI =
       topLevelDocument ? topLevelDocument->GetDocumentURI() : nullptr;
   nsCString topLevelDocURISpec;
@@ -111,14 +107,12 @@ bool IsImageExtractionAllowed(nsIDocument* aDocument, JSContext* aCx) {
   rv = thirdPartyUtil->IsThirdPartyURI(topLevelDocURI, docURI, &isThirdParty);
   NS_ENSURE_SUCCESS(rv, false);
   if (isThirdParty) {
-    nsAutoCString message;
-    message.AppendPrintf(
-        "Blocked third party %s in page %s from extracting canvas data.",
-        docURISpec.get(), topLevelDocURISpec.get());
-    if (isScriptKnown) {
-      message.AppendPrintf(" %s:%u.", scriptFile.get(), scriptLine);
-    }
-    nsContentUtils::LogMessageToConsole(message.get());
+    nsAutoString message;
+    message.AppendPrintf("Blocked third party %s from extracting canvas data.",
+                         docURISpec.get());
+    nsContentUtils::ReportToConsoleNonLocalized(
+        message, nsIScriptError::warningFlag, NS_LITERAL_CSTRING("Security"),
+        aDocument);
     return false;
   }
 
@@ -146,37 +140,38 @@ bool IsImageExtractionAllowed(nsIDocument* aDocument, JSContext* aCx) {
   // (nsIPermissionManager::UNKNOWN_ACTION).
 
   // Check if the request is in response to user input
-  bool isAutoBlockCanvas = DOMPrefs::EnableAutoDeclineCanvasPrompts() &&
-                           !EventStateManager::IsHandlingUserInput();
+  bool isAutoBlockCanvas =
+      StaticPrefs::
+          privacy_resistFingerprinting_autoDeclineNoUserInputCanvasPrompts() &&
+      !EventStateManager::IsHandlingUserInput();
+
   if (isAutoBlockCanvas) {
-    nsAutoCString message;
+    nsAutoString message;
     message.AppendPrintf(
-        "Blocked %s in page %s from extracting canvas data "
-        "because no user input was detected.",
-        docURISpec.get(), topLevelDocURISpec.get());
-    if (isScriptKnown) {
-      message.AppendPrintf(" %s:%u.", scriptFile.get(), scriptLine);
-    }
-    nsContentUtils::LogMessageToConsole(message.get());
+        "Blocked %s from extracting canvas data because no user input was "
+        "detected.",
+        docURISpec.get());
+    nsContentUtils::ReportToConsoleNonLocalized(
+        message, nsIScriptError::warningFlag, NS_LITERAL_CSTRING("Security"),
+        aDocument);
   } else {
     // It was in response to user input, so log and display the prompt.
-    nsAutoCString message;
+    nsAutoString message;
     message.AppendPrintf(
-        "Blocked %s in page %s from extracting canvas data, "
-        "but prompting the user.",
-        docURISpec.get(), topLevelDocURISpec.get());
-    if (isScriptKnown) {
-      message.AppendPrintf(" %s:%u.", scriptFile.get(), scriptLine);
-    }
-    nsContentUtils::LogMessageToConsole(message.get());
+        "Blocked %s from extracting canvas data, but prompting the user.",
+        docURISpec.get());
+    nsContentUtils::ReportToConsoleNonLocalized(
+        message, nsIScriptError::warningFlag, NS_LITERAL_CSTRING("Security"),
+        aDocument);
   }
 
   // Prompt the user (asynchronous).
+  nsPIDOMWindowOuter* win = aDocument->GetWindow();
   if (XRE_IsContentProcess()) {
-    TabChild* tabChild = TabChild::GetFrom(win);
-    if (tabChild) {
-      tabChild->SendShowCanvasPermissionPrompt(topLevelDocURISpec,
-                                               isAutoBlockCanvas);
+    BrowserChild* browserChild = BrowserChild::GetFrom(win);
+    if (browserChild) {
+      browserChild->SendShowCanvasPermissionPrompt(topLevelDocURISpec,
+                                                   isAutoBlockCanvas);
     }
   } else {
     nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
@@ -249,31 +244,31 @@ void DoDrawImageSecurityCheck(dom::HTMLCanvasElement* aCanvasElement,
   // No need to do a security check if the image used CORS for the load
   if (CORSUsed) return;
 
-  NS_PRECONDITION(aPrincipal, "Must have a principal here");
+  MOZ_ASSERT(aPrincipal, "Must have a principal here");
 
   if (aCanvasElement->NodePrincipal()->Subsumes(aPrincipal)) {
     // This canvas has access to that image anyway
     return;
   }
 
-    if (BasePrincipal::Cast(aPrincipal)->AddonPolicy()) {
-        // This is a resource from an extension content script principal.
+  if (BasePrincipal::Cast(aPrincipal)->AddonPolicy()) {
+    // This is a resource from an extension content script principal.
 
-        if (aCanvasElement->mExpandedReader &&
-            aCanvasElement->mExpandedReader->Subsumes(aPrincipal)) {
-            // This canvas already allows reading from this principal.
-            return;
-        }
-
-        if (!aCanvasElement->mExpandedReader) {
-            // Allow future reads from this same princial only.
-            aCanvasElement->SetWriteOnly(aPrincipal);
-            return;
-        }
-
-        // If we got here, this must be the *second* extension tainting
-        // the canvas.  Fall through to mark it WriteOnly for everyone.
+    if (aCanvasElement->mExpandedReader &&
+        aCanvasElement->mExpandedReader->Subsumes(aPrincipal)) {
+      // This canvas already allows reading from this principal.
+      return;
     }
+
+    if (!aCanvasElement->mExpandedReader) {
+      // Allow future reads from this same princial only.
+      aCanvasElement->SetWriteOnly(aPrincipal);
+      return;
+    }
+
+    // If we got here, this must be the *second* extension tainting
+    // the canvas.  Fall through to mark it WriteOnly for everyone.
+  }
 
   aCanvasElement->SetWriteOnly();
 }

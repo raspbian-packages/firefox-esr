@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "AnonymousContent.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/AnonymousContentBinding.h"
 #include "nsComputedDOMStyle.h"
 #include "nsCycleCollectionParticipant.h"
-#include "nsIDocument.h"
 #include "nsIFrame.h"
 #include "nsStyledElement.h"
 #include "HTMLCanvasElement.h"
@@ -22,16 +23,12 @@ NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(AnonymousContent, AddRef)
 NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(AnonymousContent, Release)
 NS_IMPL_CYCLE_COLLECTION(AnonymousContent, mContentNode)
 
-AnonymousContent::AnonymousContent(Element* aContentNode)
-    : mContentNode(aContentNode) {}
-
-AnonymousContent::~AnonymousContent() {}
-
-Element* AnonymousContent::GetContentNode() { return mContentNode; }
-
-void AnonymousContent::SetContentNode(Element* aContentNode) {
-  mContentNode = aContentNode;
+AnonymousContent::AnonymousContent(already_AddRefed<Element> aContentNode)
+    : mContentNode(aContentNode) {
+  MOZ_ASSERT(mContentNode);
 }
+
+AnonymousContent::~AnonymousContent() = default;
 
 void AnonymousContent::SetTextContentForElement(const nsAString& aElementId,
                                                 const nsAString& aText,
@@ -177,7 +174,7 @@ Element* AnonymousContent::GetElementById(const nsAString& aElementId) {
 bool AnonymousContent::WrapObject(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto,
                                   JS::MutableHandle<JSObject*> aReflector) {
-  return AnonymousContentBinding::Wrap(aCx, this, aGivenProto, aReflector);
+  return AnonymousContent_Binding::Wrap(aCx, this, aGivenProto, aReflector);
 }
 
 void AnonymousContent::GetComputedStylePropertyValue(
@@ -189,15 +186,25 @@ void AnonymousContent::GetComputedStylePropertyValue(
     return;
   }
 
-  nsIPresShell* shell = element->OwnerDoc()->GetShell();
-  if (!shell) {
+  if (!element->OwnerDoc()->GetPresShell()) {
     aRv.Throw(NS_ERROR_NOT_AVAILABLE);
     return;
   }
 
-  RefPtr<nsComputedDOMStyle> cs = new nsComputedDOMStyle(
-      element, NS_LITERAL_STRING(""), shell, nsComputedDOMStyle::eAll);
+  RefPtr<nsComputedDOMStyle> cs =
+      new nsComputedDOMStyle(element, NS_LITERAL_STRING(""),
+                             element->OwnerDoc(), nsComputedDOMStyle::eAll);
   aRv = cs->GetPropertyValue(aPropertyName, aResult);
+}
+
+void AnonymousContent::GetTargetIdForEvent(Event& aEvent, DOMString& aResult) {
+  nsCOMPtr<Element> el = do_QueryInterface(aEvent.GetOriginalTarget());
+  if (el && el->IsInNativeAnonymousSubtree() && mContentNode->Contains(el)) {
+    aResult.SetKnownLiveAtom(el->GetID(), DOMString::eTreatNullAsNull);
+    return;
+  }
+
+  aResult.SetNull();
 }
 
 }  // namespace dom

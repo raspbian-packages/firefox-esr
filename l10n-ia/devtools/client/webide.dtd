@@ -36,12 +36,13 @@
 <!ENTITY runtimeMenu_takeScreenshot_accesskey "I">
 <!ENTITY runtimeMenu_showDetails_label "Informationes sur le ambiente de execution">
 <!ENTITY runtimeMenu_showDetails_accesskey "n">
-<!ENTITY runtimeMenu_showMonitor_label "Monitor">
-<!ENTITY runtimeMenu_showMonitor_accesskey "M">
 <!ENTITY runtimeMenu_showDevicePrefs_label "Preferentias del apparato">
 <!ENTITY runtimeMenu_showDevicePrefs_accesskey "r">
 <!ENTITY runtimeMenu_showSettings_label "Parametros del apparato">
 <!ENTITY runtimeMenu_showSettings_accesskey "P">
+
+<!ENTITY runtimeMenu_showPerformancePanel_label "Prestationes">
+<!ENTITY runtimeMenu_showPerformancePanel_accesskey "p">
 
 <!ENTITY viewMenu_label "Vider">
 <!ENTITY viewMenu_accesskey "V">
@@ -146,10 +147,6 @@
 <!ENTITY devicesetting_newname "Nove nomine deconfiguration">
 <!ENTITY devicesetting_newtext "Valor de configuration">
 <!ENTITY devicesetting_addnew "Adder un nove configuration">
-
-<!-- Monitor -->
-<!ENTITY monitor_title "Monitor">
-<!ENTITY monitor_help "Adjuta">
 
 <!-- WiFi Authentication -->
 <!-- LOCALIZATION NOTE (wifi_auth_header): The header displayed on the dialog

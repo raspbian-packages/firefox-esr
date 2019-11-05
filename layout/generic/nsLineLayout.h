@@ -92,9 +92,9 @@ class nsLineLayout {
   void ReflowFrame(nsIFrame* aFrame, nsReflowStatus& aReflowStatus,
                    ReflowOutput* aMetrics, bool& aPushedFrame);
 
-  void AddBulletFrame(nsIFrame* aFrame, const ReflowOutput& aMetrics);
+  void AddMarkerFrame(nsIFrame* aFrame, const ReflowOutput& aMetrics);
 
-  void RemoveBulletFrame(nsIFrame* aFrame) { PushFrame(aFrame); }
+  void RemoveMarkerFrame(nsIFrame* aFrame);
 
   /**
    * Place frames in the block direction (CSS property vertical-align)
@@ -146,12 +146,12 @@ class nsLineLayout {
   // Inform the line-layout about the presence of a floating frame
   // XXX get rid of this: use get-frame-type?
   bool AddFloat(nsIFrame* aFloat, nscoord aAvailableISize) {
-    // When reflowing ruby text frames, no block reflow state is
+    // When reflowing ruby text frames, no block reflow input is
     // provided to the line layout. However, floats should never be
     // associated with ruby text containers, hence this method should
     // not be called in that case.
     MOZ_ASSERT(mBlockRI,
-               "Should not call this method if there is no block reflow state "
+               "Should not call this method if there is no block reflow input "
                "available");
     return mBlockRI->AddFloat(this, aFloat, aAvailableISize);
   }
@@ -211,21 +211,18 @@ class nsLineLayout {
    * should break here
    */
   bool NotifyOptionalBreakPosition(nsIFrame* aFrame, int32_t aOffset,
-                                   bool aFits, gfxBreakPriority aPriority) {
-    NS_ASSERTION(!aFits || !mNeedBackup,
-                 "Shouldn't be updating the break position with a break that "
-                 "fits after we've already flagged an overrun");
-    // Remember the last break position that fits; if there was no break that
-    // fit, just remember the first break
-    if ((aFits && aPriority >= mLastOptionalBreakPriority) ||
-        !mLastOptionalBreakFrame) {
-      mLastOptionalBreakFrame = aFrame;
-      mLastOptionalBreakFrameOffset = aOffset;
-      mLastOptionalBreakPriority = aPriority;
-    }
-    return aFrame && mForceBreakFrame == aFrame &&
-           mForceBreakFrameOffset == aOffset;
-  }
+                                   bool aFits, gfxBreakPriority aPriority);
+
+  // Tries to place a float, and records whether the float actually was placed.
+  bool TryToPlaceFloat(nsIFrame* aFloat);
+
+  // Records a floating frame in a nowrap context for it to be placed on the
+  // next break opportunity.
+  void RecordNoWrapFloat(nsIFrame* aFloat);
+
+  // Tries to place the floats from the nowrap context.
+  void FlushNoWrapFloats();
+
   /**
    * Like NotifyOptionalBreakPosition, but here it's OK for mNeedBackup
    * to be set, because the caller is merely pruning some saved break
@@ -426,7 +423,7 @@ class nsLineLayout {
     bool mIsNonWhitespaceTextFrame : 1;
     bool mIsLetterFrame : 1;
     bool mRecomputeOverflow : 1;
-    bool mIsBullet : 1;
+    bool mIsMarker : 1;
     bool mSkipWhenTrimmingWhitespace : 1;
     bool mIsEmpty : 1;
     bool mIsPlaceholder : 1;
@@ -503,7 +500,7 @@ class nsLineLayout {
     nscoord* mBaseline;
 
     void AppendFrame(PerFrameData* pfd) {
-      if (nullptr == mLastFrame) {
+      if (!mLastFrame) {
         mFirstFrame = pfd;
       } else {
         mLastFrame->mNext = pfd;
@@ -572,7 +569,7 @@ class nsLineLayout {
   bool mInFirstLine : 1;
   bool mGotLineBox : 1;
   bool mInFirstLetter : 1;
-  bool mHasBullet : 1;
+  bool mHasMarker : 1;
   bool mDirtyNextLine : 1;
   bool mLineAtStart : 1;
   bool mHasRuby : 1;

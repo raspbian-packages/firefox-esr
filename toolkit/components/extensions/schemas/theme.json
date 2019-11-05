@@ -42,6 +42,37 @@
         ]
       },
       {
+        "id": "ThemeExperiment",
+        "type": "object",
+        "properties": {
+          "stylesheet": {
+            "optional": true,
+            "$ref": "ExtensionURL"
+          },
+          "images": {
+            "type": "object",
+            "optional": true,
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "colors": {
+            "type": "object",
+            "optional": true,
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "optional": true,
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
         "id": "ThemeType",
         "type": "object",
         "properties": {
@@ -52,18 +83,20 @@
               "additional_backgrounds": {
                 "type": "array",
                 "items": { "$ref": "ImageDataOrExtensionURL" },
+                "maxItems": 15,
                 "optional": true
               },
               "headerURL": {
                 "$ref": "ImageDataOrExtensionURL",
-                "optional": true
+                "optional": true,
+                "deprecated": "Please use <em>theme.images.theme_frame</em>, this alias will be removed in Firefox 69."
               },
               "theme_frame": {
                 "$ref": "ImageDataOrExtensionURL",
                 "optional": true
               }
             },
-            "additionalProperties": { "$ref": "UnrecognizedProperty" }
+            "additionalProperties": { "$ref": "ImageDataOrExtensionURL" }
           },
           "colors": {
             "type": "object",
@@ -75,7 +108,8 @@
               },
               "accentcolor": {
                 "$ref": "ThemeColor",
-                "optional": true
+                "optional": true,
+                "deprecated": "Please use <em>theme.colors.frame</em>, this alias will be removed in Firefox 69."
               },
               "frame": {
                 "$ref": "ThemeColor",
@@ -87,9 +121,14 @@
               },
               "textcolor": {
                 "$ref": "ThemeColor",
-                "optional": true
+                "optional": true,
+                "deprecated": "Please use <em>theme.colors.tab_background_text</em>, this alias will be removed in Firefox 69."
               },
               "tab_background_text": {
+                "$ref": "ThemeColor",
+                "optional": true
+              },
+              "tab_background_separator": {
                 "$ref": "ThemeColor",
                 "optional": true
               },
@@ -111,7 +150,8 @@
               },
               "toolbar_text": {
                 "$ref": "ThemeColor",
-                "optional": true
+                "optional": true,
+                "deprecated": "Please use <em>theme.colors.bookmark_text</em>, this alias will be removed in Firefox 69."
               },
               "bookmark_text": {
                 "$ref": "ThemeColor",
@@ -172,336 +212,65 @@
               "popup_border": {
                 "$ref": "ThemeColor",
                 "optional": true
-              }
-            },
-            "additionalProperties": { "$ref": "UnrecognizedProperty" }
-          },
-          "icons": {
-            "type": "object",
-            "optional": true,
-            "properties": {
-              "back": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "forward": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "reload": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "stop": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "bookmark_star": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "bookmark_menu": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "downloads": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "home": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "app_menu": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "cut": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "copy": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "paste": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "new_window": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "new_private_window": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "save_page": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "print": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "history": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "full_screen": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "find": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "options": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "addons": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "developer": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "synced_tabs": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "open_file": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "sidebars": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "subscribe": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "text_encoding": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "email_link": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "forget": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "pocket": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "getmsg": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "newmsg": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "address": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "reply": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "replyall": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "replylist": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "forwarding": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "delete": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "junk": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "file": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "nextUnread": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "prevUnread": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "mark": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "tag": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "compact": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "archive": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "chat": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "nextMsg": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "prevMsg": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "QFB": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "conversation": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "newcard": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "newlist": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "editcard": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "newim": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "send": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "spelling": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "attach": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "security": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "save": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "quote": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "buddy": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "join_chat": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "chat_accounts": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "calendar": {
-                "$ref": "ExtensionURL",
-                "optional": true
-              },
-              "tasks": {
-                "$ref": "ExtensionURL",
-                "optional": true
               },
-              "synchronize": {
-                "$ref": "ExtensionURL",
+              "toolbar_field_focus": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "newevent": {
-                "$ref": "ExtensionURL",
+              "toolbar_field_text_focus": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "newtask": {
-                "$ref": "ExtensionURL",
+              "toolbar_field_border_focus": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "editevent": {
-                "$ref": "ExtensionURL",
+              "popup_highlight": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "today": {
-                "$ref": "ExtensionURL",
+              "popup_highlight_text": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "category": {
-                "$ref": "ExtensionURL",
+              "ntp_background": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "complete": {
-                "$ref": "ExtensionURL",
+              "ntp_text": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "priority": {
-                "$ref": "ExtensionURL",
+              "sidebar": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "saveandclose": {
-                "$ref": "ExtensionURL",
+              "sidebar_border": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "attendees": {
-                "$ref": "ExtensionURL",
+              "sidebar_text": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "privacy": {
-                "$ref": "ExtensionURL",
+              "sidebar_highlight": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "status": {
-                "$ref": "ExtensionURL",
+              "sidebar_highlight_text": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "freebusy": {
-                "$ref": "ExtensionURL",
+			        "toolbar_field_highlight": {
+                "$ref": "ThemeColor",
                 "optional": true
               },
-              "timezones": {
-                "$ref": "ExtensionURL",
+              "toolbar_field_highlight_text": {
+                "$ref": "ThemeColor",
                 "optional": true
               }
             },
-            "additionalProperties": { "$ref": "UnrecognizedProperty" }
+            "additionalProperties": { "$ref": "ThemeColor" }
           },
           "properties": {
             "type": "object",
@@ -518,6 +287,7 @@
                     "right bottom", "right center", "right top"
                   ]
                 },
+                "maxItems": 15,
                 "optional": true
               },
               "additional_backgrounds_tiling": {
@@ -526,10 +296,11 @@
                   "type": "string",
                   "enum": ["no-repeat", "repeat", "repeat-x", "repeat-y"]
                 },
+                "maxItems": 15,
                 "optional": true
               }
             },
-            "additionalProperties": { "$ref": "UnrecognizedProperty" }
+            "additionalProperties": { "type": "string" }
           }
         },
         "additionalProperties": { "$ref": "UnrecognizedProperty" }
@@ -543,6 +314,18 @@
           "theme": {
             "$ref": "ThemeType"
           },
+          "dark_theme": {
+            "$ref": "ThemeType",
+            "optional": true
+          },
+          "default_locale": {
+            "type": "string",
+            "optional": true
+          },
+          "theme_experiment": {
+            "$ref": "ThemeExperiment",
+            "optional": true
+          },
           "icons": {
             "type": "object",
             "optional": true,
@@ -551,13 +334,21 @@
             }
           }
         }
+      },
+      {
+        "$extend": "WebExtensionManifest",
+        "properties": {
+          "theme_experiment": {
+            "$ref": "ThemeExperiment",
+            "optional": true
+          }
+        }
       }
     ]
   },
   {
     "namespace": "theme",
     "description": "The theme API allows customizing of visual elements of the browser.",
-    "permissions": ["theme"],
     "types": [
       {
         "id": "ThemeUpdateInfo",
@@ -610,6 +401,7 @@
         "type": "function",
         "async": true,
         "description": "Make complete updates to the theme. Resolves when the update has completed.",
+        "permissions": ["theme"],
         "parameters": [
           {
             "type": "integer",
@@ -629,6 +421,7 @@
         "type": "function",
         "async": true,
         "description": "Removes the updates made to the theme.",
+        "permissions": ["theme"],
         "parameters": [
           {
             "type": "integer",

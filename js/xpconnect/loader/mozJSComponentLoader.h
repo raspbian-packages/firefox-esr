@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,13 +8,13 @@
 #define mozJSComponentLoader_h
 
 #include "mozilla/dom/ScriptSettings.h"
+#include "mozilla/FileLocation.h"
 #include "mozilla/MemoryReporting.h"
-#include "mozilla/ModuleLoader.h"
+#include "mozilla/Module.h"
+#include "mozilla/StaticPtr.h"
 #include "nsAutoPtr.h"
 #include "nsISupports.h"
-#include "nsIObserver.h"
 #include "nsIURI.h"
-#include "xpcIJSModuleLoader.h"
 #include "nsClassHashtable.h"
 #include "nsDataHashtable.h"
 #include "jsapi.h"
@@ -29,38 +29,33 @@ namespace mozilla {
 class ScriptPreloader;
 }  // namespace mozilla
 
-/* 6bd13476-1dd2-11b2-bbef-f0ccb5fa64b6 (thanks, mozbot) */
-
-#define MOZJSCOMPONENTLOADER_CID                     \
-  {                                                  \
-    0x6bd13476, 0x1dd2, 0x11b2, {                    \
-      0xbb, 0xef, 0xf0, 0xcc, 0xb5, 0xfa, 0x64, 0xb6 \
-    }                                                \
-  }
-#define MOZJSCOMPONENTLOADER_CONTRACTID "@mozilla.org/moz/jsloader;1"
-
 #if defined(NIGHTLY_BUILD) || defined(MOZ_DEV_EDITION) || defined(DEBUG)
-#define STARTUP_RECORDER_ENABLED
+#  define STARTUP_RECORDER_ENABLED
 #endif
 
-class mozJSComponentLoader final : public mozilla::ModuleLoader,
-                                   public xpcIJSModuleLoader,
-                                   public nsIObserver {
+class mozJSComponentLoader final {
  public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_XPCIJSMODULELOADER
-  NS_DECL_NSIOBSERVER
+  NS_INLINE_DECL_REFCOUNTING(mozJSComponentLoader);
 
-  mozJSComponentLoader();
+  void GetLoadedModules(nsTArray<nsCString>& aLoadedModules);
+  void GetLoadedComponents(nsTArray<nsCString>& aLoadedComponents);
+  nsresult GetModuleImportStack(const nsACString& aLocation,
+                                nsACString& aRetval);
+  nsresult GetComponentLoadStack(const nsACString& aLocation,
+                                 nsACString& aRetval);
 
-  // ModuleLoader
-  const mozilla::Module* LoadModule(mozilla::FileLocation& aFile) override;
+  const mozilla::Module* LoadModule(mozilla::FileLocation& aFile);
 
   void FindTargetObject(JSContext* aCx, JS::MutableHandleObject aTargetObject);
 
-  static already_AddRefed<mozJSComponentLoader> GetOrCreate();
+  static void InitStatics();
+  static void Unload();
+  static void Shutdown();
 
-  static mozJSComponentLoader* Get() { return sSelf; }
+  static mozJSComponentLoader* Get() {
+    MOZ_ASSERT(sSelf, "Should have already created the component loader");
+    return sSelf;
+  }
 
   nsresult ImportInto(const nsACString& aResourceURI,
                       JS::HandleValue aTargetObj, JSContext* aCx, uint8_t aArgc,
@@ -86,25 +81,28 @@ class mozJSComponentLoader final : public mozilla::ModuleLoader,
   nsresult AnnotateCrashReport();
 
  protected:
-  virtual ~mozJSComponentLoader();
+  mozJSComponentLoader();
+  ~mozJSComponentLoader();
 
-  friend class mozilla::ScriptPreloader;
+  friend class XPCJSRuntime;
 
   JSObject* CompilationScope(JSContext* aCx) {
-    if (mLoaderGlobal) return mLoaderGlobal;
+    if (mLoaderGlobal) {
+      return mLoaderGlobal;
+    }
     return GetSharedGlobal(aCx);
   }
 
  private:
-  static mozJSComponentLoader* sSelf;
+  static mozilla::StaticRefPtr<mozJSComponentLoader> sSelf;
 
   nsresult ReallyInit();
   void UnloadModules();
 
   void CreateLoaderGlobal(JSContext* aCx, const nsACString& aLocation,
-                          JSAddonId* aAddonID, JS::MutableHandleObject aGlobal);
+                          JS::MutableHandleObject aGlobal);
 
-  bool ReuseGlobal(bool aIsAddon, nsIURI* aComponent);
+  bool ReuseGlobal(nsIURI* aComponent);
 
   JSObject* GetSharedGlobal(JSContext* aCx);
 
@@ -148,19 +146,19 @@ class mozJSComponentLoader final : public mozilla::ModuleLoader,
       getfactoryobj = nullptr;
 
       if (obj) {
-        mozilla::AutoJSContext cx;
-        JSAutoCompartment ac(cx, obj);
-
         if (JS_HasExtensibleLexicalEnvironment(obj)) {
-          JS_SetAllNonReservedSlotsToUndefined(
-              cx, JS_ExtensibleLexicalEnvironment(obj));
+          JS::RootedObject lexicalEnv(mozilla::dom::RootingCx(),
+                                      JS_ExtensibleLexicalEnvironment(obj));
+          JS_SetAllNonReservedSlotsToUndefined(lexicalEnv);
         }
-        JS_SetAllNonReservedSlotsToUndefined(cx, obj);
+        JS_SetAllNonReservedSlotsToUndefined(obj);
         obj = nullptr;
         thisObjectKey = nullptr;
       }
 
-      if (location) free(location);
+      if (location) {
+        free(location);
+      }
 
       obj = nullptr;
       thisObjectKey = nullptr;

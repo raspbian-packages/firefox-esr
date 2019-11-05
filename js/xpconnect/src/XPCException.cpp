@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -49,16 +49,23 @@ const void* nsXPCException::IterateNSResults(nsresult* rv, const char** name,
                                              const char** format,
                                              const void** iterp) {
   const ResultMap* p = (const ResultMap*)*iterp;
-  if (!p)
+  if (!p) {
     p = map;
-  else
+  } else {
     p++;
-  if (!p->name)
+  }
+  if (!p->name) {
     p = nullptr;
-  else {
-    if (rv) *rv = p->rv;
-    if (name) *name = p->name;
-    if (format) *format = p->format;
+  } else {
+    if (rv) {
+      *rv = p->rv;
+    }
+    if (name) {
+      *name = p->name;
+    }
+    if (format) {
+      *format = p->format;
+    }
   }
   *iterp = p;
   return p;

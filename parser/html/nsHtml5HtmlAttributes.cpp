@@ -23,28 +23,28 @@
 
 #define nsHtml5HtmlAttributes_cpp__
 
-#include "nsAtom.h"
-#include "nsHtml5AtomTable.h"
-#include "nsHtml5String.h"
-#include "nsNameSpaceManager.h"
-#include "nsIContent.h"
-#include "nsTraceRefcnt.h"
 #include "jArray.h"
-#include "nsHtml5ArrayCopy.h"
 #include "nsAHtml5TreeBuilderState.h"
+#include "nsAtom.h"
+#include "nsHtml5ArrayCopy.h"
+#include "nsHtml5AtomTable.h"
 #include "nsHtml5ByteReadable.h"
 #include "nsHtml5Macros.h"
+#include "nsHtml5String.h"
+#include "nsIContent.h"
 #include "nsIContentHandle.h"
+#include "nsNameSpaceManager.h"
+#include "nsTraceRefcnt.h"
 
-#include "nsHtml5Tokenizer.h"
-#include "nsHtml5TreeBuilder.h"
-#include "nsHtml5MetaScanner.h"
 #include "nsHtml5AttributeName.h"
 #include "nsHtml5ElementName.h"
-#include "nsHtml5StackNode.h"
-#include "nsHtml5UTF16Buffer.h"
-#include "nsHtml5StateSnapshot.h"
+#include "nsHtml5MetaScanner.h"
 #include "nsHtml5Portability.h"
+#include "nsHtml5StackNode.h"
+#include "nsHtml5StateSnapshot.h"
+#include "nsHtml5Tokenizer.h"
+#include "nsHtml5TreeBuilder.h"
+#include "nsHtml5UTF16Buffer.h"
 
 #include "nsHtml5HtmlAttributes.h"
 
@@ -161,13 +161,12 @@ void nsHtml5HtmlAttributes::adjustForSvg() {
   mMode = nsHtml5AttributeName::SVG;
 }
 
-nsHtml5HtmlAttributes* nsHtml5HtmlAttributes::cloneAttributes(
-    nsHtml5AtomTable* aInterner) {
+nsHtml5HtmlAttributes* nsHtml5HtmlAttributes::cloneAttributes() {
   MOZ_ASSERT(mStorage.IsEmpty() || !mMode);
   nsHtml5HtmlAttributes* clone =
       new nsHtml5HtmlAttributes(nsHtml5AttributeName::HTML);
   for (nsHtml5AttributeEntry& entry : mStorage) {
-    clone->AddEntry(entry.Clone(aInterner));
+    clone->AddEntry(entry.Clone());
   }
   return clone;
 }

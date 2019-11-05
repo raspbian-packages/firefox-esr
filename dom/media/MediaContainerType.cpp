@@ -16,7 +16,7 @@ size_t MediaContainerType::SizeOfExcludingThis(
 Maybe<MediaContainerType> MakeMediaContainerType(const nsAString& aType) {
   Maybe<MediaExtendedMIMEType> mime = MakeMediaExtendedMIMEType(aType);
   if (mime) {
-    return Some(MediaContainerType(Move(*mime)));
+    return Some(MediaContainerType(std::move(*mime)));
   }
   return Nothing();
 }

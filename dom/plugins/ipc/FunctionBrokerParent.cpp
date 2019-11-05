@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,7 +18,8 @@ PtrToIdMap sPtrToIdMap;
 IdToPtrMap sIdToPtrMap;
 #endif  // defined(XP_WIN)
 
-/* static */ FunctionBrokerParent* FunctionBrokerParent::Create(
+/* static */
+FunctionBrokerParent* FunctionBrokerParent::Create(
     Endpoint<PFunctionBrokerParent>&& aParentEnd) {
   FunctionBrokerThread* thread = FunctionBrokerThread::Create();
   if (!thread) {
@@ -29,7 +30,7 @@ IdToPtrMap sIdToPtrMap;
   // message thread.
   FunctionHook::GetHooks();
 
-  return new FunctionBrokerParent(thread, Move(aParentEnd));
+  return new FunctionBrokerParent(thread, std::move(aParentEnd));
 }
 
 FunctionBrokerParent::FunctionBrokerParent(
@@ -41,7 +42,7 @@ FunctionBrokerParent::FunctionBrokerParent(
   mThread->Dispatch(
       NewNonOwningRunnableMethod<Endpoint<PFunctionBrokerParent>&&>(
           "FunctionBrokerParent::Bind", this, &FunctionBrokerParent::Bind,
-          Move(aParentEnd)));
+          std::move(aParentEnd)));
 }
 
 FunctionBrokerParent::~FunctionBrokerParent() {

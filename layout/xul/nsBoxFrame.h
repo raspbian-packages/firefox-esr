@@ -23,14 +23,17 @@ horizontally. It lays them out according to a min max or preferred size.
 class nsBoxLayoutState;
 
 namespace mozilla {
+class PresShell;
 namespace gfx {
 class DrawTarget;
 }  // namespace gfx
 }  // namespace mozilla
 
-nsIFrame* NS_NewBoxFrame(nsIPresShell* aPresShell, nsStyleContext* aContext,
-                         bool aIsRoot, nsBoxLayout* aLayoutManager);
-nsIFrame* NS_NewBoxFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
+nsIFrame* NS_NewBoxFrame(mozilla::PresShell* aPresShell,
+                         mozilla::ComputedStyle* aStyle, bool aIsRoot,
+                         nsBoxLayout* aLayoutManager);
+nsIFrame* NS_NewBoxFrame(mozilla::PresShell* aPresShell,
+                         mozilla::ComputedStyle* aStyle);
 
 class nsBoxFrame : public nsContainerFrame {
  protected:
@@ -42,11 +45,11 @@ class nsBoxFrame : public nsContainerFrame {
   NS_DECL_QUERYFRAME
 #endif
 
-  friend nsIFrame* NS_NewBoxFrame(nsIPresShell* aPresShell,
-                                  nsStyleContext* aContext, bool aIsRoot,
+  friend nsIFrame* NS_NewBoxFrame(mozilla::PresShell* aPresShell,
+                                  ComputedStyle* aStyle, bool aIsRoot,
                                   nsBoxLayout* aLayoutManager);
-  friend nsIFrame* NS_NewBoxFrame(nsIPresShell* aPresShell,
-                                  nsStyleContext* aContext);
+  friend nsIFrame* NS_NewBoxFrame(mozilla::PresShell* aPresShell,
+                                  ComputedStyle* aStyle);
 
   // gets the rect inside our border and debug border. If you wish to paint
   // inside a box call this method to get the rect so you don't draw on the
@@ -64,11 +67,6 @@ class nsBoxFrame : public nsContainerFrame {
   virtual nsSize GetXULMaxSize(nsBoxLayoutState& aBoxLayoutState) override;
   virtual nscoord GetXULFlex() override;
   virtual nscoord GetXULBoxAscent(nsBoxLayoutState& aBoxLayoutState) override;
-#ifdef DEBUG_LAYOUT
-  virtual nsresult SetXULDebug(nsBoxLayoutState& aBoxLayoutState,
-                               bool aDebug) override;
-  virtual nsresult GetXULDebug(bool& aDebug) override;
-#endif
   virtual Valignment GetXULVAlign() const override { return mValign; }
   virtual Halignment GetXULHAlign() const override { return mHalign; }
   NS_IMETHOD DoXULLayout(nsBoxLayoutState& aBoxLayoutState) override;
@@ -103,7 +101,7 @@ class nsBoxFrame : public nsContainerFrame {
 
   virtual nsContainerFrame* GetContentInsertionFrame() override;
 
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
     // record that children that are ignorable whitespace should be excluded
@@ -138,12 +136,6 @@ class nsBoxFrame : public nsContainerFrame {
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                 const nsDisplayListSet& aLists) override;
 
-#ifdef DEBUG_LAYOUT
-  virtual void SetDebugOnChildList(nsBoxLayoutState& aState, nsIFrame* aChild,
-                                   bool aDebug);
-  nsresult DisplayDebugInfoFor(nsIFrame* aBox, nsPoint& aPoint);
-#endif
-
   static nsresult LayoutChildAt(nsBoxLayoutState& aState, nsIFrame* aBox,
                                 const nsRect& aRect);
 
@@ -157,30 +149,18 @@ class nsBoxFrame : public nsContainerFrame {
                              const nsDisplayListSet& aOut);
 
   /**
-   * This defaults to true, but some box frames (nsListBoxBodyFrame for
-   * example) don't support ordinals in their children.
-   */
-  virtual bool SupportsOrdinalsInChildren();
-
-  /**
    * Return our wrapper block, if any.
    */
   void AppendDirectlyOwnedAnonBoxes(nsTArray<OwnedAnonBox>& aResult) override;
 
  private:
-  explicit nsBoxFrame(nsStyleContext* aContext)
-      : nsBoxFrame(aContext, kClassID, false, nullptr) {}
+  explicit nsBoxFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsBoxFrame(aStyle, aPresContext, kClassID, false, nullptr) {}
 
  protected:
-  nsBoxFrame(nsStyleContext* aContext, ClassID aID, bool aIsRoot = false,
-             nsBoxLayout* aLayoutManager = nullptr);
+  nsBoxFrame(ComputedStyle* aStyle, nsPresContext* aPresContext, ClassID aID,
+             bool aIsRoot = false, nsBoxLayout* aLayoutManager = nullptr);
   virtual ~nsBoxFrame();
-
-#ifdef DEBUG_LAYOUT
-  virtual void GetBoxName(nsAutoString& aName) override;
-  void PaintXULDebugBackground(gfxContext& aRenderingContext, nsPoint aPt);
-  void PaintXULDebugOverlay(DrawTarget& aRenderingContext, nsPoint aPt);
-#endif
 
   virtual bool GetInitialEqualSize(bool& aEqualSize);
   virtual void GetInitialOrientation(bool& aIsHorizontal);
@@ -214,30 +194,6 @@ class nsBoxFrame : public nsContainerFrame {
   void CheckBoxOrder();
 
  private:
-#ifdef DEBUG_LAYOUT
-  nsresult SetXULDebug(nsPresContext* aPresContext, bool aDebug);
-  bool GetInitialDebug(bool& aDebug);
-  void GetDebugPref();
-
-  void GetDebugBorder(nsMargin& aInset);
-  void GetDebugPadding(nsMargin& aInset);
-  void GetDebugMargin(nsMargin& aInset);
-
-  nsresult GetFrameSizeWithMargin(nsIFrame* aBox, nsSize& aSize);
-
-  void PixelMarginToTwips(nsMargin& aMarginPixels);
-
-  void GetValue(nsPresContext* aPresContext, const nsSize& a, const nsSize& b,
-                char* value);
-  void GetValue(nsPresContext* aPresContext, int32_t a, int32_t b, char* value);
-  void DrawSpacer(nsPresContext* aPresContext, DrawTarget& aDrawTarget,
-                  bool aHorizontal, int32_t flex, nscoord x, nscoord y,
-                  nscoord size, nscoord spacerSize);
-  void DrawLine(DrawTarget& aDrawTarget, bool aHorizontal, nscoord x1,
-                nscoord y1, nscoord x2, nscoord y2);
-  void FillRect(DrawTarget& aDrawTarget, bool aHorizontal, nscoord x, nscoord y,
-                nscoord width, nscoord height);
-#endif
   virtual void UpdateMouseThrough();
 
   void CacheAttributes();
@@ -245,11 +201,6 @@ class nsBoxFrame : public nsContainerFrame {
   // instance variables.
   Halignment mHalign;
   Valignment mValign;
-
-#ifdef DEBUG_LAYOUT
-  static bool gDebug;
-  static nsIFrame* mDebugChild;
-#endif
 
 };  // class nsBoxFrame
 

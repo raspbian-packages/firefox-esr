@@ -6,61 +6,91 @@
 
 #include "InspectorFontFace.h"
 
-#ifdef MOZ_OLD_STYLE
-#include "nsCSSRules.h"
-#endif
+#include "gfxPlatformFontList.h"
 #include "gfxTextRun.h"
 #include "gfxUserFontSet.h"
 #include "nsFontFaceLoader.h"
 #include "mozilla/gfx/2D.h"
 #include "brotli/decode.h"
 #include "zlib.h"
+#include "mozilla/dom/CSSFontFaceRule.h"
 #include "mozilla/dom/FontFaceSet.h"
+#include "mozilla/ServoBindings.h"
 #include "mozilla/Unused.h"
 
 namespace mozilla {
 namespace dom {
 
+InspectorFontFace::InspectorFontFace(gfxFontEntry* aFontEntry,
+                                     gfxFontGroup* aFontGroup,
+                                     FontMatchType aMatchType)
+    : mFontEntry(aFontEntry), mFontGroup(aFontGroup), mMatchType(aMatchType) {
+  MOZ_COUNT_CTOR(InspectorFontFace);
+}
+
+InspectorFontFace::~InspectorFontFace() { MOZ_COUNT_DTOR(InspectorFontFace); }
+
 bool InspectorFontFace::FromFontGroup() {
-  return mMatchType & gfxTextRange::kFontGroup;
+  return bool(mMatchType.kind & FontMatchType::Kind::kFontGroup);
 }
 
 bool InspectorFontFace::FromLanguagePrefs() {
-  return mMatchType & gfxTextRange::kPrefsFallback;
+  return bool(mMatchType.kind & FontMatchType::Kind::kPrefsFallback);
 }
 
 bool InspectorFontFace::FromSystemFallback() {
-  return mMatchType & gfxTextRange::kSystemFallback;
+  return bool(mMatchType.kind & FontMatchType::Kind::kSystemFallback);
 }
 
 void InspectorFontFace::GetName(nsAString& aName) {
   if (mFontEntry->IsUserFont() && !mFontEntry->IsLocalUserFont()) {
     NS_ASSERTION(mFontEntry->mUserFontData, "missing userFontData");
-    aName = mFontEntry->mUserFontData->mRealName;
+    aName.Append(NS_ConvertUTF8toUTF16(mFontEntry->mUserFontData->mRealName));
   } else {
-    aName = mFontEntry->RealFaceName();
+    aName.Append(NS_ConvertUTF8toUTF16(mFontEntry->RealFaceName()));
   }
 }
 
 void InspectorFontFace::GetCSSFamilyName(nsAString& aCSSFamilyName) {
-  aCSSFamilyName = mFontEntry->FamilyName();
+  aCSSFamilyName.Append(NS_ConvertUTF8toUTF16(mFontEntry->FamilyName()));
 }
 
-nsCSSFontFaceRule* InspectorFontFace::GetRule() {
-  // check whether this font entry is associated with an @font-face rule
-  // in the relevant font group's user font set
-  nsCSSFontFaceRule* rule = nullptr;
-  if (mFontEntry->IsUserFont()) {
-    FontFaceSet::UserFontSet* fontSet =
-        static_cast<FontFaceSet::UserFontSet*>(mFontGroup->GetUserFontSet());
-    if (fontSet) {
-      FontFaceSet* fontFaceSet = fontSet->GetFontFaceSet();
-      if (fontFaceSet) {
-        rule = fontFaceSet->FindRuleForEntry(mFontEntry);
+void InspectorFontFace::GetCSSGeneric(nsAString& aName) {
+  if (mMatchType.generic != StyleGenericFontFamily::None) {
+    aName.AssignASCII(gfxPlatformFontList::GetGenericName(mMatchType.generic));
+  } else {
+    aName.Truncate(0);
+  }
+}
+
+CSSFontFaceRule* InspectorFontFace::GetRule() {
+  if (!mRule) {
+    // check whether this font entry is associated with an @font-face rule
+    // in the relevant font group's user font set
+    RawServoFontFaceRule* rule = nullptr;
+    if (mFontEntry->IsUserFont()) {
+      FontFaceSet::UserFontSet* fontSet =
+          static_cast<FontFaceSet::UserFontSet*>(mFontGroup->GetUserFontSet());
+      if (fontSet) {
+        FontFaceSet* fontFaceSet = fontSet->GetFontFaceSet();
+        if (fontFaceSet) {
+          rule = fontFaceSet->FindRuleForEntry(mFontEntry);
+        }
       }
     }
+    if (rule) {
+      // XXX It would be better if we can share this with CSSOM tree,
+      // but that may require us to create another map, which is not
+      // great either. As far as they would use the same backend, and
+      // we don't really support mutating @font-face rule via CSSOM,
+      // it's probably fine for now.
+      uint32_t line, column;
+      Servo_FontFaceRule_GetSourceLocation(rule, &line, &column);
+      mRule =
+          new CSSFontFaceRule(do_AddRef(rule), nullptr, nullptr, line, column);
+    }
   }
-  return rule;
+  return mRule;
 }
 
 int32_t InspectorFontFace::SrcIndex() {
@@ -85,11 +115,11 @@ void InspectorFontFace::GetURI(nsAString& aURI) {
 }
 
 void InspectorFontFace::GetLocalName(nsAString& aLocalName) {
+  aLocalName.Truncate();
   if (mFontEntry->IsLocalUserFont()) {
     NS_ASSERTION(mFontEntry->mUserFontData, "missing userFontData");
-    aLocalName = mFontEntry->mUserFontData->mLocalName;
-  } else {
-    aLocalName.Truncate();
+    aLocalName.Append(
+        NS_ConvertUTF8toUTF16(mFontEntry->mUserFontData->mLocalName));
   }
 }
 
@@ -197,7 +227,7 @@ void InspectorFontFace::GetVariationAxes(
   for (auto a : axes) {
     InspectorVariationAxis& axis = *aResult.AppendElement();
     AppendTagAsASCII(axis.mTag, a.mTag);
-    axis.mName = a.mName;
+    axis.mName.Append(NS_ConvertUTF8toUTF16(a.mName));
     axis.mMinValue = a.mMinValue;
     axis.mMaxValue = a.mMaxValue;
     axis.mDefaultValue = a.mDefaultValue;
@@ -217,7 +247,7 @@ void InspectorFontFace::GetVariationInstances(
   }
   for (auto i : instances) {
     InspectorVariationInstance& inst = *aResult.AppendElement();
-    inst.mName = i.mName;
+    inst.mName.Append(NS_ConvertUTF8toUTF16(i.mName));
     // inst.mValues is a webidl sequence<>, which is a fallible array,
     // so we are required to use fallible SetCapacity and AppendElement calls,
     // and check the result. In practice we don't expect failure here; the

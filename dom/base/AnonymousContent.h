@@ -8,9 +8,10 @@
 #define mozilla_dom_AnonymousContent_h
 
 #include "mozilla/dom/Element.h"
+#include "mozilla/dom/Event.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsICSSDeclaration.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 
 namespace mozilla {
 namespace dom {
@@ -24,10 +25,10 @@ class AnonymousContent final {
   NS_INLINE_DECL_CYCLE_COLLECTING_NATIVE_REFCOUNTING(AnonymousContent)
   NS_DECL_CYCLE_COLLECTION_NATIVE_CLASS(AnonymousContent)
 
-  explicit AnonymousContent(Element* aContentNode);
-  Element* GetContentNode();
+  explicit AnonymousContent(already_AddRefed<Element> aContentNode);
+  Element& ContentNode() { return *mContentNode; }
+
   Element* GetElementById(const nsAString& aElementId);
-  void SetContentNode(Element* aContentNode);
   bool WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto,
                   JS::MutableHandle<JSObject*> aReflector);
 
@@ -68,9 +69,11 @@ class AnonymousContent final {
                                      const nsAString& aPropertyName,
                                      DOMString& aResult, ErrorResult& aRv);
 
+  void GetTargetIdForEvent(Event& aEvent, DOMString& aResult);
+
  private:
   ~AnonymousContent();
-  nsCOMPtr<Element> mContentNode;
+  RefPtr<Element> mContentNode;
 };
 
 }  // namespace dom

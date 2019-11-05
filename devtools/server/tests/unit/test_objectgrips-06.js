@@ -8,59 +8,46 @@
  * grip.
  */
 
-var gDebuggee;
-var gClient;
-var gThreadClient;
-var gCallback;
+Services.prefs.setBoolPref("security.allow_eval_with_system_principal", true);
+registerCleanupFunction(() => {
+  Services.prefs.clearUserPref("security.allow_eval_with_system_principal");
+});
 
-function run_test() {
-  run_test_with_server(DebuggerServer, function () {
-    run_test_with_server(WorkerDebuggerServer, do_test_finished);
-  });
-  do_test_pending();
-}
+add_task(
+  threadClientTest(async ({ threadClient, debuggee, client }) => {
+    return new Promise(resolve => {
+      threadClient.addOneTimeListener("paused", function(event, packet) {
+        const obj1 = packet.frame.arguments[0];
+        Assert.ok(obj1.sealed);
 
-function run_test_with_server(server, callback) {
-  gCallback = callback;
-  initTestDebuggerServer(server);
-  gDebuggee = addTestGlobal("test-grips", server);
-  gDebuggee.eval(function stopMe(arg1, arg2) {
-    debugger;
-  }.toString());
+        const obj1Client = threadClient.pauseGrip(obj1);
+        Assert.ok(obj1Client.isSealed);
 
-  gClient = new DebuggerClient(server.connectPipe());
-  gClient.connect().then(function () {
-    attachTestTabAndResume(gClient, "test-grips",
-                           function (response, tabClient, threadClient) {
-                             gThreadClient = threadClient;
-                             test_object_grip();
-                           });
-  });
-}
+        const obj2 = packet.frame.arguments[1];
+        Assert.ok(!obj2.sealed);
 
-function test_object_grip() {
-  gThreadClient.addOneTimeListener("paused", function (event, packet) {
-    let obj1 = packet.frame.arguments[0];
-    Assert.ok(obj1.sealed);
+        const obj2Client = threadClient.pauseGrip(obj2);
+        Assert.ok(!obj2Client.isSealed);
 
-    let obj1Client = gThreadClient.pauseGrip(obj1);
-    Assert.ok(obj1Client.isSealed);
+        threadClient.resume().then(resolve);
+      });
 
-    let obj2 = packet.frame.arguments[1];
-    Assert.ok(!obj2.sealed);
-
-    let obj2Client = gThreadClient.pauseGrip(obj2);
-    Assert.ok(!obj2Client.isSealed);
-
-    gThreadClient.resume(_ => {
-      gClient.close().then(gCallback);
+      debuggee.eval(
+        function stopMe(arg1) {
+          debugger;
+        }.toString()
+      );
+      /* eslint-disable no-undef */
+      debuggee.eval(
+        "(" +
+          function() {
+            const obj1 = {};
+            Object.seal(obj1);
+            stopMe(obj1, {});
+          } +
+          "())"
+      );
+      /* eslint-enable no-undef */
     });
-  });
-
-  gDebuggee.eval("(" + function () {
-    let obj1 = {};
-    Object.seal(obj1);
-    stopMe(obj1, {});
-  } + "())");
-}
-
+  })
+);

@@ -7,14 +7,14 @@
 #include "mozilla/GfxMessageUtils.h"  // For ParamTraits<GeckoProcessType>
 
 #ifdef MOZ_GECKO_PROFILER
-#include "shared-libraries.h"
+#  include "shared-libraries.h"
 #endif
 
 namespace mozilla {
 
 NS_IMETHODIMP
-nsHangDetails::GetDuration(uint32_t* aDuration) {
-  *aDuration = mDetails.duration();
+nsHangDetails::GetDuration(double* aDuration) {
+  *aDuration = mDetails.duration().ToMilliseconds();
   return NS_OK;
 }
 
@@ -359,8 +359,7 @@ void ReadModuleInformation(HangStack& stack) {
     }
 
     if (moduleReferenced) {
-      nsDependentCString cstr(info.GetBreakpadId().c_str());
-      HangModule module(info.GetDebugName(), cstr);
+      HangModule module(info.GetDebugName(), info.GetBreakpadId());
       stack.modules().AppendElement(module);
     }
   }
@@ -373,7 +372,8 @@ ProcessHangStackRunnable::Run() {
   // it off-main-thread.
   ReadModuleInformation(mHangDetails.stack());
 
-  RefPtr<nsHangDetails> hangDetails = new nsHangDetails(Move(mHangDetails));
+  RefPtr<nsHangDetails> hangDetails =
+      new nsHangDetails(std::move(mHangDetails));
   hangDetails->Submit();
 
   return NS_OK;

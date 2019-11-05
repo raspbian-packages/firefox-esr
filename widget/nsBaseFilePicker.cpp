@@ -21,6 +21,7 @@
 #include "mozilla/dom/File.h"
 #include "mozilla/Services.h"
 #include "WidgetUtils.h"
+#include "nsSimpleEnumerator.h"
 #include "nsThreadUtils.h"
 
 #include "nsBaseFilePicker.h"
@@ -50,8 +51,8 @@ nsresult LocalFileToDirectoryOrBlob(nsPIDOMWindowInner* aWindow,
     return NS_OK;
   }
 
-  nsCOMPtr<nsIDOMBlob> blob = File::CreateFromFile(aWindow, aFile);
-  blob.forget(aResult);
+  RefPtr<File> file = File::CreateFromFile(aWindow, aFile);
+  file.forget(aResult);
   return NS_OK;
 }
 
@@ -93,15 +94,15 @@ class nsBaseFilePicker::AsyncShowFilePicker : public mozilla::Runnable {
   RefPtr<nsIFilePickerShownCallback> mCallback;
 };
 
-class nsBaseFilePickerEnumerator : public nsISimpleEnumerator {
+class nsBaseFilePickerEnumerator : public nsSimpleEnumerator {
  public:
-  NS_DECL_ISUPPORTS
-
   nsBaseFilePickerEnumerator(nsPIDOMWindowOuter* aParent,
                              nsISimpleEnumerator* iterator, int16_t aMode)
       : mIterator(iterator),
         mParent(aParent->GetCurrentInnerWindow()),
         mMode(aMode) {}
+
+  const nsID& DefaultInterface() override { return NS_GET_IID(nsIFile); }
 
   NS_IMETHOD
   GetNext(nsISupports** aResult) override {
@@ -127,16 +128,11 @@ class nsBaseFilePickerEnumerator : public nsISimpleEnumerator {
     return mIterator->HasMoreElements(aResult);
   }
 
- protected:
-  virtual ~nsBaseFilePickerEnumerator() {}
-
  private:
   nsCOMPtr<nsISimpleEnumerator> mIterator;
   nsCOMPtr<nsPIDOMWindowInner> mParent;
   int16_t mMode;
 };
-
-NS_IMPL_ISUPPORTS(nsBaseFilePickerEnumerator, nsISimpleEnumerator)
 
 nsBaseFilePicker::nsBaseFilePicker()
     : mAddToRecentDocs(true), mMode(nsIFilePicker::modeOpen) {}
@@ -145,14 +141,13 @@ nsBaseFilePicker::~nsBaseFilePicker() {}
 
 NS_IMETHODIMP nsBaseFilePicker::Init(mozIDOMWindowProxy* aParent,
                                      const nsAString& aTitle, int16_t aMode) {
-  NS_PRECONDITION(aParent,
-                  "Null parent passed to filepicker, no file "
-                  "picker for you!");
+  MOZ_ASSERT(aParent,
+             "Null parent passed to filepicker, no file "
+             "picker for you!");
 
   mParent = nsPIDOMWindowOuter::From(aParent);
 
-  nsCOMPtr<nsIWidget> widget =
-      WidgetUtils::DOMWindowToWidget(mParent->GetOuterWindow());
+  nsCOMPtr<nsIWidget> widget = WidgetUtils::DOMWindowToWidget(mParent);
   NS_ENSURE_TRUE(widget, NS_ERROR_FAILURE);
 
   mMode = aMode;
@@ -236,6 +231,11 @@ nsBaseFilePicker::AppendFilters(int32_t aFilterMask) {
   return NS_OK;
 }
 
+NS_IMETHODIMP nsBaseFilePicker::AppendRawFilter(const nsAString& aFilter) {
+  mRawFilters.AppendElement(aFilter);
+  return NS_OK;
+}
+
 // Set the filter index
 NS_IMETHODIMP nsBaseFilePicker::GetFilterIndex(int32_t* aFilterIndex) {
   *aFilterIndex = 0;
@@ -260,7 +260,7 @@ NS_IMETHODIMP nsBaseFilePicker::GetFiles(nsISimpleEnumerator** aFiles) {
 
   files.AppendObject(file);
 
-  return NS_NewArrayEnumerator(aFiles, files);
+  return NS_NewArrayEnumerator(aFiles, files, NS_GET_IID(nsIFile));
 }
 
 // Set the display directory
@@ -278,8 +278,8 @@ NS_IMETHODIMP nsBaseFilePicker::SetDisplayDirectory(nsIFile* aDirectory) {
   nsCOMPtr<nsIFile> directory;
   nsresult rv = aDirectory->Clone(getter_AddRefs(directory));
   if (NS_FAILED(rv)) return rv;
-  mDisplayDirectory = do_QueryInterface(directory, &rv);
-  return rv;
+  mDisplayDirectory = directory;
+  return NS_OK;
 }
 
 // Get the display directory

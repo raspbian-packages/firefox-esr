@@ -4,11 +4,11 @@
 
 "use strict";
 
-const { SymbolActor } = require("devtools/server/actors/object");
+const { SymbolActor } = require("devtools/server/actors/object/symbol");
 
 function run_test() {
   test_SA_destroy();
-  test_SA_grip();
+  test_SA_form();
   test_SA_raw();
 }
 
@@ -16,34 +16,34 @@ const SYMBOL_NAME = "abc";
 const TEST_SYMBOL = Symbol(SYMBOL_NAME);
 
 function makeMockSymbolActor() {
-  let symbol = TEST_SYMBOL;
-  let actor = new SymbolActor(symbol);
+  const symbol = TEST_SYMBOL;
+  const actor = new SymbolActor(symbol);
   actor.actorID = "symbol1";
   actor.registeredPool = {
     symbolActors: {
-      [symbol]: actor
-    }
+      [symbol]: actor,
+    },
   };
   return actor;
 }
 
 function test_SA_destroy() {
-  let actor = makeMockSymbolActor();
+  const actor = makeMockSymbolActor();
   strictEqual(actor.registeredPool.symbolActors[TEST_SYMBOL], actor);
 
   actor.destroy();
   strictEqual(TEST_SYMBOL in actor.registeredPool.symbolActors, false);
 }
 
-function test_SA_grip() {
-  let actor = makeMockSymbolActor();
-  let grip = actor.grip();
-  strictEqual(grip.type, "symbol");
-  strictEqual(grip.actor, actor.actorID);
-  strictEqual(grip.name, SYMBOL_NAME);
+function test_SA_form() {
+  const actor = makeMockSymbolActor();
+  const form = actor.form();
+  strictEqual(form.type, "symbol");
+  strictEqual(form.actor, actor.actorID);
+  strictEqual(form.name, SYMBOL_NAME);
 }
 
 function test_SA_raw() {
-  let actor = makeMockSymbolActor();
+  const actor = makeMockSymbolActor();
   strictEqual(actor.rawValue(), TEST_SYMBOL);
 }

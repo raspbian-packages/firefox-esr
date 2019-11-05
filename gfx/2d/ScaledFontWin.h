@@ -26,7 +26,7 @@ class ScaledFontWin : public ScaledFontBase {
   AntialiasMode GetDefaultAAMode() override;
 
 #ifdef USE_SKIA
-  SkTypeface* GetSkTypeface() override;
+  SkTypeface* CreateSkTypeface() override;
 #endif
 
  protected:

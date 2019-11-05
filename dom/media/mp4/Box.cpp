@@ -118,7 +118,8 @@ Box::Box(BoxContext* aContext, uint64_t aOffset, const Box* aParent)
   mRange = boxRange;
 }
 
-Box::Box() : mContext(nullptr), mParent(nullptr) {}
+Box::Box()
+    : mContext(nullptr), mBodyOffset(0), mChildOffset(0), mParent(nullptr) {}
 
 Box Box::Next() const {
   MOZ_ASSERT(IsAvailable());

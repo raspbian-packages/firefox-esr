@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -28,16 +28,21 @@ static EGLSurface CreatePBufferSurface(GLLibraryEGL* egl, EGLDisplay display,
   MOZ_ASSERT(preCallErr == LOCAL_EGL_SUCCESS);
   EGLSurface surface = egl->fCreatePbufferSurface(display, config, attribs);
   EGLint err = egl->fGetError();
-  if (err != LOCAL_EGL_SUCCESS) return 0;
+  if (err != LOCAL_EGL_SUCCESS) {
+    gfxCriticalError() << "Failed to create Pbuffer surface error: "
+                       << gfx::hexa(err) << " Size : " << size;
+    return 0;
+  }
 
   return surface;
 }
 
-/*static*/ UniquePtr<SharedSurface_ANGLEShareHandle>
+/*static*/
+UniquePtr<SharedSurface_ANGLEShareHandle>
 SharedSurface_ANGLEShareHandle::Create(GLContext* gl, EGLConfig config,
                                        const gfx::IntSize& size,
                                        bool hasAlpha) {
-  GLLibraryEGL* egl = &sEGLLibrary;
+  auto* egl = gl::GLLibraryEGL::Get();
   MOZ_ASSERT(egl);
   MOZ_ASSERT(egl->IsExtensionSupported(
       GLLibraryEGL::ANGLE_surface_d3d_texture_2d_share_handle));
@@ -61,11 +66,23 @@ SharedSurface_ANGLEShareHandle::Create(GLContext* gl, EGLConfig config,
       display, pbuffer, LOCAL_EGL_DXGI_KEYED_MUTEX_ANGLE, &opaqueKeyedMutex);
   RefPtr<IDXGIKeyedMutex> keyedMutex =
       static_cast<IDXGIKeyedMutex*>(opaqueKeyedMutex);
+#ifdef DEBUG
+  if (!keyedMutex) {
+    std::string envStr("1");
+    static auto env = PR_GetEnv("MOZ_REQUIRE_KEYED_MUTEX");
+    if (env) {
+      envStr = env;
+    }
+    if (envStr != "0") {
+      MOZ_ASSERT(keyedMutex, "set MOZ_REQUIRE_KEYED_MUTEX=0 to allow");
+    }
+  }
+#endif
 
   typedef SharedSurface_ANGLEShareHandle ptrT;
   UniquePtr<ptrT> ret(
       new ptrT(gl, egl, size, hasAlpha, pbuffer, shareHandle, keyedMutex));
-  return Move(ret);
+  return ret;
 }
 
 EGLDisplay SharedSurface_ANGLEShareHandle::Display() { return mEGL->Display(); }
@@ -82,6 +99,11 @@ SharedSurface_ANGLEShareHandle::SharedSurface_ANGLEShareHandle(
       mKeyedMutex(keyedMutex) {}
 
 SharedSurface_ANGLEShareHandle::~SharedSurface_ANGLEShareHandle() {
+  GLContext* gl = mGL;
+
+  if (gl && GLContextEGL::Cast(gl)->GetEGLSurfaceOverride() == mPBuffer) {
+    GLContextEGL::Cast(gl)->SetEGLSurfaceOverride(EGL_NO_SURFACE);
+  }
   mEGL->fDestroySurface(Display(), mPBuffer);
 }
 
@@ -127,8 +149,8 @@ bool SharedSurface_ANGLEShareHandle::ToSurfaceDescriptor(
     layers::SurfaceDescriptor* const out_descriptor) {
   gfx::SurfaceFormat format =
       mHasAlpha ? gfx::SurfaceFormat::B8G8R8A8 : gfx::SurfaceFormat::B8G8R8X8;
-  *out_descriptor = layers::SurfaceDescriptorD3D10((WindowsHandle)mShareHandle,
-                                                   format, mSize);
+  *out_descriptor = layers::SurfaceDescriptorD3D10(
+      (WindowsHandle)mShareHandle, format, mSize, gfx::YUVColorSpace::UNKNOWN);
   return true;
 }
 
@@ -278,12 +300,13 @@ bool SharedSurface_ANGLEShareHandle::ReadbackBySharedHandle(
 ////////////////////////////////////////////////////////////////////////////////
 // Factory
 
-/*static*/ UniquePtr<SurfaceFactory_ANGLEShareHandle>
+/*static*/
+UniquePtr<SurfaceFactory_ANGLEShareHandle>
 SurfaceFactory_ANGLEShareHandle::Create(
     GLContext* gl, const SurfaceCaps& caps,
     const RefPtr<layers::LayersIPCChannel>& allocator,
     const layers::TextureFlags& flags) {
-  GLLibraryEGL* egl = &sEGLLibrary;
+  auto* egl = gl::GLLibraryEGL::Get();
   if (!egl) return nullptr;
 
   auto ext = GLLibraryEGL::ANGLE_surface_d3d_texture_2d_share_handle;
@@ -293,7 +316,7 @@ SurfaceFactory_ANGLEShareHandle::Create(
 
   typedef SurfaceFactory_ANGLEShareHandle ptrT;
   UniquePtr<ptrT> ret(new ptrT(gl, caps, allocator, flags, egl, config));
-  return Move(ret);
+  return ret;
 }
 
 SurfaceFactory_ANGLEShareHandle::SurfaceFactory_ANGLEShareHandle(

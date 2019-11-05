@@ -5,17 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/dom/XBLChildrenElement.h"
-#include "nsCharSeparatedTokenizer.h"
+
+#include "mozilla/PresShell.h"
 #include "mozilla/dom/NodeListBinding.h"
 #include "nsAttrValueOrString.h"
+#include "nsCharSeparatedTokenizer.h"
 
 namespace mozilla {
 namespace dom {
 
 XBLChildrenElement::~XBLChildrenElement() {}
-
-NS_IMPL_ISUPPORTS_INHERITED(XBLChildrenElement, Element, nsIDOMNode,
-                            nsIDOMElement)
 
 NS_IMPL_ELEMENT_CLONE(XBLChildrenElement)
 
@@ -39,6 +38,30 @@ nsresult XBLChildrenElement::BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
   return nsXMLElement::BeforeSetAttr(aNamespaceID, aName, aValue, aNotify);
 }
 
+void XBLChildrenElement::DoRemoveDefaultContent(bool aNotify) {
+  // Default content is going away, need to tell layout about it first.
+  MOZ_ASSERT(HasChildren(), "Why bothering?");
+  MOZ_ASSERT(GetParentElement());
+
+  // We don't want to do this from frame construction while setting up the
+  // binding initially.
+  if (aNotify) {
+    Element* parent = GetParentElement();
+    if (Document* doc = parent->GetComposedDoc()) {
+      if (PresShell* presShell = doc->GetPresShell()) {
+        presShell->DestroyFramesForAndRestyle(parent);
+      }
+    }
+  }
+
+  for (nsIContent* child = static_cast<nsINode*>(this)->GetFirstChild(); child;
+       child = child->GetNextSibling()) {
+    MOZ_ASSERT(!child->GetPrimaryFrame());
+    MOZ_ASSERT(!child->IsElement() || !child->AsElement()->HasServoData());
+    child->SetXBLInsertionPoint(nullptr);
+  }
+}
+
 }  // namespace dom
 }  // namespace mozilla
 
@@ -51,15 +74,13 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(nsAnonymousContentList)
 
 NS_INTERFACE_TABLE_HEAD(nsAnonymousContentList)
   NS_WRAPPERCACHE_INTERFACE_TABLE_ENTRY
-  NS_INTERFACE_TABLE(nsAnonymousContentList, nsINodeList, nsIDOMNodeList)
+  NS_INTERFACE_TABLE(nsAnonymousContentList, nsINodeList)
   NS_INTERFACE_TABLE_TO_MAP_SEGUE_CYCLE_COLLECTION(nsAnonymousContentList)
 NS_INTERFACE_MAP_END
 
-NS_IMETHODIMP
-nsAnonymousContentList::GetLength(uint32_t* aLength) {
+uint32_t nsAnonymousContentList::Length() {
   if (!mParent) {
-    *aLength = 0;
-    return NS_OK;
+    return 0;
   }
 
   uint32_t count = 0;
@@ -77,19 +98,7 @@ nsAnonymousContentList::GetLength(uint32_t* aLength) {
     }
   }
 
-  *aLength = count;
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsAnonymousContentList::Item(uint32_t aIndex, nsIDOMNode** aReturn) {
-  nsIContent* item = Item(aIndex);
-  if (!item) {
-    return NS_ERROR_FAILURE;
-  }
-
-  return CallQueryInterface(item, aReturn);
+  return count;
 }
 
 nsIContent* nsAnonymousContentList::Item(uint32_t aIndex) {
@@ -164,5 +173,5 @@ int32_t nsAnonymousContentList::IndexOf(nsIContent* aContent) {
 
 JSObject* nsAnonymousContentList::WrapObject(
     JSContext* cx, JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::NodeListBinding::Wrap(cx, this, aGivenProto);
+  return mozilla::dom::NodeList_Binding::Wrap(cx, this, aGivenProto);
 }

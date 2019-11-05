@@ -27,12 +27,6 @@
 <!ENTITY firstrun_button_next "Следеће">
 
 <!ENTITY firstrun_tabqueue_title "Везе">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Укључи низ језичака">
-<!ENTITY firstrun_tabqueue_subtext_off "Сачувајте везе за касније у &brandShortName;-у при додиру у другим апликацијама.">
-
-<!ENTITY firstrun_tabqueue_message_on "Браво!">
-<!ENTITY firstrun_tabqueue_subtext_on "Можете увек да искључите ову могућност у &settings; под &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Чланци">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -69,6 +63,14 @@
 <!ENTITY  crash_restart_label "Рестартуј &brandShortName;">
 
 <!ENTITY url_bar_default_text2 "Претражи или унеси адресу">
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Користите ваш QR читач да претражујете или уносите адресе">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Користите ваш микрофон да претражујете или уносите адресе">
 
 <!ENTITY bookmark "Забелешка">
 <!ENTITY bookmark_remove "Уклони забелешку">
@@ -206,7 +208,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Обнова језичака, штедња података, алати за развој">
 <!ENTITY pref_category_notifications "Обавештења">
-<!ENTITY pref_category_notifications_summary "Нове могућности, ажурирања веб сајта">
+<!ENTITY pref_category_notifications_summary2 "Нове могућности, савети за производе">
 <!ENTITY pref_developer_remotedebugging_usb "USB отклањање греш.">
 <!ENTITY pref_developer_remotedebugging_wifi "Wi-Fi отклањање греш.">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Wi-Fi отклањање грешака захтева да уређај има инсталиран читач QR кода.">
@@ -289,6 +291,11 @@
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Сазнајте више о коришћењу &brandShortName;-а и других &vendorShortName; производа">
 
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference
+     Will be used in the context "<Turn on> ... to enable this feature" -->
+<!ENTITY pref_feature_tips_notification_enabling_hint "Укључите">
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "Експерименталне могућности">
@@ -361,7 +368,8 @@
 <!ENTITY pref_use_system_font_size_summary "Прилагодите веб садржај према величини фонта система">
 
 <!ENTITY pref_media_autoplay_enabled "Аутоматска репродукција">
-<!ENTITY pref_media_autoplay_enabled_summary "Контролишите да ли веб сајтови могу да аутоматски репродукују видео или други медијски садржај">
+<!ENTITY pref_media_autoplay_allow "Аутоматска репродукција">
+<!ENTITY pref_media_autoplay_block "Блокирај аутоматску репродукцију">
 <!ENTITY pref_zoom_force_enabled "Увек увеличај">
 <!ENTITY pref_zoom_force_enabled_summary "Форсирај могућност увеличавања било које странице">
 <!ENTITY pref_voice_input "Говорни унос">
@@ -437,6 +445,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Извештач о рушењу">
 <!ENTITY datareporting_wifi_title2 "Сервис за локацију">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Помозите &vendorShortName;-и да мапира свет! Поделите приближну Wi-Fi и мобилну локацију вашег уређаја да би унапредили сервис геолокације.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; сервис за локацију ради">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -543,7 +556,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Распореди језичке у два реда у режиму портрета">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Страница је уклоњена">
 <!ENTITY folder_removed "Фасцикла обрисана">
@@ -761,7 +774,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Последња синхронизација: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Последња синхронизација: никада">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -822,9 +835,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Не могу да отворим &brandShortName;. Поново инсталирајте апликацију и пробајте онда.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; се више неће ажурирати">
-<!ENTITY eol_notification_summary "Сазнајте више">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; је актуелан">
@@ -881,3 +891,23 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Додај на почетни екран">
 <!ENTITY pwa_continue_to_website "Настави на веб сајт">
 <!ENTITY pwa_onboarding_sumo "Можете лако додати овај веб сајт на почетни екран вашег телефона како бисте лако приступили и сурфовали брже.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Пусти">
+<!ENTITY pip_play_button_description "Наставите пуштање">
+<!ENTITY pip_pause_button_title "Паузирај">
+<!ENTITY pip_pause_button_description "Паузирајте пуштање">
+
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel "&brandShortName;">
+<!ENTITY mls_notification_channel "&vendorShortName; Сервис за локацију">
+<!ENTITY download_notification_channel "Преузимања">
+<!ENTITY media_notification_channel "Репродукција медије">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel "&brandShortName; Push обавештења">
+<!ENTITY updater_notification_channel "Ажурирања апликација">
+<!ENTITY synced_tabs_notification_channel "Синхронизовани јежичци">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Обавештења сајта">

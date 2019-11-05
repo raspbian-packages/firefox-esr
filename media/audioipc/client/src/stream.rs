@@ -3,8 +3,6 @@
 // This program is made available under an ISC-style license.  See the
 // accompanying file LICENSE for details
 
-use {assert_not_in_callback, set_in_callback};
-use ClientContext;
 use audioipc::codec::LengthDelimitedCodec;
 use audioipc::frame::{framed, Framed};
 use audioipc::messages::{self, CallbackReq, CallbackResp, ClientMessage, ServerMessage};
@@ -14,13 +12,11 @@ use cubeb_backend::{ffi, DeviceRef, Error, Result, Stream, StreamOps};
 use futures::Future;
 use futures_cpupool::{CpuFuture, CpuPool};
 use std::ffi::CString;
-use std::fs::File;
 use std::os::raw::c_void;
-use std::os::unix::io::FromRawFd;
-use std::os::unix::net;
 use std::ptr;
 use std::sync::mpsc;
-use tokio_uds::UnixStream;
+use ClientContext;
+use {assert_not_in_callback, set_in_callback};
 
 // TODO: Remove and let caller allocate based on cubeb backend requirements.
 const SHM_AREA_SIZE: usize = 2 * 1024 * 1024;
@@ -40,17 +36,21 @@ impl Drop for Device {
     }
 }
 
+// ClientStream's layout *must* match cubeb.c's `struct cubeb_stream` for the
+// common fields.
+#[repr(C)]
 #[derive(Debug)]
 pub struct ClientStream<'ctx> {
     // This must be a reference to Context for cubeb, cubeb accesses
     // stream methods via stream->context->ops
     context: &'ctx ClientContext,
+    user_ptr: *mut c_void,
     token: usize,
 }
 
 struct CallbackServer {
-    input_shm: SharedMemSlice,
-    output_shm: SharedMemMutSlice,
+    input_shm: Option<SharedMemSlice>,
+    output_shm: Option<SharedMemMutSlice>,
     data_cb: ffi::cubeb_data_callback,
     state_cb: ffi::cubeb_state_callback,
     user_ptr: usize,
@@ -61,32 +61,46 @@ impl rpc::Server for CallbackServer {
     type Request = CallbackReq;
     type Response = CallbackResp;
     type Future = CpuFuture<Self::Response, ()>;
-    type Transport = Framed<UnixStream, LengthDelimitedCodec<Self::Response, Self::Request>>;
+    type Transport = Framed<audioipc::AsyncMessageStream, LengthDelimitedCodec<Self::Response, Self::Request>>;
 
     fn process(&mut self, req: Self::Request) -> Self::Future {
         match req {
-            CallbackReq::Data(nframes, frame_size) => {
-                debug!(
-                    "stream_thread: Data Callback: nframes={} frame_size={}",
-                    nframes, frame_size
+            CallbackReq::Data { nframes, input_frame_size, output_frame_size } => {
+                trace!(
+                    "stream_thread: Data Callback: nframes={} input_fs={} output_fs={}",
+                    nframes,
+                    input_frame_size,
+                    output_frame_size,
                 );
 
                 // Clone values that need to be moved into the cpu pool thread.
-                let input_shm = unsafe { self.input_shm.clone_view() };
-                let mut output_shm = unsafe { self.output_shm.clone_view() };
+                let input_shm = match self.input_shm {
+                    Some(ref shm) => unsafe { Some(shm.clone_view()) },
+                    None => None,
+                };
+                let mut output_shm = match self.output_shm {
+                    Some(ref shm) => unsafe { Some(shm.clone_view()) },
+                    None => None,
+                };
                 let user_ptr = self.user_ptr;
                 let cb = self.data_cb.unwrap();
 
                 self.cpu_pool.spawn_fn(move || {
                     // TODO: This is proof-of-concept. Make it better.
-                    let input_ptr: *const u8 = input_shm
-                        .get_slice(nframes as usize * frame_size)
-                        .unwrap()
-                        .as_ptr();
-                    let output_ptr: *mut u8 = output_shm
-                        .get_mut_slice(nframes as usize * frame_size)
-                        .unwrap()
-                        .as_mut_ptr();
+                    let input_ptr: *const u8 = match input_shm {
+                        Some(shm) => shm
+                            .get_slice(nframes as usize * input_frame_size)
+                            .unwrap()
+                            .as_ptr(),
+                        None => ptr::null(),
+                    };
+                    let output_ptr: *mut u8 = match output_shm {
+                        Some(ref mut shm) => shm
+                            .get_mut_slice(nframes as usize * output_frame_size)
+                            .unwrap()
+                            .as_mut_ptr(),
+                        None => ptr::null_mut(),
+                    };
 
                     set_in_callback(true);
                     let nframes = unsafe {
@@ -104,7 +118,7 @@ impl rpc::Server for CallbackServer {
                 })
             }
             CallbackReq::State(state) => {
-                debug!("stream_thread: State Callback: {:?}", state);
+                trace!("stream_thread: State Callback: {:?}", state);
                 let user_ptr = self.user_ptr;
                 let cb = self.state_cb.unwrap();
                 self.cpu_pool.spawn_fn(move || {
@@ -131,21 +145,32 @@ impl<'ctx> ClientStream<'ctx> {
     ) -> Result<Stream> {
         assert_not_in_callback();
 
+        let has_input = init_params.input_stream_params.is_some();
+        let has_output = init_params.output_stream_params.is_some();
+
         let rpc = ctx.rpc();
         let data = try!(send_recv!(rpc, StreamInit(init_params) => StreamCreated()));
 
-        trace!("token = {}, fds = {:?}", data.token, data.fds);
+        debug!("token = {}, handles = {:?}", data.token, data.platform_handles);
 
-        let stm = data.fds[0];
-        let stream = unsafe { net::UnixStream::from_raw_fd(stm) };
+        let stm = data.platform_handles[0];
+        let stream = unsafe { audioipc::MessageStream::from_raw_fd(stm.as_raw()) };
 
-        let input = data.fds[1];
-        let input_file = unsafe { File::from_raw_fd(input) };
-        let input_shm = SharedMemSlice::from(&input_file, SHM_AREA_SIZE).unwrap();
+        let input = data.platform_handles[1];
+        let input_file = unsafe { input.into_file() };
+        let input_shm = if has_input {
+            Some(SharedMemSlice::from(&input_file, SHM_AREA_SIZE).unwrap())
+        } else {
+            None
+        };
 
-        let output = data.fds[2];
-        let output_file = unsafe { File::from_raw_fd(output) };
-        let output_shm = SharedMemMutSlice::from(&output_file, SHM_AREA_SIZE).unwrap();
+        let output = data.platform_handles[2];
+        let output_file = unsafe { output.into_file() };
+        let output_shm = if has_output {
+            Some(SharedMemMutSlice::from(&output_file, SHM_AREA_SIZE).unwrap())
+        } else {
+            None
+        };
 
         let user_data = user_ptr as usize;
 
@@ -162,7 +187,7 @@ impl<'ctx> ClientStream<'ctx> {
 
         let (wait_tx, wait_rx) = mpsc::channel();
         ctx.remote().spawn(move |handle| {
-            let stream = UnixStream::from_stream(stream, handle).unwrap();
+            let stream = stream.into_tokio_ipc(handle).unwrap();
             let transport = framed(stream, Default::default());
             rpc::bind_server(transport, server, handle);
             wait_tx.send(()).unwrap();
@@ -172,6 +197,7 @@ impl<'ctx> ClientStream<'ctx> {
 
         let stream = Box::into_raw(Box::new(ClientStream {
             context: ctx,
+            user_ptr: user_ptr,
             token: data.token,
         }));
         Ok(unsafe { Stream::from_ptr(stream as *mut _) })
@@ -180,7 +206,7 @@ impl<'ctx> ClientStream<'ctx> {
 
 impl<'ctx> Drop for ClientStream<'ctx> {
     fn drop(&mut self) {
-        trace!("ClientStream drop...");
+        debug!("ClientStream dropped...");
         let rpc = self.context.rpc();
         let _ = send_recv!(rpc, StreamDestroy(self.token) => StreamDestroyed);
     }
@@ -268,5 +294,13 @@ pub fn init(
     state_callback: ffi::cubeb_state_callback,
     user_ptr: *mut c_void,
 ) -> Result<Stream> {
-    ClientStream::init(ctx, init_params, data_callback, state_callback, user_ptr)
+    let stm = try!(ClientStream::init(
+        ctx,
+        init_params,
+        data_callback,
+        state_callback,
+        user_ptr
+    ));
+    debug_assert_eq!(stm.user_ptr(), user_ptr);
+    Ok(stm)
 }

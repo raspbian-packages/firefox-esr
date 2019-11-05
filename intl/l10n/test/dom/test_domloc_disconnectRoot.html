@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <title>Test DOMLocalization.prototype.disconnectRoot</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript">
   "use strict";
   const { DOMLocalization } =
-    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm", {});
+    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm");
 
   async function* mockGenerateMessages(locales, resourceIds) {
   }
@@ -17,7 +17,6 @@
     SimpleTest.waitForExplicitFinish();
 
     const domLoc = new DOMLocalization(
-      window,
       [],
       mockGenerateMessages
     );

@@ -4,10 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "EmptyBlobImpl.h"
 #include "MutableBlobStorage.h"
 #include "MemoryBlobImpl.h"
 #include "mozilla/CheckedInt.h"
-#include "mozilla/dom/ipc/TemporaryIPCBlobChild.h"
+#include "mozilla/dom/TemporaryIPCBlobChild.h"
 #include "mozilla/dom/WorkerPrivate.h"
 #include "mozilla/ipc/BackgroundChild.h"
 #include "mozilla/ipc/PBackgroundChild.h"
@@ -211,15 +212,15 @@ class CreateBlobRunnable final : public Runnable,
   }
 
   void OperationSucceeded(BlobImpl* aBlobImpl) override {
-    nsCOMPtr<nsISupports> parent(Move(mParent));
-    RefPtr<MutableBlobStorageCallback> callback(Move(mCallback));
+    nsCOMPtr<nsISupports> parent(std::move(mParent));
+    RefPtr<MutableBlobStorageCallback> callback(std::move(mCallback));
 
     RefPtr<Blob> blob = Blob::Create(parent, aBlobImpl);
     callback->BlobStoreCompleted(mBlobStorage, blob, NS_OK);
   }
 
   void OperationFailed(nsresult aRv) override {
-    RefPtr<MutableBlobStorageCallback> callback(Move(mCallback));
+    RefPtr<MutableBlobStorageCallback> callback(std::move(mCallback));
     callback->BlobStoreCompleted(mBlobStorage, nullptr, aRv);
   }
 
@@ -506,17 +507,23 @@ bool MutableBlobStorage::MaybeCreateTemporaryFile(
   if (!NS_IsMainThread()) {
     RefPtr<MutableBlobStorage> self = this;
     nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
-        "MutableBlobStorage::MaybeCreateTemporaryFile",
-        [self]() { self->MaybeCreateTemporaryFileOnMainThread(); });
-    EventTarget()->Dispatch(r.forget(), NS_DISPATCH_SYNC);
-    return !!mActor;
+        "MutableBlobStorage::MaybeCreateTemporaryFile", [self]() {
+          MutexAutoLock lock(self->mMutex);
+          self->MaybeCreateTemporaryFileOnMainThread(lock);
+          if (!self->mActor) {
+            self->ErrorPropagated(NS_ERROR_FAILURE);
+          }
+        });
+    EventTarget()->Dispatch(r.forget(), NS_DISPATCH_NORMAL);
+    return true;
   }
 
-  MaybeCreateTemporaryFileOnMainThread();
+  MaybeCreateTemporaryFileOnMainThread(aProofOfLock);
   return !!mActor;
 }
 
-void MutableBlobStorage::MaybeCreateTemporaryFileOnMainThread() {
+void MutableBlobStorage::MaybeCreateTemporaryFileOnMainThread(
+    const MutexAutoLock& aProofOfLock) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!mActor);
 

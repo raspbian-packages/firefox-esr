@@ -9,7 +9,7 @@
 #include "Platform.h"
 
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 using namespace mozilla;
@@ -38,7 +38,8 @@ NS_IMETHODIMP_(MozExternalRefCountType)
 xpcAccessibilityService::AddRef(void) {
   MOZ_ASSERT_TYPE_OK_FOR_REFCOUNTING(xpcAccessibilityService)
   MOZ_ASSERT(int32_t(mRefCnt) >= 0, "illegal refcnt");
-  if (!mRefCnt.isThreadSafe) NS_ASSERT_OWNINGTHREAD(xpcAccessibilityService);
+  if (!nsAutoRefCnt::isThreadSafe)
+    NS_ASSERT_OWNINGTHREAD(xpcAccessibilityService);
   nsrefcnt count = ++mRefCnt;
   NS_LOG_ADDREF(this, count, "xpcAccessibilityService", sizeof(*this));
 
@@ -60,7 +61,7 @@ NS_IMETHODIMP_(MozExternalRefCountType)
 xpcAccessibilityService::Release(void) {
   MOZ_ASSERT(int32_t(mRefCnt) > 0, "dup release");
 
-  if (!mRefCnt.isThreadSafe) {
+  if (!nsAutoRefCnt::isThreadSafe) {
     NS_ASSERT_OWNINGTHREAD(xpcAccessibilityService);
   }
 
@@ -68,7 +69,7 @@ xpcAccessibilityService::Release(void) {
   NS_LOG_RELEASE(this, count, "xpcAccessibilityService");
 
   if (count == 0) {
-    if (!mRefCnt.isThreadSafe) {
+    if (!nsAutoRefCnt::isThreadSafe) {
       NS_ASSERT_OWNINGTHREAD(xpcAccessibilityService);
     }
 
@@ -102,7 +103,7 @@ xpcAccessibilityService::GetApplicationAccessible(
 }
 
 NS_IMETHODIMP
-xpcAccessibilityService::GetAccessibleFor(nsIDOMNode* aNode,
+xpcAccessibilityService::GetAccessibleFor(nsINode* aNode,
                                           nsIAccessible** aAccessible) {
   NS_ENSURE_ARG_POINTER(aAccessible);
   *aAccessible = nullptr;
@@ -110,19 +111,14 @@ xpcAccessibilityService::GetAccessibleFor(nsIDOMNode* aNode,
     return NS_OK;
   }
 
-  nsCOMPtr<nsINode> node(do_QueryInterface(aNode));
-  if (!node) {
-    return NS_ERROR_INVALID_ARG;
-  }
-
   nsAccessibilityService* accService = GetAccService();
   if (!accService) {
     return NS_ERROR_SERVICE_NOT_AVAILABLE;
   }
 
-  DocAccessible* document = accService->GetDocAccessible(node->OwnerDoc());
+  DocAccessible* document = accService->GetDocAccessible(aNode->OwnerDoc());
   if (document) {
-    NS_IF_ADDREF(*aAccessible = ToXPC(document->GetAccessible(node)));
+    NS_IF_ADDREF(*aAccessible = ToXPC(document->GetAccessible(aNode)));
   }
 
   return NS_OK;
@@ -176,17 +172,12 @@ xpcAccessibilityService::GetStringRelationType(uint32_t aRelationType,
 }
 
 NS_IMETHODIMP
-xpcAccessibilityService::GetAccessibleFromCache(nsIDOMNode* aNode,
+xpcAccessibilityService::GetAccessibleFromCache(nsINode* aNode,
                                                 nsIAccessible** aAccessible) {
   NS_ENSURE_ARG_POINTER(aAccessible);
   *aAccessible = nullptr;
   if (!aNode) {
     return NS_OK;
-  }
-
-  nsCOMPtr<nsINode> node(do_QueryInterface(aNode));
-  if (!node) {
-    return NS_ERROR_INVALID_ARG;
   }
 
   nsAccessibilityService* accService = GetAccService();
@@ -200,12 +191,9 @@ xpcAccessibilityService::GetAccessibleFromCache(nsIDOMNode* aNode,
   // document accessibles are not stored in the document cache, however an
   // "unofficially" shutdown document (i.e. not from DocManager) can still
   // exist in the document cache.
-  Accessible* accessible = accService->FindAccessibleInCache(node);
-  if (!accessible) {
-    nsCOMPtr<nsIDocument> document(do_QueryInterface(node));
-    if (document) {
-      accessible = mozilla::a11y::GetExistingDocAccessible(document);
-    }
+  Accessible* accessible = accService->FindAccessibleInCache(aNode);
+  if (!accessible && aNode->IsDocument()) {
+    accessible = mozilla::a11y::GetExistingDocAccessible(aNode->AsDocument());
   }
 
   NS_IF_ADDREF(*aAccessible = ToXPC(accessible));

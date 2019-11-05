@@ -8,11 +8,14 @@
 
 #include "jsapi.h"
 #include "jsfriendapi.h"
+#include "js/ArrayBuffer.h"
+#include "js/JSON.h"
 #include "js/TracingAPI.h"
 #include "xpcpublic.h"
 
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/EndianUtils.h"
+#include "mozilla/Components.h"
 #include "mozilla/Compression.h"
 #include "mozilla/LinkedList.h"
 #include "mozilla/Preferences.h"
@@ -28,13 +31,14 @@
 #include "nsAppRunner.h"
 #include "nsContentUtils.h"
 #include "nsChromeRegistry.h"
+#include "nsIAppStartup.h"
 #include "nsIDOMWindowUtils.h"  // for nsIJSRAIIHelper
 #include "nsIFileURL.h"
 #include "nsIIOService.h"
-#include "nsIJARProtocolHandler.h"
 #include "nsIJARURI.h"
 #include "nsIStringEnumerator.h"
 #include "nsIZipReader.h"
+#include "nsJARProtocolHandler.h"
 #include "nsJSUtils.h"
 #include "nsReadableUtils.h"
 #include "nsXULAppAPI.h"
@@ -46,12 +50,6 @@ namespace mozilla {
 using Compression::LZ4;
 using dom::ipc::StructuredCloneData;
 
-#ifdef XP_WIN
-#define READ_BINARYMODE "rb"
-#else
-#define READ_BINARYMODE "r"
-#endif
-
 AddonManagerStartup& AddonManagerStartup::GetSingleton() {
   static RefPtr<AddonManagerStartup> singleton;
   if (!singleton) {
@@ -61,7 +59,7 @@ AddonManagerStartup& AddonManagerStartup::GetSingleton() {
   return *singleton;
 }
 
-AddonManagerStartup::AddonManagerStartup() : mInitialized(false) {}
+AddonManagerStartup::AddonManagerStartup() {}
 
 nsIFile* AddonManagerStartup::ProfileDir() {
   if (!mProfileDir) {
@@ -76,6 +74,44 @@ nsIFile* AddonManagerStartup::ProfileDir() {
 }
 
 NS_IMPL_ISUPPORTS(AddonManagerStartup, amIAddonManagerStartup, nsIObserver)
+
+/*****************************************************************************
+ * URI utils
+ *****************************************************************************/
+
+static nsresult ParseJARURI(nsIJARURI* uri, nsIURI** jarFile,
+                            nsCString& entry) {
+  MOZ_TRY(uri->GetJARFile(jarFile));
+  MOZ_TRY(uri->GetJAREntry(entry));
+
+  // The entry portion of a jar: URI is required to begin with a '/', but for
+  // nested JAR URIs, the leading / of the outer entry is currently stripped.
+  // This is a bug which should be fixed in the JAR URI code, but...
+  if (entry.IsEmpty() || entry[0] != '/') {
+    entry.Insert('/', 0);
+  }
+  return NS_OK;
+}
+
+static nsresult ParseJARURI(nsIURI* uri, nsIURI** jarFile, nsCString& entry) {
+  nsresult rv;
+  nsCOMPtr<nsIJARURI> jarURI = do_QueryInterface(uri, &rv);
+  MOZ_TRY(rv);
+
+  return ParseJARURI(jarURI, jarFile, entry);
+}
+
+static Result<nsCOMPtr<nsIFile>, nsresult> GetFile(nsIURI* uri) {
+  nsresult rv;
+  nsCOMPtr<nsIFileURL> fileURL = do_QueryInterface(uri, &rv);
+  MOZ_TRY(rv);
+
+  nsCOMPtr<nsIFile> file;
+  MOZ_TRY(fileURL->GetFile(getter_AddRefs(file)));
+  MOZ_ASSERT(file);
+
+  return std::move(file);
+}
 
 /*****************************************************************************
  * File utils
@@ -112,11 +148,17 @@ static Result<nsCString, nsresult> DecodeLZ4(const nsACString& lz4,
   auto size = LittleEndian::readUint32(data);
   data += 4;
 
+  size_t dataLen = lz4.EndReading() - data;
+  size_t outputSize;
+
   nsCString result;
   if (!result.SetLength(size, fallible) ||
-      !LZ4::decompress(data, result.BeginWriting(), size)) {
+      !LZ4::decompress(data, dataLen, result.BeginWriting(), size,
+                       &outputSize)) {
     return Err(NS_ERROR_UNEXPECTED);
   }
+
+  MOZ_DIAGNOSTIC_ASSERT(size == outputSize);
 
   return result;
 }
@@ -190,13 +232,11 @@ static Result<nsCOMPtr<nsIZipReaderCache>, nsresult> GetJarCache() {
   nsCOMPtr<nsIProtocolHandler> jarProto;
   MOZ_TRY(ios->GetProtocolHandler("jar", getter_AddRefs(jarProto)));
 
-  nsCOMPtr<nsIJARProtocolHandler> jar = do_QueryInterface(jarProto);
+  auto jar = static_cast<nsJARProtocolHandler*>(jarProto.get());
   MOZ_ASSERT(jar);
 
-  nsCOMPtr<nsIZipReaderCache> zipCache;
-  MOZ_TRY(jar->GetJARCache(getter_AddRefs(zipCache)));
-
-  return Move(zipCache);
+  nsCOMPtr<nsIZipReaderCache> zipCache = jar->JarCache();
+  return std::move(zipCache);
 }
 
 static Result<FileLocation, nsresult> GetFileLocation(nsIURI* uri) {
@@ -208,24 +248,16 @@ static Result<FileLocation, nsresult> GetFileLocation(nsIURI* uri) {
     MOZ_TRY(fileURL->GetFile(getter_AddRefs(file)));
     location.Init(file);
   } else {
-    nsCOMPtr<nsIJARURI> jarURI = do_QueryInterface(uri);
-    NS_ENSURE_TRUE(jarURI, Err(NS_ERROR_INVALID_ARG));
-
     nsCOMPtr<nsIURI> fileURI;
-    MOZ_TRY(jarURI->GetJARFile(getter_AddRefs(fileURI)));
-
-    fileURL = do_QueryInterface(fileURI);
-    NS_ENSURE_TRUE(fileURL, Err(NS_ERROR_INVALID_ARG));
-
-    MOZ_TRY(fileURL->GetFile(getter_AddRefs(file)));
-
     nsCString entry;
-    MOZ_TRY(jarURI->GetJAREntry(entry));
+    MOZ_TRY(ParseJARURI(uri, getter_AddRefs(fileURI), entry));
+
+    MOZ_TRY_VAR(file, GetFile(fileURI));
 
     location.Init(file, entry.get());
   }
 
-  return Move(location);
+  return std::move(location);
 }
 
 /*****************************************************************************
@@ -368,17 +400,17 @@ class MOZ_STACK_CLASS Addon : public WrapperBase {
 
   nsString Path() { return GetString("path"); }
 
-  bool Bootstrapped() { return GetBool("bootstrapped"); }
+  nsString Type() { return GetString("type", "extension"); }
 
   bool Enabled() { return GetBool("enabled"); }
 
-  bool ShimsEnabled() { return GetBool("enableShims"); }
-
   double LastModifiedTime() { return GetNumber("lastModifiedTime"); }
 
-  Result<nsCOMPtr<nsIFile>, nsresult> FullPath();
+  bool ShouldCheckStartupModifications() {
+    return Type().EqualsLiteral("locale");
+  }
 
-  NSLocationType LocationType();
+  Result<nsCOMPtr<nsIFile>, nsresult> FullPath();
 
   Result<bool, nsresult> UpdateLastModifiedTime();
 
@@ -393,30 +425,29 @@ Result<nsCOMPtr<nsIFile>, nsresult> Addon::FullPath() {
   // First check for an absolute path, in case we have a proxy file.
   nsCOMPtr<nsIFile> file;
   if (NS_SUCCEEDED(NS_NewLocalFile(path, false, getter_AddRefs(file)))) {
-    return Move(file);
+    return std::move(file);
   }
 
   // If not an absolute path, fall back to a relative path from the location.
   MOZ_TRY(NS_NewLocalFile(mLocation.Path(), false, getter_AddRefs(file)));
 
   MOZ_TRY(file->AppendRelativePath(path));
-  return Move(file);
-}
-
-NSLocationType Addon::LocationType() {
-  nsString type = GetString("type", "extension");
-  if (type.LowerCaseEqualsLiteral("theme")) {
-    return NS_SKIN_LOCATION;
-  }
-  return NS_EXTENSION_LOCATION;
+  return std::move(file);
 }
 
 Result<bool, nsresult> Addon::UpdateLastModifiedTime() {
   nsCOMPtr<nsIFile> file;
   MOZ_TRY_VAR(file, FullPath());
 
+  JS::RootedObject obj(mCx, mObject);
+
   bool result;
   if (NS_FAILED(file->Exists(&result)) || !result) {
+    JS::RootedValue value(mCx, JS::NullValue());
+    if (!JS_SetProperty(mCx, obj, "currentModifiedTime", value)) {
+      JS_ClearPendingException(mCx);
+    }
+
     return true;
   }
 
@@ -424,20 +455,15 @@ Result<bool, nsresult> Addon::UpdateLastModifiedTime() {
 
   nsCOMPtr<nsIFile> manifest = file;
   if (!IsNormalFile(manifest)) {
-    manifest = CloneAndAppend(file, "install.rdf");
+    manifest = CloneAndAppend(file, "manifest.json");
     if (!IsNormalFile(manifest)) {
-      manifest = CloneAndAppend(file, "manifest.json");
-      if (!IsNormalFile(manifest)) {
-        return true;
-      }
+      return true;
     }
   }
 
   if (NS_FAILED(manifest->GetLastModifiedTime(&time))) {
     return true;
   }
-
-  JS::RootedObject obj(mCx, mObject);
 
   double lastModified = time;
   JS::RootedValue value(mCx, JS::NumberValue(lastModified));
@@ -446,7 +472,6 @@ Result<bool, nsresult> Addon::UpdateLastModifiedTime() {
   }
 
   return lastModified != LastModifiedTime();
-  ;
 }
 
 InstallLocation::InstallLocation(JSContext* cx, const JS::Value& value)
@@ -461,30 +486,6 @@ InstallLocation::InstallLocation(JSContext* cx, const JS::Value& value)
 /*****************************************************************************
  * XPC interfacing
  *****************************************************************************/
-
-Result<Ok, nsresult> AddonManagerStartup::AddInstallLocation(Addon& addon) {
-  nsCOMPtr<nsIFile> file;
-  MOZ_TRY_VAR(file, addon.FullPath());
-
-  nsString path;
-  MOZ_TRY(file->GetPath(path));
-
-  auto type = addon.LocationType();
-
-  if (type == NS_SKIN_LOCATION) {
-    mThemePaths.AppendElement(file);
-  } else {
-    mExtensionPaths.AppendElement(file);
-  }
-
-  if (StringTail(path, 4).LowerCaseEqualsLiteral(".xpi")) {
-    XRE_AddJarManifestLocation(type, file);
-  } else {
-    nsCOMPtr<nsIFile> manifest = CloneAndAppend(file, "chrome.manifest");
-    XRE_AddManifestLocation(type, manifest);
-  }
-  return Ok();
-}
 
 nsresult AddonManagerStartup::ReadStartupData(
     JSContext* cx, JS::MutableHandleValue locations) {
@@ -513,50 +514,17 @@ nsresult AddonManagerStartup::ReadStartupData(
   for (auto e1 : PropertyIter(cx, locs)) {
     InstallLocation loc(e1);
 
-    if (!loc.ShouldCheckStartupModifications()) {
-      continue;
-    }
+    bool shouldCheck = loc.ShouldCheckStartupModifications();
 
     for (auto e2 : loc.Addons()) {
       Addon addon(e2);
 
-      if (addon.Enabled()) {
+      if (addon.Enabled() &&
+          (shouldCheck || addon.ShouldCheckStartupModifications())) {
         bool changed;
         MOZ_TRY_VAR(changed, addon.UpdateLastModifiedTime());
         if (changed) {
           loc.SetChanged(true);
-        }
-      }
-    }
-  }
-
-  return NS_OK;
-}
-
-nsresult AddonManagerStartup::InitializeExtensions(JS::HandleValue locations,
-                                                   JSContext* cx) {
-  NS_ENSURE_FALSE(mInitialized, NS_ERROR_UNEXPECTED);
-  NS_ENSURE_TRUE(locations.isObject(), NS_ERROR_INVALID_ARG);
-
-  mInitialized = true;
-
-  if (!Preferences::GetBool("extensions.defaultProviders.enabled", true)) {
-    return NS_OK;
-  }
-
-  JS::RootedObject locs(cx, &locations.toObject());
-  for (auto e1 : PropertyIter(cx, locs)) {
-    InstallLocation loc(e1);
-
-    for (auto e2 : loc.Addons()) {
-      Addon addon(e2);
-
-      if (addon.Enabled() && !addon.Bootstrapped()) {
-        Unused << AddInstallLocation(addon);
-
-        if (addon.ShimsEnabled()) {
-          NS_ConvertUTF16toUTF8 id(addon.Id());
-          Unused << xpc::AllowCPOWsInAddon(id, true);
         }
       }
     }
@@ -595,8 +563,8 @@ nsresult AddonManagerStartup::EncodeBlob(JS::HandleValue value, JSContext* cx,
 nsresult AddonManagerStartup::DecodeBlob(JS::HandleValue value, JSContext* cx,
                                          JS::MutableHandleValue result) {
   NS_ENSURE_TRUE(value.isObject() &&
-                     JS_IsArrayBufferObject(&value.toObject()) &&
-                     JS_ArrayBufferHasData(&value.toObject()),
+                     JS::IsArrayBufferObject(&value.toObject()) &&
+                     JS::ArrayBufferHasData(&value.toObject()),
                  NS_ERROR_INVALID_ARG);
 
   StructuredCloneData holder;
@@ -609,8 +577,8 @@ nsresult AddonManagerStartup::DecodeBlob(JS::HandleValue value, JSContext* cx,
     bool isShared;
 
     nsDependentCSubstring lz4(
-        reinterpret_cast<char*>(JS_GetArrayBufferData(obj, &isShared, nogc)),
-        JS_GetArrayBufferByteLength(obj));
+        reinterpret_cast<char*>(JS::GetArrayBufferData(obj, &isShared, nogc)),
+        JS::GetArrayBufferByteLength(obj));
 
     MOZ_TRY_VAR(data, DecodeLZ4(lz4, STRUCTURED_CLONE_MAGIC));
   }
@@ -624,24 +592,11 @@ nsresult AddonManagerStartup::DecodeBlob(JS::HandleValue value, JSContext* cx,
   ;
 }
 
-nsresult AddonManagerStartup::EnumerateZipFile(nsIFile* file,
-                                               const nsACString& pattern,
-                                               uint32_t* countOut,
-                                               char16_t*** entriesOut) {
-  NS_ENSURE_ARG_POINTER(file);
-  NS_ENSURE_ARG_POINTER(countOut);
-  NS_ENSURE_ARG_POINTER(entriesOut);
-
-  nsCOMPtr<nsIZipReaderCache> zipCache;
-  MOZ_TRY_VAR(zipCache, GetJarCache());
-
-  nsCOMPtr<nsIZipReader> zip;
-  MOZ_TRY(zipCache->GetZip(file, getter_AddRefs(zip)));
-
+static nsresult EnumerateZip(nsIZipReader* zip, const nsACString& pattern,
+                             nsTArray<nsString>& results) {
   nsCOMPtr<nsIUTF8StringEnumerator> entries;
   MOZ_TRY(zip->FindEntries(pattern, getter_AddRefs(entries)));
 
-  nsTArray<nsString> results;
   bool hasMore;
   while (NS_SUCCEEDED(entries->HasMore(&hasMore)) && hasMore) {
     nsAutoCString name;
@@ -650,26 +605,60 @@ nsresult AddonManagerStartup::EnumerateZipFile(nsIFile* file,
     results.AppendElement(NS_ConvertUTF8toUTF16(name));
   }
 
-  auto strResults = MakeUnique<char16_t* []>(results.Length());
-  for (uint32_t i = 0; i < results.Length(); i++) {
-    strResults[i] = ToNewUnicode(results[i]);
-  }
-
-  *countOut = results.Length();
-  *entriesOut = strResults.release();
-
   return NS_OK;
 }
 
-nsresult AddonManagerStartup::Reset() {
-  MOZ_RELEASE_ASSERT(xpc::IsInAutomation());
+nsresult AddonManagerStartup::EnumerateJAR(nsIURI* uri,
+                                           const nsACString& pattern,
+                                           nsTArray<nsString>& results) {
+  nsCOMPtr<nsIZipReaderCache> zipCache;
+  MOZ_TRY_VAR(zipCache, GetJarCache());
 
-  mInitialized = false;
+  nsCOMPtr<nsIZipReader> zip;
+  nsCOMPtr<nsIFile> file;
+  if (nsCOMPtr<nsIJARURI> jarURI = do_QueryInterface(uri)) {
+    nsCOMPtr<nsIURI> fileURI;
+    nsCString entry;
+    MOZ_TRY(ParseJARURI(jarURI, getter_AddRefs(fileURI), entry));
 
-  mExtensionPaths.Clear();
-  mThemePaths.Clear();
+    MOZ_TRY_VAR(file, GetFile(fileURI));
+    MOZ_TRY(zipCache->GetInnerZip(file, Substring(entry, 1),
+                                  getter_AddRefs(zip)));
+  } else {
+    MOZ_TRY_VAR(file, GetFile(uri));
+    MOZ_TRY(zipCache->GetZip(file, getter_AddRefs(zip)));
+  }
+  MOZ_ASSERT(zip);
 
-  return NS_OK;
+  return EnumerateZip(zip, pattern, results);
+}
+
+nsresult AddonManagerStartup::EnumerateJARSubtree(nsIURI* uri,
+                                                  nsTArray<nsString>& results) {
+  nsCOMPtr<nsIURI> fileURI;
+  nsCString entry;
+  MOZ_TRY(ParseJARURI(uri, getter_AddRefs(fileURI), entry));
+
+  // Mangle the path into a pattern to match all child entries by escaping any
+  // existing pattern matching metacharacters it contains and appending "/*".
+  NS_NAMED_LITERAL_CSTRING(metaChars, "[]()?*~|$\\");
+
+  nsCString pattern;
+  pattern.SetCapacity(entry.Length());
+
+  // The first character of the entry name is "/", which we want to skip.
+  for (auto chr : MakeSpan(Substring(entry, 1))) {
+    if (metaChars.FindChar(chr) >= 0) {
+      pattern.Append('\\');
+    }
+    pattern.Append(chr);
+  }
+  if (!pattern.IsEmpty() && !StringEndsWith(pattern, NS_LITERAL_CSTRING("/"))) {
+    pattern.Append('/');
+  }
+  pattern.Append('*');
+
+  return EnumerateJAR(fileURI, pattern, results);
 }
 
 nsresult AddonManagerStartup::InitializeURLPreloader() {
@@ -687,6 +676,25 @@ nsresult AddonManagerStartup::InitializeURLPreloader() {
 namespace {
 static bool sObserverRegistered;
 
+struct ContentEntry final {
+  explicit ContentEntry(nsTArray<nsCString>& aArgs, uint8_t aFlags = 0)
+      : mArgs(aArgs), mFlags(aFlags) {}
+
+  ContentEntry(const ContentEntry& other)
+      : mArgs(other.mArgs), mFlags(other.mFlags) {}
+
+  AutoTArray<nsCString, 2> mArgs;
+  uint8_t mFlags;
+};
+
+};  // anonymous namespace
+};  // namespace mozilla
+
+DECLARE_USE_COPY_CONSTRUCTORS(mozilla::ContentEntry);
+
+namespace mozilla {
+namespace {
+
 class RegistryEntries final : public nsIJSRAIIHelper,
                               public LinkedListElement<RegistryEntries> {
  public:
@@ -697,10 +705,11 @@ class RegistryEntries final : public nsIJSRAIIHelper,
   using Locale = AutoTArray<nsCString, 3>;
 
   RegistryEntries(FileLocation& location, nsTArray<Override>&& overrides,
-                  nsTArray<Locale>&& locales)
+                  nsTArray<ContentEntry>&& content, nsTArray<Locale>&& locales)
       : mLocation(location),
-        mOverrides(Move(overrides)),
-        mLocales(Move(locales)) {}
+        mOverrides(std::move(overrides)),
+        mContent(std::move(content)),
+        mLocales(std::move(locales)) {}
 
   void Register();
 
@@ -710,6 +719,7 @@ class RegistryEntries final : public nsIJSRAIIHelper,
  private:
   FileLocation mLocation;
   const nsTArray<Override> mOverrides;
+  const nsTArray<ContentEntry> mContent;
   const nsTArray<Locale> mLocales;
 };
 
@@ -726,6 +736,11 @@ void RegistryEntries::Register() {
     cr->ManifestOverride(context, 0, const_cast<char**>(args), 0);
   }
 
+  for (auto& content : mContent) {
+    const char* args[] = {content.mArgs[0].get(), content.mArgs[1].get()};
+    cr->ManifestContent(context, 0, const_cast<char**>(args), content.mFlags);
+  }
+
   for (auto& locale : mLocales) {
     const char* args[] = {locale[0].get(), locale[1].get(), locale[2].get()};
     cr->ManifestLocale(context, 0, const_cast<char**>(args), 0);
@@ -736,6 +751,13 @@ NS_IMETHODIMP
 RegistryEntries::Destruct() {
   if (isInList()) {
     remove();
+
+    // No point in doing I/O to check for new chrome during shutdown, return
+    // early in that case.
+    nsCOMPtr<nsIAppStartup> appStartup = components::AppStartup::Service();
+    if (!appStartup || appStartup->GetShuttingDown()) {
+      return NS_OK;
+    }
 
     // When we remove dynamic entries from the registry, we need to rebuild it
     // in order to ensure a consistent state. See comments in Observe().
@@ -767,6 +789,7 @@ AddonManagerStartup::RegisterChrome(nsIURI* manifestURI,
   MOZ_TRY_VAR(location, GetFileLocation(manifestURI));
 
   nsTArray<RegistryEntries::Locale> locales;
+  nsTArray<ContentEntry> content;
   nsTArray<RegistryEntries::Override> overrides;
 
   JS::RootedObject locs(cx, &locations.toObject());
@@ -794,6 +817,17 @@ AddonManagerStartup::RegisterChrome(nsIURI* manifestURI,
     if (type.EqualsLiteral("override")) {
       NS_ENSURE_TRUE(vals.Length() == 2, NS_ERROR_INVALID_ARG);
       overrides.AppendElement(vals);
+    } else if (type.EqualsLiteral("content")) {
+      if (vals.Length() == 3 &&
+          vals[2].EqualsLiteral("contentaccessible=yes")) {
+        NS_ENSURE_TRUE(xpc::IsInAutomation(), NS_ERROR_INVALID_ARG);
+        vals.RemoveElementAt(2);
+        content.AppendElement(
+            ContentEntry(vals, nsChromeRegistry::CONTENT_ACCESSIBLE));
+      } else {
+        NS_ENSURE_TRUE(vals.Length() == 2, NS_ERROR_INVALID_ARG);
+        content.AppendElement(ContentEntry(vals));
+      }
     } else if (type.EqualsLiteral("locale")) {
       NS_ENSURE_TRUE(vals.Length() == 3, NS_ERROR_INVALID_ARG);
       locales.AppendElement(vals);
@@ -810,8 +844,8 @@ AddonManagerStartup::RegisterChrome(nsIURI* manifestURI,
     sObserverRegistered = true;
   }
 
-  auto entry =
-      MakeRefPtr<RegistryEntries>(location, Move(overrides), Move(locales));
+  auto entry = MakeRefPtr<RegistryEntries>(
+      location, std::move(overrides), std::move(content), std::move(locales));
 
   entry->Register();
   GetRegistryEntries().insertBack(entry);

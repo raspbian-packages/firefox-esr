@@ -9,9 +9,9 @@
 
 #include "mozilla/IHistory.h"
 #include "mozilla/MemoryReporting.h"
+#include "mozilla/Move.h"
 #include "mozilla/Mutex.h"
 #include "mozIAsyncHistory.h"
-#include "nsIDownloadHistory.h"
 #include "Database.h"
 
 #include "mozilla/dom/Link.h"
@@ -20,7 +20,6 @@
 #include "nsString.h"
 #include "nsURIHashKey.h"
 #include "nsTObserverArray.h"
-#include "nsDeque.h"
 #include "nsIMemoryReporter.h"
 #include "nsIObserver.h"
 #include "mozIStorageConnection.h"
@@ -52,14 +51,12 @@ class ConcurrentStatementsHolder;
 #define NOTIFY_VISITS_CHUNK_SIZE 100
 
 class History final : public IHistory,
-                      public nsIDownloadHistory,
                       public mozIAsyncHistory,
                       public nsIObserver,
                       public nsIMemoryReporter {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_IHISTORY
-  NS_DECL_NSIDOWNLOADHISTORY
   NS_DECL_MOZIASYNCHISTORY
   NS_DECL_NSIOBSERVER
   NS_DECL_NSIMEMORYREPORTER
@@ -168,13 +165,14 @@ class History final : public IHistory,
    * Mark all links for the given URI in the given document as visited. Used
    * within NotifyVisited.
    */
-  void NotifyVisitedForDocument(nsIURI* aURI, nsIDocument* aDocument);
+  void NotifyVisitedForDocument(nsIURI* aURI,
+                                mozilla::dom::Document* aDocument);
 
   /**
    * Dispatch a runnable for the document passed in which will call
    * NotifyVisitedForDocument with the correct URI and Document.
    */
-  void DispatchNotifyVisited(nsIURI* aURI, nsIDocument* aDocument);
+  void DispatchNotifyVisited(nsIURI* aURI, mozilla::dom::Document* aDocument);
 
   /**
    * The database handle.  This is initialized lazily by the first call to
@@ -206,8 +204,11 @@ class History final : public IHistory,
   class KeyClass : public nsURIHashKey {
    public:
     explicit KeyClass(const nsIURI* aURI) : nsURIHashKey(aURI) {}
-    KeyClass(const KeyClass& aOther) : nsURIHashKey(aOther) {
-      NS_NOTREACHED("Do not call me!");
+    KeyClass(KeyClass&& aOther)
+        : nsURIHashKey(std::move(aOther)),
+          array(std::move(aOther.array)),
+          mVisited(std::move(aOther.mVisited)) {
+      MOZ_ASSERT_UNREACHABLE("Do not call me!");
     }
     size_t SizeOfExcludingThis(mozilla::MallocSizeOf aMallocSizeOf) const {
       return array.ShallowSizeOfExcludingThis(aMallocSizeOf);
@@ -225,8 +226,8 @@ class History final : public IHistory,
   class RecentURIKey : public nsURIHashKey {
    public:
     explicit RecentURIKey(const nsIURI* aURI) : nsURIHashKey(aURI) {}
-    RecentURIKey(const RecentURIKey& aOther) : nsURIHashKey(aOther) {
-      NS_NOTREACHED("Do not call me!");
+    RecentURIKey(RecentURIKey&& aOther) : nsURIHashKey(std::move(aOther)) {
+      MOZ_ASSERT_UNREACHABLE("Do not call me!");
     }
     MOZ_INIT_OUTSIDE_CTOR PRTime time;
   };

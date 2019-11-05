@@ -53,6 +53,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.graphics.Bitmap;
@@ -662,17 +663,17 @@ public class LocalBrowserDB extends BrowserDB {
             // Only create a filter query with a maximum of 10 constraint words.
             final int constraintCount = Math.min(constraintWords.length, 10);
             for (int i = 0; i < constraintCount; i++) {
-                selection = DBUtils.concatenateWhere(selection, "(" + Combined.URL + " LIKE ? OR " +
-                                                                      Combined.TITLE + " LIKE ?)");
+                selection = DatabaseUtils.concatenateWhere(selection, "(" + Combined.URL + " LIKE ? OR " +
+                                                                            Combined.TITLE + " LIKE ?)");
                 String constraintWord =  "%" + constraintWords[i] + "%";
-                selectionArgs = DBUtils.appendSelectionArgs(selectionArgs,
-                                                            new String[] { constraintWord, constraintWord });
+                selectionArgs = DatabaseUtils.appendSelectionArgs(selectionArgs,
+                                                                  new String[] { constraintWord, constraintWord });
             }
         }
 
         if (urlFilter != null) {
-            selection = DBUtils.concatenateWhere(selection, "(" + Combined.URL + " NOT LIKE ?)");
-            selectionArgs = DBUtils.appendSelectionArgs(selectionArgs, new String[] { urlFilter.toString() });
+            selection = DatabaseUtils.concatenateWhere(selection, "(" + Combined.URL + " NOT LIKE ?)");
+            selectionArgs = DatabaseUtils.appendSelectionArgs(selectionArgs, new String[] { urlFilter.toString() });
         }
 
         // Order by combined remote+local frecency score.
@@ -1220,6 +1221,25 @@ public class LocalBrowserDB extends BrowserDB {
         cr.delete(mBookmarksUriWithProfile,
                   Bookmarks._ID + " = ? AND " + Bookmarks.PARENT + " != ? ",
                   new String[] { String.valueOf(id), String.valueOf(Bookmarks.FIXED_PINNED_LIST_ID) });
+    }
+
+    @Override
+    public void removeSoftDeleteBookmarks(ContentResolver cr) {
+        // BrowserProvider will bump parent's lastModified timestamp after successful deletion.
+        cr.delete(mBookmarksUriWithProfile,
+                Bookmarks.IS_DELETED + " = 1 AND " + Bookmarks.PARENT + " != ? ",
+                new String[] { String.valueOf(Bookmarks.FIXED_PINNED_LIST_ID) });
+    }
+
+    public void updateSoftDeleteForBookmarkWithId(ContentResolver cr, long id, boolean safeDelete) {
+        ContentValues values = new ContentValues();
+        values.put(Bookmarks.IS_DELETED, safeDelete ? 1 : 0);
+        // No need to update Bookmarks.SYNC_VERSION at this time. The user might revert this operation.
+
+        cr.update(mBookmarksUriWithProfile,
+                values,
+                "_id = ?",
+                new String[] { String.valueOf(id) });
     }
 
     @Override

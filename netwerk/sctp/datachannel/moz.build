@@ -20,6 +20,7 @@ FINAL_LIBRARY = 'xul'
 
 LOCAL_INCLUDES += [
     '/media/mtransport',
+    '/media/webrtc',
     '/netwerk/sctp/src',
 ]
 
@@ -29,8 +30,6 @@ if CONFIG['OS_TARGET'] == 'WINNT':
     DEFINES['__Userspace_os_Windows'] = 1
 else:
     DEFINES['__Userspace_os_%s' % CONFIG['OS_TARGET']] = 1
-
-NO_PGO = True # Don't PGO
 
 if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
     CXXFLAGS += ['-Wno-error=shadow']

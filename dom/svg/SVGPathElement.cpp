@@ -12,17 +12,17 @@
 #include "DOMSVGPathSegList.h"
 #include "gfx2DGlue.h"
 #include "gfxPlatform.h"
-#include "mozilla/dom/SVGPathElementBinding.h"
-#include "mozilla/gfx/2D.h"
-#include "mozilla/RefPtr.h"
-#include "nsCOMPtr.h"
 #include "nsComputedDOMStyle.h"
 #include "nsGkAtoms.h"
 #include "nsStyleConsts.h"
 #include "nsStyleStruct.h"
-#include "SVGContentUtils.h"
+#include "nsWindowSizes.h"
+#include "mozilla/dom/SVGPathElementBinding.h"
+#include "mozilla/gfx/2D.h"
+#include "mozilla/RefPtr.h"
+#include "mozilla/SVGContentUtils.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Path)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Path)
 
 using namespace mozilla::gfx;
 
@@ -31,15 +31,15 @@ namespace dom {
 
 JSObject* SVGPathElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SVGPathElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGPathElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGPathElement::SVGPathElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGPathElementBase(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGPathElementBase(std::move(aNodeInfo)) {}
 
 //----------------------------------------------------------------------
 // memory reporting methods
@@ -51,7 +51,7 @@ void SVGPathElement::AddSizeOfExcludingThis(nsWindowSizes& aSizes,
 }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGPathElement)
 
@@ -214,9 +214,10 @@ already_AddRefed<DOMSVGPathSegList> SVGPathElement::AnimatedPathSegList() {
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-/* virtual */ bool SVGPathElement::HasValidDimensions() const {
+/* virtual */
+bool SVGPathElement::HasValidDimensions() const {
   return !mD.GetAnimValue().IsEmpty();
 }
 
@@ -244,36 +245,8 @@ bool SVGPathElement::AttributeDefinesGeometry(const nsAtom* aName) {
 
 bool SVGPathElement::IsMarkable() { return true; }
 
-void SVGPathElement::GetMarkPoints(nsTArray<nsSVGMark>* aMarks) {
+void SVGPathElement::GetMarkPoints(nsTArray<SVGMark>* aMarks) {
   mD.GetAnimValue().GetMarkerPositioningData(aMarks);
-}
-
-float SVGPathElement::GetPathLengthScale(PathLengthScaleForType aFor) {
-  MOZ_ASSERT(aFor == eForTextPath || aFor == eForStroking, "Unknown enum");
-  if (mPathLength.IsExplicitlySet()) {
-    float authorsPathLengthEstimate = mPathLength.GetAnimValue();
-    if (authorsPathLengthEstimate > 0) {
-      RefPtr<Path> path = GetOrBuildPathForMeasuring();
-      if (!path) {
-        // The path is empty or invalid so its length must be zero and
-        // we know that 0 / authorsPathLengthEstimate = 0.
-        return 0.0;
-      }
-      if (aFor == eForTextPath) {
-        // For textPath, a transform on the referenced path affects the
-        // textPath layout, so when calculating the actual path length
-        // we need to take that into account.
-        gfxMatrix matrix = PrependLocalTransformsTo(gfxMatrix());
-        if (!matrix.IsIdentity()) {
-          RefPtr<PathBuilder> builder =
-              path->TransformedCopyToBuilder(ToMatrix(matrix));
-          path = builder->Finish();
-        }
-      }
-      return path->ComputeLength() / authorsPathLengthEstimate;
-    }
-  }
-  return 1.0;
 }
 
 already_AddRefed<Path> SVGPathElement::BuildPath(PathBuilder* aBuilder) {
@@ -287,10 +260,10 @@ already_AddRefed<Path> SVGPathElement::BuildPath(PathBuilder* aBuilder) {
   uint8_t strokeLineCap = NS_STYLE_STROKE_LINECAP_BUTT;
   Float strokeWidth = 0;
 
-  RefPtr<nsStyleContext> styleContext =
-      nsComputedDOMStyle::GetStyleContextNoFlush(this, nullptr);
-  if (styleContext) {
-    const nsStyleSVG* style = styleContext->StyleSVG();
+  RefPtr<ComputedStyle> computedStyle =
+      nsComputedDOMStyle::GetComputedStyleNoFlush(this, nullptr);
+  if (computedStyle) {
+    const nsStyleSVG* style = computedStyle->StyleSVG();
     // Note: the path that we return may be used for hit-testing, and SVG
     // exposes hit-testing of strokes that are not actually painted. For that
     // reason we do not check for eStyleSVGPaintType_None or check the stroke
@@ -298,7 +271,7 @@ already_AddRefed<Path> SVGPathElement::BuildPath(PathBuilder* aBuilder) {
     if (style->mStrokeLinecap != NS_STYLE_STROKE_LINECAP_BUTT) {
       strokeLineCap = style->mStrokeLinecap;
       strokeWidth =
-          SVGContentUtils::GetStrokeWidth(this, styleContext, nullptr);
+          SVGContentUtils::GetStrokeWidth(this, computedStyle, nullptr);
     }
   }
 

@@ -24,9 +24,13 @@ const BREAKDOWN = {
     by: "internalType",
     then: { by: "count", count: true, bytes: true },
   },
+  domNode: {
+    by: "descriptiveType",
+    then: { by: "count", count: true, bytes: true },
+  },
 };
 
-add_task(async function () {
+add_task(async function() {
   const firstSnapshotFilePath = saveNewHeapSnapshot();
   const secondSnapshotFilePath = saveNewHeapSnapshot();
 
@@ -36,15 +40,18 @@ add_task(async function () {
 
   ok(true, "Should have read both heap snapshot files");
 
-  const { delta } = await client.takeCensusDiff(firstSnapshotFilePath,
-                                                secondSnapshotFilePath,
-                                                { breakdown: BREAKDOWN });
+  const { delta } = await client.takeCensusDiff(
+    firstSnapshotFilePath,
+    secondSnapshotFilePath,
+    { breakdown: BREAKDOWN }
+  );
 
-  const { delta: deltaTreeNode }
-    = await client.takeCensusDiff(firstSnapshotFilePath,
-                                 secondSnapshotFilePath,
-                                 { breakdown: BREAKDOWN },
-                                 { asInvertedTreeNode: true });
+  const { delta: deltaTreeNode } = await client.takeCensusDiff(
+    firstSnapshotFilePath,
+    secondSnapshotFilePath,
+    { breakdown: BREAKDOWN },
+    { asInvertedTreeNode: true }
+  );
 
   // Have to manually set these because symbol properties aren't structured
   // cloned.

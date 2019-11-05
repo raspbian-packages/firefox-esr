@@ -36,7 +36,7 @@
 <!ENTITY newFeedAccountCmd.accesskey "r">
 <!ENTITY newIMContactCmd.label "Txat-kontaktua…">
 <!ENTITY newIMContactCmd.accesskey "x">
-<!ENTITY  newMessageCmd2.key "B">
+<!ENTITY  newMessageCmd2.key "N">
 <!ENTITY  newMessageCmd.key "M">
 <!ENTITY  newMessageCmd.label "Mezua">
 <!ENTITY  newMessageCmd.accesskey "m">
@@ -165,7 +165,7 @@
 <!ENTITY unreadFolders.label "Irakurri gabeak">
 <!ENTITY unreadFolders.accesskey "u">
 <!ENTITY favoriteFolders.label "Gogokoena">
-<!ENTITY favoriteFolders.accesskey "G">
+<!ENTITY favoriteFolders.accesskey "a">
 <!ENTITY recentFolders.label "Oraintsukoa">
 <!ENTITY recentFolders.accesskey "r">
 <!ENTITY compactVersion.label "Ikuspegi trinkoa">
@@ -440,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Ireki mezua">
 <!ENTITY openMessageWindowCmd.accesskey "I">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Ireki hizketaldian">
-<!ENTITY openConversationCmd.accesskey "h">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Ireki hizketaldian">
+<!ENTITY openInConversationCmd.accesskey "s">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Eranskinak">
 <!ENTITY openAttachmentListCmd.accesskey "r">
 <!ENTITY openFeedMessage1.label "Jarioen mezuak irekitzean">
@@ -605,6 +605,8 @@
 <!ENTITY tagButton.tooltip "Etiketatu mezuak">
 <!ENTITY compactButton.tooltip "Kendu ezabatutako mezuak hautatutako karpetatik">
 <!ENTITY appmenuButton1.tooltip "Bistaratu &brandShortName; menua">
+
+<!ENTITY addonsButton.tooltip "Kudeatu zure gehigarriak">
 
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Birbidali barnean">
@@ -792,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "m">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Oraintsukoa">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "O">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Gogokoak">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "a">
 <!ENTITY contextCopyMsgMenu.label "Kopiatu hona">
 <!ENTITY contextCopyMsgMenu.accesskey "K">
 <!ENTITY contextKillThreadMenu.label "Ezikusi haria">
@@ -811,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Inprimatzeko aurrebista">
 <!ENTITY contextPrintPreview.accesskey "b">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Berrezarri zutabeak lehenetsietara">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -857,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "Karpeta hau">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Erreproduzitu">
 <!ENTITY contextPlay.accesskey "p">
@@ -875,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

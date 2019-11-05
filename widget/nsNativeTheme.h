@@ -11,6 +11,7 @@
 
 #include "nsAlgorithm.h"
 #include "nsAtom.h"
+#include "nsColor.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
 #include "nsMargin.h"
@@ -21,10 +22,11 @@
 #include "nsIContent.h"
 
 class nsIFrame;
-class nsIPresShell;
 class nsPresContext;
 
 namespace mozilla {
+class ComputedStyle;
+enum class StyleAppearance : uint8_t;
 class EventStates;
 }  // namespace mozilla
 
@@ -51,13 +53,14 @@ class nsNativeTheme : public nsITimerCallback, public nsINamed {
   nsNativeTheme();
 
   // Returns the content state (hover, focus, etc), see EventStateManager.h
-  mozilla::EventStates GetContentState(nsIFrame* aFrame, uint8_t aWidgetType);
+  mozilla::EventStates GetContentState(nsIFrame* aFrame,
+                                       mozilla::StyleAppearance aAppearance);
 
   // Returns whether the widget is already styled by content
   // Normally called from ThemeSupportsWidget to turn off native theming
   // for elements that are already styled.
   bool IsWidgetStyled(nsPresContext* aPresContext, nsIFrame* aFrame,
-                      uint8_t aWidgetType);
+                      mozilla::StyleAppearance aAppearance);
 
   // Accessors to widget-specific state information
 
@@ -162,9 +165,6 @@ class nsNativeTheme : public nsITimerCallback, public nsINamed {
   // True if it's not a menubar item or menulist item
   bool IsRegularMenuItem(nsIFrame* aFrame);
 
-  bool IsMenuListEditable(nsIFrame* aFrame);
-
-  nsIPresShell* GetPresShell(nsIFrame* aFrame);
   static bool CheckBooleanAttr(nsIFrame* aFrame, nsAtom* aAtom);
   static int32_t CheckIntAttr(nsIFrame* aFrame, nsAtom* aAtom,
                               int32_t defaultValue);
@@ -186,6 +186,9 @@ class nsNativeTheme : public nsITimerCallback, public nsINamed {
 
   // scrollbar
   bool IsDarkBackground(nsIFrame* aFrame);
+  // custom scrollbar
+  typedef nscolor (*AutoColorGetter)(mozilla::ComputedStyle*);
+  bool IsWidgetScrollbarPart(mozilla::StyleAppearance aAppearance);
 
  private:
   uint32_t mAnimatedContentTimeout;

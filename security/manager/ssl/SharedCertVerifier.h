@@ -6,6 +6,7 @@
 #define SharedCertVerifier_h
 
 #include "CertVerifier.h"
+#include "EnterpriseRoots.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/TimeStamp.h"
 
@@ -20,18 +21,19 @@ class SharedCertVerifier : public mozilla::psm::CertVerifier {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(SharedCertVerifier)
 
   SharedCertVerifier(OcspDownloadConfig odc, OcspStrictConfig osc,
-                     OcspGetConfig ogc, mozilla::TimeDuration ocspSoftTimeout,
+                     mozilla::TimeDuration ocspSoftTimeout,
                      mozilla::TimeDuration ocspHardTimeout,
                      uint32_t certShortLifetimeInDays, PinningMode pinningMode,
                      SHA1Mode sha1Mode,
                      BRNameMatchingPolicy::Mode nameMatchingMode,
                      NetscapeStepUpPolicy netscapeStepUpPolicy,
                      CertificateTransparencyMode ctMode,
-                     DistrustedCAPolicy distrustedCAPolicy)
+                     DistrustedCAPolicy distrustedCAPolicy,
+                     const Vector<EnterpriseCert>& thirdPartyCerts)
       : mozilla::psm::CertVerifier(
-            odc, osc, ogc, ocspSoftTimeout, ocspHardTimeout,
-            certShortLifetimeInDays, pinningMode, sha1Mode, nameMatchingMode,
-            netscapeStepUpPolicy, ctMode, distrustedCAPolicy) {}
+            odc, osc, ocspSoftTimeout, ocspHardTimeout, certShortLifetimeInDays,
+            pinningMode, sha1Mode, nameMatchingMode, netscapeStepUpPolicy,
+            ctMode, distrustedCAPolicy, thirdPartyCerts) {}
 };
 
 }  // namespace psm

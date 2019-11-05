@@ -5,12 +5,12 @@
 <!ENTITY autoconfigWizard2.title         "Nastavenie existujúceho e-mailového účtu">
 <!ENTITY name.label                      "Vaše meno:">
 <!ENTITY name.accesskey                  "V">
-<!ENTITY name.placeholder                "Meno priezvisko">
+<!ENTITY name.placeholder                "Meno Priezvisko">
 <!ENTITY name.text                       "Vaše meno tak ako bude zobrazené ostatným">
 <!ENTITY email.label                     "E-mailová adresa:">
 <!ENTITY email.accesskey                 "E">
 <!-- LOCALIZATION NOTE(email.placeholder): Domain @example.com must stay in English -->
-<!ENTITY email2.placeholder              "you@example.com">
+<!ENTITY email2.placeholder              "vasa_adresa@example.com">
 <!ENTITY email.text                      "Vaša existujúca e-mailová adresa">
 <!ENTITY password.label                  "Heslo:">
 <!ENTITY password.accesskey              "H">
@@ -18,6 +18,13 @@
 <!ENTITY password.text                   "Voliteľné, bude použité len na overenie prihlasovacieho mena">
 <!ENTITY rememberPassword.label          "Zapamätať si heslo">
 <!ENTITY rememberPassword.accesskey      "m">
+
+<!ENTITY usernameEx.label                "Vaše prihlasovacie meno:">
+<!ENTITY usernameEx.accesskey            "l">
+<!-- LOCALIZATION NOTE(usernameEx.placeholder): YOURDOMAIN refers to the Windows domain in ActiveDirectory. yourusername refers to the user's account name in Windows. -->
+<!ENTITY usernameEx.placeholder          "YOURDOMAIN\yourusername">
+<!-- LOCALIZATION NOTE(usernameEx.text): Domain refers to the Windows domain in ActiveDirectory. We mean the user's login in Windows at the local corporate network. -->
+<!ENTITY usernameEx.text                 "Prihlásenie k doméne">
 
 <!ENTITY imapLong.label                  "IMAP (vzdialené priečinky)">
 <!ENTITY pop3Long.label                  "POP3 (uchováva poštu na disku počítača)">
@@ -30,7 +37,9 @@
 <!ENTITY ssl.label                       "SSL">
 <!ENTITY auth.label                      "Overenie">
 <!ENTITY imap.label                      "IMAP">
-<!ENTITY pop3.label                       "POP3">
+<!ENTITY pop3.label                      "POP3">
+<!-- LOCALIZATION NOTE(exchange.label): Do not translate Exchange, it is a product name. -->
+<!ENTITY exchange.label                  "Exchange">
 <!ENTITY smtp.label                      "SMTP">
 <!ENTITY autodetect.label                "Autodetekcia">
 <!-- LOCALIZATION NOTE(noEncryption.label): Neither SSL/TLS nor STARTTLS.
@@ -38,6 +47,9 @@
 <!ENTITY noEncryption.label              "Žiadne">
 <!ENTITY starttls.label                  "STARTTLS">
 <!ENTITY sslTls.label                    "SSL/TLS">
+
+<!-- LOCALIZATION NOTE(exchange-hostname.label): Do not translate Exchange, it is a product name. -->
+<!ENTITY exchange-hostname.label         "Server Exchange:">
 
 <!ENTITY advancedSetup.label             "Spresniť nastavenie">
 <!ENTITY advancedSetup.accesskey         "e">

@@ -22,6 +22,16 @@
 // for slightly more efficient SELECTs.
 #define MAX_CHARS_TO_HASH 1500U
 
+extern "C" {
+
+// Generates a new Places GUID. This function uses C linkage because it's
+// called from the Rust synced bookmarks mirror, on the storage thread.
+nsresult NS_GeneratePlacesGUID(nsACString* _guid) {
+  return mozilla::places::GenerateGUID(*_guid);
+}
+
+}  // extern "C"
+
 namespace mozilla {
 namespace places {
 
@@ -176,7 +186,7 @@ void ReverseString(const nsString& aInput, nsString& aReversed) {
 }
 
 static nsresult GenerateRandomBytes(uint32_t aSize, uint8_t* _buffer) {
-// On Windows, we'll use its built-in cryptographic API.
+  // On Windows, we'll use its built-in cryptographic API.
 #if defined(XP_WIN)
   const nsNavHistory* history = nsNavHistory::GetConstHistoryService();
   HCRYPTPROV cryptoProvider;
@@ -311,6 +321,55 @@ bool GetHiddenState(bool aIsRedirect, uint32_t aTransitionType) {
   return aTransitionType == nsINavHistoryService::TRANSITION_FRAMED_LINK ||
          aTransitionType == nsINavHistoryService::TRANSITION_EMBED ||
          aIsRedirect;
+}
+
+nsresult TokenizeQueryString(const nsACString& aQuery,
+                             nsTArray<QueryKeyValuePair>* aTokens) {
+  // Strip off the "place:" prefix
+  const uint32_t prefixlen = 6;  // = strlen("place:");
+  nsCString query;
+  if (aQuery.Length() >= prefixlen &&
+      Substring(aQuery, 0, prefixlen).EqualsLiteral("place:"))
+    query = Substring(aQuery, prefixlen);
+  else
+    query = aQuery;
+
+  int32_t keyFirstIndex = 0;
+  int32_t equalsIndex = 0;
+  for (uint32_t i = 0; i < query.Length(); i++) {
+    if (query[i] == '&') {
+      // new clause, save last one
+      if (i - keyFirstIndex > 1) {
+        if (!aTokens->AppendElement(
+                QueryKeyValuePair(query, keyFirstIndex, equalsIndex, i)))
+          return NS_ERROR_OUT_OF_MEMORY;
+      }
+      keyFirstIndex = equalsIndex = i + 1;
+    } else if (query[i] == '=') {
+      equalsIndex = i;
+    }
+  }
+
+  // handle last pair, if any
+  if (query.Length() - keyFirstIndex > 1) {
+    if (!aTokens->AppendElement(QueryKeyValuePair(query, keyFirstIndex,
+                                                  equalsIndex, query.Length())))
+      return NS_ERROR_OUT_OF_MEMORY;
+  }
+  return NS_OK;
+}
+
+void TokensToQueryString(const nsTArray<QueryKeyValuePair>& aTokens,
+                         nsACString& aQuery) {
+  aQuery = NS_LITERAL_CSTRING("place:");
+  for (uint32_t i = 0; i < aTokens.Length(); i++) {
+    if (i > 0) {
+      aQuery.Append("&");
+    }
+    aQuery.Append(aTokens[i].key);
+    aQuery.AppendLiteral("=");
+    aQuery.Append(aTokens[i].value);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

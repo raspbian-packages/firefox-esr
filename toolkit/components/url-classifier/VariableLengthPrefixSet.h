@@ -24,16 +24,17 @@ class VariableLengthPrefixSet final : public nsIMemoryReporter {
   VariableLengthPrefixSet();
 
   nsresult Init(const nsACString& aName);
-  nsresult SetPrefixes(
-      const mozilla::safebrowsing::PrefixStringMap& aPrefixMap);
+  nsresult SetPrefixes(mozilla::safebrowsing::PrefixStringMap& aPrefixMap);
   nsresult GetPrefixes(mozilla::safebrowsing::PrefixStringMap& aPrefixMap);
   nsresult GetFixedLengthPrefixes(FallibleTArray<uint32_t>& aPrefixes);
-  nsresult Matches(const nsACString& aFullHash, uint32_t* aLength);
-  nsresult IsEmpty(bool* aEmpty);
-  nsresult LoadFromFile(nsIFile* aFile);
-  nsresult StoreToFile(nsIFile* aFile);
+  nsresult Matches(const nsACString& aFullHash, uint32_t* aLength) const;
+  nsresult IsEmpty(bool* aEmpty) const;
 
-  size_t SizeOfIncludingThis(mozilla::MallocSizeOf mallocSizeOf);
+  nsresult WritePrefixes(nsCOMPtr<nsIOutputStream>& out) const;
+  nsresult LoadPrefixes(nsCOMPtr<nsIInputStream>& in);
+  uint32_t CalculatePreallocateSize() const;
+
+  size_t SizeOfIncludingThis(mozilla::MallocSizeOf mallocSizeOf) const;
 
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIMEMORYREPORTER
@@ -41,25 +42,21 @@ class VariableLengthPrefixSet final : public nsIMemoryReporter {
  private:
   virtual ~VariableLengthPrefixSet();
 
-  static const uint32_t MAX_BUFFER_SIZE = 64 * 1024;
   static const uint32_t PREFIXSET_VERSION_MAGIC = 1;
 
   bool BinarySearch(const nsACString& aFullHash, const nsACString& aPrefixes,
-                    uint32_t aPrefixSize);
-
-  uint32_t CalculatePreallocateSize();
-  nsresult WritePrefixes(nsIOutputStream* out);
-  nsresult LoadPrefixes(nsIInputStream* in);
+                    uint32_t aPrefixSize) const;
 
   // Lock to prevent races between the url-classifier thread (which does most
   // of the operations) and the main thread (which does memory reporting).
   // It should be held for all operations between Init() and destruction that
   // touch this class's data members.
-  mozilla::Mutex mLock;
+  mutable mozilla::Mutex mLock;
 
-  RefPtr<nsUrlClassifierPrefixSet> mFixedPrefixSet;
+  const RefPtr<nsUrlClassifierPrefixSet> mFixedPrefixSet;
   mozilla::safebrowsing::PrefixStringMap mVLPrefixSet;
 
+  nsCString mName;
   nsCString mMemoryReportPath;
 };
 

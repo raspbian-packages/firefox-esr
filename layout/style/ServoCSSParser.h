@@ -11,25 +11,16 @@
 
 #include "mozilla/gfx/Types.h"
 #include "mozilla/RefPtr.h"
+#include "mozilla/ServoStyleConsts.h"
 #include "mozilla/ServoTypes.h"
 #include "nsColor.h"
 #include "nsCSSPropertyID.h"
 #include "nsDOMCSSDeclaration.h"
 #include "nsStringFwd.h"
 
-class nsCSSValue;
-class nsIDocument;
 struct nsCSSRect;
 struct nsTimingFunction;
 struct RawServoDeclarationBlock;
-
-using RawGeckoGfxMatrix4x4 = mozilla::gfx::Float[16];
-
-namespace mozilla {
-namespace css {
-class Loader;
-}  // namespace css
-}  // namespace mozilla
 
 namespace mozilla {
 
@@ -37,9 +28,17 @@ class ServoStyleSet;
 class SharedFontList;
 struct URLExtraData;
 
+namespace css {
+class Loader;
+}
+
+namespace dom {
+class Document;
+}
+
 class ServoCSSParser {
  public:
-  using ParsingEnvironment = nsDOMCSSDeclaration::ServoCSSParsingEnvironment;
+  using ParsingEnvironment = nsDOMCSSDeclaration::ParsingEnvironment;
 
   /**
    * Returns whether the specified string can be parsed as a valid CSS
@@ -68,42 +67,6 @@ class ServoCSSParser {
                            const nsAString& aValue, nscolor* aResultColor,
                            bool* aWasCurrentColor = nullptr,
                            css::Loader* aLoader = nullptr);
-
-  /**
-   * Parses a IntersectionObserver's initialization dictionary's rootMargin
-   * property.
-   *
-   * @param aValue The rootMargin value.
-   * @param aResult The nsCSSRect object to write the result into.
-   * @return Whether the value was successfully parsed.
-   */
-  static bool ParseIntersectionObserverRootMargin(const nsAString& aValue,
-                                                  nsCSSRect* aResult);
-
-  /**
-   * Parses a @counter-style name.
-   *
-   * @param aValue The name to parse.
-   * @return The name as an atom, lowercased if a built-in counter style name,
-   *   or nullptr if parsing failed or if the name was invalid (like "inherit").
-   */
-  static already_AddRefed<nsAtom> ParseCounterStyleName(
-      const nsAString& aValue);
-
-  /**
-   * Parses a @counter-style descriptor.
-   *
-   * @param aDescriptor The descriptor to parse.
-   * @param aValue The value of the descriptor.
-   * @param aURLExtraData URL data for parsing. This would be used for
-   *   image value URL resolution.
-   * @param aResult The nsCSSValue to store the result in.
-   * @return Whether parsing succeeded.
-   */
-  static bool ParseCounterStyleDescriptor(nsCSSCounterDesc aDescriptor,
-                                          const nsAString& aValue,
-                                          URLExtraData* aURLExtraData,
-                                          nsCSSValue& aResult);
 
   /**
    * Parse a string representing a CSS property value into a
@@ -144,20 +107,7 @@ class ServoCSSParser {
    */
   static bool ParseTransformIntoMatrix(const nsAString& aValue,
                                        bool& aContains3DTransform,
-                                       RawGeckoGfxMatrix4x4& aResult);
-
-  /**
-   * Parse a font descriptor.
-   *
-   * @param aDescID The font descriptor id.
-   * @param aValue The specified value.
-   * @param aUrl The parser url extra data.
-   * @param aResult The parsed result. (output)
-   * @return Whether the value was successfully parsed.
-   */
-  static bool ParseFontDescriptor(nsCSSFontDesc aDescID,
-                                  const nsAString& aValue, URLExtraData* aUrl,
-                                  nsCSSValue& aResult);
+                                       gfx::Matrix4x4& aResult);
 
   /**
    * Parse a font shorthand for FontFaceSet matching, so we only care about
@@ -171,28 +121,20 @@ class ServoCSSParser {
    * @param aWeight The parsed FontWeight. (output)
    * @return Whether the value was successfully parsed.
    */
-  static bool ParseFontShorthandForMatching(const nsAString& aValue,
-                                            URLExtraData* aUrl,
-                                            RefPtr<SharedFontList>& aList,
-                                            nsCSSValue& aStyle,
-                                            nsCSSValue& aStretch,
-                                            nsCSSValue& aWeight);
+  static bool ParseFontShorthandForMatching(
+      const nsAString& aValue, URLExtraData* aUrl,
+      RefPtr<SharedFontList>& aList, StyleComputedFontStyleDescriptor& aStyle,
+      float& aStretch, float& aWeight);
 
   /**
-   * Get a URLExtraData from |nsIDocument|.
-   *
-   * @param aDocument The current document.
-   * @return The URLExtraData object.
+   * Get a URLExtraData from a document.
    */
-  static already_AddRefed<URLExtraData> GetURLExtraData(nsIDocument* aDocument);
+  static already_AddRefed<URLExtraData> GetURLExtraData(dom::Document*);
 
   /**
-   * Get a ParsingEnvironment from |nsIDocument|.
-   *
-   * @param aDocument The current document.
-   * @return The ParsingEnvironment object.
+   * Get a ParsingEnvironment from a document.
    */
-  static ParsingEnvironment GetParsingEnvironment(nsIDocument* aDocument);
+  static ParsingEnvironment GetParsingEnvironment(dom::Document*);
 };
 
 }  // namespace mozilla

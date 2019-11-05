@@ -33,7 +33,9 @@ enum class SurfaceType : int8_t {
   RECORDING,              /* Surface used for recording */
   TILED,                  /* Surface from a tiled DrawTarget */
   DATA_SHARED,            /* Data surface using shared memory */
-  CAPTURE                 /* Data from a DrawTargetCapture */
+  CAPTURE,                /* Data from a DrawTargetCapture */
+  DATA_RECYCLING_SHARED,  /* Data surface using shared memory */
+  OFFSET,                 /* Offset */
 };
 
 enum class SurfaceFormat : int8_t {
@@ -61,10 +63,17 @@ enum class SurfaceFormat : int8_t {
   A16,
 
   R8G8,
+  R16G16,
 
   // These ones are their own special cases.
   YUV,
-  NV12,
+  NV12,  // YUV 4:2:0 image with a plane of 8 bit Y samples followed by
+         // an interleaved U/V plane containing 8 bit 2x2 subsampled
+         // colour difference samples.
+  P016,  // Similar to NV12, but with 16 bits plane values
+  P010,  // Identical to P016 but the 6 least significant bits are 0.
+         // With DXGI in theory entirely compatible, however practice has
+         // shown that it's not the case.
   YUV422,
   HSV,
   Lab,
@@ -83,22 +92,145 @@ enum class SurfaceFormat : int8_t {
   A8R8G8B8_UINT32 = A8R8G8B8,  // 0xAARRGGBB
   X8R8G8B8_UINT32 = X8R8G8B8   // 0x00RRGGBB
 #else
-#error "bad endianness"
+#  error "bad endianness"
 #endif
 };
+
+static inline int BytesPerPixel(SurfaceFormat aFormat) {
+  switch (aFormat) {
+    case SurfaceFormat::A8:
+      return 1;
+    case SurfaceFormat::R5G6B5_UINT16:
+    case SurfaceFormat::A16:
+      return 2;
+    case SurfaceFormat::R8G8B8:
+    case SurfaceFormat::B8G8R8:
+      return 3;
+    case SurfaceFormat::HSV:
+    case SurfaceFormat::Lab:
+      return 3 * sizeof(float);
+    case SurfaceFormat::Depth:
+      return sizeof(uint16_t);
+    default:
+      return 4;
+  }
+}
 
 inline bool IsOpaque(SurfaceFormat aFormat) {
   switch (aFormat) {
     case SurfaceFormat::B8G8R8X8:
     case SurfaceFormat::R8G8B8X8:
+    case SurfaceFormat::X8R8G8B8:
     case SurfaceFormat::R5G6B5_UINT16:
+    case SurfaceFormat::R8G8B8:
+    case SurfaceFormat::B8G8R8:
+    case SurfaceFormat::R8G8:
+    case SurfaceFormat::HSV:
+    case SurfaceFormat::Lab:
+    case SurfaceFormat::Depth:
     case SurfaceFormat::YUV:
     case SurfaceFormat::NV12:
+    case SurfaceFormat::P010:
+    case SurfaceFormat::P016:
     case SurfaceFormat::YUV422:
       return true;
     default:
       return false;
   }
+}
+
+enum class YUVColorSpace : uint8_t {
+  BT601,
+  BT709,
+  BT2020,
+  // This represents the unknown format and is a valid value.
+  UNKNOWN,
+  _NUM_COLORSPACE
+};
+
+enum class ColorDepth : uint8_t {
+  COLOR_8,
+  COLOR_10,
+  COLOR_12,
+  COLOR_16,
+  UNKNOWN
+};
+
+static inline SurfaceFormat SurfaceFormatForColorDepth(ColorDepth aColorDepth) {
+  SurfaceFormat format = SurfaceFormat::A8;
+  switch (aColorDepth) {
+    case ColorDepth::COLOR_8:
+      break;
+    case ColorDepth::COLOR_10:
+    case ColorDepth::COLOR_12:
+    case ColorDepth::COLOR_16:
+      format = SurfaceFormat::A16;
+      break;
+    case ColorDepth::UNKNOWN:
+      MOZ_ASSERT_UNREACHABLE("invalid color depth value");
+  }
+  return format;
+}
+
+static inline uint32_t BitDepthForColorDepth(ColorDepth aColorDepth) {
+  uint32_t depth = 8;
+  switch (aColorDepth) {
+    case ColorDepth::COLOR_8:
+      break;
+    case ColorDepth::COLOR_10:
+      depth = 10;
+      break;
+    case ColorDepth::COLOR_12:
+      depth = 12;
+      break;
+    case ColorDepth::COLOR_16:
+      depth = 16;
+      break;
+    case ColorDepth::UNKNOWN:
+      MOZ_ASSERT_UNREACHABLE("invalid color depth value");
+  }
+  return depth;
+}
+
+static inline ColorDepth ColorDepthForBitDepth(uint8_t aBitDepth) {
+  ColorDepth depth = ColorDepth::COLOR_8;
+  switch (aBitDepth) {
+    case 8:
+      break;
+    case 10:
+      depth = ColorDepth::COLOR_10;
+      break;
+    case 12:
+      depth = ColorDepth::COLOR_12;
+      break;
+    case 16:
+      depth = ColorDepth::COLOR_16;
+      break;
+    default:
+      MOZ_ASSERT_UNREACHABLE("invalid color depth value");
+  }
+  return depth;
+}
+
+// 10 and 12 bits color depth image are using 16 bits integers for storage
+// As such we need to rescale the value from 10 or 12 bits to 16.
+static inline uint32_t RescalingFactorForColorDepth(ColorDepth aColorDepth) {
+  uint32_t factor = 1;
+  switch (aColorDepth) {
+    case ColorDepth::COLOR_8:
+      break;
+    case ColorDepth::COLOR_10:
+      factor = 64;
+      break;
+    case ColorDepth::COLOR_12:
+      factor = 16;
+      break;
+    case ColorDepth::COLOR_16:
+      break;
+    case ColorDepth::UNKNOWN:
+      MOZ_ASSERT_UNREACHABLE("invalid color depth value");
+  }
+  return factor;
 }
 
 enum class FilterType : int8_t {
@@ -127,7 +259,8 @@ enum class FilterType : int8_t {
   DISTANT_SPECULAR,
   CROP,
   PREMULTIPLY,
-  UNPREMULTIPLY
+  UNPREMULTIPLY,
+  OPACITY
 };
 
 enum class DrawTargetType : int8_t {
@@ -144,6 +277,7 @@ enum class BackendType : int8_t {
   RECORDING,
   DIRECT2D1_1,
   WEBRENDER_TEXT,
+  CAPTURE,  // Used for paths
 
   // Add new entries above this line.
   BACKEND_LAST
@@ -153,11 +287,9 @@ enum class FontType : int8_t {
   DWRITE,
   GDI,
   MAC,
-  SKIA,
-  CAIRO,
-  COREGRAPHICS,
   FONTCONFIG,
-  FREETYPE
+  FREETYPE,
+  UNKNOWN
 };
 
 enum class NativeSurfaceType : int8_t {
@@ -169,11 +301,9 @@ enum class NativeSurfaceType : int8_t {
 };
 
 enum class NativeFontType : int8_t {
-  DWRITE_FONT_FACE,
-  GDI_FONT_FACE,
-  MAC_FONT_FACE,
-  SKIA_FONT_FACE,
-  CAIRO_FONT_FACE
+  GDI_LOGFONT,
+  FREETYPE_FACE,
+  FONTCONFIG_PATTERN,
 };
 
 enum class FontStyle : int8_t { NORMAL, ITALIC, BOLD, BOLD_ITALIC };
@@ -324,13 +454,13 @@ enum class JobStatus { Complete, Wait, Yield, Error };
 typedef mozilla::gfx::SurfaceFormat gfxImageFormat;
 
 #if defined(XP_WIN) && defined(MOZ_GFX)
-#ifdef GFX2D_INTERNAL
-#define GFX2D_API __declspec(dllexport)
+#  ifdef GFX2D_INTERNAL
+#    define GFX2D_API __declspec(dllexport)
+#  else
+#    define GFX2D_API __declspec(dllimport)
+#  endif
 #else
-#define GFX2D_API __declspec(dllimport)
-#endif
-#else
-#define GFX2D_API
+#  define GFX2D_API
 #endif
 
 namespace mozilla {
@@ -398,7 +528,7 @@ static inline Corner operator++(Corner& aCorner) {
 }
 
 // Indices into "half corner" arrays (nsStyleCorners e.g.)
-enum HalfCorner {
+enum HalfCorner : uint8_t {
   // This order is important!
   eCornerTopLeftX = 0,
   eCornerTopLeftY = 1,

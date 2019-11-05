@@ -1,18 +1,11 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 //! A punctuated sequence of syntax tree nodes separated by punctuation.
 //!
 //! Lots of things in Rust are punctuated sequences.
 //!
 //! - The fields of a struct are `Punctuated<Field, Token![,]>`.
 //! - The segments of a path are `Punctuated<PathSegment, Token![::]>`.
-//! - The bounds on a generic parameter are `Punctuated<TypeParamBound, Token![+]>`.
+//! - The bounds on a generic parameter are `Punctuated<TypeParamBound,
+//!   Token![+]>`.
 //! - The arguments to a function call are `Punctuated<Expr, Token![,]>`.
 //!
 //! This module provides a common representation for these punctuated sequences
@@ -27,19 +20,22 @@
 //!                 ^^^^^ ~~~~~ ^^^^
 //! ```
 
-use std::iter::FromIterator;
-use std::ops::{Index, IndexMut};
-use std::slice;
-use std::vec;
 #[cfg(feature = "extra-traits")]
 use std::fmt::{self, Debug};
+#[cfg(any(feature = "full", feature = "derive"))]
+use std::iter;
+use std::iter::FromIterator;
+use std::ops::{Index, IndexMut};
+use std::option;
+use std::slice;
+use std::vec;
 
 #[cfg(feature = "parsing")]
-use synom::{Synom, PResult};
+use parse::{Parse, ParseStream, Result};
+#[cfg(any(feature = "full", feature = "derive"))]
+use private;
 #[cfg(feature = "parsing")]
-use buffer::Cursor;
-#[cfg(feature = "parsing")]
-use parse_error;
+use token::Token;
 
 /// A punctuated sequence of syntax tree nodes of type `T` separated by
 /// punctuation of type `P`.
@@ -50,19 +46,23 @@ use parse_error;
 #[cfg_attr(feature = "extra-traits", derive(Eq, PartialEq, Hash))]
 #[cfg_attr(feature = "clone-impls", derive(Clone))]
 pub struct Punctuated<T, P> {
-    inner: Vec<(T, Option<P>)>,
+    inner: Vec<(T, P)>,
+    last: Option<Box<T>>,
 }
 
 impl<T, P> Punctuated<T, P> {
     /// Creates an empty punctuated sequence.
     pub fn new() -> Punctuated<T, P> {
-        Punctuated { inner: Vec::new() }
+        Punctuated {
+            inner: Vec::new(),
+            last: None,
+        }
     }
 
     /// Determines whether this punctuated sequence is empty, meaning it
     /// contains no syntax tree nodes or punctuation.
     pub fn is_empty(&self) -> bool {
-        self.inner.len() == 0
+        self.inner.len() == 0 && self.last.is_none()
     }
 
     /// Returns the number of syntax tree nodes in this punctuated sequence.
@@ -70,47 +70,54 @@ impl<T, P> Punctuated<T, P> {
     /// This is the number of nodes of type `T`, not counting the punctuation of
     /// type `P`.
     pub fn len(&self) -> usize {
-        self.inner.len()
+        self.inner.len() + if self.last.is_some() { 1 } else { 0 }
     }
 
     /// Borrows the first punctuated pair in this sequence.
     pub fn first(&self) -> Option<Pair<&T, &P>> {
-        self.inner.first().map(|&(ref t, ref d)| match *d {
-            Some(ref d) => Pair::Punctuated(t, d),
-            None => Pair::End(t),
-        })
+        self.pairs().next()
     }
 
     /// Borrows the last punctuated pair in this sequence.
     pub fn last(&self) -> Option<Pair<&T, &P>> {
-        self.inner.last().map(|&(ref t, ref d)| match *d {
-            Some(ref d) => Pair::Punctuated(t, d),
-            None => Pair::End(t),
-        })
+        if self.last.is_some() {
+            self.last.as_ref().map(|t| Pair::End(t.as_ref()))
+        } else {
+            self.inner
+                .last()
+                .map(|&(ref t, ref d)| Pair::Punctuated(t, d))
+        }
     }
 
     /// Mutably borrows the last punctuated pair in this sequence.
     pub fn last_mut(&mut self) -> Option<Pair<&mut T, &mut P>> {
-        self.inner
-            .last_mut()
-            .map(|&mut (ref mut t, ref mut d)| match *d {
-                Some(ref mut d) => Pair::Punctuated(t, d),
-                None => Pair::End(t),
-            })
+        if self.last.is_some() {
+            self.last.as_mut().map(|t| Pair::End(t.as_mut()))
+        } else {
+            self.inner
+                .last_mut()
+                .map(|&mut (ref mut t, ref mut d)| Pair::Punctuated(t, d))
+        }
     }
 
     /// Returns an iterator over borrowed syntax tree nodes of type `&T`.
-    pub fn iter(&self) -> Iter<T, P> {
+    pub fn iter(&self) -> Iter<T> {
         Iter {
-            inner: self.inner.iter(),
+            inner: Box::new(PrivateIter {
+                inner: self.inner.iter(),
+                last: self.last.as_ref().map(Box::as_ref).into_iter(),
+            }),
         }
     }
 
     /// Returns an iterator over mutably borrowed syntax tree nodes of type
     /// `&mut T`.
-    pub fn iter_mut(&mut self) -> IterMut<T, P> {
+    pub fn iter_mut(&mut self) -> IterMut<T> {
         IterMut {
-            inner: self.inner.iter_mut(),
+            inner: Box::new(PrivateIterMut {
+                inner: self.inner.iter_mut(),
+                last: self.last.as_mut().map(Box::as_mut).into_iter(),
+            }),
         }
     }
 
@@ -119,6 +126,7 @@ impl<T, P> Punctuated<T, P> {
     pub fn pairs(&self) -> Pairs<T, P> {
         Pairs {
             inner: self.inner.iter(),
+            last: self.last.as_ref().map(Box::as_ref).into_iter(),
         }
     }
 
@@ -127,6 +135,7 @@ impl<T, P> Punctuated<T, P> {
     pub fn pairs_mut(&mut self) -> PairsMut<T, P> {
         PairsMut {
             inner: self.inner.iter_mut(),
+            last: self.last.as_mut().map(Box::as_mut).into_iter(),
         }
     }
 
@@ -135,6 +144,7 @@ impl<T, P> Punctuated<T, P> {
     pub fn into_pairs(self) -> IntoPairs<T, P> {
         IntoPairs {
             inner: self.inner.into_iter(),
+            last: self.last.map(|t| *t).into_iter(),
         }
     }
 
@@ -152,7 +162,7 @@ impl<T, P> Punctuated<T, P> {
     /// this method is called.
     pub fn push_value(&mut self, value: T) {
         assert!(self.empty_or_trailing());
-        self.inner.push((value, None));
+        self.last = Some(Box::new(value));
     }
 
     /// Appends a trailing punctuation onto the end of this punctuated sequence.
@@ -163,25 +173,25 @@ impl<T, P> Punctuated<T, P> {
     ///
     /// Panics if the sequence is empty or already has a trailing punctuation.
     pub fn push_punct(&mut self, punctuation: P) {
-        assert!(!self.is_empty());
-        let last = self.inner.last_mut().unwrap();
-        assert!(last.1.is_none());
-        last.1 = Some(punctuation);
+        assert!(self.last.is_some());
+        let last = self.last.take().unwrap();
+        self.inner.push((*last, punctuation));
     }
 
     /// Removes the last punctuated pair from this sequence, or `None` if the
     /// sequence is empty.
     pub fn pop(&mut self) -> Option<Pair<T, P>> {
-        self.inner.pop().map(|(t, d)| Pair::new(t, d))
+        if self.last.is_some() {
+            self.last.take().map(|t| Pair::End(*t))
+        } else {
+            self.inner.pop().map(|(t, d)| Pair::Punctuated(t, d))
+        }
     }
 
     /// Determines whether this punctuated sequence ends with a trailing
     /// punctuation.
     pub fn trailing_punct(&self) -> bool {
-        self.inner
-            .last()
-            .map(|last| last.1.is_some())
-            .unwrap_or(false)
+        self.last.is_none() && !self.is_empty()
     }
 
     /// Returns true if either this `Punctuated` is empty, or it has a trailing
@@ -189,23 +199,18 @@ impl<T, P> Punctuated<T, P> {
     ///
     /// Equivalent to `punctuated.is_empty() || punctuated.trailing_punct()`.
     pub fn empty_or_trailing(&self) -> bool {
-        self.inner
-            .last()
-            .map(|last| last.1.is_some())
-            .unwrap_or(true)
+        self.last.is_none()
     }
-}
 
-impl<T, P> Punctuated<T, P>
-where
-    P: Default,
-{
     /// Appends a syntax tree node onto the end of this punctuated sequence.
     ///
     /// If there is not a trailing punctuation in this sequence when this method
     /// is called, the default value of punctuation type `P` is inserted before
     /// the given value of type `T`.
-    pub fn push(&mut self, value: T) {
+    pub fn push(&mut self, value: T)
+    where
+        P: Default,
+    {
         if !self.empty_or_trailing() {
             self.push_punct(Default::default());
         }
@@ -218,21 +223,139 @@ where
     ///
     /// Panics if `index` is greater than the number of elements previously in
     /// this punctuated sequence.
-    pub fn insert(&mut self, index: usize, value: T) {
+    pub fn insert(&mut self, index: usize, value: T)
+    where
+        P: Default,
+    {
         assert!(index <= self.len());
 
         if index == self.len() {
             self.push(value);
         } else {
-            self.inner.insert(index, (value, Some(Default::default())));
+            self.inner.insert(index, (value, Default::default()));
         }
+    }
+
+    /// Parses zero or more occurrences of `T` separated by punctuation of type
+    /// `P`, with optional trailing punctuation.
+    ///
+    /// Parsing continues until the end of this parse stream. The entire content
+    /// of this parse stream must consist of `T` and `P`.
+    ///
+    /// *This function is available if Syn is built with the `"parsing"`
+    /// feature.*
+    #[cfg(feature = "parsing")]
+    pub fn parse_terminated(input: ParseStream) -> Result<Self>
+    where
+        T: Parse,
+        P: Parse,
+    {
+        Self::parse_terminated_with(input, T::parse)
+    }
+
+    /// Parses zero or more occurrences of `T` using the given parse function,
+    /// separated by punctuation of type `P`, with optional trailing
+    /// punctuation.
+    ///
+    /// Like [`parse_terminated`], the entire content of this stream is expected
+    /// to be parsed.
+    ///
+    /// [`parse_terminated`]: #method.parse_terminated
+    ///
+    /// *This function is available if Syn is built with the `"parsing"`
+    /// feature.*
+    #[cfg(feature = "parsing")]
+    pub fn parse_terminated_with(
+        input: ParseStream,
+        parser: fn(ParseStream) -> Result<T>,
+    ) -> Result<Self>
+    where
+        P: Parse,
+    {
+        let mut punctuated = Punctuated::new();
+
+        loop {
+            if input.is_empty() {
+                break;
+            }
+            let value = parser(input)?;
+            punctuated.push_value(value);
+            if input.is_empty() {
+                break;
+            }
+            let punct = input.parse()?;
+            punctuated.push_punct(punct);
+        }
+
+        Ok(punctuated)
+    }
+
+    /// Parses one or more occurrences of `T` separated by punctuation of type
+    /// `P`, not accepting trailing punctuation.
+    ///
+    /// Parsing continues as long as punctuation `P` is present at the head of
+    /// the stream. This method returns upon parsing a `T` and observing that it
+    /// is not followed by a `P`, even if there are remaining tokens in the
+    /// stream.
+    ///
+    /// *This function is available if Syn is built with the `"parsing"`
+    /// feature.*
+    #[cfg(feature = "parsing")]
+    pub fn parse_separated_nonempty(input: ParseStream) -> Result<Self>
+    where
+        T: Parse,
+        P: Token + Parse,
+    {
+        Self::parse_separated_nonempty_with(input, T::parse)
+    }
+
+    /// Parses one or more occurrences of `T` using the given parse function,
+    /// separated by punctuation of type `P`, not accepting trailing
+    /// punctuation.
+    ///
+    /// Like [`parse_separated_nonempty`], may complete early without parsing
+    /// the entire content of this stream.
+    ///
+    /// [`parse_separated_nonempty`]: #method.parse_separated_nonempty
+    ///
+    /// *This function is available if Syn is built with the `"parsing"`
+    /// feature.*
+    #[cfg(feature = "parsing")]
+    pub fn parse_separated_nonempty_with(
+        input: ParseStream,
+        parser: fn(ParseStream) -> Result<T>,
+    ) -> Result<Self>
+    where
+        P: Token + Parse,
+    {
+        let mut punctuated = Punctuated::new();
+
+        loop {
+            let value = parser(input)?;
+            punctuated.push_value(value);
+            if !P::peek(input.cursor()) {
+                break;
+            }
+            let punct = input.parse()?;
+            punctuated.push_punct(punct);
+        }
+
+        Ok(punctuated)
     }
 }
 
 #[cfg(feature = "extra-traits")]
 impl<T: Debug, P: Debug> Debug for Punctuated<T, P> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.inner.fmt(f)
+        let mut list = f.debug_list();
+        for &(ref t, ref p) in &self.inner {
+            list.entry(t);
+            list.entry(p);
+        }
+        if let Some(ref last) = self.last {
+            list.entry(last);
+        }
+        list.finish()
     }
 }
 
@@ -268,10 +391,18 @@ impl<T, P> FromIterator<Pair<T, P>> for Punctuated<T, P> {
 
 impl<T, P> Extend<Pair<T, P>> for Punctuated<T, P> {
     fn extend<I: IntoIterator<Item = Pair<T, P>>>(&mut self, i: I) {
+        assert!(self.empty_or_trailing());
+        let mut nomore = false;
         for pair in i {
+            if nomore {
+                panic!("Punctuated extended with items after a Pair::End");
+            }
             match pair {
-                Pair::Punctuated(a, b) => self.inner.push((a, Some(b))),
-                Pair::End(a) => self.inner.push((a, None)),
+                Pair::Punctuated(a, b) => self.inner.push((a, b)),
+                Pair::End(a) => {
+                    self.last = Some(Box::new(a));
+                    nomore = true;
+                }
             }
         }
     }
@@ -284,13 +415,14 @@ impl<T, P> IntoIterator for Punctuated<T, P> {
     fn into_iter(self) -> Self::IntoIter {
         IntoIter {
             inner: self.inner.into_iter(),
+            last: self.last.map(|t| *t).into_iter(),
         }
     }
 }
 
 impl<'a, T, P> IntoIterator for &'a Punctuated<T, P> {
     type Item = &'a T;
-    type IntoIter = Iter<'a, T, P>;
+    type IntoIter = Iter<'a, T>;
 
     fn into_iter(self) -> Self::IntoIter {
         Punctuated::iter(self)
@@ -299,7 +431,7 @@ impl<'a, T, P> IntoIterator for &'a Punctuated<T, P> {
 
 impl<'a, T, P> IntoIterator for &'a mut Punctuated<T, P> {
     type Item = &'a mut T;
-    type IntoIter = IterMut<'a, T, P>;
+    type IntoIter = IterMut<'a, T>;
 
     fn into_iter(self) -> Self::IntoIter {
         Punctuated::iter_mut(self)
@@ -318,17 +450,24 @@ impl<T, P> Default for Punctuated<T, P> {
 ///
 /// [module documentation]: index.html
 pub struct Pairs<'a, T: 'a, P: 'a> {
-    inner: slice::Iter<'a, (T, Option<P>)>,
+    inner: slice::Iter<'a, (T, P)>,
+    last: option::IntoIter<&'a T>,
 }
 
 impl<'a, T, P> Iterator for Pairs<'a, T, P> {
     type Item = Pair<&'a T, &'a P>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| match pair.1 {
-            Some(ref p) => Pair::Punctuated(&pair.0, p),
-            None => Pair::End(&pair.0),
-        })
+        self.inner
+            .next()
+            .map(|&(ref t, ref p)| Pair::Punctuated(t, p))
+            .or_else(|| self.last.next().map(Pair::End))
+    }
+}
+
+impl<'a, T, P> ExactSizeIterator for Pairs<'a, T, P> {
+    fn len(&self) -> usize {
+        self.inner.len() + self.last.len()
     }
 }
 
@@ -338,17 +477,24 @@ impl<'a, T, P> Iterator for Pairs<'a, T, P> {
 ///
 /// [module documentation]: index.html
 pub struct PairsMut<'a, T: 'a, P: 'a> {
-    inner: slice::IterMut<'a, (T, Option<P>)>,
+    inner: slice::IterMut<'a, (T, P)>,
+    last: option::IntoIter<&'a mut T>,
 }
 
 impl<'a, T, P> Iterator for PairsMut<'a, T, P> {
     type Item = Pair<&'a mut T, &'a mut P>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| match pair.1 {
-            Some(ref mut p) => Pair::Punctuated(&mut pair.0, p),
-            None => Pair::End(&mut pair.0),
-        })
+        self.inner
+            .next()
+            .map(|&mut (ref mut t, ref mut p)| Pair::Punctuated(t, p))
+            .or_else(|| self.last.next().map(Pair::End))
+    }
+}
+
+impl<'a, T, P> ExactSizeIterator for PairsMut<'a, T, P> {
+    fn len(&self) -> usize {
+        self.inner.len() + self.last.len()
     }
 }
 
@@ -358,17 +504,24 @@ impl<'a, T, P> Iterator for PairsMut<'a, T, P> {
 ///
 /// [module documentation]: index.html
 pub struct IntoPairs<T, P> {
-    inner: vec::IntoIter<(T, Option<P>)>,
+    inner: vec::IntoIter<(T, P)>,
+    last: option::IntoIter<T>,
 }
 
 impl<T, P> Iterator for IntoPairs<T, P> {
     type Item = Pair<T, P>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| match pair.1 {
-            Some(p) => Pair::Punctuated(pair.0, p),
-            None => Pair::End(pair.0),
-        })
+        self.inner
+            .next()
+            .map(|(t, p)| Pair::Punctuated(t, p))
+            .or_else(|| self.last.next().map(Pair::End))
+    }
+}
+
+impl<T, P> ExactSizeIterator for IntoPairs<T, P> {
+    fn len(&self) -> usize {
+        self.inner.len() + self.last.len()
     }
 }
 
@@ -378,14 +531,24 @@ impl<T, P> Iterator for IntoPairs<T, P> {
 ///
 /// [module documentation]: index.html
 pub struct IntoIter<T, P> {
-    inner: vec::IntoIter<(T, Option<P>)>,
+    inner: vec::IntoIter<(T, P)>,
+    last: option::IntoIter<T>,
 }
 
 impl<T, P> Iterator for IntoIter<T, P> {
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| pair.0)
+        self.inner
+            .next()
+            .map(|pair| pair.0)
+            .or_else(|| self.last.next())
+    }
+}
+
+impl<T, P> ExactSizeIterator for IntoIter<T, P> {
+    fn len(&self) -> usize {
+        self.inner.len() + self.last.len()
     }
 }
 
@@ -394,26 +557,52 @@ impl<T, P> Iterator for IntoIter<T, P> {
 /// Refer to the [module documentation] for details about punctuated sequences.
 ///
 /// [module documentation]: index.html
-pub struct Iter<'a, T: 'a, P: 'a> {
-    inner: slice::Iter<'a, (T, Option<P>)>,
+pub struct Iter<'a, T: 'a> {
+    inner: Box<ExactSizeIterator<Item = &'a T> + 'a>,
+}
+
+struct PrivateIter<'a, T: 'a, P: 'a> {
+    inner: slice::Iter<'a, (T, P)>,
+    last: option::IntoIter<&'a T>,
 }
 
 #[cfg(any(feature = "full", feature = "derive"))]
-impl<'a, T, P> Iter<'a, T, P> {
-    // Not public API.
-    #[doc(hidden)]
-    pub fn private_empty() -> Self {
+impl private {
+    pub fn empty_punctuated_iter<'a, T>() -> Iter<'a, T> {
         Iter {
-            inner: [].iter(),
+            inner: Box::new(iter::empty()),
         }
     }
 }
 
-impl<'a, T, P> Iterator for Iter<'a, T, P> {
+impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| &pair.0)
+        self.inner.next()
+    }
+}
+
+impl<'a, T> ExactSizeIterator for Iter<'a, T> {
+    fn len(&self) -> usize {
+        self.inner.len()
+    }
+}
+
+impl<'a, T, P> Iterator for PrivateIter<'a, T, P> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner
+            .next()
+            .map(|pair| &pair.0)
+            .or_else(|| self.last.next())
+    }
+}
+
+impl<'a, T, P> ExactSizeIterator for PrivateIter<'a, T, P> {
+    fn len(&self) -> usize {
+        self.inner.len() + self.last.len()
     }
 }
 
@@ -422,15 +611,52 @@ impl<'a, T, P> Iterator for Iter<'a, T, P> {
 /// Refer to the [module documentation] for details about punctuated sequences.
 ///
 /// [module documentation]: index.html
-pub struct IterMut<'a, T: 'a, P: 'a> {
-    inner: slice::IterMut<'a, (T, Option<P>)>,
+pub struct IterMut<'a, T: 'a> {
+    inner: Box<ExactSizeIterator<Item = &'a mut T> + 'a>,
 }
 
-impl<'a, T, P> Iterator for IterMut<'a, T, P> {
+struct PrivateIterMut<'a, T: 'a, P: 'a> {
+    inner: slice::IterMut<'a, (T, P)>,
+    last: option::IntoIter<&'a mut T>,
+}
+
+#[cfg(any(feature = "full", feature = "derive"))]
+impl private {
+    pub fn empty_punctuated_iter_mut<'a, T>() -> IterMut<'a, T> {
+        IterMut {
+            inner: Box::new(iter::empty()),
+        }
+    }
+}
+
+impl<'a, T> Iterator for IterMut<'a, T> {
     type Item = &'a mut T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| &mut pair.0)
+        self.inner.next()
+    }
+}
+
+impl<'a, T> ExactSizeIterator for IterMut<'a, T> {
+    fn len(&self) -> usize {
+        self.inner.len()
+    }
+}
+
+impl<'a, T, P> Iterator for PrivateIterMut<'a, T, P> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner
+            .next()
+            .map(|pair| &mut pair.0)
+            .or_else(|| self.last.next())
+    }
+}
+
+impl<'a, T, P> ExactSizeIterator for PrivateIterMut<'a, T, P> {
+    fn len(&self) -> usize {
+        self.inner.len() + self.last.len()
     }
 }
 
@@ -500,138 +726,26 @@ impl<T, P> Index<usize> for Punctuated<T, P> {
     type Output = T;
 
     fn index(&self, index: usize) -> &Self::Output {
-        &self.inner[index].0
+        if index == self.len() - 1 {
+            match self.last {
+                Some(ref t) => t,
+                None => &self.inner[index].0,
+            }
+        } else {
+            &self.inner[index].0
+        }
     }
 }
 
 impl<T, P> IndexMut<usize> for Punctuated<T, P> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.inner[index].0
-    }
-}
-
-#[cfg(feature = "parsing")]
-impl<T, P> Punctuated<T, P>
-where
-    T: Synom,
-    P: Synom,
-{
-    /// Parse **zero or more** syntax tree nodes with punctuation in between and
-    /// **no trailing** punctuation.
-    pub fn parse_separated(input: Cursor) -> PResult<Self> {
-        Self::parse_separated_with(input, T::parse)
-    }
-
-    /// Parse **one or more** syntax tree nodes with punctuation in bewteen and
-    /// **no trailing** punctuation.
-    /// allowing trailing punctuation.
-    pub fn parse_separated_nonempty(input: Cursor) -> PResult<Self> {
-        Self::parse_separated_nonempty_with(input, T::parse)
-    }
-
-    /// Parse **zero or more** syntax tree nodes with punctuation in between and
-    /// **optional trailing** punctuation.
-    pub fn parse_terminated(input: Cursor) -> PResult<Self> {
-        Self::parse_terminated_with(input, T::parse)
-    }
-
-    /// Parse **one or more** syntax tree nodes with punctuation in between and
-    /// **optional trailing** punctuation.
-    pub fn parse_terminated_nonempty(input: Cursor) -> PResult<Self> {
-        Self::parse_terminated_nonempty_with(input, T::parse)
-    }
-}
-
-#[cfg(feature = "parsing")]
-impl<T, P> Punctuated<T, P>
-where
-    P: Synom,
-{
-    /// Parse **zero or more** syntax tree nodes using the given parser with
-    /// punctuation in between and **no trailing** punctuation.
-    pub fn parse_separated_with(
-        input: Cursor,
-        parse: fn(Cursor) -> PResult<T>,
-    ) -> PResult<Self> {
-        Self::parse(input, parse, false)
-    }
-
-    /// Parse **one or more** syntax tree nodes using the given parser with
-    /// punctuation in between and **no trailing** punctuation.
-    pub fn parse_separated_nonempty_with(
-        input: Cursor,
-        parse: fn(Cursor) -> PResult<T>,
-    ) -> PResult<Self> {
-        match Self::parse(input, parse, false) {
-            Ok((ref b, _)) if b.is_empty() => parse_error(),
-            other => other,
-        }
-    }
-
-    /// Parse **zero or more** syntax tree nodes using the given parser with
-    /// punctuation in between and **optional trailing** punctuation.
-    pub fn parse_terminated_with(
-        input: Cursor,
-        parse: fn(Cursor) -> PResult<T>,
-    ) -> PResult<Self> {
-        Self::parse(input, parse, true)
-    }
-
-    /// Parse **one or more** syntax tree nodes using the given parser with
-    /// punctuation in between and **optional trailing** punctuation.
-    pub fn parse_terminated_nonempty_with(
-        input: Cursor,
-        parse: fn(Cursor) -> PResult<T>,
-    ) -> PResult<Self> {
-        match Self::parse(input, parse, true) {
-            Ok((ref b, _)) if b.is_empty() => parse_error(),
-            other => other,
-        }
-    }
-
-    fn parse(
-        mut input: Cursor,
-        parse: fn(Cursor) -> PResult<T>,
-        terminated: bool,
-    ) -> PResult<Self> {
-        let mut res = Punctuated::new();
-
-        // get the first element
-        match parse(input) {
-            Err(_) => Ok((res, input)),
-            Ok((o, i)) => {
-                if i == input {
-                    return parse_error();
-                }
-                input = i;
-                res.push_value(o);
-
-                // get the separator first
-                while let Ok((s, i2)) = P::parse(input) {
-                    if i2 == input {
-                        break;
-                    }
-
-                    // get the element next
-                    if let Ok((o3, i3)) = parse(i2) {
-                        if i3 == i2 {
-                            break;
-                        }
-                        res.push_punct(s);
-                        res.push_value(o3);
-                        input = i3;
-                    } else {
-                        break;
-                    }
-                }
-                if terminated {
-                    if let Ok((sep, after)) = P::parse(input) {
-                        res.push_punct(sep);
-                        input = after;
-                    }
-                }
-                Ok((res, input))
+        if index == self.len() - 1 {
+            match self.last {
+                Some(ref mut t) => t,
+                None => &mut self.inner[index].0,
             }
+        } else {
+            &mut self.inner[index].0
         }
     }
 }
@@ -639,14 +753,15 @@ where
 #[cfg(feature = "printing")]
 mod printing {
     use super::*;
-    use quote::{ToTokens, Tokens};
+    use proc_macro2::TokenStream;
+    use quote::{ToTokens, TokenStreamExt};
 
     impl<T, P> ToTokens for Punctuated<T, P>
     where
         T: ToTokens,
         P: ToTokens,
     {
-        fn to_tokens(&self, tokens: &mut Tokens) {
+        fn to_tokens(&self, tokens: &mut TokenStream) {
             tokens.append_all(self.pairs())
         }
     }
@@ -656,7 +771,7 @@ mod printing {
         T: ToTokens,
         P: ToTokens,
     {
-        fn to_tokens(&self, tokens: &mut Tokens) {
+        fn to_tokens(&self, tokens: &mut TokenStream) {
             match *self {
                 Pair::Punctuated(ref a, ref b) => {
                     a.to_tokens(tokens);

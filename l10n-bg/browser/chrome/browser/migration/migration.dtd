@@ -23,8 +23,6 @@
 <!ENTITY importFromChrome.accesskey     "C">
 <!ENTITY importFromChromeBeta.label     "Chrome Beta">
 <!ENTITY importFromChromeBeta.accesskey "B">
-<!ENTITY importFromChromeDev.label      "">
-<!ENTITY importFromChromeDev.accesskey  "">
 <!ENTITY importFromChromium.label       "Chromium">
 <!ENTITY importFromChromium.accesskey   "u">
 <!ENTITY importFromFirefox.label        "Firefox">
@@ -45,6 +43,6 @@
 <!ENTITY selectProfile.label            "Следните профили могат да бъдат внесени:">
 
 <!ENTITY done.title                     "Внасянето е завършено">
-<!ENTITY done.label                     "Следните елементи бяха успешно внесени:">
+<!ENTITY done.label                     "Следните елементи са внесени успешно:">
 
 <!ENTITY closeSourceBrowser.label       "Моля, преди да продължите се уверете, че избраният мрежов четец е затворен.">

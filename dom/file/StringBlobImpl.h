@@ -33,6 +33,11 @@ class StringBlobImpl final : public BaseBlobImpl, public nsIMemoryReporter {
 
   size_t GetAllocationSize() const override { return mData.Length(); }
 
+  size_t GetAllocationSize(
+      FallibleTArray<BlobImpl*>& aVisitedBlobImpls) const override {
+    return GetAllocationSize();
+  }
+
  private:
   StringBlobImpl(const nsACString& aData, const nsAString& aContentType);
 

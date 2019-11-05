@@ -69,11 +69,11 @@ TaskQueue::TaskQueue(already_AddRefed<nsIEventTarget> aTarget,
 
 TaskQueue::TaskQueue(already_AddRefed<nsIEventTarget> aTarget,
                      bool aSupportsTailDispatch)
-    : TaskQueue(Move(aTarget), "Unnamed", aSupportsTailDispatch) {}
+    : TaskQueue(std::move(aTarget), "Unnamed", aSupportsTailDispatch) {}
 
 TaskQueue::~TaskQueue() {
-  MonitorAutoLock mon(mQueueMonitor);
-  MOZ_ASSERT(mIsShutdown);
+  // No one is referencing this TaskQueue anymore, meaning no tasks can be
+  // pending as all Runner hold a reference to this TaskQueue.
 }
 
 TaskDispatcher& TaskQueue::TailDispatcher() {
@@ -150,7 +150,6 @@ RefPtr<ShutdownPromise> TaskQueue::BeginShutdown() {
   if (AbstractThread* currentThread = AbstractThread::GetCurrent()) {
     currentThread->TailDispatchTasksFor(this);
   }
-
   MonitorAutoLock mon(mQueueMonitor);
   mIsShutdown = true;
   RefPtr<ShutdownPromise> p = mShutdownPromise.Ensure(__func__);
@@ -164,12 +163,7 @@ bool TaskQueue::IsEmpty() {
   return mTasks.empty();
 }
 
-uint32_t TaskQueue::ImpreciseLengthForHeuristics() {
-  MonitorAutoLock mon(mQueueMonitor);
-  return mTasks.size();
-}
-
-bool TaskQueue::IsCurrentThreadIn() {
+bool TaskQueue::IsCurrentThreadIn() const {
   bool in = mRunningThread == GetCurrentPhysicalThread();
   return in;
 }

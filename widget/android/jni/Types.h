@@ -49,17 +49,29 @@ struct TypeAdapter<LocalRef<Cls>> {
 // clang is picky about function types, including attributes that modify the
 // calling convention, lining up.  GCC appears to be somewhat less so.
 #ifdef __clang__
-#define MOZ_JNICALL_ABI JNICALL
+#  define MOZ_JNICALL_ABI JNICALL
 #else
-#define MOZ_JNICALL_ABI
+#  define MOZ_JNICALL_ABI
 #endif
+
+// NDK r18 made jvalue* method parameters const. We detect the change directly
+// instead of using ndk-version.h in order to remain compatible with r15 for
+// now, which doesn't include those headers.
+class CallArgs {
+  static const jvalue* test(void (JNIEnv::*)(jobject, jmethodID,
+                                             const jvalue*));
+  static jvalue* test(void (JNIEnv::*)(jobject, jmethodID, jvalue*));
+
+ public:
+  using JValueType = decltype(test(&JNIEnv::CallVoidMethodA));
+};
 
 template <class Cls>
 constexpr jobject (JNIEnv::*TypeAdapter<LocalRef<Cls>>::Call)(
-    jobject, jmethodID, jvalue*) MOZ_JNICALL_ABI;
+    jobject, jmethodID, CallArgs::JValueType) MOZ_JNICALL_ABI;
 template <class Cls>
 constexpr jobject (JNIEnv::*TypeAdapter<LocalRef<Cls>>::StaticCall)(
-    jclass, jmethodID, jvalue*) MOZ_JNICALL_ABI;
+    jclass, jmethodID, CallArgs::JValueType) MOZ_JNICALL_ABI;
 template <class Cls>
 constexpr jobject (JNIEnv::*TypeAdapter<LocalRef<Cls>>::Get)(jobject, jfieldID);
 template <class Cls>

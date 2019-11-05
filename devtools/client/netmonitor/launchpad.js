@@ -21,7 +21,7 @@ pref("devtools.cache.disabled", false);
 pref("devtools.netmonitor.enabled", true);
 pref("devtools.netmonitor.filters", "[\"all\"]");
 pref("devtools.netmonitor.visibleColumns",
-     "[\"status\",\"method\",\"file\",\"domain\",\"cause\"," +
+     "[\"status\",\"method\",\"domain,\"file\",\"domain\",\"cause\"," +
      "\"type\",\"transferred\",\"contentSize\",\"waterfall\"]"
 );
 pref("devtools.netmonitor.panes-network-details-width", 550);
@@ -64,7 +64,7 @@ window.store = store;
  * stylesheet.
  */
 window.addEventListener("DOMContentLoaded", () => {
-  for (let link of document.head.querySelectorAll("link")) {
+  for (const link of document.head.querySelectorAll("link")) {
     link.href = link.href.replace(/(resource|chrome)\:\/\//, "/");
   }
 

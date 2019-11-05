@@ -7,9 +7,13 @@
 // Main header first:
 #include "nsSVGInnerSVGFrame.h"
 
-nsIFrame* NS_NewSVGInnerSVGFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext) {
-  return new (aPresShell) nsSVGInnerSVGFrame(aContext);
+#include "mozilla/PresShell.h"
+
+using namespace mozilla;
+
+nsIFrame* NS_NewSVGInnerSVGFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsSVGInnerSVGFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsSVGInnerSVGFrame)
@@ -18,8 +22,8 @@ NS_IMPL_FRAMEARENA_HELPERS(nsSVGInnerSVGFrame)
 // nsIFrame methods
 
 NS_QUERYFRAME_HEAD(nsSVGInnerSVGFrame)
-NS_QUERYFRAME_ENTRY(nsSVGInnerSVGFrame)
-NS_QUERYFRAME_ENTRY(nsISVGSVGFrame)
+  NS_QUERYFRAME_ENTRY(nsSVGInnerSVGFrame)
+  NS_QUERYFRAME_ENTRY(nsISVGSVGFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsSVGViewportFrame)
 
 #ifdef DEBUG

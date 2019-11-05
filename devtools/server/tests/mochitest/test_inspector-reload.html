@@ -7,13 +7,13 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=
   <meta charset="utf-8">
   <title>Test for Bug </title>
 
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript" src="inspector-helpers.js"></script>
   <script type="application/javascript">
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
   runNextTest();
 };
@@ -21,25 +21,19 @@ window.onload = function () {
 let gInspectee = null;
 let gWalker = null;
 
-addTest(function setup() {
-  let url = document.getElementById("inspectorContent").href;
-  attachURL(url, function (err, client, tab, doc) {
-    gInspectee = doc;
-    let {InspectorFront} = require("devtools/shared/fronts/inspector");
-    let inspector = InspectorFront(client, tab);
-    promiseDone(inspector.getWalker().then(walker => {
-      ok(walker, "getWalker() should return an actor.");
-      gWalker = walker;
-      return inspector.getWalker();
-    }).then(walker => {
-      dump(walker.actorID + "\n");
-      ok(walker === gWalker, "getWalker() twice should return the same walker.");
-    }).then(runNextTest));
-  });
+addTest(async function setup() {
+  const url = document.getElementById("inspectorContent").href;
+  const { target, doc } = await attachURL(url);
+  const inspector = await target.getInspector();
+  gInspectee = doc;
+  const walker = inspector.walker;
+  gWalker = await inspector.getWalker();
+  ok(walker === gWalker, "getWalker() twice should return the same walker.");
+  runNextTest();
 });
 
 addTest(function testReload() {
-  let oldRootID = gWalker.rootNode.actorID;
+  const oldRootID = gWalker.rootNode.actorID;
   // Load a node to populate the tree a bit.
   promiseDone(gWalker.querySelector(gWalker.rootNode, "#a").then(front => {
     gInspectee.defaultView.location.reload();

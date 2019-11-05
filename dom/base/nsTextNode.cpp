@@ -5,22 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
- * Implementation of DOM Core's nsIDOMText node.
+ * Implementation of DOM Core's Text node.
  */
 
 #include "nsTextNode.h"
 #include "mozilla/dom/TextBinding.h"
 #include "nsContentUtils.h"
 #include "mozilla/dom/DirectionalityUtils.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDOMEventListener.h"
-#include "nsIDocument.h"
 #include "nsThreadUtils.h"
 #include "nsStubMutationObserver.h"
 #include "mozilla/IntegerPrintfMacros.h"
 #ifdef DEBUG
-#include "nsRange.h"
+#  include "nsRange.h"
 #endif
-#include "nsDocument.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
@@ -33,9 +32,9 @@ class nsAttributeTextNode final : public nsTextNode,
  public:
   NS_DECL_ISUPPORTS_INHERITED
 
-  nsAttributeTextNode(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+  nsAttributeTextNode(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
                       int32_t aNameSpaceID, nsAtom* aAttrName)
-      : nsTextNode(aNodeInfo),
+      : nsTextNode(std::move(aNodeInfo)),
         mGrandparent(nullptr),
         mNameSpaceID(aNameSpaceID),
         mAttrName(aAttrName) {
@@ -43,26 +42,23 @@ class nsAttributeTextNode final : public nsTextNode,
     NS_ASSERTION(mAttrName, "Must have attr name");
   }
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
   NS_DECL_NSIMUTATIONOBSERVER_ATTRIBUTECHANGED
   NS_DECL_NSIMUTATIONOBSERVER_NODEWILLBEDESTROYED
 
-  virtual nsGenericDOMDataNode* CloneDataNode(mozilla::dom::NodeInfo* aNodeInfo,
-                                              bool aCloneText) const override {
-    already_AddRefed<mozilla::dom::NodeInfo> ni =
-        RefPtr<mozilla::dom::NodeInfo>(aNodeInfo).forget();
-    nsAttributeTextNode* it =
-        new nsAttributeTextNode(ni, mNameSpaceID, mAttrName);
-    if (it && aCloneText) {
+  virtual already_AddRefed<CharacterData> CloneDataNode(
+      mozilla::dom::NodeInfo* aNodeInfo, bool aCloneText) const override {
+    RefPtr<nsAttributeTextNode> it =
+        new nsAttributeTextNode(do_AddRef(aNodeInfo), mNameSpaceID, mAttrName);
+    if (aCloneText) {
       it->mText = mText;
     }
 
-    return it;
+    return it.forget();
   }
 
   // Public method for the event to run
@@ -90,29 +86,23 @@ nsTextNode::~nsTextNode() {}
 
 // Use the CC variant of this, even though this class does not define
 // a new CC participant, to make QIing to the CC interfaces faster.
-NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED(nsTextNode, nsGenericDOMDataNode,
-                                             nsIDOMNode, nsIDOMText,
-                                             nsIDOMCharacterData)
+NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED_0(nsTextNode, CharacterData)
 
 JSObject* nsTextNode::WrapNode(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) {
-  return TextBinding::Wrap(aCx, this, aGivenProto);
+  return Text_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-bool nsTextNode::IsNodeOfType(uint32_t aFlags) const {
-  return !(aFlags & ~(eTEXT | eDATA_NODE));
-}
+bool nsTextNode::IsNodeOfType(uint32_t aFlags) const { return false; }
 
-nsGenericDOMDataNode* nsTextNode::CloneDataNode(
+already_AddRefed<CharacterData> nsTextNode::CloneDataNode(
     mozilla::dom::NodeInfo* aNodeInfo, bool aCloneText) const {
-  already_AddRefed<mozilla::dom::NodeInfo> ni =
-      RefPtr<mozilla::dom::NodeInfo>(aNodeInfo).forget();
-  nsTextNode* it = new nsTextNode(ni);
+  RefPtr<nsTextNode> it = new nsTextNode(do_AddRef(aNodeInfo));
   if (aCloneText) {
     it->mText = mText;
   }
 
-  return it;
+  return it.forget();
 }
 
 nsresult nsTextNode::AppendTextForNormalize(const char16_t* aBuffer,
@@ -124,11 +114,9 @@ nsresult nsTextNode::AppendTextForNormalize(const char16_t* aBuffer,
                          &details);
 }
 
-nsresult nsTextNode::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                                nsIContent* aBindingParent,
-                                bool aCompileEventHandlers) {
-  nsresult rv = nsGenericDOMDataNode::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+nsresult nsTextNode::BindToTree(Document* aDocument, nsIContent* aParent,
+                                nsIContent* aBindingParent) {
+  nsresult rv = CharacterData::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   SetDirectionFromNewTextNode(this);
@@ -139,11 +127,7 @@ nsresult nsTextNode::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
 void nsTextNode::UnbindFromTree(bool aDeep, bool aNullParent) {
   ResetDirectionSetByTextNode(this);
 
-  nsGenericDOMDataNode::UnbindFromTree(aDeep, aNullParent);
-}
-
-bool nsTextNode::IsShadowDOMEnabled(JSContext* aCx, JSObject* aObject) {
-  return nsDocument::IsShadowDOMEnabled(aCx, aObject);
+  CharacterData::UnbindFromTree(aDeep, aNullParent);
 }
 
 #ifdef DEBUG
@@ -193,18 +177,17 @@ void nsTextNode::DumpContent(FILE* out, int32_t aIndent, bool aDumpAll) const {
 nsresult NS_NewAttributeContent(nsNodeInfoManager* aNodeInfoManager,
                                 int32_t aNameSpaceID, nsAtom* aAttrName,
                                 nsIContent** aResult) {
-  NS_PRECONDITION(aNodeInfoManager, "Missing nodeInfoManager");
-  NS_PRECONDITION(aAttrName, "Must have an attr name");
-  NS_PRECONDITION(aNameSpaceID != kNameSpaceID_Unknown, "Must know namespace");
+  MOZ_ASSERT(aNodeInfoManager, "Missing nodeInfoManager");
+  MOZ_ASSERT(aAttrName, "Must have an attr name");
+  MOZ_ASSERT(aNameSpaceID != kNameSpaceID_Unknown, "Must know namespace");
 
   *aResult = nullptr;
 
-  already_AddRefed<mozilla::dom::NodeInfo> ni =
-      aNodeInfoManager->GetTextNodeInfo();
+  RefPtr<mozilla::dom::NodeInfo> ni = aNodeInfoManager->GetTextNodeInfo();
 
-  nsAttributeTextNode* textNode =
-      new nsAttributeTextNode(ni, aNameSpaceID, aAttrName);
-  NS_ADDREF(*aResult = textNode);
+  RefPtr<nsAttributeTextNode> textNode =
+      new nsAttributeTextNode(ni.forget(), aNameSpaceID, aAttrName);
+  textNode.forget(aResult);
 
   return NS_OK;
 }
@@ -212,16 +195,14 @@ nsresult NS_NewAttributeContent(nsNodeInfoManager* aNodeInfoManager,
 NS_IMPL_ISUPPORTS_INHERITED(nsAttributeTextNode, nsTextNode,
                             nsIMutationObserver)
 
-nsresult nsAttributeTextNode::BindToTree(nsIDocument* aDocument,
+nsresult nsAttributeTextNode::BindToTree(Document* aDocument,
                                          nsIContent* aParent,
-                                         nsIContent* aBindingParent,
-                                         bool aCompileEventHandlers) {
-  NS_PRECONDITION(
+                                         nsIContent* aBindingParent) {
+  MOZ_ASSERT(
       aParent && aParent->GetParent(),
       "This node can't be a child of the document or of the document root");
 
-  nsresult rv = nsTextNode::BindToTree(aDocument, aParent, aBindingParent,
-                                       aCompileEventHandlers);
+  nsresult rv = nsTextNode::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   NS_ASSERTION(!mGrandparent, "We were already bound!");

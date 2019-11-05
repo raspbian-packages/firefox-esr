@@ -40,7 +40,7 @@ class SyncRunnable : public Runnable {
 
   explicit SyncRunnable(already_AddRefed<nsIRunnable> aRunnable)
       : Runnable("SyncRunnable"),
-        mRunnable(Move(aRunnable)),
+        mRunnable(std::move(aRunnable)),
         mMonitor("SyncRunnable"),
         mDone(false) {}
 

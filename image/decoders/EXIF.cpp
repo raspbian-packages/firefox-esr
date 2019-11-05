@@ -258,7 +258,7 @@ bool EXIFParser::MatchUInt16(const uint16_t aValue) {
       matched = BigEndian::readUint16(mCurrent) == aValue;
       break;
     default:
-      NS_NOTREACHED("Should know the byte order by now");
+      MOZ_ASSERT_UNREACHABLE("Should know the byte order by now");
       matched = false;
   }
 
@@ -283,7 +283,7 @@ bool EXIFParser::ReadUInt16(uint16_t& aValue) {
       aValue = BigEndian::readUint16(mCurrent);
       break;
     default:
-      NS_NOTREACHED("Should know the byte order by now");
+      MOZ_ASSERT_UNREACHABLE("Should know the byte order by now");
       matched = false;
   }
 
@@ -308,7 +308,7 @@ bool EXIFParser::ReadUInt32(uint32_t& aValue) {
       aValue = BigEndian::readUint32(mCurrent);
       break;
     default:
-      NS_NOTREACHED("Should know the byte order by now");
+      MOZ_ASSERT_UNREACHABLE("Should know the byte order by now");
       matched = false;
   }
 

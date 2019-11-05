@@ -7,12 +7,13 @@
 #include "ImageCapture.h"
 #include "mozilla/dom/BlobEvent.h"
 #include "mozilla/dom/DOMException.h"
+#include "mozilla/dom/Event.h"
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/ImageCaptureError.h"
 #include "mozilla/dom/ImageCaptureErrorEvent.h"
 #include "mozilla/dom/ImageCaptureErrorEventBinding.h"
 #include "mozilla/dom/VideoStreamTrack.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "CaptureTask.h"
 #include "MediaEngineSource.h"
 
@@ -25,8 +26,7 @@ LogModule* GetICLog() {
 
 namespace dom {
 
-NS_IMPL_CYCLE_COLLECTION_INHERITED(ImageCapture, DOMEventTargetHelper,
-                                   mVideoStreamTrack)
+NS_IMPL_CYCLE_COLLECTION_INHERITED(ImageCapture, DOMEventTargetHelper, mTrack)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(ImageCapture)
 NS_INTERFACE_MAP_END_INHERITING(DOMEventTargetHelper)
@@ -34,33 +34,35 @@ NS_INTERFACE_MAP_END_INHERITING(DOMEventTargetHelper)
 NS_IMPL_ADDREF_INHERITED(ImageCapture, DOMEventTargetHelper)
 NS_IMPL_RELEASE_INHERITED(ImageCapture, DOMEventTargetHelper)
 
-ImageCapture::ImageCapture(VideoStreamTrack* aVideoStreamTrack,
+ImageCapture::ImageCapture(VideoStreamTrack* aTrack,
                            nsPIDOMWindowInner* aOwnerWindow)
-    : DOMEventTargetHelper(aOwnerWindow) {
+    : DOMEventTargetHelper(aOwnerWindow), mTrack(aTrack) {
   MOZ_ASSERT(aOwnerWindow);
-  MOZ_ASSERT(aVideoStreamTrack);
-
-  mVideoStreamTrack = aVideoStreamTrack;
+  MOZ_ASSERT(aTrack);
 }
 
 ImageCapture::~ImageCapture() { MOZ_ASSERT(NS_IsMainThread()); }
 
 already_AddRefed<ImageCapture> ImageCapture::Constructor(
-    const GlobalObject& aGlobal, VideoStreamTrack& aTrack, ErrorResult& aRv) {
+    const GlobalObject& aGlobal, MediaStreamTrack& aTrack, ErrorResult& aRv) {
   nsCOMPtr<nsPIDOMWindowInner> win = do_QueryInterface(aGlobal.GetAsSupports());
   if (!win) {
     aRv.Throw(NS_ERROR_FAILURE);
     return nullptr;
   }
 
-  RefPtr<ImageCapture> object = new ImageCapture(&aTrack, win);
+  if (!aTrack.AsVideoStreamTrack()) {
+    aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+    return nullptr;
+  }
+
+  RefPtr<ImageCapture> object =
+      new ImageCapture(aTrack.AsVideoStreamTrack(), win);
 
   return object.forget();
 }
 
-VideoStreamTrack* ImageCapture::GetVideoStreamTrack() const {
-  return mVideoStreamTrack;
-}
+MediaStreamTrack* ImageCapture::GetVideoStreamTrack() const { return mTrack; }
 
 nsresult ImageCapture::TakePhotoByMediaEngine() {
   // Callback for TakPhoto(), it also monitor the principal. If principal
@@ -100,23 +102,23 @@ nsresult ImageCapture::TakePhotoByMediaEngine() {
       mVideoTrack->RemovePrincipalChangeObserver(this);
     }
 
-    RefPtr<VideoStreamTrack> mVideoTrack;
-    RefPtr<ImageCapture> mImageCapture;
+    const RefPtr<VideoStreamTrack> mVideoTrack;
+    const RefPtr<ImageCapture> mImageCapture;
     bool mPrincipalChanged;
   };
 
   RefPtr<MediaEnginePhotoCallback> callback =
-      new TakePhotoCallback(mVideoStreamTrack, this);
-  return mVideoStreamTrack->GetSource().TakePhoto(callback);
+      new TakePhotoCallback(mTrack, this);
+  return mTrack->GetSource().TakePhoto(callback);
 }
 
 void ImageCapture::TakePhoto(ErrorResult& aResult) {
-  // According to spec, VideoStreamTrack.readyState must be "live"; however
+  // According to spec, MediaStreamTrack.readyState must be "live"; however
   // gecko doesn't implement it yet (bug 910249). Instead of readyState, we
-  // check VideoStreamTrack.enable before bug 910249 is fixed.
+  // check MediaStreamTrack.enable before bug 910249 is fixed.
   // The error code should be INVALID_TRACK, but spec doesn't define it in
   // ImageCaptureError. So it returns PHOTO_ERROR here before spec updates.
-  if (!mVideoStreamTrack->Enabled()) {
+  if (!mTrack->Enabled()) {
     PostErrorEvent(ImageCaptureError::PHOTO_ERROR, NS_ERROR_FAILURE);
     return;
   }
@@ -159,7 +161,7 @@ nsresult ImageCapture::PostBlobEvent(Blob* aBlob) {
 
 nsresult ImageCapture::PostErrorEvent(uint16_t aErrorCode, nsresult aReason) {
   MOZ_ASSERT(NS_IsMainThread());
-  nsresult rv = CheckInnerWindowCorrectness();
+  nsresult rv = CheckCurrentGlobalCorrectness();
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsString errorMsg;
@@ -179,7 +181,7 @@ nsresult ImageCapture::PostErrorEvent(uint16_t aErrorCode, nsresult aReason) {
   init.mCancelable = false;
   init.mImageCaptureError = error;
 
-  nsCOMPtr<nsIDOMEvent> event = ImageCaptureErrorEvent::Constructor(
+  RefPtr<Event> event = ImageCaptureErrorEvent::Constructor(
       this, NS_LITERAL_STRING("error"), init);
 
   return DispatchTrustedEvent(event);
@@ -188,12 +190,12 @@ nsresult ImageCapture::PostErrorEvent(uint16_t aErrorCode, nsresult aReason) {
 bool ImageCapture::CheckPrincipal() {
   MOZ_ASSERT(NS_IsMainThread());
 
-  nsCOMPtr<nsIPrincipal> principal = mVideoStreamTrack->GetPrincipal();
+  nsCOMPtr<nsIPrincipal> principal = mTrack->GetPrincipal();
 
   if (!GetOwner()) {
     return false;
   }
-  nsCOMPtr<nsIDocument> doc = GetOwner()->GetExtantDoc();
+  nsCOMPtr<Document> doc = GetOwner()->GetExtantDoc();
   if (!doc || !principal) {
     return false;
   }

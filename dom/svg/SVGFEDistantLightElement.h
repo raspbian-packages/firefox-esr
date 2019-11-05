@@ -7,8 +7,8 @@
 #ifndef mozilla_dom_SVGFEDistantLightElement_h
 #define mozilla_dom_SVGFEDistantLightElement_h
 
-#include "nsSVGFilters.h"
-#include "nsSVGNumber2.h"
+#include "SVGAnimatedNumber.h"
+#include "SVGFilters.h"
 
 nsresult NS_NewSVGFEDistantLightElement(
     nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
@@ -25,29 +25,29 @@ class SVGFEDistantLightElement : public SVGFEDistantLightElementBase {
 
  protected:
   explicit SVGFEDistantLightElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : SVGFEDistantLightElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : SVGFEDistantLightElementBase(std::move(aNodeInfo)) {}
   virtual JSObject* WrapNode(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
  public:
-  virtual AttributeMap ComputeLightAttributes(
-      nsSVGFilterInstance* aInstance) override;
+  virtual mozilla::gfx::LightType ComputeLightAttributes(
+      nsSVGFilterInstance* aInstance,
+      nsTArray<float>& aFloatAttributes) override;
   virtual bool AttributeAffectsRendering(int32_t aNameSpaceID,
                                          nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL
-  already_AddRefed<SVGAnimatedNumber> Azimuth();
-  already_AddRefed<SVGAnimatedNumber> Elevation();
+  already_AddRefed<DOMSVGAnimatedNumber> Azimuth();
+  already_AddRefed<DOMSVGAnimatedNumber> Elevation();
 
  protected:
   virtual NumberAttributesInfo GetNumberInfo() override;
 
   enum { AZIMUTH, ELEVATION };
-  nsSVGNumber2 mNumberAttributes[2];
+  SVGAnimatedNumber mNumberAttributes[2];
   static NumberInfo sNumberInfo[2];
 };
 

@@ -20,7 +20,6 @@
 <!ENTITY downloadCert.message1 "Você foi solicitado a marcar como confiável uma nova Autoridade Certificadora (CA).">
 <!ENTITY downloadCert.trustSSL "Confiar nesta CA para identificar sites.">
 <!ENTITY downloadCert.trustEmail "Confiar nesta CA para identificar usuários de e-mail.">
-<!ENTITY downloadCert.trustObjSign "Confiar nesta CA para identificar desenvolvedores de software.">
 <!ENTITY downloadCert.message3 "Antes de considerar confiável esta CA para algum fim, você deve examinar seu certificado, sua diretiva e procedimentos (se disponíveis).">
 <!ENTITY downloadCert.viewCert.label "Ver">
 <!ENTITY downloadCert.viewCert.text "Examinar certificado da CA">
@@ -35,7 +34,7 @@
 <!ENTITY pkcs12.setpassword.message  "A senha de backup do certificado que você definir protege o arquivo backup que será criado. Você deve definir esta senha para prosseguir com o backup.">
 <!ENTITY pkcs12.setpassword.label1 "Senha de backup do certificado:">
 <!ENTITY pkcs12.setpassword.label2 "Senha de backup do certificado (confirmar):">
-<!ENTITY pkcs12.setpassword.reminder "Importante: caso esqueça a senha de backup do certificado, você não poderá restaurar este backup depois. Por favor, anote em um local seguro.">
+<!ENTITY pkcs12.setpassword.reminder "Importante: caso você esqueça a senha do backup do certificado, não poderá restaurar este backup mais tarde. Anote em um local seguro.">
 
 <!ENTITY chooseToken.title  "Janela para seleção de token">
 <!ENTITY chooseToken.message1 "Escolher um token.">
@@ -43,9 +42,9 @@
 <!-- Strings for the CreateCertInfo dialog  -->
 <!ENTITY createCertInfo.title "Gerando uma chave privada">
 <!ENTITY createCertInfo.msg1 "Geração de chave em progresso… Pode levar alguns minutos….">
-<!ENTITY createCertInfo.msg2 "Por favor, espere…">
+<!ENTITY createCertInfo.msg2 "Aguarde…">
 
 <!-- Strings for protectedAuth dialog -->
 <!ENTITY protectedAuth.title "Autenticação protegida por token">
-<!ENTITY protectedAuth.msg "Por favor, autentique-se com o token. O modo de autenticação depende do tipo do seu token.">
+<!ENTITY protectedAuth.msg "Autentique-se com o token. O modo de autenticação depende do tipo do seu token.">
 <!ENTITY protectedAuth.tokenName.label "Token:">

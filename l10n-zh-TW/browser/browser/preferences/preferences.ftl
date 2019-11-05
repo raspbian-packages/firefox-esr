@@ -4,8 +4,8 @@
 
 do-not-track-description = 傳送 “Do Not Track” 訊號，告訴網站您不想被追蹤
 do-not-track-learn-more = 了解更多
-do-not-track-option-default =
-    .label = 只在使用追蹤保護功能時
+do-not-track-option-default-content-blocking-known =
+    .label = 僅在 { -brand-short-name } 設定為封鎖已知追蹤器時
 do-not-track-option-always =
     .label = 總是
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] 選項
            *[other] 偏好設定
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] 您的組織已鎖定某些選項。
        *[other] 您的組織已鎖定某些偏好設定。
     }
+managed-notice = 您的瀏覽器受到組織管理。
 pane-general-title = 一般
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = 隱私權與安全性
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox 帳號
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = { -brand-short-name } 技術支援
+addons-button-label = 擴充套件與佈景主題
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = 重新啟動 { -brand-short-name }
 should-restart-ok = 立刻重新啟動 { -brand-short-name }
 cancel-no-restart-button = 取消
 restart-later = 稍後再重新啟動
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = 擴充套件「<img data-l10n-name="icon"/> { $name }」正在控制您的首頁內容。
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = 擴充套件「<img data-l10n-name="icon"/> { $name }」正在控制您的新分頁內容。
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = 擴充套件<img data-l10n-name="icon"/> { $name } 正在控制此設定。
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = 擴充套件「<img data-l10n-name="icon"/> { $name }」修改了您的預設搜尋引擎。
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = 擴充套件「<img data-l10n-name="icon"/> { $name }」需要開啟容器分頁功能才能使用。
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = 擴充套件<img data-l10n-name="icon"/> { $name } 正在控制此設定。
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = 擴充套件「<img data-l10n-name="icon"/> { $name }」正在控制您的 { -brand-short-name } 如何連線至網際網路。
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = 要啟用這套擴充套件，請到 <img data-l10n-name="menu-icon"/> 選單中的 <img data-l10n-name="addons-icon"/> 附加元件。
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } 不是您的預設瀏覽器
 set-as-my-default-browser =
     .label = 設為預設瀏覽器…
     .accesskey = D
-startup-page = 當 { -brand-short-name } 啟動時
+startup-restore-previous-session =
+    .label = 回復先前的瀏覽狀態
     .accesskey = s
-startup-user-homepage =
-    .label = 顯示您的首頁
-startup-blank-page =
-    .label = 顯示空白頁
-startup-prev-session =
-    .label = 顯示您上次瀏覽的視窗與分頁
+startup-restore-warn-on-quit =
+    .label = 關閉瀏覽器時警告您
 disable-extension =
     .label = 停用擴充套件
-home-page-header = 首頁
 tabs-group-header = 分頁
 ctrl-tab-recently-used-order =
     .label = 按下 Ctrl+Tab 時，依照最近使用分頁的順序切換分頁標籤
@@ -135,7 +162,7 @@ show-tabs-in-taskbar =
 browser-containers-enabled =
     .label = 開啟容器分頁
     .accesskey = n
-browser-containers-learn-more = 詳細資訊
+browser-containers-learn-more = 了解更多
 browser-containers-settings =
     .label = 設定…
     .accesskey = i
@@ -169,6 +196,12 @@ choose-language-description = 請選擇瀏覽支援多國語言的網頁時要�
 choose-button =
     .label = 選擇…
     .accesskey = o
+choose-browser-language-description = 請選擇 { -brand-short-name } 要用來顯示選單、介面訊息以及通知內容的語言。
+manage-browser-languages-button =
+    .label = 設定其他語言…
+    .accesskey = l
+confirm-browser-language-change-description = 重新啟動 { -brand-short-name } 來套用變更
+confirm-browser-language-change-button = 套用並重新啟動
 translate-web-pages =
     .label = 翻譯網頁內容
     .accesskey = T
@@ -217,10 +250,9 @@ drm-content-header = 數位權利管理（DRM）內容
 play-drm-content =
     .label = 播放 DRM 內容
     .accesskey = P
-play-drm-content-learn-more = 詳細資訊
+play-drm-content-learn-more = 了解更多
 update-application-title = { -brand-short-name } 更新
 update-application-description = 保持更新 { -brand-short-name }，獲得最佳效能、穩定度以及安全性。
-update-application-info = { $version }版 <a>有什麼新鮮事</a>
 update-application-version = { $version }版 <a data-l10n-name="learn-more">有什麼新鮮事</a>
 update-history =
     .label = 顯示更新紀錄…
@@ -235,12 +267,32 @@ update-application-check-choose =
 update-application-manual =
     .label = 不要檢查更新（不建議，可能會有安全性風險）
     .accesskey = N
+update-application-warning-cross-user-setting = 此設定將套用到本電腦上的所有 Windows 帳號及此份 { -brand-short-name } 的所有 { -brand-short-name } 設定檔。
 update-application-use-service =
     .label = 在背景服務當中安裝更新
     .accesskey = b
 update-enable-search-update =
     .label = 自動更新搜尋引擎
     .accesskey = e
+update-pref-write-failure-title = 寫入失敗
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = 無法儲存偏好設定。無法寫入檔案: { $path }
+update-setting-write-failure-title = 儲存更新偏好設定時發生錯誤
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } 遇到錯誤，並未儲存此變更。請注意: 調整此更新偏好設定，需要能夠寫入下列檔案的權限。您或您的系統管理員可以透過授予使用者此檔案的完整控制權，來解決本問題。
+    
+    無法寫入下列檔案: { $path }
+update-in-progress-title = 更新中
+update-in-progress-message = 您希望 { -brand-short-name } 繼續此更新嗎？
+update-in-progress-ok-button = 捨棄 (&D)
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = 繼續 (&C)
 
 ## General Section - Performance
 
@@ -256,7 +308,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = 內容處理程序數量限制
     .accesskey = L
 performance-limit-content-process-enabled-desc = 調高內容處理程序的數量，可改善開啟多個分頁時的效能，但也會使用更多記憶體。
-performance-limit-content-process-disabled-desc = 僅能在多程序的 { -brand-short-name } 當中修改內容處理程序數量。 <a>了解如何確認多程序模式是否已開啟</a>
 performance-limit-content-process-blocked-desc = 僅能在多程序的 { -brand-short-name } 當中修改內容處理程序數量。 <a data-l10n-name="learn-more">了解如何確認多程序模式是否已開啟</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -281,10 +332,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = 打字時直接搜尋頁面文字（隨打即找）
     .accesskey = x
+browsing-cfr-recommendations =
+    .label = 隨您上網推薦擴充套件
+    .accesskey = R
+browsing-cfr-features =
+    .label = 隨您上網時推薦新功能
+    .accesskey = f
+browsing-cfr-recommendations-learn-more = 了解更多
 
 ## General Section - Proxy
 
-network-proxy-title = 網路代理伺服器
+network-settings-title = 網路設定
+network-proxy-connection-description = 設定 { -brand-short-name } 要如何連線至網際網路。
 network-proxy-connection-learn-more = 了解更多
 network-proxy-connection-settings =
     .label = 設定…
@@ -326,9 +385,6 @@ use-current-pages =
 choose-bookmark =
     .label = 使用書籤…
     .accesskey = B
-restore-default =
-    .label = 回復為預設值
-    .accesskey = R
 
 ## Search Section
 
@@ -336,9 +392,9 @@ search-bar-header = 搜尋列
 search-bar-hidden =
     .label = 使用網址列搜尋與上網
 search-bar-shown =
-    .label = 在工具列新增搜尋列
+    .label = 在工具列加入搜尋列
 search-engine-default-header = 預設搜尋引擎
-search-engine-default-desc = 選擇在網址列與搜尋列搜尋時預設使用的搜尋引擎。
+search-engine-default-desc = 請選擇在網址列或搜尋列進行搜尋時，預設要使用的搜尋引擎。
 search-suggestions-option =
     .label = 提供搜尋建議
     .accesskey = s
@@ -427,7 +483,7 @@ sync-sign-in =
     .label = 登入
     .accesskey = g
 sync-signedin-settings-header = 同步設定
-sync-signedin-settings-desc = 選擇要同步哪些資料到您其他使用 { -brand-short-name } 的裝置上。
+sync-signedin-settings-desc = 請選擇要同步哪些資料到您其他使用 { -brand-short-name } 的裝置上。
 sync-engine-bookmarks =
     .label = 書籤
     .accesskey = m
@@ -472,8 +528,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = 儲存
     .accesskey = v
-sync-mobilepromo-single = 連結其他裝置
-sync-mobilepromo-multi = 管理裝置
+sync-connect-another-device = 連結其他裝置
+sync-manage-devices = 管理裝置
+sync-fxa-begin-pairing = 與裝置配對
 sync-tos-link = 服務條款
 sync-fxa-privacy-notice = 隱私權公告
 
@@ -483,13 +540,16 @@ privacy-header = 瀏覽器隱私權
 
 ## Privacy Section - Forms
 
-forms-header = 表單與密碼
+logins-header = 登入資訊與密碼
 forms-ask-to-save-logins =
     .label = 向您詢問是否要記住網站的登入帳號與密碼
     .accesskey = r
 forms-exceptions =
     .label = 例外網站…
     .accesskey = x
+forms-generate-passwords =
+    .label = 產生強密碼
+    .accesskey = u
 forms-saved-logins =
     .label = 已存登入資訊…
     .accesskey = L
@@ -525,8 +585,8 @@ history-dontremember-description = { -brand-short-name } 不會儲存任何瀏�
 history-private-browsing-permanent =
     .label = 總是使用隱私瀏覽模式
     .accesskey = p
-history-remember-option =
-    .label = 保留我的瀏覽與下載記錄
+history-remember-browser-option =
+    .label = 保留瀏覽與下載記錄
     .accesskey = b
 history-remember-search-option =
     .label = 保留我的搜尋列與表單輸入的內容
@@ -544,36 +604,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookie 與網站資料
+sitedata-total-size-calculating = 正在計算網站資料與快取大小…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = 您儲存的 Cookie、網站資料與快取目前使用了 { $value } { $unit } 磁碟空間
 sitedata-learn-more = 了解更多
-sitedata-accept-cookies-option =
-    .label = 接受網站設定的 Cookie 與網站資料（建議）
+sitedata-delete-on-close =
+    .label = 關閉 { -brand-short-name } 時清除 Cookie 與網站資料
+    .accesskey = C
+sitedata-delete-on-close-private-browsing = 在永久隱私瀏覽模式下，每次關閉 { -brand-short-name } 時就會清除 Cookie 與網站資料。
+sitedata-allow-cookies-option =
+    .label = 允許網站設定 Cookie 與網站資料
     .accesskey = A
-sitedata-block-cookies-option =
-    .label = 封鎖 Cookie 與網站資料（可能會造成某些網站運作不正常）
+sitedata-disallow-cookies-option =
+    .label = 封鎖 Cookie 與網站資料
     .accesskey = B
-sitedata-keep-until = 保留 Cookie 直到
-    .accesskey = u
-sitedata-keep-until-expire =
-    .label = Cookie 過期
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } 已關閉
-sitedata-accept-third-party-desc = 接受第三方 Cookie 與網站資料
-    .accesskey = y
-sitedata-accept-third-party-always-option =
-    .label = 總是
-sitedata-accept-third-party-visited-option =
-    .label = 造訪過的網站
-sitedata-accept-third-party-never-option =
-    .label = 永不
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = 要封鎖的類型
+    .accesskey = T
+sitedata-option-block-trackers =
+    .label = 第三方追蹤器
+sitedata-option-block-unvisited =
+    .label = 來自未造訪過網站的 Cookie
+sitedata-option-block-all-third-party =
+    .label = 所有第三方 Cookie（可能造成某些網站不正常）
+sitedata-option-block-all =
+    .label = 所有 Cookie（會造成網站不正常）
 sitedata-clear =
     .label = 清除資料…
     .accesskey = l
 sitedata-settings =
     .label = 管理資料…
     .accesskey = M
-sitedata-cookies-exceptions =
-    .label = 例外網站…
-    .accesskey = E
+sitedata-cookies-permissions =
+    .label = 管理權限…
+    .accesskey = P
 
 ## Privacy Section - Address Bar
 
@@ -590,30 +657,73 @@ addressbar-locbar-openpage-option =
     .accesskey = O
 addressbar-suggestions-settings = 修改搜尋建議偏好設定
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = 內容封鎖
+content-blocking-description = 封鎖會在網路上追蹤您的第三方內容。控制您要讓不同網站儲存並分享多少線上行為。
+content-blocking-section-description = 在上網時保護您的隱私。封鎖會在不同網站間追蹤您上網，並對使用者進行分類的隱藏內容。封鎖這類內容也可能讓網頁更快載入。
+content-blocking-learn-more = 了解更多
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = 標準
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = 嚴格
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = 自訂
+    .accesskey = C
+content-blocking-standard-description = 只在隱私視窗中，封鎖已知的追蹤器。
+content-blocking-standard-desc = 在保護與效能間取得平衡。允許某些追蹤器以確保網站運作正常。
+content-blocking-strict-desc = 封鎖所有 { -brand-short-name } 偵測到的追蹤器。可能造成某些網站故障。
+content-blocking-strict-description = 保護更強，可能造成某些網站無法正常運作。
+content-blocking-custom-desc = 選擇要封鎖哪些內容。
+content-blocking-private-trackers = 僅在隱私視窗中封鎖已知的追蹤器
+content-blocking-third-party-cookies = 第三方追蹤 Cookie
+content-blocking-all-cookies = 所有 Cookie
+content-blocking-unvisited-cookies = 來自未造訪過網站的 Cookie
+content-blocking-all-windows-trackers = 在所有視窗封鎖已知的追蹤器
+content-blocking-all-third-party-cookies = 所有第三方 Cookie
+content-blocking-cryptominers = 加密貨幣採礦程式
+content-blocking-fingerprinters = 數位指紋追蹤程式
+content-blocking-warning-title = 注意！
+content-blocking-warning-description = 封鎖內容後可能造成某些網站無法正常運作。很簡單就能為您信任的網站關閉封鎖功能。
+content-blocking-learn-how = 了解要怎麼做
+content-blocking-reload-description = 需要重新載入分頁才能套用變更。
+content-blocking-reload-tabs-button =
+    .label = 重新載入所有分頁
+    .accesskey = R
+content-blocking-trackers-label =
+    .label = 追蹤器
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = 所有視窗
+    .accesskey = A
+content-blocking-option-private =
+    .label = 僅在隱私瀏覽視窗
+    .accesskey = p
+content-blocking-tracking-protection-change-block-list = 變更封鎖清單
+content-blocking-cookies-label =
+    .label = Cookie
+    .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = 更多資訊
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = 加密貨幣採礦程式
+    .accesskey = y
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = 數位指紋追蹤程式
+    .accesskey = F
+
 ## Privacy Section - Tracking
 
-tracking-header = 追蹤保護
-tracking-desc = 追蹤保護功能會封鎖在不同網站間收集您的瀏覽資料的網路追蹤器。 <a data-l10n-name="learn-more">了解有關追蹤保護功能，以及您的隱私權的更多資訊</a>
-tracking-mode-label = 使用追蹤保護功能，封鎖已知的追蹤器
-tracking-mode-always =
-    .label = 總是
-    .accesskey = y
-tracking-mode-private =
-    .label = 僅在隱私瀏覽視窗
-    .accesskey = l
-tracking-mode-never =
-    .label = 永不
-    .accesskey = n
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = 在隱私瀏覽模式使用追蹤保護功能，封鎖已知的追蹤器
-    .accesskey = v
-tracking-exceptions =
-    .label = 例外網站…
+tracking-manage-exceptions =
+    .label = 管理例外網站…
     .accesskey = x
-tracking-change-block-list =
-    .label = 變更封鎖清單…
-    .accesskey = C
 
 ## Privacy Section - Permissions
 
@@ -638,6 +748,16 @@ permissions-notification-link = 了解更多
 permissions-notification-pause =
     .label = 暫停通知到 { -brand-short-name } 重新啟動後
     .accesskey = n
+permissions-block-autoplay-media2 =
+    .label = 防止網站自動播放聲音
+    .accesskey = B
+permissions-block-autoplay-media-exceptions =
+    .label = 例外網站…
+    .accesskey = E
+permissions-autoplay = 自動播放
+permissions-autoplay-settings =
+    .label = 設定…
+    .accesskey = t
 permissions-block-popups =
     .label = 封鎖彈出型視窗
     .accesskey = B
@@ -664,13 +784,15 @@ collection-health-report =
     .label = 允許 { -brand-short-name } 傳送技術與互動資料給 { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = 更多資訊
+collection-studies =
+    .label = 允許 { -brand-short-name } 安裝並進行研究
+collection-studies-link = 檢視 { -brand-short-name } 所進行的研究
+addon-recommendations =
+    .label = 允許 { -brand-short-name } 提供個人化的擴充套件推薦項目
+addon-recommendations-link = 了解更多
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = 進行編譯設定時，已停用了資料回報功能
-collection-browser-errors =
-    .label = 允許 { -brand-short-name } 向 { -vendor-short-name } 發送瀏覽器錯誤報告（包括錯誤訊息）
-    .accesskey = b
-collection-browser-errors-link = 了解更多
 collection-backlogged-crash-reports =
     .label = 允許 { -brand-short-name } 為您傳送先前紀錄下的錯誤報告
     .accesskey = c
@@ -713,3 +835,36 @@ certs-view =
 certs-devices =
     .label = 安全性裝置…
     .accesskey = D
+space-alert-learn-more-button =
+    .label = 了解更多
+    .accesskey = L
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] 開啟選項
+           *[other] 開啟偏好設定
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] O
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } 的磁碟空間不足，網站內容可能無法正確顯示。您可以到選項 > 隱私權與安全性 > Cookie 與網站資料清除目前已儲存的網站資料。
+       *[other] { -brand-short-name } 的磁碟空間不足，網站內容可能無法正確顯示。您可以到偏好設定 > 隱私權與安全性 > Cookie 與網站資料清除目前已儲存的網站資料。
+    }
+space-alert-under-5gb-ok-button =
+    .label = 好，知道了
+    .accesskey = K
+space-alert-under-5gb-message = { -brand-short-name } 的磁碟空間不足，網站內容可能無法正確顯示。請點擊「瞭解更多」清理磁碟空間，讓您有更好的瀏覽體驗。
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = 桌面
+downloads-folder-name = 下載
+choose-download-folder-title = 選取下載目錄:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = 儲存檔案到 { $service-name }

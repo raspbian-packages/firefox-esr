@@ -19,18 +19,18 @@
 namespace mozilla {
 namespace dom {
 
-using namespace SVGTextContentElementBinding;
+using namespace SVGTextContentElement_Binding;
 
-nsSVGEnumMapping SVGTextContentElement::sLengthAdjustMap[] = {
-    {&nsGkAtoms::spacing, LENGTHADJUST_SPACING},
-    {&nsGkAtoms::spacingAndGlyphs, LENGTHADJUST_SPACINGANDGLYPHS},
+SVGEnumMapping SVGTextContentElement::sLengthAdjustMap[] = {
+    {nsGkAtoms::spacing, LENGTHADJUST_SPACING},
+    {nsGkAtoms::spacingAndGlyphs, LENGTHADJUST_SPACINGANDGLYPHS},
     {nullptr, 0}};
 
-nsSVGElement::EnumInfo SVGTextContentElement::sEnumInfo[1] = {
-    {&nsGkAtoms::lengthAdjust, sLengthAdjustMap, LENGTHADJUST_SPACING}};
+SVGElement::EnumInfo SVGTextContentElement::sEnumInfo[1] = {
+    {nsGkAtoms::lengthAdjust, sLengthAdjustMap, LENGTHADJUST_SPACING}};
 
-nsSVGElement::LengthInfo SVGTextContentElement::sLengthInfo[1] = {
-    {&nsGkAtoms::textLength, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+SVGElement::LengthInfo SVGTextContentElement::sLengthInfo[1] = {
+    {nsGkAtoms::textLength, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::XY}};
 
 SVGTextFrame* SVGTextContentElement::GetSVGTextFrame() {
@@ -48,11 +48,12 @@ SVGTextContentElement::GetSVGTextFrameForNonLayoutDependentQuery() {
   return static_cast<SVGTextFrame*>(textFrame);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGTextContentElement::TextLength() {
+already_AddRefed<DOMSVGAnimatedLength> SVGTextContentElement::TextLength() {
   return LengthAttributes()[TEXTLENGTH].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedEnumeration> SVGTextContentElement::LengthAdjust() {
+already_AddRefed<DOMSVGAnimatedEnumeration>
+SVGTextContentElement::LengthAdjust() {
   return EnumAttributes()[LENGTHADJUST].ToDOMAnimatedEnum(this);
 }
 
@@ -78,7 +79,7 @@ Maybe<int32_t> SVGTextContentElement::GetNonLayoutDependentNumberOfChars() {
   uint32_t num = 0;
 
   for (nsINode* n = Element::GetFirstChild(); n; n = n->GetNextSibling()) {
-    if (!n->IsNodeOfType(nsINode::eTEXT)) {
+    if (!n->IsText()) {
       return Nothing();
     }
 

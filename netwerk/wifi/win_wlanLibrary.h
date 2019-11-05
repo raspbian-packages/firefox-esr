@@ -18,13 +18,13 @@ class WinWLANLibrary {
   ~WinWLANLibrary();
 
   HANDLE GetWLANHandle() const;
-  decltype(::WlanEnumInterfaces) * GetWlanEnumInterfacesPtr() const;
-  decltype(::WlanGetNetworkBssList) * GetWlanGetNetworkBssListPtr() const;
-  decltype(::WlanFreeMemory) * GetWlanFreeMemoryPtr() const;
-  decltype(::WlanCloseHandle) * GetWlanCloseHandlePtr() const;
-  decltype(::WlanOpenHandle) * GetWlanOpenHandlePtr() const;
-  decltype(::WlanRegisterNotification) * GetWlanRegisterNotificationPtr() const;
-  decltype(::WlanScan) * GetWlanScanPtr() const;
+  decltype(::WlanEnumInterfaces)* GetWlanEnumInterfacesPtr() const;
+  decltype(::WlanGetNetworkBssList)* GetWlanGetNetworkBssListPtr() const;
+  decltype(::WlanFreeMemory)* GetWlanFreeMemoryPtr() const;
+  decltype(::WlanCloseHandle)* GetWlanCloseHandlePtr() const;
+  decltype(::WlanOpenHandle)* GetWlanOpenHandlePtr() const;
+  decltype(::WlanRegisterNotification)* GetWlanRegisterNotificationPtr() const;
+  decltype(::WlanScan)* GetWlanScanPtr() const;
 
  private:
   WinWLANLibrary();

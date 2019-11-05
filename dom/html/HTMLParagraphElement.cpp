@@ -7,7 +7,7 @@
 #include "mozilla/dom/HTMLParagraphElement.h"
 #include "mozilla/dom/HTMLParagraphElementBinding.h"
 
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsStyleConsts.h"
 #include "nsMappedAttributes.h"
 
@@ -34,9 +34,9 @@ bool HTMLParagraphElement::ParseAttribute(int32_t aNamespaceID,
 }
 
 void HTMLParagraphElement::MapAttributesIntoRule(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
@@ -56,7 +56,7 @@ nsMapRuleToAttributesFunc HTMLParagraphElement::GetAttributeMappingFunction()
 
 JSObject* HTMLParagraphElement::WrapNode(JSContext* aCx,
                                          JS::Handle<JSObject*> aGivenProto) {
-  return HTMLParagraphElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLParagraphElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

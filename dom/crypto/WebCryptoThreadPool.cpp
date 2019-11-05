@@ -14,7 +14,7 @@
 #include "nsXPCOMCIDInternal.h"
 #include "nsXPCOMPrivate.h"
 #include "nsIObserverService.h"
-#include "nsIThreadPool.h"
+#include "nsThreadPool.h"
 
 namespace mozilla {
 namespace dom {
@@ -23,7 +23,8 @@ StaticRefPtr<WebCryptoThreadPool> gInstance;
 
 NS_IMPL_ISUPPORTS(WebCryptoThreadPool, nsIObserver)
 
-/* static */ void WebCryptoThreadPool::Initialize() {
+/* static */
+void WebCryptoThreadPool::Initialize() {
   MOZ_ASSERT(NS_IsMainThread(), "Wrong thread!");
   MOZ_ASSERT(!gInstance, "More than one instance!");
 
@@ -36,7 +37,8 @@ NS_IMPL_ISUPPORTS(WebCryptoThreadPool, nsIObserver)
   }
 }
 
-/* static */ nsresult WebCryptoThreadPool::Dispatch(nsIRunnable* aRunnable) {
+/* static */
+nsresult WebCryptoThreadPool::Dispatch(nsIRunnable* aRunnable) {
   if (gInstance) {
     return gInstance->DispatchInternal(aRunnable);
   }
@@ -65,8 +67,7 @@ nsresult WebCryptoThreadPool::DispatchInternal(nsIRunnable* aRunnable) {
   if (!mPool) {
     NS_ENSURE_TRUE(EnsureNSSInitializedChromeOrContent(), NS_ERROR_FAILURE);
 
-    nsCOMPtr<nsIThreadPool> pool(do_CreateInstance(NS_THREADPOOL_CONTRACTID));
-    NS_ENSURE_TRUE(pool, NS_ERROR_FAILURE);
+    nsCOMPtr<nsIThreadPool> pool(new nsThreadPool());
 
     nsresult rv = pool->SetName(NS_LITERAL_CSTRING("SubtleCrypto"));
     NS_ENSURE_SUCCESS(rv, rv);

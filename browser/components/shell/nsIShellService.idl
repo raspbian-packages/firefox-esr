@@ -5,8 +5,9 @@
 
 #include "nsISupports.idl"
 
-interface nsIDOMElement;
 interface nsIFile;
+
+webidl Element;
 
 [scriptable, uuid(2d1a95e4-5bd8-4eeb-b0a8-c1455fd2a357)]
 interface nsIShellService : nsISupports
@@ -16,15 +17,11 @@ interface nsIShellService : nsISupports
    * This is simply whether or not Firefox is registered to handle
    * http links.
    *
-   * @param aStartupCheck true if this is the check being performed
-   *                      by the first browser window at startup,
-   *                      false otherwise.
    * @param aForAllTypes  true if the check should be made for HTTP and HTML.
    *                      false if the check should be made for HTTP only.
    *                      This parameter may be ignored on some platforms.
    */
-  boolean isDefaultBrowser(in boolean aStartupCheck,
-                           [optional] in boolean aForAllTypes);
+  boolean isDefaultBrowser([optional] in boolean aForAllTypes);
 
   /**
    * Registers Firefox as the "Default Browser."
@@ -46,6 +43,7 @@ interface nsIShellService : nsISupports
   const long BACKGROUND_CENTER    = 3;
   const long BACKGROUND_FILL      = 4;
   const long BACKGROUND_FIT       = 5;
+  const long BACKGROUND_SPAN      = 6;
 
     /**
      * Sets the desktop background image using either the HTML <IMG> 
@@ -58,7 +56,7 @@ interface nsIShellService : nsISupports
      * @param aImageName    The image name. Equivalent to the leaf name of the
      *                      location.href.
      */
-  void setDesktopBackground(in nsIDOMElement aElement,
+  void setDesktopBackground(in Element aElement,
                             in long aPosition,
                             in ACString aImageName);
 
@@ -91,9 +89,4 @@ interface nsIShellService : nsISupports
    *          The uri to be loaded by the application
    */
   void openApplicationWithURI(in nsIFile aApplication, in ACString aURI);
-
-  /**
-   * The default system handler for web feeds
-   */
-  readonly attribute nsIFile defaultFeedReader;
 };

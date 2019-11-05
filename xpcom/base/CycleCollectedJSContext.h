@@ -9,12 +9,15 @@
 
 #include <queue>
 
+#include "mozilla/Attributes.h"
 #include "mozilla/DeferredFinalize.h"
 #include "mozilla/LinkedList.h"
 #include "mozilla/mozalloc.h"
 #include "mozilla/MemoryReporting.h"
+#include "mozilla/dom/AtomList.h"
+#include "mozilla/dom/Promise.h"
 #include "jsapi.h"
-#include "jsfriendapi.h"
+#include "js/Promise.h"
 
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
@@ -32,6 +35,8 @@ class CycleCollectedJSRuntime;
 
 namespace dom {
 class Exception;
+class WorkerJSContext;
+class WorkletJSContext;
 }  // namespace dom
 
 // Contains various stats about the cycle collection.
@@ -70,17 +75,19 @@ struct CycleCollectorResults {
 
 class MicroTaskRunnable {
  public:
-  MicroTaskRunnable() {}
+  MicroTaskRunnable() = default;
   NS_INLINE_DECL_REFCOUNTING(MicroTaskRunnable)
-  virtual void Run(AutoSlowOperation& aAso) = 0;
+  MOZ_CAN_RUN_SCRIPT virtual void Run(AutoSlowOperation& aAso) = 0;
   virtual bool Suppressed() { return false; }
 
  protected:
-  virtual ~MicroTaskRunnable() {}
+  virtual ~MicroTaskRunnable() = default;
 };
 
 class CycleCollectedJSContext
-    : public LinkedListElement<CycleCollectedJSContext> {
+    : dom::PerThreadAtomCache,
+      public LinkedListElement<CycleCollectedJSContext>,
+      private JS::JobQueue {
   friend class CycleCollectedJSRuntime;
 
  protected:
@@ -104,7 +111,9 @@ class CycleCollectedJSContext
   void InitializeCommon();
 
   static JSObject* GetIncumbentGlobalCallback(JSContext* aCx);
-  static bool EnqueuePromiseJobCallback(JSContext* aCx, JS::HandleObject aJob,
+  static bool EnqueuePromiseJobCallback(JSContext* aCx,
+                                        JS::HandleObject aPromise,
+                                        JS::HandleObject aJob,
                                         JS::HandleObject aAllocationSite,
                                         JS::HandleObject aIncumbentGlobal,
                                         void* aData);
@@ -125,6 +134,9 @@ class CycleCollectedJSContext
     FinalizeIncrementally,
     FinalizeNow,
   };
+
+  virtual dom::WorkerJSContext* GetAsWorkerJSContext() { return nullptr; }
+  virtual dom::WorkletJSContext* GetAsWorkletJSContext() { return nullptr; }
 
   CycleCollectedJSRuntime* Runtime() const {
     MOZ_ASSERT(mRuntime);
@@ -156,18 +168,32 @@ class CycleCollectedJSContext
 
  public:
   // nsThread entrypoints
+  //
+  // MOZ_CAN_RUN_SCRIPT_BOUNDARY so we don't need to annotate
+  // nsThread::ProcessNextEvent and all its callers MOZ_CAN_RUN_SCRIPT for now.
+  // But we really should!
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual void BeforeProcessTask(bool aMightBlock);
+  // MOZ_CAN_RUN_SCRIPT_BOUNDARY so we don't need to annotate
+  // nsThread::ProcessNextEvent and all its callers MOZ_CAN_RUN_SCRIPT for now.
+  // But we really should!
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual void AfterProcessTask(uint32_t aRecursionDepth);
 
   // Check whether we need an idle GC task.
-  void IsIdleGCTaskNeeded();
+  void IsIdleGCTaskNeeded() const;
 
-  uint32_t RecursionDepth();
+  uint32_t RecursionDepth() const;
 
   // Run in stable state (call through nsContentUtils)
   void RunInStableState(already_AddRefed<nsIRunnable>&& aRunnable);
 
   void AddPendingIDBTransaction(already_AddRefed<nsIRunnable>&& aTransaction);
+
+  // Get the CycleCollectedJSContext for a JSContext.
+  // Returns null only if Initialize() has not completed on or during
+  // destruction of the CycleCollectedJSContext.
+  static CycleCollectedJSContext* GetFor(JSContext* aCx);
 
   // Get the current thread's CycleCollectedJSContext.  Returns null if there
   // isn't one.
@@ -181,23 +207,26 @@ class CycleCollectedJSContext
   // Usually the best way to do this is to use nsAutoMicroTask.
   void EnterMicroTask() { ++mMicroTaskLevel; }
 
+  MOZ_CAN_RUN_SCRIPT
   void LeaveMicroTask() {
     if (--mMicroTaskLevel == 0) {
       PerformMicroTaskCheckPoint();
     }
   }
 
-  bool IsInMicroTask() { return mMicroTaskLevel != 0; }
+  bool IsInMicroTask() const { return mMicroTaskLevel != 0; }
 
-  uint32_t MicroTaskLevel() { return mMicroTaskLevel; }
+  uint32_t MicroTaskLevel() const { return mMicroTaskLevel; }
 
   void SetMicroTaskLevel(uint32_t aLevel) { mMicroTaskLevel = aLevel; }
 
-  bool PerformMicroTaskCheckPoint();
+  MOZ_CAN_RUN_SCRIPT
+  bool PerformMicroTaskCheckPoint(bool aForce = false);
 
+  MOZ_CAN_RUN_SCRIPT
   void PerformDebuggerMicroTaskCheckpoint();
 
-  bool IsInStableOrMetaStableState() { return mDoingStableStates; }
+  bool IsInStableOrMetaStableState() const { return mDoingStableStates; }
 
   // Storage for watching rejected promises waiting for some client to
   // consume their rejection.
@@ -215,6 +244,27 @@ class CycleCollectedJSContext
       mConsumedRejections;
   nsTArray<nsCOMPtr<nsISupports /* UncaughtRejectionObserver */>>
       mUncaughtRejectionObservers;
+
+  virtual bool IsSystemCaller() const = 0;
+
+ private:
+  // JS::JobQueue implementation: see js/public/Promise.h.
+  // SpiderMonkey uses some of these methods to enqueue promise resolution jobs.
+  // Others protect the debuggee microtask queue from the debugger's
+  // interruptions; see the comments on JS::AutoDebuggerJobQueueInterruption for
+  // details.
+  JSObject* getIncumbentGlobal(JSContext* cx) override;
+  bool enqueuePromiseJob(JSContext* cx, JS::HandleObject promise,
+                         JS::HandleObject job, JS::HandleObject allocationSite,
+                         JS::HandleObject incumbentGlobal) override;
+  // MOZ_CAN_RUN_SCRIPT_BOUNDARY for now so we don't have to change SpiderMonkey
+  // headers.  The caller presumably knows this can run script (like everything
+  // in SpiderMonkey!) and will deal.
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  void runJobs(JSContext* cx) override;
+  bool empty() const override;
+  class SavedMicroTaskQueue;
+  js::UniquePtr<SavedJobQueue> saveJobQueue(JSContext*) override;
 
  private:
   // A primary context owns the mRuntime. Non-main-thread contexts should always
@@ -249,7 +299,52 @@ class CycleCollectedJSContext
   std::queue<RefPtr<MicroTaskRunnable>> mPendingMicroTaskRunnables;
   std::queue<RefPtr<MicroTaskRunnable>> mDebuggerMicroTaskQueue;
 
+  // How many times the debugger has interrupted execution, possibly creating
+  // microtask checkpoints in places that they would not normally occur.
+  uint32_t mDebuggerRecursionDepth;
+
   uint32_t mMicroTaskRecursionDepth;
+
+  // This implements about-to-be-notified rejected promises list in the spec.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#about-to-be-notified-rejected-promises-list
+  typedef nsTArray<RefPtr<dom::Promise>> PromiseArray;
+  PromiseArray mAboutToBeNotifiedRejectedPromises;
+
+  // This is for the "outstanding rejected promises weak set" in the spec,
+  // https://html.spec.whatwg.org/multipage/webappapis.html#outstanding-rejected-promises-weak-set
+  // We use different data structure and opposite logic here to achieve the same
+  // effect. Basically this is used for tracking the rejected promise that does
+  // NOT need firing a rejectionhandled event. We will check the table to see if
+  // firing rejectionhandled event is required when a rejected promise is being
+  // handled.
+  //
+  // The rejected promise will be stored in the table if
+  // - it is unhandled, and
+  // - The unhandledrejection is not yet fired.
+  //
+  // And be removed when
+  // - it is handled, or
+  // - A unhandledrejection is fired and it isn't being handled in event
+  // handler.
+  typedef nsRefPtrHashtable<nsUint64HashKey, dom::Promise> PromiseHashtable;
+  PromiseHashtable mPendingUnhandledRejections;
+
+  class NotifyUnhandledRejections final : public CancelableRunnable {
+   public:
+    NotifyUnhandledRejections(CycleCollectedJSContext* aCx,
+                              PromiseArray&& aPromises)
+        : CancelableRunnable("NotifyUnhandledRejections"),
+          mCx(aCx),
+          mUnhandledRejections(std::move(aPromises)) {}
+
+    NS_IMETHOD Run() final;
+
+    nsresult Cancel() final;
+
+   private:
+    CycleCollectedJSContext* mCx;
+    PromiseArray mUnhandledRejections;
+  };
 };
 
 class MOZ_STACK_CLASS nsAutoMicroTask {
@@ -260,7 +355,7 @@ class MOZ_STACK_CLASS nsAutoMicroTask {
       ccjs->EnterMicroTask();
     }
   }
-  ~nsAutoMicroTask() {
+  MOZ_CAN_RUN_SCRIPT ~nsAutoMicroTask() {
     CycleCollectedJSContext* ccjs = CycleCollectedJSContext::Get();
     if (ccjs) {
       ccjs->LeaveMicroTask();

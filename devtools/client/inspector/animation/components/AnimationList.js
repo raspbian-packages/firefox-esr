@@ -4,7 +4,10 @@
 
 "use strict";
 
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  PureComponent,
+} = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 
@@ -20,6 +23,7 @@ class AnimationList extends PureComponent {
       onHideBoxModelHighlighter: PropTypes.func.isRequired,
       onShowBoxModelHighlighterForNode: PropTypes.func.isRequired,
       selectAnimation: PropTypes.func.isRequired,
+      setHighlightedNode: PropTypes.func.isRequired,
       setSelectedNode: PropTypes.func.isRequired,
       simulateAnimation: PropTypes.func.isRequired,
       timeScale: PropTypes.object.isRequired,
@@ -35,6 +39,7 @@ class AnimationList extends PureComponent {
       onHideBoxModelHighlighter,
       onShowBoxModelHighlighterForNode,
       selectAnimation,
+      setHighlightedNode,
       setSelectedNode,
       simulateAnimation,
       timeScale,
@@ -42,23 +47,22 @@ class AnimationList extends PureComponent {
 
     return dom.ul(
       {
-        className: "animation-list"
+        className: "animation-list",
       },
       animations.map(animation =>
-        AnimationItem(
-          {
-            animation,
-            emitEventForTest,
-            getAnimatedPropertyMap,
-            getNodeFromActor,
-            onHideBoxModelHighlighter,
-            onShowBoxModelHighlighterForNode,
-            selectAnimation,
-            setSelectedNode,
-            simulateAnimation,
-            timeScale,
-          }
-        )
+        AnimationItem({
+          animation,
+          emitEventForTest,
+          getAnimatedPropertyMap,
+          getNodeFromActor,
+          onHideBoxModelHighlighter,
+          onShowBoxModelHighlighterForNode,
+          selectAnimation,
+          setHighlightedNode,
+          setSelectedNode,
+          simulateAnimation,
+          timeScale,
+        })
       )
     );
   }

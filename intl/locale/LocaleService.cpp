@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,6 +11,7 @@
 #include "mozilla/Omnijar.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Services.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/intl/MozLocale.h"
 #include "mozilla/intl/OSPreferences.h"
 #include "nsDirectoryService.h"
@@ -26,8 +27,10 @@
 #define INTL_SYSTEM_LOCALES_CHANGED "intl:system-locales-changed"
 
 #define REQUESTED_LOCALES_PREF "intl.locale.requested"
+#define WEB_EXPOSED_LOCALES_PREF "intl.locale.privacy.web_exposed"
 
-static const char* kObservedPrefs[] = {REQUESTED_LOCALES_PREF, nullptr};
+static const char* kObservedPrefs[] = {REQUESTED_LOCALES_PREF,
+                                       WEB_EXPOSED_LOCALES_PREF, nullptr};
 
 using namespace mozilla::intl;
 using namespace mozilla;
@@ -91,7 +94,7 @@ static void SplitLocaleListStringIntoArray(nsACString& str,
   }
 }
 
-static bool ReadRequestedLocales(nsTArray<nsCString>& aRetVal) {
+static void ReadRequestedLocales(nsTArray<nsCString>& aRetVal) {
   nsAutoCString str;
   nsresult rv = Preferences::GetCString(REQUESTED_LOCALES_PREF, str);
 
@@ -108,22 +111,26 @@ static bool ReadRequestedLocales(nsTArray<nsCString>& aRetVal) {
     } else {
       SplitLocaleListStringIntoArray(str, aRetVal);
     }
-  } else {
+  }
+
+  // This will happen when either the pref is not set,
+  // or parsing of the pref didn't produce any usable
+  // result.
+  if (aRetVal.IsEmpty()) {
     nsAutoCString defaultLocale;
     LocaleService::GetInstance()->GetDefaultLocale(defaultLocale);
     aRetVal.AppendElement(defaultLocale);
   }
+}
 
-  // Last fallback locale is a locale for the requested locale chain.
-  // In the future we'll want to make the fallback chain differ per-locale.
-  //
-  // Notice: This is not the same as DefaultLocale,
-  // which follows the default locale the build is in.
-  LocaleService::GetInstance()->GetLastFallbackLocale(str);
-  if (!aRetVal.Contains(str)) {
-    aRetVal.AppendElement(str);
+static void ReadWebExposedLocales(nsTArray<nsCString>& aRetVal) {
+  nsAutoCString str;
+  nsresult rv = Preferences::GetCString(WEB_EXPOSED_LOCALES_PREF, str);
+  if (NS_WARN_IF(NS_FAILED(rv)) || str.Length() == 0) {
+    return;
   }
-  return true;
+
+  SplitLocaleListStringIntoArray(str, aRetVal);
 }
 
 LocaleService::LocaleService(bool aIsServer) : mIsServer(aIsServer) {}
@@ -144,23 +151,22 @@ void LocaleService::NegotiateAppLocales(nsTArray<nsCString>& aRetVal) {
     GetRequestedLocales(requestedLocales);
 
     NegotiateLanguages(requestedLocales, availableLocales, defaultLocale,
-                       LangNegStrategy::Filtering, aRetVal);
-  } else {
-    // In content process, we will not do any language negotiation.
-    // Instead, the language is set manually by SetAppLocales.
+                       kLangNegStrategyFiltering, aRetVal);
+  }
+
+  nsAutoCString lastFallbackLocale;
+  GetLastFallbackLocale(lastFallbackLocale);
+
+  if (!aRetVal.Contains(lastFallbackLocale)) {
+    // This part is used in one of the two scenarios:
     //
-    // If this method has been called, it means that we did not fire
-    // SetAppLocales yet (happens during initialization).
-    // In that case, all we can do is return the default or last fallback
-    // locale.
-    //
-    // We will return last fallback here, to avoid having to trigger reading
-    // `update.locale` for default locale.
-    //
-    // Once SetAppLocales will be called later, it'll fire an event
-    // allowing callers to update the locale.
-    nsAutoCString lastFallbackLocale;
-    GetLastFallbackLocale(lastFallbackLocale);
+    // a) We're in a client mode, and no locale has been set yet,
+    //    so we need to return last fallback locale temporarily.
+    // b) We're in a server mode, and the last fallback locale was excluded
+    //    when negotiating against the requested locales.
+    //    Since we currently package it as a last fallback at build
+    //    time, we should also add it at the end of the list at
+    //    runtime.
     aRetVal.AppendElement(lastFallbackLocale);
   }
 }
@@ -198,68 +204,6 @@ LocaleService::~LocaleService() {
   }
 }
 
-void LocaleService::GetAppLocalesAsLangTags(nsTArray<nsCString>& aRetVal) {
-  if (mAppLocales.IsEmpty()) {
-    NegotiateAppLocales(mAppLocales);
-  }
-  for (uint32_t i = 0; i < mAppLocales.Length(); i++) {
-    nsAutoCString locale(mAppLocales[i]);
-    if (locale.LowerCaseEqualsASCII("ja-jp-macos")) {
-      aRetVal.AppendElement("ja-JP-mac");
-    } else {
-      aRetVal.AppendElement(locale);
-    }
-  }
-}
-
-void LocaleService::GetAppLocalesAsBCP47(nsTArray<nsCString>& aRetVal) {
-  if (mAppLocales.IsEmpty()) {
-    NegotiateAppLocales(mAppLocales);
-  }
-  aRetVal = mAppLocales;
-}
-
-void LocaleService::GetRegionalPrefsLocales(nsTArray<nsCString>& aRetVal) {
-  bool useOSLocales =
-      Preferences::GetBool("intl.regional_prefs.use_os_locales", false);
-
-  // If the user specified that they want to use OS Regional Preferences
-  // locales, try to retrieve them and use.
-  if (useOSLocales) {
-    if (OSPreferences::GetInstance()->GetRegionalPrefsLocales(aRetVal)) {
-      return;
-    }
-
-    // If we fail to retrieve them, return the app locales.
-    GetAppLocalesAsBCP47(aRetVal);
-    return;
-  }
-
-  // Otherwise, fetch OS Regional Preferences locales and compare the first one
-  // to the app locale. If the language subtag matches, we can safely use
-  // the OS Regional Preferences locale.
-  //
-  // This facilitates scenarios such as Firefox in "en-US" and User sets
-  // regional prefs to "en-GB".
-  nsAutoCString appLocale;
-  AutoTArray<nsCString, 10> regionalPrefsLocales;
-  LocaleService::GetInstance()->GetAppLocaleAsBCP47(appLocale);
-
-  if (!OSPreferences::GetInstance()->GetRegionalPrefsLocales(
-          regionalPrefsLocales)) {
-    GetAppLocalesAsBCP47(aRetVal);
-    return;
-  }
-
-  if (LocaleService::LanguagesMatch(appLocale, regionalPrefsLocales[0])) {
-    aRetVal = regionalPrefsLocales;
-    return;
-  }
-
-  // Otherwise use the app locales.
-  GetAppLocalesAsBCP47(aRetVal);
-}
-
 void LocaleService::AssignAppLocales(const nsTArray<nsCString>& aAppLocales) {
   MOZ_ASSERT(!mIsServer,
              "This should only be called for LocaleService in client mode.");
@@ -283,27 +227,6 @@ void LocaleService::AssignRequestedLocales(
   }
 }
 
-bool LocaleService::GetRequestedLocales(nsTArray<nsCString>& aRetVal) {
-  if (mRequestedLocales.IsEmpty()) {
-    ReadRequestedLocales(mRequestedLocales);
-  }
-
-  aRetVal = mRequestedLocales;
-  return true;
-}
-
-bool LocaleService::GetAvailableLocales(nsTArray<nsCString>& aRetVal) {
-  if (mAvailableLocales.IsEmpty()) {
-    // If there are no available locales set, it means that L10nRegistry
-    // did not register its locale pool yet. The best course of action
-    // is to use packaged locales until that happens.
-    GetPackagedLocales(mAvailableLocales);
-  }
-
-  aRetVal = mAvailableLocales;
-  return true;
-}
-
 void LocaleService::RequestedLocalesChanged() {
   MOZ_ASSERT(mIsServer, "This should only be called in the server mode.");
 
@@ -311,12 +234,22 @@ void LocaleService::RequestedLocalesChanged() {
   ReadRequestedLocales(newLocales);
 
   if (mRequestedLocales != newLocales) {
-    mRequestedLocales = Move(newLocales);
+    mRequestedLocales = std::move(newLocales);
     nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
     if (obs) {
       obs->NotifyObservers(nullptr, "intl:requested-locales-changed", nullptr);
     }
     LocalesChanged();
+  }
+}
+
+void LocaleService::WebExposedLocalesChanged() {
+  MOZ_ASSERT(mIsServer, "This should only be called in the server mode.");
+
+  nsTArray<nsCString> newLocales;
+  ReadWebExposedLocales(newLocales);
+  if (mWebExposedLocales != newLocales) {
+    mWebExposedLocales = std::move(newLocales);
   }
 }
 
@@ -332,7 +265,7 @@ void LocaleService::LocalesChanged() {
   NegotiateAppLocales(newLocales);
 
   if (mAppLocales != newLocales) {
-    mAppLocales = Move(newLocales);
+    mAppLocales = std::move(newLocales);
     nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
     if (obs) {
       obs->NotifyObservers(nullptr, "intl:app-locales-changed", nullptr);
@@ -344,14 +277,14 @@ void LocaleService::LocalesChanged() {
 // locale, if a match was found we use this macro to decide whether to return
 // immediately, skip to the next requested locale, or continue searching for
 // additional matches, according to the desired negotiation strategy.
-#define HANDLE_STRATEGY              \
-  switch (aStrategy) {               \
-    case LangNegStrategy::Lookup:    \
-      return;                        \
-    case LangNegStrategy::Matching:  \
-      continue;                      \
-    case LangNegStrategy::Filtering: \
-      break;                         \
+#define HANDLE_STRATEGY             \
+  switch (aStrategy) {              \
+    case kLangNegStrategyLookup:    \
+      return;                       \
+    case kLangNegStrategyMatching:  \
+      continue;                     \
+    case kLangNegStrategyFiltering: \
+      break;                        \
   }
 
 /**
@@ -397,7 +330,7 @@ void LocaleService::LocalesChanged() {
  */
 void LocaleService::FilterMatches(const nsTArray<nsCString>& aRequested,
                                   const nsTArray<nsCString>& aAvailable,
-                                  LangNegStrategy aStrategy,
+                                  int32_t aStrategy,
                                   nsTArray<nsCString>& aRetVal) {
   // Local copy of the list of available locales, in Locale form for flexible
   // matching. We will invalidate entries in this list when they are matched
@@ -442,7 +375,7 @@ void LocaleService::FilterMatches(const nsTArray<nsCString>& aRequested,
         aRetVal.AppendElement(aAvailable[match - availLocales.begin()]);
         match->Invalidate();
         foundMatch = true;
-        if (aStrategy != LangNegStrategy::Filtering) {
+        if (aStrategy != kLangNegStrategyFiltering) {
           return true;  // we only want the first match
         }
       }
@@ -483,40 +416,28 @@ void LocaleService::FilterMatches(const nsTArray<nsCString>& aRequested,
   }
 }
 
-bool LocaleService::NegotiateLanguages(const nsTArray<nsCString>& aRequested,
-                                       const nsTArray<nsCString>& aAvailable,
-                                       const nsACString& aDefaultLocale,
-                                       LangNegStrategy aStrategy,
-                                       nsTArray<nsCString>& aRetVal) {
-  // If the strategy is Lookup, we require the defaultLocale to be set.
-  if (aStrategy == LangNegStrategy::Lookup && aDefaultLocale.IsEmpty()) {
-    return false;
-  }
-
-  FilterMatches(aRequested, aAvailable, aStrategy, aRetVal);
-
-  if (aStrategy == LangNegStrategy::Lookup) {
-    if (aRetVal.Length() == 0) {
-      // If the strategy is Lookup and Filtering returned no matches, use
-      // the default locale.
-      aRetVal.AppendElement(aDefaultLocale);
-    }
-  } else if (!aDefaultLocale.IsEmpty() && !aRetVal.Contains(aDefaultLocale)) {
-    // If it's not a Lookup strategy, add the default locale only if it's
-    // set and it's not in the results already.
-    aRetVal.AppendElement(aDefaultLocale);
-  }
-  return true;
-}
-
 bool LocaleService::IsAppLocaleRTL() {
-  nsAutoCString locale;
-  GetAppLocaleAsBCP47(locale);
-
+  // First, let's check if there's a manual override
+  // preference for directionality set.
   int pref = Preferences::GetInt("intl.uidirection", -1);
   if (pref >= 0) {
     return (pref > 0);
   }
+
+  // If not, check if there is a pseudo locale `bidi`
+  // set.
+  nsAutoCString locale;
+  if (NS_SUCCEEDED(Preferences::GetCString("intl.l10n.pseudo", locale))) {
+    if (locale.EqualsLiteral("bidi")) {
+      return true;
+    }
+    if (locale.EqualsLiteral("accented")) {
+      return false;
+    }
+  }
+
+  GetAppLocaleAsBCP47(locale);
+
   return uloc_isRightToLeft(locale.get());
 }
 
@@ -527,12 +448,15 @@ LocaleService::Observe(nsISupports* aSubject, const char* aTopic,
 
   if (!strcmp(aTopic, INTL_SYSTEM_LOCALES_CHANGED)) {
     RequestedLocalesChanged();
+    WebExposedLocalesChanged();
   } else {
     NS_ConvertUTF16toUTF8 pref(aData);
     // At the moment the only thing we're observing are settings indicating
     // user requested locales.
     if (pref.EqualsLiteral(REQUESTED_LOCALES_PREF)) {
       RequestedLocalesChanged();
+    } else if (pref.EqualsLiteral(WEB_EXPOSED_LOCALES_PREF)) {
+      WebExposedLocalesChanged();
     }
   }
 
@@ -547,15 +471,6 @@ bool LocaleService::LanguagesMatch(const nsACString& aRequested,
 }
 
 bool LocaleService::IsServer() { return mIsServer; }
-
-static char** CreateOutArray(const nsTArray<nsCString>& aArray) {
-  uint32_t n = aArray.Length();
-  char** result = static_cast<char**>(moz_xmalloc(n * sizeof(char*)));
-  for (uint32_t i = 0; i < n; i++) {
-    result[i] = moz_xstrdup(aArray[i].get());
-  }
-  return result;
-}
 
 static bool GetGREFileContents(const char* aFilePath, nsCString* aOutString) {
   // Look for the requested file in omnijar.
@@ -621,13 +536,6 @@ void LocaleService::InitPackagedLocales() {
   }
 }
 
-void LocaleService::GetPackagedLocales(nsTArray<nsCString>& aRetVal) {
-  if (mPackagedLocales.IsEmpty()) {
-    InitPackagedLocales();
-  }
-  aRetVal = mPackagedLocales;
-}
-
 /**
  * mozILocaleService methods
  */
@@ -667,23 +575,27 @@ LocaleService::GetLastFallbackLocale(nsACString& aRetVal) {
 }
 
 NS_IMETHODIMP
-LocaleService::GetAppLocalesAsLangTags(uint32_t* aCount, char*** aOutArray) {
-  AutoTArray<nsCString, 32> locales;
-  GetAppLocalesAsLangTags(locales);
-
-  *aCount = locales.Length();
-  *aOutArray = CreateOutArray(locales);
-
+LocaleService::GetAppLocalesAsLangTags(nsTArray<nsCString>& aRetVal) {
+  if (mAppLocales.IsEmpty()) {
+    NegotiateAppLocales(mAppLocales);
+  }
+  for (uint32_t i = 0; i < mAppLocales.Length(); i++) {
+    nsAutoCString locale(mAppLocales[i]);
+    if (locale.LowerCaseEqualsASCII("ja-jp-macos")) {
+      aRetVal.AppendElement("ja-JP-mac");
+    } else {
+      aRetVal.AppendElement(locale);
+    }
+  }
   return NS_OK;
 }
 
 NS_IMETHODIMP
-LocaleService::GetAppLocalesAsBCP47(uint32_t* aCount, char*** aOutArray) {
+LocaleService::GetAppLocalesAsBCP47(nsTArray<nsCString>& aRetVal) {
   if (mAppLocales.IsEmpty()) {
     NegotiateAppLocales(mAppLocales);
   }
-  *aCount = mAppLocales.Length();
-  *aOutArray = CreateOutArray(mAppLocales);
+  aRetVal = mAppLocales;
 
   return NS_OK;
 }
@@ -707,144 +619,147 @@ LocaleService::GetAppLocaleAsBCP47(nsACString& aRetVal) {
 }
 
 NS_IMETHODIMP
-LocaleService::GetRegionalPrefsLocales(uint32_t* aCount, char*** aOutArray) {
-  AutoTArray<nsCString, 10> rgLocales;
+LocaleService::GetRegionalPrefsLocales(nsTArray<nsCString>& aRetVal) {
+  bool useOSLocales =
+      Preferences::GetBool("intl.regional_prefs.use_os_locales", false);
 
-  GetRegionalPrefsLocales(rgLocales);
+  // If the user specified that they want to use OS Regional Preferences
+  // locales, try to retrieve them and use.
+  if (useOSLocales) {
+    if (NS_SUCCEEDED(
+            OSPreferences::GetInstance()->GetRegionalPrefsLocales(aRetVal))) {
+      return NS_OK;
+    }
 
-  *aCount = rgLocales.Length();
-  *aOutArray = static_cast<char**>(moz_xmalloc(*aCount * sizeof(char*)));
-
-  for (uint32_t i = 0; i < *aCount; i++) {
-    (*aOutArray)[i] = moz_xstrdup(rgLocales[i].get());
+    // If we fail to retrieve them, return the app locales.
+    GetAppLocalesAsBCP47(aRetVal);
+    return NS_OK;
   }
 
+  // Otherwise, fetch OS Regional Preferences locales and compare the first one
+  // to the app locale. If the language subtag matches, we can safely use
+  // the OS Regional Preferences locale.
+  //
+  // This facilitates scenarios such as Firefox in "en-US" and User sets
+  // regional prefs to "en-GB".
+  nsAutoCString appLocale;
+  AutoTArray<nsCString, 10> regionalPrefsLocales;
+  LocaleService::GetInstance()->GetAppLocaleAsBCP47(appLocale);
+
+  if (NS_FAILED(OSPreferences::GetInstance()->GetRegionalPrefsLocales(
+          regionalPrefsLocales))) {
+    GetAppLocalesAsBCP47(aRetVal);
+    return NS_OK;
+  }
+
+  if (LocaleService::LanguagesMatch(appLocale, regionalPrefsLocales[0])) {
+    aRetVal = regionalPrefsLocales;
+    return NS_OK;
+  }
+
+  // Otherwise use the app locales.
+  GetAppLocalesAsBCP47(aRetVal);
   return NS_OK;
 }
 
-static LocaleService::LangNegStrategy ToLangNegStrategy(int32_t aStrategy) {
-  switch (aStrategy) {
-    case 1:
-      return LocaleService::LangNegStrategy::Matching;
-    case 2:
-      return LocaleService::LangNegStrategy::Lookup;
-    default:
-      return LocaleService::LangNegStrategy::Filtering;
+NS_IMETHODIMP
+LocaleService::GetWebExposedLocales(nsTArray<nsCString>& aRetVal) {
+  if (StaticPrefs::privacy_spoof_english() == 2) {
+    aRetVal = nsTArray<nsCString>({NS_LITERAL_CSTRING("en-US")});
+    return NS_OK;
   }
+
+  if (!mWebExposedLocales.IsEmpty()) {
+    aRetVal = mWebExposedLocales;
+    return NS_OK;
+  }
+
+  return GetRegionalPrefsLocales(aRetVal);
 }
 
 NS_IMETHODIMP
-LocaleService::NegotiateLanguages(const char** aRequested,
-                                  const char** aAvailable,
-                                  const char* aDefaultLocale, int32_t aStrategy,
-                                  uint32_t aRequestedCount,
-                                  uint32_t aAvailableCount, uint32_t* aCount,
-                                  char*** aRetVal) {
+LocaleService::NegotiateLanguages(const nsTArray<nsCString>& aRequested,
+                                  const nsTArray<nsCString>& aAvailable,
+                                  const nsACString& aDefaultLocale,
+                                  int32_t aStrategy,
+                                  nsTArray<nsCString>& aRetVal) {
   if (aStrategy < 0 || aStrategy > 2) {
     return NS_ERROR_INVALID_ARG;
   }
 
-  // Check that the given string contains only ASCII characters valid in tags
-  // (i.e. alphanumerics, plus '-' and '_'), and is non-empty.
-  auto validTagChars = [](const char* s) {
-    if (!s || !*s) {
-      return false;
-    }
-    while (*s) {
-      if (isalnum((unsigned char)*s) || *s == '-' || *s == '_' || *s == '*') {
-        s++;
+  MOZ_ASSERT(
+      aDefaultLocale.IsEmpty() || Locale(aDefaultLocale).IsWellFormed(),
+      "If specified, default locale must be a well-formed BCP47 language tag.");
+
+  if (aStrategy == kLangNegStrategyLookup && aDefaultLocale.IsEmpty()) {
+    NS_WARNING(
+        "Default locale should be specified when using lookup strategy.");
+  }
+
+  FilterMatches(aRequested, aAvailable, aStrategy, aRetVal);
+
+  if (aStrategy == kLangNegStrategyLookup) {
+    // If the strategy is Lookup and Filtering returned no matches, use
+    // the default locale.
+    if (aRetVal.Length() == 0) {
+      // If the default locale is empty, we already issued a warning, so
+      // now we will just pick up the LocaleService's defaultLocale.
+      if (aDefaultLocale.IsEmpty()) {
+        nsAutoCString defaultLocale;
+        GetDefaultLocale(defaultLocale);
+        aRetVal.AppendElement(defaultLocale);
       } else {
-        return false;
+        aRetVal.AppendElement(aDefaultLocale);
       }
     }
-    return true;
-  };
-
-  AutoTArray<nsCString, 100> requestedLocales;
-  for (uint32_t i = 0; i < aRequestedCount; i++) {
-    if (!validTagChars(aRequested[i])) {
-      continue;
-    }
-    requestedLocales.AppendElement(aRequested[i]);
+  } else if (!aDefaultLocale.IsEmpty() && !aRetVal.Contains(aDefaultLocale)) {
+    // If it's not a Lookup strategy, add the default locale only if it's
+    // set and it's not in the results already.
+    aRetVal.AppendElement(aDefaultLocale);
   }
-
-  AutoTArray<nsCString, 100> availableLocales;
-  for (uint32_t i = 0; i < aAvailableCount; i++) {
-    if (!validTagChars(aAvailable[i])) {
-      continue;
-    }
-    availableLocales.AppendElement(aAvailable[i]);
-  }
-
-  nsAutoCString defaultLocale(aDefaultLocale);
-
-  LangNegStrategy strategy = ToLangNegStrategy(aStrategy);
-
-  AutoTArray<nsCString, 100> supportedLocales;
-  bool result = NegotiateLanguages(requestedLocales, availableLocales,
-                                   defaultLocale, strategy, supportedLocales);
-
-  if (!result) {
-    return NS_ERROR_INVALID_ARG;
-  }
-
-  *aRetVal = static_cast<char**>(
-      moz_xmalloc(sizeof(char*) * supportedLocales.Length()));
-
-  *aCount = 0;
-  for (const auto& supported : supportedLocales) {
-    (*aRetVal)[(*aCount)++] = moz_xstrdup(supported.get());
-  }
-
   return NS_OK;
 }
 
 NS_IMETHODIMP
-LocaleService::GetRequestedLocales(uint32_t* aCount, char*** aOutArray) {
-  AutoTArray<nsCString, 16> requestedLocales;
-  bool res = GetRequestedLocales(requestedLocales);
-
-  if (!res) {
-    NS_ERROR("Couldn't retrieve selected locales from prefs!");
-    return NS_ERROR_FAILURE;
+LocaleService::GetRequestedLocales(nsTArray<nsCString>& aRetVal) {
+  if (mRequestedLocales.IsEmpty()) {
+    ReadRequestedLocales(mRequestedLocales);
   }
 
-  *aCount = requestedLocales.Length();
-  *aOutArray = CreateOutArray(requestedLocales);
-
+  aRetVal = mRequestedLocales;
   return NS_OK;
 }
 
 NS_IMETHODIMP
 LocaleService::GetRequestedLocale(nsACString& aRetVal) {
-  AutoTArray<nsCString, 16> requestedLocales;
-  bool res = GetRequestedLocales(requestedLocales);
-
-  if (!res) {
-    NS_ERROR("Couldn't retrieve selected locales from prefs!");
-    return NS_ERROR_FAILURE;
+  if (mRequestedLocales.IsEmpty()) {
+    ReadRequestedLocales(mRequestedLocales);
   }
 
-  if (requestedLocales.Length() > 0) {
-    aRetVal = requestedLocales[0];
+  if (mRequestedLocales.Length() > 0) {
+    aRetVal = mRequestedLocales[0];
   }
 
   return NS_OK;
 }
 
 NS_IMETHODIMP
-LocaleService::SetRequestedLocales(const char** aRequested,
-                                   uint32_t aRequestedCount) {
+LocaleService::SetRequestedLocales(const nsTArray<nsCString>& aRequested) {
+  MOZ_ASSERT(mIsServer, "This should only be called in the server mode.");
+  if (!mIsServer) {
+    return NS_ERROR_UNEXPECTED;
+  }
+
   nsAutoCString str;
 
-  for (uint32_t i = 0; i < aRequestedCount; i++) {
-    nsAutoCString locale(aRequested[i]);
+  for (auto& req : aRequested) {
+    nsAutoCString locale(req);
     if (!SanitizeForBCP47(locale, true)) {
       NS_ERROR("Invalid language tag provided to SetRequestedLocales!");
       return NS_ERROR_INVALID_ARG;
     }
 
-    if (i > 0) {
+    if (!str.IsEmpty()) {
       str.AppendLiteral(",");
     }
     str.Append(locale);
@@ -855,17 +770,20 @@ LocaleService::SetRequestedLocales(const char** aRequested,
 }
 
 NS_IMETHODIMP
-LocaleService::GetAvailableLocales(uint32_t* aCount, char*** aOutArray) {
-  AutoTArray<nsCString, 100> availableLocales;
-  bool res = GetAvailableLocales(availableLocales);
-
-  if (!res) {
-    NS_ERROR("Couldn't retrieve available locales!");
-    return NS_ERROR_FAILURE;
+LocaleService::GetAvailableLocales(nsTArray<nsCString>& aRetVal) {
+  MOZ_ASSERT(mIsServer, "This should only be called in the server mode.");
+  if (!mIsServer) {
+    return NS_ERROR_UNEXPECTED;
   }
 
-  *aCount = availableLocales.Length();
-  *aOutArray = CreateOutArray(availableLocales);
+  if (mAvailableLocales.IsEmpty()) {
+    // If there are no available locales set, it means that L10nRegistry
+    // did not register its locale pool yet. The best course of action
+    // is to use packaged locales until that happens.
+    GetPackagedLocales(mAvailableLocales);
+  }
+
+  aRetVal = mAvailableLocales;
   return NS_OK;
 }
 
@@ -876,12 +794,16 @@ LocaleService::GetIsAppLocaleRTL(bool* aRetVal) {
 }
 
 NS_IMETHODIMP
-LocaleService::SetAvailableLocales(const char** aAvailable,
-                                   uint32_t aAvailableCount) {
+LocaleService::SetAvailableLocales(const nsTArray<nsCString>& aAvailable) {
+  MOZ_ASSERT(mIsServer, "This should only be called in the server mode.");
+  if (!mIsServer) {
+    return NS_ERROR_UNEXPECTED;
+  }
+
   nsTArray<nsCString> newLocales;
 
-  for (uint32_t i = 0; i < aAvailableCount; i++) {
-    nsAutoCString locale(aAvailable[i]);
+  for (auto& avail : aAvailable) {
+    nsAutoCString locale(avail);
     if (!SanitizeForBCP47(locale, true)) {
       NS_ERROR("Invalid language tag provided to SetAvailableLocales!");
       return NS_ERROR_INVALID_ARG;
@@ -890,7 +812,7 @@ LocaleService::SetAvailableLocales(const char** aAvailable,
   }
 
   if (newLocales != mAvailableLocales) {
-    mAvailableLocales = Move(newLocales);
+    mAvailableLocales = std::move(newLocales);
     LocalesChanged();
   }
 
@@ -898,13 +820,10 @@ LocaleService::SetAvailableLocales(const char** aAvailable,
 }
 
 NS_IMETHODIMP
-LocaleService::GetPackagedLocales(uint32_t* aCount, char*** aOutArray) {
+LocaleService::GetPackagedLocales(nsTArray<nsCString>& aRetVal) {
   if (mPackagedLocales.IsEmpty()) {
     InitPackagedLocales();
   }
-
-  *aCount = mPackagedLocales.Length();
-  *aOutArray = CreateOutArray(mPackagedLocales);
-
+  aRetVal = mPackagedLocales;
   return NS_OK;
 }

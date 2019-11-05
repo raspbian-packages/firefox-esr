@@ -14,10 +14,10 @@ function waitForThirtyMilliseconds() {
 
 const BREAKDOWN = {
   by: "internalType",
-  then: { by: "count", count: true, bytes: true }
+  then: { by: "count", count: true, bytes: true },
 };
 
-add_task(async function () {
+add_task(async function() {
   const client = new HeapAnalysesClient();
   const start = Date.now() * 1000;
 
@@ -35,15 +35,15 @@ add_task(async function () {
   let threw = false;
   try {
     await client.getCreationTime("/not/a/real/path", {
-      breakdown: BREAKDOWN
+      breakdown: BREAKDOWN,
     });
   } catch (_) {
     threw = true;
   }
   ok(threw, "getCreationTime should throw when snapshot does not exist");
 
-  let time = await client.getCreationTime(snapshotFilePath, {
-    breakdown: BREAKDOWN
+  const time = await client.getCreationTime(snapshotFilePath, {
+    breakdown: BREAKDOWN,
   });
 
   dumpn("Start = " + start);

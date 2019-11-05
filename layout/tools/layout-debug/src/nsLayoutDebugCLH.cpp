@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 // vim:cindent:tabstop=4:expandtab:shiftwidth=4:
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,6 +14,7 @@
 #include "nsIDOMWindow.h"
 #include "nsISupportsPrimitives.h"
 #include "nsICommandLine.h"
+#include "nsIURI.h"
 
 nsLayoutDebugCLH::nsLayoutDebugCLH() {}
 
@@ -45,11 +46,16 @@ nsLayoutDebugCLH::Handle(nsICommandLine* aCmdLine) {
   nsCOMPtr<nsIMutableArray> argsArray = nsArray::Create();
 
   if (!url.IsEmpty()) {
+    nsCOMPtr<nsIURI> uri;
+    rv = aCmdLine->ResolveURI(url, getter_AddRefs(uri));
+    NS_ENSURE_SUCCESS(rv, rv);
     nsCOMPtr<nsISupportsString> scriptableURL =
         do_CreateInstance(NS_SUPPORTS_STRING_CONTRACTID);
     NS_ENSURE_TRUE(scriptableURL, NS_ERROR_FAILURE);
-
-    scriptableURL->SetData(url);
+    nsAutoCString resolvedSpec;
+    rv = uri->GetSpec(resolvedSpec);
+    NS_ENSURE_SUCCESS(rv, rv);
+    scriptableURL->SetData(NS_ConvertUTF8toUTF16(resolvedSpec));
     argsArray->AppendElement(scriptableURL);
   }
 

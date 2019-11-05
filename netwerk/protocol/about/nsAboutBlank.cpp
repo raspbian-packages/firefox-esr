@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -40,12 +40,8 @@ nsAboutBlank::GetURIFlags(nsIURI* aURI, uint32_t* result) {
 
 nsresult nsAboutBlank::Create(nsISupports* aOuter, REFNSIID aIID,
                               void** aResult) {
-  nsAboutBlank* about = new nsAboutBlank();
-  if (about == nullptr) return NS_ERROR_OUT_OF_MEMORY;
-  NS_ADDREF(about);
-  nsresult rv = about->QueryInterface(aIID, aResult);
-  NS_RELEASE(about);
-  return rv;
+  RefPtr<nsAboutBlank> about = new nsAboutBlank();
+  return about->QueryInterface(aIID, aResult);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

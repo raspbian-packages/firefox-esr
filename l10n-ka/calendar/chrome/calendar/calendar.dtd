@@ -4,7 +4,7 @@
 
 <!-- General -->
 <!ENTITY calendar.calendar.label     "კალენდარი">
-<!ENTITY calendar.calendar.accesskey "C">
+<!ENTITY calendar.calendar.accesskey "კ">
 
 <!ENTITY calendar.newevent.button.tooltip         "ახალი ღონისძიების შექმნა" >
 <!ENTITY calendar.newtask.button.tooltip          "ახალი დავალების შექმნა" >
@@ -78,15 +78,15 @@
 <!ENTITY calendar.nextmonth.accesskey           "x" >
 <!ENTITY calendar.prevmonth.accesskey           "s" >
 
-<!ENTITY calendar.navigation.nextday.tooltip    "ერთი დღით წინ" >
-<!ENTITY calendar.navigation.prevday.tooltip    "ერთი დღით უკან" >
-<!ENTITY calendar.navigation.nextweek.tooltip   "ერთი კვირით წინ" >
-<!ENTITY calendar.navigation.prevweek.tooltip   "ერთი კვირით უკან" >
-<!ENTITY calendar.navigation.nextmonth.tooltip  "ერთი თვით წინ" >
-<!ENTITY calendar.navigation.prevmonth.tooltip  "ერთი თვით უკან" >
+<!ENTITY calendar.navigation.nextday.tooltip    "ერთი დღით შემდგომ" >
+<!ENTITY calendar.navigation.prevday.tooltip    "ერთი დღით წინ" >
+<!ENTITY calendar.navigation.nextweek.tooltip   "ერთი კვირით შემდგომ" >
+<!ENTITY calendar.navigation.prevweek.tooltip   "ერთი კვირით წინ" >
+<!ENTITY calendar.navigation.nextmonth.tooltip  "ერთი თვით შემდგომ" >
+<!ENTITY calendar.navigation.prevmonth.tooltip  "ერთი თვით წინ" >
 
 <!ENTITY calendar.newevent.button.label         "ახალი ღონისძიება" >
-<!ENTITY calendar.newtask.button.label          "რედაქტირება" >
+<!ENTITY calendar.newtask.button.label          "ჩასწორება" >
 <!ENTITY calendar.print.button.label            "ბეჭდვა" >
 <!ENTITY calendar.print.button.accesskey        "ჭ">
 
@@ -168,8 +168,8 @@
 <!ENTITY calendar.context.deleteevent.accesskey       "წ">
 <!ENTITY calendar.context.cutevent.label              "ამოჭრა">
 <!ENTITY calendar.context.cutevent.accesskey          "ჭ">
-<!ENTITY calendar.context.copyevent.label             "დაკოპირება">
-<!ENTITY calendar.context.copyevent.accesskey         "პ">
+<!ENTITY calendar.context.copyevent.label             "ასლი">
+<!ENTITY calendar.context.copyevent.accesskey         "ლ">
 <!ENTITY calendar.context.pasteevent.label            "ჩასმა">
 <!ENTITY calendar.context.pasteevent.accesskey        "ჩ">
 <!ENTITY calendar.context.button.label                "დღევანდელის სტენდი">
@@ -178,8 +178,6 @@
 <!ENTITY calendar.context.attendance.menu.label                 "დამსწრეები">
 <!ENTITY calendar.context.attendance.menu.accesskey             "d">
 <!ENTITY calendar.context.attendance.occurrence.label           "ჩატარების თარიღი">
-<!ENTITY calendar.context.attendance.all.label        "განმეორებითი ჩატარების ყველა თარიღი" >
-
 <!ENTITY calendar.context.attendance.all2.label                 "სრული რიგი">
 <!ENTITY calendar.context.attendance.send.label                 "შეტყობინება ახლავე">
 <!ENTITY calendar.context.attendance.send.accesskey             "შ">
@@ -256,8 +254,8 @@
 <!ENTITY calendar.context.postpone.1week.label      "1 კვირა">
 <!ENTITY calendar.context.postpone.1week.accesskey  "W">
 
-<!ENTITY calendar.copylink.label       "ბმის მისამართის ასლი">
-<!ENTITY calendar.copylink.accesskey   "C">
+<!ENTITY calendar.copylink.label       "ბმულის მისამართის ასლი">
+<!ENTITY calendar.copylink.accesskey   "ლ">
 
 <!-- Task View -->
 <!-- Note that the above *.context.* strings are currently used for the other
@@ -276,7 +274,7 @@
       calendar is the general action of removing it, while deleting means to
       clear the data and unsubscribing means just taking it out of the calendar
       list. -->
-<!ENTITY calendar.context.removeserver.label           "კალენდრის ამოღება…">
+<!ENTITY calendar.context.removeserver.label           "კალენდრის მოცილება…">
 <!ENTITY calendar.context.removeserver.accesskey       "მ">
 <!ENTITY calendar.context.unsubscribeserver.label      "კალენდრის გამოწერის გაუქმება…">
 <!ENTITY calendar.context.unsubscribeserver.accesskey  "უ">
@@ -349,7 +347,7 @@
 <!ENTITY calendar.alarm.snooze.cancel               "გადადების გაუქმება">
 
 <!-- Calendar Server Dialog -->
-<!ENTITY calendar.server.dialog.title.edit          "კალენდრის რედაქტირება">
+<!ENTITY calendar.server.dialog.title.edit          "კალენდრის ჩასწორება">
 <!ENTITY calendar.server.dialog.name.label          "კალენდრის სახელი:">
 
 <!-- Calendar Properties -->
@@ -366,9 +364,9 @@
 <!ENTITY calendarproperties.firealarms.label               "შეხსენებათა ჩვენება">
 <!ENTITY calendarproperties.cache3.label                   "ბუფერიზაცია">
 <!ENTITY calendarproperties.enabled.label                  "ამ კალენდრის ჩართვა">
-<!ENTITY calendarproperties.forceDisabled.label            "ამ კალენდრის პროვაიდერი ვერ მოიძებნა. ხშირად ეს თქვენს მიერ გარკვეული პაკეტების ამოღების ან ამორთვის შემთხვევაში ხდება.">
-<!ENTITY calendarproperties.unsubscribe.label              "ხელმოწერის გაუქმება">
-<!ENTITY calendarproperties.unsubscribe.accesskey          "U">
+<!ENTITY calendarproperties.forceDisabled.label            "ამ კალენდრისთვის მომწოდებელი ვერ მოიძებნა. ხშირად, ეს თქვენ მიერ გარკვეული დამატებების წაშლის ან ამორთვის შემთხვევაში ხდება.">
+<!ENTITY calendarproperties.unsubscribe.label              "გამოწერა გაუქმება">
+<!ENTITY calendarproperties.unsubscribe.accesskey          "უ">
 
 <!-- Calendar Publish Dialog -->
 <!ENTITY calendar.publish.dialog.title              "კალენდრის გამოქვეყნება">

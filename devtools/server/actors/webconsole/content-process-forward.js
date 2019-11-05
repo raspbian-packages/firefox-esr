@@ -4,14 +4,13 @@
 
 "use strict";
 
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
-const { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
-                                   "@mozilla.org/childprocessmessagemanager;1",
-                                   "nsIMessageSender");
-ChromeUtils.defineModuleGetter(this, "E10SUtils",
-                               "resource://gre/modules/E10SUtils.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "E10SUtils",
+  "resource://gre/modules/E10SUtils.jsm"
+);
 
 /*
  * The message manager has an upper limit on message sizes that it can
@@ -37,11 +36,16 @@ const MSG_MGR_CONSOLE_INFO_MAX = 1024;
 function ContentProcessForward() {
   Services.obs.addObserver(this, "console-api-log-event");
   Services.obs.addObserver(this, "xpcom-shutdown");
-  cpmm.addMessageListener("DevTools:StopForwardingContentProcessMessage", this);
+  Services.cpmm.addMessageListener(
+    "DevTools:StopForwardingContentProcessMessage",
+    this
+  );
 }
 ContentProcessForward.prototype = {
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
-                                         Ci.nsISupportsWeakReference]),
+  QueryInterface: ChromeUtils.generateQI([
+    Ci.nsIObserver,
+    Ci.nsISupportsWeakReference,
+  ]),
 
   receiveMessage(message) {
     if (message.name == "DevTools:StopForwardingContentProcessMessage") {
@@ -52,13 +56,14 @@ ContentProcessForward.prototype = {
   observe(subject, topic, data) {
     switch (topic) {
       case "console-api-log-event": {
-        let consoleMsg = subject.wrappedJSObject;
+        const consoleMsg = subject.wrappedJSObject;
 
-        let msgData = {
+        const msgData = {
           ...consoleMsg,
           arguments: [],
           filename: consoleMsg.filename.substring(0, MSG_MGR_CONSOLE_INFO_MAX),
-          functionName: consoleMsg.functionName &&
+          functionName:
+            consoleMsg.functionName &&
             consoleMsg.functionName.substring(0, MSG_MGR_CONSOLE_INFO_MAX),
           // Prevents cyclic object error when using msgData in sendAsyncMessage
           wrappedJSObject: null,
@@ -66,8 +71,8 @@ ContentProcessForward.prototype = {
 
         // We can't send objects over the message manager, so we sanitize
         // them out, replacing those arguments with "<unavailable>".
-        let unavailString = "<unavailable>";
-        let unavailStringLength = unavailString.length * 2; // 2-bytes per char
+        const unavailString = "<unavailable>";
+        const unavailStringLength = unavailString.length * 2; // 2-bytes per char
 
         // When the sum of argument sizes reaches MSG_MGR_CONSOLE_MAX_SIZE,
         // replace all arguments with "<truncated>".
@@ -75,9 +80,13 @@ ContentProcessForward.prototype = {
 
         // Walk through the arguments, checking the type and size.
         for (let arg of consoleMsg.arguments) {
-          if ((typeof arg == "object" || typeof arg == "function") &&
-              arg !== null) {
-            if (Services.appinfo.remoteType === E10SUtils.EXTENSION_REMOTE_TYPE) {
+          if (
+            (typeof arg == "object" || typeof arg == "function") &&
+            arg !== null
+          ) {
+            if (
+              Services.appinfo.remoteType === E10SUtils.EXTENSION_REMOTE_TYPE
+            ) {
               // For OOP extensions: we want the developer to be able to see the
               // logs in the Browser Console. When the Addon Toolbox will be more
               // prominent we can revisit.
@@ -107,7 +116,7 @@ ContentProcessForward.prototype = {
           }
         }
 
-        cpmm.sendAsyncMessage("Console:Log", msgData);
+        Services.cpmm.sendAsyncMessage("Console:Log", msgData);
         break;
       }
 
@@ -120,8 +129,11 @@ ContentProcessForward.prototype = {
   uninit() {
     Services.obs.removeObserver(this, "console-api-log-event");
     Services.obs.removeObserver(this, "xpcom-shutdown");
-    cpmm.removeMessageListener("DevTools:StopForwardingContentProcessMessage", this);
-  }
+    Services.cpmm.removeMessageListener(
+      "DevTools:StopForwardingContentProcessMessage",
+      this
+    );
+  },
 };
 
 // loadProcessScript loads in all processes, including the parent,
@@ -129,4 +141,3 @@ ContentProcessForward.prototype = {
 if (Services.appinfo.processType == Services.appinfo.PROCESS_TYPE_CONTENT) {
   new ContentProcessForward();
 }
-

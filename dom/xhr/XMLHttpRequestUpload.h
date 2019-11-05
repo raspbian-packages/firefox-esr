@@ -17,10 +17,7 @@ class XMLHttpRequestUpload final : public XMLHttpRequestEventTarget {
   explicit XMLHttpRequestUpload(DOMEventTargetHelper* aOwner)
       : XMLHttpRequestEventTarget(aOwner) {}
 
-  explicit XMLHttpRequestUpload() {}
-
   NS_DECL_ISUPPORTS_INHERITED
-  NS_REALLY_FORWARD_NSIDOMEVENTTARGET(XMLHttpRequestEventTarget)
 
   virtual JSObject* WrapObject(JSContext* cx,
                                JS::Handle<JSObject*> aGivenProto) override;

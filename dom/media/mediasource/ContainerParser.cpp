@@ -17,11 +17,11 @@
 #include "MediaData.h"
 #include "nsMimeTypes.h"
 #ifdef MOZ_FMP4
-#include "AtomType.h"
-#include "BufferReader.h"
-#include "Index.h"
-#include "MP4Interval.h"
-#include "ByteStream.h"
+#  include "AtomType.h"
+#  include "BufferReader.h"
+#  include "Index.h"
+#  include "MP4Interval.h"
+#  include "ByteStream.h"
 #endif
 #include "nsAutoPtr.h"
 #include "SourceBufferResource.h"
@@ -29,8 +29,6 @@
 
 extern mozilla::LogModule* GetMediaSourceSamplesLog();
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
 #define MSE_DEBUG(arg, ...)                                            \
   DDMOZ_LOG(GetMediaSourceSamplesLog(), mozilla::LogLevel::Debug,      \
             "(%s)::%s: " arg, mType.OriginalString().Data(), __func__, \
@@ -526,7 +524,8 @@ class MP4ContainerParser : public ContainerParser,
       // consumers of ParseStartAndEndTimestamps to add their timestamp offset
       // manually. This allows the ContainerParser to be shared across different
       // timestampOffsets.
-      mParser = new MoofParser(mStream, 0, /* aIsAudio = */ false);
+      mParser = new MoofParser(mStream, AsVariant(ParseAllTracks{}),
+                               /* aIsAudio = */ false);
       DDLINKCHILD("parser", mParser.get());
       mInitData = new MediaByteBuffer();
       mCompleteInitSegmentRange = MediaByteRange();
@@ -742,7 +741,8 @@ class ADTSContainerParser
 };
 #endif  // MOZ_FMP4
 
-/*static*/ ContainerParser* ContainerParser::CreateForMIMEType(
+/*static*/
+ContainerParser* ContainerParser::CreateForMIMEType(
     const MediaContainerType& aType) {
   if (aType.Type() == MEDIAMIMETYPE(VIDEO_WEBM) ||
       aType.Type() == MEDIAMIMETYPE(AUDIO_WEBM)) {

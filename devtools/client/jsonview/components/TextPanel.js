@@ -6,7 +6,7 @@
 
 "use strict";
 
-define(function (require, exports, module) {
+define(function(require, exports, module) {
   const { Component } = require("devtools/client/shared/vendor/react");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
   const dom = require("devtools/client/shared/vendor/react-dom-factories");
@@ -34,16 +34,13 @@ define(function (require, exports, module) {
     }
 
     render() {
-      return (
-        div({className: "textPanelBox tab-panel-inner"},
-          TextToolbar({
-            actions: this.props.actions,
-            isValidJson: this.props.isValidJson
-          }),
-          div({className: "panelContent"},
-            LiveText({data: this.props.data})
-          )
-        )
+      return div(
+        { className: "textPanelBox tab-panel-inner" },
+        TextToolbar({
+          actions: this.props.actions,
+          isValidJson: this.props.isValidJson,
+        }),
+        div({ className: "panelContent" }, LiveText({ data: this.props.data }))
       );
     }
   }

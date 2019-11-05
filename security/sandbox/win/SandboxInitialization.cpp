@@ -9,19 +9,22 @@
 #include "base/memory/ref_counted.h"
 #include "nsWindowsDllInterceptor.h"
 #include "sandbox/win/src/sandbox_factory.h"
+#include "mozilla/DebugOnly.h"
 #include "mozilla/sandboxing/permissionsService.h"
+#include "mozilla/WindowsProcessMitigations.h"
 
 namespace mozilla {
 namespace sandboxing {
 
 typedef BOOL(WINAPI* CloseHandle_func)(HANDLE hObject);
-static CloseHandle_func stub_CloseHandle = nullptr;
+static WindowsDllInterceptor::FuncHookType<CloseHandle_func> stub_CloseHandle;
 
 typedef BOOL(WINAPI* DuplicateHandle_func)(
     HANDLE hSourceProcessHandle, HANDLE hSourceHandle,
     HANDLE hTargetProcessHandle, LPHANDLE lpTargetHandle, DWORD dwDesiredAccess,
     BOOL bInheritHandle, DWORD dwOptions);
-static DuplicateHandle_func stub_DuplicateHandle = nullptr;
+static WindowsDllInterceptor::FuncHookType<DuplicateHandle_func>
+    stub_DuplicateHandle;
 
 static BOOL WINAPI patched_CloseHandle(HANDLE hObject) {
   // Check all handles being closed against the sandbox's tracked handles.
@@ -45,20 +48,37 @@ static BOOL WINAPI patched_DuplicateHandle(
                               dwDesiredAccess, bInheritHandle, dwOptions);
 }
 
+typedef BOOL (WINAPI* ApiSetQueryApiSetPresence_func)(PCUNICODE_STRING, PBOOLEAN);
+static WindowsDllInterceptor::FuncHookType<ApiSetQueryApiSetPresence_func> stub_ApiSetQueryApiSetPresence;
+
+static const WCHAR gApiSetNtUserWindowStation[] =
+  L"ext-ms-win-ntuser-windowstation-l1-1-0";
+
+static BOOL WINAPI patched_ApiSetQueryApiSetPresence(
+    PCUNICODE_STRING aNamespace, PBOOLEAN aPresent) {
+  if (aNamespace && aPresent && !wcsncmp(aNamespace->Buffer,
+                                         gApiSetNtUserWindowStation,
+                                         aNamespace->Length / sizeof(WCHAR))) {
+    *aPresent = FALSE;
+    return TRUE;
+  }
+
+  return stub_ApiSetQueryApiSetPresence(aNamespace, aPresent);
+}
+
 static WindowsDllInterceptor Kernel32Intercept;
+static WindowsDllInterceptor gApiQueryIntercept;
 
 static bool EnableHandleCloseMonitoring() {
   Kernel32Intercept.Init("kernel32.dll");
-  bool hooked = Kernel32Intercept.AddHook(
-      "CloseHandle", reinterpret_cast<intptr_t>(patched_CloseHandle),
-      (void**)&stub_CloseHandle);
+  bool hooked = stub_CloseHandle.Set(Kernel32Intercept, "CloseHandle",
+                                     &patched_CloseHandle);
   if (!hooked) {
     return false;
   }
 
-  hooked = Kernel32Intercept.AddHook(
-      "DuplicateHandle", reinterpret_cast<intptr_t>(patched_DuplicateHandle),
-      (void**)&stub_DuplicateHandle);
+  hooked = stub_DuplicateHandle.Set(Kernel32Intercept, "DuplicateHandle",
+                                    &patched_DuplicateHandle);
   if (!hooked) {
     return false;
   }
@@ -66,8 +86,28 @@ static bool EnableHandleCloseMonitoring() {
   return true;
 }
 
+/**
+ * There is a bug in COM that causes its initialization to fail when user32.dll
+ * is loaded but Win32k lockdown is enabled. COM uses ApiSetQueryApiSetPresence
+ * to make this check. When we are under Win32k lockdown, we hook
+ * ApiSetQueryApiSetPresence and force it to tell the caller that the DLL of
+ * interest is not present.
+ */
+static void EnableApiQueryInterception() {
+  if (!IsWin32kLockedDown()) {
+    return;
+  }
+
+  gApiQueryIntercept.Init(L"Api-ms-win-core-apiquery-l1-1-0.dll");
+  DebugOnly<bool> hookSetOk =
+    stub_ApiSetQueryApiSetPresence.Set(gApiQueryIntercept,
+                                       "ApiSetQueryApiSetPresence",
+                                       &patched_ApiSetQueryApiSetPresence);
+  MOZ_ASSERT(hookSetOk);
+}
+
 static bool ShouldDisableHandleVerifier() {
-#if defined(_X86_) && (defined(NIGHTLY_BUILD) || defined(DEBUG))
+#if defined(_X86_) && (defined(EARLY_BETA_OR_EARLIER) || defined(DEBUG))
   // Chromium only has the verifier enabled for 32-bit and our close monitoring
   // hooks cause debug assertions for 64-bit anyway.
   // For x86 keep the verifier enabled by default only for Nightly or debug.
@@ -86,6 +126,11 @@ static void InitializeHandleVerifier() {
 }
 
 static sandbox::TargetServices* InitializeTargetServices() {
+  // This might disable the verifier, so we want to do it before it is used.
+  InitializeHandleVerifier();
+
+  EnableApiQueryInterception();
+
   sandbox::TargetServices* targetServices =
       sandbox::SandboxFactory::GetTargetServices();
   if (!targetServices) {
@@ -95,8 +140,6 @@ static sandbox::TargetServices* InitializeTargetServices() {
   if (targetServices->Init() != sandbox::SBOX_ALL_OK) {
     return nullptr;
   }
-
-  InitializeHandleVerifier();
 
   return targetServices;
 }
@@ -111,6 +154,9 @@ sandbox::TargetServices* GetInitializedTargetServices() {
 void LowerSandbox() { GetInitializedTargetServices()->LowerToken(); }
 
 static sandbox::BrokerServices* InitializeBrokerServices() {
+  // This might disable the verifier, so we want to do it before it is used.
+  InitializeHandleVerifier();
+
   sandbox::BrokerServices* brokerServices =
       sandbox::SandboxFactory::GetBrokerServices();
   if (!brokerServices) {
@@ -128,9 +174,7 @@ static sandbox::BrokerServices* InitializeBrokerServices() {
   // the process to swap its window station. During this time all the UI
   // will be broken. This has to run before threads and windows are created.
   scoped_refptr<sandbox::TargetPolicy> policy = brokerServices->CreatePolicy();
-  sandbox::ResultCode result = policy->CreateAlternateDesktop(true);
-
-  InitializeHandleVerifier();
+  policy->CreateAlternateDesktop(true);
 
   return brokerServices;
 }

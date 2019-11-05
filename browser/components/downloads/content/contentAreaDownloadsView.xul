@@ -7,8 +7,8 @@
 <?xml-stylesheet href="chrome://global/skin/"?>
 <?xml-stylesheet href="chrome://browser/content/downloads/contentAreaDownloadsView.css"?>
 <?xml-stylesheet href="chrome://browser/skin/downloads/contentAreaDownloadsView.css"?>
-
-<?xul-overlay href="chrome://browser/content/downloads/allDownloadsViewOverlay.xul"?>
+<?xml-stylesheet href="chrome://browser/content/downloads/downloads.css"?>
+<?xml-stylesheet href="chrome://browser/skin/downloads/allDownloadsView.css"?>
 
 <!DOCTYPE window [
 <!ENTITY % downloadsDTD SYSTEM "chrome://browser/locale/downloads/downloads.dtd">
@@ -22,12 +22,11 @@
         title="&downloads.title;"
         onload="ContentAreaDownloadsView.init();">
 
-  <script type="application/javascript"
-          src="chrome://global/content/globalOverlay.js"/>
-  <script type="application/javascript"
-          src="chrome://browser/content/downloads/contentAreaDownloadsView.js"/>
-
-#include ../../../../toolkit/content/editMenuCommands.inc.xul
+  <script src="chrome://global/content/globalOverlay.js"/>
+  <script src="chrome://browser/content/downloads/contentAreaDownloadsView.js"/>
+  <script src="chrome://browser/content/downloads/allDownloadsView.js"/>
+  <script src="chrome://global/content/contentAreaUtils.js"/>
+  <script src="chrome://global/content/editMenuOverlay.js"/>
 
 #include ../../../../toolkit/content/editMenuKeys.inc.xul
 #ifdef XP_MACOSX
@@ -37,11 +36,12 @@
 #endif
 
   <stack flex="1">
-    <richlistbox id="downloadsRichListBox"/>
+#include downloadsRichListBox.inc.xul
     <description id="downloadsListEmptyDescription"
                  value="&downloadsListEmpty.label;"
                  mousethrough="always"/>
   </stack>
-  <commandset id="downloadCommands"/>
-  <menupopup id="downloadsContextMenu"/>
+#include downloadsCommands.inc.xul
+#include downloadsStrings.inc.xul
+#include downloadsContextMenu.inc.xul
 </window>

@@ -86,7 +86,7 @@ platform.  For example:
             default: 8
 
 The full set of available properties is in
-``taskcluster/taskgraph/transform/tests/test_description.py``.  Some other
+``taskcluster/taskgraph/transforms/tests.py``.  Some other
 commonly-modified properties are ``max-run-time`` (useful if tests are being
 killed for exceeding maxRunTime) and ``treeherder-symbol``.
 
@@ -104,7 +104,7 @@ for that suite, and which kind it fits into (consult :doc:`kinds`).
 Add a new stanza to ``taskcluster/ci/<kind>/tests.yml``, copying from the other
 stanzas in that file.  The meanings should be clear, but authoritative
 documentation is in
-``taskcluster/taskgraph/transform/tests/test_description.py`` should you need
+``taskcluster/taskgraph/transforms/tests.py`` should you need
 it.  The stanza name is the name by which the test will be referenced in try
 syntax.
 
@@ -142,7 +142,7 @@ options.  A few questions to consider:
  * Is this one of a few related tasks, or will you need to generate a large
    set of tasks using some programmatic means (for example, chunking)?
 
- * How is the task actually excuted?  Mozharness?  Mach?
+ * How is the task actually executed?  Mozharness?  Mach?
 
  * What kind of environment does the task require?
 

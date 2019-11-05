@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,18 +11,12 @@
 
 namespace mozilla {
 
-WebGLSampler::WebGLSampler(WebGLContext* webgl, GLuint sampler)
-    : WebGLRefCountedObject(webgl),
-      mGLName(sampler),
-      mMinFilter(LOCAL_GL_NEAREST_MIPMAP_LINEAR),
-      mMagFilter(LOCAL_GL_LINEAR),
-      mWrapS(LOCAL_GL_REPEAT),
-      mWrapT(LOCAL_GL_REPEAT),
-      mWrapR(LOCAL_GL_REPEAT),
-      mMinLod(-1000),
-      mMaxLod(1000),
-      mCompareMode(LOCAL_GL_NONE),
-      mCompareFunc(LOCAL_GL_LEQUAL) {
+WebGLSampler::WebGLSampler(WebGLContext* const webgl)
+    : WebGLRefCountedObject(webgl), mGLName([&]() {
+        GLuint ret = 0;
+        webgl->gl->fGenSamplers(1, &ret);
+        return ret;
+      }()) {
   mContext->mSamplers.insertBack(this);
 }
 
@@ -38,11 +32,10 @@ WebGLContext* WebGLSampler::GetParentObject() const { return mContext; }
 
 JSObject* WebGLSampler::WrapObject(JSContext* cx,
                                    JS::Handle<JSObject*> givenProto) {
-  return dom::WebGLSamplerBinding::Wrap(cx, this, givenProto);
+  return dom::WebGLSampler_Binding::Wrap(cx, this, givenProto);
 }
 
-static bool ValidateSamplerParameterParams(WebGLContext* webgl,
-                                           const char* funcName, GLenum pname,
+static bool ValidateSamplerParameterParams(WebGLContext* webgl, GLenum pname,
                                            const FloatOrInt& param) {
   const auto& paramInt = param.i;
 
@@ -120,63 +113,46 @@ static bool ValidateSamplerParameterParams(WebGLContext* webgl,
       break;
 
     default:
-      webgl->ErrorInvalidEnumArg(funcName, "pname", pname);
+      webgl->ErrorInvalidEnumInfo("pname", pname);
       return false;
   }
 
-  webgl->ErrorInvalidEnumArg(funcName, "param", paramInt);
+  webgl->ErrorInvalidEnumInfo("param", paramInt);
   return false;
 }
 
-void WebGLSampler::SamplerParameter(const char* funcName, GLenum pname,
-                                    const FloatOrInt& param) {
-  if (!ValidateSamplerParameterParams(mContext, funcName, pname, param)) return;
+void WebGLSampler::SamplerParameter(GLenum pname, const FloatOrInt& param) {
+  if (!ValidateSamplerParameterParams(mContext, pname, param)) return;
 
+  bool invalidate = true;
   switch (pname) {
     case LOCAL_GL_TEXTURE_MIN_FILTER:
-      mMinFilter = param.i;
+      mState.minFilter = param.i;
       break;
 
     case LOCAL_GL_TEXTURE_MAG_FILTER:
-      mMagFilter = param.i;
+      mState.magFilter = param.i;
       break;
 
     case LOCAL_GL_TEXTURE_WRAP_S:
-      mWrapS = param.i;
+      mState.wrapS = param.i;
       break;
 
     case LOCAL_GL_TEXTURE_WRAP_T:
-      mWrapT = param.i;
-      break;
-
-    case LOCAL_GL_TEXTURE_WRAP_R:
-      mWrapR = param.i;
+      mState.wrapT = param.i;
       break;
 
     case LOCAL_GL_TEXTURE_COMPARE_MODE:
-      mCompareMode = param.i;
-      break;
-
-    case LOCAL_GL_TEXTURE_COMPARE_FUNC:
-      mCompareFunc = param.i;
-      break;
-
-    case LOCAL_GL_TEXTURE_MIN_LOD:
-      mMinLod = param.f;
-      break;
-
-    case LOCAL_GL_TEXTURE_MAX_LOD:
-      mMaxLod = param.f;
+      mState.compareMode = param.i;
       break;
 
     default:
-      MOZ_CRASH("GFX: Unhandled pname");
+      invalidate = false;
       break;
   }
 
-  for (uint32_t i = 0; i < mContext->mBoundSamplers.Length(); ++i) {
-    if (this == mContext->mBoundSamplers[i])
-      mContext->InvalidateResolveCacheForTextureWithTexUnit(i);
+  if (invalidate) {
+    InvalidateCaches();
   }
 
   ////

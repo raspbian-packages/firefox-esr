@@ -94,7 +94,12 @@ public abstract class BrowserToolbar extends ThemedRelativeLayout
     }
 
     public interface OnCommitListener {
-        public void onCommit();
+        public void onCommit(CommitEventSource eventSource);
+    }
+
+    public enum CommitEventSource {
+        KEY_EVENT,
+        PRE_IME_KEY_EVENT
     }
 
     public interface OnDismissListener {
@@ -291,6 +296,10 @@ public abstract class BrowserToolbar extends ThemedRelativeLayout
         });
     }
 
+    public void launchVoiceRecognizer() {
+        urlEditLayout.launchVoiceRecognizer();
+    }
+
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -435,6 +444,7 @@ public abstract class BrowserToolbar extends ThemedRelativeLayout
     }
 
     @Override
+    @SuppressWarnings("fallthrough")
     public void onTabChanged(@Nullable Tab tab, Tabs.TabEvents msg, String data) {
         Log.d(LOGTAG, "onTabChanged: " + msg);
         final Tabs tabs = Tabs.getInstance();
@@ -524,6 +534,7 @@ public abstract class BrowserToolbar extends ThemedRelativeLayout
                     break;
 
                 case SECURITY_CHANGE:
+                case TRACKING_CHANGE:
                     flags.add(UpdateFlags.SITE_IDENTITY);
                     break;
             }

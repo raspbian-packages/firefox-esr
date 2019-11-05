@@ -5,7 +5,7 @@
 
 "use strict";
 
-add_task(async function () {
+add_task(async function() {
   await throttleTest(true);
   await throttleTest(false);
 });
@@ -13,13 +13,15 @@ add_task(async function () {
 async function throttleTest(actuallyThrottle) {
   requestLongerTimeout(2);
 
-  let { monitor } = await initNetMonitor(SIMPLE_URL);
-  let { store, windowRequire, connector } = monitor.panelWin;
-  let { ACTIVITY_TYPE } = windowRequire("devtools/client/netmonitor/src/constants");
-  let { setPreferences, triggerActivity } = connector;
-  let {
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+  const { monitor } = await initNetMonitor(SIMPLE_URL);
+  const { store, windowRequire, connector } = monitor.panelWin;
+  const { ACTIVITY_TYPE } = windowRequire(
+    "devtools/client/netmonitor/src/constants"
+  );
+  const { setPreferences, triggerActivity } = connector;
+  const { getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   info("Starting test... (actuallyThrottle = " + actuallyThrottle + ")");
 
@@ -39,22 +41,15 @@ async function throttleTest(actuallyThrottle) {
   };
 
   info("sending throttle request");
-  await new Promise((resolve) => {
-    setPreferences(request, response => {
-      resolve(response);
-    });
-  });
+  await setPreferences(request);
 
-  let wait = waitForNetworkEvents(monitor, 1);
+  const wait = waitForNetworkEvents(monitor, 1);
   await triggerActivity(ACTIVITY_TYPE.RELOAD.WITH_CACHE_DISABLED);
   await wait;
 
-  await waitUntil(() => {
-    let requestItem = getSortedRequests(store.getState()).get(0);
-    return requestItem && requestItem.eventTimings;
-  });
+  await waitForRequestData(store, ["eventTimings"]);
 
-  let requestItem = getSortedRequests(store.getState()).get(0);
+  const requestItem = getSortedRequests(store.getState()).get(0);
   const reportedOneSecond = requestItem.eventTimings.timings.receive > 1000;
   if (actuallyThrottle) {
     ok(reportedOneSecond, "download reported as taking more than one second");

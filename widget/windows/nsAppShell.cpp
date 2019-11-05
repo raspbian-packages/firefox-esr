@@ -15,7 +15,8 @@
 #include "nsString.h"
 #include "WinIMEHandler.h"
 #include "mozilla/widget/AudioSession.h"
-#include "mozilla/HangMonitor.h"
+#include "mozilla/BackgroundHangMonitor.h"
+#include "mozilla/Hal.h"
 #include "nsIDOMWakeLockListener.h"
 #include "nsIPowerManagerService.h"
 #include "mozilla/StaticPtr.h"
@@ -29,8 +30,8 @@
 #include "mozilla/Atomics.h"
 
 #if defined(ACCESSIBILITY)
-#include "mozilla/a11y/Compatibility.h"
-#include "mozilla/a11y/Platform.h"
+#  include "mozilla/a11y/Compatibility.h"
+#  include "mozilla/a11y/Platform.h"
 #endif  // defined(ACCESSIBILITY)
 
 // These are two messages that the code in winspool.drv on Windows 7 explicitly
@@ -156,13 +157,11 @@ SingleNativeEventPump::AfterProcessNextEvent(nsIThreadInternal* aThread,
   return NS_OK;
 }
 
-namespace mozilla {
-namespace widget {
-// Native event callback message.
-UINT sAppShellGeckoMsgId = RegisterWindowMessageW(L"nsAppShell:EventID");
-}  // namespace widget
-}  // namespace mozilla
-
+// RegisterWindowMessage values
+// Native event callback message
+const wchar_t* kAppShellGeckoEventId = L"nsAppShell:EventID";
+UINT sAppShellGeckoMsgId;
+// Taskbar button creation message
 const wchar_t* kTaskbarButtonEventId = L"TaskbarButtonCreated";
 UINT sTaskbarButtonCreatedMsg;
 
@@ -204,6 +203,8 @@ static Atomic<size_t, ReleaseAcquire> sOutstandingNativeEventCallbacks;
 }
 
 nsAppShell::~nsAppShell() {
+  hal::Shutdown();
+
   if (mEventWnd) {
     // DestroyWindow doesn't do anything when called from a non UI thread.
     // Since mEventWnd was created on the UI thread, it must be destroyed on
@@ -316,16 +317,23 @@ nsAppShell::Observe(nsISupports* aSubject, const char* aTopic,
 nsresult nsAppShell::Init() {
   LSPAnnotate();
 
-  mozilla::ipc::windows::InitUIThread();
+  hal::Init();
 
-  sTaskbarButtonCreatedMsg = ::RegisterWindowMessageW(kTaskbarButtonEventId);
-  NS_ASSERTION(sTaskbarButtonCreatedMsg,
-               "Could not register taskbar button creation message");
+  if (XRE_Win32kCallsAllowed()) {
+    sTaskbarButtonCreatedMsg = ::RegisterWindowMessageW(kTaskbarButtonEventId);
+    NS_ASSERTION(sTaskbarButtonCreatedMsg,
+                 "Could not register taskbar button creation message");
+  }
 
   // The hidden message window is used for interrupting the processing of native
   // events, so that we can process gecko events. Therefore, we only need it if
-  // we are processing native events.
+  // we are processing native events. Disabling this is required for win32k
+  // syscall lockdown.
   if (XRE_UseNativeEventProcessing()) {
+    sAppShellGeckoMsgId = ::RegisterWindowMessageW(kAppShellGeckoEventId);
+    NS_ASSERTION(sAppShellGeckoMsgId,
+                 "Could not register hidden window event message!");
+
     mLastNativeEventScheduled = TimeStamp::NowLoRes();
 
     WNDCLASSW wc;
@@ -349,7 +357,7 @@ nsresult nsAppShell::Init() {
     mEventWnd = CreateWindowW(kWindowClass, L"nsAppShell:EventWindow", 0, 0, 0,
                               10, 10, HWND_MESSAGE, nullptr, module, nullptr);
     NS_ENSURE_STATE(mEventWnd);
-  } else {
+  } else if (XRE_IsContentProcess()) {
     // We're not generally processing native events, but still using GDI and we
     // still have some internal windows, e.g. from calling CoInitializeEx.
     // So we use a class that will do a single event pump where previously we
@@ -513,9 +521,7 @@ bool nsAppShell::ProcessNextNativeEvent(bool mayWait) {
       } else {
         // If we had UI activity we would be processing it now so we know we
         // have either kUIActivity or kActivityNoUIAVail.
-        mozilla::HangMonitor::NotifyActivity(
-            uiMessage ? mozilla::HangMonitor::kUIActivity
-                      : mozilla::HangMonitor::kActivityNoUIAVail);
+        mozilla::BackgroundHangMonitor().NotifyActivity();
 
         if (msg.message >= WM_KEYFIRST && msg.message <= WM_KEYLAST &&
             IMEHandler::ProcessRawKeyMessage(msg)) {
@@ -536,8 +542,9 @@ bool nsAppShell::ProcessNextNativeEvent(bool mayWait) {
       }
     } else if (mayWait) {
       // Block and wait for any posted application message
-      mozilla::HangMonitor::Suspend();
+      mozilla::BackgroundHangMonitor().NotifyWait();
       {
+        AUTO_PROFILER_LABEL("nsAppShell::ProcessNextNativeEvent::Wait", IDLE);
         AUTO_PROFILER_THREAD_SLEEP;
         WinUtils::WaitForMessage();
       }

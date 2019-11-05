@@ -11,6 +11,7 @@
 #include "nsAutoRef.h"
 #include "nscore.h"
 #include "mozilla/Assertions.h"
+#include "mozilla/UniquePtr.h"
 
 // ----------------------------------------------------------------------------
 // Critical Section helper class
@@ -277,4 +278,17 @@ HMODULE inline LoadLibrarySystem32(LPCWSTR aModule) {
 
 }  // namespace
 
+// for UniquePtr
+struct LocalFreeDeleter {
+  void operator()(void* aPtr) { ::LocalFree(aPtr); }
+};
+
+// for UniquePtr to store a PSID
+struct FreeSidDeleter {
+  void operator()(void* aPtr) { ::FreeSid(aPtr); }
+};
+// Unfortunately, although SID is a struct, PSID is a void*
+// This typedef will work for storing a PSID in a UniquePtr and should make
+// things a bit more readable.
+typedef mozilla::UniquePtr<void, FreeSidDeleter> UniqueSidPtr;
 #endif

@@ -31,12 +31,8 @@ void nsOverflowAreas::SetAllTo(const nsRect& aRect) {
 
 namespace mozilla {
 
-ReflowOutput::ReflowOutput(const ReflowInput& aReflowInput, uint32_t aFlags)
-    : mISize(0),
-      mBSize(0),
-      mBlockStartAscent(ASK_FOR_BASELINE),
-      mFlags(aFlags),
-      mWritingMode(aReflowInput.GetWritingMode()) {}
+ReflowOutput::ReflowOutput(const ReflowInput& aReflowInput)
+    : ReflowOutput(aReflowInput.GetWritingMode()) {}
 
 void ReflowOutput::SetOverflowAreasToDesiredBounds() {
   NS_FOR_FRAME_OVERFLOW_TYPES(otype) {

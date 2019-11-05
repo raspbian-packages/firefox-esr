@@ -3,7 +3,9 @@
 
 "use strict";
 
-const { addDebuggerToGlobal } = ChromeUtils.import("resource://gre/modules/jsdebugger.jsm", {});
+const { addDebuggerToGlobal } = ChromeUtils.import(
+  "resource://gre/modules/jsdebugger.jsm"
+);
 addDebuggerToGlobal(this);
 
 /**
@@ -16,12 +18,12 @@ function run_test() {
 }
 
 function visible_loader() {
-  let loader = new DevToolsLoader();
+  const loader = new DevToolsLoader();
   loader.invisibleToDebugger = false;
   loader.require("devtools/shared/indentation");
 
-  let dbg = new Debugger();
-  let sandbox = loader._provider.loader.sharedGlobalSandbox;
+  const dbg = new Debugger();
+  const sandbox = loader._provider.loader.sharedGlobalSandbox;
 
   try {
     dbg.addDebuggee(sandbox);
@@ -32,17 +34,18 @@ function visible_loader() {
 
   // Check that for common loader used for tabs, promise modules is Promise.jsm
   // Which is required to support unhandled promises rejection in mochitests
-  const promise = ChromeUtils.import("resource://gre/modules/Promise.jsm", {}).Promise;
+  const promise = ChromeUtils.import("resource://gre/modules/Promise.jsm", {})
+    .Promise;
   Assert.equal(loader.require("promise"), promise);
 }
 
 function invisible_loader() {
-  let loader = new DevToolsLoader();
+  const loader = new DevToolsLoader();
   loader.invisibleToDebugger = true;
   loader.require("devtools/shared/indentation");
 
-  let dbg = new Debugger();
-  let sandbox = loader._provider.loader.sharedGlobalSandbox;
+  const dbg = new Debugger();
+  const sandbox = loader._provider.loader.sharedGlobalSandbox;
 
   try {
     dbg.addDebuggee(sandbox);
@@ -55,6 +58,9 @@ function invisible_loader() {
   // of Promise-backend.js, that to be invisible to the debugger and not step
   // into it.
   const promise = loader.require("promise");
-  const promiseModule = loader._provider.loader.modules["resource://gre/modules/Promise-backend.js"];
+  const promiseModule =
+    loader._provider.loader.modules[
+      "resource://gre/modules/Promise-backend.js"
+    ];
   Assert.equal(promise, promiseModule.exports);
 }

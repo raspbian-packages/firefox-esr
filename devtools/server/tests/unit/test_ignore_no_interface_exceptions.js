@@ -8,49 +8,44 @@
  * exceptions, but not normal ones.
  */
 
-var gDebuggee;
-var gClient;
-var gThreadClient;
+add_task(
+  threadClientTest(
+    async ({ threadClient, debuggee, client }) => {
+      await threadClient.pauseOnExceptions(true, false);
+      const paused = await executeOnNextTickAndWaitForPause(
+        () => evaluateTestCode(debuggee),
+        client
+      );
+      equal(paused.frame.where.line, 6, "paused at throw");
 
-function run_test() {
-  initTestDebuggerServer();
-  gDebuggee = addTestGlobal("test-no-interface");
-  gClient = new DebuggerClient(DebuggerServer.connectPipe());
-  gClient.connect().then(function () {
-    attachTestTabAndResume(gClient, "test-no-interface",
-                           function (response, tabClient, threadClient) {
-                             gThreadClient = threadClient;
-                             test_pause_frame();
-                           });
-  });
-  do_test_pending();
-}
+      await resume(threadClient);
+    },
+    {
+      // Bug 1508289, exception tests fails in worker scope
+      doNotRunWorker: true,
+    }
+  )
+);
 
-function test_pause_frame() {
-  gThreadClient.pauseOnExceptions(true, false, function () {
-    gThreadClient.addOneTimeListener("paused", function (event, packet) {
-      Assert.equal(packet.why.type, "exception");
-      Assert.equal(packet.why.exception, 42);
-      gThreadClient.resume(function () {
-        finishClient(gClient);
-      });
-    });
-
-    /* eslint-disable */
-    gDebuggee.eval("(" + function () {
-      function QueryInterface() {
-        throw Cr.NS_ERROR_NO_INTERFACE;
-      }
-      function stopMe() {
-        throw 42;
-      }
-      try {
-        QueryInterface();
-      } catch (e) {}
-      try {
-        stopMe();
-      } catch (e) {}
-    } + ")()");
-    /* eslint-enable */
-  });
+function evaluateTestCode(debuggee) {
+  /* eslint-disable */
+  Cu.evalInSandbox(`                    // 1
+    function QueryInterface() {         // 2
+      throw Cr.NS_ERROR_NO_INTERFACE;   // 3
+    }                                   // 4
+    function stopMe() {                 // 5
+      throw 42;                         // 6
+    }                                   // 7
+    try {                               // 8
+      QueryInterface();                 // 9
+    } catch (e) {}                      // 10
+    try {                               // 11
+      stopMe();                         // 12
+    } catch (e) {}`,                    // 13
+    debuggee,
+    "1.8",
+    "test_ignore_no_interface_exceptions.js",
+    1
+  );
+  /* eslint-disable */
 }

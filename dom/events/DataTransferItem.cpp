@@ -7,6 +7,7 @@
 #include "DataTransferItem.h"
 #include "DataTransferItemList.h"
 
+#include "mozilla/Attributes.h"
 #include "mozilla/ContentEvents.h"
 #include "mozilla/EventForwards.h"
 #include "mozilla/dom/DataTransferItemBinding.h"
@@ -52,7 +53,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* DataTransferItem::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return DataTransferItemBinding::Wrap(aCx, this, aGivenProto);
+  return DataTransferItem_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<DataTransferItem> DataTransferItem::Clone(
@@ -103,7 +104,7 @@ void DataTransferItem::SetData(nsIVariant* aData) {
   nsresult rv = aData->GetAsISupports(getter_AddRefs(supports));
   if (NS_SUCCEEDED(rv) && supports) {
     // Check if we have one of the supported file data formats
-    if (nsCOMPtr<nsIDOMBlob>(do_QueryInterface(supports)) ||
+    if (RefPtr<Blob>(do_QueryObject(supports)) ||
         nsCOMPtr<BlobImpl>(do_QueryInterface(supports)) ||
         nsCOMPtr<nsIFile>(do_QueryInterface(supports))) {
       return KIND_FILE;
@@ -137,43 +138,44 @@ void DataTransferItem::FillInExternalData() {
     format = kURLDataMime;
   }
 
-  nsCOMPtr<nsITransferable> trans =
-      do_CreateInstance("@mozilla.org/widget/transferable;1");
-  if (NS_WARN_IF(!trans)) {
-    return;
+  nsCOMPtr<nsITransferable> trans = mDataTransfer->GetTransferable();
+  if (!trans) {
+    trans = do_CreateInstance("@mozilla.org/widget/transferable;1");
+    if (NS_WARN_IF(!trans)) {
+      return;
+    }
+
+    trans->Init(nullptr);
+    trans->AddDataFlavor(format);
+
+    if (mDataTransfer->GetEventMessage() == ePaste) {
+      MOZ_ASSERT(mIndex == 0, "index in clipboard must be 0");
+
+      nsCOMPtr<nsIClipboard> clipboard =
+          do_GetService("@mozilla.org/widget/clipboard;1");
+      if (!clipboard || mDataTransfer->ClipboardType() < 0) {
+        return;
+      }
+
+      nsresult rv = clipboard->GetData(trans, mDataTransfer->ClipboardType());
+      if (NS_WARN_IF(NS_FAILED(rv))) {
+        return;
+      }
+    } else {
+      nsCOMPtr<nsIDragSession> dragSession = nsContentUtils::GetDragSession();
+      if (!dragSession) {
+        return;
+      }
+
+      nsresult rv = dragSession->GetData(trans, mIndex);
+      if (NS_WARN_IF(NS_FAILED(rv))) {
+        return;
+      }
+    }
   }
 
-  trans->Init(nullptr);
-  trans->AddDataFlavor(format);
-
-  if (mDataTransfer->GetEventMessage() == ePaste) {
-    MOZ_ASSERT(mIndex == 0, "index in clipboard must be 0");
-
-    nsCOMPtr<nsIClipboard> clipboard =
-        do_GetService("@mozilla.org/widget/clipboard;1");
-    if (!clipboard || mDataTransfer->ClipboardType() < 0) {
-      return;
-    }
-
-    nsresult rv = clipboard->GetData(trans, mDataTransfer->ClipboardType());
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return;
-    }
-  } else {
-    nsCOMPtr<nsIDragSession> dragSession = nsContentUtils::GetDragSession();
-    if (!dragSession) {
-      return;
-    }
-
-    nsresult rv = dragSession->GetData(trans, mIndex);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return;
-    }
-  }
-
-  uint32_t length = 0;
   nsCOMPtr<nsISupports> data;
-  nsresult rv = trans->GetTransferData(format, getter_AddRefs(data), &length);
+  nsresult rv = trans->GetTransferData(format, getter_AddRefs(data));
   if (NS_WARN_IF(NS_FAILED(rv) || !data)) {
     return;
   }
@@ -282,8 +284,7 @@ already_AddRefed<File> DataTransferItem::GetAsFile(
       return nullptr;
     }
 
-    if (nsCOMPtr<nsIDOMBlob> domBlob = do_QueryInterface(supports)) {
-      Blob* blob = static_cast<Blob*>(domBlob.get());
+    if (RefPtr<Blob> blob = do_QueryObject(supports)) {
       mCachedFile = blob->ToFile();
     } else if (nsCOMPtr<BlobImpl> blobImpl = do_QueryInterface(supports)) {
       MOZ_ASSERT(blobImpl->IsFile());
@@ -314,10 +315,9 @@ already_AddRefed<FileSystemEntry> DataTransferItem::GetAsEntry(
   if (target) {
     global = target->GetOwnerGlobal();
   } else {
-    nsCOMPtr<nsIDOMEvent> event =
-        do_QueryInterface(mDataTransfer->GetParentObject());
+    RefPtr<Event> event = do_QueryObject(mDataTransfer->GetParentObject());
     if (event) {
-      global = event->InternalDOMEvent()->GetParentObject();
+      global = event->GetParentObject();
     }
   }
 
@@ -431,6 +431,9 @@ void DataTransferItem::GetAsString(FunctionStringCallback* aCallback,
           mCallback(aCallback),
           mStringData(aStringData) {}
 
+    // MOZ_CAN_RUN_SCRIPT_BOUNDARY until runnables are opted into
+    // MOZ_CAN_RUN_SCRIPT.  See bug 1535398.
+    MOZ_CAN_RUN_SCRIPT_BOUNDARY
     NS_IMETHOD Run() override {
       ErrorResult rv;
       mCallback->Call(mStringData, rv);
@@ -439,7 +442,7 @@ void DataTransferItem::GetAsString(FunctionStringCallback* aCallback,
     }
 
    private:
-    RefPtr<FunctionStringCallback> mCallback;
+    const RefPtr<FunctionStringCallback> mCallback;
     nsString mStringData;
   };
 
@@ -452,8 +455,8 @@ void DataTransferItem::GetAsString(FunctionStringCallback* aCallback,
   if (parent && !global) {
     if (nsCOMPtr<dom::EventTarget> target = do_QueryInterface(parent)) {
       global = target->GetOwnerGlobal();
-    } else if (nsCOMPtr<nsIDOMEvent> event = do_QueryInterface(parent)) {
-      global = event->InternalDOMEvent()->GetParentObject();
+    } else if (RefPtr<Event> event = do_QueryObject(parent)) {
+      global = event->GetParentObject();
     }
   }
   if (global) {
@@ -503,7 +506,8 @@ already_AddRefed<nsIVariant> DataTransferItem::Data(nsIPrincipal* aPrincipal,
 
   bool checkItemPrincipal = mDataTransfer->IsCrossDomainSubFrameDrop() ||
                             (mDataTransfer->GetEventMessage() != eDrop &&
-                             mDataTransfer->GetEventMessage() != ePaste);
+                             mDataTransfer->GetEventMessage() != ePaste &&
+                             mDataTransfer->GetEventMessage() != eEditorInput);
 
   // Check if the caller is allowed to access the drag data. Callers with
   // chrome privileges can always read the data. During the
@@ -529,12 +533,7 @@ already_AddRefed<nsIVariant> DataTransferItem::Data(nsIPrincipal* aPrincipal,
   if (NS_SUCCEEDED(rv) && data) {
     nsCOMPtr<EventTarget> pt = do_QueryInterface(data);
     if (pt) {
-      nsIScriptContext* c = pt->GetContextForEventHandlers(&rv);
-      if (NS_WARN_IF(NS_FAILED(rv) || !c)) {
-        return nullptr;
-      }
-
-      nsIGlobalObject* go = c->GetGlobalObject();
+      nsIGlobalObject* go = pt->GetOwnerGlobal();
       if (NS_WARN_IF(!go)) {
         return nullptr;
       }

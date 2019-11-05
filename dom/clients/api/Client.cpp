@@ -11,6 +11,8 @@
 #include "mozilla/dom/ClientIPCTypes.h"
 #include "mozilla/dom/ClientManager.h"
 #include "mozilla/dom/ClientState.h"
+#include "mozilla/dom/DOMMozPromiseRequestHolder.h"
+#include "mozilla/dom/MessagePortBinding.h"
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/WorkerPrivate.h"
 #include "mozilla/dom/WorkerScope.h"
@@ -61,9 +63,9 @@ nsContentUtils::StorageAccess Client::GetStorageAccess() const {
 JSObject* Client::WrapObject(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) {
   if (mData->info().type() == ClientType::Window) {
-    return WindowClientBinding::Wrap(aCx, this, aGivenProto);
+    return WindowClient_Binding::Wrap(aCx, this, aGivenProto);
   }
-  return ClientBinding::Wrap(aCx, this, aGivenProto);
+  return Client_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsIGlobalObject* Client::GetParentObject() const { return mGlobal; }
@@ -111,6 +113,11 @@ void Client::PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
   mHandle->PostMessage(data, workerPrivate->GetServiceWorkerDescriptor());
 }
 
+void Client::PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
+                         const PostMessageOptions& aOptions, ErrorResult& aRv) {
+  PostMessage(aCx, aMessage, aOptions.mTransfer, aRv);
+}
+
 VisibilityState Client::GetVisibilityState() const {
   return mData->state().get_IPCClientWindowState().visibilityState();
 }
@@ -136,33 +143,28 @@ already_AddRefed<Promise> Client::Focus(ErrorResult& aRv) {
     return outerPromise.forget();
   }
 
-  // Hold the worker thread alive while we perform the async operation
-  // and also avoid invoking callbacks if the worker starts shutting
-  // down.
-  RefPtr<WorkerHolderToken> token =
-      WorkerHolderToken::Create(GetCurrentThreadWorkerPrivate(), Closing);
-
   EnsureHandle();
-  RefPtr<ClientStatePromise> innerPromise = mHandle->Focus();
-  RefPtr<Client> self = this;
 
-  innerPromise->Then(
-      mGlobal->EventTargetFor(TaskCategory::Other), __func__,
-      [self, token, outerPromise](const ClientState& aResult) {
-        if (token->IsShuttingDown()) {
-          return;
-        }
-        RefPtr<Client> newClient = new Client(
-            self->mGlobal,
-            ClientInfoAndState(self->mData->info(), aResult.ToIPC()));
-        outerPromise->MaybeResolve(newClient);
-      },
-      [self, token, outerPromise](nsresult aResult) {
-        if (token->IsShuttingDown()) {
-          return;
-        }
-        outerPromise->MaybeReject(aResult);
-      });
+  IPCClientInfo ipcClientInfo(mData->info());
+  auto holder =
+      MakeRefPtr<DOMMozPromiseRequestHolder<ClientStatePromise>>(mGlobal);
+
+  mHandle->Focus()
+      ->Then(
+          mGlobal->EventTargetFor(TaskCategory::Other), __func__,
+          [ipcClientInfo, holder, outerPromise](const ClientState& aResult) {
+            holder->Complete();
+            NS_ENSURE_TRUE_VOID(holder->GetParentObject());
+            RefPtr<Client> newClient =
+                new Client(holder->GetParentObject(),
+                           ClientInfoAndState(ipcClientInfo, aResult.ToIPC()));
+            outerPromise->MaybeResolve(newClient);
+          },
+          [holder, outerPromise](nsresult aResult) {
+            holder->Complete();
+            outerPromise->MaybeReject(aResult);
+          })
+      ->Track(*holder);
 
   return outerPromise.forget();
 }
@@ -185,8 +187,7 @@ already_AddRefed<Promise> Client::Navigate(const nsAString& aURL,
   RefPtr<Client> self = this;
 
   StartClientManagerOp(
-      &ClientManager::Navigate, args,
-      mGlobal->EventTargetFor(TaskCategory::Other),
+      &ClientManager::Navigate, args, mGlobal,
       [self, outerPromise](const ClientOpResult& aResult) {
         if (aResult.type() != ClientOpResult::TClientInfoAndState) {
           outerPromise->MaybeResolve(JS::NullHandleValue);

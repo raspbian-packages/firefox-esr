@@ -63,10 +63,12 @@ struct DisplayItemClipChain {
 
   DisplayItemClipChain(const DisplayItemClip& aClip,
                        const ActiveScrolledRoot* aASR,
-                       const DisplayItemClipChain* aParent)
+                       const DisplayItemClipChain* aParent,
+                       DisplayItemClipChain* aNextClipChainToDestroy)
       : mClip(aClip),
         mASR(aASR),
-        mParent(aParent)
+        mParent(aParent),
+        mNextClipChainToDestroy(aNextClipChainToDestroy)
 #ifdef DEBUG
         ,
         mOnStack(true)
@@ -75,8 +77,11 @@ struct DisplayItemClipChain {
   }
 
   DisplayItemClipChain()
+      : mASR(nullptr),
+        mNextClipChainToDestroy(nullptr)
 #ifdef DEBUG
-      : mOnStack(true)
+        ,
+        mOnStack(true)
 #endif
   {
   }
@@ -85,6 +90,7 @@ struct DisplayItemClipChain {
   const ActiveScrolledRoot* mASR;
   RefPtr<const DisplayItemClipChain> mParent;
   uint32_t mRefCount = 0;
+  DisplayItemClipChain* mNextClipChainToDestroy;
 #ifdef DEBUG
   bool mOnStack;
 #endif

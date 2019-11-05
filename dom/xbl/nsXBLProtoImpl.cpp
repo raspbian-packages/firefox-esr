@@ -8,15 +8,13 @@
 
 #include "nsXBLProtoImpl.h"
 #include "nsIContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsContentUtils.h"
 #include "nsIXPConnect.h"
 #include "nsIServiceManager.h"
-#include "nsIDOMNode.h"
 #include "nsXBLPrototypeBinding.h"
 #include "nsXBLProtoImplProperty.h"
 #include "nsIURI.h"
-#include "mozilla/AddonPathService.h"
 #include "mozilla/dom/ScriptSettings.h"
 #include "mozilla/dom/XULElementBinding.h"
 #include "xpcpublic.h"
@@ -25,7 +23,6 @@
 using namespace mozilla;
 using namespace mozilla::dom;
 using js::AssertSameCompartment;
-using js::GetGlobalForObjectCrossCompartment;
 
 nsresult nsXBLProtoImpl::InstallImplementation(
     nsXBLPrototypeBinding* aPrototypeBinding, nsXBLBinding* aBinding) {
@@ -40,7 +37,7 @@ nsresult nsXBLProtoImpl::InstallImplementation(
 
   // If the way this gets the script context changes, fix
   // nsXBLProtoImplAnonymousMethod::Execute
-  nsIDocument* document = aBinding->GetBoundElement()->OwnerDoc();
+  Document* document = aBinding->GetBoundElement()->OwnerDoc();
 
   // This sometimes gets called when we have no outer window and if we don't
   // catch this, we get leaks during crashtests and reftests.
@@ -82,17 +79,15 @@ nsresult nsXBLProtoImpl::InstallImplementation(
   // bother about the field accessors here, since we don't use/support those
   // for in-content bindings.
 
-  // First, start by entering the compartment of the XBL scope. This may or may
-  // not be the same compartment as globalObject.
-  JSAddonId* addonId = MapURIToAddonID(aPrototypeBinding->BindingURI());
+  // First, start by entering the realm of the XBL scope. This may or may
+  // not be the same realm as globalObject.
   JS::Rooted<JSObject*> globalObject(
-      cx, GetGlobalForObjectCrossCompartment(targetClassObject));
-  JS::Rooted<JSObject*> scopeObject(
-      cx, xpc::GetScopeForXBLExecution(cx, globalObject, addonId));
+      cx, JS::GetNonCCWObjectGlobal(targetClassObject));
+  JS::Rooted<JSObject*> scopeObject(cx,
+                                    xpc::GetXBLScopeOrGlobal(cx, globalObject));
   NS_ENSURE_TRUE(scopeObject, NS_ERROR_OUT_OF_MEMORY);
-  MOZ_ASSERT(js::GetGlobalForObjectCrossCompartment(scopeObject) ==
-             scopeObject);
-  JSAutoCompartment ac(cx, scopeObject);
+  MOZ_ASSERT(JS_IsGlobalObject(scopeObject));
+  JSAutoRealm ar(cx, scopeObject);
 
   // Determine the appropriate property holder.
   //
@@ -172,7 +167,7 @@ nsresult nsXBLProtoImpl::InstallImplementation(
   }
 
   // From here on out, work in the scope of the bound element.
-  JSAutoCompartment ac2(cx, targetClassObject);
+  JSAutoRealm ar2(cx, targetClassObject);
 
   // Install all of our field accessors.
   for (nsXBLProtoImplField* curr = mFields; curr; curr = curr->GetNext())
@@ -187,18 +182,17 @@ nsresult nsXBLProtoImpl::InitTargetObjects(
   nsresult rv = NS_OK;
 
   if (!mPrecompiledMemberHolder) {
-    rv = CompilePrototypeMembers(aBinding);  // This is the first time we've
-                                             // ever installed this binding on
-                                             // an element. We need to go ahead
-                                             // and compile all methods and
-                                             // properties on a class in our
-                                             // prototype binding.
+    rv = CompilePrototypeMembers(
+        aBinding);  // This is the first time we've ever installed this binding
+                    // on an element. We need to go ahead and compile all
+                    // methods and properties on a class in our prototype
+                    // binding.
     if (NS_FAILED(rv)) return rv;
 
     MOZ_ASSERT(mPrecompiledMemberHolder);
   }
 
-  nsIDocument* ownerDoc = aBoundElement->OwnerDoc();
+  Document* ownerDoc = aBoundElement->OwnerDoc();
   nsIGlobalObject* sgo;
 
   if (!(sgo = ownerDoc->GetScopeObject())) {
@@ -211,18 +205,23 @@ nsresult nsXBLProtoImpl::InitTargetObjects(
   JS::Rooted<JSObject*> global(cx, sgo->GetGlobalJSObject());
   JS::Rooted<JS::Value> v(cx);
 
-  JSAutoCompartment ac(cx, global);
+  JSAutoRealm ar(cx, global);
   // Make sure the interface object is created before the prototype object
   // so that XULElement is hidden from content. See bug 909340.
-  bool defineOnGlobal = dom::XULElementBinding::ConstructorEnabled(cx, global);
-  dom::XULElementBinding::GetConstructorObjectHandle(cx, defineOnGlobal);
+  bool defineOnGlobal = dom::XULElement_Binding::ConstructorEnabled(cx, global);
+  dom::XULElement_Binding::GetConstructorObjectHandle(cx, defineOnGlobal);
 
   rv = nsContentUtils::WrapNative(cx, aBoundElement, &v,
                                   /* aAllowWrapping = */ false);
   NS_ENSURE_SUCCESS(rv, rv);
 
   JS::Rooted<JSObject*> value(cx, &v.toObject());
-  JSAutoCompartment ac2(cx, value);
+
+  // We passed aAllowWrapping = false to nsContentUtils::WrapNative so we
+  // should not have a wrapper.
+  MOZ_ASSERT(!js::IsWrapper(value));
+
+  JSAutoRealm ar2(cx, value);
 
   // All of the above code was just obtaining the bound element's script object
   // and its immediate concrete base class.  We need to alter the object so that
@@ -324,7 +323,6 @@ bool nsXBLProtoImpl::ResolveAllFields(JSContext* cx,
 
 void nsXBLProtoImpl::UndefineFields(JSContext* cx,
                                     JS::Handle<JSObject*> obj) const {
-  JSAutoRequest ar(cx);
   for (nsXBLProtoImplField* f = mFields; f; f = f->GetNext()) {
     nsDependentString name(f->GetName());
 

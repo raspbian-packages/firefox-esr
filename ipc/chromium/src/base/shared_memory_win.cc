@@ -59,13 +59,26 @@ SharedMemory::SharedMemory()
       mapped_file_(NULL),
       memory_(NULL),
       read_only_(false),
-      max_size_(0),
-      lock_(NULL) {}
+      max_size_(0) {}
+
+SharedMemory::SharedMemory(SharedMemory&& other) {
+  if (this == &other) {
+    return;
+  }
+
+  mapped_file_ = other.mapped_file_;
+  memory_ = other.memory_;
+  read_only_ = other.read_only_;
+  max_size_ = other.max_size_;
+  external_section_ = other.external_section_;
+
+  other.mapped_file_ = nullptr;
+  other.memory_ = nullptr;
+}
 
 SharedMemory::~SharedMemory() {
   external_section_ = true;
   Close();
-  if (lock_ != NULL) CloseHandle(lock_);
 }
 
 bool SharedMemory::SetHandle(SharedMemoryHandle handle, bool read_only) {
@@ -85,57 +98,30 @@ bool SharedMemory::IsHandleValid(const SharedMemoryHandle& handle) {
 // static
 SharedMemoryHandle SharedMemory::NULLHandle() { return NULL; }
 
-bool SharedMemory::Create(const std::string& cname, bool read_only,
-                          bool open_existing, size_t size) {
+bool SharedMemory::Create(size_t size) {
   DCHECK(mapped_file_ == NULL);
-  std::wstring name = UTF8ToWide(cname);
-  name_ = name;
-  read_only_ = read_only;
-  mapped_file_ = CreateFileMapping(
-      INVALID_HANDLE_VALUE, NULL, read_only_ ? PAGE_READONLY : PAGE_READWRITE,
-      0, static_cast<DWORD>(size), name.empty() ? NULL : name.c_str());
+  read_only_ = false;
+  mapped_file_ = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE,
+                                   0, static_cast<DWORD>(size), NULL);
   if (!mapped_file_) return false;
 
-  // Check if the shared memory pre-exists.
-  if (GetLastError() == ERROR_ALREADY_EXISTS && !open_existing) {
-    Close();
-    return false;
-  }
   max_size_ = size;
   return true;
 }
 
-bool SharedMemory::Delete(const std::wstring& name) {
-  // intentionally empty -- there is nothing for us to do on Windows.
-  return true;
-}
-
-bool SharedMemory::Open(const std::wstring& name, bool read_only) {
-  DCHECK(mapped_file_ == NULL);
-
-  name_ = name;
-  read_only_ = read_only;
-  mapped_file_ =
-      OpenFileMapping(read_only_ ? FILE_MAP_READ : FILE_MAP_ALL_ACCESS, false,
-                      name.empty() ? NULL : name.c_str());
-  if (mapped_file_ != NULL) {
-    // Note: size_ is not set in this case.
-    return true;
-  }
-  return false;
-}
-
-bool SharedMemory::Map(size_t bytes) {
+bool SharedMemory::Map(size_t bytes, void* fixed_address) {
   if (mapped_file_ == NULL) return false;
 
   if (external_section_ && !IsSectionSafeToMap(mapped_file_)) {
     return false;
   }
 
-  memory_ = MapViewOfFile(
+  memory_ = MapViewOfFileEx(
       mapped_file_, read_only_ ? FILE_MAP_READ : FILE_MAP_READ | FILE_MAP_WRITE,
-      0, 0, bytes);
+      0, 0, bytes, fixed_address);
   if (memory_ != NULL) {
+    MOZ_ASSERT(!fixed_address || memory_ == fixed_address,
+               "MapViewOfFileEx returned an expected address");
     return true;
   }
   return false;
@@ -147,6 +133,14 @@ bool SharedMemory::Unmap() {
   UnmapViewOfFile(memory_);
   memory_ = NULL;
   return true;
+}
+
+void* SharedMemory::FindFreeAddressSpace(size_t size) {
+  void* memory = VirtualAlloc(NULL, size, MEM_RESERVE, PAGE_NOACCESS);
+  if (memory) {
+    VirtualFree(memory, 0, MEM_RELEASE);
+  }
+  return memory;
 }
 
 bool SharedMemory::ShareToProcessCommon(ProcessId processId,
@@ -188,25 +182,6 @@ void SharedMemory::Close(bool unmap_view) {
     CloseHandle(mapped_file_);
     mapped_file_ = NULL;
   }
-}
-
-void SharedMemory::Lock() {
-  if (lock_ == NULL) {
-    std::wstring name = name_;
-    name.append(L"lock");
-    lock_ = CreateMutex(NULL, FALSE, name.c_str());
-    DCHECK(lock_ != NULL);
-    if (lock_ == NULL) {
-      DLOG(ERROR) << "Could not create mutex" << GetLastError();
-      return;  // there is nothing good we can do here.
-    }
-  }
-  WaitForSingleObject(lock_, INFINITE);
-}
-
-void SharedMemory::Unlock() {
-  DCHECK(lock_ != NULL);
-  ReleaseMutex(lock_);
 }
 
 SharedMemoryHandle SharedMemory::handle() const { return mapped_file_; }

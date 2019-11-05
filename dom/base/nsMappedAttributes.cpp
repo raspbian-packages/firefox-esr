@@ -11,15 +11,10 @@
 
 #include "nsMappedAttributes.h"
 #include "nsHTMLStyleSheet.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsRuleData.h"
-#include "nsRuleWalker.h"
-#endif
-#include "mozilla/GenericSpecifiedValues.h"
+#include "mozilla/DeclarationBlock.h"
 #include "mozilla/HashFunctions.h"
+#include "mozilla/MappedDeclarations.h"
 #include "mozilla/MemoryReporting.h"
-#include "mozilla/ServoDeclarationBlock.h"
-#include "mozilla/ServoSpecifiedValues.h"
 
 using namespace mozilla;
 
@@ -54,8 +49,7 @@ nsMappedAttributes::nsMappedAttributes(const nsMappedAttributes& aCopy)
       mSheet(aCopy.mSheet),
       mRuleMapper(aCopy.mRuleMapper),
       // This is only called by ::Clone, which is used to create independent
-      // nsMappedAttributes objects which should not share a
-      // ServoDeclarationBlock
+      // nsMappedAttributes objects which should not share a DeclarationBlock
       mServoStyle(nullptr) {
   NS_ASSERTION(mBufferSize >= aCopy.mAttrCount, "can't fit attributes");
   MOZ_ASSERT(mRefCnt == 0);  // Ensure caching works as expected.
@@ -139,16 +133,9 @@ void nsMappedAttributes::LastRelease() {
   delete this;
 }
 
-#ifdef MOZ_OLD_STYLE
-NS_IMPL_ADDREF(nsMappedAttributes)
-NS_IMPL_RELEASE_WITH_DESTROY(nsMappedAttributes, LastRelease())
-
-NS_IMPL_QUERY_INTERFACE(nsMappedAttributes, nsIStyleRule)
-#endif
-
 void nsMappedAttributes::SetAndSwapAttr(nsAtom* aAttrName, nsAttrValue& aValue,
                                         bool* aValueWasSet) {
-  NS_PRECONDITION(aAttrName, "null name");
+  MOZ_ASSERT(aAttrName, "null name");
   *aValueWasSet = false;
   uint32_t i;
   for (i = 0; i < mAttrCount && !Attrs()[i].mName.IsSmaller(aAttrName); ++i) {
@@ -172,8 +159,8 @@ void nsMappedAttributes::SetAndSwapAttr(nsAtom* aAttrName, nsAttrValue& aValue,
   ++mAttrCount;
 }
 
-const nsAttrValue* nsMappedAttributes::GetAttr(nsAtom* aAttrName) const {
-  NS_PRECONDITION(aAttrName, "null name");
+const nsAttrValue* nsMappedAttributes::GetAttr(const nsAtom* aAttrName) const {
+  MOZ_ASSERT(aAttrName, "null name");
 
   for (uint32_t i = 0; i < mAttrCount; ++i) {
     if (Attrs()[i].mName.Equals(aAttrName)) {
@@ -234,49 +221,6 @@ void nsMappedAttributes::SetStyleSheet(nsHTMLStyleSheet* aSheet) {
   mSheet = aSheet;  // not ref counted
 }
 
-#ifdef MOZ_OLD_STYLE
-/* virtual */ void nsMappedAttributes::MapRuleInfoInto(nsRuleData* aRuleData) {
-  if (mRuleMapper) {
-    (*mRuleMapper)(this, aRuleData);
-  }
-}
-
-/* virtual */ bool nsMappedAttributes::MightMapInheritedStyleData() {
-  // Just assume that we do, rather than adding checks to all of the different
-  // kinds of attribute mapping functions we have.
-  return true;
-}
-
-/* virtual */ bool nsMappedAttributes::GetDiscretelyAnimatedCSSValue(
-    nsCSSPropertyID aProperty, nsCSSValue* aValue) {
-  MOZ_ASSERT(false, "GetDiscretelyAnimatedCSSValue is not implemented yet");
-  return false;
-}
-
-#ifdef DEBUG
-/* virtual */ void nsMappedAttributes::List(FILE* out, int32_t aIndent) const {
-  nsAutoCString str;
-  nsAutoString tmp;
-  uint32_t i;
-
-  for (i = 0; i < mAttrCount; ++i) {
-    int32_t indent;
-    for (indent = aIndent; indent > 0; --indent) {
-      str.AppendLiteral("  ");
-    }
-
-    Attrs()[i].mName.GetQualifiedName(tmp);
-    LossyAppendUTF16toASCII(tmp, str);
-
-    Attrs()[i].mValue.ToString(tmp);
-    LossyAppendUTF16toASCII(tmp, str);
-    str.Append('\n');
-    fprintf_stderr(out, "%s", str.get());
-  }
-}
-#endif
-#endif
-
 void nsMappedAttributes::RemoveAttrAt(uint32_t aPos, nsAttrValue& aValue) {
   Attrs()[aPos].mValue.SwapValueWith(aValue);
   Attrs()[aPos].~InternalAttr();
@@ -303,7 +247,7 @@ const nsAttrName* nsMappedAttributes::GetExistingAttrNameFromQName(
   return nullptr;
 }
 
-int32_t nsMappedAttributes::IndexOfAttr(nsAtom* aLocalName) const {
+int32_t nsMappedAttributes::IndexOfAttr(const nsAtom* aLocalName) const {
   uint32_t i;
   for (i = 0; i < mAttrCount; ++i) {
     if (Attrs()[i].mName.Equals(aLocalName)) {
@@ -326,13 +270,14 @@ size_t nsMappedAttributes::SizeOfIncludingThis(
   return n;
 }
 
-void nsMappedAttributes::LazilyResolveServoDeclaration(nsIDocument* aDoc) {
+void nsMappedAttributes::LazilyResolveServoDeclaration(dom::Document* aDoc) {
   MOZ_ASSERT(!mServoStyle,
              "LazilyResolveServoDeclaration should not be called if "
              "mServoStyle is already set");
   if (mRuleMapper) {
-    mServoStyle = Servo_DeclarationBlock_CreateEmpty().Consume();
-    ServoSpecifiedValues servo = ServoSpecifiedValues(aDoc, mServoStyle.get());
-    (*mRuleMapper)(this, &servo);
+    MappedDeclarations declarations(
+        aDoc, Servo_DeclarationBlock_CreateEmpty().Consume());
+    (*mRuleMapper)(this, declarations);
+    mServoStyle = declarations.TakeDeclarationBlock();
   }
 }

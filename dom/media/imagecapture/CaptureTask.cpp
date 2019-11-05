@@ -20,12 +20,8 @@ class CaptureTask::MediaStreamEventListener : public MediaStreamTrackListener {
   explicit MediaStreamEventListener(CaptureTask* aCaptureTask)
       : mCaptureTask(aCaptureTask){};
 
-  // MediaStreamListener methods.
-  void NotifyEnded() override {
-    if (!mCaptureTask->mImageGrabbedOrTrackEnd) {
-      mCaptureTask->PostTrackEndEvent();
-    }
-  }
+  // MediaStreamTrackListener methods.
+  void NotifyEnded() override { mCaptureTask->PostTrackEndEvent(); }
 
  private:
   CaptureTask* mCaptureTask;
@@ -74,7 +70,7 @@ nsresult CaptureTask::TaskComplete(already_AddRefed<dom::Blob> aBlob,
 void CaptureTask::AttachTrack() {
   MOZ_ASSERT(NS_IsMainThread());
 
-  dom::VideoStreamTrack* track = mImageCapture->GetVideoStreamTrack();
+  dom::MediaStreamTrack* track = mImageCapture->GetVideoStreamTrack();
   track->AddPrincipalChangeObserver(this);
   track->AddListener(mEventListener.get());
   track->AddDirectListener(this);
@@ -83,7 +79,7 @@ void CaptureTask::AttachTrack() {
 void CaptureTask::DetachTrack() {
   MOZ_ASSERT(NS_IsMainThread());
 
-  dom::VideoStreamTrack* track = mImageCapture->GetVideoStreamTrack();
+  dom::MediaStreamTrack* track = mImageCapture->GetVideoStreamTrack();
   track->RemovePrincipalChangeObserver(this);
   track->RemoveListener(mEventListener.get());
   track->RemoveDirectListener(this);
@@ -94,10 +90,11 @@ void CaptureTask::PrincipalChanged(dom::MediaStreamTrack* aMediaStreamTrack) {
   mPrincipalChanged = true;
 }
 
-void CaptureTask::SetCurrentFrames(const VideoSegment& aSegment) {
-  if (mImageGrabbedOrTrackEnd) {
-    return;
-  }
+void CaptureTask::NotifyRealtimeTrackData(MediaStreamGraph* aGraph,
+                                          StreamTime aTrackOffset,
+                                          const MediaSegment& aMedia) {
+  MOZ_ASSERT(aMedia.GetType() == MediaSegment::VIDEO);
+  const VideoSegment& video = static_cast<const VideoSegment&>(aMedia);
 
   // Callback for encoding complete, it calls on main thread.
   class EncodeComplete : public dom::EncodeCompleteCallback {
@@ -115,42 +112,50 @@ void CaptureTask::SetCurrentFrames(const VideoSegment& aSegment) {
     RefPtr<CaptureTask> mTask;
   };
 
-  for (VideoSegment::ConstChunkIterator iter(aSegment); !iter.IsEnded();
+  for (VideoSegment::ConstChunkIterator iter(video); !iter.IsEnded();
        iter.Next()) {
     VideoChunk chunk = *iter;
 
     // Extract the first valid video frame.
     VideoFrame frame;
-    if (!chunk.IsNull()) {
-      RefPtr<layers::Image> image;
-      if (chunk.mFrame.GetForceBlack()) {
-        // Create a black image.
-        image = VideoFrame::CreateBlackImage(chunk.mFrame.GetIntrinsicSize());
-      } else {
-        image = chunk.mFrame.GetImage();
-      }
-      if (!image) {
-        MOZ_ASSERT(image);
-        continue;
-      }
-      mImageGrabbedOrTrackEnd = true;
+    if (chunk.IsNull()) {
+      continue;
+    }
 
-      // Encode image.
-      nsresult rv;
-      nsAutoString type(NS_LITERAL_STRING("image/jpeg"));
-      nsAutoString options;
-      rv = dom::ImageEncoder::ExtractDataFromLayersImageAsync(
-          type, options, false, image, false, new EncodeComplete(this));
-      if (NS_FAILED(rv)) {
-        PostTrackEndEvent();
-      }
+    RefPtr<layers::Image> image;
+    if (chunk.mFrame.GetForceBlack()) {
+      // Create a black image.
+      image = VideoFrame::CreateBlackImage(chunk.mFrame.GetIntrinsicSize());
+    } else {
+      image = chunk.mFrame.GetImage();
+    }
+    if (!image) {
+      MOZ_ASSERT(image);
+      continue;
+    }
+
+    bool wasGrabbed = mImageGrabbedOrTrackEnd.exchange(true);
+    if (wasGrabbed) {
       return;
+    }
+
+    // Encode image.
+    nsresult rv;
+    nsAutoString type(NS_LITERAL_STRING("image/jpeg"));
+    nsAutoString options;
+    rv = dom::ImageEncoder::ExtractDataFromLayersImageAsync(
+        type, options, false, image, false, new EncodeComplete(this));
+    if (NS_FAILED(rv)) {
+      PostTrackEndEvent();
     }
   }
 }
 
 void CaptureTask::PostTrackEndEvent() {
-  mImageGrabbedOrTrackEnd = true;
+  bool wasGrabbed = mImageGrabbedOrTrackEnd.exchange(true);
+  if (wasGrabbed) {
+    return;
+  }
 
   // Got track end or finish event, stop the task.
   class TrackEndRunnable : public Runnable {

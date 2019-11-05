@@ -6,7 +6,6 @@
 
 #define INITGUID
 
-#include "mozilla/dom/ContentChild.h"
 #include "mozilla/Move.h"
 #include "mozilla/mscom/DispatchForwarder.h"
 #include "mozilla/mscom/FastMarshaler.h"
@@ -19,7 +18,7 @@
 #include "mozilla/ThreadLocal.h"
 #include "MainThreadUtils.h"
 #include "mozilla/Assertions.h"
-#include "mozilla/DebugOnly.h"
+#include "mozilla/Unused.h"
 #include "nsDirectoryServiceDefs.h"
 #include "nsDirectoryServiceUtils.h"
 #include "nsExceptionHandler.h"
@@ -48,7 +47,7 @@ class LiveSet final {
 
   void Put(IUnknown* aKey, already_AddRefed<IWeakReference> aValue) {
     mMutex.AssertCurrentThreadOwns();
-    mLiveSet.Put(aKey, Move(aValue));
+    mLiveSet.Put(aKey, std::move(aValue));
   }
 
   RefPtr<IWeakReference> Get(IUnknown* aKey) {
@@ -193,10 +192,10 @@ static detail::LiveSet& GetLiveSet() {
 
 MOZ_THREAD_LOCAL(bool) Interceptor::tlsCreatingStdMarshal;
 
-/* static */ HRESULT Interceptor::Create(STAUniquePtr<IUnknown> aTarget,
-                                         IInterceptorSink* aSink,
-                                         REFIID aInitialIid,
-                                         void** aOutInterface) {
+/* static */
+HRESULT Interceptor::Create(STAUniquePtr<IUnknown> aTarget,
+                            IInterceptorSink* aSink, REFIID aInitialIid,
+                            void** aOutInterface) {
   MOZ_ASSERT(aOutInterface && aTarget && aSink);
   if (!aOutInterface) {
     return E_INVALIDARG;
@@ -204,7 +203,7 @@ MOZ_THREAD_LOCAL(bool) Interceptor::tlsCreatingStdMarshal;
 
   detail::LiveSetAutoLock lock(GetLiveSet());
 
-  RefPtr<IWeakReference> existingWeak(Move(GetLiveSet().Get(aTarget.get())));
+  RefPtr<IWeakReference> existingWeak(GetLiveSet().Get(aTarget.get()));
   if (existingWeak) {
     RefPtr<IWeakReferenceSource> existingStrong;
     if (SUCCEEDED(existingWeak->ToStrongRef(getter_AddRefs(existingStrong)))) {
@@ -222,8 +221,8 @@ MOZ_THREAD_LOCAL(bool) Interceptor::tlsCreatingStdMarshal;
   }
 
   RefPtr<Interceptor> intcpt(new Interceptor(aSink));
-  return intcpt->GetInitialInterceptorForIID(lock, aInitialIid, Move(aTarget),
-                                             aOutInterface);
+  return intcpt->GetInitialInterceptorForIID(lock, aInitialIid,
+                                             std::move(aTarget), aOutInterface);
 }
 
 Interceptor::Interceptor(IInterceptorSink* aSink)
@@ -234,6 +233,7 @@ Interceptor::Interceptor(IInterceptorSink* aSink)
       mStdMarshal(nullptr) {
   static const bool kHasTls = tlsCreatingStdMarshal.init();
   MOZ_ASSERT(kHasTls);
+  Unused << kHasTls;
 
   MOZ_ASSERT(aSink);
   RefPtr<IWeakReference> weakRef;
@@ -500,7 +500,7 @@ Interceptor::GetInitialInterceptorForIID(detail::LiveSetAutoLock& aLiveSetLock,
     // we have been published to the live set.
     MutexAutoLock lock(mInterceptorMapMutex);
 
-    hr = PublishTarget(aLiveSetLock, nullptr, aTargetIid, Move(aTarget));
+    hr = PublishTarget(aLiveSetLock, nullptr, aTargetIid, std::move(aTarget));
     ENSURE_HR_SUCCEEDED(hr);
 
     hr = QueryInterface(aTargetIid, aOutInterceptor);
@@ -528,7 +528,8 @@ Interceptor::GetInitialInterceptorForIID(detail::LiveSetAutoLock& aLiveSetLock,
   // have been published to the live set.
   MutexAutoLock lock(mInterceptorMapMutex);
 
-  hr = PublishTarget(aLiveSetLock, unkInterceptor, aTargetIid, Move(aTarget));
+  hr = PublishTarget(aLiveSetLock, unkInterceptor, aTargetIid,
+                     std::move(aTarget));
   ENSURE_HR_SUCCEEDED(hr);
 
   if (MarshalAs(aTargetIid) == aTargetIid) {
@@ -811,15 +812,15 @@ Interceptor::AddRef() { return WeakReferenceSupport::AddRef(); }
 ULONG
 Interceptor::Release() { return WeakReferenceSupport::Release(); }
 
-/* static */ HRESULT Interceptor::DisconnectRemotesForTarget(
-    IUnknown* aTarget) {
+/* static */
+HRESULT Interceptor::DisconnectRemotesForTarget(IUnknown* aTarget) {
   MOZ_ASSERT(aTarget);
 
   detail::LiveSetAutoLock lock(GetLiveSet());
 
   // It is not an error if the interceptor doesn't exist, so we return
   // S_FALSE instead of an error in that case.
-  RefPtr<IWeakReference> existingWeak(Move(GetLiveSet().Get(aTarget)));
+  RefPtr<IWeakReference> existingWeak(GetLiveSet().Get(aTarget));
   if (!existingWeak) {
     return S_FALSE;
   }

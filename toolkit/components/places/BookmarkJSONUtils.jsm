@@ -2,20 +2,32 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var EXPORTED_SYMBOLS = [ "BookmarkJSONUtils" ];
+var EXPORTED_SYMBOLS = ["BookmarkJSONUtils"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/osfile.jsm");
-ChromeUtils.import("resource://gre/modules/PlacesUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+const { PlacesUtils } = ChromeUtils.import(
+  "resource://gre/modules/PlacesUtils.jsm"
+);
 
-ChromeUtils.defineModuleGetter(this, "NetUtil",
-  "resource://gre/modules/NetUtil.jsm");
-ChromeUtils.defineModuleGetter(this, "PlacesBackups",
-  "resource://gre/modules/PlacesBackups.jsm");
+Cu.importGlobalProperties(["fetch"]);
 
-XPCOMUtils.defineLazyGetter(this, "gTextDecoder", () => new TextDecoder());
-XPCOMUtils.defineLazyGetter(this, "gTextEncoder", () => new TextEncoder());
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesBackups",
+  "resource://gre/modules/PlacesBackups.jsm"
+);
+
+// This is used to translate old folder pseudonyms in queries with their newer
+// guids.
+const OLD_BOOKMARK_QUERY_TRANSLATIONS = {
+  PLACES_ROOT: PlacesUtils.bookmarks.rootGuid,
+  BOOKMARKS_MENU: PlacesUtils.bookmarks.menuGuid,
+  TAGS: PlacesUtils.bookmarks.tagsGuid,
+  UNFILED_BOOKMARKS: PlacesUtils.bookmarks.unfiledGuid,
+  TOOLBAR: PlacesUtils.bookmarks.toolbarGuid,
+  MOBILE_BOOKMARKS: PlacesUtils.bookmarks.mobileGuid,
+};
 
 /**
  * Generates an hash for the given string.
@@ -24,11 +36,13 @@ XPCOMUtils.defineLazyGetter(this, "gTextEncoder", () => new TextEncoder());
  * is case-sensitive if you are going to reuse this code.
  */
 function generateHash(aString) {
-  let cryptoHash = Cc["@mozilla.org/security/hash;1"]
-                     .createInstance(Ci.nsICryptoHash);
+  let cryptoHash = Cc["@mozilla.org/security/hash;1"].createInstance(
+    Ci.nsICryptoHash
+  );
   cryptoHash.init(Ci.nsICryptoHash.MD5);
-  let stringStream = Cc["@mozilla.org/io/string-input-stream;1"]
-                       .createInstance(Ci.nsIStringInputStream);
+  let stringStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(
+    Ci.nsIStringInputStream
+  );
   stringStream.data = aString;
   cryptoHash.updateFromStream(stringStream, -1);
   // base64 allows the '/' char, but we can't use it for filenames.
@@ -39,51 +53,73 @@ var BookmarkJSONUtils = Object.freeze({
   /**
    * Import bookmarks from a url.
    *
-   * @param aSpec
+   * @param {string} aSpec
    *        url of the bookmark data.
-   * @param aReplace
-   *        Boolean if true, replace existing bookmarks, else merge.
+   * @param {boolean} [options.replace]
+   *        Whether we should erase existing bookmarks before importing.
+   * @param {PlacesUtils.bookmarks.SOURCES} [options.source]
+   *        The bookmark change source, used to determine the sync status for
+   *        imported bookmarks. Defaults to `RESTORE` if `replace = true`, or
+   *        `IMPORT` otherwise.
    *
    * @return {Promise}
    * @resolves When the new bookmarks have been created.
    * @rejects JavaScript exception.
    */
-  importFromURL: function BJU_importFromURL(aSpec, aReplace) {
-    return (async function() {
-      notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_BEGIN, aReplace);
-      try {
-        let importer = new BookmarkImporter(aReplace);
-        await importer.importFromURL(aSpec);
+  async importFromURL(
+    aSpec,
+    {
+      replace: aReplace = false,
+      source: aSource = aReplace
+        ? PlacesUtils.bookmarks.SOURCES.RESTORE
+        : PlacesUtils.bookmarks.SOURCES.IMPORT,
+    } = {}
+  ) {
+    notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_BEGIN, aReplace);
+    try {
+      let importer = new BookmarkImporter(aReplace, aSource);
+      await importer.importFromURL(aSpec);
 
-        notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_SUCCESS, aReplace);
-      } catch (ex) {
-        Cu.reportError("Failed to restore bookmarks from " + aSpec + ": " + ex);
-        notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_FAILED, aReplace);
-      }
-    })();
+      notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_SUCCESS, aReplace);
+    } catch (ex) {
+      Cu.reportError("Failed to restore bookmarks from " + aSpec + ": " + ex);
+      notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_FAILED, aReplace);
+      throw ex;
+    }
   },
 
   /**
    * Restores bookmarks and tags from a JSON file.
-   * @note any item annotated with "places/excludeFromBackup" won't be removed
-   *       before executing the restore.
    *
    * @param aFilePath
    *        OS.File path string of bookmarks in JSON or JSONlz4 format to be restored.
-   * @param aReplace
-   *        Boolean if true, replace existing bookmarks, else merge.
+   * @param [options.replace]
+   *        Whether we should erase existing bookmarks before importing.
+   * @param [options.source]
+   *        The bookmark change source, used to determine the sync status for
+   *        imported bookmarks. Defaults to `RESTORE` if `replace = true`, or
+   *        `IMPORT` otherwise.
    *
    * @return {Promise}
    * @resolves When the new bookmarks have been created.
    * @rejects JavaScript exception.
    */
-  async importFromFile(aFilePath, aReplace) {
+  async importFromFile(
+    aFilePath,
+    {
+      replace: aReplace = false,
+      source: aSource = aReplace
+        ? PlacesUtils.bookmarks.SOURCES.RESTORE
+        : PlacesUtils.bookmarks.SOURCES.IMPORT,
+    } = {}
+  ) {
     notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_BEGIN, aReplace);
     try {
-      if (!(await OS.File.exists(aFilePath)))
+      if (!(await OS.File.exists(aFilePath))) {
         throw new Error("Cannot restore from nonexisting json file");
+      }
 
-      let importer = new BookmarkImporter(aReplace);
+      let importer = new BookmarkImporter(aReplace, aSource);
       if (aFilePath.endsWith("jsonlz4")) {
         await importer.importFromCompressedFile(aFilePath);
       } else {
@@ -91,7 +127,9 @@ var BookmarkJSONUtils = Object.freeze({
       }
       notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_SUCCESS, aReplace);
     } catch (ex) {
-      Cu.reportError("Failed to restore bookmarks from " + aFilePath + ": " + ex);
+      Cu.reportError(
+        "Failed to restore bookmarks from " + aFilePath + ": " + ex
+      );
       notifyObservers(PlacesUtils.TOPIC_BOOKMARKS_RESTORE_FAILED, aReplace);
       throw ex;
     }
@@ -121,8 +159,8 @@ var BookmarkJSONUtils = Object.freeze({
     // Report the time taken to convert the tree to JSON.
     try {
       Services.telemetry
-              .getHistogramById("PLACES_BACKUPS_TOJSON_MS")
-              .add(Date.now() - startTime);
+        .getHistogramById("PLACES_BACKUPS_TOJSON_MS")
+        .add(Date.now() - startTime);
     } catch (ex) {
       Cu.reportError("Unable to report telemetry.");
     }
@@ -139,60 +177,43 @@ var BookmarkJSONUtils = Object.freeze({
     // filesystem writeAtomic will fail.  Eventual dangling .tmp files should
     // be cleaned up by the caller.
     let writeOptions = { tmpPath: OS.Path.join(aFilePath + ".tmp") };
-    if (aOptions.compress)
+    if (aOptions.compress) {
       writeOptions.compression = "lz4";
+    }
 
     await OS.File.writeAtomic(aFilePath, jsonString, writeOptions);
     return { count, hash };
-  }
+  },
 });
 
-function BookmarkImporter(aReplace) {
+function BookmarkImporter(aReplace, aSource) {
   this._replace = aReplace;
-  // The bookmark change source, used to determine the sync status and change
-  // counter.
-  this._source = aReplace ? PlacesUtils.bookmarks.SOURCE_IMPORT_REPLACE :
-                            PlacesUtils.bookmarks.SOURCE_IMPORT;
+  this._source = aSource;
 }
 BookmarkImporter.prototype = {
   /**
    * Import bookmarks from a url.
    *
-   * @param aSpec
+   * @param {string} aSpec
    *        url of the bookmark data.
    *
    * @return {Promise}
    * @resolves When the new bookmarks have been created.
    * @rejects JavaScript exception.
    */
-  importFromURL(spec) {
-    return new Promise((resolve, reject) => {
-      let streamObserver = {
-        onStreamComplete: (aLoader, aContext, aStatus, aLength, aResult) => {
-          let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
-                          createInstance(Ci.nsIScriptableUnicodeConverter);
-          converter.charset = "UTF-8";
-          try {
-            let jsonString = converter.convertFromByteArray(aResult,
-                                                            aResult.length);
-            resolve(this.importFromJSON(jsonString));
-          } catch (ex) {
-            Cu.reportError("Failed to import from URL: " + ex);
-            reject(ex);
-          }
-        }
-      };
+  async importFromURL(spec) {
+    if (!spec.startsWith("chrome://") && !spec.startsWith("file://")) {
+      throw new Error(
+        "importFromURL can only be used with chrome:// and file:// URLs"
+      );
+    }
+    let nodes = await (await fetch(spec)).json();
 
-      let uri = NetUtil.newURI(spec);
-      let channel = NetUtil.newChannel({
-        uri,
-        loadUsingSystemPrincipal: true
-      });
-      let streamLoader = Cc["@mozilla.org/network/stream-loader;1"]
-                           .createInstance(Ci.nsIStreamLoader);
-      streamLoader.init(streamObserver);
-      channel.asyncOpen2(streamLoader);
-    });
+    if (!nodes.children || !nodes.children.length) {
+      return;
+    }
+
+    await this.import(nodes);
   },
 
   /**
@@ -205,13 +226,13 @@ BookmarkImporter.prototype = {
    * @resolves When the new bookmarks have been created.
    * @rejects JavaScript exception.
    */
-  importFromCompressedFile: async function BI_importFromCompressedFile(aFilePath) {
-      let aResult = await OS.File.read(aFilePath, { compression: "lz4" });
-      let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
-                        createInstance(Ci.nsIScriptableUnicodeConverter);
-      converter.charset = "UTF-8";
-      let jsonString = converter.convertFromByteArray(aResult, aResult.length);
-      await this.importFromJSON(jsonString);
+  importFromCompressedFile: async function BI_importFromCompressedFile(
+    aFilePath
+  ) {
+    let aResult = await OS.File.read(aFilePath, { compression: "lz4" });
+    let decoder = new TextDecoder();
+    let jsonString = decoder.decode(aResult);
+    await this.importFromJSON(jsonString);
   },
 
   /**
@@ -223,41 +244,49 @@ BookmarkImporter.prototype = {
    * @rejects JavaScript exception.
    */
   async importFromJSON(aString) {
-    let nodes =
-      PlacesUtils.unwrapNodes(aString, PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER);
+    let nodes = PlacesUtils.unwrapNodes(
+      aString,
+      PlacesUtils.TYPE_X_MOZ_PLACE_CONTAINER
+    );
 
-    if (nodes.length == 0 || !nodes[0].children ||
-        nodes[0].children.length == 0) {
+    if (
+      nodes.length == 0 ||
+      !nodes[0].children ||
+      nodes[0].children.length == 0
+    ) {
       return;
     }
 
-    // Change to nodes[0].children as we don't import the root, and also filter
+    await this.import(nodes[0]);
+  },
+
+  async import(rootNode) {
+    // Change to rootNode.children as we don't import the root, and also filter
     // out any obsolete "tagsFolder" sections.
-    nodes = nodes[0].children.filter(node => !node.root || node.root != "tagsFolder");
+    let nodes = rootNode.children.filter(node => node.root !== "tagsFolder");
 
     // If we're replacing, then erase existing bookmarks first.
     if (this._replace) {
-      await PlacesBackups.eraseEverythingIncludingUserRoots({ source: this._source });
+      await PlacesUtils.bookmarks.eraseEverything({ source: this._source });
     }
 
     let folderIdToGuidMap = {};
-    let searchGuids = [];
 
     // Now do some cleanup on the imported nodes so that the various guids
     // match what we need for insertTree, and we also have mappings of folders
     // so we can repair any searches after inserting the bookmarks (see bug 824502).
     for (let node of nodes) {
-      if (!node.children || node.children.length == 0)
-        continue; // Nothing to restore for this root
+      if (!node.children || node.children.length == 0) {
+        continue;
+      } // Nothing to restore for this root
 
       // Ensure we set the source correctly.
       node.source = this._source;
 
       // Translate the node for insertTree.
-      let [folders, searches] = translateTreeTypes(node);
+      let folders = translateTreeTypes(node);
 
       folderIdToGuidMap = Object.assign(folderIdToGuidMap, folders);
-      searchGuids = searchGuids.concat(searches);
     }
 
     // Now we can add the actual nodes to the database.
@@ -267,31 +296,23 @@ BookmarkImporter.prototype = {
         continue;
       }
 
-      // Places is moving away from supporting user-defined folders at the top
-      // of the tree, however, until we have a migration strategy we need to
-      // ensure any non-built-in folders are created (xref bug 1310299).
+      // Drop any roots whose guid we don't recognise - we don't support anything
+      // apart from the built-in roots.
       if (!PlacesUtils.bookmarks.userContentRoots.includes(node.guid)) {
-        node.parentGuid = PlacesUtils.bookmarks.rootGuid;
-        await PlacesUtils.bookmarks.insert(node);
+        continue;
       }
 
-      await PlacesUtils.bookmarks.insertTree(node, { fixupOrSkipInvalidEntries: true });
+      fixupSearchQueries(node, folderIdToGuidMap);
+
+      await PlacesUtils.bookmarks.insertTree(node, {
+        fixupOrSkipInvalidEntries: true,
+      });
 
       // Now add any favicons.
       try {
         insertFaviconsForTree(node);
       } catch (ex) {
         Cu.reportError(`Failed to insert favicons: ${ex}`);
-      }
-    }
-
-    // Now update any bookmarks with a place: search that contain an index to
-    // a folder id.
-    for (let guid of searchGuids) {
-      let searchBookmark = await PlacesUtils.bookmarks.fetch(guid);
-      let url = await fixupQuery(searchBookmark.url, folderIdToGuidMap);
-      if (url != searchBookmark.url) {
-        await PlacesUtils.bookmarks.update({ guid, url, source: this._source });
       }
     }
   },
@@ -302,9 +323,28 @@ function notifyObservers(topic, replace) {
 }
 
 /**
+ * Iterates through a node, fixing up any place: URL queries that are found. This
+ * replaces any old (pre Firefox 62) queries that contain "folder=<id>" parts with
+ * "parent=<guid>".
+ *
+ * @param {Object} aNode The node to search.
+ * @param {Array} aFolderIdMap An array mapping of old folder IDs to new folder GUIDs.
+ */
+function fixupSearchQueries(aNode, aFolderIdMap) {
+  if (aNode.url && aNode.url.startsWith("place:")) {
+    aNode.url = fixupQuery(aNode.url, aFolderIdMap);
+  }
+  if (aNode.children) {
+    for (let child of aNode.children) {
+      fixupSearchQueries(child, aFolderIdMap);
+    }
+  }
+}
+
+/**
  * Replaces imported folder ids with their local counterparts in a place: URI.
  *
- * @param   {nsIURI} aQueryURI
+ * @param   {String} aQueryURL
  *          A place: URI with folder ids.
  * @param   {Object} aFolderIdMap
  *          An array mapping of old folder IDs to new folder GUIDs.
@@ -312,41 +352,42 @@ function notifyObservers(topic, replace) {
  *         the URI with only the matching folders included. If none matched
  *         it returns the input URI unchanged.
  */
-async function fixupQuery(aQueryURI, aFolderIdMap) {
-  const reGlobal = /folder=([0-9]+)/g;
-  const re = /([0-9]+)/;
-
-  // Unfortunately .replace can't handle async functions. Therefore,
-  // we find the folder guids we need to know the ids for first, then
-  // do the async request, and finally replace everything in one go.
-  let uri = aQueryURI.href;
-  let found = uri.match(reGlobal);
-  if (!found) {
-    return uri;
-  }
-
-  let queryFolderGuids = [];
-  for (let folderString of found) {
-    let existingFolderId = folderString.match(re)[0];
-    queryFolderGuids.push(aFolderIdMap[existingFolderId]);
-  }
-
-  let newFolderIds = await PlacesUtils.promiseManyItemIds(queryFolderGuids);
-  let convert = function(str, p1) {
-    return "folder=" + newFolderIds.get(aFolderIdMap[p1]);
+function fixupQuery(aQueryURL, aFolderIdMap) {
+  let invalid = false;
+  let convert = function(str, existingFolderId) {
+    let guid;
+    if (
+      Object.keys(OLD_BOOKMARK_QUERY_TRANSLATIONS).includes(existingFolderId)
+    ) {
+      guid = OLD_BOOKMARK_QUERY_TRANSLATIONS[existingFolderId];
+    } else {
+      guid = aFolderIdMap[existingFolderId];
+      if (!guid) {
+        invalid = true;
+        return `invalidOldParentId=${existingFolderId}`;
+      }
+    }
+    return `parent=${guid}`;
   };
-  return uri.replace(reGlobal, convert);
+
+  let url = aQueryURL.replace(/folder=([A-Za-z0-9_]+)/g, convert);
+  if (invalid) {
+    // One or more of the folders don't exist, cause an empty query so that
+    // we don't try to display the whole database.
+    url += "&excludeItems=1";
+  }
+  return url;
 }
 
 /**
  * A mapping of root folder names to Guids. To help fixupRootFolderGuid.
  */
 const rootToFolderGuidMap = {
-  "placesRoot": PlacesUtils.bookmarks.rootGuid,
-  "bookmarksMenuFolder": PlacesUtils.bookmarks.menuGuid,
-  "unfiledBookmarksFolder": PlacesUtils.bookmarks.unfiledGuid,
-  "toolbarFolder": PlacesUtils.bookmarks.toolbarGuid,
-  "mobileFolder": PlacesUtils.bookmarks.mobileGuid
+  placesRoot: PlacesUtils.bookmarks.rootGuid,
+  bookmarksMenuFolder: PlacesUtils.bookmarks.menuGuid,
+  unfiledBookmarksFolder: PlacesUtils.bookmarks.unfiledGuid,
+  toolbarFolder: PlacesUtils.bookmarks.toolbarGuid,
+  mobileFolder: PlacesUtils.bookmarks.mobileGuid,
 };
 
 /**
@@ -374,7 +415,6 @@ function fixupRootFolderGuid(node) {
  */
 function translateTreeTypes(node) {
   let folderIdToGuidMap = {};
-  let searchGuids = [];
 
   // Do the uri fixup first, so we can be consistent in this function.
   if (node.uri) {
@@ -388,8 +428,9 @@ function translateTreeTypes(node) {
 
       // Older type mobile folders have a random guid with an annotation. We need
       // to make sure those go into the proper mobile folder.
-      let isMobileFolder = node.annos &&
-                           node.annos.some(anno => anno.name == PlacesUtils.MOBILE_ROOT_ANNO);
+      let isMobileFolder =
+        node.annos &&
+        node.annos.some(anno => anno.name == PlacesUtils.MOBILE_ROOT_ANNO);
       if (isMobileFolder) {
         node.guid = PlacesUtils.bookmarks.mobileGuid;
       } else {
@@ -403,11 +444,6 @@ function translateTreeTypes(node) {
       break;
     case PlacesUtils.TYPE_X_MOZ_PLACE:
       node.type = PlacesUtils.bookmarks.TYPE_BOOKMARK;
-
-      if (node.url && node.url.substr(0, 6) == "place:") {
-        searchGuids.push(node.guid);
-      }
-
       break;
     case PlacesUtils.TYPE_X_MOZ_PLACE_SEPARATOR:
       node.type = PlacesUtils.bookmarks.TYPE_SEPARATOR;
@@ -437,9 +473,13 @@ function translateTreeTypes(node) {
   }
 
   if (node.tags) {
-     // Separate any tags into an array, and ignore any that are too long.
-    node.tags = node.tags.split(",").filter(aTag =>
-      aTag.length > 0 && aTag.length <= Ci.nsITaggingService.MAX_TAG_LENGTH);
+    // Separate any tags into an array, and ignore any that are too long.
+    node.tags = node.tags
+      .split(",")
+      .filter(
+        aTag =>
+          aTag.length > 0 && aTag.length <= PlacesUtils.bookmarks.MAX_TAG_LENGTH
+      );
 
     // If we end up with none, then delete the property completely.
     if (!node.tags.length) {
@@ -454,7 +494,7 @@ function translateTreeTypes(node) {
 
   // Now handle any children.
   if (!node.children) {
-    return [folderIdToGuidMap, searchGuids];
+    return folderIdToGuidMap;
   }
 
   // First sort the children by index.
@@ -464,12 +504,11 @@ function translateTreeTypes(node) {
 
   // Now do any adjustments required for the children.
   for (let child of node.children) {
-    let [folders, searches] = translateTreeTypes(child);
+    let folders = translateTreeTypes(child);
     folderIdToGuidMap = Object.assign(folderIdToGuidMap, folders);
-    searchGuids = searchGuids.concat(searches);
   }
 
-  return [folderIdToGuidMap, searchGuids];
+  return folderIdToGuidMap;
 }
 
 /**
@@ -485,12 +524,19 @@ function insertFaviconForNode(node) {
       // Create a fake faviconURI to use (FIXME: bug 523932)
       let faviconURI = Services.io.newURI("fake-favicon-uri:" + node.url);
       PlacesUtils.favicons.replaceFaviconDataFromDataURL(
-        faviconURI, node.icon, 0,
-        Services.scriptSecurityManager.getSystemPrincipal());
+        faviconURI,
+        node.icon,
+        0,
+        Services.scriptSecurityManager.getSystemPrincipal()
+      );
       PlacesUtils.favicons.setAndFetchFaviconForPage(
-        Services.io.newURI(node.url), faviconURI, false,
-        PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, null,
-        Services.scriptSecurityManager.getSystemPrincipal());
+        Services.io.newURI(node.url),
+        faviconURI,
+        false,
+        PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
+        null,
+        Services.scriptSecurityManager.getSystemPrincipal()
+      );
     } catch (ex) {
       Cu.reportError("Failed to import favicon data:" + ex);
     }
@@ -502,9 +548,13 @@ function insertFaviconForNode(node) {
 
   try {
     PlacesUtils.favicons.setAndFetchFaviconForPage(
-      Services.io.newURI(node.url), Services.io.newURI(node.iconUri), false,
-      PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, null,
-      Services.scriptSecurityManager.getSystemPrincipal());
+      Services.io.newURI(node.url),
+      Services.io.newURI(node.iconUri),
+      false,
+      PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
+      null,
+      Services.scriptSecurityManager.getSystemPrincipal()
+    );
   } catch (ex) {
     Cu.reportError("Failed to import favicon URI:" + ex);
   }

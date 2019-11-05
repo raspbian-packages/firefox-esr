@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -23,21 +23,26 @@ XPCCallContext::XPCCallContext(
     JSContext* cx, HandleObject obj /* = nullptr               */,
     HandleObject funobj /* = nullptr               */,
     HandleId name /* = JSID_VOID             */,
-    unsigned argc /* = NO_ARGS               */,
-    Value* argv /* = nullptr               */,
+    unsigned argc /* = NO_ARGS               */, Value* argv /* = nullptr */,
     Value* rval /* = nullptr               */)
-    : mAr(cx),
-      mState(INIT_FAILED),
+    : mState(INIT_FAILED),
       mXPC(nsXPConnect::XPConnect()),
       mXPCJSContext(nullptr),
       mJSContext(cx),
       mWrapper(nullptr),
       mTearOff(nullptr),
-      mName(cx) {
+      mMember(nullptr),
+      mName(cx),
+      mStaticMemberIsLocal(false),
+      mArgc(0),
+      mArgv(nullptr),
+      mRetVal(nullptr) {
   MOZ_ASSERT(cx);
   MOZ_ASSERT(cx == nsContentUtils::GetCurrentJSContext());
 
-  if (!mXPC) return;
+  if (!mXPC) {
+    return;
+  }
 
   mXPCJSContext = XPCJSContext::Get();
 
@@ -46,7 +51,9 @@ XPCCallContext::XPCCallContext(
 
   mState = HAVE_CONTEXT;
 
-  if (!obj) return;
+  if (!obj) {
+    return;
+  }
 
   mMethodIndex = 0xDEAD;
 
@@ -54,7 +61,8 @@ XPCCallContext::XPCCallContext(
 
   mTearOff = nullptr;
 
-  JSObject* unwrapped = js::CheckedUnwrap(obj, /* stopAtWindowProxy = */ false);
+  JSObject* unwrapped =
+      js::CheckedUnwrapDynamic(obj, cx, /* stopAtWindowProxy = */ false);
   if (!unwrapped) {
     JS_ReportErrorASCII(mJSContext,
                         "Permission denied to call method on |this|");
@@ -74,9 +82,13 @@ XPCCallContext::XPCCallContext(
     mScriptable = mWrapper->GetScriptable();
   }
 
-  if (!JSID_IS_VOID(name)) SetName(name);
+  if (!JSID_IS_VOID(name)) {
+    SetName(name);
+  }
 
-  if (argc != NO_ARGS) SetArgsAndResultPtr(argc, argv, rval);
+  if (argc != NO_ARGS) {
+    SetArgsAndResultPtr(argc, argv, rval);
+  }
 
   CHECK_STATE(HAVE_OBJECT);
 }
@@ -91,7 +103,9 @@ void XPCCallContext::SetName(jsid name) {
     mInterface = mTearOff->GetInterface();
     mMember = mInterface->FindMember(mName);
     mStaticMemberIsLocal = true;
-    if (mMember && !mMember->IsConstant()) mMethodIndex = mMember->GetIndex();
+    if (mMember && !mMember->IsConstant()) {
+      mMethodIndex = mMember->GetIndex();
+    }
   } else {
     mSet = mWrapper ? mWrapper->GetSet() : nullptr;
 
@@ -100,7 +114,9 @@ void XPCCallContext::SetName(jsid name) {
             mName, &mMember, &mInterface,
             mWrapper->HasProto() ? mWrapper->GetProto()->GetSet() : nullptr,
             &mStaticMemberIsLocal)) {
-      if (mMember && !mMember->IsConstant()) mMethodIndex = mMember->GetIndex();
+      if (mMember && !mMember->IsConstant()) {
+        mMethodIndex = mMember->GetIndex();
+      }
     } else {
       mMember = nullptr;
       mInterface = nullptr;
@@ -119,7 +135,9 @@ void XPCCallContext::SetCallInfo(XPCNativeInterface* iface,
   // by id.
 
   // don't be tricked if method is called with wrong 'this'
-  if (mTearOff && mTearOff->GetInterface() != iface) mTearOff = nullptr;
+  if (mTearOff && mTearOff->GetInterface() != iface) {
+    mTearOff = nullptr;
+  }
 
   mSet = nullptr;
   mInterface = iface;
@@ -127,7 +145,9 @@ void XPCCallContext::SetCallInfo(XPCNativeInterface* iface,
   mMethodIndex = mMember->GetIndex() + (isSetter ? 1 : 0);
   mName = mMember->GetName();
 
-  if (mState < HAVE_NAME) mState = HAVE_NAME;
+  if (mState < HAVE_NAME) {
+    mState = HAVE_NAME;
+  }
 }
 
 void XPCCallContext::SetArgsAndResultPtr(unsigned argc, Value* argv,
@@ -151,11 +171,15 @@ void XPCCallContext::SetArgsAndResultPtr(unsigned argc, Value* argv,
 nsresult XPCCallContext::CanCallNow() {
   nsresult rv;
 
-  if (!HasInterfaceAndMember()) return NS_ERROR_UNEXPECTED;
-  if (mState < HAVE_ARGS) return NS_ERROR_UNEXPECTED;
+  if (!HasInterfaceAndMember()) {
+    return NS_ERROR_UNEXPECTED;
+  }
+  if (mState < HAVE_ARGS) {
+    return NS_ERROR_UNEXPECTED;
+  }
 
   if (!mTearOff) {
-    mTearOff = mWrapper->FindTearOff(mInterface, false, &rv);
+    mTearOff = mWrapper->FindTearOff(mJSContext, mInterface, false, &rv);
     if (!mTearOff || mTearOff->GetInterface() != mInterface) {
       mTearOff = nullptr;
       return NS_FAILED(rv) ? rv : NS_ERROR_UNEXPECTED;
@@ -180,7 +204,9 @@ void XPCCallContext::SystemIsBeingShutDown() {
   mSet = nullptr;
   mInterface = nullptr;
 
-  if (mPrevCallContext) mPrevCallContext->SystemIsBeingShutDown();
+  if (mPrevCallContext) {
+    mPrevCallContext->SystemIsBeingShutDown();
+  }
 }
 
 XPCCallContext::~XPCCallContext() {

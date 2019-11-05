@@ -1,11 +1,3 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 #[cfg(any(feature = "full", feature = "derive"))]
 macro_rules! ast_struct {
     (
@@ -133,7 +125,7 @@ macro_rules! generate_to_tokens {
 
     (($($arms:tt)*) $tokens:ident $name:ident {}) => {
         impl ::quote::ToTokens for $name {
-            fn to_tokens(&self, $tokens: &mut ::quote::Tokens) {
+            fn to_tokens(&self, $tokens: &mut ::proc_macro2::TokenStream) {
                 match *self {
                     $($arms)*
                 }
@@ -170,17 +162,4 @@ macro_rules! maybe_ast_struct {
     ) => ();
 
     ($($rest:tt)*) => (ast_struct! { $($rest)* });
-}
-
-#[cfg(all(feature = "parsing", any(feature = "full", feature = "derive")))]
-macro_rules! impl_synom {
-    ($t:ident $description:tt $($parser:tt)+) => {
-        impl Synom for $t {
-            named!(parse -> Self, $($parser)+);
-
-            fn description() -> Option<&'static str> {
-                Some($description)
-            }
-        }
-    }
 }

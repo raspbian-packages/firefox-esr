@@ -7,7 +7,9 @@
 #ifndef DecoderTraits_h_
 #define DecoderTraits_h_
 
+#include "mozilla/UniquePtr.h"
 #include "nsStringFwd.h"
+#include "nsTArray.h"
 
 namespace mozilla {
 
@@ -15,6 +17,7 @@ class DecoderDoctorDiagnostics;
 class MediaContainerType;
 struct MediaFormatReaderInit;
 class MediaFormatReader;
+class TrackInfo;
 
 enum CanPlayStatus { CANPLAY_NO, CANPLAY_MAYBE, CANPLAY_YES };
 
@@ -55,9 +58,9 @@ class DecoderTraits {
 
   static bool IsSupportedType(const MediaContainerType& aType);
 
-  // For some content types we block channel redirects to cross origin
-  // destinations due to security constraints. See bug 1441153.
-  static bool CrossOriginRedirectsProhibited(const MediaContainerType& aType);
+  // Returns an array of all TrackInfo objects described by this type.
+  static nsTArray<UniquePtr<TrackInfo>> GetTracksInfo(
+      const MediaContainerType& aType);
 };
 
 }  // namespace mozilla

@@ -10,7 +10,7 @@
 
 #include "mozilla/Atomics.h"
 #include "mozilla/Monitor.h"
-#include "nsINamedPipeService.h"
+#include "nsNamedPipeService.h"
 #include "nsNetCID.h"
 
 #define PIPE_NAME "\\\\.\\pipe\\TestNPS"
@@ -251,14 +251,12 @@ static nsresult CreateNamedPipe(LPHANDLE aServer, LPHANDLE aClient) {
   return NS_OK;
 }
 
-TEST(TestNamedPipeService, Test) {
-  nsresult rv;
-  nsCOMPtr<nsINamedPipeService> svc =
-      do_GetService(NS_NAMEDPIPESERVICE_CONTRACTID, &rv);
-  ASSERT_TRUE(NS_SUCCEEDED(rv));
+TEST(TestNamedPipeService, Test)
+{
+  nsCOMPtr<nsINamedPipeService> svc = net::NamedPipeService::GetOrCreate();
 
   HANDLE readPipe, writePipe;
-  rv = CreateNamedPipe(&readPipe, &writePipe);
+  nsresult rv = CreateNamedPipe(&readPipe, &writePipe);
   ASSERT_TRUE(NS_SUCCEEDED(rv));
 
   RefPtr<nsNamedPipeDataObserver> readObserver =

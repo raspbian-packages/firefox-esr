@@ -3,16 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 BOOL StartServiceUpdate(LPCWSTR installDir);
-DWORD LaunchServiceSoftwareUpdateCommand(int argc, LPCWSTR *argv);
-BOOL GetUUIDTempFilePath(LPCWSTR basePath, LPCWSTR prefix, LPWSTR tmpPath);
+DWORD LaunchServiceSoftwareUpdateCommand(int argc, LPCWSTR* argv);
 BOOL WriteStatusFailure(LPCWSTR updateDirPath, int errorCode);
 DWORD WaitForServiceStop(LPCWSTR serviceName, DWORD maxWaitSeconds);
 DWORD WaitForProcessExit(LPCWSTR filename, DWORD maxSeconds);
 DWORD IsProcessRunning(LPCWSTR filename);
 BOOL DoesFallbackKeyExist();
-BOOL IsLocalFile(LPCWSTR file, BOOL &isLocal);
-DWORD StartServiceCommand(int argc, LPCWSTR *argv);
-BOOL IsUnpromptedElevation(BOOL &isUnpromptedElevation);
+BOOL IsLocalFile(LPCWSTR file, BOOL& isLocal);
+DWORD StartServiceCommand(int argc, LPCWSTR* argv);
+BOOL IsUnpromptedElevation(BOOL& isUnpromptedElevation);
 
 #define SVC_NAME L"MozillaMaintenance"
 

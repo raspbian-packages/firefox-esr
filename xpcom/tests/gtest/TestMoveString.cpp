@@ -22,8 +22,7 @@ namespace TestMoveString {
 
 typedef mozilla::detail::StringDataFlags Df;
 
-void SetAsOwned(nsACString& aStr, const char* aValue)
-{
+static void SetAsOwned(nsACString& aStr, const char* aValue) {
   size_t len = strlen(aValue);
   char* data = new char[len + 1];
   memcpy(data, aValue, len + 1);
@@ -32,38 +31,38 @@ void SetAsOwned(nsACString& aStr, const char* aValue)
   EXPECT_STREQ(aStr.BeginReading(), aValue);
 }
 
-void ExpectTruncated(const nsACString& aStr)
-{
+static void ExpectTruncated(const nsACString& aStr) {
   EXPECT_EQ(aStr.Length(), uint32_t(0));
   EXPECT_STREQ(aStr.BeginReading(), "");
   EXPECT_EQ(aStr.GetDataFlags(), Df::TERMINATED);
 }
 
-void ExpectNew(const nsACString& aStr)
-{
+static void ExpectNew(const nsACString& aStr) {
   EXPECT_EQ(aStr.Length(), strlen(NEW_VAL));
   EXPECT_TRUE(aStr.EqualsASCII(NEW_VAL));
 }
 
-TEST(MoveString, SharedIntoOwned) {
+TEST(MoveString, SharedIntoOwned)
+{
   nsCString out;
   SetAsOwned(out, OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::OWNED | Df::TERMINATED);
 
   nsCString in;
   in.Assign(NEW_VAL);
-  EXPECT_EQ(in.GetDataFlags(), Df::SHARED | Df::TERMINATED);
+  EXPECT_EQ(in.GetDataFlags(), Df::REFCOUNTED | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
-  EXPECT_EQ(out.GetDataFlags(), Df::SHARED | Df::TERMINATED);
+  EXPECT_EQ(out.GetDataFlags(), Df::REFCOUNTED | Df::TERMINATED);
   EXPECT_EQ(out.get(), data);
 }
 
-TEST(MoveString, OwnedIntoOwned) {
+TEST(MoveString, OwnedIntoOwned)
+{
   nsCString out;
   SetAsOwned(out, OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::OWNED | Df::TERMINATED);
@@ -73,7 +72,7 @@ TEST(MoveString, OwnedIntoOwned) {
   EXPECT_EQ(in.GetDataFlags(), Df::OWNED | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
@@ -81,7 +80,8 @@ TEST(MoveString, OwnedIntoOwned) {
   EXPECT_EQ(out.get(), data);
 }
 
-TEST(MoveString, LiteralIntoOwned) {
+TEST(MoveString, LiteralIntoOwned)
+{
   nsCString out;
   SetAsOwned(out, OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::OWNED | Df::TERMINATED);
@@ -91,7 +91,7 @@ TEST(MoveString, LiteralIntoOwned) {
   EXPECT_EQ(in.GetDataFlags(), Df::LITERAL | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
@@ -99,7 +99,8 @@ TEST(MoveString, LiteralIntoOwned) {
   EXPECT_EQ(out.get(), data);
 }
 
-TEST(MoveString, AutoIntoOwned) {
+TEST(MoveString, AutoIntoOwned)
+{
   nsCString out;
   SetAsOwned(out, OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::OWNED | Df::TERMINATED);
@@ -109,15 +110,16 @@ TEST(MoveString, AutoIntoOwned) {
   EXPECT_EQ(in.GetDataFlags(), Df::INLINE | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
-  EXPECT_EQ(out.GetDataFlags(), Df::SHARED | Df::TERMINATED);
+  EXPECT_EQ(out.GetDataFlags(), Df::REFCOUNTED | Df::TERMINATED);
   EXPECT_NE(out.get(), data);
 }
 
-TEST(MoveString, DepIntoOwned) {
+TEST(MoveString, DepIntoOwned)
+{
   nsCString out;
   SetAsOwned(out, OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::OWNED | Df::TERMINATED);
@@ -125,14 +127,15 @@ TEST(MoveString, DepIntoOwned) {
   nsDependentCSubstring in(NEW_VAL "garbage after", strlen(NEW_VAL));
   EXPECT_EQ(in.GetDataFlags(), Df(0));
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
-  EXPECT_EQ(out.GetDataFlags(), Df::SHARED | Df::TERMINATED);
+  EXPECT_EQ(out.GetDataFlags(), Df::REFCOUNTED | Df::TERMINATED);
 }
 
-TEST(MoveString, VoidIntoOwned) {
+TEST(MoveString, VoidIntoOwned)
+{
   nsCString out;
   SetAsOwned(out, OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::OWNED | Df::TERMINATED);
@@ -140,7 +143,7 @@ TEST(MoveString, VoidIntoOwned) {
   nsCString in = VoidCString();
   EXPECT_EQ(in.GetDataFlags(), Df::VOIDED | Df::TERMINATED);
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
 
   EXPECT_EQ(out.Length(), 0u);
@@ -148,25 +151,27 @@ TEST(MoveString, VoidIntoOwned) {
   EXPECT_EQ(out.GetDataFlags(), Df::VOIDED | Df::TERMINATED);
 }
 
-TEST(MoveString, SharedIntoAuto) {
+TEST(MoveString, SharedIntoAuto)
+{
   nsAutoCString out;
   out.Assign(OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::INLINE | Df::TERMINATED);
 
   nsCString in;
   in.Assign(NEW_VAL);
-  EXPECT_EQ(in.GetDataFlags(), Df::SHARED | Df::TERMINATED);
+  EXPECT_EQ(in.GetDataFlags(), Df::REFCOUNTED | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
-  EXPECT_EQ(out.GetDataFlags(), Df::SHARED | Df::TERMINATED);
+  EXPECT_EQ(out.GetDataFlags(), Df::REFCOUNTED | Df::TERMINATED);
   EXPECT_EQ(out.get(), data);
 }
 
-TEST(MoveString, OwnedIntoAuto) {
+TEST(MoveString, OwnedIntoAuto)
+{
   nsAutoCString out;
   out.Assign(OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::INLINE | Df::TERMINATED);
@@ -176,7 +181,7 @@ TEST(MoveString, OwnedIntoAuto) {
   EXPECT_EQ(in.GetDataFlags(), Df::OWNED | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
@@ -184,7 +189,8 @@ TEST(MoveString, OwnedIntoAuto) {
   EXPECT_EQ(out.get(), data);
 }
 
-TEST(MoveString, LiteralIntoAuto) {
+TEST(MoveString, LiteralIntoAuto)
+{
   nsAutoCString out;
   out.Assign(OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::INLINE | Df::TERMINATED);
@@ -194,7 +200,7 @@ TEST(MoveString, LiteralIntoAuto) {
   EXPECT_EQ(in.GetDataFlags(), Df::LITERAL | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
@@ -202,7 +208,8 @@ TEST(MoveString, LiteralIntoAuto) {
   EXPECT_EQ(out.get(), data);
 }
 
-TEST(MoveString, AutoIntoAuto) {
+TEST(MoveString, AutoIntoAuto)
+{
   nsAutoCString out;
   out.Assign(OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::INLINE | Df::TERMINATED);
@@ -212,7 +219,7 @@ TEST(MoveString, AutoIntoAuto) {
   EXPECT_EQ(in.GetDataFlags(), Df::INLINE | Df::TERMINATED);
   const char* data = in.get();
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
@@ -220,7 +227,8 @@ TEST(MoveString, AutoIntoAuto) {
   EXPECT_NE(out.get(), data);
 }
 
-TEST(MoveString, DepIntoAuto) {
+TEST(MoveString, DepIntoAuto)
+{
   nsAutoCString out;
   out.Assign(OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::INLINE | Df::TERMINATED);
@@ -228,14 +236,15 @@ TEST(MoveString, DepIntoAuto) {
   nsDependentCSubstring in(NEW_VAL "garbage after", strlen(NEW_VAL));
   EXPECT_EQ(in.GetDataFlags(), Df(0));
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
   ExpectNew(out);
 
   EXPECT_EQ(out.GetDataFlags(), Df::INLINE | Df::TERMINATED);
 }
 
-TEST(MoveString, VoidIntoAuto) {
+TEST(MoveString, VoidIntoAuto)
+{
   nsAutoCString out;
   out.Assign(OLD_VAL);
   EXPECT_EQ(out.GetDataFlags(), Df::INLINE | Df::TERMINATED);
@@ -243,7 +252,7 @@ TEST(MoveString, VoidIntoAuto) {
   nsCString in = VoidCString();
   EXPECT_EQ(in.GetDataFlags(), Df::VOIDED | Df::TERMINATED);
 
-  out.Assign(mozilla::Move(in));
+  out.Assign(std::move(in));
   ExpectTruncated(in);
 
   EXPECT_EQ(out.Length(), 0u);
@@ -254,4 +263,4 @@ TEST(MoveString, VoidIntoAuto) {
 #undef NEW_VAL
 #undef OLD_VAL
 
-} // namespace TestStrings
+}  // namespace TestMoveString

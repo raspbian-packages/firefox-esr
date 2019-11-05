@@ -7,7 +7,7 @@
 #include "mozilla/dom/HTMLPreElement.h"
 #include "mozilla/dom/HTMLPreElementBinding.h"
 
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsAttrValueInlines.h"
 #include "nsGkAtoms.h"
 #include "nsStyleConsts.h"
@@ -37,17 +37,15 @@ bool HTMLPreElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
 }
 
 void HTMLPreElement::MapAttributesIntoRule(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  if (aData->ShouldComputeStyleStruct(NS_STYLE_INHERIT_BIT(Text))) {
-    if (!aData->PropertyIsSet(eCSSProperty_white_space)) {
-      // wrap: empty
-      if (aAttributes->GetAttr(nsGkAtoms::wrap))
-        aData->SetKeywordValue(eCSSProperty_white_space,
-                               StyleWhiteSpace::PreWrap);
-    }
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  if (!aDecls.PropertyIsSet(eCSSProperty_white_space)) {
+    // wrap: empty
+    if (aAttributes->GetAttr(nsGkAtoms::wrap))
+      aDecls.SetKeywordValue(eCSSProperty_white_space,
+                             StyleWhiteSpace::PreWrap);
   }
 
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
@@ -57,7 +55,7 @@ HTMLPreElement::IsAttributeMapped(const nsAtom* aAttribute) const {
   }
 
   static const MappedAttributeEntry attributes[] = {
-      {&nsGkAtoms::wrap},
+      {nsGkAtoms::wrap},
       {nullptr},
   };
 
@@ -79,7 +77,7 @@ nsMapRuleToAttributesFunc HTMLPreElement::GetAttributeMappingFunction() const {
 
 JSObject* HTMLPreElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return HTMLPreElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLPreElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

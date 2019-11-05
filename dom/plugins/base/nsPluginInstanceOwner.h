@@ -21,8 +21,8 @@
 #include "gfxRect.h"
 
 #ifdef XP_MACOSX
-#include "mozilla/gfx/QuartzSupport.h"
-#include <ApplicationServices/ApplicationServices.h>
+#  include "mozilla/gfx/QuartzSupport.h"
+#  include <ApplicationServices/ApplicationServices.h>
 #endif
 
 class nsIInputStream;
@@ -37,6 +37,8 @@ class gfxContext;
 namespace mozilla {
 class TextComposition;
 namespace dom {
+class Element;
+class Event;
 struct MozPluginParameter;
 }  // namespace dom
 namespace widget {
@@ -47,7 +49,7 @@ class PuppetWidget;
 using mozilla::widget::PuppetWidget;
 
 #ifdef MOZ_X11
-#include "gfxXlibNativeRenderer.h"
+#  include "gfxXlibNativeRenderer.h"
 #endif
 
 class nsPluginInstanceOwner final : public nsIPluginInstanceOwner,
@@ -95,13 +97,13 @@ class nsPluginInstanceOwner final : public nsIPluginInstanceOwner,
    * @param aDOMElement - resulting DOM element
    * @result - NS_OK if this operation was successful
    */
-  NS_IMETHOD GetDOMElement(nsIDOMElement** aResult);
+  NS_IMETHOD GetDOMElement(mozilla::dom::Element** aResult);
 
   // nsIDOMEventListener interfaces
   NS_DECL_NSIDOMEVENTLISTENER
 
-  nsresult ProcessMouseDown(nsIDOMEvent* aKeyEvent);
-  nsresult ProcessKeyPress(nsIDOMEvent* aKeyEvent);
+  nsresult ProcessMouseDown(mozilla::dom::Event* aMouseEvent);
+  nsresult ProcessKeyPress(mozilla::dom::Event* aKeyEvent);
   nsresult Destroy();
 
 #ifdef XP_WIN
@@ -340,11 +342,11 @@ class nsPluginInstanceOwner final : public nsIPluginInstanceOwner,
   // pointer to wrapper for nsIDOMContextMenuListener
   RefPtr<nsPluginDOMContextMenuListener> mCXMenuListener;
 
-  nsresult DispatchKeyToPlugin(nsIDOMEvent* aKeyEvent);
-  nsresult DispatchMouseToPlugin(nsIDOMEvent* aMouseEvent,
+  nsresult DispatchKeyToPlugin(mozilla::dom::Event* aKeyEvent);
+  nsresult DispatchMouseToPlugin(mozilla::dom::Event* aMouseEvent,
                                  bool aAllowPropagate = false);
-  nsresult DispatchFocusToPlugin(nsIDOMEvent* aFocusEvent);
-  nsresult DispatchCompositionToPlugin(nsIDOMEvent* aEvent);
+  nsresult DispatchFocusToPlugin(mozilla::dom::Event* aFocusEvent);
+  nsresult DispatchCompositionToPlugin(mozilla::dom::Event* aEvent);
 
 #ifdef XP_WIN
   void CallDefaultProc(const mozilla::WidgetGUIEvent* aEvent);

@@ -13,15 +13,18 @@
 var { executeSoon } = require("devtools/shared/DevToolsUtils");
 var defer = require("devtools/shared/defer");
 
-var asyncStackEnabled =
-  Services.prefs.getBoolPref("javascript.options.asyncstack");
+var asyncStackEnabled = Services.prefs.getBoolPref(
+  "javascript.options.asyncstack"
+);
 
 registerCleanupFunction(() => {
-  Services.prefs.setBoolPref("javascript.options.asyncstack",
-                             asyncStackEnabled);
+  Services.prefs.setBoolPref(
+    "javascript.options.asyncstack",
+    asyncStackEnabled
+  );
 });
 
-add_task(async function () {
+add_task(async function() {
   Services.prefs.setBoolPref("javascript.options.asyncstack", true);
 
   await waitForTick();
@@ -40,7 +43,7 @@ add_task(async function () {
 });
 
 function waitForTick() {
-  let deferred = defer();
+  const deferred = defer();
   executeSoon(deferred.resolve);
   return deferred.promise;
 }

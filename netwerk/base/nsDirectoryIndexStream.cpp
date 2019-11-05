@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set sw=4 sts=4 et cin: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set sw=2 sts=2 et cin: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -19,8 +19,8 @@
 #include "prtime.h"
 #include "nsISimpleEnumerator.h"
 #ifdef THREADSAFE_I18N
-#include "nsCollationCID.h"
-#include "nsICollation.h"
+#  include "nsCollationCID.h"
+#  include "nsICollation.h"
 #endif
 #include "nsIFile.h"
 #include "nsURLHelper.h"
@@ -78,7 +78,7 @@ nsresult nsDirectoryIndexStream::Init(nsIFile* aDir) {
   bool isDir;
   rv = aDir->IsDirectory(&isDir);
   if (NS_FAILED(rv)) return rv;
-  NS_PRECONDITION(isDir, "not a directory");
+  MOZ_ASSERT(isDir, "not a directory");
   if (!isDir) return NS_ERROR_ILLEGAL_VALUE;
 
   if (MOZ_LOG_TEST(gLog, LogLevel::Debug)) {
@@ -89,7 +89,7 @@ nsresult nsDirectoryIndexStream::Init(nsIFile* aDir) {
 
   // Sigh. We have to allocate on the heap because there are no
   // assignment operators defined.
-  nsCOMPtr<nsISimpleEnumerator> iter;
+  nsCOMPtr<nsIDirectoryEnumerator> iter;
   rv = aDir->GetDirectoryEntries(getter_AddRefs(iter));
   if (NS_FAILED(rv)) return rv;
 
@@ -97,14 +97,9 @@ nsresult nsDirectoryIndexStream::Init(nsIFile* aDir) {
   // XXX - should we do so here, or when the first item is requested?
   // XXX - use insertion sort instead?
 
-  bool more;
-  nsCOMPtr<nsISupports> elem;
-  while (NS_SUCCEEDED(iter->HasMoreElements(&more)) && more) {
-    rv = iter->GetNext(getter_AddRefs(elem));
-    if (NS_SUCCEEDED(rv)) {
-      nsCOMPtr<nsIFile> file = do_QueryInterface(elem);
-      if (file) mArray.AppendObject(file);  // addrefs
-    }
+  nsCOMPtr<nsIFile> file;
+  while (NS_SUCCEEDED(iter->GetNextFile(getter_AddRefs(file))) && file) {
+    mArray.AppendObject(file);  // addrefs
   }
 
 #ifdef THREADSAFE_I18N

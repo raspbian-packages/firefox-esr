@@ -11,15 +11,29 @@
 #include "mozilla/dom/ServiceWorkerRegistrationBinding.h"
 #include "mozilla/dom/ServiceWorkerRegistrationDescriptor.h"
 #include "nsProxyRelease.h"
+#include "nsTObserverArray.h"
 
 namespace mozilla {
 namespace dom {
+
+class ServiceWorkerRegistrationListener;
 
 class ServiceWorkerRegistrationInfo final
     : public nsIServiceWorkerRegistrationInfo {
   nsCOMPtr<nsIPrincipal> mPrincipal;
   ServiceWorkerRegistrationDescriptor mDescriptor;
   nsTArray<nsCOMPtr<nsIServiceWorkerRegistrationInfoListener>> mListeners;
+  nsTObserverArray<ServiceWorkerRegistrationListener*> mInstanceList;
+
+  struct VersionEntry {
+    const ServiceWorkerRegistrationDescriptor mDescriptor;
+    TimeStamp mTimeStamp;
+
+    explicit VersionEntry(
+        const ServiceWorkerRegistrationDescriptor& aDescriptor)
+        : mDescriptor(aDescriptor), mTimeStamp(TimeStamp::Now()) {}
+  };
+  nsTArray<UniquePtr<VersionEntry>> mVersionList;
 
   uint32_t mControlledClientsCounter;
   uint32_t mDelayMultiplier;
@@ -44,6 +58,8 @@ class ServiceWorkerRegistrationInfo final
   // pendingUninstall and when all controlling documents go away, removed.
   bool mPendingUninstall;
 
+  bool mCorrupt;
+
  public:
   NS_DECL_ISUPPORTS
   NS_DECL_NSISERVICEWORKERREGISTRATIONINFO
@@ -51,6 +67,11 @@ class ServiceWorkerRegistrationInfo final
   ServiceWorkerRegistrationInfo(const nsACString& aScope,
                                 nsIPrincipal* aPrincipal,
                                 ServiceWorkerUpdateViaCache aUpdateViaCache);
+
+  void AddInstance(ServiceWorkerRegistrationListener* aInstance,
+                   const ServiceWorkerRegistrationDescriptor& aDescriptor);
+
+  void RemoveInstance(ServiceWorkerRegistrationListener* aInstance);
 
   const nsCString& Scope() const;
 
@@ -92,6 +113,10 @@ class ServiceWorkerRegistrationInfo final
   }
 
   void Clear();
+
+  void ClearAsCorrupt();
+
+  bool IsCorrupt() const;
 
   void TryToActivateAsync();
 
@@ -166,13 +191,23 @@ class ServiceWorkerRegistrationInfo final
 
   const ServiceWorkerRegistrationDescriptor& Descriptor() const;
 
+  uint64_t Id() const;
+
+  uint64_t Version() const;
+
   uint32_t GetUpdateDelay();
+
+  void FireUpdateFound();
+
+  void NotifyRemoved();
 
  private:
   // Roughly equivalent to [[Update Registration State algorithm]]. Make sure
   // this is called *before* updating SW instances' state, otherwise they
   // may get CC-ed.
   void UpdateRegistrationState();
+
+  void UpdateRegistrationState(ServiceWorkerUpdateViaCache aUpdateViaCache);
 
   // Used by devtools to track changes to the properties of
   // *nsIServiceWorkerRegistrationInfo*. Note, this doesn't necessarily need to
@@ -182,6 +217,8 @@ class ServiceWorkerRegistrationInfo final
   void NotifyChromeRegistrationListeners();
 
   static uint64_t GetNextId();
+
+  static uint64_t GetNextVersion();
 };
 
 }  // namespace dom

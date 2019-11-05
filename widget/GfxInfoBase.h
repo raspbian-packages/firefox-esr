@@ -68,10 +68,12 @@ class GfxInfoBase : public nsIGfxInfo,
   NS_IMETHOD GetWebRenderEnabled(bool* aWebRenderEnabled) override;
   NS_IMETHOD GetIsHeadless(bool* aIsHeadless) override;
   NS_IMETHOD GetUsesTiling(bool* aUsesTiling) override;
+  NS_IMETHOD GetContentUsesTiling(bool* aUsesTiling) override;
   NS_IMETHOD GetOffMainThreadPaintEnabled(
       bool* aOffMainThreadPaintEnabled) override;
   NS_IMETHOD GetOffMainThreadPaintWorkerCount(
       int32_t* aOffMainThreadPaintWorkerCount) override;
+  NS_IMETHOD GetTargetFrameRate(uint32_t* aTargetFrameRate) override;
 
   // Initialization function. If you override this, you must call this class's
   // version of Init first.
@@ -88,10 +90,10 @@ class GfxInfoBase : public nsIGfxInfo,
   static void AddCollector(GfxInfoCollectorBase* collector);
   static void RemoveCollector(GfxInfoCollectorBase* collector);
 
-  static nsTArray<GfxDriverInfo>* mDriverInfo;
-  static nsTArray<mozilla::dom::GfxInfoFeatureStatus>* mFeatureStatus;
-  static bool mDriverInfoObserverInitialized;
-  static bool mShutdownOccurred;
+  static nsTArray<GfxDriverInfo>* sDriverInfo;
+  static nsTArray<mozilla::dom::GfxInfoFeatureStatus>* sFeatureStatus;
+  static bool sDriverInfoObserverInitialized;
+  static bool sShutdownOccurred;
 
   virtual nsString Model() { return EmptyString(); }
   virtual nsString Hardware() { return EmptyString(); }
@@ -102,9 +104,7 @@ class GfxInfoBase : public nsIGfxInfo,
   // Convenience to get the application version
   static const nsCString& GetApplicationVersion();
 
-  virtual nsresult FindMonitors(JSContext* cx, JS::HandleObject array) {
-    return NS_ERROR_NOT_IMPLEMENTED;
-  }
+  virtual nsresult FindMonitors(JSContext* cx, JS::HandleObject array);
 
   static void SetFeatureStatus(
       const nsTArray<mozilla::dom::GfxInfoFeatureStatus>& aFS);
@@ -122,9 +122,16 @@ class GfxInfoBase : public nsIGfxInfo,
   virtual const nsTArray<GfxDriverInfo>& GetGfxDriverInfo() = 0;
 
   virtual void DescribeFeatures(JSContext* aCx, JS::Handle<JSObject*> obj);
+
+  bool DoesVendorMatch(const nsAString& aBlocklistVendor,
+                       const nsAString& aAdapterVendor);
+
+  virtual bool DoesDriverVendorMatch(const nsAString& aBlocklistVendor,
+                                     const nsAString& aDriverVendor);
+
   bool InitFeatureObject(JSContext* aCx, JS::Handle<JSObject*> aContainer,
-                         const char* aName, int32_t aFeature,
-                         const Maybe<mozilla::gfx::FeatureStatus>& aKnownStatus,
+                         const char* aName,
+                         mozilla::gfx::FeatureStatus& aKnownStatus,
                          JS::MutableHandle<JSObject*> aOutObj);
 
   NS_IMETHOD ControlGPUProcessForXPCShell(bool aEnable, bool* _retval) override;

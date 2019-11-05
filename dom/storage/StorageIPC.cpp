@@ -8,14 +8,12 @@
 
 #include "LocalStorageManager.h"
 
-#include "mozilla/dom/ContentChild.h"
-#include "mozilla/dom/ContentParent.h"
 #include "mozilla/ipc/BackgroundChild.h"
 #include "mozilla/ipc/BackgroundParent.h"
 #include "mozilla/ipc/PBackgroundChild.h"
 #include "mozilla/ipc/PBackgroundParent.h"
+#include "mozilla/dom/ContentParent.h"
 #include "mozilla/Unused.h"
-#include "nsIDiskSpaceWatcher.h"
 #include "nsThreadUtils.h"
 
 namespace mozilla {
@@ -120,13 +118,16 @@ void StorageDBChild::ReleaseIPDLReference() {
 }
 
 StorageDBChild::StorageDBChild(LocalStorageManager* aManager)
-    : mManager(aManager), mStatus(NS_OK), mIPCOpen(false) {}
+    : mManager(aManager), mStatus(NS_OK), mIPCOpen(false) {
+  MOZ_ASSERT(!NextGenLocalStorageEnabled());
+}
 
 StorageDBChild::~StorageDBChild() {}
 
 // static
 StorageDBChild* StorageDBChild::Get() {
   MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(!NextGenLocalStorageEnabled());
 
   return sStorageChild;
 }
@@ -134,6 +135,7 @@ StorageDBChild* StorageDBChild::Get() {
 // static
 StorageDBChild* StorageDBChild::GetOrCreate() {
   MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(!NextGenLocalStorageEnabled());
 
   if (sStorageChild || sStorageChildDown) {
     // When sStorageChildDown is at true, sStorageChild is null.
@@ -400,6 +402,56 @@ StorageDBChild::ShutdownObserver::Observe(nsISupports* aSubject,
   return NS_OK;
 }
 
+SessionStorageObserverChild::SessionStorageObserverChild(
+    SessionStorageObserver* aObserver)
+    : mObserver(aObserver) {
+  AssertIsOnOwningThread();
+  MOZ_ASSERT(NextGenLocalStorageEnabled());
+  MOZ_ASSERT(aObserver);
+  aObserver->AssertIsOnOwningThread();
+
+  MOZ_COUNT_CTOR(SessionStorageObserverChild);
+}
+
+SessionStorageObserverChild::~SessionStorageObserverChild() {
+  AssertIsOnOwningThread();
+
+  MOZ_COUNT_DTOR(SessionStorageObserverChild);
+}
+
+void SessionStorageObserverChild::SendDeleteMeInternal() {
+  AssertIsOnOwningThread();
+
+  if (mObserver) {
+    mObserver->ClearActor();
+    mObserver = nullptr;
+
+    // Don't check result here since IPC may no longer be available due to
+    // SessionStorageManager (which holds a strong reference to
+    // SessionStorageObserver) being destroyed very late in the game.
+    PSessionStorageObserverChild::SendDeleteMe();
+  }
+}
+
+void SessionStorageObserverChild::ActorDestroy(ActorDestroyReason aWhy) {
+  AssertIsOnOwningThread();
+
+  if (mObserver) {
+    mObserver->ClearActor();
+    mObserver = nullptr;
+  }
+}
+
+mozilla::ipc::IPCResult SessionStorageObserverChild::RecvObserve(
+    const nsCString& aTopic, const nsString& aOriginAttributesPattern,
+    const nsCString& aOriginScope) {
+  AssertIsOnOwningThread();
+
+  StorageObserver::Self()->Notify(aTopic.get(), aOriginAttributesPattern,
+                                  aOriginScope);
+  return IPC_OK();
+}
+
 LocalStorageCacheParent::LocalStorageCacheParent(
     const PrincipalInfo& aPrincipalInfo, const nsACString& aOriginKey,
     uint32_t aPrivateBrowsingId)
@@ -522,60 +574,7 @@ void StorageDBParent::ReleaseIPDLReference() {
   Release();
 }
 
-namespace {
-
-class CheckLowDiskSpaceRunnable : public Runnable {
-  nsCOMPtr<nsIEventTarget> mOwningEventTarget;
-  RefPtr<StorageDBParent> mParent;
-  bool mLowDiskSpace;
-
- public:
-  explicit CheckLowDiskSpaceRunnable(StorageDBParent* aParent)
-      : Runnable("dom::CheckLowDiskSpaceRunnable"),
-        mOwningEventTarget(GetCurrentThreadEventTarget()),
-        mParent(aParent),
-        mLowDiskSpace(false) {
-    AssertIsOnBackgroundThread();
-    MOZ_ASSERT(aParent);
-  }
-
- private:
-  NS_IMETHOD Run() override {
-    if (IsOnBackgroundThread()) {
-      MOZ_ASSERT(mParent);
-
-      if (!mParent->IPCOpen()) {
-        return NS_OK;
-      }
-
-      if (mLowDiskSpace) {
-        mozilla::Unused << mParent->SendObserve(
-            nsDependentCString("low-disk-space"), EmptyString(),
-            EmptyCString());
-      }
-
-      mParent = nullptr;
-
-      return NS_OK;
-    }
-
-    MOZ_ASSERT(NS_IsMainThread());
-
-    nsCOMPtr<nsIDiskSpaceWatcher> diskSpaceWatcher =
-        do_GetService("@mozilla.org/toolkit/disk-space-watcher;1");
-    if (!diskSpaceWatcher) {
-      return NS_OK;
-    }
-
-    diskSpaceWatcher->GetIsDiskFull(&mLowDiskSpace);
-
-    MOZ_ALWAYS_SUCCEEDS(mOwningEventTarget->Dispatch(this, NS_DISPATCH_NORMAL));
-
-    return NS_OK;
-  }
-};
-
-}  // namespace
+namespace {}  // namespace
 
 StorageDBParent::StorageDBParent(const nsString& aProfilePath)
     : mProfilePath(aProfilePath), mIPCOpen(false) {
@@ -611,14 +610,6 @@ void StorageDBParent::Init() {
     storageThread->GetOriginsHavingData(&scopes);
     mozilla::Unused << SendOriginsHavingData(scopes);
   }
-
-  // We need to check if the device is in a low disk space situation, so
-  // we can forbid in that case any write in localStorage.
-
-  RefPtr<CheckLowDiskSpaceRunnable> runnable =
-      new CheckLowDiskSpaceRunnable(this);
-
-  MOZ_ALWAYS_SUCCEEDS(NS_DispatchToMainThread(runnable));
 }
 
 StorageDBParent::CacheParentBridge* StorageDBParent::NewCache(
@@ -915,7 +906,8 @@ class LoadRunnable : public Runnable {
         mSuffix(aOriginSuffix),
         mOrigin(aOriginNoSuffix),
         mKey(aKey),
-        mValue(aValue) {}
+        mValue(aValue),
+        mRv(NS_ERROR_NOT_INITIALIZED) {}
 
   LoadRunnable(StorageDBParent* aParent, TaskType aType,
                const nsACString& aOriginSuffix,
@@ -1166,6 +1158,56 @@ nsresult StorageDBParent::ObserverSink::Observe(
   return NS_OK;
 }
 
+SessionStorageObserverParent::SessionStorageObserverParent()
+    : mActorDestroyed(false) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  StorageObserver* observer = StorageObserver::Self();
+  if (observer) {
+    observer->AddSink(this);
+  }
+}
+
+SessionStorageObserverParent::~SessionStorageObserverParent() {
+  MOZ_ASSERT(mActorDestroyed);
+
+  StorageObserver* observer = StorageObserver::Self();
+  if (observer) {
+    observer->RemoveSink(this);
+  }
+}
+
+void SessionStorageObserverParent::ActorDestroy(ActorDestroyReason aWhy) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(!mActorDestroyed);
+
+  mActorDestroyed = true;
+}
+
+mozilla::ipc::IPCResult SessionStorageObserverParent::RecvDeleteMe() {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(!mActorDestroyed);
+
+  IProtocol* mgr = Manager();
+  if (!PSessionStorageObserverParent::Send__delete__(this)) {
+    return IPC_FAIL_NO_REASON(mgr);
+  }
+  return IPC_OK();
+}
+
+nsresult SessionStorageObserverParent::Observe(
+    const char* aTopic, const nsAString& aOriginAttributesPattern,
+    const nsACString& aOriginScope) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  if (!mActorDestroyed) {
+    mozilla::Unused << SendObserve(nsCString(aTopic),
+                                   nsString(aOriginAttributesPattern),
+                                   nsCString(aOriginScope));
+  }
+  return NS_OK;
+}
+
 /*******************************************************************************
  * Exported functions
  ******************************************************************************/
@@ -1245,6 +1287,36 @@ bool DeallocPBackgroundStorageParent(PBackgroundStorageParent* aActor) {
 
   StorageDBParent* actor = static_cast<StorageDBParent*>(aActor);
   actor->ReleaseIPDLReference();
+  return true;
+}
+
+PSessionStorageObserverParent* AllocPSessionStorageObserverParent() {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  RefPtr<SessionStorageObserverParent> actor =
+      new SessionStorageObserverParent();
+
+  // Transfer ownership to IPDL.
+  return actor.forget().take();
+}
+
+bool RecvPSessionStorageObserverConstructor(
+    PSessionStorageObserverParent* aActor) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aActor);
+
+  return true;
+}
+
+bool DeallocPSessionStorageObserverParent(
+    PSessionStorageObserverParent* aActor) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aActor);
+
+  // Transfer ownership back from IPDL.
+  RefPtr<SessionStorageObserverParent> actor =
+      dont_AddRef(static_cast<SessionStorageObserverParent*>(aActor));
+
   return true;
 }
 

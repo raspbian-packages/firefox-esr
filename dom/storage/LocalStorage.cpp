@@ -15,15 +15,12 @@
 #include "nsIPrincipal.h"
 #include "nsICookiePermission.h"
 
-#include "mozilla/dom/ContentChild.h"
-#include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/PermissionMessageUtils.h"
 #include "mozilla/dom/StorageBinding.h"
 #include "mozilla/dom/StorageEvent.h"
 #include "mozilla/dom/StorageEventBinding.h"
 #include "mozilla/ipc/BackgroundChild.h"
 #include "mozilla/ipc/PBackgroundChild.h"
-#include "mozilla/Services.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/EnumSet.h"
 #include "nsThreadUtils.h"
@@ -36,7 +33,15 @@ using namespace ipc;
 
 namespace dom {
 
-NS_IMPL_CYCLE_COLLECTION_INHERITED(LocalStorage, Storage, mManager);
+NS_IMPL_CYCLE_COLLECTION_CLASS(LocalStorage)
+NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(LocalStorage, Storage)
+  NS_IMPL_CYCLE_COLLECTION_UNLINK(mManager)
+NS_IMPL_CYCLE_COLLECTION_UNLINK_END
+NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(LocalStorage, Storage)
+  CycleCollectionNoteChild(
+      cb, NS_ISUPPORTS_CAST(nsIDOMStorageManager*, tmp->mManager.get()),
+      "mManager");
+NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(LocalStorage)
   NS_INTERFACE_MAP_ENTRY(nsISupportsWeakReference)
@@ -49,8 +54,9 @@ LocalStorage::LocalStorage(nsPIDOMWindowInner* aWindow,
                            LocalStorageManager* aManager,
                            LocalStorageCache* aCache,
                            const nsAString& aDocumentURI,
-                           nsIPrincipal* aPrincipal, bool aIsPrivate)
-    : Storage(aWindow, aPrincipal),
+                           nsIPrincipal* aPrincipal,
+                           nsIPrincipal* aStoragePrincipal, bool aIsPrivate)
+    : Storage(aWindow, aPrincipal, aStoragePrincipal),
       mManager(aManager),
       mCache(aCache),
       mDocumentURI(aDocumentURI),
@@ -158,9 +164,9 @@ void LocalStorage::Clear(nsIPrincipal& aSubjectPrincipal, ErrorResult& aRv) {
 
 void LocalStorage::OnChange(const nsAString& aKey, const nsAString& aOldValue,
                             const nsAString& aNewValue) {
-  NotifyChange(/* aStorage */ this, Principal(), aKey, aOldValue, aNewValue,
-               /* aStorageType */ u"localStorage", mDocumentURI, mIsPrivate,
-               /* aImmediateDispatch */ false);
+  NotifyChange(/* aStorage */ this, StoragePrincipal(), aKey, aOldValue,
+               aNewValue, /* aStorageType */ u"localStorage", mDocumentURI,
+               mIsPrivate, /* aImmediateDispatch */ false);
 }
 
 void LocalStorage::ApplyEvent(StorageEvent* aStorageEvent) {
@@ -188,10 +194,6 @@ void LocalStorage::ApplyEvent(StorageEvent* aStorageEvent) {
 
   // Otherwise, we set the new value.
   mCache->SetItem(this, key, value, old, LocalStorageCache::E10sPropagated);
-}
-
-bool LocalStorage::PrincipalEquals(nsIPrincipal* aPrincipal) {
-  return StorageUtils::PrincipalsEqual(mPrincipal, aPrincipal);
 }
 
 void LocalStorage::GetSupportedNames(nsTArray<nsString>& aKeys) {

@@ -23,17 +23,17 @@ using namespace mozilla::a11y;
 // HTMLHRAccessible
 ////////////////////////////////////////////////////////////////////////////////
 
-role HTMLHRAccessible::NativeRole() { return roles::SEPARATOR; }
+role HTMLHRAccessible::NativeRole() const { return roles::SEPARATOR; }
 
 ////////////////////////////////////////////////////////////////////////////////
 // HTMLBRAccessible
 ////////////////////////////////////////////////////////////////////////////////
 
-role HTMLBRAccessible::NativeRole() { return roles::WHITESPACE; }
+role HTMLBRAccessible::NativeRole() const { return roles::WHITESPACE; }
 
-uint64_t HTMLBRAccessible::NativeState() { return states::READONLY; }
+uint64_t HTMLBRAccessible::NativeState() const { return states::READONLY; }
 
-ENameValueFlag HTMLBRAccessible::NativeName(nsString& aName) {
+ENameValueFlag HTMLBRAccessible::NativeName(nsString& aName) const {
   aName = static_cast<char16_t>('\n');  // Newline char
   return eNameOK;
 }
@@ -42,22 +42,22 @@ ENameValueFlag HTMLBRAccessible::NativeName(nsString& aName) {
 // HTMLLabelAccessible
 ////////////////////////////////////////////////////////////////////////////////
 
-ENameValueFlag HTMLLabelAccessible::NativeName(nsString& aName) {
+ENameValueFlag HTMLLabelAccessible::NativeName(nsString& aName) const {
   nsTextEquivUtils::GetNameFromSubtree(this, aName);
   return aName.IsEmpty() ? eNameOK : eNameFromSubtree;
 }
 
-Relation HTMLLabelAccessible::RelationByType(RelationType aType) {
+Relation HTMLLabelAccessible::RelationByType(RelationType aType) const {
   Relation rel = AccessibleWrap::RelationByType(aType);
   if (aType == RelationType::LABEL_FOR) {
-    dom::HTMLLabelElement* label = dom::HTMLLabelElement::FromContent(mContent);
+    dom::HTMLLabelElement* label = dom::HTMLLabelElement::FromNode(mContent);
     rel.AppendTarget(mDoc, label->GetControl());
   }
 
   return rel;
 }
 
-uint8_t HTMLLabelAccessible::ActionCount() {
+uint8_t HTMLLabelAccessible::ActionCount() const {
   return nsCoreUtils::IsLabelWithControl(mContent) ? 1 : 0;
 }
 
@@ -67,7 +67,7 @@ void HTMLLabelAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
   }
 }
 
-bool HTMLLabelAccessible::DoAction(uint8_t aIndex) {
+bool HTMLLabelAccessible::DoAction(uint8_t aIndex) const {
   if (aIndex != 0) return false;
 
   DoCommand();
@@ -78,7 +78,7 @@ bool HTMLLabelAccessible::DoAction(uint8_t aIndex) {
 // nsHTMLOuputAccessible
 ////////////////////////////////////////////////////////////////////////////////
 
-Relation HTMLOutputAccessible::RelationByType(RelationType aType) {
+Relation HTMLOutputAccessible::RelationByType(RelationType aType) const {
   Relation rel = AccessibleWrap::RelationByType(aType);
   if (aType == RelationType::CONTROLLED_BY)
     rel.AppendIter(new IDRefsIterator(mDoc, mContent, nsGkAtoms::_for));
@@ -96,7 +96,7 @@ HTMLSummaryAccessible::HTMLSummaryAccessible(nsIContent* aContent,
   mGenericTypes |= eButton;
 }
 
-uint8_t HTMLSummaryAccessible::ActionCount() { return 1; }
+uint8_t HTMLSummaryAccessible::ActionCount() const { return 1; }
 
 void HTMLSummaryAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
   if (aIndex != eAction_Click) {
@@ -104,7 +104,7 @@ void HTMLSummaryAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
   }
 
   dom::HTMLSummaryElement* summary =
-      dom::HTMLSummaryElement::FromContent(mContent);
+      dom::HTMLSummaryElement::FromNode(mContent);
   if (!summary) {
     return;
   }
@@ -121,18 +121,18 @@ void HTMLSummaryAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
   }
 }
 
-bool HTMLSummaryAccessible::DoAction(uint8_t aIndex) {
+bool HTMLSummaryAccessible::DoAction(uint8_t aIndex) const {
   if (aIndex != eAction_Click) return false;
 
   DoCommand();
   return true;
 }
 
-uint64_t HTMLSummaryAccessible::NativeState() {
+uint64_t HTMLSummaryAccessible::NativeState() const {
   uint64_t state = HyperTextAccessibleWrap::NativeState();
 
   dom::HTMLSummaryElement* summary =
-      dom::HTMLSummaryElement::FromContent(mContent);
+      dom::HTMLSummaryElement::FromNode(mContent);
   if (!summary) {
     return state;
   }
@@ -160,7 +160,7 @@ bool HTMLSummaryAccessible::IsWidget() const { return true; }
 // HTMLHeaderOrFooterAccessible
 ////////////////////////////////////////////////////////////////////////////////
 
-role HTMLHeaderOrFooterAccessible::NativeRole() {
+role HTMLHeaderOrFooterAccessible::NativeRole() const {
   // Only map header and footer if they are direct descendants of the body tag.
   // If other sectioning or sectioning root elements, they become sections.
   nsIContent* parent = mContent->GetParent();
@@ -177,13 +177,7 @@ role HTMLHeaderOrFooterAccessible::NativeRole() {
 
   // No sectioning or sectioning root elements found.
   if (!parent) {
-    if (mContent->IsHTMLElement(nsGkAtoms::header)) {
-      return roles::HEADER;
-    }
-
-    if (mContent->IsHTMLElement(nsGkAtoms::footer)) {
-      return roles::FOOTER;
-    }
+    return roles::LANDMARK;
   }
 
   return roles::SECTION;
@@ -193,13 +187,36 @@ nsAtom* HTMLHeaderOrFooterAccessible::LandmarkRole() const {
   if (!HasOwnContent()) return nullptr;
 
   a11y::role r = const_cast<HTMLHeaderOrFooterAccessible*>(this)->Role();
-  if (r == roles::HEADER) {
-    return nsGkAtoms::banner;
-  }
+  if (r == roles::LANDMARK) {
+    if (mContent->IsHTMLElement(nsGkAtoms::header)) {
+      return nsGkAtoms::banner;
+    }
 
-  if (r == roles::FOOTER) {
-    return nsGkAtoms::contentinfo;
+    if (mContent->IsHTMLElement(nsGkAtoms::footer)) {
+      return nsGkAtoms::contentinfo;
+    }
   }
 
   return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// HTMLSectionAccessible
+////////////////////////////////////////////////////////////////////////////////
+
+role HTMLSectionAccessible::NativeRole() const {
+  nsAutoString name;
+  const_cast<HTMLSectionAccessible*>(this)->Name(name);
+  return name.IsEmpty() ? roles::SECTION : roles::REGION;
+}
+
+nsAtom* HTMLSectionAccessible::LandmarkRole() const {
+  if (!HasOwnContent()) {
+    return nullptr;
+  }
+
+  // Only return xml-roles "region" if the section has an accessible name.
+  nsAutoString name;
+  const_cast<HTMLSectionAccessible*>(this)->Name(name);
+  return name.IsEmpty() ? nullptr : nsGkAtoms::region;
 }

@@ -12,19 +12,20 @@
 #include "nsIAnonymousContentCreator.h"
 
 namespace mozilla {
-enum class CSSPseudoElementType : uint8_t;
+enum class PseudoStyleType : uint8_t;
+class PresShell;
 }  // namespace mozilla
 
 // Class which implements the input type=color
 
 class nsColorControlFrame final : public nsHTMLButtonControlFrame,
                                   public nsIAnonymousContentCreator {
-  typedef mozilla::CSSPseudoElementType CSSPseudoElementType;
+  typedef mozilla::PseudoStyleType PseudoStyleType;
   typedef mozilla::dom::Element Element;
 
  public:
-  friend nsIFrame* NS_NewColorControlFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext);
+  friend nsIFrame* NS_NewColorControlFrame(mozilla::PresShell* aPresShell,
+                                           ComputedStyle* aStyle);
 
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
@@ -47,13 +48,12 @@ class nsColorControlFrame final : public nsHTMLButtonControlFrame,
                                     int32_t aModType) override;
   virtual nsContainerFrame* GetContentInsertionFrame() override;
 
-  virtual Element* GetPseudoElement(CSSPseudoElementType aType) override;
-
   // Refresh the color swatch, using associated input's value
   nsresult UpdateColor();
 
  private:
-  explicit nsColorControlFrame(nsStyleContext* aContext);
+  explicit nsColorControlFrame(ComputedStyle* aStyle,
+                               nsPresContext* aPresContext);
 
   nsCOMPtr<Element> mColorContent;
 };

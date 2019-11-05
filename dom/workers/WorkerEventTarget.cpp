@@ -83,13 +83,13 @@ WorkerEventTarget::DispatchFromScript(nsIRunnable* aRunnable, uint32_t aFlags) {
 NS_IMETHODIMP
 WorkerEventTarget::Dispatch(already_AddRefed<nsIRunnable> aRunnable,
                             uint32_t aFlags) {
+  nsCOMPtr<nsIRunnable> runnable(aRunnable);
+
   MutexAutoLock lock(mMutex);
 
   if (!mWorkerPrivate) {
     return NS_ERROR_FAILURE;
   }
-
-  nsCOMPtr<nsIRunnable> runnable(aRunnable);
 
   if (mBehavior == Behavior::Hybrid) {
     RefPtr<WorkerRunnable> r =

@@ -8,7 +8,6 @@
 #include "mozilla/TextEventDispatcher.h"
 #include "nsIDocShell.h"
 #include "nsIFrame.h"
-#include "nsIPresShell.h"
 #include "nsIWidget.h"
 #include "nsPIDOMWindow.h"
 #include "nsView.h"
@@ -38,12 +37,12 @@ TextEventDispatcher::TextEventDispatcher(nsIWidget* aWidget)
   if (!sInitialized) {
     Preferences::AddBoolVarCache(
         &sDispatchKeyEventsDuringComposition,
-        "dom.keyboardevent.dispatch_during_composition", false);
+        "dom.keyboardevent.dispatch_during_composition", true);
     Preferences::AddBoolVarCache(
         &sDispatchKeyPressEventsOnlySystemGroupInContent,
         "dom.keyboardevent.keypress."
         "dispatch_non_printable_keys_only_system_group_in_content",
-        false);
+        true);
     sInitialized = true;
   }
 
@@ -385,6 +384,9 @@ nsresult TextEventDispatcher::CommitComposition(
   }
   if (message == eCompositionCommit) {
     compositionCommitEvent.mData = *aCommitString;
+    // If aCommitString comes from TextInputProcessor, it may be void, but
+    // editor requires non-void string even when it's empty.
+    compositionCommitEvent.mData.SetIsVoid(false);
     // Don't send CRLF nor CR, replace it with LF here.
     compositionCommitEvent.mData.ReplaceSubstring(NS_LITERAL_STRING("\r\n"),
                                                   NS_LITERAL_STRING("\n"));
@@ -552,12 +554,21 @@ bool TextEventDispatcher::DispatchKeyboardEventInternal(
   WidgetKeyboardEvent keyEvent(true, aMessage, mWidget);
   InitEvent(keyEvent);
   keyEvent.AssignKeyEventData(aKeyboardEvent, false);
+  // Command arrays are not duplicated by AssignKeyEventData() due to
+  // both performance and footprint reasons.  So, when TextInputProcessor
+  // emulates real text input, the arrays may be initialized all commands
+  // already.  If so, we need to duplicate the arrays here.
+  if (keyEvent.mIsSynthesizedByTIP) {
+    keyEvent.AssignCommands(aKeyboardEvent);
+  }
 
   if (aStatus == nsEventStatus_eConsumeNoDefault) {
     // If the key event should be dispatched as consumed event, marking it here.
-    // This is useful to prevent double action.  E.g., when the key was already
-    // handled by system, our chrome shouldn't handle it.
-    keyEvent.PreventDefaultBeforeDispatch();
+    // This is useful to prevent double action.  This is intended to the system
+    // has already consumed the event but we need to dispatch the event for
+    // compatibility with older version and other browsers.  So, we should not
+    // stop cross process forwarding of them.
+    keyEvent.PreventDefaultBeforeDispatch(CrossProcessForwarding::eAllow);
   }
 
   // Corrects each member for the specific key event type.
@@ -650,6 +661,8 @@ bool TextEventDispatcher::DispatchKeyboardEventInternal(
   if (sDispatchKeyPressEventsOnlySystemGroupInContent &&
       keyEvent.mMessage == eKeyPress &&
       !keyEvent.ShouldKeyPressEventBeFiredOnContent()) {
+    // Note that even if we set it to true, this may be overwritten by
+    // PresShell::DispatchEventToDOM().
     keyEvent.mFlags.mOnlySystemGroupDispatchInContent = true;
   }
 
@@ -897,6 +910,9 @@ nsresult TextEventDispatcher::PendingComposition::Flush(
     compChangeEvent.AssignEventTime(*aEventTime);
   }
   compChangeEvent.mData = mString;
+  // If mString comes from TextInputProcessor, it may be void, but editor
+  // requires non-void string even when it's empty.
+  compChangeEvent.mData.SetIsVoid(false);
   if (mClauses) {
     MOZ_ASSERT(!mClauses->IsEmpty(),
                "mClauses must be non-empty array when it's not nullptr");

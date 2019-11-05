@@ -10,7 +10,7 @@ use util::io_err;
 use log;
 
 fn trace_hex(data: &[u8]) {
-    if log_enabled!(log::LogLevel::Trace) {
+    if log_enabled!(log::Level::Trace) {
         let parts: Vec<String> = data.iter().map(|byte| format!("{:02x}", byte)).collect();
         trace!("USB send: {}", parts.join(""));
     }
@@ -167,7 +167,7 @@ impl U2FHIDInitResp {
 pub struct U2FAPDUHeader {}
 
 impl U2FAPDUHeader {
-    pub fn to_bytes(ins: u8, p1: u8, data: &[u8]) -> io::Result<Vec<u8>> {
+    pub fn serialize(ins: u8, p1: u8, data: &[u8]) -> io::Result<Vec<u8>> {
         if data.len() > 0xffff {
             return Err(io_err("payload length > 2^16"));
         }

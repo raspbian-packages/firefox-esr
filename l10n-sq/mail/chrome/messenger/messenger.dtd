@@ -36,6 +36,12 @@
 <!ENTITY newFeedAccountCmd.accesskey "P">
 <!ENTITY newIMContactCmd.label "Kontakt Fjalosjeje…">
 <!ENTITY newIMContactCmd.accesskey "K">
+<!ENTITY  newMessageCmd2.key "N">
+<!ENTITY  newMessageCmd.key "M">
+<!ENTITY  newMessageCmd.label "Mesazh">
+<!ENTITY  newMessageCmd.accesskey "m">
+<!ENTITY  newContactCmd.label "Kontakt nga Libri i Adresave…">
+<!ENTITY  newContactCmd.accesskey "K">
 <!ENTITY openMessageFileCmd.label "Hapni Mesazh të Ruajtur…">
 <!ENTITY openMessageFileCmd.accesskey "H">
 <!ENTITY saveAsMenu.label "Ruaje Si">
@@ -434,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Hape Mesazhin">
 <!ENTITY openMessageWindowCmd.accesskey "H">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Hape si Bisedë">
-<!ENTITY openConversationCmd.accesskey "B">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Hape si Bisedë">
+<!ENTITY openInConversationCmd.accesskey "d">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Bashkëngjitje">
 <!ENTITY openAttachmentListCmd.accesskey "h">
 <!ENTITY openFeedMessage1.label "Kur Hapen Mesazhe Prurjeje">
@@ -509,8 +515,6 @@
 <!ENTITY devToolboxCmd.label "Grup Mjetesh Zhvilluesi">
 <!ENTITY devToolboxCmd.accesskey "G">
 <!ENTITY devToolboxCmd.commandkey "i">
-<!ENTITY addonDebugCmd.label "Diagnostikues Shtesash">
-<!ENTITY addonDebugCmd.accesskey "S">
 <!ENTITY debugAddonsCmd.label "Diagnostikoni Shtesa">
 <!ENTITY debugAddonsCmd.accesskey "D">
 <!ENTITY tabsDebugCmd.label "Diagnostikues Lënde Kuadri">
@@ -602,6 +606,8 @@
 <!ENTITY compactButton.tooltip "Hiqini mesazhet e fshirë prej dosjes së përzgjedhur">
 <!ENTITY appmenuButton1.tooltip "Shfaq Menunë e &brandShortName;-it">
 
+<!ENTITY addonsButton.tooltip "Administroni shtesat tuaja">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Përcille Brendazi">
 <!ENTITY buttonMenuForwardAsAttachment.label "Përcille Si Bashkëngjitje">
@@ -645,6 +651,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Merr Mesazhet">
 <!ENTITY folderContextGetMessages.accesskey "M">
+<!ENTITY folderContextMarkAllFoldersRead.label "Vëru Shenjë Krejt Dosjeve Si të Lexuara">
 <!ENTITY folderContextPauseAllUpdates.label "Ndali Krejt Përditësimet">
 <!ENTITY folderContextPauseUpdates.label "Ndali Përditësimet">
 <!ENTITY folderContextPauseUpdates.accesskey "N">
@@ -787,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "e">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Së Fundi">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "F">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Më të pëlqyerit">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "p">
 <!ENTITY contextCopyMsgMenu.label "Kopjoje Te">
 <!ENTITY contextCopyMsgMenu.accesskey "K">
 <!ENTITY contextKillThreadMenu.label "Shpërfille Rrjedhën">
@@ -806,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Paraparje e Shtypjes">
 <!ENTITY contextPrintPreview.accesskey "a">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Ktheji shtyllat te parazgjedhjet">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -852,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "Këtë dosje">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Luaje">
 <!ENTITY contextPlay.accesskey "L">
@@ -870,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

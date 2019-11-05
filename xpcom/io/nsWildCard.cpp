@@ -141,7 +141,7 @@ int NS_WildCardValid(const char* aExpr) { return NS_WildCardValid_(aExpr); }
 
 int NS_WildCardValid(const char16_t* aExpr) { return NS_WildCardValid_(aExpr); }
 
-  /* ----------------------------- _shexp_match ----------------------------- */
+/* ----------------------------- _shexp_match ----------------------------- */
 
 #define MATCH 0
 #define NOMATCH 1
@@ -213,9 +213,6 @@ static int _handle_union(const T* aStr, const T* aExpr, bool aCaseInsensitive,
   }
   ++cp; /* now index of char after closing parenthesis */
   e2 = (T*)moz_xmalloc((1 + nsCharTraits<T>::length(aExpr)) * sizeof(T));
-  if (!e2) {
-    return ABORTED;
-  }
   for (sx = 1;; ++sx) {
     /* Here, aExpr[sx] is one character past the preceding '(' or '|'. */
     /* Copy everything up to the next delimiter to e2 */
@@ -392,9 +389,6 @@ static int ns_WildCardMatch(const T* aStr, const T* aXp,
   }
 
   expr = (T*)moz_xmalloc((nsCharTraits<T>::length(aXp) + 1) * sizeof(T));
-  if (!expr) {
-    return NOMATCH;
-  }
   memcpy(expr, aXp, (nsCharTraits<T>::length(aXp) + 1) * sizeof(T));
 
   int x = ::_scan_and_copy(expr, T('~'), T('\0'), static_cast<T*>(nullptr));

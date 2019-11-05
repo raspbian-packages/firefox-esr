@@ -4,14 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#ifdef MOZ_NEW_CERT_STORAGE
+#  include "cert_storage/src/cert_storage.h"
+#endif
 #include "CSTrustDomain.h"
 #include "mozilla/Base64.h"
 #include "mozilla/Preferences.h"
+#ifdef MOZ_NEW_CERT_STORAGE
+#  include "nsDirectoryServiceUtils.h"
+#endif
 #include "nsNSSCertificate.h"
 #include "nsNSSComponent.h"
+#include "NSSCertDBTrustDomain.h"
 #include "nsServiceManagerUtils.h"
 #include "nsThreadUtils.h"
-#include "pkix/pkixnss.h"
+#include "mozpkix/pkixnss.h"
 
 using namespace mozilla::pkix;
 
@@ -23,7 +30,11 @@ static LazyLogModule gTrustDomainPRLog("CSTrustDomain");
 
 CSTrustDomain::CSTrustDomain(UniqueCERTCertList& certChain)
     : mCertChain(certChain),
+#ifdef MOZ_NEW_CERT_STORAGE
+      mCertBlocklist(do_GetService(NS_CERT_STORAGE_CID)) {}
+#else
       mCertBlocklist(do_GetService(NS_CERTBLOCKLIST_CONTRACTID)) {}
+#endif
 
 Result CSTrustDomain::GetCertTrust(EndEntityOrCA endEntityOrCA,
                                    const CertPolicyId& policy,
@@ -41,18 +52,45 @@ Result CSTrustDomain::GetCertTrust(EndEntityOrCA endEntityOrCA,
     return MapPRErrorCodeToResult(PR_GetError());
   }
 
-  bool isCertRevoked;
-  nsresult nsrv = mCertBlocklist->IsCertRevoked(
-      candidateCert->derIssuer.data, candidateCert->derIssuer.len,
-      candidateCert->serialNumber.data, candidateCert->serialNumber.len,
-      candidateCert->derSubject.data, candidateCert->derSubject.len,
-      candidateCert->derPublicKey.data, candidateCert->derPublicKey.len,
-      &isCertRevoked);
+#ifdef MOZ_NEW_CERT_STORAGE
+  nsTArray<uint8_t> issuerBytes;
+  nsTArray<uint8_t> serialBytes;
+  nsTArray<uint8_t> subjectBytes;
+  nsTArray<uint8_t> pubKeyBytes;
+
+  nsresult nsrv = BuildRevocationCheckArrays(
+      candidateCert, issuerBytes, serialBytes, subjectBytes, pubKeyBytes);
+#else
+  nsAutoCString encIssuer;
+  nsAutoCString encSerial;
+  nsAutoCString encSubject;
+  nsAutoCString encPubKey;
+
+  nsresult nsrv = BuildRevocationCheckStrings(candidateCert.get(), encIssuer,
+                                              encSerial, encSubject, encPubKey);
+#endif
   if (NS_FAILED(nsrv)) {
     return Result::FATAL_ERROR_LIBRARY_FAILURE;
   }
 
+#ifdef MOZ_NEW_CERT_STORAGE
+  int16_t revocationState;
+  nsrv = mCertBlocklist->GetRevocationState(
+      issuerBytes, serialBytes, subjectBytes, pubKeyBytes, &revocationState);
+#else
+  bool isCertRevoked;
+  nsrv = mCertBlocklist->IsCertRevoked(encIssuer, encSerial, encSubject,
+                                       encPubKey, &isCertRevoked);
+#endif
+  if (NS_FAILED(nsrv)) {
+    return Result::FATAL_ERROR_LIBRARY_FAILURE;
+  }
+
+#ifdef MOZ_NEW_CERT_STORAGE
+  if (revocationState == nsICertStorage::STATE_ENFORCE) {
+#else
   if (isCertRevoked) {
+#endif
     CSTrust_LOG(("CSTrustDomain: certificate is revoked\n"));
     return Result::ERROR_REVOKED_CERTIFICATE;
   }
@@ -63,7 +101,7 @@ Result CSTrustDomain::GetCertTrust(EndEntityOrCA endEntityOrCA,
   if (!component) {
     return Result::FATAL_ERROR_LIBRARY_FAILURE;
   }
-  nsrv = component->IsCertContentSigningRoot(candidateCert.get(), isRoot);
+  nsrv = component->IsCertContentSigningRoot(candidateCert.get(), &isRoot);
   if (NS_FAILED(nsrv)) {
     return Result::FATAL_ERROR_LIBRARY_FAILURE;
   }

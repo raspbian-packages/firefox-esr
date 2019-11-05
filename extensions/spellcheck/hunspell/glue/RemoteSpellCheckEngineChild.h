@@ -19,11 +19,10 @@ class RemoteSpellcheckEngineChild
   explicit RemoteSpellcheckEngineChild(mozSpellChecker* aOwner);
   virtual ~RemoteSpellcheckEngineChild();
 
-  virtual mozilla::ipc::IPCResult RecvNotifyOfCurrentDictionary(
-      const nsString& aDictionary, const intptr_t& aPromiseId) override;
-
   RefPtr<GenericPromise> SetCurrentDictionaryFromList(
       const nsTArray<nsString>& aList);
+
+  RefPtr<CheckWordPromise> CheckWords(const nsTArray<nsString>& aWords);
 
  private:
   mozSpellChecker* mOwner;

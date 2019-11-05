@@ -34,8 +34,8 @@ typedef mozilla::dom::Element nsStyledElementBase;
 class nsStyledElement : public nsStyledElementBase {
  protected:
   inline explicit nsStyledElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsStyledElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsStyledElementBase(std::move(aNodeInfo)) {}
 
  public:
   // We don't want to implement AddRef/Release because that would add an extra
@@ -44,9 +44,11 @@ class nsStyledElement : public nsStyledElementBase {
   NS_IMETHOD QueryInterface(REFNSIID aIID, void** aInstancePtr) override;
 
   // Element interface methods
+  virtual void InlineStyleDeclarationWillChange(
+      mozilla::MutationClosureData& aData) override;
   virtual nsresult SetInlineStyleDeclaration(
-      mozilla::DeclarationBlock* aDeclaration, const nsAString* aSerialized,
-      bool aNotify) override;
+      mozilla::DeclarationBlock& aDeclaration,
+      mozilla::MutationClosureData& aData) override;
 
   nsICSSDeclaration* Style();
 
@@ -86,7 +88,7 @@ class nsStyledElement : public nsStyledElementBase {
   nsresult ReparseStyleAttribute(bool aForceInDataDoc,
                                  bool aForceIfAlreadyParsed);
 
-  virtual void NodeInfoChanged(nsIDocument* aOldDoc) override;
+  virtual void NodeInfoChanged(mozilla::dom::Document* aOldDoc) override;
 
   virtual nsresult BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
                                  const nsAttrValueOrString* aValue,

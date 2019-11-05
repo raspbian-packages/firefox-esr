@@ -6,7 +6,7 @@
 <!ENTITY fromField4.label "Nga ">
 <!ENTITY senderField4.label "Dërgues ">
 <!ENTITY author.label "Autor">
-<!ENTITY organizationField4.label "Organizëm ">
+<!ENTITY organizationField4.label "Ent">
 <!ENTITY replyToField4.label "Përgjigjuni te ">
 
 <!ENTITY subjectField4.label "Subjekt ">
@@ -94,6 +94,11 @@
 <!ENTITY deleteAllAttachmentsCmd.accesskey    "F">
 
 <!ENTITY openAttachment.tooltip "Hapni kartelën e bashkëngjitur">
+
+<!ENTITY detachedAttachmentFolder.show.label        "Hap Dosjen Përkatëse">
+<!ENTITY detachedAttachmentFolder.show.accesskey    "H">
+<!ENTITY detachedAttachmentFolder.showMac.label     "Shfaqe Në Finder">
+<!ENTITY detachedAttachmentFolder.showMac.accesskey "F">
 
 <!-- Attachment toolbar items -->
 <!ENTITY saveAttachmentButton1.label       "Ruaje">

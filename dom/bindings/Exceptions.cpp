@@ -9,6 +9,8 @@
 #include "js/RootingAPI.h"
 #include "js/TypeDecls.h"
 #include "jsapi.h"
+#include "js/SavedFrameAPI.h"
+#include "xpcpublic.h"
 #include "mozilla/CycleCollectedJSContext.h"
 #include "mozilla/dom/BindingUtils.h"
 #include "mozilla/dom/DOMException.h"
@@ -40,9 +42,11 @@ static void ThrowExceptionValueIfSafe(JSContext* aCx,
   JS::Rooted<JSObject*> exnObj(aCx, &exnVal.toObject());
   MOZ_ASSERT(js::IsObjectInContextCompartment(exnObj, aCx),
              "exnObj needs to be in the right compartment for the "
-             "CheckedUnwrap thing to make sense");
+             "CheckedUnwrapDynamic thing to make sense");
 
-  if (js::CheckedUnwrap(exnObj)) {
+  // aCx's current Realm is where we're throwing, so using it in the
+  // CheckedUnwrapDynamic check makes sense.
+  if (js::CheckedUnwrapDynamic(exnObj, aCx)) {
     // This is an object we're allowed to work with, so just go ahead and throw
     // it.
     JS_SetPendingException(aCx, exnVal);
@@ -176,9 +180,9 @@ already_AddRefed<Exception> CreateException(nsresult aRv,
 
 already_AddRefed<nsIStackFrame> GetCurrentJSStack(int32_t aMaxDepth) {
   // is there a current context available?
-  JSContext* cx = nsContentUtils::GetCurrentJSContextForThread();
+  JSContext* cx = nsContentUtils::GetCurrentJSContext();
 
-  if (!cx || !js::GetContextCompartment(cx)) {
+  if (!cx || !js::GetContextRealm(cx)) {
     return nullptr;
   }
 
@@ -191,12 +195,12 @@ already_AddRefed<nsIStackFrame> GetCurrentJSStack(int32_t aMaxDepth) {
       aMaxDepth == 0 ? JS::StackCapture(JS::AllFrames())
                      : JS::StackCapture(JS::MaxFrames(aMaxDepth));
 
-  return dom::exceptions::CreateStack(cx, mozilla::Move(captureMode));
+  return dom::exceptions::CreateStack(cx, std::move(captureMode));
 }
 
 namespace exceptions {
 
-class JSStackFrame : public nsIStackFrame {
+class JSStackFrame final : public nsIStackFrame, public xpc::JSStackFrameBase {
  public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(JSStackFrame)
@@ -208,6 +212,12 @@ class JSStackFrame : public nsIStackFrame {
  private:
   virtual ~JSStackFrame();
 
+  void Clear() override { mStack = nullptr; }
+
+  // Remove this frame from the per-realm list of live frames,
+  // and clear out the stack pointer.
+  void UnregisterAndClear();
+
   JS::Heap<JSObject*> mStack;
   nsString mFormattedStack;
 
@@ -216,11 +226,13 @@ class JSStackFrame : public nsIStackFrame {
   nsString mFilename;
   nsString mFunname;
   nsString mAsyncCause;
+  int32_t mSourceId;
   int32_t mLineno;
   int32_t mColNo;
 
   bool mFilenameInitialized;
   bool mFunnameInitialized;
+  bool mSourceIdInitialized;
   bool mLinenoInitialized;
   bool mColNoInitialized;
   bool mAsyncCauseInitialized;
@@ -231,10 +243,12 @@ class JSStackFrame : public nsIStackFrame {
 
 JSStackFrame::JSStackFrame(JS::Handle<JSObject*> aStack)
     : mStack(aStack),
+      mSourceId(0),
       mLineno(0),
       mColNo(0),
       mFilenameInitialized(false),
       mFunnameInitialized(false),
+      mSourceIdInitialized(false),
       mLinenoInitialized(false),
       mColNoInitialized(false),
       mAsyncCauseInitialized(false),
@@ -242,17 +256,32 @@ JSStackFrame::JSStackFrame(JS::Handle<JSObject*> aStack)
       mCallerInitialized(false),
       mFormattedStackInitialized(false) {
   MOZ_ASSERT(mStack);
+  MOZ_ASSERT(JS::IsUnwrappedSavedFrame(mStack));
 
   mozilla::HoldJSObjects(this);
+
+  xpc::RegisterJSStackFrame(js::GetNonCCWObjectRealm(aStack), this);
 }
 
-JSStackFrame::~JSStackFrame() { mozilla::DropJSObjects(this); }
+JSStackFrame::~JSStackFrame() {
+  UnregisterAndClear();
+  mozilla::DropJSObjects(this);
+}
+
+void JSStackFrame::UnregisterAndClear() {
+  if (!mStack) {
+    return;
+  }
+
+  xpc::UnregisterJSStackFrame(js::GetNonCCWObjectRealm(mStack), this);
+  Clear();
+}
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(JSStackFrame)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(JSStackFrame)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mCaller)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mAsyncCaller)
-  tmp->mStack = nullptr;
+  tmp->UnregisterAndClear();
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(JSStackFrame)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mCaller)
@@ -270,9 +299,53 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(JSStackFrame)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
+// Helper method to determine the JSPrincipals* to pass to JS SavedFrame APIs.
+//
+// @argument aStack the stack we're working with; must be non-null.
+// @argument [out] aCanCache whether we can use cached JSStackFrame values.
+static JSPrincipals* GetPrincipalsForStackGetter(JSContext* aCx,
+                                                 JS::Handle<JSObject*> aStack,
+                                                 bool* aCanCache) {
+  MOZ_ASSERT(JS::IsUnwrappedSavedFrame(aStack));
+
+  JSPrincipals* currentPrincipals =
+      JS::GetRealmPrincipals(js::GetContextRealm(aCx));
+  JSPrincipals* stackPrincipals =
+      JS::GetRealmPrincipals(js::GetNonCCWObjectRealm(aStack));
+
+  // Fast path for when the principals are equal. This check is also necessary
+  // for workers: no nsIPrincipal there so we can't use the code below.
+  if (currentPrincipals == stackPrincipals) {
+    *aCanCache = true;
+    return stackPrincipals;
+  }
+
+  MOZ_ASSERT(NS_IsMainThread());
+
+  if (nsJSPrincipals::get(currentPrincipals)
+          ->Subsumes(nsJSPrincipals::get(stackPrincipals))) {
+    // The current principals subsume the stack's principals. In this case use
+    // the stack's principals: the idea is that this way devtools code that's
+    // asking an exception object for a stack to display will end up with the
+    // stack the web developer would see via doing .stack in a web page, with
+    // Firefox implementation details excluded.
+
+    // Because we use the stack's principals and don't rely on the current
+    // context realm, we can use cached values.
+    *aCanCache = true;
+    return stackPrincipals;
+  }
+
+  // The stack was captured in more-privileged code, so use the less privileged
+  // principals. Don't use cached values because we don't want these values to
+  // depend on the current realm/principals.
+  *aCanCache = false;
+  return currentPrincipals;
+}
+
 // Helper method to get the value of a stack property, if it's not already
-// cached.  This will make sure we skip the cache if the access is happening
-// over Xrays.
+// cached.  This will make sure we skip the cache if the property value depends
+// on the (current) context's realm/principals.
 //
 // @argument aStack the stack we're working with; must be non-null.
 // @argument aPropGetter the getter function to call.
@@ -284,17 +357,17 @@ NS_INTERFACE_MAP_END
 template <typename ReturnType, typename GetterOutParamType>
 static void GetValueIfNotCached(
     JSContext* aCx, const JS::Heap<JSObject*>& aStack,
-    JS::SavedFrameResult (*aPropGetter)(JSContext*, JS::Handle<JSObject*>,
+    JS::SavedFrameResult (*aPropGetter)(JSContext*, JSPrincipals*,
+                                        JS::Handle<JSObject*>,
                                         GetterOutParamType,
                                         JS::SavedFrameSelfHosted),
     bool aIsCached, bool* aCanCache, bool* aUseCachedValue, ReturnType aValue) {
   MOZ_ASSERT(aStack);
+  MOZ_ASSERT(JS::IsUnwrappedSavedFrame(aStack));
 
   JS::Rooted<JSObject*> stack(aCx, aStack);
-  // Allow caching if aCx and stack are same-compartment.  Otherwise take the
-  // slow path.
-  *aCanCache =
-      js::GetContextCompartment(aCx) == js::GetObjectCompartment(stack);
+
+  JSPrincipals* principals = GetPrincipalsForStackGetter(aCx, stack, aCanCache);
   if (*aCanCache && aIsCached) {
     *aUseCachedValue = true;
     return;
@@ -302,7 +375,8 @@ static void GetValueIfNotCached(
 
   *aUseCachedValue = false;
 
-  aPropGetter(aCx, stack, aValue, JS::SavedFrameSelfHosted::Exclude);
+  aPropGetter(aCx, principals, stack, aValue,
+              JS::SavedFrameSelfHosted::Exclude);
 }
 
 NS_IMETHODIMP JSStackFrame::GetFilenameXPCOM(JSContext* aCx,
@@ -379,6 +453,34 @@ void JSStackFrame::GetName(JSContext* aCx, nsAString& aFunction) {
     mFunname = aFunction;
     mFunnameInitialized = true;
   }
+}
+
+int32_t JSStackFrame::GetSourceId(JSContext* aCx) {
+  if (!mStack) {
+    return 0;
+  }
+
+  uint32_t id;
+  bool canCache = false, useCachedValue = false;
+  GetValueIfNotCached(aCx, mStack, JS::GetSavedFrameSourceId,
+                      mSourceIdInitialized, &canCache, &useCachedValue, &id);
+
+  if (useCachedValue) {
+    return mSourceId;
+  }
+
+  if (canCache) {
+    mSourceId = id;
+    mSourceIdInitialized = true;
+  }
+
+  return id;
+}
+
+NS_IMETHODIMP
+JSStackFrame::GetSourceIdXPCOM(JSContext* aCx, int32_t* aSourceId) {
+  *aSourceId = GetSourceId(aCx);
+  return NS_OK;
 }
 
 int32_t JSStackFrame::GetLineNumber(JSContext* aCx) {
@@ -566,19 +668,17 @@ void JSStackFrame::GetFormattedStack(JSContext* aCx, nsAString& aStack) {
   // make the templates more complicated to deal, but in the meantime
   // let's just inline GetValueIfNotCached here.
 
-  // Allow caching if aCx and stack are same-compartment.  Otherwise take the
-  // slow path.
-  bool canCache =
-      js::GetContextCompartment(aCx) == js::GetObjectCompartment(mStack);
+  JS::Rooted<JSObject*> stack(aCx, mStack);
+
+  bool canCache;
+  JSPrincipals* principals = GetPrincipalsForStackGetter(aCx, stack, &canCache);
   if (canCache && mFormattedStackInitialized) {
     aStack = mFormattedStack;
     return;
   }
 
-  JS::Rooted<JSObject*> stack(aCx, mStack);
-
   JS::Rooted<JSString*> formattedStack(aCx);
-  if (!JS::BuildStackString(aCx, stack, &formattedStack)) {
+  if (!JS::BuildStackString(aCx, principals, stack, &formattedStack)) {
     JS_ClearPendingException(aCx);
     aStack.Truncate();
     return;
@@ -638,7 +738,7 @@ void JSStackFrame::ToString(JSContext* aCx, nsACString& _retval) {
 already_AddRefed<nsIStackFrame> CreateStack(JSContext* aCx,
                                             JS::StackCapture&& aCaptureMode) {
   JS::Rooted<JSObject*> stack(aCx);
-  if (!JS::CaptureCurrentStack(aCx, &stack, mozilla::Move(aCaptureMode))) {
+  if (!JS::CaptureCurrentStack(aCx, &stack, std::move(aCaptureMode))) {
     return nullptr;
   }
 

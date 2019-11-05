@@ -10,7 +10,6 @@
 #include "BufferReader.h"
 #include "ByteWriter.h"
 #include "MediaData.h"
-#include "nsAutoPtr.h"
 
 namespace mozilla {
 
@@ -53,7 +52,7 @@ Result<Ok, nsresult> AnnexB::ConvertSampleToAnnexB(
     }
   }
 
-  nsAutoPtr<MediaRawDataWriter> samplewriter(aSample->CreateWriter());
+  UniquePtr<MediaRawDataWriter> samplewriter(aSample->CreateWriter());
 
   if (!samplewriter->Replace(tmp.Elements(), tmp.Length())) {
     return Err(NS_ERROR_OUT_OF_MEMORY);
@@ -71,7 +70,7 @@ Result<Ok, nsresult> AnnexB::ConvertSampleToAnnexB(
     // offsets. So we need to account for the extra bytes by increasing
     // the length of the first clear data subsample. Otherwise decryption
     // will fail.
-    if (aSample->mCrypto.mValid) {
+    if (aSample->mCrypto.IsEncrypted()) {
       if (aSample->mCrypto.mPlainSizes.Length() == 0) {
         samplewriter->mCrypto.mPlainSizes.AppendElement(annexB->Length());
         samplewriter->mCrypto.mEncryptedSizes.AppendElement(
@@ -249,7 +248,7 @@ bool AnnexB::ConvertSampleToAVCC(mozilla::MediaRawData* aSample) {
   if (ParseNALUnits(writer, reader).isErr()) {
     return false;
   }
-  nsAutoPtr<MediaRawDataWriter> samplewriter(aSample->CreateWriter());
+  UniquePtr<MediaRawDataWriter> samplewriter(aSample->CreateWriter());
   if (!samplewriter->Replace(nalu.Elements(), nalu.Length())) {
     return false;
   }
@@ -307,7 +306,7 @@ Result<mozilla::Ok, nsresult> AnnexB::ConvertSampleTo4BytesAVCC(
       return Err(NS_ERROR_OUT_OF_MEMORY);
     }
   }
-  nsAutoPtr<MediaRawDataWriter> samplewriter(aSample->CreateWriter());
+  UniquePtr<MediaRawDataWriter> samplewriter(aSample->CreateWriter());
   if (!samplewriter->Replace(dest.Elements(), dest.Length())) {
     return Err(NS_ERROR_OUT_OF_MEMORY);
   }

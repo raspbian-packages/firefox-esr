@@ -16,17 +16,21 @@ namespace a11y {
 /**
  * Accessible for ARIA grid and treegrid.
  */
-class ARIAGridAccessible : public AccessibleWrap, public TableAccessible {
+class ARIAGridAccessible : public HyperTextAccessibleWrap,
+                           public TableAccessible {
  public:
   ARIAGridAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
-  NS_INLINE_DECL_REFCOUNTING_INHERITED(ARIAGridAccessible, AccessibleWrap)
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(ARIAGridAccessible,
+                                       HyperTextAccessibleWrap)
 
   // Accessible
+  virtual a11y::role NativeRole() const override;
+  virtual already_AddRefed<nsIPersistentProperties> NativeAttributes() override;
   virtual TableAccessible* AsTable() override { return this; }
 
   // TableAccessible
-  virtual uint32_t ColCount() override;
+  virtual uint32_t ColCount() const override;
   virtual uint32_t RowCount() override;
   virtual Accessible* CellAt(uint32_t aRowIndex,
                              uint32_t aColumnIndex) override;
@@ -50,16 +54,6 @@ class ARIAGridAccessible : public AccessibleWrap, public TableAccessible {
   virtual ~ARIAGridAccessible() {}
 
   /**
-   * Return row accessible at the given row index.
-   */
-  Accessible* GetRowAt(int32_t aRow);
-
-  /**
-   * Return cell accessible at the given column index in the row.
-   */
-  Accessible* GetCellInRowAt(Accessible* aRow, int32_t aColumn);
-
-  /**
    * Set aria-selected attribute value on DOM node of the given accessible.
    *
    * @param  aAccessible  [in] accessible
@@ -74,13 +68,15 @@ class ARIAGridAccessible : public AccessibleWrap, public TableAccessible {
 /**
  * Accessible for ARIA row.
  */
-class ARIARowAccessible : public AccessibleWrap {
+class ARIARowAccessible : public HyperTextAccessibleWrap {
  public:
   ARIARowAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
-  NS_INLINE_DECL_REFCOUNTING_INHERITED(ARIARowAccessible, AccessibleWrap)
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(ARIARowAccessible,
+                                       HyperTextAccessibleWrap)
 
   // Accessible
+  virtual a11y::role NativeRole() const override;
   virtual mozilla::a11y::GroupPos GroupPosition() override;
 
  protected:
@@ -99,6 +95,7 @@ class ARIAGridCellAccessible : public HyperTextAccessibleWrap,
                                        HyperTextAccessibleWrap)
 
   // Accessible
+  virtual a11y::role NativeRole() const override;
   virtual TableCellAccessible* AsTableCell() override { return this; }
   virtual void ApplyARIAState(uint64_t* aState) const override;
   virtual already_AddRefed<nsIPersistentProperties> NativeAttributes() override;
@@ -117,6 +114,7 @@ class ARIAGridCellAccessible : public HyperTextAccessibleWrap,
 
   /**
    * Return index of the given row.
+   * Returns -1 upon error.
    */
   int32_t RowIndexFor(Accessible* aRow) const;
 

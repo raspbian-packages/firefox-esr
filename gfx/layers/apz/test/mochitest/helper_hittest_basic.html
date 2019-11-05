@@ -4,7 +4,7 @@
   <title>Various tests to exercise the APZ hit-testing codepaths</title>
   <script type="application/javascript" src="apz_test_utils.js"></script>
   <script type="application/javascript" src="apz_test_native_event_utils.js"></script>
-  <script type="application/javascript" src="/tests/SimpleTest/paint_listener.js"></script>
+  <script src="/tests/SimpleTest/paint_listener.js"></script>
   <meta name="viewport" content="width=device-width"/>
 </head>
 <body>
@@ -21,23 +21,23 @@ function* test(testDriver) {
   var config = getHitTestConfig();
   var utils = config.utils;
 
-  var scroller = document.getElementById('scroller');
-  var apzaware = document.getElementById('apzaware');
+  var scroller = document.getElementById("scroller");
+  var apzaware = document.getElementById("apzaware");
 
-  var {hitInfo, scrollId} = hitTest(centerOf(scroller));
-  is(hitInfo, APZHitResultFlags.VISIBLE | APZHitResultFlags.DISPATCH_TO_CONTENT,
-     "inactive scrollframe hit info");
-  is(scrollId, utils.getViewId(document.scrollingElement),
-     "inactive scrollframe scrollid");
+  checkHitResult(hitTest(centerOf(scroller)),
+                 APZHitResultFlags.VISIBLE |
+                 (config.isWebRender ? APZHitResultFlags.INACTIVE_SCROLLFRAME
+                                     : APZHitResultFlags.IRREGULAR_AREA),
+                 utils.getViewId(document.scrollingElement),
+                 "inactive scrollframe");
 
   // The apz-aware div (which has a non-passive wheel listener) is not visible
   // and so the hit-test should just return the root scrollframe area that's
   // covering it
-  var {hitInfo, scrollId} = hitTest(centerOf(apzaware));
-  is(hitInfo, APZHitResultFlags.VISIBLE,
-     "inactive scrollframe - apzaware block hit info");
-  is(scrollId, utils.getViewId(document.scrollingElement),
-     "inactive scrollframe - apzaware block scrollid");
+  checkHitResult(hitTest(centerOf(apzaware)),
+                 APZHitResultFlags.VISIBLE,
+                 utils.getViewId(document.scrollingElement),
+                 "inactive scrollframe - apzaware block");
 
   // Hit test where the scroll thumbs should be.
   hitTestScrollbar({
@@ -46,14 +46,14 @@ function* test(testDriver) {
     expectedScrollId: utils.getViewId(document.scrollingElement),
     trackLocation: ScrollbarTrackLocation.START,
     expectThumb: true,
-    layerState: LayerState.INACTIVE
+    layerState: LayerState.INACTIVE,
   });
 
   // activate the scrollframe but keep the main-thread scroll position at 0.
   // also apply a async scroll offset in the y-direction such that the
   // scrollframe scrolls to the bottom of its range.
   utils.setDisplayPortForElement(0, 0, 500, 500, scroller, 1);
-  yield waitForAllPaints(testDriver);
+  yield waitForApzFlushedRepaints(testDriver);
   var scrollY = scroller.scrollTopMax;
   utils.setAsyncScrollOffset(scroller, 0, scrollY);
   if (config.isWebRender) {
@@ -67,20 +67,20 @@ function* test(testDriver) {
   var scrollerViewId = utils.getViewId(scroller);
 
   // Now we again test the middle of the scrollframe, which is now active
-  var {hitInfo, scrollId} = hitTest(centerOf(scroller));
-  is(hitInfo, APZHitResultFlags.VISIBLE,
-     "active scrollframe hit info");
-  is(scrollId, scrollerViewId,
-     "active scrollframe scrollid");
+  checkHitResult(hitTest(centerOf(scroller)),
+                 APZHitResultFlags.VISIBLE,
+                 scrollerViewId,
+                 "active scrollframe");
 
   // Test the apz-aware block
   var apzawarePosition = centerOf(apzaware); // main thread position
   apzawarePosition.y -= scrollY; // APZ position
-  var {hitInfo, scrollId} = hitTest(apzawarePosition);
-  is(hitInfo, APZHitResultFlags.VISIBLE | APZHitResultFlags.DISPATCH_TO_CONTENT,
-     "active scrollframe - apzaware block hit info");
-  is(scrollId, scrollerViewId,
-     "active scrollframe - apzaware block scrollid");
+  checkHitResult(hitTest(apzawarePosition),
+                 APZHitResultFlags.VISIBLE |
+                 (config.isWebRender ? APZHitResultFlags.APZ_AWARE_LISTENERS
+                                     : APZHitResultFlags.IRREGULAR_AREA),
+                 scrollerViewId,
+                 "active scrollframe - apzaware block");
 
   // Test the scrollbars. Note that this time the vertical scrollthumb is
   // going to be at the bottom of the track. We'll test both the top and the
@@ -93,7 +93,7 @@ function* test(testDriver) {
     expectedScrollId: scrollerViewId,
     trackLocation: ScrollbarTrackLocation.START,
     expectThumb: false,
-    layerState: LayerState.ACTIVE
+    layerState: LayerState.ACTIVE,
   });
   // bottom of scrollbar track (scrollthumb)
   hitTestScrollbar({
@@ -102,7 +102,7 @@ function* test(testDriver) {
     expectedScrollId: scrollerViewId,
     trackLocation: ScrollbarTrackLocation.END,
     expectThumb: true,
-    layerState: LayerState.ACTIVE
+    layerState: LayerState.ACTIVE,
   });
   // left part of scrollbar track (has scrollthumb)
   hitTestScrollbar({
@@ -111,7 +111,7 @@ function* test(testDriver) {
     expectedScrollId: scrollerViewId,
     trackLocation: ScrollbarTrackLocation.START,
     expectThumb: true,
-    layerState: LayerState.ACTIVE
+    layerState: LayerState.ACTIVE,
   });
   // right part of scrollbar track
   hitTestScrollbar({
@@ -120,7 +120,7 @@ function* test(testDriver) {
     expectedScrollId: scrollerViewId,
     trackLocation: ScrollbarTrackLocation.END,
     expectThumb: false,
-    layerState: LayerState.ACTIVE
+    layerState: LayerState.ACTIVE,
   });
 
   subtestDone();

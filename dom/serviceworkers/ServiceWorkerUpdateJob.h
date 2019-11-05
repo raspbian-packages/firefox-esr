@@ -13,7 +13,12 @@
 namespace mozilla {
 namespace dom {
 
+namespace serviceWorkerScriptCache {
+enum class OnFailure : uint8_t;
+}  // namespace serviceWorkerScriptCache
+
 class ServiceWorkerManager;
+class ServiceWorkerRegistrationInfo;
 
 // A job class that performs the Update and Install algorithms from the
 // service worker spec.  This class is designed to be inherited and customized
@@ -25,7 +30,6 @@ class ServiceWorkerUpdateJob : public ServiceWorkerJob {
   // Construct an update job to be used only for updates.
   ServiceWorkerUpdateJob(nsIPrincipal* aPrincipal, const nsACString& aScope,
                          const nsACString& aScriptSpec,
-                         nsILoadGroup* aLoadGroup,
                          ServiceWorkerUpdateViaCache aUpdateViaCache);
 
   already_AddRefed<ServiceWorkerRegistrationInfo> GetRegistration() const;
@@ -35,7 +39,6 @@ class ServiceWorkerUpdateJob : public ServiceWorkerJob {
   ServiceWorkerUpdateJob(Type aType, nsIPrincipal* aPrincipal,
                          const nsACString& aScope,
                          const nsACString& aScriptSpec,
-                         nsILoadGroup* aLoadGroup,
                          ServiceWorkerUpdateViaCache aUpdateViaCache);
 
   virtual ~ServiceWorkerUpdateJob();
@@ -71,6 +74,7 @@ class ServiceWorkerUpdateJob : public ServiceWorkerJob {
   // Utility method called after a script is loaded and compared to
   // our current cached script.
   void ComparisonResult(nsresult aStatus, bool aInCacheAndEqual,
+                        serviceWorkerScriptCache::OnFailure aOnFailure,
                         const nsAString& aNewCacheName,
                         const nsACString& aMaxScope, nsLoadFlags aLoadFlags);
 
@@ -78,15 +82,14 @@ class ServiceWorkerUpdateJob : public ServiceWorkerJob {
   void ContinueUpdateAfterScriptEval(bool aScriptEvaluationResult);
 
   // Utility method corresponding to the spec Install algorithm.
-  void Install(ServiceWorkerManager* aSWM);
+  void Install();
 
   // Utility method called after the install event is handled.
   void ContinueAfterInstallEvent(bool aInstallEventSuccess);
 
-  nsCOMPtr<nsILoadGroup> mLoadGroup;
-  ServiceWorkerUpdateViaCache mUpdateViaCache;
-
   RefPtr<ServiceWorkerRegistrationInfo> mRegistration;
+  ServiceWorkerUpdateViaCache mUpdateViaCache;
+  serviceWorkerScriptCache::OnFailure mOnFailure;
 };
 
 }  // namespace dom

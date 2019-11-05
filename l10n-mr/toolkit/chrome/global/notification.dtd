@@ -6,7 +6,9 @@
 
 <!ENTITY checkForUpdates "सुधारणांकरिता तपासणी करा…">
 
-<!ENTITY learnMore "आणखी शिका…">
+<!ENTITY learnMore "अधिक जाणा…">
 
 <!ENTITY defaultButton.label "ठीक आहे!">
 <!ENTITY defaultButton.accesskey "O">
+
+<!ENTITY moreActionsButton.accessibleLabel "अधिक कृती">

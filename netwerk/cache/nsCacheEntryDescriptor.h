@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -113,8 +113,9 @@ class nsCacheEntryDescriptor final : public PRCList,
 
     nsDecompressInputStreamWrapper(nsCacheEntryDescriptor* desc, uint32_t off)
         : nsInputStreamWrapper(desc, off),
-          mReadBuffer(0),
+          mReadBuffer(nullptr),
           mReadBufferLen(0),
+          mZstream{},
           mStreamInitialized(false),
           mStreamEnded(false) {}
     NS_IMETHOD Read(char* buf, uint32_t count, uint32_t* result) override;
@@ -184,8 +185,9 @@ class nsCacheEntryDescriptor final : public PRCList,
 
     nsCompressOutputStreamWrapper(nsCacheEntryDescriptor* desc, uint32_t off)
         : nsOutputStreamWrapper(desc, off),
-          mWriteBuffer(0),
+          mWriteBuffer(nullptr),
           mWriteBufferLen(0),
+          mZstream{},
           mStreamInitialized(false),
           mStreamEnded(false),
           mUncompressedCount(0) {}
@@ -203,6 +205,8 @@ class nsCacheEntryDescriptor final : public PRCList,
   /**
    * nsCacheEntryDescriptor data members
    */
+
+  nsCOMPtr<nsICacheServiceInternal> mCacheService;
   nsCacheEntry* mCacheEntry;  // we are a child of the entry
   nsCacheAccessMode mAccessGranted;
   nsTArray<nsInputStreamWrapper*> mInputWrappers;

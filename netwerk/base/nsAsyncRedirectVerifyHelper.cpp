@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -74,8 +74,8 @@ nsresult nsAsyncRedirectVerifyHelper::Init(
 
   if (!(flags & (nsIChannelEventSink::REDIRECT_INTERNAL |
                  nsIChannelEventSink::REDIRECT_STS_UPGRADE))) {
-    nsCOMPtr<nsILoadInfo> loadInfo = oldChan->GetLoadInfo();
-    if (loadInfo && loadInfo->GetDontFollowRedirects()) {
+    nsCOMPtr<nsILoadInfo> loadInfo = oldChan->LoadInfo();
+    if (loadInfo->GetDontFollowRedirects()) {
       ExplicitCallback(NS_BINDING_ABORTED);
       return NS_OK;
     }
@@ -231,7 +231,7 @@ void nsAsyncRedirectVerifyHelper::InitCallback() {
 
 NS_IMETHODIMP
 nsAsyncRedirectVerifyHelper::GetName(nsACString& aName) {
-  aName.AssignASCII("nsAsyncRedirectVerifyHelper");
+  aName.AssignLiteral("nsAsyncRedirectVerifyHelper");
   return NS_OK;
 }
 

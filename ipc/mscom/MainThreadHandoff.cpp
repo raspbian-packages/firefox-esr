@@ -16,6 +16,7 @@
 #include "mozilla/mscom/Utils.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/ThreadLocal.h"
+#include "mozilla/Unused.h"
 #include "nsThreadUtils.h"
 #include "nsProxyRelease.h"
 
@@ -144,6 +145,7 @@ class MOZ_RAII SavedCallFrame final {
     MOZ_ASSERT(sIsInit);
     MOZ_ASSERT(!tlsFrame.get());
     tlsFrame.set(this);
+    Unused << sIsInit;
   }
 
   ~SavedCallFrame() {
@@ -227,8 +229,9 @@ class MOZ_RAII LogEvent final {
 namespace mozilla {
 namespace mscom {
 
-/* static */ HRESULT MainThreadHandoff::Create(
-    IHandlerProvider* aHandlerProvider, IInterceptorSink** aOutput) {
+/* static */
+HRESULT MainThreadHandoff::Create(IHandlerProvider* aHandlerProvider,
+                                  IInterceptorSink** aOutput) {
   RefPtr<MainThreadHandoff> handoff(new MainThreadHandoff(aHandlerProvider));
   return handoff->QueryInterface(IID_IInterceptorSink, (void**)aOutput);
 }
@@ -665,7 +668,7 @@ MainThreadHandoff::OnWalkInterface(REFIID aIid, PVOID* aInterface,
       payload ? payload->MarshalAs(effectiveIid) : effectiveIid;
 
   RefPtr<IUnknown> wrapped;
-  hr = Interceptor::Create(Move(origInterface), handoff, interceptorIid,
+  hr = Interceptor::Create(std::move(origInterface), handoff, interceptorIid,
                            getter_AddRefs(wrapped));
   MOZ_ASSERT(SUCCEEDED(hr));
   if (FAILED(hr)) {

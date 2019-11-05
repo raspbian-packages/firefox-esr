@@ -6,7 +6,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=890580
 <head>
   <meta charset="utf-8">
   <title>Test for Bug 883129</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <script type="application/javascript">
   function testPaintextSerializerWithPlaceHolder() {
@@ -14,8 +14,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=890580
     const Cc = SpecialPowers.Cc;
 
     // Create a plaintext encoder with the flag OutputNonTextContentAsPlaceholder.
-    var encoder = Cc["@mozilla.org/layout/documentEncoder;1?type=text/plain"]
-                  .createInstance(de);
+    var encoder = SpecialPowers.Cu.createDocumentEncoder("text/plain");
     var flags = de.OutputRaw |
                 de.OutputNonTextContentAsPlaceholder;
     encoder.init(document, "text/plain", flags);

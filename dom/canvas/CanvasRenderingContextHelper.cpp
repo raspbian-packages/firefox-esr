@@ -31,16 +31,18 @@ void CanvasRenderingContextHelper::ToBlob(
         : mGlobal(aGlobal), mBlobCallback(aCallback) {}
 
     // This is called on main thread.
+    MOZ_CAN_RUN_SCRIPT
     nsresult ReceiveBlob(already_AddRefed<Blob> aBlob) override {
       RefPtr<Blob> blob = aBlob;
 
       RefPtr<Blob> newBlob = Blob::Create(mGlobal, blob->Impl());
 
+      RefPtr<BlobCallback> callback(mBlobCallback.forget());
       ErrorResult rv;
-      mBlobCallback->Call(newBlob, rv);
+      callback->Call(newBlob, rv);
 
       mGlobal = nullptr;
-      mBlobCallback = nullptr;
+      MOZ_ASSERT(!mBlobCallback);
 
       return rv.StealNSResult();
     }
@@ -92,7 +94,7 @@ void CanvasRenderingContextHelper::ToBlob(
   RefPtr<EncodeCompleteCallback> callback = aCallback;
 
   aRv = ImageEncoder::ExtractDataAsync(
-      type, params, usingCustomParseOptions, Move(imageBuffer), format,
+      type, params, usingCustomParseOptions, std::move(imageBuffer), format,
       GetWidthHeight(), aUsePlaceholder, callback);
 }
 
@@ -202,7 +204,7 @@ nsresult CanvasRenderingContextHelper::UpdateContext(
 
   nsCOMPtr<nsICanvasRenderingContextInternal> currentContext = mCurrentContext;
 
-  currentContext->SetIsOpaque(GetOpaqueAttr());
+  currentContext->SetOpaqueValueFromOpaqueAttr(GetOpaqueAttr());
 
   nsresult rv = currentContext->SetContextOptions(aCx, aNewContextOptions,
                                                   aRvForDictionaryInit);

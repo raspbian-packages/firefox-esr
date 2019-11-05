@@ -1,4 +1,4 @@
-/* -*- Mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; -*- */
+/* -*- Mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,11 +8,12 @@
 
 #include <time.h>
 
-#include "mozilla/HangMonitor.h"
+#include "mozilla/BackgroundHangMonitor.h"
 #include "mozilla/LinkedList.h"
 #include "mozilla/Monitor.h"
 #include "mozilla/Move.h"
 #include "mozilla/StaticPtr.h"
+#include "mozilla/TimeStamp.h"  // for mozilla::TimeDuration
 #include "mozilla/TypeTraits.h"
 #include "mozilla/UniquePtr.h"
 #include "mozilla/Unused.h"
@@ -33,8 +34,6 @@ class nsWindow;
 class nsAppShell : public nsBaseAppShell {
  public:
   struct Event : mozilla::LinkedListElement<Event> {
-    typedef mozilla::HangMonitor::ActivityType Type;
-
     static uint64_t GetTime() {
       timespec time;
       if (clock_gettime(CLOCK_MONOTONIC, &time)) {
@@ -58,7 +57,7 @@ class nsAppShell : public nsBaseAppShell {
       queue.insertBack(this);
     }
 
-    virtual Type ActivityType() const { return Type::kGeneralActivity; }
+    virtual bool IsUIEvent() const { return false; }
   };
 
   template <typename T>
@@ -67,8 +66,8 @@ class nsAppShell : public nsBaseAppShell {
     T lambda;
 
    public:
-    LambdaEvent(T&& l) : lambda(mozilla::Move(l)) {}
-    void Run() override { return lambda(); }
+    explicit LambdaEvent(T&& l) : lambda(std::move(l)) {}
+    void Run() override { lambda(); }
   };
 
   class ProxyEvent : public Event {
@@ -76,8 +75,8 @@ class nsAppShell : public nsBaseAppShell {
     mozilla::UniquePtr<Event> baseEvent;
 
    public:
-    ProxyEvent(mozilla::UniquePtr<Event>&& event)
-        : baseEvent(mozilla::Move(event)) {}
+    explicit ProxyEvent(mozilla::UniquePtr<Event>&& event)
+        : baseEvent(std::move(event)) {}
 
     void PostTo(mozilla::LinkedList<Event>& queue) override {
       baseEvent->PostTo(queue);
@@ -109,7 +108,7 @@ class nsAppShell : public nsBaseAppShell {
     if (!sAppShell) {
       return;
     }
-    sAppShell->mEventQueue.Post(mozilla::Move(event));
+    sAppShell->mEventQueue.Post(std::move(event));
   }
 
   // Post a event that will call a lambda
@@ -121,19 +120,21 @@ class nsAppShell : public nsBaseAppShell {
       return;
     }
     sAppShell->mEventQueue.Post(
-        mozilla::MakeUnique<LambdaEvent<T>>(mozilla::Move(lambda)));
+        mozilla::MakeUnique<LambdaEvent<T>>(std::move(lambda)));
   }
 
   // Post a event and wait for it to finish running on the Gecko thread.
-  static void SyncRunEvent(Event&& event,
-                           mozilla::UniquePtr<Event> (*eventFactory)(
-                               mozilla::UniquePtr<Event>&&) = nullptr);
+  static bool SyncRunEvent(
+      Event&& event,
+      mozilla::UniquePtr<Event> (*eventFactory)(mozilla::UniquePtr<Event>&&) =
+          nullptr,
+      const mozilla::TimeDuration timeout = mozilla::TimeDuration::Forever());
 
   template <typename T>
   static typename mozilla::EnableIf<!mozilla::IsBaseOf<Event, T>::value,
                                     void>::Type
   SyncRunEvent(T&& lambda) {
-    SyncRunEvent(LambdaEvent<T>(mozilla::Forward<T>(lambda)));
+    SyncRunEvent(LambdaEvent<T>(std::forward<T>(lambda)));
   }
 
   static already_AddRefed<nsIURI> ResolveURI(const nsCString& aUriStr);
@@ -160,7 +161,7 @@ class nsAppShell : public nsBaseAppShell {
     nsAppShell* const appShell;
 
    public:
-    NativeCallbackEvent(nsAppShell* as) : appShell(as) {}
+    explicit NativeCallbackEvent(nsAppShell* as) : appShell(as) {}
     void Run() override { appShell->NativeEventCallback(); }
   };
 
@@ -199,36 +200,46 @@ class nsAppShell : public nsBaseAppShell {
     }
 
     mozilla::UniquePtr<Event> Pop(bool mayWait) {
+#ifdef EARLY_BETA_OR_EARLIER
+      bool isQueueEmpty = false;
+      if (mayWait) {
+        mozilla::MonitorAutoLock lock(mMonitor);
+        isQueueEmpty = mQueue.isEmpty();
+      }
+      if (isQueueEmpty) {
+        // Record latencies when we're about to be idle.
+        // Note: We can't call this while holding the lock because
+        // nsAppShell::RecordLatencies may try to dispatch an event to the main
+        // thread which tries to acquire the lock again.
+        nsAppShell::RecordLatencies();
+      }
+#endif
       mozilla::MonitorAutoLock lock(mMonitor);
 
       if (mayWait && mQueue.isEmpty()) {
-#ifdef EARLY_BETA_OR_EARLIER
-        // Record latencies when we're about to be idle.
-        nsAppShell::RecordLatencies();
-#endif
         lock.Wait();
       }
 
       // Ownership of event object transfers to the return value.
       mozilla::UniquePtr<Event> event(mQueue.popFirst());
       if (!event || !event->mPostTime) {
-        return Move(event);
+        return event;
       }
 
 #ifdef EARLY_BETA_OR_EARLIER
       const size_t latencyType =
-          (event->ActivityType() == Event::Type::kUIActivity) ? LATENCY_UI
-                                                              : LATENCY_OTHER;
+          event->IsUIEvent() ? LATENCY_UI : LATENCY_OTHER;
       const uint64_t latency = Event::GetTime() - event->mPostTime;
 
       sLatencyCount[latencyType]++;
       sLatencyTime[latencyType] += latency;
 #endif
-      return Move(event);
+      return event;
     }
 
   } mEventQueue;
 
+ private:
   mozilla::CondVar mSyncRunFinished;
   bool mSyncRunQuit;
 

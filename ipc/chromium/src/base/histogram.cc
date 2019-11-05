@@ -26,8 +26,6 @@ namespace base {
 #define DVLOG(x) CHROMIUM_LOG(ERROR)
 #define CHECK_GT DCHECK_GT
 #define CHECK_LT DCHECK_LT
-typedef ::Lock Lock;
-typedef ::AutoLock AutoLock;
 
 // Static table of checksums for all possible 8 bit bytes.
 const uint32_t Histogram::kCrcTable[256] = {
@@ -219,9 +217,7 @@ size_t Histogram::SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) {
 
 size_t Histogram::SampleSet::SizeOfExcludingThis(
     mozilla::MallocSizeOf aMallocSizeOf) {
-  // We're not allowed to do deep dives into STL data structures.  This
-  // is as close as we can get to measuring this array.
-  return aMallocSizeOf(&counts_[0]);
+  return counts_.ShallowSizeOfExcludingThis(aMallocSizeOf);
 }
 
 Histogram::Histogram(Sample minimum, Sample maximum, size_t bucket_count)
@@ -400,7 +396,10 @@ Histogram::SampleSet::SampleSet() : counts_(), sum_(0), redundant_count_(0) {}
 Histogram::SampleSet::~SampleSet() {}
 
 void Histogram::SampleSet::Resize(const Histogram& histogram) {
-  counts_.resize(histogram.bucket_count(), 0);
+  size_t oldSize = counts_.Length();
+  counts_.SetLength(histogram.bucket_count());
+
+  for (size_t i = oldSize; i < histogram.bucket_count(); ++i) counts_[i] = 0;
 }
 
 void Histogram::SampleSet::Accumulate(Sample value, Count count, size_t index) {
@@ -422,10 +421,10 @@ Count Histogram::SampleSet::TotalCount() const {
 }
 
 void Histogram::SampleSet::Add(const SampleSet& other) {
-  DCHECK_EQ(counts_.size(), other.counts_.size());
+  DCHECK_EQ(counts_.Length(), other.counts_.Length());
   sum_ += other.sum_;
   redundant_count_ += other.redundant_count_;
-  for (size_t index = 0; index < counts_.size(); ++index)
+  for (size_t index = 0; index < counts_.Length(); ++index)
     counts_[index] += other.counts_[index];
 }
 
@@ -637,7 +636,7 @@ void CountHistogram::AddSampleSet(const SampleSet& sample) {
   }
 
   if (sample.counts(indices[0]) != 0) {
-    Accumulate(1, sample.counts(indices[0]), indices[0]);
+    Histogram::AddSampleSet(sample);
   }
 }
 

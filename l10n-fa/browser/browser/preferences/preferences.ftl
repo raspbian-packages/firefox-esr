@@ -4,8 +4,8 @@
 
 do-not-track-description = ارسال یک سیگنال “من را دنبال نکن ” برای پایگاه‌های اینترنتی که شما نمی‌خواهید توسط آن ها دنبال شوید
 do-not-track-learn-more = اطلاعات بیشتر
-do-not-track-option-default =
-    .label = تنها زمانی که از محافظ دنبال کردن استفاده ‌می‌شود
+do-not-track-option-default-content-blocking-known =
+    .label = تنها وقتی که { -brand-short-name } برای مسدودسازی ردیاب‌های شناخته شده تنظیم شده است
 do-not-track-option-always =
     .label = همیشه
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] گزینه‌ها
            *[other] ترجیحات
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -37,9 +29,17 @@ search-input-box =
             [windows] پیدا‌کردن در گزینه‌ها
            *[other] پیدا‌کردن در ترجیحات
         }
+policies-notice =
+    { PLATFORM() ->
+        [windows] سازمان شما امکان تغییر برخی از گزینه‌ها را غیرفعال کرده است.
+       *[other] سازمان شما امکان تغییر برخی از ترجیحات را غیرفعال کرده است.
+    }
 pane-general-title = عمومی
 category-general =
     .tooltiptext = { pane-general-title }
+pane-home-title = خانه
+category-home =
+    .tooltiptext = { pane-home-title }
 pane-search-title = جست‌وجو
 category-search =
     .tooltiptext = { pane-search-title }
@@ -51,6 +51,7 @@ pane-sync-title = حساب فایرفاکس
 category-sync =
     .tooltiptext = { pane-sync-title }
 help-button-label = پشتیبانی { -brand-short-name }
+addons-button-label = افزونه‌ها و پوسته‌ها
 focus-search =
     .key = f
 close-button =
@@ -62,7 +63,46 @@ feature-enable-requires-restart = جهت فعال کردن این امکان، {
 feature-disable-requires-restart = شما باید برای غیرفعال کردن این امکان { -brand-short-name } را مجددا راه‌اندازی کنید.
 should-restart-title = راه‌اندازی مجدد { -brand-short-name }
 should-restart-ok = هم‌اکنون { -brand-short-name } راه‌اندازی مجدد شود
+cancel-no-restart-button = لغو
 restart-later = بعداْ راه‌اندازی مجدد شود
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = یک افزودنی، <img data-l10n-name="icon"/>{ $name }، در کنترل صفحهٔ خانگی شماست.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = یک افزودنی، <img data-l10n-name="icon"/>{ $name }، در کنترل صفحهٔ زبانه‌ٔ جدید شماست.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = یک افزونه، <img data-l10n-name="icon"/>{ $name }، این تنظیمات را کنترل می‌کند.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = یک افزایه،‌<img data-l10n-name="icon"/> { $name }،‌ بر روی موتور پیش فرض شما تنظیم شده است.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = یک افزونه، <img data-l10n-name="icon"/> { $name }،‌نیازمند نگه‌دارنده زبانه‌ها است.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = یک افزونه، <img data-l10n-name="icon"/>{ $name }، این تنظیم را کنترل می‌کند.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = یک افزودنی، <img data-l10n-name="icon"/>{ $name }، در حال کنترل نحوهٔ اتصال { -brand-short-name } به اینترنت است.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = برای فعال کردن این افزایه به افزونه <img data-l10n-name="addons-icon"/> در فهرست <img data-l10n-name="menu-icon"/> مراجعه کنید.
 
 ## Preferences UI Search Results
 
@@ -82,7 +122,7 @@ startup-header = راه‌اندازی
 # since this setting is only exposed in Firefox Developer Edition
 separate-profile-mode =
     .label = اجازه بده تا { -brand-short-name } و فایرفاکس همزمان اجرا شوند
-use-firefox-sync = نکته: این از یک نمایه جدا استفاده میکند. از همگام‌سازی برای اشتراک‌گذاری اطلاعات بین آنها استفاده کنید.
+use-firefox-sync = نکته: این از یک نمایه جدا استفاده میکند. از { -sync-brand-short-name } برای اشتراک‌گذاری اطلاعات بین آنها استفاده کنید.
 get-started-not-logged-in = برای همگام‌سازی وارد { -sync-brand-short-name }…
 get-started-configured = باز کردن ترجیحات { -sync-brand-short-name }
 always-check-default =
@@ -93,17 +133,13 @@ is-not-default = { -brand-short-name } مرورگر پیش‌فرض شما نی�
 set-as-my-default-browser =
     .label = تنظیم به عنوان پیش‌فرض…
     .accesskey = پ
-startup-page = هنگام شروع { -brand-short-name }
+startup-restore-previous-session =
+    .label = بازنشانی نشست قبلی
     .accesskey = s
-startup-user-homepage =
-    .label = نمایش صفحه آغازه
-startup-blank-page =
-    .label = نمایش یک صفحه خالی
-startup-prev-session =
-    .label = نمایش صفحات و زبانه‌های از آخرین دفعه
+startup-restore-warn-on-quit =
+    .label = هنگام خروج اخطار می‌دهد
 disable-extension =
     .label = غیرفعال سازی افزونه
-home-page-header = صفحه خانگی
 tabs-group-header = زبانه‌ها
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab به ترتیب زبانه‌های اخیرا استفاده شده بین آنها حرکت می‌کند
@@ -172,6 +208,12 @@ choose-language-description = زبان مورد علاقهٔ خود را برا�
 choose-button =
     .label = انتخاب…
     .accesskey = ا
+choose-browser-language-description = زبانی که برای نمایش منوها، پیام‌ها و اعلان‌ها در { -brand-short-name } استفاده می‌شود را انتخاب کنید
+manage-browser-languages-button =
+    .label = تنظیم جایگزین‌ها…
+    .accesskey = l
+confirm-browser-language-change-description = برای اعمال این تغییرات { -brand-short-name } را دوباره راه‌اندازی کن
+confirm-browser-language-change-button = اعمال و راه‌اندازی دوباره
 translate-web-pages =
     .label = ترجمه محتویات وب
     .accesskey = ت
@@ -223,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = بیشتر بدانید
 update-application-title = بروزرسانی‌های { -brand-short-name }:
 update-application-description = برای تجربهٔ بهترین کارایی، پایداری و امنیت { -brand-short-name } را به روز نگاه دارید.
-update-application-info = نسخه{ $version } <a>امکانات جدید</a>
 update-application-version = نسخه{ $version } <a data-l10n-name="learn-more">امکانات جدید</a>
 update-history =
     .label = نمایش تاریخچهٔ بروزرسانی…
@@ -244,6 +285,10 @@ update-application-use-service =
 update-enable-search-update =
     .label = بطور خودکار موتورهای جست‌وجو بروزرسانی شوند
     .accesskey = س
+update-pref-write-failure-title = خطای نگارش
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = امکان ذخیرهٔ ترجیحات نیست. نوشتن در پرونده امکان‌پذیر نبود: { $path }
 
 ## General Section - Performance
 
@@ -259,7 +304,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = محدودیت پروسهٔ محتوا
     .accesskey = م
 performance-limit-content-process-enabled-desc = پروسه‌هایِ محتوایِ بیشتر می‌تواند کارایی را هنگام استفاده از چندین زبانه افزایش دهد، اما حافظه بیشتری هم مصرف خواهد کرد.
-performance-limit-content-process-disabled-desc = تغییر دادن تعداد پردازدش‌های محتوا تنها با چند‌پردازشی { -brand-short-name } امکان پذیر است. <a>بدانید چگونه بررسی کنید چندپرادزشی فعال است</a>
 performance-limit-content-process-blocked-desc = تغییر دادن تعداد پردازدش‌های محتوا تنها با چند‌پردازشی { -brand-short-name } امکان پذیر است. <a data-l10n-name="learn-more">بدانید چگونه بررسی کنید چندپرادزشی فعال است</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -284,19 +328,39 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = هنگامی که شروع به وارد کردن حروف می‌کنم، به دنبال متن جست‌وجو شود
     .accesskey = ج
+browsing-cfr-recommendations-learn-more = بیشتر بدانید
 
 ## General Section - Proxy
 
-network-proxy-title = شبکه پراکسی
+network-settings-title = تنظیمات شبکه
+network-proxy-connection-description = نحوهٔ اتصال { -brand-short-name } به اینترنت را پیکربندی کنید.
+network-proxy-connection-learn-more = اطلاعات بیشتر
 network-proxy-connection-settings =
     .label = تنظیمات…
     .accesskey = ت
 
 ## Home Section
 
+home-new-windows-tabs-header = پنجره‌ها و زبانه‌های جدید
+home-new-windows-tabs-description2 = انتخاب کنید چه چیزی در زمان باز کردن صفحهٔ خانگی، پنجره‌ها جدید و زبانه‌های جدید می‌بینید.
 
 ## Home Section - Home Page Customization
 
+home-homepage-mode-label = صفحهٔ خانگی و پنجره‌های جدید
+home-newtabs-mode-label = زبانه‌های جدید
+home-restore-defaults =
+    .label = بازنشانی پیش‌فرض‌ها
+    .accesskey = R
+# "Firefox" should be treated as a brand and kept in English,
+# while "Home" and "(Default)" can be localized.
+home-mode-choice-default =
+    .label = خانهٔ فایرفاکس (پیش‌فرض)
+home-mode-choice-custom =
+    .label = آدرس‌های سفارشی…
+home-mode-choice-blank =
+    .label = صفحهٔ خالی
+home-homepage-custom-url =
+    .placeholder = جای‌گذاری یک آدرس…
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -311,9 +375,6 @@ use-current-pages =
 choose-bookmark =
     .label = استفاده از نشانک…
     .accesskey = ن
-restore-default =
-    .label = بازگرداندن به پیش‌فرض‌
-    .accesskey = ب
 
 ## Search Section
 
@@ -405,6 +466,9 @@ sync-signedin-login-failure = لطفا جهت ارتباط مجدد وارد ش�
 sync-resend-verification =
     .label = ارسال مجدد تاییدیه
     .accesskey = d
+sync-remove-account =
+    .label = حذف حساب
+    .accesskey = R
 sync-sign-in =
     .label = ورود
     .accesskey = و
@@ -454,6 +518,8 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = ذخیره
     .accesskey = ذ
+sync-mobilepromo-single = اتصالِ یک دستگاه دیگر
+sync-mobilepromo-multi = مدیریت دستگاه‌ها
 sync-tos-link = شرایط ارائهٔ خدمات
 sync-fxa-privacy-notice = نکات حفظ حریم خصوصی
 
@@ -463,7 +529,10 @@ privacy-header = حریم خصوصی مرورگر
 
 ## Privacy Section - Forms
 
-forms-header = فرم‌ها و گذرواژه‌ها
+logins-header = ورودها و گذرواژه‌ها
+forms-ask-to-save-logins =
+    .label = در مورد ذخیره کردن نام‌کاربری و گذرواژه‌ها برای پایگاه‌ها سوال کن
+    .accesskey = r
 forms-exceptions =
     .label = استثناها…
     .accesskey = ث
@@ -497,13 +566,14 @@ history-remember-option-never =
     .label = هرگز تاریخچه را به خاطر نمی‌سپارد
 history-remember-option-custom =
     .label = تنظیمات خاصی را برای تاریخچه استفاده می‌کند
+history-remember-description = { -brand-short-name } سابقهٔ مرور، دریافت‌ها، اطلاعات فرم‌ها و تاریخچهٔ جست‌وجوهای شما را به خاطر خواهد آورد.
 history-dontremember-description = { -brand-short-name } تنظیمات حالت مرور ناشناس را استفاده خواهد کرد، و هیچ تاریخچه‌ای از مرور شما در وب نگه نخواهد داشت.
 history-private-browsing-permanent =
     .label = همیشه از حالت  مرور خصوصی استفاده کن
     .accesskey = م
-history-remember-option =
-    .label = مرور و بارگذاری های مرا به خاطر بسپار
-    .accesskey = خ
+history-remember-browser-option =
+    .label = ذخیرهٔ تاریخچهٔ دریافت‌ها و مرور
+    .accesskey = b
 history-remember-search-option =
     .label = اطلاعاتی که در فرم‌های صفحات وب و نوار جست‌وجو وارد می‌شوند به خاطر سپرده شود
     .accesskey = ط
@@ -513,28 +583,45 @@ history-clear-on-close-option =
 history-clear-on-close-settings =
     .label = تنظیمات
     .accesskey = ت
+history-clear-button =
+    .label = پاک کردن تاریخچه…
+    .accesskey = s
 
 ## Privacy Section - Site Data
 
 sitedata-header = کوکی‌ها و اطلاعات وب سایت
+sitedata-total-size-calculating = در حال محاسبهٔ اطلاعات پایگاه‌ها و اندازهٔ حافظهٔ نهان…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = کوکی‌ها، اطلاعات پایگاه‌ها و حافظهٔ نهانِ ذخیره شده در حال حاضر { $value } { $unit } از فضای دیسک شما استفاده می‌کنند.
 sitedata-learn-more = بیشتر بدانید
-sitedata-keep-until = نگهداری شوند تا
-    .accesskey = ن
-sitedata-accept-third-party-always-option =
-    .label = همیشه
-sitedata-accept-third-party-visited-option =
-    .label = از بازدید
-sitedata-accept-third-party-never-option =
-    .label = هرگز
+sitedata-delete-on-close =
+    .label = پاک کردن کوکی‌ها و داده‌های سایت هنگام بستن { -brand-short-name }.
+    .accesskey = c
+sitedata-allow-cookies-option =
+    .label = پذیرفتن کوکی‌ها و داده‌های سایت
+    .accesskey = A
+sitedata-disallow-cookies-option =
+    .label = مسدودسازی کوکی‌ها و داده‌های سایت
+    .accesskey = B
+sitedata-option-block-trackers =
+    .label = ردیاب‌های متفرقه
+sitedata-option-block-unvisited =
+    .label = کوکی‌ها از وب‌سایت‌های مشاهده نشده
+sitedata-option-block-all-third-party =
+    .label = تمام کوکی‌های متفرقه (ممکن است باعث از کار افتادن سایت‌ها شود)
+sitedata-option-block-all =
+    .label = تمام کوکی‌ها (باعث از کار افتادن وب‌سایت‌ها می‌شود)
 sitedata-clear =
     .label = پاک کردن اطلاعات…
     .accesskey = I
 sitedata-settings =
     .label = مدیریت اطلاعات…
     .accesskey = M
-sitedata-cookies-exceptions =
-    .label = استثناها…
-    .accesskey = ت
+sitedata-cookies-permissions =
+    .label = مدیریت مجوزها...
+    .accesskey = P
 
 ## Privacy Section - Address Bar
 
@@ -551,30 +638,50 @@ addressbar-locbar-openpage-option =
     .accesskey = ز
 addressbar-suggestions-settings = تغییر ترجیحات مربوط به پیشنهادهای موتورهای جست‌وجو
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = مسدود کردن محتوا
+content-blocking-learn-more = بیشتر بدانید
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = استاندارد
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = شدید
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = سفارشی
+    .accesskey = C
+content-blocking-standard-description = فقط ردیاب های شناخته شده را در پنجره‌های مرور خصوصی مسدود کن.
+content-blocking-custom-desc = انتخاب کنید چه چیزی مسدود شود.
+content-blocking-third-party-cookies = کوکی‌هایِ ردیبابِ متفرقه
+content-blocking-all-windows-trackers = ردیاب‌های شناخته شده در تمام پنجره‌ها
+content-blocking-all-third-party-cookies = تمام کوکی‌های متفرقه
+content-blocking-warning-title = هوشیار باشید!
+content-blocking-trackers-label =
+    .label = ردیاب‌ها
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = در همه پنجره‌ها
+    .accesskey = A
+content-blocking-option-private =
+    .label = تنها در پنجره‌های ناشناس
+    .accesskey = p
+content-blocking-tracking-protection-change-block-list = تغییر لیست مسدودی‌ها
+content-blocking-cookies-label =
+    .label = کوکی‌ها
+    .accesskey = C
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = استخراج کننده‌های رمزارزها
+    .accesskey = y
+
 ## Privacy Section - Tracking
 
-tracking-header = محافظت در برابر ردگیری
-tracking-desc = محافظت از ردیابی دنبال کنندگان انلاینی را که اطلاعات مرورکردن شما را از چند وب سایت مختلف دریافت می کردند مسدود کرده است. <a data-l10n-name="learn-more">در مورد محافظت از ردیابی و حریم شخصی خود بیشتر بدانید</a>
-tracking-mode-label = استفاده از محافظ ردیابی برای مسدود کردند دنبال کنندگان ناشناس
-tracking-mode-always =
-    .label = همیشه
-    .accesskey = م
-tracking-mode-private =
-    .label = تنها در پنجره‌های ناشناس
-    .accesskey = ت
-tracking-mode-never =
-    .label = هرگز
-    .accesskey = ه
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = استفاده از محافظ دنبال کننده در مرورگر خصوصی جهت مسدود کردن دنبال کننده های ناشناس
-    .accesskey = خ
-tracking-exceptions =
-    .label = استثناها…
-    .accesskey = ت
-tracking-change-block-list =
-    .label = تغییر فهرست مسدودی‌ها…
-    .accesskey = ت
+tracking-manage-exceptions =
+    .label = مدیریت استثناها…
+    .accesskey = x
 
 ## Privacy Section - Permissions
 
@@ -599,6 +706,23 @@ permissions-notification-link = بیشتر بدانید
 permissions-notification-pause =
     .label = توقف هوشدار تا زمانی که { -brand-short-name } مجدد راه اندازی شود
     .accesskey = n
+permissions-block-autoplay-media =
+    .label = مسدود کردن پایگاه‌ها برای پخش خودکار رسانه و صوت
+    .accesskey = B
+permissions-block-autoplay-media-menu = برای سایت‌هایی که بطور خودکار صدا پخش می‌کنند
+permissions-block-autoplay-media2 =
+    .label = مسدود کردن وب‌سایت‌ها از پخش خودکار صدا
+    .accesskey = B
+permissions-block-autoplay-media-exceptions =
+    .label = استثاناها…
+    .accesskey = E
+autoplay-option-ask =
+    .label = همیشه بپرس
+autoplay-option-allow =
+    .label = اجازه پخش خودکار بده
+autoplay-option-dont =
+    .label = خودکار پخش نکن
+permissions-autoplay-link = بیشتر بدانید
 permissions-block-popups =
     .label = مسدود کردن پنجره‌های بازشو
     .accesskey = م
@@ -622,14 +746,20 @@ collection-header = ذخیره اطلاعات و استفاده { -brand-short-n
 collection-description = ما تمام تلاش خود را می‌کنیم که به شما حق انتخاب بدهیم و تنها اطلاعاتی را جمع‌آوری کنیم که برای بهبود { -brand-short-name } برای همه، کمک کند. ما همیشه قبل از دریافت اطلاعات شخصی از شما اجازه خواهیم گرفت.
 collection-privacy-notice = نکات حفظ حریم خصوصی
 collection-health-report =
-    .label = { -brand-short-name } اجازه دهید تا اطلاعات موارد فنی وفعال و انفعالات رابرای موزیلا ارسال کند
+    .label = اجازه دادن به { -brand-short-name } برای ارسال اطلاعاتِ فنی و رفتاری به { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = بیشتر بدانید
+collection-studies =
+    .label = اجازه دادن به { -brand-short-name } برای نصب و اجرای studyها
+collection-studies-link = نمایش studyهای { -brand-short-name }
+addon-recommendations =
+    .label = اجازه دادن به { -brand-short-name } برای ساخت پیشنهادهای سفارشی شدهٔ مربوط به افزونه‌ها
+addon-recommendations-link = بیشتر بدانید
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = گزارش کردن داده‌ها برای این پیکربندی ساخته شده غیرفعال شده است
 collection-browser-errors =
-    .label = به { -brand-short-name } اجازه بده تا گزارش‌های خطای مرورگر را به موزیلا ارسال کند( شامل پیام های خطا)
+    .label = به { -brand-short-name } اجازه بده تا گزارش‌های خطای مرورگر ( شامل پیام‌های خطا) را به { -vendor-short-name } ارسال کند
     .accesskey = b
 collection-browser-errors-link = بیشتر بدانید
 collection-backlogged-crash-reports =
@@ -674,3 +804,31 @@ certs-view =
 certs-devices =
     .label = امنیت دستگاه‌ها…
     .accesskey = د
+space-alert-learn-more-button =
+    .label = بیشتر بدانید
+    .accesskey = ب
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] بازکردن گزینه‌ها
+           *[other] بازکردن ترجیحات
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] ب
+           *[other] ب
+        }
+space-alert-under-5gb-ok-button =
+    .label = باشه،‌ متوجه شدم
+    .accesskey = ب
+space-alert-under-5gb-message = فضای ذخیره سازی { -brand-short-name } تمام شده است. ممکن است محتواهای سایت‌ها خوب نمایش داده نشود.“اطلاعات بیشتر” رابرای بهبود سازی فضای ذخیره سازی خود در جهت کسب تجربه بهتری از مرورگر مشاهده کنید.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = رومیزی
+downloads-folder-name = بارگیری‌ها
+choose-download-folder-title = انتخاب پوشهٔ بارگیری:‏
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = ذخیره فایل‌ها در { $service-name }

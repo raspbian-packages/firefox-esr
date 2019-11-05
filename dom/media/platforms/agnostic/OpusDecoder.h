@@ -4,12 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #if !defined(OpusDecoder_h_)
-#define OpusDecoder_h_
+#  define OpusDecoder_h_
 
-#include "PlatformDecoderModule.h"
+#  include "PlatformDecoderModule.h"
 
-#include "mozilla/Maybe.h"
-#include "nsAutoPtr.h"
+#  include "mozilla/Maybe.h"
+#  include "nsAutoPtr.h"
+#  include "nsTArray.h"
 
 struct OpusMSDecoder;
 
@@ -65,7 +66,8 @@ class OpusDataDecoder : public MediaDataDecoder,
   bool mPaddingDiscarded;
   int64_t mFrames;
   Maybe<int64_t> mLastFrameTime;
-  uint8_t mMappingTable[MAX_AUDIO_CHANNELS];  // Channel mapping table.
+  AutoTArray<uint8_t, 8> mMappingTable;
+  AudioConfig::ChannelLayout::ChannelMap mChannelMap;
 };
 
 }  // namespace mozilla

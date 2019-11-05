@@ -2,8 +2,7 @@
 <html>
 <head>
   <title>Test for recursive CPOW-getting-cookie bug</title>
-  <script type="application/javascript"
-          src="/tests/SimpleTest/SimpleTest.js">
+  <script src="/tests/SimpleTest/SimpleTest.js">
   </script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
@@ -11,6 +10,7 @@
 
   <script type="application/javascript">
     "use strict";
+    /* eslint-env mozilla/frame-script */
 
     SimpleTest.waitForExplicitFinish();
 
@@ -21,7 +21,7 @@
       "use strict";
 
       let { MockFilePicker } =
-        ChromeUtils.import("chrome://specialpowers/content/MockFilePicker.jsm", {});
+        ChromeUtils.import("resource://specialpowers/MockFilePicker.jsm");
 
       function parentReady(message) {
         MockFilePicker.init(content);
@@ -52,7 +52,8 @@
         test.next(msg.data.value);
       }
 
-      mm.addMessageListener("testBug1086684:childDone", testDone);
+      mm.addMessageListener("testBug1086684:childDone",
+                            SpecialPowers.wrapCallback(testDone));
 
       let blob = new Blob([]);
       let file = new File([blob], "helloworld.txt", { type: "text/plain" });
@@ -98,8 +99,8 @@
           ["dom.ipc.browser_frames.oop_by_default", true],
           ["dom.mozBrowserFramesEnabled", true],
           ["network.disable.ipc.security", true],
-          ["browser.pagethumbnails.capturing_disabled", true]
-        ]
+          ["browser.pagethumbnails.capturing_disabled", true],
+        ],
       }, runTests);
     });
   </script>

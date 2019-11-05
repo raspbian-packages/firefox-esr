@@ -14,7 +14,7 @@ class nsUDPSocketProvider final : public nsISocketProvider {
   NS_DECL_NSISOCKETPROVIDER
 
  private:
-  ~nsUDPSocketProvider();
+  ~nsUDPSocketProvider() = default;
 };
 
 #endif /* nsUDPSocketProvider_h__ */

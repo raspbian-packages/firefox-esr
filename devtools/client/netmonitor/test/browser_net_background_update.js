@@ -8,11 +8,11 @@
  * are displayed when the user shows the panel again.
  */
 add_task(async () => {
-  let { tab, monitor, toolbox } = await initNetMonitor(CUSTOM_GET_URL);
+  const { tab, monitor, toolbox } = await initNetMonitor(CUSTOM_GET_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
 
   store.dispatch(Actions.batchEnable(false));
 
@@ -20,13 +20,15 @@ add_task(async () => {
   await performRequests(monitor, tab, 2);
 
   // Wait for two logs
-  await waitUntil(() => document.querySelectorAll(".request-list-item").length == 2);
+  await waitUntil(
+    () => document.querySelectorAll(".request-list-item").length == 2
+  );
 
   info("Select the inspector");
   await toolbox.selectTool("inspector");
 
   info("Wait for Net panel to be hidden");
-  await waitUntil(() => (document.visibilityState == "hidden"));
+  await waitUntil(() => document.visibilityState == "hidden");
 
   // Execute another two requests
   await performRequests(monitor, tab, 2);
@@ -34,23 +36,20 @@ add_task(async () => {
   // The number of rendered requests should be the same since
   // requests shouldn't be rendered while the net panel is in
   // background
-  is(document.querySelectorAll(".request-list-item").length, 2,
-    "There should be expected number of requests");
+  is(
+    document.querySelectorAll(".request-list-item").length,
+    2,
+    "There should be expected number of requests"
+  );
 
   info("Select the Net panel again");
   await toolbox.selectTool("netmonitor");
 
   // Wait for another two logs to be rendered since the panel
   // is selected now.
-  await waitUntil(() => document.querySelectorAll(".request-list-item").length == 4);
+  await waitUntil(
+    () => document.querySelectorAll(".request-list-item").length == 4
+  );
 
   return teardown(monitor);
 });
-
-async function performRequests(monitor, tab, count) {
-  let wait = waitForNetworkEvents(monitor, count);
-  await ContentTask.spawn(tab.linkedBrowser, count, requestCount => {
-    content.wrappedJSObject.performRequests(requestCount);
-  });
-  await wait;
-}

@@ -10,11 +10,13 @@
 
 #include "ipc/IPCMessageUtils.h"
 #include "nsExceptionHandler.h"
+#include "nsIHttpChannel.h"
 #include "nsPrintfCString.h"
 #include "nsString.h"
 #include "prio.h"
 #include "mozilla/net/DNS.h"
 #include "TimingStruct.h"
+#include "nsILoadInfo.h"
 
 namespace IPC {
 
@@ -25,8 +27,9 @@ struct Permission {
   uint32_t capability, expireType;
   int64_t expireTime;
 
-  Permission() {}
-  Permission(const nsCString& aOrigin, const nsCString& aType,
+  Permission() : capability(0), expireType(0), expireTime(0) {}
+
+  Permission(const nsCString& aOrigin, const nsACString& aType,
              const uint32_t aCapability, const uint32_t aExpireType,
              const int64_t aExpireTime)
       : origin(aOrigin),
@@ -95,7 +98,7 @@ struct ParamTraits<mozilla::net::NetAddr> {
       if (XRE_IsParentProcess()) {
         nsPrintfCString msg("%d", aParam.raw.family);
         CrashReporter::AnnotateCrashReport(
-            NS_LITERAL_CSTRING("Unknown NetAddr socket family"), msg);
+            CrashReporter::Annotation::UnknownNetAddrSocketFamily, msg);
       }
 
       MOZ_CRASH("Unknown socket family");
@@ -177,6 +180,12 @@ struct ParamTraits<mozilla::net::ResourceTimingStruct> {
            ReadParam(aMsg, aIter, &aResult->cacheReadEnd);
   }
 };
+
+template <>
+struct ParamTraits<nsIHttpChannel::FlashPluginState>
+    : public ContiguousEnumSerializerInclusive<
+          nsIHttpChannel::FlashPluginState, nsIHttpChannel::FlashPluginUnknown,
+          nsIHttpChannel::FlashPluginLastValue> {};
 
 }  // namespace IPC
 

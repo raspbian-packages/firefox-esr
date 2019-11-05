@@ -4,8 +4,8 @@
 
 do-not-track-description = Siųsti svetainėms „Do Not Track“ signalą, nurodant pageidavimą nebūti sekamiems
 do-not-track-learn-more = Sužinoti daugiau
-do-not-track-option-default =
-    .label = Tik naudojant apsaugą nuo stebėjimo
+do-not-track-option-default-content-blocking-known =
+    .label = Tik kai „{ -brand-short-name }“ nurodyta blokuoti žinomus stebėjimo elementus
 do-not-track-option-always =
     .label = Visada
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Nuostatos
            *[other] Nuostatos
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Jūsų organizacija apribojo galimybę keisti dalį nuostatų.
        *[other] Jūsų organizacija apribojo galimybę keisti dalį nuostatų.
     }
+managed-notice = Jūsų naršyklę tvarko jūsų organizacija.
 pane-general-title = Bendrosios
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Privatumas ir saugumas
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = „Firefox“ paskyra
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = „{ -brand-short-name }“ pagalba
+addons-button-label = Priedai ir grafiniai apvalkalai
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Perleisti „{ -brand-short-name }“
 should-restart-ok = Perleisti „{ -brand-short-name }“ dabar
 cancel-no-restart-button = Atsisakyti
 restart-later = Perleisti vėliau
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Priedas „<img data-l10n-name="icon"/> { $name }“ valdo jūsų pradžios tinklalapį.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Priedas „<img data-l10n-name="icon"/> { $name }“ valdo jūsų naujos kortelės tinklalapį.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Šią nuostatą valdo priedas <img data-l10n-name="icon"/> „{ $name }“.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Priedas „<img data-l10n-name="icon"/> { $name }“ pakeitė jūsų numatytąją ieškyklę.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Priedui „<img data-l10n-name="icon"/> { $name }“ reikia sudėtinio rodinio kortelių.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Šią nuostatą valdo priedas <img data-l10n-name="icon"/> „{ $name }“.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Priedas „<img data-l10n-name="icon"/> { $name }“ valdo „{ -brand-short-name }“ jungimosi prie interneto būdą.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Norėdami įjungti priedą, eikite į „<img data-l10n-name="addons-icon"/> Priedai“, esantį <img data-l10n-name="menu-icon"/> meniu.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = „{ -brand-short-name }“ šiuo metu nėra numatytoji naršyk
 set-as-my-default-browser =
     .label = Paskirti numatytąja…
     .accesskey = n
-startup-page = Paleidžiant „{ -brand-short-name }“:
-    .accesskey = l
-startup-user-homepage =
-    .label = rodyti pradžios tinklalapį
-startup-blank-page =
-    .label = rodyti tuščią puslapį
-startup-prev-session =
-    .label = atverti paskiausio seanso langus ir korteles
+startup-restore-previous-session =
+    .label = Atkurti paskiausiąjį seansą
+    .accesskey = r
+startup-restore-warn-on-quit =
+    .label = Perspėti išjungiant naršyklę
 disable-extension =
     .label = Išjungti priedą
-home-page-header = Pradžios tinklalapis
 tabs-group-header = Kortelės
 ctrl-tab-recently-used-order =
     .label = Vald+Tab perjungia korteles paskiausiai naudotų eiliškumu
@@ -184,6 +211,12 @@ choose-language-description = Pasirinkite kalbą, kuria pageidaujate matyti tink
 choose-button =
     .label = Pasirinkti…
     .accesskey = P
+choose-browser-language-description = Pasirinkite kalbas, kurios bus naudojamos atvaizduojant meniu, žinutes, pranešimus iš „{ -brand-short-name }“.
+manage-browser-languages-button =
+    .label = Nustatyti kitas…
+    .accesskey = k
+confirm-browser-language-change-description = Norėdami pritaikyti pakeitimus, paleiskite „{ -brand-short-name }“ iš naujo
+confirm-browser-language-change-button = Pritaikyti ir perleisti
 translate-web-pages =
     .label = Versti tinklalapių turinį
     .accesskey = V
@@ -235,7 +268,6 @@ play-drm-content =
 play-drm-content-learn-more = Sužinoti daugiau
 update-application-title = „{ -brand-short-name }“ naujinimai
 update-application-description = Laiku atnaujinkite „{ -brand-short-name }“ didesniam našumui, stabilumui bei saugumui užtikrinti.
-update-application-info = Laida { $version } <a>Kas naujo</a>
 update-application-version = Laida { $version } <a data-l10n-name="learn-more">Kas naujo</a>
 update-history =
     .label = Rodyti naujinimų žurnalą…
@@ -250,12 +282,32 @@ update-application-check-choose =
 update-application-manual =
     .label = niekada netikrinti ar yra naujinimų (nerekomenduojama)
     .accesskey = N
+update-application-warning-cross-user-setting = Ši nuostata bus pritaikyta visoms „Windows“ paskyroms ir „{ -brand-short-name }“ profiliams, naudojantiems šią „{ -brand-short-name }“ įdiegtį.
 update-application-use-service =
     .label = naujinimų įdiegimui naudoti fone veikiančią tarnybą
     .accesskey = f
 update-enable-search-update =
     .label = automatiškai naujinti ieškykles
     .accesskey = e
+update-pref-write-failure-title = Įrašymo klaida
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Nepavyko įrašyti nuostatos. Negalima įrašyti į failą: { $path }
+update-setting-write-failure-title = Klaida įrašant naujinimų nuostatas
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    „{ -brand-short-name }“ susidūrė su klaida ir neįrašė šio pakeitimo. Atminkite, kad norint pakeisti šią naujinimų nuostatą, reikalingas leidimas rašyti į žemiau nurodytą failą. Jūs, arba sistemos prižiūrėtojas, gali pabandyti tai sutvarkyti, suteikiant visišką šio failo valdymo teisę „Users“ grupei.
+    
+    Nepavyko rašymas į failą: { $path }
+update-in-progress-title = Vyksta naujinimas
+update-in-progress-message = Ar norite, kad „{ -brand-short-name }“ tęstų šį naujinimą?
+update-in-progress-ok-button = &Atsisakyti
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Tęsti
 
 ## General Section - Performance
 
@@ -271,7 +323,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Turinio procesų riba
     .accesskey = r
 performance-limit-content-process-enabled-desc = Papildomi turinio procesai gali paspartinti veikimą kai naudojama daugiau kortelių, tačiau taip pat naudos daugiau atminties.
-performance-limit-content-process-disabled-desc = Turinio procesų skaičiaus keitimas galimas tik daugiaprocesėje „{ -brand-short-name }“. <a>Sužinokite kaip patikrinti, ar daugiaprocesė veiksena įjungta</a>
 performance-limit-content-process-blocked-desc = Turinio procesų skaičiaus keitimas galimas tik daugiaprocesėje „{ -brand-short-name }“. <a data-l10n-name="learn-more">Sužinokite kaip patikrinti, ar daugiaprocesė veiksena įjungta</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -296,10 +347,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Pradėti paiešką pradėjus rinkti tekstą
     .accesskey = P
+browsing-cfr-recommendations =
+    .label = Rekomenduoti priedus naršant
+    .accesskey = R
+browsing-cfr-features =
+    .label = Rekomenduoti funkcijas naršant
+    .accesskey = f
+browsing-cfr-recommendations-learn-more = Sužinoti daugiau
 
 ## General Section - Proxy
 
-network-proxy-title = Tinklo įgaliotasis serveris
+network-settings-title = Tinklo nuostatos
+network-proxy-connection-description = Nustatykite, kaip „{ -brand-short-name }“ jungiasi prie interneto.
 network-proxy-connection-learn-more = Sužinoti daugiau
 network-proxy-connection-settings =
     .label = Nuostatos…
@@ -341,9 +400,6 @@ use-current-pages =
 choose-bookmark =
     .label = Tinklalapis iš adresyno…
     .accesskey = T
-restore-default =
-    .label = Atstatyti numatytąjį
-    .accesskey = A
 
 ## Search Section
 
@@ -487,10 +543,11 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Įrašyti
     .accesskey = r
-sync-mobilepromo-single = Susieti kitą įrenginį
-sync-mobilepromo-multi = Tvarkyti įrenginius
+sync-connect-another-device = Susieti kitą įrenginį
+sync-manage-devices = Tvarkyti įrenginius
+sync-fxa-begin-pairing = Susieti įrenginį
 sync-tos-link = Paslaugos teikimo nuostatai
-sync-fxa-privacy-notice = Pastaba dėl privatumo
+sync-fxa-privacy-notice = Privatumo pranešimas
 
 ## Privacy Section
 
@@ -498,13 +555,16 @@ privacy-header = Naršyklės privatumas
 
 ## Privacy Section - Forms
 
-forms-header = Formos ir slaptažodžiai
+logins-header = Prisijungimai ir slaptažodžiai
 forms-ask-to-save-logins =
     .label = Klausti, ar norite įrašyti svetainių prisijungimus ir slaptažodžius
     .accesskey = r
 forms-exceptions =
     .label = Išimtys…
     .accesskey = š
+forms-generate-passwords =
+    .label = Siūlyti ir generuoti stiprius slaptažodžius
+    .accesskey = i
 forms-saved-logins =
     .label = Įrašyti prisijungimai…
     .accesskey = p
@@ -540,7 +600,7 @@ history-dontremember-description = „{ -brand-short-name }“ visą laiką laik
 history-private-browsing-permanent =
     .label = Visada naršyti privačiojo naršymo veiksenoje
     .accesskey = V
-history-remember-option =
+history-remember-browser-option =
     .label = Įsiminti lankytus tinklalapius ir parsiųstus failus
     .accesskey = m
 history-remember-search-option =
@@ -559,36 +619,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Slapukai ir svetainių duomenys
+sitedata-total-size-calculating = Skaičiuojamas svetainių duomenų ir podėlio dydis…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Saugomi slapukai, svetainių duomenys ir podėlis šiuo metu užima { $value } { $unit } disko vietos.
 sitedata-learn-more = Sužinoti daugiau
-sitedata-accept-cookies-option =
-    .label = Leisti įrašyti slapukus ir svetainių duomenis (rekomenduojama)
-    .accesskey = L
-sitedata-block-cookies-option =
-    .label = Neleisti įrašyti slapukų ir svetainių duomenų (gali sutrikti svetainių veikimas)
-    .accesskey = N
-sitedata-keep-until = Laikyti iki
-    .accesskey = y
-sitedata-keep-until-expire =
-    .label = jie baigia galioti
-sitedata-keep-until-closed =
-    .label = „{ -brand-short-name }“ yra uždaroma
-sitedata-accept-third-party-desc = Leisti trečiųjų šalių slapukus ir svetainių duomenis
-    .accesskey = j
-sitedata-accept-third-party-always-option =
-    .label = Visada
-sitedata-accept-third-party-visited-option =
-    .label = tik lankytoms svetainėms
-sitedata-accept-third-party-never-option =
-    .label = niekada
+sitedata-delete-on-close =
+    .label = Ištrinti slapukus ir svetainių duomenis uždarant „{ -brand-short-name }“
+    .accesskey = s
+sitedata-delete-on-close-private-browsing = Nuolatinėje privačiojo naršymo veiksenoje, slapukai ir svetainių duomenys bus visada išvalomi užveriant „{ -brand-short-name }“.
+sitedata-allow-cookies-option =
+    .label = Priimti slapukus ir svetainių duomenis
+    .accesskey = P
+sitedata-disallow-cookies-option =
+    .label = Blokuoti slapukus ir svetainių duomenis
+    .accesskey = B
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Blokuojamas tipas
+    .accesskey = t
+sitedata-option-block-trackers =
+    .label = Trečiųjų šalių stebėjimo elementai
+sitedata-option-block-unvisited =
+    .label = Slapukai iš neaplankytų svetainių
+sitedata-option-block-all-third-party =
+    .label = Visi trečiųjų šalių slapukai (gali sutrikti svetainių veikimas)
+sitedata-option-block-all =
+    .label = Visi slapukai (sutriks svetainių veikimas)
 sitedata-clear =
     .label = Išvalyti duomenis…
     .accesskey = v
 sitedata-settings =
     .label = Tvarkyti duomenis…
     .accesskey = T
-sitedata-cookies-exceptions =
-    .label = Išimtys…
-    .accesskey = I
+sitedata-cookies-permissions =
+    .label = Tvarkyti leidimus…
+    .accesskey = l
 
 ## Privacy Section - Address Bar
 
@@ -605,30 +672,73 @@ addressbar-locbar-openpage-option =
     .accesskey = v
 addressbar-suggestions-settings = Keisti ieškyklių siūlymų nuostatas
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Turinio blokavimas
+content-blocking-description = Blokuokite trečiųjų šalių turinį, kuris stebi jūsų veiklą internete. Kontroliuokite, kiek jūsų veiklos saugoma ir dalijamasi tarp svetainių.
+content-blocking-section-description = Saugokite savo privatumą naršydami. Blokuokite nematomą turinį, kuris seka jūsų lankomas svetaines ir jus profiliuoja. Užblokavus dalį šio turinio gali pagreitėti tinklalapių įkėlimas.
+content-blocking-learn-more = Sužinoti daugiau
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Standartinis
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = Griežtas
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Kitas
+    .accesskey = K
+content-blocking-standard-description = Blokuoja tik žinomus stebėjimo elementus privačiojo naršymo languose.
+content-blocking-standard-desc = Pritaikyta saugumui ir našumui. Leidžia dalį stebėjimo elementų, kad svetainės veiktų tinkamai.
+content-blocking-strict-desc = Blokuoja visus „{ -brand-short-name }“ aptinkamus stebėjimo elementus. Gali sutrikti kai kurių svetainių veikimas.
+content-blocking-strict-description = Stipresnė apsauga, tačiau gali sutrikti kai kurių svetainių veikimas.
+content-blocking-custom-desc = Pasirinkite, ką blokuoti.
+content-blocking-private-trackers = Žinomi stebėjimo elementai tik privačiojo naršymo languose
+content-blocking-third-party-cookies = Trečiųjų šalių stebėjimo slapukai
+content-blocking-all-cookies = Visi slapukai
+content-blocking-unvisited-cookies = Slapukai iš nelankytų svetainių
+content-blocking-all-windows-trackers = Žinomi stebėjimo elementai visuose languose
+content-blocking-all-third-party-cookies = Visi trečiųjų šalių slapukai
+content-blocking-cryptominers = Kriptovaliutų kasėjai
+content-blocking-fingerprinters = Skaitmeninių atspaudų stebėjimas
+content-blocking-warning-title = Dėmesio!
+content-blocking-warning-description = Blokuojant turinį gali sutrikti kai kurių svetainių veikimas. Blokavimą galima lengvai išjungti patikimose svetainėse.
+content-blocking-learn-how = Sužinoti kaip
+content-blocking-reload-description = Norėdami pritaikyti šiuos pakeitimus, turėsite įkelti savo korteles iš naujo.
+content-blocking-reload-tabs-button =
+    .label = Iš naujo įkelti visas korteles
+    .accesskey = v
+content-blocking-trackers-label =
+    .label = Stebėjimo elementai
+    .accesskey = S
+content-blocking-tracking-protection-option-all-windows =
+    .label = Visuose languose
+    .accesskey = V
+content-blocking-option-private =
+    .label = Tik privačiojo naršymo languose
+    .accesskey = p
+content-blocking-tracking-protection-change-block-list = Keisti blokavimo sąrašą
+content-blocking-cookies-label =
+    .label = Slapukai
+    .accesskey = S
+content-blocking-expand-section =
+    .tooltiptext = Daugiau informacijos
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Kriptovaliutų kasėjai
+    .accesskey = i
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Skaitmeninių atspaudų stebėjimas
+    .accesskey = S
+
 ## Privacy Section - Tracking
 
-tracking-header = Apsauga nuo stebėjimo
-tracking-desc = Apsauga nuo stebėjimo blokuoja stebėjimo elementus, renkančius jūsų naršymo duomenis daugelyje svetainių. <a data-l10n-name="learn-more">Sužinokite daugiau apie apsaugą nuo stebėjimo ir savo privatumą</a>
-tracking-mode-label = Naudokite apsaugą nuo stebėjimo, norėdami užblokuoti žinomus stebėjimo elementus
-tracking-mode-always =
-    .label = Visada
-    .accesskey = V
-tracking-mode-private =
-    .label = Tik privačiojo naršymo languose
-    .accesskey = T
-tracking-mode-never =
-    .label = Niekada
-    .accesskey = N
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Naudokite apsaugą nuo stebėjimo privačiojo naršymo veiksenoje, norėdami užblokuoti žinomus stebėjimo elementus
-    .accesskey = v
-tracking-exceptions =
-    .label = Išimtys…
-    .accesskey = I
-tracking-change-block-list =
-    .label = Keisti blokavimo sąrašą…
-    .accesskey = K
+tracking-manage-exceptions =
+    .label = Tvarkyti išimtis…
+    .accesskey = m
 
 ## Privacy Section - Permissions
 
@@ -653,6 +763,16 @@ permissions-notification-link = Sužinoti daugiau
 permissions-notification-pause =
     .label = Nerodyti pranešimų iki kito „{ -brand-short-name }“ paleidimo
     .accesskey = p
+permissions-block-autoplay-media2 =
+    .label = Neleisti svetainėms automatiškai groti garso.
+    .accesskey = N
+permissions-block-autoplay-media-exceptions =
+    .label = Išimtys…
+    .accesskey = I
+permissions-autoplay = Automatinis grojimas
+permissions-autoplay-settings =
+    .label = Nuostatos…
+    .accesskey = t
 permissions-block-popups =
     .label = Neleisti iškylančiųjų langų
     .accesskey = N
@@ -674,18 +794,20 @@ permissions-a11y-privacy-link = Sužinoti daugiau
 
 collection-header = „{ -brand-short-name }“ duomenų rinkimas ir naudojimas
 collection-description = Mes siekiame jums leisti rinktis ir rinkti tik tai, ko reikia teikti ir tobulinti „{ -brand-short-name }“ visiems. Mes visuomet paprašome leidimo prieš gaudami asmeninę informaciją.
-collection-privacy-notice = Privatumo nuostatai
+collection-privacy-notice = Privatumo pranešimas
 collection-health-report =
     .label = Leisti „{ -brand-short-name }“ siųsti techninius ir naudojimosi duomenis „{ -vendor-short-name }i“
     .accesskey = t
 collection-health-report-link = Sužinoti daugiau
+collection-studies =
+    .label = Leisti „{ -brand-short-name }“ diegti ir atlikti tyrimus
+collection-studies-link = Peržiūrėti „{ -brand-short-name }“ tyrimus
+addon-recommendations =
+    .label = Leisti „{ -brand-short-name }“ siūlyti suasmenintas priedų rekomendacijas
+addon-recommendations-link = Sužinoti daugiau
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Duomenų siuntimas šiai darinio sąrankai yra išjungtas
-collection-browser-errors =
-    .label = Leisti „{ -brand-short-name }“ siųsti naršyklės klaidų pranešimus (kartu su klaidų tekstu) „{ -vendor-short-name }i“
-    .accesskey = n
-collection-browser-errors-link = Sužinoti daugiau
 collection-backlogged-crash-reports =
     .label = Leisti „{ -brand-short-name }“ siųsti sukauptus strigčių pranešimus jūsų vardu
     .accesskey = g
@@ -728,3 +850,36 @@ certs-view =
 certs-devices =
     .label = Saugumo priemonės…
     .accesskey = S
+space-alert-learn-more-button =
+    .label = Sužinoti daugiau
+    .accesskey = u
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Atverti nuostatas
+           *[other] Atverti nuostatas
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] v
+           *[other] v
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] „{ -brand-short-name }“ tuoj pritrūks vietos diske. Svetainių turinys gali būti atvaizduojamas netinkamai. Galite išvalyti saugomus duomenis per „Nuostatos“ > „Privatumas ir saugumas“ > „Slapukai ir svetainių duomenys“.
+       *[other] „{ -brand-short-name }“ tuoj pritrūks vietos diske. Svetainių turinys gali būti atvaizduojamas netinkamai. Galite išvalyti saugomus duomenis per „Nuostatos“ > „Privatumas ir saugumas“ > „Slapukai ir svetainių duomenys“.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Gerai, supratau
+    .accesskey = G
+space-alert-under-5gb-message = „{ -brand-short-name }“ tuoj pritrūks vietos diske. Svetainių turinys gali būti atvaizduojamas netinkamai. Spustelėkite „Sužinoti daugiau“, norėdami optimizuoti savo disko naudojimą efektyvesniam naršymui.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Darbalaukis
+downloads-folder-name = Atsiuntimų aplankas
+choose-download-folder-title = Atsiuntimų aplanko parinkimas
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Įrašyti failus į „{ $service-name }“

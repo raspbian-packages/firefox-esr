@@ -8,23 +8,23 @@
 #define GFX_ASYNCCOMPOSITIONMANAGER_H
 
 #include "Units.h"                                 // for ScreenPoint, etc
+#include "FrameMetrics.h"                          // for FrameMetrics
 #include "mozilla/layers/LayerManagerComposite.h"  // for LayerManagerComposite
 #include "mozilla/Attributes.h"                    // for final, etc
 #include "mozilla/RefPtr.h"                        // for RefCounted
 #include "mozilla/TimeStamp.h"                     // for TimeStamp
-#include "mozilla/dom/ScreenOrientation.h"         // for ScreenOrientation
 #include "mozilla/gfx/BasePoint.h"                 // for BasePoint
 #include "mozilla/gfx/Matrix.h"                    // for Matrix4x4
-#include "mozilla/layers/AnimationMetricsTracker.h"  // for AnimationMetricsTracker
-#include "mozilla/layers/FrameUniformityData.h"      // For FrameUniformityData
-#include "mozilla/layers/LayersMessages.h"           // for TargetConfig
-#include "mozilla/RefPtr.h"                          // for nsRefPtr
-#include "nsISupportsImpl.h"  // for LayerManager::AddRef, etc
+#include "mozilla/HalScreenConfiguration.h"        // For ScreenOrientation
+#include "mozilla/layers/FrameUniformityData.h"    // For FrameUniformityData
+#include "mozilla/layers/LayersMessages.h"         // for TargetConfig
+#include "mozilla/RefPtr.h"                        // for nsRefPtr
+#include "nsISupportsImpl.h"         // for LayerManager::AddRef, etc
+#include "CompositorBridgeParent.h"  // for TransformsToSkip
 
 namespace mozilla {
 namespace layers {
 
-class AsyncPanZoomController;
 class Layer;
 class LayerManagerComposite;
 class AutoResolveRefLayers;
@@ -67,8 +67,8 @@ class AsyncCompositionManager final {
  public:
   NS_INLINE_DECL_REFCOUNTING(AsyncCompositionManager)
 
-  explicit AsyncCompositionManager(CompositorBridgeParent* aParent,
-                                   HostLayerManager* aManager);
+  AsyncCompositionManager(CompositorBridgeParent* aParent,
+                          HostLayerManager* aManager);
 
   /**
    * This forces the is-first-paint flag to true. This is intended to
@@ -82,10 +82,10 @@ class AsyncCompositionManager final {
 
   // Sample transforms for layer trees.  Return true to request
   // another animation frame.
-  enum class TransformsToSkip : uint8_t { NoneOfThem = 0, APZ = 1 };
   bool TransformShadowTree(
       TimeStamp aCurrentFrame, TimeDuration aVsyncRate,
-      TransformsToSkip aSkip = TransformsToSkip::NoneOfThem);
+      CompositorBridgeParentBase::TransformsToSkip aSkip =
+          CompositorBridgeParentBase::TransformsToSkip::NoneOfThem);
 
   // Calculates the correct rotation and applies the transform to
   // our layer manager
@@ -98,8 +98,7 @@ class AsyncCompositionManager final {
     mTargetConfig = aTargetConfig;
   }
 
-  bool RequiresReorientation(
-      mozilla::dom::ScreenOrientationInternal aOrientation) const {
+  bool RequiresReorientation(hal::ScreenOrientation aOrientation) const {
     return mTargetConfig.orientation() != aOrientation;
   }
 
@@ -128,36 +127,6 @@ class AsyncCompositionManager final {
   };
 
   typedef std::map<Layer*, ClipParts> ClipPartsCache;
-
-  /**
-   * Compute the updated shadow transform for a scroll thumb layer that
-   * reflects async scrolling of the associated scroll frame.
-   *
-   * @param aCurrentTransform The current shadow transform on the scroll thumb
-   *    layer, as returned by Layer::GetLocalTransform() or similar.
-   * @param aScrollableContentTransform The current content transform on the
-   *    scrollable content, as returned by Layer::GetTransform().
-   * @param aApzc The APZC that scrolls the scroll frame.
-   * @param aMetrics The metrics associated with the scroll frame, reflecting
-   *    the last paint of the associated content. Note: this metrics should
-   *    NOT reflect async scrolling, i.e. they should be the layer tree's
-   *    copy of the metrics, or APZC's last-content-paint metrics.
-   * @param aThumbData The scroll thumb data for the the scroll thumb layer.
-   * @param aScrollbarIsDescendant True iff. the scroll thumb layer is a
-   *    descendant of the layer bearing the scroll frame's metrics.
-   * @param aOutClipTransform If not null, and |aScrollbarIsDescendant| is true,
-   *    this will be populated with a transform that should be applied to the
-   *    clip rects of all layers between the scroll thumb layer and the ancestor
-   *    layer for the scrollable content.
-   * @return The new shadow transform for the scroll thumb layer, including
-   *    any pre- or post-scales.
-   */
-  static LayerToParentLayerMatrix4x4 ComputeTransformForScrollThumb(
-      const LayerToParentLayerMatrix4x4& aCurrentTransform,
-      const gfx::Matrix4x4& aScrollableContentTransform,
-      AsyncPanZoomController* aApzc, const FrameMetrics& aMetrics,
-      const ScrollThumbData& aThumbData, bool aScrollbarIsDescendant,
-      AsyncTransformComponentMatrix* aOutClipTransform);
 
  private:
   // Return true if an AsyncPanZoomController content transform was
@@ -188,7 +157,7 @@ class AsyncCompositionManager final {
    * zooming.
    * |aTransformScrollId| is the scroll id of the scroll frame that scrolls
    * |aTransformedSubtreeRoot|.
-   * |aClipPartsCache| optionally maps layers to separate fixed and scrolled
+   * |aClipPartsCache| maps layers to separate fixed and scrolled
    * clips, so we can only adjust the fixed portion.
    * This function has a recursive implementation; aStartTraversalAt specifies
    * where to start the current recursion of the traversal. For the initial
@@ -196,10 +165,22 @@ class AsyncCompositionManager final {
    */
   void AlignFixedAndStickyLayers(
       Layer* aTransformedSubtreeRoot, Layer* aStartTraversalAt,
-      FrameMetrics::ViewID aTransformScrollId,
+      ScrollableLayerGuid::ViewID aTransformScrollId,
       const LayerToParentLayerMatrix4x4& aPreviousTransformForRoot,
       const LayerToParentLayerMatrix4x4& aCurrentTransformForRoot,
-      const ScreenMargin& aFixedLayerMargins, ClipPartsCache* aClipPartsCache);
+      const ScreenMargin& aFixedLayerMargins, ClipPartsCache& aClipPartsCache);
+
+  /**
+   * Helper function for AlignFixedAndStickyLayers() to perform a transform
+   * adjustment for a single fixed or sticky layer, rather than all such
+   * layers rooted at a subtree. May also be called directly.
+   */
+  void AdjustFixedOrStickyLayer(
+      Layer* aTransformedSubtreeRoot, Layer* aFixedOrSticky,
+      ScrollableLayerGuid::ViewID aTransformScrollId,
+      const LayerToParentLayerMatrix4x4& aPreviousTransformForRoot,
+      const LayerToParentLayerMatrix4x4& aCurrentTransformForRoot,
+      const ScreenMargin& aFixedLayerMargins, ClipPartsCache& aClipPartsCache);
 
   /**
    * DRAWING PHASE ONLY
@@ -250,24 +231,27 @@ class AsyncCompositionManager final {
   LayerTransformRecorder mLayerTransformRecorder;
 
   TimeStamp mPreviousFrameTimeStamp;
-  AnimationMetricsTracker mAnimationMetricsTracker;
 
-  CompositorBridgeParent* mCompositorBridge;
+  MOZ_NON_OWNING_REF CompositorBridgeParent* mCompositorBridge;
 
 #ifdef MOZ_WIDGET_ANDROID
  public:
   void SetFixedLayerMargins(ScreenIntCoord aTop, ScreenIntCoord aBottom);
+  ScreenMargin GetFixedLayerMargins() const;
 
  private:
+  // This calculates whether frame metrics should be sent to Java.
+  bool FrameMetricsHaveUpdated(const FrameMetrics& aMetrics);
+  // This holds the most recent scroll/zoom metrics sent to Java, and is used
+  // to send new updates when it changes.
+  FrameMetrics mLastMetrics;
   // The following two fields are only needed on Fennec with C++ APZ, because
   // then we need to reposition the gecko scrollbar to deal with the
   // dynamic toolbar shifting content around.
-  FrameMetrics::ViewID mRootScrollableId;
+  ScrollableLayerGuid::ViewID mRootScrollableId;
   ScreenMargin mFixedLayerMargins;
 #endif
 };
-
-MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(AsyncCompositionManager::TransformsToSkip)
 
 class MOZ_STACK_CLASS AutoResolveRefLayers {
  public:

@@ -5,8 +5,7 @@
   <link rel="stylesheet" type="text/css"
         href="chrome://mochikit/content/tests/SimpleTest/test.css" />
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
 
   <script type="application/javascript"
           src="../common.js"></script>
@@ -21,7 +20,7 @@
      */
     function bulletUpdate() {
       this.eventSeq = [
-        new invokerChecker(EVENT_REORDER, getNode("list"))
+        new invokerChecker(EVENT_REORDER, getNode("list")),
       ];
 
       this.invoke = function bulletUpdate_invoke() {

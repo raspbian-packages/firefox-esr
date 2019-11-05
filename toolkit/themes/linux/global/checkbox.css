@@ -25,7 +25,7 @@ checkbox {
 }
 
 .checkbox-label {
-  margin: 0 !important;
+  margin: 0;
 }
 
 /* ..... focused state ..... */
@@ -47,10 +47,5 @@ checkbox[disabled="true"] {
 .checkbox-check {
   -moz-appearance: checkbox;
   margin: 2px;
-}
-
-checkbox:not([disabled="true"]):hover {
-  color: -moz-buttonhovertext;
-  text-shadow: none;
 }
 

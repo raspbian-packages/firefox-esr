@@ -30,7 +30,8 @@ class nsXBLProtoImplField {
   void SetNext(nsXBLProtoImplField* aNext) { mNext = aNext; }
 
   nsresult InstallField(JS::Handle<JSObject*> aBoundNode,
-                        nsIURI* aBindingDocURI, bool* aDidInstall) const;
+                        const nsXBLPrototypeBinding& aProtoBinding,
+                        bool* aDidInstall) const;
 
   nsresult InstallAccessors(JSContext* aCx,
                             JS::Handle<JSObject*> aTargetClassObject);

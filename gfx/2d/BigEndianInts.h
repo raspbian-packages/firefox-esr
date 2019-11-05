@@ -61,6 +61,6 @@ struct BigEndianUint32 {
 
 #pragma pack(pop)
 
-}  // mozilla
+}  // namespace mozilla
 
 #endif  // mozilla_BigEndianInts_h

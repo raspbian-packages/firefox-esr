@@ -36,6 +36,12 @@
 <!ENTITY newFeedAccountCmd.accesskey "d">
 <!ENTITY newIMContactCmd.label "Contatto di Chat…">
 <!ENTITY newIMContactCmd.accesskey "h">
+<!ENTITY  newMessageCmd2.key "N">
+<!ENTITY  newMessageCmd.key "M">
+<!ENTITY  newMessageCmd.label "Messaggio">
+<!ENTITY  newMessageCmd.accesskey "m">
+<!ENTITY  newContactCmd.label "Contatto rubrica…">
+<!ENTITY  newContactCmd.accesskey "C">
 <!ENTITY openMessageFileCmd.label "Apri messaggio salvato…">
 <!ENTITY openMessageFileCmd.accesskey "A">
 <!ENTITY saveAsMenu.label "Salva come">
@@ -201,9 +207,9 @@
 <!ENTITY sortByUnreadCmd.accesskey "L">
 <!ENTITY sortByOrderReceivedCmd.label "Ordine di ricezione">
 <!ENTITY sortByOrderReceivedCmd.accesskey "r">
-<!ENTITY sortAscending.label "Ascendente">
+<!ENTITY sortAscending.label "Crescente">
 <!ENTITY sortAscending.accesskey "n">
-<!ENTITY sortDescending.label "Discendente">
+<!ENTITY sortDescending.label "Decrescente">
 <!ENTITY sortDescending.accesskey "c">
 <!ENTITY sortThreaded.label "Visualizzazione ad albero">
 <!ENTITY sortThreaded.accesskey "b">
@@ -434,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Apri messaggio">
 <!ENTITY openMessageWindowCmd.accesskey "A">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Apri nella conversazione">
-<!ENTITY openConversationCmd.accesskey "z">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Apri nella conversazione">
+<!ENTITY openInConversationCmd.accesskey "s">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Allegati">
 <!ENTITY openAttachmentListCmd.accesskey "l">
 <!ENTITY openFeedMessage1.label "Quando si aprono messaggi di feed">
@@ -509,8 +515,6 @@
 <!ENTITY devToolboxCmd.label "Cassetta degli strumenti di sviluppo">
 <!ENTITY devToolboxCmd.accesskey "C">
 <!ENTITY devToolboxCmd.commandkey "i">
-<!ENTITY addonDebugCmd.label "Add-on Debugger">
-<!ENTITY addonDebugCmd.accesskey "A">
 <!ENTITY debugAddonsCmd.label "Componenti aggiuntivi di debug">
 <!ENTITY debugAddonsCmd.accesskey "m">
 <!ENTITY tabsDebugCmd.label "Tab di debug del contenuto">
@@ -602,6 +606,8 @@
 <!ENTITY compactButton.tooltip "Compatta le cartelle">
 <!ENTITY appmenuButton1.tooltip "Mostra il menu di &brandShortName;">
 
+<!ENTITY addonsButton.tooltip "Gestisci i tuoi componenti aggiuntivi">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Inoltra nel messaggio">
 <!ENTITY buttonMenuForwardAsAttachment.label "Inoltra come allegato">
@@ -645,6 +651,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Scarica messaggi">
 <!ENTITY folderContextGetMessages.accesskey "c">
+<!ENTITY folderContextMarkAllFoldersRead.label "Marca tutte le cartelle come lette">
 <!ENTITY folderContextPauseAllUpdates.label "Metti in pausa tutti gli aggiornamenti">
 <!ENTITY folderContextPauseUpdates.label "Metti in pausa gli aggiornamenti">
 <!ENTITY folderContextPauseUpdates.accesskey "A">
@@ -787,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "p">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Recenti">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "r">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Preferiti">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "P">
 <!ENTITY contextCopyMsgMenu.label "Copia in">
 <!ENTITY contextCopyMsgMenu.accesskey "n">
 <!ENTITY contextKillThreadMenu.label "Ignora la discussione">
@@ -806,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Anteprima di stampa">
 <!ENTITY contextPrintPreview.accesskey "A">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Ripristina le colonne predefinite">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -852,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "questa cartella">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Riproduci">
 <!ENTITY contextPlay.accesskey "R">
@@ -870,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

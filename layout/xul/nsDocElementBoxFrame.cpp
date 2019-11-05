@@ -3,28 +3,27 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/Document.h"
+#include "mozilla/dom/Element.h"
+#include "mozilla/dom/FromParser.h"
+#include "mozilla/dom/NodeInfo.h"
 #include "nsHTMLParts.h"
 #include "nsContainerFrame.h"
 #include "nsCSSRendering.h"
-#include "nsIDocument.h"
 #include "nsPageFrame.h"
-#include "nsIDOMEvent.h"
 #include "nsStyleConsts.h"
 #include "nsGkAtoms.h"
-#include "nsIPresShell.h"
 #include "nsBoxFrame.h"
 #include "nsStackLayout.h"
 #include "nsIAnonymousContentCreator.h"
-#include "mozilla/dom/NodeInfo.h"
 #include "nsIServiceManager.h"
 #include "nsNodeInfoManager.h"
 #include "nsContentCreatorFunctions.h"
-#include "nsContentUtils.h"
-#include "mozilla/dom/Element.h"
-#include "mozilla/dom/FromParser.h"
 
 //#define DEBUG_REFLOW
 
+using namespace mozilla;
 using namespace mozilla::dom;
 
 class nsDocElementBoxFrame final : public nsBoxFrame,
@@ -33,11 +32,12 @@ class nsDocElementBoxFrame final : public nsBoxFrame,
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
 
-  friend nsIFrame* NS_NewBoxFrame(nsIPresShell* aPresShell,
-                                  nsStyleContext* aContext);
+  friend nsIFrame* NS_NewBoxFrame(mozilla::PresShell* aPresShell,
+                                  ComputedStyle* aStyle);
 
-  explicit nsDocElementBoxFrame(nsStyleContext* aContext)
-      : nsBoxFrame(aContext, kClassID, true) {}
+  explicit nsDocElementBoxFrame(ComputedStyle* aStyle,
+                                nsPresContext* aPresContext)
+      : nsBoxFrame(aStyle, aPresContext, kClassID, true) {}
 
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsDocElementBoxFrame)
@@ -65,9 +65,10 @@ class nsDocElementBoxFrame final : public nsBoxFrame,
 
 //----------------------------------------------------------------------
 
-nsContainerFrame* NS_NewDocElementBoxFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext) {
-  return new (aPresShell) nsDocElementBoxFrame(aContext);
+nsContainerFrame* NS_NewDocElementBoxFrame(PresShell* aPresShell,
+                                           ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsDocElementBoxFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsDocElementBoxFrame)
@@ -81,7 +82,7 @@ void nsDocElementBoxFrame::DestroyFrom(nsIFrame* aDestructRoot,
 
 nsresult nsDocElementBoxFrame::CreateAnonymousContent(
     nsTArray<ContentInfo>& aElements) {
-  nsIDocument* doc = mContent->GetComposedDoc();
+  Document* doc = mContent->GetComposedDoc();
   if (!doc) {
     // The page is currently being torn down.  Why bother.
     return NS_ERROR_FAILURE;
@@ -130,7 +131,7 @@ void nsDocElementBoxFrame::AppendAnonymousContentTo(
 }
 
 NS_QUERYFRAME_HEAD(nsDocElementBoxFrame)
-NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
+  NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
 NS_QUERYFRAME_TAIL_INHERITING(nsBoxFrame)
 
 #ifdef DEBUG_FRAME_DUMP

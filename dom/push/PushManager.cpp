@@ -44,7 +44,7 @@ nsresult GetPermissionState(nsIPrincipal* aPrincipal,
   }
   uint32_t permission = nsIPermissionManager::UNKNOWN_ACTION;
   nsresult rv = permManager->TestExactPermissionFromPrincipal(
-      aPrincipal, "desktop-notification", &permission);
+      aPrincipal, NS_LITERAL_CSTRING("desktop-notification"), &permission);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -58,38 +58,6 @@ nsresult GetPermissionState(nsIPrincipal* aPrincipal,
     aState = PushPermissionState::Prompt;
   }
 
-  return NS_OK;
-}
-
-// A helper class that frees an `nsIPushSubscription` key buffer when it
-// goes out of scope.
-class MOZ_RAII AutoFreeKeyBuffer final {
-  uint8_t** mKeyBuffer;
-
- public:
-  explicit AutoFreeKeyBuffer(uint8_t** aKeyBuffer) : mKeyBuffer(aKeyBuffer) {
-    MOZ_ASSERT(mKeyBuffer);
-  }
-
-  ~AutoFreeKeyBuffer() { free(*mKeyBuffer); }
-};
-
-// Copies a subscription key buffer into an array.
-nsresult CopySubscriptionKeyToArray(nsIPushSubscription* aSubscription,
-                                    const nsAString& aKeyName,
-                                    nsTArray<uint8_t>& aKey) {
-  uint8_t* keyBuffer = nullptr;
-  AutoFreeKeyBuffer autoFree(&keyBuffer);
-
-  uint32_t keyLen;
-  nsresult rv = aSubscription->GetKey(aKeyName, &keyLen, &keyBuffer);
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-  if (!aKey.SetCapacity(keyLen, fallible) ||
-      !aKey.InsertElementsAt(0, keyBuffer, keyLen, fallible)) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
   return NS_OK;
 }
 
@@ -107,18 +75,15 @@ nsresult GetSubscriptionParams(nsIPushSubscription* aSubscription,
     return rv;
   }
 
-  rv = CopySubscriptionKeyToArray(aSubscription, NS_LITERAL_STRING("p256dh"),
-                                  aRawP256dhKey);
+  rv = aSubscription->GetKey(NS_LITERAL_STRING("p256dh"), aRawP256dhKey);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
-  rv = CopySubscriptionKeyToArray(aSubscription, NS_LITERAL_STRING("auth"),
-                                  aAuthSecret);
+  rv = aSubscription->GetKey(NS_LITERAL_STRING("auth"), aAuthSecret);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
-  rv = CopySubscriptionKeyToArray(aSubscription, NS_LITERAL_STRING("appServer"),
-                                  aAppServerKey);
+  rv = aSubscription->GetKey(NS_LITERAL_STRING("appServer"), aAppServerKey);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -136,13 +101,13 @@ class GetSubscriptionResultRunnable final : public WorkerRunnable {
                                 nsTArray<uint8_t>&& aAuthSecret,
                                 nsTArray<uint8_t>&& aAppServerKey)
       : WorkerRunnable(aWorkerPrivate),
-        mProxy(Move(aProxy)),
+        mProxy(std::move(aProxy)),
         mStatus(aStatus),
         mEndpoint(aEndpoint),
         mScope(aScope),
-        mRawP256dhKey(Move(aRawP256dhKey)),
-        mAuthSecret(Move(aAuthSecret)),
-        mAppServerKey(Move(aAppServerKey)) {}
+        mRawP256dhKey(std::move(aRawP256dhKey)),
+        mAuthSecret(std::move(aAuthSecret)),
+        mAppServerKey(std::move(aAppServerKey)) {}
 
   bool WorkerRun(JSContext* aCx, WorkerPrivate* aWorkerPrivate) override {
     RefPtr<Promise> promise = mProxy->WorkerPromise();
@@ -151,8 +116,8 @@ class GetSubscriptionResultRunnable final : public WorkerRunnable {
         promise->MaybeResolve(JS::NullHandleValue);
       } else {
         RefPtr<PushSubscription> sub = new PushSubscription(
-            nullptr, mEndpoint, mScope, Move(mRawP256dhKey), Move(mAuthSecret),
-            Move(mAppServerKey));
+            nullptr, mEndpoint, mScope, std::move(mRawP256dhKey),
+            std::move(mAuthSecret), std::move(mAppServerKey));
         promise->MaybeResolve(sub);
       }
     } else if (NS_ERROR_GET_MODULE(mStatus) == NS_ERROR_MODULE_DOM_PUSH) {
@@ -206,8 +171,9 @@ class GetSubscriptionCallback final : public nsIPushSubscriptionCallback {
 
     WorkerPrivate* worker = mProxy->GetWorkerPrivate();
     RefPtr<GetSubscriptionResultRunnable> r = new GetSubscriptionResultRunnable(
-        worker, mProxy.forget(), aStatus, endpoint, mScope, Move(rawP256dhKey),
-        Move(authSecret), Move(appServerKey));
+        worker, mProxy.forget(), aStatus, endpoint, mScope,
+        std::move(rawP256dhKey), std::move(authSecret),
+        std::move(appServerKey));
     MOZ_ALWAYS_TRUE(r->Dispatch());
 
     return NS_OK;
@@ -237,7 +203,7 @@ class GetSubscriptionRunnable final : public Runnable {
         mProxy(aProxy),
         mScope(aScope),
         mAction(aAction),
-        mAppServerKey(Move(aAppServerKey)) {}
+        mAppServerKey(std::move(aAppServerKey)) {}
 
   NS_IMETHOD
   Run() override {
@@ -289,9 +255,8 @@ class GetSubscriptionRunnable final : public Runnable {
       if (mAppServerKey.IsEmpty()) {
         rv = service->Subscribe(mScope, principal, callback);
       } else {
-        rv =
-            service->SubscribeWithKey(mScope, principal, mAppServerKey.Length(),
-                                      mAppServerKey.Elements(), callback);
+        rv = service->SubscribeWithKey(mScope, principal, mAppServerKey,
+                                       callback);
       }
     } else {
       MOZ_ASSERT(mAction == PushManager::GetSubscriptionAction);
@@ -334,7 +299,7 @@ class PermissionResultRunnable final : public WorkerRunnable {
     if (NS_SUCCEEDED(mStatus)) {
       promise->MaybeResolve(mState);
     } else {
-      promise->MaybeReject(aCx, JS::UndefinedHandleValue);
+      promise->MaybeRejectWithUndefined();
     }
 
     mProxy->CleanUp();
@@ -410,7 +375,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* PushManager::WrapObject(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto) {
-  return PushManagerBinding::Wrap(aCx, this, aGivenProto);
+  return PushManager_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 // static
@@ -472,7 +437,7 @@ already_AddRefed<Promise> PushManager::PermissionState(
 
   RefPtr<PromiseWorkerProxy> proxy = PromiseWorkerProxy::Create(worker, p);
   if (!proxy) {
-    p->MaybeReject(worker->GetJSContext(), JS::UndefinedHandleValue);
+    p->MaybeRejectWithUndefined();
     return p.forget();
   }
 
@@ -517,8 +482,8 @@ already_AddRefed<Promise> PushManager::PerformSubscriptionActionFromWorker(
     }
   }
 
-  RefPtr<GetSubscriptionRunnable> r =
-      new GetSubscriptionRunnable(proxy, mScope, aAction, Move(appServerKey));
+  RefPtr<GetSubscriptionRunnable> r = new GetSubscriptionRunnable(
+      proxy, mScope, aAction, std::move(appServerKey));
   MOZ_ALWAYS_SUCCEEDS(NS_DispatchToMainThread(r));
 
   return p.forget();

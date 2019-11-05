@@ -11,7 +11,8 @@
 
 namespace mozilla {
 
-OggWriter::OggWriter() : ContainerWriter() {
+OggWriter::OggWriter()
+    : ContainerWriter(), mOggStreamState(), mOggPage(), mPacket() {
   if (NS_FAILED(Init())) {
     LOG("ERROR! Fail to initialize the OggWriter.");
   }

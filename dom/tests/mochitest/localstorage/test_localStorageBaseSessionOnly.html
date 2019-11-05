@@ -2,13 +2,19 @@
 <head>
 <title>localStorage basic test, while in sesison only mode</title>
 
-<script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+<script src="/tests/SimpleTest/SimpleTest.js"></script>
 <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
 
 <script type="text/javascript">
 
 function startTest()
 {
+  if (SpecialPowers.Services.lsm.nextGenLocalStorageEnabled) {
+    ok(true, "Test ignored when the next gen local storage is enabled.");
+    SimpleTest.finish();
+    return;
+  }
+
   SpecialPowers.pushPermissions([{'type': 'cookie', 'allow': SpecialPowers.Ci.nsICookiePermission.ACCESS_SESSION, 'context': document}], test1);
 }
 

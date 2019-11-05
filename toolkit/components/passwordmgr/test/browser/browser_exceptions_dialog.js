@@ -1,4 +1,3 @@
-
 "use strict";
 
 const LOGIN_HOST = "http://example.com";
@@ -6,28 +5,29 @@ const LOGIN_HOST = "http://example.com";
 function openExceptionsDialog() {
   return window.openDialog(
     "chrome://browser/content/preferences/permissions.xul",
-    "Toolkit:PasswordManagerExceptions", "",
+    "Toolkit:PasswordManagerExceptions",
+    "",
     {
       blockVisible: true,
       sessionVisible: false,
       allowVisible: false,
       hideStatusColumn: true,
       prefilledHost: "",
-      permissionType: "login-saving"
+      permissionType: "login-saving",
     }
   );
 }
 
 function countDisabledHosts(dialog) {
-  let doc = dialog.document;
-  let rejectsTree = doc.getElementById("permissionsTree");
-
-  return rejectsTree.view.rowCount;
+  return dialog.document.getElementById("permissionsBox").itemCount;
 }
 
 function promiseStorageChanged(expectedData) {
   function observer(subject, data) {
-    return data == expectedData && subject.QueryInterface(Ci.nsISupportsString).data == LOGIN_HOST;
+    return (
+      data == expectedData &&
+      subject.QueryInterface(Ci.nsISupportsString).data == LOGIN_HOST
+    );
   }
 
   return TestUtils.topicObserved("passwordmgr-storage-changed", observer);

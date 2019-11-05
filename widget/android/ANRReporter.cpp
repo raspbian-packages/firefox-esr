@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
+/* -*- Mode: c++; c-basic-offset: 2; tab-width: 20; indent-tabs-mode: nil; -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -25,12 +25,12 @@ bool ANRReporter::RequestNativeStack(bool aUnwind) {
                       (aUnwind ? ProfilerFeature::StackWalk : 0) |
                       ProfilerFeature::Threads;
 
-  const char *NATIVE_STACK_THREADS[] = {"GeckoMain", "Compositor"};
+  const char* NATIVE_STACK_THREADS[] = {"GeckoMain", "Compositor"};
 
   // Buffer one sample and let the profiler wait a long time
   profiler_start(/* entries */ 100, /* interval */ 10000, features,
                  NATIVE_STACK_THREADS,
-                 sizeof(NATIVE_STACK_THREADS) / sizeof(char *));
+                 sizeof(NATIVE_STACK_THREADS) / sizeof(char*));
 #endif
   return true;
 }

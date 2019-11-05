@@ -29,7 +29,8 @@ class nsHangDetails : public nsIHangDetails {
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIHANGDETAILS
 
-  explicit nsHangDetails(HangDetails&& aDetails) : mDetails(Move(aDetails)) {}
+  explicit nsHangDetails(HangDetails&& aDetails)
+      : mDetails(std::move(aDetails)) {}
 
   // Submit these HangDetails to the main thread. This will dispatch a runnable
   // to the main thread which will fire off the bhr-thread-hang observer
@@ -54,7 +55,7 @@ class ProcessHangStackRunnable final : public Runnable {
  public:
   explicit ProcessHangStackRunnable(HangDetails&& aHangDetails)
       : Runnable("ProcessHangStackRunnable"),
-        mHangDetails(Move(aHangDetails)) {}
+        mHangDetails(std::move(aHangDetails)) {}
 
   NS_IMETHOD Run() override;
 
@@ -63,22 +64,5 @@ class ProcessHangStackRunnable final : public Runnable {
 };
 
 }  // namespace mozilla
-
-// We implement the ability to send the HangDetails object over IPC. We need to
-// do this rather than rely on StructuredClone of the objects created by the
-// XPCOM getters on nsHangDetails because we want to run BHR in the GPU process
-// which doesn't run any JS.
-namespace IPC {
-
-template <>
-class ParamTraits<mozilla::HangDetails> {
- public:
-  typedef mozilla::HangDetails paramType;
-  static void Write(Message* aMsg, const paramType& aParam);
-  static bool Read(const Message* aMsg, PickleIterator* aIter,
-                   paramType* aResult);
-};
-
-}  // namespace IPC
 
 #endif  // mozilla_HangDetails_h

@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,20 +14,18 @@
  */
 
 #ifndef GLAPIENTRY
-#ifdef XP_WIN
-#define GLAPIENTRY __stdcall
-#else
-#define GLAPIENTRY
-#endif
-#define GLAPI
+#  ifdef XP_WIN
+#    define GLAPIENTRY __stdcall
+#  else
+#    define GLAPIENTRY
+#  endif
+#  define GLAPI
 #endif
 
 namespace mozilla {
 namespace gl {
 
 struct GLContextSymbols final {
-  GLContextSymbols() = delete;  // Initialize with {}.
-
   void(GLAPIENTRY* fActiveTexture)(GLenum);
   void(GLAPIENTRY* fAttachShader)(GLuint, GLuint);
   void(GLAPIENTRY* fBeginQuery)(GLenum, GLuint);
@@ -137,6 +135,8 @@ struct GLContextSymbols final {
   void(GLAPIENTRY* fTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei,
                                    GLsizei, GLenum, GLenum, const void*);
   void(GLAPIENTRY* fTextureRangeAPPLE)(GLenum, GLsizei, GLvoid*);
+  void(GLAPIENTRY* fFinishObjectAPPLE)(GLenum, GLint);
+  realGLboolean(GLAPIENTRY* fTestObjectAPPLE)(GLenum, GLint);
   void(GLAPIENTRY* fUniform1f)(GLint, GLfloat);
   void(GLAPIENTRY* fUniform1fv)(GLint, GLsizei, const GLfloat*);
   void(GLAPIENTRY* fUniform1i)(GLint, GLint);

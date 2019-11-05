@@ -2,14 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-ChromeUtils.defineModuleGetter(this, "AppMenuNotifications",
-                               "resource://gre/modules/AppMenuNotifications.jsm");
-ChromeUtils.defineModuleGetter(this, "NewTabUtils",
-                               "resource://gre/modules/NewTabUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "PanelMultiView",
-                               "resource:///modules/PanelMultiView.jsm");
-ChromeUtils.defineModuleGetter(this, "ScrollbarSampler",
-                               "resource:///modules/ScrollbarSampler.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "AppMenuNotifications",
+  "resource://gre/modules/AppMenuNotifications.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "NewTabUtils",
+  "resource://gre/modules/NewTabUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PanelMultiView",
+  "resource:///modules/PanelMultiView.jsm"
+);
 
 /**
  * Maintains the state and dispatches events for the main menu panel.
@@ -49,13 +56,16 @@ const PanelUI = {
 
     this.menuButton.addEventListener("mousedown", this);
     this.menuButton.addEventListener("keypress", this);
-    this._overlayScrollListenerBoundFn = this._overlayScrollListener.bind(this);
 
     Services.obs.addObserver(this, "fullscreen-nav-toolbox");
     Services.obs.addObserver(this, "appMenu-notifications");
 
-    XPCOMUtils.defineLazyPreferenceGetter(this, "autoHideToolbarInFullScreen",
-      "browser.fullscreen.autohide", false, (pref, previousValue, newValue) => {
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "autoHideToolbarInFullScreen",
+      "browser.fullscreen.autohide",
+      false,
+      (pref, previousValue, newValue) => {
         // On OSX, or with autohide preffed off, MozDOMFullscreen is the only
         // event we care about, since fullscreen should behave just like non
         // fullscreen. Otherwise, we don't want to listen to these because
@@ -72,7 +82,9 @@ const PanelUI = {
         }
 
         this._updateNotifications(false);
-      }, autoHidePref => autoHidePref && Services.appinfo.OS !== "Darwin");
+      },
+      autoHidePref => autoHidePref && Services.appinfo.OS !== "Darwin"
+    );
 
     if (this.autoHideToolbarInFullScreen) {
       window.addEventListener("fullscreen", this);
@@ -81,14 +93,19 @@ const PanelUI = {
       window.addEventListener("MozDOMFullscreen:Exited", this);
     }
 
-    XPCOMUtils.defineLazyPreferenceGetter(this, "libraryRecentHighlightsEnabled",
-      "browser.library.activity-stream.enabled", false, (pref, previousValue, newValue) => {
-        if (!newValue)
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "libraryRecentHighlightsEnabled",
+      "browser.library.activity-stream.enabled",
+      false,
+      (pref, previousValue, newValue) => {
+        if (!newValue) {
           this.clearLibraryRecentHighlights();
-      });
+        }
+      }
+    );
 
     window.addEventListener("activate", this);
-    window.matchMedia("(-moz-overlay-scrollbars)").addListener(this._overlayScrollListenerBoundFn);
     CustomizableUI.addListener(this);
 
     for (let event of this.kEvents) {
@@ -99,11 +116,18 @@ const PanelUI = {
     // we need to know whether anything is in the permanent panel area.
     this.overflowFixedList.hidden = false;
     // Also unhide the separator. We use CSS to hide/show it based on the panel's content.
-    this.overflowFixedList.previousSibling.hidden = false;
-    CustomizableUI.registerMenuPanel(this.overflowFixedList, CustomizableUI.AREA_FIXED_OVERFLOW_PANEL);
+    this.overflowFixedList.previousElementSibling.hidden = false;
+    CustomizableUI.registerMenuPanel(
+      this.overflowFixedList,
+      CustomizableUI.AREA_FIXED_OVERFLOW_PANEL
+    );
     this.updateOverflowStatus();
 
-    Services.obs.notifyObservers(null, "appMenu-notifications-request", "refresh");
+    Services.obs.notifyObservers(
+      null,
+      "appMenu-notifications-request",
+      "refresh"
+    );
 
     this._initialized = true;
   },
@@ -115,15 +139,16 @@ const PanelUI = {
       let id = v;
       this.__defineGetter__(getKey, function() {
         delete this[getKey];
-        return this[getKey] = document.getElementById(id);
+        return (this[getKey] = document.getElementById(id));
       });
     }
   },
 
   _eventListenersAdded: false,
   _ensureEventListenersAdded() {
-    if (this._eventListenersAdded)
+    if (this._eventListenersAdded) {
       return;
+    }
     this._addEventListeners();
   },
 
@@ -159,9 +184,7 @@ const PanelUI = {
     window.removeEventListener("activate", this);
     this.menuButton.removeEventListener("mousedown", this);
     this.menuButton.removeEventListener("keypress", this);
-    window.matchMedia("(-moz-overlay-scrollbars)").removeListener(this._overlayScrollListenerBoundFn);
     CustomizableUI.removeListener(this);
-    this._overlayScrollListenerBoundFn = null;
     this.libraryView.removeEventListener("ViewShowing", this);
   },
 
@@ -194,36 +217,26 @@ const PanelUI = {
    */
   show(aEvent) {
     this._ensureShortcutsShown();
-    return new Promise(resolve => {
-      this.ensureReady().then(() => {
-        if (this.panel.state == "open" ||
-            document.documentElement.hasAttribute("customizing")) {
-          resolve();
-          return;
-        }
+    (async () => {
+      await this.ensureReady();
 
-        let anchor;
-        let domEvent = null;
-        if (!aEvent ||
-            aEvent.type == "command") {
-          anchor = this.menuButton;
-        } else {
-          domEvent = aEvent;
-          anchor = aEvent.target;
-        }
+      if (
+        this.panel.state == "open" ||
+        document.documentElement.hasAttribute("customizing")
+      ) {
+        return;
+      }
 
-        this.panel.addEventListener("popupshown", function() {
-          resolve();
-        }, {once: true});
+      let domEvent = null;
+      if (aEvent && aEvent.type != "command") {
+        domEvent = aEvent;
+      }
 
-        anchor = this._getPanelAnchor(anchor);
-        PanelMultiView.openPopup(this.panel, anchor, {
-          triggerEvent: domEvent,
-        }).catch(Cu.reportError);
-      }, (reason) => {
-        console.error("Error showing the PanelUI menu", reason);
+      let anchor = this._getPanelAnchor(this.menuButton);
+      await PanelMultiView.openPopup(this.panel, anchor, {
+        triggerEvent: domEvent,
       });
-    });
+    })().catch(Cu.reportError);
   },
 
   /**
@@ -257,24 +270,23 @@ const PanelUI = {
 
   handleEvent(aEvent) {
     // Ignore context menus and menu button menus showing and hiding:
-    if (aEvent.type.startsWith("popup") &&
-        aEvent.target != this.panel) {
+    if (aEvent.type.startsWith("popup") && aEvent.target != this.panel) {
       return;
     }
     switch (aEvent.type) {
       case "popupshowing":
         updateEditUIVisibility();
-        // Fall through
+      // Fall through
       case "popupshown":
         if (aEvent.type == "popupshown") {
           CustomizableUI.addPanelCloseListeners(this.panel);
         }
-        // Fall through
+      // Fall through
       case "popuphiding":
         if (aEvent.type == "popuphiding") {
           updateEditUIVisibility();
         }
-        // Fall through
+      // Fall through
       case "popuphidden":
         this._updateNotifications();
         this._updatePanelButton(aEvent.target);
@@ -283,11 +295,15 @@ const PanelUI = {
         }
         break;
       case "mousedown":
-        if (aEvent.button == 0)
+        if (aEvent.button == 0) {
           this.toggle(aEvent);
+        }
         break;
       case "keypress":
-        this.toggle(aEvent);
+        if (aEvent.key == " " || aEvent.key == "Enter") {
+          this.toggle(aEvent);
+          aEvent.stopPropagation();
+        }
         break;
       case "MozDOMFullscreen:Entered":
       case "MozDOMFullscreen:Exited":
@@ -358,12 +374,36 @@ const PanelUI = {
       if (aEvent.type == "mousedown" && aEvent.button != 0) {
         return;
       }
+      if (
+        aEvent.type == "keypress" &&
+        aEvent.key != " " &&
+        aEvent.key != "Enter"
+      ) {
+        return;
+      }
       if (aEvent.type == "command" && aEvent.inputSource != null) {
         // Synthesize a new DOM mouse event to pass on the inputSource.
         domEvent = document.createEvent("MouseEvent");
-        domEvent.initNSMouseEvent("click", true, true, null, 0, aEvent.screenX, aEvent.screenY,
-                                  0, 0, false, false, false, false, 0, aEvent.target, 0, aEvent.inputSource);
-      } else if (aEvent.mozInputSource != null) {
+        domEvent.initNSMouseEvent(
+          "click",
+          true,
+          true,
+          null,
+          0,
+          aEvent.screenX,
+          aEvent.screenY,
+          0,
+          0,
+          false,
+          false,
+          false,
+          false,
+          0,
+          aEvent.target,
+          0,
+          aEvent.inputSource
+        );
+      } else if (aEvent.mozInputSource != null || aEvent.type == "keypress") {
         domEvent = aEvent;
       }
     }
@@ -376,7 +416,9 @@ const PanelUI = {
     }
 
     if (!aAnchor) {
-      Cu.reportError("Expected an anchor when opening subview with id: " + aViewId);
+      Cu.reportError(
+        "Expected an anchor when opening subview with id: " + aViewId
+      );
       return;
     }
 
@@ -388,7 +430,7 @@ const PanelUI = {
     } else if (!aAnchor.open) {
       aAnchor.open = true;
 
-      let tempPanel = document.createElement("panel");
+      let tempPanel = document.createXULElement("panel");
       tempPanel.setAttribute("type", "arrow");
       tempPanel.setAttribute("id", "customizationui-widget-panel");
       tempPanel.setAttribute("class", "cui-widget-panel");
@@ -401,12 +443,16 @@ const PanelUI = {
       }
       tempPanel.setAttribute("context", "");
       tempPanel.setAttribute("photon", true);
-      document.getElementById(CustomizableUI.AREA_NAVBAR).appendChild(tempPanel);
+      document
+        .getElementById(CustomizableUI.AREA_NAVBAR)
+        .appendChild(tempPanel);
       // If the view has a footer, set a convenience class on the panel.
-      tempPanel.classList.toggle("cui-widget-panelWithFooter",
-                                 viewNode.querySelector(".panel-subview-footer"));
+      tempPanel.classList.toggle(
+        "cui-widget-panelWithFooter",
+        viewNode.querySelector(".panel-subview-footer")
+      );
 
-      let multiView = document.createElement("panelmultiview");
+      let multiView = document.createXULElement("panelmultiview");
       multiView.setAttribute("id", "customizationui-widget-multiview");
       multiView.setAttribute("viewCacheId", "appMenu-viewCache");
       multiView.setAttribute("mainViewId", viewNode.id);
@@ -459,8 +505,9 @@ const PanelUI = {
    * @param {panelview} viewNode The library view.
    */
   ensureLibraryInitialized(viewNode) {
-    if (viewNode != this.libraryView || viewNode._initialized)
+    if (viewNode != this.libraryView || viewNode._initialized) {
       return;
+    }
 
     viewNode._initialized = true;
     viewNode.addEventListener("ViewShowing", this);
@@ -498,17 +545,19 @@ const PanelUI = {
    * view with the results.
    */
   async fetchAndPopulateLibraryRecentHighlights() {
-    let highlights = await NewTabUtils.activityStreamLinks.getHighlights({
-      // As per bug 1402023, hard-coded limit, until Activity Stream develops a
-      // richer list.
-      numItems: 6,
-      withFavicons: true,
-      excludePocket: true
-    }).catch(ex => {
-      // Just hide the section if we can't retrieve the items from the database.
-      Cu.reportError(ex);
-      return [];
-    });
+    let highlights = await NewTabUtils.activityStreamLinks
+      .getHighlights({
+        // As per bug 1402023, hard-coded limit, until Activity Stream develops a
+        // richer list.
+        numItems: 6,
+        withFavicons: true,
+        excludePocket: true,
+      })
+      .catch(ex => {
+        // Just hide the section if we can't retrieve the items from the database.
+        Cu.reportError(ex);
+        return [];
+      });
 
     // Since the call above is asynchronous, the panel may be already hidden
     // at this point, but we still prepare the items for the next time the
@@ -520,12 +569,16 @@ const PanelUI = {
     }
 
     let container = this.libraryRecentHighlights;
-    container.hidden = container.previousSibling.hidden =
-      container.previousSibling.previousSibling.hidden = false;
+    container.hidden = container.previousElementSibling.hidden = container.previousElementSibling.previousElementSibling.hidden = false;
     let fragment = document.createDocumentFragment();
     for (let highlight of highlights) {
-      let button = document.createElement("toolbarbutton");
-      button.classList.add("subviewbutton", "highlight", "subviewbutton-iconic", "bookmark-item");
+      let button = document.createXULElement("toolbarbutton");
+      button.classList.add(
+        "subviewbutton",
+        "highlight",
+        "subviewbutton-iconic",
+        "bookmark-item"
+      );
       let title = highlight.title || highlight.url;
       button.setAttribute("label", title);
       button.setAttribute("tooltiptext", title);
@@ -559,8 +612,7 @@ const PanelUI = {
     while (container.firstChild) {
       container.firstChild.remove();
     }
-    container.hidden = container.previousSibling.hidden =
-      container.previousSibling.previousSibling.hidden = true;
+    container.hidden = container.previousElementSibling.hidden = container.previousElementSibling.previousElementSibling.hidden = true;
   },
 
   /**
@@ -577,7 +629,11 @@ const PanelUI = {
       // Bug 1402849, close library panel on mid mouse click
       CustomizableUI.hidePanelForNode(button);
     }
-    window.openUILink(button._highlight.url, event);
+    window.openUILink(button._highlight.url, event, {
+      triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
+        {}
+      ),
+    });
   },
 
   /**
@@ -622,8 +678,8 @@ const PanelUI = {
    * on the state of the panel.
    */
   _updatePanelButton() {
-    this.menuButton.open = this.panel.state == "open" ||
-                           this.panel.state == "showing";
+    this.menuButton.open =
+      this.panel.state == "open" || this.panel.state == "showing";
   },
 
   _onHelpViewShow(aEvent) {
@@ -633,7 +689,6 @@ const PanelUI = {
     let helpMenu = document.getElementById("menu_HelpPopup");
     let items = this.getElementsByTagName("vbox")[0];
     let attrs = ["oncommand", "onclick", "label", "key", "disabled"];
-    let NSXUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
     // Remove all buttons from the view
     while (items.firstChild) {
@@ -641,16 +696,20 @@ const PanelUI = {
     }
 
     // Add the current set of menuitems of the Help menu to this view
-    let menuItems = Array.prototype.slice.call(helpMenu.getElementsByTagName("menuitem"));
+    let menuItems = Array.prototype.slice.call(
+      helpMenu.getElementsByTagName("menuitem")
+    );
     let fragment = document.createDocumentFragment();
     for (let node of menuItems) {
-      if (node.hidden)
+      if (node.hidden) {
         continue;
-      let button = document.createElementNS(NSXUL, "toolbarbutton");
+      }
+      let button = document.createXULElement("toolbarbutton");
       // Copy specific attributes from a menuitem of the Help menu
       for (let attrName of attrs) {
-        if (!node.hasAttribute(attrName))
+        if (!node.hasAttribute(attrName)) {
           continue;
+        }
         button.setAttribute(attrName, node.getAttribute(attrName));
       }
       button.setAttribute("class", "subviewbutton");
@@ -664,24 +723,25 @@ const PanelUI = {
       return;
     }
 
-    let tooltipId = AppConstants.platform == "macosx" ?
-                    "quit-button.tooltiptext.mac" :
-                    "quit-button.tooltiptext.linux2";
+    let tooltipId =
+      AppConstants.platform == "macosx"
+        ? "quit-button.tooltiptext.mac"
+        : "quit-button.tooltiptext.linux2";
 
-    let brands = Services.strings.createBundle("chrome://branding/locale/brand.properties");
+    let brands = Services.strings.createBundle(
+      "chrome://branding/locale/brand.properties"
+    );
     let stringArgs = [brands.GetStringFromName("brandShortName")];
 
     let key = document.getElementById("key_quitApplication");
     stringArgs.push(ShortcutUtils.prettifyShortcut(key));
-    let tooltipString = CustomizableUI.getLocalizedProperty({x: tooltipId}, "x", stringArgs);
+    let tooltipString = CustomizableUI.getLocalizedProperty(
+      { x: tooltipId },
+      "x",
+      stringArgs
+    );
     let quitButton = document.getElementById("PanelUI-quit");
     quitButton.setAttribute("tooltiptext", tooltipString);
-  },
-
-  _overlayScrollListenerBoundFn: null,
-  _overlayScrollListener(aMQL) {
-    ScrollbarSampler.resetSystemScrollbarWidth();
-    this._scrollWidth = null;
   },
 
   _hidePopup() {
@@ -700,18 +760,27 @@ const PanelUI = {
       return;
     }
 
-    if ((window.fullScreen && FullScreen.navToolboxHidden) || document.fullscreenElement) {
+    if (
+      (window.fullScreen && FullScreen.navToolboxHidden) ||
+      document.fullscreenElement
+    ) {
       this._hidePopup();
       return;
     }
 
-    let doorhangers =
-      notifications.filter(n => !n.dismissed && !n.options.badgeOnly);
+    let doorhangers = notifications.filter(
+      n => !n.dismissed && !n.options.badgeOnly
+    );
 
     if (this.panel.state == "showing" || this.panel.state == "open") {
       // If the menu is already showing, then we need to dismiss all notifications
       // since we don't want their doorhangers competing for attention
-      doorhangers.forEach(n => { n.dismissed = true; });
+      doorhangers.forEach(n => {
+        n.dismissed = true;
+        if (n.options.onDismissed) {
+          n.options.onDismissed(window);
+        }
+      });
       this._hidePopup();
       this._clearBadge();
       if (!notifications[0].options.badgeOnly) {
@@ -719,7 +788,10 @@ const PanelUI = {
       }
     } else if (doorhangers.length > 0) {
       // Only show the doorhanger if the window is focused and not fullscreen
-      if ((window.fullScreen && this.autoHideToolbarInFullScreen) || Services.focus.activeWindow !== window) {
+      if (
+        (window.fullScreen && this.autoHideToolbarInFullScreen) ||
+        Services.focus.activeWindow !== window
+      ) {
         this._hidePopup();
         this._showBadge(doorhangers[0]);
         this._showBannerItem(doorhangers[0]);
@@ -748,6 +820,20 @@ const PanelUI = {
     let anchor = this._getPanelAnchor(this.menuButton);
 
     this.notificationPanel.hidden = false;
+
+    // Insert Fluent files when needed before notification is opened
+    MozXULElement.insertFTLIfNeeded("branding/brand.ftl");
+    MozXULElement.insertFTLIfNeeded("browser/appMenuNotifications.ftl");
+
+    // After Fluent files are loaded into document replace data-lazy-l10n-ids with actual ones
+    document
+      .getElementById("appMenu-notification-popup")
+      .querySelectorAll("[data-lazy-l10n-id]")
+      .forEach(el => {
+        el.setAttribute("data-l10n-id", el.getAttribute("data-lazy-l10n-id"));
+        el.removeAttribute("data-lazy-l10n-id");
+      });
+
     this.notificationPanel.openPopup(anchor, "bottomcenter topright");
   },
 
@@ -764,6 +850,15 @@ const PanelUI = {
     this._clearBannerItem();
   },
 
+  _formatDescriptionMessage(n) {
+    let text = {};
+    let array = n.options.message.split("<>");
+    text.start = array[0] || "";
+    text.name = n.options.name || "";
+    text.end = array[1] || "";
+    return text;
+  },
+
   _refreshNotificationPanel(notification) {
     this._clearNotificationPanel();
 
@@ -771,12 +866,30 @@ const PanelUI = {
     let popupnotification = document.getElementById(popupnotificationID);
 
     popupnotification.setAttribute("id", popupnotificationID);
-    popupnotification.setAttribute("buttoncommand", "PanelUI._onNotificationButtonEvent(event, 'buttoncommand');");
-    popupnotification.setAttribute("secondarybuttoncommand",
-      "PanelUI._onNotificationButtonEvent(event, 'secondarybuttoncommand');");
+    popupnotification.setAttribute(
+      "buttoncommand",
+      "PanelUI._onNotificationButtonEvent(event, 'buttoncommand');"
+    );
+    popupnotification.setAttribute(
+      "secondarybuttoncommand",
+      "PanelUI._onNotificationButtonEvent(event, 'secondarybuttoncommand');"
+    );
+
+    if (notification.options.message) {
+      let desc = this._formatDescriptionMessage(notification);
+      popupnotification.setAttribute("label", desc.start);
+      popupnotification.setAttribute("name", desc.name);
+      popupnotification.setAttribute("endlabel", desc.end);
+    }
+    if (notification.options.onRefresh) {
+      notification.options.onRefresh(window);
+    }
+    if (notification.options.popupIconURL) {
+      popupnotification.setAttribute("icon", notification.options.popupIconURL);
+    }
 
     popupnotification.notification = notification;
-    popupnotification.hidden = false;
+    popupnotification.show();
   },
 
   _showBadge(notification) {
@@ -815,11 +928,17 @@ const PanelUI = {
   _onNotificationButtonEvent(event, type) {
     let notificationEl = getNotificationFromElement(event.originalTarget);
 
-    if (!notificationEl)
-      throw "PanelUI._onNotificationButtonEvent: couldn't find notification element";
+    if (!notificationEl) {
+      throw new Error(
+        "PanelUI._onNotificationButtonEvent: couldn't find notification element"
+      );
+    }
 
-    if (!notificationEl.notification)
-      throw "PanelUI._onNotificationButtonEvent: couldn't find notification";
+    if (!notificationEl.notification) {
+      throw new Error(
+        "PanelUI._onNotificationButtonEvent: couldn't find notification"
+      );
+    }
 
     let notification = notificationEl.notification;
 
@@ -832,33 +951,46 @@ const PanelUI = {
 
   _onBannerItemSelected(event) {
     let target = event.originalTarget;
-    if (!target.notification)
-      throw "menucommand target has no associated action/notification";
+    if (!target.notification) {
+      throw new Error(
+        "menucommand target has no associated action/notification"
+      );
+    }
 
     event.stopPropagation();
     AppMenuNotifications.callMainAction(window, target.notification, false);
   },
 
-  _getPopupId(notification) { return "appMenu-" + notification.id + "-notification"; },
+  _getPopupId(notification) {
+    return "appMenu-" + notification.id + "-notification";
+  },
 
-  _getBadgeStatus(notification) { return notification.id; },
+  _getBadgeStatus(notification) {
+    return notification.id;
+  },
 
   _getPanelAnchor(candidate) {
     let iconAnchor =
-      document.getAnonymousElementByAttribute(candidate, "class",
-                                              "toolbarbutton-badge-stack") ||
-      document.getAnonymousElementByAttribute(candidate, "class",
-                                              "toolbarbutton-icon");
+      document.getAnonymousElementByAttribute(
+        candidate,
+        "class",
+        "toolbarbutton-badge-stack"
+      ) ||
+      document.getAnonymousElementByAttribute(
+        candidate,
+        "class",
+        "toolbarbutton-icon"
+      );
     return iconAnchor || candidate;
   },
 
   _addedShortcuts: false,
-  _ensureShortcutsShown() {
-    if (this._addedShortcuts) {
+  _ensureShortcutsShown(view = this.mainView) {
+    if (view.hasAttribute("added-shortcuts")) {
       return;
     }
-    this._addedShortcuts = true;
-    for (let button of this.mainView.querySelectorAll("toolbarbutton[key]")) {
+    view.setAttribute("added-shortcuts", "true");
+    for (let button of view.querySelectorAll("toolbarbutton[key]")) {
       let keyId = button.getAttribute("key");
       let key = document.getElementById(keyId);
       if (!key) {
@@ -876,18 +1008,12 @@ XPCOMUtils.defineConstant(this, "PanelUI", PanelUI);
  * @return  the selected locale
  */
 function getLocale() {
-  return Services.locale.getAppLocaleAsLangTag();
+  return Services.locale.appLocaleAsLangTag;
 }
 
+/**
+ * Given a DOM node inside a <popupnotification>, return the parent <popupnotification>.
+ */
 function getNotificationFromElement(aElement) {
-  // Need to find the associated notification object, which is a bit tricky
-  // since it isn't associated with the element directly - this is kind of
-  // gross and very dependent on the structure of the popupnotification
-  // binding's content.
-  let notificationEl;
-  let parent = aElement;
-  while (parent && (parent = aElement.ownerDocument.getBindingParent(parent))) {
-    notificationEl = parent;
-  }
-  return notificationEl;
+  return aElement.closest("popupnotification");
 }

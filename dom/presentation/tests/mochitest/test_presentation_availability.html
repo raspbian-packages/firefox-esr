@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <title>Test for PresentationAvailability</title>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
 </head>
 <body>
 <a target="_blank" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1228508">Test PresentationAvailability</a>
@@ -14,7 +14,7 @@
 // This test loads in an iframe, to ensure that the navigator instance is
 // loaded with the correct value of the preference.
 SimpleTest.waitForExplicitFinish();
-SimpleTest.requestFlakyTimeout('Test for guarantee not firing async event');
+SimpleTest.requestFlakyTimeout("Test for guarantee not firing async event");
 SpecialPowers.pushPermissions([
   {type: "presentation-device-manage", allow: false, context: document},
 ], function() {

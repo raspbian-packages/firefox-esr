@@ -10,8 +10,8 @@ const TEST_URL = "data:text/html;charset=utf-8,";
 const { startup } = require("devtools/client/responsive.html/utils/window");
 
 const activateTab = (tab) => new Promise(resolve => {
-  let { gBrowser } = tab.ownerGlobal;
-  let { tabContainer } = gBrowser;
+  const { gBrowser } = tab.ownerGlobal;
+  const { tabContainer } = gBrowser;
 
   tabContainer.addEventListener("TabSelect", function listener({type}) {
     tabContainer.removeEventListener(type, listener);
@@ -22,11 +22,11 @@ const activateTab = (tab) => new Promise(resolve => {
 });
 
 const isMenuChecked = () => {
-  let menu = document.getElementById("menu_responsiveUI");
+  const menu = document.getElementById("menu_responsiveUI");
   return menu.getAttribute("checked") === "true";
 };
 
-add_task(async function () {
+add_task(async function() {
   await startup(window);
 
   ok(!isMenuChecked(),

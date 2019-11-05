@@ -15,11 +15,11 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
 
-class nsSVGElement;
-
 namespace mozilla {
 
+namespace dom {
 class DOMSVGLength;
+class SVGElement;
 
 /**
  * Class DOMSVGLengthList
@@ -61,7 +61,7 @@ class DOMSVGLengthList final : public nsISupports, public nsWrapperCache {
     // aInternalList must be passed in explicitly because we can't use
     // InternalList() here. (Because it depends on IsAnimValList, which depends
     // on this object having been assigned to aAList's mBaseVal or mAnimVal,
-    // which hasn't happend yet.)
+    // which hasn't happened yet.)
 
     InternalListLengthWillChange(aInternalList.Length());  // Sync mItems
   }
@@ -82,7 +82,7 @@ class DOMSVGLengthList final : public nsISupports, public nsWrapperCache {
     return mItems.Length();
   }
 
-  /// Called to notify us to syncronize our length and detach excess items.
+  /// Called to notify us to synchronize our length and detach excess items.
   void InternalListLengthWillChange(uint32_t aNewLength);
 
   /**
@@ -123,7 +123,7 @@ class DOMSVGLengthList final : public nsISupports, public nsWrapperCache {
   uint32_t Length() const { return NumberOfItems(); }
 
  private:
-  nsSVGElement* Element() const { return mAList->mElement; }
+  dom::SVGElement* Element() const { return mAList->mElement; }
 
   uint8_t AttrEnum() const { return mAList->mAttrEnum; }
 
@@ -159,6 +159,7 @@ class DOMSVGLengthList final : public nsISupports, public nsWrapperCache {
   RefPtr<DOMSVGAnimatedLengthList> mAList;
 };
 
+}  // namespace dom
 }  // namespace mozilla
 
 #endif  // MOZILLA_DOMSVGLENGTHLIST_H__

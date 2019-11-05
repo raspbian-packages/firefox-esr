@@ -14,18 +14,18 @@
 
 struct JSContext;
 class JSObject;
-class nsIDocument;
-class nsStyleContext;
+class ComputedStyle;
 struct RawServoDeclarationBlock;
 
 namespace mozilla {
 struct AnimationProperty;
-enum class CSSPseudoElementType : uint8_t;
+enum class PseudoStyleType : uint8_t;
 class ErrorResult;
 struct Keyframe;
 struct PropertyStyleAnimationValuePair;
 
 namespace dom {
+class Document;
 class Element;
 }  // namespace dom
 }  // namespace mozilla
@@ -56,7 +56,7 @@ class KeyframeUtils {
    *   returned.
    */
   static nsTArray<Keyframe> GetKeyframesFromObject(
-      JSContext* aCx, nsIDocument* aDocument, JS::Handle<JSObject*> aFrames,
+      JSContext* aCx, dom::Document* aDocument, JS::Handle<JSObject*> aFrames,
       ErrorResult& aRv);
 
   /**
@@ -78,18 +78,16 @@ class KeyframeUtils {
    *
    * @param aKeyframes The input keyframes.
    * @param aElement The context element.
-   * @param aStyleType The |ServoStyleContext| or |GeckoStyleContext| to use
-   *   when computing values.
+   * @param aStyle The computed style values.
    * @param aEffectComposite The composite operation specified on the effect.
    *   For any keyframes in |aKeyframes| that do not specify a composite
    *   operation, this value will be used.
    * @return The set of animation properties. If an error occurs, the returned
    *   array will be empty.
    */
-  template <typename StyleType>
   static nsTArray<AnimationProperty> GetAnimationPropertiesFromKeyframes(
       const nsTArray<Keyframe>& aKeyframes, dom::Element* aElement,
-      StyleType* aStyleType, dom::CompositeOperation aEffectComposite);
+      const ComputedStyle* aStyle, dom::CompositeOperation aEffectComposite);
 
   /**
    * Check if the property or, for shorthands, one or more of
@@ -100,8 +98,7 @@ class KeyframeUtils {
    *                  if the property is animatable or not.
    * @return true if |aProperty| is animatable.
    */
-  static bool IsAnimatableProperty(nsCSSPropertyID aProperty,
-                                   StyleBackendType aBackend);
+  static bool IsAnimatableProperty(nsCSSPropertyID aProperty);
 };
 
 }  // namespace mozilla

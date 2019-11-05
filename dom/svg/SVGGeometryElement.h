@@ -7,12 +7,14 @@
 #ifndef mozilla_dom_SVGGeometryElement_h
 #define mozilla_dom_SVGGeometryElement_h
 
+#include "mozilla/dom/SVGGraphicsElement.h"
 #include "mozilla/gfx/2D.h"
-#include "SVGGraphicsElement.h"
+#include "SVGAnimatedNumber.h"
 #include "nsISVGPoint.h"
-#include "nsSVGNumber2.h"
 
-struct nsSVGMark {
+namespace mozilla {
+
+struct SVGMark {
   enum Type {
     eStart,
     eMid,
@@ -23,14 +25,13 @@ struct nsSVGMark {
 
   float x, y, angle;
   Type type;
-  nsSVGMark(float aX, float aY, float aAngle, Type aType)
+  SVGMark(float aX, float aY, float aAngle, Type aType)
       : x(aX), y(aY), angle(aAngle), type(aType) {}
 };
 
-namespace mozilla {
 namespace dom {
 
-class SVGAnimatedNumber;
+class DOMSVGAnimatedNumber;
 
 typedef mozilla::dom::SVGGraphicsElement SVGGeometryElementBase;
 
@@ -49,13 +50,14 @@ class SVGGeometryElement : public SVGGeometryElementBase {
 
  public:
   explicit SVGGeometryElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   virtual nsresult AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
                                 const nsAttrValue* aValue,
                                 const nsAttrValue* aOldValue,
                                 nsIPrincipal* aSubjectPrincipal,
                                 bool aNotify) override;
+  bool IsNodeOfType(uint32_t aFlags) const override;
 
   /**
    * Causes this element to discard any Path object that GetOrBuildPath may
@@ -77,7 +79,7 @@ class SVGGeometryElement : public SVGGeometryElementBase {
   bool GeometryDependsOnCoordCtx();
 
   virtual bool IsMarkable();
-  virtual void GetMarkPoints(nsTArray<nsSVGMark>* aMarks);
+  virtual void GetMarkPoints(nsTArray<SVGMark>* aMarks);
 
   /**
    * A method that can be faster than using a Moz2D Path and calling GetBounds/
@@ -108,7 +110,8 @@ class SVGGeometryElement : public SVGGeometryElementBase {
    */
   class SimplePath {
    public:
-    SimplePath() : mType(NONE) {}
+    SimplePath()
+        : mX(0.0), mY(0.0), mWidthOrX2(0.0), mHeightOrY2(0.0), mType(NONE) {}
     bool IsPath() const { return mType != NONE; }
     void SetRect(Float x, Float y, Float width, Float height) {
       mX = x;
@@ -194,17 +197,27 @@ class SVGGeometryElement : public SVGGeometryElementBase {
    */
   FillRule GetFillRule();
 
+  enum PathLengthScaleForType { eForTextPath, eForStroking };
+
+  /**
+   * Gets the ratio of the actual element's length to the content author's
+   * estimated length (as provided by the element's 'pathLength' attribute).
+   * This is used to scale stroke dashing, and to scale offsets along a
+   * textPath.
+   */
+  float GetPathLengthScale(PathLengthScaleForType aFor);
+
   // WebIDL
-  already_AddRefed<SVGAnimatedNumber> PathLength();
+  already_AddRefed<DOMSVGAnimatedNumber> PathLength();
   float GetTotalLength();
   already_AddRefed<nsISVGPoint> GetPointAtLength(float distance,
                                                  ErrorResult& rv);
 
  protected:
-  // nsSVGElement method
+  // SVGElement method
   virtual NumberAttributesInfo GetNumberInfo() override;
 
-  nsSVGNumber2 mPathLength;
+  SVGAnimatedNumber mPathLength;
   static NumberInfo sNumberInfo;
   mutable RefPtr<Path> mCachedPath;
 };

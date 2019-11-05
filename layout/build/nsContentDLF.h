@@ -20,7 +20,7 @@ class nsIStreamListener;
 #define PLUGIN_DLF_CONTRACTID \
   "@mozilla.org/content/plugin/document-loader-factory;1"
 
-class nsContentDLF : public nsIDocumentLoaderFactory {
+class nsContentDLF final : public nsIDocumentLoaderFactory {
  protected:
   virtual ~nsContentDLF();
 
@@ -32,9 +32,10 @@ class nsContentDLF : public nsIDocumentLoaderFactory {
 
   nsresult InitUAStyleSheet();
 
+  typedef already_AddRefed<mozilla::dom::Document> (*DocumentCreator)();
   nsresult CreateDocument(const char* aCommand, nsIChannel* aChannel,
                           nsILoadGroup* aLoadGroup, nsIDocShell* aContainer,
-                          const nsCID& aDocumentCID,
+                          DocumentCreator aDocumentCreator,
                           nsIStreamListener** aDocListener,
                           nsIContentViewer** aContentViewer);
 
@@ -49,7 +50,7 @@ class nsContentDLF : public nsIDocumentLoaderFactory {
    * principal.  aPrincipal is allowed to be null, in which case the
    * new document will get the about:blank codebase principal.
    */
-  static already_AddRefed<nsIDocument> CreateBlankDocument(
+  static already_AddRefed<mozilla::dom::Document> CreateBlankDocument(
       nsILoadGroup* aLoadGroup, nsIPrincipal* aPrincipal,
       nsDocShell* aContainer);
 

@@ -25,8 +25,8 @@
 #include "nsIX509Cert.h"
 #include "nsNSSASN1Object.h"
 #include "nsNSSCertHelper.h"
+#include "nsNSSCertTrust.h"
 #include "nsNSSCertValidity.h"
-#include "nsNSSComponent.h"  // for PIPNSS string bundle calls.
 #include "nsPK11TokenDB.h"
 #include "nsPKCS12Blob.h"
 #include "nsProxyRelease.h"
@@ -35,9 +35,9 @@
 #include "nsThreadUtils.h"
 #include "nsUnicharUtils.h"
 #include "nspr.h"
-#include "pkix/pkixnss.h"
-#include "pkix/pkixtypes.h"
-#include "pkix/Result.h"
+#include "mozpkix/pkixnss.h"
+#include "mozpkix/pkixtypes.h"
+#include "mozpkix/Result.h"
 #include "prerror.h"
 #include "secasn1.h"
 #include "secder.h"
@@ -45,13 +45,32 @@
 #include "ssl.h"
 
 #ifdef XP_WIN
-#include <winsock.h>  // for htonl
+#  include <winsock.h>  // for htonl
 #endif
 
 using namespace mozilla;
 using namespace mozilla::psm;
 
 extern LazyLogModule gPIPNSSLog;
+
+class nsNSSCertListEnumerator : public nsSimpleEnumerator {
+ public:
+  NS_DECL_NSISIMPLEENUMERATOR
+
+  const nsID& DefaultInterface() override { return NS_GET_IID(nsIX509Cert); }
+
+  explicit nsNSSCertListEnumerator(
+      const std::vector<UniqueCERTCertificate>& certs);
+
+  nsNSSCertListEnumerator(const nsNSSCertListEnumerator&) = delete;
+  void operator=(const nsNSSCertListEnumerator&) = delete;
+
+ private:
+  virtual ~nsNSSCertListEnumerator() = default;
+
+  std::vector<UniqueCERTCertificate> mCerts;
+  std::vector<UniqueCERTCertificate>::const_iterator mPosition;
+};
 
 // This is being stored in an uint32_t that can otherwise
 // only take values from nsIX509Cert's list of cert types.
@@ -61,9 +80,8 @@ extern LazyLogModule gPIPNSSLog;
 
 NS_IMPL_ISUPPORTS(nsNSSCertificate, nsIX509Cert, nsISerializable, nsIClassInfo)
 
-static NS_DEFINE_CID(kNSSComponentCID, NS_NSSCOMPONENT_CID);
-
-/*static*/ nsNSSCertificate* nsNSSCertificate::Create(CERTCertificate* cert) {
+/*static*/
+nsNSSCertificate* nsNSSCertificate::Create(CERTCertificate* cert) {
   if (cert)
     return new nsNSSCertificate(cert);
   else
@@ -86,29 +104,41 @@ bool nsNSSCertificate::InitFromDER(char* certDER, int derLen) {
 
   CERTCertificate* aCert = CERT_DecodeCertFromPackage(certDER, derLen);
 
-  if (!aCert) return false;
+  if (!aCert) {
+#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
+    if (XRE_GetProcessType() == GeckoProcessType_Content) {
+      MOZ_CRASH_UNSAFE_PRINTF("CERT_DecodeCertFromPackage failed in child: %d",
+                              PR_GetError());
+    }
+#endif
+    return false;
+  }
 
   if (!aCert->dbhandle) {
     aCert->dbhandle = CERT_GetDefaultCertDB();
   }
 
   mCert.reset(aCert);
+  GetSubjectAltNames();
   return true;
 }
 
 nsNSSCertificate::nsNSSCertificate(CERTCertificate* cert)
     : mCert(nullptr),
       mPermDelete(false),
-      mCertType(CERT_TYPE_NOT_YET_INITIALIZED) {
+      mCertType(CERT_TYPE_NOT_YET_INITIALIZED),
+      mSubjectAltNames() {
   if (cert) {
     mCert.reset(CERT_DupCertificate(cert));
+    GetSubjectAltNames();
   }
 }
 
 nsNSSCertificate::nsNSSCertificate()
     : mCert(nullptr),
       mPermDelete(false),
-      mCertType(CERT_TYPE_NOT_YET_INITIALIZED) {}
+      mCertType(CERT_TYPE_NOT_YET_INITIALIZED),
+      mSubjectAltNames() {}
 
 nsNSSCertificate::~nsNSSCertificate() {
   if (mPermDelete) {
@@ -122,6 +152,29 @@ nsNSSCertificate::~nsNSSCertificate() {
       SEC_DeletePermCertificate(mCert.get());
     }
   }
+}
+
+static uint32_t getCertType(CERTCertificate* cert) {
+  nsNSSCertTrust trust(cert->trust);
+  if (cert->nickname && trust.HasAnyUser()) {
+    return nsIX509Cert::USER_CERT;
+  }
+  if (trust.HasAnyCA()) {
+    return nsIX509Cert::CA_CERT;
+  }
+  if (trust.HasPeer(true, false)) {
+    return nsIX509Cert::SERVER_CERT;
+  }
+  if (trust.HasPeer(false, true) && cert->emailAddr) {
+    return nsIX509Cert::EMAIL_CERT;
+  }
+  if (CERT_IsCACert(cert, nullptr)) {
+    return nsIX509Cert::CA_CERT;
+  }
+  if (cert->emailAddr) {
+    return nsIX509Cert::EMAIL_CERT;
+  }
+  return nsIX509Cert::UNKNOWN_CERT;
 }
 
 nsresult nsNSSCertificate::GetCertType(uint32_t* aCertType) {
@@ -170,16 +223,14 @@ nsresult nsNSSCertificate::MarkForPermDeletion() {
 /**
  * Appends a pipnss bundle string to the given string.
  *
- * @param nssComponent For accessing the string bundle.
  * @param bundleKey Key for the string to append.
  * @param currentText The text to append to, using commas as separators.
  */
 template <size_t N>
-void AppendBundleString(const NotNull<nsCOMPtr<nsINSSComponent>>& nssComponent,
-                        const char (&bundleKey)[N],
-                        /*in/out*/ nsAString& currentText) {
+void AppendBundleStringCommaSeparated(const char (&bundleKey)[N],
+                                      /*in/out*/ nsAString& currentText) {
   nsAutoString bundleString;
-  nsresult rv = nssComponent->GetPIPNSSBundleString(bundleKey, bundleString);
+  nsresult rv = GetPIPNSSBundleString(bundleKey, bundleString);
   if (NS_FAILED(rv)) {
     return;
   }
@@ -193,11 +244,6 @@ void AppendBundleString(const NotNull<nsCOMPtr<nsINSSComponent>>& nssComponent,
 NS_IMETHODIMP
 nsNSSCertificate::GetKeyUsages(nsAString& text) {
   text.Truncate();
-
-  nsCOMPtr<nsINSSComponent> nssComponent = do_GetService(kNSSComponentCID);
-  if (!nssComponent) {
-    return NS_ERROR_FAILURE;
-  }
 
   if (!mCert) {
     return NS_ERROR_FAILURE;
@@ -218,28 +264,26 @@ nsNSSCertificate::GetKeyUsages(nsAString& text) {
     keyUsage = keyUsageItem.data[0];
   }
 
-  NotNull<nsCOMPtr<nsINSSComponent>> wrappedNSSComponent =
-      WrapNotNull(nssComponent);
   if (keyUsage & KU_DIGITAL_SIGNATURE) {
-    AppendBundleString(wrappedNSSComponent, "CertDumpKUSign", text);
+    AppendBundleStringCommaSeparated("CertDumpKUSign", text);
   }
   if (keyUsage & KU_NON_REPUDIATION) {
-    AppendBundleString(wrappedNSSComponent, "CertDumpKUNonRep", text);
+    AppendBundleStringCommaSeparated("CertDumpKUNonRep", text);
   }
   if (keyUsage & KU_KEY_ENCIPHERMENT) {
-    AppendBundleString(wrappedNSSComponent, "CertDumpKUEnc", text);
+    AppendBundleStringCommaSeparated("CertDumpKUEnc", text);
   }
   if (keyUsage & KU_DATA_ENCIPHERMENT) {
-    AppendBundleString(wrappedNSSComponent, "CertDumpKUDEnc", text);
+    AppendBundleStringCommaSeparated("CertDumpKUDEnc", text);
   }
   if (keyUsage & KU_KEY_AGREEMENT) {
-    AppendBundleString(wrappedNSSComponent, "CertDumpKUKA", text);
+    AppendBundleStringCommaSeparated("CertDumpKUKA", text);
   }
   if (keyUsage & KU_KEY_CERT_SIGN) {
-    AppendBundleString(wrappedNSSComponent, "CertDumpKUCertSign", text);
+    AppendBundleStringCommaSeparated("CertDumpKUCertSign", text);
   }
   if (keyUsage & KU_CRL_SIGN) {
-    AppendBundleString(wrappedNSSComponent, "CertDumpKUCRLSign", text);
+    AppendBundleStringCommaSeparated("CertDumpKUCRLSign", text);
   }
 
   return NS_OK;
@@ -327,12 +371,13 @@ nsNSSCertificate::GetDisplayName(nsAString& aDisplayName) {
       organizationalUnitName.get(), organizationName.get(),
       mCert->subjectName,           mCert->emailAddr};
 
-  nsAutoCString nameOption;
-  for (auto nameOptionPtr : nameOptions) {
-    nameOption.Assign(nameOptionPtr);
-    if (nameOption.Length() > 0 && IsUTF8(nameOption)) {
-      CopyUTF8toUTF16(nameOption, aDisplayName);
-      return NS_OK;
+  for (auto nameOption : nameOptions) {
+    if (nameOption) {
+      size_t len = strlen(nameOption);
+      if (len > 0) {
+        LossyUTF8ToUTF16(nameOption, len, aDisplayName);
+        return NS_OK;
+      }
     }
   }
 
@@ -342,15 +387,9 @@ nsNSSCertificate::GetDisplayName(nsAString& aDisplayName) {
 NS_IMETHODIMP
 nsNSSCertificate::GetEmailAddress(nsAString& aEmailAddress) {
   if (mCert->emailAddr) {
-    CopyUTF8toUTF16(mCert->emailAddr, aEmailAddress);
+    CopyUTF8toUTF16(MakeStringSpan(mCert->emailAddr), aEmailAddress);
   } else {
-    nsresult rv;
-    nsCOMPtr<nsINSSComponent> nssComponent(
-        do_GetService(kNSSComponentCID, &rv));
-    if (NS_FAILED(rv) || !nssComponent) {
-      return NS_ERROR_FAILURE;
-    }
-    nssComponent->GetPIPNSSBundleString("CertNoEmailAddress", aEmailAddress);
+    GetPIPNSSBundleString("CertNoEmailAddress", aEmailAddress);
   }
   return NS_OK;
 }
@@ -362,19 +401,18 @@ nsNSSCertificate::GetEmailAddresses(uint32_t* aLength, char16_t*** aAddresses) {
 
   *aLength = 0;
 
-  const char* aAddr;
-  for (aAddr = CERT_GetFirstEmailAddress(mCert.get()); aAddr;
+  for (const char* aAddr = CERT_GetFirstEmailAddress(mCert.get()); aAddr;
        aAddr = CERT_GetNextEmailAddress(mCert.get(), aAddr)) {
     ++(*aLength);
   }
 
   *aAddresses = (char16_t**)moz_xmalloc(sizeof(char16_t*) * (*aLength));
-  if (!*aAddresses) return NS_ERROR_OUT_OF_MEMORY;
 
-  uint32_t iAddr;
-  for (aAddr = CERT_GetFirstEmailAddress(mCert.get()), iAddr = 0; aAddr;
-       aAddr = CERT_GetNextEmailAddress(mCert.get(), aAddr), ++iAddr) {
-    (*aAddresses)[iAddr] = ToNewUnicode(NS_ConvertUTF8toUTF16(aAddr));
+  uint32_t iAddr = 0;
+  for (const char* aAddr = CERT_GetFirstEmailAddress(mCert.get()); aAddr;
+       aAddr = CERT_GetNextEmailAddress(mCert.get(), aAddr)) {
+    (*aAddresses)[iAddr] = ToNewUnicode(nsDependentCString(aAddr));
+    iAddr++;
   }
 
   return NS_OK;
@@ -386,10 +424,10 @@ nsNSSCertificate::ContainsEmailAddress(const nsAString& aEmailAddress,
   NS_ENSURE_ARG(result);
   *result = false;
 
-  const char* aAddr = nullptr;
-  for (aAddr = CERT_GetFirstEmailAddress(mCert.get()); aAddr;
+  for (const char* aAddr = CERT_GetFirstEmailAddress(mCert.get()); aAddr;
        aAddr = CERT_GetNextEmailAddress(mCert.get(), aAddr)) {
-    NS_ConvertUTF8toUTF16 certAddr(aAddr);
+    nsAutoString certAddr;
+    LossyUTF8ToUTF16(aAddr, strlen(aAddr), certAddr);
     ToLowerCase(certAddr);
 
     nsAutoString testAddr(aEmailAddress);
@@ -410,7 +448,7 @@ nsNSSCertificate::GetCommonName(nsAString& aCommonName) {
   if (mCert) {
     UniquePORTString commonName(CERT_GetCommonName(&mCert->subject));
     if (commonName) {
-      aCommonName = NS_ConvertUTF8toUTF16(commonName.get());
+      LossyUTF8ToUTF16(commonName.get(), strlen(commonName.get()), aCommonName);
     }
   }
   return NS_OK;
@@ -422,7 +460,8 @@ nsNSSCertificate::GetOrganization(nsAString& aOrganization) {
   if (mCert) {
     UniquePORTString organization(CERT_GetOrgName(&mCert->subject));
     if (organization) {
-      aOrganization = NS_ConvertUTF8toUTF16(organization.get());
+      LossyUTF8ToUTF16(organization.get(), strlen(organization.get()),
+                       aOrganization);
     }
   }
   return NS_OK;
@@ -434,7 +473,7 @@ nsNSSCertificate::GetIssuerCommonName(nsAString& aCommonName) {
   if (mCert) {
     UniquePORTString commonName(CERT_GetCommonName(&mCert->issuer));
     if (commonName) {
-      aCommonName = NS_ConvertUTF8toUTF16(commonName.get());
+      LossyUTF8ToUTF16(commonName.get(), strlen(commonName.get()), aCommonName);
     }
   }
   return NS_OK;
@@ -446,7 +485,8 @@ nsNSSCertificate::GetIssuerOrganization(nsAString& aOrganization) {
   if (mCert) {
     UniquePORTString organization(CERT_GetOrgName(&mCert->issuer));
     if (organization) {
-      aOrganization = NS_ConvertUTF8toUTF16(organization.get());
+      LossyUTF8ToUTF16(organization.get(), strlen(organization.get()),
+                       aOrganization);
     }
   }
   return NS_OK;
@@ -458,34 +498,10 @@ nsNSSCertificate::GetIssuerOrganizationUnit(nsAString& aOrganizationUnit) {
   if (mCert) {
     UniquePORTString organizationUnit(CERT_GetOrgUnitName(&mCert->issuer));
     if (organizationUnit) {
-      aOrganizationUnit = NS_ConvertUTF8toUTF16(organizationUnit.get());
+      LossyUTF8ToUTF16(organizationUnit.get(), strlen(organizationUnit.get()),
+                       aOrganizationUnit);
     }
   }
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSCertificate::GetIssuer(nsIX509Cert** aIssuer) {
-  NS_ENSURE_ARG(aIssuer);
-  *aIssuer = nullptr;
-
-  nsCOMPtr<nsIArray> chain;
-  nsresult rv;
-  rv = GetChain(getter_AddRefs(chain));
-  NS_ENSURE_SUCCESS(rv, rv);
-  uint32_t length;
-  if (!chain || NS_FAILED(chain->GetLength(&length)) || length == 0) {
-    return NS_ERROR_UNEXPECTED;
-  }
-  if (length == 1) {  // No known issuer
-    return NS_OK;
-  }
-  nsCOMPtr<nsIX509Cert> cert;
-  chain->QueryElementAt(1, NS_GET_IID(nsIX509Cert), getter_AddRefs(cert));
-  if (!cert) {
-    return NS_ERROR_UNEXPECTED;
-  }
-  cert.forget(aIssuer);
   return NS_OK;
 }
 
@@ -495,80 +511,102 @@ nsNSSCertificate::GetOrganizationalUnit(nsAString& aOrganizationalUnit) {
   if (mCert) {
     UniquePORTString orgunit(CERT_GetOrgUnitName(&mCert->subject));
     if (orgunit) {
-      aOrganizationalUnit = NS_ConvertUTF8toUTF16(orgunit.get());
+      LossyUTF8ToUTF16(orgunit.get(), strlen(orgunit.get()),
+                       aOrganizationalUnit);
     }
   }
   return NS_OK;
-}
-
-static nsresult UniqueCERTCertListToMutableArray(
-    /*in*/ UniqueCERTCertList& nssChain,
-    /*out*/ nsIArray** x509CertArray) {
-  if (!x509CertArray) {
-    return NS_ERROR_INVALID_ARG;
-  }
-
-  nsCOMPtr<nsIMutableArray> array = nsArrayBase::Create();
-  if (!array) {
-    return NS_ERROR_FAILURE;
-  }
-
-  CERTCertListNode* node;
-  for (node = CERT_LIST_HEAD(nssChain.get());
-       !CERT_LIST_END(node, nssChain.get()); node = CERT_LIST_NEXT(node)) {
-    nsCOMPtr<nsIX509Cert> cert = nsNSSCertificate::Create(node->cert);
-    nsresult rv = array->AppendElement(cert);
-    if (NS_FAILED(rv)) {
-      return rv;
-    }
-  }
-
-  array.forget(x509CertArray);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSCertificate::GetChain(nsIArray** _rvChain) {
-  NS_ENSURE_ARG(_rvChain);
-
-  mozilla::pkix::Time now(mozilla::pkix::Now());
-
-  RefPtr<SharedCertVerifier> certVerifier(GetDefaultCertVerifier());
-  NS_ENSURE_TRUE(certVerifier, NS_ERROR_UNEXPECTED);
-
-  UniqueCERTCertList nssChain;
-  // We want to test all usages supported by the certificate verifier, but we
-  // start with TLS server because most of the time Firefox users care about
-  // server certs.
-  const int usagesToTest[] = {certificateUsageSSLServer,
-                              certificateUsageSSLClient, certificateUsageSSLCA,
-                              certificateUsageEmailSigner,
-                              certificateUsageEmailRecipient};
-  for (auto usage : usagesToTest) {
-    if (certVerifier->VerifyCert(mCert.get(), usage, now, nullptr, /*XXX fixme*/
-                                 nullptr,                          /*hostname*/
-                                 nssChain, CertVerifier::FLAG_LOCAL_ONLY) ==
-        mozilla::pkix::Success) {
-      return UniqueCERTCertListToMutableArray(nssChain, _rvChain);
-    }
-  }
-
-  // There is no verified path for the chain, however we still want to
-  // present to the user as much of a possible chain as possible, in the case
-  // where there was a problem with the cert or the issuers.
-  nssChain = UniqueCERTCertList(
-      CERT_GetCertChainFromCert(mCert.get(), PR_Now(), certUsageSSLClient));
-  if (!nssChain) {
-    return NS_ERROR_FAILURE;
-  }
-  return UniqueCERTCertListToMutableArray(nssChain, _rvChain);
 }
 
 NS_IMETHODIMP
 nsNSSCertificate::GetSubjectName(nsAString& _subjectName) {
   _subjectName.Truncate();
   if (mCert->subjectName) {
-    _subjectName = NS_ConvertUTF8toUTF16(mCert->subjectName);
+    LossyUTF8ToUTF16(mCert->subjectName, strlen(mCert->subjectName),
+                     _subjectName);
+  }
+  return NS_OK;
+}
+
+// Reads dNSName and iPAddress entries encountered in the subject alternative
+// name extension of the certificate and stores them in mSubjectAltNames.
+void nsNSSCertificate::GetSubjectAltNames() {
+  mSubjectAltNames.clear();
+
+  ScopedAutoSECItem altNameExtension;
+  SECStatus rv = CERT_FindCertExtension(
+      mCert.get(), SEC_OID_X509_SUBJECT_ALT_NAME, &altNameExtension);
+  if (rv != SECSuccess) {
+    return;
+  }
+  UniquePLArenaPool arena(PORT_NewArena(DER_DEFAULT_CHUNKSIZE));
+  if (!arena) {
+    return;
+  }
+  CERTGeneralName* sanNameList(
+      CERT_DecodeAltNameExtension(arena.get(), &altNameExtension));
+  if (!sanNameList) {
+    return;
+  }
+
+  CERTGeneralName* current = sanNameList;
+  do {
+    nsAutoString name;
+    switch (current->type) {
+      case certDNSName: {
+        nsDependentCSubstring nameFromCert(
+            BitwiseCast<char*, unsigned char*>(current->name.other.data),
+            current->name.other.len);
+        // dNSName fields are defined as type IA5String and thus should
+        // be limited to ASCII characters.
+        if (IsASCII(nameFromCert)) {
+          name.Assign(NS_ConvertASCIItoUTF16(nameFromCert));
+          mSubjectAltNames.push_back(name);
+        }
+      } break;
+
+      case certIPAddress: {
+        char buf[INET6_ADDRSTRLEN];
+        PRNetAddr addr;
+        if (current->name.other.len == 4) {
+          addr.inet.family = PR_AF_INET;
+          memcpy(&addr.inet.ip, current->name.other.data,
+                 current->name.other.len);
+          PR_NetAddrToString(&addr, buf, sizeof(buf));
+          name.AssignASCII(buf);
+        } else if (current->name.other.len == 16) {
+          addr.ipv6.family = PR_AF_INET6;
+          memcpy(&addr.ipv6.ip, current->name.other.data,
+                 current->name.other.len);
+          PR_NetAddrToString(&addr, buf, sizeof(buf));
+          name.AssignASCII(buf);
+        } else {
+          /* invalid IP address */
+        }
+        if (!name.IsEmpty()) {
+          mSubjectAltNames.push_back(name);
+        }
+        break;
+      }
+
+      default:  // all other types of names are ignored
+        break;
+    }
+    current = CERT_GetNextGeneralName(current);
+  } while (current != sanNameList);  // double linked
+
+  return;
+}
+
+NS_IMETHODIMP
+nsNSSCertificate::GetSubjectAltNames(nsAString& _subjectAltNames) {
+  _subjectAltNames.Truncate();
+
+  for (auto altName : mSubjectAltNames) {
+    if (!_subjectAltNames.IsEmpty()) {
+      _subjectAltNames.Append(',');
+    }
+    _subjectAltNames.Append(altName);
   }
   return NS_OK;
 }
@@ -577,7 +615,7 @@ NS_IMETHODIMP
 nsNSSCertificate::GetIssuerName(nsAString& _issuerName) {
   _issuerName.Truncate();
   if (mCert->issuerName) {
-    _issuerName = NS_ConvertUTF8toUTF16(mCert->issuerName);
+    LossyUTF8ToUTF16(mCert->issuerName, strlen(mCert->issuerName), _issuerName);
   }
   return NS_OK;
 }
@@ -625,31 +663,22 @@ nsNSSCertificate::GetSha1Fingerprint(nsAString& _sha1Fingerprint) {
 
 NS_IMETHODIMP
 nsNSSCertificate::GetTokenName(nsAString& aTokenName) {
-  aTokenName.Truncate();
-  if (mCert) {
-    // HACK alert
-    // When the trust of a builtin cert is modified, NSS copies it into the
-    // cert db.  At this point, it is now "managed" by the user, and should
-    // not be listed with the builtins.  However, in the collection code
-    // used by PK11_ListCerts, the cert is found in the temp db, where it
-    // has been loaded from the token.  Though the trust is correct (grabbed
-    // from the cert db), the source is wrong.  I believe this is a safe
-    // way to work around this.
-    if (mCert->slot) {
-      char* token = PK11_GetTokenName(mCert->slot);
-      if (token) {
-        aTokenName = NS_ConvertUTF8toUTF16(token);
-      }
-    } else {
-      nsresult rv;
-      nsAutoString tok;
-      nsCOMPtr<nsINSSComponent> nssComponent(
-          do_GetService(kNSSComponentCID, &rv));
-      if (NS_FAILED(rv)) return rv;
-      rv = nssComponent->GetPIPNSSBundleString("InternalToken", tok);
-      if (NS_SUCCEEDED(rv)) aTokenName = tok;
-    }
+  MOZ_ASSERT(mCert);
+  if (!mCert) {
+    return NS_ERROR_FAILURE;
   }
+  UniquePK11SlotInfo internalSlot(PK11_GetInternalSlot());
+  if (!internalSlot) {
+    return NS_ERROR_FAILURE;
+  }
+  nsCOMPtr<nsIPK11Token> token(
+      new nsPK11Token(mCert->slot ? mCert->slot : internalSlot.get()));
+  nsAutoCString tmp;
+  nsresult rv = token->GetTokenName(tmp);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+  aTokenName.Assign(NS_ConvertUTF8toUTF16(tmp));
   return NS_OK;
 }
 
@@ -677,132 +706,12 @@ NS_IMETHODIMP
 nsNSSCertificate::GetRawDER(uint32_t* aLength, uint8_t** aArray) {
   if (mCert) {
     *aArray = (uint8_t*)moz_xmalloc(mCert->derCert.len);
-    if (*aArray) {
-      memcpy(*aArray, mCert->derCert.data, mCert->derCert.len);
-      *aLength = mCert->derCert.len;
-      return NS_OK;
-    }
+    memcpy(*aArray, mCert->derCert.data, mCert->derCert.len);
+    *aLength = mCert->derCert.len;
+    return NS_OK;
   }
   *aLength = 0;
   return NS_ERROR_FAILURE;
-}
-
-NS_IMETHODIMP
-nsNSSCertificate::ExportAsCMS(uint32_t chainMode, uint32_t* aLength,
-                              uint8_t** aArray) {
-  NS_ENSURE_ARG(aLength);
-  NS_ENSURE_ARG(aArray);
-
-  nsresult rv = BlockUntilLoadableRootsLoaded();
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-
-  if (!mCert) return NS_ERROR_FAILURE;
-
-  switch (chainMode) {
-    case nsIX509Cert::CMS_CHAIN_MODE_CertOnly:
-    case nsIX509Cert::CMS_CHAIN_MODE_CertChain:
-    case nsIX509Cert::CMS_CHAIN_MODE_CertChainWithRoot:
-      break;
-    default:
-      return NS_ERROR_INVALID_ARG;
-  }
-
-  UniqueNSSCMSMessage cmsg(NSS_CMSMessage_Create(nullptr));
-  if (!cmsg) {
-    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-            ("nsNSSCertificate::ExportAsCMS - can't create CMS message\n"));
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-
-  // first, create SignedData with the certificate only (no chain)
-  UniqueNSSCMSSignedData sigd(
-      NSS_CMSSignedData_CreateCertsOnly(cmsg.get(), mCert.get(), false));
-  if (!sigd) {
-    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-            ("nsNSSCertificate::ExportAsCMS - can't create SignedData\n"));
-    return NS_ERROR_FAILURE;
-  }
-
-  // Calling NSS_CMSSignedData_CreateCertsOnly() will not allow us
-  // to specify the inclusion of the root, but CERT_CertChainFromCert() does.
-  // Since CERT_CertChainFromCert() also includes the certificate itself,
-  // we have to start at the issuing cert (to avoid duplicate certs
-  // in the SignedData).
-  if (chainMode == nsIX509Cert::CMS_CHAIN_MODE_CertChain ||
-      chainMode == nsIX509Cert::CMS_CHAIN_MODE_CertChainWithRoot) {
-    UniqueCERTCertificate issuerCert(
-        CERT_FindCertIssuer(mCert.get(), PR_Now(), certUsageAnyCA));
-    // the issuerCert of a self signed root is the cert itself,
-    // so make sure we're not adding duplicates, again
-    if (issuerCert && issuerCert != mCert) {
-      bool includeRoot =
-          (chainMode == nsIX509Cert::CMS_CHAIN_MODE_CertChainWithRoot);
-      UniqueCERTCertificateList certChain(CERT_CertChainFromCert(
-          issuerCert.get(), certUsageAnyCA, includeRoot));
-      if (certChain) {
-        if (NSS_CMSSignedData_AddCertList(sigd.get(), certChain.get()) ==
-            SECSuccess) {
-          Unused << certChain.release();
-        } else {
-          MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-                  ("nsNSSCertificate::ExportAsCMS - can't add chain\n"));
-          return NS_ERROR_FAILURE;
-        }
-      } else {
-        // try to add the issuerCert, at least
-        if (NSS_CMSSignedData_AddCertificate(sigd.get(), issuerCert.get()) ==
-            SECSuccess) {
-          Unused << issuerCert.release();
-        } else {
-          MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-                  ("nsNSSCertificate::ExportAsCMS - can't add issuer cert\n"));
-          return NS_ERROR_FAILURE;
-        }
-      }
-    }
-  }
-
-  NSSCMSContentInfo* cinfo = NSS_CMSMessage_GetContentInfo(cmsg.get());
-  if (NSS_CMSContentInfo_SetContent_SignedData(cmsg.get(), cinfo, sigd.get()) ==
-      SECSuccess) {
-    Unused << sigd.release();
-  } else {
-    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-            ("nsNSSCertificate::ExportAsCMS - can't attach SignedData\n"));
-    return NS_ERROR_FAILURE;
-  }
-
-  UniquePLArenaPool arena(PORT_NewArena(1024));
-  if (!arena) {
-    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-            ("nsNSSCertificate::ExportAsCMS - out of memory\n"));
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-
-  SECItem certP7 = {siBuffer, nullptr, 0};
-  NSSCMSEncoderContext* ecx = NSS_CMSEncoder_Start(
-      cmsg.get(), nullptr, nullptr, &certP7, arena.get(), nullptr, nullptr,
-      nullptr, nullptr, nullptr, nullptr);
-  if (!ecx) {
-    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-            ("nsNSSCertificate::ExportAsCMS - can't create encoder context\n"));
-    return NS_ERROR_FAILURE;
-  }
-
-  if (NSS_CMSEncoder_Finish(ecx) != SECSuccess) {
-    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
-            ("nsNSSCertificate::ExportAsCMS - failed to add encoded data\n"));
-    return NS_ERROR_FAILURE;
-  }
-
-  *aArray = (uint8_t*)moz_xmalloc(certP7.len);
-  if (!*aArray) return NS_ERROR_OUT_OF_MEMORY;
-
-  memcpy(*aArray, certP7.data, certP7.len);
-  *aLength = certP7.len;
-  return NS_OK;
 }
 
 CERTCertificate* nsNSSCertificate::GetCert() {
@@ -884,17 +793,29 @@ NS_IMPL_CLASSINFO(nsNSSCertList, nullptr,
 NS_IMPL_ISUPPORTS_CI(nsNSSCertList, nsIX509CertList, nsISerializable)
 
 nsNSSCertList::nsNSSCertList(UniqueCERTCertList certList) {
-  if (certList) {
-    mCertList = Move(certList);
-  } else {
-    mCertList = UniqueCERTCertList(CERT_NewCertList());
+  // Commonly we'll store only 3 certificates. If this is a verified certificate
+  // chain, it may be as many as 8 certificates. If this is a list of all known
+  // certificates, it may be a few hundred. We'll optimize for the common case
+  // (i.e. a verified certificate chain).
+  mCerts.reserve(8);
+  if (certList.get()) {
+    for (CERTCertListNode* node = CERT_LIST_HEAD(certList.get());
+         !CERT_LIST_END(node, certList.get()); node = CERT_LIST_NEXT(node)) {
+      UniqueCERTCertificate cert(CERT_DupCertificate(node->cert));
+      mCerts.push_back(std::move(cert));
+    }
   }
 }
 
 nsNSSCertList::nsNSSCertList() {
-  mCertList = UniqueCERTCertList(CERT_NewCertList());
+  // Commonly we'll store only 3 certificates. If this is a verified certificate
+  // chain, it may be as many as 8 certificates. If this is a list of all known
+  // certificates, it may be a few hundred. We'll optimize for the common case
+  // (i.e. a verified certificate chain).
+  mCerts.reserve(8);
 }
 
+// This is the implementation of nsIX509CertList.getCertList().
 nsNSSCertList* nsNSSCertList::GetCertList() { return this; }
 
 NS_IMETHODIMP
@@ -909,15 +830,7 @@ nsNSSCertList::AddCert(nsIX509Cert* aCert) {
     NS_ERROR("Somehow got nullptr for mCertificate in nsNSSCertificate.");
     return NS_ERROR_FAILURE;
   }
-
-  if (!mCertList) {
-    NS_ERROR("Somehow got nullptr for mCertList in nsNSSCertList.");
-    return NS_ERROR_FAILURE;
-  }
-  if (CERT_AddCertToListTail(mCertList.get(), cert.get()) != SECSuccess) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-  Unused << cert.release();  // Ownership transferred to the cert list.
+  mCerts.push_back(std::move(cert));
   return NS_OK;
 }
 
@@ -948,28 +861,87 @@ UniqueCERTCertList nsNSSCertList::DupCertList(
   return newList;
 }
 
-CERTCertList* nsNSSCertList::GetRawCertList() { return mCertList.get(); }
+NS_IMETHODIMP
+nsNSSCertList::AsPKCS7Blob(/*out*/ nsACString& result) {
+  UniqueNSSCMSMessage cmsg(NSS_CMSMessage_Create(nullptr));
+  if (!cmsg) {
+    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
+            ("nsNSSCertList::AsPKCS7Blob - can't create CMS message"));
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
+  UniqueNSSCMSSignedData sigd(nullptr);
+  nsresult rv = ForEachCertificateInChain(
+      [&cmsg, &sigd](nsCOMPtr<nsIX509Cert> aCert, bool /*unused*/,
+                     /*out*/ bool& /*unused*/) {
+        // We need an owning handle when calling nsIX509Cert::GetCert().
+        UniqueCERTCertificate nssCert(aCert->GetCert());
+        if (!sigd) {
+          sigd.reset(NSS_CMSSignedData_CreateCertsOnly(cmsg.get(),
+                                                       nssCert.get(), false));
+          if (!sigd) {
+            MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
+                    ("nsNSSCertList::AsPKCS7Blob - can't create SignedData"));
+            return NS_ERROR_FAILURE;
+          }
+        } else if (NSS_CMSSignedData_AddCertificate(
+                       sigd.get(), nssCert.get()) != SECSuccess) {
+          MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
+                  ("nsNSSCertList::AsPKCS7Blob - can't add cert"));
+          return NS_ERROR_FAILURE;
+        }
+        return NS_OK;
+      });
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+
+  NSSCMSContentInfo* cinfo = NSS_CMSMessage_GetContentInfo(cmsg.get());
+  if (NSS_CMSContentInfo_SetContent_SignedData(cmsg.get(), cinfo, sigd.get()) !=
+      SECSuccess) {
+    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
+            ("nsNSSCertList::AsPKCS7Blob - can't attach SignedData"));
+    return NS_ERROR_FAILURE;
+  }
+  // cmsg owns sigd now.
+  Unused << sigd.release();
+
+  UniquePLArenaPool arena(PORT_NewArena(1024));
+  if (!arena) {
+    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
+            ("nsNSSCertList::AsPKCS7Blob - out of memory"));
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
+  SECItem certP7 = {siBuffer, nullptr, 0};
+  NSSCMSEncoderContext* ecx = NSS_CMSEncoder_Start(
+      cmsg.get(), nullptr, nullptr, &certP7, arena.get(), nullptr, nullptr,
+      nullptr, nullptr, nullptr, nullptr);
+  if (!ecx) {
+    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
+            ("nsNSSCertList::AsPKCS7Blob - can't create encoder"));
+    return NS_ERROR_FAILURE;
+  }
+
+  if (NSS_CMSEncoder_Finish(ecx) != SECSuccess) {
+    MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
+            ("nsNSSCertList::AsPKCS7Blob - failed to add encoded data"));
+    return NS_ERROR_FAILURE;
+  }
+
+  result.Assign(nsDependentCSubstring(
+      reinterpret_cast<const char*>(certP7.data), certP7.len));
+  return NS_OK;
+}
 
 NS_IMETHODIMP
 nsNSSCertList::Write(nsIObjectOutputStream* aStream) {
-  NS_ENSURE_STATE(mCertList);
-  nsresult rv = NS_OK;
-
-  // First, enumerate the certs to get the length of the list
-  uint32_t certListLen = 0;
-  CERTCertListNode* node = nullptr;
-  for (node = CERT_LIST_HEAD(mCertList); !CERT_LIST_END(node, mCertList);
-       node = CERT_LIST_NEXT(node), ++certListLen) {
-  }
-
   // Write the length of the list
-  rv = aStream->Write32(certListLen);
+  nsresult rv = aStream->Write32(mCerts.size());
 
-  // Repeat the loop, and serialize each certificate
-  node = nullptr;
-  for (node = CERT_LIST_HEAD(mCertList); !CERT_LIST_END(node, mCertList);
-       node = CERT_LIST_NEXT(node)) {
-    nsCOMPtr<nsIX509Cert> cert = nsNSSCertificate::Create(node->cert);
+  // Serialize each certificate
+  for (const auto& certRef : mCerts) {
+    nsCOMPtr<nsIX509Cert> cert = nsNSSCertificate::Create(certRef.get());
     if (!cert) {
       rv = NS_ERROR_OUT_OF_MEMORY;
       break;
@@ -988,11 +960,8 @@ nsNSSCertList::Write(nsIObjectOutputStream* aStream) {
 
 NS_IMETHODIMP
 nsNSSCertList::Read(nsIObjectInputStream* aStream) {
-  NS_ENSURE_STATE(mCertList);
-  nsresult rv = NS_OK;
-
   uint32_t certListLen;
-  rv = aStream->Read32(&certListLen);
+  nsresult rv = aStream->Read32(&certListLen);
   if (NS_FAILED(rv)) {
     return rv;
   }
@@ -1018,13 +987,7 @@ nsNSSCertList::Read(nsIObjectInputStream* aStream) {
 
 NS_IMETHODIMP
 nsNSSCertList::GetEnumerator(nsISimpleEnumerator** _retval) {
-  if (!mCertList) {
-    return NS_ERROR_FAILURE;
-  }
-
-  nsCOMPtr<nsISimpleEnumerator> enumerator =
-      new nsNSSCertListEnumerator(mCertList);
-
+  nsCOMPtr<nsISimpleEnumerator> enumerator(new nsNSSCertListEnumerator(mCerts));
   enumerator.forget(_retval);
   return NS_OK;
 }
@@ -1177,55 +1140,53 @@ nsresult nsNSSCertList::GetRootCertificate(
   if (aRoot) {
     return NS_ERROR_UNEXPECTED;
   }
-  CERTCertListNode* rootNode = CERT_LIST_TAIL(mCertList);
-  if (!rootNode) {
-    return NS_ERROR_UNEXPECTED;
-  }
-  if (CERT_LIST_END(rootNode, mCertList)) {
-    // Empty list, leave aRoot empty
+  // If the list is empty, leave aRoot empty.
+  if (mCerts.size() < 1) {
     return NS_OK;
   }
-  // Duplicates the certificate
-  aRoot = nsNSSCertificate::Create(rootNode->cert);
+  const UniqueCERTCertificate& cert = mCerts.back();
+  // This increases the refcount on the underlying CERTCertificate, which aRoot
+  // will own.
+  aRoot = nsNSSCertificate::Create(cert.get());
   if (!aRoot) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
   return NS_OK;
 }
 
-NS_IMPL_ISUPPORTS(nsNSSCertListEnumerator, nsISimpleEnumerator)
-
 nsNSSCertListEnumerator::nsNSSCertListEnumerator(
-    const UniqueCERTCertList& certList) {
-  MOZ_ASSERT(certList);
-  mCertList = nsNSSCertList::DupCertList(certList);
+    const std::vector<UniqueCERTCertificate>& certs) {
+  mCerts.reserve(certs.size());
+  // Unfortunately we can't just clone the vector because we have to ensure the
+  // reference counts on the CERTCertificates are accurate.
+  for (const auto& certRef : certs) {
+    UniqueCERTCertificate cert(CERT_DupCertificate(certRef.get()));
+    mCerts.push_back(std::move(cert));
+  }
+  mPosition = mCerts.cbegin();
 }
 
 NS_IMETHODIMP
 nsNSSCertListEnumerator::HasMoreElements(bool* _retval) {
-  NS_ENSURE_TRUE(mCertList, NS_ERROR_FAILURE);
-
-  *_retval = !CERT_LIST_EMPTY(mCertList);
+  *_retval = mPosition != mCerts.cend();
   return NS_OK;
 }
 
 NS_IMETHODIMP
 nsNSSCertListEnumerator::GetNext(nsISupports** _retval) {
-  NS_ENSURE_TRUE(mCertList, NS_ERROR_FAILURE);
-
-  CERTCertListNode* node = CERT_LIST_HEAD(mCertList);
-  if (CERT_LIST_END(node, mCertList)) {
-    return NS_ERROR_FAILURE;
+  *_retval = nullptr;
+  if (mPosition == mCerts.cend()) {
+    return NS_ERROR_UNEXPECTED;
   }
-
-  nsCOMPtr<nsIX509Cert> nssCert = nsNSSCertificate::Create(node->cert);
+  const UniqueCERTCertificate& certRef = *mPosition;
+  // nsNSSCertificate::Create calls nsNSSCertificate::nsNSSCertificate, which
+  // increases the reference count on the underlying CERTCertificate itself.
+  nsCOMPtr<nsIX509Cert> nssCert = nsNSSCertificate::Create(certRef.get());
   if (!nssCert) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
-
   nssCert.forget(_retval);
-
-  CERT_RemoveCertListNode(node);
+  mPosition++;
   return NS_OK;
 }
 
@@ -1275,9 +1236,8 @@ nsNSSCertificate::Read(nsIObjectInputStream* aStream) {
 }
 
 NS_IMETHODIMP
-nsNSSCertificate::GetInterfaces(uint32_t* count, nsIID*** array) {
-  *count = 0;
-  *array = nullptr;
+nsNSSCertificate::GetInterfaces(nsTArray<nsIID>& array) {
+  array.Clear();
   return NS_OK;
 }
 
@@ -1302,7 +1262,6 @@ nsNSSCertificate::GetClassDescription(nsACString& aClassDescription) {
 NS_IMETHODIMP
 nsNSSCertificate::GetClassID(nsCID** aClassID) {
   *aClassID = (nsCID*)moz_xmalloc(sizeof(nsCID));
-  if (!*aClassID) return NS_ERROR_OUT_OF_MEMORY;
   return GetClassIDNoAlloc(*aClassID);
 }
 

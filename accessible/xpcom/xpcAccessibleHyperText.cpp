@@ -490,7 +490,8 @@ xpcAccessibleHyperText::GetSelectionRanges(nsIArray** aRanges) {
   Intl()->SelectionRanges(&ranges);
   uint32_t len = ranges.Length();
   for (uint32_t idx = 0; idx < len; idx++)
-    xpcRanges->AppendElement(new xpcAccessibleTextRange(Move(ranges[idx])));
+    xpcRanges->AppendElement(
+        new xpcAccessibleTextRange(std::move(ranges[idx])));
 
   xpcRanges.forget(aRanges);
   return NS_OK;
@@ -512,7 +513,8 @@ xpcAccessibleHyperText::GetVisibleRanges(nsIArray** aRanges) {
   Intl()->VisibleRanges(&ranges);
   uint32_t len = ranges.Length();
   for (uint32_t idx = 0; idx < len; idx++)
-    xpcRanges->AppendElement(new xpcAccessibleTextRange(Move(ranges[idx])));
+    xpcRanges->AppendElement(
+        new xpcAccessibleTextRange(std::move(ranges[idx])));
 
   xpcRanges.forget(aRanges);
   return NS_OK;
@@ -641,7 +643,8 @@ xpcAccessibleHyperText::PasteText(int32_t aOffset) {
   if (mIntl.IsNull()) return NS_ERROR_FAILURE;
 
   if (mIntl.IsAccessible()) {
-    Intl()->PasteText(aOffset);
+    RefPtr<HyperTextAccessible> acc = Intl();
+    acc->PasteText(aOffset);
   } else {
 #if defined(XP_WIN)
     return NS_ERROR_NOT_IMPLEMENTED;

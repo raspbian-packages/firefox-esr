@@ -1,22 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Different checks done during the style sharing process in order to determine
 //! quickly whether it's worth to share style, and whether two different
 //! elements can indeed share the same style.
 
-use bloom::StyleBloom;
-use context::{SelectorFlagsMap, SharedStyleContext};
-use dom::TElement;
+use crate::bloom::StyleBloom;
+use crate::context::{SelectorFlagsMap, SharedStyleContext};
+use crate::dom::TElement;
+use crate::sharing::{StyleSharingCandidate, StyleSharingTarget};
 use selectors::NthIndexCache;
-use sharing::{StyleSharingCandidate, StyleSharingTarget};
 
 /// Determines whether a target and a candidate have compatible parents for
 /// sharing.
 pub fn parents_allow_sharing<E>(
     target: &mut StyleSharingTarget<E>,
-    candidate: &mut StyleSharingCandidate<E>
+    candidate: &mut StyleSharingCandidate<E>,
 ) -> bool
 where
     E: TElement,
@@ -58,7 +58,7 @@ where
 /// Whether two elements have the same same style attribute (by pointer identity).
 pub fn have_same_style_attribute<E>(
     target: &mut StyleSharingTarget<E>,
-    candidate: &mut StyleSharingCandidate<E>
+    candidate: &mut StyleSharingCandidate<E>,
 ) -> bool
 where
     E: TElement,
@@ -66,14 +66,14 @@ where
     match (target.style_attribute(), candidate.style_attribute()) {
         (None, None) => true,
         (Some(_), None) | (None, Some(_)) => false,
-        (Some(a), Some(b)) => &*a as *const _ == &*b as *const _
+        (Some(a), Some(b)) => &*a as *const _ == &*b as *const _,
     }
 }
 
 /// Whether two elements have the same same presentational attributes.
 pub fn have_same_presentational_hints<E>(
     target: &mut StyleSharingTarget<E>,
-    candidate: &mut StyleSharingCandidate<E>
+    candidate: &mut StyleSharingCandidate<E>,
 ) -> bool
 where
     E: TElement,
@@ -114,18 +114,10 @@ where
 {
     let stylist = &shared_context.stylist;
 
-    let for_element = target.revalidation_match_results(
-        stylist,
-        bloom,
-        nth_index_cache,
-        selector_flags_map,
-    );
+    let for_element =
+        target.revalidation_match_results(stylist, bloom, nth_index_cache, selector_flags_map);
 
-    let for_candidate = candidate.revalidation_match_results(
-        stylist,
-        bloom,
-        nth_index_cache,
-    );
+    let for_candidate = candidate.revalidation_match_results(stylist, bloom, nth_index_cache);
 
     // This assert "ensures", to some extent, that the two candidates have
     // matched the same rulehash buckets, and as such, that the bits we're
@@ -156,7 +148,7 @@ where
 
     let may_have_rules_for_element = match element_id {
         Some(id) => stylist.may_have_rules_for_id(id, element),
-        None => false
+        None => false,
     };
 
     if may_have_rules_for_element {
@@ -165,6 +157,6 @@ where
 
     match candidate_id {
         Some(id) => stylist.may_have_rules_for_id(id, candidate),
-        None => false
+        None => false,
     }
 }

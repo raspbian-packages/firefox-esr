@@ -7,10 +7,9 @@
 #include "mozilla/AsyncEventDispatcher.h"
 #include "mozilla/BasicEvents.h"
 #include "mozilla/EventDispatcher.h"
-#include "mozilla/dom/Event.h"  // for nsIDOMEvent::InternalDOMEvent()
+#include "mozilla/dom/Event.h"
 #include "mozilla/dom/EventTarget.h"
 #include "nsContentUtils.h"
-#include "nsIDOMEvent.h"
 
 namespace mozilla {
 
@@ -49,23 +48,25 @@ AsyncEventDispatcher::Run() {
   }
   mTarget->AsyncEventRunning(this);
   if (mEventMessage != eUnidentifiedEvent) {
+    MOZ_ASSERT(mComposed == Composed::eDefault);
     return nsContentUtils::DispatchTrustedEvent<WidgetEvent>(
-        node->OwnerDoc(), mTarget, mEventMessage, mBubbles,
-        false /* aCancelable */, nullptr /* aDefaultAction */,
-        mOnlyChromeDispatch);
+        node->OwnerDoc(), mTarget, mEventMessage, mCanBubble, Cancelable::eNo,
+        nullptr /* aDefaultAction */, mOnlyChromeDispatch);
   }
-  RefPtr<Event> event = mEvent ? mEvent->InternalDOMEvent() : nullptr;
+  RefPtr<Event> event = mEvent;
   if (!event) {
     event = NS_NewDOMEvent(mTarget, nullptr, nullptr);
-    event->InitEvent(mEventType, mBubbles, false);
+    event->InitEvent(mEventType, mCanBubble, Cancelable::eNo);
     event->SetTrusted(true);
   }
-  if (mOnlyChromeDispatch) {
+  if (mComposed != Composed::eDefault) {
+    event->WidgetEventPtr()->mFlags.mComposed = mComposed == Composed::eYes;
+  }
+  if (mOnlyChromeDispatch == ChromeOnlyDispatch::eYes) {
     MOZ_ASSERT(event->IsTrusted());
     event->WidgetEventPtr()->mFlags.mOnlyChromeDispatch = true;
   }
-  bool dummy;
-  mTarget->DispatchEvent(event, &dummy);
+  mTarget->DispatchEvent(*event);
   return NS_OK;
 }
 
@@ -85,7 +86,7 @@ nsresult AsyncEventDispatcher::PostDOMEvent() {
     // Sometimes GetOwnerGlobal returns null because it uses
     // GetScriptHandlingObject rather than GetScopeObject.
     if (nsCOMPtr<nsINode> node = do_QueryInterface(mTarget)) {
-      nsCOMPtr<nsIDocument> doc = node->OwnerDoc();
+      nsCOMPtr<Document> doc = node->OwnerDoc();
       return doc->Dispatch(TaskCategory::Other,
                            ensureDeletionWhenFailing.forget());
     }

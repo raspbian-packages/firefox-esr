@@ -4,7 +4,10 @@
 
 "use strict";
 
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  PureComponent,
+} = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const ReactDOM = require("devtools/client/shared/vendor/react-dom");
@@ -23,10 +26,10 @@ class KeyframesGraphPath extends PureComponent {
   static get propTypes() {
     return {
       getComputedStyle: PropTypes.func.isRequired,
-      property: PropTypes.string.isRequired,
+      keyframes: PropTypes.array.isRequired,
+      name: PropTypes.string.isRequired,
       simulateAnimation: PropTypes.func.isRequired,
       type: PropTypes.string.isRequired,
-      values: PropTypes.array.isRequired,
     };
   }
 
@@ -45,11 +48,11 @@ class KeyframesGraphPath extends PureComponent {
 
   getPathComponent(type) {
     switch (type) {
-      case "color" :
+      case "color":
         return ColorPath;
-      case "discrete" :
+      case "discrete":
         return DiscretePath;
-      default :
+      default:
         return DistancePath;
     }
   }
@@ -65,15 +68,12 @@ class KeyframesGraphPath extends PureComponent {
   render() {
     const {
       getComputedStyle,
-      property,
+      keyframes,
+      name,
       simulateAnimation,
       type,
-      values,
     } = this.props;
-    const {
-      componentHeight,
-      componentWidth,
-    } = this.state;
+    const { componentHeight, componentWidth } = this.state;
 
     if (!componentWidth) {
       return dom.svg();
@@ -81,28 +81,28 @@ class KeyframesGraphPath extends PureComponent {
 
     const pathComponent = this.getPathComponent(type);
     const strokeWidthInViewBox =
-      DEFAULT_EASING_HINT_STROKE_WIDTH / 2 / componentHeight * DEFAULT_GRAPH_HEIGHT;
+      (DEFAULT_EASING_HINT_STROKE_WIDTH / 2 / componentHeight) *
+      DEFAULT_GRAPH_HEIGHT;
 
     return dom.svg(
       {
         className: "keyframes-graph-path",
         preserveAspectRatio: "none",
-        viewBox: `0 -${ DEFAULT_GRAPH_HEIGHT + strokeWidthInViewBox } ` +
-                 `${ DEFAULT_KEYFRAMES_GRAPH_DURATION } ` +
-                 `${ DEFAULT_GRAPH_HEIGHT + strokeWidthInViewBox * 2 }`,
+        viewBox:
+          `0 -${DEFAULT_GRAPH_HEIGHT + strokeWidthInViewBox} ` +
+          `${DEFAULT_KEYFRAMES_GRAPH_DURATION} ` +
+          `${DEFAULT_GRAPH_HEIGHT + strokeWidthInViewBox * 2}`,
       },
-      pathComponent(
-        {
-          componentWidth,
-          easingHintStrokeWidth: DEFAULT_EASING_HINT_STROKE_WIDTH,
-          getComputedStyle,
-          graphHeight: DEFAULT_GRAPH_HEIGHT,
-          property,
-          simulateAnimation,
-          totalDuration: DEFAULT_KEYFRAMES_GRAPH_DURATION,
-          values,
-        }
-      )
+      pathComponent({
+        componentWidth,
+        easingHintStrokeWidth: DEFAULT_EASING_HINT_STROKE_WIDTH,
+        getComputedStyle,
+        graphHeight: DEFAULT_GRAPH_HEIGHT,
+        keyframes,
+        name,
+        simulateAnimation,
+        totalDuration: DEFAULT_KEYFRAMES_GRAPH_DURATION,
+      })
     );
   }
 }

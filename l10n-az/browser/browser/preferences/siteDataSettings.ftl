@@ -7,6 +7,7 @@
 
 site-data-settings-window =
     .title = Çərəzlər və Sayt Məlumatlarını idarə et
+site-data-settings-description = Aşağıdakı saytlar kompüterinizdə çərəz və sayt məlumatları saxlayır. { -brand-short-name } siz silənə qədər sayt məlumatlarını daimi yaddaşda saxlayır və daimi olmayan saytların məlumatlarını yer lazım olduqda silir.
 site-data-search-textbox =
     .placeholder = Saytlarda axtar
     .accesskey = S
@@ -20,18 +21,30 @@ site-data-column-last-used =
     .label = Son istifadə edilmə
 site-data-remove-selected =
     .label = Seçiləni Sil
-    .accesskey = r
+    .accesskey = S
 site-data-button-cancel =
     .label = Ləğv et
-    .accesskey = C
+    .accesskey = L
 site-data-button-save =
     .label = Dəyişiklikləri Yadda Saxla
     .accesskey = a
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-usage-pattern = { $value } { $unit }
+site-usage-persistent = { site-usage-pattern } (Daimi)
+site-data-remove-all =
+    .label = Hamısını sil
+    .accesskey = m
+site-data-remove-shown =
+    .label = Göstərilənlərin Hamısını Sil
+    .accesskey = G
 
 ## Removing
 
-site-data-removing-window =
+site-data-removing-dialog =
     .title = { site-data-removing-header }
+    .buttonlabelaccept = Sil
 site-data-removing-header = Çərəzlər və Sayt Məlumatları silinir
 site-data-removing-desc = Çərəzlər və sayt məlumatlarını sildikdə avtomatik saytlardan çıxış etmiş ola bilərsiz. Bunu etmək istədiyinizə əminsiniz?
 site-data-removing-table = Aşağıdakı saytlar üçün çərəzlər və sayt məlumatları silinəcək

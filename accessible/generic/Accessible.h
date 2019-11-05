@@ -160,14 +160,9 @@ class Accessible : public nsISupports {
    * Return DOM node associated with the accessible.
    */
   virtual nsINode* GetNode() const;
-  inline already_AddRefed<nsIDOMNode> DOMNode() const {
-    nsCOMPtr<nsIDOMNode> DOMNode = do_QueryInterface(GetNode());
-    return DOMNode.forget();
-  }
+
   nsIContent* GetContent() const { return mContent; }
-  mozilla::dom::Element* Elm() const {
-    return mContent && mContent->IsElement() ? mContent->AsElement() : nullptr;
-  }
+  dom::Element* Elm() const { return dom::Element::FromNodeOrNull(mContent); }
 
   /**
    * Return node type information of DOM node associated with the accessible.
@@ -177,7 +172,15 @@ class Accessible : public nsISupports {
   /**
    * Return the unique identifier of the accessible.
    */
-  void* UniqueID() { return static_cast<void*>(this); }
+  void* UniqueID() {
+    // When recording or replaying, use an ID which will be consistent when
+    // recording/replaying (pointer values are not consistent), so that IPC
+    // messages from the parent process can be handled when replaying.
+    if (recordreplay::IsRecordingOrReplaying()) {
+      return reinterpret_cast<void*>(recordreplay::ThingIndex(this));
+    }
+    return static_cast<void*>(this);
+  }
 
   /**
    * Return language associated with the accessible.
@@ -192,7 +195,7 @@ class Accessible : public nsISupports {
   /**
    * Get the value of this accessible.
    */
-  virtual void Value(nsString& aValue);
+  virtual void Value(nsString& aValue) const;
 
   /**
    * Get help string for the accessible.
@@ -205,7 +208,7 @@ class Accessible : public nsISupports {
    * Note: aName.IsVoid() when name was left empty by the author on purpose.
    * aName.IsEmpty() when the author missed name, AT can try to repair a name.
    */
-  virtual ENameValueFlag Name(nsString& aName);
+  virtual ENameValueFlag Name(nsString& aName) const;
 
   /**
    * Maps ARIA state attributes to state of accessible. Note the given state
@@ -219,7 +222,7 @@ class Accessible : public nsISupports {
   /**
    * Return enumerated accessible role (see constants in Role.h).
    */
-  mozilla::a11y::role Role();
+  mozilla::a11y::role Role() const;
 
   /**
    * Return true if ARIA role is specified on the element.
@@ -248,7 +251,7 @@ class Accessible : public nsISupports {
    * Returns enumerated accessible role from native markup (see constants in
    * Role.h). Doesn't take into account ARIA roles.
    */
-  virtual mozilla::a11y::role NativeRole();
+  virtual mozilla::a11y::role NativeRole() const;
 
   /**
    * Return all states of accessible (including ARIA states).
@@ -287,7 +290,7 @@ class Accessible : public nsISupports {
    * Return the states of accessible, not taking into account ARIA states.
    * Use State() to get complete set of states.
    */
-  virtual uint64_t NativeState();
+  virtual uint64_t NativeState() const;
 
   /**
    * Return native interactice state (unavailable, focusable or selectable).
@@ -302,7 +305,7 @@ class Accessible : public nsISupports {
   /**
    * Return bit set of invisible and offscreen states.
    */
-  uint64_t VisibilityState();
+  uint64_t VisibilityState() const;
 
   /**
    * Return true if native unavailable state present.
@@ -358,7 +361,7 @@ class Accessible : public nsISupports {
   /**
    * Get the relation of the given type.
    */
-  virtual Relation RelationByType(RelationType aType);
+  virtual Relation RelationByType(RelationType aType) const;
 
   //////////////////////////////////////////////////////////////////////////////
   // Initializing methods
@@ -428,15 +431,15 @@ class Accessible : public nsISupports {
   /**
    * Return true if accessible has children;
    */
-  bool HasChildren() { return !!GetChildAt(0); }
+  bool HasChildren() const { return !!GetChildAt(0); }
 
   /**
    * Return first/last/next/previous sibling of the accessible.
    */
   inline Accessible* NextSibling() const { return GetSiblingAtOffset(1); }
   inline Accessible* PrevSibling() const { return GetSiblingAtOffset(-1); }
-  inline Accessible* FirstChild() { return GetChildAt(0); }
-  inline Accessible* LastChild() {
+  inline Accessible* FirstChild() const { return GetChildAt(0); }
+  inline Accessible* LastChild() const {
     uint32_t childCount = ChildCount();
     return childCount != 0 ? GetChildAt(childCount - 1) : nullptr;
   }
@@ -502,9 +505,19 @@ class Accessible : public nsISupports {
                             uint32_t aLength = UINT32_MAX);
 
   /**
+   * Return boundaries in screen coordinates in app units.
+   */
+  virtual nsRect BoundsInAppUnits() const;
+
+  /**
    * Return boundaries in screen coordinates.
    */
   virtual nsIntRect Bounds() const;
+
+  /**
+   * Return boundaries in screen coordinates in CSS pixels.
+   */
+  virtual nsIntRect BoundsInCSSPixels() const;
 
   /**
    * Return boundaries rect relative the bounding frame.
@@ -524,12 +537,13 @@ class Accessible : public nsISupports {
   /**
    * Focus the accessible.
    */
-  virtual void TakeFocus();
+  virtual void TakeFocus() const;
 
   /**
    * Scroll the accessible into view.
    */
-  void ScrollTo(uint32_t aHow) const;
+  MOZ_CAN_RUN_SCRIPT
+  virtual void ScrollTo(uint32_t aHow) const;
 
   /**
    * Scroll the accessible to the given point.
@@ -627,7 +641,16 @@ class Accessible : public nsISupports {
   bool IsTable() const { return HasGenericType(eTable); }
   virtual TableAccessible* AsTable() { return nullptr; }
 
-  bool IsTableCell() const { return HasGenericType(eTableCell); }
+  /**
+   * Note: The eTable* types defined in the ARIA map are used in
+   * nsAccessibilityService::CreateAccessible to determine which ARIAGrid*
+   * classes to use for accessible object creation. However, an invalid table
+   * structure might cause these classes not to be used after all.
+   *
+   * To make sure we're really dealing with a table cell, only check the
+   * generic type defined by the class, not the type defined in the ARIA map.
+   */
+  bool IsTableCell() const { return mGenericTypes & eTableCell; }
   virtual TableCellAccessible* AsTableCell() { return nullptr; }
   const TableCellAccessible* AsTableCell() const {
     return const_cast<Accessible*>(this)->AsTableCell();
@@ -635,7 +658,11 @@ class Accessible : public nsISupports {
 
   bool IsTableRow() const { return HasGenericType(eTableRow); }
 
-  bool IsTextField() const { return mType == eHTMLTextFieldType; }
+  bool IsTextField() const {
+    return mType == eHTMLTextFieldType || mType == eHTMLTextPasswordFieldType;
+  }
+
+  bool IsPassword() const { return mType == eHTMLTextPasswordFieldType; }
 
   bool IsText() const { return mGenericTypes & eText; }
 
@@ -663,7 +690,7 @@ class Accessible : public nsISupports {
   /**
    * Return the number of actions that can be performed on this accessible.
    */
-  virtual uint8_t ActionCount();
+  virtual uint8_t ActionCount() const;
 
   /**
    * Return action name at given index.
@@ -682,7 +709,7 @@ class Accessible : public nsISupports {
   /**
    * Invoke the accessible action.
    */
-  virtual bool DoAction(uint8_t aIndex);
+  virtual bool DoAction(uint8_t aIndex) const;
 
   /**
    * Return access key, such as Alt+D.
@@ -702,7 +729,7 @@ class Accessible : public nsISupports {
   /**
    * Return true if the accessible is hyper link accessible.
    */
-  virtual bool IsLink();
+  virtual bool IsLink() const;
 
   /**
    * Return the start offset of the link within the parent accessible.
@@ -718,7 +745,7 @@ class Accessible : public nsISupports {
    * Return true if the link is valid (e. g. points to a valid URL).
    */
   inline bool IsLinkValid() {
-    NS_PRECONDITION(IsLink(), "IsLinkValid is called on not hyper link!");
+    MOZ_ASSERT(IsLink(), "IsLinkValid is called on not hyper link!");
 
     // XXX In order to implement this we would need to follow every link
     // Perhaps we can get information about invalid links from the cache
@@ -740,7 +767,7 @@ class Accessible : public nsISupports {
   /**
    * Returns an anchor URI at the given index.
    */
-  virtual already_AddRefed<nsIURI> AnchorURIAt(uint32_t aAnchorIndex);
+  virtual already_AddRefed<nsIURI> AnchorURIAt(uint32_t aAnchorIndex) const;
 
   /**
    * Returns a text point for the accessible element.
@@ -825,12 +852,12 @@ class Accessible : public nsISupports {
    * Return the current item of the widget, i.e. an item that has or will have
    * keyboard focus when widget gets active.
    */
-  virtual Accessible* CurrentItem();
+  virtual Accessible* CurrentItem() const;
 
   /**
    * Set the current item of the widget.
    */
-  virtual void SetCurrentItem(Accessible* aItem);
+  virtual void SetCurrentItem(const Accessible* aItem);
 
   /**
    * Return container widget this accessible belongs to.
@@ -880,9 +907,10 @@ class Accessible : public nsISupports {
 
   /**
    * Return true if the accessible state change is processed by handling proper
-   * DOM UI event, if otherwise then false. For example, HTMLCheckboxAccessible
-   * process nsIDocumentObserver::ContentStateChanged instead
-   * 'CheckboxStateChange' event.
+   * DOM UI event, if otherwise then false. For example, CheckboxAccessible
+   * created for HTML:input@type="checkbox" will process
+   * nsIDocumentObserver::ContentStateChanged instead of 'CheckboxStateChange'
+   * event.
    */
   bool NeedsDOMUIEvent() const { return !(mStateFlags & eIgnoreDOMUIEvent); }
 
@@ -919,13 +947,6 @@ class Accessible : public nsISupports {
   }
 
   /**
-   * Return true if aria-hidden="true" is applied to the accessible or inherited
-   * from the parent.
-   */
-  bool IsARIAHidden() const { return mContextFlags & eARIAHidden; }
-  void SetARIAHidden(bool aIsDefined);
-
-  /**
    * Return true if the element is inside an alert.
    */
   bool IsInsideAlert() const { return mContextFlags & eInsideAlert; }
@@ -960,6 +981,8 @@ class Accessible : public nsISupports {
    */
   void SetHideEventTarget(bool aTarget) { mHideEventTarget = aTarget; }
 
+  void Announce(const nsAString& aAnnouncement, uint16_t aPriority);
+
  protected:
   virtual ~Accessible();
 
@@ -967,7 +990,7 @@ class Accessible : public nsISupports {
    * Return the accessible name provided by native markup. It doesn't take
    * into account ARIA markup used to specify the name.
    */
-  virtual mozilla::a11y::ENameValueFlag NativeName(nsString& aName);
+  virtual mozilla::a11y::ENameValueFlag NativeName(nsString& aName) const;
 
   /**
    * Return the accessible description provided by native markup. It doesn't
@@ -1027,8 +1050,7 @@ class Accessible : public nsISupports {
   enum ContextFlags {
     eHasNameDependentParent =
         1 << 0,  // Parent's name depends on this accessible.
-    eARIAHidden = 1 << 1,
-    eInsideAlert = 1 << 2,
+    eInsideAlert = 1 << 1,
 
     eLastContextFlag = eInsideAlert
   };
@@ -1040,7 +1062,7 @@ class Accessible : public nsISupports {
   /**
    * Return ARIA role (helper method).
    */
-  mozilla::a11y::role ARIATransformRole(mozilla::a11y::role aRole);
+  mozilla::a11y::role ARIATransformRole(mozilla::a11y::role aRole) const;
 
   //////////////////////////////////////////////////////////////////////////////
   // Name helpers
@@ -1048,7 +1070,7 @@ class Accessible : public nsISupports {
   /**
    * Returns the accessible name specified by ARIA.
    */
-  void ARIAName(nsString& aName);
+  void ARIAName(nsString& aName) const;
 
   /**
    * Return the name for XUL element.
@@ -1077,12 +1099,15 @@ class Accessible : public nsISupports {
    * @param  aContent      [in, optional] element to click
    * @param  aActionIndex  [in, optional] index of accessible action
    */
-  void DoCommand(nsIContent* aContent = nullptr, uint32_t aActionIndex = 0);
+  void DoCommand(nsIContent* aContent = nullptr,
+                 uint32_t aActionIndex = 0) const;
 
   /**
    * Dispatch click event.
    */
-  virtual void DispatchClickEvent(nsIContent* aContent, uint32_t aActionIndex);
+  MOZ_CAN_RUN_SCRIPT
+  virtual void DispatchClickEvent(nsIContent* aContent,
+                                  uint32_t aActionIndex) const;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helpers
@@ -1110,7 +1135,7 @@ class Accessible : public nsISupports {
   /**
    * Return group info.
    */
-  AccGroupInfo* GetGroupInfo();
+  AccGroupInfo* GetGroupInfo() const;
 
   // Data Members
   nsCOMPtr<nsIContent> mContent;
@@ -1121,7 +1146,7 @@ class Accessible : public nsISupports {
   int32_t mIndexInParent;
 
   static const uint8_t kStateFlagsBits = 12;
-  static const uint8_t kContextFlagsBits = 3;
+  static const uint8_t kContextFlagsBits = 2;
   static const uint8_t kTypeBits = 6;
   static const uint8_t kGenericTypesBits = 16;
 
@@ -1134,7 +1159,7 @@ class Accessible : public nsISupports {
   /**
    * Keep in sync with StateFlags, ContextFlags, and AccTypes.
    */
-  uint32_t mStateFlags : kStateFlagsBits;
+  mutable uint32_t mStateFlags : kStateFlagsBits;
   uint32_t mContextFlags : kContextFlagsBits;
   uint32_t mType : kTypeBits;
   uint32_t mGenericTypes : kGenericTypesBits;
@@ -1165,7 +1190,7 @@ class Accessible : public nsISupports {
   union {
     AccGroupInfo* groupInfo;
     ProxyAccessible* proxy;
-  } mBits;
+  } mutable mBits;
   friend class AccGroupInfo;
 
  private:

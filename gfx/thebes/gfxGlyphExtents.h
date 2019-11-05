@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -86,13 +86,14 @@ class gfxGlyphExtents {
    public:
     // When constructing a new entry in the hashtable, we'll leave this
     // blank. The caller of Put() will fill this in.
-    explicit HashEntry(KeyTypePointer aPtr) : nsUint32HashKey(aPtr) {}
-    HashEntry(const HashEntry& toCopy) : nsUint32HashKey(toCopy) {
-      x = toCopy.x;
-      y = toCopy.y;
-      width = toCopy.width;
-      height = toCopy.height;
-    }
+    explicit HashEntry(KeyTypePointer aPtr)
+        : nsUint32HashKey(aPtr), x(0.0), y(0.0), width(0.0), height(0.0) {}
+    HashEntry(HashEntry&& aOther)
+        : nsUint32HashKey(std::move(aOther)),
+          x(aOther.x),
+          y(aOther.y),
+          width(aOther.width),
+          height(aOther.height) {}
 
     float x, y, width, height;
   };

@@ -4,7 +4,7 @@
   <title>APZ hit-testing over a checkerboarded area</title>
   <script type="application/javascript" src="apz_test_utils.js"></script>
   <script type="application/javascript" src="apz_test_native_event_utils.js"></script>
-  <script type="application/javascript" src="/tests/SimpleTest/paint_listener.js"></script>
+  <script src="/tests/SimpleTest/paint_listener.js"></script>
   <meta name="viewport" content="width=device-width"/>
 </head>
 <body>
@@ -21,14 +21,14 @@ function* test(testDriver) {
   var config = getHitTestConfig();
   var utils = config.utils;
 
-  var scroller = document.getElementById('scroller');
+  var scroller = document.getElementById("scroller");
 
   // Activate the scrollframe but keep the main-thread scroll position at 0.
   // Also apply an async scroll offset in the y-direction such that the
   // scrollframe scrolls all the way to the bottom of its range, where it's
   // sure to checkerboard.
   utils.setDisplayPortForElement(0, 0, 300, 1000, scroller, 1);
-  yield waitForAllPaints(testDriver);
+  yield waitForApzFlushedRepaints(testDriver);
   var scrollY = scroller.scrollTopMax;
   utils.setAsyncScrollOffset(scroller, 0, scrollY);
   if (config.isWebRender) {
@@ -44,11 +44,10 @@ function* test(testDriver) {
   // Hit-test the middle of the scrollframe, which is now inside the
   // checkerboarded region, and check that we hit the scrollframe and
   // not its parent.
-  var {hitInfo, scrollId} = hitTest(centerOf(scroller));
-  is(hitInfo, APZHitResultFlags.VISIBLE,
-     "active scrollframe hit info");
-  is(scrollId, scrollerViewId,
-     "active scrollframe scrollid");
+  checkHitResult(hitTest(centerOf(scroller)),
+                 APZHitResultFlags.VISIBLE,
+                 scrollerViewId,
+                 "active scrollframe");
 
   subtestDone();
 }

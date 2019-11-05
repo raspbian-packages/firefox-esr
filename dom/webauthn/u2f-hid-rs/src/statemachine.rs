@@ -7,16 +7,16 @@ use platform::device::Device;
 use platform::transaction::Transaction;
 use std::thread;
 use std::time::Duration;
-use util::OnceCallback;
 use u2fprotocol::{u2f_init_device, u2f_is_keyhandle_valid, u2f_register, u2f_sign};
+use util::OnceCallback;
 
 fn is_valid_transport(transports: ::AuthenticatorTransports) -> bool {
     transports.is_empty() || transports.contains(::AuthenticatorTransports::USB)
 }
 
 fn find_valid_key_handles<'a, F>(
-    app_ids: &'a Vec<::AppId>,
-    key_handles: &'a Vec<::KeyHandle>,
+    app_ids: &'a [::AppId],
+    key_handles: &'a [::KeyHandle],
     mut is_valid: F,
 ) -> (&'a ::AppId, Vec<&'a ::KeyHandle>)
 where
@@ -31,12 +31,12 @@ where
             .collect::<Vec<_>>();
 
         // If there's at least one, stop.
-        if valid_handles.len() > 0 {
+        if !valid_handles.is_empty() {
             return (app_id, valid_handles);
         }
     }
 
-    return (&app_ids[0], vec![]);
+    (&app_ids[0], vec![])
 }
 
 #[derive(Default)]
@@ -90,23 +90,24 @@ impl StateMachine {
             // If so, we'll keep polling the device anyway to test for user
             // consent, to be consistent with CTAP2 device behavior.
             let excluded = key_handles.iter().any(|key_handle| {
-                is_valid_transport(key_handle.transports)
-                    && u2f_is_keyhandle_valid(dev, &challenge, &application, &key_handle.credential)
-                        .unwrap_or(false) /* no match on failure */
+                is_valid_transport(key_handle.transports) && u2f_is_keyhandle_valid(
+                    dev,
+                    &challenge,
+                    &application,
+                    &key_handle.credential,
+                ).unwrap_or(false) /* no match on failure */
             });
 
             while alive() {
                 if excluded {
                     let blank = vec![0u8; PARAMETER_SIZE];
-                    if let Ok(_) = u2f_register(dev, &blank, &blank) {
+                    if u2f_register(dev, &blank, &blank).is_ok() {
                         callback.call(Err(::Error::InvalidState));
                         break;
                     }
-                } else {
-                    if let Ok(bytes) = u2f_register(dev, &challenge, &application) {
-                        callback.call(Ok(bytes));
-                        break;
-                    }
+                } else if let Ok(bytes) = u2f_register(dev, &challenge, &application) {
+                    callback.call(Ok(bytes));
+                    break;
                 }
 
                 // Sleep a bit before trying again.
@@ -165,9 +166,7 @@ impl StateMachine {
             // Aggregate distinct transports from all given credentials.
             let transports = key_handles
                 .iter()
-                .fold(::AuthenticatorTransports::empty(), |t, k| {
-                    t | k.transports
-                });
+                .fold(::AuthenticatorTransports::empty(), |t, k| t | k.transports);
 
             // We currently only support USB. If the RP specifies transports
             // and doesn't include USB it's probably lying.
@@ -180,7 +179,7 @@ impl StateMachine {
                 // then just make it blink with bogus data.
                 if valid_handles.is_empty() {
                     let blank = vec![0u8; PARAMETER_SIZE];
-                    if let Ok(_) = u2f_register(dev, &blank, &blank) {
+                    if u2f_register(dev, &blank, &blank).is_ok() {
                         callback.call(Err(::Error::InvalidState));
                         break;
                     }

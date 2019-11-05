@@ -21,7 +21,7 @@ limitations under the License.
 <head>
   <meta charset="utf-8">
   <title>Test for Bug 1243846</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
 <body onload="onLoad()">
@@ -29,6 +29,7 @@ limitations under the License.
 <p id="display"></p>
 <pre id="test">
 <script type="application/javascript">
+  /* eslint "no-shadow": ["error", {"allow": ["done", "next"]}] */
   var tests = [];
   var curDescribeMsg = '';
   var curItMsg = '';
@@ -56,21 +57,16 @@ limitations under the License.
   }
 
   var callbacks = [];
-  function callDelayed(fn, delay) {
-    callbacks.push({
-      fn: fn,
-      time: +new Date() + delay
-    });
+  function callDelayed(fn) {
+    callbacks.push(fn);
   }
 
   requestAnimationFrame(function tick() {
     var i = callbacks.length;
     while (i--) {
       var cb = callbacks[i];
-      if (+new Date() >= cb.time) {
-        SimpleTest.executeSoon(cb.fn);
-        callbacks.splice(i, 1);
-      }
+      SimpleTest.executeSoon(function() { SimpleTest.executeSoon(cb) });
+      callbacks.splice(i, 1);
     }
     requestAnimationFrame(tick);
   });
@@ -154,18 +150,18 @@ limitations under the License.
 
   var sinon = {
     spy: function () {
-      var callbacks = [];
+      var cbs = [];
       var fn = function () {
         fn.callCount++;
         fn.lastCall = { args: arguments };
-        if (callbacks.length) {
-          callbacks.shift()();
+        if (cbs.length) {
+          cbs.shift()();
         }
       };
       fn.callCount = 0;
       fn.lastCall = { args: [] };
-      fn.waitForNotification = (fn) => {
-        callbacks.push(fn);
+      fn.waitForNotification = (fn1) => {
+        cbs.push(fn1);
       };
       return fn;
     }
@@ -333,7 +329,7 @@ limitations under the License.
         callDelayed(function() {
           expect(spy.callCount).to.be(1);
           done();
-        }, ASYNC_TIMEOUT);
+        });
       });
 
 
@@ -348,7 +344,7 @@ limitations under the License.
         callDelayed(function() {
           expect(spy.callCount).to.be(0);
           done();
-        }, ASYNC_TIMEOUT);
+        });
       });
 
       it('triggers if target or root becomes invisible',
@@ -485,7 +481,7 @@ limitations under the License.
             callDelayed(function() {
               expect(spy.callCount).to.be(2);
               done();
-            }, ASYNC_TIMEOUT);
+            });
           },
           function(done) {
             targetEl1.style.left = '-10px';
@@ -809,14 +805,14 @@ limitations under the License.
         runSequence([
           function(done) {
             io.observe(targetEl1);
-            callDelayed(done, 0);
+            callDelayed(done);
           },
           function(done) {
             document.getElementById('fixtures').appendChild(rootEl);
             callDelayed(function() {
               expect(spy.callCount).to.be(1);
               done();
-            }, ASYNC_TIMEOUT);
+            });
           },
           function(done) {
             parentEl.insertBefore(targetEl1, targetEl2);
@@ -876,7 +872,7 @@ limitations under the License.
         io.observe(targetEl3);
         callDelayed(function() {
           parentEl.scrollLeft = 40;
-        }, 0);
+        });
       });
 
 
@@ -900,7 +896,7 @@ limitations under the License.
         io.observe(targetEl1);
         callDelayed(function() {
           targetEl1.style.transform = 'translateX(-40px) translateY(-40px)';
-        }, 0);
+        });
       });
 
 
@@ -925,14 +921,14 @@ limitations under the License.
           callDelayed(function () {
             expect(spy.callCount).to.be(1);
             done();
-          }, ASYNC_TIMEOUT);
+          });
         });
       });
 
     });
 
     describe('observe subframe', function () {
-      
+
       it('should not trigger if target and root are not in the same document',
           function(done) {
 
@@ -945,11 +941,11 @@ limitations under the License.
           callDelayed(function() {
             expect(spy.callCount).to.be(0);
             done();
-          }, ASYNC_TIMEOUT);
+          });
         }
 
         targetEl4.src = "intersectionobserver_iframe.html";
-      
+
       });
 
       it('boundingClientRect matches target.getBoundingClientRect() for an element inside an iframe',
@@ -982,7 +978,7 @@ limitations under the License.
         targetEl4.src = "http://example.org/tests/dom/base/test/intersectionobserver_cross_domain_iframe.html";
 
       });
-    
+
     });
 
     describe('takeRecords', function() {
@@ -1005,9 +1001,9 @@ limitations under the License.
             expect(lastestRecords.length).to.be(1);
             expect(lastestRecords[0].intersectionRatio).to.be(1);
             done();
-          }, ASYNC_TIMEOUT);
+          });
         });
-        
+
       });
 
     });
@@ -1056,7 +1052,7 @@ limitations under the License.
             callDelayed(function() {
               expect(spy.callCount).to.be(2);
               done();
-            }, ASYNC_TIMEOUT);
+            });
           }
         ], done);
 
@@ -1095,7 +1091,7 @@ limitations under the License.
             callDelayed(function() {
               expect(spy.callCount).to.be(1);
               done();
-            }, ASYNC_TIMEOUT);
+            });
           }
         ], done);
 

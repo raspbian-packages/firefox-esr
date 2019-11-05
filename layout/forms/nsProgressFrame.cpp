@@ -6,40 +6,34 @@
 
 #include "nsProgressFrame.h"
 
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/Document.h"
+#include "mozilla/dom/Element.h"
+#include "mozilla/dom/HTMLProgressElement.h"
 #include "nsIContent.h"
 #include "nsPresContext.h"
 #include "nsGkAtoms.h"
 #include "nsNameSpaceManager.h"
-#include "nsIDocument.h"
-#include "nsIPresShell.h"
 #include "nsNodeInfoManager.h"
 #include "nsContentCreatorFunctions.h"
-#include "nsContentUtils.h"
 #include "nsCheckboxRadioFrame.h"
 #include "nsFontMetrics.h"
-#include "mozilla/dom/Element.h"
-#include "mozilla/dom/HTMLProgressElement.h"
 #include "nsCSSPseudoElements.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsStyleSet.h"
-#endif
-#include "mozilla/StyleSetHandle.h"
-#include "mozilla/StyleSetHandleInlines.h"
-#include "nsThemeConstants.h"
+#include "nsStyleConsts.h"
 #include <algorithm>
 
 using namespace mozilla;
 using namespace mozilla::dom;
 
-nsIFrame* NS_NewProgressFrame(nsIPresShell* aPresShell,
-                              nsStyleContext* aContext) {
-  return new (aPresShell) nsProgressFrame(aContext);
+nsIFrame* NS_NewProgressFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsProgressFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsProgressFrame)
 
-nsProgressFrame::nsProgressFrame(nsStyleContext* aContext)
-    : nsContainerFrame(aContext, kClassID), mBarDiv(nullptr) {}
+nsProgressFrame::nsProgressFrame(ComputedStyle* aStyle,
+                                 nsPresContext* aPresContext)
+    : nsContainerFrame(aStyle, aPresContext, kClassID), mBarDiv(nullptr) {}
 
 nsProgressFrame::~nsProgressFrame() {}
 
@@ -56,11 +50,11 @@ void nsProgressFrame::DestroyFrom(nsIFrame* aDestructRoot,
 nsresult nsProgressFrame::CreateAnonymousContent(
     nsTArray<ContentInfo>& aElements) {
   // Create the progress bar div.
-  nsCOMPtr<nsIDocument> doc = mContent->GetComposedDoc();
+  nsCOMPtr<Document> doc = mContent->GetComposedDoc();
   mBarDiv = doc->CreateHTMLElement(nsGkAtoms::div);
 
   // Associate ::-moz-progress-bar pseudo-element to the anonymous child.
-  mBarDiv->SetPseudoElementType(CSSPseudoElementType::mozProgressBar);
+  mBarDiv->SetPseudoElementType(PseudoStyleType::mozProgressBar);
 
   if (!aElements.AppendElement(mBarDiv)) {
     return NS_ERROR_OUT_OF_MEMORY;
@@ -77,8 +71,8 @@ void nsProgressFrame::AppendAnonymousContentTo(nsTArray<nsIContent*>& aElements,
 }
 
 NS_QUERYFRAME_HEAD(nsProgressFrame)
-NS_QUERYFRAME_ENTRY(nsProgressFrame)
-NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
+  NS_QUERYFRAME_ENTRY(nsProgressFrame)
+  NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 void nsProgressFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
@@ -196,10 +190,10 @@ nsresult nsProgressFrame::AttributeChanged(int32_t aNameSpaceID,
 
   if (aNameSpaceID == kNameSpaceID_None &&
       (aAttribute == nsGkAtoms::value || aAttribute == nsGkAtoms::max)) {
-    auto shell = PresShell();
+    auto presShell = PresShell();
     for (auto childFrame : PrincipalChildList()) {
-      shell->FrameNeedsReflow(childFrame, nsIPresShell::eResize,
-                              NS_FRAME_IS_DIRTY);
+      presShell->FrameNeedsReflow(childFrame, IntrinsicDirty::Resize,
+                                  NS_FRAME_IS_DIRTY);
     }
     InvalidateFrame();
   }
@@ -252,21 +246,14 @@ bool nsProgressFrame::ShouldUseNativeStyle() const {
   // - both frames use the native appearance;
   // - neither frame has author specified rules setting the border or the
   //   background.
-  return StyleDisplay()->mAppearance == NS_THEME_PROGRESSBAR &&
+  return StyleDisplay()->mAppearance == StyleAppearance::ProgressBar &&
          !PresContext()->HasAuthorSpecifiedRules(
              this,
              NS_AUTHOR_SPECIFIED_BORDER | NS_AUTHOR_SPECIFIED_BACKGROUND) &&
          barFrame &&
-         barFrame->StyleDisplay()->mAppearance == NS_THEME_PROGRESSCHUNK &&
+         barFrame->StyleDisplay()->mAppearance ==
+             StyleAppearance::Progresschunk &&
          !PresContext()->HasAuthorSpecifiedRules(
              barFrame,
              NS_AUTHOR_SPECIFIED_BORDER | NS_AUTHOR_SPECIFIED_BACKGROUND);
-}
-
-Element* nsProgressFrame::GetPseudoElement(CSSPseudoElementType aType) {
-  if (aType == CSSPseudoElementType::mozProgressBar) {
-    return mBarDiv;
-  }
-
-  return nsContainerFrame::GetPseudoElement(aType);
 }

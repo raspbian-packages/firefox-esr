@@ -10,7 +10,7 @@
 #include "SVGViewportElement.h"
 
 nsresult NS_NewSVGSymbolElement(
-    nsIContent **aResult, already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo);
+    nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
 namespace mozilla {
 namespace dom {
@@ -20,20 +20,19 @@ typedef SVGViewportElement SVGSymbolElementBase;
 class SVGSymbolElement final : public SVGSymbolElementBase {
  protected:
   friend nsresult(::NS_NewSVGSymbolElement(
-      nsIContent **aResult,
-      already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo));
+      nsIContent** aResult,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
   explicit SVGSymbolElement(
-      already_AddRefed<mozilla::dom::NodeInfo> &aNodeInfo);
-  ~SVGSymbolElement();
-  virtual JSObject *WrapNode(JSContext *cx,
-                             JS::Handle<JSObject *> aGivenProto) override;
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+  ~SVGSymbolElement() = default;
+  virtual JSObject* WrapNode(JSContext* cx,
+                             JS::Handle<JSObject*> aGivenProto) override;
 
  public:
   // interfaces:
   NS_DECL_ISUPPORTS_INHERITED
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo *aNodeInfo, nsINode **aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 };
 
 }  // namespace dom

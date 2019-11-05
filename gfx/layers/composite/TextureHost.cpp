@@ -21,6 +21,9 @@
 #include "mozilla/layers/TextureHostOGL.h"  // for TextureHostOGL
 #include "mozilla/layers/ImageDataSerializer.h"
 #include "mozilla/layers/TextureClient.h"
+#ifdef XP_DARWIN
+#  include "mozilla/layers/TextureSync.h"
+#endif
 #include "mozilla/layers/GPUVideoTextureHost.h"
 #include "mozilla/layers/WebRenderTextureHost.h"
 #include "mozilla/webrender/RenderBufferTextureHost.h"
@@ -38,27 +41,28 @@
 #include "IPDLActor.h"
 
 #ifdef MOZ_ENABLE_D3D10_LAYER
-#include "../d3d11/CompositorD3D11.h"
+#  include "../d3d11/CompositorD3D11.h"
 #endif
 
 #ifdef MOZ_X11
-#include "mozilla/layers/X11TextureHost.h"
+#  include "mozilla/layers/X11TextureHost.h"
 #endif
 
 #ifdef XP_MACOSX
-#include "../opengl/MacIOSurfaceTextureHostOGL.h"
+#  include "../opengl/MacIOSurfaceTextureHostOGL.h"
 #endif
 
 #ifdef XP_WIN
-#include "mozilla/layers/TextureDIB.h"
+#  include "mozilla/layers/TextureD3D11.h"
+#  include "mozilla/layers/TextureDIB.h"
 #endif
 
 #if 0
-#define RECYCLE_LOG(...) printf_stderr(__VA_ARGS__)
+#  define RECYCLE_LOG(...) printf_stderr(__VA_ARGS__)
 #else
-#define RECYCLE_LOG(...) \
-  do {                   \
-  } while (0)
+#  define RECYCLE_LOG(...) \
+    do {                   \
+    } while (0)
 #endif
 
 namespace mozilla {
@@ -71,10 +75,10 @@ namespace layers {
  */
 class TextureParent : public ParentActor<PTextureParent> {
  public:
-  explicit TextureParent(HostIPCAllocator* aAllocator, uint64_t aSerial,
-                         const wr::MaybeExternalImageId& aExternalImageId);
+  TextureParent(HostIPCAllocator* aAllocator, uint64_t aSerial,
+                const wr::MaybeExternalImageId& aExternalImageId);
 
-  ~TextureParent();
+  virtual ~TextureParent();
 
   bool Init(const SurfaceDescriptor& aSharedData,
             const ReadLockDescriptor& aReadLock,
@@ -82,12 +86,12 @@ class TextureParent : public ParentActor<PTextureParent> {
 
   void NotifyNotUsed(uint64_t aTransactionId);
 
-  virtual mozilla::ipc::IPCResult RecvRecycleTexture(
-      const TextureFlags& aTextureFlags) override;
+  mozilla::ipc::IPCResult RecvRecycleTexture(
+      const TextureFlags& aTextureFlags) final;
 
   TextureHost* GetTextureHost() { return mTextureHost; }
 
-  virtual void Destroy() override;
+  void Destroy() override;
 
   uint64_t GetSerial() const { return mSerial; }
 
@@ -159,21 +163,6 @@ void TextureHost::SetLastFwdTransactionId(uint64_t aTransactionId) {
   MOZ_ASSERT(mFwdTransactionId <= aTransactionId);
   mFwdTransactionId = aTransactionId;
 }
-
-// implemented in TextureHostOGL.cpp
-already_AddRefed<TextureHost> CreateTextureHostOGL(
-    const SurfaceDescriptor& aDesc, ISurfaceAllocator* aDeallocator,
-    LayersBackend aBackend, TextureFlags aFlags);
-
-// implemented in TextureHostBasic.cpp
-already_AddRefed<TextureHost> CreateTextureHostBasic(
-    const SurfaceDescriptor& aDesc, ISurfaceAllocator* aDeallocator,
-    LayersBackend aBackend, TextureFlags aFlags);
-
-// implemented in TextureD3D11.cpp
-already_AddRefed<TextureHost> CreateTextureHostD3D11(
-    const SurfaceDescriptor& aDesc, ISurfaceAllocator* aDeallocator,
-    LayersBackend aBackend, TextureFlags aFlags);
 
 already_AddRefed<TextureHost> TextureHost::Create(
     const SurfaceDescriptor& aDesc, const ReadLockDescriptor& aReadLock,
@@ -319,8 +308,8 @@ already_AddRefed<TextureHost> CreateBackendIndependentTextureHost(
       break;
     }
     case SurfaceDescriptor::TSurfaceDescriptorGPUVideo: {
-      result = new GPUVideoTextureHost(aFlags,
-                                       aDesc.get_SurfaceDescriptorGPUVideo());
+      result = GPUVideoTextureHost::CreateFromDescriptor(
+          aFlags, aDesc.get_SurfaceDescriptorGPUVideo());
       break;
     }
 #ifdef XP_WIN
@@ -356,11 +345,14 @@ TextureHost::TextureHost(TextureFlags aFlags)
       mReadLocked(false) {}
 
 TextureHost::~TextureHost() {
-  // If we still have a ReadLock, unlock it. At this point we don't care about
-  // the texture client being written into on the other side since it should be
-  // destroyed by now. But we will hit assertions if we don't ReadUnlock before
-  // destroying the lock itself.
-  ReadUnlock();
+  if (mReadLocked) {
+    // If we still have a ReadLock, unlock it. At this point we don't care about
+    // the texture client being written into on the other side since it should
+    // be destroyed by now. But we will hit assertions if we don't ReadUnlock
+    // before destroying the lock itself.
+    ReadUnlock();
+    MaybeNotifyUnlocked();
+  }
 }
 
 void TextureHost::Finalize() {
@@ -383,6 +375,7 @@ void TextureHost::UnbindTextureSource() {
       // GetCompositor returned null which means no compositor can be using this
       // texture. We can ReadUnlock right away.
       ReadUnlock();
+      MaybeNotifyUnlocked();
     }
   }
 }
@@ -457,12 +450,6 @@ void TextureHost::Updated(const nsIntRegion* aRegion) {
 TextureSource::TextureSource() : mCompositableCount(0) {}
 
 TextureSource::~TextureSource() {}
-
-const char* TextureSource::Name() const {
-  MOZ_CRASH("GFX: TextureSource without class name");
-  return "TextureSource";
-}
-
 BufferTextureHost::BufferTextureHost(const BufferDescriptor& aDesc,
                                      TextureFlags aFlags)
     : TextureHost(aFlags),
@@ -601,10 +588,12 @@ void BufferTextureHost::PushResourceUpdates(
     MOZ_ASSERT(aImageKeys.length() == 3);
 
     const layers::YCbCrDescriptor& desc = mDescriptor.get_YCbCrDescriptor();
-    wr::ImageDescriptor yDescriptor(desc.ySize(), desc.yStride(),
-                                    gfx::SurfaceFormat::A8);
-    wr::ImageDescriptor cbcrDescriptor(desc.cbCrSize(), desc.cbCrStride(),
-                                       gfx::SurfaceFormat::A8);
+    wr::ImageDescriptor yDescriptor(
+        desc.ySize(), desc.yStride(),
+        SurfaceFormatForColorDepth(desc.colorDepth()));
+    wr::ImageDescriptor cbcrDescriptor(
+        desc.cbCrSize(), desc.cbCrStride(),
+        SurfaceFormatForColorDepth(desc.colorDepth()));
     (aResources.*method)(aImageKeys[0], yDescriptor, aExtID, bufferType, 0);
     (aResources.*method)(aImageKeys[1], cbcrDescriptor, aExtID, bufferType, 1);
     (aResources.*method)(aImageKeys[2], cbcrDescriptor, aExtID, bufferType, 2);
@@ -624,6 +613,7 @@ void BufferTextureHost::PushDisplayItems(
     const YCbCrDescriptor& desc = mDescriptor.get_YCbCrDescriptor();
     aBuilder.PushYCbCrPlanarImage(
         aBounds, aClip, true, aImageKeys[0], aImageKeys[1], aImageKeys[2],
+        wr::ToWrColorDepth(desc.colorDepth()),
         wr::ToWrYuvColorSpace(desc.yUVColorSpace()), aFilter);
   }
 }
@@ -646,6 +636,9 @@ void TextureHost::SetReadLocked() {
   // lock again!
   MOZ_ASSERT(!mReadLocked);
   mReadLocked = true;
+  if (mProvider) {
+    mProvider->MaybeUnlockBeforeNextComposition(this);
+  }
 }
 
 void TextureHost::ReadUnlock() {
@@ -653,6 +646,10 @@ void TextureHost::ReadUnlock() {
     mReadLock->ReadUnlock();
     mReadLocked = false;
   }
+}
+
+bool TextureHost::NeedsYFlip() const {
+  return bool(mFlags & TextureFlags::ORIGIN_BOTTOM_LEFT);
 }
 
 bool BufferTextureHost::EnsureWrappingTextureSource() {
@@ -741,7 +738,9 @@ static bool IsCompatibleTextureSource(TextureSource* aTexture,
       return aTexture->GetFormat() == rgb.format() &&
              aTexture->GetSize() == rgb.size();
     }
-    default: { return false; }
+    default: {
+      return false;
+    }
   }
 }
 
@@ -818,10 +817,30 @@ bool BufferTextureHost::AcquireTextureSource(
   return !!mFirstSource;
 }
 
+void BufferTextureHost::ReadUnlock() {
+  if (mFirstSource) {
+    mFirstSource->Sync(true);
+  }
+
+  TextureHost::ReadUnlock();
+}
+
+void BufferTextureHost::MaybeNotifyUnlocked() {
+#ifdef XP_DARWIN
+  auto actor = GetIPDLActor();
+  if (actor) {
+    AutoTArray<uint64_t, 1> serials;
+    serials.AppendElement(TextureHost::GetTextureSerial(actor));
+    TextureSync::SetTexturesUnlocked(actor->OtherPid(), serials);
+  }
+#endif
+}
+
 void BufferTextureHost::UnbindTextureSource() {
   if (mFirstSource && mFirstSource->IsOwnedBy(this)) {
     mFirstSource->Unbind();
   }
+
   // This texture is not used by any layer anymore.
   // If the texture doesn't have an intermediate buffer, it means we are
   // compositing synchronously on the CPU, so we don't need to wait until
@@ -830,6 +849,7 @@ void BufferTextureHost::UnbindTextureSource() {
   // If the texture has an intermediate buffer we don't care either because
   // texture uploads are also performed synchronously for BufferTextureHost.
   ReadUnlock();
+  MaybeNotifyUnlocked();
 }
 
 gfx::SurfaceFormat BufferTextureHost::GetFormat() const {
@@ -845,20 +865,20 @@ gfx::SurfaceFormat BufferTextureHost::GetFormat() const {
   return mFormat;
 }
 
-YUVColorSpace BufferTextureHost::GetYUVColorSpace() const {
+gfx::YUVColorSpace BufferTextureHost::GetYUVColorSpace() const {
   if (mFormat == gfx::SurfaceFormat::YUV) {
     const YCbCrDescriptor& desc = mDescriptor.get_YCbCrDescriptor();
     return desc.yUVColorSpace();
   }
-  return YUVColorSpace::UNKNOWN;
+  return gfx::YUVColorSpace::UNKNOWN;
 }
 
-uint32_t BufferTextureHost::GetBitDepth() const {
+gfx::ColorDepth BufferTextureHost::GetColorDepth() const {
   if (mFormat == gfx::SurfaceFormat::YUV) {
     const YCbCrDescriptor& desc = mDescriptor.get_YCbCrDescriptor();
-    return desc.bitDepth();
+    return desc.colorDepth();
   }
-  return 8;
+  return gfx::ColorDepth::COLOR_8;
 }
 
 bool BufferTextureHost::UploadIfNeeded() {
@@ -885,6 +905,7 @@ bool BufferTextureHost::MaybeUpload(nsIntRegion* aRegion) {
     // We just did the texture upload, the content side can now freely write
     // into the shared buffer.
     ReadUnlock();
+    MaybeNotifyUnlocked();
   }
 
   // We no longer have an invalid region.
@@ -912,7 +933,9 @@ bool BufferTextureHost::Upload(nsIntRegion* aRegion) {
     return false;
   }
   if (!mHasIntermediateBuffer && EnsureWrappingTextureSource()) {
-    return true;
+    if (!mFirstSource || !mFirstSource->IsDirectMap()) {
+      return true;
+    }
   }
 
   if (mFormat == gfx::SurfaceFormat::UNKNOWN) {
@@ -968,15 +991,15 @@ bool BufferTextureHost::Upload(nsIntRegion* aRegion) {
     RefPtr<gfx::DataSourceSurface> tempY =
         gfx::Factory::CreateWrappingDataSourceSurface(
             ImageDataSerializer::GetYChannel(buf, desc), desc.yStride(),
-            desc.ySize(), SurfaceFormatForAlphaBitDepth(desc.bitDepth()));
+            desc.ySize(), SurfaceFormatForColorDepth(desc.colorDepth()));
     RefPtr<gfx::DataSourceSurface> tempCb =
         gfx::Factory::CreateWrappingDataSourceSurface(
             ImageDataSerializer::GetCbChannel(buf, desc), desc.cbCrStride(),
-            desc.cbCrSize(), SurfaceFormatForAlphaBitDepth(desc.bitDepth()));
+            desc.cbCrSize(), SurfaceFormatForColorDepth(desc.colorDepth()));
     RefPtr<gfx::DataSourceSurface> tempCr =
         gfx::Factory::CreateWrappingDataSourceSurface(
             ImageDataSerializer::GetCrChannel(buf, desc), desc.cbCrStride(),
-            desc.cbCrSize(), SurfaceFormatForAlphaBitDepth(desc.bitDepth()));
+            desc.cbCrSize(), SurfaceFormatForColorDepth(desc.colorDepth()));
     // We don't support partial updates for Y U V textures
     NS_ASSERTION(!aRegion, "Unsupported partial updates for YCbCr textures");
     if (!tempY || !tempCb || !tempCr || !srcY->Update(tempY) ||
@@ -1156,9 +1179,12 @@ void TextureParent::Destroy() {
     return;
   }
 
-  // ReadUnlock here to make sure the ReadLock's shmem does not outlive the
-  // protocol that created it.
-  mTextureHost->ReadUnlock();
+  if (mTextureHost->mReadLocked) {
+    // ReadUnlock here to make sure the ReadLock's shmem does not outlive the
+    // protocol that created it.
+    mTextureHost->ReadUnlock();
+    mTextureHost->MaybeNotifyUnlocked();
+  }
 
   if (mTextureHost->GetFlags() & TextureFlags::DEALLOCATE_CLIENT) {
     mTextureHost->ForgetSharedData();

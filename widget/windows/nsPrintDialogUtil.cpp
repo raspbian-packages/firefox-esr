@@ -27,6 +27,7 @@ WIN_LIBS=                                       \
 #include <unknwn.h>
 #include <commdlg.h>
 
+#include "mozilla/BackgroundHangMonitor.h"
 #include "nsIWebBrowserPrint.h"
 #include "nsString.h"
 #include "nsIServiceManager.h"
@@ -334,9 +335,9 @@ static UINT CALLBACK PrintHookProc(HWND hdlg, UINT uiMsg, WPARAM wParam,
     int top = dlgRect.bottom + grpGap;
     int radHgt = rad1Rect.bottom - rad1Rect.top + 1;  // top of new group box
     int y = top + (rad1Rect.top - dlgRect.top);  // starting pos of first radio
-    int rbWidth = dlgRect.right - rad1Rect.left -
-                  5;  // measure from rb left to the edge of the groupbox
-                      // (5 is arbitrary)
+    int rbWidth =
+        dlgRect.right - rad1Rect.left - 5;  // measure from rb left to the edge
+                                            // of the groupbox (5 is arbitrary)
     nsIntRect rect;
 
     // Create and position the radio buttons
@@ -635,6 +636,7 @@ static nsresult ShowNativePrintDialog(HWND aHWnd,
   BOOL result;
   {
     mozilla::widget::WinUtils::AutoSystemDpiAware dpiAwareness;
+    mozilla::BackgroundHangMonitor().NotifyWait();
     result = ::PrintDlgW(&prntdlg);
   }
 

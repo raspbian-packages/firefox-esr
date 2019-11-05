@@ -45,48 +45,26 @@ function findOptimalTimeInterval(minTimeInterval) {
 }
 
 /**
- * Check the equality of the given animations.
+ * Check whether or not the given list of animations has an iteration count of infinite.
  *
  * @param {Array} animations.
- * @param {Array} same to above.
- * @return {Boolean} true: same animations
+ * @return {Boolean} true if there is an animation in the  list of animations
+ *                   whose animation iteration count is infinite.
  */
-function isAllAnimationEqual(animationsA, animationsB) {
-  if (animationsA.length !== animationsB.length) {
-    return false;
-  }
-
-  for (let i = 0; i < animationsA.length; i++) {
-    const animationA = animationsA[i];
-    const animationB = animationsB[i];
-
-    if (animationA.actorID !== animationB.actorID ||
-        !isTimingEffectEqual(animationsA[i].state, animationsB[i].state)) {
-      return false;
-    }
-  }
-
-  return true;
+function hasAnimationIterationCountInfinite(animations) {
+  return animations.some(({ state }) => !state.iterationCount);
 }
 
 /**
- * Check the equality given states as effect timing.
+ * Check wether the animations are running at least one.
  *
- * @param {Object} state of animation.
- * @param {Object} same to avobe.
- * @return {Boolean} true: same effect timing
+ * @param {Array} animations.
+ * @return {Boolean} true: running
  */
-function isTimingEffectEqual(stateA, stateB) {
-  return stateA.delay === stateB.delay &&
-         stateA.direction === stateB.direction &&
-         stateA.duration === stateB.duration &&
-         stateA.easing === stateB.easing &&
-         stateA.endDelay === stateB.endDelay &&
-         stateA.fill === stateB.fill &&
-         stateA.iterationCount === stateB.iterationCount &&
-         stateA.iterationStart === stateB.iterationStart;
+function hasRunningAnimation(animations) {
+  return animations.some(({ state }) => state.playState === "running");
 }
 
 exports.findOptimalTimeInterval = findOptimalTimeInterval;
-exports.isAllAnimationEqual = isAllAnimationEqual;
-exports.isTimingEffectEqual = isTimingEffectEqual;
+exports.hasAnimationIterationCountInfinite = hasAnimationIterationCountInfinite;
+exports.hasRunningAnimation = hasRunningAnimation;

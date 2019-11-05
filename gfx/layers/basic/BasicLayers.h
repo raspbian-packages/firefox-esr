@@ -26,7 +26,6 @@ class nsIWidget;
 namespace mozilla {
 namespace layers {
 
-class DisplayItemLayer;
 class ImageFactory;
 class ImageLayer;
 class PaintLayerContext;
@@ -97,8 +96,9 @@ class BasicLayerManager final : public LayerManager {
     return mType == BLM_INACTIVE;
   }
 
-  virtual bool BeginTransaction() override;
-  virtual bool BeginTransactionWithTarget(gfxContext* aTarget) override;
+  virtual bool BeginTransaction(const nsCString& aURL = nsCString()) override;
+  virtual bool BeginTransactionWithTarget(
+      gfxContext* aTarget, const nsCString& aURL = nsCString()) override;
   virtual bool EndEmptyTransaction(
       EndTransactionFlags aFlags = END_DEFAULT) override;
   virtual void EndTransaction(
@@ -113,9 +113,7 @@ class BasicLayerManager final : public LayerManager {
   virtual already_AddRefed<ImageLayer> CreateImageLayer() override;
   virtual already_AddRefed<CanvasLayer> CreateCanvasLayer() override;
   virtual already_AddRefed<ColorLayer> CreateColorLayer() override;
-  virtual already_AddRefed<BorderLayer> CreateBorderLayer() override;
   virtual already_AddRefed<ReadbackLayer> CreateReadbackLayer() override;
-  virtual already_AddRefed<DisplayItemLayer> CreateDisplayItemLayer() override;
   virtual ImageFactory* GetImageFactory();
 
   virtual LayersBackend GetBackendType() override {

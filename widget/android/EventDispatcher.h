@@ -1,5 +1,5 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
- * vim: set sw=4 ts=4 expandtab:
+/* -*- Mode: c++; c-basic-offset: 2; tab-width: 20; indent-tabs-mode: nil; -*-
+ * vim: set sw=2 ts=4 expandtab:
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -44,6 +44,7 @@ class EventDispatcher final
                     java::GeckoBundle::Param aData = nullptr,
                     nsIAndroidEventCallback* aCallback = nullptr);
 
+  bool HasListener(const char16_t* aEvent);
   bool HasGeckoListener(jni::String::Param aEvent);
   void DispatchToGecko(jni::String::Param aEvent, jni::Object::Param aData,
                        jni::Object::Param aCallback);
@@ -51,12 +52,13 @@ class EventDispatcher final
   static nsresult UnboxBundle(JSContext* aCx, jni::Object::Param aData,
                               JS::MutableHandleValue aOut);
 
-  static void DisposeNative(const java::EventDispatcher::LocalRef& aInstance);
+  nsIGlobalObject* GetGlobalObject();
+
+  using NativesBase::DisposeNative;
 
  private:
-  java::EventDispatcher::GlobalRef mDispatcher;
+  java::EventDispatcher::WeakRef mDispatcher;
   nsCOMPtr<nsPIDOMWindowOuter> mDOMWindow;
-  int32_t mAttachCount{0};
 
   virtual ~EventDispatcher() {}
 
@@ -87,7 +89,8 @@ class EventDispatcher final
                            nsIAndroidEventCallback* aCallback);
 
   java::EventDispatcher::NativeCallbackDelegate::LocalRef WrapCallback(
-      nsIAndroidEventCallback* aCallback);
+      nsIAndroidEventCallback* aCallback,
+      nsIAndroidEventFinalizer* aFinalizer = nullptr);
 };
 
 }  // namespace widget

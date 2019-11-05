@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #ifdef WIN32
-#include <float.h>
+#  include <float.h>
 #endif
 #include "prdtoa.h"
 
@@ -26,17 +26,16 @@
  */
 class txStringToDouble {
  public:
-  typedef char16_t input_type;
-  typedef char16_t value_type;
   txStringToDouble() : mState(eWhitestart), mSign(ePositive) {}
 
-  void write(const input_type* aSource, uint32_t aSourceLength) {
+  void Parse(const nsAString& aSource) {
     if (mState == eIllegal) {
       return;
     }
     uint32_t i = 0;
     char16_t c;
-    for (; i < aSourceLength; ++i) {
+    auto len = aSource.Length();
+    for (; i < len; ++i) {
       c = aSource[i];
       switch (mState) {
         case eWhitestart:
@@ -105,8 +104,7 @@ class txStringToDouble {
 
 double txDouble::toDouble(const nsAString& aSrc) {
   txStringToDouble sink;
-  nsAString::const_iterator fromBegin, fromEnd;
-  copy_string(aSrc.BeginReading(fromBegin), aSrc.EndReading(fromEnd), sink);
+  sink.Parse(aSrc);
   return sink.getDouble();
 }
 
@@ -154,8 +152,8 @@ void txDouble::toString(double aValue, nsAString& aDest) {
   uint32_t oldlength = aDest.Length();
   if (!aDest.SetLength(oldlength + length, mozilla::fallible))
     return;  // out of memory
-  nsAString::iterator dest;
-  aDest.BeginWriting(dest).advance(int32_t(oldlength));
+  auto dest = aDest.BeginWriting();
+  std::advance(dest, oldlength);
   if (aValue < 0) {
     *dest = '-';
     ++dest;

@@ -13,6 +13,7 @@ connection-close-key =
     .key = w
 connection-disable-extension =
     .label = غیرفعال سازی افزونه
+connection-proxy-configure = پیکربندی دسترسی پیشکار به اینترنت
 connection-proxy-option-no =
     .label = بدون پیشکار
     .accesskey = پ
@@ -66,3 +67,19 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = استفاده از پیشکار DNS هنگام استفاده از SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = فعال‌سازی دی‌ان‌اس از طریق HTTPS
+    .accesskey = b
+connection-dns-over-https-url = URL
+    .accesskey = U
+    .tooltiptext = آدرسی برای پیدا کردن دی‌ان‌اس از طریق HTTPS
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = استفاده از پیش‌فرض ({ $url })
+    .accesskey = U
+    .tooltiptext = از URL پیش فرض برای مدیریت DNS روی HTTPS استفاده کنید
+connection-dns-over-https-url-custom =
+    .label = سفارشی
+    .accesskey = C
+    .tooltiptext = URL دلخواه خود را برای مدیریت DNS از طریق HTTPS وارد کنید

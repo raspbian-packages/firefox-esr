@@ -31,7 +31,7 @@ class TaskFactory : public RevocableStore {
    public:
     template <typename... Args>
     explicit TaskWrapper(RevocableStore* store, Args&&... args)
-        : TaskType(mozilla::Forward<Args>(args)...), revocable_(store) {}
+        : TaskType(std::forward<Args>(args)...), revocable_(store) {}
 
     NS_IMETHOD Run() override {
       if (!revocable_.revoked()) TaskType::Run();
@@ -49,20 +49,19 @@ class TaskFactory : public RevocableStore {
   inline already_AddRefed<TaskParamType> NewTask(Args&&... args) {
     typedef TaskWrapper<TaskParamType> TaskWrapper;
     RefPtr<TaskWrapper> task =
-        new TaskWrapper(this, mozilla::Forward<Args>(args)...);
+        new TaskWrapper(this, std::forward<Args>(args)...);
     return task.forget();
   }
 
   template <class Method, typename... Args>
   inline already_AddRefed<Runnable> NewRunnableMethod(Method method,
                                                       Args&&... args) {
-    typedef decltype(base::MakeTuple(mozilla::Forward<Args>(args)...)) ArgTuple;
+    typedef decltype(base::MakeTuple(std::forward<Args>(args)...)) ArgTuple;
     typedef RunnableMethod<Method, ArgTuple> RunnableMethod;
     typedef TaskWrapper<RunnableMethod> TaskWrapper;
 
-    RefPtr<TaskWrapper> task =
-        new TaskWrapper(this, object_, method,
-                        base::MakeTuple(mozilla::Forward<Args>(args)...));
+    RefPtr<TaskWrapper> task = new TaskWrapper(
+        this, object_, method, base::MakeTuple(std::forward<Args>(args)...));
 
     return task.forget();
   }

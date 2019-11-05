@@ -13,29 +13,30 @@
 #include "mozilla/gfx/2D.h"  // for StrokeOptions
 #include "mozilla/gfx/Matrix.h"
 #include "mozilla/RangedPtr.h"
+#include "nsStyleCoord.h"
 #include "nsError.h"
 #include "nsStringFwd.h"
 #include "gfx2DGlue.h"
+#include "nsDependentSubstring.h"
 
 class nsIContent;
-class nsIDocument;
+
 class nsIFrame;
-class nsStyleContext;
-class nsStyleCoord;
-class nsSVGElement;
+class nsPresContext;
 
 namespace mozilla {
-class nsSVGAnimatedTransformList;
+class ComputedStyle;
+class SVGAnimatedTransformList;
 class SVGAnimatedPreserveAspectRatio;
 class SVGContextPaint;
 class SVGPreserveAspectRatio;
 namespace dom {
+class Document;
 class Element;
+class SVGElement;
 class SVGSVGElement;
 class SVGViewportElement;
 }  // namespace dom
-
-}  // namespace mozilla
 
 #define SVG_ZERO_LENGTH_PATH_FIX_FACTOR 512
 
@@ -68,15 +69,6 @@ enum SVGTransformTypes {
   eChildToUserSpace
 };
 
-inline bool IsSVGWhitespace(char aChar) {
-  return aChar == '\x20' || aChar == '\x9' || aChar == '\xD' || aChar == '\xA';
-}
-
-inline bool IsSVGWhitespace(char16_t aChar) {
-  return aChar == char16_t('\x20') || aChar == char16_t('\x9') ||
-         aChar == char16_t('\xD') || aChar == char16_t('\xA');
-}
-
 /**
  * Functions generally used by SVG Content classes. Functions here
  * should not generally depend on layout methods/classes e.g. nsSVGUtils
@@ -87,15 +79,11 @@ class SVGContentUtils {
   typedef mozilla::gfx::Matrix Matrix;
   typedef mozilla::gfx::Rect Rect;
   typedef mozilla::gfx::StrokeOptions StrokeOptions;
-  typedef mozilla::SVGAnimatedPreserveAspectRatio
-      SVGAnimatedPreserveAspectRatio;
-  typedef mozilla::SVGPreserveAspectRatio SVGPreserveAspectRatio;
 
   /*
    * Get the outer SVG element of an nsIContent
    */
-  static mozilla::dom::SVGSVGElement* GetOuterSVGElement(
-      nsSVGElement* aSVGElement);
+  static dom::SVGSVGElement* GetOuterSVGElement(dom::SVGElement* aSVGElement);
 
   /**
    * Activates the animation element aContent as a result of navigation to the
@@ -162,22 +150,22 @@ class SVGContentUtils {
    * whether or not the stroke is dashed.
    */
   static void GetStrokeOptions(AutoStrokeOptions* aStrokeOptions,
-                               nsSVGElement* aElement,
-                               nsStyleContext* aStyleContext,
+                               dom::SVGElement* aElement,
+                               ComputedStyle* aComputedStyle,
                                mozilla::SVGContextPaint* aContextPaint,
                                StrokeOptionFlags aFlags = eAllStrokeOptions);
 
   /**
    * Returns the current computed value of the CSS property 'stroke-width' for
-   * the given element. aStyleContext may be provided as an optimization.
+   * the given element. aComputedStyle may be provided as an optimization.
    * aContextPaint is also optional.
    *
    * Note that this function does NOT take account of the value of the 'stroke'
    * and 'stroke-opacity' properties to, say, return zero if they are "none" or
    * "0", respectively.
    */
-  static Float GetStrokeWidth(nsSVGElement* aElement,
-                              nsStyleContext* aStyleContext,
+  static Float GetStrokeWidth(dom::SVGElement* aElement,
+                              ComputedStyle* aComputedStyle,
                               mozilla::SVGContextPaint* aContextPaint);
 
   /*
@@ -189,7 +177,7 @@ class SVGContentUtils {
    */
   static float GetFontSize(mozilla::dom::Element* aElement);
   static float GetFontSize(nsIFrame* aFrame);
-  static float GetFontSize(nsStyleContext* aStyleContext);
+  static float GetFontSize(ComputedStyle*, nsPresContext*);
   /*
    * Get the number of CSS px (user units) per ex (i.e. the x-height in user
    * units) for an nsIContent
@@ -199,16 +187,16 @@ class SVGContentUtils {
    */
   static float GetFontXHeight(mozilla::dom::Element* aElement);
   static float GetFontXHeight(nsIFrame* aFrame);
-  static float GetFontXHeight(nsStyleContext* aStyleContext);
+  static float GetFontXHeight(ComputedStyle*, nsPresContext*);
 
   /*
    * Report a localized error message to the error console.
    */
-  static nsresult ReportToConsole(nsIDocument* doc, const char* aWarning,
+  static nsresult ReportToConsole(dom::Document* doc, const char* aWarning,
                                   const char16_t** aParams,
                                   uint32_t aParamsLength);
 
-  static Matrix GetCTM(nsSVGElement* aElement, bool aScreenCTM);
+  static Matrix GetCTM(dom::SVGElement* aElement, bool aScreenCTM);
 
   /**
    * Gets the tight bounds-space stroke bounds of the non-scaling-stroked rect
@@ -244,7 +232,7 @@ class SVGContentUtils {
   /* Returns the angle halfway between the two specified angles */
   static float AngleBisect(float a1, float a2);
 
-  /* Generate a viewbox to viewport tranformation matrix */
+  /* Generate a viewbox to viewport transformation matrix */
 
   static Matrix GetViewBoxTransform(
       float aViewportWidth, float aViewportHeight, float aViewboxX,
@@ -261,19 +249,6 @@ class SVGContentUtils {
 
   static mozilla::RangedPtr<const char16_t> GetEndRangedPtr(
       const nsAString& aString);
-
-  /**
-   * True if 'aCh' is a decimal digit.
-   */
-  static inline bool IsDigit(char16_t aCh) { return aCh >= '0' && aCh <= '9'; }
-
-  /**
-   * Assuming that 'aCh' is a decimal digit, return its numeric value.
-   */
-  static inline uint32_t DecimalDigitValue(char16_t aCh) {
-    MOZ_ASSERT(IsDigit(aCh), "Digit expected");
-    return aCh - '0';
-  }
 
   /**
    * Parses the sign (+ or -) of a number and moves aIter to the next
@@ -344,11 +319,10 @@ class SVGContentUtils {
   static bool ParseInteger(const nsAString& aString, int32_t& aValue);
 
   /**
-   * Converts an nsStyleCoord into a userspace value.  Handles units
-   * Factor (straight userspace), Coord (dimensioned), and Percent (of
-   * aContent's SVG viewport)
+   * Converts an nsStyleCoord into a userspace value, resolving percentage
+   * values relative to aContent's SVG viewport.
    */
-  static float CoordToFloat(nsSVGElement* aContent, const nsStyleCoord& aCoord);
+  static float CoordToFloat(dom::SVGElement* aContent, const LengthPercentage&);
   /**
    * Parse the SVG path string
    * Returns a path
@@ -362,6 +336,16 @@ class SVGContentUtils {
    *  to have no corners: circle or ellipse
    */
   static bool ShapeTypeHasNoCorners(const nsIContent* aContent);
+
+  /**
+   *  Return one token in aString, aString may have leading and trailing
+   * whitespace; aSuccess will be set to false if there is no token or more than
+   * one token, otherwise it's set to true.
+   */
+  static nsDependentSubstring GetAndEnsureOneToken(const nsAString& aString,
+                                                   bool& aSuccess);
 };
+
+}  // namespace mozilla
 
 #endif

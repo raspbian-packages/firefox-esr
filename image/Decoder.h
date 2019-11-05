@@ -11,6 +11,7 @@
 #include "mozilla/Maybe.h"
 #include "mozilla/NotNull.h"
 #include "mozilla/RefPtr.h"
+#include "AnimationParams.h"
 #include "DecoderFlags.h"
 #include "Downscaler.h"
 #include "ImageMetadata.h"
@@ -26,6 +27,8 @@ enum HistogramID : uint32_t;
 }  // namespace Telemetry
 
 namespace image {
+
+class imgFrame;
 
 struct DecoderFinalStatus final {
   DecoderFinalStatus(bool aWasMetadataDecode, bool aFinished, bool aHadError,
@@ -80,9 +83,28 @@ struct DecoderTelemetry final {
   const TimeDuration mDecodeTime;
 };
 
+/**
+ * Interface which owners of an animated Decoder object must implement in order
+ * to use recycling. It allows the decoder to get a handle to the recycled
+ * frames.
+ */
+class IDecoderFrameRecycler {
+ public:
+  /**
+   * Request the next available recycled imgFrame from the recycler.
+   *
+   * @param aRecycleRect  If a frame is returned, this must be set to the
+   *                      accumulated dirty rect between the frame being
+   *                      recycled, and the frame being generated.
+   *
+   * @returns The recycled frame, if any is available.
+   */
+  virtual RawAccessFrameRef RecycleFrame(gfx::IntRect& aRecycleRect) = 0;
+};
+
 class Decoder {
  public:
-  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(Decoder)
+  NS_INLINE_DECL_THREADSAFE_REFCOUNTING_RECORDED(Decoder)
 
   explicit Decoder(RasterImage* aImage);
 
@@ -230,7 +252,7 @@ class Decoder {
    */
   void SetIterator(SourceBufferIterator&& aIterator) {
     MOZ_ASSERT(!mInitialized, "Shouldn't be initialized yet");
-    mIterator.emplace(Move(aIterator));
+    mIterator.emplace(std::move(aIterator));
   }
 
   SourceBuffer* GetSourceBuffer() const { return mIterator->Owner(); }
@@ -378,14 +400,40 @@ class Decoder {
     return mCurrentFrame ? mCurrentFrame->RawAccessRef() : RawAccessFrameRef();
   }
 
+  /**
+   * For use during decoding only. Allows the BlendAnimationFilter to get the
+   * current frame we are producing for its animation parameters.
+   */
+  imgFrame* GetCurrentFrame() { return mCurrentFrame.get(); }
+
+  /**
+   * For use during decoding only. Allows the BlendAnimationFilter to get the
+   * frame it should be pulling the previous frame data from.
+   */
+  const RawAccessFrameRef& GetRestoreFrameRef() const { return mRestoreFrame; }
+
+  const gfx::IntRect& GetRestoreDirtyRect() const { return mRestoreDirtyRect; }
+
+  const gfx::IntRect& GetRecycleRect() const { return mRecycleRect; }
+
+  const gfx::IntRect& GetFirstFrameRefreshArea() const {
+    return mFirstFrameRefreshArea;
+  }
+
   bool HasFrameToTake() const { return mHasFrameToTake; }
   void ClearHasFrameToTake() {
     MOZ_ASSERT(mHasFrameToTake);
     mHasFrameToTake = false;
   }
 
+  IDecoderFrameRecycler* GetFrameRecycler() const { return mFrameRecycler; }
+  void SetFrameRecycler(IDecoderFrameRecycler* aFrameRecycler) {
+    mFrameRecycler = aFrameRecycler;
+  }
+
  protected:
   friend class AutoRecordDecoderTelemetry;
+  friend class DecoderTestHelper;
   friend class nsICODecoder;
   friend class PalettedSurfaceSink;
   friend class SurfaceSink;
@@ -448,11 +496,7 @@ class Decoder {
   // Specify whether this frame is opaque as an optimization.
   // For animated images, specify the disposal, blend method and timeout for
   // this frame.
-  void PostFrameStop(Opacity aFrameOpacity = Opacity::SOME_TRANSPARENCY,
-                     DisposalMethod aDisposalMethod = DisposalMethod::KEEP,
-                     FrameTimeout aTimeout = FrameTimeout::Forever(),
-                     BlendMethod aBlendMethod = BlendMethod::OVER,
-                     const Maybe<nsIntRect>& aBlendRect = Nothing());
+  void PostFrameStop(Opacity aFrameOpacity = Opacity::SOME_TRANSPARENCY);
 
   /**
    * Called by the decoders when they have a region to invalidate. We may not
@@ -481,15 +525,10 @@ class Decoder {
 
   /**
    * Allocates a new frame, making it our current frame if successful.
-   *
-   * The @aFrameNum parameter only exists as a sanity check; it's illegal to
-   * create a new frame anywhere but immediately after the existing frames.
-   *
-   * If a non-paletted frame is desired, pass 0 for aPaletteDepth.
    */
-  nsresult AllocateFrame(uint32_t aFrameNum, const gfx::IntSize& aOutputSize,
-                         const gfx::IntRect& aFrameRect,
-                         gfx::SurfaceFormat aFormat, uint8_t aPaletteDepth = 0);
+  nsresult AllocateFrame(const gfx::IntSize& aOutputSize,
+                         gfx::SurfaceFormat aFormat,
+                         const Maybe<AnimationParams>& aAnimParams = Nothing());
 
  private:
   /// Report that an error was encountered while decoding.
@@ -512,29 +551,38 @@ class Decoder {
     return mInFrame ? mFrameCount - 1 : mFrameCount;
   }
 
-  RawAccessFrameRef AllocateFrameInternal(uint32_t aFrameNum,
-                                          const gfx::IntSize& aOutputSize,
-                                          const gfx::IntRect& aFrameRect,
-                                          gfx::SurfaceFormat aFormat,
-                                          uint8_t aPaletteDepth,
-                                          imgFrame* aPreviousFrame);
+  RawAccessFrameRef AllocateFrameInternal(
+      const gfx::IntSize& aOutputSize, gfx::SurfaceFormat aFormat,
+      const Maybe<AnimationParams>& aAnimParams,
+      RawAccessFrameRef&& aPreviousFrame);
 
  protected:
   Maybe<Downscaler> mDownscaler;
 
-  uint8_t* mImageData;  // Pointer to image data in either Cairo or 8bit format
+  uint8_t* mImageData;  // Pointer to image data in BGRA/X
   uint32_t mImageDataLength;
-  uint32_t* mColormap;  // Current colormap to be used in Cairo format
-  uint32_t mColormapSize;
 
  private:
   RefPtr<RasterImage> mImage;
   Maybe<SourceBufferIterator> mIterator;
+  IDecoderFrameRecycler* mFrameRecycler;
+
+  // The current frame the decoder is producing.
   RawAccessFrameRef mCurrentFrame;
+
+  // The complete frame to combine with the current partial frame to produce
+  // a complete current frame.
+  RawAccessFrameRef mRestoreFrame;
+
   ImageMetadata mImageMetadata;
+
   gfx::IntRect
-      mInvalidRect;  // Tracks an invalidation region in the current frame.
-  Maybe<gfx::IntSize> mOutputSize;    // The size of our output surface.
+      mInvalidRect;  // Tracks new rows as the current frame is decoded.
+  gfx::IntRect mRestoreDirtyRect;   // Tracks an invalidation region between the
+                                    // restore frame and the previous frame.
+  gfx::IntRect mRecycleRect;        // Tracks an invalidation region between the
+                                    // recycled frame and the current frame.
+  Maybe<gfx::IntSize> mOutputSize;  // The size of our output surface.
   Maybe<gfx::IntSize> mExpectedSize;  // The expected size of the image.
   Progress mProgress;
 

@@ -18,8 +18,8 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(AnimationEventDispatcher)
   for (auto& info : tmp->mPendingEvents) {
     ImplCycleCollectionTraverse(
-        cb, info.mElement,
-        "mozilla::AnimationEventDispatcher.mPendingEvents.mElement");
+        cb, info.mTarget,
+        "mozilla::AnimationEventDispatcher.mPendingEvents.mTarget");
     ImplCycleCollectionTraverse(
         cb, info.mAnimation,
         "mozilla::AnimationEventDispatcher.mPendingEvents.mAnimation");
@@ -40,12 +40,21 @@ void AnimationEventDispatcher::Disconnect() {
   mPresContext = nullptr;
 }
 
+void AnimationEventDispatcher::QueueEvent(AnimationEventInfo&& aEvent) {
+  mPendingEvents.AppendElement(std::move(aEvent));
+  mIsSorted = false;
+  ScheduleDispatch();
+}
+
 void AnimationEventDispatcher::QueueEvents(
     nsTArray<AnimationEventInfo>&& aEvents) {
-  MOZ_ASSERT(mPresContext, "The pres context should be valid");
-
-  mPendingEvents.AppendElements(Move(aEvents));
+  mPendingEvents.AppendElements(std::move(aEvents));
   mIsSorted = false;
+  ScheduleDispatch();
+}
+
+void AnimationEventDispatcher::ScheduleDispatch() {
+  MOZ_ASSERT(mPresContext, "The pres context should be valid");
   if (!mIsObserving) {
     mPresContext->RefreshDriver()->ScheduleAnimationEventDispatch(this);
     mIsObserving = true;

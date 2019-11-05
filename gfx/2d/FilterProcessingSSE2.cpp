@@ -99,6 +99,13 @@ void FilterProcessing::DoUnpremultiplicationCalculation_SSE2(
       aSize, aTargetData, aTargetStride, aSourceData, aSourceStride);
 }
 
+void FilterProcessing::DoOpacityCalculation_SSE2(
+    const IntSize& aSize, uint8_t* aTargetData, int32_t aTargetStride,
+    uint8_t* aSourceData, int32_t aSourceStride, Float aValue) {
+  DoOpacityCalculation_SIMD<__m128i, __m128i>(
+      aSize, aTargetData, aTargetStride, aSourceData, aSourceStride, aValue);
+}
+
 already_AddRefed<DataSourceSurface> FilterProcessing::RenderTurbulence_SSE2(
     const IntSize& aSize, const Point& aOffset, const Size& aBaseFrequency,
     int32_t aSeed, int aNumOctaves, TurbulenceType aType, bool aStitch,

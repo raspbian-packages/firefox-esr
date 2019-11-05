@@ -12,20 +12,23 @@ def Libxul_defines():
         LIBRARY_DEFINES['STATIC_EXPORTABLE_JS_API'] = True
 
 @template
-def Libxul(name):
+def Libxul(name, output_category=None):
     if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('cocoa', 'uikit'):
         # This is going to be a framework named "XUL", not an ordinary library named
         # "libxul.dylib"
-        GeckoFramework(name, linkage=None)
+        GeckoFramework(name, output_category=output_category, linkage=None)
         SHARED_LIBRARY_NAME = 'XUL'
     else:
-        GeckoSharedLibrary(name, linkage=None)
+        GeckoSharedLibrary(name, output_category=output_category, linkage=None)
         SHARED_LIBRARY_NAME = 'xul'
 
     DELAYLOAD_DLLS += [
         'comdlg32.dll',
+        'hid.dll',
+        'msimg32.dll',
         'netapi32.dll',
         'secur32.dll',
+        'urlmon.dll',
         'wininet.dll',
         'winspool.drv'
     ]
@@ -45,7 +48,7 @@ def Libxul(name):
     if CONFIG['OS_ARCH'] == 'WINNT' and CONFIG['ACCESSIBILITY']:
         LOCAL_INCLUDES += ['!/accessible/interfaces/gecko/']
 
-    if CONFIG['OS_ARCH'] == 'WINNT' and CONFIG['CC_TYPE'] not in ('clang', 'gcc'):
+    if CONFIG['OS_ARCH'] == 'WINNT':
         LOCAL_INCLUDES += [
             '/widget/windows',
             '/xpcom/base',
@@ -56,46 +59,32 @@ def Libxul(name):
         # and config/version.mk would lift the $(srcdir)
         RCINCLUDE = '$(DEPTH)/toolkit/library/xulrunner.rc'
 
-    # BFD ld doesn't create multiple PT_LOADs as usual when an unknown section
-    # exists. Using an implicit linker script to make it fold that section in
-    # .data.rel.ro makes it create multiple PT_LOADs. That implicit linker
-    # script however makes gold misbehave, first because it doesn't like that
-    # the linker script is given after crtbegin.o, and even past that, replaces
-    # the default section rules with those from the script instead of
-    # supplementing them. Which leads to a lib with a huge load of sections.
-    if CONFIG['OS_TARGET'] not in ('OpenBSD', 'WINNT') and CONFIG['LD_IS_BFD']:
-        LDFLAGS += [TOPSRCDIR + '/toolkit/library/StaticXULComponents.ld']
-
     Libxul_defines()
 
     if CONFIG['MOZ_NEEDS_LIBATOMIC']:
         OS_LIBS += ['atomic']
 
-    # This option should go away in bug 1290972, but we need to wait until
-    # Rust 1.12 has been released.
+    # TouchBar-related classes are only available in the 10.12.2 SDK and later.
+    # We need to weak link these classes until we've upgraded our SDK to at
+    # least 10.12.2.
     # We're also linking against libresolv to solve bug 1367932.
     if CONFIG['OS_ARCH'] == 'Darwin':
-        LDFLAGS += ['-Wl,-no_compact_unwind,-lresolv']
+        LDFLAGS += ['-Wl,-U,_OBJC_CLASS_$_NSTouchBar']
+        LDFLAGS += ['-Wl,-U,_OBJC_CLASS_$_NSSharingServicePickerTouchBarItem']
+        LDFLAGS += ['-Wl,-U,_OBJC_METACLASS_$_NSTouchBar']
+        LDFLAGS += ['-Wl,-U,_OBJC_CLASS_$_NSCustomTouchBarItem']
+        LDFLAGS += ['-lresolv']
+
+    if CONFIG['MOZ_DEBUG_SYMBOLS'] and CONFIG['CC_TYPE'] == 'clang-cl':
+        LDFLAGS += ['-NATVIS:%s/toolkit/library/gecko.natvis' % TOPSRCDIR]
+    if CONFIG['RUSTC_NATVIS_LDFLAGS']:
+        LDFLAGS += CONFIG['RUSTC_NATVIS_LDFLAGS']
 
 Libxul('xul')
 
 FORCE_STATIC_LIB = True
 
 STATIC_LIBRARY_NAME = 'xul_s'
-
-SOURCES += [
-    'StaticXULComponentsStart.cpp',
-]
-
-# This, combined with the fact the file is first, makes the start pointer
-# it contains first in Windows PGO builds.
-SOURCES['StaticXULComponentsStart.cpp'].no_pgo = True
-
-# Don't let LTO reorder StaticXULComponentsStart.o.
-for f in CONFIG['OS_CXXFLAGS']:
-    if f.startswith('-flto'):
-        SOURCES['StaticXULComponentsStart.cpp'].flags += ['-fno-lto']
-        break
 
 if CONFIG['OS_ARCH'] == 'WINNT':
     SOURCES += [
@@ -204,6 +193,7 @@ if CONFIG['OS_ARCH'] == 'WINNT':
     OS_LIBS += [
         'crypt32',
         'shell32',
+        'ntdll',
         'ole32',
         'version',
         'winspool',
@@ -223,20 +213,14 @@ if CONFIG['MOZ_ANDROID_GOOGLE_VR']:
 OS_LIBS += CONFIG['MOZ_CAIRO_OSLIBS']
 OS_LIBS += CONFIG['MOZ_WEBRTC_X11_LIBS']
 
-if CONFIG['SERVO_TARGET_DIR']:
-    if CONFIG['CC_TYPE'] in ('msvc', 'clang-cl'):
-        OS_LIBS += ['%s/geckoservo' % CONFIG['SERVO_TARGET_DIR']]
-    else:
-        OS_LIBS += ['-L%s' % CONFIG['SERVO_TARGET_DIR'], '-lgeckoservo']
-
 if CONFIG['MOZ_SYSTEM_JPEG']:
     OS_LIBS += CONFIG['MOZ_JPEG_LIBS']
 
 if CONFIG['MOZ_SYSTEM_PNG']:
     OS_LIBS += CONFIG['MOZ_PNG_LIBS']
 
-if CONFIG['MOZ_SYSTEM_HUNSPELL']:
-    OS_LIBS += CONFIG['MOZ_HUNSPELL_LIBS']
+if CONFIG['MOZ_SYSTEM_WEBP']:
+    OS_LIBS += CONFIG['MOZ_WEBP_LIBS']
 
 if CONFIG['MOZ_SYSTEM_LIBEVENT']:
     OS_LIBS += CONFIG['MOZ_LIBEVENT_LIBS']
@@ -327,7 +311,14 @@ if CONFIG['OS_ARCH'] == 'WINNT':
         'locationapi',
         'sapi',
         'dxguid',
+        'dhcpcsvc',
     ]
+
+    if CONFIG['CC_TYPE'] == 'clang-cl':
+        OS_LIBS += [
+            'runtimeobject',
+        ]
+
     if CONFIG['ACCESSIBILITY']:
         OS_LIBS += [
             'oleacc',
@@ -358,14 +349,22 @@ if CONFIG['COMPILE_ENVIRONMENT']:
 
     if CONFIG['OS_ARCH'] == 'Linux' and CONFIG['OS_TARGET'] != 'Android':
         GENERATED_FILES += ['symverscript']
-        GENERATED_FILES['symverscript'].script = 'gen_symverscript.py'
+        GENERATED_FILES['symverscript'].script = '/build/gen_symverscript.py'
         GENERATED_FILES['symverscript'].inputs = ['symverscript.in']
+        GENERATED_FILES['symverscript'].flags = [
+            'xul%s' % CONFIG['MOZILLA_SYMBOLVERSION']
+        ]
         SYMBOLS_FILE = '!symverscript'
 
-# This library needs to be last to make XPCOM module registration work.
-USE_LIBS += ['StaticXULComponentsEnd']
+    # Generate GDB pretty printer-autoload files only on Linux. OSX's GDB is
+    # too old to support Python pretty-printers; if this changes, we could
+    # make this 'ifdef GNU_CC'.
+    if CONFIG['OS_ARCH'] == 'Linux':
+        # Create a GDB Python auto-load file alongside the libxul shared library
+        # in the build directory.
+        DEFINES['topsrcdir'] = TOPSRCDIR
+        OBJDIR_PP_FILES.toolkit.library += ['libxul.so-gdb.py.in']
 
-# The above library needs to be last for C++ purposes.  This library,
-# however, is entirely composed of Rust code, and needs to come after
+# This library is entirely composed of Rust code, and needs to come after
 # all the C++ code so any possible C++ -> Rust calls can be resolved.
 USE_LIBS += ['gkrust']

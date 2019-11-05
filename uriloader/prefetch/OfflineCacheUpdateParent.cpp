@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,7 +7,8 @@
 
 #include "BackgroundUtils.h"
 #include "mozilla/BasePrincipal.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/Element.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "mozilla/ipc/URIUtils.h"
 #include "mozilla/Unused.h"
 #include "nsContentUtils.h"
@@ -19,7 +20,7 @@
 using namespace mozilla::ipc;
 using mozilla::BasePrincipal;
 using mozilla::OriginAttributes;
-using mozilla::dom::TabParent;
+using mozilla::dom::BrowserParent;
 
 //
 // To enable logging (see mozilla/Logging.h for full details):
@@ -127,9 +128,7 @@ nsresult OfflineCacheUpdateParent::Schedule(
   }
 
   if (stickDocument) {
-    nsCOMPtr<nsIURI> stickURI;
-    documentURI->Clone(getter_AddRefs(stickURI));
-    update->StickDocument(stickURI);
+    update->StickDocument(documentURI);
   }
 
   return NS_OK;
@@ -193,7 +192,7 @@ OfflineCacheUpdateParent::GetTopWindow(mozIDOMWindowProxy** aTopWindow) {
 }
 
 NS_IMETHODIMP
-OfflineCacheUpdateParent::GetTopFrameElement(nsIDOMElement** aElement) {
+OfflineCacheUpdateParent::GetTopFrameElement(dom::Element** aElement) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -232,6 +231,16 @@ OfflineCacheUpdateParent::SetRemoteTabs(bool aUseRemoteTabs) {
 }
 
 NS_IMETHODIMP
+OfflineCacheUpdateParent::GetUseRemoteSubframes(bool* aUseRemoteSubframes) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP
+OfflineCacheUpdateParent::SetRemoteSubframes(bool aUseRemoteSubframes) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP
 OfflineCacheUpdateParent::GetIsInIsolatedMozBrowserElement(
     bool* aIsInIsolatedMozBrowserElement) {
   NS_ENSURE_TRUE(mLoadingPrincipal, NS_ERROR_UNEXPECTED);
@@ -241,13 +250,10 @@ OfflineCacheUpdateParent::GetIsInIsolatedMozBrowserElement(
 
 NS_IMETHODIMP
 OfflineCacheUpdateParent::GetScriptableOriginAttributes(
-    JS::MutableHandleValue aAttrs) {
+    JSContext* aCx, JS::MutableHandleValue aAttrs) {
   NS_ENSURE_TRUE(mLoadingPrincipal, NS_ERROR_UNEXPECTED);
 
-  JSContext* cx = nsContentUtils::GetCurrentJSContext();
-  MOZ_ASSERT(cx);
-
-  nsresult rv = mLoadingPrincipal->GetOriginAttributes(cx, aAttrs);
+  nsresult rv = mLoadingPrincipal->GetOriginAttributes(aCx, aAttrs);
   NS_ENSURE_SUCCESS(rv, rv);
 
   return NS_OK;

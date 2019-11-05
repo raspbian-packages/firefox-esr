@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #if defined(OS_MACOSX)
-#include <sched.h>
+#  include <sched.h>
 #endif
 #include <stddef.h>
 #include <unistd.h>
@@ -25,19 +25,18 @@
 
 #include "base/command_line.h"
 #include "base/eintr_wrapper.h"
-#include "base/lock.h"
 #include "base/logging.h"
 #include "base/process_util.h"
 #include "base/string_util.h"
-#include "base/singleton.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/file_descriptor_set_posix.h"
 #include "chrome/common/ipc_message_utils.h"
 #include "mozilla/ipc/ProtocolUtils.h"
+#include "mozilla/StaticMutex.h"
 #include "mozilla/UniquePtr.h"
 
 #ifdef FUZZING
-#include "mozilla/ipc/Faulty.h"
+#  include "mozilla/ipc/Faulty.h"
 #endif
 
 // Use OS specific iovec array limit where it's possible.
@@ -50,7 +49,7 @@ static const size_t kMaxIOVecSize = 16;
 #endif
 
 #ifdef MOZ_TASK_TRACER
-#include "GeckoTaskTracerImpl.h"
+#  include "GeckoTaskTracerImpl.h"
 using namespace mozilla::tasktracer;
 #endif
 
@@ -109,7 +108,7 @@ class PipeMap {
  public:
   // Lookup a given channel id. Return -1 if not found.
   int Lookup(const std::string& channel_id) {
-    AutoLock locked(lock_);
+    mozilla::StaticMutexAutoLock locked(lock_);
 
     ChannelToFDMap::const_iterator i = map_.find(channel_id);
     if (i == map_.end()) return -1;
@@ -119,7 +118,7 @@ class PipeMap {
   // Remove the mapping for the given channel id. No error is signaled if the
   // channel_id doesn't exist
   void Remove(const std::string& channel_id) {
-    AutoLock locked(lock_);
+    mozilla::StaticMutexAutoLock locked(lock_);
 
     ChannelToFDMap::iterator i = map_.find(channel_id);
     if (i != map_.end()) map_.erase(i);
@@ -128,17 +127,34 @@ class PipeMap {
   // Insert a mapping from @channel_id to @fd. It's a fatal error to insert a
   // mapping if one already exists for the given channel_id
   void Insert(const std::string& channel_id, int fd) {
-    AutoLock locked(lock_);
+    mozilla::StaticMutexAutoLock locked(lock_);
     DCHECK(fd != -1);
 
     ChannelToFDMap::const_iterator i = map_.find(channel_id);
-    CHECK(i == map_.end()) << "Creating second IPC server for '" << channel_id
-                           << "' while first still exists";
+    CHECK(i == map_.end())
+    << "Creating second IPC server for '" << channel_id
+    << "' while first still exists";
     map_[channel_id] = fd;
   }
 
+  static PipeMap& instance() {
+    // This setup is a little gross: the `map` instance lives until libxul is
+    // unloaded, but leak checking runs prior to that, and would see a Mutex
+    // instance contained in PipeMap as still live.  Said instance would be
+    // reported as a leak...but it's not, really.  To avoid that, we need to
+    // use StaticMutex (which is not leak-checked), but StaticMutex can't be
+    // a member variable.  So we have to have this separate variable and pass
+    // it into the PipeMap constructor.
+    static mozilla::StaticMutex mutex;
+    static PipeMap map(mutex);
+    return map;
+  }
+
  private:
-  Lock lock_;
+  explicit PipeMap(mozilla::StaticMutex& aMutex) : lock_(aMutex) {}
+  ~PipeMap() = default;
+
+  mozilla::StaticMutex& lock_;
   typedef std::map<std::string, int> ChannelToFDMap;
   ChannelToFDMap map_;
 };
@@ -157,7 +173,7 @@ static int gClientChannelFd =
 // Used to map a channel name to the equivalent FD # in the client process.
 int ChannelNameToClientFD(const std::string& channel_id) {
   // See the large block comment above PipeMap for the reasoning here.
-  const int fd = Singleton<PipeMap>()->Lookup(channel_id);
+  const int fd = PipeMap::instance().Lookup(channel_id);
   if (fd != -1) return dup(fd);
 
   // If we don't find an entry, we assume that the correct value has been
@@ -241,25 +257,25 @@ bool Channel::ChannelImpl::CreatePipe(const std::wstring& channel_id,
   if (mode == MODE_SERVER) {
     int pipe_fds[2];
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, pipe_fds) != 0) {
-      mozilla::ipc::AnnotateCrashReportWithErrno("IpcCreatePipeSocketPairErrno",
-                                                 errno);
+      mozilla::ipc::AnnotateCrashReportWithErrno(
+          CrashReporter::Annotation::IpcCreatePipeSocketPairErrno, errno);
       return false;
     }
     // Set both ends to be non-blocking.
     if (fcntl(pipe_fds[0], F_SETFL, O_NONBLOCK) == -1 ||
         fcntl(pipe_fds[1], F_SETFL, O_NONBLOCK) == -1) {
-      mozilla::ipc::AnnotateCrashReportWithErrno("IpcCreatePipeFcntlErrno",
-                                                 errno);
-      HANDLE_EINTR(close(pipe_fds[0]));
-      HANDLE_EINTR(close(pipe_fds[1]));
+      mozilla::ipc::AnnotateCrashReportWithErrno(
+          CrashReporter::Annotation::IpcCreatePipeFcntlErrno, errno);
+      IGNORE_EINTR(close(pipe_fds[0]));
+      IGNORE_EINTR(close(pipe_fds[1]));
       return false;
     }
 
     if (!SetCloseOnExec(pipe_fds[0]) || !SetCloseOnExec(pipe_fds[1])) {
-      mozilla::ipc::AnnotateCrashReportWithErrno("IpcCreatePipeCloExecErrno",
-                                                 errno);
-      HANDLE_EINTR(close(pipe_fds[0]));
-      HANDLE_EINTR(close(pipe_fds[1]));
+      mozilla::ipc::AnnotateCrashReportWithErrno(
+          CrashReporter::Annotation::IpcCreatePipeCloExecErrno, errno);
+      IGNORE_EINTR(close(pipe_fds[0]));
+      IGNORE_EINTR(close(pipe_fds[1]));
       return false;
     }
 
@@ -267,7 +283,7 @@ bool Channel::ChannelImpl::CreatePipe(const std::wstring& channel_id,
     client_pipe_ = pipe_fds[1];
 
     if (pipe_name_.length()) {
-      Singleton<PipeMap>()->Insert(pipe_name_, client_pipe_);
+      PipeMap::instance().Insert(pipe_name_, client_pipe_);
     }
   } else {
     pipe_ = ChannelNameToClientFD(pipe_name_);
@@ -351,8 +367,8 @@ bool Channel::ChannelImpl::ProcessIncomingMessages() {
     DCHECK(bytes_read);
 
     if (client_pipe_ != -1) {
-      Singleton<PipeMap>()->Remove(pipe_name_);
-      HANDLE_EINTR(close(client_pipe_));
+      PipeMap::instance().Remove(pipe_name_);
+      IGNORE_EINTR(close(client_pipe_));
       client_pipe_ = -1;
     }
 
@@ -390,7 +406,7 @@ bool Channel::ChannelImpl::ProcessIncomingMessages() {
                 << "SCM_RIGHTS message was truncated"
                 << " cmsg_len:" << cmsg->cmsg_len << " fd:" << pipe_;
             for (unsigned i = 0; i < num_wire_fds; ++i)
-              HANDLE_EINTR(close(wire_fds[i]));
+              IGNORE_EINTR(close(wire_fds[i]));
             return false;
           }
           break;
@@ -412,10 +428,27 @@ bool Channel::ChannelImpl::ProcessIncomingMessages() {
       fds = wire_fds;
       num_fds = num_wire_fds;
     } else {
-      const size_t prev_size = input_overflow_fds_.size();
-      input_overflow_fds_.resize(prev_size + num_wire_fds);
-      memcpy(&input_overflow_fds_[prev_size], wire_fds,
-             num_wire_fds * sizeof(int));
+      // This code may look like a no-op in the case where
+      // num_wire_fds == 0, but in fact:
+      //
+      // 1. wire_fds will be nullptr, so passing it to memcpy is
+      // undefined behavior according to the C standard, even though
+      // the memcpy length is 0.
+      //
+      // 2. prev_size will be an out-of-bounds index for
+      // input_overflow_fds_; this is undefined behavior according to
+      // the C++ standard, even though the element only has its
+      // pointer taken and isn't accessed (and the corresponding
+      // operation on a C array would be defined).
+      //
+      // UBSan makes #1 a fatal error, and assertions in libstdc++ do
+      // the same for #2 if enabled.
+      if (num_wire_fds > 0) {
+        const size_t prev_size = input_overflow_fds_.size();
+        input_overflow_fds_.resize(prev_size + num_wire_fds);
+        memcpy(&input_overflow_fds_[prev_size], wire_fds,
+               num_wire_fds * sizeof(int));
+      }
       fds = &input_overflow_fds_[0];
       num_fds = input_overflow_fds_.size();
     }
@@ -507,7 +540,7 @@ bool Channel::ChannelImpl::ProcessIncomingMessages() {
               << " num_fds:" << num_fds << " fds_i:" << fds_i;
           // close the existing file descriptors so that we don't leak them
           for (unsigned i = fds_i; i < num_fds; ++i)
-            HANDLE_EINTR(close(fds[i]));
+            IGNORE_EINTR(close(fds[i]));
           input_overflow_fds_.clear();
           // abort the connection
           return false;
@@ -543,7 +576,7 @@ bool Channel::ChannelImpl::ProcessIncomingMessages() {
         CloseDescriptors(m.fd_cookie());
 #endif
       } else {
-        listener_->OnMessageReceived(mozilla::Move(m));
+        listener_->OnMessageReceived(std::move(m));
       }
 
       incoming_message_.reset();
@@ -577,7 +610,7 @@ bool Channel::ChannelImpl::ProcessOutgoingMessages() {
   // more outgoing messages.
   while (!output_queue_.empty()) {
 #ifdef FUZZING
-    Singleton<mozilla::ipc::Faulty>::get()->MaybeCollectAndClosePipe(pipe_);
+    mozilla::ipc::Faulty::instance().MaybeCollectAndClosePipe(pipe_);
 #endif
     Message* msg = output_queue_.front();
 
@@ -738,6 +771,11 @@ bool Channel::ChannelImpl::Send(Message* message) {
              << " in queue)";
 #endif
 
+#ifdef FUZZING
+  message = mozilla::ipc::Faulty::instance().MutateIPCMessage(
+      "Channel::ChannelImpl::Send", message);
+#endif
+
   // If the channel has been closed, ProcessOutgoingMessages() is never going
   // to pop anything off output_queue; output_queue will only get emptied when
   // the channel is destructed.  We might as well delete message now, instead
@@ -771,8 +809,8 @@ void Channel::ChannelImpl::GetClientFileDescriptorMapping(int* src_fd,
 
 void Channel::ChannelImpl::CloseClientFileDescriptor() {
   if (client_pipe_ != -1) {
-    Singleton<PipeMap>()->Remove(pipe_name_);
-    HANDLE_EINTR(close(client_pipe_));
+    PipeMap::instance().Remove(pipe_name_);
+    IGNORE_EINTR(close(client_pipe_));
     client_pipe_ = -1;
   }
 }
@@ -830,7 +868,7 @@ void Channel::ChannelImpl::Close() {
   server_listen_connection_watcher_.StopWatchingFileDescriptor();
 
   if (server_listen_pipe_ != -1) {
-    HANDLE_EINTR(close(server_listen_pipe_));
+    IGNORE_EINTR(close(server_listen_pipe_));
     server_listen_pipe_ = -1;
   }
 
@@ -838,12 +876,12 @@ void Channel::ChannelImpl::Close() {
   read_watcher_.StopWatchingFileDescriptor();
   write_watcher_.StopWatchingFileDescriptor();
   if (pipe_ != -1) {
-    HANDLE_EINTR(close(pipe_));
+    IGNORE_EINTR(close(pipe_));
     pipe_ = -1;
   }
   if (client_pipe_ != -1) {
-    Singleton<PipeMap>()->Remove(pipe_name_);
-    HANDLE_EINTR(close(client_pipe_));
+    PipeMap::instance().Remove(pipe_name_);
+    IGNORE_EINTR(close(client_pipe_));
     client_pipe_ = -1;
   }
 
@@ -856,7 +894,7 @@ void Channel::ChannelImpl::Close() {
   // Close any outstanding, received file descriptors
   for (std::vector<int>::iterator i = input_overflow_fds_.begin();
        i != input_overflow_fds_.end(); ++i) {
-    HANDLE_EINTR(close(*i));
+    IGNORE_EINTR(close(*i));
   }
   input_overflow_fds_.clear();
 

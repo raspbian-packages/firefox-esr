@@ -49,9 +49,11 @@ class U2FTokenManager final : public nsIU2FTokenManager {
   ~U2FTokenManager() {}
   RefPtr<U2FTokenTransport> GetTokenManagerImpl();
   void AbortTransaction(const uint64_t& aTransactionId, const nsresult& aError);
+  void AbortOngoingTransaction();
   void ClearTransaction();
   // Step two of "Register", kicking off the actual transaction.
-  void DoRegister(const WebAuthnMakeCredentialInfo& aInfo);
+  void DoRegister(const WebAuthnMakeCredentialInfo& aInfo,
+                  bool aForceNoneAttestation);
   void MaybeConfirmRegister(const uint64_t& aTransactionId,
                             const WebAuthnMakeCredentialResult& aResult);
   void MaybeAbortRegister(const uint64_t& aTransactionId,
@@ -60,8 +62,7 @@ class U2FTokenManager final : public nsIU2FTokenManager {
                         const WebAuthnGetAssertionResult& aResult);
   void MaybeAbortSign(const uint64_t& aTransactionId, const nsresult& aError);
   // The main thread runnable function for "nsIU2FTokenManager.ResumeRegister".
-  void RunResumeRegister(uint64_t aTransactionId,
-                         bool aPermitDirectAttestation);
+  void RunResumeRegister(uint64_t aTransactionId, bool aForceNoneAttestation);
   // The main thread runnable function for "nsIU2FTokenManager.Cancel".
   void RunCancel(uint64_t aTransactionId);
   // Sends a "webauthn-prompt" observer notification with the given data.

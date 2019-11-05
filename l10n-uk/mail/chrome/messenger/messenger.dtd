@@ -59,7 +59,7 @@
 <!ENTITY getNewMsgCurrentAccountCmdPopupMenu.accesskey "П">
 <!ENTITY getNextNMsgCmd2.label "Отримати наступні листи">
 <!ENTITY getNextNMsgCmd2.accesskey "т">
-<!ENTITY sendUnsentCmd.label "Відіслати невідіслані листи">
+<!ENTITY sendUnsentCmd.label "Надіслати ненадіслані повідомлення">
 <!ENTITY sendUnsentCmd.accesskey "л">
 <!ENTITY subscribeCmd.label "Підписатися…">
 <!ENTITY subscribeCmd.accesskey "д">
@@ -440,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Відкрити лист">
 <!ENTITY openMessageWindowCmd.accesskey "В">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Відкрити в розмові">
-<!ENTITY openConversationCmd.accesskey "з">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Відкрити в розмові">
+<!ENTITY openInConversationCmd.accesskey "к">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Вкладення">
 <!ENTITY openAttachmentListCmd.accesskey "л">
 <!ENTITY openFeedMessage1.label "При відкритті повідомлень зі стрічки новин">
@@ -606,6 +606,8 @@
 <!ENTITY compactButton.tooltip "Вилучити видалені листи з вибраної теки">
 <!ENTITY appmenuButton1.tooltip "Відкрити меню &brandShortName;">
 
+<!ENTITY addonsButton.tooltip "Керуйте своїми додатками">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Переслати всередині повідомлення">
 <!ENTITY buttonMenuForwardAsAttachment.label "Переслати у вигляді вкладення">
@@ -649,6 +651,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Отримати листи">
 <!ENTITY folderContextGetMessages.accesskey "О">
+<!ENTITY folderContextMarkAllFoldersRead.label "Позначити всі теки прочитаними">
 <!ENTITY folderContextPauseAllUpdates.label "Призупинити всі оновлення">
 <!ENTITY folderContextPauseUpdates.label "Призупинити оновлення">
 <!ENTITY folderContextPauseUpdates.accesskey "П">
@@ -668,7 +671,7 @@
 <!ENTITY folderContextEmptyTrash.accesskey "ч">
 <!ENTITY folderContextEmptyJunk.label "Очистити теку зі спамом">
 <!ENTITY folderContextEmptyJunk.accesskey "ч">
-<!ENTITY folderContextSendUnsentMessages.label "Відіслати невідіслані листи…">
+<!ENTITY folderContextSendUnsentMessages.label "Надіслати ненадіслані повідомлення">
 <!ENTITY folderContextSendUnsentMessages.accesskey "і">
 <!ENTITY folderContextUnsubscribe.label "Відписатися">
 <!ENTITY folderContextUnsubscribe.accesskey "д">
@@ -791,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "е">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Недавні">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "д">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Обране">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "О">
 <!ENTITY contextCopyMsgMenu.label "Копіювати в">
 <!ENTITY contextCopyMsgMenu.accesskey "о">
 <!ENTITY contextKillThreadMenu.label "Ігнорувати розмову">
@@ -810,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Попередній перегляд">
 <!ENTITY contextPrintPreview.accesskey "г">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Скинути стовпчики на типові">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -856,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "Цієї теки">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Грати">
 <!ENTITY contextPlay.accesskey "Г">
@@ -874,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

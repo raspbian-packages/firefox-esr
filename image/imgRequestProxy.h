@@ -8,7 +8,6 @@
 #define mozilla_image_imgRequestProxy_h
 
 #include "imgIRequest.h"
-#include "nsISecurityInfoProvider.h"
 
 #include "nsILoadGroup.h"
 #include "nsISupportsPriority.h"
@@ -41,7 +40,6 @@ class TabGroup;
 
 namespace image {
 class Image;
-class ImageURL;
 class ProgressTracker;
 }  // namespace image
 }  // namespace mozilla
@@ -49,14 +47,13 @@ class ProgressTracker;
 class imgRequestProxy : public imgIRequest,
                         public mozilla::image::IProgressObserver,
                         public nsISupportsPriority,
-                        public nsISecurityInfoProvider,
                         public nsITimedChannel {
  protected:
   virtual ~imgRequestProxy();
 
  public:
+  typedef mozilla::dom::Document Document;
   typedef mozilla::image::Image Image;
-  typedef mozilla::image::ImageURL ImageURL;
   typedef mozilla::image::ProgressTracker ProgressTracker;
 
   MOZ_DECLARE_REFCOUNTED_TYPENAME(imgRequestProxy)
@@ -64,7 +61,6 @@ class imgRequestProxy : public imgIRequest,
   NS_DECL_IMGIREQUEST
   NS_DECL_NSIREQUEST
   NS_DECL_NSISUPPORTSPRIORITY
-  NS_DECL_NSISECURITYINFOPROVIDER
   // nsITimedChannel declared below
 
   imgRequestProxy();
@@ -72,7 +68,7 @@ class imgRequestProxy : public imgIRequest,
   // Callers to Init or ChangeOwner are required to call NotifyListener after
   // (although not immediately after) doing so.
   nsresult Init(imgRequest* aOwner, nsILoadGroup* aLoadGroup,
-                nsIDocument* aLoadingDocument, ImageURL* aURI,
+                Document* aLoadingDocument, nsIURI* aURI,
                 imgINotificationObserver* aObserver);
 
   nsresult ChangeOwner(imgRequest* aNewOwner);  // this will change mOwner.
@@ -126,13 +122,11 @@ class imgRequestProxy : public imgIRequest,
   void ClearAnimationConsumers();
 
   nsresult SyncClone(imgINotificationObserver* aObserver,
-                     nsIDocument* aLoadingDocument, imgRequestProxy** aClone);
+                     Document* aLoadingDocument, imgRequestProxy** aClone);
   nsresult Clone(imgINotificationObserver* aObserver,
-                 nsIDocument* aLoadingDocument, imgRequestProxy** aClone);
-  nsresult GetStaticRequest(nsIDocument* aLoadingDocument,
+                 Document* aLoadingDocument, imgRequestProxy** aClone);
+  nsresult GetStaticRequest(Document* aLoadingDocument,
                             imgRequestProxy** aReturn);
-
-  nsresult GetURI(ImageURL** aURI);
 
  protected:
   friend class mozilla::image::ProgressTracker;
@@ -187,7 +181,7 @@ class imgRequestProxy : public imgIRequest,
   imgCacheValidator* GetValidator() const;
 
   nsresult PerformClone(imgINotificationObserver* aObserver,
-                        nsIDocument* aLoadingDocument, bool aSyncNotify,
+                        Document* aLoadingDocument, bool aSyncNotify,
                         imgRequestProxy** aClone);
 
   virtual imgRequestProxy* NewClonedProxy();
@@ -201,14 +195,14 @@ class imgRequestProxy : public imgIRequest,
  private:
   friend class imgCacheValidator;
 
-  void AddToOwner(nsIDocument* aLoadingDocument);
+  void AddToOwner(Document* aLoadingDocument);
   void RemoveFromOwner(nsresult aStatus);
 
   nsresult DispatchWithTargetIfAvailable(already_AddRefed<nsIRunnable> aEvent);
   void DispatchWithTarget(already_AddRefed<nsIRunnable> aEvent);
 
   // The URI of our request.
-  RefPtr<ImageURL> mURI;
+  nsCOMPtr<nsIURI> mURI;
 
   // mListener is only promised to be a weak ref (see imgILoader.idl),
   // but we actually keep a strong ref to it until we've seen our

@@ -48,10 +48,8 @@ StaticAutoPtr<mozilla::Monitor> sImageBridgesLock;
 
 static StaticRefPtr<ImageBridgeParent> sImageBridgeParentSingleton;
 
-// defined in CompositorBridgeParent.cpp
-CompositorThreadHolder* GetCompositorThreadHolder();
-
-/* static */ void ImageBridgeParent::Setup() {
+/* static */
+void ImageBridgeParent::Setup() {
   MOZ_ASSERT(NS_IsMainThread());
   if (!sImageBridgesLock) {
     sImageBridgesLock = new Monitor("ImageBridges");
@@ -62,7 +60,6 @@ CompositorThreadHolder* GetCompositorThreadHolder();
 ImageBridgeParent::ImageBridgeParent(MessageLoop* aLoop,
                                      ProcessId aChildProcessId)
     : mMessageLoop(aLoop),
-      mSetChildThreadPriority(false),
       mClosed(false),
       mCompositorThreadHolder(CompositorThreadHolder::GetSingleton()) {
   MOZ_ASSERT(NS_IsMainThread());
@@ -71,7 +68,8 @@ ImageBridgeParent::ImageBridgeParent(MessageLoop* aLoop,
 
 ImageBridgeParent::~ImageBridgeParent() {}
 
-/* static */ ImageBridgeParent* ImageBridgeParent::CreateSameProcess() {
+/* static */
+ImageBridgeParent* ImageBridgeParent::CreateSameProcess() {
   base::ProcessId pid = base::GetCurrentProcId();
   RefPtr<ImageBridgeParent> parent =
       new ImageBridgeParent(CompositorThreadHolder::Loop(), pid);
@@ -87,7 +85,8 @@ ImageBridgeParent::~ImageBridgeParent() {}
   return parent;
 }
 
-/* static */ bool ImageBridgeParent::CreateForGPUProcess(
+/* static */
+bool ImageBridgeParent::CreateForGPUProcess(
     Endpoint<PImageBridgeParent>&& aEndpoint) {
   MOZ_ASSERT(XRE_GetProcessType() == GeckoProcessType_GPU);
 
@@ -101,13 +100,14 @@ ImageBridgeParent::~ImageBridgeParent() {}
 
   loop->PostTask(NewRunnableMethod<Endpoint<PImageBridgeParent>&&>(
       "layers::ImageBridgeParent::Bind", parent, &ImageBridgeParent::Bind,
-      Move(aEndpoint)));
+      std::move(aEndpoint)));
 
   sImageBridgeParentSingleton = parent;
   return true;
 }
 
-/* static */ void ImageBridgeParent::ShutdownInternal() {
+/* static */
+void ImageBridgeParent::ShutdownInternal() {
   // We make a copy because we don't want to hold the lock while closing and we
   // don't want the object to get freed underneath us.
   nsTArray<RefPtr<ImageBridgeParent>> actors;
@@ -126,7 +126,8 @@ ImageBridgeParent::~ImageBridgeParent() {}
   sImageBridgeParentSingleton = nullptr;
 }
 
-/* static */ void ImageBridgeParent::Shutdown() {
+/* static */
+void ImageBridgeParent::Shutdown() {
   CompositorThreadHolder::Loop()->PostTask(NS_NewRunnableFunction(
       "ImageBridgeParent::Shutdown",
       []() -> void { ImageBridgeParent::ShutdownInternal(); }));
@@ -152,17 +153,7 @@ void ImageBridgeParent::ActorDestroy(ActorDestroyReason aWhy) {
   // forever, waiting for the compositor thread to terminate.
 }
 
-mozilla::ipc::IPCResult ImageBridgeParent::RecvImageBridgeThreadId(
-    const PlatformThreadId& aThreadId) {
-  MOZ_ASSERT(!mSetChildThreadPriority);
-  if (mSetChildThreadPriority) {
-    return IPC_FAIL_NO_REASON(this);
-  }
-  mSetChildThreadPriority = true;
-  return IPC_OK();
-}
-
-class MOZ_STACK_CLASS AutoImageBridgeParentAsyncMessageSender {
+class MOZ_STACK_CLASS AutoImageBridgeParentAsyncMessageSender final {
  public:
   explicit AutoImageBridgeParentAsyncMessageSender(
       ImageBridgeParent* aImageBridge,
@@ -185,27 +176,28 @@ class MOZ_STACK_CLASS AutoImageBridgeParentAsyncMessageSender {
   InfallibleTArray<OpDestroy>* mToDestroy;
 };
 
-mozilla::ipc::IPCResult ImageBridgeParent::RecvInitReadLocks(
-    ReadLockArray&& aReadLocks) {
-  if (!AddReadLocks(Move(aReadLocks))) {
-    return IPC_FAIL_NO_REASON(this);
-  }
-  return IPC_OK();
-}
-
 mozilla::ipc::IPCResult ImageBridgeParent::RecvUpdate(
     EditArray&& aEdits, OpDestroyArray&& aToDestroy,
     const uint64_t& aFwdTransactionId) {
+  AUTO_PROFILER_TRACING("Paint", "ImageBridgeTransaction", GRAPHICS);
+  AUTO_PROFILER_LABEL("ImageBridgeParent::RecvUpdate", GRAPHICS);
+
   // This ensures that destroy operations are always processed. It is not safe
   // to early-return from RecvUpdate without doing so.
   AutoImageBridgeParentAsyncMessageSender autoAsyncMessageSender(this,
                                                                  &aToDestroy);
   UpdateFwdTransactionId(aFwdTransactionId);
-  AutoClearReadLocks clearLocks(mReadLocks);
 
-  for (EditArray::index_type i = 0; i < aEdits.Length(); ++i) {
-    if (!ReceiveCompositableUpdate(aEdits[i])) {
+  for (const auto& edit : aEdits) {
+    RefPtr<CompositableHost> compositable =
+        FindCompositable(edit.compositable());
+    if (!compositable ||
+        !ReceiveCompositableUpdate(edit.detail(), WrapNotNull(compositable))) {
       return IPC_FAIL_NO_REASON(this);
+    }
+    uint32_t dropped = compositable->GetDroppedFrames();
+    if (dropped) {
+      Unused << SendReportFramesDropped(edit.compositable(), dropped);
     }
   }
 
@@ -219,7 +211,8 @@ mozilla::ipc::IPCResult ImageBridgeParent::RecvUpdate(
   return IPC_OK();
 }
 
-/* static */ bool ImageBridgeParent::CreateForContent(
+/* static */
+bool ImageBridgeParent::CreateForContent(
     Endpoint<PImageBridgeParent>&& aEndpoint) {
   MessageLoop* loop = CompositorThreadHolder::Loop();
   if (!loop) {
@@ -230,7 +223,7 @@ mozilla::ipc::IPCResult ImageBridgeParent::RecvUpdate(
       new ImageBridgeParent(loop, aEndpoint.OtherPid());
   loop->PostTask(NewRunnableMethod<Endpoint<PImageBridgeParent>&&>(
       "layers::ImageBridgeParent::Bind", bridge, &ImageBridgeParent::Bind,
-      Move(aEndpoint)));
+      std::move(aEndpoint)));
 
   return true;
 }
@@ -337,7 +330,8 @@ class ProcessIdComparator {
   }
 };
 
-/* static */ bool ImageBridgeParent::NotifyImageComposites(
+/* static */
+bool ImageBridgeParent::NotifyImageComposites(
     nsTArray<ImageCompositeNotificationInfo>& aNotifications) {
   // Group the notifications by destination process ID and then send the
   // notifications in one message per group.
@@ -357,6 +351,7 @@ class ProcessIdComparator {
     }
     RefPtr<ImageBridgeParent> bridge = GetInstance(pid);
     if (!bridge || bridge->mClosed) {
+      i = end;
       continue;
     }
     bridge->SendPendingAsyncMessages();
@@ -379,7 +374,7 @@ already_AddRefed<ImageBridgeParent> ImageBridgeParent::GetInstance(
   MonitorAutoLock lock(*sImageBridgesLock);
   ImageBridgeMap::const_iterator i = sImageBridges.find(aId);
   if (i == sImageBridges.end()) {
-    NS_ASSERTION(false, "Cannot find image bridge for process!");
+    NS_WARNING("Cannot find image bridge for process!");
     return nullptr;
   }
   RefPtr<ImageBridgeParent> bridge = i->second;

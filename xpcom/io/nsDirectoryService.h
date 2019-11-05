@@ -10,8 +10,7 @@
 #include "nsIDirectoryService.h"
 #include "nsInterfaceHashtable.h"
 #include "nsIFile.h"
-#include "nsAtom.h"
-#include "nsStaticAtom.h"
+#include "nsDirectoryServiceDefs.h"
 #include "nsTArray.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/StaticPtr.h"
@@ -56,11 +55,6 @@ class nsDirectoryService final : public nsIDirectoryService,
 
   nsInterfaceHashtable<nsCStringHashKey, nsIFile> mHashtable;
   nsTArray<nsCOMPtr<nsIDirectoryServiceProvider>> mProviders;
-
- public:
-#define DIR_ATOM(name_, value_) NS_STATIC_ATOM_DECL(name_)
-#include "nsDirectoryServiceAtomList.h"
-#undef DIR_ATOM
 };
 
 #endif

@@ -22,32 +22,25 @@
 #include "nsMargin.h"
 #include "nsCOMPtr.h"
 #include "nsStringFwd.h"
-#include "SVGAttrValueWrapper.h"
 #include "nsTArrayForwardDeclare.h"
 #include "nsAtom.h"
-#include "mozilla/AtomArray.h"
-#include "mozilla/MemoryReporting.h"
 #include "mozilla/dom/BindingDeclarations.h"
+#include "mozilla/AtomArray.h"
 #include "mozilla/EnumTypeTraits.h"
+#include "mozilla/MemoryReporting.h"
+#include "mozilla/SVGAttrValueWrapper.h"
 
-// Undefine LoadImage to prevent naming conflict with Windows.
-#undef LoadImage
-
-class nsIDocument;
+class nsIURI;
 class nsStyledElement;
 struct MiscContainer;
 
 namespace mozilla {
 class DeclarationBlock;
-namespace css {
-struct URLValue;
-struct ImageValue;
-}  // namespace css
 }  // namespace mozilla
 
 #define NS_ATTRVALUE_MAX_STRINGLENGTH_ATOM 12
 
-#define NS_ATTRVALUE_BASETYPE_MASK (uintptr_t(3))
+const uintptr_t NS_ATTRVALUE_BASETYPE_MASK = 3;
 #define NS_ATTRVALUE_POINTERVALUE_MASK (~NS_ATTRVALUE_BASETYPE_MASK)
 
 #define NS_ATTRVALUE_INTEGERTYPE_BITS 4
@@ -108,9 +101,9 @@ class nsAttrValue {
     eAtomArray,
     eDoubleValue,
     eIntMarginValue,
-    eSVGAngle,
-    eSVGTypesBegin = eSVGAngle,
     eSVGIntegerPair,
+    eSVGTypesBegin = eSVGIntegerPair,
+    eSVGOrient,
     eSVGLength,
     eSVGLengthList,
     eSVGNumberList,
@@ -156,25 +149,30 @@ class nsAttrValue {
   void SetTo(double aValue, const nsAString* aSerialized);
   void SetTo(already_AddRefed<mozilla::DeclarationBlock> aValue,
              const nsAString* aSerialized);
-  void SetTo(mozilla::css::URLValue* aValue, const nsAString* aSerialized);
+  void SetTo(nsIURI* aValue, const nsAString* aSerialized);
   void SetTo(const nsIntMargin& aValue);
-  void SetTo(const nsSVGAngle& aValue, const nsAString* aSerialized);
-  void SetTo(const nsSVGIntegerPair& aValue, const nsAString* aSerialized);
-  void SetTo(const nsSVGLength2& aValue, const nsAString* aSerialized);
+  void SetTo(const mozilla::SVGAnimatedIntegerPair& aValue,
+             const nsAString* aSerialized);
+  void SetTo(const mozilla::SVGAnimatedLength& aValue,
+             const nsAString* aSerialized);
+  void SetTo(const mozilla::SVGAnimatedNumberPair& aValue,
+             const nsAString* aSerialized);
+  void SetTo(const mozilla::SVGAnimatedOrient& aValue,
+             const nsAString* aSerialized);
+  void SetTo(const mozilla::SVGAnimatedPreserveAspectRatio& aValue,
+             const nsAString* aSerialized);
+  void SetTo(const mozilla::SVGAnimatedViewBox& aValue,
+             const nsAString* aSerialized);
   void SetTo(const mozilla::SVGLengthList& aValue,
              const nsAString* aSerialized);
   void SetTo(const mozilla::SVGNumberList& aValue,
              const nsAString* aSerialized);
-  void SetTo(const nsSVGNumberPair& aValue, const nsAString* aSerialized);
   void SetTo(const mozilla::SVGPathData& aValue, const nsAString* aSerialized);
   void SetTo(const mozilla::SVGPointList& aValue, const nsAString* aSerialized);
-  void SetTo(const mozilla::SVGAnimatedPreserveAspectRatio& aValue,
-             const nsAString* aSerialized);
   void SetTo(const mozilla::SVGStringList& aValue,
              const nsAString* aSerialized);
   void SetTo(const mozilla::SVGTransformList& aValue,
              const nsAString* aSerialized);
-  void SetTo(const nsSVGViewBox& aValue, const nsAString* aSerialized);
 
   /**
    * Sets this object with the string or atom representation of aValue.
@@ -207,8 +205,7 @@ class nsAttrValue {
   inline float GetPercentValue() const;
   inline mozilla::AtomArray* GetAtomArrayValue() const;
   inline mozilla::DeclarationBlock* GetCSSDeclarationValue() const;
-  inline mozilla::css::URLValue* GetURLValue() const;
-  inline mozilla::css::ImageValue* GetImageValue() const;
+  inline nsIURI* GetURLValue() const;
   inline double GetDoubleValue() const;
   bool GetIntMarginValue(nsIntMargin& aMargin) const;
 
@@ -232,7 +229,7 @@ class nsAttrValue {
   bool Equals(const nsAttrValue& aOther) const;
   // aCaseSensitive == eIgnoreCase means ASCII case-insenstive matching
   bool Equals(const nsAString& aValue, nsCaseTreatment aCaseSensitive) const;
-  bool Equals(nsAtom* aValue, nsCaseTreatment aCaseSensitive) const;
+  bool Equals(const nsAtom* aValue, nsCaseTreatment aCaseSensitive) const;
 
   /**
    * Compares this object with aOther according to their string representation.
@@ -421,13 +418,6 @@ class nsAttrValue {
   bool ParseIntMarginValue(const nsAString& aString);
 
   /**
-   * Convert a URL nsAttrValue to an Image nsAttrValue.
-   *
-   * @param aDocument the document this nsAttrValue belongs to.
-   */
-  void LoadImage(nsIDocument* aDocument);
-
-  /**
    * Parse a string into a CSS style rule.
    *
    * @param aString the style attribute value to be parsed.
@@ -491,7 +481,11 @@ class nsAttrValue {
   int32_t EnumTableEntryToValue(const EnumTable* aEnumTable,
                                 const EnumTable* aTableEntry);
 
+  static MiscContainer* AllocMiscContainer();
+  static void DeallocMiscContainer(MiscContainer* aCont);
+
   static nsTArray<const EnumTable*>* sEnumTableArray;
+  static MiscContainer* sMiscContainerCache;
 
   uintptr_t mBits;
 };

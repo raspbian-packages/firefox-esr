@@ -4,7 +4,10 @@
 
 "use strict";
 
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  PureComponent,
+} = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const { getStr } = require("devtools/client/inspector/layout/utils/l10n");
@@ -18,48 +21,45 @@ class GridList extends PureComponent {
     return {
       getSwatchColorPickerTooltip: PropTypes.func.isRequired,
       grids: PropTypes.arrayOf(PropTypes.shape(Types.grid)).isRequired,
-      setSelectedNode: PropTypes.func.isRequired,
       onHideBoxModelHighlighter: PropTypes.func.isRequired,
       onSetGridOverlayColor: PropTypes.func.isRequired,
       onShowBoxModelHighlighterForNode: PropTypes.func.isRequired,
       onToggleGridHighlighter: PropTypes.func.isRequired,
+      setSelectedNode: PropTypes.func.isRequired,
     };
   }
 
   render() {
-    let {
+    const {
       getSwatchColorPickerTooltip,
       grids,
-      setSelectedNode,
       onHideBoxModelHighlighter,
       onSetGridOverlayColor,
       onShowBoxModelHighlighterForNode,
       onToggleGridHighlighter,
+      setSelectedNode,
     } = this.props;
 
     return dom.div(
-      {
-        className: "grid-container",
-      },
-      dom.span(
-        {},
-        getStr("layout.overlayGrid")
-      ),
+      { className: "grid-container" },
+      dom.span({}, getStr("layout.overlayGrid")),
       dom.ul(
         {
           id: "grid-list",
           className: "devtools-monospace",
         },
-        grids.map(grid => GridItem({
-          key: grid.id,
-          getSwatchColorPickerTooltip,
-          grid,
-          setSelectedNode,
-          onHideBoxModelHighlighter,
-          onSetGridOverlayColor,
-          onShowBoxModelHighlighterForNode,
-          onToggleGridHighlighter,
-        }))
+        grids.map(grid =>
+          GridItem({
+            key: grid.id,
+            getSwatchColorPickerTooltip,
+            grid,
+            onHideBoxModelHighlighter,
+            onSetGridOverlayColor,
+            onShowBoxModelHighlighterForNode,
+            onToggleGridHighlighter,
+            setSelectedNode,
+          })
+        )
       )
     );
   }

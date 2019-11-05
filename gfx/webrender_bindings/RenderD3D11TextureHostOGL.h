@@ -23,8 +23,10 @@ class RenderDXGITextureHostOGL final : public RenderTextureHostOGL {
                                     gfx::SurfaceFormat aFormat,
                                     gfx::IntSize aSize);
 
-  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL) override;
+  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL,
+                           wr::ImageRendering aRendering) override;
   void Unlock() override;
+  void ClearCachedResources() override;
 
   virtual gfx::IntSize GetSize(uint8_t aChannelIndex) const;
   virtual GLuint GetGLHandle(uint8_t aChannelIndex) const;
@@ -32,7 +34,7 @@ class RenderDXGITextureHostOGL final : public RenderTextureHostOGL {
  private:
   virtual ~RenderDXGITextureHostOGL();
 
-  bool EnsureLockable();
+  bool EnsureLockable(wr::ImageRendering aRendering);
 
   void DeleteTextureHandle();
 
@@ -61,8 +63,10 @@ class RenderDXGIYCbCrTextureHostOGL final : public RenderTextureHostOGL {
                                          gfx::IntSize aSize,
                                          gfx::IntSize aSizeCbCr);
 
-  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL) override;
-  virtual void Unlock() override;
+  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL,
+                           wr::ImageRendering aRendering) override;
+  void Unlock() override;
+  void ClearCachedResources() override;
 
   virtual gfx::IntSize GetSize(uint8_t aChannelIndex) const;
   virtual GLuint GetGLHandle(uint8_t aChannelIndex) const;
@@ -70,7 +74,7 @@ class RenderDXGIYCbCrTextureHostOGL final : public RenderTextureHostOGL {
  private:
   virtual ~RenderDXGIYCbCrTextureHostOGL();
 
-  bool EnsureLockable();
+  bool EnsureLockable(wr::ImageRendering aRendering);
 
   void DeleteTextureHandle();
 

@@ -7,7 +7,7 @@
 
 <!-- Specific error messages -->
 
-<!ENTITY connectionFailure.title "Sikertelen csatlakozás">
+<!ENTITY connectionFailure.title "A kapcsolódás sikertelen">
 <!ENTITY connectionFailure.longDesc "<p>Bár a webhely érvényesnek tűnik, a böngésző képtelen volt kapcsolatot létesíteni vele.</p><ul><li>Lehet, hogy a webhely ideiglenesen üzemen kívül van? Próbálja újra később.</li><li>Más webhelyeket sem képes elérni? Ellenőrizze a számítógép hálózati kapcsolatát.</li><li>Lehetséges, hogy tűzfal vagy proxy mögött van a számítógépe vagy a helyi hálózata? A helytelen beállítások zavarhatják a webböngészést.</li></ul>">
 
 <!ENTITY deniedPortAccess.title "A port biztonsági okok miatt tiltva van">
@@ -73,8 +73,8 @@
 <!ENTITY securityOverride.linkText "Vagy hozzáadhat egy kivételt…">
 <!ENTITY securityOverride.warningContent "<p>Ne adjon hozzá kivételt, ha nem teljesen megbízható internetkapcsolatot használ, vagy ha nem szokta látni ezt a figyelmeztetést ennél a kiszolgálónál.</p><p>Ha még mindig fel akarja venni ezt a webhelyet a kivételek közé, megteheti haladó titkosítási beállítások között.</p>">
 
-<!ENTITY cspBlocked.title "Blokkolva a tartalombiztonsági irányelv szerint">
-<!ENTITY cspBlocked.longDesc "<p>A böngésző nem engedte meg, hogy az oldalt ezen a módon betöltse, mert az oldal tartalombiztonsági irányelve ezt tiltja.</p>">
+<!ENTITY cspBlocked.title "Blokkolva a tartalombiztonsági házirend szerint">
+<!ENTITY cspBlocked.longDesc "<p>A böngésző nem engedte meg, hogy az oldalt ezen a módon betöltse, mert az oldal tartalombiztonsági házirendje ezt tiltja.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Sérült tartalom hiba">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>A megtekinteni kívánt oldal nem jeleníthető meg, mert az adatátvitel közben hiba történt.</p><ul><li>Lépjen kapcsolatba a webhely üzemeltetőjével, és értesítse a problémáról.</li></ul>">
@@ -88,3 +88,6 @@
 <!ENTITY inadequateSecurityError.longDesc "<p><span class='hostname'></span> olyan biztonsági technológiát használ, amely elavult, és sérülékeny a támadásokkal szemben. Egy támadó könnyen felfedhet olyan információkat, amelyeket biztonságosnak gondol. A weboldal rendszergazdájának ki kell javítania a kiszolgálót, mielőtt meglátogathatja az oldalt.</p><p>Hibakód: NS_ERROR_NET_INADEQUATE_SECURITY</p>">
 
 <!ENTITY blockedByPolicy.title "Blokkolt oldal">
+
+<!ENTITY networkProtocolError.title "Hálózati protokoll hiba">
+<!ENTITY networkProtocolError.longDesc "<p>A megtekinteni kívánt oldal nem jeleníthető meg, mert hiba történt a hálózati protokollban.</p><ul><li>Lépjen kapcsolatba a webhely üzemeltetőjével, és értesítse a problémáról.</li></ul>">

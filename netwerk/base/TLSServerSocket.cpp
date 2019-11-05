@@ -30,8 +30,6 @@ namespace net {
 
 TLSServerSocket::TLSServerSocket() : mServerCert(nullptr) {}
 
-TLSServerSocket::~TLSServerSocket() {}
-
 NS_IMPL_ISUPPORTS_INHERITED(TLSServerSocket, nsServerSocket, nsITLSServerSocket)
 
 nsresult TLSServerSocket::SetSocketDefaults() {
@@ -240,7 +238,7 @@ namespace {
 
 class TLSServerSecurityObserverProxy final
     : public nsITLSServerSecurityObserver {
-  ~TLSServerSecurityObserverProxy() {}
+  ~TLSServerSecurityObserverProxy() = default;
 
  public:
   explicit TLSServerSecurityObserverProxy(

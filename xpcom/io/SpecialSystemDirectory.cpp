@@ -11,40 +11,40 @@
 
 #if defined(XP_WIN)
 
-#include <windows.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <direct.h>
-#include <shlobj.h>
-#include <knownfolders.h>
-#include <guiddef.h>
+#  include <windows.h>
+#  include <stdlib.h>
+#  include <stdio.h>
+#  include <string.h>
+#  include <direct.h>
+#  include <shlobj.h>
+#  include <knownfolders.h>
+#  include <guiddef.h>
 
 #elif defined(XP_UNIX)
 
-#include <limits.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/param.h>
-#include "prenv.h"
-#if defined(MOZ_WIDGET_COCOA)
-#include "CocoaFileUtils.h"
-#endif
+#  include <limits.h>
+#  include <unistd.h>
+#  include <stdlib.h>
+#  include <sys/param.h>
+#  include "prenv.h"
+#  if defined(MOZ_WIDGET_COCOA)
+#    include "CocoaFileUtils.h"
+#  endif
 
 #endif
 
 #ifndef MAXPATHLEN
-#ifdef PATH_MAX
-#define MAXPATHLEN PATH_MAX
-#elif defined(MAX_PATH)
-#define MAXPATHLEN MAX_PATH
-#elif defined(_MAX_PATH)
-#define MAXPATHLEN _MAX_PATH
-#elif defined(CCHMAXPATH)
-#define MAXPATHLEN CCHMAXPATH
-#else
-#define MAXPATHLEN 1024
-#endif
+#  ifdef PATH_MAX
+#    define MAXPATHLEN PATH_MAX
+#  elif defined(MAX_PATH)
+#    define MAXPATHLEN MAX_PATH
+#  elif defined(_MAX_PATH)
+#    define MAXPATHLEN _MAX_PATH
+#  elif defined(CCHMAXPATH)
+#    define MAXPATHLEN CCHMAXPATH
+#  else
+#    define MAXPATHLEN 1024
+#  endif
 #endif
 
 #if defined(XP_WIN)
@@ -89,7 +89,7 @@ static nsresult GetWindowsFolder(int aFolder, nsIFile** aFile) {
   return NS_NewLocalFile(nsDependentString(path, len), true, aFile);
 }
 
-#if WINVER < 0x0601
+#  if WINVER < 0x0601
 __inline HRESULT SHLoadLibraryFromKnownFolder(REFKNOWNFOLDERID aFolderId,
                                               DWORD aMode, REFIID riid,
                                               void** ppv) {
@@ -106,8 +106,9 @@ __inline HRESULT SHLoadLibraryFromKnownFolder(REFKNOWNFOLDERID aFolderId,
   }
   return hr;
 }
-#endif
+#  endif
 
+#  if defined(MOZ_THUNDERBIRD) || defined(MOZ_SUITE)
 /*
  * Return the default save-to location for the Windows Library passed in
  * through aFolderId.
@@ -135,6 +136,7 @@ static nsresult GetLibrarySaveToPath(int aFallbackFolderId,
 
   return GetWindowsFolder(aFallbackFolderId, aFile);
 }
+#  endif
 
 /**
  * Provides a fallback for getting the path to APPDATA or LOCALAPPDATA by
@@ -175,13 +177,13 @@ static nsresult GetRegWindowsAppDataFolder(bool aLocal, nsIFile** aFile) {
 
 #if defined(XP_UNIX)
 static nsresult GetUnixHomeDir(nsIFile** aFile) {
-#if defined(ANDROID)
+#  if defined(ANDROID)
   // XXX no home dir on android; maybe we should return the sdcard if present?
   return NS_ERROR_FAILURE;
-#else
+#  else
   return NS_NewNativeLocalFile(nsDependentCString(PR_GetEnv("HOME")), true,
                                aFile);
-#endif
+#  endif
 }
 
 /*
@@ -430,24 +432,6 @@ nsresult GetSpecialSystemDirectory(SystemDirectories aSystemSystemDirectory,
       return NS_NewNativeLocalFile(nsDependentCString(path), true, aFile);
 #endif
 
-    case OS_DriveDirectory:
-#if defined(XP_WIN)
-    {
-      int32_t len = ::GetWindowsDirectoryW(path, MAX_PATH);
-      if (len == 0) {
-        break;
-      }
-      if (path[1] == char16_t(':') && path[2] == char16_t('\\')) {
-        path[3] = 0;
-      }
-
-      return NS_NewLocalFile(nsDependentString(path), true, aFile);
-    }
-#else
-      return NS_NewNativeLocalFile(nsDependentCString("/"), true, aFile);
-
-#endif
-
     case OS_TemporaryDirectory:
 #if defined(XP_WIN)
     {
@@ -557,9 +541,6 @@ nsresult GetSpecialSystemDirectory(SystemDirectories aSystemSystemDirectory,
         return NS_NewLocalFile(nsDependentString(path, len), true, aFile);
       }
     }
-    case Win_Desktop: {
-      return GetWindowsFolder(CSIDL_DESKTOP, aFile);
-    }
     case Win_Programs: {
       return GetWindowsFolder(CSIDL_PROGRAMS, aFile);
     }
@@ -580,68 +561,11 @@ nsresult GetSpecialSystemDirectory(SystemDirectories aSystemSystemDirectory,
       return rv;
     }
 
-    case Win_Controls: {
-      return GetWindowsFolder(CSIDL_CONTROLS, aFile);
-    }
-    case Win_Printers: {
-      return GetWindowsFolder(CSIDL_PRINTERS, aFile);
-    }
-    case Win_Personal: {
-      return GetWindowsFolder(CSIDL_PERSONAL, aFile);
-    }
     case Win_Favorites: {
       return GetWindowsFolder(CSIDL_FAVORITES, aFile);
     }
-    case Win_Startup: {
-      return GetWindowsFolder(CSIDL_STARTUP, aFile);
-    }
-    case Win_Recent: {
-      return GetWindowsFolder(CSIDL_RECENT, aFile);
-    }
-    case Win_Sendto: {
-      return GetWindowsFolder(CSIDL_SENDTO, aFile);
-    }
-    case Win_Bitbucket: {
-      return GetWindowsFolder(CSIDL_BITBUCKET, aFile);
-    }
-    case Win_Startmenu: {
-      return GetWindowsFolder(CSIDL_STARTMENU, aFile);
-    }
     case Win_Desktopdirectory: {
       return GetWindowsFolder(CSIDL_DESKTOPDIRECTORY, aFile);
-    }
-    case Win_Drives: {
-      return GetWindowsFolder(CSIDL_DRIVES, aFile);
-    }
-    case Win_Network: {
-      return GetWindowsFolder(CSIDL_NETWORK, aFile);
-    }
-    case Win_Nethood: {
-      return GetWindowsFolder(CSIDL_NETHOOD, aFile);
-    }
-    case Win_Fonts: {
-      return GetWindowsFolder(CSIDL_FONTS, aFile);
-    }
-    case Win_Templates: {
-      return GetWindowsFolder(CSIDL_TEMPLATES, aFile);
-    }
-    case Win_Common_Startmenu: {
-      return GetWindowsFolder(CSIDL_COMMON_STARTMENU, aFile);
-    }
-    case Win_Common_Programs: {
-      return GetWindowsFolder(CSIDL_COMMON_PROGRAMS, aFile);
-    }
-    case Win_Common_Startup: {
-      return GetWindowsFolder(CSIDL_COMMON_STARTUP, aFile);
-    }
-    case Win_Common_Desktopdirectory: {
-      return GetWindowsFolder(CSIDL_COMMON_DESKTOPDIRECTORY, aFile);
-    }
-    case Win_Common_AppData: {
-      return GetWindowsFolder(CSIDL_COMMON_APPDATA, aFile);
-    }
-    case Win_Printhood: {
-      return GetWindowsFolder(CSIDL_PRINTHOOD, aFile);
     }
     case Win_Cookies: {
       return GetWindowsFolder(CSIDL_COOKIES, aFile);
@@ -660,47 +584,26 @@ nsresult GetSpecialSystemDirectory(SystemDirectories aSystemSystemDirectory,
       }
       return rv;
     }
-#if defined(MOZ_CONTENT_SANDBOX)
+#  if defined(MOZ_SANDBOX)
     case Win_LocalAppdataLow: {
       GUID localAppDataLowGuid = FOLDERID_LocalAppDataLow;
       return GetKnownFolder(&localAppDataLowGuid, aFile);
     }
-#endif
+#  endif
+#  if defined(MOZ_THUNDERBIRD) || defined(MOZ_SUITE)
     case Win_Documents: {
       return GetLibrarySaveToPath(CSIDL_MYDOCUMENTS, FOLDERID_DocumentsLibrary,
                                   aFile);
     }
-    case Win_Pictures: {
-      return GetLibrarySaveToPath(CSIDL_MYPICTURES, FOLDERID_PicturesLibrary,
-                                  aFile);
-    }
-    case Win_Music: {
-      return GetLibrarySaveToPath(CSIDL_MYMUSIC, FOLDERID_MusicLibrary, aFile);
-    }
-    case Win_Videos: {
-      return GetLibrarySaveToPath(CSIDL_MYVIDEO, FOLDERID_VideosLibrary, aFile);
-    }
+#  endif
 #endif  // XP_WIN
 
 #if defined(XP_UNIX)
-    case Unix_LocalDirectory:
-      return NS_NewNativeLocalFile(nsDependentCString("/usr/local/netscape/"),
-                                   true, aFile);
-    case Unix_LibDirectory:
-      return NS_NewNativeLocalFile(
-          nsDependentCString("/usr/local/lib/netscape/"), true, aFile);
-
     case Unix_HomeDirectory:
       return GetUnixHomeDir(aFile);
 
     case Unix_XDG_Desktop:
-    case Unix_XDG_Documents:
     case Unix_XDG_Download:
-    case Unix_XDG_Music:
-    case Unix_XDG_Pictures:
-    case Unix_XDG_PublicShare:
-    case Unix_XDG_Templates:
-    case Unix_XDG_Videos:
       return GetUnixXDGUserDirectory(aSystemSystemDirectory, aFile);
 #endif
 

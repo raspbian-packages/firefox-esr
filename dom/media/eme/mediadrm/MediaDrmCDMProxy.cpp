@@ -82,11 +82,11 @@ void MediaDrmCDMProxy::CreateSession(uint32_t aCreateSessionToken,
   data->mCreateSessionToken = aCreateSessionToken;
   data->mPromiseId = aPromiseId;
   data->mInitDataType = NS_ConvertUTF16toUTF8(aInitDataType);
-  data->mInitData = Move(aInitData);
+  data->mInitData = std::move(aInitData);
 
   nsCOMPtr<nsIRunnable> task(NewRunnableMethod<UniquePtr<CreateSessionData>&&>(
       "MediaDrmCDMProxy::md_CreateSession", this,
-      &MediaDrmCDMProxy::md_CreateSession, Move(data)));
+      &MediaDrmCDMProxy::md_CreateSession, std::move(data)));
   mOwnerThread->Dispatch(task, NS_DISPATCH_NORMAL);
 }
 
@@ -101,10 +101,14 @@ void MediaDrmCDMProxy::LoadSession(PromiseId aPromiseId,
 
 void MediaDrmCDMProxy::SetServerCertificate(PromiseId aPromiseId,
                                             nsTArray<uint8_t>& aCert) {
-  // TODO: Implement SetServerCertificate.
-  RejectPromise(aPromiseId, NS_ERROR_DOM_INVALID_STATE_ERR,
-                NS_LITERAL_CSTRING(
-                    "Currently Fennec does not support SetServerCertificate"));
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(mOwnerThread);
+
+  mOwnerThread->Dispatch(NewRunnableMethod<PromiseId, const nsTArray<uint8_t>>(
+                             "MediaDrmCDMProxy::md_SetServerCertificate", this,
+                             &MediaDrmCDMProxy::md_SetServerCertificate,
+                             aPromiseId, std::move(aCert)),
+                         NS_DISPATCH_NORMAL);
 }
 
 void MediaDrmCDMProxy::UpdateSession(const nsAString& aSessionId,
@@ -117,11 +121,11 @@ void MediaDrmCDMProxy::UpdateSession(const nsAString& aSessionId,
   UniquePtr<UpdateSessionData> data(new UpdateSessionData());
   data->mPromiseId = aPromiseId;
   data->mSessionId = NS_ConvertUTF16toUTF8(aSessionId);
-  data->mResponse = Move(aResponse);
+  data->mResponse = std::move(aResponse);
 
   nsCOMPtr<nsIRunnable> task(NewRunnableMethod<UniquePtr<UpdateSessionData>&&>(
       "MediaDrmCDMProxy::md_UpdateSession", this,
-      &MediaDrmCDMProxy::md_UpdateSession, Move(data)));
+      &MediaDrmCDMProxy::md_UpdateSession, std::move(data)));
   mOwnerThread->Dispatch(task, NS_DISPATCH_NORMAL);
 }
 
@@ -137,7 +141,7 @@ void MediaDrmCDMProxy::CloseSession(const nsAString& aSessionId,
 
   nsCOMPtr<nsIRunnable> task(NewRunnableMethod<UniquePtr<SessionOpData>&&>(
       "MediaDrmCDMProxy::md_CloseSession", this,
-      &MediaDrmCDMProxy::md_CloseSession, Move(data)));
+      &MediaDrmCDMProxy::md_CloseSession, std::move(data)));
   mOwnerThread->Dispatch(task, NS_DISPATCH_NORMAL);
 }
 
@@ -285,6 +289,25 @@ void MediaDrmCDMProxy::ResolvePromise(PromiseId aId) {
   }
 }
 
+template <typename T>
+void MediaDrmCDMProxy::ResolvePromiseWithResult(PromiseId aId,
+                                                const T& aResult) {
+  if (NS_IsMainThread()) {
+    if (!mKeys.IsNull()) {
+      mKeys->ResolvePromiseWithResult(aId, aResult);
+    } else {
+      NS_WARNING("MediaDrmCDMProxy unable to resolve promise!");
+    }
+    return;
+  }
+
+  nsCOMPtr<nsIRunnable> task;
+  task = NewRunnableMethod<PromiseId, T>(
+      "MediaDrmCDMProxy::ResolvePromiseWithResult", this,
+      &MediaDrmCDMProxy::ResolvePromiseWithResult<T>, aId, aResult);
+  mMainThread->Dispatch(task.forget(), NS_DISPATCH_NORMAL);
+}
+
 const nsString& MediaDrmCDMProxy::KeySystem() const { return mKeySystem; }
 
 DataMutex<CDMCaps>& MediaDrmCDMProxy::Capabilites() { return mCapabilites; }
@@ -359,6 +382,25 @@ void MediaDrmCDMProxy::md_CreateSession(UniquePtr<CreateSessionData>&& aData) {
   mCDM->CreateSession(aData->mCreateSessionToken, aData->mPromiseId,
                       aData->mInitDataType, aData->mInitData,
                       ToMediaDrmSessionType(aData->mSessionType));
+}
+
+void MediaDrmCDMProxy::md_SetServerCertificate(PromiseId aPromiseId,
+                                               const nsTArray<uint8_t>& aCert) {
+  MOZ_ASSERT(IsOnOwnerThread());
+
+  if (!mCDM) {
+    RejectPromise(aPromiseId, NS_ERROR_DOM_INVALID_STATE_ERR,
+                  NS_LITERAL_CSTRING("Null CDM in md_SetServerCertificate"));
+    return;
+  }
+
+  if (mCDM->SetServerCertificate(aCert)) {
+    ResolvePromiseWithResult(aPromiseId, true);
+  } else {
+    RejectPromise(aPromiseId, NS_ERROR_DOM_INVALID_STATE_ERR,
+                  NS_LITERAL_CSTRING(
+                      "MediaDrmCDMProxy unable to set server certificate"));
+  }
 }
 
 void MediaDrmCDMProxy::md_UpdateSession(UniquePtr<UpdateSessionData>&& aData) {

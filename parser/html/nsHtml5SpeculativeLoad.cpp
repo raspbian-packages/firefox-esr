@@ -3,18 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsHtml5SpeculativeLoad.h"
-#include "nsHtml5TreeOpExecutor.h"
 #include "mozilla/Encoding.h"
+#include "nsHtml5TreeOpExecutor.h"
 
 using namespace mozilla;
 
 nsHtml5SpeculativeLoad::nsHtml5SpeculativeLoad()
-    :
-#ifdef DEBUG
-      mOpCode(eSpeculativeLoadUninitialized),
-#endif
+    : mOpCode(eSpeculativeLoadUninitialized),
       mIsAsync(false),
-      mIsDefer(false) {
+      mIsDefer(false),
+      mEncoding(nullptr) {
   MOZ_COUNT_CTOR(nsHtml5SpeculativeLoad);
   new (&mCharsetOrSrcset) nsString;
 }
@@ -62,29 +60,29 @@ void nsHtml5SpeculativeLoad::Perform(nsHtml5TreeOpExecutor* aExecutor) {
       aExecutor->PreloadScript(
           mUrlOrSizes, mCharsetOrSrcset,
           mTypeOrCharsetSourceOrDocumentModeOrMetaCSPOrSizesOrIntegrity,
-          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity, false, mIsAsync,
-          mIsDefer, false);
+          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity,
+          mScriptReferrerPolicy, false, mIsAsync, mIsDefer, false);
       break;
     case eSpeculativeLoadScriptFromHead:
       aExecutor->PreloadScript(
           mUrlOrSizes, mCharsetOrSrcset,
           mTypeOrCharsetSourceOrDocumentModeOrMetaCSPOrSizesOrIntegrity,
-          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity, true, mIsAsync,
-          mIsDefer, false);
+          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity,
+          mScriptReferrerPolicy, true, mIsAsync, mIsDefer, false);
       break;
     case eSpeculativeLoadNoModuleScript:
       aExecutor->PreloadScript(
           mUrlOrSizes, mCharsetOrSrcset,
           mTypeOrCharsetSourceOrDocumentModeOrMetaCSPOrSizesOrIntegrity,
-          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity, false, mIsAsync,
-          mIsDefer, true);
+          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity,
+          mScriptReferrerPolicy, false, mIsAsync, mIsDefer, true);
       break;
     case eSpeculativeLoadNoModuleScriptFromHead:
       aExecutor->PreloadScript(
           mUrlOrSizes, mCharsetOrSrcset,
           mTypeOrCharsetSourceOrDocumentModeOrMetaCSPOrSizesOrIntegrity,
-          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity, true, mIsAsync,
-          mIsDefer, true);
+          mCrossOriginOrMedia, mReferrerPolicyOrIntegrity,
+          mScriptReferrerPolicy, true, mIsAsync, mIsDefer, true);
       break;
     case eSpeculativeLoadStyle:
       aExecutor->PreloadStyle(
@@ -118,7 +116,7 @@ void nsHtml5SpeculativeLoad::Perform(nsHtml5TreeOpExecutor* aExecutor) {
       aExecutor->Preconnect(mUrlOrSizes, mCrossOriginOrMedia);
       break;
     default:
-      NS_NOTREACHED("Bogus speculative load.");
+      MOZ_ASSERT_UNREACHABLE("Bogus speculative load.");
       break;
   }
 }

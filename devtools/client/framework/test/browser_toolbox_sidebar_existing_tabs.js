@@ -7,7 +7,7 @@
 
 // Test that the sidebar widget auto-registers existing tabs.
 
-const {ToolSidebar} = require("devtools/client/framework/sidebar");
+const { ToolSidebar } = require("devtools/client/framework/sidebar");
 
 const testToolDefinition = {
   id: "testTool",
@@ -22,22 +22,22 @@ const testToolDefinition = {
       destroy: () => {},
       panelDoc: iframeWindow.document,
     });
-  }
+  },
 };
 
-add_task(function* () {
-  let tab = yield addTab("about:blank");
+add_task(async function() {
+  const tab = await addTab("about:blank");
 
-  let target = TargetFactory.forTab(tab);
+  const target = await TargetFactory.forTab(tab);
 
   gDevTools.registerTool(testToolDefinition);
-  let toolbox = yield gDevTools.showToolbox(target, testToolDefinition.id);
+  const toolbox = await gDevTools.showToolbox(target, testToolDefinition.id);
 
-  let toolPanel = toolbox.getPanel(testToolDefinition.id);
-  let tabbox = toolPanel.panelDoc.getElementById("sidebar");
+  const toolPanel = toolbox.getPanel(testToolDefinition.id);
+  const tabbox = toolPanel.panelDoc.getElementById("sidebar");
 
   info("Creating the sidebar widget");
-  let sidebar = new ToolSidebar(tabbox, toolPanel, "bug1101569");
+  const sidebar = new ToolSidebar(tabbox, toolPanel, "bug1101569");
 
   info("Checking that existing tabs have been registered");
   ok(sidebar.getTab("tab1"), "Existing tab 1 was found");
@@ -48,14 +48,24 @@ add_task(function* () {
   info("Checking that the sidebar API works with existing tabs");
 
   sidebar.select("tab2");
-  is(tabbox.selectedTab, tabbox.querySelector("#tab2"),
-    "Existing tabs can be selected");
+  is(
+    tabbox.selectedTab,
+    tabbox.querySelector("#tab2"),
+    "Existing tabs can be selected"
+  );
 
   sidebar.select("tab1");
-  is(tabbox.selectedTab, tabbox.querySelector("#tab1"),
-    "Existing tabs can be selected");
+  is(
+    tabbox.selectedTab,
+    tabbox.querySelector("#tab1"),
+    "Existing tabs can be selected"
+  );
 
-  is(sidebar.getCurrentTabID(), "tab1", "getCurrentTabID returns the expected id");
+  is(
+    sidebar.getCurrentTabID(),
+    "tab1",
+    "getCurrentTabID returns the expected id"
+  );
 
   info("Removing a tab");
   sidebar.removeTab("tab2", "tabpanel2");
@@ -63,7 +73,7 @@ add_task(function* () {
   ok(!sidebar.getTabPanel("tabpanel2"), "Tabpanel 2 was removed correctly");
 
   sidebar.destroy();
-  yield toolbox.destroy();
+  await toolbox.destroy();
   gDevTools.unregisterTool(testToolDefinition.id);
   gBrowser.removeCurrentTab();
 });

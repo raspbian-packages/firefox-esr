@@ -13,19 +13,22 @@ namespace dom {
 
 class HTMLElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit HTMLElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
   virtual ~HTMLElement();
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
-  virtual JSObject* WrapNode(JSContext* aCx,
-                             JS::Handle<JSObject*> aGivenProto) override;
+  JSObject* WrapNode(JSContext* aCx,
+                     JS::Handle<JSObject*> aGivenProto) override;
 };
 
-HTMLElement::HTMLElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {}
+HTMLElement::HTMLElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {
+  if (NodeInfo()->Equals(nsGkAtoms::bdi)) {
+    AddStatesSilently(NS_EVENT_STATE_DIR_ATTR_LIKE_AUTO);
+  }
+}
 
 HTMLElement::~HTMLElement() {}
 
@@ -33,7 +36,7 @@ NS_IMPL_ELEMENT_CLONE(HTMLElement)
 
 JSObject* HTMLElement::WrapNode(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return dom::HTMLElementBinding::Wrap(aCx, this, aGivenProto);
+  return dom::HTMLElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom
@@ -44,7 +47,7 @@ JSObject* HTMLElement::WrapNode(JSContext* aCx,
 nsGenericHTMLElement* NS_NewHTMLElement(
     already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
     mozilla::dom::FromParser aFromParser) {
-  return new mozilla::dom::HTMLElement(aNodeInfo);
+  return new mozilla::dom::HTMLElement(std::move(aNodeInfo));
 }
 
 // Distinct from the above in order to have function pointer that compared
@@ -52,5 +55,5 @@ nsGenericHTMLElement* NS_NewHTMLElement(
 nsGenericHTMLElement* NS_NewCustomElement(
     already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
     mozilla::dom::FromParser aFromParser) {
-  return new mozilla::dom::HTMLElement(aNodeInfo);
+  return new mozilla::dom::HTMLElement(std::move(aNodeInfo));
 }

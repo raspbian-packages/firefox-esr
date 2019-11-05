@@ -23,7 +23,7 @@ struct EnumTypeData {
 
   // States if the attribute value is matched to the enum value. Used as
   // Element::AttrValuesArray, last item must be nullptr.
-  nsStaticAtom* const* const mValues[4];
+  nsStaticAtom* const mValues[4];
 
   // States applied if corresponding enum values are matched.
   const uint64_t mStates[3];
@@ -84,8 +84,7 @@ bool aria::MapToState(EStateRule aRule, dom::Element* aElement,
     case eARIAAutoComplete: {
       static const EnumTypeData data = {
           nsGkAtoms::aria_autocomplete,
-          {&nsGkAtoms::inlinevalue, &nsGkAtoms::list, &nsGkAtoms::both,
-           nullptr},
+          {nsGkAtoms::inlinevalue, nsGkAtoms::list_, nsGkAtoms::both, nullptr},
           {states::SUPPORTS_AUTOCOMPLETION,
            states::HASPOPUP | states::SUPPORTS_AUTOCOMPLETION,
            states::HASPOPUP | states::SUPPORTS_AUTOCOMPLETION},
@@ -98,7 +97,7 @@ bool aria::MapToState(EStateRule aRule, dom::Element* aElement,
     case eARIABusy: {
       static const EnumTypeData data = {
           nsGkAtoms::aria_busy,
-          {&nsGkAtoms::_true, &nsGkAtoms::error, nullptr},
+          {nsGkAtoms::_true, nsGkAtoms::error, nullptr},
           {states::BUSY, states::INVALID},
           0};
 
@@ -201,7 +200,7 @@ bool aria::MapToState(EStateRule aRule, dom::Element* aElement,
     case eARIAOrientation: {
       static const EnumTypeData data = {
           nsGkAtoms::aria_orientation,
-          {&nsGkAtoms::horizontal, &nsGkAtoms::vertical, nullptr},
+          {nsGkAtoms::horizontal, nsGkAtoms::vertical, nullptr},
           {states::HORIZONTAL, states::VERTICAL},
           states::HORIZONTAL | states::VERTICAL};
 

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,6 +7,7 @@
 
 #include "mozilla/gfx/2D.h"
 #include "nsString.h"
+#include "SkPDFDocument.h"
 #include <vector>
 
 namespace mozilla {
@@ -15,8 +16,9 @@ namespace gfx {
 PrintTargetSkPDF::PrintTargetSkPDF(const IntSize& aSize,
                                    UniquePtr<SkWStream> aStream)
     : PrintTarget(/* not using cairo_surface_t */ nullptr, aSize),
-      mOStream(Move(aStream)),
-      mPageCanvas(nullptr) {}
+      mOStream(std::move(aStream)),
+      mPageCanvas(nullptr),
+      mRefCanvas(nullptr) {}
 
 PrintTargetSkPDF::~PrintTargetSkPDF() {
   Finish();  // ensure stream is flushed
@@ -27,9 +29,10 @@ PrintTargetSkPDF::~PrintTargetSkPDF() {
   mRefPDFDoc = nullptr;
 }
 
-/* static */ already_AddRefed<PrintTargetSkPDF> PrintTargetSkPDF::CreateOrNull(
+/* static */
+already_AddRefed<PrintTargetSkPDF> PrintTargetSkPDF::CreateOrNull(
     UniquePtr<SkWStream> aStream, const IntSize& aSizeInPoints) {
-  return do_AddRef(new PrintTargetSkPDF(aSizeInPoints, Move(aStream)));
+  return do_AddRef(new PrintTargetSkPDF(aSizeInPoints, std::move(aStream)));
 }
 
 nsresult PrintTargetSkPDF::BeginPrinting(const nsAString& aTitle,
@@ -39,18 +42,16 @@ nsresult PrintTargetSkPDF::BeginPrinting(const nsAString& aTitle,
   // because it's only now that we are given aTitle which we want for the
   // PDF metadata.
 
-  SkDocument::PDFMetadata metadata;
+  SkPDF::Metadata metadata;
   metadata.fTitle = NS_ConvertUTF16toUTF8(aTitle).get();
   metadata.fCreator = "Firefox";
   SkTime::DateTime now;
   SkTime::GetDateTime(&now);
-  metadata.fCreation.fEnabled = true;
-  metadata.fCreation.fDateTime = now;
-  metadata.fModified.fEnabled = true;
-  metadata.fModified.fDateTime = now;
+  metadata.fCreation = now;
+  metadata.fModified = now;
 
   // SkDocument stores a non-owning raw pointer to aStream
-  mPDFDoc = SkDocument::MakePDF(mOStream.get(), metadata);
+  mPDFDoc = SkPDF::MakeDocument(mOStream.get(), metadata);
 
   return mPDFDoc ? NS_OK : NS_ERROR_FAILURE;
 }
@@ -104,9 +105,9 @@ already_AddRefed<DrawTarget> PrintTargetSkPDF::MakeDrawTarget(
 
 already_AddRefed<DrawTarget> PrintTargetSkPDF::GetReferenceDrawTarget() {
   if (!mRefDT) {
-    SkDocument::PDFMetadata metadata;
+    SkPDF::Metadata metadata;
     // SkDocument stores a non-owning raw pointer to aStream
-    mRefPDFDoc = SkDocument::MakePDF(&mRefOStream, metadata);
+    mRefPDFDoc = SkPDF::MakeDocument(&mRefOStream, metadata);
     if (!mRefPDFDoc) {
       return nullptr;
     }

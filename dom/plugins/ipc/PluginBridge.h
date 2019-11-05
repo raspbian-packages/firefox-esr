@@ -7,8 +7,6 @@
 #ifndef mozilla_plugins_PluginBridge_h
 #define mozilla_plugins_PluginBridge_h
 
-#include <functional>
-
 #include "base/process.h"
 
 namespace mozilla {
@@ -36,13 +34,12 @@ nsresult FindPluginsForContent(uint32_t aPluginEpoch,
                                uint32_t* aNewPluginEpoch);
 
 void TakeFullMinidump(uint32_t aPluginId, base::ProcessId aContentProcessId,
-                      const nsAString& aBrowserDumpId,
-                      std::function<void(nsString)>&& aCallback, bool aAsync);
+                      const nsAString& aBrowserDumpId, nsString& aDumpId);
 
 void TerminatePlugin(uint32_t aPluginId, base::ProcessId aContentProcessId,
                      const nsCString& aMonitorDescription,
-                     const nsAString& aDumpId,
-                     std::function<void(bool)>&& aCallback);
+                     const nsAString& aDumpId);
+
 }  // namespace plugins
 }  // namespace mozilla
 

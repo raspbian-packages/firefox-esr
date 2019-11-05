@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim:expandtab:shiftwidth=4:tabstop=4:
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -12,7 +12,6 @@
 #include "nsDragServiceProxy.h"
 #include "nsFilePickerProxy.h"
 #include "nsSoundProxy.h"
-#include "mozilla/widget/PuppetBidiKeyboard.h"
 #include "mozilla/widget/ScreenManager.h"
 
 using namespace mozilla;
@@ -23,7 +22,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsColorPickerProxy)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsDragServiceProxy)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsFilePickerProxy)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsSoundProxy)
-NS_GENERIC_FACTORY_CONSTRUCTOR(PuppetBidiKeyboard)
 NS_GENERIC_FACTORY_SINGLETON_CONSTRUCTOR(ScreenManager,
                                          ScreenManager::GetAddRefedSingleton)
 
@@ -32,7 +30,6 @@ NS_DEFINE_NAMED_CID(NS_COLORPICKER_CID);
 NS_DEFINE_NAMED_CID(NS_DRAGSERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_FILEPICKER_CID);
 NS_DEFINE_NAMED_CID(NS_SOUND_CID);
-NS_DEFINE_NAMED_CID(PUPPETBIDIKEYBOARD_CID);
 NS_DEFINE_NAMED_CID(NS_SCREENMANAGER_CID);
 
 static const mozilla::Module::CIDEntry kWidgetCIDs[] = {
@@ -45,8 +42,6 @@ static const mozilla::Module::CIDEntry kWidgetCIDs[] = {
     {&kNS_FILEPICKER_CID, false, nullptr, nsFilePickerProxyConstructor,
      Module::CONTENT_PROCESS_ONLY},
     {&kNS_SOUND_CID, false, nullptr, nsSoundProxyConstructor,
-     Module::CONTENT_PROCESS_ONLY},
-    {&kPUPPETBIDIKEYBOARD_CID, false, NULL, PuppetBidiKeyboardConstructor,
      Module::CONTENT_PROCESS_ONLY},
     {&kNS_SCREENMANAGER_CID, false, nullptr, ScreenManagerConstructor,
      Module::CONTENT_PROCESS_ONLY},
@@ -64,11 +59,7 @@ static const mozilla::Module::ContractIDEntry kWidgetContracts[] = {
     {"@mozilla.org/sound;1", &kNS_SOUND_CID, Module::CONTENT_PROCESS_ONLY},
     {"@mozilla.org/widget/dragservice;1", &kNS_DRAGSERVICE_CID,
      Module::CONTENT_PROCESS_ONLY},
-    {"@mozilla.org/widget/bidikeyboard;1", &kPUPPETBIDIKEYBOARD_CID,
-     Module::CONTENT_PROCESS_ONLY},
     {nullptr}};
 
-static const mozilla::Module kWidgetModule = {mozilla::Module::kVersion,
-                                              kWidgetCIDs, kWidgetContracts};
-
-NSMODULE_DEFN(nsContentProcessWidgetModule) = &kWidgetModule;
+extern const mozilla::Module kContentProcessWidgetModule = {
+    mozilla::Module::kVersion, kWidgetCIDs, kWidgetContracts};

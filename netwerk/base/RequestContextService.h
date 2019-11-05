@@ -22,16 +22,16 @@ class RequestContextService final : public nsIRequestContextService,
   NS_DECL_NSIREQUESTCONTEXTSERVICE
   NS_DECL_NSIOBSERVER
 
+  static already_AddRefed<nsIRequestContextService> GetOrCreate();
+
+ private:
   RequestContextService();
+  virtual ~RequestContextService();
 
   nsresult Init();
   void Shutdown();
-  static nsresult Create(nsISupports *outer, const nsIID &iid, void **result);
 
- private:
-  virtual ~RequestContextService();
-
-  static RequestContextService *sSelf;
+  static RequestContextService* sSelf;
 
   nsInterfaceHashtable<nsUint64HashKey, nsIRequestContext> mTable;
   uint32_t mRCIDNamespace;

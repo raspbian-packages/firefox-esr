@@ -9,6 +9,7 @@
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/BinarySearch.h"
 #include "mozilla/CheckedInt.h"
+#include "mozilla/TextUtils.h"
 #include "nsTArray.h"
 #include "nsCRT.h"
 #include "plstr.h"
@@ -108,9 +109,6 @@ char* nsEscape(const char* aStr, size_t aLength, size_t* aOutputLength,
   }
 
   char* result = (char*)moz_xmalloc(dstSize);
-  if (!result) {
-    return nullptr;
-  }
 
   unsigned char* dst = (unsigned char*)result;
   src = (const unsigned char*)aStr;
@@ -298,7 +296,7 @@ static nsresult T_EscapeURL(const typename T::char_type* aPart, size_t aPartLen,
                 "unexpected char type");
 
   if (!aPart) {
-    NS_NOTREACHED("null pointer");
+    MOZ_ASSERT_UNREACHABLE("null pointer");
     return NS_ERROR_INVALID_ARG;
   }
 
@@ -307,6 +305,7 @@ static nsresult T_EscapeURL(const typename T::char_type* aPart, size_t aPartLen,
   bool ignoreAscii = !!(aFlags & esc_OnlyNonASCII);
   bool writing = !!(aFlags & esc_AlwaysCopy);
   bool colon = !!(aFlags & esc_Colon);
+  bool spaces = !!(aFlags & esc_Spaces);
 
   auto src = reinterpret_cast<const unsigned_char_type*>(aPart);
 
@@ -344,12 +343,11 @@ static nsresult T_EscapeURL(const typename T::char_type* aPart, size_t aPartLen,
     // And, we should escape the '|' character when it occurs after any
     // non-ASCII character as it may be aPart of a multi-byte character.
     //
-    // 0x20..0x7e are the valid ASCII characters. We also escape spaces
-    // (0x20) since they are not legal in URLs.
+    // 0x20..0x7e are the valid ASCII characters.
     if ((dontNeedEscape(c, aFlags) || (c == HEX_ESCAPE && !forced) ||
          (c > 0x7f && ignoreNonAscii) ||
-         (c > 0x20 && c < 0x7f && ignoreAscii)) &&
-        !(c == ':' && colon) &&
+         (c >= 0x20 && c < 0x7f && ignoreAscii)) &&
+        !(c == ':' && colon) && !(c == ' ' && spaces) &&
         !(previousIsNonASCII && c == '|' && !ignoreNonAscii)) {
       if (writing) {
         tempBuffer[tempBufferPos++] = c;
@@ -388,17 +386,26 @@ static nsresult T_EscapeURL(const typename T::char_type* aPart, size_t aPartLen,
 
 bool NS_EscapeURL(const char* aPart, int32_t aPartLen, uint32_t aFlags,
                   nsACString& aResult) {
+  size_t partLen;
   if (aPartLen < 0) {
-    aPartLen = strlen(aPart);
+    partLen = strlen(aPart);
+  } else {
+    partLen = aPartLen;
   }
 
-  bool result = false;
-  nsresult rv = T_EscapeURL(aPart, aPartLen, aFlags, nullptr, aResult, result);
+  return NS_EscapeURLSpan(MakeSpan(aPart, partLen), aFlags, aResult);
+}
+
+bool NS_EscapeURLSpan(mozilla::Span<const char> aStr, uint32_t aFlags,
+                      nsACString& aResult) {
+  bool appended = false;
+  nsresult rv = T_EscapeURL(aStr.Elements(), aStr.Length(), aFlags, nullptr,
+                            aResult, appended);
   if (NS_FAILED(rv)) {
     ::NS_ABORT_OOM(aResult.Length() * sizeof(nsACString::char_type));
   }
 
-  return result;
+  return appended;
 }
 
 nsresult NS_EscapeURL(const nsACString& aStr, uint32_t aFlags,
@@ -456,14 +463,12 @@ const nsAString& NS_EscapeURL(const nsAString& aStr, uint32_t aFlags,
 }
 
 // Starting at aStr[aStart] find the first index in aStr that matches any
-// character in aForbidden. Return false if not found.
+// character that is forbidden by aFunction. Return false if not found.
 static bool FindFirstMatchFrom(const nsString& aStr, size_t aStart,
-                               const nsTArray<char16_t>& aForbidden,
+                               const std::function<bool(char16_t)>& aFunction,
                                size_t* aIndex) {
-  const size_t len = aForbidden.Length();
   for (size_t j = aStart, l = aStr.Length(); j < l; ++j) {
-    size_t unused;
-    if (mozilla::BinarySearch(aForbidden, 0, len, aStr[j], &unused)) {
+    if (aFunction(aStr[j])) {
       *aIndex = j;
       return true;
     }
@@ -472,12 +477,12 @@ static bool FindFirstMatchFrom(const nsString& aStr, size_t aStart,
 }
 
 const nsAString& NS_EscapeURL(const nsString& aStr,
-                              const nsTArray<char16_t>& aForbidden,
+                              const std::function<bool(char16_t)>& aFunction,
                               nsAString& aResult) {
   bool didEscape = false;
   for (size_t i = 0, strLen = aStr.Length(); i < strLen;) {
     size_t j;
-    if (MOZ_UNLIKELY(FindFirstMatchFrom(aStr, i, aForbidden, &j))) {
+    if (MOZ_UNLIKELY(FindFirstMatchFrom(aStr, i, aFunction, &j))) {
       if (i == 0) {
         didEscape = true;
         aResult.Truncate();
@@ -506,8 +511,6 @@ const nsAString& NS_EscapeURL(const nsString& aStr,
   return aStr;
 }
 
-#define ISHEX(c) memchr(hexCharsUpperLower, c, sizeof(hexCharsUpperLower) - 1)
-
 bool NS_UnescapeURL(const char* aStr, int32_t aLen, uint32_t aFlags,
                     nsACString& aResult) {
   bool didAppend = false;
@@ -524,15 +527,22 @@ nsresult NS_UnescapeURL(const char* aStr, int32_t aLen, uint32_t aFlags,
                         nsACString& aResult, bool& aDidAppend,
                         const mozilla::fallible_t&) {
   if (!aStr) {
-    NS_NOTREACHED("null pointer");
+    MOZ_ASSERT_UNREACHABLE("null pointer");
     return NS_ERROR_INVALID_ARG;
   }
 
   MOZ_ASSERT(aResult.IsEmpty(),
              "Passing a non-empty string as an out parameter!");
 
+  uint32_t len;
   if (aLen < 0) {
-    aLen = strlen(aStr);
+    size_t stringLength = strlen(aStr);
+    if (stringLength >= UINT32_MAX) {
+      return NS_ERROR_OUT_OF_MEMORY;
+    }
+    len = stringLength;
+  } else {
+    len = aLen;
   }
 
   bool ignoreNonAscii = !!(aFlags & esc_OnlyASCII);
@@ -541,50 +551,62 @@ nsresult NS_UnescapeURL(const char* aStr, int32_t aLen, uint32_t aFlags,
   bool skipControl = !!(aFlags & esc_SkipControl);
   bool skipInvalidHostChar = !!(aFlags & esc_Host);
 
+  unsigned char* destPtr;
+  uint32_t destPos;
+
   if (writing) {
-    if (!aResult.SetCapacity(aLen, mozilla::fallible)) {
+    if (!aResult.SetLength(len, mozilla::fallible)) {
       return NS_ERROR_OUT_OF_MEMORY;
     }
+    destPos = 0;
+    destPtr = reinterpret_cast<unsigned char*>(aResult.BeginWriting());
   }
 
   const char* last = aStr;
-  const char* p = aStr;
+  const char* end = aStr + len;
 
-  for (int i = 0; i < aLen; ++i, ++p) {
-    if (*p == HEX_ESCAPE && i < aLen - 2) {
+  for (const char* p = aStr; p < end; ++p) {
+    if (*p == HEX_ESCAPE && p + 2 < end) {
       unsigned char c1 = *((unsigned char*)p + 1);
       unsigned char c2 = *((unsigned char*)p + 2);
       unsigned char u = (UNHEX(c1) << 4) + UNHEX(c2);
-      if (ISHEX(c1) && ISHEX(c2) &&
+      if (mozilla::IsAsciiHexDigit(c1) && mozilla::IsAsciiHexDigit(c2) &&
           (!skipInvalidHostChar || dontNeedEscape(u, aFlags) || c1 >= '8') &&
           ((c1 < '8' && !ignoreAscii) || (c1 >= '8' && !ignoreNonAscii)) &&
           !(skipControl &&
             (c1 < '2' || (c1 == '7' && (c2 == 'f' || c2 == 'F'))))) {
-        if (!writing) {
+        if (MOZ_UNLIKELY(!writing)) {
           writing = true;
-          if (!aResult.SetCapacity(aLen, mozilla::fallible)) {
+          if (!aResult.SetLength(len, mozilla::fallible)) {
             return NS_ERROR_OUT_OF_MEMORY;
           }
+          destPos = 0;
+          destPtr = reinterpret_cast<unsigned char*>(aResult.BeginWriting());
         }
         if (p > last) {
-          if (!aResult.Append(last, p - last, mozilla::fallible)) {
-            return NS_ERROR_OUT_OF_MEMORY;
-          }
+          auto toCopy = p - last;
+          memcpy(destPtr + destPos, last, toCopy);
+          destPos += toCopy;
+          MOZ_ASSERT(destPos <= len);
           last = p;
         }
-        if (!aResult.Append(u, mozilla::fallible)) {
-          return NS_ERROR_OUT_OF_MEMORY;
-        }
-        i += 2;
+        destPtr[destPos] = u;
+        destPos += 1;
+        MOZ_ASSERT(destPos <= len);
         p += 2;
         last += 3;
       }
     }
   }
-  if (writing && last < aStr + aLen) {
-    if (!aResult.Append(last, aStr + aLen - last, mozilla::fallible)) {
-      return NS_ERROR_OUT_OF_MEMORY;
-    }
+  if (writing && last < end) {
+    auto toCopy = end - last;
+    memcpy(destPtr + destPos, last, toCopy);
+    destPos += toCopy;
+    MOZ_ASSERT(destPos <= len);
+  }
+
+  if (writing) {
+    aResult.Truncate(destPos);
   }
 
   aDidAppend = writing;

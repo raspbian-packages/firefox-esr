@@ -20,10 +20,8 @@ MutationEvent::MutationEvent(EventTarget* aOwner, nsPresContext* aPresContext,
   mEventIsInternal = (aEvent == nullptr);
 }
 
-already_AddRefed<nsINode> MutationEvent::GetRelatedNode() {
-  nsCOMPtr<nsINode> n =
-      do_QueryInterface(mEvent->AsMutationEvent()->mRelatedNode);
-  return n.forget();
+nsINode* MutationEvent::GetRelatedNode() {
+  return mEvent->AsMutationEvent()->mRelatedNode;
 }
 
 void MutationEvent::GetPrevValue(nsAString& aPrevValue) const {
@@ -56,7 +54,7 @@ void MutationEvent::InitMutationEvent(const nsAString& aType, bool aCanBubble,
   Event::InitEvent(aType, aCanBubble, aCancelable);
 
   InternalMutationEvent* mutation = mEvent->AsMutationEvent();
-  mutation->mRelatedNode = aRelatedNode ? aRelatedNode->AsDOMNode() : nullptr;
+  mutation->mRelatedNode = aRelatedNode;
   if (!aPrevValue.IsEmpty()) mutation->mPrevAttrValue = NS_Atomize(aPrevValue);
   if (!aNewValue.IsEmpty()) mutation->mNewAttrValue = NS_Atomize(aNewValue);
   if (!aAttrName.IsEmpty()) {

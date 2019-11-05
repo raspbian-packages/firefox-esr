@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -58,7 +58,7 @@ class nsPartChannel final : public nsIChannel,
   NS_DECL_NSIMULTIPARTCHANNEL
 
  protected:
-  ~nsPartChannel();
+  ~nsPartChannel() = default;
 
  protected:
   nsCOMPtr<nsIChannel> mMultipartChannel;
@@ -138,7 +138,7 @@ class nsMultiMixedConv : public nsIStreamConverter {
  protected:
   typedef mozilla::IncrementalTokenizer::Token Token;
 
-  virtual ~nsMultiMixedConv();
+  virtual ~nsMultiMixedConv() = default;
 
   nsresult SendStart();
   void AccumulateData(Token const& aToken);
@@ -151,9 +151,8 @@ class nsMultiMixedConv : public nsIStreamConverter {
 
   nsCOMPtr<nsIChannel>
       mChannel;  // The channel as we get in in OnStartRequest call
-  RefPtr<nsPartChannel>
-      mPartChannel;  // the channel for the given part we're processing.
-                     // one channel per part.
+  RefPtr<nsPartChannel> mPartChannel;  // the channel for the given part we're
+                                       // processing. one channel per part.
   nsCOMPtr<nsISupports> mContext;
   nsCString mContentType;
   nsCString mContentDisposition;

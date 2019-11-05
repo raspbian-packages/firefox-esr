@@ -130,7 +130,7 @@ class nsISVGPoint : public nsISupports, public nsWrapperCache {
       dom::SVGMatrix& matrix) = 0;
   virtual JSObject* WrapObject(JSContext* cx,
                                JS::Handle<JSObject*> aGivenProto) override {
-    return dom::SVGPointBinding::Wrap(cx, this, aGivenProto);
+    return dom::SVGPoint_Binding::Wrap(cx, this, aGivenProto);
   }
 
   virtual nsISupports* GetParentObject() = 0;

@@ -46,15 +46,15 @@ class OnBeforeUnloadEventHandlerNonNull;
 class HTMLFrameSetElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLFrameSetElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo),
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)),
         mNumRows(0),
         mNumCols(0),
         mCurrentRowColHint(NS_STYLE_HINT_REFLOW) {
     SetHasWeirdParserInsertionMode();
   }
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLFrameSetElement, frameset)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLFrameSetElement, frameset)
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLFrameSetElement,
@@ -112,8 +112,7 @@ class HTMLFrameSetElement final : public nsGenericHTMLElement {
   virtual nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
                                               int32_t aModType) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual ~HTMLFrameSetElement();

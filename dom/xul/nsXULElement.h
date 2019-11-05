@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,34 +12,25 @@
 #ifndef nsXULElement_h__
 #define nsXULElement_h__
 
+#include "js/SourceText.h"
 #include "js/TracingAPI.h"
 #include "mozilla/Attributes.h"
-#include "nsIDOMEvent.h"
 #include "nsIServiceManager.h"
 #include "nsAtom.h"
 #include "mozilla/dom/NodeInfo.h"
 #include "nsIControllers.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMXULElement.h"
 #include "nsIDOMXULMultSelectCntrlEl.h"
 #include "nsIURI.h"
 #include "nsLayoutCID.h"
-#include "nsAttrAndChildArray.h"
+#include "AttrArray.h"
 #include "nsGkAtoms.h"
 #include "nsStringFwd.h"
 #include "nsStyledElement.h"
-#include "nsIFrameLoader.h"
-#include "nsFrameLoader.h"  // Needed because we return an
-                            // already_AddRefed<nsFrameLoader> where bindings
-// want an already_AddRefed<nsIFrameLoader> and hence
-// bindings need to know that the former can cast to
-// the latter.
 #include "mozilla/dom/DOMRect.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/DOMString.h"
 #include "mozilla/dom/FromParser.h"
 
-class nsIDocument;
 class nsXULPrototypeDocument;
 
 class nsIObjectInputStream;
@@ -57,21 +48,18 @@ class StyleRule;
 namespace dom {
 class BoxObject;
 class HTMLIFrameElement;
+class PrototypeDocumentContentSink;
 enum class CallerType : uint32_t;
 }  // namespace dom
 }  // namespace mozilla
 
-namespace JS {
-class SourceBufferHolder;
-}  // namespace JS
-
 ////////////////////////////////////////////////////////////////////////
 
 #ifdef XUL_PROTOTYPE_ATTRIBUTE_METERING
-#define XUL_PROTOTYPE_ATTRIBUTE_METER(counter) \
-  (nsXULPrototypeAttribute::counter++)
+#  define XUL_PROTOTYPE_ATTRIBUTE_METER(counter) \
+    (nsXULPrototypeAttribute::counter++)
 #else
-#define XUL_PROTOTYPE_ATTRIBUTE_METER(counter) ((void)0)
+#  define XUL_PROTOTYPE_ATTRIBUTE_METER(counter) ((void)0)
 #endif
 
 /**
@@ -152,7 +140,8 @@ class nsXULPrototypeElement : public nsXULPrototypeNode {
         mHasIdAttribute(false),
         mHasClassAttribute(false),
         mHasStyleAttribute(false),
-        mAttributes(nullptr) {}
+        mAttributes(nullptr),
+        mIsAtom(nullptr) {}
 
   virtual ~nsXULPrototypeElement() { Unlink(); }
 
@@ -189,6 +178,7 @@ class nsXULPrototypeElement : public nsXULPrototypeNode {
   uint32_t mHasClassAttribute : 1;
   uint32_t mHasStyleAttribute : 1;
   nsXULPrototypeAttribute* mAttributes;  // [OWNER]
+  RefPtr<nsAtom> mIsAtom;
 };
 
 namespace mozilla {
@@ -214,12 +204,9 @@ class nsXULPrototypeScript : public nsXULPrototypeNode {
   nsresult DeserializeOutOfLine(nsIObjectInputStream* aInput,
                                 nsXULPrototypeDocument* aProtoDoc);
 
-  nsresult Compile(JS::SourceBufferHolder& aSrcBuf, nsIURI* aURI,
-                   uint32_t aLineNo, nsIDocument* aDocument,
-                   nsIOffThreadScriptReceiver* aOffThreadReceiver = nullptr);
-
-  nsresult Compile(const char16_t* aText, int32_t aTextLength, nsIURI* aURI,
-                   uint32_t aLineNo, nsIDocument* aDocument,
+  nsresult Compile(const char16_t* aText, size_t aTextLength,
+                   JS::SourceOwnership aOwnership, nsIURI* aURI,
+                   uint32_t aLineNo, mozilla::dom::Document* aDocument,
                    nsIOffThreadScriptReceiver* aOffThreadReceiver = nullptr);
 
   void UnlinkJSObjects();
@@ -247,7 +234,8 @@ class nsXULPrototypeScript : public nsXULPrototypeNode {
   uint32_t mLineNo;
   bool mSrcLoading;
   bool mOutOfLine;
-  mozilla::dom::XULDocument* mSrcLoadWaiters;  // [OWNER] but not COMPtr
+  mozilla::dom::PrototypeDocumentContentSink*
+      mSrcLoadWaiters;  // [OWNER] but not COMPtr
  private:
   JS::Heap<JSScript*> mScriptObject;
 };
@@ -308,41 +296,55 @@ ASSERT_NODE_FLAGS_SPACE(ELEMENT_TYPE_SPECIFIC_BITS_OFFSET + 2);
 
 #undef XUL_ELEMENT_FLAG_BIT
 
-class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
+class nsXULElement : public nsStyledElement {
+ protected:
+  typedef mozilla::dom::Document Document;
+
+  // Use Construct to construct elements instead of this constructor.
+  explicit nsXULElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+
  public:
   using Element::Blur;
   using Element::Focus;
-  explicit nsXULElement(already_AddRefed<mozilla::dom::NodeInfo> aNodeInfo);
 
-  static nsresult Create(nsXULPrototypeElement* aPrototype,
-                         nsIDocument* aDocument, bool aIsScriptable,
-                         bool aIsRoot, mozilla::dom::Element** aResult);
+  static nsresult CreateFromPrototype(nsXULPrototypeElement* aPrototype,
+                                      Document* aDocument, bool aIsScriptable,
+                                      bool aIsRoot,
+                                      mozilla::dom::Element** aResult);
 
-  NS_IMPL_FROMCONTENT(nsXULElement, kNameSpaceID_XUL)
+  // This is the constructor for nsXULElements.
+  static nsXULElement* Construct(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+
+  NS_IMPL_FROMNODE(nsXULElement, kNameSpaceID_XUL)
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(nsXULElement, nsStyledElement)
 
   // nsINode
-  virtual nsresult GetEventTargetParent(
-      mozilla::EventChainPreVisitor& aVisitor) override;
+  void GetEventTargetParent(mozilla::EventChainPreVisitor& aVisitor) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual nsresult PreHandleEvent(
       mozilla::EventChainVisitor& aVisitor) override;
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep, bool aNullParent) override;
-  virtual void RemoveChildAt_Deprecated(uint32_t aIndex, bool aNotify) override;
-  virtual void RemoveChildNode(nsIContent* aKid, bool aNotify) override;
   virtual void DestroyContent() override;
+  virtual void DoneAddingChildren(bool aHaveNotified) override;
 
 #ifdef DEBUG
   virtual void List(FILE* out, int32_t aIndent) const override;
   virtual void DumpContent(FILE* out, int32_t aIndent,
                            bool aDumpAll) const override {}
 #endif
+
+  MOZ_CAN_RUN_SCRIPT int32_t ScreenX();
+  MOZ_CAN_RUN_SCRIPT int32_t ScreenY();
+
+  bool HasMenu();
+  MOZ_CAN_RUN_SCRIPT void OpenMenu(bool aOpenFlag);
 
   virtual bool PerformAccesskey(bool aKeyCausesActivation,
                                 bool aIsTrustedEvent) override;
@@ -354,22 +356,13 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   virtual bool IsFocusableInternal(int32_t* aTabIndex,
                                    bool aWithMouse) override;
 
-#ifdef MOZ_OLD_STYLE
-  NS_IMETHOD WalkContentStyleRules(nsRuleWalker* aRuleWalker) override;
-#endif
   virtual nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
                                               int32_t aModType) const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  // nsIDOMXULElement
-  NS_DECL_NSIDOMXULELEMENT
-
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(mozilla::dom::NodeInfo*,
+                         nsINode** aResult) const override;
   virtual mozilla::EventStates IntrinsicState() const override;
-
-  nsresult GetFrameLoaderXPCOM(nsIFrameLoader** aFrameLoader);
-  void PresetOpenerWindow(mozIDOMWindowProxy* aWindow, ErrorResult& aRv);
 
   virtual void RecompileScriptEventListeners() override;
 
@@ -380,8 +373,6 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
     mBindingParent = aBindingParent;
   }
 
-  virtual nsIDOMNode* AsDOMNode() override { return this; }
-
   virtual bool IsEventAttributeNameInternal(nsAtom* aName) override;
 
   typedef mozilla::dom::DOMString DOMString;
@@ -391,6 +382,10 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   void SetXULAttr(nsAtom* aName, const nsAString& aValue,
                   mozilla::ErrorResult& aError) {
     SetAttr(aName, aValue, aError);
+  }
+  bool GetXULBoolAttr(nsAtom* aName) const {
+    return AttrValueIs(kNameSpaceID_None, aName, NS_LITERAL_STRING("true"),
+                       eCaseMatters);
   }
   void SetXULBoolAttr(nsAtom* aName, bool aValue) {
     if (aValue) {
@@ -414,12 +409,6 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   void GetFlex(DOMString& aValue) const { GetXULAttr(nsGkAtoms::flex, aValue); }
   void SetFlex(const nsAString& aValue, mozilla::ErrorResult& rv) {
     SetXULAttr(nsGkAtoms::flex, aValue, rv);
-  }
-  void GetFlexGroup(DOMString& aValue) const {
-    GetXULAttr(nsGkAtoms::flexgroup, aValue);
-  }
-  void SetFlexGroup(const nsAString& aValue, mozilla::ErrorResult& rv) {
-    SetXULAttr(nsGkAtoms::flexgroup, aValue, rv);
   }
   void GetOrdinal(DOMString& aValue) const {
     GetXULAttr(nsGkAtoms::ordinal, aValue);
@@ -499,12 +488,6 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   void SetMaxHeight(const nsAString& aValue, mozilla::ErrorResult& rv) {
     SetXULAttr(nsGkAtoms::maxheight, aValue, rv);
   }
-  void GetPersist(DOMString& aValue) const {
-    GetXULAttr(nsGkAtoms::persist, aValue);
-  }
-  void SetPersist(const nsAString& aValue, mozilla::ErrorResult& rv) {
-    SetXULAttr(nsGkAtoms::persist, aValue, rv);
-  }
   void GetLeft(DOMString& aValue) const { GetXULAttr(nsGkAtoms::left, aValue); }
   void SetLeft(const nsAString& aValue, mozilla::ErrorResult& rv) {
     SetXULAttr(nsGkAtoms::left, aValue, rv);
@@ -518,12 +501,6 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   }
   void SetTooltipText(const nsAString& aValue, mozilla::ErrorResult& rv) {
     SetXULAttr(nsGkAtoms::tooltiptext, aValue, rv);
-  }
-  void GetStatusText(DOMString& aValue) const {
-    GetXULAttr(nsGkAtoms::statustext, aValue);
-  }
-  void SetStatusText(const nsAString& aValue, mozilla::ErrorResult& rv) {
-    SetXULAttr(nsGkAtoms::statustext, aValue, rv);
   }
   void GetSrc(DOMString& aValue) const { GetXULAttr(nsGkAtoms::src, aValue); }
   void SetSrc(const nsAString& aValue, mozilla::ErrorResult& rv) {
@@ -539,27 +516,16 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   already_AddRefed<mozilla::dom::BoxObject> GetBoxObject(
       mozilla::ErrorResult& rv);
   void Click(mozilla::dom::CallerType aCallerType);
-  void DoCommand();
-  already_AddRefed<nsINodeList> GetElementsByAttribute(
-      const nsAString& aAttribute, const nsAString& aValue);
-  already_AddRefed<nsINodeList> GetElementsByAttributeNS(
-      const nsAString& aNamespaceURI, const nsAString& aAttribute,
-      const nsAString& aValue, mozilla::ErrorResult& rv);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY void DoCommand();
   // Style() inherited from nsStyledElement
-  already_AddRefed<nsFrameLoader> GetFrameLoader();
-  void InternalSetFrameLoader(nsIFrameLoader* aNewFrameLoader);
-  void SwapFrameLoaders(mozilla::dom::HTMLIFrameElement& aOtherLoaderOwner,
-                        mozilla::ErrorResult& rv);
-  void SwapFrameLoaders(nsXULElement& aOtherLoaderOwner,
-                        mozilla::ErrorResult& rv);
-  void SwapFrameLoaders(nsIFrameLoaderOwner* aOtherLoaderOwner,
-                        mozilla::ErrorResult& rv);
 
   nsINode* GetScopeChainParent() const override {
     // For XUL, the parent is the parent element, if any
     Element* parent = GetParentElement();
     return parent ? parent : nsStyledElement::GetScopeChainParent();
   }
+
+  bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override;
 
  protected:
   ~nsXULElement();
@@ -570,24 +536,13 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   // Implementation methods
   nsresult EnsureContentsGenerated(void) const;
 
-  nsresult ExecuteOnBroadcastHandler(nsIDOMElement* anElement,
-                                     const nsAString& attrName);
-
-  static nsresult ExecuteJSCode(nsIDOMElement* anElement,
-                                mozilla::WidgetEvent* aEvent);
-
-  // Helper routine that crawls a parent chain looking for a tree element.
-  NS_IMETHOD GetParentTree(nsIDOMXULMultiSelectControlElement** aTreeElement);
-
   nsresult AddPopupListener(nsAtom* aName);
-
-  nsresult LoadSrc();
 
   /**
    * The nearest enclosing content node with a binding
-   * that created us. [Weak]
+   * that created us.
    */
-  nsIContent* mBindingParent;
+  nsCOMPtr<nsIContent> mBindingParent;
 
   /**
    * Abandon our prototype linkage, and copy all attributes locally
@@ -616,7 +571,7 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   /**
    * Add a listener for the specified attribute, if appropriate.
    */
-  void AddListenerFor(const nsAttrName& aName, bool aCompileEventHandlers);
+  void AddListenerFor(const nsAttrName& aName);
   void MaybeAddPopupListener(nsAtom* aLocalName);
 
   nsIWidget* GetWindowWidget();
@@ -625,13 +580,10 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   nsresult HideWindowChrome(bool aShouldHide);
   void SetChromeMargins(const nsAttrValue* aValue);
   void ResetChromeMargins();
-  void SetTitlebarColor(nscolor aColor, bool aActive);
 
   void SetDrawsInTitlebar(bool aState);
   void SetDrawsTitle(bool aState);
-  void UpdateBrightTitlebarForeground(nsIDocument* aDocument);
-
-  void RemoveBroadcaster(const nsAString& broadcasterId);
+  void UpdateBrightTitlebarForeground(Document* aDocument);
 
  protected:
   void AddTooltipSupport();
@@ -647,6 +599,9 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   void UnregisterAccessKey(const nsAString& aOldValue);
   bool BoolAttrIsTrue(nsAtom* aName) const;
 
+  friend nsXULElement* NS_NewBasicXULElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+
   friend nsresult NS_NewXULElement(mozilla::dom::Element** aResult,
                                    mozilla::dom::NodeInfo* aNodeInfo,
                                    mozilla::dom::FromParser aFromParser,
@@ -654,7 +609,7 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
   friend void NS_TrustedNewXULElement(mozilla::dom::Element** aResult,
                                       mozilla::dom::NodeInfo* aNodeInfo);
 
-  static already_AddRefed<nsXULElement> Create(
+  static already_AddRefed<nsXULElement> CreateFromPrototype(
       nsXULPrototypeElement* aPrototype, mozilla::dom::NodeInfo* aNodeInfo,
       bool aIsScriptable, bool aIsRoot);
 
@@ -670,6 +625,7 @@ class nsXULElement final : public nsStyledElement, public nsIDOMXULElement {
 
   bool IsEventStoppedFromAnonymousScrollbar(mozilla::EventMessage aMessage);
 
+  MOZ_CAN_RUN_SCRIPT
   nsresult DispatchXULCommand(const mozilla::EventChainVisitor& aVisitor,
                               nsAutoString& aCommand);
 };

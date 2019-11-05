@@ -4,29 +4,29 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozilla/ArrayUtils.h"
-
 #include "mozilla/dom/SVGMPathElement.h"
+
 #include "nsDebug.h"
+#include "mozilla/ArrayUtils.h"
 #include "mozilla/dom/SVGAnimateMotionElement.h"
 #include "mozilla/dom/SVGPathElement.h"
 #include "nsContentUtils.h"
 #include "mozilla/dom/SVGMPathElementBinding.h"
 #include "nsIURI.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(MPath)
+NS_IMPL_NS_NEW_SVG_ELEMENT(MPath)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGMPathElement::WrapNode(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return SVGMPathElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGMPathElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::StringInfo SVGMPathElement::sStringInfo[2] = {
-    {&nsGkAtoms::href, kNameSpaceID_None, false},
-    {&nsGkAtoms::href, kNameSpaceID_XLink, false}};
+SVGElement::StringInfo SVGMPathElement::sStringInfo[2] = {
+    {nsGkAtoms::href, kNameSpaceID_None, false},
+    {nsGkAtoms::href, kNameSpaceID_XLink, false}};
 
 // Cycle collection magic -- based on SVGUseElement
 NS_IMPL_CYCLE_COLLECTION_CLASS(SVGMPathElement)
@@ -45,22 +45,22 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 // nsISupports methods
 
 NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED(SVGMPathElement,
-                                             SVGMPathElementBase, nsIDOMNode,
-                                             nsIDOMElement, nsIMutationObserver)
+                                             SVGMPathElementBase,
+                                             nsIMutationObserver)
 
 // Constructor
 SVGMPathElement::SVGMPathElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGMPathElementBase(aNodeInfo), mPathTracker(this) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGMPathElementBase(std::move(aNodeInfo)), mPathTracker(this) {}
 
 SVGMPathElement::~SVGMPathElement() { UnlinkHrefTarget(false); }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGMPathElement)
 
-already_AddRefed<SVGAnimatedString> SVGMPathElement::Href() {
+already_AddRefed<DOMSVGAnimatedString> SVGMPathElement::Href() {
   return mStringAttributes[HREF].IsExplicitlySet()
              ? mStringAttributes[HREF].ToDOMAnimatedString(this)
              : mStringAttributes[XLINK_HREF].ToDOMAnimatedString(this);
@@ -69,21 +69,19 @@ already_AddRefed<SVGAnimatedString> SVGMPathElement::Href() {
 //----------------------------------------------------------------------
 // nsIContent methods
 
-nsresult SVGMPathElement::BindToTree(nsIDocument* aDocument,
-                                     nsIContent* aParent,
-                                     nsIContent* aBindingParent,
-                                     bool aCompileEventHandlers) {
+nsresult SVGMPathElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                     nsIContent* aBindingParent) {
   MOZ_ASSERT(!mPathTracker.get(),
              "Shouldn't have href-target yet (or it should've been cleared)");
-  nsresult rv = SVGMPathElementBase::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+  nsresult rv =
+      SVGMPathElementBase::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  if (aDocument) {
+  if (IsInComposedDoc()) {
     const nsAttrValue* hrefAttrValue =
         HasAttr(kNameSpaceID_None, nsGkAtoms::href)
-            ? mAttrsAndChildren.GetAttr(nsGkAtoms::href, kNameSpaceID_None)
-            : mAttrsAndChildren.GetAttr(nsGkAtoms::href, kNameSpaceID_XLink);
+            ? mAttrs.GetAttr(nsGkAtoms::href, kNameSpaceID_None)
+            : mAttrs.GetAttr(nsGkAtoms::href, kNameSpaceID_XLink);
     if (hrefAttrValue) {
       UpdateHrefTarget(aParent, hrefAttrValue->GetStringValue());
     }
@@ -105,7 +103,7 @@ bool SVGMPathElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
       aNamespaceID, aAttribute, aValue, aMaybeScriptedPrincipal, aResult);
   if ((aNamespaceID == kNameSpaceID_XLink ||
        aNamespaceID == kNameSpaceID_None) &&
-      aAttribute == nsGkAtoms::href && IsInUncomposedDoc()) {
+      aAttribute == nsGkAtoms::href && IsInComposedDoc()) {
     // Note: If we fail the IsInDoc call, it's ok -- we'll update the target
     // on next BindToTree call.
 
@@ -132,7 +130,7 @@ nsresult SVGMPathElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
       // After unsetting href, we may still have xlink:href, so we should
       // try to add it back.
       const nsAttrValue* xlinkHref =
-          mAttrsAndChildren.GetAttr(nsGkAtoms::href, kNameSpaceID_XLink);
+          mAttrs.GetAttr(nsGkAtoms::href, kNameSpaceID_XLink);
       if (xlinkHref) {
         UpdateHrefTarget(GetParent(), xlinkHref->GetStringValue());
       }
@@ -149,9 +147,9 @@ nsresult SVGMPathElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-nsSVGElement::StringAttributesInfo SVGMPathElement::GetStringInfo() {
+SVGElement::StringAttributesInfo SVGMPathElement::GetStringInfo() {
   return StringAttributesInfo(mStringAttributes, sStringInfo,
                               ArrayLength(sStringInfo));
 }
@@ -207,7 +205,10 @@ void SVGMPathElement::UpdateHrefTarget(nsIContent* aParent,
     // Pass in |aParent| instead of |this| -- first argument is only used
     // for a call to GetComposedDoc(), and |this| might not have a current
     // document yet (if our caller is BindToTree).
-    mPathTracker.Reset(aParent, targetURI);
+    // Bug 1415044 to investigate which referrer we should use
+    mPathTracker.ResetToURIFragmentID(aParent, targetURI,
+                                      OwnerDoc()->GetDocumentURI(),
+                                      OwnerDoc()->GetReferrerPolicy());
   } else {
     // if we don't have a parent, then there's no animateMotion element
     // depending on our target, so there's no point tracking it right now.

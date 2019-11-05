@@ -19,16 +19,9 @@ class nsIURI;
 namespace mozilla {
 
 namespace dom {
-class TabParent;
+class BrowsingContext;
+class BrowserParent;
 }  // namespace dom
-
-namespace layers {
-struct TextureFactoryIdentifier;
-}  // namespace layers
-
-namespace layout {
-class PRenderFrameParent;
-}  // namespace layout
 
 /**
  * BrowserElementParent implements a portion of the parent-process side of
@@ -81,24 +74,24 @@ class BrowserElementParent {
    * iframe element) into the DOM somewhere.
    *
    * 3) If the embedder accepted the window.open request, we return true and
-   *    set aPopupTabParent's frame element to event.detail.frameElement.
+   *    set aPopupBrowserParent's frame element to event.detail.frameElement.
    *    Otherwise, we return false.
    *
    * @param aURL the URL the new window should load.  The empty string is
    *             allowed.
-   * @param aOpenerTabParent the TabParent whose TabChild called window.open.
-   * @param aPopupTabParent the TabParent inside which the opened window will
-   *                        live.
+   * @param aOpenerBrowserParent the BrowserParent whose BrowserChild called
+   * window.open.
+   * @param aPopupBrowserParent the BrowserParent inside which the opened window
+   * will live.
    * @return an OpenWindowresult that describes whether the embedder added the
    *         frame to a document and whether it called preventDefault to prevent
    *         the platform from handling the open request.
    */
   static OpenWindowResult OpenWindowOOP(
-      dom::TabParent* aOpenerTabParent, dom::TabParent* aPopupTabParent,
-      layout::PRenderFrameParent* aRenderFrame, const nsAString& aURL,
-      const nsAString& aName, const nsAString& aFeatures,
-      layers::TextureFactoryIdentifier* aTextureFactoryIdentifier,
-      uint64_t* aLayersId);
+      dom::BrowserParent* aOpenerBrowserParent,
+      dom::BrowserParent* aPopupBrowserParent, const nsAString& aURL,
+      const nsAString& aName, bool aForceNoReferrer,
+      const nsAString& aFeatures);
 
   /**
    * Handle a window.open call from an in-process <iframe mozbrowser>.
@@ -112,14 +105,14 @@ class BrowserElementParent {
    * prevent the platform from handling the open request
    */
   static OpenWindowResult OpenWindowInProcess(
-      nsPIDOMWindowOuter* aOpenerWindow, nsIURI* aURI, const nsAString& aName,
-      const nsACString& aFeatures, bool aForceNoOpener,
+      mozilla::dom::BrowsingContext* aOpenerWindow, nsIURI* aURI,
+      const nsAString& aName, const nsACString& aFeatures, bool aForceNoOpener,
       mozIDOMWindowProxy** aReturnWindow);
 
  private:
   static OpenWindowResult DispatchOpenWindowEvent(
       dom::Element* aOpenerFrameElement, dom::Element* aPopupFrameElement,
-      const nsAString& aURL, const nsAString& aName,
+      const nsAString& aURL, const nsAString& aName, bool aForceNoReferrer,
       const nsAString& aFeatures);
 };
 

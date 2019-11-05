@@ -10,17 +10,12 @@ EXPORTS.mozilla += [
     'SandboxBrokerPolicyFactory.h',
 ]
 
-SOURCES += [
+UNIFIED_SOURCES += [
     'SandboxBroker.cpp',
     'SandboxBrokerCommon.cpp',
     'SandboxBrokerPolicyFactory.cpp',
     'SandboxBrokerRealpath.cpp',
 ]
-
-if CONFIG['MOZ_ALSA']:
-    DEFINES['MOZ_ALSA'] = True
-if CONFIG['MOZ_PULSEAUDIO']:
-    DEFINES['MOZ_PULSEAUDIO'] = True
 
 LOCAL_INCLUDES += [
     '/security/sandbox/linux', # SandboxLogging.h, SandboxInfo.h
@@ -37,5 +32,6 @@ LOCAL_INCLUDES += [
 
 if 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:
     CXXFLAGS += CONFIG['GLIB_CFLAGS']
+    CXXFLAGS += CONFIG['TK_CFLAGS']
 
 FINAL_LIBRARY = 'xul'

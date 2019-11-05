@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,11 +10,10 @@
 
 #include "mozilla/dom/NodeIterator.h"
 
-#include "nsIDOMNode.h"
 #include "nsError.h"
 
 #include "nsIContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsContentUtils.h"
 #include "nsCOMPtr.h"
 #include "mozilla/dom/NodeFilterBinding.h"
@@ -26,10 +25,10 @@ namespace dom {
 /*
  * NodePointer implementation
  */
-NodeIterator::NodePointer::NodePointer(nsINode *aNode, bool aBeforeNode)
+NodeIterator::NodePointer::NodePointer(nsINode* aNode, bool aBeforeNode)
     : mNode(aNode), mBeforeNode(aBeforeNode) {}
 
-bool NodeIterator::NodePointer::MoveToNext(nsINode *aRoot) {
+bool NodeIterator::NodePointer::MoveToNext(nsINode* aRoot) {
   if (!mNode) return false;
 
   if (mBeforeNode) {
@@ -37,7 +36,7 @@ bool NodeIterator::NodePointer::MoveToNext(nsINode *aRoot) {
     return true;
   }
 
-  nsINode *child = mNode->GetFirstChild();
+  nsINode* child = mNode->GetFirstChild();
   if (child) {
     mNode = child;
     return true;
@@ -46,7 +45,7 @@ bool NodeIterator::NodePointer::MoveToNext(nsINode *aRoot) {
   return MoveForward(aRoot, mNode);
 }
 
-bool NodeIterator::NodePointer::MoveToPrevious(nsINode *aRoot) {
+bool NodeIterator::NodePointer::MoveToPrevious(nsINode* aRoot) {
   if (!mNode) return false;
 
   if (!mBeforeNode) {
@@ -62,8 +61,8 @@ bool NodeIterator::NodePointer::MoveToPrevious(nsINode *aRoot) {
 }
 
 void NodeIterator::NodePointer::AdjustAfterRemoval(
-    nsINode *aRoot, nsINode *aContainer, nsIContent *aChild,
-    nsIContent *aPreviousSibling) {
+    nsINode* aRoot, nsINode* aContainer, nsIContent* aChild,
+    nsIContent* aPreviousSibling) {
   // If mNode is null or the root there is nothing to do.
   if (!mNode || mNode == aRoot) return;
 
@@ -72,7 +71,7 @@ void NodeIterator::NodePointer::AdjustAfterRemoval(
 
   if (mBeforeNode) {
     // Try the next sibling
-    nsINode *nextSibling = aPreviousSibling ? aPreviousSibling->GetNextSibling()
+    nsINode* nextSibling = aPreviousSibling ? aPreviousSibling->GetNextSibling()
                                             : aContainer->GetFirstChild();
 
     if (nextSibling) {
@@ -90,11 +89,11 @@ void NodeIterator::NodePointer::AdjustAfterRemoval(
   MoveBackward(aContainer, aPreviousSibling);
 }
 
-bool NodeIterator::NodePointer::MoveForward(nsINode *aRoot, nsINode *aNode) {
+bool NodeIterator::NodePointer::MoveForward(nsINode* aRoot, nsINode* aNode) {
   while (1) {
     if (aNode == aRoot) break;
 
-    nsINode *sibling = aNode->GetNextSibling();
+    nsINode* sibling = aNode->GetNextSibling();
     if (sibling) {
       mNode = sibling;
       return true;
@@ -105,7 +104,7 @@ bool NodeIterator::NodePointer::MoveForward(nsINode *aRoot, nsINode *aNode) {
   return false;
 }
 
-void NodeIterator::NodePointer::MoveBackward(nsINode *aParent, nsINode *aNode) {
+void NodeIterator::NodePointer::MoveBackward(nsINode* aParent, nsINode* aNode) {
   if (aNode) {
     do {
       mNode = aNode;
@@ -120,8 +119,8 @@ void NodeIterator::NodePointer::MoveBackward(nsINode *aParent, nsINode *aNode) {
  * Factories, constructors and destructors
  */
 
-NodeIterator::NodeIterator(nsINode *aRoot, uint32_t aWhatToShow,
-                           NodeFilter *aFilter)
+NodeIterator::NodeIterator(nsINode* aRoot, uint32_t aWhatToShow,
+                           NodeFilter* aFilter)
     : nsTraversal(aRoot, aWhatToShow, aFilter), mPointer(mRoot, true) {
   aRoot->AddMutationObserver(this);
 }
@@ -157,7 +156,7 @@ NS_IMPL_CYCLE_COLLECTING_ADDREF(NodeIterator)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(NodeIterator)
 
 already_AddRefed<nsINode> NodeIterator::NextOrPrevNode(
-    NodePointer::MoveToMethodType aMove, ErrorResult &aResult) {
+    NodePointer::MoveToMethodType aMove, ErrorResult& aResult) {
   if (mInAcceptNode) {
     aResult.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
     return nullptr;
@@ -166,8 +165,8 @@ already_AddRefed<nsINode> NodeIterator::NextOrPrevNode(
   mWorkingPointer = mPointer;
 
   struct AutoClear {
-    NodePointer *mPtr;
-    explicit AutoClear(NodePointer *ptr) : mPtr(ptr) {}
+    NodePointer* mPtr;
+    explicit AutoClear(NodePointer* ptr) : mPtr(ptr) {}
     ~AutoClear() { mPtr->Clear(); }
   } ac(&mWorkingPointer);
 
@@ -178,7 +177,7 @@ already_AddRefed<nsINode> NodeIterator::NextOrPrevNode(
       return nullptr;
     }
 
-    if (filtered == NodeFilterBinding::FILTER_ACCEPT) {
+    if (filtered == NodeFilter_Binding::FILTER_ACCEPT) {
       mPointer = mWorkingPointer;
       return testNode.forget();
     }
@@ -189,7 +188,7 @@ already_AddRefed<nsINode> NodeIterator::NextOrPrevNode(
 
 void NodeIterator::Detach() {
   if (mRoot) {
-    mRoot->OwnerDoc()->WarnOnceAbout(nsIDocument::eNodeIteratorDetach);
+    mRoot->OwnerDoc()->WarnOnceAbout(Document::eNodeIteratorDetach);
   }
 }
 
@@ -197,18 +196,18 @@ void NodeIterator::Detach() {
  * nsIMutationObserver interface
  */
 
-void NodeIterator::ContentRemoved(nsIContent *aChild,
-                                  nsIContent *aPreviousSibling) {
-  nsINode *container = aChild->GetParentNode();
+void NodeIterator::ContentRemoved(nsIContent* aChild,
+                                  nsIContent* aPreviousSibling) {
+  nsINode* container = aChild->GetParentNode();
 
   mPointer.AdjustAfterRemoval(mRoot, container, aChild, aPreviousSibling);
   mWorkingPointer.AdjustAfterRemoval(mRoot, container, aChild,
                                      aPreviousSibling);
 }
 
-bool NodeIterator::WrapObject(JSContext *cx, JS::Handle<JSObject *> aGivenProto,
-                              JS::MutableHandle<JSObject *> aReflector) {
-  return NodeIteratorBinding::Wrap(cx, this, aGivenProto, aReflector);
+bool NodeIterator::WrapObject(JSContext* cx, JS::Handle<JSObject*> aGivenProto,
+                              JS::MutableHandle<JSObject*> aReflector) {
+  return NodeIterator_Binding::Wrap(cx, this, aGivenProto, aReflector);
 }
 
 }  // namespace dom

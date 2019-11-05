@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "mozilla/Maybe.h"
 #include "mozilla/ipc/SharedMemory.h"
+#include "mozilla/layers/PTextureChild.h"
 #include "mozilla/layers/WebRenderBridgeChild.h"
 
 namespace mozilla {
@@ -23,6 +24,28 @@ ShmSegmentsWriter::ShmSegmentsWriter(layers::WebRenderBridgeChild* aAllocator,
 }
 
 ShmSegmentsWriter::~ShmSegmentsWriter() { Clear(); }
+
+ShmSegmentsWriter::ShmSegmentsWriter(ShmSegmentsWriter&& aOther) noexcept
+    : mSmallAllocs(std::move(aOther.mSmallAllocs)),
+      mLargeAllocs(std::move(aOther.mLargeAllocs)),
+      mShmAllocator(aOther.mShmAllocator),
+      mCursor(aOther.mCursor),
+      mChunkSize(aOther.mChunkSize) {
+  aOther.mCursor = 0;
+}
+
+ShmSegmentsWriter& ShmSegmentsWriter::operator=(
+    ShmSegmentsWriter&& aOther) noexcept {
+  MOZ_ASSERT(IsEmpty(), "Will forget existing updates!");
+  Clear();
+  mSmallAllocs = std::move(aOther.mSmallAllocs);
+  mLargeAllocs = std::move(aOther.mLargeAllocs);
+  mShmAllocator = aOther.mShmAllocator;
+  mCursor = aOther.mCursor;
+  mChunkSize = aOther.mChunkSize;
+  aOther.mCursor = 0;
+  return *this;
+}
 
 layers::OffsetRange ShmSegmentsWriter::Write(Range<uint8_t> aBytes) {
   const size_t start = mCursor;
@@ -226,8 +249,40 @@ bool ShmSegmentsReader::Read(const layers::OffsetRange& aRange,
 }
 
 IpcResourceUpdateQueue::IpcResourceUpdateQueue(
-    layers::WebRenderBridgeChild* aAllocator, size_t aChunkSize)
-    : mWriter(Move(aAllocator), aChunkSize) {}
+    layers::WebRenderBridgeChild* aAllocator, wr::RenderRoot aRenderRoot,
+    size_t aChunkSize)
+    : mWriter(aAllocator, aChunkSize), mRenderRoot(aRenderRoot) {}
+
+IpcResourceUpdateQueue::IpcResourceUpdateQueue(
+    IpcResourceUpdateQueue&& aOther) noexcept
+    : mWriter(std::move(aOther.mWriter)),
+      mUpdates(std::move(aOther.mUpdates)),
+      mRenderRoot(aOther.mRenderRoot) {
+  for (auto renderRoot : wr::kNonDefaultRenderRoots) {
+    mSubQueues[renderRoot] = std::move(aOther.mSubQueues[renderRoot]);
+  }
+}
+
+IpcResourceUpdateQueue& IpcResourceUpdateQueue::operator=(
+    IpcResourceUpdateQueue&& aOther) noexcept {
+  MOZ_ASSERT(IsEmpty(), "Will forget existing updates!");
+  mWriter = std::move(aOther.mWriter);
+  mUpdates = std::move(aOther.mUpdates);
+  mRenderRoot = aOther.mRenderRoot;
+  for (auto renderRoot : wr::kNonDefaultRenderRoots) {
+    mSubQueues[renderRoot] = std::move(aOther.mSubQueues[renderRoot]);
+  }
+  return *this;
+}
+
+void IpcResourceUpdateQueue::ReplaceResources(IpcResourceUpdateQueue&& aOther) {
+  MOZ_ASSERT(IsEmpty(), "Will forget existing updates!");
+  MOZ_ASSERT(!aOther.HasAnySubQueue(), "Subqueues will be lost!");
+  MOZ_ASSERT(mRenderRoot == aOther.mRenderRoot);
+  mWriter = std::move(aOther.mWriter);
+  mUpdates = std::move(aOther.mUpdates);
+  mRenderRoot = aOther.mRenderRoot;
+}
 
 bool IpcResourceUpdateQueue::AddImage(ImageKey key,
                                       const ImageDescriptor& aDescriptor,
@@ -240,9 +295,10 @@ bool IpcResourceUpdateQueue::AddImage(ImageKey key,
   return true;
 }
 
-bool IpcResourceUpdateQueue::AddBlobImage(ImageKey key,
+bool IpcResourceUpdateQueue::AddBlobImage(BlobImageKey key,
                                           const ImageDescriptor& aDescriptor,
                                           Range<uint8_t> aBytes) {
+  MOZ_RELEASE_ASSERT(aDescriptor.width > 0 && aDescriptor.height > 0);
   auto bytes = mWriter.Write(aBytes);
   if (!bytes.length()) {
     return false;
@@ -256,6 +312,17 @@ void IpcResourceUpdateQueue::AddExternalImage(wr::ExternalImageId aExtId,
   mUpdates.AppendElement(layers::OpAddExternalImage(aExtId, aKey));
 }
 
+void IpcResourceUpdateQueue::PushExternalImageForTexture(
+    wr::ExternalImageId aExtId, wr::ImageKey aKey,
+    layers::TextureClient* aTexture, bool aIsUpdate) {
+  MOZ_ASSERT(aTexture);
+  MOZ_ASSERT(aTexture->GetIPDLActor());
+  MOZ_RELEASE_ASSERT(aTexture->GetIPDLActor()->GetIPCChannel() ==
+                     mWriter.WrBridge()->GetIPCChannel());
+  mUpdates.AppendElement(layers::OpPushExternalImageForTexture(
+      aExtId, aKey, nullptr, aTexture->GetIPDLActor(), aIsUpdate));
+}
+
 bool IpcResourceUpdateQueue::UpdateImageBuffer(
     ImageKey aKey, const ImageDescriptor& aDescriptor, Range<uint8_t> aBytes) {
   auto bytes = mWriter.Write(aBytes);
@@ -266,7 +333,7 @@ bool IpcResourceUpdateQueue::UpdateImageBuffer(
   return true;
 }
 
-bool IpcResourceUpdateQueue::UpdateBlobImage(ImageKey aKey,
+bool IpcResourceUpdateQueue::UpdateBlobImage(BlobImageKey aKey,
                                              const ImageDescriptor& aDescriptor,
                                              Range<uint8_t> aBytes,
                                              ImageIntRect aDirtyRect) {
@@ -279,8 +346,24 @@ bool IpcResourceUpdateQueue::UpdateBlobImage(ImageKey aKey,
   return true;
 }
 
+void IpcResourceUpdateQueue::UpdateExternalImage(wr::ExternalImageId aExtId,
+                                                 wr::ImageKey aKey,
+                                                 ImageIntRect aDirtyRect) {
+  mUpdates.AppendElement(
+      layers::OpUpdateExternalImage(aExtId, aKey, aDirtyRect));
+}
+
+void IpcResourceUpdateQueue::SetBlobImageVisibleArea(
+    wr::BlobImageKey aKey, const ImageIntRect& aArea) {
+  mUpdates.AppendElement(layers::OpSetImageVisibleArea(aArea, aKey));
+}
+
 void IpcResourceUpdateQueue::DeleteImage(ImageKey aKey) {
   mUpdates.AppendElement(layers::OpDeleteImage(aKey));
+}
+
+void IpcResourceUpdateQueue::DeleteBlobImage(BlobImageKey aKey) {
+  mUpdates.AppendElement(layers::OpDeleteBlobImage(aKey));
 }
 
 bool IpcResourceUpdateQueue::AddRawFont(wr::FontKey aKey, Range<uint8_t> aBytes,
@@ -344,6 +427,12 @@ bool IpcResourceUpdateQueue::IsEmpty() const {
 void IpcResourceUpdateQueue::Clear() {
   mWriter.Clear();
   mUpdates.Clear();
+
+  for (auto& subQueue : mSubQueues) {
+    if (subQueue) {
+      subQueue->Clear();
+    }
+  }
 }
 
 // static

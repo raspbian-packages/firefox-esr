@@ -17,17 +17,21 @@
 
 class gfxContext;
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsSVGMaskFrame final : public nsSVGContainerFrame {
-  friend nsIFrame* NS_NewSVGMaskFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext);
+  friend nsIFrame* NS_NewSVGMaskFrame(mozilla::PresShell* aPresShell,
+                                      ComputedStyle* aStyle);
 
   typedef mozilla::gfx::Matrix Matrix;
   typedef mozilla::gfx::SourceSurface SourceSurface;
   typedef mozilla::image::imgDrawingParams imgDrawingParams;
 
  protected:
-  explicit nsSVGMaskFrame(nsStyleContext* aContext)
-      : nsSVGContainerFrame(aContext, kClassID), mInUse(false) {
+  explicit nsSVGMaskFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsSVGContainerFrame(aStyle, aPresContext, kClassID), mInUse(false) {
     AddStateBits(NS_FRAME_IS_NONDISPLAY);
   }
 
@@ -40,12 +44,13 @@ class nsSVGMaskFrame final : public nsSVGContainerFrame {
     const gfxMatrix& toUserSpace;
     float opacity;
     Matrix* maskTransform;
-    uint8_t maskMode;
+    mozilla::StyleMaskMode maskMode;
     imgDrawingParams& imgParams;
 
     explicit MaskParams(gfxContext* aCtx, nsIFrame* aMaskedFrame,
                         const gfxMatrix& aToUserSpace, float aOpacity,
-                        Matrix* aMaskTransform, uint8_t aMaskMode,
+                        Matrix* aMaskTransform,
+                        mozilla::StyleMaskMode aMaskMode,
                         imgDrawingParams& aImgParams)
         : ctx(aCtx),
           maskedFrame(aMaskedFrame),

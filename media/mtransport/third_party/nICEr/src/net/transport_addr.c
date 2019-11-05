@@ -30,11 +30,6 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
-static char *RCSSTRING __UNUSED__="$Id: transport_addr.c,v 1.2 2008/04/28 17:59:03 ekr Exp $";
-
-
 #include <csi_platform.h>
 #include <stdio.h>
 #include <memory.h>
@@ -104,12 +99,12 @@ int nr_transport_addr_fmt_ifname_addr_string(const nr_transport_addr *addr, char
     switch(addr->ip_version){
       case NR_IPV4:
         if (!inet_ntop(AF_INET, &addr->u.addr4.sin_addr,buffer,sizeof(buffer))) {
-           strncpy(buffer, "[error]", len);
+           strncpy(buffer, "[error]", sizeof(buffer));
         }
         break;
       case NR_IPV6:
         if (!inet_ntop(AF_INET6, &addr->u.addr6.sin6_addr,buffer,sizeof(buffer))) {
-           strncpy(buffer, "[error]", len);
+           strncpy(buffer, "[error]", sizeof(buffer));
         }
         break;
       default:
@@ -402,7 +397,7 @@ int nr_transport_addr_is_loopback(nr_transport_addr *addr)
               return 1;
             break;
           default:
-            UNIMPLEMENTED;
+            NR_UNIMPLEMENTED;
             break;
         }
         break;
@@ -412,7 +407,7 @@ int nr_transport_addr_is_loopback(nr_transport_addr *addr)
           return(1);
         break;
       default:
-        UNIMPLEMENTED;
+        NR_UNIMPLEMENTED;
     }
 
     return(0);
@@ -434,7 +429,7 @@ int nr_transport_addr_is_link_local(nr_transport_addr *addr)
         }
         break;
       default:
-        UNIMPLEMENTED;
+        NR_UNIMPLEMENTED;
     }
 
     return(0);
@@ -459,7 +454,7 @@ int nr_transport_addr_is_mac_based(nr_transport_addr *addr)
         }
         break;
       default:
-        UNIMPLEMENTED;
+        NR_UNIMPLEMENTED;
     }
     return(0);
   }
@@ -477,7 +472,7 @@ int nr_transport_addr_is_teredo(nr_transport_addr *addr)
         }
         break;
       default:
-        UNIMPLEMENTED;
+        NR_UNIMPLEMENTED;
     }
 
     return(0);
@@ -514,7 +509,7 @@ int nr_transport_addr_is_wildcard(nr_transport_addr *addr)
           return(1);
         break;
       default:
-        UNIMPLEMENTED;
+        NR_UNIMPLEMENTED;
     }
 
     return(0);
@@ -537,7 +532,7 @@ int nr_transport_addr_get_private_addr_range(nr_transport_addr *addr)
       case NR_IPV4:
         {
           UINT4 ip = ntohl(addr->u.addr4.sin_addr.s_addr);
-          for (int i=0; i<(sizeof(nr_private_ipv4_addrs)/sizeof(nr_transport_addr_mask)); i++) {
+          for (size_t i=0; i<(sizeof(nr_private_ipv4_addrs)/sizeof(nr_transport_addr_mask)); i++) {
             if ((ip & nr_private_ipv4_addrs[i].mask) == nr_private_ipv4_addrs[i].addr)
               return i + 1;
           }
@@ -546,7 +541,7 @@ int nr_transport_addr_get_private_addr_range(nr_transport_addr *addr)
       case NR_IPV6:
         return(0);
       default:
-        UNIMPLEMENTED;
+        NR_UNIMPLEMENTED;
     }
 
     return(0);

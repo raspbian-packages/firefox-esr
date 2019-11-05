@@ -12,6 +12,7 @@
 #include "mozilla/WeakPtr.h"
 #include "mozilla/RelativeTimeline.h"
 #include "mozilla/TimeStamp.h"
+#include "nsITimer.h"
 
 class nsDocShell;
 class nsIURI;
@@ -76,6 +77,13 @@ class nsDOMNavigationTiming final : public mozilla::RelativeTimeline {
   DOMTimeMilliSec GetTimeToNonBlankPaint() const {
     return TimeStampToDOM(mNonBlankPaint);
   }
+  DOMTimeMilliSec GetTimeToContentfulPaint() const {
+    return TimeStampToDOM(mContentfulPaint);
+  }
+  DOMTimeMilliSec GetTimeToTTFI() const { return TimeStampToDOM(mTTFI); }
+  DOMTimeMilliSec GetTimeToDOMContentFlushed() const {
+    return TimeStampToDOM(mDOMContentFlushed);
+  }
 
   DOMHighResTimeStamp GetUnloadEventStartHighRes() {
     mozilla::TimeStamp stamp = GetUnloadEventStartTimeStamp();
@@ -129,7 +137,14 @@ class nsDOMNavigationTiming final : public mozilla::RelativeTimeline {
   void NotifyDOMContentLoadedStart(nsIURI* aURI);
   void NotifyDOMContentLoadedEnd(nsIURI* aURI);
 
+  static void TTITimeoutCallback(nsITimer* aTimer, void* aClosure);
+  void TTITimeout(nsITimer* aTimer);
+
+  void NotifyLongTask(mozilla::TimeStamp aWhen);
   void NotifyNonBlankPaintForRootContentDocument();
+  void NotifyContentfulPaintForRootContentDocument(
+      const mozilla::TimeStamp& aCompositeEndTime);
+  void NotifyDOMContentFlushedForRootContentDocument();
   void NotifyDocShellStateChanged(DocShellState aDocShellState);
 
   DOMTimeMilliSec TimeStampToDOM(mozilla::TimeStamp aStamp) const;
@@ -158,11 +173,14 @@ class nsDOMNavigationTiming final : public mozilla::RelativeTimeline {
 
   nsCOMPtr<nsIURI> mUnloadedURI;
   nsCOMPtr<nsIURI> mLoadedURI;
+  nsCOMPtr<nsITimer> mTTITimer;
 
   Type mNavigationType;
   DOMHighResTimeStamp mNavigationStartHighRes;
   mozilla::TimeStamp mNavigationStart;
   mozilla::TimeStamp mNonBlankPaint;
+  mozilla::TimeStamp mContentfulPaint;
+  mozilla::TimeStamp mDOMContentFlushed;
 
   mozilla::TimeStamp mBeforeUnloadStart;
   mozilla::TimeStamp mUnloadStart;
@@ -175,6 +193,8 @@ class nsDOMNavigationTiming final : public mozilla::RelativeTimeline {
   mozilla::TimeStamp mDOMContentLoadedEventStart;
   mozilla::TimeStamp mDOMContentLoadedEventEnd;
   mozilla::TimeStamp mDOMComplete;
+
+  mozilla::TimeStamp mTTFI;
 
   bool mDocShellHasBeenActiveSinceNavigationStart : 1;
 };

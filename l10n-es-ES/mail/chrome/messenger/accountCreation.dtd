@@ -17,6 +17,10 @@
 <!ENTITY password.text "Opcional, sólo se usará para validar el nombre de usuario">
 <!ENTITY rememberPassword.label "Recordar contraseña">
 <!ENTITY rememberPassword.accesskey "R">
+<!ENTITY usernameEx.label "Su nombre de usuario:">
+<!ENTITY usernameEx.accesskey "u">
+<!ENTITY usernameEx.placeholder "SUDOMINIO\sunombredeusuario">
+<!ENTITY usernameEx.text "Nombre de usuario del dominio">
 <!ENTITY imapLong.label "IMAP (carpetas remotas)">
 <!ENTITY pop3Long.label "POP3 (conservar correo en su equipo)">
 <!ENTITY incoming.label "Entrante:">
@@ -28,11 +32,13 @@
 <!ENTITY auth.label "Identificación">
 <!ENTITY imap.label "IMAP">
 <!ENTITY pop3.label "POP3">
+<!ENTITY exchange.label "Exchange">
 <!ENTITY smtp.label "SMTP">
 <!ENTITY autodetect.label "Autodetectar">
 <!ENTITY noEncryption.label "Ninguno">
 <!ENTITY starttls.label "STARTTLS">
 <!ENTITY sslTls.label "SSL/TLS">
+<!ENTITY exchange-hostname.label "Servidor Exchange:">
 <!ENTITY advancedSetup.label "Config. avanzada">
 <!ENTITY advancedSetup.accesskey "C">
 <!ENTITY cancel.label "Cancelar">

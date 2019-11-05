@@ -5,7 +5,6 @@
 blocklist-window =
     .title = ਪਾਬੰਦੀਸ਼ੁਦਾ ਸੂਚੀ
     .style = width: 50em
-blocklist-desc = ਤੁਸੀਂ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ ਕਿ ਸੂਚੀ ਨੂੰ ਫਾਇਰਫਾਕਸ ਵੈੱਬ ਭਾਗਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਗਾਉਣ ਲਈ ਵਰਤੇ, ਜੋ ਕਿ ਤੁਹਾਡੀਆਂ ਬਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਨੂੰ ਟਰੈਕ ਕਰ ਸਕਦੇ ਹਨ।
 blocklist-close-key =
     .key = w
 blocklist-treehead-list =
@@ -14,5 +13,17 @@ blocklist-button-cancel =
     .label = ਰੱਦ ਕਰੋ
     .accesskey = C
 blocklist-button-ok =
-    .label = ਤਬਦੀਲੀਆਂ ਨੂੰ ਸੰਭਾਲੋ
+    .label = ਬਦਲਾਅ ਸੰਭਾਲੋ
     .accesskey = S
+# This template constructs the name of the block list in the block lists dialog.
+# It combines the list name and description.
+# e.g. "Standard (Recommended). This list does a pretty good job."
+#
+# Variables:
+#   $listName {string, "Standard (Recommended)."} - List name.
+#   $description {string, "This list does a pretty good job."} - Description of the list.
+blocklist-item-list-template = { $listName } { $description }
+blocklist-item-moz-std-listName = ਪੱਧਰ 1 ਪਾਬੰਦੀ ਸੂਚੀ (ਸਿਫਾਰਸ਼ੀ)।
+blocklist-item-moz-std-description = ਕੁਝ ਟਰੈਕਰਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਆ ਤਾਂ ਕਿ ਘੱਟ ਵੈੱਬਸਾਈਟ ਖ਼ਰਾਬ ਹੋਣ।
+blocklist-item-moz-full-listName = ਪੱਧਰ 2 ਪਾਬੰਦੀ ਸੂਚੀ।
+blocklist-item-moz-full-description = ਸਾਰੇ ਖੋਜੇ ਗਏ ਟਰੈਕਰਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਗਾਉ। ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ ਜਾਂ ਸਮੱਗਰੀ ਠੀਕ ਤਰ੍ਹਾਂ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕਦੀ ਹੈ।

@@ -26,7 +26,7 @@ SpeechRecognitionResultList::SpeechRecognitionResultList(
     SpeechRecognition* aParent)
     : mParent(aParent) {}
 
-SpeechRecognitionResultList::~SpeechRecognitionResultList() {}
+SpeechRecognitionResultList::~SpeechRecognitionResultList() = default;
 
 nsISupports* SpeechRecognitionResultList::GetParentObject() const {
   return static_cast<DOMEventTargetHelper*>(mParent.get());
@@ -34,7 +34,7 @@ nsISupports* SpeechRecognitionResultList::GetParentObject() const {
 
 JSObject* SpeechRecognitionResultList::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return SpeechRecognitionResultListBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechRecognitionResultList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<SpeechRecognitionResult>

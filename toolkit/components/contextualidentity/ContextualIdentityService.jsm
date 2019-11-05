@@ -4,14 +4,21 @@
 
 var EXPORTED_SYMBOLS = ["ContextualIdentityService"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
+// The maximum valid numeric value for the userContextId.
+const MAX_USER_CONTEXT_ID = -1 >>> 0;
+const LAST_CONTAINERS_JSON_VERSION = 4;
 const SAVE_DELAY_MS = 1500;
 const CONTEXTUAL_IDENTITY_ENABLED_PREF = "privacy.userContext.enabled";
 
 XPCOMUtils.defineLazyGetter(this, "gBrowserBundle", function() {
-  return Services.strings.createBundle("chrome://browser/locale/browser.properties");
+  return Services.strings.createBundle(
+    "chrome://browser/locale/browser.properties"
+  );
 });
 
 XPCOMUtils.defineLazyGetter(this, "gTextDecoder", function() {
@@ -22,41 +29,50 @@ XPCOMUtils.defineLazyGetter(this, "gTextEncoder", function() {
   return new TextEncoder();
 });
 
-ChromeUtils.defineModuleGetter(this, "AsyncShutdown",
-                               "resource://gre/modules/AsyncShutdown.jsm");
-ChromeUtils.defineModuleGetter(this, "OS",
-                               "resource://gre/modules/osfile.jsm");
-ChromeUtils.defineModuleGetter(this, "DeferredTask",
-                               "resource://gre/modules/DeferredTask.jsm");
-ChromeUtils.defineModuleGetter(this, "FileUtils",
-                               "resource://gre/modules/FileUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "NetUtil",
-                               "resource://gre/modules/NetUtil.jsm");
-ChromeUtils.defineModuleGetter(this, "AppConstants",
-                               "resource://gre/modules/AppConstants.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "AsyncShutdown",
+  "resource://gre/modules/AsyncShutdown.jsm"
+);
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "DeferredTask",
+  "resource://gre/modules/DeferredTask.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "FileUtils",
+  "resource://gre/modules/FileUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "NetUtil",
+  "resource://gre/modules/NetUtil.jsm"
+);
 
-function _TabRemovalObserver(resolver, tabParentIds) {
+function _TabRemovalObserver(resolver, remoteTabIds) {
   this._resolver = resolver;
-  this._tabParentIds = tabParentIds;
+  this._remoteTabIds = remoteTabIds;
   Services.obs.addObserver(this, "ipc:browser-destroyed");
 }
 
 _TabRemovalObserver.prototype = {
   _resolver: null,
-  _tabParentIds: null,
+  _remoteTabIds: null,
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIObserver]),
 
   observe(subject, topic, data) {
-    let tabParent = subject.QueryInterface(Ci.nsITabParent);
-    if (this._tabParentIds.has(tabParent.tabId)) {
-      this._tabParentIds.delete(tabParent.tabId);
-      if (this._tabParentIds.size == 0) {
+    let remoteTab = subject.QueryInterface(Ci.nsIRemoteTab);
+    if (this._remoteTabIds.has(remoteTab.tabId)) {
+      this._remoteTabIds.delete(remoteTab.tabId);
+      if (this._remoteTabIds.size == 0) {
         Services.obs.removeObserver(this, "ipc:browser-destroyed");
         this._resolver();
       }
     }
-  }
+  },
 };
 
 function _ContextualIdentityService(path) {
@@ -64,8 +80,11 @@ function _ContextualIdentityService(path) {
 }
 
 _ContextualIdentityService.prototype = {
+  LAST_CONTAINERS_JSON_VERSION,
+
   _defaultIdentities: [
-    { userContextId: 1,
+    {
+      userContextId: 1,
       public: true,
       icon: "fingerprint",
       color: "blue",
@@ -73,7 +92,8 @@ _ContextualIdentityService.prototype = {
       accessKey: "userContextPersonal.accesskey",
       telemetryId: 1,
     },
-    { userContextId: 2,
+    {
+      userContextId: 2,
       public: true,
       icon: "briefcase",
       color: "orange",
@@ -81,7 +101,8 @@ _ContextualIdentityService.prototype = {
       accessKey: "userContextWork.accesskey",
       telemetryId: 2,
     },
-    { userContextId: 3,
+    {
+      userContextId: 3,
       public: true,
       icon: "dollar",
       color: "green",
@@ -89,7 +110,8 @@ _ContextualIdentityService.prototype = {
       accessKey: "userContextBanking.accesskey",
       telemetryId: 3,
     },
-    { userContextId: 4,
+    {
+      userContextId: 4,
       public: true,
       icon: "cart",
       color: "pink",
@@ -97,12 +119,26 @@ _ContextualIdentityService.prototype = {
       accessKey: "userContextShopping.accesskey",
       telemetryId: 4,
     },
-    { userContextId: 5,
+    {
+      userContextId: 5,
       public: false,
       icon: "",
       color: "",
       name: "userContextIdInternal.thumbnail",
-      accessKey: "" },
+      accessKey: "",
+    },
+    // This userContextId is used by ExtensionStorageIDB.jsm to create an IndexedDB database
+    // opened with the extension principal but not directly accessible to the extension code
+    // (do not change the userContextId assigned here, otherwise the installed extensions will
+    // not be able to access the data previously stored with the browser.storage.local API).
+    {
+      userContextId: MAX_USER_CONTEXT_ID,
+      public: false,
+      icon: "",
+      color: "",
+      name: "userContextIdInternal.webextStorageLocal",
+      accessKey: "",
+    },
   ],
 
   _identities: null,
@@ -122,7 +158,9 @@ _ContextualIdentityService.prototype = {
 
   async observe(aSubject, aTopic) {
     if (aTopic === "nsPref:changed") {
-      const contextualIdentitiesEnabled = Services.prefs.getBoolPref(CONTEXTUAL_IDENTITY_ENABLED_PREF);
+      const contextualIdentitiesEnabled = Services.prefs.getBoolPref(
+        CONTEXTUAL_IDENTITY_ENABLED_PREF
+      );
       if (!contextualIdentitiesEnabled) {
         await this.closeContainerTabs();
         this.notifyAllContainersCleared();
@@ -132,28 +170,40 @@ _ContextualIdentityService.prototype = {
   },
 
   load() {
-    OS.File.read(this._path).then(bytes => {
-      // If synchronous loading happened in the meantime, exit now.
-      if (this._dataReady) {
-        return;
-      }
+    return OS.File.read(this._path).then(
+      bytes => {
+        // If synchronous loading happened in the meantime, exit now.
+        if (this._dataReady) {
+          return;
+        }
 
-      try {
-        this.parseData(bytes);
-      } catch (error) {
+        try {
+          this.parseData(bytes);
+        } catch (error) {
+          this.loadError(error);
+        }
+      },
+      error => {
         this.loadError(error);
       }
-    }, (error) => {
-      this.loadError(error);
-    });
+    );
   },
 
   resetDefault() {
     this._identities = [];
+
+    // Compute the last used context id (excluding the reserved userContextIds
+    // "userContextIdInternal.webextStorageLocal" which has UINT32_MAX as its
+    // userContextId).
+    this._lastUserContextId = this._defaultIdentities
+      .filter(identity => identity.userContextId < MAX_USER_CONTEXT_ID)
+      .map(identity => identity.userContextId)
+      .sort((a, b) => a >= b)
+      .pop();
+
     // Clone the array
-    this._lastUserContextId = this._defaultIdentities.length;
-    for (let i = 0; i < this._lastUserContextId; i++) {
-      this._identities.push(Object.assign({}, this._defaultIdentities[i]));
+    for (let identity of this._defaultIdentities) {
+      this._identities.push(Object.assign({}, identity));
     }
     this._openedIdentities = new Set();
 
@@ -167,10 +217,14 @@ _ContextualIdentityService.prototype = {
   },
 
   loadError(error) {
-    if (error != null &&
-        !(error instanceof OS.File.Error && error.becauseNoSuchFile) &&
-        !(error instanceof Components.Exception &&
-          error.result == Cr.NS_ERROR_FILE_NOT_FOUND)) {
+    if (
+      error != null &&
+      !(error instanceof OS.File.Error && error.becauseNoSuchFile) &&
+      !(
+        error instanceof Components.Exception &&
+        error.result == Cr.NS_ERROR_FILE_NOT_FOUND
+      )
+    ) {
       // Let's report the error.
       Cu.reportError(error);
     }
@@ -189,7 +243,9 @@ _ContextualIdentityService.prototype = {
 
       this._saver = new DeferredTask(() => this.save(), SAVE_DELAY_MS);
       AsyncShutdown.profileBeforeChange.addBlocker(
-        "ContextualIdentityService: writing data", this._saverCallback);
+        "ContextualIdentityService: writing data",
+        this._saverCallback
+      );
     } else {
       this._saver.disarm();
     }
@@ -204,31 +260,46 @@ _ContextualIdentityService.prototype = {
     this._saverCallback = null;
 
     let object = {
-      version: 3,
+      version: LAST_CONTAINERS_JSON_VERSION,
       lastUserContextId: this._lastUserContextId,
-      identities: this._identities
+      identities: this._identities,
     };
 
     let bytes = gTextEncoder.encode(JSON.stringify(object));
-    return OS.File.writeAtomic(this._path, bytes,
-                               { tmpPath: this._path + ".tmp" });
+    return OS.File.writeAtomic(this._path, bytes, {
+      tmpPath: this._path + ".tmp",
+    });
   },
 
   create(name, icon, color) {
     this.ensureDataReady();
 
+    // Retrieve the next userContextId available.
+    let userContextId = ++this._lastUserContextId;
+
+    // Throw an error if the next userContextId available is invalid (the one associated to
+    // MAX_USER_CONTEXT_ID is already reserved to "userContextIdInternal.webextStorageLocal", which
+    // is also the last valid userContextId available, because its userContextId is equal to UINT32_MAX).
+    if (userContextId >= MAX_USER_CONTEXT_ID) {
+      throw new Error(
+        `Unable to create a new userContext with id '${userContextId}'`
+      );
+    }
+
     let identity = {
-      userContextId: ++this._lastUserContextId,
+      userContextId,
       public: true,
       icon,
       color,
-      name
+      name,
     };
 
     this._identities.push(identity);
     this.saveSoon();
-    Services.obs.notifyObservers(this.getIdentityObserverOutput(identity),
-                                 "contextual-identity-created");
+    Services.obs.notifyObservers(
+      this.getIdentityObserverOutput(identity),
+      "contextual-identity-created"
+    );
 
     return Cu.cloneInto(identity, {});
   },
@@ -236,8 +307,9 @@ _ContextualIdentityService.prototype = {
   update(userContextId, name, icon, color) {
     this.ensureDataReady();
 
-    let identity = this._identities.find(identity => identity.userContextId == userContextId &&
-                                         identity.public);
+    let identity = this._identities.find(
+      identity => identity.userContextId == userContextId && identity.public
+    );
     if (identity && name) {
       identity.name = name;
       identity.color = color;
@@ -246,8 +318,10 @@ _ContextualIdentityService.prototype = {
       delete identity.accessKey;
 
       this.saveSoon();
-      Services.obs.notifyObservers(this.getIdentityObserverOutput(identity),
-                                   "contextual-identity-updated");
+      Services.obs.notifyObservers(
+        this.getIdentityObserverOutput(identity),
+        "contextual-identity-updated"
+      );
     }
 
     return !!identity;
@@ -256,15 +330,18 @@ _ContextualIdentityService.prototype = {
   remove(userContextId) {
     this.ensureDataReady();
 
-    let index = this._identities.findIndex(i => i.userContextId == userContextId && i.public);
+    let index = this._identities.findIndex(
+      i => i.userContextId == userContextId && i.public
+    );
     if (index == -1) {
       return false;
     }
 
-    Services.obs.notifyObservers(null, "clear-origin-attributes-data",
-                                 JSON.stringify({ userContextId }));
+    Services.clearData.deleteDataFromOriginAttributesPattern({ userContextId });
 
-    let deletedOutput = this.getIdentityObserverOutput(this.getPublicIdentityFromId(userContextId));
+    let deletedOutput = this.getIdentityObserverOutput(
+      this.getPublicIdentityFromId(userContextId)
+    );
     this._identities.splice(index, 1);
     this._openedIdentities.delete(userContextId);
     this.saveSoon();
@@ -281,7 +358,7 @@ _ContextualIdentityService.prototype = {
       userContextId: identity.userContextId,
     };
 
-    return {wrappedJSObject};
+    return { wrappedJSObject };
   },
 
   parseData(bytes) {
@@ -298,8 +375,17 @@ _ContextualIdentityService.prototype = {
       saveNeeded = true;
     }
 
-    if (data.version != 3) {
-      dump("ERROR - ContextualIdentityService - Unknown version found in " + this._path + "\n");
+    if (data.version == 3) {
+      data = this.migrate3to4(data);
+      saveNeeded = true;
+    }
+
+    if (data.version != LAST_CONTAINERS_JSON_VERSION) {
+      dump(
+        "ERROR - ContextualIdentityService - Unknown version found in " +
+          this._path +
+          "\n"
+      );
       this.loadError(null);
       return;
     }
@@ -322,12 +408,20 @@ _ContextualIdentityService.prototype = {
 
     try {
       // This reads the file and automatically detects the UTF-8 encoding.
-      let inputStream = Cc["@mozilla.org/network/file-input-stream;1"]
-                          .createInstance(Ci.nsIFileInputStream);
-      inputStream.init(new FileUtils.File(this._path),
-                       FileUtils.MODE_RDONLY, FileUtils.PERMS_FILE, 0);
+      let inputStream = Cc[
+        "@mozilla.org/network/file-input-stream;1"
+      ].createInstance(Ci.nsIFileInputStream);
+      inputStream.init(
+        new FileUtils.File(this._path),
+        FileUtils.MODE_RDONLY,
+        FileUtils.PERMS_FILE,
+        0
+      );
       try {
-        let bytes = NetUtil.readInputStream(inputStream, inputStream.available());
+        let bytes = NetUtil.readInputStream(
+          inputStream,
+          inputStream.available()
+        );
         this.parseData(bytes);
       } finally {
         inputStream.close();
@@ -337,6 +431,12 @@ _ContextualIdentityService.prototype = {
     }
   },
 
+  getPrivateUserContextIds() {
+    return this._identities
+      .filter(identity => !identity.public)
+      .map(identity => identity.userContextId);
+  },
+
   getPublicIdentities() {
     this.ensureDataReady();
     return Cu.cloneInto(this._identities.filter(info => info.public), {});
@@ -344,13 +444,30 @@ _ContextualIdentityService.prototype = {
 
   getPrivateIdentity(name) {
     this.ensureDataReady();
-    return Cu.cloneInto(this._identities.find(info => !info.public && info.name == name), {});
+    return Cu.cloneInto(
+      this._identities.find(info => !info.public && info.name == name),
+      {}
+    );
+  },
+
+  // getDefaultPrivateIdentity is similar to getPrivateIdentity but it only looks in the
+  // default identities (e.g. it is used in the data migration methods to retrieve a new default
+  // private identity and add it to the containers data stored on file).
+  getDefaultPrivateIdentity(name) {
+    return Cu.cloneInto(
+      this._defaultIdentities.find(info => !info.public && info.name == name),
+      {}
+    );
   },
 
   getPublicIdentityFromId(userContextId) {
     this.ensureDataReady();
-    return Cu.cloneInto(this._identities.find(info => info.userContextId == userContextId &&
-                                              info.public), {});
+    return Cu.cloneInto(
+      this._identities.find(
+        info => info.userContextId == userContextId && info.public
+      ),
+      {}
+    );
   },
 
   getUserContextLabel(userContextId) {
@@ -374,7 +491,17 @@ _ContextualIdentityService.prototype = {
 
     let userContextId = tab.getAttribute("usercontextid");
     let identity = this.getPublicIdentityFromId(userContextId);
-    tab.setAttribute("data-identity-color", identity ? identity.color : "");
+
+    let prefix = "identity-color-";
+    /* Remove the existing container color highlight if it exists */
+    for (let className of tab.classList) {
+      if (className.startsWith(prefix)) {
+        tab.classList.remove(className);
+      }
+    }
+    if (identity && identity.color) {
+      tab.classList.add(prefix + identity.color);
+    }
   },
 
   countContainerTabs(userContextId = 0) {
@@ -387,49 +514,54 @@ _ContextualIdentityService.prototype = {
 
   closeContainerTabs(userContextId = 0) {
     return new Promise(resolve => {
-      let tabParentIds = new Set();
+      let remoteTabIds = new Set();
       this._forEachContainerTab((tab, tabbrowser) => {
         let frameLoader = tab.linkedBrowser.frameLoader;
 
-        // We don't have tabParent in non-e10s mode.
-        if (frameLoader.tabParent) {
-          tabParentIds.add(frameLoader.tabParent.tabId);
+        // We don't have remoteTab in non-e10s mode.
+        if (frameLoader.remoteTab) {
+          remoteTabIds.add(frameLoader.remoteTab.tabId);
         }
 
         tabbrowser.removeTab(tab);
       }, userContextId);
 
-      if (tabParentIds.size == 0) {
+      if (remoteTabIds.size == 0) {
         resolve();
         return;
       }
 
-      new _TabRemovalObserver(resolve, tabParentIds);
+      new _TabRemovalObserver(resolve, remoteTabIds);
     });
   },
 
   notifyAllContainersCleared() {
     for (let identity of this._identities) {
-      Services.obs.notifyObservers(null, "clear-origin-attributes-data",
-                                   JSON.stringify({ userContextId: identity.userContextId }));
+      // Don't clear the data related to private identities (e.g. the one used internally
+      // for the thumbnails and the one used for the storage.local IndexedDB backend).
+      if (!identity.public) {
+        continue;
+      }
+      Services.clearData.deleteDataFromOriginAttributesPattern({
+        userContextId: identity.userContextId,
+      });
     }
   },
 
   _forEachContainerTab(callback, userContextId = 0) {
-    let windowList = Services.wm.getEnumerator("navigator:browser");
-    while (windowList.hasMoreElements()) {
-      let win = windowList.getNext();
-
+    for (let win of Services.wm.getEnumerator("navigator:browser")) {
       if (win.closed || !win.gBrowser) {
         continue;
       }
 
       let tabbrowser = win.gBrowser;
-      for (let i = tabbrowser.tabContainer.childNodes.length - 1; i >= 0; --i) {
-        let tab = tabbrowser.tabContainer.childNodes[i];
-        if (tab.hasAttribute("usercontextid") &&
-                  (!userContextId ||
-                   parseInt(tab.getAttribute("usercontextid"), 10) == userContextId)) {
+      for (let i = tabbrowser.tabContainer.children.length - 1; i >= 0; --i) {
+        let tab = tabbrowser.tabContainer.children[i];
+        if (
+          tab.hasAttribute("usercontextid") &&
+          (!userContextId ||
+            parseInt(tab.getAttribute("usercontextid"), 10) == userContextId)
+        ) {
           callback(tab, tabbrowser);
         }
       }
@@ -452,8 +584,9 @@ _ContextualIdentityService.prototype = {
     Services.telemetry.getHistogramById("TOTAL_CONTAINERS_OPENED").add(1);
 
     if (identity.telemetryId) {
-      Services.telemetry.getHistogramById("CONTAINER_USED")
-                        .add(identity.telemetryId);
+      Services.telemetry
+        .getHistogramById("CONTAINER_USED")
+        .add(identity.telemetryId);
     }
   },
 
@@ -462,19 +595,31 @@ _ContextualIdentityService.prototype = {
   },
 
   deleteContainerData() {
+    // The userContextId 0 is reserved to the default firefox identity,
+    // and it should not be clear when we delete the public containers data.
     let minUserContextId = 1;
-    let maxUserContextId = minUserContextId;
-    const enumerator = Services.cookies.enumerator;
-    while (enumerator.hasMoreElements()) {
-      const cookie = enumerator.getNext().QueryInterface(Ci.nsICookie);
-      if (cookie.originAttributes.userContextId > maxUserContextId) {
-        maxUserContextId = cookie.originAttributes.userContextId;
+
+    // Collect the userContextId related to the identities that should not be cleared
+    // (the ones marked as `public = false`).
+    const keepDataContextIds = this.getPrivateUserContextIds();
+
+    // Collect the userContextIds currently used by any stored cookie.
+    let cookiesUserContextIds = new Set();
+
+    for (let cookie of Services.cookies.enumerator) {
+      // Skip any userContextIds that should not be cleared.
+      if (
+        cookie.originAttributes.userContextId >= minUserContextId &&
+        !keepDataContextIds.includes(cookie.originAttributes.userContextId)
+      ) {
+        cookiesUserContextIds.add(cookie.originAttributes.userContextId);
       }
     }
 
-    for (let i = minUserContextId; i <= maxUserContextId; ++i) {
-      Services.obs.notifyObservers(null, "clear-origin-attributes-data",
-                                   JSON.stringify({ userContextId: i }));
+    for (let userContextId of cookiesUserContextIds) {
+      Services.clearData.deleteDataFromOriginAttributesPattern({
+        userContextId,
+      });
     }
   },
 
@@ -482,6 +627,24 @@ _ContextualIdentityService.prototype = {
     // migrating from 2 to 3 is basically just increasing the version id.
     // This migration was needed for bug 1419591. See bug 1419591 to know more.
     data.version = 3;
+
+    return data;
+  },
+
+  migrate3to4(data) {
+    // Migrating from 3 to 4 is:
+    // - adding the reserver userContextId used by the webextension storage.local API
+    // - add the keepData property to all the existent identities
+    // - increasing the version id.
+    //
+    // This migration was needed for Bug 1406181. See bug 1406181 for rationale.
+    const webextStorageLocalIdentity = this.getDefaultPrivateIdentity(
+      "userContextIdInternal.webextStorageLocal"
+    );
+
+    data.identities.push(webextStorageLocalIdentity);
+
+    data.version = 4;
 
     return data;
   },

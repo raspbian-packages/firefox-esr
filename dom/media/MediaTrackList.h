@@ -32,7 +32,7 @@ class VideoStreamTrack;
  */
 class MediaTrackList : public DOMEventTargetHelper {
  public:
-  MediaTrackList(nsPIDOMWindowInner* aOwnerWindow,
+  MediaTrackList(nsIGlobalObject* aOwnerObject,
                  HTMLMediaElement* aMediaElement);
 
   NS_DECL_ISUPPORTS_INHERITED
@@ -44,6 +44,7 @@ class MediaTrackList : public DOMEventTargetHelper {
   // for array mTracks.
   MediaTrack* operator[](uint32_t aIndex);
 
+  // The track must be from the same Window as this MediaTrackList.
   void AddTrack(MediaTrack* aTrack);
 
   // In remove track case, the VideoTrackList::mSelectedIndex should be updated
@@ -53,13 +54,15 @@ class MediaTrackList : public DOMEventTargetHelper {
   void RemoveTracks();
 
   static already_AddRefed<AudioTrack> CreateAudioTrack(
-      const nsAString& aId, const nsAString& aKind, const nsAString& aLabel,
+      nsIGlobalObject* aOwnerGlobal, const nsAString& aId,
+      const nsAString& aKind, const nsAString& aLabel,
       const nsAString& aLanguage, bool aEnabled);
 
   // For the case of src of HTMLMediaElement is non-MediaStream, leave the
   // aVideoTrack as default(nullptr).
   static already_AddRefed<VideoTrack> CreateVideoTrack(
-      const nsAString& aId, const nsAString& aKind, const nsAString& aLabel,
+      nsIGlobalObject* aOwnerGlobal, const nsAString& aId,
+      const nsAString& aKind, const nsAString& aLabel,
       const nsAString& aLanguage, VideoStreamTrack* aVideoTrack = nullptr);
 
   virtual void EmptyTracks();

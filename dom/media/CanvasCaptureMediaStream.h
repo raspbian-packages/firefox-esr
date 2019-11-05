@@ -14,7 +14,6 @@ class nsIPrincipal;
 
 namespace mozilla {
 class DOMMediaStream;
-class MediaStreamListener;
 class SourceMediaStream;
 
 namespace layers {
@@ -44,16 +43,10 @@ class OutputStreamFrameListener;
  * | Canvas |  SetFrameCapture()        | (FrameCaptureListener) |
  * |________| ------------------------> |________________________|
  *                                                  |
- *                                                  | SetImage()
+ *                                                  | SetImage() -
+ *                                                  | AppendToTrack()
+ *                                                  |
  *                                                  v
- *                                         ___________________
- *                                        |   StreamListener  |
- * ---------------------------------------| (All image access |----------------
- *     === MediaStreamGraph Thread ===    |   Mutex Guarded)  |
- *                                        |___________________|
- *                                              ^       |
- *                                 NotifyPull() |       | AppendToTrack()
- *                                              |       v
  *                                      ___________________________
  *                                     |                           |
  *                                     |  MSG / SourceMediaStream  |
@@ -80,6 +73,12 @@ class OutputStreamDriver : public FrameCaptureListener {
   void SetImage(const RefPtr<layers::Image>& aImage, const TimeStamp& aTime);
 
   /*
+   * Ends the track in mSourceStream when we know there won't be any more images
+   * requested for it.
+   */
+  void EndTrack();
+
+  /*
    * Makes sure any internal resources this driver is holding that may create
    * reference cycles are released.
    */
@@ -87,11 +86,11 @@ class OutputStreamDriver : public FrameCaptureListener {
 
  protected:
   virtual ~OutputStreamDriver();
-  class StreamListener;
 
  private:
-  RefPtr<SourceMediaStream> mSourceStream;
-  RefPtr<StreamListener> mStreamListener;
+  const TrackID mTrackId;
+  const RefPtr<SourceMediaStream> mSourceStream;
+  const PrincipalHandle mPrincipalHandle;
 };
 
 class CanvasCaptureMediaStream : public DOMMediaStream {

@@ -7,12 +7,16 @@
 #ifndef mozilla_layers_GeckoContentController_h
 #define mozilla_layers_GeckoContentController_h
 
-#include "FrameMetrics.h"           // for FrameMetrics, etc
-#include "InputData.h"              // for PinchGestureInput
-#include "Units.h"                  // for CSSPoint, CSSRect, etc
-#include "mozilla/Assertions.h"     // for MOZ_ASSERT_HELPER2
-#include "mozilla/DefineEnum.h"     // for MOZ_DEFINE_ENUM
-#include "mozilla/EventForwards.h"  // for Modifiers
+#include "InputData.h"                           // for PinchGestureInput
+#include "LayersTypes.h"                         // for ScrollDirection
+#include "Units.h"                               // for CSSPoint, CSSRect, etc
+#include "mozilla/Assertions.h"                  // for MOZ_ASSERT_HELPER2
+#include "mozilla/Attributes.h"                  // for MOZ_CAN_RUN_SCRIPT
+#include "mozilla/DefineEnum.h"                  // for MOZ_DEFINE_ENUM
+#include "mozilla/EventForwards.h"               // for Modifiers
+#include "mozilla/layers/MatrixMessage.h"        // for MatrixMessage
+#include "mozilla/layers/RepaintRequest.h"       // for RepaintRequest
+#include "mozilla/layers/ScrollableLayerGuid.h"  // for ScrollableLayerGuid, etc
 #include "nsISupportsImpl.h"
 
 namespace mozilla {
@@ -26,7 +30,16 @@ class GeckoContentController {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(GeckoContentController)
 
   /**
-   * Requests a paint of the given FrameMetrics |aFrameMetrics| from Gecko.
+   * Notifies the content side of the most recently computed transforms for
+   * each layers subtree to the root. The nsTArray will contain one
+   *  MatrixMessage for each layers id in the current APZ tree, along with the
+   * corresponding transform.
+   */
+  virtual void NotifyLayerTransforms(
+      const nsTArray<MatrixMessage>& aTransforms) = 0;
+
+  /**
+   * Requests a paint of the given RepaintRequest |aRequest| from Gecko.
    * Implementations per-platform are responsible for actually handling this.
    *
    * This method must always be called on the repaint thread, which depends
@@ -34,7 +47,7 @@ class GeckoContentController {
    * Gecko main thread, while for RemoteContentController it is the compositor
    * thread where it can send IPDL messages.
    */
-  virtual void RequestContentRepaint(const FrameMetrics& aFrameMetrics) = 0;
+  virtual void RequestContentRepaint(const RepaintRequest& aRequest) = 0;
 
   /**
    * Different types of tap-related events that can be sent in
@@ -64,6 +77,7 @@ class GeckoContentController {
    * Requests handling of a tap event. |aPoint| is in LD pixels, relative to the
    * current scroll offset.
    */
+  MOZ_CAN_RUN_SCRIPT
   virtual void HandleTap(TapType aType, const LayoutDevicePoint& aPoint,
                          Modifiers aModifiers, const ScrollableLayerGuid& aGuid,
                          uint64_t aInputBlockId) = 0;
@@ -149,18 +163,30 @@ class GeckoContentController {
   /**
    * Notify content of a MozMouseScrollFailed event.
    */
-  virtual void NotifyMozMouseScrollEvent(const FrameMetrics::ViewID& aScrollId,
-                                         const nsString& aEvent) {}
+  virtual void NotifyMozMouseScrollEvent(
+      const ScrollableLayerGuid::ViewID& aScrollId, const nsString& aEvent) {}
 
   /**
    * Notify content that the repaint requests have been flushed.
    */
   virtual void NotifyFlushComplete() = 0;
 
+  /**
+   * If the async scrollbar-drag initiation code kicks in on the APZ side, then
+   * we need to let content know that we are dragging the scrollbar. Otherwise,
+   * by the time the mousedown events is handled by content, the scrollthumb
+   * could already have been moved via a RequestContentRepaint message at a
+   * new scroll position, and the mousedown might end up triggering a click-to-
+   * scroll on where the thumb used to be.
+   */
+  virtual void NotifyAsyncScrollbarDragInitiated(
+      uint64_t aDragBlockId, const ScrollableLayerGuid::ViewID& aScrollId,
+      ScrollDirection aDirection) = 0;
   virtual void NotifyAsyncScrollbarDragRejected(
-      const FrameMetrics::ViewID& aScrollId) = 0;
+      const ScrollableLayerGuid::ViewID& aScrollId) = 0;
+
   virtual void NotifyAsyncAutoscrollRejected(
-      const FrameMetrics::ViewID& aScrollId) = 0;
+      const ScrollableLayerGuid::ViewID& aScrollId) = 0;
 
   virtual void CancelAutoscroll(const ScrollableLayerGuid& aGuid) = 0;
 
@@ -176,9 +202,14 @@ class GeckoContentController {
    */
   virtual void Destroy() {}
 
+  /**
+   * Whether this is RemoteContentController.
+   */
+  virtual bool IsRemote() { return false; }
+
  protected:
   // Protected destructor, to discourage deletion outside of Release():
-  virtual ~GeckoContentController() {}
+  virtual ~GeckoContentController() = default;
 };
 
 }  // namespace layers

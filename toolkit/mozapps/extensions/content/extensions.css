@@ -9,16 +9,13 @@ xhtml|link {
   display: none;
 }
 
-#categories {
-  -moz-binding: url("chrome://mozapps/content/extensions/extensions.xml#categories-list");
-}
-
 .category {
   -moz-binding: url("chrome://mozapps/content/extensions/extensions.xml#category");
 }
 
-.sort-controls {
-  -moz-binding: url("chrome://mozapps/content/extensions/extensions.xml#sorters");
+.sidebar-footer-button > .text-link {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .addon[status="installed"] {
@@ -57,7 +54,6 @@ xhtml|link {
 
 .text-list {
   white-space: pre-line;
-  -moz-user-select: element;
 }
 
 row[unsupported="true"] {
@@ -111,6 +107,21 @@ row[unsupported="true"] {
   display: none;
 }
 
+.addon .privateBrowsing-notice {
+  display: none;
+}
+.addon[privateBrowsing="true"] .privateBrowsing-notice-container {
+  /* 40px is width and margin of .icon-container */
+  margin-inline-start: 40px;
+}
+.addon[privateBrowsing="true"] .privateBrowsing-notice {
+  margin: 4px 0 0;
+  display: inline-block;
+}
+.addon[active="false"] .privateBrowsing-notice {
+  background-color: var(--purple-70-a40);
+}
+
 #addons-page:not([warning]) #list-view > .global-warning-container {
   display: none;
 }
@@ -135,15 +146,30 @@ row[unsupported="true"] {
 
 /* Plugins aren't yet disabled by safemode (bug 342333),
    so don't show that warning when viewing plugins. */
+#addons-page[warning="safemode"] #html-view[type="list"][param="plugin"] .global-warning-safemode,
 #addons-page[warning="safemode"] .view-pane[type="plugin"] .global-warning-container,
 #addons-page[warning="safemode"] #detail-view[loading="true"] .global-warning {
   display: none;
 }
-
-#addons-page .view-pane:not([type="theme"]) #getthemes-container,
-#addons-page .view-pane:not([type="plugin"]) #plugindeprecation-notice,
-#addons-page .view-pane:not([type="experiment"]) .experiment-info-container {
+#addons-page .view-pane:not([type="plugin"]) #plugindeprecation-notice {
   display: none;
+}
+
+.list-view-notice {
+  margin-inline-start: 28px;
+  margin-bottom: 16px;
+}
+
+.list-view-notice > .message-bar {
+  width: 664px;
+}
+
+.html-alert-container > .message-bar {
+  margin-bottom: 8px;
+}
+
+.html-global-warning-button {
+  margin-inline: 0;
 }
 
 .addon .relnotes {
@@ -151,6 +177,13 @@ row[unsupported="true"] {
 }
 #detail-name, #detail-desc, #detail-fulldesc {
   -moz-user-select: text;
+  word-wrap: break-word;
+}
+
+#detail-name-container {
+  /* Set a max-width on this so the labels inside of this will wrap instead of
+     growing the card horizontally with long names. */
+  max-width: 580px;
 }
 
 /* Make sure we're not animating hidden images. See bug 623739. */
@@ -168,19 +201,7 @@ richlistitem:not([selected]) * {
   width: 22em;
 }
 
-#header-utils-btn {
-  -moz-user-focus: normal;
-}
-
 .discover-button[disabled="true"] {
-  display: none;
-}
-
-#experiments-learn-more[disabled="true"] {
-  display: none;
-}
-
-#experiments-change-telemetry[disabled="true"] {
   display: none;
 }
 
@@ -188,27 +209,6 @@ richlistitem:not([selected]) * {
   display: none;
 }
 
-.view-pane[type="experiment"] .error,
-.view-pane[type="experiment"] .warning,
-.view-pane[type="experiment"] .addon:not([pending="uninstall"]) .pending,
-.view-pane[type="experiment"] .disabled-postfix,
-.view-pane[type="experiment"] .update-postfix,
-.view-pane[type="experiment"] .addon-control.enable,
-.view-pane[type="experiment"] .addon-control.disable,
-#detail-view[type="experiment"] .alert-container,
-#detail-view[type="experiment"] #detail-version,
-#detail-view[type="experiment"] #detail-creator,
-#detail-view[type="experiment"] #detail-enable-btn,
-#detail-view[type="experiment"] #detail-disable-btn {
-  display: none;
-}
-
-.view-pane:not([type="experiment"]) .experiment-container,
-.view-pane:not([type="experiment"]) #detail-experiment-container {
-  display: none;
-}
-
-.addon[type="experiment"][status="installing"] .experiment-time,
-.addon[type="experiment"][status="installing"] .experiment-state {
-  display: none;
+#pluginFlashBlockingCheckbox .checkbox-label-box {
+  display: none; /*see bug 1508724*/
 }

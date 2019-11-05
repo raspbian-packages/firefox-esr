@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.leanplum.callbacks.InboxChangedCallback;
+import com.leanplum.callbacks.InboxSyncedCallback;
 import com.leanplum.callbacks.VariablesChangedCallback;
 import com.leanplum.internal.AESCrypt;
 import com.leanplum.internal.CollectionUtil;
@@ -32,8 +33,9 @@ import com.leanplum.internal.Constants;
 import com.leanplum.internal.JsonConverter;
 import com.leanplum.internal.Log;
 import com.leanplum.internal.OsHandler;
-import com.leanplum.internal.Request;
+import com.leanplum.internal.RequestOld;
 import com.leanplum.internal.Util;
+import com.leanplum.utils.SharedPreferencesUtil;
 
 import org.json.JSONObject;
 
@@ -54,33 +56,26 @@ import java.util.Set;
  * @author Aleksandar Gyorev, Anna Orlova
  */
 public class LeanplumInbox {
-  static boolean isInboxImagePrefetchingEnabled = true;
-  /**
-   * Should be like this until Newsfeed is removed for backward compatibility.
-   */
-  static Newsfeed instance = new Newsfeed();
+  private static LeanplumInbox instance = new LeanplumInbox();
+
   static Set<String> downloadedImageUrls;
+  static boolean isInboxImagePrefetchingEnabled = true;
 
-  // Inbox properties.
-  private int unreadCount;
-  private Map<String, LeanplumInboxMessage> messages;
-  private boolean didLoad = false;
-  private List<InboxChangedCallback> changedCallbacks;
-  private Object updatingLock = new Object();
+  private volatile int unreadCount;
+  private volatile Map<String, LeanplumInboxMessage> messages;
+  private volatile boolean didLoad = false;
 
-  LeanplumInbox() {
+  private final List<InboxChangedCallback> changedCallbacks;
+  private final List<InboxSyncedCallback> syncedCallbacks;
+  private final Object updatingLock = new Object();
+
+  private LeanplumInbox() {
     this.unreadCount = 0;
     this.messages = new HashMap<>();
     this.didLoad = false;
     this.changedCallbacks = new ArrayList<>();
+    this.syncedCallbacks = new ArrayList<>();
     downloadedImageUrls = new HashSet<>();
-  }
-
-  /**
-   * Static 'getInstance' method.
-   */
-  static LeanplumInbox getInstance() {
-    return instance;
   }
 
   /**
@@ -88,6 +83,132 @@ public class LeanplumInbox {
    */
   public static void disableImagePrefetching() {
     isInboxImagePrefetchingEnabled = false;
+  }
+
+  /**
+   * Returns the number of all inbox messages on the device.
+   */
+  public int count() {
+    return messages.size();
+  }
+
+  /**
+   * Returns the number of the unread inbox messages on the device.
+   */
+  public int unreadCount() {
+    return unreadCount;
+  }
+
+  /**
+   * Returns the identifiers of all inbox messages on the device sorted in ascending
+   * chronological order, i.e. the id of the oldest message is the first one, and the most recent
+   * one is the last one in the array.
+   */
+  public List<String> messagesIds() {
+    List<String> messageIds = new ArrayList<>(messages.keySet());
+    try {
+      Collections.sort(messageIds, new Comparator<String>() {
+        @Override
+        public int compare(String firstMessageId, String secondMessageId) {
+          // Message that is null will be moved to the back of the list.
+          LeanplumInboxMessage firstMessage = messageForId(firstMessageId);
+          if (firstMessage == null) {
+            return -1;
+          }
+          LeanplumInboxMessage secondMessage = messageForId(secondMessageId);
+          if (secondMessage == null) {
+            return 1;
+          }
+          // Message with null date will be moved to the back of the list.
+          Date firstDate = firstMessage.getDeliveryTimestamp();
+          if (firstDate == null) {
+            return -1;
+          }
+          Date secondDate = secondMessage.getDeliveryTimestamp();
+          if (secondDate == null) {
+            return 1;
+          }
+          return firstDate.compareTo(secondDate);
+        }
+      });
+    } catch (Throwable t) {
+      Util.handleException(t);
+    }
+    return messageIds;
+  }
+
+  /**
+   * Returns a List containing all of the inbox messages sorted chronologically ascending (i.e.
+   * the oldest first and the newest last).
+   */
+  public List<LeanplumInboxMessage> allMessages() {
+    return allMessages(new ArrayList<LeanplumInboxMessage>());
+  }
+
+  /**
+   * Returns a List containing all of the unread inbox messages sorted chronologically ascending
+   * (i.e. the oldest first and the newest last).
+   */
+  public List<LeanplumInboxMessage> unreadMessages() {
+    return unreadMessages(new ArrayList<LeanplumInboxMessage>());
+  }
+
+  /**
+   * Returns the inbox messages associated with the given getMessageId identifier.
+   */
+  public LeanplumInboxMessage messageForId(String messageId) {
+    return messages.get(messageId);
+  }
+
+  /**
+   * Add a callback for when the inbox receives new values from the server.
+   */
+  public void addChangedHandler(InboxChangedCallback handler) {
+    synchronized (changedCallbacks) {
+      changedCallbacks.add(handler);
+    }
+    if (this.didLoad) {
+      handler.inboxChanged();
+    }
+  }
+
+  /**
+   * Removes a inbox changed callback.
+   */
+  public void removeChangedHandler(InboxChangedCallback handler) {
+    synchronized (changedCallbacks) {
+      changedCallbacks.remove(handler);
+    }
+  }
+
+  /**
+   * Add a callback for when the forceContentUpdate was called.
+   *
+   * @param handler InboxSyncedCallback callback that need to be added.
+   */
+  public void addSyncedHandler(InboxSyncedCallback handler) {
+    synchronized (syncedCallbacks) {
+      syncedCallbacks.add(handler);
+    }
+  }
+
+
+  /**
+   * Removes a inbox synced callback.
+   *
+   * @param handler InboxSyncedCallback callback that need to be removed.
+   */
+  public void removeSyncedHandler(InboxSyncedCallback handler) {
+    synchronized (syncedCallbacks) {
+      syncedCallbacks.remove(handler);
+    }
+  }
+
+  /**
+   * Static 'getInstance' method.
+   */
+  static LeanplumInbox getInstance() {
+    return instance;
   }
 
   boolean isInboxImagePrefetchingEnabled() {
@@ -134,13 +255,26 @@ public class LeanplumInbox {
 
     Map<String, Object> params = new HashMap<>();
     params.put(Constants.Params.INBOX_MESSAGE_ID, messageId);
-    Request req = Request.post(Constants.Methods.DELETE_INBOX_MESSAGE, params);
+    RequestOld req = RequestOld.post(Constants.Methods.DELETE_INBOX_MESSAGE, params);
     req.send();
   }
 
   void triggerChanged() {
     synchronized (changedCallbacks) {
       for (InboxChangedCallback callback : changedCallbacks) {
+        OsHandler.getInstance().post(callback);
+      }
+    }
+  }
+
+  /**
+   * Trigger InboxSyncedCallback with status of forceContentUpdate.
+   * @param success True if forceContentUpdate was successful.
+   */
+  void triggerInboxSyncedWithStatus(boolean success) {
+    synchronized (changedCallbacks) {
+      for (InboxSyncedCallback callback : syncedCallbacks) {
+        callback.setSuccess(success);
         OsHandler.getInstance().post(callback);
       }
     }
@@ -153,12 +287,12 @@ public class LeanplumInbox {
     Context context = Leanplum.getContext();
     SharedPreferences defaults = context.getSharedPreferences(
         "__leanplum__", Context.MODE_PRIVATE);
-    if (Request.token() == null) {
+    if (RequestOld.token() == null) {
       update(new HashMap<String, LeanplumInboxMessage>(), 0, false);
       return;
     }
     int unreadCount = 0;
-    AESCrypt aesContext = new AESCrypt(Request.appId(), Request.token());
+    AESCrypt aesContext = new AESCrypt(RequestOld.appId(), RequestOld.token());
     String newsfeedString = aesContext.decodePreference(
         defaults, Constants.Defaults.INBOX_KEY, "{}");
     Map<String, Object> newsfeed = JsonConverter.fromJson(newsfeedString);
@@ -188,7 +322,7 @@ public class LeanplumInbox {
     if (Constants.isNoop()) {
       return;
     }
-    if (Request.token() == null) {
+    if (RequestOld.token() == null) {
       return;
     }
     Context context = Leanplum.getContext();
@@ -198,18 +332,14 @@ public class LeanplumInbox {
     Map<String, Object> messages = new HashMap<>();
     for (Map.Entry<String, LeanplumInboxMessage> entry : this.messages.entrySet()) {
       String messageId = entry.getKey();
-      NewsfeedMessage newsfeedMessage = entry.getValue();
-      Map<String, Object> data = newsfeedMessage.toJsonMap();
+      LeanplumInboxMessage inboxMessage = entry.getValue();
+      Map<String, Object> data = inboxMessage.toJsonMap();
       messages.put(messageId, data);
     }
     String messagesJson = JsonConverter.toJson(messages);
-    AESCrypt aesContext = new AESCrypt(Request.appId(), Request.token());
+    AESCrypt aesContext = new AESCrypt(RequestOld.appId(), RequestOld.token());
     editor.putString(Constants.Defaults.INBOX_KEY, aesContext.encrypt(messagesJson));
-    try {
-      editor.apply();
-    } catch (NoSuchMethodError e) {
-      editor.commit();
-    }
+    SharedPreferencesUtil.commitChanges(editor);
   }
 
   void downloadMessages() {
@@ -217,12 +347,11 @@ public class LeanplumInbox {
       return;
     }
 
-    Request req = Request.post(Constants.Methods.GET_INBOX_MESSAGES, null);
-    req.onResponse(new Request.ResponseCallback() {
+    final RequestOld req = RequestOld.post(Constants.Methods.GET_INBOX_MESSAGES, null);
+    req.onResponse(new RequestOld.ResponseCallback() {
       @Override
-      public void response(JSONObject responses) {
+      public void response(JSONObject response) {
         try {
-          JSONObject response = Request.getLastResponse(responses);
           if (response == null) {
             Log.e("No inbox response received from the server.");
             return;
@@ -263,6 +392,7 @@ public class LeanplumInbox {
 
           if (!willDownladImages) {
             update(messages, unreadCount, true);
+            triggerInboxSyncedWithStatus(true);
             return;
           }
 
@@ -272,134 +402,60 @@ public class LeanplumInbox {
                 @Override
                 public void variablesChanged() {
                   update(messages, totalUnreadCount, true);
+                  triggerInboxSyncedWithStatus(true);
                 }
               });
         } catch (Throwable t) {
+          triggerInboxSyncedWithStatus(false);
           Util.handleException(t);
         }
+      }
+    });
+    req.onError(new RequestOld.ErrorCallback() {
+      @Override
+      public void error(Exception e) {
+        triggerInboxSyncedWithStatus(false);
       }
     });
     req.sendIfConnected();
   }
 
   /**
-   * Returns the number of all inbox messages on the device.
-   */
-  public int count() {
-    return messages.size();
-  }
-
-  /**
-   * Returns the number of the unread inbox messages on the device.
-   */
-  public int unreadCount() {
-    return unreadCount;
-  }
-
-  /**
-   * Returns the identifiers of all inbox messages on the device sorted in ascending
-   * chronological order, i.e. the id of the oldest message is the first one, and the most recent
-   * one is the last one in the array.
-   */
-  public List<String> messagesIds() {
-    List<String> messageIds = new ArrayList<>(messages.keySet());
-    try {
-      Collections.sort(messageIds, new Comparator<String>() {
-        @Override
-        public int compare(String firstMessage, String secondMessage) {
-          Date firstDate = messageForId(firstMessage).getDeliveryTimestamp();
-          Date secondDate = messageForId(secondMessage).getDeliveryTimestamp();
-          return firstDate.compareTo(secondDate);
-        }
-      });
-    } catch (Throwable t) {
-      Util.handleException(t);
-    }
-    return messageIds;
-  }
-
-  /**
-   * Have to stay as is because of backward compatibility + generics super-sub incompatibility
-   * (http://www.angelikalanger.com/GenericsFAQ/FAQSections/ParameterizedTypes.html#Topic2).
-   * <p>
-   * Returns a List containing all of the newsfeed messages sorted chronologically ascending (i.e.
+   * Returns a List containing all of the inbox messages sorted chronologically ascending (i.e.
    * the oldest first and the newest last).
    */
-  public List<NewsfeedMessage> allMessages() {
-    return allMessages(new ArrayList<NewsfeedMessage>());
-  }
-
-  /**
-   * Have to stay as is because of backward compatibility + generics super-sub incompatibility
-   * (http://www.angelikalanger.com/GenericsFAQ/FAQSections/ParameterizedTypes.html#Topic2).
-   * <p>
-   * Returns a List containing all of the unread newsfeed messages sorted chronologically ascending
-   * (i.e. the oldest first and the newest last).
-   */
-  public List<NewsfeedMessage> unreadMessages() {
-    return unreadMessages(new ArrayList<NewsfeedMessage>());
-  }
-
-  /**
-   * Suggested workaround for generics to be used with {@link LeanplumInbox#getInstance()} although
-   * only LeanplumInboxMessage could be an instance of NewsfeedMessage.
-   */
-  private <T extends NewsfeedMessage> List<T> allMessages(List<T> messages) {
+  private List<LeanplumInboxMessage> allMessages(List<LeanplumInboxMessage> messages) {
     if (messages == null) {
       messages = new ArrayList<>();
     }
     try {
       for (String messageId : messagesIds()) {
-        messages.add((T) messageForId(messageId));
+        LeanplumInboxMessage message = messageForId(messageId);
+        if (message != null) {
+          messages.add(message);
+        }
       }
     } catch (Throwable t) {
       Util.handleException(t);
     }
+    Leanplum.countAggregator().incrementCount("all_messages_inbox");
     return messages;
   }
 
   /**
-   * Suggested workaround for generics to be used with {@link LeanplumInbox#getInstance()} although
-   * only LeanplumInboxMessage could be an instance of NewsfeedMessage.
+   * Returns a List containing all of the unread inbox messages sorted chronologically ascending
+   * (i.e. the oldest first and the newest last).
    */
-  private <T extends NewsfeedMessage> List<T> unreadMessages(List<T> unreadMessages) {
+  private List<LeanplumInboxMessage> unreadMessages(List<LeanplumInboxMessage> unreadMessages) {
     if (unreadMessages == null) {
       unreadMessages = new ArrayList<>();
     }
     List<LeanplumInboxMessage> messages = allMessages(null);
     for (LeanplumInboxMessage message : messages) {
       if (!message.isRead()) {
-        unreadMessages.add((T) message);
+        unreadMessages.add(message);
       }
     }
     return unreadMessages;
-  }
-
-  /**
-   * Returns the inbox messages associated with the given getMessageId identifier.
-   */
-  public LeanplumInboxMessage messageForId(String messageId) {
-    return messages.get(messageId);
-  }
-
-  /**
-   * Add a callback for when the inbox receives new values from the server.
-   */
-  public void addChangedHandler(InboxChangedCallback handler) {
-    synchronized (changedCallbacks) {
-      changedCallbacks.add(handler);
-    }
-    if (this.didLoad) {
-      handler.inboxChanged();
-    }
-  }
-
-  /**
-   * Removes a inbox changed callback.
-   */
-  public void removeChangedHandler(InboxChangedCallback handler) {
-    synchronized (changedCallbacks) {
-      changedCallbacks.remove(handler);
-    }
   }
 }

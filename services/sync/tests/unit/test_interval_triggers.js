@@ -1,24 +1,20 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-ChromeUtils.import("resource://services-common/utils.js");
-ChromeUtils.import("resource://services-sync/constants.js");
-ChromeUtils.import("resource://services-sync/engines.js");
-ChromeUtils.import("resource://services-sync/engines/clients.js");
-ChromeUtils.import("resource://services-sync/util.js");
-
 Svc.Prefs.set("registerEngines", "");
-ChromeUtils.import("resource://services-sync/service.js");
+const { Service } = ChromeUtils.import("resource://services-sync/service.js");
 
 let scheduler;
 let clientsEngine;
 
-function sync_httpd_setup() {
+async function sync_httpd_setup() {
+  let clientsSyncID = await clientsEngine.resetLocalSyncID();
   let global = new ServerWBO("global", {
     syncID: Service.syncID,
     storageVersion: STORAGE_VERSION,
-    engines: {clients: {version: clientsEngine.version,
-                        syncID: clientsEngine.syncID}}
+    engines: {
+      clients: { version: clientsEngine.version, syncID: clientsSyncID },
+    },
   });
   let clientsColl = new ServerCollection({}, true);
 
@@ -29,15 +25,17 @@ function sync_httpd_setup() {
   return httpd_setup({
     "/1.1/johndoe/storage/meta/global": upd("meta", global.handler()),
     "/1.1/johndoe/info/collections": collectionsHelper.handler,
-    "/1.1/johndoe/storage/crypto/keys":
-      upd("crypto", (new ServerWBO("keys")).handler()),
-    "/1.1/johndoe/storage/clients": upd("clients", clientsColl.handler())
+    "/1.1/johndoe/storage/crypto/keys": upd(
+      "crypto",
+      new ServerWBO("keys").handler()
+    ),
+    "/1.1/johndoe/storage/clients": upd("clients", clientsColl.handler()),
   });
 }
 
 async function setUp(server) {
   syncTestLogging();
-  await configureIdentity({username: "johndoe"}, server);
+  await configureIdentity({ username: "johndoe" }, server);
   await generateNewKeys(Service.collectionKeys);
   let serverKeys = Service.collectionKeys.asWBO("crypto", "keys");
   await serverKeys.encrypt(Service.identity.syncKeyBundle);
@@ -51,7 +49,7 @@ add_task(async function setup() {
   // Don't remove stale clients when syncing. This is a test-only workaround
   // that lets us add clients directly to the store, without losing them on
   // the next sync.
-  clientsEngine._removeRemoteClient = async (id) => {};
+  clientsEngine._removeRemoteClient = async id => {};
 });
 
 add_task(async function test_successful_sync_adjustSyncInterval() {
@@ -65,7 +63,7 @@ add_task(async function test_successful_sync_adjustSyncInterval() {
   }
   Svc.Obs.add("weave:service:sync:finish", onSyncFinish);
 
-  let server = sync_httpd_setup();
+  let server = await sync_httpd_setup();
   await setUp(server);
 
   // Confirm defaults
@@ -111,9 +109,14 @@ add_task(async function test_successful_sync_adjustSyncInterval() {
   Assert.ok(scheduler.hasIncomingItems);
   Assert.equal(scheduler.syncInterval, scheduler.singleDeviceInterval);
 
-  _("Test as long as idle && numClients > 1 our sync interval is idleInterval.");
+  _(
+    "Test as long as idle && numClients > 1 our sync interval is idleInterval."
+  );
   // idle == true && numClients > 1 && hasIncomingItems == true
-  await Service.clientsEngine._store.create({ id: "foo", cleartext: { name: "bar", type: "mobile" } });
+  await Service.clientsEngine._store.create({
+    id: "foo",
+    cleartext: { name: "bar", type: "mobile" },
+  });
   await Service.sync();
   Assert.equal(syncSuccesses, 5);
   Assert.ok(scheduler.idle);
@@ -171,7 +174,7 @@ add_task(async function test_unsuccessful_sync_adjustSyncInterval() {
   // Force sync to fail.
   Svc.Prefs.set("firstSync", "notReady");
 
-  let server = sync_httpd_setup();
+  let server = await sync_httpd_setup();
   await setUp(server);
 
   // Confirm defaults
@@ -217,7 +220,9 @@ add_task(async function test_unsuccessful_sync_adjustSyncInterval() {
   Assert.ok(scheduler.hasIncomingItems);
   Assert.equal(scheduler.syncInterval, scheduler.singleDeviceInterval);
 
-  _("Test as long as idle && numClients > 1 our sync interval is idleInterval.");
+  _(
+    "Test as long as idle && numClients > 1 our sync interval is idleInterval."
+  );
   // idle == true && numClients > 1 && hasIncomingItems == true
   Svc.Prefs.set("clients.devices.mobile", 2);
   scheduler.updateClientMode();
@@ -266,7 +271,7 @@ add_task(async function test_unsuccessful_sync_adjustSyncInterval() {
 add_task(async function test_back_triggers_sync() {
   enableValidationPrefs();
 
-  let server = sync_httpd_setup();
+  let server = await sync_httpd_setup();
   await setUp(server);
 
   // Single device: no sync triggered.
@@ -297,7 +302,7 @@ add_task(async function test_back_triggers_sync() {
 add_task(async function test_adjust_interval_on_sync_error() {
   enableValidationPrefs();
 
-  let server = sync_httpd_setup();
+  let server = await sync_httpd_setup();
   await setUp(server);
 
   let syncFailures = 0;
@@ -335,7 +340,7 @@ add_task(async function test_bug671378_scenario() {
   // scheduleNextSync() was called without a time interval parameter,
   // setting nextSync to a non-zero value and preventing the timer from
   // being adjusted in the next call to scheduleNextSync().
-  let server = sync_httpd_setup();
+  let server = await sync_httpd_setup();
   await setUp(server);
 
   let syncSuccesses = 0;
@@ -391,13 +396,18 @@ add_task(async function test_bug671378_scenario() {
     });
   });
 
-  await Service.clientsEngine._store.create({ id: "foo", cleartext: { name: "bar", type: "mobile" } });
+  await Service.clientsEngine._store.create({
+    id: "foo",
+    cleartext: { name: "bar", type: "mobile" },
+  });
   await Service.sync();
   await promiseDone;
 });
 
 add_task(async function test_adjust_timer_larger_syncInterval() {
-  _("Test syncInterval > current timout period && nextSync != 0, syncInterval is NOT used.");
+  _(
+    "Test syncInterval > current timout period && nextSync != 0, syncInterval is NOT used."
+  );
   Svc.Prefs.set("clients.devices.mobile", 2);
   scheduler.updateClientMode();
   Assert.equal(scheduler.syncInterval, scheduler.activeInterval);
@@ -425,7 +435,9 @@ add_task(async function test_adjust_timer_larger_syncInterval() {
 });
 
 add_task(async function test_adjust_timer_smaller_syncInterval() {
-  _("Test current timout > syncInterval period && nextSync != 0, syncInterval is used.");
+  _(
+    "Test current timout > syncInterval period && nextSync != 0, syncInterval is used."
+  );
   scheduler.scheduleNextSync();
 
   // Ensure we have a large interval.

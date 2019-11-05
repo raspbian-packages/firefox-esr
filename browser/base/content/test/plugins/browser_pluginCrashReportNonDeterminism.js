@@ -1,7 +1,9 @@
 /* Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
-ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm");
+const { PromiseUtils } = ChromeUtils.import(
+  "resource://gre/modules/PromiseUtils.jsm"
+);
 
 /**
  * With e10s, plugins must run in their own process. This means we have
@@ -20,7 +22,8 @@ ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm");
  * This test exercises the browser's reaction to both possibilities.
  */
 
-const CRASH_URL = "http://example.com/browser/browser/base/content/test/plugins/plugin_crashCommentAndURL.html";
+const CRASH_URL =
+  "http://example.com/browser/browser/base/content/test/plugins/plugin_crashCommentAndURL.html";
 const CRASHED_MESSAGE = "BrowserPlugins:NPAPIPluginProcessCrashed";
 
 /**
@@ -51,7 +54,9 @@ const CRASHED_MESSAGE = "BrowserPlugins:NPAPIPluginProcessCrashed";
  *        the crash reporter state.
  */
 function preparePlugin(browser, pluginFallbackState) {
-  return ContentTask.spawn(browser, pluginFallbackState, async function(contentPluginFallbackState) {
+  return ContentTask.spawn(browser, pluginFallbackState, async function(
+    contentPluginFallbackState
+  ) {
     let plugin = content.document.getElementById("plugin");
     plugin.QueryInterface(Ci.nsIObjectLoadingContent);
     // CRASH_URL will load a plugin that crashes immediately. We
@@ -59,9 +64,8 @@ function preparePlugin(browser, pluginFallbackState) {
     // state.
     let statusDiv;
     await ContentTaskUtils.waitForCondition(() => {
-      statusDiv = plugin.ownerDocument
-                        .getAnonymousElementByAttribute(plugin, "anonid",
-                                                        "submitStatus");
+      statusDiv = plugin.openOrClosedShadowRoot.getElementById("submitStatus");
+
       return statusDiv && statusDiv.getAttribute("status") == "please";
     }, "Timed out waiting for plugin to be in crash report state");
 
@@ -72,11 +76,13 @@ function preparePlugin(browser, pluginFallbackState) {
     Object.defineProperty(plugin, "pluginFallbackType", {
       get() {
         return contentPluginFallbackState;
-      }
+      },
     });
     return plugin.runID;
-  }).then((runID) => {
-    browser.messageManager.sendAsyncMessage("BrowserPlugins:Test:ClearCrashData");
+  }).then(runID => {
+    browser.messageManager.sendAsyncMessage(
+      "BrowserPlugins:Test:ClearCrashData"
+    );
     return runID;
   });
 }
@@ -133,24 +139,29 @@ add_task(async function testChromeHearsPluginCrashFirst() {
 
   // Open a remote window so that we can run this test even if e10s is not
   // enabled by default.
-  let win = await BrowserTestUtils.openNewBrowserWindow({remote: true});
+  let win = await BrowserTestUtils.openNewBrowserWindow({ remote: true });
   let browser = win.gBrowser.selectedBrowser;
 
-  browser.loadURI(CRASH_URL);
+  BrowserTestUtils.loadURI(browser, CRASH_URL);
   await BrowserTestUtils.browserLoaded(browser);
 
   // In this case, we want the <object> to match the -moz-handler-crashed
   // pseudoselector, but we want it to seem still active, because the
   // content process is not yet supposed to know that the plugin has
   // crashed.
-  let runID = await preparePlugin(browser,
-                                  Ci.nsIObjectLoadingContent.PLUGIN_ACTIVE);
+  let runID = await preparePlugin(
+    browser,
+    Ci.nsIObjectLoadingContent.PLUGIN_ACTIVE
+  );
 
   // Send the message down to PluginContent.jsm saying that the plugin has
   // crashed, and that we have a crash report.
   let mm = browser.messageManager;
-  mm.sendAsyncMessage(CRASHED_MESSAGE,
-                      { pluginName: "", runID, state: "please" });
+  mm.sendAsyncMessage(CRASHED_MESSAGE, {
+    pluginName: "",
+    runID,
+    state: "please",
+  });
 
   await ContentTask.spawn(browser, null, async function() {
     // At this point, the content process should have heard the
@@ -158,9 +169,9 @@ add_task(async function testChromeHearsPluginCrashFirst() {
     // the PluginCrashed event.
     let plugin = content.document.getElementById("plugin");
     plugin.QueryInterface(Ci.nsIObjectLoadingContent);
-    let statusDiv = plugin.ownerDocument
-                          .getAnonymousElementByAttribute(plugin, "anonid",
-                                                          "submitStatus");
+    let statusDiv = plugin.openOrClosedShadowRoot.getElementById(
+      "submitStatus"
+    );
 
     if (statusDiv.getAttribute("status") == "please") {
       Assert.ok(false, "Did not expect plugin to be in crash report mode yet.");
@@ -186,8 +197,11 @@ add_task(async function testChromeHearsPluginCrashFirst() {
     });
 
     plugin.dispatchEvent(event);
-    Assert.equal(statusDiv.getAttribute("status"), "please",
-      "Should have been showing crash report UI");
+    Assert.equal(
+      statusDiv.getAttribute("status"),
+      "please",
+      "Should have been showing crash report UI"
+    );
   });
   await BrowserTestUtils.closeWindow(win);
   await crashDeferred.promise;
@@ -202,17 +216,19 @@ add_task(async function testContentHearsCrashFirst() {
 
   // Open a remote window so that we can run this test even if e10s is not
   // enabled by default.
-  let win = await BrowserTestUtils.openNewBrowserWindow({remote: true});
+  let win = await BrowserTestUtils.openNewBrowserWindow({ remote: true });
   let browser = win.gBrowser.selectedBrowser;
 
-  browser.loadURI(CRASH_URL);
+  BrowserTestUtils.loadURI(browser, CRASH_URL);
   await BrowserTestUtils.browserLoaded(browser);
 
   // In this case, we want the <object> to match the -moz-handler-crashed
   // pseudoselector, and we want the plugin to seem crashed, since the
   // content process in this case has heard about the crash first.
-  let runID = await preparePlugin(browser,
-                                  Ci.nsIObjectLoadingContent.PLUGIN_CRASHED);
+  let runID = await preparePlugin(
+    browser,
+    Ci.nsIObjectLoadingContent.PLUGIN_CRASHED
+  );
 
   await ContentTask.spawn(browser, null, async function() {
     // At this point, the content process has not yet heard from the
@@ -220,9 +236,9 @@ add_task(async function testContentHearsCrashFirst() {
     // we're not showing the plugin crash report UI.
     let plugin = content.document.getElementById("plugin");
     plugin.QueryInterface(Ci.nsIObjectLoadingContent);
-    let statusDiv = plugin.ownerDocument
-                          .getAnonymousElementByAttribute(plugin, "anonid",
-                                                          "submitStatus");
+    let statusDiv = plugin.openOrClosedShadowRoot.getElementById(
+      "submitStatus"
+    );
 
     if (statusDiv.getAttribute("status") == "please") {
       Assert.ok(false, "Did not expect plugin to be in crash report mode yet.");
@@ -239,15 +255,21 @@ add_task(async function testContentHearsCrashFirst() {
 
     plugin.dispatchEvent(event);
 
-    Assert.notEqual(statusDiv.getAttribute("status"), "please",
-      "Should not yet be showing crash report UI");
+    Assert.notEqual(
+      statusDiv.getAttribute("status"),
+      "please",
+      "Should not yet be showing crash report UI"
+    );
   });
 
   // Now send the message down to PluginContent.jsm that the plugin has
   // crashed...
   let mm = browser.messageManager;
-  mm.sendAsyncMessage(CRASHED_MESSAGE,
-                      { pluginName: "", runID, state: "please"});
+  mm.sendAsyncMessage(CRASHED_MESSAGE, {
+    pluginName: "",
+    runID,
+    state: "please",
+  });
 
   await ContentTask.spawn(browser, null, async function() {
     // At this point, the content process will have heard the message
@@ -255,12 +277,15 @@ add_task(async function testContentHearsCrashFirst() {
     // crash report UI now.
     let plugin = content.document.getElementById("plugin");
     plugin.QueryInterface(Ci.nsIObjectLoadingContent);
-    let statusDiv = plugin.ownerDocument
-                          .getAnonymousElementByAttribute(plugin, "anonid",
-                                                          "submitStatus");
+    let statusDiv = plugin.openOrClosedShadowRoot.getElementById(
+      "submitStatus"
+    );
 
-    Assert.equal(statusDiv.getAttribute("status"), "please",
-      "Should have been showing crash report UI");
+    Assert.equal(
+      statusDiv.getAttribute("status"),
+      "please",
+      "Should have been showing crash report UI"
+    );
   });
 
   await BrowserTestUtils.closeWindow(win);

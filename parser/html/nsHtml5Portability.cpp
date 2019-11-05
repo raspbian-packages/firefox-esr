@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "nsAtom.h"
-#include "nsString.h"
-#include "jArray.h"
 #include "nsHtml5Portability.h"
+#include "jArray.h"
+#include "nsAtom.h"
 #include "nsHtml5TreeBuilder.h"
+#include "nsString.h"
 
 nsAtom* nsHtml5Portability::newLocalNameFromBuffer(char16_t* buf,
                                                    int32_t length,
@@ -68,18 +68,6 @@ jArray<char16_t, int32_t> nsHtml5Portability::newCharArrayFromString(
   jArray<char16_t, int32_t> arr = jArray<char16_t, int32_t>::newJArray(len);
   string.CopyToBuffer(arr);
   return arr;
-}
-
-nsAtom* nsHtml5Portability::newLocalFromLocal(nsAtom* local,
-                                              nsHtml5AtomTable* interner) {
-  NS_PRECONDITION(local, "Atom was null.");
-  NS_PRECONDITION(interner, "Atom table was null");
-  if (!local->IsStatic()) {
-    nsAutoString str;
-    local->ToString(str);
-    local = interner->GetAtom(str);
-  }
-  return local;
 }
 
 bool nsHtml5Portability::localEqualsBuffer(nsAtom* local, char16_t* buf,

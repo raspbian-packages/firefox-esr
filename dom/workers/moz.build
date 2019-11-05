@@ -7,20 +7,23 @@
 with Files("**"):
     BUG_COMPONENT = ("Core", "DOM: Workers")
 
+DIRS += ['remoteworkers', 'sharedworkers']
+
 # Public stuff.
 EXPORTS.mozilla.dom += [
     'ChromeWorker.h',
-    'SharedWorker.h',
     'Worker.h',
     'WorkerCommon.h',
     'WorkerDebugger.h',
     'WorkerDebuggerManager.h',
+    'WorkerError.h',
     'WorkerHolder.h',
     'WorkerHolderToken.h',
     'WorkerLoadInfo.h',
     'WorkerLocation.h',
     'WorkerNavigator.h',
     'WorkerPrivate.h',
+    'WorkerRef.h',
     'WorkerRunnable.h',
     'WorkerScope.h',
 ]
@@ -30,6 +33,7 @@ EXPORTS.mozilla.dom.workerinternals += [
     'JSSettings.h',
     'Queue.h',
     'RuntimeService.h',
+    'ScriptLoader.h',
 ]
 
 XPIDL_MODULE = 'dom_workers'
@@ -47,8 +51,8 @@ UNIFIED_SOURCES += [
     'RegisterBindings.cpp',
     'RuntimeService.cpp',
     'ScriptLoader.cpp',
-    'SharedWorker.cpp',
     'Worker.cpp',
+    'WorkerCSPEventListener.cpp',
     'WorkerDebugger.cpp',
     'WorkerDebuggerManager.cpp',
     'WorkerError.cpp',
@@ -59,29 +63,32 @@ UNIFIED_SOURCES += [
     'WorkerLocation.cpp',
     'WorkerNavigator.cpp',
     'WorkerPrivate.cpp',
+    'WorkerRef.cpp',
     'WorkerRunnable.cpp',
     'WorkerScope.cpp',
     'WorkerThread.cpp',
 ]
 
 LOCAL_INCLUDES += [
-    '../base',
-    '../system',
+    '/caps',
     '/dom/base',
     '/dom/bindings',
+    '/dom/system',
     '/js/xpconnect/loader',
+    '/netwerk/base',
     '/xpcom/build',
     '/xpcom/threads',
 ]
 
+if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
+    LOCAL_INCLUDES += [
+        '/xpcom/base',
+    ]
+
+
 include('/ipc/chromium/chromium-config.mozbuild')
 
 FINAL_LIBRARY = 'xul'
-
-TEST_DIRS += [
-    'test/extensions/bootstrap',
-    'test/extensions/traditional',
-]
 
 MOCHITEST_MANIFESTS += [
     'test/mochitest.ini',
@@ -94,8 +101,6 @@ MOCHITEST_CHROME_MANIFESTS += [
 XPCSHELL_TESTS_MANIFESTS += ['test/xpcshell/xpcshell.ini']
 
 BROWSER_CHROME_MANIFESTS += ['test/browser.ini']
-
-TEST_DIRS += ['test/gtest']
 
 if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
     CXXFLAGS += ['-Wno-error=shadow']

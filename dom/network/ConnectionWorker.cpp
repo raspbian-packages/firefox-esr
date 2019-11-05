@@ -7,54 +7,47 @@
 #include <limits>
 #include "mozilla/Hal.h"
 #include "ConnectionWorker.h"
+#include "mozilla/dom/WorkerRef.h"
 #include "mozilla/dom/WorkerRunnable.h"
 
 namespace mozilla {
 namespace dom {
 namespace network {
 
-class ConnectionProxy final : public NetworkObserver, public WorkerHolder {
+class ConnectionProxy final : public hal::NetworkObserver {
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(ConnectionProxy)
 
   static already_AddRefed<ConnectionProxy> Create(
       WorkerPrivate* aWorkerPrivate, ConnectionWorker* aConnection) {
-    RefPtr<ConnectionProxy> proxy =
-        new ConnectionProxy(aWorkerPrivate, aConnection);
-    if (!proxy->HoldWorker(aWorkerPrivate, Closing)) {
-      proxy->mConnection = nullptr;
+    RefPtr<ConnectionProxy> proxy = new ConnectionProxy(aConnection);
+
+    RefPtr<StrongWorkerRef> workerRef = StrongWorkerRef::Create(
+        aWorkerPrivate, "ConnectionProxy", [proxy]() { proxy->Shutdown(); });
+    if (NS_WARN_IF(!workerRef)) {
       return nullptr;
     }
 
+    proxy->mWorkerRef = new ThreadSafeWorkerRef(workerRef);
     return proxy.forget();
   }
 
+  ThreadSafeWorkerRef* WorkerRef() const { return mWorkerRef; }
+
   // For IObserver - main-thread only.
   void Notify(const hal::NetworkInformation& aNetworkInfo) override;
-
-  // Worker notification
-  virtual bool Notify(WorkerStatus aStatus) override {
-    Shutdown();
-    return true;
-  }
 
   void Shutdown();
 
   void Update(ConnectionType aType, bool aIsWifi, uint32_t aDHCPGateway) {
     MOZ_ASSERT(mConnection);
-    mWorkerPrivate->AssertIsOnWorkerThread();
+    MOZ_ASSERT(IsCurrentThreadRunningWorker());
     mConnection->Update(aType, aIsWifi, aDHCPGateway, true);
   }
 
  private:
-  ConnectionProxy(WorkerPrivate* aWorkerPrivate, ConnectionWorker* aConnection)
-      : WorkerHolder("ConnectionProxy"),
-        mConnection(aConnection),
-        mWorkerPrivate(aWorkerPrivate) {
-    MOZ_ASSERT(mWorkerPrivate);
-    MOZ_ASSERT(mConnection);
-    mWorkerPrivate->AssertIsOnWorkerThread();
-  }
+  explicit ConnectionProxy(ConnectionWorker* aConnection)
+      : mConnection(aConnection) {}
 
   ~ConnectionProxy() = default;
 
@@ -63,7 +56,7 @@ class ConnectionProxy final : public NetworkObserver, public WorkerHolder {
   // shutdown procedure starts.
   ConnectionWorker* mConnection;
 
-  WorkerPrivate* mWorkerPrivate;
+  RefPtr<ThreadSafeWorkerRef> mWorkerRef;
 };
 
 namespace {
@@ -146,9 +139,10 @@ class NotifyRunnable : public WorkerRunnable {
 
 }  // anonymous namespace
 
-/* static */ already_AddRefed<ConnectionWorker> ConnectionWorker::Create(
+/* static */
+already_AddRefed<ConnectionWorker> ConnectionWorker::Create(
     WorkerPrivate* aWorkerPrivate, ErrorResult& aRv) {
-  RefPtr<ConnectionWorker> c = new ConnectionWorker(aWorkerPrivate);
+  RefPtr<ConnectionWorker> c = new ConnectionWorker();
   c->mProxy = ConnectionProxy::Create(aWorkerPrivate, c);
   if (!c->mProxy) {
     aRv.ThrowTypeError<MSG_WORKER_THREAD_SHUTTING_DOWN>();
@@ -159,7 +153,7 @@ class NotifyRunnable : public WorkerRunnable {
   RefPtr<InitializeRunnable> runnable =
       new InitializeRunnable(aWorkerPrivate, c->mProxy, networkInfo);
 
-  runnable->Dispatch(Terminating, aRv);
+  runnable->Dispatch(Canceling, aRv);
   if (NS_WARN_IF(aRv.Failed())) {
     return nullptr;
   }
@@ -169,30 +163,29 @@ class NotifyRunnable : public WorkerRunnable {
   return c.forget();
 }
 
-ConnectionWorker::ConnectionWorker(WorkerPrivate* aWorkerPrivate)
-    : Connection(nullptr), mWorkerPrivate(aWorkerPrivate) {
-  MOZ_ASSERT(aWorkerPrivate);
-  aWorkerPrivate->AssertIsOnWorkerThread();
+ConnectionWorker::ConnectionWorker() : Connection(nullptr) {
+  MOZ_ASSERT(IsCurrentThreadRunningWorker());
 }
 
 ConnectionWorker::~ConnectionWorker() { Shutdown(); }
 
 void ConnectionWorker::ShutdownInternal() {
-  mWorkerPrivate->AssertIsOnWorkerThread();
+  MOZ_ASSERT(IsCurrentThreadRunningWorker());
   mProxy->Shutdown();
 }
 
 void ConnectionProxy::Notify(const hal::NetworkInformation& aNetworkInfo) {
   MOZ_ASSERT(NS_IsMainThread());
 
-  RefPtr<NotifyRunnable> runnable = new NotifyRunnable(
-      mWorkerPrivate, this, static_cast<ConnectionType>(aNetworkInfo.type()),
-      aNetworkInfo.isWifi(), aNetworkInfo.dhcpGateway());
+  RefPtr<NotifyRunnable> runnable =
+      new NotifyRunnable(mWorkerRef->Private(), this,
+                         static_cast<ConnectionType>(aNetworkInfo.type()),
+                         aNetworkInfo.isWifi(), aNetworkInfo.dhcpGateway());
   runnable->Dispatch();
 }
 
 void ConnectionProxy::Shutdown() {
-  mWorkerPrivate->AssertIsOnWorkerThread();
+  MOZ_ASSERT(IsCurrentThreadRunningWorker());
 
   // Already shut down.
   if (!mConnection) {
@@ -202,7 +195,7 @@ void ConnectionProxy::Shutdown() {
   mConnection = nullptr;
 
   RefPtr<ShutdownRunnable> runnable =
-      new ShutdownRunnable(mWorkerPrivate, this);
+      new ShutdownRunnable(mWorkerRef->Private(), this);
 
   ErrorResult rv;
   // This runnable _must_ be executed.
@@ -211,7 +204,7 @@ void ConnectionProxy::Shutdown() {
     rv.SuppressException();
   }
 
-  ReleaseWorker();
+  mWorkerRef = nullptr;
 }
 
 }  // namespace network

@@ -59,24 +59,36 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
                                    public CompositableForwarder {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(WebRenderBridgeChild, override)
 
+  friend class PWebRenderBridgeChild;
+
  public:
   explicit WebRenderBridgeChild(const wr::PipelineId& aPipelineId);
 
-  void AddWebRenderParentCommand(const WebRenderParentCommand& aCmd);
-  void AddWebRenderParentCommands(
-      const nsTArray<WebRenderParentCommand>& aCommands);
+  void AddWebRenderParentCommand(const WebRenderParentCommand& aCmd,
+                                 wr::RenderRoot aRenderRoot);
+  bool HasWebRenderParentCommands(wr::RenderRoot aRenderRoot) {
+    return !mParentCommands[aRenderRoot].IsEmpty();
+  }
 
-  void UpdateResources(wr::IpcResourceUpdateQueue& aResources);
+  void UpdateResources(wr::IpcResourceUpdateQueue& aResources,
+                       wr::RenderRoot aRenderRoot);
   void BeginTransaction();
-  void EndTransaction(const wr::LayoutSize& aContentSize,
-                      wr::BuiltDisplayList& dl,
-                      wr::IpcResourceUpdateQueue& aResources,
-                      const gfx::IntSize& aSize, uint64_t aTransactionId,
-                      const WebRenderScrollData& aScrollData,
-                      const mozilla::TimeStamp& aTxnStartTime);
+  void EndTransaction(nsTArray<RenderRootDisplayListData>& aRenderRoots,
+                      TransactionId aTransactionId, bool aContainsSVGroup,
+                      const mozilla::VsyncId& aVsyncId,
+                      const mozilla::TimeStamp& aVsyncStartTime,
+                      const mozilla::TimeStamp& aRefreshStartTime,
+                      const mozilla::TimeStamp& aTxnStartTime,
+                      const nsCString& aTxtURL);
   void EndEmptyTransaction(const FocusTarget& aFocusTarget,
-                           uint64_t aTransactionId,
-                           const mozilla::TimeStamp& aTxnStartTime);
+                           nsTArray<RenderRootUpdates>& aRenderRootUpdates,
+                           uint32_t aPaintSequenceNumber,
+                           TransactionId aTransactionId,
+                           const mozilla::VsyncId& aVsyncId,
+                           const mozilla::TimeStamp& aVsyncStartTime,
+                           const mozilla::TimeStamp& aRefreshStartTime,
+                           const mozilla::TimeStamp& aTxnStartTime,
+                           const nsCString& aTxtURL);
   void ProcessWebRenderParentCommands();
 
   CompositorBridgeChild* GetCompositorBridgeChild();
@@ -92,14 +104,18 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
   }
 
   void AddPipelineIdForAsyncCompositable(const wr::PipelineId& aPipelineId,
-                                         const CompositableHandle& aHandlee);
+                                         const CompositableHandle& aHandlee,
+                                         wr::RenderRoot aRenderRoot);
   void AddPipelineIdForCompositable(const wr::PipelineId& aPipelineId,
-                                    const CompositableHandle& aHandlee);
-  void RemovePipelineIdForCompositable(const wr::PipelineId& aPipelineId);
+                                    const CompositableHandle& aHandlee,
+                                    wr::RenderRoot aRenderRoot);
+  void RemovePipelineIdForCompositable(const wr::PipelineId& aPipelineId,
+                                       wr::RenderRoot aRenderRoot);
 
-  wr::ExternalImageId AllocExternalImageIdForCompositable(
-      CompositableClient* aCompositable);
-  void DeallocExternalImageId(const wr::ExternalImageId& aImageId);
+  /// Release TextureClient that is bounded to ImageKey.
+  /// It is used for recycling TextureClient.
+  void ReleaseTextureOfImage(const wr::ImageKey& aKey,
+                             wr::RenderRoot aRenderRoot);
 
   /**
    * Clean this up, finishing with SendShutDown() which will cause __delete__
@@ -131,15 +147,17 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
                   Range<const wr::GlyphInstance> aGlyphs,
                   gfx::ScaledFont* aFont, const wr::ColorF& aColor,
                   const StackingContextHelper& aSc,
-                  const wr::LayerRect& aBounds, const wr::LayerRect& aClip,
+                  const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
                   bool aBackfaceVisible,
                   const wr::GlyphOptions* aGlyphOptions = nullptr);
 
-  wr::FontInstanceKey GetFontKeyForScaledFont(gfx::ScaledFont* aScaledFont);
-  wr::FontKey GetFontKeyForUnscaledFont(gfx::UnscaledFont* aUnscaledFont);
-
-  void RemoveExpiredFontKeys();
-  void ClearReadLocks();
+  Maybe<wr::FontInstanceKey> GetFontKeyForScaledFont(
+      gfx::ScaledFont* aScaledFont, wr::RenderRoot aRenderRoot,
+      wr::IpcResourceUpdateQueue* aResources = nullptr);
+  Maybe<wr::FontKey> GetFontKeyForUnscaledFont(
+      gfx::UnscaledFont* aUnscaledFont, wr::RenderRoot aRenderRoot,
+      wr::IpcResourceUpdateQueue* aResources = nullptr);
+  void RemoveExpiredFontKeys(wr::IpcResourceUpdateQueue& aResources);
 
   void BeginClearCachedResources();
   void EndClearCachedResources();
@@ -148,9 +166,9 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
 
   ipc::IShmemAllocator* GetShmemAllocator();
 
-  virtual bool IsThreadSafe() const override { return false; }
+  bool IsThreadSafe() const override { return false; }
 
-  virtual RefPtr<KnowsCompositor> GetForMedia() override;
+  RefPtr<KnowsCompositor> GetForMedia() override;
 
   /// Alloc a specific type of shmem that is intended for use in
   /// IpcResourceUpdateQueue only, and cache at most one of them,
@@ -184,10 +202,12 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
   void ReleaseCompositable(const CompositableHandle& aHandle) override;
   bool DestroyInTransaction(PTextureChild* aTexture) override;
   bool DestroyInTransaction(const CompositableHandle& aHandle);
-  void RemoveTextureFromCompositable(CompositableClient* aCompositable,
-                                     TextureClient* aTexture) override;
+  void RemoveTextureFromCompositable(
+      CompositableClient* aCompositable, TextureClient* aTexture,
+      const Maybe<wr::RenderRoot>& aRenderRoot) override;
   void UseTextures(CompositableClient* aCompositable,
-                   const nsTArray<TimedTextureClient>& aTextures) override;
+                   const nsTArray<TimedTextureClient>& aTextures,
+                   const Maybe<wr::RenderRoot>& aRenderRoot) override;
   void UseComponentAlphaTextures(CompositableClient* aCompositable,
                                  TextureClient* aClientOnBlack,
                                  TextureClient* aClientOnWhite) override;
@@ -200,7 +220,10 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
   void DoDestroy();
 
   mozilla::ipc::IPCResult RecvWrUpdated(
-      const wr::IdNamespace& aNewIdNamespace) override;
+      const wr::IdNamespace& aNewIdNamespace,
+      const TextureFactoryIdentifier& textureFactoryIdentifier);
+  mozilla::ipc::IPCResult RecvWrReleasedImages(
+      nsTArray<wr::ExternalImageKeyPair>&& aPairs);
 
   void AddIPDLReference() {
     MOZ_ASSERT(mIPCOpen == false);
@@ -215,11 +238,9 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
 
   bool AddOpDestroy(const OpDestroy& aOp);
 
-  nsTArray<WebRenderParentCommand> mParentCommands;
   nsTArray<OpDestroy> mDestroyedActors;
+  wr::RenderRootArray<nsTArray<WebRenderParentCommand>> mParentCommands;
   nsDataHashtable<nsUint64HashKey, CompositableClient*> mCompositables;
-  nsTArray<nsTArray<ReadLockInit>> mReadLocks;
-  uint64_t mReadLockSequenceNumber;
   bool mIsInTransaction;
   bool mIsInClearCachedResources;
   wr::IdNamespace mIdNamespace;
@@ -230,11 +251,13 @@ class WebRenderBridgeChild final : public PWebRenderBridgeChild,
   bool mIPCOpen;
   bool mDestroyed;
 
-  uint32_t mFontKeysDeleted;
-  nsDataHashtable<UnscaledFontHashKey, wr::FontKey> mFontKeys;
+  wr::RenderRootArray<uint32_t> mFontKeysDeleted;
+  wr::RenderRootArray<nsDataHashtable<UnscaledFontHashKey, wr::FontKey>>
+      mFontKeys;
 
-  uint32_t mFontInstanceKeysDeleted;
-  nsDataHashtable<ScaledFontHashKey, wr::FontInstanceKey> mFontInstanceKeys;
+  wr::RenderRootArray<uint32_t> mFontInstanceKeysDeleted;
+  wr::RenderRootArray<nsDataHashtable<ScaledFontHashKey, wr::FontInstanceKey>>
+      mFontInstanceKeys;
 
   UniquePtr<ActiveResourceTracker> mActiveResourceTracker;
 

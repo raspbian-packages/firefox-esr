@@ -65,7 +65,7 @@ void GMPVideoDecoder::Decoded(GMPVideoi420Frame* aDecodedFrame) {
       media::TimeUnit::FromMicroseconds(-1), pictureRegion);
   RefPtr<GMPVideoDecoder> self = this;
   if (v) {
-    mDecodedData.AppendElement(Move(v));
+    mDecodedData.AppendElement(std::move(v));
   } else {
     mDecodedData.Clear();
     mDecodePromise.RejectIfExists(
@@ -85,14 +85,14 @@ void GMPVideoDecoder::ReceivedDecodedFrame(const uint64_t aPictureId) {
 
 void GMPVideoDecoder::InputDataExhausted() {
   MOZ_ASSERT(IsOnGMPThread());
-  mDecodePromise.ResolveIfExists(mDecodedData, __func__);
-  mDecodedData.Clear();
+  mDecodePromise.ResolveIfExists(std::move(mDecodedData), __func__);
+  mDecodedData = DecodedData();
 }
 
 void GMPVideoDecoder::DrainComplete() {
   MOZ_ASSERT(IsOnGMPThread());
-  mDrainPromise.ResolveIfExists(mDecodedData, __func__);
-  mDecodedData.Clear();
+  mDrainPromise.ResolveIfExists(std::move(mDecodedData), __func__);
+  mDecodedData = DecodedData();
 }
 
 void GMPVideoDecoder::ResetComplete() {
@@ -259,7 +259,8 @@ RefPtr<MediaDataDecoder::InitPromise> GMPVideoDecoder::Init() {
   InitTags(tags);
   UniquePtr<GetGMPVideoDecoderCallback> callback(new GMPInitDoneCallback(this));
   if (NS_FAILED(mMPS->GetDecryptingGMPVideoDecoder(
-          mCrashHelper, &tags, GetNodeId(), Move(callback), DecryptorId()))) {
+          mCrashHelper, &tags, GetNodeId(), std::move(callback),
+          DecryptorId()))) {
     mInitPromise.Reject(NS_ERROR_DOM_MEDIA_FATAL_ERR, __func__);
   }
 
@@ -289,7 +290,7 @@ RefPtr<MediaDataDecoder::DecodePromise> GMPVideoDecoder::Decode(
   }
   RefPtr<DecodePromise> p = mDecodePromise.Ensure(__func__);
   nsTArray<uint8_t> info;  // No codec specific per-frame info to pass.
-  nsresult rv = mGMP->Decode(Move(frame), false, info, 0);
+  nsresult rv = mGMP->Decode(std::move(frame), false, info, 0);
   if (NS_FAILED(rv)) {
     mDecodePromise.Reject(MediaResult(NS_ERROR_DOM_MEDIA_DECODE_ERR,
                                       RESULT_DETAIL("mGMP->Decode:%" PRIx32,

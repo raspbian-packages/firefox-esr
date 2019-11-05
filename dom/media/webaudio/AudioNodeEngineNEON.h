@@ -21,6 +21,7 @@ void AudioBlockCopyChannelWithScale_NEON(
     float aOutput[WEBAUDIO_BLOCK_SIZE]);
 
 void AudioBufferInPlaceScale_NEON(float* aBlock, float aScale, uint32_t aSize);
+void AudioBufferInPlaceScale_NEON(float* aBlock, float* aScale, uint32_t aSize);
 
 void AudioBlockPanStereoToStereo_NEON(const float aInputL[WEBAUDIO_BLOCK_SIZE],
                                       const float aInputR[WEBAUDIO_BLOCK_SIZE],

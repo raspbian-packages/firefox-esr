@@ -14,14 +14,21 @@ textbox {
   color: -moz-FieldText;
 }
 
-html|*.textbox-input, 
-html|*.textbox-textarea {
-  margin: 0px !important;
-  border: none !important;
-  padding: 0px 1px !important;
-  background-color: inherit;
+html|*.textbox-input {
+  -moz-appearance: none;
+  margin: 0;
+  border: none;
+  padding: 0 1px;
+  background-color: transparent;
   color: inherit;
   font: inherit;
+  text-shadow: inherit;
+  box-sizing: border-box;
+  -moz-box-flex: 1;
+}
+
+html|*.textbox-input {
+  text-align: inherit;
 }
 
 .textbox-contextmenu {
@@ -37,7 +44,7 @@ textbox[disabled="true"] {
   cursor: default;
   background-color: -moz-Dialog;
   color: GrayText;
-} 
+}
 
 textbox.plain {
   -moz-appearance: none !important;
@@ -47,14 +54,13 @@ textbox.plain {
   border: none !important;
 }
 
-textbox.plain html|*.textbox-input,
-textbox.plain html|*.textbox-textarea {
+textbox.plain html|*.textbox-input {
   padding: 0px !important;
 }
 
 /* ::::: search box ::::: */
 
-textbox[type="search"] {
+textbox[is="search-textbox"] {
   -moz-appearance: searchfield;
   padding: 1px;
   font-size: 12px;
@@ -66,19 +72,10 @@ textbox[type="search"] {
   margin-bottom: 1px;
 }
 
-textbox[type="search"].compact {
-  padding: 0;
-  font-size: 11px;
-}
-
-textbox[type="search"].compact > .textbox-input-box > .textbox-search-icons > .textbox-search-clear {
-  width: 11px;
-}
-
 .textbox-search-clear:not([disabled]) {
   cursor: default;
 }
- 
+
 .textbox-search-icons:not([selectedIndex="1"]) {
   visibility: hidden;
 }

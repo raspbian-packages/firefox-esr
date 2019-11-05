@@ -8,13 +8,23 @@
  * Manages the base loader (base-loader.js) instance used to load the developer tools.
  */
 
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
-var { Loader, Require, resolveURI, unload } =
-  ChromeUtils.import("resource://devtools/shared/base-loader.js", {});
-var { requireRawId } = ChromeUtils.import("resource://devtools/shared/loader-plugin-raw.jsm", {});
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+var { Loader, Require, resolveURI, unload } = ChromeUtils.import(
+  "resource://devtools/shared/base-loader.js"
+);
+var { requireRawId } = ChromeUtils.import(
+  "resource://devtools/shared/loader-plugin-raw.jsm"
+);
 
-this.EXPORTED_SYMBOLS = ["DevToolsLoader", "devtools", "BuiltinProvider",
-                         "require", "loader"];
+this.EXPORTED_SYMBOLS = [
+  "DevToolsLoader",
+  "devtools",
+  "BuiltinProvider",
+  "require",
+  "loader",
+  // Export StructuredCloneHolder for its use from builtin-modules
+  "StructuredCloneHolder",
+];
 
 /**
  * Providers are different strategies for loading the devtools.
@@ -26,18 +36,14 @@ this.EXPORTED_SYMBOLS = ["DevToolsLoader", "devtools", "BuiltinProvider",
  */
 function BuiltinProvider() {}
 BuiltinProvider.prototype = {
-  load: function () {
+  load: function() {
     const paths = {
       // ⚠ DISCUSSION ON DEV-DEVELOPER-TOOLS REQUIRED BEFORE MODIFYING ⚠
-      "devtools": "resource://devtools",
+      devtools: "resource://devtools",
       // ⚠ DISCUSSION ON DEV-DEVELOPER-TOOLS REQUIRED BEFORE MODIFYING ⚠
-      "gcli": "resource://devtools/shared/gcli/source/lib/gcli",
-      // ⚠ DISCUSSION ON DEV-DEVELOPER-TOOLS REQUIRED BEFORE MODIFYING ⚠
-      "acorn": "resource://devtools/shared/acorn",
+      acorn: "resource://devtools/shared/acorn",
       // ⚠ DISCUSSION ON DEV-DEVELOPER-TOOLS REQUIRED BEFORE MODIFYING ⚠
       "acorn/util/walk": "resource://devtools/shared/acorn/walk.js",
-      // ⚠ DISCUSSION ON DEV-DEVELOPER-TOOLS REQUIRED BEFORE MODIFYING ⚠
-      "source-map": "resource://devtools/shared/sourcemap/source-map.js",
       // ⚠ DISCUSSION ON DEV-DEVELOPER-TOOLS REQUIRED BEFORE MODIFYING ⚠
       // Allow access to xpcshell test items from the loader.
       "xpcshell-test": "resource://test",
@@ -47,7 +53,7 @@ BuiltinProvider.prototype = {
       // used in the source tree.
       "devtools/client/locales": "chrome://devtools/locale",
       "devtools/shared/locales": "chrome://devtools-shared/locale",
-      "devtools/shim/locales": "chrome://devtools-shim/locale",
+      "devtools/startup/locales": "chrome://devtools-startup/locale",
       "toolkit/locales": "chrome://global/locale",
     };
     // When creating a Loader invisible to the Debugger, we have to ensure
@@ -61,6 +67,7 @@ BuiltinProvider.prototype = {
     this.loader = new Loader({
       paths,
       invisibleToDebugger: this.invisibleToDebugger,
+      freshCompartment: this.freshCompartment,
       sharedGlobal: true,
       sandboxName: "DevTools (Module loader)",
       requireHook: (id, require) => {
@@ -72,7 +79,7 @@ BuiltinProvider.prototype = {
     });
   },
 
-  unload: function (reason) {
+  unload: function(reason) {
     unload(this.loader, reason);
     delete this.loader;
   },
@@ -92,7 +99,7 @@ this.DevToolsLoader = function DevToolsLoader() {
 };
 
 DevToolsLoader.prototype = {
-  destroy: function (reason = "shutdown") {
+  destroy: function(reason = "shutdown") {
     Services.obs.removeObserver(this, "devtools-unload");
 
     if (this._provider) {
@@ -123,7 +130,7 @@ DevToolsLoader.prototype = {
    * this is first called.  This will then be replaced by the real version.
    * @see setProvider
    */
-  require: function () {
+  require: function() {
     if (!this._provider) {
       this._loadProvider();
     }
@@ -134,14 +141,14 @@ DevToolsLoader.prototype = {
    * Return true if |id| refers to something requiring help from a
    * loader plugin.
    */
-  isLoaderPluginId: function (id) {
+  isLoaderPluginId: function(id) {
     return id.startsWith("raw!");
   },
 
   /**
    * Override the provider used to load the tools.
    */
-  setProvider: function (provider) {
+  setProvider: function(provider) {
     if (provider === this._provider) {
       return;
     }
@@ -154,12 +161,15 @@ DevToolsLoader.prototype = {
 
     // Pass through internal loader settings specific to this loader instance
     this._provider.invisibleToDebugger = this.invisibleToDebugger;
+    this._provider.freshCompartment = this.freshCompartment;
 
     this._provider.load();
     this.require = Require(this._provider.loader, { id: "devtools" });
 
     // Fetch custom pseudo modules and globals
-    let { modules, globals } = this.require("devtools/shared/builtin-modules");
+    const { modules, globals } = this.require(
+      "devtools/shared/builtin-modules"
+    );
 
     // When creating a Loader for the browser toolbox, we have to use
     // Promise-backend.js, as a Loader module. Instead of Promise.jsm which
@@ -169,31 +179,47 @@ DevToolsLoader.prototype = {
     }
 
     // Register custom pseudo modules to the current loader instance
-    let loader = this._provider.loader;
-    for (let id in modules) {
-      let uri = resolveURI(id, loader.mapping);
+    const loader = this._provider.loader;
+    for (const id in modules) {
+      const uri = resolveURI(id, loader.mapping);
       loader.modules[uri] = {
         get exports() {
           return modules[id];
-        }
+        },
       };
     }
 
     // Register custom globals to the current loader instance
     globals.loader.id = this.id;
-    Object.defineProperties(loader.globals, Object.getOwnPropertyDescriptors(globals));
+    Object.defineProperties(
+      loader.globals,
+      Object.getOwnPropertyDescriptors(globals)
+    );
 
     // Expose lazy helpers on loader
     this.lazyGetter = globals.loader.lazyGetter;
     this.lazyImporter = globals.loader.lazyImporter;
     this.lazyServiceGetter = globals.loader.lazyServiceGetter;
     this.lazyRequireGetter = globals.loader.lazyRequireGetter;
+
+    // When replaying, modify the require hook to allow the ReplayInspector to
+    // replace chrome interfaces with alternatives that understand the proxies
+    // created for objects in the recording/replaying process.
+    if (globals.isReplaying) {
+      const oldHook = this._provider.loader.requireHook;
+      const ReplayInspector = this.require(
+        "devtools/server/actors/replay/inspector"
+      );
+      this._provider.loader.requireHook = ReplayInspector.wrapRequireHook(
+        oldHook
+      );
+    }
   },
 
   /**
    * Choose a default tools provider based on the preferences.
    */
-  _loadProvider: function () {
+  _loadProvider: function() {
     this.setProvider(new BuiltinProvider());
   },
 
@@ -203,7 +229,7 @@ DevToolsLoader.prototype = {
    * @param String data
    *    reason passed to modules when unloaded
    */
-  observe: function (subject, topic, data) {
+  observe: function(subject, topic, data) {
     if (topic != "devtools-unload") {
       return;
     }
@@ -219,7 +245,7 @@ DevToolsLoader.prototype = {
    * loader instance.
    * @see devtools/client/framework/ToolboxProcess.jsm
    */
-  invisibleToDebugger: Services.appinfo.name !== "Firefox"
+  invisibleToDebugger: Services.appinfo.name !== "Firefox",
 };
 
 // Export the standard instance of DevToolsLoader used by the tools.
@@ -229,8 +255,8 @@ this.require = this.devtools.require.bind(this.devtools);
 
 // For compatibility reasons, expose these symbols on "devtools":
 Object.defineProperty(this.devtools, "Toolbox", {
-  get: () => this.require("devtools/client/framework/toolbox").Toolbox
+  get: () => this.require("devtools/client/framework/toolbox").Toolbox,
 });
 Object.defineProperty(this.devtools, "TargetFactory", {
-  get: () => this.require("devtools/client/framework/target").TargetFactory
+  get: () => this.require("devtools/client/framework/target").TargetFactory,
 });

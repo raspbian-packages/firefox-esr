@@ -46,28 +46,28 @@ class EventListenerChange final : public nsIEventListenerChange {
 class EventListenerInfo final : public nsIEventListenerInfo {
  public:
   EventListenerInfo(const nsAString& aType,
-                    already_AddRefed<nsIDOMEventListener> aListener,
+                    JS::Handle<JSObject*> aScriptedListener,
+                    JS::Handle<JSObject*> aScriptedListenerGlobal,
                     bool aCapturing, bool aAllowsUntrusted,
-                    bool aInSystemEventGroup)
-      : mType(aType),
-        mListener(aListener),
-        mCapturing(aCapturing),
-        mAllowsUntrusted(aAllowsUntrusted),
-        mInSystemEventGroup(aInSystemEventGroup) {}
+                    bool aInSystemEventGroup);
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_CYCLE_COLLECTION_CLASS(EventListenerInfo)
+  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(EventListenerInfo)
   NS_DECL_NSIEVENTLISTENERINFO
 
  protected:
-  virtual ~EventListenerInfo() {}
+  virtual ~EventListenerInfo();
 
-  bool GetJSVal(JSContext* aCx, Maybe<JSAutoCompartment>& aAc,
+  bool GetJSVal(JSContext* aCx, Maybe<JSAutoRealm>& aAr,
                 JS::MutableHandle<JS::Value> aJSVal);
 
   nsString mType;
-  // nsReftPtr because that is what nsListenerStruct uses too.
-  RefPtr<nsIDOMEventListener> mListener;
+  JS::Heap<JSObject*> mScriptedListener;  // May be null.
+  // mScriptedListener may be a cross-compartment wrapper so we cannot use it
+  // with JSAutoRealm because CCWs are not associated with a single realm. We
+  // use this global instead (must be same-compartment with mScriptedListener
+  // and must be non-null if mScriptedListener is non-null).
+  JS::Heap<JSObject*> mScriptedListenerGlobal;
   bool mCapturing;
   bool mAllowsUntrusted;
   bool mInSystemEventGroup;

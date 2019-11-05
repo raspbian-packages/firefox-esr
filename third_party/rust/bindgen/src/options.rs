@@ -71,6 +71,20 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("blacklist-function")
+                .long("blacklist-function")
+                .help("Mark <function> as hidden.")
+                .value_name("function")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
+            Arg::with_name("blacklist-item")
+                .long("blacklist-item")
+                .help("Mark <item> as hidden.")
+                .value_name("item")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("no-layout-tests")
                 .long("no-layout-tests")
                 .help("Avoid generating layout tests for any type."),
@@ -125,6 +139,12 @@ where
             Arg::with_name("objc-extern-crate")
                 .long("objc-extern-crate")
                 .help("Use extern crate instead of use for objc."),
+            Arg::with_name("generate-block")
+                .long("generate-block")
+                .help("Generate block signatures instead of void pointers."),
+            Arg::with_name("block-extern-crate")
+                .long("block-extern-crate")
+                .help("Use extern crate instead of use for block."),
             Arg::with_name("distrust-clang-mangling")
                 .long("distrust-clang-mangling")
                 .help("Do not trust the libclang-provided mangling"),
@@ -143,6 +163,7 @@ where
                 .help("Time the different bindgen phases and print to stderr"),
             // All positional arguments after the end of options marker, `--`
             Arg::with_name("clang-args")
+                .last(true)
                 .multiple(true),
             Arg::with_name("emit-clang-ast")
                 .long("emit-clang-ast")
@@ -182,6 +203,9 @@ where
             Arg::with_name("no-prepend-enum-name")
                 .long("no-prepend-enum-name")
                 .help("Do not prepend the enum name to bitfield or constant variants."),
+            Arg::with_name("no-include-path-detection")
+                .long("no-include-path-detection")
+                .help("Do not try to detect default include paths"),
             Arg::with_name("unstable-rust")
                 .long("unstable-rust")
                 .help("Generate unstable Rust code (deprecated; use --rust-target instead).")
@@ -256,6 +280,10 @@ where
                        Useful when debugging bindgen, using C-Reduce, or when \
                        filing issues. The resulting file will be named \
                        something like `__bindgen.i` or `__bindgen.ii`."),
+            Arg::with_name("no-record-matches")
+                .long("no-record-matches")
+                .help("Do not record matching items in the regex sets. \
+                      This disables reporting of unused items."),
             Arg::with_name("no-rustfmt-bindings")
                 .long("no-rustfmt-bindings")
                 .help("Do not format the generated bindings with rustfmt."),
@@ -294,6 +322,10 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("enable-function-attribute-detection")
+                .long("enable-function-attribute-detection")
+                .help("Enables detecting unexposed attributes in functions (slow).
+                       Used to generate #[must_use] annotations."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -347,6 +379,18 @@ where
     if let Some(hidden_types) = matches.values_of("blacklist-type") {
         for ty in hidden_types {
             builder = builder.blacklist_type(ty);
+        }
+    }
+
+    if let Some(hidden_functions) = matches.values_of("blacklist-function") {
+        for fun in hidden_functions {
+            builder = builder.blacklist_function(fun);
+        }
+    }
+
+    if let Some(hidden_identifiers) = matches.values_of("blacklist-item") {
+        for id in hidden_identifiers {
+            builder = builder.blacklist_item(id);
         }
     }
 
@@ -406,6 +450,10 @@ where
         builder = builder.prepend_enum_name(false);
     }
 
+    if matches.is_present("no-include-path-detection") {
+        builder = builder.detect_include_paths(false);
+    }
+
     if matches.is_present("time-phases") {
         builder = builder.time_phases(true);
     }
@@ -415,15 +463,15 @@ where
     }
 
     if let Some(what_to_generate) = matches.value_of("generate") {
-        let mut config = CodegenConfig::nothing();
+        let mut config = CodegenConfig::empty();
         for what in what_to_generate.split(",") {
             match what {
-                "functions" => config.functions = true,
-                "types" => config.types = true,
-                "vars" => config.vars = true,
-                "methods" => config.methods = true,
-                "constructors" => config.constructors = true,
-                "destructors" => config.destructors = true,
+                "functions" => config.insert(CodegenConfig::FUNCTIONS),
+                "types" => config.insert(CodegenConfig::TYPES),
+                "vars" => config.insert(CodegenConfig::VARS),
+                "methods" => config.insert(CodegenConfig::METHODS),
+                "constructors" => config.insert(CodegenConfig::CONSTRUCTORS),
+                "destructors" => config.insert(CodegenConfig::DESTRUCTORS),
                 otherwise => {
                     return Err(Error::new(
                         ErrorKind::Other,
@@ -449,6 +497,10 @@ where
 
     if matches.is_present("enable-cxx-namespaces") {
         builder = builder.enable_cxx_namespaces();
+    }
+
+    if matches.is_present("enable-function-attribute-detection") {
+        builder = builder.enable_function_attribute_detection();
     }
 
     if matches.is_present("disable-name-namespacing") {
@@ -477,6 +529,14 @@ where
 
     if matches.is_present("objc-extern-crate") {
         builder = builder.objc_extern_crate(true);
+    }
+
+    if matches.is_present("generate-block") {
+        builder = builder.generate_block(true);
+    }
+
+    if matches.is_present("block-extern-crate") {
+        builder = builder.block_extern_crate(true);
     }
 
     if let Some(opaque_types) = matches.values_of("opaque-type") {
@@ -540,6 +600,10 @@ where
 
     if matches.is_present("dump-preprocessed-input") {
         builder.dump_preprocessed_input()?;
+    }
+
+    if matches.is_present("no-record-matches") {
+        builder = builder.record_matches(false);
     }
 
     let no_rustfmt_bindings = matches.is_present("no-rustfmt-bindings");

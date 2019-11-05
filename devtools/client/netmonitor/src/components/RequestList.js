@@ -12,25 +12,23 @@ const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 // Components
 const StatusBar = createFactory(require("./StatusBar"));
 
-loader.lazyGetter(this, "RequestListContent", function () {
+loader.lazyGetter(this, "RequestListContent", function() {
   return createFactory(require("./RequestListContent"));
 });
-loader.lazyGetter(this, "RequestListEmptyNotice", function () {
+loader.lazyGetter(this, "RequestListEmptyNotice", function() {
   return createFactory(require("./RequestListEmptyNotice"));
 });
 
 /**
  * Request panel component
  */
-function RequestList({
-  connector,
-  isEmpty,
-}) {
-  return (
-    div({ className: "request-list-container" },
-      isEmpty ? RequestListEmptyNotice({ connector }) : RequestListContent({ connector }),
-      StatusBar({ connector }),
-    )
+function RequestList({ connector, isEmpty }) {
+  return div(
+    { className: "request-list-container" },
+    isEmpty
+      ? RequestListEmptyNotice({ connector })
+      : RequestListContent({ connector }),
+    StatusBar({ connector })
   );
 }
 

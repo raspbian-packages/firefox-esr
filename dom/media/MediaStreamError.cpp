@@ -10,37 +10,46 @@
 
 namespace mozilla {
 
-BaseMediaMgrError::BaseMediaMgrError(const nsAString& aName,
-                                     const nsAString& aMessage,
+BaseMediaMgrError::BaseMediaMgrError(Name aName, const nsAString& aMessage,
                                      const nsAString& aConstraint)
-    : mName(aName), mMessage(aMessage), mConstraint(aConstraint) {
-  if (mMessage.IsEmpty()) {
-    if (mName.EqualsLiteral("NotFoundError")) {
-      mMessage.AssignLiteral("The object can not be found here.");
-    } else if (mName.EqualsLiteral("NotAllowedError")) {
-      mMessage.AssignLiteral(
-          "The request is not allowed by the user agent "
-          "or the platform in the current context.");
-    } else if (mName.EqualsLiteral("SecurityError")) {
-      mMessage.AssignLiteral("The operation is insecure.");
-    } else if (mName.EqualsLiteral("NotReadableError")) {
-      mMessage.AssignLiteral("The I/O read operation failed.");
-    } else if (mName.EqualsLiteral("InternalError")) {
-      mMessage.AssignLiteral("Internal error.");
-    } else if (mName.EqualsLiteral("NotSupportedError")) {
-      mMessage.AssignLiteral("The operation is not supported.");
-    } else if (mName.EqualsLiteral("OverconstrainedError")) {
-      mMessage.AssignLiteral("Constraints could be not satisfied.");
+    : mMessage(aMessage), mConstraint(aConstraint), mName(aName) {
+#define MAP_MEDIAERR(name, msg) \
+  { Name::name, #name, msg }
+
+  static struct {
+    Name mName;
+    const char* mNameString;
+    const char* mMessage;
+  } map[] = {
+      MAP_MEDIAERR(AbortError, "The operation was aborted."),
+      MAP_MEDIAERR(InvalidStateError, "The object is in an invalid state."),
+      MAP_MEDIAERR(NotAllowedError,
+                   "The request is not allowed by the user agent "
+                   "or the platform in the current context."),
+      MAP_MEDIAERR(NotFoundError, "The object can not be found here."),
+      MAP_MEDIAERR(NotReadableError, "The I/O read operation failed."),
+      MAP_MEDIAERR(NotSupportedError, "The operation is not supported."),
+      MAP_MEDIAERR(OverconstrainedError, "Constraints could be not satisfied."),
+      MAP_MEDIAERR(SecurityError, "The operation is insecure."),
+      MAP_MEDIAERR(TypeError, ""),
+  };
+  for (auto& entry : map) {
+    if (entry.mName == mName) {
+      mNameString.AssignASCII(entry.mNameString);
+      if (mMessage.IsEmpty()) {
+        mMessage.AssignASCII(entry.mMessage);
+      }
+      return;
     }
   }
+  MOZ_ASSERT_UNREACHABLE("Unknown error type");
 }
 
 NS_IMPL_ISUPPORTS0(MediaMgrError)
 
 namespace dom {
 
-MediaStreamError::MediaStreamError(nsPIDOMWindowInner* aParent,
-                                   const nsAString& aName,
+MediaStreamError::MediaStreamError(nsPIDOMWindowInner* aParent, Name aName,
                                    const nsAString& aMessage,
                                    const nsAString& aConstraint)
     : BaseMediaMgrError(aName, aMessage, aConstraint), mParent(aParent) {}
@@ -56,10 +65,10 @@ NS_INTERFACE_MAP_END
 
 JSObject* MediaStreamError::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return MediaStreamErrorBinding::Wrap(aCx, this, aGivenProto);
+  return MediaStreamError_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-void MediaStreamError::GetName(nsAString& aName) const { aName = mName; }
+void MediaStreamError::GetName(nsAString& aName) const { aName = mNameString; }
 
 void MediaStreamError::GetMessage(nsAString& aMessage) const {
   aMessage = mMessage;

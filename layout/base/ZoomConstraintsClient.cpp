@@ -7,14 +7,15 @@
 #include "ZoomConstraintsClient.h"
 
 #include <inttypes.h>
-#include "FrameMetrics.h"
 #include "gfxPrefs.h"
 #include "LayersLogging.h"
 #include "mozilla/layers/APZCCallbackHelper.h"
+#include "mozilla/layers/ScrollableLayerGuid.h"
+#include "mozilla/layers/ZoomConstraints.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/PresShell.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/Event.h"
-#include "nsDocument.h"
 #include "nsIFrame.h"
 #include "nsLayoutUtils.h"
 #include "nsPoint.h"
@@ -35,6 +36,7 @@ NS_IMPL_ISUPPORTS(ZoomConstraintsClient, nsIDOMEventListener, nsIObserver)
 #define NS_PREF_CHANGED NS_LITERAL_CSTRING("nsPref:changed")
 
 using namespace mozilla;
+using namespace mozilla::dom;
 using namespace mozilla::layers;
 
 ZoomConstraintsClient::ZoomConstraintsClient()
@@ -42,11 +44,11 @@ ZoomConstraintsClient::ZoomConstraintsClient()
 
 ZoomConstraintsClient::~ZoomConstraintsClient() {}
 
-static nsIWidget* GetWidget(nsIPresShell* aShell) {
-  if (!aShell) {
+static nsIWidget* GetWidget(PresShell* aPresShell) {
+  if (!aPresShell) {
     return nullptr;
   }
-  if (nsIFrame* rootFrame = aShell->GetRootFrame()) {
+  if (nsIFrame* rootFrame = aPresShell->GetRootFrame()) {
 #if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_UIKIT)
     return rootFrame->GetNearestWidget();
 #else
@@ -94,8 +96,7 @@ void ZoomConstraintsClient::Destroy() {
   mPresShell = nullptr;
 }
 
-void ZoomConstraintsClient::Init(nsIPresShell* aPresShell,
-                                 nsIDocument* aDocument) {
+void ZoomConstraintsClient::Init(PresShell* aPresShell, Document* aDocument) {
   if (!(aPresShell && aDocument)) {
     return;
   }
@@ -122,7 +123,7 @@ void ZoomConstraintsClient::Init(nsIPresShell* aPresShell,
 }
 
 NS_IMETHODIMP
-ZoomConstraintsClient::HandleEvent(nsIDOMEvent* event) {
+ZoomConstraintsClient::HandleEvent(dom::Event* event) {
   nsAutoString type;
   event->GetType(type);
 
@@ -143,7 +144,7 @@ ZoomConstraintsClient::HandleEvent(nsIDOMEvent* event) {
 NS_IMETHODIMP
 ZoomConstraintsClient::Observe(nsISupports* aSubject, const char* aTopic,
                                const char16_t* aData) {
-  if (SameCOMIdentity(aSubject, mDocument) &&
+  if (SameCOMIdentity(aSubject, ToSupports(mDocument)) &&
       BEFORE_FIRST_PAINT.EqualsASCII(aTopic)) {
     ZCC_LOG("Got a before-first-paint event in %p\n", this);
     RefreshZoomConstraints();
@@ -167,11 +168,12 @@ void ZoomConstraintsClient::ScreenSizeChanged() {
 }
 
 static mozilla::layers::ZoomConstraints ComputeZoomConstraintsFromViewportInfo(
-    const nsViewportInfo& aViewportInfo) {
+    const nsViewportInfo& aViewportInfo, Document* aDocument) {
   mozilla::layers::ZoomConstraints constraints;
-  constraints.mAllowZoom =
-      aViewportInfo.IsZoomAllowed() && gfxPrefs::APZAllowZooming();
-  constraints.mAllowDoubleTapZoom = constraints.mAllowZoom;
+  constraints.mAllowZoom = aViewportInfo.IsZoomAllowed() &&
+                           nsLayoutUtils::AllowZoomingForDocument(aDocument);
+  constraints.mAllowDoubleTapZoom =
+      constraints.mAllowZoom && gfxPrefs::APZAllowDoubleTapZooming();
   if (constraints.mAllowZoom) {
     constraints.mMinZoom.scale = aViewportInfo.GetMinZoom().scale;
     constraints.mMaxZoom.scale = aViewportInfo.GetMaxZoom().scale;
@@ -189,7 +191,7 @@ void ZoomConstraintsClient::RefreshZoomConstraints() {
   }
 
   uint32_t presShellId = 0;
-  FrameMetrics::ViewID viewId = FrameMetrics::NULL_SCROLL_ID;
+  ScrollableLayerGuid::ViewID viewId = ScrollableLayerGuid::NULL_SCROLL_ID;
   bool scrollIdentifiersValid =
       APZCCallbackHelper::GetOrCreateScrollIdentifiers(
           mDocument->GetDocumentElement(), &presShellId, &viewId);
@@ -207,7 +209,7 @@ void ZoomConstraintsClient::RefreshZoomConstraints() {
       screenSize, PixelCastJustification::LayoutDeviceIsScreenForBounds));
 
   mozilla::layers::ZoomConstraints zoomConstraints =
-      ComputeZoomConstraintsFromViewportInfo(viewportInfo);
+      ComputeZoomConstraintsFromViewportInfo(viewportInfo, mDocument);
 
   if (mDocument->Fullscreen()) {
     ZCC_LOG("%p is in fullscreen, disallowing zooming\n", this);
@@ -235,7 +237,7 @@ void ZoomConstraintsClient::RefreshZoomConstraints() {
     rcdrsf->SetZoomableByAPZ(zoomConstraints.mAllowZoom);
   }
 
-  ScrollableLayerGuid newGuid(0, presShellId, viewId);
+  ScrollableLayerGuid newGuid(LayersId{0}, presShellId, viewId);
   if (mGuid && mGuid.value() != newGuid) {
     ZCC_LOG("Clearing old constraints in %p for { %u, %" PRIu64 " }\n", this,
             mGuid->mPresShellId, mGuid->mScrollId);

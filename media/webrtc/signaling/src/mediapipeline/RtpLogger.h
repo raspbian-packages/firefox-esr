@@ -8,6 +8,7 @@
 #define rtplogger_h__
 
 #include "webrtc/modules/rtp_rtcp/include/rtp_header_parser.h"
+#include "mtransport/mediapacket.h"
 
 namespace mozilla {
 
@@ -20,8 +21,8 @@ namespace mozilla {
 class RtpLogger {
  public:
   static bool IsPacketLoggingOn();
-  static void LogPacket(const unsigned char *data, int len, bool input,
-                        bool isRtp, int headerLength, std::string desc);
+  static void LogPacket(const MediaPacket& packet, bool input,
+                        std::string desc);
 };
 
 }  // namespace mozilla

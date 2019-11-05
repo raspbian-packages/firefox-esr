@@ -4,7 +4,7 @@
 
 <!ENTITY pref.toolbars.title    "Barra de ferramentas">
 
-<!ENTITY composition.caption    "Mostrar esses botões na barra de ferramentas de composição:">
+<!ENTITY composition.caption    "Mostrar esses botões na barra de redação:">
 
 <!ENTITY new.label              "Novo">
 <!ENTITY open.label             "Abrir">
@@ -15,7 +15,7 @@
 <!ENTITY copy.label             "Copiar">
 <!ENTITY paste.label            "Colar">
 <!ENTITY print.label            "Imprimir">
-<!ENTITY find.label             "Localizar">
+<!ENTITY find.label             "Procurar">
 <!ENTITY image.label            "Imagem">
 <!ENTITY hline.label            "Linha H.">
 <!ENTITY table.label            "Tabela">

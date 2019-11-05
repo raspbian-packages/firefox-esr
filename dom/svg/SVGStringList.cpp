@@ -7,6 +7,7 @@
 #include "SVGStringList.h"
 #include "nsError.h"
 #include "nsCharSeparatedTokenizer.h"
+#include "nsContentUtils.h"
 #include "nsString.h"
 #include "nsWhitespaceTokenizer.h"
 #include "SVGContentUtils.h"
@@ -39,7 +40,8 @@ nsresult SVGStringList::SetValue(const nsAString& aValue) {
   SVGStringList temp;
 
   if (mIsCommaSeparated) {
-    nsCharSeparatedTokenizerTemplate<IsSVGWhitespace> tokenizer(aValue, ',');
+    nsCharSeparatedTokenizerTemplate<nsContentUtils::IsHTMLWhitespace>
+        tokenizer(aValue, ',');
 
     while (tokenizer.hasMoreTokens()) {
       if (!temp.AppendItem(tokenizer.nextToken())) {
@@ -50,7 +52,8 @@ nsresult SVGStringList::SetValue(const nsAString& aValue) {
       return NS_ERROR_DOM_SYNTAX_ERR;  // trailing comma
     }
   } else {
-    nsWhitespaceTokenizerTemplate<IsSVGWhitespace> tokenizer(aValue);
+    nsWhitespaceTokenizerTemplate<nsContentUtils::IsHTMLWhitespace> tokenizer(
+        aValue);
 
     while (tokenizer.hasMoreTokens()) {
       if (!temp.AppendItem(tokenizer.nextToken())) {

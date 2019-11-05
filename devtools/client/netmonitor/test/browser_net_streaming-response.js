@@ -8,42 +8,38 @@
  * displayed as XML or plain text
  */
 
-add_task(async function () {
-  let { tab, monitor } = await initNetMonitor(CUSTOM_GET_URL);
+add_task(async function() {
+  const { tab, monitor } = await initNetMonitor(CUSTOM_GET_URL);
 
   info("Starting test... ");
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let {
-    getDisplayedRequests,
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { getDisplayedRequests, getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
-  const REQUESTS = [
-    [ "hls-m3u8", /^#EXTM3U/ ],
-    [ "mpeg-dash", /^<\?xml/ ]
-  ];
+  const REQUESTS = [["hls-m3u8", /^#EXTM3U/], ["mpeg-dash", /^<\?xml/]];
 
   let wait = waitForNetworkEvents(monitor, REQUESTS.length);
-  for (let [fmt] of REQUESTS) {
-    let url = CONTENT_TYPE_SJS + "?fmt=" + fmt;
-    await ContentTask.spawn(tab.linkedBrowser, { url }, async function (args) {
+  for (const [fmt] of REQUESTS) {
+    const url = CONTENT_TYPE_SJS + "?fmt=" + fmt;
+    await ContentTask.spawn(tab.linkedBrowser, { url }, async function(args) {
       content.wrappedJSObject.performRequests(1, args.url);
     });
   }
   await wait;
 
-  let requestItems = document.querySelectorAll(".request-list-item");
-  for (let requestItem of requestItems) {
+  const requestItems = document.querySelectorAll(".request-list-item");
+  for (const requestItem of requestItems) {
     requestItem.scrollIntoView();
-    let requestsListStatus = requestItem.querySelector(".requests-list-status");
+    const requestsListStatus = requestItem.querySelector(".status-code");
     EventUtils.sendMouseEvent({ type: "mouseover" }, requestsListStatus);
     await waitUntil(() => requestsListStatus.title);
   }
 
-  REQUESTS.forEach(([ fmt ], i) => {
+  REQUESTS.forEach(([fmt], i) => {
     verifyRequestItemTarget(
       document,
       getDisplayedRequests(store.getState()),
@@ -52,15 +48,17 @@ add_task(async function () {
       CONTENT_TYPE_SJS + "?fmt=" + fmt,
       {
         status: 200,
-        statusText: "OK"
-      });
+        statusText: "OK",
+      }
+    );
   });
 
   wait = waitForDOM(document, "#response-panel");
-  EventUtils.sendMouseEvent({ type: "click" },
-    document.querySelector(".network-details-panel-toggle"));
-  EventUtils.sendMouseEvent({ type: "click" },
-    document.querySelector("#response-tab"));
+  store.dispatch(Actions.toggleNetworkDetails());
+  EventUtils.sendMouseEvent(
+    { type: "click" },
+    document.querySelector("#response-tab")
+  );
   await wait;
 
   store.dispatch(Actions.selectRequest(null));
@@ -75,8 +73,10 @@ add_task(async function () {
 
   return teardown(monitor);
 
-  function testEditorContent([ fmt, textRe ]) {
-    ok(document.querySelector(".CodeMirror-line").textContent.match(textRe),
-      "The text shown in the source editor for " + fmt + " is correct.");
+  function testEditorContent([fmt, textRe]) {
+    ok(
+      getCodeMirrorValue(monitor).match(textRe),
+      "The text shown in the source editor for " + fmt + " is correct."
+    );
   }
 });

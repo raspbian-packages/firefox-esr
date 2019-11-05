@@ -14,45 +14,49 @@ const TAB_URL = URL_ROOT + "service-workers/empty-sw.html";
 
 const SW_TIMEOUT = 1000;
 
-add_task(function* () {
-  yield enableServiceWorkerDebugging();
-  yield pushPref("dom.serviceWorkers.idle_timeout", SW_TIMEOUT);
-  yield pushPref("dom.serviceWorkers.idle_extended_timeout", SW_TIMEOUT);
+add_task(async function() {
+  await enableServiceWorkerDebugging();
+  await pushPref("dom.serviceWorkers.idle_timeout", SW_TIMEOUT);
+  await pushPref("dom.serviceWorkers.idle_extended_timeout", SW_TIMEOUT);
 
-  let { tab, document } = yield openAboutDebugging("workers");
+  const { tab, document } = await openAboutDebugging("workers");
 
   // Listen for mutations in the service-workers list.
-  let serviceWorkersElement = getServiceWorkerList(document);
+  const serviceWorkersElement = getServiceWorkerList(document);
 
   // Open a tab that registers an empty service worker.
-  let swTab = yield addTab(TAB_URL);
+  const swTab = await addTab(TAB_URL);
 
   // Wait for the service-workers list to update.
   info("Wait until the service worker appears in about:debugging");
-  yield waitUntilServiceWorkerContainer(SERVICE_WORKER, document);
+  await waitUntilServiceWorkerContainer(SERVICE_WORKER, document);
 
-  info("Ensure that the registration resolved before trying to interact with " +
-    "the service worker.");
-  yield waitForServiceWorkerRegistered(swTab);
+  info(
+    "Ensure that the registration resolved before trying to interact with " +
+      "the service worker."
+  );
+  await waitForServiceWorkerRegistered(swTab);
   ok(true, "Service worker registration resolved");
 
-  yield waitForServiceWorkerActivation(SERVICE_WORKER, document);
+  await waitForServiceWorkerActivation(SERVICE_WORKER, document);
 
   // Retrieve the Target element corresponding to the service worker.
-  let names = [...document.querySelectorAll("#service-workers .target-name")];
-  let name = names.filter(element => element.textContent === SERVICE_WORKER)[0];
+  const names = [...document.querySelectorAll("#service-workers .target-name")];
+  const name = names.filter(
+    element => element.textContent === SERVICE_WORKER
+  )[0];
   ok(name, "Found the service worker in the list");
-  let targetElement = name.parentNode.parentNode;
+  const targetElement = name.parentNode.parentNode;
 
   // The service worker may already be killed with the low 1s timeout.
   // At this stage, either the SW is started and the Debug button is visible or was
   // already stopped and the start button is visible. Wait until the service worker is
   // stopped.
   info("Wait until the start button is visible");
-  yield waitUntilElement(".start-button", targetElement);
+  await waitUntilElement(".start-button", targetElement);
 
   // We should now have a Start button but no Debug button.
-  let startBtn = targetElement.querySelector(".start-button");
+  const startBtn = targetElement.querySelector(".start-button");
   ok(startBtn, "Found its start button");
   ok(!targetElement.querySelector(".debug-button"), "No debug button");
 
@@ -60,7 +64,7 @@ add_task(function* () {
   startBtn.click();
 
   info("Wait until the service worker starts and the debug button appears");
-  yield waitUntilElement(".debug-button", targetElement);
+  await waitUntilElement(".debug-button", targetElement);
   info("Found the debug button");
 
   // Check that we have a Debug button but not a Start button again.
@@ -68,12 +72,12 @@ add_task(function* () {
 
   // Finally, unregister the service worker itself.
   try {
-    yield unregisterServiceWorker(swTab, serviceWorkersElement);
+    await unregisterServiceWorker(swTab, serviceWorkersElement);
     ok(true, "Service worker registration unregistered");
   } catch (e) {
     ok(false, "SW not unregistered; " + e);
   }
 
-  yield removeTab(swTab);
-  yield closeAboutDebugging(tab);
+  await removeTab(swTab);
+  await closeAboutDebugging(tab);
 });

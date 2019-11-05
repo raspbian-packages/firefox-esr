@@ -21,10 +21,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=964646
   <meta charset="utf-8">
   <title>Test for css3-animations running on the compositor thread (Bug
          964646)</title>
-  <script type="application/javascript"
-    src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="application/javascript"
-    src="/tests/SimpleTest/paint_listener.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/paint_listener.js"></script>
   <script type="application/javascript" src="animation_utils.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <style type="text/css">
@@ -192,7 +190,7 @@ var gDisplay = document.getElementById("display")
 [ 'omta_is', 'omta_todo_is', 'omta_is_approx' ].forEach(function(fn) {
   var origFn = window[fn];
   window[fn] = function() {
-    var args = Array.slice(arguments);
+    var args = Array.from(arguments);
     if (!(args[0] instanceof Element)) {
       args.unshift(gDiv);
     }
@@ -223,6 +221,11 @@ runOMTATest(function() {
     SimpleTest.finish();
   });
 }, SimpleTest.finish);
+
+function isGeckoView() {
+  return SpecialPowers.Services.androidBridge &&
+    !SpecialPowers.Services.androidBridge.isFennec;
+}
 
 //----------------------------------------------------------------------
 //
@@ -2093,9 +2096,8 @@ addAsyncAnimTest(async function() {
 // Bug 996796 patch 12 - test for correct visited styles during
 // animation-only style flush.
 addAsyncAnimTest(async function() {
-  var isb2g = SpecialPowers.Services.appinfo.name == "B2G";
-  if (isb2g) {
-    todo(false, "no global history on B2G; can't run test");
+  if (isGeckoView()) {
+    todo(false, "no global history on GeckoView; can't run test");
     return;
   }
 
@@ -2387,6 +2389,227 @@ addAsyncAnimTest(async function() {
   await waitForPaints();
   omta_is("transform", { tx: 200 }, RunningOn.MainThread,
           "transition runs on main thread at end of active interval");
+
+  done_div();
+});
+
+if (SpecialPowers.DOMWindowUtils.layerManagerType != 'WebRender') {
+  // Normal background-color animation.
+  addAsyncAnimTest(async function() {
+    new_div("background-color: rgb(255, 0, 0); " +
+            "transition: background-color 10s linear");
+    await waitForPaintsFlushed();
+
+    gDiv.style.backgroundColor = "rgb(0, 255, 0)";
+    await waitForPaintsFlushed();
+
+    omta_is("background-color", "rgb(255, 0, 0)", RunningOn.Compositor,
+            "background-color transition runs on compositor thread");
+
+    advance_clock(5000);
+    omta_is("background-color", "rgb(128, 128, 0)", RunningOn.Compositor,
+            "background-color on compositor at 5s");
+
+    done_div();
+  });
+
+  // background-color animation with currentColor.
+  addAsyncAnimTest(async function() {
+    new_div("color: rgb(255, 0, 0); " +
+            "background-color: currentColor; " +
+            "transition: background-color 10s linear");
+    await waitForPaintsFlushed();
+
+    gDiv.style.backgroundColor = "rgb(0, 255, 0)";
+    await waitForPaintsFlushed();
+
+    omta_is("background-color", "rgb(255, 0, 0)", RunningOn.Compositor,
+            "background-color transition starting with current-color runs on " +
+            "compositor thread");
+
+    advance_clock(5000);
+    omta_is("background-color", "rgb(128, 128, 0)", RunningOn.Compositor,
+            "background-color on compositor at 5s");
+
+    done_div();
+  });
+
+  // Tests that a background-color animation from inherited currentColor to
+  // a normal color on the compositor is updated when the parent color is
+  // changed.
+  addAsyncAnimTest(async function() {
+    new_div("");
+    const parent = document.createElement("div");
+    gDiv.parentNode.insertBefore(parent, gDiv);
+    parent.style.color = "rgb(255, 0, 0)";
+    parent.appendChild(gDiv);
+
+    gDiv.animate({ backgroundColor: [ "currentColor", "rgb(0, 255, 0)" ] }, 1000);
+
+    await waitForPaintsFlushed();
+
+    omta_is("background-color", "rgb(255, 0, 0)", RunningOn.Compositor,
+            "background-color animation starting with current-color runs on " +
+            "compositor thread");
+
+    advance_clock(500);
+
+    omta_is("background-color", "rgb(128, 128, 0)", RunningOn.Compositor,
+            "background-color on compositor at 5s");
+
+    // Change the parent's color in the middle of the animation.
+    parent.style.color = "rgb(0, 0, 255)";
+    await waitForPaintsFlushed();
+
+    omta_is("background-color", "rgb(0, 128, 128)", RunningOn.Compositor,
+            "background-color on compositor is reflected by the parent's " +
+            "color change");
+
+    done_div();
+    parent.remove();
+  });
+
+  // Tests that a background-color animation from currentColor to a normal color
+  // on <a> element is updated when the link is visited.
+  addAsyncAnimTest(async function() {
+    if (isGeckoView()) {
+      todo(false, "no global history on GeckoView; can't run test");
+      return;
+    }
+
+    [ gDiv ] = new_element("a", "display: block");
+    gDiv.setAttribute("href", "not-exist.html");
+    gDiv.classList.add("visited");
+
+    const extraStyle = document.createElement('style');
+    document.head.appendChild(extraStyle);
+    extraStyle.sheet.insertRule(".visited:visited { color: rgb(0, 0, 255); }", 0);
+    extraStyle.sheet.insertRule(".visited:link { color: rgb(255, 0, 0); }", 1);
+
+    gDiv.animate({ backgroundColor: [ "currentColor", "rgb(0, 255, 0)" ] }, 1000);
+    await waitForPaintsFlushed();
+
+    omta_is("background-color", "rgb(255, 0, 0)", RunningOn.Compositor,
+            "background-color animation starting with current-color runs on " +
+            "compositor thread");
+
+    advance_clock(500);
+
+    omta_is("background-color", "rgb(128, 128, 0)", RunningOn.Compositor,
+            "background-color on compositor at 5s");
+
+    gDiv.setAttribute("href", window.top.location.href);
+    await waitForVisitedLinkColoring(gDiv, "color", "rgb(0, 0, 255)");
+    await waitForPaintsFlushed();
+
+    // `omta_is` checks that the result on the compositor equals to the value by
+    // getComputedValue() but getComputedValue lies for visited link values so
+    // we use getOMTAStyle directly instead.
+    is(SpecialPowers.DOMWindowUtils.getOMTAStyle(gDiv, "background-color"),
+       "rgb(0, 128, 128)",
+       "background-color on <a> element after the link is visited");
+
+    extraStyle.remove();
+    done_element();
+    gDiv = null;
+  });
+}
+
+// Normal translate animation.
+addAsyncAnimTest(async function() {
+  new_div("translate: 100px; " +
+          "transition: translate 10s linear");
+  await waitForPaintsFlushed();
+
+  gDiv.style.translate = "200px";
+  await waitForPaintsFlushed();
+
+  omta_is("translate", { compositorValue: { tx: 100 }, computed: "100px" },
+          RunningOn.Compositor,
+          "translate transition runs on compositor thread");
+
+  advance_clock(5000);
+  omta_is("translate", { compositorValue: { tx: 150 }, computed: "150px" },
+          RunningOn.Compositor, "translate on compositor at 5s");
+
+  done_div();
+});
+
+// Normal rotate animation.
+addAsyncAnimTest(async function() {
+  new_div("rotate: 0deg; " +
+          "transition: rotate 10s linear");
+  await waitForPaintsFlushed();
+
+  gDiv.style.rotate = "90deg";
+  await waitForPaintsFlushed();
+
+  omta_is("rotate", { compositorValue: [ 1, 0, 0, 1, 0, 0 ], computed: "0deg"},
+          RunningOn.Compositor, "rotate transition runs on compositor thread");
+
+  advance_clock(5000);
+  omta_is("rotate",
+          { compositorValue: [ Math.cos(Math.PI / 4), Math.sin(Math.PI / 4),
+                              -Math.sin(Math.PI / 4), Math.cos(Math.PI / 4),
+                               0, 0 ],
+            computed: "45deg" }, RunningOn.Compositor,
+          "rotate on compositor at 5s");
+
+  done_div();
+});
+
+// Normal scale animation.
+addAsyncAnimTest(async function() {
+  new_div("scale: 1 1; " +
+          "transition: scale 10s linear");
+  await waitForPaintsFlushed();
+
+  gDiv.style.scale = "2 2";
+  await waitForPaintsFlushed();
+
+  omta_is("scale", { compositorValue: [ 1, 0, 0, 1, 0, 0 ], computed: "1" },
+          RunningOn.Compositor, "scale transition runs on compositor thread");
+
+  advance_clock(5000);
+  omta_is("scale",
+          { compositorValue: [ 1.5, 0, 0, 1.5, 0, 0 ], computed: "1.5" },
+          RunningOn.Compositor, "scale on compositor at 5s");
+
+  done_div();
+});
+
+// Normal multiple transform-like properties animation.
+addAsyncAnimTest(async function() {
+  new_div("translate: 100px; " +
+          "scale: 1 1; " +
+          "transform: translate(200px); " +
+          "transition: all 10s linear");
+  await waitForPaintsFlushed();
+
+  gDiv.style.translate = "200px";
+  gDiv.style.scale = "2 2";
+  gDiv.style.transform = "translate(300px)";
+  await waitForPaintsFlushed();
+
+  omta_is("transform", { compositorValue: { tx: 300 },
+                         usesMultipleProperties: true },
+          RunningOn.Compositor,
+          "transform-like properties transition runs on compositor thread");
+
+  advance_clock(5000);
+
+  if (isGeckoView()) {
+    todo(false,
+         "Bug 1536392: GeckoView with e10s: cannot get correct OMTA style");
+  } else {
+    omta_is("transform",
+            // The order is: translate, scale, transform.
+            // So the translate() in transform should be multiplied by 1.5.
+            { compositorValue: [ 1.5, 0, 0, 1.5, (150 + 250*1.5), 0 ],
+              usesMultipleProperties: true },
+            RunningOn.Compositor,
+            "transform-like properties on compositor at 5s");
+  }
 
   done_div();
 });

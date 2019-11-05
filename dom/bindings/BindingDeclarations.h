@@ -60,6 +60,20 @@ struct DictionaryBase {
   bool IsAnyMemberPresent() const { return mIsAnyMemberPresent; }
 };
 
+template <typename T>
+inline typename EnableIf<IsBaseOf<DictionaryBase, T>::value, void>::Type
+ImplCycleCollectionUnlink(T& aDictionary) {
+  aDictionary.UnlinkForCC();
+}
+
+template <typename T>
+inline typename EnableIf<IsBaseOf<DictionaryBase, T>::value, void>::Type
+ImplCycleCollectionTraverse(nsCycleCollectionTraversalCallback& aCallback,
+                            T& aDictionary, const char* aName,
+                            uint32_t aFlags = 0) {
+  aDictionary.TraverseForCC(aCallback, aFlags);
+}
+
 // Struct that serves as a base class for all typed arrays and array buffers and
 // array buffer views.  Particularly useful so we can use IsBaseOf to detect
 // typed array/buffer/view template arguments.
@@ -122,6 +136,10 @@ class Optional_base {
     return mImpl == aOther.mImpl;
   }
 
+  bool operator!=(const Optional_base<T, InternalType>& aOther) const {
+    return mImpl != aOther.mImpl;
+  }
+
   template <typename T1, typename T2>
   explicit Optional_base(const T1& aValue1, const T2& aValue2) {
     mImpl.emplace(aValue1, aValue2);
@@ -132,7 +150,7 @@ class Optional_base {
   // Return InternalType here so we can work with it usefully.
   template <typename... Args>
   InternalType& Construct(Args&&... aArgs) {
-    mImpl.emplace(Forward<Args>(aArgs)...);
+    mImpl.emplace(std::forward<Args>(aArgs)...);
     return *mImpl;
   }
 
@@ -162,7 +180,7 @@ class Optional_base {
 template <typename T>
 class Optional : public Optional_base<T, T> {
  public:
-  Optional() : Optional_base<T, T>() {}
+  MOZ_ALLOW_TEMPORARY Optional() : Optional_base<T, T>() {}
 
   explicit Optional(const T& aValue) : Optional_base<T, T>(aValue) {}
 };
@@ -171,7 +189,8 @@ template <typename T>
 class Optional<JS::Handle<T> >
     : public Optional_base<JS::Handle<T>, JS::Rooted<T> > {
  public:
-  Optional() : Optional_base<JS::Handle<T>, JS::Rooted<T> >() {}
+  MOZ_ALLOW_TEMPORARY Optional()
+      : Optional_base<JS::Handle<T>, JS::Rooted<T> >() {}
 
   explicit Optional(JSContext* cx)
       : Optional_base<JS::Handle<T>, JS::Rooted<T> >() {
@@ -296,6 +315,22 @@ class Optional<nsAString> {
   const nsAString* mStr;
 };
 
+template <typename T>
+inline void ImplCycleCollectionUnlink(Optional<T>& aField) {
+  if (aField.WasPassed()) {
+    ImplCycleCollectionUnlink(aField.Value());
+  }
+}
+
+template <typename T>
+inline void ImplCycleCollectionTraverse(
+    nsCycleCollectionTraversalCallback& aCallback, Optional<T>& aField,
+    const char* aName, uint32_t aFlags = 0) {
+  if (aField.WasPassed()) {
+    ImplCycleCollectionTraverse(aCallback, aField.Value(), aName, aFlags);
+  }
+}
+
 template <class T>
 class NonNull {
  public:
@@ -358,7 +393,7 @@ class NonNull {
 
  protected:
   // ptr is left uninitialized for optimization purposes.
-  T* ptr;
+  MOZ_INIT_OUTSIDE_CTOR T* ptr;
 #ifdef DEBUG
   bool inited;
 #endif
@@ -385,27 +420,31 @@ inline nsWrapperCache* GetWrapperCache(const SmartPtr<T>& aObject) {
   return GetWrapperCache(aObject.get());
 }
 
+enum class ReflectionScope { Content, NAC, UAWidget };
+
 struct MOZ_STACK_CLASS ParentObject {
   template <class T>
   MOZ_IMPLICIT ParentObject(T* aObject)
-      : mObject(aObject),
+      : mObject(ToSupports(aObject)),
         mWrapperCache(GetWrapperCache(aObject)),
-        mUseXBLScope(false) {}
+        mReflectionScope(ReflectionScope::Content) {}
 
   template <class T, template <typename> class SmartPtr>
   MOZ_IMPLICIT ParentObject(const SmartPtr<T>& aObject)
       : mObject(aObject.get()),
         mWrapperCache(GetWrapperCache(aObject.get())),
-        mUseXBLScope(false) {}
+        mReflectionScope(ReflectionScope::Content) {}
 
   ParentObject(nsISupports* aObject, nsWrapperCache* aCache)
-      : mObject(aObject), mWrapperCache(aCache), mUseXBLScope(false) {}
+      : mObject(aObject),
+        mWrapperCache(aCache),
+        mReflectionScope(ReflectionScope::Content) {}
 
   // We don't want to make this an nsCOMPtr because of performance reasons, but
   // it's safe because ParentObject is a stack class.
   nsISupports* const MOZ_NON_OWNING_REF mObject;
   nsWrapperCache* const mWrapperCache;
-  bool mUseXBLScope;
+  ReflectionScope mReflectionScope;
 };
 
 namespace binding_detail {

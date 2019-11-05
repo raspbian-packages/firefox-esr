@@ -6,7 +6,6 @@
 /* eslint-env mozilla/browser-window */
 
 var gSafeBrowsing = {
-
   setReportPhishingMenu() {
     // In order to detect whether or not we're at the phishing warning
     // page, we have to check the documentURI instead of the currentURI.
@@ -18,30 +17,37 @@ var gSafeBrowsing = {
       docURI && docURI.spec.startsWith("about:blocked?e=deceptiveBlocked");
 
     // Show/hide the appropriate menu item.
-    document.getElementById("menu_HelpPopup_reportPhishingtoolmenu")
-            .hidden = isPhishingPage;
-    document.getElementById("menu_HelpPopup_reportPhishingErrortoolmenu")
-            .hidden = !isPhishingPage;
+    const reportMenu = document.getElementById(
+      "menu_HelpPopup_reportPhishingtoolmenu"
+    );
+    reportMenu.hidden = isPhishingPage;
+    const reportErrorMenu = document.getElementById(
+      "menu_HelpPopup_reportPhishingErrortoolmenu"
+    );
+    reportErrorMenu.hidden = !isPhishingPage;
+    if (isPhishingPage && !reportErrorMenu.hasAttribute("data-l10n-id")) {
+      MozXULElement.insertFTLIfNeeded("browser/safebrowsing/blockedSite.ftl");
+      document.l10n.setAttributes(reportErrorMenu, "safeb-palm-notdeceptive");
+    }
 
     // Now look at the currentURI to learn which page we were trying
     // to browse to.
     const uri = gBrowser.currentURI;
-    const isReportablePage = uri && (uri.schemeIs("http") || uri.schemeIs("https"));
+    const isReportablePage =
+      uri && (uri.schemeIs("http") || uri.schemeIs("https"));
 
     const disabledByPolicy = !Services.policies.isAllowed("feedbackCommands");
 
-    const reportBroadcaster = document.getElementById("reportPhishingBroadcaster");
     if (disabledByPolicy || isPhishingPage || !isReportablePage) {
-      reportBroadcaster.setAttribute("disabled", "true");
+      reportMenu.setAttribute("disabled", "true");
     } else {
-      reportBroadcaster.removeAttribute("disabled");
+      reportMenu.removeAttribute("disabled");
     }
 
-    const reportErrorBroadcaster = document.getElementById("reportPhishingErrorBroadcaster");
     if (disabledByPolicy || !isPhishingPage || !isReportablePage) {
-      reportErrorBroadcaster.setAttribute("disabled", "true");
+      reportErrorMenu.setAttribute("disabled", "true");
     } else {
-      reportErrorBroadcaster.removeAttribute("disabled");
+      reportErrorMenu.removeAttribute("disabled");
     }
   },
 
@@ -59,17 +65,18 @@ var gSafeBrowsing = {
   getReportURL(name, info) {
     let reportInfo = info;
     if (!reportInfo) {
-      let pageUri = gBrowser.currentURI.clone();
+      let pageUri = gBrowser.currentURI;
 
       // Remove the query to avoid including potentially sensitive data
       if (pageUri instanceof Ci.nsIURL) {
-        pageUri = pageUri.mutate()
-                         .setQuery("")
-                         .finalize();
+        pageUri = pageUri
+          .mutate()
+          .setQuery("")
+          .finalize();
       }
 
       reportInfo = { uri: pageUri.asciiSpec };
     }
     return SafeBrowsing.getReportURL(name, reportInfo);
-  }
+  },
 };

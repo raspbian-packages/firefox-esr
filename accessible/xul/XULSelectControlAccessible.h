@@ -35,13 +35,11 @@ class XULSelectControlAccessible : public AccessibleWrap {
   virtual bool UnselectAll() override;
 
   // Widgets
-  virtual Accessible* CurrentItem() override;
-  virtual void SetCurrentItem(Accessible* aItem) override;
+  virtual Accessible* CurrentItem() const override;
+  virtual void SetCurrentItem(const Accessible* aItem) override;
 
  protected:
-  // nsIDOMXULMultiSelectControlElement inherits from this, so we'll always have
-  // one of these if the widget is valid and not defunct
-  nsCOMPtr<nsIDOMXULSelectControlElement> mSelectControl;
+  RefPtr<Element> mSelectControl;
 };
 
 }  // namespace a11y

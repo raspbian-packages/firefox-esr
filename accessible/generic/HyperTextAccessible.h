@@ -56,13 +56,13 @@ class HyperTextAccessible : public AccessibleWrap {
   virtual nsAtom* LandmarkRole() const override;
   virtual int32_t GetLevelInternal() override;
   virtual already_AddRefed<nsIPersistentProperties> NativeAttributes() override;
-  virtual mozilla::a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
+  virtual mozilla::a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
 
   virtual void Shutdown() override;
   virtual bool RemoveChild(Accessible* aAccessible) override;
   virtual bool InsertChildAt(uint32_t aIndex, Accessible* aChild) override;
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual Relation RelationByType(RelationType aType) const override;
 
   // HyperTextAccessible (static helper method)
 
@@ -118,13 +118,11 @@ class HyperTextAccessible : public AccessibleWrap {
    * offset if >=0 and aNode is not text, this represents a child node offset
    * @param aIsEndOffset  [in] if true, then then this offset is not inclusive.
    * The character indicated by the offset returned is at [offset - 1]. This
-   * means if the passed-in offset is really in a
-   * descendant, then the offset returned will come just
-   * after the relevant embedded object characer. If
-   * false, then the offset is inclusive. The character
-   * indicated by the offset returned is at [offset]. If the passed-in offset in
-   * inside a descendant, then the returned offset will be
-   * on the relevant embedded object char.
+   * means if the passed-in offset is really in a descendant, then the offset
+   * returned will come just after the relevant embedded object characer. If
+   * false, then the offset is inclusive. The character indicated by the offset
+   * returned is at [offset]. If the passed-in offset in inside a descendant,
+   * then the returned offset will be on the relevant embedded object char.
    */
   uint32_t DOMPointToOffset(nsINode* aNode, int32_t aNodeOffset,
                             bool aIsEndOffset = false) const;
@@ -406,8 +404,10 @@ class HyperTextAccessible : public AccessibleWrap {
   void ReplaceText(const nsAString& aText);
   void InsertText(const nsAString& aText, int32_t aPosition);
   void CopyText(int32_t aStartPos, int32_t aEndPos);
-  void CutText(int32_t aStartPos, int32_t aEndPos);
-  void DeleteText(int32_t aStartPos, int32_t aEndPos);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY void CutText(int32_t aStartPos, int32_t aEndPos);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY void DeleteText(int32_t aStartPos,
+                                              int32_t aEndPos);
+  MOZ_CAN_RUN_SCRIPT
   void PasteText(int32_t aPosition);
 
   /**
@@ -425,7 +425,7 @@ class HyperTextAccessible : public AccessibleWrap {
   virtual ~HyperTextAccessible() {}
 
   // Accessible
-  virtual ENameValueFlag NativeName(nsString& aName) override;
+  virtual ENameValueFlag NativeName(nsString& aName) const override;
 
   // HyperTextAccessible
 

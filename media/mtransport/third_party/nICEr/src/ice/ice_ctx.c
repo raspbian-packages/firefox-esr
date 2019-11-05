@@ -31,10 +31,6 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
-static char *RCSSTRING __UNUSED__="$Id: ice_ctx.c,v 1.2 2008/04/28 17:59:01 ekr Exp $";
-
 #include <csi_platform.h>
 #include <assert.h>
 #include <sys/types.h>
@@ -343,28 +339,6 @@ int nr_ice_fetch_turn_servers(int ct, nr_ice_turn_server **out)
 #define MAXADDRS 100 /* Ridiculously high */
 int nr_ice_ctx_create(char *label, UINT4 flags, nr_ice_ctx **ctxp)
   {
-    int r,_status;
-    char *ufrag = 0;
-    char *pwd = 0;
-
-    if (r=nr_ice_get_new_ice_ufrag(&ufrag))
-      ABORT(r);
-    if (r=nr_ice_get_new_ice_pwd(&pwd))
-      ABORT(r);
-
-    if (r=nr_ice_ctx_create_with_credentials(label, flags, ufrag, pwd, ctxp))
-      ABORT(r);
-
-    _status=0;
-  abort:
-    RFREE(ufrag);
-    RFREE(pwd);
-
-    return(_status);
-  }
-
-int nr_ice_ctx_create_with_credentials(char *label, UINT4 flags, char *ufrag, char *pwd, nr_ice_ctx **ctxp)
-  {
     nr_ice_ctx *ctx=0;
     int r,_status;
 
@@ -378,11 +352,6 @@ int nr_ice_ctx_create_with_credentials(char *label, UINT4 flags, char *ufrag, ch
 
     if(!(ctx->label=r_strdup(label)))
       ABORT(R_NO_MEMORY);
-
-    if(!(ctx->ufrag=r_strdup(ufrag)))
-      ABORT(r);
-    if(!(ctx->pwd=r_strdup(pwd)))
-      ABORT(r);
 
     /* Get the STUN servers */
     if(r=NR_reg_get_child_count(NR_ICE_REG_STUN_SRV_PRFX,
@@ -498,8 +467,6 @@ static void nr_ice_ctx_destroy_cb(NR_SOCKET s, int how, void *cb_arg)
       RFREE(f1);
       f1=f2;
     }
-    RFREE(ctx->pwd);
-    RFREE(ctx->ufrag);
 
     STAILQ_FOREACH_SAFE(id1, &ctx->ids, entry, id2){
       STAILQ_REMOVE(&ctx->ids,id1,nr_ice_stun_id_,entry);
@@ -544,15 +511,26 @@ void nr_ice_gather_finished_cb(NR_SOCKET s, int h, void *cb_arg)
     int r;
     nr_ice_candidate *cand=cb_arg;
     nr_ice_ctx *ctx;
+    nr_ice_media_stream *stream;
+    int component_id;
 
 
     assert(cb_arg);
     if (!cb_arg)
       return;
     ctx = cand->ctx;
+    stream = cand->stream;
+    component_id = cand->component_id;
 
     ctx->uninitialized_candidates--;
-    r_log(LOG_ICE,LOG_DEBUG,"ICE(%s)/CAND(%s): initialized, %d remaining",ctx->label,cand->codeword,ctx->uninitialized_candidates);
+    if (cand->state == NR_ICE_CAND_STATE_FAILED) {
+      r_log(LOG_ICE, LOG_WARNING,
+            "ICE(%s)/CAND(%s): failed to initialize, %d remaining", ctx->label,
+            cand->label, ctx->uninitialized_candidates);
+    } else {
+      r_log(LOG_ICE, LOG_DEBUG, "ICE(%s)/CAND(%s): initialized, %d remaining",
+            ctx->label, cand->label, ctx->uninitialized_candidates);
+    }
 
     /* Avoid the need for yet another initialization function */
     if (cand->state == NR_ICE_CAND_STATE_INITIALIZING && cand->type == HOST)
@@ -566,9 +544,13 @@ void nr_ice_gather_finished_cb(NR_SOCKET s, int h, void *cb_arg)
           r_log(LOG_ICE, LOG_NOTICE, "ICE(%s): Problem pruning candidates",ctx->label);
       }
 
+      if (was_pruned) {
+        cand = NULL;
+      }
+
       /* If we are initialized, the candidate wasn't pruned,
          and we have a trickle ICE callback fire the callback */
-      if (ctx->trickle_cb && !was_pruned &&
+      if (ctx->trickle_cb && cand &&
           !nr_ice_ctx_hide_candidate(ctx, cand)) {
         ctx->trickle_cb(ctx->trickle_cb_arg, ctx, cand->stream, cand->component_id, cand);
 
@@ -577,15 +559,22 @@ void nr_ice_gather_finished_cb(NR_SOCKET s, int h, void *cb_arg)
           /* But continue */
         }
       }
+
+      if (nr_ice_media_stream_is_done_gathering(stream) &&
+          ctx->trickle_cb) {
+        ctx->trickle_cb(ctx->trickle_cb_arg, ctx, stream, component_id, NULL);
+      }
     }
 
     if(ctx->uninitialized_candidates==0){
-      r_log(LOG_ICE,LOG_DEBUG,"ICE(%s): All candidates initialized",ctx->label);
+      r_log(LOG_ICE, LOG_INFO, "ICE(%s): All candidates initialized",
+            ctx->label);
       if (ctx->done_cb) {
         ctx->done_cb(0,0,ctx->cb_arg);
       }
       else {
-        r_log(LOG_ICE,LOG_DEBUG,"ICE(%s): No done_cb. We were probably destroyed.",ctx->label);
+        r_log(LOG_ICE, LOG_INFO,
+              "ICE(%s): No done_cb. We were probably destroyed.", ctx->label);
       }
     }
     else {
@@ -689,7 +678,7 @@ static int nr_ice_get_default_local_address(nr_ice_ctx *ctx, int ip_version, nr_
     if (i == addr_ct) {
       if ((r=nr_transport_addr_copy(&addrp->addr, &default_addr)))
         ABORT(r);
-      strlcpy(addrp->addr.ifname, "default route", sizeof(addrp->addr.ifname));
+      (void)strlcpy(addrp->addr.ifname, "default route", sizeof(addrp->addr.ifname));
     }
 
     _status=0;
@@ -822,8 +811,11 @@ int nr_ice_gather(nr_ice_ctx *ctx, NR_async_cb done_cb, void *cb_arg)
     /* Initialize all the media stream/component pairs */
     stream=STAILQ_FIRST(&ctx->streams);
     while(stream){
-      if(r=nr_ice_media_stream_initialize(ctx,stream))
-        ABORT(r);
+      if(!stream->obsolete) {
+        if(r=nr_ice_media_stream_initialize(ctx,stream)) {
+          ABORT(r);
+        }
+      }
 
       stream=STAILQ_NEXT(stream,entry);
     }
@@ -836,11 +828,11 @@ int nr_ice_gather(nr_ice_ctx *ctx, NR_async_cb done_cb, void *cb_arg)
     return(_status);
   }
 
-int nr_ice_add_media_stream(nr_ice_ctx *ctx,char *label,int components, nr_ice_media_stream **streamp)
+int nr_ice_add_media_stream(nr_ice_ctx *ctx,const char *label,const char *ufrag,const char *pwd,int components, nr_ice_media_stream **streamp)
   {
     int r,_status;
 
-    if(r=nr_ice_media_stream_create(ctx,label,components,streamp))
+    if(r=nr_ice_media_stream_create(ctx,label,ufrag,pwd,components,streamp))
       ABORT(r);
 
     STAILQ_INSERT_TAIL(&ctx->streams,*streamp,entry);
@@ -879,42 +871,15 @@ int nr_ice_remove_media_stream(nr_ice_ctx *ctx,nr_ice_media_stream **streamp)
 
 int nr_ice_get_global_attributes(nr_ice_ctx *ctx,char ***attrsp, int *attrctp)
   {
-    char **attrs=0;
-    int _status;
-    char *tmp=0;
-
-    if(!(attrs=RCALLOC(sizeof(char *)*2)))
-      ABORT(R_NO_MEMORY);
-
-    if(!(tmp=RMALLOC(100)))
-      ABORT(R_NO_MEMORY);
-    snprintf(tmp,100,"ice-ufrag:%s",ctx->ufrag);
-    attrs[0]=tmp;
-
-    if(!(tmp=RMALLOC(100)))
-      ABORT(R_NO_MEMORY);
-    snprintf(tmp,100,"ice-pwd:%s",ctx->pwd);
-    attrs[1]=tmp;
-
-    *attrctp=2;
-    *attrsp=attrs;
-
-    _status=0;
-  abort:
-    if (_status){
-      if (attrs){
-        RFREE(attrs[0]);
-        RFREE(attrs[1]);
-      }
-      RFREE(attrs);
-    }
-    return(_status);
+    *attrctp=0;
+    *attrsp=0;
+    return(0);
   }
 
 static int nr_ice_random_string(char *str, int len)
   {
     unsigned char bytes[100];
-    int needed;
+    size_t needed;
     int r,_status;
 
     if(len%2) ABORT(R_BAD_ARGS);
@@ -1086,18 +1051,4 @@ int nr_ice_get_new_ice_pwd(char** pwd)
       *pwd = 0;
     }
     return(_status);
-  }
-
-#ifndef UINT2_MAX
-#define UINT2_MAX ((UINT2)(65535U))
-#endif
-
-void nr_ice_accumulate_count(UINT2* orig_count, UINT2 new_count)
-  {
-    if (UINT2_MAX - new_count < *orig_count) {
-      // don't rollover, just stop accumulating at MAX value
-      *orig_count = UINT2_MAX;
-    } else {
-      *orig_count += new_count;
-    }
   }

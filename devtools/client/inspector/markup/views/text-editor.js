@@ -4,13 +4,25 @@
 
 "use strict";
 
-const {getAutocompleteMaxWidth} = require("devtools/client/inspector/markup/utils");
-const {editableField} = require("devtools/client/shared/inplace-editor");
-const {getCssProperties} = require("devtools/shared/fronts/css-properties");
-const {LocalizationHelper} = require("devtools/shared/l10n");
+const { editableField } = require("devtools/client/shared/inplace-editor");
+const { LocalizationHelper } = require("devtools/shared/l10n");
 
-const INSPECTOR_L10N =
-      new LocalizationHelper("devtools/client/locales/inspector.properties");
+loader.lazyRequireGetter(
+  this,
+  "getAutocompleteMaxWidth",
+  "devtools/client/inspector/markup/utils",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "getLongString",
+  "devtools/client/inspector/shared/utils",
+  true
+);
+
+const INSPECTOR_L10N = new LocalizationHelper(
+  "devtools/client/locales/inspector.properties"
+);
 
 /**
  * Creates a simple text editor node, used for TEXT and COMMENT
@@ -42,44 +54,46 @@ function TextEditor(container, node, type) {
       if (!commit) {
         return;
       }
-      this.node.getNodeValue().then(longstr => {
-        longstr.string().then(oldValue => {
-          longstr.release().catch(console.error);
-
-          this.container.undo.do(() => {
+      getLongString(this.node.getNodeValue()).then(oldValue => {
+        this.container.undo.do(
+          () => {
             this.node.setNodeValue(val);
-          }, () => {
+          },
+          () => {
             this.node.setNodeValue(oldValue);
-          });
-        });
+          }
+        );
       });
     },
-    cssProperties: getCssProperties(this.markup.toolbox),
+    cssProperties: this.markup.inspector.cssProperties,
   });
 
   this.update();
 }
 
 TextEditor.prototype = {
-  buildMarkup: function (type) {
-    let doc = this.markup.doc;
+  buildMarkup: function(type) {
+    const doc = this.markup.doc;
 
     this.elt = doc.createElement("span");
     this.elt.classList.add("editor", type);
 
     if (type === "comment") {
-      let openComment = doc.createElement("span");
+      const openComment = doc.createElement("span");
       openComment.textContent = "<!--";
       this.elt.appendChild(openComment);
     }
 
     this.value = doc.createElement("pre");
-    this.value.setAttribute("style", "display:inline-block;white-space: normal;");
+    this.value.setAttribute(
+      "style",
+      "display:inline-block;white-space: normal;"
+    );
     this.value.setAttribute("tabindex", "-1");
     this.elt.appendChild(this.value);
 
     if (type === "comment") {
-      let closeComment = doc.createElement("span");
+      const closeComment = doc.createElement("span");
       closeComment.textContent = "-->";
       this.elt.appendChild(closeComment);
     }
@@ -97,35 +111,36 @@ TextEditor.prototype = {
     this.update();
   },
 
-  update: function () {
-    let longstr = null;
-    this.node.getNodeValue().then(ret => {
-      longstr = ret;
-      return longstr.string();
-    }).then(str => {
-      longstr.release().catch(console.error);
-      this.value.textContent = str;
+  update: function() {
+    getLongString(this.node.getNodeValue())
+      .then(str => {
+        this.value.textContent = str;
 
-      let isWhitespace = !/[^\s]/.exec(str);
-      this.value.classList.toggle("whitespace", isWhitespace);
+        const isWhitespace = !/[^\s]/.exec(str);
+        this.value.classList.toggle("whitespace", isWhitespace);
 
-      let chars = str.replace(/\n/g, "⏎")
-                     .replace(/\t/g, "⇥")
-                     .replace(/ /g, "◦");
-      this.value.setAttribute("title", isWhitespace
-        ? INSPECTOR_L10N.getFormatStr("markupView.whitespaceOnly", chars)
-        : "");
-    }).catch(console.error);
+        const chars = str
+          .replace(/\n/g, "⏎")
+          .replace(/\t/g, "⇥")
+          .replace(/ /g, "◦");
+        this.value.setAttribute(
+          "title",
+          isWhitespace
+            ? INSPECTOR_L10N.getFormatStr("markupView.whitespaceOnly", chars)
+            : ""
+        );
+      })
+      .catch(console.error);
   },
 
-  destroy: function () {},
+  destroy: function() {},
 
   /**
    * Stub method for consistency with ElementEditor.
    */
-  getInfoAtNode: function () {
+  getInfoAtNode: function() {
     return null;
-  }
+  },
 };
 
 module.exports = TextEditor;

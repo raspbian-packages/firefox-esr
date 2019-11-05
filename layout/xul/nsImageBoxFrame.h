@@ -18,14 +18,18 @@ class nsImageBoxFrame;
 
 class nsDisplayXULImage;
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsImageBoxListener final : public imgINotificationObserver {
  public:
-  nsImageBoxListener();
+  explicit nsImageBoxListener(nsImageBoxFrame* frame);
 
   NS_DECL_ISUPPORTS
   NS_DECL_IMGINOTIFICATIONOBSERVER
 
-  void SetFrame(nsImageBoxFrame* frame) { mFrame = frame; }
+  void ClearFrame() { mFrame = nullptr; }
 
  private:
   virtual ~nsImageBoxListener();
@@ -41,6 +45,7 @@ class nsImageBoxFrame final : public nsLeafBoxFrame {
 
   friend class nsDisplayXULImage;
   NS_DECL_FRAMEARENA_HELPERS(nsImageBoxFrame)
+  NS_DECL_QUERYFRAME
 
   virtual nsSize GetXULPrefSize(nsBoxLayoutState& aBoxLayoutState) override;
   virtual nsSize GetXULMinSize(nsBoxLayoutState& aBoxLayoutState) override;
@@ -49,8 +54,8 @@ class nsImageBoxFrame final : public nsLeafBoxFrame {
 
   nsresult Notify(imgIRequest* aRequest, int32_t aType, const nsIntRect* aData);
 
-  friend nsIFrame* NS_NewImageBoxFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext);
+  friend nsIFrame* NS_NewImageBoxFrame(mozilla::PresShell* aPresShell,
+                                       ComputedStyle* aStyle);
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* asPrevInFlow) override;
@@ -58,7 +63,7 @@ class nsImageBoxFrame final : public nsLeafBoxFrame {
   virtual nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
                                     int32_t aModType) override;
 
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
@@ -80,6 +85,9 @@ class nsImageBoxFrame final : public nsLeafBoxFrame {
    */
   void UpdateLoadFlags();
 
+  void RestartAnimation();
+  void StopAnimation();
+
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                 const nsDisplayListSet& aLists) override;
 
@@ -97,7 +105,7 @@ class nsImageBoxFrame final : public nsLeafBoxFrame {
       mozilla::wr::DisplayListBuilder& aBuilder,
       mozilla::wr::IpcResourceUpdateQueue& aResources,
       const mozilla::layers::StackingContextHelper& aSc,
-      mozilla::layers::WebRenderLayerManager* aManager, nsDisplayItem* aItem,
+      mozilla::layers::RenderRootStateManager* aManager, nsDisplayItem* aItem,
       nsPoint aPt, uint32_t aFlags);
 
   bool CanOptimizeToImageLayer();
@@ -105,7 +113,7 @@ class nsImageBoxFrame final : public nsLeafBoxFrame {
   nsRect GetDestRect(const nsPoint& aOffset, Maybe<nsPoint>& aAnchorPoint);
 
  protected:
-  explicit nsImageBoxFrame(nsStyleContext* aContext);
+  explicit nsImageBoxFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
 
   virtual void GetImageSize();
 
@@ -166,19 +174,11 @@ class nsDisplayXULImage final : public nsDisplayImageContainer {
   // event receiver for us
   virtual void Paint(nsDisplayListBuilder* aBuilder, gfxContext* aCtx) override;
 
-  virtual LayerState GetLayerState(
-      nsDisplayListBuilder* aBuilder, LayerManager* aManager,
-      const ContainerLayerParameters& aParameters) override;
-
-  virtual already_AddRefed<Layer> BuildLayer(
-      nsDisplayListBuilder* aBuilder, LayerManager* aManager,
-      const ContainerLayerParameters& aContainerParameters) override;
-
   virtual bool CreateWebRenderCommands(
       mozilla::wr::DisplayListBuilder& aBuilder,
       mozilla::wr::IpcResourceUpdateQueue& aResources,
       const StackingContextHelper& aSc,
-      mozilla::layers::WebRenderLayerManager* aManager,
+      mozilla::layers::RenderRootStateManager* aManager,
       nsDisplayListBuilder* aDisplayListBuilder) override;
 
   NS_DISPLAY_DECL_NAME("XULImage", TYPE_XUL_IMAGE)

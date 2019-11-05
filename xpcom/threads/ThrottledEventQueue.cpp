@@ -10,64 +10,70 @@
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/EventQueue.h"
 #include "mozilla/Mutex.h"
-#include "mozilla/Services.h"
 #include "mozilla/Unused.h"
-#include "nsIObserver.h"
-#include "nsIObserverService.h"
 #include "nsThreadUtils.h"
 
 namespace mozilla {
 
-using mozilla::services::GetObserverService;
-
-namespace {
-
-static const char kShutdownTopic[] = "xpcom-shutdown";
-
-}  // anonymous namespace
+namespace {}  // anonymous namespace
 
 // The ThrottledEventQueue is designed with inner and outer objects:
 //
-//       XPCOM code    nsObserverService
+//       XPCOM code     base event target
 //            |               |
-//            |               |
-//            v               |
-//        +-------+           |
-//        | Outer |           |
-//        +-------+           |
-//            |               |
+//            v               v
+//        +-------+       +--------+
+//        | Outer |   +-->|executor|
+//        +-------+   |   +--------+
+//            |       |       |
 //            |   +-------+   |
 //            +-->| Inner |<--+
 //                +-------+
 //
 // Client code references the outer nsIEventTarget which in turn references
-// an inner object.  The inner object is also held alive by the observer
-// service.
+// an inner object, which actually holds the queue of runnables.
 //
-// If the outer object is dereferenced and destroyed, it will trigger a
-// shutdown operation on the inner object.  Similarly if the observer
-// service notifies that the browser is shutting down, then the inner
-// object also starts shutting down.
+// Whenever the queue is non-empty (and not paused), it keeps an "executor"
+// runnable dispatched to the base event target. Each time the executor is run,
+// it draws the next event from Inner's queue and runs it. If that queue has
+// more events, the executor is dispatched to the base again.
 //
-// Once the queue has drained we unregister from the observer service.  If
-// the outer object is already gone, then the inner object is free'd at this
-// point.  If the outer object still exists then calls fall back to the
-// ThrottledEventQueue's base target.  We just don't queue things
-// any more.  The inner is then released once the outer object is released.
+// The executor holds a strong reference to the Inner object. This means that if
+// the outer object is dereferenced and destroyed, the Inner object will remain
+// live for as long as the executor exists - that is, until the Inner's queue is
+// empty.
 //
-// Note, we must keep the inner object alive and attached to the observer
-// service until the TaskQueue is fully shutdown and idle.  We must delay
-// xpcom shutdown if the TaskQueue is in the middle of draining.
-class ThrottledEventQueue::Inner final : public nsIObserver {
+// A Paused ThrottledEventQueue does not enqueue an executor when new events are
+// added. Any executor previously queued on the base event target draws no
+// events from a Paused ThrottledEventQueue, and returns without re-enqueueing
+// itself. Since there is no executor keeping the Inner object alive until its
+// queue is empty, dropping a Paused ThrottledEventQueue may drop the Inner
+// while it still owns events. This is the correct behavior: if there are no
+// references to it, it will never be Resumed, and thus it will never dispatch
+// events again.
+//
+// Resuming a ThrottledEventQueue must dispatch an executor, so calls to Resume
+// are fallible for the same reasons as calls to Dispatch.
+//
+// The xpcom shutdown process drains the main thread's event queue several
+// times, so if a ThrottledEventQueue is being driven by the main thread, it
+// should get emptied out by the time we reach the "eventq shutdown" phase.
+class ThrottledEventQueue::Inner final : public nsISupports {
   // The runnable which is dispatched to the underlying base target.  Since
   // we only execute one event at a time we just re-use a single instance
   // of this class while there are events left in the queue.
-  class Executor final : public Runnable {
+  class Executor final : public Runnable, public nsIRunnablePriority {
+    // The Inner whose runnables we execute. mInner->mExecutor points
+    // to this executor, forming a reference loop.
     RefPtr<Inner> mInner;
+
+    ~Executor() = default;
 
    public:
     explicit Executor(Inner* aInner)
         : Runnable("ThrottledEventQueue::Inner::Executor"), mInner(aInner) {}
+
+    NS_DECL_ISUPPORTS_INHERITED
 
     NS_IMETHODIMP
     Run() override {
@@ -76,33 +82,90 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
     }
 
     NS_IMETHODIMP
+    GetPriority(uint32_t* aPriority) override {
+      *aPriority = mInner->mPriority;
+      return NS_OK;
+    }
+
+#ifdef MOZ_COLLECTING_RUNNABLE_TELEMETRY
+    NS_IMETHODIMP
     GetName(nsACString& aName) override { return mInner->CurrentName(aName); }
+#endif
   };
 
   mutable Mutex mMutex;
   mutable CondVar mIdleCondVar;
 
-  // any thread, protected by mutex
+  // As-of-yet unexecuted runnables queued on this ThrottledEventQueue.
+  //
+  // Used from any thread; protected by mMutex. Signals mIdleCondVar when
+  // emptied.
   EventQueue mEventQueue;
 
-  // written on main thread, read on any thread
+  // The event target we dispatch our events (actually, just our Executor) to.
+  //
+  // Written only during construction. Readable by any thread without locking.
   nsCOMPtr<nsISerialEventTarget> mBaseTarget;
 
-  // any thread, protected by mutex
+  // The Executor that we dispatch to mBaseTarget to draw runnables from our
+  // queue. mExecutor->mInner points to this Inner, forming a reference loop.
+  //
+  // Used from any thread; protected by mMutex.
   nsCOMPtr<nsIRunnable> mExecutor;
 
-  // any thread, protected by mutex
-  bool mShutdownStarted;
+  const char* mName;
 
-  explicit Inner(nsISerialEventTarget* aBaseTarget)
+  const uint32_t mPriority;
+
+  // True if this queue is currently paused.
+  // Used from any thread; protected by mMutex.
+  bool mIsPaused;
+
+  explicit Inner(nsISerialEventTarget* aBaseTarget, const char* aName,
+                 uint32_t aPriority)
       : mMutex("ThrottledEventQueue"),
         mIdleCondVar(mMutex, "ThrottledEventQueue:Idle"),
         mBaseTarget(aBaseTarget),
-        mShutdownStarted(false) {}
+        mName(aName),
+        mPriority(aPriority),
+        mIsPaused(false) {
+          MOZ_ASSERT(mName, "Must pass a valid name!");
+        }
 
   ~Inner() {
+#ifdef DEBUG
+    MutexAutoLock lock(mMutex);
+
+    // As long as an executor exists, it had better keep us alive, since it's
+    // going to call ExecuteRunnable on us.
     MOZ_ASSERT(!mExecutor);
-    MOZ_ASSERT(mShutdownStarted);
+
+    // If we have any events in our queue, there should be an executor queued
+    // for them, and that should have kept us alive. The exception is that, if
+    // we're paused, we don't enqueue an executor.
+    MOZ_ASSERT(mEventQueue.IsEmpty(lock) || IsPaused(lock));
+
+    // Some runnables are only safe to drop on the main thread, so if our queue
+    // isn't empty, we'd better be on the main thread.
+    MOZ_ASSERT_IF(!mEventQueue.IsEmpty(lock), NS_IsMainThread());
+#endif
+  }
+
+  // Make sure an executor has been queued on our base target. If we already
+  // have one, do nothing; otherwise, create and dispatch it.
+  nsresult EnsureExecutor(MutexAutoLock& lock) {
+    if (mExecutor) return NS_OK;
+
+    // Note, this creates a ref cycle keeping the inner alive
+    // until the queue is drained.
+    mExecutor = new Executor(this);
+    nsresult rv = mBaseTarget->Dispatch(mExecutor, NS_DISPATCH_NORMAL);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      mExecutor = nullptr;
+      return rv;
+    }
+
+    return NS_OK;
   }
 
   nsresult CurrentName(nsACString& aName) {
@@ -128,14 +191,13 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
       return rv;
     }
 
-    aName.AssignLiteral("non-nsINamed ThrottledEventQueue runnable");
+    aName.AssignASCII(mName);
     return NS_OK;
   }
 
   void ExecuteRunnable() {
     // Any thread
     nsCOMPtr<nsIRunnable> event;
-    bool shouldShutdown = false;
 
 #ifdef DEBUG
     bool currentThread = false;
@@ -145,6 +207,17 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
 
     {
       MutexAutoLock lock(mMutex);
+
+      // Normally, a paused queue doesn't dispatch any executor, but we might
+      // have been paused after the executor was already in flight. There's no
+      // way to yank the executor out of the base event target, so we just check
+      // for a paused queue here and return without running anything. We'll
+      // create a new executor when we're resumed.
+      if (IsPaused(lock)) {
+        // Note, this breaks a ref cycle.
+        mExecutor = nullptr;
+        return;
+      }
 
       // We only dispatch an executor runnable when we know there is something
       // in the queue, so this should never fail.
@@ -164,11 +237,9 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
       }
 
       // Otherwise the queue is empty and we can stop dispatching the
-      // executor.  We might also need to shutdown after running the
-      // last event.
+      // executor.
       else {
-        shouldShutdown = mShutdownStarted;
-        // Note, this breaks a ref cycle.
+        // Break the Executor::mInner / Inner::mExecutor reference loop.
         mExecutor = nullptr;
         mIdleCondVar.NotifyAll();
       }
@@ -176,87 +247,18 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
 
     // Execute the event now that we have unlocked.
     Unused << event->Run();
-
-    // If shutdown was started and the queue is now empty we can now
-    // finalize the shutdown.  This is performed separately at the end
-    // of the method in order to wait for the event to finish running.
-    if (shouldShutdown) {
-      MOZ_ASSERT(IsEmpty());
-      NS_DispatchToMainThread(
-          NewRunnableMethod("ThrottledEventQueue::Inner::ShutdownComplete",
-                            this, &Inner::ShutdownComplete));
-    }
-  }
-
-  void ShutdownComplete() {
-    MOZ_ASSERT(NS_IsMainThread());
-    MOZ_ASSERT(IsEmpty());
-    nsCOMPtr<nsIObserverService> obs = GetObserverService();
-    obs->RemoveObserver(this, kShutdownTopic);
   }
 
  public:
-  static already_AddRefed<Inner> Create(nsISerialEventTarget* aBaseTarget) {
+  static already_AddRefed<Inner> Create(nsISerialEventTarget* aBaseTarget,
+                                        const char* aName,
+                                        uint32_t aPriority) {
     MOZ_ASSERT(NS_IsMainThread());
+    MOZ_ASSERT(ClearOnShutdown_Internal::sCurrentShutdownPhase ==
+               ShutdownPhase::NotInShutdown);
 
-    if (ClearOnShutdown_Internal::sCurrentShutdownPhase !=
-        ShutdownPhase::NotInShutdown) {
-      return nullptr;
-    }
-
-    nsCOMPtr<nsIObserverService> obs = GetObserverService();
-    if (NS_WARN_IF(!obs)) {
-      return nullptr;
-    }
-
-    RefPtr<Inner> ref = new Inner(aBaseTarget);
-
-    nsresult rv = obs->AddObserver(ref, kShutdownTopic,
-                                   false /* means OS will hold a strong ref */);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      ref->MaybeStartShutdown();
-      MOZ_ASSERT(ref->IsEmpty());
-      return nullptr;
-    }
-
+    RefPtr<Inner> ref = new Inner(aBaseTarget, aName, aPriority);
     return ref.forget();
-  }
-
-  NS_IMETHOD
-  Observe(nsISupports*, const char* aTopic, const char16_t*) override {
-    MOZ_ASSERT(NS_IsMainThread());
-    MOZ_ASSERT(!strcmp(aTopic, kShutdownTopic));
-
-    MaybeStartShutdown();
-
-    // Once shutdown begins we set the Atomic<bool> mShutdownStarted flag.
-    // This prevents any new runnables from being dispatched into the
-    // TaskQueue.  Therefore this loop should be finite.
-    MOZ_ALWAYS_TRUE(SpinEventLoopUntil([&]() -> bool { return IsEmpty(); }));
-
-    return NS_OK;
-  }
-
-  void MaybeStartShutdown() {
-    // Any thread
-    MutexAutoLock lock(mMutex);
-
-    if (mShutdownStarted) {
-      return;
-    }
-    mShutdownStarted = true;
-
-    // We are marked for shutdown now, but we are still processing runnables.
-    // Return for now.  The shutdown will be completed once the queue is
-    // drained.
-    if (mExecutor) {
-      return;
-    }
-
-    // The queue is empty, so we can complete immediately.
-    NS_DispatchToMainThread(
-        NewRunnableMethod("ThrottledEventQueue::Inner::ShutdownComplete", this,
-                          &Inner::ShutdownComplete));
   }
 
   bool IsEmpty() const {
@@ -282,9 +284,33 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
 #endif
 
     MutexAutoLock lock(mMutex);
-    while (mExecutor) {
+    while (mExecutor || IsPaused(lock)) {
       mIdleCondVar.Wait();
     }
+  }
+
+  bool IsPaused() const {
+    MutexAutoLock lock(mMutex);
+    return IsPaused(lock);
+  }
+
+  bool IsPaused(const MutexAutoLock& aProofOfLock) const { return mIsPaused; }
+
+  nsresult SetIsPaused(bool aIsPaused) {
+    MutexAutoLock lock(mMutex);
+
+    // If we will be unpaused, and we have events in our queue, make sure we
+    // have an executor queued on the base event target to run them. Do this
+    // before we actually change mIsPaused, since this is fallible.
+    if (!aIsPaused && !mEventQueue.IsEmpty(lock)) {
+      nsresult rv = EnsureExecutor(lock);
+      if (NS_FAILED(rv)) {
+        return rv;
+      }
+    }
+
+    mIsPaused = aIsPaused;
+    return NS_OK;
   }
 
   nsresult DispatchFromScript(nsIRunnable* aEvent, uint32_t aFlags) {
@@ -299,30 +325,17 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
     // Any thread
     MutexAutoLock lock(mMutex);
 
-    // If we are shutting down, just fall back to our base target
-    // directly.
-    if (mShutdownStarted) {
-      return mBaseTarget->Dispatch(Move(aEvent), aFlags);
-    }
-
-    // We are not currently processing events, so we must start
-    // operating on our base target.  This is fallible, so do
-    // it first.  Our lock will prevent the executor from accessing
-    // the event queue before we add the event below.
-    if (!mExecutor) {
-      // Note, this creates a ref cycle keeping the inner alive
-      // until the queue is drained.
-      mExecutor = new Executor(this);
-      nsresult rv = mBaseTarget->Dispatch(mExecutor, NS_DISPATCH_NORMAL);
-      if (NS_WARN_IF(NS_FAILED(rv))) {
-        mExecutor = nullptr;
-        return rv;
-      }
+    if (!IsPaused(lock)) {
+      // Make sure we have an executor in flight to process events. This is
+      // fallible, so do it first. Our lock will prevent the executor from
+      // accessing the event queue before we add the event below.
+      nsresult rv = EnsureExecutor(lock);
+      if (NS_FAILED(rv)) return rv;
     }
 
     // Only add the event to the underlying queue if are able to
     // dispatch to our base target.
-    mEventQueue.PutEvent(Move(aEvent), EventPriority::Normal, lock);
+    mEventQueue.PutEvent(std::move(aEvent), EventQueuePriority::Normal, lock);
     return NS_OK;
   }
 
@@ -338,7 +351,10 @@ class ThrottledEventQueue::Inner final : public nsIObserver {
   NS_DECL_THREADSAFE_ISUPPORTS
 };
 
-NS_IMPL_ISUPPORTS(ThrottledEventQueue::Inner, nsIObserver);
+NS_IMPL_ISUPPORTS(ThrottledEventQueue::Inner, nsISupports);
+
+NS_IMPL_ISUPPORTS_INHERITED(ThrottledEventQueue::Inner::Executor, Runnable,
+                            nsIRunnablePriority)
 
 NS_IMPL_ISUPPORTS(ThrottledEventQueue, ThrottledEventQueue, nsIEventTarget,
                   nsISerialEventTarget);
@@ -348,21 +364,12 @@ ThrottledEventQueue::ThrottledEventQueue(already_AddRefed<Inner> aInner)
   MOZ_ASSERT(mInner);
 }
 
-ThrottledEventQueue::~ThrottledEventQueue() { mInner->MaybeStartShutdown(); }
-
-void ThrottledEventQueue::MaybeStartShutdown() {
-  return mInner->MaybeStartShutdown();
-}
-
 already_AddRefed<ThrottledEventQueue> ThrottledEventQueue::Create(
-    nsISerialEventTarget* aBaseTarget) {
+    nsISerialEventTarget* aBaseTarget, const char* aName, uint32_t aPriority) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aBaseTarget);
 
-  RefPtr<Inner> inner = Inner::Create(aBaseTarget);
-  if (NS_WARN_IF(!inner)) {
-    return nullptr;
-  }
+  RefPtr<Inner> inner = Inner::Create(aBaseTarget, aName, aPriority);
 
   RefPtr<ThrottledEventQueue> ref = new ThrottledEventQueue(inner.forget());
   return ref.forget();
@@ -374,6 +381,12 @@ uint32_t ThrottledEventQueue::Length() const { return mInner->Length(); }
 
 void ThrottledEventQueue::AwaitIdle() const { return mInner->AwaitIdle(); }
 
+nsresult ThrottledEventQueue::SetIsPaused(bool aIsPaused) {
+  return mInner->SetIsPaused(aIsPaused);
+}
+
+bool ThrottledEventQueue::IsPaused() const { return mInner->IsPaused(); }
+
 NS_IMETHODIMP
 ThrottledEventQueue::DispatchFromScript(nsIRunnable* aEvent, uint32_t aFlags) {
   return mInner->DispatchFromScript(aEvent, aFlags);
@@ -382,13 +395,13 @@ ThrottledEventQueue::DispatchFromScript(nsIRunnable* aEvent, uint32_t aFlags) {
 NS_IMETHODIMP
 ThrottledEventQueue::Dispatch(already_AddRefed<nsIRunnable> aEvent,
                               uint32_t aFlags) {
-  return mInner->Dispatch(Move(aEvent), aFlags);
+  return mInner->Dispatch(std::move(aEvent), aFlags);
 }
 
 NS_IMETHODIMP
 ThrottledEventQueue::DelayedDispatch(already_AddRefed<nsIRunnable> aEvent,
                                      uint32_t aFlags) {
-  return mInner->DelayedDispatch(Move(aEvent), aFlags);
+  return mInner->DelayedDispatch(std::move(aEvent), aFlags);
 }
 
 NS_IMETHODIMP

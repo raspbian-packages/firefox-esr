@@ -3,13 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/net/CaptivePortalService.h"
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/Services.h"
 #include "mozilla/Preferences.h"
 #include "nsIObserverService.h"
 #include "nsServiceManagerUtils.h"
 #include "nsXULAppAPI.h"
+#include "xpcpublic.h"
 
-static const char16_t kInterfaceName[] = u"captive-portal-inteface";
+static NS_NAMED_LITERAL_STRING(kInterfaceName, u"captive-portal-inteface");
 
 static const char kOpenCaptivePortalLoginEvent[] = "captive-portal-login";
 static const char kAbortCaptivePortalLoginEvent[] =
@@ -29,6 +31,19 @@ static LazyLogModule gCaptivePortalLog("CaptivePortalService");
 NS_IMPL_ISUPPORTS(CaptivePortalService, nsICaptivePortalService, nsIObserver,
                   nsISupportsWeakReference, nsITimerCallback,
                   nsICaptivePortalCallback, nsINamed)
+
+static StaticRefPtr<CaptivePortalService> gCPService;
+
+// static
+already_AddRefed<nsICaptivePortalService> CaptivePortalService::GetSingleton() {
+  if (gCPService) {
+    return do_AddRef(gCPService);
+  }
+
+  gCPService = new CaptivePortalService();
+  ClearOnShutdown(&gCPService);
+  return do_AddRef(gCPService);
+}
 
 CaptivePortalService::CaptivePortalService()
     : mState(UNKNOWN),
@@ -131,6 +146,11 @@ nsresult CaptivePortalService::Start() {
     return NS_ERROR_NOT_INITIALIZED;
   }
 
+  if (xpc::AreNonLocalConnectionsDisabled() &&
+      !Preferences::GetBool("network.captive-portal-service.testMode", false)) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+
   if (XRE_GetProcessType() != GeckoProcessType_Default) {
     // Doesn't do anything if called in the content process.
     return NS_OK;
@@ -206,7 +226,7 @@ void CaptivePortalService::SetStateInChild(int32_t aState) {
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-CaptivePortalService::GetState(int32_t *aState) {
+CaptivePortalService::GetState(int32_t* aState) {
   *aState = mState;
   return NS_OK;
 }
@@ -231,7 +251,7 @@ CaptivePortalService::RecheckCaptivePortal() {
 }
 
 NS_IMETHODIMP
-CaptivePortalService::GetLastChecked(uint64_t *aLastChecked) {
+CaptivePortalService::GetLastChecked(uint64_t* aLastChecked) {
   double duration = (TimeStamp::Now() - mLastChecked).ToMilliseconds();
   *aLastChecked = static_cast<uint64_t>(duration);
   return NS_OK;
@@ -243,7 +263,7 @@ CaptivePortalService::GetLastChecked(uint64_t *aLastChecked) {
 // It issues a checkCaptivePortal operation if one isn't already in progress
 //-----------------------------------------------------------------------------
 NS_IMETHODIMP
-CaptivePortalService::Notify(nsITimer *aTimer) {
+CaptivePortalService::Notify(nsITimer* aTimer) {
   LOG(("CaptivePortalService::Notify\n"));
   MOZ_ASSERT(aTimer == mTimer);
   MOZ_ASSERT(XRE_GetProcessType() == GeckoProcessType_Default);
@@ -272,7 +292,7 @@ CaptivePortalService::Notify(nsITimer *aTimer) {
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-CaptivePortalService::GetName(nsACString &aName) {
+CaptivePortalService::GetName(nsACString& aName) {
   aName.AssignLiteral("CaptivePortalService");
   return NS_OK;
 }
@@ -281,8 +301,8 @@ CaptivePortalService::GetName(nsACString &aName) {
 // CaptivePortalService::nsIObserver
 //-----------------------------------------------------------------------------
 NS_IMETHODIMP
-CaptivePortalService::Observe(nsISupports *aSubject, const char *aTopic,
-                              const char16_t *aData) {
+CaptivePortalService::Observe(nsISupports* aSubject, const char* aTopic,
+                              const char16_t* aData) {
   if (XRE_GetProcessType() != GeckoProcessType_Default) {
     // Doesn't do anything if called in the content process.
     return NS_OK;

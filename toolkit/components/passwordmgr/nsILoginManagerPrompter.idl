@@ -6,8 +6,9 @@
 #include "nsISupports.idl"
 
 interface nsILoginInfo;
-interface nsIDOMElement;
 interface nsIDOMWindow;
+
+webidl Element;
 
 [scriptable, uuid(425f73b9-b2db-4e8a-88c5-9ac2512934ce)]
 interface nsILoginManagerPrompter : nsISupports {
@@ -34,23 +35,25 @@ interface nsILoginManagerPrompter : nsISupports {
    * The browser this prompter is being created for.
    * This is required if the init function received a chrome window as argument.
    */
-  attribute nsIDOMElement browser;
+  attribute Element browser;
 
   /**
-   * The opener that was used to open the window passed to init.
+   * The opener browser that was used to open the window passed to init.
    * The opener can be used to determine in which window the prompt
-   * should be shown. Must be a content window that is not a frame window,
-   * make sure to pass the top window using e.g. window.top.
+   * should be shown.
    */
-  attribute nsIDOMWindow opener;
+  attribute Element openerBrowser;
 
   /**
    * Ask the user if they want to save a login (Yes, Never, Not Now)
    *
    * @param aLogin
    *        The login to be saved.
+   * @param dismissed
+   *        A boolean value indicating whether the save logins doorhanger should
+   *        be dismissed automatically when shown.
    */
-  void promptToSavePassword(in nsILoginInfo aLogin);
+  void promptToSavePassword(in nsILoginInfo aLogin, in boolean dismissed);
 
   /**
    * Ask the user if they want to change a login's password or username.
@@ -60,9 +63,13 @@ interface nsILoginManagerPrompter : nsISupports {
    *        The existing login (with the old password).
    * @param aNewLogin
    *        The new login.
+   * @param dismissed
+   *        A boolean value indicating whether the save logins doorhanger should
+   *        be dismissed automatically when shown.
    */
   void promptToChangePassword(in nsILoginInfo aOldLogin,
-                              in nsILoginInfo aNewLogin);
+                              in nsILoginInfo aNewLogin,
+                              in boolean dismissed);
 
   /**
    * Ask the user if they want to change the password for one of
@@ -72,8 +79,6 @@ interface nsILoginManagerPrompter : nsISupports {
    *
    * @param logins
    *        An array of existing logins.
-   * @param count
-   *        (length of the array)
    * @param aNewLogin
    *        The new login.
    *
@@ -83,8 +88,7 @@ interface nsILoginManagerPrompter : nsISupports {
    *       is called.
    */
   void promptToChangePasswordWithUsernames(
-          [array, size_is(count)] in nsILoginInfo logins,
-          in uint32_t count,
+          in Array<nsILoginInfo> logins,
           in nsILoginInfo aNewLogin);
 };
 %{C++

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -26,12 +26,8 @@ using namespace mozilla::gfx;
 gfxXlibSurface::gfxXlibSurface(Display* dpy, Drawable drawable, Visual* visual)
     : mPixmapTaken(false),
       mDisplay(dpy),
-      mDrawable(drawable)
-#if defined(GL_PROVIDER_GLX)
-      ,
-      mGLXPixmap(X11None)
-#endif
-{
+      mDrawable(drawable),
+      mGLXPixmap(X11None) {
   const gfx::IntSize size = DoSizeQuery();
   cairo_surface_t* surf =
       cairo_xlib_surface_create(dpy, drawable, visual, size.width, size.height);
@@ -42,12 +38,8 @@ gfxXlibSurface::gfxXlibSurface(Display* dpy, Drawable drawable, Visual* visual,
                                const gfx::IntSize& size)
     : mPixmapTaken(false),
       mDisplay(dpy),
-      mDrawable(drawable)
-#if defined(GL_PROVIDER_GLX)
-      ,
-      mGLXPixmap(X11None)
-#endif
-{
+      mDrawable(drawable),
+      mGLXPixmap(X11None) {
   NS_ASSERTION(Factory::CheckSurfaceSize(size, XLIB_IMAGE_SIDE_SIZE_LIMIT),
                "Bad size");
 
@@ -61,12 +53,8 @@ gfxXlibSurface::gfxXlibSurface(Screen* screen, Drawable drawable,
                                const gfx::IntSize& size)
     : mPixmapTaken(false),
       mDisplay(DisplayOfScreen(screen)),
-      mDrawable(drawable)
-#if defined(GL_PROVIDER_GLX)
-      ,
-      mGLXPixmap(X11None)
-#endif
-{
+      mDrawable(drawable),
+      mGLXPixmap(X11None) {
   NS_ASSERTION(Factory::CheckSurfaceSize(size, XLIB_IMAGE_SIDE_SIZE_LIMIT),
                "Bad Size");
 
@@ -76,14 +64,9 @@ gfxXlibSurface::gfxXlibSurface(Screen* screen, Drawable drawable,
 }
 
 gfxXlibSurface::gfxXlibSurface(cairo_surface_t* csurf)
-    : mPixmapTaken(false)
-#if defined(GL_PROVIDER_GLX)
-      ,
-      mGLXPixmap(X11None)
-#endif
-{
-  NS_PRECONDITION(cairo_surface_status(csurf) == 0,
-                  "Not expecting an error surface");
+    : mPixmapTaken(false), mGLXPixmap(X11None) {
+  MOZ_ASSERT(cairo_surface_status(csurf) == 0,
+             "Not expecting an error surface");
 
   mDrawable = cairo_xlib_surface_get_drawable(csurf);
   mDisplay = cairo_xlib_surface_get_display(csurf);
@@ -94,11 +77,9 @@ gfxXlibSurface::gfxXlibSurface(cairo_surface_t* csurf)
 gfxXlibSurface::~gfxXlibSurface() {
   // gfxASurface's destructor calls RecordMemoryFreed().
   if (mPixmapTaken) {
-#if defined(GL_PROVIDER_GLX)
     if (mGLXPixmap) {
       gl::sGLXLibrary.DestroyPixmap(mDisplay, mGLXPixmap);
     }
-#endif
     XFreePixmap(mDisplay, mDrawable);
   }
 }
@@ -258,12 +239,10 @@ already_AddRefed<gfxASurface> gfxXlibSurface::CreateSimilarSurface(
 }
 
 void gfxXlibSurface::Finish() {
-#if defined(GL_PROVIDER_GLX)
   if (mPixmapTaken && mGLXPixmap) {
     gl::sGLXLibrary.DestroyPixmap(mDisplay, mGLXPixmap);
     mGLXPixmap = X11None;
   }
-#endif
   gfxASurface::Finish();
 }
 
@@ -349,9 +328,11 @@ DisplayTable* DisplayTable::sDisplayTable;
 // differ from the visual passed in.  Colormaps are tied to a visual, so
 // should only be used with their visual.
 
-/* static */ bool DisplayTable::GetColormapAndVisual(
-    Screen* aScreen, XRenderPictFormat* aFormat, Visual* aVisual,
-    Colormap* aColormap, Visual** aVisualForColormap)
+/* static */
+bool DisplayTable::GetColormapAndVisual(Screen* aScreen,
+                                        XRenderPictFormat* aFormat,
+                                        Visual* aVisual, Colormap* aColormap,
+                                        Visual** aVisualForColormap)
 
 {
   Display* display = DisplayOfScreen(aScreen);
@@ -418,8 +399,8 @@ DisplayTable* DisplayTable::sDisplayTable;
   return true;
 }
 
-/* static */ int DisplayTable::DisplayClosing(Display* display,
-                                              XExtCodes* codes) {
+/* static */
+int DisplayTable::DisplayClosing(Display* display, XExtCodes* codes) {
   // No need to free the colormaps explicitly as they will be released when
   // the connection is closed.
   sDisplayTable->mDisplays.RemoveElement(display, FindDisplay());
@@ -540,7 +521,6 @@ XRenderPictFormat* gfxXlibSurface::XRenderFormat() {
   return cairo_xlib_surface_get_xrender_format(CairoSurface());
 }
 
-#if defined(GL_PROVIDER_GLX)
 GLXPixmap gfxXlibSurface::GetGLXPixmap() {
   if (!mGLXPixmap) {
 #ifdef DEBUG
@@ -560,5 +540,3 @@ void gfxXlibSurface::BindGLXPixmap(GLXPixmap aPixmap) {
   MOZ_ASSERT(!mGLXPixmap, "A GLXPixmap is already bound!");
   mGLXPixmap = aPixmap;
 }
-
-#endif

@@ -9,7 +9,6 @@
 
 #include "mozilla/Mutex.h"
 #include "nsIThreadManager.h"
-#include "nsRefPtrHashtable.h"
 #include "nsThread.h"
 
 class nsIRunnable;
@@ -67,29 +66,23 @@ class nsThreadManager : public nsIThreadManager {
   void SuspendInputEventPrioritization();
   void ResumeInputEventPrioritization();
 
+  static bool MainThreadHasPendingHighPriorityEvents();
+
  private:
   nsThreadManager()
-      : mCurThreadIndex(0),
-        mMainPRThread(nullptr),
-        mLock("nsThreadManager.mLock"),
-        mInitialized(false),
-        mCurrentNumberOfThreads(1),
-        mHighestNumberOfThreads(1) {}
+      : mCurThreadIndex(0), mMainPRThread(nullptr), mInitialized(false) {}
 
   nsresult SpinEventLoopUntilInternal(nsINestedEventLoopCondition* aCondition,
                                       bool aCheckingShutdown);
 
-  nsRefPtrHashtable<nsPtrHashKey<PRThread>, nsThread> mThreadsByPRThread;
+  static void ReleaseThread(void* aData);
+
   unsigned mCurThreadIndex;  // thread-local-storage index
   RefPtr<nsThread> mMainThread;
   PRThread* mMainPRThread;
-  mozilla::OffTheBooksMutex mLock;  // protects tables
-  mozilla::Atomic<bool> mInitialized;
-
-  // The current number of threads
-  uint32_t mCurrentNumberOfThreads;
-  // The highest number of threads encountered so far during the session
-  uint32_t mHighestNumberOfThreads;
+  mozilla::Atomic<bool, mozilla::SequentiallyConsistent,
+                  mozilla::recordreplay::Behavior::DontPreserve>
+      mInitialized;
 };
 
 #define NS_THREADMANAGER_CID                         \

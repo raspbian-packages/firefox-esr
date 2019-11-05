@@ -8,6 +8,7 @@
 #define mozilla_dom_HTMLIFrameElement_h
 
 #include "mozilla/Attributes.h"
+#include "mozilla/dom/FeaturePolicy.h"
 #include "nsGenericHTMLFrameElement.h"
 #include "nsDOMTokenList.h"
 
@@ -17,14 +18,15 @@ namespace dom {
 class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
  public:
   explicit HTMLIFrameElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
       FromParser aFromParser = NOT_FROM_PARSER);
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLIFrameElement, iframe)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLIFrameElement, iframe)
 
   // nsISupports
-  NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLIFrameElement,
-                                       nsGenericHTMLFrameElement)
+  NS_DECL_ISUPPORTS_INHERITED
+  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLIFrameElement,
+                                           nsGenericHTMLFrameElement)
 
   // Element
   virtual bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override {
@@ -32,6 +34,8 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
   }
 
   // nsIContent
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                               const nsAString& aValue,
                               nsIPrincipal* aMaybeScriptedPrincipal,
@@ -40,10 +44,9 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
-  uint32_t GetSandboxFlags();
+  uint32_t GetSandboxFlags() const;
 
   // Web IDL binding methods
   void GetSrc(nsString& aSrc) const {
@@ -94,6 +97,10 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
   void SetAlign(const nsAString& aAlign, ErrorResult& aError) {
     SetHTMLAttr(nsGkAtoms::align, aAlign, aError);
   }
+  void GetAllow(DOMString& aAllow) { GetHTMLAttr(nsGkAtoms::allow, aAllow); }
+  void SetAllow(const nsAString& aAllow, ErrorResult& aError) {
+    SetHTMLAttr(nsGkAtoms::allow, aAllow, aError);
+  }
   void GetScrolling(DOMString& aScrolling) {
     GetHTMLAttr(nsGkAtoms::scrolling, aScrolling);
   }
@@ -130,7 +137,7 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
   void GetReferrerPolicy(nsAString& aReferrer) {
     GetEnumAttr(nsGkAtoms::referrerpolicy, EmptyCString().get(), aReferrer);
   }
-  nsIDocument* GetSVGDocument(nsIPrincipal& aSubjectPrincipal) {
+  Document* GetSVGDocument(nsIPrincipal& aSubjectPrincipal) {
     return GetContentDocument(aSubjectPrincipal);
   }
   bool Mozbrowser() const { return GetBoolAttr(nsGkAtoms::mozbrowser); }
@@ -147,6 +154,8 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
   // automatically when its subdocument exits fullscreen.
   bool FullscreenFlag() const { return mFullscreenFlag; }
   void SetFullscreenFlag(bool aValue) { mFullscreenFlag = aValue; }
+
+  FeaturePolicy* Policy() const;
 
  protected:
   virtual ~HTMLIFrameElement();
@@ -165,9 +174,17 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 
   static const DOMTokenListSupportedToken sSupportedSandboxTokens[];
+
+  void RefreshFeaturePolicy(bool aParseAllowAttribute);
+
+  // If this iframe has a 'srcdoc' attribute, the document's origin will be
+  // returned. Otherwise, if this iframe has a 'src' attribute, the origin will
+  // be the parsing of its value as URL. If the URL is invalid, or 'src'
+  // attribute doesn't exist, the origin will be the document's origin.
+  already_AddRefed<nsIPrincipal> GetFeaturePolicyDefaultOrigin() const;
 
   /**
    * This function is called by AfterSetAttr and OnAttrSetButNotChanged.
@@ -179,6 +196,8 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
    * @param aNotify Whether we plan to notify document observers.
    */
   void AfterMaybeChangeAttr(int32_t aNamespaceID, nsAtom* aName, bool aNotify);
+
+  RefPtr<mozilla::dom::FeaturePolicy> mFeaturePolicy;
 };
 
 }  // namespace dom

@@ -5,6 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsLegendFrame.h"
+
+#include "mozilla/PresShell.h"
+#include "ComputedStyle.h"
 #include "nsIContent.h"
 #include "nsGenericHTMLElement.h"
 #include "nsAttrValueInlines.h"
@@ -12,16 +15,19 @@
 #include "nsGkAtoms.h"
 #include "nsStyleConsts.h"
 #include "nsCheckboxRadioFrame.h"
+#include "WritingModes.h"
 
-nsIFrame* NS_NewLegendFrame(nsIPresShell* aPresShell,
-                            nsStyleContext* aContext) {
+using namespace mozilla;
+
+nsIFrame* NS_NewLegendFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
 #ifdef DEBUG
-  const nsStyleDisplay* disp = aContext->StyleDisplay();
+  const nsStyleDisplay* disp = aStyle->StyleDisplay();
   NS_ASSERTION(!disp->IsAbsolutelyPositionedStyle() && !disp->IsFloatingStyle(),
                "Legends should not be positioned and should not float");
 #endif
 
-  nsIFrame* f = new (aPresShell) nsLegendFrame(aContext);
+  nsIFrame* f =
+      new (aPresShell) nsLegendFrame(aStyle, aPresShell->GetPresContext());
   f->AddStateBits(NS_BLOCK_FORMATTING_CONTEXT_STATE_BITS);
   return f;
 }
@@ -35,7 +41,7 @@ void nsLegendFrame::DestroyFrom(nsIFrame* aDestructRoot,
 }
 
 NS_QUERYFRAME_HEAD(nsLegendFrame)
-NS_QUERYFRAME_ENTRY(nsLegendFrame)
+  NS_QUERYFRAME_ENTRY(nsLegendFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsBlockFrame)
 
 void nsLegendFrame::Reflow(nsPresContext* aPresContext,
@@ -54,7 +60,7 @@ void nsLegendFrame::Reflow(nsPresContext* aPresContext,
 
 int32_t nsLegendFrame::GetLogicalAlign(WritingMode aCBWM) {
   int32_t intValue = NS_STYLE_TEXT_ALIGN_START;
-  nsGenericHTMLElement* content = nsGenericHTMLElement::FromContent(mContent);
+  nsGenericHTMLElement* content = nsGenericHTMLElement::FromNode(mContent);
   if (content) {
     const nsAttrValue* attr = content->GetParsedAttr(nsGkAtoms::align);
     if (attr && attr->Type() == nsAttrValue::eEnum) {

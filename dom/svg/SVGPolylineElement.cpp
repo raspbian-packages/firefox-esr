@@ -11,25 +11,25 @@
 using namespace mozilla;
 using namespace mozilla::gfx;
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Polyline)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Polyline)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGPolylineElement::WrapNode(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return SVGPolylineElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGPolylineElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGPolylineElement::SVGPolylineElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGPolylineElementBase(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGPolylineElementBase(std::move(aNodeInfo)) {}
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGPolylineElement)
 

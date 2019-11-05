@@ -4,61 +4,58 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozilla/dom/SVGScriptElement.h"
+
 #include "nsGkAtoms.h"
 #include "nsNetUtil.h"
 #include "nsContentUtils.h"
-#include "mozilla/dom/SVGScriptElement.h"
 #include "mozilla/dom/SVGScriptElementBinding.h"
 #include "nsIScriptError.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT_CHECK_PARSER(Script)
+NS_IMPL_NS_NEW_SVG_ELEMENT_CHECK_PARSER(Script)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGScriptElement::WrapNode(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return SVGScriptElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGScriptElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::StringInfo SVGScriptElement::sStringInfo[2] = {
-    {&nsGkAtoms::href, kNameSpaceID_None, false},
-    {&nsGkAtoms::href, kNameSpaceID_XLink, false}};
+SVGElement::StringInfo SVGScriptElement::sStringInfo[2] = {
+    {nsGkAtoms::href, kNameSpaceID_None, false},
+    {nsGkAtoms::href, kNameSpaceID_XLink, false}};
 
 //----------------------------------------------------------------------
 // nsISupports methods
 
-NS_IMPL_ISUPPORTS_INHERITED(SVGScriptElement, SVGScriptElementBase, nsIDOMNode,
-                            nsIDOMElement, nsIScriptLoaderObserver,
-                            nsIScriptElement, nsIMutationObserver)
+NS_IMPL_ISUPPORTS_INHERITED(SVGScriptElement, SVGScriptElementBase,
+                            nsIScriptLoaderObserver, nsIScriptElement,
+                            nsIMutationObserver)
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGScriptElement::SVGScriptElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, FromParser aFromParser)
-    : SVGScriptElementBase(aNodeInfo), ScriptElement(aFromParser) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+    FromParser aFromParser)
+    : SVGScriptElementBase(std::move(aNodeInfo)), ScriptElement(aFromParser) {
   AddMutationObserver(this);
 }
 
-SVGScriptElement::~SVGScriptElement() {}
-
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
-nsresult SVGScriptElement::Clone(mozilla::dom::NodeInfo* aNodeInfo,
-                                 nsINode** aResult,
-                                 bool aPreallocateChildren) const {
+nsresult SVGScriptElement::Clone(dom::NodeInfo* aNodeInfo,
+                                 nsINode** aResult) const {
   *aResult = nullptr;
 
-  already_AddRefed<mozilla::dom::NodeInfo> ni =
-      RefPtr<mozilla::dom::NodeInfo>(aNodeInfo).forget();
-  SVGScriptElement* it = new SVGScriptElement(ni, NOT_FROM_PARSER);
+  SVGScriptElement* it =
+      new SVGScriptElement(do_AddRef(aNodeInfo), NOT_FROM_PARSER);
 
   nsCOMPtr<nsINode> kungFuDeathGrip = it;
   nsresult rv1 = it->Init();
-  nsresult rv2 = const_cast<SVGScriptElement*>(this)->CopyInnerTo(
-      it, aPreallocateChildren);
+  nsresult rv2 = const_cast<SVGScriptElement*>(this)->CopyInnerTo(it);
   NS_ENSURE_SUCCESS(rv1, rv1);
   NS_ENSURE_SUCCESS(rv2, rv2);
 
@@ -91,7 +88,7 @@ void SVGScriptElement::SetCrossOrigin(const nsAString& aCrossOrigin,
   SetOrRemoveNullableStringAttr(nsGkAtoms::crossorigin, aCrossOrigin, aError);
 }
 
-already_AddRefed<SVGAnimatedString> SVGScriptElement::Href() {
+already_AddRefed<DOMSVGAnimatedString> SVGScriptElement::Href() {
   return mStringAttributes[HREF].IsExplicitlySet()
              ? mStringAttributes[HREF].ToDOMAnimatedString(this)
              : mStringAttributes[XLINK_HREF].ToDOMAnimatedString(this);
@@ -112,7 +109,7 @@ void SVGScriptElement::GetScriptCharset(nsAString& charset) {
   charset.Truncate();
 }
 
-void SVGScriptElement::FreezeExecutionAttrs(nsIDocument* aOwnerDoc) {
+void SVGScriptElement::FreezeExecutionAttrs(Document* aOwnerDoc) {
   if (mFrozen) {
     return;
   }
@@ -120,7 +117,7 @@ void SVGScriptElement::FreezeExecutionAttrs(nsIDocument* aOwnerDoc) {
   if (mStringAttributes[HREF].IsExplicitlySet() ||
       mStringAttributes[XLINK_HREF].IsExplicitlySet()) {
     // variation of this code in nsHTMLScriptElement - check if changes
-    // need to be transfered when modifying
+    // need to be transferred when modifying
     bool isHref = false;
     nsAutoString src;
     if (mStringAttributes[HREF].IsExplicitlySet()) {
@@ -142,7 +139,8 @@ void SVGScriptElement::FreezeExecutionAttrs(nsIDocument* aOwnerDoc) {
         nsContentUtils::ReportToConsole(
             nsIScriptError::warningFlag, NS_LITERAL_CSTRING("SVG"), OwnerDoc(),
             nsContentUtils::eDOM_PROPERTIES, "ScriptSourceInvalidUri", params,
-            ArrayLength(params), nullptr, EmptyString(), GetScriptLineNumber());
+            ArrayLength(params), nullptr, EmptyString(), GetScriptLineNumber(),
+            GetScriptColumnNumber());
       }
     } else {
       const char16_t* params[] = {isHref ? u"href" : u"xlink:href"};
@@ -150,7 +148,8 @@ void SVGScriptElement::FreezeExecutionAttrs(nsIDocument* aOwnerDoc) {
       nsContentUtils::ReportToConsole(
           nsIScriptError::warningFlag, NS_LITERAL_CSTRING("SVG"), OwnerDoc(),
           nsContentUtils::eDOM_PROPERTIES, "ScriptSourceEmpty", params,
-          ArrayLength(params), nullptr, EmptyString(), GetScriptLineNumber());
+          ArrayLength(params), nullptr, EmptyString(), GetScriptLineNumber(),
+          GetScriptColumnNumber());
     }
 
     // At this point mUri will be null for invalid URLs.
@@ -171,9 +170,9 @@ bool SVGScriptElement::HasScriptContent() {
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-nsSVGElement::StringAttributesInfo SVGScriptElement::GetStringInfo() {
+SVGElement::StringAttributesInfo SVGScriptElement::GetStringInfo() {
   return StringAttributesInfo(mStringAttributes, sStringInfo,
                               ArrayLength(sStringInfo));
 }
@@ -181,12 +180,10 @@ nsSVGElement::StringAttributesInfo SVGScriptElement::GetStringInfo() {
 //----------------------------------------------------------------------
 // nsIContent methods
 
-nsresult SVGScriptElement::BindToTree(nsIDocument* aDocument,
-                                      nsIContent* aParent,
-                                      nsIContent* aBindingParent,
-                                      bool aCompileEventHandlers) {
-  nsresult rv = SVGScriptElementBase::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+nsresult SVGScriptElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                      nsIContent* aBindingParent) {
+  nsresult rv =
+      SVGScriptElementBase::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (aDocument) {

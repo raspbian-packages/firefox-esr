@@ -20,15 +20,7 @@ But there can be a wide variety of highlighters. In particular, highlighters are
 
 Highlighters run on the debuggee side, not on the toolbox side. This is so that it's possible to highlight elements on a remote device for instance. This means you need to go through the [Remote Debugging Protocol](protocol.md) to use a highlighter.
 
-### The highlighter utils
-
-The easiest way to access the highlighters from toolbox-side DevTools code is by using the highlighter utils, which is conveniently available on the toolbox object. Here is how you can access the utils:
-
-```js
-let hUtils = toolbox.highlighterUtils;
-```
-
-Since the box-model highlighter is the most used type of highlighter (for instance it's displayed when you move your mouse over nodes in the inspector), the utils provides a set of methods to interact with it:
+Since the box-model highlighter (HighlighterFront) is the most used type of highlighter (for instance it's displayed when you move your mouse over nodes in the inspector), the HighlighterFront provides a custom set of methods to interact with it:
 
 | Method                             | Description                                                                                                                                                                                                                   |
 |------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -38,7 +30,15 @@ Since the box-model highlighter is the most used type of highlighter (for instan
 | `highlightDomValueGrip(valueGrip)` | Display the box-model highlighter on a given node, represented by a debugger object value grip.                                                                                                                               |
 | `unhighlight()`                    | Hide the box-model highlighter.                                                                                                                                                                                               |
 
-But the box-model highlighter isn't the only type of highlighter, so the highlighter utils provides the following method:
+Not all methods that are related to highlighters are present on the HighlighterFront. The
+`highlightDomValueGrip` method also requires the WalkerFront in order to transform a Grip into a
+NodeFront. Therefore, methods that access other Fronts are available on the InspectorFront.
+
+| Method                             | Description                                                                                                                                                                                                                   |
+|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `highlightDomValueGrip(valueGrip)` | Display the box-model highlighter on a given node, represented by a debugger object value grip.                                                                                                                               |
+
+But the box-model highlighter isn't the only type of highlighter, so the InspectorFront also provides the following method:
 
 | Method                           | Description                                                                                                                                                                                                                                                                                                   |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -46,7 +46,7 @@ But the box-model highlighter isn't the only type of highlighter, so the highlig
 
 ### The highlighter API
 
-When getting a highlighter via `toolbox.highlighterUtils.getHighlighterByType(typeName)`, the right type of highlighter will be instantiated on the server-side and will be wrapped into a `CustomHighlighterActor` and that's what will be returned to the caller. This means that all types of highlighters share the same following API:
+When getting a highlighter via `toolbox.inspector.getHighlighterByType(typeName)`, the right type of highlighter will be instantiated on the server-side and will be wrapped into a `CustomHighlighterActor` and that's what will be returned to the caller. This means that all types of highlighters share the same following API:
 
 | Method                                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 |------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -123,10 +123,10 @@ Its goal is to provide a simple way for highlighters to insert their content int
 Using this helper is quite simple:
 
 ```js
-let helper = new CanvasFrameAnonymousContentHelper(tabActor, this.buildMarkup.bind(this));
+let helper = new CanvasFrameAnonymousContentHelper(targetActor, this.buildMarkup.bind(this));
 ```
 
-It only requires a `tabActor`, which highlighters get when they are instantiated, and a callback function that will be used to create and insert the content the first time the highlighter is shown, and every time there's a page navigation.
+It only requires a `targetActor`, which highlighters get when they are instantiated, and a callback function that will be used to create and insert the content the first time the highlighter is shown, and every time there's a page navigation.
 
 The returned object provides the following API:
 
@@ -147,9 +147,9 @@ A good way to get started is by taking a look at [existing highlighters here](ht
 Here is some boilerplate code for a new highlighter class:
 
 ```js
- function MyNewHighlighter(tabActor) {
-   this.doc = tabActor.window.document;
-   this.markup = new CanvasFrameAnonymousContentHelper(tabActor, this._buildMarkup.bind(this));
+ function MyNewHighlighter(targetActor) {
+   this.doc = targetActor.window.document;
+   this.markup = new CanvasFrameAnonymousContentHelper(targetActor, this._buildMarkup.bind(this));
  }
 
  MyNewHighlighter.prototype = {

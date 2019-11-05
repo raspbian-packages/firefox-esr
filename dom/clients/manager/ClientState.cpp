@@ -26,7 +26,7 @@ ClientWindowState::ClientWindowState(const ClientWindowState& aRight) {
 }
 
 ClientWindowState::ClientWindowState(ClientWindowState&& aRight)
-    : mData(Move(aRight.mData)) {}
+    : mData(std::move(aRight.mData)) {}
 
 ClientWindowState& ClientWindowState::operator=(
     const ClientWindowState& aRight) {
@@ -37,7 +37,7 @@ ClientWindowState& ClientWindowState::operator=(
 
 ClientWindowState& ClientWindowState::operator=(ClientWindowState&& aRight) {
   mData.reset();
-  mData = Move(aRight.mData);
+  mData = std::move(aRight.mData);
   return *this;
 }
 
@@ -67,7 +67,7 @@ ClientWorkerState::ClientWorkerState(const IPCClientWorkerState& aData)
     : mData(MakeUnique<IPCClientWorkerState>(aData)) {}
 
 ClientWorkerState::ClientWorkerState(ClientWorkerState&& aRight)
-    : mData(Move(aRight.mData)) {}
+    : mData(std::move(aRight.mData)) {}
 
 ClientWorkerState::ClientWorkerState(const ClientWorkerState& aRight) {
   operator=(aRight);
@@ -82,7 +82,7 @@ ClientWorkerState& ClientWorkerState::operator=(
 
 ClientWorkerState& ClientWorkerState::operator=(ClientWorkerState&& aRight) {
   mData.reset();
-  mData = Move(aRight.mData);
+  mData = std::move(aRight.mData);
   return *this;
 }
 
@@ -112,10 +112,11 @@ ClientState::ClientState(const IPCClientWorkerState& aData) {
   mData.emplace(AsVariant(ClientWorkerState(aData)));
 }
 
-ClientState::ClientState(ClientState&& aRight) : mData(Move(aRight.mData)) {}
+ClientState::ClientState(ClientState&& aRight)
+    : mData(std::move(aRight.mData)) {}
 
 ClientState& ClientState::operator=(ClientState&& aRight) {
-  mData = Move(aRight.mData);
+  mData = std::move(aRight.mData);
   return *this;
 }
 

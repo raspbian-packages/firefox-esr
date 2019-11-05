@@ -64,6 +64,7 @@ following parameters::
     "Pocket Installed" -> true          // If Pocket for Android is installed.
     "Signed In Sync" -> true            // If the user has signed in to Mozilla account.
     "Default Browser" -> true           // If the user has set Fennec as default browser.
+    "Pocket in Top Sites" -> true       // If Pocket recommendations for Top Sites home panel are enabled (by default or through user action)
   }
   "appId" -> "app_6Ao...."              // Leanplum App ID.
   "clientKey" -> "dev_srwDUNZR...."     // Leanplum client access key.
@@ -135,6 +136,10 @@ List of current Events related data that is sent:
 {
   "event" : "E_Interact_With_Search_URL_Area"
 }
+* Interact with search widget
+{
+  "event" : "E_Interact_With_Search_Widget"
+}
 * When a screenshot is taken
 {
   "event" : "E_Screenshot"
@@ -155,11 +160,36 @@ List of current Events related data that is sent:
 {
   "event" : "E_Dismiss_Onboarding"
 }
+* Sign in Firefox Account
+{
+  "event" : "E_User_Signed_In_To_FxA"
+}
+* Firefox Sync finished event
+{
+  "event" : "E_User_Finished_Sync"
+}
+* The user just resumed the app from background
+{
+  "event" : "E_Resumed_From_Background"
+}
+* User set Fennec as default browser and resumed the app
+{
+  "event" : "E_Changed_Default_To_Fennec"
+}
+* User installed the Focus app
+{
+  "event" : "E_Just_Installed_Focus"
+}
+* User installed the Klar app
+{
+  "event" : "E_Just_Installed_Klar"
+}
 
 Deep Links:
 Deep links are actions that can point Fennec to open certain pages or load features such as `show bookmark list` or
 `open a SUMO page`. When users see a prompt Leanplum message, they can click the button(s) on it. These buttons can
 trigger the following deep links
+* Link to open pages specifically in Fennec (firefox://open?url=)
 * Link to Set Default Browser settings (firefox://default_browser)
 * Link to specific Add-on page (http://link_to_the_add_on_page)
 * Link to sync signup/sign in (firefox://sign_up)

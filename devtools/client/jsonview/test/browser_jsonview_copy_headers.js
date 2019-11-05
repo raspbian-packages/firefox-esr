@@ -7,29 +7,34 @@
 
 const TEST_JSON_URL = URL_ROOT + "valid_json.json";
 
-add_task(function* () {
+add_task(async function() {
   info("Test valid JSON started");
 
-  yield addJsonViewTab(TEST_JSON_URL);
+  await addJsonViewTab(TEST_JSON_URL);
 
   // Select the RawData tab
-  yield selectJsonViewContentTab("headers");
+  await selectJsonViewContentTab("headers");
 
   // Check displayed headers
-  let count = yield getElementCount(".headersPanelBox .netHeadersGroup");
+  const count = await getElementCount(".headersPanelBox .netHeadersGroup");
   is(count, 2, "There must be two header groups");
 
-  let text = yield getElementText(".headersPanelBox .netInfoHeadersTable");
+  const text = await getElementText(".headersPanelBox .netInfoHeadersTable");
   isnot(text, "", "Headers text must not be empty");
 
-  let browser = gBrowser.selectedBrowser;
+  const browser = gBrowser.selectedBrowser;
 
   // Verify JSON copy into the clipboard.
-  yield waitForClipboardPromise(function setup() {
-    BrowserTestUtils.synthesizeMouseAtCenter(
-      ".headersPanelBox .toolbar button.copy",
-      {}, browser);
-  }, function validator(value) {
-    return value.indexOf("application/json") > 0;
-  });
+  await waitForClipboardPromise(
+    function setup() {
+      BrowserTestUtils.synthesizeMouseAtCenter(
+        ".headersPanelBox .toolbar button.copy",
+        {},
+        browser
+      );
+    },
+    function validator(value) {
+      return value.indexOf("application/json") > 0;
+    }
+  );
 });

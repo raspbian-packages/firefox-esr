@@ -31,22 +31,19 @@ XULComboboxAccessible::XULComboboxAccessible(nsIContent* aContent,
   else
     mGenericTypes |= eCombobox;
 
-  // Both the XUL <textbox type="autocomplete"> and <menulist editable="true">
-  // widgets use XULComboboxAccessible. We need to walk the anonymous children
-  // for these so that the entry field is a child. Otherwise no XBL children.
-  if (!mContent->NodeInfo()->Equals(nsGkAtoms::textbox, kNameSpaceID_XUL) &&
-      !mContent->AsElement()->AttrValueIs(kNameSpaceID_None,
-                                          nsGkAtoms::editable, nsGkAtoms::_true,
-                                          eIgnoreCase)) {
+  // The XUL <textbox type="autocomplete"> uses XULComboboxAccessible. We need
+  // to walk the anonymous children for these so that the entry field is a
+  // child. Otherwise no XBL children.
+  if (!mContent->NodeInfo()->Equals(nsGkAtoms::textbox, kNameSpaceID_XUL)) {
     mStateFlags |= eNoXBLKids;
   }
 }
 
-role XULComboboxAccessible::NativeRole() {
+role XULComboboxAccessible::NativeRole() const {
   return IsAutoComplete() ? roles::AUTOCOMPLETE : roles::COMBOBOX;
 }
 
-uint64_t XULComboboxAccessible::NativeState() {
+uint64_t XULComboboxAccessible::NativeState() const {
   // As a nsComboboxAccessible we can have the following states:
   //     STATE_FOCUSED
   //     STATE_FOCUSABLE
@@ -57,7 +54,7 @@ uint64_t XULComboboxAccessible::NativeState() {
   // Get focus status from base class
   uint64_t state = Accessible::NativeState();
 
-  nsCOMPtr<nsIDOMXULMenuListElement> menuList(do_QueryInterface(mContent));
+  nsCOMPtr<nsIDOMXULMenuListElement> menuList = Elm()->AsXULMenuList();
   if (menuList) {
     bool isOpen = false;
     menuList->GetOpen(&isOpen);
@@ -73,37 +70,35 @@ uint64_t XULComboboxAccessible::NativeState() {
 void XULComboboxAccessible::Description(nsString& aDescription) {
   aDescription.Truncate();
   // Use description of currently focused option
-  nsCOMPtr<nsIDOMXULMenuListElement> menuListElm(do_QueryInterface(mContent));
+  nsCOMPtr<nsIDOMXULMenuListElement> menuListElm = Elm()->AsXULMenuList();
   if (!menuListElm) return;
 
-  nsCOMPtr<nsIDOMXULSelectControlItemElement> focusedOptionItem;
+  nsCOMPtr<Element> focusedOptionItem;
   menuListElm->GetSelectedItem(getter_AddRefs(focusedOptionItem));
-  nsCOMPtr<nsIContent> focusedOptionContent =
-      do_QueryInterface(focusedOptionItem);
-  if (focusedOptionContent && mDoc) {
-    Accessible* focusedOptionAcc = mDoc->GetAccessible(focusedOptionContent);
+  if (focusedOptionItem && mDoc) {
+    Accessible* focusedOptionAcc = mDoc->GetAccessible(focusedOptionItem);
     if (focusedOptionAcc) focusedOptionAcc->Description(aDescription);
   }
 }
 
-void XULComboboxAccessible::Value(nsString& aValue) {
+void XULComboboxAccessible::Value(nsString& aValue) const {
   aValue.Truncate();
 
   // The value is the option or text shown entered in the combobox.
-  nsCOMPtr<nsIDOMXULMenuListElement> menuList(do_QueryInterface(mContent));
+  nsCOMPtr<nsIDOMXULMenuListElement> menuList = Elm()->AsXULMenuList();
   if (menuList) menuList->GetLabel(aValue);
 }
 
-uint8_t XULComboboxAccessible::ActionCount() {
+uint8_t XULComboboxAccessible::ActionCount() const {
   // Just one action (click).
   return 1;
 }
 
-bool XULComboboxAccessible::DoAction(uint8_t aIndex) {
+bool XULComboboxAccessible::DoAction(uint8_t aIndex) const {
   if (aIndex != XULComboboxAccessible::eAction_Click) return false;
 
   // Programmaticaly toggle the combo box.
-  nsCOMPtr<nsIDOMXULMenuListElement> menuList(do_QueryInterface(mContent));
+  nsCOMPtr<nsIDOMXULMenuListElement> menuList = Elm()->AsXULMenuList();
   if (!menuList) return false;
 
   bool isDroppedDown = false;
@@ -116,7 +111,7 @@ void XULComboboxAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
   aName.Truncate();
   if (aIndex != XULComboboxAccessible::eAction_Click) return;
 
-  nsCOMPtr<nsIDOMXULMenuListElement> menuList(do_QueryInterface(mContent));
+  nsCOMPtr<nsIDOMXULMenuListElement> menuList = Elm()->AsXULMenuList();
   if (!menuList) return;
 
   bool isDroppedDown = false;
@@ -158,7 +153,7 @@ bool XULComboboxAccessible::AreItemsOperable() const {
     return false;
   }
 
-  nsCOMPtr<nsIDOMXULMenuListElement> menuListElm = do_QueryInterface(mContent);
+  nsCOMPtr<nsIDOMXULMenuListElement> menuListElm = Elm()->AsXULMenuList();
   if (menuListElm) {
     bool isOpen = false;
     menuListElm->GetOpen(&isOpen);

@@ -7,12 +7,12 @@ async function createTabWithRandomValue(url) {
 
   // Set a random value.
   let r = `rand-${Math.random()}`;
-  ss.setTabValue(tab, "foobar", r);
+  ss.setCustomTabValue(tab, "foobar", r);
 
   // Flush to ensure there are no scheduled messages.
   await TabStateFlusher.flush(browser);
 
-  return {tab, r};
+  return { tab, r };
 }
 
 function isValueInClosedData(rval) {
@@ -35,7 +35,7 @@ function restoreClosedTabWithValue(rval) {
 function promiseNewLocationAndHistoryEntryReplaced(browser, snippet) {
   return ContentTask.spawn(browser, snippet, async function(codeSnippet) {
     let webNavigation = docShell.QueryInterface(Ci.nsIWebNavigation);
-    let shistory = webNavigation.sessionHistory;
+    let shistory = webNavigation.sessionHistory.legacySHistory;
 
     // Evaluate the snippet that the changes the location.
     // eslint-disable-next-line no-eval
@@ -48,10 +48,10 @@ function promiseNewLocationAndHistoryEntryReplaced(browser, snippet) {
           resolve();
         },
 
-        QueryInterface: XPCOMUtils.generateQI([
+        QueryInterface: ChromeUtils.generateQI([
           Ci.nsISHistoryListener,
-          Ci.nsISupportsWeakReference
-        ])
+          Ci.nsISupportsWeakReference,
+        ]),
       };
 
       shistory.addSHistoryListener(listener);
@@ -60,41 +60,19 @@ function promiseNewLocationAndHistoryEntryReplaced(browser, snippet) {
       addEventListener("unload", function() {
         try {
           shistory.removeSHistoryListener(listener);
-        } catch (e) { /* Will most likely fail. */ }
+        } catch (e) {
+          /* Will most likely fail. */
+        }
       });
     });
   });
 }
 
-function promiseHistoryEntryReplacedNonRemote(browser) {
-  let {listeners} = promiseHistoryEntryReplacedNonRemote;
-
-  return new Promise(resolve => {
-    let shistory = browser.webNavigation.sessionHistory;
-
-    let listener = {
-      OnHistoryReplaceEntry() {
-        shistory.removeSHistoryListener(this);
-        executeSoon(resolve);
-      },
-
-      QueryInterface: XPCOMUtils.generateQI([
-        Ci.nsISHistoryListener,
-        Ci.nsISupportsWeakReference
-      ])
-    };
-
-    shistory.addSHistoryListener(listener);
-    listeners.set(browser, listener);
-  });
-}
-promiseHistoryEntryReplacedNonRemote.listeners = new WeakMap();
-
 add_task(async function dont_save_empty_tabs() {
-  let {tab, r} = await createTabWithRandomValue("about:blank");
+  let { tab, r } = await createTabWithRandomValue("about:blank");
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // No tab state worth saving.
   ok(!isValueInClosedData(r), "closed tab not saved");
@@ -105,11 +83,11 @@ add_task(async function dont_save_empty_tabs() {
 });
 
 add_task(async function save_worthy_tabs_remote() {
-  let {tab, r} = await createTabWithRandomValue("https://example.com/");
+  let { tab, r } = await createTabWithRandomValue("https://example.com/");
   ok(tab.linkedBrowser.isRemoteBrowser, "browser is remote");
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // Tab state deemed worth saving.
   ok(isValueInClosedData(r), "closed tab saved");
@@ -120,11 +98,11 @@ add_task(async function save_worthy_tabs_remote() {
 });
 
 add_task(async function save_worthy_tabs_nonremote() {
-  let {tab, r} = await createTabWithRandomValue("about:robots");
+  let { tab, r } = await createTabWithRandomValue("about:robots");
   ok(!tab.linkedBrowser.isRemoteBrowser, "browser is not remote");
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // Tab state deemed worth saving.
   ok(isValueInClosedData(r), "closed tab saved");
@@ -135,21 +113,21 @@ add_task(async function save_worthy_tabs_nonremote() {
 });
 
 add_task(async function save_worthy_tabs_remote_final() {
-  let {tab, r} = await createTabWithRandomValue("about:blank");
+  let { tab, r } = await createTabWithRandomValue("about:blank");
   let browser = tab.linkedBrowser;
   ok(browser.isRemoteBrowser, "browser is remote");
 
   // Replace about:blank with a new remote page.
-  let snippet = 'webNavigation.loadURI("https://example.com/",\
-                                       null, null, null, null,\
-                                       Services.scriptSecurityManager.getSystemPrincipal())';
+  let snippet =
+    'webNavigation.loadURI("https://example.com/",\
+    {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal()})';
   await promiseNewLocationAndHistoryEntryReplaced(browser, snippet);
 
   // Remotness shouldn't have changed.
   ok(browser.isRemoteBrowser, "browser is still remote");
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // No tab state worth saving (that we know about yet).
   ok(!isValueInClosedData(r), "closed tab not saved");
@@ -160,7 +138,7 @@ add_task(async function save_worthy_tabs_remote_final() {
 });
 
 add_task(async function save_worthy_tabs_nonremote_final() {
-  let {tab, r} = await createTabWithRandomValue("about:blank");
+  let { tab, r } = await createTabWithRandomValue("about:blank");
   let browser = tab.linkedBrowser;
   ok(browser.isRemoteBrowser, "browser is remote");
 
@@ -168,11 +146,13 @@ add_task(async function save_worthy_tabs_nonremote_final() {
   await BrowserTestUtils.loadURI(browser, "about:robots");
   ok(!browser.isRemoteBrowser, "browser is not remote anymore");
 
-  // Wait until the new entry replaces about:blank.
-  await promiseHistoryEntryReplacedNonRemote(browser);
+  // Switching remoteness caused a SessionRestore to begin, moving over history
+  // and initiating the load in the target process. Wait for the full restore
+  // and load to complete before trying to close the tab.
+  await promiseTabRestored(tab);
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // No tab state worth saving (that we know about yet).
   ok(!isValueInClosedData(r), "closed tab not saved");
@@ -183,7 +163,7 @@ add_task(async function save_worthy_tabs_nonremote_final() {
 });
 
 add_task(async function dont_save_empty_tabs_final() {
-  let {tab, r} = await createTabWithRandomValue("https://example.com/");
+  let { tab, r } = await createTabWithRandomValue("https://example.com/");
   let browser = tab.linkedBrowser;
 
   // Replace the current page with an about:blank entry.
@@ -191,7 +171,7 @@ add_task(async function dont_save_empty_tabs_final() {
   await promiseNewLocationAndHistoryEntryReplaced(browser, snippet);
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // Tab state deemed worth saving (yet).
   ok(isValueInClosedData(r), "closed tab saved");
@@ -202,11 +182,11 @@ add_task(async function dont_save_empty_tabs_final() {
 });
 
 add_task(async function undo_worthy_tabs() {
-  let {tab, r} = await createTabWithRandomValue("https://example.com/");
+  let { tab, r } = await createTabWithRandomValue("https://example.com/");
   ok(tab.linkedBrowser.isRemoteBrowser, "browser is remote");
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // Tab state deemed worth saving.
   ok(isValueInClosedData(r), "closed tab saved");
@@ -221,15 +201,15 @@ add_task(async function undo_worthy_tabs() {
   ok(!isValueInClosedData(r), "tab no longer closed");
 
   // Cleanup.
-  await promiseRemoveTab(tab);
+  BrowserTestUtils.removeTab(tab);
 });
 
 add_task(async function forget_worthy_tabs_remote() {
-  let {tab, r} = await createTabWithRandomValue("https://example.com/");
+  let { tab, r } = await createTabWithRandomValue("https://example.com/");
   ok(tab.linkedBrowser.isRemoteBrowser, "browser is remote");
 
   // Remove the tab before the update arrives.
-  let promise = promiseRemoveTab(tab);
+  let promise = promiseRemoveTabAndSessionState(tab);
 
   // Tab state deemed worth saving.
   ok(isValueInClosedData(r), "closed tab saved");

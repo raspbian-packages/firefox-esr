@@ -12,6 +12,10 @@
 
 class nsFontMetrics;
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <mfenced> -- surround content with a pair of fences
 //
@@ -20,15 +24,15 @@ class nsMathMLmfencedFrame final : public nsMathMLContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmfencedFrame)
 
-  friend nsIFrame* NS_NewMathMLmfencedFrame(nsIPresShell* aPresShell,
-                                            nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmfencedFrame(mozilla::PresShell* aPresShell,
+                                            ComputedStyle* aStyle);
 
   void DestroyFrom(nsIFrame* aDestructRoot,
                    PostDestroyData& aPostDestroyData) override;
 
-  virtual void SetAdditionalStyleContext(
-      int32_t aIndex, nsStyleContext* aStyleContext) override;
-  virtual nsStyleContext* GetAdditionalStyleContext(
+  virtual void SetAdditionalComputedStyle(
+      int32_t aIndex, ComputedStyle* aComputedStyle) override;
+  virtual ComputedStyle* GetAdditionalComputedStyle(
       int32_t aIndex) const override;
 
   NS_IMETHOD
@@ -77,8 +81,9 @@ class nsMathMLmfencedFrame final : public nsMathMLContainerFrame {
   }
 
  protected:
-  explicit nsMathMLmfencedFrame(nsStyleContext* aContext)
-      : nsMathMLContainerFrame(aContext, kClassID),
+  explicit nsMathMLmfencedFrame(ComputedStyle* aStyle,
+                                nsPresContext* aPresContext)
+      : nsMathMLContainerFrame(aStyle, aPresContext, kClassID),
         mOpenChar(nullptr),
         mCloseChar(nullptr),
         mSeparatorsChar(nullptr),

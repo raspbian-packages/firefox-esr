@@ -7,11 +7,11 @@
 
 const TEST_URL = "http://example.com/";
 
-add_task(async function () {
-  let tab = await addTab(TEST_URL);
+add_task(async function() {
+  const tab = await addTab(TEST_URL);
 
-  let { ui } = await openRDM(tab);
-  let clientClosed = waitForClientClose(ui);
+  const { ui } = await openRDM(tab);
+  const clientClosed = waitForClientClose(ui);
 
   closeRDM(tab, {
     reason: "BeforeTabRemotenessChange",
@@ -26,11 +26,11 @@ add_task(async function () {
   await removeTab(tab);
 });
 
-add_task(async function () {
-  let tab = await addTab(TEST_URL);
+add_task(async function() {
+  const tab = await addTab(TEST_URL);
 
-  let { ui } = await openRDM(tab);
-  let clientClosed = waitForClientClose(ui);
+  const { ui } = await openRDM(tab);
+  const clientClosed = waitForClientClose(ui);
 
   // Load URL that requires the main process, forcing a remoteness flip
   await load(tab.linkedBrowser, "about:robots");

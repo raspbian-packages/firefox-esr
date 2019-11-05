@@ -8,12 +8,15 @@ function waitForNewWindow() {
         function downloadOnLoad() {
           domwindow.removeEventListener("load", downloadOnLoad, true);
 
-          is(domwindow.document.location.href, "chrome://mozapps/content/downloads/unknownContentType.xul", "Download page appeared");
+          is(
+            domwindow.document.location.href,
+            "chrome://mozapps/content/downloads/unknownContentType.xul",
+            "Download page appeared"
+          );
           resolve(domwindow);
         }
 
-        var domwindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-                                  .getInterface(Ci.nsIDOMWindow);
+        var domwindow = aXULWindow.docShell.domWindow;
         domwindow.addEventListener("load", downloadOnLoad, true);
       },
       onCloseWindow: aXULWindow => {},
@@ -35,11 +38,18 @@ async function testLink(link, name) {
   let win = await winPromise;
 
   await ContentTask.spawn(gBrowser.selectedBrowser, null, () => {
-    Assert.equal(content.document.getElementById("unload-flag").textContent,
-      "Okay", "beforeunload shouldn't have fired");
+    Assert.equal(
+      content.document.getElementById("unload-flag").textContent,
+      "Okay",
+      "beforeunload shouldn't have fired"
+    );
   });
 
-  is(win.document.getElementById("location").value, name, "file name should match");
+  is(
+    win.document.getElementById("location").value,
+    name,
+    "file name should match"
+  );
 
   await BrowserTestUtils.closeWindow(win);
 }
@@ -52,7 +62,7 @@ async function testLocation(link, url) {
   });
 
   let tab = await tabPromise;
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 }
 
 async function runTest(url) {
@@ -70,13 +80,17 @@ async function runTest(url) {
   await testLink("link6", "test.blob");
   await testLocation("link7", "http://example.com/");
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 }
 
 add_task(async function() {
   requestLongerTimeout(3);
   waitForExplicitFinish();
 
-  await runTest("http://mochi.test:8888/browser/browser/base/content/test/general/download_page.html");
-  await runTest("https://example.com:443/browser/browser/base/content/test/general/download_page.html");
+  await runTest(
+    "http://mochi.test:8888/browser/browser/base/content/test/general/download_page.html"
+  );
+  await runTest(
+    "https://example.com:443/browser/browser/base/content/test/general/download_page.html"
+  );
 });

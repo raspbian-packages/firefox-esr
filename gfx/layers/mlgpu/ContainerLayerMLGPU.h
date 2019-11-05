@@ -19,7 +19,7 @@ class RenderViewMLGPU;
 class ContainerLayerMLGPU final : public ContainerLayer, public LayerMLGPU {
  public:
   explicit ContainerLayerMLGPU(LayerManagerMLGPU* aManager);
-  ~ContainerLayerMLGPU() override;
+  virtual ~ContainerLayerMLGPU();
 
   MOZ_LAYER_DECL_NAME("ContainerLayerMLGPU", TYPE_CONTAINER)
 
@@ -53,12 +53,16 @@ class ContainerLayerMLGPU final : public ContainerLayer, public LayerMLGPU {
     mView = aView;
   }
 
+  void ComputeIntermediateSurfaceBounds();
+
  protected:
   bool OnPrepareToRender(FrameBuilder* aBuilder) override;
   void OnLayerManagerChange(LayerManagerMLGPU* aManager) override;
-  Maybe<gfx::IntRect> ComputeIntermediateSurfaceBounds();
 
  private:
+  static Maybe<gfx::IntRect> FindVisibleBounds(
+      Layer* aLayer, const Maybe<RenderTargetIntRect>& aClip);
+
   RefPtr<MLGRenderTarget> mRenderTarget;
 
   // We cache these since occlusion culling can change the visible region.

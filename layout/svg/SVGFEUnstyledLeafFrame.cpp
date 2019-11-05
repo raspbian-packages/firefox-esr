@@ -5,19 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Keep in (case-insensitive) order:
+#include "mozilla/PresShell.h"
 #include "nsContainerFrame.h"
 #include "nsFrame.h"
 #include "nsGkAtoms.h"
 #include "SVGObserverUtils.h"
-#include "nsSVGFilters.h"
+#include "SVGFilters.h"
 
-class SVGFEUnstyledLeafFrame : public nsFrame {
-  friend nsIFrame* NS_NewSVGFEUnstyledLeafFrame(nsIPresShell* aPresShell,
-                                                nsStyleContext* aContext);
+using namespace mozilla;
+
+class SVGFEUnstyledLeafFrame final : public nsFrame {
+  friend nsIFrame* NS_NewSVGFEUnstyledLeafFrame(mozilla::PresShell* aPresShell,
+                                                ComputedStyle* aStyle);
 
  protected:
-  explicit SVGFEUnstyledLeafFrame(nsStyleContext* aContext)
-      : nsFrame(aContext, kClassID) {
+  explicit SVGFEUnstyledLeafFrame(ComputedStyle* aStyle,
+                                  nsPresContext* aPresContext)
+      : nsFrame(aStyle, aPresContext, kClassID) {
     AddStateBits(NS_FRAME_SVG_LAYOUT | NS_FRAME_IS_NONDISPLAY);
   }
 
@@ -28,6 +32,10 @@ class SVGFEUnstyledLeafFrame : public nsFrame {
                                 const nsDisplayListSet& aLists) override {}
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsFrame::IsFrameOfType(aFlags & ~(nsIFrame::eSVG));
   }
 
@@ -46,9 +54,10 @@ class SVGFEUnstyledLeafFrame : public nsFrame {
   }
 };
 
-nsIFrame* NS_NewSVGFEUnstyledLeafFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext) {
-  return new (aPresShell) SVGFEUnstyledLeafFrame(aContext);
+nsIFrame* NS_NewSVGFEUnstyledLeafFrame(PresShell* aPresShell,
+                                       ComputedStyle* aStyle) {
+  return new (aPresShell)
+      SVGFEUnstyledLeafFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(SVGFEUnstyledLeafFrame)

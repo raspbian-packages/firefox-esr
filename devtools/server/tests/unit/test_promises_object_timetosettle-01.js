@@ -8,70 +8,63 @@
 
 "use strict";
 
-const { PromisesFront } = require("devtools/shared/fronts/promises");
-
-var EventEmitter = require("devtools/shared/event-emitter");
-
-add_task(async function () {
-  let client = await startTestDebuggerServer("test-promises-timetosettle");
-  let chromeActors = await getChromeActors(client);
+add_task(async function() {
+  const { promisesFront } = await createMainProcessPromisesFront();
 
   ok(Promise.toString().includes("native code"), "Expect native DOM Promise.");
 
-  // We have to attach the chrome TabActor before playing with the PromiseActor
-  await attachTab(client, chromeActors);
-  await testGetTimeToSettle(client, chromeActors, () => {
-    let p = new Promise(() => {});
+  await testGetTimeToSettle(promisesFront, () => {
+    const p = new Promise(() => {});
     p.name = "p";
-    let q = p.then();
+    const q = p.then();
     q.name = "q";
 
     return p;
   });
-
-  let response = await listTabs(client);
-  let targetTab = findTab(response.tabs, "test-promises-timetosettle");
-  ok(targetTab, "Found our target tab.");
-
-  await testGetTimeToSettle(client, targetTab, () => {
-    const debuggee =
-      DebuggerServer.getTestGlobal("test-promises-timetosettle");
-
-    let p = new debuggee.Promise(() => {});
-    p.name = "p";
-    let q = p.then();
-    q.name = "q";
-
-    return p;
-  });
-
-  await close(client);
 });
 
-async function testGetTimeToSettle(client, form, makePromises) {
-  let front = PromisesFront(client, form);
+add_task(async function() {
+  const { debuggee, promisesFront } = await createTabPromisesFront();
 
+  await testGetTimeToSettle(promisesFront, () => {
+    const p = new debuggee.Promise(() => {});
+    p.name = "p";
+    const q = p.then();
+    q.name = "q";
+
+    return p;
+  });
+});
+
+async function testGetTimeToSettle(front, makePromises) {
   await front.attach();
   await front.listPromises();
 
-  let onNewPromise = new Promise(resolve => {
-    EventEmitter.on(front, "new-promises", promises => {
-      for (let p of promises) {
+  const onNewPromise = new Promise(resolve => {
+    front.on("new-promises", promises => {
+      for (const p of promises) {
         if (p.promiseState.state === "pending") {
-          ok(!p.promiseState.timeToSettle,
-            "Expect no time to settle for unsettled promise.");
+          ok(
+            !p.promiseState.timeToSettle,
+            "Expect no time to settle for unsettled promise."
+          );
         } else {
-          ok(p.promiseState.timeToSettle,
-            "Expect time to settle for settled promise.");
-          equal(typeof p.promiseState.timeToSettle, "number",
-            "Expect time to settle to be a number.");
+          ok(
+            p.promiseState.timeToSettle,
+            "Expect time to settle for settled promise."
+          );
+          equal(
+            typeof p.promiseState.timeToSettle,
+            "number",
+            "Expect time to settle to be a number."
+          );
         }
       }
       resolve();
     });
   });
 
-  let promise = makePromises();
+  const promise = makePromises();
 
   await onNewPromise;
   await front.detach();

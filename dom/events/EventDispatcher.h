@@ -5,19 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ifdef MOZILLA_INTERNAL_API
-#ifndef mozilla_EventDispatcher_h_
-#define mozilla_EventDispatcher_h_
+#  ifndef mozilla_EventDispatcher_h_
+#    define mozilla_EventDispatcher_h_
 
-#include "mozilla/dom/BindingDeclarations.h"
-#include "mozilla/EventForwards.h"
-#include "nsCOMPtr.h"
-#include "nsTArray.h"
+#    include "mozilla/dom/BindingDeclarations.h"
+#    include "mozilla/dom/Touch.h"
+#    include "mozilla/EventForwards.h"
+#    include "mozilla/Maybe.h"
+#    include "nsCOMPtr.h"
+#    include "nsTArray.h"
 
 // Microsoft's API Name hackery sucks
-#undef CreateEvent
+#    undef CreateEvent
 
 class nsIContent;
-class nsIDOMEvent;
 class nsPresContext;
 
 template <class E>
@@ -49,10 +50,13 @@ class EventTarget;
  * is called right after calling event listener for the current event target.
  */
 
-class EventChainVisitor {
+class MOZ_STACK_CLASS EventChainVisitor {
  public:
+  // For making creators of this class instances guarantee the lifetime of
+  // aPresContext, this needs to be marked as MOZ_CAN_RUN_SCRIPT.
+  MOZ_CAN_RUN_SCRIPT
   EventChainVisitor(nsPresContext* aPresContext, WidgetEvent* aEvent,
-                    nsIDOMEvent* aDOMEvent,
+                    dom::Event* aDOMEvent,
                     nsEventStatus aEventStatus = nsEventStatus_eIgnore)
       : mPresContext(aPresContext),
         mEvent(aEvent),
@@ -62,6 +66,9 @@ class EventChainVisitor {
 
   /**
    * The prescontext, possibly nullptr.
+   * Note that the lifetime of mPresContext is guaranteed by the creators so
+   * that you can use this with MOZ_KnownLive() when you set argument
+   * of can-run-script methods to this.
    */
   nsPresContext* const mPresContext;
 
@@ -74,7 +81,7 @@ class EventChainVisitor {
    * The DOM Event assiciated with the mEvent. Possibly nullptr if a DOM Event
    * is not (yet) created.
    */
-  nsIDOMEvent* mDOMEvent;
+  dom::Event* mDOMEvent;
 
   /**
    * The status of the event.
@@ -105,10 +112,11 @@ class EventChainVisitor {
   nsCOMPtr<nsISupports> mItemData;
 };
 
-class EventChainPreVisitor : public EventChainVisitor {
+class MOZ_STACK_CLASS EventChainPreVisitor final : public EventChainVisitor {
  public:
+  MOZ_CAN_RUN_SCRIPT
   EventChainPreVisitor(nsPresContext* aPresContext, WidgetEvent* aEvent,
-                       nsIDOMEvent* aDOMEvent, nsEventStatus aEventStatus,
+                       dom::Event* aDOMEvent, nsEventStatus aEventStatus,
                        bool aIsInAnon,
                        dom::EventTarget* aTargetInKnownToBeHandledScope)
       : EventChainVisitor(aPresContext, aEvent, aDOMEvent, aEventStatus),
@@ -121,9 +129,11 @@ class EventChainPreVisitor : public EventChainVisitor {
         mMayHaveListenerManager(true),
         mWantsPreHandleEvent(false),
         mRootOfClosedTree(false),
+        mItemInShadowTree(false),
         mParentIsSlotInClosedTree(false),
         mParentIsChromeHandler(false),
         mRelatedTargetRetargetedInCurrentScope(false),
+        mIgnoreBecauseOfShadowDOM(false),
         mParentTarget(nullptr),
         mEventTargetAtParent(nullptr),
         mRetargetedRelatedTarget(nullptr),
@@ -139,14 +149,17 @@ class EventChainPreVisitor : public EventChainVisitor {
     mMayHaveListenerManager = true;
     mWantsPreHandleEvent = false;
     mRootOfClosedTree = false;
+    mItemInShadowTree = false;
     mParentIsSlotInClosedTree = false;
     mParentIsChromeHandler = false;
     // Note, we don't clear mRelatedTargetRetargetedInCurrentScope explicitly,
     // since it is used during event path creation to indicate whether
     // relatedTarget may need to be retargeted.
+    mIgnoreBecauseOfShadowDOM = false;
     mParentTarget = nullptr;
     mEventTargetAtParent = nullptr;
     mRetargetedRelatedTarget = nullptr;
+    mRetargetedTouchTargets.reset();
   }
 
   dom::EventTarget* GetParentTarget() { return mParentTarget; }
@@ -158,8 +171,9 @@ class EventChainPreVisitor : public EventChainVisitor {
     }
   }
 
-  void IgnoreCurrentTarget() {
+  void IgnoreCurrentTargetBecauseOfShadowDOMRetargeting() {
     mCanHandle = false;
+    mIgnoreBecauseOfShadowDOM = true;
     SetParentTarget(nullptr, false);
     mEventTargetAtParent = nullptr;
   }
@@ -198,7 +212,7 @@ class EventChainPreVisitor : public EventChainVisitor {
   bool mOriginalTargetIsInAnon;
 
   /**
-   * Whether or not nsIDOMEventTarget::WillHandleEvent will be
+   * Whether or not EventTarget::WillHandleEvent will be
    * called. Default is false;
    */
   bool mWantsWillHandleEvent;
@@ -210,7 +224,7 @@ class EventChainPreVisitor : public EventChainVisitor {
   bool mMayHaveListenerManager;
 
   /**
-   * Whether or not nsIDOMEventTarget::PreHandleEvent will be called. Default is
+   * Whether or not EventTarget::PreHandleEvent will be called. Default is
    * false;
    */
   bool mWantsPreHandleEvent;
@@ -220,6 +234,12 @@ class EventChainPreVisitor : public EventChainVisitor {
    * chrome only access tree (for example native anonymous content).
    */
   bool mRootOfClosedTree;
+
+  /**
+   * If target is node and its root is a shadow root.
+   * https://dom.spec.whatwg.org/#event-path-item-in-shadow-tree
+   */
+  bool mItemInShadowTree;
 
   /**
    * True if mParentTarget is HTMLSlotElement in a closed shadow tree and the
@@ -238,6 +258,12 @@ class EventChainPreVisitor : public EventChainVisitor {
    * event path creation crosses shadow boundary.
    */
   bool mRelatedTargetRetargetedInCurrentScope;
+
+  /**
+   * True if Shadow DOM relatedTarget retargeting causes the current item
+   * to not show up in the event path.
+   */
+  bool mIgnoreBecauseOfShadowDOM;
 
  private:
   /**
@@ -259,6 +285,13 @@ class EventChainPreVisitor : public EventChainVisitor {
   dom::EventTarget* mRetargetedRelatedTarget;
 
   /**
+   * If mEvent is a WidgetTouchEvent and its mTouches needs retargeting,
+   * set the targets to this array. The array should contain one entry per
+   * each object in WidgetTouchEvent::mTouches.
+   */
+  mozilla::Maybe<nsTArray<RefPtr<dom::EventTarget>>> mRetargetedTouchTargets;
+
+  /**
    * Set to the value of mEvent->mTarget of the previous scope in case of
    * Shadow DOM or such, and if there is no anonymous content this just points
    * to the initial target.
@@ -266,10 +299,16 @@ class EventChainPreVisitor : public EventChainVisitor {
   dom::EventTarget* mTargetInKnownToBeHandledScope;
 };
 
-class EventChainPostVisitor : public mozilla::EventChainVisitor {
+class MOZ_STACK_CLASS EventChainPostVisitor final
+    : public mozilla::EventChainVisitor {
  public:
+  // Note that for making guarantee the lifetime of mPresContext and mDOMEvent,
+  // creators should guarantee that aOther won't be deleted while the instance
+  // of this class is alive.
+  MOZ_CAN_RUN_SCRIPT
   explicit EventChainPostVisitor(EventChainVisitor& aOther)
-      : EventChainVisitor(aOther.mPresContext, aOther.mEvent, aOther.mDOMEvent,
+      : EventChainVisitor(MOZ_KnownLive(aOther.mPresContext), aOther.mEvent,
+                          MOZ_KnownLive(aOther.mDOMEvent),
                           aOther.mEventStatus) {}
 };
 
@@ -277,10 +316,11 @@ class EventChainPostVisitor : public mozilla::EventChainVisitor {
  * If an EventDispatchingCallback object is passed to Dispatch,
  * its HandleEvent method is called after handling the default event group,
  * before handling the system event group.
- * This is used in nsPresShell.
+ * This is used in PresShell.
  */
 class MOZ_STACK_CLASS EventDispatchingCallback {
  public:
+  MOZ_CAN_RUN_SCRIPT
   virtual void HandleEvent(EventChainPostVisitor& aVisitor) = 0;
 };
 
@@ -306,9 +346,11 @@ class EventDispatcher {
    * eVoidEvent.
    * @note Use this method when dispatching a WidgetEvent.
    */
+  // This should obviously be MOZ_CAN_RUN_SCRIPT, but that's a bit of
+  // a project.  See bug 1539884.
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   static nsresult Dispatch(nsISupports* aTarget, nsPresContext* aPresContext,
-                           WidgetEvent* aEvent,
-                           nsIDOMEvent* aDOMEvent = nullptr,
+                           WidgetEvent* aEvent, dom::Event* aDOMEvent = nullptr,
                            nsEventStatus* aEventStatus = nullptr,
                            EventDispatchingCallback* aCallback = nullptr,
                            nsTArray<dom::EventTarget*>* aTargets = nullptr);
@@ -319,10 +361,10 @@ class EventDispatcher {
    * (aEvent can then be nullptr) and (if aDOMEvent is not |trusted| already),
    * the |trusted| flag is set based on the UniversalXPConnect capability.
    * Otherwise this works like EventDispatcher::Dispatch.
-   * @note Use this method when dispatching nsIDOMEvent.
+   * @note Use this method when dispatching a dom::Event.
    */
   static nsresult DispatchDOMEvent(nsISupports* aTarget, WidgetEvent* aEvent,
-                                   nsIDOMEvent* aDOMEvent,
+                                   dom::Event* aDOMEvent,
                                    nsPresContext* aPresContext,
                                    nsEventStatus* aEventStatus);
 
@@ -345,5 +387,5 @@ class EventDispatcher {
 
 }  // namespace mozilla
 
-#endif  // mozilla_EventDispatcher_h_
+#  endif  // mozilla_EventDispatcher_h_
 #endif

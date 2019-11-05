@@ -29,6 +29,7 @@ class nsIContent;
 
 namespace mozilla {
 namespace dom {
+class DocumentType;
 class Element;
 }  // namespace dom
 }  // namespace mozilla
@@ -50,16 +51,18 @@ class nsPlainTextSerializer final : public nsIContentSerializer {
                         int32_t aEndOffset, nsAString& aStr) override;
   NS_IMETHOD AppendCDATASection(nsIContent* aCDATASection, int32_t aStartOffset,
                                 int32_t aEndOffset, nsAString& aStr) override;
-  NS_IMETHOD AppendProcessingInstruction(nsIContent* aPI, int32_t aStartOffset,
-                                         int32_t aEndOffset,
-                                         nsAString& aStr) override {
+  NS_IMETHOD AppendProcessingInstruction(
+      mozilla::dom::ProcessingInstruction* aPI, int32_t aStartOffset,
+      int32_t aEndOffset, nsAString& aStr) override {
     return NS_OK;
   }
-  NS_IMETHOD AppendComment(nsIContent* aComment, int32_t aStartOffset,
-                           int32_t aEndOffset, nsAString& aStr) override {
+  NS_IMETHOD AppendComment(mozilla::dom::Comment* aComment,
+                           int32_t aStartOffset, int32_t aEndOffset,
+                           nsAString& aStr) override {
     return NS_OK;
   }
-  NS_IMETHOD AppendDoctype(nsIContent* aDoctype, nsAString& aStr) override {
+  NS_IMETHOD AppendDoctype(mozilla::dom::DocumentType* aDoctype,
+                           nsAString& aStr) override {
     return NS_OK;
   }
   NS_IMETHOD AppendElementStart(mozilla::dom::Element* aElement,
@@ -69,7 +72,7 @@ class nsPlainTextSerializer final : public nsIContentSerializer {
                               nsAString& aStr) override;
   NS_IMETHOD Flush(nsAString& aStr) override;
 
-  NS_IMETHOD AppendDocumentStart(nsIDocument* aDocument,
+  NS_IMETHOD AppendDocumentStart(mozilla::dom::Document* aDocument,
                                  nsAString& aStr) override;
 
   NS_IMETHOD ScanElementForPreformat(mozilla::dom::Element* aElement) override;

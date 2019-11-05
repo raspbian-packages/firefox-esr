@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
+/* -*- Mode: c++; c-basic-offset: 2; tab-width: 20; indent-tabs-mode: nil; -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -29,10 +29,7 @@ class PrefsHelper : public java::PrefsHelper::Natives<PrefsHelper> {
       return false;
     }
 
-    uint16_t varType = nsIDataType::VTYPE_EMPTY;
-    if (NS_FAILED(aVariant->GetDataType(&varType))) {
-      return false;
-    }
+    uint16_t varType = aVariant->GetDataType();
 
     int32_t type = java::PrefsHelper::PREF_INVALID;
     bool boolVal = false;
@@ -102,7 +99,7 @@ class PrefsHelper : public java::PrefsHelper::Natives<PrefsHelper> {
 
     uint16_t varType = nsIDataType::VTYPE_EMPTY;
     if (NS_SUCCEEDED(rv)) {
-      rv = aVariant->GetDataType(&varType);
+      varType = aVariant->GetDataType();
     }
 
     // We use set-to-empty to signal the pref was handled.
@@ -133,7 +130,7 @@ class PrefsHelper : public java::PrefsHelper::Natives<PrefsHelper> {
     nsAutoString strVal;
 
     for (jni::Object::LocalRef& nameRef : nameRefArray) {
-      jni::String::LocalRef nameStr(mozilla::Move(nameRef));
+      jni::String::LocalRef nameStr(std::move(nameRef));
       const nsCString& name = nameStr->ToCString();
 
       int32_t type = java::PrefsHelper::PREF_INVALID;
@@ -246,9 +243,9 @@ class PrefsHelper : public java::PrefsHelper::Natives<PrefsHelper> {
     MOZ_ASSERT(appShell);
 
     for (jni::Object::LocalRef& nameRef : nameRefArray) {
-      jni::String::LocalRef nameStr(mozilla::Move(nameRef));
+      jni::String::LocalRef nameStr(std::move(nameRef));
       MOZ_ALWAYS_SUCCEEDS(
-          Preferences::AddStrongObserver(appShell, nameStr->ToCString().get()));
+          Preferences::AddStrongObserver(appShell, nameStr->ToCString()));
     }
   }
 
@@ -260,9 +257,9 @@ class PrefsHelper : public java::PrefsHelper::Natives<PrefsHelper> {
     MOZ_ASSERT(appShell);
 
     for (jni::Object::LocalRef& nameRef : nameRefArray) {
-      jni::String::LocalRef nameStr(mozilla::Move(nameRef));
+      jni::String::LocalRef nameStr(std::move(nameRef));
       MOZ_ALWAYS_SUCCEEDS(
-          Preferences::RemoveObserver(appShell, nameStr->ToCString().get()));
+          Preferences::RemoveObserver(appShell, nameStr->ToCString()));
     }
   }
 

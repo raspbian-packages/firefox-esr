@@ -41,6 +41,8 @@ struct APZTestDataToJSConverter {
                ConvertBucket);
     ConvertList(aFrom.mHitResults, aOutTo.mHitResults.Construct(),
                 ConvertHitResult);
+    ConvertMap(aFrom.mAdditionalData, aOutTo.mAdditionalData.Construct(),
+               ConvertAdditionalDataEntry);
   }
 
   static void ConvertBucket(const SequenceNumber& aKey,
@@ -64,6 +66,13 @@ struct APZTestDataToJSConverter {
     ConvertString(aValue, aOutKeyValuePair.mValue.Construct());
   }
 
+  static void ConvertAdditionalDataEntry(
+      const std::string& aKey, const std::string& aValue,
+      dom::AdditionalDataEntry& aOutKeyValuePair) {
+    ConvertString(aKey, aOutKeyValuePair.mKey.Construct());
+    ConvertString(aValue, aOutKeyValuePair.mValue.Construct());
+  }
+
   static void ConvertString(const std::string& aFrom, nsString& aOutTo) {
     aOutTo = NS_ConvertUTF8toUTF16(aFrom.c_str(), aFrom.size());
   }
@@ -72,10 +81,12 @@ struct APZTestDataToJSConverter {
                                dom::APZHitResult& aOutHitResult) {
     aOutHitResult.mScreenX.Construct() = aResult.point.x;
     aOutHitResult.mScreenY.Construct() = aResult.point.y;
-    static_assert(sizeof(aResult.result) == sizeof(uint16_t),
-                  "Expected CompositorHitTestInfo to be 16-bit");
+    static_assert(MaxEnumValue<gfx::CompositorHitTestInfo::valueType>::value <
+                      std::numeric_limits<uint16_t>::digits,
+                  "CompositorHitTestFlags MAX value have to be less than "
+                  "number of bits in uint16_t");
     aOutHitResult.mHitResult.Construct() =
-        static_cast<uint16_t>(aResult.result);
+        static_cast<uint16_t>(aResult.result.serialize());
     aOutHitResult.mScrollId.Construct() = aResult.scrollId;
   }
 };

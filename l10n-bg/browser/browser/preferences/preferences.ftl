@@ -4,8 +4,6 @@
 
 do-not-track-description = Указване на сайтовете, че не желаете да бъдете проследявани
 do-not-track-learn-more = Научете повече
-do-not-track-option-default =
-    .label = Само при използване на защита от проследяване
 do-not-track-option-always =
     .label = Винаги
 pref-page =
@@ -14,14 +12,6 @@ pref-page =
             [windows] Настройки
            *[other] Настройки
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -57,7 +47,11 @@ category-privacy =
 pane-sync-title = Firefox Account
 category-sync =
     .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Поддръжка на { -brand-short-name }
+addons-button-label = Разширения и теми
 focus-search =
     .key = f
 close-button =
@@ -65,12 +59,47 @@ close-button =
 
 ## Browser Restart Dialog
 
-feature-enable-requires-restart = Приожението { -brand-short-name } трябва да бъде рестартирано, за да бъде включена тази възможност.
+feature-enable-requires-restart = Приложението { -brand-short-name } трябва да бъде рестартирано, за да бъде включена тази възможност.
 feature-disable-requires-restart = Приложението { -brand-short-name } трябва да бъде рестартирано, за да бъде изключена тази възможност.
 should-restart-title = Рестартиране на { -brand-short-name }
 should-restart-ok = Рестартиране на { -brand-short-name }
 cancel-no-restart-button = Отказ
 restart-later = Рестартиране по-късно
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Разширението „<img data-l10n-name="icon"/> { $name }“ управлява началната страница.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Разширението „<img data-l10n-name="icon"/> { $name }“ управлява страницата за нов раздел.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Разширението „<img data-l10n-name="icon"/> { $name }“ е задало стандартната търсеща машина.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Разширението „<img data-l10n-name="icon"/> { $name }“ има изискване за изолирани раздели.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Разширението „<img data-l10n-name="icon"/> { $name }“ управлява тази настройка.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Разширението „<img data-l10n-name="icon"/> { $name }“ управлява как { -brand-short-name } се свързва с интернет.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Отворете <img data-l10n-name="addons-icon"/> Добавки в менюто <img data-l10n-name="menu-icon"/>, за да включите разширението.
 
 ## Preferences UI Search Results
 
@@ -101,17 +130,11 @@ is-not-default = { -brand-short-name } не е вашият стандартен
 set-as-my-default-browser =
     .label = Задаване като стандартен…
     .accesskey = с
-startup-page = Когато { -brand-short-name } стартира
+startup-restore-previous-session =
+    .label = Възстановяване на предишна сесия
     .accesskey = с
-startup-user-homepage =
-    .label = Показва началната страница
-startup-blank-page =
-    .label = Показва празна страница
-startup-prev-session =
-    .label = Показва прозорците и разделите от последния път
 disable-extension =
     .label = Изключване на разширението
-home-page-header = Начална страница
 tabs-group-header = Раздели
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab обикаля разделите в реда на използване
@@ -180,6 +203,12 @@ choose-language-description = Избор на език при показване
 choose-button =
     .label = Избиране…
     .accesskey = И
+choose-browser-language-description = Изберете езиците, на които да бъдат показвани менютата, съобщенията и известията от { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Допълнителни езици…
+    .accesskey = з
+confirm-browser-language-change-description = Рестартирайте { -brand-short-name }, за да бъдат приложени промените
+confirm-browser-language-change-button = Прилагане и рестартиране
 translate-web-pages =
     .label = Превеждане на съдържанието на страниците
     .accesskey = П
@@ -230,8 +259,7 @@ play-drm-content =
     .accesskey = И
 play-drm-content-learn-more = Научете повече
 update-application-title = Обновявания на { -brand-short-name }
-update-application-description = За най-добра производителност, стабилност и защита поддържайте вашия { -brand-short-name } обновен.
-update-application-info = Издание { $version } <a>Новото в това издание</a>
+update-application-description = За най-добра производителност, стабилност и защита поддържайте { -brand-short-name } обновен.
 update-application-version = Издание { $version } <a data-l10n-name="learn-more">Новото в това издание</a>
 update-history =
     .label = Хронология на обновяванията…
@@ -266,8 +294,7 @@ performance-allow-hw-accel =
     .accesskey = х
 performance-limit-content-process-option = Процеси за обработка на съдържание
     .accesskey = с
-performance-limit-content-process-enabled-desc = Допълнителни процеси за обработка съдържание може да направят &brandShortName; по-отзивчив, при използване на повече раздели за сметка на повече използвана памет.
-performance-limit-content-process-disabled-desc = Променянето на броя на процесите за съдържание е възможно само при многопроцесен { -brand-short-name }. <a>Научете как да проверите дали многопроцесността е включена</a>
+performance-limit-content-process-enabled-desc = Допълнителни процеси за обработка съдържание може да подобрят производителността при използване на повече раздели за сметка на повече използвана памет.
 performance-limit-content-process-blocked-desc = Променянето на броя на процесите за съдържание е възможно само при многопроцесен { -brand-short-name }. <a data-l10n-name="learn-more">Научете как да проверите дали многопроцесността е включена</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -292,10 +319,12 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Търсене на текст при започване на въвеждане
     .accesskey = Т
+browsing-cfr-recommendations-learn-more = Научете повече
 
 ## General Section - Proxy
 
-network-proxy-title = Мрежов посредник
+network-settings-title = Настройки на мрежата
+network-proxy-connection-description = Настройване на достъпа до интернет от { -brand-short-name }.
 network-proxy-connection-learn-more = Научете повече
 network-proxy-connection-settings =
     .label = Настройки…
@@ -308,7 +337,7 @@ home-new-windows-tabs-description2 = Изберете какво да вижда
 
 ## Home Section - Home Page Customization
 
-home-homepage-mode-label = Началната страница и нови прозорци
+home-homepage-mode-label = Начална страница и нови прозорци
 home-newtabs-mode-label = Нов раздел
 home-restore-defaults =
     .label = Стандартни настройки
@@ -337,9 +366,6 @@ use-current-pages =
 choose-bookmark =
     .label = Отметка…
     .accesskey = О
-restore-default =
-    .label = Стандартната страница
-    .accesskey = С
 
 ## Search Section
 
@@ -494,7 +520,7 @@ privacy-header = Поверителност на четеца
 
 ## Privacy Section - Forms
 
-forms-header = Формуляри и пароли
+logins-header = Регистрации и пароли
 forms-ask-to-save-logins =
     .label = Питане при запазване имена и пароли за вход в страниците
     .accesskey = т
@@ -508,7 +534,7 @@ forms-master-pw-use =
     .label = Използване на главна парола
     .accesskey = г
 forms-master-pw-change =
-    .label = Промяна на главна парола…
+    .label = Промяна на главна парола
     .accesskey = л
 
 ## Privacy Section - History
@@ -536,9 +562,9 @@ history-dontremember-description = { -brand-short-name } ще използва �
 history-private-browsing-permanent =
     .label = Винаги включено поверително разглеждане
     .accesskey = п
-history-remember-option =
+history-remember-browser-option =
     .label = Запазване на история на разглеждане и изтегляния
-    .accesskey = З
+    .accesskey = и
 history-remember-search-option =
     .label = Запазване на история на търсения и формуляри
     .accesskey = ф
@@ -555,36 +581,28 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Бисквитки и данни на страници
+sitedata-total-size-calculating = Изчисляване на размера на данните и буфера…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Буферът, бисквитките и данните от страници момента заемат { $value } { $unit } дисково пространство.
 sitedata-learn-more = Научете повече
-sitedata-accept-cookies-option =
-    .label = Приемане на бисквитки и данни на страници (препоръчително)
-    .accesskey = П
-sitedata-block-cookies-option =
-    .label = Забраняване на бисквитки и данни на страници (може е да доведе до неработещи страници)
-    .accesskey = З
-sitedata-keep-until = Пазене до
-    .accesskey = а
-sitedata-keep-until-expire =
-    .label = загуба на валидност
-sitedata-keep-until-closed =
-    .label = затваряне на { -brand-short-name }
-sitedata-accept-third-party-desc = Приемане на бисквитки и данни за сайтове от трети лица
-    .accesskey = б
-sitedata-accept-third-party-always-option =
-    .label = Винаги
-sitedata-accept-third-party-visited-option =
-    .label = От посетените
-sitedata-accept-third-party-never-option =
-    .label = Никога
+sitedata-allow-cookies-option =
+    .label = Разрешаване на бисквитки и данни
+    .accesskey = р
+sitedata-disallow-cookies-option =
+    .label = Ограничаване на бисквитки и данни
+    .accesskey = о
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Вид на ограничения ресурс
+    .accesskey = в
 sitedata-clear =
     .label = Изчистване на данни…
     .accesskey = т
 sitedata-settings =
     .label = Управление на данни…
     .accesskey = у
-sitedata-cookies-exceptions =
-    .label = Изключения…
-    .accesskey = И
 
 ## Privacy Section - Address Bar
 
@@ -601,30 +619,35 @@ addressbar-locbar-openpage-option =
     .accesskey = р
 addressbar-suggestions-settings = Настройки на предложенията от търсещите машини
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Ограничаване на съдържание
+content-blocking-learn-more = Научете повече
+content-blocking-warning-title = Внимание!
+content-blocking-learn-how = Научете как
+content-blocking-trackers-label =
+    .label = Проследявания
+    .accesskey = П
+content-blocking-tracking-protection-option-all-windows =
+    .label = Във всички прозорци
+    .accesskey = в
+content-blocking-option-private =
+    .label = Само в поверителни прозорци
+    .accesskey = о
+content-blocking-tracking-protection-change-block-list = Промяна списъка за блокиране
+content-blocking-cookies-label =
+    .label = Бисквитки
+    .accesskey = б
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Копачи на криптовалути
+    .accesskey = к
+
 ## Privacy Section - Tracking
 
-tracking-header = Защита от проследяване
-tracking-desc = Защитата от проследяване спира страниците, които събират информация за вас докато разглеждате различни сайтове. <a data-l10n-name="learn-more">Научете повече за защитата от проследяване и поверителност</a>
-tracking-mode-label = Използвайте защитата за спиране на известните проследяващи страници
-tracking-mode-always =
-    .label = Винаги
-    .accesskey = В
-tracking-mode-private =
-    .label = Само в поверителни прозорци
-    .accesskey = С
-tracking-mode-never =
-    .label = Никога
-    .accesskey = Н
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Използвайте защитата от проследяване докато разглеждате поверително за блокиране на известните проследяващи сайтове
-    .accesskey = з
-tracking-exceptions =
-    .label = Изключения…
-    .accesskey = з
-tracking-change-block-list =
-    .label = Промяна на блокиращия списък…
-    .accesskey = с
+tracking-manage-exceptions =
+    .label = Управление на изключенията…
+    .accesskey = и
 
 ## Privacy Section - Permissions
 
@@ -649,6 +672,9 @@ permissions-notification-link = Научете повече
 permissions-notification-pause =
     .label = Спиране на известията до рестарт на { -brand-short-name }
     .accesskey = з
+permissions-block-autoplay-media-exceptions =
+    .label = Изключения…
+    .accesskey = ю
 permissions-block-popups =
     .label = Спиране на изскачащите прозорци
     .accesskey = С
@@ -675,13 +701,13 @@ collection-health-report =
     .label = Разрешаване на { -brand-short-name } да изпраща техническа информация и данни за използването към { -vendor-short-name }
     .accesskey = т
 collection-health-report-link = Научете повече
+collection-studies =
+    .label = Разрешаване на { -brand-short-name } да инсталира и извършва изследвания
+collection-studies-link = Преглед на изследванията на { -brand-short-name }
+addon-recommendations-link = Научете повече
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Докладването да данни е изключено за тази конфигурация на изданието
-collection-browser-errors =
-    .label = Разрешаване на { -brand-short-name } да изпраща доклади за грешките на четеца (включително и самото съобщение) към { -vendor-short-name }
-    .accesskey = г
-collection-browser-errors-link = Научете повече
 collection-backlogged-crash-reports =
     .label = Разрешаване на { -brand-short-name } да изпраща от ваше име предишни доклади за срив
     .accesskey = и
@@ -724,3 +750,32 @@ certs-view =
 certs-devices =
     .label = Устройства по безопасността…
     .accesskey = у
+space-alert-learn-more-button =
+    .label = Научете повече
+    .accesskey = н
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Настройки
+           *[other] Настройки
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] н
+           *[other] н
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] Дисковото пространство достъпно за { -brand-short-name } е на свършване. Съдържанието на страницата може да не се показва правилно. Може да изчистите текущите данни от Настройки > Поверителност и защита > Бисквитки и данни на страници.
+       *[other] Дисковото пространство достъпно за { -brand-short-name } е на свършване. Съдържанието на страницата може да не се показва правилно. Може да изчистите текущите данни от Настройки > Поверителност и защита > Бисквитки и данни на страници.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Добре
+    .accesskey = д
+space-alert-under-5gb-message = Дисковото пространство достъпно за { -brand-short-name } е на свършване. Съдържанието на страницата може да не се показва правилно. За да оптимално използване на дисковото пространство при сърфиране посетете „Научете повече“.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Плот
+downloads-folder-name = Изтегляния
+choose-download-folder-title = Избиране на папка за изтегляне:

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,6 +12,7 @@
 #include "WebBrowserPersistDocumentParent.h"
 #include "nsCOMPtr.h"
 #include "nsIWebBrowserPersistDocument.h"
+#include "nsIContentPolicy.h"
 
 namespace mozilla {
 
@@ -24,7 +25,8 @@ class WebBrowserPersistResourcesParent final
       nsIWebBrowserPersistResourceVisitor* aVisitor);
 
   virtual mozilla::ipc::IPCResult RecvVisitResource(
-      const nsCString& aURI) override;
+      const nsCString& aURI,
+      const nsContentPolicyType& aContentPolicyType) override;
 
   virtual mozilla::ipc::IPCResult RecvVisitDocument(
       PWebBrowserPersistDocumentParent* aSubDocument) override;

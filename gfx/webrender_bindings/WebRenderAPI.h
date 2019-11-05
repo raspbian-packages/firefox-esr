@@ -13,26 +13,36 @@
 
 #include "mozilla/AlreadyAddRefed.h"
 #include "mozilla/gfx/CompositorHitTestInfo.h"
+#include "mozilla/layers/IpcResourceUpdateQueue.h"
+#include "mozilla/layers/ScrollableLayerGuid.h"
 #include "mozilla/layers/SyncObject.h"
 #include "mozilla/Range.h"
 #include "mozilla/webrender/webrender_ffi.h"
 #include "mozilla/webrender/WebRenderTypes.h"
-#include "FrameMetrics.h"
 #include "GLTypes.h"
 #include "Units.h"
 
+class nsDisplayItem;
+class nsDisplayTransform;
+
 namespace mozilla {
 
-struct DisplayItemClipChain;
+struct ActiveScrolledRoot;
 
 namespace widget {
 class CompositorWidget;
 }
 
 namespace layers {
-class CompositorBridgeParentBase;
+class CompositorBridgeParent;
 class WebRenderBridgeParent;
+class RenderRootStateManager;
+struct RenderRootDisplayListData;
 }  // namespace layers
+
+namespace layout {
+class TextDrawTarget;
+}
 
 namespace wr {
 
@@ -50,11 +60,26 @@ struct Line {
   wr::LineStyle style;
 };
 
-class TransactionBuilder {
+/// A handler that can be bundled into a transaction and notified at specific
+/// points in the rendering pipeline, such as after scene building or after
+/// frame building.
+///
+/// If for any reason the handler is dropped before reaching the requested
+/// point, it is notified with the value Checkpoint::TransactionDropped.
+/// So it is safe to assume that the handler will be notified "at some point".
+class NotificationHandler {
  public:
-  TransactionBuilder();
+  virtual void Notify(wr::Checkpoint aCheckpoint) = 0;
+  virtual ~NotificationHandler() = default;
+};
+
+class TransactionBuilder final {
+ public:
+  explicit TransactionBuilder(bool aUseSceneBuilderThread = true);
 
   ~TransactionBuilder();
+
+  void SetLowPriority(bool aIsLowPriority);
 
   void UpdateEpoch(PipelineId aPipelineId, Epoch aEpoch);
 
@@ -63,7 +88,7 @@ class TransactionBuilder {
   void RemovePipeline(PipelineId aPipelineId);
 
   void SetDisplayList(gfx::Color aBgColor, Epoch aEpoch,
-                      mozilla::LayerSize aViewportSize,
+                      const wr::LayoutSize& aViewportSize,
                       wr::WrPipelineId pipeline_id,
                       const wr::LayoutSize& content_size,
                       wr::BuiltDisplayListDescriptor dl_descriptor,
@@ -73,23 +98,29 @@ class TransactionBuilder {
 
   void GenerateFrame();
 
+  void InvalidateRenderedFrame();
+
   void UpdateDynamicProperties(
       const nsTArray<wr::WrOpacityProperty>& aOpacityArray,
       const nsTArray<wr::WrTransformProperty>& aTransformArray);
 
-  void SetWindowParameters(const LayoutDeviceIntSize& aWindowSize,
-                           const LayoutDeviceIntRect& aDocRect);
+  void SetDocumentView(const LayoutDeviceIntRect& aDocRect);
 
-  void UpdateScrollPosition(const wr::WrPipelineId& aPipelineId,
-                            const layers::FrameMetrics::ViewID& aScrollId,
-                            const wr::LayoutPoint& aScrollPosition);
+  void UpdateScrollPosition(
+      const wr::WrPipelineId& aPipelineId,
+      const layers::ScrollableLayerGuid::ViewID& aScrollId,
+      const wr::LayoutPoint& aScrollPosition);
 
   bool IsEmpty() const;
+
+  bool IsResourceUpdatesEmpty() const;
+
+  bool IsRenderedFrameInvalidated() const;
 
   void AddImage(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
                 wr::Vec<uint8_t>& aBytes);
 
-  void AddBlobImage(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
+  void AddBlobImage(wr::BlobImageKey aKey, const ImageDescriptor& aDescriptor,
                     wr::Vec<uint8_t>& aBytes);
 
   void AddExternalImageBuffer(ImageKey key, const ImageDescriptor& aDescriptor,
@@ -103,16 +134,26 @@ class TransactionBuilder {
   void UpdateImageBuffer(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
                          wr::Vec<uint8_t>& aBytes);
 
-  void UpdateBlobImage(wr::ImageKey aKey, const ImageDescriptor& aDescriptor,
+  void UpdateBlobImage(wr::BlobImageKey aKey,
+                       const ImageDescriptor& aDescriptor,
                        wr::Vec<uint8_t>& aBytes,
-                       const wr::DeviceUintRect& aDirtyRect);
+                       const wr::LayoutIntRect& aDirtyRect);
 
   void UpdateExternalImage(ImageKey aKey, const ImageDescriptor& aDescriptor,
                            ExternalImageId aExtID,
                            wr::WrExternalImageBufferType aBufferType,
                            uint8_t aChannelIndex = 0);
 
+  void UpdateExternalImageWithDirtyRect(
+      ImageKey aKey, const ImageDescriptor& aDescriptor, ExternalImageId aExtID,
+      wr::WrExternalImageBufferType aBufferType,
+      const wr::DeviceIntRect& aDirtyRect, uint8_t aChannelIndex = 0);
+
+  void SetImageVisibleArea(BlobImageKey aKey, const wr::DeviceIntRect& aArea);
+
   void DeleteImage(wr::ImageKey aKey);
+
+  void DeleteBlobImage(wr::BlobImageKey aKey);
 
   void AddRawFont(wr::FontKey aKey, wr::Vec<uint8_t>& aBytes, uint32_t aIndex);
 
@@ -129,38 +170,58 @@ class TransactionBuilder {
 
   void DeleteFontInstance(wr::FontInstanceKey aKey);
 
+  void Notify(wr::Checkpoint aWhen, UniquePtr<NotificationHandler> aHandler);
+
   void Clear();
 
+  bool UseSceneBuilderThread() const { return mUseSceneBuilderThread; }
   Transaction* Raw() { return mTxn; }
-  wr::ResourceUpdates* RawUpdates() { return mResourceUpdates; }
 
  protected:
+  bool mUseSceneBuilderThread;
   Transaction* mTxn;
-  wr::ResourceUpdates* mResourceUpdates;
 };
 
-class WebRenderAPI {
+class TransactionWrapper final {
+ public:
+  explicit TransactionWrapper(Transaction* aTxn);
+
+  void AppendTransformProperties(
+      const nsTArray<wr::WrTransformProperty>& aTransformArray);
+  void UpdateScrollPosition(
+      const wr::WrPipelineId& aPipelineId,
+      const layers::ScrollableLayerGuid::ViewID& aScrollId,
+      const wr::LayoutPoint& aScrollPosition);
+  void UpdatePinchZoom(float aZoom);
+
+ private:
+  Transaction* mTxn;
+};
+
+class WebRenderAPI final {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(WebRenderAPI);
 
  public:
   /// This can be called on the compositor thread only.
   static already_AddRefed<WebRenderAPI> Create(
-      layers::CompositorBridgeParentBase* aBridge,
-      RefPtr<widget::CompositorWidget>&& aWidget, LayoutDeviceIntSize aSize);
+      layers::CompositorBridgeParent* aBridge,
+      RefPtr<widget::CompositorWidget>&& aWidget,
+      const wr::WrWindowId& aWindowId, LayoutDeviceIntSize aSize);
+
+  static void SendTransactions(
+      const RenderRootArray<RefPtr<WebRenderAPI>>& aApis,
+      RenderRootArray<TransactionBuilder*>& aTxns);
 
   already_AddRefed<WebRenderAPI> CreateDocument(LayoutDeviceIntSize aSize,
-                                                int8_t aLayerIndex);
-
-  // Redirect the WR's log to gfxCriticalError/Note.
-  static void InitExternalLogHandler();
-  static void ShutdownExternalLogHandler();
+                                                int8_t aLayerIndex,
+                                                wr::RenderRoot aRenderRoot);
 
   already_AddRefed<WebRenderAPI> Clone();
 
   wr::WindowId GetId() const { return mId; }
 
   bool HitTest(const wr::WorldPoint& aPoint, wr::WrPipelineId& aOutPipelineId,
-               layers::FrameMetrics::ViewID& aOutScrollId,
+               layers::ScrollableLayerGuid::ViewID& aOutScrollId,
                gfx::CompositorHitTestInfo& aOutHitInfo);
 
   void SendTransaction(TransactionBuilder& aTxn);
@@ -169,37 +230,52 @@ class WebRenderAPI {
 
   void RunOnRenderThread(UniquePtr<RendererEvent> aEvent);
 
-  void Readback(gfx::IntSize aSize, uint8_t* aBuffer, uint32_t aBufferSize);
+  void Readback(const TimeStamp& aStartTime, gfx::IntSize aSize,
+                const gfx::SurfaceFormat& aFormat,
+                const Range<uint8_t>& aBuffer);
+
+  void ClearAllCaches();
 
   void Pause();
   bool Resume();
 
+  void WakeSceneBuilder();
+  void FlushSceneBuilder();
+
+  void NotifyMemoryPressure();
+  void AccumulateMemoryReport(wr::MemoryReport*);
+
   wr::WrIdNamespace GetNamespace();
+  wr::RenderRoot GetRenderRoot() const { return mRenderRoot; }
   uint32_t GetMaxTextureSize() const { return mMaxTextureSize; }
   bool GetUseANGLE() const { return mUseANGLE; }
+  bool GetUseDComp() const { return mUseDComp; }
+  bool GetUseTripleBuffering() const { return mUseTripleBuffering; }
   layers::SyncHandle GetSyncHandle() const { return mSyncHandle; }
 
   void Capture();
 
  protected:
   WebRenderAPI(wr::DocumentHandle* aHandle, wr::WindowId aId,
-               uint32_t aMaxTextureSize, bool aUseANGLE,
-               layers::SyncHandle aSyncHandle)
-      : mDocHandle(aHandle),
-        mId(aId),
-        mMaxTextureSize(aMaxTextureSize),
-        mUseANGLE(aUseANGLE),
-        mSyncHandle(aSyncHandle) {}
+               uint32_t aMaxTextureSize, bool aUseANGLE, bool aUseDComp,
+               bool aUseTripleBuffering, layers::SyncHandle aSyncHandle,
+               wr::RenderRoot aRenderRoot);
 
   ~WebRenderAPI();
   // Should be used only for shutdown handling
   void WaitFlushed();
 
+  void UpdateDebugFlags(uint32_t aFlags);
+
   wr::DocumentHandle* mDocHandle;
   wr::WindowId mId;
-  uint32_t mMaxTextureSize;
+  int32_t mMaxTextureSize;
   bool mUseANGLE;
+  bool mUseDComp;
+  bool mUseTripleBuffering;
   layers::SyncHandle mSyncHandle;
+  wr::DebugFlags mDebugFlags;
+  wr::RenderRoot mRenderRoot;
 
   // We maintain alive the root api to know when to shut the render backend
   // down, and the root api for the document to know when to delete the
@@ -216,14 +292,69 @@ class WebRenderAPI {
   friend class layers::WebRenderBridgeParent;
 };
 
+// This is a RAII class that automatically sends the transaction on
+// destruction. This is useful for code that has multiple exit points and we
+// want to ensure that the stuff accumulated in the transaction gets sent
+// regardless of which exit we take. Note that if the caller explicitly calls
+// mApi->SendTransaction() that's fine too because that empties out the
+// TransactionBuilder and leaves it as a valid empty transaction, so calling
+// SendTransaction on it again ends up being a no-op.
+class MOZ_RAII AutoTransactionSender {
+ public:
+  AutoTransactionSender(WebRenderAPI* aApi, TransactionBuilder* aTxn)
+      : mApi(aApi), mTxn(aTxn) {}
+
+  ~AutoTransactionSender() { mApi->SendTransaction(*mTxn); }
+
+ private:
+  WebRenderAPI* mApi;
+  TransactionBuilder* mTxn;
+};
+
+/**
+ * A set of optional parameters for stacking context creation.
+ */
+struct MOZ_STACK_CLASS StackingContextParams : public WrStackingContextParams {
+  StackingContextParams()
+      : WrStackingContextParams{WrStackingContextClip::None(),
+                                nullptr,
+                                nullptr,
+                                wr::TransformStyle::Flat,
+                                wr::WrReferenceFrameKind::Transform,
+                                nullptr,
+                                /* is_backface_visible = */ true,
+                                /* cache_tiles = */ false,
+                                wr::MixBlendMode::Normal} {}
+
+  void SetPreserve3D(bool aPreserve) {
+    transform_style =
+        aPreserve ? wr::TransformStyle::Preserve3D : wr::TransformStyle::Flat;
+  }
+
+  nsTArray<wr::FilterOp> mFilters;
+  nsTArray<wr::WrFilterData> mFilterDatas;
+  wr::LayoutRect mBounds = wr::ToLayoutRect(LayoutDeviceRect());
+  const gfx::Matrix4x4* mBoundTransform = nullptr;
+  const gfx::Matrix4x4* mTransformPtr = nullptr;
+  Maybe<nsDisplayTransform*> mDeferredTransformItem;
+  // Whether the stacking context is possibly animated. This alters how
+  // coordinates are transformed/snapped to invalidate less when transforms
+  // change frequently.
+  bool mAnimated = false;
+  // Whether items should be rasterized in a local space that is (mostly)
+  // invariant to transforms, i.e. disabling subpixel AA and screen space pixel
+  // snapping on text runs that would only make sense in screen space.
+  bool mRasterizeLocally = false;
+};
+
 /// This is a simple C++ wrapper around WrState defined in the rust bindings.
 /// We may want to turn this into a direct wrapper on top of
 /// WebRenderFrameBuilder instead, so the interface may change a bit.
-class DisplayListBuilder {
+class DisplayListBuilder final {
  public:
-  explicit DisplayListBuilder(wr::PipelineId aId,
-                              const wr::LayoutSize& aContentSize,
-                              size_t aCapacity = 0);
+  DisplayListBuilder(wr::PipelineId aId, const wr::LayoutSize& aContentSize,
+                     size_t aCapacity = 0,
+                     RenderRoot aRenderRoot = RenderRoot::Default);
   DisplayListBuilder(DisplayListBuilder&&) = default;
 
   ~DisplayListBuilder();
@@ -231,63 +362,72 @@ class DisplayListBuilder {
   void Save();
   void Restore();
   void ClearSave();
-  void Dump();
+  usize Dump(usize aIndent, const Maybe<usize>& aStart,
+             const Maybe<usize>& aEnd);
 
-  void Finalize(wr::LayoutSize& aOutContentSize,
+  void Finalize(wr::LayoutSize& aOutContentSizes,
                 wr::BuiltDisplayList& aOutDisplayList);
+  void Finalize(layers::RenderRootDisplayListData& aOutTransaction);
 
-  void PushStackingContext(
-      const wr::LayoutRect&
-          aBounds,  // TODO: We should work with strongly typed rects
-      const wr::WrAnimationProperty* aAnimation, const float* aOpacity,
-      const gfx::Matrix4x4* aTransform, wr::TransformStyle aTransformStyle,
-      const gfx::Matrix4x4* aPerspective, const wr::MixBlendMode& aMixBlendMode,
-      const nsTArray<wr::WrFilterOp>& aFilters, bool aIsBackfaceVisible);
-  void PopStackingContext();
+  RenderRoot GetRenderRoot() const { return mRenderRoot; }
+  bool HasSubBuilder(RenderRoot aRenderRoot);
+  DisplayListBuilder& CreateSubBuilder(const wr::LayoutSize& aContentSize,
+                                       size_t aCapacity,
+                                       RenderRoot aRenderRoot);
+  DisplayListBuilder& SubBuilder(RenderRoot aRenderRoot);
+
+  bool GetSendSubBuilderDisplayList(RenderRoot aRenderRoot) {
+    if (aRenderRoot == RenderRoot::Default) {
+      return true;
+    }
+    return mSubBuilders[aRenderRoot] &&
+           mSubBuilders[aRenderRoot]->mSendSubBuilderDisplayList;
+  }
+
+  void SetSendSubBuilderDisplayList(RenderRoot aRenderRoot) {
+    mSubBuilders[aRenderRoot]->mSendSubBuilderDisplayList = true;
+  }
+
+  Maybe<wr::WrSpatialId> PushStackingContext(
+      const StackingContextParams& aParams, const wr::LayoutRect& aBounds,
+      const wr::RasterSpace& aRasterSpace);
+  void PopStackingContext(bool aIsReferenceFrame);
+
+  wr::WrClipChainId DefineClipChain(const nsTArray<wr::WrClipId>& aClips,
+                                    bool aParentWithCurrentChain = false);
 
   wr::WrClipId DefineClip(
-      const Maybe<wr::WrScrollId>& aAncestorScrollId,
-      const Maybe<wr::WrClipId>& aAncestorClipId,
-      const wr::LayoutRect& aClipRect,
+      const Maybe<wr::WrSpaceAndClip>& aParent, const wr::LayoutRect& aClipRect,
       const nsTArray<wr::ComplexClipRegion>* aComplex = nullptr,
-      const wr::WrImageMask* aMask = nullptr);
-  void PushClip(const wr::WrClipId& aClipId,
-                const DisplayItemClipChain* aParent = nullptr);
-  void PopClip(const DisplayItemClipChain* aParent = nullptr);
-  Maybe<wr::WrClipId> GetCacheOverride(const DisplayItemClipChain* aParent);
+      const wr::ImageMask* aMask = nullptr);
 
-  wr::WrStickyId DefineStickyFrame(const wr::LayoutRect& aContentRect,
-                                   const float* aTopMargin,
-                                   const float* aRightMargin,
-                                   const float* aBottomMargin,
-                                   const float* aLeftMargin,
-                                   const StickyOffsetBounds& aVerticalBounds,
-                                   const StickyOffsetBounds& aHorizontalBounds,
-                                   const wr::LayoutVector2D& aAppliedOffset);
-  void PushStickyFrame(const wr::WrStickyId& aStickyId,
-                       const DisplayItemClipChain* aParent);
-  void PopStickyFrame(const DisplayItemClipChain* aParent);
+  wr::WrSpatialId DefineStickyFrame(const wr::LayoutRect& aContentRect,
+                                    const float* aTopMargin,
+                                    const float* aRightMargin,
+                                    const float* aBottomMargin,
+                                    const float* aLeftMargin,
+                                    const StickyOffsetBounds& aVerticalBounds,
+                                    const StickyOffsetBounds& aHorizontalBounds,
+                                    const wr::LayoutVector2D& aAppliedOffset);
 
-  Maybe<wr::WrScrollId> GetScrollIdForDefinedScrollLayer(
-      layers::FrameMetrics::ViewID aViewId) const;
-  wr::WrScrollId DefineScrollLayer(
-      const layers::FrameMetrics::ViewID& aViewId,
-      const Maybe<wr::WrScrollId>& aAncestorScrollId,
-      const Maybe<wr::WrClipId>& aAncestorClipId,
-      const wr::LayoutRect&
-          aContentRect,  // TODO: We should work with strongly typed rects
-      const wr::LayoutRect& aClipRect);
-  void PushScrollLayer(const wr::WrScrollId& aScrollId);
-  void PopScrollLayer();
-
-  void PushClipAndScrollInfo(const wr::WrScrollId& aScrollId,
-                             const wr::WrClipId* aClipId);
-  void PopClipAndScrollInfo();
+  Maybe<wr::WrSpaceAndClip> GetScrollIdForDefinedScrollLayer(
+      layers::ScrollableLayerGuid::ViewID aViewId) const;
+  wr::WrSpaceAndClip DefineScrollLayer(
+      const layers::ScrollableLayerGuid::ViewID& aViewId,
+      const Maybe<wr::WrSpaceAndClip>& aParent,
+      const wr::LayoutRect& aContentRect, const wr::LayoutRect& aClipRect,
+      const wr::LayoutPoint& aScrollOffset);
 
   void PushRect(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
                 bool aIsBackfaceVisible, const wr::ColorF& aColor);
-
+  void PushRoundedRect(const wr::LayoutRect& aBounds,
+                       const wr::LayoutRect& aClip, bool aIsBackfaceVisible,
+                       const wr::ColorF& aColor);
+  void PushHitTest(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
+                   bool aIsBackfaceVisible);
   void PushClearRect(const wr::LayoutRect& aBounds);
+  void PushClearRectWithComplexRegion(const wr::LayoutRect& aBounds,
+                                      const wr::ComplexClipRegion& aRegion);
 
   void PushLinearGradient(const wr::LayoutRect& aBounds,
                           const wr::LayoutRect& aClip, bool aIsBackfaceVisible,
@@ -309,22 +449,25 @@ class DisplayListBuilder {
 
   void PushImage(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
                  bool aIsBackfaceVisible, wr::ImageRendering aFilter,
-                 wr::ImageKey aImage, bool aPremultipliedAlpha = true);
+                 wr::ImageKey aImage, bool aPremultipliedAlpha = true,
+                 const wr::ColorF& aColor = wr::ColorF{1.0f, 1.0f, 1.0f, 1.0f});
 
   void PushImage(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
                  bool aIsBackfaceVisible, const wr::LayoutSize& aStretchSize,
                  const wr::LayoutSize& aTileSpacing, wr::ImageRendering aFilter,
-                 wr::ImageKey aImage, bool aPremultipliedAlpha = true);
+                 wr::ImageKey aImage, bool aPremultipliedAlpha = true,
+                 const wr::ColorF& aColor = wr::ColorF{1.0f, 1.0f, 1.0f, 1.0f});
 
   void PushYCbCrPlanarImage(
       const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
       bool aIsBackfaceVisible, wr::ImageKey aImageChannel0,
       wr::ImageKey aImageChannel1, wr::ImageKey aImageChannel2,
-      wr::WrYuvColorSpace aColorSpace, wr::ImageRendering aFilter);
+      wr::WrColorDepth aColorDepth, wr::WrYuvColorSpace aColorSpace,
+      wr::ImageRendering aFilter);
 
   void PushNV12Image(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
                      bool aIsBackfaceVisible, wr::ImageKey aImageChannel0,
-                     wr::ImageKey aImageChannel1,
+                     wr::ImageKey aImageChannel1, wr::WrColorDepth aColorDepth,
                      wr::WrYuvColorSpace aColorSpace,
                      wr::ImageRendering aFilter);
 
@@ -332,30 +475,36 @@ class DisplayListBuilder {
                                  const wr::LayoutRect& aClip,
                                  bool aIsBackfaceVisible,
                                  wr::ImageKey aImageChannel0,
+                                 wr::WrColorDepth aColorDepth,
                                  wr::WrYuvColorSpace aColorSpace,
                                  wr::ImageRendering aFilter);
 
   void PushIFrame(const wr::LayoutRect& aBounds, bool aIsBackfaceVisible,
-                  wr::PipelineId aPipeline);
+                  wr::PipelineId aPipeline, bool aIgnoreMissingPipeline);
 
   // XXX WrBorderSides are passed with Range.
   // It is just to bypass compiler bug. See Bug 1357734.
   void PushBorder(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
-                  bool aIsBackfaceVisible, const wr::BorderWidths& aWidths,
+                  bool aIsBackfaceVisible, const wr::LayoutSideOffsets& aWidths,
                   const Range<const wr::BorderSide>& aSides,
-                  const wr::BorderRadius& aRadius);
+                  const wr::BorderRadius& aRadius,
+                  wr::AntialiasBorder = wr::AntialiasBorder::Yes);
 
   void PushBorderImage(const wr::LayoutRect& aBounds,
                        const wr::LayoutRect& aClip, bool aIsBackfaceVisible,
-                       const wr::BorderWidths& aWidths, wr::ImageKey aImage,
-                       const wr::NinePatchDescriptor& aPatch,
+                       const wr::LayoutSideOffsets& aWidths,
+                       wr::ImageKey aImage, const int32_t aWidth,
+                       const int32_t aHeight,
+                       const wr::SideOffsets2D<int32_t>& aSlice,
                        const wr::SideOffsets2D<float>& aOutset,
                        const wr::RepeatMode& aRepeatHorizontal,
                        const wr::RepeatMode& aRepeatVertical);
 
   void PushBorderGradient(const wr::LayoutRect& aBounds,
                           const wr::LayoutRect& aClip, bool aIsBackfaceVisible,
-                          const wr::BorderWidths& aWidths,
+                          const wr::LayoutSideOffsets& aWidths,
+                          const int32_t aWidth, const int32_t aHeight,
+                          const wr::SideOffsets2D<int32_t>& aSlice,
                           const wr::LayoutPoint& aStartPoint,
                           const wr::LayoutPoint& aEndPoint,
                           const nsTArray<wr::GradientStop>& aStops,
@@ -364,7 +513,7 @@ class DisplayListBuilder {
 
   void PushBorderRadialGradient(
       const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
-      bool aIsBackfaceVisible, const wr::BorderWidths& aWidths,
+      bool aIsBackfaceVisible, const wr::LayoutSideOffsets& aWidths,
       const wr::LayoutPoint& aCenter, const wr::LayoutSize& aRadius,
       const nsTArray<wr::GradientStop>& aStops, wr::ExtendMode aExtendMode,
       const wr::SideOffsets2D<float>& aOutset);
@@ -379,7 +528,8 @@ class DisplayListBuilder {
                 const wr::Line& aLine);
 
   void PushShadow(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
-                  bool aIsBackfaceVisible, const wr::Shadow& aShadow);
+                  bool aIsBackfaceVisible, const wr::Shadow& aShadow,
+                  bool aShouldInflate);
 
   void PopAllShadows();
 
@@ -391,62 +541,142 @@ class DisplayListBuilder {
                      const wr::BorderRadius& aBorderRadius,
                      const wr::BoxShadowClipMode& aClipMode);
 
-  // Returns the clip id that was most recently pushed with PushClip and that
-  // has not yet been popped with PopClip. Return Nothing() if the clip stack
-  // is empty.
-  Maybe<wr::WrClipId> TopmostClipId();
-  // Same as TopmostClipId() but for scroll layers.
-  wr::WrScrollId TopmostScrollId();
-  // If the topmost item on the stack is a clip or a scroll layer
-  bool TopmostIsClip();
+  uint64_t CurrentClipChainId() const {
+    return mCurrentSpaceAndClipChain.clip_chain;
+  }
+
+  // Checks to see if the innermost enclosing fixed pos item has the same
+  // ASR. If so, it returns the scroll target for that fixed-pos item.
+  // Otherwise, it returns Nothing().
+  Maybe<layers::ScrollableLayerGuid::ViewID> GetContainingFixedPosScrollTarget(
+      const ActiveScrolledRoot* aAsr);
 
   // Set the hit-test info to be used for all display items until the next call
   // to SetHitTestInfo or ClearHitTestInfo.
-  void SetHitTestInfo(const layers::FrameMetrics::ViewID& aScrollId,
+  void SetHitTestInfo(const layers::ScrollableLayerGuid::ViewID& aScrollId,
                       gfx::CompositorHitTestInfo aHitInfo);
   // Clears the hit-test info so that subsequent display items will not have it.
   void ClearHitTestInfo();
 
+  already_AddRefed<gfxContext> GetTextContext(
+      wr::IpcResourceUpdateQueue& aResources,
+      const layers::StackingContextHelper& aSc,
+      layers::RenderRootStateManager* aManager, nsDisplayItem* aItem,
+      nsRect& aBounds, const gfx::Point& aDeviceOffset);
+
   // Try to avoid using this when possible.
   wr::WrState* Raw() { return mWrState; }
 
-  // Return true if the current clip stack has any extra clip.
-  bool HasExtraClip() { return !mCacheOverride.empty(); }
+  void SetClipChainLeaf(const Maybe<wr::LayoutRect>& aClipRect) {
+    mClipChainLeaf = aClipRect;
+  }
+
+  // A chain of RAII objects, each holding a (ASR, ViewID) tuple of data. The
+  // topmost object is pointed to by the mActiveFixedPosTracker pointer in
+  // the wr::DisplayListBuilder.
+  class MOZ_RAII FixedPosScrollTargetTracker final {
+   public:
+    FixedPosScrollTargetTracker(DisplayListBuilder& aBuilder,
+                                const ActiveScrolledRoot* aAsr,
+                                layers::ScrollableLayerGuid::ViewID aScrollId);
+    ~FixedPosScrollTargetTracker();
+    Maybe<layers::ScrollableLayerGuid::ViewID> GetScrollTargetForASR(
+        const ActiveScrolledRoot* aAsr);
+
+   private:
+    FixedPosScrollTargetTracker* mParentTracker;
+    DisplayListBuilder& mBuilder;
+    const ActiveScrolledRoot* mAsr;
+    layers::ScrollableLayerGuid::ViewID mScrollId;
+  };
 
  protected:
-  void PushCacheOverride(const DisplayItemClipChain* aParent,
-                         const wr::WrClipId& aClipId);
-  void PopCacheOverride(const DisplayItemClipChain* aParent);
+  wr::LayoutRect MergeClipLeaf(const wr::LayoutRect& aClip) {
+    if (mClipChainLeaf) {
+      return wr::IntersectLayoutRect(*mClipChainLeaf, aClip);
+    }
+    return aClip;
+  }
+
+  // See the implementation of PushShadow for details on these methods.
+  void SuspendClipLeafMerging();
+  void ResumeClipLeafMerging();
 
   wr::WrState* mWrState;
-
-  // Track the stack of clip ids and scroll layer ids that have been pushed
-  // (by PushClip and PushScrollLayer/PushClipAndScrollInfo, respectively) and
-  // haven't yet been popped.
-  std::vector<wr::ScrollOrClipId> mClipStack;
 
   // Track each scroll id that we encountered. We use this structure to
   // ensure that we don't define a particular scroll layer multiple times,
   // as that results in undefined behaviour in WR.
-  std::unordered_map<layers::FrameMetrics::ViewID, wr::WrScrollId> mScrollIds;
+  std::unordered_map<layers::ScrollableLayerGuid::ViewID, wr::WrSpaceAndClip>
+      mScrollIds;
 
-  // A map that holds the cache overrides creates by "out of band" clips, i.e.
-  // clips that are generated by display items but that ScrollingLayersHelper
-  // doesn't know about. These are called "cache overrides" because while we're
-  // inside one of these clips, the WR clip stack is different from what
-  // ScrollingLayersHelper thinks it actually is (because of the out-of-band
-  // clip that was pushed onto the stack) and so ScrollingLayersHelper cannot
-  // use its clip cache as-is. Instead, any time ScrollingLayersHelper wants
-  // to define a new clip as a child of clip X, it should first check the
-  // cache overrides to see if there is an out-of-band clip Y that is already a
-  // child of X, and then define its clip as a child of Y instead. This map
-  // stores X -> ClipId of Y, which allows ScrollingLayersHelper to do the
-  // necessary lookup. Note that there theoretically might be multiple
-  // different "Y" clips which is why we need a vector.
-  std::unordered_map<const DisplayItemClipChain*, std::vector<wr::WrClipId>>
-      mCacheOverride;
+  wr::WrSpaceAndClipChain mCurrentSpaceAndClipChain;
+
+  // Contains the current leaf of the clip chain to be merged with the
+  // display item's clip rect when pushing an item. May be set to Nothing() if
+  // there is no clip rect to merge with.
+  Maybe<wr::LayoutRect> mClipChainLeaf;
+
+  // Versions of the above that are on hold while SuspendClipLeafMerging is on
+  // (see the implementation of PushShadow for details).
+  Maybe<wr::WrSpaceAndClipChain> mSuspendedSpaceAndClipChain;
+  Maybe<wr::LayoutRect> mSuspendedClipChainLeaf;
+
+  RefPtr<layout::TextDrawTarget> mCachedTextDT;
+  RefPtr<gfxContext> mCachedContext;
+
+  FixedPosScrollTargetTracker* mActiveFixedPosTracker;
+
+  NonDefaultRenderRootArray<UniquePtr<DisplayListBuilder>> mSubBuilders;
+  wr::PipelineId mPipelineId;
+  wr::LayoutSize mContentSize;
+
+  RenderRoot mRenderRoot;
+  bool mSendSubBuilderDisplayList;
 
   friend class WebRenderAPI;
+  friend class SpaceAndClipChainHelper;
+};
+
+// This is a RAII class that overrides the current Wr's SpatialId and
+// ClipChainId.
+class MOZ_RAII SpaceAndClipChainHelper final {
+ public:
+  SpaceAndClipChainHelper(DisplayListBuilder& aBuilder,
+                          wr::WrSpaceAndClipChain aSpaceAndClipChain
+                              MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
+      : mBuilder(aBuilder),
+        mOldSpaceAndClipChain(aBuilder.mCurrentSpaceAndClipChain) {
+    aBuilder.mCurrentSpaceAndClipChain = aSpaceAndClipChain;
+    MOZ_GUARD_OBJECT_NOTIFIER_INIT;
+  }
+  SpaceAndClipChainHelper(DisplayListBuilder& aBuilder,
+                          wr::WrSpatialId aSpatialId
+                              MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
+      : mBuilder(aBuilder),
+        mOldSpaceAndClipChain(aBuilder.mCurrentSpaceAndClipChain) {
+    aBuilder.mCurrentSpaceAndClipChain.space = aSpatialId;
+    MOZ_GUARD_OBJECT_NOTIFIER_INIT;
+  }
+  SpaceAndClipChainHelper(DisplayListBuilder& aBuilder,
+                          wr::WrClipChainId aClipChainId
+                              MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
+      : mBuilder(aBuilder),
+        mOldSpaceAndClipChain(aBuilder.mCurrentSpaceAndClipChain) {
+    aBuilder.mCurrentSpaceAndClipChain.clip_chain = aClipChainId.id;
+    MOZ_GUARD_OBJECT_NOTIFIER_INIT;
+  }
+
+  ~SpaceAndClipChainHelper() {
+    mBuilder.mCurrentSpaceAndClipChain = mOldSpaceAndClipChain;
+  }
+
+ private:
+  SpaceAndClipChainHelper(const SpaceAndClipChainHelper&) = delete;
+
+  DisplayListBuilder& mBuilder;
+  wr::WrSpaceAndClipChain mOldSpaceAndClipChain;
+  MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
 };
 
 Maybe<wr::ImageFormat> SurfaceFormatToImageFormat(gfx::SurfaceFormat aFormat);

@@ -17,6 +17,7 @@ void AudioBlockCopyChannelWithScale_SSE(const float aInput[WEBAUDIO_BLOCK_SIZE],
                                         float aOutput[WEBAUDIO_BLOCK_SIZE]);
 
 void AudioBufferInPlaceScale_SSE(float* aBlock, float aScale, uint32_t aSize);
+void AudioBufferInPlaceScale_SSE(float* aBlock, float* aScale, uint32_t aSize);
 
 void AudioBlockPanStereoToStereo_SSE(const float aInputL[WEBAUDIO_BLOCK_SIZE],
                                      const float aInputR[WEBAUDIO_BLOCK_SIZE],

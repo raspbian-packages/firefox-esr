@@ -12,12 +12,16 @@
 #include "nsContainerFrame.h"
 #include "RubyUtils.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 /**
  * Factory function.
  * @return a newly allocated nsRubyBaseContainerFrame (infallible)
  */
-nsContainerFrame* NS_NewRubyBaseContainerFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext);
+nsContainerFrame* NS_NewRubyBaseContainerFrame(mozilla::PresShell* aPresShell,
+                                               mozilla::ComputedStyle* aStyle);
 
 class nsRubyBaseContainerFrame final : public nsContainerFrame {
  public:
@@ -56,10 +60,11 @@ class nsRubyBaseContainerFrame final : public nsContainerFrame {
 
  protected:
   friend nsContainerFrame* NS_NewRubyBaseContainerFrame(
-      nsIPresShell* aPresShell, nsStyleContext* aContext);
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
 
-  explicit nsRubyBaseContainerFrame(nsStyleContext* aContext)
-      : nsContainerFrame(aContext, kClassID) {}
+  explicit nsRubyBaseContainerFrame(ComputedStyle* aStyle,
+                                    nsPresContext* aPresContext)
+      : nsContainerFrame(aStyle, aPresContext, kClassID) {}
 
   struct RubyReflowInput;
   nscoord ReflowColumns(const RubyReflowInput& aReflowInput,

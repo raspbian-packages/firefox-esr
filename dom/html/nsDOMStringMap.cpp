@@ -66,7 +66,7 @@ DocGroup* nsDOMStringMap::GetDocGroup() const {
 /* virtual */
 JSObject* nsDOMStringMap::WrapObject(JSContext* cx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return DOMStringMapBinding::Wrap(cx, this, aGivenProto);
+  return DOMStringMap_Binding::Wrap(cx, this, aGivenProto);
 }
 
 void nsDOMStringMap::NamedGetter(const nsAString& aProp, bool& found,
@@ -235,8 +235,8 @@ bool nsDOMStringMap::AttrToDataProp(const nsAString& aAttr,
 void nsDOMStringMap::AttributeChanged(Element* aElement, int32_t aNameSpaceID,
                                       nsAtom* aAttribute, int32_t aModType,
                                       const nsAttrValue* aOldValue) {
-  if ((aModType == MutationEventBinding::ADDITION ||
-       aModType == MutationEventBinding::REMOVAL) &&
+  if ((aModType == MutationEvent_Binding::ADDITION ||
+       aModType == MutationEvent_Binding::REMOVAL) &&
       aNameSpaceID == kNameSpaceID_None &&
       StringBeginsWith(nsDependentAtomString(aAttribute),
                        NS_LITERAL_STRING("data-"))) {

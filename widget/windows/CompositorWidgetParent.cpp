@@ -32,8 +32,8 @@ mozilla::ipc::IPCResult CompositorWidgetParent::RecvLeavePresentLock() {
 }
 
 mozilla::ipc::IPCResult CompositorWidgetParent::RecvUpdateTransparency(
-    const int32_t& aMode) {
-  UpdateTransparency(static_cast<nsTransparencyMode>(aMode));
+    const nsTransparencyMode& aMode) {
+  UpdateTransparency(aMode);
   return IPC_OK();
 }
 
@@ -56,6 +56,13 @@ void CompositorWidgetParent::ObserveVsync(VsyncObserver* aObserver) {
 RefPtr<VsyncObserver> CompositorWidgetParent::GetVsyncObserver() const {
   MOZ_ASSERT(XRE_GetProcessType() == GeckoProcessType_GPU);
   return mVsyncObserver;
+}
+
+void CompositorWidgetParent::UpdateCompositorWnd(const HWND aCompositorWnd,
+                                                 const HWND aParentWnd) {
+  Unused << SendUpdateCompositorWnd(
+      reinterpret_cast<WindowsHandle>(aCompositorWnd),
+      reinterpret_cast<WindowsHandle>(aParentWnd));
 }
 
 void CompositorWidgetParent::ActorDestroy(ActorDestroyReason aWhy) {}

@@ -54,7 +54,7 @@ class AndroidDynamicToolbarAnimator {
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(AndroidDynamicToolbarAnimator);
   explicit AndroidDynamicToolbarAnimator(APZCTreeManager* aApz);
-  void Initialize(uint64_t aRootLayerTreeId);
+  void Initialize(LayersId aRootLayerTreeId);
   void ClearTreeManager();
   // Used to intercept events to determine if the event affects the toolbar.
   // May apply translation to touch events if the toolbar is visible.
@@ -106,13 +106,6 @@ class AndroidDynamicToolbarAnimator {
   // Only update the frame metrics if the root composition size has changed
   void MaybeUpdateCompositionSizeAndRootFrameMetrics(
       const FrameMetrics& aMetrics);
-  // When aEnable is set to true, it informs the animator that the UI thread
-  // expects to be notified when the layer tree  has been updated. Enabled
-  // currently by robocop tests.
-  void EnableLayersUpdateNotifications(bool aEnable);
-  // Called when a layer has been updated so the UI thread may be notified if
-  // necessary.
-  void NotifyLayersUpdated();
   // Adopts the Shmem containing the toolbar snapshot sent from the UI thread.
   // The AndroidDynamicToolbarAnimator is responsible for deallocating the Shmem
   // when it is done being used.
@@ -184,7 +177,7 @@ class AndroidDynamicToolbarAnimator {
   void QueueMessage(int32_t aMessage);
 
   // Read only Compositor and Controller threads after Initialize()
-  uint64_t mRootLayerTreeId;
+  LayersId mRootLayerTreeId;
   MOZ_NON_OWNING_REF APZCTreeManager* mApz;
 
   // Read/Write Compositor Thread, Read only Controller thread
@@ -261,14 +254,11 @@ class AndroidDynamicToolbarAnimator {
   // Compositor thread only
   bool
       mCompositorShutdown;  // Set to true when the compositor has been shutdown
-  bool mCompositorAnimationDeferred;    // An animation has been deferred until
-                                        // the toolbar is unlocked
-  bool mCompositorLayersUpdateEnabled;  // Flag set to true when the UI thread
-                                        // is expecting to be notified when a
-                                        // layer has been updated
-  bool mCompositorAnimationStarted;     // Set to true when the compositor has
-                                        // actually started animating the static
-                                        // snapshot.
+  bool mCompositorAnimationDeferred;   // An animation has been deferred until
+                                       // the toolbar is unlocked
+  bool mCompositorAnimationStarted;    // Set to true when the compositor has
+                                       // actually started animating the static
+                                       // snapshot.
   bool mCompositorReceivedFirstPaint;  // Set to true when a first paint occurs.
                                        // Used by toolbar animator to detect a
                                        // new page load.
@@ -296,29 +286,24 @@ class AndroidDynamicToolbarAnimator {
   ScreenIntSize mCompositorCompositionSize;  // Current size of the visible page
   int32_t mCompositorAnimationDirection;     // Direction the snapshot should be
                                              // animated
-  ScreenIntCoord mCompositorAnimationStartHeight;  // The height of the snapshot
-                                                   // at the start of an
-                                                   // animation
+  ScreenIntCoord
+      mCompositorAnimationStartHeight;  // The height of the snapshot at the
+                                        // start of an animation
   ScreenIntSize
       mCompositorToolbarPixelsSize;  // Size of the received toolbar pixels
-  Maybe<mozilla::ipc::Shmem> mCompositorToolbarPixels;  // Shared memory contain
-                                                        // the updated snapshot
-                                                        // pixels used to create
-                                                        // the OGL texture
-  RefPtr<DataTextureSource> mCompositorToolbarTexture;  // The OGL texture used
-                                                        // to render the
-                                                        // snapshot in the
-                                                        // compositor
+  Maybe<mozilla::ipc::Shmem>
+      mCompositorToolbarPixels;  // Shared memory contain the updated snapshot
+                                 // pixels used to create the OGL texture
+  RefPtr<DataTextureSource>
+      mCompositorToolbarTexture;  // The OGL texture used to render the snapshot
+                                  // in the compositor
   RefPtr<EffectRGB> mCompositorToolbarEffect;    // Effect used to render the
                                                  // snapshot in the compositor
   TimeStamp mCompositorAnimationStartTimeStamp;  // Time stamp when the current
                                                  // animation started
-  AutoCleanLinkedList<QueuedMessage> mCompositorQueuedMessages;  // Queue to
-                                                                 // contain
-                                                                 // messages
-                                                                 // sent before
-                                                                 // Initialize()
-                                                                 // called
+  AutoCleanLinkedList<QueuedMessage>
+      mCompositorQueuedMessages;  // Queue to contain messages sent before
+                                  // Initialize() called
 };
 
 }  // namespace layers

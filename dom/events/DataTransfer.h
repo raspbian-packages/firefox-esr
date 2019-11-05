@@ -11,11 +11,12 @@
 #include "nsTArray.h"
 #include "nsIVariant.h"
 #include "nsIPrincipal.h"
-#include "nsIDOMDataTransfer.h"
-#include "nsIDOMElement.h"
 #include "nsIDragService.h"
+#include "nsITransferable.h"
 #include "nsCycleCollectionParticipant.h"
 
+#include "mozilla/ArrayUtils.h"
+#include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/EventForwards.h"
 #include "mozilla/dom/BindingDeclarations.h"
@@ -47,20 +48,15 @@ class Optional;
     }                                                \
   }
 
-class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
+class DataTransfer final : public nsISupports, public nsWrapperCache {
  public:
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_DATATRANSFER_IID)
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_NSIDOMDATATRANSFER
 
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(DataTransfer)
 
   friend class mozilla::EventStateManager;
-
-  static DataTransfer* Cast(nsIDOMDataTransfer* aArg) {
-    return static_cast<DataTransfer*>(aArg);
-  }
 
   /// An enum which represents which "Drag Data Store Mode" the DataTransfer is
   /// in according to the spec.
@@ -92,14 +88,19 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
   // Constructor for DataTransfer.
   //
   // aIsExternal must only be true when used to create a dataTransfer for a
-  // paste or a drag that was started without using a data transfer. The
-  // latter will occur when an external drag occurs, that is, a drag where the
-  // source is another application, or a drag is started by calling the drag
-  // service directly. For clipboard operations, aClipboardType indicates
-  // which clipboard to use, from nsIClipboard, or -1 for non-clipboard
-  // operations, or if access to the system clipboard should not be allowed.
+  // paste, a drag or an input that was started without using a data transfer.
+  // The case of a drag will occur when an external drag occurs, that is, a
+  // drag where the source is another application, or a drag is started by
+  // calling the drag service directly. For clipboard operations,
+  // aClipboardType indicates which clipboard to use, from nsIClipboard, or -1
+  // for non-clipboard operations, or if access to the system clipboard should
+  // not be allowed.
   DataTransfer(nsISupports* aParent, EventMessage aEventMessage,
                bool aIsExternal, int32_t aClipboardType);
+  DataTransfer(nsISupports* aParent, EventMessage aEventMessage,
+               nsITransferable* aTransferable);
+  DataTransfer(nsISupports* aParent, EventMessage aEventMessage,
+               const nsAString& aString);
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
@@ -115,22 +116,84 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
   }
 
   static already_AddRefed<DataTransfer> Constructor(const GlobalObject& aGlobal,
-                                                    const nsAString& aEventType,
-                                                    bool aIsExternal,
                                                     ErrorResult& aRv);
 
-  void GetDropEffect(nsString& aDropEffect) {
+  /**
+   * The actual effect that will be used, and should always be one of the
+   * possible values of effectAllowed.
+   *
+   * For dragstart, drag and dragleave events, the dropEffect is initialized
+   * to none. Any value assigned to the dropEffect will be set, but the value
+   * isn't used for anything.
+   *
+   * For the dragenter and dragover events, the dropEffect will be initialized
+   * based on what action the user is requesting. How this is determined is
+   * platform specific, but typically the user can press modifier keys to
+   * adjust which action is desired. Within an event handler for the dragenter
+   * and dragover events, the dropEffect should be modified if the action the
+   * user is requesting is not the one that is desired.
+   *
+   * For the drop and dragend events, the dropEffect will be initialized to
+   * the action that was desired, which will be the value that the dropEffect
+   * had after the last dragenter or dragover event.
+   *
+   * Possible values:
+   *  copy - a copy of the source item is made at the new location
+   *  move - an item is moved to a new location
+   *  link - a link is established to the source at the new location
+   *  none - the item may not be dropped
+   *
+   * Assigning any other value has no effect and retains the old value.
+   */
+  void GetDropEffect(nsAString& aDropEffect) {
     aDropEffect.AssignASCII(sEffects[mDropEffect]);
   }
+  void SetDropEffect(const nsAString& aDropEffect);
 
-  void GetEffectAllowed(nsString& aEffectAllowed) {
+  /*
+   * Specifies the effects that are allowed for this drag. You may set this in
+   * the dragstart event to set the desired effects for the source, and within
+   * the dragenter and dragover events to set the desired effects for the
+   * target. The value is not used for other events.
+   *
+   * Possible values:
+   *  copy - a copy of the source item is made at the new location
+   *  move - an item is moved to a new location
+   *  link - a link is established to the source at the new location
+   *  copyLink, copyMove, linkMove, all - combinations of the above
+   *  none - the item may not be dropped
+   *  uninitialized - the default value when the effect has not been set,
+   *                  equivalent to all.
+   *
+   * Assigning any other value has no effect and retains the old value.
+   */
+  void GetEffectAllowed(nsAString& aEffectAllowed) {
     if (mEffectAllowed == nsIDragService::DRAGDROP_ACTION_UNINITIALIZED) {
       aEffectAllowed.AssignLiteral("uninitialized");
     } else {
       aEffectAllowed.AssignASCII(sEffects[mEffectAllowed]);
     }
   }
+  void SetEffectAllowed(const nsAString& aEffectAllowed);
 
+  /**
+   * Set the image to be used for dragging if a custom one is desired. Most of
+   * the time, this would not be set, as a default image is created from the
+   * node that was dragged.
+   *
+   * If the node is an HTML img element, an HTML canvas element or a XUL image
+   * element, the image data is used. Otherwise, image should be a visible
+   * node and the drag image will be created from this. If image is null, any
+   * custom drag image is cleared and the default is used instead.
+   *
+   * The coordinates specify the offset into the image where the mouse cursor
+   * should be. To center the image for instance, use values that are half the
+   * width and height.
+   *
+   * @param image a node to use
+   * @param x the horizontal offset
+   * @param y the vertical offset
+   */
   void SetDragImage(Element& aElement, int32_t aX, int32_t aY);
   void UpdateDragImage(Element& aElement, int32_t aX, int32_t aY);
 
@@ -145,8 +208,12 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
   void ClearData(const mozilla::dom::Optional<nsAString>& aFormat,
                  nsIPrincipal& aSubjectPrincipal, mozilla::ErrorResult& aRv);
 
-  already_AddRefed<FileList> GetFiles(nsIPrincipal& aSubjectPrincipal,
-                                      mozilla::ErrorResult& aRv);
+  /**
+   * Holds a list of all the local files available on this data transfer.
+   * A dataTransfer containing no files will return an empty list, and an
+   * invalid index access on the resulting file list will return null.
+   */
+  already_AddRefed<FileList> GetFiles(nsIPrincipal& aSubjectPrincipal);
 
   already_AddRefed<Promise> GetFilesAndDirectories(
       nsIPrincipal& aSubjectPrincipal, mozilla::ErrorResult& aRv);
@@ -159,13 +226,14 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
 
   uint32_t MozItemCount() const;
 
-  void GetMozCursor(nsString& aCursor) {
+  void GetMozCursor(nsAString& aCursor) {
     if (mCursorState) {
       aCursor.AssignLiteral("default");
     } else {
       aCursor.AssignLiteral("auto");
     }
   }
+  void SetMozCursor(const nsAString& aCursor);
 
   already_AddRefed<DOMStringList> MozTypesAt(uint32_t aIndex,
                                              CallerType aCallerType,
@@ -186,6 +254,23 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
   bool MozUserCancelled() const { return mUserCancelled; }
 
   already_AddRefed<nsINode> GetMozSourceNode();
+
+  /*
+   * Integer version of dropEffect, set to one of the constants in
+   * nsIDragService.
+   */
+  uint32_t DropEffectInt() const { return mDropEffect; }
+  void SetDropEffectInt(uint32_t aDropEffectInt) {
+    MOZ_RELEASE_ASSERT(aDropEffectInt < ArrayLength(sEffects),
+                       "Bogus drop effect value");
+    mDropEffect = aDropEffectInt;
+  }
+
+  /*
+   * Integer version of effectAllowed, set to one or a combination of the
+   * constants in nsIDragService.
+   */
+  uint32_t EffectAllowedInt() const { return mEffectAllowed; }
 
   void GetMozTriggeringPrincipalURISpec(nsAString& aPrincipalURISpec);
 
@@ -209,13 +294,14 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
   // that DataTransfer type information may be read, but data may not be.
   bool IsProtected() const { return mMode == Mode::Protected; }
 
+  nsITransferable* GetTransferable() const { return mTransferable; }
   int32_t ClipboardType() const { return mClipboardType; }
   EventMessage GetEventMessage() const { return mEventMessage; }
   bool IsCrossDomainSubFrameDrop() const { return mIsCrossDomainSubFrameDrop; }
 
   // converts the data into an array of nsITransferable objects to be used for
   // drag and drop or clipboard operations.
-  already_AddRefed<nsIArray> GetTransferables(nsIDOMNode* aDragTarget);
+  already_AddRefed<nsIArray> GetTransferables(nsINode* aDragTarget);
 
   already_AddRefed<nsIArray> GetTransferables(nsILoadContext* aLoadContext);
 
@@ -286,6 +372,28 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
   already_AddRefed<DataTransfer> MozCloneForEvent(const nsAString& aEvent,
                                                   ErrorResult& aRv);
 
+  // Retrieve a list of clipboard formats supported
+  //
+  // If kFileMime is supported, then it will be placed either at
+  // index 0 or at index 1 in aResult
+  static void GetExternalClipboardFormats(const int32_t& aWhichClipboard,
+                                          const bool& aPlainTextOnly,
+                                          nsTArray<nsCString>* aResult);
+
+  // Retrieve a list of supporting formats in aTransferable.
+  //
+  // If kFileMime is supported, then it will be placed either at
+  // index 0 or at index 1 in aResult
+  static void GetExternalTransferableFormats(nsITransferable* aTransferable,
+                                             bool aPlainTextOnly,
+                                             nsTArray<nsCString>* aResult);
+
+  // Returns true if moz* APIs should be exposed (true for chrome code or if
+  // dom.datatransfer.moz pref is enabled).
+  // The affected moz* APIs are mozItemCount, mozTypesAt, mozClearDataAt,
+  // mozSetDataAt, mozGetDataAt
+  static bool MozAtAPIsEnabled(JSContext* cx, JSObject* obj);
+
  protected:
   // caches text and uri-list data formats that exist in the drag service or
   // clipboard for retrieval later.
@@ -299,6 +407,13 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
   // caches the formats that exist in the clipboard
   void CacheExternalClipboardFormats(bool aPlainTextOnly);
 
+  // caches the formats that exist in mTransferable
+  void CacheTransferableFormats();
+
+  // caches the formats specified by aTypes.
+  void CacheExternalData(const nsTArray<nsCString>& aTypes,
+                         nsIPrincipal* aPrincipal);
+
   FileList* GetFilesInternal(ErrorResult& aRv, nsIPrincipal* aSubjectPrincipal);
   nsresult GetDataAtInternal(const nsAString& aFormat, uint32_t aIndex,
                              nsIPrincipal* aSubjectPrincipal,
@@ -308,6 +423,7 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
                              uint32_t aIndex, nsIPrincipal* aSubjectPrincipal);
 
   friend class ContentParent;
+  friend class Clipboard;
 
   void FillAllExternalData();
 
@@ -321,6 +437,11 @@ class DataTransfer final : public nsIDOMDataTransfer, public nsWrapperCache {
                             mozilla::ErrorResult& aRv);
 
   nsCOMPtr<nsISupports> mParent;
+
+  // If DataTransfer is initialized with an instance of nsITransferable, it's
+  // grabbed with this member **until** the constructor fills all data of all
+  // items.
+  nsCOMPtr<nsITransferable> mTransferable;
 
   // the drop effect and effect allowed
   uint32_t mDropEffect;

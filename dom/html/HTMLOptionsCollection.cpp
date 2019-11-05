@@ -10,7 +10,7 @@
 #include "mozAutoDocUpdate.h"
 #include "mozilla/dom/BindingUtils.h"
 #include "mozilla/dom/Element.h"
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "mozilla/dom/HTMLFormSubmission.h"
 #include "mozilla/dom/HTMLOptionElement.h"
 #include "mozilla/dom/HTMLOptionsCollectionBinding.h"
@@ -18,17 +18,12 @@
 #include "nsContentCreatorFunctions.h"
 #include "nsError.h"
 #include "nsGkAtoms.h"
-#include "nsIComboboxControlFrame.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIFormControlFrame.h"
 #include "nsIForm.h"
 #include "nsIFormProcessor.h"
-#include "nsIListControlFrame.h"
 #include "nsLayoutUtils.h"
 #include "nsMappedAttributes.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsRuleData.h"
-#endif
 #include "nsServiceManagerUtils.h"
 #include "nsStyleConsts.h"
 #include "jsfriendapi.h"
@@ -86,7 +81,7 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(HTMLOptionsCollection)
 
 JSObject* HTMLOptionsCollection::WrapObject(JSContext* aCx,
                                             JS::Handle<JSObject*> aGivenProto) {
-  return HTMLOptionsCollectionBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLOptionsCollection_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 uint32_t HTMLOptionsCollection::Length() { return mElements.Length(); }
@@ -138,13 +133,12 @@ void HTMLOptionsCollection::IndexedSetter(uint32_t aIndex,
   parent->ReplaceChild(*aOption, *refChild, aError);
 }
 
-int32_t HTMLOptionsCollection::GetSelectedIndex(ErrorResult& aError) {
+int32_t HTMLOptionsCollection::SelectedIndex() {
   return mSelect->SelectedIndex();
 }
 
-void HTMLOptionsCollection::SetSelectedIndex(int32_t aSelectedIndex,
-                                             ErrorResult& aError) {
-  mSelect->SetSelectedIndex(aSelectedIndex, aError);
+void HTMLOptionsCollection::SetSelectedIndex(int32_t aSelectedIndex) {
+  mSelect->SetSelectedIndex(aSelectedIndex);
 }
 
 Element* HTMLOptionsCollection::GetElementAt(uint32_t aIndex) {
@@ -211,12 +205,7 @@ void HTMLOptionsCollection::Add(const HTMLOptionOrOptGroupElement& aElement,
   mSelect->Add(aElement, aBefore, aError);
 }
 
-void HTMLOptionsCollection::Remove(int32_t aIndex, ErrorResult& aError) {
-  uint32_t len = mSelect->Length();
-  if (aIndex < 0 || (uint32_t)aIndex >= len) aIndex = 0;
-
-  mSelect->Remove(aIndex);
-}
+void HTMLOptionsCollection::Remove(int32_t aIndex) { mSelect->Remove(aIndex); }
 
 }  // namespace dom
 }  // namespace mozilla

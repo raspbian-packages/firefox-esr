@@ -11,6 +11,7 @@
 #include "mozilla/IntegerPrintfMacros.h"
 #include "mozilla/Likely.h"
 #include "mozilla/Poison.h"
+#include "mozilla/PresShell.h"
 #include "nsIWidget.h"
 #include "nsViewManager.h"
 #include "nsIFrame.h"
@@ -56,8 +57,9 @@ nsView::nsView(nsViewManager* aViewManager, nsViewVisibility aVisibility)
 }
 
 void nsView::DropMouseGrabbing() {
-  nsIPresShell* presShell = mViewManager->GetPresShell();
-  if (presShell) presShell->ClearMouseCaptureOnView(this);
+  if (mViewManager->GetPresShell()) {
+    PresShell::ClearMouseCaptureOnView(this);
+  }
 }
 
 nsView::~nsView() {
@@ -103,6 +105,8 @@ nsView::~nsView() {
 
   // Destroy and release the widget
   DestroyWidget();
+
+  MOZ_RELEASE_ASSERT(!mFrame);
 
   delete mDirtyRegion;
 }
@@ -151,7 +155,7 @@ void nsView::DestroyWidget() {
 }
 
 nsView* nsView::GetViewFor(nsIWidget* aWidget) {
-  NS_PRECONDITION(nullptr != aWidget, "null widget ptr");
+  MOZ_ASSERT(nullptr != aWidget, "null widget ptr");
 
   nsIWidgetListener* listener = aWidget->GetWidgetListener();
   if (listener) {
@@ -292,7 +296,7 @@ void nsView::DoResetWidgetBounds(bool aMoveOnly, bool aInvalidateChangedSize) {
     return;
   }
 
-  NS_PRECONDITION(mWindow, "Why was this called??");
+  MOZ_ASSERT(mWindow, "Why was this called??");
 
   // Hold this ref to make sure it stays alive.
   nsCOMPtr<nsIWidget> widget = mWindow;
@@ -300,7 +304,6 @@ void nsView::DoResetWidgetBounds(bool aMoveOnly, bool aInvalidateChangedSize) {
   // Stash a copy of these and use them so we can handle this being deleted (say
   // from sync painting/flushing from Show/Move/Resize on the widget).
   LayoutDeviceIntRect newBounds;
-  RefPtr<nsDeviceContext> dx = mViewManager->GetDeviceContext();
 
   nsWindowType type = widget->WindowType();
 
@@ -313,10 +316,11 @@ void nsView::DoResetWidgetBounds(bool aMoveOnly, bool aInvalidateChangedSize) {
     // We're going to hit the early exit below, avoid calling CalcWidgetBounds.
   } else {
     newBounds = CalcWidgetBounds(type);
+    invisiblePopup = newBounds.IsEmpty();
   }
 
   bool curVisibility = widget->IsVisible();
-  bool newVisibility = IsEffectivelyVisible();
+  bool newVisibility = !invisiblePopup && IsEffectivelyVisible();
   if (curVisibility && !newVisibility) {
     widget->Show(false);
   }
@@ -340,7 +344,8 @@ void nsView::DoResetWidgetBounds(bool aMoveOnly, bool aInvalidateChangedSize) {
   // because of the potential for device-pixel coordinate spaces for mixed
   // hidpi/lodpi screens to overlap each other and result in bad placement
   // (bug 814434).
-  DesktopToLayoutDeviceScale scale = dx->GetDesktopToDeviceScale();
+
+  DesktopToLayoutDeviceScale scale = widget->GetDesktopToDeviceScaleByScreen();
 
   DesktopRect deskRect = newBounds / scale;
   if (changedPos) {
@@ -423,7 +428,7 @@ void nsView::InvalidateHierarchy() {
 }
 
 void nsView::InsertChild(nsView* aChild, nsView* aSibling) {
-  NS_PRECONDITION(nullptr != aChild, "null ptr");
+  MOZ_ASSERT(nullptr != aChild, "null ptr");
 
   if (nullptr != aChild) {
     if (nullptr != aSibling) {
@@ -451,7 +456,7 @@ void nsView::InsertChild(nsView* aChild, nsView* aSibling) {
 }
 
 void nsView::RemoveChild(nsView* child) {
-  NS_PRECONDITION(nullptr != child, "null ptr");
+  MOZ_ASSERT(nullptr != child, "null ptr");
 
   if (nullptr != child) {
     nsView* prevKid = nullptr;
@@ -648,7 +653,8 @@ void nsView::SetNeedsWindowPropertiesSync() {
 
 // Attach to a top level widget and start receiving mirrored events.
 nsresult nsView::AttachToTopLevelWidget(nsIWidget* aWidget) {
-  NS_PRECONDITION(nullptr != aWidget, "null widget ptr");
+  MOZ_ASSERT(nullptr != aWidget, "null widget ptr");
+
   /// XXXjimm This is a temporary workaround to an issue w/document
   // viewer (bug 513162).
   nsIWidgetListener* listener = aWidget->GetAttachedWidgetListener();
@@ -680,8 +686,8 @@ nsresult nsView::AttachToTopLevelWidget(nsIWidget* aWidget) {
 
 // Detach this view from an attached widget.
 nsresult nsView::DetachFromTopLevelWidget() {
-  NS_PRECONDITION(mWidgetIsTopLevel, "Not attached currently!");
-  NS_PRECONDITION(mWindow, "null mWindow for DetachFromTopLevelWidget!");
+  MOZ_ASSERT(mWidgetIsTopLevel, "Not attached currently!");
+  MOZ_ASSERT(mWindow, "null mWindow for DetachFromTopLevelWidget!");
 
   mWindow->SetAttachedWidgetListener(nullptr);
   nsIWidgetListener* listener = mWindow->GetPreviouslyAttachedWidgetListener();
@@ -761,9 +767,9 @@ void nsView::List(FILE* out, int32_t aIndent) const {
             nonclientBounds.Y(), windowBounds.Width(), windowBounds.Height());
   }
   nsRect brect = GetBounds();
-  fprintf(out, "{%d,%d,%d,%d}", brect.X(), brect.Y(), brect.Width(),
-          brect.Height());
-  fprintf(out, " z=%d vis=%d frame=%p <\n", mZIndex, mVis,
+  fprintf(out, "{%d,%d,%d,%d} @ %d,%d", brect.X(), brect.Y(), brect.Width(),
+          brect.Height(), mPosX, mPosY);
+  fprintf(out, " flags=%x z=%d vis=%d frame=%p <\n", mVFlags, mZIndex, mVis,
           static_cast<void*>(mFrame));
   for (nsView* kid = mFirstChild; kid; kid = kid->GetNextSibling()) {
     NS_ASSERTION(kid->GetParent() == this, "incorrect parent");
@@ -920,9 +926,7 @@ static bool IsPopupWidget(nsIWidget* aWidget) {
   return (aWidget->WindowType() == eWindowType_popup);
 }
 
-nsIPresShell* nsView::GetPresShell() {
-  return GetViewManager()->GetPresShell();
-}
+PresShell* nsView::GetPresShell() { return GetViewManager()->GetPresShell(); }
 
 bool nsView::WindowMoved(nsIWidget* aWidget, int32_t x, int32_t y) {
   nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
@@ -950,7 +954,7 @@ bool nsView::WindowResized(nsIWidget* aWidget, int32_t aWidth,
 
     nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
     if (pm) {
-      nsIPresShell* presShell = mViewManager->GetPresShell();
+      PresShell* presShell = mViewManager->GetPresShell();
       if (presShell && presShell->GetDocument()) {
         pm->AdjustPopupsOnWindowChange(presShell);
       }
@@ -999,49 +1003,60 @@ void nsView::DidPaintWindow() {
   vm->DidPaintWindow();
 }
 
-void nsView::DidCompositeWindow(uint64_t aTransactionId,
+void nsView::DidCompositeWindow(mozilla::layers::TransactionId aTransactionId,
                                 const TimeStamp& aCompositeStart,
                                 const TimeStamp& aCompositeEnd) {
-  nsIPresShell* presShell = mViewManager->GetPresShell();
-  if (presShell) {
-    nsAutoScriptBlocker scriptBlocker;
+  PresShell* presShell = mViewManager->GetPresShell();
+  if (!presShell) {
+    return;
+  }
 
-    nsPresContext* context = presShell->GetPresContext();
-    nsRootPresContext* rootContext = context->GetRootPresContext();
-    if (rootContext) {
-      rootContext->NotifyDidPaintForSubtree(aTransactionId, aCompositeEnd);
-    }
+  nsAutoScriptBlocker scriptBlocker;
 
-    // If the two timestamps are identical, this was likely a fake composite
-    // event which wouldn't be terribly useful to display.
-    if (aCompositeStart == aCompositeEnd) {
-      return;
-    }
+  nsPresContext* context = presShell->GetPresContext();
+  nsRootPresContext* rootContext = context->GetRootPresContext();
+  if (rootContext) {
+    rootContext->NotifyDidPaintForSubtree(aTransactionId, aCompositeEnd);
+  }
 
-    nsIDocShell* docShell = context->GetDocShell();
-    RefPtr<TimelineConsumers> timelines = TimelineConsumers::Get();
+  // If the two timestamps are identical, this was likely a fake composite
+  // event which wouldn't be terribly useful to display.
+  if (aCompositeStart == aCompositeEnd) {
+    return;
+  }
 
-    if (timelines && timelines->HasConsumer(docShell)) {
-      timelines->AddMarkerForDocShell(
-          docShell, MakeUnique<CompositeTimelineMarker>(
-                        aCompositeStart, MarkerTracingType::START));
-      timelines->AddMarkerForDocShell(
-          docShell, MakeUnique<CompositeTimelineMarker>(
-                        aCompositeEnd, MarkerTracingType::END));
-    }
+  nsIDocShell* docShell = context->GetDocShell();
+  RefPtr<TimelineConsumers> timelines = TimelineConsumers::Get();
+
+  if (timelines && timelines->HasConsumer(docShell)) {
+    timelines->AddMarkerForDocShell(
+        docShell, MakeUnique<CompositeTimelineMarker>(
+                      aCompositeStart, MarkerTracingType::START));
+    timelines->AddMarkerForDocShell(
+        docShell, MakeUnique<CompositeTimelineMarker>(aCompositeEnd,
+                                                      MarkerTracingType::END));
   }
 }
 
 void nsView::RequestRepaint() {
-  nsIPresShell* presShell = mViewManager->GetPresShell();
+  PresShell* presShell = mViewManager->GetPresShell();
   if (presShell) {
     presShell->ScheduleViewManagerFlush();
   }
 }
 
+bool nsView::ShouldNotBeVisible() {
+  if (mFrame && mFrame->IsMenuPopupFrame()) {
+    nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
+    return !pm || !pm->IsPopupOpen(mFrame->GetContent());
+  }
+
+  return false;
+}
+
 nsEventStatus nsView::HandleEvent(WidgetGUIEvent* aEvent,
                                   bool aUseAttachedEvents) {
-  NS_PRECONDITION(nullptr != aEvent->mWidget, "null widget ptr");
+  MOZ_ASSERT(nullptr != aEvent->mWidget, "null widget ptr");
 
   nsEventStatus result = nsEventStatus_eIgnore;
   nsView* view;

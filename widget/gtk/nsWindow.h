@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim:expandtab:shiftwidth=4:tabstop=4:
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,6 +8,15 @@
 #ifndef __nsWindow_h__
 #define __nsWindow_h__
 
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+#ifdef MOZ_X11
+#  include <gdk/gdkx.h>
+#  include "X11UndefineNone.h"
+#endif /* MOZ_X11 */
+#ifdef MOZ_WAYLAND
+#  include <gdk/gdkwayland.h>
+#endif
 #include "mozcontainer.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/UniquePtr.h"
@@ -15,25 +24,14 @@
 #include "nsITimer.h"
 #include "nsGkAtoms.h"
 #include "nsRefPtrHashtable.h"
-
+#include "nsIFrame.h"
 #include "nsBaseWidget.h"
 #include "CompositorWidget.h"
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
-
-#ifdef MOZ_X11
-#include <gdk/gdkx.h>
-#include "X11UndefineNone.h"
-#endif /* MOZ_X11 */
-#ifdef MOZ_WAYLAND
-#include <gdk/gdkwayland.h>
-#endif
-
 #include "mozilla/widget/WindowSurface.h"
 #include "mozilla/widget/WindowSurfaceProvider.h"
 
 #ifdef ACCESSIBILITY
-#include "mozilla/a11y/Accessible.h"
+#  include "mozilla/a11y/Accessible.h"
 #endif
 #include "mozilla/EventForwards.h"
 #include "mozilla/TouchEvents.h"
@@ -43,28 +41,42 @@
 #undef LOG
 #ifdef MOZ_LOGGING
 
-#include "mozilla/Logging.h"
-#include "nsTArray.h"
-#include "Units.h"
+#  include "mozilla/Logging.h"
+#  include "nsTArray.h"
+#  include "Units.h"
 
 extern mozilla::LazyLogModule gWidgetLog;
 extern mozilla::LazyLogModule gWidgetFocusLog;
 extern mozilla::LazyLogModule gWidgetDragLog;
 extern mozilla::LazyLogModule gWidgetDrawLog;
 
-#define LOG(args) MOZ_LOG(gWidgetLog, mozilla::LogLevel::Debug, args)
-#define LOGFOCUS(args) MOZ_LOG(gWidgetFocusLog, mozilla::LogLevel::Debug, args)
-#define LOGDRAG(args) MOZ_LOG(gWidgetDragLog, mozilla::LogLevel::Debug, args)
-#define LOGDRAW(args) MOZ_LOG(gWidgetDrawLog, mozilla::LogLevel::Debug, args)
+#  define LOG(args) MOZ_LOG(gWidgetLog, mozilla::LogLevel::Debug, args)
+#  define LOGFOCUS(args) \
+    MOZ_LOG(gWidgetFocusLog, mozilla::LogLevel::Debug, args)
+#  define LOGDRAG(args) MOZ_LOG(gWidgetDragLog, mozilla::LogLevel::Debug, args)
+#  define LOGDRAW(args) MOZ_LOG(gWidgetDrawLog, mozilla::LogLevel::Debug, args)
 
 #else
 
-#define LOG(args)
-#define LOGFOCUS(args)
-#define LOGDRAG(args)
-#define LOGDRAW(args)
+#  define LOG(args)
+#  define LOGFOCUS(args)
+#  define LOGDRAG(args)
+#  define LOGDRAW(args)
 
 #endif /* MOZ_LOGGING */
+
+#ifdef MOZ_WAYLAND
+class nsWaylandDragContext;
+
+gboolean WindowDragMotionHandler(GtkWidget* aWidget,
+                                 GdkDragContext* aDragContext,
+                                 nsWaylandDragContext* aWaylandDragContext,
+                                 gint aX, gint aY, guint aTime);
+gboolean WindowDragDropHandler(GtkWidget* aWidget, GdkDragContext* aDragContext,
+                               nsWaylandDragContext* aWaylandDragContext,
+                               gint aX, gint aY, guint aTime);
+void WindowDragLeaveHandler(GtkWidget* aWidget);
+#endif
 
 class gfxPattern;
 
@@ -77,6 +89,7 @@ class nsWindow final : public nsBaseWidget {
  public:
   typedef mozilla::gfx::DrawTarget DrawTarget;
   typedef mozilla::WidgetEventTime WidgetEventTime;
+  typedef mozilla::WidgetKeyboardEvent WidgetKeyboardEvent;
   typedef mozilla::widget::PlatformCompositorWidgetDelegate
       PlatformCompositorWidgetDelegate;
 
@@ -108,6 +121,8 @@ class nsWindow final : public nsBaseWidget {
   virtual float GetDPI() override;
   virtual double GetDefaultScaleInternal() override;
   mozilla::DesktopToLayoutDeviceScale GetDesktopToDeviceScale() override;
+  mozilla::DesktopToLayoutDeviceScale GetDesktopToDeviceScaleByScreen()
+      override;
   virtual void SetParent(nsIWidget* aNewParent) override;
   virtual void SetModal(bool aModal) override;
   virtual bool IsVisible() const override;
@@ -129,9 +144,8 @@ class nsWindow final : public nsBaseWidget {
   virtual LayoutDeviceIntRect GetClientBounds() override;
   virtual LayoutDeviceIntSize GetClientSize() override;
   virtual LayoutDeviceIntPoint GetClientOffset() override;
-  virtual void SetCursor(nsCursor aCursor) override;
-  virtual nsresult SetCursor(imgIContainer* aCursor, uint32_t aHotspotX,
-                             uint32_t aHotspotY) override;
+  virtual void SetCursor(nsCursor aDefaultCursor, imgIContainer* aCursor,
+                         uint32_t aHotspotX, uint32_t aHotspotY) override;
   virtual void Invalidate(const LayoutDeviceIntRect& aRect) override;
   virtual void* GetNativeData(uint32_t aDataType) override;
   virtual nsresult SetTitle(const nsAString& aTitle) override;
@@ -169,6 +183,11 @@ class nsWindow final : public nsBaseWidget {
 
   GdkRectangle DevicePixelsToGdkRectRoundOut(LayoutDeviceIntRect aRect);
 
+  mozilla::widget::IMContextWrapper* GetIMContext() const { return mIMContext; }
+
+  bool DispatchCommandEvent(nsAtom* aCommand);
+  bool DispatchContentCommandEvent(mozilla::EventMessage aMsg);
+
   // event callbacks
   gboolean OnExposeEvent(cairo_t* cr);
   gboolean OnConfigureEvent(GtkWidget* aWidget, GdkEventConfigure* aEvent);
@@ -184,18 +203,6 @@ class nsWindow final : public nsBaseWidget {
   void OnContainerFocusOutEvent(GdkEventFocus* aEvent);
   gboolean OnKeyPressEvent(GdkEventKey* aEvent);
   gboolean OnKeyReleaseEvent(GdkEventKey* aEvent);
-
-  /**
-   * MaybeDispatchContextMenuEvent() may dispatch eContextMenu event if
-   * the given key combination should cause opening context menu.
-   *
-   * @param aEvent            The native key event.
-   * @return                  true if this method dispatched eContextMenu
-   *                          event.  Otherwise, false.
-   *                          Be aware, when this returns true, the
-   *                          widget may have been destroyed.
-   */
-  bool MaybeDispatchContextMenuEvent(const GdkEventKey* aEvent);
 
   void OnScrollEvent(GdkEventScroll* aEvent);
   void OnVisibilityNotifyEvent(GdkEventVisibility* aEvent);
@@ -215,6 +222,8 @@ class nsWindow final : public nsBaseWidget {
   virtual void EndRemoteDrawingInRegion(
       mozilla::gfx::DrawTarget* aDrawTarget,
       LayoutDeviceIntRegion& aInvalidRegion) override;
+
+  void SetProgress(unsigned long progressPercent);
 
  private:
   void UpdateAlpha(mozilla::gfx::SourceSurface* aSourceSurface,
@@ -236,12 +245,16 @@ class nsWindow final : public nsBaseWidget {
 
   void DispatchContextMenuEventFromMouseEvent(uint16_t domButton,
                                               GdkEventButton* aEvent);
+#ifdef MOZ_WAYLAND
+  void WaylandEGLSurfaceForceRedraw();
+#endif
 
  public:
   void ThemeChanged(void);
   void OnDPIChanged(void);
   void OnCheckResize(void);
   void OnCompositedChanged(void);
+  void OnScaleChanged(GtkAllocation* aAllocation);
 
 #ifdef MOZ_X11
   Window mOldFocusWindow;
@@ -252,23 +265,21 @@ class nsWindow final : public nsBaseWidget {
   virtual MOZ_MUST_USE nsresult BeginResizeDrag(mozilla::WidgetGUIEvent* aEvent,
                                                 int32_t aHorizontal,
                                                 int32_t aVertical) override;
-  virtual MOZ_MUST_USE nsresult
-  BeginMoveDrag(mozilla::WidgetMouseEvent* aEvent) override;
 
   MozContainer* GetMozContainer() { return mContainer; }
   // GetMozContainerWidget returns the MozContainer even for undestroyed
   // descendant windows
   GtkWidget* GetMozContainerWidget();
   GdkWindow* GetGdkWindow() { return mGdkWindow; }
+  GtkWidget* GetGtkWidget() { return mShell; }
+  nsIFrame* GetFrame();
   bool IsDestroyed() { return mIsDestroyed; }
 
   void DispatchDragEvent(mozilla::EventMessage aMsg,
                          const LayoutDeviceIntPoint& aRefPoint, guint aTime);
   static void UpdateDragStatus(GdkDragContext* aDragContext,
                                nsIDragService* aDragService);
-  // If this dispatched the keydown event actually, this returns TRUE,
-  // otherwise, FALSE.
-  bool DispatchKeyDownEvent(GdkEventKey* aEvent, bool* aIsCancelled);
+
   WidgetEventTime GetWidgetEventTime(guint32 aEventTime);
   mozilla::TimeStamp GetEventTimeStamp(guint32 aEventTime);
   mozilla::CurrentX11TimeGetter* GetCurrentTimeGetter();
@@ -293,15 +304,14 @@ class nsWindow final : public nsBaseWidget {
 
   virtual void SetTransparencyMode(nsTransparencyMode aMode) override;
   virtual nsTransparencyMode GetTransparencyMode() override;
-#if (MOZ_WIDGET_GTK >= 3)
   virtual void UpdateOpaqueRegion(
       const LayoutDeviceIntRegion& aOpaqueRegion) override;
-#endif
   virtual nsresult ConfigureChildren(
       const nsTArray<Configuration>& aConfigurations) override;
   nsresult UpdateTranslucentWindowAlphaInternal(const nsIntRect& aRect,
                                                 uint8_t* aAlphas,
                                                 int32_t aStride);
+  void UpdateTitlebarTransparencyBitmap();
 
   virtual void ReparentNativeWidget(nsIWidget* aNewParent) override;
 
@@ -335,6 +345,7 @@ class nsWindow final : public nsBaseWidget {
 #ifdef MOZ_WAYLAND
   wl_display* GetWaylandDisplay();
   wl_surface* GetWaylandSurface();
+  bool WaylandSurfaceNeedsClear();
 #endif
   virtual void GetCompositorWidgetInitData(
       mozilla::widget::CompositorWidgetInitData* aInitData) override;
@@ -362,6 +373,9 @@ class nsWindow final : public nsBaseWidget {
 
   virtual bool WidgetTypeSupportsAcceleration() override;
 
+  nsresult SetSystemFont(const nsCString& aFontName) override;
+  nsresult GetSystemFont(nsCString& aFontName) override;
+
   typedef enum {
     CSD_SUPPORT_SYSTEM,  // CSD including shadows
     CSD_SUPPORT_CLIENT,  // CSD without shadows
@@ -373,6 +387,10 @@ class nsWindow final : public nsBaseWidget {
    * the XDG_CURRENT_DESKTOP environment variable.
    */
   static CSDSupportLevel GetSystemCSDSupportLevel();
+
+  static bool HideTitlebarByDefault();
+  static bool GetTopLevelWindowActiveState(nsIFrame* aFrame);
+  static bool TitlebarCanUseShapeMask();
 
  protected:
   virtual ~nsWindow();
@@ -416,6 +434,9 @@ class nsWindow final : public nsBaseWidget {
   bool mIsDragPopup;
   // Can we access X?
   bool mIsX11Display;
+#ifdef MOZ_WAYLAND
+  bool mNeedsUpdatingEGLSurface;
+#endif
 
  private:
   void DestroyChildWindows();
@@ -426,8 +447,6 @@ class nsWindow final : public nsBaseWidget {
   void SetWindowDecoration(nsBorderStyle aStyle);
   void InitButtonEvent(mozilla::WidgetMouseEvent& aEvent,
                        GdkEventButton* aGdkEvent);
-  bool DispatchCommandEvent(nsAtom* aCommand);
-  bool DispatchContentCommandEvent(mozilla::EventMessage aMsg);
   bool CheckForRollup(gdouble aMouseX, gdouble aMouseY, bool aIsWheel,
                       bool aAlwaysRollup);
   void CheckForRollupDuringGrab() { CheckForRollup(0, 0, false, true); }
@@ -436,23 +455,35 @@ class nsWindow final : public nsBaseWidget {
                    gint* aButton, gint* aRootX, gint* aRootY);
   void ClearCachedResources();
   nsIWidgetListener* GetListener();
-  bool IsComposited() const;
 
   void UpdateClientOffsetForCSDWindow();
 
   nsWindow* GetTransientForWindowIfPopup();
   bool IsHandlingTouchSequence(GdkEventSequence* aSequence);
 
+  void NativeMoveResizeWaylandPopup(GdkPoint* aPosition, GdkRectangle* aSize);
+
+  GtkTextDirection GetTextDirection();
+
+#ifdef MOZ_X11
+  typedef enum {GTK_WIDGET_COMPOSIDED_DEFAULT = 0,
+                GTK_WIDGET_COMPOSIDED_DISABLED = 1,
+                GTK_WIDGET_COMPOSIDED_ENABLED = 2} WindowComposeRequest;
+
+  void SetCompositorHint(WindowComposeRequest aState);
+#endif
+  nsCString mGtkWindowTypeName;
+  nsCString mGtkWindowRoleName;
+  void RefreshWindowClass();
+
   GtkWidget* mShell;
   MozContainer* mContainer;
   GdkWindow* mGdkWindow;
+  bool mWindowShouldStartDragging = false;
   PlatformCompositorWidgetDelegate* mCompositorWidgetDelegate;
 
   uint32_t mHasMappedToplevel : 1, mIsFullyObscured : 1, mRetryPointerGrab : 1;
   nsSizeMode mSizeState;
-
-  int32_t mTransparencyBitmapWidth;
-  int32_t mTransparencyBitmapHeight;
 
   nsIntPoint mClientOffset;
 
@@ -482,6 +513,8 @@ class nsWindow final : public nsBaseWidget {
   CSDSupportLevel mCSDSupportLevel;
   // If true, draw our own window titlebar.
   bool mDrawInTitlebar;
+  // Draw titlebar with :backdrop css state (inactive/unfocused).
+  bool mTitlebarBackdropState;
   // Draggable titlebar region maintained by UpdateWindowDraggingRegion
   LayoutDeviceIntRegion mDraggableRegion;
 
@@ -540,6 +573,15 @@ class nsWindow final : public nsBaseWidget {
   // full translucency at this time; each pixel is either fully opaque
   // or fully transparent.
   gchar* mTransparencyBitmap;
+  int32_t mTransparencyBitmapWidth;
+  int32_t mTransparencyBitmapHeight;
+  // The transparency bitmap is used instead of ARGB visual for toplevel
+  // window to draw titlebar.
+  bool mTransparencyBitmapForTitlebar;
+
+  // True when we're on compositing window manager and this
+  // window is using visual with alpha channel.
+  bool mHasAlphaVisual;
 
   // all of our DND stuff
   void InitDragEvent(mozilla::WidgetDragEvent& aEvent);
@@ -565,6 +607,14 @@ class nsWindow final : public nsBaseWidget {
   void CleanLayerManagerRecursive();
 
   virtual int32_t RoundsWidgetCoordinatesTo() override;
+
+  void ForceTitlebarRedraw();
+
+  bool IsWaylandPopup();
+  GtkWidget* ConfigureWaylandPopupWindows();
+  void HideWaylandWindow();
+  void HideWaylandTooltips();
+  void HideWaylandPopupAndAllChildren();
 
   /**
    * |mIMContext| takes all IME related stuff.

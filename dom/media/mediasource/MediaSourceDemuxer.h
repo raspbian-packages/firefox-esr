@@ -5,17 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(MediaSourceDemuxer_h_)
-#define MediaSourceDemuxer_h_
+#  define MediaSourceDemuxer_h_
 
-#include "mozilla/Atomics.h"
-#include "mozilla/Maybe.h"
-#include "mozilla/Monitor.h"
-#include "AutoTaskQueue.h"
-
-#include "MediaDataDemuxer.h"
-#include "MediaResource.h"
-#include "MediaSource.h"
-#include "TrackBuffersManager.h"
+#  include "MediaDataDemuxer.h"
+#  include "MediaResource.h"
+#  include "MediaSource.h"
+#  include "TrackBuffersManager.h"
+#  include "mozilla/Atomics.h"
+#  include "mozilla/Maybe.h"
+#  include "mozilla/Monitor.h"
+#  include "mozilla/TaskQueue.h"
 
 namespace mozilla {
 
@@ -47,7 +46,7 @@ class MediaSourceDemuxer : public MediaDataDemuxer,
   /* interface for TrackBuffersManager */
   void AttachSourceBuffer(RefPtr<TrackBuffersManager>& aSourceBuffer);
   void DetachSourceBuffer(RefPtr<TrackBuffersManager>& aSourceBuffer);
-  AutoTaskQueue* GetTaskQueue() { return mTaskQueue; }
+  TaskQueue* GetTaskQueue() { return mTaskQueue; }
   void NotifyInitDataArrived();
 
   // Returns a string describing the state of the MediaSource internal
@@ -75,7 +74,7 @@ class MediaSourceDemuxer : public MediaDataDemuxer,
     return !GetTaskQueue() || GetTaskQueue()->IsCurrentThreadIn();
   }
 
-  RefPtr<AutoTaskQueue> mTaskQueue;
+  RefPtr<TaskQueue> mTaskQueue;
   nsTArray<RefPtr<MediaSourceTrackDemuxer>> mDemuxers;
 
   nsTArray<RefPtr<TrackBuffersManager>> mSourceBuffers;

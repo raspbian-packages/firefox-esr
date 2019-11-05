@@ -4,21 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #if !defined(mozilla_dom_HTMLCanvasElement_h)
-#define mozilla_dom_HTMLCanvasElement_h
+#  define mozilla_dom_HTMLCanvasElement_h
 
-#include "mozilla/Attributes.h"
-#include "mozilla/WeakPtr.h"
-#include "nsIDOMEventListener.h"
-#include "nsIObserver.h"
-#include "nsGenericHTMLElement.h"
-#include "nsGkAtoms.h"
-#include "nsSize.h"
-#include "nsError.h"
+#  include "mozilla/Attributes.h"
+#  include "mozilla/WeakPtr.h"
+#  include "nsIDOMEventListener.h"
+#  include "nsIObserver.h"
+#  include "nsGenericHTMLElement.h"
+#  include "nsGkAtoms.h"
+#  include "nsSize.h"
+#  include "nsError.h"
 
-#include "mozilla/dom/BindingDeclarations.h"
-#include "mozilla/dom/CanvasRenderingContextHelper.h"
-#include "mozilla/gfx/Rect.h"
-#include "mozilla/layers/LayersTypes.h"
+#  include "mozilla/dom/BindingDeclarations.h"
+#  include "mozilla/dom/CanvasRenderingContextHelper.h"
+#  include "mozilla/gfx/Rect.h"
+#  include "mozilla/layers/LayersTypes.h"
 
 class nsICanvasRenderingContextInternal;
 class nsITimerCallback;
@@ -125,9 +125,9 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
 
  public:
   explicit HTMLCanvasElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLCanvasElement, canvas)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLCanvasElement, canvas)
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -166,10 +166,11 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
 
   void ToDataURL(JSContext* aCx, const nsAString& aType,
                  JS::Handle<JS::Value> aParams, nsAString& aDataURL,
-                 ErrorResult& aRv);
+                 nsIPrincipal& aSubjectPrincipal, ErrorResult& aRv);
 
   void ToBlob(JSContext* aCx, BlobCallback& aCallback, const nsAString& aType,
-              JS::Handle<JS::Value> aParams, ErrorResult& aRv);
+              JS::Handle<JS::Value> aParams, nsIPrincipal& aSubjectPrincipal,
+              ErrorResult& aRv);
 
   OffscreenCanvas* TransferControlToOffscreen(ErrorResult& aRv);
 
@@ -184,14 +185,16 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   }
   already_AddRefed<File> MozGetAsFile(const nsAString& aName,
                                       const nsAString& aType,
-                                      CallerType aCallerType, ErrorResult& aRv);
+                                      nsIPrincipal& aSubjectPrincipal,
+                                      ErrorResult& aRv);
   already_AddRefed<nsISupports> MozGetIPCContext(const nsAString& aContextId,
                                                  ErrorResult& aRv);
   PrintCallback* GetMozPrintCallback() const;
   void SetMozPrintCallback(PrintCallback* aCallback);
 
   already_AddRefed<CanvasCaptureMediaStream> CaptureStream(
-      const Optional<double>& aFrameRate, ErrorResult& aRv);
+      const Optional<double>& aFrameRate, nsIPrincipal& aSubjectPrincipal,
+      ErrorResult& aRv);
 
   /**
    * Get the size in pixels of this canvas element
@@ -280,12 +283,10 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
                                       int32_t aModType) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
-  nsresult CopyInnerTo(mozilla::dom::Element* aDest, bool aPreallocateChildren);
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
+  nsresult CopyInnerTo(HTMLCanvasElement* aDest);
 
-  virtual nsresult GetEventTargetParent(
-      mozilla::EventChainPreVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
 
   /*
    * Helpers called by various users of Canvas
@@ -329,6 +330,8 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
 
   already_AddRefed<layers::SharedSurfaceTextureClient> GetVRFrame();
 
+  bool MaybeModified() const { return mMaybeModified; };
+
  protected:
   virtual ~HTMLCanvasElement();
 
@@ -340,12 +343,14 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   virtual already_AddRefed<nsICanvasRenderingContextInternal> CreateContext(
       CanvasContextType aContextType) override;
 
-  nsresult ExtractData(JSContext* aCx, nsAString& aType,
-                       const nsAString& aOptions, nsIInputStream** aStream);
-  nsresult ToDataURLImpl(JSContext* aCx, const nsAString& aMimeType,
+  nsresult ExtractData(JSContext* aCx, nsIPrincipal& aSubjectPrincipal,
+                       nsAString& aType, const nsAString& aOptions,
+                       nsIInputStream** aStream);
+  nsresult ToDataURLImpl(JSContext* aCx, nsIPrincipal& aSubjectPrincipal,
+                         const nsAString& aMimeType,
                          const JS::Value& aEncoderOptions, nsAString& aDataURL);
   nsresult MozGetAsFileImpl(const nsAString& aName, const nsAString& aType,
-                            File** aResult);
+                            nsIPrincipal& aSubjectPrincipal, File** aResult);
   void CallPrintCallback();
 
   virtual nsresult AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
@@ -360,6 +365,8 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   AsyncCanvasRenderer* GetAsyncCanvasRenderer();
 
   bool mResetLayer;
+  bool mMaybeModified;  // we fetched the context, so we may have written to the
+                        // canvas
   RefPtr<HTMLCanvasElement> mOriginalCanvas;
   RefPtr<PrintCallback> mPrintCallback;
   RefPtr<HTMLCanvasPrintState> mPrintState;
@@ -375,14 +382,14 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   // We also transitively set it when script paints a canvas which
   // is itself write-only.
   bool mWriteOnly;
- 
+
   // When this canvas is (only) tainted by an image from an extension
   // content script, allow reads from the same extension afterwards.
   RefPtr<nsIPrincipal> mExpandedReader;
 
   // Determines if the caller should be able to read the content.
   bool CallerCanRead(JSContext* aCx);
-  
+
   bool IsPrintCallbackDone();
 
   void HandlePrintCallback(nsPresContext::nsPresContextType aType);

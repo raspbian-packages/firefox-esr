@@ -37,7 +37,7 @@ StatementRow::StatementRow(nsPIDOMWindowInner* aWindow, Statement* aStatement)
 
 JSObject* StatementRow::WrapObject(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return dom::MozStorageStatementRowBinding::Wrap(aCx, this, aGivenProto);
+  return dom::MozStorageStatementRow_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void StatementRow::NamedGetter(JSContext* aCx, const nsAString& aName,
@@ -85,7 +85,8 @@ void StatementRow::NamedGetter(JSContext* aCx, const nsAString& aName,
       const char16_t* sval = reinterpret_cast<const char16_t*>(
           static_cast<mozIStorageStatement*>(mStatement)
               ->AsSharedWString(idx, &bytes));
-      JSString* str = ::JS_NewUCStringCopyN(aCx, sval, bytes / 2);
+      JSString* str =
+          ::JS_NewUCStringCopyN(aCx, sval, bytes / sizeof(char16_t));
       if (!str) {
         aRv.Throw(NS_ERROR_UNEXPECTED);
         return;

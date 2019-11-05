@@ -19,7 +19,7 @@
 #include "mozilla/dom/WebCryptoCommon.h"
 #include "mozilla/dom/WebCryptoTask.h"
 #include "mozilla/dom/WebCryptoThreadPool.h"
-#include "mozilla/dom/WorkerHolder.h"
+#include "mozilla/dom/WorkerRef.h"
 #include "mozilla/dom/WorkerPrivate.h"
 
 // Template taken from security/nss/lib/util/templates.c
@@ -85,6 +85,7 @@ enum TelemetryAlgorithm {
   TA_PBKDF2 = 21,
   TA_ECDSA = 22,
   TA_HKDF = 23,
+  TA_DH = 24,
 };
 
 // Convenience functions for extracting / converting information
@@ -127,40 +128,6 @@ class ClearException {
   JSContext* mCx;
 };
 
-class WebCryptoTask::InternalWorkerHolder final : public WorkerHolder {
-  InternalWorkerHolder()
-      : WorkerHolder("WebCryptoTask::InternalWorkerHolder") {}
-
-  ~InternalWorkerHolder() {
-    NS_ASSERT_OWNINGTHREAD(InternalWorkerHolder);
-    // Nothing to do here since the parent destructor releases the
-    // worker automatically.
-  }
-
- public:
-  static already_AddRefed<InternalWorkerHolder> Create() {
-    MOZ_ASSERT(!NS_IsMainThread());
-    WorkerPrivate* workerPrivate = GetCurrentThreadWorkerPrivate();
-    MOZ_ASSERT(workerPrivate);
-    RefPtr<InternalWorkerHolder> ref = new InternalWorkerHolder();
-    if (NS_WARN_IF(!ref->HoldWorker(workerPrivate, Canceling))) {
-      return nullptr;
-    }
-    return ref.forget();
-  }
-
-  virtual bool Notify(WorkerStatus aStatus) override {
-    NS_ASSERT_OWNINGTHREAD(InternalWorkerHolder);
-    // Do nothing here.  Since WebCryptoTask dispatches back to
-    // the worker thread using nsThread::Dispatch() instead of
-    // WorkerRunnable it will always be able to execute its
-    // runnables.
-    return true;
-  }
-
-  NS_INLINE_DECL_REFCOUNTING(WebCryptoTask::InternalWorkerHolder)
-};
-
 template <class OOS>
 static nsresult GetAlgorithmName(JSContext* aCx, const OOS& aAlgorithm,
                                  nsString& aName) {
@@ -182,7 +149,7 @@ static nsresult GetAlgorithmName(JSContext* aCx, const OOS& aAlgorithm,
   }
 
   if (!NormalizeToken(aName, aName)) {
-    return NS_ERROR_DOM_SYNTAX_ERR;
+    return NS_ERROR_DOM_NOT_SUPPORTED_ERR;
   }
 
   return NS_OK;
@@ -357,11 +324,15 @@ void WebCryptoTask::DispatchWithPromise(Promise* aResultPromise) {
   // private may get torn down before we dispatch back to complete
   // the transaction.
   if (!NS_IsMainThread()) {
-    mWorkerHolder = InternalWorkerHolder::Create();
-    // If we can't register a holder then the worker is already
-    // shutting down.  Don't start new work.
-    if (!mWorkerHolder) {
+    WorkerPrivate* workerPrivate = GetCurrentThreadWorkerPrivate();
+    MOZ_ASSERT(workerPrivate);
+
+    RefPtr<StrongWorkerRef> workerRef =
+        StrongWorkerRef::Create(workerPrivate, "WebCryptoTask");
+    if (NS_WARN_IF(!workerRef)) {
       mEarlyRv = NS_BINDING_ABORTED;
+    } else {
+      mWorkerRef = new ThreadSafeWorkerRef(workerRef);
     }
   }
   MAYBE_EARLY_FAIL(mEarlyRv);
@@ -387,7 +358,7 @@ WebCryptoTask::Run() {
 
   // Stop holding the worker thread alive now that the async work has
   // been completed.
-  mWorkerHolder = nullptr;
+  mWorkerRef = nullptr;
 
   return NS_OK;
 }
@@ -407,7 +378,7 @@ void WebCryptoTask::FailWithError(nsresult aRv) {
   mResultPromise->MaybeReject(aRv);
   // Manually release mResultPromise while we're on the main thread
   mResultPromise = nullptr;
-  mWorkerHolder = nullptr;
+  mWorkerRef = nullptr;
   Cleanup();
 }
 
@@ -475,13 +446,21 @@ class AesTask : public ReturnArrayBufferViewTask, public DeferredData {
  public:
   AesTask(JSContext* aCx, const ObjectOrString& aAlgorithm, CryptoKey& aKey,
           bool aEncrypt)
-      : mSymKey(aKey.GetSymKey()), mEncrypt(aEncrypt) {
+      : mMechanism(CKM_INVALID_MECHANISM),
+        mSymKey(aKey.GetSymKey()),
+        mTagLength(0),
+        mCounterLength(0),
+        mEncrypt(aEncrypt) {
     Init(aCx, aAlgorithm, aKey, aEncrypt);
   }
 
   AesTask(JSContext* aCx, const ObjectOrString& aAlgorithm, CryptoKey& aKey,
           const CryptoOperationData& aData, bool aEncrypt)
-      : mSymKey(aKey.GetSymKey()), mEncrypt(aEncrypt) {
+      : mMechanism(CKM_INVALID_MECHANISM),
+        mSymKey(aKey.GetSymKey()),
+        mTagLength(0),
+        mCounterLength(0),
+        mEncrypt(aEncrypt) {
     Init(aCx, aAlgorithm, aKey, aEncrypt);
     SetData(aData);
   }
@@ -1504,9 +1483,9 @@ class ImportSymmetricKeyTask : public ImportKeyTask {
         return NS_ERROR_DOM_DATA_ERR;
       }
     }
-
     // Check that we have valid key data.
-    if (mKeyData.Length() == 0) {
+    if (mKeyData.Length() == 0 &&
+        !mAlgName.EqualsLiteral(WEBCRYPTO_ALG_PBKDF2)) {
       return NS_ERROR_DOM_DATA_ERR;
     }
 
@@ -1589,14 +1568,16 @@ class ImportRsaKeyTask : public ImportKeyTask {
  public:
   ImportRsaKeyTask(nsIGlobalObject* aGlobal, JSContext* aCx,
                    const nsAString& aFormat, const ObjectOrString& aAlgorithm,
-                   bool aExtractable, const Sequence<nsString>& aKeyUsages) {
+                   bool aExtractable, const Sequence<nsString>& aKeyUsages)
+      : mModulusLength(0) {
     Init(aGlobal, aCx, aFormat, aAlgorithm, aExtractable, aKeyUsages);
   }
 
   ImportRsaKeyTask(nsIGlobalObject* aGlobal, JSContext* aCx,
                    const nsAString& aFormat, JS::Handle<JSObject*> aKeyData,
                    const ObjectOrString& aAlgorithm, bool aExtractable,
-                   const Sequence<nsString>& aKeyUsages) {
+                   const Sequence<nsString>& aKeyUsages)
+      : mModulusLength(0) {
     Init(aGlobal, aCx, aFormat, aAlgorithm, aExtractable, aKeyUsages);
     if (NS_FAILED(mEarlyRv)) {
       return;
@@ -2135,7 +2116,6 @@ class GenerateSymmetricKeyTask : public WebCryptoTask {
     nsString algName;
     mEarlyRv = GetAlgorithmName(aCx, aAlgorithm, algName);
     if (NS_FAILED(mEarlyRv)) {
-      mEarlyRv = NS_ERROR_DOM_SYNTAX_ERR;
       return;
     }
 
@@ -2164,7 +2144,6 @@ class GenerateSymmetricKeyTask : public WebCryptoTask {
       nsString hashName;
       mEarlyRv = GetAlgorithmName(aCx, params.mHash, hashName);
       if (NS_FAILED(mEarlyRv)) {
-        mEarlyRv = NS_ERROR_DOM_SYNTAX_ERR;
         return;
       }
 
@@ -2242,7 +2221,10 @@ class GenerateSymmetricKeyTask : public WebCryptoTask {
 GenerateAsymmetricKeyTask::GenerateAsymmetricKeyTask(
     nsIGlobalObject* aGlobal, JSContext* aCx, const ObjectOrString& aAlgorithm,
     bool aExtractable, const Sequence<nsString>& aKeyUsages)
-    : mKeyPair(new CryptoKeyPair()) {
+    : mKeyPair(new CryptoKeyPair()),
+      mMechanism(CKM_INVALID_MECHANISM),
+      mRsaParams(),
+      mDhParams() {
   mArena = UniquePLArenaPool(PORT_NewArena(DER_DEFAULT_CHUNKSIZE));
   if (!mArena) {
     mEarlyRv = NS_ERROR_DOM_UNKNOWN_ERR;
@@ -2256,7 +2238,6 @@ GenerateAsymmetricKeyTask::GenerateAsymmetricKeyTask(
   // Extract algorithm name
   mEarlyRv = GetAlgorithmName(aCx, aAlgorithm, mAlgName);
   if (NS_FAILED(mEarlyRv)) {
-    mEarlyRv = NS_ERROR_DOM_SYNTAX_ERR;
     return;
   }
 
@@ -2279,7 +2260,6 @@ GenerateAsymmetricKeyTask::GenerateAsymmetricKeyTask(
     nsString hashName;
     mEarlyRv = GetAlgorithmName(aCx, params.mHash, hashName);
     if (NS_FAILED(mEarlyRv)) {
-      mEarlyRv = NS_ERROR_DOM_SYNTAX_ERR;
       return;
     }
 
@@ -2465,13 +2445,16 @@ class DeriveHkdfBitsTask : public ReturnArrayBufferViewTask {
  public:
   DeriveHkdfBitsTask(JSContext* aCx, const ObjectOrString& aAlgorithm,
                      CryptoKey& aKey, uint32_t aLength)
-      : mSymKey(aKey.GetSymKey()) {
+      : mSymKey(aKey.GetSymKey()), mMechanism(CKM_INVALID_MECHANISM) {
     Init(aCx, aAlgorithm, aKey, aLength);
   }
 
   DeriveHkdfBitsTask(JSContext* aCx, const ObjectOrString& aAlgorithm,
                      CryptoKey& aKey, const ObjectOrString& aTargetAlgorithm)
-      : mSymKey(aKey.GetSymKey()) {
+      : mLengthInBits(0),
+        mLengthInBytes(0),
+        mSymKey(aKey.GetSymKey()),
+        mMechanism(CKM_INVALID_MECHANISM) {
     size_t length;
     mEarlyRv = GetKeyLengthForAlgorithm(aCx, aTargetAlgorithm, length);
 
@@ -2618,13 +2601,16 @@ class DerivePbkdfBitsTask : public ReturnArrayBufferViewTask {
  public:
   DerivePbkdfBitsTask(JSContext* aCx, const ObjectOrString& aAlgorithm,
                       CryptoKey& aKey, uint32_t aLength)
-      : mSymKey(aKey.GetSymKey()) {
+      : mSymKey(aKey.GetSymKey()), mHashOidTag(SEC_OID_UNKNOWN) {
     Init(aCx, aAlgorithm, aKey, aLength);
   }
 
   DerivePbkdfBitsTask(JSContext* aCx, const ObjectOrString& aAlgorithm,
                       CryptoKey& aKey, const ObjectOrString& aTargetAlgorithm)
-      : mSymKey(aKey.GetSymKey()) {
+      : mLength(0),
+        mIterations(0),
+        mSymKey(aKey.GetSymKey()),
+        mHashOidTag(SEC_OID_UNKNOWN) {
     size_t length;
     mEarlyRv = GetKeyLengthForAlgorithm(aCx, aTargetAlgorithm, length);
 
@@ -2638,12 +2624,6 @@ class DerivePbkdfBitsTask : public ReturnArrayBufferViewTask {
     Telemetry::Accumulate(Telemetry::WEBCRYPTO_ALG, TA_PBKDF2);
     CHECK_KEY_ALGORITHM(aKey.Algorithm(), WEBCRYPTO_ALG_PBKDF2);
 
-    // Check that we got a symmetric key
-    if (mSymKey.Length() == 0) {
-      mEarlyRv = NS_ERROR_DOM_INVALID_ACCESS_ERR;
-      return;
-    }
-
     RootedDictionary<Pbkdf2Params> params(aCx);
     mEarlyRv = Coerce(aCx, params, aAlgorithm);
     if (NS_FAILED(mEarlyRv)) {
@@ -2653,7 +2633,7 @@ class DerivePbkdfBitsTask : public ReturnArrayBufferViewTask {
 
     // length must be a multiple of 8 bigger than zero.
     if (aLength == 0 || aLength % 8) {
-      mEarlyRv = NS_ERROR_DOM_DATA_ERR;
+      mEarlyRv = NS_ERROR_DOM_OPERATION_ERR;
       return;
     }
 
@@ -2904,6 +2884,7 @@ class DeriveDhBitsTask : public ReturnArrayBufferViewTask {
   }
 
   void Init(JSContext* aCx, const ObjectOrString& aAlgorithm, CryptoKey& aKey) {
+    Telemetry::Accumulate(Telemetry::WEBCRYPTO_ALG, TA_DH);
     CHECK_KEY_ALGORITHM(aKey.Algorithm(), WEBCRYPTO_ALG_DH);
 
     // Check that we have a private key.
@@ -3472,12 +3453,7 @@ WebCryptoTask::WebCryptoTask()
       mOriginalEventTarget(nullptr),
       mRv(NS_ERROR_NOT_INITIALIZED) {}
 
-WebCryptoTask::~WebCryptoTask() {
-  if (mWorkerHolder) {
-    NS_ProxyRelease("WebCryptoTask::mWorkerHolder", mOriginalEventTarget,
-                    mWorkerHolder.forget());
-  }
-}
+WebCryptoTask::~WebCryptoTask() = default;
 
 }  // namespace dom
 }  // namespace mozilla

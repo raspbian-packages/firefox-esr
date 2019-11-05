@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Velkommen">
 <!ENTITY firstrun_urlbar_message2 "Tak for at du valgte &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Velkommen til &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "En moderne mobil browser fra Mozilla, nonprofit-organisationen der er dedikeret til et frit og åbent internet.">
+<!ENTITY newfirstrun_urlbar_subtext "Hurtig, privat og på din side.">
 <!ENTITY firstrun_panel_title_privacy "Privatliv">
 <!ENTITY firstrun_privacy_message "Surf på nettet uden at føle dig overvåget">
 <!ENTITY firstrun_privacy_subtext "Privat browsing med beskyttelse mod sporing blokerer for elementer, der registrerer data om dig, og din historik gemmes ikke, når du er færdig.">
+<!ENTITY newfirstrun_privacy_subtext "Privat browsing blokerer sporing fra reklamer, der følger dig online.">
 <!ENTITY firstrun_panel_title_customize "Tilpas">
 <!ENTITY firstrun_customize_message "Gør &brandShortName; til din egen.">
 <!ENTITY firstrun_customize_subtext "Tilpas &brandShortName; med tilføjelser. Bloker annoncer, tilføj funktioner eller vælg et tema, der passer til dig.">
@@ -18,21 +21,20 @@
 <!ENTITY firstrun_data_message "Færre data, hurtigere internet">
 <!ENTITY firstrun_data_subtext2 "Blokér billeder, så der skal hentes færre data fra de besøgte sider.">
 <!ENTITY firstrun_sync_title "Sync">
+<!ENTITY updatednewfirstrun_sync_title "Konto">
 <!ENTITY firstrun_sync_message2 "Fortsæt hvor du slap.">
 <!ENTITY firstrun_sync_subtext2 "Brug Sync til at finde bogmærker, adgangskoder og andet du har gemt i &brandShortName; på alle dine enheder.">
+<!ENTITY newfirstrun_sync_subtext "Synkroniser de gemte ting i Firefox for Android med Firefox på din computer. Der synkroniseres privat og sikkert.">
+<!ENTITY updatednewfirstrun_sync_subtext "Log ind på din konto for at få det fulde udbytte af &brandShortName;">
 <!ENTITY firstrun_signin_message "Bliv forbundet, start">
 <!ENTITY firstrun_signin_button "Log ind på Sync">
+<!ENTITY newfirstrun_signin_button "Aktiver Sync">
+<!ENTITY updatednewfirstrun_signin_button "Log ind på &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Start surfing">
 <!ENTITY firstrun_button_notnow "Ikke nu">
 <!ENTITY firstrun_button_next "Næste">
 
 <!ENTITY firstrun_tabqueue_title "Links">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Aktiver fanebladskø">
-<!ENTITY firstrun_tabqueue_subtext_off "Gem links til senere åbning i &brandShortName;, når du vælger dem i andre apps.">
-
-<!ENTITY firstrun_tabqueue_message_on "Succes!">
-<!ENTITY firstrun_tabqueue_subtext_on "Du kan altid deaktivere igen i &settings; under &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Artikler">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -68,7 +70,27 @@
 <!ENTITY  crash_close_label "Luk">
 <!ENTITY  crash_restart_label "Genstart &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; gik ned">
+<!ENTITY  crash_notification_message "Tryk for at rapportere til &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Ignorer">
+
 <!ENTITY url_bar_default_text2 "Indtast søgeord eller adresse">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Søg på nettet">
+<!ENTITY search_widget_default_cropped_text "Søg">
+<!ENTITY search_widget_logo_description "Søg på nettet med &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Brug din QR-læser til søgning eller skriv en adresse">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Brug din mikrofon til at søge på nettet eller til at angive en webadresse">
 
 <!ENTITY bookmark "Sæt bogmærke">
 <!ENTITY bookmark_remove "Fjern bogmærke">
@@ -95,6 +117,10 @@
 <!ENTITY bookmark_folder_updated "Mappe opdateret">
 <!ENTITY bookmark_parent_folder "Overordnet mappe">
 <!ENTITY bookmark_add_folder "Tilføj ny mappe">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(ingen titel)">
 
 <!ENTITY reader_saved_offline "Gemt offline">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -204,9 +230,9 @@
 <!-- Localization note (pref_category_advanced_summary3): “data saver” in this
      context means consuming less data, e.g. by not loading images, not
      “storing data”. -->
-<!ENTITY pref_category_advanced_summary3 "Gendan faneblade, data-sparer, udviklerværktøjer">
+<!ENTITY pref_category_advanced_summary3 "Gendan faneblade, data-sparer, Udviklerværktøj">
 <!ENTITY pref_category_notifications "Beskeder">
-<!ENTITY pref_category_notifications_summary "Nye funktioner, opdatering af websteder">
+<!ENTITY pref_category_notifications_summary2 "Nye funktioner og tips">
 <!ENTITY pref_developer_remotedebugging_usb "Ekstern debugging via USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Ekstern debugging via wi-fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Debugging via wi-fi kræver, at din enhed har en app til skanning af QR-koder installeret.">
@@ -261,7 +287,7 @@
      “storing data”. -->
 <!ENTITY pref_category_data_saver "Data-sparer">
 <!ENTITY pref_category_media "Medie">
-<!ENTITY pref_category_developer_tools "Udviklerværktøjer">
+<!ENTITY pref_category_developer_tools "Udviklerværktøj">
 
 <!ENTITY pref_tap_to_load_images_title2 "Vis billeder">
 <!ENTITY pref_tap_to_load_images_enabled "Altid">
@@ -288,6 +314,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Læs mere om brug af &brandShortName; og andre produkter fra &vendorShortName;">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(For at aktivere denne mulighed, skal &pref_feature_tips_notification_enabling_path; først aktiveres.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -327,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Åbn indstillingerne">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Tilføjer ny fane til køen&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "Skaler webindhold i henhold til systemets skriftstørrelse">
 
 <!ENTITY pref_media_autoplay_enabled "Tillad automatisk afspilning">
-<!ENTITY pref_media_autoplay_enabled_summary "Bestemmer om websteder kan starte afspilning af video og andet medieindhold automatisk">
+<!ENTITY pref_media_autoplay_allow "Tillad automatisk afspilning">
+<!ENTITY pref_media_autoplay_block "Afspil ikke automatisk">
 <!ENTITY pref_zoom_force_enabled "Aktiver altid zoom">
 <!ENTITY pref_zoom_force_enabled_summary "Gennemtving zoom, så du kan zoome på alle websider">
 <!ENTITY pref_voice_input "Stemme-input">
@@ -384,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "Søgehistorik">
 <!ENTITY pref_private_data_formdata2 "Formularhistorik">
 <!ENTITY pref_private_data_cookies2 "Cookies og aktive logins">
-<!ENTITY pref_private_data_passwords2 "Gemte logins">
 <!ENTITY pref_private_data_cache "Cache">
 <!ENTITY pref_private_data_offlineApps "Offline webstedsdata">
 <!ENTITY pref_private_data_siteSettings2 "Webstedsindstillinger">
 <!ENTITY pref_private_data_downloadFiles2 "Hentede filer">
 <!ENTITY pref_private_data_syncedTabs "Synkroniserede faneblade">
 
-<!ENTITY pref_default_browser "Angiv som standardbrowser">
+<!ENTITY pref_default_browser2 "Gør &brandShortName; til din standardbrowser">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Tryk på Browser-app &amp; vælg &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Besøg Mozilla Support">
 <!ENTITY pref_about_firefox "Om &brandShortName;">
 <!ENTITY pref_vendor_faqs "FAQs">
@@ -437,6 +476,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Fejlrapportering">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName; Positionstjeneste">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Hjælp &vendorShortName; med at kortlægge hele verden! Del din enheds tilnærmelsesvise position ud fra wi-fi og mobilmaster, så vi kan forbedre vores positionstjeneste.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName;s positionstjeneste kører">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -462,7 +506,7 @@
 <!ENTITY print "Udskriv">
 <!ENTITY view_page_source "Vis sidens kildekode">
 <!ENTITY find_in_page "Find på siden">
-<!ENTITY desktop_mode "Anmod om desktopversion">
+<!ENTITY desktop_mode "Bed om desktop-version">
 <!ENTITY page "Side">
 <!ENTITY tools "Funktioner">
 <!ENTITY new_tab "Nyt faneblad">
@@ -481,6 +525,10 @@
 <!ENTITY find_prev "Forrige">
 <!ENTITY find_next "Næste">
 <!ENTITY find_close "Luk">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Søgetermen blev ikke fundet">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -543,7 +591,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Vis faneblade i to kolonner i portrætvisning">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Side fjernet">
 <!ENTITY folder_removed "Mappen er slettet">
@@ -554,6 +602,8 @@
 <!ENTITY bookmark_edit_location "Adresse">
 <!ENTITY bookmark_edit_keyword "Genvej">
 <!ENTITY bookmark_select_folder "Vælg mappe">
+
+<!ENTITY bookmark_edit_undo "Fortryd">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -642,6 +692,8 @@
 <!ENTITY filepicker_audio_title "Vælg eller optag et lydklip">
 <!ENTITY filepicker_image_title "Vælg eller tag et billede">
 <!ENTITY filepicker_video_title "Vælg eller optag en video">
+
+<!ENTITY filepicker_permission_denied "De nødvendige tilladelser er ikke tildelt, returnerer til systemets filvælger.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Du er forbundet til">
@@ -761,7 +813,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Sidst synkroniseret: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Sidst synkroniseret: aldrig">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -822,15 +874,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Kunne ikke åbne &brandShortName;. Geninstaller og prøv så igen.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; opdateres ikke længere">
-<!ENTITY eol_notification_summary "Tryk for at læse mere">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; er blevet opdateret">
 <!ENTITY whatsnew_notification_summary "Læs om nyhederne i denne version">
-
-<!ENTITY promotion_add_page_shortcut "Tilføj genvej til side">
 
 <!ENTITY helper_first_offline_bookmark_title "Læs offline">
 <!ENTITY helper_first_offline_bookmark_message "Find ting fra din læseliste i bogmærkerne, også når du er offline.">
@@ -881,3 +928,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Føj til startskærm">
 <!ENTITY pwa_continue_to_website "Fortsæt til websted">
 <!ENTITY pwa_onboarding_sumo "Du kan nemt føje dette websted til din startskærm for at have hurtig adgang til det og browse hurtigere med en app-lignende oplevelse.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Afspil">
+<!ENTITY pip_play_button_description "Fortsæt afspilning">
+<!ENTITY pip_pause_button_title "Pause">
+<!ENTITY pip_pause_button_description "Sæt afspilning på pause">
+
+<!ENTITY pref_notification_settings_link "Håndter beskedindstillinger">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Browser">
+<!ENTITY mls_notification_channel "&vendorShortName;s positionstjeneste">
+<!ENTITY download_notification_channel "Hentede filer">
+<!ENTITY media_notification_channel2 "Lyd og video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; tips og tricks">
+<!ENTITY updater_notification_channel "App-opdateringer">
+<!ENTITY synced_tabs_notification_channel "Synkroniserede faneblade">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Webstedsbeskeder">
+<!ENTITY crash_handler_notifications_channel "&brandShortName;s fejlrapportering">

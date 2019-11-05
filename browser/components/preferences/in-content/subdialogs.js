@@ -14,19 +14,20 @@
  * @param {DOMNode} parentElement: New dialog is appended onto parentElement.
  * @param {String}  id: A unique identifier for the dialog.
  */
-function SubDialog({template, parentElement, id}) {
+function SubDialog({ template, parentElement, id }) {
   this._id = id;
 
   this._overlay = template.cloneNode(true);
-  this._frame = this._overlay.querySelector(".dialogFrame");
   this._box = this._overlay.querySelector(".dialogBox");
-  this._closeButton = this._overlay.querySelector(".dialogClose");
+  this._titleBar = this._overlay.querySelector(".dialogTitleBar");
   this._titleElement = this._overlay.querySelector(".dialogTitle");
+  this._closeButton = this._overlay.querySelector(".dialogClose");
+  this._frame = this._overlay.querySelector(".dialogFrame");
 
   this._overlay.id = `dialogOverlay-${id}`;
   this._frame.setAttribute("name", `dialogFrame-${id}`);
   this._frameCreated = new Promise(resolve => {
-    this._frame.addEventListener("load", resolve, {once: true});
+    this._frame.addEventListener("load", resolve, { once: true });
   });
 
   parentElement.appendChild(this._overlay);
@@ -55,8 +56,9 @@ SubDialog.prototype = {
   _closeButton: null,
 
   updateTitle(aEvent) {
-    if (aEvent.target != this._frame.contentDocument)
+    if (aEvent.target != this._frame.contentDocument) {
       return;
+    }
     this._titleElement.textContent = this._frame.contentDocument.title;
   },
 
@@ -65,8 +67,10 @@ SubDialog.prototype = {
       "xml-stylesheet",
       'href="' + aStylesheetURL + '" type="text/css"'
     );
-    this._frame.contentDocument.insertBefore(contentStylesheet,
-                                             this._frame.contentDocument.documentElement);
+    this._frame.contentDocument.insertBefore(
+      contentStylesheet,
+      this._frame.contentDocument.documentElement
+    );
   },
 
   async open(aURL, aFeatures = null, aParams = null, aClosingCallback = null) {
@@ -95,8 +99,14 @@ SubDialog.prototype = {
     }
     this._addDialogEventListeners();
 
-    let features = (aFeatures ? aFeatures + "," : "") + "resizable,dialog=no,centerscreen";
-    let dialog = window.openDialog(aURL, `dialogFrame-${this._id}`, features, aParams);
+    let features =
+      (aFeatures ? aFeatures + "," : "") + "resizable,dialog=no,centerscreen";
+    let dialog = window.openDialog(
+      aURL,
+      `dialogFrame-${this._id}`,
+      features,
+      aParams
+    );
     if (aClosingCallback) {
       this._closingCallback = aClosingCallback.bind(dialog);
     }
@@ -107,9 +117,12 @@ SubDialog.prototype = {
 
     features = features.replace(/,/g, "&");
     let featureParams = new URLSearchParams(features.toLowerCase());
-    this._box.setAttribute("resizable", featureParams.has("resizable") &&
-                                        featureParams.get("resizable") != "no" &&
-                                        featureParams.get("resizable") != "0");
+    this._box.setAttribute(
+      "resizable",
+      featureParams.has("resizable") &&
+        featureParams.get("resizable") != "no" &&
+        featureParams.get("resizable") != "0"
+    );
   },
 
   close(aEvent = null) {
@@ -141,10 +154,12 @@ SubDialog.prototype = {
     this._box.style.removeProperty("min-height");
     this._box.style.removeProperty("min-width");
 
-    this._overlay.dispatchEvent(new CustomEvent("dialogclose", {
-      bubbles: true,
-      detail: { dialog: this },
-    }));
+    this._overlay.dispatchEvent(
+      new CustomEvent("dialogclose", {
+        bubbles: true,
+        detail: { dialog: this },
+      })
+    );
 
     setTimeout(() => {
       // Unload the dialog after the event listeners run so that the load of about:blank isn't
@@ -159,7 +174,11 @@ SubDialog.prototype = {
         }
       };
       this._frame.addEventListener("load", onBlankLoad);
-      this._frame.loadURI("about:blank");
+      this._frame.loadURI("about:blank", {
+        triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
+          {}
+        ),
+      });
     }, 0);
   },
 
@@ -208,7 +227,10 @@ SubDialog.prototype = {
   },
 
   _onContentLoaded(aEvent) {
-    if (aEvent.target != this._frame || aEvent.target.contentWindow.location == "about:blank") {
+    if (
+      aEvent.target != this._frame ||
+      aEvent.target.contentWindow.location == "about:blank"
+    ) {
       return;
     }
 
@@ -217,7 +239,10 @@ SubDialog.prototype = {
     }
 
     // Provide the ability for the dialog to know that it is being loaded "in-content".
-    this._frame.contentDocument.documentElement.setAttribute("subdialog", "true");
+    this._frame.contentDocument.documentElement.setAttribute(
+      "subdialog",
+      "true"
+    );
 
     this._frame.contentWindow.addEventListener("dialogclosing", this);
 
@@ -227,10 +252,14 @@ SubDialog.prototype = {
       let frameHeight = this._frame.clientHeight;
       let boxMinHeight = parseFloat(getComputedStyle(this._box).minHeight, 10);
 
-      this._frame.style.height = (frameHeight + resizeByHeight) + "px";
-      this._box.style.minHeight = (boxMinHeight + resizeByHeight) + "px";
+      this._frame.style.height = frameHeight + resizeByHeight + "px";
+      this._box.style.minHeight = boxMinHeight + resizeByHeight + "px";
 
-      oldResizeBy.call(this._frame.contentWindow, resizeByWidth, resizeByHeight);
+      oldResizeBy.call(
+        this._frame.contentWindow,
+        resizeByWidth,
+        resizeByHeight
+      );
     };
 
     // Make window.close calls work like dialog closing.
@@ -257,45 +286,123 @@ SubDialog.prototype = {
     this._overlay.style.opacity = "0.01";
   },
 
-  _onLoad(aEvent) {
+  async _onLoad(aEvent) {
     if (aEvent.target.contentWindow.location == "about:blank") {
       return;
     }
 
+    // In order to properly calculate the sizing of the subdialog, we need to
+    // ensure that all of the l10n is done.
+    if (aEvent.target.contentDocument.l10n) {
+      await aEvent.target.contentDocument.l10n.ready;
+    }
+
+    // Some subdialogs may want to perform additional, asynchronous steps during initializations.
+    //
+    // In that case, we expect them to define a Promise which will delay measuring
+    // until the promise is fulfilled.
+    if (aEvent.target.contentDocument.mozSubdialogReady) {
+      await aEvent.target.contentDocument.mozSubdialogReady;
+    }
+
+    await this.resizeDialog();
+  },
+
+  async resizeDialog() {
     // Do this on load to wait for the CSS to load and apply before calculating the size.
     let docEl = this._frame.contentDocument.documentElement;
 
-    let groupBoxTitle = document.getAnonymousElementByAttribute(this._box, "class", "groupbox-title");
-    let groupBoxTitleHeight = groupBoxTitle.clientHeight +
-                              parseFloat(getComputedStyle(groupBoxTitle).borderBottomWidth);
-
-    let groupBoxBody = document.getAnonymousElementByAttribute(this._box, "class", "groupbox-body");
     // These are deduced from styles which we don't change, so it's safe to get them now:
-    let boxVerticalPadding = 2 * parseFloat(getComputedStyle(groupBoxBody).paddingTop);
-    let boxHorizontalPadding = 2 * parseFloat(getComputedStyle(groupBoxBody).paddingLeft);
-    let boxHorizontalBorder = 2 * parseFloat(getComputedStyle(this._box).borderLeftWidth);
-    let boxVerticalBorder = 2 * parseFloat(getComputedStyle(this._box).borderTopWidth);
+    let boxHorizontalBorder =
+      2 * parseFloat(getComputedStyle(this._box).borderLeftWidth);
+    let frameHorizontalMargin =
+      2 * parseFloat(getComputedStyle(this._frame).marginLeft);
+
+    // Then determine and set a bunch of width stuff:
+    let frameMinWidth = docEl.style.width;
+    if (!frameMinWidth) {
+      if (docEl.ownerDocument.body) {
+        // HTML documents have a body but XUL documents don't
+        frameMinWidth = docEl.ownerDocument.body.scrollWidth;
+      } else {
+        frameMinWidth = docEl.scrollWidth;
+      }
+      frameMinWidth += "px";
+    }
+    let frameWidth = docEl.getAttribute("width")
+      ? docEl.getAttribute("width") + "px"
+      : frameMinWidth;
+    this._frame.style.width = frameWidth;
+    this._box.style.minWidth =
+      "calc(" +
+      (boxHorizontalBorder + frameHorizontalMargin) +
+      "px + " +
+      frameMinWidth +
+      ")";
+
+    this.resizeVertically();
+
+    this._overlay.dispatchEvent(
+      new CustomEvent("dialogopen", {
+        bubbles: true,
+        detail: { dialog: this },
+      })
+    );
+    this._overlay.style.visibility = "visible";
+    this._overlay.style.opacity = ""; // XXX: focus hack continued from _onContentLoaded
+
+    if (this._box.getAttribute("resizable") == "true") {
+      this._onResize = this._onResize.bind(this);
+      this._resizeObserver = new MutationObserver(this._onResize);
+      this._resizeObserver.observe(this._box, { attributes: true });
+    }
+
+    this._trapFocus();
+
+    // Search within main document and highlight matched keyword.
+    gSearchResultsPane.searchWithinNode(
+      this._titleElement,
+      gSearchResultsPane.query
+    );
+
+    // Search within sub-dialog document and highlight matched keyword.
+    gSearchResultsPane.searchWithinNode(
+      this._frame.contentDocument.firstElementChild,
+      gSearchResultsPane.query
+    );
+
+    // Creating tooltips for all the instances found
+    for (let node of gSearchResultsPane.listSearchTooltips) {
+      if (!node.tooltipNode) {
+        gSearchResultsPane.createSearchTooltip(node, gSearchResultsPane.query);
+      }
+    }
+  },
+
+  resizeVertically() {
+    let docEl = this._frame.contentDocument.documentElement;
+
+    let titleBarHeight =
+      this._titleBar.clientHeight +
+      parseFloat(getComputedStyle(this._titleBar).borderBottomWidth);
+    let boxVerticalBorder =
+      2 * parseFloat(getComputedStyle(this._box).borderTopWidth);
+    let frameVerticalMargin =
+      2 * parseFloat(getComputedStyle(this._frame).marginTop);
 
     // The difference between the frame and box shouldn't change, either:
     let boxRect = this._box.getBoundingClientRect();
     let frameRect = this._frame.getBoundingClientRect();
-    let frameSizeDifference = (frameRect.top - boxRect.top) + (boxRect.bottom - frameRect.bottom);
-
-    // Then determine and set a bunch of width stuff:
-    let frameMinWidth = docEl.style.width || docEl.scrollWidth + "px";
-    let frameWidth = docEl.getAttribute("width") ? docEl.getAttribute("width") + "px" :
-                     frameMinWidth;
-    this._frame.style.width = frameWidth;
-    this._box.style.minWidth = "calc(" +
-                               (boxHorizontalBorder + boxHorizontalPadding) +
-                               "px + " + frameMinWidth + ")";
+    let frameSizeDifference =
+      frameRect.top - boxRect.top + (boxRect.bottom - frameRect.bottom);
 
     // Now do the same but for the height. We need to do this afterwards because otherwise
     // XUL assumes we'll optimize for height and gives us "wrong" values which then are no
     // longer correct after we set the width:
     let frameMinHeight = docEl.style.height || docEl.scrollHeight + "px";
-    let frameHeight = docEl.getAttribute("height") ? docEl.getAttribute("height") + "px" :
-                                                     frameMinHeight;
+    let frameHeight = docEl.getAttribute("height")
+      ? docEl.getAttribute("height") + "px"
+      : frameMinHeight;
 
     // Now check if the frame height we calculated is possible at this window size,
     // accounting for titlebar, padding/border and some spacing.
@@ -308,56 +415,39 @@ SubDialog.prototype = {
     } else if (frameHeight.endsWith("px")) {
       comparisonFrameHeight = parseFloat(frameHeight, 10);
     } else {
-      Cu.reportError("This dialog (" + this._frame.contentWindow.location.href + ") " +
-                     "set a height in non-px-non-em units ('" + frameHeight + "'), " +
-                     "which is likely to lead to bad sizing in in-content preferences. " +
-                     "Please consider changing this.");
+      Cu.reportError(
+        "This dialog (" +
+          this._frame.contentWindow.location.href +
+          ") " +
+          "set a height in non-px-non-em units ('" +
+          frameHeight +
+          "'), " +
+          "which is likely to lead to bad sizing in in-content preferences. " +
+          "Please consider changing this."
+      );
       comparisonFrameHeight = parseFloat(frameHeight);
     }
 
     if (comparisonFrameHeight > maxHeight) {
-      // If the height is bigger than that of the window, we should let the contents scroll:
+      // If the height is bigger than that of the window, we should let the
+      // contents scroll. The class is set on the "dialog" element, unless a
+      // content pane exists, which is usually the case when the "window"
+      // element is used to implement the subdialog instead.
       frameHeight = maxHeight + "px";
       frameMinHeight = maxHeight + "px";
-      let containers = this._frame.contentDocument.querySelectorAll(".largeDialogContainer");
-      for (let container of containers) {
-        container.classList.add("doScroll");
-      }
+      let contentPane =
+        this._frame.contentDocument.querySelector(".contentPane") ||
+        this._frame.contentDocument.documentElement;
+      contentPane.classList.add("doScroll");
     }
 
     this._frame.style.height = frameHeight;
-    this._box.style.minHeight = "calc(" +
-                                (boxVerticalBorder + groupBoxTitleHeight + boxVerticalPadding) +
-                                "px + " + frameMinHeight + ")";
-
-    this._overlay.dispatchEvent(new CustomEvent("dialogopen", {
-      bubbles: true,
-      detail: { dialog: this },
-    }));
-    this._overlay.style.visibility = "visible";
-    this._overlay.style.opacity = ""; // XXX: focus hack continued from _onContentLoaded
-
-    if (this._box.getAttribute("resizable") == "true") {
-      this._onResize = this._onResize.bind(this);
-      this._resizeObserver = new MutationObserver(this._onResize);
-      this._resizeObserver.observe(this._box, {attributes: true});
-    }
-
-    this._trapFocus();
-
-    // Search within main document and highlight matched keyword.
-    gSearchResultsPane.searchWithinNode(this._titleElement, gSearchResultsPane.query);
-
-    // Search within sub-dialog document and highlight matched keyword.
-    gSearchResultsPane.searchWithinNode(this._frame.contentDocument.firstElementChild,
-      gSearchResultsPane.query);
-
-    // Creating tooltips for all the instances found
-    for (let node of gSearchResultsPane.listSearchTooltips) {
-      if (!node.tooltipNode) {
-        gSearchResultsPane.createSearchTooltip(node, gSearchResultsPane.query);
-      }
-    }
+    this._box.style.minHeight =
+      "calc(" +
+      (boxVerticalBorder + titleBarHeight + frameVerticalMargin) +
+      "px + " +
+      frameMinHeight +
+      ")";
   },
 
   _onResize(mutations) {
@@ -371,9 +461,11 @@ SubDialog.prototype = {
 
     let docEl = frame.contentDocument.documentElement;
     let persistedAttributes = docEl.getAttribute("persist");
-    if (!persistedAttributes ||
-        (!persistedAttributes.includes("width") &&
-         !persistedAttributes.includes("height"))) {
+    if (
+      !persistedAttributes ||
+      (!persistedAttributes.includes("width") &&
+        !persistedAttributes.includes("height"))
+    ) {
       return;
     }
 
@@ -392,13 +484,20 @@ SubDialog.prototype = {
   },
 
   _onKeyDown(aEvent) {
-    if (aEvent.currentTarget == window && aEvent.keyCode == aEvent.DOM_VK_ESCAPE &&
-        !aEvent.defaultPrevented) {
+    if (
+      aEvent.currentTarget == window &&
+      aEvent.keyCode == aEvent.DOM_VK_ESCAPE &&
+      !aEvent.defaultPrevented
+    ) {
       this.close(aEvent);
       return;
     }
-    if (aEvent.keyCode != aEvent.DOM_VK_TAB ||
-        aEvent.ctrlKey || aEvent.altKey || aEvent.metaKey) {
+    if (
+      aEvent.keyCode != aEvent.DOM_VK_TAB ||
+      aEvent.ctrlKey ||
+      aEvent.altKey ||
+      aEvent.metaKey
+    ) {
       return;
     }
 
@@ -407,15 +506,19 @@ SubDialog.prototype = {
     let isLastFocusableElement = el => {
       // XXXgijs unfortunately there is no way to get the last focusable element without asking
       // the focus manager to move focus to it.
-      let rv = el == fm.moveFocus(this._frame.contentWindow, null, fm.MOVEFOCUS_LAST, 0);
+      let rv =
+        el ==
+        fm.moveFocus(this._frame.contentWindow, null, fm.MOVEFOCUS_LAST, 0);
       fm.setFocus(el, 0);
       return rv;
     };
 
     let forward = !aEvent.shiftKey;
     // check if focus is leaving the frame (incl. the close button):
-    if ((aEvent.target == this._closeButton && !forward) ||
-        (isLastFocusableElement(aEvent.originalTarget) && forward)) {
+    if (
+      (aEvent.target == this._closeButton && !forward) ||
+      (isLastFocusableElement(aEvent.originalTarget) && forward)
+    ) {
       aEvent.preventDefault();
       aEvent.stopImmediatePropagation();
       let parentWin = this._getBrowser().ownerGlobal;
@@ -499,10 +602,7 @@ SubDialog.prototype = {
   },
 
   _getBrowser() {
-    return window.QueryInterface(Ci.nsIInterfaceRequestor)
-                 .getInterface(Ci.nsIWebNavigation)
-                 .QueryInterface(Ci.nsIDocShell)
-                 .chromeEventHandler;
+    return window.docShell.chromeEventHandler;
   },
 };
 
@@ -518,15 +618,19 @@ var gSubDialog = {
   _nextDialogID: 0,
   _preloadDialog: null,
   get _topDialog() {
-    return this._dialogs.length > 0 ? this._dialogs[this._dialogs.length - 1] : undefined;
+    return this._dialogs.length > 0
+      ? this._dialogs[this._dialogs.length - 1]
+      : undefined;
   },
 
   init() {
     this._dialogStack = document.getElementById("dialogStack");
     this._dialogTemplate = document.getElementById("dialogTemplate");
-    this._preloadDialog = new SubDialog({template: this._dialogTemplate,
-                                         parentElement: this._dialogStack,
-                                         id: this._nextDialogID++});
+    this._preloadDialog = new SubDialog({
+      template: this._dialogTemplate,
+      parentElement: this._dialogStack,
+      id: this._nextDialogID++,
+    });
   },
 
   open(aURL, aFeatures = null, aParams = null, aClosingCallback = null) {
@@ -543,9 +647,11 @@ var gSubDialog = {
 
     this._preloadDialog.open(aURL, aFeatures, aParams, aClosingCallback);
     this._dialogs.push(this._preloadDialog);
-    this._preloadDialog = new SubDialog({template: this._dialogTemplate,
-                                         parentElement: this._dialogStack,
-                                         id: this._nextDialogID++});
+    this._preloadDialog = new SubDialog({
+      template: this._dialogTemplate,
+      parentElement: this._dialogStack,
+      id: this._nextDialogID++,
+    });
 
     if (this._dialogs.length == 1) {
       this._ensureStackEventListeners();
@@ -570,7 +676,10 @@ var gSubDialog = {
   },
 
   _onDialogOpen() {
-    let lowerDialog = this._dialogs.length > 1 ? this._dialogs[this._dialogs.length - 2] : undefined;
+    let lowerDialog =
+      this._dialogs.length > 1
+        ? this._dialogs[this._dialogs.length - 2]
+        : undefined;
     if (lowerDialog) {
       lowerDialog._overlay.removeAttribute("topmost");
       lowerDialog._removeDialogEventListeners();
@@ -591,7 +700,12 @@ var gSubDialog = {
     }
 
     if (this._topDialog) {
-      fm.moveFocus(this._topDialog._frame.contentWindow, null, fm.MOVEFOCUS_FIRST, fm.FLAG_BYKEY);
+      fm.moveFocus(
+        this._topDialog._frame.contentWindow,
+        null,
+        fm.MOVEFOCUS_FIRST,
+        fm.FLAG_BYKEY
+      );
       this._topDialog._overlay.setAttribute("topmost", true);
       this._topDialog._addDialogEventListeners();
     } else {

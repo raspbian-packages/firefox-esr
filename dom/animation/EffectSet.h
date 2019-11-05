@@ -7,18 +7,16 @@
 #ifndef mozilla_EffectSet_h
 #define mozilla_EffectSet_h
 
-#ifdef MOZ_OLD_STYLE
-#include "mozilla/AnimValuesStyleRule.h"
-#endif
 #include "mozilla/DebugOnly.h"
 #include "mozilla/EffectCompositor.h"
 #include "mozilla/EnumeratedArray.h"
 #include "mozilla/TimeStamp.h"
-#include "mozilla/dom/KeyframeEffectReadOnly.h"
+#include "mozilla/dom/KeyframeEffect.h"
 #include "nsHashKeys.h"    // For nsPtrHashKey
 #include "nsTHashtable.h"  // For nsTHashtable
 
 class nsPresContext;
+enum class DisplayItemType : uint8_t;
 
 namespace mozilla {
 
@@ -26,7 +24,7 @@ namespace dom {
 class Element;
 }  // namespace dom
 
-enum class CSSPseudoElementType : uint8_t;
+enum class PseudoStyleType : uint8_t;
 
 // A wrapper around a hashset of AnimationEffect objects to handle
 // storing the set as a property of an element.
@@ -61,15 +59,41 @@ class EffectSet {
   void Traverse(nsCycleCollectionTraversalCallback& aCallback);
 
   static EffectSet* GetEffectSet(const dom::Element* aElement,
-                                 CSSPseudoElementType aPseudoType);
-  static EffectSet* GetEffectSet(const nsIFrame* aFrame);
+                                 PseudoStyleType aPseudoType);
   static EffectSet* GetOrCreateEffectSet(dom::Element* aElement,
-                                         CSSPseudoElementType aPseudoType);
-  static void DestroyEffectSet(dom::Element* aElement,
-                               CSSPseudoElementType aPseudoType);
+                                         PseudoStyleType aPseudoType);
 
-  void AddEffect(dom::KeyframeEffectReadOnly& aEffect);
-  void RemoveEffect(dom::KeyframeEffectReadOnly& aEffect);
+  static EffectSet* GetEffectSetForFrame(const nsIFrame* aFrame,
+                                         const nsCSSPropertyIDSet& aProperties);
+  static EffectSet* GetEffectSetForFrame(const nsIFrame* aFrame,
+                                         DisplayItemType aDisplayItemType);
+  // Gets the EffectSet associated with the specified frame's content.
+  //
+  // Typically the specified frame should be a "style frame".
+  //
+  // That is because display:table content:
+  //
+  // - makes a distinction between the primary frame and style frame,
+  // - associates the EffectSet with the style frame's content,
+  // - applies transform animations to the primary frame.
+  //
+  // In such a situation, passing in the primary frame here will return nullptr
+  // despite the fact that it has a transform animation applied to it.
+  //
+  // GetEffectSetForFrame, above, handles this by automatically looking up the
+  // EffectSet on the corresponding style frame when querying transform
+  // properties. Unless you are sure you know what you are doing, you should
+  // try using GetEffectSetForFrame first.
+  //
+  // If you decide to use this, consider documenting why you are sure it is ok
+  // to use this.
+  static EffectSet* GetEffectSetForStyleFrame(const nsIFrame* aStyleFrame);
+
+  static void DestroyEffectSet(dom::Element* aElement,
+                               PseudoStyleType aPseudoType);
+
+  void AddEffect(dom::KeyframeEffect& aEffect);
+  void RemoveEffect(dom::KeyframeEffect& aEffect);
 
   void SetMayHaveOpacityAnimation() { mMayHaveOpacityAnim = true; }
   bool MayHaveOpacityAnimation() const { return mMayHaveOpacityAnim; }
@@ -77,8 +101,7 @@ class EffectSet {
   bool MayHaveTransformAnimation() const { return mMayHaveTransformAnim; }
 
  private:
-  typedef nsTHashtable<nsRefPtrHashKey<dom::KeyframeEffectReadOnly>>
-      OwningEffectSet;
+  typedef nsTHashtable<nsRefPtrHashKey<dom::KeyframeEffect>> OwningEffectSet;
 
  public:
   // A simple iterator to support iterating over the effects in this object in
@@ -91,7 +114,7 @@ class EffectSet {
    public:
     explicit Iterator(EffectSet& aEffectSet)
         : mEffectSet(aEffectSet),
-          mHashIterator(mozilla::Move(aEffectSet.mEffects.Iter())),
+          mHashIterator(aEffectSet.mEffects.Iter()),
           mIsEndIterator(false) {
 #ifdef DEBUG
       mEffectSet.mActiveIterators++;
@@ -100,7 +123,7 @@ class EffectSet {
 
     Iterator(Iterator&& aOther)
         : mEffectSet(aOther.mEffectSet),
-          mHashIterator(mozilla::Move(aOther.mHashIterator)),
+          mHashIterator(std::move(aOther.mHashIterator)),
           mIsEndIterator(aOther.mIsEndIterator) {
 #ifdef DEBUG
       mEffectSet.mActiveIterators++;
@@ -133,7 +156,7 @@ class EffectSet {
       return *this;
     }
 
-    dom::KeyframeEffectReadOnly* operator*() {
+    dom::KeyframeEffect* operator*() {
       MOZ_ASSERT(!Done());
       return mHashIterator.Get()->GetKey();
     }
@@ -163,18 +186,11 @@ class EffectSet {
 
   size_t Count() const { return mEffects.Count(); }
 
-#ifdef MOZ_OLD_STYLE
-  RefPtr<AnimValuesStyleRule>& AnimationRule(
-      EffectCompositor::CascadeLevel aCascadeLevel) {
-    return mAnimationRule[aCascadeLevel];
+  const TimeStamp& LastOverflowAnimationSyncTime() const {
+    return mLastOverflowAnimationSyncTime;
   }
-#endif
-
-  const TimeStamp& LastTransformSyncTime() const {
-    return mLastTransformSyncTime;
-  }
-  void UpdateLastTransformSyncTime(const TimeStamp& aRefreshTime) {
-    mLastTransformSyncTime = aRefreshTime;
+  void UpdateLastOverflowAnimationSyncTime(const TimeStamp& aRefreshTime) {
+    mLastOverflowAnimationSyncTime = aRefreshTime;
   }
 
   bool CascadeNeedsUpdate() const { return mCascadeNeedsUpdate; }
@@ -186,6 +202,9 @@ class EffectSet {
 
   static nsAtom** GetEffectSetPropertyAtoms();
 
+  const nsCSSPropertyIDSet& PropertiesWithImportantRules() const {
+    return mPropertiesWithImportantRules;
+  }
   nsCSSPropertyIDSet& PropertiesWithImportantRules() {
     return mPropertiesWithImportantRules;
   }
@@ -197,28 +216,18 @@ class EffectSet {
   }
 
  private:
-  static nsAtom* GetEffectSetPropertyAtom(CSSPseudoElementType aPseudoType);
+  static nsAtom* GetEffectSetPropertyAtom(PseudoStyleType aPseudoType);
 
   OwningEffectSet mEffects;
 
-#ifdef MOZ_OLD_STYLE
-  // These style rules contain the style data for currently animating
-  // values.  They only match when styling with animation.  When we
-  // style without animation, we need to not use them so that we can
-  // detect any new changes; if necessary we restyle immediately
-  // afterwards with animation.
-  EnumeratedArray<EffectCompositor::CascadeLevel,
-                  EffectCompositor::CascadeLevel(
-                      EffectCompositor::kCascadeLevelCount),
-                  RefPtr<AnimValuesStyleRule>>
-      mAnimationRule;
-#endif
+  // Refresh driver timestamp from the moment when the animations which produce
+  // overflow change hints in this effect set were last updated.
 
-  // Refresh driver timestamp from the moment when transform animations in this
-  // effect set were last updated and sent to the compositor. This is used for
-  // transform animations that run on the compositor but need to be updated on
-  // the main thread periodically (e.g. so scrollbars can be updated).
-  TimeStamp mLastTransformSyncTime;
+  // This is used for animations whose main-thread restyling is throttled either
+  // because they are running on the compositor or because they are not visible.
+  // We still need to update them on the main thread periodically, however (e.g.
+  // so scrollbars can be updated), so this tracks the last time we did that.
+  TimeStamp mLastOverflowAnimationSyncTime;
 
   // Dirty flag to represent when the mPropertiesWithImportantRules and
   // mPropertiesForAnimationsLevel on effects in this set might need to be

@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sw=4 et tw=80:
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: set ts=8 sw=2 et tw=80:
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,7 +22,6 @@ class WrapperOwner : public virtual JavaScriptShared {
   typedef mozilla::ipc::IProtocol::ActorDestroyReason ActorDestroyReason;
 
   WrapperOwner();
-  bool init();
 
   // Standard internal methods.
   // (The traps should be in the same order like js/Proxy.h)
@@ -33,7 +32,7 @@ class WrapperOwner : public virtual JavaScriptShared {
                       JS::Handle<JS::PropertyDescriptor> desc,
                       JS::ObjectOpResult& result);
   bool ownPropertyKeys(JSContext* cx, JS::HandleObject proxy,
-                       JS::AutoIdVector& props);
+                       JS::MutableHandleIdVector props);
   bool delete_(JSContext* cx, JS::HandleObject proxy, JS::HandleId id,
                JS::ObjectOpResult& result);
   bool preventExtensions(JSContext* cx, JS::HandleObject proxy,
@@ -49,12 +48,9 @@ class WrapperOwner : public virtual JavaScriptShared {
                        const JS::CallArgs& args, bool construct);
 
   // SpiderMonkey extensions.
-  bool getPropertyDescriptor(JSContext* cx, JS::HandleObject proxy,
-                             JS::HandleId id,
-                             JS::MutableHandle<JS::PropertyDescriptor> desc);
   bool hasOwn(JSContext* cx, JS::HandleObject proxy, JS::HandleId id, bool* bp);
   bool getOwnEnumerablePropertyKeys(JSContext* cx, JS::HandleObject proxy,
-                                    JS::AutoIdVector& props);
+                                    JS::MutableHandleIdVector props);
   bool hasInstance(JSContext* cx, JS::HandleObject proxy,
                    JS::MutableHandleValue v, bool* bp);
   bool getBuiltinClass(JSContext* cx, JS::HandleObject proxy, js::ESClass* cls);
@@ -103,7 +99,7 @@ class WrapperOwner : public virtual JavaScriptShared {
   ObjectId idOfUnchecked(JSObject* obj);
 
   bool getPropertyKeys(JSContext* cx, JS::HandleObject proxy, uint32_t flags,
-                       JS::AutoIdVector& props);
+                       JS::MutableHandleIdVector props);
 
   // Catastrophic IPC failure.
   bool ipcfail(JSContext* cx);
@@ -123,10 +119,6 @@ class WrapperOwner : public virtual JavaScriptShared {
   virtual bool SendDropObject(const ObjectId& objId) = 0;
   virtual bool SendPreventExtensions(const ObjectId& objId,
                                      ReturnStatus* rs) = 0;
-  virtual bool SendGetPropertyDescriptor(const ObjectId& objId,
-                                         const JSIDVariant& id,
-                                         ReturnStatus* rs,
-                                         PPropertyDescriptor* out) = 0;
   virtual bool SendGetOwnPropertyDescriptor(const ObjectId& objId,
                                             const JSIDVariant& id,
                                             ReturnStatus* rs,

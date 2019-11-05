@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,7 +18,7 @@
 #include FT_MULTIPLE_MASTERS_H
 
 #ifndef FT_FACE_FLAG_COLOR
-#define FT_FACE_FLAG_COLOR (1L << 14)
+#  define FT_FACE_FLAG_COLOR (1L << 14)
 #endif
 
 using namespace mozilla::gfx;
@@ -26,11 +26,12 @@ using namespace mozilla::gfx;
 gfxFT2FontBase::gfxFT2FontBase(
     const RefPtr<UnscaledFontFreeType>& aUnscaledFont,
     cairo_scaled_font_t* aScaledFont, gfxFontEntry* aFontEntry,
-    const gfxFontStyle* aFontStyle, bool aEmbolden)
+    const gfxFontStyle* aFontStyle)
     : gfxFont(aUnscaledFont, aFontEntry, aFontStyle, kAntialiasDefault,
               aScaledFont),
-      mSpaceGlyph(0),
-      mEmbolden(aEmbolden) {
+      mSpaceGlyph(0) {
+  mEmbolden = aFontStyle->NeedsSyntheticBold(aFontEntry);
+
   cairo_scaled_font_reference(mScaledFont);
 
   InitMetrics();
@@ -98,7 +99,7 @@ uint32_t gfxFT2FontBase::GetGlyph(uint32_t aCharCode) {
 
 void gfxFT2FontBase::GetGlyphExtents(uint32_t aGlyph,
                                      cairo_text_extents_t* aExtents) {
-  NS_PRECONDITION(aExtents != nullptr, "aExtents must not be NULL");
+  MOZ_ASSERT(aExtents != nullptr, "aExtents must not be NULL");
 
   cairo_glyph_t glyphs[1];
   glyphs[0].index = aGlyph;
@@ -198,7 +199,7 @@ void gfxFT2FontBase::InitMetrics() {
     mMetrics.spaceWidth = spaceWidth;
     mMetrics.maxAdvance = spaceWidth;
     mMetrics.aveCharWidth = spaceWidth;
-    mMetrics.zeroOrAveCharWidth = spaceWidth;
+    mMetrics.zeroWidth = spaceWidth;
     const gfxFloat xHeight = 0.5 * emHeight;
     mMetrics.xHeight = xHeight;
     mMetrics.capHeight = mMetrics.maxAscent;
@@ -212,22 +213,11 @@ void gfxFT2FontBase::InitMetrics() {
     return;
   }
 
-  if ((!mFontEntry->mVariationSettings.IsEmpty() ||
-       !mStyle.variationSettings.IsEmpty()) &&
-      (face->face_flags & FT_FACE_FLAG_MULTIPLE_MASTERS)) {
+  if (face->face_flags & FT_FACE_FLAG_MULTIPLE_MASTERS) {
     // Resolve variations from entry (descriptor) and style (property)
-    const nsTArray<gfxFontVariation>* settings;
-    AutoTArray<gfxFontVariation, 8> mergedSettings;
-    if (mFontEntry->mVariationSettings.IsEmpty()) {
-      settings = &mStyle.variationSettings;
-    } else if (mStyle.variationSettings.IsEmpty()) {
-      settings = &mFontEntry->mVariationSettings;
-    } else {
-      gfxFontUtils::MergeVariations(mFontEntry->mVariationSettings,
-                                    mStyle.variationSettings, &mergedSettings);
-      settings = &mergedSettings;
-    }
-    SetupVarCoords(face, *settings, &mCoords);
+    AutoTArray<gfxFontVariation, 8> settings;
+    mFontEntry->GetVariationsForStyle(settings, mStyle);
+    SetupVarCoords(mFontEntry->GetMMVar(), settings, &mCoords);
     if (!mCoords.IsEmpty()) {
 #if MOZ_TREE_FREETYPE
       FT_Set_Var_Design_Coordinates(face, mCoords.Length(), mCoords.Elements());
@@ -310,18 +300,14 @@ void gfxFT2FontBase::InitMetrics() {
     // If the OS/2 fsSelection USE_TYPO_METRICS bit is set,
     // set maxAscent/Descent from the sTypo* fields instead of hhea.
     const uint16_t kUseTypoMetricsMask = 1 << 7;
-    if (os2->fsSelection & kUseTypoMetricsMask) {
-      mMetrics.maxAscent = NS_round(mMetrics.emAscent);
-      mMetrics.maxDescent = NS_round(mMetrics.emDescent);
-    } else {
-      // maxAscent/maxDescent get used for frame heights, and some fonts
-      // don't have the HHEA table ascent/descent set (bug 279032).
+    if ((os2->fsSelection & kUseTypoMetricsMask) ||
+        // maxAscent/maxDescent get used for frame heights, and some fonts
+        // don't have the HHEA table ascent/descent set (bug 279032).
+        (mMetrics.maxAscent == 0.0 && mMetrics.maxDescent == 0.0)) {
       // We use NS_round here to parallel the pixel-rounded values that
       // freetype gives us for ftMetrics.ascender/descender.
-      mMetrics.maxAscent =
-          std::max(mMetrics.maxAscent, NS_round(mMetrics.emAscent));
-      mMetrics.maxDescent =
-          std::max(mMetrics.maxDescent, NS_round(mMetrics.emDescent));
+      mMetrics.maxAscent = NS_round(mMetrics.emAscent);
+      mMetrics.maxDescent = NS_round(mMetrics.emDescent);
     }
   } else {
     mMetrics.emAscent = mMetrics.maxAscent;
@@ -407,9 +393,9 @@ void gfxFT2FontBase::InitMetrics() {
   }
 
   if (GetCharWidth('0', &width)) {
-    mMetrics.zeroOrAveCharWidth = width;
+    mMetrics.zeroWidth = width;
   } else {
-    mMetrics.zeroOrAveCharWidth = 0.0;
+    mMetrics.zeroWidth = -1.0;  // indicates not found
   }
 
   // Prefering a measured x over sxHeight because sxHeight doesn't consider
@@ -426,13 +412,9 @@ void gfxFT2FontBase::InitMetrics() {
     mMetrics.capHeight = -extents.y_bearing;
   }
 
-  mMetrics.aveCharWidth =
-      std::max(mMetrics.aveCharWidth, mMetrics.zeroOrAveCharWidth);
+  mMetrics.aveCharWidth = std::max(mMetrics.aveCharWidth, mMetrics.zeroWidth);
   if (mMetrics.aveCharWidth == 0.0) {
     mMetrics.aveCharWidth = mMetrics.spaceWidth;
-  }
-  if (mMetrics.zeroOrAveCharWidth == 0.0) {
-    mMetrics.zeroOrAveCharWidth = mMetrics.aveCharWidth;
   }
   // Apparently hinting can mean that max_advance is not always accurate.
   mMetrics.maxAdvance = std::max(mMetrics.maxAdvance, mMetrics.aveCharWidth);
@@ -526,7 +508,7 @@ bool gfxFT2FontBase::GetFTGlyphAdvance(uint16_t aGID, int32_t* aAdvance) {
   int32_t flags =
       hinting ? FT_LOAD_ADVANCE_ONLY
               : FT_LOAD_ADVANCE_ONLY | FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_HINTING;
-  FT_Error ftError = FT_Load_Glyph(face.get(), aGID, flags);
+  FT_Error ftError = Factory::LoadFTGlyph(face.get(), aGID, flags);
   if (ftError != FT_Err_Ok) {
     // FT_Face was somehow broken/invalid? Don't try to access glyph slot.
     // This probably shouldn't happen, but does: see bug 1440938.
@@ -558,7 +540,7 @@ bool gfxFT2FontBase::GetFTGlyphAdvance(uint16_t aGID, int32_t* aAdvance) {
   return true;
 }
 
-int32_t gfxFT2FontBase::GetGlyphWidth(DrawTarget& aDrawTarget, uint16_t aGID) {
+int32_t gfxFT2FontBase::GetGlyphWidth(uint16_t aGID) {
   if (!mGlyphWidths) {
     mGlyphWidths =
         mozilla::MakeUnique<nsDataHashtable<nsUint32HashKey, int32_t>>(128);
@@ -621,43 +603,22 @@ bool gfxFT2FontBase::SetupCairoFont(DrawTarget* aDrawTarget) {
 // axes in mStyle.variationSettings, so we need to search by axis tag).
 /*static*/
 void gfxFT2FontBase::SetupVarCoords(
-    FT_Face aFace, const nsTArray<gfxFontVariation>& aVariations,
+    FT_MM_Var* aMMVar, const nsTArray<gfxFontVariation>& aVariations,
     nsTArray<FT_Fixed>* aCoords) {
   aCoords->TruncateLength(0);
-  if (aFace->face_flags & FT_FACE_FLAG_MULTIPLE_MASTERS) {
-    typedef FT_Error (*GetVarFunc)(FT_Face, FT_MM_Var**);
-    typedef FT_Error (*DoneVarFunc)(FT_Library, FT_MM_Var*);
-#if MOZ_TREE_FREETYPE
-    GetVarFunc getVar = &FT_Get_MM_Var;
-    DoneVarFunc doneVar = &FT_Done_MM_Var;
-#else
-    static GetVarFunc getVar;
-    static DoneVarFunc doneVar;
-    static bool firstTime = true;
-    if (firstTime) {
-      firstTime = false;
-      getVar = (GetVarFunc)dlsym(RTLD_DEFAULT, "FT_Get_MM_Var");
-      doneVar = (DoneVarFunc)dlsym(RTLD_DEFAULT, "FT_Done_MM_Var");
-    }
-#endif
-    FT_MM_Var* ftVar;
-    if (getVar && FT_Err_Ok == (*getVar)(aFace, &ftVar)) {
-      for (unsigned i = 0; i < ftVar->num_axis; ++i) {
-        aCoords->AppendElement(ftVar->axis[i].def);
-        for (const auto& v : aVariations) {
-          if (ftVar->axis[i].tag == v.mTag) {
-            FT_Fixed val = v.mValue * 0x10000;
-            val = std::min(val, ftVar->axis[i].maximum);
-            val = std::max(val, ftVar->axis[i].minimum);
-            (*aCoords)[i] = val;
-            break;
-          }
-        }
-      }
-      if (doneVar) {
-        (*doneVar)(aFace->glyph->library, ftVar);
-      } else {
-        free(ftVar);
+  if (!aMMVar) {
+    return;
+  }
+
+  for (unsigned i = 0; i < aMMVar->num_axis; ++i) {
+    aCoords->AppendElement(aMMVar->axis[i].def);
+    for (const auto& v : aVariations) {
+      if (aMMVar->axis[i].tag == v.mTag) {
+        FT_Fixed val = v.mValue * 0x10000;
+        val = std::min(val, aMMVar->axis[i].maximum);
+        val = std::max(val, aMMVar->axis[i].minimum);
+        (*aCoords)[i] = val;
+        break;
       }
     }
   }

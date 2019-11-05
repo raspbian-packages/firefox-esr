@@ -155,11 +155,7 @@ nsresult PresentationResponderLoadingCallback::Init(nsIDocShell* aDocShell) {
     return NS_ERROR_NOT_AVAILABLE;
   }
 
-  uint32_t busyFlags = nsIDocShell::BUSY_FLAGS_NONE;
-  nsresult rv = aDocShell->GetBusyFlags(&busyFlags);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
+  auto busyFlags = aDocShell->GetBusyFlags();
 
   if ((busyFlags == nsIDocShell::BUSY_FLAGS_NONE) ||
       (busyFlags & nsIDocShell::BUSY_FLAGS_PAGE_LOADING)) {
@@ -239,7 +235,14 @@ PresentationResponderLoadingCallback::OnStatusChange(
 
 NS_IMETHODIMP
 PresentationResponderLoadingCallback::OnSecurityChange(
-    nsIWebProgress* aWebProgress, nsIRequest* aRequest, uint32_t state) {
+    nsIWebProgress* aWebProgress, nsIRequest* aRequest, uint32_t aState) {
+  // Do nothing.
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+PresentationResponderLoadingCallback::OnContentBlockingEvent(
+    nsIWebProgress* aWebProgress, nsIRequest* aRequest, uint32_t aEvent) {
   // Do nothing.
   return NS_OK;
 }

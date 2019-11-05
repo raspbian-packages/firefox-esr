@@ -6,7 +6,7 @@ Test that we don't display `JS::ubi::RootList` for the root, and instead show "G
 <head>
     <meta charset="utf-8">
     <title>Tree component test</title>
-    <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+    <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
     <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -16,11 +16,12 @@ Test that we don't display `JS::ubi::RootList` for the root, and instead show "G
     <pre id="test">
         <script src="head.js" type="application/javascript"></script>
         <script type="application/javascript">
-         window.onload = Task.async(function* () {
+         "use strict";
+         window.onload = async function() {
            try {
              const container = document.getElementById("container");
 
-             yield renderComponent(DominatorTreeItem({
+             await renderComponent(DominatorTreeItem({
                item: makeTestDominatorTreeNode({ label: ["other", "JS::ubi::RootList"] }),
                depth: 0,
                arrow: dom.div(),
@@ -33,12 +34,12 @@ Test that we don't display `JS::ubi::RootList` for the root, and instead show "G
                 "Should not display `JS::ubi::RootList`");
              ok(container.textContent.includes("GC Roots"),
                 "Should display `GC Roots` instead");
-           } catch(e) {
+           } catch (e) {
              ok(false, "Got an error: " + DevToolsUtils.safeErrorString(e));
            } finally {
              SimpleTest.finish();
            }
-         });
+         };
         </script>
     </pre>
 </body>

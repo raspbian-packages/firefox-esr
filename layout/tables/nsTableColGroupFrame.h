@@ -13,6 +13,10 @@
 
 class nsTableColFrame;
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 /**
  * nsTableColGroupFrame
  * data structure to maintain information about a single table cell's frame
@@ -21,13 +25,15 @@ class nsTableColGroupFrame final : public nsContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsTableColGroupFrame)
 
-  /** instantiate a new instance of nsTableRowFrame.
+  /**
+   * instantiate a new instance of nsTableRowFrame.
+   *
    * @param aPresShell the pres shell for this frame
    *
    * @return           the frame that was created
    */
   friend nsTableColGroupFrame* NS_NewTableColGroupFrame(
-      nsIPresShell* aPresShell, nsStyleContext* aContext);
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
 
   // nsIFrame overrides
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
@@ -75,8 +81,8 @@ class nsTableColGroupFrame final : public nsContainerFrame {
    */
   static nsTableColGroupFrame* GetLastRealColGroup(nsTableFrame* aTableFrame);
 
-  /** @see nsIFrame::DidSetStyleContext */
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  /** @see nsIFrame::DidSetComputedStyle */
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   virtual void SetInitialChildList(ChildListID aListID,
                                    nsFrameList& aChildList) override;
@@ -185,18 +191,25 @@ class nsTableColGroupFrame final : public nsContainerFrame {
                                   BCPixelSize aPixelValue);
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsContainerFrame::IsFrameOfType(aFlags & ~(nsIFrame::eTablePart));
   }
 
-  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0) override;
-  virtual void InvalidateFrameWithRect(const nsRect& aRect,
-                                       uint32_t aDisplayItemKey = 0) override;
+  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0,
+                               bool aRebuildDisplayItems = true) override;
+  virtual void InvalidateFrameWithRect(
+      const nsRect& aRect, uint32_t aDisplayItemKey = 0,
+      bool aRebuildDisplayItems = true) override;
   virtual void InvalidateFrameForRemoval() override {
     InvalidateFrameSubtree();
   }
 
  protected:
-  explicit nsTableColGroupFrame(nsStyleContext* aContext);
+  explicit nsTableColGroupFrame(ComputedStyle* aStyle,
+                                nsPresContext* aPresContext);
 
   void InsertColsReflow(int32_t aColIndex, const nsFrameList::Slice& aCols);
 
@@ -213,8 +226,11 @@ class nsTableColGroupFrame final : public nsContainerFrame {
   BCPixelSize mBEndContBorderWidth;
 };
 
-inline nsTableColGroupFrame::nsTableColGroupFrame(nsStyleContext* aContext)
-    : nsContainerFrame(aContext, kClassID), mColCount(0), mStartColIndex(0) {}
+inline nsTableColGroupFrame::nsTableColGroupFrame(ComputedStyle* aStyle,
+                                                  nsPresContext* aPresContext)
+    : nsContainerFrame(aStyle, aPresContext, kClassID),
+      mColCount(0),
+      mStartColIndex(0) {}
 
 inline int32_t nsTableColGroupFrame::GetStartColumnIndex() {
   return mStartColIndex;

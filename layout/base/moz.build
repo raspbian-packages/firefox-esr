@@ -14,7 +14,7 @@ with Files('nsChangeHint.h'):
     BUG_COMPONENT = ('Core', 'CSS Parsing and Computation')
 
 with Files('nsBidi*'):
-    BUG_COMPONENT = ('Core', 'Layout: Text')
+    BUG_COMPONENT = ('Core', 'Layout: Text and Fonts')
 
 with Files('AccessibleCaret*'):
     BUG_COMPONENT = ('Core', 'Selection')
@@ -35,6 +35,7 @@ XPIDL_MODULE = 'layout_base'
 EXPORTS += [
     'CaretAssociationHint.h',
     'FrameProperties.h',
+    'LayoutConstants.h',
     'LayoutLogging.h',
     'MobileViewportManager.h',
     'nsAutoLayoutPhase.h',
@@ -51,19 +52,16 @@ EXPORTS += [
     'nsIFrameTraversal.h',
     'nsILayoutDebugger.h',
     'nsIPercentBSizeObserver.h',
-    'nsIPresShell.h',
-    'nsIPresShellInlines.h',
     'nsIReflowCallback.h',
     'nsLayoutUtils.h',
     'nsPresArena.h',
     'nsPresArenaObjectList.h',
     'nsPresContext.h',
-    'nsPresState.h',
+    'nsPresContextInlines.h',
     'nsQuoteList.h',
     'nsRefreshDriver.h',
     'nsStyleChangeList.h',
     'nsStyleSheetService.h',
-    'ScrollbarStyles.h',
     'StackArena.h',
     'TouchManager.h',
     'Units.h',
@@ -73,30 +71,27 @@ EXPORTS += [
 ]
 
 EXPORTS.mozilla += [
+    'AccessibleCaretEventHub.h',
     'ArenaObjectID.h',
-    'ArenaRefPtr.h',
-    'ArenaRefPtrInlines.h',
+    'GeckoMVMContext.h',
     'GeometryUtils.h',
+    'MVMContext.h',
     'OverflowChangedTracker.h',
     'PresShell.h',
-    'RestyleLogging.h',
+    'PresShellForwards.h',
+    'PresShellInlines.h',
     'RestyleManager.h',
-    'RestyleManagerInlines.h',
-    'ServoRestyleManager.h',
+    'ScrollStyles.h',
+    'ScrollTypes.h',
     'ShapeUtils.h',
     'StaticPresData.h',
-    'UndisplayedNode.h',
 ]
-
-if CONFIG['MOZ_OLD_STYLE']:
-    EXPORTS.mozilla += [
-        'GeckoRestyleManager.h',
-    ]
 
 UNIFIED_SOURCES += [
     'AccessibleCaret.cpp',
     'AccessibleCaretEventHub.cpp',
     'AccessibleCaretManager.cpp',
+    'GeckoMVMContext.cpp',
     'GeometryUtils.cpp',
     'LayoutLogging.cpp',
     'MobileViewportManager.cpp',
@@ -121,20 +116,13 @@ UNIFIED_SOURCES += [
     'PositionedEventTargeting.cpp',
     'PresShell.cpp',
     'RestyleManager.cpp',
-    'ScrollbarStyles.cpp',
-    'ServoRestyleManager.cpp',
+    'ScrollStyles.cpp',
     'ShapeUtils.cpp',
     'StackArena.cpp',
     'StaticPresData.cpp',
     'TouchManager.cpp',
     'ZoomConstraintsClient.cpp',
 ]
-
-if CONFIG['MOZ_OLD_STYLE']:
-    UNIFIED_SOURCES += [
-        'GeckoRestyleManager.cpp',
-        'RestyleTracker.cpp',
-    ]
 
 # nsRefreshDriver.cpp needs to be built separately because of name clashes in the OS X headers
 SOURCES += [
@@ -171,17 +159,16 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android':
         '/widget/android',
     ]
 
+IPDL_SOURCES += [
+    'PresState.ipdlh',
+]
+
 FINAL_LIBRARY = 'xul'
 
 BROWSER_CHROME_MANIFESTS += ['tests/browser.ini']
 MARIONETTE_LAYOUT_MANIFESTS += ['tests/marionette/manifest.ini']
 MOCHITEST_MANIFESTS += ['tests/mochitest.ini']
 MOCHITEST_CHROME_MANIFESTS += ['tests/chrome/chrome.ini']
-
-if CONFIG['CC_TYPE'] in ('msvc', 'clang-cl'):
-    # This is intended as a temporary hack to support building with VS2015.
-    # 'type cast': conversion from 'unsigned int' to 'void *' of greater size
-    CXXFLAGS += ['-wd4312']
 
 if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
     CXXFLAGS += ['-Wno-error=shadow']

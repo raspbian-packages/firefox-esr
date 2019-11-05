@@ -304,7 +304,7 @@ UniquePtr<nsGridRow[]> nsGrid::BuildRows(nsIFrame* aBox, int32_t aRowCount,
     } else {
       for (int32_t i = 0; i < mRowCount; i++) mRows[i].Init(nullptr, false);
 
-      row = Move(mRows);
+      row = std::move(mRows);
     }
   } else {
     if (aRowCount > mColumnCount) {
@@ -313,7 +313,7 @@ UniquePtr<nsGridRow[]> nsGrid::BuildRows(nsIFrame* aBox, int32_t aRowCount,
       for (int32_t i = 0; i < mColumnCount; i++)
         mColumns[i].Init(nullptr, false);
 
-      row = Move(mColumns);
+      row = std::move(mColumns);
     }
   }
 
@@ -347,7 +347,7 @@ UniquePtr<nsGridCell[]> nsGrid::BuildCellMap(int32_t aRows, int32_t aColumns) {
     mCellMap[i].SetBoxInRow(nullptr);
     mCellMap[i].SetBoxInColumn(nullptr);
   }
-  return Move(mCellMap);
+  return std::move(mCellMap);
 }
 
 /**
@@ -949,8 +949,8 @@ nscoord nsGrid::GetRowFlex(int32_t aIndex, bool aIsHorizontal) {
     // affect us. We need to do this for this case:
     // <grid>
     //   <rows>
-    //     <rows> // this is not flexible. So our children should not be
-    //     flexible
+    //     <rows> // this is not flexible.
+    //            // So our children should not be flexible
     //        <row flex="1"/>
     //        <row flex="1"/>
     //     </rows>

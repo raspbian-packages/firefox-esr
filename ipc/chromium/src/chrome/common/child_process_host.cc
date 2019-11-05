@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/message_loop.h"
 #include "base/process_util.h"
-#include "base/singleton.h"
 #include "base/waitable_event.h"
 #include "mozilla/ipc/ProcessChild.h"
 #include "mozilla/ipc/BrowserProcessSubThread.h"
@@ -56,7 +55,7 @@ ChildProcessHost::ListenerHook::ListenerHook(ChildProcessHost* host)
     : host_(host) {}
 
 void ChildProcessHost::ListenerHook::OnMessageReceived(IPC::Message&& msg) {
-  host_->OnMessageReceived(mozilla::Move(msg));
+  host_->OnMessageReceived(std::move(msg));
 }
 
 void ChildProcessHost::ListenerHook::OnChannelConnected(int32_t peer_pid) {

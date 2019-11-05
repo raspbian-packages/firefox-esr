@@ -18,16 +18,17 @@ using dom::MediaTrackSettings;
 const unsigned int MediaEngineSource::kMaxDeviceNameLength;
 const unsigned int MediaEngineSource::kMaxUniqueIdLength;
 
-/* static */ bool MediaEngineSource::IsVideo(MediaSourceEnum aSource) {
+/* static */
+bool MediaEngineSource::IsVideo(MediaSourceEnum aSource) {
   switch (aSource) {
     case MediaSourceEnum::Camera:
     case MediaSourceEnum::Screen:
-    case MediaSourceEnum::Application:
     case MediaSourceEnum::Window:
     case MediaSourceEnum::Browser:
       return true;
     case MediaSourceEnum::Microphone:
     case MediaSourceEnum::AudioCapture:
+    case MediaSourceEnum::Other:
       return false;
     default:
       MOZ_ASSERT_UNREACHABLE("Unknown type");
@@ -35,11 +36,13 @@ const unsigned int MediaEngineSource::kMaxUniqueIdLength;
   }
 }
 
-bool MediaEngineSource::RequiresSharing() const { return false; }
-
 bool MediaEngineSource::IsFake() const { return false; }
 
 bool MediaEngineSource::GetScary() const { return false; }
+
+nsresult MediaEngineSource::FocusOnSelectedSource() {
+  return NS_ERROR_NOT_AVAILABLE;
+}
 
 void MediaEngineSource::Shutdown() {}
 

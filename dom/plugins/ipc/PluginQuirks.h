@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -51,6 +51,8 @@ enum PluginQuirks {
   QUIRK_FLASH_HOOK_PRINTDLGW = 1 << 14,
   // Win: Broker Win32 SSL operations
   QUIRK_FLASH_HOOK_SSL = 1 << 15,
+  // Win: Hook CreateMutexW for brokering when using the camera
+  QUIRK_FLASH_HOOK_CREATEMUTEXW = 1 << 16,
 };
 
 int GetQuirksFromMimeTypeAndFilename(const nsCString& aMimeType,

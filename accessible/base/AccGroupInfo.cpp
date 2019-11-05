@@ -4,13 +4,14 @@
 
 #include "AccGroupInfo.h"
 #include "nsAccUtils.h"
+#include "TableAccessible.h"
 
 #include "Role.h"
 #include "States.h"
 
 using namespace mozilla::a11y;
 
-AccGroupInfo::AccGroupInfo(Accessible* aItem, role aRole)
+AccGroupInfo::AccGroupInfo(const Accessible* aItem, role aRole)
     : mPosInSet(0), mSetSize(0), mParent(nullptr), mItem(aItem), mRole(aRole) {
   MOZ_COUNT_CTOR(AccGroupInfo);
   Update();
@@ -58,7 +59,7 @@ void AccGroupInfo::Update() {
 
     // If the previous item in the group has calculated group information then
     // build group information for this item based on found one.
-    if (sibling->mBits.groupInfo) {
+    if (sibling->mBits.groupInfo && !sibling->HasDirtyGroupInfo()) {
       mPosInSet += sibling->mBits.groupInfo->mPosInSet;
       mParent = sibling->mBits.groupInfo->mParent;
       mSetSize = sibling->mBits.groupInfo->mSetSize;
@@ -92,7 +93,7 @@ void AccGroupInfo::Update() {
 
     // If the next item in the group has calculated group information then
     // build group information for this item based on found one.
-    if (sibling->mBits.groupInfo) {
+    if (sibling->mBits.groupInfo && !sibling->HasDirtyGroupInfo()) {
       mParent = sibling->mBits.groupInfo->mParent;
       mSetSize = sibling->mBits.groupInfo->mSetSize;
       return;
@@ -130,7 +131,7 @@ void AccGroupInfo::Update() {
   }
 }
 
-Accessible* AccGroupInfo::FirstItemOf(Accessible* aContainer) {
+Accessible* AccGroupInfo::FirstItemOf(const Accessible* aContainer) {
   // ARIA tree can be arranged by ARIA groups case #1 (previous sibling of a
   // group is a parent) or by aria-level.
   a11y::role containerRole = aContainer->Role();
@@ -169,6 +170,74 @@ Accessible* AccGroupInfo::FirstItemOf(Accessible* aContainer) {
   return nullptr;
 }
 
+uint32_t AccGroupInfo::TotalItemCount(Accessible* aContainer,
+                                      bool* aIsHierarchical) {
+  uint32_t itemCount = 0;
+  switch (aContainer->Role()) {
+    case roles::TABLE:
+      if (nsCoreUtils::GetUIntAttr(aContainer->GetContent(),
+                                   nsGkAtoms::aria_rowcount,
+                                   (int32_t*)&itemCount)) {
+        break;
+      }
+
+      if (TableAccessible* tableAcc = aContainer->AsTable()) {
+        return tableAcc->RowCount();
+      }
+
+      break;
+    case roles::ROW:
+      if (Accessible* table = nsAccUtils::TableFor(aContainer)) {
+        if (nsCoreUtils::GetUIntAttr(table->GetContent(),
+                                     nsGkAtoms::aria_colcount,
+                                     (int32_t*)&itemCount)) {
+          break;
+        }
+
+        if (TableAccessible* tableAcc = table->AsTable()) {
+          return tableAcc->ColCount();
+        }
+      }
+
+      break;
+    case roles::OUTLINE:
+    case roles::LIST:
+    case roles::MENUBAR:
+    case roles::MENUPOPUP:
+    case roles::COMBOBOX:
+    case roles::GROUPING:
+    case roles::TREE_TABLE:
+    case roles::COMBOBOX_LIST:
+    case roles::LISTBOX:
+    case roles::DEFINITION_LIST:
+    case roles::EDITCOMBOBOX:
+    case roles::RADIO_GROUP:
+    case roles::PAGETABLIST: {
+      Accessible* childItem = AccGroupInfo::FirstItemOf(aContainer);
+      if (!childItem) {
+        childItem = aContainer->FirstChild();
+        if (childItem && childItem->IsTextLeaf()) {
+          // First child can be a text leaf, check its sibling for an item.
+          childItem = childItem->NextSibling();
+        }
+      }
+
+      if (childItem) {
+        GroupPos groupPos = childItem->GroupPosition();
+        itemCount = groupPos.setSize;
+        if (groupPos.level && aIsHierarchical) {
+          *aIsHierarchical = true;
+        }
+      }
+      break;
+    }
+    default:
+      break;
+  }
+
+  return itemCount;
+}
+
 Accessible* AccGroupInfo::NextItemTo(Accessible* aItem) {
   AccGroupInfo* groupInfo = aItem->GetGroupInfo();
   if (!groupInfo) return nullptr;
@@ -187,7 +256,8 @@ Accessible* AccGroupInfo::NextItemTo(Accessible* aItem) {
     }
   }
 
-  NS_NOTREACHED("Item in the middle of the group but there's no next item!");
+  MOZ_ASSERT_UNREACHABLE(
+      "Item in the middle of the group but there's no next item!");
   return nullptr;
 }
 

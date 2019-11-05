@@ -18,7 +18,7 @@
 #define CHROMIUM_CDM_API "chromium-cdm10-host4"
 
 class nsIFile;
-class nsISimpleEnumerator;
+class nsIDirectoryEnumerator;
 
 namespace mozilla {
 
@@ -53,7 +53,7 @@ class DirectoryEnumerator {
 
  private:
   Mode mMode;
-  nsCOMPtr<nsISimpleEnumerator> mIter;
+  nsCOMPtr<nsIDirectoryEnumerator> mIter;
 };
 
 class GMPInfoFileParser {

@@ -6,7 +6,7 @@
 
 #include "mozilla/dom/HTMLBRElement.h"
 #include "mozilla/dom/HTMLBRElementBinding.h"
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsAttrValueInlines.h"
 #include "nsStyleConsts.h"
 #include "nsMappedAttributes.h"
@@ -17,8 +17,8 @@ namespace mozilla {
 namespace dom {
 
 HTMLBRElement::HTMLBRElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
 HTMLBRElement::~HTMLBRElement() {}
 
@@ -44,21 +44,18 @@ bool HTMLBRElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
 }
 
 void HTMLBRElement::MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                          GenericSpecifiedValues* aData) {
-  if (aData->ShouldComputeStyleStruct(NS_STYLE_INHERIT_BIT(Display))) {
-    if (!aData->PropertyIsSet(eCSSProperty_clear)) {
-      const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::clear);
-      if (value && value->Type() == nsAttrValue::eEnum)
-        aData->SetKeywordValue(eCSSProperty_clear, value->GetEnumValue());
-    }
+                                          MappedDeclarations& aDecls) {
+  if (!aDecls.PropertyIsSet(eCSSProperty_clear)) {
+    const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::clear);
+    if (value && value->Type() == nsAttrValue::eEnum)
+      aDecls.SetKeywordValue(eCSSProperty_clear, value->GetEnumValue());
   }
-
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
 HTMLBRElement::IsAttributeMapped(const nsAtom* aAttribute) const {
-  static const MappedAttributeEntry attributes[] = {{&nsGkAtoms::clear},
+  static const MappedAttributeEntry attributes[] = {{nsGkAtoms::clear},
                                                     {nullptr}};
 
   static const MappedAttributeEntry* const map[] = {
@@ -75,7 +72,7 @@ nsMapRuleToAttributesFunc HTMLBRElement::GetAttributeMappingFunction() const {
 
 JSObject* HTMLBRElement::WrapNode(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto) {
-  return HTMLBRElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLBRElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

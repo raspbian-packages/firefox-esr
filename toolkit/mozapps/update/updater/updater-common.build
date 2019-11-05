@@ -6,7 +6,6 @@
 
 srcs = [
     'archivereader.cpp',
-    'bspatch.cpp',
     'updater.cpp',
 ]
 
@@ -22,7 +21,6 @@ if CONFIG['OS_ARCH'] == 'WINNT':
     srcs += [
         'loaddlls.cpp',
         'progressui_win.cpp',
-        'win_dirent.cpp',
     ]
     RCINCLUDE = '%supdater.rc' % updater_rel_path
     DEFINES['UNICODE'] = True
@@ -41,25 +39,13 @@ if CONFIG['OS_ARCH'] == 'WINNT':
         'crypt32',
         'advapi32',
     ]
-elif CONFIG['OS_ARCH'] == 'Linux' and CONFIG['MOZ_VERIFY_MAR_SIGNATURE']:
-    USE_LIBS += [
-        'nss',
-        'signmar',
-    ]
-    OS_LIBS += CONFIG['NSPR_LIBS']
 
 USE_LIBS += [
+    'bspatch',
     'mar',
     'updatecommon',
     'xz-embedded',
 ]
-
-if CONFIG['MOZ_SYSTEM_BZ2']:
-    OS_LIBS += CONFIG['MOZ_BZ2_LIBS']
-else:
-    USE_LIBS += [
-        'bz2',
-    ]
 
 if 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:
     have_progressui = 1
@@ -109,7 +95,7 @@ DELAYLOAD_DLLS += [
     'wsock32.dll',
 ]
 
-if CONFIG['CC_TYPE'] in ('msvc', 'clang-cl'):
+if CONFIG['CC_TYPE'] == 'clang-cl':
     WIN32_EXE_LDFLAGS += ['-ENTRY:wmainCRTStartup']
 elif CONFIG['OS_ARCH'] == 'WINNT':
     WIN32_EXE_LDFLAGS += ['-municode']
@@ -117,3 +103,6 @@ elif CONFIG['OS_ARCH'] == 'WINNT':
 if 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:
     CXXFLAGS += CONFIG['TK_CFLAGS']
     OS_LIBS += CONFIG['TK_LIBS']
+
+if CONFIG['CC_TYPE'] == 'gcc':
+    CXXFLAGS += ['-Wno-format-truncation']

@@ -150,7 +150,7 @@ void TypeUtils::ToCacheRequest(
   aOut.integrity() = aIn->GetIntegrity();
 
   if (aBodyAction == IgnoreBody) {
-    aOut.body() = void_t();
+    aOut.body() = Nothing();
     return;
   }
 
@@ -192,9 +192,9 @@ void TypeUtils::ToCacheResponseWithoutBody(CacheResponse& aOut,
   aOut.headersGuard() = headers->Guard();
   aOut.channelInfo() = aIn.GetChannelInfo().AsIPCChannelInfo();
   if (aIn.GetPrincipalInfo()) {
-    aOut.principalInfo() = *aIn.GetPrincipalInfo();
+    aOut.principalInfo() = Some(*aIn.GetPrincipalInfo());
   } else {
-    aOut.principalInfo() = void_t();
+    aOut.principalInfo() = Nothing();
   }
 
   aOut.paddingInfo() = aIn.GetPaddingInfo();
@@ -204,7 +204,11 @@ void TypeUtils::ToCacheResponseWithoutBody(CacheResponse& aOut,
 void TypeUtils::ToCacheResponse(
     JSContext* aCx, CacheResponse& aOut, Response& aIn,
     nsTArray<UniquePtr<AutoIPCStream>>& aStreamCleanupList, ErrorResult& aRv) {
-  if (aIn.BodyUsed()) {
+  bool bodyUsed = aIn.GetBodyUsed(aRv);
+  if (NS_WARN_IF(aRv.Failed())) {
+    return;
+  }
+  if (bodyUsed) {
     aRv.ThrowTypeError<MSG_FETCH_BODY_CONSUMED_ERROR>();
     return;
   }
@@ -269,11 +273,10 @@ already_AddRefed<Response> TypeUtils::ToResponse(const CacheResponse& aIn) {
   MOZ_DIAGNOSTIC_ASSERT(!result.Failed());
 
   ir->InitChannelInfo(aIn.channelInfo());
-  if (aIn.principalInfo().type() ==
-      mozilla::ipc::OptionalPrincipalInfo::TPrincipalInfo) {
-    UniquePtr<mozilla::ipc::PrincipalInfo> info(new mozilla::ipc::PrincipalInfo(
-        aIn.principalInfo().get_PrincipalInfo()));
-    ir->SetPrincipalInfo(Move(info));
+  if (aIn.principalInfo().isSome()) {
+    UniquePtr<mozilla::ipc::PrincipalInfo> info(
+        new mozilla::ipc::PrincipalInfo(aIn.principalInfo().ref()));
+    ir->SetPrincipalInfo(std::move(info));
   }
 
   nsCOMPtr<nsIInputStream> stream = ReadStream::Create(aIn.body());
@@ -357,7 +360,8 @@ already_AddRefed<InternalHeaders> TypeUtils::ToInternalHeaders(
         InternalHeaders::Entry(headersEntry.name(), headersEntry.value()));
   }
 
-  RefPtr<InternalHeaders> ref = new InternalHeaders(Move(entryList), aGuard);
+  RefPtr<InternalHeaders> ref =
+      new InternalHeaders(std::move(entryList), aGuard);
   return ref.forget();
 }
 
@@ -427,7 +431,11 @@ void TypeUtils::CheckAndSetBodyUsed(JSContext* aCx, Request* aRequest,
     return;
   }
 
-  if (aRequest->BodyUsed()) {
+  bool bodyUsed = aRequest->GetBodyUsed(aRv);
+  if (NS_WARN_IF(aRv.Failed())) {
+    return;
+  }
+  if (bodyUsed) {
     aRv.ThrowTypeError<MSG_FETCH_BODY_CONSUMED_ERROR>();
     return;
   }
@@ -467,9 +475,9 @@ already_AddRefed<InternalRequest> TypeUtils::ToInternalRequest(
 }
 
 void TypeUtils::SerializeCacheStream(
-    nsIInputStream* aStream, CacheReadStreamOrVoid* aStreamOut,
+    nsIInputStream* aStream, Maybe<CacheReadStream>* aStreamOut,
     nsTArray<UniquePtr<AutoIPCStream>>& aStreamCleanupList, ErrorResult& aRv) {
-  *aStreamOut = void_t();
+  *aStreamOut = Nothing();
   if (!aStream) {
     return;
   }
@@ -480,8 +488,8 @@ void TypeUtils::SerializeCacheStream(
     return;
   }
 
-  *aStreamOut = CacheReadStream();
-  CacheReadStream& cacheStream = aStreamOut->get_CacheReadStream();
+  aStreamOut->emplace(CacheReadStream());
+  CacheReadStream& cacheStream = aStreamOut->ref();
 
   cacheStream.controlChild() = nullptr;
   cacheStream.controlParent() = nullptr;
@@ -489,7 +497,7 @@ void TypeUtils::SerializeCacheStream(
   UniquePtr<AutoIPCStream> autoStream(new AutoIPCStream(cacheStream.stream()));
   autoStream->Serialize(aStream, GetIPCManager());
 
-  aStreamCleanupList.AppendElement(Move(autoStream));
+  aStreamCleanupList.AppendElement(std::move(autoStream));
 }
 
 }  // namespace cache

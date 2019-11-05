@@ -3,6 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozilla/Preferences.h"
 #include "nsIDNService.h"
 #include "nsReadableUtils.h"
 #include "nsCRT.h"
@@ -11,8 +12,6 @@
 #include "nsUnicodeScriptCodes.h"
 #include "harfbuzz/hb.h"
 #include "nsIServiceManager.h"
-#include "nsIPrefService.h"
-#include "nsIPrefBranch.h"
 #include "nsIObserverService.h"
 #include "nsISupportsPrimitives.h"
 #include "punycode.h"
@@ -28,6 +27,8 @@ const bool kIDNA2008_TransitionalProcessing = false;
 #include "unicode/uscript.h"
 
 using namespace mozilla::unicode;
+using namespace mozilla::net;
+using mozilla::Preferences;
 
 //-----------------------------------------------------------------------------
 // RFC 1034 - 3.1. Name space specifications and terminology
@@ -38,14 +39,27 @@ static const char kACEPrefix[] = "xn--";
 
 //-----------------------------------------------------------------------------
 
-#define NS_NET_PREF_IDNBLACKLIST "network.IDN.blacklist_chars"
+#define NS_NET_PREF_EXTRAALLOWED "network.IDN.extra_allowed_chars"
+#define NS_NET_PREF_EXTRABLOCKED "network.IDN.extra_blocked_chars"
 #define NS_NET_PREF_SHOWPUNYCODE "network.IDN_show_punycode"
 #define NS_NET_PREF_IDNWHITELIST "network.IDN.whitelist."
 #define NS_NET_PREF_IDNUSEWHITELIST "network.IDN.use_whitelist"
 #define NS_NET_PREF_IDNRESTRICTION "network.IDN.restriction_profile"
 
-inline bool isOnlySafeChars(const nsString& in, const nsString& blacklist) {
-  return (blacklist.IsEmpty() || in.FindCharInSet(blacklist) == kNotFound);
+static inline bool isOnlySafeChars(const nsString& in,
+                                   const nsTArray<BlocklistRange>& aBlocklist) {
+  if (aBlocklist.IsEmpty()) {
+    return true;
+  }
+  const char16_t* cur = in.BeginReading();
+  const char16_t* end = in.EndReading();
+
+  for (; cur < end; ++cur) {
+    if (CharInBlocklist(*cur, aBlocklist)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -53,8 +67,13 @@ inline bool isOnlySafeChars(const nsString& in, const nsString& blacklist) {
 //-----------------------------------------------------------------------------
 
 /* Implementation file */
-NS_IMPL_ISUPPORTS(nsIDNService, nsIIDNService, nsIObserver,
-                  nsISupportsWeakReference)
+NS_IMPL_ISUPPORTS(nsIDNService, nsIIDNService, nsISupportsWeakReference)
+
+static const char* gCallbackPrefs[] = {
+    NS_NET_PREF_EXTRAALLOWED,    NS_NET_PREF_EXTRABLOCKED,
+    NS_NET_PREF_SHOWPUNYCODE,    NS_NET_PREF_IDNRESTRICTION,
+    NS_NET_PREF_IDNUSEWHITELIST, nullptr,
+};
 
 nsresult nsIDNService::Init() {
   MOZ_ASSERT(NS_IsMainThread());
@@ -65,60 +84,37 @@ nsresult nsIDNService::Init() {
     prefs->GetBranch(NS_NET_PREF_IDNWHITELIST,
                      getter_AddRefs(mIDNWhitelistPrefBranch));
 
-  nsCOMPtr<nsIPrefBranch> prefInternal(do_QueryInterface(prefs));
-  if (prefInternal) {
-    prefInternal->AddObserver(NS_NET_PREF_IDNBLACKLIST, this, true);
-    prefInternal->AddObserver(NS_NET_PREF_SHOWPUNYCODE, this, true);
-    prefInternal->AddObserver(NS_NET_PREF_IDNRESTRICTION, this, true);
-    prefInternal->AddObserver(NS_NET_PREF_IDNUSEWHITELIST, this, true);
-    prefsChanged(prefInternal, nullptr);
-  }
+  Preferences::RegisterPrefixCallbacks(PrefChanged, gCallbackPrefs, this);
+  prefsChanged(nullptr);
+  InitializeBlocklist(mIDNBlocklist);
 
   return NS_OK;
 }
 
-NS_IMETHODIMP nsIDNService::Observe(nsISupports* aSubject, const char* aTopic,
-                                    const char16_t* aData) {
-  MOZ_ASSERT(NS_IsMainThread());
-  MutexAutoLock lock(mLock);
-
-  if (!strcmp(aTopic, NS_PREFBRANCH_PREFCHANGE_TOPIC_ID)) {
-    nsCOMPtr<nsIPrefBranch> prefBranch(do_QueryInterface(aSubject));
-    if (prefBranch) prefsChanged(prefBranch, aData);
-  }
-  return NS_OK;
-}
-
-void nsIDNService::prefsChanged(nsIPrefBranch* prefBranch,
-                                const char16_t* pref) {
+void nsIDNService::prefsChanged(const char* pref) {
   MOZ_ASSERT(NS_IsMainThread());
   mLock.AssertCurrentThreadOwns();
 
-  if (!pref || NS_LITERAL_STRING(NS_NET_PREF_IDNBLACKLIST).Equals(pref)) {
-    nsAutoCString blacklist;
-    nsresult rv = prefBranch->GetStringPref(NS_NET_PREF_IDNBLACKLIST,
-                                            EmptyCString(), 0, blacklist);
-    if (NS_SUCCEEDED(rv)) {
-      CopyUTF8toUTF16(blacklist, mIDNBlacklist);
-    } else {
-      mIDNBlacklist.Truncate();
-    }
+  if (pref && NS_LITERAL_CSTRING(NS_NET_PREF_EXTRAALLOWED).Equals(pref)) {
+    InitializeBlocklist(mIDNBlocklist);
   }
-  if (!pref || NS_LITERAL_STRING(NS_NET_PREF_SHOWPUNYCODE).Equals(pref)) {
+  if (pref && NS_LITERAL_CSTRING(NS_NET_PREF_EXTRABLOCKED).Equals(pref)) {
+    InitializeBlocklist(mIDNBlocklist);
+  }
+  if (!pref || NS_LITERAL_CSTRING(NS_NET_PREF_SHOWPUNYCODE).Equals(pref)) {
     bool val;
-    if (NS_SUCCEEDED(prefBranch->GetBoolPref(NS_NET_PREF_SHOWPUNYCODE, &val)))
+    if (NS_SUCCEEDED(Preferences::GetBool(NS_NET_PREF_SHOWPUNYCODE, &val)))
       mShowPunycode = val;
   }
-  if (!pref || NS_LITERAL_STRING(NS_NET_PREF_IDNUSEWHITELIST).Equals(pref)) {
+  if (!pref || NS_LITERAL_CSTRING(NS_NET_PREF_IDNUSEWHITELIST).Equals(pref)) {
     bool val;
-    if (NS_SUCCEEDED(
-            prefBranch->GetBoolPref(NS_NET_PREF_IDNUSEWHITELIST, &val)))
+    if (NS_SUCCEEDED(Preferences::GetBool(NS_NET_PREF_IDNUSEWHITELIST, &val)))
       mIDNUseWhitelist = val;
   }
-  if (!pref || NS_LITERAL_STRING(NS_NET_PREF_IDNRESTRICTION).Equals(pref)) {
+  if (!pref || NS_LITERAL_CSTRING(NS_NET_PREF_IDNRESTRICTION).Equals(pref)) {
     nsAutoCString profile;
     if (NS_FAILED(
-            prefBranch->GetCharPref(NS_NET_PREF_IDNRESTRICTION, profile))) {
+            Preferences::GetCString(NS_NET_PREF_IDNRESTRICTION, profile))) {
       profile.Truncate();
     }
     if (profile.EqualsLiteral("moderate")) {
@@ -134,6 +130,7 @@ void nsIDNService::prefsChanged(nsIPrefBranch* prefBranch,
 nsIDNService::nsIDNService()
     : mLock("DNService pref value lock"),
       mShowPunycode(false),
+      mRestrictionProfile(static_cast<restrictionProfile>(0)),
       mIDNUseWhitelist(false) {
   MOZ_ASSERT(NS_IsMainThread());
 
@@ -147,6 +144,8 @@ nsIDNService::nsIDNService()
 
 nsIDNService::~nsIDNService() {
   MOZ_ASSERT(NS_IsMainThread());
+
+  Preferences::UnregisterPrefixCallbacks(PrefChanged, gCallbackPrefs, this);
 
   uidna_close(mIDNA);
 }
@@ -698,7 +697,7 @@ bool nsIDNService::isLabelSafe(const nsAString& label) {
     mLock.AssertCurrentThreadOwns();
   }
 
-  if (!isOnlySafeChars(PromiseFlatString(label), mIDNBlacklist)) {
+  if (!isOnlySafeChars(PromiseFlatString(label), mIDNBlocklist)) {
     return false;
   }
 
@@ -807,7 +806,7 @@ bool nsIDNService::isLabelSafe(const nsAString& label) {
       lastScript = script;
     }
 
-      // Simplified/Traditional Chinese check temporarily disabled -- bug 857481
+    // Simplified/Traditional Chinese check temporarily disabled -- bug 857481
 #if 0
 
     // Check for both simplified-only and traditional-only Chinese characters

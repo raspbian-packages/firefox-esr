@@ -9,6 +9,7 @@
 #include "nsComplexBreaker.h"
 #include "nsTArray.h"
 #include "nsUnicodeProperties.h"
+#include "mozilla/ArrayUtils.h"
 
 using namespace mozilla::unicode;
 using namespace mozilla::intl;
@@ -18,210 +19,210 @@ already_AddRefed<LineBreaker> LineBreaker::Create() {
   return RefPtr<LineBreaker>(new LineBreaker()).forget();
 }
 
-  /*
+/*
 
-     Simplification of Pair Table in JIS X 4051
+   Simplification of Pair Table in JIS X 4051
 
-     1. The Origion Table - in 4.1.3
+   1. The Origion Table - in 4.1.3
 
-     In JIS x 4051. The pair table is defined as below
+   In JIS x 4051. The pair table is defined as below
 
-     Class of
-     Leading    Class of Trailing Char Class
-     Char
+   Class of
+   Leading    Class of Trailing Char Class
+   Char
 
-                1  2  3  4  5  6  7  8  9 10 11 12 13 13 14 14 15 16 17 18 19 20
-                                                   *  #  *  #
-          1     X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  E
-          2        X  X  X  X  X                                               X
-          3        X  X  X  X  X                                               X
-          4        X  X  X  X  X                                               X
-          5        X  X  X  X  X                                               X
-          6        X  X  X  X  X                                               X
-          7        X  X  X  X  X  X                                            X
-          8        X  X  X  X  X                                X              E
-          9        X  X  X  X  X                                               X
-         10        X  X  X  X  X                                               X
-         11        X  X  X  X  X                                               X
-         12        X  X  X  X  X                                               X
-         13        X  X  X  X  X                    X                          X
-         14        X  X  X  X  X                          X                    X
-         15        X  X  X  X  X        X                       X        X     X
-         16        X  X  X  X  X                                   X     X     X
-         17        X  X  X  X  X                                               E
-         18        X  X  X  X  X                                X  X     X     X
-         19     X  E  E  E  E  E  X  X  X  X  X  X  X  X  X  X  X  X  E  X  E  E
-         20        X  X  X  X  X                                               E
+              1  2  3  4  5  6  7  8  9 10 11 12 13 13 14 14 15 16 17 18 19 20
+                                                 *  #  *  #
+        1     X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  E
+        2        X  X  X  X  X                                               X
+        3        X  X  X  X  X                                               X
+        4        X  X  X  X  X                                               X
+        5        X  X  X  X  X                                               X
+        6        X  X  X  X  X                                               X
+        7        X  X  X  X  X  X                                            X
+        8        X  X  X  X  X                                X              E
+        9        X  X  X  X  X                                               X
+       10        X  X  X  X  X                                               X
+       11        X  X  X  X  X                                               X
+       12        X  X  X  X  X                                               X
+       13        X  X  X  X  X                    X                          X
+       14        X  X  X  X  X                          X                    X
+       15        X  X  X  X  X        X                       X        X     X
+       16        X  X  X  X  X                                   X     X     X
+       17        X  X  X  X  X                                               E
+       18        X  X  X  X  X                                X  X     X     X
+       19     X  E  E  E  E  E  X  X  X  X  X  X  X  X  X  X  X  X  E  X  E  E
+       20        X  X  X  X  X                                               E
 
-     * Same Char
-     # Other Char
+   * Same Char
+   # Other Char
 
-     X Cannot Break
+   X Cannot Break
 
-     The classes mean:
-        1: Open parenthesis
-        2: Close parenthesis
-        3: Prohibit a line break before
-        4: Punctuation for sentence end (except Full stop, e.g., "!" and "?")
-        5: Middle dot (e.g., U+30FB KATAKANA MIDDLE DOT)
-        6: Full stop
-        7: Non-breakable between same characters
-        8: Prefix (e.g., "$", "NO.")
-        9: Postfix (e.g., "%")
-       10: Ideographic space
-       11: Hiragana
-       12: Japanese characters (except class 11)
-       13: Subscript
-       14: Ruby
-       15: Numeric
-       16: Alphabet
-       17: Space for Western language
-       18: Western characters (except class 17)
-       19: Split line note (Warichu) begin quote
-       20: Split line note (Warichu) end quote
+   The classes mean:
+      1: Open parenthesis
+      2: Close parenthesis
+      3: Prohibit a line break before
+      4: Punctuation for sentence end (except Full stop, e.g., "!" and "?")
+      5: Middle dot (e.g., U+30FB KATAKANA MIDDLE DOT)
+      6: Full stop
+      7: Non-breakable between same characters
+      8: Prefix (e.g., "$", "NO.")
+      9: Postfix (e.g., "%")
+     10: Ideographic space
+     11: Hiragana
+     12: Japanese characters (except class 11)
+     13: Subscript
+     14: Ruby
+     15: Numeric
+     16: Alphabet
+     17: Space for Western language
+     18: Western characters (except class 17)
+     19: Split line note (Warichu) begin quote
+     20: Split line note (Warichu) end quote
 
-     2. Simplified by remove the class which we do not care
+   2. Simplified by remove the class which we do not care
 
-     However, since we do not care about class 13(Subscript), 14(Ruby),
-     16 (Aphabet), 19(split line note begin quote), and 20(split line note end
-     quote) we can simplify this par table into the following
+   However, since we do not care about class 13(Subscript), 14(Ruby),
+   16 (Aphabet), 19(split line note begin quote), and 20(split line note end
+   quote) we can simplify this par table into the following
 
-     Class of
-     Leading    Class of Trailing Char Class
-     Char
+   Class of
+   Leading    Class of Trailing Char Class
+   Char
 
-                1  2  3  4  5  6  7  8  9 10 11 12 15 17 18
+              1  2  3  4  5  6  7  8  9 10 11 12 15 17 18
 
-          1     X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
-          2        X  X  X  X  X
-          3        X  X  X  X  X
-          4        X  X  X  X  X
-          5        X  X  X  X  X
-          6        X  X  X  X  X
-          7        X  X  X  X  X  X
-          8        X  X  X  X  X                    X
-          9        X  X  X  X  X
-         10        X  X  X  X  X
-         11        X  X  X  X  X
-         12        X  X  X  X  X
-         15        X  X  X  X  X        X           X     X
-         17        X  X  X  X  X
-         18        X  X  X  X  X                    X     X
+        1     X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+        2        X  X  X  X  X
+        3        X  X  X  X  X
+        4        X  X  X  X  X
+        5        X  X  X  X  X
+        6        X  X  X  X  X
+        7        X  X  X  X  X  X
+        8        X  X  X  X  X                    X
+        9        X  X  X  X  X
+       10        X  X  X  X  X
+       11        X  X  X  X  X
+       12        X  X  X  X  X
+       15        X  X  X  X  X        X           X     X
+       17        X  X  X  X  X
+       18        X  X  X  X  X                    X     X
 
-     3. Simplified by merged classes
+   3. Simplified by merged classes
 
-     After the 2 simplification, the pair table have some duplication
-     a. class 2, 3, 4, 5, 6,  are the same- we can merged them
-     b. class 10, 11, 12, 17  are the same- we can merged them
-
-
-     Class of
-     Leading    Class of Trailing Char Class
-     Char
-
-                1 [a] 7  8  9 [b]15 18
-
-          1     X  X  X  X  X  X  X  X
-        [a]        X
-          7        X  X
-          8        X              X
-          9        X
-        [b]        X
-         15        X        X     X  X
-         18        X              X  X
+   After the 2 simplification, the pair table have some duplication
+   a. class 2, 3, 4, 5, 6,  are the same- we can merged them
+   b. class 10, 11, 12, 17  are the same- we can merged them
 
 
-     4. We add COMPLEX characters and make it breakable w/ all ther class
-        except after class 1 and before class [a]
+   Class of
+   Leading    Class of Trailing Char Class
+   Char
 
-     Class of
-     Leading    Class of Trailing Char Class
-     Char
+              1 [a] 7  8  9 [b]15 18
 
-                1 [a] 7  8  9 [b]15 18 COMPLEX
-
-          1     X  X  X  X  X  X  X  X  X
-        [a]        X
-          7        X  X
-          8        X              X
-          9        X
-        [b]        X
-         15        X        X     X  X
-         18        X              X  X
-    COMPLEX        X                    T
-
-       T : need special handling
+        1     X  X  X  X  X  X  X  X
+      [a]        X
+        7        X  X
+        8        X              X
+        9        X
+      [b]        X
+       15        X        X     X  X
+       18        X              X  X
 
 
-     5. However, we need two special class for some punctuations/parentheses,
-        theirs breaking rules like character class (18), see bug 389056.
-        And also we need character like punctuation that is same behavior with
-   18, but the characters are not letters of all languages. (e.g., '_') [c].
-   Based on open parenthesis class (1), but it is not breakable after character
-   class (18) or numeric class (15). [d]. Based on close parenthesis (or
-   punctuation) class (2), but it is not breakable before character class (18)
-   or numeric class (15).
+   4. We add COMPLEX characters and make it breakable w/ all ther class
+      except after class 1 and before class [a]
 
-     Class of
-     Leading    Class of Trailing Char Class
-     Char
+   Class of
+   Leading    Class of Trailing Char Class
+   Char
 
-                1 [a] 7  8  9 [b]15 18 COMPLEX [c] [d]
+              1 [a] 7  8  9 [b]15 18 COMPLEX
 
-          1     X  X  X  X  X  X  X  X  X       X    X
-        [a]        X                            X    X
-          7        X  X
-          8        X              X
-          9        X
-        [b]        X                                 X
-         15        X        X     X  X          X    X
-         18        X              X  X          X    X
-    COMPLEX        X                    T
-        [c]     X  X  X  X  X  X  X  X  X       X    X
-        [d]        X              X  X               X
+        1     X  X  X  X  X  X  X  X  X
+      [a]        X
+        7        X  X
+        8        X              X
+        9        X
+      [b]        X
+       15        X        X     X  X
+       18        X              X  X
+  COMPLEX        X                    T
+
+     T : need special handling
 
 
-     6. And Unicode has "NON-BREAK" characters. The lines should be broken
-   around them. But in JIS X 4051, such class is not, therefore, we create [e].
+   5. However, we need two special class for some punctuations/parentheses,
+      theirs breaking rules like character class (18), see bug 389056.
+      And also we need character like punctuation that is same behavior with 18,
+      but the characters are not letters of all languages. (e.g., '_')
+      [c]. Based on open parenthesis class (1), but it is not breakable after
+           character class (18) or numeric class (15).
+      [d]. Based on close parenthesis (or punctuation) class (2), but it is not
+           breakable before character class (18) or numeric class (15).
 
-     Class of
-     Leading    Class of Trailing Char Class
-     Char
+   Class of
+   Leading    Class of Trailing Char Class
+   Char
 
-                1 [a] 7  8  9 [b]15 18 COMPLEX [c] [d] [e]
+              1 [a] 7  8  9 [b]15 18 COMPLEX [c] [d]
 
-          1     X  X  X  X  X  X  X  X  X       X    X   X
-        [a]        X                                 X   X
-          7        X  X                                  X
-          8        X              X                      X
-          9        X                                     X
-        [b]        X                                 X   X
-         15        X        X     X  X          X    X   X
-         18        X              X  X          X    X   X
-    COMPLEX        X                    T                X
-        [c]     X  X  X  X  X  X  X  X  X       X    X   X
-        [d]        X              X  X               X   X
-        [e]     X  X  X  X  X  X  X  X  X       X    X   X
+        1     X  X  X  X  X  X  X  X  X       X    X
+      [a]        X                            X    X
+        7        X  X
+        8        X              X
+        9        X
+      [b]        X                                 X
+       15        X        X     X  X          X    X
+       18        X              X  X          X    X
+  COMPLEX        X                    T
+      [c]     X  X  X  X  X  X  X  X  X       X    X
+      [d]        X              X  X               X
 
 
-     7. Now we use one bit to encode weather it is breakable, and use 2 bytes
-        for one row, then the bit table will look like:
+   6. And Unicode has "NON-BREAK" characters. The lines should be broken around
+      them. But in JIS X 4051, such class is not, therefore, we create [e].
 
-                   18    <-   1
+   Class of
+   Leading    Class of Trailing Char Class
+   Char
 
-         1  0000 1111 1111 1111  = 0x0FFF
-        [a] 0000 1100 0000 0010  = 0x0C02
-         7  0000 1000 0000 0110  = 0x0806
-         8  0000 1000 0100 0010  = 0x0842
-         9  0000 1000 0000 0010  = 0x0802
-        [b] 0000 1100 0000 0010  = 0x0C02
-        15  0000 1110 1101 0010  = 0x0ED2
-        18  0000 1110 1100 0010  = 0x0EC2
-   COMPLEX  0000 1001 0000 0010  = 0x0902
-        [c] 0000 1111 1111 1111  = 0x0FFF
-        [d] 0000 1100 1100 0010  = 0x0CC2
-        [e] 0000 1111 1111 1111  = 0x0FFF
-  */
+              1 [a] 7  8  9 [b]15 18 COMPLEX [c] [d] [e]
+
+        1     X  X  X  X  X  X  X  X  X       X    X   X
+      [a]        X                                 X   X
+        7        X  X                                  X
+        8        X              X                      X
+        9        X                                     X
+      [b]        X                                 X   X
+       15        X        X     X  X          X    X   X
+       18        X              X  X          X    X   X
+  COMPLEX        X                    T                X
+      [c]     X  X  X  X  X  X  X  X  X       X    X   X
+      [d]        X              X  X               X   X
+      [e]     X  X  X  X  X  X  X  X  X       X    X   X
+
+
+   7. Now we use one bit to encode weather it is breakable, and use 2 bytes
+      for one row, then the bit table will look like:
+
+                 18    <-   1
+
+       1  0000 1111 1111 1111  = 0x0FFF
+      [a] 0000 1100 0000 0010  = 0x0C02
+       7  0000 1000 0000 0110  = 0x0806
+       8  0000 1000 0100 0010  = 0x0842
+       9  0000 1000 0000 0010  = 0x0802
+      [b] 0000 1100 0000 0010  = 0x0C02
+      15  0000 1110 1101 0010  = 0x0ED2
+      18  0000 1110 1100 0010  = 0x0EC2
+ COMPLEX  0000 1001 0000 0010  = 0x0902
+      [c] 0000 1111 1111 1111  = 0x0FFF
+      [d] 0000 1100 1100 0010  = 0x0CC2
+      [e] 0000 1111 1111 1111  = 0x0FFF
+*/
 
 #define MAX_CLASSES 12
 
@@ -497,7 +498,7 @@ static int8_t GetClass(uint32_t u) {
       /* INFIX_NUMERIC = 16,                [IS] */ CLASS_CHARACTER,
       /* LINE_FEED = 17,                    [LF] */ CLASS_BREAKABLE,
       /* NONSTARTER = 18,                   [NS] */ CLASS_CLOSE_LIKE_CHARACTER,
-      /* NUMERIC = 19,                      [NU] */ CLASS_CHARACTER,
+      /* NUMERIC = 19,                      [NU] */ CLASS_NUMERIC,
       /* OPEN_PUNCTUATION = 20,             [OP] */ CLASS_CHARACTER,
       /* POSTFIX_NUMERIC = 21,              [PO] */ CLASS_CHARACTER,
       /* PREFIX_NUMERIC = 22,               [PR] */ CLASS_CHARACTER,
@@ -525,7 +526,7 @@ static int8_t GetClass(uint32_t u) {
   static_assert(U_LB_COUNT == mozilla::ArrayLength(sUnicodeLineBreakToClass),
                 "Gecko vs ICU LineBreak class mismatch");
 
-  auto cls = mozilla::unicode::GetLineBreakClass(u);
+  auto cls = GetLineBreakClass(u);
   MOZ_ASSERT(cls < mozilla::ArrayLength(sUnicodeLineBreakToClass));
   return sUnicodeLineBreakToClass[cls];
 }
@@ -584,16 +585,16 @@ class ContextState {
 
   void NotifyBreakBefore() { mLastBreakIndex = mIndex; }
 
-    // A word of western language should not be broken. But even if the word has
-    // only ASCII characters, non-natural context words should be broken, e.g.,
-    // URL and file path. For protecting the natural words, we should use
-    // conservative breaking rules at following conditions:
-    //   1. at near the start of word
-    //   2. at near the end of word
-    //   3. at near the latest broken point
-    // CONSERVATIVE_RANGE_{LETTER,OTHER} define the 'near' in characters,
-    // which varies depending whether we are looking at a letter or a non-letter
-    // character: for non-letters, we use an extended "conservative" range.
+  // A word of western language should not be broken. But even if the word has
+  // only ASCII characters, non-natural context words should be broken, e.g.,
+  // URL and file path. For protecting the natural words, we should use
+  // conservative breaking rules at following conditions:
+  //   1. at near the start of word
+  //   2. at near the end of word
+  //   3. at near the latest broken point
+  // CONSERVATIVE_RANGE_{LETTER,OTHER} define the 'near' in characters,
+  // which varies depending whether we are looking at a letter or a non-letter
+  // character: for non-letters, we use an extended "conservative" range.
 
 #define CONSERVATIVE_RANGE_LETTER 2
 #define CONSERVATIVE_RANGE_OTHER 6
@@ -889,16 +890,35 @@ void LineBreaker::GetJISx4051Breaks(const char16_t* aChars, uint32_t aLength,
       cl = GetClass(ch);
     }
 
+    // To implement word-break:break-all, we overwrite the line-break class of
+    // alphanumeric characters so they are treated the same as ideographic.
+    // The relevant characters will have been assigned CLASS_CHARACTER, _CLOSE,
+    // or _NUMERIC by GetClass(), but those classes also include others that
+    // we don't want to touch here, so we re-check the Unicode line-break class
+    // to determine which ones to modify.
+    if (aWordBreak == LineBreaker::kWordBreak_BreakAll &&
+        (cl == CLASS_CHARACTER || cl == CLASS_CLOSE || cl == CLASS_NUMERIC)) {
+      auto cls = GetLineBreakClass(ch);
+      if (cls == U_LB_ALPHABETIC || cls == U_LB_NUMERIC ||
+          cls == U_LB_AMBIGUOUS || cls == U_LB_COMPLEX_CONTEXT ||
+          /* Additional Japanese and Korean LB classes; CSS Text spec doesn't
+             explicitly mention these, but this appears to give expected
+             behavior (spec issue?) */
+          cls == U_LB_CONDITIONAL_JAPANESE_STARTER ||
+          (cls >= U_LB_H2 && cls <= U_LB_JV)) {
+        cl = CLASS_BREAKABLE;
+      }
+    }
+
     bool allowBreak = false;
     if (cur > 0) {
       NS_ASSERTION(CLASS_COMPLEX != lastClass || CLASS_COMPLEX != cl,
                    "Loop should have prevented adjacent complex chars here");
-      if (aWordBreak == LineBreaker::kWordBreak_Normal) {
+      if (aWordBreak == LineBreaker::kWordBreak_Normal ||
+          aWordBreak == LineBreaker::kWordBreak_BreakAll) {
         allowBreak = (state.UseConservativeBreaking())
                          ? GetPairConservative(lastClass, cl)
                          : GetPair(lastClass, cl);
-      } else if (aWordBreak == LineBreaker::kWordBreak_BreakAll) {
-        allowBreak = true;
       }
     }
     aBreakBefore[cur] = allowBreak;
@@ -918,18 +938,20 @@ void LineBreaker::GetJISx4051Breaks(const char16_t* aChars, uint32_t aLength,
         }
       }
 
-      NS_GetComplexLineBreaks(aChars + cur, end - cur, aBreakBefore + cur);
-
-      // We have to consider word-break value again for complex characters
-      if (aWordBreak != LineBreaker::kWordBreak_Normal) {
-        // Respect word-break property
-        for (uint32_t i = cur; i < end; i++)
-          aBreakBefore[i] = (aWordBreak == LineBreaker::kWordBreak_BreakAll);
+      if (aWordBreak == LineBreaker::kWordBreak_BreakAll) {
+        // For break-all, we don't need to run a dictionary-based breaking
+        // algorithm, we just allow breaks between all grapheme clusters.
+        ClusterIterator ci(aChars + cur, end - cur);
+        while (!ci.AtEnd()) {
+          ci.Next();
+          aBreakBefore[ci - aChars] = true;
+        }
+      } else {
+        NS_GetComplexLineBreaks(aChars + cur, end - cur, aBreakBefore + cur);
+        // restore breakability at chunk begin, which was always set to false
+        // by the complex line breaker
+        aBreakBefore[cur] = allowBreak;
       }
-
-      // restore breakability at chunk begin, which was always set to false
-      // by the complex line breaker
-      aBreakBefore[cur] = allowBreak;
 
       cur = end - 1;
     }
@@ -963,15 +985,23 @@ void LineBreaker::GetJISx4051Breaks(const uint8_t* aChars, uint32_t aLength,
       state.NotifyNonHyphenCharacter(ch);
       cl = GetClass(ch);
     }
+    if (aWordBreak == LineBreaker::kWordBreak_BreakAll &&
+        (cl == CLASS_CHARACTER || cl == CLASS_CLOSE || cl == CLASS_NUMERIC)) {
+      auto cls = GetLineBreakClass(ch);
+      // Don't need to check additional Japanese/Korean classes in 8-bit
+      if (cls == U_LB_ALPHABETIC || cls == U_LB_NUMERIC ||
+          cls == U_LB_COMPLEX_CONTEXT) {
+        cl = CLASS_BREAKABLE;
+      }
+    }
 
     bool allowBreak = false;
     if (cur > 0) {
-      if (aWordBreak == LineBreaker::kWordBreak_Normal) {
+      if (aWordBreak == LineBreaker::kWordBreak_Normal ||
+          aWordBreak == LineBreaker::kWordBreak_BreakAll) {
         allowBreak = (state.UseConservativeBreaking())
                          ? GetPairConservative(lastClass, cl)
                          : GetPair(lastClass, cl);
-      } else if (aWordBreak == LineBreaker::kWordBreak_BreakAll) {
-        allowBreak = true;
       }
     }
     aBreakBefore[cur] = allowBreak;

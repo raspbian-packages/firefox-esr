@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,11 +16,11 @@ namespace mozilla {
 
 JSObject* WebGLVertexArray::WrapObject(JSContext* cx,
                                        JS::Handle<JSObject*> givenProto) {
-  return dom::WebGLVertexArrayObjectBinding::Wrap(cx, this, givenProto);
+  return dom::WebGLVertexArrayObject_Binding::Wrap(cx, this, givenProto);
 }
 
-WebGLVertexArray::WebGLVertexArray(WebGLContext* webgl)
-    : WebGLRefCountedObject(webgl), mGLName(0) {
+WebGLVertexArray::WebGLVertexArray(WebGLContext* const webgl, const GLuint name)
+    : WebGLRefCountedObject(webgl), mGLName(name) {
   mAttribs.SetLength(mContext->mGLMaxVertexAttribs);
   mContext->mVertexArrays.insertBack(this);
 }
@@ -52,8 +52,6 @@ void WebGLVertexArray::Delete() {
   mElementArrayBuffer = nullptr;
   mAttribs.Clear();
 }
-
-bool WebGLVertexArray::IsVertexArray() const { return IsVertexArrayImpl(); }
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(WebGLVertexArray, mAttribs,
                                       mElementArrayBuffer)

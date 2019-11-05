@@ -33,9 +33,10 @@ PresentationConnectionList::PresentationConnectionList(
   MOZ_ASSERT(aPromise);
 }
 
-/* virtual */ JSObject* PresentationConnectionList::WrapObject(
+/* virtual */
+JSObject* PresentationConnectionList::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return PresentationConnectionListBinding::Wrap(aCx, this, aGivenProto);
+  return PresentationConnectionList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void PresentationConnectionList::GetConnections(
@@ -81,7 +82,7 @@ PresentationConnectionList::FindConnectionById(const nsAString& aId) {
     }
   }
 
-  return mConnections.NoIndex;
+  return ConnectionArray::NoIndex;
 }
 
 void PresentationConnectionList::NotifyStateChange(
@@ -92,9 +93,9 @@ void PresentationConnectionList::NotifyStateChange(
   }
 
   bool connectionFound =
-      FindConnectionById(aSessionId) != mConnections.NoIndex ? true : false;
+      FindConnectionById(aSessionId) != ConnectionArray::NoIndex ? true : false;
 
-  PresentationConnectionListBinding::ClearCachedConnectionsValue(this);
+  PresentationConnectionList_Binding::ClearCachedConnectionsValue(this);
   switch (aConnection->State()) {
     case PresentationConnectionState::Connected:
       if (!connectionFound) {

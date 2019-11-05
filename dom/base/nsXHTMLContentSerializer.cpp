@@ -12,9 +12,9 @@
 
 #include "nsXHTMLContentSerializer.h"
 
-#include "nsIDOMElement.h"
+#include "mozilla/dom/Element.h"
 #include "nsIContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsElementTable.h"
 #include "nsNameSpaceManager.h"
 #include "nsString.h"
@@ -31,7 +31,9 @@
 #include "nsStubMutationObserver.h"
 #include "nsAttrName.h"
 #include "nsComputedDOMStyle.h"
-#include "mozilla/dom/Element.h"
+
+using namespace mozilla;
+using namespace mozilla::dom;
 
 static const int32_t kLongLineLen = 128;
 
@@ -44,7 +46,11 @@ nsresult NS_NewXHTMLContentSerializer(nsIContentSerializer** aSerializer) {
 }
 
 nsXHTMLContentSerializer::nsXHTMLContentSerializer()
-    : mIsHTMLSerializer(false) {}
+    : mIsHTMLSerializer(false),
+      mIsCopying(false),
+      mDisableEntityEncoding(0),
+      mRewriteEncodingDeclaration(false),
+      mIsFirstChildOfOL(false) {}
 
 nsXHTMLContentSerializer::~nsXHTMLContentSerializer() {
   NS_ASSERTION(mOLStateStack.IsEmpty(), "Expected OL State stack to be empty");
@@ -52,8 +58,7 @@ nsXHTMLContentSerializer::~nsXHTMLContentSerializer() {
 
 NS_IMETHODIMP
 nsXHTMLContentSerializer::Init(uint32_t aFlags, uint32_t aWrapColumn,
-                               const mozilla::Encoding* aEncoding,
-                               bool aIsCopying,
+                               const Encoding* aEncoding, bool aIsCopying,
                                bool aRewriteEncodingDeclaration,
                                bool* aNeedsPreformatScanning) {
   // The previous version of the HTML serializer did implicit wrapping
@@ -149,6 +154,8 @@ bool nsXHTMLContentSerializer::SerializeAttributes(
 
   int32_t contentNamespaceID = aElement->GetNameSpaceID();
 
+  MaybeSerializeIsValue(aElement, aStr);
+
   // this method is not called by nsHTMLContentSerializer
   // so we don't have to check HTML element, just XHTML
 
@@ -165,9 +172,9 @@ bool nsXHTMLContentSerializer::SerializeAttributes(
         nsresult rv = NS_OK;
         startAttrVal = start.ToInteger(&rv);
         // If OL has "start" attribute, first LI element has to start with that
-        // value  Therefore subtracting 1 as all the LI elements are
-        // incrementing it before using it;  In failure of ToInteger(), default
-        // StartAttrValue to 0.
+        // value Therefore subtracting 1 as all the LI elements are incrementing
+        // it before using it; In failure of ToInteger(), default StartAttrValue
+        // to 0.
         if (NS_SUCCEEDED(rv))
           --startAttrVal;
         else
@@ -213,7 +220,7 @@ bool nsXHTMLContentSerializer::SerializeAttributes(
       continue;
     }
 
-    mozilla::dom::BorrowedAttrInfo info = aElement->GetAttrInfoAt(index);
+    dom::BorrowedAttrInfo info = aElement->GetAttrInfoAt(index);
     const nsAttrName* name = info.mName;
 
     int32_t namespaceID = name->NamespaceID();
@@ -379,7 +386,7 @@ void nsXHTMLContentSerializer::AfterElementEnd(nsIContent* aContent,
 }
 
 NS_IMETHODIMP
-nsXHTMLContentSerializer::AppendDocumentStart(nsIDocument* aDocument,
+nsXHTMLContentSerializer::AppendDocumentStart(Document* aDocument,
                                               nsAString& aStr) {
   if (!mBodyOnly)
     return nsXMLContentSerializer::AppendDocumentStart(aDocument, aStr);
@@ -413,7 +420,7 @@ bool nsXHTMLContentSerializer::CheckElementStart(Element* aElement,
   return true;
 }
 
-bool nsXHTMLContentSerializer::CheckElementEnd(mozilla::dom::Element* aElement,
+bool nsXHTMLContentSerializer::CheckElementEnd(Element* aElement,
                                                bool& aForceFormat,
                                                nsAString& aStr) {
   NS_ASSERTION(!mIsHTMLSerializer,
@@ -427,7 +434,7 @@ bool nsXHTMLContentSerializer::CheckElementEnd(mozilla::dom::Element* aElement,
     /* Though at this point we must always have an state to be deleted as all
        the OL opening tags are supposed to push an olState object to the stack*/
     if (!mOLStateStack.IsEmpty()) {
-      mOLStateStack.RemoveElementAt(mOLStateStack.Length() - 1);
+      mOLStateStack.RemoveLastElement();
     }
   }
 
@@ -442,7 +449,7 @@ bool nsXHTMLContentSerializer::AppendAndTranslateEntities(
   }
 
   if (mDisableEntityEncoding) {
-    return aOutputStr.Append(aStr, mozilla::fallible);
+    return aOutputStr.Append(aStr, fallible);
   }
 
   return nsXMLContentSerializer::AppendAndTranslateEntities(aStr, aOutputStr);
@@ -637,10 +644,10 @@ bool nsXHTMLContentSerializer::IsElementPreformatted(nsIContent* aNode) {
   if (!aNode->IsElement()) {
     return false;
   }
-  RefPtr<nsStyleContext> styleContext =
-      nsComputedDOMStyle::GetStyleContextNoFlush(aNode->AsElement(), nullptr);
-  if (styleContext) {
-    const nsStyleText* textStyle = styleContext->StyleText();
+  RefPtr<ComputedStyle> computedStyle =
+      nsComputedDOMStyle::GetComputedStyleNoFlush(aNode->AsElement(), nullptr);
+  if (computedStyle) {
+    const nsStyleText* textStyle = computedStyle->StyleText();
     return textStyle->WhiteSpaceOrNewlineIsSignificant();
   }
   return false;
@@ -728,7 +735,7 @@ bool nsXHTMLContentSerializer::IsFirstChildOfOL(nsIContent* aElement) {
 bool nsXHTMLContentSerializer::HasNoChildren(nsIContent* aContent) {
   for (nsIContent* child = aContent->GetFirstChild(); child;
        child = child->GetNextSibling()) {
-    if (!child->IsNodeOfType(nsINode::eTEXT)) return false;
+    if (!child->IsText()) return false;
 
     if (child->TextLength()) return false;
   }

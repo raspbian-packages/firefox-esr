@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,6 +17,8 @@
 #include "nsIClassInfoImpl.h"
 #include "nsIScriptSecurityManager.h"
 #include "pratom.h"
+
+using namespace mozilla;
 
 NS_IMPL_CLASSINFO(SystemPrincipal, nullptr,
                   nsIClassInfo::SINGLETON | nsIClassInfo::MAIN_THREAD_ONLY,
@@ -41,11 +43,7 @@ nsresult SystemPrincipal::GetScriptLocation(nsACString& aStr) {
 // Methods implementing nsIPrincipal //
 ///////////////////////////////////////
 
-NS_IMETHODIMP
-SystemPrincipal::GetHashValue(uint32_t* result) {
-  *result = NS_PTR_TO_INT32(this);
-  return NS_OK;
-}
+uint32_t SystemPrincipal::GetHashValue() { return NS_PTR_TO_INT32(this); }
 
 NS_IMETHODIMP
 SystemPrincipal::GetURI(nsIURI** aURI) {
@@ -68,7 +66,7 @@ SystemPrincipal::SetCsp(nsIContentSecurityPolicy* aCsp) {
 }
 
 NS_IMETHODIMP
-SystemPrincipal::EnsureCSP(nsIDOMDocument* aDocument,
+SystemPrincipal::EnsureCSP(dom::Document* aDocument,
                            nsIContentSecurityPolicy** aCSP) {
   // CSP on a system principal makes no sense
   return NS_ERROR_FAILURE;
@@ -81,10 +79,10 @@ SystemPrincipal::GetPreloadCsp(nsIContentSecurityPolicy** aPreloadCSP) {
 }
 
 NS_IMETHODIMP
-SystemPrincipal::EnsurePreloadCSP(nsIDOMDocument* aDocument,
+SystemPrincipal::EnsurePreloadCSP(dom::Document* aDocument,
                                   nsIContentSecurityPolicy** aPreloadCSP) {
   // CSP on a system principal makes no sense
-  return NS_OK;
+  return NS_ERROR_FAILURE;
 }
 
 NS_IMETHODIMP

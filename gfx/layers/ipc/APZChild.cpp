@@ -7,7 +7,7 @@
 #include "mozilla/layers/APZChild.h"
 #include "mozilla/layers/GeckoContentController.h"
 
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/layers/APZCCallbackHelper.h"
 
 #include "InputData.h"  // for InputData
@@ -27,11 +27,17 @@ APZChild::~APZChild() {
   }
 }
 
+mozilla::ipc::IPCResult APZChild::RecvLayerTransforms(
+    const nsTArray<MatrixMessage>& aTransforms) {
+  mController->NotifyLayerTransforms(aTransforms);
+  return IPC_OK();
+}
+
 mozilla::ipc::IPCResult APZChild::RecvRequestContentRepaint(
-    const FrameMetrics& aFrameMetrics) {
+    const RepaintRequest& aRequest) {
   MOZ_ASSERT(mController->IsRepaintThread());
 
-  mController->RequestContentRepaint(aFrameMetrics);
+  mController->RequestContentRepaint(aRequest);
   return IPC_OK();
 }
 
@@ -64,6 +70,14 @@ mozilla::ipc::IPCResult APZChild::RecvNotifyFlushComplete() {
   MOZ_ASSERT(mController->IsRepaintThread());
 
   mController->NotifyFlushComplete();
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult APZChild::RecvNotifyAsyncScrollbarDragInitiated(
+    const uint64_t& aDragBlockId, const ViewID& aScrollId,
+    const ScrollDirection& aDirection) {
+  mController->NotifyAsyncScrollbarDragInitiated(aDragBlockId, aScrollId,
+                                                 aDirection);
   return IPC_OK();
 }
 

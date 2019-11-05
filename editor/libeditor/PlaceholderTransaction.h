@@ -7,12 +7,9 @@
 #define PlaceholderTransaction_h
 
 #include "EditAggregateTransaction.h"
-#include "mozilla/EditorUtils.h"
 #include "mozilla/Maybe.h"
 #include "nsIAbsorbingTransaction.h"
-#include "nsIDOMNode.h"
-#include "nsCOMPtr.h"
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 
 namespace mozilla {
 
@@ -44,9 +41,9 @@ class PlaceholderTransaction final : public EditAggregateTransaction,
       Maybe<SelectionState>&& aSelState) {
     // Make sure to move aSelState into a local variable to null out the
     // original Maybe<SelectionState> variable.
-    Maybe<SelectionState> selState(Move(aSelState));
+    Maybe<SelectionState> selState(std::move(aSelState));
     RefPtr<PlaceholderTransaction> transaction =
-        new PlaceholderTransaction(aEditorBase, aName, Move(selState));
+        new PlaceholderTransaction(aEditorBase, aName, std::move(selState));
     return transaction.forget();
   }
 

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -26,6 +26,7 @@
 #include "base/task.h"
 #include "base/thread.h"
 #include "base/message_loop.h"
+#include "mozilla/FontPropertyTypes.h"
 #include "mozilla/gfx/Logging.h"
 
 #include "mozilla/gfx/2D.h"
@@ -35,23 +36,25 @@
 
 #include "gfxImageSurface.h"
 #ifdef MOZ_X11
-#include <gdk/gdkx.h>
-#include "gfxXlibSurface.h"
-#include "cairo-xlib.h"
-#include "mozilla/Preferences.h"
-#include "mozilla/X11Util.h"
+#  include <gdk/gdkx.h>
+#  include "gfxXlibSurface.h"
+#  include "cairo-xlib.h"
+#  include "mozilla/Preferences.h"
+#  include "mozilla/X11Util.h"
 
-#ifdef GL_PROVIDER_GLX
-#include "GLContextProvider.h"
-#include "GLContextGLX.h"
-#include "GLXLibrary.h"
-#endif
+#  include "GLContextProvider.h"
+#  include "GLContextGLX.h"
+#  include "GLXLibrary.h"
 
 /* Undefine the Status from Xlib since it will conflict with system headers on
  * OSX */
-#if defined(__APPLE__) && defined(Status)
-#undef Status
-#endif
+#  if defined(__APPLE__) && defined(Status)
+#    undef Status
+#  endif
+
+#  ifdef MOZ_WAYLAND
+#    include <gdk/gdkwayland.h>
+#  endif
 
 #endif /* MOZ_X11 */
 
@@ -85,14 +88,7 @@ gfxPlatformGtk::gfxPlatformGtk() {
   }
 #endif
 
-  uint32_t canvasMask = BackendTypeBit(BackendType::CAIRO);
-  uint32_t contentMask = BackendTypeBit(BackendType::CAIRO);
-#ifdef USE_SKIA
-  canvasMask |= BackendTypeBit(BackendType::SKIA);
-  contentMask |= BackendTypeBit(BackendType::SKIA);
-#endif
-  InitBackendPrefs(canvasMask, BackendType::CAIRO, contentMask,
-                   BackendType::CAIRO);
+  InitBackendPrefs(GetBackendPrefs());
 
 #ifdef MOZ_X11
   if (gfxPlatform::IsHeadless() &&
@@ -103,6 +99,12 @@ gfxPlatformGtk::gfxPlatformGtk() {
     mCompositorDisplay = nullptr;
   }
 #endif  // MOZ_X11
+#ifdef MOZ_WAYLAND
+  // Wayland compositors use g_get_monotonic_time() to get timestamps.
+  mWaylandLastVsyncTimestamp = (g_get_monotonic_time() / 1000);
+  // Set default display fps to 60
+  mWaylandFrameDelay = 1000 / 60;
+#endif
 }
 
 gfxPlatformGtk::~gfxPlatformGtk() {
@@ -189,13 +191,14 @@ nsresult gfxPlatformGtk::UpdateFontList() {
 // out a more general list
 static const char kFontDejaVuSans[] = "DejaVu Sans";
 static const char kFontDejaVuSerif[] = "DejaVu Serif";
-static const char kFontEmojiOneMozilla[] = "EmojiOne Mozilla";
 static const char kFontFreeSans[] = "FreeSans";
 static const char kFontFreeSerif[] = "FreeSerif";
 static const char kFontTakaoPGothic[] = "TakaoPGothic";
+static const char kFontTwemojiMozilla[] = "Twemoji Mozilla";
 static const char kFontDroidSansFallback[] = "Droid Sans Fallback";
 static const char kFontWenQuanYiMicroHei[] = "WenQuanYi Micro Hei";
 static const char kFontNanumGothic[] = "NanumGothic";
+static const char kFontSymbola[] = "Symbola";
 
 void gfxPlatformGtk::GetCommonFallbackFonts(uint32_t aCh, uint32_t aNextCh,
                                             Script aRunScript,
@@ -206,7 +209,7 @@ void gfxPlatformGtk::GetCommonFallbackFonts(uint32_t aCh, uint32_t aNextCh,
         (aNextCh != kVariationSelector15 &&
          emoji == EmojiPresentation::EmojiDefault)) {
       // if char is followed by VS16, try for a color emoji glyph
-      aFontList.AppendElement(kFontEmojiOneMozilla);
+      aFontList.AppendElement(kFontTwemojiMozilla);
     }
   }
 
@@ -214,6 +217,7 @@ void gfxPlatformGtk::GetCommonFallbackFonts(uint32_t aCh, uint32_t aNextCh,
   aFontList.AppendElement(kFontFreeSerif);
   aFontList.AppendElement(kFontDejaVuSans);
   aFontList.AppendElement(kFontFreeSans);
+  aFontList.AppendElement(kFontSymbola);
 
   // add fonts for CJK ranges
   // xxx - this isn't really correct, should use the same CJK font ordering
@@ -241,37 +245,12 @@ gfxPlatformFontList* gfxPlatformGtk::CreatePlatformFontList() {
   return nullptr;
 }
 
-nsresult gfxPlatformGtk::GetStandardFamilyName(const nsAString& aFontName,
-                                               nsAString& aFamilyName) {
-  gfxPlatformFontList::PlatformFontList()->GetStandardFamilyName(aFontName,
-                                                                 aFamilyName);
-  return NS_OK;
-}
-
 gfxFontGroup* gfxPlatformGtk::CreateFontGroup(
     const FontFamilyList& aFontFamilyList, const gfxFontStyle* aStyle,
     gfxTextPerfMetrics* aTextPerf, gfxUserFontSet* aUserFontSet,
     gfxFloat aDevToCssSize) {
   return new gfxFontGroup(aFontFamilyList, aStyle, aTextPerf, aUserFontSet,
                           aDevToCssSize);
-}
-
-gfxFontEntry* gfxPlatformGtk::LookupLocalFont(const nsAString& aFontName,
-                                              uint16_t aWeight,
-                                              int16_t aStretch,
-                                              uint8_t aStyle) {
-  gfxPlatformFontList* pfl = gfxPlatformFontList::PlatformFontList();
-  return pfl->LookupLocalFont(aFontName, aWeight, aStretch, aStyle);
-}
-
-gfxFontEntry* gfxPlatformGtk::MakePlatformFont(const nsAString& aFontName,
-                                               uint16_t aWeight,
-                                               int16_t aStretch, uint8_t aStyle,
-                                               const uint8_t* aFontData,
-                                               uint32_t aLength) {
-  gfxPlatformFontList* pfl = gfxPlatformFontList::PlatformFontList();
-  return pfl->MakePlatformFont(aFontName, aWeight, aStretch, aStyle, aFontData,
-                               aLength);
 }
 
 FT_Library gfxPlatformGtk::GetFTLibrary() {
@@ -350,9 +329,7 @@ uint32_t gfxPlatformGtk::MaxGenericSubstitions() {
   return uint32_t(mMaxGenericSubstitutions);
 }
 
-bool gfxPlatformGtk::AccelerateLayersByDefault() {
-  return gfxPrefs::WebRenderAll();
-}
+bool gfxPlatformGtk::AccelerateLayersByDefault() { return true; }
 
 void gfxPlatformGtk::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
   mem = nullptr;
@@ -383,7 +360,7 @@ void gfxPlatformGtk::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
   if (iccAtom) {
     // read once to get size, once for the data
     if (Success == XGetWindowProperty(dpy, root, iccAtom, 0,
-                                      INT_MAX /* length */, False,
+                                      INT_MAX /* length */, X11False,
                                       AnyPropertyType, &retAtom, &retFormat,
                                       &retLength, &retAfter, &retProperty)) {
       if (retLength > 0) {
@@ -397,10 +374,10 @@ void gfxPlatformGtk::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
 
       XFree(retProperty);
       if (size > 0) {
-#ifdef DEBUG_tor
+#  ifdef DEBUG_tor
         fprintf(stderr, "ICM profile read from %s successfully\n",
                 ICC_PROFILE_ATOM_NAME);
-#endif
+#  endif
         return;
       }
     }
@@ -408,7 +385,7 @@ void gfxPlatformGtk::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
 
   edidAtom = XInternAtom(dpy, EDID1_ATOM_NAME, TRUE);
   if (edidAtom) {
-    if (Success == XGetWindowProperty(dpy, root, edidAtom, 0, 32, False,
+    if (Success == XGetWindowProperty(dpy, root, edidAtom, 0, 32, X11False,
                                       AnyPropertyType, &retAtom, &retFormat,
                                       &retLength, &retAfter, &retProperty)) {
       double gamma;
@@ -416,9 +393,9 @@ void gfxPlatformGtk::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
       qcms_CIE_xyYTRIPLE primaries;
 
       if (retLength != 128) {
-#ifdef DEBUG_tor
+#  ifdef DEBUG_tor
         fprintf(stderr, "Short EDID data\n");
-#endif
+#  endif
         return;
       }
 
@@ -451,7 +428,7 @@ void gfxPlatformGtk::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
 
       XFree(retProperty);
 
-#ifdef DEBUG_tor
+#  ifdef DEBUG_tor
       fprintf(stderr, "EDID gamma: %f\n", gamma);
       fprintf(stderr, "EDID whitepoint: %f %f %f\n", whitePoint.x, whitePoint.y,
               whitePoint.Y);
@@ -459,32 +436,41 @@ void gfxPlatformGtk::GetPlatformCMSOutputProfile(void*& mem, size_t& size) {
               primaries.Red.x, primaries.Red.y, primaries.Red.Y,
               primaries.Green.x, primaries.Green.y, primaries.Green.Y,
               primaries.Blue.x, primaries.Blue.y, primaries.Blue.Y);
-#endif
+#  endif
 
       qcms_data_create_rgb_with_gamma(whitePoint, primaries, gamma, &mem,
                                       &size);
 
-#ifdef DEBUG_tor
+#  ifdef DEBUG_tor
       if (size > 0) {
         fprintf(stderr, "ICM profile read from %s successfully\n",
                 EDID1_ATOM_NAME);
       }
-#endif
+#  endif
     }
   }
 #endif
 }
 
-#ifdef GL_PROVIDER_GLX
+bool gfxPlatformGtk::CheckVariationFontSupport() {
+  // Although there was some variation/multiple-master support in FreeType
+  // in older versions, it seems too incomplete/unstable for us to use
+  // until at least 2.7.1.
+  FT_Int major, minor, patch;
+  FT_Library_Version(GetFTLibrary(), &major, &minor, &patch);
+  return major * 1000000 + minor * 1000 + patch >= 2007001;
+}
 
-class GLXVsyncSource final : public VsyncSource {
+#ifdef MOZ_X11
+
+class GtkVsyncSource final : public VsyncSource {
  public:
-  GLXVsyncSource() {
+  GtkVsyncSource() {
     MOZ_ASSERT(NS_IsMainThread());
     mGlobalDisplay = new GLXDisplay();
   }
 
-  virtual ~GLXVsyncSource() { MOZ_ASSERT(NS_IsMainThread()); }
+  virtual ~GtkVsyncSource() { MOZ_ASSERT(NS_IsMainThread()); }
 
   virtual Display& GetGlobalDisplay() override { return *mGlobalDisplay; }
 
@@ -499,7 +485,13 @@ class GLXVsyncSource final : public VsyncSource {
           mVsyncThread("GLXVsyncThread"),
           mVsyncTask(nullptr),
           mVsyncEnabledLock("GLXVsyncEnabledLock"),
-          mVsyncEnabled(false) {}
+          mVsyncEnabled(false)
+#  ifdef MOZ_WAYLAND
+          ,
+          mIsWaylandDisplay(false)
+#  endif
+    {
+    }
 
     // Sets up the display's GL context on a worker thread.
     // Required as GLContexts may only be used by the creating thread.
@@ -510,13 +502,22 @@ class GLXVsyncSource final : public VsyncSource {
       if (!mVsyncThread.Start()) return false;
 
       RefPtr<Runnable> vsyncSetup =
-          NewRunnableMethod("GLXVsyncSource::GLXDisplay::SetupGLContext", this,
+          NewRunnableMethod("GtkVsyncSource::GLXDisplay::SetupGLContext", this,
                             &GLXDisplay::SetupGLContext);
       mVsyncThread.message_loop()->PostTask(vsyncSetup.forget());
       // Wait until the setup has completed.
       lock.Wait();
       return mGLContext != nullptr;
     }
+
+#  ifdef MOZ_WAYLAND
+    bool SetupWayland() {
+      MonitorAutoLock lock(mSetupLock);
+      MOZ_ASSERT(NS_IsMainThread());
+      mIsWaylandDisplay = true;
+      return mVsyncThread.Start();
+    }
+#  endif
 
     // Called on the Vsync thread to setup the GL context.
     void SetupGLContext() {
@@ -568,7 +569,9 @@ class GLXVsyncSource final : public VsyncSource {
 
     virtual void EnableVsync() override {
       MOZ_ASSERT(NS_IsMainThread());
+#  if !defined(MOZ_WAYLAND)
       MOZ_ASSERT(mGLContext, "GLContext not setup!");
+#  endif
 
       MonitorAutoLock lock(mVsyncEnabledLock);
       if (mVsyncEnabled) {
@@ -579,8 +582,12 @@ class GLXVsyncSource final : public VsyncSource {
       // If the task has not nulled itself out, it hasn't yet realized
       // that vsync was disabled earlier, so continue its execution.
       if (!mVsyncTask) {
-        mVsyncTask = NewRunnableMethod("GLXVsyncSource::GLXDisplay::RunVsync",
-                                       this, &GLXDisplay::RunVsync);
+        mVsyncTask =
+            NewRunnableMethod("GtkVsyncSource::GLXDisplay::RunVsync", this,
+#  if defined(MOZ_WAYLAND)
+                              mIsWaylandDisplay ? &GLXDisplay::RunVsyncWayland :
+#  endif
+                                                &GLXDisplay::RunVsync);
         RefPtr<Runnable> addrefedTask = mVsyncTask;
         mVsyncThread.message_loop()->PostTask(addrefedTask.forget());
       }
@@ -602,7 +609,7 @@ class GLXVsyncSource final : public VsyncSource {
 
       // Cleanup thread-specific resources before shutting down.
       RefPtr<Runnable> shutdownTask = NewRunnableMethod(
-          "GLXVsyncSource::GLXDisplay::Cleanup", this, &GLXDisplay::Cleanup);
+          "GtkVsyncSource::GLXDisplay::Cleanup", this, &GLXDisplay::Cleanup);
       mVsyncThread.message_loop()->PostTask(shutdownTask.forget());
 
       // Stop, waiting for the cleanup task to finish execution.
@@ -610,7 +617,7 @@ class GLXVsyncSource final : public VsyncSource {
     }
 
    private:
-    virtual ~GLXDisplay() {}
+    virtual ~GLXDisplay() = default;
 
     void RunVsync() {
       MOZ_ASSERT(!NS_IsMainThread());
@@ -660,11 +667,46 @@ class GLXVsyncSource final : public VsyncSource {
       }
     }
 
+#  ifdef MOZ_WAYLAND
+    /* VSync on Wayland is tricky as we can get only "last VSync" event signal.
+     * That means we should draw next frame at "last Vsync + frame delay" time.
+     */
+    void RunVsyncWayland() {
+      MOZ_ASSERT(!NS_IsMainThread());
+
+      for (;;) {
+        {
+          MonitorAutoLock lock(mVsyncEnabledLock);
+          if (!mVsyncEnabled) {
+            mVsyncTask = nullptr;
+            return;
+          }
+        }
+
+        gint64 lastVsync = gfxPlatformGtk::GetPlatform()->GetWaylandLastVsync();
+        gint64 currTime = (g_get_monotonic_time() / 1000);
+
+        gint64 remaining =
+            gfxPlatformGtk::GetPlatform()->GetWaylandFrameDelay() -
+            (currTime - lastVsync);
+        if (remaining > 0) {
+          PlatformThread::Sleep(remaining);
+        } else {
+          // Time from last HW Vsync is longer than our frame delay,
+          // use our approximation then.
+          gfxPlatformGtk::GetPlatform()->SetWaylandLastVsync(currTime);
+        }
+
+        NotifyVsync(TimeStamp::Now());
+      }
+    }
+#  endif
+
     void Cleanup() {
       MOZ_ASSERT(!NS_IsMainThread());
 
       mGLContext = nullptr;
-      XCloseDisplay(mXDisplay);
+      if (mXDisplay) XCloseDisplay(mXDisplay);
     }
 
     // Owned by the vsync thread.
@@ -675,6 +717,9 @@ class GLXVsyncSource final : public VsyncSource {
     RefPtr<Runnable> mVsyncTask;
     Monitor mVsyncEnabledLock;
     bool mVsyncEnabled;
+#  ifdef MOZ_WAYLAND
+    bool mIsWaylandDisplay;
+#  endif
   };
 
  private:
@@ -683,14 +728,23 @@ class GLXVsyncSource final : public VsyncSource {
 };
 
 already_AddRefed<gfx::VsyncSource> gfxPlatformGtk::CreateHardwareVsyncSource() {
+#  ifdef MOZ_WAYLAND
+  if (!GDK_IS_X11_DISPLAY(gdk_display_get_default())) {
+    RefPtr<VsyncSource> vsyncSource = new GtkVsyncSource();
+    VsyncSource::Display& display = vsyncSource->GetGlobalDisplay();
+    static_cast<GtkVsyncSource::GLXDisplay&>(display).SetupWayland();
+    return vsyncSource.forget();
+  }
+#  endif
+
   // Only use GLX vsync when the OpenGL compositor is being used.
   // The extra cost of initializing a GLX context while blocking the main
   // thread is not worth it when using basic composition.
   if (gfxConfig::IsEnabled(Feature::HW_COMPOSITING)) {
     if (gl::sGLXLibrary.SupportsVideoSync()) {
-      RefPtr<VsyncSource> vsyncSource = new GLXVsyncSource();
+      RefPtr<VsyncSource> vsyncSource = new GtkVsyncSource();
       VsyncSource::Display& display = vsyncSource->GetGlobalDisplay();
-      if (!static_cast<GLXVsyncSource::GLXDisplay&>(display).Setup()) {
+      if (!static_cast<GtkVsyncSource::GLXDisplay&>(display).Setup()) {
         NS_WARNING(
             "Failed to setup GLContext, falling back to software vsync.");
         return gfxPlatform::CreateHardwareVsyncSource();

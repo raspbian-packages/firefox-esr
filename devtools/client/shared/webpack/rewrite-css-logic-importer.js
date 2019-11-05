@@ -4,11 +4,11 @@
 
 "use strict";
 
-module.exports = function (content) {
+module.exports = function(content) {
   this.cacheable && this.cacheable();
 
   return content.replace(
-    "loader.lazyImporter(this, \"findCssSelector\", \"resource://gre/modules/css-selector.js\");",
+    'loader.lazyImporter(this, "findCssSelector", "resource://gre/modules/css-selector.js");',
     "let findCssSelector = function () {};"
   );
 };

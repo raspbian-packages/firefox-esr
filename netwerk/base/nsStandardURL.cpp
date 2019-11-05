@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set ts=4 sw=4 sts=4 et cindent: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=4 sw=2 sts=2 et cindent: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,8 +13,6 @@
 #include "nsIFile.h"
 #include "nsIObjectInputStream.h"
 #include "nsIObjectOutputStream.h"
-#include "nsIPrefService.h"
-#include "nsIPrefBranch.h"
 #include "nsIIDNService.h"
 #include "mozilla/Logging.h"
 #include "nsAutoPtr.h"
@@ -22,12 +20,13 @@
 #include "nsNetCID.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/ipc/URIUtils.h"
+#include "mozilla/TextUtils.h"
 #include <algorithm>
-#include "mozilla/SyncRunnable.h"
 #include "nsContentUtils.h"
 #include "prprf.h"
 #include "nsReadableUtils.h"
-#include "rust-url-capi/src/rust-url-capi.h"
+#include "mozilla/net/MozURL_ffi.h"
+#include "mozilla/TextUtils.h"
 
 //
 // setenv MOZ_LOG nsStandardURL:5
@@ -50,7 +49,7 @@ static NS_DEFINE_CID(kStandardURLCID, NS_STANDARDURL_CID);
 
 // This will always be initialized and destroyed on the main thread, but
 // can be safely used on other threads.
-nsIIDNService *nsStandardURL::gIDN = nullptr;
+StaticRefPtr<nsIIDNService> nsStandardURL::gIDN;
 
 // This value will only be updated on the main thread once. Worker threads
 // may race when reading this values, but that's OK because in the worst
@@ -61,10 +60,6 @@ const char nsStandardURL::gHostLimitDigits[] = {'/', '\\', '?', '#', 0};
 bool nsStandardURL::gPunycodeHost = true;
 
 // Invalid host characters
-// We still allow % because it is in the ID of addons.
-// Any percent encoded ASCII characters that are not allowed in the
-// hostname are not percent decoded, and will be parsed just fine.
-//
 // Note that the array below will be initialized at compile time,
 // so we do not need to "optimize" TestForInvalidHostCharacters.
 //
@@ -75,46 +70,21 @@ constexpr bool TestForInvalidHostCharacters(char c) {
          c == ' ' || c == '#' || c == '/' || c == ':' || c == '?' || c == '@' ||
          c == '[' || c == '\\' || c == ']' || c == '*' || c == '<' ||
          c == '^' ||
+#if defined(MOZ_THUNDERBIRD) || defined(MOZ_SUITE)
+         // Mailnews %-escapes file paths into URLs.
          c == '>' || c == '|' || c == '"';
+#else
+         c == '>' || c == '|' || c == '"' || c == '%';
+#endif
 }
 constexpr ASCIIMaskArray sInvalidHostChars =
     CreateASCIIMask(TestForInvalidHostCharacters);
 
 //----------------------------------------------------------------------------
-
-#define ENSURE_MUTABLE()                                        \
-  PR_BEGIN_MACRO                                                \
-  if (!mMutable) {                                              \
-    NS_WARNING("attempt to modify an immutable nsStandardURL"); \
-    return NS_ERROR_ABORT;                                      \
-  }                                                             \
-  PR_END_MACRO
-
-//----------------------------------------------------------------------------
-// nsStandardURL::nsPrefObserver
-//----------------------------------------------------------------------------
-
-NS_IMPL_ISUPPORTS(nsStandardURL::nsPrefObserver, nsIObserver)
-
-NS_IMETHODIMP nsStandardURL::nsPrefObserver::Observe(nsISupports *subject,
-                                                     const char *topic,
-                                                     const char16_t *data) {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  if (!strcmp(topic, NS_PREFBRANCH_PREFCHANGE_TOPIC_ID)) {
-    nsCOMPtr<nsIPrefBranch> prefBranch(do_QueryInterface(subject));
-    if (prefBranch) {
-      PrefsChanged(prefBranch, NS_ConvertUTF16toUTF8(data).get());
-    }
-  }
-  return NS_OK;
-}
-
-//----------------------------------------------------------------------------
 // nsStandardURL::nsSegmentEncoder
 //----------------------------------------------------------------------------
 
-nsStandardURL::nsSegmentEncoder::nsSegmentEncoder(const Encoding *encoding)
+nsStandardURL::nsSegmentEncoder::nsSegmentEncoder(const Encoding* encoding)
     : mEncoding(encoding) {
   if (mEncoding == UTF_8_ENCODING) {
     mEncoding = nullptr;
@@ -122,55 +92,95 @@ nsStandardURL::nsSegmentEncoder::nsSegmentEncoder(const Encoding *encoding)
 }
 
 int32_t nsStandardURL::nsSegmentEncoder::EncodeSegmentCount(
-    const char *str, const URLSegment &seg, int16_t mask, nsCString &result,
-    bool &appended, uint32_t extraLen) {
-  // extraLen is characters outside the segment that will be
+    const char* aStr, const URLSegment& aSeg, int16_t aMask, nsCString& aOut,
+    bool& aAppended, uint32_t aExtraLen) {
+  // aExtraLen is characters outside the segment that will be
   // added when the segment is not empty (like the @ following
   // a username).
-  appended = false;
-  if (!str) return 0;
-  int32_t len = 0;
-  if (seg.mLen > 0) {
-    uint32_t pos = seg.mPos;
-    len = seg.mLen;
-
-    // first honor the origin charset if appropriate. as an optimization,
-    // only do this if the segment is non-ASCII.  Further, if mEncoding is
-    // null, then the origin charset is UTF-8 and there is nothing to do.
-    nsAutoCString encBuf;
-    if (mEncoding && !nsCRT::IsAscii(str + pos, len)) {
-      // we have to encode this segment
-      nsresult rv;
-      const Encoding *ignored;
-      Tie(rv, ignored) =
-          mEncoding->Encode(Substring(str + pos, str + pos + len), encBuf);
-      if (NS_SUCCEEDED(rv)) {
-        str = encBuf.get();
-        pos = 0;
-        len = encBuf.Length();
-      }
-      // else some failure occurred... assume UTF-8 is ok.
-    }
-
-    uint32_t initLen = result.Length();
-
-    // now perform any required escaping
-    if (NS_EscapeURL(str + pos, len, mask, result)) {
-      len = result.Length() - initLen;
-      appended = true;
-    } else if (str == encBuf.get()) {
-      result += encBuf;  // append only!!
-      len = encBuf.Length();
-      appended = true;
-    }
-    len += extraLen;
+  if (!aStr || aSeg.mLen <= 0) {
+    // Empty segment, so aExtraLen not added per above.
+    aAppended = false;
+    return 0;
   }
-  return len;
+
+  uint32_t origLen = aOut.Length();
+
+  Span<const char> span = MakeSpan(aStr + aSeg.mPos, aSeg.mLen);
+
+  // first honor the origin charset if appropriate. as an optimization,
+  // only do this if the segment is non-ASCII.  Further, if mEncoding is
+  // null, then the origin charset is UTF-8 and there is nothing to do.
+  if (mEncoding) {
+    size_t upTo = Encoding::ASCIIValidUpTo(AsBytes(span));
+    if (upTo != span.Length()) {
+      // we have to encode this segment
+      char bufferArr[512];
+      Span<char> buffer = MakeSpan(bufferArr);
+
+      auto encoder = mEncoding->NewEncoder();
+
+      nsAutoCString valid;  // has to be declared in this scope
+      if (MOZ_UNLIKELY(!IsUTF8(span.From(upTo)))) {
+        MOZ_ASSERT_UNREACHABLE("Invalid UTF-8 passed to nsStandardURL.");
+        // It's UB to pass invalid UTF-8 to
+        // EncodeFromUTF8WithoutReplacement(), so let's make our input valid
+        // UTF-8 by replacing invalid sequences with the REPLACEMENT
+        // CHARACTER.
+        UTF_8_ENCODING->Decode(
+            nsDependentCSubstring(span.Elements(), span.Length()), valid);
+        // This assigment is OK. `span` can't be used after `valid` has
+        // been destroyed because the only way out of the scope that `valid`
+        // was declared in is via return inside the loop below. Specifically,
+        // the return is the only way out of the loop.
+        span = valid;
+      }
+
+      size_t totalRead = 0;
+      for (;;) {
+        uint32_t encoderResult;
+        size_t read;
+        size_t written;
+        Tie(encoderResult, read, written) =
+            encoder->EncodeFromUTF8WithoutReplacement(
+                AsBytes(span.From(totalRead)), AsWritableBytes(buffer), true);
+        totalRead += read;
+        auto bufferWritten = buffer.To(written);
+        if (!NS_EscapeURLSpan(bufferWritten, aMask, aOut)) {
+          aOut.Append(bufferWritten);
+        }
+        if (encoderResult == kInputEmpty) {
+          aAppended = true;
+          // Difference between original and current output
+          // string lengths plus extra length
+          return aOut.Length() - origLen + aExtraLen;
+        }
+        if (encoderResult == kOutputFull) {
+          continue;
+        }
+        aOut.AppendLiteral("%26%23");
+        aOut.AppendInt(encoderResult);
+        aOut.AppendLiteral("%3B");
+      }
+      MOZ_RELEASE_ASSERT(
+          false,
+          "There's supposed to be no way out of the above loop except return.");
+    }
+  }
+
+  if (NS_EscapeURLSpan(span, aMask, aOut)) {
+    aAppended = true;
+    // Difference between original and current output
+    // string lengths plus extra length
+    return aOut.Length() - origLen + aExtraLen;
+  }
+  aAppended = false;
+  // Original segment length plus extra length
+  return span.Length() + aExtraLen;
 }
 
-const nsACString &nsStandardURL::nsSegmentEncoder::EncodeSegment(
-    const nsACString &str, int16_t mask, nsCString &result) {
-  const char *text;
+const nsACString& nsStandardURL::nsSegmentEncoder::EncodeSegment(
+    const nsACString& str, int16_t mask, nsCString& result) {
+  const char* text;
   bool encoded;
   EncodeSegmentCount(str.BeginReading(text), URLSegment(0, str.Length()), mask,
                      result, encoded);
@@ -178,11 +188,12 @@ const nsACString &nsStandardURL::nsSegmentEncoder::EncodeSegment(
   return str;
 }
 
-  //----------------------------------------------------------------------------
-  // nsStandardURL <public>
-  //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+// nsStandardURL <public>
+//----------------------------------------------------------------------------
 
 #ifdef DEBUG_DUMP_URLS_AT_SHUTDOWN
+static StaticMutex gAllURLsMutex;
 static LinkedList<nsStandardURL> gAllURLs;
 #endif
 
@@ -190,9 +201,7 @@ nsStandardURL::nsStandardURL(bool aSupportsFileURL, bool aTrackURL)
     : mDefaultPort(-1),
       mPort(-1),
       mDisplayHost(nullptr),
-      mSpecEncoding(eEncoding_Unknown),
       mURLType(URLTYPE_STANDARD),
-      mMutable(true),
       mSupportsFileURL(aSupportsFileURL),
       mCheckedIfHostA(false) {
   LOG(("Creating nsStandardURL @%p\n", this));
@@ -200,9 +209,7 @@ nsStandardURL::nsStandardURL(bool aSupportsFileURL, bool aTrackURL)
   // gInitialized changes value only once (false->true) on the main thread.
   // It's OK to race here because in the worst case we'll just
   // dispatch a noop runnable to the main thread.
-  if (!gInitialized) {
-    InitGlobalObjects();
-  }
+  MOZ_ASSERT(gInitialized);
 
   // default parser in case nsIStandardURL::Init is never called
   mParser = net_GetStdURLParser();
@@ -210,6 +217,7 @@ nsStandardURL::nsStandardURL(bool aSupportsFileURL, bool aTrackURL)
 #ifdef DEBUG_DUMP_URLS_AT_SHUTDOWN
   if (NS_IsMainThread()) {
     if (aTrackURL) {
+      StaticMutexAutoLock lock(gAllURLsMutex);
       gAllURLs.insertBack(this);
     }
   }
@@ -218,16 +226,26 @@ nsStandardURL::nsStandardURL(bool aSupportsFileURL, bool aTrackURL)
 
 nsStandardURL::~nsStandardURL() {
   LOG(("Destroying nsStandardURL @%p\n", this));
+
+#ifdef DEBUG_DUMP_URLS_AT_SHUTDOWN
+  {
+    StaticMutexAutoLock lock(gAllURLsMutex);
+    if (isInList()) {
+      remove();
+    }
+  }
+#endif
 }
 
 #ifdef DEBUG_DUMP_URLS_AT_SHUTDOWN
 struct DumpLeakedURLs {
-  DumpLeakedURLs() {}
+  DumpLeakedURLs() = default;
   ~DumpLeakedURLs();
 };
 
 DumpLeakedURLs::~DumpLeakedURLs() {
   MOZ_ASSERT(NS_IsMainThread());
+  StaticMutexAutoLock lock(gAllURLsMutex);
   if (!gAllURLs.isEmpty()) {
     printf("Leaked URLs:\n");
     for (auto url : gAllURLs) {
@@ -239,44 +257,38 @@ DumpLeakedURLs::~DumpLeakedURLs() {
 #endif
 
 void nsStandardURL::InitGlobalObjects() {
-  if (!NS_IsMainThread()) {
-    RefPtr<Runnable> r = NS_NewRunnableFunction(
-        "nsStandardURL::InitGlobalObjects", &nsStandardURL::InitGlobalObjects);
-    SyncRunnable::DispatchToThread(GetMainThreadEventTarget(), r, false);
-    return;
-  }
+  MOZ_DIAGNOSTIC_ASSERT(NS_IsMainThread());
 
   if (gInitialized) {
     return;
   }
 
-  MOZ_ASSERT(NS_IsMainThread());
   gInitialized = true;
-
-  nsCOMPtr<nsIPrefBranch> prefBranch(do_GetService(NS_PREFSERVICE_CONTRACTID));
-  if (prefBranch) {
-    nsCOMPtr<nsIObserver> obs(new nsPrefObserver());
-    PrefsChanged(prefBranch, nullptr);
-  }
 
   Preferences::AddBoolVarCache(&gPunycodeHost,
                                "network.standard-url.punycode-host", true);
   nsCOMPtr<nsIIDNService> serv(do_GetService(NS_IDNSERVICE_CONTRACTID));
   if (serv) {
-    NS_ADDREF(gIDN = serv.get());
-    MOZ_ASSERT(gIDN);
+    gIDN = serv;
   }
+  MOZ_DIAGNOSTIC_ASSERT(gIDN);
+
+  // Make sure nsURLHelper::InitGlobals() gets called on the main thread
+  nsCOMPtr<nsIURLParser> parser = net_GetStdURLParser();
+  MOZ_DIAGNOSTIC_ASSERT(parser);
+  Unused << parser;
 }
 
 void nsStandardURL::ShutdownGlobalObjects() {
-  MOZ_ASSERT(NS_IsMainThread());
-  NS_IF_RELEASE(gIDN);
+  MOZ_DIAGNOSTIC_ASSERT(NS_IsMainThread());
+  gIDN = nullptr;
 
 #ifdef DEBUG_DUMP_URLS_AT_SHUTDOWN
   if (gInitialized) {
     // This instanciates a dummy class, and will trigger the class
     // destructor when libxul is unloaded. This is equivalent to atexit(),
     // but gracefully handles dlclose().
+    StaticMutexAutoLock lock(gAllURLsMutex);
     static DumpLeakedURLs d;
   }
 #endif
@@ -313,9 +325,6 @@ void nsStandardURL::InvalidateCache(bool invalidateCachedFile) {
   if (invalidateCachedFile) {
     mFile = nullptr;
   }
-  mDisplayHost.Truncate();
-  mCheckedIfHostA = false;
-  mSpecEncoding = eEncoding_Unknown;
 }
 
 // Return the number of "dots" in the string, or -1 if invalid.  Note that the
@@ -326,9 +335,9 @@ void nsStandardURL::InvalidateCache(bool invalidateCachedFile) {
 // length is assumed to be <= host.Length(); the callers is responsible for that
 //
 // Note that the value returned is guaranteed to be in [-1, 3] range.
-inline int32_t ValidateIPv4Number(const nsACString &host, int32_t bases[4],
-                                  int32_t dotIndex[3], bool &onlyBase10,
-                                  int32_t &length) {
+inline int32_t ValidateIPv4Number(const nsACString& host, int32_t bases[4],
+                                  int32_t dotIndex[3], bool& onlyBase10,
+                                  int32_t& length) {
   MOZ_ASSERT(length <= (int32_t)host.Length());
   if (length <= 0) {
     return -1;
@@ -362,10 +371,9 @@ inline int32_t ValidateIPv4Number(const nsACString &host, int32_t bases[4],
       if (!lastWasNumber ||  // An X should not follow an X or a dot or be first
           i == (length - 1) ||  // No trailing Xs allowed
           (dotCount == 0 &&
-           i != 1) ||  // If we had no dots, an X should be second
-          host[i - 1] !=
-              '0' ||  // X should always follow a 0.  Guaranteed i > 0
-                      // as lastWasNumber is true
+           i != 1) ||            // If we had no dots, an X should be second
+          host[i - 1] != '0' ||  // X should always follow a 0.  Guaranteed i >
+                                 // 0 as lastWasNumber is true
           (dotCount > 0 &&
            host[i - 2] != '.')) {  // And that zero follows a dot if it exists
         return -1;
@@ -377,10 +385,9 @@ inline int32_t ValidateIPv4Number(const nsACString &host, int32_t bases[4],
     } else if (current == '0') {
       if (i < length - 1 &&      // Trailing zero doesn't signal octal
           host[i + 1] != '.' &&  // Lone zero is not octal
-          (i == 0 ||
-           host[i - 1] == '.')) {  // Zero at start or following a dot is
-                                   // a candidate for octal
-        bases[dotCount] = 8;       // This will turn to 16 above if X shows up
+          (i == 0 || host[i - 1] == '.')) {  // Zero at start or following a dot
+                                             // is a candidate for octal
+        bases[dotCount] = 8;  // This will turn to 16 above if X shows up
         onlyBase10 = false;
       }
       lastWasNumber = true;
@@ -409,11 +416,11 @@ inline int32_t ValidateIPv4Number(const nsACString &host, int32_t bases[4],
   return dotCount;
 }
 
-inline nsresult ParseIPv4Number10(const nsACString &input, uint32_t &number,
+inline nsresult ParseIPv4Number10(const nsACString& input, uint32_t& number,
                                   uint32_t maxNumber) {
   uint64_t value = 0;
-  const char *current = input.BeginReading();
-  const char *end = input.EndReading();
+  const char* current = input.BeginReading();
+  const char* end = input.EndReading();
   for (; current < end; ++current) {
     char c = *current;
     MOZ_ASSERT(c >= '0' && c <= '9');
@@ -430,12 +437,12 @@ inline nsresult ParseIPv4Number10(const nsACString &input, uint32_t &number,
   return NS_ERROR_FAILURE;
 }
 
-inline nsresult ParseIPv4Number(const nsACString &input, int32_t base,
-                                uint32_t &number, uint32_t maxNumber) {
+inline nsresult ParseIPv4Number(const nsACString& input, int32_t base,
+                                uint32_t& number, uint32_t maxNumber) {
   // Accumulate in the 64-bit value
   uint64_t value = 0;
-  const char *current = input.BeginReading();
-  const char *end = input.EndReading();
+  const char* current = input.BeginReading();
+  const char* end = input.EndReading();
   switch (base) {
     case 16:
       ++current;
@@ -450,10 +457,10 @@ inline nsresult ParseIPv4Number(const nsACString &input, int32_t base,
   for (; current < end; ++current) {
     value *= base;
     char c = *current;
-    MOZ_ASSERT((base == 10 && isdigit(c)) ||
+    MOZ_ASSERT((base == 10 && IsAsciiDigit(c)) ||
                (base == 8 && c >= '0' && c <= '7') ||
-               (base == 16 && isxdigit(c)));
-    if (isdigit(c)) {
+               (base == 16 && IsAsciiHexDigit(c)));
+    if (IsAsciiDigit(c)) {
       value += c - '0';
     } else if (c >= 'a' && c <= 'f') {
       value += c - 'a' + 10;
@@ -473,8 +480,9 @@ inline nsresult ParseIPv4Number(const nsACString &input, int32_t base,
 }
 
 // IPv4 parser spec: https://url.spec.whatwg.org/#concept-ipv4-parser
-/* static */ nsresult nsStandardURL::NormalizeIPv4(const nsACString &host,
-                                                   nsCString &result) {
+/* static */
+nsresult nsStandardURL::NormalizeIPv4(const nsACString& host,
+                                      nsCString& result) {
   int32_t bases[4] = {10, 10, 10, 10};
   bool onlyBase10 = true;  // Track this as a special case
   int32_t dotIndex[3];     // The positions of the dots in the string
@@ -528,8 +536,8 @@ inline nsresult ParseIPv4Number(const nsACString &input, int32_t base,
   return NS_OK;
 }
 
-nsresult nsStandardURL::NormalizeIDN(const nsACString &host,
-                                     nsCString &result) {
+nsresult nsStandardURL::NormalizeIDN(const nsACString& host,
+                                     nsCString& result) {
   // If host is ACE, then convert to UTF-8.  Else, if host is already UTF-8,
   // then make sure it is normalized per IDN.
 
@@ -568,7 +576,7 @@ nsresult nsStandardURL::NormalizeIDN(const nsACString &host,
   return NS_OK;
 }
 
-bool nsStandardURL::ValidIPv6orHostname(const char *host, uint32_t length) {
+bool nsStandardURL::ValidIPv6orHostname(const char* host, uint32_t length) {
   if (!host || !*host) {
     // Should not be NULL or empty string
     return false;
@@ -583,7 +591,7 @@ bool nsStandardURL::ValidIPv6orHostname(const char *host, uint32_t length) {
   bool closeBracket = host[length - 1] == ']';
 
   if (openBracket && closeBracket) {
-    return net_IsValidIPv6Addr(host + 1, length - 2);
+    return net_IsValidIPv6Addr(Substring(host + 1, length - 2));
   }
 
   if (openBracket || closeBracket) {
@@ -591,8 +599,8 @@ bool nsStandardURL::ValidIPv6orHostname(const char *host, uint32_t length) {
     return false;
   }
 
-  const char *end = host + length;
-  const char *iter = host;
+  const char* end = host + length;
+  const char* iter = host;
   for (; iter != end && *iter; ++iter) {
     if (ASCIIMask::IsMasked(sInvalidHostChars, *iter)) {
       return false;
@@ -601,7 +609,7 @@ bool nsStandardURL::ValidIPv6orHostname(const char *host, uint32_t length) {
   return true;
 }
 
-void nsStandardURL::CoalescePath(netCoalesceFlags coalesceFlag, char *path) {
+void nsStandardURL::CoalescePath(netCoalesceFlags coalesceFlag, char* path) {
   net_CoalesceDirs(coalesceFlag, path);
   int32_t newLen = strlen(path);
   if (newLen < mPath.mLen) {
@@ -613,12 +621,12 @@ void nsStandardURL::CoalescePath(netCoalesceFlags coalesceFlag, char *path) {
   }
 }
 
-uint32_t nsStandardURL::AppendSegmentToBuf(char *buf, uint32_t i,
-                                           const char *str,
-                                           const URLSegment &segInput,
-                                           URLSegment &segOutput,
-                                           const nsCString *escapedStr,
-                                           bool useEscaped, int32_t *diff) {
+uint32_t nsStandardURL::AppendSegmentToBuf(char* buf, uint32_t i,
+                                           const char* str,
+                                           const URLSegment& segInput,
+                                           URLSegment& segOutput,
+                                           const nsCString* escapedStr,
+                                           bool useEscaped, int32_t* diff) {
   MOZ_ASSERT(segInput.mLen == segOutput.mLen);
 
   if (diff) *diff = 0;
@@ -640,7 +648,7 @@ uint32_t nsStandardURL::AppendSegmentToBuf(char *buf, uint32_t i,
   return i;
 }
 
-uint32_t nsStandardURL::AppendToBuf(char *buf, uint32_t i, const char *str,
+uint32_t nsStandardURL::AppendToBuf(char* buf, uint32_t i, const char* str,
                                     uint32_t len) {
   memcpy(buf + i, str, len);
   return i + len;
@@ -651,8 +659,8 @@ uint32_t nsStandardURL::AppendToBuf(char *buf, uint32_t i, const char *str,
 //  2- allocate spec buffer
 //  3- write url segments
 //  4- update url segment positions and lengths
-nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
-                                            const Encoding *encoding) {
+nsresult nsStandardURL::BuildNormalizedSpec(const char* spec,
+                                            const Encoding* encoding) {
   // Assumptions: all member URLSegments must be relative the |spec| argument
   // passed to this function.
 
@@ -684,15 +692,16 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
   {
     nsSegmentEncoder encoder;
     nsSegmentEncoder queryEncoder(encoding);
-    // Items using an extraLen of 1 don't add anything unless mLen > 0
     // Username@
     approxLen += encoder.EncodeSegmentCount(spec, mUsername, esc_Username,
-                                            encUsername, useEncUsername, 1);
+                                            encUsername, useEncUsername, 0);
+    approxLen += 1;  // reserve length for @
     // :password - we insert the ':' even if there's no actual password if
     // "user:@" was in the spec
-    if (mPassword.mLen >= 0)
+    if (mPassword.mLen > 0) {
       approxLen += 1 + encoder.EncodeSegmentCount(spec, mPassword, esc_Password,
                                                   encPassword, useEncPassword);
+    }
     // mHost is handled differently below due to encoding differences
     MOZ_ASSERT(mPort >= -1, "Invalid negative mPort");
     if (mPort != -1 && mPort != mDefaultPort) {
@@ -764,6 +773,10 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
     if (!ValidIPv6orHostname(encHost.BeginReading(), encHost.Length())) {
       return NS_ERROR_MALFORMED_URI;
     }
+  } else {
+    // empty host means empty mDisplayHost
+    mDisplayHost.Truncate();
+    mCheckedIfHostA = true;
   }
 
   // We must take a copy of every single segment because they are pointing to
@@ -773,12 +786,17 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
   URLSegment password(mPassword);
   URLSegment host(mHost);
   URLSegment path(mPath);
-  URLSegment filepath(mFilepath);
   URLSegment directory(mDirectory);
   URLSegment basename(mBasename);
   URLSegment extension(mExtension);
   URLSegment query(mQuery);
   URLSegment ref(mRef);
+
+  // The encoded string could be longer than the original input, so we need
+  // to check the final URI isn't longer than the max length.
+  if (approxLen + 1 > (uint32_t)net_GetURLMaxLength()) {
+    return NS_ERROR_MALFORMED_URI;
+  }
 
   //
   // generate the normalized URL string
@@ -787,8 +805,7 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
   if (!mSpec.SetLength(approxLen + 1,
                        fallible))  // buf needs a trailing '\0' below
     return NS_ERROR_OUT_OF_MEMORY;
-  char *buf;
-  mSpec.BeginWriting(buf);
+  char* buf = mSpec.BeginWriting();
   uint32_t i = 0;
   int32_t diff = 0;
 
@@ -802,10 +819,14 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
   mAuthority.mPos = i;
 
   // append authority
-  if (mUsername.mLen > 0) {
-    i = AppendSegmentToBuf(buf, i, spec, username, mUsername, &encUsername,
-                           useEncUsername, &diff);
-    ShiftFromPassword(diff);
+  if (mUsername.mLen > 0 || mPassword.mLen > 0) {
+    if (mUsername.mLen > 0) {
+      i = AppendSegmentToBuf(buf, i, spec, username, mUsername, &encUsername,
+                             useEncUsername, &diff);
+      ShiftFromPassword(diff);
+    } else {
+      mUsername.mLen = -1;
+    }
     if (password.mLen > 0) {
       buf[i++] = ':';
       i = AppendSegmentToBuf(buf, i, spec, password, mPassword, &encPassword,
@@ -815,6 +836,9 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
       mPassword.mLen = -1;
     }
     buf[i++] = '@';
+  } else {
+    mUsername.mLen = -1;
+    mPassword.mLen = -1;
   }
   if (host.mLen > 0) {
     i = AppendSegmentToBuf(buf, i, spec, host, mHost, &encHost, useEncHost,
@@ -910,8 +934,8 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
   // https://url.spec.whatwg.org/#path-state (1.4.1.2)
   // https://url.spec.whatwg.org/#windows-drive-letter
   if (SegmentIs(buf, mScheme, "file")) {
-    char *path = &buf[mPath.mPos];
-    if (mPath.mLen >= 3 && path[0] == '/' && nsCRT::IsAsciiAlpha(path[1]) &&
+    char* path = &buf[mPath.mPos];
+    if (mPath.mLen >= 3 && path[0] == '/' && IsAsciiAlpha(path[1]) &&
         path[2] == '|') {
       buf[mPath.mPos + 2] = ':';
     }
@@ -926,13 +950,17 @@ nsresult nsStandardURL::BuildNormalizedSpec(const char *spec,
     }
     CoalescePath(coalesceFlag, buf + mDirectory.mPos);
   }
-  mSpec.SetLength(strlen(buf));
+  mSpec.Truncate(strlen(buf));
   NS_ASSERTION(mSpec.Length() <= approxLen,
                "We've overflowed the mSpec buffer!");
+  MOZ_ASSERT(mSpec.Length() <= (uint32_t)net_GetURLMaxLength(),
+             "The spec should never be this long, we missed a check.");
+
+  MOZ_ASSERT(mUsername.mLen != 0 && mPassword.mLen != 0);
   return NS_OK;
 }
 
-bool nsStandardURL::SegmentIs(const URLSegment &seg, const char *val,
+bool nsStandardURL::SegmentIs(const URLSegment& seg, const char* val,
                               bool ignoreCase) {
   // one or both may be null
   if (!val || mSpec.IsEmpty())
@@ -943,13 +971,13 @@ bool nsStandardURL::SegmentIs(const URLSegment &seg, const char *val,
   if (ignoreCase)
     return !PL_strncasecmp(mSpec.get() + seg.mPos, val, seg.mLen) &&
            (val[seg.mLen] == '\0');
-  else
-    return !strncmp(mSpec.get() + seg.mPos, val, seg.mLen) &&
-           (val[seg.mLen] == '\0');
+
+  return !strncmp(mSpec.get() + seg.mPos, val, seg.mLen) &&
+         (val[seg.mLen] == '\0');
 }
 
-bool nsStandardURL::SegmentIs(const char *spec, const URLSegment &seg,
-                              const char *val, bool ignoreCase) {
+bool nsStandardURL::SegmentIs(const char* spec, const URLSegment& seg,
+                              const char* val, bool ignoreCase) {
   // one or both may be null
   if (!val || !spec) return (!val && (!spec || seg.mLen < 0));
   if (seg.mLen < 0) return false;
@@ -958,24 +986,24 @@ bool nsStandardURL::SegmentIs(const char *spec, const URLSegment &seg,
   if (ignoreCase)
     return !PL_strncasecmp(spec + seg.mPos, val, seg.mLen) &&
            (val[seg.mLen] == '\0');
-  else
-    return !strncmp(spec + seg.mPos, val, seg.mLen) && (val[seg.mLen] == '\0');
+
+  return !strncmp(spec + seg.mPos, val, seg.mLen) && (val[seg.mLen] == '\0');
 }
 
-bool nsStandardURL::SegmentIs(const URLSegment &seg1, const char *val,
-                              const URLSegment &seg2, bool ignoreCase) {
+bool nsStandardURL::SegmentIs(const URLSegment& seg1, const char* val,
+                              const URLSegment& seg2, bool ignoreCase) {
   if (seg1.mLen != seg2.mLen) return false;
   if (seg1.mLen == -1 || (!val && mSpec.IsEmpty()))
     return true;  // both are empty
   if (!val) return false;
   if (ignoreCase)
     return !PL_strncasecmp(mSpec.get() + seg1.mPos, val + seg2.mPos, seg1.mLen);
-  else
-    return !strncmp(mSpec.get() + seg1.mPos, val + seg2.mPos, seg1.mLen);
+
+  return !strncmp(mSpec.get() + seg1.mPos, val + seg2.mPos, seg1.mLen);
 }
 
 int32_t nsStandardURL::ReplaceSegment(uint32_t pos, uint32_t len,
-                                      const char *val, uint32_t valLen) {
+                                      const char* val, uint32_t valLen) {
   if (val && valLen) {
     if (len == 0)
       mSpec.Insert(val, pos, valLen);
@@ -990,7 +1018,7 @@ int32_t nsStandardURL::ReplaceSegment(uint32_t pos, uint32_t len,
 }
 
 int32_t nsStandardURL::ReplaceSegment(uint32_t pos, uint32_t len,
-                                      const nsACString &val) {
+                                      const nsACString& val) {
   if (len == 0)
     mSpec.Insert(val, pos);
   else
@@ -998,7 +1026,7 @@ int32_t nsStandardURL::ReplaceSegment(uint32_t pos, uint32_t len,
   return val.Length() - len;
 }
 
-nsresult nsStandardURL::ParseURL(const char *spec, int32_t specLen) {
+nsresult nsStandardURL::ParseURL(const char* spec, int32_t specLen) {
   nsresult rv;
 
   if (specLen > net_GetURLMaxLength()) {
@@ -1040,7 +1068,7 @@ nsresult nsStandardURL::ParseURL(const char *spec, int32_t specLen) {
   return rv;
 }
 
-nsresult nsStandardURL::ParsePath(const char *spec, uint32_t pathPos,
+nsresult nsStandardURL::ParsePath(const char* spec, uint32_t pathPos,
                                   int32_t pathLen) {
   LOG(("ParsePath: %s pathpos %d len %d\n", spec, pathPos, pathLen));
 
@@ -1071,8 +1099,8 @@ nsresult nsStandardURL::ParsePath(const char *spec, uint32_t pathPos,
   return NS_OK;
 }
 
-char *nsStandardURL::AppendToSubstring(uint32_t pos, int32_t len,
-                                       const char *tail) {
+char* nsStandardURL::AppendToSubstring(uint32_t pos, int32_t len,
+                                       const char* tail) {
   // Verify pos and length are within boundaries
   if (pos > mSpec.Length()) return nullptr;
   if (len < 0) return nullptr;
@@ -1084,30 +1112,28 @@ char *nsStandardURL::AppendToSubstring(uint32_t pos, int32_t len,
   // Check for int overflow for proposed length of combined string
   if (UINT32_MAX - ((uint32_t)len + 1) < tailLen) return nullptr;
 
-  char *result = (char *)moz_xmalloc(len + tailLen + 1);
-  if (result) {
-    memcpy(result, mSpec.get() + pos, len);
-    memcpy(result + len, tail, tailLen);
-    result[len + tailLen] = '\0';
-  }
+  char* result = (char*)moz_xmalloc(len + tailLen + 1);
+  memcpy(result, mSpec.get() + pos, len);
+  memcpy(result + len, tail, tailLen);
+  result[len + tailLen] = '\0';
   return result;
 }
 
-nsresult nsStandardURL::ReadSegment(nsIBinaryInputStream *stream,
-                                    URLSegment &seg) {
+nsresult nsStandardURL::ReadSegment(nsIBinaryInputStream* stream,
+                                    URLSegment& seg) {
   nsresult rv;
 
   rv = stream->Read32(&seg.mPos);
   if (NS_FAILED(rv)) return rv;
 
-  rv = stream->Read32((uint32_t *)&seg.mLen);
+  rv = stream->Read32((uint32_t*)&seg.mLen);
   if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
 }
 
-nsresult nsStandardURL::WriteSegment(nsIBinaryOutputStream *stream,
-                                     const URLSegment &seg) {
+nsresult nsStandardURL::WriteSegment(nsIBinaryOutputStream* stream,
+                                     const URLSegment& seg) {
   nsresult rv;
 
   rv = stream->Write32(seg.mPos);
@@ -1117,19 +1143,6 @@ nsresult nsStandardURL::WriteSegment(nsIBinaryOutputStream *stream,
   if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
-}
-
-/* static */ void nsStandardURL::PrefsChanged(nsIPrefBranch *prefs,
-                                              const char *pref) {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  LOG(("nsStandardURL::PrefsChanged [pref=%s]\n", pref));
-
-#define PREF_CHANGED(p) ((pref == nullptr) || !strcmp(pref, p))
-#define GOT_PREF(p, b) (NS_SUCCEEDED(prefs->GetBoolPref(p, &b)))
-
-#undef PREF_CHANGED
-#undef GOT_PREF
 }
 
 #define SHIFT_FROM(name, what)             \
@@ -1178,12 +1191,10 @@ NS_INTERFACE_MAP_BEGIN(nsStandardURL)
   NS_INTERFACE_MAP_ENTRY(nsIStandardURL)
   NS_INTERFACE_MAP_ENTRY(nsISerializable)
   NS_INTERFACE_MAP_ENTRY(nsIClassInfo)
-  NS_INTERFACE_MAP_ENTRY(nsIMutable)
-  NS_INTERFACE_MAP_ENTRY(nsIIPCSerializableURI)
   NS_INTERFACE_MAP_ENTRY(nsISensitiveInfoHiddenURI)
   // see nsStandardURL::Equals
   if (aIID.Equals(kThisImplCID))
-    foundInterface = static_cast<nsIURI *>(this);
+    foundInterface = static_cast<nsIURI*>(this);
   else
     NS_INTERFACE_MAP_ENTRY(nsISizeOf)
 NS_INTERFACE_MAP_END
@@ -1194,7 +1205,7 @@ NS_INTERFACE_MAP_END
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetSpec(nsACString &result) {
+nsStandardURL::GetSpec(nsACString& result) {
   MOZ_ASSERT(mSpec.Length() <= (uint32_t)net_GetURLMaxLength(),
              "The spec should never be this long, we missed a check.");
   nsresult rv = NS_OK;
@@ -1208,12 +1219,12 @@ nsStandardURL::GetSpec(nsACString &result) {
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetSensitiveInfoHiddenSpec(nsACString &result) {
+nsStandardURL::GetSensitiveInfoHiddenSpec(nsACString& result) {
   nsresult rv = GetSpec(result);
   if (NS_FAILED(rv)) {
     return rv;
   }
-  if (mPassword.mLen >= 0) {
+  if (mPassword.mLen > 0) {
     result.ReplaceLiteral(mPassword.mPos, mPassword.mLen, "****");
   }
   return NS_OK;
@@ -1221,7 +1232,7 @@ nsStandardURL::GetSensitiveInfoHiddenSpec(nsACString &result) {
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetSpecIgnoringRef(nsACString &result) {
+nsStandardURL::GetSpecIgnoringRef(nsACString& result) {
   // URI without ref is 0 to one char before ref
   if (mRef.mLen < 0) {
     return GetSpec(result);
@@ -1230,7 +1241,6 @@ nsStandardURL::GetSpecIgnoringRef(nsACString &result) {
   URLSegment noRef(0, mRef.mPos - 1);
   result = Segment(noRef);
 
-  CheckIfHostIsAscii();
   MOZ_ASSERT(mCheckedIfHostA);
   if (!gPunycodeHost && !mDisplayHost.IsEmpty()) {
     result.Replace(mHost.mPos, mHost.mLen, mDisplayHost);
@@ -1268,8 +1278,7 @@ nsresult nsStandardURL::CheckIfHostIsAscii() {
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetDisplaySpec(nsACString &aUnicodeSpec) {
-  CheckIfHostIsAscii();
+nsStandardURL::GetDisplaySpec(nsACString& aUnicodeSpec) {
   aUnicodeSpec.Assign(mSpec);
   MOZ_ASSERT(mCheckedIfHostA);
   if (!mDisplayHost.IsEmpty()) {
@@ -1280,7 +1289,7 @@ nsStandardURL::GetDisplaySpec(nsACString &aUnicodeSpec) {
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetDisplayHostPort(nsACString &aUnicodeHostPort) {
+nsStandardURL::GetDisplayHostPort(nsACString& aUnicodeHostPort) {
   nsAutoCString unicodeHostPort;
 
   nsresult rv = GetDisplayHost(unicodeHostPort);
@@ -1304,8 +1313,7 @@ nsStandardURL::GetDisplayHostPort(nsACString &aUnicodeHostPort) {
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetDisplayHost(nsACString &aUnicodeHost) {
-  CheckIfHostIsAscii();
+nsStandardURL::GetDisplayHost(nsACString& aUnicodeHost) {
   MOZ_ASSERT(mCheckedIfHostA);
   if (mDisplayHost.IsEmpty()) {
     return GetAsciiHost(aUnicodeHost);
@@ -1317,9 +1325,8 @@ nsStandardURL::GetDisplayHost(nsACString &aUnicodeHost) {
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetPrePath(nsACString &result) {
+nsStandardURL::GetPrePath(nsACString& result) {
   result = Prepath();
-  CheckIfHostIsAscii();
   MOZ_ASSERT(mCheckedIfHostA);
   if (!gPunycodeHost && !mDisplayHost.IsEmpty()) {
     result.Replace(mHost.mPos, mHost.mLen, mDisplayHost);
@@ -1329,9 +1336,8 @@ nsStandardURL::GetPrePath(nsACString &result) {
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetDisplayPrePath(nsACString &result) {
+nsStandardURL::GetDisplayPrePath(nsACString& result) {
   result = Prepath();
-  CheckIfHostIsAscii();
   MOZ_ASSERT(mCheckedIfHostA);
   if (!mDisplayHost.IsEmpty()) {
     result.Replace(mHost.mPos, mHost.mLen, mDisplayHost);
@@ -1341,34 +1347,34 @@ nsStandardURL::GetDisplayPrePath(nsACString &result) {
 
 // result is strictly US-ASCII
 NS_IMETHODIMP
-nsStandardURL::GetScheme(nsACString &result) {
+nsStandardURL::GetScheme(nsACString& result) {
   result = Scheme();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetUserPass(nsACString &result) {
+nsStandardURL::GetUserPass(nsACString& result) {
   result = Userpass();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetUsername(nsACString &result) {
+nsStandardURL::GetUsername(nsACString& result) {
   result = Username();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetPassword(nsACString &result) {
+nsStandardURL::GetPassword(nsACString& result) {
   result = Password();
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetHostPort(nsACString &result) {
+nsStandardURL::GetHostPort(nsACString& result) {
   nsresult rv;
   if (gPunycodeHost) {
     rv = GetAsciiHostPort(result);
@@ -1379,7 +1385,7 @@ nsStandardURL::GetHostPort(nsACString &result) {
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetHost(nsACString &result) {
+nsStandardURL::GetHost(nsACString& result) {
   nsresult rv;
   if (gPunycodeHost) {
     rv = GetAsciiHost(result);
@@ -1390,7 +1396,7 @@ nsStandardURL::GetHost(nsACString &result) {
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetPort(int32_t *result) {
+nsStandardURL::GetPort(int32_t* result) {
   // should never be more than 16 bit
   MOZ_ASSERT(mPort <= std::numeric_limits<uint16_t>::max());
   *result = mPort;
@@ -1399,62 +1405,33 @@ nsStandardURL::GetPort(int32_t *result) {
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetPathQueryRef(nsACString &result) {
+nsStandardURL::GetPathQueryRef(nsACString& result) {
   result = Path();
   return NS_OK;
 }
 
 // result is ASCII
 NS_IMETHODIMP
-nsStandardURL::GetAsciiSpec(nsACString &result) {
-  if (mSpecEncoding == eEncoding_Unknown) {
-    if (IsASCII(mSpec))
-      mSpecEncoding = eEncoding_ASCII;
-    else
-      mSpecEncoding = eEncoding_UTF8;
-  }
-
-  if (mSpecEncoding == eEncoding_ASCII) {
-    result = mSpec;
-    return NS_OK;
-  }
-
-  // try to guess the capacity required for result...
-  result.SetCapacity(mSpec.Length() +
-                     std::min<uint32_t>(32, mSpec.Length() / 10));
-
-  result = Substring(mSpec, 0, mScheme.mLen + 3);
-
-  // This is left infallible as this entire function is expected to be
-  // infallible.
-  NS_EscapeURL(Userpass(true), esc_OnlyNonASCII | esc_AlwaysCopy, result);
-
-  // get the hostport
-  nsAutoCString hostport;
-  MOZ_ALWAYS_SUCCEEDS(GetAsciiHostPort(hostport));
-  result += hostport;
-
-  // This is left infallible as this entire function is expected to be
-  // infallible.
-  NS_EscapeURL(Path(), esc_OnlyNonASCII | esc_AlwaysCopy, result);
+nsStandardURL::GetAsciiSpec(nsACString& result) {
+  result = mSpec;
   return NS_OK;
 }
 
 // result is ASCII
 NS_IMETHODIMP
-nsStandardURL::GetAsciiHostPort(nsACString &result) {
+nsStandardURL::GetAsciiHostPort(nsACString& result) {
   result = Hostport();
   return NS_OK;
 }
 
 // result is ASCII
 NS_IMETHODIMP
-nsStandardURL::GetAsciiHost(nsACString &result) {
+nsStandardURL::GetAsciiHost(nsACString& result) {
   result = Host();
   return NS_OK;
 }
 
-static bool IsSpecialProtocol(const nsACString &input) {
+static bool IsSpecialProtocol(const nsACString& input) {
   nsACString::const_iterator start, end;
   input.BeginReading(start);
   nsACString::const_iterator iterator(start);
@@ -1475,15 +1452,13 @@ static bool IsSpecialProtocol(const nsACString &input) {
          protocol.LowerCaseEqualsLiteral("gopher");
 }
 
-nsresult nsStandardURL::SetSpecInternal(const nsACString &input) {
+nsresult nsStandardURL::SetSpecInternal(const nsACString& input) {
   return SetSpecWithEncoding(input, nullptr);
 }
 
-nsresult nsStandardURL::SetSpecWithEncoding(const nsACString &input,
-                                            const Encoding *encoding) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &flat = PromiseFlatCString(input);
+nsresult nsStandardURL::SetSpecWithEncoding(const nsACString& input,
+                                            const Encoding* encoding) {
+  const nsPromiseFlatCString& flat = PromiseFlatCString(input);
   LOG(("nsStandardURL::SetSpec [spec=%s]\n", flat.get()));
 
   if (input.Length() > (uint32_t)net_GetURLMaxLength()) {
@@ -1506,10 +1481,8 @@ nsresult nsStandardURL::SetSpecWithEncoding(const nsACString &input,
   if (IsSpecialProtocol(filteredURI)) {
     // Bug 652186: Replace all backslashes with slashes when parsing paths
     // Stop when we reach the query or the hash.
-    nsAutoCString::iterator start;
-    nsAutoCString::iterator end;
-    filteredURI.BeginWriting(start);
-    filteredURI.EndWriting(end);
+    auto start = filteredURI.BeginWriting();
+    auto end = filteredURI.EndWriting();
     while (start != end) {
       if (*start == '?' || *start == '#') {
         break;
@@ -1521,7 +1494,7 @@ nsresult nsStandardURL::SetSpecWithEncoding(const nsACString &input,
     }
   }
 
-  const char *spec = filteredURI.get();
+  const char* spec = filteredURI.get();
   int32_t specLength = filteredURI.Length();
 
   // parse the given URL...
@@ -1565,10 +1538,8 @@ nsresult nsStandardURL::SetSpecWithEncoding(const nsACString &input,
   return rv;
 }
 
-nsresult nsStandardURL::SetScheme(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &scheme = PromiseFlatCString(input);
+nsresult nsStandardURL::SetScheme(const nsACString& input) {
+  const nsPromiseFlatCString& scheme = PromiseFlatCString(input);
 
   LOG(("nsStandardURL::SetScheme [scheme=%s]\n", scheme.get()));
 
@@ -1604,14 +1575,12 @@ nsresult nsStandardURL::SetScheme(const nsACString &input) {
   //
   // XXX the string code unfortunately doesn't provide a ToLowerCase
   //     that operates on a substring.
-  net_ToLowerCase((char *)mSpec.get(), mScheme.mLen);
+  net_ToLowerCase((char*)mSpec.get(), mScheme.mLen);
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetUserPass(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &userpass = PromiseFlatCString(input);
+nsresult nsStandardURL::SetUserPass(const nsACString& input) {
+  const nsPromiseFlatCString& userpass = PromiseFlatCString(input);
 
   LOG(("nsStandardURL::SetUserPass [userpass=%s]\n", userpass.get()));
 
@@ -1632,21 +1601,6 @@ nsresult nsStandardURL::SetUserPass(const nsACString &input) {
 
   InvalidateCache();
 
-  if (userpass.IsEmpty()) {
-    // remove user:pass
-    if (mUsername.mLen > 0) {
-      if (mPassword.mLen > 0) mUsername.mLen += (mPassword.mLen + 1);
-      mUsername.mLen++;
-      mSpec.Cut(mUsername.mPos, mUsername.mLen);
-      mAuthority.mLen -= mUsername.mLen;
-      ShiftFromHost(-mUsername.mLen);
-      mUsername.mLen = -1;
-      mPassword.mLen = -1;
-    }
-
-    return NS_OK;
-  }
-
   NS_ASSERTION(mHost.mLen >= 0, "uninitialized");
 
   nsresult rv;
@@ -1659,7 +1613,7 @@ nsresult nsStandardURL::SetUserPass(const nsACString &input) {
 
   // build new user:pass in |buf|
   nsAutoCString buf;
-  if (usernameLen > 0) {
+  if (usernameLen > 0 || passwordLen > 0) {
     nsSegmentEncoder encoder;
     bool ignoredOut;
     usernameLen = encoder.EncodeSegmentCount(
@@ -1673,12 +1627,14 @@ nsresult nsStandardURL::SetUserPass(const nsACString &input) {
     } else {
       passwordLen = -1;
     }
-    if (mUsername.mLen < 0) buf.Append('@');
+    if (mUsername.mLen < 0 && mPassword.mLen < 0) {
+      buf.Append('@');
+    }
   }
 
-  uint32_t shift = 0;
+  int32_t shift = 0;
 
-  if (mUsername.mLen < 0) {
+  if (mUsername.mLen < 0 && mPassword.mLen < 0) {
     // no existing user:pass
     if (!buf.IsEmpty()) {
       mSpec.Insert(buf, mHost.mPos);
@@ -1687,29 +1643,43 @@ nsresult nsStandardURL::SetUserPass(const nsACString &input) {
     }
   } else {
     // replace existing user:pass
-    uint32_t userpassLen = mUsername.mLen;
-    if (mPassword.mLen >= 0) userpassLen += (mPassword.mLen + 1);
-    mSpec.Replace(mUsername.mPos, userpassLen, buf);
+    uint32_t userpassLen = 0;
+    if (mUsername.mLen > 0) {
+      userpassLen += mUsername.mLen;
+    }
+    if (mPassword.mLen > 0) {
+      userpassLen += (mPassword.mLen + 1);
+    }
+    if (buf.IsEmpty()) {
+      // remove `@` character too
+      userpassLen++;
+    }
+    mSpec.Replace(mAuthority.mPos, userpassLen, buf);
     shift = buf.Length() - userpassLen;
   }
   if (shift) {
     ShiftFromHost(shift);
+    MOZ_DIAGNOSTIC_ASSERT(mAuthority.mLen >= -shift);
     mAuthority.mLen += shift;
   }
   // update positions and lengths
-  mUsername.mLen = usernameLen;
-  mPassword.mLen = passwordLen;
+  mUsername.mLen = usernameLen > 0 ? usernameLen : -1;
+  mUsername.mPos = mAuthority.mPos;
+  mPassword.mLen = passwordLen > 0 ? passwordLen : -1;
   if (passwordLen > 0) {
-    mPassword.mPos = mUsername.mPos + mUsername.mLen + 1;
+    if (mUsername.mLen > 0) {
+      mPassword.mPos = mUsername.mPos + mUsername.mLen + 1;
+    } else {
+      mPassword.mPos = mAuthority.mPos + 1;
+    }
   }
 
+  MOZ_ASSERT(mUsername.mLen != 0 && mPassword.mLen != 0);
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetUsername(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &username = PromiseFlatCString(input);
+nsresult nsStandardURL::SetUsername(const nsACString& input) {
+  const nsPromiseFlatCString& username = PromiseFlatCString(input);
 
   LOG(("nsStandardURL::SetUsername [username=%s]\n", username.get()));
 
@@ -1718,8 +1688,6 @@ nsresult nsStandardURL::SetUsername(const nsACString &input) {
     NS_WARNING("cannot set username on no-auth url");
     return NS_ERROR_UNEXPECTED;
   }
-
-  if (username.IsEmpty()) return SetUserPass(username);
 
   if (mSpec.Length() + input.Length() - Username().Length() >
       (uint32_t)net_GetURLMaxLength()) {
@@ -1731,31 +1699,52 @@ nsresult nsStandardURL::SetUsername(const nsACString &input) {
   // escape username if necessary
   nsAutoCString buf;
   nsSegmentEncoder encoder;
-  const nsACString &escUsername =
+  const nsACString& escUsername =
       encoder.EncodeSegment(username, esc_Username, buf);
 
-  int32_t shift;
+  int32_t shift = 0;
 
-  if (mUsername.mLen < 0) {
+  if (mUsername.mLen < 0 && escUsername.IsEmpty()) {
+    return NS_OK;
+  }
+
+  if (mUsername.mLen < 0 && mPassword.mLen < 0) {
+    MOZ_ASSERT(!escUsername.IsEmpty(), "Should not be empty at this point");
     mUsername.mPos = mAuthority.mPos;
     mSpec.Insert(escUsername + NS_LITERAL_CSTRING("@"), mUsername.mPos);
     shift = escUsername.Length() + 1;
-  } else
-    shift = ReplaceSegment(mUsername.mPos, mUsername.mLen, escUsername);
+    mUsername.mLen = escUsername.Length() > 0 ? escUsername.Length() : -1;
+  } else {
+    uint32_t pos = mUsername.mLen < 0 ? mAuthority.mPos : mUsername.mPos;
+    int32_t len = mUsername.mLen < 0 ? 0 : mUsername.mLen;
+
+    if (mPassword.mLen < 0 && escUsername.IsEmpty()) {
+      len++;  // remove the @ character too
+    }
+    shift = ReplaceSegment(pos, len, escUsername);
+    mUsername.mLen = escUsername.Length() > 0 ? escUsername.Length() : -1;
+  }
 
   if (shift) {
-    mUsername.mLen = escUsername.Length();
     mAuthority.mLen += shift;
     ShiftFromPassword(shift);
   }
 
+  MOZ_ASSERT(mUsername.mLen != 0 && mPassword.mLen != 0);
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetPassword(const nsACString &input) {
-  ENSURE_MUTABLE();
+nsresult nsStandardURL::SetPassword(const nsACString& input) {
+  const nsPromiseFlatCString& password = PromiseFlatCString(input);
 
-  const nsPromiseFlatCString &password = PromiseFlatCString(input);
+  auto clearedPassword = MakeScopeExit([&password, this]() {
+    // Check that if this method is called with the empty string then the
+    // password is definitely cleared when exiting this method.
+    if (password.IsEmpty()) {
+      MOZ_DIAGNOSTIC_ASSERT(this->Password().IsEmpty());
+    }
+    Unused << this;  // silence compiler -Wunused-lambda-capture
+  });
 
   LOG(("nsStandardURL::SetPassword [password=%s]\n", password.get()));
 
@@ -1763,14 +1752,6 @@ nsresult nsStandardURL::SetPassword(const nsACString &input) {
     if (password.IsEmpty()) return NS_OK;
     NS_WARNING("cannot set password on no-auth url");
     return NS_ERROR_UNEXPECTED;
-  }
-  if (mUsername.mLen <= 0) {
-    if (password.IsEmpty()) {
-      MOZ_DIAGNOSTIC_ASSERT(Password().IsEmpty());
-      return NS_OK;
-    }
-    NS_WARNING("cannot set password without existing username");
-    return NS_ERROR_FAILURE;
   }
 
   if (mSpec.Length() + input.Length() - Password().Length() >
@@ -1781,28 +1762,42 @@ nsresult nsStandardURL::SetPassword(const nsACString &input) {
   InvalidateCache();
 
   if (password.IsEmpty()) {
-    if (mPassword.mLen >= 0) {
+    if (mPassword.mLen > 0) {
       // cut(":password")
-      mSpec.Cut(mPassword.mPos - 1, mPassword.mLen + 1);
-      ShiftFromHost(-(mPassword.mLen + 1));
-      mAuthority.mLen -= (mPassword.mLen + 1);
+      int32_t len = mPassword.mLen;
+      if (mUsername.mLen < 0) {
+        len++;  // also cut the @ character
+      }
+      len++;  // for the : character
+      mSpec.Cut(mPassword.mPos - 1, len);
+      ShiftFromHost(-len);
+      mAuthority.mLen -= len;
       mPassword.mLen = -1;
     }
+    MOZ_ASSERT(mUsername.mLen != 0 && mPassword.mLen != 0);
     return NS_OK;
   }
 
   // escape password if necessary
   nsAutoCString buf;
   nsSegmentEncoder encoder;
-  const nsACString &escPassword =
+  const nsACString& escPassword =
       encoder.EncodeSegment(password, esc_Password, buf);
 
   int32_t shift;
 
   if (mPassword.mLen < 0) {
-    mPassword.mPos = mUsername.mPos + mUsername.mLen + 1;
-    mSpec.Insert(NS_LITERAL_CSTRING(":") + escPassword, mPassword.mPos - 1);
-    shift = escPassword.Length() + 1;
+    if (mUsername.mLen > 0) {
+      mPassword.mPos = mUsername.mPos + mUsername.mLen + 1;
+      mSpec.Insert(NS_LITERAL_CSTRING(":") + escPassword, mPassword.mPos - 1);
+      shift = escPassword.Length() + 1;
+    } else {
+      mPassword.mPos = mAuthority.mPos + 1;
+      mSpec.Insert(
+          NS_LITERAL_CSTRING(":") + escPassword + NS_LITERAL_CSTRING("@"),
+          mPassword.mPos - 1);
+      shift = escPassword.Length() + 2;
+    }
   } else
     shift = ReplaceSegment(mPassword.mPos, mPassword.mLen, escPassword);
 
@@ -1811,11 +1806,13 @@ nsresult nsStandardURL::SetPassword(const nsACString &input) {
     mAuthority.mLen += shift;
     ShiftFromHost(shift);
   }
+
+  MOZ_ASSERT(mUsername.mLen != 0 && mPassword.mLen != 0);
   return NS_OK;
 }
 
-void nsStandardURL::FindHostLimit(nsACString::const_iterator &aStart,
-                                  nsACString::const_iterator &aEnd) {
+void nsStandardURL::FindHostLimit(nsACString::const_iterator& aStart,
+                                  nsACString::const_iterator& aEnd) {
   for (int32_t i = 0; gHostLimitDigits[i]; ++i) {
     nsACString::const_iterator c(aStart);
     if (FindCharInReadable(gHostLimitDigits[i], c, aEnd)) {
@@ -1826,9 +1823,7 @@ void nsStandardURL::FindHostLimit(nsACString::const_iterator &aStart,
 
 // If aValue only has a host part and no port number, the port
 // will not be reset!!!
-nsresult nsStandardURL::SetHostPort(const nsACString &aValue) {
-  ENSURE_MUTABLE();
-
+nsresult nsStandardURL::SetHostPort(const nsACString& aValue) {
   // We cannot simply call nsIURI::SetHost because that would treat the name as
   // an IPv6 address (like http:://[server:443]/).  We also cannot call
   // nsIURI::SetHostPort because that isn't implemented.  Sadfaces.
@@ -1893,10 +1888,8 @@ nsresult nsStandardURL::SetHostPort(const nsACString &aValue) {
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetHost(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &hostname = PromiseFlatCString(input);
+nsresult nsStandardURL::SetHost(const nsACString& input) {
+  const nsPromiseFlatCString& hostname = PromiseFlatCString(input);
 
   nsACString::const_iterator start, end;
   hostname.BeginReading(start);
@@ -1909,7 +1902,7 @@ nsresult nsStandardURL::SetHost(const nsACString &input) {
   nsAutoCString flat;
   NS_UnescapeURL(unescapedHost.BeginReading(), unescapedHost.Length(),
                  esc_AlwaysCopy | esc_Host, flat);
-  const char *host = flat.get();
+  const char* host = flat.get();
 
   LOG(("nsStandardURL::SetHost [host=%s]\n", host));
 
@@ -1917,12 +1910,11 @@ nsresult nsStandardURL::SetHost(const nsACString &input) {
     if (flat.IsEmpty()) return NS_OK;
     NS_WARNING("cannot set host on no-auth url");
     return NS_ERROR_UNEXPECTED;
-  } else {
-    if (flat.IsEmpty()) {
-      // Setting an empty hostname is not allowed for
-      // URLTYPE_STANDARD and URLTYPE_AUTHORITY.
-      return NS_ERROR_UNEXPECTED;
-    }
+  }
+  if (flat.IsEmpty()) {
+    // Setting an empty hostname is not allowed for
+    // URLTYPE_STANDARD and URLTYPE_AUTHORITY.
+    return NS_ERROR_UNEXPECTED;
   }
 
   if (strlen(host) < flat.Length())
@@ -2000,8 +1992,6 @@ nsresult nsStandardURL::SetHost(const nsACString &input) {
 }
 
 nsresult nsStandardURL::SetPort(int32_t port) {
-  ENSURE_MUTABLE();
-
   LOG(("nsStandardURL::SetPort [port=%d]\n", port));
 
   if ((port == mPort) || (mPort == -1 && port == mDefaultPort)) return NS_OK;
@@ -2036,7 +2026,6 @@ nsresult nsStandardURL::SetPort(int32_t port) {
  *    caller should pass aNewPort=-1).
  */
 void nsStandardURL::ReplacePortInSpec(int32_t aNewPort) {
-  MOZ_ASSERT(mMutable, "Caller should ensure we're mutable");
   NS_ASSERTION(aNewPort != mDefaultPort || mDefaultPort == -1,
                "Caller should check its passed-in value and pass -1 instead of "
                "mDefaultPort, to avoid encoding default port into mSpec");
@@ -2068,10 +2057,8 @@ void nsStandardURL::ReplacePortInSpec(int32_t aNewPort) {
   ShiftFromPath(shift);
 }
 
-nsresult nsStandardURL::SetPathQueryRef(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &path = PromiseFlatCString(input);
+nsresult nsStandardURL::SetPathQueryRef(const nsACString& input) {
+  const nsPromiseFlatCString& path = PromiseFlatCString(input);
   LOG(("nsStandardURL::SetPathQueryRef [path=%s]\n", path.get()));
 
   InvalidateCache();
@@ -2084,7 +2071,8 @@ nsresult nsStandardURL::SetPathQueryRef(const nsACString &input) {
     spec.Append(path);
 
     return SetSpecInternal(spec);
-  } else if (mPath.mLen >= 1) {
+  }
+  if (mPath.mLen >= 1) {
     mSpec.Cut(mPath.mPos + 1, mPath.mLen - 1);
     // these contain only a '/'
     mPath.mLen = 1;
@@ -2100,11 +2088,14 @@ nsresult nsStandardURL::SetPathQueryRef(const nsACString &input) {
 }
 
 // When updating this also update SubstitutingURL::Mutator
-NS_IMPL_ISUPPORTS(nsStandardURL::Mutator, nsIURISetters, nsIURIMutator,
-                  nsIStandardURLMutator, nsIURLMutator, nsIFileURLMutator)
+// Queries this list of interfaces. If none match, it queries mURI.
+NS_IMPL_NSIURIMUTATOR_ISUPPORTS(nsStandardURL::Mutator, nsIURISetters,
+                                nsIURIMutator, nsIStandardURLMutator,
+                                nsIURLMutator, nsIFileURLMutator,
+                                nsISerializable)
 
 NS_IMETHODIMP
-nsStandardURL::Mutate(nsIURIMutator **aMutator) {
+nsStandardURL::Mutate(nsIURIMutator** aMutator) {
   RefPtr<nsStandardURL::Mutator> mutator = new nsStandardURL::Mutator();
   nsresult rv = mutator->InitFromURI(this);
   if (NS_FAILED(rv)) {
@@ -2115,20 +2106,20 @@ nsStandardURL::Mutate(nsIURIMutator **aMutator) {
 }
 
 NS_IMETHODIMP
-nsStandardURL::Equals(nsIURI *unknownOther, bool *result) {
+nsStandardURL::Equals(nsIURI* unknownOther, bool* result) {
   return EqualsInternal(unknownOther, eHonorRef, result);
 }
 
 NS_IMETHODIMP
-nsStandardURL::EqualsExceptRef(nsIURI *unknownOther, bool *result) {
+nsStandardURL::EqualsExceptRef(nsIURI* unknownOther, bool* result) {
   return EqualsInternal(unknownOther, eIgnoreRef, result);
 }
 
 nsresult nsStandardURL::EqualsInternal(
-    nsIURI *unknownOther, nsStandardURL::RefHandlingEnum refHandlingMode,
-    bool *result) {
+    nsIURI* unknownOther, nsStandardURL::RefHandlingEnum refHandlingMode,
+    bool* result) {
   NS_ENSURE_ARG_POINTER(unknownOther);
-  NS_PRECONDITION(result, "null pointer");
+  MOZ_ASSERT(result, "null pointer");
 
   RefPtr<nsStandardURL> other;
   nsresult rv =
@@ -2215,36 +2206,29 @@ nsresult nsStandardURL::EqualsInternal(
 }
 
 NS_IMETHODIMP
-nsStandardURL::SchemeIs(const char *scheme, bool *result) {
-  NS_PRECONDITION(result, "null pointer");
+nsStandardURL::SchemeIs(const char* scheme, bool* result) {
+  MOZ_ASSERT(result, "null pointer");
+  if (!scheme) {
+    *result = false;
+    return NS_OK;
+  }
 
   *result = SegmentIs(mScheme, scheme);
   return NS_OK;
 }
 
-/* virtual */ nsStandardURL *nsStandardURL::StartClone() {
-  nsStandardURL *clone = new nsStandardURL();
+/* virtual */ nsStandardURL* nsStandardURL::StartClone() {
+  nsStandardURL* clone = new nsStandardURL();
   return clone;
 }
 
-NS_IMETHODIMP
-nsStandardURL::Clone(nsIURI **result) {
+nsresult nsStandardURL::Clone(nsIURI** result) {
   return CloneInternal(eHonorRef, EmptyCString(), result);
 }
 
-NS_IMETHODIMP
-nsStandardURL::CloneIgnoringRef(nsIURI **result) {
-  return CloneInternal(eIgnoreRef, EmptyCString(), result);
-}
-
-NS_IMETHODIMP
-nsStandardURL::CloneWithNewRef(const nsACString &newRef, nsIURI **result) {
-  return CloneInternal(eReplaceRef, newRef, result);
-}
-
 nsresult nsStandardURL::CloneInternal(
-    nsStandardURL::RefHandlingEnum refHandlingMode, const nsACString &newRef,
-    nsIURI **result)
+    nsStandardURL::RefHandlingEnum refHandlingMode, const nsACString& newRef,
+    nsIURI** result)
 
 {
   RefPtr<nsStandardURL> clone = StartClone();
@@ -2259,8 +2243,8 @@ nsresult nsStandardURL::CloneInternal(
 }
 
 nsresult nsStandardURL::CopyMembers(
-    nsStandardURL *source, nsStandardURL::RefHandlingEnum refHandlingMode,
-    const nsACString &newRef, bool copyCached) {
+    nsStandardURL* source, nsStandardURL::RefHandlingEnum refHandlingMode,
+    const nsACString& newRef, bool copyCached) {
   mSpec = source->mSpec;
   mDefaultPort = source->mDefaultPort;
   mPort = source->mPort;
@@ -2278,14 +2262,12 @@ nsresult nsStandardURL::CopyMembers(
   mRef = source->mRef;
   mURLType = source->mURLType;
   mParser = source->mParser;
-  mMutable = true;
   mSupportsFileURL = source->mSupportsFileURL;
+  mCheckedIfHostA = source->mCheckedIfHostA;
+  mDisplayHost = source->mDisplayHost;
 
   if (copyCached) {
     mFile = source->mFile;
-    mCheckedIfHostA = source->mCheckedIfHostA;
-    mDisplayHost = source->mDisplayHost;
-    mSpecEncoding = source->mSpecEncoding;
   } else {
     InvalidateCache(true);
   }
@@ -2300,16 +2282,16 @@ nsresult nsStandardURL::CopyMembers(
 }
 
 NS_IMETHODIMP
-nsStandardURL::Resolve(const nsACString &in, nsACString &out) {
-  const nsPromiseFlatCString &flat = PromiseFlatCString(in);
+nsStandardURL::Resolve(const nsACString& in, nsACString& out) {
+  const nsPromiseFlatCString& flat = PromiseFlatCString(in);
   // filter out unexpected chars "\r\n\t" if necessary
   nsAutoCString buf;
   net_FilterURIString(flat, buf);
 
-  const char *relpath = buf.get();
+  const char* relpath = buf.get();
   int32_t relpathLen = buf.Length();
 
-  char *result = nullptr;
+  char* result = nullptr;
 
   LOG(("nsStandardURL::Resolve [this=%p spec=%s relpath=%s]\n", this,
        mSpec.get(), relpath));
@@ -2327,7 +2309,7 @@ nsStandardURL::Resolve(const nsACString &in, nsACString &out) {
 
   nsresult rv;
   URLSegment scheme;
-  char *resultPath = nullptr;
+  char* resultPath = nullptr;
   bool relative = false;
   uint32_t offset = 0;
   netCoalesceFlags coalesceFlag = NET_COALESCE_NORMAL;
@@ -2351,10 +2333,8 @@ nsStandardURL::Resolve(const nsACString &in, nsACString &out) {
   // scheme
   if ((protocol.IsEmpty() && IsSpecialProtocol(baseProtocol)) ||
       IsSpecialProtocol(protocol)) {
-    nsAutoCString::iterator start;
-    nsAutoCString::iterator end;
-    buf.BeginWriting(start);
-    buf.EndWriting(end);
+    auto start = buf.BeginWriting();
+    auto end = buf.EndWriting();
     while (start != end) {
       if (*start == '?' || *start == '#') {
         break;
@@ -2382,7 +2362,7 @@ nsStandardURL::Resolve(const nsACString &in, nsACString &out) {
       if (strncmp(relpath + scheme.mPos + scheme.mLen, "://", 3) == 0) {
         // now this is really absolute
         // because a :// follows the scheme
-        result = NS_strdup(relpath);
+        result = NS_xstrdup(relpath);
       } else {
         // This is a deprecated form of relative urls like
         // http:file or http:/path/file
@@ -2393,7 +2373,7 @@ nsStandardURL::Resolve(const nsACString &in, nsACString &out) {
     } else {
       // the schemes are not the same, we are also done
       // because we have to assume this is absolute
-      result = NS_strdup(relpath);
+      result = NS_xstrdup(relpath);
     }
   } else {
     // add some flags to coalesceFlag if it is an ftp-url
@@ -2413,7 +2393,7 @@ nsStandardURL::Resolve(const nsACString &in, nsACString &out) {
   }
   if (relative) {
     uint32_t len = 0;
-    const char *realrelpath = relpath + offset;
+    const char* realrelpath = relpath + offset;
     switch (*realrelpath) {
       case '/':
         // overwrite everything after the authority
@@ -2475,7 +2455,7 @@ nsStandardURL::Resolve(const nsACString &in, nsACString &out) {
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetCommonBaseSpec(nsIURI *uri2, nsACString &aResult) {
+nsStandardURL::GetCommonBaseSpec(nsIURI* uri2, nsACString& aResult) {
   NS_ENSURE_ARG_POINTER(uri2);
 
   // if uri's are equal, then return uri as is
@@ -2486,8 +2466,8 @@ nsStandardURL::GetCommonBaseSpec(nsIURI *uri2, nsACString &aResult) {
   aResult.Truncate();
 
   // check pre-path; if they don't match, then return empty string
-  nsStandardURL *stdurl2;
-  nsresult rv = uri2->QueryInterface(kThisImplCID, (void **)&stdurl2);
+  RefPtr<nsStandardURL> stdurl2;
+  nsresult rv = uri2->QueryInterface(kThisImplCID, getter_AddRefs(stdurl2));
   isEquals = NS_SUCCEEDED(rv) &&
              SegmentIs(mScheme, stdurl2->mSpec.get(), stdurl2->mScheme) &&
              SegmentIs(mHost, stdurl2->mSpec.get(), stdurl2->mHost) &&
@@ -2495,7 +2475,6 @@ nsStandardURL::GetCommonBaseSpec(nsIURI *uri2, nsACString &aResult) {
              SegmentIs(mPassword, stdurl2->mSpec.get(), stdurl2->mPassword) &&
              (Port() == stdurl2->Port());
   if (!isEquals) {
-    if (NS_SUCCEEDED(rv)) NS_RELEASE(stdurl2);
     return NS_OK;
   }
 
@@ -2517,12 +2496,11 @@ nsStandardURL::GetCommonBaseSpec(nsIURI *uri2, nsACString &aResult) {
   // grab spec from beginning to thisIndex
   aResult = Substring(mSpec, mScheme.mPos, thisIndex - mSpec.get());
 
-  NS_RELEASE(stdurl2);
   return rv;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetRelativeSpec(nsIURI *uri2, nsACString &aResult) {
+nsStandardURL::GetRelativeSpec(nsIURI* uri2, nsACString& aResult) {
   NS_ENSURE_ARG_POINTER(uri2);
 
   aResult.Truncate();
@@ -2531,8 +2509,8 @@ nsStandardURL::GetRelativeSpec(nsIURI *uri2, nsACString &aResult) {
   bool isEquals = false;
   if (NS_SUCCEEDED(Equals(uri2, &isEquals)) && isEquals) return NS_OK;
 
-  nsStandardURL *stdurl2;
-  nsresult rv = uri2->QueryInterface(kThisImplCID, (void **)&stdurl2);
+  RefPtr<nsStandardURL> stdurl2;
+  nsresult rv = uri2->QueryInterface(kThisImplCID, getter_AddRefs(stdurl2));
   isEquals = NS_SUCCEEDED(rv) &&
              SegmentIs(mScheme, stdurl2->mSpec.get(), stdurl2->mScheme) &&
              SegmentIs(mHost, stdurl2->mSpec.get(), stdurl2->mHost) &&
@@ -2540,8 +2518,6 @@ nsStandardURL::GetRelativeSpec(nsIURI *uri2, nsACString &aResult) {
              SegmentIs(mPassword, stdurl2->mSpec.get(), stdurl2->mPassword) &&
              (Port() == stdurl2->Port());
   if (!isEquals) {
-    if (NS_SUCCEEDED(rv)) NS_RELEASE(stdurl2);
-
     return uri2->GetSpec(aResult);
   }
 
@@ -2569,7 +2545,6 @@ nsStandardURL::GetRelativeSpec(nsIURI *uri2, nsACString &aResult) {
 
     // if we didn't match through the first segment, return absolute path
     if ((*thisIndex != '/') || (*thatIndex != '/')) {
-      NS_RELEASE(stdurl2);
       return uri2->GetSpec(aResult);
     }
   }
@@ -2585,7 +2560,7 @@ nsStandardURL::GetRelativeSpec(nsIURI *uri2, nsACString &aResult) {
   // todo:  also check for file matches with '#' and '?'
   while ((*(thatIndex - 1) != '/') && (thatIndex != startCharPos)) thatIndex--;
 
-  const char *limit = mSpec.get() + mFilepath.mPos + mFilepath.mLen;
+  const char* limit = mSpec.get() + mFilepath.mPos + mFilepath.mLen;
 
   // need to account for slashes and add corresponding "../"
   for (; thisIndex <= limit && *thisIndex; ++thisIndex) {
@@ -2597,7 +2572,6 @@ nsStandardURL::GetRelativeSpec(nsIURI *uri2, nsACString &aResult) {
   aResult.Append(
       Substring(stdurl2->mSpec, startPos, stdurl2->mSpec.Length() - startPos));
 
-  NS_RELEASE(stdurl2);
   return rv;
 }
 
@@ -2607,64 +2581,62 @@ nsStandardURL::GetRelativeSpec(nsIURI *uri2, nsACString &aResult) {
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetFilePath(nsACString &result) {
+nsStandardURL::GetFilePath(nsACString& result) {
   result = Filepath();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetQuery(nsACString &result) {
+nsStandardURL::GetQuery(nsACString& result) {
   result = Query();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetRef(nsACString &result) {
+nsStandardURL::GetRef(nsACString& result) {
   result = Ref();
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetHasRef(bool *result) {
+nsStandardURL::GetHasRef(bool* result) {
   *result = (mRef.mLen >= 0);
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetDirectory(nsACString &result) {
+nsStandardURL::GetDirectory(nsACString& result) {
   result = Directory();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetFileName(nsACString &result) {
+nsStandardURL::GetFileName(nsACString& result) {
   result = Filename();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetFileBaseName(nsACString &result) {
+nsStandardURL::GetFileBaseName(nsACString& result) {
   result = Basename();
   return NS_OK;
 }
 
 // result may contain unescaped UTF-8 characters
 NS_IMETHODIMP
-nsStandardURL::GetFileExtension(nsACString &result) {
+nsStandardURL::GetFileExtension(nsACString& result) {
   result = Extension();
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetFilePath(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &flat = PromiseFlatCString(input);
-  const char *filepath = flat.get();
+nsresult nsStandardURL::SetFilePath(const nsACString& input) {
+  const nsPromiseFlatCString& flat = PromiseFlatCString(input);
+  const char* filepath = flat.get();
 
   LOG(("nsStandardURL::SetFilePath [filepath=%s]\n", filepath));
 
@@ -2715,7 +2687,8 @@ nsresult nsStandardURL::SetFilePath(const nsACString &input) {
     }
 
     return SetSpecInternal(spec);
-  } else if (mPath.mLen > 1) {
+  }
+  if (mPath.mLen > 1) {
     mSpec.Cut(mPath.mPos + 1, mFilepath.mLen - 1);
     // left shift query, and ref
     ShiftFromQuery(1 - mFilepath.mLen);
@@ -2730,21 +2703,19 @@ nsresult nsStandardURL::SetFilePath(const nsACString &input) {
   return NS_OK;
 }
 
-inline bool IsUTFEncoding(const Encoding *aEncoding) {
+inline bool IsUTFEncoding(const Encoding* aEncoding) {
   return aEncoding == UTF_8_ENCODING || aEncoding == UTF_16BE_ENCODING ||
          aEncoding == UTF_16LE_ENCODING;
 }
 
-nsresult nsStandardURL::SetQuery(const nsACString &input) {
+nsresult nsStandardURL::SetQuery(const nsACString& input) {
   return SetQueryWithEncoding(input, nullptr);
 }
 
-nsresult nsStandardURL::SetQueryWithEncoding(const nsACString &input,
-                                             const Encoding *encoding) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &flat = PromiseFlatCString(input);
-  const char *query = flat.get();
+nsresult nsStandardURL::SetQueryWithEncoding(const nsACString& input,
+                                             const Encoding* encoding) {
+  const nsPromiseFlatCString& flat = PromiseFlatCString(input);
+  const char* query = flat.get();
 
   LOG(("nsStandardURL::SetQuery [query=%s]\n", query));
 
@@ -2814,11 +2785,9 @@ nsresult nsStandardURL::SetQueryWithEncoding(const nsACString &input,
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetRef(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &flat = PromiseFlatCString(input);
-  const char *ref = flat.get();
+nsresult nsStandardURL::SetRef(const nsACString& input) {
+  const nsPromiseFlatCString& flat = PromiseFlatCString(input);
+  const char* ref = flat.get();
 
   LOG(("nsStandardURL::SetRef [ref=%s]\n", ref));
 
@@ -2874,11 +2843,9 @@ nsresult nsStandardURL::SetRef(const nsACString &input) {
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetFileNameInternal(const nsACString &input) {
-  ENSURE_MUTABLE();
-
-  const nsPromiseFlatCString &flat = PromiseFlatCString(input);
-  const char *filename = flat.get();
+nsresult nsStandardURL::SetFileNameInternal(const nsACString& input) {
+  const nsPromiseFlatCString& flat = PromiseFlatCString(input);
+  const char* filename = flat.get();
 
   LOG(("nsStandardURL::SetFileNameInternal [filename=%s]\n", filename));
 
@@ -2961,7 +2928,7 @@ nsresult nsStandardURL::SetFileNameInternal(const nsACString &input) {
   return NS_OK;
 }
 
-nsresult nsStandardURL::SetFileBaseNameInternal(const nsACString &input) {
+nsresult nsStandardURL::SetFileBaseNameInternal(const nsACString& input) {
   nsAutoCString extension;
   nsresult rv = GetFileExtension(extension);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -2976,7 +2943,7 @@ nsresult nsStandardURL::SetFileBaseNameInternal(const nsACString &input) {
   return SetFileNameInternal(newFileName);
 }
 
-nsresult nsStandardURL::SetFileExtensionInternal(const nsACString &input) {
+nsresult nsStandardURL::SetFileExtensionInternal(const nsACString& input) {
   nsAutoCString newFileName;
   nsresult rv = GetFileBaseName(newFileName);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -2994,8 +2961,9 @@ nsresult nsStandardURL::SetFileExtensionInternal(const nsACString &input) {
 //----------------------------------------------------------------------------
 
 nsresult nsStandardURL::EnsureFile() {
-  NS_PRECONDITION(mSupportsFileURL,
-                  "EnsureFile() called on a URL that doesn't support files!");
+  MOZ_ASSERT(mSupportsFileURL,
+             "EnsureFile() called on a URL that doesn't support files!");
+
   if (mFile) {
     // Nothing to do
     return NS_OK;
@@ -3016,9 +2984,10 @@ nsresult nsStandardURL::EnsureFile() {
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetFile(nsIFile **result) {
-  NS_PRECONDITION(mSupportsFileURL,
-                  "GetFile() called on a URL that doesn't support files!");
+nsStandardURL::GetFile(nsIFile** result) {
+  MOZ_ASSERT(mSupportsFileURL,
+             "GetFile() called on a URL that doesn't support files!");
+
   nsresult rv = EnsureFile();
   if (NS_FAILED(rv)) return rv;
 
@@ -3036,9 +3005,7 @@ nsStandardURL::GetFile(nsIFile **result) {
   return mFile->Clone(result);
 }
 
-nsresult nsStandardURL::SetFile(nsIFile *file) {
-  ENSURE_MUTABLE();
-
+nsresult nsStandardURL::SetFile(nsIFile* file) {
   NS_ENSURE_ARG_POINTER(file);
 
   nsresult rv;
@@ -3074,10 +3041,8 @@ nsresult nsStandardURL::SetFile(nsIFile *file) {
 //----------------------------------------------------------------------------
 
 nsresult nsStandardURL::Init(uint32_t urlType, int32_t defaultPort,
-                             const nsACString &spec, const char *charset,
-                             nsIURI *baseURI) {
-  ENSURE_MUTABLE();
-
+                             const nsACString& spec, const char* charset,
+                             nsIURI* baseURI) {
   if (spec.Length() > (uint32_t)net_GetURLMaxLength() ||
       defaultPort > std::numeric_limits<uint16_t>::max()) {
     return NS_ERROR_MALFORMED_URI;
@@ -3096,7 +3061,7 @@ nsresult nsStandardURL::Init(uint32_t urlType, int32_t defaultPort,
       mParser = net_GetNoAuthURLParser();
       break;
     default:
-      NS_NOTREACHED("bad urlType");
+      MOZ_ASSERT_UNREACHABLE("bad urlType");
       return NS_ERROR_INVALID_ARG;
   }
   mDefaultPort = defaultPort;
@@ -3126,8 +3091,6 @@ nsresult nsStandardURL::Init(uint32_t urlType, int32_t defaultPort,
 }
 
 nsresult nsStandardURL::SetDefaultPort(int32_t aNewDefaultPort) {
-  ENSURE_MUTABLE();
-
   InvalidateCache();
 
   // should never be more than 16 bit
@@ -3147,29 +3110,18 @@ nsresult nsStandardURL::SetDefaultPort(int32_t aNewDefaultPort) {
   return NS_OK;
 }
 
-NS_IMETHODIMP
-nsStandardURL::GetMutable(bool *value) {
-  *value = mMutable;
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsStandardURL::SetMutable(bool value) {
-  NS_ENSURE_ARG(mMutable || !value);
-
-  mMutable = value;
-  return NS_OK;
-}
-
 //----------------------------------------------------------------------------
 // nsStandardURL::nsISerializable
 //----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsStandardURL::Read(nsIObjectInputStream *stream) {
-  NS_PRECONDITION(mDisplayHost.IsEmpty(), "Shouldn't have cached unicode host");
-  NS_PRECONDITION(mSpecEncoding == eEncoding_Unknown,
-                  "Shouldn't have spec encoding here");
+nsStandardURL::Read(nsIObjectInputStream* stream) {
+  MOZ_ASSERT_UNREACHABLE("Use nsIURIMutator.read() instead");
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+nsresult nsStandardURL::ReadPrivate(nsIObjectInputStream* stream) {
+  MOZ_ASSERT(mDisplayHost.IsEmpty(), "Shouldn't have cached unicode host");
 
   nsresult rv;
 
@@ -3188,14 +3140,14 @@ nsStandardURL::Read(nsIObjectInputStream *stream) {
       mParser = net_GetNoAuthURLParser();
       break;
     default:
-      NS_NOTREACHED("bad urlType");
+      MOZ_ASSERT_UNREACHABLE("bad urlType");
       return NS_ERROR_FAILURE;
   }
 
-  rv = stream->Read32((uint32_t *)&mPort);
+  rv = stream->Read32((uint32_t*)&mPort);
   if (NS_FAILED(rv)) return rv;
 
-  rv = stream->Read32((uint32_t *)&mDefaultPort);
+  rv = stream->Read32((uint32_t*)&mDefaultPort);
   if (NS_FAILED(rv)) return rv;
 
   rv = NS_ReadOptionalCString(stream, mSpec);
@@ -3249,7 +3201,7 @@ nsStandardURL::Read(nsIObjectInputStream *stream) {
   bool isMutable;
   rv = stream->ReadBoolean(&isMutable);
   if (NS_FAILED(rv)) return rv;
-  mMutable = isMutable;
+  Unused << isMutable;
 
   bool supportsFileURL;
   rv = stream->ReadBoolean(&supportsFileURL);
@@ -3268,11 +3220,16 @@ nsStandardURL::Read(nsIObjectInputStream *stream) {
     mExtension.Merge(mSpec, ';', old_param);
   }
 
+  rv = CheckIfHostIsAscii();
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::Write(nsIObjectOutputStream *stream) {
+nsStandardURL::Write(nsIObjectOutputStream* stream) {
   MOZ_ASSERT(mSpec.Length() <= (uint32_t)net_GetURLMaxLength(),
              "The spec should never be this long, we missed a check.");
   nsresult rv;
@@ -3337,30 +3294,26 @@ nsStandardURL::Write(nsIObjectOutputStream *stream) {
   rv = NS_WriteOptionalStringZ(stream, EmptyCString().get());
   if (NS_FAILED(rv)) return rv;
 
-  rv = stream->WriteBoolean(mMutable);
+  // former mMutable
+  rv = stream->WriteBoolean(false);
   if (NS_FAILED(rv)) return rv;
 
   rv = stream->WriteBoolean(mSupportsFileURL);
   if (NS_FAILED(rv)) return rv;
 
-  // mSpecEncoding and mDisplayHost are just caches that can be recovered as
-  // needed.
+  // mDisplayHost is just a cache that can be recovered as needed.
 
   return NS_OK;
 }
 
-//---------------------------------------------------------------------------
-// nsStandardURL::nsIIPCSerializableURI
-//---------------------------------------------------------------------------
-
 inline ipc::StandardURLSegment ToIPCSegment(
-    const nsStandardURL::URLSegment &aSegment) {
+    const nsStandardURL::URLSegment& aSegment) {
   return ipc::StandardURLSegment(aSegment.mPos, aSegment.mLen);
 }
 
-inline MOZ_MUST_USE bool FromIPCSegment(const nsACString &aSpec,
-                                        const ipc::StandardURLSegment &aSegment,
-                                        nsStandardURL::URLSegment &aTarget) {
+inline MOZ_MUST_USE bool FromIPCSegment(const nsACString& aSpec,
+                                        const ipc::StandardURLSegment& aSegment,
+                                        nsStandardURL::URLSegment& aTarget) {
   // This seems to be just an empty segment.
   if (aSegment.length() == -1) {
     aTarget = nsStandardURL::URLSegment();
@@ -3386,7 +3339,7 @@ inline MOZ_MUST_USE bool FromIPCSegment(const nsACString &aSpec,
   return true;
 }
 
-void nsStandardURL::Serialize(URIParams &aParams) {
+void nsStandardURL::Serialize(URIParams& aParams) {
   MOZ_ASSERT(mSpec.Length() <= (uint32_t)net_GetURLMaxLength(),
              "The spec should never be this long, we missed a check.");
   StandardURLParams params;
@@ -3407,26 +3360,22 @@ void nsStandardURL::Serialize(URIParams &aParams) {
   params.extension() = ToIPCSegment(mExtension);
   params.query() = ToIPCSegment(mQuery);
   params.ref() = ToIPCSegment(mRef);
-  params.isMutable() = !!mMutable;
   params.supportsFileURL() = !!mSupportsFileURL;
-  // mSpecEncoding and mDisplayHost are just caches that can be recovered as
-  // needed.
+  // mDisplayHost is just a cache that can be recovered as needed.
 
   aParams = params;
 }
 
-bool nsStandardURL::Deserialize(const URIParams &aParams) {
-  NS_PRECONDITION(mDisplayHost.IsEmpty(), "Shouldn't have cached unicode host");
-  NS_PRECONDITION(mSpecEncoding == eEncoding_Unknown,
-                  "Shouldn't have spec encoding here");
-  NS_PRECONDITION(!mFile, "Shouldn't have cached file");
+bool nsStandardURL::Deserialize(const URIParams& aParams) {
+  MOZ_ASSERT(mDisplayHost.IsEmpty(), "Shouldn't have cached unicode host");
+  MOZ_ASSERT(!mFile, "Shouldn't have cached file");
 
   if (aParams.type() != URIParams::TStandardURLParams) {
     NS_ERROR("Received unknown parameters from the other process!");
     return false;
   }
 
-  const StandardURLParams &params = aParams.get_StandardURLParams();
+  const StandardURLParams& params = aParams.get_StandardURLParams();
 
   mURLType = params.urlType();
   switch (mURLType) {
@@ -3440,7 +3389,7 @@ bool nsStandardURL::Deserialize(const URIParams &aParams) {
       mParser = net_GetNoAuthURLParser();
       break;
     default:
-      NS_NOTREACHED("bad urlType");
+      MOZ_ASSERT_UNREACHABLE("bad urlType");
       return false;
   }
 
@@ -3461,11 +3410,12 @@ bool nsStandardURL::Deserialize(const URIParams &aParams) {
   NS_ENSURE_TRUE(FromIPCSegment(mSpec, params.query(), mQuery), false);
   NS_ENSURE_TRUE(FromIPCSegment(mSpec, params.ref(), mRef), false);
 
-  mMutable = params.isMutable();
   mSupportsFileURL = params.supportsFileURL();
 
-  // mSpecEncoding and mDisplayHost are just caches that can be recovered as
-  // needed.
+  nsresult rv = CheckIfHostIsAscii();
+  if (NS_FAILED(rv)) {
+    return false;
+  }
 
   // Some sanity checks
   NS_ENSURE_TRUE(mScheme.mPos == 0, false);
@@ -3493,45 +3443,43 @@ bool nsStandardURL::Deserialize(const URIParams &aParams) {
 //----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsStandardURL::GetInterfaces(uint32_t *count, nsIID ***array) {
-  *count = 0;
-  *array = nullptr;
+nsStandardURL::GetInterfaces(nsTArray<nsIID>& array) {
+  array.Clear();
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetScriptableHelper(nsIXPCScriptable **_retval) {
+nsStandardURL::GetScriptableHelper(nsIXPCScriptable** _retval) {
   *_retval = nullptr;
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetContractID(nsACString &aContractID) {
+nsStandardURL::GetContractID(nsACString& aContractID) {
   aContractID.SetIsVoid(true);
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetClassDescription(nsACString &aClassDescription) {
+nsStandardURL::GetClassDescription(nsACString& aClassDescription) {
   aClassDescription.SetIsVoid(true);
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetClassID(nsCID **aClassID) {
-  *aClassID = (nsCID *)moz_xmalloc(sizeof(nsCID));
-  if (!*aClassID) return NS_ERROR_OUT_OF_MEMORY;
+nsStandardURL::GetClassID(nsCID** aClassID) {
+  *aClassID = (nsCID*)moz_xmalloc(sizeof(nsCID));
   return GetClassIDNoAlloc(*aClassID);
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetFlags(uint32_t *aFlags) {
+nsStandardURL::GetFlags(uint32_t* aFlags) {
   *aFlags = nsIClassInfo::MAIN_THREAD_ONLY;
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsStandardURL::GetClassIDNoAlloc(nsCID *aClassIDNoAlloc) {
+nsStandardURL::GetClassIDNoAlloc(nsCID* aClassIDNoAlloc) {
   *aClassIDNoAlloc = kStandardURLCID;
   return NS_OK;
 }
@@ -3558,6 +3506,6 @@ size_t nsStandardURL::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
 }  // namespace mozilla
 
 // For unit tests.  Including nsStandardURL.h seems to cause problems
-nsresult Test_NormalizeIPv4(const nsACString &host, nsCString &result) {
-  return nsStandardURL::NormalizeIPv4(host, result);
+nsresult Test_NormalizeIPv4(const nsACString& host, nsCString& result) {
+  return mozilla::net::nsStandardURL::NormalizeIPv4(host, result);
 }

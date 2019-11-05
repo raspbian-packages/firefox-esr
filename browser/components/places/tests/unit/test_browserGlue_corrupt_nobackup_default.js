@@ -9,7 +9,9 @@
  * corrupt, nor a JSON backup nor bookmarks.html are available.
  */
 
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
+const { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
 
 function run_test() {
   // Remove bookmarks.html from profile.
@@ -30,26 +32,23 @@ add_task(async function() {
 
   // Check the database was corrupt.
   // nsBrowserGlue uses databaseStatus to manage initialization.
-  Assert.equal(PlacesUtils.history.databaseStatus,
-               PlacesUtils.history.DATABASE_STATUS_CORRUPT);
+  Assert.equal(
+    PlacesUtils.history.databaseStatus,
+    PlacesUtils.history.DATABASE_STATUS_CORRUPT
+  );
 
-  // The test will continue once import has finished and smart bookmarks
-  // have been created.
+  // The test will continue once import has finished.
   await promiseTopicObserved("places-browser-init-complete");
 
+  // Check that default bookmarks have been restored.
   let bm = await PlacesUtils.bookmarks.fetch({
     parentGuid: PlacesUtils.bookmarks.toolbarGuid,
-    index: 0
-  });
-  await checkItemHasAnnotation(bm.guid, SMART_BOOKMARKS_ANNO);
-
-  // Check that default bookmarks have been restored.
-  bm = await PlacesUtils.bookmarks.fetch({
-    parentGuid: PlacesUtils.bookmarks.toolbarGuid,
-    index: SMART_BOOKMARKS_ON_TOOLBAR
+    index: 0,
   });
 
   // Bug 1283076: Nightly bookmark points to Get Involved page, not Getting Started one
-  let chanTitle = AppConstants.NIGHTLY_BUILD ? "Get Involved" : "Getting Started";
+  let chanTitle = AppConstants.NIGHTLY_BUILD
+    ? "Get Involved"
+    : "Getting Started";
   Assert.equal(bm.title, chanTitle);
 });

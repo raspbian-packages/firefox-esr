@@ -12,7 +12,7 @@
  */
 
 #include "mozilla/dom/CryptoBuffer.h"
-#include "pkix/Input.h"
+#include "mozilla/dom/WebAuthenticationBinding.h"
 
 namespace mozilla {
 namespace dom {
@@ -20,7 +20,7 @@ namespace dom {
 enum class U2FOperation { Register, Sign };
 
 bool EvaluateAppID(nsPIDOMWindowInner* aParent, const nsString& aOrigin,
-                   const U2FOperation& aOp, /* in/out */ nsString& aAppId);
+                   /* in/out */ nsString& aAppId);
 
 nsresult AssembleAuthenticatorData(const CryptoBuffer& rpIdHashBuf,
                                    const uint8_t flags,
@@ -28,10 +28,13 @@ nsresult AssembleAuthenticatorData(const CryptoBuffer& rpIdHashBuf,
                                    const CryptoBuffer& attestationDataBuf,
                                    /* out */ CryptoBuffer& authDataBuf);
 
-nsresult AssembleAttestationData(const CryptoBuffer& aaguidBuf,
-                                 const CryptoBuffer& keyHandleBuf,
-                                 const CryptoBuffer& pubKeyObj,
-                                 /* out */ CryptoBuffer& attestationDataBuf);
+nsresult AssembleAttestationObject(const CryptoBuffer& aRpIdHash,
+                                   const CryptoBuffer& aPubKeyBuf,
+                                   const CryptoBuffer& aKeyHandleBuf,
+                                   const CryptoBuffer& aAttestationCertBuf,
+                                   const CryptoBuffer& aSignatureBuf,
+                                   bool aForceNoneAttestation,
+                                   /* out */ CryptoBuffer& aAttestationObjBuf);
 
 nsresult U2FDecomposeSignResponse(const CryptoBuffer& aResponse,
                                   /* out */ uint8_t& aFlags,
@@ -45,14 +48,43 @@ nsresult U2FDecomposeRegistrationResponse(
     /* out */ CryptoBuffer& aAttestationCertBuf,
     /* out */ CryptoBuffer& aSignatureBuf);
 
-nsresult ReadToCryptoBuffer(pkix::Reader& aSrc, /* out */ CryptoBuffer& aDest,
-                            uint32_t aLen);
-
 nsresult U2FDecomposeECKey(const CryptoBuffer& aPubKeyBuf,
                            /* out */ CryptoBuffer& aXcoord,
                            /* out */ CryptoBuffer& aYcoord);
 
+nsresult HashCString(const nsACString& aIn, /* out */ CryptoBuffer& aOut);
+
+nsresult BuildTransactionHashes(const nsCString& aRpId,
+                                const nsCString& aClientDataJSON,
+                                /* out */ CryptoBuffer& aRpIdHash,
+                                /* out */ CryptoBuffer& aClientDataHash);
+
 }  // namespace dom
 }  // namespace mozilla
+
+namespace IPC {
+
+template <>
+struct ParamTraits<mozilla::dom::AuthenticatorAttachment>
+    : public ContiguousEnumSerializer<
+          mozilla::dom::AuthenticatorAttachment,
+          mozilla::dom::AuthenticatorAttachment::Platform,
+          mozilla::dom::AuthenticatorAttachment::EndGuard_> {};
+
+template <>
+struct ParamTraits<mozilla::dom::UserVerificationRequirement>
+    : public ContiguousEnumSerializer<
+          mozilla::dom::UserVerificationRequirement,
+          mozilla::dom::UserVerificationRequirement::Required,
+          mozilla::dom::UserVerificationRequirement::EndGuard_> {};
+
+template <>
+struct ParamTraits<mozilla::dom::AttestationConveyancePreference>
+    : public ContiguousEnumSerializer<
+          mozilla::dom::AttestationConveyancePreference,
+          mozilla::dom::AttestationConveyancePreference::None,
+          mozilla::dom::AttestationConveyancePreference::EndGuard_> {};
+
+}  // namespace IPC
 
 #endif  // mozilla_dom_WebAuthnUtil_h

@@ -11,7 +11,7 @@
 #include "mozilla/gfx/PathHelpers.h"
 #include "mozilla/RefPtr.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Ellipse)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Ellipse)
 
 using namespace mozilla::gfx;
 
@@ -20,17 +20,17 @@ namespace dom {
 
 JSObject* SVGEllipseElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return SVGEllipseElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGEllipseElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::LengthInfo SVGEllipseElement::sLengthInfo[4] = {
-    {&nsGkAtoms::cx, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+SVGElement::LengthInfo SVGEllipseElement::sLengthInfo[4] = {
+    {nsGkAtoms::cx, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::cy, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::cy, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
-    {&nsGkAtoms::rx, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::rx, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::ry, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::ry, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
 };
 
@@ -38,44 +38,45 @@ nsSVGElement::LengthInfo SVGEllipseElement::sLengthInfo[4] = {
 // Implementation
 
 SVGEllipseElement::SVGEllipseElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGEllipseElementBase(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGEllipseElementBase(std::move(aNodeInfo)) {}
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGEllipseElement)
 
 //----------------------------------------------------------------------
 // nsIDOMSVGEllipseElement methods
 
-already_AddRefed<SVGAnimatedLength> SVGEllipseElement::Cx() {
+already_AddRefed<DOMSVGAnimatedLength> SVGEllipseElement::Cx() {
   return mLengthAttributes[CX].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGEllipseElement::Cy() {
+already_AddRefed<DOMSVGAnimatedLength> SVGEllipseElement::Cy() {
   return mLengthAttributes[CY].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGEllipseElement::Rx() {
+already_AddRefed<DOMSVGAnimatedLength> SVGEllipseElement::Rx() {
   return mLengthAttributes[RX].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGEllipseElement::Ry() {
+already_AddRefed<DOMSVGAnimatedLength> SVGEllipseElement::Ry() {
   return mLengthAttributes[RY].ToDOMAnimatedLength(this);
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-/* virtual */ bool SVGEllipseElement::HasValidDimensions() const {
+/* virtual */
+bool SVGEllipseElement::HasValidDimensions() const {
   return mLengthAttributes[RX].IsExplicitlySet() &&
          mLengthAttributes[RX].GetAnimValInSpecifiedUnits() > 0 &&
          mLengthAttributes[RY].IsExplicitlySet() &&
          mLengthAttributes[RY].GetAnimValInSpecifiedUnits() > 0;
 }
 
-nsSVGElement::LengthAttributesInfo SVGEllipseElement::GetLengthInfo() {
+SVGElement::LengthAttributesInfo SVGEllipseElement::GetLengthInfo() {
   return LengthAttributesInfo(mLengthAttributes, sLengthInfo,
                               ArrayLength(sLengthInfo));
 }

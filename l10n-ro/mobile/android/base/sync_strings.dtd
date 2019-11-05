@@ -29,10 +29,10 @@
 <!ENTITY sync.default.client.name '&formatS1; pe &formatS2;'>
 
 <!-- Bookmark folder strings -->
-<!ENTITY bookmarks.folder.menu.label 'Meniul „Marcaje”'>
+<!ENTITY bookmarks.folder.menu.label 'Meniu de marcaje'>
 <!ENTITY bookmarks.folder.places.label ''>
 <!ENTITY bookmarks.folder.tags.label 'Etichete'>
-<!ENTITY bookmarks.folder.toolbar.label 'Bara pentru marcaje'>
+<!ENTITY bookmarks.folder.toolbar.label 'Bara de marcaje'>
 <!ENTITY bookmarks.folder.other.label 'Alte marcaje'>
 <!ENTITY bookmarks.folder.desktop.label 'Marcaje de pe desktop'>
 <!ENTITY bookmarks.folder.mobile.label 'Marcaje mobile'>
@@ -46,7 +46,7 @@
      Firefox. -->
 <!ENTITY fxaccount_back_to_browsing 'Înapoi la navigare'>
 
-<!ENTITY fxaccount_getting_started_welcome_to_sync 'Bun venit la &syncBrand.shortName.label;'>
+<!ENTITY fxaccount_getting_started_welcome_to_sync 'Bine ai venit la &syncBrand.shortName.label;'>
 <!ENTITY fxaccount_getting_started_description2 'Autentifică-te pentru a sincroniza filele, marcajele, parolele și altele.'>
 <!ENTITY fxaccount_getting_started_get_started 'Începe'>
 <!ENTITY fxaccount_getting_started_old_firefox 'Folosești o versiune mai veche de &syncBrand.shortName.label;?'>
@@ -78,10 +78,10 @@
      these strings are separated to accommodate languages that decline
      the two uses differently. -->
 <!ENTITY fxaccount_status_linktos2 'Termenii de utilizare a serviciului'>
-<!ENTITY fxaccount_status_linkprivacy2 'Politica de confidențialitate'>
+<!ENTITY fxaccount_status_linkprivacy2 'Declarație de confidențialitate'>
 <!ENTITY fxaccount_remove_account 'Deconectează-te&ellipsis;'>
 
-<!ENTITY fxaccount_remove_account_dialog_title2 'Te deconectezi de la Sincronizare?'>
+<!ENTITY fxaccount_remove_account_dialog_title2 'Te deconectezi de la Sync?'>
 <!ENTITY fxaccount_remove_account_dialog_message2 'Datele de navigare vor rămâne pe acest dispozitv, însă nu se vor mai sincroniza cu contul tău.'>
 <!-- Localization note: format string below will be replaced
      with the Firefox Account's email address. -->

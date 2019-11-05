@@ -13,6 +13,7 @@ connection-close-key =
     .key = w
 connection-disable-extension =
     .label = పొడగింతను అచేతనించు
+connection-proxy-configure = అంతర్జాలానికి ప్రాక్సీ అందుబాటును స్వరూపించండి
 connection-proxy-option-no =
     .label = ప్రాక్సీ ఏమీలేదు
     .accesskey = y
@@ -66,3 +67,19 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = SOCKS v5 వాడేటప్పుడు ప్రాక్సీ DNS
     .accesskey = D
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = అప్రమేయాన్ని వాడు ({ $url })
+    .accesskey = U
+    .tooltiptext = DNSను HTTPS ద్వారా పరిష్కరించడానికి అప్రమేయ URLను వాడు
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (అప్రమేయం)
+    .tooltiptext = HTTPS ద్వారా DNS పరిష్కరించడానికి అప్రమేయ చిరునామా వాడండి
+connection-dns-over-https-url-custom =
+    .label = అభిమతం
+    .accesskey = C
+    .tooltiptext = DNSను HTTPS ద్వారా పరిష్కరించడానికి మీరు ప్రాధాన్యమిచ్చే URL ఇవ్వండి
+connection-dns-over-https-custom-label = అభిమతం

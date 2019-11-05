@@ -10,6 +10,7 @@
 #include "mozilla/gfx/Logging.h"
 #include "nsITimer.h"
 #include "mozilla/Preferences.h"
+#include "VRGPUChild.h"
 
 namespace mozilla {
 namespace gfx {
@@ -29,7 +30,7 @@ GPUProcessHost::GPUProcessHost(Listener* aListener)
 
 GPUProcessHost::~GPUProcessHost() { MOZ_COUNT_DTOR(GPUProcessHost); }
 
-bool GPUProcessHost::Launch() {
+bool GPUProcessHost::Launch(StringVector aExtraOpts) {
   MOZ_ASSERT(mLaunchPhase == LaunchPhase::Unlaunched);
   MOZ_ASSERT(!mGPUChild);
   MOZ_ASSERT(!gfxPlatform::IsHeadless());
@@ -41,7 +42,7 @@ bool GPUProcessHost::Launch() {
   mLaunchPhase = LaunchPhase::Waiting;
   mLaunchTime = TimeStamp::Now();
 
-  if (!GeckoChildProcessHost::AsyncLaunch()) {
+  if (!GeckoChildProcessHost::AsyncLaunch(aExtraOpts)) {
     mLaunchPhase = LaunchPhase::Complete;
     return false;
   }
@@ -150,6 +151,10 @@ void GPUProcessHost::Shutdown() {
 
     // The channel might already be closed if we got here unexpectedly.
     if (!mChannelClosed) {
+      if (VRGPUChild::IsCreated()) {
+        VRGPUChild::Get()->Close();
+      }
+      mGPUChild->SendShutdownVR();
       mGPUChild->Close();
     }
 
@@ -182,7 +187,7 @@ void GPUProcessHost::OnChannelClosed() {
   }
 
   // Release the actor.
-  GPUChild::Destroy(Move(mGPUChild));
+  GPUChild::Destroy(std::move(mGPUChild));
   MOZ_ASSERT(!mGPUChild);
 }
 
@@ -197,11 +202,6 @@ void GPUProcessHost::KillHard(const char* aReason) {
 
 uint64_t GPUProcessHost::GetProcessToken() const { return mProcessToken; }
 
-static void DelayedDeleteSubprocess(GeckoChildProcessHost* aSubprocess) {
-  XRE_GetIOMessageLoop()->PostTask(
-      mozilla::MakeAndAddRef<DeleteTask<GeckoChildProcessHost>>(aSubprocess));
-}
-
 void GPUProcessHost::KillProcess() { KillHard("DiagnosticKill"); }
 
 void GPUProcessHost::DestroyProcess() {
@@ -212,8 +212,8 @@ void GPUProcessHost::DestroyProcess() {
     mTaskFactory.RevokeAll();
   }
 
-  MessageLoop::current()->PostTask(NewRunnableFunction(
-      "DestroyProcessRunnable", DelayedDeleteSubprocess, this));
+  MessageLoop::current()->PostTask(
+      NS_NewRunnableFunction("DestroyProcessRunnable", [this] { Destroy(); }));
 }
 
 }  // namespace gfx

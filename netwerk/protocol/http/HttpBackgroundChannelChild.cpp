@@ -24,9 +24,9 @@ namespace mozilla {
 namespace net {
 
 // HttpBackgroundChannelChild
-HttpBackgroundChannelChild::HttpBackgroundChannelChild() {}
+HttpBackgroundChannelChild::HttpBackgroundChannelChild() = default;
 
-HttpBackgroundChannelChild::~HttpBackgroundChannelChild() {}
+HttpBackgroundChannelChild::~HttpBackgroundChannelChild() = default;
 
 nsresult HttpBackgroundChannelChild::Init(HttpChannelChild* aChannelChild) {
   LOG(
@@ -68,7 +68,7 @@ void HttpBackgroundChannelChild::OnStartRequestReceived() {
   nsTArray<nsCOMPtr<nsIRunnable>> runnables;
   runnables.SwapElements(mQueuedRunnables);
 
-  for (auto event : runnables) {
+  for (const auto& event : runnables) {
     // Note: these runnables call Recv* methods on HttpBackgroundChannelChild
     // but not the Process* methods on HttpChannelChild.
     event->Run();
@@ -155,7 +155,8 @@ IPCResult HttpBackgroundChannelChild::RecvOnStopRequest(
     const TimeStamp& aLastActiveTabOptHit,
     const nsHttpHeaderArray& aResponseTrailers) {
   LOG(("HttpBackgroundChannelChild::RecvOnStopRequest [this=%p]\n", this));
-  MOZ_ASSERT(OnSocketThread());
+  MOZ_ASSERT(gSocketTransportService);
+  MOZ_ASSERT(gSocketTransportService->IsOnCurrentThreadInfallible());
 
   // It's enough to set this from (just before) OnStopRequest notification,
   // since we don't need this value sooner than a channel was done loading -
@@ -290,9 +291,83 @@ IPCResult HttpBackgroundChannelChild::RecvDivertMessages() {
   return IPC_OK();
 }
 
-IPCResult HttpBackgroundChannelChild::RecvNotifyTrackingProtectionDisabled() {
+IPCResult
+HttpBackgroundChannelChild::RecvNotifyChannelClassifierProtectionDisabled(
+    const uint32_t& aAcceptedReason) {
   LOG(
-      ("HttpBackgroundChannelChild::RecvNotifyTrackingProtectionDisabled "
+      ("HttpBackgroundChannelChild::"
+       "RecvNotifyChannelClassifierProtectionDisabled [this=%p "
+       "aAcceptedReason=%" PRIu32 "]\n",
+       this, aAcceptedReason));
+  MOZ_ASSERT(OnSocketThread());
+
+  if (NS_WARN_IF(!mChannelChild)) {
+    return IPC_OK();
+  }
+
+  // NotifyChannelClassifierProtectionDisabled has no order dependency to
+  // OnStartRequest. It this be handled as soon as possible
+  mChannelChild->ProcessNotifyChannelClassifierProtectionDisabled(
+      aAcceptedReason);
+
+  return IPC_OK();
+}
+
+IPCResult HttpBackgroundChannelChild::RecvNotifyCookieAllowed() {
+  LOG(("HttpBackgroundChannelChild::RecvNotifyCookieAllowed [this=%p]\n",
+       this));
+  MOZ_ASSERT(OnSocketThread());
+
+  if (NS_WARN_IF(!mChannelChild)) {
+    return IPC_OK();
+  }
+
+  mChannelChild->ProcessNotifyCookieAllowed();
+
+  return IPC_OK();
+}
+
+IPCResult HttpBackgroundChannelChild::RecvNotifyCookieBlocked(
+    const uint32_t& aRejectedReason) {
+  LOG(
+      ("HttpBackgroundChannelChild::RecvNotifyCookieBlocked [this=%p "
+       "aRejectedReason=%" PRIu32 "]\n",
+       this, aRejectedReason));
+  MOZ_ASSERT(OnSocketThread());
+
+  if (NS_WARN_IF(!mChannelChild)) {
+    return IPC_OK();
+  }
+
+  mChannelChild->ProcessNotifyCookieBlocked(aRejectedReason);
+
+  return IPC_OK();
+}
+
+IPCResult HttpBackgroundChannelChild::RecvNotifyClassificationFlags(
+    const uint32_t& aClassificationFlags, const bool& aIsThirdParty) {
+  LOG(
+      ("HttpBackgroundChannelChild::RecvNotifyClassificationFlags "
+       "classificationFlags=%" PRIu32 ", thirdparty=%d [this=%p]\n",
+       aClassificationFlags, static_cast<int>(aIsThirdParty), this));
+  MOZ_ASSERT(OnSocketThread());
+
+  if (NS_WARN_IF(!mChannelChild)) {
+    return IPC_OK();
+  }
+
+  // NotifyClassificationFlags has no order dependency to OnStartRequest.
+  // It this be handled as soon as possible
+  mChannelChild->ProcessNotifyClassificationFlags(aClassificationFlags,
+                                                  aIsThirdParty);
+
+  return IPC_OK();
+}
+
+IPCResult HttpBackgroundChannelChild::RecvNotifyFlashPluginStateChanged(
+    const nsIHttpChannel::FlashPluginState& aState) {
+  LOG(
+      ("HttpBackgroundChannelChild::RecvNotifyFlashPluginStateChanged "
        "[this=%p]\n",
        this));
   MOZ_ASSERT(OnSocketThread());
@@ -301,25 +376,9 @@ IPCResult HttpBackgroundChannelChild::RecvNotifyTrackingProtectionDisabled() {
     return IPC_OK();
   }
 
-  // NotifyTrackingProtectionDisabled has no order dependency to OnStartRequest.
+  // NotifyFlashPluginStateChanged has no order dependency to OnStartRequest.
   // It this be handled as soon as possible
-  mChannelChild->ProcessNotifyTrackingProtectionDisabled();
-
-  return IPC_OK();
-}
-
-IPCResult HttpBackgroundChannelChild::RecvNotifyTrackingResource() {
-  LOG(("HttpBackgroundChannelChild::RecvNotifyTrackingResource [this=%p]\n",
-       this));
-  MOZ_ASSERT(OnSocketThread());
-
-  if (NS_WARN_IF(!mChannelChild)) {
-    return IPC_OK();
-  }
-
-  // NotifyTrackingResource has no order dependency to OnStartRequest.
-  // It this be handled as soon as possible
-  mChannelChild->ProcessNotifyTrackingResource();
+  mChannelChild->ProcessNotifyFlashPluginStateChanged(aState);
 
   return IPC_OK();
 }
@@ -342,6 +401,25 @@ IPCResult HttpBackgroundChannelChild::RecvSetClassifierMatchedInfo(
   return IPC_OK();
 }
 
+IPCResult HttpBackgroundChannelChild::RecvSetClassifierMatchedTrackingInfo(
+    const ClassifierInfo& info) {
+  LOG(
+      ("HttpBackgroundChannelChild::RecvSetClassifierMatchedTrackingInfo "
+       "[this=%p]\n",
+       this));
+  MOZ_ASSERT(OnSocketThread());
+
+  if (NS_WARN_IF(!mChannelChild)) {
+    return IPC_OK();
+  }
+
+  // SetClassifierMatchedTrackingInfo has no order dependency to OnStartRequest.
+  // It this be handled as soon as possible
+  mChannelChild->ProcessSetClassifierMatchedTrackingInfo(info.list(),
+                                                         info.fullhash());
+
+  return IPC_OK();
+}
 void HttpBackgroundChannelChild::ActorDestroy(ActorDestroyReason aWhy) {
   LOG(("HttpBackgroundChannelChild::ActorDestroy[this=%p]\n", this));
   // This function might be called during shutdown phase, so OnSocketThread()

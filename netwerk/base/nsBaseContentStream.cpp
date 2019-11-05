@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -49,19 +49,19 @@ nsBaseContentStream::Close() {
 }
 
 NS_IMETHODIMP
-nsBaseContentStream::Available(uint64_t *result) {
+nsBaseContentStream::Available(uint64_t* result) {
   *result = 0;
   return mStatus;
 }
 
 NS_IMETHODIMP
-nsBaseContentStream::Read(char *buf, uint32_t count, uint32_t *result) {
+nsBaseContentStream::Read(char* buf, uint32_t count, uint32_t* result) {
   return ReadSegments(NS_CopySegmentToBuffer, buf, count, result);
 }
 
 NS_IMETHODIMP
-nsBaseContentStream::ReadSegments(nsWriteSegmentFun fun, void *closure,
-                                  uint32_t count, uint32_t *result) {
+nsBaseContentStream::ReadSegments(nsWriteSegmentFun fun, void* closure,
+                                  uint32_t count, uint32_t* result) {
   *result = 0;
 
   if (mStatus == NS_BASE_STREAM_CLOSED) return NS_OK;
@@ -73,7 +73,7 @@ nsBaseContentStream::ReadSegments(nsWriteSegmentFun fun, void *closure,
 }
 
 NS_IMETHODIMP
-nsBaseContentStream::IsNonBlocking(bool *result) {
+nsBaseContentStream::IsNonBlocking(bool* result) {
   *result = mNonBlocking;
   return NS_OK;
 }
@@ -93,9 +93,9 @@ nsBaseContentStream::CloseWithStatus(nsresult status) {
 }
 
 NS_IMETHODIMP
-nsBaseContentStream::AsyncWait(nsIInputStreamCallback *callback, uint32_t flags,
+nsBaseContentStream::AsyncWait(nsIInputStreamCallback* callback, uint32_t flags,
                                uint32_t requestedCount,
-                               nsIEventTarget *target) {
+                               nsIEventTarget* target) {
   // Our _only_ consumer is nsInputStreamPump, so we simplify things here by
   // making assumptions about how we will be called.
   NS_ASSERTION(target, "unexpected parameter");

@@ -1,15 +1,19 @@
-const { AppConstants } = ChromeUtils.import("resource://gre/modules/AppConstants.jsm", {});
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
-const { MessageContext } = ChromeUtils.import("resource://gre/modules/MessageContext.jsm", {});
-Cu.importGlobalProperties(["fetch"]);
+const { AppConstants } = ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+// eslint-disable-next-line mozilla/use-services
+const appinfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime);
+const { FluentBundle, FluentResource } = ChromeUtils.import("resource://gre/modules/Fluent.jsm");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
+const isParentProcess = appinfo.processType === appinfo.PROCESS_TYPE_DEFAULT;
 /**
  * L10nRegistry is a localization resource management system for Gecko.
  *
  * It manages the list of resource sources provided with the app and allows
  * for additional sources to be added and updated.
  *
- * It's primary purpose is to allow for building an iterator over MessageContext objects
+ * It's primary purpose is to allow for building an iterator over FluentBundle objects
  * that will be utilized by a localization API.
  *
  * The generator creates all possible permutations of locales and sources to allow for
@@ -32,7 +36,7 @@ Cu.importGlobalProperties(["fetch"]);
  *     ]
  *
  * If the user will request:
- *   L10nRegistry.generateContexts(['de', 'en-US'], [
+ *   L10nRegistry.generateBundles(['de', 'en-US'], [
  *     '/browser/menu.ftl',
  *     '/platform/toolkit.ftl'
  *   ]);
@@ -68,36 +72,109 @@ Cu.importGlobalProperties(["fetch"]);
  *     ]
  *   }
  *
- * This allows the localization API to consume the MessageContext and lazily fallback
+ * This allows the localization API to consume the FluentBundle and lazily fallback
  * on the next in case of a missing string or error.
  *
  * If during the life-cycle of the app a new source is added, the generator can be called again
  * and will produce a new set of permutations placing the language pack provided resources
  * at the top.
+ *
+ * Notice: L10nRegistry is primarily an asynchronous API, but
+ * it does provide a synchronous version of it's main method
+ * for use by the `LocalizationSync` class.
+ * This API should be only used in very specialized cases and
+ * the uses should be reviewed by the toolkit owner/peer.
  */
+class L10nRegistryService {
+  constructor() {
+    this.sources = new Map();
 
-const L10nRegistry = {
-  sources: new Map(),
-  ctxCache: new Map(),
-  bootstrap: null,
+    if (!isParentProcess) {
+      this._setSourcesFromSharedData();
+      Services.cpmm.sharedData.addEventListener("change", this);
+    }
+  }
+
+  handleEvent(event) {
+    if (event.type === "change") {
+      if (event.changedKeys.includes("L10nRegistry:Sources")) {
+        this._setSourcesFromSharedData();
+      }
+    }
+  }
 
   /**
    * Based on the list of requested languages and resource Ids,
    * this function returns an lazy iterator over message context permutations.
    *
+   * Notice: Any changes to this method should be copied
+   * to the `generateBundlesSync` equivalent below.
+   *
    * @param {Array} requestedLangs
    * @param {Array} resourceIds
-   * @returns {AsyncIterator<MessageContext>}
+   * @returns {AsyncIterator<FluentBundle>}
    */
-  async* generateContexts(requestedLangs, resourceIds) {
-    if (this.bootstrap !== null) {
-      await this.bootstrap;
-    }
+  async* generateBundles(requestedLangs, resourceIds) {
     const sourcesOrder = Array.from(this.sources.keys()).reverse();
+    const pseudoNameFromPref = Services.prefs.getStringPref("intl.l10n.pseudo", "");
     for (const locale of requestedLangs) {
-      yield * generateContextsForLocale(locale, sourcesOrder, resourceIds);
+      for await (const dataSets of generateResourceSetsForLocale(locale, sourcesOrder, resourceIds)) {
+        const bundle = new FluentBundle(locale, {
+          ...MSG_CONTEXT_OPTIONS,
+          transform: PSEUDO_STRATEGIES[pseudoNameFromPref],
+        });
+        for (const data of dataSets) {
+          if (data === null) {
+            return;
+          }
+          bundle.addResource(data);
+        }
+        yield bundle;
+      }
     }
-  },
+  }
+
+  /**
+   * This is a synchronous version of the `generateBundles`
+   * method and should stay completely in sync with it at all
+   * times except of the async/await changes.
+   *
+   * Notice: This method should be avoided at all costs
+   * You can think of it similarly to a synchronous XMLHttpRequest.
+   *
+   * @param {Array} requestedLangs
+   * @param {Array} resourceIds
+   * @returns {Iterator<FluentBundle>}
+   */
+  * generateBundlesSync(requestedLangs, resourceIds) {
+    const sourcesOrder = Array.from(this.sources.keys()).reverse();
+    const pseudoNameFromPref = Services.prefs.getStringPref("intl.l10n.pseudo", "");
+    for (const locale of requestedLangs) {
+      for (const dataSets of generateResourceSetsForLocaleSync(locale, sourcesOrder, resourceIds)) {
+        const bundle = new FluentBundle(locale, {
+          ...MSG_CONTEXT_OPTIONS,
+          transform: PSEUDO_STRATEGIES[pseudoNameFromPref],
+        });
+        for (const data of dataSets) {
+          if (data === null) {
+            return;
+          }
+          bundle.addResource(data);
+        }
+        yield bundle;
+      }
+    }
+  }
+
+  /**
+   * Check whether a source with the given known is already registered.
+   *
+   * @param {String} sourceName
+   * @returns {boolean} whether or not a source by that name is known.
+   */
+  hasSource(sourceName) {
+    return this.sources.has(sourceName);
+  }
 
   /**
    * Adds a new resource source to the L10nRegistry.
@@ -105,12 +182,16 @@ const L10nRegistry = {
    * @param {FileSource} source
    */
   registerSource(source) {
-    if (this.sources.has(source.name)) {
+    if (this.hasSource(source.name)) {
       throw new Error(`Source with name "${source.name}" already registered.`);
     }
     this.sources.set(source.name, source);
-    Services.locale.setAvailableLocales(this.getAvailableLocales());
-  },
+
+    if (isParentProcess) {
+      this._synchronizeSharedData();
+      Services.locale.availableLocales = this.getAvailableLocales();
+    }
+  }
 
   /**
    * Updates an existing source in the L10nRegistry
@@ -121,13 +202,15 @@ const L10nRegistry = {
    * @param {FileSource} source
    */
   updateSource(source) {
-    if (!this.sources.has(source.name)) {
+    if (!this.hasSource(source.name)) {
       throw new Error(`Source with name "${source.name}" is not registered.`);
     }
     this.sources.set(source.name, source);
-    this.ctxCache.clear();
-    Services.locale.setAvailableLocales(this.getAvailableLocales());
-  },
+    if (isParentProcess) {
+      this._synchronizeSharedData();
+      Services.locale.availableLocales = this.getAvailableLocales();
+    }
+  }
 
   /**
    * Removes a source from the L10nRegistry.
@@ -136,8 +219,41 @@ const L10nRegistry = {
    */
   removeSource(sourceName) {
     this.sources.delete(sourceName);
-    Services.locale.setAvailableLocales(this.getAvailableLocales());
-  },
+    if (isParentProcess) {
+      this._synchronizeSharedData();
+      Services.locale.availableLocales = this.getAvailableLocales();
+    }
+  }
+
+  _synchronizeSharedData() {
+    const sources = new Map();
+    for (const [name, source] of this.sources.entries()) {
+      if (source.indexed) {
+        continue;
+      }
+      sources.set(name, {
+        locales: source.locales,
+        prePath: source.prePath,
+      });
+    }
+    Services.ppmm.sharedData.set("L10nRegistry:Sources", sources);
+    Services.ppmm.sharedData.flush();
+  }
+
+  _setSourcesFromSharedData() {
+    let sources = Services.cpmm.sharedData.get("L10nRegistry:Sources");
+    for (let [name, data] of sources.entries()) {
+      if (!this.hasSource(name)) {
+        const source = new FileSource(name, data.locales, data.prePath);
+        this.registerSource(source);
+      }
+    }
+    for (let name of this.sources.keys()) {
+      if (!sources.has(name)) {
+        this.removeSource(name);
+      }
+    }
+  }
 
   /**
    * Returns a list of locales for which at least one source
@@ -154,39 +270,27 @@ const L10nRegistry = {
       }
     }
     return Array.from(locales);
-  },
-};
-
-/**
- * A helper function for generating unique context ID used for caching
- * MessageContexts.
- *
- * @param {String} locale
- * @param {Array} sourcesOrder
- * @param {Array} resourceIds
- * @returns {String}
- */
-function generateContextID(locale, sourcesOrder, resourceIds) {
-  const sources = sourcesOrder.join(",");
-  const ids = resourceIds.join(",");
-  return `${locale}|${sources}|${ids}`;
+  }
 }
 
 /**
- * This function generates an iterator over MessageContexts for a single locale
+ * This function generates an iterator over FluentBundles for a single locale
  * for a given list of resourceIds for all possible combinations of sources.
  *
  * This function is called recursively to generate all possible permutations
  * and uses the last, optional parameter, to pass the already resolved
  * sources order.
  *
+ * Notice: Any changes to this method should be copied
+ * to the `generateResourceSetsForLocaleSync` equivalent below.
+ *
  * @param {String} locale
  * @param {Array} sourcesOrder
  * @param {Array} resourceIds
  * @param {Array} [resolvedOrder]
- * @returns {AsyncIterator<MessageContext>}
+ * @returns {AsyncIterator<FluentBundle>}
  */
-async function* generateContextsForLocale(locale, sourcesOrder, resourceIds, resolvedOrder = []) {
+async function* generateResourceSetsForLocale(locale, sourcesOrder, resourceIds, resolvedOrder = []) {
   const resolvedLength = resolvedOrder.length;
   const resourcesLength = resourceIds.length;
 
@@ -196,25 +300,101 @@ async function* generateContextsForLocale(locale, sourcesOrder, resourceIds, res
   for (const sourceName of sourcesOrder) {
     const order = resolvedOrder.concat(sourceName);
 
-    // We bail only if the hasFile returns a strict false here,
-    // because for FileSource it may also return undefined, which means
-    // that we simply don't know if the source contains the file and we'll
-    // have to perform the I/O to learn.
-    if (L10nRegistry.sources.get(sourceName).hasFile(locale, resourceIds[resolvedOrder.length]) === false) {
-      continue;
+    // We want to bail out early if we know that any of
+    // the (res)x(source) combinations in the permutation
+    // are unavailable.
+    // The combination may have been `undefined` when we
+    // stepped into this branch, and now is resolved to
+    // `false`.
+    //
+    // If the combination resolved to `false` is the last
+    // in the resolvedOrder, we want to continue in this
+    // loop, but if it's somewhere in the middle, we can
+    // safely bail from the whole branch.
+    for (let [idx, sourceName] of order.entries()) {
+      const source = L10nRegistry.sources.get(sourceName);
+      if (!source || source.hasFile(locale, resourceIds[idx]) === false) {
+        if (idx === order.length - 1) {
+          continue;
+        } else {
+          return;
+        }
+      }
     }
 
     // If the number of resolved sources equals the number of resources,
     // create the right context and return it if it loads.
     if (resolvedLength + 1 === resourcesLength) {
-      const ctx = await generateContext(locale, order, resourceIds);
-      if (ctx !== null) {
-        yield ctx;
+      let dataSet = await generateResourceSet(locale, order, resourceIds);
+      // Here we check again to see if the newly resolved
+      // resources returned `false` on any position.
+      if (!dataSet.includes(false)) {
+        yield dataSet;
       }
-    } else {
+    } else if (resolvedLength < resourcesLength) {
       // otherwise recursively load another generator that walks over the
       // partially resolved list of sources.
-      yield * generateContextsForLocale(locale, sourcesOrder, resourceIds, order);
+      yield * generateResourceSetsForLocale(locale, sourcesOrder, resourceIds, order);
+    }
+  }
+}
+
+/**
+ * This is a synchronous version of the `generateResourceSetsForLocale`
+ * method and should stay completely in sync with it at all
+ * times except of the async/await changes.
+ *
+ * @param {String} locale
+ * @param {Array} sourcesOrder
+ * @param {Array} resourceIds
+ * @param {Array} [resolvedOrder]
+ * @returns {Iterator<FluentBundle>}
+ */
+function* generateResourceSetsForLocaleSync(locale, sourcesOrder, resourceIds, resolvedOrder = []) {
+  const resolvedLength = resolvedOrder.length;
+  const resourcesLength = resourceIds.length;
+
+  // Inside that loop we have a list of resources and the sources for them, like this:
+  //   ['test.ftl', 'menu.ftl', 'foo.ftl']
+  //   ['app', 'platform', 'app']
+  for (const sourceName of sourcesOrder) {
+    const order = resolvedOrder.concat(sourceName);
+
+    // We want to bail out early if we know that any of
+    // the (res)x(source) combinations in the permutation
+    // are unavailable.
+    // The combination may have been `undefined` when we
+    // stepped into this branch, and now is resolved to
+    // `false`.
+    //
+    // If the combination resolved to `false` is the last
+    // in the resolvedOrder, we want to continue in this
+    // loop, but if it's somewhere in the middle, we can
+    // safely bail from the whole branch.
+    for (let [idx, sourceName] of order.entries()) {
+      const source = L10nRegistry.sources.get(sourceName);
+      if (!source || source.hasFile(locale, resourceIds[idx]) === false) {
+        if (idx === order.length - 1) {
+          continue;
+        } else {
+          return;
+        }
+      }
+    }
+
+    // If the number of resolved sources equals the number of resources,
+    // create the right context and return it if it loads.
+    if (resolvedLength + 1 === resourcesLength) {
+      let dataSet = generateResourceSetSync(locale, order, resourceIds);
+      // Here we check again to see if the newly resolved
+      // resources returned `false` on any position.
+      if (!dataSet.includes(false)) {
+        yield dataSet;
+      }
+    } else if (resolvedLength < resourcesLength) {
+      // otherwise recursively load another generator that walks over the
+      // partially resolved list of sources.
+      yield * generateResourceSetsForLocaleSync(locale, sourcesOrder, resourceIds, order);
     }
   }
 }
@@ -240,12 +420,99 @@ const MSG_CONTEXT_OPTIONS = {
         default:
           return "other";
       }
-    }
-  }
+    },
+  },
 };
 
 /**
- * Generates a single MessageContext by loading all resources
+ * Pseudolocalizations
+ *
+ * PSEUDO_STRATEGIES is a dict of strategies to be used to modify a
+ * context in order to create pseudolocalizations.  These can be used by
+ * developers to test the localizability of their code without having to
+ * actually speak a foreign language.
+ *
+ * Currently, the following pseudolocales are supported:
+ *
+ *   accented - Ȧȧƈƈḗḗƞŧḗḗḓ Ḗḗƞɠŀīīşħ
+ *
+ *     In Accented English all Latin letters are replaced by accented
+ *     Unicode counterparts which don't impair the readability of the content.
+ *     This allows developers to quickly test if any given string is being
+ *     correctly displayed in its 'translated' form.  Additionally, simple
+ *     heuristics are used to make certain words longer to better simulate the
+ *     experience of international users.
+ *
+ *   bidi - ɥsıʅƃuƎ ıpıԐ
+ *
+ *     Bidi English is a fake RTL locale.  All words are surrounded by
+ *     Unicode formatting marks forcing the RTL directionality of characters.
+ *     In addition, to make the reversed text easier to read, individual
+ *     letters are flipped.
+ *
+ *     Note: The name above is hardcoded to be RTL in case code editors have
+ *     trouble with the RLO and PDF Unicode marks.  In reality, it should be
+ *     surrounded by those marks as well.
+ *
+ * See https://bugzil.la/1450781 for more information.
+ *
+ * In this implementation we use code points instead of inline unicode characters
+ * because the encoding of JSM files mangles them otherwise.
+ */
+
+const ACCENTED_MAP = {
+      // ȦƁƇḒḖƑƓĦĪĴĶĿḾȠǾƤɊŘŞŦŬṼẆẊẎẐ
+      "caps": [550, 385, 391, 7698, 7702, 401, 403, 294, 298, 308, 310, 319, 7742, 544, 510, 420, 586, 344, 350, 358, 364, 7804, 7814, 7818, 7822, 7824],
+      // ȧƀƈḓḗƒɠħīĵķŀḿƞǿƥɋřşŧŭṽẇẋẏẑ
+      "small": [551, 384, 392, 7699, 7703, 402, 608, 295, 299, 309, 311, 320, 7743, 414, 511, 421, 587, 345, 351, 359, 365, 7805, 7815, 7819, 7823, 7825],
+};
+
+const FLIPPED_MAP = {
+      // ∀ԐↃᗡƎℲ⅁HIſӼ⅂WNOԀÒᴚS⊥∩ɅMX⅄Z
+      "caps": [8704, 1296, 8579, 5601, 398, 8498, 8513, 72, 73, 383, 1276, 8514, 87, 78, 79, 1280, 210, 7450, 83, 8869, 8745, 581, 77, 88, 8516, 90],
+      // ɐqɔpǝɟƃɥıɾʞʅɯuodbɹsʇnʌʍxʎz
+      "small": [592, 113, 596, 112, 477, 607, 387, 613, 305, 638, 670, 645, 623, 117, 111, 100, 98, 633, 115, 647, 110, 652, 653, 120, 654, 122],
+};
+
+function transformString(map, elongate = false, prefix = "", postfix = "", msg) {
+  // Exclude access-keys and other single-char messages
+  if (msg.length === 1) {
+    return msg;
+  }
+  // XML entities (&#x202a;) and XML tags.
+  const reExcluded = /(&[#\w]+;|<\s*.+?\s*>)/;
+
+  const parts = msg.split(reExcluded);
+  const modified = parts.map((part) => {
+    if (reExcluded.test(part)) {
+      return part;
+    }
+    return prefix + part.replace(/[a-z]/ig, (ch) => {
+      let cc = ch.charCodeAt(0);
+      if (cc >= 97 && cc <= 122) {
+        const newChar = String.fromCodePoint(map.small[cc - 97]);
+        // duplicate "a", "e", "o" and "u" to emulate ~30% longer text
+        if (elongate && (cc === 97 || cc === 101 || cc === 111 || cc === 117)) {
+          return newChar + newChar;
+        }
+        return newChar;
+      }
+      if (cc >= 65 && cc <= 90) {
+        return String.fromCodePoint(map.caps[cc - 65]);
+      }
+      return ch;
+    }) + postfix;
+  });
+  return modified.join("");
+}
+
+const PSEUDO_STRATEGIES = {
+  "accented": transformString.bind(null, ACCENTED_MAP, true, "", ""),
+  "bidi": transformString.bind(null, FLIPPED_MAP, false, "\u202e", "\u202c"),
+};
+
+/**
+ * Generates a single FluentBundle by loading all resources
  * from the listed sources for a given locale.
  *
  * The function casts all error cases into a Promise that resolves with
@@ -253,36 +520,42 @@ const MSG_CONTEXT_OPTIONS = {
  * This allows the caller to be an async generator without using
  * try/catch clauses.
  *
+ * Notice: Any changes to this method should be copied
+ * to the `generateResourceSetSync` equivalent below.
+ *
  * @param {String} locale
  * @param {Array} sourcesOrder
  * @param {Array} resourceIds
- * @returns {Promise<MessageContext>}
+ * @returns {Promise<FluentBundle>}
  */
-function generateContext(locale, sourcesOrder, resourceIds) {
-  const ctxId = generateContextID(locale, sourcesOrder, resourceIds);
-  if (L10nRegistry.ctxCache.has(ctxId)) {
-    return L10nRegistry.ctxCache.get(ctxId);
-  }
+function generateResourceSet(locale, sourcesOrder, resourceIds) {
+  return Promise.all(resourceIds.map((resourceId, i) => {
+    const source = L10nRegistry.sources.get(sourcesOrder[i]);
+    if (!source) {
+      return false;
+    }
+    return source.fetchFile(locale, resourceId);
+  }));
+}
 
-  const fetchPromises = resourceIds.map((resourceId, i) => {
-    return L10nRegistry.sources.get(sourcesOrder[i]).fetchFile(locale, resourceId);
+/**
+ * This is a synchronous version of the `generateResourceSet`
+ * method and should stay completely in sync with it at all
+ * times except of the async/await changes.
+ *
+ * @param {String} locale
+ * @param {Array} sourcesOrder
+ * @param {Array} resourceIds
+ * @returns {FluentBundle}
+ */
+function generateResourceSetSync(locale, sourcesOrder, resourceIds) {
+  return resourceIds.map((resourceId, i) => {
+    const source = L10nRegistry.sources.get(sourcesOrder[i]);
+    if (!source) {
+      return false;
+    }
+    return source.fetchFile(locale, resourceId, {sync: true});
   });
-
-  const ctxPromise = Promise.all(fetchPromises).then(
-    dataSets => {
-      const ctx = new MessageContext(locale, MSG_CONTEXT_OPTIONS);
-      for (const data of dataSets) {
-        if (data === null) {
-          return null;
-        }
-        ctx.addMessages(data);
-      }
-      return ctx;
-    },
-    () => null
-  );
-  L10nRegistry.ctxCache.set(ctxId, ctxPromise);
-  return ctxPromise;
 }
 
 /**
@@ -299,7 +572,7 @@ class FileSource {
    * @param {Array<string>}  locales
    * @param {string}         prePath
    *
-   * @returns {IndexedFileSource}
+   * @returns {FileSource}
    */
   constructor(name, locales, prePath) {
     this.name = name;
@@ -351,30 +624,45 @@ class FileSource {
     return true;
   }
 
-  fetchFile(locale, path) {
+  fetchFile(locale, path, options = {sync: false}) {
     if (!this.locales.includes(locale)) {
-      return Promise.reject(`The source has no resources for locale "${locale}"`);
+      return false;
     }
 
     const fullPath = this.getPath(locale, path);
 
     if (this.cache.hasOwnProperty(fullPath)) {
       if (this.cache[fullPath] === false) {
-        return Promise.reject(`The source has no resources for path "${fullPath}"`);
+        return false;
       }
-      if (this.cache[fullPath].then) {
+      // `true` means that the file is indexed, but hasn't
+      // been fetched yet.
+      if (this.cache[fullPath] !== true) {
         return this.cache[fullPath];
       }
     } else if (this.indexed) {
-        return Promise.reject(`The source has no resources for path "${fullPath}"`);
+      return false;
+    }
+    if (options.sync) {
+      let data = L10nRegistry.loadSync(fullPath);
+
+      if (data === false) {
+        this.cache[fullPath] = false;
+      } else {
+        this.cache[fullPath] = FluentResource.fromString(data);
       }
+
+      return this.cache[fullPath];
+    }
+
+    // async
     return this.cache[fullPath] = L10nRegistry.load(fullPath).then(
       data => {
-        return this.cache[fullPath] = data;
+        return this.cache[fullPath] = FluentResource.fromString(data);
       },
       err => {
         this.cache[fullPath] = false;
-        return Promise.reject(err);
+        return false;
       }
     );
   }
@@ -405,6 +693,8 @@ class IndexedFileSource extends FileSource {
   }
 }
 
+this.L10nRegistry = new L10nRegistryService();
+
 /**
  * The low level wrapper around Fetch API. It unifies the error scenarios to
  * always produce a promise rejection.
@@ -415,7 +705,7 @@ class IndexedFileSource extends FileSource {
  *
  * @returns {Promise<string>}
  */
-L10nRegistry.load = function(url) {
+this.L10nRegistry.load = function(url) {
   return fetch(url).then(response => {
     if (!response.ok) {
       return Promise.reject(response.statusText);
@@ -424,7 +714,28 @@ L10nRegistry.load = function(url) {
   });
 };
 
-this.L10nRegistry = L10nRegistry;
+/**
+ * This is a synchronous version of the `load`
+ * function and should stay completely in sync with it at all
+ * times except of the async/await changes.
+ *
+ * Notice: Any changes to this method should be copied
+ * to the `generateResourceSetSync` equivalent below.
+ *
+ * @param {string} url
+ *
+ * @returns {string}
+ */
+this.L10nRegistry.loadSync = function(uri) {
+  try {
+    let url = Services.io.newURI(uri);
+    let data = Cu.readUTF8URI(url);
+    return data;
+  } catch (e) {
+    return false;
+  }
+};
+
 this.FileSource = FileSource;
 this.IndexedFileSource = IndexedFileSource;
 

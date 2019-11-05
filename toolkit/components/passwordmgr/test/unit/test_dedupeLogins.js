@@ -4,8 +4,6 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/LoginHelper.jsm");
-
 const DOMAIN1_HTTP_TO_HTTP_U1_P1 = TestData.formLogin({
   timePasswordChanged: 3000,
   timeLastUsed: 2000,
@@ -37,7 +35,6 @@ const DOMAIN1_HTTP_AUTH = TestData.authLogin({
 const DOMAIN1_HTTPS_AUTH = TestData.authLogin({
   hostname: "https://www3.example.com",
 });
-
 
 add_task(function test_dedupeLogins() {
   // [description, expectedOutput, dedupe arg. 0, dedupe arg 1, ...]
@@ -118,12 +115,17 @@ add_task(function test_dedupeLogins() {
   }
 });
 
-
 add_task(async function test_dedupeLogins_resolveBy() {
-  Assert.ok(DOMAIN1_HTTP_TO_HTTP_U1_P1.timeLastUsed > DOMAIN1_HTTPS_TO_HTTPS_U1_P1.timeLastUsed,
-            "Sanity check timeLastUsed difference");
-  Assert.ok(DOMAIN1_HTTP_TO_HTTP_U1_P1.timePasswordChanged < DOMAIN1_HTTPS_TO_HTTPS_U1_P1.timePasswordChanged,
-            "Sanity check timePasswordChanged difference");
+  Assert.ok(
+    DOMAIN1_HTTP_TO_HTTP_U1_P1.timeLastUsed >
+      DOMAIN1_HTTPS_TO_HTTPS_U1_P1.timeLastUsed,
+    "Sanity check timeLastUsed difference"
+  );
+  Assert.ok(
+    DOMAIN1_HTTP_TO_HTTP_U1_P1.timePasswordChanged <
+      DOMAIN1_HTTPS_TO_HTTPS_U1_P1.timePasswordChanged,
+    "Sanity check timePasswordChanged difference"
+  );
 
   let testcases = [
     [
@@ -245,7 +247,6 @@ add_task(async function test_dedupeLogins_resolveBy() {
       Assert.strictEqual(actual[i], login, `Check index ${i}`);
     }
   }
-
 });
 
 add_task(async function test_dedupeLogins_preferredOriginMissing() {
@@ -277,8 +278,12 @@ add_task(async function test_dedupeLogins_preferredOriginMissing() {
   for (let tc of testcases) {
     let description = tc.shift();
     let expectedException = tc.shift();
-    Assert.throws(() => {
-      LoginHelper.dedupeLogins(...tc);
-    }, expectedException, `Check: ${description}`);
+    Assert.throws(
+      () => {
+        LoginHelper.dedupeLogins(...tc);
+      },
+      expectedException,
+      `Check: ${description}`
+    );
   }
 });

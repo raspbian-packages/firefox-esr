@@ -18,8 +18,8 @@ const double HTMLProgressElement::kDefaultValue = 0.0;
 const double HTMLProgressElement::kDefaultMax = 1.0;
 
 HTMLProgressElement::HTMLProgressElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {
   // We start out indeterminate
   AddStatesSilently(NS_EVENT_STATE_INDETERMINATE);
 }
@@ -54,7 +54,7 @@ bool HTMLProgressElement::ParseAttribute(int32_t aNamespaceID,
 }
 
 double HTMLProgressElement::Value() const {
-  const nsAttrValue* attrValue = mAttrsAndChildren.GetAttr(nsGkAtoms::value);
+  const nsAttrValue* attrValue = mAttrs.GetAttr(nsGkAtoms::value);
   if (!attrValue || attrValue->Type() != nsAttrValue::eDoubleValue ||
       attrValue->GetDoubleValue() < 0.0) {
     return kDefaultValue;
@@ -64,7 +64,7 @@ double HTMLProgressElement::Value() const {
 }
 
 double HTMLProgressElement::Max() const {
-  const nsAttrValue* attrMax = mAttrsAndChildren.GetAttr(nsGkAtoms::max);
+  const nsAttrValue* attrMax = mAttrs.GetAttr(nsGkAtoms::max);
   if (!attrMax || attrMax->Type() != nsAttrValue::eDoubleValue ||
       attrMax->GetDoubleValue() <= 0.0) {
     return kDefaultMax;
@@ -82,13 +82,13 @@ double HTMLProgressElement::Position() const {
 }
 
 bool HTMLProgressElement::IsIndeterminate() const {
-  const nsAttrValue* attrValue = mAttrsAndChildren.GetAttr(nsGkAtoms::value);
+  const nsAttrValue* attrValue = mAttrs.GetAttr(nsGkAtoms::value);
   return !attrValue || attrValue->Type() != nsAttrValue::eDoubleValue;
 }
 
 JSObject* HTMLProgressElement::WrapNode(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return HTMLProgressElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLProgressElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

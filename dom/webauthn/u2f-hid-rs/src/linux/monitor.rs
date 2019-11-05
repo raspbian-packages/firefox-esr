@@ -12,7 +12,7 @@ use std::io;
 use std::os::unix::io::AsRawFd;
 use std::sync::Arc;
 
-const UDEV_SUBSYSTEM: &'static str = "hidraw";
+const UDEV_SUBSYSTEM: &str = "hidraw";
 const POLLIN: c_short = 0x0001;
 const POLL_TIMEOUT: c_int = 100;
 
@@ -65,20 +65,18 @@ where
 
         // Start listening for new devices.
         let mut socket = monitor.listen()?;
-        let mut fds = vec![
-            ::libc::pollfd {
-                fd: socket.as_raw_fd(),
-                events: POLLIN,
-                revents: 0,
-            },
-        ];
+        let mut fds = vec![::libc::pollfd {
+            fd: socket.as_raw_fd(),
+            events: POLLIN,
+            revents: 0,
+        }];
 
         while alive() {
             // Wait for new events, break on failure.
             poll(&mut fds)?;
 
             if let Some(event) = socket.receive_event() {
-                self.process_event(event);
+                self.process_event(&event);
             }
         }
 
@@ -88,7 +86,7 @@ where
         Ok(())
     }
 
-    fn process_event(&mut self, event: libudev::Event) {
+    fn process_event(&mut self, event: &libudev::Event) {
         let path = event
             .device()
             .devnode()
@@ -99,7 +97,7 @@ where
                 self.add_device(path);
             }
             (EventType::Remove, Some(path)) => {
-                self.remove_device(path);
+                self.remove_device(&path);
             }
             _ => { /* ignore other types and failures */ }
         }
@@ -120,8 +118,8 @@ where
         }
     }
 
-    fn remove_device(&mut self, path: OsString) {
-        if let Some(runloop) = self.runloops.remove(&path) {
+    fn remove_device(&mut self, path: &OsString) {
+        if let Some(runloop) = self.runloops.remove(path) {
             runloop.cancel();
         }
     }
@@ -129,7 +127,7 @@ where
     fn remove_all_devices(&mut self) {
         while !self.runloops.is_empty() {
             let path = self.runloops.keys().next().unwrap().clone();
-            self.remove_device(path);
+            self.remove_device(&path);
         }
     }
 }

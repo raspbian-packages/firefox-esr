@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/dom/WheelEvent.h"
 #include "mozilla/MouseEvents.h"
 #include "prtime.h"
@@ -24,14 +25,15 @@ WheelEvent::WheelEvent(EventTarget* aOwner, nsPresContext* aPresContext,
     // device pixels.  However, JS contents need the delta values in CSS pixels.
     // We should store the value of mAppUnitsPerDevPixel here because
     // it might be changed by changing zoom or something.
-    if (aWheelEvent->mDeltaMode == nsIDOMWheelEvent::DOM_DELTA_PIXEL) {
+    if (aWheelEvent->mDeltaMode == WheelEvent_Binding::DOM_DELTA_PIXEL) {
       mAppUnitsPerDevPixel = aPresContext->AppUnitsPerDevPixel();
     }
   } else {
     mEventIsInternal = true;
     mEvent->mTime = PR_Now();
     mEvent->mRefPoint = LayoutDeviceIntPoint(0, 0);
-    mEvent->AsWheelEvent()->inputSource = nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN;
+    mEvent->AsWheelEvent()->mInputSource =
+        MouseEvent_Binding::MOZ_SOURCE_UNKNOWN;
   }
 }
 
@@ -59,7 +61,7 @@ double WheelEvent::DeltaX() {
     return mEvent->AsWheelEvent()->mDeltaX;
   }
   return mEvent->AsWheelEvent()->mDeltaX * mAppUnitsPerDevPixel /
-         nsPresContext::AppUnitsPerCSSPixel();
+         AppUnitsPerCSSPixel();
 }
 
 double WheelEvent::DeltaY() {
@@ -67,7 +69,7 @@ double WheelEvent::DeltaY() {
     return mEvent->AsWheelEvent()->mDeltaY;
   }
   return mEvent->AsWheelEvent()->mDeltaY * mAppUnitsPerDevPixel /
-         nsPresContext::AppUnitsPerCSSPixel();
+         AppUnitsPerCSSPixel();
 }
 
 double WheelEvent::DeltaZ() {
@@ -75,7 +77,7 @@ double WheelEvent::DeltaZ() {
     return mEvent->AsWheelEvent()->mDeltaZ;
   }
   return mEvent->AsWheelEvent()->mDeltaZ * mAppUnitsPerDevPixel /
-         nsPresContext::AppUnitsPerCSSPixel();
+         AppUnitsPerCSSPixel();
 }
 
 uint32_t WheelEvent::DeltaMode() { return mEvent->AsWheelEvent()->mDeltaMode; }

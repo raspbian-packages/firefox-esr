@@ -41,6 +41,7 @@ DIRS += [
     'gmp-plugin-openh264',
     'imagecapture',
     'ipc',
+    'mediacapabilities',
     'mediasink',
     'mediasource',
     'mp3',
@@ -80,6 +81,7 @@ if CONFIG['MOZ_WEBRTC']:
 
 XPIDL_SOURCES += [
     'nsIAudioDeviceInfo.idl',
+    'nsIAutoplay.idl',
     'nsIDOMNavigatorUserMedia.idl',
     'nsIMediaManager.idl',
 ]
@@ -89,10 +91,13 @@ XPIDL_MODULE = 'dom_media'
 EXPORTS += [
     'ADTSDecoder.h',
     'ADTSDemuxer.h',
+    'AsyncLogger.h',
     'AudioBufferUtils.h',
     'AudioChannelFormat.h',
     'AudioCompactor.h',
+    'AudioConfig.h',
     'AudioConverter.h',
+    'AudioDeviceInfo.h',
     'AudioMixer.h',
     'AudioPacketizer.h',
     'AudioSampleFormat.h',
@@ -102,6 +107,7 @@ EXPORTS += [
     'BackgroundVideoDecodingPermissionObserver.h',
     'Benchmark.h',
     'BitReader.h',
+    'BitWriter.h',
     'BufferMediaResource.h',
     'BufferReader.h',
     'ByteWriter.h',
@@ -109,10 +115,11 @@ EXPORTS += [
     'CubebUtils.h',
     'DecoderTraits.h',
     'DOMMediaStream.h',
+    'DriftCompensation.h',
     'FileBlockCache.h',
     'FrameStatistics.h',
+    'ImageToI420.h',
     'Intervals.h',
-    'Latency.h',
     'MediaCache.h',
     'MediaContainerType.h',
     'MediaData.h',
@@ -125,7 +132,6 @@ EXPORTS += [
     'MediaInfo.h',
     'MediaMetadataManager.h',
     'MediaMIMETypes.h',
-    'MediaPrefs.h',
     'MediaPromiseDefs.h',
     'MediaQueue.h',
     'MediaRecorder.h',
@@ -138,7 +144,6 @@ EXPORTS += [
     'MediaStreamGraph.h',
     'MediaStreamListener.h',
     'MediaStreamTypes.h',
-    'MediaStreamVideoSink.h',
     'MediaTimer.h',
     'MediaTrack.h',
     'MediaTrackList.h',
@@ -153,6 +158,7 @@ EXPORTS += [
     'StreamTracks.h',
     'ThreadPoolCOMListener.h',
     'TimeUnits.h',
+    'Tracing.h',
     'TrackID.h',
     'TrackUnionStream.h',
     'VideoFrameContainer.h',
@@ -169,6 +175,7 @@ EXPORTS.mozilla += [
 
 EXPORTS.mozilla.media.webrtc += [
     'webrtc/WebrtcGlobal.h',
+    'webrtc/WebrtcIPCTraits.h',
 ]
 
 if not CONFIG['MOZ_WEBRTC']:
@@ -177,7 +184,7 @@ if not CONFIG['MOZ_WEBRTC']:
   ]
 
 IPDL_SOURCES += [
-    'webrtc/PWebrtcGlobal.ipdl'
+    'webrtc/PWebrtcGlobal.ipdl',
 ]
 
 EXPORTS.mozilla.dom += [
@@ -200,6 +207,8 @@ EXPORTS.mozilla.dom += [
     'VideoStreamTrack.h',
     'VideoTrack.h',
     'VideoTrackList.h',
+    'webrtc/MediaTransportChild.h',
+    'webrtc/MediaTransportParent.h',
 ]
 
 UNIFIED_SOURCES += [
@@ -208,6 +217,7 @@ UNIFIED_SOURCES += [
     'AudioCaptureStream.cpp',
     'AudioChannelFormat.cpp',
     'AudioCompactor.cpp',
+    'AudioConfig.cpp',
     'AudioConverter.cpp',
     'AudioDeviceInfo.cpp',
     'AudioSegment.cpp',
@@ -220,6 +230,7 @@ UNIFIED_SOURCES += [
     'BaseMediaResource.cpp',
     'Benchmark.cpp',
     'BitReader.cpp',
+    'BitWriter.cpp',
     'CanvasCaptureMediaStream.cpp',
     'ChannelMediaDecoder.cpp',
     'ChannelMediaResource.cpp',
@@ -229,7 +240,8 @@ UNIFIED_SOURCES += [
     'FileMediaResource.cpp',
     'GetUserMediaRequest.cpp',
     'GraphDriver.cpp',
-    'Latency.cpp',
+    'GraphRunner.cpp',
+    'ImageToI420.cpp',
     'MediaCache.cpp',
     'MediaContainerType.cpp',
     'MediaData.cpp',
@@ -241,7 +253,6 @@ UNIFIED_SOURCES += [
     'MediaInfo.cpp',
     'MediaManager.cpp',
     'MediaMIMETypes.cpp',
-    'MediaPrefs.cpp',
     'MediaRecorder.cpp',
     'MediaResource.cpp',
     'MediaShutdownManager.cpp',
@@ -249,7 +260,6 @@ UNIFIED_SOURCES += [
     'MediaStreamGraph.cpp',
     'MediaStreamListener.cpp',
     'MediaStreamTrack.cpp',
-    'MediaStreamVideoSink.cpp',
     'MediaTimer.cpp',
     'MediaTrack.cpp',
     'MediaTrackList.cpp',
@@ -263,6 +273,7 @@ UNIFIED_SOURCES += [
     'TextTrackCueList.cpp',
     'TextTrackList.cpp',
     'TextTrackRegion.cpp',
+    'Tracing.cpp',
     'TrackUnionStream.cpp',
     'VideoFrameContainer.cpp',
     'VideoPlaybackQuality.cpp',
@@ -296,13 +307,16 @@ SOURCES += [
 
 # Some codec-related code uses multi-character constants, which GCC and clang
 # warn about. Suppress turning this warning into an error.
-if CONFIG['CC_TYPE'] in ('clang', 'clang-cl', 'gcc'):
-  SOURCES['DecoderTraits.cpp'].flags += ['-Wno-error=multichar']
+SOURCES['DecoderTraits.cpp'].flags += ['-Wno-error=multichar']
 
-EXTRA_COMPONENTS += [
-    'PeerConnection.js',
-    'PeerConnection.manifest',
-]
+if CONFIG['MOZ_WEBRTC']:
+    XPCOM_MANIFESTS += [
+        'components.conf',
+    ]
+
+    EXTRA_JS_MODULES.media += [
+        'PeerConnection.jsm',
+    ]
 
 EXTRA_JS_MODULES.media += [
     'IdpSandbox.jsm',
@@ -316,6 +330,7 @@ LOCAL_INCLUDES += [
     '/dom/base',
     '/layout/generic',
     '/layout/xul',
+    '/media/libyuv/libyuv/include',
     '/netwerk/base',
 ]
 
@@ -323,9 +338,11 @@ if CONFIG['MOZ_WEBRTC']:
     LOCAL_INCLUDES += [
         '/media/webrtc/signaling/src/common',
         '/media/webrtc/trunk',
+        '/media/webrtc/trunk/webrtc',
     ]
 
 DEFINES['MOZILLA_INTERNAL_API'] = True
+DEFINES['TRACING'] = True
 
 if CONFIG['MOZ_ANDROID_HLS_SUPPORT']:
     DEFINES['MOZ_ANDROID_HLS_SUPPORT'] = True
@@ -342,3 +359,7 @@ if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
     ]
 
 FINAL_LIBRARY = 'xul'
+
+MARIONETTE_DOM_MEDIA_MANIFESTS += [
+ 'test/marionette/manifest.ini'
+]

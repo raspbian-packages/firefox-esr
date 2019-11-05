@@ -14,9 +14,9 @@ include URIParams;
 include IPCServiceWorkerDescriptor;
 include IPCStream;
 include PBackgroundSharedTypes;
+include DOMTypes;
 
 using mozilla::OriginAttributes from "mozilla/ipc/BackgroundUtils.h";
-using struct mozilla::void_t from "ipc/IPCMessageUtils.h";
 using RequestHeaderTuples from "mozilla/net/PHttpChannelParams.h";
 using struct nsHttpAtom from "nsHttp.h";
 using class mozilla::net::nsHttpResponseHead from "nsHttpResponseHead.h";
@@ -26,43 +26,75 @@ namespace mozilla {
 namespace net {
 
 //-----------------------------------------------------------------------------
+// CookieSettings IPDL structs
+//-----------------------------------------------------------------------------
+
+struct CookiePermissionData
+{
+  PrincipalInfo principalInfo;
+  uint32_t cookiePermission;
+};
+
+struct CookieSettingsArgs
+{
+  // Copy of the cookie behavior and permissions for the top-level document.
+  uint32_t cookieBehavior;
+  CookiePermissionData[] cookiePermissions;
+  bool isFixed;
+};
+
+//-----------------------------------------------------------------------------
+// Preferrer alternative data type
+//-----------------------------------------------------------------------------
+
+struct PreferredAlternativeDataTypeParams
+{
+  nsCString type;
+  nsCString contentType;
+  bool deliverAltData;
+};
+
+//-----------------------------------------------------------------------------
 // LoadInfo IPDL structs
 //-----------------------------------------------------------------------------
 
 struct RedirectHistoryEntryInfo
 {
   PrincipalInfo       principalInfo;
-  OptionalURIParams   referrerUri;
+  URIParams?          referrerUri;
   nsCString           remoteAddress;
 };
 
 struct LoadInfoArgs
 {
-  OptionalPrincipalInfo       requestingPrincipalInfo;
+  PrincipalInfo?              requestingPrincipalInfo;
   PrincipalInfo               triggeringPrincipalInfo;
-  OptionalPrincipalInfo       principalToInheritInfo;
-  OptionalPrincipalInfo       sandboxedLoadingPrincipalInfo;
-  OptionalURIParams           resultPrincipalURI;
+  PrincipalInfo?              principalToInheritInfo;
+  PrincipalInfo?              sandboxedLoadingPrincipalInfo;
+  PrincipalInfo?              topLevelPrincipalInfo;
+  PrincipalInfo?              topLevelStorageAreaPrincipalInfo;
+  URIParams?                  resultPrincipalURI;
   uint32_t                    securityFlags;
   uint32_t                    contentPolicyType;
   uint32_t                    tainting;
   bool                        upgradeInsecureRequests;
   bool                        browserUpgradeInsecureRequests;
-  bool                        verifySignedContent;
-  bool                        enforceSRI;
-  bool                        allowDocumentToBeAgnosticToCSP;
+  bool                        browserWouldUpgradeInsecureRequests;
   bool                        forceAllowDataURI;
   bool                        allowInsecureRedirectToDataURI;
+  bool                        skipContentPolicyCheckForWebRequest;
   bool                        forceInheritPrincipalDropped;
   uint64_t                    innerWindowID;
   uint64_t                    outerWindowID;
   uint64_t                    parentOuterWindowID;
   uint64_t                    topOuterWindowID;
   uint64_t                    frameOuterWindowID;
-  bool                        enforceSecurity;
+  uint64_t                    browsingContextID;
+  uint64_t                    frameBrowsingContextID;
   bool                        initialSecurityCheckDone;
   bool                        isInThirdPartyContext;
   bool                        isDocshellReload;
+  bool                        sendCSPViolationEvents;
   OriginAttributes            originAttributes;
   RedirectHistoryEntryInfo[]  redirectChainIncludingInternalRedirects;
   RedirectHistoryEntryInfo[]  redirectChain;
@@ -76,9 +108,9 @@ struct LoadInfoArgs
 
   /**
    * ClientInfo structure representing the window or worker that triggered
-   * this network request.  May be void_t if its a system internal request.
+   * this network request.  May be Nothing if its a system internal request.
    */
-  OptionalIPCClientInfo       clientInfo;
+  IPCClientInfo?              clientInfo;
 
   /**
    * Non-subresource requests will result in the creation of a window or
@@ -87,31 +119,27 @@ struct LoadInfoArgs
    * about:blank window that will be re-used while a reserved ClientInfo
    * represents a to-be-newly-created window/worker.
    */
-  OptionalIPCClientInfo       reservedClientInfo;
-  OptionalIPCClientInfo       initialClientInfo;
+  IPCClientInfo?              reservedClientInfo;
+  IPCClientInfo?              initialClientInfo;
 
   /**
    * Subresource loads may have a controller set based on their owning
    * window/worker client.  We must send this across IPC to support
    * performing interception in the parent.
    */
-  OptionalIPCServiceWorkerDescriptor controller;
+  IPCServiceWorkerDescriptor? controller;
 
   nsCString[]                 corsUnsafeHeaders;
   bool                        forcePreflight;
   bool                        isPreflight;
   bool                        loadTriggeredFromExternal;
   bool                        serviceWorkerTaintingSynthesized;
+  bool                        documentHasUserInteracted;
+  bool                        documentHasLoaded;
+  nsString                    cspNonce;
   bool                        isFromProcessingFrameAttributes;
-};
-
-/**
- * Not every channel necessarily has a loadInfo attached.
- */
-union OptionalLoadInfoArgs
-{
-  void_t;
-  LoadInfoArgs;
+  CookieSettingsArgs cookieSettings;
+  uint32_t                    requestBlockingReason;
 };
 
 /**
@@ -128,30 +156,56 @@ struct ParentLoadInfoForwarderArgs
   // checks can pass.
   bool allowInsecureRedirectToDataURI;
 
+  // The ServiceWorker controller that may be set in the parent when
+  // interception occurs.
+  IPCServiceWorkerDescriptor? controller;
+
+  // The service worker may synthesize a Response with a particular
+  // tainting value.
+  uint32_t tainting;
+
+  // We must also note that the tainting value was explicitly set
+  // by the service worker.
+  bool serviceWorkerTaintingSynthesized;
+
+  bool documentHasUserInteracted;
+  bool documentHasLoaded;
+
+  CookieSettingsArgs? cookieSettings;
+
+  uint32_t requestBlockingReason;
+
   // IMPORTANT: when you add new properites here you must also update
   // LoadInfoToParentLoadInfoForwarder and MergeParentLoadInfoForwarder
   // in BackgroundUtils.cpp/.h!
+};
+
+/**
+ * This structure is used to carry selected properties of a LoadInfo
+ * object to the parent process that might have changed in the child
+ * during a redirect.  We don't want to use LoadInfoArgs for that since
+ * it's too huge and we only care about small subpart of properties
+ * anyway.
+ */
+struct ChildLoadInfoForwarderArgs
+{
+  // The reserved and initial ClientInfo values may change during a
+  // redirect if the new channel is cross-origin to the old channel.
+  IPCClientInfo? reservedClientInfo;
+  IPCClientInfo? initialClientInfo;
+
+  // The ServiceWorker controller may be cleared in the child during
+  // a redirect.
+  IPCServiceWorkerDescriptor? controller;
 };
 
 //-----------------------------------------------------------------------------
 // HTTP IPDL structs
 //-----------------------------------------------------------------------------
 
-union OptionalHttpResponseHead
-{
-  void_t;
-  nsHttpResponseHead;
-};
-
 struct CorsPreflightArgs
 {
   nsCString[]   unsafeHeaders;
-};
-
-union OptionalCorsPreflightArgs
-{
-  void_t;
-  CorsPreflightArgs;
 };
 
 struct HttpChannelOpenArgs
@@ -160,16 +214,18 @@ struct HttpChannelOpenArgs
   // - TODO: bug 571161: unclear if any HTTP channel clients ever
   // set originalURI != uri (about:credits?); also not clear if
   // chrome channel would ever need to know.  Get rid of next arg?
-  OptionalURIParams           original;
-  OptionalURIParams           doc;
-  OptionalURIParams           referrer;
+  URIParams?                  original;
+  URIParams?                  doc;
+  nsIReferrerInfo             referrerInfo;
+  URIParams?                  originalReferrer;
+  uint32_t                    originalReferrerPolicy;
   uint32_t                    referrerPolicy;
-  OptionalURIParams           apiRedirectTo;
-  OptionalURIParams           topWindowURI;
+  URIParams?                  apiRedirectTo;
+  URIParams?                  topWindowURI;
   uint32_t                    loadFlags;
   RequestHeaderTuples         requestHeaders;
   nsCString                   requestMethod;
-  OptionalIPCStream           uploadStream;
+  IPCStream?                  uploadStream;
   bool                        uploadStreamHasHeaders;
   int16_t                     priority;
   uint32_t                    classOfService;
@@ -185,12 +241,12 @@ struct HttpChannelOpenArgs
   bool                        allowAltSvc;
   bool                        beConservative;
   uint32_t                    tlsFlags;
-  OptionalLoadInfoArgs        loadInfo;
-  OptionalHttpResponseHead    synthesizedResponseHead;
+  LoadInfoArgs?               loadInfo;
+  nsHttpResponseHead?         synthesizedResponseHead;
   nsCString                   synthesizedSecurityInfoSerialization;
   uint32_t                    cacheKey;
   uint64_t                    requestContextID;
-  OptionalCorsPreflightArgs   preflightArgs;
+  CorsPreflightArgs?          preflightArgs;
   uint32_t                    initialRwin;
   bool                        blockAuthPrompt;
   bool                        suspendAfterSynthesizeResponse;
@@ -199,8 +255,9 @@ struct HttpChannelOpenArgs
   uint32_t                    corsMode;
   uint32_t                    redirectMode;
   uint64_t                    channelId;
+  nsString                    integrityMetadata;
   uint64_t                    contentWindowId;
-  nsCString                   preferredAlternativeType;
+  PreferredAlternativeDataTypeParams[] preferredAlternativeTypes;
   uint64_t                    topLevelOuterContentWindowId;
   TimeStamp                   launchServiceWorkerStart;
   TimeStamp                   launchServiceWorkerEnd;
@@ -209,6 +266,7 @@ struct HttpChannelOpenArgs
   TimeStamp                   handleFetchEventStart;
   TimeStamp                   handleFetchEventEnd;
   bool                        forceMainDocumentChannel;
+  TimeStamp                   navigationStartTimeStamp;
 };
 
 struct HttpChannelConnectArgs
@@ -232,8 +290,9 @@ struct FTPChannelOpenArgs
   URIParams                 uri;
   uint64_t                  startPos;
   nsCString                 entityID;
-  OptionalIPCStream         uploadStream;
-  OptionalLoadInfoArgs      loadInfo;
+  IPCStream?                uploadStream;
+  LoadInfoArgs?             loadInfo;
+  uint32_t                  loadFlags;
 };
 
 struct FTPChannelConnectArgs

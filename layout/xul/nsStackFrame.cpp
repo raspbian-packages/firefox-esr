@@ -12,24 +12,27 @@
 //
 
 #include "nsStackFrame.h"
-#include "nsStyleContext.h"
+
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "nsIContent.h"
 #include "nsCOMPtr.h"
 #include "nsHTMLParts.h"
-#include "nsIPresShell.h"
 #include "nsCSSRendering.h"
 #include "nsBoxLayoutState.h"
 #include "nsStackLayout.h"
 #include "nsDisplayList.h"
 
-nsIFrame* NS_NewStackFrame(nsIPresShell* aPresShell, nsStyleContext* aContext) {
-  return new (aPresShell) nsStackFrame(aContext);
+using namespace mozilla;
+
+nsIFrame* NS_NewStackFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsStackFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsStackFrame)
 
-nsStackFrame::nsStackFrame(nsStyleContext* aContext)
-    : nsBoxFrame(aContext, kClassID) {
+nsStackFrame::nsStackFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+    : nsBoxFrame(aStyle, aPresContext, kClassID) {
   nsCOMPtr<nsBoxLayout> layout;
   NS_NewStackLayout(layout);
   SetXULLayoutManager(layout);

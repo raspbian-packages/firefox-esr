@@ -46,21 +46,18 @@ class ChannelSplitterNodeEngine final : public AudioNodeEngine {
 
 ChannelSplitterNode::ChannelSplitterNode(AudioContext* aContext,
                                          uint16_t aOutputCount)
-    : AudioNode(aContext, 2, ChannelCountMode::Max,
-                ChannelInterpretation::Speakers),
+    : AudioNode(aContext, aOutputCount, ChannelCountMode::Explicit,
+                ChannelInterpretation::Discrete),
       mOutputCount(aOutputCount) {
   mStream = AudioNodeStream::Create(
       aContext, new ChannelSplitterNodeEngine(this),
       AudioNodeStream::NO_STREAM_FLAGS, aContext->Graph());
 }
 
-/* static */ already_AddRefed<ChannelSplitterNode> ChannelSplitterNode::Create(
+/* static */
+already_AddRefed<ChannelSplitterNode> ChannelSplitterNode::Create(
     AudioContext& aAudioContext, const ChannelSplitterOptions& aOptions,
     ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
   if (aOptions.mNumberOfOutputs == 0 ||
       aOptions.mNumberOfOutputs > WebAudioUtils::MaxChannelCount) {
     aRv.Throw(NS_ERROR_DOM_INDEX_SIZE_ERR);
@@ -70,8 +67,24 @@ ChannelSplitterNode::ChannelSplitterNode(AudioContext* aContext,
   RefPtr<ChannelSplitterNode> audioNode =
       new ChannelSplitterNode(&aAudioContext, aOptions.mNumberOfOutputs);
 
-  audioNode->Initialize(aOptions, aRv);
-  if (NS_WARN_IF(aRv.Failed())) {
+  // Manually check that the other options are valid, this node has
+  // channelCount, channelCountMode and channelInterpretation constraints: they
+  // cannot be changed from the default.
+  if (aOptions.mChannelCount.WasPassed() &&
+      aOptions.mChannelCount.Value() != audioNode->ChannelCount()) {
+    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
+    return nullptr;
+  }
+  if (aOptions.mChannelInterpretation.WasPassed() &&
+      aOptions.mChannelInterpretation.Value() !=
+          audioNode->ChannelInterpretationValue()) {
+    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
+    return nullptr;
+  }
+  if (aOptions.mChannelCountMode.WasPassed() &&
+      aOptions.mChannelCountMode.Value() !=
+          audioNode->ChannelCountModeValue()) {
+    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
     return nullptr;
   }
 
@@ -80,7 +93,7 @@ ChannelSplitterNode::ChannelSplitterNode(AudioContext* aContext,
 
 JSObject* ChannelSplitterNode::WrapObject(JSContext* aCx,
                                           JS::Handle<JSObject*> aGivenProto) {
-  return ChannelSplitterNodeBinding::Wrap(aCx, this, aGivenProto);
+  return ChannelSplitterNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

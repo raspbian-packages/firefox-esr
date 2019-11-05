@@ -9,8 +9,11 @@
 
 "use strict";
 
-ChromeUtils.defineModuleGetter(this, "DownloadError",
-                               "resource://gre/modules/DownloadCore.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "DownloadError",
+  "resource://gre/modules/DownloadCore.jsm"
+);
 
 // Execution of common tests
 
@@ -22,11 +25,35 @@ Services.scriptloader.loadSubScript(NetUtil.newURI(scriptFile).spec);
 // Tests
 
 /**
+ * The download should fail early if the source and the target are the same.
+ */
+add_task(async function test_error_target_downloadingToSameFile() {
+  let targetFile = getTempFile(TEST_TARGET_FILE_NAME);
+  targetFile.create(Ci.nsIFile.NORMAL_FILE_TYPE, FileUtils.PERMS_FILE);
+
+  let download = await Downloads.createDownload({
+    source: NetUtil.newURI(targetFile),
+    target: targetFile,
+  });
+  await Assert.rejects(
+    download.start(),
+    ex => ex instanceof Downloads.Error && ex.becauseTargetFailed
+  );
+
+  Assert.ok(
+    await OS.File.exists(download.target.path),
+    "The file should not have been deleted."
+  );
+});
+
+/**
  * Tests the DownloadError object.
  */
 add_task(function test_DownloadError() {
-  let error = new DownloadError({ result: Cr.NS_ERROR_NOT_RESUMABLE,
-                                  message: "Not resumable."});
+  let error = new DownloadError({
+    result: Cr.NS_ERROR_NOT_RESUMABLE,
+    message: "Not resumable.",
+  });
   Assert.equal(error.result, Cr.NS_ERROR_NOT_RESUMABLE);
   Assert.equal(error.message, "Not resumable.");
   Assert.ok(!error.becauseSourceFailed);
@@ -34,7 +61,7 @@ add_task(function test_DownloadError() {
   Assert.ok(!error.becauseBlocked);
   Assert.ok(!error.becauseBlockedByParentalControls);
 
-  error = new DownloadError({ message: "Unknown error."});
+  error = new DownloadError({ message: "Unknown error." });
   Assert.equal(error.result, Cr.NS_ERROR_FAILURE);
   Assert.equal(error.message, "Unknown error.");
 
@@ -43,14 +70,18 @@ add_task(function test_DownloadError() {
   Assert.ok(error.message.indexOf("Exception") > 0);
 
   // becauseSourceFailed will be set, but not the unknown property.
-  error = new DownloadError({ message: "Unknown error.",
-                              becauseSourceFailed: true,
-                              becauseUnknown: true });
+  error = new DownloadError({
+    message: "Unknown error.",
+    becauseSourceFailed: true,
+    becauseUnknown: true,
+  });
   Assert.ok(error.becauseSourceFailed);
   Assert.equal(false, "becauseUnknown" in error);
 
-  error = new DownloadError({ result: Cr.NS_ERROR_MALFORMED_URI,
-                              inferCause: true });
+  error = new DownloadError({
+    result: Cr.NS_ERROR_MALFORMED_URI,
+    inferCause: true,
+  });
   Assert.equal(error.result, Cr.NS_ERROR_MALFORMED_URI);
   Assert.ok(error.becauseSourceFailed);
   Assert.ok(!error.becauseTargetFailed);
@@ -62,8 +93,10 @@ add_task(function test_DownloadError() {
   Assert.equal(error.result, Cr.NS_ERROR_MALFORMED_URI);
   Assert.ok(!error.becauseSourceFailed);
 
-  error = new DownloadError({ result: Cr.NS_ERROR_FILE_INVALID_PATH,
-                              inferCause: true });
+  error = new DownloadError({
+    result: Cr.NS_ERROR_FILE_INVALID_PATH,
+    inferCause: true,
+  });
   Assert.equal(error.result, Cr.NS_ERROR_FILE_INVALID_PATH);
   Assert.ok(!error.becauseSourceFailed);
   Assert.ok(error.becauseTargetFailed);

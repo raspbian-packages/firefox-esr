@@ -17,8 +17,8 @@ namespace dom {
 class HTMLParagraphElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLParagraphElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLParagraphElement,
@@ -32,8 +32,7 @@ class HTMLParagraphElement final : public nsGenericHTMLElement {
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL API
   void GetAlign(nsAString& aValue) { GetHTMLAttr(nsGkAtoms::align, aValue); }
@@ -49,7 +48,7 @@ class HTMLParagraphElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

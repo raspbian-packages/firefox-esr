@@ -10,44 +10,45 @@
 #include <stdio.h> /* for FILE* */
 #include "nsDebug.h"
 #include "nsTArray.h"
+#include "mozilla/FunctionTypeTraits.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/ReverseIterator.h"
 
 #if defined(DEBUG) || defined(MOZ_DUMP_PAINTING)
 // DEBUG_FRAME_DUMP enables nsIFrame::List and related methods.
 // You can also define this in a non-DEBUG build if you need frame dumps.
-#define DEBUG_FRAME_DUMP 1
+#  define DEBUG_FRAME_DUMP 1
 #endif
 
 class nsContainerFrame;
 class nsIContent;
 class nsIFrame;
-class nsIPresShell;
 class nsPresContext;
 
 namespace mozilla {
+class PresShell;
 namespace layout {
 class FrameChildList;
 enum FrameChildListID {
   // The individual concrete child lists.
-  kPrincipalList = 0x1,
-  kPopupList = 0x2,
-  kCaptionList = 0x4,
-  kColGroupList = 0x8,
-  kSelectPopupList = 0x10,
-  kAbsoluteList = 0x20,
-  kFixedList = 0x40,
-  kOverflowList = 0x80,
-  kOverflowContainersList = 0x100,
-  kExcessOverflowContainersList = 0x200,
-  kOverflowOutOfFlowList = 0x400,
-  kFloatList = 0x800,
-  kBulletList = 0x1000,
-  kPushedFloatsList = 0x2000,
-  kBackdropList = 0x4000,
+  kPrincipalList,
+  kPopupList,
+  kCaptionList,
+  kColGroupList,
+  kSelectPopupList,
+  kAbsoluteList,
+  kFixedList,
+  kOverflowList,
+  kOverflowContainersList,
+  kExcessOverflowContainersList,
+  kOverflowOutOfFlowList,
+  kFloatList,
+  kBulletList,
+  kPushedFloatsList,
+  kBackdropList,
   // A special alias for kPrincipalList that suppress the reflow request that
   // is normally done when manipulating child lists.
-  kNoReflowPrincipalList = 0x8000
+  kNoReflowPrincipalList,
 };
 
 // A helper class for nsIFrame::Destroy[From].  It's defined here because
@@ -56,13 +57,9 @@ struct PostFrameDestroyData {
   PostFrameDestroyData(const PostFrameDestroyData&) = delete;
   PostFrameDestroyData() = default;
 
-  AutoTArray<RefPtr<nsIContent>, 50> mAnonymousContent;
-  AutoTArray<RefPtr<nsIContent>, 50> mGeneratedContent;
+  AutoTArray<RefPtr<nsIContent>, 100> mAnonymousContent;
   void AddAnonymousContent(already_AddRefed<nsIContent>&& aContent) {
     mAnonymousContent.AppendElement(aContent);
-  }
-  void AddGeneratedContent(already_AddRefed<nsIContent>&& aContent) {
-    mGeneratedContent.AppendElement(aContent);
   }
 };
 }  // namespace layout
@@ -89,13 +86,13 @@ class nsFrameList {
   /**
    * Infallibly allocate a nsFrameList from the shell arena.
    */
-  void* operator new(size_t sz, nsIPresShell* aPresShell);
+  void* operator new(size_t sz, mozilla::PresShell* aPresShell);
 
   /**
    * Deallocate this list that was allocated from the shell arena.
    * The list is required to be empty.
    */
-  void Delete(nsIPresShell* aPresShell);
+  void Delete(mozilla::PresShell* aPresShell);
 
   /**
    * For each frame in this list: remove it from the list then call
@@ -116,7 +113,7 @@ class nsFrameList {
   void SetFrames(nsIFrame* aFrameList);
 
   void SetFrames(nsFrameList& aFrameList) {
-    NS_PRECONDITION(!mFirstChild, "Losing frames");
+    MOZ_ASSERT(!mFirstChild, "Losing frames");
 
     mFirstChild = aFrameList.FirstChild();
     mLastChild = aFrameList.LastChild();
@@ -224,6 +221,32 @@ class nsFrameList {
   class FrameLinkEnumerator;
 
   /**
+   * Split this list just before the first frame that matches aPredicate,
+   * and return a nsFrameList containing all the frames before it. The
+   * matched frame and all frames after it stay in this list. If no matched
+   * frame exists, all the frames are drained into the returned list, and
+   * this list ends up empty.
+   *
+   * aPredicate should be of this function signature: bool(nsIFrame*).
+   */
+  template <typename Predicate>
+  nsFrameList Split(Predicate&& aPredicate) {
+    static_assert(
+        std::is_same<
+            typename mozilla::FunctionTypeTraits<Predicate>::ReturnType,
+            bool>::value &&
+            mozilla::FunctionTypeTraits<Predicate>::arity == 1 &&
+            std::is_same<typename mozilla::FunctionTypeTraits<
+                             Predicate>::template ParameterType<0>,
+                         nsIFrame*>::value,
+        "aPredicate should be of this function signature: bool(nsIFrame*)");
+
+    FrameLinkEnumerator link(*this);
+    link.Find(aPredicate);
+    return ExtractHead(link);
+  }
+
+  /**
    * Split this frame list such that all the frames before the link pointed to
    * by aLink end up in the returned list, while the remaining frames stay in
    * this list.  After this call, aLink points to the beginning of this list.
@@ -248,12 +271,18 @@ class nsFrameList {
 
   bool NotEmpty() const { return nullptr != mFirstChild; }
 
+  /**
+   * Return true if aFrame is on this list.
+   * @note this method has O(n) time complexity over the length of the list
+   * XXXmats: ideally, we should make this function #ifdef DEBUG
+   */
   bool ContainsFrame(const nsIFrame* aFrame) const;
 
   /**
    * Get the number of frames in this list. Note that currently the
    * implementation has O(n) time complexity. Do not call it repeatedly in hot
    * code.
+   * XXXmats: ideally, we should make this function #ifdef DEBUG
    */
   int32_t GetLength() const;
 
@@ -385,7 +414,7 @@ class nsFrameList {
      * iterator that is at end!
      */
     nsIFrame* get() const {
-      NS_PRECONDITION(!AtEnd(), "Enumerator is at end");
+      MOZ_ASSERT(!AtEnd(), "Enumerator is at end");
       return mFrame;
     }
 
@@ -446,12 +475,25 @@ class nsFrameList {
     inline FrameLinkEnumerator(const nsFrameList& aList, nsIFrame* aPrevFrame);
 
     void operator=(const FrameLinkEnumerator& aOther) {
-      NS_PRECONDITION(&List() == &aOther.List(), "Different lists?");
+      MOZ_ASSERT(&List() == &aOther.List(), "Different lists?");
       mFrame = aOther.mFrame;
       mPrev = aOther.mPrev;
     }
 
     inline void Next();
+
+    /**
+     * Find the first frame from the current position that satisfies
+     * aPredicate, and stop at it. If no such frame exists, then this method
+     * advances to the end of the list.
+     *
+     * aPredicate should be of this function signature: bool(nsIFrame*).
+     *
+     * Note: Find() needs to see the definition of Next(), so put this
+     * definition in nsIFrame.h.
+     */
+    template <typename Predicate>
+    inline void Find(Predicate&& aPredicate);
 
     bool AtEnd() const { return Enumerator::AtEnd(); }
 

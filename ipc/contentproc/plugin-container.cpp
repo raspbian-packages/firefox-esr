@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,17 +9,17 @@
 #include "mozilla/Bootstrap.h"
 
 #ifdef XP_WIN
-#include <windows.h>
+#  include <windows.h>
 // we want a wmain entry point
-#include "nsWindowsWMain.cpp"
+#  include "nsWindowsWMain.cpp"
 #else
 // FIXME/cjones testing
-#include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #if defined(XP_WIN) && defined(MOZ_SANDBOX)
-#include "mozilla/sandboxing/SandboxInitialization.h"
-#include "mozilla/sandboxing/sandboxLogging.h"
+#  include "mozilla/sandboxing/SandboxInitialization.h"
+#  include "mozilla/sandboxing/sandboxLogging.h"
 #endif
 
 int content_process_main(mozilla::Bootstrap* bootstrap, int argc,
@@ -45,6 +45,13 @@ int content_process_main(mozilla::Bootstrap* bootstrap, int argc,
 #endif
 
   bootstrap->XRE_SetProcessType(argv[--argc]);
+
+#if defined(XP_WIN) && defined(MOZ_SANDBOX)
+  if (bootstrap->XRE_GetProcessType() == GeckoProcessType_RemoteSandboxBroker) {
+    childData.sandboxBrokerServices =
+        mozilla::sandboxing::GetInitializedBrokerServices();
+  }
+#endif
 
   nsresult rv = bootstrap->XRE_InitChildProcess(argc, argv, &childData);
   return NS_FAILED(rv);

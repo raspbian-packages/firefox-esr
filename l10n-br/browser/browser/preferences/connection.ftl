@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = DNS Proksi p'eo arveret SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Gweredekaat DNS dre HTTPS
+    .accesskey = G
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = DNS dre ziouer ({ $url })
+    .accesskey = D
+    .tooltiptext = Arverit an URL dre ziouer evit diskoulmañ an DNS war HTTPS
+connection-dns-over-https-url-resolver = Ober gant ar pourchaser
+    .accesskey = O
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (dre ziouer)
+    .tooltiptext = Ober gant an URL dre ziouer evit diskoulmañ an DNS war HTTPS
+connection-dns-over-https-url-custom =
+    .label = Personelaet
+    .accesskey = P
+    .tooltiptext = Enankit an URL a fell deoc'h implijout evit diskoulmañ HTTPS war DNS
+connection-dns-over-https-custom-label = Personelaet

@@ -7,6 +7,12 @@
 
 var gCategoryUtilities;
 
+// Not implemented yet on HTML about:addons (Bug 1552184), once supported
+// this test case will be included in the HTML about:addons test files.
+SpecialPowers.pushPrefEnv({
+  set: [["extensions.htmlaboutaddons.enabled", false]],
+});
+
 function test() {
   waitForExplicitFinish();
 
@@ -17,28 +23,36 @@ function end_test() {
   finish();
 }
 
-add_test(function() {
-  open_manager("addons://detail/foo", function(aManager) {
-    gCategoryUtilities = new CategoryUtilities(aManager);
-    is(gCategoryUtilities.selectedCategory, "discover", "Should fall back to the discovery pane");
+add_test(async function() {
+  let aManager = await open_manager("addons://detail/foo");
+  gCategoryUtilities = new CategoryUtilities(aManager);
+  is(
+    gCategoryUtilities.selectedCategory,
+    "discover",
+    "Should fall back to the discovery pane"
+  );
 
-    close_manager(aManager, run_next_test);
-  });
+  close_manager(aManager, run_next_test);
 });
 
 // Also test that opening directly to an add-on that does exist doesn't break
 // and selects the right category
-add_test(function() {
-  new MockProvider().createAddons([{
-    id: "addon1@tests.mozilla.org",
-    name: "addon 1",
-    version: "1.0"
-  }]);
+add_test(async function() {
+  new MockProvider().createAddons([
+    {
+      id: "addon1@tests.mozilla.org",
+      name: "addon 1",
+      version: "1.0",
+    },
+  ]);
 
-  open_manager("addons://detail/addon1@tests.mozilla.org", function(aManager) {
-    gCategoryUtilities = new CategoryUtilities(aManager);
-    is(gCategoryUtilities.selectedCategory, "extension", "Should have selected the right category");
+  let aManager = await open_manager("addons://detail/addon1@tests.mozilla.org");
+  gCategoryUtilities = new CategoryUtilities(aManager);
+  is(
+    gCategoryUtilities.selectedCategory,
+    "extension",
+    "Should have selected the right category"
+  );
 
-    close_manager(aManager, run_next_test);
-  });
+  close_manager(aManager, run_next_test);
 });

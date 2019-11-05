@@ -65,6 +65,10 @@ nsresult CheckedPrincipalToPrincipalInfo(nsIPrincipal* aPrincipal,
     return rv;
   }
 
+  if (NS_WARN_IF(!QuotaManager::IsPrincipalInfoValid(aPrincipalInfo))) {
+    return NS_ERROR_FAILURE;
+  }
+
   if (aPrincipalInfo.type() != PrincipalInfo::TContentPrincipalInfo &&
       aPrincipalInfo.type() != PrincipalInfo::TSystemPrincipalInfo) {
     return NS_ERROR_UNEXPECTED;
@@ -73,17 +77,49 @@ nsresult CheckedPrincipalToPrincipalInfo(nsIPrincipal* aPrincipal,
   return NS_OK;
 }
 
-class AbortOperationsRunnable final : public Runnable {
-  ContentParentId mContentParentId;
+nsresult GetClearResetOriginParams(nsIPrincipal* aPrincipal,
+                                   const nsACString& aPersistenceType,
+                                   const nsAString& aClientType, bool aMatchAll,
+                                   ClearResetOriginParams& aParams) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aPrincipal);
 
- public:
-  explicit AbortOperationsRunnable(ContentParentId aContentParentId)
-      : Runnable("dom::quota::AbortOperationsRunnable"),
-        mContentParentId(aContentParentId) {}
+  nsresult rv =
+      CheckedPrincipalToPrincipalInfo(aPrincipal, aParams.principalInfo());
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
 
- private:
-  NS_DECL_NSIRUNNABLE
-};
+  Nullable<PersistenceType> persistenceType;
+  rv = NullablePersistenceTypeFromText(aPersistenceType, &persistenceType);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return NS_ERROR_INVALID_ARG;
+  }
+
+  if (persistenceType.IsNull()) {
+    aParams.persistenceTypeIsExplicit() = false;
+  } else {
+    aParams.persistenceType() = persistenceType.Value();
+    aParams.persistenceTypeIsExplicit() = true;
+  }
+
+  Nullable<Client::Type> clientType;
+  rv = Client::NullableTypeFromText(aClientType, &clientType);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return NS_ERROR_INVALID_ARG;
+  }
+
+  if (clientType.IsNull()) {
+    aParams.clientTypeIsExplicit() = false;
+  } else {
+    aParams.clientType() = clientType.Value();
+    aParams.clientTypeIsExplicit() = true;
+  }
+
+  aParams.matchAll() = aMatchAll;
+
+  return NS_OK;
+}
 
 }  // namespace
 
@@ -196,35 +232,20 @@ void QuotaManagerService::ClearBackgroundActor() {
   mBackgroundActor = nullptr;
 }
 
-void QuotaManagerService::NoteLiveManager(QuotaManager* aManager) {
-  MOZ_ASSERT(XRE_IsParentProcess());
-  MOZ_ASSERT(NS_IsMainThread());
-  MOZ_ASSERT(aManager);
-
-  mBackgroundThread = aManager->OwningThread();
-}
-
-void QuotaManagerService::NoteShuttingDownManager() {
-  MOZ_ASSERT(XRE_IsParentProcess());
-  MOZ_ASSERT(NS_IsMainThread());
-
-  mBackgroundThread = nullptr;
-}
-
 void QuotaManagerService::AbortOperationsForProcess(
     ContentParentId aContentParentId) {
   MOZ_ASSERT(XRE_IsParentProcess());
   MOZ_ASSERT(NS_IsMainThread());
 
-  if (!mBackgroundThread) {
+  nsresult rv = EnsureBackgroundActor();
+  if (NS_WARN_IF(NS_FAILED(rv))) {
     return;
   }
 
-  RefPtr<AbortOperationsRunnable> runnable =
-      new AbortOperationsRunnable(aContentParentId);
-
-  MOZ_ALWAYS_SUCCEEDS(
-      mBackgroundThread->Dispatch(runnable, NS_DISPATCH_NORMAL));
+  if (NS_WARN_IF(
+          !mBackgroundActor->SendAbortOperationsForProcess(aContentParentId))) {
+    return;
+  }
 }
 
 nsresult QuotaManagerService::Init() {
@@ -262,8 +283,9 @@ void QuotaManagerService::Destroy() {
   delete this;
 }
 
-nsresult QuotaManagerService::InitiateRequest(
-    nsAutoPtr<PendingRequestInfo>& aInfo) {
+nsresult QuotaManagerService::EnsureBackgroundActor() {
+  MOZ_ASSERT(NS_IsMainThread());
+
   // Nothing can be done here if we have previously failed to create a
   // background actor.
   if (mBackgroundActorFailed) {
@@ -291,8 +313,17 @@ nsresult QuotaManagerService::InitiateRequest(
     return NS_ERROR_FAILURE;
   }
 
-  // If we already have a background actor then we can start this request now.
-  nsresult rv = aInfo->InitiateRequest(mBackgroundActor);
+  return NS_OK;
+}
+
+nsresult QuotaManagerService::InitiateRequest(
+    nsAutoPtr<PendingRequestInfo>& aInfo) {
+  nsresult rv = EnsureBackgroundActor();
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  rv = aInfo->InitiateRequest(mBackgroundActor);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -383,6 +414,30 @@ QuotaManagerService::Init(nsIQuotaRequest** _retval) {
   RefPtr<Request> request = new Request();
 
   InitParams params;
+
+  nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
+
+  nsresult rv = InitiateRequest(info);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  request.forget(_retval);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+QuotaManagerService::InitTemporaryStorage(nsIQuotaRequest** _retval) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(nsContentUtils::IsCallerChrome());
+
+  if (NS_WARN_IF(!gTestingMode)) {
+    return NS_ERROR_UNEXPECTED;
+  }
+
+  RefPtr<Request> request = new Request();
+
+  InitTemporaryStorageParams params;
 
   nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
 
@@ -514,9 +569,34 @@ QuotaManagerService::Clear(nsIQuotaRequest** _retval) {
 }
 
 NS_IMETHODIMP
+QuotaManagerService::ClearStoragesForOriginAttributesPattern(
+    const nsAString& aPattern, nsIQuotaRequest** _retval) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  OriginAttributesPattern pattern;
+  MOZ_ALWAYS_TRUE(pattern.Init(aPattern));
+
+  RefPtr<Request> request = new Request();
+
+  ClearDataParams params;
+
+  params.pattern() = pattern;
+
+  nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
+
+  nsresult rv = InitiateRequest(info);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  request.forget(_retval);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 QuotaManagerService::ClearStoragesForPrincipal(
     nsIPrincipal* aPrincipal, const nsACString& aPersistenceType,
-    bool aClearAll, nsIQuotaRequest** _retval) {
+    const nsAString& aClientType, bool aClearAll, nsIQuotaRequest** _retval) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aPrincipal);
 
@@ -531,28 +611,16 @@ QuotaManagerService::ClearStoragesForPrincipal(
 
   RefPtr<Request> request = new Request(aPrincipal);
 
-  ClearOriginParams params;
+  ClearResetOriginParams commonParams;
 
-  nsresult rv =
-      CheckedPrincipalToPrincipalInfo(aPrincipal, params.principalInfo());
+  nsresult rv = GetClearResetOriginParams(aPrincipal, aPersistenceType,
+                                          aClientType, aClearAll, commonParams);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
-  Nullable<PersistenceType> persistenceType;
-  rv = NullablePersistenceTypeFromText(aPersistenceType, &persistenceType);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return NS_ERROR_INVALID_ARG;
-  }
-
-  if (persistenceType.IsNull()) {
-    params.persistenceTypeIsExplicit() = false;
-  } else {
-    params.persistenceType() = persistenceType.Value();
-    params.persistenceTypeIsExplicit() = true;
-  }
-
-  params.clearAll() = aClearAll;
+  RequestParams params;
+  params = ClearOriginParams(commonParams);
 
   nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
 
@@ -580,6 +648,50 @@ QuotaManagerService::Reset(nsIQuotaRequest** _retval) {
   nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
 
   nsresult rv = InitiateRequest(info);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  request.forget(_retval);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+QuotaManagerService::ResetStoragesForPrincipal(
+    nsIPrincipal* aPrincipal, const nsACString& aPersistenceType,
+    const nsAString& aClientType, bool aResetAll, nsIQuotaRequest** _retval) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aPrincipal);
+
+  if (NS_WARN_IF(!gTestingMode)) {
+    return NS_ERROR_UNEXPECTED;
+  }
+
+  nsCString suffix;
+  aPrincipal->OriginAttributesRef().CreateSuffix(suffix);
+
+  if (NS_WARN_IF(aResetAll && !suffix.IsEmpty())) {
+    // The originAttributes should be default originAttributes when the
+    // aClearAll flag is set.
+    return NS_ERROR_INVALID_ARG;
+  }
+
+  RefPtr<Request> request = new Request(aPrincipal);
+
+  ClearResetOriginParams commonParams;
+
+  nsresult rv = GetClearResetOriginParams(aPrincipal, aPersistenceType,
+                                          aClientType, aResetAll, commonParams);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  RequestParams params;
+  params = ResetOriginParams(commonParams);
+
+  nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
+
+  rv = InitiateRequest(info);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -645,6 +757,27 @@ QuotaManagerService::Persist(nsIPrincipal* aPrincipal,
 }
 
 NS_IMETHODIMP
+QuotaManagerService::ListInitializedOrigins(nsIQuotaCallback* aCallback,
+                                            nsIQuotaRequest** _retval) {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(aCallback);
+
+  RefPtr<Request> request = new Request(aCallback);
+
+  ListInitializedOriginsParams params;
+
+  nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
+
+  nsresult rv = InitiateRequest(info);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  request.forget(_retval);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 QuotaManagerService::Observe(nsISupports* aSubject, const char* aTopic,
                              const char16_t* aData) {
   MOZ_ASSERT(XRE_IsParentProcess());
@@ -656,14 +789,9 @@ QuotaManagerService::Observe(nsISupports* aSubject, const char* aTopic,
   }
 
   if (!strcmp(aTopic, "clear-origin-attributes-data")) {
-    RefPtr<Request> request = new Request();
-
-    ClearDataParams params;
-    params.pattern() = nsDependentString(aData);
-
-    nsAutoPtr<PendingRequestInfo> info(new RequestInfo(request, params));
-
-    nsresult rv = InitiateRequest(info);
+    nsCOMPtr<nsIQuotaRequest> request;
+    nsresult rv = ClearStoragesForOriginAttributesPattern(
+        nsDependentString(aData), getter_AddRefs(request));
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
@@ -709,24 +837,6 @@ QuotaManagerService::Observe(nsISupports* aSubject, const char* aTopic,
 void QuotaManagerService::Notify(const hal::BatteryInformation& aBatteryInfo) {
   // This notification is received when battery data changes. We don't need to
   // deal with this notification.
-}
-
-NS_IMETHODIMP
-AbortOperationsRunnable::Run() {
-  AssertIsOnBackgroundThread();
-
-  if (QuotaManager::IsShuttingDown()) {
-    return NS_OK;
-  }
-
-  QuotaManager* quotaManager = QuotaManager::Get();
-  if (!quotaManager) {
-    return NS_OK;
-  }
-
-  quotaManager->AbortOperationsForProcess(mContentParentId);
-
-  return NS_OK;
 }
 
 nsresult QuotaManagerService::UsageRequestInfo::InitiateRequest(

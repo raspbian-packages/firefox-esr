@@ -20,8 +20,6 @@ class GamepadHapticActuator : public nsISupports, public nsWrapperCache {
  public:
   GamepadHapticActuator(nsISupports* aParent, uint32_t aGamepadId,
                         uint32_t aIndex);
-  explicit GamepadHapticActuator(nsISupports* aParent)
-      : mParent(aParent), mType(GamepadHapticActuatorType::Vibration) {}
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(GamepadHapticActuator)

@@ -6,7 +6,10 @@
 #define TelemetryTestHelpers_h_
 
 #include "js/TypeDecls.h"
+#include "mozilla/TelemetryProcessEnums.h"
 #include "nsITelemetry.h"
+
+using mozilla::Telemetry::ProcessID;
 
 namespace TelemetryTestHelpers {
 
@@ -30,7 +33,8 @@ void CheckNumberOfProperties(const char* aName, JSContext* aCx,
                              uint32_t expectedNumProperties);
 
 void GetScalarsSnapshot(bool aKeyed, JSContext* aCx,
-                        JS::MutableHandle<JS::Value> aResult);
+                        JS::MutableHandle<JS::Value> aResult,
+                        ProcessID aProcessType = ProcessID::Parent);
 
 void GetAndClearHistogram(JSContext* cx, nsCOMPtr<nsITelemetry> mTelemetry,
                           const nsACString& name, bool is_keyed);

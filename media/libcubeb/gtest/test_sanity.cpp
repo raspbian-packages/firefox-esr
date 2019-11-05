@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+
+//#define ENABLE_NORMAL_LOG
+//#define ENABLE_VERBOSE_LOG
 #include "common.h"
 
 #define STREAM_RATE 44100
@@ -114,7 +117,6 @@ TEST(cubeb, context_variables)
   int r;
   cubeb * ctx;
   uint32_t value;
-  cubeb_channel_layout layout;
   cubeb_stream_params params;
 
   r = common_init(&ctx, "test_context_variables");
@@ -138,11 +140,6 @@ TEST(cubeb, context_variables)
   if (r == CUBEB_OK) {
     ASSERT_TRUE(value > 0);
   }
-
-  r = cubeb_get_preferred_channel_layout(ctx, &layout);
-  ASSERT_TRUE(r == CUBEB_ERROR_NOT_SUPPORTED ||
-              (r == CUBEB_OK && layout != CUBEB_LAYOUT_UNDEFINED) ||
-              (r == CUBEB_ERROR && layout == CUBEB_LAYOUT_UNDEFINED));
 
   cubeb_destroy(ctx);
 }
@@ -403,6 +400,7 @@ TEST(cubeb, basic_stream_operations)
   cubeb_stream * stream;
   cubeb_stream_params params;
   uint64_t position;
+  uint32_t latency;
 
   r = common_init(&ctx, "test_sanity");
   ASSERT_EQ(r, CUBEB_OK);
@@ -419,23 +417,32 @@ TEST(cubeb, basic_stream_operations)
   ASSERT_EQ(r, CUBEB_OK);
   ASSERT_NE(stream, nullptr);
 
-  /* position and volume before stream has started */
+  /* position and latency before stream has started */
   r = cubeb_stream_get_position(stream, &position);
   ASSERT_EQ(r, CUBEB_OK);
   ASSERT_EQ(position, 0u);
 
+  r = cubeb_stream_get_latency(stream, &latency);
+  ASSERT_EQ(r, CUBEB_OK);
+
   r = cubeb_stream_start(stream);
   ASSERT_EQ(r, CUBEB_OK);
 
-  /* position and volume after while stream running */
+  /* position and latency after while stream running */
   r = cubeb_stream_get_position(stream, &position);
+  ASSERT_EQ(r, CUBEB_OK);
+
+  r = cubeb_stream_get_latency(stream, &latency);
   ASSERT_EQ(r, CUBEB_OK);
 
   r = cubeb_stream_stop(stream);
   ASSERT_EQ(r, CUBEB_OK);
 
-  /* position and volume after stream has stopped */
+  /* position and latency after stream has stopped */
   r = cubeb_stream_get_position(stream, &position);
+  ASSERT_EQ(r, CUBEB_OK);
+
+  r = cubeb_stream_get_latency(stream, &latency);
   ASSERT_EQ(r, CUBEB_OK);
 
   cubeb_stream_destroy(stream);

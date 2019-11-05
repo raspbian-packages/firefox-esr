@@ -15,11 +15,11 @@ void nsID::Clear() {
   memset(m3, 0, sizeof(m3));
 }
 
-  /**
-   * Multiplies the_int_var with 16 (0x10) and adds the value of the
-   * hexadecimal digit the_char. If it fails it returns false from
-   * the function it's used in.
-   */
+/**
+ * Multiplies the_int_var with 16 (0x10) and adds the value of the
+ * hexadecimal digit the_char. If it fails it returns false from
+ * the function it's used in.
+ */
 
 #define ADD_HEX_CHAR_TO_INT_OR_RETURN_FALSE(the_char, the_int_var) \
   the_int_var = (the_int_var << 4) + the_char;                     \
@@ -32,12 +32,12 @@ void nsID::Clear() {
   else                                                             \
     return false
 
-  /**
-   * Parses number_of_chars characters from the char_pointer pointer and
-   * puts the number in the dest_variable. The pointer is moved to point
-   * at the first character after the parsed ones. If it fails it returns
-   * false from the function the macro is used in.
-   */
+/**
+ * Parses number_of_chars characters from the char_pointer pointer and
+ * puts the number in the dest_variable. The pointer is moved to point
+ * at the first character after the parsed ones. If it fails it returns
+ * false from the function the macro is used in.
+ */
 
 #define PARSE_CHARS_TO_NUM(char_pointer, dest_variable, number_of_chars) \
   do {                                                                   \
@@ -50,11 +50,11 @@ void nsID::Clear() {
     }                                                                    \
   } while (0)
 
-  /**
-   * Parses a hyphen from the char_pointer string. If there is no hyphen there
-   * the function returns false from the function it's used in. The
-   * char_pointer is advanced one step.
-   */
+/**
+ * Parses a hyphen from the char_pointer string. If there is no hyphen there
+ * the function returns false from the function it's used in. The
+ * char_pointer is advanced one step.
+ */
 
 #define PARSE_HYPHEN(char_pointer) \
   if (*(char_pointer++) != '-') return false
@@ -107,13 +107,9 @@ static const char gIDFormat[] =
 
 char* nsID::ToString() const {
   char* res = (char*)moz_xmalloc(NSID_LENGTH);
-
-  if (res) {
-    snprintf(res, NSID_LENGTH, gIDFormat, m0, (uint32_t)m1, (uint32_t)m2,
-             (uint32_t)m3[0], (uint32_t)m3[1], (uint32_t)m3[2], (uint32_t)m3[3],
-             (uint32_t)m3[4], (uint32_t)m3[5], (uint32_t)m3[6],
-             (uint32_t)m3[7]);
-  }
+  snprintf(res, NSID_LENGTH, gIDFormat, m0, (uint32_t)m1, (uint32_t)m2,
+           (uint32_t)m3[0], (uint32_t)m3[1], (uint32_t)m3[2], (uint32_t)m3[3],
+           (uint32_t)m3[4], (uint32_t)m3[5], (uint32_t)m3[6], (uint32_t)m3[7]);
   return res;
 }
 

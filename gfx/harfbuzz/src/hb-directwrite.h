@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015  Ebrahim Byagowi
+ * Copyright © 2015-2019  Ebrahim Byagowi
  *
  *  This is part of HarfBuzz, a text shaping library.
  *
@@ -30,8 +30,12 @@
 HB_BEGIN_DECLS
 
 HB_EXTERN hb_bool_t
-hb_directwrite_shape_experimental_width(hb_font_t *font, hb_buffer_t *buffer,
-  const hb_feature_t *features, unsigned int num_features, float width);
+hb_directwrite_shape_experimental_width (hb_font_t *font, hb_buffer_t *buffer,
+					 const hb_feature_t *features,
+					 unsigned int num_features, float width);
+
+HB_EXTERN hb_face_t *
+hb_directwrite_face_create (IDWriteFontFace *font_face);
 
 HB_END_DECLS
 

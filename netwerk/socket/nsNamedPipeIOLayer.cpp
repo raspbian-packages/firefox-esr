@@ -12,7 +12,7 @@
 #include "mozilla/net/DNS.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/Unused.h"
-#include "nsINamedPipeService.h"
+#include "nsNamedPipeService.h"
 #include "nsISupportsImpl.h"
 #include "nsIThread.h"
 #include "nsNamedPipeIOLayer.h"
@@ -165,7 +165,7 @@ class NamedPipeInfo final : public nsINamedPipeDataObserver {
 NS_IMPL_ISUPPORTS(NamedPipeInfo, nsINamedPipeDataObserver)
 
 NamedPipeInfo::NamedPipeInfo()
-    : mNamedPipeService(do_GetService(NS_NAMEDPIPESERVICE_CONTRACTID)),
+    : mNamedPipeService(NamedPipeService::GetOrCreate()),
       mPipe(INVALID_HANDLE_VALUE),
       mReadBegin(0),
       mReadEnd(0),

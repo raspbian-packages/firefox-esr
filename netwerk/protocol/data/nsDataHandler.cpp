@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,23 +11,16 @@
 #include "DataChannelChild.h"
 #include "plstr.h"
 #include "nsSimpleURI.h"
+#include "mozilla/dom/MimeType.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-
-nsDataHandler::nsDataHandler() {}
-
-nsDataHandler::~nsDataHandler() {}
 
 NS_IMPL_ISUPPORTS(nsDataHandler, nsIProtocolHandler, nsISupportsWeakReference)
 
 nsresult nsDataHandler::Create(nsISupports* aOuter, const nsIID& aIID,
                                void** aResult) {
-  nsDataHandler* ph = new nsDataHandler();
-  if (ph == nullptr) return NS_ERROR_OUT_OF_MEMORY;
-  NS_ADDREF(ph);
-  nsresult rv = ph->QueryInterface(aIID, aResult);
-  NS_RELEASE(ph);
-  return rv;
+  RefPtr<nsDataHandler> ph = new nsDataHandler();
+  return ph->QueryInterface(aIID, aResult);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +51,13 @@ NS_IMETHODIMP
 nsDataHandler::NewURI(const nsACString& aSpec,
                       const char* aCharset,  // ignore charset info
                       nsIURI* aBaseURI, nsIURI** result) {
+  return nsDataHandler::CreateNewURI(aSpec, aCharset, aBaseURI, result);
+}
+
+/* static */ nsresult nsDataHandler::CreateNewURI(const nsACString& aSpec,
+                                                  const char* aCharset,
+                                                  nsIURI* aBaseURI,
+                                                  nsIURI** result) {
   nsresult rv;
   nsCOMPtr<nsIURI> uri;
 
@@ -85,7 +85,9 @@ nsDataHandler::NewURI(const nsACString& aSpec,
       }
     }
 
-    rv = NS_MutateURI(new nsSimpleURI::Mutator()).SetSpec(spec).Finalize(uri);
+    rv = NS_MutateURI(new mozilla::net::nsSimpleURI::Mutator())
+             .SetSpec(spec)
+             .Finalize(uri);
   }
 
   if (NS_FAILED(rv)) return rv;
@@ -95,37 +97,29 @@ nsDataHandler::NewURI(const nsACString& aSpec,
 }
 
 NS_IMETHODIMP
-nsDataHandler::NewChannel2(nsIURI* uri, nsILoadInfo* aLoadInfo,
-                           nsIChannel** result) {
+nsDataHandler::NewChannel(nsIURI* uri, nsILoadInfo* aLoadInfo,
+                          nsIChannel** result) {
   NS_ENSURE_ARG_POINTER(uri);
-  nsDataChannel* channel;
+  RefPtr<nsDataChannel> channel;
   if (XRE_IsParentProcess()) {
     channel = new nsDataChannel(uri);
   } else {
     channel = new mozilla::net::DataChannelChild(uri);
   }
-  NS_ADDREF(channel);
 
   nsresult rv = channel->Init();
   if (NS_FAILED(rv)) {
-    NS_RELEASE(channel);
     return rv;
   }
 
   // set the loadInfo on the new channel
   rv = channel->SetLoadInfo(aLoadInfo);
   if (NS_FAILED(rv)) {
-    NS_RELEASE(channel);
     return rv;
   }
 
-  *result = channel;
+  channel.forget(result);
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsDataHandler::NewChannel(nsIURI* uri, nsIChannel** result) {
-  return NewChannel2(uri, nullptr, result);
 }
 
 NS_IMETHODIMP
@@ -135,20 +129,20 @@ nsDataHandler::AllowPort(int32_t port, const char* scheme, bool* _retval) {
   return NS_OK;
 }
 
-#define BASE64_EXTENSION ";base64"
-
 /**
  * Helper that performs a case insensitive match to find the offset of a given
  * pattern in a nsACString.
+ * The search is performed starting from the end of the string; if the string
+ * contains more than one match, the rightmost (last) match will be returned.
  */
-bool FindOffsetOf(const nsACString& aPattern, const nsACString& aSrc,
-                  nsACString::size_type& aOffset) {
+static bool FindOffsetOf(const nsACString& aPattern, const nsACString& aSrc,
+                         nsACString::size_type& aOffset) {
   static const nsCaseInsensitiveCStringComparator kComparator;
 
   nsACString::const_iterator begin, end;
   aSrc.BeginReading(begin);
   aSrc.EndReading(end);
-  if (!FindInReadable(aPattern, begin, end, kComparator)) {
+  if (!RFindInReadable(aPattern, begin, end, kComparator)) {
     return false;
   }
 
@@ -161,8 +155,8 @@ nsresult nsDataHandler::ParsePathWithoutRef(
     const nsACString& aPath, nsCString& aContentType,
     nsCString* aContentCharset, bool& aIsBase64,
     nsDependentCSubstring* aDataBuffer) {
-  static NS_NAMED_LITERAL_CSTRING(kBase64Ext, BASE64_EXTENSION);
-  static NS_NAMED_LITERAL_CSTRING(kCharset, "charset=");
+  static NS_NAMED_LITERAL_CSTRING(kBase64, "base64");
+  static NS_NAMED_LITERAL_CSTRING(kCharset, "charset");
 
   aIsBase64 = false;
 
@@ -183,8 +177,8 @@ nsresult nsDataHandler::ParsePathWithoutRef(
 
     // Determine if the data is base64 encoded.
     nsACString::size_type base64;
-    if (FindOffsetOf(kBase64Ext, mediaType, base64)) {
-      nsACString::size_type offset = base64 + kBase64Ext.Length();
+    if (FindOffsetOf(kBase64, mediaType, base64) && base64 > 0) {
+      nsACString::size_type offset = base64 + kBase64.Length();
       // Per the RFC 2397 grammar, "base64" MUST be at the end of the
       // non-data part.
       //
@@ -192,35 +186,50 @@ nsresult nsDataHandler::ParsePathWithoutRef(
       // is ok as well (this deals with *broken* data URIs, see bug
       // 781693 for an example). Anything after "base64" in the non-data
       // part will be discarded in this case, however.
-      if (offset == mediaType.Length() || mediaType[offset] == ';') {
-        aIsBase64 = true;
-        // Trim the base64 part off.
-        mediaType.Rebind(aPath, 0, base64);
+      if (offset == mediaType.Length() || mediaType[offset] == ';' ||
+          mediaType[offset] == ' ') {
+        MOZ_DIAGNOSTIC_ASSERT(base64 > 0, "Did someone remove the check?");
+        // Index is on the first character of matched "base64" so we
+        // move to the preceding character
+        base64--;
+        // Skip any preceding spaces, searching for a semicolon
+        while (base64 > 0 && mediaType[base64] == ' ') {
+          base64--;
+        }
+        if (mediaType[base64] == ';') {
+          aIsBase64 = true;
+          // Trim the base64 part off.
+          mediaType.Rebind(aPath, 0, base64);
+        }
       }
+    }
+
+    // Skip any leading spaces
+    nsACString::size_type startIndex = 0;
+    while (startIndex < mediaType.Length() && mediaType[startIndex] == ' ') {
+      startIndex++;
+    }
+
+    nsAutoCString mediaTypeBuf;
+    // If the mimetype starts with ';' we assume text/plain
+    if (startIndex < mediaType.Length() && mediaType[startIndex] == ';') {
+      mediaTypeBuf.AssignLiteral("text/plain");
+      mediaTypeBuf.Append(mediaType);
+      mediaType.Rebind(mediaTypeBuf, 0, mediaTypeBuf.Length());
     }
 
     // Everything else is content type.
-    int32_t semiColon = mediaType.FindChar(';');
-
-    if (semiColon == 0 || mediaType.IsEmpty()) {
-      // There is no content type, but there are other parameters.
-      aContentType.AssignLiteral("text/plain");
-    } else {
-      aContentType = Substring(mediaType, 0, semiColon);
-      ToLowerCase(aContentType);
-      if (!aContentType.StripWhitespace(mozilla::fallible)) {
-        return NS_ERROR_OUT_OF_MEMORY;
+    UniquePtr<CMimeType> parsed = CMimeType::Parse(mediaType);
+    if (parsed) {
+      parsed->GetFullType(aContentType);
+      if (aContentCharset) {
+        parsed->GetParameterValue(kCharset, *aContentCharset);
       }
-    }
-
-    if (semiColon != kNotFound && aContentCharset) {
-      auto afterSemi = Substring(mediaType, semiColon + 1);
-      nsACString::size_type charset;
-      if (FindOffsetOf(kCharset, afterSemi, charset)) {
-        *aContentCharset = Substring(afterSemi, charset + kCharset.Length());
-        if (!aContentCharset->StripWhitespace(mozilla::fallible)) {
-          return NS_ERROR_OUT_OF_MEMORY;
-        }
+    } else {
+      // Mime Type parsing failed
+      aContentType.AssignLiteral("text/plain");
+      if (aContentCharset) {
+        aContentCharset->AssignLiteral("US-ASCII");
       }
     }
   }

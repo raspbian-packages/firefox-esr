@@ -8,35 +8,27 @@
 #define mozilla_dom_ProcessingInstruction_h
 
 #include "mozilla/Attributes.h"
-#include "nsIDOMProcessingInstruction.h"
-#include "nsGenericDOMDataNode.h"
+#include "mozilla/dom/CharacterData.h"
 #include "nsAString.h"
+#include "nsStyleLinkElement.h"
+
+class nsIPrincipal;
+class nsIURI;
 
 namespace mozilla {
 namespace dom {
 
-class ProcessingInstruction : public nsGenericDOMDataNode,
-                              public nsIDOMProcessingInstruction {
+class ProcessingInstruction : public CharacterData, public nsStyleLinkElement {
  public:
   ProcessingInstruction(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
                         const nsAString& aData);
 
-  // nsISupports
+  // nsISupports.  We need to declare QI, because nsStyleLinkElement
+  // has a pure-virtual QI.
   NS_DECL_ISUPPORTS_INHERITED
 
-  // nsIDOMCharacterData
-  NS_FORWARD_NSIDOMCHARACTERDATA(nsGenericDOMDataNode::)
-  using nsGenericDOMDataNode::SetData;  // Prevent hiding overloaded virtual
-                                        // function.
-
-  // nsIDOMProcessingInstruction
-  NS_DECL_NSIDOMPROCESSINGINSTRUCTION
-
-  // nsINode
-  virtual bool IsNodeOfType(uint32_t aFlags) const override;
-
-  virtual nsGenericDOMDataNode* CloneDataNode(mozilla::dom::NodeInfo* aNodeInfo,
-                                              bool aCloneText) const override;
+  virtual already_AddRefed<CharacterData> CloneDataNode(
+      mozilla::dom::NodeInfo* aNodeInfo, bool aCloneText) const override;
 
 #ifdef DEBUG
   virtual void List(FILE* out, int32_t aIndent) const override;
@@ -44,10 +36,10 @@ class ProcessingInstruction : public nsGenericDOMDataNode,
                            bool aDumpAll) const override;
 #endif
 
-  virtual nsIDOMNode* AsDOMNode() override { return this; }
-
   // WebIDL API
-  void GetTarget(nsString& aTarget) { aTarget = NodeName(); }
+  void GetTarget(nsAString& aTarget) { aTarget = NodeName(); }
+
+  NS_IMPL_FROMNODE_HELPER(ProcessingInstruction, IsProcessingInstruction())
 
  protected:
   virtual ~ProcessingInstruction();
@@ -66,6 +58,9 @@ class ProcessingInstruction : public nsGenericDOMDataNode,
 
   virtual JSObject* WrapNode(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) override;
+
+  // nsStyleLinkElement overrides, because we can't leave them pure virtual.
+  Maybe<SheetInfo> GetStyleSheetInfo() override;
 };
 
 }  // namespace dom

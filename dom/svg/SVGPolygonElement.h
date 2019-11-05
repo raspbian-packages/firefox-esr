@@ -11,7 +11,7 @@
 #include "SVGPolyElement.h"
 
 nsresult NS_NewSVGPolygonElement(
-    nsIContent **aResult, already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo);
+    nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
 namespace mozilla {
 namespace dom {
@@ -21,20 +21,19 @@ typedef SVGPolyElement SVGPolygonElementBase;
 class SVGPolygonElement final : public SVGPolygonElementBase {
  protected:
   explicit SVGPolygonElement(
-      already_AddRefed<mozilla::dom::NodeInfo> &aNodeInfo);
-  virtual JSObject *WrapNode(JSContext *cx,
-                             JS::Handle<JSObject *> aGivenProto) override;
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+  virtual JSObject* WrapNode(JSContext* cx,
+                             JS::Handle<JSObject*> aGivenProto) override;
   friend nsresult(::NS_NewSVGPolygonElement(
-      nsIContent **aResult,
-      already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo));
+      nsIContent** aResult,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
 
  public:
   // SVGGeometryElement methods:
-  virtual void GetMarkPoints(nsTArray<nsSVGMark> *aMarks) override;
-  virtual already_AddRefed<Path> BuildPath(PathBuilder *aBuilder) override;
+  virtual void GetMarkPoints(nsTArray<SVGMark>* aMarks) override;
+  virtual already_AddRefed<Path> BuildPath(PathBuilder* aBuilder) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo *aNodeInfo, nsINode **aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 };
 
 }  // namespace dom

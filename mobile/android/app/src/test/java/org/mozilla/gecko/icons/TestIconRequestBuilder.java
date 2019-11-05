@@ -8,15 +8,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mozilla.gecko.GeckoAppShell;
-import org.mozilla.gecko.background.testhelpers.TestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import static org.junit.Assert.fail;
 
-@RunWith(TestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class TestIconRequestBuilder {
     private static final String TEST_PAGE_URL_1 = "http://www.mozilla.org";
     private static final String TEST_PAGE_URL_2 = "http://www.example.org";
@@ -85,6 +84,27 @@ public class TestIconRequestBuilder {
     }
 
     @Test
+    public void testPrivateMode() {
+        IconRequest request = Icons.with(RuntimeEnvironment.application)
+                .pageUrl(TEST_PAGE_URL_1)
+                .build();
+
+        Assert.assertFalse(request.isPrivateMode());
+
+        request.modify()
+                .setPrivateMode(true)
+                .deferBuild();
+
+        Assert.assertTrue(request.isPrivateMode());
+
+        request.modify()
+                .setPrivateMode(false)
+                .deferBuild();
+
+        Assert.assertFalse(request.isPrivateMode());
+    }
+
+    @Test
     public void testSkipNetwork() {
         IconRequest request = Icons.with(RuntimeEnvironment.application)
                 .pageUrl(TEST_PAGE_URL_1)
@@ -148,6 +168,27 @@ public class TestIconRequestBuilder {
                 .deferBuild();
 
         Assert.assertTrue(request.shouldSkipMemory());
+    }
+
+    @Test
+    public void testSkipMemoryIf() {
+        IconRequest request = Icons.with(RuntimeEnvironment.application)
+                .pageUrl(TEST_PAGE_URL_1)
+                .build();
+
+        Assert.assertFalse(request.shouldSkipMemory());
+
+        request.modify()
+                .skipMemoryIf(true)
+                .deferBuild();
+
+        Assert.assertTrue(request.shouldSkipMemory());
+
+        request.modify()
+                .skipMemoryIf(false)
+                .deferBuild();
+
+        Assert.assertFalse(request.shouldSkipMemory());
     }
 
     @Test

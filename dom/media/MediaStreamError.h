@@ -15,10 +15,11 @@
 #include "mozilla/RefPtr.h"
 
 #if defined(XP_WIN) && defined(GetMessage)
-#undef GetMessage
+#  undef GetMessage
 #endif
 
 namespace mozilla {
+
 namespace dom {
 
 #define MOZILLA_DOM_MEDIASTREAMERROR_IMPLEMENTATION_IID \
@@ -34,18 +35,33 @@ class MediaStreamError;
 class BaseMediaMgrError {
   friend class dom::MediaStreamError;
 
+ public:
+  enum class Name {
+    AbortError,
+    InvalidStateError,
+    NotAllowedError,
+    NotFoundError,
+    NotReadableError,
+    NotSupportedError,
+    OverconstrainedError,
+    SecurityError,
+    TypeError,
+  };
+
  protected:
-  BaseMediaMgrError(const nsAString& aName, const nsAString& aMessage,
+  BaseMediaMgrError(Name aName, const nsAString& aMessage,
                     const nsAString& aConstraint);
-  const nsString mName;
+
+ public:
+  nsString mNameString;
   nsString mMessage;
   const nsString mConstraint;
+  const Name mName;
 };
 
 class MediaMgrError final : public nsISupports, public BaseMediaMgrError {
  public:
-  explicit MediaMgrError(const nsAString& aName,
-                         const nsAString& aMessage = EmptyString(),
+  explicit MediaMgrError(Name aName, const nsAString& aMessage = EmptyString(),
                          const nsAString& aConstraint = EmptyString())
       : BaseMediaMgrError(aName, aMessage, aConstraint) {}
 
@@ -60,7 +76,7 @@ class MediaStreamError final : public nsISupports,
                                public BaseMediaMgrError,
                                public nsWrapperCache {
  public:
-  MediaStreamError(nsPIDOMWindowInner* aParent, const nsAString& aName,
+  MediaStreamError(nsPIDOMWindowInner* aParent, Name aName,
                    const nsAString& aMessage = EmptyString(),
                    const nsAString& aConstraint = EmptyString());
 

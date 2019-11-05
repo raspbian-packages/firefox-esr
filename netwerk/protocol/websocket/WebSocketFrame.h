@@ -63,7 +63,7 @@ class WebSocketFrame final : public nsIWebSocketFrame {
   const WebSocketFrameData& Data() const { return mData; }
 
  private:
-  ~WebSocketFrame();
+  ~WebSocketFrame() = default;
 
   WebSocketFrameData mData;
 };

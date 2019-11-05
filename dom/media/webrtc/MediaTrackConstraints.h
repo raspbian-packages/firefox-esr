@@ -52,7 +52,7 @@ class NormalizedConstraintSet {
         aList->AppendElement(aMemberPtr);
       }
     }
-    virtual ~BaseRange() {}
+    virtual ~BaseRange() = default;
 
    public:
     virtual bool Merge(const BaseRange& aOther) = 0;
@@ -76,7 +76,7 @@ class NormalizedConstraintSet {
           mMin(aMin),
           mMax(aMax),
           mMergeDenominator(0) {}
-    virtual ~Range(){};
+    virtual ~Range() = default;
 
     template <class ConstrainRange>
     void SetFrom(const ConstrainRange& aOther);
@@ -151,8 +151,8 @@ class NormalizedConstraintSet {
     typedef LongRange NormalizedConstraintSet::*LongPtrType;
 
     LongRange(LongPtrType aMemberPtr, const char* aName,
-              const dom::OwningLongOrConstrainLongRange& aOther, bool advanced,
-              nsTArray<MemberPtrType>* aList);
+              const dom::Optional<dom::OwningLongOrConstrainLongRange>& aOther,
+              bool advanced, nsTArray<MemberPtrType>* aList);
   };
 
   struct LongLongRange : public Range<int64_t> {
@@ -165,17 +165,20 @@ class NormalizedConstraintSet {
   struct DoubleRange : public Range<double> {
     typedef DoubleRange NormalizedConstraintSet::*DoublePtrType;
 
-    DoubleRange(DoublePtrType aMemberPtr, const char* aName,
-                const dom::OwningDoubleOrConstrainDoubleRange& aOther,
-                bool advanced, nsTArray<MemberPtrType>* aList);
+    DoubleRange(
+        DoublePtrType aMemberPtr, const char* aName,
+        const dom::Optional<dom::OwningDoubleOrConstrainDoubleRange>& aOther,
+        bool advanced, nsTArray<MemberPtrType>* aList);
   };
 
   struct BooleanRange : public Range<bool> {
     typedef BooleanRange NormalizedConstraintSet::*BooleanPtrType;
 
-    BooleanRange(BooleanPtrType aMemberPtr, const char* aName,
-                 const dom::OwningBooleanOrConstrainBooleanParameters& aOther,
-                 bool advanced, nsTArray<MemberPtrType>* aList);
+    BooleanRange(
+        BooleanPtrType aMemberPtr, const char* aName,
+        const dom::Optional<dom::OwningBooleanOrConstrainBooleanParameters>&
+            aOther,
+        bool advanced, nsTArray<MemberPtrType>* aList);
 
     BooleanRange(BooleanPtrType aMemberPtr, const char* aName,
                  const bool& aOther, nsTArray<MemberPtrType>* aList)
@@ -192,7 +195,8 @@ class NormalizedConstraintSet {
 
     StringRange(
         StringPtrType aMemberPtr, const char* aName,
-        const dom::OwningStringOrStringSequenceOrConstrainDOMStringParameters&
+        const dom::Optional<
+            dom::OwningStringOrStringSequenceOrConstrainDOMStringParameters>&
             aOther,
         bool advanced, nsTArray<MemberPtrType>* aList);
 
@@ -202,7 +206,7 @@ class NormalizedConstraintSet {
       mIdeal.insert(aOther);
     }
 
-    ~StringRange() {}
+    ~StringRange() = default;
 
     void SetFrom(const dom::ConstrainDOMStringParameters& aOther);
     ValueType Clamp(const ValueType& n) const;
@@ -286,10 +290,6 @@ struct NormalizedConstraints : public NormalizedConstraintSet {
   explicit NormalizedConstraints(const dom::MediaTrackConstraints& aOther,
                                  nsTArray<MemberPtrType>* aList = nullptr);
 
-  // Merge constructor
-  explicit NormalizedConstraints(
-      const nsTArray<const NormalizedConstraints*>& aOthers);
-
   std::vector<NormalizedConstraintSet> mAdvanced;
   const char* mBadConstraint;
 };
@@ -311,7 +311,7 @@ class MediaConstraintsHelper {
   static uint32_t FeasibilityDistance(ValueType aN,
                                       const NormalizedRange& aRange);
   static uint32_t FitnessDistance(
-      nsString aN, const NormalizedConstraintSet::StringRange& aConstraint);
+      const nsString& aN, const NormalizedConstraintSet::StringRange& aParams);
 
  protected:
   static bool SomeSettingsFit(const NormalizedConstraints& aConstraints,
@@ -336,11 +336,7 @@ class MediaConstraintsHelper {
       const RefPtr<MediaEngineSource>& aMediaEngineSource,
       const nsString& aDeviceId);
 
-  // Warn on and convert use of deprecated constraints to new ones
-  static void ConvertOldWithWarning(
-      const dom::OwningBooleanOrConstrainBooleanParameters& old,
-      dom::OwningBooleanOrConstrainBooleanParameters& to,
-      const char* aMessageName, nsPIDOMWindowInner* aWindow);
+  static void LogConstraints(const NormalizedConstraintSet& aConstraints);
 };
 
 }  // namespace mozilla

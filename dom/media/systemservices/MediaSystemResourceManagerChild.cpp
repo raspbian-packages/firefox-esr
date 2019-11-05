@@ -11,7 +11,7 @@ namespace mozilla {
 namespace media {
 
 MediaSystemResourceManagerChild::MediaSystemResourceManagerChild()
-    : mDestroyed(false) {}
+    : mDestroyed(false), mManager(nullptr) {}
 
 MediaSystemResourceManagerChild::~MediaSystemResourceManagerChild() {}
 

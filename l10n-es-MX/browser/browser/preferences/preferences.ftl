@@ -4,8 +4,8 @@
 
 do-not-track-description = Enviar a los sitios web una señal de “No rastrear”, significa que no quieres ser rastreado
 do-not-track-learn-more = Aprender más
-do-not-track-option-default =
-    .label = Solo al usar Protección contra el Rastreo
+do-not-track-option-default-content-blocking-known =
+    .label = Solo cuando { -brand-short-name } está configurado para bloquear los rastreadores conocidos
 do-not-track-option-always =
     .label = Siempre
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Opciones
            *[other] Preferencias
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 18.5em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -58,7 +50,11 @@ category-privacy =
 pane-sync-title = Cuenta de Firefox
 category-sync =
     .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Soporte de { -brand-short-name }
+addons-button-label = Complementos y temas
 focus-search =
     .key = f
 close-button =
@@ -72,6 +68,44 @@ should-restart-title = Reiniciar { -brand-short-name }
 should-restart-ok = Reiniciar { -brand-short-name } ahora
 cancel-no-restart-button = Cancelar
 restart-later = Reiniciar después
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Una extensión, <img data-l10n-name="icon"/> { $name }, está controlando tu página de inicio.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Una extensión, <img data-l10n-name="icon"/> { $name }, está controlando tu página de Nueva Pestaña.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Un complemento, <img data-l10n-name="icon"/> { $name }, está controlando esta configuración.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Una extensión, <img data-l10n-name="icon"/> { $name }, se ha establecido como tu motor de búsqueda predeterminado.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Una extensión, <img data-l10n-name="icon"/> { $name }, requiere contenedor de pestañas.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Una extensión, <img data-l10n-name="icon"/> { $name }, está controlando esta configuración.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Una extensión, <img data-l10n-name="icon"/> { $name }, está controlando como { -brand-short-name } se conecta a internet.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Para habilitar la extensión ve a complementos de <img data-l10n-name="addons-icon"/> en el menú de<img data-l10n-name="menu-icon"/>.
 
 ## Preferences UI Search Results
 
@@ -102,17 +136,13 @@ is-not-default = { -brand-short-name } no es tu navegador predeterminado
 set-as-my-default-browser =
     .label = Hacer predeterminado…
     .accesskey = D
-startup-page = Al iniciar { -brand-short-name }
+startup-restore-previous-session =
+    .label = Restaurar sesión anterior
     .accesskey = s
-startup-user-homepage =
-    .label = Mostrar tu página de inicio
-startup-blank-page =
-    .label = Mostrar una página vacía
-startup-prev-session =
-    .label = Muestra las ventanas y pestañas de tu última visita
+startup-restore-warn-on-quit =
+    .label = Advertir al salir del navegador
 disable-extension =
     .label = Deshabilitar extensión
-home-page-header = Página de inicio
 tabs-group-header = Pestañas
 ctrl-tab-recently-used-order =
     .label = Ctrl + Tab recorre pestañas según su uso reciente
@@ -130,7 +160,7 @@ switch-links-to-new-tabs =
     .label = Al abrir un enlace en una nueva pestaña, cambiar a la pestaña inmediatamente
     .accesskey = h
 show-tabs-in-taskbar =
-    .label = Mostrar vista previa de las pestañás en la barra de tareas de Windows
+    .label = Mostrar vista previa de las pestañas en la barra de tareas de Windows
     .accesskey = t
 browser-containers-enabled =
     .label = Habilitar pestañas contenedoras
@@ -181,6 +211,12 @@ choose-language-description = Elegir el idioma preferido para mostrar las págin
 choose-button =
     .label = Seleccionar…
     .accesskey = o
+choose-browser-language-description = Elegir los idiomas usados para mostrar menús, mensajes y notificaciones de { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Establecer alternativos
+    .accesskey = l
+confirm-browser-language-change-description = Reiniciar { -brand-short-name } para aplicar los cambios
+confirm-browser-language-change-button = Aplicar y reiniciar
 translate-web-pages =
     .label = Traducir contenido web
     .accesskey = T
@@ -229,10 +265,9 @@ drm-content-header = Contenido DRM (Digital Rights Management - Administración 
 play-drm-content =
     .label = Reproducir contenido controlado por DRM
     .accesskey = P
-play-drm-content-learn-more = Saber más 
+play-drm-content-learn-more = Saber más
 update-application-title = { -brand-short-name } actualizaciones
 update-application-description = Mantener { -brand-short-name } actualizado para el mejor rendimiento, estabilidad y seguridad.
-update-application-info = Versión { $version } <a>Qué hay de nuevo</a>
 update-application-version = Versión { $version } <a data-l10n-name="learn-more">Qué hay de nuevo</a>
 update-history =
     .label = Mostrar historial de actualizaciones…
@@ -253,6 +288,10 @@ update-application-use-service =
 update-enable-search-update =
     .label = Actualice automáticamente los motores de búsqueda
     .accesskey = e
+update-pref-write-failure-title = Error de escritura
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = No se pudo guardar la preferencia. No se pudo escribir al archivo: { $path }
 
 ## General Section - Performance
 
@@ -268,7 +307,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Número límite de proceso de contenido
     .accesskey = L
 performance-limit-content-process-enabled-desc = Los procesos de contenido adicionales mejoran el rendimiento cuando se utilizan múltiples pestañas, pero también consumen más memoria.
-performance-limit-content-process-disabled-desc = Es posible modificar el número de procesos de contenido solo con el multiproceso { -brand-short-name }. <a>Aprender a comprobar si el multiproceso está habilitado</a>
 performance-limit-content-process-blocked-desc = Es posible modificar el número de procesos de contenido solo con el multiproceso { -brand-short-name }. <a data-l10n-name="learn-more">Aprender a comprobar si el multiproceso está habilitado</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -293,10 +331,15 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Buscar el texto cuando empiezas a escribir
     .accesskey = x
+browsing-cfr-recommendations =
+    .label = Recomendar extensiones mientras se navega
+    .accesskey = R
+browsing-cfr-recommendations-learn-more = Aprender más
 
 ## General Section - Proxy
 
-network-proxy-title = Proxy de red
+network-settings-title = Configuración de conexión
+network-proxy-connection-description = Configurar como { -brand-short-name } se conecta a internet.
 network-proxy-connection-learn-more = Saber más
 network-proxy-connection-settings =
     .label = Configurar…
@@ -338,9 +381,6 @@ use-current-pages =
 choose-bookmark =
     .label = Usar marcador…
     .accesskey = m
-restore-default =
-    .label = Restaurar valor por defecto
-    .accesskey = R
 
 ## Search Section
 
@@ -438,7 +478,7 @@ sync-remove-account =
 sync-sign-in =
     .label = Iniciar sesión
     .accesskey = g
-sync-signedin-settings-header = Sincronizar configuraciones
+sync-signedin-settings-header = Configuración de Sync
 sync-signedin-settings-desc = Usa { -brand-short-name } para escoger lo que quiere sincronizar en tu dispositivos.
 sync-engine-bookmarks =
     .label = Marcadores
@@ -486,6 +526,9 @@ sync-device-name-save =
     .accesskey = v
 sync-mobilepromo-single = Conectar otro dispositivo
 sync-mobilepromo-multi = Administrar dispositivos
+sync-connect-another-device = Conectar otro dispositivo
+sync-manage-devices = Administrar dispositivos
+sync-fxa-begin-pairing = Asociar un dispositivo
 sync-tos-link = Términos del servicio
 sync-fxa-privacy-notice = Política de privacidad
 
@@ -495,7 +538,7 @@ privacy-header = Navegación privada
 
 ## Privacy Section - Forms
 
-forms-header = Contraseñas de los formularios &
+logins-header = Inicios de sesión y contraseñas
 forms-ask-to-save-logins =
     .label = Preguntar para guardar inicios de sesión y contraseñas para los sitios web
     .accesskey = r
@@ -537,9 +580,9 @@ history-dontremember-description = { -brand-short-name } usará la misma configu
 history-private-browsing-permanent =
     .label = Siempre usar modo de navegación privada
     .accesskey = p
-history-remember-option =
-    .label = Recordar mi historial de navegación y descargas
-    .accesskey = R
+history-remember-browser-option =
+    .label = Recordar historial de navegación y descargas
+    .accesskey = h
 history-remember-search-option =
     .label = Recordar el historial de búsquedas y formularios
     .accesskey = f
@@ -556,36 +599,42 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookies y datos del sitio
+sitedata-total-size-calculating = Calculando tamaño de los datos del sitio y el caché…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Tus cookies, datos del sitio y caché almacenados ocupan actualmente un { $value } { $unit } del espacio en disco.
 sitedata-learn-more = Aprender más
-sitedata-accept-cookies-option =
-    .label = Aceptar cookies y datos de los sitios web (recomendado)
+sitedata-delete-on-close =
+    .label = Eliminar cookies y datos del sitio cuando se cierra { -brand-short-name }
+    .accesskey = c
+sitedata-allow-cookies-option =
+    .label = Aceptar cookies y datos del sitio
     .accesskey = A
-sitedata-block-cookies-option =
-    .label = Bloquear cookies y datos del sitio (puede que algunos sitios no funcionen)
+sitedata-disallow-cookies-option =
+    .label = Bloquear cookies y datos del sitio
     .accesskey = B
-sitedata-keep-until = Mantener hasta
-    .accesskey = u
-sitedata-keep-until-expire =
-    .label = expiran
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } está cerrado
-sitedata-accept-third-party-desc = Aceptar cookies de terceros y datos del sitio
-    .accesskey = y
-sitedata-accept-third-party-always-option =
-    .label = Siempre
-sitedata-accept-third-party-visited-option =
-    .label = Visitado
-sitedata-accept-third-party-never-option =
-    .label = Nunca
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Tipo de contenido bloqueado
+    .accesskey = T
+sitedata-option-block-trackers =
+    .label = Rastreadores de terceros
+sitedata-option-block-unvisited =
+    .label = Cookies de sitios web no visitados
+sitedata-option-block-all-third-party =
+    .label = Todas las cookies de terceros (puede causar errores en los sitios web)
+sitedata-option-block-all =
+    .label = Todas las cookies (causará errores en los sitios web)
 sitedata-clear =
     .label = Limpiar datos…
     .accesskey = l
 sitedata-settings =
     .label = Administrar datos…
     .accesskey = M
-sitedata-cookies-exceptions =
-    .label = Excepciones…
-    .accesskey = E
+sitedata-cookies-permissions =
+    .label = Administrar permisos...
+    .accesskey = p
 
 ## Privacy Section - Address Bar
 
@@ -602,30 +651,63 @@ addressbar-locbar-openpage-option =
     .accesskey = O
 addressbar-suggestions-settings = Cambiar las preferencias para las sugerencias del motor de navegación
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Bloqueo de contenido
+content-blocking-description = Bloquear el contenido de terceros que te rastrea en la web. Controla cuánto de tu actividad en línea se almacena y compartes entre sitios web.
+content-blocking-learn-more = Saber más
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Estándar
+    .accesskey = E
+content-blocking-setting-strict =
+    .label = Estricto
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Personalizar
+    .accesskey = P
+content-blocking-standard-description = Sólo bloquea rastreadores conocidos en pestañas privadas.
+content-blocking-standard-desc = Balanceado para protección y rendimiento. Permite algunos rastreadores, así lo sitios web funcionan adecuadamente.
+content-blocking-strict-desc = Bloquear todos los rastreadores que { -brand-short-name } detecte. Puede causar errores en algunos sitios web.
+content-blocking-custom-desc = Elegir que bloquear
+content-blocking-private-trackers = Rastreadores conocidos solo en ventanas privadas
+content-blocking-third-party-cookies = Cookies de rastreadores de terceros
+content-blocking-all-cookies = Todas las cookies
+content-blocking-unvisited-cookies = Cookies de sitios no visitados
+content-blocking-all-windows-trackers = Rastreadores conocidos en todas las ventanas
+content-blocking-all-third-party-cookies = Todas las cookies de terceros
+content-blocking-warning-title = ¡Atención!
+content-blocking-warning-desc = Bloquear cookies y rastreadores puede causar que algunos sitios web fallen. Es fácil de deshabilitar el bloqueo en sitios en lo que confías.
+content-blocking-learn-how = Saber cómo
+content-blocking-reload-tabs-button =
+    .label = Recargar todas las pestañas
+    .accesskey = R
+content-blocking-trackers-label =
+    .label = Rastreadores
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = En todas las ventanas
+    .accesskey = A
+content-blocking-option-private =
+    .label = Solo en ventanas privadas
+    .accesskey = P
+content-blocking-tracking-protection-change-block-list = Cambiar listas de bloqueo
+content-blocking-cookies-label =
+    .label = Cookies
+    .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = Más información
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Criptomineros
+    .accesskey = y
+
 ## Privacy Section - Tracking
 
-tracking-header = Protección contra rastreo
-tracking-desc = Protección de rastreo bloquea a los rastreadores en línea que recolecta tus datos de navegación a través de múltiples sitios web. <a data-l10n-name="learn-more">Saber más acerca de la protección de rastreo y tu privacidad</a>
-tracking-mode-label = Usar protección de rastreo para bloquear rastreadores conocidos
-tracking-mode-always =
-    .label = Siempre
-    .accesskey = e
-tracking-mode-private =
-    .label = Solo en ventanas privadas
-    .accesskey = l
-tracking-mode-never =
-    .label = Nunca
-    .accesskey = N
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Usar Protección de Rastreo en la navegación privada para bloquear rastreadores conocidos
-    .accesskey = v
-tracking-exceptions =
-    .label = Excepciones…
+tracking-manage-exceptions =
+    .label = Administrar excepciones
     .accesskey = x
-tracking-change-block-list =
-    .label = Cambiar lista de bloqueo…
-    .accesskey = C
 
 ## Privacy Section - Permissions
 
@@ -650,6 +732,9 @@ permissions-notification-link = Saber más
 permissions-notification-pause =
     .label = Pausar las notificaciones hasta que { -brand-short-name } reinicie
     .accesskey = n
+permissions-block-autoplay-media-exceptions =
+    .label = Excepciones...
+    .accesskey = E
 permissions-block-popups =
     .label = Bloquear ventanas emergentes
     .accesskey = B
@@ -676,13 +761,15 @@ collection-health-report =
     .label = Permitir que { -brand-short-name } envíe información técnica y de interacción a { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Saber más
+collection-studies =
+    .label = Permitir { -brand-short-name } para instalar y ejecutar estudios
+collection-studies-link = Ver estudios de { -brand-short-name }
+addon-recommendations =
+    .label = Permitir que { -brand-short-name } haga recomendaciones personalizadas de extensiones
+addon-recommendations-link = Saber más
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = El reporte de datos está deshabilitado para esta configuración de compilación
-collection-browser-errors =
-    .label = Permitir que { -brand-short-name } envíe reportes de errores (incluyendo mensajes de error) a { -vendor-short-name }
-    .accesskey = b
-collection-browser-errors-link = Saber más
 collection-backlogged-crash-reports =
     .label = Permitir que { -brand-short-name } envíe los informes de fallos pendientes en tu nombre
     .accesskey = c
@@ -725,3 +812,36 @@ certs-view =
 certs-devices =
     .label = Dispositivos de seguridad…
     .accesskey = D
+space-alert-learn-more-button =
+    .label = Aprender más
+    .accesskey = L
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Abrir opciones
+           *[other] Abrir preferencias
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] O
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } se está quedando sin espacio en el disco. Puede que los contenidos del sitio web no se muestren adecuadamente. Puedes limpiar los datos almacenados en Opciones > Privacidad y seguridad > Cookies y datos del sitio.
+       *[other] { -brand-short-name } necesita espacio en el disco. Puede que los contenidos del sitio web no se muestren adecuadamente. Puedes limpiar los datos almacenados en Preferencias > Privacidad y seguridad > Cookies y datos del sitio.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Perfecto, entendido
+    .accesskey = K
+space-alert-under-5gb-message = { -brand-short-name } se está quedando sin espacio en el disco. Tal vez los contenidos web no se muestren correctamente. Visita "Aprende más" para optimizar el utilizo del disco y mejorar la navegación.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Escritorio
+downloads-folder-name = Descargas
+choose-download-folder-title = Selecciona la carpeta que almacenará las descargas:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Guardar archivos en { $service-name }

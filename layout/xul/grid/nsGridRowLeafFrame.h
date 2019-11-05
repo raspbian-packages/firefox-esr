@@ -18,6 +18,10 @@ one time. So the can be flipped though like a deck of cards.
 #include "mozilla/Attributes.h"
 #include "nsBoxFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 /**
  * A frame representing a grid row (or column).  Grid row (and column)
  * elements are the children of row group (or column group) elements,
@@ -29,8 +33,8 @@ class nsGridRowLeafFrame : public nsBoxFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsGridRowLeafFrame)
 
-  friend nsIFrame* NS_NewGridRowLeafFrame(nsIPresShell* aPresShell,
-                                          nsStyleContext* aContext);
+  friend nsIFrame* NS_NewGridRowLeafFrame(mozilla::PresShell* aPresShell,
+                                          ComputedStyle* aStyle);
 
 #ifdef DEBUG_FRAME_DUMP
   virtual nsresult GetFrameName(nsAString& aResult) const override {
@@ -38,9 +42,10 @@ class nsGridRowLeafFrame : public nsBoxFrame {
   }
 #endif
 
-  nsGridRowLeafFrame(nsStyleContext* aContext, bool aIsRoot,
-                     nsBoxLayout* aLayoutManager, ClassID aID = kClassID)
-      : nsBoxFrame(aContext, aID, aIsRoot, aLayoutManager) {}
+  nsGridRowLeafFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                     bool aIsRoot, nsBoxLayout* aLayoutManager,
+                     ClassID aID = kClassID)
+      : nsBoxFrame(aStyle, aPresContext, aID, aIsRoot, aLayoutManager) {}
 
   virtual nsresult GetXULBorderAndPadding(nsMargin& aBorderAndPadding) override;
 

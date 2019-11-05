@@ -10,8 +10,9 @@
 #include "Accessible-inl.h"
 #include "AccIterator.h"
 #include "nsCoreUtils.h"
-#include "nsIDOMXULLabeledControlEl.h"
+#include "mozilla/dom/Text.h"
 
+using namespace mozilla;
 using namespace mozilla::a11y;
 
 /**
@@ -19,12 +20,12 @@ using namespace mozilla::a11y;
  * for bailing out during recursive text computation, or for special cases
  * like step f. of the ARIA implementation guide.
  */
-static Accessible* sInitiatorAcc = nullptr;
+static const Accessible* sInitiatorAcc = nullptr;
 
 ////////////////////////////////////////////////////////////////////////////////
 // nsTextEquivUtils. Public.
 
-nsresult nsTextEquivUtils::GetNameFromSubtree(Accessible* aAccessible,
+nsresult nsTextEquivUtils::GetNameFromSubtree(const Accessible* aAccessible,
                                               nsAString& aName) {
   aName.Truncate();
 
@@ -46,7 +47,7 @@ nsresult nsTextEquivUtils::GetNameFromSubtree(Accessible* aAccessible,
   return NS_OK;
 }
 
-nsresult nsTextEquivUtils::GetTextEquivFromIDRefs(Accessible* aAccessible,
+nsresult nsTextEquivUtils::GetTextEquivFromIDRefs(const Accessible* aAccessible,
                                                   nsAtom* aIDRefsAttr,
                                                   nsAString& aTextEquiv) {
   aTextEquiv.Truncate();
@@ -67,9 +68,8 @@ nsresult nsTextEquivUtils::GetTextEquivFromIDRefs(Accessible* aAccessible,
   return NS_OK;
 }
 
-nsresult nsTextEquivUtils::AppendTextEquivFromContent(Accessible* aInitiatorAcc,
-                                                      nsIContent* aContent,
-                                                      nsAString* aString) {
+nsresult nsTextEquivUtils::AppendTextEquivFromContent(
+    const Accessible* aInitiatorAcc, nsIContent* aContent, nsAString* aString) {
   // Prevent recursion which can cause infinite loops.
   if (sInitiatorAcc) return NS_OK;
 
@@ -100,7 +100,7 @@ nsresult nsTextEquivUtils::AppendTextEquivFromContent(Accessible* aInitiatorAcc,
 
 nsresult nsTextEquivUtils::AppendTextEquivFromTextContent(nsIContent* aContent,
                                                           nsAString* aString) {
-  if (aContent->IsNodeOfType(nsINode::eTEXT)) {
+  if (aContent->IsText()) {
     bool isHTMLBlock = false;
 
     nsIContent* parentContent = aContent->GetFlattenedTreeParent();
@@ -125,12 +125,12 @@ nsresult nsTextEquivUtils::AppendTextEquivFromTextContent(nsIContent* aContent,
       nsIFrame* frame = aContent->GetPrimaryFrame();
       if (frame) {
         nsIFrame::RenderedText text = frame->GetRenderedText(
-            0, UINT32_MAX, nsIFrame::TextOffsetType::OFFSETS_IN_CONTENT_TEXT,
-            nsIFrame::TrailingWhitespace::DONT_TRIM_TRAILING_WHITESPACE);
+            0, UINT32_MAX, nsIFrame::TextOffsetType::OffsetsInContentText,
+            nsIFrame::TrailingWhitespace::DontTrim);
         aString->Append(text.mString);
       } else {
         // If aContent is an object that is display: none, we have no a frame.
-        aContent->AppendTextTo(*aString);
+        aContent->GetAsText()->AppendTextTo(*aString);
       }
       if (isHTMLBlock && !aString->IsEmpty()) {
         aString->Append(char16_t(' '));
@@ -152,8 +152,8 @@ nsresult nsTextEquivUtils::AppendTextEquivFromTextContent(nsIContent* aContent,
 ////////////////////////////////////////////////////////////////////////////////
 // nsTextEquivUtils. Private.
 
-nsresult nsTextEquivUtils::AppendFromAccessibleChildren(Accessible* aAccessible,
-                                                        nsAString* aString) {
+nsresult nsTextEquivUtils::AppendFromAccessibleChildren(
+    const Accessible* aAccessible, nsAString* aString) {
   nsresult rv = NS_OK_NO_NAME_CLAUSE_HANDLED;
 
   uint32_t childCount = aAccessible->ChildCount();
@@ -275,19 +275,17 @@ nsresult nsTextEquivUtils::AppendFromDOMNode(nsIContent* aContent,
 
   if (aContent->IsXULElement()) {
     nsAutoString textEquivalent;
-    nsCOMPtr<nsIDOMXULLabeledControlElement> labeledEl =
-        do_QueryInterface(aContent);
-
-    if (labeledEl) {
-      labeledEl->GetLabel(textEquivalent);
+    if (aContent->NodeInfo()->Equals(nsGkAtoms::label, kNameSpaceID_XUL)) {
+      aContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::value,
+                                     textEquivalent);
     } else {
-      if (aContent->NodeInfo()->Equals(nsGkAtoms::label, kNameSpaceID_XUL))
-        aContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::value,
-                                       textEquivalent);
+      aContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::label,
+                                     textEquivalent);
+    }
 
-      if (textEquivalent.IsEmpty())
-        aContent->AsElement()->GetAttr(kNameSpaceID_None,
-                                       nsGkAtoms::tooltiptext, textEquivalent);
+    if (textEquivalent.IsEmpty()) {
+      aContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::tooltiptext,
+                                     textEquivalent);
     }
 
     AppendString(aString, textEquivalent);
@@ -314,7 +312,7 @@ bool nsTextEquivUtils::AppendString(nsAString* aString,
 
 uint32_t nsTextEquivUtils::GetRoleRule(role aRole) {
 #define ROLE(geckoRole, stringRole, atkRole, macRole, msaaRole, ia2Role, \
-             nameRule)                                                   \
+             androidClass, nameRule)                                     \
   case roles::geckoRole:                                                 \
     return nameRule;
 

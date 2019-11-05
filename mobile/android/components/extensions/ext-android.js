@@ -1,5 +1,11 @@
 "use strict";
 
+ChromeUtils.defineModuleGetter(
+  this,
+  "Services",
+  "resource://gre/modules/Services.jsm"
+);
+
 // This function is pretty tightly tied to Extension.jsm.
 // Its job is to fill in the |tab| property of the sender.
 const getSender = (extension, target, sender) => {
@@ -10,7 +16,7 @@ const getSender = (extension, target, sender) => {
     // page-open listener below).
     tabId = sender.tabId;
     delete sender.tabId;
-  } else if (target instanceof Ci.nsIDOMXULElement) {
+  } else if (ChromeUtils.getClassName(target) == "XULFrameElement") {
     tabId = tabTracker.getBrowserData(target).tabId;
   }
 
@@ -34,7 +40,7 @@ extensions.on("page-shutdown", (type, context) => {
       // WebExtension as an embedded inline options page.
       return;
     }
-    let {BrowserApp} = context.xulBrowser.ownerGlobal;
+    let { BrowserApp } = context.xulBrowser.ownerGlobal;
     if (BrowserApp) {
       let nativeTab = BrowserApp.getTabForBrowser(context.xulBrowser);
       if (nativeTab) {
@@ -45,13 +51,13 @@ extensions.on("page-shutdown", (type, context) => {
 });
 /* eslint-enable mozilla/balanced-listeners */
 
-global.openOptionsPage = (extension) => {
+global.openOptionsPage = extension => {
   let window = windowTracker.topWindow;
   if (!window) {
-    return Promise.reject({message: "No browser window available"});
+    return Promise.reject({ message: "No browser window available" });
   }
 
-  let {BrowserApp} = window;
+  let { BrowserApp } = window;
 
   if (extension.manifest.options_ui.open_in_tab) {
     BrowserApp.selectOrAddTab(extension.manifest.options_ui.page, {
@@ -59,7 +65,7 @@ global.openOptionsPage = (extension) => {
       parentId: BrowserApp.selectedTab.id,
     });
   } else {
-    BrowserApp.openAddonManager({addonId: extension.id});
+    BrowserApp.openAddonManager({ addonId: extension.id });
   }
 
   return Promise.resolve();
@@ -67,39 +73,38 @@ global.openOptionsPage = (extension) => {
 
 extensions.registerModules({
   browserAction: {
-    url: "chrome://browser/content/ext-browserAction.js",
-    schema: "chrome://browser/content/schemas/browser_action.json",
+    url: "chrome://geckoview/content/ext-browserAction.js",
+    schema: "chrome://geckoview/content/schemas/browser_action.json",
     scopes: ["addon_parent"],
     manifest: ["browser_action"],
-    paths: [
-      ["browserAction"],
-    ],
+    paths: [["browserAction"]],
   },
   browsingData: {
-    url: "chrome://browser/content/ext-browsingData.js",
-    schema: "chrome://browser/content/schemas/browsing_data.json",
+    url: "chrome://geckoview/content/ext-browsingData.js",
+    schema: "chrome://geckoview/content/schemas/browsing_data.json",
     scopes: ["addon_parent"],
     manifest: ["browsing_data"],
-    paths: [
-      ["browsingData"],
-    ],
+    paths: [["browsingData"]],
   },
   pageAction: {
-    url: "chrome://browser/content/ext-pageAction.js",
-    schema: "chrome://browser/content/schemas/page_action.json",
+    url: "chrome://geckoview/content/ext-pageAction.js",
+    schema: "chrome://geckoview/content/schemas/page_action.json",
     scopes: ["addon_parent"],
     manifest: ["page_action"],
-    paths: [
-      ["pageAction"],
-    ],
+    paths: [["pageAction"]],
   },
   tabs: {
-    url: "chrome://browser/content/ext-tabs.js",
-    schema: "chrome://browser/content/schemas/tabs.json",
+    url: "chrome://geckoview/content/ext-tabs.js",
+    schema: "chrome://geckoview/content/schemas/tabs.json",
     scopes: ["addon_parent"],
-    paths: [
-      ["tabs"],
-    ],
+    paths: [["tabs"]],
   },
 });
 
+if (!Services.androidBridge.isFennec) {
+  extensions.registerModules({
+    geckoViewAddons: {
+      schema: "chrome://geckoview/content/schemas/gecko_view_addons.json",
+    },
+  });
+}

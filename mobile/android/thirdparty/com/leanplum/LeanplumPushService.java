@@ -25,17 +25,14 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
 
 import com.leanplum.callbacks.VariablesChangedCallback;
 import com.leanplum.internal.ActionManager;
@@ -46,10 +43,10 @@ import com.leanplum.internal.Constants.Params;
 import com.leanplum.internal.JsonConverter;
 import com.leanplum.internal.LeanplumInternal;
 import com.leanplum.internal.Log;
-import com.leanplum.internal.Request;
+import com.leanplum.internal.RequestOld;
 import com.leanplum.internal.Util;
 import com.leanplum.internal.VarCache;
-import com.leanplum.utils.BitmapUtil;
+import com.leanplum.utils.BuildUtil;
 import com.leanplum.utils.SharedPreferencesUtil;
 
 import org.json.JSONException;
@@ -71,31 +68,91 @@ public class LeanplumPushService {
    * Leanplum's built-in Google Cloud Messaging sender ID.
    */
   public static final String LEANPLUM_SENDER_ID = "44059457771";
-  private static final String LEANPLUM_PUSH_FCM_LISTENER_SERVICE_CLASS =
-      "com.leanplum.LeanplumPushFcmListenerService";
-  private static final String PUSH_FIREBASE_MESSAGING_SERVICE_CLASS =
-      "com.leanplum.LeanplumPushFirebaseMessagingService";
-  private static final String LEANPLUM_PUSH_INSTANCE_ID_SERVICE_CLASS =
-      "com.leanplum.LeanplumPushInstanceIDService";
-  private static final String LEANPLUM_PUSH_LISTENER_SERVICE_CLASS =
-      "com.leanplum.LeanplumPushListenerService";
-  private static final String GCM_RECEIVER_CLASS = "com.google.android.gms.gcm.GcmReceiver";
+  /**
+   * Intent action used when broadcast is received in custom BroadcastReceiver.
+   */
+  public static final String LEANPLUM_NOTIFICATION = "LP_NOTIFICATION";
+  /**
+   * Action param key contained when Notification Bundle is parsed with {@link
+   * LeanplumPushService#parseNotificationBundle(Bundle)}.
+   */
+  public static final String LEANPLUM_ACTION_PARAM = "lp_action_param";
+  /**
+   * Message title param key contained when Notification Bundle is parsed with {@link
+   * LeanplumPushService#parseNotificationBundle(Bundle)}.
+   */
+  public static final String LEANPLUM_MESSAGE_PARAM = "lp_message_param";
+  /**
+   * Message id param key contained when Notification Bundle is parsed with {@link
+   * LeanplumPushService#parseNotificationBundle(Bundle)}.
+   */
+  public static final String LEANPLUM_MESSAGE_ID = "lp_message_id";
+  private static final String LEANPLUM_PUSH_SERVICE_GCM = "com.leanplum.LeanplumPushServiceGcm";
+  private static final String LEANPLUM_PUSH_SERVICE_FCM = "com.leanplum.LeanplumPushServiceFcm";
 
-  private static Class<? extends Activity> callbackClass;
-  private static LeanplumCloudMessagingProvider provider;
-  private static boolean isFirebaseEnabled = false;
   private static final int NOTIFICATION_ID = 1;
-
   private static final String OPEN_URL = "Open URL";
   private static final String URL = "URL";
   private static final String OPEN_ACTION = "Open";
+  private static final String COM_LEANPLUM_GCM_PROVIDER = "com.leanplum.LeanplumGcmProvider";
+  private static Class<? extends Activity> callbackClass;
+  private static LeanplumCloudMessagingProvider provider;
+  private static boolean isFirebaseEnabled = false;
   private static LeanplumPushNotificationCustomizer customizer;
+  private static boolean useNotificationBuilderCustomizer = false;
+
+  /**
+   * Sets the Google Cloud Messaging sender ID. Required for push GCM notifications to work.
+   *
+   * @param senderId The GCM sender ID to permit notifications from. Use {@link
+   * LeanplumPushService#LEANPLUM_SENDER_ID} to use the built-in sender ID for GCM. If you have
+   * multiple sender IDs, use {@link LeanplumPushService#setGcmSenderIds}.
+   */
+  public static void setGcmSenderId(String senderId) {
+    LeanplumGcmProvider.setSenderId(senderId);
+  }
+
+  /**
+   * Sets the Google Cloud Messaging sender ID. Required for push GCM notifications to work.
+   *
+   * @param senderIds The GCM sender IDs to permit notifications from. Use {@link
+   * LeanplumPushService#LEANPLUM_SENDER_ID} to use the built-in sender ID.
+   */
+  public static void setGcmSenderIds(String... senderIds) {
+    StringBuilder joinedSenderIds = new StringBuilder();
+    for (String senderId : senderIds) {
+      if (joinedSenderIds.length() > 0) {
+        joinedSenderIds.append(',');
+      }
+      joinedSenderIds.append(senderId);
+    }
+
+    try {
+      Class.forName(COM_LEANPLUM_GCM_PROVIDER).getDeclaredMethod("setSenderId",
+          String.class).invoke(new Object(), joinedSenderIds.toString());
+    } catch (Throwable throwable) {
+      Log.e("Couldn't invoke a LeanplumGcmProvider.setGcmSenderId method, please be " +
+          "sure you include LeanplumGCM module.", throwable);
+    }
+  }
 
   /**
    * Use Firebase Cloud Messaging, instead of the default Google Cloud Messaging.
+   *
+   * @deprecated FCM is no longer packaged in the SDK. Instead it is split up into modules.
+   *  Modify your build.gradle by replacing implementation 'com.leanplum:Leanplum:+'
+   *  with each module separately.
+   *
+   *  For example:
+   *    implementation 'com.leanplum:leanplum-fcm:+'
+   *    implementation 'com.leanplum:leanplum-location:+'
    */
+  @Deprecated
   public static void enableFirebase() {
     LeanplumPushService.isFirebaseEnabled = true;
+    Log.e("enableFirebase() is deprecated and FCM is not enabled! " +
+            "SDK has been split up into modules and you need to modify your build.gradle. " +
+            "See the doc for more info.");
   }
 
   /**
@@ -116,6 +173,10 @@ public class LeanplumPushService {
     return provider;
   }
 
+  static void setCloudMessagingProvider(LeanplumCloudMessagingProvider cloudMessagingProvider) {
+    provider = cloudMessagingProvider;
+  }
+
   /**
    * Changes the default activity to launch if the user opens a push notification.
    *
@@ -126,43 +187,31 @@ public class LeanplumPushService {
   }
 
   /**
-   * Sets an object used to customize the appearance of notifications. <p>Call this from your
+   * Sets an object used to customize the appearance of notifications. Call this from your
    * Application class's onCreate method so that the customizer is set when your application starts
    * in the background.
+   *
+   * @param customizer LeanplumPushNotificationCustomizer push notification customizer.
    */
   public static void setCustomizer(LeanplumPushNotificationCustomizer customizer) {
+    setCustomizer(customizer, false);
+  }
+
+  /**
+   * Sets an object used to customize the appearance of notifications. Call this from your
+   * Application class's onCreate method so that the customizer is set when your application starts
+   * in the background.
+   *
+   * @param customizer LeanplumPushNotificationCustomizer push notification customizer.
+   * @param useNotificationBuilderCustomizer True if if you want to support 2 lines of text on
+   * BigPicture style push notification.
+   */
+  public static void setCustomizer(LeanplumPushNotificationCustomizer customizer,
+      boolean useNotificationBuilderCustomizer) {
     LeanplumPushService.customizer = customizer;
+    LeanplumPushService.useNotificationBuilderCustomizer = useNotificationBuilderCustomizer;
   }
 
-  /**
-   * Sets the Google Cloud Messaging/Firebase Cloud Messaging sender ID. Required for push
-   * notifications to work.
-   *
-   * @param senderId The GCM/FCM sender ID to permit notifications from. Use {@link
-   * LeanplumPushService#LEANPLUM_SENDER_ID} to use the built-in sender ID for GCM. If you have
-   * multiple sender IDs, use {@link LeanplumPushService#setGcmSenderIds}.
-   */
-  public static void setGcmSenderId(String senderId) {
-    LeanplumGcmProvider.setSenderId(senderId);
-  }
-
-  /**
-   * Sets the Google Cloud Messaging/Firebase Cloud Messaging sender ID. Required for push
-   * notifications to work.
-   *
-   * @param senderIds The GCM/FCM sender IDs to permit notifications from. Use {@link
-   * LeanplumPushService#LEANPLUM_SENDER_ID} to use the built-in sender ID.
-   */
-  public static void setGcmSenderIds(String... senderIds) {
-    StringBuilder joinedSenderIds = new StringBuilder();
-    for (String senderId : senderIds) {
-      if (joinedSenderIds.length() > 0) {
-        joinedSenderIds.append(',');
-      }
-      joinedSenderIds.append(senderId);
-    }
-    LeanplumGcmProvider.setSenderId(joinedSenderIds.toString());
-  }
 
   private static Class<? extends Activity> getCallbackClass() {
     return callbackClass;
@@ -187,24 +236,23 @@ public class LeanplumPushService {
             Map<String, Object> params = new HashMap<>();
             params.put(Params.INCLUDE_DEFAULTS, Boolean.toString(false));
             params.put(Params.INCLUDE_MESSAGE_ID, messageId);
-            Request req = Request.post(Methods.GET_VARS, params);
-            req.onResponse(new Request.ResponseCallback() {
+            RequestOld req = RequestOld.post(Methods.GET_VARS, params);
+            req.onResponse(new RequestOld.ResponseCallback() {
               @Override
               public void response(JSONObject response) {
                 try {
-                  JSONObject getVariablesResponse = Request.getLastResponse(response);
-                  if (getVariablesResponse == null) {
+                  if (response == null) {
                     Log.e("No response received from the server. Please contact us to " +
                         "investigate.");
                   } else {
                     Map<String, Object> values = JsonConverter.mapFromJson(
-                        getVariablesResponse.optJSONObject(Constants.Keys.VARS));
+                        response.optJSONObject(Constants.Keys.VARS));
                     Map<String, Object> messages = JsonConverter.mapFromJson(
-                        getVariablesResponse.optJSONObject(Constants.Keys.MESSAGES));
+                        response.optJSONObject(Constants.Keys.MESSAGES));
                     Map<String, Object> regions = JsonConverter.mapFromJson(
-                        getVariablesResponse.optJSONObject(Constants.Keys.REGIONS));
+                        response.optJSONObject(Constants.Keys.REGIONS));
                     List<Map<String, Object>> variants = JsonConverter.listFromJson(
-                        getVariablesResponse.optJSONArray(Constants.Keys.VARIANTS));
+                        response.optJSONArray(Constants.Keys.VARIANTS));
                     if (!Constants.canDownloadContentMidSessionInProduction ||
                         VarCache.getDiffs().equals(values)) {
                       values = null;
@@ -213,7 +261,7 @@ public class LeanplumPushService {
                       messages = null;
                     }
                     if (values != null || messages != null) {
-                      VarCache.applyVariableDiffs(values, messages, null, null, regions, variants);
+                      VarCache.applyVariableDiffs(values, messages, null, null, regions, variants, null);
                     }
                   }
                   onComplete.variablesChanged();
@@ -222,7 +270,7 @@ public class LeanplumPushService {
                 }
               }
             });
-            req.onError(new Request.ErrorCallback() {
+            req.onError(new RequestOld.ErrorCallback() {
               @Override
               public void error(Exception e) {
                 onComplete.variablesChanged();
@@ -277,57 +325,101 @@ public class LeanplumPushService {
     // Leanplum.track("Displayed", 0.0, null, null, requestArgs);
 
     showNotification(context, message);
+
+    Leanplum.countAggregator().incrementCount("handle_notification");
   }
 
   /**
    * Put the message into a notification and post it.
    */
-  private static void showNotification(Context context, Bundle message) {
-    NotificationManager notificationManager = (NotificationManager)
+  private static void showNotification(Context context, final Bundle message) {
+    if (context == null || message == null) {
+      return;
+    }
+
+    int defaultIconId = 0;
+    // If client will start to use adaptive icon, there can be a problem
+    // https://issuetracker.google.com/issues/68716460 that can cause a factory reset of the device
+    // on Android Version 26.
+    if (!LeanplumNotificationHelper.isApplicationIconValid(context)) {
+      defaultIconId = LeanplumNotificationHelper.getDefaultPushNotificationIconResourceId(context);
+      if (defaultIconId == 0) {
+        Log.e("You are using adaptive icons without having a fallback icon for push" +
+            " notifications on Android Oreo. \n" + "This can cause a factory reset of the device" +
+            " on Android Version 26. Please add regular icon with name " +
+            "\"leanplum_default_push_icon.png\" to your \"drawable\" folder.\n" + "Google issue: " +
+            "https://issuetracker.google.com/issues/68716460"
+        );
+        return;
+      }
+    }
+
+    final NotificationManager notificationManager = (NotificationManager)
         context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+    if (notificationManager == null) {
+      return;
+    }
 
     Intent intent = new Intent(context, LeanplumPushReceiver.class);
     intent.addCategory("lpAction");
     intent.putExtras(message);
-    PendingIntent contentIntent = PendingIntent.getBroadcast(
-        context.getApplicationContext(), new Random().nextInt(),
-        intent, 0);
+    PendingIntent contentIntent = PendingIntent.getBroadcast(context.getApplicationContext(),
+        new Random().nextInt(), intent, 0);
 
     String title = Util.getApplicationName(context.getApplicationContext());
     if (message.getString("title") != null) {
       title = message.getString("title");
     }
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-        .setSmallIcon(context.getApplicationInfo().icon)
-        .setContentTitle(title)
-        .setStyle(new NotificationCompat.BigTextStyle()
-            .bigText(message.getString(Keys.PUSH_MESSAGE_TEXT)))
-        .setContentText(message.getString(Keys.PUSH_MESSAGE_TEXT));
+    NotificationCompat.Builder notificationCompatBuilder = null;
+    Notification.Builder notificationBuilder = null;
 
-    String imageUrl = message.getString(Keys.PUSH_MESSAGE_IMAGE_URL);
-    // BigPictureStyle support requires API 16 and higher.
-    if (!TextUtils.isEmpty(imageUrl) && Build.VERSION.SDK_INT >= 16) {
-      Bitmap bigPicture = BitmapUtil.getScaledBitmap(context, imageUrl);
-      if (bigPicture != null) {
-        builder.setStyle(new NotificationCompat.BigPictureStyle()
-            .bigPicture(bigPicture)
-            .setBigContentTitle(title)
-            .setSummaryText(message.getString(Keys.PUSH_MESSAGE_TEXT)));
-      } else {
-        Log.w(String.format("Image download failed for push notification with big picture. " +
-            "No image will be included with the push notification. Image URL: %s.", imageUrl));
+    final String messageText = message.getString(Keys.PUSH_MESSAGE_TEXT);
+    Bitmap bigPicture = LeanplumNotificationHelper.getBigPictureBitmap(context,
+        message.getString(Keys.PUSH_MESSAGE_IMAGE_URL));
+
+    if (customizer != null && !useNotificationBuilderCustomizer) {
+      notificationCompatBuilder = LeanplumNotificationHelper.getNotificationCompatBuilder(context,
+          message, contentIntent, title, messageText, bigPicture, defaultIconId);
+    } else {
+      notificationBuilder = LeanplumNotificationHelper.getNotificationBuilder(context, message,
+          contentIntent, title, messageText, defaultIconId);
+    }
+
+    if ((notificationCompatBuilder == null && notificationBuilder == null) ||
+        (customizer != null & !useNotificationBuilderCustomizer &&
+            notificationCompatBuilder == null) ||
+        (customizer != null && useNotificationBuilderCustomizer && notificationBuilder == null) ||
+        (customizer == null && notificationBuilder == null)) {
+      return;
+    }
+
+    if (customizer != null) {
+      try {
+        if (useNotificationBuilderCustomizer) {
+          if (bigPicture != null) {
+            Notification.BigPictureStyle bigPictureStyle =
+                LeanplumNotificationHelper.getBigPictureStyle(message, bigPicture, title,
+                    messageText);
+            customizer.customize(notificationBuilder, message, bigPictureStyle);
+            LeanplumNotificationHelper.setModifiedBigPictureStyle(notificationBuilder,
+                bigPictureStyle);
+          } else {
+            customizer.customize(notificationBuilder, message, null);
+          }
+        } else {
+          customizer.customize(notificationCompatBuilder, message);
+        }
+      } catch (Throwable t) {
+        Log.e("Unable to customize push notification: ", Log.getStackTraceString(t));
+        return;
       }
-    }
-
-    // Try to put notification on top of notification area.
-    if (Build.VERSION.SDK_INT >= 16) {
-      builder.setPriority(Notification.PRIORITY_MAX);
-    }
-    builder.setAutoCancel(true);
-    builder.setContentIntent(contentIntent);
-
-    if (LeanplumPushService.customizer != null) {
-      LeanplumPushService.customizer.customize(builder, message);
+    } else {
+      if (bigPicture != null) {
+        Notification.BigPictureStyle bigPictureStyle =
+            LeanplumNotificationHelper.getBigPictureStyle(message, bigPicture, title, messageText);
+        LeanplumNotificationHelper.setModifiedBigPictureStyle(notificationBuilder, bigPictureStyle);
+      }
     }
 
     int notificationId = LeanplumPushService.NOTIFICATION_ID;
@@ -346,13 +438,45 @@ public class LeanplumPushService {
         notificationId = value.hashCode();
       }
     }
-    notificationManager.notify(notificationId, builder.build());
+
+    try {
+      // Check if we have a chained message, and if it exists in var cache.
+      if (ActionContext.shouldForceContentUpdateForChainedMessage(
+          JsonConverter.fromJson(message.getString(Keys.PUSH_MESSAGE_ACTION)))) {
+        final int currentNotificationId = notificationId;
+        final Notification.Builder currentNotificationBuilder = notificationBuilder;
+        final NotificationCompat.Builder currentNotificationCompatBuilder = notificationCompatBuilder;
+        Leanplum.forceContentUpdate(new VariablesChangedCallback() {
+          @Override
+          public void variablesChanged() {
+            if (currentNotificationBuilder != null) {
+              notificationManager.notify(currentNotificationId, currentNotificationBuilder.build());
+            } else {
+              notificationManager.notify(currentNotificationId, currentNotificationCompatBuilder.build());
+            }
+          }
+        });
+      } else {
+        if (notificationBuilder != null) {
+          notificationManager.notify(notificationId, notificationBuilder.build());
+        } else {
+          notificationManager.notify(notificationId, notificationCompatBuilder.build());
+        }
+      }
+    } catch (NullPointerException e) {
+      Log.e("Unable to show push notification.", e);
+    } catch (Throwable t) {
+      Log.e("Unable to show push notification.", t);
+      Util.handleException(t);
+    }
+    Leanplum.countAggregator().incrementCount("show_with_title");
   }
 
-  static void openNotification(Context context, final Bundle notification) {
+  static void openNotification(Context context, Intent intent) {
     Log.d("Opening push notification action.");
+    // Pre handles push notification.
+    Bundle notification = preHandlePushNotification(context, intent);
     if (notification == null) {
-      Log.i("Received null Bundle.");
       return;
     }
 
@@ -364,24 +488,88 @@ public class LeanplumPushService {
     // Start activity.
     Class<? extends Activity> callbackClass = LeanplumPushService.getCallbackClass();
     boolean shouldStartActivity = true;
-    if (LeanplumActivityHelper.currentActivity != null &&
-        !LeanplumActivityHelper.isActivityPaused) {
+    Activity currentActivity = LeanplumActivityHelper.currentActivity;
+    if (currentActivity != null && !LeanplumActivityHelper.isActivityPaused) {
       if (callbackClass == null) {
         shouldStartActivity = false;
-      } else if (callbackClass.isInstance(LeanplumActivityHelper.currentActivity)) {
+      } else if (callbackClass.isInstance(currentActivity)) {
         shouldStartActivity = false;
       }
     }
 
     if (shouldStartActivity) {
       Intent actionIntent = getActionIntent(context);
+      if (actionIntent == null) {
+        return;
+      }
       actionIntent.putExtras(notification);
-      actionIntent.addFlags(
-          Intent.FLAG_ACTIVITY_CLEAR_TOP |
-              Intent.FLAG_ACTIVITY_NEW_TASK);
+      actionIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
       context.startActivity(actionIntent);
     }
+    // Post handles push notification.
+    postHandlePushNotification(context, intent);
+  }
 
+  /**
+   * Parse notification bundle. Use this method to get parsed bundle to decide next step. Parsed
+   * data will contain {@link LeanplumPushService#LEANPLUM_ACTION_PARAM}, {@link
+   * LeanplumPushService#LEANPLUM_MESSAGE_PARAM} and {@link LeanplumPushService#LEANPLUM_MESSAGE_ID}
+   *
+   * @param notificationBundle Bundle to be parsed.
+   * @return Map containing Actions, Message title and Message Id.
+   */
+  public static Map<String, Object> parseNotificationBundle(Bundle notificationBundle) {
+    try {
+      String notificationActions = notificationBundle.getString(Keys.PUSH_MESSAGE_ACTION);
+      String notificationMessage = notificationBundle.getString(Keys.PUSH_MESSAGE_TEXT);
+      String notificationMessageId = LeanplumPushService.getMessageId(notificationBundle);
+
+      Map<String, Object> arguments = new HashMap<>();
+      arguments.put(LEANPLUM_ACTION_PARAM, JsonConverter.fromJson(notificationActions));
+      arguments.put(LEANPLUM_MESSAGE_PARAM, notificationMessage);
+      arguments.put(LEANPLUM_MESSAGE_ID, notificationMessageId);
+
+      return arguments;
+    } catch (Throwable ignored) {
+      Log.i("Failed to parse notification bundle.");
+    }
+    return null;
+  }
+
+  /**
+   * Must be called before deciding which activity will be opened, to allow Leanplum SDK to track
+   * stats, open events etc.
+   *
+   * @param context Surrounding context.
+   * @param intent Received Intent.
+   * @return Bundle containing push notification data.
+   */
+  public static Bundle preHandlePushNotification(Context context, Intent intent) {
+    if (intent == null) {
+      Log.i("Unable to pre handle push notification, Intent is null.");
+      return null;
+    }
+    Bundle notification = intent.getExtras();
+    if (notification == null) {
+      Log.i("Unable to pre handle push notification, extras are null.");
+      return null;
+    }
+    return notification;
+  }
+
+  /**
+   * Must be called after deciding which activity will be opened, to allow Leanplum SDK to track
+   * stats, open events etc.
+   *
+   * @param context Surrounding context.
+   * @param intent Received Intent.
+   */
+  public static void postHandlePushNotification(Context context, Intent intent) {
+    final Bundle notification = intent.getExtras();
+    if (notification == null) {
+      Log.i("Could not post handle push notification, extras are null.");
+      return;
+    }
     // Perform action.
     LeanplumActivityHelper.queueActionUponActive(new VariablesChangedCallback() {
       @Override
@@ -396,8 +584,8 @@ public class LeanplumPushService {
               Map<String, Object> args = new HashMap<>();
               args.put(actionName, JsonConverter.fromJson(
                   notification.getString(Keys.PUSH_MESSAGE_ACTION)));
-              ActionContext context = new ActionContext(
-                  ActionManager.PUSH_NOTIFICATION_ACTION_NAME, args, messageId);
+              ActionContext context = new ActionContext(ActionManager.PUSH_NOTIFICATION_ACTION_NAME,
+                  args, messageId);
               context.preventRealtimeUpdating();
               context.update();
               context.runTrackedActionNamed(actionName);
@@ -475,21 +663,13 @@ public class LeanplumPushService {
    * Checks if there is some activity that can handle intent.
    */
   private static Boolean activityHasIntent(Context context, Intent deepLinkIntent) {
-    final int flag;
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-      flag = PackageManager.MATCH_ALL;
-    } else {
-      flag = 0;
-    }
     List<ResolveInfo> resolveInfoList =
-            context.getPackageManager().queryIntentActivities(deepLinkIntent, flag);
+        context.getPackageManager().queryIntentActivities(deepLinkIntent, 0);
     if (resolveInfoList != null && !resolveInfoList.isEmpty()) {
       for (ResolveInfo resolveInfo : resolveInfoList) {
         if (resolveInfo != null && resolveInfo.activityInfo != null &&
             resolveInfo.activityInfo.name != null) {
-          // In local build, Fennec's activityInfo.packagename is org.mozilla.fennec_<device_name>
-          // But activityInfo.name is org.mozilla.Gecko.App. Thus we should use packagename here.
-          if (resolveInfo.activityInfo.packageName.equals(context.getPackageName())) {
+          if (resolveInfo.activityInfo.name.contains(context.getPackageName())) {
             // If url can be handled by current app - set package name to intent, so url will be
             // open by current app. Skip chooser dialog.
             deepLinkIntent.setPackage(resolveInfo.activityInfo.packageName);
@@ -533,13 +713,16 @@ public class LeanplumPushService {
    * Stores the registration ID and app versionCode in the application's shared preferences.
    */
   private static void registerInBackground() {
-    Context context = Leanplum.getContext();
-    if (context == null) {
-      Log.e("Failed to register application with GCM/FCM. Your application context is not set.");
-      return;
+    try {
+      Context context = Leanplum.getContext();
+      if (context == null) {
+        Log.e("Failed to register application with GCM/FCM. Your application context is not set.");
+        return;
+      }
+      Intent registerIntent = new Intent(context, LeanplumPushRegistrationService.class);
+      context.startService(registerIntent);
+    } catch (Throwable ignored) {
     }
-    Intent registerIntent = new Intent(context, LeanplumPushRegistrationService.class);
-    context.startService(registerIntent);
   }
 
   /**
@@ -552,195 +735,23 @@ public class LeanplumPushService {
   }
 
   /**
-   * Call this when Leanplum starts.
+   * Call this when Leanplum starts. This method will call by reflection from AndroidSDKCore.
    */
   static void onStart() {
-    try {
-      if (Util.hasPlayServices()) {
-        initPushService();
-      } else {
-        Log.i("No valid Google Play Services APK found.");
-      }
-    } catch (LeanplumException e) {
-      Log.e("There was an error registering for push notifications.\n" +
-          Log.getStackTraceString(e));
-    }
+      LeanplumPushServiceGcm.onStart();
   }
 
-  private static void initPushService() {
-    if (!enableServices()) {
+  /**
+   * Initialize push service.
+   */
+  static void initPushService() {
+    if (!provider.isInitialized() || !provider.isManifestSetup()) {
       return;
     }
-    provider = new LeanplumGcmProvider();
-    if (!provider.isInitialized()) {
-      return;
-    }
-    if (hasAppIDChanged(Request.appId())) {
+    if (hasAppIDChanged(RequestOld.appId())) {
       provider.unregister();
     }
     registerInBackground();
-  }
-
-
-  /**
-   * Enable Leanplum GCM or FCM services.
-   *
-   * @return True if services was enabled.
-   */
-  private static boolean enableServices() {
-    Context context = Leanplum.getContext();
-    if (context == null) {
-      return false;
-    }
-
-    PackageManager packageManager = context.getPackageManager();
-    if (packageManager == null) {
-      return false;
-    }
-
-    if (isFirebaseEnabled) {
-      Class fcmListenerClass = getClassForName(LEANPLUM_PUSH_FCM_LISTENER_SERVICE_CLASS);
-      if (fcmListenerClass == null) {
-        return false;
-      }
-
-      if (!wasComponentEnabled(context, packageManager, fcmListenerClass)) {
-        if (!enableServiceAndStart(context, packageManager, PUSH_FIREBASE_MESSAGING_SERVICE_CLASS)
-            || !enableServiceAndStart(context, packageManager, fcmListenerClass)) {
-          return false;
-        }
-      }
-    } else {
-      Class gcmPushInstanceIDClass = getClassForName(LEANPLUM_PUSH_INSTANCE_ID_SERVICE_CLASS);
-      if (gcmPushInstanceIDClass == null) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Gets Class for name.
-   *
-   * @param className - class name.
-   * @return Class for provided class name.
-   */
-  private static Class getClassForName(String className) {
-    try {
-      return Class.forName(className);
-    } catch (Throwable t) {
-      if (isFirebaseEnabled) {
-        Log.e("Please compile FCM library.");
-      } else {
-        Log.e("Please compile GCM library.");
-      }
-      return null;
-    }
-  }
-
-  /**
-   * Enables and starts service for provided class name.
-   *
-   * @param context Current Context.
-   * @param packageManager Current PackageManager.
-   * @param className Name of Class that needs to be enabled and started.
-   * @return True if service was enabled and started.
-   */
-  private static boolean enableServiceAndStart(Context context, PackageManager packageManager,
-      String className) {
-    Class clazz;
-    try {
-      clazz = Class.forName(className);
-    } catch (Throwable t) {
-      return false;
-    }
-    return enableServiceAndStart(context, packageManager, clazz);
-  }
-
-  /**
-   * Enables and starts service for provided class name.
-   *
-   * @param context Current Context.
-   * @param packageManager Current PackageManager.
-   * @param clazz Class of service that needs to be enabled and started.
-   * @return True if service was enabled and started.
-   */
-  private static boolean enableServiceAndStart(Context context, PackageManager packageManager,
-      Class clazz) {
-    if (!enableComponent(context, packageManager, clazz)) {
-      return false;
-    }
-    try {
-      context.startService(new Intent(context, clazz));
-    } catch (Throwable t) {
-      Log.w("Could not start service " + clazz.getName());
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Enables component for provided class name.
-   *
-   * @param context Current Context.
-   * @param packageManager Current PackageManager.
-   * @param className Name of Class for enable.
-   * @return True if component was enabled.
-   */
-  private static boolean enableComponent(Context context, PackageManager packageManager,
-      String className) {
-    try {
-      Class clazz = Class.forName(className);
-      return enableComponent(context, packageManager, clazz);
-    } catch (Throwable t) {
-      return false;
-    }
-  }
-
-  /**
-   * Enables component for provided class.
-   *
-   * @param context Current Context.
-   * @param packageManager Current PackageManager.
-   * @param clazz Class for enable.
-   * @return True if component was enabled.
-   */
-  private static boolean enableComponent(Context context, PackageManager packageManager,
-      Class clazz) {
-    if (clazz == null || context == null || packageManager == null) {
-      return false;
-    }
-
-    try {
-      packageManager.setComponentEnabledSetting(new ComponentName(context, clazz),
-          PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-    } catch (Throwable t) {
-      Log.w("Could not enable component " + clazz.getName());
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Checks if component for provided class enabled before.
-   *
-   * @param context Current Context.
-   * @param packageManager Current PackageManager.
-   * @param clazz Class for check.
-   * @return True if component was enabled before.
-   */
-  private static boolean wasComponentEnabled(Context context, PackageManager packageManager,
-      Class clazz) {
-    if (clazz == null || context == null || packageManager == null) {
-      return false;
-    }
-    int componentStatus = packageManager.getComponentEnabledSetting(new ComponentName(context,
-        clazz));
-    if (PackageManager.COMPONENT_ENABLED_STATE_DEFAULT == componentStatus ||
-        PackageManager.COMPONENT_ENABLED_STATE_DISABLED == componentStatus) {
-      return false;
-    }
-    return true;
   }
 
   /**
@@ -771,5 +782,35 @@ public class LeanplumPushService {
       }
     }
     return false;
+  }
+
+  /**
+   * Show notification that device was registered for push notifications. This method will call by
+   * reflection from AndroidSDKCore.
+   *
+   * @param context The application context.
+   * @param currentContext Current application context.
+   */
+  static void showDeviceRegistedPush(Context context, Context currentContext) {
+    try {
+      NotificationCompat.Builder builder =
+          LeanplumNotificationHelper.getDefaultCompatNotificationBuilder(context,
+              BuildUtil.isNotificationChannelSupported(context));
+      if (builder == null) {
+        return;
+      }
+      builder.setSmallIcon(android.R.drawable.star_on)
+          .setContentTitle("Leanplum")
+          .setContentText("Your device is registered.");
+      builder.setContentIntent(PendingIntent.getActivity(
+          currentContext.getApplicationContext(), 0, new Intent(), 0));
+      NotificationManager mNotificationManager =
+          (NotificationManager) currentContext.getSystemService(
+              Context.NOTIFICATION_SERVICE);
+      // mId allows you to update the notification later on.
+      mNotificationManager.notify(0, builder.build());
+    } catch (Throwable t) {
+      Log.i("Device is registered.");
+    }
   }
 }

@@ -16,8 +16,6 @@
 #include "nsIRunnable.h"
 #include "nsWeakReference.h"
 
-class nsPIDOMWindowInner;
-
 namespace mozilla {
 namespace dom {
 
@@ -112,11 +110,6 @@ class IDBFileHandle final : public DOMEventTargetHelper,
   void Abort();
 
   // WebIDL
-  nsPIDOMWindowInner* GetParentObject() const {
-    AssertIsOnOwningThread();
-    return GetOwner();
-  }
-
   IDBMutableFile* GetMutableFile() const {
     AssertIsOnOwningThread();
     return mMutableFile;
@@ -203,9 +196,8 @@ class IDBFileHandle final : public DOMEventTargetHelper,
   NS_DECL_NSIRUNNABLE
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(IDBFileHandle, DOMEventTargetHelper)
 
-  // nsIDOMEventTarget
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
+  // EventTarget
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
 
   // WrapperCache
   virtual JSObject* WrapObject(JSContext* aCx,

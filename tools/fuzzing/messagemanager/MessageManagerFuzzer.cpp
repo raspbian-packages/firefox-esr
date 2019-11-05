@@ -9,6 +9,7 @@
 #include "FuzzingTraits.h"
 #include "jsapi.h"
 #include "jsfriendapi.h"
+#include "js/CharacterEncoding.h"
 #include "prenv.h"
 #include "MessageManagerFuzzer.h"
 #include "mozilla/ErrorResult.h"
@@ -25,6 +26,11 @@
 #include "nsILineInputStream.h"
 #include "nsLocalFile.h"
 #include "nsTArray.h"
+
+#ifdef IsLoggingEnabled
+// This is defined in the Windows SDK urlmon.h
+#  undef IsLoggingEnabled
+#endif
 
 #define MESSAGEMANAGER_FUZZER_DEFAULT_MUTATION_PROBABILITY 2
 #define MSGMGR_FUZZER_LOG(fmt, args...)                        \
@@ -182,9 +188,10 @@ bool MessageManagerFuzzer::MutateValue(JSContext* aCx, JS::HandleValue aValue,
     }
     JSString* str = JS_NewStringCopyZ(aCx, x.get());
     aOutMutationValue.set(JS::StringValue(str));
+    JS::RootedString rootedValue(aCx, aValue.toString());
+    JS::UniqueChars valueChars = JS_EncodeStringToUTF8(aCx, rootedValue);
     MSGMGR_FUZZER_LOG("%*s! Mutated value of type |string|: '%s' to '%s'",
-                      aRecursionCounter * 4, "",
-                      JS_EncodeString(aCx, aValue.toString()), x.get());
+                      aRecursionCounter * 4, "", valueChars.get(), x.get());
     return true;
   }
 
@@ -240,9 +247,10 @@ bool MessageManagerFuzzer::Mutate(JSContext* aCx, const nsAString& aMessageName,
   /* Mutated and successfully written to StructuredCloneData object. */
   if (isMutated) {
     JS::RootedString str(aCx, JS_ValueToSource(aCx, scdMutationContent));
+    JS::UniqueChars strChars = JS_EncodeStringToUTF8(aCx, str);
     MSGMGR_FUZZER_LOG("Mutated '%s' Message: %s",
                       NS_ConvertUTF16toUTF8(aMessageName).get(),
-                      JS_EncodeStringToUTF8(aCx, str));
+                      strChars.get());
   }
 
   return true;

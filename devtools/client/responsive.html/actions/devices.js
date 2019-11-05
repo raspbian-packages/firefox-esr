@@ -4,9 +4,13 @@
 
 "use strict";
 
+const Services = require("Services");
+const asyncStorage = require("devtools/shared/async-storage");
+
 const {
   ADD_DEVICE,
   ADD_DEVICE_TYPE,
+  EDIT_DEVICE,
   LOAD_DEVICE_LIST_START,
   LOAD_DEVICE_LIST_ERROR,
   LOAD_DEVICE_LIST_END,
@@ -14,11 +18,12 @@ const {
   UPDATE_DEVICE_DISPLAYED,
   UPDATE_DEVICE_MODAL,
 } = require("./index");
-const { removeDeviceAssociation } = require("./viewports");
+const { post } = require("../utils/message");
 
-const { addDevice, getDevices, removeDevice } = require("devtools/client/shared/devices");
+const { addDevice, editDevice, getDevices, removeDevice } = require("devtools/client/shared/devices");
+const { changeUserAgent, toggleTouchSimulation } = require("./ui");
+const { changeDevice, changePixelRatio } = require("./viewports");
 
-const Services = require("Services");
 const DISPLAYED_DEVICES_PREF = "devtools.responsive.html.displayedDeviceList";
 
 /**
@@ -29,7 +34,7 @@ const DISPLAYED_DEVICES_PREF = "devtools.responsive.html.displayedDeviceList";
  * - removed: Names of the devices that were explicitly removed by the user
  */
 function loadPreferredDevices() {
-  let preferredDevices = {
+  const preferredDevices = {
     "added": new Set(),
     "removed": new Set(),
   };
@@ -74,7 +79,7 @@ module.exports = {
   updatePreferredDevices: updatePreferredDevices,
 
   addCustomDevice(device) {
-    return async function (dispatch) {
+    return async function(dispatch) {
       // Add custom device to device storage
       await addDevice(device, "custom");
       dispatch({
@@ -100,16 +105,34 @@ module.exports = {
     };
   },
 
-  removeCustomDevice(device) {
-    return async function (dispatch, getState) {
-      // Check if the custom device is currently associated with any viewports
-      let { viewports } = getState();
-      for (let viewport of viewports) {
-        if (viewport.device == device.name) {
-          dispatch(removeDeviceAssociation(viewport.id));
-        }
+  editCustomDevice(viewport, oldDevice, newDevice) {
+    return async function(dispatch) {
+      // Edit custom device in storage
+      await editDevice(oldDevice, newDevice, "custom");
+      // Notify the window that the device should be updated in the device selector.
+      post(window, {
+        type: "change-device",
+        device: newDevice,
+      });
+
+      // Update UI if the device is selected.
+      if (viewport) {
+        dispatch(changeUserAgent(newDevice.userAgent));
+        dispatch(toggleTouchSimulation(newDevice.touch));
       }
 
+      dispatch({
+        type: EDIT_DEVICE,
+        deviceType: "custom",
+        viewport,
+        oldDevice,
+        newDevice,
+      });
+    };
+  },
+
+  removeCustomDevice(device) {
+    return async function(dispatch) {
       // Remove custom device from device storage
       await removeDevice(device, "custom");
       dispatch({
@@ -130,9 +153,9 @@ module.exports = {
   },
 
   loadDevices() {
-    return async function (dispatch) {
+    return async function(dispatch) {
       dispatch({ type: LOAD_DEVICE_LIST_START });
-      let preferredDevices = loadPreferredDevices();
+      const preferredDevices = loadPreferredDevices();
       let devices;
 
       try {
@@ -143,14 +166,14 @@ module.exports = {
         return;
       }
 
-      for (let type of devices.TYPES) {
+      for (const type of devices.TYPES) {
         dispatch(module.exports.addDeviceType(type));
-        for (let device of devices[type]) {
+        for (const device of devices[type]) {
           if (device.os == "fxos") {
             continue;
           }
 
-          let newDevice = Object.assign({}, device, {
+          const newDevice = Object.assign({}, device, {
             displayed: preferredDevices.added.has(device.name) ||
               (device.featured && !(preferredDevices.removed.has(device.name))),
           });
@@ -165,6 +188,39 @@ module.exports = {
       }
 
       dispatch({ type: LOAD_DEVICE_LIST_END });
+    };
+  },
+
+  restoreDeviceState() {
+    return async function(dispatch, getState) {
+      const deviceState = await asyncStorage.getItem("devtools.responsive.deviceState");
+      if (!deviceState) {
+        return;
+      }
+
+      const { id, device: deviceName, deviceType } = deviceState;
+      const devices = getState().devices;
+
+      if (!devices.types.includes(deviceType)) {
+        // Can't find matching device type.
+        return;
+      }
+
+      const device = devices[deviceType].find(d => d.name === deviceName);
+      if (!device) {
+        // Can't find device with the same device name.
+        return;
+      }
+
+      post(window, {
+        type: "change-device",
+        device,
+      });
+
+      dispatch(changeDevice(id, device.name, deviceType));
+      dispatch(changePixelRatio(id, device.pixelRatio));
+      dispatch(changeUserAgent(device.userAgent));
+      dispatch(toggleTouchSimulation(device.touch));
     };
   },
 

@@ -23,17 +23,14 @@ namespace layers {
 static StaticRefPtr<CompositorThreadHolder> sCompositorThreadHolder;
 static bool sFinishedCompositorShutDown = false;
 
-CompositorThreadHolder* GetCompositorThreadHolder() {
-  return sCompositorThreadHolder;
-}
-
 base::Thread* CompositorThread() {
   return sCompositorThreadHolder
              ? sCompositorThreadHolder->GetCompositorThread()
              : nullptr;
 }
 
-/* static */ MessageLoop* CompositorThreadHolder::Loop() {
+/* static */
+MessageLoop* CompositorThreadHolder::Loop() {
   return CompositorThread() ? CompositorThread()->message_loop() : nullptr;
 }
 
@@ -53,14 +50,14 @@ CompositorThreadHolder::~CompositorThreadHolder() {
   }
 }
 
-/* static */ void CompositorThreadHolder::DestroyCompositorThread(
+/* static */
+void CompositorThreadHolder::DestroyCompositorThread(
     base::Thread* aCompositorThread) {
   MOZ_ASSERT(NS_IsMainThread());
 
   MOZ_ASSERT(!sCompositorThreadHolder,
              "We shouldn't be destroying the compositor thread yet.");
 
-  CompositorBridgeParent::Shutdown();
   delete aCompositorThread;
   sFinishedCompositorShutDown = true;
 }
@@ -85,8 +82,8 @@ CompositorThreadHolder::~CompositorThreadHolder() {
 #if defined(_WIN32)
   /* With d3d9 the compositor thread creates native ui, see DeviceManagerD3D9.
    * As such the thread is a gui thread, and must process a windows message
-   * queue or risk deadlocks. Chromium message loop TYPE_UI does exactly what we
-   * need. */
+   * queue or
+   * risk deadlocks. Chromium message loop TYPE_UI does exactly what we need. */
   options.message_loop_type = MessageLoop::TYPE_UI;
 #endif
 
@@ -140,7 +137,8 @@ void CompositorThreadHolder::Shutdown() {
   CompositorBridgeParent::FinishShutdown();
 }
 
-/* static */ bool CompositorThreadHolder::IsInCompositorThread() {
+/* static */
+bool CompositorThreadHolder::IsInCompositorThread() {
   return CompositorThread() &&
          CompositorThread()->thread_id() == PlatformThread::CurrentId();
 }

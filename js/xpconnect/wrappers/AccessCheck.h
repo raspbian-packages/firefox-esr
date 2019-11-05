@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,24 +11,17 @@
 #include "js/Wrapper.h"
 #include "nsString.h"
 
-class nsIPrincipal;
-
 namespace xpc {
 
 class AccessCheck {
  public:
-  static bool subsumes(JSCompartment* a, JSCompartment* b);
   static bool subsumes(JSObject* a, JSObject* b);
   static bool wrapperSubsumes(JSObject* wrapper);
-  static bool subsumesConsideringDomain(JSCompartment* a, JSCompartment* b);
-  static bool subsumesConsideringDomainIgnoringFPD(JSCompartment* a,
-                                                   JSCompartment* b);
-  static bool isChrome(JSCompartment* compartment);
+  static bool subsumesConsideringDomain(JS::Realm* a, JS::Realm* b);
+  static bool subsumesConsideringDomainIgnoringFPD(JS::Realm* a, JS::Realm* b);
+  static bool isChrome(JS::Compartment* compartment);
+  static bool isChrome(JS::Realm* realm);
   static bool isChrome(JSObject* obj);
-  static nsIPrincipal* getPrincipal(JSCompartment* compartment);
-  static bool isCrossOriginAccessPermitted(JSContext* cx, JS::HandleObject obj,
-                                           JS::HandleId id,
-                                           js::Wrapper::Action act);
   static bool checkPassToPrivilegedCode(JSContext* cx, JS::HandleObject wrapper,
                                         JS::HandleValue value);
   static bool checkPassToPrivilegedCode(JSContext* cx, JS::HandleObject wrapper,
@@ -40,12 +33,13 @@ class AccessCheck {
                                       const nsACString& accessType);
 };
 
-enum CrossOriginObjectType {
-  CrossOriginWindow,
-  CrossOriginLocation,
-  CrossOriginOpaque
-};
-CrossOriginObjectType IdentifyCrossOriginObject(JSObject* obj);
+/**
+ * Returns true if the given object (which is expected to be stripped of
+ * cross-compartment wrappers in practice, but this function doesn't assume
+ * that) is a WindowProxy or Location object, which need special wrapping
+ * behavior due to being usable cross-origin in limited ways.
+ */
+bool IsCrossOriginAccessibleObject(JSObject* obj);
 
 struct Policy {
   static bool checkCall(JSContext* cx, JS::HandleObject wrapper,
@@ -88,28 +82,6 @@ struct OpaqueWithCall : public Policy {
   static bool checkCall(JSContext* cx, JS::HandleObject wrapper,
                         const JS::CallArgs& args) {
     return AccessCheck::checkPassToPrivilegedCode(cx, wrapper, args);
-  }
-};
-
-// This policy only permits access to properties that are safe to be used
-// across origins.
-struct CrossOriginAccessiblePropertiesOnly : public Policy {
-  static bool check(JSContext* cx, JS::HandleObject wrapper, JS::HandleId id,
-                    js::Wrapper::Action act) {
-    return AccessCheck::isCrossOriginAccessPermitted(cx, wrapper, id, act);
-  }
-  static bool deny(JSContext* cx, js::Wrapper::Action act, JS::HandleId id,
-                   bool mayThrow) {
-    // Silently fail for enumerate-like operations.
-    if (act == js::Wrapper::ENUMERATE) return true;
-    if (mayThrow)
-      AccessCheck::reportCrossOriginDenial(cx, id,
-                                           NS_LITERAL_CSTRING("access"));
-    return false;
-  }
-  static bool allowNativeCall(JSContext* cx, JS::IsAcceptableThis test,
-                              JS::NativeImpl impl) {
-    return false;
   }
 };
 

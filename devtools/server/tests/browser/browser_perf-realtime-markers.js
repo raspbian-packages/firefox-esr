@@ -7,37 +7,36 @@
 
 "use strict";
 
-const { PerformanceFront } = require("devtools/shared/fronts/performance");
+add_task(async function() {
+  const target = await addTabTarget(MAIN_DOMAIN + "doc_perf.html");
 
-add_task(async function () {
-  await addTab(MAIN_DOMAIN + "doc_perf.html");
-
-  initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
-  let form = await connectDebuggerClient(client);
-  let front = PerformanceFront(client, form);
-  await front.connect();
+  const front = await target.getFront("performance");
 
   let lastMemoryDelta = 0;
   let lastTickDelta = 0;
 
-  let counters = {
+  const counters = {
     markers: [],
     memory: [],
-    ticks: []
+    ticks: [],
   };
 
-  let deferreds = {
+  const deferreds = {
     markers: defer(),
     memory: defer(),
-    ticks: defer()
+    ticks: defer(),
   };
 
   front.on("timeline-data", handler);
 
-  let rec = await front.startRecording(
-    { withMarkers: true, withMemory: true, withTicks: true });
-  await Promise.all(Object.keys(deferreds).map(type => deferreds[type].promise));
+  const rec = await front.startRecording({
+    withMarkers: true,
+    withMemory: true,
+    withTicks: true,
+  });
+  await Promise.all(
+    Object.keys(deferreds).map(type => deferreds[type].promise)
+  );
   await front.stopRecording(rec);
   front.off("timeline-data", handler);
 
@@ -45,8 +44,7 @@ add_task(async function () {
   is(counters.memory.length, 3, "three memory events fired.");
   is(counters.ticks.length, 3, "three ticks events fired.");
 
-  await front.destroy();
-  await client.close();
+  await target.destroy();
   gBrowser.removeCurrentTab();
 
   function handler(name, data) {
@@ -63,7 +61,7 @@ add_task(async function () {
       if (counters.memory.length >= 3) {
         return;
       }
-      let { delta, measurement } = data;
+      const { delta, measurement } = data;
       is(typeof delta, "number", "received `delta` in memory event");
       ok(delta > lastMemoryDelta, "received `delta` in memory event");
       ok(measurement.total, "received `total` in memory event");
@@ -74,7 +72,7 @@ add_task(async function () {
       if (counters.ticks.length >= 3) {
         return;
       }
-      let { delta, timestamps } = data;
+      const { delta, timestamps } = data;
       ok(delta > lastTickDelta, "received `delta` in ticks event");
 
       // Timestamps aren't guaranteed to always contain tick events, since
@@ -88,9 +86,11 @@ add_task(async function () {
       ok(false, `Received unknown event: ${name}`);
     }
 
-    if (name === "markers" && counters[name].length === 1 ||
-        name === "memory" && counters[name].length === 3 ||
-        name === "ticks" && counters[name].length === 3) {
+    if (
+      (name === "markers" && counters[name].length === 1) ||
+      (name === "memory" && counters[name].length === 3) ||
+      (name === "ticks" && counters[name].length === 3)
+    ) {
       deferreds[name].resolve();
     }
   }

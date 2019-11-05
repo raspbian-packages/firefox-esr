@@ -7,6 +7,7 @@
 
 site-data-settings-window =
     .title = Sýsla með smákökur og gögn vefsvæðis
+site-data-settings-description = Eftirfarandi vefsíður geyma vefkökur og vefsíðugögn á tölvunni þinni. { -brand-short-name } geymir gögn frá vefsvæðum með viðvarandi geymslum þar til þú fjarlægir þær og það fjarlægir gögn frá áður óþekktum vefsvæðum til að losna við pláss þegar þörf krefur.
 site-data-search-textbox =
     .placeholder = Leita á vefsvæðum
     .accesskey = s
@@ -27,9 +28,23 @@ site-data-button-cancel =
 site-data-button-save =
     .label = Vista breytingar
     .accesskey = a
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-usage-pattern = { $value } { $unit }
+site-usage-persistent = { site-usage-pattern } (Varanlegt)
+site-data-remove-all =
+    .label = Fjarlægja allt
+    .accesskey = F
+site-data-remove-shown =
+    .label = Fjarlægja allt sem er sýnilegt
+    .accesskey = F
 
 ## Removing
 
-site-data-removing-window =
+site-data-removing-dialog =
     .title = { site-data-removing-header }
+    .buttonlabelaccept = Fjarlægja
 site-data-removing-header = Fjarlægja smákökur og gögn vefsvæðis
+site-data-removing-desc = Að fjarlægja vefkökur og vefsíðugögn getur skráð þig útaf vefsíðum. Ertu viss um að þú viljir gera breytingar?
+site-data-removing-table = Vefkökur og vefsíðugögn fyrir eftirfarandi vefsíður verða fjarlægðar

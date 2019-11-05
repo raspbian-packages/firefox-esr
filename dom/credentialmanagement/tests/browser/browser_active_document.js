@@ -20,14 +20,19 @@ function promiseMakeCredential(tab) {
     const cose_alg_ECDSA_w_SHA256 = -7;
 
     let publicKey = {
-      rp: {id: content.document.domain, name: "none", icon: "none"},
-      user: {id: new Uint8Array(), name: "none", icon: "none", displayName: "none"},
+      rp: { id: content.document.domain, name: "none", icon: "none" },
+      user: {
+        id: new Uint8Array(),
+        name: "none",
+        icon: "none",
+        displayName: "none",
+      },
       challenge: content.crypto.getRandomValues(new Uint8Array(16)),
       timeout: 5000, // the minimum timeout is actually 15 seconds
-      pubKeyCredParams: [{type: "public-key", alg: cose_alg_ECDSA_w_SHA256}],
+      pubKeyCredParams: [{ type: "public-key", alg: cose_alg_ECDSA_w_SHA256 }],
     };
 
-    return content.navigator.credentials.create({publicKey});
+    return content.navigator.credentials.create({ publicKey });
   });
 }
 
@@ -43,20 +48,20 @@ function promiseGetAssertion(tab) {
       challenge: content.crypto.getRandomValues(new Uint8Array(16)),
       timeout: 5000, // the minimum timeout is actually 15 seconds
       rpId: content.document.domain,
-      allowCredentials: [newCredential]
+      allowCredentials: [newCredential],
     };
 
-    return content.navigator.credentials.get({publicKey});
+    return content.navigator.credentials.get({ publicKey });
   });
 }
 
 add_task(async function test_setup() {
   await SpecialPowers.pushPrefEnv({
-    "set": [
+    set: [
       ["security.webauth.webauthn", true],
       ["security.webauth.webauthn_enable_softtoken", true],
-      ["security.webauth.webauthn_enable_usbtoken", false]
-    ]
+      ["security.webauth.webauthn_enable_usbtoken", false],
+    ],
   });
 });
 
@@ -85,6 +90,9 @@ add_task(async function test_background_window() {
   let tab_bg = await BrowserTestUtils.openNewForegroundTab(gBrowser, TEST_URL);
   let win = await BrowserTestUtils.openNewBrowserWindow();
 
+  // Wait until the new window is really focused.
+  await new Promise(resolve => SimpleTest.waitForFocus(resolve, win));
+
   // Requests from selected tabs not in the active window must fail.
   await promiseMakeCredential(tab_bg)
     .then(arrivingHereIsBad)
@@ -101,8 +109,9 @@ add_task(async function test_background_window() {
 });
 
 add_task(async function test_minimized() {
-  let env = Cc["@mozilla.org/process/environment;1"]
-              .getService(Ci.nsIEnvironment);
+  let env = Cc["@mozilla.org/process/environment;1"].getService(
+    Ci.nsIEnvironment
+  );
   // Minimizing windows doesn't supported in headless mode.
   if (env.get("MOZ_HEADLESS")) {
     return;

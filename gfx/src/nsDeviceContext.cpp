@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set sw=4 ts=4 expandtab: */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set sw=2 ts=4 expandtab: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,9 +8,9 @@
 #include <algorithm>      // for max
 #include "gfxASurface.h"  // for gfxASurface, etc
 #include "gfxContext.h"
-#include "gfxFont.h"             // for gfxFontGroup
 #include "gfxImageSurface.h"     // for gfxImageSurface
 #include "gfxPoint.h"            // for gfxSize
+#include "gfxTextRun.h"          // for gfxFontGroup
 #include "mozilla/Attributes.h"  // for final
 #include "mozilla/gfx/PathHelpers.h"
 #include "mozilla/gfx/PrintTarget.h"
@@ -18,7 +18,7 @@
 #include "mozilla/Services.h"     // for GetObserverService
 #include "mozilla/mozalloc.h"     // for operator new
 #include "nsCRT.h"                // for nsCRT
-#include "nsDebug.h"              // for NS_NOTREACHED, NS_ASSERTION, etc
+#include "nsDebug.h"              // for NS_ASSERTION, etc
 #include "nsFont.h"               // for nsFont
 #include "nsFontMetrics.h"        // for nsFontMetrics
 #include "nsAtom.h"               // for nsAtom, NS_Atomize
@@ -46,9 +46,9 @@ using mozilla::widget::ScreenManager;
 
 class nsFontCache final : public nsIObserver {
  public:
-  nsFontCache() {}
+  nsFontCache() : mContext(nullptr) {}
 
-  NS_DECL_ISUPPORTS
+  NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIOBSERVER
 
   void Init(nsDeviceContext* aContext);
@@ -59,16 +59,50 @@ class nsFontCache final : public nsIObserver {
 
   void FontMetricsDeleted(const nsFontMetrics* aFontMetrics);
   void Compact();
-  void Flush();
+
+  // Flush aFlushCount oldest entries, or all if aFlushCount is negative
+  void Flush(int32_t aFlushCount = -1);
 
   void UpdateUserFonts(gfxUserFontSet* aUserFontSet);
 
  protected:
+  // If the array of cached entries is about to exceed this threshold,
+  // we'll discard the oldest ones so as to keep the size reasonable.
+  // In practice, the great majority of cache hits are among the last
+  // few entries; keeping thousands of older entries becomes counter-
+  // productive because it can then take too long to scan the cache.
+  static const int32_t kMaxCacheEntries = 128;
+
   ~nsFontCache() {}
 
   nsDeviceContext* mContext;  // owner
   RefPtr<nsAtom> mLocaleLanguage;
-  nsTArray<nsFontMetrics*> mFontMetrics;
+
+  // We may not flush older entries immediately the array reaches
+  // kMaxCacheEntries length, because this usually happens on a stylo
+  // thread where we can't safely delete metrics objects. So we allocate an
+  // oversized autoarray buffer here, so that we're unlikely to overflow
+  // it and need separate heap allocation before the flush happens on the
+  // main thread.
+  AutoTArray<nsFontMetrics*, kMaxCacheEntries * 2> mFontMetrics;
+
+  bool mFlushPending = false;
+
+  class FlushFontMetricsTask : public mozilla::Runnable {
+   public:
+    explicit FlushFontMetricsTask(nsFontCache* aCache)
+        : mozilla::Runnable("FlushFontMetricsTask"), mCache(aCache) {}
+    NS_IMETHOD Run() override {
+      // Partially flush the cache, leaving the kMaxCacheEntries/2 most
+      // recent entries.
+      mCache->Flush(mCache->mFontMetrics.Length() - kMaxCacheEntries / 2);
+      mCache->mFlushPending = false;
+      return NS_OK;
+    }
+
+   private:
+    RefPtr<nsFontCache> mCache;
+  };
 };
 
 NS_IMPL_ISUPPORTS(nsFontCache, nsIObserver)
@@ -108,8 +142,7 @@ already_AddRefed<nsFontMetrics> nsFontCache::GetMetricsFor(
 
   // First check our cache
   // start from the end, which is where we put the most-recent-used element
-
-  int32_t n = mFontMetrics.Length() - 1;
+  const int32_t n = mFontMetrics.Length() - 1;
   for (int32_t i = n; i >= 0; --i) {
     nsFontMetrics* fm = mFontMetrics[i];
     if (fm->Font().Equals(aFont) &&
@@ -127,6 +160,18 @@ already_AddRefed<nsFontMetrics> nsFontCache::GetMetricsFor(
   }
 
   // It's not in the cache. Get font metrics and then cache them.
+  // If the cache has reached its size limit, drop the older half of the
+  // entries; but if we're on a stylo thread (the usual case), we have
+  // to post a task back to the main thread to do the flush.
+  if (n >= kMaxCacheEntries - 1 && !mFlushPending) {
+    if (NS_IsMainThread()) {
+      Flush(mFontMetrics.Length() - kMaxCacheEntries / 2);
+    } else {
+      mFlushPending = true;
+      nsCOMPtr<nsIRunnable> flushTask = new FlushFontMetricsTask(this);
+      MOZ_ALWAYS_SUCCEEDS(NS_DispatchToMainThread(flushTask));
+    }
+  }
 
   nsFontMetrics::Params params = aParams;
   params.language = language;
@@ -168,8 +213,12 @@ void nsFontCache::Compact() {
   }
 }
 
-void nsFontCache::Flush() {
-  for (int32_t i = mFontMetrics.Length() - 1; i >= 0; --i) {
+// Flush the aFlushCount oldest entries, or all if (aFlushCount < 0)
+void nsFontCache::Flush(int32_t aFlushCount) {
+  int32_t n = aFlushCount < 0
+                  ? mFontMetrics.Length()
+                  : std::min<int32_t>(aFlushCount, mFontMetrics.Length());
+  for (int32_t i = n - 1; i >= 0; --i) {
     nsFontMetrics* fm = mFontMetrics[i];
     // Destroy() will unhook our device context from the fm so that we
     // won't waste time in triggering the notification of
@@ -177,7 +226,7 @@ void nsFontCache::Flush() {
     fm->Destroy();
     NS_RELEASE(fm);
   }
-  mFontMetrics.Clear();
+  mFontMetrics.RemoveElementsAt(0, n);
 }
 
 nsDeviceContext::nsDeviceContext()
@@ -188,6 +237,7 @@ nsDeviceContext::nsDeviceContext()
       mAppUnitsPerPhysicalInch(-1),
       mFullZoom(1.0f),
       mPrintingScale(1.0f),
+      mPrintingTranslate(gfxPoint(0, 0)),
       mIsCurrentlyPrintingDoc(false)
 #ifdef DEBUG
       ,
@@ -238,12 +288,13 @@ nsresult nsDeviceContext::FontMetricsDeleted(
 bool nsDeviceContext::IsPrinterContext() { return mPrintTarget != nullptr; }
 
 void nsDeviceContext::SetDPI(double* aScale) {
-  float dpi = -1.0f;
+  float dpi;
 
   // Use the printing DC to determine DPI values, if we have one.
   if (mDeviceContextSpec) {
     dpi = mDeviceContextSpec->GetDPI();
     mPrintingScale = mDeviceContextSpec->GetPrintingScale();
+    mPrintingTranslate = mDeviceContextSpec->GetPrintingTranslate();
     mAppUnitsPerDevPixelAtUnitFullZoom =
         NS_lround((AppUnitsPerCSSPixel() * 96) / dpi);
   } else {
@@ -373,6 +424,7 @@ already_AddRefed<gfxContext> nsDeviceContext::CreateRenderingContextCommon(
   MOZ_ASSERT(pContext);  // already checked draw target above
 
   gfxMatrix transform;
+  transform.PreTranslate(mPrintingTranslate);
   if (mPrintTarget->RotateNeededForLandscape()) {
     // Rotate page 90 degrees to draw landscape page on portrait paper
     IntSize size = mPrintTarget->GetSize();
@@ -484,11 +536,9 @@ nsresult nsDeviceContext::EndDocument(void) {
   MOZ_ASSERT(mIsCurrentlyPrintingDoc,
              "Mismatched BeginDocument/EndDocument calls");
 
-  nsresult rv = NS_OK;
-
   mIsCurrentlyPrintingDoc = false;
 
-  rv = mPrintTarget->EndPrinting();
+  nsresult rv = mPrintTarget->EndPrinting();
   if (NS_SUCCEEDED(rv)) {
     mPrintTarget->Finish();
   }
@@ -619,7 +669,7 @@ bool nsDeviceContext::CheckDPIChange(double* aScale) {
 
 bool nsDeviceContext::SetFullZoom(float aScale) {
   if (aScale <= 0) {
-    NS_NOTREACHED("Invalid full zoom value");
+    MOZ_ASSERT_UNREACHABLE("Invalid full zoom value");
     return false;
   }
   int32_t oldAppUnitsPerDevPixel = mAppUnitsPerDevPixel;
@@ -656,7 +706,7 @@ bool nsDeviceContext::IsSyncPagePrinting() const {
 void nsDeviceContext::RegisterPageDoneCallback(
     PrintTarget::PageDoneCallback&& aCallback) {
   MOZ_ASSERT(mPrintTarget && aCallback && !IsSyncPagePrinting());
-  mPrintTarget->RegisterPageDoneCallback(Move(aCallback));
+  mPrintTarget->RegisterPageDoneCallback(std::move(aCallback));
 }
 void nsDeviceContext::UnregisterPageDoneCallback() {
   if (mPrintTarget) {

@@ -18,15 +18,14 @@ class HTMLScriptElement final : public nsGenericHTMLElement,
                                 public ScriptElement {
  public:
   using Element::GetText;
-  using Element::SetText;
 
-  HTMLScriptElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+  HTMLScriptElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
                     FromParser aFromParser);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
 
-  NS_IMETHOD GetInnerHTML(nsAString& aInnerHTML) override;
+  void GetInnerHTML(nsAString& aInnerHTML, OOMReporter& aError) override;
   virtual void SetInnerHTML(const nsAString& aInnerHTML,
                             nsIPrincipal* aSubjectPrincipal,
                             mozilla::ErrorResult& aError) override;
@@ -35,20 +34,19 @@ class HTMLScriptElement final : public nsGenericHTMLElement,
   virtual bool GetScriptType(nsAString& type) override;
   virtual void GetScriptText(nsAString& text) override;
   virtual void GetScriptCharset(nsAString& charset) override;
-  virtual void FreezeExecutionAttrs(nsIDocument* aOwnerDoc) override;
+  virtual void FreezeExecutionAttrs(Document* aOwnerDoc) override;
   virtual CORSMode GetCORSMode() const override;
+  virtual mozilla::net::ReferrerPolicy GetReferrerPolicy() override;
 
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                               const nsAString& aValue,
                               nsIPrincipal* aMaybeScriptedPrincipal,
                               nsAttrValue& aResult) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // Element
   virtual nsresult AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
@@ -124,6 +122,14 @@ class HTMLScriptElement final : public nsGenericHTMLElement,
   }
   void SetIntegrity(const nsAString& aIntegrity, ErrorResult& aRv) {
     SetHTMLAttr(nsGkAtoms::integrity, aIntegrity, aRv);
+  }
+  void SetReferrerPolicy(const nsAString& aReferrerPolicy,
+                         ErrorResult& aError) {
+    SetHTMLAttr(nsGkAtoms::referrerpolicy, aReferrerPolicy, aError);
+  }
+  void GetReferrerPolicy(nsAString& aReferrerPolicy) {
+    GetEnumAttr(nsGkAtoms::referrerpolicy, EmptyCString().get(),
+                aReferrerPolicy);
   }
 
  protected:

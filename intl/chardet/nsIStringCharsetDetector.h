@@ -16,9 +16,6 @@
     }                                               \
   }
 
-#define NS_STRCDETECTOR_CONTRACTID_BASE \
-  "@mozilla.org/intl/stringcharsetdetect;1?type="
-
 /*
   This interface is similar to nsICharsetDetector
   The difference is it is for line base detection instead of block based

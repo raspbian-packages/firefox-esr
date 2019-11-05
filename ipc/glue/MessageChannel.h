@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,11 +18,10 @@
 #include "mozilla/MozPromise.h"
 #include "mozilla/Vector.h"
 #if defined(OS_WIN)
-#include "mozilla/ipc/Neutering.h"
+#  include "mozilla/ipc/Neutering.h"
 #endif  // defined(OS_WIN)
 #include "mozilla/ipc/Transport.h"
 #include "MessageLink.h"
-#include "nsILabelableRunnable.h"
 #include "nsThreadUtils.h"
 
 #include <deque>
@@ -90,6 +89,9 @@ class AutoEnterTransaction;
 class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
   friend class ProcessLink;
   friend class ThreadLink;
+#ifdef FUZZING
+  friend class ProtocolFuzzerHelper;
+#endif
 
   class CxxStackFrame;
   class InterruptFrame;
@@ -104,11 +106,11 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
  public:
   struct UntypedCallbackHolder {
     UntypedCallbackHolder(ActorIdType aActorId, RejectCallback&& aReject)
-        : mActorId(aActorId), mReject(Move(aReject)) {}
+        : mActorId(aActorId), mReject(std::move(aReject)) {}
 
     virtual ~UntypedCallbackHolder() {}
 
-    void Reject(ResponseRejectReason aReason) { mReject(aReason); }
+    void Reject(ResponseRejectReason&& aReason) { mReject(std::move(aReason)); }
 
     ActorIdType mActorId;
     RejectCallback mReject;
@@ -118,10 +120,10 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
   struct CallbackHolder : public UntypedCallbackHolder {
     CallbackHolder(ActorIdType aActorId, ResolveCallback<Value>&& aResolve,
                    RejectCallback&& aReject)
-        : UntypedCallbackHolder(aActorId, Move(aReject)),
-          mResolve(Move(aResolve)) {}
+        : UntypedCallbackHolder(aActorId, std::move(aReject)),
+          mResolve(std::move(aResolve)) {}
 
-    void Resolve(Value&& aReason) { mResolve(Move(aReason)); }
+    void Resolve(Value&& aReason) { mResolve(std::move(aReason)); }
 
     ResolveCallback<Value> mResolve;
   };
@@ -160,6 +162,15 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
   // in MessageChannel.cpp.
   bool Open(MessageChannel* aTargetChan, nsIEventTarget* aEventTarget,
             Side aSide);
+
+  // "Open" a connection to an actor on the current thread.
+  //
+  // Returns true if the transport layer was successfully connected,
+  // i.e., mChannelState == ChannelConnected.
+  //
+  // Same-thread channels may not perform synchronous or blocking message
+  // sends, to avoid deadlocks.
+  bool OpenOnSameThread(MessageChannel* aTargetChan, Side aSide);
 
   // Close the underlying transport channel.
   void Close();
@@ -211,13 +222,14 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
     }
 
     UniquePtr<UntypedCallbackHolder> callback =
-        MakeUnique<CallbackHolder<Value>>(aActorId, Move(aResolve),
-                                          Move(aReject));
-    mPendingResponses.insert(std::make_pair(seqno, Move(callback)));
+        MakeUnique<CallbackHolder<Value>>(aActorId, std::move(aResolve),
+                                          std::move(aReject));
+    mPendingResponses.insert(std::make_pair(seqno, std::move(callback)));
     gUnresolvedResponses++;
   }
 
-  void SendBuildID();
+  bool SendBuildIDsMatchMessage(const char* aParentBuildI);
+  bool DoBuildIDsMatch() { return mBuildIDsConfirmedMatch; }
 
   // Asynchronously deliver a message back to this side of the
   // channel
@@ -300,6 +312,11 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
     sIsPumpingMessages = aIsPumping;
   }
 
+  /**
+   * Does this MessageChannel cross process boundaries?
+   */
+  bool IsCrossProcess() const { return mIsCrossProcess; }
+
 #ifdef OS_WIN
   struct MOZ_STACK_CLASS SyncStackFrame {
     SyncStackFrame(MessageChannel* channel, bool interrupt);
@@ -340,10 +357,10 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
 
  private:
   void SpinInternalEventLoop();
-#if defined(ACCESSIBILITY)
+#  if defined(ACCESSIBILITY)
   bool WaitForSyncNotifyWithA11yReentry();
-#endif  // defined(ACCESSIBILITY)
-#endif  // defined(OS_WIN)
+#  endif  // defined(ACCESSIBILITY)
+#endif    // defined(OS_WIN)
 
  private:
   void CommonThreadOpenInit(MessageChannel* aTargetChan, Side aSide);
@@ -526,10 +543,19 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
                        "not on worker thread!");
   }
 
-  // The "link" thread is either the I/O thread (ProcessLink) or the
-  // other actor's work thread (ThreadLink).  In either case, it is
-  // NOT our worker thread.
+  // The "link" thread is either the I/O thread (ProcessLink), the other
+  // actor's work thread (ThreadLink), or the worker thread (same-thread
+  // channels).
   void AssertLinkThread() const {
+    if (mIsSameThreadChannel) {
+      // If we're a same-thread channel, we have to be on our worker
+      // thread.
+      AssertWorkerThread();
+      return;
+    }
+
+    // If we aren't a same-thread channel, our "link" thread is _not_ our
+    // worker thread!
     MOZ_ASSERT(mWorkerThread, "Channel hasn't been opened yet");
     MOZ_RELEASE_ASSERT(mWorkerThread != GetCurrentVirtualThread(),
                        "on worker thread but should not be!");
@@ -538,8 +564,7 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
  private:
   class MessageTask : public CancelableRunnable,
                       public LinkedListElement<RefPtr<MessageTask>>,
-                      public nsIRunnablePriority,
-                      public nsILabelableRunnable {
+                      public nsIRunnablePriority {
    public:
     explicit MessageTask(MessageChannel* aChannel, Message&& aMessage);
 
@@ -555,8 +580,6 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
 
     Message& Msg() { return mMessage; }
     const Message& Msg() const { return mMessage; }
-
-    bool GetAffectedSchedulerGroups(SchedulerGroupSet& aGroups) override;
 
    private:
     MessageTask() = delete;
@@ -588,6 +611,7 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
   ChannelState mChannelState;
   RefPtr<RefCountedMonitor> mMonitor;
   Side mSide;
+  bool mIsCrossProcess;
   MessageLink* mLink;
   MessageLoop* mWorkerLoop;  // thread where work is done
   RefPtr<CancelableRunnable>
@@ -820,6 +844,12 @@ class MessageChannel : HasResultCodes, MessageLoop::DestructionObserver {
   // held in a queue until another thread deems it is safe to send them.
   bool mIsPostponingSends;
   std::vector<UniquePtr<Message>> mPostponedSends;
+
+  bool mBuildIDsConfirmedMatch;
+
+  // If this is true, both ends of this message channel have event targets
+  // on the same thread.
+  bool mIsSameThreadChannel;
 };
 
 void CancelCPOWs();

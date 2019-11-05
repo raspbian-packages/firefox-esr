@@ -20,6 +20,7 @@ elif CONFIG['OS_ARCH'] == 'WINNT':
     FORCE_STATIC_LIB = True
 
     DIRS += [
+        'win/src/remotesandboxbroker',
         'win/src/sandboxbroker',
         'win/src/sandboxpermissions',
         'win/src/sandboxtarget',
@@ -143,8 +144,12 @@ elif CONFIG['OS_ARCH'] == 'WINNT':
         'chromium/sandbox/win/src/window.cc',
         'win/SandboxInitialization.cpp',
     ]
+    # Sandbox interceptors can be called before the process's import table
+    # is populated.  Don't let the compiler insert any instrumentation that
+    # might call an import.
+    SOURCES['chromium/sandbox/win/src/process_thread_interception.cc'].no_pgo = True
 
-    if CONFIG['CPU_ARCH'] == 'x86_64':
+    if CONFIG['CPU_ARCH'] in ('x86_64', 'aarch64'):
         SOURCES += [
             'chromium/sandbox/win/src/interceptors_64.cc',
             'chromium/sandbox/win/src/resolver_64.cc',
@@ -169,12 +174,7 @@ elif CONFIG['OS_ARCH'] == 'WINNT':
     DisableStlWrapping()
 
     # Suppress warnings in third-party code.
-    if CONFIG['CC_TYPE'] in ('msvc', 'clang-cl'):
+    if CONFIG['CC_TYPE'] == 'clang-cl':
         CXXFLAGS += [
-            '-wd4275', # non dll-interface class exception used as base for dll-interface class
-            '-wd4717', # recursive on all control paths, function will cause runtime stack overflow
-            '-wd4996', # 'GetVersionExW': was declared deprecated
-            '-wd4302', # 'reinterpret_cast': truncation from 'LPCSTR' to 'WORD'
-            '-wd4311', # 'reinterpret_cast': pointer truncation from 'LPOVERLAPPED' to 'DWORD'
-            '-wd4312', # 'reinterpret_cast': conversion from 'DWORD' to 'LPOVERLAPPED' of greater size
+            '-Wno-deprecated-declarations', # 'GetVersionExW': was declared deprecated
         ]

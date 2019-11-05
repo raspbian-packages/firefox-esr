@@ -8,11 +8,13 @@
 #define SlicedInputStream_h
 
 #include "mozilla/Attributes.h"
+#include "mozilla/Mutex.h"
 #include "nsCOMPtr.h"
 #include "nsIAsyncInputStream.h"
 #include "nsICloneableInputStream.h"
 #include "nsIIPCSerializableInputStream.h"
 #include "nsISeekableStream.h"
+#include "nsIInputStreamLength.h"
 
 namespace mozilla {
 
@@ -22,7 +24,10 @@ class SlicedInputStream final : public nsIAsyncInputStream,
                                 public nsICloneableInputStream,
                                 public nsIIPCSerializableInputStream,
                                 public nsISeekableStream,
-                                public nsIInputStreamCallback {
+                                public nsIInputStreamCallback,
+                                public nsIInputStreamLength,
+                                public nsIAsyncInputStreamLength,
+                                public nsIInputStreamLengthCallback {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIINPUTSTREAM
@@ -30,7 +35,11 @@ class SlicedInputStream final : public nsIAsyncInputStream,
   NS_DECL_NSICLONEABLEINPUTSTREAM
   NS_DECL_NSIIPCSERIALIZABLEINPUTSTREAM
   NS_DECL_NSISEEKABLESTREAM
+  NS_DECL_NSITELLABLESTREAM
   NS_DECL_NSIINPUTSTREAMCALLBACK
+  NS_DECL_NSIINPUTSTREAMLENGTH
+  NS_DECL_NSIASYNCINPUTSTREAMLENGTH
+  NS_DECL_NSIINPUTSTREAMLENGTHCALLBACK
 
   // Create an input stream whose data comes from a slice of aInputStream.  The
   // slice begins at aStart bytes beyond aInputStream's current position, and
@@ -52,9 +61,15 @@ class SlicedInputStream final : public nsIAsyncInputStream,
  private:
   ~SlicedInputStream();
 
+  template <typename M>
+  void SerializeInternal(mozilla::ipc::InputStreamParams& aParams,
+                         FileDescriptorArray& aFileDescriptors,
+                         bool aDelayedStart, uint32_t aMaxSize,
+                         uint32_t* aSizeUsed, M* aManager);
+
   void SetSourceStream(already_AddRefed<nsIInputStream> aInputStream);
 
-  nsresult RunAsyncWaitCallback();
+  uint64_t AdjustRange(uint64_t aRange);
 
   nsCOMPtr<nsIInputStream> mInputStream;
 
@@ -62,7 +77,10 @@ class SlicedInputStream final : public nsIAsyncInputStream,
   nsICloneableInputStream* mWeakCloneableInputStream;
   nsIIPCSerializableInputStream* mWeakIPCSerializableInputStream;
   nsISeekableStream* mWeakSeekableInputStream;
+  nsITellableStream* mWeakTellableInputStream;
   nsIAsyncInputStream* mWeakAsyncInputStream;
+  nsIInputStreamLength* mWeakInputStreamLength;
+  nsIAsyncInputStreamLength* mWeakAsyncInputStreamLength;
 
   uint64_t mStart;
   uint64_t mLength;
@@ -70,11 +88,18 @@ class SlicedInputStream final : public nsIAsyncInputStream,
 
   bool mClosed;
 
-  // These four are used for AsyncWait.
+  // These four are used for AsyncWait. They are protected by mutex because
+  // touched on multiple threads.
   nsCOMPtr<nsIInputStreamCallback> mAsyncWaitCallback;
   nsCOMPtr<nsIEventTarget> mAsyncWaitEventTarget;
   uint32_t mAsyncWaitFlags;
   uint32_t mAsyncWaitRequestedCount;
+
+  // This is use for nsIAsyncInputStreamLength::AsyncWait.
+  // This is protected by mutex.
+  nsCOMPtr<nsIInputStreamLengthCallback> mAsyncWaitLengthCallback;
+
+  Mutex mMutex;
 };
 
 }  // namespace mozilla

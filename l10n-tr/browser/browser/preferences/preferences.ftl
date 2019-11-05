@@ -4,8 +4,8 @@
 
 do-not-track-description = Web sitelerine izlenmek istemediğimi bildiren “Do Not Track” sinyalini gönder
 do-not-track-learn-more = Daha fazla bilgi al
-do-not-track-option-default =
-    .label = Yalnızca İzlenme Koruması’nı kullanırken
+do-not-track-option-default-content-blocking-known =
+    .label = Yalnızca { -brand-short-name } bilinen takipçileri engellemeye ayarlandığında
 do-not-track-option-always =
     .label = Her zaman
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Seçenekler
            *[other] Tercihler
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Kurumunuz bazı seçenekleri değiştirme olanağını devre dışı bırakmış.
        *[other] Kurumunuz bazı tercihleri değiştirme olanağını devre dışı bırakmış.
     }
+managed-notice = Tarayıcınız kuruluşunuz tarafından yönetiliyor.
 pane-general-title = Genel
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Gizlilik ve Güvenlik
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox Hesabı
-category-sync =
-    .tooltiptext = { pane-sync-title }
-help-button-label = { -brand-short-name } Desteği
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
+help-button-label = { -brand-short-name } desteği
+addons-button-label = Eklentiler ve temalar
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = { -brand-short-name } tarayıcısını yeniden başlat
 should-restart-ok = { -brand-short-name } tarayıcısını yeniden başlat
 cancel-no-restart-button = Vazgeç
 restart-later = Daha sonra yeniden başlat
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Giriş sayfanızı <img data-l10n-name="icon"/> { $name } adlı eklenti yönetiyor.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Yeni Sekme sayfanızı <img data-l10n-name="icon"/> { $name } adlı eklenti yönetiyor.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Bu ayarı <img data-l10n-name="icon"/> { $name } adlı eklenti kontrol ediyor.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = <img data-l10n-name="icon"/> { $name } eklentisi varsayılan arama motorunuzu değiştirdi.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = <img data-l10n-name="icon"/> { $name } eklentisi kapsayıcı sekmelere ihtiyaç duyuyor.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Bu ayarı <img data-l10n-name="icon"/> { $name } adlı eklenti yönetiyor.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = { -brand-short-name } tarayıcınızın internete nasıl bağlanacağını <img data-l10n-name="icon"/> { $name } adlı eklenti kontrol ediyor.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Eklentiyi etkinleştirmek için <img data-l10n-name="menu-icon"/> menüdeki <img data-l10n-name="addons-icon"/> Eklentiler bölümüne gidin.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } varsayılan tarayıcınız değil
 set-as-my-default-browser =
     .label = Varsayılan yap…
     .accesskey = a
-startup-page = { -brand-short-name } açıldığında
-    .accesskey = a
-startup-user-homepage =
-    .label = Giriş sayfamı göster
-startup-blank-page =
-    .label = Boş bir sayfa göster
-startup-prev-session =
-    .label = Son oturumdaki pencereleri ve sekmeleri göster
+startup-restore-previous-session =
+    .label = Önceki oturumu geri yükle
+    .accesskey = o
+startup-restore-warn-on-quit =
+    .label = Tarayıcıdan çıkarken beni uyar
 disable-extension =
     .label = Eklentiyi etkisizleştir
-home-page-header = Giriş sayfası
 tabs-group-header = Sekmeler
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab, sekmeler arasında son kullanıldıkları sırayla atlasın
@@ -181,6 +208,12 @@ choose-language-description = Sayfaları hangi dilde görmeyi tercih ettiğinizi
 choose-button =
     .label = Seç…
     .accesskey = S
+choose-browser-language-description = { -brand-short-name } menülerini, iletilerini ve bildirimlerini gösterirken kullanılacak dilleri seçin.
+manage-browser-languages-button =
+    .label = Alternatifleri ayarla…
+    .accesskey = l
+confirm-browser-language-change-description = Bu değişiklikleri uygulamak için { -brand-short-name } tarayıcısını yeniden başlatın
+confirm-browser-language-change-button = Uygula ve yeniden başlat
 translate-web-pages =
     .label = Web içeriğini çevir
     .accesskey = W
@@ -232,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Daha fazla bilgi al
 update-application-title = { -brand-short-name } güncellemeleri
 update-application-description = En yüksek performans, güvenilirlik ve güvenlik için { -brand-short-name } tarayıcınızı güncel tutmalısınız.
-update-application-info = Sürüm { $version } <a>Yeni neler var?</a>
 update-application-version = Sürüm { $version } <a data-l10n-name="learn-more">Yeni neler var?</a>
 update-history =
     .label = Güncelleme geçmişini göster…
@@ -247,12 +279,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Hiçbir zaman denetlenmesin (Önerilmez)
     .accesskey = H
+update-application-warning-cross-user-setting = Bu ayar, bu { -brand-short-name } kurulumunu kullanan tüm Windows hesaplarına ve { -brand-short-name } profillerine uygulanacaktır.
 update-application-use-service =
     .label = Güncellemeleri yüklemek için arka plan hizmetini kullan
     .accesskey = h
 update-enable-search-update =
     .label = Arama motorlarını otomatik olarak güncelle
     .accesskey = e
+update-pref-write-failure-title = Yazma Hatası
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Tercih kaydedilemiyor. Dosyaya yazılamadı: { $path }
+update-setting-write-failure-title = Güncelleme tercihlerini kaydetmede hata
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } bir hatayla karşılaştı ve bu değişikliği kaydetmedi. Bu güncelleme tercihinin ayarlanması için aşağıdaki dosyaya yazma izninizin olması gerekir. Siz veya sistem yöneticiniz bu dosya için Kullanıcılar grubuna tam denetim vererek hatayı giderebilirsiniz.
+    
+    Dosyaya yazılamadı: { $path }
+update-in-progress-title = Güncelleme sürüyor
+update-in-progress-message = { -brand-short-name } bu güncellemeyi uygulamaya devam etsin mi?
+update-in-progress-ok-button = &Vazgeç
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Devam et
 
 ## General Section - Performance
 
@@ -268,7 +320,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = İçerik işlemi sınırı
     .accesskey = L
 performance-limit-content-process-enabled-desc = Daha fazla içerik işlemine izin verdiğinizde, çok sayıda sekme açıkken performans artar ama daha fazla bellek kullanılır.
-performance-limit-content-process-disabled-desc = İçerik işlemi sayısını değiştirmek yalnızca çok işlemli { -brand-short-name } ile mümkündür. <a>Çok işlemin etkin olmadığını kontrol etmeyi öğrenin</a>
 performance-limit-content-process-blocked-desc = İçerik işlemi sayısını değiştirmek yalnızca çok işlemli { -brand-short-name } ile mümkündür. <a data-l10n-name="learn-more">Çok işlemin etkin olmadığını kontrol etmeyi öğrenin</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -293,10 +344,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Yazmaya başlar başlamaz arama yap
     .accesskey = z
+browsing-cfr-recommendations =
+    .label = Gezinirken yeni eklentiler öner
+    .accesskey = G
+browsing-cfr-features =
+    .label = Gezinti yeni özellikler öner
+    .accesskey = G
+browsing-cfr-recommendations-learn-more = Daha fazla bilgi al
 
 ## General Section - Proxy
 
-network-proxy-title = Ağ vekil sunucusu
+network-settings-title = Ağ ayarları
+network-proxy-connection-description = { -brand-short-name } tarayıcınızın internete nasıl bağlanacağını yapılandırın.
 network-proxy-connection-learn-more = Daha fazla bilgi al
 network-proxy-connection-settings =
     .label = Ayarlar…
@@ -338,9 +397,6 @@ use-current-pages =
 choose-bookmark =
     .label = Yer imi kullan…
     .accesskey = m
-restore-default =
-    .label = Varsayılanı geri getir
-    .accesskey = r
 
 ## Search Section
 
@@ -457,7 +513,7 @@ sync-engine-logins =
 sync-engine-addresses =
     .label = Adresler
     .tooltiptext = Kaydettiğiniz posta adresleri (yalnızca masaüstü)
-    .accesskey = e
+    .accesskey = A
 sync-engine-creditcards =
     .label = Kredi kartları
     .tooltiptext = Adlar, numaralar ve son kullanma tarihleri (yalnızca masaüstü)
@@ -465,7 +521,7 @@ sync-engine-creditcards =
 sync-engine-addons =
     .label = Eklentiler
     .tooltiptext = Masaüstü Firefox eklentileri ve temaları
-    .accesskey = E
+    .accesskey = t
 sync-engine-prefs =
     .label =
         { PLATFORM() ->
@@ -473,7 +529,7 @@ sync-engine-prefs =
            *[other] Tercihler
         }
     .tooltiptext = Değiştirdiğiniz Genel, Gizlilik ve Güvenlik ayarları
-    .accesskey = T
+    .accesskey = e
 sync-device-name-header = Cihaz adı
 sync-device-name-change =
     .label = Cihaz adını değiştir…
@@ -484,8 +540,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Kaydet
     .accesskey = K
-sync-mobilepromo-single = Başka bir cihaz bağla
-sync-mobilepromo-multi = Cihazları yönet
+sync-connect-another-device = Başka bir cihaz bağla
+sync-manage-devices = Cihazları yönet
+sync-fxa-begin-pairing = Cihaz eşleştir
 sync-tos-link = Kullanım Koşulları
 sync-fxa-privacy-notice = Gizlilik Bildirimi
 
@@ -495,13 +552,16 @@ privacy-header = Tarayıcı gizliliği
 
 ## Privacy Section - Forms
 
-forms-header = Formlar ve parolalar
+logins-header = Hesaplar ve parolalar
 forms-ask-to-save-logins =
     .label = Sitelerdeki kullanıcı adı ve parolalarımı kaydetmeyi öner
     .accesskey = r
 forms-exceptions =
     .label = İstisnalar…
     .accesskey = s
+forms-generate-passwords =
+    .label = Güçlü parolalar öner ve oluştur
+    .accesskey = G
 forms-saved-logins =
     .label = Kayıtlı hesaplar…
     .accesskey = K
@@ -537,9 +597,9 @@ history-dontremember-description = { -brand-short-name } Gizli Gezinti ile aynı
 history-private-browsing-permanent =
     .label = Her zaman gizli gezinti kipini kullan
     .accesskey = m
-history-remember-option =
-    .label = Gezinti ve indirme geçmişimi hatırla
-    .accesskey = h
+history-remember-browser-option =
+    .label = Tarama ve indirme geçmişini hatırla
+    .accesskey = T
 history-remember-search-option =
     .label = Arama ve form geçmişini hatırla
     .accesskey = f
@@ -556,36 +616,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Çerezler ve site verileri
+sitedata-total-size-calculating = Site verilerinin ve önbelleğin boyutu hesaplanıyor…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Depolanmış site verileriniz ve önbelleğiniz şu anda { $value } { $unit } disk alanı kullanıyor.
 sitedata-learn-more = Daha fazla bilgi al
-sitedata-accept-cookies-option =
-    .label = Web sitelerinden gelen çerezleri ve site verilerini kabul et (Önerilir)
+sitedata-delete-on-close =
+    .label = { -brand-short-name } kapatıldığında çerezleri ve site verilerini sil
     .accesskey = k
-sitedata-block-cookies-option =
-    .label = Çerezleri ve site verilerini engelle (Bazı siteler düzgün çalışmayabilir)
+sitedata-delete-on-close-private-browsing = Kalıcı gizli gezinti modunda, { -brand-short-name } kapatıldığında çerezler ve site verileri her zaman silinir.
+sitedata-allow-cookies-option =
+    .label = Çerezleri ve site verilerini kabul et
     .accesskey = z
-sitedata-keep-until = Tutma sınırı
-    .accesskey = u
-sitedata-keep-until-expire =
-    .label = Süresi dolana dek
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } kapatılana dek
-sitedata-accept-third-party-desc = Üçüncü taraf çerezlerini ve site verilerini kabul et
+sitedata-disallow-cookies-option =
+    .label = Çerezleri ve site verilerini engelle
+    .accesskey = s
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Engellenecek tür
     .accesskey = ü
-sitedata-accept-third-party-always-option =
-    .label = Her zaman
-sitedata-accept-third-party-visited-option =
-    .label = Ziyaret edilenlerden
-sitedata-accept-third-party-never-option =
-    .label = Asla
+sitedata-option-block-trackers =
+    .label = Üçüncü taraf takipçileri
+sitedata-option-block-unvisited =
+    .label = Ziyaret etmediğim sitelerden gelen çerezler
+sitedata-option-block-all-third-party =
+    .label = Tüm üçüncü taraf çerezleri (Bazı siteler bozulabilir.)
+sitedata-option-block-all =
+    .label = Tüm çerezler (Bazı siteler bozulabilir.)
 sitedata-clear =
     .label = Verileri temizle…
     .accesskey = l
 sitedata-settings =
     .label = Verileri yönet…
     .accesskey = V
-sitedata-cookies-exceptions =
-    .label = İstisnalar…
-    .accesskey = r
+sitedata-cookies-permissions =
+    .label = İzinleri yönet…
+    .accesskey = z
 
 ## Privacy Section - Address Bar
 
@@ -602,30 +669,73 @@ addressbar-locbar-openpage-option =
     .accesskey = s
 addressbar-suggestions-settings = Arama motoru önerileri için tercihleri değiştir
 
-## Privacy Section - Tracking
+## Privacy Section - Content Blocking
 
-tracking-header = İzlenme Koruması
-tracking-desc = İzlenme Koruması, siz siteler arasında gezinirken hakkınızda veri toplayan çevrimiçi takipçileri engeller. <a data-l10n-name="learn-more">İzlenme Koruması ve gizliliğiniz hakkında daha fazla bilgi alın</a>
-tracking-mode-label = Bilinen takipçileri engellemek için İzlenme Koruması’nı kullan
-tracking-mode-always =
-    .label = Her zaman
-    .accesskey = H
-tracking-mode-private =
+content-blocking-header = İçerik engelleme
+content-blocking-description = Web’de sizi takip eden üçüncü taraf içeriklerini engelleyebilirsiniz. İnternette yaptıklarınızın ne kadarının depolanacağına ve siteler arasında paylaşılacağına siz karar verin.
+content-blocking-section-description = Gezinirken gizliliğinizi koruyun. Ziyaret ettiğiniz siteleri izleyen ve profilinizi çıkarak görünmez içerikleri engelleyebilirsiniz. Bu içerikleri engellemek sayfaların daha hızlı yüklenmesini de sağlayabilir.
+content-blocking-learn-more = Daha fazla bilgi al
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Standart
+    .accesskey = S
+content-blocking-setting-strict =
+    .label = Sıkı
+    .accesskey = k
+content-blocking-setting-custom =
+    .label = Özel
+    .accesskey = Ö
+content-blocking-standard-description = Bilinen takipçileri yalnızca gizli penceredeyken engeller.
+content-blocking-standard-desc = Koruma ve performans dengesi sunar. Web sitelerinin düzgün çalışabilmesi için bazı takipçilere izin verir.
+content-blocking-strict-desc = { -brand-short-name } tarafından bulunan tüm takipçileri engeller. Bazı siteler düzgün çalışmayabilir.
+content-blocking-strict-description = Daha güçlü koruma. Bazı sitelerin bozulmasına neden olabilir.
+content-blocking-custom-desc = Nelerin engelleneceğini seçin.
+content-blocking-private-trackers = Bilinen takipçileri yalnızca gizli pencelerde engeller
+content-blocking-third-party-cookies = Üçüncü taraf takip çerezlerini engeller
+content-blocking-all-cookies = Tüm çerezler
+content-blocking-unvisited-cookies = Ziyaret etmediğim sitelerden gelen çerezler
+content-blocking-all-windows-trackers = Bilinen takipçileri tüm pencerelerde engeller
+content-blocking-all-third-party-cookies = Tüm üçüncü taraf çerezlerini engeller
+content-blocking-cryptominers = Kripto madencileri
+content-blocking-fingerprinters = Parmak izi toplayıcılar
+content-blocking-warning-title = Dikkat!
+content-blocking-warning-description = İçerikleri engellemek bazı sitelerin bozulmasına neden olabilir. Güvendiğiniz sitelerde engellemeyi kolayca kapatabilirsiniz.
+content-blocking-learn-how = Engellemeyi kapatmayı öğrenin
+content-blocking-reload-description = Bu değişiklikleri uygulamak için sekmelerinizi tazelemeniz gerekiyor.
+content-blocking-reload-tabs-button =
+    .label = Tüm sekmeleri tazele
+    .accesskey = T
+content-blocking-trackers-label =
+    .label = Takipçiler
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = Tüm pencerelerde
+    .accesskey = m
+content-blocking-option-private =
     .label = Yalnızca gizli pencerelerde
     .accesskey = z
-tracking-mode-never =
-    .label = Asla
-    .accesskey = A
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Gizli Gezinti’de bilinen takipçileri engellemek için İzlenme Koruması’nı kullan
-    .accesskey = G
-tracking-exceptions =
-    .label = İstisnalar…
-    .accesskey = r
-tracking-change-block-list =
-    .label = Engelleme listesini değiştir…
-    .accesskey = E
+content-blocking-tracking-protection-change-block-list = Engelleme listesini değiştir
+content-blocking-cookies-label =
+    .label = Çerezler
+    .accesskey = e
+content-blocking-expand-section =
+    .tooltiptext = Daha fazla bilgi
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Kripto madencileri
+    .accesskey = m
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Parmak izi toplayıcılar
+    .accesskey = P
+
+## Privacy Section - Tracking
+
+tracking-manage-exceptions =
+    .label = İstisnaları yönet…
+    .accesskey = n
 
 ## Privacy Section - Permissions
 
@@ -646,10 +756,20 @@ permissions-notification = Bildirimler
 permissions-notification-settings =
     .label = Ayarlar…
     .accesskey = r
-permissions-notification-link = Daha fazlası
+permissions-notification-link = Daha fazla bilgi al
 permissions-notification-pause =
     .label = { -brand-short-name } yeniden başlatılana dek bildirimleri duraklat
     .accesskey = b
+permissions-block-autoplay-media2 =
+    .label = Web sitelerinin otomatik olarak ses çalmasını engelle
+    .accesskey = s
+permissions-block-autoplay-media-exceptions =
+    .label = İstisnalar…
+    .accesskey = s
+permissions-autoplay = Otomatik oynatma
+permissions-autoplay-settings =
+    .label = Ayarlar…
+    .accesskey = r
 permissions-block-popups =
     .label = Açılır pencereleri engelle
     .accesskey = n
@@ -676,13 +796,15 @@ collection-health-report =
     .label = { -brand-short-name }, teknik ve etkileşim verilerimi { -vendor-short-name }’ya gönderebilir
     .accesskey = r
 collection-health-report-link = Daha fazla bilgi al
+collection-studies =
+    .label = { -brand-short-name }, araştırmalar yükleyip çalıştırabilir
+collection-studies-link = { -brand-short-name } araştırmalarını göster
+addon-recommendations =
+    .label = { -brand-short-name }, bana özel eklenti tavsiyelerinde bulunabilir
+addon-recommendations-link = Daha fazla bilgi al
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Bu yapılandırma için veri raporlama devre dışı bırakılmış
-collection-browser-errors =
-    .label = { -brand-short-name }, tarayıcı hata raporlarını (hata mesajları da dahil olmak üzere) { -vendor-short-name }’ya gönderebilir
-    .accesskey = t
-collection-browser-errors-link = Daha fazla bilgi al
 collection-backlogged-crash-reports =
     .label = { -brand-short-name } geriye dönük çökme raporlarını benim adıma gönderebilir
     .accesskey = ö
@@ -725,3 +847,36 @@ certs-view =
 certs-devices =
     .label = Güvenlik aygıtları…
     .accesskey = ü
+space-alert-learn-more-button =
+    .label = Daha fazla bilgi al
+    .accesskey = D
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Seçenekleri aç
+           *[other] Tercihleri aç
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] S
+           *[other] e
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } tarafından kulllanılabilen disk alanı azaldı. Site içerikleri düzgün görüntülenemeyebilir. Depolanan verileri Seçenekler > Gizlilik ve Güvenlik > Site verileri kısmından temizleyebilirsiniz.
+       *[other] { -brand-short-name } tarafından kulllanılabilen disk alanı azaldı. Site içerikleri düzgün görüntülenemeyebilir. Depolanan verileri Tercihler > Gizlilik ve Güvenlik > Site verileri kısmından temizleyebilirsiniz.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Anladım
+    .accesskey = A
+space-alert-under-5gb-message = { -brand-short-name } tarafından kulllanılabilen disk alanı azaldı. Site içerikleri düzgün görüntülenemeyebilir. Daha iyi bir gezinti deneyimi içi disk kullanımınızı iyileştirmek isterseniz “Daha fazla bilgi al” sayfasını ziyaret edin.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Masaüstü
+downloads-folder-name = İndirilenler
+choose-download-folder-title = İndirme klasörünü seçin:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Dosyaları { $service-name } alanıma kaydet

@@ -10,6 +10,7 @@
 #include "nsString.h"
 #include "nsStringBuffer.h"
 #include "mozilla/RefPtr.h"
+#include "mozilla/Span.h"
 
 namespace mozilla {
 namespace dom {
@@ -23,7 +24,7 @@ struct FakeString {
         mClassFlags(nsString::ClassFlags(0)) {}
 
   ~FakeString() {
-    if (mDataFlags & nsString::DataFlags::SHARED) {
+    if (mDataFlags & nsString::DataFlags::REFCOUNTED) {
       nsStringBuffer::FromData(mData)->Release();
     }
   }
@@ -61,9 +62,21 @@ struct FakeString {
 
   const nsString::char_type* Data() const { return mData; }
 
-  nsString::char_type* BeginWriting() { return mData; }
+  nsString::char_type* BeginWriting() {
+    MOZ_ASSERT(!(mDataFlags & nsString::DataFlags::REFCOUNTED) ||
+               !nsStringBuffer::FromData(mData)->IsReadonly());
+    return mData;
+  }
 
   nsString::size_type Length() const { return mLength; }
+
+  operator mozilla::Span<const nsString::char_type>() const {
+    return mozilla::MakeSpan(Data(), Length());
+  }
+
+  operator mozilla::Span<nsString::char_type>() {
+    return mozilla::MakeSpan(BeginWriting(), Length());
+  }
 
   // Reserve space to write aLength chars, not including null-terminator.
   bool SetLength(nsString::size_type aLength, mozilla::fallible_t const&) {
@@ -98,9 +111,9 @@ struct FakeString {
   nsAString* ToAStringPtr() { return reinterpret_cast<nsString*>(this); }
 
   // mData is left uninitialized for optimization purposes.
-  nsString::char_type* mData;
+  MOZ_INIT_OUTSIDE_CTOR nsString::char_type* mData;
   // mLength is left uninitialized for optimization purposes.
-  nsString::size_type mLength;
+  MOZ_INIT_OUTSIDE_CTOR nsString::size_type mLength;
   nsString::DataFlags mDataFlags;
   nsString::ClassFlags mClassFlags;
 
@@ -116,7 +129,8 @@ struct FakeString {
   }
   void AssignFromStringBuffer(already_AddRefed<nsStringBuffer> aBuffer) {
     SetData(static_cast<nsString::char_type*>(aBuffer.take()->Data()));
-    mDataFlags = nsString::DataFlags::SHARED | nsString::DataFlags::TERMINATED;
+    mDataFlags =
+        nsString::DataFlags::REFCOUNTED | nsString::DataFlags::TERMINATED;
   }
 
   friend class NonNull<nsAString>;

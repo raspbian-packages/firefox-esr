@@ -12,7 +12,19 @@ blocklist-treehead-list =
     .label = فہرست
 blocklist-button-cancel =
     .label = منسوخ کریں
-    .accesskey = م
+    .accesskey = C
 blocklist-button-ok =
     .label = تبدیلیاں محفوظ کریں
-    .accesskey = م
+    .accesskey = S
+# This template constructs the name of the block list in the block lists dialog.
+# It combines the list name and description.
+# e.g. "Standard (Recommended). This list does a pretty good job."
+#
+# Variables:
+#   $listName {string, "Standard (Recommended)."} - List name.
+#   $description {string, "This list does a pretty good job."} - Description of the list.
+blocklist-item-list-template = { $listName } { $description }
+blocklist-item-moz-std-name = Disconnect.me اساسی حفاظت (سفارش شدا)۔
+blocklist-item-moz-std-desc = ٹریکرس کواجازت دیں تاکہ ویب سائٹ صحیع طرح سے فعل کریں۔
+blocklist-item-moz-full-name = Disconnect.me سخت حفاظت۔
+blocklist-item-moz-full-desc = ٹریکرس کوبلاک کرنے سے چندویب سائٹ صحیع طرح سے فعل نہیں کریں گی۔

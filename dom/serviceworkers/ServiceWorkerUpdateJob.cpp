@@ -8,11 +8,18 @@
 
 #include "nsIScriptError.h"
 #include "nsIURL.h"
+#include "nsNetUtil.h"
+#include "nsProxyRelease.h"
+#include "ServiceWorkerManager.h"
+#include "ServiceWorkerPrivate.h"
+#include "ServiceWorkerRegistrationInfo.h"
 #include "ServiceWorkerScriptCache.h"
 #include "mozilla/dom/WorkerCommon.h"
 
 namespace mozilla {
 namespace dom {
+
+using serviceWorkerScriptCache::OnFailure;
 
 namespace {
 
@@ -39,32 +46,22 @@ enum ScopeStringPrefixMode { eUseDirectory, eUsePath };
 
 nsresult GetRequiredScopeStringPrefix(nsIURI* aScriptURI, nsACString& aPrefix,
                                       ScopeStringPrefixMode aPrefixMode) {
-  nsresult rv = aScriptURI->GetPrePath(aPrefix);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
+  nsresult rv;
   if (aPrefixMode == eUseDirectory) {
     nsCOMPtr<nsIURL> scriptURL(do_QueryInterface(aScriptURI));
     if (NS_WARN_IF(!scriptURL)) {
       return NS_ERROR_FAILURE;
     }
 
-    nsAutoCString dir;
-    rv = scriptURL->GetDirectory(dir);
+    rv = scriptURL->GetDirectory(aPrefix);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
-
-    aPrefix.Append(dir);
   } else if (aPrefixMode == eUsePath) {
-    nsAutoCString path;
-    rv = aScriptURI->GetPathQueryRef(path);
+    rv = aScriptURI->GetPathQueryRef(aPrefix);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
-
-    aPrefix.Append(path);
   } else {
     MOZ_ASSERT_UNREACHABLE("Invalid value for aPrefixMode");
   }
@@ -85,11 +82,12 @@ class ServiceWorkerUpdateJob::CompareCallback final
   }
 
   virtual void ComparisonResult(nsresult aStatus, bool aInCacheAndEqual,
+                                OnFailure aOnFailure,
                                 const nsAString& aNewCacheName,
                                 const nsACString& aMaxScope,
                                 nsLoadFlags aLoadFlags) override {
-    mJob->ComparisonResult(aStatus, aInCacheAndEqual, aNewCacheName, aMaxScope,
-                           aLoadFlags);
+    mJob->ComparisonResult(aStatus, aInCacheAndEqual, aOnFailure, aNewCacheName,
+                           aMaxScope, aLoadFlags);
   }
 
   NS_INLINE_DECL_REFCOUNTING(ServiceWorkerUpdateJob::CompareCallback, override)
@@ -143,11 +141,10 @@ class ServiceWorkerUpdateJob::ContinueInstallRunnable final
 
 ServiceWorkerUpdateJob::ServiceWorkerUpdateJob(
     nsIPrincipal* aPrincipal, const nsACString& aScope,
-    const nsACString& aScriptSpec, nsILoadGroup* aLoadGroup,
-    ServiceWorkerUpdateViaCache aUpdateViaCache)
+    const nsACString& aScriptSpec, ServiceWorkerUpdateViaCache aUpdateViaCache)
     : ServiceWorkerJob(Type::Update, aPrincipal, aScope, aScriptSpec),
-      mLoadGroup(aLoadGroup),
-      mUpdateViaCache(aUpdateViaCache) {}
+      mUpdateViaCache(aUpdateViaCache),
+      mOnFailure(OnFailure::DoNothing) {}
 
 already_AddRefed<ServiceWorkerRegistrationInfo>
 ServiceWorkerUpdateJob::GetRegistration() const {
@@ -158,11 +155,10 @@ ServiceWorkerUpdateJob::GetRegistration() const {
 
 ServiceWorkerUpdateJob::ServiceWorkerUpdateJob(
     Type aType, nsIPrincipal* aPrincipal, const nsACString& aScope,
-    const nsACString& aScriptSpec, nsILoadGroup* aLoadGroup,
-    ServiceWorkerUpdateViaCache aUpdateViaCache)
+    const nsACString& aScriptSpec, ServiceWorkerUpdateViaCache aUpdateViaCache)
     : ServiceWorkerJob(aType, aPrincipal, aScope, aScriptSpec),
-      mLoadGroup(aLoadGroup),
-      mUpdateViaCache(aUpdateViaCache) {}
+      mUpdateViaCache(aUpdateViaCache),
+      mOnFailure(serviceWorkerScriptCache::OnFailure::DoNothing) {}
 
 ServiceWorkerUpdateJob::~ServiceWorkerUpdateJob() {}
 
@@ -171,20 +167,38 @@ void ServiceWorkerUpdateJob::FailUpdateJob(ErrorResult& aRv) {
   MOZ_ASSERT(aRv.Failed());
 
   // Cleanup after a failed installation.  This essentially implements
-  // step 12 of the Install algorithm.
+  // step 13 of the Install algorithm.
   //
-  //  https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#installation-algorithm
+  //  https://w3c.github.io/ServiceWorker/#installation-algorithm
   //
   // The spec currently only runs this after an install event fails,
   // but we must handle many more internal errors.  So we check for
   // cleanup on every non-successful exit.
   if (mRegistration) {
-    mRegistration->ClearEvaluating();
-    mRegistration->ClearInstalling();
+    // Some kinds of failures indicate there is something broken in the
+    // currently installed registration.  In these cases we want to fully
+    // unregister.
+    if (mOnFailure == OnFailure::Uninstall) {
+      mRegistration->ClearAsCorrupt();
+    }
+
+    // Otherwise just clear the workers we may have created as part of the
+    // update process.
+    else {
+      mRegistration->ClearEvaluating();
+      mRegistration->ClearInstalling();
+    }
 
     RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
     if (swm) {
       swm->MaybeRemoveRegistration(mRegistration);
+
+      // Also clear the registration on disk if we are forcing uninstall
+      // due to a particularly bad failure.
+      if (mOnFailure == OnFailure::Uninstall) {
+        swm->MaybeSendUnregister(mRegistration->Principal(),
+                                 mRegistration->Scope());
+      }
     }
   }
 
@@ -272,7 +286,7 @@ void ServiceWorkerUpdateJob::Update() {
 
   nsresult rv = serviceWorkerScriptCache::Compare(
       mRegistration, mPrincipal, cacheName, NS_ConvertUTF8toUTF16(mScriptSpec),
-      callback, mLoadGroup);
+      callback);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     FailUpdateJob(rv);
     return;
@@ -285,10 +299,13 @@ ServiceWorkerUpdateViaCache ServiceWorkerUpdateJob::GetUpdateViaCache() const {
 
 void ServiceWorkerUpdateJob::ComparisonResult(nsresult aStatus,
                                               bool aInCacheAndEqual,
+                                              OnFailure aOnFailure,
                                               const nsAString& aNewCacheName,
                                               const nsACString& aMaxScope,
                                               nsLoadFlags aLoadFlags) {
   MOZ_ASSERT(NS_IsMainThread());
+
+  mOnFailure = aOnFailure;
 
   RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
   if (NS_WARN_IF(Canceled() || !swm)) {
@@ -345,7 +362,22 @@ void ServiceWorkerUpdateJob::ComparisonResult(nsresult aStatus,
     }
   }
 
-  if (!StringBeginsWith(mRegistration->Scope(), maxPrefix)) {
+  nsCOMPtr<nsIURI> scopeURI;
+  rv = NS_NewURI(getter_AddRefs(scopeURI), mRegistration->Scope(), nullptr,
+                 scriptURI);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    FailUpdateJob(NS_ERROR_FAILURE);
+    return;
+  }
+
+  nsAutoCString scopeString;
+  rv = scopeURI->GetPathQueryRef(scopeString);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    FailUpdateJob(NS_ERROR_FAILURE);
+    return;
+  }
+
+  if (!StringBeginsWith(scopeString, maxPrefix)) {
     nsAutoString message;
     NS_ConvertUTF8toUTF16 reportScope(mRegistration->Scope());
     NS_ConvertUTF8toUTF16 reportMaxPrefix(maxPrefix);
@@ -376,9 +408,17 @@ void ServiceWorkerUpdateJob::ComparisonResult(nsresult aStatus,
     flags |= nsIRequest::VALIDATE_ALWAYS;
   }
 
-  RefPtr<ServiceWorkerInfo> sw =
-      new ServiceWorkerInfo(mRegistration->Principal(), mRegistration->Scope(),
-                            mScriptSpec, aNewCacheName, flags);
+  RefPtr<ServiceWorkerInfo> sw = new ServiceWorkerInfo(
+      mRegistration->Principal(), mRegistration->Scope(), mRegistration->Id(),
+      mRegistration->Version(), mScriptSpec, aNewCacheName, flags);
+
+  // If the registration is corrupt enough to force an uninstall if the
+  // upgrade fails, then we want to make sure the upgrade takes effect
+  // if it succeeds.  Therefore force the skip-waiting flag on to replace
+  // the broken worker after install.
+  if (aOnFailure == OnFailure::Uninstall) {
+    sw->SetSkipWaitingFlag();
+  }
 
   mRegistration->SetEvaluating(sw);
 
@@ -420,13 +460,12 @@ void ServiceWorkerUpdateJob::ContinueUpdateAfterScriptEval(
     return;
   }
 
-  Install(swm);
+  Install();
 }
 
-void ServiceWorkerUpdateJob::Install(ServiceWorkerManager* aSWM) {
+void ServiceWorkerUpdateJob::Install() {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_DIAGNOSTIC_ASSERT(!Canceled());
-  MOZ_DIAGNOSTIC_ASSERT(aSWM);
 
   MOZ_ASSERT(!mRegistration->GetInstalling());
 
@@ -439,24 +478,9 @@ void ServiceWorkerUpdateJob::Install(ServiceWorkerManager* aSWM) {
   // Step 6 of the Install algorithm resolving the job promise.
   InvokeResultCallbacks(NS_OK);
 
-  // The job promise cannot be rejected after this point, but the job can
-  // still fail; e.g. if the install event handler throws, etc.
-
-  // fire the updatefound event
-  nsCOMPtr<nsIRunnable> upr =
-      NewRunnableMethod<RefPtr<ServiceWorkerRegistrationInfo>>(
-          "dom::ServiceWorkerManager::"
-          "FireUpdateFoundOnServiceWorkerRegistrations",
-          aSWM,
-          &ServiceWorkerManager::FireUpdateFoundOnServiceWorkerRegistrations,
-          mRegistration);
-  NS_DispatchToMainThread(upr);
-
-  // Call ContinueAfterInstallEvent(false) on main thread if the SW
-  // script fails to load.
-  nsCOMPtr<nsIRunnable> failRunnable = NewRunnableMethod<bool>(
-      "dom::ServiceWorkerUpdateJob::ContinueAfterInstallEvent", this,
-      &ServiceWorkerUpdateJob::ContinueAfterInstallEvent, false);
+  // Queue a task to fire an event named updatefound at all the
+  // ServiceWorkerRegistration.
+  mRegistration->FireUpdateFound();
 
   nsMainThreadPtrHandle<ServiceWorkerUpdateJob> handle(
       new nsMainThreadPtrHolder<ServiceWorkerUpdateJob>(
@@ -466,8 +490,8 @@ void ServiceWorkerUpdateJob::Install(ServiceWorkerManager* aSWM) {
   // Send the install event to the worker thread
   ServiceWorkerPrivate* workerPrivate =
       mRegistration->GetInstalling()->WorkerPrivate();
-  nsresult rv = workerPrivate->SendLifeCycleEvent(NS_LITERAL_STRING("install"),
-                                                  callback, failRunnable);
+  nsresult rv =
+      workerPrivate->SendLifeCycleEvent(NS_LITERAL_STRING("install"), callback);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     ContinueAfterInstallEvent(false /* aSuccess */);
   }

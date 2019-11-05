@@ -10,13 +10,16 @@
 #include "nsIGlobalObject.h"
 #include "nsITimer.h"
 
+#include "js/ArrayBuffer.h"  // JS::NewArrayBufferWithContents
 #include "mozilla/Base64.h"
 #include "mozilla/CheckedInt.h"
 #include "mozilla/dom/DOMException.h"
+#include "mozilla/dom/DOMExceptionBinding.h"
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/FileReaderBinding.h"
 #include "mozilla/dom/ProgressEvent.h"
-#include "mozilla/dom/WorkerPrivate.h"
+#include "mozilla/dom/WorkerCommon.h"
+#include "mozilla/dom/WorkerRef.h"
 #include "mozilla/dom/WorkerScope.h"
 #include "mozilla/Encoding.h"
 #include "nsAlgorithm.h"
@@ -25,6 +28,7 @@
 #include "nsError.h"
 #include "nsNetUtil.h"
 #include "xpcpublic.h"
+#include "nsReadableUtils.h"
 
 namespace mozilla {
 namespace dom {
@@ -60,6 +64,7 @@ NS_IMPL_CYCLE_COLLECTION_TRACE_BEGIN_INHERITED(FileReader, DOMEventTargetHelper)
 NS_IMPL_CYCLE_COLLECTION_TRACE_END
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileReader)
+  NS_INTERFACE_MAP_ENTRY_CONCRETE(FileReader)
   NS_INTERFACE_MAP_ENTRY(nsITimerCallback)
   NS_INTERFACE_MAP_ENTRY(nsIInputStreamCallback)
   NS_INTERFACE_MAP_ENTRY(nsISupportsWeakReference)
@@ -83,9 +88,8 @@ void FileReader::RootResultArrayBuffer() { mozilla::HoldJSObjects(this); }
 
 // FileReader constructors/initializers
 
-FileReader::FileReader(nsIGlobalObject* aGlobal, WorkerPrivate* aWorkerPrivate)
+FileReader::FileReader(nsIGlobalObject* aGlobal, WeakWorkerRef* aWorkerRef)
     : DOMEventTargetHelper(aGlobal),
-      WorkerHolder("FileReader"),
       mFileData(nullptr),
       mDataLen(0),
       mDataFormat(FILE_AS_BINARY),
@@ -96,9 +100,9 @@ FileReader::FileReader(nsIGlobalObject* aGlobal, WorkerPrivate* aWorkerPrivate)
       mTotal(0),
       mTransferred(0),
       mBusyCount(0),
-      mWorkerPrivate(aWorkerPrivate) {
+      mWeakWorkerRef(aWorkerRef) {
   MOZ_ASSERT(aGlobal);
-  MOZ_ASSERT(NS_IsMainThread() == !mWorkerPrivate);
+  MOZ_ASSERT_IF(NS_IsMainThread(), !mWeakWorkerRef);
 
   if (NS_IsMainThread()) {
     mTarget = aGlobal->EventTargetFor(TaskCategory::Other);
@@ -114,18 +118,20 @@ FileReader::~FileReader() {
   DropJSObjects(this);
 }
 
-/* static */ already_AddRefed<FileReader> FileReader::Constructor(
+/* static */
+already_AddRefed<FileReader> FileReader::Constructor(
     const GlobalObject& aGlobal, ErrorResult& aRv) {
   nsCOMPtr<nsIGlobalObject> global = do_QueryInterface(aGlobal.GetAsSupports());
-  WorkerPrivate* workerPrivate = nullptr;
+  RefPtr<WeakWorkerRef> workerRef;
 
   if (!NS_IsMainThread()) {
     JSContext* cx = aGlobal.Context();
-    workerPrivate = GetWorkerPrivateFromContext(cx);
-    MOZ_ASSERT(workerPrivate);
+    WorkerPrivate* workerPrivate = GetWorkerPrivateFromContext(cx);
+
+    workerRef = WeakWorkerRef::Create(workerPrivate);
   }
 
-  RefPtr<FileReader> fileReader = new FileReader(global, workerPrivate);
+  RefPtr<FileReader> fileReader = new FileReader(global, workerRef);
 
   return fileReader.forget();
 }
@@ -175,7 +181,7 @@ void FileReader::OnLoadEndArrayBuffer() {
 
   JSContext* cx = jsapi.cx();
 
-  mResultArrayBuffer = JS_NewArrayBufferWithContents(cx, mDataLen, mFileData);
+  mResultArrayBuffer = JS::NewArrayBufferWithContents(cx, mDataLen, mFileData);
   if (mResultArrayBuffer) {
     mFileData = nullptr;  // Transfer ownership
     FreeDataAndDispatchSuccess();
@@ -211,8 +217,9 @@ void FileReader::OnLoadEndArrayBuffer() {
   nsAutoCString errorMsg(er->message().c_str());
   nsAutoCString errorNameC = NS_LossyConvertUTF16toASCII(errorName);
   // XXX Code selected arbitrarily
-  mError = new DOMException(NS_ERROR_DOM_INVALID_STATE_ERR, errorMsg,
-                            errorNameC, DOMException::INVALID_STATE_ERR);
+  mError =
+      new DOMException(NS_ERROR_DOM_INVALID_STATE_ERR, errorMsg, errorNameC,
+                       DOMException_Binding::INVALID_STATE_ERR);
 
   FreeDataAndDispatchError();
 }
@@ -238,13 +245,8 @@ namespace {
 
 void PopulateBufferForBinaryString(char16_t* aDest, const char* aSource,
                                    uint32_t aCount) {
-  const unsigned char* source = (const unsigned char*)aSource;
-  char16_t* end = aDest + aCount;
-  while (aDest != end) {
-    *aDest = *source;
-    ++aDest;
-    ++source;
-  }
+  // Zero-extend each char to char16_t.
+  ConvertLatin1toUTF16(MakeSpan(aSource, aCount), MakeSpan(aDest, aCount));
 }
 
 nsresult ReadFuncBinaryString(nsIInputStream* aInputStream, void* aClosure,
@@ -344,6 +346,11 @@ nsresult FileReader::DoReadData(uint64_t aCount) {
 
 void FileReader::ReadFileContent(Blob& aBlob, const nsAString& aCharset,
                                  eDataFormat aDataFormat, ErrorResult& aRv) {
+  if (IsCurrentThreadRunningWorker() && !mWeakWorkerRef) {
+    // The worker is already shutting down.
+    return;
+  }
+
   if (mReadyState == LOADING) {
     aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
     return;
@@ -465,21 +472,21 @@ nsresult FileReader::GetAsDataURL(Blob* aBlob, const char* aFileData,
   return NS_OK;
 }
 
-/* virtual */ JSObject* FileReader::WrapObject(
-    JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return FileReaderBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* FileReader::WrapObject(JSContext* aCx,
+                                 JS::Handle<JSObject*> aGivenProto) {
+  return FileReader_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void FileReader::StartProgressEventTimer() {
   if (!mProgressNotifier) {
-    mProgressNotifier = NS_NewTimer();
+    mProgressNotifier = NS_NewTimer(mTarget);
   }
 
   if (mProgressNotifier) {
     mProgressEventWasDelayed = false;
     mTimerIsActive = true;
     mProgressNotifier->Cancel();
-    mProgressNotifier->SetTarget(mTarget);
     mProgressNotifier->InitWithCallback(this, NS_PROGRESS_EVENT_INTERVAL,
                                         nsITimer::TYPE_ONE_SHOT);
   }
@@ -491,6 +498,19 @@ void FileReader::ClearProgressEventTimer() {
   if (mProgressNotifier) {
     mProgressNotifier->Cancel();
   }
+}
+
+void FileReader::FreeFileData() {
+  if (mFileData) {
+    if (mDataFormat == FILE_AS_ARRAYBUFFER) {
+      js_free(mFileData);
+    } else {
+      free(mFileData);
+    }
+    mFileData = nullptr;
+  }
+
+  mDataLen = 0;
 }
 
 void FileReader::FreeDataAndDispatchSuccess() {
@@ -550,8 +570,9 @@ nsresult FileReader::DispatchProgressEvent(const nsAString& aType) {
   RefPtr<ProgressEvent> event = ProgressEvent::Constructor(this, aType, init);
   event->SetTrusted(true);
 
-  bool dummy;
-  return DispatchEvent(event, &dummy);
+  ErrorResult rv;
+  DispatchEvent(*event, rv);
+  return rv.StealNSResult();
 }
 
 // nsITimerCallback
@@ -579,7 +600,7 @@ FileReader::OnInputStreamReady(nsIAsyncInputStream* aStream) {
 
   // We use this class to decrease the busy counter at the end of this method.
   // In theory we can do it immediatelly but, for debugging reasons, we want to
-  // be 100% sure we have a workerHolder when OnLoadEnd() is called.
+  // be 100% sure we have a workerRef when OnLoadEnd() is called.
   FileReaderDecreaseBusyCounter RAII(this);
 
   uint64_t count;
@@ -703,30 +724,31 @@ void FileReader::Abort() {
 }
 
 nsresult FileReader::IncreaseBusyCounter() {
-  if (mWorkerPrivate && mBusyCount++ == 0 &&
-      !HoldWorker(mWorkerPrivate, Closing)) {
-    return NS_ERROR_FAILURE;
+  if (mWeakWorkerRef && mBusyCount++ == 0) {
+    if (NS_WARN_IF(!mWeakWorkerRef->GetPrivate())) {
+      return NS_ERROR_FAILURE;
+    }
+
+    RefPtr<FileReader> self = this;
+
+    RefPtr<StrongWorkerRef> ref =
+        StrongWorkerRef::Create(mWeakWorkerRef->GetPrivate(), "FileReader",
+                                [self]() { self->Shutdown(); });
+    if (NS_WARN_IF(!ref)) {
+      return NS_ERROR_FAILURE;
+    }
+
+    mStrongWorkerRef = ref;
   }
 
   return NS_OK;
 }
 
 void FileReader::DecreaseBusyCounter() {
-  MOZ_ASSERT_IF(mWorkerPrivate, mBusyCount);
-  if (mWorkerPrivate && --mBusyCount == 0) {
-    ReleaseWorker();
+  MOZ_ASSERT_IF(mStrongWorkerRef, mBusyCount);
+  if (mStrongWorkerRef && --mBusyCount == 0) {
+    mStrongWorkerRef = nullptr;
   }
-}
-
-bool FileReader::Notify(WorkerStatus aStatus) {
-  MOZ_ASSERT(mWorkerPrivate);
-  mWorkerPrivate->AssertIsOnWorkerThread();
-
-  if (aStatus > Running) {
-    Shutdown();
-  }
-
-  return true;
 }
 
 void FileReader::Shutdown() {
@@ -740,12 +762,12 @@ void FileReader::Shutdown() {
   FreeFileData();
   mResultArrayBuffer = nullptr;
 
-  if (mWorkerPrivate && mBusyCount != 0) {
-    ReleaseWorker();
-    mWorkerPrivate = nullptr;
+  if (mWeakWorkerRef && mBusyCount != 0) {
+    mStrongWorkerRef = nullptr;
+    mWeakWorkerRef = nullptr;
     mBusyCount = 0;
   }
 }
 
-}  // dom namespace
+}  // namespace dom
 }  // namespace mozilla

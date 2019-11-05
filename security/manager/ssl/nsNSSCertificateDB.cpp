@@ -13,7 +13,11 @@
 #include "mozilla/Assertions.h"
 #include "mozilla/Base64.h"
 #include "mozilla/Casting.h"
+#include "mozilla/Services.h"
 #include "mozilla/Unused.h"
+#include "mozpkix/Time.h"
+#include "mozpkix/pkixnss.h"
+#include "mozpkix/pkixtypes.h"
 #include "nsArray.h"
 #include "nsArrayUtils.h"
 #include "nsCOMPtr.h"
@@ -36,16 +40,13 @@
 #include "nsReadableUtils.h"
 #include "nsThreadUtils.h"
 #include "nspr.h"
-#include "pkix/Time.h"
-#include "pkix/pkixnss.h"
-#include "pkix/pkixtypes.h"
 #include "secasn1.h"
 #include "secder.h"
 #include "secerr.h"
 #include "ssl.h"
 
 #ifdef XP_WIN
-#include <winsock.h>  // for ntohl
+#  include <winsock.h>  // for ntohl
 #endif
 
 using namespace mozilla;
@@ -256,7 +257,7 @@ nsresult nsNSSCertificateDB::handleCACertDownload(NotNull<nsIArray*> x509Certs,
   uint32_t numCerts;
 
   x509Certs->GetLength(&numCerts);
-  MOZ_ASSERT(numCerts > 0, "Didn't get any certs to import.");
+
   if (numCerts == 0) return NS_OK;  // Nothing to import, so nothing to do.
 
   nsCOMPtr<nsIX509Cert> certToShow;
@@ -544,8 +545,6 @@ nsresult nsNSSCertificateDB::ImportCACerts(int numCACerts, SECItem* caCerts,
 void nsNSSCertificateDB::DisplayCertificateAlert(nsIInterfaceRequestor* ctx,
                                                  const char* stringID,
                                                  nsIX509Cert* certToShow) {
-  static NS_DEFINE_CID(kNSSComponentCID, NS_NSSCOMPONENT_CID);
-
   if (!NS_IsMainThread()) {
     NS_ERROR(
         "nsNSSCertificateDB::DisplayCertificateAlert called off the main "
@@ -561,19 +560,14 @@ void nsNSSCertificateDB::DisplayCertificateAlert(nsIInterfaceRequestor* ctx,
   // This shall be replaced by embedding ovverridable prompts
   // as discussed in bug 310446, and should make use of certToShow.
 
-  nsresult rv;
-  nsCOMPtr<nsINSSComponent> nssComponent(do_GetService(kNSSComponentCID, &rv));
-  if (NS_SUCCEEDED(rv)) {
-    nsAutoString tmpMessage;
-    nssComponent->GetPIPNSSBundleString(stringID, tmpMessage);
-
-    nsCOMPtr<nsIPrompt> prompt(do_GetInterface(my_ctx));
-    if (!prompt) {
-      return;
-    }
-
-    prompt->Alert(nullptr, tmpMessage.get());
+  nsAutoString tmpMessage;
+  GetPIPNSSBundleString(stringID, tmpMessage);
+  nsCOMPtr<nsIPrompt> prompt(do_GetInterface(my_ctx));
+  if (!prompt) {
+    return;
   }
+
+  prompt->Alert(nullptr, tmpMessage.get());
 }
 
 NS_IMETHODIMP
@@ -813,7 +807,8 @@ nsNSSCertificateDB::ImportCertsFromFile(nsIFile* aFile, uint32_t aType) {
 }
 
 NS_IMETHODIMP
-nsNSSCertificateDB::ImportPKCS12File(nsIFile* aFile) {
+nsNSSCertificateDB::ImportPKCS12File(nsIFile* aFile, const nsAString& aPassword,
+                                     uint32_t* aError) {
   if (!NS_IsMainThread()) {
     return NS_ERROR_NOT_SAME_THREAD;
   }
@@ -824,8 +819,7 @@ nsNSSCertificateDB::ImportPKCS12File(nsIFile* aFile) {
 
   NS_ENSURE_ARG(aFile);
   nsPKCS12Blob blob;
-  rv = blob.ImportFromFile(aFile);
-
+  rv = blob.ImportFromFile(aFile, aPassword, *aError);
   nsCOMPtr<nsIObserverService> observerService =
       mozilla::services::GetObserverService();
   if (NS_SUCCEEDED(rv) && observerService) {
@@ -837,8 +831,10 @@ nsNSSCertificateDB::ImportPKCS12File(nsIFile* aFile) {
 }
 
 NS_IMETHODIMP
-nsNSSCertificateDB::ExportPKCS12File(nsIFile* aFile, uint32_t count,
-                                     nsIX509Cert** certs) {
+nsNSSCertificateDB::ExportPKCS12File(nsIFile* aFile, uint32_t aCount,
+                                     nsIX509Cert** aCerts,
+                                     const nsAString& aPassword,
+                                     uint32_t* aError) {
   if (!NS_IsMainThread()) {
     return NS_ERROR_NOT_SAME_THREAD;
   }
@@ -848,59 +844,11 @@ nsNSSCertificateDB::ExportPKCS12File(nsIFile* aFile, uint32_t count,
   }
 
   NS_ENSURE_ARG(aFile);
-  if (count == 0) {
+  if (aCount == 0) {
     return NS_OK;
   }
   nsPKCS12Blob blob;
-  return blob.ExportToFile(aFile, certs, count);
-}
-
-NS_IMETHODIMP
-nsNSSCertificateDB::FindCertByEmailAddress(const nsACString& aEmailAddress,
-                                           nsIX509Cert** _retval) {
-  nsresult rv = BlockUntilLoadableRootsLoaded();
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-
-  RefPtr<SharedCertVerifier> certVerifier(GetDefaultCertVerifier());
-  NS_ENSURE_TRUE(certVerifier, NS_ERROR_UNEXPECTED);
-
-  const nsCString& flatEmailAddress = PromiseFlatCString(aEmailAddress);
-  UniqueCERTCertList certlist(
-      PK11_FindCertsFromEmailAddress(flatEmailAddress.get(), nullptr));
-  if (!certlist) return NS_ERROR_FAILURE;
-
-  // certlist now contains certificates with the right email address,
-  // but they might not have the correct usage or might even be invalid
-
-  if (CERT_LIST_END(CERT_LIST_HEAD(certlist), certlist))
-    return NS_ERROR_FAILURE;  // no certs found
-
-  CERTCertListNode* node;
-  // search for a valid certificate
-  for (node = CERT_LIST_HEAD(certlist); !CERT_LIST_END(node, certlist);
-       node = CERT_LIST_NEXT(node)) {
-    UniqueCERTCertList unusedCertChain;
-    mozilla::pkix::Result result = certVerifier->VerifyCert(
-        node->cert, certificateUsageEmailRecipient, mozilla::pkix::Now(),
-        nullptr /*XXX pinarg*/, nullptr /*hostname*/, unusedCertChain);
-    if (result == mozilla::pkix::Success) {
-      break;
-    }
-  }
-
-  if (CERT_LIST_END(node, certlist)) {
-    // no valid cert found
-    return NS_ERROR_FAILURE;
-  }
-
-  // node now contains the first valid certificate with correct usage
-  RefPtr<nsNSSCertificate> nssCert = nsNSSCertificate::Create(node->cert);
-  if (!nssCert) return NS_ERROR_OUT_OF_MEMORY;
-
-  nssCert.forget(_retval);
-  return NS_OK;
+  return blob.ExportToFile(aFile, aCerts, aCount, aPassword, *aError);
 }
 
 NS_IMETHODIMP
@@ -956,11 +904,8 @@ nsNSSCertificateDB::ConstructX509(const nsACString& certDER,
 void nsNSSCertificateDB::get_default_nickname(CERTCertificate* cert,
                                               nsIInterfaceRequestor* ctx,
                                               nsCString& nickname) {
-  static NS_DEFINE_CID(kNSSComponentCID, NS_NSSCOMPONENT_CID);
-
   nickname.Truncate();
 
-  nsresult rv;
   CK_OBJECT_HANDLE keyHandle;
 
   if (NS_FAILED(BlockUntilLoadableRootsLoaded())) {
@@ -968,9 +913,6 @@ void nsNSSCertificateDB::get_default_nickname(CERTCertificate* cert,
   }
 
   CERTCertDBHandle* defaultcertdb = CERT_GetDefaultCertDB();
-  nsCOMPtr<nsINSSComponent> nssComponent(do_GetService(kNSSComponentCID, &rv));
-  if (NS_FAILED(rv)) return;
-
   nsAutoCString username;
   UniquePORTString tempCN(CERT_GetCommonName(&cert->subject));
   if (tempCN) {
@@ -984,7 +926,7 @@ void nsNSSCertificateDB::get_default_nickname(CERTCertificate* cert,
   }
 
   nsAutoString tmpNickFmt;
-  nssComponent->GetPIPNSSBundleString("nick_template", tmpNickFmt);
+  GetPIPNSSBundleString("nick_template", tmpNickFmt);
   NS_ConvertUTF16toUTF8 nickFmt(tmpNickFmt);
 
   nsAutoCString baseName;
@@ -1157,30 +1099,10 @@ nsNSSCertificateDB::GetCerts(nsIX509CertList** _retval) {
 
   // nsNSSCertList 1) adopts certList, and 2) handles the nullptr case fine.
   // (returns an empty list)
-  nssCertList = new nsNSSCertList(Move(certList));
+  nssCertList = new nsNSSCertList(std::move(certList));
 
   nssCertList.forget(_retval);
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSCertificateDB::GetEnterpriseRoots(nsIX509CertList** enterpriseRoots) {
-  MOZ_ASSERT(NS_IsMainThread());
-  if (!NS_IsMainThread()) {
-    return NS_ERROR_NOT_SAME_THREAD;
-  }
-
-  NS_ENSURE_ARG_POINTER(enterpriseRoots);
-
-#ifdef XP_WIN
-  nsCOMPtr<nsINSSComponent> psm(do_GetService(PSM_COMPONENT_CONTRACTID));
-  if (!psm) {
-    return NS_ERROR_FAILURE;
-  }
-  return psm->GetEnterpriseRoots(enterpriseRoots);
-#else
-  return NS_ERROR_NOT_IMPLEMENTED;
-#endif
 }
 
 nsresult VerifyCertAtTime(nsIX509Cert* aCert,
@@ -1233,7 +1155,7 @@ nsresult VerifyCertAtTime(nsIX509Cert* aCert,
 
   nsCOMPtr<nsIX509CertList> nssCertList;
   // This adopts the list
-  nssCertList = new nsNSSCertList(Move(resultChain));
+  nssCertList = new nsNSSCertList(std::move(resultChain));
   NS_ENSURE_TRUE(nssCertList, NS_ERROR_FAILURE);
 
   *_retval = mozilla::pkix::MapResultToPRErrorCode(result);
@@ -1243,29 +1165,6 @@ nsresult VerifyCertAtTime(nsIX509Cert* aCert,
   nssCertList.forget(aVerifiedChain);
 
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSCertificateDB::VerifyCertNow(nsIX509Cert* aCert,
-                                  int64_t /*SECCertificateUsage*/ aUsage,
-                                  uint32_t aFlags, const nsACString& aHostname,
-                                  nsIX509CertList** aVerifiedChain,
-                                  bool* aHasEVPolicy,
-                                  int32_t* /*PRErrorCode*/ _retval) {
-  return ::VerifyCertAtTime(aCert, aUsage, aFlags, aHostname,
-                            mozilla::pkix::Now(), aVerifiedChain, aHasEVPolicy,
-                            _retval);
-}
-
-NS_IMETHODIMP
-nsNSSCertificateDB::VerifyCertAtTime(
-    nsIX509Cert* aCert, int64_t /*SECCertificateUsage*/ aUsage, uint32_t aFlags,
-    const nsACString& aHostname, uint64_t aTime,
-    nsIX509CertList** aVerifiedChain, bool* aHasEVPolicy,
-    int32_t* /*PRErrorCode*/ _retval) {
-  return ::VerifyCertAtTime(aCert, aUsage, aFlags, aHostname,
-                            mozilla::pkix::TimeFromEpochInSeconds(aTime),
-                            aVerifiedChain, aHasEVPolicy, _retval);
 }
 
 class VerifyCertAtTimeTask final : public CryptoTask {
@@ -1290,9 +1189,10 @@ class VerifyCertAtTimeTask final : public CryptoTask {
     if (!certDB) {
       return NS_ERROR_FAILURE;
     }
-    return certDB->VerifyCertAtTime(mCert, mUsage, mFlags, mHostname, mTime,
-                                    getter_AddRefs(mVerifiedCertList),
-                                    &mHasEVPolicy, &mPRErrorCode);
+    return VerifyCertAtTime(mCert, mUsage, mFlags, mHostname,
+                            mozilla::pkix::TimeFromEpochInSeconds(mTime),
+                            getter_AddRefs(mVerifiedCertList), &mHasEVPolicy,
+                            &mPRErrorCode);
   }
 
   virtual void CallCallback(nsresult rv) override {

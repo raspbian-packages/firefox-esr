@@ -28,7 +28,7 @@ class HTMLImageElement final : public nsGenericHTMLElement,
 
  public:
   explicit HTMLImageElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   static already_AddRefed<HTMLImageElement> Image(
       const GlobalObject& aGlobal, const Optional<uint32_t>& aWidth,
@@ -42,13 +42,17 @@ class HTMLImageElement final : public nsGenericHTMLElement,
 
   virtual bool Draggable() const override;
 
+  ResponsiveImageSelector* GetResponsiveImageSelector() {
+    return mResponsiveSelector.get();
+  }
+
   // Element
   virtual bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override;
 
   // EventTarget
   virtual void AsyncEventRunning(AsyncEventDispatcher* aEvent) override;
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLImageElement, img)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLImageElement, img)
 
   // override from nsImageLoadingContent
   CORSMode GetCORSMode() override;
@@ -64,45 +68,33 @@ class HTMLImageElement final : public nsGenericHTMLElement,
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
 
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
 
   bool IsHTMLFocusable(bool aWithMouse, bool* aIsFocusable,
                        int32_t* aTabIndex) override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep, bool aNullParent) override;
 
   virtual EventStates IntrinsicState() const override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
-  virtual void NodeInfoChanged(nsIDocument* aOldDoc) override;
+  virtual void NodeInfoChanged(Document* aOldDoc) override;
 
-  nsresult CopyInnerTo(Element* aDest, bool aPreallocateChildren);
+  nsresult CopyInnerTo(HTMLImageElement* aDest);
 
   void MaybeLoadImage(bool aAlwaysForceLoad);
-
-  // Overrides for nsImageLoadingContent's GetNaturalHeight/Width, since we
-  // handle responsive scaling in the element's version of these methods.
-  NS_IMETHOD GetNaturalHeight(uint32_t* aNaturalHeight) override;
-  NS_IMETHOD GetNaturalWidth(uint32_t* aNaturalWidth) override;
 
   bool IsMap() { return GetBoolAttr(nsGkAtoms::ismap); }
   void SetIsMap(bool aIsMap, ErrorResult& aError) {
     SetHTMLBoolAttr(nsGkAtoms::ismap, aIsMap, aError);
   }
-  MOZ_CAN_RUN_SCRIPT uint32_t Width() {
-    return GetWidthHeightForImage(mCurrentRequest).width;
-  }
+  MOZ_CAN_RUN_SCRIPT uint32_t Width();
   void SetWidth(uint32_t aWidth, ErrorResult& aError) {
     SetUnsignedIntAttr(nsGkAtoms::width, aWidth, 0, aError);
   }
-  MOZ_CAN_RUN_SCRIPT uint32_t Height() {
-    return GetWidthHeightForImage(mCurrentRequest).height;
-  }
+  MOZ_CAN_RUN_SCRIPT uint32_t Height();
   void SetHeight(uint32_t aHeight, ErrorResult& aError) {
     SetUnsignedIntAttr(nsGkAtoms::height, aHeight, 0, aError);
   }
@@ -183,6 +175,12 @@ class HTMLImageElement final : public nsGenericHTMLElement,
   void GetReferrerPolicy(nsAString& aReferrer) {
     GetEnumAttr(nsGkAtoms::referrerpolicy, EmptyCString().get(), aReferrer);
   }
+  void SetDecoding(const nsAString& aDecoding, ErrorResult& aError) {
+    SetHTMLAttr(nsGkAtoms::decoding, aDecoding, aError);
+  }
+  void GetDecoding(nsAString& aValue);
+
+  already_AddRefed<Promise> Decode(ErrorResult& aRv);
 
   net::ReferrerPolicy GetImageReferrerPolicy() override {
     return GetReferrerPolicyAsEnum();
@@ -198,9 +196,9 @@ class HTMLImageElement final : public nsGenericHTMLElement,
   }
 
 #ifdef DEBUG
-  nsIDOMHTMLFormElement* GetForm() const;
+  HTMLFormElement* GetForm() const;
 #endif
-  void SetForm(nsIDOMHTMLFormElement* aForm);
+  void SetForm(HTMLFormElement* aForm);
   void ClearForm(bool aRemoveFromForm);
 
   virtual void DestroyContent() override;
@@ -241,7 +239,7 @@ class HTMLImageElement final : public nsGenericHTMLElement,
    * further <source> or <img> tags would be considered.
    */
   static bool SelectSourceForTagWithAttrs(
-      nsIDocument* aDocument, bool aIsSourceTag, const nsAString& aSrcAttr,
+      Document* aDocument, bool aIsSourceTag, const nsAString& aSrcAttr,
       const nsAString& aSrcsetAttr, const nsAString& aSizesAttr,
       const nsAString& aTypeAttr, const nsAString& aMediaAttr,
       nsAString& aResult);
@@ -271,10 +269,8 @@ class HTMLImageElement final : public nsGenericHTMLElement,
   // only mode after Bug 1076583
   bool InResponsiveMode();
 
-  // True if the given URL and density equal the last URL and density that was
-  // loaded by this element.
-  bool SelectedSourceMatchesLast(nsIURI* aSelectedSource,
-                                 double aSelectedDensity);
+  // True if the given URL equals the last URL that was loaded by this element.
+  bool SelectedSourceMatchesLast(nsIURI* aSelectedSource);
 
   // Resolve and load the current mResponsiveSelector (responsive mode) or src
   // attr image.
@@ -351,7 +347,7 @@ class HTMLImageElement final : public nsGenericHTMLElement,
   bool SourceElementMatches(Element* aSourceElement);
 
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
   /**
    * This function is called by AfterSetAttr and OnAttrSetButNotChanged.
    * It will not be called if the value is being unset.

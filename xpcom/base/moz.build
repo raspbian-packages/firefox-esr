@@ -14,7 +14,6 @@ XPIDL_SOURCES += [
     'nsIException.idl',
     'nsIGZFileWriter.idl',
     'nsIInterfaceRequestor.idl',
-    'nsILoadURIDelegate.idl',
     'nsIMemory.idl',
     'nsIMemoryInfoDumper.idl',
     'nsIMemoryReporter.idl',
@@ -35,14 +34,20 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
     ]
     EXPORTS.mozilla += [
         'MacHelpers.h',
+        'MacStringHelpers.h',
         'nsMacPreferencesReader.h',
     ]
     UNIFIED_SOURCES += [
         'MacHelpers.mm',
+        'MacStringHelpers.mm',
         'nsMacPreferencesReader.mm',
     ]
 
 XPIDL_MODULE = 'xpcom_base'
+
+XPCOM_MANIFESTS += [
+    'components.conf',
+]
 
 EXPORTS += [
     '!ErrorList.h',
@@ -65,10 +70,10 @@ EXPORTS += [
     'nsDebugImpl.h',
     'nsDumpUtils.h',
     'nsError.h',
+    'nsErrorService.h',
     'nsGZFileWriter.h',
     'nsIClassInfoImpl.h',
     'nsID.h',
-    'nsIID.h',
     'nsIInterfaceRequestorUtils.h',
     'nsINIParser.h',
     'nsInterfaceRequestorAgg.h',
@@ -77,6 +82,7 @@ EXPORTS += [
     'nsISupportsImpl.h',
     'nsISupportsUtils.h',
     'nsIWeakReferenceUtils.h',
+    'nsMaybeWeakPtr.h',
     'nsMemory.h',
     'nsObjCExceptions.h',
     'nsQueryObject.h',
@@ -84,7 +90,6 @@ EXPORTS += [
     'nsTraceRefcnt.h',
     'nsTWeakRef.h',
     'nsVersionComparator.h',
-    'nsWeakPtr.h',
     'nsWeakReference.h',
 ]
 
@@ -109,17 +114,23 @@ EXPORTS.mozilla += [
     'DeferredFinalize.h',
     'EnumeratedArrayCycleCollection.h',
     'ErrorNames.h',
+    'GkRustUtils.h',
     'HoldDropJSObjects.h',
     'IntentionalCrash.h',
     'JSObjectHolder.h',
     'Logging.h',
+    'MemoryInfo.h',
+    'MemoryMapping.h',
     'MemoryReportingProcess.h',
+    'MemoryTelemetry.h',
     'nsMemoryInfoDumper.h',
     'NSPRLogModulesParser.h',
     'OwningNonNull.h',
     'SizeOfState.h',
+    'StaticMonitor.h',
     'StaticMutex.h',
     'StaticPtr.h',
+    'TupleCycleCollection.h',
 ]
 
 # nsDebugImpl isn't unified because we disable PGO so that NS_ABORT_OOM isn't
@@ -138,10 +149,13 @@ UNIFIED_SOURCES += [
     'DebuggerOnGCRunnable.cpp',
     'DeferredFinalize.cpp',
     'ErrorNames.cpp',
+    'GkRustUtils.cpp',
     'HoldDropJSObjects.cpp',
     'JSObjectHolder.cpp',
+    'LogCommandLineHandler.cpp',
     'Logging.cpp',
     'LogModulePrefWatcher.cpp',
+    'MemoryTelemetry.cpp',
     'nsClassInfoImpl.cpp',
     'nsCOMPtr.cpp',
     'nsConsoleMessage.cpp',
@@ -173,6 +187,16 @@ UNIFIED_SOURCES += [
     'nsWeakReference.cpp',
 ]
 
+if CONFIG['OS_TARGET'] in ('Linux', 'Android'):
+    UNIFIED_SOURCES += [
+        'MemoryMapping.cpp',
+    ]
+
+if CONFIG['OS_TARGET'] == 'WINNT':
+    UNIFIED_SOURCES += [
+        'MemoryInfo.cpp',
+    ]
+
 GENERATED_FILES += [
     "error_list.rs",
     "ErrorList.h",
@@ -192,6 +216,21 @@ elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'windows':
         'nsCrashOnException.cpp',
     ]
 
+if CONFIG['COMPILE_ENVIRONMENT']:
+    GENERATED_FILES += [
+        'gk_rust_utils_ffi_generated.h',
+    ]
+
+    EXPORTS.mozilla += [
+        '!gk_rust_utils_ffi_generated.h',
+    ]
+
+    ffi_generated = GENERATED_FILES['gk_rust_utils_ffi_generated.h']
+    ffi_generated.script = '/layout/style/RunCbindgen.py:generate'
+    ffi_generated.inputs = [
+        '/xpcom/rust/gkrust_utils',
+    ]
+
 include('/ipc/chromium/chromium-config.mozbuild')
 
 FINAL_LIBRARY = 'xul'
@@ -199,8 +238,8 @@ FINAL_LIBRARY = 'xul'
 LOCAL_INCLUDES += [
     '../build',
     '/dom/base',
-    '/js/src',
     '/mfbt',
+    '/netwerk/base',
     '/xpcom/ds',
 ]
 

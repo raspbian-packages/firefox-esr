@@ -1,10 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 use cssparser::{self, SourceLocation};
 use html5ever::{Namespace as NsAtom};
-use media_queries::CSSErrorReporterTest;
 use parking_lot::RwLock;
 use selectors::attr::*;
 use selectors::parser::*;
@@ -18,8 +17,8 @@ use std::sync::atomic::AtomicBool;
 use style::context::QuirksMode;
 use style::error_reporting::{ParseErrorReporter, ContextualParseError};
 use style::media_queries::MediaList;
-use style::properties::{CSSWideKeyword, CustomDeclaration, DeclarationSource};
-use style::properties::{DeclaredValueOwned, Importance};
+use style::properties::{CSSWideKeyword, CustomDeclaration};
+use style::properties::{CustomDeclarationValue, Importance};
 use style::properties::{PropertyDeclaration, PropertyDeclarationBlock};
 use style::properties::longhands::{self, animation_timing_function};
 use style::shared_lock::SharedRwLock;
@@ -28,14 +27,14 @@ use style::stylesheets::{Stylesheet, StylesheetContents, NamespaceRule, CssRule,
 use style::stylesheets::keyframes_rule::{Keyframe, KeyframeSelector, KeyframePercentage};
 use style::values::{KeyframesName, CustomIdent};
 use style::values::computed::Percentage;
-use style::values::specified::{LengthOrPercentageOrAuto, PositionComponent};
-use style::values::specified::transform::TimingFunction;
+use style::values::specified::{LengthPercentageOrAuto, PositionComponent};
+use style::values::specified::TimingFunction;
 
 pub fn block_from<I>(iterable: I) -> PropertyDeclarationBlock
 where I: IntoIterator<Item=(PropertyDeclaration, Importance)> {
     let mut block = PropertyDeclarationBlock::new();
     for (d, i) in iterable {
-        block.push(d, i, DeclarationSource::CssOm);
+        block.push(d, i);
     }
     block
 }
@@ -71,9 +70,9 @@ fn test_parse_stylesheet() {
     let lock = SharedRwLock::new();
     let media = Arc::new(lock.wrap(MediaList::empty()));
     let stylesheet = Stylesheet::from_str(css, url.clone(), Origin::UserAgent, media, lock,
-                                          None, &CSSErrorReporterTest, QuirksMode::NoQuirks, 0);
+                                          None, None, QuirksMode::NoQuirks, 0);
     let mut namespaces = Namespaces::default();
-    namespaces.default = Some((ns!(html), ()));
+    namespaces.default = Some(ns!(html));
     let expected = Stylesheet {
         contents: StylesheetContents {
             origin: Origin::UserAgent,
@@ -99,7 +98,6 @@ fn test_parse_stylesheet() {
                             }),
                             Component::AttributeInNoNamespace {
                                 local_name: local_name!("type"),
-                                local_name_lower: local_name!("type"),
                                 operator: AttrSelectorOperator::Equal,
                                 value: "hidden".to_owned(),
                                 case_sensitivity: ParsedCaseSensitivity::AsciiCaseInsensitive,
@@ -115,7 +113,7 @@ fn test_parse_stylesheet() {
                         (
                             PropertyDeclaration::Custom(CustomDeclaration {
                                 name: Atom::from("a"),
-                                value: DeclaredValueOwned::CSSWideKeyword(CSSWideKeyword::Inherit),
+                                value: CustomDeclarationValue::CSSWideKeyword(CSSWideKeyword::Inherit),
                             }),
                             Importance::Important,
                         ),
@@ -222,7 +220,7 @@ fn test_parse_stylesheet() {
                                           vec![KeyframePercentage::new(0.)]),
                             block: Arc::new(stylesheet.shared_lock.wrap(block_from(vec![
                                 (PropertyDeclaration::Width(
-                                    LengthOrPercentageOrAuto::Percentage(Percentage(0.))),
+                                    LengthPercentageOrAuto::Percentage(Percentage(0.))),
                                  Importance::Normal),
                             ]))),
                             source_location: SourceLocation {
@@ -235,7 +233,7 @@ fn test_parse_stylesheet() {
                                           vec![KeyframePercentage::new(1.)]),
                             block: Arc::new(stylesheet.shared_lock.wrap(block_from(vec![
                                 (PropertyDeclaration::Width(
-                                    LengthOrPercentageOrAuto::Percentage(Percentage(1.))),
+                                    LengthPercentageOrAuto::Percentage(Percentage(1.))),
                                  Importance::Normal),
                                 (PropertyDeclaration::AnimationTimingFunction(
                                     animation_timing_function::SpecifiedValue(
@@ -345,7 +343,7 @@ fn test_report_error_stylesheet() {
     let lock = SharedRwLock::new();
     let media = Arc::new(lock.wrap(MediaList::empty()));
     Stylesheet::from_str(css, url.clone(), Origin::UserAgent, media, lock,
-                         None, &error_reporter, QuirksMode::NoQuirks, 5);
+                         None, Some(&error_reporter), QuirksMode::NoQuirks, 5);
 
     error_reporter.assert_messages_contain(&[
         (8, 18, "Unsupported property declaration: 'display: invalid;'"),
@@ -387,7 +385,7 @@ fn test_no_report_unrecognized_vendor_properties() {
     let lock = SharedRwLock::new();
     let media = Arc::new(lock.wrap(MediaList::empty()));
     Stylesheet::from_str(css, url, Origin::UserAgent, media, lock,
-                         None, &error_reporter, QuirksMode::NoQuirks, 0);
+                         None, Some(&error_reporter), QuirksMode::NoQuirks, 0);
 
     error_reporter.assert_messages_contain(&[
         (4, 31, "Unsupported property declaration: '-moz-background-color: red;'"),
@@ -406,7 +404,7 @@ fn test_source_map_url() {
         let lock = SharedRwLock::new();
         let media = Arc::new(lock.wrap(MediaList::empty()));
         let stylesheet = Stylesheet::from_str(test.0, url.clone(), Origin::UserAgent, media, lock,
-                                              None, &CSSErrorReporterTest, QuirksMode::NoQuirks,
+                                              None, None, QuirksMode::NoQuirks,
                                               0);
         let url_opt = stylesheet.contents.source_map_url.read();
         assert_eq!(*url_opt, test.1);
@@ -425,7 +423,7 @@ fn test_source_url() {
         let lock = SharedRwLock::new();
         let media = Arc::new(lock.wrap(MediaList::empty()));
         let stylesheet = Stylesheet::from_str(test.0, url.clone(), Origin::UserAgent, media, lock,
-                                              None, &CSSErrorReporterTest, QuirksMode::NoQuirks,
+                                              None, None, QuirksMode::NoQuirks,
                                               0);
         let url_opt = stylesheet.contents.source_url.read();
         assert_eq!(*url_opt, test.1);

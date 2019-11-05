@@ -6,7 +6,7 @@
 
 #include "WorkerDebuggerManager.h"
 
-#include "nsISimpleEnumerator.h"
+#include "nsSimpleEnumerator.h"
 
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StaticPtr.h"
@@ -68,7 +68,7 @@ static StaticRefPtr<WorkerDebuggerManager> gWorkerDebuggerManager;
 
 } /* anonymous namespace */
 
-class WorkerDebuggerEnumerator final : public nsISimpleEnumerator {
+class WorkerDebuggerEnumerator final : public nsSimpleEnumerator {
   nsTArray<RefPtr<WorkerDebugger>> mDebuggers;
   uint32_t mIndex;
 
@@ -77,14 +77,15 @@ class WorkerDebuggerEnumerator final : public nsISimpleEnumerator {
       const nsTArray<RefPtr<WorkerDebugger>>& aDebuggers)
       : mDebuggers(aDebuggers), mIndex(0) {}
 
-  NS_DECL_ISUPPORTS
   NS_DECL_NSISIMPLEENUMERATOR
 
- private:
-  ~WorkerDebuggerEnumerator() {}
-};
+  const nsID& DefaultInterface() override {
+    return NS_GET_IID(nsIWorkerDebugger);
+  }
 
-NS_IMPL_ISUPPORTS(WorkerDebuggerEnumerator, nsISimpleEnumerator);
+ private:
+  ~WorkerDebuggerEnumerator() override = default;
+};
 
 NS_IMETHODIMP
 WorkerDebuggerEnumerator::HasMoreElements(bool* aResult) {
@@ -148,7 +149,7 @@ WorkerDebuggerManager::Observe(nsISupports* aSubject, const char* aTopic,
     return NS_OK;
   }
 
-  NS_NOTREACHED("Unknown observer topic!");
+  MOZ_ASSERT_UNREACHABLE("Unknown observer topic!");
   return NS_OK;
 }
 
@@ -321,6 +322,14 @@ void WorkerDebuggerManager::UnregisterDebuggerMainThread(
 
   debugger->Close();
   aWorkerPrivate->SetIsDebuggerRegistered(false);
+}
+
+uint32_t WorkerDebuggerManager::GetDebuggersLength() const {
+  return mDebuggers.Length();
+}
+
+WorkerDebugger* WorkerDebuggerManager::GetDebuggerAt(uint32_t aIndex) const {
+  return mDebuggers.SafeElementAt(aIndex, nullptr);
 }
 
 }  // namespace dom

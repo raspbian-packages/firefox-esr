@@ -11,18 +11,24 @@
 #include "mozilla/Atomics.h"
 #include "nsCOMPtr.h"
 #include "nsIObserver.h"
+#include "nsIRemoteTab.h"
 #include "nsStringFwd.h"
 
 class nsIRunnable;
-class nsITabChild;
+class nsIBrowserChild;
 class nsIThread;
 
 namespace mozilla {
 
 namespace dom {
 class ContentParent;
-class TabParent;
+class BrowserParent;
+struct CancelContentJSOptions;
 }  // namespace dom
+
+namespace layers {
+struct LayersObserverEpoch;
+}  // namespace layers
 
 class PProcessHangMonitorParent;
 
@@ -44,9 +50,17 @@ class ProcessHangMonitor final : public nsIObserver {
 
   static void ClearHang();
 
-  static void ForcePaint(PProcessHangMonitorParent* aParent,
-                         dom::TabParent* aTab, uint64_t aLayerObserverEpoch);
-  static void ClearForcePaint();
+  static void PaintWhileInterruptingJS(
+      PProcessHangMonitorParent* aParent, dom::BrowserParent* aTab,
+      bool aForceRepaint, const layers::LayersObserverEpoch& aEpoch);
+  static void ClearPaintWhileInterruptingJS(
+      const layers::LayersObserverEpoch& aEpoch);
+  static void MaybeStartPaintWhileInterruptingJS();
+
+  static void CancelContentJSExecutionIfRunning(
+      PProcessHangMonitorParent* aParent, dom::BrowserParent* aTab,
+      nsIRemoteTab::NavigationType aNavigationType,
+      const dom::CancelContentJSOptions& aCancelContentJSOptions);
 
   enum SlowScriptAction {
     Continue,
@@ -54,7 +68,7 @@ class ProcessHangMonitor final : public nsIObserver {
     StartDebugger,
     TerminateGlobal,
   };
-  SlowScriptAction NotifySlowScript(nsITabChild* aTabChild,
+  SlowScriptAction NotifySlowScript(nsIBrowserChild* aBrowserChild,
                                     const char* aFileName,
                                     const nsString& aAddonId);
 

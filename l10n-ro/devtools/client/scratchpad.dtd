@@ -20,6 +20,7 @@
   -  "Scratchpad" in your locale. You should feel free to find a close
   -  approximation to it or choose a word (or words) that means
   -  "simple discardable text editor". -->
+<!ENTITY window.title                 "Ciornă">
 
 <!ENTITY fileMenu.label               "Fișier">
 <!ENTITY fileMenu.accesskey           "F">
@@ -32,8 +33,10 @@
 <!ENTITY openFileCmd.accesskey        "O">
 <!ENTITY openFileCmd.commandkey       "o">
 
+<!ENTITY openRecentMenu.label         "Deschide recent">
 <!ENTITY openRecentMenu.accesskey     "R">
 
+<!ENTITY revertCmd.label              "Anulează…">
 <!ENTITY revertCmd.accesskey          "t">
 
 <!ENTITY saveFileCmd.label            "Salvează">
@@ -47,18 +50,24 @@
 <!ENTITY closeCmd.key                 "W">
 <!ENTITY closeCmd.accesskey           "C">
 
+<!ENTITY viewMenu.label               "Vizualizare">
 <!ENTITY viewMenu.accesskey           "V">
 
+<!ENTITY lineNumbers.label             "Afișează numerele rândurilor">
 <!ENTITY lineNumbers.accesskey         "L">
 
+<!ENTITY wordWrap.label                "Încadrează textul">
 <!ENTITY wordWrap.accesskey            "W">
 
+<!ENTITY highlightTrailingSpace.label     "Evidențiază spațiul de la sfârșitul rândului">
 <!ENTITY highlightTrailingSpace.accesskey "H">
 
+<!ENTITY largerFont.label             "Font mai mare">
 <!ENTITY largerFont.accesskey         "a">
 <!ENTITY largerFont.commandkey        "+">
 <!ENTITY largerFont.commandkey2       "="> <!-- + is above this key on many keyboards -->
 
+<!ENTITY smallerFont.label            "Font mai mic">
 <!ENTITY smallerFont.accesskey        "M">
 <!ENTITY smallerFont.commandkey       "-">
 
@@ -66,17 +75,22 @@
 <!ENTITY normalSize.accesskey         "N">
 <!ENTITY normalSize.commandkey        "0">
 
+<!ENTITY editMenu.label               "Editare">
 <!ENTITY editMenu.accesskey           "E">
 
+<!ENTITY run.label                    "Start">
 <!ENTITY run.accesskey                "R">
 <!ENTITY run.key                      "r">
 
+<!ENTITY inspect.label                "Inspectează">
 <!ENTITY inspect.accesskey            "I">
 <!ENTITY inspect.key                  "i">
 
+<!ENTITY display.label                "Afișare">
 <!ENTITY display.accesskey            "D">
 <!ENTITY display.key                  "l">
 
+<!ENTITY pprint.label                 "Reformatare">
 <!ENTITY pprint.key                   "p">
 <!ENTITY pprint.accesskey             "P">
 
@@ -86,9 +100,11 @@
   -  the user is evaluating against. I.e., Content (current tab) or Chrome
   -  (browser).
   -->
+<!ENTITY environmentMenu.label        "Mediu">
 <!ENTITY environmentMenu.accesskey    "N">
 
 
+<!ENTITY contentContext.label         "Conținut">
 <!ENTITY contentContext.accesskey     "C">
 
 <!-- LOCALIZATION NOTE (browserContext.label, accesskey): This menu item is used
@@ -97,6 +113,7 @@
   -  enabled via the devtools.chrome.enabled preference. Formerly, this label
   -  was called "Chrome".
   -->
+<!ENTITY browserContext.label         "Browser">
 <!ENTITY browserContext.accesskey     "B">
 
 <!-- LOCALIZATION NOTE some localizations of Windows (ex:french, german) use "?"
@@ -107,6 +124,7 @@
 <!ENTITY helpMenuWin.label            "Ajutor">
 <!ENTITY helpMenuWin.accesskey        "H">
 
+<!ENTITY documentationLink.label      "Ajutor ciornă pe MDN">
 <!ENTITY documentationLink.accesskey  "D">
 
 
@@ -116,9 +134,11 @@
 <!ENTITY resetContext2.label          "Resetează variabilele">
 <!ENTITY resetContext2.accesskey      "T">
 
+<!ENTITY reloadAndRun.label           "Reîncarcă și execută">
 <!ENTITY reloadAndRun.accesskey       "E">
 <!ENTITY reloadAndRun.key             "r">
 
+<!ENTITY executeMenu.label            "Execută">
 <!ENTITY executeMenu.accesskey        "X">
 
 <!-- LOCALIZATION NOTE (errorConsoleCmd.commandkey): This command key launches
@@ -130,5 +150,6 @@
 <!-- LOCALIZATION NOTE (evalFunction.label): This command allows the developer
   -  to evaluate the top-level function that the cursor is currently at.
   -->
+<!ENTITY evalFunction.label "Evaluează funcția actuală">
 <!ENTITY evalFunction.accesskey "v">
 <!ENTITY evalFunction.key "e">

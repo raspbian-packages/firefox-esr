@@ -104,7 +104,7 @@ pub unsafe extern "C" fn rust_u2f_result_error(res: *const U2FResult) -> u8 {
         return *err as u8;
     }
 
-    return 0; /* No error, the request succeeded. */
+    0 /* No error, the request succeeded. */
 }
 
 #[no_mangle]
@@ -229,7 +229,7 @@ pub unsafe extern "C" fn rust_u2f_mgr_sign(
     }
 
     // Need at least one app_id.
-    if (*app_ids).len() < 1 {
+    if (*app_ids).is_empty() {
         return 0;
     }
 
@@ -262,11 +262,9 @@ pub unsafe extern "C" fn rust_u2f_mgr_sign(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn rust_u2f_mgr_cancel(mgr: *mut U2FManager) -> u64 {
+pub unsafe extern "C" fn rust_u2f_mgr_cancel(mgr: *mut U2FManager) {
     if !mgr.is_null() {
         // Ignore return value.
         let _ = (*mgr).cancel();
     }
-
-    new_tid()
 }

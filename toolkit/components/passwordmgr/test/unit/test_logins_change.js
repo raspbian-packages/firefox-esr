@@ -23,8 +23,7 @@
  *        This argument is passed to the "Assert.throws" test to determine which
  *        error is expected from the modification functions.
  */
-function checkLoginInvalid(aLoginInfo, aExpectedError)
-{
+function checkLoginInvalid(aLoginInfo, aExpectedError) {
   // Try to add the new login, and verify that no data is stored.
   Assert.throws(() => Services.logins.addLogin(aLoginInfo), aExpectedError);
   LoginTestUtils.checkLogins([]);
@@ -34,17 +33,26 @@ function checkLoginInvalid(aLoginInfo, aExpectedError)
   Services.logins.addLogin(testLogin);
 
   // Try to modify the existing login using nsILoginInfo and nsIPropertyBag.
-  Assert.throws(() => Services.logins.modifyLogin(testLogin, aLoginInfo),
-                aExpectedError);
-  Assert.throws(() => Services.logins.modifyLogin(testLogin, newPropertyBag({
-    hostname: aLoginInfo.hostname,
-    formSubmitURL: aLoginInfo.formSubmitURL,
-    httpRealm: aLoginInfo.httpRealm,
-    username: aLoginInfo.username,
-    password: aLoginInfo.password,
-    usernameField: aLoginInfo.usernameField,
-    passwordField: aLoginInfo.passwordField,
-  })), aExpectedError);
+  Assert.throws(
+    () => Services.logins.modifyLogin(testLogin, aLoginInfo),
+    aExpectedError
+  );
+  Assert.throws(
+    () =>
+      Services.logins.modifyLogin(
+        testLogin,
+        newPropertyBag({
+          hostname: aLoginInfo.hostname,
+          formSubmitURL: aLoginInfo.formSubmitURL,
+          httpRealm: aLoginInfo.httpRealm,
+          username: aLoginInfo.username,
+          password: aLoginInfo.password,
+          usernameField: aLoginInfo.usernameField,
+          passwordField: aLoginInfo.passwordField,
+        })
+      ),
+    aExpectedError
+  );
 
   // Verify that no data was stored by the previous calls.
   LoginTestUtils.checkLogins([testLogin]);
@@ -79,8 +87,7 @@ function compareAttributes(objectA, objectB, attributes) {
 /**
  * Tests that adding logins to the database works.
  */
-add_task(function test_addLogin_removeLogin()
-{
+add_task(function test_addLogin_removeLogin() {
   // Each login from the test data should be valid and added to the list.
   for (let loginInfo of TestData.loginList()) {
     Services.logins.addLogin(loginInfo);
@@ -109,15 +116,18 @@ add_task(function test_addLogin_removeLogin()
  * The legacy case of an empty string in formSubmitURL and a null value in
  * httpRealm is also supported for storage at the moment.
  */
-add_task(function test_invalid_httpRealm_formSubmitURL()
-{
+add_task(function test_invalid_httpRealm_formSubmitURL() {
   // httpRealm === null, formSubmitURL === null
-  checkLoginInvalid(TestData.formLogin({ formSubmitURL: null }),
-                    /without a httpRealm or formSubmitURL/);
+  checkLoginInvalid(
+    TestData.formLogin({ formSubmitURL: null }),
+    /without a httpRealm or formSubmitURL/
+  );
 
   // httpRealm === "", formSubmitURL === null
-  checkLoginInvalid(TestData.authLogin({ httpRealm: "" }),
-                    /without a httpRealm or formSubmitURL/);
+  checkLoginInvalid(
+    TestData.authLogin({ httpRealm: "" }),
+    /without a httpRealm or formSubmitURL/
+  );
 
   // httpRealm === null, formSubmitURL === ""
   // This is not enforced for now.
@@ -125,48 +135,61 @@ add_task(function test_invalid_httpRealm_formSubmitURL()
   //                   /without a httpRealm or formSubmitURL/);
 
   // httpRealm === "", formSubmitURL === ""
-  checkLoginInvalid(TestData.formLogin({ formSubmitURL: "", httpRealm: "" }),
-                    /both a httpRealm and formSubmitURL/);
+  checkLoginInvalid(
+    TestData.formLogin({ formSubmitURL: "", httpRealm: "" }),
+    /both a httpRealm and formSubmitURL/
+  );
 
   // !!httpRealm, !!formSubmitURL
-  checkLoginInvalid(TestData.formLogin({ httpRealm: "The HTTP Realm" }),
-                    /both a httpRealm and formSubmitURL/);
+  checkLoginInvalid(
+    TestData.formLogin({ httpRealm: "The HTTP Realm" }),
+    /both a httpRealm and formSubmitURL/
+  );
 
   // httpRealm === "", !!formSubmitURL
-  checkLoginInvalid(TestData.formLogin({ httpRealm: "" }),
-                    /both a httpRealm and formSubmitURL/);
+  checkLoginInvalid(
+    TestData.formLogin({ httpRealm: "" }),
+    /both a httpRealm and formSubmitURL/
+  );
 
   // !!httpRealm, formSubmitURL === ""
-  checkLoginInvalid(TestData.authLogin({ formSubmitURL: "" }),
-                    /both a httpRealm and formSubmitURL/);
+  checkLoginInvalid(
+    TestData.authLogin({ formSubmitURL: "" }),
+    /both a httpRealm and formSubmitURL/
+  );
 });
 
 /**
  * Tests null or empty values in required login properties.
  */
-add_task(function test_missing_properties()
-{
-  checkLoginInvalid(TestData.formLogin({ hostname: null }),
-                    /null or empty hostname/);
+add_task(function test_missing_properties() {
+  checkLoginInvalid(
+    TestData.formLogin({ hostname: null }),
+    /null or empty hostname/
+  );
 
-  checkLoginInvalid(TestData.formLogin({ hostname: "" }),
-                    /null or empty hostname/);
+  checkLoginInvalid(
+    TestData.formLogin({ hostname: "" }),
+    /null or empty hostname/
+  );
 
-  checkLoginInvalid(TestData.formLogin({ username: null }),
-                    /null username/);
+  checkLoginInvalid(TestData.formLogin({ username: null }), /null username/);
 
-  checkLoginInvalid(TestData.formLogin({ password: null }),
-                    /null or empty password/);
+  checkLoginInvalid(
+    TestData.formLogin({ password: null }),
+    /null or empty password/
+  );
 
-  checkLoginInvalid(TestData.formLogin({ password: "" }),
-                    /null or empty password/);
+  checkLoginInvalid(
+    TestData.formLogin({ password: "" }),
+    /null or empty password/
+  );
 });
 
 /**
  * Tests invalid NUL characters in nsILoginInfo properties.
  */
-add_task(function test_invalid_characters()
-{
+add_task(function test_invalid_characters() {
   let loginList = [
     TestData.authLogin({ hostname: "http://null\0X.example.com" }),
     TestData.authLogin({ httpRealm: "realm\0" }),
@@ -185,17 +208,17 @@ add_task(function test_invalid_characters()
 /**
  * Tests removing a login that does not exists.
  */
-add_task(function test_removeLogin_nonexisting()
-{
-  Assert.throws(() => Services.logins.removeLogin(TestData.formLogin()),
-                /No matching logins/);
+add_task(function test_removeLogin_nonexisting() {
+  Assert.throws(
+    () => Services.logins.removeLogin(TestData.formLogin()),
+    /No matching logins/
+  );
 });
 
 /**
  * Tests removing all logins at once.
  */
-add_task(function test_removeAllLogins()
-{
+add_task(function test_removeAllLogins() {
   for (let loginInfo of TestData.loginList()) {
     Services.logins.addLogin(loginInfo);
   }
@@ -209,8 +232,7 @@ add_task(function test_removeAllLogins()
 /**
  * Tests the modifyLogin function with an nsILoginInfo argument.
  */
-add_task(function test_modifyLogin_nsILoginInfo()
-{
+add_task(function test_modifyLogin_nsILoginInfo() {
   let loginInfo = TestData.formLogin();
   let updatedLoginInfo = TestData.formLogin({
     username: "new username",
@@ -221,8 +243,10 @@ add_task(function test_modifyLogin_nsILoginInfo()
   let differentLoginInfo = TestData.authLogin();
 
   // Trying to modify a login that does not exist should throw.
-  Assert.throws(() => Services.logins.modifyLogin(loginInfo, updatedLoginInfo),
-                /No matching logins/);
+  Assert.throws(
+    () => Services.logins.modifyLogin(loginInfo, updatedLoginInfo),
+    /No matching logins/
+  );
 
   // Add the first form login, then modify it to match the second.
   Services.logins.addLogin(loginInfo);
@@ -230,8 +254,10 @@ add_task(function test_modifyLogin_nsILoginInfo()
 
   // The data should now match the second login.
   LoginTestUtils.checkLogins([updatedLoginInfo]);
-  Assert.throws(() => Services.logins.modifyLogin(loginInfo, updatedLoginInfo),
-                /No matching logins/);
+  Assert.throws(
+    () => Services.logins.modifyLogin(loginInfo, updatedLoginInfo),
+    /No matching logins/
+  );
 
   // The login can be changed to have a different type and hostname.
   Services.logins.modifyLogin(updatedLoginInfo, differentLoginInfo);
@@ -243,8 +269,9 @@ add_task(function test_modifyLogin_nsILoginInfo()
 
   // Modifying a login to match an existing one should not be possible.
   Assert.throws(
-         () => Services.logins.modifyLogin(loginInfo, differentLoginInfo),
-         /already exists/);
+    () => Services.logins.modifyLogin(loginInfo, differentLoginInfo),
+    /already exists/
+  );
   LoginTestUtils.checkLogins([loginInfo, differentLoginInfo]);
 
   LoginTestUtils.clearData();
@@ -253,8 +280,7 @@ add_task(function test_modifyLogin_nsILoginInfo()
 /**
  * Tests the modifyLogin function with an nsIPropertyBag argument.
  */
-add_task(function test_modifyLogin_nsIProperyBag()
-{
+add_task(function test_modifyLogin_nsIProperyBag() {
   let loginInfo = TestData.formLogin();
   let updatedLoginInfo = TestData.formLogin({
     username: "new username",
@@ -274,31 +300,45 @@ add_task(function test_modifyLogin_nsIProperyBag()
   });
 
   // Trying to modify a login that does not exist should throw.
-  Assert.throws(() => Services.logins.modifyLogin(loginInfo, newPropertyBag()),
-                /No matching logins/);
+  Assert.throws(
+    () => Services.logins.modifyLogin(loginInfo, newPropertyBag()),
+    /No matching logins/
+  );
 
   // Add the first form login, then modify it to match the second, changing
   // only some of its properties and checking the behavior with an empty string.
   Services.logins.addLogin(loginInfo);
-  Services.logins.modifyLogin(loginInfo, newPropertyBag({
-    username: "new username",
-    password: "new password",
-    usernameField: "",
-    passwordField: "new_form_field_password",
-  }));
+  Services.logins.modifyLogin(
+    loginInfo,
+    newPropertyBag({
+      username: "new username",
+      password: "new password",
+      usernameField: "",
+      passwordField: "new_form_field_password",
+    })
+  );
 
   // The data should now match the second login.
   LoginTestUtils.checkLogins([updatedLoginInfo]);
-  Assert.throws(() => Services.logins.modifyLogin(loginInfo, newPropertyBag()),
-                /No matching logins/);
+  Assert.throws(
+    () => Services.logins.modifyLogin(loginInfo, newPropertyBag()),
+    /No matching logins/
+  );
 
   // It is also possible to provide no properties to be modified.
   Services.logins.modifyLogin(updatedLoginInfo, newPropertyBag());
 
   // Specifying a null property for a required value should throw.
-  Assert.throws(() => Services.logins.modifyLogin(loginInfo, newPropertyBag({
-    usernameField: null,
-  })));
+  Assert.throws(
+    () =>
+      Services.logins.modifyLogin(
+        loginInfo,
+        newPropertyBag({
+          usernameField: null,
+        })
+      ),
+    /No matching logins/
+  );
 
   // The login can be changed to have a different type and hostname.
   Services.logins.modifyLogin(updatedLoginInfo, differentLoginProperties);
@@ -310,8 +350,9 @@ add_task(function test_modifyLogin_nsIProperyBag()
 
   // Modifying a login to match an existing one should not be possible.
   Assert.throws(
-         () => Services.logins.modifyLogin(loginInfo, differentLoginProperties),
-         /already exists/);
+    () => Services.logins.modifyLogin(loginInfo, differentLoginProperties),
+    /already exists/
+  );
   LoginTestUtils.checkLogins([loginInfo, differentLoginInfo]);
 
   LoginTestUtils.clearData();
@@ -347,12 +388,21 @@ add_task(function test_deduplicate_logins() {
   for (let testCase of keyCombinations) {
     // Deduplicate the logins using the current testcase keyset.
     let deduped = LoginHelper.dedupeLogins(logins, testCase.keyset);
-    Assert.equal(deduped.length, testCase.results, "Correct amount of results.");
+    Assert.equal(
+      deduped.length,
+      testCase.results,
+      "Correct amount of results."
+    );
 
     // Checks that every login after deduping is unique.
-    Assert.ok(deduped.every(loginA =>
-      deduped.every(loginB => !compareAttributes(loginA, loginB, testCase.keyset))
-    ), "Every login is unique.");
+    Assert.ok(
+      deduped.every(loginA =>
+        deduped.every(
+          loginB => !compareAttributes(loginA, loginB, testCase.keyset)
+        )
+      ),
+      "Every login is unique."
+    );
   }
 });
 
@@ -362,8 +412,11 @@ add_task(function test_deduplicate_logins() {
 add_task(function test_deduplicate_keeps_most_recent() {
   // Logins to deduplicate.
   let logins = [
-    TestData.formLogin({timeLastUsed: Date.UTC(2004, 11, 4, 0, 0, 0)}),
-    TestData.formLogin({formSubmitURL: "http://example.com", timeLastUsed: Date.UTC(2015, 11, 4, 0, 0, 0)}),
+    TestData.formLogin({ timeLastUsed: Date.UTC(2004, 11, 4, 0, 0, 0) }),
+    TestData.formLogin({
+      formSubmitURL: "http://example.com",
+      timeLastUsed: Date.UTC(2015, 11, 4, 0, 0, 0),
+    }),
   ];
 
   // Deduplicate the logins.
@@ -371,14 +424,24 @@ add_task(function test_deduplicate_keeps_most_recent() {
   Assert.equal(deduped.length, 1, "Deduplicated the logins array.");
 
   // Verify that the remaining login have the most recent date.
-  let loginTimeLastUsed = deduped[0].QueryInterface(Ci.nsILoginMetaInfo).timeLastUsed;
-  Assert.equal(loginTimeLastUsed, Date.UTC(2015, 11, 4, 0, 0, 0), "Most recent login was kept.");
+  let loginTimeLastUsed = deduped[0].QueryInterface(Ci.nsILoginMetaInfo)
+    .timeLastUsed;
+  Assert.equal(
+    loginTimeLastUsed,
+    Date.UTC(2015, 11, 4, 0, 0, 0),
+    "Most recent login was kept."
+  );
 
   // Deduplicate the reverse logins array.
   deduped = LoginHelper.dedupeLogins(logins.reverse());
   Assert.equal(deduped.length, 1, "Deduplicated the reversed logins array.");
 
   // Verify that the remaining login have the most recent date.
-  loginTimeLastUsed = deduped[0].QueryInterface(Ci.nsILoginMetaInfo).timeLastUsed;
-  Assert.equal(loginTimeLastUsed, Date.UTC(2015, 11, 4, 0, 0, 0), "Most recent login was kept.");
+  loginTimeLastUsed = deduped[0].QueryInterface(Ci.nsILoginMetaInfo)
+    .timeLastUsed;
+  Assert.equal(
+    loginTimeLastUsed,
+    Date.UTC(2015, 11, 4, 0, 0, 0),
+    "Most recent login was kept."
+  );
 });

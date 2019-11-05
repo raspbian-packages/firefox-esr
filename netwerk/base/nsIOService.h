@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,9 +10,8 @@
 #include "nsIIOService.h"
 #include "nsTArray.h"
 #include "nsCOMPtr.h"
-#include "nsWeakPtr.h"
 #include "nsIObserver.h"
-#include "nsWeakReference.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsINetUtil.h"
 #include "nsIChannelEventSink.h"
 #include "nsCategoryCache.h"
@@ -32,20 +31,26 @@
 #define NS_IPC_IOSERVICE_SET_CONNECTIVITY_TOPIC "ipc:network:set-connectivity"
 
 static const char gScheme[][sizeof("moz-safe-about")] = {
-    "chrome", "file",  "http",           "https",   "jar",
-    "data",   "about", "moz-safe-about", "resource"};
+    "chrome",   "file",          "http",      "https",
+    "jar",      "data",          "about",     "moz-safe-about",
+    "resource", "moz-extension", "page-icon", "blob"};
+
+static const char gForcedExternalSchemes[][sizeof("moz-nullprincipal")] = {
+    "place", "fake-favicon-uri", "favicon", "moz-nullprincipal"};
 
 class nsINetworkLinkService;
 class nsIPrefBranch;
 class nsIProtocolProxyService2;
 class nsIProxyInfo;
-class nsPIDNSService;
 class nsPISocketTransportService;
 
 namespace mozilla {
+class MemoryReportingProcess;
 namespace net {
 class NeckoChild;
 class nsAsyncRedirectVerifyHelper;
+class SocketProcessHost;
+class SocketProcessMemoryReporter;
 
 class nsIOService final : public nsIIOService,
                           public nsIObserver,
@@ -97,6 +102,8 @@ class nsIOService final : public nsIIOService,
   static bool IsDataURIUniqueOpaqueOrigin();
   static bool BlockToplevelDataUriNavigations();
 
+  static bool BlockFTPSubresources();
+
   // Used to count the total number of HTTP requests made
   void IncrementRequestNumber() { mTotalRequests++; }
   uint32_t GetTotalRequestNumber() { return mTotalRequests; }
@@ -108,6 +115,22 @@ class nsIOService final : public nsIIOService,
 
   // Used to trigger a recheck of the captive portal status
   nsresult RecheckCaptivePortal();
+
+  void OnProcessLaunchComplete(SocketProcessHost* aHost, bool aSucceeded);
+  void OnProcessUnexpectedShutdown(SocketProcessHost* aHost);
+  bool SocketProcessReady();
+  void NotifySocketProcessPrefsChanged(const char* aName);
+
+  bool IsSocketProcessLaunchComplete();
+
+  // Call func immediately if socket process is launched completely. Otherwise,
+  // |func| will be queued and then executed in the *main thread* once socket
+  // process is launced.
+  void CallOrWaitForSocketProcess(const std::function<void()>& aFunc);
+
+  int32_t SocketProcessPid();
+  friend SocketProcessMemoryReporter;
+  RefPtr<MemoryReportingProcess> GetSocketProcessMemoryReporter();
 
  private:
   // These shouldn't be called directly:
@@ -128,9 +151,8 @@ class nsIOService final : public nsIIOService,
   nsresult RecheckCaptivePortalIfLocalRedirect(nsIChannel* newChan);
 
   // Prefs wrangling
-  void PrefsChanged(nsIPrefBranch* prefs, const char* pref = nullptr);
-  void GetPrefBranch(nsIPrefBranch**);
-  void ParsePortList(nsIPrefBranch* prefBranch, const char* pref, bool remove);
+  void PrefsChanged(const char* pref = nullptr);
+  void ParsePortList(const char* pref, bool remove);
 
   nsresult InitializeSocketTransportService();
   nsresult InitializeNetworkLinkService();
@@ -142,7 +164,7 @@ class nsIOService final : public nsIIOService,
 
   nsresult NewChannelFromURIWithProxyFlagsInternal(
       nsIURI* aURI, nsIURI* aProxyURI, uint32_t aProxyFlags,
-      nsIDOMNode* aLoadingNode, nsIPrincipal* aLoadingPrincipal,
+      nsINode* aLoadingNode, nsIPrincipal* aLoadingPrincipal,
       nsIPrincipal* aTriggeringPrincipal,
       const mozilla::Maybe<mozilla::dom::ClientInfo>& aLoadingClientInfo,
       const mozilla::Maybe<mozilla::dom::ServiceWorkerDescriptor>& aController,
@@ -159,6 +181,9 @@ class nsIOService final : public nsIIOService,
                                       nsIInterfaceRequestor* aCallbacks,
                                       bool aAnonymous);
 
+  nsresult LaunchSocketProcess();
+  void DestroySocketProcess();
+
  private:
   bool mOffline;
   mozilla::Atomic<bool, mozilla::Relaxed> mOfflineForProfileChange;
@@ -173,11 +198,12 @@ class nsIOService final : public nsIIOService,
   bool mSettingOffline;
   bool mSetOfflineValue;
 
+  bool mSocketProcessLaunchComplete;
+
   mozilla::Atomic<bool, mozilla::Relaxed> mShutdown;
   mozilla::Atomic<bool, mozilla::Relaxed> mHttpHandlerAlreadyShutingDown;
 
   nsCOMPtr<nsPISocketTransportService> mSocketTransportService;
-  nsCOMPtr<nsPIDNSService> mDNSService;
   nsCOMPtr<nsICaptivePortalService> mCaptivePortalService;
   nsCOMPtr<nsINetworkLinkService> mNetworkLinkService;
   bool mNetworkLinkServiceInitialized;
@@ -195,6 +221,8 @@ class nsIOService final : public nsIIOService,
   static bool sIsDataURIUniqueOpaqueOrigin;
   static bool sBlockToplevelDataUriNavigations;
 
+  static bool sBlockFTPSubresources;
+
   uint32_t mTotalRequests;
   uint32_t mCacheWon;
   uint32_t mNetWon;
@@ -209,6 +237,13 @@ class nsIOService final : public nsIIOService,
 
   // Time a network tearing down started.
   mozilla::Atomic<PRIntervalTime> mNetTearingDownStarted;
+
+  SocketProcessHost* mSocketProcess;
+
+  // Events should be executed after the socket process is launched. Will
+  // dispatch these events while socket process fires OnProcessLaunchComplete.
+  // Note: this array is accessed only on the main thread.
+  nsTArray<std::function<void()>> mPendingEvents;
 
  public:
   // Used for all default buffer sizes that necko allocates.

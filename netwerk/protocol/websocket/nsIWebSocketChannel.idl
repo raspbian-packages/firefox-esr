@@ -4,15 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+interface nsICookieSettings;
 interface nsIURI;
 interface nsIInterfaceRequestor;
 interface nsILoadGroup;
 interface nsIWebSocketListener;
 interface nsIInputStream;
 interface nsILoadInfo;
-interface nsIDOMNode;
 interface nsIPrincipal;
 interface nsITransportProvider;
+
+webidl Node;
 
 #include "nsISupports.idl"
 
@@ -23,7 +25,7 @@ interface nsITransportProvider;
  * We are also making it scriptable for now, but this may change once we have
  * WebSockets for Workers.
  */
-[scriptable, uuid(ce71d028-322a-4105-a947-a894689b52bf)]
+[scriptable, builtinclass, uuid(ce71d028-322a-4105-a947-a894689b52bf)]
 interface nsIWebSocketChannel : nsISupports
 {
     /**
@@ -71,10 +73,17 @@ interface nsIWebSocketChannel : nsISupports
     [must_use] readonly attribute ACString extensions;
 
     /**
+     * The channelId of the underlying http channel.
+     * It's available only after nsIWebSocketListener::onStart
+     */
+    [must_use] readonly attribute uint64_t httpChannelId;
+
+    /**
      * Init the WebSocketChannel with LoadInfo arguments.
      * @param aLoadingNode
      * @param aLoadingPrincipal
      * @param aTriggeringPrincipal
+     * @param aCookieSettings
      * @param aSecurityFlags
      * @param aContentPolicyType
      *        These will be used as values for the nsILoadInfo object on the
@@ -88,7 +97,18 @@ interface nsIWebSocketChannel : nsISupports
      * then loadingPrincipal must be equal to loadingNode->NodePrincipal().
      * But less error prone is to just supply a loadingNode.
      */
-     [must_use] void initLoadInfo(in nsIDOMNode aLoadingNode,
+     [notxpcom] nsresult initLoadInfoNative(in Node aLoadingNode,
+                                            in nsIPrincipal aLoadingPrincipal,
+                                            in nsIPrincipal aTriggeringPrincipal,
+                                            in nsICookieSettings aCookieSettings,
+                                            in unsigned long aSecurityFlags,
+                                            in unsigned long aContentPolicyType);
+
+     /**
+      * Similar to the previous one but without nsICookieSettings.
+      * This method is used by JS code where nsICookieSettings is not exposed.
+      */
+     [must_use] void initLoadInfo(in Node aLoadingNode,
                                   in nsIPrincipal aLoadingPrincipal,
                                   in nsIPrincipal aTriggeringPrincipal,
                                   in unsigned long aSecurityFlags,
@@ -215,6 +235,16 @@ interface nsIWebSocketChannel : nsISupports
         return 0;
       }
       return serial;
+    }
+
+    inline uint64_t HttpChannelId()
+    {
+      uint64_t httpChannelId;
+      nsresult rv = GetHttpChannelId(&httpChannelId);
+      if (NS_WARN_IF(NS_FAILED(rv))) {
+        return 0;
+      }
+      return httpChannelId;
     }
 %}
 };

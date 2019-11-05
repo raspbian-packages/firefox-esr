@@ -22,8 +22,6 @@
 #include "nsAutoPtr.h"
 #include "nsContentUtils.h"
 #include "nsGlobalWindow.h"
-#include "nsIDOMEvent.h"
-#include "nsIDOMDocument.h"
 #include "nsIDOMWindow.h"
 #include "nsIObserver.h"
 #include "nsIObserverService.h"
@@ -154,7 +152,7 @@ void GamepadManager::AddListener(nsGlobalWindowInner* aWindow) {
   }
 
   if (!mEnabled || mShuttingDown ||
-      nsContentUtils::ShouldResistFingerprinting()) {
+      nsContentUtils::ShouldResistFingerprinting(aWindow->GetExtantDoc())) {
     return;
   }
 
@@ -198,8 +196,13 @@ already_AddRefed<Gamepad> GamepadManager::GetGamepad(uint32_t aIndex) const {
   return nullptr;
 }
 
+already_AddRefed<Gamepad> GamepadManager::GetGamepad(
+    uint32_t aGamepadId, GamepadServiceType aServiceType) const {
+  return GetGamepad(GetGamepadIndexWithServiceType(aGamepadId, aServiceType));
+}
+
 uint32_t GamepadManager::GetGamepadIndexWithServiceType(
-    uint32_t aIndex, GamepadServiceType aServiceType) {
+    uint32_t aIndex, GamepadServiceType aServiceType) const {
   uint32_t newIndex = 0;
 
   switch (aServiceType) {
@@ -266,8 +269,7 @@ void GamepadManager::FireButtonEvent(EventTarget* aTarget, Gamepad* aGamepad,
 
   event->SetTrusted(true);
 
-  bool defaultActionEnabled = true;
-  aTarget->DispatchEvent(event, &defaultActionEnabled);
+  aTarget->DispatchEvent(*event);
 }
 
 void GamepadManager::FireAxisMoveEvent(EventTarget* aTarget, Gamepad* aGamepad,
@@ -283,17 +285,10 @@ void GamepadManager::FireAxisMoveEvent(EventTarget* aTarget, Gamepad* aGamepad,
 
   event->SetTrusted(true);
 
-  bool defaultActionEnabled = true;
-  aTarget->DispatchEvent(event, &defaultActionEnabled);
+  aTarget->DispatchEvent(*event);
 }
 
 void GamepadManager::NewConnectionEvent(uint32_t aIndex, bool aConnected) {
-  // Do not fire gamepadconnected and gamepaddisconnected events when
-  // privacy.resistFingerprinting is true.
-  if (nsContentUtils::ShouldResistFingerprinting()) {
-    return;
-  }
-
   if (mShuttingDown) {
     return;
   }
@@ -309,8 +304,15 @@ void GamepadManager::NewConnectionEvent(uint32_t aIndex, bool aConnected) {
 
   if (aConnected) {
     for (uint32_t i = 0; i < listeners.Length(); i++) {
+      // Do not fire gamepadconnected and gamepaddisconnected events when
+      // privacy.resistFingerprinting is true.
+      if (nsContentUtils::ShouldResistFingerprinting(
+              listeners[i]->GetExtantDoc())) {
+        continue;
+      }
+
       // Only send events to non-background windows
-      if (!listeners[i]->AsInner()->IsCurrentInnerWindow() ||
+      if (!listeners[i]->IsCurrentInnerWindow() ||
           listeners[i]->GetOuterWindow()->IsBackground()) {
         continue;
       }
@@ -335,6 +337,13 @@ void GamepadManager::NewConnectionEvent(uint32_t aIndex, bool aConnected) {
     for (uint32_t i = 0; i < listeners.Length(); i++) {
       // Even background windows get these events, so we don't have to
       // deal with the hassle of syncing the state of removed gamepads.
+
+      // Do not fire gamepadconnected and gamepaddisconnected events when
+      // privacy.resistFingerprinting is true.
+      if (nsContentUtils::ShouldResistFingerprinting(
+              listeners[i]->GetExtantDoc())) {
+        continue;
+      }
 
       if (WindowHasSeenGamepad(listeners[i], aIndex)) {
         RefPtr<Gamepad> listenerGamepad = listeners[i]->GetGamepad(aIndex);
@@ -361,13 +370,14 @@ void GamepadManager::FireConnectionEvent(EventTarget* aTarget,
 
   event->SetTrusted(true);
 
-  bool defaultActionEnabled = true;
-  aTarget->DispatchEvent(event, &defaultActionEnabled);
+  aTarget->DispatchEvent(*event);
 }
 
-void GamepadManager::SyncGamepadState(uint32_t aIndex, Gamepad* aGamepad) {
+void GamepadManager::SyncGamepadState(uint32_t aIndex,
+                                      nsGlobalWindowInner* aWindow,
+                                      Gamepad* aGamepad) {
   if (mShuttingDown || !mEnabled ||
-      nsContentUtils::ShouldResistFingerprinting()) {
+      nsContentUtils::ShouldResistFingerprinting(aWindow->GetExtantDoc())) {
     return;
   }
 
@@ -479,7 +489,7 @@ void GamepadManager::Update(const GamepadChangeEvent& aEvent) {
 
   for (uint32_t i = 0; i < listeners.Length(); i++) {
     // Only send events to non-background windows
-    if (!listeners[i]->AsInner()->IsCurrentInnerWindow() ||
+    if (!listeners[i]->IsCurrentInnerWindow() ||
         listeners[i]->GetOuterWindow()->IsBackground()) {
       continue;
     }

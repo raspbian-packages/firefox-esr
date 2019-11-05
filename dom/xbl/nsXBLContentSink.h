@@ -21,7 +21,6 @@ typedef enum {
   eXBL_InDocument,       /* outside any bindings */
   eXBL_InBindings,       /* Inside a <bindings> element */
   eXBL_InBinding,        /* Inside a <binding> */
-  eXBL_InResources,      /* Inside a <resources> */
   eXBL_InImplementation, /* Inside a <implementation> */
   eXBL_InHandlers,       /* Inside a <handlers> */
   eXBL_Error /* An error has occurred.  Suspend binding construction */
@@ -60,12 +59,13 @@ class nsXBLContentSink : public nsXMLContentSink {
   nsXBLContentSink();
   ~nsXBLContentSink();
 
-  nsresult Init(nsIDocument* aDoc, nsIURI* aURL, nsISupports* aContainer);
+  nsresult Init(mozilla::dom::Document* aDoc, nsIURI* aURL,
+                nsISupports* aContainer);
 
   // nsIContentSink overrides
   NS_IMETHOD HandleStartElement(const char16_t* aName, const char16_t** aAtts,
-                                uint32_t aAttsCount,
-                                uint32_t aLineNumber) override;
+                                uint32_t aAttsCount, uint32_t aLineNumber,
+                                uint32_t aColumnNumber) override;
 
   NS_IMETHOD HandleEndElement(const char16_t* aName) override;
 
@@ -84,11 +84,12 @@ class nsXBLContentSink : public nsXMLContentSink {
 
   nsresult CreateElement(const char16_t** aAtts, uint32_t aAttsCount,
                          mozilla::dom::NodeInfo* aNodeInfo,
-                         uint32_t aLineNumber, nsIContent** aResult,
-                         bool* aAppendContent,
+                         uint32_t aLineNumber, uint32_t aColumnNumber,
+                         nsIContent** aResult, bool* aAppendContent,
                          mozilla::dom::FromParser aFromParser) override;
 
-  nsresult AddAttributes(const char16_t** aAtts, Element* aElement) override;
+  nsresult AddAttributes(const char16_t** aAtts,
+                         mozilla::dom::Element* aElement) override;
 
 #ifdef MOZ_XUL
   nsresult AddAttributesToXULPrototype(const char16_t** aAtts,
@@ -99,7 +100,6 @@ class nsXBLContentSink : public nsXMLContentSink {
   // Our own helpers for constructing XBL prototype objects.
   nsresult ConstructBinding(uint32_t aLineNumber);
   void ConstructHandler(const char16_t** aAtts, uint32_t aLineNumber);
-  void ConstructResource(const char16_t** aAtts, nsAtom* aResourceType);
   void ConstructImplementation(const char16_t** aAtts);
   void ConstructProperty(const char16_t** aAtts, uint32_t aLineNumber);
   void ConstructMethod(const char16_t** aAtts);
@@ -139,6 +139,7 @@ class nsXBLContentSink : public nsXMLContentSink {
   nsXBLProtoImplField* mField;
 };
 
-nsresult NS_NewXBLContentSink(nsIXMLContentSink** aResult, nsIDocument* aDoc,
-                              nsIURI* aURL, nsISupports* aContainer);
+nsresult NS_NewXBLContentSink(nsIXMLContentSink** aResult,
+                              mozilla::dom::Document* aDoc, nsIURI* aURL,
+                              nsISupports* aContainer);
 #endif  // nsXBLContentSink_h__

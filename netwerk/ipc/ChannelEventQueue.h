@@ -86,6 +86,8 @@ class ChannelEventQueue final {
         mSuspended(false),
         mForcedCount(0),
         mFlushing(false),
+        mHasCheckedForXMLHttpRequest(false),
+        mForXMLHttpRequest(false),
         mOwner(owner),
         mMutex("ChannelEventQueue::mMutex"),
         mRunningMutex("ChannelEventQueue::mRunningMutex") {}
@@ -126,6 +128,8 @@ class ChannelEventQueue final {
   void SuspendInternal();
   void ResumeInternal();
 
+  bool MaybeSuspendIfEventsAreSuppressed();
+
   inline void MaybeFlushQueue();
   void FlushQueue();
   inline void CompleteResume();
@@ -138,6 +142,11 @@ class ChannelEventQueue final {
   bool mSuspended;
   uint32_t mForcedCount;  // Support ForcedQueueing on multiple thread.
   bool mFlushing;
+
+  // Whether the queue is associated with an XHR. This is lazily instantiated
+  // the first time it is needed.
+  bool mHasCheckedForXMLHttpRequest;
+  bool mForXMLHttpRequest;
 
   // Keep ptr to avoid refcount cycle: only grab ref during flushing.
   nsISupports* mOwner;
@@ -171,11 +180,12 @@ inline void ChannelEventQueue::RunOrEnqueue(ChannelEvent* aCallback,
   {
     MutexAutoLock lock(mMutex);
 
-    bool enqueue =
-        !!mForcedCount || mSuspended || mFlushing || !mEventQueue.IsEmpty();
+    bool enqueue = !!mForcedCount || mSuspended || mFlushing ||
+                   !mEventQueue.IsEmpty() ||
+                   MaybeSuspendIfEventsAreSuppressed();
 
     if (enqueue) {
-      mEventQueue.AppendElement(Move(event));
+      mEventQueue.AppendElement(std::move(event));
       return;
     }
 
@@ -190,7 +200,7 @@ inline void ChannelEventQueue::RunOrEnqueue(ChannelEvent* aCallback,
       // Leverage Suspend/Resume mechanism to trigger flush procedure without
       // creating a new one.
       SuspendInternal();
-      mEventQueue.AppendElement(Move(event));
+      mEventQueue.AppendElement(std::move(event));
       ResumeInternal();
       return;
     }
@@ -231,7 +241,7 @@ inline nsresult ChannelEventQueue::PrependEvent(
   MOZ_ASSERT(mSuspended || !!mForcedCount);
 
   UniquePtr<ChannelEvent>* newEvent =
-      mEventQueue.InsertElementAt(0, Move(aEvent));
+      mEventQueue.InsertElementAt(0, std::move(aEvent));
 
   if (!newEvent) {
     return NS_ERROR_OUT_OF_MEMORY;
@@ -257,7 +267,7 @@ inline nsresult ChannelEventQueue::PrependEvents(
   }
 
   for (uint32_t i = 0; i < aEvents.Length(); i++) {
-    newEvents[i] = Move(aEvents[i]);
+    newEvents[i] = std::move(aEvents[i]);
   }
 
   return NS_OK;
@@ -291,8 +301,8 @@ inline void ChannelEventQueue::MaybeFlushQueue() {
 
   {
     MutexAutoLock lock(mMutex);
-    flushQueue =
-        !mForcedCount && !mFlushing && !mSuspended && !mEventQueue.IsEmpty();
+    flushQueue = !mForcedCount && !mFlushing && !mSuspended &&
+                 !mEventQueue.IsEmpty() && !MaybeSuspendIfEventsAreSuppressed();
 
     // Only one thread is allowed to run FlushQueue at a time.
     if (flushQueue) {

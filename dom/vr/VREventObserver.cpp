@@ -23,7 +23,10 @@ using namespace gfx;
  * window.onvrdisplaydisconnected, and window.onvrdisplaypresentchange.
  */
 VREventObserver::VREventObserver(nsGlobalWindowInner* aGlobalWindow)
-    : mWindow(aGlobalWindow), mIs2DView(true), mHasReset(false) {
+    : mWindow(aGlobalWindow),
+      mIs2DView(true),
+      mHasReset(false),
+      mStopActivity(false) {
   MOZ_ASSERT(aGlobalWindow);
 
   UpdateSpentTimeIn2DTelemetry(false);
@@ -47,6 +50,7 @@ void VREventObserver::DisconnectFromOwner() {
     VRManagerChild* vmc = VRManagerChild::Get();
     vmc->RemoveListener(this);
   }
+  mStopActivity = true;
 }
 
 void VREventObserver::UpdateSpentTimeIn2DTelemetry(bool aUpdate) {
@@ -67,6 +71,20 @@ void VREventObserver::UpdateSpentTimeIn2DTelemetry(bool aUpdate) {
   }
 }
 
+void VREventObserver::StartActivity() {
+  mStopActivity = false;
+  VRManagerChild* vmc = VRManagerChild::Get();
+  vmc->StartActivity();
+}
+
+void VREventObserver::StopActivity() {
+  mStopActivity = true;
+  VRManagerChild* vmc = VRManagerChild::Get();
+  vmc->StopActivity();
+}
+
+bool VREventObserver::GetStopActivityStatus() { return mStopActivity; }
+
 void VREventObserver::NotifyAfterLoad() {
   if (VRManagerChild::IsCreated()) {
     VRManagerChild* vmc = VRManagerChild::Get();
@@ -75,7 +93,7 @@ void VREventObserver::NotifyAfterLoad() {
 }
 
 void VREventObserver::NotifyVRDisplayMounted(uint32_t aDisplayID) {
-  if (mWindow && mWindow->AsInner()->IsCurrentInnerWindow()) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
     MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
     mWindow->DispatchVRDisplayActivate(aDisplayID,
                                        VRDisplayEventReason::Mounted);
@@ -83,7 +101,7 @@ void VREventObserver::NotifyVRDisplayMounted(uint32_t aDisplayID) {
 }
 
 void VREventObserver::NotifyVRDisplayNavigation(uint32_t aDisplayID) {
-  if (mWindow && mWindow->AsInner()->IsCurrentInnerWindow()) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
     MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
     mWindow->DispatchVRDisplayActivate(aDisplayID,
                                        VRDisplayEventReason::Navigation);
@@ -91,7 +109,7 @@ void VREventObserver::NotifyVRDisplayNavigation(uint32_t aDisplayID) {
 }
 
 void VREventObserver::NotifyVRDisplayRequested(uint32_t aDisplayID) {
-  if (mWindow && mWindow->AsInner()->IsCurrentInnerWindow()) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
     MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
     mWindow->DispatchVRDisplayActivate(aDisplayID,
                                        VRDisplayEventReason::Requested);
@@ -99,7 +117,7 @@ void VREventObserver::NotifyVRDisplayRequested(uint32_t aDisplayID) {
 }
 
 void VREventObserver::NotifyVRDisplayUnmounted(uint32_t aDisplayID) {
-  if (mWindow && mWindow->AsInner()->IsCurrentInnerWindow()) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
     MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
     mWindow->DispatchVRDisplayDeactivate(aDisplayID,
                                          VRDisplayEventReason::Unmounted);
@@ -112,14 +130,14 @@ void VREventObserver::NotifyVRDisplayConnect(uint32_t aDisplayID) {
    * can assume that a newly enumerated display is not presenting WebVR
    * content.
    */
-  if (mWindow && mWindow->AsInner()->IsCurrentInnerWindow()) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
     MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
     mWindow->DispatchVRDisplayConnect(aDisplayID);
   }
 }
 
 void VREventObserver::NotifyVRDisplayDisconnect(uint32_t aDisplayID) {
-  if (mWindow && mWindow->AsInner()->IsCurrentInnerWindow()) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
     mWindow->NotifyActiveVRDisplaysChanged();
     MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
     mWindow->DispatchVRDisplayDisconnect(aDisplayID);
@@ -131,10 +149,17 @@ void VREventObserver::NotifyVRDisplayPresentChange(uint32_t aDisplayID) {
   // to be a 2D view.
   mIs2DView = false;
 
-  if (mWindow && mWindow->AsInner()->IsCurrentInnerWindow()) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
     mWindow->NotifyActiveVRDisplaysChanged();
     MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
     mWindow->DispatchVRDisplayPresentChange(aDisplayID);
+  }
+}
+
+void VREventObserver::NotifyPresentationGenerationChanged(uint32_t aDisplayID) {
+  if (mWindow && mWindow->IsCurrentInnerWindow()) {
+    mWindow->NotifyPresentationGenerationChanged(aDisplayID);
+    MOZ_ASSERT(nsContentUtils::IsSafeToRunScript());
   }
 }
 

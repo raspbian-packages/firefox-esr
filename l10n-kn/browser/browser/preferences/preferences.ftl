@@ -17,14 +17,6 @@ pref-page =
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
 # Please keep the placeholder string short to avoid truncation.
 #
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
@@ -41,6 +33,8 @@ pane-general-title = ಸಾಮಾನ್ಯ
 category-general =
     .tooltiptext = { pane-general-title }
 pane-home-title = ಮನೆ
+category-home =
+    .tooltiptext = { pane-home-title }
 pane-search-title = ಹುಡುಕು
 category-search =
     .tooltiptext = { pane-search-title }
@@ -66,6 +60,17 @@ should-restart-ok = ಈಗ { -brand-short-name } ಮರಳಿ ಆರಂಭಿಸ
 cancel-no-restart-button = ರದ್ದು ಮಾಡು
 restart-later = ಆಮೇಲೆ ಮರು ಆರಂಭಿಸು
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = ಹುಡುಕು ಫಲಿತಾಂಶಗಳು
@@ -78,7 +83,7 @@ startup-header = ಆರಂಭಿಕ
 # since this setting is only exposed in Firefox Developer Edition
 separate-profile-mode =
     .label = { -brand-short-name } ಅನ್ನು ಮತ್ತು Firefox ಅನ್ನು ಏಕಕಾಲಕ್ಕೆ ಚಲಾಯಿತಗೊಳ್ಳಲು ಅನುಮತಿಸಿ
-use-firefox-sync = ಸೂಚನೆ: ಇದು ಪ್ರತ್ಯೇಕ ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬಳಸುತ್ತದೆ. ಅವುಗಳ ನಡುವೆ ದತ್ತಾಂಶವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಿಂಕ್ ಅನ್ನು ಬಳಸಿ.
+use-firefox-sync = ಸೂಚನೆ: ಇದು ಪ್ರತ್ಯೇಕ ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬಳಸುತ್ತದೆ. ಅವುಗಳ ನಡುವೆ ದತ್ತಾಂಶವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು { -sync-brand-short-name } ಬಳಸಿ.
 get-started-not-logged-in = { -sync-brand-short-name }ಗೆ ಸೈನ್-ಇನ್ ಆಗು…
 get-started-configured = { -sync-brand-short-name } ಆದ್ಯತೆಗಳನ್ನು ತೆರೆ
 always-check-default =
@@ -89,17 +94,11 @@ is-not-default = { -brand-short-name } ಪ್ರಸ್ತುತ ನಿಮ್ಮ 
 set-as-my-default-browser =
     .label = ಪೂರ್ವನಿಯೋಜಿತವನ್ನಾಗಿ ಮಾಡು…
     .accesskey = D
-startup-page = { -brand-short-name } ವು ಆರಂಭಗೊಂಡಾಗ
+startup-restore-previous-session =
+    .label = ಹಿಂದಿನ ಅಧಿವೇಶನವನ್ನು ಮರಳಿ ಸ್ಥಾಪಿಸು
     .accesskey = s
-startup-user-homepage =
-    .label = ನನ್ನ ನೆಲೆ ತಾಣವನ್ನು ತೋರಿಸು
-startup-blank-page =
-    .label = ಒಂದು ಖಾಲಿ ಪುಟವನ್ನು ತೋರಿಸು
-startup-prev-session =
-    .label = ಹಿಂದಿನ ಬಾರಿಯ ನಿನ್ನ ಕಿಟಕಿ ಹಾಗು ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸು
 disable-extension =
     .label = ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು
-home-page-header = ಮುಖಪುಟ
 tabs-group-header = ಟ್ಯಾಬ್‌ಗಳು
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ಟ್ಯಾಬ್‍ಗಳನ್ನು ತಿರುಗಿಕೊಡುತ್ತದೆ
@@ -150,6 +149,9 @@ choose-language-description = ಪುಟಗಳನ್ನು ತೋರಿಸಲು 
 choose-button =
     .label = ಆರಿಸಿ…
     .accesskey = o
+manage-browser-languages-button =
+    .label = ಪರ್ಯಾಯಗಳನ್ನು ಹೊಂದಿಸಿ...
+    .accesskey = l
 translate-web-pages =
     .label = ಜಾಲದಲ್ಲಿನ ಕಂಟೆಂಟ್ ಅನ್ನು ಅನುವಾದಿಸು
     .accesskey = T
@@ -192,7 +194,6 @@ applications-action-column =
     .accesskey = A
 play-drm-content-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
 update-application-title = { -brand-short-name } ನವೀಕರಣಗಳು
-update-application-info = ಆವೃತ್ತಿ{ $version } <a>ಹೊಸತೇನಿದೆ</a>
 update-application-version = ಆವೃತ್ತಿ{ $version } <a data-l10n-name="learn-more">ಹೊಸತೇನಿದೆ</a>
 update-history =
     .label = ಅಪ್ಡೇಟ್ ಇತಿಹಾಸವನ್ನು ತೋರಿಸು…
@@ -234,10 +235,11 @@ browsing-use-onscreen-keyboard =
 browsing-use-cursor-navigation =
     .label = ಪುಟದಲ್ಲಿ ಸಂಚರಿಸಲು ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ತೆರೆಸೂಚಕ ಕೀಲಿಗಳನ್ನು ಬಳಸು
     .accesskey = c
+browsing-cfr-recommendations-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
 
 ## General Section - Proxy
 
-network-proxy-title = ಜಾಲಬಂಧ ಪ್ರಾಕ್ಸಿ
+network-settings-title = ನೆಟ್ವರ್ಕ್ ಸಿದ್ಧತೆಗಳು
 network-proxy-connection-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
 network-proxy-connection-settings =
     .label = ಸಿದ್ಧತೆಗಳು...
@@ -261,15 +263,12 @@ use-current-pages =
     .label =
         { $tabCount ->
             [1] ಈಗಿನ ಪುಟವನ್ನು ಬಳಸು
-           *[other] ಈಗಿನ ಪುಟಗಳನ್ನು ಬಳಸು 
+           *[other] ಈಗಿನ ಪುಟಗಳನ್ನು ಬಳಸು
         }
     .accesskey = C
 choose-bookmark =
     .label = ಪುಟಗುರುತನ್ನು ಬಳಸು…
     .accesskey = B
-restore-default =
-    .label = ಪೂರ್ವನಿಯೋಜಿತಕ್ಕೆ ಮರಳಿಸು
-    .accesskey = R
 
 ## Search Section
 
@@ -357,6 +356,10 @@ sync-engine-bookmarks =
 sync-engine-history =
     .label = ಇತಿಹಾಸ
     .accesskey = r
+sync-engine-tabs =
+    .label = ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು
+    .tooltiptext = ಸಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನಗಳಲ್ಲಿ ಏನನ್ನು ತೆರೆಯಲಾಗಿದೆಯೋ ಅವುಗಳ ಪಟ್ಟಿ
+    .accesskey = t
 sync-device-name-header = ಸಾಧನದ ಹೆಸರು
 sync-device-name-change =
     .label = ಸಾಧನದ ಹೆಸರನ್ನು ಬದಲಿಸಿ…
@@ -416,9 +419,6 @@ history-dontremember-description = { -brand-short-name } ಖಾಸಗಿ ಜಾ�
 history-private-browsing-permanent =
     .label = ಯಾವಾಗಲೂ ಖಾಸಗಿ ವೀಕ್ಷಣೆ ಕ್ರಮವನ್ನು ಬಳಸು
     .accesskey = p
-history-remember-option =
-    .label = ನನ್ನ ಜಾಲವೀಕ್ಷಣಾ ಮತ್ತು ಇಳಿಕೆ ಇತಿಹಾಸವನ್ನು ನೆನಪಿಟ್ಟುಕೊ
-    .accesskey = b
 history-remember-search-option =
     .label = ಹುಡುಕು ಹಾಗು ಫಾರ್ಮ್ ಇತಿಹಾಸವನ್ನು ನೆನಪಿಟ್ಟುಕೊ
     .accesskey = f
@@ -435,12 +435,6 @@ sitedata-header = ಕುಕ್ಕಿಗಳು ಮತ್ತು ತಾಣ ದತ�
 sitedata-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
 sitedata-keep-until = ಈವರೆಗೆ ಇರಿಸಿಕೋ
     .accesskey = u
-sitedata-accept-third-party-always-option =
-    .label = ಯಾವಾಗಲೂ
-sitedata-accept-third-party-visited-option =
-    .label = ಭೇಟಿ ಮಾಡಿದವುಗಳಿಂದ
-sitedata-accept-third-party-never-option =
-    .label = ಎಂದಿಗೂ ಬೇಡ
 sitedata-clear =
     .label = ದತ್ತಾಂಶ ಬರಿದುಮಾಡು…
     .accesskey = l
@@ -465,6 +459,17 @@ addressbar-locbar-openpage-option =
     .label = Open ಹಾಳೆಗಳು
     .accesskey = O
 addressbar-suggestions-settings = ಹುಡುಕು ಯಂತ್ರಗಳ ಸಲಹೆಗಳ ಇಚ್ಛೆಗಳನ್ನು ಬದಲಾಯಿಸಿ
+
+## Privacy Section - Content Blocking
+
+content-blocking-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
+content-blocking-toggle-label-on = ಆನ್‌
+    .accesskey = O
+content-blocking-toggle-label-off = ಆಫ್‌
+    .accesskey = O
+content-blocking-tracking-protection-option-always =
+    .label = ಯಾವಾಗಲೂ
+    .accesskey = A
 
 ## Privacy Section - Tracking
 
@@ -560,3 +565,26 @@ certs-view =
 certs-devices =
     .label = ಸುರಕ್ಷತಾ ಸಾಧನಗಳು…
     .accesskey = D
+space-alert-learn-more-button =
+    .label = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
+    .accesskey = L
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] ಆಯ್ಕೆಗಳನ್ನು ತೆರೆ
+           *[other] ಆದ್ಯತೆಗಳನ್ನು ತೆರೆ
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] O
+        }
+space-alert-under-5gb-ok-button =
+    .label = OK ಸರಿ, ಗೊತ್ತಾಯಿತು
+    .accesskey = K
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = ಗಣಕತೆರೆ
+downloads-folder-name = ಡೌನ್‌ಲೋಡ್‌ಗಳು
+choose-download-folder-title = ಡೌನ್‌ಲೋಡ್‌ ಕಡತಕೋಶವನ್ನು ಆರಿಸು:

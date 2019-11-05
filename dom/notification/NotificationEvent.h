@@ -26,11 +26,10 @@ class NotificationEvent final : public ExtendableEvent {
  public:
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(NotificationEvent, ExtendableEvent)
-  NS_FORWARD_TO_EVENT
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return NotificationEventBinding::Wrap(aCx, this, aGivenProto);
+    return NotificationEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   static already_AddRefed<NotificationEvent> Constructor(

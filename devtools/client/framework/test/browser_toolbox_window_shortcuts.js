@@ -5,17 +5,22 @@
 
 "use strict";
 
-var Startup = Cc["@mozilla.org/devtools/startup-clh;1"].getService(Ci.nsISupports)
-  .wrappedJSObject;
-var {Toolbox} = require("devtools/client/framework/toolbox");
+var Startup = Cc["@mozilla.org/devtools/startup-clh;1"].getService(
+  Ci.nsISupports
+).wrappedJSObject;
+var { Toolbox } = require("devtools/client/framework/toolbox");
 
-var toolbox, toolIDs, toolShortcuts = [], idIndex, modifiedPrefs = [];
+var toolbox,
+  toolIDs,
+  toolShortcuts = [],
+  idIndex,
+  modifiedPrefs = [];
 
-function test() {
-  addTab("about:blank").then(function () {
+async function test() {
+  addTab("about:blank").then(async function() {
     toolIDs = [];
-    for (let [id, definition] of gDevTools._tools) {
-      let shortcut = Startup.KeyShortcuts.filter(s => s.toolId == id)[0];
+    for (const [id, definition] of gDevTools._tools) {
+      const shortcut = Startup.KeyShortcuts.filter(s => s.toolId == id)[0];
       if (!shortcut) {
         continue;
       }
@@ -23,21 +28,20 @@ function test() {
       toolShortcuts.push(shortcut);
 
       // Enable disabled tools
-      let pref = definition.visibilityswitch, prefValue;
-      try {
-        prefValue = Services.prefs.getBoolPref(pref);
-      } catch (e) {
-        continue;
-      }
-      if (!prefValue) {
-        modifiedPrefs.push(pref);
-        Services.prefs.setBoolPref(pref, true);
+      const pref = definition.visibilityswitch;
+      if (pref) {
+        const prefValue = Services.prefs.getBoolPref(pref, false);
+        if (!prefValue) {
+          modifiedPrefs.push(pref);
+          Services.prefs.setBoolPref(pref, true);
+        }
       }
     }
-    let target = TargetFactory.forTab(gBrowser.selectedTab);
+    const target = await TargetFactory.forTab(gBrowser.selectedTab);
     idIndex = 0;
-    gDevTools.showToolbox(target, toolIDs[0], Toolbox.HostType.WINDOW)
-             .then(testShortcuts);
+    gDevTools
+      .showToolbox(target, toolIDs[0], Toolbox.HostType.WINDOW)
+      .then(testShortcuts);
   });
 }
 
@@ -54,34 +58,43 @@ function testShortcuts(aToolbox, aIndex) {
 
   toolbox.once("select", selectCB);
 
-  let shortcut = toolShortcuts[aIndex];
-  let key = shortcut.shortcut;
-  let toolModifiers = shortcut.modifiers;
-  let modifiers = {
+  const shortcut = toolShortcuts[aIndex];
+  const key = shortcut.shortcut;
+  const toolModifiers = shortcut.modifiers;
+  const modifiers = {
     accelKey: toolModifiers.includes("accel"),
     altKey: toolModifiers.includes("alt"),
     shiftKey: toolModifiers.includes("shift"),
   };
   idIndex = aIndex;
-  info("Testing shortcut for tool " + aIndex + ":" + toolIDs[aIndex] +
-       " using key " + key);
+  info(
+    "Testing shortcut for tool " +
+      aIndex +
+      ":" +
+      toolIDs[aIndex] +
+      " using key " +
+      key
+  );
   EventUtils.synthesizeKey(key, modifiers, toolbox.win.parent);
 }
 
-function selectCB(event, id) {
+function selectCB(id) {
   info("toolbox-select event from " + id);
 
-  is(toolIDs.indexOf(id), idIndex,
-     "Correct tool is selected on pressing the shortcut for " + id);
+  is(
+    toolIDs.indexOf(id),
+    idIndex,
+    "Correct tool is selected on pressing the shortcut for " + id
+  );
 
   testShortcuts(toolbox, idIndex + 1);
 }
 
 function tidyUp() {
-  toolbox.destroy().then(function () {
+  toolbox.destroy().then(function() {
     gBrowser.removeCurrentTab();
 
-    for (let pref of modifiedPrefs) {
+    for (const pref of modifiedPrefs) {
       Services.prefs.clearUserPref(pref);
     }
     toolbox = toolIDs = idIndex = modifiedPrefs = Toolbox = null;

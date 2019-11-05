@@ -9,7 +9,7 @@
 <!ENTITY setPassword.newPassword.label "Nieuw wachtwoord:">
 <!ENTITY setPassword.reenterPassword.label "Nieuw wachtwoord (nogmaals):">
 <!ENTITY setPassword.meter.label "Wachtwoordkwaliteitsmeter">
-   
+
 <!-- Values for resetpassword.xul -->
 <!ENTITY resetPasswordButtonLabel "Herinitialiseren">
 <!ENTITY resetPassword.title  "Hoofdwachtwoord herinitialiseren">
@@ -41,10 +41,10 @@
 
 <!-- Strings for the CreateCertInfo dialog  -->
 <!ENTITY createCertInfo.title "Genereren van een privésleutel">
-<!ENTITY createCertInfo.msg1 "Bezig met genereren van sleutel… Dit kan enkele minuten duren…">
+<!ENTITY createCertInfo.msg1 "Sleutel wordt gegenereerd… Dit kan enkele minuten duren…">
 <!ENTITY createCertInfo.msg2 "Even geduld…">
 
 <!-- Strings for protectedAuth dialog -->
 <!ENTITY protectedAuth.title "Beschermde tokenauthenticatie">
-<!ENTITY protectedAuth.msg "Authenticeer bij de token. Authenticatiemethode hangt af van het type van uw token.">
+<!ENTITY protectedAuth.msg "Authenticeer bij het token. Authenticatiemethode hangt af van het type van uw token.">
 <!ENTITY protectedAuth.tokenName.label "Token:">

@@ -4,13 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozilla/dom/SVGComponentTransferFunctionElement.h"
 #include "mozilla/dom/SVGFEComponentTransferElement.h"
+
+#include "mozilla/dom/SVGComponentTransferFunctionElement.h"
 #include "mozilla/dom/SVGFEComponentTransferElementBinding.h"
 #include "nsSVGUtils.h"
 #include "mozilla/gfx/2D.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(FEComponentTransfer)
+NS_IMPL_NS_NEW_SVG_ELEMENT(FEComponentTransfer)
 
 using namespace mozilla::gfx;
 ;
@@ -20,26 +21,26 @@ namespace dom {
 
 JSObject* SVGFEComponentTransferElement::WrapNode(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return SVGFEComponentTransferElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGFEComponentTransferElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::StringInfo SVGFEComponentTransferElement::sStringInfo[2] = {
-    {&nsGkAtoms::result, kNameSpaceID_None, true},
-    {&nsGkAtoms::in, kNameSpaceID_None, true}};
+SVGElement::StringInfo SVGFEComponentTransferElement::sStringInfo[2] = {
+    {nsGkAtoms::result, kNameSpaceID_None, true},
+    {nsGkAtoms::in, kNameSpaceID_None, true}};
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGFEComponentTransferElement)
 
-already_AddRefed<SVGAnimatedString> SVGFEComponentTransferElement::In1() {
+already_AddRefed<DOMSVGAnimatedString> SVGFEComponentTransferElement::In1() {
   return mStringAttributes[IN1].ToDOMAnimatedString(this);
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-nsSVGElement::StringAttributesInfo
+SVGElement::StringAttributesInfo
 SVGFEComponentTransferElement::GetStringInfo() {
   return StringAttributesInfo(mStringAttributes, sStringInfo,
                               ArrayLength(sStringInfo));
@@ -65,23 +66,15 @@ SVGFEComponentTransferElement::GetPrimitiveDescription(
     }
   }
 
-  static const AttributeName attributeNames[4] = {
-      eComponentTransferFunctionR, eComponentTransferFunctionG,
-      eComponentTransferFunctionB, eComponentTransferFunctionA};
-
-  FilterPrimitiveDescription descr(PrimitiveType::ComponentTransfer);
+  ComponentTransferAttributes atts;
   for (int32_t i = 0; i < 4; i++) {
     if (childForChannel[i]) {
-      descr.Attributes().Set(attributeNames[i],
-                             childForChannel[i]->ComputeAttributes());
+      childForChannel[i]->ComputeAttributes(i, atts);
     } else {
-      AttributeMap functionAttributes;
-      functionAttributes.Set(eComponentTransferFunctionType,
-                             (uint32_t)SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY);
-      descr.Attributes().Set(attributeNames[i], functionAttributes);
+      atts.mTypes[i] = (uint8_t)SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY;
     }
   }
-  return descr;
+  return FilterPrimitiveDescription(AsVariant(std::move(atts)));
 }
 
 bool SVGFEComponentTransferElement::AttributeAffectsRendering(
@@ -92,8 +85,8 @@ bool SVGFEComponentTransferElement::AttributeAffectsRendering(
 }
 
 void SVGFEComponentTransferElement::GetSourceImageNames(
-    nsTArray<nsSVGStringInfo>& aSources) {
-  aSources.AppendElement(nsSVGStringInfo(&mStringAttributes[IN1], this));
+    nsTArray<SVGStringInfo>& aSources) {
+  aSources.AppendElement(SVGStringInfo(&mStringAttributes[IN1], this));
 }
 
 }  // namespace dom

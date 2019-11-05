@@ -6,129 +6,110 @@
 
 var EXPORTED_SYMBOLS = ["GeckoViewSettings"];
 
-ChromeUtils.import("resource://gre/modules/GeckoViewModule.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { GeckoViewModule } = ChromeUtils.import(
+  "resource://gre/modules/GeckoViewModule.jsm"
+);
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  SafeBrowsing: "resource://gre/modules/SafeBrowsing.jsm",
-  Services: "resource://gre/modules/Services.jsm",
+XPCOMUtils.defineLazyGetter(this, "MOBILE_USER_AGENT", function() {
+  return Cc["@mozilla.org/network/protocol;1?name=http"].getService(
+    Ci.nsIHttpProtocolHandler
+  ).userAgent;
 });
 
-XPCOMUtils.defineLazyGetter(
-  this, "DESKTOP_USER_AGENT",
-  function() {
-    return Cc["@mozilla.org/network/protocol;1?name=http"]
-           .getService(Ci.nsIHttpProtocolHandler).userAgent
-           .replace(/Android \d.+?; [a-zA-Z]+/, "X11; Linux x86_64")
-           .replace(/Gecko\/[0-9\.]+/, "Gecko/20100101");
-  });
+XPCOMUtils.defineLazyGetter(this, "DESKTOP_USER_AGENT", function() {
+  return MOBILE_USER_AGENT.replace(
+    /Android \d.+?; [a-zA-Z]+/,
+    "X11; Linux x86_64"
+  ).replace(/Gecko\/[0-9\.]+/, "Gecko/20100101");
+});
 
-XPCOMUtils.defineLazyGetter(this, "dump", () =>
-    ChromeUtils.import("resource://gre/modules/AndroidLog.jsm",
-                       {}).AndroidLog.d.bind(null, "ViewSettings"));
+XPCOMUtils.defineLazyGetter(this, "VR_USER_AGENT", function() {
+  return MOBILE_USER_AGENT.replace(/Mobile/, "Mobile VR");
+});
 
-function debug(aMsg) {
-  // dump(aMsg);
-}
+// This needs to match GeckoSessionSettings.java
+const USER_AGENT_MODE_MOBILE = 0;
+const USER_AGENT_MODE_DESKTOP = 1;
+const USER_AGENT_MODE_VR = 2;
 
 // Handles GeckoView settings including:
 // * multiprocess
 // * user agent override
 class GeckoViewSettings extends GeckoViewModule {
-  init() {
-    this._isSafeBrowsingInit = false;
-    this._useDesktopMode = false;
+  onInit() {
+    debug`onInit`;
+    this._userAgentMode = USER_AGENT_MODE_MOBILE;
+    this._userAgentOverride = null;
+    // Required for safe browsing and tracking protection.
 
-    // We only allow to set this setting during initialization, further updates
-    // will be ignored.
-    this.useMultiprocess = !!this.settings.useMultiprocess;
-    this._displayMode = Ci.nsIDocShell.DISPLAY_MODE_BROWSER;
+    this.registerListener(["GeckoView:GetUserAgent"]);
+  }
 
-    this.messageManager.loadFrameScript(
-      "chrome://geckoview/content/GeckoViewContentSettings.js", true);
+  onEvent(aEvent, aData, aCallback) {
+    debug`onEvent ${aEvent} ${aData}`;
+
+    switch (aEvent) {
+      case "GeckoView:GetUserAgent": {
+        aCallback.onSuccess(this.userAgent);
+      }
+    }
   }
 
   onSettingsUpdate() {
-    debug("onSettingsUpdate: " + JSON.stringify(this.settings));
+    const settings = this.settings;
+    debug`onSettingsUpdate: ${settings}`;
 
-    this.displayMode = this.settings.displayMode;
-    this.useTrackingProtection = !!this.settings.useTrackingProtection;
-    this.useDesktopMode = !!this.settings.useDesktopMode;
+    this.displayMode = settings.displayMode;
+    this.userAgentMode = settings.userAgentMode;
+    this.userAgentOverride = settings.userAgentOverride;
   }
 
   get useMultiprocess() {
-    return this.browser.getAttribute("remote") == "true";
+    return this.browser.isRemoteBrowser;
   }
 
-  set useMultiprocess(aUse) {
-    if (aUse == this.useMultiprocess) {
+  get userAgent() {
+    if (this.userAgentOverride !== null) {
+      return this.userAgentOverride;
+    }
+    if (this.userAgentMode === USER_AGENT_MODE_DESKTOP) {
+      return DESKTOP_USER_AGENT;
+    }
+    if (this.userAgentMode === USER_AGENT_MODE_VR) {
+      return VR_USER_AGENT;
+    }
+    return MOBILE_USER_AGENT;
+  }
+
+  get userAgentMode() {
+    return this._userAgentMode;
+  }
+
+  set userAgentMode(aMode) {
+    if (this.userAgentMode === aMode) {
       return;
     }
-    let parentNode = this.browser.parentNode;
-    parentNode.removeChild(this.browser);
-
-    if (aUse) {
-      this.browser.setAttribute("remote", "true");
-    } else {
-      this.browser.removeAttribute("remote");
-    }
-    parentNode.appendChild(this.browser);
+    this._userAgentMode = aMode;
   }
 
-  set useTrackingProtection(aUse) {
-    if (aUse && !this._isSafeBrowsingInit) {
-      SafeBrowsing.init();
-      this._isSafeBrowsingInit = true;
-    }
+  get userAgentOverride() {
+    return this._userAgentOverride;
   }
 
-  onUserAgentRequest(aSubject, aTopic, aData) {
-    debug("onUserAgentRequest");
-
-    let channel = aSubject.QueryInterface(Ci.nsIHttpChannel);
-
-    if (this.browser.outerWindowID !== channel.topLevelOuterContentWindowId) {
-      return;
-    }
-
-    if (this.useDesktopMode) {
-      channel.setRequestHeader("User-Agent", DESKTOP_USER_AGENT, false);
-    }
-  }
-
-  get useDesktopMode() {
-    return this._useDesktopMode;
-  }
-
-  set useDesktopMode(aUse) {
-    if (this.useDesktopMode === aUse) {
-      return;
-    }
-    if (aUse) {
-      Services.obs.addObserver(this.onUserAgentRequest.bind(this),
-                               "http-on-useragent-request");
-    } else {
-      Services.obs.removeObserver(this.onUserAgentRequest.bind(this),
-                                  "http-on-useragent-request");
-    }
-    this._useDesktopMode = aUse;
+  set userAgentOverride(aUserAgent) {
+    this._userAgentOverride = aUserAgent;
   }
 
   get displayMode() {
-    return this._displayMode;
+    return this.window.docShell.displayMode;
   }
 
   set displayMode(aMode) {
-    if (!this.useMultiprocess) {
-      this.window.QueryInterface(Ci.nsIInterfaceRequestor)
-                   .getInterface(Ci.nsIDocShell)
-                   .displayMode = aMode;
-    } else {
-      this.messageManager.loadFrameScript("data:," +
-        `docShell.displayMode = ${aMode}`,
-        true
-      );
-    }
-    this._displayMode = aMode;
+    this.window.docShell.displayMode = aMode;
   }
 }
+
+const { debug, warn } = GeckoViewSettings.initLogging("GeckoViewSettings"); // eslint-disable-line no-unused-vars

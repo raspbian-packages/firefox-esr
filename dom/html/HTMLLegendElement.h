@@ -17,21 +17,21 @@ namespace dom {
 class HTMLLegendElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLLegendElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLLegendElement, legend)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLLegendElement, legend)
 
   using nsGenericHTMLElement::Focus;
-  virtual void Focus(ErrorResult& aError) override;
+  virtual void Focus(const FocusOptions& aOptions,
+                     ErrorResult& aError) override;
 
   virtual bool PerformAccesskey(bool aKeyCausesActivation,
                                 bool aIsTrustedEvent) override;
 
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
@@ -41,8 +41,7 @@ class HTMLLegendElement final : public nsGenericHTMLElement {
   virtual nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
                                               int32_t aModType) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   Element* GetFormElement() const {
     nsCOMPtr<nsIFormControl> fieldsetControl = do_QueryInterface(GetFieldSet());

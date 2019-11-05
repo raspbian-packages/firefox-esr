@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,7 +17,7 @@
 #include "nsString.h"
 #include "nsWrapperCache.h"
 
-#include "CacheMap.h"
+#include "CacheInvalidator.h"
 #include "WebGLContext.h"
 #include "WebGLObjectModel.h"
 
@@ -38,10 +38,11 @@ class Sequence;
 
 namespace webgl {
 
+enum class TextureBaseType : uint8_t;
+
 struct AttribInfo final {
   const RefPtr<WebGLActiveInfo> mActiveInfo;
   const GLint mLoc;  // -1 for active built-ins
-  const GLenum mBaseType;
 };
 
 struct UniformInfo final {
@@ -49,6 +50,9 @@ struct UniformInfo final {
 
   const RefPtr<WebGLActiveInfo> mActiveInfo;
   const TexListT* const mSamplerTexList;
+  const webgl::TextureBaseType mTexBaseType;
+  const bool mIsShadowSampler;
+
   std::vector<uint32_t> mSamplerValues;
 
  protected:
@@ -73,14 +77,22 @@ struct UniformBlockInfo final {
         mBinding(&webgl->mIndexedUniformBufferBindings[0]) {}
 };
 
+struct FragOutputInfo final {
+  const uint8_t loc;
+  const nsCString userName;
+  const nsCString mappedName;
+  const TextureBaseType baseType;
+};
+
 struct CachedDrawFetchLimits final {
   uint64_t maxVerts;
   uint64_t maxInstances;
 };
 
 struct LinkedProgramInfo final : public RefCounted<LinkedProgramInfo>,
-                                 public SupportsWeakPtr<LinkedProgramInfo> {
-  friend class WebGLProgram;
+                                 public SupportsWeakPtr<LinkedProgramInfo>,
+                                 public CacheInvalidator {
+  friend class mozilla::WebGLProgram;
 
   MOZ_DECLARE_REFCOUNTED_TYPENAME(LinkedProgramInfo)
   MOZ_DECLARE_WEAKREFERENCE_TYPENAME(LinkedProgramInfo)
@@ -94,6 +106,7 @@ struct LinkedProgramInfo final : public RefCounted<LinkedProgramInfo>,
   std::vector<UniformInfo*> uniforms;            // Owns its contents.
   std::vector<UniformBlockInfo*> uniformBlocks;  // Owns its contents.
   std::vector<RefPtr<WebGLActiveInfo>> transformFeedbackVaryings;
+  std::unordered_map<uint8_t, const FragOutputInfo> fragOutputs;
 
   // Needed for draw call validation.
   std::vector<UniformInfo*> uniformSamplers;
@@ -104,15 +117,10 @@ struct LinkedProgramInfo final : public RefCounted<LinkedProgramInfo>,
 
   //////
 
-  // The maps for the frag data names to the translated names.
-  std::map<nsCString, const nsCString> fragDataMap;
-
-  //////
-
-  mutable CacheMap<const WebGLVertexArray*, CachedDrawFetchLimits>
+  mutable CacheWeakMap<const WebGLVertexArray*, CachedDrawFetchLimits>
       mDrawFetchCache;
 
-  const CachedDrawFetchLimits* GetDrawFetchLimits(const char* funcName) const;
+  const CachedDrawFetchLimits* GetDrawFetchLimits() const;
 
   //////
 
@@ -124,8 +132,6 @@ struct LinkedProgramInfo final : public RefCounted<LinkedProgramInfo>,
   bool FindUniform(const nsCString& userName, nsCString* const out_mappedName,
                    size_t* const out_arrayIndex,
                    UniformInfo** const out_info) const;
-  bool MapFragDataName(const nsCString& userName,
-                       nsCString* const out_mappedName) const;
 };
 
 }  // namespace webgl
@@ -201,6 +207,8 @@ class WebGLProgram final : public nsWrapperCache,
     return mMostRecentLinkInfo.get();
   }
 
+  const auto& FragShader() const { return mFragShader; }
+
   WebGLContext* GetParentObject() const { return mContext; }
 
   virtual JSObject* WrapObject(JSContext* js,
@@ -221,7 +229,7 @@ class WebGLProgram final : public nsWrapperCache,
   WebGLRefPtr<WebGLShader> mFragShader;
   size_t mNumActiveTFOs;
 
-  std::map<nsCString, GLuint> mNextLink_BoundAttribLocs;
+  std::map<std::string, GLuint> mNextLink_BoundAttribLocs;
 
   std::vector<nsString> mNextLink_TransformFeedbackVaryings;
   GLenum mNextLink_TransformFeedbackBufferMode;

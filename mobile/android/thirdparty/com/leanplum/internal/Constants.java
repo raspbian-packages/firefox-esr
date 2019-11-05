@@ -21,7 +21,7 @@
 
 package com.leanplum.internal;
 
-//import com.leanplum.BuildConfig;
+
 
 /**
  * Leanplum constants.
@@ -29,15 +29,16 @@ package com.leanplum.internal;
  * @author Andrew First.
  */
 public class Constants {
-  public static String API_HOST_NAME = "www.leanplum.com";
+  public static String API_HOST_NAME = "api.leanplum.com";
+  public static String API_SERVLET = "api";
+  public static boolean API_SSL = true;
   public static String SOCKET_HOST = "dev.leanplum.com";
   public static int SOCKET_PORT = 80;
-  public static boolean API_SSL = true;
   public static int NETWORK_TIMEOUT_SECONDS = 10;
   public static int NETWORK_TIMEOUT_SECONDS_FOR_DOWNLOADS = 10;
-  static final String LEANPLUM_PACKAGE_IDENTIFIER = "s";//BuildConfig.LEANPLUM_PACKAGE_IDENTIFIER;
+  static final String LEANPLUM_PACKAGE_IDENTIFIER = "s"; //TODO investigate what this should be
 
-  public static String LEANPLUM_VERSION = "2.2.2-SNAPSHOT";
+  public static String LEANPLUM_VERSION = "4.2.7";
   public static String CLIENT = "android";
 
   static final String INVALID_MAC_ADDRESS = "02:00:00:00:00:00";
@@ -66,11 +67,11 @@ public class Constants {
     return isTestMode || isInPermanentFailureState;
   }
 
-  public static String API_SERVLET = "api";
-
   public static class Defaults {
+    public static final String LEANPLUM = "__leanplum__";
     public static final String COUNT_KEY = "__leanplum_unsynced";
     public static final String ITEM_KEY = "__leanplum_unsynced_%d";
+    public static final String UUID_KEY = "__leanplum_uuid";
     public static final String VARIABLES_KEY = "__leanplum_variables";
     public static final String ATTRIBUTES_KEY = "__leanplum_attributes";
     public static final String TOKEN_KEY = "__leanplum_token";
@@ -89,6 +90,9 @@ public class Constants {
     public static final String APP_ID = "__app_id";
     public static final String PROPERTY_REGISTRATION_ID = "registration_id";
     public static final String PROPERTY_SENDER_IDS = "sender_ids";
+    public static final String NOTIFICATION_CHANNELS_KEY = "__leanplum_notification_channels";
+    public static final String DEFAULT_NOTIFICATION_CHANNEL_KEY = "__leanplum_default_notification_channels";
+    public static final String NOTIFICATION_GROUPS_KEY = "__leanplum_notification_groups";
   }
 
   public static class Methods {
@@ -141,12 +145,15 @@ public class Constants {
     public static final String IAP_CURRENCY_CODE = "currencyCode";
     public static final String IAP_ITEM = "item";
     public static final String INCLUDE_DEFAULTS = "includeDefaults";
+    public static final String INCLUDE_VARIANT_DEBUG_INFO = "includeVariantDebugInfo";
     public static final String INCLUDE_MESSAGE_ID = "includeMessageId";
     public static final String INFO = "info";
     public static final String INSTALL_DATE = "installDate";
     public static final String KINDS = "kinds";
     public static final String LIMIT_TRACKING = "limitTracking";
     public static final String MESSAGE = "message";
+    public static final String NAME = "name";
+    public static final String COUNT = "count";
     public static final String MESSAGE_ID = "messageId";
     public static final String NEW_USER_ID = "newUserId";
     public static final String INBOX_MESSAGE_ID = "newsfeedMessageId";
@@ -197,10 +204,13 @@ public class Constants {
     public static final String REGION = "region";
     public static final String REGION_STATE = "regionState";
     public static final String REGIONS = "regions";
+    public static final String VARIANT_DEBUG_INFO = "variantDebugInfo";
     public static final String SIZE = "size";
     public static final String SUBTITLE = "Subtitle";
     public static final String SYNC_INBOX = "syncNewsfeed";
     public static final String LOGGING_ENABLED = "loggingEnabled";
+    public static final String ENABLED_COUNTERS = "enabledSdkCounters";
+    public static final String ENABLED_FEATURE_FLAGS = "enabledFeatureFlags";
     public static final String TIMEZONE = "timezone";
     public static final String TIMEZONE_OFFSET_SECONDS = "timezoneOffsetSeconds";
     public static final String TITLE = "Title";
@@ -210,6 +220,9 @@ public class Constants {
     public static final String VARIANTS = "variants";
     public static final String VARS = "vars";
     public static final String VARS_FROM_CODE = "varsFromCode";
+    public static final String NOTIFICATION_CHANNELS = "notificationChannels";
+    public static final String DEFAULT_NOTIFICATION_CHANNEL = "defaultNotificationChannel";
+    public static final String NOTIFICATION_GROUPS = "notificationChannelGroups";
   }
 
   public static class Kinds {
@@ -242,6 +255,7 @@ public class Constants {
     public static final String DEFAULT_PUSH_MESSAGE = "Push message goes here.";
     public static final String SDK_LOG = "sdkLog";
     public static final String SDK_ERROR = "sdkError";
+    public static final String SDK_COUNT = "sdkCount";
     public static final String FILE_PREFIX = "__file__";
   }
 

@@ -43,9 +43,9 @@ class ComputedStylePath extends PureComponent {
       componentWidth: PropTypes.number.isRequired,
       easingHintStrokeWidth: PropTypes.number.isRequired,
       graphHeight: PropTypes.number.isRequired,
+      keyframes: PropTypes.array.isRequired,
       simulateAnimation: PropTypes.func.isRequired,
       totalDuration: PropTypes.number.isRequired,
-      values: PropTypes.array.isRequired,
     };
   }
 
@@ -53,26 +53,22 @@ class ComputedStylePath extends PureComponent {
    * Return an array containing the path segments between the given start and
    * end keyframe values.
    *
-   * @param {Object} startValue
+   * @param {Object} startKeyframe
    *        Starting keyframe.
-   * @param {Object} startValue
+   * @param {Object} endKeyframe
    *        Ending keyframe.
    * @return {Array}
    *         Array of path segment.
    *         [{x: {Number} time, y: {Number} segment value}, ...]
    */
-  getPathSegments(startValue, endValue) {
-    const {
-      componentWidth,
-      simulateAnimation,
-      totalDuration,
-    } = this.props;
+  getPathSegments(startKeyframe, endKeyframe) {
+    const { componentWidth, simulateAnimation, totalDuration } = this.props;
 
     const propertyName = this.getPropertyName();
-    const offsetDistance = endValue.offset - startValue.offset;
+    const offsetDistance = endKeyframe.offset - startKeyframe.offset;
     const duration = offsetDistance * totalDuration;
 
-    const keyframes = [startValue, endValue].map((keyframe, index) => {
+    const keyframes = [startKeyframe, endKeyframe].map((keyframe, index) => {
       return {
         offset: index,
         easing: keyframe.easing,
@@ -83,15 +79,22 @@ class ComputedStylePath extends PureComponent {
       duration,
       fill: "forwards",
     };
+
     const simulatedAnimation = simulateAnimation(keyframes, effect, true);
+
+    if (!simulatedAnimation) {
+      return null;
+    }
+
     const simulatedElement = simulatedAnimation.effect.target;
     const win = simulatedElement.ownerGlobal;
     const threshold = getPreferredProgressThresholdByKeyframes(keyframes);
 
     const getSegment = time => {
       simulatedAnimation.currentTime = time;
-      const computedStyle =
-        win.getComputedStyle(simulatedElement).getPropertyValue(propertyName);
+      const computedStyle = win
+        .getComputedStyle(simulatedElement)
+        .getPropertyValue(propertyName);
 
       return {
         computedStyle,
@@ -100,9 +103,15 @@ class ComputedStylePath extends PureComponent {
       };
     };
 
-    const segments = createPathSegments(0, duration, duration / componentWidth, threshold,
-                                        DEFAULT_DURATION_RESOLUTION, getSegment);
-    const offset = startValue.offset * totalDuration;
+    const segments = createPathSegments(
+      0,
+      duration,
+      duration / componentWidth,
+      threshold,
+      DEFAULT_DURATION_RESOLUTION,
+      getSegment
+    );
+    const offset = startKeyframe.offset * totalDuration;
 
     for (const segment of segments) {
       segment.x += offset;
@@ -120,17 +129,13 @@ class ComputedStylePath extends PureComponent {
    *         Element which represents easing hint.
    */
   renderEasingHint(segments) {
-    const {
-      easingHintStrokeWidth,
-      totalDuration,
-      values,
-    } = this.props;
+    const { easingHintStrokeWidth, keyframes, totalDuration } = this.props;
 
     const hints = [];
 
-    for (let i = 0, indexOfSegments = 0; i < values.length - 1; i++) {
-      const startKeyframe = values[i];
-      const endKeyframe = values[i + 1];
+    for (let i = 0, indexOfSegments = 0; i < keyframes.length - 1; i++) {
+      const startKeyframe = keyframes[i];
+      const endKeyframe = keyframes[i + 1];
       const endTime = endKeyframe.offset * totalDuration;
       const hintSegments = [];
 
@@ -148,18 +153,17 @@ class ComputedStylePath extends PureComponent {
 
       const g = dom.g(
         {
-          className: "hint"
+          className: "hint",
         },
         dom.title({}, startKeyframe.easing),
-        dom.path(
-          {
-            d: `M${ hintSegments[0].x },${ hintSegments[0].y } ` +
-               toPathString(hintSegments),
-            style: {
-              "stroke-width": easingHintStrokeWidth,
-            }
-          }
-        )
+        dom.path({
+          d:
+            `M${hintSegments[0].x},${hintSegments[0].y} ` +
+            toPathString(hintSegments),
+          style: {
+            "stroke-width": easingHintStrokeWidth,
+          },
+        })
       );
 
       hints.push(g);
@@ -174,20 +178,26 @@ class ComputedStylePath extends PureComponent {
    * @return {Element}
    */
   renderGraph() {
-    const { values } = this.props;
+    const { keyframes } = this.props;
 
     const segments = [];
 
-    for (let i = 0; i < values.length - 1; i++) {
-      const startValue = values[i];
-      const endValue = values[i + 1];
-      segments.push(...this.getPathSegments(startValue, endValue));
+    for (let i = 0; i < keyframes.length - 1; i++) {
+      const startKeyframe = keyframes[i];
+      const endKeyframe = keyframes[i + 1];
+      const keyframesSegments = this.getPathSegments(
+        startKeyframe,
+        endKeyframe
+      );
+
+      if (!keyframesSegments) {
+        return null;
+      }
+
+      segments.push(...keyframesSegments);
     }
 
-    return [
-      this.renderPathSegments(segments),
-      this.renderEasingHint(segments)
-    ];
+    return [this.renderPathSegments(segments), this.renderEasingHint(segments)];
   }
 
   /**
@@ -204,9 +214,9 @@ class ComputedStylePath extends PureComponent {
       segment.y *= graphHeight;
     }
 
-    let d = `M${ segments[0].x },0 `;
+    let d = `M${segments[0].x},0 `;
     d += toPathString(segments);
-    d += `L${ segments[segments.length - 1].x },0 Z`;
+    d += `L${segments[segments.length - 1].x},0 Z`;
 
     return dom.path({ d, style });
   }

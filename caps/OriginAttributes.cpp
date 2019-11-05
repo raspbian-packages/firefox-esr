@@ -6,11 +6,12 @@
 
 #include "mozilla/OriginAttributes.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/dom/BlobURLProtocolHandler.h"
 #include "mozilla/dom/URLSearchParams.h"
 #include "mozilla/dom/quota/QuotaManager.h"
 #include "nsIEffectiveTLDService.h"
 #include "nsIURI.h"
-#include "nsIURIWithPrincipal.h"
+#include "nsURLHelper.h"
 
 namespace mozilla {
 
@@ -18,6 +19,7 @@ using dom::URLParams;
 
 bool OriginAttributes::sFirstPartyIsolation = false;
 bool OriginAttributes::sRestrictedOpenerAccess = false;
+bool OriginAttributes::sBlockPostMessageForFPI = false;
 
 void OriginAttributes::InitPrefs() {
   MOZ_ASSERT(NS_IsMainThread());
@@ -29,15 +31,18 @@ void OriginAttributes::InitPrefs() {
     Preferences::AddBoolVarCache(
         &sRestrictedOpenerAccess,
         "privacy.firstparty.isolate.restrict_opener_access");
+    Preferences::AddBoolVarCache(
+        &sBlockPostMessageForFPI,
+        "privacy.firstparty.isolate.block_post_message");
   }
 }
 
 void OriginAttributes::SetFirstPartyDomain(const bool aIsTopLevelDocument,
-                                           nsIURI* aURI) {
+                                           nsIURI* aURI, bool aForced) {
   bool isFirstPartyEnabled = IsFirstPartyEnabled();
 
-  // If the pref is off or this is not a top level load, bail out.
-  if (!isFirstPartyEnabled || !aIsTopLevelDocument) {
+  // If the prefs are off or this is not a top level load, bail out.
+  if ((!isFirstPartyEnabled || !aIsTopLevelDocument) && !aForced) {
     return;
   }
 
@@ -55,23 +60,53 @@ void OriginAttributes::SetFirstPartyDomain(const bool aIsTopLevelDocument,
     return;
   }
 
+  if (rv == NS_ERROR_HOST_IS_IP_ADDRESS) {
+    // If the host is an IPv4/IPv6 address, we still accept it as a
+    // valid firstPartyDomain.
+    nsAutoCString ipAddr;
+    rv = aURI->GetHost(ipAddr);
+    NS_ENSURE_SUCCESS_VOID(rv);
+
+    if (net_IsValidIPv6Addr(ipAddr)) {
+      // According to RFC2732, the host of an IPv6 address should be an
+      // IPv6reference. The GetHost() of nsIURI will only return the IPv6
+      // address. So, we need to convert it back to IPv6reference here.
+      mFirstPartyDomain.Truncate();
+      mFirstPartyDomain.AssignLiteral("[");
+      mFirstPartyDomain.Append(NS_ConvertUTF8toUTF16(ipAddr));
+      mFirstPartyDomain.AppendLiteral("]");
+    } else {
+      mFirstPartyDomain = NS_ConvertUTF8toUTF16(ipAddr);
+    }
+
+    return;
+  }
+
+  // Saving isInsufficientDomainLevels before rv is overwritten.
+  bool isInsufficientDomainLevels = (rv == NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS);
   nsAutoCString scheme;
   rv = aURI->GetScheme(scheme);
   NS_ENSURE_SUCCESS_VOID(rv);
   if (scheme.EqualsLiteral("about")) {
     mFirstPartyDomain.AssignLiteral(ABOUT_URI_FIRST_PARTY_DOMAIN);
-  } else if (scheme.EqualsLiteral("blob")) {
-    nsCOMPtr<nsIURIWithPrincipal> uriPrinc = do_QueryInterface(aURI);
-    if (uriPrinc) {
-      nsCOMPtr<nsIPrincipal> principal;
-      rv = uriPrinc->GetPrincipal(getter_AddRefs(principal));
-      NS_ENSURE_SUCCESS_VOID(rv);
+    return;
+  }
 
-      MOZ_ASSERT(principal, "blob URI but no principal.");
-      if (principal) {
-        mFirstPartyDomain = principal->OriginAttributesRef().mFirstPartyDomain;
-      }
+  nsCOMPtr<nsIPrincipal> blobPrincipal;
+  if (dom::BlobURLProtocolHandler::GetBlobURLPrincipal(
+          aURI, getter_AddRefs(blobPrincipal))) {
+    MOZ_ASSERT(blobPrincipal);
+    mFirstPartyDomain = blobPrincipal->OriginAttributesRef().mFirstPartyDomain;
+    return;
+  }
+
+  if (isInsufficientDomainLevels) {
+    nsAutoCString publicSuffix;
+    rv = tldService->GetPublicSuffix(aURI, publicSuffix);
+    if (NS_SUCCEEDED(rv)) {
+      mFirstPartyDomain = NS_ConvertUTF8toUTF16(publicSuffix);
     }
+    return;
   }
 }
 
@@ -98,11 +133,6 @@ void OriginAttributes::CreateSuffix(nsACString& aStr) const {
   // naming.
   //
 
-  if (mAppId != nsIScriptSecurityManager::NO_APP_ID) {
-    value.AppendInt(mAppId);
-    params.Set(NS_LITERAL_STRING("appId"), value);
-  }
-
   if (mInIsolatedMozBrowser) {
     params.Set(NS_LITERAL_STRING("inBrowser"), NS_LITERAL_STRING("1"));
   }
@@ -120,10 +150,12 @@ void OriginAttributes::CreateSuffix(nsACString& aStr) const {
   }
 
   if (!mFirstPartyDomain.IsEmpty()) {
-    MOZ_RELEASE_ASSERT(mFirstPartyDomain.FindCharInSet(
-                           dom::quota::QuotaManager::kReplaceChars) ==
-                       kNotFound);
-    params.Set(NS_LITERAL_STRING("firstPartyDomain"), mFirstPartyDomain);
+    nsAutoString sanitizedFirstPartyDomain(mFirstPartyDomain);
+    sanitizedFirstPartyDomain.ReplaceChar(
+        dom::quota::QuotaManager::kReplaceChars, '+');
+
+    params.Set(NS_LITERAL_STRING("firstPartyDomain"),
+               sanitizedFirstPartyDomain);
   }
 
   aStr.Truncate();
@@ -170,16 +202,6 @@ class MOZ_STACK_CLASS PopulateFromSuffixIterator final
 
   bool URLParamsIterator(const nsAString& aName,
                          const nsAString& aValue) override {
-    if (aName.EqualsLiteral("appId")) {
-      nsresult rv;
-      int64_t val = aValue.ToInteger64(&rv);
-      NS_ENSURE_SUCCESS(rv, false);
-      NS_ENSURE_TRUE(val <= UINT32_MAX, false);
-      mOriginAttributes->mAppId = static_cast<uint32_t>(val);
-
-      return true;
-    }
-
     if (aName.EqualsLiteral("inBrowser")) {
       if (!aValue.EqualsLiteral("1")) {
         return false;
@@ -189,7 +211,7 @@ class MOZ_STACK_CLASS PopulateFromSuffixIterator final
       return true;
     }
 
-    if (aName.EqualsLiteral("addonId")) {
+    if (aName.EqualsLiteral("addonId") || aName.EqualsLiteral("appId")) {
       // No longer supported. Silently ignore so that legacy origin strings
       // don't cause failures.
       return true;

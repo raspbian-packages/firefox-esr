@@ -11,21 +11,19 @@
 #include "nsTArray.h"
 #include "nsAutoPtr.h"
 #include "nsXULAppAPI.h"
-#include "LabeledEventQueue.h"
 #include "MainThreadQueue.h"
 #include "mozilla/AbstractThread.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/EventQueue.h"
 #include "mozilla/Preferences.h"
-#include "mozilla/Scheduler.h"
 #include "mozilla/SystemGroup.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/ThreadEventQueue.h"
 #include "mozilla/ThreadLocal.h"
 #include "PrioritizedEventQueue.h"
 #ifdef MOZ_CANARY
-#include <fcntl.h>
-#include <unistd.h>
+#  include <fcntl.h>
+#  include <unistd.h>
 #endif
 
 #include "MainThreadIdlePeriod.h"
@@ -38,7 +36,11 @@ static MOZ_THREAD_LOCAL(PRThread*) gTlsCurrentVirtualThread;
 
 bool NS_IsMainThreadTLSInitialized() { return sTLSIsMainThread.initialized(); }
 
+extern "C" {
+// This uses the C language linkage because it's exposed to Rust
+// via the xpcom/rust/moz_task crate.
 bool NS_IsMainThread() { return sTLSIsMainThread.get(); }
+}
 
 void NS_SetMainThread() {
   if (!sTLSIsMainThread.init()) {
@@ -49,16 +51,12 @@ void NS_SetMainThread() {
 }
 
 void NS_SetMainThread(PRThread* aVirtualThread) {
-  MOZ_ASSERT(Scheduler::IsCooperativeThread());
-
   MOZ_ASSERT(!gTlsCurrentVirtualThread.get());
   gTlsCurrentVirtualThread.set(aVirtualThread);
   NS_SetMainThread();
 }
 
 void NS_UnsetMainThread() {
-  MOZ_ASSERT(Scheduler::IsCooperativeThread());
-
   sTLSIsMainThread.set(false);
   MOZ_ASSERT(!NS_IsMainThread());
   gTlsCurrentVirtualThread.set(nullptr);
@@ -76,10 +74,24 @@ void AssertIsOnMainThread() { MOZ_ASSERT(NS_IsMainThread(), "Wrong thread!"); }
 
 typedef nsTArray<NotNull<RefPtr<nsThread>>> nsThreadArray;
 
+static bool sShutdownComplete;
+
 //-----------------------------------------------------------------------------
 
-static void ReleaseObject(void* aData) {
-  static_cast<nsISupports*>(aData)->Release();
+/* static */
+void nsThreadManager::ReleaseThread(void* aData) {
+  if (sShutdownComplete) {
+    // We've already completed shutdown and released the references to all or
+    // our TLS wrappers. Don't try to release them again.
+    return;
+  }
+
+  auto* thread = static_cast<nsThread*>(aData);
+
+  if (thread->mHasTLSEntry) {
+    thread->mHasTLSEntry = false;
+    thread->Release();
+  }
 }
 
 // statically allocated instance
@@ -168,7 +180,8 @@ StaticRefPtr<ShutdownObserveHelper> gShutdownObserveHelper;
   return sInstance;
 }
 
-/* static */ void nsThreadManager::InitializeShutdownObserver() {
+/* static */
+void nsThreadManager::InitializeShutdownObserver() {
   MOZ_ASSERT(!gShutdownObserveHelper);
 
   RefPtr<ShutdownObserveHelper> observer;
@@ -193,9 +206,7 @@ nsresult nsThreadManager::Init() {
     return NS_ERROR_UNEXPECTED;
   }
 
-  Scheduler::EventLoopActivation::Init();
-
-  if (PR_NewThreadPrivateIndex(&mCurThreadIndex, ReleaseObject) == PR_FAILURE) {
+  if (PR_NewThreadPrivateIndex(&mCurThreadIndex, ReleaseThread) == PR_FAILURE) {
     return NS_ERROR_FAILURE;
   }
 
@@ -211,21 +222,9 @@ nsresult nsThreadManager::Init() {
 
   nsCOMPtr<nsIIdlePeriod> idlePeriod = new MainThreadIdlePeriod();
 
-  bool startScheduler = false;
-  if (XRE_IsContentProcess() && Scheduler::IsSchedulerEnabled()) {
-    mMainThread = Scheduler::Init(idlePeriod);
-    startScheduler = true;
-  } else {
-    if (XRE_IsContentProcess() && Scheduler::UseMultipleQueues()) {
-      mMainThread = CreateMainThread<
-          ThreadEventQueue<PrioritizedEventQueue<LabeledEventQueue>>,
-          LabeledEventQueue>(idlePeriod);
-    } else {
-      mMainThread =
-          CreateMainThread<ThreadEventQueue<PrioritizedEventQueue<EventQueue>>,
-                           EventQueue>(idlePeriod);
-    }
-  }
+  mMainThread =
+      CreateMainThread<ThreadEventQueue<PrioritizedEventQueue<EventQueue>>,
+                       EventQueue>(idlePeriod);
 
   nsresult rv = mMainThread->InitCurrentThread();
   if (NS_FAILED(rv)) {
@@ -243,9 +242,6 @@ nsresult nsThreadManager::Init() {
 
   mInitialized = true;
 
-  if (startScheduler) {
-    Scheduler::Start();
-  }
   return NS_OK;
 }
 
@@ -264,31 +260,27 @@ void nsThreadManager::Shutdown() {
   // Empty the main thread event queue before we begin shutting down threads.
   NS_ProcessPendingEvents(mMainThread);
 
-  // We gather the threads from the hashtable into a list, so that we avoid
-  // holding the hashtable lock while calling nsIThread::Shutdown.
-  nsThreadArray threads;
   {
-    OffTheBooksMutexAutoLock lock(mLock);
-    for (auto iter = mThreadsByPRThread.Iter(); !iter.Done(); iter.Next()) {
-      RefPtr<nsThread>& thread = iter.Data();
-      threads.AppendElement(WrapNotNull(thread));
-      iter.Remove();
+    // We gather the threads from the hashtable into a list, so that we avoid
+    // holding the enumerator lock while calling nsIThread::Shutdown.
+    nsTArray<RefPtr<nsThread>> threadsToShutdown;
+    for (auto* thread : nsThread::Enumerate()) {
+      if (thread->ShutdownRequired()) {
+        threadsToShutdown.AppendElement(thread);
+      }
     }
-  }
 
-  // It's tempting to walk the list of threads here and tell them each to stop
-  // accepting new events, but that could lead to badness if one of those
-  // threads is stuck waiting for a response from another thread.  To do it
-  // right, we'd need some way to interrupt the threads.
-  //
-  // Instead, we process events on the current thread while waiting for threads
-  // to shutdown.  This means that we have to preserve a mostly functioning
-  // world until such time as the threads exit.
+    // It's tempting to walk the list of threads here and tell them each to stop
+    // accepting new events, but that could lead to badness if one of those
+    // threads is stuck waiting for a response from another thread.  To do it
+    // right, we'd need some way to interrupt the threads.
+    //
+    // Instead, we process events on the current thread while waiting for
+    // threads to shutdown.  This means that we have to preserve a mostly
+    // functioning world until such time as the threads exit.
 
-  // Shutdown all threads that require it (join with threads that we created).
-  for (uint32_t i = 0; i < threads.Length(); ++i) {
-    NotNull<nsThread*> thread = threads[i];
-    if (thread->ShutdownRequired()) {
+    // Shutdown all threads that require it (join with threads that we created).
+    for (auto& thread : threadsToShutdown) {
       thread->Shutdown();
     }
   }
@@ -304,51 +296,49 @@ void nsThreadManager::Shutdown() {
 
   // There are no more background threads at this point.
 
-  // Clear the table of threads.
-  {
-    OffTheBooksMutexAutoLock lock(mLock);
-    mThreadsByPRThread.Clear();
-  }
-
   // Normally thread shutdown clears the observer for the thread, but since the
   // main thread is special we do it manually here after we're sure all events
   // have been processed.
   mMainThread->SetObserver(nullptr);
-  mMainThread->ClearObservers();
 
   // Release main thread object.
   mMainThread = nullptr;
 
   // Remove the TLS entry for the main thread.
   PR_SetThreadPrivate(mCurThreadIndex, nullptr);
+
+  {
+    // Cleanup the last references to any threads which haven't shut down yet.
+    nsTArray<RefPtr<nsThread>> threads;
+    for (auto* thread : nsThread::Enumerate()) {
+      if (thread->mHasTLSEntry) {
+        threads.AppendElement(dont_AddRef(thread));
+        thread->mHasTLSEntry = false;
+      }
+    }
+  }
+
+  // xpcshell tests sometimes leak the main thread. They don't enable leak
+  // checking, so that doesn't cause the test to fail, but leaving the entry in
+  // the thread list triggers an assertion, which does.
+  nsThread::ClearThreadList();
+
+  sShutdownComplete = true;
 }
 
 void nsThreadManager::RegisterCurrentThread(nsThread& aThread) {
   MOZ_ASSERT(aThread.GetPRThread() == PR_GetCurrentThread(), "bad aThread");
 
-  OffTheBooksMutexAutoLock lock(mLock);
-
-  ++mCurrentNumberOfThreads;
-  if (mCurrentNumberOfThreads > mHighestNumberOfThreads) {
-    mHighestNumberOfThreads = mCurrentNumberOfThreads;
-  }
-
-  mThreadsByPRThread.Put(aThread.GetPRThread(), &aThread);  // XXX check OOM?
-
   aThread.AddRef();  // for TLS entry
+  aThread.mHasTLSEntry = true;
   PR_SetThreadPrivate(mCurThreadIndex, &aThread);
 }
 
 void nsThreadManager::UnregisterCurrentThread(nsThread& aThread) {
   MOZ_ASSERT(aThread.GetPRThread() == PR_GetCurrentThread(), "bad aThread");
 
-  OffTheBooksMutexAutoLock lock(mLock);
-
-  --mCurrentNumberOfThreads;
-  mThreadsByPRThread.Remove(aThread.GetPRThread());
-
   PR_SetThreadPrivate(mCurThreadIndex, nullptr);
-  // Ref-count balanced via ReleaseObject
+  // Ref-count balanced via ReleaseThread
 }
 
 nsThread* nsThreadManager::CreateCurrentThread(
@@ -360,7 +350,6 @@ nsThread* nsThreadManager::CreateCurrentThread(
     return nullptr;
   }
 
-  // OK, that's fine.  We'll dynamically create one :-)
   RefPtr<nsThread> thread = new nsThread(WrapNotNull(aQueue), aMainThread, 0);
   if (!thread || NS_FAILED(thread->InitCurrentThread())) {
     return nullptr;
@@ -381,10 +370,11 @@ nsThread* nsThreadManager::GetCurrentThread() {
   }
 
   // OK, that's fine.  We'll dynamically create one :-)
-  RefPtr<ThreadEventQueue<EventQueue>> queue =
-      new ThreadEventQueue<EventQueue>(MakeUnique<EventQueue>());
-  RefPtr<nsThread> thread =
-      new nsThread(WrapNotNull(queue), nsThread::NOT_MAIN_THREAD, 0);
+  //
+  // We assume that if we're implicitly creating a thread here that it doesn't
+  // want an event queue. Any thread which wants an event queue should
+  // explicitly create its nsThread wrapper.
+  RefPtr<nsThread> thread = new nsThread();
   if (!thread || NS_FAILED(thread->InitCurrentThread())) {
     return nullptr;
   }
@@ -393,7 +383,13 @@ nsThread* nsThreadManager::GetCurrentThread() {
 }
 
 bool nsThreadManager::IsNSThread() const {
-  return mInitialized && !!PR_GetThreadPrivate(mCurThreadIndex);
+  if (!mInitialized) {
+    return false;
+  }
+  if (auto* thread = (nsThread*)PR_GetThreadPrivate(mCurThreadIndex)) {
+    return thread->EventQueue();
+  }
+  return false;
 }
 
 NS_IMETHODIMP
@@ -439,29 +435,14 @@ nsThreadManager::NewNamedThread(const nsACString& aName, uint32_t aStackSize,
 }
 
 NS_IMETHODIMP
-nsThreadManager::GetThreadFromPRThread(PRThread* aThread, nsIThread** aResult) {
-  // Keep this functioning during Shutdown
-  if (NS_WARN_IF(!mMainThread)) {
-    return NS_ERROR_NOT_INITIALIZED;
-  }
-  if (NS_WARN_IF(!aThread)) {
-    return NS_ERROR_INVALID_ARG;
-  }
-
-  RefPtr<nsThread> temp;
-  {
-    OffTheBooksMutexAutoLock lock(mLock);
-    mThreadsByPRThread.Get(aThread, getter_AddRefs(temp));
-  }
-
-  NS_IF_ADDREF(*aResult = temp);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
 nsThreadManager::GetMainThread(nsIThread** aResult) {
   // Keep this functioning during Shutdown
-  if (NS_WARN_IF(!mMainThread)) {
+  if (!mMainThread) {
+    if (!NS_IsMainThread()) {
+      NS_WARNING(
+          "Called GetMainThread but there isn't a main thread and "
+          "we're not the main thread.");
+    }
     return NS_ERROR_NOT_INITIALIZED;
   }
   NS_ADDREF(*aResult = mMainThread);
@@ -551,8 +532,7 @@ nsThreadManager::GetSystemGroupEventTarget(nsIEventTarget** aTarget) {
 }
 
 uint32_t nsThreadManager::GetHighestNumberOfThreads() {
-  OffTheBooksMutexAutoLock lock(mLock);
-  return mHighestNumberOfThreads;
+  return nsThread::MaxActiveThreads();
 }
 
 NS_IMETHODIMP
@@ -593,19 +573,31 @@ void nsThreadManager::ResumeInputEventPrioritization() {
   mMainThread->ResumeInputEventPrioritization();
 }
 
+// static
+bool nsThreadManager::MainThreadHasPendingHighPriorityEvents() {
+  MOZ_ASSERT(NS_IsMainThread());
+  bool retVal = false;
+  if (get().mMainThread) {
+    get().mMainThread->HasPendingHighPriorityEvents(&retVal);
+  }
+  return retVal;
+}
+
 NS_IMETHODIMP
 nsThreadManager::IdleDispatchToMainThread(nsIRunnable* aEvent,
                                           uint32_t aTimeout) {
-  // Note: C++ callers should instead use NS_IdleDispatchToThread or
-  // NS_IdleDispatchToCurrentThread.
+  // Note: C++ callers should instead use NS_DispatchToThreadQueue or
+  // NS_DispatchToCurrentThreadQueue.
   MOZ_ASSERT(NS_IsMainThread());
 
   nsCOMPtr<nsIRunnable> event(aEvent);
   if (aTimeout) {
-    return NS_IdleDispatchToThread(event.forget(), aTimeout, mMainThread);
+    return NS_DispatchToThreadQueue(event.forget(), aTimeout, mMainThread,
+                                    EventQueuePriority::Idle);
   }
 
-  return NS_IdleDispatchToThread(event.forget(), mMainThread);
+  return NS_DispatchToThreadQueue(event.forget(), mMainThread,
+                                  EventQueuePriority::Idle);
 }
 
 namespace mozilla {

@@ -13,7 +13,7 @@ use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
 use super::layout::Opaque;
 use super::module::Module;
-use super::super::codegen::CONSTIFIED_ENUM_MODULE_REPR_NAME;
+use super::super::codegen::{CONSTIFIED_ENUM_MODULE_REPR_NAME, EnumVariation};
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
@@ -329,7 +329,7 @@ impl CanDeriveDefault for Item {
     }
 }
 
-impl<'a> CanDeriveCopy<'a> for Item {
+impl CanDeriveCopy for Item {
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
         self.id().can_derive_copy(ctx)
     }
@@ -454,7 +454,7 @@ impl Item {
         ty: &clang::Type,
         ctx: &mut BindgenContext,
     ) -> TypeId {
-        let ty = Opaque::from_clang_ty(ty);
+        let ty = Opaque::from_clang_ty(ty, ctx);
         let kind = ItemKind::Type(ty);
         let parent = ctx.root_module().into();
         ctx.add_item(Item::new(with_id, None, None, parent, kind), None, None);
@@ -631,8 +631,25 @@ impl Item {
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        self.annotations.hide() ||
-            ctx.blacklisted_by_name(&self.canonical_path(ctx), self.id)
+        if self.annotations.hide() {
+            return true;
+        }
+
+        let path = self.path_for_whitelisting(ctx);
+        let name = path[1..].join("::");
+        ctx.options().blacklisted_items.matches(&name) ||
+        match self.kind {
+            ItemKind::Type(..) => {
+                ctx.options().blacklisted_types.matches(&name) ||
+                    ctx.is_replaced_type(&path, self.id)
+            }
+            ItemKind::Function(..) => {
+                ctx.options().blacklisted_functions.matches(&name)
+            }
+            // TODO: Add constant / namespace blacklisting?
+            ItemKind::Var(..) |
+            ItemKind::Module(..) => false,
+        }
     }
 
     /// Is this a reference to another type?
@@ -858,6 +875,14 @@ impl Item {
 
         let name = names.join("_");
 
+        let name = if opt.user_mangled == UserMangled::Yes {
+            ctx.parse_callbacks()
+                .and_then(|callbacks| callbacks.item_name(&name))
+                .unwrap_or(name)
+        } else {
+            name
+        };
+
         ctx.rust_mangle(&name).into_owned()
     }
 
@@ -912,7 +937,7 @@ impl Item {
 
         match *type_.kind() {
             TypeKind::Enum(ref enum_) => {
-                enum_.is_constified_enum_module(ctx, self)
+                enum_.computed_enum_variation(ctx, self) == EnumVariation::ModuleConsts
             }
             TypeKind::Alias(inner_id) => {
                 // TODO(emilio): Make this "hop through type aliases that aren't
@@ -935,24 +960,58 @@ impl Item {
         let cc = &ctx.options().codegen_config;
         match *self.kind() {
             ItemKind::Module(..) => true,
-            ItemKind::Var(_) => cc.vars,
-            ItemKind::Type(_) => cc.types,
+            ItemKind::Var(_) => cc.vars(),
+            ItemKind::Type(_) => cc.types(),
             ItemKind::Function(ref f) => {
                 match f.kind() {
-                    FunctionKind::Function => cc.functions,
-                    FunctionKind::Method(MethodKind::Constructor) => {
-                        cc.constructors
-                    }
+                    FunctionKind::Function => cc.functions(),
+                    FunctionKind::Method(MethodKind::Constructor) => cc.constructors(),
                     FunctionKind::Method(MethodKind::Destructor) |
-                    FunctionKind::Method(MethodKind::VirtualDestructor { .. }) => {
-                        cc.destructors
-                    }
+                    FunctionKind::Method(MethodKind::VirtualDestructor { ..  }) => cc.destructors(),
                     FunctionKind::Method(MethodKind::Static) |
                     FunctionKind::Method(MethodKind::Normal) |
-                    FunctionKind::Method(MethodKind::Virtual { .. }) => cc.methods,
+                    FunctionKind::Method(MethodKind::Virtual { .. }) => cc.methods(),
                 }
             }
         }
+    }
+
+    /// Returns the path we should use for whitelisting / blacklisting, which
+    /// doesn't include user-mangling.
+    pub fn path_for_whitelisting(&self, ctx: &BindgenContext) -> Vec<String> {
+        self.compute_path(ctx, UserMangled::No)
+    }
+
+    fn compute_path(&self, ctx: &BindgenContext, mangled: UserMangled) -> Vec<String> {
+        if let Some(path) = self.annotations().use_instead_of() {
+            let mut ret =
+                vec![ctx.resolve_item(ctx.root_module()).name(ctx).get()];
+            ret.extend_from_slice(path);
+            return ret;
+        }
+
+        let target = ctx.resolve_item(self.name_target(ctx));
+        let mut path: Vec<_> = target
+            .ancestors(ctx)
+            .chain(iter::once(ctx.root_module().into()))
+            .map(|id| ctx.resolve_item(id))
+            .filter(|item| {
+                item.id() == target.id() ||
+                    item.as_module().map_or(false, |module| {
+                        !module.is_inline() ||
+                            ctx.options().conservative_inline_namespaces
+                    })
+            })
+            .map(|item| {
+                ctx.resolve_item(item.name_target(ctx))
+                    .name(ctx)
+                    .within_namespaces()
+                    .user_mangled(mangled)
+                    .get()
+            })
+            .collect();
+        path.reverse();
+        path
     }
 }
 
@@ -981,7 +1040,7 @@ impl IsOpaque for Item {
         );
         self.annotations.opaque() ||
             self.as_type().map_or(false, |ty| ty.is_opaque(ctx, self)) ||
-            ctx.opaque_by_name(&self.canonical_path(ctx))
+            ctx.opaque_by_name(&self.path_for_whitelisting(ctx))
     }
 }
 
@@ -1203,8 +1262,6 @@ impl ClangItemParser for Item {
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
     ) -> Result<ItemId, ParseError> {
-        use ir::function::Function;
-        use ir::module::Module;
         use ir::var::Var;
         use clang_sys::*;
 
@@ -1301,7 +1358,8 @@ impl ClangItemParser for Item {
                 CXCursor_UsingDeclaration |
                 CXCursor_UsingDirective |
                 CXCursor_StaticAssert |
-                CXCursor_InclusionDirective => {
+                CXCursor_InclusionDirective |
+                CXCursor_FunctionTemplate => {
                     debug!(
                         "Unhandled cursor kind {:?}: {:?}",
                         cursor.kind(),
@@ -1389,6 +1447,7 @@ impl ClangItemParser for Item {
         let is_const = ty.is_const();
         let kind = TypeKind::UnresolvedTypeRef(ty, location, parent_id);
         let current_module = ctx.current_module();
+
         ctx.add_item(
             Item::new(
                 potential_id,
@@ -1397,7 +1456,7 @@ impl ClangItemParser for Item {
                 parent_id.unwrap_or(current_module.into()),
                 ItemKind::Type(Type::new(None, None, kind, is_const)),
             ),
-            Some(clang::Cursor::null()),
+            None,
             None,
         );
         potential_id.as_type_id_unchecked()
@@ -1802,35 +1861,19 @@ impl ItemCanonicalPath for Item {
     }
 
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String> {
-        if let Some(path) = self.annotations().use_instead_of() {
-            let mut ret =
-                vec![ctx.resolve_item(ctx.root_module()).name(ctx).get()];
-            ret.extend_from_slice(path);
-            return ret;
-        }
-
-        let target = ctx.resolve_item(self.name_target(ctx));
-        let mut path: Vec<_> = target
-            .ancestors(ctx)
-            .chain(iter::once(ctx.root_module().into()))
-            .map(|id| ctx.resolve_item(id))
-            .filter(|item| {
-                item.id() == target.id() ||
-                    item.as_module().map_or(false, |module| {
-                        !module.is_inline() ||
-                            ctx.options().conservative_inline_namespaces
-                    })
-            })
-            .map(|item| {
-                ctx.resolve_item(item.name_target(ctx))
-                    .name(ctx)
-                    .within_namespaces()
-                    .get()
-            })
-            .collect();
-        path.reverse();
-        path
+        self.compute_path(ctx, UserMangled::Yes)
     }
+}
+
+/// Whether to use the user-mangled name (mangled by the `item_name` callback or
+/// not.
+///
+/// Most of the callers probably want just yes, but the ones dealing with
+/// whitelisting and blacklisting don't.
+#[derive(Copy, Clone, Debug, PartialEq)]
+enum UserMangled {
+    No,
+    Yes,
 }
 
 /// Builder struct for naming variations, which hold inside different
@@ -1840,6 +1883,7 @@ pub struct NameOptions<'a> {
     item: &'a Item,
     ctx: &'a BindgenContext,
     within_namespaces: bool,
+    user_mangled: UserMangled,
 }
 
 impl<'a> NameOptions<'a> {
@@ -1849,6 +1893,7 @@ impl<'a> NameOptions<'a> {
             item: item,
             ctx: ctx,
             within_namespaces: false,
+            user_mangled: UserMangled::Yes,
         }
     }
 
@@ -1856,6 +1901,11 @@ impl<'a> NameOptions<'a> {
     /// into it. In other words, the item's name within the item's namespace.
     pub fn within_namespaces(&mut self) -> &mut Self {
         self.within_namespaces = true;
+        self
+    }
+
+    fn user_mangled(&mut self, user_mangled: UserMangled) -> &mut Self {
+        self.user_mangled = user_mangled;
         self
     }
 

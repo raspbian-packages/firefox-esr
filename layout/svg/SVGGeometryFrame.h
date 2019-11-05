@@ -18,6 +18,7 @@
 
 namespace mozilla {
 class SVGGeometryFrame;
+class SVGMarkerObserver;
 namespace gfx {
 class DrawTarget;
 }  // namespace gfx
@@ -27,34 +28,33 @@ class gfxContext;
 class nsDisplaySVGGeometry;
 class nsAtom;
 class nsIFrame;
-class nsIPresShell;
-class nsStyleContext;
 class nsSVGMarkerFrame;
-class nsSVGMarkerProperty;
 
 struct nsRect;
 
-nsIFrame* NS_NewSVGGeometryFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext);
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
+nsIFrame* NS_NewSVGGeometryFrame(mozilla::PresShell* aPresShell,
+                                 mozilla::ComputedStyle* aStyle);
 
 namespace mozilla {
 
 class SVGGeometryFrame : public nsFrame, public nsSVGDisplayableFrame {
   typedef mozilla::gfx::DrawTarget DrawTarget;
 
-  friend nsIFrame* ::NS_NewSVGGeometryFrame(nsIPresShell* aPresShell,
-                                            nsStyleContext* aContext);
+  friend nsIFrame* ::NS_NewSVGGeometryFrame(mozilla::PresShell* aPresShell,
+                                            ComputedStyle* aStyle);
 
   friend class ::nsDisplaySVGGeometry;
 
  protected:
-  SVGGeometryFrame(nsStyleContext* aContext, nsIFrame::ClassID aID)
-      : nsFrame(aContext, aID) {
+  SVGGeometryFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                   nsIFrame::ClassID aID = kClassID)
+      : nsFrame(aStyle, aPresContext, aID) {
     AddStateBits(NS_FRAME_SVG_LAYOUT | NS_FRAME_MAY_BE_TRANSFORMED);
   }
-
-  explicit SVGGeometryFrame(nsStyleContext* aContext)
-      : SVGGeometryFrame(aContext, kClassID) {}
 
  public:
   NS_DECL_QUERYFRAME
@@ -65,6 +65,10 @@ class SVGGeometryFrame : public nsFrame, public nsSVGDisplayableFrame {
                     nsIFrame* aPrevInFlow) override;
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsFrame::IsFrameOfType(aFlags &
                                   ~(nsIFrame::eSVG | nsIFrame::eSVGGeometry));
   }
@@ -72,7 +76,7 @@ class SVGGeometryFrame : public nsFrame, public nsSVGDisplayableFrame {
   virtual nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
                                     int32_t aModType) override;
 
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   virtual bool IsSVGTransformed(
       Matrix* aOwnTransforms = nullptr,
@@ -119,27 +123,8 @@ class SVGGeometryFrame : public nsFrame, public nsSVGDisplayableFrame {
    * @param aMatrix The transform that must be multiplied onto aContext to
    *   establish this frame's SVG user space.
    */
-  void PaintMarkers(gfxContext& aContext, const gfxMatrix& aMatrix,
+  void PaintMarkers(gfxContext& aContext, const gfxMatrix& aTransform,
                     imgDrawingParams& aImgParams);
-
-  struct MarkerProperties {
-    nsSVGMarkerProperty* mMarkerStart;
-    nsSVGMarkerProperty* mMarkerMid;
-    nsSVGMarkerProperty* mMarkerEnd;
-
-    bool MarkersExist() const {
-      return mMarkerStart || mMarkerMid || mMarkerEnd;
-    }
-
-    nsSVGMarkerFrame* GetMarkerStartFrame();
-    nsSVGMarkerFrame* GetMarkerMidFrame();
-    nsSVGMarkerFrame* GetMarkerEndFrame();
-  };
-
-  /**
-   * @param aFrame should be the first continuation
-   */
-  static MarkerProperties GetMarkerProperties(SVGGeometryFrame* aFrame);
 };
 }  // namespace mozilla
 

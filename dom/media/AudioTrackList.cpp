@@ -12,7 +12,7 @@ namespace dom {
 
 JSObject* AudioTrackList::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return AudioTrackListBinding::Wrap(aCx, this, aGivenProto);
+  return AudioTrackList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 AudioTrack* AudioTrackList::operator[](uint32_t aIndex) {

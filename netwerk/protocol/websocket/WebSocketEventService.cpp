@@ -55,7 +55,7 @@ class WebSocketBaseRunnable : public Runnable {
   }
 
  protected:
-  ~WebSocketBaseRunnable() {}
+  ~WebSocketBaseRunnable() = default;
 
   virtual void DoWork(nsIWebSocketEventListener* aListener) = 0;
 
@@ -69,7 +69,7 @@ class WebSocketFrameRunnable final : public WebSocketBaseRunnable {
                          already_AddRefed<WebSocketFrame> aFrame,
                          bool aFrameSent)
       : WebSocketBaseRunnable(aWebSocketSerialID, aInnerWindowID),
-        mFrame(Move(aFrame)),
+        mFrame(std::move(aFrame)),
         mFrameSent(aFrameSent) {}
 
  private:
@@ -112,22 +112,26 @@ class WebSocketOpenedRunnable final : public WebSocketBaseRunnable {
   WebSocketOpenedRunnable(uint32_t aWebSocketSerialID, uint64_t aInnerWindowID,
                           const nsAString& aEffectiveURI,
                           const nsACString& aProtocols,
-                          const nsACString& aExtensions)
+                          const nsACString& aExtensions,
+                          uint64_t aHttpChannelId)
       : WebSocketBaseRunnable(aWebSocketSerialID, aInnerWindowID),
         mEffectiveURI(aEffectiveURI),
         mProtocols(aProtocols),
-        mExtensions(aExtensions) {}
+        mExtensions(aExtensions),
+        mHttpChannelId(aHttpChannelId) {}
 
  private:
   virtual void DoWork(nsIWebSocketEventListener* aListener) override {
-    DebugOnly<nsresult> rv = aListener->WebSocketOpened(
-        mWebSocketSerialID, mEffectiveURI, mProtocols, mExtensions);
+    DebugOnly<nsresult> rv =
+        aListener->WebSocketOpened(mWebSocketSerialID, mEffectiveURI,
+                                   mProtocols, mExtensions, mHttpChannelId);
     NS_WARNING_ASSERTION(NS_SUCCEEDED(rv), "WebSocketOpened failed");
   }
 
   const nsString mEffectiveURI;
   const nsCString mProtocols;
   const nsCString mExtensions;
+  uint64_t mHttpChannelId;
 };
 
 class WebSocketMessageAvailableRunnable final : public WebSocketBaseRunnable {
@@ -173,15 +177,15 @@ class WebSocketClosedRunnable final : public WebSocketBaseRunnable {
   const nsString mReason;
 };
 
-/* static */ already_AddRefed<WebSocketEventService>
-WebSocketEventService::Get() {
+/* static */
+already_AddRefed<WebSocketEventService> WebSocketEventService::Get() {
   MOZ_ASSERT(NS_IsMainThread());
   RefPtr<WebSocketEventService> service = gWebSocketEventService.get();
   return service.forget();
 }
 
-/* static */ already_AddRefed<WebSocketEventService>
-WebSocketEventService::GetOrCreate() {
+/* static */
+already_AddRefed<WebSocketEventService> WebSocketEventService::GetOrCreate() {
   MOZ_ASSERT(NS_IsMainThread());
 
   if (!gWebSocketEventService) {
@@ -238,15 +242,16 @@ void WebSocketEventService::WebSocketOpened(uint32_t aWebSocketSerialID,
                                             const nsAString& aEffectiveURI,
                                             const nsACString& aProtocols,
                                             const nsACString& aExtensions,
+                                            uint64_t aHttpChannelId,
                                             nsIEventTarget* aTarget) {
   // Let's continue only if we have some listeners.
   if (!HasListeners()) {
     return;
   }
 
-  RefPtr<WebSocketOpenedRunnable> runnable =
-      new WebSocketOpenedRunnable(aWebSocketSerialID, aInnerWindowID,
-                                  aEffectiveURI, aProtocols, aExtensions);
+  RefPtr<WebSocketOpenedRunnable> runnable = new WebSocketOpenedRunnable(
+      aWebSocketSerialID, aInnerWindowID, aEffectiveURI, aProtocols,
+      aExtensions, aHttpChannelId);
   DebugOnly<nsresult> rv = aTarget
                                ? aTarget->Dispatch(runnable, NS_DISPATCH_NORMAL)
                                : NS_DispatchToMainThread(runnable);
@@ -291,7 +296,7 @@ void WebSocketEventService::WebSocketClosed(uint32_t aWebSocketSerialID,
 void WebSocketEventService::FrameReceived(
     uint32_t aWebSocketSerialID, uint64_t aInnerWindowID,
     already_AddRefed<WebSocketFrame> aFrame, nsIEventTarget* aTarget) {
-  RefPtr<WebSocketFrame> frame(Move(aFrame));
+  RefPtr<WebSocketFrame> frame(std::move(aFrame));
   MOZ_ASSERT(frame);
 
   // Let's continue only if we have some listeners.
@@ -312,7 +317,7 @@ void WebSocketEventService::FrameSent(uint32_t aWebSocketSerialID,
                                       uint64_t aInnerWindowID,
                                       already_AddRefed<WebSocketFrame> aFrame,
                                       nsIEventTarget* aTarget) {
-  RefPtr<WebSocketFrame> frame(Move(aFrame));
+  RefPtr<WebSocketFrame> frame(std::move(aFrame));
   MOZ_ASSERT(frame);
 
   // Let's continue only if we have some listeners.

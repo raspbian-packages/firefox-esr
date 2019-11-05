@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,10 +16,11 @@ bool FunctionBrokerChild::IsDispatchThread() { return mThread->IsOnThread(); }
 
 void FunctionBrokerChild::PostToDispatchThread(
     already_AddRefed<nsIRunnable>&& runnable) {
-  mThread->Dispatch(Move(runnable));
+  mThread->Dispatch(std::move(runnable));
 }
 
-/* static */ bool FunctionBrokerChild::Initialize(
+/* static */
+bool FunctionBrokerChild::Initialize(
     Endpoint<PFunctionBrokerChild>&& aBrokerEndpoint) {
   MOZ_RELEASE_ASSERT(
       XRE_IsPluginProcess(),
@@ -30,11 +31,12 @@ void FunctionBrokerChild::PostToDispatchThread(
   if (!thread) {
     return false;
   }
-  sInstance = new FunctionBrokerChild(thread, Move(aBrokerEndpoint));
+  sInstance = new FunctionBrokerChild(thread, std::move(aBrokerEndpoint));
   return true;
 }
 
-/* static */ FunctionBrokerChild* FunctionBrokerChild::GetInstance() {
+/* static */
+FunctionBrokerChild* FunctionBrokerChild::GetInstance() {
   MOZ_RELEASE_ASSERT(
       XRE_IsPluginProcess(),
       "FunctionBrokerChild can only be used in plugin processes");
@@ -52,7 +54,7 @@ FunctionBrokerChild::FunctionBrokerChild(
   PostToDispatchThread(
       NewNonOwningRunnableMethod<Endpoint<PFunctionBrokerChild>&&>(
           "FunctionBrokerChild::Bind", this, &FunctionBrokerChild::Bind,
-          Move(aEndpoint)));
+          std::move(aEndpoint)));
 }
 
 void FunctionBrokerChild::Bind(Endpoint<PFunctionBrokerChild>&& aEndpoint) {

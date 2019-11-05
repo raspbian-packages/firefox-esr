@@ -6,13 +6,13 @@
 
 <!ENTITY errFile.label   "Qaynaq fayl:">
 <!ENTITY errLine.label   "Satır:">
-<!ENTITY errColumn.label "Sutun:">
+<!ENTITY errColumn.label "Sütun:">
 
 <!ENTITY all.label          "Hepsi">
 <!ENTITY all.accesskey      "H">
 <!ENTITY errors.label       "Səhvlər">
 <!ENTITY errors.accesskey   "r">
-<!ENTITY warnings.label     "Uyarılar">
+<!ENTITY warnings.label     "Xəbərdarlıqlar">
 <!ENTITY warnings.accesskey "U">
 <!ENTITY messages.label     "İsmarıclar">
 <!ENTITY messages.accesskey "m">

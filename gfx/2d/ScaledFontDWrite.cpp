@@ -9,7 +9,9 @@
 #include "PathD2D.h"
 #include "gfxFont.h"
 #include "Logging.h"
+#include "mozilla/FontPropertyTypes.h"
 #include "mozilla/webrender/WebRenderTypes.h"
+#include "HelpersD2D.h"
 
 #include "dwrite_3.h"
 
@@ -22,22 +24,22 @@
 // we #include an extra header that contains copies of the relevant
 // classes/interfaces we need.
 #if !defined(__MINGW32__) && WINVER < 0x0A00
-#include "dw-extra.h"
+#  include "dw-extra.h"
 #endif
 
 using namespace std;
 
 #ifdef USE_SKIA
-#include "PathSkia.h"
-#include "skia/include/core/SkPaint.h"
-#include "skia/include/core/SkPath.h"
-#include "skia/include/ports/SkTypeface_win.h"
+#  include "PathSkia.h"
+#  include "skia/include/core/SkPaint.h"
+#  include "skia/include/core/SkPath.h"
+#  include "skia/include/ports/SkTypeface_win.h"
 #endif
 
 #include <vector>
 
 #ifdef USE_CAIRO_SCALED_FONT
-#include "cairo-win32.h"
+#  include "cairo-win32.h"
 #endif
 
 #include "HelpersWinFonts.h"
@@ -90,29 +92,35 @@ static bool DoGrayscale(IDWriteFontFace* aDWFace, Float ppem) {
 }
 
 static inline DWRITE_FONT_STRETCH DWriteFontStretchFromStretch(
-    int16_t aStretch) {
-  switch (aStretch) {
-    case NS_FONT_STRETCH_ULTRA_CONDENSED:
-      return DWRITE_FONT_STRETCH_ULTRA_CONDENSED;
-    case NS_FONT_STRETCH_EXTRA_CONDENSED:
-      return DWRITE_FONT_STRETCH_EXTRA_CONDENSED;
-    case NS_FONT_STRETCH_CONDENSED:
-      return DWRITE_FONT_STRETCH_CONDENSED;
-    case NS_FONT_STRETCH_SEMI_CONDENSED:
-      return DWRITE_FONT_STRETCH_SEMI_CONDENSED;
-    case NS_FONT_STRETCH_NORMAL:
-      return DWRITE_FONT_STRETCH_NORMAL;
-    case NS_FONT_STRETCH_SEMI_EXPANDED:
-      return DWRITE_FONT_STRETCH_SEMI_EXPANDED;
-    case NS_FONT_STRETCH_EXPANDED:
-      return DWRITE_FONT_STRETCH_EXPANDED;
-    case NS_FONT_STRETCH_EXTRA_EXPANDED:
-      return DWRITE_FONT_STRETCH_EXTRA_EXPANDED;
-    case NS_FONT_STRETCH_ULTRA_EXPANDED:
-      return DWRITE_FONT_STRETCH_ULTRA_EXPANDED;
-    default:
-      return DWRITE_FONT_STRETCH_UNDEFINED;
+    FontStretch aStretch) {
+  if (aStretch == FontStretch::UltraCondensed()) {
+    return DWRITE_FONT_STRETCH_ULTRA_CONDENSED;
   }
+  if (aStretch == FontStretch::ExtraCondensed()) {
+    return DWRITE_FONT_STRETCH_EXTRA_CONDENSED;
+  }
+  if (aStretch == FontStretch::Condensed()) {
+    return DWRITE_FONT_STRETCH_CONDENSED;
+  }
+  if (aStretch == FontStretch::SemiCondensed()) {
+    return DWRITE_FONT_STRETCH_SEMI_CONDENSED;
+  }
+  if (aStretch == FontStretch::Normal()) {
+    return DWRITE_FONT_STRETCH_NORMAL;
+  }
+  if (aStretch == FontStretch::SemiExpanded()) {
+    return DWRITE_FONT_STRETCH_SEMI_EXPANDED;
+  }
+  if (aStretch == FontStretch::Expanded()) {
+    return DWRITE_FONT_STRETCH_EXPANDED;
+  }
+  if (aStretch == FontStretch::ExtraExpanded()) {
+    return DWRITE_FONT_STRETCH_EXTRA_EXPANDED;
+  }
+  if (aStretch == FontStretch::UltraExpanded()) {
+    return DWRITE_FONT_STRETCH_ULTRA_EXPANDED;
+  }
+  return DWRITE_FONT_STRETCH_UNDEFINED;
 }
 
 ScaledFontDWrite::ScaledFontDWrite(IDWriteFontFace* aFontFace,
@@ -130,10 +138,12 @@ ScaledFontDWrite::ScaledFontDWrite(IDWriteFontFace* aFontFace,
       mGamma(aGamma),
       mContrast(aContrast) {
   if (aStyle) {
-    mStyle = SkFontStyle(
-        aStyle->weight, DWriteFontStretchFromStretch(aStyle->stretch),
-        aStyle->style == NS_FONT_STYLE_NORMAL ? SkFontStyle::kUpright_Slant
-                                              : SkFontStyle::kItalic_Slant);
+    mStyle = SkFontStyle(aStyle->weight.ToIntRounded(),
+                         DWriteFontStretchFromStretch(aStyle->stretch),
+                         // FIXME(jwatt): also use kOblique_Slant
+                         aStyle->style == FontSlantStyle::Normal()
+                             ? SkFontStyle::kUpright_Slant
+                             : SkFontStyle::kItalic_Slant);
   }
 }
 
@@ -155,29 +165,26 @@ already_AddRefed<Path> ScaledFontDWrite::GetPathForGlyphs(
 }
 
 #ifdef USE_SKIA
-SkTypeface* ScaledFontDWrite::GetSkTypeface() {
-  if (!mTypeface) {
-    RefPtr<IDWriteFactory> factory = Factory::GetDWriteFactory();
-    if (!factory) {
-      return nullptr;
-    }
-
-    Float gamma = mGamma;
-    // Skia doesn't support a gamma value outside of 0-4, so default to 2.2
-    if (gamma < 0.0f || gamma > 4.0f) {
-      gamma = 2.2f;
-    }
-
-    Float contrast = mContrast;
-    // Skia doesn't support a contrast value outside of 0-1, so default to 1.0
-    if (contrast < 0.0f || contrast > 1.0f) {
-      contrast = 1.0f;
-    }
-
-    mTypeface = SkCreateTypefaceFromDWriteFont(factory, mFontFace, mStyle,
-                                               mForceGDIMode, gamma, contrast);
+SkTypeface* ScaledFontDWrite::CreateSkTypeface() {
+  RefPtr<IDWriteFactory> factory = Factory::GetDWriteFactory();
+  if (!factory) {
+    return nullptr;
   }
-  return mTypeface;
+
+  Float gamma = mGamma;
+  // Skia doesn't support a gamma value outside of 0-4, so default to 2.2
+  if (gamma < 0.0f || gamma > 4.0f) {
+    gamma = 2.2f;
+  }
+
+  Float contrast = mContrast;
+  // Skia doesn't support a contrast value outside of 0-1, so default to 1.0
+  if (contrast < 0.0f || contrast > 1.0f) {
+    contrast = 1.0f;
+  }
+
+  return SkCreateTypefaceFromDWriteFont(factory, mFontFace, mStyle,
+                                        mForceGDIMode, gamma, contrast);
 }
 #endif
 
@@ -185,6 +192,12 @@ void ScaledFontDWrite::CopyGlyphsToBuilder(const GlyphBuffer& aBuffer,
                                            PathBuilder* aBuilder,
                                            const Matrix* aTransformHint) {
   BackendType backendType = aBuilder->GetBackendType();
+  if (backendType == BackendType::CAPTURE) {
+    StreamingGeometrySink sink(aBuilder);
+    CopyGlyphsToSink(aBuffer, &sink);
+    return;
+  }
+
   if (backendType != BackendType::DIRECT2D &&
       backendType != BackendType::DIRECT2D1_1) {
     ScaledFontBase::CopyGlyphsToBuilder(aBuffer, aBuilder, aTransformHint);
@@ -230,7 +243,7 @@ void ScaledFontDWrite::GetGlyphDesignMetrics(const uint16_t* aGlyphs,
 }
 
 void ScaledFontDWrite::CopyGlyphsToSink(const GlyphBuffer& aBuffer,
-                                        ID2D1GeometrySink* aSink) {
+                                        ID2D1SimplifiedGeometrySink* aSink) {
   std::vector<UINT16> indices;
   std::vector<FLOAT> advances;
   std::vector<DWRITE_GLYPH_OFFSET> offsets;
@@ -257,9 +270,9 @@ void ScaledFontDWrite::CopyGlyphsToSink(const GlyphBuffer& aBuffer,
 bool UnscaledFontDWrite::GetFontFileData(FontFileDataOutput aDataCallback,
                                          void* aBaton) {
   UINT32 fileCount = 0;
-  mFontFace->GetFiles(&fileCount, nullptr);
+  HRESULT hr = mFontFace->GetFiles(&fileCount, nullptr);
 
-  if (fileCount > 1) {
+  if (FAILED(hr) || fileCount > 1) {
     MOZ_ASSERT(false);
     return false;
   }
@@ -269,7 +282,10 @@ bool UnscaledFontDWrite::GetFontFileData(FontFileDataOutput aDataCallback,
   }
 
   RefPtr<IDWriteFontFile> file;
-  mFontFace->GetFiles(&fileCount, getter_AddRefs(file));
+  hr = mFontFace->GetFiles(&fileCount, getter_AddRefs(file));
+  if (FAILED(hr)) {
+    return false;
+  }
 
   const void* referenceKey;
   UINT32 refKeySize;
@@ -277,17 +293,26 @@ bool UnscaledFontDWrite::GetFontFileData(FontFileDataOutput aDataCallback,
   // key out of the file, that can be an invalid reference key for the loader
   // we use it with. The fix to this is not obvious but it will probably
   // have to happen inside thebes.
-  file->GetReferenceKey(&referenceKey, &refKeySize);
+  hr = file->GetReferenceKey(&referenceKey, &refKeySize);
+  if (FAILED(hr)) {
+    return false;
+  }
 
   RefPtr<IDWriteFontFileLoader> loader;
-  file->GetLoader(getter_AddRefs(loader));
+  hr = file->GetLoader(getter_AddRefs(loader));
+  if (FAILED(hr)) {
+    return false;
+  }
 
   RefPtr<IDWriteFontFileStream> stream;
-  loader->CreateStreamFromKey(referenceKey, refKeySize, getter_AddRefs(stream));
+  hr = loader->CreateStreamFromKey(referenceKey, refKeySize, getter_AddRefs(stream));
+  if (FAILED(hr)) {
+    return false;
+  }
 
   UINT64 fileSize64;
-  stream->GetFileSize(&fileSize64);
-  if (fileSize64 > UINT32_MAX) {
+  hr = stream->GetFileSize(&fileSize64);
+  if (FAILED(hr) || fileSize64 > UINT32_MAX) {
     MOZ_ASSERT(false);
     return false;
   }
@@ -295,7 +320,10 @@ bool UnscaledFontDWrite::GetFontFileData(FontFileDataOutput aDataCallback,
   uint32_t fileSize = static_cast<uint32_t>(fileSize64);
   const void* fragmentStart;
   void* context;
-  stream->ReadFileFragment(&fragmentStart, 0, fileSize, &context);
+  hr = stream->ReadFileFragment(&fragmentStart, 0, fileSize, &context);
+  if (FAILED(hr)) {
+    return false;
+  }
 
   aDataCallback((uint8_t*)fragmentStart, fileSize, mFontFace->GetIndex(),
                 aBaton);
@@ -305,37 +333,65 @@ bool UnscaledFontDWrite::GetFontFileData(FontFileDataOutput aDataCallback,
   return true;
 }
 
-static bool GetDWriteName(RefPtr<IDWriteLocalizedStrings> aNames,
-                          std::vector<WCHAR>& aOutName) {
-  BOOL exists = false;
-  UINT32 index = 0;
-  HRESULT hr = aNames->FindLocaleName(L"en-us", &index, &exists);
+static bool GetFontFileName(RefPtr<IDWriteFontFace> aFontFace,
+                            std::vector<WCHAR>& aFileName) {
+  UINT32 numFiles;
+  HRESULT hr = aFontFace->GetFiles(&numFiles, nullptr);
   if (FAILED(hr)) {
+    gfxDebug() << "Failed getting file count for WR font";
     return false;
-  }
-  if (!exists) {
-    // No english found, use whatever is first in the list.
-    index = 0;
+  } else if (numFiles != 1) {
+    gfxDebug() << "Invalid file count " << numFiles << " for WR font";
+    return false;
   }
 
-  UINT32 length;
-  hr = aNames->GetStringLength(index, &length);
+  RefPtr<IDWriteFontFile> file;
+  hr = aFontFace->GetFiles(&numFiles, getter_AddRefs(file));
   if (FAILED(hr)) {
+    gfxDebug() << "Failed getting file for WR font";
     return false;
   }
-  aOutName.resize(length + 1);
-  hr = aNames->GetString(index, aOutName.data(), length + 1);
-  return SUCCEEDED(hr);
-}
 
-static bool GetDWriteFamilyName(const RefPtr<IDWriteFontFamily>& aFamily,
-                                std::vector<WCHAR>& aOutName) {
-  RefPtr<IDWriteLocalizedStrings> names;
-  HRESULT hr = aFamily->GetFamilyNames(getter_AddRefs(names));
+  const void* key;
+  UINT32 keySize;
+  hr = file->GetReferenceKey(&key, &keySize);
   if (FAILED(hr)) {
+    gfxDebug() << "Failed getting file ref key for WR font";
     return false;
   }
-  return GetDWriteName(names, aOutName);
+  RefPtr<IDWriteFontFileLoader> loader;
+  hr = file->GetLoader(getter_AddRefs(loader));
+  if (FAILED(hr)) {
+    gfxDebug() << "Failed getting file loader for WR font";
+    return false;
+  }
+  RefPtr<IDWriteLocalFontFileLoader> localLoader;
+  loader->QueryInterface(__uuidof(IDWriteLocalFontFileLoader),
+                         (void**)getter_AddRefs(localLoader));
+  if (!localLoader) {
+    gfxDebug() << "Failed querying loader interface for WR font";
+    return false;
+  }
+  UINT32 pathLen;
+  hr = localLoader->GetFilePathLengthFromKey(key, keySize, &pathLen);
+  if (FAILED(hr)) {
+    gfxDebug() << "Failed getting path length for WR font";
+    return false;
+  }
+  aFileName.resize(pathLen + 1);
+  hr = localLoader->GetFilePathFromKey(key, keySize, aFileName.data(),
+                                       pathLen + 1);
+  if (FAILED(hr) || aFileName.back() != 0) {
+    gfxDebug() << "Failed getting path for WR font";
+    return false;
+  }
+  DWORD attribs = GetFileAttributesW(aFileName.data());
+  if (attribs == INVALID_FILE_ATTRIBUTES) {
+    gfxDebug() << "Invalid file \"" << aFileName.data() << "\" for WR font";
+    return false;
+  }
+  aFileName.pop_back();
+  return true;
 }
 
 bool UnscaledFontDWrite::GetWRFontDescriptor(WRFontDescriptorOutput aCb,
@@ -344,38 +400,36 @@ bool UnscaledFontDWrite::GetWRFontDescriptor(WRFontDescriptorOutput aCb,
     return false;
   }
 
-  RefPtr<IDWriteFontFamily> family;
-  HRESULT hr = mFont->GetFontFamily(getter_AddRefs(family));
-  if (FAILED(hr)) {
+  std::vector<WCHAR> fileName;
+  if (!GetFontFileName(mFontFace, fileName)) {
     return false;
   }
+  uint32_t index = mFontFace->GetIndex();
 
-  DWRITE_FONT_WEIGHT weight = mFont->GetWeight();
-  DWRITE_FONT_STRETCH stretch = mFont->GetStretch();
-  DWRITE_FONT_STYLE style = mFont->GetStyle();
-
-  RefPtr<IDWriteFont> match;
-  hr = family->GetFirstMatchingFont(weight, stretch, style,
-                                    getter_AddRefs(match));
-  if (FAILED(hr) || match->GetWeight() != weight ||
-      match->GetStretch() != stretch || match->GetStyle() != style) {
-    return false;
-  }
-
-  std::vector<WCHAR> familyName;
-  if (!GetDWriteFamilyName(family, familyName)) {
-    return false;
-  }
-
-  // The style information that identifies the font can be encoded easily in
-  // less than 32 bits. Since the index is needed for font descriptors, only
-  // the family name and style information, pass along the style in the index
-  // data to avoid requiring a more complicated structure packing for it in
-  // the data payload.
-  uint32_t index = weight | (stretch << 16) | (style << 24);
-  aCb(reinterpret_cast<const uint8_t*>(familyName.data()),
-      (familyName.size() - 1) * sizeof(WCHAR), index, aBaton);
+  aCb(reinterpret_cast<const uint8_t*>(fileName.data()),
+      fileName.size() * sizeof(WCHAR), index, aBaton);
   return true;
+}
+
+ScaledFontDWrite::InstanceData::InstanceData(
+    const wr::FontInstanceOptions* aOptions,
+    const wr::FontInstancePlatformOptions* aPlatformOptions)
+    : mUseEmbeddedBitmap(false),
+      mForceGDIMode(false),
+      mGamma(2.2f),
+      mContrast(1.0f) {
+  if (aOptions) {
+    if (aOptions->flags & wr::FontInstanceFlags_EMBEDDED_BITMAPS) {
+      mUseEmbeddedBitmap = true;
+    }
+    if (aOptions->flags & wr::FontInstanceFlags_FORCE_GDI) {
+      mForceGDIMode = true;
+    }
+  }
+  if (aPlatformOptions) {
+    mGamma = aPlatformOptions->gamma / 100.0f;
+    mContrast = aPlatformOptions->contrast / 100.0f;
+  }
 }
 
 // Helper for ScaledFontDWrite::GetFontInstanceData: if the font has variation
@@ -436,20 +490,37 @@ bool ScaledFontDWrite::GetWRFontInstanceOptions(
     Maybe<wr::FontInstancePlatformOptions>* aOutPlatformOptions,
     std::vector<FontVariation>* aOutVariations) {
   wr::FontInstanceOptions options;
-  options.render_mode = wr::ToFontRenderMode(GetDefaultAAMode());
-  options.subpx_dir = wr::SubpixelDirection::Horizontal;
-  options.flags = 0;
+  bool useSubpixel = !mParams || mParams->GetClearTypeLevel() != 0.0f;
+  options.render_mode = wr::ToFontRenderMode(GetDefaultAAMode(), useSubpixel);
+  options.flags = wr::FontInstanceFlags{0};
   if (mFontFace->GetSimulations() & DWRITE_FONT_SIMULATIONS_BOLD) {
-    options.flags |= wr::FontInstanceFlags::SYNTHETIC_BOLD;
+    options.flags |= wr::FontInstanceFlags_SYNTHETIC_BOLD;
   }
   if (UseEmbeddedBitmaps()) {
-    options.flags |= wr::FontInstanceFlags::EMBEDDED_BITMAPS;
+    options.flags |= wr::FontInstanceFlags_EMBEDDED_BITMAPS;
   }
   if (ForceGDIMode()) {
-    options.flags |= wr::FontInstanceFlags::FORCE_GDI;
+    options.flags |= wr::FontInstanceFlags_FORCE_GDI;
+  } else {
+    options.flags |= wr::FontInstanceFlags_SUBPIXEL_POSITION;
+  }
+  if (Factory::GetBGRSubpixelOrder()) {
+    options.flags |= wr::FontInstanceFlags_SUBPIXEL_BGR;
   }
   options.bg_color = wr::ToColorU(Color());
+  options.synthetic_italics =
+      wr::DegreesToSyntheticItalics(GetSyntheticObliqueAngle());
+
+  wr::FontInstancePlatformOptions platformOptions;
+  platformOptions.gamma = uint16_t(std::round(mGamma * 100.0f));
+  platformOptions.contrast =
+      uint16_t(std::round(std::min(mContrast, 1.0f) * 100.0f));
+
   *aOutOptions = Some(options);
+  *aOutPlatformOptions = Some(platformOptions);
+
+  GetVariationsFromFontFace(mFontFace, aOutVariations);
+
   return true;
 }
 
@@ -503,6 +574,8 @@ already_AddRefed<ScaledFont> UnscaledFontDWrite::CreateScaledFont(
     gfxWarning() << "DWrite scaled font instance data is truncated.";
     return nullptr;
   }
+  const ScaledFontDWrite::InstanceData& instanceData =
+      *reinterpret_cast<const ScaledFontDWrite::InstanceData*>(aInstanceData);
 
   IDWriteFontFace* face = mFontFace;
 
@@ -518,12 +591,10 @@ already_AddRefed<ScaledFont> UnscaledFontDWrite::CreateScaledFont(
     }
   }
 
-  const ScaledFontDWrite::InstanceData* instanceData =
-      reinterpret_cast<const ScaledFontDWrite::InstanceData*>(aInstanceData);
   RefPtr<ScaledFontBase> scaledFont = new ScaledFontDWrite(
-      face, this, aGlyphSize, instanceData->mUseEmbeddedBitmap,
-      instanceData->mForceGDIMode, nullptr, instanceData->mGamma,
-      instanceData->mContrast);
+      face, this, aGlyphSize, instanceData.mUseEmbeddedBitmap,
+      instanceData.mForceGDIMode, nullptr, instanceData.mGamma,
+      instanceData.mContrast);
 
   if (mNeedsCairo && !scaledFont->PopulateCairoScaledFont()) {
     gfxWarning() << "Unable to create cairo scaled font DWrite font.";
@@ -531,6 +602,15 @@ already_AddRefed<ScaledFont> UnscaledFontDWrite::CreateScaledFont(
   }
 
   return scaledFont.forget();
+}
+
+already_AddRefed<ScaledFont> UnscaledFontDWrite::CreateScaledFontFromWRFont(
+    Float aGlyphSize, const wr::FontInstanceOptions* aOptions,
+    const wr::FontInstancePlatformOptions* aPlatformOptions,
+    const FontVariation* aVariations, uint32_t aNumVariations) {
+  ScaledFontDWrite::InstanceData instanceData(aOptions, aPlatformOptions);
+  return CreateScaledFont(aGlyphSize, reinterpret_cast<uint8_t*>(&instanceData),
+                          sizeof(instanceData), aVariations, aNumVariations);
 }
 
 AntialiasMode ScaledFontDWrite::GetDefaultAAMode() {
@@ -553,5 +633,6 @@ cairo_font_face_t* ScaledFontDWrite::GetCairoFontFace() {
   return cairo_dwrite_font_face_create_for_dwrite_fontface(nullptr, mFontFace);
 }
 #endif
-}
+
+}  // namespace gfx
 }  // namespace mozilla

@@ -13,7 +13,7 @@ const {
   getSnapshotTotals,
   getStatusText,
   snapshotIsDiffable,
-  getSavedCensus
+  getSavedCensus,
 } = require("../utils");
 const { diffingState } = require("../constants");
 const { snapshot: snapshotModel, app: appModel } = require("../models");
@@ -31,15 +31,18 @@ class SnapshotListItem extends Component {
   }
 
   render() {
-    let { item: snapshot, onClick, onSave, onDelete, diffing } = this.props;
-    let className = `snapshot-list-item ${snapshot.selected ? " selected" : ""}`;
+    const { item: snapshot, onClick, onSave, onDelete, diffing } = this.props;
+    let className = `snapshot-list-item ${
+      snapshot.selected ? " selected" : ""
+    }`;
     let statusText = getStatusText(snapshot.state);
     let wantThrobber = !!statusText;
-    let title = getSnapshotTitle(snapshot);
+    const title = getSnapshotTitle(snapshot);
 
-    const selectedForDiffing = diffing
-          && (diffing.firstSnapshotId === snapshot.id
-              || diffing.secondSnapshotId === snapshot.id);
+    const selectedForDiffing =
+      diffing &&
+      (diffing.firstSnapshotId === snapshot.id ||
+        diffing.secondSnapshotId === snapshot.id);
 
     let checkbox;
     if (diffing && snapshotIsDiffable(snapshot)) {
@@ -56,9 +59,11 @@ class SnapshotListItem extends Component {
         checkboxAttrs.checked = true;
         checkboxAttrs.disabled = true;
         className += " selected";
-        statusText = L10N.getStr(diffing.firstSnapshotId === snapshot.id
-                                   ? "diffing.baseline"
-                                   : "diffing.comparison");
+        statusText = L10N.getStr(
+          diffing.firstSnapshotId === snapshot.id
+            ? "diffing.baseline"
+            : "diffing.comparison"
+        );
       }
 
       if (selectedForDiffing || diffing.state == diffingState.SELECTING) {
@@ -69,15 +74,18 @@ class SnapshotListItem extends Component {
     let details;
     if (!selectedForDiffing) {
       // See if a tree map or census is in the read state.
-      let census = getSavedCensus(snapshot);
+      const census = getSavedCensus(snapshot);
 
       // If there is census data, fill in the total bytes.
       if (census) {
-        let { bytes } = getSnapshotTotals(census);
-        let formatBytes = L10N.getFormatStr("aggregate.mb",
-          L10N.numberWithDecimals(bytes / 1000000, 2));
+        const { bytes } = getSnapshotTotals(census);
+        const formatBytes = L10N.getFormatStr(
+          "aggregate.mb",
+          L10N.numberWithDecimals(bytes / 1000000, 2)
+        );
 
-        details = dom.span({ className: "snapshot-totals" },
+        details = dom.span(
+          { className: "snapshot-totals" },
           dom.span({ className: "total-bytes" }, formatBytes)
         );
       }
@@ -86,31 +94,40 @@ class SnapshotListItem extends Component {
       details = dom.span({ className: "snapshot-state" }, statusText);
     }
 
-    let saveLink = !snapshot.path ? void 0 : dom.a({
-      onClick: () => onSave(snapshot),
-      className: "save",
-    }, L10N.getStr("snapshot.io.save"));
+    const saveLink = !snapshot.path
+      ? void 0
+      : dom.a(
+          {
+            onClick: () => onSave(snapshot),
+            className: "save",
+          },
+          L10N.getStr("snapshot.io.save")
+        );
 
-    let deleteButton = !snapshot.path ? void 0 : dom.button({
-      onClick: () => onDelete(snapshot),
-      className: "delete",
-      title: L10N.getStr("snapshot.io.delete")
-    });
+    const deleteButton = !snapshot.path
+      ? void 0
+      : dom.button({
+          onClick: event => {
+            event.stopPropagation();
+            onDelete(snapshot);
+          },
+          className: "delete",
+          title: L10N.getStr("snapshot.io.delete"),
+        });
 
-    return (
-      dom.li({ className, onClick },
-        dom.span({
-          className: `snapshot-title ${wantThrobber ? " devtools-throbber" : ""}`
+    return dom.li(
+      { className, onClick },
+      dom.span(
+        {
+          className: `snapshot-title ${
+            wantThrobber ? " devtools-throbber" : ""
+          }`,
         },
-          checkbox,
-          title,
-          deleteButton
-        ),
-        dom.span({ className: "snapshot-info" },
-          details,
-          saveLink
-        )
-      )
+        checkbox,
+        title,
+        deleteButton
+      ),
+      dom.span({ className: "snapshot-info" }, details, saveLink)
     );
   }
 }

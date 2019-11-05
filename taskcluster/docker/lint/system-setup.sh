@@ -10,7 +10,6 @@ mkdir -p /setup
 cd /setup
 
 apt_packages=()
-apt_packages+=('codespell')
 apt_packages+=('curl')
 apt_packages+=('locales')
 apt_packages+=('git')
@@ -52,11 +51,8 @@ cd /build
 # shellcheck disable=SC1091
 . install-node.sh
 
-###
-# jsdoc Setup
-###
-
 npm install -g jsdoc@3.5.5
+npm install -g yarn@1.9.4
 
 /build/tooltool.py fetch -m /tmp/eslint.tt
 mv /build/node_modules /build/node_modules_eslint
@@ -87,6 +83,14 @@ mv fzf /usr/local/bin
 cd /setup
 
 pip install --require-hashes -r /tmp/flake8_requirements.txt
+
+###
+# codespell Setup
+###
+
+cd /setup
+
+pip install --require-hashes -r /tmp/codespell_requirements.txt
 
 ###
 # tox Setup

@@ -8,12 +8,12 @@
 
 #if XP_WIN && HAVE_64BIT_BUILD
 
-#include "Win64ModuleUnwindMetadata.h"
+#  include "Win64ModuleUnwindMetadata.h"
 
-#include "google_breakpad/processor/stack_frame_symbolizer.h"
-#include "google_breakpad/processor/stack_frame.h"
+#  include "google_breakpad/processor/stack_frame_symbolizer.h"
+#  include "google_breakpad/processor/stack_frame.h"
 
-#include <memory>
+#  include <memory>
 
 namespace CrashReporter {
 
@@ -33,9 +33,9 @@ class MozStackFrameSymbolizer : public StackFrameSymbolizer {
  public:
   MozStackFrameSymbolizer();
 
-  virtual SymbolizerResult FillSourceLineInfo(const CodeModules* modules,
-                                              const SystemInfo* system_info,
-                                              StackFrame* stack_frame);
+  virtual SymbolizerResult FillSourceLineInfo(
+      const CodeModules* modules, const CodeModules* unloaded_modules,
+      const SystemInfo* system_info, StackFrame* stack_frame);
 
   virtual class google_breakpad::CFIFrameInfo* FindCFIFrameInfo(
       const StackFrame* frame);

@@ -9,7 +9,7 @@
 #include "mozilla/dom/SVGLineElementBinding.h"
 #include "mozilla/gfx/2D.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Line)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Line)
 
 using namespace mozilla::gfx;
 
@@ -18,17 +18,17 @@ namespace dom {
 
 JSObject* SVGLineElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SVGLineElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGLineElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::LengthInfo SVGLineElement::sLengthInfo[4] = {
-    {&nsGkAtoms::x1, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+SVGElement::LengthInfo SVGLineElement::sLengthInfo[4] = {
+    {nsGkAtoms::x1, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::y1, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::y1, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
-    {&nsGkAtoms::x2, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::x2, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::X},
-    {&nsGkAtoms::y2, 0, SVGLengthBinding::SVG_LENGTHTYPE_NUMBER,
+    {nsGkAtoms::y2, 0, SVGLength_Binding::SVG_LENGTHTYPE_NUMBER,
      SVGContentUtils::Y},
 };
 
@@ -36,8 +36,8 @@ nsSVGElement::LengthInfo SVGLineElement::sLengthInfo[4] = {
 // Implementation
 
 SVGLineElement::SVGLineElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGLineElementBase(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGLineElementBase(std::move(aNodeInfo)) {}
 
 void SVGLineElement::MaybeAdjustForZeroLength(float aX1, float aY1, float& aX2,
                                               float aY2) {
@@ -55,25 +55,25 @@ void SVGLineElement::MaybeAdjustForZeroLength(float aX1, float aY1, float& aX2,
 }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGLineElement)
 
 //----------------------------------------------------------------------
 
-already_AddRefed<SVGAnimatedLength> SVGLineElement::X1() {
+already_AddRefed<DOMSVGAnimatedLength> SVGLineElement::X1() {
   return mLengthAttributes[ATTR_X1].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGLineElement::Y1() {
+already_AddRefed<DOMSVGAnimatedLength> SVGLineElement::Y1() {
   return mLengthAttributes[ATTR_Y1].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGLineElement::X2() {
+already_AddRefed<DOMSVGAnimatedLength> SVGLineElement::X2() {
   return mLengthAttributes[ATTR_X2].ToDOMAnimatedLength(this);
 }
 
-already_AddRefed<SVGAnimatedLength> SVGLineElement::Y2() {
+already_AddRefed<DOMSVGAnimatedLength> SVGLineElement::Y2() {
   return mLengthAttributes[ATTR_Y2].ToDOMAnimatedLength(this);
 }
 
@@ -89,9 +89,9 @@ SVGLineElement::IsAttributeMapped(const nsAtom* name) const {
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-nsSVGElement::LengthAttributesInfo SVGLineElement::GetLengthInfo() {
+SVGElement::LengthAttributesInfo SVGLineElement::GetLengthInfo() {
   return LengthAttributesInfo(mLengthAttributes, sLengthInfo,
                               ArrayLength(sLengthInfo));
 }
@@ -99,15 +99,15 @@ nsSVGElement::LengthAttributesInfo SVGLineElement::GetLengthInfo() {
 //----------------------------------------------------------------------
 // SVGGeometryElement methods
 
-void SVGLineElement::GetMarkPoints(nsTArray<nsSVGMark>* aMarks) {
+void SVGLineElement::GetMarkPoints(nsTArray<SVGMark>* aMarks) {
   float x1, y1, x2, y2;
 
   GetAnimatedLengthValues(&x1, &y1, &x2, &y2, nullptr);
 
-  float angle = atan2(y2 - y1, x2 - x1);
+  float angle = std::atan2(y2 - y1, x2 - x1);
 
-  aMarks->AppendElement(nsSVGMark(x1, y1, angle, nsSVGMark::eStart));
-  aMarks->AppendElement(nsSVGMark(x2, y2, angle, nsSVGMark::eEnd));
+  aMarks->AppendElement(SVGMark(x1, y1, angle, SVGMark::eStart));
+  aMarks->AppendElement(SVGMark(x2, y2, angle, SVGMark::eEnd));
 }
 
 void SVGLineElement::GetAsSimplePath(SimplePath* aSimplePath) {

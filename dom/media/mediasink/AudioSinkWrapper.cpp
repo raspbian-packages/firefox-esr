@@ -4,13 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "AudioSink.h"
 #include "AudioSinkWrapper.h"
-#include "nsPrintfCString.h"
+#include "AudioSink.h"
 #include "VideoUtils.h"
+#include "nsPrintfCString.h"
 
 namespace mozilla {
-namespace media {
+
+using media::TimeUnit;
 
 AudioSinkWrapper::~AudioSinkWrapper() {}
 
@@ -35,11 +36,11 @@ void AudioSinkWrapper::SetPlaybackParams(const PlaybackParams& aParams) {
   mParams = aParams;
 }
 
-RefPtr<GenericPromise> AudioSinkWrapper::OnEnded(TrackType aType) {
+RefPtr<MediaSink::EndedPromise> AudioSinkWrapper::OnEnded(TrackType aType) {
   AssertOwnerThread();
   MOZ_ASSERT(mIsStarted, "Must be called after playback starts.");
   if (aType == TrackInfo::kAudioTrack) {
-    return mEndPromise;
+    return mEndedPromise;
   }
   return nullptr;
 }
@@ -70,6 +71,7 @@ TimeUnit AudioSinkWrapper::GetPosition(TimeStamp* aTimeStamp) const {
   TimeStamp t = TimeStamp::Now();
 
   if (!mAudioEnded) {
+    MOZ_ASSERT(mAudioSink);
     // Rely on the audio sink to report playback position when it is not ended.
     pos = mAudioSink->GetPosition();
   } else if (!mPlayStartTime.IsNull()) {
@@ -152,27 +154,37 @@ void AudioSinkWrapper::SetPlaying(bool aPlaying) {
   }
 }
 
-void AudioSinkWrapper::Start(const TimeUnit& aStartTime,
-                             const MediaInfo& aInfo) {
+nsresult AudioSinkWrapper::Start(const TimeUnit& aStartTime,
+                                 const MediaInfo& aInfo) {
   AssertOwnerThread();
   MOZ_ASSERT(!mIsStarted, "playback already started.");
 
   mIsStarted = true;
   mPlayDuration = aStartTime;
   mPlayStartTime = TimeStamp::Now();
+  mAudioEnded = IsAudioSourceEnded(aInfo);
 
-  // no audio is equivalent to audio ended before video starts.
-  mAudioEnded = !aInfo.HasAudio();
-
-  if (aInfo.HasAudio()) {
+  nsresult rv = NS_OK;
+  if (!mAudioEnded) {
     mAudioSink.reset(mCreator->Create());
-    mEndPromise = mAudioSink->Init(mParams);
-
-    mEndPromise
+    rv = mAudioSink->Init(mParams, mEndedPromise);
+    mEndedPromise
         ->Then(mOwnerThread.get(), __func__, this,
                &AudioSinkWrapper::OnAudioEnded, &AudioSinkWrapper::OnAudioEnded)
-        ->Track(mAudioSinkPromise);
+        ->Track(mAudioSinkEndedPromise);
+  } else {
+    if (aInfo.HasAudio()) {
+      mEndedPromise = MediaSink::EndedPromise::CreateAndResolve(true, __func__);
+    }
   }
+  return rv;
+}
+
+bool AudioSinkWrapper::IsAudioSourceEnded(const MediaInfo& aInfo) const {
+  // no audio or empty audio queue which won't get data anymore is equivalent to
+  // audio ended
+  return !aInfo.HasAudio() ||
+         (mAudioQueue.IsFinished() && mAudioQueue.GetSize() == 0u);
 }
 
 void AudioSinkWrapper::Stop() {
@@ -183,10 +195,10 @@ void AudioSinkWrapper::Stop() {
   mAudioEnded = true;
 
   if (mAudioSink) {
-    mAudioSinkPromise.DisconnectIfExists();
+    mAudioSinkEndedPromise.DisconnectIfExists();
     mAudioSink->Shutdown();
     mAudioSink = nullptr;
-    mEndPromise = nullptr;
+    mEndedPromise = nullptr;
   }
 }
 
@@ -202,7 +214,7 @@ bool AudioSinkWrapper::IsPlaying() const {
 
 void AudioSinkWrapper::OnAudioEnded() {
   AssertOwnerThread();
-  mAudioSinkPromise.Complete();
+  mAudioSinkEndedPromise.Complete();
   mPlayDuration = GetPosition();
   if (!mPlayStartTime.IsNull()) {
     mPlayStartTime = TimeStamp::Now();
@@ -218,8 +230,7 @@ nsCString AudioSinkWrapper::GetDebugInfo() {
   if (mAudioSink) {
     AppendStringIfNotEmpty(str, mAudioSink->GetDebugInfo());
   }
-  return str;
+  return std::move(str);
 }
 
-}  // namespace media
 }  // namespace mozilla

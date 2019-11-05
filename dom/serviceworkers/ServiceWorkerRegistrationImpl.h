@@ -4,10 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#ifndef mozilla_dom_serviceworkerregistrationimpl_h
+#define mozilla_dom_serviceworkerregistrationimpl_h
+
 #include "mozilla/dom/WorkerPrivate.h"
 #include "mozilla/Unused.h"
 #include "nsCycleCollectionParticipant.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsPIDOMWindow.h"
 #include "ServiceWorkerManager.h"
 #include "ServiceWorkerRegistration.h"
@@ -19,6 +22,7 @@ namespace dom {
 class Promise;
 class PushManager;
 class ServiceWorker;
+class WeakWorkerRef;
 
 ////////////////////////////////////////////////////
 // Main Thread implementation
@@ -37,25 +41,17 @@ class ServiceWorkerRegistrationMainThread final
 
   void ClearServiceWorkerRegistration(ServiceWorkerRegistration* aReg) override;
 
-  already_AddRefed<Promise> Update(ErrorResult& aRv) override;
+  void Update(ServiceWorkerRegistrationCallback&& aSuccessCB,
+              ServiceWorkerFailureCallback&& aFailureCB) override;
 
-  already_AddRefed<Promise> Unregister(ErrorResult& aRv) override;
-
-  already_AddRefed<Promise> ShowNotification(
-      JSContext* aCx, const nsAString& aTitle,
-      const NotificationOptions& aOptions, ErrorResult& aRv) override;
-
-  already_AddRefed<Promise> GetNotifications(
-      const GetNotificationOptions& aOptions, ErrorResult& aRv) override;
-
-  already_AddRefed<PushManager> GetPushManager(JSContext* aCx,
-                                               ErrorResult& aRv) override;
+  void Unregister(ServiceWorkerBoolCallback&& aSuccessCB,
+                  ServiceWorkerFailureCallback&& aFailureCB) override;
 
   // ServiceWorkerRegistrationListener
-  void UpdateFound() override;
-
   void UpdateState(
       const ServiceWorkerRegistrationDescriptor& aDescriptor) override;
+
+  void FireUpdateFound() override;
 
   void RegistrationRemoved() override;
 
@@ -73,7 +69,9 @@ class ServiceWorkerRegistrationMainThread final
 
   void RegistrationRemovedInternal();
 
-  RefPtr<ServiceWorkerRegistration> mOuter;
+  ServiceWorkerRegistration* mOuter;
+  ServiceWorkerRegistrationDescriptor mDescriptor;
+  RefPtr<ServiceWorkerRegistrationInfo> mInfo;
   const nsString mScope;
   bool mListeningForEvents;
 };
@@ -84,13 +82,13 @@ class ServiceWorkerRegistrationMainThread final
 class WorkerListener;
 
 class ServiceWorkerRegistrationWorkerThread final
-    : public ServiceWorkerRegistration::Inner,
-      public WorkerHolder {
+    : public ServiceWorkerRegistration::Inner {
+  friend class WorkerListener;
+
  public:
   NS_INLINE_DECL_REFCOUNTING(ServiceWorkerRegistrationWorkerThread, override)
 
-  ServiceWorkerRegistrationWorkerThread(
-      WorkerPrivate* aWorkerPrivate,
+  explicit ServiceWorkerRegistrationWorkerThread(
       const ServiceWorkerRegistrationDescriptor& aDescriptor);
 
   void RegistrationRemoved();
@@ -100,24 +98,11 @@ class ServiceWorkerRegistrationWorkerThread final
 
   void ClearServiceWorkerRegistration(ServiceWorkerRegistration* aReg) override;
 
-  already_AddRefed<Promise> Update(ErrorResult& aRv) override;
+  void Update(ServiceWorkerRegistrationCallback&& aSuccessCB,
+              ServiceWorkerFailureCallback&& aFailureCB) override;
 
-  already_AddRefed<Promise> Unregister(ErrorResult& aRv) override;
-
-  already_AddRefed<Promise> ShowNotification(
-      JSContext* aCx, const nsAString& aTitle,
-      const NotificationOptions& aOptions, ErrorResult& aRv) override;
-
-  already_AddRefed<Promise> GetNotifications(
-      const GetNotificationOptions& aOptions, ErrorResult& aRv) override;
-
-  already_AddRefed<PushManager> GetPushManager(JSContext* aCx,
-                                               ErrorResult& aRv) override;
-
-  // WorkerHolder
-  bool Notify(WorkerStatus aStatus) override;
-
-  void UpdateFound();
+  void Unregister(ServiceWorkerBoolCallback&& aSuccessCB,
+                  ServiceWorkerFailureCallback&& aFailureCB) override;
 
  private:
   ~ServiceWorkerRegistrationWorkerThread();
@@ -126,16 +111,21 @@ class ServiceWorkerRegistrationWorkerThread final
 
   void ReleaseListener();
 
-  // Store a strong reference to the outer binding object.  This will create
-  // a ref-cycle.  We must hold it alive in case any events need to be fired
-  // on it.  The cycle is broken when the global becomes detached or the
-  // registration is removed in the ServiceWorkerManager.
-  RefPtr<ServiceWorkerRegistration> mOuter;
+  void UpdateState(const ServiceWorkerRegistrationDescriptor& aDescriptor);
 
-  WorkerPrivate* mWorkerPrivate;
+  void FireUpdateFound();
+
+  // This can be called only by WorkerListener.
+  WorkerPrivate* GetWorkerPrivate(const MutexAutoLock& aProofOfLock);
+
+  ServiceWorkerRegistration* mOuter;
+  const ServiceWorkerRegistrationDescriptor mDescriptor;
   const nsString mScope;
   RefPtr<WorkerListener> mListener;
+  RefPtr<WeakWorkerRef> mWorkerRef;
 };
 
 }  // namespace dom
 }  // namespace mozilla
+
+#endif  // mozilla_dom_serviceworkerregistrationimpl_h

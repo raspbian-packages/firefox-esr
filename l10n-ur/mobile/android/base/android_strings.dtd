@@ -4,7 +4,9 @@
 
 <!ENTITY firstrun_panel_title_welcome "خوش آمدید">
 <!ENTITY firstrun_urlbar_message2 "&brandShortName; کا انتخاب کرنے کے لئے شکریہ">
-<!ENTITY firstrun_urlbar_subtext2 "ایک جدید موبائل براؤزر موزیلا سے غیر منافع بخش ایک مفت اور آزاد ویب کے لیے پُر عزم ہے۔">
+<!ENTITY newfirstrun_urlbar_message "&brandShortName; میں خوش آمدید">
+<!ENTITY firstrun_urlbar_subtext2 "ایک جدید موبائل براؤزر Mozilla سے غیر منافع بخش ایک مفت اور آزاد ویب کے لیے پُر عزم ہے۔">
+<!ENTITY newfirstrun_urlbar_subtext "تیز، نجی، اور آپ کے طرف۔">
 <!ENTITY firstrun_panel_title_privacy "رازداری">
 <!ENTITY firstrun_privacy_message "اس طرح براؤز کریں جیسے کوئی نہیں دیکھ رہا">
 <!ENTITY firstrun_privacy_subtext "سراغ راہ حفاظت کاری کے ساتھ نجی برائوزنگ سراغ راہ کو آپ کی برائوزنگ کے دوران بلاک کرتی اور آپکے سابقات بھی یاد نہیں رکھتی جب آپ برائوزنگ مکمل کرتے ہیں۔">
@@ -19,6 +21,7 @@
 <!ENTITY firstrun_data_subtext2 "ہر سائٹ دیکھتیں وقت نقوش کو آف کردیں تاکہ کمتر کوائف خرچ ہوں۔">
 <!ENTITY firstrun_sync_title "ہمہ وار کریں">
 <!ENTITY firstrun_sync_message2 "اٹھائیں جہاں آپ نے چھوڑ دیا ہے۔">
+<!ENTITY firstrun_sync_subtext2 "اپنی نشانی، پاس ورڈ اور دوسری چیزیے جو آپنے تمام آلات پر &brandShortName; میں محفوز کی ہے اسے تلاش کرنے کے لئے ہم وقت سازی کا استعمال کریں۔">
 <!ENTITY firstrun_signin_message "جڑیں، شروع کریں">
 <!ENTITY firstrun_signin_button "ہم سازی کے لئے سائن ان کریں">
 <!ENTITY  onboard_start_button_browser "براؤزنگ شروع کریں">
@@ -26,12 +29,6 @@
 <!ENTITY firstrun_button_next "اگلا">
 
 <!ENTITY firstrun_tabqueue_title "روابط">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "ٹیب کی قطار چالو کریں">
-<!ENTITY firstrun_tabqueue_subtext_off "بعد میں میں اور &brandShortName; لئے لنکس کو محفوظ کریں؛ دیگر اطلاقات میں ان ٹیپ.">
-
-<!ENTITY firstrun_tabqueue_message_on "کامیابی!">
-<!ENTITY firstrun_tabqueue_subtext_on "آپ پمیشہ &settings; سے پند کرسکتے ہیں &pref_category_general;. کے نیچے">
 
 <!ENTITY firstrun_readerview_title "مضامین">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -46,7 +43,7 @@
 
 <!-- Localization note: These are used as the titles of different pages on the home screen.
      They are automatically converted to all caps by the Android platform. -->
-<!ENTITY  bookmarks_title "نشانیاں">
+<!ENTITY  bookmarks_title "بک مارک">
 <!ENTITY  history_title "سابقات">
 
 <!ENTITY  switch_to_tab "ٹیب پر سوئچ کریں">
@@ -68,6 +65,19 @@
 <!ENTITY  crash_restart_label "&brandShortName; پھر شروع کریں">
 
 <!ENTITY url_bar_default_text2 "پتہ تلاش یا داخل کریں">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "ويب پر تلاش کريں">
+<!ENTITY search_widget_default_cropped_text "تلاش کریں">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "پتہ تلاش یا داخل کرنے کے لیئے اپنے قیو آر کوڈ کا استعمال کریں">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "پتہ تلاش یا داخل کرنے کے لیئے اپنے مائکروفون کا استعمال کریں">
 
 <!ENTITY bookmark "نشانی">
 <!ENTITY bookmark_remove "نشانی ہٹائیں">
@@ -205,7 +215,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "ٹیبس بحال کریں، کوائف محفوظ کار، تخلیق کار ٹولز">
 <!ENTITY pref_category_notifications "اعلانات">
-<!ENTITY pref_category_notifications_summary "نئے فیچرز، ویب سائٹ کی تازہ کاریاں">
+<!ENTITY pref_category_notifications_summary2 "نئی خصوصیات، مصنوعات کی تجاویز">
 <!ENTITY pref_developer_remotedebugging_usb "USB کے ذریعے بعید ٹھیک کاری">
 <!ENTITY pref_developer_remotedebugging_wifi "وائی فائی کے ذریعے بعید ٹھیک کاری ">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "وائی فائی ٹھیک کاری کے لیے آپ کے آلے پر QR ضابطہ ناظر ایپ تنصیب شدہ ہونی چاہیے۔">
@@ -281,6 +291,17 @@
 <!ENTITY pref_whats_new_notification "&brandShortName; میں نیا کیا ہے">
 <!ENTITY pref_whats_new_notification_summary "ایک اپ ڈیٹ کے بعد سے نئی خصوصیات کے بارے میں جانیں">
 
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "مصنوعات اور خصوصیات تجاویز">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "&brandShortName; کے استعمال اور دیگر &vendorShortName; مصنوعات کے بارے میں مزید سیکھیں">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "تجرباتی فیچر">
@@ -294,9 +315,11 @@
 <!-- Localization note (custom_tabs_menu_item_open_in): The variable is replaced by the name of
      default browser from user's preference, such as "Open in Firefox" -->
 <!ENTITY custom_tabs_menu_item_open_in "&formatS; میں کھولیں">
+<!ENTITY custom_tabs_menu_footer "&brandShortName; کی طرف سے">
 <!-- Long-click title of CustomTabsActivity will copy URL to clipboard and display this hint -->
 <!ENTITY custom_tabs_hint_url_copy "نقل شدہ URL">
 
+<!ENTITY pref_pwa "پروگریسو ویب ایپس">
 <!ENTITY pref_pwa_summary "ابتدائی اسکرین پر ویب ایپس شامل کرنے کی اجازت دیں">
 
 <!ENTITY tracking_protection_prompt_title "اب سراغ کاری حفاظت کے ساتھ">
@@ -317,6 +340,8 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "سیٹکگیں بطرف جائیں">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -348,9 +373,11 @@
 <!-- Localization note (pref_use_system_font_size, pref_use_system_font_size_summary):
      Font size here refers to the name of the corresponding Android system setting. -->
 <!ENTITY pref_use_system_font_size "نظام فانٹ استعمال کریں">
+<!ENTITY pref_use_system_font_size_summary "سسٹم فونٹ سائز کے مطابق ویب مواد کو اسکیل کریں">
 
 <!ENTITY pref_media_autoplay_enabled "خودکار چلنے کی اجازت دیں">
-<!ENTITY pref_media_autoplay_enabled_summary "قابو کریں اگر ویب سائٹیں خود وڈیو اور دیگر میڈیا مواد چلاسکتی ہیں">
+<!ENTITY pref_media_autoplay_allow "آٹوپلے کی اجازت دیں">
+<!ENTITY pref_media_autoplay_block "آٹوپلے کو بلاک دیں">
 <!ENTITY pref_zoom_force_enabled "زوم ہمیشہ اہل بنائیں">
 <!ENTITY pref_zoom_force_enabled_summary "زیر لازمی کریں تاکہ آپ کسی بھی صفحے پر زوم کر سکیں">
 <!ENTITY pref_voice_input "آواز ان پٹ">
@@ -373,14 +400,16 @@
 <!ENTITY pref_private_data_searchHistory "سابقات تلاش کریں">
 <!ENTITY pref_private_data_formdata2 "فارم سابقات">
 <!ENTITY pref_private_data_cookies2 "کوکیاں &amp; متحرک لاگ ان">
-<!ENTITY pref_private_data_passwords2 "محفوظ شدہ لاگ ان">
 <!ENTITY pref_private_data_cache "کیسہ">
 <!ENTITY pref_private_data_offlineApps "کوکیاں &amp; متحرک لاگ ان">
 <!ENTITY pref_private_data_siteSettings2 "سائٹ سیٹکگیں">
 <!ENTITY pref_private_data_downloadFiles2 "ڈاؤن لوڈ">
 <!ENTITY pref_private_data_syncedTabs "ہمہ وقت ساز ٹیب">
 
-<!ENTITY pref_default_browser "طےشدہ براؤزر بنائیں">
+<!ENTITY pref_default_browser2 "&brandShortName; کو اپنا طے شدہ برائوزر بنائیں">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY pref_default_browser_mozilla_support_tablet "موزیلا تعاون کا دورہ کریں">
 <!ENTITY pref_about_firefox "&brandShortName; کے بارے میں">
 <!ENTITY pref_vendor_faqs "عمومی سوالات">
@@ -426,6 +455,11 @@
 <!ENTITY datareporting_crashreporter_title_short "کریش رپورٹ کار">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName; محل وقوع سروس">
 <!ENTITY datareporting_wifi_geolocation_summary4 "دنیا کی نقشہ بندی کرنے میں &vendorShortName; کی مدد کریں۔ ہماری جغرافیائی محل وقوع خدمت بہتر کرنے کے لیے آپنے آلہ کی تقریباً وائی فائی اور سیلولر محل وقوع شیئر کریں۔">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; محل وقوع خدمات چل رہی ہے">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -470,6 +504,10 @@
 <!ENTITY find_prev "پچھلا">
 <!ENTITY find_next "اگلا">
 <!ENTITY find_close "بند کریں">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "فقرا نہیں ملا">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -532,7 +570,7 @@
 <!ENTITY pref_compact_tabs_summary2 "ٹیبس کو دو کالم میں پوٹریٹ موڈ میں ترتیب دیں">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "صفحہ ہٹا دیا گیا">
 <!ENTITY folder_removed "پوشہ ہٹا دیا گیا">
@@ -671,9 +709,9 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY private_data_fail "کچھ نجی کوائف ہٹائے نہیں جا سکے">
 
 <!ENTITY bookmarkhistory_button_import "درآمد کریں">
-<!ENTITY bookmarkhistory_import_both "اینڈروائڈ سے نشانیاں اور سابقات   درآمد کر رہا ہے">
-<!ENTITY bookmarkhistory_import_bookmarks "اینڈروائڈ سے نشانیاں درآمد کر رہا ہے">
-<!ENTITY bookmarkhistory_import_history "اینڈروائڈ سے سابقات درآمد کر رہا ہے">
+<!ENTITY bookmarkhistory_import_both "Android سے نشانیاں اور سابقات   درآمد کر رہا ہے">
+<!ENTITY bookmarkhistory_import_bookmarks "Android سے نشانیاں درآمد کر رہا ہے">
+<!ENTITY bookmarkhistory_import_history "Android سے سابقات درآمد کر رہا ہے">
 <!ENTITY bookmarkhistory_import_wait "انتظار کریں...">
 
 <!ENTITY suggestions_prompt3 "کیا آپ تلاش تجاویز آن کرنا چاہیں گے؟">
@@ -747,7 +785,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "آخری ہمہ وقت سازی: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "آخری ہمہ وقت سازی: کبھی نہیں">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -806,16 +844,12 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY unsupported_sdk_version "معذرت! یہ &brandShortName; اس آلہ پر کام نہیں کریگا (&formatS1;, &formatS2;)۔ براہ مہربانی صحیح ورزن ڈاونلوڈ لرے۔">
 
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
-
-<!ENTITY eol_notification_title2 "&brandShortName; اب تازہ کاری نہیں کرے گا">
-<!ENTITY eol_notification_summary "مزید سیکھنے کے لیے یہاں کلک کریں">
+<!ENTITY corrupt_apk "&brandShortName; کھولنے میں ناکام رہا۔ براہ مہربانی دوبارہ تنصینب کریں اور پھر کوشش کریں۔">
 
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; تازہ ترین ہے">
 <!ENTITY whatsnew_notification_summary "ڈھونڈیں اس ورژن میں کیا نیا ہے">
-
-<!ENTITY promotion_add_page_shortcut "صفحہ کے تیز راہ کا اظافہ کریں">
 
 <!ENTITY helper_first_offline_bookmark_title "آف لائن پڑھیں">
 <!ENTITY helper_first_offline_bookmark_message "نشانیاں میں اپنے قارئین کے لنک اشیاء، بھی آف لائن تلاش کریں.">
@@ -851,6 +885,7 @@ is simply hidden from the Activity Stream panel. -->
 <!ENTITY activity_stream_delete_history "تاریخ سے حذف کریں">
 
 <!ENTITY private_tab_panel_title "ٹریکنگ پروٹیکشن + نجی براؤزنگ">
+<!ENTITY private_tab_panel_description "&brandShortName; نے صفحے کے ان حصوں کو بلاک کردیا ہے جو شاید آپکی براؤزنگ کی سرگرمی کا سراغ راہ لگا سکیں۔">
 <!ENTITY private_tab_panel_description2 "ہم کوئی سابقات یاد نہیں رکھتے، لیکن ڈاؤن لوڈ کی گئ مسلیں اور نئ نشانیاںآپ کے آلہ پر مہفوظ ہونگی۔">
 <!ENTITY private_tab_learn_more "مزید سیکھنا چاہیں گے؟">
 
@@ -865,3 +900,23 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "ابتدائی سکرین پر شا،ل کریں">
 <!ENTITY pwa_continue_to_website "ویب سائٹ پر جاری رکھیں">
 <!ENTITY pwa_onboarding_sumo "ایپلی کیشن جیسے تجربے کے لیئےآ پ اس ویب سائَٹ کو آسانی سے ابتدائِی اسکرین پر فوری رسائی اور تیز برائوزنگ کے لیئے شامل کر سکتے ہیں۔">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "چلائیں">
+<!ENTITY pip_play_button_description "شروع کریں">
+<!ENTITY pip_pause_button_title "توقف کریں">
+<!ENTITY pip_pause_button_description "روک دیں">
+
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "براؤزر">
+<!ENTITY mls_notification_channel "&vendorShortName; محل وقوع خدمات">
+<!ENTITY download_notification_channel "ڈاؤن لوڈز">
+<!ENTITY media_notification_channel2 "آواز اور ویڈیو">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; تجاویز اور چالیں">
+<!ENTITY updater_notification_channel "ایپ اپ ڈیٹس">
+<!ENTITY synced_tabs_notification_channel "ہمہ وقت ساز ٹیب">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "سائٹ اعلانات">

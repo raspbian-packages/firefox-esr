@@ -8,9 +8,6 @@
 
 #include "mozilla/Attributes.h"
 #include "nsGenericHTMLElement.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsIStyleRule.h"
-#endif
 
 namespace mozilla {
 
@@ -23,15 +20,14 @@ class OnBeforeUnloadEventHandlerNonNull;
 class HTMLBodyElement final : public nsGenericHTMLElement {
  public:
   using Element::GetText;
-  using Element::SetText;
 
-  explicit HTMLBodyElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+  explicit HTMLBodyElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLBodyElement, nsGenericHTMLElement)
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLBodyElement, body);
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLBodyElement, body);
 
   // Event listener stuff; we need to declare only the ones we need to
   // forward to window that don't come from nsIDOMHTMLBodyElement.
@@ -100,14 +96,12 @@ class HTMLBodyElement final : public nsGenericHTMLElement {
       const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
   virtual already_AddRefed<TextEditor> GetAssociatedEditor() override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   virtual bool IsEventAttributeNameInternal(nsAtom* aName) override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   /**
    * Called when an attribute has just been changed
    */
@@ -125,7 +119,7 @@ class HTMLBodyElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

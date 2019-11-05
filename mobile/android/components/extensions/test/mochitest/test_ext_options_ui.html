@@ -3,7 +3,6 @@
 <head>
   <title>PageAction Test</title>
   <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
-  <script src="chrome://mochikit/content/tests/SimpleTest/SpawnTask.js"></script>
   <script src="chrome://mochikit/content/tests/SimpleTest/ExtensionTestUtils.js"></script>
   <script type="text/javascript" src="head.js"></script>
   <link rel="stylesheet" href="chrome://mochikit/contents/tests/SimpleTest/test.css"/>
@@ -13,8 +12,8 @@
 <script type="text/javascript">
 "use strict";
 
-ChromeUtils.import("resource://testing-common/ContentTask.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {ContentTask} = ChromeUtils.import("resource://testing-common/ContentTask.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 async function waitAboutAddonsRendered(addonId) {
   await ContentTaskUtils.waitForCondition(() => {
@@ -27,8 +26,7 @@ async function navigateToAddonDetails(addonId) {
   let rect = item.getBoundingClientRect();
   const x = rect.left + rect.width / 2;
   const y = rect.top + rect.height / 2;
-  let domWinUtils = content.window.QueryInterface(Ci.nsIInterfaceRequestor)
-                           .getInterface(Ci.nsIDOMWindowUtils);
+  let domWinUtils = content.window.windowUtils;
 
   domWinUtils.sendMouseEventToWindow("mousedown", x, y, 0, 1, 0);
   domWinUtils.sendMouseEventToWindow("mouseup", x, y, 0, 1, 0);
@@ -413,6 +411,10 @@ add_task(async function test_options_ui_open_in_tab() {
 });
 
 add_task(async function test_options_ui_on_disable_and_enable() {
+  // Temporarily disabled for races.
+  /* eslint-disable no-unreachable */
+  return;
+
   let addonID = "test-options-ui-disable-enable@mozilla.org";
 
   function optionsScript() {

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,7 +8,7 @@
 
 #include <map>
 
-#include "CacheMap.h"
+#include "CacheInvalidator.h"
 #include "GLDefs.h"
 #include "mozilla/LinkedList.h"
 #include "nsWrapperCache.h"
@@ -41,17 +41,16 @@ class WebGLBuffer final : public nsWrapperCache,
 
   Maybe<uint32_t> GetIndexedFetchMaxVert(GLenum type, uint64_t byteOffset,
                                          uint32_t indexCount) const;
-  bool ValidateRange(const char* funcName, size_t byteOffset,
-                     size_t byteLen) const;
+  bool ValidateRange(size_t byteOffset, size_t byteLen) const;
 
   WebGLContext* GetParentObject() const { return mContext; }
 
   virtual JSObject* WrapObject(JSContext* cx,
                                JS::Handle<JSObject*> givenProto) override;
 
-  bool ValidateCanBindToTarget(const char* funcName, GLenum target);
-  void BufferData(GLenum target, size_t size, const void* data, GLenum usage);
-  void BufferSubData(GLenum target, size_t dstByteOffset, size_t dataLen,
+  bool ValidateCanBindToTarget(GLenum target);
+  void BufferData(GLenum target, uint64_t size, const void* data, GLenum usage);
+  void BufferSubData(GLenum target, uint64_t dstByteOffset, uint64_t dataLen,
                      const void* data) const;
 
   ////
@@ -117,7 +116,7 @@ class WebGLBuffer final : public nsWrapperCache,
   mutable std::map<IndexRange, Maybe<uint32_t>> mIndexRanges;
 
  public:
-  CacheMapInvalidator mFetchInvalidator;
+  CacheInvalidator mFetchInvalidator;
 
   void ResetLastUpdateFenceId() const;
 };

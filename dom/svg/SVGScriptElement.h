@@ -7,12 +7,10 @@
 #ifndef mozilla_dom_SVGScriptElement_h
 #define mozilla_dom_SVGScriptElement_h
 
-#include "nsSVGElement.h"
-#include "nsCOMPtr.h"
-#include "nsSVGString.h"
+#include "SVGAnimatedString.h"
+#include "mozilla/AlreadyAddRefed.h"
 #include "mozilla/dom/ScriptElement.h"
-
-class nsIDocument;
+#include "mozilla/dom/SVGElement.h"
 
 nsresult NS_NewSVGScriptElement(
     nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
@@ -21,7 +19,7 @@ nsresult NS_NewSVGScriptElement(
 namespace mozilla {
 namespace dom {
 
-typedef nsSVGElement SVGScriptElementBase;
+typedef SVGElement SVGScriptElementBase;
 
 class SVGScriptElement final : public SVGScriptElementBase,
                                public ScriptElement {
@@ -30,7 +28,7 @@ class SVGScriptElement final : public SVGScriptElementBase,
       nsIContent** aResult,
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
       mozilla::dom::FromParser aFromParser));
-  SVGScriptElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+  SVGScriptElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
                    FromParser aFromParser);
 
   virtual JSObject* WrapNode(JSContext* aCx,
@@ -45,16 +43,15 @@ class SVGScriptElement final : public SVGScriptElementBase,
   virtual bool GetScriptType(nsAString& type) override;
   virtual void GetScriptText(nsAString& text) override;
   virtual void GetScriptCharset(nsAString& charset) override;
-  virtual void FreezeExecutionAttrs(nsIDocument* aOwnerDoc) override;
+  virtual void FreezeExecutionAttrs(Document* aOwnerDoc) override;
   virtual CORSMode GetCORSMode() const override;
 
   // ScriptElement
   virtual bool HasScriptContent() override;
 
   // nsIContent specializations:
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual nsresult AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
                                 const nsAttrValue* aValue,
                                 const nsAttrValue* aOldValue,
@@ -65,18 +62,17 @@ class SVGScriptElement final : public SVGScriptElementBase,
                               nsIPrincipal* aMaybeScriptedPrincipal,
                               nsAttrValue& aResult) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL
   void GetType(nsAString& aType);
   void SetType(const nsAString& aType, ErrorResult& rv);
   void GetCrossOrigin(nsAString& aCrossOrigin);
   void SetCrossOrigin(const nsAString& aCrossOrigin, ErrorResult& aError);
-  already_AddRefed<SVGAnimatedString> Href();
+  already_AddRefed<DOMSVGAnimatedString> Href();
 
  protected:
-  ~SVGScriptElement();
+  ~SVGScriptElement() = default;
 
   virtual StringAttributesInfo GetStringInfo() override;
 
@@ -85,7 +81,7 @@ class SVGScriptElement final : public SVGScriptElementBase,
   virtual bool GetAsyncState() override { return false; }
 
   enum { HREF, XLINK_HREF };
-  nsSVGString mStringAttributes[2];
+  SVGAnimatedString mStringAttributes[2];
   static StringInfo sStringInfo[2];
 };
 

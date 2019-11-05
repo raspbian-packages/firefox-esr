@@ -9,7 +9,7 @@
 #include "prdtoa.h"
 #include <math.h>
 #include "nsCycleCollectionParticipant.h"
-#include "xpt_struct.h"
+#include "xptinfo.h"
 #include "nsReadableUtils.h"
 #include "nsMemory.h"
 #include "nsString.h"
@@ -56,7 +56,7 @@ nsresult nsDiscriminatedUnion::ToManageableNumber(
   nsresult rv;
 
   switch (mType) {
-  // This group results in a int32_t...
+    // This group results in a int32_t...
 
 #define CASE__NUMBER_INT32(type_, member_)      \
   case nsIDataType::type_:                      \
@@ -107,7 +107,6 @@ nsresult nsDiscriminatedUnion::ToManageableNumber(
       }
       aOutData->mType = nsIDataType::VTYPE_DOUBLE;
       return NS_OK;
-    case nsIDataType::VTYPE_DOMSTRING:
     case nsIDataType::VTYPE_ASTRING:
       rv = AString2Double(*u.mAStringValue, &aOutData->u.mDoubleValue);
       if (NS_FAILED(rv)) {
@@ -203,7 +202,6 @@ void nsDiscriminatedUnion::FreeArray() {
     // The rest are illegal.
     case nsIDataType::VTYPE_VOID:
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
     case nsIDataType::VTYPE_UTF8STRING:
     case nsIDataType::VTYPE_CSTRING:
     case nsIDataType::VTYPE_WSTRING_SIZE_IS:
@@ -292,7 +290,6 @@ static nsresult CloneArray(uint16_t aInType, const nsIID* aInIID,
 
     // The rest are illegal.
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
     case nsIDataType::VTYPE_UTF8STRING:
     case nsIDataType::VTYPE_CSTRING:
     case nsIDataType::VTYPE_STRING_SIZE_IS:
@@ -310,9 +307,6 @@ static nsresult CloneArray(uint16_t aInType, const nsIID* aInIID,
 
   allocSize = aInCount * elementSize;
   *aOutValue = moz_xmalloc(allocSize);
-  if (!*aOutValue) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
 
   // Clone the elements.
 
@@ -385,7 +379,7 @@ static nsresult CloneArray(uint16_t aInType, const nsIID* aInIID,
       for (i = aInCount; i > 0; i--) {
         char16_t* str = *(inp++);
         if (str) {
-          *(outp++) = NS_strdup(str);
+          *(outp++) = NS_xstrdup(str);
         } else {
           *(outp++) = nullptr;
         }
@@ -399,7 +393,6 @@ static nsresult CloneArray(uint16_t aInType, const nsIID* aInIID,
     case nsIDataType::VTYPE_EMPTY_ARRAY:
     case nsIDataType::VTYPE_EMPTY:
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
     case nsIDataType::VTYPE_UTF8STRING:
     case nsIDataType::VTYPE_CSTRING:
     case nsIDataType::VTYPE_STRING_SIZE_IS:
@@ -414,7 +407,7 @@ static nsresult CloneArray(uint16_t aInType, const nsIID* aInIID,
   return NS_OK;
 }
 
-  /***************************************************************************/
+/***************************************************************************/
 
 #define TRIVIAL_DATA_CONVERTER(type_, member_, retval_) \
   if (mType == nsIDataType::type_) {                    \
@@ -628,7 +621,6 @@ bool nsDiscriminatedUnion::String2ID(nsID* aPid) const {
     case nsIDataType::VTYPE_UTF8STRING:
       return aPid->Parse(PromiseFlatUTF8String(*u.mUTF8StringValue).get());
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
       pString = u.mAStringValue;
       break;
     case nsIDataType::VTYPE_WCHAR_STR:
@@ -664,7 +656,6 @@ nsresult nsDiscriminatedUnion::ConvertToID(nsID* aResult) const {
       *aResult = u.iface.mInterfaceID;
       return NS_OK;
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
     case nsIDataType::VTYPE_UTF8STRING:
     case nsIDataType::VTYPE_CSTRING:
     case nsIDataType::VTYPE_CHAR_STR:
@@ -689,7 +680,6 @@ nsresult nsDiscriminatedUnion::ToString(nsACString& aOutString) const {
   switch (mType) {
     // all the stuff we don't handle...
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
     case nsIDataType::VTYPE_UTF8STRING:
     case nsIDataType::VTYPE_CSTRING:
     case nsIDataType::VTYPE_CHAR_STR:
@@ -726,7 +716,7 @@ nsresult nsDiscriminatedUnion::ToString(nsACString& aOutString) const {
       return NS_OK;
     }
 
-      // Can't use Smprintf for floats, since it's locale-dependent
+    // Can't use Smprintf for floats, since it's locale-dependent
 #define CASE__APPENDFLOAT_NUMBER(type_, member_) \
   case nsIDataType::type_: {                     \
     nsAutoCString str;                           \
@@ -777,7 +767,6 @@ nsresult nsDiscriminatedUnion::ToString(nsACString& aOutString) const {
 nsresult nsDiscriminatedUnion::ConvertToAString(nsAString& aResult) const {
   switch (mType) {
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
       aResult.Assign(*u.mAStringValue);
       return NS_OK;
     case nsIDataType::VTYPE_CSTRING:
@@ -787,7 +776,7 @@ nsresult nsDiscriminatedUnion::ConvertToAString(nsAString& aResult) const {
       CopyUTF8toUTF16(*u.mUTF8StringValue, aResult);
       return NS_OK;
     case nsIDataType::VTYPE_CHAR_STR:
-      CopyASCIItoUTF16(u.str.mStringValue, aResult);
+      CopyASCIItoUTF16(mozilla::MakeStringSpan(u.str.mStringValue), aResult);
       return NS_OK;
     case nsIDataType::VTYPE_WCHAR_STR:
       aResult.Assign(u.wstr.mWStringValue);
@@ -817,7 +806,6 @@ nsresult nsDiscriminatedUnion::ConvertToAString(nsAString& aResult) const {
 nsresult nsDiscriminatedUnion::ConvertToACString(nsACString& aResult) const {
   switch (mType) {
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
       LossyCopyUTF16toASCII(*u.mAStringValue, aResult);
       return NS_OK;
     case nsIDataType::VTYPE_CSTRING:
@@ -858,7 +846,6 @@ nsresult nsDiscriminatedUnion::ConvertToAUTF8String(
     nsAUTF8String& aResult) const {
   switch (mType) {
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
       CopyUTF16toUTF8(*u.mAStringValue, aResult);
       return NS_OK;
     case nsIDataType::VTYPE_CSTRING:
@@ -875,7 +862,7 @@ nsresult nsDiscriminatedUnion::ConvertToAUTF8String(
       CopyUTF16toUTF8(NS_ConvertASCIItoUTF16(u.str.mStringValue), aResult);
       return NS_OK;
     case nsIDataType::VTYPE_WCHAR_STR:
-      CopyUTF16toUTF8(u.wstr.mWStringValue, aResult);
+      CopyUTF16toUTF8(mozilla::MakeStringSpan(u.wstr.mWStringValue), aResult);
       return NS_OK;
     case nsIDataType::VTYPE_STRING_SIZE_IS:
       // XXX Extra copy, can be removed if we're sure CHAR_STR can
@@ -926,7 +913,6 @@ nsresult nsDiscriminatedUnion::ConvertToStringWithSize(uint32_t* aSize,
 
   switch (mType) {
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
       *aSize = u.mAStringValue->Length();
       *aStr = ToNewCString(*u.mAStringValue);
       break;
@@ -995,7 +981,6 @@ nsresult nsDiscriminatedUnion::ConvertToWStringWithSize(uint32_t* aSize,
 
   switch (mType) {
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
       *aSize = u.mAStringValue->Length();
       *aStr = ToNewUnicode(*u.mAStringValue);
       break;
@@ -1105,8 +1090,8 @@ nsresult nsDiscriminatedUnion::ConvertToArray(uint16_t* aType, nsIID* aIID,
   return NS_ERROR_CANNOT_CONVERT_DATA;
 }
 
-  /***************************************************************************/
-  // static setter functions...
+/***************************************************************************/
+// static setter functions...
 
 #define DATA_SETTER_PROLOGUE Cleanup()
 
@@ -1122,7 +1107,7 @@ nsresult nsDiscriminatedUnion::ConvertToArray(uint16_t* aType, nsIID* aIID,
   u.member_ = cast_ value_;                                  \
   DATA_SETTER_EPILOGUE(type_)
 
-  /********************************************/
+/********************************************/
 
 #define CASE__SET_FROM_VARIANT_VTYPE_PROLOGUE(type_) {
 #define CASE__SET_FROM_VARIANT_VTYPE__GETTER(member_, name_) \
@@ -1151,15 +1136,11 @@ nsresult nsDiscriminatedUnion::ConvertToArray(uint16_t* aType, nsIID* aIID,
     CASE__SET_FROM_VARIANT_VTYPE_EPILOGUE(type_)
 
 nsresult nsDiscriminatedUnion::SetFromVariant(nsIVariant* aValue) {
-  uint16_t type;
-  nsresult rv;
+  nsresult rv = NS_OK;
 
   Cleanup();
 
-  rv = aValue->GetDataType(&type);
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
+  uint16_t type = aValue->GetDataType();
 
   switch (type) {
     CASE__SET_FROM_VARIANT_VTYPE_CAST(VTYPE_INT8, (uint8_t*), mInt8Value, Int8)
@@ -1176,7 +1157,6 @@ nsresult nsDiscriminatedUnion::SetFromVariant(nsIVariant* aValue) {
     CASE__SET_FROM_VARIANT_TYPE(VTYPE_ID, mIDValue, ID)
 
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
     case nsIDataType::VTYPE_WCHAR_STR:
     case nsIDataType::VTYPE_WSTRING_SIZE_IS:
       CASE__SET_FROM_VARIANT_VTYPE_PROLOGUE(VTYPE_ASTRING);
@@ -1307,12 +1287,6 @@ void nsDiscriminatedUnion::SetFromAString(const nsAString& aValue) {
   DATA_SETTER_EPILOGUE(VTYPE_ASTRING);
 }
 
-void nsDiscriminatedUnion::SetFromDOMString(const nsAString& aValue) {
-  DATA_SETTER_PROLOGUE;
-  u.mAStringValue = new nsString(aValue);
-  DATA_SETTER_EPILOGUE(VTYPE_DOMSTRING);
-}
-
 void nsDiscriminatedUnion::SetFromACString(const nsACString& aValue) {
   DATA_SETTER_PROLOGUE;
   u.mCStringValue = new nsCString(aValue);
@@ -1372,10 +1346,7 @@ nsresult nsDiscriminatedUnion::SetFromStringWithSize(uint32_t aSize,
   if (!aValue) {
     return NS_ERROR_NULL_POINTER;
   }
-  if (!(u.str.mStringValue =
-            (char*)nsMemory::Clone(aValue, (aSize + 1) * sizeof(char)))) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
+  u.str.mStringValue = (char*)moz_xmemdup(aValue, (aSize + 1) * sizeof(char));
   u.str.mStringLength = aSize;
   DATA_SETTER_EPILOGUE(VTYPE_STRING_SIZE_IS);
   return NS_OK;
@@ -1386,10 +1357,8 @@ nsresult nsDiscriminatedUnion::SetFromWStringWithSize(uint32_t aSize,
   if (!aValue) {
     return NS_ERROR_NULL_POINTER;
   }
-  if (!(u.wstr.mWStringValue = (char16_t*)nsMemory::Clone(
-            aValue, (aSize + 1) * sizeof(char16_t)))) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
+  u.wstr.mWStringValue =
+      (char16_t*)moz_xmemdup(aValue, (aSize + 1) * sizeof(char16_t));
   u.wstr.mWStringLength = aSize;
   DATA_SETTER_EPILOGUE(VTYPE_WSTRING_SIZE_IS);
   return NS_OK;
@@ -1435,7 +1404,6 @@ void nsDiscriminatedUnion::Cleanup() {
     case nsIDataType::VTYPE_ID:
       break;
     case nsIDataType::VTYPE_ASTRING:
-    case nsIDataType::VTYPE_DOMSTRING:
       delete u.mAStringValue;
       break;
     case nsIDataType::VTYPE_CSTRING:
@@ -1502,62 +1470,12 @@ void nsDiscriminatedUnion::Traverse(
 /***************************************************************************/
 // members...
 
-nsVariantBase::nsVariantBase()
-    : mWritable(true){
-#ifdef DEBUG
-          {// Assert that the nsIDataType consts match the values #defined in
-           // xpt_struct.h. Bad things happen somewhere if they don't.
-           struct THE_TYPES{uint16_t a;
-uint16_t b;
-}
-;
-static const THE_TYPES array[] = {
-    {nsIDataType::VTYPE_INT8, TD_INT8},
-    {nsIDataType::VTYPE_INT16, TD_INT16},
-    {nsIDataType::VTYPE_INT32, TD_INT32},
-    {nsIDataType::VTYPE_INT64, TD_INT64},
-    {nsIDataType::VTYPE_UINT8, TD_UINT8},
-    {nsIDataType::VTYPE_UINT16, TD_UINT16},
-    {nsIDataType::VTYPE_UINT32, TD_UINT32},
-    {nsIDataType::VTYPE_UINT64, TD_UINT64},
-    {nsIDataType::VTYPE_FLOAT, TD_FLOAT},
-    {nsIDataType::VTYPE_DOUBLE, TD_DOUBLE},
-    {nsIDataType::VTYPE_BOOL, TD_BOOL},
-    {nsIDataType::VTYPE_CHAR, TD_CHAR},
-    {nsIDataType::VTYPE_WCHAR, TD_WCHAR},
-    {nsIDataType::VTYPE_VOID, TD_VOID},
-    {nsIDataType::VTYPE_ID, TD_PNSIID},
-    {nsIDataType::VTYPE_DOMSTRING, TD_DOMSTRING},
-    {nsIDataType::VTYPE_CHAR_STR, TD_PSTRING},
-    {nsIDataType::VTYPE_WCHAR_STR, TD_PWSTRING},
-    {nsIDataType::VTYPE_INTERFACE, TD_INTERFACE_TYPE},
-    {nsIDataType::VTYPE_INTERFACE_IS, TD_INTERFACE_IS_TYPE},
-    {nsIDataType::VTYPE_ARRAY, TD_ARRAY},
-    {nsIDataType::VTYPE_STRING_SIZE_IS, TD_PSTRING_SIZE_IS},
-    {nsIDataType::VTYPE_WSTRING_SIZE_IS, TD_PWSTRING_SIZE_IS},
-    {nsIDataType::VTYPE_UTF8STRING, TD_UTF8STRING},
-    {nsIDataType::VTYPE_CSTRING, TD_CSTRING},
-    {nsIDataType::VTYPE_ASTRING, TD_ASTRING}};
-static const int length = sizeof(array) / sizeof(array[0]);
-static bool inited = false;
-if (!inited) {
-  for (int i = 0; i < length; ++i) {
-    NS_ASSERTION(array[i].a == array[i].b, "bad const declaration");
-  }
-  inited = true;
-}
-}
-#endif
-}
+nsVariantBase::nsVariantBase() : mWritable(true) {}
 
 // For all the data getters we just forward to the static (and sharable)
 // 'ConvertTo' functions.
 
-NS_IMETHODIMP
-nsVariantBase::GetDataType(uint16_t* aDataType) {
-  *aDataType = mData.GetType();
-  return NS_OK;
-}
+uint16_t nsVariantBase::GetDataType() { return mData.GetType(); }
 
 NS_IMETHODIMP
 nsVariantBase::GetAsInt8(uint8_t* aResult) {
@@ -1625,13 +1543,6 @@ nsVariantBase::GetAsID(nsID* aResult) { return mData.ConvertToID(aResult); }
 
 NS_IMETHODIMP
 nsVariantBase::GetAsAString(nsAString& aResult) {
-  return mData.ConvertToAString(aResult);
-}
-
-NS_IMETHODIMP
-nsVariantBase::GetAsDOMString(nsAString& aResult) {
-  // A DOMString maps to an AString internally, so we can re-use
-  // ConvertToAString here.
   return mData.ConvertToAString(aResult);
 }
 
@@ -1840,16 +1751,6 @@ nsVariantBase::SetAsAString(const nsAString& aValue) {
     return NS_ERROR_OBJECT_IS_IMMUTABLE;
   }
   mData.SetFromAString(aValue);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsVariantBase::SetAsDOMString(const nsAString& aValue) {
-  if (!mWritable) {
-    return NS_ERROR_OBJECT_IS_IMMUTABLE;
-  }
-
-  mData.SetFromDOMString(aValue);
   return NS_OK;
 }
 

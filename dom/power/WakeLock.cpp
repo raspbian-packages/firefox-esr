@@ -6,13 +6,12 @@
 
 #include "WakeLock.h"
 #include "mozilla/dom/ContentParent.h"
-#include "mozilla/dom/Event.h"  // for nsIDOMEvent::InternalDOMEvent()
+#include "mozilla/dom/Event.h"  // for Event
 #include "mozilla/Hal.h"
 #include "mozilla/HalWakeLock.h"
 #include "nsError.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDOMWindow.h"
-#include "nsIDOMEvent.h"
 #include "nsPIDOMWindow.h"
 #include "nsIPropertyBag2.h"
 
@@ -26,6 +25,7 @@ NS_INTERFACE_MAP_BEGIN(WakeLock)
   NS_INTERFACE_MAP_ENTRY(nsIDOMEventListener)
   NS_INTERFACE_MAP_ENTRY(nsIObserver)
   NS_INTERFACE_MAP_ENTRY(nsISupportsWeakReference)
+  NS_INTERFACE_MAP_ENTRY(nsIWakeLock)
 NS_INTERFACE_MAP_END
 
 NS_IMPL_ADDREF(WakeLock)
@@ -58,7 +58,7 @@ nsresult WakeLock::Init(const nsAString& aTopic, nsPIDOMWindowInner* aWindow) {
    * is always considered invisible.
    */
   if (aWindow) {
-    nsCOMPtr<nsIDocument> doc = aWindow->GetExtantDoc();
+    nsCOMPtr<Document> doc = aWindow->GetExtantDoc();
     NS_ENSURE_STATE(doc);
     mHidden = doc->Hidden();
   }
@@ -150,7 +150,7 @@ void WakeLock::DoUnlock() {
 
 void WakeLock::AttachEventListener() {
   if (nsCOMPtr<nsPIDOMWindowInner> window = do_QueryReferent(mWindow)) {
-    nsCOMPtr<nsIDocument> doc = window->GetExtantDoc();
+    nsCOMPtr<Document> doc = window->GetExtantDoc();
     if (doc) {
       doc->AddSystemEventListener(NS_LITERAL_STRING("visibilitychange"), this,
                                   /* useCapture = */ true,
@@ -169,7 +169,7 @@ void WakeLock::AttachEventListener() {
 
 void WakeLock::DetachEventListener() {
   if (nsCOMPtr<nsPIDOMWindowInner> window = do_QueryReferent(mWindow)) {
-    nsCOMPtr<nsIDocument> doc = window->GetExtantDoc();
+    nsCOMPtr<Document> doc = window->GetExtantDoc();
     if (doc) {
       doc->RemoveSystemEventListener(NS_LITERAL_STRING("visibilitychange"),
                                      this,
@@ -199,13 +199,12 @@ void WakeLock::Unlock(ErrorResult& aRv) {
 void WakeLock::GetTopic(nsAString& aTopic) { aTopic.Assign(mTopic); }
 
 NS_IMETHODIMP
-WakeLock::HandleEvent(nsIDOMEvent* aEvent) {
+WakeLock::HandleEvent(Event* aEvent) {
   nsAutoString type;
   aEvent->GetType(type);
 
   if (type.EqualsLiteral("visibilitychange")) {
-    nsCOMPtr<nsIDocument> doc =
-        do_QueryInterface(aEvent->InternalDOMEvent()->GetTarget());
+    nsCOMPtr<Document> doc = do_QueryInterface(aEvent->GetTarget());
     NS_ENSURE_STATE(doc);
 
     bool oldHidden = mHidden;
@@ -232,6 +231,13 @@ WakeLock::HandleEvent(nsIDOMEvent* aEvent) {
   }
 
   return NS_OK;
+}
+
+NS_IMETHODIMP
+WakeLock::Unlock() {
+  ErrorResult error;
+  Unlock(error);
+  return error.StealNSResult();
 }
 
 nsPIDOMWindowInner* WakeLock::GetParentObject() const {

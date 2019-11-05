@@ -8,22 +8,22 @@
 
 const TESTCASE_URI = TEST_BASE_HTTP + "simple.html";
 
-const {Toolbox} = require("devtools/client/framework/toolbox");
+const { Toolbox } = require("devtools/client/framework/toolbox");
 
-add_task(function* () {
-  let { toolbox, ui } = yield openStyleEditorForURL(TESTCASE_URI);
+add_task(async function() {
+  const { toolbox, ui } = await openStyleEditorForURL(TESTCASE_URI);
 
   is(ui.editors.length, 2, "There are 2 style sheets initially");
 
   info("Changing toolbox host to a window.");
-  yield toolbox.switchHost(Toolbox.HostType.WINDOW);
+  await toolbox.switchHost(Toolbox.HostType.WINDOW);
 
-  let editor = yield ui.editors[0].getSourceEditor();
-  let originalSourceEditor = editor.sourceEditor;
+  const editor = await ui.editors[0].getSourceEditor();
+  const originalSourceEditor = editor.sourceEditor;
 
-  let hostWindow = toolbox.win.parent;
-  let originalWidth = hostWindow.outerWidth;
-  let originalHeight = hostWindow.outerHeight;
+  const hostWindow = toolbox.win.parent;
+  const originalWidth = hostWindow.outerWidth;
+  const originalHeight = hostWindow.outerHeight;
 
   // to check the caret is preserved
   originalSourceEditor.setCursor(originalSourceEditor.getPosition(4));
@@ -31,12 +31,18 @@ add_task(function* () {
   info("Resizing window.");
   hostWindow.resizeTo(120, 480);
 
-  let sourceEditor = ui.editors[0].sourceEditor;
-  is(sourceEditor, originalSourceEditor,
-     "the editor still references the same Editor instance");
+  const sourceEditor = ui.editors[0].sourceEditor;
+  is(
+    sourceEditor,
+    originalSourceEditor,
+    "the editor still references the same Editor instance"
+  );
 
-  is(sourceEditor.getOffset(sourceEditor.getCursor()), 4,
-     "the caret position has been preserved");
+  is(
+    sourceEditor.getOffset(sourceEditor.getCursor()),
+    4,
+    "the caret position has been preserved"
+  );
 
   info("Restoring window to original size.");
   hostWindow.resizeTo(originalWidth, originalHeight);

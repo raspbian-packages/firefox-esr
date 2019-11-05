@@ -155,7 +155,7 @@ TimeRanges::index_type TimeRanges::Find(double aTime,
 
 JSObject* TimeRanges::WrapObject(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return TimeRangesBinding::Wrap(aCx, this, aGivenProto);
+  return TimeRanges_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* TimeRanges::GetParentObject() const { return mParent; }

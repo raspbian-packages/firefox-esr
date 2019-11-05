@@ -28,10 +28,10 @@ const char16_t* kUpgradeNeededEventType = u"upgradeneeded";
 const char16_t* kVersionChangeEventType = u"versionchange";
 const char16_t* kCloseEventType = u"close";
 
-already_AddRefed<nsIDOMEvent> CreateGenericEvent(EventTarget* aOwner,
-                                                 const nsDependentString& aType,
-                                                 Bubbles aBubbles,
-                                                 Cancelable aCancelable) {
+already_AddRefed<Event> CreateGenericEvent(EventTarget* aOwner,
+                                           const nsDependentString& aType,
+                                           Bubbles aBubbles,
+                                           Cancelable aCancelable) {
   RefPtr<Event> event = new Event(aOwner, nullptr, nullptr);
 
   event->InitEvent(aType, aBubbles == eDoesBubble ? true : false,
@@ -79,7 +79,7 @@ NS_INTERFACE_MAP_END_INHERITING(Event)
 
 JSObject* IDBVersionChangeEvent::WrapObjectInternal(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return IDBVersionChangeEventBinding::Wrap(aCx, this, aGivenProto);
+  return IDBVersionChangeEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

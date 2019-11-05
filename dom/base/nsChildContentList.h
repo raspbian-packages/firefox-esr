@@ -15,10 +15,10 @@ class nsIContent;
 class nsINode;
 
 /**
- * Class that implements the nsIDOMNodeList interface (a list of children of
- * the content), by holding a reference to the content and delegating GetLength
+ * Class that implements the nsINodeList interface (a list of children of
+ * the content), by holding a reference to the content and delegating Length
  * and Item to its existing child list.
- * @see nsIDOMNodeList
+ * @see nsINodeList
  */
 class nsAttrChildContentList : public nsINodeList {
  public:
@@ -31,12 +31,10 @@ class nsAttrChildContentList : public nsINodeList {
   virtual JSObject* WrapObject(JSContext* cx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
-  // nsIDOMNodeList interface
-  NS_DECL_NSIDOMNODELIST
-
   // nsINodeList interface
   virtual int32_t IndexOf(nsIContent* aContent) override;
   virtual nsIContent* Item(uint32_t aIndex) override;
+  uint32_t Length() override;
 
   virtual void DropReference() { mNode = nullptr; }
 
@@ -59,12 +57,10 @@ class nsParentNodeChildContentList final : public nsAttrChildContentList {
     ValidateCache();
   }
 
-  // nsIDOMNodeList interface
-  NS_DECL_NSIDOMNODELIST
-
   // nsINodeList interface
   virtual int32_t IndexOf(nsIContent* aContent) override;
   virtual nsIContent* Item(uint32_t aIndex) override;
+  uint32_t Length() override;
 
   void DropReference() override {
     InvalidateCache();

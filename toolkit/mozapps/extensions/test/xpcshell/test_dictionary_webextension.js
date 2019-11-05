@@ -3,52 +3,48 @@
  */
 "use strict";
 
-XPCOMUtils.defineLazyServiceGetter(this, "spellCheck",
-                                   "@mozilla.org/spellchecker/engine;1", "mozISpellCheckingEngine");
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "spellCheck",
+  "@mozilla.org/spellchecker/engine;1",
+  "mozISpellCheckingEngine"
+);
 
 add_task(async function setup() {
   createAppInfo("xpcshell@tests.mozilla.org", "XPCShell", "61", "61");
 
-  // The dictionary service bails out early if this provider fails, and
-  // the built-in version isn't available in xpcshell tests, so register
-  // a stub.
-  Services.dirsvc.registerProvider({
-    getFiles(prop) {
-      if (prop == "DictDL") {
-        return {
-          hasMoreElements() {
-            return false;
-          },
-          QueryInterface: XPCOMUtils.generateQI(["nsISimpleEnumerator"]),
-        };
-      }
-      return null;
-    },
-
-    QueryInterface: XPCOMUtils.generateQI(["nsIDirectoryServiceProvider",
-                                           "nsIDirectoryServiceProvider2"]),
-  });
+  // Initialize the URLPreloader so that we can load the built-in
+  // add-ons list, which contains the list of built-in dictionaries.
+  AddonTestUtils.initializeURLPreloader();
 
   await promiseStartupManager();
+
+  // Starts collecting the Addon Manager Telemetry events.
+  AddonTestUtils.hookAMTelemetryEvents();
 });
 
 add_task(async function test_validation() {
   await Assert.rejects(
     promiseInstallWebExtension({
       manifest: {
-        applications: {gecko: {id: "en-US-no-dic@dictionaries.mozilla.org"}},
-        "dictionaries": {
+        applications: {
+          gecko: { id: "en-US-no-dic@dictionaries.mozilla.org" },
+        },
+        dictionaries: {
           "en-US": "en-US.dic",
         },
       },
-    })
+    }),
+    /Expected file to be downloaded for install/
   );
 
   await Assert.rejects(
     promiseInstallWebExtension({
       manifest: {
-        applications: {gecko: {id: "en-US-no-aff@dictionaries.mozilla.org"}},
-        "dictionaries": {
+        applications: {
+          gecko: { id: "en-US-no-aff@dictionaries.mozilla.org" },
+        },
+        dictionaries: {
           "en-US": "en-US.dic",
         },
       },
@@ -56,13 +52,14 @@ add_task(async function test_validation() {
       files: {
         "en-US.dic": "",
       },
-    })
+    }),
+    /Expected file to be downloaded for install/
   );
 
   let addon = await promiseInstallWebExtension({
     manifest: {
-      applications: {gecko: {id: "en-US-1@dictionaries.mozilla.org"}},
-      "dictionaries": {
+      applications: { gecko: { id: "en-US-1@dictionaries.mozilla.org" } },
+      dictionaries: {
         "en-US": "en-US.dic",
       },
     },
@@ -75,8 +72,8 @@ add_task(async function test_validation() {
 
   let addon2 = await promiseInstallWebExtension({
     manifest: {
-      applications: {gecko: {id: "en-US-2@dictionaries.mozilla.org"}},
-      "dictionaries": {
+      applications: { gecko: { id: "en-US-2@dictionaries.mozilla.org" } },
+      dictionaries: {
         "en-US": "dictionaries/en-US.dic",
       },
     },
@@ -87,21 +84,85 @@ add_task(async function test_validation() {
     },
   });
 
-  addon.uninstall();
-  addon2.uninstall();
+  await addon.uninstall();
+  await addon2.uninstall();
+
+  let amEvents = AddonTestUtils.getAMTelemetryEvents();
+
+  let amInstallEvents = amEvents
+    .filter(evt => evt.method === "install")
+    .map(evt => {
+      const { object, extra } = evt;
+      return { object, extra };
+    });
+
+  Assert.deepEqual(
+    amInstallEvents.filter(evt => evt.object === "unknown"),
+    [
+      {
+        object: "unknown",
+        extra: { step: "started", error: "ERROR_CORRUPT_FILE" },
+      },
+      {
+        object: "unknown",
+        extra: { step: "started", error: "ERROR_CORRUPT_FILE" },
+      },
+    ],
+    "Got the expected install telemetry events for the corrupted dictionaries"
+  );
+
+  Assert.deepEqual(
+    amInstallEvents.filter(evt => evt.extra.addon_id === addon.id),
+    [
+      { object: "dictionary", extra: { step: "started", addon_id: addon.id } },
+      {
+        object: "dictionary",
+        extra: { step: "completed", addon_id: addon.id },
+      },
+    ],
+    "Got the expected install telemetry events for the first installed dictionary"
+  );
+
+  Assert.deepEqual(
+    amInstallEvents.filter(evt => evt.extra.addon_id === addon2.id),
+    [
+      { object: "dictionary", extra: { step: "started", addon_id: addon2.id } },
+      {
+        object: "dictionary",
+        extra: { step: "completed", addon_id: addon2.id },
+      },
+    ],
+    "Got the expected install telemetry events for the second installed dictionary"
+  );
+
+  let amUninstallEvents = amEvents
+    .filter(evt => evt.method === "uninstall")
+    .map(evt => {
+      const { object, value } = evt;
+      return { object, value };
+    });
+
+  Assert.deepEqual(
+    amUninstallEvents,
+    [
+      { object: "dictionary", value: addon.id },
+      { object: "dictionary", value: addon2.id },
+    ],
+    "Got the expected uninstall telemetry events"
+  );
 });
 
-add_task(async function test_registration() {
-  const WORD = "Flehgragh";
+const WORD = "Flehgragh";
 
+add_task(async function test_registration() {
   spellCheck.dictionary = "en-US";
 
   ok(!spellCheck.check(WORD), "Word should not pass check before add-on loads");
 
   let addon = await promiseInstallWebExtension({
     manifest: {
-      applications: {gecko: {id: "en-US@dictionaries.mozilla.org"}},
-      "dictionaries": {
+      applications: { gecko: { id: "en-US@dictionaries.mozilla.org" } },
+      dictionaries: {
         "en-US": "en-US.dic",
       },
     },
@@ -115,12 +176,23 @@ SFX A   0       en         [^elr]
     },
   });
 
-  ok(spellCheck.check(WORD), "Word should pass check while add-on load is loaded");
+  ok(
+    spellCheck.check(WORD),
+    "Word should pass check while add-on load is loaded"
+  );
   ok(spellCheck.check("nativen"), "Words should have correct affixes");
 
-  addon.uninstall();
+  await addon.uninstall();
 
   await new Promise(executeSoon);
 
-  ok(!spellCheck.check(WORD), "Word should not pass check after add-on unloads");
+  ok(
+    !spellCheck.check(WORD),
+    "Word should not pass check after add-on unloads"
+  );
+});
+
+add_task(function teardown_telemetry_events() {
+  // Ignore any additional telemetry events collected in this file.
+  AddonTestUtils.getAMTelemetryEvents();
 });

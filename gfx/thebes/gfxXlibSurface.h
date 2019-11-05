@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,9 +12,7 @@
 #include <X11/Xlib.h>
 #include "X11UndefineNone.h"
 
-#if defined(GL_PROVIDER_GLX)
 #include "GLXLibrary.h"
-#endif
 
 #include "nsSize.h"
 
@@ -57,11 +55,11 @@ class gfxXlibSurface final : public gfxASurface {
 
   virtual ~gfxXlibSurface();
 
-  virtual already_AddRefed<gfxASurface> CreateSimilarSurface(
+  already_AddRefed<gfxASurface> CreateSimilarSurface(
       gfxContentType aType, const mozilla::gfx::IntSize& aSize) override;
-  virtual void Finish() override;
+  void Finish() override;
 
-  virtual const mozilla::gfx::IntSize GetSize() const override;
+  const mozilla::gfx::IntSize GetSize() const override;
 
   Display* XDisplay() { return mDisplay; }
   ::Screen* XScreen();
@@ -87,12 +85,10 @@ class gfxXlibSurface final : public gfxASurface {
   // Find a visual and colormap pair suitable for rendering to this surface.
   bool GetColormapAndVisual(Colormap* colormap, Visual** visual);
 
-#if defined(GL_PROVIDER_GLX)
   GLXPixmap GetGLXPixmap();
   // Binds a GLXPixmap backed by this context's surface.
   // Primarily for use in sharing surfaces.
   void BindGLXPixmap(GLXPixmap aPixmap);
-#endif
 
   // Return true if cairo will take its slow path when this surface is used
   // in a pattern with EXTEND_PAD.  As a workaround for XRender's RepeatPad
@@ -115,9 +111,7 @@ class gfxXlibSurface final : public gfxASurface {
 
   const mozilla::gfx::IntSize DoSizeQuery();
 
-#if defined(GL_PROVIDER_GLX)
   GLXPixmap mGLXPixmap;
-#endif
 };
 
 #endif /* GFX_XLIBSURFACE_H */

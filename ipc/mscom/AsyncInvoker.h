@@ -284,7 +284,7 @@ class MOZ_RAII AsyncInvoker final : public WaitPolicy<AsyncInterface> {
   HRESULT Invoke(SyncMethod aSyncMethod, AsyncMethod aAsyncMethod,
                  Args... aArgs) {
     if (mSyncObj) {
-      return (mSyncObj->*aSyncMethod)(Forward<Args>(aArgs)...);
+      return (mSyncObj->*aSyncMethod)(std::forward<Args>(aArgs)...);
     }
 
     MOZ_ASSERT(this->mAsyncCall);
@@ -298,7 +298,7 @@ class MOZ_RAII AsyncInvoker final : public WaitPolicy<AsyncInterface> {
       return E_POINTER;
     }
 
-    return (asyncInterface->*aAsyncMethod)(Forward<Args>(aArgs)...);
+    return (asyncInterface->*aAsyncMethod)(std::forward<Args>(aArgs)...);
   }
 
   AsyncInvoker(const AsyncInvoker& aOther) = delete;

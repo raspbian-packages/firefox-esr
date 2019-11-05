@@ -7,13 +7,13 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1345119
   <meta charset="utf-8">
   <title>Test for Bug 1345119</title>
 
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript" src="inspector-helpers.js"></script>
   <script type="application/javascript">
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
   runNextTest();
 };
@@ -22,25 +22,17 @@ var gWalker;
 var gHTMLNode;
 var gBodyNode;
 
-addTest(function setup() {
-  let url = document.getElementById("inspectorContent").href;
-  attachURL(url, function (err, client, tab, doc) {
-    let {InspectorFront} = require("devtools/shared/fronts/inspector");
-    let inspector = InspectorFront(client, tab);
-
-    promiseDone(inspector.getWalker().then(walker => {
-      gWalker = walker;
-      return gWalker.querySelector(gWalker.rootNode, "body");
-    }).then(node => {
-      gBodyNode = node;
-      return gWalker.querySelector(gWalker.rootNode, "html");
-    }).then(node => {
-      gHTMLNode = node;
-    }).then(runNextTest));
-  });
+addTest(async function setup() {
+  const url = document.getElementById("inspectorContent").href;
+  const { target } = await attachURL(url);
+  const inspector = await target.getInspector();
+  gWalker = inspector.walker;
+  gBodyNode = await gWalker.querySelector(gWalker.rootNode, "body");
+  gHTMLNode = await gWalker.querySelector(gWalker.rootNode, "html");
+  runNextTest();
 });
 
-addTest(function () {
+addTest(function() {
   info("Try to get the offset parent for a dead node (null)");
   gWalker.getOffsetParent(null).then(offsetParent => {
     ok(!offsetParent, "No offset parent found");
@@ -48,7 +40,7 @@ addTest(function () {
   });
 });
 
-addTest(function () {
+addTest(function() {
   info("Try to get the offset parent for a node that is absolutely positioned inside a " +
     "relative node");
   gWalker.querySelector(gWalker.rootNode, "#absolute_child").then(node => {
@@ -62,7 +54,7 @@ addTest(function () {
   });
 });
 
-addTest(function () {
+addTest(function() {
   info("Try to get the offset parent for a node that is absolutely positioned outside a" +
     " relative node");
   gWalker.querySelector(gWalker.rootNode, "#no_parent").then(node => {
@@ -74,7 +66,7 @@ addTest(function () {
   });
 });
 
-addTest(function () {
+addTest(function() {
   info("Try to get the offset parent for a relatively positioned node");
   gWalker.querySelector(gWalker.rootNode, "#relative_parent").then(node => {
     return gWalker.getOffsetParent(node);
@@ -85,7 +77,7 @@ addTest(function () {
   });
 });
 
-addTest(function () {
+addTest(function() {
   info("Try to get the offset parent for a statically positioned node");
   gWalker.querySelector(gWalker.rootNode, "#static").then(node => {
     return gWalker.getOffsetParent(node);
@@ -96,7 +88,7 @@ addTest(function () {
   });
 });
 
-addTest(function () {
+addTest(function() {
   info("Try to get the offset parent for a fixed positioned node");
   gWalker.querySelector(gWalker.rootNode, "#fixed").then(node => {
     return gWalker.getOffsetParent(node);
@@ -107,7 +99,7 @@ addTest(function () {
   });
 });
 
-addTest(function () {
+addTest(function() {
   info("Try to get the offset parent for the body");
   gWalker.querySelector(gWalker.rootNode, "body").then(node => {
     return gWalker.getOffsetParent(node);
@@ -117,7 +109,7 @@ addTest(function () {
   });
 });
 
-addTest(function () {
+addTest(function() {
   gWalker = null;
   gBodyNode = null;
   runNextTest();

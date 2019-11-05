@@ -95,9 +95,7 @@ void SaveSettings() {
 }
 
 void SendReport() {
-#ifdef MOZ_ENABLE_GCONF
   LoadProxyinfo();
-#endif
 
   // spawn a thread to do the sending
   gSendThreadID = g_thread_create(SendThread, nullptr, TRUE, nullptr);
@@ -175,9 +173,7 @@ static void ViewReportClicked(GtkButton* button, gpointer userData) {
                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
   gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled),
                                       GTK_SHADOW_IN);
-#if (MOZ_WIDGET_GTK >= 3)
   gtk_widget_set_vexpand(scrolled, TRUE);
-#endif
 
   GtkWidget* viewReportTextView = gtk_text_view_new();
   gtk_container_add(GTK_CONTAINER(scrolled), viewReportTextView);
@@ -436,10 +432,8 @@ bool UIShowCrashUI(const StringTable& files, const StringTable& queryParameters,
                                  GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
   gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled),
                                       GTK_SHADOW_IN);
-#if (MOZ_WIDGET_GTK >= 3)
   gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(scrolled),
                                              100);
-#endif
 
   gCommentTextLabel = gtk_label_new(gStrings[ST_COMMENTGRAYTEXT].c_str());
   gCommentText = gtk_text_view_new();
@@ -456,7 +450,7 @@ bool UIShowCrashUI(const StringTable& files, const StringTable& queryParameters,
   g_signal_connect(commentBuffer, "insert-text", G_CALLBACK(CommentInsert), 0);
 
   gtk_container_add(GTK_CONTAINER(scrolled), gCommentText);
-  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(gCommentText), GTK_WRAP_WORD);
+  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(gCommentText), GTK_WRAP_WORD_CHAR);
   gtk_widget_set_size_request(GTK_WIDGET(gCommentText), -1, 100);
 
   if (gQueryParameters.find("URL") != gQueryParameters.end()) {

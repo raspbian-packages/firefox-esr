@@ -18,8 +18,7 @@
 #include "nsPluginInstanceOwner.h"
 
 #include "nsThreadUtils.h"
-#include "nsIDOMElement.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDocShell.h"
 #include "nsIScriptGlobalObject.h"
 #include "nsIScriptContext.h"
@@ -33,7 +32,9 @@
 #include "mozilla/Preferences.h"
 #include "mozilla/Unused.h"
 #include "nsILoadContext.h"
+#include "mozilla/dom/Element.h"
 #include "mozilla/dom/HTMLObjectElementBinding.h"
+#include "AudioChannelAgent.h"
 #include "AudioChannelService.h"
 
 using namespace mozilla;
@@ -61,7 +62,6 @@ nsNPAPIPluginInstance::nsNPAPIPluginInstance()
       mCurrentPluginEvent(nullptr)
 #endif
       ,
-      mHaveJavaC2PJSObjectQuirk(false),
       mCachedParamLength(0),
       mCachedParamNames(nullptr),
       mCachedParamValues(nullptr),
@@ -139,11 +139,7 @@ nsresult nsNPAPIPluginInstance::Stop() {
 
   // Make sure the plugin didn't leave popups enabled.
   if (mPopupStates.Length() > 0) {
-    nsCOMPtr<nsPIDOMWindowOuter> window = GetDOMWindow();
-
-    if (window) {
-      window->PopPopupControlState(openAbused);
-    }
+    PopupBlocker::PopPopupControlState(PopupBlocker::openAbused);
   }
 
   if (RUNNING != mRunning) {
@@ -200,7 +196,7 @@ already_AddRefed<nsPIDOMWindowOuter> nsNPAPIPluginInstance::GetDOMWindow() {
 
   RefPtr<nsPluginInstanceOwner> kungFuDeathGrip(mOwner);
 
-  nsCOMPtr<nsIDocument> doc;
+  nsCOMPtr<Document> doc;
   kungFuDeathGrip->GetDocument(getter_AddRefs(doc));
   if (!doc) return nullptr;
 
@@ -709,7 +705,7 @@ void nsNPAPIPluginInstance::DidComposite() {
 }
 
 nsresult nsNPAPIPluginInstance::NotifyPainted(void) {
-  NS_NOTREACHED("Dead code, shouldn't be called.");
+  MOZ_ASSERT_UNREACHABLE("Dead code, shouldn't be called.");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -761,7 +757,7 @@ nsresult nsNPAPIPluginInstance::GetFormValue(nsAString& aValue) {
   nsresult rv = GetValueFromPlugin(NPPVformValue, &value);
   if (NS_FAILED(rv) || !value) return NS_ERROR_FAILURE;
 
-  CopyUTF8toUTF16(value, aValue);
+  CopyUTF8toUTF16(MakeStringSpan(value), aValue);
 
   // NPPVformValue allocates with NPN_MemAlloc(), which uses
   // nsMemory.
@@ -774,12 +770,14 @@ nsresult nsNPAPIPluginInstance::PushPopupsEnabledState(bool aEnabled) {
   nsCOMPtr<nsPIDOMWindowOuter> window = GetDOMWindow();
   if (!window) return NS_ERROR_FAILURE;
 
-  PopupControlState oldState =
-      window->PushPopupControlState(aEnabled ? openAllowed : openAbused, true);
+  PopupBlocker::PopupControlState oldState =
+      PopupBlocker::PushPopupControlState(
+          aEnabled ? PopupBlocker::openAllowed : PopupBlocker::openAbused,
+          true);
 
   if (!mPopupStates.AppendElement(oldState)) {
     // Appending to our state stack failed, pop what we just pushed.
-    window->PopPopupControlState(oldState);
+    PopupBlocker::PopPopupControlState(oldState);
     return NS_ERROR_FAILURE;
   }
 
@@ -797,9 +795,9 @@ nsresult nsNPAPIPluginInstance::PopPopupsEnabledState() {
   nsCOMPtr<nsPIDOMWindowOuter> window = GetDOMWindow();
   if (!window) return NS_ERROR_FAILURE;
 
-  PopupControlState& oldState = mPopupStates[last];
+  PopupBlocker::PopupControlState& oldState = mPopupStates[last];
 
-  window->PopPopupControlState(oldState);
+  PopupBlocker::PopPopupControlState(oldState);
 
   mPopupStates.RemoveElementAt(last);
 
@@ -846,7 +844,7 @@ nsresult nsNPAPIPluginInstance::PrivateModeStateChanged(bool enabled) {
 nsresult nsNPAPIPluginInstance::IsPrivateBrowsing(bool* aEnabled) {
   if (!mOwner) return NS_ERROR_FAILURE;
 
-  nsCOMPtr<nsIDocument> doc;
+  nsCOMPtr<Document> doc;
   mOwner->GetDocument(getter_AddRefs(doc));
   NS_ENSURE_TRUE(doc, NS_ERROR_FAILURE);
 
@@ -966,7 +964,7 @@ NPBool nsNPAPIPluginInstance::ConvertPoint(double sourceX, double sourceY,
   return false;
 }
 
-nsresult nsNPAPIPluginInstance::GetDOMElement(nsIDOMElement** result) {
+nsresult nsNPAPIPluginInstance::GetDOMElement(Element** result) {
   if (!mOwner) {
     *result = nullptr;
     return NS_ERROR_FAILURE;
@@ -1089,19 +1087,14 @@ nsresult nsNPAPIPluginInstance::CreateAudioChannelAgentIfNeeded() {
     return NS_OK;
   }
 
-  nsresult rv;
-  mAudioChannelAgent =
-      do_CreateInstance("@mozilla.org/audiochannelagent;1", &rv);
-  if (NS_WARN_IF(!mAudioChannelAgent)) {
-    return NS_ERROR_FAILURE;
-  }
+  mAudioChannelAgent = new AudioChannelAgent();
 
   nsCOMPtr<nsPIDOMWindowOuter> window = GetDOMWindow();
   if (NS_WARN_IF(!window)) {
     return NS_ERROR_FAILURE;
   }
 
-  rv = mAudioChannelAgent->Init(window->GetCurrentInnerWindow(), this);
+  nsresult rv = mAudioChannelAgent->Init(window->GetCurrentInnerWindow(), this);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }

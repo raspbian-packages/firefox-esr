@@ -1,16 +1,11 @@
 include debian/make.mk
 
-PYTHON := python -B
+PYTHON := python2.7 -B
 PRODUCT := browser
 
 include debian/upstream.mk
 
 ARCHES := amd64 i386
-DPKG_ARCHES := $(shell dpkg --print-architecture) $(shell dpkg --print-foreign-architectures)
-
-ifneq ($(ARCHES),$(filter $(ARCHES),$(DPKG_ARCHES)))
-$(foreach arch,$(filter-out $(filter $(ARCHES),$(DPKG_ARCHES)),$(ARCHES)),$(error Please run `dpkg --add-architecture $(arch)`))
-endif
 
 .DEFAULT_GOAL = symbols
 
@@ -30,7 +25,7 @@ $(foreach arch,$(ARCHES),$(call download_package,$1,$(lastword $(subst :, ,$(PAC
 endef
 
 $(eval $(call define_package,$(PACKAGE_NAME)))
-ifeq (,$(filter $(DIST),wheezy jessie))
+ifeq (,$(filter $(DIST),jessie))
 DBG=dbgsym
 else
 DBG=dbg
@@ -40,12 +35,14 @@ DBGTYPE=buildid
 else
 DBGTYPE=dbg
 endif
-$(eval $(call define_package,$(PACKAGE_NAME)-$(DBG)))
+DBG_PACKAGE_NAME = $(PACKAGE_NAME)-$(DBG)
+$(eval $(call define_package,$(DBG_PACKAGE_NAME)))
 
 export APT_CONFIG=$(CURDIR)/debian/symbols.apt.conf
 apt-tmp:
 	mkdir -p apt-tmp/config/apt.conf.d apt-tmp/config/preferences.d apt-tmp/dpkg apt-tmp/lists/lists/partial
 	touch apt-tmp/dpkg/status
+	for arch in $(ARCHES); do echo $$arch; done > apt-tmp/dpkg/arch
 	apt-get update
 
 $(PACKAGES): apt-tmp
@@ -60,7 +57,7 @@ define CR
 
 endef
 
-$(NON_DEBUG_PACKAGES:%=%.x): $(PACKAGE_NAME)_%.x: $(PACKAGE_NAME)_% $(PACKAGE_NAME)-$(DBG)_%
+$(NON_DEBUG_PACKAGES:%=%.x): $(PACKAGE_NAME)_%.x: $(PACKAGE_NAME)_% $(DBG_PACKAGE_NAME)_%
 	$(foreach deb,$^,dpkg-deb -x $(deb) $@$(CR))
 	@touch $@
 
@@ -70,6 +67,7 @@ export MOZCONFIG=$(CURDIR)/$(MOZ_OBJDIR)/mozconfig
 $(MOZ_OBJDIR)/mozconfig:
 	mkdir -p $(MOZ_OBJDIR)
 	@echo mk_add_options MOZ_OBJDIR=$(MOZ_OBJDIR) > $@
+	@echo ac_add_options --enable-project=tools/crashreporter >> $@
 
 $(MOZ_OBJDIR)/config.status: $(MOZ_OBJDIR)/mozconfig
 	$(CURDIR)/mach configure
@@ -113,4 +111,4 @@ syms.zip:
 	(cd syms; zip -rmD ../syms.zip .)
 
 upload: syms.zip
-	curl -X POST -H 'Auth-Token: $(API_TOKEN)' --form syms.zip=@syms.zip https://crash-stats.mozilla.com/symbols/upload
+	curl -X POST -H 'Auth-Token: $(API_TOKEN)' --form syms.zip=@syms.zip https://symbols.mozilla.org/upload/

@@ -49,7 +49,7 @@ class StreamList final : public Context::Activity {
   ~StreamList();
   struct Entry {
     explicit Entry(const nsID& aId, nsCOMPtr<nsIInputStream>&& aStream)
-        : mId(aId), mStream(Move(aStream)) {}
+        : mId(aId), mStream(std::move(aStream)) {}
 
     nsID mId;
     nsCOMPtr<nsIInputStream> mStream;

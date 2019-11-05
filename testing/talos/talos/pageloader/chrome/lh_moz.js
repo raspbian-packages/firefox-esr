@@ -2,16 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 function _contentPaintHandler() {
-  var utils = content.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  var utils = content.windowUtils;
   if (utils.isMozAfterPaintPending) {
-    addEventListener("MozAfterPaint", function afterpaint(e) {
-      removeEventListener("MozAfterPaint", afterpaint, true);
-      sendAsyncMessage("PageLoader:LoadEvent", {});
-    }, true);
+    addEventListener(
+      "MozAfterPaint",
+      function afterpaint(e) {
+        removeEventListener("MozAfterPaint", afterpaint, true);
+        sendAsyncMessage("PageLoader:LoadEvent", {});
+      },
+      true
+    );
   } else {
     sendAsyncMessage("PageLoader:LoadEvent", {});
   }
 }
 
-
-addEventListener("load", contentLoadHandlerCallback(_contentPaintHandler), true); // eslint-disable-line no-undef
+addEventListener(
+  "load",
+  // eslint-disable-next-line no-undef
+  contentLoadHandlerCallback(_contentPaintHandler),
+  true
+);

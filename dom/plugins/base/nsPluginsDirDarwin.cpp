@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -213,21 +213,16 @@ static void ParsePlistPluginInfo(nsPluginInfo& info, CFBundleRef bundle) {
   // Allocate memory for mime data
   int mimeDataArraySize = mimeDictKeyCount * sizeof(char*);
   info.fMimeTypeArray = static_cast<char**>(moz_xmalloc(mimeDataArraySize));
-  if (!info.fMimeTypeArray) return;
   memset(info.fMimeTypeArray, 0, mimeDataArraySize);
   info.fExtensionArray = static_cast<char**>(moz_xmalloc(mimeDataArraySize));
-  if (!info.fExtensionArray) return;
   memset(info.fExtensionArray, 0, mimeDataArraySize);
   info.fMimeDescriptionArray =
       static_cast<char**>(moz_xmalloc(mimeDataArraySize));
-  if (!info.fMimeDescriptionArray) return;
   memset(info.fMimeDescriptionArray, 0, mimeDataArraySize);
 
   // Allocate memory for mime dictionary keys and values
   mozilla::UniquePtr<CFTypeRef[]> keys(new CFTypeRef[mimeDictKeyCount]);
-  if (!keys) return;
   mozilla::UniquePtr<CFTypeRef[]> values(new CFTypeRef[mimeDictKeyCount]);
-  if (!values) return;
 
   info.fVariantCount = 0;
 
@@ -278,7 +273,7 @@ static void ParsePlistPluginInfo(nsPluginInfo& info, CFBundleRef bundle) {
   }
 }
 
-nsPluginFile::nsPluginFile(nsIFile* spec) : mPlugin(spec) {}
+nsPluginFile::nsPluginFile(nsIFile* spec) : pLibrary(nullptr), mPlugin(spec) {}
 
 nsPluginFile::~nsPluginFile() {}
 
@@ -338,10 +333,8 @@ nsresult nsPluginFile::LoadPlugin(PRLibrary** outLibrary) {
 static char* p2cstrdup(StringPtr pstr) {
   int len = pstr[0];
   char* cstr = static_cast<char*>(moz_xmalloc(len + 1));
-  if (cstr) {
-    memmove(cstr, pstr + 1, len);
-    cstr[len] = '\0';
-  }
+  memmove(cstr, pstr + 1, len);
+  cstr[len] = '\0';
   return cstr;
 }
 
@@ -434,7 +427,7 @@ nsresult nsPluginFile::GetPluginInfo(nsPluginInfo& info,
     // to be blocked, or that the filename starts with "fbplugin_".  But we
     // don't yet know for sure if this is always true.  So for the time being
     // record extra information in our crash logs.
-    CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("Bug_1086977"),
+    CrashReporter::AnnotateCrashReport(CrashReporter::Annotation::Bug_1086977,
                                        fileName);
   }
 
@@ -447,11 +440,10 @@ nsresult nsPluginFile::GetPluginInfo(nsPluginInfo& info,
   rv = LoadPlugin(outLibrary);
 
   if (nsCocoaFeatures::OnYosemiteOrLater()) {
-    // If we didn't crash in LoadPlugin(), change the previous annotation so we
-    // don't sow confusion.
-    CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("Bug_1086977"),
-        NS_LITERAL_CSTRING("Didn't crash, please ignore"));
+    // If we didn't crash in LoadPlugin(), remove the annotation so we don't
+    // sow confusion.
+    CrashReporter::RemoveCrashReportAnnotation(
+        CrashReporter::Annotation::Bug_1086977);
   }
 
   if (NS_FAILED(rv)) return rv;
@@ -488,14 +480,11 @@ nsresult nsPluginFile::GetPluginInfo(nsPluginInfo& info,
   int variantCount = info.fVariantCount;
   info.fMimeTypeArray =
       static_cast<char**>(moz_xmalloc(variantCount * sizeof(char*)));
-  if (!info.fMimeTypeArray) return NS_ERROR_OUT_OF_MEMORY;
   info.fExtensionArray =
       static_cast<char**>(moz_xmalloc(variantCount * sizeof(char*)));
-  if (!info.fExtensionArray) return NS_ERROR_OUT_OF_MEMORY;
   if (mi.infoStrings) {
     info.fMimeDescriptionArray =
         static_cast<char**>(moz_xmalloc(variantCount * sizeof(char*)));
-    if (!info.fMimeDescriptionArray) return NS_ERROR_OUT_OF_MEMORY;
   }
   short mimeIndex = 2;
   short descriptionIndex = 2;

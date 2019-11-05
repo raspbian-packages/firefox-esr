@@ -11,6 +11,14 @@
 namespace mozilla {
 namespace wr {
 
+WindowId NewWindowId() {
+  static uint64_t sNextId = 1;
+
+  WindowId id;
+  id.mHandle = sNextId++;
+  return id;
+}
+
 void Assign_WrVecU8(wr::WrVecU8& aVec, mozilla::ipc::ByteBuf&& aOther) {
   aVec.data = aOther.mData;
   aVec.length = aOther.mLen;
@@ -18,6 +26,25 @@ void Assign_WrVecU8(wr::WrVecU8& aVec, mozilla::ipc::ByteBuf&& aOther) {
   aOther.mData = nullptr;
   aOther.mLen = 0;
   aOther.mCapacity = 0;
+}
+
+WrSpaceAndClip RootScrollNode() {
+  WrSpaceAndClip sac;
+  sac.clip = wr_root_clip_id();
+  sac.space = wr_root_scroll_node_id();
+  return sac;
+}
+
+WrSpaceAndClipChain RootScrollNodeWithChain() {
+  WrSpaceAndClipChain sacc;
+  sacc.clip_chain = wr::ROOT_CLIP_CHAIN;
+  sacc.space = wr_root_scroll_node_id();
+  return sacc;
+}
+
+RenderRoot RenderRootFromId(DocumentId id) {
+  MOZ_ASSERT(id.mHandle < kRenderRootCount);
+  return (RenderRoot)id.mHandle;
 }
 
 }  // namespace wr

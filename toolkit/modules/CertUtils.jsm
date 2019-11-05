@@ -2,11 +2,11 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-var EXPORTED_SYMBOLS = [ "BadCertHandler", "checkCert", "readCertPrefs", "validateCert" ];
+var EXPORTED_SYMBOLS = ["CertUtils"];
 
 const Ce = Components.Exception;
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 /**
  * Reads a set of expected certificate attributes from preferences. The returned
@@ -27,20 +27,23 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
  *         expected certificate's attribute names / values.
  */
 function readCertPrefs(aPrefBranch) {
-  if (Services.prefs.getBranch(aPrefBranch).getChildList("").length == 0)
+  if (Services.prefs.getBranch(aPrefBranch).getChildList("").length == 0) {
     return null;
+  }
 
   let certs = [];
   let counter = 1;
   while (true) {
     let prefBranchCert = Services.prefs.getBranch(aPrefBranch + counter + ".");
     let prefCertAttrs = prefBranchCert.getChildList("");
-    if (prefCertAttrs.length == 0)
+    if (prefCertAttrs.length == 0) {
       break;
+    }
 
     let certAttrs = {};
-    for (let prefCertAttr of prefCertAttrs)
+    for (let prefCertAttr of prefCertAttrs) {
       certAttrs[prefCertAttr] = prefBranchCert.getCharPref(prefCertAttr);
+    }
 
     certs.push(certAttrs);
     counter++;
@@ -67,8 +70,9 @@ function readCertPrefs(aPrefBranch) {
  */
 function validateCert(aCertificate, aCerts) {
   // If there are no certificate requirements then just exit
-  if (!aCerts || aCerts.length == 0)
+  if (!aCerts || aCerts.length == 0) {
     return;
+  }
 
   if (!aCertificate) {
     const missingCertErr = "A required certificate was not present.";
@@ -83,27 +87,36 @@ function validateCert(aCertificate, aCerts) {
     for (var name in certAttrs) {
       if (!(name in aCertificate)) {
         error = true;
-        errors.push("Expected attribute '" + name + "' not present in " +
-                    "certificate.");
+        errors.push(
+          "Expected attribute '" + name + "' not present in certificate."
+        );
         break;
       }
       if (aCertificate[name] != certAttrs[name]) {
         error = true;
-        errors.push("Expected certificate attribute '" + name + "' " +
-                    "value incorrect, expected: '" + certAttrs[name] +
-                    "', got: '" + aCertificate[name] + "'.");
+        errors.push(
+          "Expected certificate attribute '" +
+            name +
+            "' " +
+            "value incorrect, expected: '" +
+            certAttrs[name] +
+            "', got: '" +
+            aCertificate[name] +
+            "'."
+        );
         break;
       }
     }
 
-    if (!error)
+    if (!error) {
       break;
+    }
   }
 
   if (error) {
     errors.forEach(Cu.reportError.bind(Cu));
-    const certCheckErr = "Certificate checks failed. See previous errors " +
-                         "for details.";
+    const certCheckErr =
+      "Certificate checks failed. See previous errors for details.";
     Cu.reportError(certCheckErr);
     throw new Ce(certCheckErr, Cr.NS_ERROR_ILLEGAL_VALUE);
   }
@@ -136,31 +149,38 @@ function checkCert(aChannel, aAllowNonBuiltInCerts, aCerts) {
   if (!aChannel.originalURI.schemeIs("https")) {
     // Require https if there are certificate values to verify
     if (aCerts) {
-      throw new Ce("SSL is required and URI scheme is not https.",
-                   Cr.NS_ERROR_UNEXPECTED);
+      throw new Ce(
+        "SSL is required and URI scheme is not https.",
+        Cr.NS_ERROR_UNEXPECTED
+      );
     }
     return;
   }
 
-  var cert =
-      aChannel.securityInfo.QueryInterface(Ci.nsISSLStatusProvider).
-      SSLStatus.QueryInterface(Ci.nsISSLStatus).serverCert;
+  let secInfo = aChannel.securityInfo.QueryInterface(
+    Ci.nsITransportSecurityInfo
+  );
+  let cert = secInfo.serverCert;
 
   validateCert(cert, aCerts);
 
-  if (aAllowNonBuiltInCerts === true)
+  if (aAllowNonBuiltInCerts === true) {
     return;
+  }
 
-  var issuerCert = cert;
-  while (issuerCert.issuer && !issuerCert.issuer.equals(issuerCert))
-    issuerCert = issuerCert.issuer;
+  let issuerCert = null;
+  // eslint-disable-next-line no-empty
+  for (issuerCert of secInfo.succeededCertChain.getEnumerator()) {
+  }
 
   const certNotBuiltInErr = "Certificate issuer is not built-in.";
-  if (!issuerCert)
+  if (!issuerCert) {
     throw new Ce(certNotBuiltInErr, Cr.NS_ERROR_ABORT);
+  }
 
-  if (!issuerCert.isBuiltInRoot)
+  if (!issuerCert.isBuiltInRoot) {
     throw new Ce(certNotBuiltInErr, Cr.NS_ERROR_ABORT);
+  }
 }
 
 /**
@@ -176,7 +196,6 @@ function BadCertHandler(aAllowNonBuiltInCerts) {
   this.allowNonBuiltInCerts = aAllowNonBuiltInCerts;
 }
 BadCertHandler.prototype = {
-
   // nsIChannelEventSink
   asyncOnChannelRedirect(oldChannel, newChannel, flags, callback) {
     if (this.allowNonBuiltInCerts) {
@@ -187,8 +206,9 @@ BadCertHandler.prototype = {
     // make sure the certificate of the old channel checks out before we follow
     // a redirect from it.  See bug 340198.
     // Don't call checkCert for internal redirects. See bug 569648.
-    if (!(flags & Ci.nsIChannelEventSink.REDIRECT_INTERNAL))
+    if (!(flags & Ci.nsIChannelEventSink.REDIRECT_INTERNAL)) {
       checkCert(oldChannel);
+    }
 
     callback.onRedirectVerifyCallback(Cr.NS_OK);
   },
@@ -199,11 +219,15 @@ BadCertHandler.prototype = {
   },
 
   // nsISupports
-  QueryInterface(iid) {
-    if (!iid.equals(Ci.nsIChannelEventSink) &&
-        !iid.equals(Ci.nsIInterfaceRequestor) &&
-        !iid.equals(Ci.nsISupports))
-      throw Cr.NS_ERROR_NO_INTERFACE;
-    return this;
-  }
+  QueryInterface: ChromeUtils.generateQI([
+    "nsIChannelEventSink",
+    "nsIInterfaceRequestor",
+  ]),
+};
+
+var CertUtils = {
+  BadCertHandler,
+  checkCert,
+  readCertPrefs,
+  validateCert,
 };

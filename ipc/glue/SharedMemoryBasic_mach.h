@@ -12,9 +12,10 @@
 
 #include "SharedMemory.h"
 #include <mach/port.h>
+#include "chrome/common/mach_ipc_mac.h"
 
 #ifdef FUZZING
-#include "SharedMemoryFuzzer.h"
+#  include "SharedMemoryFuzzer.h"
 #endif
 
 //
@@ -28,6 +29,27 @@ class ReceivePort;
 namespace mozilla {
 namespace ipc {
 
+enum {
+  kGetPortsMsg = 1,
+  kSharePortsMsg,
+  kWaitForTexturesMsg,
+  kUpdateTextureLocksMsg,
+  kReturnIdMsg,
+  kReturnWaitForTexturesMsg,
+  kReturnPortsMsg,
+  kShutdownMsg,
+  kCleanupMsg,
+};
+
+struct MemoryPorts {
+  MachPortSender* mSender;
+  ReceivePort* mReceiver;
+
+  MemoryPorts() = default;
+  MemoryPorts(MachPortSender* sender, ReceivePort* receiver)
+      : mSender(sender), mReceiver(receiver) {}
+};
+
 class SharedMemoryBasic final : public SharedMemoryCommon<mach_port_t> {
  public:
   static void SetupMachMemory(pid_t pid, ReceivePort* listen_port,
@@ -39,13 +61,16 @@ class SharedMemoryBasic final : public SharedMemoryCommon<mach_port_t> {
 
   static void Shutdown();
 
+  static bool SendMachMessage(pid_t pid, MachSendMessage& message,
+                              MachReceiveMessage* response);
+
   SharedMemoryBasic();
 
   virtual bool SetHandle(const Handle& aHandle, OpenRights aRights) override;
 
   virtual bool Create(size_t aNbytes) override;
 
-  virtual bool Map(size_t nBytes) override;
+  virtual bool Map(size_t nBytes, void* fixed_address = nullptr) override;
 
   virtual void CloseHandle() override;
 
@@ -60,6 +85,8 @@ class SharedMemoryBasic final : public SharedMemoryCommon<mach_port_t> {
   virtual SharedMemoryType Type() const override { return TYPE_BASIC; }
 
   static Handle NULLHandle() { return Handle(); }
+
+  static void* FindFreeAddressSpace(size_t aSize);
 
   virtual bool IsHandleValid(const Handle& aHandle) const override;
 

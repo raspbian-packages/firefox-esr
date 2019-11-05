@@ -7,22 +7,25 @@
 
 #include "DocAccessible-inl.h"
 #include "DocAccessibleChild.h"
+#include "nsEventShell.h"
 #include "TextLeafAccessible.h"
 #include "TextUpdater.h"
 
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/Telemetry.h"
 
 using namespace mozilla;
 using namespace mozilla::a11y;
+using namespace mozilla::dom;
 
 ////////////////////////////////////////////////////////////////////////////////
 // NotificationCollector
 ////////////////////////////////////////////////////////////////////////////////
 
 NotificationController::NotificationController(DocAccessible* aDocument,
-                                               nsIPresShell* aPresShell)
+                                               PresShell* aPresShell)
     : EventQueue(aDocument),
       mObservingState(eNotObservingRefresh),
       mPresShell(aPresShell),
@@ -410,24 +413,35 @@ void NotificationController::ScheduleChildDocBinding(DocAccessible* aDocument) {
 }
 
 void NotificationController::ScheduleContentInsertion(
-    Accessible* aContainer, nsIContent* aStartChildNode,
-    nsIContent* aEndChildNode) {
-  nsTArray<nsCOMPtr<nsIContent>> list;
-
-  bool needsProcessing = false;
-  nsIContent* node = aStartChildNode;
-  while (node != aEndChildNode) {
-    // Notification triggers for content insertion even if no content was
-    // actually inserted, check if the given content has a frame to discard
-    // this case early.
-    if (node->GetPrimaryFrame()) {
-      if (list.AppendElement(node)) needsProcessing = true;
-    }
-    node = node->GetNextSibling();
+    nsIContent* aStartChildNode, nsIContent* aEndChildNode) {
+  // The frame constructor guarantees that only ranges with the same parent
+  // arrive here in presence of dynamic changes to the page, see
+  // nsCSSFrameConstructor::IssueSingleInsertNotifications' callers.
+  nsINode* parent = aStartChildNode->GetFlattenedTreeParentNode();
+  if (!parent) {
+    return;
   }
 
-  if (needsProcessing) {
-    mContentInsertions.LookupOrAdd(aContainer)->AppendElements(list);
+  Accessible* container = mDocument->AccessibleOrTrueContainer(parent);
+  if (!container) {
+    return;
+  }
+
+  AutoTArray<nsCOMPtr<nsIContent>, 10> list;
+  for (nsIContent* node = aStartChildNode; node != aEndChildNode;
+       node = node->GetNextSibling()) {
+    MOZ_ASSERT(parent == node->GetFlattenedTreeParentNode());
+    // Notification triggers for content insertion even if no content was
+    // actually inserted (like if the content is display: none). Try to catch
+    // this case early.
+    if (node->GetPrimaryFrame() ||
+        (node->IsElement() && node->AsElement()->IsDisplayContents())) {
+      list.AppendElement(node);
+    }
+  }
+
+  if (!list.IsEmpty()) {
+    mContentInsertions.LookupOrAdd(container)->AppendElements(list);
     ScheduleProcessing();
   }
 }
@@ -683,8 +697,8 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
 #endif
 
     nsIFrame::RenderedText text = textFrame->GetRenderedText(
-        0, UINT32_MAX, nsIFrame::TextOffsetType::OFFSETS_IN_CONTENT_TEXT,
-        nsIFrame::TrailingWhitespace::DONT_TRIM_TRAILING_WHITESPACE);
+        0, UINT32_MAX, nsIFrame::TextOffsetType::OffsetsInContentText,
+        nsIFrame::TrailingWhitespace::DontTrim);
 
     // Remove text accessible if rendered text is empty.
     if (textAcc) {
@@ -703,7 +717,7 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
         continue;
       }
 
-        // Update text of the accessible and fire text change events.
+      // Update text of the accessible and fire text change events.
 #ifdef A11Y_LOG
       if (logging::IsEnabled(logging::eText)) {
         logging::MsgBegin("TEXT", "text may be changed; doc: %p", mDocument);
@@ -734,10 +748,11 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
       }
 #endif
 
-      Accessible* container =
-          mDocument->AccessibleOrTrueContainer(containerNode);
-      MOZ_ASSERT(container,
+      MOZ_ASSERT(mDocument->AccessibleOrTrueContainer(containerNode),
                  "Text node having rendered text hasn't accessible document!");
+
+      Accessible* container =
+          mDocument->AccessibleOrTrueContainer(containerNode, true);
       if (container) {
         nsTArray<nsCOMPtr<nsIContent>>* list =
             mContentInsertions.LookupOrAdd(container);
@@ -777,7 +792,7 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
       Accessible* outerDocAcc = mDocument->GetAccessible(ownerContent);
       if (outerDocAcc && outerDocAcc->AppendChild(childDoc)) {
         if (mDocument->AppendChildDocument(childDoc)) {
-          newChildDocs.AppendElement(Move(mHangingChildDocuments[idx]));
+          newChildDocs.AppendElement(std::move(mHangingChildDocuments[idx]));
           continue;
         }
 
@@ -848,7 +863,7 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
   mEventGeneration = 0;
 
   // Now that we are done with them get rid of the events we fired.
-  RefPtr<AccTreeMutationEvent> mutEvent = Move(mFirstMutationEvent);
+  RefPtr<AccTreeMutationEvent> mutEvent = std::move(mFirstMutationEvent);
   mLastMutationEvent = nullptr;
   mFirstMutationEvent = nullptr;
   while (mutEvent) {
@@ -905,10 +920,10 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
       parentIPCDoc->ConstructChildDocInParentProcess(
           ipcDoc, id, AccessibleWrap::GetChildIDFor(childDoc));
 #else
-      nsCOMPtr<nsITabChild> tabChild =
+      nsCOMPtr<nsIBrowserChild> browserChild =
           do_GetInterface(mDocument->DocumentNode()->GetDocShell());
-      if (tabChild) {
-        static_cast<TabChild*>(tabChild.get())
+      if (browserChild) {
+        static_cast<BrowserChild*>(browserChild.get())
             ->SendPDocAccessibleConstructor(ipcDoc, parentIPCDoc, id, 0, 0);
       }
 #endif

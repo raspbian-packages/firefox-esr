@@ -21,8 +21,7 @@
         <receiver
             android:name="org.mozilla.gecko.fxa.receivers.FxAccountUpgradeReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
@@ -33,6 +32,15 @@
                 <action android:name="@ANDROID_PACKAGE_NAME@.ACTION_FXA_GET_STARTED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
+        </activity>
+
+        <activity
+             android:exported="false"
+             android:name="org.mozilla.gecko.fxa.activities.FxAccountSignUpActivityWeb">
+             <intent-filter>
+                 <action android:name="@ANDROID_PACKAGE_NAME@.ACTION_FXA_SIGN_UP"/>
+                 <category android:name="android.intent.category.DEFAULT"/>
+             </intent-filter>
         </activity>
 
         <activity

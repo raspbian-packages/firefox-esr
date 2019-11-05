@@ -76,7 +76,7 @@ void ImageLayerMLGPU::SetRenderRegion(LayerIntRegion&& aRegion) {
           LayerIntRect(0, 0, mPictureRect.Width(), mPictureRect.Height()));
       break;
   }
-  LayerMLGPU::SetRenderRegion(Move(aRegion));
+  LayerMLGPU::SetRenderRegion(std::move(aRegion));
 }
 
 void ImageLayerMLGPU::CleanupResources() {

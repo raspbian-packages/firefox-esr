@@ -1,4 +1,4 @@
-/* vim:set expandtab ts=4 sw=4 sts=4 cin: */
+/* vim:set expandtab ts=4 sw=2 sts=2 cin: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -22,7 +22,7 @@ nsConverterOutputStream::~nsConverterOutputStream() { Close(); }
 NS_IMETHODIMP
 nsConverterOutputStream::Init(nsIOutputStream* aOutStream,
                               const char* aCharset) {
-  NS_PRECONDITION(aOutStream, "Null output stream!");
+  MOZ_ASSERT(aOutStream, "Null output stream!");
 
   const Encoding* encoding;
   if (!aCharset) {

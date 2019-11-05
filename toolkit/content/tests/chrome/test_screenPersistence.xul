@@ -6,10 +6,8 @@
         onload="runTest()"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
 
 <script class="testbody" type="application/javascript"><![CDATA[
   SimpleTest.waitForExplicitFinish();
@@ -44,8 +42,8 @@
       is(win.screenX, 80, "The window should be placed now at x=80px");
       is(win.screenY, 80, "The window should be placed now at y=80px");
     }
-    is(win.outerHeight, 300, "The window size should be height=300px");
-    is(win.outerWidth, 300, "The window size should be width=300px");
+    is(win.innerHeight, 300, "The window size should be height=300px");
+    is(win.innerWidth, 300, "The window size should be width=300px");
     win.close();
     SimpleTest.finish();
   }

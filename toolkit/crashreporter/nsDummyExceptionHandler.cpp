@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <functional>
+
 #include "nsExceptionHandler.h"
 #include "nsExceptionHandlerUtils.h"
 
@@ -36,12 +38,29 @@ nsresult SetupExtraData(nsIFile* aAppDataDirectory,
 
 nsresult UnsetExceptionHandler() { return NS_ERROR_NOT_IMPLEMENTED; }
 
-nsresult AnnotateCrashReport(const nsACString& key, const nsACString& data) {
+void NotifyCrashReporterClientCreated() {}
+
+nsresult AnnotateCrashReport(Annotation key, bool data) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-nsresult RemoveCrashReportAnnotation(const nsACString& key) {
+nsresult AnnotateCrashReport(Annotation key, int data) {
   return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+nsresult AnnotateCrashReport(Annotation key, unsigned int data) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+nsresult AnnotateCrashReport(Annotation key, const nsACString& data) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+nsresult RemoveCrashReportAnnotation(Annotation key) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+void MergeCrashAnnotations(AnnotationTable& aDst, const AnnotationTable& aSrc) {
 }
 
 nsresult SetGarbageCollecting(bool collecting) {
@@ -85,7 +104,7 @@ void RegisterChildCrashAnnotationFileDescriptor(ProcessId aProcess,
 
 void DeregisterChildCrashAnnotationFileDescriptor(ProcessId aProcess) {}
 
-#ifdef XP_WIN32
+#ifdef XP_WIN
 nsresult WriteMinidumpForException(EXCEPTION_POINTERS* aExceptionInfo) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -141,17 +160,11 @@ bool GetExtraFileForMinidump(nsIFile* minidump, nsIFile** extraFile) {
   return false;
 }
 
-bool AppendExtraData(const nsAString& id, const AnnotationTable& data) {
-  return false;
-}
-
-bool AppendExtraData(nsIFile* extraFile, const AnnotationTable& data) {
+bool WriteExtraFile(const nsAString& id, const AnnotationTable& annotations) {
   return false;
 }
 
 void OOPInit() {}
-
-void GetChildProcessTmpDir(nsIFile** aOutTmpDir) {}
 
 #if defined(XP_WIN) || defined(XP_MACOSX)
 const char* GetChildNotificationPipe() { return nullptr; }
@@ -187,24 +200,26 @@ bool SetRemoteExceptionHandler() { return false; }
 #endif  // XP_WIN
 
 bool TakeMinidumpForChild(uint32_t childPid, nsIFile** dump,
-                          uint32_t* aSequence) {
+                          AnnotationTable& aAnnotations, uint32_t* aSequence) {
   return false;
 }
 
-void RenameAdditionalHangMinidump(nsIFile* minidump, nsIFile* childMinidump,
-                                  const nsACString& name) {}
+bool FinalizeOrphanedMinidump(uint32_t aChildPid, GeckoProcessType aType) {
+  return false;
+}
 
 ThreadId CurrentThreadId() { return -1; }
 
 bool TakeMinidump(nsIFile** aResult, bool aMoveToPending) { return false; }
 
-void CreateMinidumpsAndPair(ProcessHandle aTargetPid,
+bool CreateMinidumpsAndPair(ProcessHandle aTargetPid,
                             ThreadId aTargetBlamedThread,
                             const nsACString& aIncomingPairName,
                             nsIFile* aIncomingDumpToPair,
-                            nsIFile** aMainDumpOut,
-                            std::function<void(bool)>&& aCallback,
-                            bool aAsync) {}
+                            AnnotationTable& aTargetAnnotations,
+                            nsIFile** aTargetDumpOut) {
+  return false;
+}
 
 bool CreateAdditionalChildMinidump(ProcessHandle childPid,
                                    ThreadId childBlamedThread,

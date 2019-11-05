@@ -14,13 +14,12 @@
         onload="onLoad();"
         title="findbar test - entire words only">
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/ChromeUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/ChromeUtils.js"/>
 
   <script type="application/javascript"><![CDATA[
-    ChromeUtils.import("resource://testing-common/ContentTask.jsm");
+    const {BrowserTestUtils} = ChromeUtils.import("resource://testing-common/BrowserTestUtils.jsm");
+    const {ContentTask} = ChromeUtils.import("resource://testing-common/ContentTask.jsm");
     ContentTask.setTestScope(window.opener.wrappedJSObject);
 
     var gFindBar = null;
@@ -132,7 +131,7 @@
           });
         });
       });
-      gBrowser.loadURI(kBaseURL + "/sample_entireword_" + testName + ".html");
+      BrowserTestUtils.loadURI(gBrowser, kBaseURL + "/sample_entireword_" + testName + ".html");
       await promise;
       await onDocumentLoaded(testName);
     }

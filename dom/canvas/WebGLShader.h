@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -60,15 +60,14 @@ class WebGLShader final : public nsWrapperCache,
   bool UnmapUniformBlockName(const nsACString& baseMappedName,
                              nsCString* const out_baseUserName) const;
 
-  void EnumerateFragOutputs(
-      std::map<nsCString, const nsCString>& out_FragOutputs) const;
-
   bool IsCompiled() const {
     return mTranslationSuccessful && mCompilationSuccessful;
   }
+  const auto* Validator() const { return mValidator.get(); }
+  const auto& TranslatedSource() const { return mTranslatedSource; }
 
  private:
-  void BindAttribLocation(GLuint prog, const nsCString& userName,
+  void BindAttribLocation(GLuint prog, const std::string& userName,
                           GLuint index) const;
   void MapTransformFeedbackVaryings(
       const std::vector<nsString>& varyings,

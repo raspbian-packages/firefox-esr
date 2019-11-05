@@ -25,8 +25,8 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
  public:
   AudioParam(AudioNode* aNode, uint32_t aIndex, const char* aName,
              float aDefaultValue,
-             float aMinValue = -std::numeric_limits<float>::infinity(),
-             float aMaxValue = std::numeric_limits<float>::infinity());
+             float aMinValue = std::numeric_limits<float>::lowest(),
+             float aMaxValue = std::numeric_limits<float>::max());
 
   NS_IMETHOD_(MozExternalRefCountType) AddRef(void);
   NS_IMETHOD_(MozExternalRefCountType) Release(void);
@@ -39,19 +39,18 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
 
   // We override SetValueCurveAtTime to convert the Float32Array to the wrapper
   // object.
-  AudioParam* SetValueCurveAtTime(const Float32Array& aValues,
+  AudioParam* SetValueCurveAtTime(const nsTArray<float>& aValues,
                                   double aStartTime, double aDuration,
                                   ErrorResult& aRv) {
     if (!WebAudioUtils::IsTimeValid(aStartTime)) {
-      aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+      aRv.ThrowRangeError<MSG_INVALID_AUDIOPARAM_METHOD_START_TIME_ERROR>();
       return this;
     }
-    aValues.ComputeLengthAndData();
-
     aStartTime = std::max(aStartTime, GetParentObject()->CurrentTime());
     EventInsertionHelper(aRv, AudioTimelineEvent::SetValueCurve, aStartTime,
-                         0.0f, 0.0f, aDuration, aValues.Data(),
+                         0.0f, 0.0f, aDuration, aValues.Elements(),
                          aValues.Length());
+
     return this;
   }
 
@@ -74,7 +73,7 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
   AudioParam* SetValueAtTime(float aValue, double aStartTime,
                              ErrorResult& aRv) {
     if (!WebAudioUtils::IsTimeValid(aStartTime)) {
-      aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+      aRv.ThrowRangeError<MSG_INVALID_AUDIOPARAM_METHOD_START_TIME_ERROR>();
       return this;
     }
     aStartTime = std::max(aStartTime, GetParentObject()->CurrentTime());
@@ -87,7 +86,7 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
   AudioParam* LinearRampToValueAtTime(float aValue, double aEndTime,
                                       ErrorResult& aRv) {
     if (!WebAudioUtils::IsTimeValid(aEndTime)) {
-      aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+      aRv.ThrowRangeError<MSG_INVALID_AUDIOPARAM_METHOD_END_TIME_ERROR>();
       return this;
     }
     aEndTime = std::max(aEndTime, GetParentObject()->CurrentTime());
@@ -98,7 +97,7 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
   AudioParam* ExponentialRampToValueAtTime(float aValue, double aEndTime,
                                            ErrorResult& aRv) {
     if (!WebAudioUtils::IsTimeValid(aEndTime)) {
-      aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+      aRv.ThrowRangeError<MSG_INVALID_AUDIOPARAM_METHOD_END_TIME_ERROR>();
       return this;
     }
     aEndTime = std::max(aEndTime, GetParentObject()->CurrentTime());
@@ -111,7 +110,7 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
                               double aTimeConstant, ErrorResult& aRv) {
     if (!WebAudioUtils::IsTimeValid(aStartTime) ||
         !WebAudioUtils::IsTimeValid(aTimeConstant)) {
-      aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+      aRv.ThrowRangeError<MSG_INVALID_AUDIOPARAM_METHOD_START_TIME_ERROR>();
       return this;
     }
     aStartTime = std::max(aStartTime, GetParentObject()->CurrentTime());
@@ -123,7 +122,7 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
 
   AudioParam* CancelScheduledValues(double aStartTime, ErrorResult& aRv) {
     if (!WebAudioUtils::IsTimeValid(aStartTime)) {
-      aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+      aRv.ThrowRangeError<MSG_INVALID_AUDIOPARAM_METHOD_START_TIME_ERROR>();
       return this;
     }
 
@@ -149,6 +148,10 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
 
   float MaxValue() const { return mMaxValue; }
 
+  bool IsStreamSuspended() const {
+    return mStream ? mStream->IsSuspended() : false;
+  }
+
   const nsTArray<AudioNode::InputNode>& InputNodes() const {
     return mInputNodes;
   }
@@ -161,6 +164,9 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
 
   // May create the stream if it doesn't exist
   MediaStream* Stream();
+
+  // Return nullptr if stream doesn't exist.
+  MediaStream* GetStream() const;
 
   size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const override {
     size_t amount = AudioParamTimeline::SizeOfExcludingThis(aMallocSizeOf);
@@ -184,7 +190,7 @@ class AudioParam final : public nsWrapperCache, public AudioParamTimeline {
  private:
   void EventInsertionHelper(ErrorResult& aRv, AudioTimelineEvent::Type aType,
                             double aTime, float aValue,
-                            double aTimeConstant = 0.0, float aDuration = 0.0,
+                            double aTimeConstant = 0.0, double aDuration = 0.0,
                             const float* aCurve = nullptr,
                             uint32_t aCurveLength = 0) {
     AudioTimelineEvent event(aType, aTime, aValue, aTimeConstant, aDuration,

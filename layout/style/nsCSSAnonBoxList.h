@@ -23,7 +23,8 @@
  *
  * CSS_NON_INHERITING_ANON_BOX is used for anon boxes that never inherit style
  * from anything.  This means all their property values are the initial values
- * of those properties.
+ * of those properties.  These ones must come first!  Code relies on this.
+ * If this macro is not defined, it will default to CSS_ANON_BOX.
  *
  * CSS_WRAPPER_ANON_BOX is used for anon boxes that are used as wrappers around
  * other frames during frametree fixup (e.g. table anonymous boxes, ruby
@@ -51,13 +52,38 @@
 #  define DEFINED_CSS_WRAPPER_ANON_BOX
 #endif /* CSS_WRAPPER_ANON_BOX */
 
-// ::-moz-text, ::-moz-oof-placeholder, and ::-moz-first-letter-continuation are
-// non-elements which no rule will match.
-CSS_ANON_BOX(mozText, ":-moz-text")
-// placeholder frames for out of flows.  Note that :-moz-placeholder is used for
+//---------------------------------------------------------------------------
+// Non-inheriting ones, which must come first
+//---------------------------------------------------------------------------
+
+// Placeholder frames for out of flows.  Note that :-moz-placeholder is used for
 // the pseudo-element that represents the placeholder text in <input
 // placeholder="foo">, so we need a different string here.
 CSS_NON_INHERITING_ANON_BOX(oofPlaceholder, ":-moz-oof-placeholder")
+
+// Framesets
+CSS_NON_INHERITING_ANON_BOX(horizontalFramesetBorder, ":-moz-hframeset-border")
+CSS_NON_INHERITING_ANON_BOX(verticalFramesetBorder, ":-moz-vframeset-border")
+
+CSS_NON_INHERITING_ANON_BOX(framesetBlank, ":-moz-frameset-blank")
+
+CSS_NON_INHERITING_ANON_BOX(tableColGroup, ":-moz-table-column-group")
+CSS_NON_INHERITING_ANON_BOX(tableCol, ":-moz-table-column")
+
+CSS_NON_INHERITING_ANON_BOX(pageBreak, ":-moz-pagebreak")
+
+// Applies to blocks that wrap contiguous runs of "column-span: all"
+// elements in multi-column subtrees, or the wrappers themselves, all the
+// way up to the column set wrappers.
+CSS_NON_INHERITING_ANON_BOX(columnSpanWrapper, ":-moz-column-span-wrapper")
+
+//---------------------------------------------------------------------------
+// Other ones
+//---------------------------------------------------------------------------
+
+// ::-moz-text, ::-moz-oof-placeholder, and ::-moz-first-letter-continuation are
+// non-elements which no rule will match.
+CSS_ANON_BOX(mozText, ":-moz-text")
 // nsFirstLetterFrames for content outside the ::first-letter.
 CSS_ANON_BOX(firstLetterContinuation, ":-moz-first-letter-continuation")
 
@@ -65,38 +91,37 @@ CSS_ANON_BOX(mozBlockInsideInlineWrapper, ":-moz-block-inside-inline-wrapper")
 CSS_WRAPPER_ANON_BOX(mozMathMLAnonymousBlock, ":-moz-mathml-anonymous-block")
 CSS_ANON_BOX(mozXULAnonymousBlock, ":-moz-xul-anonymous-block")
 
-// Framesets
-CSS_NON_INHERITING_ANON_BOX(horizontalFramesetBorder, ":-moz-hframeset-border")
-CSS_NON_INHERITING_ANON_BOX(verticalFramesetBorder, ":-moz-vframeset-border")
-
 CSS_ANON_BOX(mozLineFrame, ":-moz-line-frame")
 
 CSS_ANON_BOX(buttonContent, ":-moz-button-content")
 CSS_ANON_BOX(cellContent, ":-moz-cell-content")
 CSS_ANON_BOX(dropDownList, ":-moz-dropdown-list")
 CSS_ANON_BOX(fieldsetContent, ":-moz-fieldset-content")
-CSS_NON_INHERITING_ANON_BOX(framesetBlank, ":-moz-frameset-blank")
 CSS_ANON_BOX(mozDisplayComboboxControlFrame, ":-moz-display-comboboxcontrol-frame")
 CSS_ANON_BOX(htmlCanvasContent, ":-moz-html-canvas-content")
 
 CSS_WRAPPER_ANON_BOX(inlineTable, ":-moz-inline-table")
 CSS_WRAPPER_ANON_BOX(table, ":-moz-table")
 CSS_WRAPPER_ANON_BOX(tableCell, ":-moz-table-cell")
-CSS_NON_INHERITING_ANON_BOX(tableColGroup, ":-moz-table-column-group")
-CSS_NON_INHERITING_ANON_BOX(tableCol, ":-moz-table-column")
 CSS_ANON_BOX(tableWrapper, ":-moz-table-wrapper")
 CSS_WRAPPER_ANON_BOX(tableRowGroup, ":-moz-table-row-group")
 CSS_WRAPPER_ANON_BOX(tableRow, ":-moz-table-row")
 
 CSS_ANON_BOX(canvas, ":-moz-canvas")
-CSS_NON_INHERITING_ANON_BOX(pageBreak, ":-moz-pagebreak")
 CSS_ANON_BOX(page, ":-moz-page")
 CSS_ANON_BOX(pageContent, ":-moz-pagecontent")
 CSS_ANON_BOX(pageSequence, ":-moz-page-sequence")
 CSS_ANON_BOX(scrolledContent, ":-moz-scrolled-content")
 CSS_ANON_BOX(scrolledCanvas, ":-moz-scrolled-canvas")
 CSS_ANON_BOX(scrolledPageSequence, ":-moz-scrolled-page-sequence")
+
+// A column set is a set of columns inside of ColumnSetWrapperFrame, which
+// applies to nsColumnSetFrame. It doesn't contain any column-span elements.
+CSS_ANON_BOX(columnSet, ":-moz-column-set")
+
+// Applies to each column block inside of a column set.
 CSS_ANON_BOX(columnContent, ":-moz-column-content")
+
 CSS_ANON_BOX(viewport, ":-moz-viewport")
 CSS_ANON_BOX(viewportScroll, ":-moz-viewport-scroll")
 

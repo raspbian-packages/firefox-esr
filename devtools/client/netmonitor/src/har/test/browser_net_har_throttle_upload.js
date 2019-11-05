@@ -5,23 +5,26 @@
 
 "use strict";
 
-add_task(async function () {
+add_task(async function() {
   await throttleUploadTest(true);
   await throttleUploadTest(false);
 });
 
 async function throttleUploadTest(actuallyThrottle) {
-  let { tab, monitor } = await initNetMonitor(
-    HAR_EXAMPLE_URL + "html_har_post-data-test-page.html");
+  const { tab, monitor } = await initNetMonitor(
+    HAR_EXAMPLE_URL + "html_har_post-data-test-page.html"
+  );
 
   info("Starting test... (actuallyThrottle = " + actuallyThrottle + ")");
 
-  let { connector, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let RequestListContextMenu = windowRequire(
-    "devtools/client/netmonitor/src/widgets/RequestListContextMenu");
-  let { getSortedRequests } = windowRequire(
-    "devtools/client/netmonitor/src/selectors/index");
+  const { connector, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { HarMenuUtils } = windowRequire(
+    "devtools/client/netmonitor/src/har/har-menu-utils"
+  );
+  const { getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
@@ -40,34 +43,33 @@ async function throttleUploadTest(actuallyThrottle) {
   };
 
   info("sending throttle request");
-  await new Promise((resolve) => {
-    connector.setPreferences(request, (response) => {
-      resolve(response);
-    });
-  });
+  await connector.setPreferences(request);
 
   // Execute one POST request on the page and wait till its done.
-  let onEventTimings = monitor.panelWin.once(EVENTS.RECEIVED_EVENT_TIMINGS);
-  let wait = waitForNetworkEvents(monitor, 1);
-  await ContentTask.spawn(tab.linkedBrowser, { size }, async function (args) {
+  const onEventTimings = monitor.panelWin.api.once(
+    EVENTS.RECEIVED_EVENT_TIMINGS
+  );
+  const wait = waitForNetworkEvents(monitor, 1);
+  await ContentTask.spawn(tab.linkedBrowser, { size }, async function(args) {
     content.wrappedJSObject.executeTest2(args.size);
   });
   await wait;
   await onEventTimings;
 
   // Copy HAR into the clipboard (asynchronous).
-  let contextMenu = new RequestListContextMenu({ connector });
-  let jsonString = await contextMenu.copyAllAsHar(getSortedRequests(store.getState()));
-  let har = JSON.parse(jsonString);
+  const jsonString = await HarMenuUtils.copyAllAsHar(
+    getSortedRequests(store.getState()),
+    connector
+  );
+  const har = JSON.parse(jsonString);
 
   // Check out the HAR log.
   isnot(har.log, null, "The HAR log must exist");
   is(har.log.pages.length, 1, "There must be one page");
   is(har.log.entries.length, 1, "There must be one request");
 
-  let entry = har.log.entries[0];
-  is(entry.request.postData.text, "x".repeat(size),
-     "Check post data payload");
+  const entry = har.log.entries[0];
+  is(entry.request.postData.text, "x".repeat(size), "Check post data payload");
 
   const wasTwoSeconds = entry.timings.send >= 2000;
   if (actuallyThrottle) {

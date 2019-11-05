@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 with Files("**"):
-    BUG_COMPONENT = ("Core", "DOM")
+    BUG_COMPONENT = ("Core", "DOM: Core & HTML")
 
 DIRS += ['input']
 
@@ -22,7 +22,6 @@ MOCHITEST_CHROME_MANIFESTS += [
 BROWSER_CHROME_MANIFESTS += ['test/browser.ini']
 
 XPIDL_SOURCES += [
-    'nsIDateTimeInputArea.idl',
     'nsIFormSubmitObserver.idl',
     'nsIImageDocument.idl',
     'nsIMenuBuilder.idl',
@@ -34,6 +33,7 @@ EXPORTS += [
     'nsGenericHTMLElement.h',
     'nsGenericHTMLFrameElement.h',
     'nsHTMLDNSPrefetch.h',
+    'nsHTMLDocument.h',
     'nsIConstraintValidation.h',
     'nsIForm.h',
     'nsIFormControl.h',
@@ -82,6 +82,7 @@ EXPORTS.mozilla.dom += [
     'HTMLLIElement.h',
     'HTMLLinkElement.h',
     'HTMLMapElement.h',
+    'HTMLMarqueeElement.h',
     'HTMLMediaElement.h',
     'HTMLMenuElement.h',
     'HTMLMenuItemElement.h',
@@ -122,6 +123,7 @@ EXPORTS.mozilla.dom += [
     'ImageDocument.h',
     'MediaError.h',
     'nsBrowserElement.h',
+    'PlayPromise.h',
     'RadioNodeList.h',
     'TextTrackManager.h',
     'TimeRanges.h',
@@ -161,6 +163,7 @@ UNIFIED_SOURCES += [
     'HTMLLIElement.cpp',
     'HTMLLinkElement.cpp',
     'HTMLMapElement.cpp',
+    'HTMLMarqueeElement.cpp',
     'HTMLMediaElement.cpp',
     'HTMLMenuElement.cpp',
     'HTMLMenuItemElement.cpp',
@@ -211,6 +214,7 @@ UNIFIED_SOURCES += [
     'nsIConstraintValidation.cpp',
     'nsRadioVisitor.cpp',
     'nsTextEditorState.cpp',
+    'PlayPromise.cpp',
     'RadioNodeList.cpp',
     'TextTrackManager.cpp',
     'TimeRanges.cpp',
@@ -223,9 +227,12 @@ SOURCES += [
     'PluginDocument.cpp',
 ]
 
-EXTRA_COMPONENTS += [
-    'htmlMenuBuilder.js',
-    'htmlMenuBuilder.manifest'
+EXTRA_JS_MODULES += [
+    'HTMLMenuBuilder.jsm',
+]
+
+XPCOM_MANIFESTS += [
+    'components.conf',
 ]
 
 include('/ipc/chromium/chromium-config.mozbuild')
@@ -240,7 +247,6 @@ LOCAL_INCLUDES += [
     '/dom/security',
     '/dom/xbl',
     '/dom/xul',
-    '/editor/txmgr',
     '/image',
     '/layout/forms',
     '/layout/generic',

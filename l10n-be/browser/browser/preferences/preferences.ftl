@@ -4,8 +4,8 @@
 
 do-not-track-description = Адсылаць вэб-сайтам сігнал “Не сачыць”
 do-not-track-learn-more = Даведацца больш
-do-not-track-option-default =
-    .label = Толькі калі ўключана ахова ад сачэння
+do-not-track-option-default-content-blocking-known =
+    .label = Толькі калі { -brand-short-name } настаўлены блакаваць вядомыя трэкеры
 do-not-track-option-always =
     .label = Заўсёды
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Налады
            *[other] Налады
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Ваша арганізацыя выключыла магчымасць змяняць некаторыя налады.
        *[other] Ваша арганізацыя выключыла магчымасць змяняць некаторыя налады.
     }
+managed-notice = Вашым браўзерам кіруе ваша арганізацыя.
 pane-general-title = Агульныя
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Прыватнасць і Бяспека
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Уліковы запіс Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Падтрымка { -brand-short-name }
+addons-button-label = Пашырэнні & Тэмы
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Перазапуск { -brand-short-name }
 should-restart-ok = Перазапусціць { -brand-short-name } зараз
 cancel-no-restart-button = Скасаваць
 restart-later = Перазапусціць пазней
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Пашырэнне <img data-l10n-name="icon"/> { $name } кантралюе вашу хатнюю старонку.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Пашырэнне <img data-l10n-name="icon"/> { $name } кантралюе вашу старонку новай карткі.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Пашырэнне <img data-l10n-name="icon"/> { $name } кантралюе гэты параметр.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Пашырэнне <img data-l10n-name="icon"/> { $name } устанавіла ваш прадвызначаны рухавік пошуку.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Пашырэнне <img data-l10n-name="icon"/> { $name } патрабуе для працы "Карткі ў кантэйнеры".
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Пашырэнне <img data-l10n-name="icon"/> { $name } кантралюе гэты параметр.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Пашырэнне <img data-l10n-name="icon"/> { $name } кантралюе спосаб злучэння { -brand-short-name } з Інтэрнэтам.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Каб уключыць пашырэнне, зайдзіце ў <img data-l10n-name="addons-icon"/> Дадаткаў ў меню <img data-l10n-name="menu-icon"/>.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } не прадвызначаны браў�
 set-as-my-default-browser =
     .label = Зрабіць прадвызначаным…
     .accesskey = З
-startup-page = Пасля запуску { -brand-short-name }
-    .accesskey = а
-startup-user-homepage =
-    .label = паказваць вашу хатнюю старонку
-startup-blank-page =
-    .label = паказваць пустую старонку
-startup-prev-session =
-    .label = паказваць апошнія вокны і карткі
+startup-restore-previous-session =
+    .label = Узнаўляць папярэдні сеанс
+    .accesskey = с
+startup-restore-warn-on-quit =
+    .label = Папярэджваць пры выхадзе з браўзера
 disable-extension =
     .label = Адключыць пашырэнне
-home-page-header = Хатняя старонка
 tabs-group-header = Карткі
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab пераключае паміж карткамі ў парадку апошняга выкарыстання
@@ -184,6 +211,12 @@ choose-language-description = Выберыце мовы, якім вы адда�
 choose-button =
     .label = Выбраць…
     .accesskey = В
+choose-browser-language-description = Выберыце мовы для адлюстравання меню, паведамленняў і наменак { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Устанавіць альтэрнатывы…
+    .accesskey = э
+confirm-browser-language-change-description = Перазапусціць { -brand-short-name } для прымянення змен
+confirm-browser-language-change-button = Прымяніць і перастартаваць
 translate-web-pages =
     .label = Перакладаць змесціва
     .accesskey = П
@@ -194,7 +227,7 @@ translate-exceptions =
     .label = Выключэнні…
     .accesskey = ч
 check-user-spelling =
-    .label = Правяраць арфаграфію пад час набору
+    .label = Правяраць арфаграфію ў час набору
     .accesskey = н
 
 ## General Section - Files and Applications
@@ -235,7 +268,6 @@ play-drm-content =
 play-drm-content-learn-more = Даведацца больш
 update-application-title = Абнаўленні { -brand-short-name }
 update-application-description = Трымайце { -brand-short-name } абноўленым для лепшай прадукцыйнасці, стабільнасці і бяспекі.
-update-application-info = Версія { $version } <a>Што новага</a>
 update-application-version = Версія { $version } <a data-l10n-name="learn-more">Што новага</a>
 update-history =
     .label = Паказаць гісторыю абнаўленняў...
@@ -250,12 +282,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Ніколі не правяраць наяўнасць абнаўленняў (не рэкамендуецца)
     .accesskey = Н
+update-application-warning-cross-user-setting = Гэта налада дзейнічае на ўсе ўліковыя запісы Windows і профілі { -brand-short-name }, якія выкарыстоўваюць усталёўку { -brand-short-name }.
 update-application-use-service =
     .label = Выкарыстоўваць фонавую службу для ўсталявання абнаўленняў
     .accesskey = ф
 update-enable-search-update =
     .label = Аўтаматычна абнаўляць пашукавікі
     .accesskey = а
+update-pref-write-failure-title = Збой запісу
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Немагчыма захаваць налады. Не ўдалося запісаць у файл: { $path }
+update-setting-write-failure-title = Памылка пры захаванні налад абнаўлення
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } сутыкнуўся з памылкай і не захаваў гэтую змену. Звярніце ўвагу, што ўстаноўка гэтага параметру абнаўлення патрабуе дазволу на запіс у файл ніжэй. Вы або сістэмны адміністратар можаце мець магчымасць ліквідаваць гэтую памылку, даўшы групе Карыстальнікі поўны кантроль над гэтым файлам.
+    
+    Немагчыма запісаць у файл: { $path }
+update-in-progress-title = Абнаўленне ў працэсе
+update-in-progress-message = Хочаце, каб { -brand-short-name } працягнуў гэта абнаўленне?
+update-in-progress-ok-button = &Адкінуць
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Працягнуць
 
 ## General Section - Performance
 
@@ -271,7 +323,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Абмежаванне колькасці працэсаў
     .accesskey = а
 performance-limit-content-process-enabled-desc = Дадатковая колькасць працэсаў можа павялічыць прадукцыйнасць пры адкрыцці некалькіх картак, але браўзер будзе спажываць больш памяці.
-performance-limit-content-process-disabled-desc = Змена колькасці працэсаў магчымая толькі ў шматпрацэснай версіі { -brand-short-name }. <a>Даведайцеся, як праверыць, ці ўключана шматпрацэснасць</a>
 performance-limit-content-process-blocked-desc = Змена колькасці працэсаў магчымая толькі ў шматпрацэснай версіі { -brand-short-name }. <a data-l10n-name="learn-more">Даведайцеся, як праверыць, ці ўключана шматпрацэснасць</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -296,10 +347,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Шукаць тэкст, калі вы пачынаеце набор
     .accesskey = ч
+browsing-cfr-recommendations =
+    .label = Рэкамендаваць пашырэнні цягам аглядання
+    .accesskey = Р
+browsing-cfr-features =
+    .label = Рэкамендаваць функцыі цягам аглядання
+    .accesskey = а
+browsing-cfr-recommendations-learn-more = Падрабязней
 
 ## General Section - Proxy
 
-network-proxy-title = Проксі-сервер
+network-settings-title = Налады сеткі
+network-proxy-connection-description = Наладзіць спосаб злучэння { -brand-short-name } з Інтэрнэтам.
 network-proxy-connection-learn-more = Падрабязней
 network-proxy-connection-settings =
     .label = Налады…
@@ -341,9 +400,6 @@ use-current-pages =
 choose-bookmark =
     .label = Ужыць закладку…
     .accesskey = з
-restore-default =
-    .label = Аднавіць прадвызначаную
-    .accesskey = А
 
 ## Search Section
 
@@ -487,8 +543,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Захаваць
     .accesskey = х
-sync-mobilepromo-single = Злучыць іншую прыладу
-sync-mobilepromo-multi = Кіраваць прыладамі
+sync-connect-another-device = Злучыць іншую прыладу
+sync-manage-devices = Кіраваць прыладамі
+sync-fxa-begin-pairing = Спараваць прыладу
 sync-tos-link = Умовы абслугоўвання
 sync-fxa-privacy-notice = Паведамленнем аб прыватнасці
 
@@ -498,13 +555,16 @@ privacy-header = Прыватнасць браўзера
 
 ## Privacy Section - Forms
 
-forms-header = Формы & паролі
+logins-header = Лагіны & Паролі
 forms-ask-to-save-logins =
     .label = Прапаноўваць захаваць лагіны і паролі для вэб-сайтаў
     .accesskey = р
 forms-exceptions =
     .label = Выключэнні…
     .accesskey = ы
+forms-generate-passwords =
+    .label = Прапаноўваць і генераваць надзейныя паролі
+    .accesskey = г
 forms-saved-logins =
     .label = Захаваныя лагіны…
     .accesskey = З
@@ -540,9 +600,9 @@ history-dontremember-description = { -brand-short-name } будзе ўжывац
 history-private-browsing-permanent =
     .label = Заўсёды ўжываць прыватны рэжым аглядання
     .accesskey = д
-history-remember-option =
-    .label = Памятаць гісторыю маіх аглядання і сцягванняў
-    .accesskey = а
+history-remember-browser-option =
+    .label = Памятаць гісторыю аглядання і сцягванняў
+    .accesskey = П
 history-remember-search-option =
     .label = Памятаць гісторыю пошуку і запаўнення формаў
     .accesskey = ш
@@ -559,36 +619,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Кукі і дадзеныя сайтаў
+sitedata-total-size-calculating = Падлік памеру дадзеных сайтаў і кэша…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Вашы захаваныя кукі, дадзеныя сайтаў і кэш зараз займаюць { $value } { $unit } на дыску.
 sitedata-learn-more = Даведацца больш
-sitedata-accept-cookies-option =
-    .label = Прымаць кукі і дадзеныя з вэб-сайтаў (рэкамендуецца)
+sitedata-delete-on-close =
+    .label = Выдаляць кукі і звесткі сайтаў па закрыцці { -brand-short-name }
+    .accesskey = с
+sitedata-delete-on-close-private-browsing = У рэжыме сталага прыватнага аглядання кукі і звесткі сайтаў будуць заўсёды выдаляцца па закрыцці { -brand-short-name }.
+sitedata-allow-cookies-option =
+    .label = Прымаць кукі і звесткі сайтаў
     .accesskey = П
-sitedata-block-cookies-option =
-    .label = Блакаваць кукі і дадзеныя з сайтаў (можа прывесці да памылак адлюстравання вэб-сайта)
+sitedata-disallow-cookies-option =
+    .label = Блакаваць кукі і звесткі сайтаў
     .accesskey = Б
-sitedata-keep-until = Трымаць пакуль
-    .accesskey = п
-sitedata-keep-until-expire =
-    .label = Тэрмін канчаецца
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } закрыта
-sitedata-accept-third-party-desc = Прымаць кукі і дадзеныя з пабочных сайтаў
-    .accesskey = ы
-sitedata-accept-third-party-always-option =
-    .label = заўсёды
-sitedata-accept-third-party-visited-option =
-    .label = з наведаных
-sitedata-accept-third-party-never-option =
-    .label = ніколі
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Тып заблакаванага
+    .accesskey = Т
+sitedata-option-block-trackers =
+    .label = Трэкеры трэцяга боку
+sitedata-option-block-unvisited =
+    .label = Кукі з ненаведаных вэб-сайтаў
+sitedata-option-block-all-third-party =
+    .label = Усе кукі трэцяга боку (можа парушыць працу сайтаў)
+sitedata-option-block-all =
+    .label = Усе кукі (будзе перашкаджаць працы сайтаў)
 sitedata-clear =
     .label = Выдаліць дадзеныя…
     .accesskey = ы
 sitedata-settings =
     .label = Кіраваць дадзенымі…
     .accesskey = К
-sitedata-cookies-exceptions =
-    .label = Выключэнні…
-    .accesskey = В
+sitedata-cookies-permissions =
+    .label = Кіраваць дазволамі...
+    .accesskey = з
 
 ## Privacy Section - Address Bar
 
@@ -605,30 +672,73 @@ addressbar-locbar-openpage-option =
     .accesskey = А
 addressbar-suggestions-settings = Змяніць налады для падказак пашукавіка
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Блакаванне змесціва
+content-blocking-description = Блакуйце змесціва трэцяга боку, якое асочвае вас па сеціве. Кантралюйце, што з вашай анлайн-актыўнасці захоўваецца і распаўсюджваецца паміж вэб-сайтамі.
+content-blocking-section-description = Ахоўвайце сваю прыватнасць у час аглядання. Блакуйце нябачнае змесціва, якое асочвае сайты, што вы наведваеце, і збірае ваш профіль. Блакаванне часткі гэтага змесціва можа паскорыць загрузку старонак.
+content-blocking-learn-more = Падрабязней
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Стандартна
+    .accesskey = т
+content-blocking-setting-strict =
+    .label = Строга
+    .accesskey = о
+content-blocking-setting-custom =
+    .label = Адмыслова
+    .accesskey = с
+content-blocking-standard-description = Блакуе толькі вядомыя трэкеры ў прыватных вокнах.
+content-blocking-standard-desc = Збалансаваная абарона і прадукцыйнасць. Дазваляе некаторыя трэкеры, таму сайты працуюць спраўна.
+content-blocking-strict-desc = Блакуе ўсе трэкеры, якія { -brand-short-name } заўважае. Можа парушыць працу некаторых сайтаў.
+content-blocking-strict-description = Больш моцная абарона, можа парушыць працу некаторых сайтаў.
+content-blocking-custom-desc = Выберыце, што блакаваць.
+content-blocking-private-trackers = Вядомыя трэкеры толькі ў прыватных вокнах
+content-blocking-third-party-cookies = Трэцебаковыя кукі сачэння
+content-blocking-all-cookies = Усе кукі
+content-blocking-unvisited-cookies = Кукі з ненаведаных сайтаў
+content-blocking-all-windows-trackers = Вядомыя трэкеры ва ўсіх вокнах
+content-blocking-all-third-party-cookies = Усе кукі трэцяга боку
+content-blocking-cryptominers = Майнеры крыптавалют
+content-blocking-fingerprinters = Збіральнікі адбіткаў пальцаў
+content-blocking-warning-title = Увага!
+content-blocking-warning-description = Блакаванне змесціва можа парушыць працу некаторых вэб-сайтаў. Адключыць блакаванне на сайтах, якім вы давяраеце, лёгка.
+content-blocking-learn-how = Даведацца, як
+content-blocking-reload-description = Вам трэба будзе перазагрузіць свае карткі, каб прымяніць гэтыя змены.
+content-blocking-reload-tabs-button =
+    .label = Перачытаць усе карткі
+    .accesskey = к
+content-blocking-trackers-label =
+    .label = Трэкеры
+    .accesskey = е
+content-blocking-tracking-protection-option-all-windows =
+    .label = Ва ўсіх вокнах
+    .accesskey = ў
+content-blocking-option-private =
+    .label = Толькі ў прыватных вокнах
+    .accesskey = х
+content-blocking-tracking-protection-change-block-list = Змяніць спіс блакавання
+content-blocking-cookies-label =
+    .label = Кукі
+    .accesskey = К
+content-blocking-expand-section =
+    .tooltiptext = Дадатковая інфармацыя
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Майнеры крыптавалют
+    .accesskey = н
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Збіральнікі адбіткаў пальцаў
+    .accesskey = а
+
 ## Privacy Section - Tracking
 
-tracking-header = Ахова ад сачэння
-tracking-desc = Ахова ад сачэння блакуе сеціўныя сістэмы, якія збіраюць звесткі пра ваша агляданне на шматлікіх сайтах. <a data-l10n-name="learn-more">Даведацца больш пра ахову ад сачэння і прыватнасць</a>
-tracking-mode-label = Ахоўваць ад асочвання вядомымі сістэмамі
-tracking-mode-always =
-    .label = Заўсёды
-    .accesskey = З
-tracking-mode-private =
-    .label = Толькі ў прыватных вокнах
-    .accesskey = л
-tracking-mode-never =
-    .label = Ніколі
-    .accesskey = н
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Блакіраваць вядомыя элементы сачэння ў рэжыме прыватнага аглядання
-    .accesskey = м
-tracking-exceptions =
-    .label = Выключэнні…
+tracking-manage-exceptions =
+    .label = Кіраваць выключэннямі…
     .accesskey = ч
-tracking-change-block-list =
-    .label = Змяніць спіс блакавання…
-    .accesskey = З
 
 ## Privacy Section - Permissions
 
@@ -645,14 +755,24 @@ permissions-microphone = Мікрафон
 permissions-microphone-settings =
     .label = Налады…
     .accesskey = а
-permissions-notification = Апавяшчэнні
+permissions-notification = Абвесткі
 permissions-notification-settings =
     .label = Налады…
     .accesskey = а
 permissions-notification-link = Падрабязней
 permissions-notification-pause =
-    .label = Прыпыніць апавяшчэнні да перазапуску { -brand-short-name }
+    .label = Прыпыніць абвесткі да перазапуску { -brand-short-name }
     .accesskey = а
+permissions-block-autoplay-media2 =
+    .label = Блакаваць аўтаматычнае прайграванне гуку на сайтах
+    .accesskey = Б
+permissions-block-autoplay-media-exceptions =
+    .label = Выключэнні…
+    .accesskey = к
+permissions-autoplay = Аўтапрайграванне
+permissions-autoplay-settings =
+    .label = Налады…
+    .accesskey = Н
 permissions-block-popups =
     .label = Блакаваць выплыўныя вокны
     .accesskey = Б
@@ -679,13 +799,15 @@ collection-health-report =
     .label = Дазволіць { -brand-short-name } адпраўляць тэхнічныя звесткі і звесткі ўзаемадзеяння ў { -vendor-short-name }
     .accesskey = к
 collection-health-report-link = Даведацца больш
+collection-studies =
+    .label = Дазволіць { -brand-short-name } усталёўваць і выконваць даследаванні
+collection-studies-link = Прагляд даследаванняў { -brand-short-name }
+addon-recommendations =
+    .label = Дазволіць { -brand-short-name } рабіць персаналізаваныя рэкамендацыі пашырэнняў
+addon-recommendations-link = Падрабязней
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Адпраўка дадзеных адключана для гэтай канфігурацыі зборкі
-collection-browser-errors =
-    .label = Дазволіць { -brand-short-name } адпраўляць справаздачы аб памылках браўзера (уключаючы паведамленні пра памылкі) у { -vendor-short-name }
-    .accesskey = б
-collection-browser-errors-link = Падрабязней
 collection-backlogged-crash-reports =
     .label = Дазволіць { -brand-short-name } адпраўляць назапашаныя справаздачы аб памылках ад вашага імя
     .accesskey = а
@@ -728,3 +850,36 @@ certs-view =
 certs-devices =
     .label = Прылады бяспекі…
     .accesskey = б
+space-alert-learn-more-button =
+    .label = Падрабязней
+    .accesskey = П
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Адкрыць налады
+           *[other] Адкрыць налады
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] А
+           *[other] А
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] У { -brand-short-name } сканчаецца месца на дыску. Змесціва вэб-сайтаў можа адлюстроўвацца няправільна. Вы можаце выдаліць захаваныя дадзеныя ў Налады > Прыватнасць і бяспека > Кукі і дадзеныя сайтаў.
+       *[other] У { -brand-short-name } сканчаецца месца на дыску. Змесціва вэб-сайтаў можа адлюстроўвацца няправільна. Вы можаце выдаліць захаваныя дадзеныя ў Налады > Прыватнасць і бяспека > Кукі і дадзеныя сайтаў.
+    }
+space-alert-under-5gb-ok-button =
+    .label = OK, зразумела
+    .accesskey = K
+space-alert-under-5gb-message = У { -brand-short-name } сканчаецца месца на дыску. Змесціва вэб-сайтаў можа адлюстроўвацца няправільна. Клікніце “Падрабязней”, каб аптымізаваць выкарыстанне вашага дыска для паляпшэння вэб-сёрфінгу.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Працоўны стол
+downloads-folder-name = Сцягванні
+choose-download-folder-title = Выбар папкі сцягванняў:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Захаваць файлы ў { $service-name }

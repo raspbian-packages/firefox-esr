@@ -51,12 +51,6 @@ TextureClient* SharedPlanarYCbCrImage::GetTextureClient(
   return mTextureClient.get();
 }
 
-uint8_t* SharedPlanarYCbCrImage::GetBuffer() const {
-  // This should never be used
-  MOZ_ASSERT(false);
-  return nullptr;
-}
-
 already_AddRefed<gfx::SourceSurface>
 SharedPlanarYCbCrImage::GetAsSourceSurface() {
   if (!IsValid()) {
@@ -90,30 +84,8 @@ bool SharedPlanarYCbCrImage::CopyData(const PlanarYCbCrData& aData) {
 }
 
 bool SharedPlanarYCbCrImage::AdoptData(const Data& aData) {
-  MOZ_ASSERT(mTextureClient, "This Image should have already allocated data");
-  if (!mTextureClient) {
-    return false;
-  }
-  mData = aData;
-  mSize = aData.mPicSize;
-  mOrigin = gfx::IntPoint(aData.mPicX, aData.mPicY);
-
-  uint8_t* base = GetBuffer();
-  uint32_t yOffset = aData.mYChannel - base;
-  uint32_t cbOffset = aData.mCbChannel - base;
-  uint32_t crOffset = aData.mCrChannel - base;
-
-  auto fwd = mCompositable->GetForwarder();
-  bool hasIntermediateBuffer = ComputeHasIntermediateBuffer(
-      gfx::SurfaceFormat::YUV, fwd->GetCompositorBackendType());
-
-  static_cast<BufferTextureData*>(mTextureClient->GetInternalData())
-      ->SetDesciptor(YCbCrDescriptor(
-          aData.mYSize, aData.mYStride, aData.mCbCrSize, aData.mCbCrStride,
-          yOffset, cbOffset, crOffset, aData.mStereoMode, aData.mYUVColorSpace,
-          aData.mBitDepth, hasIntermediateBuffer));
-
-  return true;
+  MOZ_ASSERT(false, "This shouldn't be used.");
+  return false;
 }
 
 bool SharedPlanarYCbCrImage::IsValid() const {
@@ -168,7 +140,7 @@ bool SharedPlanarYCbCrImage::Allocate(PlanarYCbCrData& aData) {
   mData.mPicSize = aData.mPicSize;
   mData.mStereoMode = aData.mStereoMode;
   mData.mYUVColorSpace = aData.mYUVColorSpace;
-  mData.mBitDepth = aData.mBitDepth;
+  mData.mColorDepth = aData.mColorDepth;
   // those members are not always equal to aData's, due to potentially different
   // packing.
   mData.mYSkip = 0;

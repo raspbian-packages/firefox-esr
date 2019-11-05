@@ -19,7 +19,7 @@ AudioScheduledSourceNode::AudioScheduledSourceNode(
 
 JSObject* AudioScheduledSourceNode::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return AudioScheduledSourceNodeBinding::Wrap(aCx, this, aGivenProto);
+  return AudioScheduledSourceNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

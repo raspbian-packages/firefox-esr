@@ -6,8 +6,10 @@
 
 #include "nsHTMLButtonControlFrame.h"
 
+#include "mozilla/PresShell.h"
 #include "nsContainerFrame.h"
 #include "nsIFormControlFrame.h"
+#include "nsIFrameInlines.h"
 #include "nsPresContext.h"
 #include "nsGkAtoms.h"
 #include "nsButtonFrameRenderer.h"
@@ -19,16 +21,18 @@
 
 using namespace mozilla;
 
-nsContainerFrame* NS_NewHTMLButtonControlFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext) {
-  return new (aPresShell) nsHTMLButtonControlFrame(aContext);
+nsContainerFrame* NS_NewHTMLButtonControlFrame(PresShell* aPresShell,
+                                               ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsHTMLButtonControlFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsHTMLButtonControlFrame)
 
-nsHTMLButtonControlFrame::nsHTMLButtonControlFrame(nsStyleContext* aContext,
+nsHTMLButtonControlFrame::nsHTMLButtonControlFrame(ComputedStyle* aStyle,
+                                                   nsPresContext* aPresContext,
                                                    nsIFrame::ClassID aID)
-    : nsContainerFrame(aContext, aID) {}
+    : nsContainerFrame(aStyle, aPresContext, aID) {}
 
 nsHTMLButtonControlFrame::~nsHTMLButtonControlFrame() {}
 
@@ -46,7 +50,7 @@ void nsHTMLButtonControlFrame::Init(nsIContent* aContent,
 }
 
 NS_QUERYFRAME_HEAD(nsHTMLButtonControlFrame)
-NS_QUERYFRAME_ENTRY(nsIFormControlFrame)
+  NS_QUERYFRAME_ENTRY(nsIFormControlFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 #ifdef ACCESSIBILITY
@@ -71,32 +75,30 @@ nsresult nsHTMLButtonControlFrame::HandleEvent(nsPresContext* aPresContext,
 }
 
 bool nsHTMLButtonControlFrame::ShouldClipPaintingToBorderBox() {
-  return IsInput() || StyleDisplay()->mOverflowX != NS_STYLE_OVERFLOW_VISIBLE;
+  return IsInput() || StyleDisplay()->mOverflowX != StyleOverflow::Visible;
 }
 
 void nsHTMLButtonControlFrame::BuildDisplayList(
     nsDisplayListBuilder* aBuilder, const nsDisplayListSet& aLists) {
-  // Clip to our border area for event hit testing.
-  Maybe<DisplayListClipState::AutoSaveRestore> eventClipState;
-  const bool isForEventDelivery = aBuilder->IsForEventDelivery();
-  if (isForEventDelivery) {
-    eventClipState.emplace(aBuilder);
-    nsRect rect(aBuilder->ToReferenceFrame(this), GetSize());
-    nscoord radii[8];
-    bool hasRadii = GetBorderRadii(radii);
-    eventClipState->ClipContainingBlockDescendants(rect,
-                                                   hasRadii ? radii : nullptr);
-  }
-
   nsDisplayList onTop;
-  if (IsVisibleForPainting(aBuilder)) {
+  if (IsVisibleForPainting()) {
+    // Clip the button itself to its border area for event hit testing.
+    Maybe<DisplayListClipState::AutoSaveRestore> eventClipState;
+    if (aBuilder->IsForEventDelivery()) {
+      eventClipState.emplace(aBuilder);
+      nsRect rect(aBuilder->ToReferenceFrame(this), GetSize());
+      nscoord radii[8];
+      bool hasRadii = GetBorderRadii(radii);
+      eventClipState->ClipContainingBlockDescendants(
+          rect, hasRadii ? radii : nullptr);
+    }
+
     mRenderer.DisplayButton(aBuilder, aLists.BorderBackground(), &onTop);
   }
 
   nsDisplayListCollection set(aBuilder);
 
-  // Do not allow the child subtree to receive events.
-  if (!isForEventDelivery || aBuilder->HitTestIsForVisibility()) {
+  {
     DisplayListClipState::AutoSaveRestore clipState(aBuilder);
 
     if (ShouldClipPaintingToBorderBox()) {
@@ -111,7 +113,6 @@ void nsHTMLButtonControlFrame::BuildDisplayList(
 
     BuildDisplayListForChild(aBuilder, mFrames.FirstChild(), set,
                              DISPLAY_CHILD_FORCE_PSEUDO_STACKING_CONTEXT);
-    // That should put the display items in set.Content()
   }
 
   // Put the foreground outline and focus rects on top of the children
@@ -126,23 +127,27 @@ void nsHTMLButtonControlFrame::BuildDisplayList(
 
 nscoord nsHTMLButtonControlFrame::GetMinISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_MIN_WIDTH(this, result);
-
-  nsIFrame* kid = mFrames.FirstChild();
-  result = nsLayoutUtils::IntrinsicForContainer(aRenderingContext, kid,
-                                                nsLayoutUtils::MIN_ISIZE);
-
+  DISPLAY_MIN_INLINE_SIZE(this, result);
+  if (StyleDisplay()->IsContainSize()) {
+    result = 0;
+  } else {
+    nsIFrame* kid = mFrames.FirstChild();
+    result = nsLayoutUtils::IntrinsicForContainer(aRenderingContext, kid,
+                                                  nsLayoutUtils::MIN_ISIZE);
+  }
   return result;
 }
 
 nscoord nsHTMLButtonControlFrame::GetPrefISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_PREF_WIDTH(this, result);
-
-  nsIFrame* kid = mFrames.FirstChild();
-  result = nsLayoutUtils::IntrinsicForContainer(aRenderingContext, kid,
-                                                nsLayoutUtils::PREF_ISIZE);
-
+  DISPLAY_PREF_INLINE_SIZE(this, result);
+  if (StyleDisplay()->IsContainSize()) {
+    result = 0;
+  } else {
+    nsIFrame* kid = mFrames.FirstChild();
+    result = nsLayoutUtils::IntrinsicForContainer(aRenderingContext, kid,
+                                                  nsLayoutUtils::PREF_ISIZE);
+  }
   return result;
 }
 
@@ -166,7 +171,7 @@ void nsHTMLButtonControlFrame::Reflow(nsPresContext* aPresContext,
   MOZ_ASSERT(!firstKid->GetNextSibling(),
              "Button should have exactly one child frame");
   MOZ_ASSERT(
-      firstKid->StyleContext()->GetPseudo() == nsCSSAnonBoxes::buttonContent,
+      firstKid->Style()->GetPseudoType() == PseudoStyleType::buttonContent,
       "Button's child frame has unexpected pseudo type!");
 
   // XXXbz Eventually we may want to check-and-bail if
@@ -217,6 +222,16 @@ void nsHTMLButtonControlFrame::ReflowButtonContents(
   childPos.B(wm) = 0;  // This will be set properly later, after reflowing the
                        // child to determine its size.
 
+  const LayoutFrameType frameType = aFirstKid->Type();
+  if (frameType == LayoutFrameType::FlexContainer ||
+      frameType == LayoutFrameType::GridContainer) {
+    contentsReflowInput.ComputedBSize() = aButtonReflowInput.ComputedBSize();
+    contentsReflowInput.ComputedMinBSize() =
+        aButtonReflowInput.ComputedMinBSize();
+    contentsReflowInput.ComputedMaxBSize() =
+        aButtonReflowInput.ComputedMaxBSize();
+  }
+
   // We just pass a dummy containerSize here, as the child will be
   // repositioned later by FinishReflowChild.
   nsSize dummyContainerSize;
@@ -231,6 +246,11 @@ void nsHTMLButtonControlFrame::ReflowButtonContents(
   if (aButtonReflowInput.ComputedBSize() != NS_INTRINSICSIZE) {
     // Button has a fixed block-size -- that's its content-box bSize.
     buttonContentBox.BSize(wm) = aButtonReflowInput.ComputedBSize();
+  } else if (aButtonReflowInput.mStyleDisplay->IsContainSize()) {
+    // Button is intrinsically sized and has size containment.
+    // It should have a BSize that is either zero or the minimum
+    // specified BSize.
+    buttonContentBox.BSize(wm) = aButtonReflowInput.ComputedMinBSize();
   } else {
     // Button is intrinsically sized -- it should shrinkwrap the
     // button-contents' bSize:
@@ -247,6 +267,8 @@ void nsHTMLButtonControlFrame::ReflowButtonContents(
   }
   if (aButtonReflowInput.ComputedISize() != NS_INTRINSICSIZE) {
     buttonContentBox.ISize(wm) = aButtonReflowInput.ComputedISize();
+  } else if (aButtonReflowInput.mStyleDisplay->IsContainSize()) {
+    buttonContentBox.ISize(wm) = aButtonReflowInput.ComputedMinISize();
   } else {
     buttonContentBox.ISize(wm) = contentsDesiredSize.ISize(wm);
     buttonContentBox.ISize(wm) = NS_CSS_MINMAX(
@@ -289,7 +311,19 @@ void nsHTMLButtonControlFrame::ReflowButtonContents(
   // within our frame... unless it's orthogonal, in which case we'll use the
   // contents inline-size as an approximation for now.
   // XXX is there a better strategy? should we include border-padding?
-  if (aButtonDesiredSize.GetWritingMode().IsOrthogonalTo(wm)) {
+  if (aButtonReflowInput.mStyleDisplay->IsContainLayout()) {
+    // If we're layout-contained, then for the purposes of computing the
+    // ascent, we should pretend our button-contents frame had 0 height. In
+    // other words, we use the <button> content-rect's central block-axis
+    // position as our baseline.
+    // NOTE: This should be the same ascent that we'd get from the final 'else'
+    // clause here, if we had no DOM children. In that no-children scenario,
+    // the final 'else' clause's BlockStartAscent() term would be 0, and its
+    // childPos.B(wm) term would be equal to the same central offset that we're
+    // independently calculating here.
+    nscoord containAscent = (buttonContentBox.BSize(wm) / 2) + clbp.BStart(wm);
+    aButtonDesiredSize.SetBlockStartAscent(containAscent);
+  } else if (aButtonDesiredSize.GetWritingMode().IsOrthogonalTo(wm)) {
     aButtonDesiredSize.SetBlockStartAscent(contentsDesiredSize.ISize(wm));
   } else {
     aButtonDesiredSize.SetBlockStartAscent(
@@ -308,7 +342,7 @@ bool nsHTMLButtonControlFrame::GetVerticalAlignBaseline(
   if (!inner->GetVerticalAlignBaseline(aWM, aBaseline)) {
     // <input type=color> has an empty block frame as inner frame
     *aBaseline = inner->SynthesizeBaselineBOffsetFromBorderBox(
-        aWM, BaselineSharingGroup::eFirst);
+        aWM, BaselineSharingGroup::First);
   }
   nscoord innerBStart = inner->BStart(aWM, GetSize());
   *aBaseline += innerBStart;
@@ -328,7 +362,7 @@ bool nsHTMLButtonControlFrame::GetNaturalBaselineBOffset(
         inner->SynthesizeBaselineBOffsetFromBorderBox(aWM, aBaselineGroup);
   }
   nscoord innerBStart = inner->BStart(aWM, GetSize());
-  if (aBaselineGroup == BaselineSharingGroup::eFirst) {
+  if (aBaselineGroup == BaselineSharingGroup::First) {
     *aBaseline += innerBStart;
   } else {
     *aBaseline += BSize(aWM) - (innerBStart + inner->BSize(aWM));
@@ -345,14 +379,14 @@ nsresult nsHTMLButtonControlFrame::SetFormProperty(nsAtom* aName,
   return NS_OK;
 }
 
-nsStyleContext* nsHTMLButtonControlFrame::GetAdditionalStyleContext(
+ComputedStyle* nsHTMLButtonControlFrame::GetAdditionalComputedStyle(
     int32_t aIndex) const {
-  return mRenderer.GetStyleContext(aIndex);
+  return mRenderer.GetComputedStyle(aIndex);
 }
 
-void nsHTMLButtonControlFrame::SetAdditionalStyleContext(
-    int32_t aIndex, nsStyleContext* aStyleContext) {
-  mRenderer.SetStyleContext(aIndex, aStyleContext);
+void nsHTMLButtonControlFrame::SetAdditionalComputedStyle(
+    int32_t aIndex, ComputedStyle* aComputedStyle) {
+  mRenderer.SetComputedStyle(aIndex, aComputedStyle);
 }
 
 void nsHTMLButtonControlFrame::AppendDirectlyOwnedAnonBoxes(

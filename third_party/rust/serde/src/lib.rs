@@ -1,11 +1,3 @@
-// Copyright 2017 Serde Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 //! # Serde
 //!
 //! Serde is a framework for ***ser***ializing and ***de***serializing Rust data
@@ -50,15 +42,17 @@
 //! - [MessagePack], an efficient binary format that resembles a compact JSON.
 //! - [TOML], a minimal configuration format used by [Cargo].
 //! - [Pickle], a format common in the Python world.
-//! - [Hjson], a variant of JSON designed to be readable and writable by humans.
+//! - [RON], a Rusty Object Notation.
 //! - [BSON], the data storage and network transfer format used by MongoDB.
+//! - [Avro], a binary format used within Apache Hadoop, with support for schema
+//!   definition.
+//! - [Hjson], a variant of JSON designed to be readable and writable by humans.
+//! - [JSON5], A superset of JSON including some productions from ES5.
 //! - [URL], the x-www-form-urlencoded format.
-//! - [XML], the flexible machine-friendly W3C standard.
-//!   *(deserialization only)*
 //! - [Envy], a way to deserialize environment variables into Rust structs.
 //!   *(deserialization only)*
-//! - [Redis], deserialize values from Redis when using [redis-rs].
-//!   *(deserialization only)*
+//! - [Envy Store], a way to deserialize [AWS Parameter Store] parameters into
+//!   Rust structs. *(deserialization only)*
 //!
 //! [JSON]: https://github.com/serde-rs/json
 //! [Bincode]: https://github.com/TyOverby/bincode
@@ -67,56 +61,59 @@
 //! [MessagePack]: https://github.com/3Hren/msgpack-rust
 //! [TOML]: https://github.com/alexcrichton/toml-rs
 //! [Pickle]: https://github.com/birkenfeld/serde-pickle
-//! [Hjson]: https://github.com/laktak/hjson-rust
+//! [RON]: https://github.com/ron-rs/ron
 //! [BSON]: https://github.com/zonyitoo/bson-rs
+//! [Avro]: https://github.com/flavray/avro-rs
+//! [Hjson]: https://github.com/laktak/hjson-rust
+//! [JSON5]: https://github.com/callum-oakley/json5-rs
 //! [URL]: https://github.com/nox/serde_urlencoded
-//! [XML]: https://github.com/RReverser/serde-xml-rs
 //! [Envy]: https://github.com/softprops/envy
-//! [Redis]: https://github.com/OneSignal/serde-redis
+//! [Envy Store]: https://github.com/softprops/envy-store
 //! [Cargo]: http://doc.crates.io/manifest.html
-//! [redis-rs]: https://crates.io/crates/redis
+//! [AWS Parameter Store]: https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Serde types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/serde/1.0.27")]
+#![doc(html_root_url = "https://docs.rs/serde/1.0.88")]
 // Support using Serde without the standard library!
 #![cfg_attr(not(feature = "std"), no_std)]
 // Unstable functionality only if the user asks for it. For tracking and
 // discussion of these features please refer to this issue:
 //
 //    https://github.com/serde-rs/serde/issues/812
-#![cfg_attr(feature = "unstable", feature(nonzero, specialization))]
+#![cfg_attr(feature = "unstable", feature(specialization, never_type))]
 #![cfg_attr(feature = "alloc", feature(alloc))]
+#![cfg_attr(feature = "cargo-clippy", allow(renamed_and_removed_lints))]
 #![cfg_attr(feature = "cargo-clippy", deny(clippy, clippy_pedantic))]
-// Whitelisted clippy lints
-#![cfg_attr(feature = "cargo-clippy",
-            allow(cast_lossless, const_static_lifetime, doc_markdown, linkedlist,
-                  needless_pass_by_value, type_complexity, unreadable_literal,
-                  zero_prefixed_literal))]
-// Whitelisted clippy_pedantic lints
-#![cfg_attr(feature = "cargo-clippy", allow(
-// integer and float ser/de requires these sorts of casts
-    cast_possible_truncation,
-    cast_possible_wrap,
-    cast_precision_loss,
-    cast_sign_loss,
-// simplifies some macros
-    invalid_upcast_comparisons,
-// things are often more readable this way
-    option_unwrap_used,
-    result_unwrap_used,
-    shadow_reuse,
-    single_match_else,
-    stutter,
-    use_self,
-// not practical
-    missing_docs_in_private_items,
-// alternative is not stable
-    empty_enum,
-    use_debug,
-))]
-// Blacklisted Rust lints.
+// Ignored clippy and clippy_pedantic lints
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(
+        // not available in our oldest supported compiler
+        const_static_lifetime,
+        empty_enum,
+        redundant_field_names,
+        // integer and float ser/de requires these sorts of casts
+        cast_possible_truncation,
+        cast_possible_wrap,
+        cast_precision_loss,
+        cast_sign_loss,
+        // things are often more readable this way
+        cast_lossless,
+        module_name_repetitions,
+        single_match_else,
+        type_complexity,
+        use_self,
+        zero_prefixed_literal,
+        // not practical
+        needless_pass_by_value,
+        similar_names,
+        // preference
+        doc_markdown,
+    )
+)]
+// Rustc lints.
 #![deny(missing_docs, unused_imports)]
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,24 +121,21 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-#[cfg(all(feature = "unstable", feature = "std"))]
-extern crate core;
-
 /// A facade around all the types we need from the `std`, `core`, and `alloc`
 /// crates. This avoids elaborate import wrangling having to happen in every
 /// module.
 mod lib {
     mod core {
-        #[cfg(feature = "std")]
-        pub use std::*;
         #[cfg(not(feature = "std"))]
         pub use core::*;
+        #[cfg(feature = "std")]
+        pub use std::*;
     }
 
-    pub use self::core::{cmp, iter, mem, ops, slice, str};
-    pub use self::core::{isize, i16, i32, i64, i8};
-    pub use self::core::{usize, u16, u32, u64, u8};
+    pub use self::core::{cmp, iter, mem, num, slice, str};
     pub use self::core::{f32, f64};
+    pub use self::core::{i16, i32, i64, i8, isize};
+    pub use self::core::{u16, u32, u64, u8, usize};
 
     pub use self::core::cell::{Cell, RefCell};
     pub use self::core::clone::{self, Clone};
@@ -149,43 +143,44 @@ mod lib {
     pub use self::core::default::{self, Default};
     pub use self::core::fmt::{self, Debug, Display};
     pub use self::core::marker::{self, PhantomData};
+    pub use self::core::ops::Range;
     pub use self::core::option::{self, Option};
     pub use self::core::result::{self, Result};
 
-    #[cfg(feature = "std")]
-    pub use std::borrow::{Cow, ToOwned};
     #[cfg(all(feature = "alloc", not(feature = "std")))]
     pub use alloc::borrow::{Cow, ToOwned};
-
     #[cfg(feature = "std")]
-    pub use std::string::String;
+    pub use std::borrow::{Cow, ToOwned};
+
     #[cfg(all(feature = "alloc", not(feature = "std")))]
     pub use alloc::string::{String, ToString};
-
     #[cfg(feature = "std")]
-    pub use std::vec::Vec;
+    pub use std::string::String;
+
     #[cfg(all(feature = "alloc", not(feature = "std")))]
     pub use alloc::vec::Vec;
-
     #[cfg(feature = "std")]
-    pub use std::boxed::Box;
+    pub use std::vec::Vec;
+
     #[cfg(all(feature = "alloc", not(feature = "std")))]
     pub use alloc::boxed::Box;
+    #[cfg(feature = "std")]
+    pub use std::boxed::Box;
 
-    #[cfg(all(feature = "rc", feature = "std"))]
-    pub use std::rc::Rc;
     #[cfg(all(feature = "rc", feature = "alloc", not(feature = "std")))]
-    pub use alloc::rc::Rc;
-
+    pub use alloc::rc::{Rc, Weak as RcWeak};
     #[cfg(all(feature = "rc", feature = "std"))]
-    pub use std::sync::Arc;
-    #[cfg(all(feature = "rc", feature = "alloc", not(feature = "std")))]
-    pub use alloc::arc::Arc;
+    pub use std::rc::{Rc, Weak as RcWeak};
 
+    #[cfg(all(feature = "rc", feature = "alloc", not(feature = "std")))]
+    pub use alloc::sync::{Arc, Weak as ArcWeak};
+    #[cfg(all(feature = "rc", feature = "std"))]
+    pub use std::sync::{Arc, Weak as ArcWeak};
+
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    pub use alloc::collections::{BTreeMap, BTreeSet, BinaryHeap, LinkedList, VecDeque};
     #[cfg(feature = "std")]
     pub use std::collections::{BTreeMap, BTreeSet, BinaryHeap, LinkedList, VecDeque};
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
-    pub use alloc::{BTreeMap, BTreeSet, BinaryHeap, LinkedList, VecDeque};
 
     #[cfg(feature = "std")]
     pub use std::{error, net};
@@ -203,12 +198,21 @@ mod lib {
     #[cfg(feature = "std")]
     pub use std::path::{Path, PathBuf};
     #[cfg(feature = "std")]
-    pub use std::time::{Duration, SystemTime, UNIX_EPOCH};
-    #[cfg(feature = "std")]
     pub use std::sync::{Mutex, RwLock};
+    #[cfg(feature = "std")]
+    pub use std::time::{SystemTime, UNIX_EPOCH};
 
-    #[cfg(feature = "unstable")]
-    pub use core::nonzero::{NonZero, Zeroable};
+    #[cfg(any(core_duration, feature = "std"))]
+    pub use self::core::time::Duration;
+
+    #[cfg(range_inclusive)]
+    pub use self::core::ops::RangeInclusive;
+
+    #[cfg(all(feature = "std", collections_bound))]
+    pub use std::collections::Bound;
+
+    #[cfg(ops_bound)]
+    pub use self::core::ops::Bound;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -216,13 +220,16 @@ mod lib {
 #[macro_use]
 mod macros;
 
-pub mod ser;
+#[macro_use]
+mod integer128;
+
 pub mod de;
+pub mod ser;
 
 #[doc(inline)]
-pub use ser::{Serialize, Serializer};
-#[doc(inline)]
 pub use de::{Deserialize, Deserializer};
+#[doc(inline)]
+pub use ser::{Serialize, Serializer};
 
 // Generated code uses these to support no_std. Not public API.
 #[doc(hidden)]
@@ -233,40 +240,6 @@ pub mod export;
 pub mod private;
 
 // Re-export #[derive(Serialize, Deserialize)].
-//
-// This is a workaround for https://github.com/rust-lang/cargo/issues/1286.
-// Without this re-export, crates that put Serde derives behind a cfg_attr would
-// need to use some silly feature name that depends on both serde and
-// serde_derive.
-//
-//     [features]
-//     serde-impls = ["serde", "serde_derive"]
-//
-//     [dependencies]
-//     serde = { version = "1.0", optional = true }
-//     serde_derive = { version = "1.0", optional = true }
-//
-//     # Used like this:
-//     # #[cfg(feature = "serde-impls")]
-//     # #[macro_use]
-//     # extern crate serde_derive;
-//     #
-//     # #[cfg_attr(feature = "serde-impls", derive(Serialize, Deserialize))]
-//     # struct S { /* ... */ }
-//
-// The re-exported derives allow crates to use "serde" as the name of their
-// Serde feature which is more intuitive.
-//
-//     [dependencies]
-//     serde = { version = "1.0", optional = true, features = ["derive"] }
-//
-//     # Used like this:
-//     # #[cfg(feature = "serde")]
-//     # #[macro_use]
-//     # extern crate serde;
-//     #
-//     # #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-//     # struct S { /* ... */ }
 //
 // The reason re-exporting is not enabled by default is that disabling it would
 // be annoying for crates that provide handwritten impls or data formats. They

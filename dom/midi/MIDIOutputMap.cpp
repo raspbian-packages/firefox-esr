@@ -24,7 +24,7 @@ MIDIOutputMap::MIDIOutputMap(nsPIDOMWindowInner* aParent) : mParent(aParent) {}
 
 JSObject* MIDIOutputMap::WrapObject(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return MIDIOutputMapBinding::Wrap(aCx, this, aGivenProto);
+  return MIDIOutputMap_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

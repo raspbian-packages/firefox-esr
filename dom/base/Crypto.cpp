@@ -33,9 +33,10 @@ Crypto::Crypto(nsIGlobalObject* aParent) : mParent(aParent) {}
 
 Crypto::~Crypto() {}
 
-/* virtual */ JSObject* Crypto::WrapObject(JSContext* aCx,
-                                           JS::Handle<JSObject*> aGivenProto) {
-  return CryptoBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* Crypto::WrapObject(JSContext* aCx,
+                             JS::Handle<JSObject*> aGivenProto) {
+  return Crypto_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void Crypto::GetRandomValues(JSContext* aCx, const ArrayBufferView& aArray,

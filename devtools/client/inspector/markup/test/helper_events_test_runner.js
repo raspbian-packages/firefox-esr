@@ -6,25 +6,27 @@
 /* import-globals-from helper_diff.js */
 "use strict";
 
+const beautify = require("devtools/shared/jsbeautify/beautify");
+
 loadHelperScript("helper_diff.js");
 
 /**
  * Generator function that runs checkEventsForNode() for each object in the
  * TEST_DATA array.
  */
-function* runEventPopupTests(url, tests) {
-  let {inspector, testActor} = yield openInspectorForURL(url);
+async function runEventPopupTests(url, tests) {
+  const { inspector, testActor } = await openInspectorForURL(url);
 
-  yield inspector.markup.expandAll();
+  await inspector.markup.expandAll();
 
-  for (let test of tests) {
-    yield checkEventsForNode(test, inspector, testActor);
+  for (const test of tests) {
+    await checkEventsForNode(test, inspector, testActor);
   }
 
   // Wait for promises to avoid leaks when running this as a single test.
   // We need to do this because we have opened a bunch of popups and don't them
   // to affect other test runs when they are GCd.
-  yield promiseNextTick();
+  await promiseNextTick();
 }
 
 /**
@@ -47,25 +49,27 @@ function* runEventPopupTests(url, tests) {
  * opened
  * @param {TestActorFront} testActor
  */
-function* checkEventsForNode(test, inspector, testActor) {
-  let {selector, expected, beforeTest, isSourceMapped} = test;
-  let container = yield getContainerForSelector(selector, inspector);
+async function checkEventsForNode(test, inspector, testActor) {
+  const { selector, expected, beforeTest, isSourceMapped } = test;
+  const container = await getContainerForSelector(selector, inspector);
 
   if (typeof beforeTest === "function") {
-    yield beforeTest(inspector, testActor);
+    await beforeTest(inspector, testActor);
   }
 
-  let evHolder = container.elt.querySelector(".markupview-events");
+  const evHolder = container.elt.querySelector(
+    ".inspector-badge.interactive[data-event]"
+  );
 
   if (expected.length === 0) {
-    // if no event is expected, simply check that the event bubble is hidden
-    is(evHolder.style.display, "none", "event bubble should be hidden");
+    // If no event is expected, check that event bubble is hidden.
+    ok(!evHolder, "event bubble should be hidden");
     return;
   }
 
-  let tooltip = inspector.markup.eventDetailsTooltip;
+  const tooltip = inspector.markup.eventDetailsTooltip;
 
-  yield selectNode(selector, inspector);
+  await selectNode(selector, inspector);
 
   let sourceMapPromise = null;
   if (isSourceMapped) {
@@ -74,63 +78,94 @@ function* checkEventsForNode(test, inspector, testActor) {
 
   // Click button to show tooltip
   info("Clicking evHolder");
-  EventUtils.synthesizeMouseAtCenter(evHolder, {},
-    inspector.markup.doc.defaultView);
-  yield tooltip.once("shown");
+  evHolder.scrollIntoView();
+  EventUtils.synthesizeMouseAtCenter(
+    evHolder,
+    {},
+    inspector.markup.doc.defaultView
+  );
+  await tooltip.once("shown");
   info("tooltip shown");
 
   if (isSourceMapped) {
     info("Waiting for source map to be applied");
-    yield sourceMapPromise;
+    await sourceMapPromise;
   }
 
   // Check values
-  let headers = tooltip.panel.querySelectorAll(".event-header");
-  let nodeFront = container.node;
-  let cssSelector = nodeFront.nodeName + "#" + nodeFront.id;
+  const headers = tooltip.panel.querySelectorAll(".event-header");
+  const nodeFront = container.node;
+  const cssSelector = nodeFront.nodeName + "#" + nodeFront.id;
 
   for (let i = 0; i < headers.length; i++) {
-    info("Processing header[" + i + "] for " + cssSelector);
+    const label = `${cssSelector}.${expected[i].type} (index ${i})`;
+    info(`${label} START`);
 
-    let header = headers[i];
-    let type = header.querySelector(".event-tooltip-event-type");
-    let filename = header.querySelector(".event-tooltip-filename");
-    let attributes = header.querySelectorAll(".event-tooltip-attributes");
-    let contentBox = header.nextElementSibling;
+    const header = headers[i];
+    const type = header.querySelector(".event-tooltip-event-type");
+    const filename = header.querySelector(".event-tooltip-filename");
+    const attributes = header.querySelectorAll(".event-tooltip-attributes");
+    const contentBox = header.nextElementSibling;
 
     info("Looking for " + type.textContent);
 
-    is(type.textContent, expected[i].type,
-       "type matches for " + cssSelector);
-    is(filename.textContent, expected[i].filename,
-       "filename matches for " + cssSelector);
+    is(type.textContent, expected[i].type, "type matches for " + cssSelector);
+    is(
+      filename.textContent,
+      expected[i].filename,
+      "filename matches for " + cssSelector
+    );
 
-    is(attributes.length, expected[i].attributes.length,
-       "we have the correct number of attributes");
+    is(
+      attributes.length,
+      expected[i].attributes.length,
+      "we have the correct number of attributes"
+    );
 
     for (let j = 0; j < expected[i].attributes.length; j++) {
-      is(attributes[j].textContent, expected[i].attributes[j],
-         "attribute[" + j + "] matches for " + cssSelector);
+      is(
+        attributes[j].textContent,
+        expected[i].attributes[j],
+        "attribute[" + j + "] matches for " + cssSelector
+      );
     }
 
-    is(header.classList.contains("content-expanded"), false,
-        "We are not in expanded state");
+    is(
+      header.classList.contains("content-expanded"),
+      false,
+      "We are not in expanded state"
+    );
 
     // Make sure the header is not hidden by scrollbars before clicking.
     header.scrollIntoView();
 
-    EventUtils.synthesizeMouseAtCenter(header, {}, type.ownerGlobal);
-    yield tooltip.once("event-tooltip-ready");
+    // Avoid clicking the header's center (could hit the debugger button)
+    EventUtils.synthesizeMouse(header, 2, 2, {}, type.ownerGlobal);
+    await tooltip.once("event-tooltip-ready");
 
-    is(header.classList.contains("content-expanded"), true,
-        "We are in expanded state and icon changed");
+    is(
+      header.classList.contains("content-expanded"),
+      true,
+      "We are in expanded state and icon changed"
+    );
 
-    let editor = tooltip.eventTooltip._eventEditors.get(contentBox).editor;
-    testDiff(editor.getText(), expected[i].handler,
-       "handler matches for " + cssSelector, ok);
+    const editor = tooltip.eventTooltip._eventEditors.get(contentBox).editor;
+    const tidiedHandler = beautify.js(expected[i].handler, {
+      indent_size: 2,
+    });
+    testDiff(
+      editor.getText(),
+      tidiedHandler,
+      "handler matches for " + cssSelector,
+      ok
+    );
+
+    info(`${label} END`);
   }
 
+  const tooltipHidden = tooltip.once("hidden");
   tooltip.hide();
+  await tooltipHidden;
 }
 
 /**
@@ -152,9 +187,9 @@ function testDiff(text1, text2, msg) {
     return;
   }
 
-  let result = textDiff(text1, text2);
+  const result = textDiff(text1, text2);
 
-  for (let {atom, operation} of result) {
+  for (const { atom, operation } of result) {
     switch (operation) {
       case "add":
         out += "+ " + atom + "\n";

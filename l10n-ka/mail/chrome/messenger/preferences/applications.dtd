@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY  typeColumn.label            "შიგთავსის ტიპი">
+<!ENTITY  typeColumn.label            "შიგთავსის სახეობა">
 <!ENTITY  typeColumn.accesskey        "T">
 
 <!ENTITY  actionColumn2.label         "ქმედება">
@@ -15,7 +15,7 @@
 
 <!ENTITY saveTo.label                 "ფაილების შენახვა…">
 <!ENTITY saveTo.accesskey             "S">
-<!ENTITY alwaysAsk.label              "ყოველთვის დამეკითხე ფაილების შენახვისას">
+<!ENTITY alwaysAsk.label              "ფაილების შესანახი მდებარეობის ყოველ ჯერზე მითითება">
 <!ENTITY alwaysAsk.accesskey          "A">
 <!ENTITY chooseFolderWin.label        "ნუსხა…">
 <!ENTITY chooseFolderWin.accesskey    "B">
@@ -28,11 +28,13 @@
 <!ENTITY addCloudFileAccount1.label       "დამატება…">
 <!ENTITY addCloudFileAccount1.accesskey   "დ">
 <!ENTITY addCloudFileAccount.description  "ფაილების ბმების საცავის ახალი მომსახურების დამატება">
-<!ENTITY removeCloudFileAccount.label     "ამოღება">
+<!ENTITY removeCloudFileAccount.label     "მოცილება">
 <!ENTITY removeCloudFileAccount.accesskey "R">
-<!ENTITY authRequired.description         "თქვენი ავტორიზაცია აუცილებელია საცავის ამ მომსახურების პარამეტრების სანახავად.">
-<!ENTITY authRequired.button.label        "ავტორიზაცია">
+<!ENTITY authRequired.description         "ანგარიშზე შესვლა აუცილებელია საცავის ამ მომსახურების პარამეტრების სანახავად.">
+<!ENTITY authRequired.button.label        "შესვლა">
 <!ENTITY authRequired.button.accesskey    "U">
+
+<!ENTITY findCloudFileProviders.label     "მეტი მომსახურების მოძიება…">
 
 <!ENTITY enableCloudFileAccountOffer.label "შემოთავაზება ფაილებისთვის ზომით მეტი ვიდრე">
 <!ENTITY enableCloudFileAccountOffer.mb "მბ">

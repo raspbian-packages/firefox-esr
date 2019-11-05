@@ -15,6 +15,7 @@
 #include "mozilla/dom/WebCryptoTask.h"
 #include "mozilla/Move.h"
 #include "mozilla/Sprintf.h"
+#include "mtransport/dtlsidentity.h"
 
 #include <cstdio>
 
@@ -88,7 +89,7 @@ class GenerateRTCCertificateTask : public GenerateAsymmetricKeyTask {
       return NS_ERROR_DOM_UNKNOWN_ERR;
     }
 
-    UniqueSECKEYPublicKey publicKey(mKeyPair->mPublicKey.get()->GetPublicKey());
+    UniqueSECKEYPublicKey publicKey(mKeyPair->mPublicKey->GetPublicKey());
     UniqueCERTSubjectPublicKeyInfo spki(
         SECKEY_CreateSubjectPublicKeyInfo(publicKey.get()));
     if (!spki) {
@@ -153,8 +154,7 @@ class GenerateRTCCertificateTask : public GenerateAsymmetricKeyTask {
       return NS_ERROR_DOM_UNKNOWN_ERR;
     }
 
-    UniqueSECKEYPrivateKey privateKey(
-        mKeyPair->mPrivateKey.get()->GetPrivateKey());
+    UniqueSECKEYPrivateKey privateKey(mKeyPair->mPrivateKey->GetPrivateKey());
     rv = SEC_DerSignData(arena, signedCert, innerDER.data, innerDER.len,
                          privateKey.get(), mSignatureAlg);
     if (rv != SECSuccess) {
@@ -172,7 +172,7 @@ class GenerateRTCCertificateTask : public GenerateAsymmetricKeyTask {
         return NS_ERROR_DOM_NOT_SUPPORTED_ERR;
       }
 
-      KeyAlgorithmProxy& alg = mKeyPair->mPublicKey.get()->Algorithm();
+      KeyAlgorithmProxy& alg = mKeyPair->mPublicKey->Algorithm();
       if (alg.mType != KeyAlgorithmProxy::RSA ||
           !alg.mRsa.mHash.mName.EqualsLiteral(WEBCRYPTO_ALG_SHA256)) {
         return NS_ERROR_DOM_NOT_SUPPORTED_ERR;
@@ -209,7 +209,7 @@ class GenerateRTCCertificateTask : public GenerateAsymmetricKeyTask {
   virtual void Resolve() override {
     // Make copies of the private key and certificate, otherwise, when this
     // object is deleted, the structures they reference will be deleted too.
-    UniqueSECKEYPrivateKey key = mKeyPair->mPrivateKey.get()->GetPrivateKey();
+    UniqueSECKEYPrivateKey key = mKeyPair->mPrivateKey->GetPrivateKey();
     CERTCertificate* cert = CERT_DupCertificate(mCertificate.get());
     RefPtr<RTCCertificate> result =
         new RTCCertificate(mResultPromise->GetParentObject(), key.release(),
@@ -246,7 +246,7 @@ static PRTime ReadExpires(JSContext* aCx, const ObjectOrString& aOptions,
 
 already_AddRefed<Promise> RTCCertificate::GenerateCertificate(
     const GlobalObject& aGlobal, const ObjectOrString& aOptions,
-    ErrorResult& aRv, JSCompartment* aCompartment) {
+    ErrorResult& aRv, JS::Compartment* aCompartment) {
   nsIGlobalObject* global = xpc::NativeGlobal(aGlobal.Get());
   RefPtr<Promise> p = Promise::Create(global, aRv);
   if (aRv.Failed()) {
@@ -291,13 +291,14 @@ RefPtr<DtlsIdentity> RTCCertificate::CreateDtlsIdentity() const {
   }
   UniqueSECKEYPrivateKey key(SECKEY_CopyPrivateKey(mPrivateKey.get()));
   UniqueCERTCertificate cert(CERT_DupCertificate(mCertificate.get()));
-  RefPtr<DtlsIdentity> id = new DtlsIdentity(Move(key), Move(cert), mAuthType);
+  RefPtr<DtlsIdentity> id =
+      new DtlsIdentity(std::move(key), std::move(cert), mAuthType);
   return id;
 }
 
 JSObject* RTCCertificate::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return RTCCertificateBinding::Wrap(aCx, this, aGivenProto);
+  return RTCCertificate_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 bool RTCCertificate::WritePrivateKey(JSStructuredCloneWriter* aWriter) const {

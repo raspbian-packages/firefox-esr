@@ -7,17 +7,27 @@ function test() {
   waitForExplicitFinish();
 
   let newState = {
-    windows: [{
-      tabs: [
-        { entries: [{ url: "about:mozilla", triggeringPrincipal_base64 }], extData: { "foo": "bar" } },
-        { entries: [{ url: "http://example.org", triggeringPrincipal_base64 }], extData: { "baz": "qux" } }
-      ]
-    }]
+    windows: [
+      {
+        tabs: [
+          {
+            entries: [{ url: "about:mozilla", triggeringPrincipal_base64 }],
+            extData: { foo: "bar" },
+          },
+          {
+            entries: [
+              { url: "http://example.org", triggeringPrincipal_base64 },
+            ],
+            extData: { baz: "qux" },
+          },
+        ],
+      },
+    ],
   };
 
   let busyEventCount = 0,
-      readyEventCount = 0,
-      tabRestoredCount = 0;
+    readyEventCount = 0,
+    tabRestoredCount = 0;
 
   function onSSWindowStateBusy(aEvent) {
     busyEventCount++;
@@ -25,13 +35,14 @@ function test() {
 
   function onSSWindowStateReady(aEvent) {
     readyEventCount++;
-    is(ss.getTabValue(gBrowser.tabs[0], "foo"), "bar");
-    is(ss.getTabValue(gBrowser.tabs[1], "baz"), "qux");
+    is(ss.getCustomTabValue(gBrowser.tabs[0], "foo"), "bar");
+    is(ss.getCustomTabValue(gBrowser.tabs[1], "baz"), "qux");
   }
 
   function onSSTabRestored(aEvent) {
-    if (++tabRestoredCount < 2)
+    if (++tabRestoredCount < 2) {
       return;
+    }
 
     is(busyEventCount, 1);
     is(readyEventCount, 1);
@@ -52,4 +63,3 @@ function test() {
 
   ss.setWindowState(window, JSON.stringify(newState), true);
 }
-

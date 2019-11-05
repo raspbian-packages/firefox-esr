@@ -6,10 +6,11 @@
 "use strict";
 
 const mimeSvc = Cc["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService);
-const handlerSvc = Cc["@mozilla.org/uriloader/handler-service;1"]
-                     .getService(Ci.nsIHandlerService);
+const handlerSvc = Cc["@mozilla.org/uriloader/handler-service;1"].getService(
+  Ci.nsIHandlerService
+);
 
-let contentTypes = {
+const contentTypes = {
   valid: [
     "application/json",
     "application/manifest+json",
@@ -26,32 +27,34 @@ let contentTypes = {
   ],
 };
 
-add_task(function* () {
+add_task(async function() {
   info("Test JSON content types started");
 
   // Prevent saving files to disk.
-  let useDownloadDir = SpecialPowers.getBoolPref("browser.download.useDownloadDir");
+  const useDownloadDir = SpecialPowers.getBoolPref(
+    "browser.download.useDownloadDir"
+  );
   SpecialPowers.setBoolPref("browser.download.useDownloadDir", false);
-  let { MockFilePicker } = SpecialPowers;
+  const { MockFilePicker } = SpecialPowers;
   MockFilePicker.init(window);
   MockFilePicker.returnValue = MockFilePicker.returnCancel;
 
-  for (let kind of Object.keys(contentTypes)) {
-    let isValid = kind === "valid";
-    for (let type of contentTypes[kind]) {
+  for (const kind of Object.keys(contentTypes)) {
+    const isValid = kind === "valid";
+    for (const type of contentTypes[kind]) {
       // Prevent "Open or Save" dialogs, which would make the test fail.
-      let mimeInfo = mimeSvc.getFromTypeAndExtension(type, null);
-      let exists = handlerSvc.exists(mimeInfo);
-      let {alwaysAskBeforeHandling} = mimeInfo;
+      const mimeInfo = mimeSvc.getFromTypeAndExtension(type, null);
+      const exists = handlerSvc.exists(mimeInfo);
+      const { alwaysAskBeforeHandling } = mimeInfo;
       mimeInfo.alwaysAskBeforeHandling = false;
       handlerSvc.store(mimeInfo);
 
-      yield testType(isValid, type);
-      yield testType(isValid, type, ";foo=bar+json");
+      await testType(isValid, type);
+      await testType(isValid, type, ";foo=bar+json");
 
       // Restore old nsIMIMEInfo
       if (exists) {
-        Object.assign(mimeInfo, {alwaysAskBeforeHandling});
+        Object.assign(mimeInfo, { alwaysAskBeforeHandling });
         handlerSvc.store(mimeInfo);
       } else {
         handlerSvc.remove(mimeInfo);
@@ -60,21 +63,38 @@ add_task(function* () {
   }
 
   // Restore old pref
-  registerCleanupFunction(function () {
+  registerCleanupFunction(function() {
     MockFilePicker.cleanup();
-    SpecialPowers.setBoolPref("browser.download.useDownloadDir", useDownloadDir);
+    SpecialPowers.setBoolPref(
+      "browser.download.useDownloadDir",
+      useDownloadDir
+    );
   });
 });
 
 function testType(isValid, type, params = "") {
   const TEST_JSON_URL = "data:" + type + params + ",[1,2,3]";
-  return addJsonViewTab(TEST_JSON_URL).then(async function () {
-    ok(isValid, "The JSON Viewer should only load for valid content types.");
-    is(await evalInContent("document.contentType"), type, "Got the right content type");
+  return addJsonViewTab(TEST_JSON_URL).then(
+    async function() {
+      ok(isValid, "The JSON Viewer should only load for valid content types.");
+      await ContentTask.spawn(gBrowser.selectedBrowser, type, function(
+        contentType
+      ) {
+        is(
+          content.document.contentType,
+          contentType,
+          "Got the right content type"
+        );
+      });
 
-    let count = await getElementCount(".jsonPanelBox .treeTable .treeRow");
-    is(count, 3, "There must be expected number of rows");
-  }, function () {
-    ok(!isValid, "The JSON Viewer should only not load for invalid content types.");
-  });
+      const count = await getElementCount(".jsonPanelBox .treeTable .treeRow");
+      is(count, 3, "There must be expected number of rows");
+    },
+    function() {
+      ok(
+        !isValid,
+        "The JSON Viewer should only not load for invalid content types."
+      );
+    }
+  );
 }

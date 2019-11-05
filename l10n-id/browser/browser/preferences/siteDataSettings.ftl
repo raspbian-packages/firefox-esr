@@ -7,6 +7,7 @@
 
 site-data-settings-window =
     .title = Kelola Kuki dan Data Situs
+site-data-settings-description = Situs web ini menyimpan kuki dan data situs pada komputer Anda. { -brand-short-name } menyimpan data dari situs web dengan penyimpanan tetap hingga Anda menghapusnya sendiri, dan menghapus data dari situs web dengan penyimpanan tidak tetap ketika memerlukan ruang penyimpanan lebih.
 site-data-search-textbox =
     .placeholder = Cari situs web
     .accesskey = C
@@ -27,11 +28,30 @@ site-data-button-cancel =
 site-data-button-save =
     .label = Simpan Perubahan
     .accesskey = a
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-usage-pattern = { $value } { $unit }
+site-usage-persistent = { site-usage-pattern } (Persisten)
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-storage-usage =
+    .value = { $value } { $unit }
+site-storage-persistent =
+    .value = { site-storage-usage.value } (Persisten)
+site-data-remove-all =
+    .label = Hapus Seluruhnya
+    .accesskey = u
+site-data-remove-shown =
+    .label = Hapus Semua Yang Muncul
+    .accesskey = u
 
 ## Removing
 
-site-data-removing-window =
+site-data-removing-dialog =
     .title = { site-data-removing-header }
+    .buttonlabelaccept = Buang
 site-data-removing-header = Menghapus Kuki dan Data Situs
 site-data-removing-desc = Menghapus kuki dan data situs mungkin mengeluarkan Anda dari situs web. Yakin ingin melakukannya?
 site-data-removing-table = Kuki dan data situs untuk situs web berikut ini akan dihapus

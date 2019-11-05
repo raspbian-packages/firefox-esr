@@ -5,21 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsError.h"
-#include "MediaDecoderStateMachine.h"
 #include "MediaResource.h"
 #ifdef MOZ_AV1
-#include "AOMDecoder.h"
+#  include "AOMDecoder.h"
 #endif
 #include "OpusDecoder.h"
 #include "VPXDecoder.h"
 #include "WebMDemuxer.h"
 #include "WebMBufferedParser.h"
 #include "gfx2DGlue.h"
-#include "mozilla/Atomics.h"
 #include "mozilla/EndianUtils.h"
 #include "mozilla/SharedThreadPool.h"
 #include "MediaDataDemuxer.h"
-#include "nsAutoPtr.h"
 #include "nsAutoRef.h"
 #include "NesteggPacketHolder.h"
 #include "XiphExtradata.h"
@@ -47,8 +44,6 @@ LazyLogModule gNesteggLog("Nestegg");
 // This value is based on what appears to be a reasonable value as most webm
 // files encountered appear to have keyframes located < 4s.
 #define MAX_LOOK_AHEAD 10000000
-
-static Atomic<uint32_t> sStreamSourceID(0u);
 
 // Functions for reading and seeking using WebMDemuxer required for
 // nestegg_io. The 'user data' passed to these functions is the
@@ -366,7 +361,9 @@ nsresult WebMDemuxer::ReadMetadata() {
         mInfo.mVideo.mDuration = TimeUnit::FromNanoseconds(duration);
       }
       mInfo.mVideo.mCrypto = GetTrackCrypto(TrackInfo::kVideoTrack, track);
-      if (mInfo.mVideo.mCrypto.mValid) {
+      if (mInfo.mVideo.mCrypto.IsEncrypted()) {
+        MOZ_ASSERT(mInfo.mVideo.mCrypto.mCryptoScheme == CryptoScheme::Cenc,
+                   "WebM should only use cenc scheme");
         mCrypto.AddInitData(NS_LITERAL_STRING("webm"),
                             mInfo.mVideo.mCrypto.mKeyId);
       }
@@ -375,6 +372,10 @@ nsresult WebMDemuxer::ReadMetadata() {
       r = nestegg_track_audio_params(context, track, &params);
       if (r == -1) {
         return NS_ERROR_FAILURE;
+      }
+      if (params.rate > AudioInfo::MAX_RATE ||
+          params.channels > AudioConfig::ChannelLayout::MAX_CHANNELS) {
+        return NS_ERROR_DOM_MEDIA_METADATA_ERR;
       }
 
       mAudioTrack = track;
@@ -431,7 +432,9 @@ nsresult WebMDemuxer::ReadMetadata() {
         mInfo.mAudio.mDuration = TimeUnit::FromNanoseconds(duration);
       }
       mInfo.mAudio.mCrypto = GetTrackCrypto(TrackInfo::kAudioTrack, track);
-      if (mInfo.mAudio.mCrypto.mValid) {
+      if (mInfo.mAudio.mCrypto.IsEncrypted()) {
+        MOZ_ASSERT(mInfo.mAudio.mCrypto.mCryptoScheme == CryptoScheme::Cenc,
+                   "WebM should only use cenc scheme");
         mCrypto.AddInitData(NS_LITERAL_STRING("webm"),
                             mInfo.mAudio.mCrypto.mKeyId);
       }
@@ -513,10 +516,10 @@ CryptoTrack WebMDemuxer::GetTrackCrypto(TrackInfo::TrackType aType,
   }
 
   if (!initData.IsEmpty()) {
-    crypto.mValid = true;
-    // crypto.mMode is not used for WebMs
+    // Webm only uses a cenc style scheme.
+    crypto.mCryptoScheme = CryptoScheme::Cenc;
     crypto.mIVSize = WEBM_IV_SIZE;
-    crypto.mKeyId = Move(initData);
+    crypto.mKeyId = std::move(initData);
   }
 
   return crypto;
@@ -549,45 +552,47 @@ nsresult WebMDemuxer::GetNextPacket(TrackInfo::TrackType aType,
   // the timestamp of the next packet for this track.  If we've reached the
   // end of the resource, use the file's duration as the end time of this
   // video frame.
+  RefPtr<NesteggPacketHolder> next_holder;
+  rv = NextPacket(aType, next_holder);
+  if (NS_FAILED(rv) && rv != NS_ERROR_DOM_MEDIA_END_OF_STREAM) {
+    return rv;
+  }
+
   int64_t next_tstamp = INT64_MIN;
+  auto calculateNextTimestamp = [&](auto&& pushPacket, auto&& lastFrameTime,
+                                    int64_t trackEndTime) {
+    if (next_holder) {
+      next_tstamp = next_holder->Timestamp();
+      (this->*pushPacket)(next_holder);
+    } else if (duration >= 0) {
+      next_tstamp = tstamp + duration;
+    } else if (lastFrameTime.isSome()) {
+      next_tstamp = tstamp + (tstamp - lastFrameTime.ref());
+    } else if (mIsMediaSource) {
+      (this->*pushPacket)(holder);
+    } else {
+      // If we can't get frame's duration, it means either we need to wait for
+      // more data for MSE case or this is the last frame for file resource
+      // case.
+      if (tstamp > trackEndTime) {
+        // This shouldn't happen, but some muxers give incorrect durations to
+        // segments, then have samples appear beyond those durations.
+        WEBM_DEBUG("Found tstamp=%" PRIi64 " > trackEndTime=%" PRIi64
+                   " while calculating next timestamp! Indicates a bad mux! "
+                   "Will use tstamp value.",
+                   tstamp, trackEndTime);
+      }
+      next_tstamp = std::max<int64_t>(tstamp, trackEndTime);
+    }
+    lastFrameTime = Some(tstamp);
+  };
+
   if (aType == TrackInfo::kAudioTrack) {
-    RefPtr<NesteggPacketHolder> next_holder;
-    rv = NextPacket(aType, next_holder);
-    if (NS_FAILED(rv) && rv != NS_ERROR_DOM_MEDIA_END_OF_STREAM) {
-      return rv;
-    }
-    if (next_holder) {
-      next_tstamp = next_holder->Timestamp();
-      PushAudioPacket(next_holder);
-    } else if (duration >= 0) {
-      next_tstamp = tstamp + duration;
-    } else if (!mIsMediaSource ||
-               (mIsMediaSource && mLastAudioFrameTime.isSome())) {
-      next_tstamp = tstamp;
-      next_tstamp += tstamp - mLastAudioFrameTime.refOr(0);
-    } else {
-      PushAudioPacket(holder);
-    }
-    mLastAudioFrameTime = Some(tstamp);
-  } else if (aType == TrackInfo::kVideoTrack) {
-    RefPtr<NesteggPacketHolder> next_holder;
-    rv = NextPacket(aType, next_holder);
-    if (NS_FAILED(rv) && rv != NS_ERROR_DOM_MEDIA_END_OF_STREAM) {
-      return rv;
-    }
-    if (next_holder) {
-      next_tstamp = next_holder->Timestamp();
-      PushVideoPacket(next_holder);
-    } else if (duration >= 0) {
-      next_tstamp = tstamp + duration;
-    } else if (!mIsMediaSource ||
-               (mIsMediaSource && mLastVideoFrameTime.isSome())) {
-      next_tstamp = tstamp;
-      next_tstamp += tstamp - mLastVideoFrameTime.refOr(0);
-    } else {
-      PushVideoPacket(holder);
-    }
-    mLastVideoFrameTime = Some(tstamp);
+    calculateNextTimestamp(&WebMDemuxer::PushAudioPacket, mLastAudioFrameTime,
+                           mInfo.mAudio.mDuration.ToMicroseconds());
+  } else {
+    calculateNextTimestamp(&WebMDemuxer::PushVideoPacket, mLastVideoFrameTime,
+                           mInfo.mVideo.mDuration.ToMicroseconds());
   }
 
   if (mIsMediaSource && next_tstamp == INT64_MIN) {
@@ -666,33 +671,6 @@ nsresult WebMDemuxer::GetNextPacket(TrackInfo::TrackType aType,
             NS_WARNING("Cannot detect keyframes in unknown WebM video codec");
             return NS_ERROR_FAILURE;
         }
-        if (isKeyframe) {
-          // For both VP8 and VP9, we only look for resolution changes
-          // on keyframes. Other resolution changes are invalid.
-          auto dimensions = gfx::IntSize(0, 0);
-          switch (mVideoCodec) {
-            case NESTEGG_CODEC_VP8:
-              dimensions =
-                  VPXDecoder::GetFrameSize(sample, VPXDecoder::Codec::VP8);
-              break;
-            case NESTEGG_CODEC_VP9:
-              dimensions =
-                  VPXDecoder::GetFrameSize(sample, VPXDecoder::Codec::VP9);
-              break;
-#ifdef MOZ_AV1
-            case NESTEGG_CODEC_AV1:
-              dimensions = AOMDecoder::GetFrameSize(sample);
-              break;
-#endif
-          }
-          if (mLastSeenFrameSize.isSome() &&
-              (dimensions != mLastSeenFrameSize.value())) {
-            mInfo.mVideo.mDisplay = dimensions;
-            mSharedVideoTrackInfo =
-                new TrackInfoSharedPtr(mInfo.mVideo, ++sStreamSourceID);
-          }
-          mLastSeenFrameSize = Some(dimensions);
-        }
       }
     }
 
@@ -716,7 +694,9 @@ nsresult WebMDemuxer::GetNextPacket(TrackInfo::TrackType aType,
     }
     sample->mTimecode = TimeUnit::FromMicroseconds(tstamp);
     sample->mTime = TimeUnit::FromMicroseconds(tstamp);
-    sample->mDuration = TimeUnit::FromMicroseconds(next_tstamp - tstamp);
+    if (next_tstamp > tstamp) {
+      sample->mDuration = TimeUnit::FromMicroseconds(next_tstamp - tstamp);
+    }
     sample->mOffset = holder->Offset();
     sample->mKeyframe = isKeyframe;
     if (discardPadding && i == count - 1) {
@@ -738,11 +718,11 @@ nsresult WebMDemuxer::GetNextPacket(TrackInfo::TrackType aType,
 
     if (packetEncryption == NESTEGG_PACKET_HAS_SIGNAL_BYTE_ENCRYPTED ||
         packetEncryption == NESTEGG_PACKET_HAS_SIGNAL_BYTE_PARTITIONED) {
-      nsAutoPtr<MediaRawDataWriter> writer(sample->CreateWriter());
+      UniquePtr<MediaRawDataWriter> writer(sample->CreateWriter());
       unsigned char const* iv;
       size_t ivLength;
       nestegg_packet_iv(holder->Packet(), &iv, &ivLength);
-      writer->mCrypto.mValid = true;
+      writer->mCrypto.mCryptoScheme = CryptoScheme::Cenc;
       writer->mCrypto.mIVSize = ivLength;
       if (ivLength == 0) {
         // Frame is not encrypted. This shouldn't happen as it means the
@@ -797,7 +777,7 @@ nsresult WebMDemuxer::GetNextPacket(TrackInfo::TrackType aType,
             encrypted = !encrypted;
             lastOffset = partition;
 
-            assert(lastOffset <= length);
+            MOZ_ASSERT(lastOffset <= length);
           }
 
           // Add the data between the last offset and the end of the data.
@@ -824,7 +804,7 @@ nsresult WebMDemuxer::GetNextPacket(TrackInfo::TrackType aType,
 
           // Assert that the lengths of the encrypted and plain samples add to
           // the length of the data.
-          assert(
+          MOZ_ASSERT(
               ((size_t)(std::accumulate(writer->mCrypto.mPlainSizes.begin(),
                                         writer->mCrypto.mPlainSizes.end(), 0) +
                         std::accumulate(writer->mCrypto.mEncryptedSizes.begin(),
@@ -832,9 +812,6 @@ nsresult WebMDemuxer::GetNextPacket(TrackInfo::TrackType aType,
                                         0)) == length));
         }
       }
-    }
-    if (aType == TrackInfo::kVideoTrack) {
-      sample->mTrackInfo = mSharedVideoTrackInfo;
     }
     aSamples->Push(sample);
   }
@@ -1093,7 +1070,6 @@ RefPtr<WebMTrackDemuxer::SeekPromise> WebMTrackDemuxer::Seek(
 
 nsresult WebMTrackDemuxer::NextSample(RefPtr<MediaRawData>& aData) {
   nsresult rv = NS_ERROR_DOM_MEDIA_END_OF_STREAM;
-  ;
   while (mSamples.GetSize() < 1 &&
          NS_SUCCEEDED((rv = mParent->GetNextPacket(mType, &mSamples)))) {
   }
@@ -1116,6 +1092,12 @@ RefPtr<WebMTrackDemuxer::SamplesPromise> WebMTrackDemuxer::GetSamples(
     rv = NextSample(sample);
     if (NS_FAILED(rv)) {
       break;
+    }
+    // Ignore empty samples.
+    if (sample->Size() == 0) {
+      WEBM_DEBUG(
+          "0 sized sample encountered while getting samples, skipping it");
+      continue;
     }
     if (mNeedKeyframe && !sample->mKeyframe) {
       continue;
@@ -1177,7 +1159,7 @@ void WebMTrackDemuxer::SetNextKeyFrameTime() {
   }
   // We may have demuxed more than intended, so ensure that all frames are kept
   // in the right order.
-  mSamples.PushFront(Move(skipSamplesQueue));
+  mSamples.PushFront(std::move(skipSamplesQueue));
 
   if (frameTime.IsValid()) {
     mNextKeyframeTime.emplace(frameTime);
@@ -1206,9 +1188,8 @@ void WebMTrackDemuxer::Reset() {
 
 void WebMTrackDemuxer::UpdateSamples(nsTArray<RefPtr<MediaRawData>>& aSamples) {
   for (const auto& sample : aSamples) {
-    if (sample->mCrypto.mValid) {
-      nsAutoPtr<MediaRawDataWriter> writer(sample->CreateWriter());
-      writer->mCrypto.mMode = mInfo->mCrypto.mMode;
+    if (sample->mCrypto.IsEncrypted()) {
+      UniquePtr<MediaRawDataWriter> writer(sample->CreateWriter());
       writer->mCrypto.mIVSize = mInfo->mCrypto.mIVSize;
       writer->mCrypto.mKeyId.AppendElements(mInfo->mCrypto.mKeyId);
     }
@@ -1254,7 +1235,8 @@ WebMTrackDemuxer::SkipToNextRandomAccessPoint(const TimeUnit& aTimeThreshold) {
     return SkipAccessPointPromise::CreateAndResolve(parsed, __func__);
   } else {
     SkipFailureHolder failure(NS_ERROR_DOM_MEDIA_END_OF_STREAM, parsed);
-    return SkipAccessPointPromise::CreateAndReject(Move(failure), __func__);
+    return SkipAccessPointPromise::CreateAndReject(std::move(failure),
+                                                   __func__);
   }
 }
 

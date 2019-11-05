@@ -1,12 +1,11 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=4 sw=4 et tw=80:
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: set ts=4 sw=2 et tw=80:
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "JavaScriptChild.h"
-#include "mozilla/dom/ContentChild.h"
 #include "mozilla/dom/BindingUtils.h"
 #include "mozilla/ipc/MessageChannel.h"
 #include "nsContentUtils.h"
@@ -37,9 +36,6 @@ JavaScriptChild::~JavaScriptChild() {
 }
 
 bool JavaScriptChild::init() {
-  if (!WrapperOwner::init()) return false;
-  if (!WrapperAnswer::init()) return false;
-
   JSContext* cx = dom::danger::GetJSContext();
   JS_AddWeakPointerZonesCallback(
       cx, UpdateChildWeakPointersBeforeSweepingZoneGroup, this);

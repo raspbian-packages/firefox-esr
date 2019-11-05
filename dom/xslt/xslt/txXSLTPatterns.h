@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -81,23 +81,23 @@ class txPattern {
   virtual void setSubPatternAt(uint32_t aPos, txPattern* aPattern) override
 
 #ifndef TX_TO_STRING
-#define TX_DECL_PATTERN TX_DECL_PATTERN_BASE
+#  define TX_DECL_PATTERN TX_DECL_PATTERN_BASE
 #else
-#define TX_DECL_PATTERN \
-  TX_DECL_PATTERN_BASE; \
-  void toString(nsAString& aDest) override
+#  define TX_DECL_PATTERN \
+    TX_DECL_PATTERN_BASE; \
+    void toString(nsAString& aDest) override
 #endif
 
 #define TX_IMPL_PATTERN_STUBS_NO_SUB_EXPR(_class)               \
   Expr* _class::getSubExprAt(uint32_t aPos) { return nullptr; } \
   void _class::setSubExprAt(uint32_t aPos, Expr* aExpr) {       \
-    NS_NOTREACHED("setting bad subexpression index");           \
+    MOZ_ASSERT_UNREACHABLE("setting bad subexpression index");  \
   }
 
 #define TX_IMPL_PATTERN_STUBS_NO_SUB_PATTERN(_class)                    \
   txPattern* _class::getSubPatternAt(uint32_t aPos) { return nullptr; } \
   void _class::setSubPatternAt(uint32_t aPos, txPattern* aPattern) {    \
-    NS_NOTREACHED("setting bad subexpression index");                   \
+    MOZ_ASSERT_UNREACHABLE("setting bad subexpression index");          \
   }
 
 class txUnionPattern : public txPattern {

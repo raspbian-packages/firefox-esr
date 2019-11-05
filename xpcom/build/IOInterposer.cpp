@@ -18,10 +18,11 @@
 #include "mozilla/ThreadLocal.h"
 #include "nscore.h"  // for NS_FREE_PERMANENT_DATA
 #if !defined(XP_WIN)
-#include "NSPRInterposer.h"
+#  include "NSPRInterposer.h"
 #endif  // !defined(XP_WIN)
 #include "nsXULAppAPI.h"
 #include "PoisonIOInterposer.h"
+#include "prenv.h"
 
 using namespace mozilla;
 
@@ -396,7 +397,14 @@ bool IOInterposer::Init() {
   MainThreadIOLogger::Init();
 
   // Now we initialize the various interposers depending on platform
-  InitPoisonIOInterposer();
+
+  // Under certain conditions it may be unsafe to initialize PoisonIOInterposer,
+  // such as when a background thread is already running. We set this variable
+  // elsewhere when such a condition applies.
+  if (!PR_GetEnv("MOZ_DISABLE_POISON_IO_INTERPOSER")) {
+    InitPoisonIOInterposer();
+  }
+
   // We don't hook NSPR on Windows because PoisonIOInterposer captures a
   // superset of the former's events.
 #if !defined(XP_WIN)
@@ -417,9 +425,9 @@ bool IOInterposeObserver::IsMainThread() {
 }
 
 void IOInterposer::Clear() {
-/* Clear() is a no-op on release builds so that we may continue to trap I/O
-   until process termination. In leak-checking builds, we need to shut down
-   IOInterposer so that all references are properly released. */
+  /* Clear() is a no-op on release builds so that we may continue to trap I/O
+     until process termination. In leak-checking builds, we need to shut down
+     IOInterposer so that all references are properly released. */
 #ifdef NS_FREE_PERMANENT_DATA
   UnregisterCurrentThread();
   sMasterList = nullptr;

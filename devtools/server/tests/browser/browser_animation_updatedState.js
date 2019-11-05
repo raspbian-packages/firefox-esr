@@ -7,39 +7,49 @@
 
 // Check the animation player's updated state
 
-add_task(async function () {
-  let {client, walker, animations} =
-    await initAnimationsFrontForUrl(MAIN_DOMAIN + "animation.html");
+add_task(async function() {
+  const { target, walker, animations } = await initAnimationsFrontForUrl(
+    MAIN_DOMAIN + "animation.html"
+  );
 
   await playStateIsUpdatedDynamically(walker, animations);
 
-  await client.close();
+  await target.destroy();
   gBrowser.removeCurrentTab();
 });
 
 async function playStateIsUpdatedDynamically(walker, animations) {
   info("Getting the test node (which runs a very long animation)");
   // The animation lasts for 100s, to avoid intermittents.
-  let node = await walker.querySelector(walker.rootNode, ".long-animation");
+  const node = await walker.querySelector(walker.rootNode, ".long-animation");
 
   info("Getting the animation player front for this node");
-  let [player] = await animations.getAnimationPlayersForNode(node);
-  await player.ready();
+  const [player] = await animations.getAnimationPlayersForNode(node);
 
   let state = await player.getCurrentState();
-  is(state.playState, "running",
-    "The playState is running while the animation is running");
+  is(
+    state.playState,
+    "running",
+    "The playState is running while the animation is running"
+  );
 
-  info("Change the animation's currentTime to be near the end and wait for " +
-       "it to finish");
-  let onFinished = waitForAnimationPlayState(player, "finished");
+  info(
+    "Change the animation's currentTime to be near the end and wait for " +
+      "it to finish"
+  );
+  const onFinished = waitForAnimationPlayState(player, "finished");
   // Set the currentTime to 98s, knowing that the animation lasts for 100s.
-  await player.setCurrentTime(98 * 1000);
+  await animations.setCurrentTimes([player], 98 * 1000, false);
   state = await onFinished;
-  is(state.playState, "finished",
-    "The animation has ended and the state has been updated");
-  ok(state.currentTime > player.initialState.currentTime,
-    "The currentTime has been updated");
+  is(
+    state.playState,
+    "finished",
+    "The animation has ended and the state has been updated"
+  );
+  ok(
+    state.currentTime > player.initialState.currentTime,
+    "The currentTime has been updated"
+  );
 }
 
 async function waitForAnimationPlayState(player, playState) {

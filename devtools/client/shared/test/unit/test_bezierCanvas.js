@@ -7,8 +7,11 @@
 
 // Tests the BezierCanvas API in the CubicBezierWidget module
 
-var {require} = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
-var {CubicBezier, BezierCanvas} = require("devtools/client/shared/widgets/CubicBezierWidget");
+var { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm");
+var {
+  CubicBezier,
+  BezierCanvas,
+} = require("devtools/client/shared/widgets/CubicBezierWidget");
 
 function run_test() {
   offsetsGetterReturnsData();
@@ -19,7 +22,7 @@ function run_test() {
 function offsetsGetterReturnsData() {
   info("offsets getter returns an array of 2 offset objects");
 
-  let b = new BezierCanvas(getCanvasMock(), getCubicBezier(), [.25, 0]);
+  let b = new BezierCanvas(getCanvasMock(), getCubicBezier(), [0.25, 0]);
   let offsets = b.offsets;
 
   Assert.equal(offsets.length, 2);
@@ -48,27 +51,33 @@ function offsetsGetterReturnsData() {
 function convertsOffsetsToCoordinates() {
   info("Converts offsets to coordinates");
 
-  let b = new BezierCanvas(getCanvasMock(), getCubicBezier(), [.25, 0]);
+  const b = new BezierCanvas(getCanvasMock(), getCubicBezier(), [0.25, 0]);
 
-  let coordinates = b.offsetsToCoordinates({style: {
-    left: "0px",
-    top: "0px"
-  }});
+  let coordinates = b.offsetsToCoordinates({
+    style: {
+      left: "0px",
+      top: "0px",
+    },
+  });
   Assert.equal(coordinates.length, 2);
   Assert.equal(coordinates[0], 0);
   Assert.equal(coordinates[1], 1.5);
 
-  coordinates = b.offsetsToCoordinates({style: {
-    left: "0px",
-    top: "300px"
-  }});
+  coordinates = b.offsetsToCoordinates({
+    style: {
+      left: "0px",
+      top: "300px",
+    },
+  });
   Assert.equal(coordinates[0], 0);
   Assert.equal(coordinates[1], 0);
 
-  coordinates = b.offsetsToCoordinates({style: {
-    left: "200px",
-    top: "100px"
-  }});
+  coordinates = b.offsetsToCoordinates({
+    style: {
+      left: "200px",
+      top: "100px",
+    },
+  });
   Assert.equal(coordinates[0], 1);
   Assert.equal(coordinates[1], 1);
 }
@@ -77,7 +86,7 @@ function plotsCanvas() {
   info("Plots the curve to the canvas");
 
   let hasDrawnCurve = false;
-  let b = new BezierCanvas(getCanvasMock(), getCubicBezier(), [.25, 0]);
+  const b = new BezierCanvas(getCanvasMock(), getCubicBezier(), [0.25, 0]);
   b.ctx.bezierCurveTo = () => {
     hasDrawnCurve = true;
   };
@@ -92,7 +101,7 @@ function getCubicBezier() {
 
 function getCanvasMock(w = 200, h = 400) {
   return {
-    getContext: function () {
+    getContext: function() {
       return {
         scale: () => {},
         translate: () => {},
@@ -107,10 +116,10 @@ function getCanvasMock(w = 200, h = 400) {
         bezierCurveTo: () => {},
         save: () => {},
         restore: () => {},
-        setTransform: () => {}
+        setTransform: () => {},
       };
     },
     width: w,
-    height: h
+    height: h,
   };
 }

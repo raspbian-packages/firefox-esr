@@ -10,6 +10,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <vector>
 
 #include <mozilla/UniquePtr.h>
 #include "nsError.h"
@@ -19,7 +20,6 @@
 #include "signaling/src/sdp/Sdp.h"
 #include "signaling/src/sdp/SdpAttribute.h"
 #include "signaling/src/sdp/SdpMediaSection.h"
-#include "signaling/src/common/PtrVector.h"
 
 namespace mozilla {
 
@@ -31,16 +31,16 @@ class JsepTrackNegotiatedDetails {
       : mExtmap(orig.mExtmap),
         mUniquePayloadTypes(orig.mUniquePayloadTypes),
         mTias(orig.mTias) {
-    for (const JsepTrackEncoding* encoding : orig.mEncodings.values) {
-      mEncodings.values.push_back(new JsepTrackEncoding(*encoding));
+    for (const auto& encoding : orig.mEncodings) {
+      mEncodings.emplace_back(new JsepTrackEncoding(*encoding));
     }
   }
 
-  size_t GetEncodingCount() const { return mEncodings.values.size(); }
+  size_t GetEncodingCount() const { return mEncodings.size(); }
 
   const JsepTrackEncoding& GetEncoding(size_t index) const {
-    MOZ_RELEASE_ASSERT(index < mEncodings.values.size());
-    return *mEncodings.values[index];
+    MOZ_RELEASE_ASSERT(index < mEncodings.size());
+    return *mEncodings[index];
   }
 
   const SdpExtmapAttributeList::Extmap* GetExt(
@@ -71,7 +71,7 @@ class JsepTrackNegotiatedDetails {
 
   std::map<std::string, SdpExtmapAttributeList::Extmap> mExtmap;
   std::vector<uint8_t> mUniquePayloadTypes;
-  PtrVector<JsepTrackEncoding> mEncodings;
+  std::vector<UniquePtr<JsepTrackEncoding>> mEncodings;
   uint32_t mTias;  // bits per second
 };
 
@@ -85,16 +85,13 @@ class JsepTrack {
 
   virtual ~JsepTrack() {}
 
-  void UpdateTrackIds(const std::vector<std::string>& streamIds,
-                      const std::string& trackId) {
+  void UpdateStreamIds(const std::vector<std::string>& streamIds) {
     mStreamIds = streamIds;
-    mTrackId = trackId;
   }
 
-  void ClearTrackIds() {
-    mStreamIds.clear();
-    mTrackId.clear();
-  }
+  void SetTrackId(const std::string& aTrackId) { mTrackId = aTrackId; }
+
+  void ClearStreamIds() { mStreamIds.clear(); }
 
   void UpdateRecvTrack(const Sdp& sdp, const SdpMediaSection& msection) {
     MOZ_ASSERT(mDirection == sdp::kRecv);
@@ -106,7 +103,7 @@ class JsepTrack {
     mRemoteSetSendBit = msection.IsSending();
 
     if (msection.IsSending()) {
-      (void)helper.GetIdsFromMsid(sdp, msection, &mStreamIds, &mTrackId);
+      (void)helper.GetIdsFromMsid(sdp, msection, &mStreamIds);
     } else {
       mStreamIds.clear();
     }
@@ -139,8 +136,9 @@ class JsepTrack {
       mActive = rhs.mActive;
       mRemoteSetSendBit = rhs.mRemoteSetSendBit;
 
-      for (const JsepCodecDescription* codec : rhs.mPrototypeCodecs.values) {
-        mPrototypeCodecs.values.push_back(codec->Clone());
+      mPrototypeCodecs.clear();
+      for (const auto& codec : rhs.mPrototypeCodecs) {
+        mPrototypeCodecs.emplace_back(codec->Clone());
       }
       if (rhs.mNegotiatedDetails) {
         mNegotiatedDetails.reset(
@@ -157,8 +155,6 @@ class JsepTrack {
   virtual const std::vector<std::string>& GetStreamIds() const {
     return mStreamIds;
   }
-
-  virtual const std::string& GetTrackId() const { return mTrackId; }
 
   virtual const std::string& GetCNAME() const { return mCNAME; }
 
@@ -177,18 +173,16 @@ class JsepTrack {
   bool GetRemoteSetSendBit() const { return mRemoteSetSendBit; }
 
   virtual void PopulateCodecs(
-      const std::vector<JsepCodecDescription*>& prototype);
+      const std::vector<UniquePtr<JsepCodecDescription>>& prototype);
 
   template <class UnaryFunction>
   void ForEachCodec(UnaryFunction func) {
-    std::for_each(mPrototypeCodecs.values.begin(),
-                  mPrototypeCodecs.values.end(), func);
+    std::for_each(mPrototypeCodecs.begin(), mPrototypeCodecs.end(), func);
   }
 
   template <class BinaryPredicate>
   void SortCodecs(BinaryPredicate sorter) {
-    std::stable_sort(mPrototypeCodecs.values.begin(),
-                     mPrototypeCodecs.values.end(), sorter);
+    std::stable_sort(mPrototypeCodecs.begin(), mPrototypeCodecs.end(), sorter);
   }
 
   // These two are non-const because this is where ssrcs are chosen.
@@ -223,9 +217,13 @@ class JsepTrack {
   struct JsConstraints {
     std::string rid;
     EncodingConstraints constraints;
+    bool operator==(const JsConstraints& other) const {
+      return rid == other.rid && constraints == other.constraints;
+    }
   };
 
-  void SetJsConstraints(const std::vector<JsConstraints>& constraintsList);
+  // Returns true if the constraints changed.
+  bool SetJsConstraints(const std::vector<JsConstraints>& constraintsList);
 
   void GetJsConstraints(std::vector<JsConstraints>* outConstraintsList) const {
     MOZ_ASSERT(outConstraintsList);
@@ -237,28 +235,23 @@ class JsepTrack {
                      SdpMediaSection* msection);
 
  private:
-  std::vector<JsepCodecDescription*> GetCodecClones() const;
+  std::vector<UniquePtr<JsepCodecDescription>> GetCodecClones() const;
   static void EnsureNoDuplicatePayloadTypes(
-      std::vector<JsepCodecDescription*>* codecs);
-  static void GetPayloadTypes(const std::vector<JsepCodecDescription*>& codecs,
-                              std::vector<uint16_t>* pts);
-  static void EnsurePayloadTypeIsUnique(std::set<uint16_t>* uniquePayloadTypes,
-                                        JsepCodecDescription* codec);
-  void AddToMsection(const std::vector<JsepCodecDescription*>& codecs,
+      std::vector<UniquePtr<JsepCodecDescription>>* codecs);
+  static void GetPayloadTypes(
+      const std::vector<UniquePtr<JsepCodecDescription>>& codecs,
+      std::vector<uint16_t>* pts);
+  void AddToMsection(const std::vector<UniquePtr<JsepCodecDescription>>& codecs,
                      SdpMediaSection* msection);
   void GetRids(const SdpMediaSection& msection, sdp::Direction direction,
                std::vector<SdpRidAttributeList::Rid>* rids) const;
   void CreateEncodings(
       const SdpMediaSection& remote,
-      const std::vector<JsepCodecDescription*>& negotiatedCodecs,
+      const std::vector<UniquePtr<JsepCodecDescription>>& negotiatedCodecs,
       JsepTrackNegotiatedDetails* details);
 
-  // |formatChanges| is set on completion of offer/answer, and records how the
-  // formats in |codecs| were changed, which is used by |Negotiate| to update
-  // |mPrototypeCodecs|.
-  virtual void NegotiateCodecs(
-      const SdpMediaSection& remote, std::vector<JsepCodecDescription*>* codecs,
-      std::map<std::string, std::string>* formatChanges = nullptr) const;
+  virtual std::vector<UniquePtr<JsepCodecDescription>> NegotiateCodecs(
+      const SdpMediaSection& remote, bool isOffer);
 
   JsConstraints* FindConstraints(
       const std::string& rid,
@@ -273,7 +266,7 @@ class JsepTrack {
   std::string mTrackId;
   std::string mCNAME;
   sdp::Direction mDirection;
-  PtrVector<JsepCodecDescription> mPrototypeCodecs;
+  std::vector<UniquePtr<JsepCodecDescription>> mPrototypeCodecs;
   // Holds encoding params/constraints from JS. Simulcast happens when there are
   // multiple of these. If there are none, we assume unconstrained unicast with
   // no rid.

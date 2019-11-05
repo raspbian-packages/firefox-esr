@@ -94,14 +94,13 @@
      as attachments.accesskey. -->
 <!ENTITY toggleAttachmentPaneCmd.accesskey "B">
 <!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.key):
-     With OS-specific access modifier, this defines the shortcut key for showing/
-     hiding/minimizing the attachment pane, e.g. Alt+M on Windows.
-     toggleAttachmentPaneCmd.key and attachments.accesskey must be the same
-     for the bucket view state machinery to work. -->
+     As Mac does not have access keys, this key defines a Mac-only, cross-l10n
+     shortcut key (Ctrl+M). Typically, this key should not be translated unless
+     otherwise required by specific needs of the localization. -->
 <!ENTITY toggleAttachmentPaneCmd.key "m">
 <!ENTITY selectAllCmd.label "Alles selecteren">
-<!ENTITY selectAllCmd.key "A">
 <!ENTITY selectAllCmd.accesskey "A">
+<!ENTITY selectAllCmd.key "A">
 <!ENTITY findBarCmd.label "Zoeken…">
 <!ENTITY findBarCmd.accesskey "Z">
 <!ENTITY findBarCmd.key "F">
@@ -167,7 +166,7 @@
 <!ENTITY checkSpellingCmd2.key "p">
 <!ENTITY checkSpellingCmd2.key2 "VK_F7">
 <!ENTITY checkSpellingCmd2.accesskey "c">
-<!ENTITY enableInlineSpellChecker.label "Spellingcontrole tijdens typen">
+<!ENTITY enableInlineSpellChecker.label "Spellingcontrole tijdens het typen">
 <!ENTITY enableInlineSpellChecker.accesskey "S">
 <!ENTITY quoteCmd.label "Bericht citeren">
 <!ENTITY quoteCmd.accesskey "B">
@@ -247,7 +246,6 @@
 <!ENTITY sendlaterButton.tooltip "Dit bericht later verzenden">
 <!ENTITY quoteButton.tooltip "Het vorige bericht citeren">
 <!ENTITY addressButton.tooltip "Een ontvanger uit een adresboek selecteren">
-<!ENTITY attachButton.tooltip "Een bijlage koppelen">
 <!ENTITY attachButton.tooltip2 "Een bijlage toevoegen">
 <!ENTITY spellingButton.tooltip "Spelling van selectie of hele bericht controleren">
 <!ENTITY saveButton.tooltip "Dit bericht opslaan">
@@ -267,15 +265,16 @@
 <!ENTITY bccAddr.label "Bcc:">
 <!ENTITY replyAddr.label "Antwoord-naar:">
 <!ENTITY newsgroupsAddr.label "Nieuwsgroep:">
-<!ENTITY followupAddr.label "Reacties-naar:">
+<!ENTITY followupAddr.label "Opvolgen-aan:">
 <!ENTITY subject.label "Onderwerp:">
 <!ENTITY subject.accesskey "n">
 <!-- LOCALIZATION NOTE (attachments.accesskey) This access key character should
-     be taken from the strings in attachmentCount in composeMsgs.properties,
-     and it must be the same as toggleAttachmentPaneCmd.key, otherwise it won't
-     work, as the shortcut key functionality supersedes the access key. -->
+     be taken from the strings of attachmentCount in composeMsgs.properties.
+     Please ensure that this access key is unique: Do not duplicate any other
+     first-level access keys of the compose window, e.g. those of main menu,
+     buttons, or labels (message headers, contacts side bar, attachment reminder
+     bar). -->
 <!ENTITY attachments.accesskey "a">
-
 <!ENTITY attachmentBucketHeader.tooltip "Bijlagenpaneel">
 <!ENTITY attachmentBucketCloseButton.tooltip "Het bijlagenpaneel verbergen">
 
@@ -360,6 +359,9 @@
 <!-- Identity popup customize menuitem -->
 <!ENTITY customizeFromAddress.label "Van-adres aanpassen…">
 <!ENTITY customizeFromAddress.accesskey "V">
+
+<!-- Accessibility name for the document -->
+<!ENTITY aria.message.bodyName "Berichttekst">
 
 <!-- Status Bar -->
 <!ENTITY languageStatusButton.tooltip "Taal van spellingcontrole">

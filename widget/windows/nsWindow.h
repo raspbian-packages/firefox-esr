@@ -30,6 +30,7 @@
 #include "mozilla/MouseEvents.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/webrender/WebRenderTypes.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "nsMargin.h"
 #include "nsRegionFwd.h"
 
@@ -40,12 +41,11 @@
 #include "TaskbarWindowPreview.h"
 
 #ifdef ACCESSIBILITY
-#include "oleacc.h"
-#include "mozilla/a11y/Accessible.h"
+#  include "oleacc.h"
+#  include "mozilla/a11y/Accessible.h"
 #endif
 
 #include "nsUXThemeData.h"
-#include "nsIDOMMouseEvent.h"
 #include "nsIIdleServiceInternal.h"
 
 #include "IMMHandler.h"
@@ -128,11 +128,13 @@ class nsWindow final : public nsWindowBase {
   virtual void ConstrainPosition(bool aAllowSlop, int32_t* aX,
                                  int32_t* aY) override;
   virtual void SetSizeConstraints(const SizeConstraints& aConstraints) override;
+  virtual void LockAspectRatio(bool aShouldLock) override;
   virtual const SizeConstraints GetSizeConstraints() override;
   virtual void Move(double aX, double aY) override;
   virtual void Resize(double aWidth, double aHeight, bool aRepaint) override;
   virtual void Resize(double aX, double aY, double aWidth, double aHeight,
                       bool aRepaint) override;
+  virtual mozilla::Maybe<bool> IsResizingNativeWidget() override;
   virtual MOZ_MUST_USE nsresult BeginResizeDrag(mozilla::WidgetGUIEvent* aEvent,
                                                 int32_t aHorizontal,
                                                 int32_t aVertical) override;
@@ -150,9 +152,8 @@ class nsWindow final : public nsWindowBase {
   virtual LayoutDeviceIntRect GetClientBounds() override;
   virtual LayoutDeviceIntPoint GetClientOffset() override;
   void SetBackgroundColor(const nscolor& aColor) override;
-  virtual nsresult SetCursor(imgIContainer* aCursor, uint32_t aHotspotX,
-                             uint32_t aHotspotY) override;
-  virtual void SetCursor(nsCursor aCursor) override;
+  virtual void SetCursor(nsCursor aDefaultCursor, imgIContainer* aCursorImage,
+                         uint32_t aHotspotX, uint32_t aHotspotY) override;
   virtual nsresult ConfigureChildren(
       const nsTArray<Configuration>& aConfigurations) override;
   virtual bool PrepareForFullscreenTransition(nsISupports** aData) override;
@@ -229,6 +230,7 @@ class nsWindow final : public nsWindowBase {
   virtual void UpdateThemeGeometries(
       const nsTArray<ThemeGeometry>& aThemeGeometries) override;
   virtual uint32_t GetMaxTouchPoints() const override;
+  virtual void SetWindowClass(const nsAString& xulWinType) override;
 
   /**
    * Event helpers
@@ -236,8 +238,9 @@ class nsWindow final : public nsWindowBase {
   virtual bool DispatchMouseEvent(
       mozilla::EventMessage aEventMessage, WPARAM wParam, LPARAM lParam,
       bool aIsContextMenuKey = false,
-      int16_t aButton = mozilla::WidgetMouseEvent::eLeftButton,
-      uint16_t aInputSource = nsIDOMMouseEvent::MOZ_SOURCE_MOUSE,
+      int16_t aButton = mozilla::MouseButton::eLeft,
+      uint16_t aInputSource =
+          mozilla::dom::MouseEvent_Binding::MOZ_SOURCE_MOUSE,
       WinPointerInfo* aPointerInfo = nullptr);
   virtual bool DispatchWindowEvent(mozilla::WidgetGUIEvent* aEvent,
                                    nsEventStatus& aStatus);
@@ -534,6 +537,7 @@ class nsWindow final : public nsWindowBase {
   WNDPROC mPrevWndProc;
   HBRUSH mBrush;
   IMEContext mDefaultIMC;
+  HDEVNOTIFY mDeviceNotifyHandle;
   bool mIsTopWidgetWindow;
   bool mInDtor;
   bool mIsVisible;
@@ -547,6 +551,8 @@ class nsWindow final : public nsWindowBase {
   bool mMousePresent;
   bool mDestroyCalled;
   bool mOpeningAnimationSuppressed;
+  bool mAlwaysOnTop;
+  bool mIsEarlyBlankWindow;
   uint32_t mBlurSuppressLevel;
   DWORD_PTR mOldStyle;
   DWORD_PTR mOldExStyle;
@@ -596,6 +602,8 @@ class nsWindow final : public nsWindowBase {
   int32_t mCaptionHeight;
 
   double mDefaultScale;
+
+  float mAspectRatio;
 
   nsCOMPtr<nsIIdleServiceInternal> mIdleService;
 
@@ -651,7 +659,7 @@ class nsWindow final : public nsWindowBase {
   // Whether we're in the process of sending a WM_SETTEXT ourselves
   bool mSendingSetText;
 
-  // Whether we we're created as a NS_CHILD_CID window (aka ChildWindow) or not.
+  // Whether we we're created as a child window (aka ChildWindow) or not.
   bool mIsChildWindow : 1;
 
   // The point in time at which the last paint completed. We use this to avoid

@@ -50,7 +50,7 @@ already_AddRefed<DOMRect> nsDOMCaretPosition::GetClientRect() const {
 
 JSObject* nsDOMCaretPosition::WrapObject(JSContext* aCx,
                                          JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::CaretPositionBinding::Wrap(aCx, this, aGivenProto);
+  return mozilla::dom::CaretPosition_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(nsDOMCaretPosition, mOffsetNode,

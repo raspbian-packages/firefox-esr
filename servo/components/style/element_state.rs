@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! States elements can be in.
 
@@ -71,7 +71,8 @@ bitflags! {
         const IN_OPTIONAL_STATE = 1 << 22;
         /// <https://html.spec.whatwg.org/multipage/#selector-read-write>
         const IN_READ_WRITE_STATE = 1 << 22;
-        /// There is a free bit at 23.
+        /// <https://html.spec.whatwg.org/multipage/#selector-defined>
+        const IN_DEFINED_STATE = 1 << 23;
         /// <https://html.spec.whatwg.org/multipage/#selector-visited>
         const IN_VISITED_STATE = 1 << 24;
         /// <https://html.spec.whatwg.org/multipage/#selector-link>
@@ -143,7 +144,7 @@ bitflags! {
     /// Event-based document states.
     ///
     /// NB: Is important for this to remain in sync with Gecko's
-    /// dom/base/nsIDocument.h.
+    /// dom/base/Document.h.
     #[derive(MallocSizeOf)]
     pub struct DocumentState: u64 {
         /// RTL locale: specific to the XUL localedir attribute

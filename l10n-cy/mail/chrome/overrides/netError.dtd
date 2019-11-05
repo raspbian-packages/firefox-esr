@@ -79,7 +79,7 @@
 <!ENTITY cspBlocked.longDesc "<p>Mae &brandShortName; wedi rhwystro'r dudalen rhag llwytho yn y ffordd yma gan fod gan y dudalen bolisi diogelwch cynnwys sy'n atal hynny.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Gwall Cynnwys Llygredig">
-<!ENTITY corruptedContentErrorv2.longDesc "<p>Nid oes modd dangos y cynnwys rydych yn ceisio ei ddarllen oherwydd fod gwall yn nhrosglwyddo data wedi'i ganfod.</p><ul><li>Cysylltwch â'r perchnogion i'w hysbysu o'r anhawster.</li></ul>">
+<!ENTITY corruptedContentErrorv2.longDesc "<p>Nid oes modd dangos y dudalen rydych yn ceisio ei gweld yn sgil canfod gwall trosglwyddo data.</p><ul><li>Cysylltwch â pherchnogion y wefan i'w hysbysu o'r anhawster.</li></ul>">
 
 <!ENTITY securityOverride.linkText "Neu mae modd ychwanegu eithriad…">
 <!ENTITY securityOverride.getMeOutOfHereButton "Allan o fan hyn!">
@@ -101,3 +101,6 @@ functionality specific to thunderbird. -->
 <!ENTITY inadequateSecurityError.longDesc "Mae <p><span class='hostname'></span> yn defnyddio technoleg diogelwch sy'n hen ac yn agored i ymosodiad. Gall yr ymosodwr weld manylion am hyn roeddech yn meddwl ei fod yn ddiogel. Mae angen i weinyddwr y wefan drwsio'r gweinydd yn gyntaf cyn bod modd i chi ymweld â' r wefan.</p><p>Cod gwall: NS_ERROR_NET_INADEQUATE_SECURITY</p>">
 
 <!ENTITY blockedByPolicy.title "Tudalen wedi ei Rhwystro">
+
+<!ENTITY networkProtocolError.title "Gwall Protocol Rhwydwaith">
+<!ENTITY networkProtocolError.longDesc "<p>Nid oes modd dangos y dudalen rydych chi'n ceisio'i weld oherwydd canfuwyd gwall yn y protocol rhwydwaith.</p><ul><li> Cysylltwch â pherchenogion y wefan i roi gwybod iddynt am y broblem hon.</li></ul>">

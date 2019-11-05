@@ -62,9 +62,9 @@ class MainThreadClearer : public SyncRunnableBase {
 namespace mozilla {
 
 void ClearPrivateSSLState() {
-// This only works if it is called on the socket transport
-// service thread immediately after closing all private SSL
-// connections.
+  // This only works if it is called on the socket transport
+  // service thread immediately after closing all private SSL
+  // connections.
 #ifdef DEBUG
   nsresult rv;
   nsCOMPtr<nsIEventTarget> sts =
@@ -158,14 +158,16 @@ bool SharedSSLState::SocketCreated() {
   return mSocketCreated;
 }
 
-/*static*/ void SharedSSLState::GlobalInit() {
+/*static*/
+void SharedSSLState::GlobalInit() {
   MOZ_ASSERT(NS_IsMainThread(), "Not on main thread");
   gPublicState = new SharedSSLState();
   gPrivateState = new SharedSSLState();
   gPrivateState->NotePrivateBrowsingStatus();
 }
 
-/*static*/ void SharedSSLState::GlobalCleanup() {
+/*static*/
+void SharedSSLState::GlobalCleanup() {
   MOZ_ASSERT(NS_IsMainThread(), "Not on main thread");
 
   if (gPrivateState) {
@@ -181,7 +183,8 @@ bool SharedSSLState::SocketCreated() {
   }
 }
 
-/*static*/ void SharedSSLState::NoteCertOverrideServiceInstantiated() {
+/*static*/
+void SharedSSLState::NoteCertOverrideServiceInstantiated() {
   sCertOverrideSvcExists = true;
 }
 

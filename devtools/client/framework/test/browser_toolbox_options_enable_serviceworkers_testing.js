@@ -6,13 +6,12 @@
 // Test that enabling Service Workers testing option enables the
 // mServiceWorkersTestingEnabled attribute added to nsPIDOMWindow.
 
-const ROOT_TEST_DIR =
-  getRootDirectory(gTestPath);
+const ROOT_TEST_DIR = getRootDirectory(gTestPath);
 const FRAME_SCRIPT_URL =
   ROOT_TEST_DIR +
   "browser_toolbox_options_enable_serviceworkers_testing_frame_script.js";
-const TEST_URI = URL_ROOT +
-                 "browser_toolbox_options_enable_serviceworkers_testing.html";
+const TEST_URI =
+  URL_ROOT + "browser_toolbox_options_enable_serviceworkers_testing.html";
 
 const ELEMENT_ID = "devtools-enable-serviceWorkersTesting";
 
@@ -21,17 +20,22 @@ var toolbox;
 function test() {
   // Note: Pref dom.serviceWorkers.testing.enabled is false since we are testing
   // the same capabilities are enabled with the devtool pref.
-  SpecialPowers.pushPrefEnv({"set": [
-    ["dom.serviceWorkers.exemptFromPerDomainMax", true],
-    ["dom.serviceWorkers.enabled", true],
-    ["dom.serviceWorkers.testing.enabled", false]
-  ]}, init);
+  SpecialPowers.pushPrefEnv(
+    {
+      set: [
+        ["dom.serviceWorkers.exemptFromPerDomainMax", true],
+        ["dom.serviceWorkers.enabled", true],
+        ["dom.serviceWorkers.testing.enabled", false],
+      ],
+    },
+    init
+  );
 }
 
 function init() {
-  addTab(TEST_URI).then(tab => {
-    let target = TargetFactory.forTab(tab);
-    let linkedBrowser = tab.linkedBrowser;
+  addTab(TEST_URI).then(async tab => {
+    const target = await TargetFactory.forTab(tab);
+    const linkedBrowser = tab.linkedBrowser;
 
     loadFrameScriptUtils(linkedBrowser);
     linkedBrowser.messageManager.loadFrameScript(FRAME_SCRIPT_URL, false);
@@ -64,8 +68,8 @@ function testRegisterFails(data) {
 }
 
 function toggleServiceWorkersTestingCheckbox() {
-  let panel = toolbox.getCurrentPanel();
-  let cbx = panel.panelDoc.getElementById(ELEMENT_ID);
+  const panel = toolbox.getCurrentPanel();
+  const cbx = panel.panelDoc.getElementById(ELEMENT_ID);
 
   cbx.scrollIntoView();
 
@@ -81,7 +85,7 @@ function toggleServiceWorkersTestingCheckbox() {
 }
 
 function reload() {
-  let promise = BrowserTestUtils.browserLoaded(gBrowser.selectedBrowser);
+  const promise = BrowserTestUtils.browserLoaded(gBrowser.selectedBrowser);
 
   executeInContent("devtools:test:reload", {}, {}, false);
   return promise;
@@ -107,9 +111,10 @@ function start() {
     .then(reload)
     .then(register)
     .then(testRegisterFails)
-    .catch(function (e) {
+    .catch(function(e) {
       ok(false, "Some test failed with error " + e);
-    }).then(finishUp);
+    })
+    .then(finishUp);
 }
 
 function finishUp() {

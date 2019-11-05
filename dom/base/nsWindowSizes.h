@@ -52,41 +52,33 @@ class nsTabSizes {
 struct nsStyleSizes {
   nsStyleSizes()
       :
-#define STYLE_STRUCT(name_, cb_) NS_STYLE_SIZES_FIELD(name_)(0),
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
+#define STYLE_STRUCT(name_) NS_STYLE_SIZES_FIELD(name_)(0),
 #include "nsStyleStructList.h"
 #undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
 
         dummy() {
   }
 
   void addToTabSizes(nsTabSizes* aSizes) const {
-#define STYLE_STRUCT(name_, cb_) \
+#define STYLE_STRUCT(name_) \
   aSizes->add(nsTabSizes::Style, NS_STYLE_SIZES_FIELD(name_));
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
 #include "nsStyleStructList.h"
 #undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
   }
 
   size_t getTotalSize() const {
     size_t total = 0;
 
-#define STYLE_STRUCT(name_, cb_) total += NS_STYLE_SIZES_FIELD(name_);
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
+#define STYLE_STRUCT(name_) total += NS_STYLE_SIZES_FIELD(name_);
 #include "nsStyleStructList.h"
 #undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
 
     return total;
   }
 
-#define STYLE_STRUCT(name_, cb_) size_t NS_STYLE_SIZES_FIELD(name_);
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
+#define STYLE_STRUCT(name_) size_t NS_STYLE_SIZES_FIELD(name_);
 #include "nsStyleStructList.h"
 #undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
 
   // Present just to absorb the trailing comma in the constructor.
   int dummy;
@@ -98,7 +90,7 @@ struct nsArenaSizes {
 #define FOR_EACH_SIZE(MACRO) \
   MACRO(Other, mLineBoxes)   \
   MACRO(Style, mRuleNodes)   \
-  MACRO(Style, mStyleContexts)
+  MACRO(Style, mComputedStyles)
 
   nsArenaSizes()
       : FOR_EACH_SIZE(ZERO_SIZE)
@@ -108,7 +100,7 @@ struct nsArenaSizes {
 #undef FRAME_ID
 #undef ABSTRACT_FRAME_ID
 
-            mGeckoStyleSizes() {
+            dummy() {
   }
 
   void addToTabSizes(nsTabSizes* aSizes) const {
@@ -120,8 +112,6 @@ struct nsArenaSizes {
 #include "nsFrameIdList.h"
 #undef FRAME_ID
 #undef ABSTRACT_FRAME_ID
-
-    mGeckoStyleSizes.addToTabSizes(aSizes);
   }
 
   size_t getTotalSize() const {
@@ -135,8 +125,6 @@ struct nsArenaSizes {
 #undef FRAME_ID
 #undef ABSTRACT_FRAME_ID
 
-    total += mGeckoStyleSizes.getTotalSize();
-
     return total;
   }
 
@@ -148,41 +136,41 @@ struct nsArenaSizes {
 #undef FRAME_ID
 #undef ABSTRACT_FRAME_ID
 
-  // This is Gecko-only because in Stylo these style structs are stored outside
-  // the nsPresArena, and so measured elsewhere.
-  nsStyleSizes mGeckoStyleSizes;
+  // Present just to absorb the trailing comma in the constructor.
+  int dummy;
 
 #undef FOR_EACH_SIZE
 };
 
 class nsWindowSizes {
-#define FOR_EACH_SIZE(MACRO)                                      \
-  MACRO(DOM, mDOMElementNodesSize)                                \
-  MACRO(DOM, mDOMTextNodesSize)                                   \
-  MACRO(DOM, mDOMCDATANodesSize)                                  \
-  MACRO(DOM, mDOMCommentNodesSize)                                \
-  MACRO(DOM, mDOMEventTargetsSize)                                \
-  MACRO(DOM, mDOMPerformanceUserEntries)                          \
-  MACRO(DOM, mDOMPerformanceResourceEntries)                      \
-  MACRO(DOM, mDOMOtherSize)                                       \
-  MACRO(Style, mLayoutStyleSheetsSize)                            \
-  MACRO(Other, mLayoutPresShellSize)                              \
-  MACRO(Style, mLayoutGeckoStyleSets)                             \
-  MACRO(Style, mLayoutServoStyleSetsStylistRuleTree)              \
-  MACRO(Style, mLayoutServoStyleSetsStylistElementAndPseudosMaps) \
-  MACRO(Style, mLayoutServoStyleSetsStylistInvalidationMap)       \
-  MACRO(Style, mLayoutServoStyleSetsStylistRevalidationSelectors) \
-  MACRO(Style, mLayoutServoStyleSetsStylistOther)                 \
-  MACRO(Style, mLayoutServoStyleSetsOther)                        \
-  MACRO(Style, mLayoutServoElementDataObjects)                    \
-  MACRO(Other, mLayoutTextRunsSize)                               \
-  MACRO(Other, mLayoutPresContextSize)                            \
-  MACRO(Other, mLayoutFramePropertiesSize)                        \
-  MACRO(Style, mLayoutComputedValuesDom)                          \
-  MACRO(Style, mLayoutComputedValuesNonDom)                       \
-  MACRO(Style, mLayoutComputedValuesVisited)                      \
-  MACRO(Style, mLayoutComputedValuesStale)                        \
-  MACRO(Other, mPropertyTablesSize)                               \
+#define FOR_EACH_SIZE(MACRO)                                 \
+  MACRO(DOM, mDOMElementNodesSize)                           \
+  MACRO(DOM, mDOMTextNodesSize)                              \
+  MACRO(DOM, mDOMCDATANodesSize)                             \
+  MACRO(DOM, mDOMCommentNodesSize)                           \
+  MACRO(DOM, mDOMEventTargetsSize)                           \
+  MACRO(DOM, mDOMMediaQueryLists)                            \
+  MACRO(DOM, mDOMPerformanceUserEntries)                     \
+  MACRO(DOM, mDOMPerformanceResourceEntries)                 \
+  MACRO(DOM, mDOMOtherSize)                                  \
+  MACRO(Style, mLayoutStyleSheetsSize)                       \
+  MACRO(Style, mLayoutShadowDomStyleSheetsSize)              \
+  MACRO(Style, mLayoutShadowDomAuthorStyles)                 \
+  MACRO(Other, mLayoutPresShellSize)                         \
+  MACRO(Style, mLayoutStyleSetsStylistRuleTree)              \
+  MACRO(Style, mLayoutStyleSetsStylistElementAndPseudosMaps) \
+  MACRO(Style, mLayoutStyleSetsStylistInvalidationMap)       \
+  MACRO(Style, mLayoutStyleSetsStylistRevalidationSelectors) \
+  MACRO(Style, mLayoutStyleSetsStylistOther)                 \
+  MACRO(Style, mLayoutStyleSetsOther)                        \
+  MACRO(Style, mLayoutElementDataObjects)                    \
+  MACRO(Other, mLayoutTextRunsSize)                          \
+  MACRO(Other, mLayoutPresContextSize)                       \
+  MACRO(Other, mLayoutFramePropertiesSize)                   \
+  MACRO(Style, mLayoutComputedValuesDom)                     \
+  MACRO(Style, mLayoutComputedValuesNonDom)                  \
+  MACRO(Style, mLayoutComputedValuesVisited)                 \
+  MACRO(Other, mPropertyTablesSize)                          \
   MACRO(Other, mBindingsSize)
 
  public:
@@ -190,13 +178,13 @@ class nsWindowSizes {
       : FOR_EACH_SIZE(ZERO_SIZE) mDOMEventTargetsCount(0),
         mDOMEventListenersCount(0),
         mArenaSizes(),
-        mServoStyleSizes(),
+        mStyleSizes(),
         mState(aState) {}
 
   void addToTabSizes(nsTabSizes* aSizes) const {
     FOR_EACH_SIZE(ADD_TO_TAB_SIZES)
     mArenaSizes.addToTabSizes(aSizes);
-    mServoStyleSizes.addToTabSizes(aSizes);
+    mStyleSizes.addToTabSizes(aSizes);
   }
 
   size_t getTotalSize() const {
@@ -204,7 +192,7 @@ class nsWindowSizes {
 
     FOR_EACH_SIZE(ADD_TO_TOTAL_SIZE)
     total += mArenaSizes.getTotalSize();
-    total += mServoStyleSizes.getTotalSize();
+    total += mStyleSizes.getTotalSize();
 
     return total;
   }
@@ -216,9 +204,7 @@ class nsWindowSizes {
 
   nsArenaSizes mArenaSizes;
 
-  // This is Stylo-only because in Gecko these style structs are stored in the
-  // nsPresArena, and so are measured as part of that.
-  nsStyleSizes mServoStyleSizes;
+  nsStyleSizes mStyleSizes;
 
   mozilla::SizeOfState& mState;
 

@@ -8,7 +8,7 @@
 #include "mozilla/dom/SVGFEPointLightElementBinding.h"
 #include "nsSVGFilterInstance.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(FEPointLight)
+NS_IMPL_NS_NEW_SVG_ELEMENT(FEPointLight)
 
 using namespace mozilla::gfx;
 
@@ -17,16 +17,16 @@ namespace dom {
 
 JSObject* SVGFEPointLightElement::WrapNode(JSContext* aCx,
                                            JS::Handle<JSObject*> aGivenProto) {
-  return SVGFEPointLightElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGFEPointLightElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::NumberInfo SVGFEPointLightElement::sNumberInfo[3] = {
-    {&nsGkAtoms::x, 0, false},
-    {&nsGkAtoms::y, 0, false},
-    {&nsGkAtoms::z, 0, false}};
+SVGElement::NumberInfo SVGFEPointLightElement::sNumberInfo[3] = {
+    {nsGkAtoms::x, 0, false},
+    {nsGkAtoms::y, 0, false},
+    {nsGkAtoms::z, 0, false}};
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGFEPointLightElement)
 
@@ -42,33 +42,34 @@ bool SVGFEPointLightElement::AttributeAffectsRendering(
 
 //----------------------------------------------------------------------
 
-AttributeMap SVGFEPointLightElement::ComputeLightAttributes(
-    nsSVGFilterInstance* aInstance) {
+LightType SVGFEPointLightElement::ComputeLightAttributes(
+    nsSVGFilterInstance* aInstance, nsTArray<float>& aFloatAttributes) {
   Point3D lightPos;
   GetAnimatedNumberValues(&lightPos.x, &lightPos.y, &lightPos.z, nullptr);
-
-  AttributeMap map;
-  map.Set(eLightType, (uint32_t)eLightTypePoint);
-  map.Set(ePointLightPosition, aInstance->ConvertLocation(lightPos));
-  return map;
+  lightPos = aInstance->ConvertLocation(lightPos);
+  aFloatAttributes.SetLength(kPointLightNumAttributes);
+  aFloatAttributes[kPointLightPositionXIndex] = lightPos.x;
+  aFloatAttributes[kPointLightPositionYIndex] = lightPos.y;
+  aFloatAttributes[kPointLightPositionZIndex] = lightPos.z;
+  return LightType::Point;
 }
 
-already_AddRefed<SVGAnimatedNumber> SVGFEPointLightElement::X() {
+already_AddRefed<DOMSVGAnimatedNumber> SVGFEPointLightElement::X() {
   return mNumberAttributes[ATTR_X].ToDOMAnimatedNumber(this);
 }
 
-already_AddRefed<SVGAnimatedNumber> SVGFEPointLightElement::Y() {
+already_AddRefed<DOMSVGAnimatedNumber> SVGFEPointLightElement::Y() {
   return mNumberAttributes[ATTR_Y].ToDOMAnimatedNumber(this);
 }
 
-already_AddRefed<SVGAnimatedNumber> SVGFEPointLightElement::Z() {
+already_AddRefed<DOMSVGAnimatedNumber> SVGFEPointLightElement::Z() {
   return mNumberAttributes[ATTR_Z].ToDOMAnimatedNumber(this);
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-nsSVGElement::NumberAttributesInfo SVGFEPointLightElement::GetNumberInfo() {
+SVGElement::NumberAttributesInfo SVGFEPointLightElement::GetNumberInfo() {
   return NumberAttributesInfo(mNumberAttributes, sNumberInfo,
                               ArrayLength(sNumberInfo));
 }

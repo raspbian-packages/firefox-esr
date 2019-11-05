@@ -8,7 +8,7 @@
 #define mozilla_mscom_Factory_h
 
 #if defined(MOZILLA_INTERNAL_API)
-#error This code is NOT for internal Gecko use!
+#  error This code is NOT for internal Gecko use!
 #endif  // defined(MOZILLA_INTERNAL_API)
 
 #include "mozilla/Attributes.h"
@@ -38,7 +38,7 @@ class MOZ_NONHEAP_CLASS Factory : public IClassFactory {
 
   template <typename... Args>
   HRESULT DoCreate(HRESULT (*aFnPtr)(IUnknown*, REFIID, void**), Args... args) {
-    return aFnPtr(mozilla::Forward<Args>(args)...);
+    return aFnPtr(std::forward<Args>(args)...);
   }
 
  public:

@@ -8,7 +8,7 @@
 
 #include "gfxPrefs.h"
 #ifdef GFX_DECL_PREF
-#error "This is not supposed to be defined outside of gfxPrefs.h"
+#  error "This is not supposed to be defined outside of gfxPrefs.h"
 #endif
 
 // If the default values for any of these preferences change,
@@ -16,12 +16,14 @@
 // a particular value to make sure we receive the correct
 // result through this API.
 
-TEST(GfxPrefs, Singleton) {
+TEST(GfxPrefs, Singleton)
+{
   gfxPrefs::GetSingleton();
   ASSERT_TRUE(gfxPrefs::SingletonExists());
 }
 
-TEST(GfxPrefs, LiveValues) {
+TEST(GfxPrefs, LiveValues)
+{
   gfxPrefs::GetSingleton();
   ASSERT_TRUE(gfxPrefs::SingletonExists());
 
@@ -35,7 +37,8 @@ TEST(GfxPrefs, LiveValues) {
   ASSERT_TRUE(gfxPrefs::MSAALevel() == 2);
 }
 
-TEST(GfxPrefs, OnceValues) {
+TEST(GfxPrefs, OnceValues)
+{
   gfxPrefs::GetSingleton();
   ASSERT_TRUE(gfxPrefs::SingletonExists());
 
@@ -45,9 +48,6 @@ TEST(GfxPrefs, OnceValues) {
   // Once boolean, default false
   ASSERT_FALSE(gfxPrefs::LayersDump());
 
-  // Once int32_t, default 95
-  ASSERT_TRUE(gfxPrefs::CanvasSkiaGLCacheSize() == 96);
-
   // Once uint32_t, default 5
   ASSERT_TRUE(gfxPrefs::APZMaxVelocityQueueSize() == 5);
 
@@ -55,7 +55,8 @@ TEST(GfxPrefs, OnceValues) {
   ASSERT_TRUE(gfxPrefs::APZMaxVelocity() == -1.0f);
 }
 
-TEST(GfxPrefs, Set) {
+TEST(GfxPrefs, Set)
+{
   gfxPrefs::GetSingleton();
   ASSERT_TRUE(gfxPrefs::SingletonExists());
 
@@ -83,7 +84,8 @@ TEST(GfxPrefs, Set) {
 
 // Randomly test the function we use in nsExceptionHandler.cpp here:
 extern bool SimpleNoCLibDtoA(double aValue, char* aBuffer, int aBufferLength);
-TEST(GfxPrefs, StringUtility) {
+TEST(GfxPrefs, StringUtility)
+{
   char testBuffer[64];
   double testVal[] = {
       13.4,

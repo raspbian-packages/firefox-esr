@@ -24,7 +24,6 @@
 
 #include "base/basictypes.h"
 #include "base/logging.h"
-#include "base/singleton.h"
 
 namespace {
 
@@ -617,12 +616,12 @@ void SplitString(const std::string& str, char s, std::vector<std::string>* r) {
   SplitStringT(str, s, true, r);
 }
 
-  // For the various *ToInt conversions, there are no *ToIntTraits classes to
-  // use because there's no such thing as strtoi.  Use *ToLongTraits through a
-  // cast instead, requiring that long and int are compatible and equal-width.
-  // They are on our target platforms.
+// For the various *ToInt conversions, there are no *ToIntTraits classes to use
+// because there's no such thing as strtoi.  Use *ToLongTraits through a cast
+// instead, requiring that long and int are compatible and equal-width.  They
+// are on our target platforms.
 
-  // XXX Sigh.
+// XXX Sigh.
 
 #if !defined(ARCH_CPU_64_BITS)
 bool StringToInt(const std::string& input, int* output) {

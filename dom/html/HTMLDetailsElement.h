@@ -23,22 +23,26 @@ class HTMLDetailsElement final : public nsGenericHTMLElement {
  public:
   using NodeInfo = mozilla::dom::NodeInfo;
 
-  explicit HTMLDetailsElement(already_AddRefed<NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+  explicit HTMLDetailsElement(already_AddRefed<NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLDetailsElement, details)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLDetailsElement, details)
 
   nsIContent* GetFirstSummary() const;
 
-  nsresult Clone(NodeInfo* aNodeInfo, nsINode** aResult,
-                 bool aPreallocateChildren) const override;
+  nsresult Clone(NodeInfo* aNodeInfo, nsINode** aResult) const override;
 
+  // Element
   nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
                                       int32_t aModType) const override;
 
   nsresult BeforeSetAttr(int32_t aNameSpaceID, nsAtom* aName,
                          const nsAttrValueOrString* aValue,
                          bool aNotify) override;
+
+  bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override {
+    return true;
+  }
 
   // HTMLDetailsElement WebIDL
   bool Open() const { return GetBoolAttr(nsGkAtoms::open); }

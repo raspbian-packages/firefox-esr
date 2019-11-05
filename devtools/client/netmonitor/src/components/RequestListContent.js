@@ -4,26 +4,38 @@
 
 "use strict";
 
-const { Component, createFactory } = require("devtools/client/shared/vendor/react");
+const {
+  Component,
+  createFactory,
+} = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
-const { connect } = require("devtools/client/shared/redux/visibility-handler-connect");
-const { HTMLTooltip } = require("devtools/client/shared/widgets/tooltip/HTMLTooltip");
+const {
+  connect,
+} = require("devtools/client/shared/redux/visibility-handler-connect");
+const {
+  HTMLTooltip,
+} = require("devtools/client/shared/widgets/tooltip/HTMLTooltip");
 
 const Actions = require("../actions/index");
 const { formDataURI } = require("../utils/request-utils");
 const {
   getDisplayedRequests,
   getSelectedRequest,
-  getSortedRequests,
   getWaterfallScale,
 } = require("../selectors/index");
 
-loader.lazyGetter(this, "setImageTooltip", function () {
+loader.lazyRequireGetter(
+  this,
+  "openRequestInTab",
+  "devtools/client/netmonitor/src/utils/firefox/open-request-in-tab",
+  true
+);
+loader.lazyGetter(this, "setImageTooltip", function() {
   return require("devtools/client/shared/widgets/tooltip/ImageTooltipHelper")
     .setImageTooltip;
 });
-loader.lazyGetter(this, "getImageDimensions", function () {
+loader.lazyGetter(this, "getImageDimensions", function() {
   return require("devtools/client/shared/widgets/tooltip/ImageTooltipHelper")
     .getImageDimensions;
 });
@@ -42,30 +54,39 @@ const REQUESTS_TOOLTIP_IMAGE_MAX_DIM = 400;
 // Gecko's scrollTop is int32_t, so the maximum value is 2^31 - 1 = 2147483647
 const MAX_SCROLL_HEIGHT = 2147483647;
 
+const LEFT_MOUSE_BUTTON = 0;
+const RIGHT_MOUSE_BUTTON = 2;
+
 /**
  * Renders the actual contents of the request list.
  */
 class RequestListContent extends Component {
   static get propTypes() {
     return {
+      blockSelectedRequestURL: PropTypes.func.isRequired,
       connector: PropTypes.object.isRequired,
       columns: PropTypes.object.isRequired,
       networkDetailsOpen: PropTypes.bool.isRequired,
-      networkDetailsWidth: PropTypes.number.isRequired,
-      networkDetailsHeight: PropTypes.number.isRequired,
-      cloneSelectedRequest: PropTypes.func.isRequired,
+      networkDetailsWidth: PropTypes.number,
+      networkDetailsHeight: PropTypes.number,
+      cloneRequest: PropTypes.func.isRequired,
+      clickedRequest: PropTypes.object,
+      openDetailsPanelTab: PropTypes.func.isRequired,
+      sendCustomRequest: PropTypes.func.isRequired,
       displayedRequests: PropTypes.array.isRequired,
       firstRequestStartedMillis: PropTypes.number.isRequired,
       fromCache: PropTypes.bool,
       onCauseBadgeMouseDown: PropTypes.func.isRequired,
+      onItemRightMouseButtonDown: PropTypes.func.isRequired,
       onItemMouseDown: PropTypes.func.isRequired,
       onSecurityIconMouseDown: PropTypes.func.isRequired,
       onSelectDelta: PropTypes.func.isRequired,
       onWaterfallMouseDown: PropTypes.func.isRequired,
       openStatistics: PropTypes.func.isRequired,
       scale: PropTypes.number,
+      selectRequest: PropTypes.func.isRequired,
       selectedRequest: PropTypes.object,
-      sortedRequests: PropTypes.array.isRequired,
+      unblockSelectedRequestURL: PropTypes.func.isRequired,
       requestFilterTypes: PropTypes.object.isRequired,
     };
   }
@@ -77,47 +98,43 @@ class RequestListContent extends Component {
     this.onScroll = this.onScroll.bind(this);
     this.onResize = this.onResize.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.openRequestInTab = this.openRequestInTab.bind(this);
+    this.onDoubleClick = this.onDoubleClick.bind(this);
     this.onContextMenu = this.onContextMenu.bind(this);
     this.onFocusedNodeChange = this.onFocusedNodeChange.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
   }
 
   componentWillMount() {
-    const { connector, cloneSelectedRequest, openStatistics } = this.props;
-    this.contextMenu = new RequestListContextMenu({
-      connector,
-      cloneSelectedRequest,
-      openStatistics,
-    });
     this.tooltip = new HTMLTooltip(window.parent.document, { type: "arrow" });
     window.addEventListener("resize", this.onResize);
   }
 
   componentDidMount() {
     // Install event handler for displaying a tooltip
-    this.tooltip.startTogglingOnHover(this.refs.contentEl, this.onHover, {
+    this.tooltip.startTogglingOnHover(this.refs.scrollEl, this.onHover, {
       toggleDelay: REQUESTS_TOOLTIP_TOGGLE_DELAY,
-      interactive: true
+      interactive: true,
     });
     // Install event handler to hide the tooltip on scroll
-    this.refs.contentEl.addEventListener("scroll", this.onScroll, true);
+    this.refs.scrollEl.addEventListener("scroll", this.onScroll, true);
     this.onResize();
   }
 
   componentWillUpdate(nextProps) {
     // Check if the list is scrolled to bottom before the UI update.
-    // The scroll is ever needed only if new rows are added to the list.
-    const delta = nextProps.displayedRequests.size - this.props.displayedRequests.size;
-    this.shouldScrollBottom = delta > 0 && this.isScrolledToBottom();
+    this.shouldScrollBottom = this.isScrolledToBottom();
   }
 
   componentDidUpdate(prevProps) {
-    let node = this.refs.contentEl;
+    const node = this.refs.scrollEl;
     // Keep the list scrolled to bottom if a new row was added
     if (this.shouldScrollBottom && node.scrollTop !== MAX_SCROLL_HEIGHT) {
       // Using maximum scroll height rather than node.scrollHeight to avoid sync reflow.
       node.scrollTop = MAX_SCROLL_HEIGHT;
     }
-    if (prevProps.networkDetailsOpen !== this.props.networkDetailsOpen ||
+    if (
+      prevProps.networkDetailsOpen !== this.props.networkDetailsOpen ||
       prevProps.networkDetailsWidth !== this.props.networkDetailsWidth ||
       prevProps.networkDetailsHeight !== this.props.networkDetailsHeight
     ) {
@@ -126,53 +143,68 @@ class RequestListContent extends Component {
   }
 
   componentWillUnmount() {
-    this.refs.contentEl.removeEventListener("scroll", this.onScroll, true);
+    this.refs.scrollEl.removeEventListener("scroll", this.onScroll, true);
 
     // Uninstall the tooltip event handler
     this.tooltip.stopTogglingOnHover();
     window.removeEventListener("resize", this.onResize);
+
+    // Performance optimization. React is slow when removing long lists
+    // of elements (i.e. the list of HTTP requests in this case), and so
+    // let's clean up the content through `innerHTML` property in advance.
+    // This significantly speeds up Network panel closing time.
+    // This isn't React friendly since React has no way to know the DOM
+    // has been modified. But, the panel is closing at this point anyway.
+    // See also: Bug 1546513 - Closing the network panel with many
+    // entries takes multiple seconds
+    this.refs.rowGroupEl.innerHTML = "";
   }
 
+  /*
+   * Removing onResize() method causes perf regression - too many repaints of the panel.
+   * So it is needed in ComponentDidMount and ComponentDidUpdate. See Bug 1532914.
+   */
   onResize() {
-    let parent = this.refs.contentEl.parentNode;
-    this.refs.contentEl.style.width = parent.offsetWidth + "px";
-    this.refs.contentEl.style.height = parent.offsetHeight + "px";
+    const parent = this.refs.scrollEl.parentNode;
+    this.refs.scrollEl.style.width = parent.offsetWidth + "px";
+    this.refs.scrollEl.style.height = parent.offsetHeight + "px";
   }
 
   isScrolledToBottom() {
-    const { contentEl } = this.refs;
-    const lastChildEl = contentEl.lastElementChild;
+    const { scrollEl, rowGroupEl } = this.refs;
+    const lastChildEl = rowGroupEl.lastElementChild;
 
     if (!lastChildEl) {
       return false;
     }
 
-    let lastChildRect = lastChildEl.getBoundingClientRect();
-    let contentRect = contentEl.getBoundingClientRect();
-
-    return (lastChildRect.height + lastChildRect.top) <= contentRect.bottom;
+    const lastNodeHeight = lastChildEl.clientHeight;
+    return (
+      scrollEl.scrollTop + scrollEl.clientHeight >=
+      scrollEl.scrollHeight - lastNodeHeight / 2
+    );
   }
 
   /**
    * The predicate used when deciding whether a popup should be shown
    * over a request item or not.
    *
-   * @param nsIDOMNode target
+   * @param Node target
    *        The element node currently being hovered.
    * @param object tooltip
    *        The current tooltip instance.
    * @return {Promise}
    */
   async onHover(target, tooltip) {
-    let itemEl = target.closest(".request-list-item");
+    const itemEl = target.closest(".request-list-item");
     if (!itemEl) {
       return false;
     }
-    let itemId = itemEl.dataset.id;
+    const itemId = itemEl.dataset.id;
     if (!itemId) {
       return false;
     }
-    let requestItem = this.props.displayedRequests.find(r => r.id == itemId);
+    const requestItem = this.props.displayedRequests.find(r => r.id == itemId);
     if (!requestItem) {
       return false;
     }
@@ -181,18 +213,23 @@ class RequestListContent extends Component {
       return false;
     }
 
-    let { mimeType } = requestItem;
+    const { mimeType } = requestItem;
     if (!mimeType || !mimeType.includes("image/")) {
       return false;
     }
 
-    let responseContent = await this.props.connector
-      .requestData(requestItem.id, "responseContent");
-    let { encoding, text } = responseContent.content;
-    let src = formDataURI(mimeType, encoding, text);
-    let maxDim = REQUESTS_TOOLTIP_IMAGE_MAX_DIM;
-    let { naturalWidth, naturalHeight } = await getImageDimensions(tooltip.doc, src);
-    let options = { maxDim, naturalWidth, naturalHeight };
+    const responseContent = await this.props.connector.requestData(
+      requestItem.id,
+      "responseContent"
+    );
+    const { encoding, text } = responseContent.content;
+    const src = formDataURI(mimeType, encoding, text);
+    const maxDim = REQUESTS_TOOLTIP_IMAGE_MAX_DIM;
+    const { naturalWidth, naturalHeight } = await getImageDimensions(
+      tooltip.doc,
+      src
+    );
+    const options = { maxDim, naturalWidth, naturalHeight };
     setImageTooltip(tooltip, tooltip.doc, src, options);
 
     return itemEl.querySelector(".requests-list-file");
@@ -203,6 +240,14 @@ class RequestListContent extends Component {
    */
   onScroll() {
     this.tooltip.hide();
+  }
+
+  onMouseDown(evt, id) {
+    if (evt.button === LEFT_MOUSE_BUTTON) {
+      this.props.selectRequest(id);
+    } else if (evt.button === RIGHT_MOUSE_BUTTON) {
+      this.props.onItemRightMouseButtonDown(id);
+    }
   }
 
   /**
@@ -243,10 +288,52 @@ class RequestListContent extends Component {
     }
   }
 
+  /**
+   * Opens selected item in a new tab.
+   */
+  async openRequestInTab(id, url, requestHeaders, requestPostData) {
+    requestHeaders =
+      requestHeaders ||
+      (await this.props.connector.requestData(id, "requestHeaders"));
+
+    requestPostData =
+      requestPostData ||
+      (await this.props.connector.requestData(id, "requestPostData"));
+
+    openRequestInTab(url, requestHeaders, requestPostData);
+  }
+
+  onDoubleClick({ id, url, requestHeaders, requestPostData }) {
+    this.openRequestInTab(id, url, requestHeaders, requestPostData);
+  }
+
   onContextMenu(evt) {
     evt.preventDefault();
-    let { selectedRequest, sortedRequests } = this.props;
-    this.contextMenu.open(evt, selectedRequest, sortedRequests);
+    const { clickedRequest, displayedRequests } = this.props;
+
+    if (!this.contextMenu) {
+      const {
+        blockSelectedRequestURL,
+        connector,
+        cloneRequest,
+        openDetailsPanelTab,
+        sendCustomRequest,
+        openStatistics,
+        unblockSelectedRequestURL,
+      } = this.props;
+      this.contextMenu = new RequestListContextMenu({
+        blockSelectedRequestURL,
+        connector,
+        cloneRequest,
+        openDetailsPanelTab,
+        sendCustomRequest,
+        openStatistics,
+        openRequestInTab: this.openRequestInTab,
+        unblockSelectedRequestURL,
+      });
+    }
+
+    this.contextMenu.open(evt, clickedRequest, displayedRequests);
   }
 
   /**
@@ -264,7 +351,6 @@ class RequestListContent extends Component {
       displayedRequests,
       firstRequestStartedMillis,
       onCauseBadgeMouseDown,
-      onItemMouseDown,
       onSecurityIconMouseDown,
       onWaterfallMouseDown,
       requestFilterTypes,
@@ -272,18 +358,30 @@ class RequestListContent extends Component {
       selectedRequest,
     } = this.props;
 
-    return (
-      div({ className: "requests-list-wrapper" },
-        div({ className: "requests-list-table" },
-          div({
-            ref: "contentEl",
-            className: "requests-list-contents",
+    return div(
+      {
+        ref: "scrollEl",
+        className: "requests-list-scroll",
+      },
+      dom.table(
+        {
+          className: "requests-list-table",
+        },
+        RequestListHeader(),
+        dom.tbody(
+          {
+            ref: "rowGroupEl",
+            className: "requests-list-row-group",
             tabIndex: 0,
             onKeyDown: this.onKeyDown,
-            style: { "--timings-scale": scale, "--timings-rev-scale": 1 / scale }
+            style: {
+              "--timings-scale": scale,
+              "--timings-rev-scale": 1 / scale,
+            },
           },
-            RequestListHeader(),
-            displayedRequests.map((item, index) => RequestListItem({
+          displayedRequests.map((item, index) =>
+            RequestListItem({
+              blocked: !!item.blockedReason,
               firstRequestStartedMillis,
               fromCache: item.status === "304" || item.fromCache,
               connector,
@@ -294,59 +392,77 @@ class RequestListContent extends Component {
               key: item.id,
               onContextMenu: this.onContextMenu,
               onFocusedNodeChange: this.onFocusedNodeChange,
-              onMouseDown: () => onItemMouseDown(item.id),
+              onDoubleClick: () => this.onDoubleClick(item),
+              onMouseDown: evt => this.onMouseDown(evt, item.id),
               onCauseBadgeMouseDown: () => onCauseBadgeMouseDown(item.cause),
-              onSecurityIconMouseDown: () => onSecurityIconMouseDown(item.securityState),
+              onSecurityIconMouseDown: () =>
+                onSecurityIconMouseDown(item.securityState),
               onWaterfallMouseDown: () => onWaterfallMouseDown(),
               requestFilterTypes,
-            }))
+            })
           )
-        )
+        ) // end of requests-list-row-group">
       )
     );
   }
 }
 
 module.exports = connect(
-  (state) => ({
+  state => ({
     columns: state.ui.columns,
     networkDetailsOpen: state.ui.networkDetailsOpen,
     networkDetailsWidth: state.ui.networkDetailsWidth,
     networkDetailsHeight: state.ui.networkDetailsHeight,
+    clickedRequest: state.requests.clickedRequest,
     displayedRequests: getDisplayedRequests(state),
     firstRequestStartedMillis: state.requests.firstStartedMillis,
     selectedRequest: getSelectedRequest(state),
     scale: getWaterfallScale(state),
-    sortedRequests: getSortedRequests(state),
     requestFilterTypes: state.filters.requestFilterTypes,
   }),
   (dispatch, props) => ({
-    cloneSelectedRequest: () => dispatch(Actions.cloneSelectedRequest()),
-    openStatistics: (open) => dispatch(Actions.openStatistics(props.connector, open)),
+    blockSelectedRequestURL: clickedRequest => {
+      dispatch(
+        Actions.blockSelectedRequestURL(props.connector, clickedRequest)
+      );
+    },
+    cloneRequest: id => dispatch(Actions.cloneRequest(id)),
+    openDetailsPanelTab: () => dispatch(Actions.openNetworkDetails(true)),
+    sendCustomRequest: () =>
+      dispatch(Actions.sendCustomRequest(props.connector)),
+    openStatistics: open =>
+      dispatch(Actions.openStatistics(props.connector, open)),
+    unblockSelectedRequestURL: clickedRequest => {
+      dispatch(
+        Actions.unblockSelectedRequestURL(props.connector, clickedRequest)
+      );
+    },
     /**
      * A handler that opens the stack trace tab when a stack trace is available
      */
-    onCauseBadgeMouseDown: (cause) => {
+    onCauseBadgeMouseDown: cause => {
       if (cause.stacktrace && cause.stacktrace.length > 0) {
         dispatch(Actions.selectDetailsPanelTab("stack-trace"));
       }
     },
-    onItemMouseDown: (id) => dispatch(Actions.selectRequest(id)),
+    selectRequest: id => dispatch(Actions.selectRequest(id)),
+    onItemRightMouseButtonDown: id => dispatch(Actions.rightClickRequest(id)),
+    onItemMouseDown: id => dispatch(Actions.selectRequest(id)),
     /**
      * A handler that opens the security tab in the details view if secure or
      * broken security indicator is clicked.
      */
-    onSecurityIconMouseDown: (securityState) => {
+    onSecurityIconMouseDown: securityState => {
       if (securityState && securityState !== "insecure") {
         dispatch(Actions.selectDetailsPanelTab("security"));
       }
     },
-    onSelectDelta: (delta) => dispatch(Actions.selectDelta(delta)),
+    onSelectDelta: delta => dispatch(Actions.selectDelta(delta)),
     /**
      * A handler that opens the timing sidebar panel if the waterfall is clicked.
      */
     onWaterfallMouseDown: () => {
       dispatch(Actions.selectDetailsPanelTab("timings"));
     },
-  }),
+  })
 )(RequestListContent);

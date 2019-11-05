@@ -41,7 +41,7 @@ struct ParamTraits<mozilla::wr::ImageDescriptor> {
     WriteParam(aMsg, aParam.width);
     WriteParam(aMsg, aParam.height);
     WriteParam(aMsg, aParam.stride);
-    WriteParam(aMsg, aParam.is_opaque);
+    WriteParam(aMsg, aParam.opacity);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
@@ -50,7 +50,7 @@ struct ParamTraits<mozilla::wr::ImageDescriptor> {
            ReadParam(aMsg, aIter, &aResult->width) &&
            ReadParam(aMsg, aIter, &aResult->height) &&
            ReadParam(aMsg, aIter, &aResult->stride) &&
-           ReadParam(aMsg, aIter, &aResult->is_opaque);
+           ReadParam(aMsg, aIter, &aResult->opacity);
   }
 };
 
@@ -61,6 +61,10 @@ struct ParamTraits<mozilla::wr::IdNamespace>
 template <>
 struct ParamTraits<mozilla::wr::ImageKey>
     : public PlainOldDataSerializer<mozilla::wr::ImageKey> {};
+
+template <>
+struct ParamTraits<mozilla::wr::BlobImageKey>
+    : public PlainOldDataSerializer<mozilla::wr::BlobImageKey> {};
 
 template <>
 struct ParamTraits<mozilla::wr::FontKey>
@@ -106,8 +110,10 @@ struct ParamTraits<mozilla::wr::LayoutPoint>
     : public PlainOldDataSerializer<mozilla::wr::LayoutPoint> {};
 
 template <>
-struct ParamTraits<mozilla::wr::WrImageMask>
-    : public PlainOldDataSerializer<mozilla::wr::WrImageMask> {};
+struct ParamTraits<mozilla::wr::RenderRoot>
+    : public ContiguousEnumSerializerInclusive<
+          mozilla::wr::RenderRoot, mozilla::wr::RenderRoot::Default,
+          mozilla::wr::kHighestRenderRoot> {};
 
 template <>
 struct ParamTraits<mozilla::wr::ImageRendering>
@@ -130,6 +136,18 @@ struct ParamTraits<mozilla::wr::WebRenderError>
     : public ContiguousEnumSerializer<mozilla::wr::WebRenderError,
                                       mozilla::wr::WebRenderError::INITIALIZE,
                                       mozilla::wr::WebRenderError::Sentinel> {};
+
+template <>
+struct ParamTraits<mozilla::wr::MemoryReport>
+    : public PlainOldDataSerializer<mozilla::wr::MemoryReport> {};
+
+template <>
+struct ParamTraits<mozilla::wr::OpacityType>
+    : public PlainOldDataSerializer<mozilla::wr::OpacityType> {};
+
+template <>
+struct ParamTraits<mozilla::wr::ExternalImageKeyPair>
+    : public PlainOldDataSerializer<mozilla::wr::ExternalImageKeyPair> {};
 
 }  // namespace IPC
 

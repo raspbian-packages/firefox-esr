@@ -6,6 +6,7 @@
 #ifndef TypeInState_h
 #define TypeInState_h
 
+#include "mozilla/EditorDOMPoint.h"
 #include "mozilla/UniquePtr.h"
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
@@ -16,7 +17,7 @@
 
 // Workaround for windows headers
 #ifdef SetProp
-#undef SetProp
+#  undef SetProp
 #endif
 
 class nsAtom;
@@ -93,9 +94,8 @@ class TypeInState final {
 
   nsTArray<PropItem*> mSetArray;
   nsTArray<PropItem*> mClearedArray;
+  EditorDOMPoint mLastSelectionPoint;
   int32_t mRelativeFontSize;
-  nsCOMPtr<nsINode> mLastSelectionContainer;
-  int32_t mLastSelectionOffset;
 
   friend class HTMLEditRules;
 };

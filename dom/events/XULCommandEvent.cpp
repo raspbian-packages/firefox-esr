@@ -15,7 +15,8 @@ XULCommandEvent::XULCommandEvent(EventTarget* aOwner,
                                  WidgetInputEvent* aEvent)
     : UIEvent(
           aOwner, aPresContext,
-          aEvent ? aEvent : new WidgetInputEvent(false, eVoidEvent, nullptr)) {
+          aEvent ? aEvent : new WidgetInputEvent(false, eVoidEvent, nullptr)),
+      mInputSource(0) {
   if (aEvent) {
     mEventIsInternal = false;
   } else {
@@ -30,80 +31,33 @@ NS_IMPL_RELEASE_INHERITED(XULCommandEvent, UIEvent)
 NS_IMPL_CYCLE_COLLECTION_INHERITED(XULCommandEvent, UIEvent, mSourceEvent)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(XULCommandEvent)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMXULCommandEvent)
 NS_INTERFACE_MAP_END_INHERITING(UIEvent)
 
 bool XULCommandEvent::AltKey() { return mEvent->AsInputEvent()->IsAlt(); }
 
-NS_IMETHODIMP
-XULCommandEvent::GetAltKey(bool* aIsDown) {
-  NS_ENSURE_ARG_POINTER(aIsDown);
-  *aIsDown = AltKey();
-  return NS_OK;
-}
-
 bool XULCommandEvent::CtrlKey() { return mEvent->AsInputEvent()->IsControl(); }
-
-NS_IMETHODIMP
-XULCommandEvent::GetCtrlKey(bool* aIsDown) {
-  NS_ENSURE_ARG_POINTER(aIsDown);
-  *aIsDown = CtrlKey();
-  return NS_OK;
-}
 
 bool XULCommandEvent::ShiftKey() { return mEvent->AsInputEvent()->IsShift(); }
 
-NS_IMETHODIMP
-XULCommandEvent::GetShiftKey(bool* aIsDown) {
-  NS_ENSURE_ARG_POINTER(aIsDown);
-  *aIsDown = ShiftKey();
-  return NS_OK;
-}
-
 bool XULCommandEvent::MetaKey() { return mEvent->AsInputEvent()->IsMeta(); }
-
-NS_IMETHODIMP
-XULCommandEvent::GetMetaKey(bool* aIsDown) {
-  NS_ENSURE_ARG_POINTER(aIsDown);
-  *aIsDown = MetaKey();
-  return NS_OK;
-}
 
 uint16_t XULCommandEvent::InputSource() { return mInputSource; }
 
-NS_IMETHODIMP
-XULCommandEvent::GetInputSource(uint16_t* aInputSource) {
-  NS_ENSURE_ARG_POINTER(aInputSource);
-  *aInputSource = InputSource();
-  return NS_OK;
-}
+void XULCommandEvent::InitCommandEvent(
+    const nsAString& aType, bool aCanBubble, bool aCancelable,
+    nsGlobalWindowInner* aView, int32_t aDetail, bool aCtrlKey, bool aAltKey,
+    bool aShiftKey, bool aMetaKey, Event* aSourceEvent, uint16_t aInputSource,
+    ErrorResult& aRv) {
+  if (NS_WARN_IF(mEvent->mFlags.mIsBeingDispatched)) {
+    return;
+  }
 
-NS_IMETHODIMP
-XULCommandEvent::GetSourceEvent(nsIDOMEvent** aSourceEvent) {
-  NS_ENSURE_ARG_POINTER(aSourceEvent);
-  nsCOMPtr<nsIDOMEvent> event = GetSourceEvent();
-  event.forget(aSourceEvent);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-XULCommandEvent::InitCommandEvent(const nsAString& aType, bool aCanBubble,
-                                  bool aCancelable, mozIDOMWindow* aView,
-                                  int32_t aDetail, bool aCtrlKey, bool aAltKey,
-                                  bool aShiftKey, bool aMetaKey,
-                                  nsIDOMEvent* aSourceEvent,
-                                  uint16_t aInputSource) {
-  NS_ENSURE_TRUE(!mEvent->mFlags.mIsBeingDispatched, NS_OK);
-
-  auto* view = nsGlobalWindowInner::Cast(nsPIDOMWindowInner::From(aView));
-  UIEvent::InitUIEvent(aType, aCanBubble, aCancelable, view, aDetail);
+  UIEvent::InitUIEvent(aType, aCanBubble, aCancelable, aView, aDetail);
 
   mEvent->AsInputEvent()->InitBasicModifiers(aCtrlKey, aAltKey, aShiftKey,
                                              aMetaKey);
   mSourceEvent = aSourceEvent;
   mInputSource = aInputSource;
-
-  return NS_OK;
 }
 
 }  // namespace dom

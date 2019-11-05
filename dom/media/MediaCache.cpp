@@ -9,7 +9,6 @@
 #include "ChannelMediaResource.h"
 #include "FileBlockCache.h"
 #include "MediaBlockCacheBase.h"
-#include "MediaPrefs.h"
 #include "MediaResource.h"
 #include "MemoryBlockCache.h"
 #include "mozilla/Attributes.h"
@@ -20,15 +19,18 @@
 #include "mozilla/Preferences.h"
 #include "mozilla/Services.h"
 #include "mozilla/StaticPtr.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/SystemGroup.h"
 #include "mozilla/Telemetry.h"
 #include "nsContentUtils.h"
+#include "nsINetworkLinkService.h"
 #include "nsIObserverService.h"
 #include "nsIPrincipal.h"
 #include "nsPrintfCString.h"
 #include "nsProxyRelease.h"
 #include "nsThreadUtils.h"
 #include "prio.h"
+#include "VideoUtils.h"
 #include <algorithm>
 
 namespace mozilla {
@@ -103,18 +105,17 @@ class MediaCacheFlusher final : public nsIObserver,
   nsTArray<MediaCache*> mMediaCaches;
 };
 
-/* static */ StaticRefPtr<MediaCacheFlusher>
-    MediaCacheFlusher::gMediaCacheFlusher;
+/* static */
+StaticRefPtr<MediaCacheFlusher> MediaCacheFlusher::gMediaCacheFlusher;
 
 NS_IMPL_ISUPPORTS(MediaCacheFlusher, nsIObserver, nsISupportsWeakReference)
 
-/* static */ void MediaCacheFlusher::RegisterMediaCache(
-    MediaCache* aMediaCache) {
+/* static */
+void MediaCacheFlusher::RegisterMediaCache(MediaCache* aMediaCache) {
   NS_ASSERTION(NS_IsMainThread(), "Only call on main thread");
 
   if (!gMediaCacheFlusher) {
     gMediaCacheFlusher = new MediaCacheFlusher();
-
     nsCOMPtr<nsIObserverService> observerService =
         mozilla::services::GetObserverService();
     if (observerService) {
@@ -122,14 +123,18 @@ NS_IMPL_ISUPPORTS(MediaCacheFlusher, nsIObserver, nsISupportsWeakReference)
                                    true);
       observerService->AddObserver(gMediaCacheFlusher,
                                    "cacheservice:empty-cache", true);
+      observerService->AddObserver(
+          gMediaCacheFlusher, "contentchild:network-link-type-changed", true);
+      observerService->AddObserver(gMediaCacheFlusher,
+                                   NS_NETWORK_LINK_TYPE_TOPIC, true);
     }
   }
 
   gMediaCacheFlusher->mMediaCaches.AppendElement(aMediaCache);
 }
 
-/* static */ void MediaCacheFlusher::UnregisterMediaCache(
-    MediaCache* aMediaCache) {
+/* static */
+void MediaCacheFlusher::UnregisterMediaCache(MediaCache* aMediaCache) {
   NS_ASSERTION(NS_IsMainThread(), "Only call on main thread");
 
   gMediaCacheFlusher->mMediaCaches.RemoveElement(aMediaCache);
@@ -242,6 +247,11 @@ class MediaCache {
     return mMonitor;
   }
 
+  // Polls whether we're on a cellular network connection, and posts a task
+  // to the MediaCache thread to set the value of MediaCache::sOnCellular.
+  // Call on main thread only.
+  static void UpdateOnCellular();
+
   /**
    * An iterator that makes it easy to iterate through all streams that
    * have a given resource ID and are not closed.
@@ -282,6 +292,7 @@ class MediaCache {
     NS_ASSERTION(NS_IsMainThread(), "Only construct MediaCache on main thread");
     MOZ_COUNT_CTOR(MediaCache);
     MediaCacheFlusher::RegisterMediaCache(this);
+    UpdateOnCellular();
   }
 
   ~MediaCache() {
@@ -311,6 +322,23 @@ class MediaCache {
     NS_ASSERTION(mIndex.Length() == 0, "Blocks leaked?");
 
     MOZ_COUNT_DTOR(MediaCache);
+  }
+
+  static size_t CacheSize() {
+    MOZ_ASSERT(sThread->IsOnCurrentThread());
+    return sOnCellular ? StaticPrefs::MediaCacheCellularSize()
+                       : StaticPrefs::MediaCacheSize();
+  }
+
+  static size_t ReadaheadLimit() {
+    MOZ_ASSERT(sThread->IsOnCurrentThread());
+    return sOnCellular ? StaticPrefs::MediaCacheCellularReadaheadLimit()
+                       : StaticPrefs::MediaCacheReadaheadLimit();
+  }
+
+  static size_t ResumeThreshold() {
+    return sOnCellular ? StaticPrefs::MediaCacheCellularResumeThreshold()
+                       : StaticPrefs::MediaCacheResumeThreshold();
   }
 
   // Find a free or reusable block and return its index. If there are no
@@ -452,6 +480,9 @@ class MediaCache {
   static bool sThreadInit;
 
  private:
+  // MediaCache thread only. True if we're on a cellular network connection.
+  static bool sOnCellular;
+
   // Used by MediaCacheStream::GetDebugInfo() only for debugging.
   // Don't add new callers to this function.
   friend nsCString MediaCacheStream::GetDebugInfo();
@@ -462,10 +493,26 @@ class MediaCache {
 };
 
 // Initialized to nullptr by non-local static initialization.
-/* static */ MediaCache* MediaCache::gMediaCache;
+/* static */
+MediaCache* MediaCache::gMediaCache;
 
-/* static */ StaticRefPtr<nsIThread> MediaCache::sThread;
-/* static */ bool MediaCache::sThreadInit = false;
+/* static */
+StaticRefPtr<nsIThread> MediaCache::sThread;
+/* static */
+bool MediaCache::sThreadInit = false;
+
+/* static */
+bool MediaCache::sOnCellular = false;
+
+void MediaCache::UpdateOnCellular() {
+  NS_ASSERTION(NS_IsMainThread(),
+               "Only call on main thread");  // JNI required on Android...
+  bool onCellular = OnCellularConnection();
+  LOG("MediaCache::UpdateOnCellular() onCellular=%d", onCellular);
+  nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
+      "MediaCache::UpdateOnCellular", [=]() { sOnCellular = onCellular; });
+  sThread->Dispatch(r.forget());
+}
 
 NS_IMETHODIMP
 MediaCacheFlusher::Observe(nsISupports* aSubject, char const* aTopic,
@@ -484,6 +531,10 @@ MediaCacheFlusher::Observe(nsISupports* aSubject, char const* aTopic,
     }
     return NS_OK;
   }
+  if (strcmp(aTopic, "contentchild:network-link-type-changed") == 0 ||
+      strcmp(aTopic, NS_NETWORK_LINK_TYPE_TOPIC) == 0) {
+    MediaCache::UpdateOnCellular();
+  }
   return NS_OK;
 }
 
@@ -497,10 +548,13 @@ MediaCacheStream::MediaCacheStream(ChannelMediaResource* aClient,
       mStreamOffset(0),
       mPlaybackBytesPerSecond(10000),
       mPinCount(0),
+      mNotifyDataEndedStatus(NS_ERROR_NOT_INITIALIZED),
       mMetadataInPartialBlockBuffer(false),
       mIsPrivateBrowsing(aIsPrivateBrowsing) {}
 
 size_t MediaCacheStream::SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const {
+  AutoLock lock(mMediaCache->Monitor());
+
   // Looks like these are not owned:
   // - mClient
   size_t size = mBlocks.ShallowSizeOfExcludingThis(aMallocSizeOf);
@@ -692,8 +746,8 @@ void MediaCache::Flush() {
 void MediaCache::CloseStreamsForPrivateBrowsing() {
   MOZ_ASSERT(NS_IsMainThread());
   sThread->Dispatch(NS_NewRunnableFunction(
-      "MediaCache::CloseStreamsForPrivateBrowsing", [self = RefPtr<MediaCache>(
-                                                         this)]() {
+      "MediaCache::CloseStreamsForPrivateBrowsing",
+      [self = RefPtr<MediaCache>(this)]() {
         AutoLock lock(self->mMonitor);
         // Copy mStreams since CloseInternal() will change the array.
         nsTArray<MediaCacheStream*> streams(self->mStreams);
@@ -705,8 +759,8 @@ void MediaCache::CloseStreamsForPrivateBrowsing() {
       }));
 }
 
-/* static */ RefPtr<MediaCache> MediaCache::GetMediaCache(
-    int64_t aContentLength) {
+/* static */
+RefPtr<MediaCache> MediaCache::GetMediaCache(int64_t aContentLength) {
   NS_ASSERTION(NS_IsMainThread(), "Only call on main thread");
 
   if (!sThreadInit) {
@@ -735,7 +789,8 @@ void MediaCache::CloseStreamsForPrivateBrowsing() {
   }
 
   if (aContentLength > 0 &&
-      aContentLength <= int64_t(MediaPrefs::MediaMemoryCacheMaxSize()) * 1024) {
+      aContentLength <=
+          int64_t(StaticPrefs::MediaMemoryCacheMaxSize()) * 1024) {
     // Small-enough resource, use a new memory-backed MediaCache.
     RefPtr<MediaBlockCacheBase> bc = new MemoryBlockCache(aContentLength);
     nsresult rv = bc->Init();
@@ -822,7 +877,8 @@ int32_t MediaCache::FindBlockForIncomingData(AutoLock& aLock, TimeStamp aNow,
     // b) the data we're going to store in the free block is not higher
     // priority than the data already stored in the free block.
     // The latter can lead us to go over the cache limit a bit.
-    if ((mIndex.Length() < uint32_t(mBlockCache->GetMaxBlocks()) ||
+    if ((mIndex.Length() <
+             uint32_t(mBlockCache->GetMaxBlocks(MediaCache::CacheSize())) ||
          blockIndex < 0 ||
          PredictNextUseForIncomingData(aLock, aStream) >=
              PredictNextUse(aLock, aNow, blockIndex))) {
@@ -1150,7 +1206,7 @@ void MediaCache::Update() {
   mInUpdate = true;
 #endif
 
-  int32_t maxBlocks = mBlockCache->GetMaxBlocks();
+  int32_t maxBlocks = mBlockCache->GetMaxBlocks(MediaCache::CacheSize());
   TimeStamp now = TimeStamp::Now();
 
   int32_t freeBlockCount = mFreeBlocks.GetCount();
@@ -1271,8 +1327,8 @@ void MediaCache::Update() {
     }
   }
 
-  int32_t resumeThreshold = MediaPrefs::MediaCacheResumeThreshold();
-  int32_t readaheadLimit = MediaPrefs::MediaCacheReadaheadLimit();
+  int32_t resumeThreshold = MediaCache::ResumeThreshold();
+  int32_t readaheadLimit = MediaCache::ReadaheadLimit();
 
   for (uint32_t i = 0; i < mStreams.Length(); ++i) {
     actions.AppendElement(StreamAction{});
@@ -1829,7 +1885,7 @@ void MediaCacheStream::NotifyLoadID(uint32_t aLoadID) {
 
   nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
       "MediaCacheStream::NotifyLoadID",
-      [ client = RefPtr<ChannelMediaResource>(mClient), this, aLoadID ]() {
+      [client = RefPtr<ChannelMediaResource>(mClient), this, aLoadID]() {
         AutoLock lock(mMediaCache->Monitor());
         mLoadID = aLoadID;
       });
@@ -1883,10 +1939,11 @@ void MediaCacheStream::NotifyDataStarted(uint32_t aLoadID, int64_t aOffset,
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aLoadID > 0);
 
-  nsCOMPtr<nsIRunnable> r =
-      NS_NewRunnableFunction("MediaCacheStream::NotifyDataStarted", [
-        =, client = RefPtr<ChannelMediaResource>(mClient)
-      ]() { NotifyDataStartedInternal(aLoadID, aOffset, aSeekable, aLength); });
+  nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
+      "MediaCacheStream::NotifyDataStarted",
+      [=, client = RefPtr<ChannelMediaResource>(mClient)]() {
+        NotifyDataStartedInternal(aLoadID, aOffset, aSeekable, aLength);
+      });
   OwnerThread()->Dispatch(r.forget());
 }
 
@@ -2090,7 +2147,7 @@ void MediaCacheStream::NotifyResume() {
 
   nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
       "MediaCacheStream::NotifyResume",
-      [ this, client = RefPtr<ChannelMediaResource>(mClient) ]() {
+      [this, client = RefPtr<ChannelMediaResource>(mClient)]() {
         AutoLock lock(mMediaCache->Monitor());
         if (mClosed) {
           return;
@@ -2152,7 +2209,7 @@ void MediaCacheStream::Close() {
   }
   OwnerThread()->Dispatch(NS_NewRunnableFunction(
       "MediaCacheStream::Close",
-      [ this, client = RefPtr<ChannelMediaResource>(mClient) ]() {
+      [this, client = RefPtr<ChannelMediaResource>(mClient)]() {
         AutoLock lock(mMediaCache->Monitor());
         CloseInternal(lock);
       }));
@@ -2291,14 +2348,14 @@ int64_t MediaCacheStream::GetNextCachedDataInternal(AutoLock&,
     ++blockIndex;
   }
 
-  NS_NOTREACHED("Should return in loop");
+  MOZ_ASSERT_UNREACHABLE("Should return in loop");
   return -1;
 }
 
 void MediaCacheStream::SetReadMode(ReadMode aMode) {
   nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
       "MediaCacheStream::SetReadMode",
-      [ this, client = RefPtr<ChannelMediaResource>(mClient), aMode ]() {
+      [this, client = RefPtr<ChannelMediaResource>(mClient), aMode]() {
         AutoLock lock(mMediaCache->Monitor());
         if (!mClosed && mCurrentMode != aMode) {
           mCurrentMode = aMode;
@@ -2342,7 +2399,7 @@ void MediaCacheStream::ThrottleReadahead(bool bThrottle) {
 
   nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
       "MediaCacheStream::ThrottleReadahead",
-      [ client = RefPtr<ChannelMediaResource>(mClient), this, bThrottle ]() {
+      [client = RefPtr<ChannelMediaResource>(mClient), this, bThrottle]() {
         AutoLock lock(mMediaCache->Monitor());
         if (!mClosed && mThrottleReadahead != bThrottle) {
           LOGI("Stream %p ThrottleReadahead %d", this, bThrottle);
@@ -2394,7 +2451,7 @@ Result<uint32_t, nsresult> MediaCacheStream::ReadBlockFromCache(
   }
 
   if (mStreamLength >= 0 &&
-      aBuffer.Length() > uint32_t(mStreamLength - aOffset)) {
+      int64_t(aBuffer.Length()) > mStreamLength - aOffset) {
     // Clamp reads to stream's length
     aBuffer = aBuffer.First(mStreamLength - aOffset);
   }
@@ -2607,7 +2664,7 @@ nsresult MediaCacheStream::Init(int64_t aContentLength) {
 
   OwnerThread()->Dispatch(NS_NewRunnableFunction(
       "MediaCacheStream::Init",
-      [ this, res = RefPtr<ChannelMediaResource>(mClient) ]() {
+      [this, res = RefPtr<ChannelMediaResource>(mClient)]() {
         AutoLock lock(mMediaCache->Monitor());
         mMediaCache->OpenStream(lock, this);
       }));
@@ -2621,11 +2678,12 @@ void MediaCacheStream::InitAsClone(MediaCacheStream* aOriginal) {
 
   // Use the same MediaCache as our clone.
   mMediaCache = aOriginal->mMediaCache;
-  OwnerThread()->Dispatch(
-      NS_NewRunnableFunction("MediaCacheStream::InitAsClone", [
-        this, aOriginal, r1 = RefPtr<ChannelMediaResource>(mClient),
-        r2 = RefPtr<ChannelMediaResource>(aOriginal->mClient)
-      ]() { InitAsCloneInternal(aOriginal); }));
+  OwnerThread()->Dispatch(NS_NewRunnableFunction(
+      "MediaCacheStream::InitAsClone",
+      [this, aOriginal, r1 = RefPtr<ChannelMediaResource>(mClient),
+       r2 = RefPtr<ChannelMediaResource>(aOriginal->mClient)]() {
+        InitAsCloneInternal(aOriginal);
+      }));
 }
 
 void MediaCacheStream::InitAsCloneInternal(MediaCacheStream* aOriginal) {

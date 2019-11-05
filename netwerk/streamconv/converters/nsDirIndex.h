@@ -1,17 +1,18 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ifndef nsDirIndex_h__
+#define nsDirIndex_h__
 
 #include "nsIDirIndex.h"
 #include "nsString.h"
 #include "mozilla/Attributes.h"
 
-/* CID: {f6913e2e-1dd1-11b2-84be-f455dee342af} */
-
 class nsDirIndex final : public nsIDirIndex {
  private:
-  ~nsDirIndex();
+  ~nsDirIndex() = default;
 
  public:
   nsDirIndex();
@@ -27,3 +28,5 @@ class nsDirIndex final : public nsIDirIndex {
   int64_t mSize;
   PRTime mLastModified;
 };
+
+#endif

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,12 +17,12 @@ using namespace mozilla::intl;
  * case-insensitive Windows. The class name is `Locale`.
  */
 Locale::Locale(const nsACString& aLocale) {
-  int32_t position = 0;
-
-  if (!IsASCII(aLocale)) {
-    mIsValid = false;
+  if (aLocale.IsEmpty() || !IsASCII(aLocale)) {
+    mIsWellFormed = false;
     return;
   }
+
+  int32_t position = 0;
 
   nsAutoCString normLocale(aLocale);
   normLocale.ReplaceChar('_', '-');
@@ -46,16 +46,27 @@ Locale::Locale(const nsACString& aLocale) {
    *           ["-" script]        4ALPHA
    *           ["-" region]        2ALPHA
    *           *("-" variant)      3*8alphanum
+   *           ["-"] privateuse]   "x" 1*("-" (1*8alphanum))
    *
    * The `position` variable represents the currently expected section of the
    * tag and intentionally skips positions (like `extlang`) which may be added
    * later.
+   *
+   *  language-extlangs-script-region-variant-extension-privateuse
+   *  --- 0 -- --- 1 -- -- 2 - -- 3 - -- 4 -- --- x --- ---- 6 ---
    */
   for (const nsACString& subTag : normLocale.Split('-')) {
     auto slen = subTag.Length();
-    if (position == 0) {
+    if (slen > 8) {
+      mIsWellFormed = false;
+      return;
+    } else if (position == 6) {
+      ToLowerCase(*mPrivateUse.AppendElement(subTag));
+    } else if (subTag.LowerCaseEqualsLiteral("x")) {
+      position = 6;
+    } else if (position == 0) {
       if (slen < 2 || slen > 3) {
-        mIsValid = false;
+        mIsWellFormed = false;
         return;
       }
       mLanguage = subTag;
@@ -82,7 +93,7 @@ Locale::Locale(const nsACString& aLocale) {
 const nsCString Locale::AsString() const {
   nsCString tag;
 
-  if (!mIsValid) {
+  if (!mIsWellFormed) {
     tag.AppendLiteral("und");
     return tag;
   }
@@ -103,20 +114,33 @@ const nsCString Locale::AsString() const {
     tag.AppendLiteral("-");
     tag.Append(variant);
   }
+
+  if (!mPrivateUse.IsEmpty()) {
+    if (tag.IsEmpty()) {
+      tag.AppendLiteral("x");
+    } else {
+      tag.AppendLiteral("-x");
+    }
+
+    for (const auto& subTag : mPrivateUse) {
+      tag.AppendLiteral("-");
+      tag.Append(subTag);
+    }
+  }
   return tag;
 }
 
-const nsACString& Locale::GetLanguage() const { return mLanguage; }
+const nsCString& Locale::GetLanguage() const { return mLanguage; }
 
-const nsACString& Locale::GetScript() const { return mScript; }
+const nsCString& Locale::GetScript() const { return mScript; }
 
-const nsACString& Locale::GetRegion() const { return mRegion; }
+const nsCString& Locale::GetRegion() const { return mRegion; }
 
 const nsTArray<nsCString>& Locale::GetVariants() const { return mVariants; }
 
 bool Locale::Matches(const Locale& aOther, bool aThisRange,
                      bool aOtherRange) const {
-  if (!IsValid() || !aOther.IsValid()) {
+  if (!IsWellFormed() || !aOther.IsWellFormed()) {
     return false;
   }
 

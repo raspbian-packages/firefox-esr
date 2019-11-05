@@ -36,13 +36,14 @@
 
 #include "mozilla/arm.h"
 #include "mozilla/Bootstrap.h"
+#include "mozilla/Sprintf.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/UniquePtr.h"
 #include "XREChildData.h"
 
 /* Android headers don't define RUSAGE_THREAD */
 #ifndef RUSAGE_THREAD
-#define RUSAGE_THREAD 1
+#  define RUSAGE_THREAD 1
 #endif
 
 #ifndef RELEASE_OR_BETA
@@ -142,9 +143,9 @@ static void* sqlite_handle = nullptr;
 static void* nspr_handle = nullptr;
 static void* plc_handle = nullptr;
 #else
-#define sqlite_handle nss_handle
-#define nspr_handle nss_handle
-#define plc_handle nss_handle
+#  define sqlite_handle nss_handle
+#  define nspr_handle nss_handle
+#  define plc_handle nss_handle
 #endif
 static void* nss_handle = nullptr;
 
@@ -174,31 +175,29 @@ extern "C" void delete_mapping(const char* name) {
   }
 }
 
-static UniquePtr<char[]> getAPKLibraryName(const char* apkName,
-                                           const char* libraryName) {
-#define APK_ASSETS_PATH "!/assets/" ANDROID_CPU_ARCH "/"
-  size_t filenameLength = strlen(apkName) +
-                          sizeof(APK_ASSETS_PATH) +  // includes \0 terminator
-                          strlen(libraryName);
-  auto file = MakeUnique<char[]>(filenameLength);
-  snprintf(file.get(), filenameLength, "%s" APK_ASSETS_PATH "%s", apkName,
-           libraryName);
+static UniquePtr<char[]> getUnpackedLibraryName(const char* libraryName) {
+  static const char* libdir = getenv("MOZ_ANDROID_LIBDIR");
+
+  size_t len = strlen(libdir) + 1 /* path separator */ + strlen(libraryName) +
+               1; /* null terminator */
+  auto file = MakeUnique<char[]>(len);
+  snprintf(file.get(), len, "%s/%s", libdir, libraryName);
   return file;
-#undef APK_ASSETS_PATH
 }
 
-static void* dlopenAPKLibrary(const char* apkName, const char* libraryName) {
-  return __wrap_dlopen(getAPKLibraryName(apkName, libraryName).get(),
+static void* dlopenLibrary(const char* libraryName) {
+  return __wrap_dlopen(getUnpackedLibraryName(libraryName).get(),
                        RTLD_GLOBAL | RTLD_LAZY);
 }
 
-static mozglueresult loadGeckoLibs(const char* apkName) {
+static mozglueresult loadGeckoLibs() {
   TimeStamp t0 = TimeStamp::Now();
   struct rusage usage1_thread, usage1;
   getrusage(RUSAGE_THREAD, &usage1_thread);
   getrusage(RUSAGE_SELF, &usage1);
 
-  gBootstrap = GetBootstrap(getAPKLibraryName(apkName, "libxul.so").get());
+  gBootstrap = GetBootstrap(getUnpackedLibraryName("libxul.so").get(),
+                            LibLoadingStrategy::ReadAhead);
   if (!gBootstrap) {
     __android_log_print(ANDROID_LOG_ERROR, "GeckoLibLoad",
                         "Couldn't get a handle to libxul!");
@@ -230,16 +229,16 @@ static mozglueresult loadGeckoLibs(const char* apkName) {
   return SUCCESS;
 }
 
-static mozglueresult loadNSSLibs(const char* apkName);
+static mozglueresult loadNSSLibs();
 
-static mozglueresult loadSQLiteLibs(const char* apkName) {
+static mozglueresult loadSQLiteLibs() {
   if (sqlite_handle) return SUCCESS;
 
 #ifdef MOZ_FOLD_LIBS
-  if (loadNSSLibs(apkName) != SUCCESS) return FAILURE;
+  if (loadNSSLibs() != SUCCESS) return FAILURE;
 #else
 
-  sqlite_handle = dlopenAPKLibrary(apkName, "libmozsqlite3.so");
+  sqlite_handle = dlopenLibrary("libmozsqlite3.so");
   if (!sqlite_handle) {
     __android_log_print(ANDROID_LOG_ERROR, "GeckoLibLoad",
                         "Couldn't get a handle to libmozsqlite3!");
@@ -251,15 +250,15 @@ static mozglueresult loadSQLiteLibs(const char* apkName) {
   return SUCCESS;
 }
 
-static mozglueresult loadNSSLibs(const char* apkName) {
+static mozglueresult loadNSSLibs() {
   if (nss_handle && nspr_handle && plc_handle) return SUCCESS;
 
-  nss_handle = dlopenAPKLibrary(apkName, "libnss3.so");
+  nss_handle = dlopenLibrary("libnss3.so");
 
 #ifndef MOZ_FOLD_LIBS
-  nspr_handle = dlopenAPKLibrary(apkName, "libnspr4.so");
+  nspr_handle = dlopenLibrary("libnspr4.so");
 
-  plc_handle = dlopenAPKLibrary(apkName, "libplc4.so");
+  plc_handle = dlopenLibrary("libplc4.so");
 #endif
 
   if (!nss_handle) {
@@ -287,56 +286,35 @@ static mozglueresult loadNSSLibs(const char* apkName) {
 
 extern "C" APKOPEN_EXPORT void MOZ_JNICALL
 Java_org_mozilla_gecko_mozglue_GeckoLoader_loadGeckoLibsNative(
-    JNIEnv* jenv, jclass jGeckoAppShellClass, jstring jApkName) {
+    JNIEnv* jenv, jclass jGeckoAppShellClass) {
   jenv->GetJavaVM(&sJavaVM);
 
-  const char* str;
-  // XXX: java doesn't give us true UTF8, we should figure out something
-  // better to do here
-  str = jenv->GetStringUTFChars(jApkName, nullptr);
-  if (str == nullptr) return;
-
-  int res = loadGeckoLibs(str);
+  int res = loadGeckoLibs();
   if (res != SUCCESS) {
     JNI_Throw(jenv, "java/lang/Exception", "Error loading gecko libraries");
   }
-  jenv->ReleaseStringUTFChars(jApkName, str);
 }
 
 extern "C" APKOPEN_EXPORT void MOZ_JNICALL
 Java_org_mozilla_gecko_mozglue_GeckoLoader_loadSQLiteLibsNative(
-    JNIEnv* jenv, jclass jGeckoAppShellClass, jstring jApkName) {
-  const char* str;
-  // XXX: java doesn't give us true UTF8, we should figure out something
-  // better to do here
-  str = jenv->GetStringUTFChars(jApkName, nullptr);
-  if (str == nullptr) return;
-
+    JNIEnv* jenv, jclass jGeckoAppShellClass) {
   __android_log_print(ANDROID_LOG_ERROR, "GeckoLibLoad", "Load sqlite start\n");
-  mozglueresult rv = loadSQLiteLibs(str);
+  mozglueresult rv = loadSQLiteLibs();
   if (rv != SUCCESS) {
     JNI_Throw(jenv, "java/lang/Exception", "Error loading sqlite libraries");
   }
   __android_log_print(ANDROID_LOG_ERROR, "GeckoLibLoad", "Load sqlite done\n");
-  jenv->ReleaseStringUTFChars(jApkName, str);
 }
 
 extern "C" APKOPEN_EXPORT void MOZ_JNICALL
 Java_org_mozilla_gecko_mozglue_GeckoLoader_loadNSSLibsNative(
-    JNIEnv* jenv, jclass jGeckoAppShellClass, jstring jApkName) {
-  const char* str;
-  // XXX: java doesn't give us true UTF8, we should figure out something
-  // better to do here
-  str = jenv->GetStringUTFChars(jApkName, nullptr);
-  if (str == nullptr) return;
-
+    JNIEnv* jenv, jclass jGeckoAppShellClass) {
   __android_log_print(ANDROID_LOG_ERROR, "GeckoLibLoad", "Load nss start\n");
-  mozglueresult rv = loadNSSLibs(str);
+  mozglueresult rv = loadNSSLibs();
   if (rv != SUCCESS) {
     JNI_Throw(jenv, "java/lang/Exception", "Error loading nss libraries");
   }
   __android_log_print(ANDROID_LOG_ERROR, "GeckoLibLoad", "Load nss done\n");
-  jenv->ReleaseStringUTFChars(jApkName, str);
 }
 
 static char** CreateArgvFromObjectArray(JNIEnv* jenv, jobjectArray jargs,
@@ -378,6 +356,7 @@ static void FreeArgv(char** argv, int argc) {
 extern "C" APKOPEN_EXPORT void MOZ_JNICALL
 Java_org_mozilla_gecko_mozglue_GeckoLoader_nativeRun(JNIEnv* jenv, jclass jc,
                                                      jobjectArray jargs,
+                                                     int prefsFd, int prefMapFd,
                                                      int ipcFd, int crashFd,
                                                      int crashAnnotationFd) {
   int argc = 0;
@@ -393,34 +372,32 @@ Java_org_mozilla_gecko_mozglue_GeckoLoader_nativeRun(JNIEnv* jenv, jclass jc,
     gBootstrap->GeckoStart(jenv, argv, argc, sAppData);
     ElfLoader::Singleton.ExpectShutdown(true);
   } else {
-    gBootstrap->XRE_SetAndroidChildFds(jenv, ipcFd, crashFd, crashAnnotationFd);
+    gBootstrap->XRE_SetAndroidChildFds(
+        jenv, {prefsFd, prefMapFd, ipcFd, crashFd, crashAnnotationFd});
     gBootstrap->XRE_SetProcessType(argv[argc - 1]);
 
     XREChildData childData;
     gBootstrap->XRE_InitChildProcess(argc - 1, argv, &childData);
   }
 
+#ifdef MOZ_WIDGET_ANDROID
+#  ifdef MOZ_PROFILE_GENERATE
+  gBootstrap->XRE_WriteLLVMProfData();
+#  endif
+#endif
   gBootstrap.reset();
   FreeArgv(argv, argc);
 }
 
 extern "C" APKOPEN_EXPORT mozglueresult ChildProcessInit(int argc,
                                                          char* argv[]) {
-  int i;
-  for (i = 0; i < (argc - 1); i++) {
-    if (strcmp(argv[i], "-greomni")) continue;
-
-    i = i + 1;
-    break;
-  }
-
-  if (loadNSSLibs(argv[i]) != SUCCESS) {
+  if (loadNSSLibs() != SUCCESS) {
     return FAILURE;
   }
-  if (loadSQLiteLibs(argv[i]) != SUCCESS) {
+  if (loadSQLiteLibs() != SUCCESS) {
     return FAILURE;
   }
-  if (loadGeckoLibs(argv[i]) != SUCCESS) {
+  if (loadGeckoLibs() != SUCCESS) {
     return FAILURE;
   }
 
@@ -444,7 +421,7 @@ Java_org_mozilla_gecko_mozglue_GeckoLoader_neonCompatible(JNIEnv* jenv,
 static bool IsMediaProcess() {
   pid_t pid = getpid();
   char str[256];
-  snprintf(str, sizeof(str), "/proc/%d/cmdline", pid);
+  SprintfLiteral(str, "/proc/%d/cmdline", pid);
   FILE* f = fopen(str, "r");
   if (f) {
     fgets(str, sizeof(str), f);
@@ -461,7 +438,7 @@ static bool IsMediaProcess() {
 }
 
 #ifndef SYS_rt_tgsigqueueinfo
-#define SYS_rt_tgsigqueueinfo __NR_rt_tgsigqueueinfo
+#  define SYS_rt_tgsigqueueinfo __NR_rt_tgsigqueueinfo
 #endif
 /* Copy of http://androidxref.com/7.1.1_r6/xref/bionic/linker/debugger.cpp#262,
  * with debuggerd related code stripped.

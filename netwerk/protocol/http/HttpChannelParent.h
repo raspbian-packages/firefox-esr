@@ -23,7 +23,6 @@
 #include "nsIDeprecationWarner.h"
 
 class nsICacheEntry;
-class nsIAssociatedContentSecurity;
 
 #define HTTP_CHANNEL_PARENT_IID                      \
   {                                                  \
@@ -35,7 +34,7 @@ class nsIAssociatedContentSecurity;
 namespace mozilla {
 
 namespace dom {
-class TabParent;
+class BrowserParent;
 class PBrowserOrId;
 }  // namespace dom
 
@@ -102,8 +101,9 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
     }
   }
 
-  MOZ_MUST_USE nsresult OpenAlternativeOutputStream(const nsACString& type,
-                                                    nsIOutputStream** _retval);
+  MOZ_MUST_USE nsresult
+  OpenAlternativeOutputStream(const nsACString& type, int64_t predictedSize,
+                              nsIAsyncOutputStream** _retval);
 
   // Callbacks for each asynchronous tasks required in AsyncOpen
   // procedure, will call InvokeAsyncOpen when all the expected
@@ -123,6 +123,14 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
 
   base::ProcessId OtherPid() const override;
 
+  // Calling this method will cancel the HttpChannelChild because the consumer
+  // needs to be relocated to another process.
+  // Any OnStart/Stop/DataAvailable calls that follow will not be sent to the
+  // child channel.
+  void CancelChildCrossProcessRedirect();
+
+  already_AddRefed<HttpChannelParentListener> GetParentListener();
+
  protected:
   // used to connect redirected-to channel in parent with just created
   // ChildChannel.  Used during redirects.
@@ -130,13 +138,12 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
                                    const bool& shouldIntercept);
 
   MOZ_MUST_USE bool DoAsyncOpen(
-      const URIParams& uri, const OptionalURIParams& originalUri,
-      const OptionalURIParams& docUri, const OptionalURIParams& referrerUri,
-      const uint32_t& referrerPolicy,
-      const OptionalURIParams& internalRedirectUri,
-      const OptionalURIParams& topWindowUri, const uint32_t& loadFlags,
+      const URIParams& uri, const Maybe<URIParams>& originalUri,
+      const Maybe<URIParams>& docUri, nsIReferrerInfo* aReferrerInfo,
+      const Maybe<URIParams>& internalRedirectUri,
+      const Maybe<URIParams>& topWindowUri, const uint32_t& loadFlags,
       const RequestHeaderTuples& requestHeaders, const nsCString& requestMethod,
-      const OptionalIPCStream& uploadStream, const bool& uploadStreamHasHeaders,
+      const Maybe<IPCStream>& uploadStream, const bool& uploadStreamHasHeaders,
       const int16_t& priority, const uint32_t& classOfService,
       const uint8_t& redirectionLimit, const bool& allowSTS,
       const uint32_t& thirdPartyFlags, const bool& doResumeAt,
@@ -144,17 +151,19 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
       const bool& chooseApplicationCache, const nsCString& appCacheClientID,
       const bool& allowSpdy, const bool& allowAltSvc,
       const bool& beConservative, const uint32_t& tlsFlags,
-      const OptionalLoadInfoArgs& aLoadInfoArgs,
-      const OptionalHttpResponseHead& aSynthesizedResponseHead,
+      const Maybe<LoadInfoArgs>& aLoadInfoArgs,
+      const Maybe<nsHttpResponseHead>& aSynthesizedResponseHead,
       const nsCString& aSecurityInfoSerialization, const uint32_t& aCacheKey,
       const uint64_t& aRequestContextID,
-      const OptionalCorsPreflightArgs& aCorsPreflightArgs,
+      const Maybe<CorsPreflightArgs>& aCorsPreflightArgs,
       const uint32_t& aInitialRwin, const bool& aBlockAuthPrompt,
       const bool& aSuspendAfterSynthesizeResponse,
       const bool& aAllowStaleCacheContent, const nsCString& aContentTypeHint,
       const uint32_t& aCorsMode, const uint32_t& aRedirectMode,
-      const uint64_t& aChannelId, const uint64_t& aContentWindowId,
-      const nsCString& aPreferredAlternativeType,
+      const uint64_t& aChannelId, const nsString& aIntegrityMetadata,
+      const uint64_t& aContentWindowId,
+      const nsTArray<PreferredAlternativeDataTypeParams>&
+          aPreferredAlternativeTypes,
       const uint64_t& aTopLevelOuterContentWindowId,
       const TimeStamp& aLaunchServiceWorkerStart,
       const TimeStamp& aLaunchServiceWorkerEnd,
@@ -162,7 +171,8 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
       const TimeStamp& aDispatchFetchEventEnd,
       const TimeStamp& aHandleFetchEventStart,
       const TimeStamp& aHandleFetchEventEnd,
-      const bool& aForceMainDocumentChannel);
+      const bool& aForceMainDocumentChannel,
+      const TimeStamp& aNavigationStartTimeStamp);
 
   virtual mozilla::ipc::IPCResult RecvSetPriority(
       const int16_t& priority) override;
@@ -175,13 +185,11 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
   virtual mozilla::ipc::IPCResult RecvCancel(const nsresult& status) override;
   virtual mozilla::ipc::IPCResult RecvRedirect2Verify(
       const nsresult& result, const RequestHeaderTuples& changedHeaders,
-      const uint32_t& loadFlags, const uint32_t& referrerPolicy,
-      const OptionalURIParams& aReferrerURI,
-      const OptionalURIParams& apiRedirectUri,
-      const OptionalCorsPreflightArgs& aCorsPreflightArgs,
+      const ChildLoadInfoForwarderArgs& aLoadInfoForwarder,
+      const uint32_t& loadFlags, nsIReferrerInfo* aReferrerInfo,
+      const Maybe<URIParams>& apiRedirectUri,
+      const Maybe<CorsPreflightArgs>& aCorsPreflightArgs,
       const bool& aChooseAppcache) override;
-  virtual mozilla::ipc::IPCResult RecvUpdateAssociatedContentSecurity(
-      const int32_t& broken, const int32_t& no) override;
   virtual mozilla::ipc::IPCResult RecvDocumentChannelCleanup(
       const bool& clearCacheEntry) override;
   virtual mozilla::ipc::IPCResult RecvMarkOfflineCacheEntryAsForeign() override;
@@ -191,9 +199,15 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
   virtual mozilla::ipc::IPCResult RecvDivertOnStopRequest(
       const nsresult& statusCode) override;
   virtual mozilla::ipc::IPCResult RecvDivertComplete() override;
+  virtual mozilla::ipc::IPCResult RecvCrossProcessRedirectDone(
+      const nsresult& aResult) override;
   virtual mozilla::ipc::IPCResult RecvRemoveCorsPreflightCacheEntry(
       const URIParams& uri,
       const mozilla::ipc::PrincipalInfo& requestingPrincipal) override;
+  virtual mozilla::ipc::IPCResult RecvBytesRead(const int32_t& aCount) override;
+  virtual mozilla::ipc::IPCResult RecvOpenOriginalCacheInputStream() override;
+  virtual mozilla::ipc::IPCResult RecvOpenAltDataCacheInputStream(
+      const nsCString& aType) override;
   virtual void ActorDestroy(ActorDestroyReason why) override;
 
   // Supporting function for ADivertableParentChannel.
@@ -203,11 +217,15 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
   void FailDiversion(nsresult aErrorCode);
 
   friend class HttpChannelParentListener;
-  RefPtr<mozilla::dom::TabParent> mTabParent;
+  RefPtr<mozilla::dom::BrowserParent> mBrowserParent;
 
   MOZ_MUST_USE nsresult ReportSecurityMessage(
       const nsAString& aMessageTag, const nsAString& aMessageCategory) override;
-  nsresult LogBlockedCORSRequest(const nsAString& aMessage) override;
+  nsresult LogBlockedCORSRequest(const nsAString& aMessage,
+                                 const nsACString& aCategory) override;
+  nsresult LogMimeTypeMismatch(const nsACString& aMessageName, bool aWarning,
+                               const nsAString& aURL,
+                               const nsAString& aContentType) override;
 
   // Calls SendDeleteSelf and sets mIPCClosed to true because we should not
   // send any more messages after that. Bug 1274886
@@ -238,12 +256,18 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
   // id, a promise will be returned so the caller can append callbacks on it.
   // If called multiple times before mBgParent is available, the same promise
   // will be returned and the callbacks will be invoked in order.
-  already_AddRefed<GenericPromise> WaitForBgParent();
+  MOZ_MUST_USE RefPtr<GenericNonExclusivePromise> WaitForBgParent();
 
   // Remove the association with background channel after main-thread IPC
   // is about to be destroyed or no further event is going to be sent, i.e.,
   // DocumentChannelCleanup.
   void CleanupBackgroundChannel();
+
+  // Check if the channel needs to enable the flow control on the IPC channel.
+  // That is, we may suspend the channel if the ODA-s to child process are not
+  // consumed quickly enough. Otherwise, memory explosion could happen.
+  bool NeedFlowControl();
+  int32_t mSendWindowSize;
 
   friend class HttpBackgroundChannelParent;
   friend class DivertDataAvailableEvent;
@@ -252,25 +276,12 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
 
   RefPtr<HttpBaseChannel> mChannel;
   nsCOMPtr<nsICacheEntry> mCacheEntry;
-  nsCOMPtr<nsIAssociatedContentSecurity> mAssociatedContentSecurity;
-  Atomic<bool> mIPCClosed;  // PHttpChannel actor has been Closed()
 
   nsCOMPtr<nsIChannel> mRedirectChannel;
   nsCOMPtr<nsIAsyncVerifyRedirectCallback> mRedirectCallback;
 
   nsAutoPtr<class nsHttpChannel::OfflineCacheEntryAsForeignMarker>
       mOfflineForeignMarker;
-
-  // OnStatus is always called before OnProgress.
-  // Set true in OnStatus if next OnProgress can be ignored
-  // since the information can be recontructed from ODA.
-  bool mIgnoreProgress : 1;
-
-  bool mSentRedirect1BeginFailed : 1;
-  bool mReceivedRedirect2Verify : 1;
-
-  PBOverrideStatus mPBOverride;
-
   nsCOMPtr<nsILoadContext> mLoadContext;
   RefPtr<nsHttpHandler> mHttpHandler;
 
@@ -278,44 +289,71 @@ class HttpChannelParent final : public nsIInterfaceRequestor,
   // The listener we are diverting to or will divert to if mPendingDiversion
   // is set.
   nsCOMPtr<nsIStreamListener> mDivertListener;
-  // Set to the canceled status value if the main channel was canceled.
-  nsresult mStatus;
-  // Indicates that diversion has been requested, but we could not start it
-  // yet because the channel is still being opened with a synthesized response.
-  bool mPendingDiversion;
-  // Once set, no OnStart/OnData/OnStop calls should be accepted; conversely, it
-  // must be set when RecvDivertOnData/~DivertOnStop/~DivertComplete are
-  // received from the child channel.
-  bool mDivertingFromChild;
-
-  // Set if OnStart|StopRequest was called during a diversion from the child.
-  bool mDivertedOnStartRequest;
-
-  bool mSuspendedForDiversion;
-
-  // Set if this channel should be suspended after synthesizing a response.
-  bool mSuspendAfterSynthesizeResponse;
-  // Set if this channel will synthesize its response.
-  bool mWillSynthesizeResponse;
-
-  dom::TabId mNestedFrameId;
 
   RefPtr<ChannelEventQueue> mEventQ;
 
   RefPtr<HttpBackgroundChannelParent> mBgParent;
+
+  MozPromiseHolder<GenericNonExclusivePromise> mPromise;
+  MozPromiseRequestHolder<GenericNonExclusivePromise> mRequest;
+
+  dom::TabId mNestedFrameId;
+
+  // To calculate the delay caused by the e10s back-pressure suspension
+  TimeStamp mResumedTimestamp;
+
+  Atomic<bool> mIPCClosed;  // PHttpChannel actor has been Closed()
+
+  // Corresponding redirect channel registrar Id. 0 means redirection is not
+  // started.
+  uint32_t mRedirectRegistrarId = 0;
+
+  PBOverrideStatus mPBOverride;
+
+  // Set to the canceled status value if the main channel was canceled.
+  nsresult mStatus;
+
+  // OnStatus is always called before OnProgress.
+  // Set true in OnStatus if next OnProgress can be ignored
+  // since the information can be recontructed from ODA.
+  uint8_t mIgnoreProgress : 1;
+
+  uint8_t mSentRedirect1BeginFailed : 1;
+  uint8_t mReceivedRedirect2Verify : 1;
+  uint8_t mHasSuspendedByBackPressure : 1;
+
+  // Indicates that diversion has been requested, but we could not start it
+  // yet because the channel is still being opened with a synthesized response.
+  uint8_t mPendingDiversion : 1;
+  // Once set, no OnStart/OnData/OnStop calls should be accepted; conversely, it
+  // must be set when RecvDivertOnData/~DivertOnStop/~DivertComplete are
+  // received from the child channel.
+  uint8_t mDivertingFromChild : 1;
+
+  // Set if OnStart|StopRequest was called during a diversion from the child.
+  uint8_t mDivertedOnStartRequest : 1;
+
+  uint8_t mSuspendedForDiversion : 1;
+
+  // Set if this channel should be suspended after synthesizing a response.
+  uint8_t mSuspendAfterSynthesizeResponse : 1;
+  // Set if this channel will synthesize its response.
+  uint8_t mWillSynthesizeResponse : 1;
+
+  // Set if we get the result of and cache |mNeedFlowControl|
+  uint8_t mCacheNeedFlowControlInitialized : 1;
+  uint8_t mNeedFlowControl : 1;
+  uint8_t mSuspendedForFlowControl : 1;
+
+  // The child channel was cancelled, as the consumer was relocated to another
+  // process.
+  uint8_t mDoingCrossProcessRedirect : 1;
 
   // Number of events to wait before actually invoking AsyncOpen on the main
   // channel. For each asynchronous step required before InvokeAsyncOpen, should
   // increase 1 to mAsyncOpenBarrier and invoke TryInvokeAsyncOpen after
   // finished. This attribute is main thread only.
   uint8_t mAsyncOpenBarrier = 0;
-
-  // Corresponding redirect channel registrar Id. 0 means redirection is not
-  // started.
-  uint32_t mRedirectRegistrarId = 0;
-
-  MozPromiseHolder<GenericPromise> mPromise;
-  MozPromiseRequestHolder<GenericPromise> mRequest;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(HttpChannelParent, HTTP_CHANNEL_PARENT_IID)

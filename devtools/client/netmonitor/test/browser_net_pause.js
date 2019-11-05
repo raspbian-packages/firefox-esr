@@ -6,13 +6,13 @@
 /**
  * Tests if the pause/resume button works.
  */
-add_task(async function () {
-  let { tab, monitor } = await initNetMonitor(PAUSE_URL);
+add_task(async function() {
+  const { tab, monitor } = await initNetMonitor(PAUSE_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire, connector } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let pauseButton = document.querySelector(".requests-list-pause-button");
+  const { document, store, windowRequire, connector } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const pauseButton = document.querySelector(".requests-list-pause-button");
 
   store.dispatch(Actions.batchEnable(false));
 
@@ -24,11 +24,11 @@ add_task(async function () {
   assertRequestCount(store, 1);
 
   let noRequest = true;
-  monitor.panelWin.once(EVENTS.NETWORK_EVENT, () => {
+  monitor.panelWin.api.once(EVENTS.NETWORK_EVENT, () => {
     noRequest = false;
   });
 
-  monitor.panelWin.once(EVENTS.NETWORK_EVENT_UPDATED, () => {
+  monitor.panelWin.api.once(EVENTS.NETWORK_EVENT_UPDATED, () => {
     noRequest = false;
   });
 
@@ -58,16 +58,19 @@ add_task(async function () {
  * Asserts the number of requests in the network monitor.
  */
 function assertRequestCount(store, count) {
-  is(store.getState().requests.requests.size, count,
-    "There should be correct number of requests");
+  is(
+    store.getState().requests.requests.size,
+    count,
+    "There should be correct number of requests"
+  );
 }
 
 /**
  * Execute simple GET request and wait till it's done.
  */
 async function performRequestAndWait(tab, monitor) {
-  let wait = waitForNetworkEvents(monitor, 1);
-  await ContentTask.spawn(tab.linkedBrowser, SIMPLE_SJS, async function (url) {
+  const wait = waitForNetworkEvents(monitor, 1);
+  await ContentTask.spawn(tab.linkedBrowser, SIMPLE_SJS, async function(url) {
     await content.wrappedJSObject.performRequests(url);
   });
   await wait;
@@ -77,21 +80,9 @@ async function performRequestAndWait(tab, monitor) {
  * Execute simple GET request
  */
 async function performPausedRequest(connector, tab, monitor) {
-  let wait = waitForWebConsoleNetworkEvent(connector);
-  await ContentTask.spawn(tab.linkedBrowser, SIMPLE_SJS, async function (url) {
+  const wait = connector.connector.webConsoleClient.once("networkEvent");
+  await ContentTask.spawn(tab.linkedBrowser, SIMPLE_SJS, async function(url) {
     await content.wrappedJSObject.performRequests(url);
   });
   await wait;
-}
-
-/**
- * Listen for events fired by the console client since the Firefox
- * connector (data provider) is paused.
- */
-function waitForWebConsoleNetworkEvent(connector) {
-  return new Promise(resolve => {
-    connector.connector.webConsoleClient.once("networkEvent", (type, networkInfo) => {
-      resolve();
-    });
-  });
 }

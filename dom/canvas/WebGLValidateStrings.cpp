@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -46,10 +46,10 @@ bool TruncateComments(const nsAString& src, nsAString* const out) {
 
   ////
 
-  const nsString commentBeginnings[] =
-      {NS_LITERAL_STRING("//"), NS_LITERAL_STRING("/*"),
-       nsString()};  // Final empty string for "found
-                     // nothing".
+  const nsString commentBeginnings[] = {NS_LITERAL_STRING("//"),
+                                        NS_LITERAL_STRING("/*"),
+                                        nsString()};  // Final empty string for
+                                                      // "found nothing".
   const nsString lineCommentEndings[] = {NS_LITERAL_STRING("\\\n"),
                                          NS_LITERAL_STRING("\n"), nsString()};
   const nsString blockCommentEndings[] = {NS_LITERAL_STRING("\n"),
@@ -158,22 +158,20 @@ static bool IsValidGLSLPreprocChar(char16_t c) {
 
 ////
 
-bool ValidateGLSLPreprocString(WebGLContext* webgl, const char* funcName,
-                               const nsAString& string) {
+bool ValidateGLSLPreprocString(WebGLContext* webgl, const nsAString& string) {
   for (size_t i = 0; i < string.Length(); ++i) {
     const auto& cur = string[i];
 
     if (!IsValidGLSLPreprocChar(cur)) {
-      webgl->ErrorInvalidValue(
-          "%s: String contains the illegal character 0x%x.", funcName, cur);
+      webgl->ErrorInvalidValue("String contains the illegal character 0x%x.",
+                               cur);
       return false;
     }
 
     if (cur == '\\' && !webgl->IsWebGL2()) {
       // Todo: Backslash is technically still invalid in WebGLSL 1 under even
       // under WebGL 2.
-      webgl->ErrorInvalidValue("%s: Backslash is not valid in WebGL 1.",
-                               funcName);
+      webgl->ErrorInvalidValue("Backslash is not valid in WebGL 1.");
       return false;
     }
   }
@@ -181,24 +179,23 @@ bool ValidateGLSLPreprocString(WebGLContext* webgl, const char* funcName,
   return true;
 }
 
-bool ValidateGLSLVariableName(const nsAString& name, WebGLContext* webgl,
-                              const char* funcName) {
+bool ValidateGLSLVariableName(const nsAString& name, WebGLContext* webgl) {
   if (name.IsEmpty()) return false;
 
   const uint32_t maxSize = webgl->IsWebGL2() ? 1024 : 256;
   if (name.Length() > maxSize) {
     webgl->ErrorInvalidValue(
-        "%s: Identifier is %u characters long, exceeds the"
+        "Identifier is %u characters long, exceeds the"
         " maximum allowed length of %u characters.",
-        funcName, name.Length(), maxSize);
+        name.Length(), maxSize);
     return false;
   }
 
   for (size_t i = 0; i < name.Length(); ++i) {
     const auto& cur = name[i];
     if (!IsValidGLSLChar(cur)) {
-      webgl->ErrorInvalidValue(
-          "%s: String contains the illegal character 0x%x'.", funcName, cur);
+      webgl->ErrorInvalidValue("String contains the illegal character 0x%x'.",
+                               cur);
       return false;
     }
   }
@@ -208,8 +205,7 @@ bool ValidateGLSLVariableName(const nsAString& name, WebGLContext* webgl,
 
   if (Substring(name, 0, prefix1.Length()).Equals(prefix1) ||
       Substring(name, 0, prefix2.Length()).Equals(prefix2)) {
-    webgl->ErrorInvalidOperation("%s: String contains a reserved GLSL prefix.",
-                                 funcName);
+    webgl->ErrorInvalidOperation("String contains a reserved GLSL prefix.");
     return false;
   }
 

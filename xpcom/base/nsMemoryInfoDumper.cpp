@@ -26,32 +26,32 @@
 #include "nsIFile.h"
 
 #ifdef XP_WIN
-#include <process.h>
-#ifndef getpid
-#define getpid _getpid
-#endif
+#  include <process.h>
+#  ifndef getpid
+#    define getpid _getpid
+#  endif
 #else
-#include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #ifdef XP_UNIX
-#define MOZ_SUPPORTS_FIFO 1
+#  define MOZ_SUPPORTS_FIFO 1
 #endif
 
 // Some Android devices seem to send RT signals to Firefox so we want to avoid
 // consuming those as they're not user triggered.
 #if !defined(ANDROID) && (defined(XP_LINUX) || defined(__FreeBSD__))
-#define MOZ_SUPPORTS_RT_SIGNALS 1
+#  define MOZ_SUPPORTS_RT_SIGNALS 1
 #endif
 
 #if defined(MOZ_SUPPORTS_RT_SIGNALS)
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#  include <fcntl.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
 #endif
 
 #if defined(MOZ_SUPPORTS_FIFO)
-#include "mozilla/Preferences.h"
+#  include "mozilla/Preferences.h"
 #endif
 
 using namespace mozilla;
@@ -202,9 +202,9 @@ void doGCCCDump(const nsCString& aInputStr) {
 }
 
 bool SetupFifo() {
-#ifdef DEBUG
+#  ifdef DEBUG
   static bool fifoCallbacksRegistered = false;
-#endif
+#  endif
 
   if (!FifoWatcher::MaybeCreate()) {
     return false;
@@ -222,17 +222,17 @@ bool SetupFifo() {
   fw->RegisterCallback(NS_LITERAL_CSTRING("gc log"), doGCCCDump);
   fw->RegisterCallback(NS_LITERAL_CSTRING("abbreviated gc log"), doGCCCDump);
 
-#ifdef DEBUG
+#  ifdef DEBUG
   fifoCallbacksRegistered = true;
-#endif
+#  endif
   return true;
 }
 
 void OnFifoEnabledChange(const char* /*unused*/, void* /*unused*/) {
   LOG("%s changed", FifoWatcher::kPrefName);
   if (SetupFifo()) {
-    Preferences::UnregisterCallback(OnFifoEnabledChange, FifoWatcher::kPrefName,
-                                    nullptr);
+    Preferences::UnregisterCallback(OnFifoEnabledChange,
+                                    FifoWatcher::kPrefName);
   }
 }
 
@@ -245,7 +245,8 @@ nsMemoryInfoDumper::nsMemoryInfoDumper() {}
 
 nsMemoryInfoDumper::~nsMemoryInfoDumper() {}
 
-/* static */ void nsMemoryInfoDumper::Initialize() {
+/* static */
+void nsMemoryInfoDumper::Initialize() {
 #if defined(MOZ_SUPPORTS_RT_SIGNALS)
   SignalPipeWatcher* sw = SignalPipeWatcher::GetSingleton();
 
@@ -266,8 +267,7 @@ nsMemoryInfoDumper::~nsMemoryInfoDumper() {}
     //     set to enable the fifo watcher that has not been loaded yet. Register
     //     to attempt to initialize if the fifo watcher becomes enabled by
     //     a user pref.
-    Preferences::RegisterCallback(OnFifoEnabledChange, FifoWatcher::kPrefName,
-                                  nullptr);
+    Preferences::RegisterCallback(OnFifoEnabledChange, FifoWatcher::kPrefName);
   }
 #endif
 }
@@ -335,8 +335,7 @@ nsMemoryInfoDumper::DumpGCAndCCLogsToFile(
     }
   }
 
-  nsCOMPtr<nsICycleCollectorListener> logger =
-      do_CreateInstance("@mozilla.org/cycle-collector-logger;1");
+  nsCOMPtr<nsICycleCollectorListener> logger = nsCycleCollector_createLogger();
 
   if (aDumpAllTraces) {
     nsCOMPtr<nsICycleCollectorListener> allTracesLogger;
@@ -362,8 +361,7 @@ nsMemoryInfoDumper::DumpGCAndCCLogsToFile(
 NS_IMETHODIMP
 nsMemoryInfoDumper::DumpGCAndCCLogsToSink(bool aDumpAllTraces,
                                           nsICycleCollectorLogSink* aSink) {
-  nsCOMPtr<nsICycleCollectorListener> logger =
-      do_CreateInstance("@mozilla.org/cycle-collector-logger;1");
+  nsCOMPtr<nsICycleCollectorListener> logger = nsCycleCollector_createLogger();
 
   if (aDumpAllTraces) {
     nsCOMPtr<nsICycleCollectorListener> allTracesLogger;
@@ -417,7 +415,7 @@ class HandleReportAndFinishReportingCallbacks final
   HandleReportAndFinishReportingCallbacks(
       UniquePtr<JSONWriter> aWriter, nsIFinishDumpingCallback* aFinishDumping,
       nsISupports* aFinishDumpingData)
-      : mWriter(Move(aWriter)),
+      : mWriter(std::move(aWriter)),
         mFinishDumping(aFinishDumping),
         mFinishDumpingData(aFinishDumpingData) {}
 
@@ -600,7 +598,7 @@ static nsresult DumpMemoryInfoToFile(nsIFile* aReportsFile,
   RefPtr<HandleReportAndFinishReportingCallbacks>
       handleReportAndFinishReporting =
           new HandleReportAndFinishReportingCallbacks(
-              Move(jsonWriter), aFinishDumping, aFinishDumpingData);
+              std::move(jsonWriter), aFinishDumping, aFinishDumpingData);
   rv = mgr->GetReportsExtended(
       handleReportAndFinishReporting, nullptr, handleReportAndFinishReporting,
       nullptr, aAnonymize, aMinimizeMemoryUsage, aDMDIdentifier);

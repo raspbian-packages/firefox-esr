@@ -15,9 +15,10 @@
 #include "mozilla/DOMEventTargetHelper.h"
 #include "mozilla/EffectCompositor.h"  // For EffectCompositor::CascadeLevel
 #include "mozilla/LinkedList.h"
+#include "mozilla/PostRestyleMode.h"
 #include "mozilla/TimeStamp.h"             // for TimeStamp, TimeDuration
 #include "mozilla/dom/AnimationBinding.h"  // for AnimationPlayState
-#include "mozilla/dom/AnimationEffectReadOnly.h"
+#include "mozilla/dom/AnimationEffect.h"
 #include "mozilla/dom/AnimationTimeline.h"
 #include "mozilla/dom/Promise.h"
 #include "nsCSSPropertyID.h"
@@ -25,18 +26,11 @@
 
 // X11 has a #define for CurrentTime.
 #ifdef CurrentTime
-#undef CurrentTime
-#endif
-
-// GetCurrentTime is defined in winbase.h as zero argument macro forwarding to
-// GetTickCount().
-#ifdef GetCurrentTime
-#undef GetCurrentTime
+#  undef CurrentTime
 #endif
 
 struct JSContext;
 class nsCSSPropertyIDSet;
-class nsIDocument;
 class nsIFrame;
 
 namespace mozilla {
@@ -48,6 +42,7 @@ namespace dom {
 class AsyncFinishNotification;
 class CSSAnimation;
 class CSSTransition;
+class Document;
 
 class Animation : public DOMEventTargetHelper,
                   public LinkedListElement<Animation> {
@@ -58,8 +53,9 @@ class Animation : public DOMEventTargetHelper,
   explicit Animation(nsIGlobalObject* aGlobal)
       : DOMEventTargetHelper(aGlobal),
         mPlaybackRate(1.0),
-        mPendingState(PendingState::NotPending),
         mAnimationIndex(sNextAnimationIndex++),
+        mCachedChildIndex(-1),
+        mPendingState(PendingState::NotPending),
         mFinishedAtLastComposeStyle(false),
         mIsRelevant(false),
         mFinishedIsResolved(false),
@@ -87,52 +83,60 @@ class Animation : public DOMEventTargetHelper,
 
   // Animation interface methods
   static already_AddRefed<Animation> Constructor(
-      const GlobalObject& aGlobal, AnimationEffectReadOnly* aEffect,
+      const GlobalObject& aGlobal, AnimationEffect* aEffect,
       const Optional<AnimationTimeline*>& aTimeline, ErrorResult& aRv);
+
   void GetId(nsAString& aResult) const { aResult = mId; }
   void SetId(const nsAString& aId);
-  AnimationEffectReadOnly* GetEffect() const { return mEffect; }
-  void SetEffect(AnimationEffectReadOnly* aEffect);
+
+  AnimationEffect* GetEffect() const { return mEffect; }
+  void SetEffect(AnimationEffect* aEffect);
+  void SetEffectNoUpdate(AnimationEffect* aEffect);
+
   AnimationTimeline* GetTimeline() const { return mTimeline; }
   void SetTimeline(AnimationTimeline* aTimeline);
+  void SetTimelineNoUpdate(AnimationTimeline* aTimeline);
+
   Nullable<TimeDuration> GetStartTime() const { return mStartTime; }
+  Nullable<double> GetStartTimeAsDouble() const;
   void SetStartTime(const Nullable<TimeDuration>& aNewStartTime);
-  Nullable<TimeDuration> GetCurrentTime() const {
+  void SetStartTimeAsDouble(const Nullable<double>& aStartTime);
+
+  // This is deliberately _not_ called GetCurrentTime since that would clash
+  // with a macro defined in winbase.h
+  Nullable<TimeDuration> GetCurrentTimeAsDuration() const {
     return GetCurrentTimeForHoldTime(mHoldTime);
   }
+  Nullable<double> GetCurrentTimeAsDouble() const;
   void SetCurrentTime(const TimeDuration& aNewCurrentTime);
+  void SetCurrentTimeAsDouble(const Nullable<double>& aCurrentTime,
+                              ErrorResult& aRv);
+
   double PlaybackRate() const { return mPlaybackRate; }
   void SetPlaybackRate(double aPlaybackRate);
+
   AnimationPlayState PlayState() const;
+  virtual AnimationPlayState PlayStateFromJS() const { return PlayState(); }
+
   bool Pending() const { return mPendingState != PendingState::NotPending; }
+  virtual bool PendingFromJS() const { return Pending(); }
+
   virtual Promise* GetReady(ErrorResult& aRv);
   Promise* GetFinished(ErrorResult& aRv);
-  void Cancel();
-  void Finish(ErrorResult& aRv);
-  virtual void Play(ErrorResult& aRv, LimitBehavior aLimitBehavior);
-  virtual void Pause(ErrorResult& aRv);
-  void Reverse(ErrorResult& aRv);
-  void UpdatePlaybackRate(double aPlaybackRate);
-  bool IsRunningOnCompositor() const;
+
   IMPL_EVENT_HANDLER(finish);
   IMPL_EVENT_HANDLER(cancel);
 
-  // Wrapper functions for Animation DOM methods when called
-  // from script.
-  //
-  // We often use the same methods internally and from script but when called
-  // from script we (or one of our subclasses) perform extra steps such as
-  // flushing style or converting the return type.
-  Nullable<double> GetStartTimeAsDouble() const;
-  void SetStartTimeAsDouble(const Nullable<double>& aStartTime);
-  Nullable<double> GetCurrentTimeAsDouble() const;
-  void SetCurrentTimeAsDouble(const Nullable<double>& aCurrentTime,
-                              ErrorResult& aRv);
-  virtual AnimationPlayState PlayStateFromJS() const { return PlayState(); }
-  virtual bool PendingFromJS() const { return Pending(); }
+  void Cancel(PostRestyleMode aPostRestyle = PostRestyleMode::IfNeeded);
+
+  void Finish(ErrorResult& aRv);
+
+  virtual void Play(ErrorResult& aRv, LimitBehavior aLimitBehavior);
   virtual void PlayFromJS(ErrorResult& aRv) {
     Play(aRv, LimitBehavior::AutoRewind);
   }
+
+  virtual void Pause(ErrorResult& aRv);
   /**
    * PauseFromJS is currently only here for symmetry with PlayFromJS but
    * in future we will likely have to flush style in
@@ -140,15 +144,24 @@ class Animation : public DOMEventTargetHelper,
    */
   void PauseFromJS(ErrorResult& aRv) { Pause(aRv); }
 
-  // Wrapper functions for Animation DOM methods when called from style.
+  void UpdatePlaybackRate(double aPlaybackRate);
+  void Reverse(ErrorResult& aRv);
 
-  virtual void CancelFromStyle() { CancelNoUpdate(); }
-  void SetTimelineNoUpdate(AnimationTimeline* aTimeline);
-  void SetEffectNoUpdate(AnimationEffectReadOnly* aEffect);
+  bool IsRunningOnCompositor() const;
 
   virtual void Tick();
   bool NeedsTicks() const {
-    return Pending() || PlayState() == AnimationPlayState::Running;
+    return Pending() ||
+           (PlayState() == AnimationPlayState::Running &&
+            // An animation with a zero playback rate doesn't need ticks even if
+            // it is running since it effectively behaves as if it is paused.
+            //
+            // It's important we return false in this case since a zero playback
+            // rate animation in the before or after phase that doesn't fill
+            // won't be relevant and hence won't be returned by GetAnimations().
+            // We don't want its timeline to keep it alive (which would happen
+            // if we return true) since otherwise it will effectively be leaked.
+            PlaybackRate() != 0.0);
   }
 
   /**
@@ -160,7 +173,7 @@ class Animation : public DOMEventTargetHelper,
    * should begin.
    *
    * When the document finishes painting, any pending animations in its table
-   * are marked as being ready to start by calling StartOnNextTick.
+   * are marked as being ready to start by calling TriggerOnNextTick.
    * The moment when the paint completed is also recorded, converted to a
    * timeline time, and passed to StartOnTick. This is so that when these
    * animations do start, they can be timed from the point when painting
@@ -215,8 +228,9 @@ class Animation : public DOMEventTargetHelper,
    */
   void TriggerNow();
   /**
-   * When StartOnNextTick is called, we store the ready time but we don't apply
-   * it until the next tick. In the meantime, GetStartTime() will return null.
+   * When TriggerOnNextTick is called, we store the ready time but we don't
+   * apply it until the next tick. In the meantime, GetStartTime() will return
+   * null.
    *
    * However, if we build layer animations again before the next tick, we
    * should initialize them with the start time that GetStartTime() will return
@@ -294,14 +308,7 @@ class Animation : public DOMEventTargetHelper,
       const StickyTimeDuration& aElapsedTime) const;
 
   bool IsPausedOrPausing() const {
-    // FIXME: Once we drop the dom.animations-api.pending-member.enabled pref we
-    // can simplify the following check to just:
-    //
-    //   return PlayState() == AnimationPlayState::Paused;
-    //
-    // And at that point we might not need this method at all.
-    return PlayState() == AnimationPlayState::Paused ||
-           mPendingState == PendingState::PausePending;
+    return PlayState() == AnimationPlayState::Paused;
   }
 
   bool HasCurrentEffect() const {
@@ -310,19 +317,14 @@ class Animation : public DOMEventTargetHelper,
   bool IsInEffect() const { return GetEffect() && GetEffect()->IsInEffect(); }
 
   bool IsPlaying() const {
-    // FIXME: Once we drop the dom.animations-api.pending-member.enabled pref we
-    // can simplify the last two conditions to just:
-    //
-    //   PlayState() == AnimationPlayState::Running
     return mPlaybackRate != 0.0 && mTimeline &&
-           !mTimeline->GetCurrentTime().IsNull() &&
-           (PlayState() == AnimationPlayState::Running ||
-            mPendingState == PendingState::PlayPending);
+           !mTimeline->GetCurrentTimeAsDuration().IsNull() &&
+           PlayState() == AnimationPlayState::Running;
   }
 
   bool ShouldBeSynchronizedWithMainThread(
-      nsCSSPropertyID aProperty, const nsIFrame* aFrame,
-      AnimationPerformanceWarning::Type& aPerformanceWarning) const;
+      const nsCSSPropertyIDSet& aPropertySet, const nsIFrame* aFrame,
+      AnimationPerformanceWarning::Type& aPerformanceWarning /* out */) const;
 
   bool IsRelevant() const { return mIsRelevant; }
   void UpdateRelevance();
@@ -350,8 +352,7 @@ class Animation : public DOMEventTargetHelper,
   /**
    * Updates various bits of state that we need to update as the result of
    * running ComposeStyle().
-   * See the comment of KeyframeEffectReadOnly::WillComposeStyle for more
-   * detail.
+   * See the comment of KeyframeEffect::WillComposeStyle for more detail.
    */
   void WillComposeStyle();
 
@@ -361,12 +362,26 @@ class Animation : public DOMEventTargetHelper,
    * Any properties contained in |aPropertiesToSkip| will not be added or
    * updated in |aComposeResult|.
    */
-  template <typename ComposeAnimationResult>
-  void ComposeStyle(ComposeAnimationResult&& aComposeResult,
+  void ComposeStyle(RawServoAnimationValueMap& aComposeResult,
                     const nsCSSPropertyIDSet& aPropertiesToSkip);
 
   void NotifyEffectTimingUpdated();
   void NotifyGeometricAnimationsStartingThisFrame();
+
+  /**
+   * Reschedule pending pause or pending play tasks when updating the target
+   * effect.
+   *
+   * If we are pending, we will either be registered in the pending animation
+   * tracker and have a null pending ready time, or, after our effect has been
+   * painted, we will be removed from the tracker and assigned a pending ready
+   * time.
+   *
+   * When the target effect is updated, we'll typically need to repaint so for
+   * the latter case where we already have a pending ready time, clear it and
+   * put ourselves back in the pending animation tracker.
+   */
+  void ReschedulePendingTasks();
 
   /**
    * Used by subclasses to synchronously queue a cancel event in situations
@@ -377,6 +392,8 @@ class Animation : public DOMEventTargetHelper,
    * exist when we would normally go to queue events on the next tick.
    */
   virtual void MaybeQueueCancelEvent(const StickyTimeDuration& aActiveTime){};
+
+  int32_t& CachedChildIndexRef() { return mCachedChildIndex; }
 
  protected:
   void SilentlySetCurrentTime(const TimeDuration& aNewCurrentTime);
@@ -390,7 +407,8 @@ class Animation : public DOMEventTargetHelper,
     } else if (mPendingState == PendingState::PausePending) {
       PauseAt(aReadyTime);
     } else {
-      NS_NOTREACHED("Can't finish pending if we're not in a pending state");
+      MOZ_ASSERT_UNREACHABLE(
+          "Can't finish pending if we're not in a pending state");
     }
   }
   void ApplyPendingPlaybackRate() {
@@ -410,15 +428,20 @@ class Animation : public DOMEventTargetHelper,
 
   virtual void UpdateTiming(SeekFlag aSeekFlag, SyncNotifyFlag aSyncNotifyFlag);
   void UpdateFinishedState(SeekFlag aSeekFlag, SyncNotifyFlag aSyncNotifyFlag);
-  void UpdateEffect();
-  void FlushStyle() const;
+  void UpdateEffect(PostRestyleMode aPostRestyle);
+  /**
+   * Flush all pending styles other than throttled animation styles (e.g.
+   * animations running on the compositor).
+   */
+  void FlushUnanimatedStyle() const;
   void PostUpdate();
   void ResetFinishedPromise();
   void MaybeResolveFinishedPromise();
   void DoFinishNotification(SyncNotifyFlag aSyncNotifyFlag);
   friend class AsyncFinishNotification;
   void DoFinishNotificationImmediately(MicroTaskRunnable* aAsync = nullptr);
-  void DispatchPlaybackEvent(const nsAString& aName);
+  void QueuePlaybackEvent(const nsAString& aName,
+                          TimeStamp&& aScheduledEventTime);
 
   /**
    * Remove this animation from the pending animation tracker and reset
@@ -458,10 +481,47 @@ class Animation : public DOMEventTargetHelper,
     return GetCurrentTimeForHoldTime(Nullable<TimeDuration>());
   }
 
-  nsIDocument* GetRenderedDocument() const;
+  // Earlier side of the elapsed time range reported in CSS Animations and CSS
+  // Transitions events.
+  //
+  // https://drafts.csswg.org/css-animations-2/#interval-start
+  // https://drafts.csswg.org/css-transitions-2/#interval-start
+  StickyTimeDuration IntervalStartTime(
+      const StickyTimeDuration& aActiveDuration) const {
+    MOZ_ASSERT(AsCSSTransition() || AsCSSAnimation(),
+               "Should be called for CSS animations or transitions");
+    static constexpr StickyTimeDuration zeroDuration = StickyTimeDuration();
+    return std::max(
+        std::min(StickyTimeDuration(-mEffect->SpecifiedTiming().Delay()),
+                 aActiveDuration),
+        zeroDuration);
+  }
+
+  // Later side of the elapsed time range reported in CSS Animations and CSS
+  // Transitions events.
+  //
+  // https://drafts.csswg.org/css-animations-2/#interval-end
+  // https://drafts.csswg.org/css-transitions-2/#interval-end
+  StickyTimeDuration IntervalEndTime(
+      const StickyTimeDuration& aActiveDuration) const {
+    MOZ_ASSERT(AsCSSTransition() || AsCSSAnimation(),
+               "Should be called for CSS animations or transitions");
+
+    static constexpr StickyTimeDuration zeroDuration = StickyTimeDuration();
+    return std::max(std::min((EffectEnd() - mEffect->SpecifiedTiming().Delay()),
+                             aActiveDuration),
+                    zeroDuration);
+  }
+
+  TimeStamp GetTimelineCurrentTimeAsTimeStamp() const {
+    return mTimeline ? mTimeline->GetCurrentTimeAsTimeStamp() : TimeStamp();
+  }
+
+  Document* GetRenderedDocument() const;
+  Document* GetTimelineDocument() const;
 
   RefPtr<AnimationTimeline> mTimeline;
-  RefPtr<AnimationEffectReadOnly> mEffect;
+  RefPtr<AnimationEffect> mEffect;
   // The beginning of the delay period.
   Nullable<TimeDuration> mStartTime;            // Timeline timescale
   Nullable<TimeDuration> mHoldTime;             // Animation timescale
@@ -483,32 +543,33 @@ class Animation : public DOMEventTargetHelper,
   // See http://drafts.csswg.org/web-animations/#current-finished-promise
   RefPtr<Promise> mFinished;
 
-  // Indicates if the animation is in the pending state (and what state it is
-  // waiting to enter when it finished pending). We use this rather than
-  // checking if this animation is tracked by a PendingAnimationTracker because
-  // the animation will continue to be pending even after it has been removed
-  // from the PendingAnimationTracker while it is waiting for the next tick
-  // (see TriggerOnNextTick for details).
-  enum class PendingState { NotPending, PlayPending, PausePending };
-  PendingState mPendingState;
-
   static uint64_t sNextAnimationIndex;
 
   // The relative position of this animation within the global animation list.
-  // This is kNoIndex while the animation is in the idle state and is updated
-  // each time the animation transitions out of the idle state.
   //
   // Note that subclasses such as CSSTransition and CSSAnimation may repurpose
   // this member to implement their own brand of sorting. As a result, it is
   // possible for two different objects to have the same index.
   uint64_t mAnimationIndex;
 
+  // While ordering Animation objects for event dispatch, the index of the
+  // target node in its parent may be cached in mCachedChildIndex.
+  int32_t mCachedChildIndex;
+
+  // Indicates if the animation is in the pending state (and what state it is
+  // waiting to enter when it finished pending). We use this rather than
+  // checking if this animation is tracked by a PendingAnimationTracker because
+  // the animation will continue to be pending even after it has been removed
+  // from the PendingAnimationTracker while it is waiting for the next tick
+  // (see TriggerOnNextTick for details).
+  enum class PendingState : uint8_t { NotPending, PlayPending, PausePending };
+  PendingState mPendingState;
+
   bool mFinishedAtLastComposeStyle;
   // Indicates that the animation should be exposed in an element's
   // getAnimations() list.
   bool mIsRelevant;
 
-  RefPtr<MicroTaskRunnable> mFinishNotificationTask;
   // True if mFinished is resolved or would be resolved if mFinished has
   // yet to be created. This is not set when mFinished is rejected since
   // in that case mFinished is immediately reset to represent a new current
@@ -519,6 +580,8 @@ class Animation : public DOMEventTargetHelper,
   // geometric animations and hence we should run any transform animations on
   // the main thread.
   bool mSyncWithGeometricAnimations;
+
+  RefPtr<MicroTaskRunnable> mFinishNotificationTask;
 
   nsString mId;
 };

@@ -61,7 +61,12 @@ class SipccSdpMediaSection final : public SdpMediaSection {
 
  private:
   SipccSdpMediaSection(size_t level, const SipccSdpAttributeList* sessionLevel)
-      : SdpMediaSection(level), mAttributeList(sessionLevel) {}
+      : SdpMediaSection(level),
+        mMediaType(static_cast<MediaType>(0)),
+        mPort(0),
+        mPortCount(0),
+        mProtocol(static_cast<Protocol>(0)),
+        mAttributeList(sessionLevel) {}
 
   bool Load(sdp_t* sdp, uint16_t level, SdpErrorHolder& errorHolder);
   bool LoadConnection(sdp_t* sdp, uint16_t level, SdpErrorHolder& errorHolder);

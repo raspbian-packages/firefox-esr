@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 connection-window =
-    .title = Configurar conexão
+    .title = Configuração de conexão
     .style =
         { PLATFORM() ->
             [macos] width: 44em
@@ -12,8 +12,8 @@ connection-window =
 connection-close-key =
     .key = W
 connection-disable-extension =
-    .label = Desabilitar extensão
-connection-proxy-configure = Configure o Proxy de acesso à Internet
+    .label = Desativar extensão
+connection-proxy-configure = Configuração do proxy de acesso à Internet
 connection-proxy-option-no =
     .label = Sem proxy
     .accesskey = S
@@ -21,8 +21,8 @@ connection-proxy-option-system =
     .label = Usar as configurações de proxy do sistema
     .accesskey = a
 connection-proxy-option-auto =
-    .label = Autodetectar as configurações de proxy para esta rede
-    .accesskey = i
+    .label = Detectar automaticamente as configurações de proxy desta rede
+    .accesskey = r
 connection-proxy-option-manual =
     .label = Configuração manual de proxy
     .accesskey = m
@@ -31,7 +31,7 @@ connection-proxy-http = Proxy HTTP
 connection-proxy-http-port = Porta
     .accesskey = P
 connection-proxy-http-share =
-    .label = Usar este proxy para todos os protocolos
+    .label = Usar este servidor de proxy para todos os protocolos
     .accesskey = x
 connection-proxy-ssl = Proxy SSL
     .accesskey = S
@@ -61,9 +61,30 @@ connection-proxy-reload =
     .label = Recarregar
     .accesskey = c
 connection-proxy-autologin =
-    .label = Não pedir confirmação da autenticação se a senha estiver memorizada
+    .label = Não pedir confirmação de autenticação se a senha estiver memorizada
     .accesskey = v
     .tooltip = Autenticação silenciosa em proxies quando houver credenciais memorizadas. Uma confirmação será solicitada se a autenticação falhar.
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS ao usar SOCKS v5
     .accesskey = D
+connection-dns-over-https =
+    .label = Ativar DNS sobre HTTPS
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Usar padrão ({ $url })
+    .accesskey = U
+    .tooltiptext = Usar a URL padrão para resolver DNS sobre HTTPS
+connection-dns-over-https-url-resolver = Usar provedor
+    .accesskey = p
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (padrão)
+    .tooltiptext = Usar a URL padrão para resolver DNS sobre HTTPS
+connection-dns-over-https-url-custom =
+    .label = Personalizado
+    .accesskey = P
+    .tooltiptext = Insira sua URL preferida para resolver DNS sobre HTTPS
+connection-dns-over-https-custom-label = Personalizado

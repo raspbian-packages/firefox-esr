@@ -23,6 +23,7 @@ class ThrottleInputStream final : public nsIAsyncInputStream,
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIINPUTSTREAM
   NS_DECL_NSISEEKABLESTREAM
+  NS_DECL_NSITELLABLESTREAM
   NS_DECL_NSIASYNCINPUTSTREAM
 
   void AllowInput();
@@ -39,7 +40,7 @@ class ThrottleInputStream final : public nsIAsyncInputStream,
 };
 
 NS_IMPL_ISUPPORTS(ThrottleInputStream, nsIAsyncInputStream, nsIInputStream,
-                  nsISeekableStream)
+                  nsITellableStream, nsISeekableStream)
 
 ThrottleInputStream::ThrottleInputStream(nsIInputStream* aStream,
                                          ThrottleQueue* aQueue)
@@ -145,7 +146,7 @@ ThrottleInputStream::Tell(int64_t* aResult) {
     return mClosedStatus;
   }
 
-  nsCOMPtr<nsISeekableStream> sstream = do_QueryInterface(mStream);
+  nsCOMPtr<nsITellableStream> sstream = do_QueryInterface(mStream);
   if (!sstream) {
     return NS_ERROR_FAILURE;
   }

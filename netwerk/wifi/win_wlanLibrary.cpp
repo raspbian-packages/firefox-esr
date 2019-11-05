@@ -34,34 +34,34 @@ WinWLANLibrary::WinWLANLibrary()
 HANDLE
 WinWLANLibrary::GetWLANHandle() const { return mWlanHandle; }
 
-decltype(::WlanEnumInterfaces) * WinWLANLibrary::GetWlanEnumInterfacesPtr()
+decltype(::WlanEnumInterfaces)* WinWLANLibrary::GetWlanEnumInterfacesPtr()
     const {
   return mWlanEnumInterfacesPtr;
 }
 
-decltype(::WlanGetNetworkBssList) *
-WinWLANLibrary::GetWlanGetNetworkBssListPtr() const {
+decltype(::WlanGetNetworkBssList)* WinWLANLibrary::GetWlanGetNetworkBssListPtr()
+    const {
   return mWlanGetNetworkBssListPtr;
 }
 
-decltype(::WlanFreeMemory) * WinWLANLibrary::GetWlanFreeMemoryPtr() const {
+decltype(::WlanFreeMemory)* WinWLANLibrary::GetWlanFreeMemoryPtr() const {
   return mWlanFreeMemoryPtr;
 }
 
-decltype(::WlanCloseHandle) * WinWLANLibrary::GetWlanCloseHandlePtr() const {
+decltype(::WlanCloseHandle)* WinWLANLibrary::GetWlanCloseHandlePtr() const {
   return mWlanCloseHandlePtr;
 }
 
-decltype(::WlanOpenHandle) * WinWLANLibrary::GetWlanOpenHandlePtr() const {
+decltype(::WlanOpenHandle)* WinWLANLibrary::GetWlanOpenHandlePtr() const {
   return mWlanOpenHandlePtr;
 }
 
-decltype(::WlanRegisterNotification) *
+decltype(::WlanRegisterNotification)*
 WinWLANLibrary::GetWlanRegisterNotificationPtr() const {
   return mWlanRegisterNotificationPtr;
 }
 
-decltype(::WlanScan) * WinWLANLibrary::GetWlanScanPtr() const {
+decltype(::WlanScan)* WinWLANLibrary::GetWlanScanPtr() const {
   return mWlanScanPtr;
 }
 

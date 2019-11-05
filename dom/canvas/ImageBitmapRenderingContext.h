@@ -62,13 +62,13 @@ class ImageBitmapRenderingContext final
   virtual mozilla::UniquePtr<uint8_t[]> GetImageBuffer(
       int32_t* aFormat) override;
   NS_IMETHOD GetInputStream(const char* aMimeType,
-                            const char16_t* aEncoderOptions,
+                            const nsAString& aEncoderOptions,
                             nsIInputStream** aStream) override;
 
   virtual already_AddRefed<mozilla::gfx::SourceSurface> GetSurfaceSnapshot(
       gfxAlphaType* aOutAlphaType) override;
 
-  virtual void SetIsOpaque(bool aIsOpaque) override;
+  virtual void SetOpaqueValueFromOpaqueAttr(bool aOpaqueAttrValue) override;
   virtual bool GetIsOpaque() override;
   NS_IMETHOD Reset() override;
   virtual already_AddRefed<Layer> GetCanvasLayer(

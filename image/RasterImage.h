@@ -40,7 +40,7 @@
 #include "ImageContainer.h"
 #include "PlaybackType.h"
 #ifdef DEBUG
-#include "imgIContainerDebug.h"
+#  include "imgIContainerDebug.h"
 #endif
 
 class nsIInputStream;
@@ -217,8 +217,7 @@ class RasterImage final : public ImageResource,
    * @param aInvalidRect  Any final invalidation rect to send.
    * @param aFrameCount   If Some(), a final updated count of the number of
    * frames of animation the decoder has finished decoding so far. This is a
-   * lower bound for the total number of animation frames
-   * this image has.
+   * lower bound for the total number of animation frames this image has.
    * @param aDecoderFlags The decoder flags used by the decoder.
    * @param aSurfaceFlags The surface flags used by the decoder.
    */
@@ -278,17 +277,18 @@ class RasterImage final : public ImageResource,
    * data, we'll attempt a sync decode if no matching surface is found. If
    * FLAG_SYNC_DECODE was not specified and no matching surface was found, we'll
    * kick off an async decode so that the surface is (hopefully) available next
-   * time it's requested.
+   * time it's requested. aMarkUsed determines if we mark the surface used in
+   * the surface cache or not.
    *
    * @return a drawable surface, which may be empty if the requested surface
    *         could not be found.
    */
   LookupResult LookupFrame(const gfx::IntSize& aSize, uint32_t aFlags,
-                           PlaybackType aPlaybackType);
+                           PlaybackType aPlaybackType, bool aMarkUsed);
 
   /// Helper method for LookupFrame().
   LookupResult LookupFrameInternal(const gfx::IntSize& aSize, uint32_t aFlags,
-                                   PlaybackType aPlaybackType);
+                                   PlaybackType aPlaybackType, bool aMarkUsed);
 
   ImgDrawResult DrawInternal(DrawableSurface&& aFrameRef, gfxContext* aContext,
                              const nsIntSize& aSize, const ImageRegion& aRegion,
@@ -300,9 +300,9 @@ class RasterImage final : public ImageResource,
                    const Maybe<SVGImageContext>& aSVGContext,
                    uint32_t aWhichFrame, uint32_t aFlags) override;
 
-  gfx::IntSize GetImageContainerSize(layers::LayerManager* aManager,
-                                     const gfx::IntSize& aSize,
-                                     uint32_t aFlags) override;
+  Tuple<ImgDrawResult, gfx::IntSize> GetImageContainerSize(
+      layers::LayerManager* aManager, const gfx::IntSize& aSize,
+      uint32_t aFlags) override;
 
   //////////////////////////////////////////////////////////////////////////////
   // Decoding.
@@ -452,10 +452,11 @@ class RasterImage final : public ImageResource,
   bool IsOpaque();
 
   DrawableSurface RequestDecodeForSizeInternal(const gfx::IntSize& aSize,
-                                               uint32_t aFlags);
+                                               uint32_t aFlags,
+                                               uint32_t aWhichFrame);
 
  protected:
-  explicit RasterImage(ImageURL* aURI = nullptr);
+  explicit RasterImage(nsIURI* aURI = nullptr);
 
   bool ShouldAnimate() override;
 

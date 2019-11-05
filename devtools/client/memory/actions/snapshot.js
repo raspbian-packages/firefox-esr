@@ -4,7 +4,11 @@
 "use strict";
 
 const { Preferences } = require("resource://gre/modules/Preferences.jsm");
-const { assert, reportException, isSet } = require("devtools/shared/DevToolsUtils");
+const {
+  assert,
+  reportException,
+  isSet,
+} = require("devtools/shared/DevToolsUtils");
 const {
   censusIsUpToDate,
   getSnapshot,
@@ -33,19 +37,19 @@ const TaskCache = require("./task-cache");
  * @param {HeapAnalysesClient}
  * @param {Object}
  */
-exports.takeSnapshotAndCensus = function (front, heapWorker) {
-  return function* (dispatch, getState) {
-    const id = yield dispatch(takeSnapshot(front));
+exports.takeSnapshotAndCensus = function(front, heapWorker) {
+  return async function(dispatch, getState) {
+    const id = await dispatch(takeSnapshot(front));
     if (id === null) {
       return;
     }
 
-    yield dispatch(readSnapshot(heapWorker, id));
+    await dispatch(readSnapshot(heapWorker, id));
     if (getSnapshot(getState(), id).state !== states.READ) {
       return;
     }
 
-    yield dispatch(computeSnapshotData(heapWorker, id));
+    await dispatch(computeSnapshotData(heapWorker, id));
   };
 };
 
@@ -57,22 +61,27 @@ exports.takeSnapshotAndCensus = function (front, heapWorker) {
  * @param {HeapAnalysesClient} heapWorker
  * @param {snapshotId} id
  */
-const computeSnapshotData = exports.computeSnapshotData = function (heapWorker, id) {
-  return function* (dispatch, getState) {
+const computeSnapshotData = (exports.computeSnapshotData = function(
+  heapWorker,
+  id
+) {
+  return async function(dispatch, getState) {
     if (getSnapshot(getState(), id).state !== states.READ) {
       return;
     }
 
     // Decide which type of census to take.
     const censusTaker = getCurrentCensusTaker(getState().view.state);
-    yield dispatch(censusTaker(heapWorker, id));
+    await dispatch(censusTaker(heapWorker, id));
 
-    if (getState().view.state === viewState.DOMINATOR_TREE &&
-        !getSnapshot(getState(), id).dominatorTree) {
-      yield dispatch(computeAndFetchDominatorTree(heapWorker, id));
+    if (
+      getState().view.state === viewState.DOMINATOR_TREE &&
+      !getSnapshot(getState(), id).dominatorTree
+    ) {
+      await dispatch(computeAndFetchDominatorTree(heapWorker, id));
     }
   };
-};
+});
 
 /**
  * Selects a snapshot and if the snapshot's census is using a different
@@ -81,14 +90,14 @@ const computeSnapshotData = exports.computeSnapshotData = function (heapWorker, 
  * @param {HeapAnalysesClient} heapWorker
  * @param {snapshotId} id
  */
-exports.selectSnapshotAndRefresh = function (heapWorker, id) {
-  return function* (dispatch, getState) {
+exports.selectSnapshotAndRefresh = function(heapWorker, id) {
+  return async function(dispatch, getState) {
     if (getState().diffing || getState().individuals) {
       dispatch(view.changeView(viewState.CENSUS));
     }
 
     dispatch(selectSnapshot(id));
-    yield dispatch(refresh.refresh(heapWorker));
+    await dispatch(refresh.refresh(heapWorker));
   };
 };
 
@@ -98,8 +107,8 @@ exports.selectSnapshotAndRefresh = function (heapWorker, id) {
  * @param {MemoryFront} front
  * @returns {Number|null}
  */
-const takeSnapshot = exports.takeSnapshot = function (front) {
-  return function* (dispatch, getState) {
+const takeSnapshot = (exports.takeSnapshot = function(front) {
+  return async function(dispatch, getState) {
     if (getState().diffing || getState().individuals) {
       dispatch(view.changeView(viewState.CENSUS));
     }
@@ -111,7 +120,7 @@ const takeSnapshot = exports.takeSnapshot = function (front) {
 
     let path;
     try {
-      path = yield front.saveHeapSnapshot();
+      path = await front.saveHeapSnapshot();
     } catch (error) {
       reportException("takeSnapshot", error);
       dispatch({ type: actions.SNAPSHOT_ERROR, id, error });
@@ -121,7 +130,7 @@ const takeSnapshot = exports.takeSnapshot = function (front) {
     dispatch({ type: actions.TAKE_SNAPSHOT_END, id, path });
     return snapshot.id;
   };
-};
+});
 
 /**
  * Reads a snapshot into memory; necessary to do before taking
@@ -130,23 +139,26 @@ const takeSnapshot = exports.takeSnapshot = function (front) {
  * @param {HeapAnalysesClient} heapWorker
  * @param {snapshotId} id
  */
-const readSnapshot = exports.readSnapshot =
-TaskCache.declareCacheableTask({
+const readSnapshot = (exports.readSnapshot = TaskCache.declareCacheableTask({
   getCacheKey(_, id) {
     return id;
   },
 
-  task: function* (heapWorker, id, removeFromCache, dispatch, getState) {
+  task: async function(heapWorker, id, removeFromCache, dispatch, getState) {
     const snapshot = getSnapshot(getState(), id);
-    assert([states.SAVED, states.IMPORTING].includes(snapshot.state),
-           `Should only read a snapshot once. Found snapshot in state ${snapshot.state}`);
+    assert(
+      [states.SAVED, states.IMPORTING].includes(snapshot.state),
+      `Should only read a snapshot once. Found snapshot in state ${
+        snapshot.state
+      }`
+    );
 
     let creationTime;
 
     dispatch({ type: actions.READ_SNAPSHOT_START, id });
     try {
-      yield heapWorker.readHeapSnapshot(snapshot.path);
-      creationTime = yield heapWorker.getCreationTime(snapshot.path);
+      await heapWorker.readHeapSnapshot(snapshot.path);
+      creationTime = await heapWorker.getCreationTime(snapshot.path);
     } catch (error) {
       removeFromCache();
       reportException("readSnapshot", error);
@@ -156,8 +168,8 @@ TaskCache.declareCacheableTask({
 
     removeFromCache();
     dispatch({ type: actions.READ_SNAPSHOT_END, id, creationTime });
-  }
-});
+  },
+}));
 
 let takeCensusTaskCounter = 0;
 
@@ -172,8 +184,15 @@ let takeCensusTaskCounter = 0;
  * @param {endAction} Action to send at the end of a heap snapshot.
  * @param {errorAction} Action to send if a snapshot has an error.
  */
-function makeTakeCensusTask({ getDisplay, getFilter, getCensus, beginAction,
-                              endAction, errorAction, canTakeCensus }) {
+function makeTakeCensusTask({
+  getDisplay,
+  getFilter,
+  getCensus,
+  beginAction,
+  endAction,
+  errorAction,
+  canTakeCensus,
+}) {
   /**
    * @param {HeapAnalysesClient} heapWorker
    * @param {snapshotId} id
@@ -182,13 +201,13 @@ function makeTakeCensusTask({ getDisplay, getFilter, getCensus, beginAction,
    * @see `devtools/shared/heapsnapshot/HeapAnalysesClient.js`
    * @see `js/src/doc/Debugger/Debugger.Memory.md` for breakdown details
    */
-  let thisTakeCensusTaskId = ++takeCensusTaskCounter;
+  const thisTakeCensusTaskId = ++takeCensusTaskCounter;
   return TaskCache.declareCacheableTask({
     getCacheKey(_, id) {
       return `take-census-task-${thisTakeCensusTaskId}-${id}`;
     },
 
-    task: function* (heapWorker, id, removeFromCache, dispatch, getState) {
+    task: async function(heapWorker, id, removeFromCache, dispatch, getState) {
       const snapshot = getSnapshot(getState(), id);
       if (!snapshot) {
         removeFromCache();
@@ -196,10 +215,12 @@ function makeTakeCensusTask({ getDisplay, getFilter, getCensus, beginAction,
       }
 
       // Assert that snapshot is in a valid state
-      assert(canTakeCensus(snapshot),
+      assert(
+        canTakeCensus(snapshot),
         "Attempting to take a census when the snapshot is not in a ready state. " +
-        `snapshot.state = ${snapshot.state}, ` +
-        `census.state = ${(getCensus(snapshot) || { state: null }).state}`);
+          `snapshot.state = ${snapshot.state}, ` +
+          `census.state = ${(getCensus(snapshot) || { state: null }).state}`
+      );
 
       let report, parentMap;
       let display = getDisplay(getState());
@@ -222,29 +243,31 @@ function makeTakeCensusTask({ getDisplay, getFilter, getCensus, beginAction,
           type: beginAction,
           id,
           filter,
-          display
+          display,
         });
 
-        let opts = display.inverted
+        const opts = display.inverted
           ? { asInvertedTreeNode: true }
           : { asTreeNode: true };
 
         opts.filter = filter || null;
 
         try {
-          ({ report, parentMap } = yield heapWorker.takeCensus(
+          ({ report, parentMap } = await heapWorker.takeCensus(
             snapshot.path,
             { breakdown: display.breakdown },
-            opts));
+            opts
+          ));
         } catch (error) {
           removeFromCache();
           reportException("takeCensus", error);
           dispatch({ type: errorAction, id, error });
           return;
         }
-      }
-      while (filter !== getState().filter ||
-             display !== getDisplay(getState()));
+      } while (
+        filter !== getState().filter ||
+        display !== getDisplay(getState())
+      );
 
       removeFromCache();
       dispatch({
@@ -253,41 +276,41 @@ function makeTakeCensusTask({ getDisplay, getFilter, getCensus, beginAction,
         display,
         filter,
         report,
-        parentMap
+        parentMap,
       });
-    }
+    },
   });
 }
 
 /**
  * Take a census.
  */
-const takeCensus = exports.takeCensus = makeTakeCensusTask({
-  getDisplay: (state) => state.censusDisplay,
-  getFilter: (state) => state.filter,
-  getCensus: (snapshot) => snapshot.census,
+const takeCensus = (exports.takeCensus = makeTakeCensusTask({
+  getDisplay: state => state.censusDisplay,
+  getFilter: state => state.filter,
+  getCensus: snapshot => snapshot.census,
   beginAction: actions.TAKE_CENSUS_START,
   endAction: actions.TAKE_CENSUS_END,
   errorAction: actions.TAKE_CENSUS_ERROR,
   canTakeCensus: snapshot =>
     snapshot.state === states.READ &&
     (!snapshot.census || snapshot.census.state === censusState.SAVED),
-});
+}));
 
 /**
  * Take a census for the treemap.
  */
-const takeTreeMap = exports.takeTreeMap = makeTakeCensusTask({
-  getDisplay: (state) => state.treeMapDisplay,
+const takeTreeMap = (exports.takeTreeMap = makeTakeCensusTask({
+  getDisplay: state => state.treeMapDisplay,
   getFilter: () => null,
-  getCensus: (snapshot) => snapshot.treeMap,
+  getCensus: snapshot => snapshot.treeMap,
   beginAction: actions.TAKE_TREE_MAP_START,
   endAction: actions.TAKE_TREE_MAP_END,
   errorAction: actions.TAKE_TREE_MAP_ERROR,
   canTakeCensus: snapshot =>
     snapshot.state === states.READ &&
     (!snapshot.treeMap || snapshot.treeMap.state === treeMapState.SAVED),
-});
+}));
 
 /**
  * Define what should be the default mode for taking a census based on the
@@ -303,7 +326,9 @@ const defaultCensusTaker = takeTreeMap;
  *
  * @param {string} value from viewState
  */
-const getCurrentCensusTaker = exports.getCurrentCensusTaker = function (currentView) {
+const getCurrentCensusTaker = (exports.getCurrentCensusTaker = function(
+  currentView
+) {
   switch (currentView) {
     case viewState.TREE_MAP:
       return takeTreeMap;
@@ -312,14 +337,14 @@ const getCurrentCensusTaker = exports.getCurrentCensusTaker = function (currentV
     default:
       return defaultCensusTaker;
   }
-};
+});
 
 /**
  * Focus the given node in the individuals view.
  *
  * @param {DominatorTreeNode} node.
  */
-exports.focusIndividual = function (node) {
+exports.focusIndividual = function(node) {
   return {
     type: actions.FOCUS_INDIVIDUAL,
     node,
@@ -335,24 +360,32 @@ exports.focusIndividual = function (node) {
  * @param {Object} censusBreakdown
  * @param {Set<Number> | Number} reportLeafIndex
  */
-const fetchIndividuals = exports.fetchIndividuals =
-function (heapWorker, id, censusBreakdown, reportLeafIndex) {
-  return function* (dispatch, getState) {
+const fetchIndividuals = (exports.fetchIndividuals = function(
+  heapWorker,
+  id,
+  censusBreakdown,
+  reportLeafIndex
+) {
+  return async function(dispatch, getState) {
     if (getState().view.state !== viewState.INDIVIDUALS) {
       dispatch(view.changeView(viewState.INDIVIDUALS));
     }
 
     const snapshot = getSnapshot(getState(), id);
-    assert(snapshot && snapshot.state === states.READ,
-           "The snapshot should already be read into memory");
+    assert(
+      snapshot && snapshot.state === states.READ,
+      "The snapshot should already be read into memory"
+    );
 
     if (!dominatorTreeIsComputed(snapshot)) {
-      yield dispatch(computeAndFetchDominatorTree(heapWorker, id));
+      await dispatch(computeAndFetchDominatorTree(heapWorker, id));
     }
 
     const snapshot_ = getSnapshot(getState(), id);
-    assert(snapshot_.dominatorTree && snapshot_.dominatorTree.root,
-           "Should have a dominator tree with a root.");
+    assert(
+      snapshot_.dominatorTree && snapshot_.dominatorTree.root,
+      "Should have a dominator tree with a root."
+    );
 
     const dominatorTreeId = snapshot_.dominatorTree.dominatorTreeId;
 
@@ -364,8 +397,12 @@ function (heapWorker, id, censusBreakdown, reportLeafIndex) {
     let nodes;
     do {
       labelDisplay = getState().labelDisplay;
-      assert(labelDisplay && labelDisplay.breakdown && labelDisplay.breakdown.by,
-             `Should have a breakdown to label nodes with, got: ${uneval(labelDisplay)}`);
+      assert(
+        labelDisplay && labelDisplay.breakdown && labelDisplay.breakdown.by,
+        `Should have a breakdown to label nodes with, got: ${uneval(
+          labelDisplay
+        )}`
+      );
 
       if (getState().view.state !== viewState.INDIVIDUALS) {
         // We switched views while in the process of fetching individuals -- any
@@ -376,12 +413,14 @@ function (heapWorker, id, censusBreakdown, reportLeafIndex) {
       dispatch({ type: actions.FETCH_INDIVIDUALS_START });
 
       try {
-        ({ nodes } = yield heapWorker.getCensusIndividuals({
+        ({ nodes } = await heapWorker.getCensusIndividuals({
           dominatorTreeId,
           indices,
           censusBreakdown,
           labelBreakdown: labelDisplay.breakdown,
-          maxRetainingPaths: Preferences.get("devtools.memory.max-retaining-paths"),
+          maxRetainingPaths: Preferences.get(
+            "devtools.memory.max-retaining-paths"
+          ),
           maxIndividuals: Preferences.get("devtools.memory.max-individuals"),
         }));
       } catch (error) {
@@ -389,8 +428,7 @@ function (heapWorker, id, censusBreakdown, reportLeafIndex) {
         dispatch({ type: actions.INDIVIDUALS_ERROR, error });
         return;
       }
-    }
-    while (labelDisplay !== getState().labelDisplay);
+    } while (labelDisplay !== getState().labelDisplay);
 
     dispatch({
       type: actions.FETCH_INDIVIDUALS_END,
@@ -402,17 +440,19 @@ function (heapWorker, id, censusBreakdown, reportLeafIndex) {
       dominatorTree: snapshot_.dominatorTree,
     });
   };
-};
+});
 
 /**
  * Refresh the current individuals view.
  *
  * @param {HeapAnalysesClient} heapWorker
  */
-exports.refreshIndividuals = function (heapWorker) {
-  return function* (dispatch, getState) {
-    assert(getState().view.state === viewState.INDIVIDUALS,
-           "Should be in INDIVIDUALS view.");
+exports.refreshIndividuals = function(heapWorker) {
+  return async function(dispatch, getState) {
+    assert(
+      getState().view.state === viewState.INDIVIDUALS,
+      "Should be in INDIVIDUALS view."
+    );
 
     const { individuals } = getState();
 
@@ -437,10 +477,14 @@ exports.refreshIndividuals = function (heapWorker) {
         return;
     }
 
-    yield dispatch(fetchIndividuals(heapWorker,
-                                    individuals.id,
-                                    individuals.censusBreakdown,
-                                    individuals.indices));
+    await dispatch(
+      fetchIndividuals(
+        heapWorker,
+        individuals.id,
+        individuals.censusBreakdown,
+        individuals.indices
+      )
+    );
   };
 };
 
@@ -450,9 +494,9 @@ exports.refreshIndividuals = function (heapWorker) {
  *
  * @param {HeapAnalysesClient} heapWorker
  */
-exports.refreshSelectedCensus = function (heapWorker) {
-  return function* (dispatch, getState) {
-    let snapshot = getState().snapshots.find(s => s.selected);
+exports.refreshSelectedCensus = function(heapWorker) {
+  return async function(dispatch, getState) {
+    const snapshot = getState().snapshots.find(s => s.selected);
     if (!snapshot || snapshot.state !== states.READ) {
       return;
     }
@@ -463,9 +507,11 @@ exports.refreshSelectedCensus = function (heapWorker) {
     // the inverted property matches the inverted state. If the snapshot is
     // still in the process of being saved or read, the takeSnapshotAndCensus
     // task action will follow through and ensure that a census is taken.
-    if ((snapshot.census && snapshot.census.state === censusState.SAVED) ||
-        !snapshot.census) {
-      yield dispatch(takeCensus(heapWorker, snapshot.id));
+    if (
+      (snapshot.census && snapshot.census.state === censusState.SAVED) ||
+      !snapshot.census
+    ) {
+      await dispatch(takeCensus(heapWorker, snapshot.id));
     }
   };
 };
@@ -476,9 +522,9 @@ exports.refreshSelectedCensus = function (heapWorker) {
  *
  * @param {HeapAnalysesClient} heapWorker
  */
-exports.refreshSelectedTreeMap = function (heapWorker) {
-  return function* (dispatch, getState) {
-    let snapshot = getState().snapshots.find(s => s.selected);
+exports.refreshSelectedTreeMap = function(heapWorker) {
+  return async function(dispatch, getState) {
+    const snapshot = getState().snapshots.find(s => s.selected);
     if (!snapshot || snapshot.state !== states.READ) {
       return;
     }
@@ -489,9 +535,11 @@ exports.refreshSelectedTreeMap = function (heapWorker) {
     // the inverted property matches the inverted state. If the snapshot is
     // still in the process of being saved or read, the takeSnapshotAndCensus
     // task action will follow through and ensure that a census is taken.
-    if ((snapshot.treeMap && snapshot.treeMap.state === treeMapState.SAVED) ||
-        !snapshot.treeMap) {
-      yield dispatch(takeTreeMap(heapWorker, snapshot.id));
+    if (
+      (snapshot.treeMap && snapshot.treeMap.state === treeMapState.SAVED) ||
+      !snapshot.treeMap
+    ) {
+      await dispatch(takeTreeMap(heapWorker, snapshot.id));
     }
   };
 };
@@ -505,34 +553,41 @@ exports.refreshSelectedTreeMap = function (heapWorker) {
  *
  * @returns {Promise<DominatorTreeId>}
  */
-const computeDominatorTree = exports.computeDominatorTree =
-TaskCache.declareCacheableTask({
-  getCacheKey(_, id) {
-    return id;
-  },
+const computeDominatorTree = (exports.computeDominatorTree = TaskCache.declareCacheableTask(
+  {
+    getCacheKey(_, id) {
+      return id;
+    },
 
-  task: function* (heapWorker, id, removeFromCache, dispatch, getState) {
-    const snapshot = getSnapshot(getState(), id);
-    assert(!(snapshot.dominatorTree && snapshot.dominatorTree.dominatorTreeId),
-           "Should not re-compute dominator trees");
+    task: async function(heapWorker, id, removeFromCache, dispatch, getState) {
+      const snapshot = getSnapshot(getState(), id);
+      assert(
+        !(snapshot.dominatorTree && snapshot.dominatorTree.dominatorTreeId),
+        "Should not re-compute dominator trees"
+      );
 
-    dispatch({ type: actions.COMPUTE_DOMINATOR_TREE_START, id });
+      dispatch({ type: actions.COMPUTE_DOMINATOR_TREE_START, id });
 
-    let dominatorTreeId;
-    try {
-      dominatorTreeId = yield heapWorker.computeDominatorTree(snapshot.path);
-    } catch (error) {
+      let dominatorTreeId;
+      try {
+        dominatorTreeId = await heapWorker.computeDominatorTree(snapshot.path);
+      } catch (error) {
+        removeFromCache();
+        reportException("actions/snapshot/computeDominatorTree", error);
+        dispatch({ type: actions.DOMINATOR_TREE_ERROR, id, error });
+        return null;
+      }
+
       removeFromCache();
-      reportException("actions/snapshot/computeDominatorTree", error);
-      dispatch({ type: actions.DOMINATOR_TREE_ERROR, id, error });
-      return null;
-    }
-
-    removeFromCache();
-    dispatch({ type: actions.COMPUTE_DOMINATOR_TREE_END, id, dominatorTreeId });
-    return dominatorTreeId;
+      dispatch({
+        type: actions.COMPUTE_DOMINATOR_TREE_END,
+        id,
+        dominatorTreeId,
+      });
+      return dominatorTreeId;
+    },
   }
-});
+));
 
 /**
  * Get the partial subtree, starting from the root, of the
@@ -543,46 +598,54 @@ TaskCache.declareCacheableTask({
  *
  * @returns {Promise<DominatorTreeNode>}
  */
-const fetchDominatorTree = exports.fetchDominatorTree =
-TaskCache.declareCacheableTask({
-  getCacheKey(_, id) {
-    return id;
-  },
+const fetchDominatorTree = (exports.fetchDominatorTree = TaskCache.declareCacheableTask(
+  {
+    getCacheKey(_, id) {
+      return id;
+    },
 
-  task: function* (heapWorker, id, removeFromCache, dispatch, getState) {
-    const snapshot = getSnapshot(getState(), id);
-    assert(dominatorTreeIsComputed(snapshot),
-           "Should have dominator tree model and it should be computed");
+    task: async function(heapWorker, id, removeFromCache, dispatch, getState) {
+      const snapshot = getSnapshot(getState(), id);
+      assert(
+        dominatorTreeIsComputed(snapshot),
+        "Should have dominator tree model and it should be computed"
+      );
 
-    let display;
-    let root;
-    do {
-      display = getState().labelDisplay;
-      assert(display && display.breakdown,
-             `Should have a breakdown to describe nodes with, got: ${uneval(display)}`);
+      let display;
+      let root;
+      do {
+        display = getState().labelDisplay;
+        assert(
+          display && display.breakdown,
+          `Should have a breakdown to describe nodes with, got: ${uneval(
+            display
+          )}`
+        );
 
-      dispatch({ type: actions.FETCH_DOMINATOR_TREE_START, id, display });
+        dispatch({ type: actions.FETCH_DOMINATOR_TREE_START, id, display });
 
-      try {
-        root = yield heapWorker.getDominatorTree({
-          dominatorTreeId: snapshot.dominatorTree.dominatorTreeId,
-          breakdown: display.breakdown,
-          maxRetainingPaths: Preferences.get("devtools.memory.max-retaining-paths"),
-        });
-      } catch (error) {
-        removeFromCache();
-        reportException("actions/snapshot/fetchDominatorTree", error);
-        dispatch({ type: actions.DOMINATOR_TREE_ERROR, id, error });
-        return null;
-      }
-    }
-    while (display !== getState().labelDisplay);
+        try {
+          root = await heapWorker.getDominatorTree({
+            dominatorTreeId: snapshot.dominatorTree.dominatorTreeId,
+            breakdown: display.breakdown,
+            maxRetainingPaths: Preferences.get(
+              "devtools.memory.max-retaining-paths"
+            ),
+          });
+        } catch (error) {
+          removeFromCache();
+          reportException("actions/snapshot/fetchDominatorTree", error);
+          dispatch({ type: actions.DOMINATOR_TREE_ERROR, id, error });
+          return null;
+        }
+      } while (display !== getState().labelDisplay);
 
-    removeFromCache();
-    dispatch({ type: actions.FETCH_DOMINATOR_TREE_END, id, root });
-    return root;
+      removeFromCache();
+      dispatch({ type: actions.FETCH_DOMINATOR_TREE_END, id, root });
+      return root;
+    },
   }
-});
+));
 
 /**
  * Fetch the immediately dominated children represented by the placeholder
@@ -597,13 +660,23 @@ exports.fetchImmediatelyDominated = TaskCache.declareCacheableTask({
     return `${id}-${lazyChildren.key()}`;
   },
 
-  task: function* (heapWorker, id, lazyChildren, removeFromCache, dispatch, getState) {
+  task: async function(
+    heapWorker,
+    id,
+    lazyChildren,
+    removeFromCache,
+    dispatch,
+    getState
+  ) {
     const snapshot = getSnapshot(getState(), id);
     assert(snapshot.dominatorTree, "Should have dominator tree model");
-    assert(snapshot.dominatorTree.state === dominatorTreeState.LOADED ||
-           snapshot.dominatorTree.state === dominatorTreeState.INCREMENTAL_FETCHING,
-           "Cannot fetch immediately dominated nodes in a dominator tree unless " +
-           " the dominator tree has already been computed");
+    assert(
+      snapshot.dominatorTree.state === dominatorTreeState.LOADED ||
+        snapshot.dominatorTree.state ===
+          dominatorTreeState.INCREMENTAL_FETCHING,
+      "Cannot fetch immediately dominated nodes in a dominator tree unless " +
+        " the dominator tree has already been computed"
+    );
 
     let display;
     let response;
@@ -614,12 +687,14 @@ exports.fetchImmediatelyDominated = TaskCache.declareCacheableTask({
       dispatch({ type: actions.FETCH_IMMEDIATELY_DOMINATED_START, id });
 
       try {
-        response = yield heapWorker.getImmediatelyDominated({
+        response = await heapWorker.getImmediatelyDominated({
           dominatorTreeId: snapshot.dominatorTree.dominatorTreeId,
           breakdown: display.breakdown,
           nodeId: lazyChildren.parentNodeId(),
           startIndex: lazyChildren.siblingIndex(),
-          maxRetainingPaths: Preferences.get("devtools.memory.max-retaining-paths"),
+          maxRetainingPaths: Preferences.get(
+            "devtools.memory.max-retaining-paths"
+          ),
         });
       } catch (error) {
         removeFromCache();
@@ -627,8 +702,7 @@ exports.fetchImmediatelyDominated = TaskCache.declareCacheableTask({
         dispatch({ type: actions.DOMINATOR_TREE_ERROR, id, error });
         return;
       }
-    }
-    while (display !== getState().labelDisplay);
+    } while (display !== getState().labelDisplay);
 
     removeFromCache();
     dispatch({
@@ -638,7 +712,7 @@ exports.fetchImmediatelyDominated = TaskCache.declareCacheableTask({
       nodes: response.nodes,
       moreChildrenAvailable: response.moreChildrenAvailable,
     });
-  }
+  },
 });
 
 /**
@@ -650,46 +724,53 @@ exports.fetchImmediatelyDominated = TaskCache.declareCacheableTask({
  *
  * @returns {Promise<DominatorTreeNode>}
  */
-const computeAndFetchDominatorTree = exports.computeAndFetchDominatorTree =
-TaskCache.declareCacheableTask({
-  getCacheKey(_, id) {
-    return id;
-  },
+const computeAndFetchDominatorTree = (exports.computeAndFetchDominatorTree = TaskCache.declareCacheableTask(
+  {
+    getCacheKey(_, id) {
+      return id;
+    },
 
-  task: function* (heapWorker, id, removeFromCache, dispatch, getState) {
-    const dominatorTreeId = yield dispatch(computeDominatorTree(heapWorker, id));
-    if (dominatorTreeId === null) {
+    task: async function(heapWorker, id, removeFromCache, dispatch, getState) {
+      const dominatorTreeId = await dispatch(
+        computeDominatorTree(heapWorker, id)
+      );
+      if (dominatorTreeId === null) {
+        removeFromCache();
+        return null;
+      }
+
+      const root = await dispatch(fetchDominatorTree(heapWorker, id));
       removeFromCache();
-      return null;
-    }
 
-    const root = yield dispatch(fetchDominatorTree(heapWorker, id));
-    removeFromCache();
+      if (!root) {
+        return null;
+      }
 
-    if (!root) {
-      return null;
-    }
-
-    return root;
+      return root;
+    },
   }
-});
+));
 
 /**
  * Update the currently selected snapshot's dominator tree.
  *
  * @param {HeapAnalysesClient} heapWorker
  */
-exports.refreshSelectedDominatorTree = function (heapWorker) {
-  return function* (dispatch, getState) {
-    let snapshot = getState().snapshots.find(s => s.selected);
+exports.refreshSelectedDominatorTree = function(heapWorker) {
+  return async function(dispatch, getState) {
+    const snapshot = getState().snapshots.find(s => s.selected);
     if (!snapshot) {
       return;
     }
 
-    if (snapshot.dominatorTree &&
-        !(snapshot.dominatorTree.state === dominatorTreeState.COMPUTED ||
-          snapshot.dominatorTree.state === dominatorTreeState.LOADED ||
-          snapshot.dominatorTree.state === dominatorTreeState.INCREMENTAL_FETCHING)) {
+    if (
+      snapshot.dominatorTree &&
+      !(
+        snapshot.dominatorTree.state === dominatorTreeState.COMPUTED ||
+        snapshot.dominatorTree.state === dominatorTreeState.LOADED ||
+        snapshot.dominatorTree.state === dominatorTreeState.INCREMENTAL_FETCHING
+      )
+    ) {
       return;
     }
 
@@ -698,9 +779,9 @@ exports.refreshSelectedDominatorTree = function (heapWorker) {
     // then takeSnapshotAndCensus will finish the job for us
     if (snapshot.state === states.READ) {
       if (snapshot.dominatorTree) {
-        yield dispatch(fetchDominatorTree(heapWorker, snapshot.id));
+        await dispatch(fetchDominatorTree(heapWorker, snapshot.id));
       } else {
-        yield dispatch(computeAndFetchDominatorTree(heapWorker, snapshot.id));
+        await dispatch(computeAndFetchDominatorTree(heapWorker, snapshot.id));
       }
     }
   };
@@ -712,29 +793,30 @@ exports.refreshSelectedDominatorTree = function (heapWorker) {
  * @param {snapshotId} id
  * @see {Snapshot} model defined in devtools/client/memory/models.js
  */
-const selectSnapshot = exports.selectSnapshot = function (id) {
+const selectSnapshot = (exports.selectSnapshot = function(id) {
   return {
     type: actions.SELECT_SNAPSHOT,
-    id
+    id,
   };
-};
+});
 
 /**
  * Delete all snapshots that are in the READ or ERROR state
  *
  * @param {HeapAnalysesClient} heapWorker
  */
-exports.clearSnapshots = function (heapWorker) {
-  return function* (dispatch, getState) {
-    let snapshots = getState().snapshots.filter(s => {
-      let snapshotReady = s.state === states.READ || s.state === states.ERROR;
-      let censusReady = (s.treeMap && s.treeMap.state === treeMapState.SAVED) ||
-                        (s.census && s.census.state === censusState.SAVED);
+exports.clearSnapshots = function(heapWorker) {
+  return async function(dispatch, getState) {
+    const snapshots = getState().snapshots.filter(s => {
+      const snapshotReady = s.state === states.READ || s.state === states.ERROR;
+      const censusReady =
+        (s.treeMap && s.treeMap.state === treeMapState.SAVED) ||
+        (s.census && s.census.state === censusState.SAVED);
 
       return snapshotReady && censusReady;
     });
 
-    let ids = snapshots.map(s => s.id);
+    const ids = snapshots.map(s => s.id);
 
     dispatch({ type: actions.DELETE_SNAPSHOTS_START, ids });
 
@@ -745,12 +827,14 @@ exports.clearSnapshots = function (heapWorker) {
       dispatch(view.popView());
     }
 
-    yield Promise.all(snapshots.map(snapshot => {
-      return heapWorker.deleteHeapSnapshot(snapshot.path).catch(error => {
-        reportException("clearSnapshots", error);
-        dispatch({ type: actions.SNAPSHOT_ERROR, id: snapshot.id, error });
-      });
-    }));
+    await Promise.all(
+      snapshots.map(snapshot => {
+        return heapWorker.deleteHeapSnapshot(snapshot.path).catch(error => {
+          reportException("clearSnapshots", error);
+          dispatch({ type: actions.SNAPSHOT_ERROR, id: snapshot.id, error });
+        });
+      })
+    );
 
     dispatch({ type: actions.DELETE_SNAPSHOTS_END, ids });
   };
@@ -762,12 +846,12 @@ exports.clearSnapshots = function (heapWorker) {
  * @param {HeapAnalysesClient} heapWorker
  * @param {snapshotModel} snapshot
  */
-exports.deleteSnapshot = function (heapWorker, snapshot) {
-  return function* (dispatch, getState) {
+exports.deleteSnapshot = function(heapWorker, snapshot) {
+  return async function(dispatch, getState) {
     dispatch({ type: actions.DELETE_SNAPSHOTS_START, ids: [snapshot.id] });
 
     try {
-      yield heapWorker.deleteHeapSnapshot(snapshot.path);
+      await heapWorker.deleteHeapSnapshot(snapshot.path);
     } catch (error) {
       reportException("deleteSnapshot", error);
       dispatch({ type: actions.SNAPSHOT_ERROR, id: snapshot.id, error });
@@ -782,7 +866,7 @@ exports.deleteSnapshot = function (heapWorker, snapshot) {
  *
  * @param {CensusTreeNode} node
  */
-exports.expandCensusNode = function (id, node) {
+exports.expandCensusNode = function(id, node) {
   return {
     type: actions.EXPAND_CENSUS_NODE,
     id,
@@ -795,7 +879,7 @@ exports.expandCensusNode = function (id, node) {
  *
  * @param {CensusTreeNode} node
  */
-exports.collapseCensusNode = function (id, node) {
+exports.collapseCensusNode = function(id, node) {
   return {
     type: actions.COLLAPSE_CENSUS_NODE,
     id,
@@ -809,7 +893,7 @@ exports.collapseCensusNode = function (id, node) {
  * @param {SnapshotId} id
  * @param {DominatorTreeNode} node
  */
-exports.focusCensusNode = function (id, node) {
+exports.focusCensusNode = function(id, node) {
   return {
     type: actions.FOCUS_CENSUS_NODE,
     id,
@@ -822,7 +906,7 @@ exports.focusCensusNode = function (id, node) {
  *
  * @param {DominatorTreeTreeNode} node
  */
-exports.expandDominatorTreeNode = function (id, node) {
+exports.expandDominatorTreeNode = function(id, node) {
   return {
     type: actions.EXPAND_DOMINATOR_TREE_NODE,
     id,
@@ -835,7 +919,7 @@ exports.expandDominatorTreeNode = function (id, node) {
  *
  * @param {DominatorTreeTreeNode} node
  */
-exports.collapseDominatorTreeNode = function (id, node) {
+exports.collapseDominatorTreeNode = function(id, node) {
   return {
     type: actions.COLLAPSE_DOMINATOR_TREE_NODE,
     id,
@@ -849,7 +933,7 @@ exports.collapseDominatorTreeNode = function (id, node) {
  * @param {SnapshotId} id
  * @param {DominatorTreeNode} node
  */
-exports.focusDominatorTreeNode = function (id, node) {
+exports.focusDominatorTreeNode = function(id, node) {
   return {
     type: actions.FOCUS_DOMINATOR_TREE_NODE,
     id,

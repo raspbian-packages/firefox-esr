@@ -6,17 +6,17 @@
 
 #include <math.h>
 
-#include "HTMLEditorObjectResizerUtils.h"
+#include "HTMLEditorEventListener.h"
 #include "HTMLEditRules.h"
 #include "HTMLEditUtils.h"
 #include "TextEditUtils.h"
 #include "mozilla/EditAction.h"
-#include "mozilla/EditorUtils.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/TextEditRules.h"
-#include "mozilla/dom/CSSPrimitiveValueBinding.h"
 #include "mozilla/dom/Selection.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/dom/EventTarget.h"
 #include "mozilla/mozalloc.h"
 #include "nsAString.h"
 #include "nsAlgorithm.h"
@@ -27,15 +27,10 @@
 #include "nsGkAtoms.h"
 #include "nsIContent.h"
 #include "nsROCSSPrimitiveValue.h"
-#include "nsIDOMElement.h"
 #include "nsIDOMEventListener.h"
-#include "nsIDOMEventTarget.h"
-#include "nsIDOMNode.h"
-#include "nsDOMCSSRGBColor.h"
 #include "nsIDOMWindow.h"
 #include "nsIHTMLObjectResizer.h"
 #include "nsINode.h"
-#include "nsIPresShell.h"
 #include "nsISupportsImpl.h"
 #include "nsISupportsUtils.h"
 #include "nsLiteralString.h"
@@ -49,38 +44,56 @@ namespace mozilla {
 
 using namespace dom;
 
-#define BLACK_BG_RGB_TRIGGER 0xd0
-
 nsresult HTMLEditor::SetSelectionToAbsoluteOrStatic(bool aEnabled) {
-  AutoPlaceholderBatch beginBatching(this);
-  AutoRules beginRulesSniffing(this,
-                               aEnabled ? EditAction::setAbsolutePosition
-                                        : EditAction::removeAbsolutePosition,
-                               nsIEditor::eNext);
+  MOZ_ASSERT(IsEditActionDataAvailable());
+
+  AutoEditActionDataSetter editActionData(
+      *this, EditAction::eSetPositionToAbsoluteOrStatic);
+  if (NS_WARN_IF(!editActionData.CanHandle())) {
+    return NS_ERROR_NOT_INITIALIZED;
+  }
+
+  AutoPlaceholderBatch treatAsOneTransaction(*this);
+  AutoTopLevelEditSubActionNotifier maybeTopLevelEditSubAction(
+      *this,
+      aEnabled ? EditSubAction::eSetPositionToAbsolute
+               : EditSubAction::eSetPositionToStatic,
+      nsIEditor::eNext);
 
   // the line below does not match the code; should it be removed?
   // Find out if the selection is collapsed:
-  RefPtr<Selection> selection = GetSelection();
-  NS_ENSURE_TRUE(selection, NS_ERROR_NULL_POINTER);
 
-  RulesInfo ruleInfo(aEnabled ? EditAction::setAbsolutePosition
-                              : EditAction::removeAbsolutePosition);
+  EditSubActionInfo subActionInfo(aEnabled
+                                      ? EditSubAction::eSetPositionToAbsolute
+                                      : EditSubAction::eSetPositionToStatic);
   bool cancel, handled;
   // Protect the edit rules object from dying
   RefPtr<TextEditRules> rules(mRules);
-  nsresult rv = rules->WillDoAction(selection, &ruleInfo, &cancel, &handled);
+  nsresult rv = rules->WillDoAction(subActionInfo, &cancel, &handled);
   if (NS_FAILED(rv) || cancel) {
-    return rv;
+    return EditorBase::ToGenericNSResult(rv);
   }
 
-  return rules->DidDoAction(selection, &ruleInfo, rv);
+  rv = rules->DidDoAction(subActionInfo, rv);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return EditorBase::ToGenericNSResult(rv);
+  }
+  return NS_OK;
 }
 
 already_AddRefed<Element>
 HTMLEditor::GetAbsolutelyPositionedSelectionContainer() {
-  nsAutoString positionStr;
-  RefPtr<Element> element = GetSelectionContainer();
+  AutoEditActionDataSetter editActionData(*this, EditAction::eNotEditing);
+  if (NS_WARN_IF(!editActionData.CanHandle())) {
+    return nullptr;
+  }
 
+  RefPtr<Element> element = GetSelectionContainerElement();
+  if (NS_WARN_IF(!element)) {
+    return nullptr;
+  }
+
+  nsAutoString positionStr;
   while (element && !element->IsHTMLElement(nsGkAtoms::html)) {
     nsresult rv = CSSEditUtils::GetComputedProperty(
         *element, *nsGkAtoms::position, positionStr);
@@ -97,13 +110,13 @@ HTMLEditor::GetAbsolutelyPositionedSelectionContainer() {
 
 NS_IMETHODIMP
 HTMLEditor::GetAbsolutePositioningEnabled(bool* aIsEnabled) {
-  *aIsEnabled = AbsolutePositioningEnabled();
+  *aIsEnabled = IsAbsolutePositionEditorEnabled();
   return NS_OK;
 }
 
 NS_IMETHODIMP
 HTMLEditor::SetAbsolutePositioningEnabled(bool aIsEnabled) {
-  mIsAbsolutelyPositioningEnabled = aIsEnabled;
+  EnableAbsolutePositionEditor(aIsEnabled);
   return NS_OK;
 }
 
@@ -130,30 +143,46 @@ void HTMLEditor::SetZIndex(Element& aElement, int32_t aZindex) {
 }
 
 nsresult HTMLEditor::AddZIndex(int32_t aChange) {
-  AutoPlaceholderBatch beginBatching(this);
-  AutoRules beginRulesSniffing(
-      this,
-      (aChange < 0) ? EditAction::decreaseZIndex : EditAction::increaseZIndex,
+  MOZ_ASSERT(IsEditActionDataAvailable());
+
+  AutoEditActionDataSetter editActionData(
+      *this, EditAction::eIncreaseOrDecreaseZIndex);
+  if (NS_WARN_IF(!editActionData.CanHandle())) {
+    return NS_ERROR_NOT_INITIALIZED;
+  }
+
+  AutoPlaceholderBatch treatAsOneTransaction(*this);
+  AutoTopLevelEditSubActionNotifier maybeTopLevelEditSubAction(
+      *this,
+      aChange < 0 ? EditSubAction::eDecreaseZIndex
+                  : EditSubAction::eIncreaseZIndex,
       nsIEditor::eNext);
 
   // brade: can we get rid of this comment?
   // Find out if the selection is collapsed:
-  RefPtr<Selection> selection = GetSelection();
-  NS_ENSURE_TRUE(selection, NS_ERROR_NULL_POINTER);
-  RulesInfo ruleInfo(aChange < 0 ? EditAction::decreaseZIndex
-                                 : EditAction::increaseZIndex);
+  EditSubActionInfo subActionInfo(aChange < 0 ? EditSubAction::eDecreaseZIndex
+                                              : EditSubAction::eIncreaseZIndex);
   bool cancel, handled;
   // Protect the edit rules object from dying
   RefPtr<TextEditRules> rules(mRules);
-  nsresult rv = rules->WillDoAction(selection, &ruleInfo, &cancel, &handled);
+  nsresult rv = rules->WillDoAction(subActionInfo, &cancel, &handled);
   if (cancel || NS_FAILED(rv)) {
-    return rv;
+    return EditorBase::ToGenericNSResult(rv);
   }
 
-  return rules->DidDoAction(selection, &ruleInfo, rv);
+  rv = rules->DidDoAction(subActionInfo, rv);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return EditorBase::ToGenericNSResult(rv);
+  }
+  return NS_OK;
 }
 
 int32_t HTMLEditor::GetZIndex(Element& aElement) {
+  AutoEditActionDataSetter editActionData(*this, EditAction::eNotEditing);
+  if (NS_WARN_IF(!editActionData.CanHandle())) {
+    return 0;
+  }
+
   nsAutoString zIndexStr;
 
   nsresult rv = CSSEditUtils::GetSpecifiedProperty(
@@ -194,67 +223,100 @@ int32_t HTMLEditor::GetZIndex(Element& aElement) {
   return zIndexStr.ToInteger(&errorCode);
 }
 
-ManualNACPtr HTMLEditor::CreateGrabber(nsIContent& aParentContent) {
-  // let's create a grabber through the element factory
-  ManualNACPtr ret = CreateAnonymousElement(
-      nsGkAtoms::span, aParentContent, NS_LITERAL_STRING("mozGrabber"), false);
-  if (NS_WARN_IF(!ret)) {
-    return nullptr;
+bool HTMLEditor::CreateGrabberInternal(nsIContent& aParentContent) {
+  if (NS_WARN_IF(mGrabber)) {
+    return false;
   }
 
-  // add the mouse listener so we can detect a click on a resizer
-  nsCOMPtr<nsIDOMEventTarget> evtTarget = do_QueryInterface(ret);
-  evtTarget->AddEventListener(NS_LITERAL_STRING("mousedown"), mEventListener,
-                              false);
+  mGrabber = CreateAnonymousElement(nsGkAtoms::span, aParentContent,
+                                    NS_LITERAL_STRING("mozGrabber"), false);
 
-  return ret;
+  // mGrabber may be destroyed during creation due to there may be
+  // mutation event listener.
+  if (NS_WARN_IF(!mGrabber)) {
+    return false;
+  }
+
+  EventListenerManager* eventListenerManager =
+      mGrabber->GetOrCreateListenerManager();
+  eventListenerManager->AddEventListenerByType(
+      mEventListener, NS_LITERAL_STRING("mousedown"),
+      TrustedEventsAtSystemGroupBubble());
+  MOZ_ASSERT(mGrabber);
+  return true;
 }
 
 NS_IMETHODIMP
 HTMLEditor::RefreshGrabber() {
-  NS_ENSURE_TRUE(mAbsolutelyPositionedObject, NS_ERROR_NULL_POINTER);
+  if (NS_WARN_IF(!mAbsolutelyPositionedObject)) {
+    return NS_ERROR_FAILURE;
+  }
 
+  AutoEditActionDataSetter editActionData(*this, EditAction::eNotEditing);
+  if (NS_WARN_IF(!editActionData.CanHandle())) {
+    return NS_ERROR_NOT_INITIALIZED;
+  }
+
+  nsresult rv = RefreshGrabberInternal();
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return EditorBase::ToGenericNSResult(rv);
+  }
+  return NS_OK;
+}
+
+nsresult HTMLEditor::RefreshGrabberInternal() {
+  if (!mAbsolutelyPositionedObject) {
+    return NS_OK;
+  }
   nsresult rv = GetPositionAndDimensions(
       *mAbsolutelyPositionedObject, mPositionedObjectX, mPositionedObjectY,
       mPositionedObjectWidth, mPositionedObjectHeight,
       mPositionedObjectBorderLeft, mPositionedObjectBorderTop,
       mPositionedObjectMarginLeft, mPositionedObjectMarginTop);
-  NS_ENSURE_SUCCESS(rv, rv);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
 
+  RefPtr<Element> grabber = mGrabber.get();
   SetAnonymousElementPosition(mPositionedObjectX + 12, mPositionedObjectY - 14,
-                              mGrabber);
+                              grabber);
   return NS_OK;
 }
 
-void HTMLEditor::HideGrabber() {
-  nsresult rv = mAbsolutelyPositionedObject->UnsetAttr(
+void HTMLEditor::HideGrabberInternal() {
+  if (NS_WARN_IF(!mAbsolutelyPositionedObject)) {
+    return;
+  }
+
+  // Move all members to the local variables first since mutation event
+  // listener may try to show grabber while we're hiding them.
+  RefPtr<Element> absolutePositioningObject =
+      std::move(mAbsolutelyPositionedObject);
+  ManualNACPtr grabber = std::move(mGrabber);
+  ManualNACPtr positioningShadow = std::move(mPositioningShadow);
+
+  DebugOnly<nsresult> rv = absolutePositioningObject->UnsetAttr(
       kNameSpaceID_None, nsGkAtoms::_moz_abspos, true);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return;
-  }
+  NS_WARNING_ASSERTION(NS_SUCCEEDED(rv), "Failed to unset the attribute");
 
-  mAbsolutelyPositionedObject = nullptr;
-  if (NS_WARN_IF(!mGrabber)) {
-    return;
-  }
-
-  // get the presshell's document observer interface.
-  nsCOMPtr<nsIPresShell> ps = GetPresShell();
   // We allow the pres shell to be null; when it is, we presume there
   // are no document observers to notify, but we still want to
   // UnbindFromTree.
-
-  DeleteRefToAnonymousNode(Move(mGrabber), ps);
-  DeleteRefToAnonymousNode(Move(mPositioningShadow), ps);
+  RefPtr<PresShell> presShell = GetPresShell();
+  if (grabber) {
+    DeleteRefToAnonymousNode(std::move(grabber), presShell);
+  }
+  if (positioningShadow) {
+    DeleteRefToAnonymousNode(std::move(positioningShadow), presShell);
+  }
 }
 
-nsresult HTMLEditor::ShowGrabber(Element& aElement) {
+nsresult HTMLEditor::ShowGrabberInternal(Element& aElement) {
   if (NS_WARN_IF(!IsDescendantOfEditorRoot(&aElement))) {
     return NS_ERROR_UNEXPECTED;
   }
 
-  if (mGrabber) {
-    NS_ERROR("call HideGrabber first");
+  if (NS_WARN_IF(mGrabber)) {
     return NS_ERROR_UNEXPECTED;
   }
 
@@ -267,7 +329,6 @@ nsresult HTMLEditor::ShowGrabber(Element& aElement) {
                         true);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // first, let's keep track of that element...
   mAbsolutelyPositionedObject = &aElement;
 
   nsIContent* parentContent = aElement.GetParent();
@@ -275,14 +336,23 @@ nsresult HTMLEditor::ShowGrabber(Element& aElement) {
     return NS_ERROR_FAILURE;
   }
 
-  mGrabber = CreateGrabber(*parentContent);
-  NS_ENSURE_TRUE(mGrabber, NS_ERROR_FAILURE);
+  if (NS_WARN_IF(!CreateGrabberInternal(*parentContent))) {
+    return NS_ERROR_FAILURE;
+  }
 
-  // and set its position
-  return RefreshGrabber();
+  // If we succeeded to create the grabber, HideGrabberInternal() hasn't been
+  // called yet.  So, mAbsolutelyPositionedObject should be non-nullptr.
+  MOZ_ASSERT(mAbsolutelyPositionedObject);
+
+  // Finally, move the grabber to proper position.
+  rv = RefreshGrabberInternal();
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+  return NS_OK;
 }
 
-nsresult HTMLEditor::StartMoving(nsIDOMElement* aHandle) {
+nsresult HTMLEditor::StartMoving() {
   nsCOMPtr<nsIContent> parentContent = mGrabber->GetParent();
   if (NS_WARN_IF(!parentContent) || NS_WARN_IF(!mAbsolutelyPositionedObject)) {
     return NS_ERROR_FAILURE;
@@ -291,19 +361,27 @@ nsresult HTMLEditor::StartMoving(nsIDOMElement* aHandle) {
   // now, let's create the resizing shadow
   mPositioningShadow =
       CreateShadow(*parentContent, *mAbsolutelyPositionedObject);
-  NS_ENSURE_TRUE(mPositioningShadow, NS_ERROR_FAILURE);
+  if (NS_WARN_IF(!mPositioningShadow) ||
+      NS_WARN_IF(!mAbsolutelyPositionedObject)) {
+    return NS_ERROR_FAILURE;
+  }
+  RefPtr<Element> positioningShadow = mPositioningShadow.get();
+  RefPtr<Element> absolutelyPositionedObject = mAbsolutelyPositionedObject;
   nsresult rv =
-      SetShadowPosition(mPositioningShadow, mAbsolutelyPositionedObject,
+      SetShadowPosition(*positioningShadow, *absolutelyPositionedObject,
                         mPositionedObjectX, mPositionedObjectY);
-  NS_ENSURE_SUCCESS(rv, rv);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
 
   // make the shadow appear
   mPositioningShadow->UnsetAttr(kNameSpaceID_None, nsGkAtoms::_class, true);
 
   // position it
-  mCSSEditUtils->SetCSSPropertyPixels(*mPositioningShadow, *nsGkAtoms::width,
+  positioningShadow = mPositioningShadow.get();
+  mCSSEditUtils->SetCSSPropertyPixels(*positioningShadow, *nsGkAtoms::width,
                                       mPositionedObjectWidth);
-  mCSSEditUtils->SetCSSPropertyPixels(*mPositioningShadow, *nsGkAtoms::height,
+  mCSSEditUtils->SetCSSPropertyPixels(*positioningShadow, *nsGkAtoms::height,
                                       mPositionedObjectHeight);
 
   mIsMoving = true;
@@ -318,20 +396,13 @@ void HTMLEditor::SnapToGrid(int32_t& newX, int32_t& newY) {
 }
 
 nsresult HTMLEditor::GrabberClicked() {
-  // add a mouse move listener to the editor
-  nsresult rv = NS_OK;
-  if (!mMouseMotionListenerP) {
-    mMouseMotionListenerP = new ResizerMouseMotionListener(*this);
-    if (!mMouseMotionListenerP) {
-      return NS_ERROR_NULL_POINTER;
-    }
-
-    nsIDOMEventTarget* piTarget = GetDOMEventTarget();
-    NS_ENSURE_TRUE(piTarget, NS_ERROR_FAILURE);
-
-    rv = piTarget->AddEventListener(NS_LITERAL_STRING("mousemove"),
-                                    mMouseMotionListenerP, false, false);
-    NS_ASSERTION(NS_SUCCEEDED(rv), "failed to register mouse motion listener");
+  if (NS_WARN_IF(!mEventListener)) {
+    return NS_ERROR_NOT_INITIALIZED;
+  }
+  nsresult rv = static_cast<HTMLEditorEventListener*>(mEventListener.get())
+                    ->ListenToMouseMoveEventForGrabber(true);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return NS_OK;
   }
   mGrabberClicked = true;
   return rv;
@@ -339,29 +410,31 @@ nsresult HTMLEditor::GrabberClicked() {
 
 nsresult HTMLEditor::EndMoving() {
   if (mPositioningShadow) {
-    nsCOMPtr<nsIPresShell> ps = GetPresShell();
-    NS_ENSURE_TRUE(ps, NS_ERROR_NOT_INITIALIZED);
+    RefPtr<PresShell> presShell = GetPresShell();
+    if (NS_WARN_IF(!presShell)) {
+      return NS_ERROR_NOT_INITIALIZED;
+    }
 
-    DeleteRefToAnonymousNode(Move(mPositioningShadow), ps);
+    DeleteRefToAnonymousNode(std::move(mPositioningShadow), presShell);
 
     mPositioningShadow = nullptr;
   }
-  nsCOMPtr<nsIDOMEventTarget> piTarget = GetDOMEventTarget();
 
-  if (piTarget && mMouseMotionListenerP) {
-    DebugOnly<nsresult> rv = piTarget->RemoveEventListener(
-        NS_LITERAL_STRING("mousemove"), mMouseMotionListenerP, false);
-    NS_ASSERTION(NS_SUCCEEDED(rv), "failed to remove mouse motion listener");
+  if (mEventListener) {
+    DebugOnly<nsresult> rvIgnored =
+        static_cast<HTMLEditorEventListener*>(mEventListener.get())
+            ->ListenToMouseMoveEventForGrabber(false);
+    NS_WARNING_ASSERTION(NS_SUCCEEDED(rvIgnored),
+                         "Failed to remove mousemove event listener");
   }
-  mMouseMotionListenerP = nullptr;
 
   mGrabberClicked = false;
   mIsMoving = false;
-  RefPtr<Selection> selection = GetSelection();
-  if (!selection) {
-    return NS_ERROR_NOT_INITIALIZED;
+  nsresult rv = RefreshEditingUI();
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
   }
-  return CheckSelectionStateForAnonymousButtons(selection);
+  return NS_OK;
 }
 nsresult HTMLEditor::SetFinalPosition(int32_t aX, int32_t aY) {
   nsresult rv = EndMoving();
@@ -382,11 +455,13 @@ nsresult HTMLEditor::SetFinalPosition(int32_t aX, int32_t aY) {
   y.AppendInt(newY);
 
   // we want one transaction only from a user's point of view
-  AutoPlaceholderBatch batchIt(this);
+  AutoPlaceholderBatch treatAsOneTransaction(*this);
 
-  nsCOMPtr<Element> absolutelyPositionedObject =
-      do_QueryInterface(mAbsolutelyPositionedObject);
-  NS_ENSURE_STATE(absolutelyPositionedObject);
+  if (NS_WARN_IF(!mAbsolutelyPositionedObject)) {
+    return NS_ERROR_FAILURE;
+  }
+  OwningNonNull<Element> absolutelyPositionedObject =
+      *mAbsolutelyPositionedObject;
   mCSSEditUtils->SetCSSPropertyPixels(*absolutelyPositionedObject,
                                       *nsGkAtoms::top, newY);
   mCSSEditUtils->SetCSSPropertyPixels(*absolutelyPositionedObject,
@@ -395,7 +470,11 @@ nsresult HTMLEditor::SetFinalPosition(int32_t aX, int32_t aY) {
   mPositionedObjectX = newX;
   mPositionedObjectY = newY;
 
-  return RefreshResizers();
+  rv = RefreshResizers();
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+  return NS_OK;
 }
 
 void HTMLEditor::AddPositioningOffset(int32_t& aX, int32_t& aY) {
@@ -427,7 +506,9 @@ nsresult HTMLEditor::SetPositionToAbsoluteOrStatic(Element& aElement,
 }
 
 nsresult HTMLEditor::SetPositionToAbsolute(Element& aElement) {
-  AutoPlaceholderBatch batchIt(this);
+  MOZ_ASSERT(IsEditActionDataAvailable());
+
+  AutoPlaceholderBatch treatAsOneTransaction(*this);
 
   int32_t x, y;
   GetElementOrigin(aElement, x, y);
@@ -443,13 +524,9 @@ nsresult HTMLEditor::SetPositionToAbsolute(Element& aElement) {
   // container
   nsINode* parentNode = aElement.GetParentNode();
   if (parentNode->GetChildCount() == 1) {
-    RefPtr<Selection> selection = GetSelection();
-    if (NS_WARN_IF(!selection)) {
-      return NS_ERROR_FAILURE;
-    }
-    RefPtr<Element> newBRElement =
-        CreateBRImpl(*selection, EditorRawDOMPoint(parentNode, 0), eNone);
-    if (NS_WARN_IF(!newBRElement)) {
+    RefPtr<Element> newBrElement =
+        InsertBrElementWithTransaction(EditorDOMPoint(parentNode, 0));
+    if (NS_WARN_IF(!newBrElement)) {
       return NS_ERROR_FAILURE;
     }
   }
@@ -457,7 +534,7 @@ nsresult HTMLEditor::SetPositionToAbsolute(Element& aElement) {
 }
 
 nsresult HTMLEditor::SetPositionToStatic(Element& aElement) {
-  AutoPlaceholderBatch batchIt(this);
+  AutoPlaceholderBatch treatAsOneTransaction(*this);
 
   mCSSEditUtils->RemoveCSSProperty(aElement, *nsGkAtoms::position,
                                    EmptyString());
@@ -477,9 +554,9 @@ nsresult HTMLEditor::SetPositionToStatic(Element& aElement) {
       !HasStyleOrIdOrClass(&aElement)) {
     RefPtr<HTMLEditRules> htmlRules = static_cast<HTMLEditRules*>(mRules.get());
     NS_ENSURE_TRUE(htmlRules, NS_ERROR_FAILURE);
-    nsresult rv = htmlRules->MakeSureElemStartsOrEndsOnCR(aElement);
+    nsresult rv = htmlRules->MakeSureElemStartsAndEndsOnCR(aElement);
     NS_ENSURE_SUCCESS(rv, rv);
-    rv = RemoveContainer(&aElement);
+    rv = RemoveContainerWithTransaction(aElement);
     NS_ENSURE_SUCCESS(rv, rv);
   }
   return NS_OK;
@@ -511,18 +588,9 @@ HTMLEditor::GetGridSize(uint32_t* aSize) {
 
 // self-explanatory
 void HTMLEditor::SetTopAndLeft(Element& aElement, int32_t aX, int32_t aY) {
-  AutoPlaceholderBatch batchIt(this);
+  AutoPlaceholderBatch treatAsOneTransaction(*this);
   mCSSEditUtils->SetCSSPropertyPixels(aElement, *nsGkAtoms::left, aX);
   mCSSEditUtils->SetCSSPropertyPixels(aElement, *nsGkAtoms::top, aY);
-}
-
-// self-explanatory
-NS_IMETHODIMP
-HTMLEditor::GetPositionedElement(nsIDOMElement** aReturn) {
-  nsCOMPtr<nsIDOMElement> ret =
-      static_cast<nsIDOMElement*>(GetAsDOMNode(GetPositionedElement()));
-  ret.forget(aReturn);
-  return NS_OK;
 }
 
 nsresult HTMLEditor::GetTemporaryStyleForFocusedPositionedElement(
@@ -551,44 +619,24 @@ nsresult HTMLEditor::GetTemporaryStyleForFocusedPositionedElement(
   rv = CSSEditUtils::GetComputedProperty(aElement, *nsGkAtoms::backgroundColor,
                                          bgColorStr);
   NS_ENSURE_SUCCESS(rv, rv);
-  if (!bgColorStr.EqualsLiteral("transparent")) {
+  if (!bgColorStr.EqualsLiteral("rgba(0, 0, 0, 0)")) {
     return NS_OK;
   }
 
-  RefPtr<nsComputedDOMStyle> cssDecl =
-      CSSEditUtils::GetComputedStyle(&aElement);
-  NS_ENSURE_STATE(cssDecl);
+  RefPtr<ComputedStyle> style =
+      nsComputedDOMStyle::GetComputedStyle(&aElement, nullptr);
+  NS_ENSURE_STATE(style);
 
-  // from these declarations, get the one we want and that one only
-  ErrorResult error;
-  RefPtr<dom::CSSValue> cssVal =
-      cssDecl->GetPropertyCSSValue(NS_LITERAL_STRING("color"), error);
-  NS_ENSURE_TRUE(!error.Failed(), error.StealNSResult());
+  const uint8_t kBlackBgTrigger = 0xd0;
 
-  nsROCSSPrimitiveValue* val = cssVal->AsPrimitiveValue();
-  NS_ENSURE_TRUE(val, NS_ERROR_FAILURE);
-
-  if (CSSPrimitiveValueBinding::CSS_RGBCOLOR != val->PrimitiveType()) {
-    return NS_OK;
-  }
-
-  nsDOMCSSRGBColor* rgbVal = val->GetRGBColorValue(error);
-  NS_ENSURE_TRUE(!error.Failed(), error.StealNSResult());
-  float r =
-      rgbVal->Red()->GetFloatValue(CSSPrimitiveValueBinding::CSS_NUMBER, error);
-  NS_ENSURE_TRUE(!error.Failed(), error.StealNSResult());
-  float g = rgbVal->Green()->GetFloatValue(CSSPrimitiveValueBinding::CSS_NUMBER,
-                                           error);
-  NS_ENSURE_TRUE(!error.Failed(), error.StealNSResult());
-  float b = rgbVal->Blue()->GetFloatValue(CSSPrimitiveValueBinding::CSS_NUMBER,
-                                          error);
-  NS_ENSURE_TRUE(!error.Failed(), error.StealNSResult());
-  if (r >= BLACK_BG_RGB_TRIGGER && g >= BLACK_BG_RGB_TRIGGER &&
-      b >= BLACK_BG_RGB_TRIGGER) {
+  const auto& color = style->StyleColor()->mColor;
+  if (color.red >= kBlackBgTrigger && color.green >= kBlackBgTrigger &&
+      color.blue >= kBlackBgTrigger) {
     aReturn.AssignLiteral("black");
   } else {
     aReturn.AssignLiteral("white");
   }
+
   return NS_OK;
 }
 

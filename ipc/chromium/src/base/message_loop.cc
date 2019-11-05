@@ -16,23 +16,23 @@
 #include "base/thread_local.h"
 
 #if defined(OS_MACOSX)
-#include "base/message_pump_mac.h"
+#  include "base/message_pump_mac.h"
 #endif
 #if defined(OS_POSIX)
-#include "base/message_pump_libevent.h"
+#  include "base/message_pump_libevent.h"
 #endif
 #if defined(OS_LINUX) || defined(OS_BSD)
-#if defined(MOZ_WIDGET_GTK)
-#include "base/message_pump_glib.h"
-#endif
+#  if defined(MOZ_WIDGET_GTK)
+#    include "base/message_pump_glib.h"
+#  endif
 #endif
 #ifdef ANDROID
-#include "base/message_pump_android.h"
+#  include "base/message_pump_android.h"
 #endif
 #include "nsISerialEventTarget.h"
 #ifdef MOZ_TASK_TRACER
-#include "GeckoTaskTracer.h"
-#include "TracedTaskCommon.h"
+#  include "GeckoTaskTracer.h"
+#  include "TracedTaskCommon.h"
 #endif
 
 #include "MessagePump.h"
@@ -41,7 +41,6 @@ using base::Time;
 using base::TimeDelta;
 using base::TimeTicks;
 
-using mozilla::Move;
 using mozilla::Runnable;
 
 static base::ThreadLocalPointer<MessageLoop>& get_tls_ptr() {
@@ -142,7 +141,7 @@ MessageLoop::EventTarget::Dispatch(already_AddRefed<nsIRunnable> aEvent,
     return NS_ERROR_NOT_IMPLEMENTED;
   }
 
-  mLoop->PostTask(Move(aEvent));
+  mLoop->PostTask(std::move(aEvent));
   return NS_OK;
 }
 
@@ -153,7 +152,7 @@ MessageLoop::EventTarget::DelayedDispatch(already_AddRefed<nsIRunnable> aEvent,
     return NS_ERROR_NOT_INITIALIZED;
   }
 
-  mLoop->PostDelayedTask(Move(aEvent), aDelayMs);
+  mLoop->PostDelayedTask(std::move(aEvent), aDelayMs);
   return NS_OK;
 }
 
@@ -172,6 +171,7 @@ MessageLoop::MessageLoop(Type type, nsIEventTarget* aEventTarget)
       id_(++message_loop_id_seq),
       nestable_tasks_allowed_(true),
       exception_restoration_(false),
+      incoming_queue_lock_("MessageLoop Incoming Queue Lock"),
       state_(NULL),
       run_depth_base_(1),
       shutting_down_(false),
@@ -233,17 +233,17 @@ MessageLoop::MessageLoop(Type type, nsIEventTarget* aEventTarget)
   }
 #elif defined(OS_POSIX)
   if (type_ == TYPE_UI) {
-#if defined(OS_MACOSX)
+#  if defined(OS_MACOSX)
     pump_ = base::MessagePumpMac::Create();
-#elif defined(OS_LINUX) || defined(OS_BSD)
+#  elif defined(OS_LINUX) || defined(OS_BSD)
     pump_ = new base::MessagePumpForUI();
-#endif  // OS_LINUX
+#  endif  // OS_LINUX
   } else if (type_ == TYPE_IO) {
     pump_ = new base::MessagePumpLibevent();
   } else {
     pump_ = new base::MessagePumpDefault();
   }
-#endif  // OS_POSIX
+#endif    // OS_POSIX
 }
 
 MessageLoop::~MessageLoop() {
@@ -343,20 +343,20 @@ void MessageLoop::Quit() {
 }
 
 void MessageLoop::PostTask(already_AddRefed<nsIRunnable> task) {
-  PostTask_Helper(Move(task), 0);
+  PostTask_Helper(std::move(task), 0);
 }
 
 void MessageLoop::PostDelayedTask(already_AddRefed<nsIRunnable> task,
                                   int delay_ms) {
-  PostTask_Helper(Move(task), delay_ms);
+  PostTask_Helper(std::move(task), delay_ms);
 }
 
 void MessageLoop::PostIdleTask(already_AddRefed<nsIRunnable> task) {
   DCHECK(current() == this);
   MOZ_ASSERT(NS_IsMainThread());
 
-  PendingTask pending_task(Move(task), false);
-  deferred_non_nestable_work_queue_.push(Move(pending_task));
+  PendingTask pending_task(std::move(task), false);
+  deferred_non_nestable_work_queue_.push(std::move(pending_task));
 }
 
 // Possibly called on a background thread!
@@ -365,9 +365,9 @@ void MessageLoop::PostTask_Helper(already_AddRefed<nsIRunnable> task,
   if (nsIEventTarget* target = pump_->GetXPCOMThread()) {
     nsresult rv;
     if (delay_ms) {
-      rv = target->DelayedDispatch(Move(task), delay_ms);
+      rv = target->DelayedDispatch(std::move(task), delay_ms);
     } else {
-      rv = target->Dispatch(Move(task), 0);
+      rv = target->Dispatch(std::move(task), 0);
     }
     MOZ_ALWAYS_SUCCEEDS(rv);
     return;
@@ -385,7 +385,7 @@ void MessageLoop::PostTask_Helper(already_AddRefed<nsIRunnable> task,
   }
   PendingTask pending_task(tracedTask.forget(), true);
 #else
-  PendingTask pending_task(Move(task), true);
+  PendingTask pending_task(std::move(task), true);
 #endif
 
   if (delay_ms > 0) {
@@ -401,8 +401,8 @@ void MessageLoop::PostTask_Helper(already_AddRefed<nsIRunnable> task,
 
   RefPtr<base::MessagePump> pump;
   {
-    AutoLock locked(incoming_queue_lock_);
-    incoming_queue_.push(Move(pending_task));
+    mozilla::MutexAutoLock locked(incoming_queue_lock_);
+    incoming_queue_.push(std::move(pending_task));
     pump = pump_;
   }
   // Since the incoming_queue_ may contain a task that destroys this message
@@ -455,7 +455,7 @@ bool MessageLoop::DeferOrRunPendingTask(PendingTask&& pending_task) {
 
   // We couldn't run the task now because we're in a nested message loop
   // and the task isn't nestable.
-  deferred_non_nestable_work_queue_.push(Move(pending_task));
+  deferred_non_nestable_work_queue_.push(std::move(pending_task));
   return false;
 }
 
@@ -466,7 +466,7 @@ void MessageLoop::AddToDelayedWorkQueue(const PendingTask& pending_task) {
   // delayed_run_time value.
   PendingTask new_pending_task(pending_task);
   new_pending_task.sequence_num = next_sequence_num_++;
-  delayed_work_queue_.push(Move(new_pending_task));
+  delayed_work_queue_.push(std::move(new_pending_task));
 }
 
 void MessageLoop::ReloadWorkQueue() {
@@ -479,7 +479,7 @@ void MessageLoop::ReloadWorkQueue() {
 
   // Acquire all we can from the inter-thread queue with one lock acquisition.
   {
-    AutoLock lock(incoming_queue_lock_);
+    mozilla::MutexAutoLock lock(incoming_queue_lock_);
     if (incoming_queue_.empty()) return;
     std::swap(incoming_queue_, work_queue_);
     DCHECK(incoming_queue_.empty());
@@ -511,7 +511,7 @@ bool MessageLoop::DoWork() {
 
     // Execute oldest task.
     do {
-      PendingTask pending_task = Move(work_queue_.front());
+      PendingTask pending_task = std::move(work_queue_.front());
       work_queue_.pop();
       if (!pending_task.delayed_run_time.is_null()) {
         // NB: Don't move, because we use this later!
@@ -520,7 +520,7 @@ bool MessageLoop::DoWork() {
         if (delayed_work_queue_.top().task == pending_task.task)
           pump_->ScheduleDelayedWork(pending_task.delayed_run_time);
       } else {
-        if (DeferOrRunPendingTask(Move(pending_task))) return true;
+        if (DeferOrRunPendingTask(std::move(pending_task))) return true;
       }
     } while (!work_queue_.empty());
   }
@@ -546,7 +546,7 @@ bool MessageLoop::DoDelayedWork(TimeTicks* next_delayed_work_time) {
   if (!delayed_work_queue_.empty())
     *next_delayed_work_time = delayed_work_queue_.top().delayed_run_time;
 
-  return DeferOrRunPendingTask(Move(pending_task));
+  return DeferOrRunPendingTask(std::move(pending_task));
 }
 
 bool MessageLoop::DoIdleWork() {
@@ -609,8 +609,8 @@ bool MessageLoop::PendingTask::operator<(const PendingTask& other) const {
 
 nsISerialEventTarget* MessageLoop::SerialEventTarget() { return mEventTarget; }
 
-  //------------------------------------------------------------------------------
-  // MessageLoopForUI
+//------------------------------------------------------------------------------
+// MessageLoopForUI
 
 #if defined(OS_WIN)
 
@@ -640,8 +640,8 @@ void MessageLoopForUI::PumpOutPendingPaintMessages() {
 
 #endif  // defined(OS_WIN)
 
-  //------------------------------------------------------------------------------
-  // MessageLoopForIO
+//------------------------------------------------------------------------------
+// MessageLoopForIO
 
 #if defined(OS_WIN)
 

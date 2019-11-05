@@ -4,11 +4,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [ "TranslationDocument" ];
+var EXPORTED_SYMBOLS = ["TranslationDocument"];
 
-const TEXT_NODE = Ci.nsIDOMNode.TEXT_NODE;
-
-ChromeUtils.import("resource://services-common/async.js");
+const { Async } = ChromeUtils.import("resource://services-common/async.js");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+XPCOMUtils.defineLazyGlobalGetters(this, ["DOMParser"]);
 
 /**
  * This class represents a document that is being translated,
@@ -38,9 +40,7 @@ this.TranslationDocument.prototype = {
    * @param document  The document to be translated
    */
   _init(document) {
-    let window = document.defaultView;
-    let winUtils = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                         .getInterface(Ci.nsIDOMWindowUtils);
+    let winUtils = document.defaultView.windowUtils;
 
     // Get all the translation nodes in the document's body:
     // a translation node is a node from the document which
@@ -72,8 +72,7 @@ this.TranslationDocument.prototype = {
     // we are able to reduce their data payload sent to the translation service.
 
     for (let root of this.roots) {
-      if (root.children.length == 0 &&
-          root.nodeRef.childElementCount == 0) {
+      if (root.children.length == 0 && root.nodeRef.childElementCount == 0) {
         root.isSimpleRoot = true;
       }
     }
@@ -140,7 +139,7 @@ this.TranslationDocument.prototype = {
     let wasLastItemPlaceholder = false;
 
     for (let child of item.nodeRef.childNodes) {
-      if (child.nodeType == TEXT_NODE) {
+      if (child.nodeType == child.TEXT_NODE) {
         let x = child.nodeValue.trim();
         if (x != "") {
           item.original.push(x);
@@ -208,13 +207,13 @@ this.TranslationDocument.prototype = {
       // Let the event loop breath on every 100 nodes
       // that are replaced.
       const YIELD_INTERVAL = 100;
-      let maybeYield = Async.jankYielder(YIELD_INTERVAL);
-      for (let root of this.roots) {
-        root.swapText(target);
-        await maybeYield();
-      }
+      await Async.yieldingForEach(
+        this.roots,
+        root => root.swapText(target),
+        YIELD_INTERVAL
+      );
     })();
-  }
+  },
 };
 
 /**
@@ -274,8 +273,13 @@ TranslationItem.prototype = {
         rootType = " (non simple root)";
       }
     }
-    return "[object TranslationItem: <" + this.nodeRef.localName + ">"
-           + rootType + "]";
+    return (
+      "[object TranslationItem: <" +
+      this.nodeRef.localName +
+      ">" +
+      rootType +
+      "]"
+    );
   },
 
   /**
@@ -301,8 +305,7 @@ TranslationItem.prototype = {
       return;
     }
 
-    let domParser = Cc["@mozilla.org/xmlextras/domparser;1"]
-                      .createInstance(Ci.nsIDOMParser);
+    let domParser = new DOMParser();
 
     let doc = domParser.parseFromString(result, "text/html");
     parseResultNode(this, doc.body.firstChild);
@@ -317,7 +320,7 @@ TranslationItem.prototype = {
    */
   getChildById(id) {
     for (let child of this.children) {
-      if (("n" + child.id) == id) {
+      if ("n" + child.id == id) {
         return child;
       }
     }
@@ -333,7 +336,7 @@ TranslationItem.prototype = {
    */
   swapText(target) {
     swapTextForItem(this, target);
-  }
+  },
 };
 
 /**
@@ -346,7 +349,7 @@ TranslationItem.prototype = {
 const TranslationItem_NodePlaceholder = {
   toString() {
     return "[object TranslationItem_NodePlaceholder]";
-  }
+  },
 };
 
 /**
@@ -359,12 +362,12 @@ const TranslationItem_NodePlaceholder = {
  */
 function generateTranslationHtmlForItem(item, content) {
   let localName = item.isRoot ? "div" : "b";
-  return "<" + localName + " id=n" + item.id + ">" +
-         content +
-         "</" + localName + ">";
+  return (
+    "<" + localName + " id=n" + item.id + ">" + content + "</" + localName + ">"
+  );
 }
 
- /**
+/**
  * Regenerate the text string that represents a TranslationItem object,
  * with data from its "original" array. The array must have already
  * been created by TranslationDocument.generateTextForItem().
@@ -409,7 +412,7 @@ function regenerateTextFromOriginalHelper(item) {
 function parseResultNode(item, node) {
   item.translation = [];
   for (let child of node.childNodes) {
-    if (child.nodeType == TEXT_NODE) {
+    if (child.nodeType == child.TEXT_NODE) {
       item.translation.push(child.nodeValue);
     } else if (child.localName == "br") {
       item.translation.push(TranslationItem_NodePlaceholder);
@@ -492,7 +495,7 @@ function parseResultNode(item, node) {
 function swapTextForItem(item, target) {
   // visitStack is the stack of items that we still need to visit.
   // Let's start the process by adding the root item.
-  let visitStack = [ item ];
+  let visitStack = [item];
 
   while (visitStack.length > 0) {
     let curItem = visitStack.shift();
@@ -557,9 +560,11 @@ function swapTextForItem(item, target) {
     // which completely avoids any node reordering, and requires only one
     // text change instead of two (while also leaving the page closer to
     // its original state).
-    while (curNode &&
-           curNode.nodeType == TEXT_NODE &&
-           curNode.nodeValue.trim() == "") {
+    while (
+      curNode &&
+      curNode.nodeType == curNode.TEXT_NODE &&
+      curNode.nodeValue.trim() == ""
+    ) {
       curNode = curNode.nextSibling;
     }
 
@@ -567,7 +572,6 @@ function swapTextForItem(item, target) {
     // TranslationItem. This means either the TranslationItem.original or
     // TranslationItem.translation array.
     for (let targetItem of curItem[target]) {
-
       if (targetItem instanceof TranslationItem) {
         // If the array element is another TranslationItem object, let's
         // add it to the stack to be visited.
@@ -575,15 +579,16 @@ function swapTextForItem(item, target) {
 
         let targetNode = targetItem.nodeRef;
 
-            // If the node is not in the expected position, let's reorder
-            // it into position...
-        if (curNode != targetNode &&
-            // ...unless the page has reparented this node under a totally
-            // different node (or removed it). In this case, all bets are off
-            // on being able to do anything correctly, so it's better not to
-            // bring back the node to this parent.
-            targetNode.parentNode == domNode) {
-
+        // If the node is not in the expected position, let's reorder
+        // it into position...
+        if (
+          curNode != targetNode &&
+          // ...unless the page has reparented this node under a totally
+          // different node (or removed it). In this case, all bets are off
+          // on being able to do anything correctly, so it's better not to
+          // bring back the node to this parent.
+          targetNode.parentNode == domNode
+        ) {
           // We don't need to null-check curNode because insertBefore(..., null)
           // does what we need in that case: reorder this node to the end
           // of child nodes.
@@ -598,7 +603,6 @@ function swapTextForItem(item, target) {
         if (curNode) {
           curNode = getNextSiblingSkippingEmptyTextNodes(curNode);
         }
-
       } else if (targetItem === TranslationItem_NodePlaceholder) {
         // If the current item is a placeholder node, we need to move
         // our pointer "past" it, jumping from one side of a block of
@@ -607,17 +611,18 @@ function swapTextForItem(item, target) {
         // they will be pulled correctly later in the process when the
         // targetItem for those nodes are handled.
 
-        while (curNode &&
-               (curNode.nodeType != TEXT_NODE ||
-                curNode.nodeValue.trim() == "")) {
+        while (
+          curNode &&
+          (curNode.nodeType != curNode.TEXT_NODE ||
+            curNode.nodeValue.trim() == "")
+        ) {
           curNode = curNode.nextSibling;
         }
-
       } else {
         // Finally, if it's a text item, we just need to find the next
         // text node to use. Text nodes don't need to be reordered, so
         // the first one found can be used.
-        while (curNode && curNode.nodeType != TEXT_NODE) {
+        while (curNode && curNode.nodeType != curNode.TEXT_NODE) {
           curNode = curNode.nextSibling;
         }
 
@@ -627,7 +632,9 @@ function swapTextForItem(item, target) {
           // We don't know if the original content had a space or not,
           // so the best bet is to create the text node with " " which
           // will add one space at the beginning and one at the end.
-          curNode = domNode.appendChild(domNode.ownerDocument.createTextNode(" "));
+          curNode = domNode.appendChild(
+            domNode.ownerDocument.createTextNode(" ")
+          );
         }
 
         // A trailing and a leading space must be preserved because
@@ -653,9 +660,11 @@ function swapTextForItem(item, target) {
 
 function getNextSiblingSkippingEmptyTextNodes(startSibling) {
   let item = startSibling.nextSibling;
-  while (item &&
-         item.nodeType == TEXT_NODE &&
-         item.nodeValue.trim() == "") {
+  while (
+    item &&
+    item.nodeType == item.TEXT_NODE &&
+    item.nodeValue.trim() == ""
+  ) {
     item = item.nextSibling;
   }
   return item;
@@ -664,8 +673,7 @@ function getNextSiblingSkippingEmptyTextNodes(startSibling) {
 function clearRemainingNonEmptyTextNodesFromElement(startSibling) {
   let item = startSibling;
   while (item) {
-    if (item.nodeType == TEXT_NODE &&
-        item.nodeValue != "") {
+    if (item.nodeType == item.TEXT_NODE && item.nodeValue != "") {
       item.nodeValue = "";
     }
     item = item.nextSibling;

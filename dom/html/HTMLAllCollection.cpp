@@ -36,13 +36,37 @@ nsINode* HTMLAllCollection::GetParentObject() const { return mDocument; }
 
 uint32_t HTMLAllCollection::Length() { return Collection()->Length(true); }
 
-nsIContent* HTMLAllCollection::Item(uint32_t aIndex) {
-  return Collection()->Item(aIndex);
+Element* HTMLAllCollection::Item(uint32_t aIndex) {
+  nsIContent* item = Collection()->Item(aIndex);
+  return item ? item->AsElement() : nullptr;
+}
+
+void HTMLAllCollection::Item(const Optional<nsAString>& aNameOrIndex,
+                             Nullable<OwningHTMLCollectionOrElement>& aResult) {
+  if (!aNameOrIndex.WasPassed()) {
+    aResult.SetNull();
+    return;
+  }
+
+  const nsAString& nameOrIndex = aNameOrIndex.Value();
+  uint32_t indexVal;
+  if (js::StringIsArrayIndex(nameOrIndex.BeginReading(), nameOrIndex.Length(),
+                             &indexVal)) {
+    Element* element = Item(indexVal);
+    if (element) {
+      aResult.SetValue().SetAsElement() = element;
+    } else {
+      aResult.SetNull();
+    }
+    return;
+  }
+
+  NamedItem(nameOrIndex, aResult);
 }
 
 nsContentList* HTMLAllCollection::Collection() {
   if (!mCollection) {
-    nsIDocument* document = mDocument;
+    Document* document = mDocument;
     mCollection = document->GetElementsByTagName(NS_LITERAL_STRING("*"));
     MOZ_ASSERT(mCollection);
   }
@@ -63,7 +87,7 @@ static bool DocAllResultMatch(Element* aElement, int32_t aNamespaceID,
     return true;
   }
 
-  nsGenericHTMLElement* elm = nsGenericHTMLElement::FromContent(aElement);
+  nsGenericHTMLElement* elm = nsGenericHTMLElement::FromNode(aElement);
   if (!elm) {
     return false;
   }
@@ -87,7 +111,7 @@ nsContentList* HTMLAllCollection::GetDocumentAllList(const nsAString& aID) {
 
 void HTMLAllCollection::NamedGetter(
     const nsAString& aID, bool& aFound,
-    Nullable<OwningNodeOrHTMLCollection>& aResult) {
+    Nullable<OwningHTMLCollectionOrElement>& aResult) {
   if (aID.IsEmpty()) {
     aFound = false;
     aResult.SetNull();
@@ -113,7 +137,7 @@ void HTMLAllCollection::NamedGetter(
   // There's only 0 or 1 items. Return the first one or null.
   if (nsIContent* node = docAllList->Item(0, true)) {
     aFound = true;
-    aResult.SetValue().SetAsNode() = node;
+    aResult.SetValue().SetAsElement() = node->AsElement();
     return;
   }
 
@@ -135,7 +159,7 @@ void HTMLAllCollection::GetSupportedNames(nsTArray<nsString>& aNames) {
       }
     }
 
-    nsGenericHTMLElement* el = nsGenericHTMLElement::FromContent(content);
+    nsGenericHTMLElement* el = nsGenericHTMLElement::FromNode(content);
     if (el) {
       // Note: nsINode::HasName means the name is exposed on the document,
       // which is false for options, so we don't check it here.
@@ -160,7 +184,7 @@ void HTMLAllCollection::GetSupportedNames(nsTArray<nsString>& aNames) {
 
 JSObject* HTMLAllCollection::WrapObject(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return HTMLAllCollectionBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLAllCollection_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

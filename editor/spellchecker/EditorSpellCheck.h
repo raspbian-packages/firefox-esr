@@ -6,7 +6,8 @@
 #ifndef mozilla_EditorSpellCheck_h
 #define mozilla_EditorSpellCheck_h
 
-#include "nsCOMPtr.h"  // for nsCOMPtr
+#include "mozilla/mozSpellChecker.h"  // for mozilla::CheckWordPromise
+#include "nsCOMPtr.h"                 // for nsCOMPtr
 #include "nsCycleCollectionParticipant.h"
 #include "nsIEditorSpellCheck.h"  // for NS_DECL_NSIEDITORSPELLCHECK, etc
 #include "nsISupportsImpl.h"
@@ -16,19 +17,11 @@
 
 class mozSpellChecker;
 class nsIEditor;
-class nsISpellChecker;
-class nsITextServicesFilter;
-
-#define NS_EDITORSPELLCHECK_CID                      \
-  { /* {75656ad9-bd13-4c5d-939a-ec6351eea0cc} */     \
-    0x75656ad9, 0xbd13, 0x4c5d, {                    \
-      0x93, 0x9a, 0xec, 0x63, 0x51, 0xee, 0xa0, 0xcc \
-    }                                                \
-  }
 
 namespace mozilla {
 
 class DictionaryFetcher;
+class EditorBase;
 
 enum dictCompare {
   DICT_NORMAL_COMPARE,
@@ -50,12 +43,24 @@ class EditorSpellCheck final : public nsIEditorSpellCheck {
 
   mozSpellChecker* GetSpellChecker();
 
+  /**
+   * Like CheckCurrentWord, checks the word you give it, returning true via
+   * promise if it's misspelled.
+   * This is faster than CheckCurrentWord because it does not compute
+   * any suggestions.
+   *
+   * Watch out: this does not clear any suggestions left over from previous
+   * calls to CheckCurrentWord, so there may be suggestions, but they will be
+   * invalid.
+   */
+  RefPtr<mozilla::CheckWordPromise> CheckCurrentWordsNoSuggest(
+      const nsTArray<nsString>& aSuggestedWords);
+
  protected:
   virtual ~EditorSpellCheck();
 
   RefPtr<mozSpellChecker> mSpellChecker;
-  nsCOMPtr<nsITextServicesFilter> mTxtSrvFilter;
-  nsCOMPtr<nsIEditor> mEditor;
+  RefPtr<EditorBase> mEditor;
 
   nsTArray<nsString> mSuggestedWordList;
 
@@ -65,6 +70,7 @@ class EditorSpellCheck final : public nsIEditorSpellCheck {
 
   nsString mPreferredLang;
 
+  uint32_t mTxtSrvFilterType;
   int32_t mSuggestedWordIndex;
   int32_t mDictionaryIndex;
   uint32_t mDictionaryFetcherGroup;

@@ -4,13 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozilla/dom/Event.h"  // for nsIDOMEvent::InternalDOMEvent()
-#include "mozilla/dom/ScreenBinding.h"
 #include "nsContentUtils.h"
 #include "nsScreen.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDocShell.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsPresContext.h"
 #include "nsCOMPtr.h"
 #include "nsIDocShellTreeItem.h"
@@ -21,8 +19,8 @@
 using namespace mozilla;
 using namespace mozilla::dom;
 
-/* static */ already_AddRefed<nsScreen> nsScreen::Create(
-    nsPIDOMWindowInner* aWindow) {
+/* static */
+already_AddRefed<nsScreen> nsScreen::Create(nsPIDOMWindowInner* aWindow) {
   MOZ_ASSERT(aWindow);
 
   if (!aWindow->GetDocShell()) {
@@ -44,7 +42,6 @@ nsScreen::~nsScreen() {}
 
 // QueryInterface implementation for nsScreen
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(nsScreen)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMScreen)
 NS_INTERFACE_MAP_END_INHERITING(DOMEventTargetHelper)
 
 NS_IMPL_ADDREF_INHERITED(nsScreen, DOMEventTargetHelper)
@@ -70,21 +67,6 @@ int32_t nsScreen::GetPixelDepth(ErrorResult& aRv) {
   context->GetDepth(depth);
   return depth;
 }
-
-#define FORWARD_LONG_GETTER(_name)      \
-  NS_IMETHODIMP                         \
-  nsScreen::Get##_name(int32_t* aOut) { \
-    ErrorResult rv;                     \
-    *aOut = Get##_name(rv);             \
-    return rv.StealNSResult();          \
-  }
-
-FORWARD_LONG_GETTER(AvailWidth)
-FORWARD_LONG_GETTER(AvailHeight)
-
-FORWARD_LONG_GETTER(Top)
-FORWARD_LONG_GETTER(AvailTop)
-FORWARD_LONG_GETTER(AvailLeft)
 
 nsPIDOMWindowOuter* nsScreen::GetOuter() const {
   if (nsPIDOMWindowInner* inner = GetOwner()) {
@@ -181,8 +163,8 @@ void nsScreen::GetMozOrientation(nsString& aOrientation,
   }
 }
 
-static void UpdateDocShellOrientationLock(
-    nsPIDOMWindowInner* aWindow, ScreenOrientationInternal aOrientation) {
+static void UpdateDocShellOrientationLock(nsPIDOMWindowInner* aWindow,
+                                          hal::ScreenOrientation aOrientation) {
   if (!aWindow) {
     return;
   }
@@ -218,27 +200,27 @@ bool nsScreen::MozLockOrientation(const Sequence<nsString>& aOrientations,
   if (ShouldResistFingerprinting()) {
     return false;
   }
-  ScreenOrientationInternal orientation = eScreenOrientation_None;
+  hal::ScreenOrientation orientation = hal::eScreenOrientation_None;
 
   for (uint32_t i = 0; i < aOrientations.Length(); ++i) {
     const nsString& item = aOrientations[i];
 
     if (item.EqualsLiteral("portrait")) {
-      orientation |= eScreenOrientation_PortraitPrimary |
-                     eScreenOrientation_PortraitSecondary;
+      orientation |= hal::eScreenOrientation_PortraitPrimary |
+                     hal::eScreenOrientation_PortraitSecondary;
     } else if (item.EqualsLiteral("portrait-primary")) {
-      orientation |= eScreenOrientation_PortraitPrimary;
+      orientation |= hal::eScreenOrientation_PortraitPrimary;
     } else if (item.EqualsLiteral("portrait-secondary")) {
-      orientation |= eScreenOrientation_PortraitSecondary;
+      orientation |= hal::eScreenOrientation_PortraitSecondary;
     } else if (item.EqualsLiteral("landscape")) {
-      orientation |= eScreenOrientation_LandscapePrimary |
-                     eScreenOrientation_LandscapeSecondary;
+      orientation |= hal::eScreenOrientation_LandscapePrimary |
+                     hal::eScreenOrientation_LandscapeSecondary;
     } else if (item.EqualsLiteral("landscape-primary")) {
-      orientation |= eScreenOrientation_LandscapePrimary;
+      orientation |= hal::eScreenOrientation_LandscapePrimary;
     } else if (item.EqualsLiteral("landscape-secondary")) {
-      orientation |= eScreenOrientation_LandscapeSecondary;
+      orientation |= hal::eScreenOrientation_LandscapeSecondary;
     } else if (item.EqualsLiteral("default")) {
-      orientation |= eScreenOrientation_Default;
+      orientation |= hal::eScreenOrientation_Default;
     } else {
       // If we don't recognize the token, we should just return 'false'
       // without throwing.
@@ -266,7 +248,7 @@ void nsScreen::MozUnlockOrientation() {
   if (ShouldResistFingerprinting()) {
     return;
   }
-  UpdateDocShellOrientationLock(GetOwner(), eScreenOrientation_None);
+  UpdateDocShellOrientationLock(GetOwner(), hal::eScreenOrientation_None);
   mScreenOrientation->UnlockDeviceOrientation();
 }
 
@@ -283,7 +265,7 @@ bool nsScreen::IsDeviceSizePageSize() {
 /* virtual */
 JSObject* nsScreen::WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) {
-  return ScreenBinding::Wrap(aCx, this, aGivenProto);
+  return Screen_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsresult nsScreen::GetWindowInnerRect(nsRect& aRect) {

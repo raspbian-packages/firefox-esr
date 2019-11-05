@@ -17,7 +17,7 @@
 #include "nsIURI.h"
 #include "nsXBLSerialize.h"
 #include "nsXBLPrototypeBinding.h"
-#include "mozilla/AddonPathService.h"
+#include "mozilla/CycleCollectedJSContext.h"
 #include "mozilla/dom/BindingUtils.h"
 #include "mozilla/dom/ElementBinding.h"
 #include "mozilla/dom/ScriptSettings.h"
@@ -32,7 +32,7 @@ nsXBLProtoImplField::nsXBLProtoImplField(const char16_t* aName,
                                          const char16_t* aReadOnly)
     : mNext(nullptr), mFieldText(nullptr), mFieldTextLength(0), mLineNumber(0) {
   MOZ_COUNT_CTOR(nsXBLProtoImplField);
-  mName = NS_strdup(aName);  // XXXbz make more sense to use a stringbuffer?
+  mName = NS_xstrdup(aName);  // XXXbz make more sense to use a stringbuffer?
 
   mJSAttributes = JSPROP_ENUMERATE;
   if (aReadOnly) {
@@ -44,7 +44,11 @@ nsXBLProtoImplField::nsXBLProtoImplField(const char16_t* aName,
 }
 
 nsXBLProtoImplField::nsXBLProtoImplField(const bool aIsReadOnly)
-    : mNext(nullptr), mFieldText(nullptr), mFieldTextLength(0), mLineNumber(0) {
+    : mNext(nullptr),
+      mName(nullptr),
+      mFieldText(nullptr),
+      mFieldTextLength(0),
+      mLineNumber(0) {
   MOZ_COUNT_CTOR(nsXBLProtoImplField);
 
   mJSAttributes = JSPROP_ENUMERATE;
@@ -137,7 +141,10 @@ static bool InstallXBLField(JSContext* cx, JS::Handle<JSObject*> callee,
   // But there are some cases where we must accept |thisObj| but not install a
   // property on it, or otherwise touch it.  Hence this split of |this|-vetting
   // duties.
-  nsCOMPtr<nsISupports> native = xpc::UnwrapReflectorToISupports(thisObj);
+  //
+  // OK to use ReflectorToISupportsStatic, because we only care about nodes
+  // here.
+  nsCOMPtr<nsISupports> native = xpc::ReflectorToISupportsStatic(thisObj);
   if (!native) {
     // Looks like whatever |thisObj| is it's not our nsIContent.  It might well
     // be the proto our binding installed, however, where the private is the
@@ -158,15 +165,15 @@ static bool InstallXBLField(JSContext* cx, JS::Handle<JSObject*> callee,
 
   // Because of the possibility (due to XBL binding inheritance, because each
   // XBL binding lives in its own global object) that |this| might be in a
-  // different compartment from the callee (not to mention that this method can
+  // different realm from the callee (not to mention that this method can
   // be called with an arbitrary |this| regardless of how insane XBL is), and
-  // because in this method we've entered |this|'s compartment (see in
-  // Field[GS]etter where we attempt a cross-compartment call), we must enter
-  // the callee's compartment to access its reserved slots.
+  // because in this method we've entered |this|'s realm (see in
+  // Field[GS]etter where we attempt a cross-realm call), we must enter
+  // the callee's realm to access its reserved slots.
   nsXBLPrototypeBinding* protoBinding;
   nsAutoJSString fieldName;
   {
-    JSAutoCompartment ac(cx, callee);
+    JSAutoRealm ar(cx, callee);
 
     JS::Rooted<JSObject*> xblProto(cx);
     xblProto = &js::GetFunctionNativeReserved(callee, XBLPROTO_SLOT).toObject();
@@ -179,10 +186,10 @@ static bool InstallXBLField(JSContext* cx, JS::Handle<JSObject*> callee,
 
     MOZ_ALWAYS_TRUE(JS_ValueToId(cx, name, idp));
 
-    // If a separate XBL scope is being used, the callee is not same-compartment
+    // If a separate XBL scope is being used, the callee is not same-realm
     // with the xbl prototype, and the object is a cross-compartment wrapper.
     xblProto = js::UncheckedUnwrap(xblProto);
-    JSAutoCompartment ac2(cx, xblProto);
+    JSAutoRealm ar2(cx, xblProto);
     JS::Value slotVal = ::JS_GetReservedSlot(xblProto, 0);
     protoBinding = static_cast<nsXBLPrototypeBinding*>(slotVal.toPrivate());
     MOZ_ASSERT(protoBinding);
@@ -191,7 +198,7 @@ static bool InstallXBLField(JSContext* cx, JS::Handle<JSObject*> callee,
   nsXBLProtoImplField* field = protoBinding->FindField(fieldName);
   MOZ_ASSERT(field);
 
-  nsresult rv = field->InstallField(thisObj, protoBinding->DocURI(), installed);
+  nsresult rv = field->InstallField(thisObj, *protoBinding, installed);
   if (NS_SUCCEEDED(rv)) {
     return true;
   }
@@ -208,7 +215,7 @@ bool FieldGetterImpl(JSContext* cx, const JS::CallArgs& args) {
 
   JS::Rooted<JSObject*> thisObj(cx, &thisv.toObject());
 
-  // We should be in the compartment of |this|. If we got here via nativeCall,
+  // We should be in the realm of |this|. If we got here via nativeCall,
   // |this| is not same-compartment with |callee|, and it's possible via
   // asymmetric security semantics that |args.calleev()| is actually a security
   // wrapper. In this case, we know we want to do an unsafe unwrap, and
@@ -241,7 +248,7 @@ bool FieldSetterImpl(JSContext* cx, const JS::CallArgs& args) {
 
   JS::Rooted<JSObject*> thisObj(cx, &thisv.toObject());
 
-  // We should be in the compartment of |this|. If we got here via nativeCall,
+  // We should be in the realm of |this|. If we got here via nativeCall,
   // |this| is not same-compartment with |callee|, and it's possible via
   // asymmetric security semantics that |args.calleev()| is actually a security
   // wrapper. In this case, we know we want to do an unsafe unwrap, and
@@ -273,7 +280,7 @@ nsresult nsXBLProtoImplField::InstallAccessors(
     JSContext* aCx, JS::Handle<JSObject*> aTargetClassObject) {
   MOZ_ASSERT(js::IsObjectInContextCompartment(aTargetClassObject, aCx));
   JS::Rooted<JSObject*> globalObject(
-      aCx, JS_GetGlobalForObject(aCx, aTargetClassObject));
+      aCx, JS::GetNonCCWObjectGlobal(aTargetClassObject));
   JS::Rooted<JSObject*> scopeObject(
       aCx, xpc::GetXBLScopeOrGlobal(aCx, globalObject));
   NS_ENSURE_TRUE(scopeObject, NS_ERROR_OUT_OF_MEMORY);
@@ -304,7 +311,7 @@ nsresult nsXBLProtoImplField::InstallAccessors(
   // see through any SOWs on their targets.
 
   // First, enter the XBL scope, and compile the functions there.
-  JSAutoCompartment ac(aCx, scopeObject);
+  JSAutoRealm ar(aCx, scopeObject);
   JS::Rooted<JS::Value> wrappedClassObj(aCx,
                                         JS::ObjectValue(*aTargetClassObject));
   if (!JS_WrapValue(aCx, &wrappedClassObj)) return NS_ERROR_OUT_OF_MEMORY;
@@ -331,26 +338,24 @@ nsresult nsXBLProtoImplField::InstallAccessors(
 
   // Now, re-enter the class object's scope, wrap the getters/setters, and
   // define them there.
-  JSAutoCompartment ac2(aCx, aTargetClassObject);
+  JSAutoRealm ar2(aCx, aTargetClassObject);
   if (!JS_WrapObject(aCx, &get) || !JS_WrapObject(aCx, &set)) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
 
-  if (!::JS_DefinePropertyById(
-          aCx, aTargetClassObject, id, JS_DATA_TO_FUNC_PTR(JSNative, get.get()),
-          JS_DATA_TO_FUNC_PTR(JSNative, set.get()), AccessorAttributes())) {
+  if (!::JS_DefinePropertyById(aCx, aTargetClassObject, id, get, set,
+                               AccessorAttributes())) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
 
   return NS_OK;
 }
 
-nsresult nsXBLProtoImplField::InstallField(JS::Handle<JSObject*> aBoundNode,
-                                           nsIURI* aBindingDocURI,
-                                           bool* aDidInstall) const {
-  NS_PRECONDITION(aBoundNode,
-                  "uh-oh, bound node should NOT be null or bad things will "
-                  "happen");
+nsresult nsXBLProtoImplField::InstallField(
+    JS::Handle<JSObject*> aBoundNode,
+    const nsXBLPrototypeBinding& aProtoBinding, bool* aDidInstall) const {
+  MOZ_ASSERT(aBoundNode,
+             "uh-oh, bound node should NOT be null or bad things will happen");
 
   *aDidInstall = false;
 
@@ -362,7 +367,7 @@ nsresult nsXBLProtoImplField::InstallField(JS::Handle<JSObject*> aBoundNode,
   nsAutoMicroTask mt;
 
   nsAutoCString uriSpec;
-  nsresult rv = aBindingDocURI->GetSpec(uriSpec);
+  nsresult rv = aProtoBinding.DocURI()->GetSpec(uriSpec);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -374,8 +379,8 @@ nsresult nsXBLProtoImplField::InstallField(JS::Handle<JSObject*> aBoundNode,
 
   // We are going to run script via EvaluateString, so we need a script entry
   // point, but as this is XBL related it does not appear in the HTML spec.
-  // We need an actual JSContext to do GetScopeForXBLExecution, and it needs to
-  // be in the compartment of globalObject.  But we want our XBL execution scope
+  // We need an actual JSContext to do GetXBLScopeOrGlobal, and it needs to
+  // be in the realm of globalObject.  But we want our XBL execution scope
   // to be our entry global.
   AutoJSAPI jsapi;
   if (!jsapi.Init(globalObject)) {
@@ -383,8 +388,6 @@ nsresult nsXBLProtoImplField::InstallField(JS::Handle<JSObject*> aBoundNode,
   }
   MOZ_ASSERT(!::JS_IsExceptionPending(jsapi.cx()),
              "Shouldn't get here when an exception is pending!");
-
-  JSAddonId* addonId = MapURIToAddonID(aBindingDocURI);
 
   // Note: the UNWRAP_OBJECT may mutate boundNode; don't use it after that call.
   JS::Rooted<JSObject*> boundNode(jsapi.cx(), aBoundNode);
@@ -397,8 +400,7 @@ nsresult nsXBLProtoImplField::InstallField(JS::Handle<JSObject*> aBoundNode,
   // First, enter the xbl scope, build the element's scope chain, and use
   // that as the scope chain for the evaluation.
   JS::Rooted<JSObject*> scopeObject(
-      jsapi.cx(),
-      xpc::GetScopeForXBLExecution(jsapi.cx(), aBoundNode, addonId));
+      jsapi.cx(), xpc::GetXBLScopeOrGlobal(jsapi.cx(), aBoundNode));
   NS_ENSURE_TRUE(scopeObject, NS_ERROR_OUT_OF_MEMORY);
 
   AutoEntryScript aes(scopeObject, "XBL <field> initialization", true);
@@ -407,17 +409,17 @@ nsresult nsXBLProtoImplField::InstallField(JS::Handle<JSObject*> aBoundNode,
   JS::Rooted<JS::Value> result(cx);
   JS::CompileOptions options(cx);
   options.setFileAndLine(uriSpec.get(), mLineNumber);
-  JS::AutoObjectVector scopeChain(cx);
-  if (!nsJSUtils::GetScopeChainForElement(cx, boundElement, scopeChain)) {
+  JS::RootedVector<JSObject*> scopeChain(cx);
+  if (!nsJSUtils::GetScopeChainForXBL(cx, boundElement, aProtoBinding,
+                                      &scopeChain)) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
   rv = NS_OK;
   {
     nsJSUtils::ExecutionContext exec(cx, scopeObject);
     exec.SetScopeChain(scopeChain);
-    exec.CompileAndExec(options,
-                        nsDependentString(mFieldText, mFieldTextLength));
-    rv = exec.ExtractReturnValue(&result);
+    exec.Compile(options, nsDependentString(mFieldText, mFieldTextLength));
+    rv = exec.ExecScript(&result);
   }
 
   if (NS_FAILED(rv)) {
@@ -427,13 +429,13 @@ nsresult nsXBLProtoImplField::InstallField(JS::Handle<JSObject*> aBoundNode,
   if (rv == NS_SUCCESS_DOM_SCRIPT_EVALUATION_THREW) {
     // Report the exception now, before we try using the JSContext for
     // the JS_DefineUCProperty call.  Note that this reports in our current
-    // compartment, which is the XBL scope.
+    // realm, which is the XBL scope.
     aes.ReportException();
   }
 
-  // Now, enter the node's compartment, wrap the eval result, and define it on
+  // Now, enter the node's realm, wrap the eval result, and define it on
   // the bound node.
-  JSAutoCompartment ac2(cx, aBoundNode);
+  JSAutoRealm ar2(cx, aBoundNode);
   nsDependentString name(mName);
   if (!JS_WrapValue(cx, &result) ||
       !::JS_DefineUCProperty(cx, aBoundNode,

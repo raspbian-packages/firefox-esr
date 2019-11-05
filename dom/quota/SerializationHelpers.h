@@ -9,6 +9,7 @@
 
 #include "ipc/IPCMessageUtils.h"
 
+#include "mozilla/dom/quota/Client.h"
 #include "mozilla/dom/quota/PersistenceType.h"
 #include "mozilla/OriginAttributes.h"
 
@@ -22,11 +23,16 @@ struct ParamTraits<mozilla::dom::quota::PersistenceType>
           mozilla::dom::quota::PERSISTENCE_TYPE_INVALID> {};
 
 template <>
+struct ParamTraits<mozilla::dom::quota::Client::Type>
+    : public ContiguousEnumSerializer<mozilla::dom::quota::Client::Type,
+                                      mozilla::dom::quota::Client::IDB,
+                                      mozilla::dom::quota::Client::TYPE_MAX> {};
+
+template <>
 struct ParamTraits<mozilla::OriginAttributesPattern> {
   typedef mozilla::OriginAttributesPattern paramType;
 
   static void Write(Message* aMsg, const paramType& aParam) {
-    WriteParam(aMsg, aParam.mAppId);
     WriteParam(aMsg, aParam.mFirstPartyDomain);
     WriteParam(aMsg, aParam.mInIsolatedMozBrowser);
     WriteParam(aMsg, aParam.mPrivateBrowsingId);
@@ -35,8 +41,7 @@ struct ParamTraits<mozilla::OriginAttributesPattern> {
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
-    return ReadParam(aMsg, aIter, &aResult->mAppId) &&
-           ReadParam(aMsg, aIter, &aResult->mFirstPartyDomain) &&
+    return ReadParam(aMsg, aIter, &aResult->mFirstPartyDomain) &&
            ReadParam(aMsg, aIter, &aResult->mInIsolatedMozBrowser) &&
            ReadParam(aMsg, aIter, &aResult->mPrivateBrowsingId) &&
            ReadParam(aMsg, aIter, &aResult->mUserContextId);

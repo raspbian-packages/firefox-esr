@@ -41,8 +41,10 @@ class OffTheBooksMutex : public detail::MutexImpl, BlockingResourceBase {
    *          If success, a valid Mutex* which must be destroyed
    *          by Mutex::DestroyMutex()
    **/
-  explicit OffTheBooksMutex(const char* aName)
-      : detail::MutexImpl(),
+  explicit OffTheBooksMutex(
+      const char* aName,
+      recordreplay::Behavior aRecorded = recordreplay::Behavior::Preserve)
+      : detail::MutexImpl(aRecorded),
         BlockingResourceBase(aName, eMutex)
 #ifdef DEBUG
         ,
@@ -62,6 +64,11 @@ class OffTheBooksMutex : public detail::MutexImpl, BlockingResourceBase {
    * Lock this mutex.
    **/
   void Lock() { this->lock(); }
+
+  /**
+   * Try to lock this mutex, returning true if we were successful.
+   **/
+  bool TryLock() { return this->tryLock(); }
 
   /**
    * Unlock this mutex.
@@ -87,6 +94,7 @@ class OffTheBooksMutex : public detail::MutexImpl, BlockingResourceBase {
 
 #else
   void Lock();
+  bool TryLock();
   void Unlock();
 
   void AssertCurrentThreadOwns() const;
@@ -102,7 +110,7 @@ class OffTheBooksMutex : public detail::MutexImpl, BlockingResourceBase {
   OffTheBooksMutex(const OffTheBooksMutex&);
   OffTheBooksMutex& operator=(const OffTheBooksMutex&);
 
-  friend class CondVar;
+  friend class OffTheBooksCondVar;
 
 #ifdef DEBUG
   PRThread* mOwningThread;
@@ -116,7 +124,9 @@ class OffTheBooksMutex : public detail::MutexImpl, BlockingResourceBase {
  */
 class Mutex : public OffTheBooksMutex {
  public:
-  explicit Mutex(const char* aName) : OffTheBooksMutex(aName) {
+  explicit Mutex(const char* aName, recordreplay::Behavior aRecorded =
+                                        recordreplay::Behavior::Preserve)
+      : OffTheBooksMutex(aName, aRecorded) {
     MOZ_COUNT_CTOR(Mutex);
   }
 
@@ -149,14 +159,13 @@ class MOZ_RAII BaseAutoLock {
    * @param aLock A valid mozilla::Mutex* returned by
    *              mozilla::Mutex::NewMutex.
    **/
-  explicit BaseAutoLock(T& aLock MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
-      : mLock(&aLock) {
+  explicit BaseAutoLock(T aLock MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
+      : mLock(aLock) {
     MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-    NS_ASSERTION(mLock, "null mutex");
-    mLock->Lock();
+    mLock.Lock();
   }
 
-  ~BaseAutoLock(void) { mLock->Unlock(); }
+  ~BaseAutoLock(void) { mLock.Unlock(); }
 
   // Assert that aLock is the mutex passed to the constructor and that the
   // current thread owns the mutex.  In coding patterns such as:
@@ -184,8 +193,8 @@ class MOZ_RAII BaseAutoLock {
   // the mutex you expected to be held, since this method provides stronger
   // guarantees.
   void AssertOwns(const T& aLock) const {
-    MOZ_ASSERT(&aLock == mLock);
-    mLock->AssertCurrentThreadOwns();
+    MOZ_ASSERT(&aLock == &mLock);
+    mLock.AssertCurrentThreadOwns();
   }
 
  private:
@@ -196,12 +205,12 @@ class MOZ_RAII BaseAutoLock {
 
   friend class BaseAutoUnlock<T>;
 
-  T* mLock;
+  T mLock;
   MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
 };
 
-typedef BaseAutoLock<Mutex> MutexAutoLock;
-typedef BaseAutoLock<OffTheBooksMutex> OffTheBooksMutexAutoLock;
+typedef BaseAutoLock<Mutex&> MutexAutoLock;
+typedef BaseAutoLock<OffTheBooksMutex&> OffTheBooksMutexAutoLock;
 
 /**
  * MutexAutoUnlock
@@ -213,11 +222,10 @@ typedef BaseAutoLock<OffTheBooksMutex> OffTheBooksMutexAutoLock;
 template <typename T>
 class MOZ_RAII BaseAutoUnlock {
  public:
-  explicit BaseAutoUnlock(T& aLock MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
-      : mLock(&aLock) {
+  explicit BaseAutoUnlock(T aLock MOZ_GUARD_OBJECT_NOTIFIER_PARAM)
+      : mLock(aLock) {
     MOZ_GUARD_OBJECT_NOTIFIER_INIT;
-    NS_ASSERTION(mLock, "null lock");
-    mLock->Unlock();
+    mLock.Unlock();
   }
 
   explicit BaseAutoUnlock(
@@ -228,7 +236,7 @@ class MOZ_RAII BaseAutoUnlock {
     mLock->Unlock();
   }
 
-  ~BaseAutoUnlock() { mLock->Lock(); }
+  ~BaseAutoUnlock() { mLock.Lock(); }
 
  private:
   BaseAutoUnlock();
@@ -236,12 +244,12 @@ class MOZ_RAII BaseAutoUnlock {
   BaseAutoUnlock& operator=(BaseAutoUnlock&);
   static void* operator new(size_t) CPP_THROW_NEW;
 
-  T* mLock;
+  T mLock;
   MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
 };
 
-typedef BaseAutoUnlock<Mutex> MutexAutoUnlock;
-typedef BaseAutoUnlock<OffTheBooksMutex> OffTheBooksMutexAutoUnlock;
+typedef BaseAutoUnlock<Mutex&> MutexAutoUnlock;
+typedef BaseAutoUnlock<OffTheBooksMutex&> OffTheBooksMutexAutoUnlock;
 
 }  // namespace mozilla
 

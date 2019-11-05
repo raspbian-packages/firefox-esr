@@ -34,13 +34,11 @@ class nsAtomicContainerFrame : public nsContainerFrame {
           PeekOffsetCharacterOptions()) override {
     return nsFrame::PeekOffsetCharacter(aForward, aOffset, aOptions);
   }
-  nsSplittableType GetSplittableType() const override {
-    return nsFrame::GetSplittableType();
-  }
 
  protected:
-  nsAtomicContainerFrame(nsStyleContext* aContext, ClassID aID)
-      : nsContainerFrame(aContext, aID) {}
+  nsAtomicContainerFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                         ClassID aID)
+      : nsContainerFrame(aStyle, aPresContext, aID) {}
 };
 
 #endif  // nsAtomicContainerFrame_h___

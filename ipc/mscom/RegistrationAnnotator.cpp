@@ -354,14 +354,12 @@ void AnnotateInterfaceRegistration(REFIID aIid) {
 
   json.End();
 
-  nsAutoCString annotationKey;
-  annotationKey.AppendLiteral("InterfaceRegistrationInfo");
+  CrashReporter::Annotation annotationKey;
   if (XRE_IsParentProcess()) {
-    annotationKey.AppendLiteral("Parent");
+    annotationKey = CrashReporter::Annotation::InterfaceRegistrationInfoParent;
   } else {
-    annotationKey.AppendLiteral("Child");
+    annotationKey = CrashReporter::Annotation::InterfaceRegistrationInfoChild;
   }
-
   CrashReporter::AnnotateCrashReport(
       annotationKey, static_cast<CStringWriter*>(json.WriteFunc())->Get());
 }
@@ -390,12 +388,11 @@ void AnnotateClassRegistration(REFCLSID aClsid) {
 
   json.End();
 
-  nsAutoCString annotationKey;
-  annotationKey.AppendLiteral("ClassRegistrationInfo");
+  CrashReporter::Annotation annotationKey;
   if (XRE_IsParentProcess()) {
-    annotationKey.AppendLiteral("Parent");
+    annotationKey = CrashReporter::Annotation::ClassRegistrationInfoParent;
   } else {
-    annotationKey.AppendLiteral("Child");
+    annotationKey = CrashReporter::Annotation::ClassRegistrationInfoChild;
   }
 
   CrashReporter::AnnotateCrashReport(

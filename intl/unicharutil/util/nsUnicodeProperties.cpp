@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set ts=4 sw=4 sts=4 et cindent: */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=4 sw=2 sts=2 et cindent: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -25,7 +25,10 @@ const nsCharProps2& GetCharProps2(uint32_t aCh) {
                            [aCh & ((1 << kCharProp2CharBits) - 1)];
   }
 
-  NS_NOTREACHED("Getting CharProps for codepoint outside Unicode range");
+  MOZ_ASSERT_UNREACHABLE(
+      "Getting CharProps for codepoint outside Unicode "
+      "range");
+
   // Default values for unassigned
   using namespace mozilla::unicode;
   static const nsCharProps2 undefined = {
@@ -151,10 +154,13 @@ DEFINE_BMP_1PLANE_MAPPING_GET_FUNC(FullWidth)
 DEFINE_BMP_1PLANE_MAPPING_GET_FUNC(FullWidthInverse)
 
 bool IsClusterExtender(uint32_t aCh, uint8_t aCategory) {
-  return ((aCategory >= HB_UNICODE_GENERAL_CATEGORY_SPACING_MARK &&
-           aCategory <= HB_UNICODE_GENERAL_CATEGORY_NON_SPACING_MARK) ||
-          (aCh >= 0x200c && aCh <= 0x200d) ||  // ZWJ, ZWNJ
-          (aCh >= 0xff9e && aCh <= 0xff9f));   // katakana sound marks
+  return (
+      (aCategory >= HB_UNICODE_GENERAL_CATEGORY_SPACING_MARK &&
+       aCategory <= HB_UNICODE_GENERAL_CATEGORY_NON_SPACING_MARK) ||
+      (aCh >= 0x200c && aCh <= 0x200d) ||    // ZWJ, ZWNJ
+      (aCh >= 0xff9e && aCh <= 0xff9f) ||    // katakana sound marks
+      (aCh >= 0x1F3FB && aCh <= 0x1F3FF) ||  // fitzpatrick skin tone modifiers
+      (aCh >= 0xe0020 && aCh <= 0xe007f));   // emoji (flag) tag characters
 }
 
 enum HSType {
@@ -219,8 +225,24 @@ void ClusterIterator::Next() {
     }
   }
 
+  const uint32_t kVS16 = 0xfe0f;
+  const uint32_t kZWJ = 0x200d;
+  // UTF-16 surrogate values for Fitzpatrick type modifiers
+  const uint32_t kFitzpatrickHigh = 0xD83C;
+  const uint32_t kFitzpatrickLowFirst = 0xDFFB;
+  const uint32_t kFitzpatrickLowLast = 0xDFFF;
+
+  bool baseIsEmoji = (GetEmojiPresentation(ch) == EmojiDefault) ||
+                     (GetEmojiPresentation(ch) == TextDefault &&
+                      ((mPos < mLimit && *mPos == kVS16) ||
+                       (mPos + 1 < mLimit && *mPos == kFitzpatrickHigh &&
+                        *(mPos + 1) >= kFitzpatrickLowFirst &&
+                        *(mPos + 1) <= kFitzpatrickLowLast)));
+  bool prevWasZwj = false;
+
   while (mPos < mLimit) {
     ch = *mPos;
+    size_t chLen = 1;
 
     // Check for surrogate pairs; note that isolated surrogates will just
     // be treated as generic (non-cluster-extending) characters here,
@@ -228,16 +250,21 @@ void ClusterIterator::Next() {
     if (NS_IS_HIGH_SURROGATE(ch) && mPos < mLimit - 1 &&
         NS_IS_LOW_SURROGATE(*(mPos + 1))) {
       ch = SURROGATE_TO_UCS4(ch, *(mPos + 1));
+      chLen = 2;
     }
 
-    if (!IsClusterExtender(ch)) {
+    bool extendCluster =
+        IsClusterExtender(ch) ||
+        (baseIsEmoji && prevWasZwj &&
+         ((GetEmojiPresentation(ch) == EmojiDefault) ||
+          (GetEmojiPresentation(ch) == TextDefault && mPos + chLen < mLimit &&
+           *(mPos + chLen) == kVS16)));
+    if (!extendCluster) {
       break;
     }
 
-    mPos++;
-    if (!IS_IN_BMP(ch)) {
-      mPos++;
-    }
+    prevWasZwj = (ch == kZWJ);
+    mPos += chLen;
   }
 
   NS_ASSERTION(mText < mPos && mPos <= mLimit,

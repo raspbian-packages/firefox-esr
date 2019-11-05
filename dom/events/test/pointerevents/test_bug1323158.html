@@ -6,8 +6,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1323158
 <head>
   <meta charset="utf-8">
   <title>This is a test to check if target and relatedTarget of mouse events are the same as pointer events</title>
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/EventUtils.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/EventUtils.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
 <body>
@@ -67,7 +67,7 @@ function runTests() {
   done.addEventListener("mouseup", () => {
     SimpleTest.finish();
   });
-  let source = SpecialPowers.Ci.nsIDOMMouseEvent.MOZ_SOURCE_MOUSE;
+  let source = MouseEvent.MOZ_SOURCE_MOUSE;
   synthesizeMouse(target0, 5, 5, { type: "mousemove", inputSource: source },
                   iframe.contentWindow);
   synthesizeMouse(target0, 5, 5, { type: "mousedown", inputSource: source },

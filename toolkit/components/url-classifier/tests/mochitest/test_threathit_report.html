@@ -4,7 +4,7 @@
 <html>
 <head>
   <title>Test threathit repoty </title>
-  <script type="text/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <script type="text/javascript" src="classifierHelper.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
@@ -17,17 +17,11 @@
 
 <script src="head.js"></script>
 <script class="testbody" type="text/javascript">
-/* import-globals-from classifierHelper.js */
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://testing-common/BrowserTestUtils.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {BrowserTestUtils} = ChromeUtils.import("resource://testing-common/BrowserTestUtils.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-var mainWindow = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                    .getInterface(Ci.nsIWebNavigation)
-                    .QueryInterface(Ci.nsIDocShellTreeItem)
-                    .rootTreeItem
-                    .QueryInterface(Ci.nsIInterfaceRequestor)
-                    .getInterface(Ci.nsIDOMWindow);
+var mainWindow = window.docShell.rootTreeItem.domWindow;
 
 var listmanager = Cc["@mozilla.org/url-classifier/listmanager;1"].
                     getService(Ci.nsIUrlListManager);
@@ -198,20 +192,14 @@ function testOnWindow(aTestData) {
 
       let expected;
       let browser = win.gBrowser.selectedBrowser;
-      let wp = win.gBrowser.contentDocument.docShell.QueryInterface(Ci.nsIWebProgress);
+      let wp = win.gBrowser.contentWindow.docShell.QueryInterface(Ci.nsIWebProgress);
       let progressListener = {
-        onSecurityChange(aWebProgress, aRequest, aState) {
-          let utils = Cc["@mozilla.org/url-classifier/utils;1"].
-            getService(Ci.nsIUrlClassifierUtils);
-          expected = aTestData.reportUrl + "&$req=" +
-            utils.makeThreatHitReport(aRequest,
-                                      aTestData.list,
-                                      btoa(hash(aTestData.url)));
-
+        onContentBlockingEvent(aWebProgress, aRequest, aEvent) {
+          expected = aTestData.reportUrl;
         },
-        QueryInterface: XPCOMUtils.generateQI(["nsISupportsWeakReference"])
+        QueryInterface: ChromeUtils.generateQI(["nsISupportsWeakReference"]),
       };
-      wp.addProgressListener(progressListener, wp.NOTIFY_SECURITY);
+      wp.addProgressListener(progressListener, wp.NOTIFY_CONTENT_BLOCKING);
 
       await BrowserTestUtils.loadURI(browser, aTestData.url);
       await BrowserTestUtils.waitForContentEvent(browser, "DOMContentLoaded");
@@ -222,7 +210,10 @@ function testOnWindow(aTestData) {
   });
 }
 SpecialPowers.pushPrefEnv(
-  {"set": [["browser.safebrowsing.phishing.enabled", true]]},
+  {"set": [
+    ["browser.safebrowsing.phishing.enabled", true],
+    ["dom.testing.sync-content-blocking-notifications", true],
+  ]},
   test);
 
 function test() {

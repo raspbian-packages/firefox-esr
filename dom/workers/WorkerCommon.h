@@ -24,11 +24,15 @@ WorkerPrivate* GetWorkerPrivateFromContext(JSContext* aCx);
 
 WorkerPrivate* GetCurrentThreadWorkerPrivate();
 
+bool IsCurrentThreadRunningWorker();
+
 bool IsCurrentThreadRunningChromeWorker();
 
 JSContext* GetCurrentWorkerThreadJSContext();
 
 JSObject* GetCurrentThreadWorkerGlobal();
+
+JSObject* GetCurrentThreadWorkerDebuggerGlobal();
 
 void CancelWorkersForWindow(nsPIDOMWindowInner* aWindow);
 
@@ -39,6 +43,9 @@ void ThawWorkersForWindow(nsPIDOMWindowInner* aWindow);
 void SuspendWorkersForWindow(nsPIDOMWindowInner* aWindow);
 
 void ResumeWorkersForWindow(nsPIDOMWindowInner* aWindow);
+
+void PropagateFirstPartyStorageAccessGrantedToWorkers(
+    nsPIDOMWindowInner* aWindow);
 
 // All of these are implemented in WorkerScope.cpp
 

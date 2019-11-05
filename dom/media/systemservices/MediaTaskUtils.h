@@ -24,7 +24,7 @@ template <typename OnRunType>
 class LambdaTask : public Runnable {
  public:
   explicit LambdaTask(OnRunType&& aOnRun)
-      : Runnable("media::LambdaTask"), mOnRun(Move(aOnRun)) {}
+      : Runnable("media::LambdaTask"), mOnRun(std::move(aOnRun)) {}
 
  private:
   NS_IMETHOD
@@ -38,7 +38,7 @@ class LambdaTask : public Runnable {
 template <typename OnRunType>
 already_AddRefed<LambdaTask<OnRunType>> NewTaskFrom(OnRunType&& aOnRun) {
   typedef LambdaTask<OnRunType> LambdaType;
-  RefPtr<LambdaType> lambda = new LambdaType(Forward<OnRunType>(aOnRun));
+  RefPtr<LambdaType> lambda = new LambdaType(std::forward<OnRunType>(aOnRun));
   return lambda.forget();
 }
 

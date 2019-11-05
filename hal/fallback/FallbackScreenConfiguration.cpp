@@ -16,7 +16,7 @@ void GetCurrentScreenConfiguration(
   fallback::GetCurrentScreenConfiguration(aScreenConfiguration);
 }
 
-bool LockScreenOrientation(const dom::ScreenOrientationInternal& aOrientation) {
+bool LockScreenOrientation(const ScreenOrientation& aOrientation) {
   return false;
 }
 

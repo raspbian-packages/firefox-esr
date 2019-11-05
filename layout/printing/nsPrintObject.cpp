@@ -5,16 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsPrintObject.h"
+
 #include "nsIContentViewer.h"
-#include "nsIDOMDocument.h"
 #include "nsContentUtils.h"  // for nsAutoScriptBlocker
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsPIDOMWindow.h"
+#include "nsPresContext.h"
 #include "nsGkAtoms.h"
 #include "nsComponentManagerUtils.h"
 #include "nsIDocShellTreeItem.h"
 #include "nsIBaseWindow.h"
-#include "nsIDocument.h"
+#include "nsDocShell.h"
+
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/BrowsingContext.h"
+#include "mozilla/dom/Document.h"
+#include "mozilla/dom/Element.h"
+
+using mozilla::PresShell;
+using mozilla::dom::BrowsingContext;
+using mozilla::dom::Document;
+using mozilla::dom::Element;
 
 //---------------------------------------------------
 //-- nsPrintObject Class Impl
@@ -27,6 +38,7 @@ nsPrintObject::nsPrintObject()
       mDontPrint(true),
       mPrintAsIs(false),
       mInvisible(false),
+      mPrintPreview(false),
       mDidCreateDocShell(false),
       mShrinkRatio(1.0),
       mZoomRatio(1.0) {
@@ -48,44 +60,53 @@ nsPrintObject::~nsPrintObject() {
 }
 
 //------------------------------------------------------------------
-nsresult nsPrintObject::Init(nsIDocShell* aDocShell, nsIDOMDocument* aDoc,
+nsresult nsPrintObject::Init(nsIDocShell* aDocShell, Document* aDoc,
                              bool aPrintPreview) {
+  NS_ENSURE_STATE(aDoc);
+
   mPrintPreview = aPrintPreview;
 
   if (mPrintPreview || mParent) {
     mDocShell = aDocShell;
   } else {
     mTreeOwner = do_GetInterface(aDocShell);
+
+    // Create a new BrowsingContext to create our DocShell in.
+    RefPtr<BrowsingContext> bc = BrowsingContext::Create(
+        /* aParent */ nullptr,
+        /* aOpener */ nullptr, EmptyString(),
+        aDocShell->ItemType() == nsIDocShellTreeItem::typeContent
+            ? BrowsingContext::Type::Content
+            : BrowsingContext::Type::Chrome);
+
     // Create a container docshell for printing.
-    mDocShell = do_CreateInstance("@mozilla.org/docshell;1");
+    mDocShell = nsDocShell::Create(bc);
     NS_ENSURE_TRUE(mDocShell, NS_ERROR_OUT_OF_MEMORY);
+
     mDidCreateDocShell = true;
-    mDocShell->SetItemType(aDocShell->ItemType());
+    MOZ_ASSERT(mDocShell->ItemType() == aDocShell->ItemType());
     mDocShell->SetTreeOwner(mTreeOwner);
   }
   NS_ENSURE_TRUE(mDocShell, NS_ERROR_FAILURE);
 
   // Keep the document related to this docshell alive
-  nsCOMPtr<nsIDOMDocument> dummy = do_GetInterface(mDocShell);
+  nsCOMPtr<Document> dummy = do_GetInterface(mDocShell);
   mozilla::Unused << dummy;
 
   nsCOMPtr<nsIContentViewer> viewer;
   mDocShell->GetContentViewer(getter_AddRefs(viewer));
   NS_ENSURE_STATE(viewer);
 
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(aDoc);
-  NS_ENSURE_STATE(doc);
-
   if (mParent) {
-    nsCOMPtr<nsPIDOMWindowOuter> window = doc->GetWindow();
+    nsCOMPtr<nsPIDOMWindowOuter> window = aDoc->GetWindow();
     if (window) {
       mContent = window->GetFrameElementInternal();
     }
-    mDocument = doc;
+    mDocument = aDoc;
     return NS_OK;
   }
 
-  mDocument = doc->CreateStaticClone(mDocShell);
+  mDocument = aDoc->CreateStaticClone(mDocShell);
   NS_ENSURE_STATE(mDocument);
 
   viewer->SetDocument(mDocument);
@@ -98,9 +119,9 @@ void nsPrintObject::DestroyPresentation() {
   if (mPresShell) {
     mPresShell->EndObservingDocument();
     nsAutoScriptBlocker scriptBlocker;
-    nsCOMPtr<nsIPresShell> shell = mPresShell;
+    RefPtr<PresShell> presShell = mPresShell;
     mPresShell = nullptr;
-    shell->Destroy();
+    presShell->Destroy();
   }
   mPresContext = nullptr;
   mViewManager = nullptr;

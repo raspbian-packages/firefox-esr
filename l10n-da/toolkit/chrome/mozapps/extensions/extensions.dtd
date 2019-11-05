@@ -8,6 +8,8 @@
 
 <!ENTITY search.placeholder2                  "Søg på addons.mozilla.org">
 
+<!ENTITY search.placeholder3                  "Søg på addons.mozilla.org">
+
 <!ENTITY search.buttonlabel                   "Søg">
 <!-- LOCALIZATION NOTE (search.commandKey):
      The search command key should match findOnCmd.commandkey from browser.dtd -->
@@ -49,6 +51,10 @@
 <!ENTITY view.discover.label                  "Find tilføjelser">
 <!ENTITY view.recentUpdates.label             "Seneste opdateringer">
 <!ENTITY view.availableUpdates.label          "Tilgængelige opdateringer">
+
+<!ENTITY helpButton.label                      "Hjælp til tilføjelser">
+<!ENTITY preferencesWin.label                  "Indstillinger for &brandShortName;">
+<!ENTITY preferencesUnix.label                 "Indstillinger for &brandShortName;">
 
 <!-- addon updates -->
 <!ENTITY updates.checkForUpdates.label        "Søg efter opdateringer">
@@ -197,6 +203,7 @@
      to the add-on name for extensions that are not webextensions, which
      will stop working in Firefox 57. -->
 <!ENTITY addon.legacy.label                   "FORÆLDET">
+<!ENTITY addon.privateBrowsing.label          "TILLADT I PRIVATE VINDUER">
 <!-- LOCALIZATION NOTE (addon.disabled.postfix): This is used in a normal list
      to signify that an add-on is disabled, in the form
      "<Addon name> <1.0> (disabled)" -->

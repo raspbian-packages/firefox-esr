@@ -98,7 +98,11 @@ NS_IMETHODIMP nsColorPicker::Open(
   GtkWidget* color_chooser = gtk_color_chooser_dialog_new(title, parent_window);
 
   if (parent_window) {
-    gtk_window_set_destroy_with_parent(GTK_WINDOW(color_chooser), TRUE);
+    GtkWindow* window = GTK_WINDOW(color_chooser);
+    gtk_window_set_destroy_with_parent(window, TRUE);
+    if (gtk_window_get_modal(parent_window)) {
+      gtk_window_set_modal(window, TRUE);
+    }
   }
 
   gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(color_chooser), FALSE);
@@ -114,6 +118,9 @@ NS_IMETHODIMP nsColorPicker::Open(
     GtkWindow* window = GTK_WINDOW(color_chooser);
     gtk_window_set_transient_for(window, parent_window);
     gtk_window_set_destroy_with_parent(window, TRUE);
+    if (gtk_window_get_modal(parent_window)) {
+      gtk_window_set_modal(window, TRUE);
+    }
   }
 
   GdkColor color_gdk = convertToGdkColor(color);
@@ -134,9 +141,9 @@ NS_IMETHODIMP nsColorPicker::Open(
 }
 
 #if defined(ACTIVATE_GTK3_COLOR_PICKER) && GTK_CHECK_VERSION(3, 4, 0)
-/* static */ void nsColorPicker::OnColorChanged(GtkColorChooser* color_chooser,
-                                                GdkRGBA* color,
-                                                gpointer user_data) {
+/* static */
+void nsColorPicker::OnColorChanged(GtkColorChooser* color_chooser,
+                                   GdkRGBA* color, gpointer user_data) {
   static_cast<nsColorPicker*>(user_data)->Update(color);
 }
 
@@ -154,8 +161,9 @@ void nsColorPicker::SetColor(const GdkRGBA* color) {
   mColor += ToHexString(convertGdkRgbaComponent(color->blue));
 }
 #else
-/* static */ void nsColorPicker::OnColorChanged(
-    GtkColorSelection* colorselection, gpointer user_data) {
+/* static */
+void nsColorPicker::OnColorChanged(GtkColorSelection* colorselection,
+                                   gpointer user_data) {
   static_cast<nsColorPicker*>(user_data)->Update(colorselection);
 }
 
@@ -178,14 +186,14 @@ void nsColorPicker::ReadValueFromColorSelection(
 }
 #endif
 
-/* static */ void nsColorPicker::OnResponse(GtkWidget* color_chooser,
-                                            gint response_id,
-                                            gpointer user_data) {
+/* static */
+void nsColorPicker::OnResponse(GtkWidget* color_chooser, gint response_id,
+                               gpointer user_data) {
   static_cast<nsColorPicker*>(user_data)->Done(color_chooser, response_id);
 }
 
-/* static */ void nsColorPicker::OnDestroy(GtkWidget* color_chooser,
-                                           gpointer user_data) {
+/* static */
+void nsColorPicker::OnDestroy(GtkWidget* color_chooser, gpointer user_data) {
   static_cast<nsColorPicker*>(user_data)->Done(color_chooser,
                                                GTK_RESPONSE_CANCEL);
 }

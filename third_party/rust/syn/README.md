@@ -1,15 +1,16 @@
-Nom parser for Rust source code
-===============================
+Parser for Rust source code
+===========================
 
 [![Build Status](https://api.travis-ci.org/dtolnay/syn.svg?branch=master)](https://travis-ci.org/dtolnay/syn)
 [![Latest Version](https://img.shields.io/crates/v/syn.svg)](https://crates.io/crates/syn)
-[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/syn/0.12/syn/)
+[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/syn/0.15/syn/)
+[![Rustc Version 1.15+](https://img.shields.io/badge/rustc-1.15+-lightgray.svg)](https://blog.rust-lang.org/2017/02/02/Rust-1.15.html)
 
 Syn is a parsing library for parsing a stream of Rust tokens into a syntax tree
 of Rust source code.
 
-Currently this library is geared toward the [custom derive] use case but
-contains some APIs that may be useful for Rust procedural macros more generally.
+Currently this library is geared toward use in Rust procedural macros, but
+contains some APIs that may be useful more generally.
 
 [custom derive]: https://github.com/rust-lang/rfcs/blob/master/text/1681-macros-1.1.md
 
@@ -24,12 +25,11 @@ contains some APIs that may be useful for Rust procedural macros more generally.
   macro. An example below shows using this type in a library that can derive
   implementations of a trait of your own.
 
-- **Parser combinators** — Parsing in Syn is built on a suite of public parser
-  combinator macros that you can use for parsing any token-based syntax you
-  dream up within a `functionlike!(...)` procedural macro. Every syntax tree
-  node defined by Syn is individually parsable and may be used as a building
-  block for custom syntaxes, or you may do it all yourself working from the most
-  primitive tokens.
+- **Parsing** — Parsing in Syn is built around [parser functions] with the
+  signature `fn(ParseStream) -> Result<T>`. Every syntax tree node defined by
+  Syn is individually parsable and may be used as a building block for custom
+  syntaxes, or you may dream up your own brand new syntax without involving any
+  of our syntax tree types.
 
 - **Location information** — Every token parsed by Syn is associated with a
   `Span` that tracks line and column information back to the source of that
@@ -41,11 +41,12 @@ contains some APIs that may be useful for Rust procedural macros more generally.
   procedural macros enable only what they need, and do not pay in compile time
   for all the rest.
 
-[`syn::File`]: https://docs.rs/syn/0.12/syn/struct.File.html
-[`syn::Item`]: https://docs.rs/syn/0.12/syn/enum.Item.html
-[`syn::Expr`]: https://docs.rs/syn/0.12/syn/enum.Expr.html
-[`syn::Type`]: https://docs.rs/syn/0.12/syn/enum.Type.html
-[`syn::DeriveInput`]: https://docs.rs/syn/0.12/syn/struct.DeriveInput.html
+[`syn::File`]: https://docs.rs/syn/0.15/syn/struct.File.html
+[`syn::Item`]: https://docs.rs/syn/0.15/syn/enum.Item.html
+[`syn::Expr`]: https://docs.rs/syn/0.15/syn/enum.Expr.html
+[`syn::Type`]: https://docs.rs/syn/0.15/syn/enum.Type.html
+[`syn::DeriveInput`]: https://docs.rs/syn/0.15/syn/struct.DeriveInput.html
+[parser functions]: https://docs.rs/syn/0.15/syn/parse/index.html
 
 If you get stuck with anything involving procedural macros in Rust I am happy to
 provide help even if the issue is not related to Syn. Please file a ticket in
@@ -55,6 +56,8 @@ this repo.
 first support for procedural macros in Rust 1.15.0. Some features especially
 around error reporting are only available in newer compilers or on the nightly
 channel.*
+
+[*Release notes*](https://github.com/dtolnay/syn/releases)
 
 ## Example of a custom derive
 
@@ -69,8 +72,8 @@ tokens back to the compiler to compile into the user's crate.
 
 ```toml
 [dependencies]
-syn = "0.12"
-quote = "0.4"
+syn = "0.15"
+quote = "0.6"
 
 [lib]
 proc-macro = true
@@ -78,18 +81,15 @@ proc-macro = true
 
 ```rust
 extern crate proc_macro;
-extern crate syn;
-
-#[macro_use]
-extern crate quote;
 
 use proc_macro::TokenStream;
-use syn::DeriveInput;
+use quote::quote;
+use syn::{parse_macro_input, DeriveInput};
 
 #[proc_macro_derive(MyMacro)]
 pub fn my_macro(input: TokenStream) -> TokenStream {
     // Parse the input tokens into a syntax tree
-    let input: DeriveInput = syn::parse(input).unwrap();
+    let input = parse_macro_input!(input as DeriveInput);
 
     // Build the output, possibly using quasi-quotation
     let expanded = quote! {
@@ -97,12 +97,12 @@ pub fn my_macro(input: TokenStream) -> TokenStream {
     };
 
     // Hand the output tokens back to the compiler
-    expanded.into()
+    TokenStream::from(expanded)
 }
 ```
 
 The [`heapsize`] example directory shows a complete working Macros 1.1
-implementation of a custom derive. It works on any Rust compiler \>=1.15.0. The
+implementation of a custom derive. It works on any Rust compiler 1.15+. The
 example derives a `HeapSize` trait which computes an estimate of the amount of
 heap memory owned by a value.
 
@@ -130,13 +130,6 @@ struct Demo<'a, T: ?Sized> {
 
 ## Spans and error reporting
 
-The [`heapsize2`] example directory is an extension of the `heapsize` example
-that demonstrates some of the hygiene and error reporting properties of Macros
-2.0. This example currently requires a nightly Rust compiler \>=1.24.0-nightly
-but we are working to stabilize all of the APIs involved.
-
-[`heapsize2`]: examples/heapsize2
-
 The token-based procedural macro API provides great control over where the
 compiler's error messages are displayed in user code. Consider the error the
 user sees if one of their field types does not implement `HeapSize`.
@@ -149,20 +142,8 @@ struct Broken {
 }
 ```
 
-In the Macros 1.1 string-based procedural macro world, the resulting error would
-point unhelpfully to the invocation of the derive macro and not to the actual
-problematic field.
-
-```
-error[E0599]: no method named `heap_size_of_children` found for type `std::thread::Thread` in the current scope
- --> src/main.rs:4:10
-  |
-4 | #[derive(HeapSize)]
-  |          ^^^^^^^^
-```
-
 By tracking span information all the way through the expansion of a procedural
-macro as shown in the `heapsize2` example, token-based macros in Syn are able to
+macro as shown in the `heapsize` example, token-based macros in Syn are able to
 trigger errors that directly pinpoint the source of the problem.
 
 ```
@@ -173,14 +154,13 @@ error[E0277]: the trait bound `std::thread::Thread: HeapSize` is not satisfied
   |     ^^^^^^^^^^^^^^^^^^^^^^^^ the trait `HeapSize` is not implemented for `std::thread::Thread`
 ```
 
-## Parsing a custom syntax using combinators
+## Parsing a custom syntax
 
 The [`lazy-static`] example directory shows the implementation of a
 `functionlike!(...)` procedural macro in which the input tokens are parsed using
-[`nom`]-style parser combinators.
+Syn's parsing API.
 
 [`lazy-static`]: examples/lazy-static
-[`nom`]: https://github.com/Geal/nom
 
 The example reimplements the popular `lazy_static` crate from crates.io as a
 procedural macro.
@@ -241,25 +221,24 @@ available.
   types.
 - **`extra-traits`** — Debug, Eq, PartialEq, Hash impls for all syntax tree
   types.
+- **`proc-macro`** *(enabled by default)* — Runtime dependency on the dynamic
+  library libproc_macro from rustc toolchain.
 
-## Nightly features
+## Proc macro shim
 
-By default Syn uses the [`proc-macro2`] crate to emulate the nightly compiler's
-procedural macro API in a stable way that works all the way back to Rust 1.15.0.
-This shim makes it possible to write code without regard for whether the current
-compiler version supports the features we use.
+Syn uses the [proc-macro2] crate to emulate the compiler's procedural macro API
+in a stable way that works all the way back to Rust 1.15.0. This shim makes it
+possible to write code without regard for whether the current compiler version
+supports the features we use.
 
-[`proc-macro2`]: https://github.com/alexcrichton/proc-macro2
+In general all of your code should be written against proc-macro2 rather than
+proc-macro. The one exception is in the signatures of procedural macro entry
+points, which are required by the language to use `proc_macro::TokenStream`.
 
-On a nightly compiler, to eliminate the stable shim and use the compiler's
-`proc-macro` directly, add `proc-macro2` to your Cargo.toml and set its
-`"nightly"` feature which bypasses the stable shim.
+The proc-macro2 crate will automatically detect and use the compiler's data
+structures on sufficiently new compilers.
 
-```toml
-[dependencies]
-syn = "0.12"
-proc-macro2 = { version = "0.2", features = ["nightly"] }
-```
+[proc-macro2]: https://github.com/alexcrichton/proc-macro2
 
 ## License
 

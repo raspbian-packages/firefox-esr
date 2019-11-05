@@ -113,7 +113,8 @@ void InputType::GetNonFileValueInternal(nsAString& aValue) const {
 }
 
 nsresult InputType::SetValueInternal(const nsAString& aValue, uint32_t aFlags) {
-  return mInputElement->SetValueInternal(aValue, aFlags);
+  RefPtr<mozilla::dom::HTMLInputElement> inputElement(mInputElement);
+  return inputElement->SetValueInternal(aValue, aFlags);
 }
 
 mozilla::Decimal InputType::GetStepBase() const {
@@ -364,7 +365,7 @@ bool InputType::ParseDate(const nsAString& aValue, uint32_t* aYear,
 
 bool InputType::ParseTime(const nsAString& aValue, uint32_t* aResult) const {
   // see comment in InputType::ParseDate().
-  return mInputElement->ParseTime(aValue, aResult);
+  return mozilla::dom::HTMLInputElement::ParseTime(aValue, aResult);
 }
 
 bool InputType::ParseMonth(const nsAString& aValue, uint32_t* aYear,

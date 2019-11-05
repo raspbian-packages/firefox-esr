@@ -6,24 +6,28 @@
 
 package org.mozilla.gecko.cleanup;
 
+import android.content.Context;
 import android.content.Intent;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mozilla.gecko.background.testhelpers.TestRunner;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests the methods of {@link FileCleanupService}.
  */
-@RunWith(TestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class TestFileCleanupService {
     @Rule
     public final TemporaryFolder tempFolder = new TemporaryFolder();
@@ -41,10 +45,10 @@ public class TestFileCleanupService {
     }
 
     private void onHandleIntent(final ArrayList<String> filePaths) {
+        final Context context = mock(Context.class);
         final FileCleanupService service = new FileCleanupService();
-        final Intent intent = new Intent(FileCleanupService.ACTION_DELETE_FILES);
-        intent.putExtra(FileCleanupService.EXTRA_FILE_PATHS_TO_DELETE, filePaths);
-        service.onHandleIntent(intent);
+        final Intent fileCleanupIntent = FileCleanupService.getFileCleanupIntent(context, filePaths);
+        service.onHandleWork(fileCleanupIntent);
     }
 
     @Test

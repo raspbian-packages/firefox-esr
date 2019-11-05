@@ -14,9 +14,6 @@ var EXPORTED_SYMBOLS = [
   "_methodsCallableFromChild",
 ];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-
 function ContentPref(domain, name, value) {
   this.domain = domain;
   this.name = name;
@@ -24,7 +21,7 @@ function ContentPref(domain, name, value) {
 }
 
 ContentPref.prototype = {
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIContentPref]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIContentPref]),
 };
 
 function cbHandleResult(callback, pref) {
@@ -40,8 +37,9 @@ function cbHandleError(callback, nsresult) {
 }
 
 function safeCallback(callbackObj, methodName, args) {
-  if (!callbackObj || typeof(callbackObj[methodName]) != "function")
+  if (!callbackObj || typeof callbackObj[methodName] != "function") {
     return;
+  }
   try {
     callbackObj[methodName].apply(callbackObj, args);
   } catch (err) {

@@ -18,12 +18,10 @@
 class gfxPattern;
 class nsAtom;
 class nsIContent;
-class nsIFrame;
-class nsIPresShell;
-class nsStyleContext;
 
 namespace mozilla {
-class nsSVGAnimatedTransformList;
+class PresShell;
+class SVGAnimatedTransformList;
 
 namespace dom {
 class SVGLinearGradientElement;
@@ -31,15 +29,12 @@ class SVGRadialGradientElement;
 }  // namespace dom
 }  // namespace mozilla
 
-/**
- * Gradients can refer to other gradients. We create an nsSVGPaintingProperty
- * with property type nsGkAtoms::href to track the referenced gradient.
- */
 class nsSVGGradientFrame : public nsSVGPaintServerFrame {
   typedef mozilla::gfx::ExtendMode ExtendMode;
 
  protected:
-  nsSVGGradientFrame(nsStyleContext* aContext, ClassID aID);
+  nsSVGGradientFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                     ClassID aID);
 
  public:
   NS_DECL_ABSTRACT_FRAME(nsSVGGradientFrame)
@@ -48,7 +43,7 @@ class nsSVGGradientFrame : public nsSVGPaintServerFrame {
   virtual already_AddRefed<gfxPattern> GetPaintServerPattern(
       nsIFrame* aSource, const DrawTarget* aDrawTarget,
       const gfxMatrix& aContextMatrix,
-      nsStyleSVGPaint nsStyleSVG::*aFillOrStroke, float aOpacity,
+      nsStyleSVGPaint nsStyleSVG::*aFillOrStroke, float aGraphicOpacity,
       imgDrawingParams& aImgParams, const gfxRect* aOverrideBounds) override;
 
   // nsIFrame interface:
@@ -62,15 +57,16 @@ class nsSVGGradientFrame : public nsSVGPaintServerFrame {
 #endif  // DEBUG
 
  private:
-  // Parse our xlink:href and set up our nsSVGPaintingProperty if we
-  // reference another gradient and we don't have a property. Return
-  // the referenced gradient's frame if available, null otherwise.
+  /**
+   * Parses this frame's href and - if it references another gradient - returns
+   * it.  It also makes this frame a rendering observer of the specified ID.
+   */
   nsSVGGradientFrame* GetReferencedGradient();
 
   // Optionally get a stop frame (returns stop index/count)
   void GetStopFrames(nsTArray<nsIFrame*>* aStopFrames);
 
-  const mozilla::nsSVGAnimatedTransformList* GetGradientTransformList(
+  const mozilla::SVGAnimatedTransformList* GetGradientTransformList(
       nsIContent* aDefault);
   // Will be singular for gradientUnits="objectBoundingBox" with an empty bbox.
   gfxMatrix GetGradientTransform(nsIFrame* aSource,
@@ -112,13 +108,14 @@ class nsSVGGradientFrame : public nsSVGPaintServerFrame {
 // Linear Gradients
 // -------------------------------------------------------------------------
 
-class nsSVGLinearGradientFrame : public nsSVGGradientFrame {
-  friend nsIFrame* NS_NewSVGLinearGradientFrame(nsIPresShell* aPresShell,
-                                                nsStyleContext* aContext);
+class nsSVGLinearGradientFrame final : public nsSVGGradientFrame {
+  friend nsIFrame* NS_NewSVGLinearGradientFrame(mozilla::PresShell* aPresShell,
+                                                ComputedStyle* aStyle);
 
  protected:
-  explicit nsSVGLinearGradientFrame(nsStyleContext* aContext)
-      : nsSVGGradientFrame(aContext, kClassID) {}
+  explicit nsSVGLinearGradientFrame(ComputedStyle* aStyle,
+                                    nsPresContext* aPresContext)
+      : nsSVGGradientFrame(aStyle, aPresContext, kClassID) {}
 
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsSVGLinearGradientFrame)
@@ -151,13 +148,14 @@ class nsSVGLinearGradientFrame : public nsSVGGradientFrame {
 // Radial Gradients
 // -------------------------------------------------------------------------
 
-class nsSVGRadialGradientFrame : public nsSVGGradientFrame {
-  friend nsIFrame* NS_NewSVGRadialGradientFrame(nsIPresShell* aPresShell,
-                                                nsStyleContext* aContext);
+class nsSVGRadialGradientFrame final : public nsSVGGradientFrame {
+  friend nsIFrame* NS_NewSVGRadialGradientFrame(mozilla::PresShell* aPresShell,
+                                                ComputedStyle* aStyle);
 
  protected:
-  explicit nsSVGRadialGradientFrame(nsStyleContext* aContext)
-      : nsSVGGradientFrame(aContext, kClassID) {}
+  explicit nsSVGRadialGradientFrame(ComputedStyle* aStyle,
+                                    nsPresContext* aPresContext)
+      : nsSVGGradientFrame(aStyle, aPresContext, kClassID) {}
 
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsSVGRadialGradientFrame)

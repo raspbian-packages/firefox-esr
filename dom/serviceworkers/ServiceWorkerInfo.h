@@ -12,11 +12,13 @@
 #include "mozilla/dom/WorkerCommon.h"
 #include "mozilla/OriginAttributes.h"
 #include "nsIServiceWorkerManager.h"
-#include "ServiceWorker.h"
 
 namespace mozilla {
 namespace dom {
 
+class ClientInfoAndState;
+class ClientState;
+class ServiceWorkerCloneData;
 class ServiceWorkerPrivate;
 
 /*
@@ -25,8 +27,7 @@ class ServiceWorkerPrivate;
  * _GetNewestWorker(serviceWorkerRegistration)", we represent the description
  * by this class and spawn a ServiceWorker in the right global when required.
  */
-class ServiceWorkerInfo final : public nsIServiceWorkerInfo,
-                                public ServiceWorker::Inner {
+class ServiceWorkerInfo final : public nsIServiceWorkerInfo {
  private:
   nsCOMPtr<nsIPrincipal> mPrincipal;
   ServiceWorkerDescriptor mDescriptor;
@@ -53,17 +54,6 @@ class ServiceWorkerInfo final : public nsIServiceWorkerInfo,
   PRTime mActivatedTime;
   PRTime mRedundantTime;
 
-  // Track the list of known binding objects so we can fire events on them
-  // when appropriate.  These are held using strong references so that they
-  // are not GC'd while an event handler is registered and could observe an
-  // event.  This reference will create a cycle with the binding object.  The
-  // cycle is broken when either the global is detached or the service worker
-  // transitions to the redundant state.
-  //
-  // There is a high chance of there being at least one ServiceWorker
-  // associated with this all the time.
-  AutoTArray<RefPtr<ServiceWorker>, 1> mInstances;
-
   RefPtr<ServiceWorkerPrivate> mServiceWorkerPrivate;
   bool mSkipWaitingFlag;
 
@@ -75,19 +65,13 @@ class ServiceWorkerInfo final : public nsIServiceWorkerInfo,
   // invalid.
   uint64_t GetNextID() const;
 
-  // ServiceWorker::Inner implementation
-  virtual void AddServiceWorker(ServiceWorker* aWorker) override;
-
-  virtual void RemoveServiceWorker(ServiceWorker* aWorker) override;
-
-  virtual void PostMessage(nsIGlobalObject* aGlobal, JSContext* aCx,
-                           JS::Handle<JS::Value> aMessage,
-                           const Sequence<JSObject*>& aTransferable,
-                           ErrorResult& aRv) override;
-
  public:
   NS_DECL_ISUPPORTS
   NS_DECL_NSISERVICEWORKERINFO
+
+  void PostMessage(RefPtr<ServiceWorkerCloneData>&& aData,
+                   const ClientInfo& aClientInfo,
+                   const ClientState& aClientState);
 
   class ServiceWorkerPrivate* WorkerPrivate() const {
     MOZ_ASSERT(mServiceWorkerPrivate);
@@ -111,6 +95,7 @@ class ServiceWorkerInfo final : public nsIServiceWorkerInfo,
   }
 
   ServiceWorkerInfo(nsIPrincipal* aPrincipal, const nsACString& aScope,
+                    uint64_t aRegistrationId, uint64_t aRegistrationVersion,
                     const nsACString& aScriptSpec, const nsAString& aCacheName,
                     nsLoadFlags aLoadFlags);
 
@@ -141,6 +126,8 @@ class ServiceWorkerInfo final : public nsIServiceWorkerInfo,
     MOZ_DIAGNOSTIC_ASSERT(mHandlesFetch == Unknown);
     mHandlesFetch = aHandlesFetch ? Enabled : Disabled;
   }
+
+  void SetRegistrationVersion(uint64_t aVersion);
 
   bool HandlesFetch() const {
     MOZ_ASSERT(NS_IsMainThread());

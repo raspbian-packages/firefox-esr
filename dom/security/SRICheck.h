@@ -31,16 +31,6 @@ class SRICheck final {
                                     const nsACString& aSourceFileURI,
                                     nsIConsoleReportCollector* aReporter,
                                     SRIMetadata* outMetadata);
-
-  /**
-   * Process the integrity attribute of the element.  A result of false
-   * must prevent the resource from loading.
-   */
-  static nsresult VerifyIntegrity(const SRIMetadata& aMetadata,
-                                  nsIChannel* aChannel,
-                                  const nsACString& aBytes,
-                                  const nsACString& aSourceFileURI,
-                                  nsIConsoleReportCollector* aReporter);
 };
 
 // The SRICheckDataVerifier can be used in 2 different mode:

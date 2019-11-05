@@ -6,17 +6,18 @@
 #ifndef mozilla_layers_APZCCallbackHelper_h
 #define mozilla_layers_APZCCallbackHelper_h
 
-#include "FrameMetrics.h"
 #include "InputData.h"
+#include "LayersTypes.h"
 #include "mozilla/EventForwards.h"
 #include "mozilla/layers/APZUtils.h"
+#include "mozilla/layers/MatrixMessage.h"
+#include "mozilla/layers/RepaintRequest.h"
 #include "nsIDOMWindowUtils.h"
+#include "nsRefreshDriver.h"
 
 #include <functional>
 
 class nsIContent;
-class nsIDocument;
-class nsIPresShell;
 class nsIScrollableFrame;
 class nsIWidget;
 template <class T>
@@ -25,10 +26,30 @@ template <class T>
 class nsCOMPtr;
 
 namespace mozilla {
+
+class PresShell;
+
 namespace layers {
 
 typedef std::function<void(uint64_t, const nsTArray<TouchBehaviorFlags>&)>
     SetAllowedTouchBehaviorCallback;
+
+/* Refer to documentation on SendSetTargetAPZCNotification for this class */
+class DisplayportSetListener : public nsAPostRefreshObserver {
+ public:
+  DisplayportSetListener(nsIWidget* aWidget, PresShell* aPresShell,
+                         const uint64_t& aInputBlockId,
+                         const nsTArray<SLGuidAndRenderRoot>& aTargets);
+  virtual ~DisplayportSetListener();
+  bool Register();
+  void DidRefresh() override;
+
+ private:
+  RefPtr<nsIWidget> mWidget;
+  RefPtr<PresShell> mPresShell;
+  uint64_t mInputBlockId;
+  nsTArray<SLGuidAndRenderRoot> mTargets;
+};
 
 /* This class contains some helper methods that facilitate implementing the
    GeckoContentController callback interface required by the
@@ -38,44 +59,43 @@ typedef std::function<void(uint64_t, const nsTArray<TouchBehaviorFlags>&)>
    different platform implementations.
  */
 class APZCCallbackHelper {
-  typedef mozilla::layers::FrameMetrics FrameMetrics;
   typedef mozilla::layers::ScrollableLayerGuid ScrollableLayerGuid;
 
  public:
-  /* Applies the scroll and zoom parameters from the given FrameMetrics object
+  static void NotifyLayerTransforms(const nsTArray<MatrixMessage>& aTransforms);
+
+  /* Applies the scroll and zoom parameters from the given RepaintRequest object
      to the root frame for the given metrics' scrollId. If tiled thebes layers
      are enabled, this will align the displayport to tile boundaries. Setting
      the scroll position can cause some small adjustments to be made to the
-     actual scroll position. aMetrics' display port and scroll position will
-     be updated with any modifications made. */
-  static void UpdateRootFrame(FrameMetrics& aMetrics);
+     actual scroll position. */
+  static void UpdateRootFrame(const RepaintRequest& aRequest);
 
-  /* Applies the scroll parameters from the given FrameMetrics object to the
+  /* Applies the scroll parameters from the given RepaintRequest object to the
      subframe corresponding to given metrics' scrollId. If tiled thebes
      layers are enabled, this will align the displayport to tile boundaries.
      Setting the scroll position can cause some small adjustments to be made
-     to the actual scroll position. aMetrics' display port and scroll position
-     will be updated with any modifications made. */
-  static void UpdateSubFrame(FrameMetrics& aMetrics);
+     to the actual scroll position. */
+  static void UpdateSubFrame(const RepaintRequest& aRequest);
 
   /* Get the presShellId and view ID for the given content element.
    * If the view ID does not exist, one is created.
    * The pres shell ID should generally already exist; if it doesn't for some
    * reason, false is returned. */
-  static bool GetOrCreateScrollIdentifiers(nsIContent* aContent,
-                                           uint32_t* aPresShellIdOut,
-                                           FrameMetrics::ViewID* aViewIdOut);
+  static bool GetOrCreateScrollIdentifiers(
+      nsIContent* aContent, uint32_t* aPresShellIdOut,
+      ScrollableLayerGuid::ViewID* aViewIdOut);
 
   /* Initialize a zero-margin displayport on the root document element of the
      given presShell. */
-  static void InitializeRootDisplayport(nsIPresShell* aPresShell);
+  static void InitializeRootDisplayport(PresShell* aPresShell);
 
   /* Get the pres context associated with the document enclosing |aContent|. */
   static nsPresContext* GetPresContextForContent(nsIContent* aContent);
 
   /* Get the pres shell associated with the root content document enclosing
    * |aContent|. */
-  static nsIPresShell* GetRootContentDocumentPresShellForContent(
+  static PresShell* GetRootContentDocumentPresShellForContent(
       nsIContent* aContent);
 
   /* Apply an "input transform" to the given |aInput| and return the transformed
@@ -102,7 +122,7 @@ class APZCCallbackHelper {
                                      const CSSToLayoutDeviceScale& aScale);
 
   /* Dispatch a widget event via the widget stored in the event, if any.
-   * In a child process, allows the TabParent event-capture mechanism to
+   * In a child process, allows the BrowserParent event-capture mechanism to
    * intercept the event. */
   static nsEventStatus DispatchWidgetEvent(WidgetGUIEvent& aEvent);
 
@@ -115,10 +135,10 @@ class APZCCallbackHelper {
   /* Dispatch a mouse event with the given parameters.
    * Return whether or not any listeners have called preventDefault on the
    * event. */
-  static bool DispatchMouseEvent(const nsCOMPtr<nsIPresShell>& aPresShell,
-                                 const nsString& aType, const CSSPoint& aPoint,
-                                 int32_t aButton, int32_t aClickCount,
-                                 int32_t aModifiers,
+  MOZ_CAN_RUN_SCRIPT
+  static bool DispatchMouseEvent(PresShell* aPresShell, const nsString& aType,
+                                 const CSSPoint& aPoint, int32_t aButton,
+                                 int32_t aClickCount, int32_t aModifiers,
                                  bool aIgnoreRootScrollFrame,
                                  unsigned short aInputSourceArg,
                                  uint32_t aPointerId);
@@ -133,66 +153,49 @@ class APZCCallbackHelper {
    * which scrollable frames they target. If any of these frames don't have
    * a displayport, set one.
    *
-   * If any displayports need to be set, the actual notification to APZ is
-   * sent to the compositor, which will then post a message back to APZ's
-   * controller thread. Otherwise, the provided widget's SetConfirmedTargetAPZC
-   * method is invoked immediately.
+   * If any displayports need to be set, this function returns a heap-allocated
+   * object. The caller is responsible for calling Register() on that object,
+   * and release()'ing the UniquePtr if that Register() call returns true.
+   * The object registers itself as a post-refresh observer on the presShell
+   * and ensures that notifications get sent to APZ correctly after the
+   * refresh.
    *
-   * Returns true if any displayports need to be set. (A caller may be
-   * interested to know this, because they may need to delay certain actions
-   * until after the displayport comes into effect.)
+   * Having the caller manage this object is desirable in case they want to
+   * (a) know about the fact that a displayport needs to be set, and
+   * (b) register a post-refresh observer of their own that will run in
+   *     a defined ordering relative to the APZ messages.
    */
-  static bool SendSetTargetAPZCNotification(nsIWidget* aWidget,
-                                            nsIDocument* aDocument,
-                                            const WidgetGUIEvent& aEvent,
-                                            const ScrollableLayerGuid& aGuid,
-                                            uint64_t aInputBlockId);
+  static UniquePtr<DisplayportSetListener> SendSetTargetAPZCNotification(
+      nsIWidget* aWidget, mozilla::dom::Document* aDocument,
+      const WidgetGUIEvent& aEvent, const LayersId& aLayersId,
+      uint64_t aInputBlockId);
 
   /* Figure out the allowed touch behaviors of each touch point in |aEvent|
    * and send that information to the provided callback. */
   static void SendSetAllowedTouchBehaviorNotification(
-      nsIWidget* aWidget, nsIDocument* aDocument,
+      nsIWidget* aWidget, mozilla::dom::Document* aDocument,
       const WidgetTouchEvent& aEvent, uint64_t aInputBlockId,
       const SetAllowedTouchBehaviorCallback& aCallback);
 
   /* Notify content of a mouse scroll testing event. */
-  static void NotifyMozMouseScrollEvent(const FrameMetrics::ViewID& aScrollId,
-                                        const nsString& aEvent);
+  static void NotifyMozMouseScrollEvent(
+      const ScrollableLayerGuid::ViewID& aScrollId, const nsString& aEvent);
 
   /* Notify content that the repaint flush is complete. */
-  static void NotifyFlushComplete(nsIPresShell* aShell);
+  static void NotifyFlushComplete(PresShell* aPresShell);
 
+  static void NotifyAsyncScrollbarDragInitiated(
+      uint64_t aDragBlockId, const ScrollableLayerGuid::ViewID& aScrollId,
+      ScrollDirection aDirection);
   static void NotifyAsyncScrollbarDragRejected(
-      const FrameMetrics::ViewID& aScrollId);
+      const ScrollableLayerGuid::ViewID& aScrollId);
   static void NotifyAsyncAutoscrollRejected(
-      const FrameMetrics::ViewID& aScrollId);
+      const ScrollableLayerGuid::ViewID& aScrollId);
 
-  static void CancelAutoscroll(const FrameMetrics::ViewID& aScrollId);
+  static void CancelAutoscroll(const ScrollableLayerGuid::ViewID& aScrollId);
 
-  /* Temporarily ignore the Displayport for better paint performance. If at
-   * all possible, pass in a presShell if you have one at the call site, we
-   * use it to trigger a repaint once suppression is disabled. Without that
-   * the displayport may get left at the suppressed size for an extended
-   * period of time and result in unnecessary checkerboarding (see bug
-   * 1255054). */
-  static void SuppressDisplayport(const bool& aEnabled,
-                                  const nsCOMPtr<nsIPresShell>& aShell);
-
-  /* Whether or not displayport suppression should be turned on. Note that
-   * this only affects the return value of |IsDisplayportSuppressed()|, and
-   * doesn't change the value of the internal counter. As with
-   * SuppressDisplayport, this function should be passed a presShell to trigger
-   * a repaint if suppression is being turned off.
-   */
-  static void RespectDisplayPortSuppression(
-      bool aEnabled, const nsCOMPtr<nsIPresShell>& aShell);
-
-  /* Whether or not the displayport is currently suppressed. */
-  static bool IsDisplayportSuppressed();
-
-  static void AdjustDisplayPortForScrollDelta(
-      mozilla::layers::FrameMetrics& aFrameMetrics,
-      const CSSPoint& aActualScrollOffset);
+  static ScreenMargin AdjustDisplayPortForScrollDelta(
+      const RepaintRequest& aRequest, const CSSPoint& aActualScrollOffset);
 
   /*
    * Check if the scrollable frame is currently in the middle of an async

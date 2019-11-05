@@ -5,19 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ChildProfilerController.h"
-#include "nsThreadUtils.h"
+
 #include "ProfilerChild.h"
+
+#include "nsThreadUtils.h"
 
 using namespace mozilla::ipc;
 
 namespace mozilla {
 
-/* static */ already_AddRefed<ChildProfilerController>
-ChildProfilerController::Create(
+/* static */
+already_AddRefed<ChildProfilerController> ChildProfilerController::Create(
     mozilla::ipc::Endpoint<PProfilerChild>&& aEndpoint) {
   MOZ_RELEASE_ASSERT(NS_IsMainThread());
   RefPtr<ChildProfilerController> cpc = new ChildProfilerController();
-  cpc->Init(Move(aEndpoint));
+  cpc->Init(std::move(aEndpoint));
   return cpc.forget();
 }
 
@@ -32,7 +34,7 @@ void ChildProfilerController::Init(Endpoint<PProfilerChild>&& aEndpoint) {
     mThread->Dispatch(
         NewRunnableMethod<Endpoint<PProfilerChild>&&>(
             "ChildProfilerController::SetupProfilerChild", this,
-            &ChildProfilerController::SetupProfilerChild, Move(aEndpoint)),
+            &ChildProfilerController::SetupProfilerChild, std::move(aEndpoint)),
         NS_DISPATCH_NORMAL);
   }
 }
@@ -76,7 +78,7 @@ void ChildProfilerController::SetupProfilerChild(
   MOZ_ASSERT(aEndpoint.IsValid());
 
   mProfilerChild = new ProfilerChild();
-  Endpoint<PProfilerChild> endpoint = Move(aEndpoint);
+  Endpoint<PProfilerChild> endpoint = std::move(aEndpoint);
 
   if (!endpoint.Bind(mProfilerChild)) {
     MOZ_CRASH("Failed to bind ProfilerChild!");

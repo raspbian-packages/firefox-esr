@@ -34,12 +34,6 @@ struct IPCClientInfo
   FrameType frameType;
 };
 
-union OptionalIPCClientInfo
-{
-  IPCClientInfo;
-  void_t;
-};
-
 struct IPCClientWindowState
 {
   VisibilityState visibilityState;
@@ -114,6 +108,7 @@ struct ClientGetInfoAndStateArgs
 struct ClientOpenWindowArgs
 {
   PrincipalInfo principalInfo;
+  ContentSecurityPolicy[] cspInfos;
   nsCString url;
   nsCString baseURL;
 };

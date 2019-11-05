@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Croeso">
 <!ENTITY firstrun_urlbar_message2 "Diolch am ddewis &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Croeso i &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Porwr symudol modern gan Mozilla, y corff ddim-er-elw sy\&apos;n ymroddedig i we rydd ac agored.">
+<!ENTITY newfirstrun_urlbar_subtext "Yn gyflym, yn breifat, ac ar eich ochr chi.">
 <!ENTITY firstrun_panel_title_privacy "Preifatrwydd">
 <!ENTITY firstrun_privacy_message "Pori fel petai neb yn eich gwylio">
 <!ENTITY firstrun_privacy_subtext "Mae Pori Preifat gyda Diogelwch rhag Tracio yn rhwystro tracwyr wrth i chi bori ac ni fydd yn cofio eich hanes pan fyddwch wedi gorffen pori.">
+<!ENTITY newfirstrun_privacy_subtext "Mae pori preifat yn rhwystro tracwyr hysbysebion sy\&apos;n eich dilyn chi ar-lein.">
 <!ENTITY firstrun_panel_title_customize "Cyfaddasu">
 <!ENTITY firstrun_customize_message "Gwneud &brandShortName; yn gysurus.">
 <!ENTITY firstrun_customize_subtext "Cyfaddaswch &brandShortName; gydag ychwanegion. Rhwystro hysbysebion, ychwanegu nodweddion neu ddewis thema newydd i adlewyrchu eich personoliaeth.">
@@ -18,21 +21,20 @@
 <!ENTITY firstrun_data_message "Llai o ddata, mwy o arbedion">
 <!ENTITY firstrun_data_subtext2 "Diffoddwch ddelweddau a gwario llai ar ddata pob gwefan fyddwch yn mynd iddyn nhw.">
 <!ENTITY firstrun_sync_title "Sync">
+<!ENTITY updatednewfirstrun_sync_title "Cyfrif">
 <!ENTITY firstrun_sync_message2 "Parhau lle roeddech o\&apos;r blaen.">
 <!ENTITY firstrun_sync_subtext2 "Defnyddiwch Sync i ganfod nodau tudalen, cyfrineiriau a phethau eraill rydych wedi eu cadw i &brandShortName; ar eich holl ddyfeisiau.">
+<!ENTITY newfirstrun_sync_subtext "Cydweddwch y pethau rydych chi\&apos;n eu cadw ar Firefox symudol i Firefox y bwrdd gwaith, yn breifat ac yn ddiogel.">
+<!ENTITY updatednewfirstrun_sync_subtext "Mewngofnodwch i\&apos;ch cyfrif i gael y mwyaf o &brandShortName;">
 <!ENTITY firstrun_signin_message "Cysylltu a chychwyn arni">
 <!ENTITY firstrun_signin_button "Mewngofnodwch i Sync">
+<!ENTITY newfirstrun_signin_button "Cychwyn Sync">
+<!ENTITY updatednewfirstrun_signin_button "Mewngofnodi i &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Cychwyn Pori">
 <!ENTITY firstrun_button_notnow "Dim nawr">
 <!ENTITY firstrun_button_next "Nesaf">
 
 <!ENTITY firstrun_tabqueue_title "Dolenni">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Agor ciw Tabiau">
-<!ENTITY firstrun_tabqueue_subtext_off "Cadw\&apos;r dolenni ar gyfer hwyrach ymlaen yn &brandShortName; wrth eu tapio mewn apiau eraill.">
-
-<!ENTITY firstrun_tabqueue_message_on "Llwyddiant!">
-<!ENTITY firstrun_tabqueue_subtext_on "Mae modd diffodd hyn yn y &settings; o dan &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Erhyglau">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -60,7 +62,7 @@
 <!ENTITY  crash_send_report_message3 "Dweud wrth &vendorShortName; am y chwalfa fel bod modd ei drwsio">
 <!ENTITY  crash_include_url2 "Cynnwys cyfeiriad y dudalen roeddwn arni">
 <!ENTITY  crash_sorry "Ymddiheuriadau">
-<!ENTITY  crash_comment "Ychwanegu sylw (sylwadau yn weladwy)">
+<!ENTITY  crash_comment "Ychwanegu sylw (sylwadau yn weladwy\&apos;n gyhoeddus)">
 <!ENTITY  crash_allow_contact2 "Caniatáu i &vendorShortName; gysylltu â mi am yr adroddiad hwn">
 <!ENTITY  crash_email "Eich e-bost">
 <!ENTITY  crash_closing_alert "Gadael heb adael adroddiad chwalu?">
@@ -68,7 +70,27 @@
 <!ENTITY  crash_close_label "Cau">
 <!ENTITY  crash_restart_label "Ailgychwyn &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "Mae &brandShortName; wedi chwalu">
+<!ENTITY  crash_notification_message "Tapio i ddweud wrth &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Anwybyddu">
+
 <!ENTITY url_bar_default_text2 "Chwilio neu gyfeiriad gwe">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Chwilio\&apos;r we">
+<!ENTITY search_widget_default_cropped_text "Chwilio">
+<!ENTITY search_widget_logo_description "Chwilio\&apos;r we gyda &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Defnyddiwch eich Darllenydd QR i chwilio neu gynnig cyfeiriad">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Defnyddiwch eich meicroffon i chwilio neu gynnig cyfeiriad">
 
 <!ENTITY bookmark "Nod Tudalen">
 <!ENTITY bookmark_remove "Tynnu\&apos;r nod tudalen">
@@ -95,6 +117,10 @@
 <!ENTITY bookmark_folder_updated "Diweddarwyd y ffolder">
 <!ENTITY bookmark_parent_folder "Ffolder Rhiant">
 <!ENTITY bookmark_add_folder "Ychwanegu ffolder newydd">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(dim teitl)">
 
 <!ENTITY reader_saved_offline "Cadwyd all-lein">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -206,7 +232,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Adfer tabiau, arbedwr data, offer datblygwyr">
 <!ENTITY pref_category_notifications "Hysbysiadau">
-<!ENTITY pref_category_notifications_summary "Nodweddion newydd, diweddariadau gwefan">
+<!ENTITY pref_category_notifications_summary2 "Nodweddion newydd, awgrymiadau cynnyrch">
 <!ENTITY pref_developer_remotedebugging_usb "Dadfygio pell drwy USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Dadfygio pell drwy\&apos;r diwifr">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Mae dadfygio pell drwy\&apos;r diwifr angen i\&apos;ch dyfais gael ap darllenydd QR wedi ei osod.">
@@ -288,6 +314,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Dysgu rhagor am ddefnyddio &brandShortName; a chynnyrch eraill &vendorShortName;">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(I alluogi\&apos;r dewis hwn, rhaid fod &pref_feature_tips_notification_enabling_path; fod wedi ei alluogi.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -327,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Mynd i Settings Android">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Ychwanegu tab newydd i ciw &#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "Graddio cynnwys gwe yn ôl maint ffont y system">
 
 <!ENTITY pref_media_autoplay_enabled "Caniatáu awtochwarae">
-<!ENTITY pref_media_autoplay_enabled_summary "Rheoli os yw gwefannau yn awtochwarae fideos neu gynnwys cyfrwng arall">
+<!ENTITY pref_media_autoplay_allow "Caniatáu awtochwarae">
+<!ENTITY pref_media_autoplay_block "Rhwystro awtochwarae">
 <!ENTITY pref_zoom_force_enabled "Galluogi chwyddo bob tro">
 <!ENTITY pref_zoom_force_enabled_summary "Gorfodi gwrthwneud er mwyn gallu chwyddo unrhyw dudalen">
 <!ENTITY pref_voice_input "Mewnbwn llais">
@@ -384,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "Hanes chwilio">
 <!ENTITY pref_private_data_formdata2 "Hanes ffurflen">
 <!ENTITY pref_private_data_cookies2 "Cwcis a mewngofnodi gweithredol">
-<!ENTITY pref_private_data_passwords2 "Mewngofnodion wedi eu cadw">
-<!ENTITY pref_private_data_cache "Storfa">
+<!ENTITY pref_private_data_cache "Storfa Dros Dro">
 <!ENTITY pref_private_data_offlineApps "Data gwefan all-lein">
 <!ENTITY pref_private_data_siteSettings2 "Gosodiadau gwefan">
 <!ENTITY pref_private_data_downloadFiles2 "Llwythi">
 <!ENTITY pref_private_data_syncedTabs "Tabiau wedi eu cydweddu">
 
-<!ENTITY pref_default_browser "Gwneud yn borwr rhagosodedig">
+<!ENTITY pref_default_browser2 "Gwneud &brandShortName; eich porwr rhagosodedig">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Tapiwch yr ap Porwr i ddewis &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Mynd i Mozilla Support">
 <!ENTITY pref_about_firefox "Ynghylch &brandShortName;">
 <!ENTITY pref_vendor_faqs "Atebion">
@@ -437,6 +476,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Adroddwr Chwalu">
 <!ENTITY datareporting_wifi_title2 "Gwasanaethau Lleoliad &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Cynorthwywch &vendorShortName; i fapio\&apos;r byd! Rhannwch leoliadau diwifr a cellol bras eich dyfais er mwyn gwella ein gwasanaeth geoleoliad.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; Gwasanaeth Lleoliad yn rhedeg">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -462,7 +506,7 @@
 <!ENTITY print "Argraffu">
 <!ENTITY view_page_source "Gweld Ffynhonnell y Dudalen">
 <!ENTITY find_in_page "Canfod ar y Dudalen">
-<!ENTITY desktop_mode "Gofyn am wefan bwrdd gwaith">
+<!ENTITY desktop_mode "Gwefan bwrdd gwaith">
 <!ENTITY page "Tudalen">
 <!ENTITY tools "Offer">
 <!ENTITY new_tab "Tab newydd">
@@ -482,6 +526,10 @@
 <!ENTITY find_next "Nesaf">
 <!ENTITY find_close "Cau">
 
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Heb ganfod yr ymadrodd">
+
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
 <!ENTITY media_sending_to "Anfon i Ddyfais">
@@ -492,7 +540,7 @@
 <!ENTITY contextmenu_open_new_tab "Agor mewn Tab Newydd">
 <!ENTITY contextmenu_open_private_tab "Agor mewn Tab Preifat">
 <!ENTITY contextmenu_remove "Tynnu">
-<!ENTITY contextmenu_add_page_shortcut "Ychwanegu Llwybr Byr Tudalen">
+<!ENTITY contextmenu_add_page_shortcut "Creu Llwybr Byr Tudalen">
 <!ENTITY contextmenu_set_as_homepage "Gosod fel y Dudalen Cartref">
 <!ENTITY contextmenu_share "Rhannu">
 <!ENTITY contextmenu_pasteandgo "Gludo a Mynd">
@@ -543,7 +591,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Trefnu tabiau mewn dwy golofn yn y modd portread">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Wedi tynnu\&apos;r dudalen">
 <!ENTITY folder_removed "Tynnwyd y ffolder">
@@ -554,6 +602,8 @@
 <!ENTITY bookmark_edit_location "Lleoliad">
 <!ENTITY bookmark_edit_keyword "Allweddair">
 <!ENTITY bookmark_select_folder "Dewis ffolder">
+
+<!ENTITY bookmark_edit_undo "Dadwneud">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -577,7 +627,7 @@
 <!ENTITY button_clear_data "Clirio data">
 <!ENTITY button_set "Gosod">
 <!ENTITY button_clear "Clirio">
-<!ENTITY button_copy "Torri">
+<!ENTITY button_copy "Copïo">
 
 <!ENTITY home_top_sites_title "Hoff Wefannau">
 <!-- Localization note (home_top_sites_add): This string is used as placeholder
@@ -642,6 +692,8 @@
 <!ENTITY filepicker_audio_title "Dewis neu recordio sain">
 <!ENTITY filepicker_image_title "Dewis neu dynnu llun">
 <!ENTITY filepicker_video_title "Dewis neu recordio fideo">
+
+<!ENTITY filepicker_permission_denied "Heb roi\&apos;r caniatâd gofynnol, gan ddychwelyd at ddewiswr ffeiliau\&apos;r system.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Rydych wedi cysylltu â">
@@ -758,7 +810,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Cydweddwyd diwethaf: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Cydweddwyd diwethaf: byth">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -819,15 +871,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Methu agor &brandShortName;. Ail osodwch a cheisiwch eto.">
 
-<!ENTITY eol_notification_title2 "Ni fydd &brandShortName; bellach yn diweddaru">
-<!ENTITY eol_notification_summary "Tapiwch i ddysgu rhagor">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "Mae &brandShortName; yn gyfredol">
 <!ENTITY whatsnew_notification_summary "Beth sy\&apos;n newydd yn y fersiwn yma">
-
-<!ENTITY promotion_add_page_shortcut "Ychwanegu llwybr byr tudalen">
 
 <!ENTITY helper_first_offline_bookmark_title "Darllen all-lein">
 <!ENTITY helper_first_offline_bookmark_message "Canfod eich eitemau Golwg Darllen yn Nodau Tudalen, hyd yn oed all-lein.">
@@ -878,3 +925,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Ychwanegu i’r Sgrin Cartref">
 <!ENTITY pwa_continue_to_website "Parhau i\&apos;r Wefan">
 <!ENTITY pwa_onboarding_sumo "Gallwch ychwanegu\&apos;r wefan hon yn hawdd i\&apos;ch sgrin Cartref er mwyn cael mynediad cyflym a phori\&apos;n gynt gyda phrofiad fel mewn ap.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Chwarae">
+<!ENTITY pip_play_button_description "Ail gychwyn chwarae">
+<!ENTITY pip_pause_button_title "Oedi">
+<!ENTITY pip_pause_button_description "Oedi chwarae">
+
+<!ENTITY pref_notification_settings_link "Rheoli gosodiadau hysbysu">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Porwr">
+<!ENTITY mls_notification_channel "Gwasanaeth Lleoli &vendorShortName;">
+<!ENTITY download_notification_channel "Llwythau">
+<!ENTITY media_notification_channel2 "Sain a fideo">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; awgrymiadau a thriciau">
+<!ENTITY updater_notification_channel "Diweddaru apiau">
+<!ENTITY synced_tabs_notification_channel "Tabiau wedi\&apos;u cydweddu">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Hysbysiadau gwefannau">
+<!ENTITY crash_handler_notifications_channel "Adroddwr Chwalu &brandShortName;">

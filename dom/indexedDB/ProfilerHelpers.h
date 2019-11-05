@@ -23,9 +23,9 @@
 #include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/dom/BindingDeclarations.h"
+#include "mozilla/dom/Event.h"
 #include "nsDebug.h"
 #include "nsID.h"
-#include "nsIDOMEvent.h"
 #include "nsString.h"
 #include "mozilla/Logging.h"
 
@@ -232,14 +232,14 @@ class MOZ_STACK_CLASS LoggingString final : public nsAutoCString {
     }
   }
 
-  LoggingString(nsIDOMEvent* aEvent, const char16_t* aDefault)
+  LoggingString(Event* aEvent, const char16_t* aDefault)
       : nsAutoCString(kQuote) {
     MOZ_ASSERT(aDefault);
 
-    nsString eventType;
+    nsAutoString eventType;
 
     if (aEvent) {
-      MOZ_ALWAYS_SUCCEEDS(aEvent->GetType(eventType));
+      aEvent->GetType(eventType);
     } else {
       eventType = nsDependentString(aDefault);
     }
@@ -262,7 +262,7 @@ inline void MOZ_FORMAT_PRINTF(2, 3)
 
   if (MOZ_LOG_TEST(logModule, logLevel) ||
 #ifdef MOZ_GECKO_PROFILER
-      (aUseProfiler && profiler_is_active())
+      (aUseProfiler && profiler_thread_is_being_profiled())
 #else
       false
 #endif
@@ -281,7 +281,7 @@ inline void MOZ_FORMAT_PRINTF(2, 3)
     MOZ_LOG(logModule, logLevel, ("%s", message.get()));
 
     if (aUseProfiler) {
-      PROFILER_ADD_MARKER(message.get());
+      PROFILER_ADD_MARKER(message.get(), DOM);
     }
   }
 }

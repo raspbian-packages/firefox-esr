@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 with Files('**'):
-    BUG_COMPONENT = ('Toolkit', 'Build Config')
+    BUG_COMPONENT = ('Firefox Build System', 'General')
 
 EXPORTS += [
     'nsToolkitCompsCID.h',
@@ -15,24 +15,12 @@ SOURCES += [
     'nsToolkitCompsModule.cpp',
 ]
 
+XPCOM_MANIFESTS += [
+    'components.conf',
+]
+
 FINAL_LIBRARY = 'xul'
 
 LOCAL_INCLUDES += [
-    '../../xre',
-    '../alerts',
-    '../downloads',
-    '../feeds',
-    '../find',
-    '../perfmonitoring',
-    '../protobuf',
-    '../reputationservice',
-    '../startup',
-    '../statusfilter',
-    '../typeaheadfind',
     '../url-classifier',
 ]
-
-if not CONFIG['MOZ_DISABLE_PARENTAL_CONTROLS']:
-    LOCAL_INCLUDES += [
-        '../parentalcontrols',
-    ]

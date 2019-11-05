@@ -4,17 +4,26 @@
 
 "use strict";
 
-const { createFactory, createElement } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  createElement,
+} = require("devtools/client/shared/vendor/react");
 const { Provider } = require("devtools/client/shared/vendor/react-redux");
+const FlexboxInspector = require("devtools/client/inspector/flexbox/flexbox");
+const GridInspector = require("devtools/client/inspector/grids/grid-inspector");
 
 const LayoutApp = createFactory(require("./components/LayoutApp"));
 
 const { LocalizationHelper } = require("devtools/shared/l10n");
-const INSPECTOR_L10N =
-  new LocalizationHelper("devtools/client/locales/inspector.properties");
+const INSPECTOR_L10N = new LocalizationHelper(
+  "devtools/client/locales/inspector.properties"
+);
 
-loader.lazyRequireGetter(this, "FlexboxInspector", "devtools/client/inspector/flexbox/flexbox");
-loader.lazyRequireGetter(this, "GridInspector", "devtools/client/inspector/grids/grid-inspector");
+loader.lazyRequireGetter(
+  this,
+  "SwatchColorPickerTooltip",
+  "devtools/client/shared/widgets/tooltip/SwatchColorPickerTooltip"
+);
 
 class LayoutView {
   constructor(inspector, window) {
@@ -30,67 +39,75 @@ class LayoutView {
       return;
     }
 
-    let {
-      setSelectedNode,
+    const {
       onShowBoxModelHighlighterForNode,
+      setSelectedNode,
     } = this.inspector.getCommonComponentProps();
 
-    let {
+    const {
       onHideBoxModelHighlighter,
       onShowBoxModelEditor,
       onShowBoxModelHighlighter,
+      onShowRulePreviewTooltip,
       onToggleGeometryEditor,
     } = this.inspector.getPanel("boxmodel").getComponentProps();
 
-    this.flexboxInspector = new FlexboxInspector(this.inspector,
-      this.inspector.panelWin);
-    let {
+    this.flexboxInspector = new FlexboxInspector(
+      this.inspector,
+      this.inspector.panelWin
+    );
+    const {
+      onSetFlexboxOverlayColor,
       onToggleFlexboxHighlighter,
     } = this.flexboxInspector.getComponentProps();
 
-    this.gridInspector = new GridInspector(this.inspector, this.inspector.panelWin);
-    let {
-      getSwatchColorPickerTooltip,
+    this.gridInspector = new GridInspector(
+      this.inspector,
+      this.inspector.panelWin
+    );
+    const {
       onSetGridOverlayColor,
-      onShowGridAreaHighlight,
-      onShowGridCellHighlight,
-      onShowGridLineNamesHighlight,
+      onShowGridOutlineHighlight,
       onToggleGridHighlighter,
       onToggleShowGridAreas,
       onToggleShowGridLineNumbers,
       onToggleShowInfiniteLines,
     } = this.gridInspector.getComponentProps();
 
-    let layoutApp = LayoutApp({
-      getSwatchColorPickerTooltip,
-      setSelectedNode,
-      /**
-       * Shows the box model properties under the box model if true, otherwise, hidden by
-       * default.
-       */
-      showBoxModelProperties: true,
+    const layoutApp = LayoutApp({
+      getSwatchColorPickerTooltip: () => this.swatchColorPickerTooltip,
       onHideBoxModelHighlighter,
+      onSetFlexboxOverlayColor,
       onSetGridOverlayColor,
       onShowBoxModelEditor,
       onShowBoxModelHighlighter,
       onShowBoxModelHighlighterForNode,
-      onShowGridAreaHighlight,
-      onShowGridCellHighlight,
-      onShowGridLineNamesHighlight,
+      onShowRulePreviewTooltip,
+      onShowGridOutlineHighlight,
       onToggleFlexboxHighlighter,
       onToggleGeometryEditor,
       onToggleGridHighlighter,
       onToggleShowGridAreas,
       onToggleShowGridLineNumbers,
       onToggleShowInfiniteLines,
+      setSelectedNode,
+      /**
+       * Shows the box model properties under the box model if true, otherwise, hidden by
+       * default.
+       */
+      showBoxModelProperties: true,
     });
 
-    let provider = createElement(Provider, {
-      id: "layoutview",
-      key: "layoutview",
-      store: this.store,
-      title: INSPECTOR_L10N.getStr("inspector.sidebar.layoutViewTitle2"),
-    }, layoutApp);
+    const provider = createElement(
+      Provider,
+      {
+        id: "layoutview",
+        key: "layoutview",
+        store: this.store,
+        title: INSPECTOR_L10N.getStr("inspector.sidebar.layoutViewTitle2"),
+      },
+      layoutApp
+    );
 
     // Expose the provider to let inspector.js use it in setupSidebar.
     this.provider = provider;
@@ -100,12 +117,29 @@ class LayoutView {
    * Destruction function called when the inspector is destroyed. Cleans up references.
    */
   destroy() {
+    if (this._swatchColorPickerTooltip) {
+      this._swatchColorPickerTooltip.destroy();
+      this._swatchColorPickerTooltip = null;
+    }
+
     this.flexboxInspector.destroy();
     this.gridInspector.destroy();
 
     this.document = null;
     this.inspector = null;
     this.store = null;
+  }
+
+  get swatchColorPickerTooltip() {
+    if (!this._swatchColorPickerTooltip) {
+      this._swatchColorPickerTooltip = new SwatchColorPickerTooltip(
+        this.inspector.toolbox.doc,
+        this.inspector,
+        { supportsCssColor4ColorFunction: () => false }
+      );
+    }
+
+    return this._swatchColorPickerTooltip;
   }
 }
 

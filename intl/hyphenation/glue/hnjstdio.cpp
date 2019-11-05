@@ -9,7 +9,14 @@
 // access the dictionary resources.
 
 #include "hnjalloc.h"
-#undef FILE  // Undo the damage done in hnjalloc.h
+
+#undef FILE  // Undo #defines from hnjalloc.h before #including other headers
+#undef fopen
+#undef fclose
+#undef fgets
+#undef feof
+#undef fgetc
+
 #include "nsNetUtil.h"
 #include "nsIInputStream.h"
 #include "nsIURI.h"
@@ -47,7 +54,7 @@ hnjFile* hnjFopen(const char* aURISpec, const char* aMode) {
   }
 
   nsCOMPtr<nsIInputStream> instream;
-  rv = channel->Open2(getter_AddRefs(instream));
+  rv = channel->Open(getter_AddRefs(instream));
   if (NS_FAILED(rv)) {
     return nullptr;
   }

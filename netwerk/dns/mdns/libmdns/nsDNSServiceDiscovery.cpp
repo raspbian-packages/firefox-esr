@@ -109,8 +109,6 @@ RegisterRequest::Cancel(nsresult aReason) {
 
 NS_IMPL_ISUPPORTS(nsDNSServiceDiscovery, nsIDNSServiceDiscovery)
 
-nsDNSServiceDiscovery::~nsDNSServiceDiscovery() {}
-
 nsresult nsDNSServiceDiscovery::Init() {
   if (!XRE_IsParentProcess()) {
     MOZ_ASSERT(false,

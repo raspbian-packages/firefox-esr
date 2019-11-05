@@ -30,39 +30,27 @@
 #include <stdlib.h>
 
 #if defined(PROCESSMODEL_WINAPI)
-#include "nsString.h"
-#include "nsLiteralString.h"
-#include "nsReadableUtils.h"
-#include "mozilla/UniquePtrExtensions.h"
+#  include "nsString.h"
+#  include "nsLiteralString.h"
+#  include "nsReadableUtils.h"
+#  include "mozilla/UniquePtrExtensions.h"
 #else
-#ifdef XP_MACOSX
-#include <crt_externs.h>
-#include <spawn.h>
-#endif
-#ifdef XP_UNIX
-#ifndef XP_MACOSX
-#include "base/process_util.h"
-#endif
-#include <sys/wait.h>
-#include <sys/errno.h>
-#endif
-#include <sys/types.h>
-#include <signal.h>
+#  ifdef XP_MACOSX
+#    include <crt_externs.h>
+#    include <spawn.h>
+#  endif
+#  ifdef XP_UNIX
+#    ifndef XP_MACOSX
+#      include "base/process_util.h"
+#    endif
+#    include <sys/wait.h>
+#    include <sys/errno.h>
+#  endif
+#  include <sys/types.h>
+#  include <signal.h>
 #endif
 
 using namespace mozilla;
-
-#ifdef XP_MACOSX
-cpu_type_t pref_cpu_types[2] = {
-#if defined(__i386__)
-    CPU_TYPE_X86,
-#elif defined(__x86_64__)
-    CPU_TYPE_X86_64,
-#elif defined(__ppc__)
-    CPU_TYPE_POWERPC,
-#endif
-    CPU_TYPE_ANY};
-#endif
 
 //-------------------------------------------------------------------//
 // nsIProcess implementation
@@ -269,7 +257,7 @@ void nsProcess::Monitor(void* aArg) {
     }
   }
 #else
-#ifdef XP_UNIX
+#  ifdef XP_UNIX
   int exitCode = -1;
   int status = 0;
   pid_t result;
@@ -283,19 +271,19 @@ void nsProcess::Monitor(void* aArg) {
       exitCode = 256;  // match NSPR's signal exit status
     }
   }
-#else
+#  else
   int32_t exitCode = -1;
   if (PR_WaitProcess(process->mProcess, &exitCode) != PR_SUCCESS) {
     exitCode = -1;
   }
-#endif
+#  endif
 
   // Lock in case Kill or GetExitCode are called during this
   {
     MutexAutoLock lock(process->mLock);
-#if !defined(XP_UNIX)
+#  if !defined(XP_UNIX)
     process->mProcess = nullptr;
-#endif
+#  endif
     process->mExitValue = exitCode;
     if (process->mShutdown) {
       return;
@@ -365,9 +353,6 @@ nsresult nsProcess::CopyArgsAndRunProcess(bool aBlocking, const char** aArgs,
   // Add one to the aCount for the program name and one for null termination.
   char** my_argv = nullptr;
   my_argv = (char**)moz_xmalloc(sizeof(char*) * (aCount + 2));
-  if (!my_argv) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
 
   my_argv[0] = ToNewUTF8String(mTargetPath);
 
@@ -405,9 +390,6 @@ nsresult nsProcess::CopyArgsAndRunProcessw(bool aBlocking,
   // Add one to the aCount for the program name and one for null termination.
   char** my_argv = nullptr;
   my_argv = (char**)moz_xmalloc(sizeof(char*) * (aCount + 2));
-  if (!my_argv) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
 
   my_argv[0] = ToNewUTF8String(mTargetPath);
 
@@ -530,29 +512,11 @@ nsresult nsProcess::RunProcess(bool aBlocking, char** aMyArgv,
 
   mPid = GetProcessId(mProcess);
 #elif defined(XP_MACOSX)
-  // Initialize spawn attributes.
-  posix_spawnattr_t spawnattr;
-  if (posix_spawnattr_init(&spawnattr) != 0) {
-    return NS_ERROR_FAILURE;
-  }
-
-  // Set spawn attributes.
-  size_t attr_count = ArrayLength(pref_cpu_types);
-  size_t attr_ocount = 0;
-  if (posix_spawnattr_setbinpref_np(&spawnattr, attr_count, pref_cpu_types,
-                                    &attr_ocount) != 0 ||
-      attr_ocount != attr_count) {
-    posix_spawnattr_destroy(&spawnattr);
-    return NS_ERROR_FAILURE;
-  }
-
   // Note: |aMyArgv| is already null-terminated as required by posix_spawnp.
   pid_t newPid = 0;
-  int result = posix_spawnp(&newPid, aMyArgv[0], nullptr, &spawnattr, aMyArgv,
+  int result = posix_spawnp(&newPid, aMyArgv[0], nullptr, nullptr, aMyArgv,
                             *_NSGetEnviron());
   mPid = static_cast<int32_t>(newPid);
-
-  posix_spawnattr_destroy(&spawnattr);
 
   if (result != 0) {
     return NS_ERROR_FAILURE;

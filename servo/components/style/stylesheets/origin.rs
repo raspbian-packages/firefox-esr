@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! [CSS cascade origins](https://drafts.csswg.org/css-cascade/#cascading-origins).
 
@@ -10,18 +10,17 @@ use std::ops::BitOrAssign;
 /// Each style rule has an origin, which determines where it enters the cascade.
 ///
 /// <https://drafts.csswg.org/css-cascade/#cascading-origins>
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, MallocSizeOf, PartialEq, ToShmem)]
 #[repr(u8)]
-#[cfg_attr(feature = "servo", derive(MallocSizeOf))]
 pub enum Origin {
     /// <https://drafts.csswg.org/css-cascade/#cascade-origin-user-agent>
-    UserAgent = 1 << 0,
+    UserAgent = 0x1,
 
     /// <https://drafts.csswg.org/css-cascade/#cascade-origin-user>
-    User = 1 << 1,
+    User = 0x2,
 
     /// <https://drafts.csswg.org/css-cascade/#cascade-origin-author>
-    Author = 1 << 2,
+    Author = 0x4,
 }
 
 impl Origin {
@@ -36,11 +35,30 @@ impl Origin {
             _ => return None,
         })
     }
+
+    fn to_index(self) -> i8 {
+        match self {
+            Origin::Author => 0,
+            Origin::User => 1,
+            Origin::UserAgent => 2,
+        }
+    }
+
+    /// Returns an iterator from this origin, towards all the less specific
+    /// origins. So for `UserAgent`, it'd iterate through all origins.
+    #[inline]
+    pub fn following_including(self) -> OriginSetIterator {
+        OriginSetIterator {
+            set: OriginSet::ORIGIN_USER | OriginSet::ORIGIN_AUTHOR | OriginSet::ORIGIN_USER_AGENT,
+            cur: self.to_index(),
+            rev: true,
+        }
+    }
 }
 
 bitflags! {
     /// A set of origins. This is equivalent to Gecko's OriginFlags.
-    #[cfg_attr(feature = "servo", derive(MallocSizeOf))]
+    #[derive(MallocSizeOf)]
     pub struct OriginSet: u8 {
         /// <https://drafts.csswg.org/css-cascade/#cascade-origin-user-agent>
         const ORIGIN_USER_AGENT = Origin::UserAgent as u8;
@@ -60,6 +78,7 @@ impl OriginSet {
         OriginSetIterator {
             set: *self,
             cur: 0,
+            rev: false,
         }
     }
 }
@@ -82,6 +101,7 @@ impl BitOrAssign<Origin> for OriginSet {
 pub struct OriginSetIterator {
     set: OriginSet,
     cur: i8,
+    rev: bool,
 }
 
 impl Iterator for OriginSetIterator {
@@ -91,10 +111,14 @@ impl Iterator for OriginSetIterator {
         loop {
             let origin = Origin::from_index(self.cur)?;
 
-            self.cur += 1;
+            if self.rev {
+                self.cur -= 1;
+            } else {
+                self.cur += 1;
+            }
 
             if self.set.contains(origin.into()) {
-                return Some(origin)
+                return Some(origin);
             }
         }
     }
@@ -177,7 +201,10 @@ pub struct PerOriginIter<'a, T: 'a> {
     rev: bool,
 }
 
-impl<'a, T> Iterator for PerOriginIter<'a, T> where T: 'a {
+impl<'a, T> Iterator for PerOriginIter<'a, T>
+where
+    T: 'a,
+{
     type Item = (&'a T, Origin);
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -201,7 +228,10 @@ pub struct PerOriginIterMut<'a, T: 'a> {
     _marker: PhantomData<&'a mut PerOrigin<T>>,
 }
 
-impl<'a, T> Iterator for PerOriginIterMut<'a, T> where T: 'a {
+impl<'a, T> Iterator for PerOriginIterMut<'a, T>
+where
+    T: 'a,
+{
     type Item = (&'a mut T, Origin);
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -209,6 +239,9 @@ impl<'a, T> Iterator for PerOriginIterMut<'a, T> where T: 'a {
 
         self.cur += 1;
 
-        Some((unsafe { (*self.data).borrow_mut_for_origin(&origin) }, origin))
+        Some((
+            unsafe { (*self.data).borrow_mut_for_origin(&origin) },
+            origin,
+        ))
     }
 }

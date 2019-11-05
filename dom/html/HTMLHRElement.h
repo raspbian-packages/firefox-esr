@@ -10,16 +10,13 @@
 #include "nsGenericHTMLElement.h"
 #include "nsMappedAttributes.h"
 #include "nsAttrValueInlines.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsRuleData.h"
-#endif
 
 namespace mozilla {
 namespace dom {
 
 class HTMLHRElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLHRElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit HTMLHRElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLHRElement, nsGenericHTMLElement)
@@ -31,8 +28,7 @@ class HTMLHRElement final : public nsGenericHTMLElement {
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL API
   void GetAlign(nsAString& aValue) const {
@@ -76,7 +72,7 @@ class HTMLHRElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

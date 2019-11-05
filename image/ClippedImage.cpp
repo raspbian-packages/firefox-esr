@@ -129,8 +129,8 @@ ClippedImage::ClippedImage(Image* aImage, nsIntRect aClip,
   MOZ_ASSERT_IF(aSVGViewportSize,
                 aImage->GetType() == imgIContainer::TYPE_VECTOR);
   if (aSVGViewportSize) {
-    mSVGViewportSize = Some(aSVGViewportSize->ToNearestPixels(
-        nsPresContext::AppUnitsPerCSSPixel()));
+    mSVGViewportSize =
+        Some(aSVGViewportSize->ToNearestPixels(AppUnitsPerCSSPixel()));
   }
 }
 
@@ -214,14 +214,12 @@ ClippedImage::GetIntrinsicSize(nsSize* aSize) {
   return NS_OK;
 }
 
-NS_IMETHODIMP
-ClippedImage::GetIntrinsicRatio(nsSize* aRatio) {
+Maybe<AspectRatio> ClippedImage::GetIntrinsicRatio() {
   if (!ShouldClip()) {
-    return InnerImage()->GetIntrinsicRatio(aRatio);
+    return InnerImage()->GetIntrinsicRatio();
   }
 
-  *aRatio = nsSize(mClip.Width(), mClip.Height());
-  return NS_OK;
+  return Some(AspectRatio::FromSize(mClip.Width(), mClip.Height()));
 }
 
 NS_IMETHODIMP_(already_AddRefed<SourceSurface>)
@@ -247,7 +245,7 @@ Pair<ImgDrawResult, RefPtr<SourceSurface>> ClippedImage::GetFrameInternal(
   if (!ShouldClip()) {
     RefPtr<SourceSurface> surface = InnerImage()->GetFrame(aWhichFrame, aFlags);
     return MakePair(surface ? ImgDrawResult::SUCCESS : ImgDrawResult::NOT_READY,
-                    Move(surface));
+                    std::move(surface));
   }
 
   float frameToDraw = InnerImage()->GetFrameIndex(aWhichFrame);
@@ -287,7 +285,7 @@ Pair<ImgDrawResult, RefPtr<SourceSurface>> ClippedImage::GetFrameInternal(
 
   MOZ_ASSERT(mCachedSurface, "Should have a cached surface now");
   RefPtr<SourceSurface> surface = mCachedSurface->Surface();
-  return MakePair(mCachedSurface->GetDrawResult(), Move(surface));
+  return MakePair(mCachedSurface->GetDrawResult(), std::move(surface));
 }
 
 NS_IMETHODIMP_(bool)
@@ -325,11 +323,12 @@ ClippedImage::IsImageContainerAvailableAtSize(LayerManager* aManager,
   return false;
 }
 
-NS_IMETHODIMP_(already_AddRefed<ImageContainer>)
-ClippedImage::GetImageContainerAtSize(LayerManager* aManager,
-                                      const IntSize& aSize,
+NS_IMETHODIMP_(ImgDrawResult)
+ClippedImage::GetImageContainerAtSize(layers::LayerManager* aManager,
+                                      const gfx::IntSize& aSize,
                                       const Maybe<SVGImageContext>& aSVGContext,
-                                      uint32_t aFlags) {
+                                      uint32_t aFlags,
+                                      layers::ImageContainer** aOutContainer) {
   // XXX(seth): We currently don't have a way of clipping the result of
   // GetImageContainer. We work around this by always returning null, but if it
   // ever turns out that ClippedImage is widely used on codepaths that can
@@ -338,10 +337,10 @@ ClippedImage::GetImageContainerAtSize(LayerManager* aManager,
 
   if (!ShouldClip()) {
     return InnerImage()->GetImageContainerAtSize(aManager, aSize, aSVGContext,
-                                                 aFlags);
+                                                 aFlags, aOutContainer);
   }
 
-  return nullptr;
+  return ImgDrawResult::NOT_SUPPORTED;
 }
 
 static bool MustCreateSurface(gfxContext* aContext, const nsIntSize& aSize,

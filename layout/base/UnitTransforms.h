@@ -56,7 +56,16 @@ enum class PixelCastJustification : uint8_t {
   MultipleAsyncTransforms,
   // We have reason to believe a layer doesn't have a local transform.
   // Should only be used if we've already checked or asserted this.
-  NoTransformOnLayer
+  NoTransformOnLayer,
+  // LayerPixels are ImagePixels
+  LayerIsImage,
+  // External pixels are the same scale as screen pixels
+  ExternalIsScreen,
+  // LayerToScreenMatrix is used as LayoutDeviceToLayoutDevice, because
+  // out-of-process iframes uses LayoutDevicePixels as the type system-visible
+  // type of their top-level event coordinate space even if technically
+  // inaccurate.
+  ContentProcessIsLayerInUiProcess,
 };
 
 template <class TargetUnits, class SourceUnits>

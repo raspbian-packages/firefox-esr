@@ -12,70 +12,62 @@ function getRemoveButton(document, id) {
   return document.querySelector(`[data-addon-id="${id}"] .uninstall-button`);
 }
 
-add_task(function* removeLegacyExtension() {
-  const addonID = "test-devtools@mozilla.org";
-  const addonName = "test-devtools";
-
-  const { tab, document } = yield openAboutDebugging("addons");
-  yield waitForInitialAddonList(document);
-
-  // Install this add-on, and verify that it appears in the about:debugging UI
-  yield installAddon({
-    document,
-    path: "addons/unpacked/install.rdf",
-    name: addonName,
-  });
-
-  ok(getTargetEl(document, addonID), "add-on is shown");
-
-  info("Click on the remove button and wait until the addon container is removed");
-  getRemoveButton(document, addonID).click();
-  yield waitUntil(() => !getTargetEl(document, addonID), 100);
-
-  info("add-on is not shown");
-
-  yield closeAboutDebugging(tab);
-});
-
-add_task(function* removeWebextension() {
+add_task(async function removeWebextension() {
   const addonID = "test-devtools-webextension@mozilla.org";
   const addonName = "test-devtools-webextension";
 
-  const { tab, document } = yield openAboutDebugging("addons");
-  yield waitForInitialAddonList(document);
+  const { tab, document } = await openAboutDebugging("addons");
+  await waitForInitialAddonList(document);
+
+  const addonFile = ExtensionTestCommon.generateXPI({
+    manifest: {
+      name: addonName,
+      applications: {
+        gecko: { id: addonID },
+      },
+    },
+  });
+  registerCleanupFunction(() => addonFile.remove(false));
 
   // Install this add-on, and verify that it appears in the about:debugging UI
-  yield installAddon({
+  await installAddon({
     document,
-    path: "addons/test-devtools-webextension/manifest.json",
+    file: addonFile,
     name: addonName,
-    isWebExtension: true,
   });
 
   ok(getTargetEl(document, addonID), "add-on is shown");
 
-  info("Click on the remove button and wait until the addon container is removed");
+  info(
+    "Click on the remove button and wait until the addon container is removed"
+  );
   getRemoveButton(document, addonID).click();
-  yield waitUntil(() => !getTargetEl(document, addonID), 100);
+  await waitUntil(() => !getTargetEl(document, addonID), 100);
 
   info("add-on is not shown");
 
-  yield closeAboutDebugging(tab);
+  await closeAboutDebugging(tab);
 });
 
-add_task(function* onlyTempInstalledAddonsCanBeRemoved() {
-  const { tab, document } = yield openAboutDebugging("addons");
-  yield waitForInitialAddonList(document);
+add_task(async function onlyTempInstalledAddonsCanBeRemoved() {
+  const { tab, document, window } = await openAboutDebugging("addons");
+  const { AboutDebugging } = window;
+  await waitForInitialAddonList(document);
 
-  yield installAddonWithManager(getSupportsFile("addons/bug1273184.xpi").file);
-  const addon = yield getAddonByID("bug1273184@tests");
+  // List updated twice:
+  // - AddonManager's onInstalled event
+  // - WebExtension's Management's startup event.
+  const onListUpdated = waitForNEvents(AboutDebugging, "addons-updated", 2);
+  await installAddonWithManager(getSupportsFile("addons/bug1273184.xpi").file);
+  await onListUpdated;
+  const addon = await getAddonByID("bug1273184@tests");
 
   info("Wait until addon appears in about:debugging#addons");
-  yield waitUntilAddonContainer(PACKAGED_ADDON_NAME, document);
+  await waitUntilAddonContainer(PACKAGED_ADDON_NAME, document);
 
   const removeButton = getRemoveButton(document, addon.id);
   ok(!removeButton, "remove button is not shown");
 
-  yield tearDownAddon(addon);
-  yield closeAboutDebugging(tab);
+  await tearDownAddon(AboutDebugging, addon);
+  await closeAboutDebugging(tab);
 });

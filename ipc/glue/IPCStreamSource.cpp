@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "IPCStreamSource.h"
+#include "BackgroundParent.h"  // for AssertIsOnBackgroundThread
 #include "mozilla/webrender/WebRenderTypes.h"
 #include "nsIAsyncInputStream.h"
 #include "nsICancelableRunnable.h"
@@ -13,8 +14,6 @@
 #include "nsStreamUtils.h"
 #include "nsThreadUtils.h"
 
-using mozilla::dom::WorkerPrivate;
-using mozilla::dom::WorkerStatus;
 using mozilla::wr::ByteBuffer;
 
 namespace mozilla {
@@ -39,7 +38,7 @@ class IPCStreamSource::Callback final : public nsIInputStreamCallback,
 
     // If this fails, then it means the owning thread is a Worker that has
     // been shutdown.  Its ok to lose the event in this case because the
-    // IPCStreamChild listens for this event through the WorkerHolder.
+    // IPCStreamChild listens for this event through the WorkerRef.
     nsresult rv =
         mOwningEventTarget->Dispatch(this, nsIThread::DISPATCH_NORMAL);
     if (NS_FAILED(rv)) {
@@ -61,7 +60,7 @@ class IPCStreamSource::Callback final : public nsIInputStreamCallback,
   nsresult Cancel() override {
     // Cancel() gets called when the Worker thread is being shutdown.  We have
     // nothing to do here because IPCStreamChild handles this case via
-    // the WorkerHolder.
+    // the WorkerRef.
     return NS_OK;
   }
 
@@ -93,10 +92,7 @@ NS_IMPL_ISUPPORTS(IPCStreamSource::Callback, nsIInputStreamCallback,
                   nsIRunnable, nsICancelableRunnable);
 
 IPCStreamSource::IPCStreamSource(nsIAsyncInputStream* aInputStream)
-    : WorkerHolder("IPCStreamSource"),
-      mStream(aInputStream),
-      mWorkerPrivate(nullptr),
-      mState(ePending) {
+    : mStream(aInputStream), mState(ePending) {
   MOZ_ASSERT(aInputStream);
 }
 
@@ -104,7 +100,7 @@ IPCStreamSource::~IPCStreamSource() {
   NS_ASSERT_OWNINGTHREAD(IPCStreamSource);
   MOZ_ASSERT(mState == eClosed);
   MOZ_ASSERT(!mCallback);
-  MOZ_ASSERT(!mWorkerPrivate);
+  MOZ_ASSERT(!mWorkerRef);
 }
 
 bool IPCStreamSource::Initialize() {
@@ -119,19 +115,19 @@ bool IPCStreamSource::Initialize() {
   // A source can be used on any thread, but we only support IPCStream on
   // main thread, Workers and PBackground thread right now.  This is due
   // to the requirement  that the thread be guaranteed to live long enough to
-  // receive messages. We can enforce this guarantee with a WorkerHolder on
+  // receive messages. We can enforce this guarantee with a StrongWorkerRef on
   // worker threads, but not other threads. Main-thread and PBackground thread
   // do not need anything special in order to be kept alive.
-  WorkerPrivate* workerPrivate = nullptr;
   if (!NS_IsMainThread()) {
-    workerPrivate = mozilla::dom::GetCurrentThreadWorkerPrivate();
-    if (workerPrivate) {
-      bool result = HoldWorker(workerPrivate, WorkerStatus::Canceling);
-      if (!result) {
+    if (const auto workerPrivate = dom::GetCurrentThreadWorkerPrivate()) {
+      RefPtr<dom::StrongWorkerRef> workerRef =
+          dom::StrongWorkerRef::CreateForcibly(workerPrivate,
+                                               "IPCStreamSource");
+      if (NS_WARN_IF(!workerRef)) {
         return false;
       }
 
-      mWorkerPrivate = workerPrivate;
+      mWorkerRef = std::move(workerRef);
     } else {
       AssertIsOnBackgroundThread();
     }
@@ -145,13 +141,6 @@ void IPCStreamSource::ActorConstructed() {
   mState = eActorConstructed;
 }
 
-bool IPCStreamSource::Notify(WorkerStatus aStatus) {
-  NS_ASSERT_OWNINGTHREAD(IPCStreamSource);
-
-  // Keep the worker thread alive until the stream is finished.
-  return true;
-}
-
 void IPCStreamSource::ActorDestroyed() {
   NS_ASSERT_OWNINGTHREAD(IPCStreamSource);
 
@@ -162,10 +151,7 @@ void IPCStreamSource::ActorDestroyed() {
     mCallback = nullptr;
   }
 
-  if (mWorkerPrivate) {
-    ReleaseWorker();
-    mWorkerPrivate = nullptr;
-  }
+  mWorkerRef = nullptr;
 }
 
 void IPCStreamSource::Start() {

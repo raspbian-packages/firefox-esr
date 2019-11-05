@@ -30,8 +30,8 @@ AutoRestyleTimelineMarker::AutoRestyleTimelineMarker(
 
   mDocShell = aDocShell;
   timelines->AddMarkerForDocShell(
-      mDocShell, Move(MakeUnique<RestyleTimelineMarker>(
-                     mIsAnimationOnly, MarkerTracingType::START)));
+      mDocShell, MakeUnique<RestyleTimelineMarker>(mIsAnimationOnly,
+                                                   MarkerTracingType::START));
 }
 
 AutoRestyleTimelineMarker::~AutoRestyleTimelineMarker() {
@@ -47,8 +47,8 @@ AutoRestyleTimelineMarker::~AutoRestyleTimelineMarker() {
   }
 
   timelines->AddMarkerForDocShell(
-      mDocShell, Move(MakeUnique<RestyleTimelineMarker>(
-                     mIsAnimationOnly, MarkerTracingType::END)));
+      mDocShell, MakeUnique<RestyleTimelineMarker>(mIsAnimationOnly,
+                                                   MarkerTracingType::END));
 }
 
 }  // namespace mozilla

@@ -10,7 +10,7 @@
 #include "mozilla/BasicEvents.h"
 #include "nsCOMPtr.h"
 #include "nsAtom.h"
-#include "nsIDOMNode.h"
+#include "nsINode.h"
 
 namespace mozilla {
 
@@ -32,7 +32,7 @@ class InternalMutationEvent : public WidgetEvent {
     return result;
   }
 
-  nsCOMPtr<nsIDOMNode> mRelatedNode;
+  nsCOMPtr<nsINode> mRelatedNode;
   RefPtr<nsAtom> mAttrName;
   RefPtr<nsAtom> mPrevAttrValue;
   RefPtr<nsAtom> mNewAttrValue;

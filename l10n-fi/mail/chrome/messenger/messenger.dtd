@@ -57,6 +57,8 @@
 <!ENTITY getAllNewMsgCmdPopupMenu.accesskey "K">
 <!ENTITY getNewMsgCurrentAccountCmdPopupMenu.label "Valittu tili">
 <!ENTITY getNewMsgCurrentAccountCmdPopupMenu.accesskey "V">
+<!ENTITY getNextNMsgCmd2.label "Lataa uudet viestit">
+<!ENTITY getNextNMsgCmd2.accesskey "L">
 <!ENTITY sendUnsentCmd.label "Lähetä lähtevät viestit">
 <!ENTITY sendUnsentCmd.accesskey "ä">
 <!ENTITY subscribeCmd.label "Tilaa…">
@@ -164,7 +166,7 @@
 <!ENTITY unreadFolders.accesskey "L">
 <!ENTITY favoriteFolders.label "Suosikit">
 <!ENTITY favoriteFolders.accesskey "S">
-<!ENTITY recentFolders.label "Tuoreet">
+<!ENTITY recentFolders.label "Nykyinen">
 <!ENTITY recentFolders.accesskey "u">
 <!ENTITY compactVersion.label "Tiivis näkkymä">
 <!ENTITY compactVersion.accesskey "T">
@@ -378,7 +380,7 @@
 <!ENTITY createFilter.accesskey "d">
 <!ENTITY moveMsgToMenu.label "Siirrä">
 <!ENTITY moveMsgToMenu.accesskey "S">
-<!ENTITY moveCopyMsgRecentMenu.label "Tuoreet">
+<!ENTITY moveCopyMsgRecentMenu.label "Nykyinen">
 <!ENTITY moveCopyMsgRecentMenu.accesskey "T">
 <!ENTITY copyMessageLocation.label "Kopioi viestin sijainti">
 <!ENTITY copyMessageLocation.accesskey "o">
@@ -425,22 +427,22 @@
 <!ENTITY markAllReadCmd.accesskey "K">
 <!ENTITY markAllReadCmd.key "c">
 <!ENTITY markStarredCmd.label "Lisää tähti">
-<!ENTITY markStarredCmd.accesskey "L">
+<!ENTITY markStarredCmd.accesskey "t">
 <!ENTITY markStarredCmd.key "S">
 <!ENTITY markAsJunkCmd.label "Roskapostiksi">
 <!ENTITY markAsJunkCmd.accesskey "R">
 <!ENTITY markAsJunkCmd.key "j">
 <!ENTITY markAsNotJunkCmd.label "Ei roskapostiksi">
-<!ENTITY markAsNotJunkCmd.accesskey "E">
+<!ENTITY markAsNotJunkCmd.accesskey "i">
 <!ENTITY markAsNotJunkCmd.key "j">
 <!ENTITY recalculateJunkScoreCmd.label "Tunnista roskapostit">
-<!ENTITY recalculateJunkScoreCmd.accesskey "u">
+<!ENTITY recalculateJunkScoreCmd.accesskey "n">
 <!ENTITY openMessageWindowCmd.label "Avaa viesti">
 <!ENTITY openMessageWindowCmd.accesskey "i">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Avaa keskusteluna">
-<!ENTITY openConversationCmd.accesskey "k">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Avaa keskusteluna">
+<!ENTITY openInConversationCmd.accesskey "k">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Liitetiedostot">
 <!ENTITY openAttachmentListCmd.accesskey "L">
 <!ENTITY openFeedMessage1.label "Avattaessa syöteviestejä">
@@ -508,13 +510,20 @@
 <!ENTITY accountManagerCmdUnix2.accesskey "a">
 
 <!-- Developer Tools Submenu -->
-<!ENTITY devtoolsMenu.label "Kehittäjätyökalut">
+<!ENTITY devtoolsMenu.label "Kehittäjän työkalut">
 <!ENTITY devtoolsMenu.accesskey "h">
 <!ENTITY devToolboxCmd.label "Kehittäjän työkalulaatikko">
 <!ENTITY devToolboxCmd.accesskey "t">
+<!ENTITY devToolboxCmd.commandkey "y">
+<!ENTITY debugAddonsCmd.label "Virheenkorjaa lisäosia">
+<!ENTITY debugAddonsCmd.accesskey "l">
+<!ENTITY tabsDebugCmd.label "Sisältökehyksen virheenkorjaus">
+<!ENTITY tabsDebugCmd.accesskey "k">
 <!ENTITY errorConsoleCmd.label "Virhekonsoli">
 <!ENTITY errorConsoleCmd.accesskey "V">
 <!ENTITY errorConsoleCmd.commandkey "j">
+<!ENTITY scratchpadCmd.label "Muistio">
+<!ENTITY scratchpadCmd.accesskey "M">
 
 <!--LOCALIZATION NOTE (scratchpadCmd.keycode):
     This should be a key code constant as per
@@ -597,16 +606,18 @@
 <!ENTITY compactButton.tooltip "Poista poistettu viesti valitusta kansiosta">
 <!ENTITY appmenuButton1.tooltip "Avaa &brandShortName;-valikko">
 
+<!ENTITY addonsButton.tooltip "Hallinnoi lisäosia">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Välitä rungossa">
 <!ENTITY buttonMenuForwardAsAttachment.label "Välitä liitteenä">
 
 <!-- Remote Content Button Popup -->
-<!ENTITY remoteContentOptionsAllowForMsg.label "Näytä ulkoinen sisältö tässä viestissä">
-<!ENTITY remoteContentOptionsAllowForMsg.accesskey "u">
-<!ENTITY editRemoteContentSettings.label "Muokkaa ulkoisen sisällön asetuksia…">
+<!ENTITY remoteContentOptionsAllowForMsg.label "Näytä etäsisältö tässä viestissä">
+<!ENTITY remoteContentOptionsAllowForMsg.accesskey "N">
+<!ENTITY editRemoteContentSettings.label "Muokkaa etäsisällön asetuksia…">
 <!ENTITY editRemoteContentSettings.accesskey "M">
-<!ENTITY editRemoteContentSettingsUnix.label "Muokkaa ulkoisen sisällön asetuksia…">
+<!ENTITY editRemoteContentSettingsUnix.label "Muokkaa etäsisällön asetuksia…">
 <!ENTITY editRemoteContentSettingsUnix.accesskey "M">
 
 <!-- Phishing Button Popup -->
@@ -628,7 +639,7 @@
 <!-- Tags Menu Popup -->
 <!ENTITY addNewTag.label "Uusi tunnus…">
 <!ENTITY addNewTag.accesskey "t">
-<!ENTITY manageTags.label "Muokkaa tunnuksia…">
+<!ENTITY manageTags.label "Hallinnoi tunnuksia…">
 <!ENTITY manageTags.accesskey "M">
 
 <!-- Folder Pane -->
@@ -781,11 +792,14 @@
 <!ENTITY contextMultiForwardAsAttachment.accesskey "i">
 <!ENTITY contextMoveMsgMenu.label "Siirrä kansioon">
 <!ENTITY contextMoveMsgMenu.accesskey "S">
-<!ENTITY contextMoveCopyMsgRecentMenu.label "Tuoreet">
+<!ENTITY contextMoveCopyMsgRecentMenu.label "Nykyinen">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "T">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Suosikit">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "o">
 <!ENTITY contextCopyMsgMenu.label "Kopioi kansioon">
 <!ENTITY contextCopyMsgMenu.accesskey "K">
 <!ENTITY contextKillThreadMenu.label "Ohita viestiketju">
+<!ENTITY contextKillSubthreadMenu.accesskey "a">
 <!ENTITY contextKillThreadMenu.accesskey "O">
 <!ENTITY contextKillSubthreadMenu.label "Ohita alaviestiketju">
 <!ENTITY contextWatchThreadMenu.label "Tarkkaile viestiketjua">
@@ -793,6 +807,7 @@
      In the en-US locale we ran out of access keys, so there is an empty access key for
      Watch Thread. Localizers can pick a suitable key
   -->
+<!ENTITY contextWatchThreadMenu.accesskey "">
 <!ENTITY contextSaveAs.label "Tallenna nimellä…">
 <!ENTITY contextSaveAs.accesskey "n">
 <!ENTITY contextPrint.label "Tulosta…">
@@ -800,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Tulostuksen esikatselu">
 <!ENTITY contextPrintPreview.accesskey "u">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Palauta oletussarakkeet">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -845,7 +854,6 @@
      "File here" option for the move to/copy to widget.
   -->
 <!ENTITY columnPicker.thisFolder.label "Tälle kansiolle">
-
 
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Toista">
@@ -961,4 +969,4 @@
 <!-- Mac OS X Dock Icon pop-up menu -->
 <!ENTITY dockOptions.label              "Sovelluskuvakkeen asetukset…">
 <!ENTITY writeNewMessageDock.label      "Kirjoita uusi viesti">
-<!ENTITY openAddressBookDock.label      "Avaa Osoitekirja">
+<!ENTITY openAddressBookDock.label      "Avaa osoitekirja">

@@ -8,7 +8,7 @@ EXPORTS.mozilla += [
     'SandboxLaunch.h',
 ]
 
-SOURCES += [
+UNIFIED_SOURCES += [
     'LinuxCapabilities.cpp',
     'SandboxLaunch.cpp',
 ]
@@ -25,9 +25,6 @@ LOCAL_INCLUDES += [
 USE_LIBS += [
     'mozsandbox',
 ]
-
-if CONFIG['MOZ_ALSA']:
-    DEFINES['MOZ_ALSA'] = True
 
 # For the X11 socket domain inspection in SandboxLaunch:
 CXXFLAGS += CONFIG['TK_CFLAGS']

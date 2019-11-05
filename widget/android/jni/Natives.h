@@ -2,10 +2,10 @@
 #define mozilla_jni_Natives_h__
 
 #include <jni.h>
+#include <utility>
 
 #include "nsThreadUtils.h"
 
-#include "mozilla/IndexSequence.h"
 #include "mozilla/Move.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/Tuple.h"
@@ -208,9 +208,12 @@ struct NativePtr<Impl, /* Type = */ NativePtrType::WEAK> {
 
   template <class LocalRef>
   static void Set(const LocalRef& instance, Impl* ptr) {
+    // Create the new handle first before clearing any old handle, so the
+    // new handle is guaranteed to have different value than any old handle.
+    const uintptr_t handle =
+        reinterpret_cast<uintptr_t>(new WeakPtr<Impl>(ptr));
     Clear(instance);
-    SetNativeHandle(instance.Env(), instance.Get(),
-                    reinterpret_cast<uintptr_t>(new WeakPtr<Impl>(ptr)));
+    SetNativeHandle(instance.Env(), instance.Get(), handle);
     MOZ_CATCH_JNI_EXCEPTION(instance.Env());
   }
 
@@ -248,9 +251,11 @@ struct NativePtr<Impl, /* Type = */ NativePtrType::REFPTR> {
 
   template <class LocalRef>
   static void Set(const LocalRef& instance, Impl* ptr) {
+    // Create the new handle first before clearing any old handle, so the
+    // new handle is guaranteed to have different value than any old handle.
+    const uintptr_t handle = reinterpret_cast<uintptr_t>(new RefPtr<Impl>(ptr));
     Clear(instance);
-    SetNativeHandle(instance.Env(), instance.Get(),
-                    reinterpret_cast<uintptr_t>(new RefPtr<Impl>(ptr)));
+    SetNativeHandle(instance.Env(), instance.Get(), handle);
     MOZ_CATCH_JNI_EXCEPTION(instance.Env());
   }
 
@@ -290,7 +295,7 @@ using namespace detail;
  *     {
  *         Functor mCall;
  *     public:
- *         ProxyRunnable(Functor&& call) : mCall(mozilla::Move(call)) {}
+ *         ProxyRunnable(Functor&& call) : mCall(std::move(call)) {}
  *         virtual void run() override { mCall(); }
  *     };
  *
@@ -298,7 +303,7 @@ using namespace detail;
  *     template<class Functor>
  *     static void OnNativeCall(Functor&& call)
  *     {
- *         RunOnAnotherThread(new ProxyRunnable(mozilla::Move(call)));
+ *         RunOnAnotherThread(new ProxyRunnable(std::move(call)));
  *     }
  * };
  */
@@ -380,20 +385,20 @@ class ProxyNativeCall {
 
   template <bool Static, bool ThisArg, size_t... Indices>
   typename mozilla::EnableIf<Static && ThisArg, void>::Type Call(
-      const Class::LocalRef& cls, mozilla::IndexSequence<Indices...>) const {
+      const Class::LocalRef& cls, std::index_sequence<Indices...>) const {
     (*mNativeCall)(cls, mozilla::Get<Indices>(mArgs)...);
   }
 
   template <bool Static, bool ThisArg, size_t... Indices>
   typename mozilla::EnableIf<Static && !ThisArg, void>::Type Call(
-      const Class::LocalRef& cls, mozilla::IndexSequence<Indices...>) const {
+      const Class::LocalRef& cls, std::index_sequence<Indices...>) const {
     (*mNativeCall)(mozilla::Get<Indices>(mArgs)...);
   }
 
   template <bool Static, bool ThisArg, size_t... Indices>
   typename mozilla::EnableIf<!Static && ThisArg, void>::Type Call(
       const typename Owner::LocalRef& inst,
-      mozilla::IndexSequence<Indices...>) const {
+      std::index_sequence<Indices...>) const {
     Impl* const impl = NativePtr<Impl>::Get(inst);
     MOZ_CATCH_JNI_EXCEPTION(inst.Env());
     (impl->*mNativeCall)(inst, mozilla::Get<Indices>(mArgs)...);
@@ -402,14 +407,14 @@ class ProxyNativeCall {
   template <bool Static, bool ThisArg, size_t... Indices>
   typename mozilla::EnableIf<!Static && !ThisArg, void>::Type Call(
       const typename Owner::LocalRef& inst,
-      mozilla::IndexSequence<Indices...>) const {
+      std::index_sequence<Indices...>) const {
     Impl* const impl = NativePtr<Impl>::Get(inst);
     MOZ_CATCH_JNI_EXCEPTION(inst.Env());
     (impl->*mNativeCall)(mozilla::Get<Indices>(mArgs)...);
   }
 
   template <size_t... Indices>
-  void Clear(JNIEnv* env, mozilla::IndexSequence<Indices...>) {
+  void Clear(JNIEnv* env, std::index_sequence<Indices...>) {
     int dummy[] = {(ProxyArg<Args>::Clear(env, Get<Indices>(mArgs)), 0)...};
     mozilla::Unused << dummy;
   }
@@ -464,14 +469,13 @@ class ProxyNativeCall {
   void operator()() {
     JNIEnv* const env = GetEnvForThread();
     typename ThisArgClass::LocalRef thisArg(env, mThisArg);
-    Call<IsStatic, HasThisArg>(thisArg,
-                               typename IndexSequenceFor<Args...>::Type());
+    Call<IsStatic, HasThisArg>(thisArg, std::index_sequence_for<Args...>{});
 
     // Clear all saved global refs. We do this after the call is invoked,
     // and not inside the destructor because we already have a JNIEnv here,
     // so it's more efficient to clear out the saved args here. The
     // downside is that the call can only be invoked once.
-    Clear(env, typename IndexSequenceFor<Args...>::Type());
+    Clear(env, std::index_sequence_for<Args...>{});
     mThisArg.Clear(env);
   }
 };
@@ -485,7 +489,7 @@ struct Dispatcher {
   Run(ProxyArgs&&... args) {
     Impl::OnNativeCall(
         ProxyNativeCall<Impl, typename Traits::Owner, IsStatic, HasThisArg,
-                        Args...>(Forward<ProxyArgs>(args)...));
+                        Args...>(std::forward<ProxyArgs>(args)...));
   }
 
   template <class Traits, bool IsStatic = Traits::isStatic, typename ThisArg,
@@ -499,9 +503,9 @@ struct Dispatcher {
     auto proxy =
         ProxyNativeCall<Impl, typename Traits::Owner, IsStatic, HasThisArg,
                         Args...>((HasThisArg || !IsStatic) ? thisArg : nullptr,
-                                 Forward<ProxyArgs>(args)...);
+                                 std::forward<ProxyArgs>(args)...);
     DispatchToGeckoPriorityQueue(
-        NS_NewRunnableFunction("PriorityNativeCall", Move(proxy)));
+        NS_NewRunnableFunction("PriorityNativeCall", std::move(proxy)));
   }
 
   template <class Traits, bool IsStatic = Traits::isStatic, typename ThisArg,
@@ -515,9 +519,9 @@ struct Dispatcher {
     auto proxy =
         ProxyNativeCall<Impl, typename Traits::Owner, IsStatic, HasThisArg,
                         Args...>((HasThisArg || !IsStatic) ? thisArg : nullptr,
-                                 Forward<ProxyArgs>(args)...);
+                                 std::forward<ProxyArgs>(args)...);
     NS_DispatchToMainThread(
-        NS_NewRunnableFunction("GeckoNativeCall", Move(proxy)));
+        NS_NewRunnableFunction("GeckoNativeCall", std::move(proxy)));
   }
 
   template <class Traits, bool IsStatic = false, typename... ProxyArgs>
@@ -541,9 +545,9 @@ struct Dispatcher {
 
 // Bug 1207642 - Work around Dalvik bug by realigning stack on JNI entry
 #ifdef __i386__
-#define MOZ_JNICALL JNICALL __attribute__((force_align_arg_pointer))
+#  define MOZ_JNICALL JNICALL __attribute__((force_align_arg_pointer))
 #else
-#define MOZ_JNICALL JNICALL
+#  define MOZ_JNICALL JNICALL
 #endif
 
 template <class Traits, class Impl, class Args = typename Traits::Args>
@@ -773,7 +777,7 @@ class NativeImpl {
                            UniquePtr<Impl>&& ptr) {
     static_assert(NativePtrPicker<Impl>::value == NativePtrType::OWNING,
                   "Use another AttachNative for WeakPtr or RefPtr usage");
-    return NativePtr<Impl>::Set(instance, mozilla::Move(ptr));
+    return NativePtr<Impl>::Set(instance, std::move(ptr));
   }
 
   static void AttachNative(const typename Cls::LocalRef& instance, Impl* ptr) {

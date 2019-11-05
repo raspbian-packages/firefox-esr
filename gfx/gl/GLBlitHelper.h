@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,12 +16,13 @@
 #include "../layers/ImageTypes.h"
 
 #ifdef XP_WIN
-#include <windows.h>
+#  include <windows.h>
 #endif
 
 namespace mozilla {
 
 namespace layers {
+class D3D11ShareHandleImage;
 class D3D11YCbCrImage;
 class Image;
 class GPUVideoImage;
@@ -66,7 +67,7 @@ class DrawBlitProg final {
   const GLint mLoc_uTexMatrix0;
   const GLint mLoc_uTexMatrix1;
   const GLint mLoc_uColorMatrix;
-  GLenum mType_uColorMatrix;
+  GLenum mType_uColorMatrix = 0;
 
  public:
   struct Key final {
@@ -91,7 +92,7 @@ class DrawBlitProg final {
   };
   struct YUVArgs final {
     Mat3 texMatrix1;
-    YUVColorSpace colorSpace;
+    gfx::YUVColorSpace colorSpace;
   };
 
   void Draw(const BaseArgs& args, const YUVArgs* argsYUV = nullptr) const;
@@ -119,14 +120,14 @@ class GLBlitHelper final {
   GLContext* const mGL;
   mutable std::map<DrawBlitProg::Key, const DrawBlitProg*> mDrawBlitProgs;
 
-  GLuint mQuadVAO;
-  GLuint mQuadVBO;
+  GLuint mQuadVAO = 0;
+  GLuint mQuadVBO = 0;
   nsCString mDrawBlitProg_VersionLine;
   const GLuint mDrawBlitProg_VertShader;
 
-  GLuint mYuvUploads[3];
-  gfx::IntSize mYuvUploads_YSize;
-  gfx::IntSize mYuvUploads_UVSize;
+  GLuint mYuvUploads[3] = {};
+  gfx::IntSize mYuvUploads_YSize = {0, 0};
+  gfx::IntSize mYuvUploads_UVSize = {0, 0};
 
 #ifdef XP_WIN
   mutable RefPtr<ID3D11Device> mD3D11;
@@ -158,10 +159,12 @@ class GLBlitHelper final {
   ~GLBlitHelper();
 
   void BlitFramebuffer(const gfx::IntSize& srcSize,
-                       const gfx::IntSize& destSize) const;
+                       const gfx::IntSize& destSize,
+                       GLuint filter = LOCAL_GL_NEAREST) const;
   void BlitFramebufferToFramebuffer(GLuint srcFB, GLuint destFB,
                                     const gfx::IntSize& srcSize,
-                                    const gfx::IntSize& destSize) const;
+                                    const gfx::IntSize& destSize,
+                                    GLuint filter = LOCAL_GL_NEAREST) const;
   void BlitFramebufferToTexture(GLuint destTex, const gfx::IntSize& srcSize,
                                 const gfx::IntSize& destSize,
                                 GLenum destTarget = LOCAL_GL_TEXTURE_2D) const;
@@ -187,6 +190,8 @@ class GLBlitHelper final {
   // GLBlitHelperD3D.cpp:
   bool BlitImage(layers::GPUVideoImage* srcImage, const gfx::IntSize& destSize,
                  OriginPos destOrigin) const;
+  bool BlitImage(layers::D3D11ShareHandleImage* srcImage,
+                 const gfx::IntSize& destSize, OriginPos destOrigin) const;
   bool BlitImage(layers::D3D11YCbCrImage* srcImage,
                  const gfx::IntSize& destSize, OriginPos destOrigin) const;
 
@@ -196,7 +201,7 @@ class GLBlitHelper final {
   bool BlitAngleYCbCr(const WindowsHandle (&handleList)[3],
                       const gfx::IntRect& clipRect, const gfx::IntSize& ySize,
                       const gfx::IntSize& uvSize,
-                      const YUVColorSpace colorSpace,
+                      const gfx::YUVColorSpace colorSpace,
                       const gfx::IntSize& destSize, OriginPos destOrigin) const;
 
   bool BlitAnglePlanes(uint8_t numPlanes,

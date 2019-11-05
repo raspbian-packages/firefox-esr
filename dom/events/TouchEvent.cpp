@@ -9,6 +9,7 @@
 #include "mozilla/dom/Touch.h"
 #include "mozilla/dom/TouchListBinding.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/TouchEvents.h"
 #include "nsContentUtils.h"
 #include "nsIDocShell.h"
@@ -34,7 +35,7 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(TouchList)
 
 JSObject* TouchList::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return TouchListBinding::Wrap(aCx, this, aGivenProto);
+  return TouchList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 // static
@@ -64,7 +65,8 @@ TouchEvent::TouchEvent(EventTarget* aOwner, nsPresContext* aPresContext,
   }
 }
 
-NS_IMPL_CYCLE_COLLECTION_INHERITED(TouchEvent, UIEvent, mTouches,
+NS_IMPL_CYCLE_COLLECTION_INHERITED(TouchEvent, UIEvent,
+                                   mEvent->AsTouchEvent()->mTouches, mTouches,
                                    mTargetTouches, mChangedTouches)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(TouchEvent)
@@ -84,9 +86,34 @@ void TouchEvent::InitTouchEvent(const nsAString& aType, bool aCanBubble,
   UIEvent::InitUIEvent(aType, aCanBubble, aCancelable, aView, aDetail);
   mEvent->AsInputEvent()->InitBasicModifiers(aCtrlKey, aAltKey, aShiftKey,
                                              aMetaKey);
-  mTouches = aTouches;
+
+  mEvent->AsTouchEvent()->mTouches.Clear();
+
+  // To support touch.target retargeting also when the event is
+  // created by JS, we need to copy Touch objects to the widget event.
+  // In order to not affect targetTouches, we don't check duplicates in that
+  // list.
   mTargetTouches = aTargetTouches;
+  AssignTouchesToWidgetEvent(mTargetTouches, false);
+  mTouches = aTouches;
+  AssignTouchesToWidgetEvent(mTouches, true);
   mChangedTouches = aChangedTouches;
+  AssignTouchesToWidgetEvent(mChangedTouches, true);
+}
+
+void TouchEvent::AssignTouchesToWidgetEvent(TouchList* aList,
+                                            bool aCheckDuplicates) {
+  if (!aList) {
+    return;
+  }
+  WidgetTouchEvent* widgetTouchEvent = mEvent->AsTouchEvent();
+  for (uint32_t i = 0; i < aList->Length(); ++i) {
+    Touch* touch = aList->Item(i);
+    if (touch &&
+        (!aCheckDuplicates || !widgetTouchEvent->mTouches.Contains(touch))) {
+      widgetTouchEvent->mTouches.AppendElement(touch);
+    }
+  }
 }
 
 TouchList* TouchEvent::Touches() {
@@ -110,21 +137,33 @@ TouchList* TouchEvent::Touches() {
 }
 
 TouchList* TouchEvent::TargetTouches() {
-  if (!mTargetTouches) {
-    WidgetTouchEvent::AutoTouchArray targetTouches;
+  if (!mTargetTouches || !mTargetTouches->Length()) {
     WidgetTouchEvent* touchEvent = mEvent->AsTouchEvent();
+    if (!mTargetTouches) {
+      mTargetTouches = new TouchList(ToSupports(this));
+    }
     const WidgetTouchEvent::TouchArray& touches = touchEvent->mTouches;
     for (uint32_t i = 0; i < touches.Length(); ++i) {
       // for touchend/cancel events, don't append to the target list if this is
       // a touch that is ending
       if ((mEvent->mMessage != eTouchEnd && mEvent->mMessage != eTouchCancel) ||
           !touches[i]->mChanged) {
-        if (touches[i]->mTarget == mEvent->mOriginalTarget) {
-          targetTouches.AppendElement(touches[i]);
+        bool equalTarget = touches[i]->mTarget == mEvent->mTarget;
+        if (!equalTarget) {
+          // Need to still check if we're inside native anonymous content
+          // and the non-NAC target would be the same.
+          nsCOMPtr<nsIContent> touchTarget =
+              do_QueryInterface(touches[i]->mTarget);
+          nsCOMPtr<nsIContent> eventTarget = do_QueryInterface(mEvent->mTarget);
+          equalTarget = touchTarget && eventTarget &&
+                        touchTarget->FindFirstNonChromeOnlyAccessContent() ==
+                            eventTarget->FindFirstNonChromeOnlyAccessContent();
+        }
+        if (equalTarget) {
+          mTargetTouches->Append(touches[i]);
         }
       }
     }
-    mTargetTouches = new TouchList(ToSupports(this), targetTouches);
   }
   return mTargetTouches;
 }
@@ -157,13 +196,37 @@ bool TouchEvent::PrefEnabled(JSContext* aCx, JSObject* aGlobal) {
 }
 
 // static
+bool TouchEvent::PlatformSupportsTouch() {
+#if defined(MOZ_WIDGET_ANDROID)
+  // Touch support is always enabled on android.
+  return true;
+#elif defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+  static bool sDidCheckTouchDeviceSupport = false;
+  static bool sIsTouchDeviceSupportPresent = false;
+  // On Windows and GTK3 we auto-detect based on device support.
+  if (!sDidCheckTouchDeviceSupport) {
+    sDidCheckTouchDeviceSupport = true;
+    sIsTouchDeviceSupportPresent = WidgetUtils::IsTouchDeviceSupportPresent();
+    // But touch events are only actually supported if APZ is enabled. If
+    // APZ is disabled globally, we can check that once and incorporate that
+    // into the cached state. If APZ is enabled, we need to further check
+    // based on the widget, which we do below (and don't cache that result).
+    sIsTouchDeviceSupportPresent &= gfxPlatform::AsyncPanZoomEnabled();
+  }
+  return sIsTouchDeviceSupportPresent;
+#else
+  return false;
+#endif
+}
+
+// static
 bool TouchEvent::PrefEnabled(nsIDocShell* aDocShell) {
   static bool sPrefCached = false;
   static int32_t sPrefCacheValue = 0;
 
-  uint32_t touchEventsOverride = nsIDocShell::TOUCHEVENTS_OVERRIDE_NONE;
+  auto touchEventsOverride = nsIDocShell::TOUCHEVENTS_OVERRIDE_NONE;
   if (aDocShell) {
-    aDocShell->GetTouchEventsOverride(&touchEventsOverride);
+    touchEventsOverride = aDocShell->GetTouchEventsOverride();
   }
 
   if (!sPrefCached) {
@@ -180,35 +243,26 @@ bool TouchEvent::PrefEnabled(nsIDocShell* aDocShell) {
     enabled = false;
   } else {
     if (sPrefCacheValue == 2) {
-#if defined(MOZ_WIDGET_ANDROID)
-      // Touch support is always enabled on B2G and android.
-      enabled = true;
-#elif defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
-      static bool sDidCheckTouchDeviceSupport = false;
-      static bool sIsTouchDeviceSupportPresent = false;
-      // On Windows and GTK3 we auto-detect based on device support.
-      if (!sDidCheckTouchDeviceSupport) {
-        sDidCheckTouchDeviceSupport = true;
-        sIsTouchDeviceSupportPresent =
-            WidgetUtils::IsTouchDeviceSupportPresent();
-        // But touch events are only actually supported if APZ is enabled. If
-        // APZ is disabled globally, we can check that once and incorporate that
-        // into the cached state. If APZ is enabled, we need to further check
-        // based on the widget, which we do below (and don't cache that result).
-        sIsTouchDeviceSupportPresent &= gfxPlatform::AsyncPanZoomEnabled();
+      enabled = PlatformSupportsTouch();
+
+      static bool firstTime = true;
+      // The touch screen data seems to be inaccurate in the parent process,
+      // and we really need the crash annotation in child processes.
+      if (firstTime && !XRE_IsParentProcess()) {
+        CrashReporter::AnnotateCrashReport(
+            CrashReporter::Annotation::HasDeviceTouchScreen, enabled);
+        firstTime = false;
       }
-      enabled = sIsTouchDeviceSupportPresent;
+
+#if defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
       if (enabled && aDocShell) {
         // APZ might be disabled on this particular widget, in which case
         // TouchEvent support will also be disabled. Try to detect that.
-        RefPtr<nsPresContext> pc;
-        aDocShell->GetPresContext(getter_AddRefs(pc));
+        RefPtr<nsPresContext> pc = aDocShell->GetPresContext();
         if (pc && pc->GetRootWidget()) {
           enabled &= pc->GetRootWidget()->AsyncPanZoomEnabled();
         }
       }
-#else
-      enabled = false;
 #endif
     } else {
       enabled = !!sPrefCacheValue;
@@ -222,10 +276,34 @@ bool TouchEvent::PrefEnabled(nsIDocShell* aDocShell) {
 }
 
 // static
-already_AddRefed<Event> TouchEvent::Constructor(const GlobalObject& aGlobal,
-                                                const nsAString& aType,
-                                                const TouchEventInit& aParam,
-                                                ErrorResult& aRv) {
+bool TouchEvent::LegacyAPIEnabled(JSContext* aCx, JSObject* aGlobal) {
+  nsIPrincipal* principal = nsContentUtils::SubjectPrincipal(aCx);
+  bool isSystem = principal && nsContentUtils::IsSystemPrincipal(principal);
+
+  nsIDocShell* docShell = nullptr;
+  if (aGlobal) {
+    nsGlobalWindowInner* win = xpc::WindowOrNull(aGlobal);
+    if (win) {
+      docShell = win->GetDocShell();
+    }
+  }
+  return LegacyAPIEnabled(docShell, isSystem);
+}
+
+// static
+bool TouchEvent::LegacyAPIEnabled(nsIDocShell* aDocShell,
+                                  bool aCallerIsSystem) {
+  return (aCallerIsSystem ||
+          StaticPrefs::dom_w3c_touch_events_legacy_apis_enabled() ||
+          (aDocShell && aDocShell->GetTouchEventsOverride() ==
+                            nsIDocShell::TOUCHEVENTS_OVERRIDE_ENABLED)) &&
+         PrefEnabled(aDocShell);
+}
+
+// static
+already_AddRefed<TouchEvent> TouchEvent::Constructor(
+    const GlobalObject& aGlobal, const nsAString& aType,
+    const TouchEventInit& aParam, ErrorResult& aRv) {
   nsCOMPtr<EventTarget> t = do_QueryInterface(aGlobal.GetAsSupports());
   RefPtr<TouchEvent> e = new TouchEvent(t, nullptr, nullptr);
   bool trusted = e->Init(t);

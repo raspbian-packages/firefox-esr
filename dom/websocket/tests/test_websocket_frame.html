@@ -4,7 +4,7 @@
 -->
 <head>
   <title>Basic websocket frame interception test</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css"?>
 </head>
 <body>
@@ -26,9 +26,7 @@ var tests = [
   { payload: (function() { var buffer = ""; for (var i = 0; i < 120; ++i) buffer += i; return buffer; }()) },
 ]
 
-var innerId =
-  window.top.QueryInterface(Ci.nsIInterfaceRequestor)
-        .getInterface(Ci.nsIDOMWindowUtils).currentInnerWindowID;
+var innerId = window.top.windowUtils.currentInnerWindowID;
 ok(innerId, "We have a valid innerWindowID: " + innerId);
 
 var service = Cc["@mozilla.org/websocketevent/service;1"]
@@ -36,7 +34,7 @@ var service = Cc["@mozilla.org/websocketevent/service;1"]
 ok(!!service, "We have the nsIWebSocketEventService");
 
 var listener = {
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIWebSocketEventListener]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIWebSocketEventListener]),
 
   webSocketCreated: function(aWebSocketSerialID, aURI, aProtocols) {
     info("WebSocketCreated");
@@ -47,12 +45,13 @@ var listener = {
     webSocketCreatedCounter++;
   },
 
-  webSocketOpened: function(aWebSocketSerialID, aEffectiveURI, aProtocols, aExtensions) {
+  webSocketOpened: function(aWebSocketSerialID, aEffectiveURI, aProtocols, aExtensions, httpChannelId) {
     info("WebSocketOpened");
 
     is(aEffectiveURI, URI, "EffectiveURI matches");
     is(aProtocols, "frame", "Protocol matches");
     is(aExtensions, "permessage-deflate", "No extensions");
+    ok(httpChannelId > 0, "Channel ID received");
 
     webSocketOpenedCounter++;
   },

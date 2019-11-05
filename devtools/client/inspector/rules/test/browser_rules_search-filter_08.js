@@ -19,35 +19,40 @@ const TEST_URI = `
   <h1 id='testid'>Styled Node</h1>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let {inspector, view} = yield openRuleView();
-  yield selectNode("#testid", inspector);
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { inspector, view } = await openRuleView();
+  await selectNode("#testid", inspector);
 
   info("Enter the test value in the search filter");
-  yield setSearchFilter(view, SEARCH);
+  await setSearchFilter(view, SEARCH);
 
   info("Focus the height property value");
-  let ruleEditor = getRuleViewRuleEditor(view, 1);
-  let rule = ruleEditor.rule;
-  let propEditor = rule.textProps[1].editor;
-  yield focusEditableField(view, propEditor.valueSpan);
+  const ruleEditor = getRuleViewRuleEditor(view, 1);
+  const rule = ruleEditor.rule;
+  const propEditor = rule.textProps[1].editor;
+  await focusEditableField(view, propEditor.valueSpan);
 
   info("Check that the correct rules are visible");
   is(view.element.children.length, 2, "Should have 2 rules.");
   is(rule.selectorText, "#testid", "Second rule is #testid.");
-  ok(rule.textProps[0].editor.container.classList
-    .contains("ruleview-highlight"),
-    "width text property is correctly highlighted.");
-  ok(!propEditor.container.classList.contains("ruleview-highlight"),
-    "height text property is not highlighted.");
+  ok(
+    rule.textProps[0].editor.container.classList.contains("ruleview-highlight"),
+    "width text property is correctly highlighted."
+  );
+  ok(
+    !propEditor.container.classList.contains("ruleview-highlight"),
+    "height text property is not highlighted."
+  );
 
   info("Change the height property value to 100%");
-  let onRuleViewChanged = view.once("ruleview-changed");
+  const onRuleViewChanged = view.once("ruleview-changed");
   EventUtils.sendString("100%", view.styleWindow);
   EventUtils.synthesizeKey("KEY_Enter");
-  yield onRuleViewChanged;
+  await onRuleViewChanged;
 
-  ok(propEditor.container.classList.contains("ruleview-highlight"),
-    "height text property is correctly highlighted.");
+  ok(
+    propEditor.container.classList.contains("ruleview-highlight"),
+    "height text property is correctly highlighted."
+  );
 });

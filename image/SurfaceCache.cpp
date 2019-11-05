@@ -12,6 +12,7 @@
 #include <algorithm>
 #include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
+#include "mozilla/CheckedInt.h"
 #include "mozilla/DebugOnly.h"
 #include "mozilla/Likely.h"
 #include "mozilla/Move.h"
@@ -100,7 +101,8 @@ class CostEntry {
 
   bool operator<(const CostEntry& aOther) const {
     return mCost < aOther.mCost ||
-           (mCost == aOther.mCost && mSurface < aOther.mSurface);
+           (mCost == aOther.mCost &&
+            recordreplay::RecordReplayValue(mSurface < aOther.mSurface));
   }
 
  private:
@@ -175,10 +177,6 @@ class CachedSurface {
         : mCounters(aCounters), mMallocSizeOf(aMallocSizeOf) {}
 
     void Add(NotNull<CachedSurface*> aCachedSurface, bool aIsFactor2) {
-      SurfaceMemoryCounter counter(
-          aCachedSurface->GetSurfaceKey(), aCachedSurface->IsLocked(),
-          aCachedSurface->CannotSubstitute(), aIsFactor2);
-
       if (aCachedSurface->IsPlaceholder()) {
         return;
       }
@@ -187,16 +185,20 @@ class CachedSurface {
       // straightforward relationship to the size of the surface that
       // DrawableRef() returns if the surface is generated dynamically. (i.e.,
       // for surfaces with PlaybackType::eAnimated.)
-      size_t heap = 0;
-      size_t nonHeap = 0;
-      size_t handles = 0;
-      aCachedSurface->mProvider->AddSizeOfExcludingThis(mMallocSizeOf, heap,
-                                                        nonHeap, handles);
-      counter.Values().SetDecodedHeap(heap);
-      counter.Values().SetDecodedNonHeap(nonHeap);
-      counter.Values().SetExternalHandles(handles);
+      aCachedSurface->mProvider->AddSizeOfExcludingThis(
+          mMallocSizeOf, [&](ISurfaceProvider::AddSizeOfCbData& aMetadata) {
+            SurfaceMemoryCounter counter(
+                aCachedSurface->GetSurfaceKey(), aCachedSurface->IsLocked(),
+                aCachedSurface->CannotSubstitute(), aIsFactor2);
 
-      mCounters.AppendElement(counter);
+            counter.Values().SetDecodedHeap(aMetadata.heap);
+            counter.Values().SetDecodedNonHeap(aMetadata.nonHeap);
+            counter.Values().SetExternalHandles(aMetadata.handles);
+            counter.Values().SetFrameIndex(aMetadata.index);
+            counter.Values().SetExternalId(aMetadata.externalId);
+
+            mCounters.AppendElement(counter);
+          });
     }
 
    private:
@@ -237,8 +239,11 @@ class ImageSurfaceCache {
   ~ImageSurfaceCache() {}
 
  public:
-  ImageSurfaceCache()
-      : mLocked(false), mFactor2Mode(false), mFactor2Pruned(false) {}
+  explicit ImageSurfaceCache(const ImageKey aImageKey)
+      : mLocked(false),
+        mFactor2Mode(false),
+        mFactor2Pruned(false),
+        mIsVectorImage(aImageKey->GetType() == imgIContainer::TYPE_VECTOR) {}
 
   MOZ_DECLARE_REFCOUNTED_TYPENAME(ImageSurfaceCache)
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(ImageSurfaceCache)
@@ -309,7 +314,7 @@ class ImageSurfaceCache {
 
     // Try for a best match second, if using compact.
     IntSize suggestedSize = SuggestedSize(aIdealKey.Size());
-    if (mFactor2Mode) {
+    if (suggestedSize != aIdealKey.Size()) {
       if (!exactMatch) {
         SurfaceKey compactKey = aIdealKey.CloneWithSize(suggestedSize);
         mSurfaces.Get(compactKey, getter_AddRefs(exactMatch));
@@ -379,7 +384,7 @@ class ImageSurfaceCache {
       } else if (aIdealKey.Size() != bestMatch->GetSurfaceKey().Size()) {
         // The best factor of 2 match is still decoding, but the best we've got.
         MOZ_ASSERT(suggestedSize != aIdealKey.Size());
-        MOZ_ASSERT(mFactor2Mode);
+        MOZ_ASSERT(mFactor2Mode || mIsVectorImage);
         matchType = MatchType::SUBSTITUTE_BECAUSE_BEST;
       } else {
         // The exact match is still decoding, but it's the best we've got.
@@ -410,20 +415,18 @@ class ImageSurfaceCache {
       return;
     }
 
-    // Determine how many native surfaces this image has. Zero means we either
-    // don't know yet (in which case do nothing), or we don't want to limit the
-    // number of surfaces for this image.
-    //
-    // XXX(aosmond): Vector images have zero native sizes. This is because they
-    // are regenerated at the given size. There isn't an equivalent concept to
-    // the native size (and w/h ratio) to provide a frame of reference to what
-    // are "good" sizes. While it is desirable to have a similar mechanism as
-    // that for raster images, it will need a different approach.
+    // Determine how many native surfaces this image has. If it is zero, and it
+    // is a vector image, then we should impute a single native size. Otherwise,
+    // it may be zero because we don't know yet, or the image has an error, or
+    // it isn't supported.
     auto first = ConstIter();
     NotNull<CachedSurface*> current = WrapNotNull(first.UserData());
     Image* image = static_cast<Image*>(current->GetImageKey());
     size_t nativeSizes = image->GetNativeSizesLength();
-    if (nativeSizes == 0) {
+    if (mIsVectorImage) {
+      MOZ_ASSERT(nativeSizes == 0);
+      nativeSizes = 1;
+    } else if (nativeSizes == 0) {
       return;
     }
 
@@ -506,6 +509,14 @@ class ImageSurfaceCache {
   }
 
   IntSize SuggestedSize(const IntSize& aSize) const {
+    IntSize suggestedSize = SuggestedSizeInternal(aSize);
+    if (mIsVectorImage) {
+      suggestedSize = SurfaceCache::ClampVectorSize(suggestedSize);
+    }
+    return suggestedSize;
+  }
+
+  IntSize SuggestedSizeInternal(const IntSize& aSize) const {
     // When not in factor of 2 mode, we can always decode at the given size.
     if (!mFactor2Mode) {
       return aSize;
@@ -527,9 +538,47 @@ class ImageSurfaceCache {
         NS_FAILED(image->GetHeight(&factorSize.height)) ||
         factorSize.IsEmpty()) {
       // We should not have entered factor of 2 mode without a valid size, and
-      // several successfully decoded surfaces.
+      // several successfully decoded surfaces. Note that valid vector images
+      // may have a default size of 0x0, and those are not yet supported.
       MOZ_ASSERT_UNREACHABLE("Expected valid native size!");
       return aSize;
+    }
+
+    if (mIsVectorImage) {
+      // Ensure the aspect ratio matches the native size before forcing the
+      // caller to accept a factor of 2 size. The difference between the aspect
+      // ratios is:
+      //
+      //     delta = nativeWidth/nativeHeight - desiredWidth/desiredHeight
+      //
+      //     delta*nativeHeight*desiredHeight = nativeWidth*desiredHeight
+      //                                      - desiredWidth*nativeHeight
+      //
+      // Using the maximum accepted delta as a constant, we can avoid the
+      // floating point division and just compare after some integer ops.
+      int32_t delta =
+          factorSize.width * aSize.height - aSize.width * factorSize.height;
+      int32_t maxDelta = (factorSize.height * aSize.height) >> 4;
+      if (delta > maxDelta || delta < -maxDelta) {
+        return aSize;
+      }
+
+      // If the requested size is bigger than the native size, we actually need
+      // to grow the native size instead of shrinking it.
+      if (factorSize.width < aSize.width) {
+        do {
+          IntSize candidate(factorSize.width * 2, factorSize.height * 2);
+          if (!SurfaceCache::IsLegalSize(candidate)) {
+            break;
+          }
+
+          factorSize = candidate;
+        } while (factorSize.width < aSize.width);
+
+        return factorSize;
+      }
+
+      // Otherwise we can find the best fit as normal.
     }
 
     // Start with the native size as the best first guess.
@@ -642,6 +691,10 @@ class ImageSurfaceCache {
   // True if all non-factor of 2 surfaces have been removed from the cache. Note
   // that this excludes unsubstitutable sizes.
   bool mFactor2Pruned;
+
+  // True if the surfaces are produced from a vector image. If so, it must match
+  // the aspect ratio when using factor of 2 mode.
+  bool mIsVectorImage;
 };
 
 /**
@@ -724,9 +777,10 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
 
     // Locate the appropriate per-image cache. If there's not an existing cache
     // for this image, create it.
-    RefPtr<ImageSurfaceCache> cache = GetImageCache(aProvider->GetImageKey());
+    const ImageKey imageKey = aProvider->GetImageKey();
+    RefPtr<ImageSurfaceCache> cache = GetImageCache(imageKey);
     if (!cache) {
-      cache = new ImageSurfaceCache;
+      cache = new ImageSurfaceCache(imageKey);
       mImageCaches.Put(aProvider->GetImageKey(), cache);
     }
 
@@ -849,8 +903,7 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
   }
 
   LookupResult Lookup(const ImageKey aImageKey, const SurfaceKey& aSurfaceKey,
-                      const StaticMutexAutoLock& aAutoLock,
-                      bool aMarkUsed = true) {
+                      const StaticMutexAutoLock& aAutoLock, bool aMarkUsed) {
     RefPtr<ImageSurfaceCache> cache = GetImageCache(aImageKey);
     if (!cache) {
       // No cached surfaces for this image.
@@ -883,16 +936,19 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
 
     MOZ_ASSERT(surface->GetSurfaceKey() == aSurfaceKey,
                "Lookup() not returning an exact match?");
-    return LookupResult(Move(drawableSurface), MatchType::EXACT);
+    return LookupResult(std::move(drawableSurface), MatchType::EXACT);
   }
 
   LookupResult LookupBestMatch(const ImageKey aImageKey,
                                const SurfaceKey& aSurfaceKey,
-                               const StaticMutexAutoLock& aAutoLock) {
+                               const StaticMutexAutoLock& aAutoLock,
+                               bool aMarkUsed) {
     RefPtr<ImageSurfaceCache> cache = GetImageCache(aImageKey);
     if (!cache) {
       // No cached surfaces for this image.
-      return LookupResult(MatchType::NOT_FOUND);
+      return LookupResult(
+          MatchType::NOT_FOUND,
+          SurfaceCache::ClampSize(aImageKey, aSurfaceKey.Size()));
     }
 
     // Repeatedly look up the best match, trying again if the resulting surface
@@ -911,7 +967,7 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
 
       if (!surface) {
         return LookupResult(
-            matchType);  // Lookup in the per-image cache missed.
+            matchType, suggestedSize);  // Lookup in the per-image cache missed.
       }
 
       drawableSurface = surface->GetDrawableSurface();
@@ -935,12 +991,13 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
 
     if (matchType == MatchType::EXACT ||
         matchType == MatchType::SUBSTITUTE_BECAUSE_BEST) {
-      if (!MarkUsed(WrapNotNull(surface), WrapNotNull(cache), aAutoLock)) {
+      if (aMarkUsed &&
+          !MarkUsed(WrapNotNull(surface), WrapNotNull(cache), aAutoLock)) {
         Remove(WrapNotNull(surface), /* aStopTracking */ false, aAutoLock);
       }
     }
 
-    return LookupResult(Move(drawableSurface), matchType, suggestedSize);
+    return LookupResult(std::move(drawableSurface), matchType, suggestedSize);
   }
 
   bool CanHold(const Cost aCost) const { return aCost <= mMaxCost; }
@@ -966,7 +1023,7 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
   void LockImage(const ImageKey aImageKey) {
     RefPtr<ImageSurfaceCache> cache = GetImageCache(aImageKey);
     if (!cache) {
-      cache = new ImageSurfaceCache;
+      cache = new ImageSurfaceCache(aImageKey);
       mImageCaches.Put(aImageKey, cache);
     }
 
@@ -1083,7 +1140,7 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
   void TakeDiscard(nsTArray<RefPtr<CachedSurface>>& aDiscard,
                    const StaticMutexAutoLock& aAutoLock) {
     MOZ_ASSERT(aDiscard.IsEmpty());
-    aDiscard = Move(mCachedSurfacesDiscard);
+    aDiscard = std::move(mCachedSurfacesDiscard);
   }
 
   void LockSurface(NotNull<CachedSurface*> aSurface,
@@ -1261,7 +1318,7 @@ class SurfaceCacheImpl final : public nsIMemoryReporter {
     }
 
     void NotifyHandlerEnd() override {
-      nsTArray<RefPtr<CachedSurface>> discard(Move(mDiscard));
+      nsTArray<RefPtr<CachedSurface>> discard(std::move(mDiscard));
     }
 
     StaticMutex& GetMutex() override { return sInstanceMutex; }
@@ -1309,7 +1366,8 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
 // Public API
 ///////////////////////////////////////////////////////////////////////////////
 
-/* static */ void SurfaceCache::Initialize() {
+/* static */
+void SurfaceCache::Initialize() {
   // Initialize preferences.
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!sInstance, "Shouldn't initialize more than once");
@@ -1363,7 +1421,8 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   sInstance->InitMemoryReporter();
 }
 
-/* static */ void SurfaceCache::Shutdown() {
+/* static */
+void SurfaceCache::Shutdown() {
   RefPtr<SurfaceCacheImpl> cache;
   {
     StaticMutexAutoLock lock(sInstanceMutex);
@@ -1373,8 +1432,10 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   }
 }
 
-/* static */ LookupResult SurfaceCache::Lookup(const ImageKey aImageKey,
-                                               const SurfaceKey& aSurfaceKey) {
+/* static */
+LookupResult SurfaceCache::Lookup(const ImageKey aImageKey,
+                                  const SurfaceKey& aSurfaceKey,
+                                  bool aMarkUsed) {
   nsTArray<RefPtr<CachedSurface>> discard;
   LookupResult rv(MatchType::NOT_FOUND);
 
@@ -1384,15 +1445,17 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
       return rv;
     }
 
-    rv = sInstance->Lookup(aImageKey, aSurfaceKey, lock);
+    rv = sInstance->Lookup(aImageKey, aSurfaceKey, lock, aMarkUsed);
     sInstance->TakeDiscard(discard, lock);
   }
 
   return rv;
 }
 
-/* static */ LookupResult SurfaceCache::LookupBestMatch(
-    const ImageKey aImageKey, const SurfaceKey& aSurfaceKey) {
+/* static */
+LookupResult SurfaceCache::LookupBestMatch(const ImageKey aImageKey,
+                                           const SurfaceKey& aSurfaceKey,
+                                           bool aMarkUsed) {
   nsTArray<RefPtr<CachedSurface>> discard;
   LookupResult rv(MatchType::NOT_FOUND);
 
@@ -1402,15 +1465,15 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
       return rv;
     }
 
-    rv = sInstance->LookupBestMatch(aImageKey, aSurfaceKey, lock);
+    rv = sInstance->LookupBestMatch(aImageKey, aSurfaceKey, lock, aMarkUsed);
     sInstance->TakeDiscard(discard, lock);
   }
 
   return rv;
 }
 
-/* static */ InsertOutcome SurfaceCache::Insert(
-    NotNull<ISurfaceProvider*> aProvider) {
+/* static */
+InsertOutcome SurfaceCache::Insert(NotNull<ISurfaceProvider*> aProvider) {
   nsTArray<RefPtr<CachedSurface>> discard;
   InsertOutcome rv(InsertOutcome::FAILURE);
 
@@ -1427,8 +1490,9 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   return rv;
 }
 
-/* static */ bool SurfaceCache::CanHold(const IntSize& aSize,
-                                        uint32_t aBytesPerPixel /* = 4 */) {
+/* static */
+bool SurfaceCache::CanHold(const IntSize& aSize,
+                           uint32_t aBytesPerPixel /* = 4 */) {
   StaticMutexAutoLock lock(sInstanceMutex);
   if (!sInstance) {
     return false;
@@ -1438,7 +1502,8 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   return sInstance->CanHold(cost);
 }
 
-/* static */ bool SurfaceCache::CanHold(size_t aSize) {
+/* static */
+bool SurfaceCache::CanHold(size_t aSize) {
   StaticMutexAutoLock lock(sInstanceMutex);
   if (!sInstance) {
     return false;
@@ -1447,8 +1512,8 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   return sInstance->CanHold(aSize);
 }
 
-/* static */ void SurfaceCache::SurfaceAvailable(
-    NotNull<ISurfaceProvider*> aProvider) {
+/* static */
+void SurfaceCache::SurfaceAvailable(NotNull<ISurfaceProvider*> aProvider) {
   StaticMutexAutoLock lock(sInstanceMutex);
   if (!sInstance) {
     return;
@@ -1457,28 +1522,32 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   sInstance->SurfaceAvailable(aProvider, lock);
 }
 
-/* static */ void SurfaceCache::LockImage(const ImageKey aImageKey) {
+/* static */
+void SurfaceCache::LockImage(const ImageKey aImageKey) {
   StaticMutexAutoLock lock(sInstanceMutex);
   if (sInstance) {
     return sInstance->LockImage(aImageKey);
   }
 }
 
-/* static */ void SurfaceCache::UnlockImage(const ImageKey aImageKey) {
+/* static */
+void SurfaceCache::UnlockImage(const ImageKey aImageKey) {
   StaticMutexAutoLock lock(sInstanceMutex);
   if (sInstance) {
     return sInstance->UnlockImage(aImageKey, lock);
   }
 }
 
-/* static */ void SurfaceCache::UnlockEntries(const ImageKey aImageKey) {
+/* static */
+void SurfaceCache::UnlockEntries(const ImageKey aImageKey) {
   StaticMutexAutoLock lock(sInstanceMutex);
   if (sInstance) {
     return sInstance->UnlockEntries(aImageKey, lock);
   }
 }
 
-/* static */ void SurfaceCache::RemoveImage(const ImageKey aImageKey) {
+/* static */
+void SurfaceCache::RemoveImage(const ImageKey aImageKey) {
   RefPtr<ImageSurfaceCache> discard;
   {
     StaticMutexAutoLock lock(sInstanceMutex);
@@ -1488,7 +1557,8 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   }
 }
 
-/* static */ void SurfaceCache::PruneImage(const ImageKey aImageKey) {
+/* static */
+void SurfaceCache::PruneImage(const ImageKey aImageKey) {
   nsTArray<RefPtr<CachedSurface>> discard;
   {
     StaticMutexAutoLock lock(sInstanceMutex);
@@ -1499,7 +1569,8 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   }
 }
 
-/* static */ void SurfaceCache::DiscardAll() {
+/* static */
+void SurfaceCache::DiscardAll() {
   nsTArray<RefPtr<CachedSurface>> discard;
   {
     StaticMutexAutoLock lock(sInstanceMutex);
@@ -1510,7 +1581,8 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   }
 }
 
-/* static */ void SurfaceCache::CollectSizeOfSurfaces(
+/* static */
+void SurfaceCache::CollectSizeOfSurfaces(
     const ImageKey aImageKey, nsTArray<SurfaceMemoryCounter>& aCounters,
     MallocSizeOf aMallocSizeOf) {
   nsTArray<RefPtr<CachedSurface>> discard;
@@ -1525,13 +1597,65 @@ NS_IMPL_ISUPPORTS(SurfaceCacheImpl::MemoryPressureObserver, nsIObserver)
   }
 }
 
-/* static */ size_t SurfaceCache::MaximumCapacity() {
+/* static */
+size_t SurfaceCache::MaximumCapacity() {
   StaticMutexAutoLock lock(sInstanceMutex);
   if (!sInstance) {
     return 0;
   }
 
   return sInstance->MaximumCapacity();
+}
+
+/* static */
+bool SurfaceCache::IsLegalSize(const IntSize& aSize) {
+  // reject over-wide or over-tall images
+  const int32_t k64KLimit = 0x0000FFFF;
+  if (MOZ_UNLIKELY(aSize.width > k64KLimit || aSize.height > k64KLimit)) {
+    NS_WARNING("image too big");
+    return false;
+  }
+
+  // protect against invalid sizes
+  if (MOZ_UNLIKELY(aSize.height <= 0 || aSize.width <= 0)) {
+    return false;
+  }
+
+  // check to make sure we don't overflow a 32-bit
+  CheckedInt32 requiredBytes =
+      CheckedInt32(aSize.width) * CheckedInt32(aSize.height) * 4;
+  if (MOZ_UNLIKELY(!requiredBytes.isValid())) {
+    NS_WARNING("width or height too large");
+    return false;
+  }
+  return true;
+}
+
+IntSize SurfaceCache::ClampVectorSize(const IntSize& aSize) {
+  // If we exceed the maximum, we need to scale the size downwards to fit.
+  // It shouldn't get here if it is significantly larger because
+  // VectorImage::UseSurfaceCacheForSize should prevent us from requesting
+  // a rasterized version of a surface greater than 4x the maximum.
+  int32_t maxSizeKB = gfxPrefs::ImageCacheMaxRasterizedSVGThresholdKB();
+  if (maxSizeKB <= 0) {
+    return aSize;
+  }
+
+  int32_t proposedKB = int32_t(int64_t(aSize.width) * aSize.height / 256);
+  if (maxSizeKB >= proposedKB) {
+    return aSize;
+  }
+
+  double scale = sqrt(double(maxSizeKB) / proposedKB);
+  return IntSize(int32_t(scale * aSize.width), int32_t(scale * aSize.height));
+}
+
+IntSize SurfaceCache::ClampSize(ImageKey aImageKey, const IntSize& aSize) {
+  if (aImageKey->GetType() != imgIContainer::TYPE_VECTOR) {
+    return aSize;
+  }
+
+  return ClampVectorSize(aSize);
 }
 
 }  // namespace image

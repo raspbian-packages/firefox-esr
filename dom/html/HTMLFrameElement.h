@@ -18,22 +18,22 @@ class HTMLFrameElement final : public nsGenericHTMLFrameElement {
  public:
   using nsGenericHTMLFrameElement::SwapFrameLoaders;
 
-  explicit HTMLFrameElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
-                            FromParser aFromParser = NOT_FROM_PARSER);
+  explicit HTMLFrameElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+      FromParser aFromParser = NOT_FROM_PARSER);
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLFrameElement,
                                        nsGenericHTMLFrameElement)
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLFrameElement, frame)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLFrameElement, frame)
 
   // nsIContent
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                               const nsAString& aValue,
                               nsIPrincipal* aMaybeScriptedPrincipal,
                               nsAttrValue& aResult) override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL API
   void GetFrameBorder(DOMString& aFrameBorder) const {
@@ -90,8 +90,6 @@ class HTMLFrameElement final : public nsGenericHTMLFrameElement {
   using nsGenericHTMLFrameElement::GetContentDocument;
   using nsGenericHTMLFrameElement::GetContentWindow;
 
-  NS_FORWARD_NSIFRAMELOADEROWNER(nsGenericHTMLFrameElement::)
-
  protected:
   virtual ~HTMLFrameElement();
 
@@ -100,7 +98,7 @@ class HTMLFrameElement final : public nsGenericHTMLFrameElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

@@ -2,18 +2,36 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-add_task(async function testPageActionPopup() {
-  let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, "http://example.com/");
+const { GlobalManager } = ChromeUtils.import(
+  "resource://gre/modules/Extension.jsm",
+  null
+);
 
-  let scriptPage = url => `<html><head><meta charset="utf-8"><script src="${url}"></script></head></html>`;
+function assertViewCount(extension, count) {
+  let ext = GlobalManager.extensionMap.get(extension.id);
+  is(
+    ext.views.size,
+    count,
+    "Should have the expected number of extension views"
+  );
+}
+
+add_task(async function testPageActionPopup() {
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "http://example.com/"
+  );
+
+  let scriptPage = url =>
+    `<html><head><meta charset="utf-8"><script src="${url}"></script></head></html>`;
 
   let extension = ExtensionTestUtils.loadExtension({
     manifest: {
-      "background": {
-        "page": "data/background.html",
+      background: {
+        page: "data/background.html",
       },
-      "page_action": {
-        "default_popup": "popup-a.html",
+      page_action: {
+        default_popup: "popup-a.html",
       },
     },
 
@@ -21,7 +39,8 @@ add_task(async function testPageActionPopup() {
       "popup-a.html": scriptPage("popup-a.js"),
       "popup-a.js": function() {
         window.onload = () => {
-          let background = window.getComputedStyle(document.body).backgroundColor;
+          let background = window.getComputedStyle(document.body)
+            .backgroundColor;
           browser.test.assertEq("rgba(0, 0, 0, 0)", background);
           browser.runtime.sendMessage("from-popup-a");
         };
@@ -45,43 +64,51 @@ add_task(async function testPageActionPopup() {
         let sendClick;
         let tests = [
           () => {
-            sendClick({expectEvent: false, expectPopup: "a"});
+            sendClick({ expectEvent: false, expectPopup: "a" });
           },
           () => {
-            sendClick({expectEvent: false, expectPopup: "a"});
+            sendClick({ expectEvent: false, expectPopup: "a" });
           },
           () => {
-            browser.pageAction.setPopup({tabId, popup: "popup-b.html"});
-            sendClick({expectEvent: false, expectPopup: "b"});
+            browser.pageAction.setPopup({ tabId, popup: "popup-b.html" });
+            sendClick({ expectEvent: false, expectPopup: "b" });
           },
           () => {
-            sendClick({expectEvent: false, expectPopup: "b"});
+            sendClick({ expectEvent: false, expectPopup: "b" });
           },
           () => {
-            browser.pageAction.setPopup({tabId, popup: ""});
-            sendClick({expectEvent: true, expectPopup: null});
+            browser.pageAction.setPopup({ tabId, popup: "" });
+            sendClick({ expectEvent: true, expectPopup: null });
           },
           () => {
-            sendClick({expectEvent: true, expectPopup: null});
+            sendClick({ expectEvent: true, expectPopup: null });
           },
           () => {
-            browser.pageAction.setPopup({tabId, popup: "/popup-a.html"});
-            sendClick({expectEvent: false, expectPopup: "a", runNextTest: true});
+            browser.pageAction.setPopup({ tabId, popup: "/popup-a.html" });
+            sendClick({
+              expectEvent: false,
+              expectPopup: "a",
+              runNextTest: true,
+            });
           },
           () => {
-            browser.test.sendMessage("next-test", {expectClosed: true});
+            browser.test.sendMessage("next-test", { expectClosed: true });
           },
           () => {
-            sendClick({expectEvent: false, expectPopup: "a", runNextTest: true});
+            sendClick({
+              expectEvent: false,
+              expectPopup: "a",
+              runNextTest: true,
+            });
           },
           () => {
-            browser.test.sendMessage("next-test", {closeOnTabSwitch: true});
+            browser.test.sendMessage("next-test", { closeOnTabSwitch: true });
           },
         ];
 
         let expect = {};
-        sendClick = ({expectEvent, expectPopup, runNextTest}) => {
-          expect = {event: expectEvent, popup: expectPopup, runNextTest};
+        sendClick = ({ expectEvent, expectPopup, runNextTest }) => {
+          expect = { event: expectEvent, popup: expectPopup, runNextTest };
           browser.test.sendMessage("send-click");
         };
 
@@ -89,8 +116,11 @@ add_task(async function testPageActionPopup() {
           if (msg == "close-popup") {
             return;
           } else if (expect.popup) {
-            browser.test.assertEq(msg, `from-popup-${expect.popup}`,
-                                  "expected popup opened");
+            browser.test.assertEq(
+              msg,
+              `from-popup-${expect.popup}`,
+              "expected popup opened"
+            );
           } else {
             browser.test.fail(`unexpected popup: ${msg}`);
           }
@@ -133,7 +163,10 @@ add_task(async function testPageActionPopup() {
           }
         });
 
-        let [tab] = await browser.tabs.query({active: true, currentWindow: true});
+        let [tab] = await browser.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
         tabId = tab.id;
 
         await browser.pageAction.show(tabId);
@@ -164,7 +197,10 @@ add_task(async function testPageActionPopup() {
       await promisePopupShown(panel);
 
       let oldTab = gBrowser.selectedTab;
-      ok(oldTab != gBrowser.tabs[0], "Should have an inactive tab to switch to");
+      ok(
+        oldTab != gBrowser.tabs[0],
+        "Should have an inactive tab to switch to"
+      );
 
       let hiddenPromise = promisePopupHidden(panel);
 
@@ -178,6 +214,8 @@ add_task(async function testPageActionPopup() {
       panel.hidePopup();
     }
 
+    assertViewCount(extension, 1);
+
     if (panel) {
       panel = document.getElementById(panelId);
       is(panel, null, "panel successfully removed from document after hiding");
@@ -185,7 +223,6 @@ add_task(async function testPageActionPopup() {
 
     extension.sendMessage("next-test");
   });
-
 
   await extension.startup();
   await extension.awaitFinish("pageaction-tests-done");
@@ -198,9 +235,8 @@ add_task(async function testPageActionPopup() {
   let panel = document.getElementById(panelId);
   is(panel, null, "pageAction panel removed from document");
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 });
-
 
 add_task(async function testPageActionSecurity() {
   const URL = "chrome://browser/content/browser.xul";
@@ -222,13 +258,15 @@ add_task(async function testPageActionSecurity() {
 
     let extension = ExtensionTestUtils.loadExtension({
       manifest: {
-        [api]: {"default_popup": URL},
+        [api]: { default_popup: URL },
       },
     });
 
-    await Assert.rejects(extension.startup(),
-                         null,
-                         "Manifest rejected");
+    await Assert.rejects(
+      extension.startup(),
+      /startup failed/,
+      "Manifest rejected"
+    );
 
     SimpleTest.endMonitorConsole();
     await waitForConsole;

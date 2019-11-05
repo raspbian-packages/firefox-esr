@@ -20,7 +20,7 @@ namespace mozilla {
 namespace dom {
 class PrecompiledScript : public nsISupports, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(PrecompiledScript)
+  NS_DECL_CYCLE_COLLECTION_SKIPPABLE_SCRIPT_HOLDER_CLASS(PrecompiledScript)
 
   explicit PrecompiledScript(nsISupports* aParent,
                              JS::Handle<JSScript*> aScript,
@@ -42,6 +42,8 @@ class PrecompiledScript : public nsISupports, public nsWrapperCache {
   virtual ~PrecompiledScript();
 
  private:
+  bool IsBlackForCC(bool aTracingNeeded);
+
   nsCOMPtr<nsISupports> mParent;
 
   JS::Heap<JSScript*> mScript;

@@ -8,6 +8,7 @@
 
 #include "mozilla/BasicEvents.h"
 #include "mozilla/EventDispatcher.h"
+#include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/HTMLMenuElementBinding.h"
 #include "mozilla/dom/HTMLMenuItemElement.h"
 #include "nsIMenuBuilder.h"
@@ -34,15 +35,15 @@ static const nsAttrValue::EnumTable* kMenuDefaultType = &kMenuTypeTable[1];
 enum SeparatorType { ST_TRUE_INIT = -1, ST_FALSE = 0, ST_TRUE = 1 };
 
 HTMLMenuElement::HTMLMenuElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo), mType(MENU_TYPE_TOOLBAR) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)), mType(MENU_TYPE_TOOLBAR) {}
 
 HTMLMenuElement::~HTMLMenuElement() {}
 
 NS_IMPL_ELEMENT_CLONE(HTMLMenuElement)
 
 void HTMLMenuElement::SendShowEvent() {
-  nsCOMPtr<nsIDocument> document = GetComposedDoc();
+  nsCOMPtr<Document> document = GetComposedDoc();
   if (!document) {
     return;
   }
@@ -132,7 +133,7 @@ bool HTMLMenuElement::CanLoadIcon(nsIContent* aContent,
     return false;
   }
 
-  nsIDocument* doc = aContent->OwnerDoc();
+  Document* doc = aContent->OwnerDoc();
 
   nsCOMPtr<nsIURI> baseURI = aContent->GetBaseURI();
   nsCOMPtr<nsIURI> uri;
@@ -153,13 +154,13 @@ void HTMLMenuElement::TraverseContent(nsIContent* aContent,
   nsCOMPtr<nsIContent> child;
   for (child = aContent->GetFirstChild(); child;
        child = child->GetNextSibling()) {
-    nsGenericHTMLElement* element = nsGenericHTMLElement::FromContent(child);
+    nsGenericHTMLElement* element = nsGenericHTMLElement::FromNode(child);
     if (!element) {
       continue;
     }
 
     if (child->IsHTMLElement(nsGkAtoms::menuitem)) {
-      HTMLMenuItemElement* menuitem = HTMLMenuItemElement::FromContent(child);
+      HTMLMenuItemElement* menuitem = HTMLMenuItemElement::FromNode(child);
 
       if (menuitem->IsHidden()) {
         continue;
@@ -210,7 +211,7 @@ inline void HTMLMenuElement::AddSeparator(nsIMenuBuilder* aBuilder,
 
 JSObject* HTMLMenuElement::WrapNode(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return HTMLMenuElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLMenuElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

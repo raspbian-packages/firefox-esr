@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -23,7 +23,6 @@
 #include "nsIInterfaceRequestor.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIChannelEventSink.h"
-#include "nsISecurityEventSink.h"
 #include "nsISupportsPriority.h"
 #include "nsCOMPtr.h"
 #include "PLDHashTable.h"
@@ -50,7 +49,6 @@ class nsDocLoader : public nsIDocumentLoader,
                     public nsIWebProgress,
                     public nsIInterfaceRequestor,
                     public nsIChannelEventSink,
-                    public nsISecurityEventSink,
                     public nsISupportsPriority {
  public:
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_THIS_DOCLOADER_IMPL_CID)
@@ -76,8 +74,6 @@ class nsDocLoader : public nsIDocumentLoader,
 
   // nsIProgressEventSink
   NS_DECL_NSIPROGRESSEVENTSINK
-
-  NS_DECL_NSISECURITYEVENTSINK
 
   // nsIRequestObserver methods: (for observing the load group)
   NS_DECL_NSIREQUESTOBSERVER
@@ -107,6 +103,25 @@ class nsDocLoader : public nsIDocumentLoader,
     // Mask indicating which notifications the listener wants to receive.
     unsigned long mNotifyMask;
   };
+
+  /**
+   * Fired when a security change occurs due to page transitions,
+   * or end document load. This interface should be called by
+   * a security package (eg Netscape Personal Security Manager)
+   * to notify nsIWebProgressListeners that security state has
+   * changed. State flags are in nsIWebProgressListener.idl
+   */
+  void OnSecurityChange(nsISupports* aContext, uint32_t aState);
+  /**
+   * Fired when a content blocking event occurs during the time
+   * when a document is alive.  This interface should be called
+   * by Gecko to notify nsIWebProgressListeners that there is a
+   * new content blocking event.  Content blocking events are in
+   * nsIWebProgressListeners.idl.
+   */
+  void OnContentBlockingEvent(nsISupports* aContext, uint32_t aEvent);
+
+  void SetDocumentOpenedButNotLoaded() { mDocumentOpenedButNotLoaded = true; }
 
  protected:
   virtual ~nsDocLoader();
@@ -195,7 +210,8 @@ class nsDocLoader : public nsIDocumentLoader,
     // Weak mRequest is ok; we'll be told if it decides to go away.
     nsIRequest* const mRequest;
 
-    explicit nsStatusInfo(nsIRequest* aRequest) : mRequest(aRequest) {
+    explicit nsStatusInfo(nsIRequest* aRequest)
+        : mStatusCode(NS_ERROR_NOT_INITIALIZED), mRequest(aRequest) {
       MOZ_COUNT_CTOR(nsStatusInfo);
     }
     ~nsStatusInfo() { MOZ_COUNT_DTOR(nsStatusInfo); }
@@ -282,6 +298,15 @@ class nsDocLoader : public nsIDocumentLoader,
   bool mIsFlushingLayout;
 
  private:
+  /**
+   * This flag indicates that the loader is waiting for completion of
+   * a document.open-triggered "document load".  This is set when
+   * document.open() happens and sets up a new parser and cleared out
+   * when we go to fire our load event or end up with a new document
+   * channel.
+   */
+  bool mDocumentOpenedButNotLoaded;
+
   static const PLDHashTableOps sRequestInfoHashOps;
 
   // A list of kids that are in the middle of their onload calls and will let
@@ -301,13 +326,23 @@ class nsDocLoader : public nsIDocumentLoader,
 
   nsresult AddRequestInfo(nsIRequest* aRequest);
   void RemoveRequestInfo(nsIRequest* aRequest);
-  nsRequestInfo* GetRequestInfo(nsIRequest* aRequest);
+  nsRequestInfo* GetRequestInfo(nsIRequest* aRequest) const;
   void ClearRequestInfoHash();
   int64_t CalculateMaxProgress();
   ///    void DumpChannelInfo(void);
 
   // used to clear our internal progress state between loads...
   void ClearInternalProgress();
+
+  /**
+   * Used to test whether we might need to fire a load event.  This
+   * can happen when we have a document load going on, or when we've
+   * had document.open() called and haven't fired the corresponding
+   * load event yet.
+   */
+  bool IsBlockingLoadEvent() const {
+    return mIsLoadingDocument || mDocumentOpenedButNotLoaded;
+  }
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsDocLoader, NS_THIS_DOCLOADER_IMPL_CID)

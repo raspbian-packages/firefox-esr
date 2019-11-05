@@ -9,12 +9,13 @@
 */
 var EXPORTED_SYMBOLS = ["goQuitApplication"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 function canQuitApplication() {
   try {
-    var cancelQuit = Cc["@mozilla.org/supports-PRBool;1"]
-                     .createInstance(Ci.nsISupportsPRBool);
+    var cancelQuit = Cc["@mozilla.org/supports-PRBool;1"].createInstance(
+      Ci.nsISupportsPRBool
+    );
     Services.obs.notifyObservers(cancelQuit, "quit-application-requested");
 
     // Something aborted the quit process.
@@ -31,23 +32,8 @@ function goQuitApplication() {
     return false;
   }
 
-  const kAppStartup = "@mozilla.org/toolkit/app-startup;1";
-  const kAppShell   = "@mozilla.org/appshell/appShellService;1";
-  var appService;
-  var forceQuit;
-
-  if (kAppStartup in Cc) {
-    appService = Services.startup;
-    forceQuit  = Ci.nsIAppStartup.eForceQuit;
-  } else if (kAppShell in Cc) {
-    appService = Services.appShell;
-    forceQuit = Ci.nsIAppShellService.eForceQuit;
-  } else {
-    throw new Error("goQuitApplication: no AppStartup/appShell");
-  }
-
   try {
-    appService.quit(forceQuit);
+    Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
   } catch (ex) {
     throw new Error(`goQuitApplication: ${ex.message}`);
   }

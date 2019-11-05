@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,7 +6,7 @@
 #ifndef nsDNSPrefetch_h___
 #define nsDNSPrefetch_h___
 
-#include "nsWeakReference.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsString.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/Attributes.h"
@@ -18,7 +18,7 @@ class nsIURI;
 class nsIDNSService;
 
 class nsDNSPrefetch final : public nsIDNSListener {
-  ~nsDNSPrefetch() {}
+  ~nsDNSPrefetch() = default;
 
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
@@ -43,6 +43,7 @@ class nsDNSPrefetch final : public nsIDNSListener {
 
  private:
   nsCString mHostname;
+  bool mIsHttps;
   mozilla::OriginAttributes mOriginAttributes;
   bool mStoreTiming;
   mozilla::TimeStamp mStartTimestamp;

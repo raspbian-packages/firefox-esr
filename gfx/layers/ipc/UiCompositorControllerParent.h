@@ -8,13 +8,15 @@
 
 #include "mozilla/layers/PUiCompositorControllerParent.h"
 #if defined(MOZ_WIDGET_ANDROID)
-#include "mozilla/layers/AndroidDynamicToolbarAnimator.h"
+#  include "mozilla/layers/AndroidDynamicToolbarAnimator.h"
 #endif  // defined(MOZ_WIDGET_ANDROID)
 #include "mozilla/ipc/Shmem.h"
 #include "mozilla/RefPtr.h"
 
 namespace mozilla {
 namespace layers {
+
+struct FrameMetrics;
 
 class UiCompositorControllerParent final
     : public PUiCompositorControllerParent {
@@ -26,29 +28,31 @@ class UiCompositorControllerParent final
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(UiCompositorControllerParent)
 
   static RefPtr<UiCompositorControllerParent> GetFromRootLayerTreeId(
-      const uint64_t& aRootLayerTreeId);
+      const LayersId& aRootLayerTreeId);
   static RefPtr<UiCompositorControllerParent> Start(
-      const uint64_t& aRootLayerTreeId,
+      const LayersId& aRootLayerTreeId,
       Endpoint<PUiCompositorControllerParent>&& aEndpoint);
 
   // PUiCompositorControllerParent functions
-  mozilla::ipc::IPCResult RecvPause() override;
-  mozilla::ipc::IPCResult RecvResume() override;
-  mozilla::ipc::IPCResult RecvResumeAndResize(const int32_t& aHeight,
-                                              const int32_t& aWidth) override;
-  mozilla::ipc::IPCResult RecvInvalidateAndRender() override;
-  mozilla::ipc::IPCResult RecvMaxToolbarHeight(const int32_t& aHeight) override;
+  mozilla::ipc::IPCResult RecvPause();
+  mozilla::ipc::IPCResult RecvResume();
+  mozilla::ipc::IPCResult RecvResumeAndResize(const int32_t& aX,
+                                              const int32_t& aY,
+                                              const int32_t& aHeight,
+                                              const int32_t& aWidth);
+  mozilla::ipc::IPCResult RecvInvalidateAndRender();
+  mozilla::ipc::IPCResult RecvMaxToolbarHeight(const int32_t& aHeight);
+  mozilla::ipc::IPCResult RecvFixedBottomOffset(const int32_t& aOffset);
   mozilla::ipc::IPCResult RecvPinned(const bool& aPinned,
-                                     const int32_t& aReason) override;
+                                     const int32_t& aReason);
   mozilla::ipc::IPCResult RecvToolbarAnimatorMessageFromUI(
-      const int32_t& aMessage) override;
-  mozilla::ipc::IPCResult RecvDefaultClearColor(
-      const uint32_t& aColor) override;
-  mozilla::ipc::IPCResult RecvRequestScreenPixels() override;
+      const int32_t& aMessage);
+  mozilla::ipc::IPCResult RecvDefaultClearColor(const uint32_t& aColor);
+  mozilla::ipc::IPCResult RecvRequestScreenPixels();
   mozilla::ipc::IPCResult RecvEnableLayerUpdateNotifications(
-      const bool& aEnable) override;
+      const bool& aEnable);
   mozilla::ipc::IPCResult RecvToolbarPixelsToCompositor(
-      Shmem&& aMem, const ScreenIntSize& aSize) override;
+      Shmem&& aMem, const ScreenIntSize& aSize);
   void ActorDestroy(ActorDestroyReason aWhy) override;
   void DeallocPUiCompositorControllerParent() override;
 
@@ -60,20 +64,29 @@ class UiCompositorControllerParent final
   void ToolbarAnimatorMessageFromCompositor(int32_t aMessage);
   bool AllocPixelBuffer(const int32_t aSize, Shmem* aMem);
 
+  // Called when a layer has been updated so the UI thread may be notified if
+  // necessary.
+  void NotifyLayersUpdated();
+  void NotifyFirstPaint();
+  void NotifyUpdateScreenMetrics(const FrameMetrics& aMetrics);
+
  private:
-  explicit UiCompositorControllerParent(const uint64_t& aRootLayerTreeId);
-  ~UiCompositorControllerParent();
+  explicit UiCompositorControllerParent(const LayersId& aRootLayerTreeId);
+  virtual ~UiCompositorControllerParent();
   void InitializeForSameProcess();
   void InitializeForOutOfProcess();
   void Initialize();
   void Open(Endpoint<PUiCompositorControllerParent>&& aEndpoint);
   void Shutdown();
 
-  uint64_t mRootLayerTreeId;
+  LayersId mRootLayerTreeId;
 
 #if defined(MOZ_WIDGET_ANDROID)
   RefPtr<AndroidDynamicToolbarAnimator> mAnimator;
-#endif  // defined(MOZ_WIDGET_ANDROID)
+  bool mCompositorLayersUpdateEnabled;  // Flag set to true when the UI thread
+                                        // is expecting to be notified when a
+                                        // layer has been updated
+#endif                                  // defined(MOZ_WIDGET_ANDROID)
 
   int32_t mMaxToolbarHeight;
 };

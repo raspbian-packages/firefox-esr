@@ -6,9 +6,9 @@
 const UNPACKAGED_ADDON = do_get_file("data/test_bug564667");
 const PACKAGED_ADDON = do_get_file("data/test_bug564667.xpi");
 
-var gCR = Cc["@mozilla.org/chrome/chrome-registry;1"].
-          getService(Ci.nsIChromeRegistry).
-          QueryInterface(Ci.nsIXULOverlayProvider);
+var gCR = Cc["@mozilla.org/chrome/chrome-registry;1"].getService(
+  Ci.nsIChromeRegistry
+);
 
 /*
  * Checks that a mapping was added
@@ -37,28 +37,7 @@ function test_removed_mapping(chromeURL, target) {
   }
 }
 
-/*
- * Checks if any overlay was added after loading
- * the manifest files
- *
- * @param type The type of overlay: overlay|style
- */
-function test_no_overlays(chromeURL, target, type = "overlay") {
-  var uri = Services.io.newURI(chromeURL);
-  var overlays = (type == "overlay") ?
-      gCR.getXULOverlays(uri) : gCR.getStyleOverlays(uri);
-
-  // We shouldn't be allowed to register overlays nor styles
-  if (overlays.hasMoreElements()) {
-    if (type == "styles")
-      do_throw("Style Registered: " + chromeURL);
-    else
-      do_throw("Overlay Registered: " + chromeURL);
-  }
-}
-
 function testManifest(manifestPath, baseURI) {
-
   // ------------------  Add manifest file ------------------------
   Components.manager.addBootstrappedManifestLocation(manifestPath);
 
@@ -77,15 +56,6 @@ function testManifest(manifestPath, baseURI) {
 
   // Test Adding Override
   test_mapping("chrome://testOverride/content", "file:///test1/override");
-
-  // Test Not-Adding Overlays
-  test_no_overlays("chrome://test1/content/overlay.xul",
-                   "chrome://test1/content/test1.xul");
-
-  // Test Not-Adding Styles
-  test_no_overlays("chrome://test1/content/style.xul",
-                   "chrome://test1/content/test1.css", "styles");
-
 
   // ------------------  Remove manifest file ------------------------
   Components.manager.removeBootstrappedManifestLocation(manifestPath);
@@ -109,5 +79,8 @@ function run_test() {
   testManifest(UNPACKAGED_ADDON, Services.io.newFileURI(UNPACKAGED_ADDON).spec);
 
   // Test a packaged addon
-  testManifest(PACKAGED_ADDON, "jar:" + Services.io.newFileURI(PACKAGED_ADDON).spec + "!/");
+  testManifest(
+    PACKAGED_ADDON,
+    "jar:" + Services.io.newFileURI(PACKAGED_ADDON).spec + "!/"
+  );
 }

@@ -76,7 +76,7 @@ class ExtendableEvent : public Event {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return mozilla::dom::ExtendableEventBinding::Wrap(aCx, this, aGivenProto);
+    return mozilla::dom::ExtendableEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   static already_AddRefed<ExtendableEvent> Constructor(
@@ -109,6 +109,7 @@ class FetchEvent final : public ExtendableEvent {
   nsCString mScriptSpec;
   nsCString mPreventDefaultScriptSpec;
   nsString mClientId;
+  nsString mResultingClientId;
   uint32_t mPreventDefaultLineNumber;
   uint32_t mPreventDefaultColumnNumber;
   bool mIsReload;
@@ -122,13 +123,9 @@ class FetchEvent final : public ExtendableEvent {
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(FetchEvent, ExtendableEvent)
 
-  // Note, we cannot use NS_FORWARD_TO_EVENT because we want a different
-  // PreventDefault(JSContext*, CallerType) override.
-  NS_FORWARD_NSIDOMEVENT(Event::)
-
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return FetchEventBinding::Wrap(aCx, this, aGivenProto);
+    return FetchEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   void PostInit(
@@ -149,6 +146,10 @@ class FetchEvent final : public ExtendableEvent {
 
   void GetClientId(nsAString& aClientId) const { aClientId = mClientId; }
 
+  void GetResultingClientId(nsAString& aResultingClientId) const {
+    aResultingClientId = mResultingClientId;
+  }
+
   bool IsReload() const { return mIsReload; }
 
   void RespondWith(JSContext* aCx, Promise& aArg, ErrorResult& aRv);
@@ -157,6 +158,9 @@ class FetchEvent final : public ExtendableEvent {
 
   already_AddRefed<Promise> Default();
 
+  // Pull in the Event version of PreventDefault so we don't get
+  // shadowing warnings.
+  using Event::PreventDefault;
   void PreventDefault(JSContext* aCx, CallerType aCallerType) override;
 
   void ReportCanceled();
@@ -201,7 +205,6 @@ class PushEvent final : public ExtendableEvent {
  public:
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(PushEvent, ExtendableEvent)
-  NS_FORWARD_TO_EVENT
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override;
@@ -241,8 +244,8 @@ class ExtendableMessageEvent final : public ExtendableEvent {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return mozilla::dom::ExtendableMessageEventBinding::Wrap(aCx, this,
-                                                             aGivenProto);
+    return mozilla::dom::ExtendableMessageEvent_Binding::Wrap(aCx, this,
+                                                              aGivenProto);
   }
 
   static already_AddRefed<ExtendableMessageEvent> Constructor(

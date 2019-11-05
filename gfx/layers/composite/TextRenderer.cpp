@@ -223,7 +223,7 @@ bool TextRenderer::EnsureInitialized(FontType aType) {
 
   png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
-  mFonts[aType] = Move(cache);
+  mFonts[aType] = std::move(cache);
   return true;
 }
 

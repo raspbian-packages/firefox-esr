@@ -42,7 +42,8 @@ class CompositingRenderTargetOGL : public CompositingRenderTarget {
 
   // For lazy initialisation of the GL stuff
   struct InitParams {
-    InitParams() : mStatus(NO_PARAMS) {}
+    InitParams()
+        : mStatus(NO_PARAMS), mFBOTextureTarget(0), mInit(INIT_MODE_NONE) {}
     InitParams(const gfx::IntSize& aSize, const gfx::IntSize& aPhySize,
                GLenum aFBOTextureTarget, SurfaceInitMode aInit)
         : mStatus(READY),
@@ -80,9 +81,7 @@ class CompositingRenderTargetOGL : public CompositingRenderTarget {
 
   ~CompositingRenderTargetOGL();
 
-  virtual const char* Name() const override {
-    return "CompositingRenderTargetOGL";
-  }
+  const char* Name() const override { return "CompositingRenderTargetOGL"; }
 
   /**
    * Create a render target around the default FBO, for rendering straight to
@@ -147,7 +146,7 @@ class CompositingRenderTargetOGL : public CompositingRenderTarget {
   }
 
 #ifdef MOZ_DUMP_PAINTING
-  virtual already_AddRefed<gfx::DataSourceSurface> Dump(
+  already_AddRefed<gfx::DataSourceSurface> Dump(
       Compositor* aCompositor) override;
 #endif
 

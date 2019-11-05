@@ -13,6 +13,7 @@
 #include "MLGDevice.h"  // for MLGSwapChain
 #include "RenderPassMLGPU.h"
 #include "RenderViewMLGPU.h"
+#include "mozilla/gfx/Logging.h"
 #include "mozilla/gfx/Polygon.h"
 #include "mozilla/layers/BSPTree.h"
 #include "mozilla/layers/LayersHelpers.h"
@@ -61,13 +62,21 @@ bool FrameBuilder::Build() {
 
   mWidgetRenderView = new RenderViewMLGPU(this, target, region);
 
+  // Traverse the layer tree and compute visible region for intermediate
+  // surfaces
+  if (ContainerLayerMLGPU* root =
+          mRoot->AsLayerMLGPU()->AsContainerLayerMLGPU()) {
+    root->ComputeIntermediateSurfaceBounds();
+  }
+
   // Traverse the layer tree and assign each layer to tiles.
   {
     Maybe<gfx::Polygon> geometry;
     RenderTargetIntRect clip(0, 0, target->GetSize().width,
                              target->GetSize().height);
 
-    AssignLayer(mRoot->GetLayer(), mWidgetRenderView, clip, Move(geometry));
+    AssignLayer(mRoot->GetLayer(), mWidgetRenderView, clip,
+                std::move(geometry));
   }
 
   // Build the default mask buffer.
@@ -131,7 +140,7 @@ void FrameBuilder::AssignLayer(Layer* aLayer, RenderViewMLGPU* aView,
 
   // Finally, assign the layer to a rendering batch in the current render
   // target.
-  layer->AssignToView(this, aView, Move(aGeometry));
+  layer->AssignToView(this, aView, std::move(aGeometry));
 }
 
 bool FrameBuilder::ProcessContainerLayer(ContainerLayer* aContainer,
@@ -142,7 +151,7 @@ bool FrameBuilder::ProcessContainerLayer(ContainerLayer* aContainer,
 
   // Diagnostic information for bug 1387467.
   if (!layer) {
-    gfxDevCrash(LogReason::InvalidLayerType)
+    gfxDevCrash(gfx::LogReason::InvalidLayerType)
         << "Layer type is invalid: " << aContainer->Name();
     return false;
   }
@@ -171,7 +180,7 @@ bool FrameBuilder::ProcessContainerLayer(ContainerLayer* aContainer,
   // to be a full-fledged ContainerLayerMLGPU.
   ContainerLayerMLGPU* viewContainer = layer->AsContainerLayerMLGPU();
   if (!viewContainer) {
-    gfxDevCrash(LogReason::InvalidLayerType)
+    gfxDevCrash(gfx::LogReason::InvalidLayerType)
         << "Container layer type is invalid: " << aContainer->Name();
     return false;
   }
@@ -213,10 +222,10 @@ void FrameBuilder::ProcessChildList(
     } else if (aParentGeometry) {
       geometry = aParentGeometry;
     } else if (entry.geometry) {
-      geometry = Move(entry.geometry);
+      geometry = std::move(entry.geometry);
     }
 
-    AssignLayer(child, aView, clip, Move(geometry));
+    AssignLayer(child, aView, clip, std::move(geometry));
   }
 }
 
@@ -309,6 +318,10 @@ void FrameBuilder::RetainTemporaryLayer(LayerMLGPU* aLayer) {
   // have parents.
   MOZ_ASSERT(!aLayer->GetLayer()->GetParent());
   mTemporaryLayers.push_back(aLayer->GetLayer());
+}
+
+MLGRenderTarget* FrameBuilder::GetWidgetRT() {
+  return mWidgetRenderView->GetRenderTarget();
 }
 
 LayerConstants* FrameBuilder::AllocateLayerInfo(ItemInfo& aItem) {

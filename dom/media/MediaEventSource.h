@@ -9,7 +9,6 @@
 
 #include "mozilla/AbstractThread.h"
 #include "mozilla/Atomics.h"
-#include "mozilla/IndexSequence.h"
 #include "mozilla/Mutex.h"
 #include "mozilla/Tuple.h"
 #include "mozilla/TypeTraits.h"
@@ -105,7 +104,7 @@ template <>
 struct EventTarget<nsIEventTarget> {
   static void Dispatch(nsIEventTarget* aTarget,
                        already_AddRefed<nsIRunnable> aTask) {
-    aTarget->Dispatch(Move(aTask), NS_DISPATCH_NORMAL);
+    aTarget->Dispatch(std::move(aTask), NS_DISPATCH_NORMAL);
   }
 };
 
@@ -113,7 +112,7 @@ template <>
 struct EventTarget<AbstractThread> {
   static void Dispatch(AbstractThread* aTarget,
                        already_AddRefed<nsIRunnable> aTask) {
-    Unused << aTarget->Dispatch(Move(aTask));
+    Unused << aTarget->Dispatch(std::move(aTask));
   }
 };
 
@@ -139,7 +138,7 @@ class Listener : public RevocableToken {
     if (CanTakeArgs()) {
       DispatchTask(NewRunnableMethod<typename Decay<Ts>::Type&&...>(
           "detail::Listener::ApplyWithArgs", this, &Listener::ApplyWithArgs,
-          Forward<Ts>(aEvents)...));
+          std::forward<Ts>(aEvents)...));
     } else {
       DispatchTask(NewRunnableMethod("detail::Listener::ApplyWithNoArgs", this,
                                      &Listener::ApplyWithNoArgs));
@@ -176,11 +175,11 @@ class ListenerImpl : public Listener<As...> {
  public:
   template <typename F>
   ListenerImpl(Target* aTarget, F&& aFunction)
-      : mTarget(aTarget), mFunction(Forward<F>(aFunction)) {}
+      : mTarget(aTarget), mFunction(std::forward<F>(aFunction)) {}
 
  private:
   void DispatchTask(already_AddRefed<nsIRunnable> aTask) override {
-    EventTarget<Target>::Dispatch(mTarget.get(), Move(aTask));
+    EventTarget<Target>::Dispatch(mTarget.get(), std::move(aTask));
   }
 
   bool CanTakeArgs() const override { return TakeArgs<FunctionStorage>::value; }
@@ -189,7 +188,7 @@ class ListenerImpl : public Listener<As...> {
   template <typename F>
   typename EnableIf<TakeArgs<F>::value, void>::Type ApplyWithArgsImpl(
       const F& aFunc, As&&... aEvents) {
-    aFunc(Move(aEvents)...);
+    aFunc(std::move(aEvents)...);
   }
 
   // |F| takes no arguments.
@@ -203,7 +202,7 @@ class ListenerImpl : public Listener<As...> {
     MOZ_RELEASE_ASSERT(TakeArgs<Function>::value);
     // Don't call the listener if it is disconnected.
     if (!RevocableToken::IsRevoked()) {
-      ApplyWithArgsImpl(mFunction, Move(aEvents)...);
+      ApplyWithArgsImpl(mFunction, std::move(aEvents)...);
     }
   }
 
@@ -266,11 +265,11 @@ class MediaEventListener {
   MediaEventListener() {}
 
   MediaEventListener(MediaEventListener&& aOther)
-      : mToken(Move(aOther.mToken)) {}
+      : mToken(std::move(aOther.mToken)) {}
 
   MediaEventListener& operator=(MediaEventListener&& aOther) {
     MOZ_ASSERT(!mToken, "Must disconnect the listener.");
-    mToken = Move(aOther.mToken);
+    mToken = std::move(aOther.mToken);
     return *this;
   }
 
@@ -331,7 +330,7 @@ class MediaEventSourceImpl {
     MOZ_ASSERT(Lp == ListenerPolicy::NonExclusive || mListeners.IsEmpty());
     auto l = mListeners.AppendElement();
     *l = new ListenerImpl<Target, Function>(aTarget,
-                                            Forward<Function>(aFunction));
+                                            std::forward<Function>(aFunction));
     return MediaEventListener(*l);
   }
 
@@ -341,7 +340,7 @@ class MediaEventSourceImpl {
   ConnectInternal(Target* aTarget, This* aThis, Method aMethod) {
     detail::RawPtr<This> thiz(aThis);
     return ConnectInternal(aTarget, [=](ArgType<Es>&&... aEvents) {
-      (thiz.get()->*aMethod)(Move(aEvents)...);
+      (thiz.get()->*aMethod)(std::move(aEvents)...);
     });
   }
 
@@ -364,12 +363,12 @@ class MediaEventSourceImpl {
    */
   template <typename Function>
   MediaEventListener Connect(AbstractThread* aTarget, Function&& aFunction) {
-    return ConnectInternal(aTarget, Forward<Function>(aFunction));
+    return ConnectInternal(aTarget, std::forward<Function>(aFunction));
   }
 
   template <typename Function>
   MediaEventListener Connect(nsIEventTarget* aTarget, Function&& aFunction) {
-    return ConnectInternal(aTarget, Forward<Function>(aFunction));
+    return ConnectInternal(aTarget, std::forward<Function>(aFunction));
   }
 
   /**
@@ -410,7 +409,7 @@ class MediaEventSourceImpl {
         mListeners.RemoveElementAt(i);
         continue;
       }
-      l->Dispatch(Forward<Ts>(aEvents)...);
+      l->Dispatch(std::forward<Ts>(aEvents)...);
     }
   }
 
@@ -460,7 +459,7 @@ class MediaEventProducerExc : public MediaEventSourceExc<Es...> {
  public:
   template <typename... Ts>
   void Notify(Ts&&... aEvents) {
-    this->NotifyInternal(Forward<Ts>(aEvents)...);
+    this->NotifyInternal(std::forward<Ts>(aEvents)...);
   }
 };
 

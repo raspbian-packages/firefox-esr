@@ -29,11 +29,15 @@ MOZ_MTLOG_MODULE("sdp")
 nsresult SdpHelper::CopyTransportParams(size_t numComponents,
                                         const SdpMediaSection& oldLocal,
                                         SdpMediaSection* newLocal) {
+  const SdpAttributeList& oldLocalAttrs = oldLocal.GetAttributeList();
   // Copy over m-section details
-  newLocal->SetPort(oldLocal.GetPort());
+  if (!oldLocalAttrs.HasAttribute(SdpAttribute::kBundleOnlyAttribute)) {
+    // Do not copy port 0 from an offer with a=bundle-only; this could cause
+    // an answer msection to be erroneously rejected.
+    newLocal->SetPort(oldLocal.GetPort());
+  }
   newLocal->GetConnection() = oldLocal.GetConnection();
 
-  const SdpAttributeList& oldLocalAttrs = oldLocal.GetAttributeList();
   SdpAttributeList& newLocalAttrs = newLocal->GetAttributeList();
 
   // Now we copy over attributes that won't be added by the usual logic
@@ -52,6 +56,11 @@ nsresult SdpHelper::CopyTransportParams(size_t numComponents,
     if (!candidateAttrs->mValues.empty()) {
       newLocalAttrs.SetAttribute(candidateAttrs.release());
     }
+  }
+
+  if (oldLocalAttrs.HasAttribute(SdpAttribute::kEndOfCandidatesAttribute)) {
+    newLocalAttrs.SetAttribute(
+        new SdpFlagAttribute(SdpAttribute::kEndOfCandidatesAttribute));
   }
 
   if (numComponents == 2 &&
@@ -162,7 +171,7 @@ void SdpHelper::DisableMsection(Sdp* sdp, SdpMediaSection* msection) {
       msection->AddCodec("120", "VP8", 90000, 1);
       break;
     case SdpMediaSection::kApplication:
-      msection->AddDataChannel("rejected", 0, 0, 0);
+      msection->AddDataChannel("webrtc-datachannel", 0, 0, 0);
       break;
     default:
       // We need to have something here to fit the grammar, this seems safe
@@ -271,10 +280,27 @@ nsresult SdpHelper::GetMidFromLevel(const Sdp& sdp, uint16_t level,
 
 nsresult SdpHelper::AddCandidateToSdp(Sdp* sdp,
                                       const std::string& candidateUntrimmed,
-                                      const std::string& mid, uint16_t level) {
+                                      uint16_t level,
+                                      const std::string& ufrag) {
   if (level >= sdp->GetMediaSectionCount()) {
     SDP_SET_ERROR("Index " << level << " out of range");
     return NS_ERROR_INVALID_ARG;
+  }
+
+  SdpMediaSection& msection = sdp->GetMediaSection(level);
+  SdpAttributeList& attrList = msection.GetAttributeList();
+
+  if (!ufrag.empty()) {
+    if (!attrList.HasAttribute(SdpAttribute::kIceUfragAttribute) ||
+        attrList.GetIceUfrag() != ufrag) {
+      SDP_SET_ERROR("Unknown ufrag (" << ufrag << ")");
+      return NS_ERROR_INVALID_ARG;
+    }
+  }
+
+  if (candidateUntrimmed.empty()) {
+    SetIceGatheringComplete(sdp, level, ufrag);
+    return NS_OK;
   }
 
   // Trim off '[a=]candidate:'
@@ -286,35 +312,6 @@ nsresult SdpHelper::AddCandidateToSdp(Sdp* sdp,
   ++begin;
 
   std::string candidate = candidateUntrimmed.substr(begin);
-
-  // https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-11#section-3.4.2.1
-  // Implementations receiving an ICE Candidate object MUST use the MID if
-  // present, or the m= line index, if not (as it could have come from a
-  // non-JSEP endpoint). (bug 1095793)
-  SdpMediaSection* msection = 0;
-  if (!mid.empty()) {
-    // FindMsectionByMid could return nullptr
-    msection = FindMsectionByMid(*sdp, mid);
-
-    // Check to make sure mid matches what we'd get by
-    // looking up the m= line using the level. (mjf)
-    std::string checkMid;
-    nsresult rv = GetMidFromLevel(*sdp, level, &checkMid);
-    if (NS_FAILED(rv)) {
-      return rv;
-    }
-    if (mid != checkMid) {
-      SDP_SET_ERROR("Mismatch between mid and level - \""
-                    << mid << "\" is not the mid for level " << level << "; \""
-                    << checkMid << "\" is");
-      return NS_ERROR_INVALID_ARG;
-    }
-  }
-  if (!msection) {
-    msection = &(sdp->GetMediaSection(level));
-  }
-
-  SdpAttributeList& attrList = msection->GetAttributeList();
 
   UniquePtr<SdpMultiStringAttribute> candidates;
   if (!attrList.HasAttribute(SdpAttribute::kCandidateAttribute)) {
@@ -333,57 +330,38 @@ nsresult SdpHelper::AddCandidateToSdp(Sdp* sdp,
   return NS_OK;
 }
 
-void SdpHelper::SetIceGatheringComplete(Sdp* sdp, uint16_t level,
-                                        BundledMids bundledMids) {
-  SdpMediaSection& msection = sdp->GetMediaSection(level);
-
-  if (kSlaveBundle ==
-      GetMsectionBundleType(*sdp, level, bundledMids, nullptr)) {
-    return;  // Slave bundle m-section. Skip.
+nsresult SdpHelper::SetIceGatheringComplete(Sdp* sdp,
+                                            const std::string& ufrag) {
+  for (uint16_t i = 0; i < sdp->GetMediaSectionCount(); ++i) {
+    nsresult rv = SetIceGatheringComplete(sdp, i, ufrag);
+    NS_ENSURE_SUCCESS(rv, rv);
   }
-
-  SdpAttributeList& attrs = msection.GetAttributeList();
-  attrs.SetAttribute(
-      new SdpFlagAttribute(SdpAttribute::kEndOfCandidatesAttribute));
-  // Remove trickle-ice option
-  attrs.RemoveAttribute(SdpAttribute::kIceOptionsAttribute);
+  return NS_OK;
 }
 
-void SdpHelper::SetDefaultAddresses(const std::string& defaultCandidateAddr,
-                                    uint16_t defaultCandidatePort,
-                                    const std::string& defaultRtcpCandidateAddr,
-                                    uint16_t defaultRtcpCandidatePort, Sdp* sdp,
-                                    uint16_t level, BundledMids bundledMids) {
-  SdpMediaSection& msection = sdp->GetMediaSection(level);
-  std::string masterMid;
-
-  MsectionBundleType bundleType =
-      GetMsectionBundleType(*sdp, level, bundledMids, &masterMid);
-  if (kSlaveBundle == bundleType) {
-    return;  // Slave bundle m-section. Skip.
+nsresult SdpHelper::SetIceGatheringComplete(Sdp* sdp, uint16_t level,
+                                            const std::string& ufrag) {
+  if (level >= sdp->GetMediaSectionCount()) {
+    SDP_SET_ERROR("Index " << level << " out of range");
+    return NS_ERROR_INVALID_ARG;
   }
-  if (kMasterBundle == bundleType) {
-    // Master bundle m-section. Set defaultCandidateAddr and
-    // defaultCandidatePort on all bundled m-sections.
-    const SdpMediaSection* masterBundleMsection(bundledMids[masterMid]);
-    for (auto i = bundledMids.begin(); i != bundledMids.end(); ++i) {
-      if (i->second != masterBundleMsection) {
-        continue;
-      }
-      SdpMediaSection* bundledMsection = FindMsectionByMid(*sdp, i->first);
-      if (!bundledMsection) {
-        MOZ_ASSERT(false);
-        continue;
-      }
-      SetDefaultAddresses(defaultCandidateAddr, defaultCandidatePort,
-                          defaultRtcpCandidateAddr, defaultRtcpCandidatePort,
-                          bundledMsection);
+
+  SdpMediaSection& msection = sdp->GetMediaSection(level);
+  SdpAttributeList& attrList = msection.GetAttributeList();
+
+  if (!ufrag.empty()) {
+    if (!attrList.HasAttribute(SdpAttribute::kIceUfragAttribute) ||
+        attrList.GetIceUfrag() != ufrag) {
+      SDP_SET_ERROR("Unknown ufrag (" << ufrag << ")");
+      return NS_ERROR_INVALID_ARG;
     }
   }
 
-  SetDefaultAddresses(defaultCandidateAddr, defaultCandidatePort,
-                      defaultRtcpCandidateAddr, defaultRtcpCandidatePort,
-                      &msection);
+  attrList.SetAttribute(
+      new SdpFlagAttribute(SdpAttribute::kEndOfCandidatesAttribute));
+  // Remove trickle-ice option
+  attrList.RemoveAttribute(SdpAttribute::kIceOptionsAttribute);
+  return NS_OK;
 }
 
 void SdpHelper::SetDefaultAddresses(const std::string& defaultCandidateAddr,
@@ -391,14 +369,10 @@ void SdpHelper::SetDefaultAddresses(const std::string& defaultCandidateAddr,
                                     const std::string& defaultRtcpCandidateAddr,
                                     uint16_t defaultRtcpCandidatePort,
                                     SdpMediaSection* msection) {
-  msection->GetConnection().SetAddress(defaultCandidateAddr);
   SdpAttributeList& attrList = msection->GetAttributeList();
 
-  // only set the port if there is no bundle-only attribute
-  if (!attrList.HasAttribute(SdpAttribute::kBundleOnlyAttribute)) {
-    msection->SetPort(defaultCandidatePort);
-  }
-
+  msection->GetConnection().SetAddress(defaultCandidateAddr);
+  msection->SetPort(defaultCandidatePort);
   if (!defaultRtcpCandidateAddr.empty()) {
     sdp::AddrType ipVersion = sdp::kIPv4;
     if (defaultRtcpCandidateAddr.find(':') != std::string::npos) {
@@ -412,63 +386,23 @@ void SdpHelper::SetDefaultAddresses(const std::string& defaultCandidateAddr,
 
 nsresult SdpHelper::GetIdsFromMsid(const Sdp& sdp,
                                    const SdpMediaSection& msection,
-                                   std::vector<std::string>* streamIds,
-                                   std::string* trackId) {
-  if (!sdp.GetAttributeList().HasAttribute(
-          SdpAttribute::kMsidSemanticAttribute)) {
-    return NS_ERROR_NOT_AVAILABLE;
-  }
-
-  auto& msidSemantics = sdp.GetAttributeList().GetMsidSemantic().mMsidSemantics;
+                                   std::vector<std::string>* streamIds) {
   std::vector<SdpMsidAttributeList::Msid> allMsids;
   nsresult rv = GetMsids(msection, &allMsids);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  bool allMsidsAreWebrtc = false;
-  std::set<std::string> webrtcMsids;
-
-  for (auto i = msidSemantics.begin(); i != msidSemantics.end(); ++i) {
-    if (i->semantic == "WMS") {
-      for (auto j = i->msids.begin(); j != i->msids.end(); ++j) {
-        if (*j == "*") {
-          allMsidsAreWebrtc = true;
-        } else {
-          webrtcMsids.insert(*j);
-        }
-      }
-      break;
-    }
-  }
-
-  bool found = false;
-
-  for (auto i = allMsids.begin(); i != allMsids.end(); ++i) {
-    if (allMsidsAreWebrtc || webrtcMsids.count(i->identifier)) {
-      if (i->appdata.empty()) {
-        SDP_SET_ERROR("Invalid webrtc msid at level " << msection.GetLevel()
-                                                      << ": Missing track id.");
-        return NS_ERROR_INVALID_ARG;
-      }
-      if (!found) {
-        *trackId = i->appdata;
-        streamIds->clear();
-        found = true;
-      } else if ((*trackId != i->appdata)) {
-        SDP_SET_ERROR("Found multiple different webrtc track ids in m-section "
-                      << msection.GetLevel()
-                      << ". The behavior here is "
-                         "undefined.");
-        return NS_ERROR_INVALID_ARG;
-      }
-      // "-" means no stream, see draft-ietf-mmusic-msid
-      if (i->identifier != "-") {
-        streamIds->push_back(i->identifier);
-      }
-    }
-  }
-
-  if (!found) {
+  if (allMsids.empty()) {
     return NS_ERROR_NOT_AVAILABLE;
+  }
+
+  streamIds->clear();
+  for (const auto& msid : allMsids) {
+    // "-" means no stream, see draft-ietf-mmusic-msid
+    // Remove duplicates, but leave order the same
+    if (msid.identifier != "-" &&
+        !std::count(streamIds->begin(), streamIds->end(), msid.identifier)) {
+      streamIds->push_back(msid.identifier);
+    }
   }
 
   return NS_OK;
@@ -478,9 +412,10 @@ nsresult SdpHelper::GetMsids(const SdpMediaSection& msection,
                              std::vector<SdpMsidAttributeList::Msid>* msids) {
   if (msection.GetAttributeList().HasAttribute(SdpAttribute::kMsidAttribute)) {
     *msids = msection.GetAttributeList().GetMsid().mMsids;
+    return NS_OK;
   }
 
-  // Can we find some additional msids in ssrc attributes?
+  // If there are no a=msid, can we find msids in ssrc attributes?
   // (Chrome does not put plain-old msid attributes in its SDP)
   if (msection.GetAttributeList().HasAttribute(SdpAttribute::kSsrcAttribute)) {
     auto& ssrcs = msection.GetAttributeList().GetSsrc().mSsrcs;
@@ -610,6 +545,7 @@ bool SdpHelper::HasRtcp(SdpMediaSection::Protocol proto) const {
     case SdpMediaSection::kRtpSavpf:
     case SdpMediaSection::kUdpTlsRtpSavpf:
     case SdpMediaSection::kTcpTlsRtpSavpf:
+    case SdpMediaSection::kTcpDtlsRtpSavpf:
     case SdpMediaSection::kDccpTlsRtpSavpf:
       return true;
     case SdpMediaSection::kRtpAvp:
@@ -631,6 +567,7 @@ bool SdpHelper::HasRtcp(SdpMediaSection::Protocol proto) const {
     case SdpMediaSection::kDccpRtpSavp:
     case SdpMediaSection::kUdpTlsRtpSavp:
     case SdpMediaSection::kTcpTlsRtpSavp:
+    case SdpMediaSection::kTcpDtlsRtpSavp:
     case SdpMediaSection::kDccpTlsRtpSavp:
     case SdpMediaSection::kUdpMbmsFecRtpAvp:
     case SdpMediaSection::kUdpMbmsFecRtpSavp:
@@ -653,9 +590,7 @@ bool SdpHelper::HasRtcp(SdpMediaSection::Protocol proto) const {
 SdpMediaSection::Protocol SdpHelper::GetProtocolForMediaType(
     SdpMediaSection::MediaType type) {
   if (type == SdpMediaSection::kApplication) {
-    return SdpMediaSection::kDtlsSctp;
-    // TODO switch to offer the new SCTP SDP (Bug 1335206)
-    // return SdpMediaSection::kUdpDtlsSctp;
+    return SdpMediaSection::kUdpDtlsSctp;
   }
 
   return SdpMediaSection::kUdpTlsRtpSavpf;
@@ -672,8 +607,8 @@ void SdpHelper::appendSdpParseErrors(
   *aErrorString += os.str();
 }
 
-/* static */ bool SdpHelper::GetPtAsInt(const std::string& ptString,
-                                        uint16_t* ptOutparam) {
+/* static */
+bool SdpHelper::GetPtAsInt(const std::string& ptString, uint16_t* ptOutparam) {
   char* end;
   unsigned long pt = strtoul(ptString.c_str(), &end, 10);
   size_t length = static_cast<size_t>(end - ptString.c_str());
@@ -746,6 +681,62 @@ SdpHelper::MsectionBundleType SdpHelper::GetMsectionBundleType(
     }
   }
   return kNoBundle;
+}
+
+static bool AttributeListMatch(const SdpAttributeList& list1,
+                               const SdpAttributeList& list2) {
+  // TODO: Consider adding telemetry in this function to record which
+  // attributes don't match. See Bug 1432955.
+  for (int i = SdpAttribute::kFirstAttribute; i <= SdpAttribute::kLastAttribute;
+       i++) {
+    auto attributeType = static_cast<SdpAttribute::AttributeType>(i);
+    // TODO: We should do more thorough checking here, e.g. serialize and
+    // compare strings. See Bug 1439690.
+    if (list1.HasAttribute(attributeType, false) !=
+        list2.HasAttribute(attributeType, false)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool MediaSectionMatch(const SdpMediaSection& mediaSection1,
+                              const SdpMediaSection& mediaSection2) {
+  // TODO: We should do more thorough checking in this function.
+  // See Bug 1439690.
+  if (!AttributeListMatch(mediaSection1.GetAttributeList(),
+                          mediaSection2.GetAttributeList())) {
+    return false;
+  }
+  if (mediaSection1.GetPort() != mediaSection2.GetPort()) {
+    return false;
+  }
+  const std::vector<std::string>& formats1 = mediaSection1.GetFormats();
+  const std::vector<std::string>& formats2 = mediaSection2.GetFormats();
+  auto formats1Set = std::set<std::string>(formats1.begin(), formats1.end());
+  auto formats2Set = std::set<std::string>(formats2.begin(), formats2.end());
+  if (formats1Set != formats2Set) {
+    return false;
+  }
+  return true;
+}
+
+bool SdpHelper::SdpMatch(const Sdp& sdp1, const Sdp& sdp2) {
+  if (sdp1.GetMediaSectionCount() != sdp2.GetMediaSectionCount()) {
+    return false;
+  }
+  if (!AttributeListMatch(sdp1.GetAttributeList(), sdp2.GetAttributeList())) {
+    return false;
+  }
+  for (size_t i = 0; i < sdp1.GetMediaSectionCount(); i++) {
+    const SdpMediaSection& mediaSection1 = sdp1.GetMediaSection(i);
+    const SdpMediaSection& mediaSection2 = sdp2.GetMediaSection(i);
+    if (!MediaSectionMatch(mediaSection1, mediaSection2)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace mozilla

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 connection-window =
-    .title = Thiết lập Kết nối
+    .title = Cài đặt kết nối
     .style =
         { PLATFORM() ->
             [macos] width: 44em
@@ -12,7 +12,7 @@ connection-window =
 connection-close-key =
     .key = w
 connection-disable-extension =
-    .label = Tắt phần mở rộng
+    .label = Tắt tiện ích mở rộng
 connection-proxy-configure = Cấu hình proxy để truy cập Internet
 connection-proxy-option-no =
     .label = Không dùng proxy
@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = DNS của proxy khi dùng SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Kích hoạt DNS qua HTTPS
+    .accesskey = b
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Sử dụng ({ $url }) mặc định
+    .accesskey = U
+    .tooltiptext = Sử dụng URL mặc định để phân giải DNS qua HTTPS
+connection-dns-over-https-url-resolver = Sử dụng nhà cung cấp
+    .accesskey = c
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (Mặc định)
+    .tooltiptext = Sử dụng đường dẫn mặc định để phân giải DNS qua HTTPS
+connection-dns-over-https-url-custom =
+    .label = Tùy chỉnh
+    .accesskey = C
+    .tooltiptext = Nhập URL ưa thích của bạn để phân giải DNS qua HTTPS
+connection-dns-over-https-custom-label = Tùy biến

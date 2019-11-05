@@ -21,7 +21,15 @@ class nsIPrincipal;
 class nsIURI;
 struct gfxFontFeature;
 struct gfxAlternateValue;
+struct nsCSSKTableEntry;
 struct nsCSSValueList;
+
+namespace mozilla {
+class FontSlantStyle;
+namespace dom {
+class Element;
+}
+}  // namespace mozilla
 
 // Style utility functions
 class nsStyleUtil {
@@ -47,20 +55,12 @@ class nsStyleUtil {
   static void AppendEscapedCSSIdent(const nsAString& aIdent,
                                     nsAString& aResult);
 
-  static void AppendEscapedCSSFontFamilyList(
-      const mozilla::FontFamilyList& aFamilyList, nsAString& aResult);
-  static void AppendEscapedCSSFontFamilyList(mozilla::SharedFontList* aFontlist,
-                                             nsAString& aResult) {
-    AppendEscapedCSSFontFamilyList(aFontlist->mNames, aResult);
-  }
-
- private:
-  static void AppendEscapedCSSFontFamilyList(
-      const nsTArray<mozilla::FontFamilyName>& aNames, nsAString& aResult);
+  static void AppendFontSlantStyle(const mozilla::FontSlantStyle&,
+                                   nsAString& aResult);
 
  public:
   // Append a bitmask-valued property's value(s) (space-separated) to aResult.
-  static void AppendBitmaskCSSValue(nsCSSPropertyID aProperty,
+  static void AppendBitmaskCSSValue(const nsCSSKTableEntry aTable[],
                                     int32_t aMaskedValue, int32_t aFirstMask,
                                     int32_t aLastMask, nsAString& aResult);
 
@@ -68,49 +68,9 @@ class nsStyleUtil {
 
   static void AppendPaintOrderValue(uint8_t aValue, nsAString& aResult);
 
-  static void AppendFontTagAsString(uint32_t aTag, nsAString& aResult);
-
-  static void AppendFontFeatureSettings(
-      const nsTArray<gfxFontFeature>& aFeatures, nsAString& aResult);
-
-  static void AppendFontFeatureSettings(const nsCSSValue& src,
-                                        nsAString& aResult);
-
-  static void AppendFontVariationSettings(
-      const nsTArray<gfxFontVariation>& aVariations, nsAString& aResult);
-
-  static void AppendFontVariationSettings(const nsCSSValue& src,
-                                          nsAString& aResult);
-
-  static void AppendUnicodeRange(const nsCSSValue& aValue, nsAString& aResult);
-
   static void AppendCSSNumber(float aNumber, nsAString& aResult) {
     aResult.AppendFloat(aNumber);
   }
-
-  static void AppendStepsTimingFunction(nsTimingFunction::Type aType,
-                                        uint32_t aSteps, nsAString& aResult);
-  static void AppendFramesTimingFunction(uint32_t aFrames, nsAString& aResult);
-  static void AppendCubicBezierTimingFunction(float aX1, float aY1, float aX2,
-                                              float aY2, nsAString& aResult);
-  static void AppendCubicBezierKeywordTimingFunction(
-      nsTimingFunction::Type aType, nsAString& aResult);
-
-  static void AppendSerializedFontSrc(const nsCSSValue& aValue,
-                                      nsAString& aResult);
-
-  // convert bitmask value to keyword name for a functional alternate
-  static void GetFunctionalAlternatesName(int32_t aFeature,
-                                          nsAString& aFeatureName);
-
-  // Append functional font-variant-alternates values to string
-  static void SerializeFunctionalAlternates(
-      const nsTArray<gfxAlternateValue>& aAlternates, nsAString& aResult);
-
-  // List of functional font-variant-alternates values to feature/value pairs
-  static void ComputeFunctionalAlternates(
-      const nsCSSValueList* aList,
-      nsTArray<gfxAlternateValue>& aAlternateValues);
 
   /*
    * Convert an author-provided floating point number to an integer (0
@@ -118,7 +78,7 @@ class nsStyleUtil {
    */
   static uint8_t FloatToColorComponent(float aAlpha) {
     NS_ASSERTION(0.0 <= aAlpha && aAlpha <= 1.0, "out of range");
-    return NSToIntRound(aAlpha * 255);
+    return static_cast<uint8_t>(NSToIntRound(aAlpha * 255));
   }
 
   /*
@@ -129,6 +89,14 @@ class nsStyleUtil {
    * Should be used only by serialization code.
    */
   static float ColorComponentToFloat(uint8_t aAlpha);
+
+  /**
+   * GetSerializedColorValue() computes serialized color value of aColor and
+   * returns it with aSerializedColor.
+   * https://drafts.csswg.org/cssom/#serialize-a-css-component-value
+   */
+  static void GetSerializedColorValue(nscolor aColor,
+                                      nsAString& aSerializedColor);
 
   /*
    * Does this child count as significant for selector matching?
@@ -180,6 +148,9 @@ class nsStyleUtil {
    *  @param aLineNumber
    *      Line number of inline style element in the containing document (for
    *      reporting violations)
+   *  @param aColumnNumber
+   *      Column number of inline style element in the containing document (for
+   *      reporting violations)
    *  @param aStyleText
    *      Contents of the inline style element (for reporting violations)
    *  @param aRv
@@ -191,6 +162,7 @@ class nsStyleUtil {
                                    nsIPrincipal* aPrincipal,
                                    nsIPrincipal* aTriggeringPrincipal,
                                    nsIURI* aSourceURI, uint32_t aLineNumber,
+                                   uint32_t aColumnNumber,
                                    const nsAString& aStyleText, nsresult* aRv);
 
   template <size_t N>

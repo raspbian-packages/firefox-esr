@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,6 +13,7 @@
 #include "GPUVideoImage.h"
 #include "ScopedGLHelpers.h"
 
+#include "mozilla/layers/D3D11ShareHandleImage.h"
 #include "mozilla/layers/D3D11YCbCrImage.h"
 #include "mozilla/layers/TextureD3D11.h"
 
@@ -21,28 +22,28 @@ namespace gl {
 
 static EGLStreamKHR StreamFromD3DTexture(ID3D11Texture2D* const texD3D,
                                          const EGLAttrib* const postAttribs) {
-  auto& egl = sEGLLibrary;
-  if (!egl.IsExtensionSupported(
+  auto* egl = gl::GLLibraryEGL::Get();
+  if (!egl->IsExtensionSupported(
           GLLibraryEGL::NV_stream_consumer_gltexture_yuv) ||
-      !egl.IsExtensionSupported(
+      !egl->IsExtensionSupported(
           GLLibraryEGL::ANGLE_stream_producer_d3d_texture)) {
     return 0;
   }
 
-  const auto& display = egl.Display();
-  const auto stream = egl.fCreateStreamKHR(display, nullptr);
+  const auto& display = egl->Display();
+  const auto stream = egl->fCreateStreamKHR(display, nullptr);
   MOZ_ASSERT(stream);
   if (!stream) return 0;
   bool ok = true;
-  MOZ_ALWAYS_TRUE(ok &= bool(egl.fStreamConsumerGLTextureExternalAttribsNV(
+  MOZ_ALWAYS_TRUE(ok &= bool(egl->fStreamConsumerGLTextureExternalAttribsNV(
                       display, stream, nullptr)));
-  MOZ_ALWAYS_TRUE(ok &= bool(egl.fCreateStreamProducerD3DTextureANGLE(
+  MOZ_ALWAYS_TRUE(ok &= bool(egl->fCreateStreamProducerD3DTextureANGLE(
                       display, stream, nullptr)));
-  MOZ_ALWAYS_TRUE(ok &= bool(egl.fStreamPostD3DTextureANGLE(
+  MOZ_ALWAYS_TRUE(ok &= bool(egl->fStreamPostD3DTextureANGLE(
                       display, stream, texD3D, postAttribs)));
   if (ok) return stream;
 
-  (void)egl.fDestroyStreamKHR(display, stream);
+  (void)egl->fDestroyStreamKHR(display, stream);
   return 0;
 }
 
@@ -84,8 +85,8 @@ class BindAnglePlanes final {
     MOZ_RELEASE_ASSERT(numPlanes >= 1 && numPlanes <= 3);
 
     const auto& gl = mParent.mGL;
-    auto& egl = sEGLLibrary;
-    const auto& display = egl.Display();
+    auto* egl = gl::GLLibraryEGL::Get();
+    const auto& display = egl->Display();
 
     gl->fGenTextures(numPlanes, mTempTexs);
 
@@ -102,7 +103,7 @@ class BindAnglePlanes final {
 
     if (mSuccess) {
       for (uint8_t i = 0; i < mNumPlanes; i++) {
-        MOZ_ALWAYS_TRUE(egl.fStreamConsumerAcquireKHR(display, mStreams[i]));
+        MOZ_ALWAYS_TRUE(egl->fStreamConsumerAcquireKHR(display, mStreams[i]));
 
         auto& mutex = mMutexList[i];
         texD3DList[i]->QueryInterface(IID_IDXGIKeyedMutex,
@@ -120,12 +121,12 @@ class BindAnglePlanes final {
 
   ~BindAnglePlanes() {
     const auto& gl = mParent.mGL;
-    auto& egl = sEGLLibrary;
-    const auto& display = egl.Display();
+    auto* egl = gl::GLLibraryEGL::Get();
+    const auto& display = egl->Display();
 
     if (mSuccess) {
       for (uint8_t i = 0; i < mNumPlanes; i++) {
-        MOZ_ALWAYS_TRUE(egl.fStreamConsumerReleaseKHR(display, mStreams[i]));
+        MOZ_ALWAYS_TRUE(egl->fStreamConsumerReleaseKHR(display, mStreams[i]));
         if (mMutexList[i]) {
           mMutexList[i]->ReleaseSync(0);
         }
@@ -133,7 +134,7 @@ class BindAnglePlanes final {
     }
 
     for (uint8_t i = 0; i < mNumPlanes; i++) {
-      (void)egl.fDestroyStreamKHR(display, mStreams[i]);
+      (void)egl->fDestroyStreamKHR(display, mStreams[i]);
     }
 
     gl->fDeleteTextures(mNumPlanes, mTempTexs);
@@ -149,11 +150,11 @@ ID3D11Device* GLBlitHelper::GetD3D11() const {
 
   if (!mGL->IsANGLE()) return nullptr;
 
-  auto& egl = sEGLLibrary;
+  auto* egl = gl::GLLibraryEGL::Get();
   EGLDeviceEXT deviceEGL = 0;
-  MOZ_ALWAYS_TRUE(egl.fQueryDisplayAttribEXT(
-      egl.Display(), LOCAL_EGL_DEVICE_EXT, (EGLAttrib*)&deviceEGL));
-  if (!egl.fQueryDeviceAttribEXT(
+  MOZ_ALWAYS_TRUE(egl->fQueryDisplayAttribEXT(
+      egl->Display(), LOCAL_EGL_DEVICE_EXT, (EGLAttrib*)&deviceEGL));
+  if (!egl->fQueryDeviceAttribEXT(
           deviceEGL, LOCAL_EGL_D3D11_DEVICE_ANGLE,
           (EGLAttrib*)(ID3D11Device**)getter_AddRefs(mD3D11))) {
     MOZ_ASSERT(false, "d3d9?");
@@ -201,6 +202,20 @@ bool GLBlitHelper::BlitImage(layers::GPUVideoImage* const srcImage,
 
 // -------------------------------------
 
+bool GLBlitHelper::BlitImage(layers::D3D11ShareHandleImage* const srcImage,
+                             const gfx::IntSize& destSize,
+                             const OriginPos destOrigin) const {
+  const auto& data = srcImage->GetData();
+  if (!data) return false;
+
+  layers::SurfaceDescriptorD3D10 desc;
+  if (!data->SerializeSpecific(&desc)) return false;
+
+  return BlitDescriptor(desc, destSize, destOrigin);
+}
+
+// -------------------------------------
+
 bool GLBlitHelper::BlitImage(layers::D3D11YCbCrImage* const srcImage,
                              const gfx::IntSize& destSize,
                              const OriginPos destOrigin) const {
@@ -229,9 +244,11 @@ bool GLBlitHelper::BlitDescriptor(const layers::SurfaceDescriptorD3D10& desc,
 
   const auto srcOrigin = OriginPos::BottomLeft;
   const gfx::IntRect clipRect(0, 0, clipSize.width, clipSize.height);
-  const auto colorSpace = YUVColorSpace::BT601;
+  const auto colorSpace = desc.yUVColorSpace();
 
-  if (format != gfx::SurfaceFormat::NV12) {
+  if (format != gfx::SurfaceFormat::NV12 &&
+      format != gfx::SurfaceFormat::P010 &&
+      format != gfx::SurfaceFormat::P016) {
     gfxCriticalError() << "Non-NV12 format for SurfaceDescriptorD3D10: "
                        << uint32_t(format);
     return false;
@@ -239,7 +256,7 @@ bool GLBlitHelper::BlitDescriptor(const layers::SurfaceDescriptorD3D10& desc,
 
   const auto tex = OpenSharedTexture(d3d, handle);
   if (!tex) {
-    MOZ_ASSERT(false, "Get a nullptr from OpenSharedResource.");
+    MOZ_GL_ASSERT(mGL, false);  // Get a nullptr from OpenSharedResource.
     return false;
   }
   const RefPtr<ID3D11Texture2D> texList[2] = {tex, tex};
@@ -253,7 +270,7 @@ bool GLBlitHelper::BlitDescriptor(const layers::SurfaceDescriptorD3D10& desc,
 
   const BindAnglePlanes bindPlanes(this, 2, texList, postAttribsList);
   if (!bindPlanes.Success()) {
-    MOZ_ASSERT(false, "BindAnglePlanes failed.");
+    MOZ_GL_ASSERT(mGL, false);  // BindAnglePlanes failed.
     return false;
   }
 
@@ -274,7 +291,6 @@ bool GLBlitHelper::BlitDescriptor(const layers::SurfaceDescriptorD3D10& desc,
       SubRectMat3(clipRect, uvSize, divisors), colorSpace};
 
   const auto& prog = GetDrawBlitProg({kFragHeader_TexExt, kFragBody_NV12});
-  MOZ_RELEASE_ASSERT(prog);
   prog->Draw(baseArgs, &yuvArgs);
   return true;
 }
@@ -285,7 +301,7 @@ bool GLBlitHelper::BlitAngleYCbCr(const WindowsHandle (&handleList)[3],
                                   const gfx::IntRect& clipRect,
                                   const gfx::IntSize& ySize,
                                   const gfx::IntSize& uvSize,
-                                  const YUVColorSpace colorSpace,
+                                  const gfx::YUVColorSpace colorSpace,
                                   const gfx::IntSize& destSize,
                                   const OriginPos destOrigin) const {
   const auto& d3d = GetD3D11();
@@ -309,7 +325,6 @@ bool GLBlitHelper::BlitAngleYCbCr(const WindowsHandle (&handleList)[3],
       SubRectMat3(clipRect, uvSize, divisors), colorSpace};
 
   const auto& prog = GetDrawBlitProg({kFragHeader_TexExt, kFragBody_PlanarYUV});
-  MOZ_RELEASE_ASSERT(prog);
   prog->Draw(baseArgs, &yuvArgs);
   return true;
 }

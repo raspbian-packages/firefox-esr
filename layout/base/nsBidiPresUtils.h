@@ -14,7 +14,7 @@
 #include "nsCoord.h"
 
 #ifdef DrawText
-#undef DrawText
+#  undef DrawText
 #endif
 
 struct BidiParagraphData;
@@ -25,13 +25,13 @@ class nsIFrame;
 class nsBlockFrame;
 class nsPresContext;
 class nsBlockInFlowLineIterator;
-class nsStyleContext;
 struct nsSize;
 template <class T>
 class nsTHashtable;
 namespace mozilla {
-class WritingMode;
+class ComputedStyle;
 class LogicalMargin;
+class WritingMode;
 }  // namespace mozilla
 
 /**
@@ -356,7 +356,7 @@ class nsBidiPresUtils {
    * Otherwise returns NSBIDI_LTR or NSBIDI_RTL depending on the value of
    * |direction|
    */
-  static nsBidiLevel BidiLevelFromStyle(nsStyleContext* aStyleContext);
+  static nsBidiLevel BidiLevelFromStyle(mozilla::ComputedStyle* aComputedStyle);
 
  private:
   static nsresult ProcessTextForRenderingContext(
@@ -427,7 +427,7 @@ class nsBidiPresUtils {
    *                             direction, it's the distance to the end,
    *                             otherwise, it's the distance to the start.
    * @param aContinuationStates  A map from nsIFrame* to
-   * nsFrameContinuationState
+   *                             nsFrameContinuationState
    * @return                     The isize aFrame takes, including margins.
    */
   static nscoord RepositionFrame(
@@ -443,7 +443,7 @@ class nsBidiPresUtils {
    * @param aFrame               The frame which itself and its descendants will
    *                             be initialized
    * @param aContinuationStates  A map from nsIFrame* to
-   * nsFrameContinuationState
+   *                             nsFrameContinuationState
    */
   static void InitContinuationStates(nsIFrame* aFrame,
                                      nsContinuationStates* aContinuationStates);

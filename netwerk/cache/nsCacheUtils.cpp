@@ -29,8 +29,6 @@ nsShutdownThread::nsShutdownThread(nsIThread* aThread)
       mShuttingDown(false),
       mThread(aThread) {}
 
-nsShutdownThread::~nsShutdownThread() {}
-
 nsresult nsShutdownThread::Shutdown(nsIThread* aThread) {
   nsresult rv;
   RefPtr<nsDestroyThreadEvent> ev = new nsDestroyThreadEvent(aThread);

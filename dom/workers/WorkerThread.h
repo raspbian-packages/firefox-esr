@@ -75,6 +75,8 @@ class WorkerThread final : public nsThread {
 
   uint32_t RecursionDepth(const WorkerThreadFriendKey& aKey) const;
 
+  PerformanceCounter* GetPerformanceCounter(nsIRunnable* aEvent) override;
+
   NS_INLINE_DECL_REFCOUNTING_INHERITED(WorkerThread, nsThread)
 
  private:
@@ -91,6 +93,8 @@ class WorkerThread final : public nsThread {
 
   NS_IMETHOD
   DelayedDispatch(already_AddRefed<nsIRunnable>, uint32_t) override;
+
+  void IncrementDispatchCounter();
 };
 
 }  // namespace dom

@@ -95,9 +95,8 @@ NS_INTERFACE_MAP_END
 // HTMLFormSubmission
 nsresult FormData::GetEncodedSubmission(nsIURI* aURI,
                                         nsIInputStream** aPostDataStream,
-                                        int64_t* aPostDataStreamLength,
                                         nsCOMPtr<nsIURI>& aOutURI) {
-  NS_NOTREACHED("Shouldn't call FormData::GetEncodedSubmission");
+  MOZ_ASSERT_UNREACHABLE("Shouldn't call FormData::GetEncodedSubmission");
   return NS_OK;
 }
 
@@ -279,12 +278,14 @@ void FormData::SetNameDirectoryPair(FormDataTuple* aData,
   aData->value.SetAsDirectory() = aDirectory;
 }
 
-/* virtual */ JSObject* FormData::WrapObject(
-    JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return FormDataBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* FormData::WrapObject(JSContext* aCx,
+                               JS::Handle<JSObject*> aGivenProto) {
+  return FormData_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-/* static */ already_AddRefed<FormData> FormData::Constructor(
+/* static */
+already_AddRefed<FormData> FormData::Constructor(
     const GlobalObject& aGlobal,
     const Optional<NonNull<HTMLFormElement> >& aFormElement, ErrorResult& aRv) {
   RefPtr<FormData> formData = new FormData(aGlobal.GetAsSupports());

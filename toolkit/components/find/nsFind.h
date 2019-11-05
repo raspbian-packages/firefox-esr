@@ -11,12 +11,11 @@
 
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
-#include "nsIDOMNode.h"
-#include "nsIDOMRange.h"
-#include "nsIContentIterator.h"
+#include "nsINode.h"
 #include "mozilla/intl/WordBreaker.h"
 
 class nsIContent;
+class nsRange;
 
 #define NS_FIND_CONTRACTID "@mozilla.org/embedcomp/rangefind;1"
 
@@ -41,7 +40,6 @@ class nsFind : public nsIFind {
   virtual ~nsFind();
 
   // Parameters set from the interface:
-  // nsCOMPtr<nsIDOMRange> mRange;   // search only in this range
   bool mFindBackward;
   bool mCaseSensitive;
 
@@ -49,35 +47,13 @@ class nsFind : public nsIFind {
   // disable "entire words" mode.
   RefPtr<mozilla::intl::WordBreaker> mWordBreaker;
 
-  int32_t mIterOffset;
-  nsCOMPtr<nsIDOMNode> mIterNode;
-
-  // Last block parent, so that we will notice crossing block boundaries:
-  nsCOMPtr<nsIDOMNode> mLastBlockParent;
-  nsresult GetBlockParent(nsIDOMNode* aNode, nsIDOMNode** aParent);
-
-  // Utility routines:
-  bool IsBlockNode(nsIContent* aNode);
-  bool SkipNode(nsIContent* aNode);
-  bool IsVisibleNode(nsIDOMNode* aNode);
-
-  // Move in the right direction for our search:
-  nsresult NextNode(nsIDOMRange* aSearchRange, nsIDOMRange* aStartPoint,
-                    nsIDOMRange* aEndPoint, bool aContinueOk);
+  struct State;
+  class StateRestorer;
 
   // Get the first character from the next node (last if mFindBackward).
-  char16_t PeekNextChar(nsIDOMRange* aSearchRange, nsIDOMRange* aStartPoint,
-                        nsIDOMRange* aEndPoint);
-
-  // Reset variables before returning -- don't hold any references.
-  void ResetAll();
-
-  // The iterator we use to move through the document:
-  nsresult InitIterator(nsIDOMNode* aStartNode, int32_t aStartOffset,
-                        nsIDOMNode* aEndNode, int32_t aEndOffset);
-  RefPtr<nsFindContentIterator> mIterator;
-
-  friend class PeekNextCharRestoreState;
+  //
+  // This will mutate the state, but then restore it afterwards.
+  char16_t PeekNextChar(State&) const;
 };
 
 #endif  // nsFind_h__

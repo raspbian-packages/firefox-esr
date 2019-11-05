@@ -6,10 +6,8 @@
   -->
 <window title="Titlebar" width="200" height="200"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
 
 <tree id="tree" seltype="single" width="100" height="100">
   <treecols>
@@ -81,7 +79,7 @@ function popupShown(event)
   var panel = event.target;
 
   if (waitSteps > 0 && navigator.platform.includes("Linux") &&
-      panel.boxObject.screenY == 210) {
+      panel.screenY == 210) {
     waitSteps--;
     setTimeout(popupShown, 10, event);
     return;
@@ -113,12 +111,12 @@ function checkTreeCoords()
   var tree = $("tree");
   var treechildren = $("treechildren");
   tree.currentIndex = 0;
-  tree.treeBoxObject.scrollToRow(0);
-  synthesizeMouse(treechildren, 10, tree.treeBoxObject.rowHeight + 2, { });
+  tree.scrollToRow(0);
+  synthesizeMouse(treechildren, 10, tree.rowHeight + 2, { });
   is(tree.currentIndex, 1, "tree selection");
 
-  tree.treeBoxObject.scrollToRow(2);
-  synthesizeMouse(treechildren, 10, tree.treeBoxObject.rowHeight + 2, { });
+  tree.scrollToRow(2);
+  synthesizeMouse(treechildren, 10, tree.rowHeight + 2, { });
   is(tree.currentIndex, 3, "tree selection after scroll");
 }
 
@@ -213,7 +211,7 @@ var tests = [
       {
         is(event.clientY, panelrect.top + 10,
            "popup clientY");
-        is(event.screenY, panel.boxObject.screenY + 10,
+        is(event.screenY, panel.screenY + 10,
            "popup screenY");
         is(event.originalTarget, panel.firstChild, "popup target");
         gotMouseEvent = true;
@@ -228,31 +226,6 @@ var tests = [
       tree.currentIndex = 0;
       panel.appendChild(tree);
       checkTreeCoords();
-    }
-  },
-  {
-    testname: "noautohide panel with backdrag",
-    attrs: { noautohide: true, backdrag: "true" },
-    test: function(panel) {
-      var label = document.createElement("label");
-      label.id = "backdragspot";
-      label.setAttribute("value", "Hello There");
-      panel.appendChild(label);
-      panel.openPopupAtScreen(200, 230);
-    },
-    result: function(testname, panel) {
-      var oldrect = panel.getOuterScreenRect();
-
-      // Linux uses native window moving
-      if (!navigator.platform.includes("Linux")) {
-        var backdragspot = document.getElementById("backdragspot");
-        synthesizeMouse(backdragspot, 5, 5, { type: "mousedown" });
-        synthesizeMouse(backdragspot, 15, 20, { type: "mousemove" });
-        synthesizeMouse(backdragspot, 15, 20, { type: "mouseup" });
-
-        is(panel.getOuterScreenRect().left, 210, testname + "left");
-        is(panel.getOuterScreenRect().top, 245, testname + "top");
-      }
     }
   },
   {

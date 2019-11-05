@@ -90,7 +90,7 @@ class SourceBufferIterator final {
   }
 
   SourceBufferIterator(SourceBufferIterator&& aOther)
-      : mOwner(Move(aOther.mOwner)),
+      : mOwner(std::move(aOther.mOwner)),
         mState(aOther.mState),
         mData(aOther.mData),
         mChunkCount(aOther.mChunkCount),
@@ -165,6 +165,13 @@ class SourceBufferIterator final {
   size_t Length() const {
     MOZ_ASSERT(mState == READY, "Calling Length() in the wrong state");
     return mState == READY ? mData.mIterating.mNextReadLength : 0;
+  }
+
+  /// If we're ready to read, returns whether or not everything available thus
+  /// far has been in the same contiguous buffer.
+  bool IsContiguous() const {
+    MOZ_ASSERT(mState == READY, "Calling IsContiguous() in the wrong state");
+    return mState == READY ? mData.mIterating.mChunk == 0 : false;
   }
 
   /// @return a count of the chunks we've advanced through.
@@ -353,6 +360,14 @@ class SourceBuffer final {
    */
   static const size_t MIN_CHUNK_CAPACITY = 4096;
 
+  /**
+   * The maximum chunk capacity we'll allocate. This was historically the
+   * maximum we would preallocate based on the network size. We may adjust it
+   * in the future based on the IMAGE_DECODE_CHUNKS telemetry to ensure most
+   * images remain in a single chunk.
+   */
+  static const size_t MAX_CHUNK_CAPACITY = 20 * 1024 * 1024;
+
  private:
   friend class SourceBufferIterator;
 
@@ -425,7 +440,8 @@ class SourceBuffer final {
   };
 
   nsresult AppendChunk(Maybe<Chunk>&& aChunk);
-  Maybe<Chunk> CreateChunk(size_t aCapacity, bool aRoundUp = true);
+  Maybe<Chunk> CreateChunk(size_t aCapacity, size_t aExistingCapacity = 0,
+                           bool aRoundUp = true);
   nsresult Compact();
   static size_t RoundedUpCapacity(size_t aCapacity);
   size_t FibonacciCapacityWithMinimum(size_t aMinCapacity);
@@ -473,6 +489,9 @@ class SourceBuffer final {
 
   /// Count of active consumers.
   uint32_t mConsumerCount;
+
+  /// True if compacting has been performed.
+  bool mCompacted;
 };
 
 }  // namespace image

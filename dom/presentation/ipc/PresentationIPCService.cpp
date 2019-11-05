@@ -7,7 +7,7 @@
 #include "mozilla/dom/ContentChild.h"
 #include "mozilla/dom/PermissionMessageUtils.h"
 #include "mozilla/dom/PPresentation.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "mozilla/ipc/InputStreamUtils.h"
 #include "mozilla/ipc/URIUtils.h"
 #include "nsGlobalWindow.h"
@@ -55,7 +55,7 @@ NS_IMETHODIMP
 PresentationIPCService::StartSession(
     const nsTArray<nsString>& aUrls, const nsAString& aSessionId,
     const nsAString& aOrigin, const nsAString& aDeviceId, uint64_t aWindowId,
-    nsIDOMEventTarget* aEventTarget, nsIPrincipal* aPrincipal,
+    EventTarget* aEventTarget, nsIPrincipal* aPrincipal,
     nsIPresentationServiceCallback* aCallback,
     nsIPresentationTransportBuilderConstructor* aBuilderConstructor) {
   if (aWindowId != 0) {
@@ -64,8 +64,8 @@ PresentationIPCService::StartSession(
   }
 
   nsPIDOMWindowInner* window =
-      nsGlobalWindowInner::GetInnerWindowWithId(aWindowId)->AsInner();
-  TabId tabId = TabParent::GetTabIdFrom(window->GetDocShell());
+      nsGlobalWindowInner::GetInnerWindowWithId(aWindowId);
+  TabId tabId = BrowserParent::GetTabIdFrom(window->GetDocShell());
 
   return SendRequest(
       aCallback,
@@ -115,7 +115,7 @@ PresentationIPCService::SendSessionBinaryMsg(const nsAString& aSessionId,
 
 NS_IMETHODIMP
 PresentationIPCService::SendSessionBlob(const nsAString& aSessionId,
-                                        uint8_t aRole, nsIDOMBlob* aBlob) {
+                                        uint8_t aRole, Blob* aBlob) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!aSessionId.IsEmpty());
   MOZ_ASSERT(aRole == nsIPresentationService::ROLE_CONTROLLER ||

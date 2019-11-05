@@ -108,7 +108,7 @@ void TexturedLayerMLGPU::AssignToView(FrameBuilder* aBuilder,
     AssignBigImage(aBuilder, aView, iter, aGeometry);
     iter->EndBigImageIteration();
   } else {
-    LayerMLGPU::AssignToView(aBuilder, aView, Move(aGeometry));
+    LayerMLGPU::AssignToView(aBuilder, aView, std::move(aGeometry));
   }
 }
 
@@ -149,7 +149,7 @@ void TexturedLayerMLGPU::AssignBigImage(FrameBuilder* aBuilder,
     item->Init(this, tile, rect);
 
     Maybe<Polygon> geometry = aGeometry;
-    item->AddBoundsToView(aBuilder, aView, Move(geometry));
+    item->AddBoundsToView(aBuilder, aView, std::move(geometry));
 
     // Since the layer tree is not holding this alive, we have to ask the
     // FrameBuilder to do it for us.
@@ -159,7 +159,9 @@ void TexturedLayerMLGPU::AssignBigImage(FrameBuilder* aBuilder,
 
 TempImageLayerMLGPU::TempImageLayerMLGPU(LayerManagerMLGPU* aManager)
     : ImageLayer(aManager, static_cast<HostLayer*>(this)),
-      TexturedLayerMLGPU(aManager) {}
+      TexturedLayerMLGPU(aManager),
+      mFilter(gfx::SamplingFilter::GOOD),
+      mIsOpaque(false) {}
 
 TempImageLayerMLGPU::~TempImageLayerMLGPU() {}
 

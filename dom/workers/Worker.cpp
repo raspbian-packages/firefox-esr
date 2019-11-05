@@ -13,12 +13,18 @@
 #include "nsContentUtils.h"
 #include "WorkerPrivate.h"
 
+#ifdef XP_WIN
+#  undef PostMessage
+#endif
+
 namespace mozilla {
 namespace dom {
 
-/* static */ already_AddRefed<Worker> Worker::Constructor(
-    const GlobalObject& aGlobal, const nsAString& aScriptURL,
-    const WorkerOptions& aOptions, ErrorResult& aRv) {
+/* static */
+already_AddRefed<Worker> Worker::Constructor(const GlobalObject& aGlobal,
+                                             const nsAString& aScriptURL,
+                                             const WorkerOptions& aOptions,
+                                             ErrorResult& aRv) {
   JSContext* cx = aGlobal.Context();
 
   RefPtr<WorkerPrivate> workerPrivate = WorkerPrivate::Constructor(
@@ -38,7 +44,7 @@ namespace dom {
 Worker::Worker(nsIGlobalObject* aGlobalObject,
                already_AddRefed<WorkerPrivate> aWorkerPrivate)
     : DOMEventTargetHelper(aGlobalObject),
-      mWorkerPrivate(Move(aWorkerPrivate)) {
+      mWorkerPrivate(std::move(aWorkerPrivate)) {
   MOZ_ASSERT(mWorkerPrivate);
   mWorkerPrivate->SetParentEventTargetRef(this);
 }
@@ -48,7 +54,7 @@ Worker::~Worker() { Terminate(); }
 JSObject* Worker::WrapObject(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) {
   JS::Rooted<JSObject*> wrapper(aCx,
-                                WorkerBinding::Wrap(aCx, this, aGivenProto));
+                                Worker_Binding::Wrap(aCx, this, aGivenProto));
   if (wrapper) {
     // Most DOM objects don't assume they have a reflector. If they don't have
     // one and need one, they create it. But in workers code, we assume that the
@@ -115,11 +121,16 @@ void Worker::PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
   }
 }
 
+void Worker::PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
+                         const PostMessageOptions& aOptions, ErrorResult& aRv) {
+  PostMessage(aCx, aMessage, aOptions.mTransfer, aRv);
+}
+
 void Worker::Terminate() {
   NS_ASSERT_OWNINGTHREAD(Worker);
 
   if (mWorkerPrivate) {
-    mWorkerPrivate->Terminate();
+    mWorkerPrivate->Cancel();
     mWorkerPrivate = nullptr;
   }
 }

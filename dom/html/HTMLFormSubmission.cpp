@@ -9,7 +9,7 @@
 #include "nsCOMPtr.h"
 #include "nsIForm.h"
 #include "nsILinkHandler.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsGkAtoms.h"
 #include "nsIFormControl.h"
 #include "nsError.h"
@@ -36,15 +36,15 @@
 #include "nsContentUtils.h"
 
 #include "mozilla/dom/Directory.h"
-#include "mozilla/dom/DOMPrefs.h"
 #include "mozilla/dom/File.h"
+#include "mozilla/StaticPrefs.h"
 
 namespace mozilla {
 namespace dom {
 
 namespace {
 
-void SendJSWarning(nsIDocument* aDocument, const char* aWarningName,
+void SendJSWarning(Document* aDocument, const char* aWarningName,
                    const char16_t** aWarningArgs, uint32_t aWarningArgsLen) {
   nsContentUtils::ReportToConsole(nsIScriptError::warningFlag,
                                   NS_LITERAL_CSTRING("HTML"), aDocument,
@@ -85,7 +85,7 @@ class FSURLEncoded : public EncodingFormSubmission {
    */
   FSURLEncoded(nsIURI* aActionURL, const nsAString& aTarget,
                NotNull<const Encoding*> aEncoding, int32_t aMethod,
-               nsIDocument* aDocument, Element* aOriginatingElement)
+               Document* aDocument, Element* aOriginatingElement)
       : EncodingFormSubmission(aActionURL, aTarget, aEncoding,
                                aOriginatingElement),
         mMethod(aMethod),
@@ -103,7 +103,6 @@ class FSURLEncoded : public EncodingFormSubmission {
 
   virtual nsresult GetEncodedSubmission(nsIURI* aURI,
                                         nsIInputStream** aPostDataStream,
-                                        int64_t* aPostDataStreamLength,
                                         nsCOMPtr<nsIURI>& aOutURI) override;
 
  protected:
@@ -128,7 +127,7 @@ class FSURLEncoded : public EncodingFormSubmission {
   nsCString mQueryString;
 
   /** The document whose URI to use when reporting errors */
-  nsCOMPtr<nsIDocument> mDocument;
+  nsCOMPtr<Document> mDocument;
 
   /** Whether or not we have warned about a file control not being submitted */
   bool mWarnedFileControl;
@@ -242,13 +241,11 @@ void HandleMailtoSubject(nsCString& aPath) {
 
 nsresult FSURLEncoded::GetEncodedSubmission(nsIURI* aURI,
                                             nsIInputStream** aPostDataStream,
-                                            int64_t* aPostDataStreamLength,
                                             nsCOMPtr<nsIURI>& aOutURI) {
   nsresult rv = NS_OK;
   aOutURI = aURI;
 
   *aPostDataStream = nullptr;
-  *aPostDataStreamLength = -1;
 
   if (mMethod == NS_FORM_METHOD_POST) {
     bool isMailto = false;
@@ -271,11 +268,10 @@ nsresult FSURLEncoded::GetEncodedSubmission(nsIURI* aURI,
       return NS_MutateURI(aURI).SetPathQueryRef(path).Finalize(aOutURI);
     } else {
       nsCOMPtr<nsIInputStream> dataStream;
-      // XXX We *really* need to either get the string to disown its data (and
-      // not destroy it), or make a string input stream that owns the CString
-      // that is passed to it.  Right now this operation does a copy.
-      rv = NS_NewCStringInputStream(getter_AddRefs(dataStream), mQueryString);
+      rv = NS_NewCStringInputStream(getter_AddRefs(dataStream),
+                                    std::move(mQueryString));
       NS_ENSURE_SUCCESS(rv, rv);
+      mQueryString.Truncate();
 
       nsCOMPtr<nsIMIMEInputStream> mimeStream(
           do_CreateInstance("@mozilla.org/network/mime-input-stream;1", &rv));
@@ -285,10 +281,7 @@ nsresult FSURLEncoded::GetEncodedSubmission(nsIURI* aURI,
                             "application/x-www-form-urlencoded");
       mimeStream->SetData(dataStream);
 
-      *aPostDataStream = mimeStream;
-      NS_ADDREF(*aPostDataStream);
-
-      *aPostDataStreamLength = mQueryString.Length();
+      mimeStream.forget(aPostDataStream);
     }
 
   } else {
@@ -446,7 +439,7 @@ nsresult FSMultipartFormData::AddNameBlobOrNullPair(const nsAString& aName,
     if (file) {
       nsAutoString relativePath;
       file->GetRelativePath(relativePath);
-      if (DOMPrefs::WebkitBlinkDirectoryPickerEnabled() &&
+      if (StaticPrefs::dom_webkitBlink_dirPicker_enabled() &&
           !relativePath.IsEmpty()) {
         filename16 = relativePath;
       }
@@ -503,7 +496,7 @@ nsresult FSMultipartFormData::AddNameBlobOrNullPair(const nsAString& aName,
 
 nsresult FSMultipartFormData::AddNameDirectoryPair(const nsAString& aName,
                                                    Directory* aDirectory) {
-  if (!DOMPrefs::WebkitBlinkDirectoryPickerEnabled()) {
+  if (!StaticPrefs::dom_webkitBlink_dirPicker_enabled()) {
     return NS_OK;
   }
 
@@ -572,8 +565,7 @@ void FSMultipartFormData::AddDataChunk(const nsACString& aName,
 }
 
 nsresult FSMultipartFormData::GetEncodedSubmission(
-    nsIURI* aURI, nsIInputStream** aPostDataStream,
-    int64_t* aPostDataStreamLength, nsCOMPtr<nsIURI>& aOutURI) {
+    nsIURI* aURI, nsIInputStream** aPostDataStream, nsCOMPtr<nsIURI>& aOutURI) {
   nsresult rv;
   aOutURI = aURI;
 
@@ -588,7 +580,6 @@ nsresult FSMultipartFormData::GetEncodedSubmission(
 
   uint64_t bodySize;
   mimeStream->SetData(GetSubmissionBody(&bodySize));
-  *aPostDataStreamLength = bodySize;
 
   mimeStream.forget(aPostDataStream);
 
@@ -634,7 +625,6 @@ class FSTextPlain : public EncodingFormSubmission {
 
   virtual nsresult GetEncodedSubmission(nsIURI* aURI,
                                         nsIInputStream** aPostDataStream,
-                                        int64_t* aPostDataStreaLength,
                                         nsCOMPtr<nsIURI>& aOutURI) override;
 
  private:
@@ -670,13 +660,11 @@ nsresult FSTextPlain::AddNameDirectoryPair(const nsAString& aName,
 
 nsresult FSTextPlain::GetEncodedSubmission(nsIURI* aURI,
                                            nsIInputStream** aPostDataStream,
-                                           int64_t* aPostDataStreamLength,
                                            nsCOMPtr<nsIURI>& aOutURI) {
   nsresult rv = NS_OK;
   aOutURI = aURI;
 
   *aPostDataStream = nullptr;
-  *aPostDataStreamLength = -1;
 
   // XXX HACK We are using the standard URL mechanism to give the body to the
   // mailer instead of passing the post data stream to it, since that sounds
@@ -713,7 +701,7 @@ nsresult FSTextPlain::GetEncodedSubmission(nsIURI* aURI,
         cbody.get(), nsLinebreakConverter::eLinebreakAny,
         nsLinebreakConverter::eLinebreakNet));
     nsCOMPtr<nsIInputStream> bodyStream;
-    rv = NS_NewCStringInputStream(getter_AddRefs(bodyStream), cbody);
+    rv = NS_NewCStringInputStream(getter_AddRefs(bodyStream), std::move(cbody));
     if (!bodyStream) {
       return NS_ERROR_OUT_OF_MEMORY;
     }
@@ -725,9 +713,7 @@ nsresult FSTextPlain::GetEncodedSubmission(nsIURI* aURI,
 
     mimeStream->AddHeader("Content-Type", "text/plain");
     mimeStream->SetData(bodyStream);
-    CallQueryInterface(mimeStream, aPostDataStream);
-
-    *aPostDataStreamLength = cbody.Length();
+    mimeStream.forget(aPostDataStream);
   }
 
   return rv;
@@ -806,7 +792,7 @@ NotNull<const Encoding*> GetSubmitEncoding(nsGenericHTMLElement* aForm) {
   }
   // if there are no accept-charset or all the charset are not supported
   // Get the charset from document
-  nsIDocument* doc = aForm->GetComposedDoc();
+  Document* doc = aForm->GetComposedDoc();
   if (doc) {
     return doc->GetDocumentCharacterSet();
   }
@@ -823,7 +809,8 @@ void GetEnumAttr(nsGenericHTMLElement* aContent, nsAtom* atom,
 
 }  // anonymous namespace
 
-/* static */ nsresult HTMLFormSubmission::GetFromForm(
+/* static */
+nsresult HTMLFormSubmission::GetFromForm(
     HTMLFormElement* aForm, nsGenericHTMLElement* aOriginatingElement,
     HTMLFormSubmission** aFormSubmission) {
   // Get all the information necessary to encode the form data
@@ -836,6 +823,25 @@ void GetEnumAttr(nsGenericHTMLElement* aContent, nsAtom* atom,
   nsCOMPtr<nsIURI> actionURL;
   rv = aForm->GetActionURL(getter_AddRefs(actionURL), aOriginatingElement);
   NS_ENSURE_SUCCESS(rv, rv);
+
+  // Check if CSP allows this form-action
+  nsCOMPtr<nsIContentSecurityPolicy> csp;
+  rv = aForm->NodePrincipal()->GetCsp(getter_AddRefs(csp));
+  NS_ENSURE_SUCCESS(rv, rv);
+  if (csp) {
+    bool permitsFormAction = true;
+
+    // form-action is only enforced if explicitly defined in the
+    // policy - do *not* consult default-src, see:
+    // http://www.w3.org/TR/CSP2/#directive-default-src
+    rv = csp->Permits(aForm, nullptr /* nsICSPEventListener */, actionURL,
+                      nsIContentSecurityPolicy::FORM_ACTION_DIRECTIVE, true,
+                      &permitsFormAction);
+    NS_ENSURE_SUCCESS(rv, rv);
+    if (!permitsFormAction) {
+      return NS_ERROR_CSP_FORM_ACTION_VIOLATION;
+    }
+  }
 
   // Get target
   // The target is the originating element formtarget attribute if the element
@@ -883,7 +889,7 @@ void GetEnumAttr(nsGenericHTMLElement* aContent, nsAtom* atom,
     *aFormSubmission =
         new FSTextPlain(actionURL, target, encoding, aOriginatingElement);
   } else {
-    nsIDocument* doc = aForm->OwnerDoc();
+    Document* doc = aForm->OwnerDoc();
     if (enctype == NS_FORM_ENCTYPE_MULTIPART ||
         enctype == NS_FORM_ENCTYPE_TEXTPLAIN) {
       nsAutoString enctypeStr;

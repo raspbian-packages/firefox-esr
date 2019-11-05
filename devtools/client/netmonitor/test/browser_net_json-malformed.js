@@ -7,28 +7,24 @@
  * Tests if malformed JSON responses are handled correctly.
  */
 
-add_task(async function () {
-  let { L10N } = require("devtools/client/netmonitor/src/utils/l10n");
-  let { tab, monitor } = await initNetMonitor(JSON_MALFORMED_URL);
+add_task(async function() {
+  const { L10N } = require("devtools/client/netmonitor/src/utils/l10n");
+  const { tab, monitor } = await initNetMonitor(JSON_MALFORMED_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let {
-    getDisplayedRequests,
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { getDisplayedRequests, getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
-  let wait = waitForNetworkEvents(monitor, 1);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests();
-  });
-  await wait;
+  // Execute requests.
+  await performRequests(monitor, tab, 1);
 
-  let requestItem = document.querySelector(".request-list-item");
-  let requestsListStatus = requestItem.querySelector(".requests-list-status");
+  const requestItem = document.querySelector(".request-list-item");
+  const requestsListStatus = requestItem.querySelector(".status-code");
   EventUtils.sendMouseEvent({ type: "mouseover" }, requestsListStatus);
   await waitUntil(() => requestsListStatus.title);
 
@@ -42,38 +38,58 @@ add_task(async function () {
       status: 200,
       statusText: "OK",
       type: "json",
-      fullMimeType: "text/json; charset=utf-8"
-    });
+      fullMimeType: "text/json; charset=utf-8",
+    }
+  );
 
   wait = waitForDOM(document, "#response-panel .CodeMirror-code");
-  EventUtils.sendMouseEvent({ type: "click" },
-    document.querySelector(".network-details-panel-toggle"));
-  EventUtils.sendMouseEvent({ type: "click" },
-    document.querySelector("#response-tab"));
+  store.dispatch(Actions.toggleNetworkDetails());
+  EventUtils.sendMouseEvent(
+    { type: "click" },
+    document.querySelector("#response-tab")
+  );
   await wait;
 
-  let tabpanel = document.querySelector("#response-panel");
-  is(tabpanel.querySelector(".response-error-header") === null, false,
-    "The response error header doesn't have the intended visibility.");
-  is(tabpanel.querySelector(".response-error-header").textContent,
+  const tabpanel = document.querySelector("#response-panel");
+  is(
+    tabpanel.querySelector(".response-error-header") === null,
+    false,
+    "The response error header doesn't have the intended visibility."
+  );
+  is(
+    tabpanel.querySelector(".response-error-header").textContent,
     "SyntaxError: JSON.parse: unexpected non-whitespace character after JSON data" +
       " at line 1 column 40 of the JSON data",
-    "The response error header doesn't have the intended text content.");
-  is(tabpanel.querySelector(".response-error-header").getAttribute("title"),
+    "The response error header doesn't have the intended text content."
+  );
+  is(
+    tabpanel.querySelector(".response-error-header").getAttribute("title"),
     "SyntaxError: JSON.parse: unexpected non-whitespace character after JSON data" +
       " at line 1 column 40 of the JSON data",
-    "The response error header doesn't have the intended tooltiptext attribute.");
-  let jsonView = tabpanel.querySelector(".tree-section .treeLabel") || {};
-  is(jsonView.textContent === L10N.getStr("jsonScopeName"), false,
-    "The response json view doesn't have the intended visibility.");
-  is(tabpanel.querySelector(".CodeMirror-code") === null, false,
-    "The response editor has the intended visibility.");
-  is(tabpanel.querySelector(".response-image-box") === null, true,
-    "The response image box doesn't have the intended visibility.");
+    "The response error header doesn't have the intended tooltiptext attribute."
+  );
+  const jsonView = tabpanel.querySelector(".tree-section .treeLabel") || {};
+  is(
+    jsonView.textContent === L10N.getStr("jsonScopeName"),
+    false,
+    "The response json view doesn't have the intended visibility."
+  );
+  is(
+    tabpanel.querySelector(".CodeMirror-code") === null,
+    false,
+    "The response editor has the intended visibility."
+  );
+  is(
+    tabpanel.querySelector(".response-image-box") === null,
+    true,
+    "The response image box doesn't have the intended visibility."
+  );
 
-  is(document.querySelector(".CodeMirror-line").textContent,
-    "{ \"greeting\": \"Hello malformed JSON!\" },",
-    "The text shown in the source editor is incorrect.");
+  is(
+    getCodeMirrorValue(monitor),
+    '{ "greeting": "Hello malformed JSON!" },',
+    "The text shown in the source editor is incorrect."
+  );
 
   await teardown(monitor);
 });

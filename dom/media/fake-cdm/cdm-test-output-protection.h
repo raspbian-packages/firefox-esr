@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if defined(XP_WIN)
-#include <d3d9.h>  // needed to prevent re-definition of enums
-#include <stdio.h>
-#include <string>
-#include <vector>
-#include <windows.h>
+#  include <d3d9.h>  // needed to prevent re-definition of enums
+#  include <stdio.h>
+#  include <string>
+#  include <vector>
+#  include <windows.h>
 
-#include "opmapi.h"
+#  include "opmapi.h"
 #endif
 
 namespace mozilla {
@@ -43,9 +43,10 @@ static BOOL CALLBACK EnumDisplayMonitorsCallback(HMONITOR hMonitor, HDC hdc,
     if ((HRESULT)0x8007001f != hr && (HRESULT)0x80070032 != hr &&
         (HRESULT)0xc02625e5 != hr) {
       char msg[100];
-      sprintf(msg,
-              "FAIL OPMGetVideoOutputsFromHMONITOR call failed: HRESULT=0x%08x",
-              hr);
+      sprintf(
+          msg,
+          "FAIL OPMGetVideoOutputsFromHMONITOR call failed: HRESULT=0x%08lx",
+          hr);
       failureMsgs->push_back(msg);
     }
     return true;
@@ -66,7 +67,7 @@ static BOOL CALLBACK EnumDisplayMonitorsCallback(HMONITOR hMonitor, HDC hdc,
         &opmRandomNumber, &certificate, &certificateLength);
     if (S_OK != hr) {
       char msg[100];
-      sprintf(msg, "FAIL StartInitialization call failed: HRESULT=0x%08x", hr);
+      sprintf(msg, "FAIL StartInitialization call failed: HRESULT=0x%08lx", hr);
       failureMsgs->push_back(msg);
     }
 

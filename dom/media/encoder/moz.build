@@ -29,10 +29,14 @@ if CONFIG['MOZ_WEBM_ENCODER']:
     ]
     LOCAL_INCLUDES += ['/media/libyuv/libyuv/include']
 
+DEFINES['TRACING'] = True
+
 FINAL_LIBRARY = 'xul'
 
-# These includes are from Android JB, for use of MediaCodec.
-LOCAL_INCLUDES += ['/ipc/chromium/src']
+LOCAL_INCLUDES += [
+    '/dom/media',
+    '/ipc/chromium/src',
+]
 
 include('/ipc/chromium/chromium-config.mozbuild')
 

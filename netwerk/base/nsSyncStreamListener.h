@@ -22,12 +22,13 @@ class nsSyncStreamListener final : public nsISyncStreamListener,
   NS_DECL_NSISYNCSTREAMLISTENER
   NS_DECL_NSIINPUTSTREAM
 
-  nsSyncStreamListener() : mStatus(NS_OK), mKeepWaiting(false), mDone(false) {}
-
-  nsresult Init();
+  static already_AddRefed<nsISyncStreamListener> Create();
 
  private:
-  ~nsSyncStreamListener() {}
+  nsSyncStreamListener() : mStatus(NS_OK), mKeepWaiting(false), mDone(false) {}
+  ~nsSyncStreamListener() = default;
+
+  nsresult Init();
 
   nsresult WaitForData();
 

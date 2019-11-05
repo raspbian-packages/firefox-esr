@@ -13,11 +13,9 @@
 #include "nsCycleCollectionParticipant.h"
 #include "nsGenericHTMLElement.h"
 #include "nsGkAtoms.h"
-#include "nsIDOMEventTarget.h"
 #include "nsIHttpChannel.h"
 
 class nsIContent;
-class nsIDocument;
 
 namespace mozilla {
 namespace dom {
@@ -28,7 +26,7 @@ class WindowDestroyObserver;
 class HTMLTrackElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLTrackElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -75,8 +73,7 @@ class HTMLTrackElement final : public nsGenericHTMLElement {
 
   TextTrack* GetTrack();
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // Override ParseAttribute() to convert kind strings to enum values.
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
@@ -86,9 +83,8 @@ class HTMLTrackElement final : public nsGenericHTMLElement {
 
   // Override BindToTree() so that we can trigger a load when we become
   // the child of a media element.
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep, bool aNullParent) override;
 
   void DispatchTrackRunnable(const nsString& aEventName);
@@ -105,9 +101,6 @@ class HTMLTrackElement final : public nsGenericHTMLElement {
                              JS::Handle<JSObject*> aGivenProto) override;
   void OnChannelRedirect(nsIChannel* aChannel, nsIChannel* aNewChannel,
                          uint32_t aFlags);
-  // Open a new channel to the HTMLTrackElement's src attribute and call
-  // mListener's LoadResource().
-  void LoadResource();
 
   friend class TextTrackCue;
   friend class WebVTTListener;
@@ -121,6 +114,9 @@ class HTMLTrackElement final : public nsGenericHTMLElement {
 
  private:
   void DispatchLoadResource();
+  // Open a new channel to the HTMLTrackElement's src attribute and call
+  // mListener's LoadResource().
+  void LoadResource(RefPtr<WebVTTListener>&& aWebVTTListener);
   bool mLoadResourceDispatched;
 
   RefPtr<WindowDestroyObserver> mWindowDestroyObserver;

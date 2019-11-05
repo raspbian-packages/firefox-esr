@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Machinery to compute distances between animatable values.
 
@@ -21,13 +21,17 @@ use std::ops::Add;
 ///
 /// If the two values are not similar, an error is returned unless a fallback
 /// function has been specified through `#[distance(fallback)]`.
+///
+/// Trait bounds for type parameter `Foo` can be opted out of with
+/// `#[animation(no_bound(Foo))]` on the type definition, trait bounds for
+/// fields can be opted into with `#[distance(field_bound)]` on the field.
 pub trait ComputeSquaredDistance {
     /// Computes the squared distance between two animatable values.
     fn compute_squared_distance(&self, other: &Self) -> Result<SquaredDistance, ()>;
 }
 
 /// A distance between two animatable values.
-#[derive(Clone, Copy, Debug)]
+#[derive(Add, Clone, Copy, Debug, From)]
 pub struct SquaredDistance {
     value: f64,
 }
@@ -43,7 +47,9 @@ impl SquaredDistance {
 impl ComputeSquaredDistance for u16 {
     #[inline]
     fn compute_squared_distance(&self, other: &Self) -> Result<SquaredDistance, ()> {
-        Ok(SquaredDistance::from_sqrt(((*self as f64) - (*other as f64)).abs()))
+        Ok(SquaredDistance::from_sqrt(
+            ((*self as f64) - (*other as f64)).abs(),
+        ))
     }
 }
 
@@ -76,7 +82,8 @@ impl ComputeSquaredDistance for Au {
 }
 
 impl<T> ComputeSquaredDistance for Option<T>
-    where T: ComputeSquaredDistance
+where
+    T: ComputeSquaredDistance,
 {
     #[inline]
     fn compute_squared_distance(&self, other: &Self) -> Result<SquaredDistance, ()> {
@@ -89,11 +96,13 @@ impl<T> ComputeSquaredDistance for Option<T>
 }
 
 impl<T> ComputeSquaredDistance for Size2D<T>
-    where T: ComputeSquaredDistance
+where
+    T: ComputeSquaredDistance,
 {
     #[inline]
     fn compute_squared_distance(&self, other: &Self) -> Result<SquaredDistance, ()> {
-        Ok(self.width.compute_squared_distance(&other.width)? + self.height.compute_squared_distance(&other.height)?)
+        Ok(self.width.compute_squared_distance(&other.width)? +
+            self.height.compute_squared_distance(&other.height)?)
     }
 }
 
@@ -102,22 +111,6 @@ impl SquaredDistance {
     #[inline]
     pub fn sqrt(self) -> f64 {
         self.value.sqrt()
-    }
-}
-
-impl From<SquaredDistance> for f64 {
-    #[inline]
-    fn from(distance: SquaredDistance) -> Self {
-        distance.value
-    }
-}
-
-impl Add for SquaredDistance {
-    type Output = Self;
-
-    #[inline]
-    fn add(self, rhs: Self) -> Self {
-        SquaredDistance { value: self.value + rhs.value }
     }
 }
 

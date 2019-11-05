@@ -17,8 +17,6 @@ nsDocShellEnumerator::nsDocShellEnumerator(int32_t aEnumerationDirection)
 
 nsDocShellEnumerator::~nsDocShellEnumerator() {}
 
-NS_IMPL_ISUPPORTS(nsDocShellEnumerator, nsISimpleEnumerator)
-
 NS_IMETHODIMP
 nsDocShellEnumerator::GetNext(nsISupports** aResult) {
   NS_ENSURE_ARG_POINTER(aResult);

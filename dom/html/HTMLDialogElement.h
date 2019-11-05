@@ -18,13 +18,12 @@ namespace dom {
 class HTMLDialogElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLDialogElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLDialogElement, dialog)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLDialogElement, dialog)
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  nsresult Clone(dom::NodeInfo* aNodeInfo, nsINode** aResult) const override;
 
   static bool IsDialogEnabled();
 

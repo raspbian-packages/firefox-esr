@@ -30,11 +30,11 @@
 <!ENTITY PhoneticField1.label           "Nombre fonético:">
 <!ENTITY PhoneticField2.label           "Nombre fonético:">
 <!ENTITY DisplayName.label              "Mostrar:">
-<!ENTITY DisplayName.accesskey          "D">
+<!ENTITY DisplayName.accesskey          "M">
 <!ENTITY preferDisplayName.label        "Siempre preferir el nombre para mostrar sobre el encabezado del mensaje">
 <!ENTITY preferDisplayName.accesskey    "y">
 <!ENTITY NickName.label                 "Apodo:">
-<!ENTITY NickName.accesskey             "N">
+<!ENTITY NickName.accesskey             "B">
 
 <!ENTITY PrimaryEmail.label             "Correo electrónico:">
 <!ENTITY PrimaryEmail.accesskey         "E">
@@ -77,8 +77,11 @@
 <!ENTITY Birthday.label                 "Cumpleaños:">
 <!ENTITY Birthday.accesskey             "p">
 <!ENTITY In.label                       "">
+<!ENTITY Month.placeholder              "Mes">
+<!ENTITY Day.placeholder                "Día">
 <!ENTITY Year.placeholder               "Año">
 <!ENTITY Or.value                       "o">
+<!ENTITY Age.label                      "Edad:">
 <!ENTITY Age.placeholder                "Edad">
 <!ENTITY YearsOld.label                 "">
 
@@ -141,7 +144,6 @@
 
 <!ENTITY Photo.tab                      "Foto">
 <!ENTITY Photo.accesskey                "o">
-<!ENTITY PhotoDesc.label                "Elija uno de los siguientes:">
 <!ENTITY GenericPhoto.label             "Foto genérica">
 <!ENTITY GenericPhoto.accesskey         "G">
 <!ENTITY DefaultPhoto.label             "Predeterminado">

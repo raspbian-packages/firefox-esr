@@ -69,7 +69,7 @@ class IterableArena {
     if (offset < 0) {
       return offset;
     }
-    new (storage) T(Forward<Args>(aArgs)...);
+    new (storage) T(std::forward<Args>(aArgs)...);
     return offset;
   }
 

@@ -19,6 +19,8 @@
 #include "nsIQuotaRequests.h"
 #include "nsPIDOMWindow.h"
 
+using namespace mozilla::dom::quota;
+
 namespace mozilla {
 namespace dom {
 
@@ -134,37 +136,33 @@ class PersistedWorkerMainThreadRunnable final
  ******************************************************************************/
 
 class PersistentStoragePermissionRequest final
-    : public nsIContentPermissionRequest {
-  nsCOMPtr<nsIPrincipal> mPrincipal;
-  nsCOMPtr<nsPIDOMWindowInner> mWindow;
-  bool mIsHandlingUserInput;
+    : public ContentPermissionRequestBase {
   RefPtr<Promise> mPromise;
-  nsCOMPtr<nsIContentPermissionRequester> mRequester;
 
  public:
   PersistentStoragePermissionRequest(nsIPrincipal* aPrincipal,
                                      nsPIDOMWindowInner* aWindow,
-                                     bool aIsHandlingUserInput,
                                      Promise* aPromise)
-      : mPrincipal(aPrincipal),
-        mWindow(aWindow),
-        mIsHandlingUserInput(aIsHandlingUserInput),
+      : ContentPermissionRequestBase(aPrincipal, aWindow,
+                                     NS_LITERAL_CSTRING("dom.storageManager"),
+                                     NS_LITERAL_CSTRING("persistent-storage")),
         mPromise(aPromise) {
-    MOZ_ASSERT(aPrincipal);
     MOZ_ASSERT(aWindow);
     MOZ_ASSERT(aPromise);
-
-    mRequester = new nsContentPermissionRequester(mWindow);
   }
 
   nsresult Start();
 
-  NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-  NS_DECL_NSICONTENTPERMISSIONREQUEST
-  NS_DECL_CYCLE_COLLECTION_CLASS(PersistentStoragePermissionRequest)
+  NS_DECL_ISUPPORTS_INHERITED
+  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(PersistentStoragePermissionRequest,
+                                           ContentPermissionRequestBase)
+
+  // nsIContentPermissionRequest
+  NS_IMETHOD Cancel(void) override;
+  NS_IMETHOD Allow(JS::HandleValue choices) override;
 
  private:
-  ~PersistentStoragePermissionRequest() {}
+  ~PersistentStoragePermissionRequest() = default;
 };
 
 nsresult GetUsageForPrincipal(nsIPrincipal* aPrincipal,
@@ -233,7 +231,7 @@ already_AddRefed<Promise> ExecuteOpOnMainOrWorkerThread(
       return nullptr;
     }
 
-    nsCOMPtr<nsIDocument> doc = window->GetExtantDoc();
+    nsCOMPtr<Document> doc = window->GetExtantDoc();
     if (NS_WARN_IF(!doc)) {
       aRv.Throw(NS_ERROR_FAILURE);
       return nullptr;
@@ -262,9 +260,7 @@ already_AddRefed<Promise> ExecuteOpOnMainOrWorkerThread(
 
       case RequestResolver::Type::Persist: {
         RefPtr<PersistentStoragePermissionRequest> request =
-            new PersistentStoragePermissionRequest(
-                principal, window, EventStateManager::IsHandlingUserInput(),
-                promise);
+            new PersistentStoragePermissionRequest(principal, window, promise);
 
         // In private browsing mode, no permission prompt.
         if (nsContentUtils::IsInPrivateBrowsing(doc)) {
@@ -312,7 +308,7 @@ already_AddRefed<Promise> ExecuteOpOnMainOrWorkerThread(
       RefPtr<EstimateWorkerMainThreadRunnable> runnnable =
           new EstimateWorkerMainThreadRunnable(promiseProxy->GetWorkerPrivate(),
                                                promiseProxy);
-      runnnable->Dispatch(Terminating, aRv);
+      runnnable->Dispatch(Canceling, aRv);
 
       break;
     }
@@ -321,7 +317,7 @@ already_AddRefed<Promise> ExecuteOpOnMainOrWorkerThread(
       RefPtr<PersistedWorkerMainThreadRunnable> runnnable =
           new PersistedWorkerMainThreadRunnable(
               promiseProxy->GetWorkerPrivate(), promiseProxy);
-      runnnable->Dispatch(Terminating, aRv);
+      runnnable->Dispatch(Canceling, aRv);
 
       break;
     }
@@ -400,11 +396,7 @@ nsresult RequestResolver::GetStorageEstimate(nsIVariant* aResult) {
   MOZ_ASSERT(aResult);
   MOZ_ASSERT(mType == Type::Estimate);
 
-#ifdef DEBUG
-  uint16_t dataType;
-  MOZ_ALWAYS_SUCCEEDS(aResult->GetDataType(&dataType));
-  MOZ_ASSERT(dataType == nsIDataType::VTYPE_INTERFACE_IS);
-#endif
+  MOZ_ASSERT(aResult->GetDataType() == nsIDataType::VTYPE_INTERFACE_IS);
 
   nsID* iid;
   nsCOMPtr<nsISupports> supports;
@@ -433,8 +425,7 @@ nsresult RequestResolver::GetPersisted(nsIVariant* aResult) {
   MOZ_ASSERT(mType == Type::Persist || mType == Type::Persisted);
 
 #ifdef DEBUG
-  uint16_t dataType;
-  MOZ_ALWAYS_SUCCEEDS(aResult->GetDataType(&dataType));
+  uint16_t dataType = aResult->GetDataType();
 #endif
 
   if (mType == Type::Persist) {
@@ -617,67 +608,35 @@ bool PersistedWorkerMainThreadRunnable::MainThreadRun() {
 nsresult PersistentStoragePermissionRequest::Start() {
   MOZ_ASSERT(NS_IsMainThread());
 
-  // Grant permission if pref'ed on.
-  if (Preferences::GetBool("dom.storageManager.prompt.testing", false)) {
-    if (Preferences::GetBool("dom.storageManager.prompt.testing.allow",
-                             false)) {
-      return Allow(JS::UndefinedHandleValue);
-    }
-
+  PromptResult pr;
+#ifdef MOZ_WIDGET_ANDROID
+  // on Android calling `ShowPrompt` here calls
+  // `nsContentPermissionUtils::AskPermission` once, and a response of
+  // `PromptResult::Pending` calls it again. This results in multiple requests
+  // for storage access, so we check the prompt prefs only to ensure we only
+  // request it once.
+  pr = CheckPromptPrefs();
+#else
+  nsresult rv = ShowPrompt(pr);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+#endif
+  if (pr == PromptResult::Granted) {
+    return Allow(JS::UndefinedHandleValue);
+  }
+  if (pr == PromptResult::Denied) {
     return Cancel();
   }
 
   return nsContentPermissionUtils::AskPermission(this, mWindow);
 }
 
-NS_IMPL_CYCLE_COLLECTING_ADDREF(PersistentStoragePermissionRequest)
-NS_IMPL_CYCLE_COLLECTING_RELEASE(PersistentStoragePermissionRequest)
+NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED_0(
+    PersistentStoragePermissionRequest, ContentPermissionRequestBase)
 
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(PersistentStoragePermissionRequest)
-  NS_INTERFACE_MAP_ENTRY(nsIContentPermissionRequest)
-  NS_INTERFACE_MAP_ENTRY(nsISupports)
-NS_INTERFACE_MAP_END
-
-NS_IMPL_CYCLE_COLLECTION(PersistentStoragePermissionRequest, mWindow, mPromise)
-
-NS_IMETHODIMP
-PersistentStoragePermissionRequest::GetPrincipal(nsIPrincipal** aPrincipal) {
-  MOZ_ASSERT(NS_IsMainThread());
-  MOZ_ASSERT(aPrincipal);
-  MOZ_ASSERT(mPrincipal);
-
-  NS_ADDREF(*aPrincipal = mPrincipal);
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-PersistentStoragePermissionRequest::GetIsHandlingUserInput(
-    bool* aIsHandlingUserInput) {
-  *aIsHandlingUserInput = mIsHandlingUserInput;
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-PersistentStoragePermissionRequest::GetWindow(
-    mozIDOMWindow** aRequestingWindow) {
-  MOZ_ASSERT(NS_IsMainThread());
-  MOZ_ASSERT(aRequestingWindow);
-  MOZ_ASSERT(mWindow);
-
-  NS_ADDREF(*aRequestingWindow = mWindow);
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-PersistentStoragePermissionRequest::GetElement(nsIDOMElement** aElement) {
-  MOZ_ASSERT(NS_IsMainThread());
-  MOZ_ASSERT(aElement);
-
-  *aElement = nullptr;
-  return NS_OK;
-}
+NS_IMPL_CYCLE_COLLECTION_INHERITED(PersistentStoragePermissionRequest,
+                                   ContentPermissionRequestBase, mPromise)
 
 NS_IMETHODIMP
 PersistentStoragePermissionRequest::Cancel() {
@@ -714,29 +673,6 @@ PersistentStoragePermissionRequest::Allow(JS::HandleValue aChoices) {
   MOZ_ALWAYS_SUCCEEDS(request->SetCallback(resolver));
 
   return NS_OK;
-}
-
-NS_IMETHODIMP
-PersistentStoragePermissionRequest::GetRequester(
-    nsIContentPermissionRequester** aRequester) {
-  MOZ_ASSERT(NS_IsMainThread());
-  MOZ_ASSERT(aRequester);
-
-  nsCOMPtr<nsIContentPermissionRequester> requester = mRequester;
-  requester.forget(aRequester);
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-PersistentStoragePermissionRequest::GetTypes(nsIArray** aTypes) {
-  MOZ_ASSERT(aTypes);
-
-  nsTArray<nsString> emptyOptions;
-
-  return nsContentPermissionUtils::CreatePermissionArray(
-      NS_LITERAL_CSTRING("persistent-storage"), NS_LITERAL_CSTRING("unused"),
-      emptyOptions, aTypes);
 }
 
 /*******************************************************************************
@@ -785,7 +721,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* StorageManager::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return StorageManagerBinding::Wrap(aCx, this, aGivenProto);
+  return StorageManager_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

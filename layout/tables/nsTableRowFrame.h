@@ -13,6 +13,7 @@
 
 class nsTableCellFrame;
 namespace mozilla {
+class PresShell;
 struct TableCellReflowInput;
 }  // namespace mozilla
 
@@ -41,8 +42,8 @@ class nsTableRowFrame : public nsContainerFrame {
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
 
-  /** @see nsIFrame::DidSetStyleContext */
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  /** @see nsIFrame::DidSetComputedStyle */
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   virtual void AppendFrames(ChildListID aListID,
                             nsFrameList& aFrameList) override;
@@ -55,8 +56,8 @@ class nsTableRowFrame : public nsContainerFrame {
    *
    * @return           the frame that was created
    */
-  friend nsTableRowFrame* NS_NewTableRowFrame(nsIPresShell* aPresShell,
-                                              nsStyleContext* aContext);
+  friend nsTableRowFrame* NS_NewTableRowFrame(mozilla::PresShell* aPresShell,
+                                              ComputedStyle* aStyle);
 
   nsTableRowGroupFrame* GetTableRowGroupFrame() const {
     nsIFrame* parent = GetParent();
@@ -80,13 +81,17 @@ class nsTableRowFrame : public nsContainerFrame {
   inline nsTableCellFrame* GetFirstCell() const;
 
   /** calls Reflow for all of its child cells.
+   *
    * Cells with rowspan=1 are all set to the same height and stacked
-   * horizontally. <P> Cells are not split unless absolutely necessary. <P>
+   * horizontally.
+   *
+   * Cells are not split unless absolutely necessary.
+   *
    * Cells are resized in nsTableFrame::BalanceColumnWidths and
    * nsTableFrame::ShrinkWrapChildren
    *
-   * @param aDesiredSize width set to width of the sum of the cells, height set
-   * to height of cells with rowspan=1.
+   * @param aDesiredSize width set to width of the sum of the cells,
+   *                     height set to height of cells with rowspan=1.
    *
    * @see nsIFrame::Reflow
    * @see nsTableFrame::BalanceColumnWidths
@@ -197,8 +202,8 @@ class nsTableRowFrame : public nsContainerFrame {
   nscoord GetUnpaginatedBSize();
   void SetUnpaginatedBSize(nsPresContext* aPresContext, nscoord aValue);
 
-  nscoord GetBStartBCBorderWidth() const { return mBStartBorderWidth; }
-  nscoord GetBEndBCBorderWidth() const { return mBEndBorderWidth; }
+  BCPixelSize GetBStartBCBorderWidth() const { return mBStartBorderWidth; }
+  BCPixelSize GetBEndBCBorderWidth() const { return mBEndBorderWidth; }
   void SetBStartBCBorderWidth(BCPixelSize aWidth) {
     mBStartBorderWidth = aWidth;
   }
@@ -226,12 +231,18 @@ class nsTableRowFrame : public nsContainerFrame {
                                   BCPixelSize aPixelValue);
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsContainerFrame::IsFrameOfType(aFlags & ~(nsIFrame::eTablePart));
   }
 
-  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0) override;
-  virtual void InvalidateFrameWithRect(const nsRect& aRect,
-                                       uint32_t aDisplayItemKey = 0) override;
+  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0,
+                               bool aRebuildDisplayItems = true) override;
+  virtual void InvalidateFrameWithRect(
+      const nsRect& aRect, uint32_t aDisplayItemKey = 0,
+      bool aRebuildDisplayItems = true) override;
   virtual void InvalidateFrameForRemoval() override {
     InvalidateFrameSubtree();
   }
@@ -244,7 +255,8 @@ class nsTableRowFrame : public nsContainerFrame {
   /** protected constructor.
    * @see NewFrame
    */
-  explicit nsTableRowFrame(nsStyleContext* aContext, ClassID aID = kClassID);
+  explicit nsTableRowFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                           ClassID aID = kClassID);
 
   void InitChildReflowInput(nsPresContext& aPresContext,
                             const mozilla::LogicalSize& aAvailSize,
@@ -286,8 +298,8 @@ class nsTableRowFrame : public nsContainerFrame {
   // cell if mHasFixedBSize is set
   nscoord mStyleFixedBSize;
 
-  // max-ascent and max-descent amongst all cells that have 'vertical-align:
-  // baseline'
+  // max-ascent and max-descent amongst all cells that have
+  // 'vertical-align: baseline'
   nscoord mMaxCellAscent;   // does include cells with rowspan > 1
   nscoord mMaxCellDescent;  // does *not* include cells with rowspan > 1
 
@@ -413,7 +425,7 @@ inline void nsTableRowFrame::GetContinuousBCBorderWidth(
 }
 
 inline nscoord nsTableRowFrame::GetOuterBStartContBCBorderWidth() {
-  int32_t aPixelsToTwips = nsPresContext::AppUnitsPerCSSPixel();
+  int32_t aPixelsToTwips = mozilla::AppUnitsPerCSSPixel();
   return BC_BORDER_START_HALF_COORD(aPixelsToTwips, mBStartContBorderWidth);
 }
 

@@ -4,7 +4,6 @@
 
 package org.mozilla.gecko;
 
-import org.mozilla.gecko.GeckoAppShell;
 import org.mozilla.gecko.permissions.PermissionBlock;
 import org.mozilla.gecko.permissions.Permissions;
 import org.mozilla.gecko.util.BundleEventListener;
@@ -18,13 +17,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,10 +33,12 @@ import java.util.List;
 public class FilePicker implements BundleEventListener {
     private static final String LOGTAG = "GeckoFilePicker";
     private static FilePicker sFilePicker;
+    private static final int MODE_OPEN_MULTIPLE_ATTRIBUTE_VALUE = 3;
+    private static final int MODE_OPEN_SINGLE_ATTRIBUTE_VALUE = 0;
     private final Context context;
 
     public interface ResultHandler {
-        public void gotFile(String filename);
+        void gotFile(String filename);
     }
 
     public static void init(Context context) {
@@ -60,6 +60,8 @@ public class FilePicker implements BundleEventListener {
             final String mode = message.getString("mode", "");
             final int tabId = message.getInt("tabId", -1);
             final String title = message.getString("title", "");
+            final boolean isModeOpenMultiple = message.getInt("modeOpenAttribute", MODE_OPEN_SINGLE_ATTRIBUTE_VALUE)
+                    == MODE_OPEN_MULTIPLE_ATTRIBUTE_VALUE;
 
             if ("mimeType".equals(mode)) {
                 mimeType = message.getString("mimeType", "");
@@ -89,7 +91,8 @@ public class FilePicker implements BundleEventListener {
                         // TODO: Figure out which permissions have been denied and use that
                         // knowledge for availPermissions. For now we assume we don't have any
                         // permissions at all (bug 1411014).
-                        showFilePickerAsync(title, "*/*", new String[0], new ResultHandler() {
+                        Toast.makeText(context, context.getString(R.string.filepicker_permission_denied), Toast.LENGTH_LONG).show();
+                        showFilePickerAsync(title, "*/*", new String[0], isModeOpenMultiple, new ResultHandler() {
                             @Override
                             public void gotFile(final String filename) {
                                 callback.sendSuccess(filename);
@@ -100,7 +103,7 @@ public class FilePicker implements BundleEventListener {
                 .run(new Runnable() {
                     @Override
                     public void run() {
-                        showFilePickerAsync(title, finalMimeType, requiredPermission, new ResultHandler() {
+                        showFilePickerAsync(title, finalMimeType, requiredPermission, isModeOpenMultiple, new ResultHandler() {
                             @Override
                             public void gotFile(final String filename) {
                                 callback.sendSuccess(filename);
@@ -113,13 +116,13 @@ public class FilePicker implements BundleEventListener {
 
     private static String[] getPermissionsForMimeType(final String mimeType) {
         if (mimeType.startsWith("audio/")) {
-            return new String[] { Manifest.permission.READ_EXTERNAL_STORAGE };
+            return new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE };
         } else if (mimeType.startsWith("image/")) {
-            return new String[] { Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE };
+            return new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE };
         } else if (mimeType.startsWith("video/")) {
-            return new String[] { Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE };
+            return new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE };
         }
-        return new String[] { Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE };
+        return new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE };
     }
 
     private static boolean hasPermissionsForMimeType(final String mimeType, final String[] availPermissions) {
@@ -149,6 +152,7 @@ public class FilePicker implements BundleEventListener {
 
     private List<Intent> getIntentsForFilePicker(final @NonNull String mimeType,
                                                  final @NonNull String[] availPermissions,
+                                                 final boolean isModeOpenMultiple,
                                                  final FilePickerResultHandler fileHandler) {
         // The base intent to use for the file picker. Even if this is an implicit intent, Android will
         // still show a list of Activities that match this action/type.
@@ -159,32 +163,31 @@ public class FilePicker implements BundleEventListener {
         // A list of other activities to show in the picker (and the intents to launch them).
         HashMap<String, Intent> intents = new HashMap<String, Intent> ();
 
-        if (mimeType.startsWith("audio/")) {
-            baseIntent = getIntent(mimeType);
-            addActivities(baseIntent, baseIntents, null);
+        baseIntent = getIntent(mimeType);
+        if (isModeOpenMultiple) {
+            baseIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
 
+        if (mimeType.startsWith("audio/")) {
+            addActivities(baseIntent, baseIntents, null);
             if (mimeType.equals("audio/*") &&
                     hasPermissionsForMimeType(mimeType, availPermissions)) {
                 // We also add a capture intent
                 Intent intent = IntentHelper.getAudioCaptureIntent();
                 addActivities(intent, intents, baseIntents);
             }
-        } else if (mimeType.startsWith("image/")) {
-            baseIntent = getIntent(mimeType);
+        } else if (mimeType.startsWith("image/") ) {
             addActivities(baseIntent, baseIntents, null);
-
             if (mimeType.equals("image/*") &&
                     hasPermissionsForMimeType(mimeType, availPermissions)) {
                 // We also add a capture intent
-                Intent intent = IntentHelper.getImageCaptureIntent(
+                Intent intent = IntentHelper.getImageCaptureIntent(context,
                         new File(Environment.getExternalStorageDirectory(),
                                 fileHandler.generateImageName()));
                 addActivities(intent, intents, baseIntents);
             }
         } else if (mimeType.startsWith("video/")) {
-            baseIntent = getIntent(mimeType);
             addActivities(baseIntent, baseIntents, null);
-
             if (mimeType.equals("video/*") &&
                     hasPermissionsForMimeType(mimeType, availPermissions)) {
                 // We also add a capture intent
@@ -193,6 +196,9 @@ public class FilePicker implements BundleEventListener {
             }
         } else {
             baseIntent = getIntent("*/*");
+            if (isModeOpenMultiple) {
+                baseIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            }
             addActivities(baseIntent, baseIntents, null);
 
             Intent intent;
@@ -201,7 +207,7 @@ public class FilePicker implements BundleEventListener {
                 addActivities(intent, intents, baseIntents);
             }
             if (hasPermissionsForMimeType("image/*", availPermissions)) {
-                intent = IntentHelper.getImageCaptureIntent(
+                intent = IntentHelper.getImageCaptureIntent(context,
                         new File(Environment.getExternalStorageDirectory(),
                                 fileHandler.generateImageName()));
                 addActivities(intent, intents, baseIntents);
@@ -245,8 +251,9 @@ public class FilePicker implements BundleEventListener {
     private Intent getFilePickerIntent(String title,
                                        final @NonNull String mimeType,
                                        final @NonNull String[] availPermissions,
+                                       final boolean isModeOpenMultiple,
                                        final FilePickerResultHandler fileHandler) {
-        final List<Intent> intents = getIntentsForFilePicker(mimeType, availPermissions, fileHandler);
+        final List<Intent> intents = getIntentsForFilePicker(mimeType, availPermissions, isModeOpenMultiple, fileHandler);
 
         if (intents.size() == 0) {
             Log.i(LOGTAG, "no activities for the file picker!");
@@ -274,10 +281,11 @@ public class FilePicker implements BundleEventListener {
      */
     protected void showFilePickerAsync(final String title, final @NonNull String mimeType,
                                        final @NonNull String[] availPermissions,
+                                       final boolean isModeOpenMultiple,
                                        final ResultHandler handler, final int tabId) {
         final FilePickerResultHandler fileHandler =
                 new FilePickerResultHandler(handler, context, tabId);
-        final Intent intent = getFilePickerIntent(title, mimeType, availPermissions, fileHandler);
+        final Intent intent = getFilePickerIntent(title, mimeType, availPermissions, isModeOpenMultiple, fileHandler);
         final Activity currentActivity =
                 GeckoActivityMonitor.getInstance().getCurrentActivity();
 

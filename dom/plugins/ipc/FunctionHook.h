@@ -9,9 +9,10 @@
 
 #include "IpdlTuple.h"
 #include "base/process.h"
+#include "mozilla/Atomics.h"
 
 #if defined(XP_WIN)
-#include "nsWindowsDllInterceptor.h"
+#  include "nsWindowsDllInterceptor.h"
 #endif
 
 namespace mozilla {
@@ -96,11 +97,15 @@ typedef bool(ShouldHookFunc)(int aQuirks);
 
 template <FunctionHookId functionId, typename FunctionType>
 class BasicFunctionHook : public FunctionHook {
+#if defined(XP_WIN)
+  using FuncHookType = WindowsDllInterceptor::FuncHookType<FunctionType*>;
+#endif  // defined(XP_WIN)
+
  public:
   BasicFunctionHook(const char* aModuleName, const char* aFunctionName,
                     FunctionType* aOldFunction, FunctionType* aNewFunction)
       : mOldFunction(aOldFunction),
-        mIsHooked(false),
+        mRegistration(UNREGISTERED),
         mModuleName(aModuleName),
         mFunctionName(aFunctionName),
         mNewFunction(aNewFunction) {
@@ -131,9 +136,13 @@ class BasicFunctionHook : public FunctionHook {
   // Once the function is hooked, this field will take the value of a pointer to
   // a function that performs the old behavior.  Before that, it is a pointer to
   // the original function.
-  FunctionType* mOldFunction;
-  // True if we have already hooked the function.
-  bool mIsHooked;
+  Atomic<FunctionType*> mOldFunction;
+#if defined(XP_WIN)
+  FuncHookType mStub;
+#endif  // defined(XP_WIN)
+
+  enum RegistrationStatus { UNREGISTERED, FAILED, SUCCEEDED };
+  RegistrationStatus mRegistration;
 
   // The name of the module containing the function to hook.  E.g. "user32.dll".
   const nsCString mModuleName;
@@ -155,10 +164,14 @@ template <FunctionHookId functionId, typename FunctionType>
 bool BasicFunctionHook<functionId, FunctionType>::Register(int aQuirks) {
   MOZ_RELEASE_ASSERT(XRE_IsPluginProcess());
 
-  // If we have already hooked or if quirks tell us not to then don't hook.
-  if (mIsHooked || !mShouldHook(aQuirks)) {
+  // If we have already attempted to hook this function or if quirks tell us
+  // not to then don't hook.
+  if (mRegistration != UNREGISTERED || !mShouldHook(aQuirks)) {
     return true;
   }
+
+  bool isHooked = false;
+  mRegistration = FAILED;
 
 #if defined(XP_WIN)
   WindowsDllInterceptor* dllInterceptor =
@@ -167,15 +180,20 @@ bool BasicFunctionHook<functionId, FunctionType>::Register(int aQuirks) {
     return false;
   }
 
-  mIsHooked = dllInterceptor->AddHook(mFunctionName.Data(),
-                                      reinterpret_cast<intptr_t>(mNewFunction),
-                                      reinterpret_cast<void**>(&mOldFunction));
+  isHooked = mStub.Set(*dllInterceptor, mFunctionName.Data(), mNewFunction);
 #endif
 
-  HOOK_LOG(LogLevel::Debug, ("Registering to intercept function '%s' : '%s'",
-                             mFunctionName.Data(), SuccessMsg(mIsHooked)));
+  if (isHooked) {
+#if defined(XP_WIN)
+    mOldFunction = mStub.GetStub();
+#endif
+    mRegistration = SUCCEEDED;
+  }
 
-  return mIsHooked;
+  HOOK_LOG(LogLevel::Debug, ("Registering to intercept function '%s' : '%s'",
+                             mFunctionName.Data(), SuccessMsg(isHooked)));
+
+  return isHooked;
 }
 
 }  // namespace plugins

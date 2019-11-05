@@ -27,9 +27,10 @@ NS_INTERFACE_MAP_END
 NS_IMPL_CYCLE_COLLECTING_ADDREF(PaintRequest)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(PaintRequest)
 
-/* virtual */ JSObject* PaintRequest::WrapObject(
-    JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return PaintRequestBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* PaintRequest::WrapObject(JSContext* aCx,
+                                   JS::Handle<JSObject*> aGivenProto) {
+  return PaintRequest_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<DOMRect> PaintRequest::ClientRect() {
@@ -54,7 +55,7 @@ NS_IMPL_CYCLE_COLLECTING_RELEASE(PaintRequestList)
 
 JSObject* PaintRequestList::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return PaintRequestListBinding::Wrap(aCx, this, aGivenProto);
+  return PaintRequestList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

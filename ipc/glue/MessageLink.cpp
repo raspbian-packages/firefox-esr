@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +38,7 @@ using namespace std;
 namespace mozilla {
 namespace ipc {
 
-MessageLink::MessageLink(MessageChannel *aChan) : mChan(aChan) {}
+MessageLink::MessageLink(MessageChannel* aChan) : mChan(aChan) {}
 
 MessageLink::~MessageLink() {
 #ifdef DEBUG
@@ -46,7 +46,7 @@ MessageLink::~MessageLink() {
 #endif
 }
 
-ProcessLink::ProcessLink(MessageChannel *aChan)
+ProcessLink::ProcessLink(MessageChannel* aChan)
     : MessageLink(aChan),
       mTransport(nullptr),
       mIOLoop(nullptr),
@@ -60,11 +60,11 @@ ProcessLink::~ProcessLink() {
 #endif
 }
 
-void ProcessLink::Open(mozilla::ipc::Transport *aTransport,
-                       MessageLoop *aIOLoop, Side aSide) {
+void ProcessLink::Open(mozilla::ipc::Transport* aTransport,
+                       MessageLoop* aIOLoop, Side aSide) {
   mChan->AssertWorkerThread();
 
-  NS_PRECONDITION(aTransport, "need transport layer");
+  MOZ_ASSERT(aTransport, "need transport layer");
 
   // FIXME need to check for valid channel
 
@@ -79,7 +79,7 @@ void ProcessLink::Open(mozilla::ipc::Transport *aTransport,
     needOpen = true;
     mChan->mSide = (aSide == UnknownSide) ? ChildSide : aSide;
   } else {
-    NS_PRECONDITION(aSide == UnknownSide, "expected default side arg");
+    MOZ_ASSERT(aSide == UnknownSide, "expected default side arg");
 
     // parent
     mChan->mSide = ParentSide;
@@ -131,22 +131,24 @@ void ProcessLink::Open(mozilla::ipc::Transport *aTransport,
   }
 }
 
-void ProcessLink::EchoMessage(Message *msg) {
+void ProcessLink::EchoMessage(Message* msg) {
   mChan->AssertWorkerThread();
   mChan->mMonitor->AssertCurrentThreadOwns();
 
-  mIOLoop->PostTask(NewNonOwningRunnableMethod<Message *>(
+  mIOLoop->PostTask(NewNonOwningRunnableMethod<Message*>(
       "ipc::ProcessLink::OnEchoMessage", this, &ProcessLink::OnEchoMessage,
       msg));
   // OnEchoMessage takes ownership of |msg|
 }
 
-void ProcessLink::SendMessage(Message *msg) {
+void ProcessLink::SendMessage(Message* msg) {
   if (msg->size() > IPC::Channel::kMaximumMessageSize) {
-    CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("IPCMessageName"),
-                                       nsDependentCString(msg->name()));
-    CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("IPCMessageSize"),
-                                       nsPrintfCString("%d", msg->size()));
+    CrashReporter::AnnotateCrashReport(
+        CrashReporter::Annotation::IPCMessageName,
+        nsDependentCString(msg->name()));
+    CrashReporter::AnnotateCrashReport(
+        CrashReporter::Annotation::IPCMessageSize,
+        static_cast<int>(msg->size()));
     MOZ_CRASH("IPC message size is too large");
   }
 
@@ -155,7 +157,7 @@ void ProcessLink::SendMessage(Message *msg) {
   }
   mChan->mMonitor->AssertCurrentThreadOwns();
 
-  mIOLoop->PostTask(NewNonOwningRunnableMethod<Message *>(
+  mIOLoop->PostTask(NewNonOwningRunnableMethod<Message*>(
       "IPC::Channel::Send", mTransport, &Transport::Send, msg));
 }
 
@@ -167,7 +169,7 @@ void ProcessLink::SendClose() {
       "ipc::ProcessLink::OnCloseChannel", this, &ProcessLink::OnCloseChannel));
 }
 
-ThreadLink::ThreadLink(MessageChannel *aChan, MessageChannel *aTargetChan)
+ThreadLink::ThreadLink(MessageChannel* aChan, MessageChannel* aTargetChan)
     : MessageLink(aChan), mTargetChan(aTargetChan) {}
 
 ThreadLink::~ThreadLink() {
@@ -193,26 +195,26 @@ ThreadLink::~ThreadLink() {
   // also protects against the two ~ThreadLink() calls racing.
   if (mTargetChan) {
     MOZ_ASSERT(mTargetChan->mLink);
-    static_cast<ThreadLink *>(mTargetChan->mLink)->mTargetChan = nullptr;
+    static_cast<ThreadLink*>(mTargetChan->mLink)->mTargetChan = nullptr;
   }
   mTargetChan = nullptr;
 }
 
-void ThreadLink::EchoMessage(Message *msg) {
+void ThreadLink::EchoMessage(Message* msg) {
   mChan->AssertWorkerThread();
   mChan->mMonitor->AssertCurrentThreadOwns();
 
-  mChan->OnMessageReceivedFromLink(Move(*msg));
+  mChan->OnMessageReceivedFromLink(std::move(*msg));
   delete msg;
 }
 
-void ThreadLink::SendMessage(Message *msg) {
+void ThreadLink::SendMessage(Message* msg) {
   if (!mChan->mIsPostponingSends) {
     mChan->AssertWorkerThread();
   }
   mChan->mMonitor->AssertCurrentThreadOwns();
 
-  if (mTargetChan) mTargetChan->OnMessageReceivedFromLink(Move(*msg));
+  if (mTargetChan) mTargetChan->OnMessageReceivedFromLink(std::move(*msg));
   delete msg;
 }
 
@@ -244,16 +246,16 @@ uint32_t ThreadLink::Unsound_NumQueuedMessages() const {
 // The methods below run in the context of the IO thread
 //
 
-void ProcessLink::OnMessageReceived(Message &&msg) {
+void ProcessLink::OnMessageReceived(Message&& msg) {
   AssertIOThread();
   NS_ASSERTION(mChan->mChannelState != ChannelError, "Shouldn't get here!");
   MonitorAutoLock lock(*mChan->mMonitor);
-  mChan->OnMessageReceivedFromLink(Move(msg));
+  mChan->OnMessageReceivedFromLink(std::move(msg));
 }
 
-void ProcessLink::OnEchoMessage(Message *msg) {
+void ProcessLink::OnEchoMessage(Message* msg) {
   AssertIOThread();
-  OnMessageReceived(Move(*msg));
+  OnMessageReceived(std::move(*msg));
   delete msg;
 }
 
@@ -296,7 +298,7 @@ void ProcessLink::OnTakeConnectedChannel() {
 
   // Dispatch whatever messages the previous listener had queued up.
   while (!pending.empty()) {
-    OnMessageReceived(Move(pending.front()));
+    OnMessageReceived(std::move(pending.front()));
     pending.pop();
   }
 }
@@ -353,7 +355,7 @@ void ProcessLink::OnCloseChannel() {
 
   MonitorAutoLock lock(*mChan->mMonitor);
 
-  DebugOnly<IPC::Channel::Listener *> previousListener =
+  DebugOnly<IPC::Channel::Listener*> previousListener =
       mTransport->set_listener(mExistingListener);
 
   // OnChannelError may have reset the listener already.

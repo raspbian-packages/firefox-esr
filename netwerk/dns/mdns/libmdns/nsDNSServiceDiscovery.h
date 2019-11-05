@@ -35,7 +35,7 @@ class nsDNSServiceDiscovery final : public nsIDNSServiceDiscovery {
   nsresult UnregisterService(nsIDNSRegistrationListener* aListener);
 
  private:
-  virtual ~nsDNSServiceDiscovery();
+  virtual ~nsDNSServiceDiscovery() = default;
 
   nsRefPtrHashtable<nsISupportsHashKey, BrowseOperator> mDiscoveryMap;
   nsRefPtrHashtable<nsISupportsHashKey, RegisterOperator> mRegisterMap;

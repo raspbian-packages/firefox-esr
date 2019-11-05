@@ -12,12 +12,12 @@
 #include "nsStringFwd.h"
 
 class nsIRequest;
+class nsIURI;
 
 namespace mozilla {
 namespace image {
 
 class Image;
-class ImageURL;
 class MultipartImage;
 class ProgressTracker;
 
@@ -42,7 +42,7 @@ class ImageFactory {
   static already_AddRefed<Image> CreateImage(nsIRequest* aRequest,
                                              ProgressTracker* aProgressTracker,
                                              const nsCString& aMimeType,
-                                             ImageURL* aURI, bool aIsMultiPart,
+                                             nsIURI* aURI, bool aIsMultiPart,
                                              uint32_t aInnerWindowId);
   /**
    * Creates a new image which isn't associated with a URI or loaded through
@@ -70,12 +70,12 @@ class ImageFactory {
   // Factory functions that create specific types of image containers.
   static already_AddRefed<Image> CreateRasterImage(
       nsIRequest* aRequest, ProgressTracker* aProgressTracker,
-      const nsCString& aMimeType, ImageURL* aURI, uint32_t aImageFlags,
+      const nsCString& aMimeType, nsIURI* aURI, uint32_t aImageFlags,
       uint32_t aInnerWindowId);
 
   static already_AddRefed<Image> CreateVectorImage(
       nsIRequest* aRequest, ProgressTracker* aProgressTracker,
-      const nsCString& aMimeType, ImageURL* aURI, uint32_t aImageFlags,
+      const nsCString& aMimeType, nsIURI* aURI, uint32_t aImageFlags,
       uint32_t aInnerWindowId);
 
   // This is a static factory class, so disallow instantiation.

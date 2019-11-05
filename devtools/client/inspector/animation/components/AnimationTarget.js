@@ -4,23 +4,30 @@
 
 "use strict";
 
-const { PureComponent } = require("devtools/client/shared/vendor/react");
+const { Component } = require("devtools/client/shared/vendor/react");
+const { connect } = require("devtools/client/shared/vendor/react-redux");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
-const { translateNodeFrontToGrip } = require("devtools/client/inspector/shared/utils");
+const {
+  translateNodeFrontToGrip,
+} = require("devtools/client/inspector/shared/utils");
 
 const { REPS, MODE } = require("devtools/client/shared/components/reps/reps");
 const { Rep } = REPS;
 const ElementNode = REPS.ElementNode;
 
-class AnimationTarget extends PureComponent {
+const { getInspectorStr } = require("../utils/l10n");
+
+class AnimationTarget extends Component {
   static get propTypes() {
     return {
       animation: PropTypes.object.isRequired,
       emitEventForTest: PropTypes.func.isRequired,
       getNodeFromActor: PropTypes.func.isRequired,
+      highlightedNode: PropTypes.string.isRequired,
       onHideBoxModelHighlighter: PropTypes.func.isRequired,
       onShowBoxModelHighlighterForNode: PropTypes.func.isRequired,
+      setHighlightedNode: PropTypes.func.isRequired,
       setSelectedNode: PropTypes.func.isRequired,
     };
   }
@@ -44,11 +51,14 @@ class AnimationTarget extends PureComponent {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return this.state.nodeFront !== nextState.nodeFront;
+    return (
+      this.state.nodeFront !== nextState.nodeFront ||
+      this.props.highlightedNode !== nextState.highlightedNode
+    );
   }
 
   async updateNodeFront(animation) {
-    const { emitEventForTest, getNodeFromActor } = this.props;
+    const { getNodeFromActor } = this.props;
 
     // Try and get it from the playerFront directly.
     let nodeFront = animation.animationTargetNodeFront;
@@ -62,47 +72,102 @@ class AnimationTarget extends PureComponent {
         // attributed to the panel having been destroyed in the meantime, this
         // error needs to be logged and render needs to stop.
         console.error(e);
+        this.setState({ nodeFront: null });
         return;
       }
     }
 
     this.setState({ nodeFront });
-    emitEventForTest("animation-target-rendered");
+  }
+
+  async ensureNodeFront() {
+    if (!this.state.nodeFront.actorID) {
+      // In case of no actorID, the node front had been destroyed.
+      // This will occur when the pseudo element was re-generated.
+      await this.updateNodeFront(this.props.animation);
+    }
+  }
+
+  async highlight() {
+    await this.ensureNodeFront();
+
+    if (this.state.nodeFront) {
+      this.props.onShowBoxModelHighlighterForNode(this.state.nodeFront, {
+        hideInfoBar: true,
+        hideGuides: true,
+      });
+    }
+  }
+
+  async select() {
+    await this.ensureNodeFront();
+
+    if (this.state.nodeFront) {
+      this.props.setSelectedNode(this.state.nodeFront);
+    }
   }
 
   render() {
     const {
+      emitEventForTest,
       onHideBoxModelHighlighter,
-      onShowBoxModelHighlighterForNode,
-      setSelectedNode,
+      highlightedNode,
+      setHighlightedNode,
     } = this.props;
 
     const { nodeFront } = this.state;
 
     if (!nodeFront) {
-      return dom.div(
-        {
-          className: "animation-target"
-        }
-      );
+      return dom.div({
+        className: "animation-target",
+      });
     }
+
+    emitEventForTest("animation-target-rendered");
+
+    const isHighlighted = nodeFront.actorID === highlightedNode;
 
     return dom.div(
       {
-        className: "animation-target"
+        className: "animation-target" + (isHighlighted ? " highlighting" : ""),
       },
-      Rep(
-        {
-          defaultRep: ElementNode,
-          mode: MODE.TINY,
-          object: translateNodeFrontToGrip(nodeFront),
-          onDOMNodeMouseOut: () => onHideBoxModelHighlighter(),
-          onDOMNodeMouseOver: () => onShowBoxModelHighlighterForNode(nodeFront),
-          onInspectIconClick: () => setSelectedNode(nodeFront, "animation-panel"),
-        }
-      )
+      Rep({
+        defaultRep: ElementNode,
+        mode: MODE.TINY,
+        inspectIconTitle: getInspectorStr(
+          "inspector.nodePreview.highlightNodeLabel"
+        ),
+        object: translateNodeFrontToGrip(nodeFront),
+        onDOMNodeClick: () => this.select(),
+        onDOMNodeMouseOut: () => {
+          if (!isHighlighted) {
+            onHideBoxModelHighlighter();
+          }
+        },
+        onDOMNodeMouseOver: () => {
+          if (!isHighlighted) {
+            this.highlight();
+          }
+        },
+        onInspectIconClick: (_, e) => {
+          e.stopPropagation();
+
+          if (!isHighlighted) {
+            // At first, hide highlighter which was created by onDOMNodeMouseOver.
+            onHideBoxModelHighlighter();
+          }
+
+          setHighlightedNode(isHighlighted ? null : nodeFront);
+        },
+      })
     );
   }
 }
 
-module.exports = AnimationTarget;
+const mapStateToProps = state => {
+  return {
+    highlightedNode: state.animations.highlightedNode,
+  };
+};
+
+module.exports = connect(mapStateToProps)(AnimationTarget);

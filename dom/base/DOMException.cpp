@@ -11,8 +11,7 @@
 #include "mozilla/dom/Exceptions.h"
 #include "nsContentUtils.h"
 #include "nsCOMPtr.h"
-#include "nsIDocument.h"
-#include "nsIDOMDOMException.h"
+#include "mozilla/dom/Document.h"
 #include "nsIException.h"
 #include "nsMemory.h"
 #include "xpcprivate.h"
@@ -21,34 +20,36 @@
 #include "mozilla/ErrorResult.h"
 
 using namespace mozilla;
+using namespace mozilla::dom;
 
 enum DOM4ErrorTypeCodeMap {
   /* DOM4 errors from
      http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#domexception */
-  IndexSizeError = nsIDOMDOMException::INDEX_SIZE_ERR,
-  HierarchyRequestError = nsIDOMDOMException::HIERARCHY_REQUEST_ERR,
-  WrongDocumentError = nsIDOMDOMException::WRONG_DOCUMENT_ERR,
-  InvalidCharacterError = nsIDOMDOMException::INVALID_CHARACTER_ERR,
-  NoModificationAllowedError = nsIDOMDOMException::NO_MODIFICATION_ALLOWED_ERR,
-  NotFoundError = nsIDOMDOMException::NOT_FOUND_ERR,
-  NotSupportedError = nsIDOMDOMException::NOT_SUPPORTED_ERR,
+  IndexSizeError = DOMException_Binding::INDEX_SIZE_ERR,
+  HierarchyRequestError = DOMException_Binding::HIERARCHY_REQUEST_ERR,
+  WrongDocumentError = DOMException_Binding::WRONG_DOCUMENT_ERR,
+  InvalidCharacterError = DOMException_Binding::INVALID_CHARACTER_ERR,
+  NoModificationAllowedError =
+      DOMException_Binding::NO_MODIFICATION_ALLOWED_ERR,
+  NotFoundError = DOMException_Binding::NOT_FOUND_ERR,
+  NotSupportedError = DOMException_Binding::NOT_SUPPORTED_ERR,
   // Can't remove until setNamedItem is removed
-  InUseAttributeError = nsIDOMDOMException::INUSE_ATTRIBUTE_ERR,
-  InvalidStateError = nsIDOMDOMException::INVALID_STATE_ERR,
-  SyntaxError = nsIDOMDOMException::SYNTAX_ERR,
-  InvalidModificationError = nsIDOMDOMException::INVALID_MODIFICATION_ERR,
-  NamespaceError = nsIDOMDOMException::NAMESPACE_ERR,
-  InvalidAccessError = nsIDOMDOMException::INVALID_ACCESS_ERR,
-  TypeMismatchError = nsIDOMDOMException::TYPE_MISMATCH_ERR,
-  SecurityError = nsIDOMDOMException::SECURITY_ERR,
-  NetworkError = nsIDOMDOMException::NETWORK_ERR,
-  AbortError = nsIDOMDOMException::ABORT_ERR,
-  URLMismatchError = nsIDOMDOMException::URL_MISMATCH_ERR,
-  QuotaExceededError = nsIDOMDOMException::QUOTA_EXCEEDED_ERR,
-  TimeoutError = nsIDOMDOMException::TIMEOUT_ERR,
-  InvalidNodeTypeError = nsIDOMDOMException::INVALID_NODE_TYPE_ERR,
-  DataCloneError = nsIDOMDOMException::DATA_CLONE_ERR,
-  InvalidPointerId = nsIDOMDOMException::INVALID_POINTER_ERR,
+  InUseAttributeError = DOMException_Binding::INUSE_ATTRIBUTE_ERR,
+  InvalidStateError = DOMException_Binding::INVALID_STATE_ERR,
+  SyntaxError = DOMException_Binding::SYNTAX_ERR,
+  InvalidModificationError = DOMException_Binding::INVALID_MODIFICATION_ERR,
+  NamespaceError = DOMException_Binding::NAMESPACE_ERR,
+  InvalidAccessError = DOMException_Binding::INVALID_ACCESS_ERR,
+  TypeMismatchError = DOMException_Binding::TYPE_MISMATCH_ERR,
+  SecurityError = DOMException_Binding::SECURITY_ERR,
+  NetworkError = DOMException_Binding::NETWORK_ERR,
+  AbortError = DOMException_Binding::ABORT_ERR,
+  URLMismatchError = DOMException_Binding::URL_MISMATCH_ERR,
+  QuotaExceededError = DOMException_Binding::QUOTA_EXCEEDED_ERR,
+  TimeoutError = DOMException_Binding::TIMEOUT_ERR,
+  InvalidNodeTypeError = DOMException_Binding::INVALID_NODE_TYPE_ERR,
+  DataCloneError = DOMException_Binding::DATA_CLONE_ERR,
+  InvalidPointerId = 0,
   EncodingError = 0,
 
   /* XXX Should be JavaScript native errors */
@@ -230,7 +231,7 @@ void Exception::GetName(nsAString& aName) {
     nsXPCException::NameAndFormatForNSResult(mResult, &name, nullptr);
 
     if (name) {
-      CopyUTF8toUTF16(name, aName);
+      CopyUTF8toUTF16(mozilla::MakeStringSpan(name), aName);
     }
   }
 }
@@ -280,7 +281,7 @@ void Exception::ToString(JSContext* aCx, nsACString& _retval) {
 
 JSObject* Exception::WrapObject(JSContext* cx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return ExceptionBinding::Wrap(cx, this, aGivenProto);
+  return Exception_Binding::Wrap(cx, this, aGivenProto);
 }
 
 void Exception::GetMessageMoz(nsString& retval) {
@@ -288,6 +289,14 @@ void Exception::GetMessageMoz(nsString& retval) {
 }
 
 uint32_t Exception::Result() const { return (uint32_t)mResult; }
+
+uint32_t Exception::SourceId(JSContext* aCx) const {
+  if (mLocation) {
+    return mLocation->GetSourceId(aCx);
+  }
+
+  return 0;
+}
 
 uint32_t Exception::LineNumber(JSContext* aCx) const {
   if (mLocation) {
@@ -318,32 +327,9 @@ void Exception::Stringify(JSContext* aCx, nsString& retval) {
   CopyUTF8toUTF16(str, retval);
 }
 
-NS_IMPL_ADDREF_INHERITED(DOMException, Exception)
-NS_IMPL_RELEASE_INHERITED(DOMException, Exception)
-NS_INTERFACE_MAP_BEGIN(DOMException)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMDOMException)
-NS_INTERFACE_MAP_END_INHERITING(Exception)
-
 DOMException::DOMException(nsresult aRv, const nsACString& aMessage,
                            const nsACString& aName, uint16_t aCode)
     : Exception(aMessage, aRv, aName, nullptr, nullptr), mCode(aCode) {}
-
-NS_IMETHODIMP
-DOMException::GetCode(uint16_t* aCode) {
-  NS_ENSURE_ARG_POINTER(aCode);
-  *aCode = mCode;
-
-  // Warn only when the code was changed (other than DOM Core)
-  // or the code is useless (zero)
-  if (NS_ERROR_GET_MODULE(mResult) != NS_ERROR_MODULE_DOM || !mCode) {
-    nsCOMPtr<nsIDocument> doc = nsContentUtils::GetDocumentFromCaller();
-    if (doc) {
-      doc->WarnOnceAbout(nsIDocument::eDOMExceptionCode);
-    }
-  }
-
-  return NS_OK;
-}
 
 void DOMException::ToString(JSContext* aCx, nsACString& aReturn) {
   aReturn.Truncate();
@@ -395,10 +381,11 @@ already_AddRefed<DOMException> DOMException::Constructor(
 
 JSObject* DOMException::WrapObject(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return DOMExceptionBinding::Wrap(aCx, this, aGivenProto);
+  return DOMException_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-/* static */ already_AddRefed<DOMException> DOMException::Create(nsresult aRv) {
+/* static */
+already_AddRefed<DOMException> DOMException::Create(nsresult aRv) {
   nsCString name;
   nsCString message;
   uint16_t code;
@@ -407,7 +394,8 @@ JSObject* DOMException::WrapObject(JSContext* aCx,
   return inst.forget();
 }
 
-/* static */ already_AddRefed<DOMException> DOMException::Create(
+/* static */
+already_AddRefed<DOMException> DOMException::Create(
     nsresult aRv, const nsACString& aMessage) {
   nsCString name;
   nsCString message;

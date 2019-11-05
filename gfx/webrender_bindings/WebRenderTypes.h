@@ -7,18 +7,20 @@
 #ifndef GFX_WEBRENDERTYPES_H
 #define GFX_WEBRENDERTYPES_H
 
-#include "FrameMetrics.h"
 #include "ImageTypes.h"
 #include "mozilla/webrender/webrender_ffi.h"
+#include "mozilla/EnumSet.h"
 #include "mozilla/Maybe.h"
 #include "mozilla/gfx/Matrix.h"
 #include "mozilla/gfx/Types.h"
 #include "mozilla/gfx/Tools.h"
+#include "mozilla/gfx/Rect.h"
+#include "mozilla/layers/LayersTypes.h"
 #include "mozilla/PodOperations.h"
 #include "mozilla/Range.h"
+#include "mozilla/TypeTraits.h"
 #include "mozilla/Variant.h"
 #include "Units.h"
-#include "RoundedRect.h"
 #include "nsStyleConsts.h"
 
 namespace mozilla {
@@ -29,47 +31,124 @@ class ByteBuf;
 
 namespace wr {
 
+// Using uintptr_t in C++ code for "size" types seems weird, so let's use a
+// better-sounding typedef. The name comes from the fact that we generally
+// have to deal with uintptr_t because that's what rust's usize maps to.
+typedef uintptr_t usize;
+
 typedef wr::WrWindowId WindowId;
 typedef wr::WrPipelineId PipelineId;
+typedef wr::WrDocumentId DocumentId;
+typedef wr::WrRemovedPipeline RemovedPipeline;
 typedef wr::WrImageKey ImageKey;
 typedef wr::WrFontKey FontKey;
 typedef wr::WrFontInstanceKey FontInstanceKey;
 typedef wr::WrEpoch Epoch;
 typedef wr::WrExternalImageId ExternalImageId;
-typedef wr::WrDebugFlags DebugFlags;
 
-typedef mozilla::Maybe<mozilla::wr::WrImageMask> MaybeImageMask;
+typedef mozilla::Maybe<mozilla::wr::IdNamespace> MaybeIdNamespace;
+typedef mozilla::Maybe<mozilla::wr::ImageMask> MaybeImageMask;
 typedef Maybe<ExternalImageId> MaybeExternalImageId;
 
 typedef Maybe<FontInstanceOptions> MaybeFontInstanceOptions;
 typedef Maybe<FontInstancePlatformOptions> MaybeFontInstancePlatformOptions;
 
-inline WindowId NewWindowId(uint64_t aId) {
-  WindowId id;
-  id.mHandle = aId;
-  return id;
-}
+struct ExternalImageKeyPair {
+  ImageKey key;
+  ExternalImageId id;
+};
 
-inline Epoch NewEpoch(uint32_t aEpoch) {
-  Epoch e;
-  e.mHandle = aEpoch;
-  return e;
-}
+/* Generate a brand new window id and return it. */
+WindowId NewWindowId();
 
-inline DebugFlags NewDebugFlags(uint32_t aFlags) {
-  DebugFlags flags;
-  flags.mBits = aFlags;
-  return flags;
-}
+MOZ_DEFINE_ENUM_CLASS_WITH_BASE(
+    RenderRoot, uint8_t,
+    (
+        // The default render root - within the parent process, this refers
+        // to everything within the top chrome area (urlbar, tab strip, etc.).
+        // Within the content process, this refers to the content area. Any
+        // system that multiplexes data streams from different processes is
+        // responsible for converting RenderRoot::Default into
+        // RenderRoot::Content (or whatever value is appropriate)
+        Default,
+
+        // Everything below the chrome - even if it is not coming from a content
+        // process. For example. the devtools, sidebars, and status panel are
+        // traditionally part of the "chrome," but are assigned a renderroot of
+        // RenderRoot::Content because they occupy screen space in the "content"
+        // area of the browser (visually situated below the "chrome" area).
+        Content));
+
+typedef EnumSet<RenderRoot, uint8_t> RenderRootSet;
+
+// For simple iteration of all render roots
+const Array<RenderRoot, kRenderRootCount> kRenderRoots(RenderRoot::Default,
+                                                       RenderRoot::Content);
+
+const Array<RenderRoot, kRenderRootCount - 1> kNonDefaultRenderRoots(
+    RenderRoot::Content);
+
+template <typename T>
+class RenderRootArray : public Array<T, kRenderRootCount> {
+  typedef Array<T, kRenderRootCount> Super;
+
+ public:
+  RenderRootArray() {
+    if (IsPod<T>::value) {
+      // Ensure primitive types get initialized to 0/false.
+      PodArrayZero(*this);
+    }  // else C++ will default-initialize the array elements for us
+  }
+
+  T& operator[](wr::RenderRoot aIndex) {
+    return (*(Super*)this)[(size_t)aIndex];
+  }
+
+  const T& operator[](wr::RenderRoot aIndex) const {
+    return (*(Super*)this)[(size_t)aIndex];
+  }
+
+  T& operator[](size_t aIndex) = delete;
+  const T& operator[](size_t aIndex) const = delete;
+};
+
+template <typename T>
+class NonDefaultRenderRootArray : public Array<T, kRenderRootCount - 1> {
+  typedef Array<T, kRenderRootCount - 1> Super;
+
+ public:
+  NonDefaultRenderRootArray() {
+    // See RenderRootArray constructor
+    if (IsPod<T>::value) {
+      PodArrayZero(*this);
+    }
+  }
+
+  T& operator[](wr::RenderRoot aIndex) {
+    return (*(Super*)this)[(size_t)aIndex - 1];
+  }
+
+  const T& operator[](wr::RenderRoot aIndex) const {
+    return (*(Super*)this)[(size_t)aIndex - 1];
+  }
+
+  T& operator[](size_t aIndex) = delete;
+  const T& operator[](size_t aIndex) const = delete;
+};
+
+RenderRoot RenderRootFromId(DocumentId id);
+
+inline DebugFlags NewDebugFlags(uint32_t aFlags) { return {aFlags}; }
 
 inline Maybe<wr::ImageFormat> SurfaceFormatToImageFormat(
     gfx::SurfaceFormat aFormat) {
   switch (aFormat) {
     case gfx::SurfaceFormat::R8G8B8X8:
-    case gfx::SurfaceFormat::R8G8B8A8:
-      // WebRender not support RGBA8 and RGBX8. Assert here.
+      // WebRender not support RGBX8. Assert here.
       MOZ_ASSERT(false);
       return Nothing();
+    case gfx::SurfaceFormat::R8G8B8A8:
+      return Some(wr::ImageFormat::RGBA8);
     case gfx::SurfaceFormat::B8G8R8X8:
       // TODO: WebRender will have a BGRA + opaque flag for this but does not
       // have it yet (cf. issue #732).
@@ -77,8 +156,12 @@ inline Maybe<wr::ImageFormat> SurfaceFormatToImageFormat(
       return Some(wr::ImageFormat::BGRA8);
     case gfx::SurfaceFormat::A8:
       return Some(wr::ImageFormat::R8);
+    case gfx::SurfaceFormat::A16:
+      return Some(wr::ImageFormat::R16);
     case gfx::SurfaceFormat::R8G8:
       return Some(wr::ImageFormat::RG8);
+    case gfx::SurfaceFormat::R16G16:
+      return Some(wr::ImageFormat::RG16);
     case gfx::SurfaceFormat::UNKNOWN:
     default:
       return Nothing();
@@ -91,6 +174,8 @@ inline gfx::SurfaceFormat ImageFormatToSurfaceFormat(ImageFormat aFormat) {
       return gfx::SurfaceFormat::B8G8R8A8;
     case ImageFormat::R8:
       return gfx::SurfaceFormat::A8;
+    case ImageFormat::R16:
+      return gfx::SurfaceFormat::A16;
     default:
       return gfx::SurfaceFormat::UNKNOWN;
   }
@@ -103,7 +188,7 @@ struct ImageDescriptor : public wr::WrImageDescriptor {
     width = 0;
     height = 0;
     stride = 0;
-    is_opaque = false;
+    opacity = OpacityType::HasAlphaChannel;
   }
 
   ImageDescriptor(const gfx::IntSize& aSize, gfx::SurfaceFormat aFormat) {
@@ -111,7 +196,8 @@ struct ImageDescriptor : public wr::WrImageDescriptor {
     width = aSize.width;
     height = aSize.height;
     stride = 0;
-    is_opaque = gfx::IsOpaqueFormat(aFormat);
+    opacity = gfx::IsOpaque(aFormat) ? OpacityType::Opaque
+                                     : OpacityType::HasAlphaChannel;
   }
 
   ImageDescriptor(const gfx::IntSize& aSize, uint32_t aByteStride,
@@ -120,16 +206,17 @@ struct ImageDescriptor : public wr::WrImageDescriptor {
     width = aSize.width;
     height = aSize.height;
     stride = aByteStride;
-    is_opaque = gfx::IsOpaqueFormat(aFormat);
+    opacity = gfx::IsOpaque(aFormat) ? OpacityType::Opaque
+                                     : OpacityType::HasAlphaChannel;
   }
 
   ImageDescriptor(const gfx::IntSize& aSize, uint32_t aByteStride,
-                  gfx::SurfaceFormat aFormat, bool opaque) {
+                  gfx::SurfaceFormat aFormat, OpacityType aOpacity) {
     format = wr::SurfaceFormatToImageFormat(aFormat).value();
     width = aSize.width;
     height = aSize.height;
     stride = aByteStride;
-    is_opaque = opaque;
+    opacity = aOpacity;
   }
 };
 
@@ -188,6 +275,14 @@ inline PipelineId AsPipelineId(const uint64_t& aId) {
   pipeline.mNamespace = aId >> 32;
   pipeline.mHandle = aId;
   return pipeline;
+}
+
+inline mozilla::layers::LayersId AsLayersId(const PipelineId& aId) {
+  return mozilla::layers::LayersId{AsUint64(aId)};
+}
+
+inline PipelineId AsPipelineId(const mozilla::layers::LayersId& aId) {
+  return AsPipelineId(uint64_t(aId));
 }
 
 inline ImageRendering ToImageRendering(gfx::SamplingFilter aFilter) {
@@ -277,6 +372,13 @@ static inline wr::LayoutPoint ToLayoutPoint(
   return ToLayoutPoint(LayoutDevicePoint(point));
 }
 
+static inline wr::LayoutPoint ToRoundedLayoutPoint(
+    const mozilla::LayoutDevicePoint& point) {
+  mozilla::LayoutDevicePoint rounded = point;
+  rounded.Round();
+  return ToLayoutPoint(rounded);
+}
+
 static inline wr::WorldPoint ToWorldPoint(const mozilla::ScreenPoint& point) {
   wr::WorldPoint p;
   p.x = point.x;
@@ -307,7 +409,7 @@ static inline wr::LayoutRect ToLayoutRect(
   return r;
 }
 
-static inline wr::LayoutRect ToLayoutRect(const gfxRect& rect) {
+static inline wr::LayoutRect ToLayoutRect(const gfx::Rect& rect) {
   wr::LayoutRect r;
   r.origin.x = rect.X();
   r.origin.y = rect.Y();
@@ -316,9 +418,20 @@ static inline wr::LayoutRect ToLayoutRect(const gfxRect& rect) {
   return r;
 }
 
-static inline wr::DeviceUintRect ToDeviceUintRect(
+static inline wr::DeviceIntRect ToDeviceIntRect(
     const mozilla::ImageIntRect& rect) {
-  wr::DeviceUintRect r;
+  wr::DeviceIntRect r;
+  r.origin.x = rect.X();
+  r.origin.y = rect.Y();
+  r.size.width = rect.Width();
+  r.size.height = rect.Height();
+  return r;
+}
+
+// TODO: should be const LayoutDeviceIntRect instead of ImageIntRect
+static inline wr::LayoutIntRect ToLayoutIntRect(
+    const mozilla::ImageIntRect& rect) {
+  wr::LayoutIntRect r;
   r.origin.x = rect.X();
   r.origin.y = rect.Y();
   r.size.width = rect.Width();
@@ -331,6 +444,31 @@ static inline wr::LayoutRect ToLayoutRect(
   return ToLayoutRect(IntRectToRect(rect));
 }
 
+static inline wr::LayoutRect ToRoundedLayoutRect(
+    const mozilla::LayoutDeviceRect& aRect) {
+  auto rect = aRect;
+  rect.Round();
+  return wr::ToLayoutRect(rect);
+}
+
+static inline wr::LayoutRect IntersectLayoutRect(const wr::LayoutRect& aRect,
+                                                 const wr::LayoutRect& aOther) {
+  wr::LayoutRect r;
+  r.origin.x = std::max(aRect.origin.x, aOther.origin.x);
+  r.origin.y = std::max(aRect.origin.y, aOther.origin.y);
+  r.size.width = std::min(aRect.origin.x + aRect.size.width,
+                          aOther.origin.x + aOther.size.width) -
+                 r.origin.x;
+  r.size.height = std::min(aRect.origin.y + aRect.size.height,
+                           aOther.origin.y + aOther.size.height) -
+                  r.origin.y;
+  if (r.size.width < 0 || r.size.height < 0) {
+    r.size.width = 0;
+    r.size.height = 0;
+  }
+  return r;
+}
+
 static inline wr::LayoutSize ToLayoutSize(
     const mozilla::LayoutDeviceSize& size) {
   wr::LayoutSize ls;
@@ -340,7 +478,7 @@ static inline wr::LayoutSize ToLayoutSize(
 }
 
 static inline wr::ComplexClipRegion ToComplexClipRegion(
-    const RoundedRect& rect) {
+    const gfx::RoundedRect& rect) {
   wr::ComplexClipRegion ret;
   ret.rect = ToLayoutRect(rect.rect);
   ret.radii.top_left = ToLayoutSize(LayoutDeviceSize::FromUnknownSize(
@@ -351,6 +489,19 @@ static inline wr::ComplexClipRegion ToComplexClipRegion(
       rect.corners.radii[mozilla::eCornerBottomLeft]));
   ret.radii.bottom_right = ToLayoutSize(LayoutDeviceSize::FromUnknownSize(
       rect.corners.radii[mozilla::eCornerBottomRight]));
+  ret.mode = wr::ClipMode::Clip;
+  return ret;
+}
+
+static inline wr::ComplexClipRegion SimpleRadii(const wr::LayoutRect& aRect,
+                                                float aRadii) {
+  wr::ComplexClipRegion ret;
+  wr::LayoutSize radii{aRadii, aRadii};
+  ret.rect = aRect;
+  ret.radii.top_left = radii;
+  ret.radii.top_right = radii;
+  ret.radii.bottom_left = radii;
+  ret.radii.bottom_right = radii;
   ret.mode = wr::ClipMode::Clip;
   return ret;
 }
@@ -383,27 +534,27 @@ static inline wr::LayoutTransform ToLayoutTransform(
   return transform;
 }
 
-static inline wr::BorderStyle ToBorderStyle(const uint8_t& style) {
+static inline wr::BorderStyle ToBorderStyle(const StyleBorderStyle& style) {
   switch (style) {
-    case NS_STYLE_BORDER_STYLE_NONE:
+    case StyleBorderStyle::None:
       return wr::BorderStyle::None;
-    case NS_STYLE_BORDER_STYLE_SOLID:
+    case StyleBorderStyle::Solid:
       return wr::BorderStyle::Solid;
-    case NS_STYLE_BORDER_STYLE_DOUBLE:
+    case StyleBorderStyle::Double:
       return wr::BorderStyle::Double;
-    case NS_STYLE_BORDER_STYLE_DOTTED:
+    case StyleBorderStyle::Dotted:
       return wr::BorderStyle::Dotted;
-    case NS_STYLE_BORDER_STYLE_DASHED:
+    case StyleBorderStyle::Dashed:
       return wr::BorderStyle::Dashed;
-    case NS_STYLE_BORDER_STYLE_HIDDEN:
+    case StyleBorderStyle::Hidden:
       return wr::BorderStyle::Hidden;
-    case NS_STYLE_BORDER_STYLE_GROOVE:
+    case StyleBorderStyle::Groove:
       return wr::BorderStyle::Groove;
-    case NS_STYLE_BORDER_STYLE_RIDGE:
+    case StyleBorderStyle::Ridge:
       return wr::BorderStyle::Ridge;
-    case NS_STYLE_BORDER_STYLE_INSET:
+    case StyleBorderStyle::Inset:
       return wr::BorderStyle::Inset;
-    case NS_STYLE_BORDER_STYLE_OUTSET:
+    case StyleBorderStyle::Outset:
       return wr::BorderStyle::Outset;
     default:
       MOZ_ASSERT(false);
@@ -412,7 +563,7 @@ static inline wr::BorderStyle ToBorderStyle(const uint8_t& style) {
 }
 
 static inline wr::BorderSide ToBorderSide(const gfx::Color& color,
-                                          const uint8_t& style) {
+                                          const StyleBorderStyle& style) {
   wr::BorderSide bs;
   bs.color = ToColorF(color);
   bs.style = ToBorderStyle(style);
@@ -438,9 +589,31 @@ static inline wr::BorderRadius ToBorderRadius(
   return br;
 }
 
-static inline wr::BorderWidths ToBorderWidths(float top, float right,
-                                              float bottom, float left) {
-  wr::BorderWidths bw;
+static inline wr::ComplexClipRegion ToComplexClipRegion(
+    const nsRect& aRect, const nscoord* aRadii, int32_t aAppUnitsPerDevPixel) {
+  wr::ComplexClipRegion ret;
+  ret.rect = ToRoundedLayoutRect(
+      LayoutDeviceRect::FromAppUnits(aRect, aAppUnitsPerDevPixel));
+  ret.radii = ToBorderRadius(
+      LayoutDeviceSize::FromAppUnits(
+          nsSize(aRadii[eCornerTopLeftX], aRadii[eCornerTopLeftY]),
+          aAppUnitsPerDevPixel),
+      LayoutDeviceSize::FromAppUnits(
+          nsSize(aRadii[eCornerTopRightX], aRadii[eCornerTopRightY]),
+          aAppUnitsPerDevPixel),
+      LayoutDeviceSize::FromAppUnits(
+          nsSize(aRadii[eCornerBottomLeftX], aRadii[eCornerBottomLeftY]),
+          aAppUnitsPerDevPixel),
+      LayoutDeviceSize::FromAppUnits(
+          nsSize(aRadii[eCornerBottomRightX], aRadii[eCornerBottomRightY]),
+          aAppUnitsPerDevPixel));
+  ret.mode = ClipMode::Clip;
+  return ret;
+}
+
+static inline wr::LayoutSideOffsets ToBorderWidths(float top, float right,
+                                                   float bottom, float left) {
+  wr::LayoutSideOffsets bw;
   bw.top = top;
   bw.right = right;
   bw.bottom = bottom;
@@ -448,20 +621,11 @@ static inline wr::BorderWidths ToBorderWidths(float top, float right,
   return bw;
 }
 
-static inline wr::NinePatchDescriptor ToNinePatchDescriptor(
-    uint32_t width, uint32_t height, const wr::SideOffsets2D<uint32_t>& slice) {
-  NinePatchDescriptor patch;
-  patch.width = width;
-  patch.height = height;
-  patch.slice = slice;
-  return patch;
-}
-
-static inline wr::SideOffsets2D<uint32_t> ToSideOffsets2D_u32(uint32_t top,
-                                                              uint32_t right,
-                                                              uint32_t bottom,
-                                                              uint32_t left) {
-  SideOffsets2D<uint32_t> offset;
+static inline wr::SideOffsets2D<int32_t> ToSideOffsets2D_i32(int32_t top,
+                                                             int32_t right,
+                                                             int32_t bottom,
+                                                             int32_t left) {
+  SideOffsets2D<int32_t> offset;
   offset.top = top;
   offset.right = right;
   offset.bottom = bottom;
@@ -568,7 +732,7 @@ template <typename T>
 struct Vec;
 
 template <>
-struct Vec<uint8_t> {
+struct Vec<uint8_t> final {
   wr::WrVecU8 inner;
   Vec() { SetEmpty(); }
   Vec(Vec&) = delete;
@@ -685,63 +849,21 @@ struct BuiltDisplayList {
   wr::BuiltDisplayListDescriptor dl_desc;
 };
 
-static inline wr::WrFilterOpType ToWrFilterOpType(uint32_t type) {
-  switch (type) {
-    case NS_STYLE_FILTER_BLUR:
-      return wr::WrFilterOpType::Blur;
-    case NS_STYLE_FILTER_BRIGHTNESS:
-      return wr::WrFilterOpType::Brightness;
-    case NS_STYLE_FILTER_CONTRAST:
-      return wr::WrFilterOpType::Contrast;
-    case NS_STYLE_FILTER_GRAYSCALE:
-      return wr::WrFilterOpType::Grayscale;
-    case NS_STYLE_FILTER_HUE_ROTATE:
-      return wr::WrFilterOpType::HueRotate;
-    case NS_STYLE_FILTER_INVERT:
-      return wr::WrFilterOpType::Invert;
-    case NS_STYLE_FILTER_OPACITY:
-      return wr::WrFilterOpType::Opacity;
-    case NS_STYLE_FILTER_SATURATE:
-      return wr::WrFilterOpType::Saturate;
-    case NS_STYLE_FILTER_SEPIA:
-      return wr::WrFilterOpType::Sepia;
-    case NS_STYLE_FILTER_DROP_SHADOW:
-      return wr::WrFilterOpType::DropShadow;
+// Corresponds to a clip id for a clip chain in webrender. Similar to
+// WrClipId but a separate struct so we don't get them mixed up in C++.
+struct WrClipChainId {
+  uint64_t id;
+
+  bool operator==(const WrClipChainId& other) const { return id == other.id; }
+
+  static WrClipChainId Empty() {
+    WrClipChainId id = {0};
+    return id;
   }
-  MOZ_ASSERT_UNREACHABLE("Tried to convert unknown filter type.");
-  return wr::WrFilterOpType::Grayscale;
-}
-
-// Corresponds to an "internal" webrender clip id. That is, a
-// ClipId::Clip(x,pipeline_id) maps to a WrClipId{x}. We use a struct wrapper
-// instead of a typedef so that this is a distinct type from ids generated
-// by scroll and position:sticky nodes  and the compiler will catch accidental
-// conversions between them.
-struct WrClipId {
-  size_t id;
-
-  bool operator==(const WrClipId& other) const { return id == other.id; }
 };
 
-// Corresponds to a clip id for for a scroll frame in webrender. Similar
-// to WrClipId but a separate struct so we don't get them mixed up in C++.
-struct WrScrollId {
-  size_t id;
-
-  bool operator==(const WrScrollId& other) const { return id == other.id; }
-
-  bool operator!=(const WrScrollId& other) const { return id != other.id; }
-};
-
-// Corresponds to a clip id for a position:sticky clip in webrender. Similar
-// to WrClipId but a separate struct so we don't get them mixed up in C++.
-struct WrStickyId {
-  size_t id;
-
-  bool operator==(const WrStickyId& other) const { return id == other.id; }
-};
-
-typedef Variant<WrScrollId, WrClipId> ScrollOrClipId;
+WrSpaceAndClip RootScrollNode();
+WrSpaceAndClipChain RootScrollNodeWithChain();
 
 enum class WebRenderError : int8_t {
   INITIALIZE = 0,
@@ -752,19 +874,53 @@ enum class WebRenderError : int8_t {
 };
 
 static inline wr::WrYuvColorSpace ToWrYuvColorSpace(
-    YUVColorSpace aYUVColorSpace) {
+    gfx::YUVColorSpace aYUVColorSpace) {
   switch (aYUVColorSpace) {
-    case YUVColorSpace::BT601:
+    case gfx::YUVColorSpace::BT601:
       return wr::WrYuvColorSpace::Rec601;
-    case YUVColorSpace::BT709:
+    case gfx::YUVColorSpace::BT709:
       return wr::WrYuvColorSpace::Rec709;
+    case gfx::YUVColorSpace::BT2020:
+      return wr::WrYuvColorSpace::Rec2020;
     default:
       MOZ_ASSERT_UNREACHABLE("Tried to convert invalid YUVColorSpace.");
   }
   return wr::WrYuvColorSpace::Rec601;
 }
 
+static inline wr::WrColorDepth ToWrColorDepth(gfx::ColorDepth aColorDepth) {
+  switch (aColorDepth) {
+    case gfx::ColorDepth::COLOR_8:
+      return wr::WrColorDepth::Color8;
+    case gfx::ColorDepth::COLOR_10:
+      return wr::WrColorDepth::Color10;
+    case gfx::ColorDepth::COLOR_12:
+      return wr::WrColorDepth::Color12;
+    case gfx::ColorDepth::COLOR_16:
+      return wr::WrColorDepth::Color16;
+    default:
+      MOZ_ASSERT_UNREACHABLE("Tried to convert invalid color depth value.");
+  }
+  return wr::WrColorDepth::Color8;
+}
+
+static inline wr::SyntheticItalics DegreesToSyntheticItalics(float aDegrees) {
+  wr::SyntheticItalics synthetic_italics;
+  synthetic_italics.angle =
+      int16_t(std::min(std::max(aDegrees, -89.0f), 89.0f) * 256.0f);
+  return synthetic_italics;
+}
+
 }  // namespace wr
 }  // namespace mozilla
+
+namespace std {
+template <>
+struct hash<mozilla::wr::WrSpatialId> {
+  std::size_t operator()(mozilla::wr::WrSpatialId const& aKey) const noexcept {
+    return std::hash<size_t>{}(aKey.id);
+  }
+};
+}  // namespace std
 
 #endif /* GFX_WEBRENDERTYPES_H */

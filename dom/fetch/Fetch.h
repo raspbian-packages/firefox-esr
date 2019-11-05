@@ -103,6 +103,8 @@ class FetchStreamHolder {
 
   virtual void NullifyStream() = 0;
 
+  virtual void MarkAsRead() = 0;
+
   virtual JSObject* ReadableStreamBody() = 0;
 };
 
@@ -145,7 +147,11 @@ class FetchBody : public FetchStreamHolder, public AbortFollower {
  public:
   friend class FetchBodyConsumer<Derived>;
 
-  bool BodyUsed() const;
+  bool GetBodyUsed(ErrorResult& aRv) const;
+
+  // For use in assertions. On success, returns true if the body is used, false
+  // if not. On error, this sweeps the error under the rug and returns true.
+  bool CheckBodyUsed() const;
 
   already_AddRefed<Promise> ArrayBuffer(JSContext* aCx, ErrorResult& aRv) {
     return ConsumeBody(aCx, CONSUME_ARRAYBUFFER, aRv);
@@ -169,6 +175,10 @@ class FetchBody : public FetchStreamHolder, public AbortFollower {
 
   void GetBody(JSContext* aCx, JS::MutableHandle<JSObject*> aBodyOut,
                ErrorResult& aRv);
+
+  const nsACString& BodyBlobURISpec() const;
+
+  const nsAString& BodyLocalPath() const;
 
   // If the body contains a ReadableStream body object, this method produces a
   // tee() of it.
@@ -216,10 +226,15 @@ class FetchBody : public FetchStreamHolder, public AbortFollower {
     return mReadableStreamBody;
   }
 
-  virtual AbortSignal* GetSignal() const = 0;
+  void MarkAsRead() override { mBodyUsed = true; }
+
+  virtual AbortSignalImpl* GetSignalImpl() const = 0;
 
   // AbortFollower
   void Abort() override;
+
+  already_AddRefed<Promise> ConsumeBody(JSContext* aCx, FetchConsumeType aType,
+                                        ErrorResult& aRv);
 
  protected:
   nsCOMPtr<nsIGlobalObject> mOwner;
@@ -241,15 +256,14 @@ class FetchBody : public FetchStreamHolder, public AbortFollower {
 
   void SetMimeType();
 
+  void OverrideMimeType(const nsACString& aMimeType);
+
   void SetReadableStreamBody(JSContext* aCx, JSObject* aBody);
 
  private:
   Derived* DerivedClass() const {
     return static_cast<Derived*>(const_cast<FetchBody*>(this));
   }
-
-  already_AddRefed<Promise> ConsumeBody(JSContext* aCx, FetchConsumeType aType,
-                                        ErrorResult& aRv);
 
   void LockStream(JSContext* aCx, JS::HandleObject aStream, ErrorResult& aRv);
 

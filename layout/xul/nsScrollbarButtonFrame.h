@@ -19,19 +19,25 @@
 #include "nsITimer.h"
 #include "nsRepeatService.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsScrollbarButtonFrame final : public nsButtonBoxFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsScrollbarButtonFrame)
 
-  explicit nsScrollbarButtonFrame(nsStyleContext* aContext)
-      : nsButtonBoxFrame(aContext, kClassID), mCursorOnThis(false) {}
+  explicit nsScrollbarButtonFrame(ComputedStyle* aStyle,
+                                  nsPresContext* aPresContext)
+      : nsButtonBoxFrame(aStyle, aPresContext, kClassID),
+        mCursorOnThis(false) {}
 
   // Overrides
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
 
-  friend nsIFrame* NS_NewScrollbarButtonFrame(nsIPresShell* aPresShell,
-                                              nsStyleContext* aContext);
+  friend nsIFrame* NS_NewScrollbarButtonFrame(mozilla::PresShell* aPresShell,
+                                              ComputedStyle* aStyle);
 
   virtual nsresult HandleEvent(nsPresContext* aPresContext,
                                mozilla::WidgetGUIEvent* aEvent,
@@ -53,6 +59,7 @@ class nsScrollbarButtonFrame final : public nsButtonBoxFrame {
     return NS_OK;
   }
 
+  MOZ_CAN_RUN_SCRIPT
   NS_IMETHOD HandleDrag(nsPresContext* aPresContext,
                         mozilla::WidgetGUIEvent* aEvent,
                         nsEventStatus* aEventStatus) override {
@@ -64,8 +71,6 @@ class nsScrollbarButtonFrame final : public nsButtonBoxFrame {
                            nsEventStatus* aEventStatus) override;
 
  protected:
-  virtual void MouseClicked(mozilla::WidgetGUIEvent* aEvent) override;
-
   void StartRepeat() {
     nsRepeatService::GetInstance()->Start(
         Notify, this, mContent->OwnerDoc(),

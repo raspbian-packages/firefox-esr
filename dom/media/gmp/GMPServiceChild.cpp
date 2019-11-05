@@ -24,16 +24,16 @@
 namespace mozilla {
 
 #ifdef LOG
-#undef LOG
+#  undef LOG
 #endif
 
 #define LOGD(msg) MOZ_LOG(GetGMPLog(), mozilla::LogLevel::Debug, msg)
 #define LOG(level, msg) MOZ_LOG(GetGMPLog(), (level), msg)
 
 #ifdef __CLASS__
-#undef __CLASS__
+#  undef __CLASS__
 #endif
-#define __CLASS__ "GMPService"
+#define __CLASS__ "GMPServiceChild"
 
 namespace gmp {
 
@@ -109,8 +109,8 @@ GeckoMediaPluginServiceChild::GetContentParent(
           return;
         }
 
-        RefPtr<GMPContentParent> parent =
-            child->GetBridgedGMPContentParent(otherProcess, Move(endpoint));
+        RefPtr<GMPContentParent> parent = child->GetBridgedGMPContentParent(
+            otherProcess, std::move(endpoint));
         if (!alreadyBridgedTo.Contains(otherProcess)) {
           parent->SetDisplayName(displayName);
           parent->SetPluginId(pluginId);
@@ -185,8 +185,8 @@ GeckoMediaPluginServiceChild::GetContentParent(
           return;
         }
 
-        RefPtr<GMPContentParent> parent =
-            child->GetBridgedGMPContentParent(otherProcess, Move(endpoint));
+        RefPtr<GMPContentParent> parent = child->GetBridgedGMPContentParent(
+            otherProcess, std::move(endpoint));
         if (!alreadyBridgedTo.Contains(otherProcess)) {
           parent->SetDisplayName(displayName);
           parent->SetPluginId(pluginId);
@@ -217,7 +217,7 @@ struct GMPCapabilityAndVersion {
       for (const nsCString& tag : tags.tags()) {
         cap.mAPITags.AppendElement(tag);
       }
-      mCapabilities.AppendElement(Move(cap));
+      mCapabilities.AppendElement(std::move(cap));
     }
   }
 
@@ -403,7 +403,7 @@ void GeckoMediaPluginServiceChild::SetServiceChild(
     UniquePtr<GMPServiceChild>&& aServiceChild) {
   MOZ_ASSERT(mGMPThread->EventTarget()->IsOnCurrentThread());
 
-  mServiceChild = Move(aServiceChild);
+  mServiceChild = std::move(aServiceChild);
 
   nsTArray<MozPromiseHolder<GetServiceChildPromise>> holders;
   holders.SwapElements(mGetServiceChildPromises);
@@ -475,15 +475,15 @@ class OpenPGMPServiceChild : public mozilla::Runnable {
   OpenPGMPServiceChild(UniquePtr<GMPServiceChild>&& aGMPServiceChild,
                        ipc::Endpoint<PGMPServiceChild>&& aEndpoint)
       : Runnable("gmp::OpenPGMPServiceChild"),
-        mGMPServiceChild(Move(aGMPServiceChild)),
-        mEndpoint(Move(aEndpoint)) {}
+        mGMPServiceChild(std::move(aGMPServiceChild)),
+        mEndpoint(std::move(aEndpoint)) {}
 
   NS_IMETHOD Run() override {
     RefPtr<GeckoMediaPluginServiceChild> gmp =
         GeckoMediaPluginServiceChild::GetSingleton();
     MOZ_ASSERT(!gmp->mServiceChild);
     if (mEndpoint.Bind(mGMPServiceChild.get())) {
-      gmp->SetServiceChild(Move(mGMPServiceChild));
+      gmp->SetServiceChild(std::move(mGMPServiceChild));
     } else {
       gmp->SetServiceChild(nullptr);
     }
@@ -508,7 +508,7 @@ bool GMPServiceChild::Create(Endpoint<PGMPServiceChild>&& aGMPService) {
   NS_ENSURE_SUCCESS(rv, false);
 
   rv = gmpThread->Dispatch(
-      new OpenPGMPServiceChild(Move(serviceChild), Move(aGMPService)),
+      new OpenPGMPServiceChild(std::move(serviceChild), std::move(aGMPService)),
       NS_DISPATCH_NORMAL);
   return NS_SUCCEEDED(rv);
 }

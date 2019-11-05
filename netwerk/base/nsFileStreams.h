@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -24,8 +24,12 @@
 
 class nsFileStreamBase : public nsISeekableStream, public nsIFileMetadata {
  public:
-  NS_DECL_THREADSAFE_ISUPPORTS
+  // Record refcount changes to ensure that streams are destroyed on
+  // consistent threads when recording/replaying.
+  NS_DECL_THREADSAFE_ISUPPORTS_WITH_RECORDING(
+      mozilla::recordreplay::Behavior::Preserve)
   NS_DECL_NSISEEKABLESTREAM
+  NS_DECL_NSITELLABLESTREAM
   NS_DECL_NSIFILEMETADATA
 
   nsFileStreamBase();
@@ -148,6 +152,9 @@ class nsFileInputStream : public nsFileStreamBase,
 
  protected:
   virtual ~nsFileInputStream() = default;
+
+  void SerializeInternal(mozilla::ipc::InputStreamParams& aParams,
+                         FileDescriptorArray& aFileDescriptors);
 
   nsresult SeekInternal(int32_t aWhence, int64_t aOffset,
                         bool aClearBuf = true);

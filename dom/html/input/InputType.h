@@ -67,7 +67,7 @@ class InputType {
   virtual nsresult GetRangeUnderflowMessage(nsAString& aMessage);
   virtual nsresult GetBadInputMessage(nsAString& aMessage);
 
-  virtual nsresult MinMaxStepAttrChanged();
+  MOZ_CAN_RUN_SCRIPT virtual nsresult MinMaxStepAttrChanged();
 
   /**
    * Convert a string to a Decimal number in a type specific way,
@@ -128,6 +128,7 @@ class InputType {
    * @param aValue      String to set.
    * @param aFlags      See nsTextEditorState::SetValueFlags.
    */
+  MOZ_CAN_RUN_SCRIPT
   nsresult SetValueInternal(const nsAString& aValue, uint32_t aFlags);
 
   /**

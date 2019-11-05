@@ -12,25 +12,33 @@
 #include "nsRefPtrHashtable.h"
 
 #include "gfxVR.h"
-#include "VRDisplayHost.h"
+#include "VRDisplayLocal.h"
+
+#if defined(XP_WIN)
+#  include "CompositorD3D11.h"
+#endif
 
 #if defined(XP_MACOSX)
 class MacIOSurface;
 #endif
 namespace mozilla {
+namespace layers {
+struct VertexShaderConstants;
+struct PixelShaderConstants;
+}  // namespace layers
 namespace gfx {
 namespace impl {
 
-class VRDisplayPuppet : public VRDisplayHost {
+class VRDisplayPuppet : public VRDisplayLocal {
  public:
   void SetDisplayInfo(const VRDisplayInfo& aDisplayInfo);
   void SetSensorState(const VRHMDSensorState& aSensorState);
   void ZeroSensor() override;
 
  protected:
-  virtual VRHMDSensorState GetSensorState() override;
-  virtual void StartPresentation() override;
-  virtual void StopPresentation() override;
+  VRHMDSensorState& GetSensorState() override;
+  void StartPresentation() override;
+  void StopPresentation() override;
 #if defined(XP_WIN)
   virtual bool SubmitFrame(ID3D11Texture2D* aSource, const IntSize& aSize,
                            const gfx::Rect& aLeftEyeRect,
@@ -39,9 +47,9 @@ class VRDisplayPuppet : public VRDisplayHost {
   virtual bool SubmitFrame(MacIOSurface* aMacIOSurface, const IntSize& aSize,
                            const gfx::Rect& aLeftEyeRect,
                            const gfx::Rect& aRightEyeRect) override;
-#elif defined(MOZ_ANDROID_GOOGLE_VR)
+#elif defined(MOZ_WIDGET_ANDROID)
   virtual bool SubmitFrame(
-      const mozilla::layers::EGLImageDescriptor* aDescriptor,
+      const mozilla::layers::SurfaceTextureDescriptor& aDescriptor,
       const gfx::Rect& aLeftEyeRect, const gfx::Rect& aRightEyeRect) override;
 #endif
 
@@ -94,7 +102,6 @@ class VRControllerPuppet : public VRControllerHost {
   uint64_t mButtonPressState;
   uint64_t mButtonTouchState;
   float mAxisMoveState[3];
-  float mAxisMove[3];
   dom::GamepadPoseState mPoseState;
 };
 
@@ -110,21 +117,22 @@ class VRSystemManagerPuppet : public VRSystemManager {
   void SetPuppetDisplaySensorState(const uint32_t& aDeviceID,
                                    const VRHMDSensorState& aSensorState);
 
-  virtual void Destroy() override;
-  virtual void Shutdown() override;
-  virtual void Enumerate() override;
-  virtual void GetHMDs(nsTArray<RefPtr<VRDisplayHost>>& aHMDResult) override;
-  virtual bool GetIsPresenting() override;
-  virtual void HandleInput() override;
-  virtual void GetControllers(
+  void Destroy() override;
+  void Shutdown() override;
+  void Enumerate() override;
+  void GetHMDs(nsTArray<RefPtr<VRDisplayHost>>& aHMDResult) override;
+  bool GetIsPresenting() override;
+  void HandleInput() override;
+  void GetControllers(
       nsTArray<RefPtr<VRControllerHost>>& aControllerResult) override;
-  virtual void ScanForControllers() override;
-  virtual void RemoveControllers() override;
-  virtual void VibrateHaptic(uint32_t aControllerIdx, uint32_t aHapticIndex,
-                             double aIntensity, double aDuration,
-                             const VRManagerPromise& aPromise) override;
-  virtual void StopVibrateHaptic(uint32_t aControllerIdx) override;
-  virtual void NotifyVSync() override;
+  void ScanForControllers() override;
+  void RemoveControllers() override;
+  void VibrateHaptic(uint32_t aControllerIdx, uint32_t aHapticIndex,
+                     double aIntensity, double aDuration,
+                     const VRManagerPromise& aPromise) override;
+  void StopVibrateHaptic(uint32_t aControllerIdx) override;
+  void NotifyVSync() override;
+  void Run10msTasks() override;
 
  protected:
   VRSystemManagerPuppet();

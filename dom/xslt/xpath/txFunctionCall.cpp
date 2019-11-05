@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -97,14 +97,8 @@ bool FunctionCall::argsSensitiveTo(ContextSensitivity aContext) {
 
 #ifdef TX_TO_STRING
 void FunctionCall::toString(nsAString& aDest) {
-  RefPtr<nsAtom> functionNameAtom;
-  if (NS_FAILED(getNameAtom(getter_AddRefs(functionNameAtom)))) {
-    NS_ERROR("Can't get function name.");
-    return;
-  }
-
-  aDest.Append(nsDependentAtomString(functionNameAtom) +
-               NS_LITERAL_STRING("("));
+  appendName(aDest);
+  aDest.AppendLiteral("(");
   for (uint32_t i = 0; i < mParams.Length(); ++i) {
     if (i != 0) {
       aDest.Append(char16_t(','));

@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "amIAddonManager.h"
 #include "nsWindowMemoryReporter.h"
 #include "nsWindowSizes.h"
 #include "nsGlobalWindow.h"
-#include "nsIDocument.h"
-#include "nsIDOMWindowCollection.h"
+#include "mozilla/dom/Document.h"
+#include "nsDOMWindowList.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Services.h"
 #include "mozilla/StaticPtr.h"
+#include "mozilla/Telemetry.h"
 #include "nsNetCID.h"
 #include "nsPrintfCString.h"
 #include "XPCJSMemoryReporter.h"
@@ -21,10 +21,11 @@
 #include "nsQueryObject.h"
 #include "nsServiceManagerUtils.h"
 #ifdef MOZ_XUL
-#include "nsXULPrototypeCache.h"
+#  include "nsXULPrototypeCache.h"
 #endif
 
 using namespace mozilla;
+using namespace mozilla::dom;
 
 StaticRefPtr<nsWindowMemoryReporter> sWindowReporter;
 
@@ -60,22 +61,18 @@ static nsresult AddNonJSSizeOfWindowAndItsDescendents(
 
   windowSizes.addToTabSizes(aSizes);
 
-  nsCOMPtr<nsIDOMWindowCollection> frames = aWindow->GetFrames();
+  nsDOMWindowList* frames = aWindow->GetFrames();
 
-  uint32_t length;
-  nsresult rv = frames->GetLength(&length);
-  NS_ENSURE_SUCCESS(rv, rv);
+  uint32_t length = frames->GetLength();
 
   // Measure this window's descendents.
   for (uint32_t i = 0; i < length; i++) {
-    nsCOMPtr<mozIDOMWindowProxy> child;
-    rv = frames->Item(i, getter_AddRefs(child));
-    NS_ENSURE_SUCCESS(rv, rv);
+    nsCOMPtr<nsPIDOMWindowOuter> child = frames->IndexedGetter(i);
     NS_ENSURE_STATE(child);
 
     nsGlobalWindowOuter* childWin = nsGlobalWindowOuter::Cast(child);
 
-    rv = AddNonJSSizeOfWindowAndItsDescendents(childWin, aSizes);
+    nsresult rv = AddNonJSSizeOfWindowAndItsDescendents(childWin, aSizes);
     NS_ENSURE_SUCCESS(rv, rv);
   }
   return NS_OK;
@@ -95,7 +92,8 @@ static nsresult NonJSSizeOfTab(nsPIDOMWindowOuter* aWindow, size_t* aDomSize,
   return NS_OK;
 }
 
-/* static */ void nsWindowMemoryReporter::Init() {
+/* static */
+void nsWindowMemoryReporter::Init() {
   MOZ_ASSERT(!sWindowReporter);
   sWindowReporter = new nsWindowMemoryReporter();
   ClearOnShutdown(&sWindowReporter);
@@ -115,14 +113,15 @@ static nsresult NonJSSizeOfTab(nsPIDOMWindowOuter* aWindow, size_t* aDomSize,
   RegisterGhostWindowsDistinguishedAmount(GhostWindowsDistinguishedAmount);
 }
 
-/* static */ nsWindowMemoryReporter* nsWindowMemoryReporter::Get() {
+/* static */
+nsWindowMemoryReporter* nsWindowMemoryReporter::Get() {
   return sWindowReporter;
 }
 
 static already_AddRefed<nsIURI> GetWindowURI(nsGlobalWindowInner* aWindow) {
   NS_ENSURE_TRUE(aWindow, nullptr);
 
-  nsCOMPtr<nsIDocument> doc = aWindow->GetExtantDoc();
+  nsCOMPtr<Document> doc = aWindow->GetExtantDoc();
   nsCOMPtr<nsIURI> uri;
 
   if (doc) {
@@ -219,7 +218,6 @@ static void ReportCount(const nsCString& aBasePath, const char* aPathTail,
 }
 
 static void CollectWindowReports(nsGlobalWindowInner* aWindow,
-                                 amIAddonManager* addonManager,
                                  nsWindowSizes* aWindowTotalSizes,
                                  nsTHashtable<nsUint64HashKey>* aGhostWindowIDs,
                                  WindowPaths* aWindowPaths,
@@ -242,17 +240,6 @@ static void CollectWindowReports(nsGlobalWindowInner* aWindow,
   }
   if (!location) {
     location = GetWindowURI(aWindow);
-  }
-
-  if (addonManager && location) {
-    bool ok;
-    nsAutoCString id;
-    if (NS_SUCCEEDED(addonManager->MapURIToAddonID(location, id, &ok)) && ok) {
-      // Add-on names are not privacy-sensitive, so we can use them with
-      // impunity.
-      windowPath +=
-          NS_LITERAL_CSTRING("add-ons/") + id + NS_LITERAL_CSTRING("/");
-    }
   }
 
   windowPath += NS_LITERAL_CSTRING("window-objects/");
@@ -334,53 +321,59 @@ static void CollectWindowReports(nsGlobalWindowInner* aWindow,
               mDOMPerformanceResourceEntries,
               "Memory used for performance resource entries.");
 
+  REPORT_SIZE("/dom/media-query-lists", mDOMMediaQueryLists,
+              "Memory used by MediaQueryList objects for the window's "
+              "document.");
+
   REPORT_SIZE("/dom/other", mDOMOtherSize,
               "Memory used by a window's DOM that isn't measured by the "
               "other 'dom/' numbers.");
 
   REPORT_SIZE("/layout/style-sheets", mLayoutStyleSheetsSize,
-              "Memory used by style sheets within a window.");
+              "Memory used by document style sheets within a window.");
+
+  REPORT_SIZE("/layout/shadow-dom/style-sheets",
+              mLayoutShadowDomStyleSheetsSize,
+              "Memory used by Shadow DOM style sheets within a window.");
+
+  // TODO(emilio): We might want to split this up between invalidation map /
+  // element-and-pseudos / revalidation too just like the style set.
+  REPORT_SIZE("/layout/shadow-dom/author-styles", mLayoutShadowDomAuthorStyles,
+              "Memory used by Shadow DOM computed rule data within a window.");
 
   REPORT_SIZE("/layout/pres-shell", mLayoutPresShellSize,
               "Memory used by layout's PresShell, along with any structures "
               "allocated in its arena and not measured elsewhere, "
               "within a window.");
 
-  REPORT_SIZE("/layout/gecko-style-sets", mLayoutGeckoStyleSets,
-              "Memory used by Gecko style sets within a window.");
+  REPORT_SIZE("/layout/style-sets/stylist/rule-tree",
+              mLayoutStyleSetsStylistRuleTree,
+              "Memory used by rule trees within style sets within a window.");
 
-  REPORT_SIZE("/layout/servo-style-sets/stylist/rule-tree",
-              mLayoutServoStyleSetsStylistRuleTree,
-              "Memory used by rule trees within Servo style sets within a "
-              "window.");
-
-  REPORT_SIZE("/layout/servo-style-sets/stylist/element-and-pseudos-maps",
-              mLayoutServoStyleSetsStylistElementAndPseudosMaps,
-              "Memory used by element and pseudos maps within Servo style "
+  REPORT_SIZE("/layout/style-sets/stylist/element-and-pseudos-maps",
+              mLayoutStyleSetsStylistElementAndPseudosMaps,
+              "Memory used by element and pseudos maps within style "
               "sets within a window.");
 
-  REPORT_SIZE("/layout/servo-style-sets/stylist/invalidation-map",
-              mLayoutServoStyleSetsStylistInvalidationMap,
-              "Memory used by invalidation maps within Servo style sets "
+  REPORT_SIZE("/layout/style-sets/stylist/invalidation-map",
+              mLayoutStyleSetsStylistInvalidationMap,
+              "Memory used by invalidation maps within style sets "
               "within a window.");
 
-  REPORT_SIZE("/layout/servo-style-sets/stylist/revalidation-selectors",
-              mLayoutServoStyleSetsStylistRevalidationSelectors,
-              "Memory used by selectors for cache revalidation within Servo "
+  REPORT_SIZE("/layout/style-sets/stylist/revalidation-selectors",
+              mLayoutStyleSetsStylistRevalidationSelectors,
+              "Memory used by selectors for cache revalidation within "
               "style sets within a window.");
 
-  REPORT_SIZE("/layout/servo-style-sets/stylist/other",
-              mLayoutServoStyleSetsStylistOther,
-              "Memory used by other Stylist data within Servo style sets "
+  REPORT_SIZE("/layout/style-sets/stylist/other", mLayoutStyleSetsStylistOther,
+              "Memory used by other Stylist data within style sets "
               "within a window.");
 
-  REPORT_SIZE("/layout/servo-style-sets/other", mLayoutServoStyleSetsOther,
-              "Memory used by other parts of Servo style sets within a "
-              "window.");
+  REPORT_SIZE("/layout/style-sets/other", mLayoutStyleSetsOther,
+              "Memory used by other parts of style sets within a window.");
 
-  REPORT_SIZE("/layout/servo-element-data-objects",
-              mLayoutServoElementDataObjects,
-              "Memory used for Servo ElementData objects, but not the things"
+  REPORT_SIZE("/layout/element-data-objects", mLayoutElementDataObjects,
+              "Memory used for ElementData objects, but not the things "
               "hanging off them.");
 
   REPORT_SIZE("/layout/text-runs", mLayoutTextRunsSize,
@@ -406,10 +399,6 @@ static void CollectWindowReports(nsGlobalWindowInner* aWindow,
   REPORT_SIZE("/layout/computed-values/visited", mLayoutComputedValuesVisited,
               "Memory used by ComputedValues objects used for visited styles.");
 
-  REPORT_SIZE("/layout/computed-values/stale", mLayoutComputedValuesStale,
-              "Memory used by ComputedValues and style structs it holds that "
-              "is no longer used but still alive.");
-
   REPORT_SIZE("/property-tables", mPropertyTablesSize,
               "Memory used for the property tables within a window.");
 
@@ -430,43 +419,14 @@ static void CollectWindowReports(nsGlobalWindowInner* aWindow,
   REPORT_SIZE("/layout/rule-nodes", mArenaSizes.mRuleNodes,
               "Memory used by CSS rule nodes within a window.");
 
-  REPORT_SIZE("/layout/style-contexts", mArenaSizes.mStyleContexts,
-              "Memory used by style contexts within a window.");
+  REPORT_SIZE("/layout/style-contexts", mArenaSizes.mComputedStyles,
+              "Memory used by ComputedStyles within a window.");
 
   // There are many different kinds of style structs, but it is likely that
   // only a few matter. Implement a cutoff so we don't bloat about:memory with
   // many uninteresting entries.
   const size_t STYLE_SUNDRIES_THRESHOLD =
       js::MemoryReportingSundriesThreshold();
-
-  // This is the Gecko style structs, which are in the nsPresArena.
-  size_t geckoStyleSundriesSize = 0;
-#define STYLE_STRUCT(name_, cb_)                                              \
-  {                                                                           \
-    size_t size =                                                             \
-        windowSizes.mArenaSizes.mGeckoStyleSizes.NS_STYLE_SIZES_FIELD(name_); \
-    if (size < STYLE_SUNDRIES_THRESHOLD) {                                    \
-      geckoStyleSundriesSize += size;                                         \
-    } else {                                                                  \
-      REPORT_SUM_SIZE("/layout/gecko-style-structs/" #name_, size,            \
-                      "Memory used by the " #name_                            \
-                      " Gecko style structs within a window.");               \
-    }                                                                         \
-    aWindowTotalSizes->mArenaSizes.mGeckoStyleSizes.NS_STYLE_SIZES_FIELD(     \
-        name_) += size;                                                       \
-  }
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
-#include "nsStyleStructList.h"
-#undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
-
-  if (geckoStyleSundriesSize > 0) {
-    REPORT_SUM_SIZE("/layout/gecko-style-structs/sundries",
-                    geckoStyleSundriesSize,
-                    "The sum of all memory used by Gecko style structs which "
-                    "were too small "
-                    "to be shown individually.");
-  }
 
   // There are many different kinds of frames, but it is very likely
   // that only a few matter.  Implement a cutoff so we don't bloat
@@ -499,29 +459,27 @@ static void CollectWindowReports(nsGlobalWindowInner* aWindow,
         "individually.");
   }
 
-  // This is the Servo style structs.
-  size_t servoStyleSundriesSize = 0;
-#define STYLE_STRUCT(name_, cb_)                                             \
-  {                                                                          \
-    size_t size = windowSizes.mServoStyleSizes.NS_STYLE_SIZES_FIELD(name_);  \
-    if (size < STYLE_SUNDRIES_THRESHOLD) {                                   \
-      servoStyleSundriesSize += size;                                        \
-    } else {                                                                 \
-      REPORT_SUM_SIZE("/layout/servo-style-structs/" #name_, size,           \
-                      "Memory used by the " #name_                           \
-                      " Servo style structs within a window.");              \
-    }                                                                        \
-    aWindowTotalSizes->mServoStyleSizes.NS_STYLE_SIZES_FIELD(name_) += size; \
+  // This is the style structs.
+  size_t styleSundriesSize = 0;
+#define STYLE_STRUCT(name_)                                             \
+  {                                                                     \
+    size_t size = windowSizes.mStyleSizes.NS_STYLE_SIZES_FIELD(name_);  \
+    if (size < STYLE_SUNDRIES_THRESHOLD) {                              \
+      styleSundriesSize += size;                                        \
+    } else {                                                            \
+      REPORT_SUM_SIZE("/layout/style-structs/" #name_, size,            \
+                      "Memory used by the " #name_                      \
+                      " style structs within a window.");               \
+    }                                                                   \
+    aWindowTotalSizes->mStyleSizes.NS_STYLE_SIZES_FIELD(name_) += size; \
   }
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
 #include "nsStyleStructList.h"
 #undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
 
-  if (servoStyleSundriesSize > 0) {
+  if (styleSundriesSize > 0) {
     REPORT_SUM_SIZE(
-        "/layout/servo-style-structs/sundries", servoStyleSundriesSize,
-        "The sum of all memory used by Servo style structs which were too "
+        "/layout/style-structs/sundries", styleSundriesSize,
+        "The sum of all memory used by style structs which were too "
         "small to be shown individually.");
   }
 
@@ -594,15 +552,10 @@ nsWindowMemoryReporter::CollectReports(nsIHandleReportCallback* aHandleReport,
   // Collect window memory usage.
   SizeOfState fakeState(nullptr);  // this won't be used
   nsWindowSizes windowTotalSizes(fakeState);
-  nsCOMPtr<amIAddonManager> addonManager;
-  if (XRE_IsParentProcess()) {
-    // Only try to access the service from the main process.
-    addonManager = do_GetService("@mozilla.org/addons/integration;1");
-  }
   for (uint32_t i = 0; i < windows.Length(); i++) {
-    CollectWindowReports(windows[i], addonManager, &windowTotalSizes,
-                         &ghostWindows, &windowPaths, &topWindowPaths,
-                         aHandleReport, aData, aAnonymize);
+    CollectWindowReports(windows[i], &windowTotalSizes, &ghostWindows,
+                         &windowPaths, &topWindowPaths, aHandleReport, aData,
+                         aAnonymize);
   }
 
   // Report JS memory usage.  We do this from here because the JS memory
@@ -653,23 +606,18 @@ nsWindowMemoryReporter::CollectReports(nsIHandleReportCallback* aHandleReport,
          windowTotalSizes.mLayoutPresShellSize,
          "This is the sum of all windows' 'layout/arenas' numbers.");
 
-  REPORT("window-objects/layout/gecko-style-sets",
-         windowTotalSizes.mLayoutGeckoStyleSets,
-         "This is the sum of all windows' 'layout/gecko-style-sets' numbers.");
+  REPORT("window-objects/layout/style-sets",
+         windowTotalSizes.mLayoutStyleSetsStylistRuleTree +
+             windowTotalSizes.mLayoutStyleSetsStylistElementAndPseudosMaps +
+             windowTotalSizes.mLayoutStyleSetsStylistInvalidationMap +
+             windowTotalSizes.mLayoutStyleSetsStylistRevalidationSelectors +
+             windowTotalSizes.mLayoutStyleSetsStylistOther +
+             windowTotalSizes.mLayoutStyleSetsOther,
+         "This is the sum of all windows' 'layout/style-sets/' numbers.");
 
-  REPORT(
-      "window-objects/layout/servo-style-sets",
-      windowTotalSizes.mLayoutServoStyleSetsStylistRuleTree +
-          windowTotalSizes.mLayoutServoStyleSetsStylistElementAndPseudosMaps +
-          windowTotalSizes.mLayoutServoStyleSetsStylistInvalidationMap +
-          windowTotalSizes.mLayoutServoStyleSetsStylistRevalidationSelectors +
-          windowTotalSizes.mLayoutServoStyleSetsStylistOther +
-          windowTotalSizes.mLayoutServoStyleSetsOther,
-      "This is the sum of all windows' 'layout/servo-style-sets/' numbers.");
-
-  REPORT("window-objects/layout/servo-element-data-objects",
-         windowTotalSizes.mLayoutServoElementDataObjects,
-         "This is the sum of all windows' 'layout/servo-element-data-objects' "
+  REPORT("window-objects/layout/element-data-objects",
+         windowTotalSizes.mLayoutElementDataObjects,
+         "This is the sum of all windows' 'layout/element-data-objects' "
          "numbers.");
 
   REPORT("window-objects/layout/text-runs",
@@ -702,22 +650,8 @@ nsWindowMemoryReporter::CollectReports(nsIHandleReportCallback* aHandleReport,
          "This is the sum of all windows' 'layout/rule-nodes' numbers.");
 
   REPORT("window-objects/layout/style-contexts",
-         windowTotalSizes.mArenaSizes.mStyleContexts,
+         windowTotalSizes.mArenaSizes.mComputedStyles,
          "This is the sum of all windows' 'layout/style-contexts' numbers.");
-
-  size_t geckoStyleTotal = 0;
-#define STYLE_STRUCT(name_, cb_)                                          \
-  geckoStyleTotal +=                                                      \
-      windowTotalSizes.mArenaSizes.mGeckoStyleSizes.NS_STYLE_SIZES_FIELD( \
-          name_);
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
-#include "nsStyleStructList.h"
-#undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
-
-  REPORT("window-objects/layout/gecko-style-structs", geckoStyleTotal,
-         "Memory used for style structs within windows. This is the sum of "
-         "all windows' 'layout/gecko-style-structs/' numbers.");
 
   size_t frameTotal = 0;
 #define FRAME_ID(classname, ...) \
@@ -731,18 +665,15 @@ nsWindowMemoryReporter::CollectReports(nsIHandleReportCallback* aHandleReport,
          "Memory used for layout frames within windows. "
          "This is the sum of all windows' 'layout/frames/' numbers.");
 
-  size_t servoStyleTotal = 0;
-#define STYLE_STRUCT(name_, cb_) \
-  servoStyleTotal +=             \
-      windowTotalSizes.mServoStyleSizes.NS_STYLE_SIZES_FIELD(name_);
-#define STYLE_STRUCT_LIST_IGNORE_VARIABLES
+  size_t styleTotal = 0;
+#define STYLE_STRUCT(name_) \
+  styleTotal += windowTotalSizes.mStyleSizes.NS_STYLE_SIZES_FIELD(name_);
 #include "nsStyleStructList.h"
 #undef STYLE_STRUCT
-#undef STYLE_STRUCT_LIST_IGNORE_VARIABLES
 
-  REPORT("window-objects/layout/servo-style-structs", servoStyleTotal,
+  REPORT("window-objects/layout/style-structs", styleTotal,
          "Memory used for style structs within windows. This is the sum of "
-         "all windows' 'layout/servo-style-structs/' numbers.");
+         "all windows' 'layout/style-structs/' numbers.");
 
 #undef REPORT
 
@@ -779,8 +710,7 @@ nsWindowMemoryReporter::Observe(nsISupports* aSubject, const char* aTopic,
 
 void nsWindowMemoryReporter::ObserveDOMWindowDetached(
     nsGlobalWindowInner* aWindow) {
-  nsWeakPtr weakWindow =
-      do_GetWeakReference(static_cast<nsIDOMEventTarget*>(aWindow));
+  nsWeakPtr weakWindow = do_GetWeakReference(aWindow);
   if (!weakWindow) {
     NS_WARNING("Couldn't take weak reference to a window?");
     return;
@@ -941,9 +871,13 @@ void nsWindowMemoryReporter::CheckForGhostWindows(
       }
     }
   }
+
+  Telemetry::ScalarSetMaximum(
+      Telemetry::ScalarID::MEMORYREPORTER_MAX_GHOST_WINDOWS, mGhostWindowCount);
 }
 
-/* static */ int64_t nsWindowMemoryReporter::GhostWindowsDistinguishedAmount() {
+/* static */
+int64_t nsWindowMemoryReporter::GhostWindowsDistinguishedAmount() {
   return sWindowReporter->mGhostWindowCount;
 }
 
@@ -955,7 +889,8 @@ void nsWindowMemoryReporter::KillCheckTimer() {
 }
 
 #ifdef DEBUG
-/* static */ void nsWindowMemoryReporter::UnlinkGhostWindows() {
+/* static */
+void nsWindowMemoryReporter::UnlinkGhostWindows() {
   if (!sWindowReporter) {
     return;
   }

@@ -7,23 +7,24 @@
 #ifndef __nsPlacesTables_h__
 #define __nsPlacesTables_h__
 
-#define CREATE_MOZ_PLACES                          \
-  NS_LITERAL_CSTRING(                              \
-      "CREATE TABLE moz_places ( "                 \
-      "  id INTEGER PRIMARY KEY"                   \
-      ", url LONGVARCHAR"                          \
-      ", title LONGVARCHAR"                        \
-      ", rev_host LONGVARCHAR"                     \
-      ", visit_count INTEGER DEFAULT 0"            \
-      ", hidden INTEGER DEFAULT 0 NOT NULL"        \
-      ", typed INTEGER DEFAULT 0 NOT NULL"         \
-      ", frecency INTEGER DEFAULT -1 NOT NULL"     \
-      ", last_visit_date INTEGER "                 \
-      ", guid TEXT"                                \
-      ", foreign_count INTEGER DEFAULT 0 NOT NULL" \
-      ", url_hash INTEGER DEFAULT 0 NOT NULL "     \
-      ", description TEXT"                         \
-      ", preview_image_url TEXT"                   \
+#define CREATE_MOZ_PLACES                              \
+  NS_LITERAL_CSTRING(                                  \
+      "CREATE TABLE moz_places ( "                     \
+      "  id INTEGER PRIMARY KEY"                       \
+      ", url LONGVARCHAR"                              \
+      ", title LONGVARCHAR"                            \
+      ", rev_host LONGVARCHAR"                         \
+      ", visit_count INTEGER DEFAULT 0"                \
+      ", hidden INTEGER DEFAULT 0 NOT NULL"            \
+      ", typed INTEGER DEFAULT 0 NOT NULL"             \
+      ", frecency INTEGER DEFAULT -1 NOT NULL"         \
+      ", last_visit_date INTEGER "                     \
+      ", guid TEXT"                                    \
+      ", foreign_count INTEGER DEFAULT 0 NOT NULL"     \
+      ", url_hash INTEGER DEFAULT 0 NOT NULL "         \
+      ", description TEXT"                             \
+      ", preview_image_url TEXT"                       \
+      ", origin_id INTEGER REFERENCES moz_origins(id)" \
       ")")
 
 #define CREATE_MOZ_HISTORYVISITS         \
@@ -46,6 +47,8 @@
       ", PRIMARY KEY (place_id, input)" \
       ")")
 
+// Note: flags, expiration, type, dateAdded and lastModified should be
+// considered deprecated but are kept to ease backwards compatibility.
 #define CREATE_MOZ_ANNOS                 \
   NS_LITERAL_CSTRING(                    \
       "CREATE TABLE moz_annos ("         \
@@ -144,14 +147,14 @@
       ", post_data TEXT"                       \
       ")")
 
-#define CREATE_MOZ_HOSTS                   \
-  NS_LITERAL_CSTRING(                      \
-      "CREATE TABLE moz_hosts ("           \
-      "  id INTEGER PRIMARY KEY"           \
-      ", host TEXT NOT NULL UNIQUE"        \
-      ", frecency INTEGER"                 \
-      ", typed INTEGER NOT NULL DEFAULT 0" \
-      ", prefix TEXT"                      \
+#define CREATE_MOZ_ORIGINS          \
+  NS_LITERAL_CSTRING(               \
+      "CREATE TABLE moz_origins ( " \
+      "id INTEGER PRIMARY KEY, "    \
+      "prefix TEXT NOT NULL, "      \
+      "host TEXT NOT NULL, "        \
+      "frecency INTEGER NOT NULL, " \
+      "UNIQUE (prefix, host) "      \
       ")")
 
 // Note: this should be kept up-to-date with the definition in
@@ -165,23 +168,47 @@
       ", PRIMARY KEY (url, userContextId)"     \
       ")")
 
-// This table is used, along with moz_places_afterdelete_trigger, to update
-// hosts after places removals. During a DELETE FROM moz_places, hosts are
-// accumulated into this table, then a DELETE FROM moz_updatehostsdelete_temp
-// will take care of updating the moz_hosts table for every modified host. See
-// CREATE_PLACES_AFTERDELETE_TRIGGER in nsPlacestriggers.h for details.
-#define CREATE_UPDATEHOSTSDELETE_TEMP                  \
-  NS_LITERAL_CSTRING(                                  \
-      "CREATE TEMP TABLE moz_updatehostsdelete_temp (" \
-      "  host TEXT PRIMARY KEY "                       \
+// This table is used, along with moz_places_afterinsert_trigger, to update
+// origins after places removals. During an INSERT into moz_places, origins are
+// accumulated in this table, then a DELETE FROM moz_updateoriginsinsert_temp
+// will take care of updating the moz_origins table for every new origin. See
+// CREATE_PLACES_AFTERINSERT_TRIGGER in nsPlacestriggers.h for details.
+#define CREATE_UPDATEORIGINSINSERT_TEMP                   \
+  NS_LITERAL_CSTRING(                                     \
+      "CREATE TEMP TABLE moz_updateoriginsinsert_temp ( " \
+      "place_id INTEGER PRIMARY KEY, "                    \
+      "prefix TEXT NOT NULL, "                            \
+      "host TEXT NOT NULL, "                              \
+      "frecency INTEGER NOT NULL "                        \
+      ") ")
+
+// This table is used in a similar way to moz_updateoriginsinsert_temp, but for
+// deletes, and triggered via moz_places_afterdelete_trigger.
+//
+// When rows are added to this table, moz_places.origin_id may be null.  That's
+// why this table uses prefix + host as its primary key, not origin_id.
+#define CREATE_UPDATEORIGINSDELETE_TEMP                   \
+  NS_LITERAL_CSTRING(                                     \
+      "CREATE TEMP TABLE moz_updateoriginsdelete_temp ( " \
+      "prefix TEXT NOT NULL, "                            \
+      "host TEXT NOT NULL, "                              \
+      "frecency_delta INTEGER NOT NULL, "                 \
+      "PRIMARY KEY (prefix, host) "                       \
       ") WITHOUT ROWID ")
 
-// This table is used in a similar way to moz_updatehostsdelete_temp, but for
-// inserts, and triggered via moz_places_afterinsert_trigger.
-#define CREATE_UPDATEHOSTSINSERT_TEMP                  \
-  NS_LITERAL_CSTRING(                                  \
-      "CREATE TEMP TABLE moz_updatehostsinsert_temp (" \
-      "  host TEXT PRIMARY KEY "                       \
+// This table is used in a similar way to moz_updateoriginsinsert_temp, but for
+// updates to places' frecencies, and triggered via
+// moz_places_afterupdate_frecency_trigger.
+//
+// When rows are added to this table, moz_places.origin_id may be null.  That's
+// why this table uses prefix + host as its primary key, not origin_id.
+#define CREATE_UPDATEORIGINSUPDATE_TEMP                   \
+  NS_LITERAL_CSTRING(                                     \
+      "CREATE TEMP TABLE moz_updateoriginsupdate_temp ( " \
+      "prefix TEXT NOT NULL, "                            \
+      "host TEXT NOT NULL, "                              \
+      "frecency_delta INTEGER NOT NULL, "                 \
+      "PRIMARY KEY (prefix, host) "                       \
       ") WITHOUT ROWID ")
 
 // This table would not be strictly needed for functionality since it's just
@@ -228,5 +255,21 @@
       "FOREIGN KEY (page_id) REFERENCES moz_pages_w_icons ON DELETE CASCADE, " \
       "FOREIGN KEY (icon_id) REFERENCES moz_icons ON DELETE CASCADE "          \
       ") WITHOUT ROWID ")
+
+// This table holds key-value metadata for Places and its consumers. Sync stores
+// the sync IDs for the bookmarks and history collections in this table, and the
+// last sync time for history.
+#define CREATE_MOZ_META         \
+  NS_LITERAL_CSTRING(           \
+      "CREATE TABLE moz_meta (" \
+      "key TEXT PRIMARY KEY, "  \
+      "value NOT NULL"          \
+      ") WITHOUT ROWID ")
+
+// Keys in the moz_meta table.
+#define MOZ_META_KEY_ORIGIN_FRECENCY_COUNT "origin_frecency_count"
+#define MOZ_META_KEY_ORIGIN_FRECENCY_SUM "origin_frecency_sum"
+#define MOZ_META_KEY_ORIGIN_FRECENCY_SUM_OF_SQUARES \
+  "origin_frecency_sum_of_squares"
 
 #endif  // __nsPlacesTables_h__

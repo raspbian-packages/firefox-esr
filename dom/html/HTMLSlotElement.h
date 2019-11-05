@@ -17,21 +17,19 @@ struct AssignedNodesOptions;
 
 class HTMLSlotElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLSlotElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLSlotElement, slot)
+  explicit HTMLSlotElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLSlotElement, slot)
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLSlotElement,
                                            nsGenericHTMLElement)
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
-  virtual void UnbindFromTree(bool aDeep = true,
-                              bool aNullParent = true) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
+  virtual void UnbindFromTree(bool aDeep, bool aNullParent) override;
 
   virtual nsresult BeforeSetAttr(int32_t aNameSpaceID, nsAtom* aName,
                                  const nsAttrValueOrString* aValue,
@@ -52,6 +50,9 @@ class HTMLSlotElement final : public nsGenericHTMLElement {
   void AssignedNodes(const AssignedNodesOptions& aOptions,
                      nsTArray<RefPtr<nsINode>>& aNodes);
 
+  void AssignedElements(const AssignedNodesOptions& aOptions,
+                        nsTArray<RefPtr<Element>>& aNodes);
+
   // Helper methods
   const nsTArray<RefPtr<nsINode>>& AssignedNodes() const;
   void InsertAssignedNode(uint32_t aIndex, nsINode* aNode);
@@ -59,15 +60,25 @@ class HTMLSlotElement final : public nsGenericHTMLElement {
   void RemoveAssignedNode(nsINode* aNode);
   void ClearAssignedNodes();
 
-  void EnqueueSlotChangeEvent() const;
+  void EnqueueSlotChangeEvent();
+  void RemovedFromSignalSlotList() {
+    MOZ_ASSERT(mInSignalSlotList);
+    mInSignalSlotList = false;
+  }
+
   void FireSlotChangeEvent();
 
  protected:
   virtual ~HTMLSlotElement();
-  virtual JSObject* WrapNode(JSContext* aCx,
-                             JS::Handle<JSObject*> aGivenProto) override;
+  JSObject* WrapNode(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) final;
 
   nsTArray<RefPtr<nsINode>> mAssignedNodes;
+
+  // Whether we're in the signal slot list of our unit of related similar-origin
+  // browsing contexts.
+  //
+  // https://dom.spec.whatwg.org/#signal-slot-list
+  bool mInSignalSlotList = false;
 };
 
 }  // namespace dom

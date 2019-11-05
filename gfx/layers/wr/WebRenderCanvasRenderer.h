@@ -12,11 +12,11 @@
 namespace mozilla {
 namespace layers {
 
-class WebRenderLayerManager;
+class RenderRootStateManager;
 
 class WebRenderCanvasRenderer : public ShareableCanvasRenderer {
  public:
-  explicit WebRenderCanvasRenderer(WebRenderLayerManager* aManager)
+  explicit WebRenderCanvasRenderer(RenderRootStateManager* aManager)
       : mManager(aManager) {}
 
   void Initialize(const CanvasInitializeData& aData) override;
@@ -24,34 +24,12 @@ class WebRenderCanvasRenderer : public ShareableCanvasRenderer {
   CompositableForwarder* GetForwarder() override;
 
  protected:
-  WebRenderLayerManager* mManager;
-};
-
-class WebRenderCanvasRendererSync : public WebRenderCanvasRenderer {
- public:
-  explicit WebRenderCanvasRendererSync(WebRenderLayerManager* aManager)
-      : WebRenderCanvasRenderer(aManager) {}
-  virtual ~WebRenderCanvasRendererSync();
-
-  WebRenderCanvasRendererSync* AsWebRenderCanvasRendererSync() override {
-    return this;
-  }
-
-  void Initialize(const CanvasInitializeData& aData) override;
-  bool CreateCompositable() override;
-
-  void ClearCachedResources() override;
-  void Destroy() override;
-
-  wr::MaybeExternalImageId GetExternalImageId() { return mExternalImageId; }
-
- protected:
-  wr::MaybeExternalImageId mExternalImageId;
+  RenderRootStateManager* mManager;
 };
 
 class WebRenderCanvasRendererAsync : public WebRenderCanvasRenderer {
  public:
-  explicit WebRenderCanvasRendererAsync(WebRenderLayerManager* aManager)
+  explicit WebRenderCanvasRendererAsync(RenderRootStateManager* aManager)
       : WebRenderCanvasRenderer(aManager) {}
   virtual ~WebRenderCanvasRendererAsync();
 
@@ -64,6 +42,8 @@ class WebRenderCanvasRendererAsync : public WebRenderCanvasRenderer {
 
   void ClearCachedResources() override;
   void Destroy() override;
+
+  void UpdateCompositableClientForEmptyTransaction();
 
   Maybe<wr::PipelineId> GetPipelineId() { return mPipelineId; }
 

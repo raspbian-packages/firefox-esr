@@ -206,12 +206,17 @@ bool NS_ColorNameToRGB(const nsAString& aColorName, nscolor* aResult) {
   return false;
 }
 
-// Returns kColorNames, an array of all possible color names, and sets
-// *aSizeArray to the size of that array. Do NOT call free() on this array.
-const char* const* NS_AllColorNames(size_t* aSizeArray) {
-  *aSizeArray = ArrayLength(kColorNames);
-  return kColorNames;
-}
+// Fast approximate division by 255. It has the property that
+// for all 0 <= n <= 255*255, FAST_DIVIDE_BY_255(n) == n/255.
+// But it only uses two adds and two shifts instead of an
+// integer division (which is expensive on many processors).
+//
+// equivalent to target=v/255
+#define FAST_DIVIDE_BY_255(target, v)        \
+  PR_BEGIN_MACRO                             \
+  unsigned tmp_ = v;                         \
+  target = ((tmp_ << 8) + tmp_ + 255) >> 16; \
+  PR_END_MACRO
 
 // Macro to blend two colors
 //
@@ -243,88 +248,6 @@ nscolor NS_ComposeColors(nscolor aBG, nscolor aFG) {
   MOZ_BLEND(b, NS_GET_B(aBG), NS_GET_B(aFG), blendAlpha);
 
   return NS_RGBA(r, g, b, a);
-}
-
-namespace mozilla {
-
-static uint32_t BlendColorComponent(uint32_t aBg, uint32_t aFg,
-                                    uint32_t aFgAlpha) {
-  return RoundingDivideBy255(aBg * (255 - aFgAlpha) + aFg * aFgAlpha);
-}
-
-nscolor LinearBlendColors(nscolor aBg, nscolor aFg, uint_fast8_t aFgRatio) {
-  // Common case that either pure background or pure foreground
-  if (aFgRatio == 0) {
-    return aBg;
-  }
-  if (aFgRatio == 255) {
-    return aFg;
-  }
-  // Common case that alpha channel is equal (usually both are opaque)
-  if (NS_GET_A(aBg) == NS_GET_A(aFg)) {
-    auto r = BlendColorComponent(NS_GET_R(aBg), NS_GET_R(aFg), aFgRatio);
-    auto g = BlendColorComponent(NS_GET_G(aBg), NS_GET_G(aFg), aFgRatio);
-    auto b = BlendColorComponent(NS_GET_B(aBg), NS_GET_B(aFg), aFgRatio);
-    return NS_RGBA(r, g, b, NS_GET_A(aFg));
-  }
-
-  constexpr float kFactor = 1.0f / 255.0f;
-
-  float p1 = kFactor * (255 - aFgRatio);
-  float a1 = kFactor * NS_GET_A(aBg);
-  float r1 = a1 * NS_GET_R(aBg);
-  float g1 = a1 * NS_GET_G(aBg);
-  float b1 = a1 * NS_GET_B(aBg);
-
-  float p2 = 1.0f - p1;
-  float a2 = kFactor * NS_GET_A(aFg);
-  float r2 = a2 * NS_GET_R(aFg);
-  float g2 = a2 * NS_GET_G(aFg);
-  float b2 = a2 * NS_GET_B(aFg);
-
-  float a = p1 * a1 + p2 * a2;
-  if (a == 0.0) {
-    return NS_RGBA(0, 0, 0, 0);
-  }
-
-  auto r = ClampColor((p1 * r1 + p2 * r2) / a);
-  auto g = ClampColor((p1 * g1 + p2 * g2) / a);
-  auto b = ClampColor((p1 * b1 + p2 * b2) / a);
-  return NS_RGBA(r, g, b, NSToIntRound(a * 255));
-}
-
-}  // namespace mozilla
-
-// Functions to convert from HSL color space to RGB color space.
-// This is the algorithm described in the CSS3 specification
-
-// helper
-static float HSL_HueToRGB(float m1, float m2, float h) {
-  if (h < 0.0f) h += 1.0f;
-  if (h > 1.0f) h -= 1.0f;
-  if (h < (float)(1.0 / 6.0)) return m1 + (m2 - m1) * h * 6.0f;
-  if (h < (float)(1.0 / 2.0)) return m2;
-  if (h < (float)(2.0 / 3.0))
-    return m1 + (m2 - m1) * ((float)(2.0 / 3.0) - h) * 6.0f;
-  return m1;
-}
-
-// The float parameters are all expected to be in the range 0-1
-nscolor NS_HSL2RGB(float h, float s, float l) {
-  uint8_t r, g, b;
-  float m1, m2;
-  if (l <= 0.5f) {
-    m2 = l * (s + 1);
-  } else {
-    m2 = l + s - l * s;
-  }
-  m1 = l * 2 - m2;
-  // We round, not floor, because that's how we handle
-  // percentage RGB values.
-  r = ClampColor(255 * HSL_HueToRGB(m1, m2, h + 1.0f / 3.0f));
-  g = ClampColor(255 * HSL_HueToRGB(m1, m2, h));
-  b = ClampColor(255 * HSL_HueToRGB(m1, m2, h - 1.0f / 3.0f));
-  return NS_RGB(r, g, b);
 }
 
 const char* NS_RGBToColorName(nscolor aColor) {

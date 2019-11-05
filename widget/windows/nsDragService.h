@@ -23,23 +23,25 @@ class nsDragService : public nsBaseDragService {
   virtual ~nsDragService();
 
   // nsBaseDragService
-  virtual nsresult InvokeDragSessionImpl(nsIArray* anArrayTransferables,
-                                         nsIScriptableRegion* aRegion,
-                                         uint32_t aActionType);
+  MOZ_CAN_RUN_SCRIPT virtual nsresult InvokeDragSessionImpl(
+      nsIArray* anArrayTransferables,
+      const mozilla::Maybe<mozilla::CSSIntRegion>& aRegion,
+      uint32_t aActionType);
 
   // nsIDragSession
   NS_IMETHOD GetData(nsITransferable* aTransferable, uint32_t anItem) override;
   NS_IMETHOD GetNumDropItems(uint32_t* aNumItems) override;
   NS_IMETHOD IsDataFlavorSupported(const char* aDataFlavor,
                                    bool* _retval) override;
-  NS_IMETHOD EndDragSession(bool aDoneDrag, uint32_t aKeyModifiers) override;
-  NS_IMETHOD UpdateDragImage(nsIDOMNode* aImage, int32_t aImageX,
+  MOZ_CAN_RUN_SCRIPT NS_IMETHOD EndDragSession(bool aDoneDrag,
+                                               uint32_t aKeyModifiers) override;
+  NS_IMETHOD UpdateDragImage(nsINode* aImage, int32_t aImageX,
                              int32_t aImageY) override;
 
   // native impl.
   NS_IMETHOD SetIDataObject(IDataObject* aDataObj);
-  NS_IMETHOD StartInvokingDragSession(IDataObject* aDataObj,
-                                      uint32_t aActionType);
+  MOZ_CAN_RUN_SCRIPT nsresult StartInvokingDragSession(IDataObject* aDataObj,
+                                                       uint32_t aActionType);
 
   // A drop occurred within the application vs. outside of it.
   void SetDroppedLocal();
@@ -54,7 +56,8 @@ class nsDragService : public nsBaseDragService {
   bool IsCollectionObject(IDataObject* inDataObj);
 
   // Create a bitmap for drag operations
-  bool CreateDragImage(nsIDOMNode* aDOMNode, nsIScriptableRegion* aRegion,
+  bool CreateDragImage(nsINode* aDOMNode,
+                       const mozilla::Maybe<mozilla::CSSIntRegion>& aRegion,
                        SHDRAGIMAGE* psdi);
 
   IDataObject* mDataObject;

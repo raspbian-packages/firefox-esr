@@ -17,6 +17,7 @@
 #include "nsIEventTarget.h"
 
 #include "m_cpp_utils.h"
+#include "mediapacket.h"
 
 namespace mozilla {
 
@@ -46,42 +47,42 @@ class TransportLayer : public sigslot::has_slots<> {
   nsresult Init();  // Called by Insert() to set up -- do not override
   virtual nsresult InitInternal() { return NS_OK; }  // Called by Init
 
-  // Called when inserted into a flow
-  virtual void Inserted(TransportFlow *flow, TransportLayer *downward);
+  void SetFlowId(const std::string& flow_id) { flow_id_ = flow_id; }
+
+  virtual void Chain(TransportLayer* downward);
 
   // Downward interface
-  TransportLayer *downward() { return downward_; }
+  TransportLayer* downward() { return downward_; }
 
   // Get the state
   State state() const { return state_; }
   // Must be implemented by derived classes
-  virtual TransportResult SendPacket(const unsigned char *data, size_t len) = 0;
+  virtual TransportResult SendPacket(MediaPacket& packet) = 0;
 
   // Get the thread.
   const nsCOMPtr<nsIEventTarget> GetThread() const { return target_; }
 
   // Event definitions that one can register for
   // State has changed
-  sigslot::signal2<TransportLayer *, State> SignalStateChange;
+  sigslot::signal2<TransportLayer*, State> SignalStateChange;
   // Data received on the flow
-  sigslot::signal3<TransportLayer *, const unsigned char *, size_t>
-      SignalPacketReceived;
+  sigslot::signal2<TransportLayer*, MediaPacket&> SignalPacketReceived;
 
   // Return the layer id for this layer
   virtual const std::string id() const = 0;
 
   // The id of the flow
-  const std::string &flow_id() const { return flow_id_; }
+  const std::string& flow_id() const { return flow_id_; }
 
  protected:
   virtual void WasInserted() {}
-  virtual void SetState(State state, const char *file, unsigned line);
+  virtual void SetState(State state, const char* file, unsigned line);
   // Check if we are on the right thread
   void CheckThread() const { MOZ_ASSERT(CheckThreadInt(), "Wrong thread"); }
 
   State state_;
   std::string flow_id_;
-  TransportLayer *downward_;  // The next layer in the stack
+  TransportLayer* downward_;  // The next layer in the stack
   nsCOMPtr<nsIEventTarget> target_;
 
  private:

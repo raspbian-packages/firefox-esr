@@ -25,23 +25,25 @@ class CallbackInterface : public CallbackObject {
  public:
   // See CallbackObject for an explanation of the arguments.
   explicit CallbackInterface(JSContext* aCx, JS::Handle<JSObject*> aCallback,
+                             JS::Handle<JSObject*> aCallbackGlobal,
                              nsIGlobalObject* aIncumbentGlobal)
-      : CallbackObject(aCx, aCallback, aIncumbentGlobal) {}
+      : CallbackObject(aCx, aCallback, aCallbackGlobal, aIncumbentGlobal) {}
 
   // See CallbackObject for an explanation of the arguments.
-  explicit CallbackInterface(JS::Handle<JSObject*> aCallback,
-                             JS::Handle<JSObject*> aAsyncStack,
+  explicit CallbackInterface(JSObject* aCallback, JSObject* aCallbackGlobal,
+                             JSObject* aAsyncStack,
                              nsIGlobalObject* aIncumbentGlobal)
-      : CallbackObject(aCallback, aAsyncStack, aIncumbentGlobal) {}
+      : CallbackObject(aCallback, aCallbackGlobal, aAsyncStack,
+                       aIncumbentGlobal) {}
 
  protected:
   bool GetCallableProperty(JSContext* cx, JS::Handle<jsid> aPropId,
                            JS::MutableHandle<JS::Value> aCallable);
 
   // See CallbackObject for an explanation of the arguments.
-  CallbackInterface(JS::Handle<JSObject*> aCallable,
+  CallbackInterface(JSObject* aCallback, JSObject* aCallbackGlobal,
                     const FastCallbackConstructor&)
-      : CallbackObject(aCallable, FastCallbackConstructor()) {}
+      : CallbackObject(aCallback, aCallbackGlobal, FastCallbackConstructor()) {}
 };
 
 }  // namespace dom

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,8 +9,8 @@
 #include "gfxPlatform.h"
 #include "gfx2DGlue.h"
 #ifdef MOZ_X11
-#include "cairo.h"
-#include "gfxXlibSurface.h"
+#  include "cairo.h"
+#  include "gfxXlibSurface.h"
 #endif
 #include "mozilla/gfx/Logging.h"
 
@@ -98,6 +98,9 @@ already_AddRefed<gfxSurfaceDrawable> gfxCallbackDrawable::MakeSurfaceDrawable(
     gfxContext* aContext, const SamplingFilter aSamplingFilter) {
   SurfaceFormat format = gfxPlatform::GetPlatform()->Optimal2DFormatForContent(
       gfxContentType::COLOR_ALPHA);
+  if (!aContext->GetDrawTarget()->CanCreateSimilarDrawTarget(mSize, format)) {
+    return nullptr;
+  }
   RefPtr<DrawTarget> dt =
       aContext->GetDrawTarget()->CreateSimilarDrawTarget(mSize, format);
 
@@ -161,7 +164,7 @@ class DrawingCallbackFromDrawable : public gfxDrawingCallback {
     NS_ASSERTION(aDrawable, "aDrawable is null!");
   }
 
-  ~DrawingCallbackFromDrawable() override = default;
+  virtual ~DrawingCallbackFromDrawable() = default;
 
   bool operator()(gfxContext* aContext, const gfxRect& aFillRect,
                   const SamplingFilter aSamplingFilter,

@@ -30,7 +30,7 @@ GridTracks::~GridTracks() {}
 
 JSObject* GridTracks::WrapObject(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return GridTracksBinding::Wrap(aCx, this, aGivenProto);
+  return GridTracks_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 uint32_t GridTracks::Length() const { return mTracks.Length(); }

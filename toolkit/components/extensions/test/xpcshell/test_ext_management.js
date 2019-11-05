@@ -2,8 +2,7 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-ChromeUtils.defineModuleGetter(this, "AddonManager",
-                               "resource://gre/modules/AddonManager.jsm");
+AddonTestUtils.init(this);
 
 add_task(async function setup() {
   await ExtensionTestUtils.startAddonManager();
@@ -34,7 +33,11 @@ add_task(async function test_management_getAll() {
     });
 
     let addons = await browser.management.getAll();
-    browser.test.assertEq(addons.length, 2, "management.getAll returned two extensions.");
+    browser.test.assertEq(
+      2,
+      addons.length,
+      "management.getAll returned correct number of add-ons."
+    );
     browser.test.sendMessage("addons", addons);
   }
 
@@ -54,8 +57,14 @@ add_task(async function test_management_getAll() {
 
   let addons = await extension2.awaitMessage("addons");
   for (let id of [id1, id2]) {
-    let addon = addons.find(a => { return a.id === id; });
-    equal(addon.name, id, `The extension with id ${id} was returned by getAll.`);
+    let addon = addons.find(a => {
+      return a.id === id;
+    });
+    equal(
+      addon.name,
+      id,
+      `The extension with id ${id} was returned by getAll.`
+    );
     equal(addon.shortName, id, "Additional extension metadata was correct");
   }
 

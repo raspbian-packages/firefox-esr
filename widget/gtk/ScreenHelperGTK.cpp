@@ -7,10 +7,10 @@
 #include "ScreenHelperGTK.h"
 
 #ifdef MOZ_X11
-#include <gdk/gdkx.h>
+#  include <gdk/gdkx.h>
 #endif /* MOZ_X11 */
 #ifdef MOZ_WAYLAND
-#include <gdk/gdkwayland.h>
+#  include <gdk/gdkwayland.h>
 #endif /* MOZ_WAYLAND */
 #include <dlfcn.h>
 #include <gtk/gtk.h>
@@ -84,8 +84,8 @@ ScreenHelperGTK::ScreenHelperGTK()
 #ifdef MOZ_X11
   gdk_window_add_filter(mRootWindow, root_window_event_filter, this);
   if (GDK_IS_X11_DISPLAY(gdk_display_get_default())) {
-    mNetWorkareaAtom =
-        XInternAtom(GDK_WINDOW_XDISPLAY(mRootWindow), "_NET_WORKAREA", False);
+    mNetWorkareaAtom = XInternAtom(GDK_WINDOW_XDISPLAY(mRootWindow),
+                                   "_NET_WORKAREA", X11False);
   }
 #endif
   RefreshScreens();
@@ -103,7 +103,6 @@ ScreenHelperGTK::~ScreenHelperGTK() {
 }
 
 gint ScreenHelperGTK::GetGTKMonitorScaleFactor(gint aMonitorNum) {
-#if (MOZ_WIDGET_GTK >= 3)
   // Since GDK 3.10
   static auto sGdkScreenGetMonitorScaleFactorPtr =
       (gint(*)(GdkScreen*, gint))dlsym(RTLD_DEFAULT,
@@ -112,7 +111,6 @@ gint ScreenHelperGTK::GetGTKMonitorScaleFactor(gint aMonitorNum) {
     GdkScreen* screen = gdk_screen_get_default();
     return sGdkScreenGetMonitorScaleFactorPtr(screen, aMonitorNum);
   }
-#endif
   return 1;
 }
 
@@ -144,7 +142,7 @@ static already_AddRefed<Screen> MakeScreen(GdkScreen* aScreen,
   DesktopToLayoutDeviceScale contentsScale(1.0);
 #ifdef MOZ_WAYLAND
   GdkDisplay* gdkDisplay = gdk_display_get_default();
-  if (GDK_IS_WAYLAND_DISPLAY(gdkDisplay)) {
+  if (!GDK_IS_X11_DISPLAY(gdkDisplay)) {
     contentsScale.scale = gdkScaleFactor;
   }
 #endif
@@ -181,7 +179,7 @@ void ScreenHelperGTK::RefreshScreens() {
   }
 
   ScreenManager& screenManager = ScreenManager::GetSingleton();
-  screenManager.Refresh(Move(screenList));
+  screenManager.Refresh(std::move(screenList));
 }
 
 }  // namespace widget

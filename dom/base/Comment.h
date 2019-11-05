@@ -8,13 +8,12 @@
 #define mozilla_dom_Comment_h
 
 #include "mozilla/Attributes.h"
-#include "nsIDOMComment.h"
-#include "nsGenericDOMDataNode.h"
+#include "mozilla/dom/CharacterData.h"
 
 namespace mozilla {
 namespace dom {
 
-class Comment final : public nsGenericDOMDataNode, public nsIDOMComment {
+class Comment final : public CharacterData {
  private:
   void Init() {
     MOZ_ASSERT(mNodeInfo->NodeType() == COMMENT_NODE,
@@ -25,33 +24,23 @@ class Comment final : public nsGenericDOMDataNode, public nsIDOMComment {
 
  public:
   explicit Comment(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
-      : nsGenericDOMDataNode(aNodeInfo) {
+      : CharacterData(std::move(aNodeInfo)) {
     Init();
   }
 
   explicit Comment(nsNodeInfoManager* aNodeInfoManager)
-      : nsGenericDOMDataNode(aNodeInfoManager->GetCommentNodeInfo()) {
+      : CharacterData(aNodeInfoManager->GetCommentNodeInfo()) {
     Init();
   }
 
+  NS_IMPL_FROMNODE_HELPER(Comment, IsComment())
+
   // nsISupports
-  NS_DECL_ISUPPORTS_INHERITED
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(Comment, CharacterData)
 
-  // nsIDOMCharacterData
-  NS_FORWARD_NSIDOMCHARACTERDATA(nsGenericDOMDataNode::)
-  using nsGenericDOMDataNode::SetData;  // Prevent hiding overloaded virtual
-                                        // function.
+  virtual already_AddRefed<CharacterData> CloneDataNode(
+      mozilla::dom::NodeInfo* aNodeInfo, bool aCloneText) const override;
 
-  // nsIDOMComment
-  // Empty interface
-
-  // nsINode
-  virtual bool IsNodeOfType(uint32_t aFlags) const override;
-
-  virtual nsGenericDOMDataNode* CloneDataNode(mozilla::dom::NodeInfo* aNodeInfo,
-                                              bool aCloneText) const override;
-
-  virtual nsIDOMNode* AsDOMNode() override { return this; }
 #ifdef DEBUG
   virtual void List(FILE* out, int32_t aIndent) const override;
   virtual void DumpContent(FILE* out = stdout, int32_t aIndent = 0,

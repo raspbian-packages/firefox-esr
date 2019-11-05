@@ -8,8 +8,6 @@ const { Component } = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 
-const { div } = dom;
-
 class RequestListColumnMethod extends Component {
   static get propTypes() {
     return {
@@ -22,8 +20,11 @@ class RequestListColumnMethod extends Component {
   }
 
   render() {
-    let { method } = this.props.item;
-    return div({ className: "requests-list-column requests-list-method" }, method);
+    const { method } = this.props.item;
+    return dom.td(
+      { className: "requests-list-column requests-list-method" },
+      method
+    );
   }
 }
 

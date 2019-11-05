@@ -261,7 +261,7 @@
 <!ENTITY viewFeedWebPage.accesskey "W">
 <!ENTITY viewFeedSummary.label "Özet">
 <!ENTITY viewFeedSummary.accesskey "z">
-<!ENTITY viewFeedSummaryFeedPropsPref.label "Öntanımlı biçim">
+<!ENTITY viewFeedSummaryFeedPropsPref.label "Varsayılan biçim">
 <!ENTITY viewFeedSummaryFeedPropsPref.accesskey "b">
 
 <!ENTITY viewAttachmentsInlineCmd.label "Ekleri gövde içinde göster">
@@ -440,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "İletiyi aç">
 <!ENTITY openMessageWindowCmd.accesskey "t">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Dizi görünümünde aç">
-<!ENTITY openConversationCmd.accesskey "D">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Dizi görünümünde aç">
+<!ENTITY openInConversationCmd.accesskey "D">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Ekler">
 <!ENTITY openAttachmentListCmd.accesskey "k">
 <!ENTITY openFeedMessage1.label "Besleme iletilerini açarken">
@@ -606,6 +606,8 @@
 <!ENTITY compactButton.tooltip "Seçilen dizinden silinmiş iletileri kaldır">
 <!ENTITY appmenuButton1.tooltip "&brandShortName; menüsünü göster">
 
+<!ENTITY addonsButton.tooltip "Eklentinizi yönetin">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Satır içi olarak ilet">
 <!ENTITY buttonMenuForwardAsAttachment.label "Ek olarak ilet">
@@ -761,7 +763,7 @@
 <!ENTITY contextOpenNewTab.accesskey "ç">
 <!ENTITY contextOpenConversation.label "İletiyi dizi görünümünde aç">
 <!ENTITY contextOpenConversation.accesskey "d">
-<!ENTITY contextOpenContainingFolder.label "İçeren dizindeki iletiyi aç">
+<!ENTITY contextOpenContainingFolder.label "İletiyi dizin içinde aç">
 <!ENTITY contextOpenContainingFolder.accesskey "a">
 <!ENTITY contextEditMsgAsNew.label "Yeni ileti olarak düzenle">
 <!ENTITY contextEditMsgAsNew.accesskey "o">
@@ -792,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "T">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Son kullanılan">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "k">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Sık kullanılanlar">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "S">
 <!ENTITY contextCopyMsgMenu.label "Buraya kopyala">
 <!ENTITY contextCopyMsgMenu.accesskey "B">
 <!ENTITY contextKillThreadMenu.label "Diziyi göz ardı et">
@@ -811,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Yazdırma ön izleme">
 <!ENTITY contextPrintPreview.accesskey "z">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Sütunları varsayılana sıfırla">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -856,7 +854,6 @@
      "File here" option for the move to/copy to widget.
   -->
 <!ENTITY columnPicker.thisFolder.label "Bu dizin">
-
 
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Yürüt">
@@ -953,7 +950,7 @@
 <!-- Mac OS X Window Menu -->
 <!ENTITY minimizeWindow.label "Küçült">
 <!ENTITY minimizeWindow.key "m">
-<!ENTITY bringAllToFront.label "Hepsini ön plana al">
+<!ENTITY bringAllToFront.label "Tümünü öne getir">
 <!ENTITY zoomWindow.label "Yakınlaştırma">
 
 <!-- Mac OS X Application Menu (Cocoa widgets) -->

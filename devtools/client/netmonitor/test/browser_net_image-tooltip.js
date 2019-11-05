@@ -10,65 +10,82 @@ const IMAGE_TOOLTIP_REQUESTS = 1;
  * Tests if image responses show a popup in the requests menu when hovered.
  */
 add_task(async function test() {
-  let { tab, monitor } = await initNetMonitor(IMAGE_TOOLTIP_URL);
+  const { tab, monitor } = await initNetMonitor(IMAGE_TOOLTIP_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire, connector } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let { triggerActivity } = connector;
-  let { ACTIVITY_TYPE } = windowRequire("devtools/client/netmonitor/src/constants");
-  let toolboxDoc = monitor.panelWin.parent.document;
+  const { document, store, windowRequire, connector } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { triggerActivity } = connector;
+  const { ACTIVITY_TYPE } = windowRequire(
+    "devtools/client/netmonitor/src/constants"
+  );
+  const toolboxDoc = monitor.panelWin.parent.document;
 
   store.dispatch(Actions.batchEnable(false));
 
-  let onEvents = waitForNetworkEvents(monitor, IMAGE_TOOLTIP_REQUESTS);
-  await performRequests();
-  await onEvents;
+  // Execute requests.
+  await performRequests(monitor, tab, IMAGE_TOOLTIP_REQUESTS);
 
   info("Checking the image thumbnail after a few requests were made...");
-  await showTooltipAndVerify(document.querySelectorAll(".request-list-item")[0]);
+  await showTooltipAndVerify(
+    document.querySelectorAll(".request-list-item")[0]
+  );
 
   // Hide tooltip before next test, to avoid the situation that tooltip covers
   // the icon for the request of the next test.
   info("Checking the image thumbnail gets hidden...");
-  await hideTooltipAndVerify(document.querySelectorAll(".request-list-item")[0]);
+  await hideTooltipAndVerify(
+    document.querySelectorAll(".request-list-item")[0]
+  );
 
   // +1 extra document reload
-  onEvents = waitForNetworkEvents(monitor, IMAGE_TOOLTIP_REQUESTS + 1);
+  const onEvents = waitForNetworkEvents(monitor, IMAGE_TOOLTIP_REQUESTS + 1);
 
   info("Reloading the debuggee and performing all requests again...");
   await triggerActivity(ACTIVITY_TYPE.RELOAD.WITH_CACHE_ENABLED);
-  await performRequests();
+  await ContentTask.spawn(tab.linkedBrowser, {}, async function() {
+    content.wrappedJSObject.performRequests();
+  });
   await onEvents;
 
   info("Checking the image thumbnail after a reload.");
-  await showTooltipAndVerify(document.querySelectorAll(".request-list-item")[1]);
+  await showTooltipAndVerify(
+    document.querySelectorAll(".request-list-item")[1]
+  );
 
-  info("Checking if the image thumbnail is hidden when mouse leaves the menu widget");
-  let requestsListContents = document.querySelector(".requests-list-contents");
-  EventUtils.synthesizeMouse(requestsListContents, 0, 0, { type: "mousemove" },
-                             monitor.panelWin);
-  await waitUntil(() => !toolboxDoc.querySelector(".tooltip-container.tooltip-visible"));
+  info(
+    "Checking if the image thumbnail is hidden when mouse leaves the menu widget"
+  );
+  const requestsListContents = document.querySelector(
+    ".requests-list-row-group"
+  );
+  EventUtils.synthesizeMouse(
+    requestsListContents,
+    0,
+    0,
+    { type: "mousemove" },
+    monitor.panelWin
+  );
+  await waitUntil(
+    () => !toolboxDoc.querySelector(".tooltip-container.tooltip-visible")
+  );
 
   await teardown(monitor);
-
-  function performRequests() {
-    return ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-      content.wrappedJSObject.performRequests();
-    });
-  }
 
   /**
    * Show a tooltip on the {target} and verify that it was displayed
    * with the expected content.
    */
   async function showTooltipAndVerify(target) {
-    let anchor = target.querySelector(".requests-list-file");
+    const anchor = target.querySelector(".requests-list-file");
     await showTooltipOn(anchor);
 
     info("Tooltip was successfully opened for the image request.");
-    is(toolboxDoc.querySelector(".tooltip-panel img").src, TEST_IMAGE_DATA_URI,
-      "The tooltip's image content is displayed correctly.");
+    is(
+      toolboxDoc.querySelector(".tooltip-panel img").src,
+      TEST_IMAGE_DATA_URI,
+      "The tooltip's image content is displayed correctly."
+    );
   }
 
   /**
@@ -76,7 +93,7 @@ add_task(async function test() {
    * @return a promise that resolves when the tooltip is shown
    */
   async function showTooltipOn(element) {
-    let win = element.ownerDocument.defaultView;
+    const win = element.ownerDocument.defaultView;
     EventUtils.synthesizeMouseAtCenter(element, { type: "mousemove" }, win);
     await waitUntil(() => toolboxDoc.querySelector(".tooltip-panel img"));
   }
@@ -86,12 +103,13 @@ add_task(async function test() {
    */
   async function hideTooltipAndVerify(target) {
     // Hovering over the "method" column hides the tooltip.
-    let anchor = target.querySelector(".requests-list-method");
-    let win = anchor.ownerDocument.defaultView;
+    const anchor = target.querySelector(".requests-list-method");
+    const win = anchor.ownerDocument.defaultView;
     EventUtils.synthesizeMouseAtCenter(anchor, { type: "mousemove" }, win);
 
     await waitUntil(
-      () => !toolboxDoc.querySelector(".tooltip-container.tooltip-visible"));
+      () => !toolboxDoc.querySelector(".tooltip-container.tooltip-visible")
+    );
     info("Tooltip was successfully closed.");
   }
 });

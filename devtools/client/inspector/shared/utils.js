@@ -6,11 +6,26 @@
 
 "use strict";
 
-const {parseDeclarations} = require("devtools/shared/css/parsing-utils");
 const promise = require("promise");
-const {getCSSLexer} = require("devtools/shared/css/lexer");
-const {KeyCodes} = require("devtools/client/shared/keycodes");
-const {throttle} = require("devtools/shared/throttle");
+
+loader.lazyRequireGetter(
+  this,
+  "KeyCodes",
+  "devtools/client/shared/keycodes",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "getCSSLexer",
+  "devtools/shared/css/lexer",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "parseDeclarations",
+  "devtools/shared/css/parsing-utils",
+  true
+);
 
 const HTML_NS = "http://www.w3.org/1999/xhtml";
 
@@ -40,9 +55,9 @@ function advanceValidate(keyCode, value, insertionPoint) {
   // value.  Otherwise it's been inserted in some spot where it has a
   // valid meaning, like a comment or string.
   value = value.slice(0, insertionPoint) + ";" + value.slice(insertionPoint);
-  let lexer = getCSSLexer(value);
+  const lexer = getCSSLexer(value);
   while (true) {
-    let token = lexer.nextToken();
+    const token = lexer.nextToken();
     if (token.endOffset > insertionPoint) {
       if (token.tokenType === "symbol" && token.text === ";") {
         // The ";" is a terminator.
@@ -72,9 +87,9 @@ function appendText(parent, text) {
  * multiple CSS properties as the value.
  */
 function blurOnMultipleProperties(cssProperties) {
-  return (e) => {
+  return e => {
     setTimeout(() => {
-      let props = parseDeclarations(cssProperties.isKnown, e.target.value);
+      const props = parseDeclarations(cssProperties.isKnown, e.target.value);
       if (props.length > 1) {
         e.target.blur();
       }
@@ -93,8 +108,8 @@ function blurOnMultipleProperties(cssProperties) {
  *        A set of attributes to set on the node.
  */
 function createChild(parent, tagName, attributes = {}) {
-  let elt = parent.ownerDocument.createElementNS(HTML_NS, tagName);
-  for (let attr in attributes) {
+  const elt = parent.ownerDocument.createElementNS(HTML_NS, tagName);
+  for (const attr in attributes) {
     if (attributes.hasOwnProperty(attr)) {
       if (attr === "textContent") {
         elt.textContent = attributes[attr];
@@ -107,6 +122,66 @@ function createChild(parent, tagName, attributes = {}) {
   }
   parent.appendChild(elt);
   return elt;
+}
+
+/**
+ * Retrieve the content of a longString (via a promise resolving a LongStringActor).
+ *
+ * @param  {Promise} longStringActorPromise
+ *         promise expected to resolve a LongStringActor instance
+ * @return {Promise} promise resolving with the retrieved string as argument
+ */
+function getLongString(longStringActorPromise) {
+  return longStringActorPromise
+    .then(longStringActor => {
+      return longStringActor.string().then(string => {
+        longStringActor.release().catch(console.error);
+        return string;
+      });
+    })
+    .catch(console.error);
+}
+
+/**
+ * Returns a selector of the Element Rep from the grip. This is based on the
+ * getElements() function in our devtools-reps component for a ElementNode.
+ *
+ * @param  {Object} grip
+ *         Grip-like object that can be used with Reps.
+ * @return {String} selector of the element node.
+ */
+function getSelectorFromGrip(grip) {
+  const {
+    attributes,
+    nodeName,
+    isAfterPseudoElement,
+    isBeforePseudoElement,
+    isMarkerPseudoElement,
+  } = grip.preview;
+
+  if (isAfterPseudoElement) {
+    return "::after";
+  } else if (isBeforePseudoElement) {
+    return "::before";
+  } else if (isMarkerPseudoElement) {
+    return "::marker";
+  }
+
+  let selector = nodeName;
+
+  if (attributes.id) {
+    selector += `#${attributes.id}`;
+  }
+
+  if (attributes.class) {
+    selector += attributes.class
+      .trim()
+      .split(/\s+/)
+      .map(cls => `.${cls}`)
+      .join("");
+  }
+
+  return selector;
 }
 
 /**
@@ -123,7 +198,7 @@ function promiseWarn(error) {
 }
 
 /**
- * While waiting for a reps fix in https://github.com/devtools-html/reps/issues/92,
+ * While waiting for a reps fix in https://github.com/firefox-devtools/reps/issues/92,
  * translate nodeFront to a grip-like object that can be used with an ElementNode rep.
  *
  * @params  {NodeFront} nodeFront
@@ -135,8 +210,8 @@ function translateNodeFrontToGrip(nodeFront) {
 
   // The main difference between NodeFront and grips is that attributes are treated as
   // a map in grips and as an array in NodeFronts.
-  let attributesMap = {};
-  for (let {name, value} of attributes) {
+  const attributesMap = {};
+  for (const { name, value } of attributes) {
     attributesMap[name] = value;
   }
 
@@ -145,12 +220,15 @@ function translateNodeFrontToGrip(nodeFront) {
     preview: {
       attributes: attributesMap,
       attributesLength: attributes.length,
+      isAfterPseudoElement: nodeFront.isAfterPseudoElement,
+      isBeforePseudoElement: nodeFront.isBeforePseudoElement,
+      isMarkerPseudoElement: nodeFront.isMarkerPseudoElement,
       // All the grid containers are assumed to be in the DOM tree.
       isConnected: true,
       // nodeName is already lowerCased in Node grips
       nodeName: nodeFront.nodeName.toLowerCase(),
       nodeType: nodeFront.nodeType,
-    }
+    },
   };
 }
 
@@ -158,6 +236,7 @@ exports.advanceValidate = advanceValidate;
 exports.appendText = appendText;
 exports.blurOnMultipleProperties = blurOnMultipleProperties;
 exports.createChild = createChild;
+exports.getLongString = getLongString;
+exports.getSelectorFromGrip = getSelectorFromGrip;
 exports.promiseWarn = promiseWarn;
-exports.throttle = throttle;
 exports.translateNodeFrontToGrip = translateNodeFrontToGrip;

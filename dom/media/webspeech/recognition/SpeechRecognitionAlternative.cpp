@@ -25,11 +25,11 @@ SpeechRecognitionAlternative::SpeechRecognitionAlternative(
     SpeechRecognition* aParent)
     : mConfidence(0), mParent(aParent) {}
 
-SpeechRecognitionAlternative::~SpeechRecognitionAlternative() {}
+SpeechRecognitionAlternative::~SpeechRecognitionAlternative() = default;
 
 JSObject* SpeechRecognitionAlternative::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return SpeechRecognitionAlternativeBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechRecognitionAlternative_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* SpeechRecognitionAlternative::GetParentObject() const {

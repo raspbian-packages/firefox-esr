@@ -37,7 +37,7 @@ public class testInputConnection extends JavascriptBridgeTest {
         mActions.setPref("dom.select_events.enabled", true, /* flush */ false);
         mActions.setPref("dom.select_events.textcontrols.enabled", true, /* flush */ false);
         // Enable dummy key synthesis.
-        mActions.setPref("intl.ime.hack.on_ime_unaware_apps.fire_key_events_for_composition",
+        mActions.setPref("intl.ime.hack.on_any_apps.fire_key_events_for_composition",
                          true, /* flush */ false);
 
         final String url = mStringHelper.ROBOCOP_INPUT_URL;
@@ -104,6 +104,14 @@ public class testInputConnection extends JavascriptBridgeTest {
 
         BasicInputConnectionTest(final String type) {
             mType = type;
+        }
+
+        private void pressKey(final InputConnection ic, int keycode) {
+            final long time = SystemClock.uptimeMillis();
+            final KeyEvent key = new KeyEvent(time, time, KeyEvent.ACTION_DOWN, keycode, 0);
+
+            ic.sendKeyEvent(key);
+            ic.sendKeyEvent(KeyEvent.changeAction(key, KeyEvent.ACTION_UP));
         }
 
         @Override
@@ -178,14 +186,23 @@ public class testInputConnection extends JavascriptBridgeTest {
             ic.finishComposingText();
             assertTextAndSelectionAt("Can finish composition", ic, "frabar", 6);
 
+            ic.deleteSurroundingText(6, 0);
+            assertTextAndSelectionAt("Can clear text", ic, "", 0);
+
             // Test sendKeyEvent
+            pressKey(ic, KeyEvent.KEYCODE_F);
+            pressKey(ic, KeyEvent.KEYCODE_R);
+            pressKey(ic, KeyEvent.KEYCODE_A);
+            pressKey(ic, KeyEvent.KEYCODE_B);
+            pressKey(ic, KeyEvent.KEYCODE_A);
+            pressKey(ic, KeyEvent.KEYCODE_R);
+            assertTextAndSelectionAt("Can input text by keyboard", ic, "frabar", 6);
+
             final long time = SystemClock.uptimeMillis();
             final KeyEvent shiftKey = new KeyEvent(time, time, KeyEvent.ACTION_DOWN,
                                                    KeyEvent.KEYCODE_SHIFT_LEFT, 0);
             final KeyEvent leftKey = new KeyEvent(time, time, KeyEvent.ACTION_DOWN,
                                                   KeyEvent.KEYCODE_DPAD_LEFT, 0);
-            final KeyEvent tKey = new KeyEvent(time, time, KeyEvent.ACTION_DOWN,
-                                               KeyEvent.KEYCODE_T, 0);
 
             ic.sendKeyEvent(shiftKey);
             ic.sendKeyEvent(leftKey);
@@ -193,8 +210,7 @@ public class testInputConnection extends JavascriptBridgeTest {
             ic.sendKeyEvent(KeyEvent.changeAction(shiftKey, KeyEvent.ACTION_UP));
             assertTextAndSelection("Can select using key event", ic, "frabar", 6, 5);
 
-            ic.sendKeyEvent(tKey);
-            ic.sendKeyEvent(KeyEvent.changeAction(tKey, KeyEvent.ACTION_UP));
+            pressKey(ic, KeyEvent.KEYCODE_T);
             assertTextAndSelectionAt("Can type using event", ic, "frabat", 6);
 
             ic.deleteSurroundingText(6, 0);
@@ -212,18 +228,11 @@ public class testInputConnection extends JavascriptBridgeTest {
             assertTextAndSelectionAt("Can commit non-key string", ic, "foof", 4);
 
             getJS().syncCall("end_key_log");
-            if (mType.equals("designMode")) {
-                // designMode doesn't support dummy key synthesis.
-                fAssertEquals("Can synthesize keys",
-                              "keydown:o,casm;keypress:o,casm;keyup:o,casm;", // O key
-                              getKeyLog());
-            } else {
-                fAssertEquals("Can synthesize keys",
-                              "keydown:Unidentified,casm;keyup:Unidentified,casm;" + // Dummy
-                              "keydown:o,casm;keypress:o,casm;keyup:o,casm;" +       // O key
-                              "keydown:Unidentified,casm;keyup:Unidentified,casm;",  // Dummy
-                              getKeyLog());
-            }
+            fAssertEquals("Can synthesize keys",
+                          "keydown:Process,casm;keyup:Process,casm;" +     // Dummy
+                          "keydown:o,casm;keypress:o,casm;keyup:o,casm;" + // O key
+                          "keydown:Process,casm;keyup:Process,casm;",      // Dummy
+                          getKeyLog());
 
             ic.deleteSurroundingText(4, 0);
             assertTextAndSelectionAt("Can clear text", ic, "", 0);
@@ -379,6 +388,17 @@ public class testInputConnection extends JavascriptBridgeTest {
             ic.deleteSurroundingText(1, 0);
             assertTextAndSelectionAt("Can clear text", ic, "", 0);
 
+            // Bug 1490391 - Committing then setting composition can result in duplicates.
+            ic.commitText("far", 1);
+            ic.setComposingText("bar", 1);
+            assertTextAndSelectionAt("Can commit then set composition", ic, "farbar", 6);
+            ic.setComposingText("baz", 1);
+            assertTextAndSelectionAt("Composition still exists after setting", ic, "farbaz", 6);
+
+            ic.finishComposingText();
+            ic.deleteSurroundingText(6, 0);
+            assertTextAndSelectionAt("Can clear text", ic, "", 0);
+
             // Make sure we don't leave behind stale events for the following test.
             processGeckoEvents();
             processInputConnectionEvents();
@@ -461,7 +481,6 @@ public class testInputConnection extends JavascriptBridgeTest {
 
             ic.commitText("!", 1);
             // The '!' key causes the input to hide in robocop_input.html,
-            // and there won't be a text/selection update as a result.
             assertTextAndSelectionAt("Can handle hiding input", ic, "foo", 3);
 
             // Bug 1401737, Editable does not behave correctly after disconnecting from Gecko.

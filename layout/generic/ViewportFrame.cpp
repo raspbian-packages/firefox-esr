@@ -11,7 +11,9 @@
 
 #include "mozilla/ViewportFrame.h"
 
-#include "mozilla/ServoRestyleManager.h"
+#include "mozilla/ComputedStyleInlines.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/RestyleManager.h"
 #include "nsGkAtoms.h"
 #include "nsIScrollableFrame.h"
 #include "nsSubDocumentFrame.h"
@@ -20,19 +22,18 @@
 #include "GeckoProfiler.h"
 #include "nsIMozBrowserFrame.h"
 #include "nsPlaceholderFrame.h"
-#include "mozilla/ServoStyleContextInlines.h"
 
 using namespace mozilla;
 typedef nsAbsoluteContainingBlock::AbsPosReflowFlags AbsPosReflowFlags;
 
-ViewportFrame* NS_NewViewportFrame(nsIPresShell* aPresShell,
-                                   nsStyleContext* aContext) {
-  return new (aPresShell) ViewportFrame(aContext);
+ViewportFrame* NS_NewViewportFrame(PresShell* aPresShell,
+                                   ComputedStyle* aStyle) {
+  return new (aPresShell) ViewportFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(ViewportFrame)
 NS_QUERYFRAME_HEAD(ViewportFrame)
-NS_QUERYFRAME_ENTRY(ViewportFrame)
+  NS_QUERYFRAME_ENTRY(ViewportFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 void ViewportFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
@@ -51,25 +52,14 @@ void ViewportFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
 
 void ViewportFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                      const nsDisplayListSet& aLists) {
-  AUTO_PROFILER_LABEL("ViewportFrame::BuildDisplayList", GRAPHICS);
+  AUTO_PROFILER_LABEL("ViewportFrame::BuildDisplayList",
+                      GRAPHICS_DisplayListBuilding);
 
   if (nsIFrame* kid = mFrames.FirstChild()) {
     // make the kid's BorderBackground our own. This ensures that the canvas
     // frame's background becomes our own background and therefore appears
     // below negative z-index elements.
     BuildDisplayListForChild(aBuilder, kid, aLists);
-  }
-
-  nsDisplayList topLayerList;
-  BuildDisplayListForTopLayer(aBuilder, &topLayerList);
-  if (!topLayerList.IsEmpty()) {
-    // Wrap the whole top layer in a single item with maximum z-index,
-    // and append it at the very end, so that it stays at the topmost.
-    nsDisplayWrapList* wrapList =
-        MakeDisplayItem<nsDisplayWrapList>(aBuilder, this, &topLayerList);
-    wrapList->SetOverrideZIndex(
-        std::numeric_limits<decltype(wrapList->ZIndex())>::max());
-    aLists.PositionedDescendants()->AppendToTop(wrapList);
   }
 }
 
@@ -117,8 +107,7 @@ static void BuildDisplayListForTopLayerFrame(nsDisplayListBuilder* aBuilder,
         savedOutOfFlowData->mContainingBlockActiveScrolledRoot);
   }
   nsDisplayListBuilder::AutoBuildingDisplayList buildingForChild(
-      aBuilder, aFrame, visible, dirty,
-      aBuilder->IsAtRootOfPseudoStackingContext());
+      aBuilder, aFrame, visible, dirty);
 
   nsDisplayList list;
   aFrame->BuildDisplayListForStackingContext(aBuilder, &list);
@@ -127,8 +116,8 @@ static void BuildDisplayListForTopLayerFrame(nsDisplayListBuilder* aBuilder,
 
 void ViewportFrame::BuildDisplayListForTopLayer(nsDisplayListBuilder* aBuilder,
                                                 nsDisplayList* aList) {
-  nsIDocument* doc = PresContext()->Document();
-  nsTArray<Element*> fullscreenStack = doc->GetFullscreenStack();
+  nsTArray<Element*> fullscreenStack =
+      PresContext()->Document()->GetFullscreenStack();
   for (Element* elem : fullscreenStack) {
     if (nsIFrame* frame = elem->GetPrimaryFrame()) {
       // There are two cases where an element in fullscreen is not in
@@ -151,8 +140,8 @@ void ViewportFrame::BuildDisplayListForTopLayer(nsDisplayListBuilder* aBuilder,
       // be handled as top layer element here.
       if (!(frame->GetStateBits() & NS_FRAME_OUT_OF_FLOW)) {
         MOZ_ASSERT(!elem->GetParent()->IsHTMLElement(),
-                   "HTML element "
-                   "should always be out-of-flow if in the top layer");
+                   "HTML element should always be out-of-flow if in the top "
+                   "layer");
         continue;
       }
       if (nsIFrame* backdropPh =
@@ -170,10 +159,12 @@ void ViewportFrame::BuildDisplayListForTopLayer(nsDisplayListBuilder* aBuilder,
     }
   }
 
-  nsIPresShell* shell = PresShell();
-  if (nsCanvasFrame* canvasFrame = shell->GetCanvasFrame()) {
+  if (nsCanvasFrame* canvasFrame = PresShell()->GetCanvasFrame()) {
     if (Element* container = canvasFrame->GetCustomContentContainer()) {
       if (nsIFrame* frame = container->GetPrimaryFrame()) {
+        MOZ_ASSERT(frame->StyleDisplay()->mTopLayer != NS_STYLE_TOP_LAYER_NONE,
+                   "ua.css should ensure this");
+        MOZ_ASSERT(frame->GetStateBits() & NS_FRAME_OUT_OF_FLOW);
         BuildDisplayListForTopLayerFrame(aBuilder, frame, aList);
       }
     }
@@ -200,10 +191,10 @@ void ViewportFrame::RemoveFrame(ChildListID aListID, nsIFrame* aOldFrame) {
 }
 #endif
 
-/* virtual */ nscoord ViewportFrame::GetMinISize(
-    gfxContext* aRenderingContext) {
+/* virtual */
+nscoord ViewportFrame::GetMinISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_MIN_WIDTH(this, result);
+  DISPLAY_MIN_INLINE_SIZE(this, result);
   if (mFrames.IsEmpty())
     result = 0;
   else
@@ -212,10 +203,10 @@ void ViewportFrame::RemoveFrame(ChildListID aListID, nsIFrame* aOldFrame) {
   return result;
 }
 
-/* virtual */ nscoord ViewportFrame::GetPrefISize(
-    gfxContext* aRenderingContext) {
+/* virtual */
+nscoord ViewportFrame::GetPrefISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_PREF_WIDTH(this, result);
+  DISPLAY_PREF_INLINE_SIZE(this, result);
   if (mFrames.IsEmpty())
     result = 0;
   else
@@ -255,14 +246,10 @@ nsRect ViewportFrame::AdjustReflowInputAsContainingBlock(
                "We don't handle correct positioning of fixed frames with "
                "scrollbars in odd positions");
 
-  // If a scroll position clamping scroll-port size has been set, layout
-  // fixed position elements to this size instead of the computed size.
   nsRect rect(0, 0, aReflowInput->ComputedWidth(),
               aReflowInput->ComputedHeight());
-  nsIPresShell* ps = PresShell();
-  if (ps->IsScrollPositionClampingScrollPortSizeSet()) {
-    rect.SizeTo(ps->GetScrollPositionClampingScrollPortSize());
-  }
+
+  rect.SizeTo(AdjustViewportSizeForFixedPosition(rect));
 
   return rect;
 }
@@ -332,7 +319,7 @@ void ViewportFrame::Reflow(nsPresContext* aPresContext,
   aDesiredSize.SetOverflowAreasToDesiredBounds();
 
   if (HasAbsolutelyPositionedChildren()) {
-    // Make a copy of the reflow state and change the computed width and height
+    // Make a copy of the reflow input and change the computed width and height
     // to reflect the available space for the fixed items
     ReflowInput reflowInput(aReflowInput);
 
@@ -348,16 +335,11 @@ void ViewportFrame::Reflow(nsPresContext* aPresContext,
     }
 
     nsRect rect = AdjustReflowInputAsContainingBlock(&reflowInput);
-    nsOverflowAreas* overflowAreas = &aDesiredSize.mOverflowAreas;
-    nsIScrollableFrame* rootScrollFrame =
-        aPresContext->PresShell()->GetRootScrollFrameAsScrollable();
-    if (rootScrollFrame && !rootScrollFrame->IsIgnoringViewportClipping()) {
-      overflowAreas = nullptr;
-    }
     AbsPosReflowFlags flags =
-        AbsPosReflowFlags::eCBWidthAndHeightChanged;  // XXX could be optimized
+        AbsPosReflowFlags::CBWidthAndHeightChanged;  // XXX could be optimized
     GetAbsoluteContainingBlock()->Reflow(this, aPresContext, reflowInput,
-                                         aStatus, rect, flags, overflowAreas);
+                                         aStatus, rect, flags,
+                                         /* aOverflowAreas = */ nullptr);
   }
 
   if (mFrames.NotEmpty()) {
@@ -371,47 +353,19 @@ void ViewportFrame::Reflow(nsPresContext* aPresContext,
 
   // Clipping is handled by the document container (e.g., nsSubDocumentFrame),
   // so we don't need to change our overflow areas.
-  bool overflowChanged = FinishAndStoreOverflow(&aDesiredSize);
-  if (overflowChanged) {
-    // We may need to alert our container to get it to pick up the
-    // overflow change.
-    nsSubDocumentFrame* container = static_cast<nsSubDocumentFrame*>(
-        nsLayoutUtils::GetCrossDocParentFrame(this));
-    if (container && !container->ShouldClipSubdocument()) {
-      container->PresShell()->FrameNeedsReflow(container, nsIPresShell::eResize,
-                                               NS_FRAME_IS_DIRTY);
-    }
-  }
+  FinishAndStoreOverflow(&aDesiredSize);
 
   NS_FRAME_TRACE_REFLOW_OUT("ViewportFrame::Reflow", aStatus);
   NS_FRAME_SET_TRUNCATION(aStatus, aReflowInput, aDesiredSize);
 }
 
-bool ViewportFrame::ComputeCustomOverflow(nsOverflowAreas& aOverflowAreas) {
-  nsIScrollableFrame* rootScrollFrame =
-      PresShell()->GetRootScrollFrameAsScrollable();
-  if (rootScrollFrame && !rootScrollFrame->IsIgnoringViewportClipping()) {
-    return false;
-  }
-
-  return nsContainerFrame::ComputeCustomOverflow(aOverflowAreas);
-}
-
 void ViewportFrame::UpdateStyle(ServoRestyleState& aRestyleState) {
-  ServoStyleContext* oldContext = StyleContext()->AsServo();
-  nsAtom* pseudo = oldContext->GetPseudo();
-  RefPtr<ServoStyleContext> newContext =
-      aRestyleState.StyleSet().ResolveInheritingAnonymousBoxStyle(pseudo,
-                                                                  nullptr);
-
-  // We're special because we have a null GetContent(), so don't call things
-  // like UpdateStyleOfOwnedChildFrame that try to append changes for the
-  // content to the change list.  Nor do we computed a changehint, since we have
-  // no way to apply it anyway.
-  newContext->ResolveSameStructsAs(oldContext);
+  RefPtr<ComputedStyle> newStyle =
+      aRestyleState.StyleSet().ResolveInheritingAnonymousBoxStyle(
+          Style()->GetPseudoType(), nullptr);
 
   MOZ_ASSERT(!GetNextContinuation(), "Viewport has continuations?");
-  SetStyleContext(newContext);
+  SetComputedStyle(newStyle);
 
   UpdateStyleOfOwnedAnonBoxes(aRestyleState);
 }
@@ -421,6 +375,27 @@ void ViewportFrame::AppendDirectlyOwnedAnonBoxes(
   if (mFrames.NotEmpty()) {
     aResult.AppendElement(mFrames.FirstChild());
   }
+}
+
+nsSize ViewportFrame::AdjustViewportSizeForFixedPosition(
+    const nsRect& aViewportRect) const {
+  nsSize result = aViewportRect.Size();
+
+  mozilla::PresShell* presShell = PresShell();
+  // Layout fixed position elements to the visual viewport size if and only if
+  // it has been set and it is larger than the computed size, otherwise use the
+  // computed size.
+  if (presShell->IsVisualViewportSizeSet() &&
+      result < presShell->GetVisualViewportSize()) {
+    result = presShell->GetVisualViewportSize();
+  }
+  // Expand the size to the layout viewport size if necessary.
+  const nsSize layoutViewportSize = presShell->GetLayoutViewportSize();
+  if (result < layoutViewportSize) {
+    result = layoutViewportSize;
+  }
+
+  return result;
 }
 
 #ifdef DEBUG_FRAME_DUMP

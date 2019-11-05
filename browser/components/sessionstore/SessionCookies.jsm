@@ -7,12 +7,12 @@
 var EXPORTED_SYMBOLS = ["SessionCookies"];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm", this);
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", this);
 
-ChromeUtils.defineModuleGetter(this, "Utils",
-  "resource://gre/modules/sessionstore/Utils.jsm");
-ChromeUtils.defineModuleGetter(this, "PrivacyLevel",
-  "resource://gre/modules/sessionstore/PrivacyLevel.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "PrivacyLevel",
+  "resource://gre/modules/sessionstore/PrivacyLevel.jsm"
+);
 
 const MAX_EXPIRY = Number.MAX_SAFE_INTEGER;
 
@@ -26,7 +26,7 @@ var SessionCookies = Object.freeze({
 
   restore(cookies) {
     SessionCookiesInternal.restore(cookies);
-  }
+  },
 });
 
 /**
@@ -52,26 +52,41 @@ var SessionCookiesInternal = {
   restore(cookies) {
     for (let cookie of cookies) {
       let expiry = "expiry" in cookie ? cookie.expiry : MAX_EXPIRY;
-      let cookieObj = {
-        host: cookie.host,
-        path: cookie.path || "",
-        name: cookie.name || ""
-      };
-
-      let originAttributes = cookie.originAttributes || {};
       let exists = false;
       try {
-        exists = Services.cookies.cookieExists(cookieObj, originAttributes);
+        exists = Services.cookies.cookieExists(
+          cookie.host,
+          cookie.path || "",
+          cookie.name || "",
+          cookie.originAttributes || {}
+        );
       } catch (ex) {
-        Cu.reportError(`nsCookieService::CookieExists failed with error '${ex}' for '${JSON.stringify(cookie)}'.`);
+        Cu.reportError(
+          `nsCookieService::CookieExists failed with error '${ex}' for '${JSON.stringify(
+            cookie
+          )}'.`
+        );
       }
       if (!exists) {
         try {
-          Services.cookies.add(cookie.host, cookie.path || "", cookie.name || "",
-                               cookie.value, !!cookie.secure, !!cookie.httponly,
-                               /* isSession = */ true, expiry, originAttributes);
+          Services.cookies.add(
+            cookie.host,
+            cookie.path || "",
+            cookie.name || "",
+            cookie.value,
+            !!cookie.secure,
+            !!cookie.httponly,
+            /* isSession = */ true,
+            expiry,
+            cookie.originAttributes || {},
+            Ci.nsICookie2.SAMESITE_UNSET
+          );
         } catch (ex) {
-          Cu.reportError(`nsCookieService::Add failed with error '${ex}' for cookie ${JSON.stringify(cookie)}.`);
+          Cu.reportError(
+            `nsCookieService::Add failed with error '${ex}' for cookie ${JSON.stringify(
+              cookie
+            )}.`
+          );
         }
       }
     }
@@ -179,11 +194,10 @@ var SessionCookiesInternal = {
       return;
     }
 
-    let iter = Services.cookies.sessionEnumerator;
-    while (iter.hasMoreElements()) {
-      this._addCookie(iter.getNext());
+    for (let cookie of Services.cookies.sessionEnumerator) {
+      this._addCookie(cookie);
     }
-  }
+  },
 };
 
 /**
@@ -202,7 +216,7 @@ var CookieStore = {
    *        The nsICookie2 object to add to the storage.
    */
   add(cookie) {
-    let jscookie = {host: cookie.host, value: cookie.value};
+    let jscookie = { host: cookie.host, value: cookie.value };
 
     // Only add properties with non-default values to save a few bytes.
     if (cookie.path) {
@@ -270,7 +284,7 @@ var CookieStore = {
       host: cookie.host,
       name: cookie.name,
       path: cookie.path,
-      attr: ChromeUtils.originAttributesToSuffix(cookie.originAttributes)
+      attr: ChromeUtils.originAttributesToSuffix(cookie.originAttributes),
     });
-  }
+  },
 };

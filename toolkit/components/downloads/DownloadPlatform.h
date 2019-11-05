@@ -8,6 +8,8 @@
 #include "mozIDownloadPlatform.h"
 
 #include "nsCOMPtr.h"
+#include "nsIThread.h"
+
 class nsIURI;
 
 class DownloadPlatform : public mozIDownloadPlatform {
@@ -18,13 +20,14 @@ class DownloadPlatform : public mozIDownloadPlatform {
   NS_DECL_ISUPPORTS
   NS_DECL_MOZIDOWNLOADPLATFORM
 
-  DownloadPlatform() {}
+  DownloadPlatform();
 
   static DownloadPlatform* gDownloadPlatformService;
 
   static DownloadPlatform* GetDownloadPlatform();
 
  private:
+  nsCOMPtr<nsIThread> mIOThread;
   static bool IsURLPossiblyFromWeb(nsIURI* aURI);
 };
 

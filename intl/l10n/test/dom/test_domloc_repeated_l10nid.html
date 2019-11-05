@@ -3,29 +3,28 @@
 <head>
   <meta charset="utf-8">
   <title>Test DOMLocalization's matching l10nIds functionality</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript">
   "use strict";
   const { DOMLocalization } =
-    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm", {});
-  const { MessageContext } =
-    ChromeUtils.import("resource://gre/modules/MessageContext.jsm", {});
+    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm");
+  const { FluentBundle } =
+    ChromeUtils.import("resource://gre/modules/Fluent.jsm");
 
   async function* mockGenerateMessages(locales, resourceIds) {
-    const mc = new MessageContext(locales);
-    mc.addMessages(`
+    const bundle = new FluentBundle(locales);
+    bundle.addMessages(`
 key1 = Translation For Key 1
 
-key2 = Visit <a>this link<a/>.
+key2 = Visit <a data-l10n-name="link">this link<a/>.
     `);
-    yield mc;
+    yield bundle;
   }
 
   SimpleTest.waitForExplicitFinish();
   addLoadEvent(async () => {
     const domLoc = new DOMLocalization(
-      window,
       [],
       mockGenerateMessages
     );
@@ -53,11 +52,11 @@ key2 = Visit <a>this link<a/>.
   <h2 id="elem2" data-l10n-id="key1"></h2>
 
   <p id="elem3" data-l10n-id="key2">
-    <a href="http://www.mozilla.org"></a>
+    <a href="http://www.mozilla.org" data-l10n-name="link"></a>
   </p>
 
   <p id="elem4" data-l10n-id="key2">
-    <a href="http://www.firefox.com"></a>
+    <a href="http://www.firefox.com" data-l10n-name="link"></a>
   </p>
 </body>
 </html>

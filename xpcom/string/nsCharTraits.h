@@ -9,17 +9,18 @@
 
 #include <ctype.h>   // for |EOF|, |WEOF|
 #include <string.h>  // for |memcpy|, et al
+#include "mozilla/MemoryChecking.h"
 
 // This file may be used (through nsUTF8Utils.h) from non-XPCOM code, in
 // particular the standalone software updater. In that case stub out
 // the macros provided by nsDebug.h which are only usable when linking XPCOM
 
 #ifdef NS_NO_XPCOM
-#define NS_WARNING(msg)
-#define NS_ASSERTION(cond, msg)
-#define NS_ERROR(msg)
+#  define NS_WARNING(msg)
+#  define NS_ASSERTION(cond, msg)
+#  define NS_ERROR(msg)
 #else
-#include "nsDebug.h"  // for NS_ASSERTION
+#  include "nsDebug.h"  // for NS_ASSERTION
 #endif
 
 /*
@@ -120,8 +121,15 @@ struct nsCharTraits<char16_t> {
         memcpy(aStr1, aStr2, aN * sizeof(char_type)));
   }
 
+  static void uninitialize(char_type* aStr, size_t aN) {
+#ifdef DEBUG
+    memset(aStr, 0xE4, aN * sizeof(char_type));
+#endif
+    MOZ_MAKE_MEM_UNDEFINED(aStr, aN * sizeof(char_type));
+  }
+
   static char_type* copyASCII(char_type* aStr1, const char* aStr2, size_t aN) {
-    for (char_type *s = aStr1; aN--; ++s, ++aStr2) {
+    for (char_type* s = aStr1; aN--; ++s, ++aStr2) {
       NS_ASSERTION(!(*aStr2 & ~0x7F), "Unexpected non-ASCII character");
       *s = static_cast<char_type>(*aStr2);
     }
@@ -289,6 +297,13 @@ struct nsCharTraits<char> {
   static char_type* copy(char_type* aStr1, const char_type* aStr2, size_t aN) {
     return static_cast<char_type*>(
         memcpy(aStr1, aStr2, aN * sizeof(char_type)));
+  }
+
+  static void uninitialize(char_type* aStr, size_t aN) {
+#ifdef DEBUG
+    memset(aStr, 0xE4, aN * sizeof(char_type));
+#endif
+    MOZ_MAKE_MEM_UNDEFINED(aStr, aN * sizeof(char_type));
   }
 
   static char_type* copyASCII(char_type* aStr1, const char* aStr2, size_t aN) {

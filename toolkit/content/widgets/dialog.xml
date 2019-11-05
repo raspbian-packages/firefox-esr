@@ -14,9 +14,6 @@
           xmlns:xbl="http://www.mozilla.org/xbl">
 
   <binding id="dialog">
-    <resources>
-      <stylesheet src="chrome://global/skin/dialog.css"/>
-    </resources>
     <content>
       <xul:vbox class="box-inherit dialog-content-box" flex="1">
         <children/>
@@ -62,6 +59,11 @@
         if (!document.documentElement.cancelDialog())
           event.preventDefault();
       })</field>
+
+      <!-- Gets populated by elements that are passed to document.l10n.setAttributes
+           to localize the dialog buttons. Needed to properly size the dialog after
+           the asynchronous translation. -->
+      <field name="_l10nButtons">[]</field>
 
       <property name="buttons"
                 onget="return this.getAttribute('buttons');"
@@ -162,15 +164,31 @@
         this._configureButtons(this.buttons);
 
         // listen for when window is closed via native close buttons
-        window.addEventListener("close", this._closeHandler);
+        window.addEventListener("close", this);
 
         // for things that we need to initialize after onload fires
-        window.addEventListener("load", this.postLoadInit);
+        window.addEventListener("load", this);
 
         window.moveToAlertPosition = this.moveToAlertPosition;
         window.centerWindowOnScreen = this.centerWindowOnScreen;
       ]]>
       </constructor>
+
+      <method name="handleEvent">
+        <parameter name="aEvent"/>
+        <body><![CDATA[
+          switch (aEvent.type) {
+            case "close": {
+              this._closeHandler(aEvent);
+              break;
+            }
+            case "load": {
+              this.postLoadInit(aEvent);
+              break;
+            }
+          }
+        ]]></body>
+      </method>
 
       <method name="postLoadInit">
         <parameter name="aEvent"/>
@@ -219,6 +237,12 @@
 
           // Give focus after onload completes, see bug 103197.
           setTimeout(focusInit, 0);
+
+          if (this._l10nButtons.length) {
+            document.l10n.translateElements(this._l10nButtons).then(() => {
+              window.sizeToContent();
+            });
+          }
         ]]>
         </body>
       </method>
@@ -265,6 +289,10 @@
           buttons.help = document.getAnonymousElementByAttribute(this, "dlgtype", "help");
           buttons.disclosure = document.getAnonymousElementByAttribute(this, "dlgtype", "disclosure");
 
+          for (let button in buttons) {
+            customElements.upgrade(buttons[button]);
+          }
+
           // look for any overriding explicit button elements
           var exBtns = this.getElementsByAttribute("dlgtype", "*");
           var dlgtype;
@@ -287,6 +315,9 @@
                 button.setAttribute("label", this.getAttribute("buttonlabel" + dlgtype));
                 if (this.hasAttribute("buttonaccesskey" + dlgtype))
                   button.setAttribute("accesskey", this.getAttribute("buttonaccesskey" + dlgtype));
+              } else if (this.hasAttribute("buttonid" + dlgtype)) {
+                document.l10n.setAttributes(button, this.getAttribute("buttonid" + dlgtype));
+                this._l10nButtons.push(button);
               } else if (dlgtype != "extra1" && dlgtype != "extra2") {
                 button.setAttribute("label", this.mStrBundle.GetStringFromName("button-" + dlgtype));
                 var accessKey = this.mStrBundle.GetStringFromName("accesskey-" + dlgtype);
@@ -413,19 +444,7 @@
           event.initEvent("dialog" + aDlgType, true, true);
 
           // handle dom event handlers
-          var noCancel = this.dispatchEvent(event);
-
-          // handle any xml attribute event handlers
-          var handler = this.getAttribute("ondialog" + aDlgType);
-          if (handler != "") {
-            var fn = new Function("event", handler);
-            var returned = fn(event);
-            // eslint-disable-next-line mozilla/no-compare-against-boolean-literals
-            if (returned == false)
-              noCancel = false;
-          }
-
-          return noCancel;
+          return this.dispatchEvent(event);
         ]]>
         </body>
       </method>
@@ -459,7 +478,9 @@
       <handler event="focus" phase="capturing">
         var btn = this.getButton(this.defaultButton);
         if (btn)
-          btn.setAttribute("default", event.originalTarget == btn || !(event.originalTarget instanceof Ci.nsIDOMXULButtonElement));
+          btn.setAttribute("default", event.originalTarget == btn ||
+                           !(event.originalTarget.localName == "button" ||
+                             event.originalTarget.localName == "toolbarbutton"));
       </handler>
 #endif
     </handlers>

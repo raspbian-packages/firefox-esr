@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Bienvenido">
 <!ENTITY firstrun_urlbar_message2 "Gracias por elegir &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Bienvenido a &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Un navegador móvil moderno de Mozilla, la fundación sin fines de lucro comprometida con la web libre y abierta.">
+<!ENTITY newfirstrun_urlbar_subtext "Rápido, privado y de su lado.">
 <!ENTITY firstrun_panel_title_privacy "Privacidad">
 <!ENTITY firstrun_privacy_message "Navegá como si nadie estuviera viendo">
 <!ENTITY firstrun_privacy_subtext "La navegación privada con protección de rastreo bloquea a los rastreadores mientras se navega y no recordará el historial al terminar de navegar.">
+<!ENTITY newfirstrun_privacy_subtext "La navegación privada bloquea los rastreadores de publicidad que lo siguen en línea.">
 <!ENTITY firstrun_panel_title_customize "Personalizar">
 <!ENTITY firstrun_customize_message "Hacé que &brandShortName; sea tuyo.">
 <!ENTITY firstrun_customize_subtext "Personalizá &brandShortName; con complementos. Bloqueá publicidades, agregá funcionalidades o elegí un tema nuevo para reflejar tu personalidad.">
@@ -18,21 +21,20 @@
 <!ENTITY firstrun_data_message "Menos datos, más ahorro">
 <!ENTITY firstrun_data_subtext2 "Desactivá imágenes para perder menos tiempo en cada sitio que visitás.">
 <!ENTITY firstrun_sync_title "Sync">
+<!ENTITY updatednewfirstrun_sync_title "Cuenta">
 <!ENTITY firstrun_sync_message2 "Continúá desde donde dejaste.">
 <!ENTITY firstrun_sync_subtext2 "Usá Sync para encontrar los marcadores, contraseñas y otras cosas que guardás en &brandShortName; en todos tus dispositivos.">
+<!ENTITY newfirstrun_sync_subtext "Sincronice el contenido que guarda en el dispositivo móvil con Firefox para el escritorio, de forma privada y segura.">
+<!ENTITY updatednewfirstrun_sync_subtext "Iniciá sesión en tu cuenta para aprovechar &brandShortName; al máximo">
 <!ENTITY firstrun_signin_message "Conectate, empecemos">
 <!ENTITY firstrun_signin_button "Registrarse en Sync">
+<!ENTITY newfirstrun_signin_button "Activar la sincronización">
+<!ENTITY updatednewfirstrun_signin_button "Ingresá en &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Iniciar navegación">
 <!ENTITY firstrun_button_notnow "No ahora">
 <!ENTITY firstrun_button_next "Siguiente">
 
 <!ENTITY firstrun_tabqueue_title "Enlaces">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Habilitar cola de pestañas">
-<!ENTITY firstrun_tabqueue_subtext_off "Guardar enlaces para después en &brandShortName; al tocarlos en otras aplicaciones.">
-
-<!ENTITY firstrun_tabqueue_message_on "¡Éxito!">
-<!ENTITY firstrun_tabqueue_subtext_on "Siempre se puede desactivar esto en &settings; / &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Artículos">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -68,7 +70,27 @@
 <!ENTITY  crash_close_label "Cerrar">
 <!ENTITY  crash_restart_label "Reiniciar &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; falló">
+<!ENTITY  crash_notification_message "Tocá para informar a &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Ignorar">
+
 <!ENTITY url_bar_default_text2 "Buscar o ingresar dirección">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Buscar en la web">
+<!ENTITY search_widget_default_cropped_text "Buscar">
+<!ENTITY search_widget_logo_description "Buscar en la web con &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Use su lector de QR para buscar o ingresar una dirección">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Use su micrófono para buscar o ingresar una dirección">
 
 <!ENTITY bookmark "Marcador">
 <!ENTITY bookmark_remove "Eliminar marcador">
@@ -95,6 +117,10 @@
 <!ENTITY bookmark_folder_updated "Carpeta actualizada">
 <!ENTITY bookmark_parent_folder "Carpeta superior">
 <!ENTITY bookmark_add_folder "Agregar nueva carpeta">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(sin título)">
 
 <!ENTITY reader_saved_offline "Guardado sin conexión">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -206,7 +232,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Restaurar pestañas, ahorrador de datos, herramientas de desarrollador">
 <!ENTITY pref_category_notifications "Notificaciones">
-<!ENTITY pref_category_notifications_summary "Nuevas características, actualizaciones de sitio web">
+<!ENTITY pref_category_notifications_summary2 "Nuevas funciones, sugerencias de productos">
 <!ENTITY pref_developer_remotedebugging_usb "Depuración remota vía USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Depuración remota vía Wi-Fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Depuración por Wi-Fi requiere que el dispositivo tenga instalada una aplicación de lectura de códigos QR.">
@@ -288,6 +314,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Conocer más sobre el uso de &brandShortName; y otros &vendorShortName; productos">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Para habilitar esta opción, &pref_feature_tips_notification_enabling_path; ya debe estar habilitado.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -327,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Ir a Ajustes">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Agregar una nueva pestaña a la cola &#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "Escale el contenido de la Web de acuerdo al tamaño de la fuente del sistema">
 
 <!ENTITY pref_media_autoplay_enabled "Permitir ejecución automática">
-<!ENTITY pref_media_autoplay_enabled_summary "Controlar si los sitios web pueden reproducir automáticamente videos y otro contenido de medios">
+<!ENTITY pref_media_autoplay_allow "Permitir ejecución automática">
+<!ENTITY pref_media_autoplay_block "Bloquear la reproducción automática">
 <!ENTITY pref_zoom_force_enabled "Siempre habilitar zoom">
 <!ENTITY pref_zoom_force_enabled_summary "Forzar que se pueda hacer zoom en cualquier página">
 <!ENTITY pref_voice_input "Ingreso por voz">
@@ -384,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "Historial de búsqueda">
 <!ENTITY pref_private_data_formdata2 "Historial de formularios">
 <!ENTITY pref_private_data_cookies2 "Cookies e ingresos activos">
-<!ENTITY pref_private_data_passwords2 "Ingresos guardados">
 <!ENTITY pref_private_data_cache "Caché">
 <!ENTITY pref_private_data_offlineApps "Datos de sitios sin conexión">
 <!ENTITY pref_private_data_siteSettings2 "Opciones del sitio">
 <!ENTITY pref_private_data_downloadFiles2 "Descargas">
 <!ENTITY pref_private_data_syncedTabs "Pestañas sincronizadas">
 
-<!ENTITY pref_default_browser "Establecer navegador predeterminado">
+<!ENTITY pref_default_browser2 "Hacer de &brandShortName; su navegador predeterminado">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Toque la aplicación Navegador &amp; seleccione &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Visitar soporte de Mozilla">
 <!ENTITY pref_about_firefox "Acerca de &brandShortName;">
 <!ENTITY pref_vendor_faqs "FAQs">
@@ -437,6 +476,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Informe de fallos">
 <!ENTITY datareporting_wifi_title2 "Servicio de ubicación de &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "¡Ayuda a &vendorShortName; a mapear el mundo! Comparte ubicación aproximada de Wi-Fi y celular de tu dispositivo para mejorar nuestro servicio de geolocalización">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "Servicio de ubicación de &vendorShortName; ejecutándose">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -481,6 +525,10 @@
 <!ENTITY find_prev "Anterior">
 <!ENTITY find_next "Siguiente">
 <!ENTITY find_close "Cerrar">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Frase no encontrada">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -543,7 +591,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Organizar pestañas en dos columnas en modo retrato">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Página eliminada">
 <!ENTITY folder_removed "Carpeta eliminada">
@@ -554,6 +602,8 @@
 <!ENTITY bookmark_edit_location "Dirección">
 <!ENTITY bookmark_edit_keyword "Palabra clave">
 <!ENTITY bookmark_select_folder "Seleccionar carpeta">
+
+<!ENTITY bookmark_edit_undo "Deshacer">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -642,6 +692,8 @@
 <!ENTITY filepicker_audio_title "Seleccionar o grabar un sonido">
 <!ENTITY filepicker_image_title "Seleccionar o tomar una foto">
 <!ENTITY filepicker_video_title "Seleccionar o grabar un video">
+
+<!ENTITY filepicker_permission_denied "Permisos requeridos no otorgados, volviendo al selector de archivos del sistema.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Está conectado a">
@@ -761,7 +813,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Última sincronización: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Última sincronización: nunca">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -822,15 +874,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "No se puede abrir &brandShortName;. Por favor, vuelva a instalar e inténtelo de nuevo.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; no se actualizará más">
-<!ENTITY eol_notification_summary "Tocá para conocer más">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; está actualizado">
 <!ENTITY whatsnew_notification_summary "Qué hay de nuevo en esta versión">
-
-<!ENTITY promotion_add_page_shortcut "Agregar acceso directo a la página">
 
 <!ENTITY helper_first_offline_bookmark_title "Leer sin conexión">
 <!ENTITY helper_first_offline_bookmark_message "Encontrar items de vista de lectura en marcadores, incluso sin conexión.">
@@ -881,3 +928,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Agregar a pantalla de inicio">
 <!ENTITY pwa_continue_to_website "Continuar al sitio web">
 <!ENTITY pwa_onboarding_sumo "Se puede agregar fácilmente este sitio web a la pantalla de inicio para tener acceso instantáneo y navegar más rápidamente con la experiencia de una aplicación.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Reproducir">
+<!ENTITY pip_play_button_description "Continuar reproducción">
+<!ENTITY pip_pause_button_title "Pausa">
+<!ENTITY pip_pause_button_description "Pausar reproducción">
+
+<!ENTITY pref_notification_settings_link "Administrar configuración de notificaciones">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Navegador">
+<!ENTITY mls_notification_channel "&vendorShortName; Servicio de localización">
+<!ENTITY download_notification_channel "Descargas">
+<!ENTITY media_notification_channel2 "Sonido y video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; consejos y trucos">
+<!ENTITY updater_notification_channel "Actualizaciones de la aplicación">
+<!ENTITY synced_tabs_notification_channel "Pestañas sincronizadas">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Notificaciones del sitio">
+<!ENTITY crash_handler_notifications_channel "&brandShortName; Informe de fallo">

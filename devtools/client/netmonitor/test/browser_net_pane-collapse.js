@@ -7,45 +7,60 @@
  * Tests if the network monitor panes collapse properly.
  */
 
-add_task(async function () {
-  let { tab, monitor } = await initNetMonitor(SIMPLE_URL);
+add_task(async function() {
+  const { tab, monitor } = await initNetMonitor(SIMPLE_URL);
   info("Starting test... ");
 
-  let { document, windowRequire } = monitor.panelWin;
-  let { Prefs } = windowRequire("devtools/client/netmonitor/src/utils/prefs");
-  let detailsPaneToggleButton = document.querySelector(".network-details-panel-toggle");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { Prefs } = windowRequire("devtools/client/netmonitor/src/utils/prefs");
 
-  let wait = waitForNetworkEvents(monitor, 1);
+  const wait = waitForNetworkEvents(monitor, 1);
   tab.linkedBrowser.reload();
   await wait;
 
-  ok(!document.querySelector(".network-details-panel") &&
-     detailsPaneToggleButton.classList.contains("pane-collapsed"),
-    "The details panel should initially be hidden.");
+  ok(
+    !document.querySelector(".network-details-panel") &&
+      !document.querySelector(".sidebar-toggle"),
+    "The details panel should initially be hidden."
+  );
 
-  EventUtils.sendMouseEvent({ type: "click" }, detailsPaneToggleButton);
+  store.dispatch(Actions.toggleNetworkDetails());
 
-  is(~~(document.querySelector(".network-details-panel").clientWidth),
+  is(
+    ~~document.querySelector(".network-details-panel").clientWidth,
     Prefs.networkDetailsWidth,
-    "The details panel has an incorrect width.");
-  ok(document.querySelector(".network-details-panel") &&
-     !detailsPaneToggleButton.classList.contains("pane-collapsed"),
-    "The details panel should at this point be visible.");
+    "The details panel has an incorrect width."
+  );
+  ok(
+    document.querySelector(".network-details-panel") &&
+      document.querySelector(".sidebar-toggle"),
+    "The details panel should at this point be visible."
+  );
 
-  EventUtils.sendMouseEvent({ type: "click" }, detailsPaneToggleButton);
+  EventUtils.sendMouseEvent(
+    { type: "click" },
+    document.querySelector(".sidebar-toggle")
+  );
 
-  ok(!document.querySelector(".network-details-panel") &&
-     detailsPaneToggleButton.classList.contains("pane-collapsed"),
-    "The details panel should not be visible after collapsing.");
+  ok(
+    !document.querySelector(".network-details-panel") &&
+      !document.querySelector(".sidebar-toggle"),
+    "The details panel should not be visible after collapsing."
+  );
 
-  EventUtils.sendMouseEvent({ type: "click" }, detailsPaneToggleButton);
+  store.dispatch(Actions.toggleNetworkDetails());
 
-  is(~~(document.querySelector(".network-details-panel").clientWidth),
+  is(
+    ~~document.querySelector(".network-details-panel").clientWidth,
     Prefs.networkDetailsWidth,
-    "The details panel has an incorrect width after uncollapsing.");
-  ok(document.querySelector(".network-details-panel") &&
-     !detailsPaneToggleButton.classList.contains("pane-collapsed"),
-    "The details panel should be visible again after uncollapsing.");
+    "The details panel has an incorrect width after uncollapsing."
+  );
+  ok(
+    document.querySelector(".network-details-panel") &&
+      document.querySelector(".sidebar-toggle"),
+    "The details panel should be visible again after uncollapsing."
+  );
 
   await teardown(monitor);
 });

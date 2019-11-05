@@ -5,7 +5,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 DevToolsModules(
+  'css-logic.js',
+  'custom-element-watcher.js',
   'document-walker.js',
+  'event-collector.js',
   'inspector.js',
   'node.js',
   'utils.js',
@@ -13,4 +16,4 @@ DevToolsModules(
 )
 
 with Files('**'):
-    BUG_COMPONENT = ('Firefox', 'Developer Tools: Inspector')
+    BUG_COMPONENT = ('DevTools', 'Inspector')

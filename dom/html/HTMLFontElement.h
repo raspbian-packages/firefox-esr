@@ -14,8 +14,8 @@ namespace dom {
 
 class HTMLFontElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLFontElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+  explicit HTMLFontElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
   void GetColor(DOMString& aColor) { GetHTMLAttr(nsGkAtoms::color, aColor); }
   void SetColor(const nsAString& aColor, ErrorResult& aError) {
@@ -37,8 +37,7 @@ class HTMLFontElement final : public nsGenericHTMLElement {
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual ~HTMLFontElement();
@@ -48,7 +47,7 @@ class HTMLFontElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

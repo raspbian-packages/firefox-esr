@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,7 +8,7 @@
 
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/dom/ContentChild.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/layout/RemotePrintJobChild.h"
 #include "mozilla/Unused.h"
 #include "nsIDocShell.h"
@@ -55,6 +55,11 @@ already_AddRefed<nsPrintingProxy> nsPrintingProxy::GetInstance() {
 }
 
 nsresult nsPrintingProxy::Init() {
+  // Don't create a printing proxy in middleman processes, to avoid conflicts
+  // with the one created in the child recording process.
+  if (recordreplay::IsMiddleman()) {
+    return NS_ERROR_FAILURE;
+  }
   mozilla::Unused << ContentChild::GetSingleton()->SendPPrintingConstructor(
       this);
   return NS_OK;
@@ -69,19 +74,19 @@ nsPrintingProxy::ShowPrintDialog(mozIDOMWindowProxy* parent,
 
   // If parent is null we are just being called to retrieve the print settings
   // from the printer in the parent for print preview.
-  TabChild* pBrowser = nullptr;
+  BrowserChild* pBrowser = nullptr;
   if (parent) {
-    // Get the TabChild for this nsIDOMWindow, which we can then pass up to
+    // Get the BrowserChild for this nsIDOMWindow, which we can then pass up to
     // the parent.
     nsCOMPtr<nsPIDOMWindowOuter> pwin = nsPIDOMWindowOuter::From(parent);
     NS_ENSURE_STATE(pwin);
     nsCOMPtr<nsIDocShell> docShell = pwin->GetDocShell();
     NS_ENSURE_STATE(docShell);
 
-    nsCOMPtr<nsITabChild> tabchild = docShell->GetTabChild();
+    nsCOMPtr<nsIBrowserChild> tabchild = docShell->GetBrowserChild();
     NS_ENSURE_STATE(tabchild);
 
-    pBrowser = static_cast<TabChild*>(tabchild.get());
+    pBrowser = static_cast<BrowserChild*>(tabchild.get());
   }
 
   // Next, serialize the nsIWebBrowserPrint and nsIPrintSettings we were given.
@@ -116,7 +121,7 @@ nsPrintingProxy::ShowPrintDialog(mozIDOMWindowProxy* parent,
 }
 
 NS_IMETHODIMP
-nsPrintingProxy::ShowProgress(
+nsPrintingProxy::ShowPrintProgressDialog(
     mozIDOMWindowProxy* parent,
     nsIWebBrowserPrint* webBrowserPrint,  // ok to be null
     nsIPrintSettings* printSettings,      // ok to be null
@@ -128,14 +133,14 @@ nsPrintingProxy::ShowProgress(
   NS_ENSURE_ARG(printProgressParams);
   NS_ENSURE_ARG(notifyOnOpen);
 
-  // Get the TabChild for this nsIDOMWindow, which we can then pass up to
+  // Get the BrowserChild for this nsIDOMWindow, which we can then pass up to
   // the parent.
   nsCOMPtr<nsPIDOMWindowOuter> pwin = nsPIDOMWindowOuter::From(parent);
   NS_ENSURE_STATE(pwin);
   nsCOMPtr<nsIDocShell> docShell = pwin->GetDocShell();
   NS_ENSURE_STATE(docShell);
-  nsCOMPtr<nsITabChild> tabchild = docShell->GetTabChild();
-  TabChild* pBrowser = static_cast<TabChild*>(tabchild.get());
+  nsCOMPtr<nsIBrowserChild> tabchild = docShell->GetBrowserChild();
+  BrowserChild* pBrowser = static_cast<BrowserChild*>(tabchild.get());
 
   RefPtr<PrintProgressDialogChild> dialogChild =
       new PrintProgressDialogChild(openDialogObserver, printSettings);
@@ -143,12 +148,12 @@ nsPrintingProxy::ShowProgress(
   SendPPrintProgressDialogConstructor(dialogChild);
 
   // Get the RemotePrintJob if we have one available.
-  RefPtr<mozilla::layout::RemotePrintJobChild> remotePrintJob;
+  RefPtr<RemotePrintJobChild> remotePrintJob;
   if (printSettings) {
     nsCOMPtr<nsIPrintSession> printSession;
     nsresult rv = printSettings->GetPrintSession(getter_AddRefs(printSession));
     if (NS_SUCCEEDED(rv) && printSession) {
-      printSession->GetRemotePrintJob(getter_AddRefs(remotePrintJob));
+      remotePrintJob = printSession->GetRemotePrintJob();
     }
   }
 
@@ -171,8 +176,8 @@ nsPrintingProxy::ShowProgress(
 }
 
 NS_IMETHODIMP
-nsPrintingProxy::ShowPageSetup(mozIDOMWindowProxy* parent,
-                               nsIPrintSettings* printSettings) {
+nsPrintingProxy::ShowPageSetupDialog(mozIDOMWindowProxy* parent,
+                                     nsIPrintSettings* printSettings) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -195,9 +200,9 @@ nsresult nsPrintingProxy::SavePrintSettings(nsIPrintSettings* aPS,
 PPrintProgressDialogChild* nsPrintingProxy::AllocPPrintProgressDialogChild() {
   // The parent process will never initiate the PPrintProgressDialog
   // protocol connection, so no need to provide an allocator here.
-  NS_NOTREACHED(
-      "Allocator for PPrintProgressDialogChild should not be "
-      "called on nsPrintingProxy.");
+  MOZ_ASSERT_UNREACHABLE(
+      "Allocator for PPrintProgressDialogChild should not "
+      "be called on nsPrintingProxy.");
   return nullptr;
 }
 
@@ -211,9 +216,9 @@ bool nsPrintingProxy::DeallocPPrintProgressDialogChild(
 PPrintSettingsDialogChild* nsPrintingProxy::AllocPPrintSettingsDialogChild() {
   // The parent process will never initiate the PPrintSettingsDialog
   // protocol connection, so no need to provide an allocator here.
-  NS_NOTREACHED(
-      "Allocator for PPrintSettingsDialogChild should not be "
-      "called on nsPrintingProxy.");
+  MOZ_ASSERT_UNREACHABLE(
+      "Allocator for PPrintSettingsDialogChild should not "
+      "be called on nsPrintingProxy.");
   return nullptr;
 }
 

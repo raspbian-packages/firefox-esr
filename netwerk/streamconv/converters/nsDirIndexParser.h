@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,6 +9,7 @@
 #include "nsString.h"
 #include "nsCOMPtr.h"
 #include "nsIDirIndexListener.h"
+#include "mozilla/RefPtr.h"
 
 class nsIDirIndex;
 class nsITextToSubURI;
@@ -19,14 +20,22 @@ class nsDirIndexParser : public nsIDirIndexParser {
  private:
   virtual ~nsDirIndexParser();
 
+  nsDirIndexParser();
+  nsresult Init();
+
  public:
   NS_DECL_ISUPPORTS
   NS_DECL_NSISTREAMLISTENER
   NS_DECL_NSIREQUESTOBSERVER
   NS_DECL_NSIDIRINDEXPARSER
 
-  nsDirIndexParser();
-  nsresult Init();
+  static already_AddRefed<nsIDirIndexParser> CreateInstance() {
+    RefPtr<nsDirIndexParser> parser = new nsDirIndexParser();
+    if (NS_FAILED(parser->Init())) {
+      return nullptr;
+    }
+    return parser.forget();
+  }
 
   enum fieldType {
     FIELD_UNKNOWN = 0,  // MUST be 0

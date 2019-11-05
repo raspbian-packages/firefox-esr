@@ -9,17 +9,17 @@
  *
  * See InspectorUtils.h for documentation on these methods.
  */
-[ChromeOnly]
+[Func="nsContentUtils::IsCallerChromeOrFuzzingEnabled"]
 namespace InspectorUtils {
-  sequence<StyleSheet> getAllStyleSheets(Document document);
-  sequence<CSSRule> getCSSStyleRules(
+  // documentOnly tells whether user and UA sheets should get included.
+  sequence<StyleSheet> getAllStyleSheets(Document document, optional boolean documentOnly = false);
+  sequence<CSSStyleRule> getCSSStyleRules(
     Element element,
-    [TreatNullAs=EmptyString] optional DOMString pseudo = "");
+    optional [TreatNullAs=EmptyString] DOMString pseudo = "");
   unsigned long getRuleLine(CSSRule rule);
   unsigned long getRuleColumn(CSSRule rule);
   unsigned long getRelativeRuleLine(CSSRule rule);
   boolean hasRulesModifiedByCSSOM(CSSStyleSheet sheet);
-  [NewObject] CSSLexer getCSSLexer(DOMString text);
   unsigned long getSelectorCount(CSSStyleRule rule);
   [Throws] DOMString getSelectorText(CSSStyleRule rule,
                                      unsigned long selectorIndex);
@@ -29,9 +29,10 @@ namespace InspectorUtils {
       Element element,
       CSSStyleRule rule,
       unsigned long selectorIndex,
-      [TreatNullAs=EmptyString] optional DOMString pseudo = "");
+      optional [TreatNullAs=EmptyString] DOMString pseudo = "");
   boolean isInheritedProperty(DOMString property);
   sequence<DOMString> getCSSPropertyNames(optional PropertyNamesOptions options);
+  sequence<PropertyPref> getCSSPropertyPrefs();
   [Throws] sequence<DOMString> getCSSValuesForProperty(DOMString property);
   [Throws] DOMString rgbToColorName(octet r, octet g, octet b);
   InspectorRGBATuple? colorToRGBA(DOMString colorString);
@@ -39,19 +40,7 @@ namespace InspectorUtils {
   [Throws] sequence<DOMString> getSubpropertiesForCSSProperty(DOMString property);
   [Throws] boolean cssPropertyIsShorthand(DOMString property);
 
-  // TODO: Change this to use an enum.
-  const unsigned long TYPE_LENGTH = 0;
-  const unsigned long TYPE_PERCENTAGE = 1;
-  const unsigned long TYPE_COLOR = 2;
-  const unsigned long TYPE_URL = 3;
-  const unsigned long TYPE_ANGLE = 4;
-  const unsigned long TYPE_FREQUENCY = 5;
-  const unsigned long TYPE_TIME = 6;
-  const unsigned long TYPE_GRADIENT = 7;
-  const unsigned long TYPE_TIMING_FUNCTION = 8;
-  const unsigned long TYPE_IMAGE_RECT = 9;
-  const unsigned long TYPE_NUMBER = 10;
-  [Throws] boolean cssPropertySupportsType(DOMString property, unsigned long type);
+  [Throws] boolean cssPropertySupportsType(DOMString property, InspectorPropertyType type);
 
   boolean isIgnorableWhitespace(CharacterData dataNode);
   Node? getParentForNode(Node node, boolean showingAnonymousContent);
@@ -72,7 +61,8 @@ namespace InspectorUtils {
   // to access via its .ranges attribute.
   [NewObject, Throws] sequence<InspectorFontFace> getUsedFontFaces(
       Range range,
-      optional unsigned long maxRanges = 0);
+      optional unsigned long maxRanges = 0,
+      optional boolean skipCollapsedWhitespace = true);
 
   sequence<DOMString> getCSSPseudoElementNames();
   void addPseudoClassLock(Element element,
@@ -82,11 +72,19 @@ namespace InspectorUtils {
   boolean hasPseudoClassLock(Element element, DOMString pseudoClass);
   void clearPseudoClassLocks(Element element);
   [Throws] void parseStyleSheet(CSSStyleSheet sheet, DOMString input);
-  void scrollElementIntoView(Element element);
+  boolean isCustomElementName([TreatNullAs=EmptyString] DOMString name,
+                              DOMString? namespaceURI);
 };
 
 dictionary PropertyNamesOptions {
   boolean includeAliases = false;
+  boolean includeShorthands = true;
+  boolean includeExperimentals = false;
+};
+
+dictionary PropertyPref {
+  required DOMString name;
+  required DOMString pref;
 };
 
 dictionary InspectorRGBATuple {
@@ -100,6 +98,14 @@ dictionary InspectorRGBATuple {
   double g = 0;
   double b = 0;
   double a = 1;
+};
+
+// Any update to this enum should probably also update
+// devtools/shared/css/constants.js
+enum InspectorPropertyType {
+  "color",
+  "gradient",
+  "timing-function",
 };
 
 dictionary InspectorVariationAxis {
@@ -126,7 +132,7 @@ dictionary InspectorFontFeature {
   required DOMString languageSystem;
 };
 
-[ChromeOnly]
+[Func="nsContentUtils::IsCallerChromeOrFuzzingEnabled"]
 interface InspectorFontFace {
   // An indication of how we found this font during font-matching.
   // Note that the same physical font may have been found in multiple ways within a range.
@@ -139,6 +145,8 @@ interface InspectorFontFace {
   readonly attribute DOMString CSSFamilyName; // a family name that could be used in CSS font-family
                                               // (not necessarily the actual name that was used,
                                               // due to aliases, generics, localized names, etc)
+  readonly attribute DOMString CSSGeneric; // CSS generic (serif, sans-serif, etc) that was mapped
+                                           // to this font, if any (frequently empty!)
 
   [NewObject,Throws] sequence<InspectorVariationAxis> getVariationAxes();
   [NewObject,Throws] sequence<InspectorVariationInstance> getVariationInstances();

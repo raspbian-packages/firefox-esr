@@ -61,7 +61,7 @@ class nsUnknownDecoder : public nsIStreamConverter,
     NS_DECL_NSISTREAMLISTENER
 
    private:
-    virtual ~ConvertedStreamListener();
+    virtual ~ConvertedStreamListener() = default;
     static nsresult AppendDataToString(nsIInputStream* inputStream,
                                        void* closure, const char* rawSegment,
                                        uint32_t toOffset, uint32_t count,

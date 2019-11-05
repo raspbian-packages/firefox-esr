@@ -6,8 +6,9 @@
 #include "nsISupports.idl"
 #include "domstubs.idl"
 
-interface nsISelection;
-
+webidl CharacterData;
+webidl Node;
+webidl Selection;
 
 /*
 Editor Action Listener interface to outside world
@@ -25,7 +26,6 @@ Editor Action Listener interface to outside world
  * nsIDocumentObserver.
  */
 [scriptable, uuid(b22907b1-ee93-11d2-8d50-000064657374)]
-
 interface nsIEditActionListener : nsISupports
 {
   /**
@@ -34,8 +34,8 @@ interface nsIEditActionListener : nsISupports
    * @param aNewNode  The DOM Node that was created.
    * @param aResult   The result of the create node operation.
    */
-  void DidCreateNode(in DOMString aTag,
-                     in nsIDOMNode aNewNode,
+  void DidCreateNode(in AString aTag,
+                     in Node aNewNode,
                      in nsresult aResult);
 
   /**
@@ -43,7 +43,7 @@ interface nsIEditActionListener : nsISupports
    * @param aNode     The DOM Node to insert.
    * @param aResult   The result of the insert node operation.
    */
-  void DidInsertNode(in nsIDOMNode aNode,
+  void DidInsertNode(in Node aNode,
                      in nsresult aResult);
 
   /**
@@ -51,7 +51,7 @@ interface nsIEditActionListener : nsISupports
    * @param aChild    The node to delete
    * @param aResult   The result of the delete node operation.
    */
-  void DidDeleteNode(in nsIDOMNode aChild, in nsresult aResult);
+  void DidDeleteNode(in Node aChild, in nsresult aResult);
 
   /**
    * Called after the editor splits a node.
@@ -60,8 +60,8 @@ interface nsIEditActionListener : nsISupports
    * @param aNewLeftNode         The new node resulting from the split, becomes
    *                             the previous sibling of aExistingRightNode.
    */
-  void DidSplitNode(in nsIDOMNode aExistingRightNode,
-                    in nsIDOMNode aNewLeftNode);
+  void DidSplitNode(in Node aExistingRightNode,
+                    in Node aNewLeftNode);
 
   /**
    * Called after the editor joins 2 nodes.
@@ -72,54 +72,54 @@ interface nsIEditActionListener : nsISupports
    * @param aParent     The parent of aRightNode
    * @param aResult     The result of the join operation.
    */
-  void DidJoinNodes(in nsIDOMNode aLeftNode,
-                          in nsIDOMNode aRightNode,
-                          in nsIDOMNode aParent,
-                          in nsresult    aResult);
+  void DidJoinNodes(in Node aLeftNode,
+                    in Node aRightNode,
+                    in Node aParent,
+                    in nsresult aResult);
 
   /**
    * Called after the editor inserts text.
-   * @param aTextNode   This node getting inserted text
+   * @param aTextNode   This node getting inserted text.
    * @param aOffset     The offset in aTextNode to insert at.
    * @param aString     The string that gets inserted.
    * @param aResult     The result of the insert text operation.
    */
-  void DidInsertText(in nsIDOMCharacterData aTextNode,
-                           in long                aOffset,
-                           in DOMString           aString,
-                           in nsresult            aResult);
+  void DidInsertText(in CharacterData       aTextNode,
+                     in long                aOffset,
+                     in AString             aString,
+                     in nsresult            aResult);
 
   /**
    * Called before the editor deletes text.
-   * @param aTextNode   This node getting text deleted
+   * @param aTextNode   This node getting text deleted.
    * @param aOffset     The offset in aTextNode to delete at.
    * @param aLength     The amount of text to delete.
    */
-  void WillDeleteText(in nsIDOMCharacterData aTextNode,
-                            in long                aOffset,
-                            in long                aLength);
+  void WillDeleteText(in CharacterData       aTextNode,
+                      in long                aOffset,
+                      in long                aLength);
 
   /**
    * Called before the editor deletes text.
-   * @param aTextNode   This node getting text deleted
+   * @param aTextNode   This node getting text deleted.
    * @param aOffset     The offset in aTextNode to delete at.
    * @param aLength     The amount of text to delete.
    * @param aResult     The result of the delete text operation.
    */
-  void DidDeleteText(in nsIDOMCharacterData aTextNode,
-                           in long                aOffset,
-                           in long                aLength,
-                           in nsresult              aResult);
+  void DidDeleteText(in CharacterData       aTextNode,
+                     in long                aOffset,
+                     in long                aLength,
+                     in nsresult            aResult);
 
   /**
    * Called before the editor deletes the selection.
    * @param aSelection   The selection to be deleted
    */
-  void WillDeleteSelection(in nsISelection aSelection);
+  void WillDeleteSelection(in Selection aSelection);
 
   /**
    * Called after the editor deletes the selection.
    * @param aSelection   The selection, after deletion
    */
-  void DidDeleteSelection(in nsISelection aSelection);
+  void DidDeleteSelection(in Selection aSelection);
 };

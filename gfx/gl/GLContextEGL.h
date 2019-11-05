@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,6 +10,7 @@
 #include "GLContext.h"
 #include "GLLibraryEGL.h"
 
+class gfxASurface;
 namespace mozilla {
 namespace widget {
 class CompositorWidget;
@@ -46,9 +47,11 @@ class GLContextEGL : public GLContext {
 
   void SetIsDoubleBuffered(bool aIsDB) { mIsDoubleBuffered = aIsDB; }
 
-  virtual bool IsANGLE() const override { return sEGLLibrary.IsANGLE(); }
+  virtual bool IsANGLE() const override {
+    return GLLibraryEGL::Get()->IsANGLE();
+  }
 
-  virtual bool IsWARP() const override { return sEGLLibrary.IsWARP(); }
+  virtual bool IsWARP() const override { return GLLibraryEGL::Get()->IsWARP(); }
 
   virtual bool BindTexImage() override;
 
@@ -65,7 +68,7 @@ class GLContextEGL : public GLContext {
 
   virtual void ReleaseSurface() override;
 
-  virtual bool SetupLookupFunction() override;
+  Maybe<SymbolLoader> GetSymbolLoader() const override;
 
   virtual bool SwapBuffers() override;
 
@@ -77,42 +80,56 @@ class GLContextEGL : public GLContext {
 
   EGLSurface GetEGLSurface() const { return mSurface; }
 
-  EGLDisplay GetEGLDisplay() const { return sEGLLibrary.Display(); }
+  EGLDisplay GetEGLDisplay() const { return GLLibraryEGL::Get()->Display(); }
 
   bool BindTex2DOffscreen(GLContext* aOffscreen);
   void UnbindTex2DOffscreen(GLContext* aOffscreen);
   void BindOffscreenFramebuffer();
 
+  void Destroy();
+
   static already_AddRefed<GLContextEGL> CreateEGLPBufferOffscreenContext(
       CreateContextFlags flags, const gfx::IntSize& size,
       const SurfaceCaps& minCaps, nsACString* const out_FailureId);
 
+#if defined(MOZ_WAYLAND) || defined(MOZ_WIDGET_ANDROID)
+  static EGLSurface CreateEGLSurfaceForCompositorWidget(
+      widget::CompositorWidget* aCompositorWidget, const EGLConfig aConfig);
+#endif
  protected:
   friend class GLContextProviderEGL;
   friend class GLContextEGLFactory;
+
+  virtual void OnMarkDestroyed() override;
 
  public:
   const EGLConfig mConfig;
 
  protected:
+  const RefPtr<GLLibraryEGL> mEgl;
   EGLSurface mSurface;
+  const EGLSurface mFallbackSurface;
 
  public:
   const EGLContext mContext;
 
  protected:
-  EGLSurface mSurfaceOverride;
+  EGLSurface mSurfaceOverride = EGL_NO_SURFACE;
   RefPtr<gfxASurface> mThebesSurface;
-  bool mBound;
+  bool mBound = false;
 
-  bool mIsPBuffer;
-  bool mIsDoubleBuffered;
-  bool mCanBindToTexture;
-  bool mShareWithEGLImage;
-  bool mOwnsContext;
+  bool mIsPBuffer = false;
+  bool mIsDoubleBuffered = false;
+  bool mCanBindToTexture = false;
+  bool mShareWithEGLImage = false;
+  bool mOwnsContext = true;
 
   static EGLSurface CreatePBufferSurfaceTryingPowerOfTwo(
       EGLConfig config, EGLenum bindToTextureFormat, gfx::IntSize& pbsize);
+#if defined(MOZ_WAYLAND)
+  static EGLSurface CreateWaylandBufferSurface(EGLConfig config,
+                                               gfx::IntSize& pbsize);
+#endif
 #if defined(MOZ_WIDGET_ANDROID)
  public:
   EGLSurface CreateCompatibleSurface(void* aWindow);

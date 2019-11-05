@@ -1,19 +1,28 @@
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* vim:set ts=2 sw=2 sts=2 et: */
 
-ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
-ChromeUtils.import("resource://gre/modules/osfile.jsm");
-ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://testing-common/AppInfo.jsm");
-ChromeUtils.import("resource://testing-common/httpd.js");
-ChromeUtils.defineModuleGetter(this, "TestUtils",
-                               "resource://testing-common/TestUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "NetUtil",
-                               "resource://gre/modules/NetUtil.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  FileUtils: "resource://gre/modules/FileUtils.jsm",
+  NetUtil: "resource://gre/modules/NetUtil.jsm",
+  RemoteSettings: "resource://services-settings/remote-settings.js",
+  SearchTestUtils: "resource://testing-common/SearchTestUtils.jsm",
+  Services: "resource://gre/modules/Services.jsm",
+  setTimeout: "resource://gre/modules/Timer.jsm",
+  TestUtils: "resource://testing-common/TestUtils.jsm",
+});
+
+var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+var { HttpServer } = ChromeUtils.import("resource://testing-common/httpd.js");
+var { AddonTestUtils } = ChromeUtils.import(
+  "resource://testing-common/AddonTestUtils.jsm"
+);
 
 const BROWSER_SEARCH_PREF = "browser.search.";
+const PREF_SEARCH_URL = "geoSpecificDefaults.url";
 const NS_APP_SEARCH_DIR = "SrchPlugns";
 
 const MODE_RDONLY = FileUtils.MODE_RDONLY;
@@ -25,183 +34,108 @@ const CACHE_FILENAME = "search.json.mozlz4";
 
 // nsSearchService.js uses Services.appinfo.name to build a salt for a hash.
 // eslint-disable-next-line mozilla/use-services
-var XULRuntime = Components.classesByID["{95d89e3e-a169-41a3-8e56-719978e15b12}"]
-                           .getService(Ci.nsIXULRuntime);
+var XULRuntime = Cc["@mozilla.org/xre/runtime;1"].getService(Ci.nsIXULRuntime);
 
-var isChild = XULRuntime.processType == XULRuntime.PROCESS_TYPE_CONTENT;
+// Expand the amount of information available in error logs
+Services.prefs.setBoolPref("browser.search.log", true);
 
-updateAppInfo({
-  name: "XPCShell",
-  ID: "xpcshell@test.mozilla.org",
-  version: "5",
-  platformVersion: "1.9",
-  // mirror OS from the base impl as some of the "location" tests rely on it
-  OS: XULRuntime.OS,
-  // mirror processType from the base implementation
-  extraProps: {
-    processType: XULRuntime.processType,
-  },
-});
+// The geo-specific search tests assume certain prefs are already setup, which
+// might not be true when run in comm-central etc.  So create them here.
+Services.prefs.setBoolPref("browser.search.geoSpecificDefaults", true);
+Services.prefs.setIntPref("browser.search.geoip.timeout", 3000);
+// But still disable geoip lookups - tests that need it will re-configure this.
+Services.prefs.setCharPref("browser.search.geoip.url", "");
+// Also disable region defaults - tests using it will also re-configure it.
+Services.prefs
+  .getDefaultBranch(BROWSER_SEARCH_PREF)
+  .setCharPref("geoSpecificDefaults.url", "");
 
-var gProfD;
-if (!isChild) {
-  // Need to create and register a profile folder.
-  gProfD = do_get_profile();
-}
-
-function dumpn(text) {
-  dump("search test: " + text + "\n");
-}
+AddonTestUtils.init(this, false);
+AddonTestUtils.createAppInfo(
+  "xpcshell@tests.mozilla.org",
+  "XPCShell",
+  "42",
+  "42"
+);
 
 /**
  * Configure preferences to load engines from
  * chrome://testsearchplugin/locale/searchplugins/
  */
 function configureToLoadJarEngines() {
-  let url = "chrome://testsearchplugin/locale/searchplugins/";
-  let resProt = Services.io.getProtocolHandler("resource")
-                        .QueryInterface(Ci.nsIResProtocolHandler);
-  resProt.setSubstitution("search-plugins",
-                          Services.io.newURI(url));
+  let searchExtensions = do_get_cwd();
+  searchExtensions.append("data");
+  searchExtensions.append("search-extensions");
+  let url = "file://" + searchExtensions.path;
+  let resProt = Services.io
+    .getProtocolHandler("resource")
+    .QueryInterface(Ci.nsIResProtocolHandler);
+  resProt.setSubstitution("search-extensions", Services.io.newURI(url));
 }
 
 /**
- * Fake the installation of an add-on in the profile, by creating the
- * directory and registering it with the directory service.
+ * Load engines from test data located in 'folder'
  */
-function installAddonEngine(name = "engine-addon") {
-  const XRE_EXTENSIONS_DIR_LIST = "XREExtDL";
-  const profD = do_get_profile().QueryInterface(Ci.nsIFile);
-
-  let dir = profD.clone();
-  dir.append("extensions");
-  if (!dir.exists())
-    dir.create(dir.DIRECTORY_TYPE, FileUtils.PERMS_DIRECTORY);
-
-  dir.append("search-engine@tests.mozilla.org");
-  dir.create(dir.DIRECTORY_TYPE, FileUtils.PERMS_DIRECTORY);
-
-  do_get_file("data/install.rdf").copyTo(dir, "install.rdf");
-  let addonDir = dir.clone();
-  dir.append("searchplugins");
-  dir.create(dir.DIRECTORY_TYPE, FileUtils.PERMS_DIRECTORY);
-  do_get_file("data/" + name + ".xml").copyTo(dir, "bug645970.xml");
-
-  Services.dirsvc.registerProvider({
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIDirectoryServiceProvider,
-                                           Ci.nsIDirectoryServiceProvider2]),
-
-    getFile(prop, persistant) {
-      throw Cr.NS_ERROR_FAILURE;
-    },
-
-    getFiles(prop) {
-      let result = [];
-
-      switch (prop) {
-      case XRE_EXTENSIONS_DIR_LIST:
-        result.push(addonDir);
-        break;
-      default:
-        throw Cr.NS_ERROR_FAILURE;
-      }
-
-      return {
-        QueryInterface: XPCOMUtils.generateQI([Ci.nsISimpleEnumerator]),
-        hasMoreElements: () => result.length > 0,
-        getNext: () => result.shift()
-      };
-    }
-  });
+function useTestEngines(folder) {
+  let searchExtensions = do_get_cwd();
+  searchExtensions.append("data");
+  searchExtensions.append(folder);
+  let resProt = Services.io
+    .getProtocolHandler("resource")
+    .QueryInterface(Ci.nsIResProtocolHandler);
+  resProt.setSubstitution(
+    "search-extensions",
+    Services.io.newURI("file://" + searchExtensions.path)
+  );
 }
 
-/**
- * Copy the engine-distribution.xml engine to a fake distribution
- * created in the profile, and registered with the directory service.
- */
-function installDistributionEngine() {
-  const XRE_APP_DISTRIBUTION_DIR = "XREAppDist";
-
-  const profD = do_get_profile().QueryInterface(Ci.nsIFile);
-
-  let dir = profD.clone();
-  dir.append("distribution");
-  dir.create(dir.DIRECTORY_TYPE, FileUtils.PERMS_DIRECTORY);
-  let distDir = dir.clone();
-
-  dir.append("searchplugins");
-  dir.create(dir.DIRECTORY_TYPE, FileUtils.PERMS_DIRECTORY);
-
-  dir.append("common");
-  dir.create(dir.DIRECTORY_TYPE, FileUtils.PERMS_DIRECTORY);
-
-  do_get_file("data/engine-override.xml").copyTo(dir, "bug645970.xml");
-
-  Services.dirsvc.registerProvider({
-    getFile(aProp, aPersistent) {
-      aPersistent.value = true;
-      if (aProp == XRE_APP_DISTRIBUTION_DIR)
-        return distDir.clone();
-      return null;
-    }
-  });
-}
-
-function promiseCacheData() {
-  return new Promise(resolve => (async function() {
-    let path = OS.Path.join(OS.Constants.Path.profileDir, CACHE_FILENAME);
-    let bytes = await OS.File.read(path, {compression: "lz4"});
-    resolve(JSON.parse(new TextDecoder().decode(bytes)));
-  })());
+async function promiseCacheData() {
+  let path = OS.Path.join(OS.Constants.Path.profileDir, CACHE_FILENAME);
+  let bytes = await OS.File.read(path, { compression: "lz4" });
+  return JSON.parse(new TextDecoder().decode(bytes));
 }
 
 function promiseSaveCacheData(data) {
-  return OS.File.writeAtomic(OS.Path.join(OS.Constants.Path.profileDir, CACHE_FILENAME),
-                             new TextEncoder().encode(JSON.stringify(data)),
-                             {compression: "lz4"});
+  return OS.File.writeAtomic(
+    OS.Path.join(OS.Constants.Path.profileDir, CACHE_FILENAME),
+    new TextEncoder().encode(JSON.stringify(data)),
+    { compression: "lz4" }
+  );
 }
 
-function promiseEngineMetadata() {
-  return new Promise(resolve => (async function() {
-    let cache = await promiseCacheData();
-    let data = {};
-    for (let engine of cache.engines) {
-      data[engine._shortName] = engine._metaData;
-    }
-    resolve(data);
-  })());
+async function promiseEngineMetadata() {
+  let cache = await promiseCacheData();
+  let data = {};
+  for (let engine of cache.engines) {
+    data[engine._shortName] = engine._metaData;
+  }
+  return data;
 }
 
-function promiseGlobalMetadata() {
-  return new Promise(resolve => (async function() {
-    let cache = await promiseCacheData();
-    resolve(cache.metaData);
-  })());
+async function promiseGlobalMetadata() {
+  return (await promiseCacheData()).metaData;
 }
 
-function promiseSaveGlobalMetadata(globalData) {
-  return new Promise(resolve => (async function() {
-    let data = await promiseCacheData();
-    data.metaData = globalData;
-    await promiseSaveCacheData(data);
-    resolve();
-  })());
+async function promiseSaveGlobalMetadata(globalData) {
+  let data = await promiseCacheData();
+  data.metaData = globalData;
+  await promiseSaveCacheData(data);
 }
 
-var forceExpiration = async function() {
+async function forceExpiration() {
   let metadata = await promiseGlobalMetadata();
 
   // Make the current geodefaults expire 1s ago.
   metadata.searchDefaultExpir = Date.now() - 1000;
   await promiseSaveGlobalMetadata(metadata);
-};
+}
 
 /**
  * Clean the profile of any cache file left from a previous run.
  * Returns a boolean indicating if the cache file existed.
  */
 function removeCacheFile() {
-  let file = gProfD.clone();
+  let file = do_get_profile().clone();
   file.append(CACHE_FILENAME);
   if (file.exists()) {
     file.remove(false);
@@ -226,24 +160,71 @@ function isUSTimezone() {
   // 600 minutes = 10 hours (UTC-10), which is
   // Hawaii-Aleutian Standard Time (http://www.timeanddate.com/time/zones/hast)
 
-  let UTCOffset = (new Date()).getTimezoneOffset();
+  let UTCOffset = new Date().getTimezoneOffset();
   return UTCOffset >= 150 && UTCOffset <= 600;
 }
 
 const kDefaultenginenamePref = "browser.search.defaultenginename";
 const kTestEngineName = "Test search engine";
-const REQ_LOCALES_CHANGED_TOPIC = "intl:requested-locales-changed";
+const TOPIC_LOCALES_CHANGE = "intl:app-locales-changed";
 
 function getDefaultEngineName(isUS) {
-  const nsIPLS = Ci.nsIPrefLocalizedString;
-  // Copy the logic from nsSearchService
-  let pref = kDefaultenginenamePref;
-  if (isUS === undefined)
-    isUS = Services.locale.getRequestedLocale() == "en-US" && isUSTimezone();
-  if (isUS) {
-    pref += ".US";
+  // The list of visibleDefaultEngines needs to match or the cache will be ignored.
+  let chan = NetUtil.newChannel({
+    uri: "resource://search-extensions/list.json",
+    loadUsingSystemPrincipal: true,
+  });
+  let searchSettings = parseJsonFromStream(chan.open());
+  let defaultEngineName = searchSettings.default.searchDefault;
+
+  if (isUS === undefined) {
+    isUS = Services.locale.requestedLocale == "en-US" && isUSTimezone();
   }
-  return Services.prefs.getComplexValue(pref, nsIPLS).data;
+
+  if (
+    isUS &&
+    ("US" in searchSettings && "searchDefault" in searchSettings.US)
+  ) {
+    defaultEngineName = searchSettings.US.searchDefault;
+  }
+  return defaultEngineName;
+}
+
+function getDefaultEngineList(isUS) {
+  // The list of visibleDefaultEngines needs to match or the cache will be ignored.
+  let chan = NetUtil.newChannel({
+    uri: "resource://search-extensions/list.json",
+    loadUsingSystemPrincipal: true,
+  });
+  let json = parseJsonFromStream(chan.open());
+  let visibleDefaultEngines = json.default.visibleDefaultEngines;
+
+  if (isUS === undefined) {
+    isUS = Services.locale.requestedLocale == "en-US" && isUSTimezone();
+  }
+
+  if (isUS) {
+    let searchSettings = json.locales["en-US"];
+    if (
+      "US" in searchSettings &&
+      "visibleDefaultEngines" in searchSettings.US
+    ) {
+      visibleDefaultEngines = searchSettings.US.visibleDefaultEngines;
+    }
+    // From nsSearchService.js
+    let searchRegion = "US";
+    if ("regionOverrides" in json && searchRegion in json.regionOverrides) {
+      for (let engine in json.regionOverrides[searchRegion]) {
+        let index = visibleDefaultEngines.indexOf(engine);
+        if (index > -1) {
+          visibleDefaultEngines[index] =
+            json.regionOverrides[searchRegion][engine];
+        }
+      }
+    }
+  }
+
+  return visibleDefaultEngines;
 }
 
 /**
@@ -251,25 +232,28 @@ function getDefaultEngineName(isUS) {
  * @return {Promise} Resolved when the cache file is saved.
  */
 function promiseAfterCache() {
-  return waitForSearchNotification("write-cache-to-disk-complete");
+  return SearchTestUtils.promiseSearchNotification(
+    "write-cache-to-disk-complete"
+  );
 }
 
 function parseJsonFromStream(aInputStream) {
   let bytes = NetUtil.readInputStream(aInputStream, aInputStream.available());
-  return JSON.parse((new TextDecoder()).decode(bytes));
+  return JSON.parse(new TextDecoder().decode(bytes));
 }
 
 /**
  * Read a JSON file and return the JS object
  */
 function readJSONFile(aFile) {
-  let stream = Cc["@mozilla.org/network/file-input-stream;1"].
-               createInstance(Ci.nsIFileInputStream);
+  let stream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(
+    Ci.nsIFileInputStream
+  );
   try {
     stream.init(aFile, MODE_RDONLY, FileUtils.PERMS_FILE, 0);
     return parseJsonFromStream(stream, stream.available());
   } catch (ex) {
-    dumpn("readJSONFile: Error reading JSON file: " + ex);
+    dump("search test: readJSONFile: Error reading JSON file: " + ex + "\n");
   } finally {
     stream.close();
   }
@@ -286,27 +270,12 @@ function isSubObjectOf(expectedObj, actualObj) {
       Assert.equal(expectedObj[prop].length, actualObj[prop].length);
       isSubObjectOf(expectedObj[prop], actualObj[prop]);
     } else {
-      if (expectedObj[prop] != actualObj[prop])
+      if (expectedObj[prop] != actualObj[prop]) {
         info("comparing property " + prop);
+      }
       Assert.equal(expectedObj[prop], actualObj[prop]);
     }
   }
-}
-
-// Can't set prefs if we're running in a child process, but the search  service
-// doesn't run in child processes anyways.
-if (!isChild) {
-  // Expand the amount of information available in error logs
-  Services.prefs.setBoolPref("browser.search.log", true);
-
-  // The geo-specific search tests assume certain prefs are already setup, which
-  // might not be true when run in comm-central etc.  So create them here.
-  Services.prefs.setBoolPref("browser.search.geoSpecificDefaults", true);
-  Services.prefs.setIntPref("browser.search.geoip.timeout", 3000);
-  // But still disable geoip lookups - tests that need it will re-configure this.
-  Services.prefs.setCharPref("browser.search.geoip.url", "");
-  // Also disable region defaults - tests using it will also re-configure it.
-  Services.prefs.getDefaultBranch(BROWSER_SEARCH_PREF).setCharPref("geoSpecificDefaults.url", "");
 }
 
 /**
@@ -331,6 +300,109 @@ function useHttpServer() {
     });
   });
   return httpServer;
+}
+
+async function withGeoServer(
+  testFn,
+  {
+    visibleDefaultEngines = null,
+    geoLookupData = null,
+    preGeolookupPromise = Promise.resolve,
+    cohort = null,
+    intval200 = 86400 * 365,
+    intval503 = 86400,
+    delay = 0,
+    path = "lookup_defaults",
+  } = {}
+) {
+  let srv = new HttpServer();
+  let gRequests = [];
+  srv.registerPathHandler("/lookup_defaults", (metadata, response) => {
+    let data = {
+      interval: intval200,
+      settings: { searchDefault: kTestEngineName },
+    };
+    if (cohort) {
+      data.cohort = cohort;
+    }
+    if (visibleDefaultEngines) {
+      data.settings.visibleDefaultEngines = visibleDefaultEngines;
+    }
+    response.processAsync();
+    setTimeout(() => {
+      response.setStatusLine("1.1", 200, "OK");
+      response.write(JSON.stringify(data));
+      response.finish();
+      gRequests.push(metadata);
+    }, delay);
+  });
+
+  srv.registerPathHandler("/lookup_fail", (metadata, response) => {
+    response.processAsync();
+    setTimeout(() => {
+      response.setStatusLine("1.1", 404, "Not Found");
+      response.finish();
+      gRequests.push(metadata);
+    }, delay);
+  });
+
+  srv.registerPathHandler("/lookup_unavailable", (metadata, response) => {
+    response.processAsync();
+    setTimeout(() => {
+      response.setStatusLine("1.1", 503, "Service Unavailable");
+      response.setHeader("Retry-After", intval503.toString());
+      response.finish();
+      gRequests.push(metadata);
+    }, delay);
+  });
+
+  srv.registerPathHandler("/lookup_geoip", async (metadata, response) => {
+    response.processAsync();
+    await preGeolookupPromise;
+    response.setStatusLine("1.1", 200, "OK");
+    response.write(JSON.stringify(geoLookupData));
+    response.finish();
+    gRequests.push(metadata);
+  });
+
+  srv.start(-1);
+
+  let url = `http://localhost:${srv.identity.primaryPort}/${path}?`;
+  let defaultBranch = Services.prefs.getDefaultBranch(BROWSER_SEARCH_PREF);
+  let originalURL = defaultBranch.getCharPref(PREF_SEARCH_URL);
+  defaultBranch.setCharPref(PREF_SEARCH_URL, url);
+  // Set a bogus user value so that running the test ensures we ignore it.
+  Services.prefs.setCharPref(
+    BROWSER_SEARCH_PREF + PREF_SEARCH_URL,
+    "about:blank"
+  );
+
+  let geoLookupUrl = geoLookupData
+    ? `http://localhost:${srv.identity.primaryPort}/lookup_geoip`
+    : 'data:application/json,{"country_code": "FR"}';
+  Services.prefs.setCharPref("browser.search.geoip.url", geoLookupUrl);
+
+  try {
+    await testFn(gRequests);
+  } catch (ex) {
+    throw ex;
+  } finally {
+    srv.stop(() => {});
+    defaultBranch.setCharPref(PREF_SEARCH_URL, originalURL);
+    Services.prefs.clearUserPref(BROWSER_SEARCH_PREF + PREF_SEARCH_URL);
+    Services.prefs.clearUserPref("browser.search.geoip.url");
+  }
+}
+
+function checkNoRequest(requests) {
+  Assert.equal(requests.length, 0);
+}
+
+function checkRequest(requests, cohort = "") {
+  Assert.equal(requests.length, 1);
+  let req = requests.pop();
+  Assert.equal(req._method, "GET");
+  Assert.equal(req._queryString, cohort ? "/" + cohort : "");
 }
 
 /**
@@ -374,8 +446,7 @@ var addTestEngines = async function(aItems) {
       }, "browser-search-engine-modified");
 
       if (item.xmlFileName) {
-        Services.search.addEngine(gDataUrl + item.xmlFileName,
-                                  null, null, false);
+        Services.search.addEngine(gDataUrl + item.xmlFileName, null, false);
       } else {
         Services.search.addEngineWithDetails(item.name, ...item.details);
       }
@@ -390,76 +461,26 @@ var addTestEngines = async function(aItems) {
  */
 function installTestEngine() {
   useHttpServer();
-  return addTestEngines([
-    { name: kTestEngineName, xmlFileName: "engine.xml" },
-  ]);
+  return addTestEngines([{ name: kTestEngineName, xmlFileName: "engine.xml" }]);
 }
 
-/**
- * Set a localized preference on the default branch
- * @param aPrefName
- *        The name of the pref to set.
- */
-function setLocalizedDefaultPref(aPrefName, aValue) {
-  let value = "data:text/plain," + BROWSER_SEARCH_PREF + aPrefName + "=" + aValue;
-  Services.prefs.getDefaultBranch(BROWSER_SEARCH_PREF)
-          .setCharPref(aPrefName, value);
-}
+async function asyncReInit({
+  waitForRegionFetch = false,
+  skipReset = false,
+} = {}) {
+  let promises = [SearchTestUtils.promiseSearchNotification("reinit-complete")];
+  if (waitForRegionFetch) {
+    promises.push(
+      SearchTestUtils.promiseSearchNotification("ensure-known-region-done")
+    );
+  }
 
+  if (!skipReset) {
+    Services.search.reset();
+  }
+  Services.search.reInit(!waitForRegionFetch);
 
-/**
- * Installs two test engines, sets them as default for US vs. general.
- */
-function setUpGeoDefaults() {
-  const kSecondTestEngineName = "A second test engine";
-
-  setLocalizedDefaultPref("defaultenginename", "Test search engine");
-  setLocalizedDefaultPref("defaultenginename.US", "A second test engine");
-
-  useHttpServer();
-  return addTestEngines([
-    { name: kTestEngineName, xmlFileName: "engine.xml" },
-    { name: kSecondTestEngineName, xmlFileName: "engine2.xml" },
-  ]);
-}
-
-/**
- * Returns a promise that is resolved when an observer notification from the
- * search service fires with the specified data.
- *
- * @param aExpectedData
- *        The value the observer notification sends that causes us to resolve
- *        the promise.
- */
-function waitForSearchNotification(aExpectedData) {
-  return new Promise(resolve => {
-    const SEARCH_SERVICE_TOPIC = "browser-search-service";
-    Services.obs.addObserver(function observer(aSubject, aTopic, aData) {
-      if (aData != aExpectedData)
-        return;
-
-      Services.obs.removeObserver(observer, SEARCH_SERVICE_TOPIC);
-      resolve(aSubject);
-    }, SEARCH_SERVICE_TOPIC);
-  });
-}
-
-function asyncInit() {
-  return new Promise(resolve => {
-    Services.search.init(function() {
-      Assert.ok(Services.search.isInitialized);
-      resolve();
-    });
-  });
-}
-
-function asyncReInit() {
-  let promise = waitForSearchNotification("reinit-complete");
-
-  Services.search.QueryInterface(Ci.nsIObserver)
-          .observe(null, REQ_LOCALES_CHANGED_TOPIC, null);
-
-  return promise;
+  return Promise.all(promises);
 }
 
 // This "enum" from nsSearchService.js
@@ -479,12 +500,51 @@ const TELEMETRY_RESULT_ENUM = {
  *        nothing recorded in the probe at all.
  */
 function checkCountryResultTelemetry(aExpectedValue) {
-  let histogram = Services.telemetry.getHistogramById("SEARCH_SERVICE_COUNTRY_FETCH_RESULT");
+  let histogram = Services.telemetry.getHistogramById(
+    "SEARCH_SERVICE_COUNTRY_FETCH_RESULT"
+  );
   let snapshot = histogram.snapshot();
-  // The probe is declared with 8 values, but we get 9 back from .counts
-  let expectedCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   if (aExpectedValue != null) {
-    expectedCounts[aExpectedValue] = 1;
+    equal(snapshot.values[aExpectedValue], 1);
+  } else {
+    deepEqual(snapshot.values, {});
   }
-  deepEqual(snapshot.counts, expectedCounts);
 }
+
+/**
+ * Provides a basic set of remote settings for use in tests.
+ */
+async function setupRemoteSettings() {
+  const collection = await RemoteSettings("hijack-blocklists").openCollection();
+  await collection.clear();
+  await collection.create(
+    {
+      id: "submission-urls",
+      matches: ["ignore=true"],
+    },
+    { synced: true }
+  );
+  await collection.create(
+    {
+      id: "load-paths",
+      matches: ["[other]addEngineWithDetails:searchignore@mozilla.com"],
+    },
+    { synced: true }
+  );
+  await collection.db.saveLastModified(42);
+}
+
+/**
+ * Some tests might trigger initialisation which will trigger the search settings
+ * update. We need to make sure we wait for that to finish before we exit, otherwise
+ * it may cause shutdown issues.
+ */
+let updatePromise = SearchTestUtils.promiseSearchNotification(
+  "settings-update-complete"
+);
+
+registerCleanupFunction(async () => {
+  if (Services.search.isInitialized) {
+    await updatePromise;
+  }
+});

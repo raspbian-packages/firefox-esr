@@ -3,8 +3,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "nsTArray.h"
 #include "nsCellMap.h"
+
+#include "mozilla/PresShell.h"
+
+#include "nsTArray.h"
 #include "nsTableFrame.h"
 #include "nsTableCellFrame.h"
 #include "nsTableRowFrame.h"
@@ -188,7 +191,7 @@ static nsCellMap* FindMapFor(const nsTableRowGroupFrame* aRowGroup,
 
 nsCellMap* nsTableCellMap::GetMapFor(const nsTableRowGroupFrame* aRowGroup,
                                      nsCellMap* aStartHint) const {
-  NS_PRECONDITION(aRowGroup, "Must have a rowgroup");
+  MOZ_ASSERT(aRowGroup, "Must have a rowgroup");
   NS_ASSERTION(!aRowGroup->GetPrevInFlow(),
                "GetMapFor called with continuation");
   if (aStartHint) {
@@ -303,7 +306,7 @@ int32_t nsTableCellMap::GetEffectiveRowSpan(int32_t aRowIndex,
     rowIndex -= map->GetRowCount();
     map = map->GetNextSibling();
   }
-  NS_NOTREACHED("Bogus row index?");
+  MOZ_ASSERT_UNREACHABLE("Bogus row index?");
   return 0;
 }
 
@@ -318,7 +321,7 @@ int32_t nsTableCellMap::GetEffectiveColSpan(int32_t aRowIndex,
     rowIndex -= map->GetRowCount();
     map = map->GetNextSibling();
   }
-  NS_NOTREACHED("Bogus row index?");
+  MOZ_ASSERT_UNREACHABLE("Bogus row index?");
   return 0;
 }
 
@@ -593,8 +596,8 @@ void nsTableCellMap::RebuildConsideringRows(
     nsCellMap* aCellMap, int32_t aStartRowIndex,
     nsTArray<nsTableRowFrame*>* aRowsToInsert, int32_t aNumRowsToRemove,
     TableArea& aDamageArea) {
-  NS_PRECONDITION(!aRowsToInsert || aNumRowsToRemove == 0,
-                  "Can't handle both removing and inserting rows at once");
+  MOZ_ASSERT(!aRowsToInsert || aNumRowsToRemove == 0,
+             "Can't handle both removing and inserting rows at once");
 
   int32_t numOrigCols = GetColCount();
   ClearCols();
@@ -806,9 +809,8 @@ bool nsTableCellMap::RowHasSpanningCells(int32_t aRowIndex,
 // Consider removing support for the other three values.
 void nsTableCellMap::ResetBStartStart(LogicalSide aSide, nsCellMap& aCellMap,
                                       uint32_t aRowGroupStart,
-                                      uint32_t aRowIndex, uint32_t aColIndex,
-                                      bool aIsBEndIEnd) {
-  if (!mBCInfo || aIsBEndIEnd) ABORT0();
+                                      uint32_t aRowIndex, uint32_t aColIndex) {
+  if (!mBCInfo) ABORT0();
 
   BCCellData* cellData;
   BCData* bcData = nullptr;
@@ -856,7 +858,7 @@ void nsTableCellMap::ResetBStartStart(LogicalSide aSide, nsCellMap& aCellMap,
 }
 
 // store the aSide border segment at coord = (aRowIndex, aColIndex). For
-// bStart/iStart, store the info at coord. For bEnd/iStart store it at the
+// bStart/iStart, store the info at coord. For bEnd/iEnd store it at the
 // adjacent location so that it is bStart/iStart at that location. If the new
 // location is at the iEnd or bEnd edge of the table, then store it one of the
 // special arrays (iEnd-most borders, bEnd-most borders).
@@ -2429,8 +2431,8 @@ void nsCellMapColumnIterator::AdvanceRowGroup() {
 }
 
 void nsCellMapColumnIterator::IncrementRow(int32_t aIncrement) {
-  NS_PRECONDITION(aIncrement >= 0, "Bogus increment");
-  NS_PRECONDITION(mCurMap, "Bogus mOrigCells?");
+  MOZ_ASSERT(aIncrement >= 0, "Bogus increment");
+  MOZ_ASSERT(mCurMap, "Bogus mOrigCells?");
   if (aIncrement == 0) {
     AdvanceRowGroup();
   } else {
@@ -2501,6 +2503,6 @@ nsTableCellFrame* nsCellMapColumnIterator::GetNextFrame(int32_t* aRow,
     return cellFrame;
   }
 
-  NS_NOTREACHED("Can't get here");
+  MOZ_ASSERT_UNREACHABLE("Can't get here");
   return nullptr;
 }

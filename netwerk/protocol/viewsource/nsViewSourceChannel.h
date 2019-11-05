@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,6 +17,7 @@
 #include "nsIApplicationCacheChannel.h"
 #include "nsIFormPOSTActionChannel.h"
 #include "mozilla/Attributes.h"
+#include "mozilla/net/NeckoChannelParams.h"
 
 class nsViewSourceChannel final : public nsIViewSourceChannel,
                                   public nsIStreamListener,
@@ -42,7 +43,8 @@ class nsViewSourceChannel final : public nsIViewSourceChannel,
   NS_FORWARD_SAFE_NSIHTTPCHANNELINTERNAL(mHttpChannelInternal)
 
   // nsViewSourceChannel methods:
-  nsViewSourceChannel() : mIsDocument(false), mOpened(false) {}
+  nsViewSourceChannel()
+      : mIsDocument(false), mOpened(false), mIsSrcdocChannel(false) {}
 
   MOZ_MUST_USE nsresult Init(nsIURI* uri);
 
@@ -58,7 +60,8 @@ class nsViewSourceChannel final : public nsIViewSourceChannel,
   nsresult UpdateLoadInfoResultPrincipalURI();
 
  protected:
-  ~nsViewSourceChannel() {}
+  ~nsViewSourceChannel() = default;
+  nsTArray<mozilla::net::PreferredAlternativeDataTypeParams> mEmptyArray;
 
   // Clones aURI and prefixes it with "view-source:" schema,
   nsresult BuildViewSourceURI(nsIURI* aURI, nsIURI** aResult);

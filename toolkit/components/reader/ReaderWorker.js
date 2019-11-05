@@ -10,9 +10,11 @@
  * A worker dedicated to handle parsing documents for reader view.
  */
 
-importScripts("resource://gre/modules/workers/require.js",
-              "resource://gre/modules/reader/JSDOMParser.js",
-              "resource://gre/modules/reader/Readability.js");
+importScripts(
+  "resource://gre/modules/workers/require.js",
+  "resource://gre/modules/reader/JSDOMParser.js",
+  "resource://gre/modules/reader/Readability.js"
+);
 
 var PromiseWorker = require("resource://gre/modules/workers/PromiseWorker.js");
 
@@ -48,6 +50,6 @@ var Agent = {
    */
   parseDocument(uri, serializedDoc, options) {
     let doc = new JSDOMParser().parse(serializedDoc, uri.spec);
-    return new Readability(uri, doc, options).parse();
+    return new Readability(doc, options).parse();
   },
 };

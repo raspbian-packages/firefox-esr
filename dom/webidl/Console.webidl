@@ -8,7 +8,7 @@
  * https://console.spec.whatwg.org/#console-namespace
  */
 
-[Exposed=(Window,Worker,WorkerDebugger,Worklet,System),
+[Exposed=(Window,Worker,WorkerDebugger,Worklet),
  ClassString="Console",
  ProtoObjectHack]
 namespace console {
@@ -23,6 +23,8 @@ namespace console {
   void clear();
   [UseCounter]
   void count(optional DOMString label = "default");
+  [UseCounter]
+  void countReset(optional DOMString label = "default");
   [UseCounter]
   void debug(any... data);
   [UseCounter]
@@ -53,6 +55,8 @@ namespace console {
   // Timing
   [UseCounter]
   void time(optional DOMString label = "default");
+  [UseCounter]
+  void timeLog(optional DOMString label = "default", any... data);
   [UseCounter]
   void timeEnd(optional DOMString label = "default");
 
@@ -83,6 +87,9 @@ dictionary ConsoleEvent {
   DOMString addonId = "";
   DOMString level = "";
   DOMString filename = "";
+  // Unique identifier within the process for the script source this event is
+  // associated with, or zero.
+  unsigned long sourceId = 0;
   unsigned long lineNumber = 0;
   unsigned long columnNumber = 0;
   DOMString functionName = "";
@@ -100,17 +107,22 @@ dictionary ConsoleEvent {
   any timer = null;
   any counter = null;
   DOMString prefix = "";
+  boolean chromeContext = false;
 };
 
 // Event for profile operations
 dictionary ConsoleProfileEvent {
   DOMString action = "";
   sequence<any> arguments;
+  boolean chromeContext = false;
 };
 
 // This dictionary is used to manage stack trace data.
 dictionary ConsoleStackEntry {
   DOMString filename = "";
+  // Unique identifier within the process for the script source this entry is
+  // associated with, or zero.
+  unsigned long sourceId = 0;
   unsigned long lineNumber = 0;
   unsigned long columnNumber = 0;
   DOMString functionName = "";
@@ -121,7 +133,7 @@ dictionary ConsoleTimerStart {
   DOMString name = "";
 };
 
-dictionary ConsoleTimerEnd {
+dictionary ConsoleTimerLogOrEnd {
   DOMString name = "";
   double duration = 0;
 };
@@ -137,17 +149,19 @@ dictionary ConsoleCounter {
 };
 
 dictionary ConsoleCounterError {
-  DOMString error = "maxCountersExceeded";
+  DOMString label = "";
+  DOMString error = "";
 };
 
 [ChromeOnly,
- Exposed=(Window,Worker,WorkerDebugger,Worklet,System)]
+ Exposed=(Window,Worker,WorkerDebugger,Worklet)]
 // This is basically a copy of the console namespace.
 interface ConsoleInstance {
   // Logging
   void assert(optional boolean condition = false, any... data);
   void clear();
   void count(optional DOMString label = "default");
+  void countReset(optional DOMString label = "default");
   void debug(any... data);
   void error(any... data);
   void info(any... data);
@@ -165,6 +179,7 @@ interface ConsoleInstance {
 
   // Timing
   void time(optional DOMString label = "default");
+  void timeLog(optional DOMString label = "default", any... data);
   void timeEnd(optional DOMString label = "default");
 
   // Mozilla only or Webcompat methods
@@ -179,8 +194,9 @@ interface ConsoleInstance {
 callback ConsoleInstanceDumpCallback = void (DOMString message);
 
 enum ConsoleLogLevel {
-  "all", "debug", "log", "info", "clear", "trace", "timeEnd", "time", "group",
-  "groupEnd", "profile", "profileEnd", "dir", "dirxml", "warn", "error", "off"
+  "All", "Debug", "Log", "Info", "Clear", "Trace", "TimeLog", "TimeEnd", "Time",
+  "Group", "GroupEnd", "Profile", "ProfileEnd", "Dir", "Dirxml", "Warn", "Error",
+  "Off"
 };
 
 dictionary ConsoleInstanceOptions {

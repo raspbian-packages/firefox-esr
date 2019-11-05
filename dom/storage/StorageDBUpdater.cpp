@@ -13,7 +13,6 @@
 #include "mozIStorageFunction.h"
 #include "mozilla/BasePrincipal.h"
 #include "nsVariant.h"
-#include "mozilla/Services.h"
 #include "mozilla/Tokenizer.h"
 
 // Current version of the database schema
@@ -71,6 +70,7 @@ class ExtractOriginData : protected mozilla::Tokenizer {
     origin.Assign(scope);
 
     // Bail out if it isn't appId.
+    // AppId doesn't exist any more but we could have old storage data...
     uint32_t appId;
     if (!ReadInteger(&appId)) {
       return;
@@ -131,7 +131,7 @@ class ExtractOriginData : protected mozilla::Tokenizer {
         }
       }
     } else {
-      OriginAttributes attrs(appId, inIsolatedMozBrowser);
+      OriginAttributes attrs(inIsolatedMozBrowser);
       attrs.CreateSuffix(suffix);
     }
 
@@ -169,7 +169,7 @@ GetOriginParticular::OnFunctionCall(mozIStorageValueArray* aFunctionArguments,
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoCString suffix, origin;
-  ExtractOriginData(scope, suffix, origin);
+  ExtractOriginData extractor(scope, suffix, origin);
 
   nsCOMPtr<nsIWritableVariant> outVar(new nsVariant());
 

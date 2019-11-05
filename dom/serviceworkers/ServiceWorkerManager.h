@@ -26,12 +26,12 @@
 #include "mozilla/dom/ServiceWorkerRegistrar.h"
 #include "mozilla/dom/ServiceWorkerRegistrarTypes.h"
 #include "mozilla/dom/ServiceWorkerRegistrationInfo.h"
+#include "mozilla/dom/ServiceWorkerUtils.h"
 #include "mozilla/ipc/BackgroundUtils.h"
 #include "nsClassHashtable.h"
 #include "nsDataHashtable.h"
 #include "nsRefPtrHashtable.h"
 #include "nsTArrayForwardDeclare.h"
-#include "nsTObserverArray.h"
 
 class nsIConsoleReportCollector;
 
@@ -45,12 +45,12 @@ class PrincipalInfo;
 
 namespace dom {
 
+class ContentParent;
 class ServiceWorkerInfo;
 class ServiceWorkerJobQueue;
 class ServiceWorkerManagerChild;
 class ServiceWorkerPrivate;
 class ServiceWorkerRegistrar;
-class ServiceWorkerRegistrationListener;
 
 class ServiceWorkerUpdateFinishCallback {
  protected:
@@ -78,7 +78,6 @@ class ServiceWorkerUpdateFinishCallback {
  */
 class ServiceWorkerManager final : public nsIServiceWorkerManager,
                                    public nsIObserver {
-  friend class GetReadyPromiseRunnable;
   friend class GetRegistrationsRunnable;
   friend class GetRegistrationRunnable;
   friend class ServiceWorkerJob;
@@ -96,9 +95,6 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
   nsClassHashtable<nsCStringHashKey, RegistrationDataPerPrincipal>
       mRegistrationInfos;
 
-  nsTObserverArray<ServiceWorkerRegistrationListener*>
-      mServiceWorkerRegistrationListeners;
-
   struct ControlledClientData {
     RefPtr<ClientHandle> mClientHandle;
     RefPtr<ServiceWorkerRegistrationInfo> mRegistrationInfo;
@@ -109,6 +105,17 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
   };
 
   nsClassHashtable<nsIDHashKey, ControlledClientData> mControlledClients;
+
+  struct PendingReadyData {
+    RefPtr<ClientHandle> mClientHandle;
+    RefPtr<ServiceWorkerRegistrationPromise::Private> mPromise;
+
+    explicit PendingReadyData(ClientHandle* aClientHandle)
+        : mClientHandle(aClientHandle),
+          mPromise(new ServiceWorkerRegistrationPromise::Private(__func__)) {}
+  };
+
+  nsTArray<UniquePtr<PendingReadyData>> mPendingReadyList;
 
   bool IsAvailable(nsIPrincipal* aPrincipal, nsIURI* aURI);
 
@@ -155,6 +162,17 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
   void PropagateRemoveAll();
 
   void RemoveAll();
+
+  RefPtr<ServiceWorkerRegistrationPromise> Register(
+      const ClientInfo& aClientInfo, const nsACString& aScopeURL,
+      const nsACString& aScriptURL,
+      ServiceWorkerUpdateViaCache aUpdateViaCache);
+
+  RefPtr<ServiceWorkerRegistrationPromise> GetRegistration(
+      const ClientInfo& aClientInfo, const nsACString& aURL) const;
+
+  RefPtr<ServiceWorkerRegistrationListPromise> GetRegistrations(
+      const ClientInfo& aClientInfo) const;
 
   already_AddRefed<ServiceWorkerRegistrationInfo> GetRegistration(
       nsIPrincipal* aPrincipal, const nsACString& aScope) const;
@@ -219,12 +237,13 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
                    const nsString& aLine, uint32_t aLineNumber,
                    uint32_t aColumnNumber, uint32_t aFlags, JSExnType aExnType);
 
-  already_AddRefed<GenericPromise> MaybeClaimClient(
-      nsIDocument* aDocument,
+  MOZ_MUST_USE RefPtr<GenericPromise> MaybeClaimClient(
+      const ClientInfo& aClientInfo,
       ServiceWorkerRegistrationInfo* aWorkerRegistration);
 
-  already_AddRefed<GenericPromise> MaybeClaimClient(
-      nsIDocument* aDoc, const ServiceWorkerDescriptor& aServiceWorker);
+  MOZ_MUST_USE RefPtr<GenericPromise> MaybeClaimClient(
+      const ClientInfo& aClientInfo,
+      const ServiceWorkerDescriptor& aServiceWorker);
 
   void SetSkipWaitingFlag(nsIPrincipal* aPrincipal, const nsCString& aScope,
                           uint64_t aServiceWorkerID);
@@ -241,14 +260,6 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
   void ForceUnregister(RegistrationDataPerPrincipal* aRegistrationData,
                        ServiceWorkerRegistrationInfo* aRegistration);
 
-  NS_IMETHOD
-  AddRegistrationEventListener(const nsAString& aScope,
-                               ServiceWorkerRegistrationListener* aListener);
-
-  NS_IMETHOD
-  RemoveRegistrationEventListener(const nsAString& aScope,
-                                  ServiceWorkerRegistrationListener* aListener);
-
   void MaybeCheckNavigationUpdate(const ClientInfo& aClientInfo);
 
   nsresult SendPushEvent(const nsACString& aOriginAttributes,
@@ -259,7 +270,15 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
 
   void WorkerIsIdle(ServiceWorkerInfo* aWorker);
 
+  RefPtr<ServiceWorkerRegistrationPromise> WhenReady(
+      const ClientInfo& aClientInfo);
+
   void CheckPendingReadyPromises();
+
+  void RemovePendingReadyPromise(const ClientInfo& aClientInfo);
+
+  void NoteInheritedController(const ClientInfo& aClientInfo,
+                               const ServiceWorkerDescriptor& aController);
 
  private:
   ServiceWorkerManager();
@@ -269,7 +288,8 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
 
   RefPtr<GenericPromise> StartControllingClient(
       const ClientInfo& aClientInfo,
-      ServiceWorkerRegistrationInfo* aRegistrationInfo);
+      ServiceWorkerRegistrationInfo* aRegistrationInfo,
+      bool aControlClientHandle = true);
 
   void StopControllingClient(const ClientInfo& aClientInfo);
 
@@ -294,31 +314,22 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
   ServiceWorkerInfo* GetActiveWorkerInfoForScope(
       const OriginAttributes& aOriginAttributes, const nsACString& aScope);
 
-  ServiceWorkerInfo* GetActiveWorkerInfoForDocument(nsIDocument* aDocument);
-
-  void UpdateRegistrationListeners(ServiceWorkerRegistrationInfo* aReg);
-
-  void NotifyServiceWorkerRegistrationRemoved(
-      ServiceWorkerRegistrationInfo* aRegistration);
-
   void StopControllingRegistration(
       ServiceWorkerRegistrationInfo* aRegistration);
 
   already_AddRefed<ServiceWorkerRegistrationInfo>
-  GetServiceWorkerRegistrationInfo(nsPIDOMWindowInner* aWindow);
+  GetServiceWorkerRegistrationInfo(const ClientInfo& aClientInfo) const;
 
   already_AddRefed<ServiceWorkerRegistrationInfo>
-  GetServiceWorkerRegistrationInfo(nsIDocument* aDoc);
+  GetServiceWorkerRegistrationInfo(nsIPrincipal* aPrincipal,
+                                   nsIURI* aURI) const;
 
   already_AddRefed<ServiceWorkerRegistrationInfo>
-  GetServiceWorkerRegistrationInfo(nsIPrincipal* aPrincipal, nsIURI* aURI);
+  GetServiceWorkerRegistrationInfo(const nsACString& aScopeKey,
+                                   nsIURI* aURI) const;
 
-  already_AddRefed<ServiceWorkerRegistrationInfo>
-  GetServiceWorkerRegistrationInfo(const nsACString& aScopeKey, nsIURI* aURI);
-
-  // This method generates a key using appId and isInElementBrowser from the
-  // principal. We don't use the origin because it can change during the
-  // loading.
+  // This method generates a key using isInElementBrowser from the principal. We
+  // don't use the origin because it can change during the loading.
   static nsresult PrincipalToScopeKey(nsIPrincipal* aPrincipal,
                                       nsACString& aKey);
 
@@ -341,27 +352,7 @@ class ServiceWorkerManager final : public nsIServiceWorkerManager,
   void QueueFireEventOnServiceWorkerRegistrations(
       ServiceWorkerRegistrationInfo* aRegistration, const nsAString& aName);
 
-  void FireUpdateFoundOnServiceWorkerRegistrations(
-      ServiceWorkerRegistrationInfo* aRegistration);
-
   void UpdateClientControllers(ServiceWorkerRegistrationInfo* aRegistration);
-
-  void StorePendingReadyPromise(nsPIDOMWindowInner* aWindow, nsIURI* aURI,
-                                Promise* aPromise);
-
-  bool CheckReadyPromise(nsPIDOMWindowInner* aWindow, nsIURI* aURI,
-                         Promise* aPromise);
-
-  struct PendingReadyPromise final {
-    PendingReadyPromise(nsIURI* aURI, Promise* aPromise)
-        : mURI(aURI), mPromise(aPromise) {}
-
-    nsCOMPtr<nsIURI> mURI;
-    RefPtr<Promise> mPromise;
-  };
-
-  nsClassHashtable<nsISupportsHashKey, PendingReadyPromise>
-      mPendingReadyPromises;
 
   void MaybeRemoveRegistration(ServiceWorkerRegistrationInfo* aRegistration);
 

@@ -19,61 +19,82 @@ const TEST_URI = `
 
 const HIGHLIGHTER_TYPE = "ShapesHighlighter";
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let {inspector, view} = yield openRuleView();
-  let highlighters = view.highlighters;
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { inspector, view } = await openRuleView();
+  const highlighters = view.highlighters;
 
-  yield selectNode("#shape", inspector);
-  let container = getRuleViewProperty(view, "#shape", "clip-path").valueSpan;
-  let shapesToggle = container.querySelector(".ruleview-shapeswatch");
-
-  info("Checking the initial state of the CSS shape toggle in the rule-view.");
-  ok(!highlighters.highlighters[HIGHLIGHTER_TYPE],
-    "No CSS shapes highlighter exists in the rule-view.");
-  ok(!highlighters.shapesHighlighterShown, "No CSS shapes highlighter is shown.");
+  info("Select a node with a shape value");
+  await selectNode("#shape", inspector);
+  const container = getRuleViewProperty(view, "#shape", "clip-path").valueSpan;
+  const shapesToggle = container.querySelector(".ruleview-shapeswatch");
 
   info("Toggling ON the CSS shapes highlighter with transform mode on.");
   let onHighlighterShown = highlighters.once("shapes-highlighter-shown");
-  EventUtils.sendMouseEvent({type: "click", metaKey: true, ctrlKey: true},
-    shapesToggle, view.styleWindow);
-  yield onHighlighterShown;
+  EventUtils.sendMouseEvent(
+    { type: "click", metaKey: true, ctrlKey: true },
+    shapesToggle,
+    view.styleWindow
+  );
+  await onHighlighterShown;
 
-  info("Checking the CSS shapes highlighter is created and transform mode is on");
-  ok(highlighters.highlighters[HIGHLIGHTER_TYPE],
-    "CSS shapes highlighter created in the rule-view.");
+  info(
+    "Checking the CSS shapes highlighter is created and transform mode is on"
+  );
+  ok(
+    highlighters.highlighters[HIGHLIGHTER_TYPE],
+    "CSS shapes highlighter created in the rule-view."
+  );
   ok(highlighters.shapesHighlighterShown, "CSS shapes highlighter is shown.");
   ok(highlighters.state.shapes.options.transformMode, "Transform mode is on.");
 
   info("Toggling OFF the CSS shapes highlighter from the rule-view.");
-  let onHighlighterHidden = highlighters.once("shapes-highlighter-hidden");
-  EventUtils.sendMouseEvent({type: "click"},
-    shapesToggle, view.styleWindow);
-  yield onHighlighterHidden;
+  const onHighlighterHidden = highlighters.once("shapes-highlighter-hidden");
+  EventUtils.sendMouseEvent({ type: "click" }, shapesToggle, view.styleWindow);
+  await onHighlighterHidden;
 
   info("Checking the CSS shapes highlighter is not shown.");
-  ok(!highlighters.shapesHighlighterShown, "No CSS shapes highlighter is shown.");
+  ok(
+    !highlighters.shapesHighlighterShown,
+    "No CSS shapes highlighter is shown."
+  );
 
   info("Toggling ON the CSS shapes highlighter with transform mode off.");
   onHighlighterShown = highlighters.once("shapes-highlighter-shown");
-  EventUtils.sendMouseEvent({type: "click"}, shapesToggle, view.styleWindow);
-  yield onHighlighterShown;
+  EventUtils.sendMouseEvent({ type: "click" }, shapesToggle, view.styleWindow);
+  await onHighlighterShown;
 
-  info("Checking the CSS shapes highlighter is created and transform mode is off");
-  ok(highlighters.highlighters[HIGHLIGHTER_TYPE],
-    "CSS shapes highlighter created in the rule-view.");
+  info(
+    "Checking the CSS shapes highlighter is created and transform mode is off"
+  );
+  ok(
+    highlighters.highlighters[HIGHLIGHTER_TYPE],
+    "CSS shapes highlighter created in the rule-view."
+  );
   ok(highlighters.shapesHighlighterShown, "CSS shapes highlighter is shown.");
-  ok(!highlighters.state.shapes.options.transformMode, "Transform mode is off.");
+  ok(
+    !highlighters.state.shapes.options.transformMode,
+    "Transform mode is off."
+  );
 
-  info("Clicking shapes toggle to turn on transform mode while highlighter is shown.");
+  info(
+    "Clicking shapes toggle to turn on transform mode while highlighter is shown."
+  );
   onHighlighterShown = highlighters.once("shapes-highlighter-shown");
-  EventUtils.sendMouseEvent({type: "click", metaKey: true, ctrlKey: true},
-    shapesToggle, view.styleWindow);
-  yield onHighlighterShown;
+  EventUtils.sendMouseEvent(
+    { type: "click", metaKey: true, ctrlKey: true },
+    shapesToggle,
+    view.styleWindow
+  );
+  await onHighlighterShown;
 
-  info("Checking the CSS shapes highlighter is created and transform mode is on");
-  ok(highlighters.highlighters[HIGHLIGHTER_TYPE],
-    "CSS shapes highlighter created in the rule-view.");
+  info(
+    "Checking the CSS shapes highlighter is created and transform mode is on"
+  );
+  ok(
+    highlighters.highlighters[HIGHLIGHTER_TYPE],
+    "CSS shapes highlighter created in the rule-view."
+  );
   ok(highlighters.shapesHighlighterShown, "CSS shapes highlighter is shown.");
   ok(highlighters.state.shapes.options.transformMode, "Transform mode is on.");
 });

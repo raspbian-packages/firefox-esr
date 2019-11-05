@@ -20,7 +20,7 @@
 namespace mozilla {
 
 class MediaByteBuffer;
-class TaskQueue;
+class AbstractThread;
 
 namespace dom {
 
@@ -45,7 +45,7 @@ class SourceBufferResource final
   void Unpin() override { UNIMPLEMENTED(); }
   int64_t GetLength() override { return mInputBuffer.GetLength(); }
   int64_t GetNextCachedData(int64_t aOffset) override {
-    MOZ_ASSERT(OnTaskQueue());
+    MOZ_ASSERT(OnThread());
     MOZ_ASSERT(aOffset >= 0);
     if (uint64_t(aOffset) < mInputBuffer.GetOffset()) {
       return mInputBuffer.GetOffset();
@@ -55,7 +55,7 @@ class SourceBufferResource final
     return aOffset;
   }
   int64_t GetCachedDataEnd(int64_t aOffset) override {
-    MOZ_ASSERT(OnTaskQueue());
+    MOZ_ASSERT(OnThread());
     MOZ_ASSERT(aOffset >= 0);
     if (uint64_t(aOffset) < mInputBuffer.GetOffset() ||
         aOffset >= GetLength()) {
@@ -69,7 +69,7 @@ class SourceBufferResource final
                          uint32_t aCount) override;
 
   nsresult GetCachedRanges(MediaByteRangeSet& aRanges) override {
-    MOZ_ASSERT(OnTaskQueue());
+    MOZ_ASSERT(OnThread());
     if (mInputBuffer.GetLength()) {
       aRanges +=
           MediaByteRange(mInputBuffer.GetOffset(), mInputBuffer.GetLength());
@@ -78,7 +78,7 @@ class SourceBufferResource final
   }
 
   size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const {
-    MOZ_ASSERT(OnTaskQueue());
+    MOZ_ASSERT(OnThread());
     return mInputBuffer.SizeOfExcludingThis(aMallocSizeOf);
   }
 
@@ -90,7 +90,7 @@ class SourceBufferResource final
   void AppendData(MediaByteBuffer* aData);
   void Ended();
   bool IsEnded() {
-    MOZ_ASSERT(OnTaskQueue());
+    MOZ_ASSERT(OnThread());
     return mEnded;
   }
   // Remove data from resource if it holds more than the threshold reduced by
@@ -106,7 +106,7 @@ class SourceBufferResource final
 
   // Returns the amount of data currently retained by this resource.
   int64_t GetSize() {
-    MOZ_ASSERT(OnTaskQueue());
+    MOZ_ASSERT(OnThread());
     return mInputBuffer.GetLength() - mInputBuffer.GetOffset();
   }
 
@@ -120,10 +120,10 @@ class SourceBufferResource final
                           uint32_t* aBytes);
 
 #if defined(DEBUG)
-  const RefPtr<TaskQueue> mTaskQueue;
+  const RefPtr<AbstractThread> mThread;
   // TaskQueue methods and objects.
-  AbstractThread* GetTaskQueue() const;
-  bool OnTaskQueue() const;
+  const AbstractThread* GetThread() const;
+  bool OnThread() const;
 #endif
 
   // The buffer holding resource data.

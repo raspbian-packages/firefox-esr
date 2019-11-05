@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Dobrodošli">
 <!ENTITY firstrun_urlbar_message2 "Hvala što ste odabrali &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Dobro došli u &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Moderan preglednik za mobilne uređaje od Mozille, neprofitne organizacije posvećene slobodnom i otvorenom webu.">
+<!ENTITY newfirstrun_urlbar_subtext "Brz, privatak i na vašoj strani.">
 <!ENTITY firstrun_panel_title_privacy "Privatnost">
 <!ENTITY firstrun_privacy_message "Pretražujte kao da vas nitko ne gleda">
 <!ENTITY firstrun_privacy_subtext "Privatno pretraživanje sa zaštitom od praćenja blokira praćenje dok pretražujete i neće pamtiti vašu povijest nakon što završite s pretraživanjem.">
+<!ENTITY newfirstrun_privacy_subtext "Privatno pregledavanje blokira praćenje diljem Interneta.">
 <!ENTITY firstrun_panel_title_customize "Prilagodi">
 <!ENTITY firstrun_customize_message "Učinite &brandShortName; svojim.">
 <!ENTITY firstrun_customize_subtext "Prilagodite &brandShortName; dodacima. Blokirajte reklame, dodajte mogućnosti, ili odaberite temu koja odražava vašu osobnost.">
@@ -20,19 +23,17 @@
 <!ENTITY firstrun_sync_title "Sync">
 <!ENTITY firstrun_sync_message2 "Nastavite gdje ste stali.">
 <!ENTITY firstrun_sync_subtext2 "Koristite Sinkronizaciju kako biste našli zabilješke, lozinke i ostalo što spremate na &brandShortName; kod svih vaših uređaja.">
+<!ENTITY newfirstrun_sync_subtext "Sinkronizirajte stvari koje spremite na mobitelu s Firefoxom za računala, privatno i sigurno.">
+<!ENTITY updatednewfirstrun_sync_subtext "Prijavite se u svoj račun kako biste na najbolji način iskoristili &brandShortName;">
 <!ENTITY firstrun_signin_message "Povežite se, započnite">
 <!ENTITY firstrun_signin_button "Prijavite se u Sync">
+<!ENTITY newfirstrun_signin_button "Uključite sinkronizaciju">
+<!ENTITY updatednewfirstrun_signin_button "Prijavite se u &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Započni pregledavanje">
 <!ENTITY firstrun_button_notnow "Ne sada">
 <!ENTITY firstrun_button_next "Sljedeći">
 
 <!ENTITY firstrun_tabqueue_title "Poveznice">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Uključi kartice na čekanju">
-<!ENTITY firstrun_tabqueue_subtext_off "Spremi poveznice za kasnije u &brandShortName; kada pritisnete na njih u drugim aplikacijama.">
-
-<!ENTITY firstrun_tabqueue_message_on "Uspjeh!">
-<!ENTITY firstrun_tabqueue_subtext_on "Uvijek možete isključiti ovu mogućnost u &settings; pod &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Članci">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -68,7 +69,27 @@
 <!ENTITY  crash_close_label "Zatvori">
 <!ENTITY  crash_restart_label "Ponovno pokreni &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; se srušio">
+<!ENTITY  crash_notification_message "Pritisnite za slanje izvještaja &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Zanemari">
+
 <!ENTITY url_bar_default_text2 "Pretražite ili upišite adresu">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Pretraži web">
+<!ENTITY search_widget_default_cropped_text "Traži">
+<!ENTITY search_widget_logo_description "Pretraži web s &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Koristite svoj QR čitač za pretraživanje i unos adresa">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Koristite svoj mikrofon za pretraživanje i unos adresa">
 
 <!ENTITY bookmark "Zabilješka">
 <!ENTITY bookmark_remove "Ukloni zabilješku">
@@ -95,6 +116,10 @@
 <!ENTITY bookmark_folder_updated "Mapa ažurirana">
 <!ENTITY bookmark_parent_folder "Nadređena mapa">
 <!ENTITY bookmark_add_folder "Dodaj novu mapu">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(bez naslova)">
 
 <!ENTITY reader_saved_offline "Spremljeno izvanmrežno">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -151,7 +176,7 @@
 <!-- Localization note (locale_system_default) : This string indicates that
      Firefox will use the locale currently selected in Android's settings
      to display browser chrome. -->
-<!ENTITY locale_system_default "Zadani sistemski">
+<!ENTITY locale_system_default "Zadani jezik sustava">
 
 <!-- Localization note (overlay_share_label) : This is the label that appears
      in Android's intent chooser when sending a link to Firefox to bookmark,
@@ -206,7 +231,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Vrati kartice, uštede na prijenosu podataka, alati za ravijatelje">
 <!ENTITY pref_category_notifications "Obavijesti">
-<!ENTITY pref_category_notifications_summary "Nove značajke, ažuriranja stranice">
+<!ENTITY pref_category_notifications_summary2 "Nove mogućnosti, preporuke proizvoda">
 <!ENTITY pref_developer_remotedebugging_usb "Udaljeno otklanjanje grešaka putem USB-a">
 <!ENTITY pref_developer_remotedebugging_wifi "Udaljeno otklanjanje grešaka putem Wi-Fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Udaljeno otklanjanje grešaka putem Wi-Fi zahtjeva da vaš uređaj ima instaliranu aplikaciju za čitanje QR kodova.">
@@ -282,6 +307,19 @@
 <!ENTITY pref_whats_new_notification "Šta je novo u &brandShortName;">
 <!ENTITY pref_whats_new_notification_summary "Saznajte o novim značajkama nakon nadogradnje">
 
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Savjeti o proizvodima i mogućnostima">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "Saznajte više o korištenju &brandShortName; i drugih &vendorShortName; proizvoda">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Da bi se omogućila ova opcija, &pref_feature_tips_notification_enabling_path; mora biti omogućen.)">
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "Eksperimentalne značajke">
@@ -320,6 +358,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Idite na Postavke">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Dodavanje nove kartice u red čekanja &#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -350,11 +391,12 @@
 
 <!-- Localization note (pref_use_system_font_size, pref_use_system_font_size_summary):
      Font size here refers to the name of the corresponding Android system setting. -->
-<!ENTITY pref_use_system_font_size "Koristi sistemski određenu veličinu fonta">
-<!ENTITY pref_use_system_font_size_summary "Prilagodi sadržaj prema sistemski određenoj veličini fonta">
+<!ENTITY pref_use_system_font_size "Koristi veličinu fonta određenu u sustavu">
+<!ENTITY pref_use_system_font_size_summary "Prilagodi sadržaj prema veličini fonta određenoj u sustavu">
 
 <!ENTITY pref_media_autoplay_enabled "Dozvoli automatsku reprodukciju">
-<!ENTITY pref_media_autoplay_enabled_summary "Upravljajte da li web stranice mogu automatski reproducirati video i drugi medijski sadržaj">
+<!ENTITY pref_media_autoplay_allow "Dozvoli automatsku reprodukciju">
+<!ENTITY pref_media_autoplay_block "Blokiraj automatsku reprodukciju">
 <!ENTITY pref_zoom_force_enabled "Uvijek omogući uvećanje">
 <!ENTITY pref_zoom_force_enabled_summary "Prisilno zaobiđi postavke tako da možete uvećati svaku stranicu">
 <!ENTITY pref_voice_input "Glasovni unos">
@@ -377,14 +419,17 @@
 <!ENTITY pref_private_data_searchHistory "Povijest pretraživanja">
 <!ENTITY pref_private_data_formdata2 "Povijest obrazaca">
 <!ENTITY pref_private_data_cookies2 "Kolačići i aktivne prijave">
-<!ENTITY pref_private_data_passwords2 "Spremljene prijave">
 <!ENTITY pref_private_data_cache "Priručna memorija">
 <!ENTITY pref_private_data_offlineApps "Podaci izvanmreženih stranica">
 <!ENTITY pref_private_data_siteSettings2 "Postavke stranice">
 <!ENTITY pref_private_data_downloadFiles2 "Preuzimanja">
 <!ENTITY pref_private_data_syncedTabs "Sinkronizirane kartice">
 
-<!ENTITY pref_default_browser "Učinite zadanim pretraživačem">
+<!ENTITY pref_default_browser2 "Učinite &brandShortName; zadanim preglednikom">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Pritisnite na polje Aplikacija preglednika i odaberite &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Posjetite Mozillinu podršku">
 <!ENTITY pref_about_firefox "O &brandShortName;">
 <!ENTITY pref_vendor_faqs "Često postavljana pitanja">
@@ -422,7 +467,6 @@
      crashReporterDesc.label). -->
 <!ENTITY datareporting_fhr_title "&brandShortName; izvještaj zdravlja">
 <!ENTITY datareporting_fhr_summary2 "Dijeli podatke sa &vendorShortName;-om o zdravlju vašeg preglednika i pomaže vam da razumijete performanse preglednika.">
-<!ENTITY datareporting_abouthr_title "Prikaži moj izvještaj o zdravlju">
 <!ENTITY datareporting_telemetry_title "Telemetrija">
 <!ENTITY datareporting_telemetry_summary "Dijeli podatke o performansama, korištenju hardvera i prilagodbama vašeg preglednika, kako bi &vendorShortName; mogla unaprijediti &brandShortName;">
 <!ENTITY datareporting_crashreporter_summary "&brandShortName; šalje izvještaje o rušenju kako bi &vendorShortName; mogla vaš preglednik učiniti stabilnijim i sigurnijim">
@@ -431,6 +475,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Izvjestitelj rušenja">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName; lokacijske usluge">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Pomozite &vendorShortName;i ucrtati svijet! Dijelite približnu Wi-Fi i mobilnu lokaciju svojeg uređaja kako biste poboljšali našu geolokacijsku uslugu.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; lokacijska usluga je pokrenuta">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -454,6 +503,7 @@
 <!ENTITY share_image_failed "Nije moguće podijeliti ovu sliku">
 <!ENTITY save_as_pdf "Spremi kao PDF">
 <!ENTITY print "Ispis">
+<!ENTITY view_page_source "Prikaži izvorni kod stranice">
 <!ENTITY find_in_page "Pronađi na stranici">
 <!ENTITY desktop_mode "Zahtjevaj desktop stranicu">
 <!ENTITY page "Stranica">
@@ -475,6 +525,10 @@
 <!ENTITY find_next "Sljedeći">
 <!ENTITY find_close "Zatvori">
 
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Izraz nije pronađen">
+
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
 <!ENTITY media_sending_to "Slanje na uređaj">
@@ -485,7 +539,6 @@
 <!ENTITY contextmenu_open_new_tab "Otvori u novoj kartici">
 <!ENTITY contextmenu_open_private_tab "Otvori u privatnoj kartici">
 <!ENTITY contextmenu_remove "Ukloni">
-<!ENTITY contextmenu_add_to_launcher "Dodaj na početni ekran">
 <!ENTITY contextmenu_add_page_shortcut "Dodaj prečicu stranice">
 <!ENTITY contextmenu_set_as_homepage "Postavi kao početnu stranicu">
 <!ENTITY contextmenu_share "Dijeli">
@@ -496,7 +549,7 @@
 <!ENTITY contextmenu_subscribe "Pretplati se na stranicu">
 <!ENTITY contextmenu_site_settings "Uredi postavke stranice">
 <!ENTITY contextmenu_top_sites_edit "Uredi">
-<!ENTITY contextmenu_top_sites_pin "Prikači stranicu">
+<!ENTITY contextmenu_top_sites_pin "Zakači stranicu">
 <!ENTITY contextmenu_top_sites_unpin "Otkači stranicu">
 <!-- Localization note (contextmenu_pin_to_top_sites, contextmenu_unpin_from_top_sites): These strings are used to
      pin/unpin items from top sites when the user is not on the top sites screen so they'd be missing context on what
@@ -537,10 +590,9 @@
 <!ENTITY pref_compact_tabs_summary2 "Raspoređivanje kartica u dva stupca u uspravnoj orijentaciji">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Stranica je uklonjena">
-
 <!ENTITY folder_removed "Mapa uklonjena">
 
 <!ENTITY bookmark_edit_title "Uredi zabilješku">
@@ -549,6 +601,8 @@
 <!ENTITY bookmark_edit_location "Lokacija">
 <!ENTITY bookmark_edit_keyword "Ključna riječ">
 <!ENTITY bookmark_select_folder "Izaberite mapu">
+
+<!ENTITY bookmark_edit_undo "Vrati">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -637,6 +691,8 @@
 <!ENTITY filepicker_audio_title "Odaberite ili snimite zvuk">
 <!ENTITY filepicker_image_title "Odaberite ili snimite sliku">
 <!ENTITY filepicker_video_title "Odaberite ili snimite video">
+
+<!ENTITY filepicker_permission_denied "Obavezna dopuštenja nisu odobrena, povratak na odabir datoteka od strane sustava.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Povezani ste na">
@@ -753,7 +809,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Zadnja sinkronizacija: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Zadnja sinkronizacija: nikada">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -811,17 +867,13 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      replaced by the Android OS version (e.g., 14)-->
 <!ENTITY unsupported_sdk_version "Žao nam je! Ova &brandShortName; inačica neće raditi na ovom uređaju (&formatS1;, &formatS2;). Preuzmite ispravnu inačicu.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; se više neće ažurirati">
-<!ENTITY eol_notification_summary "Pritisnite kako biste saznali više">
+<!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
+<!ENTITY corrupt_apk "Nije moguće otvoriti &brandShortName;. Molimo ponovo instalirajte i pokušajte ponovo.">
 
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; je ažuriran">
 <!ENTITY whatsnew_notification_summary "Saznajte što je novo u ovoj inačici">
-
-<!ENTITY promotion_add_to_homescreen "Dodaj na početni ekran">
-
-<!ENTITY promotion_add_page_shortcut "Dodaj prečicu stranice">
 
 <!ENTITY helper_first_offline_bookmark_title "Čitaj izvanmrežno">
 <!ENTITY helper_first_offline_bookmark_message "Pronađite stavke Prikaza čitača u zabilješkama, čak i u izvanmrežnom načinu rada.">
@@ -872,3 +924,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Dodaj na početni zaslon">
 <!ENTITY pwa_continue_to_website "Nastavi na web stranicu">
 <!ENTITY pwa_onboarding_sumo "Možete jednostavno dodati ovu web stranicu na početni zaslon kako biste imali brz pristup i pretraživali brže, kao da ste u aplikaciji.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Reproduciraj">
+<!ENTITY pip_play_button_description "Nastavi reprodukciju">
+<!ENTITY pip_pause_button_title "Zaustavi">
+<!ENTITY pip_pause_button_description "Zaustavi reprodukciju">
+
+<!ENTITY pref_notification_settings_link "Upravljanje postavkama obavijesti">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Preglednik">
+<!ENTITY mls_notification_channel "&vendorShortName; lokacijska usluga">
+<!ENTITY download_notification_channel "Preuzimanja">
+<!ENTITY media_notification_channel2 "Zvuk i video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; savjeti i trikovi">
+<!ENTITY updater_notification_channel "Ažuriranja aplikacija">
+<!ENTITY synced_tabs_notification_channel "Sinkronizirane kartice">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Obavijesti stranica">
+<!ENTITY crash_handler_notifications_channel "&brandShortName; prijavitelj rušenja">

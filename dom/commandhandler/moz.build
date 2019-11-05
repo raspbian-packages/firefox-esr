@@ -5,7 +5,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 with Files("**"):
-    BUG_COMPONENT = ("Core", "Embedding: APIs")
+    BUG_COMPONENT = ("Core", "User events and focus handling")
+
+EXPORTS += [
+    'nsBaseCommandController.h',
+    'nsCommandManager.h',
+    'nsCommandParams.h',
+    'nsControllerCommandTable.h',
+]
 
 XPIDL_SOURCES += [
     'nsICommandManager.idl',
@@ -13,17 +20,19 @@ XPIDL_SOURCES += [
     'nsIControllerCommand.idl',
     'nsIControllerCommandTable.idl',
     'nsIControllerContext.idl',
-    'nsPICommandUpdater.idl',
 ]
 
 XPIDL_MODULE = 'commandhandler'
 
 UNIFIED_SOURCES += [
     'nsBaseCommandController.cpp',
-    'nsCommandGroup.cpp',
     'nsCommandManager.cpp',
     'nsCommandParams.cpp',
     'nsControllerCommandTable.cpp',
+]
+
+LOCAL_INCLUDES += [
+    '/dom/base',
 ]
 
 FINAL_LIBRARY = 'xul'

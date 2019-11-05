@@ -52,26 +52,20 @@ public class FirstrunPager extends RtlViewPager {
         if (child instanceof Decor) {
             ((RtlViewPager.LayoutParams) params).isDecor = true;
             mDecor = (Decor) child;
-            mDecor.setOnTitleClickListener(new TabMenuStrip.OnTitleClickListener() {
-                @Override
-                public void onTitleClicked(int index) {
-                    setCurrentItem(index, true);
-                }
-            });
+            mDecor.setOnTitleClickListener(itemIndex -> setCurrentItem(itemIndex, true));
         }
 
         super.addView(child, index, params);
     }
 
-    public void load(Context appContext, FragmentManager fm, final FirstrunAnimationContainer.OnFinishListener onFinishListener) {
+    public void load(Context appContext, FragmentManager fm, final boolean useLocalValues,
+                     final FirstrunAnimationContainer.OnFinishListener onFinishListener) {
         final List<FirstrunPagerConfig.FirstrunPanelConfig> panels;
 
-        if (Restrictions.isRestrictedProfile(context)) {
-            panels = FirstrunPagerConfig.getRestricted();
-        } else if (FirefoxAccounts.firefoxAccountsExist(context)) {
-            panels = FirstrunPagerConfig.forFxAUser(appContext);
+        if (Restrictions.isRestrictedProfile(appContext)) {
+            panels = FirstrunPagerConfig.getRestricted(appContext);
         } else {
-            panels = FirstrunPagerConfig.getDefault(appContext);
+            panels = FirstrunPagerConfig.getDefault(appContext, useLocalValues);
         }
 
         setAdapter(new ViewPagerAdapter(fm, panels));
@@ -144,7 +138,7 @@ public class FirstrunPager extends RtlViewPager {
             this.panels = panels;
             this.fragments = new Fragment[panels.size()];
             for (FirstrunPagerConfig.FirstrunPanelConfig panel : panels) {
-                mDecor.onAddPagerView(context.getString(panel.getTitleRes()));
+                mDecor.onAddPagerView(panel.getTitle());
             }
 
             if (panels.size() > 0) {
@@ -172,7 +166,7 @@ public class FirstrunPager extends RtlViewPager {
         @Override
         public CharSequence getPageTitle(int i) {
             // Unused now that we use TabMenuStrip.
-            return context.getString(panels.get(i).getTitleRes()).toUpperCase();
+            return panels.get(i).getTitle().toUpperCase();
         }
     }
 }

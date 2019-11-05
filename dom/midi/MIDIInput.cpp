@@ -33,11 +33,11 @@ MIDIInput* MIDIInput::Create(nsPIDOMWindowInner* aWindow,
 
 JSObject* MIDIInput::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
-  return MIDIInputBinding::Wrap(aCx, this, aGivenProto);
+  return MIDIInput_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void MIDIInput::Receive(const nsTArray<MIDIMessage>& aMsgs) {
-  nsCOMPtr<nsIDocument> doc = GetOwner()->GetDoc();
+  nsCOMPtr<Document> doc = GetOwner() ? GetOwner()->GetDoc() : nullptr;
   if (!doc) {
     NS_WARNING("No document available to send MIDIMessageEvent to!");
     return;
@@ -50,18 +50,11 @@ void MIDIInput::Receive(const nsTArray<MIDIMessage>& aMsgs) {
 }
 
 EventHandlerNonNull* MIDIInput::GetOnmidimessage() {
-  if (NS_IsMainThread()) {
-    return GetEventHandler(nsGkAtoms::onmidimessage, EmptyString());
-  }
-  return GetEventHandler(nullptr, NS_LITERAL_STRING("midimessage"));
+  return GetEventHandler(nsGkAtoms::onmidimessage);
 }
 
 void MIDIInput::SetOnmidimessage(EventHandlerNonNull* aCallback) {
-  if (NS_IsMainThread()) {
-    SetEventHandler(nsGkAtoms::onmidimessage, EmptyString(), aCallback);
-  } else {
-    SetEventHandler(nullptr, NS_LITERAL_STRING("midimessage"), aCallback);
-  }
+  SetEventHandler(nsGkAtoms::onmidimessage, aCallback);
   if (mPort->ConnectionState() != MIDIPortConnectionState::Open) {
     mPort->SendOpen();
   }

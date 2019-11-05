@@ -6,12 +6,12 @@
 #ifndef mozilla_a11y_XULTreeAccessible_h__
 #define mozilla_a11y_XULTreeAccessible_h__
 
-#include "nsITreeBoxObject.h"
 #include "nsITreeView.h"
-#include "nsITreeColumns.h"
 #include "XULListboxAccessible.h"
+#include "mozilla/dom/XULTreeElement.h"
 
 class nsTreeBodyFrame;
+class nsTreeColumn;
 
 namespace mozilla {
 namespace a11y {
@@ -39,15 +39,15 @@ class XULTreeAccessible : public AccessibleWrap {
 
   // Accessible
   virtual void Shutdown() override;
-  virtual void Value(nsString& aValue) override;
-  virtual a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
+  virtual void Value(nsString& aValue) const override;
+  virtual a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
   virtual Accessible* ChildAtPoint(int32_t aX, int32_t aY,
                                    EWhichChildAtPoint aWhichChild) override;
 
   virtual Accessible* GetChildAt(uint32_t aIndex) const override;
   virtual uint32_t ChildCount() const override;
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual Relation RelationByType(RelationType aType) const override;
 
   // SelectAccessible
   virtual void SelectedItems(nsTArray<Accessible*>* aItems) override;
@@ -63,8 +63,8 @@ class XULTreeAccessible : public AccessibleWrap {
   virtual bool IsWidget() const override;
   virtual bool IsActiveWidget() const override;
   virtual bool AreItemsOperable() const override;
-  virtual Accessible* CurrentItem() override;
-  virtual void SetCurrentItem(Accessible* aItem) override;
+  virtual Accessible* CurrentItem() const override;
+  virtual void SetCurrentItem(const Accessible* aItem) override;
 
   virtual Accessible* ContainerWidget() const override;
 
@@ -114,7 +114,7 @@ class XULTreeAccessible : public AccessibleWrap {
   virtual already_AddRefed<Accessible> CreateTreeItemAccessible(
       int32_t aRow) const;
 
-  nsCOMPtr<nsITreeBoxObject> mTree;
+  RefPtr<dom::XULTreeElement> mTree;
   nsITreeView* mTreeView;
   mutable AccessibleHashtable mAccessibleCache;
 };
@@ -133,7 +133,7 @@ class XULTreeAccessible : public AccessibleWrap {
 class XULTreeItemAccessibleBase : public AccessibleWrap {
  public:
   XULTreeItemAccessibleBase(nsIContent* aContent, DocAccessible* aDoc,
-                            Accessible* aParent, nsITreeBoxObject* aTree,
+                            Accessible* aParent, dom::XULTreeElement* aTree,
                             nsITreeView* aTreeView, int32_t aRow);
 
   // nsISupports and cycle collection
@@ -143,20 +143,22 @@ class XULTreeItemAccessibleBase : public AccessibleWrap {
 
   // Accessible
   virtual void Shutdown() override;
-  virtual nsIntRect Bounds() const override;
+  virtual nsRect BoundsInAppUnits() const override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  virtual nsIntRect BoundsInCSSPixels() const override;
   virtual GroupPos GroupPosition() override;
-  virtual uint64_t NativeState() override;
+  virtual uint64_t NativeState() const override;
   virtual uint64_t NativeInteractiveState() const override;
   virtual int32_t IndexInParent() const override;
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual Relation RelationByType(RelationType aType) const override;
   virtual Accessible* FocusedChild() override;
   virtual void SetSelected(bool aSelect) override;
-  virtual void TakeFocus() override;
+  virtual void TakeFocus() const override;
 
   // ActionAccessible
-  virtual uint8_t ActionCount() override;
+  virtual uint8_t ActionCount() const override;
   virtual void ActionNameAt(uint8_t aIndex, nsAString& aName) override;
-  virtual bool DoAction(uint8_t aIndex) override;
+  virtual bool DoAction(uint8_t aIndex) const override;
 
   // Widgets
   virtual Accessible* ContainerWidget() const override;
@@ -174,7 +176,7 @@ class XULTreeItemAccessibleBase : public AccessibleWrap {
    * accessible table then return null.
    */
   virtual XULTreeGridCellAccessible* GetCellAccessible(
-      nsITreeColumn* aColumn) const {
+      nsTreeColumn* aColumn) const {
     return nullptr;
   }
 
@@ -189,8 +191,9 @@ class XULTreeItemAccessibleBase : public AccessibleWrap {
   enum { eAction_Click = 0, eAction_Expand = 1 };
 
   // Accessible
+  MOZ_CAN_RUN_SCRIPT
   virtual void DispatchClickEvent(nsIContent* aContent,
-                                  uint32_t aActionIndex) override;
+                                  uint32_t aActionIndex) const override;
   virtual Accessible* GetSiblingAtOffset(
       int32_t aOffset, nsresult* aError = nullptr) const override;
 
@@ -199,14 +202,14 @@ class XULTreeItemAccessibleBase : public AccessibleWrap {
   /**
    * Return true if the tree item accessible is expandable (contains subrows).
    */
-  bool IsExpandable();
+  bool IsExpandable() const;
 
   /**
    * Return name for cell at the given column.
    */
-  void GetCellName(nsITreeColumn* aColumn, nsAString& aName);
+  void GetCellName(nsTreeColumn* aColumn, nsAString& aName) const;
 
-  nsCOMPtr<nsITreeBoxObject> mTree;
+  RefPtr<dom::XULTreeElement> mTree;
   nsITreeView* mTreeView;
   int32_t mRow;
 };
@@ -220,7 +223,7 @@ NS_DEFINE_STATIC_IID_ACCESSOR(XULTreeItemAccessibleBase,
 class XULTreeItemAccessible : public XULTreeItemAccessibleBase {
  public:
   XULTreeItemAccessible(nsIContent* aContent, DocAccessible* aDoc,
-                        Accessible* aParent, nsITreeBoxObject* aTree,
+                        Accessible* aParent, dom::XULTreeElement* aTree,
                         nsITreeView* aTreeView, int32_t aRow);
 
   // nsISupports and cycle collection
@@ -230,8 +233,8 @@ class XULTreeItemAccessible : public XULTreeItemAccessibleBase {
 
   // Accessible
   virtual void Shutdown() override;
-  virtual ENameValueFlag Name(nsString& aName) override;
-  virtual a11y::role NativeRole() override;
+  virtual ENameValueFlag Name(nsString& aName) const override;
+  virtual a11y::role NativeRole() const override;
 
   // XULTreeItemAccessibleBase
   virtual void RowInvalidated(int32_t aStartColIdx,
@@ -241,7 +244,7 @@ class XULTreeItemAccessible : public XULTreeItemAccessibleBase {
   virtual ~XULTreeItemAccessible();
 
   // XULTreeItemAccessible
-  nsCOMPtr<nsITreeColumn> mColumn;
+  RefPtr<nsTreeColumn> mColumn;
   nsString mCachedName;
 };
 

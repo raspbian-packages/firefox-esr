@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -43,19 +43,20 @@ static uint8_t CalcBytesPerVertex(GLenum type, uint8_t size) {
   return bytesPerType * size;
 }
 
-static GLenum AttribPointerBaseType(bool integerFunc, GLenum type) {
-  if (!integerFunc) return LOCAL_GL_FLOAT;
+static webgl::AttribBaseType AttribPointerBaseType(bool integerFunc,
+                                                   GLenum type) {
+  if (!integerFunc) return webgl::AttribBaseType::Float;
 
   switch (type) {
     case LOCAL_GL_BYTE:
     case LOCAL_GL_SHORT:
     case LOCAL_GL_INT:
-      return LOCAL_GL_INT;
+      return webgl::AttribBaseType::Int;
 
     case LOCAL_GL_UNSIGNED_BYTE:
     case LOCAL_GL_UNSIGNED_SHORT:
     case LOCAL_GL_UNSIGNED_INT:
-      return LOCAL_GL_UNSIGNED_INT;
+      return webgl::AttribBaseType::UInt;
 
     default:
       MOZ_CRASH();

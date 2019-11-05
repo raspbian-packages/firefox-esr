@@ -14,6 +14,7 @@
 #include "mozilla/MouseEvents.h"
 #include "mozilla/TextEvents.h"
 #include "mozilla/TouchEvents.h"
+#include "mozilla/WheelHandlingHelper.h"  // for WheelDeltaAdjustmentStrategy
 #include "mozilla/dom/Selection.h"
 #include "InputData.h"
 
@@ -54,6 +55,7 @@ struct ParamTraits<mozilla::WidgetEvent> {
     WriteParam(aMsg, aParam.mTime);
     WriteParam(aMsg, aParam.mTimeStamp);
     WriteParam(aMsg, aParam.mFlags);
+    WriteParam(aMsg, aParam.mLayersId);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
@@ -65,7 +67,8 @@ struct ParamTraits<mozilla::WidgetEvent> {
                ReadParam(aMsg, aIter, &aResult->mFocusSequenceNumber) &&
                ReadParam(aMsg, aIter, &aResult->mTime) &&
                ReadParam(aMsg, aIter, &aResult->mTimeStamp) &&
-               ReadParam(aMsg, aIter, &aResult->mFlags);
+               ReadParam(aMsg, aIter, &aResult->mFlags) &&
+               ReadParam(aMsg, aIter, &aResult->mLayersId);
     aResult->mClass = static_cast<mozilla::EventClassID>(eventClassID);
     if (ret) {
       // Reset cross process dispatching state here because the event has not
@@ -130,22 +133,22 @@ struct ParamTraits<mozilla::WidgetMouseEventBase> {
 
   static void Write(Message* aMsg, const paramType& aParam) {
     WriteParam(aMsg, static_cast<const mozilla::WidgetInputEvent&>(aParam));
-    WriteParam(aMsg, aParam.button);
-    WriteParam(aMsg, aParam.buttons);
-    WriteParam(aMsg, aParam.pressure);
-    WriteParam(aMsg, aParam.hitCluster);
-    WriteParam(aMsg, aParam.inputSource);
+    WriteParam(aMsg, aParam.mButton);
+    WriteParam(aMsg, aParam.mButtons);
+    WriteParam(aMsg, aParam.mPressure);
+    WriteParam(aMsg, aParam.mHitCluster);
+    WriteParam(aMsg, aParam.mInputSource);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
                    paramType* aResult) {
     return ReadParam(aMsg, aIter,
                      static_cast<mozilla::WidgetInputEvent*>(aResult)) &&
-           ReadParam(aMsg, aIter, &aResult->button) &&
-           ReadParam(aMsg, aIter, &aResult->buttons) &&
-           ReadParam(aMsg, aIter, &aResult->pressure) &&
-           ReadParam(aMsg, aIter, &aResult->hitCluster) &&
-           ReadParam(aMsg, aIter, &aResult->inputSource);
+           ReadParam(aMsg, aIter, &aResult->mButton) &&
+           ReadParam(aMsg, aIter, &aResult->mButtons) &&
+           ReadParam(aMsg, aIter, &aResult->mPressure) &&
+           ReadParam(aMsg, aIter, &aResult->mHitCluster) &&
+           ReadParam(aMsg, aIter, &aResult->mInputSource);
   }
 };
 
@@ -171,7 +174,7 @@ struct ParamTraits<mozilla::WidgetWheelEvent> {
     WriteParam(aMsg, aParam.mViewPortIsOverscrolled);
     WriteParam(aMsg, aParam.mCanTriggerSwipe);
     WriteParam(aMsg, aParam.mAllowToOverrideSystemScrollSpeed);
-    WriteParam(aMsg, aParam.mDeltaValuesAdjustedForDefaultHandler);
+    WriteParam(aMsg, aParam.mDeltaValuesHorizontalizedForDefaultHandler);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
@@ -196,7 +199,8 @@ struct ParamTraits<mozilla::WidgetWheelEvent> {
         ReadParam(aMsg, aIter, &aResult->mViewPortIsOverscrolled) &&
         ReadParam(aMsg, aIter, &aResult->mCanTriggerSwipe) &&
         ReadParam(aMsg, aIter, &aResult->mAllowToOverrideSystemScrollSpeed) &&
-        ReadParam(aMsg, aIter, &aResult->mDeltaValuesAdjustedForDefaultHandler);
+        ReadParam(aMsg, aIter,
+                  &aResult->mDeltaValuesHorizontalizedForDefaultHandler);
     aResult->mScrollType =
         static_cast<mozilla::WidgetWheelEvent::ScrollType>(scrollType);
     return rv;
@@ -885,6 +889,101 @@ struct ParamTraits<mozilla::widget::IMENotification> {
 };
 
 template <>
+struct ParamTraits<mozilla::widget::IMEState::Enabled>
+    : ContiguousEnumSerializer<mozilla::widget::IMEState::Enabled,
+                               mozilla::widget::IMEState::Enabled::DISABLED,
+                               mozilla::widget::IMEState::Enabled::UNKNOWN> {};
+
+template <>
+struct ParamTraits<mozilla::widget::IMEState::Open>
+    : ContiguousEnumSerializerInclusive<
+          mozilla::widget::IMEState::Open,
+          mozilla::widget::IMEState::Open::OPEN_STATE_NOT_SUPPORTED,
+          mozilla::widget::IMEState::Open::CLOSED> {};
+
+template <>
+struct ParamTraits<mozilla::widget::IMEState> {
+  typedef mozilla::widget::IMEState paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mEnabled);
+    WriteParam(aMsg, aParam.mOpen);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return ReadParam(aMsg, aIter, &aResult->mEnabled) &&
+           ReadParam(aMsg, aIter, &aResult->mOpen);
+  }
+};
+
+template <>
+struct ParamTraits<mozilla::widget::InputContext::Origin>
+    : ContiguousEnumSerializerInclusive<
+          mozilla::widget::InputContext::Origin,
+          mozilla::widget::InputContext::Origin::ORIGIN_MAIN,
+          mozilla::widget::InputContext::Origin::ORIGIN_CONTENT> {};
+
+template <>
+struct ParamTraits<mozilla::widget::InputContext> {
+  typedef mozilla::widget::InputContext paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mIMEState);
+    WriteParam(aMsg, aParam.mHTMLInputType);
+    WriteParam(aMsg, aParam.mHTMLInputInputmode);
+    WriteParam(aMsg, aParam.mActionHint);
+    WriteParam(aMsg, aParam.mOrigin);
+    WriteParam(aMsg, aParam.mMayBeIMEUnaware);
+    WriteParam(aMsg, aParam.mHasHandledUserInput);
+    WriteParam(aMsg, aParam.mInPrivateBrowsing);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return ReadParam(aMsg, aIter, &aResult->mIMEState) &&
+           ReadParam(aMsg, aIter, &aResult->mHTMLInputType) &&
+           ReadParam(aMsg, aIter, &aResult->mHTMLInputInputmode) &&
+           ReadParam(aMsg, aIter, &aResult->mActionHint) &&
+           ReadParam(aMsg, aIter, &aResult->mOrigin) &&
+           ReadParam(aMsg, aIter, &aResult->mMayBeIMEUnaware) &&
+           ReadParam(aMsg, aIter, &aResult->mHasHandledUserInput) &&
+           ReadParam(aMsg, aIter, &aResult->mInPrivateBrowsing);
+  }
+};
+
+template <>
+struct ParamTraits<mozilla::widget::InputContextAction::Cause>
+    : ContiguousEnumSerializerInclusive<
+          mozilla::widget::InputContextAction::Cause,
+          mozilla::widget::InputContextAction::Cause::CAUSE_UNKNOWN,
+          mozilla::widget::InputContextAction::Cause::
+              CAUSE_UNKNOWN_DURING_KEYBOARD_INPUT> {};
+
+template <>
+struct ParamTraits<mozilla::widget::InputContextAction::FocusChange>
+    : ContiguousEnumSerializerInclusive<
+          mozilla::widget::InputContextAction::FocusChange,
+          mozilla::widget::InputContextAction::FocusChange::FOCUS_NOT_CHANGED,
+          mozilla::widget::InputContextAction::FocusChange::WIDGET_CREATED> {};
+
+template <>
+struct ParamTraits<mozilla::widget::InputContextAction> {
+  typedef mozilla::widget::InputContextAction paramType;
+
+  static void Write(Message* aMsg, const paramType& aParam) {
+    WriteParam(aMsg, aParam.mCause);
+    WriteParam(aMsg, aParam.mFocusChange);
+  }
+
+  static bool Read(const Message* aMsg, PickleIterator* aIter,
+                   paramType* aResult) {
+    return ReadParam(aMsg, aIter, &aResult->mCause) &&
+           ReadParam(aMsg, aIter, &aResult->mFocusChange);
+  }
+};
+
+template <>
 struct ParamTraits<mozilla::WidgetPluginEvent> {
   typedef mozilla::WidgetPluginEvent paramType;
 
@@ -995,6 +1094,7 @@ struct ParamTraits<mozilla::InputData> {
     WriteParam(aMsg, aParam.mTimeStamp);
     WriteParam(aMsg, aParam.modifiers);
     WriteParam(aMsg, aParam.mFocusSequenceNumber);
+    WriteParam(aMsg, aParam.mLayersId);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
@@ -1003,7 +1103,8 @@ struct ParamTraits<mozilla::InputData> {
            ReadParam(aMsg, aIter, &aResult->mTime) &&
            ReadParam(aMsg, aIter, &aResult->mTimeStamp) &&
            ReadParam(aMsg, aIter, &aResult->modifiers) &&
-           ReadParam(aMsg, aIter, &aResult->mFocusSequenceNumber);
+           ReadParam(aMsg, aIter, &aResult->mFocusSequenceNumber) &&
+           ReadParam(aMsg, aIter, &aResult->mLayersId);
   }
 };
 
@@ -1047,6 +1148,7 @@ struct ParamTraits<mozilla::MultiTouchInput> {
     WriteParam(aMsg, aParam.mType);
     WriteParam(aMsg, aParam.mTouches);
     WriteParam(aMsg, aParam.mHandledByAPZ);
+    WriteParam(aMsg, aParam.mScreenOffset);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
@@ -1054,7 +1156,8 @@ struct ParamTraits<mozilla::MultiTouchInput> {
     return ReadParam(aMsg, aIter, static_cast<mozilla::InputData*>(aResult)) &&
            ReadParam(aMsg, aIter, &aResult->mType) &&
            ReadParam(aMsg, aIter, &aResult->mTouches) &&
-           ReadParam(aMsg, aIter, &aResult->mHandledByAPZ);
+           ReadParam(aMsg, aIter, &aResult->mHandledByAPZ) &&
+           ReadParam(aMsg, aIter, &aResult->mScreenOffset);
   }
 };
 
@@ -1167,6 +1270,7 @@ struct ParamTraits<mozilla::PinchGestureInput> {
   static void Write(Message* aMsg, const paramType& aParam) {
     WriteParam(aMsg, static_cast<const mozilla::InputData&>(aParam));
     WriteParam(aMsg, aParam.mType);
+    WriteParam(aMsg, aParam.mScreenOffset);
     WriteParam(aMsg, aParam.mFocusPoint);
     WriteParam(aMsg, aParam.mLocalFocusPoint);
     WriteParam(aMsg, aParam.mCurrentSpan);
@@ -1177,6 +1281,7 @@ struct ParamTraits<mozilla::PinchGestureInput> {
                    paramType* aResult) {
     return ReadParam(aMsg, aIter, static_cast<mozilla::InputData*>(aResult)) &&
            ReadParam(aMsg, aIter, &aResult->mType) &&
+           ReadParam(aMsg, aIter, &aResult->mScreenOffset) &&
            ReadParam(aMsg, aIter, &aResult->mFocusPoint) &&
            ReadParam(aMsg, aIter, &aResult->mLocalFocusPoint) &&
            ReadParam(aMsg, aIter, &aResult->mCurrentSpan) &&
@@ -1226,6 +1331,13 @@ struct ParamTraits<mozilla::ScrollWheelInput::ScrollMode>
           mozilla::ScrollWheelInput::sHighestScrollMode> {};
 
 template <>
+struct ParamTraits<mozilla::WheelDeltaAdjustmentStrategy>
+    : public ContiguousEnumSerializer<
+          mozilla::WheelDeltaAdjustmentStrategy,
+          mozilla::WheelDeltaAdjustmentStrategy(0),
+          mozilla::WheelDeltaAdjustmentStrategy::eSentinel> {};
+
+template <>
 struct ParamTraits<mozilla::ScrollWheelInput> {
   typedef mozilla::ScrollWheelInput paramType;
 
@@ -1246,6 +1358,7 @@ struct ParamTraits<mozilla::ScrollWheelInput> {
     WriteParam(aMsg, aParam.mMayHaveMomentum);
     WriteParam(aMsg, aParam.mIsMomentum);
     WriteParam(aMsg, aParam.mAllowToOverrideSystemScrollSpeed);
+    WriteParam(aMsg, aParam.mWheelDeltaAdjustmentStrategy);
   }
 
   static bool Read(const Message* aMsg, PickleIterator* aIter,
@@ -1265,7 +1378,9 @@ struct ParamTraits<mozilla::ScrollWheelInput> {
            ReadParam(aMsg, aIter, &aResult->mUserDeltaMultiplierY) &&
            ReadParam(aMsg, aIter, &aResult->mMayHaveMomentum) &&
            ReadParam(aMsg, aIter, &aResult->mIsMomentum) &&
-           ReadParam(aMsg, aIter, &aResult->mAllowToOverrideSystemScrollSpeed);
+           ReadParam(aMsg, aIter,
+                     &aResult->mAllowToOverrideSystemScrollSpeed) &&
+           ReadParam(aMsg, aIter, &aResult->mWheelDeltaAdjustmentStrategy);
   }
 };
 

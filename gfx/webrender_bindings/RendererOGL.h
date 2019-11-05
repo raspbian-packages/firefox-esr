@@ -8,9 +8,11 @@
 #define MOZILLA_LAYERS_RENDEREROGL_H
 
 #include "mozilla/layers/CompositorTypes.h"
+#include "mozilla/gfx/Point.h"
 #include "mozilla/webrender/RenderThread.h"
 #include "mozilla/webrender/WebRenderTypes.h"
 #include "mozilla/webrender/webrender_ffi.h"
+#include "mozilla/webrender/RendererScreenshotGrabber.h"
 
 namespace mozilla {
 
@@ -23,7 +25,7 @@ class GLContext;
 }
 
 namespace layers {
-class CompositorBridgeParentBase;
+class CompositorBridgeParent;
 class SyncObjectHost;
 }  // namespace layers
 
@@ -44,7 +46,8 @@ class RenderTextureHost;
 class RendererOGL {
   friend wr::WrExternalImage LockExternalImage(void* aObj,
                                                wr::WrExternalImageId aId,
-                                               uint8_t aChannelIndex);
+                                               uint8_t aChannelIndex,
+                                               wr::ImageRendering);
   friend void UnlockExternalImage(void* aObj, wr::WrExternalImageId aId,
                                   uint8_t aChannelIndex);
 
@@ -55,10 +58,13 @@ class RendererOGL {
   void Update();
 
   /// This can be called on the render thread only.
-  bool UpdateAndRender(bool aReadback);
+  bool UpdateAndRender(const Maybe<gfx::IntSize>& aReadbackSize,
+                       const Maybe<wr::ImageFormat>& aReadbackFormat,
+                       const Maybe<Range<uint8_t>>& aReadbackBuffer,
+                       bool aHadSlowFrame, RendererStats* aOutStats);
 
   /// This can be called on the render thread only.
-  bool RenderToTarget(gfx::DrawTarget& aTarget);
+  void WaitForGPU();
 
   /// This can be called on the render thread only.
   void SetProfilerEnabled(bool aEnabled);
@@ -72,8 +78,7 @@ class RendererOGL {
   /// This can be called on the render thread only.
   RendererOGL(RefPtr<RenderThread>&& aThread,
               UniquePtr<RenderCompositor> aCompositor, wr::WindowId aWindowId,
-              wr::Renderer* aRenderer,
-              layers::CompositorBridgeParentBase* aBridge);
+              wr::Renderer* aRenderer, layers::CompositorBridgeParent* aBridge);
 
   /// This can be called on the render thread only.
   void Pause();
@@ -81,13 +86,18 @@ class RendererOGL {
   /// This can be called on the render thread only.
   bool Resume();
 
+  /// This can be called on the render thread only.
+  void CheckGraphicsResetStatus();
+
   layers::SyncObjectHost* GetSyncObject() const;
 
-  layers::CompositorBridgeParentBase* GetCompositorBridge() { return mBridge; }
+  layers::CompositorBridgeParent* GetCompositorBridge() { return mBridge; }
 
-  wr::WrPipelineInfo* FlushPipelineInfo();
+  RefPtr<WebRenderPipelineInfo> FlushPipelineInfo();
 
   RenderTextureHost* GetRenderTexture(wr::WrExternalImageId aExternalImageId);
+
+  void AccumulateMemoryReport(MemoryReport* aReport);
 
   wr::Renderer* GetRenderer() { return mRenderer; }
 
@@ -99,10 +109,11 @@ class RendererOGL {
   RefPtr<RenderThread> mThread;
   UniquePtr<RenderCompositor> mCompositor;
   wr::Renderer* mRenderer;
-  layers::CompositorBridgeParentBase* mBridge;
+  layers::CompositorBridgeParent* mBridge;
   wr::WindowId mWindowId;
   TimeStamp mFrameStartTime;
-  wr::DebugFlags mDebugFlags;
+
+  RendererScreenshotGrabber mScreenshotGrabber;
 };
 
 }  // namespace wr

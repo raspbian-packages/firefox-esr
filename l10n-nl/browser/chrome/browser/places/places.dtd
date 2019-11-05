@@ -70,18 +70,11 @@
 <!ENTITY cmd.new_separator.label           "Nieuw scheidingsteken">
 <!ENTITY cmd.new_separator.accesskey       "c">
 
-<!ENTITY cmd.reloadLivebookmark.label      "Livebladwijzer opnieuw laden">
-<!ENTITY cmd.reloadLivebookmark.accesskey  "L">
-
-<!ENTITY cmd.moveBookmarks.label                 "Verplaatsen…">
-<!ENTITY cmd.moveBookmarks.accesskey             "V">
-
 <!ENTITY col.name.label          "Naam">
 <!ENTITY col.tags.label          "Labels">
 <!ENTITY col.url.label           "Locatie">
 <!ENTITY col.mostrecentvisit.label "Meest recente bezoek">
 <!ENTITY col.visitcount.label    "Bezoekteller">
-<!ENTITY col.description.label   "Beschrijving">
 <!ENTITY col.dateadded.label     "Toegevoegd">
 <!ENTITY col.lastmodified.label  "Laatst gewijzigd">
 
@@ -98,10 +91,6 @@
 
 <!ENTITY forwardButton.tooltip  "Vooruit gaan">
 
-<!ENTITY detailsPane.more.label "Meer">
-<!ENTITY detailsPane.more.accesskey "M">
-<!ENTITY detailsPane.less.label "Minder">
-<!ENTITY detailsPane.less.accesskey "M">
 <!ENTITY detailsPane.selectAnItemText.description "Selecteer een item om de eigenschappen ervan te bekijken en te wijzigen">
 
 <!ENTITY view.label               "Weergeven">

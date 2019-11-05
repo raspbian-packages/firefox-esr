@@ -16,49 +16,59 @@ namespace dom {
 
 static const char kStorageEnabled[] = "dom.storage.enabled";
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(Storage, mWindow, mPrincipal)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(Storage, mWindow, mPrincipal,
+                                      mStoragePrincipal)
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(Storage)
-NS_IMPL_CYCLE_COLLECTING_RELEASE(Storage)
+NS_IMPL_CYCLE_COLLECTING_RELEASE_WITH_LAST_RELEASE(Storage, LastRelease())
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(Storage)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
-  NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIDOMStorage)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMStorage)
+  NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-Storage::Storage(nsPIDOMWindowInner* aWindow, nsIPrincipal* aPrincipal)
-    : mWindow(aWindow), mPrincipal(aPrincipal), mIsSessionOnly(false) {
+Storage::Storage(nsPIDOMWindowInner* aWindow, nsIPrincipal* aPrincipal,
+                 nsIPrincipal* aStoragePrincipal)
+    : mWindow(aWindow),
+      mPrincipal(aPrincipal),
+      mStoragePrincipal(aStoragePrincipal),
+      mIsSessionOnly(false) {
   MOZ_ASSERT(aPrincipal);
+
+  if (nsContentUtils::IsSystemPrincipal(mPrincipal)) {
+    mIsSessionOnly = false;
+  } else if (mWindow) {
+    uint32_t rejectedReason = 0;
+    nsContentUtils::StorageAccess access =
+        nsContentUtils::StorageAllowedForWindow(mWindow, &rejectedReason);
+
+    MOZ_ASSERT(access != nsContentUtils::StorageAccess::eDeny ||
+               rejectedReason ==
+                   nsIWebProgressListener::STATE_COOKIES_BLOCKED_FOREIGN);
+
+    mIsSessionOnly = access <= nsContentUtils::StorageAccess::eSessionScoped;
+  }
 }
 
-Storage::~Storage() {}
+Storage::~Storage() = default;
 
-/* static */ bool Storage::StoragePrefIsEnabled() {
+/* static */
+bool Storage::StoragePrefIsEnabled() {
   return mozilla::Preferences::GetBool(kStorageEnabled);
 }
 
 bool Storage::CanUseStorage(nsIPrincipal& aSubjectPrincipal) {
-  // This method is responsible for correct setting of mIsSessionOnly.
   if (!StoragePrefIsEnabled()) {
     return false;
   }
 
-  nsContentUtils::StorageAccess access =
-      nsContentUtils::StorageAllowedForPrincipal(Principal());
-
-  if (access == nsContentUtils::StorageAccess::eDeny) {
-    return false;
-  }
-
-  mIsSessionOnly = access <= nsContentUtils::StorageAccess::eSessionScoped;
-
   return aSubjectPrincipal.Subsumes(mPrincipal);
 }
 
-/* virtual */ JSObject* Storage::WrapObject(JSContext* aCx,
-                                            JS::Handle<JSObject*> aGivenProto) {
-  return StorageBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* Storage::WrapObject(JSContext* aCx,
+                              JS::Handle<JSObject*> aGivenProto) {
+  return Storage_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 namespace {
@@ -94,11 +104,13 @@ class StorageNotifierRunnable : public Runnable {
 
 }  // namespace
 
-/* static */ void Storage::NotifyChange(
-    Storage* aStorage, nsIPrincipal* aPrincipal, const nsAString& aKey,
-    const nsAString& aOldValue, const nsAString& aNewValue,
-    const char16_t* aStorageType, const nsAString& aDocumentURI,
-    bool aIsPrivate, bool aImmediateDispatch) {
+/* static */
+void Storage::NotifyChange(Storage* aStorage, nsIPrincipal* aPrincipal,
+                           const nsAString& aKey, const nsAString& aOldValue,
+                           const nsAString& aNewValue,
+                           const char16_t* aStorageType,
+                           const nsAString& aDocumentURI, bool aIsPrivate,
+                           bool aImmediateDispatch) {
   StorageEventInit dict;
   dict.mBubbles = false;
   dict.mCancelable = false;

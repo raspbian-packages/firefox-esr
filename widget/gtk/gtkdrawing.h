@@ -23,6 +23,7 @@
 typedef struct {
   guint8 active;
   guint8 focused;
+  guint8 selected;
   guint8 inHover;
   guint8 disabled;
   guint8 isDefault;
@@ -30,6 +31,7 @@ typedef struct {
   /* The depressed state is for buttons which remain active for a longer period:
    * activated toggle buttons or buttons showing a popup menu. */
   guint8 depressed;
+  guint8 backdrop;
   gint32 curpos; /* curpos and maxpos are used for scrollbars */
   gint32 maxpos;
   gint32 scale; /* actual widget scale */
@@ -77,6 +79,9 @@ typedef struct {
     GtkBorder scrollbar;
     GtkBorder track;
   } border;
+  struct {
+    GtkBorder thumb;
+  } margin;
 } ScrollbarGTKMetrics;
 
 typedef struct {
@@ -286,8 +291,10 @@ typedef enum {
   MOZ_GTK_SPLITTER_SEPARATOR_VERTICAL,
   /* Paints the background of a window, dialog or page. */
   MOZ_GTK_WINDOW,
+  /* Used only as a container for MOZ_GTK_HEADER_BAR. */
+  MOZ_GTK_HEADERBAR_WINDOW,
   /* Used only as a container for MOZ_GTK_HEADER_BAR_MAXIMIZED. */
-  MOZ_GTK_WINDOW_MAXIMIZED,
+  MOZ_GTK_HEADERBAR_WINDOW_MAXIMIZED,
   /* Window container for all widgets */
   MOZ_GTK_WINDOW_CONTAINER,
   /* Paints a GtkInfoBar, for notifications. */
@@ -314,6 +321,8 @@ typedef enum {
   MOZ_GTK_HEADER_BAR,
   /* Paints a GtkHeaderBar in maximized state */
   MOZ_GTK_HEADER_BAR_MAXIMIZED,
+  /* Container for GtkHeaderBar buttons */
+  MOZ_GTK_HEADER_BAR_BUTTON_BOX,
   /* Paints GtkHeaderBar title buttons.
    * Keep the order here as MOZ_GTK_HEADER_BAR_BUTTON_* are processed
    * as an array from MOZ_GTK_HEADER_BAR_BUTTON_CLOSE to the last one.
@@ -487,11 +496,16 @@ gint moz_gtk_get_scalethumb_metrics(GtkOrientation orient, gint* thumb_length,
 /**
  * Get the metrics in GTK pixels for a scrollbar.
  * aOrientation:     [IN] the scrollbar orientation
- * aActive:          [IN] Metricts for scrollbar with mouse pointer over it.
- *
  */
-const ScrollbarGTKMetrics* GetScrollbarMetrics(GtkOrientation aOrientation,
-                                               bool aActive = false);
+const ScrollbarGTKMetrics* GetScrollbarMetrics(GtkOrientation aOrientation);
+
+/**
+ * Get the metrics in GTK pixels for a scrollbar which is active
+ * (selected by mouse pointer).
+ * aOrientation:     [IN] the scrollbar orientation
+ */
+const ScrollbarGTKMetrics* GetActiveScrollbarMetrics(
+    GtkOrientation aOrientation);
 
 /**
  * Get the desired size of a dropdown arrow button
@@ -578,20 +592,23 @@ gint moz_gtk_get_tab_thickness(WidgetNodeType aNodeType);
  * Get ToolbarButtonGTKMetrics for recent theme.
  */
 const ToolbarButtonGTKMetrics* GetToolbarButtonMetrics(
-    WidgetNodeType aWidgetType);
+    WidgetNodeType aAppearance);
 
 /**
  * Get toolbar button layout.
  * aButtonLayout:  [IN][OUT] An array which will be filled by WidgetNodeType
  *                           references to visible titlebar buttons.
-                             Must contains at least TOOLBAR_BUTTONS entries.
+ *                           Must contains at least TOOLBAR_BUTTONS entries.
  * aMaxButtonNums: [IN] Allocated aButtonLayout entries. Must be at least
-                        TOOLBAR_BUTTONS wide.
+ *                      TOOLBAR_BUTTONS wide.
+ * aReversedButtonsPlacement: [OUT] True if the buttons are placed in opposite
+ *                                  titlebar corner.
  *
  * returns:    Number of returned entries at aButtonLayout.
  */
 int GetGtkHeaderBarButtonLayout(WidgetNodeType* aButtonLayout,
-                                int aMaxButtonNums);
+                                int aMaxButtonNums,
+                                bool* aReversedButtonsPlacement);
 
 /**
  * Get size of CSD window extents of given GtkWindow.

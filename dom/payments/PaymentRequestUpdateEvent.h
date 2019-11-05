@@ -17,9 +17,8 @@ namespace mozilla {
 namespace dom {
 
 class Promise;
-
-class PaymentRequestUpdateEvent final : public Event,
-                                        public PromiseNativeHandler {
+class PaymentRequest;
+class PaymentRequestUpdateEvent : public Event, public PromiseNativeHandler {
  public:
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_INHERITED(
@@ -50,8 +49,6 @@ class PaymentRequestUpdateEvent final : public Event,
 
  protected:
   ~PaymentRequestUpdateEvent();
-
- private:
   // Indicating whether an updateWith()-initiated update is currently in
   // progress.
   bool mWaitForUpdate;

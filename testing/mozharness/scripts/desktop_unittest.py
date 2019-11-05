@@ -10,6 +10,7 @@
 author: Jordan Lund
 """
 
+import json
 import os
 import re
 import sys
@@ -17,17 +18,19 @@ import copy
 import shutil
 import glob
 import imp
+import platform
 
 from datetime import datetime, timedelta
 
 # load modules from parent dir
-sys.path.insert(1, os.path.dirname(sys.path[0]))
+here = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(1, os.path.dirname(here))
 
 from mozharness.base.errors import BaseErrorList
 from mozharness.base.log import INFO
 from mozharness.base.script import PreScriptAction
 from mozharness.base.vcs.vcsbase import MercurialScript
-from mozharness.mozilla.automation import TBPL_EXCEPTION
+from mozharness.mozilla.automation import TBPL_EXCEPTION, TBPL_RETRY
 from mozharness.mozilla.mozbase import MozbaseMixin
 from mozharness.mozilla.structuredlog import StructuredOutputParser
 from mozharness.mozilla.testing.errors import HarnessErrorList
@@ -39,7 +42,7 @@ from mozharness.mozilla.testing.codecoverage import (
 from mozharness.mozilla.testing.testbase import TestingMixin, testing_config_options
 
 SUITE_CATEGORIES = ['gtest', 'cppunittest', 'jittest', 'mochitest', 'reftest', 'xpcshell',
-                    'mozbase', 'mozmill']
+                    'mozmill']
 SUITE_DEFAULT_E10S = ['mochitest', 'reftest']
 SUITE_NO_E10S = ['xpcshell']
 
@@ -96,14 +99,6 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
                     "Suites are defined in the config file\n."
                     "Examples: 'jittest'"}
          ],
-        [['--mozbase-suite', ], {
-            "action": "extend",
-            "dest": "specified_mozbase_suites",
-            "type": "string",
-            "help": "Specify which mozbase suite to run. "
-                    "Suites are defined in the config file\n."
-                    "Examples: 'mozbase'"}
-         ],
         [['--mozmill-suite', ], {
             "action": "extend",
             "dest": "specified_mozmill_suites",
@@ -120,11 +115,11 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
                     "in the config file. You do not need to specify "
                     "any other suites.\nBeware, this may take a while ;)"}
          ],
-        [['--e10s', ], {
-            "action": "store_true",
+        [['--disable-e10s', ], {
+            "action": "store_false",
             "dest": "e10s",
-            "default": False,
-            "help": "Run tests with multiple processes."}
+            "default": True,
+            "help": "Run tests without multiple processes (e10s)."}
          ],
         [['--headless', ], {
             "action": "store_true",
@@ -161,23 +156,24 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
             "default": False,
             "help": "Forcibly enable single thread traversal in Stylo with STYLO_THREADS=1"}
          ],
-        [["--enable-stylo"], {
-            "action": "store_true",
-            "dest": "enable_stylo",
-            "default": False,
-            "help": "Run tests with Stylo enabled"}
-         ],
-        [["--disable-stylo"], {
-            "action": "store_true",
-            "dest": "disable_stylo",
-            "default": False,
-            "help": "Run tests with Stylo disabled"}
-         ],
         [["--enable-webrender"], {
             "action": "store_true",
             "dest": "enable_webrender",
             "default": False,
             "help": "Tries to enable the WebRender compositor."}
+         ],
+        [["--gpu-required"], {
+            "action": "store_true",
+            "dest": "gpu_required",
+            "default": False,
+            "help": "Run additional verification on modified tests using gpu instances."}
+         ],
+        [["--setpref"], {
+            "action": "append",
+            "metavar": "PREF=VALUE",
+            "dest": "extra_prefs",
+            "default": [],
+            "help": "Defines an extra user preference."}
          ],
     ] + copy.deepcopy(testing_config_options) + \
         copy.deepcopy(code_coverage_config_options)
@@ -223,7 +219,6 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
             ('specified_cppunittest_suites', 'cppunit'),
             ('specified_gtest_suites', 'gtest'),
             ('specified_jittest_suites', 'jittest'),
-            ('specified_mozbase_suites', 'mozbase'),
             ('specified_mozmill_suites', 'mozmill'),
         )
         for s, prefix in suites:
@@ -236,11 +231,6 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
 
         if c['e10s']:
             perfherder_options.append('e10s')
-
-        if c['enable_stylo']:
-            perfherder_options.append('stylo')
-        if c['disable_stylo']:
-            perfherder_options.append('stylo_disabled')
 
         self.resource_monitor_perfherder_id = ('.'.join(perfherder_parts),
                                                perfherder_options)
@@ -285,7 +275,6 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
                                                    'blobber_upload_dir')
         dirs['abs_jittest_dir'] = os.path.join(dirs['abs_test_install_dir'],
                                                "jit-test", "jit-test")
-        dirs['abs_mozbase_dir'] = os.path.join(dirs['abs_test_install_dir'], "mozbase")
         dirs['abs_mozmill_dir'] = os.path.join(dirs['abs_test_install_dir'], "mozmill")
 
         if os.path.isabs(c['virtualenv_path']):
@@ -372,6 +361,27 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
         self.symbols_url = symbols_url
         return self.symbols_url
 
+    def _get_mozharness_test_paths(self, suite_category, suite):
+        test_paths = json.loads(os.environ.get('MOZHARNESS_TEST_PATHS', '""'))
+
+        if '-chunked' in suite:
+            suite = suite[:suite.index('-chunked')]
+
+        if '-coverage' in suite:
+            suite = suite[:suite.index('-coverage')]
+
+        if not test_paths or suite not in test_paths:
+            return None
+
+        suite_test_paths = test_paths[suite]
+
+        if suite_category == 'reftest':
+            dirs = self.query_abs_dirs()
+            suite_test_paths = [os.path.join(dirs['abs_reftest_dir'], 'tests', p)
+                                for p in suite_test_paths]
+
+        return suite_test_paths
+
     def _query_abs_base_cmd(self, suite_category, suite):
         if self.binary_path:
             c = self.config
@@ -411,11 +421,13 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
                     base_cmd.append('--e10s')
 
             # Ignore chunking if we have user specified test paths
-            if os.environ.get('MOZHARNESS_TEST_PATHS'):
-                base_cmd.extend(os.environ['MOZHARNESS_TEST_PATHS'].split(':'))
-            elif c.get('total_chunks') and c.get('this_chunk'):
-                base_cmd.extend(['--total-chunks', c['total_chunks'],
-                                 '--this-chunk', c['this_chunk']])
+            if not (self.verify_enabled or self.per_test_coverage):
+                test_paths = self._get_mozharness_test_paths(suite_category, suite)
+                if test_paths:
+                    base_cmd.extend(test_paths)
+                elif c.get('total_chunks') and c.get('this_chunk'):
+                    base_cmd.extend(['--total-chunks', c['total_chunks'],
+                                     '--this-chunk', c['this_chunk']])
 
             if c['no_random']:
                 if suite_category == "mochitest":
@@ -426,6 +438,9 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
 
             if c['headless']:
                 base_cmd.append('--headless')
+
+            if c['extra_prefs']:
+                base_cmd.extend(['--setpref={}'.format(p) for p in c['extra_prefs']])
 
             # set pluginsPath
             abs_res_plugins_dir = os.path.join(abs_res_dir, 'plugins')
@@ -492,7 +507,7 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
             if c.get('run_all_suites'):  # needed if you dont specify any suites
                 suites = all_suites
             else:
-                suites = self.query_verify_category_suites(category, all_suites)
+                suites = self.query_per_test_category_suites(category, all_suites)
 
         return suites
 
@@ -513,7 +528,7 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
     def structured_output(self, suite_category, flavor=None):
         unstructured_flavors = self.config.get('unstructured_flavors')
         if not unstructured_flavors:
-            return False
+            return True
         if suite_category not in unstructured_flavors:
             return True
         if not unstructured_flavors.get(suite_category) or \
@@ -563,7 +578,7 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
     def download_and_extract(self):
         """
         download and extract test zip / download installer
-        optimizes which subfolders to extract from tests zip
+        optimizes which subfolders to extract from tests archive
         """
         c = self.config
 
@@ -777,13 +792,19 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
         abs_app_dir = self.query_abs_app_dir()
         abs_res_dir = self.query_abs_res_dir()
 
-        max_verify_time = timedelta(minutes=60)
-        max_verify_tests = 10
-        verified_tests = 0
+        max_per_test_time = timedelta(minutes=60)
+        max_per_test_tests = 10
+        if self.per_test_coverage:
+            max_per_test_tests = 30
+        executed_tests = 0
+        executed_too_many_tests = False
 
         if suites:
             self.info('#### Running %s suites' % suite_category)
             for suite in suites:
+                if executed_too_many_tests and not self.per_test_coverage:
+                    return False
+
                 abs_base_cmd = self._query_abs_base_cmd(suite_category, suite)
                 cmd = abs_base_cmd[:]
                 replace_dict = {
@@ -799,7 +820,9 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
                 }
                 if isinstance(suites[suite], dict):
                     options_list = suites[suite].get('options', [])
-                    if self.config.get('verify') is True:
+                    if (self.verify_enabled or self.per_test_coverage or
+                        self._get_mozharness_test_paths(suite_category, suite)):
+                        # Ignore tests list in modes where we are running specific tests.
                         tests_list = []
                     else:
                         tests_list = suites[suite].get('tests', [])
@@ -850,51 +873,60 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
                     env['MOZ_WEBRENDER'] = '1'
                     env['MOZ_ACCELERATED'] = '1'
 
-                if self.config['disable_stylo']:
-                    if self.config['single_stylo_traversal']:
-                        self.fatal("--disable-stylo conflicts with --single-stylo-traversal")
-                    if self.config['enable_stylo']:
-                        self.fatal("--disable-stylo conflicts with --enable-stylo")
-
                 if self.config['single_stylo_traversal']:
                     env['STYLO_THREADS'] = '1'
                 else:
                     env['STYLO_THREADS'] = '4'
 
-                if self.config['enable_stylo']:
-                    env['STYLO_FORCE_ENABLED'] = '1'
-                if self.config['disable_stylo']:
-                    env['STYLO_FORCE_DISABLED'] = '1'
-
                 env = self.query_env(partial_env=env, log_level=INFO)
                 cmd_timeout = self.get_timeout_for_category(suite_category)
 
-                for verify_args in self.query_verify_args(suite):
-                    if (datetime.now() - self.start_time) > max_verify_time:
-                        # Verification has run out of time. That is okay! Stop running
-                        # tests so that a task timeout is not triggered, and so that
-                        # (partial) results are made available in a timely manner.
-                        self.info("TinderboxPrint: Verification too long: Not all tests "
-                                  "were verified.<br/>")
-                        # Signal verify time exceeded, to break out of suites and
-                        # suite categories loops also.
-                        return False
-                    if verified_tests >= max_verify_tests:
-                        # When changesets are merged between trees or many tests are
-                        # otherwise updated at once, there probably is not enough time
-                        # to verify all tests, and attempting to do so may cause other
-                        # problems, such as generating too much log output.
-                        self.info("TinderboxPrint: Too many modified tests: Not all tests "
-                                  "were verified.<br/>")
-                        return False
-                    verified_tests = verified_tests + 1
+                summary = {}
+                for per_test_args in self.query_args(suite):
+                    # Make sure baseline code coverage tests are never
+                    # skipped and that having them run has no influence
+                    # on the max number of actual tests that are to be run.
+                    is_baseline_test = 'baselinecoverage' in per_test_args[-1] \
+                                       if self.per_test_coverage else False
+                    if executed_too_many_tests and not is_baseline_test:
+                        continue
+
+                    if not is_baseline_test:
+                        if (datetime.now() - self.start_time) > max_per_test_time:
+                            # Running tests has run out of time. That is okay! Stop running
+                            # them so that a task timeout is not triggered, and so that
+                            # (partial) results are made available in a timely manner.
+                            self.info("TinderboxPrint: Running tests took too long: Not all tests "
+                                      "were executed.<br/>")
+                            # Signal per-test time exceeded, to break out of suites and
+                            # suite categories loops also.
+                            return False
+                        if executed_tests >= max_per_test_tests:
+                            # When changesets are merged between trees or many tests are
+                            # otherwise updated at once, there probably is not enough time
+                            # to run all tests, and attempting to do so may cause other
+                            # problems, such as generating too much log output.
+                            self.info("TinderboxPrint: Too many modified tests: Not all tests "
+                                      "were executed.<br/>")
+                            executed_too_many_tests = True
+
+                        executed_tests = executed_tests + 1
 
                     final_cmd = copy.copy(cmd)
-                    final_cmd.extend(verify_args)
+                    final_cmd.extend(per_test_args)
+
+                    final_env = copy.copy(env)
+
+                    if self.per_test_coverage:
+                        self.set_coverage_env(final_env)
+
                     return_code = self.run_command(final_cmd, cwd=dirs['abs_work_dir'],
                                                    output_timeout=cmd_timeout,
                                                    output_parser=parser,
-                                                   env=env)
+                                                   env=final_env)
+
+                    if self.per_test_coverage:
+                        self.add_per_test_coverage_report(final_env, suite, per_test_args[-1])
 
                     # mochitest, reftest, and xpcshell suites do not return
                     # appropriate return codes. Therefore, we must parse the output
@@ -907,20 +939,29 @@ class DesktopUnittest(TestingMixin, MercurialScript, MozbaseMixin,
                     # 3) checking to see if the return code is in success_codes
 
                     success_codes = None
-                    if self._is_windows() and suite_category != 'gtest':
-                        # bug 1120644
-                        success_codes = [0, 1]
+                    if (suite_category == 'reftest'
+                            and '32bit' in platform.architecture()
+                            and platform.system() == "Windows"):
+                        # see bug 1120644, 1526777, 1531499
+                        success_codes = [1]
 
-                    tbpl_status, log_level = parser.evaluate_parser(return_code,
-                                                                    success_codes=success_codes)
+                    tbpl_status, log_level, summary = parser.evaluate_parser(return_code,
+                                                                             success_codes,
+                                                                             summary)
                     parser.append_tinderboxprint_line(suite_name)
 
                     self.record_status(tbpl_status, level=log_level)
-                    if len(verify_args) > 0:
-                        self.log_verify_status(verify_args[-1], tbpl_status, log_level)
+                    if len(per_test_args) > 0:
+                        self.log_per_test_status(per_test_args[-1], tbpl_status, log_level)
+                        if tbpl_status == TBPL_RETRY:
+                            self.info("Per-test run abandoned due to RETRY status")
+                            return False
                     else:
                         self.log("The %s suite: %s ran with return status: %s" %
                                  (suite_category, suite, tbpl_status), level=log_level)
+
+            if executed_too_many_tests:
+                return False
         else:
             self.debug('There were no suites to run for %s' % suite_category)
         return True

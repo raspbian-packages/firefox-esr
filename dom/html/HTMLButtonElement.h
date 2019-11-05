@@ -22,7 +22,7 @@ class HTMLButtonElement final : public nsGenericHTMLFormElementWithState,
   using nsIConstraintValidation::GetValidationMessage;
 
   explicit HTMLButtonElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
       FromParser aFromParser = NOT_FROM_PARSER);
 
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLButtonElement,
@@ -33,7 +33,7 @@ class HTMLButtonElement final : public nsGenericHTMLFormElementWithState,
 
   virtual int32_t TabIndexDefault() override;
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLButtonElement, button)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLButtonElement, button)
 
   // Element
   virtual bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override {
@@ -44,26 +44,24 @@ class HTMLButtonElement final : public nsGenericHTMLFormElementWithState,
   NS_IMETHOD Reset() override;
   NS_IMETHOD SubmitNamesValues(HTMLFormSubmission* aFormSubmission) override;
   NS_IMETHOD SaveState() override;
-  bool RestoreState(nsPresState* aState) override;
-  virtual bool IsDisabledForEvents(EventMessage aMessage) override;
+  bool RestoreState(PresState* aState) override;
+  virtual bool IsDisabledForEvents(WidgetEvent* aEvent) override;
 
   virtual void FieldSetDisabledChanged(bool aNotify) override;
 
-  // nsIDOMEventTarget
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
+  // EventTarget
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
 
   // nsINode
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
   virtual JSObject* WrapNode(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual void DoneCreatingElement() override;

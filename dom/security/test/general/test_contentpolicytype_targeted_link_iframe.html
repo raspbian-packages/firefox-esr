@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Bug 1255240 - Test content policy types within content policies for targeted links in iframes</title>
   <!-- Including SimpleTest.js so we can use waitForExplicitFinish !-->
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
 </head>
 <body>
@@ -51,8 +51,8 @@ var policy = {
   },
 
   // nsIContentPolicy implementation
-  shouldLoad: function(contentType, contentLocation, requestOrigin,
-                       context, mimeTypeGuess, extra) {
+  shouldLoad: function(contentLocation, loadInfo, mimeTypeGuess) {
+    let contentType = loadInfo.externalContentPolicyType;
 
     // make sure we get the right amount of content policy calls
     // e.g. about:blank also gets chrcked by content policies
@@ -60,14 +60,14 @@ var policy = {
       is(contentType, EXPECTED_CONTENT_TYPE,
          "content policy type should TYPESUBDOCUMENT");
       categoryManager.deleteCategoryEntry("content-policy", POLICYNAME, false);
+      componentManager.unregisterFactory(POLICYID, policy);
       SimpleTest.finish();
       return Ci.nsIContentPolicy.REJECT_REQUEST;
     }
     return Ci.nsIContentPolicy.ACCEPT;
   },
 
-  shouldProcess: function(contentType, contentLocation, requestOrigin,
-                          context, mimeTypeGuess, extra) {
+  shouldProcess: function(contentLocation, loadInfo, mimeTypeGuess) {
     return Ci.nsIContentPolicy.ACCEPT;
   }
 }

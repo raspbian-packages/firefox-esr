@@ -15,14 +15,14 @@ namespace dom {
 
 class HTMLMetaElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLMetaElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit HTMLMetaElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLMetaElement, nsGenericHTMLElement)
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
@@ -32,10 +32,9 @@ class HTMLMetaElement final : public nsGenericHTMLElement {
                                 nsIPrincipal* aSubjectPrincipal,
                                 bool aNotify) override;
 
-  void CreateAndDispatchEvent(nsIDocument* aDoc, const nsAString& aEventName);
+  void CreateAndDispatchEvent(Document* aDoc, const nsAString& aEventName);
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   void GetName(nsAString& aValue) { GetHTMLAttr(nsGkAtoms::name, aValue); }
   void SetName(const nsAString& aName, ErrorResult& aRv) {
@@ -47,9 +46,8 @@ class HTMLMetaElement final : public nsGenericHTMLElement {
   void SetHttpEquiv(const nsAString& aHttpEquiv, ErrorResult& aRv) {
     SetHTMLAttr(nsGkAtoms::httpEquiv, aHttpEquiv, aRv);
   }
-  nsresult GetContent(nsAString& aValue) {
+  void GetContent(nsAString& aValue) {
     GetHTMLAttr(nsGkAtoms::content, aValue);
-    return NS_OK;
   }
   void SetContent(const nsAString& aContent, ErrorResult& aRv) {
     SetHTMLAttr(nsGkAtoms::content, aContent, aRv);
@@ -66,7 +64,7 @@ class HTMLMetaElement final : public nsGenericHTMLElement {
   virtual ~HTMLMetaElement();
 
  private:
-  nsresult SetMetaReferrer(nsIDocument* aDocument);
+  void SetMetaReferrer(Document* aDocument);
 };
 
 }  // namespace dom

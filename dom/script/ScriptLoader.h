@@ -16,27 +16,33 @@
 #include "nsTArray.h"
 #include "nsAutoPtr.h"
 #include "nsICacheInfoChannel.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIIncrementalStreamLoader.h"
 #include "nsURIHashKey.h"
 #include "mozilla/CORSMode.h"
 #include "mozilla/dom/ScriptLoadRequest.h"
 #include "mozilla/dom/SRIMetadata.h"
 #include "mozilla/dom/SRICheck.h"
+#include "mozilla/Maybe.h"
 #include "mozilla/MozPromise.h"
 #include "mozilla/net/ReferrerPolicy.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/Vector.h"
 
 class nsIURI;
 
 namespace JS {
-class SourceBufferHolder;
+
+template <typename UnitT>
+class SourceText;
+
 }  // namespace JS
 
 namespace mozilla {
 namespace dom {
 
 class AutoJSAPI;
+class LoadedScript;
 class ModuleLoadRequest;
 class ModuleScript;
 class ScriptLoadHandler;
@@ -53,7 +59,9 @@ class ScriptLoader final : public nsISupports {
                              nsIScriptElement* aCurrentScript)
         : mOldScript(aScriptLoader->mCurrentScript),
           mScriptLoader(aScriptLoader) {
-      mScriptLoader->mCurrentScript = aCurrentScript;
+      nsCOMPtr<nsINode> node = do_QueryInterface(aCurrentScript);
+      mScriptLoader->mCurrentScript =
+          node && !node->IsInShadowTree() ? aCurrentScript : nullptr;
     }
 
     ~AutoCurrentScriptUpdater() {
@@ -71,7 +79,7 @@ class ScriptLoader final : public nsISupports {
   friend class AutoCurrentScriptUpdater;
 
  public:
-  explicit ScriptLoader(nsIDocument* aDocument);
+  explicit ScriptLoader(Document* aDocument);
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_CLASS(ScriptLoader)
@@ -190,13 +198,13 @@ class ScriptLoader final : public nsISupports {
   static nsresult ConvertToUTF16(nsIChannel* aChannel, const uint8_t* aData,
                                  uint32_t aLength,
                                  const nsAString& aHintCharset,
-                                 nsIDocument* aDocument, char16_t*& aBufOut,
+                                 Document* aDocument, char16_t*& aBufOut,
                                  size_t& aLengthOut);
 
   static inline nsresult ConvertToUTF16(nsIChannel* aChannel,
                                         const uint8_t* aData, uint32_t aLength,
                                         const nsAString& aHintCharset,
-                                        nsIDocument* aDocument,
+                                        Document* aDocument,
                                         JS::UniqueTwoByteChars& aBufOut,
                                         size_t& aLengthOut) {
     char16_t* bufOut;
@@ -235,8 +243,20 @@ class ScriptLoader final : public nsISupports {
    */
   void BeginDeferringScripts() {
     mDeferEnabled = true;
-    if (mDocument) {
-      mDocument->BlockOnload();
+    if (mDocumentParsingDone) {
+      // We already completed a parse and were just waiting for some async
+      // scripts to load (and were already blocking the load event waiting for
+      // that to happen), when document.open() happened and now we're doing a
+      // new parse.  We shouldn't block the load event again, but _should_ reset
+      // mDocumentParsingDone to false.  It'll get set to true again when the
+      // ParsingComplete call that corresponds to this BeginDeferringScripts
+      // call happens (on document.close()), since we just set mDeferEnabled to
+      // true.
+      mDocumentParsingDone = false;
+    } else {
+      if (mDocument) {
+        mDocument->BlockOnload();
+      }
     }
   }
 
@@ -303,18 +323,45 @@ class ScriptLoader final : public nsISupports {
    */
   void Destroy() { GiveUpBytecodeEncoding(); }
 
-  /*
-   * Clear the map of loaded modules. Called when a Document object is reused
-   * for a different global.
+  /**
+   * Implement the HostResolveImportedModule abstract operation.
+   *
+   * Resolve a module specifier string and look this up in the module
+   * map, returning the result. This is only called for previously
+   * loaded modules and always succeeds.
+   *
+   * @param aReferencingPrivate A JS::Value which is either undefined
+   *                            or contains a LoadedScript private pointer.
+   * @param aSpecifier The module specifier.
+   * @param aModuleOut This is set to the module found.
    */
-  void ClearModuleMap();
+  static void ResolveImportedModule(JSContext* aCx,
+                                    JS::Handle<JS::Value> aReferencingPrivate,
+                                    JS::Handle<JSString*> aSpecifier,
+                                    JS::MutableHandle<JSObject*> aModuleOut);
+
+  void StartDynamicImport(ModuleLoadRequest* aRequest);
+  void FinishDynamicImport(ModuleLoadRequest* aRequest, nsresult aResult);
+  void FinishDynamicImport(JSContext* aCx, ModuleLoadRequest* aRequest,
+                           nsresult aResult);
+
+  /*
+   * Get the currently active script. This is used as the initiating script when
+   * executing timeout handler scripts.
+   */
+  static LoadedScript* GetActiveScript(JSContext* aCx);
+
+  Document* GetDocument() const { return mDocument; }
 
  private:
   virtual ~ScriptLoader();
 
+  void EnsureModuleHooksInitialized();
+
   ScriptLoadRequest* CreateLoadRequest(
       ScriptKind aKind, nsIURI* aURI, nsIScriptElement* aElement,
-      mozilla::CORSMode aCORSMode, const SRIMetadata& aIntegrity,
+      nsIPrincipal* aTriggeringPrincipal, mozilla::CORSMode aCORSMode,
+      const SRIMetadata& aIntegrity,
       mozilla::net::ReferrerPolicy aReferrerPolicy);
 
   /**
@@ -340,11 +387,17 @@ class ScriptLoader final : public nsISupports {
                       SRIMetadata* aMetadataOut);
 
   /**
+   * Given a script element, get the referrer policy should be applied to load
+   * requests.
+   */
+  mozilla::net::ReferrerPolicy GetReferrerPolicy(nsIScriptElement* aElement);
+
+  /**
    * Helper function to check the content policy for a given request.
    */
-  static nsresult CheckContentPolicy(nsIDocument* aDocument,
-                                     nsISupports* aContext, nsIURI* aURI,
-                                     const nsAString& aType, bool aIsPreLoad);
+  static nsresult CheckContentPolicy(Document* aDocument, nsISupports* aContext,
+                                     const nsAString& aType,
+                                     ScriptLoadRequest* aRequest);
 
   /**
    * Start a load for aRequest's URI.
@@ -399,9 +452,12 @@ class ScriptLoader final : public nsISupports {
 
   void ReportErrorToConsole(ScriptLoadRequest* aRequest,
                             nsresult aResult) const;
+  void ReportPreloadErrorsToConsole(ScriptLoadRequest* aRequest);
 
-  nsresult AttemptAsyncScriptCompile(ScriptLoadRequest* aRequest);
+  nsresult AttemptAsyncScriptCompile(ScriptLoadRequest* aRequest,
+                                     bool* aCouldCompileOut);
   nsresult ProcessRequest(ScriptLoadRequest* aRequest);
+  void ProcessDynamicImport(ModuleLoadRequest* aRequest);
   nsresult CompileOffThreadOrProcessRequest(ScriptLoadRequest* aRequest);
   void FireScriptAvailable(nsresult aResult, ScriptLoadRequest* aRequest);
   void FireScriptEvaluated(nsresult aResult, ScriptLoadRequest* aRequest);
@@ -448,8 +504,8 @@ class ScriptLoader final : public nsISupports {
 
   void MaybeMoveToLoadedList(ScriptLoadRequest* aRequest);
 
-  JS::SourceBufferHolder GetScriptSource(ScriptLoadRequest* aRequest,
-                                         nsAutoString& inlineData);
+  mozilla::Maybe<JS::SourceText<char16_t>> GetScriptSource(
+      JSContext* aCx, ScriptLoadRequest* aRequest);
 
   void SetModuleFetchStarted(ModuleLoadRequest* aRequest);
   void SetModuleFetchFinishedAndResumeWaitingRequests(
@@ -458,11 +514,12 @@ class ScriptLoader final : public nsISupports {
   bool IsFetchingModule(ModuleLoadRequest* aRequest) const;
 
   bool ModuleMapContainsURL(nsIURI* aURL) const;
-  RefPtr<mozilla::GenericPromise> WaitForModuleFetch(nsIURI* aURL);
+  RefPtr<mozilla::GenericNonExclusivePromise> WaitForModuleFetch(nsIURI* aURL);
   ModuleScript* GetFetchedModule(nsIURI* aURL) const;
 
-  friend bool HostResolveImportedModule(JSContext* aCx, unsigned argc,
-                                        JS::Value* vp);
+  friend JSObject* HostResolveImportedModule(
+      JSContext* aCx, JS::Handle<JS::Value> aReferencingPrivate,
+      JS::Handle<JSString*> aSpecifier);
 
   // Returns wether we should save the bytecode of this script after the
   // execution of the script.
@@ -479,7 +536,12 @@ class ScriptLoader final : public nsISupports {
   RefPtr<mozilla::GenericPromise> StartFetchingModuleAndDependencies(
       ModuleLoadRequest* aParent, nsIURI* aURI);
 
-  nsIDocument* mDocument;  // [WEAK]
+  nsresult InitDebuggerDataForModuleTree(JSContext* aCx,
+                                         ModuleLoadRequest* aRequest);
+
+  void RunScriptWhenSafe(ScriptLoadRequest* aRequest);
+
+  Document* mDocument;  // [WEAK]
   nsCOMArray<nsIScriptLoaderObserver> mObservers;
   ScriptLoadRequestList mNonAsyncExternalScriptInsertedRequests;
   // mLoadingAsyncRequests holds async requests while they're loading; when they
@@ -488,6 +550,7 @@ class ScriptLoader final : public nsISupports {
   ScriptLoadRequestList mLoadedAsyncRequests;
   ScriptLoadRequestList mDeferRequests;
   ScriptLoadRequestList mXSLTRequests;
+  ScriptLoadRequestList mDynamicImportRequests;
   RefPtr<ScriptLoadRequest> mParserBlockingRequest;
 
   // List of script load request that are holding a buffer which has to be saved
@@ -520,7 +583,7 @@ class ScriptLoader final : public nsISupports {
 
   nsCOMPtr<nsIScriptElement> mCurrentScript;
   nsCOMPtr<nsIScriptElement> mCurrentParserInsertedScript;
-  nsTArray<RefPtr<ScriptLoader> > mPendingChildLoaders;
+  nsTArray<RefPtr<ScriptLoader>> mPendingChildLoaders;
   uint32_t mParserBlockingBlockerCount;
   uint32_t mBlockerCount;
   uint32_t mNumberOfProcessors;
@@ -532,20 +595,21 @@ class ScriptLoader final : public nsISupports {
   bool mGiveUpEncoding;
 
   // Module map
-  nsRefPtrHashtable<nsURIHashKey, mozilla::GenericPromise::Private>
+  nsRefPtrHashtable<nsURIHashKey, mozilla::GenericNonExclusivePromise::Private>
       mFetchingModules;
   nsRefPtrHashtable<nsURIHashKey, ModuleScript> mFetchedModules;
 
   nsCOMPtr<nsIConsoleReportCollector> mReporter;
 
   // Logging
+ public:
   static LazyLogModule gCspPRLog;
   static LazyLogModule gScriptLoaderLog;
 };
 
 class nsAutoScriptLoaderDisabler {
  public:
-  explicit nsAutoScriptLoaderDisabler(nsIDocument* aDoc) {
+  explicit nsAutoScriptLoaderDisabler(Document* aDoc) {
     mLoader = aDoc->ScriptLoader();
     mWasEnabled = mLoader->GetEnabled();
     if (mWasEnabled) {

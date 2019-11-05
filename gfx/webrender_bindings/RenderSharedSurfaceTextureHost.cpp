@@ -15,7 +15,7 @@ namespace wr {
 
 RenderSharedSurfaceTextureHost::RenderSharedSurfaceTextureHost(
     gfx::SourceSurfaceSharedDataWrapper* aSurface)
-    : mSurface(aSurface), mLocked(false) {
+    : mSurface(aSurface), mMap(), mLocked(false) {
   MOZ_COUNT_CTOR_INHERITED(RenderSharedSurfaceTextureHost, RenderTextureHost);
   MOZ_ASSERT(aSurface);
 }
@@ -24,8 +24,8 @@ RenderSharedSurfaceTextureHost::~RenderSharedSurfaceTextureHost() {
   MOZ_COUNT_DTOR_INHERITED(RenderSharedSurfaceTextureHost, RenderTextureHost);
 }
 
-wr::WrExternalImage RenderSharedSurfaceTextureHost::Lock(uint8_t aChannelIndex,
-                                                         gl::GLContext* aGL) {
+wr::WrExternalImage RenderSharedSurfaceTextureHost::Lock(
+    uint8_t aChannelIndex, gl::GLContext* aGL, wr::ImageRendering aRendering) {
   if (!mLocked) {
     if (NS_WARN_IF(!mSurface->Map(gfx::DataSourceSurface::MapType::READ_WRITE,
                                   &mMap))) {

@@ -8,12 +8,11 @@ const NON_CONTENT_ACCESSIBLE_PROPERTIES = [
   "-x-span",
   "-x-lang",
   "-x-text-zoom",
+  "-moz-list-reversed",
   "-moz-window-shadow",
-  // FIXME(bug 1419695): These should be hidden, but Gecko would refuse to
-  // transition them. We need to fix that.
-  // "-moz-window-opacity",
-  // "-moz-window-transform",
-  // "-moz-window-transform-origin",
+  "-moz-window-opacity",
+  "-moz-window-transform",
+  "-moz-window-transform-origin",
   "-moz-top-layer",
   "-moz-script-size-multiplier",
   "-moz-script-level",
@@ -23,6 +22,8 @@ const NON_CONTENT_ACCESSIBLE_PROPERTIES = [
   "-moz-font-smoothing-background-color",
   "-moz-min-font-size-ratio",
   "-moz-script-size-multiplier",
+  // TODO(emilio): Whenever we stop using `-moz-binding` in a gazillion tests
+  // we should add it here.
 ];
 
 const sheet = document.getElementById("sheet");

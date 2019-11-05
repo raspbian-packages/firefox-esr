@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -25,113 +25,45 @@ WebGLUniformLocation::WebGLUniformLocation(
 
 WebGLUniformLocation::~WebGLUniformLocation() {}
 
-bool WebGLUniformLocation::ValidateForProgram(const WebGLProgram* prog,
-                                              const char* funcName) const {
+bool WebGLUniformLocation::ValidateForProgram(const WebGLProgram* prog) const {
   // Check the weak-pointer.
   if (!mLinkInfo) {
     mContext->ErrorInvalidOperation(
-        "%s: This uniform location is obsolete because"
-        " its program has been successfully relinked.",
-        funcName);
+        "This uniform location is obsolete because"
+        " its program has been successfully relinked.");
     return false;
   }
 
   if (mLinkInfo->prog != prog) {
     mContext->ErrorInvalidOperation(
-        "%s: This uniform location corresponds to a"
-        " different program.",
-        funcName);
+        "This uniform location corresponds to a"
+        " different program.");
     return false;
   }
 
   return true;
 }
 
-static bool IsUniformSetterTypeValid(GLenum setterType, GLenum uniformType) {
-  // The order in this switch matches table 2.10 from OpenGL ES
-  // 3.0.4 (Aug 27, 2014) es_spec_3.0.4.pdf
-  switch (uniformType) {
-    case LOCAL_GL_FLOAT:
-    case LOCAL_GL_FLOAT_VEC2:
-    case LOCAL_GL_FLOAT_VEC3:
-    case LOCAL_GL_FLOAT_VEC4:
-      return setterType == LOCAL_GL_FLOAT;
-
-    case LOCAL_GL_INT:
-    case LOCAL_GL_INT_VEC2:
-    case LOCAL_GL_INT_VEC3:
-    case LOCAL_GL_INT_VEC4:
-      return setterType == LOCAL_GL_INT;
-
-    case LOCAL_GL_UNSIGNED_INT:
-    case LOCAL_GL_UNSIGNED_INT_VEC2:
-    case LOCAL_GL_UNSIGNED_INT_VEC3:
-    case LOCAL_GL_UNSIGNED_INT_VEC4:
-      return setterType == LOCAL_GL_UNSIGNED_INT;
-
-      /* bool can be set via any function: 0, 0.0f -> FALSE, _ -> TRUE */
-    case LOCAL_GL_BOOL:
-    case LOCAL_GL_BOOL_VEC2:
-    case LOCAL_GL_BOOL_VEC3:
-    case LOCAL_GL_BOOL_VEC4:
-      return (setterType == LOCAL_GL_INT || setterType == LOCAL_GL_FLOAT ||
-              setterType == LOCAL_GL_UNSIGNED_INT);
-
-    case LOCAL_GL_FLOAT_MAT2:
-    case LOCAL_GL_FLOAT_MAT3:
-    case LOCAL_GL_FLOAT_MAT4:
-    case LOCAL_GL_FLOAT_MAT2x3:
-    case LOCAL_GL_FLOAT_MAT2x4:
-    case LOCAL_GL_FLOAT_MAT3x2:
-    case LOCAL_GL_FLOAT_MAT3x4:
-    case LOCAL_GL_FLOAT_MAT4x2:
-    case LOCAL_GL_FLOAT_MAT4x3:
-      return setterType == LOCAL_GL_FLOAT;
-
-      /* Samplers can only be set via Uniform1i */
-    case LOCAL_GL_SAMPLER_2D:
-    case LOCAL_GL_SAMPLER_3D:
-    case LOCAL_GL_SAMPLER_CUBE:
-    case LOCAL_GL_SAMPLER_2D_SHADOW:
-    case LOCAL_GL_SAMPLER_2D_ARRAY:
-    case LOCAL_GL_SAMPLER_2D_ARRAY_SHADOW:
-    case LOCAL_GL_SAMPLER_CUBE_SHADOW:
-
-    case LOCAL_GL_INT_SAMPLER_2D:
-    case LOCAL_GL_INT_SAMPLER_3D:
-    case LOCAL_GL_INT_SAMPLER_CUBE:
-    case LOCAL_GL_INT_SAMPLER_2D_ARRAY:
-
-    case LOCAL_GL_UNSIGNED_INT_SAMPLER_2D:
-    case LOCAL_GL_UNSIGNED_INT_SAMPLER_3D:
-    case LOCAL_GL_UNSIGNED_INT_SAMPLER_CUBE:
-    case LOCAL_GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
-      return setterType == LOCAL_GL_INT;
-
-    default:
-      MOZ_CRASH("GFX: Bad `uniformType`.");
-  }
-}
-
-bool WebGLUniformLocation::ValidateSizeAndType(uint8_t setterElemSize,
-                                               GLenum setterType,
-                                               const char* funcName) const {
+bool WebGLUniformLocation::ValidateSizeAndType(
+    const uint8_t setterElemSize,
+    const webgl::AttribBaseType setterType) const {
   MOZ_ASSERT(mLinkInfo);
 
   const auto& uniformElemSize = mInfo->mActiveInfo->mElemSize;
   if (setterElemSize != uniformElemSize) {
     mContext->ErrorInvalidOperation(
-        "%s: Function used differs from uniform size: %i", funcName,
-        uniformElemSize);
+        "Function used differs from uniform size: %i", uniformElemSize);
     return false;
   }
 
-  const auto& uniformElemType = mInfo->mActiveInfo->mElemType;
-  if (!IsUniformSetterTypeValid(setterType, uniformElemType)) {
+  const auto& uniformType = mInfo->mActiveInfo->mBaseType;
+  if (setterType != uniformType &&
+      uniformType != webgl::AttribBaseType::Boolean) {
+    const auto& uniformStr = EnumString(mInfo->mActiveInfo->mElemType);
     mContext->ErrorInvalidOperation(
-        "%s: Function used is incompatible with uniform"
-        " type: %i",
-        funcName, uniformElemType);
+        "Function used is incompatible with uniform"
+        " of type: %s",
+        uniformStr.c_str());
     return false;
   }
 
@@ -139,15 +71,14 @@ bool WebGLUniformLocation::ValidateSizeAndType(uint8_t setterElemSize,
 }
 
 bool WebGLUniformLocation::ValidateArrayLength(uint8_t setterElemSize,
-                                               size_t setterArraySize,
-                                               const char* funcName) const {
+                                               size_t setterArraySize) const {
   MOZ_ASSERT(mLinkInfo);
 
   if (setterArraySize == 0 || setterArraySize % setterElemSize) {
     mContext->ErrorInvalidValue(
-        "%s: Expected an array of length a multiple of %d,"
+        "Expected an array of length a multiple of %d,"
         " got an array of length %zu.",
-        funcName, setterElemSize, setterArraySize);
+        setterElemSize, setterArraySize);
     return false;
   }
 
@@ -160,10 +91,10 @@ bool WebGLUniformLocation::ValidateArrayLength(uint8_t setterElemSize,
    */
   if (!mInfo->mActiveInfo->mIsArray && setterArraySize != setterElemSize) {
     mContext->ErrorInvalidOperation(
-        "%s: Expected an array of length exactly %d"
+        "Expected an array of length exactly %d"
         " (since this uniform is not an array uniform),"
         " got an array of length %zu.",
-        funcName, setterElemSize, setterArraySize);
+        setterElemSize, setterArraySize);
     return false;
   }
 
@@ -289,7 +220,7 @@ JS::Value WebGLUniformLocation::GetUniform(JSContext* js) const {
 
 JSObject* WebGLUniformLocation::WrapObject(JSContext* js,
                                            JS::Handle<JSObject*> givenProto) {
-  return dom::WebGLUniformLocationBinding::Wrap(js, this, givenProto);
+  return dom::WebGLUniformLocation_Binding::Wrap(js, this, givenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(WebGLUniformLocation)

@@ -31,13 +31,6 @@ NotifyPaintEvent::NotifyPaintEvent(
   mTimeStamp = aTimeStamp;
 }
 
-NS_INTERFACE_MAP_BEGIN(NotifyPaintEvent)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMNotifyPaintEvent)
-NS_INTERFACE_MAP_END_INHERITING(Event)
-
-NS_IMPL_ADDREF_INHERITED(NotifyPaintEvent, Event)
-NS_IMPL_RELEASE_INHERITED(NotifyPaintEvent, Event)
-
 nsRegion NotifyPaintEvent::GetRegion(SystemCallerGuarantee) {
   nsRegion r;
   for (uint32_t i = 0; i < mInvalidateRequests.Length(); ++i) {
@@ -87,8 +80,8 @@ already_AddRefed<PaintRequestList> NotifyPaintEvent::PaintRequests(
   return requests.forget();
 }
 
-NS_IMETHODIMP_(void)
-NotifyPaintEvent::Serialize(IPC::Message* aMsg, bool aSerializeInterfaceType) {
+void NotifyPaintEvent::Serialize(IPC::Message* aMsg,
+                                 bool aSerializeInterfaceType) {
   if (aSerializeInterfaceType) {
     IPC::WriteParam(aMsg, NS_LITERAL_STRING("notifypaintevent"));
   }
@@ -102,8 +95,8 @@ NotifyPaintEvent::Serialize(IPC::Message* aMsg, bool aSerializeInterfaceType) {
   }
 }
 
-NS_IMETHODIMP_(bool)
-NotifyPaintEvent::Deserialize(const IPC::Message* aMsg, PickleIterator* aIter) {
+bool NotifyPaintEvent::Deserialize(const IPC::Message* aMsg,
+                                   PickleIterator* aIter) {
   NS_ENSURE_TRUE(Event::Deserialize(aMsg, aIter), false);
 
   uint32_t length = 0;

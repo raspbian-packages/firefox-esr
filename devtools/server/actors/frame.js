@@ -7,14 +7,23 @@
 "use strict";
 
 const { ActorPool } = require("devtools/server/actors/common");
-const { createValueGrip } = require("devtools/server/actors/object");
+const { createValueGrip } = require("devtools/server/actors/object/utils");
 const { ActorClassWithSpec } = require("devtools/shared/protocol");
 const { frameSpec } = require("devtools/shared/specs/frame");
+
+function formatDisplayName(frame) {
+  if (frame.type === "call") {
+    const callee = frame.callee;
+    return callee.name || callee.userDisplayName || callee.displayName;
+  }
+
+  return `(${frame.type})`;
+}
 
 /**
  * An actor for a specified stack frame.
  */
-let FrameActor = ActorClassWithSpec(frameSpec, {
+const FrameActor = ActorClassWithSpec(frameSpec, {
   /**
    * Creates the Frame actor.
    *
@@ -23,7 +32,7 @@ let FrameActor = ActorClassWithSpec(frameSpec, {
    * @param threadActor ThreadActor
    *        The parent thread actor for this frame.
    */
-  initialize: function (frame, threadActor) {
+  initialize: function(frame, threadActor) {
     this.frame = frame;
     this.threadActor = threadActor;
   },
@@ -44,17 +53,24 @@ let FrameActor = ActorClassWithSpec(frameSpec, {
    * Finalization handler that is called when the actor is being evicted from
    * the pool.
    */
-  destroy: function () {
+  destroy: function() {
     this.conn.removeActorPool(this._frameLifetimePool);
     this._frameLifetimePool = null;
   },
 
-  getEnvironment: function () {
-    if (!this.frame.environment) {
+  getEnvironment: function() {
+    try {
+      if (!this.frame.environment) {
+        return {};
+      }
+    } catch (e) {
+      // |this.frame| might not be live. FIXME Bug 1477030 we shouldn't be
+      // using frames we derived from a point where we are not currently
+      // paused at.
       return {};
     }
 
-    let envActor = this.threadActor.createEnvironmentActor(
+    const envActor = this.threadActor.createEnvironmentActor(
       this.frame.environment,
       this.frameLifetimePool
     );
@@ -65,14 +81,9 @@ let FrameActor = ActorClassWithSpec(frameSpec, {
   /**
    * Returns a frame form for use in a protocol message.
    */
-  form: function () {
-    let threadActor = this.threadActor;
-    let form = { actor: this.actorID,
-                 type: this.frame.type };
-    if (this.frame.type === "call") {
-      form.callee = createValueGrip(this.frame.callee, threadActor._pausePool,
-        threadActor.objectGrip);
-    }
+  form: function() {
+    const threadActor = this.threadActor;
+    const form = { actor: this.actorID, type: this.frame.type };
 
     // NOTE: ignoreFrameEnvironment lets the client explicitly avoid
     // populating form environments on pause.
@@ -84,17 +95,23 @@ let FrameActor = ActorClassWithSpec(frameSpec, {
     }
 
     if (this.frame.type != "wasmcall") {
-      form.this = createValueGrip(this.frame.this, threadActor._pausePool,
-        threadActor.objectGrip);
+      form.this = createValueGrip(
+        this.frame.this,
+        threadActor._pausePool,
+        threadActor.objectGrip
+      );
     }
 
+    form.displayName = formatDisplayName(this.frame);
     form.arguments = this._args();
     if (this.frame.script) {
-      let generatedLocation = this.threadActor.sources.getFrameLocation(this.frame);
+      const generatedLocation = this.threadActor.sources.getFrameLocation(
+        this.frame
+      );
       form.where = {
-        source: generatedLocation.generatedSourceActor.form(),
+        actor: generatedLocation.generatedSourceActor.actorID,
         line: generatedLocation.generatedLine,
-        column: generatedLocation.generatedColumn
+        column: generatedLocation.generatedColumn,
       };
     }
 
@@ -105,14 +122,20 @@ let FrameActor = ActorClassWithSpec(frameSpec, {
     return form;
   },
 
-  _args: function () {
+  _args: function() {
     if (!this.frame.arguments) {
       return [];
     }
 
-    return this.frame.arguments.map(arg => createValueGrip(arg,
-      this.threadActor._pausePool, this.threadActor.objectGrip));
-  }
+    return this.frame.arguments.map(arg =>
+      createValueGrip(
+        arg,
+        this.threadActor._pausePool,
+        this.threadActor.objectGrip
+      )
+    );
+  },
 });
 
 exports.FrameActor = FrameActor;
+exports.formatDisplayName = formatDisplayName;

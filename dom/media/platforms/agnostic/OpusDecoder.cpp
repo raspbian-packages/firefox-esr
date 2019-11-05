@@ -34,7 +34,8 @@ OpusDataDecoder::OpusDataDecoder(const CreateDecoderParams& aParams)
       mSkip(0),
       mDecodedHeader(false),
       mPaddingDiscarded(false),
-      mFrames(0) {}
+      mFrames(0),
+      mChannelMap(AudioConfig::ChannelLayout::UNKNOWN_MAP) {}
 
 OpusDataDecoder::~OpusDataDecoder() {
   if (mOpusDecoder) {
@@ -79,10 +80,23 @@ RefPtr<MediaDataDecoder::InitPromise> OpusDataDecoder::Init() {
         __func__);
   }
 
+  MOZ_ASSERT(mMappingTable.Length() >= uint32_t(mOpusParser->mChannels));
   int r;
   mOpusDecoder = opus_multistream_decoder_create(
       mOpusParser->mRate, mOpusParser->mChannels, mOpusParser->mStreams,
-      mOpusParser->mCoupledStreams, mMappingTable, &r);
+      mOpusParser->mCoupledStreams, mMappingTable.Elements(), &r);
+
+  // Opus has a special feature for stereo coding where it represent wide
+  // stereo channels by 180-degree out of phase. This improves quality, but
+  // needs to be disabled when the output is downmixed to mono. Playback number
+  // of channels are set in AudioSink, using the same method
+  // `DecideAudioPlaybackChannels()`, and triggers downmix if needed.
+  if (IsDefaultPlaybackDeviceMono() ||
+      DecideAudioPlaybackChannels(mInfo) == 1) {
+    opus_multistream_decoder_ctl(mOpusDecoder,
+                                 OPUS_SET_PHASE_INVERSION_DISABLED(1));
+  }
+
   mSkip = mOpusParser->mPreSkip;
   mPaddingDiscarded = false;
 
@@ -123,29 +137,32 @@ nsresult OpusDataDecoder::DecodeHeader(const unsigned char* aData,
   }
   int channels = mOpusParser->mChannels;
 
-  AudioConfig::ChannelLayout layout(channels);
-  if (!layout.IsValid()) {
-    OPUS_DEBUG("Invalid channel mapping. Source is %d channels", channels);
-    return NS_ERROR_FAILURE;
-  }
-
+  mMappingTable.SetLength(channels);
   AudioConfig::ChannelLayout vorbisLayout(
       channels, VorbisDataDecoder::VorbisLayout(channels));
-  AudioConfig::ChannelLayout smpteLayout(channels);
-  static_assert(sizeof(mOpusParser->mMappingTable) /
-                        sizeof(mOpusParser->mMappingTable[0]) >=
-                    MAX_AUDIO_CHANNELS,
-                "Invalid size set");
-  uint8_t map[sizeof(mOpusParser->mMappingTable) /
-              sizeof(mOpusParser->mMappingTable[0])];
-  if (vorbisLayout.MappingTable(smpteLayout, map)) {
-    for (int i = 0; i < channels; i++) {
-      mMappingTable[i] = mOpusParser->mMappingTable[map[i]];
+  if (vorbisLayout.IsValid()) {
+    mChannelMap = vorbisLayout.Map();
+
+    AudioConfig::ChannelLayout smpteLayout(
+        AudioConfig::ChannelLayout::SMPTEDefault(vorbisLayout));
+
+    AutoTArray<uint8_t, 8> map;
+    map.SetLength(channels);
+    if (mOpusParser->mChannelMapping == 1 &&
+        vorbisLayout.MappingTable(smpteLayout, &map)) {
+      for (int i = 0; i < channels; i++) {
+        mMappingTable[i] = mOpusParser->mMappingTable[map[i]];
+      }
+    } else {
+      // Use Opus set channel mapping and return channels as-is.
+      PodCopy(mMappingTable.Elements(), mOpusParser->mMappingTable, channels);
     }
   } else {
-    // Should never get here as vorbis layout is always convertible to SMPTE
-    // default layout.
-    PodCopy(mMappingTable, mOpusParser->mMappingTable, MAX_AUDIO_CHANNELS);
+    // Create a dummy mapping table so that channel ordering stay the same
+    // during decoding.
+    for (int i = 0; i < channels; i++) {
+      mMappingTable[i] = i;
+    }
   }
 
   return NS_OK;
@@ -219,7 +236,7 @@ RefPtr<MediaDataDecoder::DecodePromise> OpusDataDecoder::ProcessDecode(
         MediaResult(NS_ERROR_OUT_OF_MEMORY, __func__), __func__);
   }
 
-    // Decode to the appropriate sample type.
+  // Decode to the appropriate sample type.
 #ifdef MOZ_SAMPLE_TYPE_FLOAT32
   int ret = opus_multistream_decode_float(mOpusDecoder, aSample->Data(),
                                           aSample->Size(), buffer.get(), frames,
@@ -269,7 +286,7 @@ RefPtr<MediaDataDecoder::DecodePromise> OpusDataDecoder::ProcessDecode(
     frames = frames - aSample->mDiscardPadding;
   }
 
-    // Apply the header gain if one was specified.
+  // Apply the header gain if one was specified.
 #ifdef MOZ_SAMPLE_TYPE_FLOAT32
   if (mOpusParser->mGain != 1.0f) {
     float gain = mOpusParser->mGain;
@@ -308,10 +325,17 @@ RefPtr<MediaDataDecoder::DecodePromise> OpusDataDecoder::ProcessDecode(
 
   mFrames += frames;
 
+  if (!frames) {
+    return DecodePromise::CreateAndResolve(DecodedData(), __func__);
+  }
+
+  // Trim extra allocated frames.
+  buffer.SetLength(frames * channels);
+
   return DecodePromise::CreateAndResolve(
-      DecodedData{new AudioData(aSample->mOffset, time, duration, frames,
-                                Move(buffer), mOpusParser->mChannels,
-                                mOpusParser->mRate)},
+      DecodedData{new AudioData(aSample->mOffset, time, std::move(buffer),
+                                mOpusParser->mChannels, mOpusParser->mRate,
+                                mChannelMap)},
       __func__);
 }
 

@@ -9,8 +9,8 @@ const TEST_URL = "http://example.com/";
 
 function getServerConnections(browser) {
   ok(browser.isRemoteBrowser, "Content browser is remote");
-  return ContentTask.spawn(browser, {}, async function () {
-    const { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
+  return ContentTask.spawn(browser, {}, async function() {
+    const { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm");
     const { DebuggerServer } = require("devtools/server/main");
     if (!DebuggerServer._connections) {
       return 0;
@@ -19,20 +19,20 @@ function getServerConnections(browser) {
   });
 }
 
-let checkServerConnectionCount = async function (browser, expected, msg) {
-  let conns = await getServerConnections(browser);
+const checkServerConnectionCount = async function(browser, expected, msg) {
+  const conns = await getServerConnections(browser);
   is(conns.length || 0, expected, "Server connection count: " + msg);
 };
 
-let checkToolbox = async function (tab, location) {
-  let target = TargetFactory.forTab(tab);
+const checkToolbox = async function(tab, location) {
+  const target = await TargetFactory.forTab(tab);
   ok(!!gDevTools.getToolbox(target), `Toolbox exists ${location}`);
 };
 
-add_task(async function () {
-  let tab = await addTab(TEST_URL);
+add_task(async function() {
+  const tab = await addTab(TEST_URL);
 
-  let tabsInDifferentProcesses = E10S_MULTI_ENABLED &&
+  const tabsInDifferentProcesses = E10S_MULTI_ENABLED &&
     (gBrowser.tabs[0].linkedBrowser.frameLoader.childID !=
      gBrowser.tabs[1].linkedBrowser.frameLoader.childID);
 
@@ -41,7 +41,7 @@ add_task(async function () {
     // 0: No DevTools connections yet
     await checkServerConnectionCount(tab.linkedBrowser, 0,
       "0: No DevTools connections yet");
-    let { toolbox } = await openInspector();
+    const { toolbox } = await openInspector();
     if (tabsInDifferentProcesses) {
       // 1: Two tabs open, but only one per content process
       await checkServerConnectionCount(tab.linkedBrowser, 1,
@@ -52,7 +52,7 @@ add_task(async function () {
         "2: One for each tab (starting tab plus the one we opened)");
     }
     await checkToolbox(tab, "outside RDM");
-    let { ui } = await openRDM(tab);
+    const { ui } = await openRDM(tab);
     if (tabsInDifferentProcesses) {
       // 2: RDM UI adds an extra connection, 1 + 1 = 2
       await checkServerConnectionCount(ui.getViewportBrowser(), 2,
@@ -85,11 +85,11 @@ add_task(async function () {
     // 0: No DevTools connections yet
     await checkServerConnectionCount(tab.linkedBrowser, 0,
       "0: No DevTools connections yet");
-    let { ui } = await openRDM(tab);
+    const { ui } = await openRDM(tab);
     // 1: RDM UI uses an extra connection
     await checkServerConnectionCount(ui.getViewportBrowser(), 1,
       "1: RDM UI uses an extra connection");
-    let { toolbox } = await openInspector();
+    const { toolbox } = await openInspector();
     if (tabsInDifferentProcesses) {
       // 2: Two tabs open, but only one per content process
       await checkServerConnectionCount(ui.getViewportBrowser(), 2,

@@ -2,9 +2,9 @@
 <html>
 <head>
   <title>Test for Bug 1041200</title>
-  <script type="text/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="chrome://mochikit/content/tests/SimpleTest/WindowSnapshot.js"></script>
-  <script type="text/javascript" src="chrome://mochikit/content/tests/SimpleTest/paint_listener.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/WindowSnapshot.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/paint_listener.js"></script>
 </head>
 <body>
 <iframe style="width:700px; height:500px; margin-top:200px;" id="ourFrame"></iframe>
@@ -14,12 +14,7 @@ var SimpleTest = window.opener.wrappedJSObject.SimpleTest;
 var ok = window.opener.wrappedJSObject.ok;
 var info = window.opener.wrappedJSObject.info;
 
-var viewer =
-  SpecialPowers.wrap(ourFrame).contentWindow
-               .QueryInterface(SpecialPowers.Ci.nsIInterfaceRequestor)
-               .getInterface(SpecialPowers.Ci.nsIWebNavigation)
-               .QueryInterface(SpecialPowers.Ci.nsIDocShell)
-               .contentViewer;
+var viewer = SpecialPowers.wrap(ourFrame).contentWindow.docShell.contentViewer;
 viewer.fullZoom = 2;
 
 SimpleTest.waitForExplicitFinish();

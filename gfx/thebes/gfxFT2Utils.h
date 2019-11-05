@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -57,6 +57,21 @@ class MOZ_STACK_CLASS gfxFT2LockedFace {
 
   gfxFT2FontBase* MOZ_NON_OWNING_REF mGfxFont;  // owned by caller
   FT_Face mFace;
+};
+
+// A couple of FreeType-based utilities shared by gfxFontconfigFontEntry
+// and FT2FontEntry.
+
+typedef struct FT_MM_Var_ FT_MM_Var;
+
+class gfxFT2Utils {
+ public:
+  static void GetVariationAxes(const FT_MM_Var* aMMVar,
+                               nsTArray<gfxFontVariationAxis>& aAxes);
+
+  static void GetVariationInstances(
+      gfxFontEntry* aFontEntry, const FT_MM_Var* aMMVar,
+      nsTArray<gfxFontVariationInstance>& aInstances);
 };
 
 #endif /* GFX_FT2UTILS_H */

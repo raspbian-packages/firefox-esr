@@ -14,10 +14,10 @@
 <!ENTITY  proportional.label                      "პროპორციული:">
 <!ENTITY  proportional.accesskey                  "P">
 
-<!ENTITY  serif.label                             "კონტრასტული:">
-<!ENTITY  serif.accesskey                         "s">
-<!ENTITY  sans-serif.label                        "ერთგვაროვანი:">
-<!ENTITY  sans-serif.accesskey                    "n">
+<!ENTITY  serif.label                             "ნაჭდევებიანი:">
+<!ENTITY  serif.accesskey                         "ნ">
+<!ENTITY  sans-serif.label                        "უნაჭდევო:">
+<!ENTITY  sans-serif.accesskey                    "უ">
 <!ENTITY  monospace.label                         "მონოსიგანის:">
 <!ENTITY  monospace.accesskey                     "m">
 
@@ -27,7 +27,7 @@
 <!ENTITY  font.langGroup.japanese                 "იაპონური">
 <!ENTITY  font.langGroup.trad-chinese             "ჩინური ტრადიციული (ტაივანი)">
 <!ENTITY  font.langGroup.simpl-chinese            "ჩინური გამარტივებული">
-<!ENTITY  font.langGroup.trad-chinese-hk          "ჩინური ტრადიციული (ჰონგ კონგი)">
+<!ENTITY  font.langGroup.trad-chinese-hk          "ჩინური ტრადიციული (ჰონგ-კონგი)">
 <!ENTITY  font.langGroup.korean                   "კორეული">
 <!ENTITY  font.langGroup.cyrillic                 "კირილიცა">
 <!ENTITY  font.langGroup.el                       "ბერძნული">
@@ -58,8 +58,8 @@
 <!ENTITY minSize.none                             "არა">
 
 <!-- default font type -->
-<!ENTITY  useDefaultFontSerif.label               "კონტრასტული">
-<!ENTITY  useDefaultFontSansSerif.label           "ერთგვაროვანი">
+<!ENTITY  useDefaultFontSerif.label               "ნაჭდევებიანი">
+<!ENTITY  useDefaultFontSansSerif.label           "უნაჭდევო">
 
 <!-- fonts in message -->
 <!ENTITY  fontControl.label                       "შრიფტების მართვა">

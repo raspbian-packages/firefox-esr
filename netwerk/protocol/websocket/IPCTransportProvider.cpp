@@ -16,10 +16,6 @@ namespace net {
 NS_IMPL_ISUPPORTS(TransportProviderParent, nsITransportProvider,
                   nsIHttpUpgradeListener)
 
-TransportProviderParent::TransportProviderParent() {}
-
-TransportProviderParent::~TransportProviderParent() {}
-
 NS_IMETHODIMP
 TransportProviderParent::SetListener(nsIHttpUpgradeListener* aListener) {
   MOZ_ASSERT(aListener);
@@ -63,8 +59,6 @@ void TransportProviderParent::MaybeNotify() {
 }
 
 NS_IMPL_ISUPPORTS(TransportProviderChild, nsITransportProvider)
-
-TransportProviderChild::TransportProviderChild() {}
 
 TransportProviderChild::~TransportProviderChild() { Send__delete__(this); }
 

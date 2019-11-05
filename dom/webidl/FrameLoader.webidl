@@ -5,10 +5,9 @@
  */
 
 interface LoadContext;
-interface TabParent;
+interface RemoteTab;
 interface URI;
 interface nsIDocShell;
-interface nsIMessageSender;
 interface nsIPrintSettings;
 interface nsIWebBrowserPersistDocumentReceiver;
 interface nsIWebProgressListener;
@@ -22,10 +21,10 @@ interface FrameLoader {
   readonly attribute nsIDocShell? docShell;
 
   /**
-   * Get this frame loader's TabParent, if it has a remote frame.  Otherwise,
+   * Get this frame loader's RemoteTab, if it has a remote frame.  Otherwise,
    * returns null.
    */
-  readonly attribute TabParent? tabParent;
+  readonly attribute RemoteTab? remoteTab;
 
   /**
    * Get an nsILoadContext for the top-level docshell. For remote
@@ -35,33 +34,16 @@ interface FrameLoader {
   readonly attribute LoadContext loadContext;
 
   /**
-   * Start loading the frame. This method figures out what to load
-   * from the owner content in the frame loader.
+   * Get the root BrowsingContext within the frame.
+   * This may be null immediately after creating a remote frame.
    */
-  [Throws]
-  void loadFrame(optional boolean originalSrc = false);
+  readonly attribute BrowsingContext? browsingContext;
 
   /**
-   * Loads the specified URI in this frame. Behaves identically to loadFrame,
-   * except that this method allows specifying the URI to load.
+   * Get the ParentSHistory for the nsFrameLoader. May return null if this
+   * frameloader is not for a toplevel frame.
    */
-  [Throws]
-  void loadURI(URI aURI, optional boolean originalSrc = false);
-
-  /**
-   * Adds a blocking promise for the current cross process navigation.
-   * This method can only be called while the "BrowserWillChangeProcess" event
-   * is being fired.
-   */
-  [Throws]
-  void addProcessChangeBlockingPromise(Promise<any> aPromise);
-
-  /**
-   * Destroy the frame loader and everything inside it. This will
-   * clear the weak owner content reference.
-   */
-  [Throws]
-  void destroy();
+  readonly attribute ParentSHistory? parentSHistory;
 
   /**
    * Find out whether the loader's frame is at too great a depth in
@@ -104,27 +86,26 @@ interface FrameLoader {
   void activateFrameEvent(DOMString aType, boolean capture);
 
   // Note, when frameloaders are swapped, also messageManagers are swapped.
-  readonly attribute nsIMessageSender? messageManager;
+  readonly attribute MessageSender? messageManager;
 
   /**
    * Request that the next time a remote layer transaction has been
    * received by the Compositor, a MozAfterRemoteFrame event be sent
    * to the window.
    */
-  [Throws]
   void requestNotifyAfterRemotePaint();
-
-  /**
-   * Close the window through the ownerElement.
-   */
-  [Throws]
-  void requestFrameLoaderClose();
 
   /**
    * Force a remote browser to recompute its dimension and screen position.
    */
   [Throws]
   void requestUpdatePosition();
+
+  /**
+   * Force a TabStateFlush from native sessionStoreListeners.
+   * Return true if the flush requires async ipc call.
+   */
+  boolean requestTabStateFlush(unsigned long aFlushId);
 
   /**
    * Print the current document.
@@ -140,37 +121,28 @@ interface FrameLoader {
              optional nsIWebProgressListener? aProgressListener = null);
 
   /**
-   * The default event mode automatically forwards the events
-   * handled in EventStateManager::HandleCrossProcessEvent to
-   * the child content process when these events are targeted to
-   * the remote browser element.
+   * Renders a region of the frame into an image bitmap.
    *
-   * Used primarly for input events (mouse, keyboard)
+   * @param x
+   * @param y
+   * @param w
+   * @param h Specify the area of the window to render, in CSS
+   * pixels. This is relative to the current scroll position.
+   * @param scale The scale to render the window at. Use devicePixelRatio
+   * to have comparable rendering to the OS.
+   * @param backgroundColor The background color to use.
+   *
+   * This API can only be used in the parent process, as content processes
+   * cannot access the rendering of out of process iframes. This API works
+   * with remote and local frames.
    */
-  const unsigned long EVENT_MODE_NORMAL_DISPATCH = 0x00000000;
-
-  /**
-   * With this event mode, it's the application's responsability to
-   * convert and forward events to the content process
-   */
-  const unsigned long EVENT_MODE_DONT_FORWARD_TO_CHILD = 0x00000001;
-
-  [Pure]
-  attribute unsigned long eventMode;
-
-  /**
-   * If false, then the subdocument is not clipped to its CSS viewport, and the
-   * subdocument's viewport scrollbar(s) are not rendered.
-   * Defaults to true.
-   */
-  attribute boolean clipSubdocument;
-
-  /**
-   * If false, then the subdocument's scroll coordinates will not be clamped
-   * to their scroll boundaries.
-   * Defaults to true.
-   */
-  attribute boolean clampScrollPosition;
+  [Throws]
+  Promise<ImageBitmap> drawSnapshot(double x,
+                                    double y,
+                                    double w,
+                                    double h,
+                                    double scale,
+                                    DOMString backgroundColor);
 
   /**
    * The element which owns this frame loader.
@@ -183,8 +155,8 @@ interface FrameLoader {
 
 
   /**
-   * Cached childID of the ContentParent owning the TabParent in this frame
-   * loader. This can be used to obtain the childID after the TabParent died.
+   * Cached childID of the ContentParent owning the RemoteTab in this frame
+   * loader. This can be used to obtain the childID after the RemoteTab died.
    */
   [Pure]
   readonly attribute unsigned long long childID;
@@ -221,6 +193,29 @@ interface FrameLoader {
   readonly attribute boolean isDead;
 };
 
+/**
+ * Interface for objects which represent a document that can be
+ * serialized with nsIWebBrowserPersist.  This interface is
+ * asynchronous because the actual document can be in another process
+ * (e.g., if this object is a FrameLoader for an out-of-process
+ * frame).
+ *
+ * XXXbz This method should really just return a Promise...
+ *
+ * @see nsIWebBrowserPersistDocumentReceiver
+ * @see nsIWebBrowserPersistDocument
+ * @see nsIWebBrowserPersist
+ *
+ * @param aOuterWindowID
+ *        The outer window ID of the subframe we'd like to persist.
+ *        If set at 0, WebBrowserPersistable will attempt to persist
+ *        the top-level document. If the outer window ID is for a subframe
+ *        that does not exist, or is not held beneath the WebBrowserPersistable,
+ *        aRecv's onError method will be called with NS_ERROR_NO_CONTENT.
+ * @param aRecv
+ *        The nsIWebBrowserPersistDocumentReceiver is a callback that
+ *        will be fired once the document is ready for persisting.
+ */
 [NoInterfaceObject]
 interface WebBrowserPersistable
 {

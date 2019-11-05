@@ -18,6 +18,7 @@ namespace mozilla {
 namespace dom {
 class Promise;
 class StorageManager;
+class MediaCapabilities;
 
 namespace network {
 class Connection;
@@ -88,6 +89,11 @@ class WorkerNavigator final : public nsWrapperCache {
   StorageManager* Storage();
 
   network::Connection* GetConnection(ErrorResult& aRv);
+
+  dom::MediaCapabilities* MediaCapabilities();
+
+ private:
+  RefPtr<dom::MediaCapabilities> mMediaCapabilities;
 };
 
 }  // namespace dom

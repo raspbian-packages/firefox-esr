@@ -142,8 +142,9 @@ class CombinedVisitor : public Visitor {
 };
 
 HTMLMenuItemElement::HTMLMenuItemElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, FromParser aFromParser)
-    : nsGenericHTMLElement(aNodeInfo),
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+    FromParser aFromParser)
+    : nsGenericHTMLElement(std::move(aNodeInfo)),
       mType(kMenuItemDefaultType->value),
       mParserCreating(false),
       mShouldInitChecked(false),
@@ -156,15 +157,12 @@ HTMLMenuItemElement::~HTMLMenuItemElement() {}
 
 // NS_IMPL_ELEMENT_CLONE(HTMLMenuItemElement)
 
-nsresult HTMLMenuItemElement::Clone(mozilla::dom::NodeInfo* aNodeInfo,
-                                    nsINode** aResult,
-                                    bool aPreallocateArrays) const {
+nsresult HTMLMenuItemElement::Clone(dom::NodeInfo* aNodeInfo,
+                                    nsINode** aResult) const {
   *aResult = nullptr;
-  already_AddRefed<mozilla::dom::NodeInfo> ni =
-      RefPtr<mozilla::dom::NodeInfo>(aNodeInfo).forget();
-  RefPtr<HTMLMenuItemElement> it = new HTMLMenuItemElement(ni, NOT_FROM_PARSER);
-  nsresult rv = const_cast<HTMLMenuItemElement*>(this)->CopyInnerTo(
-      it, aPreallocateArrays);
+  RefPtr<HTMLMenuItemElement> it =
+      new HTMLMenuItemElement(do_AddRef(aNodeInfo), NOT_FROM_PARSER);
+  nsresult rv = const_cast<HTMLMenuItemElement*>(this)->CopyInnerTo(it);
   if (NS_SUCCEEDED(rv)) {
     switch (mType) {
       case CMD_TYPE_CHECKBOX:
@@ -213,8 +211,7 @@ void HTMLMenuItemElement::SetChecked(bool aChecked) {
   }
 }
 
-nsresult HTMLMenuItemElement::GetEventTargetParent(
-    EventChainPreVisitor& aVisitor) {
+void HTMLMenuItemElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   if (aVisitor.mEvent->mMessage == eMouseClick) {
     bool originalCheckedValue = false;
     switch (mType) {
@@ -244,7 +241,7 @@ nsresult HTMLMenuItemElement::GetEventTargetParent(
     aVisitor.mItemFlags |= mType;
   }
 
-  return nsGenericHTMLElement::GetEventTargetParent(aVisitor);
+  nsGenericHTMLElement::GetEventTargetParent(aVisitor);
 }
 
 nsresult HTMLMenuItemElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
@@ -258,7 +255,7 @@ nsresult HTMLMenuItemElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
 
     nsCOMPtr<nsIContent> content(do_QueryInterface(aVisitor.mItemData));
     RefPtr<HTMLMenuItemElement> selectedRadio =
-        HTMLMenuItemElement::FromContentOrNull(content);
+        HTMLMenuItemElement::FromNodeOrNull(content);
     if (selectedRadio) {
       selectedRadio->SetChecked(true);
       if (mType != CMD_TYPE_RADIO) {
@@ -272,12 +269,11 @@ nsresult HTMLMenuItemElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
   return NS_OK;
 }
 
-nsresult HTMLMenuItemElement::BindToTree(nsIDocument* aDocument,
+nsresult HTMLMenuItemElement::BindToTree(Document* aDocument,
                                          nsIContent* aParent,
-                                         nsIContent* aBindingParent,
-                                         bool aCompileEventHandlers) {
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+                                         nsIContent* aBindingParent) {
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
 
   if (NS_SUCCEEDED(rv) && aDocument && mType == CMD_TYPE_RADIO) {
     AddedToRadioGroup();
@@ -374,7 +370,7 @@ void HTMLMenuItemElement::WalkRadioGroup(Visitor* aVisitor) {
 
   for (nsIContent* cur = parent->GetFirstChild(); cur;
        cur = cur->GetNextSibling()) {
-    HTMLMenuItemElement* menuitem = HTMLMenuItemElement::FromContent(cur);
+    HTMLMenuItemElement* menuitem = HTMLMenuItemElement::FromNode(cur);
 
     if (!menuitem || menuitem->GetType() != CMD_TYPE_RADIO) {
       continue;
@@ -429,7 +425,7 @@ void HTMLMenuItemElement::InitChecked() {
 
 JSObject* HTMLMenuItemElement::WrapNode(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return HTMLMenuItemElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLMenuItemElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

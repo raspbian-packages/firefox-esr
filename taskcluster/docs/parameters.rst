@@ -156,7 +156,7 @@ Release Promotion
    Specify the next version for version bump tasks.
 
 ``release_type``
-   The type of release being promoted. One of "nightly", "beta", "esr60", "release-rc", or "release".
+   The type of release being promoted. One of "nightly", "beta", "esr60", "esr68", "release-rc", or "release".
 
 ``release_eta``
    The time and date when a release is scheduled to live. This value is passed to Balrog.
@@ -197,3 +197,10 @@ them are specified, they must all be specified.
 ``comm_head_repository``
 ``comm_head_rev``
 ``comm_head_ref``
+
+Code Review
+-----------
+
+``phabricator_diff``
+   The code review process needs to know the Phabricator Differential diff that
+   started the analysis. This parameter must start with `PHID-DIFF-`

@@ -21,9 +21,6 @@ class WheelEvent : public MouseEvent {
 
   NS_INLINE_DECL_REFCOUNTING_INHERITED(WheelEvent, MouseEvent)
 
-  // Forward to base class
-  NS_FORWARD_TO_MOUSEEVENT
-
   static already_AddRefed<WheelEvent> Constructor(const GlobalObject& aGlobal,
                                                   const nsAString& aType,
                                                   const WheelEventInit& aParam,
@@ -31,7 +28,7 @@ class WheelEvent : public MouseEvent {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return WheelEventBinding::Wrap(aCx, this, aGivenProto);
+    return WheelEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   // NOTE: DeltaX(), DeltaY() and DeltaZ() return CSS pixels when deltaMode is

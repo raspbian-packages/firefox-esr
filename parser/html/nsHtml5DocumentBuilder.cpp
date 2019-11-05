@@ -6,11 +6,11 @@
 
 #include "nsHtml5DocumentBuilder.h"
 
-#include "nsIStyleSheetLinkingElement.h"
-#include "nsStyleLinkElement.h"
-#include "nsIHTMLDocument.h"
-#include "nsNameSpaceManager.h"
 #include "mozilla/dom/ScriptLoader.h"
+#include "nsIHTMLDocument.h"
+#include "nsIStyleSheetLinkingElement.h"
+#include "nsNameSpaceManager.h"
+#include "nsStyleLinkElement.h"
 
 NS_IMPL_CYCLE_COLLECTION_INHERITED(nsHtml5DocumentBuilder, nsContentSink,
                                    mOwnedElements)
@@ -26,8 +26,8 @@ nsHtml5DocumentBuilder::nsHtml5DocumentBuilder(bool aRunsToCompletion)
   mRunsToCompletion = aRunsToCompletion;
 }
 
-nsresult nsHtml5DocumentBuilder::Init(nsIDocument* aDoc, nsIURI* aURI,
-                                      nsISupports* aContainer,
+nsresult nsHtml5DocumentBuilder::Init(mozilla::dom::Document* aDoc,
+                                      nsIURI* aURI, nsISupports* aContainer,
                                       nsIChannel* aChannel) {
   return nsContentSink::Init(aDoc, aURI, aContainer, aChannel);
 }
@@ -66,11 +66,11 @@ void nsHtml5DocumentBuilder::UpdateStyleSheet(nsIContent* aElement) {
 
   ssle->SetEnableUpdates(true);
 
-  bool willNotify;
-  bool isAlternate;
-  nsresult rv = ssle->UpdateStyleSheet(mRunsToCompletion ? nullptr : this,
-                                       &willNotify, &isAlternate);
-  if (NS_SUCCEEDED(rv) && willNotify && !isAlternate && !mRunsToCompletion) {
+  auto updateOrError =
+      ssle->UpdateStyleSheet(mRunsToCompletion ? nullptr : this);
+
+  if (updateOrError.isOk() && updateOrError.unwrap().ShouldBlock() &&
+      !mRunsToCompletion) {
     ++mPendingSheetCount;
     mScriptLoader->AddParserBlockingScriptExecutionBlocker();
   }

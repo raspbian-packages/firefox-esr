@@ -7,6 +7,7 @@
 #include "nsString.h"
 #include "jsapi.h"
 #include "js/CallNonGenericMethod.h"
+#include "js/PropertySpec.h"
 #include "mozJSComponentLoader.h"
 #include "nsZipArchive.h"
 
@@ -181,6 +182,12 @@ NS_IMETHODIMP
 FinalizationWitnessService::Make(const char* aTopic, const char16_t* aValue,
                                  JSContext* aCx,
                                  JS::MutableHandle<JS::Value> aRetval) {
+  // Finalize witnesses are not created when recording or replaying, as
+  // finalizations occur non-deterministically in the recording.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+
   JS::Rooted<JSObject*> objResult(aCx, JS_NewObject(aCx, &sWitnessClass));
   if (!objResult) {
     return NS_ERROR_OUT_OF_MEMORY;

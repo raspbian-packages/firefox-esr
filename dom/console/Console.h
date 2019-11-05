@@ -43,65 +43,96 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
                                           nsPIDOMWindowInner* aWindow,
                                           ErrorResult& aRv);
 
-  // WebIDL methods
-  nsPIDOMWindowInner* GetParentObject() const { return mWindow; }
+  static already_AddRefed<Console> CreateForWorklet(JSContext* aCx,
+                                                    nsIGlobalObject* aGlobal,
+                                                    uint64_t aOuterWindowID,
+                                                    uint64_t aInnerWindowID,
+                                                    ErrorResult& aRv);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Log(const GlobalObject& aGlobal,
                   const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Info(const GlobalObject& aGlobal,
                    const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Warn(const GlobalObject& aGlobal,
                    const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Error(const GlobalObject& aGlobal,
                     const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Exception(const GlobalObject& aGlobal,
                         const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Debug(const GlobalObject& aGlobal,
                     const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Table(const GlobalObject& aGlobal,
                     const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Trace(const GlobalObject& aGlobal,
                     const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Dir(const GlobalObject& aGlobal,
                   const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Dirxml(const GlobalObject& aGlobal,
                      const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Group(const GlobalObject& aGlobal,
                     const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void GroupCollapsed(const GlobalObject& aGlobal,
                              const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void GroupEnd(const GlobalObject& aGlobal);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Time(const GlobalObject& aGlobal, const nsAString& aLabel);
 
+  MOZ_CAN_RUN_SCRIPT
+  static void TimeLog(const GlobalObject& aGlobal, const nsAString& aLabel,
+                      const Sequence<JS::Value>& aData);
+
+  MOZ_CAN_RUN_SCRIPT
   static void TimeEnd(const GlobalObject& aGlobal, const nsAString& aLabel);
 
+  MOZ_CAN_RUN_SCRIPT
   static void TimeStamp(const GlobalObject& aGlobal,
                         const JS::Handle<JS::Value> aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Profile(const GlobalObject& aGlobal,
                       const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void ProfileEnd(const GlobalObject& aGlobal,
                          const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Assert(const GlobalObject& aGlobal, bool aCondition,
                      const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void Count(const GlobalObject& aGlobal, const nsAString& aLabel);
 
+  MOZ_CAN_RUN_SCRIPT
+  static void CountReset(const GlobalObject& aGlobal, const nsAString& aLabel);
+
+  MOZ_CAN_RUN_SCRIPT
   static void Clear(const GlobalObject& aGlobal);
 
   static already_AddRefed<ConsoleInstance> CreateInstance(
@@ -115,7 +146,8 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   void SetConsoleEventHandler(AnyCallback* aHandler);
 
  private:
-  Console(JSContext* aCx, nsPIDOMWindowInner* aWindow);
+  Console(JSContext* aCx, nsIGlobalObject* aGlobal, uint64_t aOuterWindowID,
+          uint64_t aInnerWIndowID);
   ~Console();
 
   void Initialize(ErrorResult& aRv);
@@ -137,10 +169,12 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
     MethodGroupCollapsed,
     MethodGroupEnd,
     MethodTime,
+    MethodTimeLog,
     MethodTimeEnd,
     MethodTimeStamp,
     MethodAssert,
     MethodCount,
+    MethodCountReset,
     MethodClear,
     MethodProfile,
     MethodProfileEnd,
@@ -151,31 +185,44 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   static already_AddRefed<Console> GetConsoleInternal(
       const GlobalObject& aGlobal, ErrorResult& aRv);
 
+  MOZ_CAN_RUN_SCRIPT
   static void ProfileMethod(const GlobalObject& aGlobal, MethodName aName,
                             const nsAString& aAction,
                             const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   void ProfileMethodInternal(JSContext* aCx, MethodName aName,
                              const nsAString& aAction,
                              const Sequence<JS::Value>& aData);
 
+  // Implementation of the mainthread-only parts of ProfileMethod.
+  // This is indepedent of console instance state.
+  static void ProfileMethodMainthread(JSContext* aCx, const nsAString& aAction,
+                                      const Sequence<JS::Value>& aData);
+
+  MOZ_CAN_RUN_SCRIPT
   static void Method(const GlobalObject& aGlobal, MethodName aName,
                      const nsAString& aString,
                      const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   void MethodInternal(JSContext* aCx, MethodName aName,
                       const nsAString& aString,
                       const Sequence<JS::Value>& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   static void StringMethod(const GlobalObject& aGlobal, const nsAString& aLabel,
+                           const Sequence<JS::Value>& aData,
                            MethodName aMethodName,
                            const nsAString& aMethodString);
 
+  MOZ_CAN_RUN_SCRIPT
   void StringMethodInternal(JSContext* aCx, const nsAString& aLabel,
+                            const Sequence<JS::Value>& aData,
                             MethodName aMethodName,
                             const nsAString& aMethodString);
 
-  // This method must receive aCx and aArguments in the same JSCompartment.
+  // This method must receive aCx and aArguments in the same JS::Compartment.
   void ProcessCallData(JSContext* aCx, ConsoleCallData* aData,
                        const Sequence<JS::Value>& aArguments);
 
@@ -187,6 +234,7 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   void ReleaseCallData(ConsoleCallData* aCallData);
 
   // aCx and aArguments must be in the same JS compartment.
+  MOZ_CAN_RUN_SCRIPT
   void NotifyHandler(JSContext* aCx, const Sequence<JS::Value>& aArguments,
                      ConsoleCallData* aData);
 
@@ -197,13 +245,13 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   // - the system-principal scope when we want to dispatch the ConsoleEvent to
   //   nsIConsoleAPIStorage (See the comment in Console.cpp about the use of
   //   xpc::PrivilegedJunkScope()
-  // - the mConsoleEventNotifier->Callable() scope when we want to notify this
+  // - the mConsoleEventNotifier->CallableGlobal() when we want to notify this
   //   handler about a new ConsoleEvent.
   // - It can be the global from the JSContext when RetrieveConsoleEvents is
   //   called.
   bool PopulateConsoleNotificationInTheTargetScope(
       JSContext* aCx, const Sequence<JS::Value>& aArguments,
-      JSObject* aTargetScope, JS::MutableHandle<JS::Value> aValue,
+      JS::Handle<JSObject*> aTargetScope, JS::MutableHandle<JS::Value> aValue,
       ConsoleCallData* aData);
 
   // If the first JS::Value of the array is a string, this method uses it to
@@ -277,9 +325,9 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   JS::Value CreateStartTimerValue(JSContext* aCx, const nsAString& aTimerLabel,
                                   TimerStatus aTimerStatus) const;
 
-  // StopTimer follows the same pattern as StartTimer: it runs on the
+  // LogTimer follows the same pattern as StartTimer: it runs on the
   // owning thread and populates aTimerLabel and aTimerDuration, used by
-  // CreateStopTimerValue.
+  // CreateLogOrEndTimerValue.
   // * aCx - the JSContext rooting aName.
   // * aName - this is (should be) the name of the timer as JS::Value.
   // * aTimestamp - the monotonicTimer for this context taken from
@@ -288,27 +336,29 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   //                 string.
   // * aTimerDuration - the difference between aTimestamp and when the timer
   //                    started (see StartTimer).
-  TimerStatus StopTimer(JSContext* aCx, const JS::Value& aName,
-                        DOMHighResTimeStamp aTimestamp, nsAString& aTimerLabel,
-                        double* aTimerDuration);
+  // * aCancelTimer - if true, the timer is removed from the table.
+  TimerStatus LogTimer(JSContext* aCx, const JS::Value& aName,
+                       DOMHighResTimeStamp aTimestamp, nsAString& aTimerLabel,
+                       double* aTimerDuration, bool aCancelTimer);
 
   // This method generates a ConsoleTimerEnd dictionary exposed as JS::Value, or
-  // a ConsoleTimerError dictionary if aTimerStatus is false. See StopTimer.
+  // a ConsoleTimerError dictionary if aTimerStatus is false. See LogTimer.
   // * aCx - this is the context that will root the returned value.
-  // * aTimerLabel - this label must be what StopTimer received as aTimerLabel.
-  // * aTimerDuration - this is what StopTimer received as aTimerDuration
-  // * aTimerStatus - the return value of StopTimer.
-  JS::Value CreateStopTimerValue(JSContext* aCx, const nsAString& aTimerLabel,
-                                 double aTimerDuration,
-                                 TimerStatus aTimerStatus) const;
+  // * aTimerLabel - this label must be what LogTimer received as aTimerLabel.
+  // * aTimerDuration - this is what LogTimer received as aTimerDuration
+  // * aTimerStatus - the return value of LogTimer.
+  JS::Value CreateLogOrEndTimerValue(JSContext* aCx,
+                                     const nsAString& aTimerLabel,
+                                     double aTimerDuration,
+                                     TimerStatus aTimerStatus) const;
 
   // The method populates a Sequence from an array of JS::Value.
   bool ArgumentsToValueList(const Sequence<JS::Value>& aData,
                             Sequence<JS::Value>& aSequence) const;
 
   // This method follows the same pattern as StartTimer: its runs on the owning
-  // thread and populate aCountLabel, used by CreateCounterValue. Returns
-  // 3 possible values:
+  // thread and populate aCountLabel, used by CreateCounterOrResetCounterValue.
+  // Returns 3 possible values:
   // * MAX_PAGE_COUNTERS in case of error that has to be reported;
   // * 0 in case of a CX exception. The operation cannot continue;
   // * the incremented counter value.
@@ -319,6 +369,19 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   uint32_t IncreaseCounter(JSContext* aCx, const Sequence<JS::Value>& aData,
                            nsAString& aCountLabel);
 
+  // This method follows the same pattern as StartTimer: its runs on the owning
+  // thread and populate aCountLabel, used by CreateCounterResetValue. Returns
+  // 3 possible values:
+  // * MAX_PAGE_COUNTERS in case of error that has to be reported;
+  // * 0 elsewhere. In case of a CX exception, aCountLabel will be an empty
+  // string.
+  // Params:
+  // * aCx - the JSContext rooting aData.
+  // * aData - the arguments received by the console.count() method.
+  // * aCountLabel - the label that will be populated by this method.
+  uint32_t ResetCounter(JSContext* aCx, const Sequence<JS::Value>& aData,
+                        nsAString& aCountLabel);
+
   // This method generates a ConsoleCounter dictionary as JS::Value. If
   // aCountValue is == MAX_PAGE_COUNTERS it generates a ConsoleCounterError
   // instead. See IncreaseCounter.
@@ -326,8 +389,9 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   // * aCountLabel - this label must be what IncreaseCounter received as
   //                 aTimerLabel.
   // * aCountValue - the return value of IncreaseCounter.
-  JS::Value CreateCounterValue(JSContext* aCx, const nsAString& aCountLabel,
-                               uint32_t aCountValue) const;
+  JS::Value CreateCounterOrResetCounterValue(JSContext* aCx,
+                                             const nsAString& aCountLabel,
+                                             uint32_t aCountValue) const;
 
   bool ShouldIncludeStackTrace(MethodName aMethodName) const;
 
@@ -341,15 +405,18 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
                       const Sequence<JS::Value>& aData,
                       DOMHighResTimeStamp* aTimeStamp);
 
+  MOZ_CAN_RUN_SCRIPT
   void MaybeExecuteDumpFunction(JSContext* aCx, const nsAString& aMethodName,
                                 const Sequence<JS::Value>& aData,
                                 nsIStackFrame* aStack);
 
+  MOZ_CAN_RUN_SCRIPT
   void MaybeExecuteDumpFunctionForTime(JSContext* aCx, MethodName aMethodName,
                                        const nsAString& aMethodString,
                                        uint64_t aMonotonicTimer,
                                        const JS::Value& aData);
 
+  MOZ_CAN_RUN_SCRIPT
   void ExecuteDumpFunction(const nsAString& aMessage);
 
   bool IsEnabled(JSContext* aCx) const;
@@ -360,8 +427,9 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
 
   uint32_t InternalLogLevelToInteger(MethodName aName) const;
 
-  // All these nsCOMPtr are touched on main thread only.
-  nsCOMPtr<nsPIDOMWindowInner> mWindow;
+  // Owning/CC thread only
+  nsCOMPtr<nsIGlobalObject> mGlobal;
+  // These nsCOMPtr are touched on main thread only.
   nsCOMPtr<nsIConsoleAPIStorage> mStorage;
   RefPtr<JSObjectHolder> mSandbox;
 
@@ -406,10 +474,13 @@ class Console final : public nsIObserver, public nsSupportsWeakReference {
   mozilla::TimeStamp mCreationTimeStamp;
 
   friend class ConsoleCallData;
+  friend class ConsoleCallDataWorkletRunnable;
   friend class ConsoleInstance;
+  friend class ConsoleProfileWorkerRunnable;
+  friend class ConsoleProfileWorkletRunnable;
   friend class ConsoleRunnable;
-  friend class ConsoleCallDataRunnable;
-  friend class ConsoleProfileRunnable;
+  friend class ConsoleWorkerRunnable;
+  friend class ConsoleWorkletRunnable;
 };
 
 }  // namespace dom

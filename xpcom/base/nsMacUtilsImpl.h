@@ -11,8 +11,12 @@
 #include "nsString.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/Attributes.h"
+#include "mozilla/StaticMutex.h"
+#include "mozilla/StaticPtr.h"
 
 using mozilla::Atomic;
+using mozilla::StaticAutoPtr;
+using mozilla::StaticMutex;
 
 class nsMacUtilsImpl final : public nsIMacUtils {
  public:
@@ -21,7 +25,19 @@ class nsMacUtilsImpl final : public nsIMacUtils {
 
   nsMacUtilsImpl() {}
 
+#if defined(MOZ_SANDBOX)
+  static bool GetAppPath(nsCString& aAppPath);
+
+#  ifdef DEBUG
+  static nsresult GetBloatLogDir(nsCString& aDirectoryPath);
+  static nsresult GetDirectoryPath(const char* aPath,
+                                   nsCString& aDirectoryPath);
+#  endif /* DEBUG */
+#endif   /* MOZ_SANDBOX */
+
   static void EnableTCSMIfAvailable();
+  static bool IsTCSMAvailable();
+  static uint32_t GetPhysicalCPUCount();
 
  private:
   ~nsMacUtilsImpl() {}
@@ -32,10 +48,20 @@ class nsMacUtilsImpl final : public nsIMacUtils {
   // in our binary.
   nsString mBinaryArchs;
 
-  enum TCSMStatus { TCSM_Unknown = 0, TCSM_Available, TCSM_Unavailable };
+#if defined(MOZ_SANDBOX)
+  // Cache the appDir returned from GetAppPath to avoid doing I/O
+  static StaticAutoPtr<nsCString> sCachedAppPath;
+  // For thread safe setting/checking of sCachedAppPath
+  static StaticMutex sCachedAppPathMutex;
+#endif
+
+  enum TCSMStatus {
+    TCSM_Unknown = 0,
+    TCSM_Available,
+    TCSM_Unavailable
+  };
   static mozilla::Atomic<nsMacUtilsImpl::TCSMStatus> sTCSMStatus;
 
-  static bool IsTCSMAvailable();
   static nsresult EnableTCSM();
 #if defined(DEBUG)
   static bool IsTCSMEnabled();

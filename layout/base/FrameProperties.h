@@ -194,8 +194,7 @@ class FrameProperties {
    */
   template <typename T>
   bool Has(Descriptor<T> aProperty) const {
-    return mProperties.IndexOf(aProperty, 0, PropertyComparator()) !=
-           nsTArray<PropertyValue>::NoIndex;
+    return mProperties.Contains(aProperty, PropertyComparator());
   }
 
   /**
@@ -370,18 +369,20 @@ inline void* FrameProperties::GetInternal(UntypedDescriptor aProperty,
                                           bool* aFoundResult) const {
   MOZ_ASSERT(aProperty, "Null property?");
 
-  auto index = mProperties.IndexOf(aProperty, 0, PropertyComparator());
-  if (index == nsTArray<PropertyValue>::NoIndex) {
-    if (aFoundResult) {
-      *aFoundResult = false;
-    }
-    return nullptr;
-  }
-
-  if (aFoundResult) {
-    *aFoundResult = true;
-  }
-  return mProperties.ElementAt(index).mValue;
+  return mProperties.ApplyIf(
+      aProperty, 0, PropertyComparator(),
+      [&aFoundResult](const PropertyValue& aPV) -> void* {
+        if (aFoundResult) {
+          *aFoundResult = true;
+        }
+        return aPV.mValue;
+      },
+      [&aFoundResult]() -> void* {
+        if (aFoundResult) {
+          *aFoundResult = false;
+        }
+        return nullptr;
+      });
 }
 
 inline void FrameProperties::SetInternal(UntypedDescriptor aProperty,
@@ -389,15 +390,13 @@ inline void FrameProperties::SetInternal(UntypedDescriptor aProperty,
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aProperty, "Null property?");
 
-  auto index = mProperties.IndexOf(aProperty, 0, PropertyComparator());
-  if (index != nsTArray<PropertyValue>::NoIndex) {
-    PropertyValue* pv = &mProperties.ElementAt(index);
-    pv->DestroyValueFor(aFrame);
-    pv->mValue = aValue;
-    return;
-  }
-
-  mProperties.AppendElement(PropertyValue(aProperty, aValue));
+  mProperties.ApplyIf(
+      aProperty, 0, PropertyComparator(),
+      [&](PropertyValue& aPV) {
+        aPV.DestroyValueFor(aFrame);
+        aPV.mValue = aValue;
+      },
+      [&]() { mProperties.AppendElement(PropertyValue(aProperty, aValue)); });
 }
 
 inline void FrameProperties::AddInternal(UntypedDescriptor aProperty,
@@ -425,7 +424,7 @@ inline void* FrameProperties::RemoveInternal(UntypedDescriptor aProperty,
     *aFoundResult = true;
   }
 
-  void* result = mProperties.ElementAt(index).mValue;
+  void* result = mProperties.Elements()[index].mValue;
   mProperties.RemoveElementAt(index);
 
   return result;
@@ -438,7 +437,7 @@ inline void FrameProperties::DeleteInternal(UntypedDescriptor aProperty,
 
   auto index = mProperties.IndexOf(aProperty, 0, PropertyComparator());
   if (index != nsTArray<PropertyValue>::NoIndex) {
-    mProperties.ElementAt(index).DestroyValueFor(aFrame);
+    mProperties.Elements()[index].DestroyValueFor(aFrame);
     mProperties.RemoveElementAt(index);
   }
 }

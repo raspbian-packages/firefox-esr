@@ -24,6 +24,10 @@ class ImageDocument final : public MediaDocument,
 
   NS_DECL_ISUPPORTS_INHERITED
 
+  enum MediaDocumentKind MediaDocumentKind() const override {
+    return MediaDocumentKind::Image;
+  }
+
   virtual nsresult Init() override;
 
   virtual nsresult StartDocumentLoad(const char* aCommand, nsIChannel* aChannel,
@@ -36,14 +40,14 @@ class ImageDocument final : public MediaDocument,
   virtual void SetScriptGlobalObject(
       nsIScriptGlobalObject* aScriptGlobalObject) override;
   virtual void Destroy() override;
-  virtual void OnPageShow(bool aPersisted,
-                          EventTarget* aDispatchStartTarget) override;
+  virtual void OnPageShow(bool aPersisted, EventTarget* aDispatchStartTarget,
+                          bool aOnlySystemGroup = false) override;
 
   NS_DECL_NSIIMAGEDOCUMENT
   NS_DECL_IMGINOTIFICATIONOBSERVER
 
   // nsIDOMEventListener
-  NS_IMETHOD HandleEvent(nsIDOMEvent* aEvent) override;
+  NS_DECL_NSIDOMEVENTLISTENER
 
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(ImageDocument, MediaDocument)
 
@@ -66,6 +70,8 @@ class ImageDocument final : public MediaDocument,
   void RestoreImage();
   void RestoreImageTo(int32_t aX, int32_t aY) { ScrollImageTo(aX, aY, true); }
   void ToggleImageSize();
+
+  virtual void NotifyPossibleTitleChange(bool aBoundTitleElement) override;
 
  protected:
   virtual ~ImageDocument();
@@ -122,6 +128,8 @@ class ImageDocument final : public MediaDocument,
   bool mFirstResize;
   // mObservingImageLoader is true while the observer is set.
   bool mObservingImageLoader;
+  bool mTitleUpdateInProgress;
+  bool mHasCustomTitle;
 
   float mOriginalZoomLevel;
 #if defined(MOZ_WIDGET_ANDROID)

@@ -11,7 +11,7 @@
 #include "mozilla/Unused.h"
 #include "nsBaseWidget.h"
 #if defined(MOZ_WIDGET_ANDROID)
-#include "mozilla/layers/UiCompositorControllerChild.h"
+#  include "mozilla/layers/UiCompositorControllerChild.h"
 #endif  // defined(MOZ_WIDGET_ANDROID)
 
 namespace mozilla {
@@ -23,7 +23,7 @@ using namespace widget;
 RemoteCompositorSession::RemoteCompositorSession(
     nsBaseWidget* aWidget, CompositorBridgeChild* aChild,
     CompositorWidgetDelegate* aWidgetDelegate, APZCTreeManagerChild* aAPZ,
-    const uint64_t& aRootLayerTreeId)
+    const LayersId& aRootLayerTreeId)
     : CompositorSession(aWidgetDelegate, aChild, aRootLayerTreeId),
       mWidget(aWidget),
       mAPZ(aAPZ) {
@@ -56,7 +56,8 @@ CompositorBridgeParent* RemoteCompositorSession::GetInProcessBridge() const {
 void RemoteCompositorSession::SetContentController(
     GeckoContentController* aController) {
   mContentController = aController;
-  mCompositorBridgeChild->SendPAPZConstructor(new APZChild(aController), 0);
+  mCompositorBridgeChild->SendPAPZConstructor(new APZChild(aController),
+                                              LayersId{0});
 }
 
 GeckoContentController* RemoteCompositorSession::GetContentController() {
@@ -73,6 +74,7 @@ void RemoteCompositorSession::Shutdown() {
   mContentController = nullptr;
   if (mAPZ) {
     mAPZ->SetCompositorSession(nullptr);
+    mAPZ->Destroy();
   }
   mCompositorBridgeChild->Destroy();
   mCompositorBridgeChild = nullptr;

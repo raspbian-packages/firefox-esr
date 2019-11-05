@@ -10,21 +10,21 @@
                  type="text/css"?>
 
 <?xml-stylesheet href="chrome://browser/content/places/places.css"?>
-<?xml-stylesheet href="chrome://browser/skin/places/places.css"?>
-<?xul-overlay href="chrome://browser/content/places/placesOverlay.xul"?>
+<?xml-stylesheet href="chrome://browser/skin/places/tree-icons.css"?>
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="549192:  History view not updated after deleting entry"
         onload="runTest();">
 
   <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
+          src="chrome://browser/content/places/places-tree.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
   <script type="application/javascript" src="head.js" />
 
   <body xmlns="http://www.w3.org/1999/xhtml" />
 
   <tree id="tree"
-        type="places"
+        is="places-tree"
         flex="1">
     <treecols>
       <treecol label="Title" id="title" anonid="title" primary="true" ordinal="1" flex="1"/>
@@ -45,7 +45,7 @@
           parentGuid: PlacesUtils.bookmarks.unfiledGuid,
           index: PlacesUtils.bookmarks.DEFAULT_INDEX,
           type: PlacesUtils.bookmarks.TYPE_BOOKMARK,
-          url: "place:folder=UNFILED_BOOKMARKS",
+          url: `place:parent=${PlacesUtils.bookmarks.unfiledGuid}`,
           title: "shortcut"
         });
 
@@ -53,7 +53,7 @@
           parentGuid: PlacesUtils.bookmarks.unfiledGuid,
           index: PlacesUtils.bookmarks.DEFAULT_INDEX,
           type: PlacesUtils.bookmarks.TYPE_BOOKMARK,
-          url: "place:folder=UNFILED_BOOKMARKS&maxResults=10",
+          url: `place:parent=${PlacesUtils.bookmarks.unfiledGuid}&maxResults=10`,
           title: "query"
         });
 
@@ -74,7 +74,7 @@
 
         // Setup the places tree contents.
         let tree = document.getElementById("tree");
-        tree.place = "place:folder=UNFILED_BOOKMARKS";
+        tree.place = `place:parent=${PlacesUtils.bookmarks.unfiledGuid}`;
 
         // Select the last bookmark.
         tree.selectItems([bm.guid]);

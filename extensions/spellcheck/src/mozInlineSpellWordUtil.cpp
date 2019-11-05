@@ -6,16 +6,14 @@
 #include "mozInlineSpellWordUtil.h"
 
 #include "mozilla/BinarySearch.h"
+#include "mozilla/HTMLEditor.h"
 #include "mozilla/TextEditor.h"
 #include "mozilla/dom/Element.h"
 
 #include "nsDebug.h"
 #include "nsAtom.h"
 #include "nsComponentManagerUtils.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMRange.h"
 #include "nsIEditor.h"
-#include "nsIDOMNode.h"
 #include "nsUnicodeProperties.h"
 #include "nsServiceManagerUtils.h"
 #include "nsIContent.h"
@@ -46,6 +44,12 @@ inline bool IsConditionalPunctuation(char16_t ch) {
           ch == 0x00B7);                 // MIDDLE DOT
 }
 
+static bool IsAmbiguousDOMWordSeprator(char16_t ch) {
+  // This class may be CHAR_CLASS_SEPARATOR, but it depends on context.
+  return (ch == '@' || ch == ':' || ch == '.' || ch == '/' || ch == '-' ||
+          IsConditionalPunctuation(ch));
+}
+
 // mozInlineSpellWordUtil::Init
 
 nsresult mozInlineSpellWordUtil::Init(TextEditor* aTextEditor) {
@@ -57,10 +61,11 @@ nsresult mozInlineSpellWordUtil::Init(TextEditor* aTextEditor) {
   if (NS_WARN_IF(!mDocument)) {
     return NS_ERROR_FAILURE;
   }
-  mDOMDocument = do_QueryInterface(mDocument);
 
-  // Find the root node for the editor. For contenteditable we'll need something
-  // cleverer here.
+  mIsContentEditableOrDesignMode = !!aTextEditor->AsHTMLEditor();
+
+  // Find the root node for the editor. For contenteditable the mRootNode could
+  // change to shadow root if the begin and end are inside the shadowDOM.
   mRootNode = aTextEditor->GetRoot();
   if (NS_WARN_IF(!mRootNode)) {
     return NS_ERROR_FAILURE;
@@ -73,7 +78,7 @@ static inline bool IsSpellCheckingTextNode(nsINode* aNode) {
   if (parent &&
       parent->IsAnyOfHTMLElements(nsGkAtoms::script, nsGkAtoms::style))
     return false;
-  return aNode->IsNodeOfType(nsINode::eTEXT);
+  return aNode->IsText();
 }
 
 typedef void (*OnLeaveNodeFunPtr)(nsINode* aNode, void* aClosure);
@@ -83,7 +88,7 @@ typedef void (*OnLeaveNodeFunPtr)(nsINode* aNode, void* aClosure);
 // why we can't just use GetNextNode here, sadly.
 static nsINode* FindNextNode(nsINode* aNode, nsINode* aRoot,
                              OnLeaveNodeFunPtr aOnLeaveNode, void* aClosure) {
-  NS_PRECONDITION(aNode, "Null starting node?");
+  MOZ_ASSERT(aNode, "Null starting node?");
 
   nsINode* next = aNode->GetFirstChild();
   if (next) return next;
@@ -113,7 +118,7 @@ static nsINode* FindNextNode(nsINode* aNode, nsINode* aRoot,
 // in a preorder DOM traversal.
 static nsINode* FindNextTextNode(nsINode* aNode, int32_t aOffset,
                                  nsINode* aRoot) {
-  NS_PRECONDITION(aNode, "Null starting node?");
+  MOZ_ASSERT(aNode, "Null starting node?");
   NS_ASSERTION(!IsSpellCheckingTextNode(aNode),
                "FindNextTextNode should start with a non-text node");
 
@@ -136,7 +141,7 @@ static nsINode* FindNextTextNode(nsINode* aNode, int32_t aOffset,
   return checkNode;
 }
 
-// mozInlineSpellWordUtil::SetEnd
+// mozInlineSpellWordUtil::SetPositionAndEnd
 //
 //    We have two ranges "hard" and "soft". The hard boundary is simply
 //    the scope of the root node. The soft boundary is that which is set
@@ -153,12 +158,36 @@ static nsINode* FindNextTextNode(nsINode* aNode, int32_t aOffset,
 //    SetPosition(). You might think of the soft boundary as being this initial
 //    position.
 
-nsresult mozInlineSpellWordUtil::SetEnd(nsINode* aEndNode, int32_t aEndOffset) {
-  NS_PRECONDITION(aEndNode, "Null end node?");
+nsresult mozInlineSpellWordUtil::SetPositionAndEnd(nsINode* aPositionNode,
+                                                   int32_t aPositionOffset,
+                                                   nsINode* aEndNode,
+                                                   int32_t aEndOffset) {
+  MOZ_ASSERT(aPositionNode, "Null begin node?");
+  MOZ_ASSERT(aEndNode, "Null end node?");
 
   NS_ASSERTION(mRootNode, "Not initialized");
 
+  // Find a appropriate root if we are dealing with contenteditable nodes which
+  // are in the shadow DOM.
+  if (mIsContentEditableOrDesignMode) {
+    nsINode* rootNode = aPositionNode->SubtreeRoot();
+    if (rootNode != aEndNode->SubtreeRoot()) {
+      return NS_ERROR_FAILURE;
+    }
+
+    if (ShadowRoot::FromNode(rootNode)) {
+      mRootNode = rootNode;
+    }
+  }
+
   InvalidateWords();
+
+  if (!IsSpellCheckingTextNode(aPositionNode)) {
+    // Start at the start of the first text node after aNode/aOffset.
+    aPositionNode = FindNextTextNode(aPositionNode, aPositionOffset, mRootNode);
+    aPositionOffset = 0;
+  }
+  mSoftBegin = NodeOffset(aPositionNode, aPositionOffset);
 
   if (!IsSpellCheckingTextNode(aEndNode)) {
     // End at the start of the first text node after aEndNode/aEndOffset.
@@ -166,18 +195,6 @@ nsresult mozInlineSpellWordUtil::SetEnd(nsINode* aEndNode, int32_t aEndOffset) {
     aEndOffset = 0;
   }
   mSoftEnd = NodeOffset(aEndNode, aEndOffset);
-  return NS_OK;
-}
-
-nsresult mozInlineSpellWordUtil::SetPosition(nsINode* aNode, int32_t aOffset) {
-  InvalidateWords();
-
-  if (!IsSpellCheckingTextNode(aNode)) {
-    // Start at the start of the first text node after aNode/aOffset.
-    aNode = FindNextTextNode(aNode, aOffset, mRootNode);
-    aOffset = 0;
-  }
-  mSoftBegin = NodeOffset(aNode, aOffset);
 
   nsresult rv = EnsureWords();
   if (NS_FAILED(rv)) {
@@ -185,7 +202,10 @@ nsresult mozInlineSpellWordUtil::SetPosition(nsINode* aNode, int32_t aOffset) {
   }
 
   int32_t textOffset = MapDOMPositionToSoftTextOffset(mSoftBegin);
-  if (textOffset < 0) return NS_OK;
+  if (textOffset < 0) {
+    return NS_OK;
+  }
+
   mNextWordIndex = FindRealWordContaining(textOffset, HINT_END, true);
   return NS_OK;
 }
@@ -219,12 +239,11 @@ void mozInlineSpellWordUtil::MakeNodeOffsetRangeForWord(
 
 // mozInlineSpellWordUtil::GetRangeForWord
 
-nsresult mozInlineSpellWordUtil::GetRangeForWord(nsIDOMNode* aWordNode,
+nsresult mozInlineSpellWordUtil::GetRangeForWord(nsINode* aWordNode,
                                                  int32_t aWordOffset,
                                                  nsRange** aRange) {
   // Set our soft end and start
-  nsCOMPtr<nsINode> wordNode = do_QueryInterface(aWordNode);
-  NodeOffset pt = NodeOffset(wordNode, aWordOffset);
+  NodeOffset pt(aWordNode, aWordOffset);
 
   if (!mSoftTextValid || pt != mSoftBegin || pt != mSoftEnd) {
     InvalidateWords();
@@ -302,7 +321,9 @@ nsresult mozInlineSpellWordUtil::GetNextWord(nsAString& aText,
 nsresult mozInlineSpellWordUtil::MakeRange(NodeOffset aBegin, NodeOffset aEnd,
                                            nsRange** aRange) {
   NS_ENSURE_ARG_POINTER(aBegin.mNode);
-  if (!mDOMDocument) return NS_ERROR_NOT_INITIALIZED;
+  if (!mDocument) {
+    return NS_ERROR_NOT_INITIALIZED;
+  }
 
   RefPtr<nsRange> range = new nsRange(aBegin.mNode);
   nsresult rv = range->SetStartAndEnd(aBegin.mNode, aBegin.mOffset, aEnd.mNode,
@@ -313,6 +334,19 @@ nsresult mozInlineSpellWordUtil::MakeRange(NodeOffset aBegin, NodeOffset aEnd,
   range.forget(aRange);
 
   return NS_OK;
+}
+
+// static
+already_AddRefed<nsRange> mozInlineSpellWordUtil::MakeRange(
+    const NodeOffsetRange& aRange) {
+  RefPtr<nsRange> range = new nsRange(aRange.Begin().Node());
+  nsresult rv =
+      range->SetStartAndEnd(aRange.Begin().Node(), aRange.Begin().Offset(),
+                            aRange.End().Node(), aRange.End().Offset());
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return nullptr;
+  }
+  return range.forget();
 }
 
 /*********** Word Splitting ************/
@@ -390,8 +424,10 @@ CharClass WordSplitState::ClassifyCharacter(int32_t aIndex,
     if (mDOMWordText[aIndex - 1] == '.') return CHAR_CLASS_SEPARATOR;
 
     // now we know left char is a word-char, check the right-hand character
-    if (aIndex == int32_t(mDOMWordText.Length()) - 1)
+    if (aIndex == int32_t(mDOMWordText.Length() - 1)) {
       return CHAR_CLASS_SEPARATOR;
+    }
+
     if (ClassifyCharacter(aIndex + 1, false) != CHAR_CLASS_WORD)
       return CHAR_CLASS_SEPARATOR;
     // If the next charatcer is a word-char, make sure that it's not a
@@ -593,11 +629,13 @@ static bool TextNodeContainsDOMWordSeparator(nsINode* aNode,
   WordSplitState state(nullptr, text, 0, end);
   for (int32_t i = end - 1; i >= 0; --i) {
     if (IsDOMWordSeparator(textFragment->CharAt(i)) ||
-        state.ClassifyCharacter(i, true) == CHAR_CLASS_SEPARATOR) {
+        (!IsAmbiguousDOMWordSeprator(textFragment->CharAt(i)) &&
+         state.ClassifyCharacter(i, true) == CHAR_CLASS_SEPARATOR)) {
       // Be greedy, find as many separators as we can
       for (int32_t j = i - 1; j >= 0; --j) {
         if (IsDOMWordSeparator(textFragment->CharAt(j)) ||
-            state.ClassifyCharacter(j, true) == CHAR_CLASS_SEPARATOR) {
+            (!IsAmbiguousDOMWordSeprator(textFragment->CharAt(j)) &&
+             state.ClassifyCharacter(j, true) == CHAR_CLASS_SEPARATOR)) {
           i = j;
         } else {
           break;
@@ -767,7 +805,7 @@ void mozInlineSpellWordUtil::BuildSoftText() {
                                          mozilla::fallible);
         if (!ok) {
           // probably out of memory, remove from mSoftTextDOMMapping
-          mSoftTextDOMMapping.RemoveElementAt(mSoftTextDOMMapping.Length() - 1);
+          mSoftTextDOMMapping.RemoveLastElement();
           exit = true;
         }
       }

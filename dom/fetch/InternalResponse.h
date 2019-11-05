@@ -13,6 +13,7 @@
 #include "nsProxyRelease.h"
 
 #include "mozilla/dom/InternalHeaders.h"
+#include "mozilla/dom/RequestBinding.h"
 #include "mozilla/dom/ResponseBinding.h"
 #include "mozilla/dom/ChannelInfo.h"
 #include "mozilla/UniquePtr.h"
@@ -26,7 +27,6 @@ class AutoIPCStream;
 namespace dom {
 
 class InternalHeaders;
-class IPCInternalResponse;
 
 class InternalResponse final {
   friend class FetchDriver;
@@ -34,14 +34,9 @@ class InternalResponse final {
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(InternalResponse)
 
-  InternalResponse(uint16_t aStatus, const nsACString& aStatusText);
-
-  static already_AddRefed<InternalResponse> FromIPC(
-      const IPCInternalResponse& aIPCResponse);
-
-  template <typename M>
-  void ToIPC(IPCInternalResponse* aIPCResponse, M* aManager,
-             UniquePtr<mozilla::ipc::AutoIPCStream>& aAutoStream);
+  InternalResponse(
+      uint16_t aStatus, const nsACString& aStatusText,
+      RequestCredentials aCredentialsMode = RequestCredentials::Omit);
 
   enum CloneType {
     eCloneInputStream,
@@ -172,6 +167,26 @@ class InternalResponse final {
     GetUnfilteredBody(aStream, aBodySize);
   }
 
+  void SetBodyBlobURISpec(nsACString& aBlobURISpec) {
+    mBodyBlobURISpec = aBlobURISpec;
+  }
+
+  const nsACString& BodyBlobURISpec() const {
+    if (mWrappedResponse) {
+      return mWrappedResponse->BodyBlobURISpec();
+    }
+    return mBodyBlobURISpec;
+  }
+
+  void SetBodyLocalPath(nsAString& aLocalPath) { mBodyLocalPath = aLocalPath; }
+
+  const nsAString& BodyLocalPath() const {
+    if (mWrappedResponse) {
+      return mWrappedResponse->BodyLocalPath();
+    }
+    return mBodyLocalPath;
+  }
+
   void SetBody(nsIInputStream* aBody, int64_t aBodySize) {
     if (mWrappedResponse) {
       return mWrappedResponse->SetBody(aBody, aBodySize);
@@ -240,6 +255,13 @@ class InternalResponse final {
     return rtn;
   }
 
+  bool HasCacheInfoChannel() const {
+    if (mWrappedResponse) {
+      return !!mWrappedResponse->HasCacheInfoChannel();
+    }
+    return !!mCacheInfoChannel;
+  }
+
   void InitChannelInfo(nsIChannel* aChannel) {
     mChannelInfo.InitFromChannel(aChannel);
   }
@@ -290,12 +312,15 @@ class InternalResponse final {
   const nsCString mStatusText;
   RefPtr<InternalHeaders> mHeaders;
   nsCOMPtr<nsIInputStream> mBody;
+  nsCString mBodyBlobURISpec;
+  nsString mBodyLocalPath;
   int64_t mBodySize;
   // It's used to passed to the CacheResponse to generate padding size. Once, we
   // generate the padding size for resposne, we don't need it anymore.
   Maybe<uint32_t> mPaddingInfo;
   int64_t mPaddingSize;
   nsresult mErrorCode;
+  RequestCredentials mCredentialsMode;
 
   // For alternative data such as JS Bytecode cached in the HTTP cache.
   nsCOMPtr<nsIInputStream> mAlternativeBody;

@@ -6,6 +6,7 @@
 #ifndef nsIDeviceContextSpec_h___
 #define nsIDeviceContextSpec_h___
 
+#include "gfxPoint.h"
 #include "nsISupports.h"
 
 class nsIWidget;
@@ -69,6 +70,13 @@ class nsIDeviceContextSpec : public nsISupports {
    * @return the printing scale to be applied to the context for printing.
    */
   virtual float GetPrintingScale() { return 1.0f; }
+
+  /**
+   * Override to return something other than the default.
+   *
+   * @return the point to translate the context to for printing.
+   */
+  virtual gfxPoint GetPrintingTranslate() { return gfxPoint(0, 0); }
 
   NS_IMETHOD BeginDocument(const nsAString& aTitle,
                            const nsAString& aPrintToFileName,

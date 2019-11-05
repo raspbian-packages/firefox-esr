@@ -6,12 +6,12 @@
 #ifndef mozilla_image_Image_h
 #define mozilla_image_Image_h
 
+#include "mozilla/Maybe.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/Tuple.h"
 #include "mozilla/TimeStamp.h"
 #include "gfx2DGlue.h"
 #include "imgIContainer.h"
-#include "ImageURL.h"
 #include "ImageContainer.h"
 #include "LookupResult.h"
 #include "nsStringFwd.h"
@@ -32,7 +32,12 @@ class Image;
 
 struct MemoryCounter {
   MemoryCounter()
-      : mSource(0), mDecodedHeap(0), mDecodedNonHeap(0), mExternalHandles(0) {}
+      : mSource(0),
+        mDecodedHeap(0),
+        mDecodedNonHeap(0),
+        mExternalHandles(0),
+        mFrameIndex(0),
+        mExternalId(0) {}
 
   void SetSource(size_t aCount) { mSource = aCount; }
   size_t Source() const { return mSource; }
@@ -42,6 +47,10 @@ struct MemoryCounter {
   size_t DecodedNonHeap() const { return mDecodedNonHeap; }
   void SetExternalHandles(size_t aCount) { mExternalHandles = aCount; }
   size_t ExternalHandles() const { return mExternalHandles; }
+  void SetFrameIndex(size_t aIndex) { mFrameIndex = aIndex; }
+  size_t FrameIndex() const { return mFrameIndex; }
+  void SetExternalId(uint64_t aId) { mExternalId = aId; }
+  uint64_t ExternalId() const { return mExternalId; }
 
   MemoryCounter& operator+=(const MemoryCounter& aOther) {
     mSource += aOther.mSource;
@@ -56,6 +65,8 @@ struct MemoryCounter {
   size_t mDecodedHeap;
   size_t mDecodedNonHeap;
   size_t mExternalHandles;
+  size_t mFrameIndex;
+  uint64_t mExternalId;
 };
 
 enum class SurfaceMemoryCounterType { NORMAL, COMPOSITING, COMPOSITING_PREV };
@@ -213,7 +224,7 @@ class Image : public imgIContainer {
   virtual bool HasError() = 0;
   virtual void SetHasError() = 0;
 
-  virtual ImageURL* GetURI() = 0;
+  virtual nsIURI* GetURI() const = 0;
 
   virtual void ReportUseCounters() {}
 };
@@ -254,11 +265,17 @@ class ImageResource : public Image {
    * Returns a non-AddRefed pointer to the URI associated with this image.
    * Illegal to use off-main-thread.
    */
-  virtual ImageURL* GetURI() override { return mURI.get(); }
+  nsIURI* GetURI() const override { return mURI; }
 
  protected:
-  explicit ImageResource(ImageURL* aURI);
+  explicit ImageResource(nsIURI* aURI);
   ~ImageResource();
+
+  layers::ContainerProducerID GetImageProducerId() const {
+    return mImageProducerID;
+  }
+
+  bool GetSpecTruncatedTo1k(nsCString& aSpec) const;
 
   // Shared functionality for implementors of imgIContainer. Every
   // implementation of attribute animationMode should forward here.
@@ -302,7 +319,7 @@ class ImageResource : public Image {
 
   // Member data shared by all implementations of this abstract class
   RefPtr<ProgressTracker> mProgressTracker;
-  RefPtr<ImageURL> mURI;
+  nsCOMPtr<nsIURI> mURI;
   TimeStamp mLastRefreshTime;
   uint64_t mInnerWindowId;
   uint32_t mAnimationConsumers;
@@ -311,6 +328,24 @@ class ImageResource : public Image {
   bool mAnimating : 1;      // Are we currently animating?
   bool mError : 1;          // Error handling
 
+  /**
+   * Attempt to find a matching cached surface in the SurfaceCache, and if not
+   * available, request the production of such a surface (either synchronously
+   * or asynchronously).
+   *
+   * If the draw result is BAD_IMAGE, BAD_ARGS or NOT_READY, the size will be
+   * the same as aSize. If it is TEMPORARY_ERROR, INCOMPLETE, or SUCCESS, the
+   * size is a hint as to what we expect the surface size to be, once the best
+   * fitting size is available. It may or may not match the size of the surface
+   * returned at this moment. This is useful for choosing how to store the final
+   * result (e.g. if going into an ImageContainer, ideally we would share the
+   * same container for many requested sizes, if they all end up with the same
+   * best fit size in the end).
+   *
+   * A valid surface should only be returned for SUCCESS and INCOMPLETE.
+   *
+   * Any other draw result is invalid.
+   */
   virtual Tuple<ImgDrawResult, gfx::IntSize, RefPtr<gfx::SourceSurface>>
   GetFrameInternal(const gfx::IntSize& aSize,
                    const Maybe<SVGImageContext>& aSVGContext,
@@ -325,23 +360,31 @@ class ImageResource : public Image {
    * the same as the size of the surface in the image container, but it is the
    * best effort estimate.
    */
-  virtual gfx::IntSize GetImageContainerSize(layers::LayerManager* aManager,
-                                             const gfx::IntSize& aSize,
-                                             uint32_t aFlags) {
-    return gfx::IntSize(0, 0);
+  virtual Tuple<ImgDrawResult, gfx::IntSize> GetImageContainerSize(
+      layers::LayerManager* aManager, const gfx::IntSize& aSize,
+      uint32_t aFlags) {
+    return MakeTuple(ImgDrawResult::NOT_SUPPORTED, gfx::IntSize(0, 0));
   }
 
-  already_AddRefed<layers::ImageContainer> GetImageContainerImpl(
-      layers::LayerManager* aManager, const gfx::IntSize& aSize,
-      const Maybe<SVGImageContext>& aSVGContext, uint32_t aFlags);
+  ImgDrawResult GetImageContainerImpl(layers::LayerManager* aManager,
+                                      const gfx::IntSize& aSize,
+                                      const Maybe<SVGImageContext>& aSVGContext,
+                                      uint32_t aFlags,
+                                      layers::ImageContainer** aContainer);
 
-  void UpdateImageContainer();
+  /**
+   * Re-requests the appropriate frames for each image container using
+   * GetFrameInternal.
+   * @returns True if any image containers were updated, else false.
+   */
+  bool UpdateImageContainer(const Maybe<gfx::IntRect>& aDirtyRect);
 
   void ReleaseImageContainer();
 
  private:
   void SetCurrentImage(layers::ImageContainer* aContainer,
-                       gfx::SourceSurface* aSurface, bool aInTransaction);
+                       gfx::SourceSurface* aSurface,
+                       const Maybe<gfx::IntRect>& aDirtyRect);
 
   struct ImageContainerEntry {
     ImageContainerEntry(const gfx::IntSize& aSize,

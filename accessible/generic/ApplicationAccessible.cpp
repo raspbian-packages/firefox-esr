@@ -14,7 +14,6 @@
 #include "States.h"
 
 #include "nsIComponentManager.h"
-#include "nsIDOMDocument.h"
 #include "nsIWindowMediator.h"
 #include "nsServiceManagerUtils.h"
 #include "mozilla/Services.h"
@@ -33,7 +32,7 @@ ApplicationAccessible::ApplicationAccessible()
 ////////////////////////////////////////////////////////////////////////////////
 // nsIAccessible
 
-ENameValueFlag ApplicationAccessible::Name(nsString& aName) {
+ENameValueFlag ApplicationAccessible::Name(nsString& aName) const {
   aName.Truncate();
 
   nsCOMPtr<nsIStringBundleService> bundleService =
@@ -62,7 +61,7 @@ void ApplicationAccessible::Description(nsString& aDescription) {
   aDescription.Truncate();
 }
 
-void ApplicationAccessible::Value(nsString& aValue) { aValue.Truncate(); }
+void ApplicationAccessible::Value(nsString& aValue) const { aValue.Truncate(); }
 
 uint64_t ApplicationAccessible::State() {
   return IsDefunct() ? states::DEFUNCT : 0;
@@ -87,11 +86,14 @@ Accessible* ApplicationAccessible::FocusedChild() {
   return nullptr;
 }
 
-Relation ApplicationAccessible::RelationByType(RelationType aRelationType) {
+Relation ApplicationAccessible::RelationByType(
+    RelationType aRelationType) const {
   return Relation();
 }
 
 nsIntRect ApplicationAccessible::Bounds() const { return nsIntRect(); }
+
+nsRect ApplicationAccessible::BoundsInAppUnits() const { return nsRect(); }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Accessible public methods
@@ -100,9 +102,9 @@ void ApplicationAccessible::Shutdown() { mAppInfo = nullptr; }
 
 void ApplicationAccessible::ApplyARIAState(uint64_t* aState) const {}
 
-role ApplicationAccessible::NativeRole() { return roles::APP_ROOT; }
+role ApplicationAccessible::NativeRole() const { return roles::APP_ROOT; }
 
-uint64_t ApplicationAccessible::NativeState() { return 0; }
+uint64_t ApplicationAccessible::NativeState() const { return 0; }
 
 KeyBinding ApplicationAccessible::AccessKey() const { return KeyBinding(); }
 
@@ -123,9 +125,7 @@ void ApplicationAccessible::Init() {
   for (auto iter = windowsById->Iter(); !iter.Done(); iter.Next()) {
     nsGlobalWindowOuter* window = iter.Data();
     if (window->GetDocShell() && window->IsRootOuterWindow()) {
-      nsCOMPtr<nsIDocument> docNode = window->GetExtantDoc();
-
-      if (docNode) {
+      if (RefPtr<dom::Document> docNode = window->GetExtantDoc()) {
         GetAccService()->GetDocAccessible(docNode);  // ensure creation
       }
     }

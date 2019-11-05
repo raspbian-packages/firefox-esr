@@ -14,14 +14,16 @@
 #include "nsCOMPtr.h"
 
 class nsPIDOMWindowInner;
-class nsIPrincipal;
 
 namespace mozilla {
+
+class WorkletImpl;
+
 namespace dom {
 
 class Promise;
-class WorkletGlobalScope;
 class WorkletFetchHandler;
+struct WorkletOptions;
 enum class CallerType : uint32_t;
 
 class Worklet final : public nsISupports, public nsWrapperCache {
@@ -29,23 +31,22 @@ class Worklet final : public nsISupports, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(Worklet)
 
-  enum WorkletType {
-    eAudioWorklet,
-    ePaintWorklet,
-  };
-
-  Worklet(nsPIDOMWindowInner* aWindow, nsIPrincipal* aPrincipal,
-          WorkletType aWorkletType);
+  // |aOwnedObject| may be provided by the WorkletImpl as a parent thread
+  // object to keep alive and traverse for CC as long as the Worklet has
+  // references remaining.
+  Worklet(nsPIDOMWindowInner* aWindow, RefPtr<WorkletImpl> aImpl,
+          nsISupports* aOwnedObject = nullptr);
 
   nsPIDOMWindowInner* GetParentObject() const { return mWindow; }
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
-  already_AddRefed<Promise> Import(const nsAString& aModuleURL,
-                                   CallerType aCallerType, ErrorResult& aRv);
+  already_AddRefed<Promise> AddModule(const nsAString& aModuleURL,
+                                      const WorkletOptions& aOptions,
+                                      CallerType aCallerType, ErrorResult& aRv);
 
-  WorkletGlobalScope* GetOrCreateGlobalScope(JSContext* aCx);
+  WorkletImpl* Impl() const { return mImpl; }
 
  private:
   ~Worklet();
@@ -56,12 +57,11 @@ class Worklet final : public nsISupports, public nsWrapperCache {
                              WorkletFetchHandler* aHandler);
 
   nsCOMPtr<nsPIDOMWindowInner> mWindow;
-  nsCOMPtr<nsIPrincipal> mPrincipal;
+  nsCOMPtr<nsISupports> mOwnedObject;
 
-  WorkletType mWorkletType;
-
-  RefPtr<WorkletGlobalScope> mScope;
   nsRefPtrHashtable<nsCStringHashKey, WorkletFetchHandler> mImportHandlers;
+
+  const RefPtr<WorkletImpl> mImpl;
 
   friend class WorkletFetchHandler;
 };

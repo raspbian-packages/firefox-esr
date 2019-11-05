@@ -20,7 +20,7 @@
   }
 
 class nsDOMAttributeMap;
-class nsIDOMNode;
+class nsINode;
 
 namespace mozilla {
 
@@ -36,7 +36,7 @@ class HTMLURIRefObject final : public nsIURIRefObject {
  protected:
   virtual ~HTMLURIRefObject();
 
-  nsCOMPtr<nsIDOMNode> mNode;
+  nsCOMPtr<nsINode> mNode;
   uint32_t mCurAttrIndex;
   uint32_t mAttributeCnt;
   bool mAttrsInited;
@@ -44,6 +44,6 @@ class HTMLURIRefObject final : public nsIURIRefObject {
 
 }  // namespace mozilla
 
-nsresult NS_NewHTMLURIRefObject(nsIURIRefObject** aResult, nsIDOMNode* aNode);
+nsresult NS_NewHTMLURIRefObject(nsIURIRefObject** aResult, nsINode* aNode);
 
 #endif  // #ifndef HTMLURIRefObject_h

@@ -13,9 +13,8 @@
 #include "imgIContainer.h"
 #include "imgIRequest.h"
 #include "nsGenericHTMLElement.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIImageLoadingContent.h"
-#include "nsIPresShell.h"
 #include "nsIServiceManager.h"
 #include "nsIPersistentProperties2.h"
 #include "nsPIDOMWindow.h"
@@ -37,7 +36,7 @@ ImageAccessible::~ImageAccessible() {}
 ////////////////////////////////////////////////////////////////////////////////
 // Accessible public
 
-uint64_t ImageAccessible::NativeState() {
+uint64_t ImageAccessible::NativeState() const {
   // The state is a bitfield, get our inherited state, then logically OR it with
   // states::ANIMATED if this is an animated image.
 
@@ -54,7 +53,7 @@ uint64_t ImageAccessible::NativeState() {
   if (imageRequest) imageRequest->GetImage(getter_AddRefs(imgContainer));
 
   if (imgContainer) {
-    bool animated;
+    bool animated = false;
     imgContainer->GetAnimated(&animated);
     if (animated) state |= states::ANIMATED;
   }
@@ -62,7 +61,7 @@ uint64_t ImageAccessible::NativeState() {
   return state;
 }
 
-ENameValueFlag ImageAccessible::NativeName(nsString& aName) {
+ENameValueFlag ImageAccessible::NativeName(nsString& aName) const {
   bool hasAltAttrib =
       mContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::alt, aName);
   if (!aName.IsEmpty()) return eNameOK;
@@ -77,12 +76,12 @@ ENameValueFlag ImageAccessible::NativeName(nsString& aName) {
   return hasAltAttrib ? eNoNameOnPurpose : eNameOK;
 }
 
-role ImageAccessible::NativeRole() { return roles::GRAPHIC; }
+role ImageAccessible::NativeRole() const { return roles::GRAPHIC; }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Accessible
 
-uint8_t ImageAccessible::ActionCount() {
+uint8_t ImageAccessible::ActionCount() const {
   uint8_t actionCount = LinkableAccessible::ActionCount();
   return HasLongDesc() ? actionCount + 1 : actionCount;
 }
@@ -95,7 +94,7 @@ void ImageAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
     LinkableAccessible::ActionNameAt(aIndex, aName);
 }
 
-bool ImageAccessible::DoAction(uint8_t aIndex) {
+bool ImageAccessible::DoAction(uint8_t aIndex) const {
   // Get the long description uri and open in a new window.
   if (!IsLongDescIndex(aIndex)) return LinkableAccessible::DoAction(aIndex);
 
@@ -106,7 +105,7 @@ bool ImageAccessible::DoAction(uint8_t aIndex) {
   uri->GetSpec(utf8spec);
   NS_ConvertUTF8toUTF16 spec(utf8spec);
 
-  nsIDocument* document = mContent->OwnerDoc();
+  dom::Document* document = mContent->OwnerDoc();
   nsCOMPtr<nsPIDOMWindowOuter> piWindow = document->GetWindow();
   if (!piWindow) return false;
 
@@ -167,8 +166,7 @@ already_AddRefed<nsIURI> ImageAccessible::GetLongDescURI() const {
       if ((target->IsHTMLElement(nsGkAtoms::a) ||
            target->IsHTMLElement(nsGkAtoms::area)) &&
           target->AsElement()->HasAttr(kNameSpaceID_None, nsGkAtoms::href)) {
-        nsGenericHTMLElement* element =
-            nsGenericHTMLElement::FromContent(target);
+        nsGenericHTMLElement* element = nsGenericHTMLElement::FromNode(target);
 
         nsCOMPtr<nsIURI> uri;
         element->GetURIAttr(nsGkAtoms::href, nullptr, getter_AddRefs(uri));
@@ -180,6 +178,6 @@ already_AddRefed<nsIURI> ImageAccessible::GetLongDescURI() const {
   return nullptr;
 }
 
-bool ImageAccessible::IsLongDescIndex(uint8_t aIndex) {
+bool ImageAccessible::IsLongDescIndex(uint8_t aIndex) const {
   return aIndex == LinkableAccessible::ActionCount();
 }

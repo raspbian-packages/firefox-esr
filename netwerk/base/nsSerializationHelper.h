@@ -26,7 +26,7 @@ nsresult NS_SerializeToString(nsISerializable* obj, nsACString& str);
 nsresult NS_DeserializeObject(const nsACString& str, nsISupports** obj);
 
 class nsSerializationHelper final : public nsISerializationHelper {
-  ~nsSerializationHelper() {}
+  ~nsSerializationHelper() = default;
 
   NS_DECL_ISUPPORTS
   NS_DECL_NSISERIALIZATIONHELPER

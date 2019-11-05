@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,23 +11,25 @@
 #include "nsIResProtocolHandler.h"
 #include "nsInterfaceHashtable.h"
 #include "nsWeakReference.h"
-#include "nsStandardURL.h"
 
 class nsISubstitutionObserver;
 
 struct SubstitutionMapping;
-class nsResProtocolHandler final : public nsIResProtocolHandler,
-                                   public mozilla::SubstitutingProtocolHandler,
-                                   public nsSupportsWeakReference {
+class nsResProtocolHandler final
+    : public nsIResProtocolHandler,
+      public mozilla::net::SubstitutingProtocolHandler,
+      public nsSupportsWeakReference {
  public:
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_NSIRESPROTOCOLHANDLER
 
-  NS_FORWARD_NSIPROTOCOLHANDLER(mozilla::SubstitutingProtocolHandler::)
+  NS_FORWARD_NSIPROTOCOLHANDLER(mozilla::net::SubstitutingProtocolHandler::)
 
   nsResProtocolHandler()
-      : SubstitutingProtocolHandler(
-            "resource", URI_STD | URI_IS_UI_RESOURCE | URI_IS_LOCAL_RESOURCE,
+      : mozilla::net::SubstitutingProtocolHandler(
+            "resource",
+            URI_STD | URI_IS_UI_RESOURCE | URI_IS_LOCAL_RESOURCE |
+                URI_IS_POTENTIALLY_TRUSTWORTHY,
             /* aEnforceFileOrJar = */ false) {}
 
   MOZ_MUST_USE nsresult Init();
@@ -36,35 +38,32 @@ class nsResProtocolHandler final : public nsIResProtocolHandler,
                              nsIURI* aBaseURI) override;
   NS_IMETHOD SetSubstitutionWithFlags(const nsACString& aRoot, nsIURI* aBaseURI,
                                       uint32_t aFlags) override;
+  NS_IMETHOD HasSubstitution(const nsACString& aRoot, bool* aResult) override;
 
   NS_IMETHOD GetSubstitution(const nsACString& aRoot,
                              nsIURI** aResult) override {
-    return mozilla::SubstitutingProtocolHandler::GetSubstitution(aRoot,
-                                                                 aResult);
-  }
-
-  NS_IMETHOD HasSubstitution(const nsACString& aRoot, bool* aResult) override {
-    return mozilla::SubstitutingProtocolHandler::HasSubstitution(aRoot,
-                                                                 aResult);
+    return mozilla::net::SubstitutingProtocolHandler::GetSubstitution(aRoot,
+                                                                      aResult);
   }
 
   NS_IMETHOD ResolveURI(nsIURI* aResURI, nsACString& aResult) override {
-    return mozilla::SubstitutingProtocolHandler::ResolveURI(aResURI, aResult);
+    return mozilla::net::SubstitutingProtocolHandler::ResolveURI(aResURI,
+                                                                 aResult);
   }
 
   NS_IMETHOD AddObserver(nsISubstitutionObserver* aObserver) override {
-    return mozilla::SubstitutingProtocolHandler::AddObserver(aObserver);
+    return mozilla::net::SubstitutingProtocolHandler::AddObserver(aObserver);
   }
 
   NS_IMETHOD RemoveObserver(nsISubstitutionObserver* aObserver) override {
-    return mozilla::SubstitutingProtocolHandler::RemoveObserver(aObserver);
+    return mozilla::net::SubstitutingProtocolHandler::RemoveObserver(aObserver);
   }
 
  protected:
   MOZ_MUST_USE nsresult GetSubstitutionInternal(const nsACString& aRoot,
                                                 nsIURI** aResult,
                                                 uint32_t* aFlags) override;
-  virtual ~nsResProtocolHandler() {}
+  virtual ~nsResProtocolHandler() = default;
 
   MOZ_MUST_USE bool ResolveSpecialCases(const nsACString& aHost,
                                         const nsACString& aPath,
@@ -74,6 +73,11 @@ class nsResProtocolHandler final : public nsIResProtocolHandler,
  private:
   nsCString mAppURI;
   nsCString mGREURI;
+#ifdef ANDROID
+  // Used for resource://android URIs
+  nsCString mApkURI;
+  nsresult GetApkURI(nsACString& aResult);
+#endif
 };
 
 #endif /* nsResProtocolHandler_h___ */

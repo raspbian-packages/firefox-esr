@@ -8,7 +8,9 @@
 #include "GLContext.h"
 #include "mozilla/gfx/Logging.h"
 #include "mozilla/gfx/gfxVars.h"
+#include "mozilla/gfx/Types.h"
 #include "mozilla/layers/CompositorBridgeParent.h"
+#include "mozilla/layers/CompositorManagerParent.h"
 #include "mozilla/layers/CompositorThread.h"
 #include "mozilla/layers/LayersTypes.h"
 #include "mozilla/webrender/RenderCompositor.h"
@@ -19,7 +21,8 @@ namespace mozilla {
 namespace wr {
 
 wr::WrExternalImage LockExternalImage(void* aObj, wr::WrExternalImageId aId,
-                                      uint8_t aChannelIndex) {
+                                      uint8_t aChannelIndex,
+                                      wr::ImageRendering aRendering) {
   RendererOGL* renderer = reinterpret_cast<RendererOGL*>(aObj);
   RenderTextureHost* texture = renderer->GetRenderTexture(aId);
   MOZ_ASSERT(texture);
@@ -28,7 +31,7 @@ wr::WrExternalImage LockExternalImage(void* aObj, wr::WrExternalImageId aId,
                     << AsUint64(aId);
     return InvalidToWrExternalImage();
   }
-  return texture->Lock(aChannelIndex, renderer->gl());
+  return texture->Lock(aChannelIndex, renderer->gl(), aRendering);
 }
 
 void UnlockExternalImage(void* aObj, wr::WrExternalImageId aId,
@@ -45,13 +48,12 @@ void UnlockExternalImage(void* aObj, wr::WrExternalImageId aId,
 RendererOGL::RendererOGL(RefPtr<RenderThread>&& aThread,
                          UniquePtr<RenderCompositor> aCompositor,
                          wr::WindowId aWindowId, wr::Renderer* aRenderer,
-                         layers::CompositorBridgeParentBase* aBridge)
+                         layers::CompositorBridgeParent* aBridge)
     : mThread(aThread),
-      mCompositor(Move(aCompositor)),
+      mCompositor(std::move(aCompositor)),
       mRenderer(aRenderer),
       mBridge(aBridge),
-      mWindowId(aWindowId),
-      mDebugFlags({0}) {
+      mWindowId(aWindowId) {
   MOZ_ASSERT(mThread);
   MOZ_ASSERT(mCompositor);
   MOZ_ASSERT(mRenderer);
@@ -61,7 +63,7 @@ RendererOGL::RendererOGL(RefPtr<RenderThread>&& aThread,
 
 RendererOGL::~RendererOGL() {
   MOZ_COUNT_DTOR(RendererOGL);
-  if (!mCompositor->gl()->MakeCurrent()) {
+  if (!mCompositor->MakeCurrent()) {
     gfxCriticalNote
         << "Failed to make render context current during destroying.";
     // Leak resources!
@@ -79,29 +81,21 @@ wr::WrExternalImageHandler RendererOGL::GetExternalImageHandler() {
 }
 
 void RendererOGL::Update() {
-  uint32_t flags = gfx::gfxVars::WebRenderDebugFlags();
-  if (mDebugFlags.mBits != flags) {
-    mDebugFlags.mBits = flags;
-    wr_renderer_set_debug_flags(mRenderer, mDebugFlags);
-  }
-
-  if (gl()->MakeCurrent()) {
+  if (mCompositor->MakeCurrent()) {
     wr_renderer_update(mRenderer);
   }
 }
 
-bool RendererOGL::UpdateAndRender(bool aReadback) {
-  uint32_t flags = gfx::gfxVars::WebRenderDebugFlags();
-  // Disable debug flags during readback
-  if (aReadback) {
-    flags = 0;
-  }
+static void DoNotifyWebRenderContextPurge(
+    layers::CompositorBridgeParent* aBridge) {
+  aBridge->NotifyWebRenderContextPurge();
+}
 
-  if (mDebugFlags.mBits != flags) {
-    mDebugFlags.mBits = flags;
-    wr_renderer_set_debug_flags(mRenderer, mDebugFlags);
-  }
-
+bool RendererOGL::UpdateAndRender(const Maybe<gfx::IntSize>& aReadbackSize,
+                                  const Maybe<wr::ImageFormat>& aReadbackFormat,
+                                  const Maybe<Range<uint8_t>>& aReadbackBuffer,
+                                  bool aHadSlowFrame,
+                                  RendererStats* aOutStats) {
   mozilla::widget::WidgetRenderingContext widgetContext;
 
 #if defined(XP_MACOSX)
@@ -126,9 +120,22 @@ bool RendererOGL::UpdateAndRender(bool aReadback) {
 
   auto size = mCompositor->GetBufferSize();
 
-  if (!wr_renderer_render(mRenderer, size.width, size.height)) {
+  if (!wr_renderer_render(mRenderer, size.width, size.height, aHadSlowFrame,
+                          aOutStats)) {
     NotifyWebRenderError(WebRenderError::RENDER);
   }
+
+  if (aReadbackBuffer.isSome()) {
+    MOZ_ASSERT(aReadbackSize.isSome());
+    MOZ_ASSERT(aReadbackFormat.isSome());
+    wr_renderer_readback(mRenderer, aReadbackSize.ref().width,
+                         aReadbackSize.ref().height,
+                         aReadbackFormat.ref(),
+                         &aReadbackBuffer.ref()[0],
+                         aReadbackBuffer.ref().length());
+  }
+
+  mScreenshotGrabber.MaybeGrabScreenshot(mRenderer, size.ToUnknownSize());
 
   mCompositor->EndFrame();
 
@@ -144,11 +151,31 @@ bool RendererOGL::UpdateAndRender(bool aReadback) {
   mFrameStartTime = TimeStamp();
 #endif
 
+  mScreenshotGrabber.MaybeProcessQueue(mRenderer);
+
   // TODO: Flush pending actions such as texture deletions/unlocks and
   //       textureHosts recycling.
 
   return true;
 }
+
+void RendererOGL::CheckGraphicsResetStatus() {
+  if (!mCompositor || !mCompositor->gl()) {
+    return;
+  }
+
+  gl::GLContext* gl = mCompositor->gl();
+  if (gl->IsSupported(gl::GLFeature::robustness)) {
+    GLenum resetStatus = gl->fGetGraphicsResetStatus();
+    if (resetStatus == LOCAL_GL_PURGED_CONTEXT_RESET_NV) {
+      layers::CompositorThreadHolder::Loop()->PostTask(
+          NewRunnableFunction("DoNotifyWebRenderContextPurgeRunnable",
+                              &DoNotifyWebRenderContextPurge, mBridge));
+    }
+  }
+}
+
+void RendererOGL::WaitForGPU() { mCompositor->WaitForGPU(); }
 
 void RendererOGL::Pause() { mCompositor->Pause(); }
 
@@ -169,8 +196,9 @@ void RendererOGL::SetFrameStartTime(const TimeStamp& aTime) {
   mFrameStartTime = aTime;
 }
 
-wr::WrPipelineInfo* RendererOGL::FlushPipelineInfo() {
-  return wr_renderer_flush_pipeline_info(mRenderer);
+RefPtr<WebRenderPipelineInfo> RendererOGL::FlushPipelineInfo() {
+  auto info = wr_renderer_flush_pipeline_info(mRenderer);
+  return new WebRenderPipelineInfo(info);
 }
 
 RenderTextureHost* RendererOGL::GetRenderTexture(
@@ -178,15 +206,26 @@ RenderTextureHost* RendererOGL::GetRenderTexture(
   return mThread->GetRenderTexture(aExternalImageId);
 }
 
-static void DoNotifyWebRenderError(layers::CompositorBridgeParentBase* aBridge,
-                                   WebRenderError aError) {
-  aBridge->NotifyWebRenderError(aError);
+void RendererOGL::AccumulateMemoryReport(MemoryReport* aReport) {
+  wr_renderer_accumulate_memory_report(GetRenderer(), aReport);
+
+  LayoutDeviceIntSize size = mCompositor->GetBufferSize();
+
+  // Assume BGRA8 for the format since it's not exposed anywhere,
+  // and all compositor backends should be using that.
+  uintptr_t swapChainSize = size.width * size.height *
+                            BytesPerPixel(SurfaceFormat::B8G8R8A8) *
+                            (mCompositor->UseTripleBuffering() ? 3 : 2);
+  aReport->swap_chain += swapChainSize;
+}
+
+static void DoNotifyWebRenderError(WebRenderError aError) {
+  layers::CompositorManagerParent::NotifyWebRenderError(aError);
 }
 
 void RendererOGL::NotifyWebRenderError(WebRenderError aError) {
-  layers::CompositorThreadHolder::Loop()->PostTask(
-      NewRunnableFunction("DoNotifyWebRenderErrorRunnable",
-                          &DoNotifyWebRenderError, mBridge, aError));
+  layers::CompositorThreadHolder::Loop()->PostTask(NewRunnableFunction(
+      "DoNotifyWebRenderErrorRunnable", &DoNotifyWebRenderError, aError));
 }
 
 }  // namespace wr

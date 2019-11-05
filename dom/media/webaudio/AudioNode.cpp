@@ -26,12 +26,14 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(AudioNode, DOMEventTargetHelper)
     tmp->mContext->UnregisterNode(tmp);
   }
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mContext)
+  NS_IMPL_CYCLE_COLLECTION_UNLINK(mParams)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mOutputNodes)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mOutputParams)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(AudioNode,
                                                   DOMEventTargetHelper)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mContext)
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mParams)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mOutputNodes)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mOutputParams)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
@@ -53,10 +55,12 @@ AudioNode::AudioNode(AudioContext* aContext, uint32_t aChannelCount,
       mChannelInterpretation(aChannelInterpretation),
       mId(gId++),
       mPassThrough(false),
-      mAbstractMainThread(aContext->GetOwnerGlobal()->AbstractMainThreadFor(
-          TaskCategory::Other)) {
+      mAbstractMainThread(
+          aContext->GetOwnerGlobal()
+              ? aContext->GetOwnerGlobal()->AbstractMainThreadFor(
+                    TaskCategory::Other)
+              : nullptr) {
   MOZ_ASSERT(aContext);
-  DOMEventTargetHelper::BindToOwner(aContext->GetParentObject());
   aContext->RegisterNode(this);
 }
 
@@ -87,7 +91,10 @@ void AudioNode::Initialize(const AudioNodeOptions& aOptions, ErrorResult& aRv) {
   }
 
   if (aOptions.mChannelInterpretation.WasPassed()) {
-    SetChannelInterpretationValue(aOptions.mChannelInterpretation.Value());
+    SetChannelInterpretationValue(aOptions.mChannelInterpretation.Value(), aRv);
+    if (NS_WARN_IF(aRv.Failed())) {
+      return;
+    }
   }
 }
 
@@ -225,9 +232,6 @@ AudioNode* AudioNode::Connect(AudioNode& aDestination, uint32_t aOutput,
         static_cast<uint16_t>(aInput), static_cast<uint16_t>(aOutput));
   }
   aDestination.NotifyInputsChanged();
-
-  // This connection may have connected a panner and a source.
-  Context()->UpdatePannerSource();
 
   return &aDestination;
 }
@@ -410,9 +414,6 @@ void AudioNode::Disconnect(ErrorResult& aRv) {
     DisconnectMatchingDestinationInputs<AudioParam>(
         outputIndex, [](const InputNode&) { return true; });
   }
-
-  // This disconnection may have disconnected a panner and a source.
-  Context()->UpdatePannerSource();
 }
 
 void AudioNode::Disconnect(uint32_t aOutput, ErrorResult& aRv) {
@@ -436,9 +437,6 @@ void AudioNode::Disconnect(uint32_t aOutput, ErrorResult& aRv) {
           return aInputNode.mOutputPort == aOutput;
         });
   }
-
-  // This disconnection may have disconnected a panner and a source.
-  Context()->UpdatePannerSource();
 }
 
 void AudioNode::Disconnect(AudioNode& aDestination, ErrorResult& aRv) {
@@ -457,9 +455,6 @@ void AudioNode::Disconnect(AudioNode& aDestination, ErrorResult& aRv) {
     aRv.Throw(NS_ERROR_DOM_INVALID_ACCESS_ERR);
     return;
   }
-
-  // This disconnection may have disconnected a panner and a source.
-  Context()->UpdatePannerSource();
 }
 
 void AudioNode::Disconnect(AudioNode& aDestination, uint32_t aOutput,
@@ -486,9 +481,6 @@ void AudioNode::Disconnect(AudioNode& aDestination, uint32_t aOutput,
     aRv.Throw(NS_ERROR_DOM_INVALID_ACCESS_ERR);
     return;
   }
-
-  // This disconnection may have disconnected a panner and a source.
-  Context()->UpdatePannerSource();
 }
 
 void AudioNode::Disconnect(AudioNode& aDestination, uint32_t aOutput,
@@ -521,9 +513,6 @@ void AudioNode::Disconnect(AudioNode& aDestination, uint32_t aOutput,
     aRv.Throw(NS_ERROR_DOM_INVALID_ACCESS_ERR);
     return;
   }
-
-  // This disconnection may have disconnected a panner and a source.
-  Context()->UpdatePannerSource();
 }
 
 void AudioNode::Disconnect(AudioParam& aDestination, ErrorResult& aRv) {
@@ -606,6 +595,14 @@ void AudioNode::SetPassThrough(bool aPassThrough) {
   if (mStream) {
     mStream->SetPassThrough(mPassThrough);
   }
+}
+
+void AudioNode::CreateAudioParam(RefPtr<AudioParam>& aParam, uint32_t aIndex,
+                                 const char* aName, float aDefaultValue,
+                                 float aMinValue, float aMaxValue) {
+  aParam =
+      new AudioParam(this, aIndex, aName, aDefaultValue, aMinValue, aMaxValue);
+  mParams.AppendElement(aParam);
 }
 
 }  // namespace dom

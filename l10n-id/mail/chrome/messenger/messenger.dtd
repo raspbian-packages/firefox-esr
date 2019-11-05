@@ -32,6 +32,9 @@
 <!ENTITY newExistingEmailAccountCmd.accesskey "E">
 <!ENTITY newIMAccountCmd.label "Akun Ngobrol…">
 <!ENTITY newIMAccountCmd.accesskey "N">
+<!ENTITY newIMContactCmd.label "Kontak Obrolan…">
+<!ENTITY  newMessageCmd.label "Pesan">
+<!ENTITY  newMessageCmd.accesskey "p">
 <!ENTITY openMessageFileCmd.label "Buka Pesan Tersimpan…">
 <!ENTITY openMessageFileCmd.accesskey "P">
 <!ENTITY saveAsMenu.label "Simpan sebagai">
@@ -66,6 +69,7 @@
 <!ENTITY offlineGoOfflineCmd.accesskey "L">
 <!ENTITY synchronizeOfflineCmd.label "Unduh/Sinkron Sekarang…">
 <!ENTITY synchronizeOfflineCmd.accesskey "S">
+<!ENTITY settingsOfflineCmd2.label "Pengaturan Luring">
 <!ENTITY downloadSelectedCmd.label "Ambil Pesan Terpilih">
 <!ENTITY downloadSelectedCmd.accesskey "l">
 <!ENTITY downloadStarredCmd.label "Ambil Pesan dengan Bintang">
@@ -93,6 +97,7 @@
 <!ENTITY unsubscribeNewsgroupCmd.accesskey "n">
 <!ENTITY selectMenu.label "Pilih">
 <!ENTITY selectMenu.accesskey "P">
+<!ENTITY all.label "Semua">
 <!ENTITY selectThreadCmd.label "Utas">
 <!ENTITY selectThreadCmd.accesskey "U">
 <!ENTITY selectThreadCmd.key "a">
@@ -149,6 +154,7 @@
 <!ENTITY favoriteFolders.accesskey "F">
 <!ENTITY recentFolders.label "Terbaru">
 <!ENTITY recentFolders.accesskey "T">
+<!ENTITY compactVersion.label "Tampilan Ringkas">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Urut berdasar">
@@ -177,6 +183,7 @@
 <!ENTITY sortByFromCmd.accesskey "D">
 <!ENTITY sortByRecipientCmd.label "Penerima">
 <!ENTITY sortByRecipientCmd.accesskey "P">
+<!ENTITY sortByCorrespondentCmd.label "Koresponden">
 <!ENTITY sortByUnreadCmd.label "Dibaca">
 <!ENTITY sortByUnreadCmd.accesskey "b">
 <!ENTITY sortByOrderReceivedCmd.label "Urutan Diterima">
@@ -287,6 +294,7 @@
 <!ENTITY prevUnreadMsgCmd.label "Pesan Belum Dibaca">
 <!ENTITY prevUnreadMsgCmd.accesskey "P">
 <!ENTITY prevUnreadMsgCmd.key "p">
+<!ENTITY goForwardCmd.label "Teruskan">
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY goBackCmd.label "Mundur">
 <!ENTITY goBackCmd.accesskey "M">
@@ -332,6 +340,10 @@
 <!ENTITY forwardMsgCmd.key "l">
 <!ENTITY forwardAsMenu.label "Teruskan Sebagai">
 <!ENTITY forwardAsMenu.accesskey "r">
+<!ENTITY forwardAsAttachmentCmd.label "Lampiran">
+<!ENTITY editAsNewMsgCmd.label "Sunting sebagai Pesan Baru">
+<!ENTITY editTemplateMsgCmd.label "Sunting Templat">
+<!ENTITY newMsgFromTemplateCmd.label "Pesan Baru dari Templat">
 <!-- do not change "VK_RETURN" -->
 <!ENTITY createFilter.label "Buat Filter dari Pesan…">
 <!ENTITY createFilter.accesskey "a">
@@ -346,6 +358,7 @@
 <!ENTITY moveToFolderAgain.label "Pindahkan Lagi">
 <!ENTITY moveToFolderAgain.accesskey "L">
 <!ENTITY moveToFolderAgainCmd.key "m">
+<!ENTITY killThreadMenu.label "Abaikan Utas">
 <!ENTITY killThreadMenu.key "k">
 <!ENTITY killSubthreadMenu.label "Abaikan Sub Utas">
 <!ENTITY killSubthreadMenu.accesskey "S">
@@ -389,14 +402,15 @@
 <!ENTITY markAsNotJunkCmd.label "Bukan Junk">
 <!ENTITY markAsNotJunkCmd.accesskey "B">
 <!ENTITY markAsNotJunkCmd.key "j">
-<!ENTITY recalculateJunkScoreCmd.label "Jalankan Pengontrol Email Junk">
+<!ENTITY recalculateJunkScoreCmd.label "Jalankan Pengendali Surel Sampah">
 <!ENTITY recalculateJunkScoreCmd.accesskey "J">
 <!ENTITY openMessageWindowCmd.label "Buka Pesan">
 <!ENTITY openMessageWindowCmd.accesskey "P">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Buka Pesan dalam Mode Percakapan">
-<!ENTITY openConversationCmd.accesskey "k">
-<!ENTITY openConversationCmd.key "c">
+<!ENTITY openInConversationCmd.label "Tampilkan dalam Mode Percakapan">
+<!ENTITY openAttachmentListCmd.label "Lampiran">
+<!ENTITY openFeedWebPage.label "Buka sebagai Laman Web">
+<!ENTITY openFeedSummary.label "Buka sebagai Ringkasan">
 <!ENTITY openFeedWebPageInMP.label "Ganti antara Laman Web dan Ringkasan pada Panel Pesan">
 <!ENTITY openFeedWebPageInMP.accesskey "G">
 
@@ -413,6 +427,7 @@
 <!ENTITY addressBookCmd.key "B">
 <!ENTITY addons.label "Pengaya">
 <!ENTITY addons.accesskey "P">
+<!ENTITY addonPrefsUnix.label "Preferensi Pengaya">
 <!ENTITY activitymanager.label "Pengelola Aktivitas">
 <!ENTITY activitymanager.accesskey "v">
 <!ENTITY imAccountsStatus.label "Status ngobrol">
@@ -430,18 +445,23 @@
 <!ENTITY filtersApplyToSelection.accesskey "J">
 <!ENTITY filtersApplyToMessage.label "Jalankan Filter pada Pesan">
 <!ENTITY filtersApplyToMessage.accesskey "p">
-<!ENTITY runJunkControls.label "Jalankan Pengontrol Email Junk pada Folder">
+<!ENTITY runJunkControls.label "Jalankan Pengendali Surel Sampah pada Folder">
 <!ENTITY runJunkControls.accesskey "o">
 <!ENTITY deleteJunk.label "Hapus Email bertanda Junk dalam Folder">
 <!ENTITY deleteJunk.accesskey "l">
 <!ENTITY importCmd.label "Impor…">
 <!ENTITY importCmd.accesskey "I">
+<!ENTITY clearRecentHistory.label "Bersihkan Riwayat Terakhir…">
+<!ENTITY accountManagerCmd2.label "Pengaturan Akun">
 <!-- LOCALIZATION NOTE (accountManagerCmdUnix.accesskey):
      Belongs to accountManagerCmd.label, which is placed under the Edit menu
      on Unix systems
   -->
 
 <!-- Developer Tools Submenu -->
+<!ENTITY devtoolsMenu.label "Peralatan Pengembang">
+<!ENTITY devToolboxCmd.label "Kotak Peralatan Pengembang">
+<!ENTITY debugAddonsCmd.label "Pengaya Awakutu">
 <!ENTITY errorConsoleCmd.label "Konsol Kesalahan">
 <!ENTITY errorConsoleCmd.accesskey "K">
 <!ENTITY errorConsoleCmd.commandkey "j">
@@ -450,8 +470,10 @@
     This should be a key code constant as per
     https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#Constants_for_keyCode_value
     (but without the DOM_ prefix) -->
+<!ENTITY scratchpadCmd.keycode "VK_F4">
 <!--LOCALIZATION NOTE (scratchpadCmd.keytext):
     This should be the text printed on the key defined in the previous string. -->
+<!ENTITY scratchpadCmd.keytext "F4">
 
 <!-- Mail Toolbar -->
 <!ENTITY newMsgButton.label "Tulis">
@@ -517,14 +539,22 @@
 <!ENTITY chatButton.tooltip "Tampilkan tab Ngobrol">
 <!ENTITY tagButton.tooltip "Tambahkan tag pada pesan">
 <!ENTITY compactButton.tooltip "Buang pesan yang dihapus pada folder terpilih">
+<!ENTITY appmenuButton1.tooltip "Tampilkan Menu &brandShortName;">
 
 <!-- Toolbar Button Popup -->
 
 <!-- Remote Content Button Popup -->
+<!ENTITY remoteContentOptionsAllowForMsg.label "Tampilkan konten jarak jauh dalam pesan ini">
+<!ENTITY editRemoteContentSettings.label "Sunting pilihan konten jarak jauh…">
+<!ENTITY editRemoteContentSettingsUnix.label "Sunting pilihan konten jarak jauh……">
 
 <!-- Phishing Button Popup -->
 
 <!-- AppMenu Popup -->
+<!ENTITY appmenuNewMsgCmd.label "Pesan Baru">
+<!ENTITY appmenuEditMenu.label "Sunting">
+<!ENTITY appmenuSelectThread.label "Pilih Utas">
+<!ENTITY appmenuSelectFlagged.label "Pilih Pesan Berbintang">
 
 <!-- Tags Menu Popup -->
 <!ENTITY addNewTag.label "Tag baru…">
@@ -532,11 +562,14 @@
 
 <!-- Folder Pane -->
 <!ENTITY folderNameColumn.label "Nama">
+<!ENTITY folderUnreadColumn.label "Belum Dibaca">
+<!ENTITY folderTotalColumn.label "Total">
 <!ENTITY folderSizeColumn.label "Ukuran">
 
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Ambil Pesan">
 <!ENTITY folderContextGetMessages.accesskey "A">
+<!ENTITY folderContextOpenInNewWindow.label "Buka di Jendela Baru">
 <!ENTITY folderContextOpenNewTab.label "Buka di Tab Baru">
 <!ENTITY folderContextOpenNewTab.accesskey "T">
 <!ENTITY folderContextNew.label "Buat Subfolder baru…">
@@ -588,6 +621,7 @@
 <!ENTITY threadColumn.label "Utas">
 <!ENTITY fromColumn.label "Dari">
 <!ENTITY recipientColumn.label "Penerima">
+<!ENTITY correspondentColumn.label "Koresponden">
 <!ENTITY subjectColumn.label "Subjek">
 <!ENTITY dateColumn.label "Tanggal">
 <!ENTITY priorityColumn.label "Prioritas">
@@ -596,15 +630,35 @@
 <!ENTITY statusColumn.label "Status">
 <!ENTITY sizeColumn.label "Ukuran">
 <!ENTITY junkStatusColumn.label "Status Junk">
+<!ENTITY unreadColumn.label "Belum Dibaca">
+<!ENTITY totalColumn.label "Total">
 <!ENTITY readColumn.label "Sudah Dibaca">
 <!ENTITY receivedColumn.label "Diterima">
 <!ENTITY starredColumn.label "Bintang">
 <!ENTITY locationColumn.label "Lokasi">
 <!ENTITY idColumn.label "Urutan Diterima">
+<!ENTITY attachmentColumn.label "Lampiran">
 
 <!-- Thread Pane Tooltips -->
+<!ENTITY columnChooser2.tooltip "Pilih kolom yang ditampilkan">
+<!ENTITY threadColumn2.tooltip "Tampilkan utas pesan">
+<!ENTITY recipientColumn2.tooltip "Urut berdasarkan penerima">
+<!ENTITY correspondentColumn2.tooltip "Urut berdasarkan koresponden">
+<!ENTITY subjectColumn2.tooltip "Urut berdasarkan subjek">
+<!ENTITY dateColumn2.tooltip "Urut berdasarkan tanggal">
+<!ENTITY priorityColumn2.tooltip "Urut berdasarkan prioritas">
+<!ENTITY accountColumn2.tooltip "Urut berdasarkan akun">
+<!ENTITY statusColumn2.tooltip "Urut berdasarkan status">
+<!ENTITY sizeColumn2.tooltip "Urut berdasarkan ukuran">
+<!ENTITY unreadColumn2.tooltip "Jumlah pesan yang belum dibaca di utas">
+<!ENTITY totalColumn2.tooltip "Jumlah total pesan dalam utas">
+<!ENTITY receivedColumn2.tooltip "Urut berdasarkan tanggal diterima">
+<!ENTITY starredColumn2.tooltip "Urut berdasarkan bintang">
+<!ENTITY locationColumn2.tooltip "Urut berdasarkan lokasi">
+<!ENTITY attachmentColumn2.tooltip "Urut berdasarkan lampiran">
 
 <!-- Thread Pane Context Menu -->
+<!ENTITY contextNewMsgFromTemplate.label "Pesan Baru dari Templat">
 <!ENTITY contextOpenNewWindow.label "Buka Pesan di Jendela Baru">
 <!ENTITY contextOpenNewWindow.accesskey "J">
 <!-- The contextOpenNewTab.accesskey ("T") potentially conflicts with
@@ -615,6 +669,8 @@
 <!ENTITY contextOpenNewTab.accesskey "T">
 <!ENTITY contextOpenConversation.label "Buka Pesan dalam Mode Percakapan">
 <!ENTITY contextOpenConversation.accesskey "n">
+<!ENTITY contextEditMsgAsNew.label "Sunting sebagai Pesan Baru">
+<!ENTITY contextEditTemplate.label "Sunting Templat">
 <!ENTITY contextArchive.label "Arsipkan">
 <!ENTITY contextArchive.accesskey "A">
 <!ENTITY contextReplySender.label "Hanya Balas ke Pengirim">
@@ -627,6 +683,9 @@
 <!ENTITY contextReplyList.accesskey "D">
 <!ENTITY contextForward.label "Teruskan">
 <!ENTITY contextForward.accesskey "T">
+<!ENTITY contextForwardAsMenu.label "Teruskan Sebagai">
+<!ENTITY contextForwardAsAttachmentItem.label "Lampiran">
+<!ENTITY contextMultiForwardAsAttachment.label "Teruskan sebagai Lampiran">
 <!ENTITY contextMoveMsgMenu.label "Pindahkan Ke">
 <!ENTITY contextMoveMsgMenu.accesskey "P">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Terbaru">
@@ -634,6 +693,7 @@
 <!ENTITY contextCopyMsgMenu.label "Salin Ke">
 <!ENTITY contextCopyMsgMenu.accesskey "S">
 <!ENTITY contextKillThreadMenu.label "Abaikan Utas">
+<!ENTITY contextKillSubthreadMenu.label "Abaikan Subutas">
 <!-- LOCALIZATION NOTE (contextWatchThreadMenu.accesskey):
      In the en-US locale we ran out of access keys, so there is an empty access key for
      Watch Thread. Localizers can pick a suitable key
@@ -710,7 +770,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them
@@ -736,6 +796,7 @@
 <!ENTITY AddToAddressBook.accesskey "a">
 <!ENTITY AddDirectlyToAddressBook.label "Tambahkan ke Buku Alamat">
 <!ENTITY AddDirectlyToAddressBook.accesskey "a">
+<!ENTITY EditContact1.label "Sunting Kontak">
 <!ENTITY ViewContact.label "Tampilkan Kenalan">
 <!ENTITY ViewContact.accesskey "k">
 <!ENTITY SubscribeToNewsgroup.label "Berlangganan Newsgroup ini">
@@ -744,6 +805,7 @@
 <!ENTITY SendMessageTo.accesskey "s">
 <!ENTITY CopyEmailAddress.label "Salin Alamat Email">
 <!ENTITY CopyEmailAddress.accesskey "S">
+<!ENTITY CopyNameAndEmailAddress.label "Salin Nama dan Alamat Surel">
 <!ENTITY CopyNewsgroupName.label "Salin Nama Newsgroup">
 <!ENTITY CopyNewsgroupName.accesskey "n">
 <!ENTITY CopyNewsgroupURL.label "Salin URL Newsgroup">
@@ -800,3 +862,4 @@
 <!ENTITY showAllAppsCmdMac.label        "Tampilkan Semua">
 
 <!-- Mac OS X Dock Icon pop-up menu -->
+<!ENTITY writeNewMessageDock.label      "Tulis Pesan Baru">

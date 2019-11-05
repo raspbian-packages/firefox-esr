@@ -20,19 +20,19 @@ add_task(async function test_dont_save_passwords() {
 
   // Fill in some values.
   let usernameValue = "User " + Math.random();
-  await setInputValue(browser, {id: "username", value: usernameValue});
-  await setInputValue(browser, {id: "passwd", value: PASS});
+  await setInputValue(browser, { id: "username", value: usernameValue });
+  await setInputValue(browser, { id: "passwd", value: PASS });
 
   // Close and restore the tab.
-  await promiseRemoveTab(tab);
+  await promiseRemoveTabAndSessionState(tab);
   tab = ss.undoCloseTab(window, 0);
   browser = tab.linkedBrowser;
   await promiseTabRestored(tab);
 
   // Check that password fields aren't saved/restored.
-  let username = await getInputValue(browser, {id: "username"});
+  let username = await getInputValue(browser, { id: "username" });
   is(username, usernameValue, "username was saved/restored");
-  let passwd = await getInputValue(browser, {id: "passwd"});
+  let passwd = await getInputValue(browser, { id: "passwd" });
   is(passwd, "", "password wasn't saved/restored");
 
   // Write to disk and read our file.

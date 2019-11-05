@@ -27,14 +27,15 @@
 #include "States.h"
 
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 #include "nsIMutableArray.h"
 #include "nsIFrame.h"
 #include "nsIScrollableFrame.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/dom/NodeInfo.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "nsIServiceManager.h"
 #include "nsNameSpaceManager.h"
 #include "nsTextFormatter.h"
@@ -69,7 +70,7 @@ MsaaIdGenerator AccessibleWrap::sIDGen;
 StaticAutoPtr<nsTArray<AccessibleWrap::HandlerControllerData>>
     AccessibleWrap::sHandlerControllers;
 
-static const VARIANT kVarChildIdSelf = {VT_I4};
+static const VARIANT kVarChildIdSelf = {{{VT_I4}}};
 
 static const int32_t kIEnumVariantDisconnected = -1;
 
@@ -437,7 +438,7 @@ AccessibleWrap::get_accRole(
   uint32_t msaaRole = 0;
 
 #define ROLE(_geckoRole, stringRole, atkRole, macRole, _msaaRole, ia2Role, \
-             nameRule)                                                     \
+             androidClass, nameRule)                                       \
   case roles::_geckoRole:                                                  \
     msaaRole = _msaaRole;                                                  \
     break;
@@ -481,7 +482,7 @@ AccessibleWrap::get_accRole(
     if (roleString.IsEmpty()) {
       // No role attribute (or it is an empty string).
       // Use the tag name.
-      nsIDocument* document = content->GetUncomposedDoc();
+      dom::Document* document = content->GetUncomposedDoc();
       if (!document) return E_FAIL;
 
       dom::NodeInfo* nodeInfo = content->NodeInfo();
@@ -721,8 +722,8 @@ AccessibleEnumerator::Skip(unsigned long celt) {
  *
  * The VARIANT return value arguement is expected to either contain a single
  * IAccessible or an IEnumVARIANT of IAccessibles. We return the IEnumVARIANT
- * regardless of the number of children selected, unless there are none
- * selected in which case we return an empty VARIANT.
+ * regardless of the number of children selected, unless there are none selected
+ * in which case we return an empty VARIANT.
  *
  * We get the selected options from the select's accessible object and wrap
  *  those in an AccessibleEnumerator which we then put in the return VARIANT.
@@ -740,17 +741,25 @@ AccessibleWrap::get_accSelection(VARIANT __RPC_FAR* pvarChildren) {
 
   if (IsDefunct()) return CO_E_OBJNOTCONNECTED;
 
-  if (IsSelect()) {
-    AutoTArray<Accessible*, 10> selectedItems;
-    SelectedItems(&selectedItems);
+  if (!IsSelect()) {
+    return S_OK;
+  }
 
-    // 1) Create and initialize the enumeration
+  AutoTArray<Accessible*, 10> selectedItems;
+  SelectedItems(&selectedItems);
+  uint32_t count = selectedItems.Length();
+  if (count == 1) {
+    pvarChildren->vt = VT_DISPATCH;
+    pvarChildren->pdispVal = NativeAccessible(selectedItems[0]);
+  } else if (count > 1) {
     RefPtr<AccessibleEnumerator> pEnum =
         new AccessibleEnumerator(selectedItems);
     pvarChildren->vt =
         VT_UNKNOWN;  // this must be VT_UNKNOWN for an IEnumVARIANT
     NS_ADDREF(pvarChildren->punkVal = pEnum);
   }
+  // If count == 0, vt is already VT_EMPTY, so there's nothing else to do.
+
   return S_OK;
 }
 
@@ -852,6 +861,10 @@ AccessibleWrap::accLocation(
                                    kVarChildIdSelf);
   }
 
+  if (IsDefunct()) {
+    return CO_E_OBJNOTCONNECTED;
+  }
+
   nsIntRect rect = Bounds();
 
   *pxLeft = rect.X();
@@ -891,7 +904,7 @@ AccessibleWrap::accNavigate(
   switch (navDir) {
     case NAVDIR_FIRSTCHILD:
       if (IsProxy()) {
-        if (!Proxy()->MustPruneChildren()) {
+        if (!nsAccUtils::MustPrune(Proxy())) {
           navAccessible = WrapperFor(Proxy()->FirstChild());
         }
       } else {
@@ -900,7 +913,7 @@ AccessibleWrap::accNavigate(
       break;
     case NAVDIR_LASTCHILD:
       if (IsProxy()) {
-        if (!Proxy()->MustPruneChildren()) {
+        if (!nsAccUtils::MustPrune(Proxy())) {
           navAccessible = WrapperFor(Proxy()->LastChild());
         }
       } else {
@@ -1224,8 +1237,13 @@ HWND AccessibleWrap::GetHWNDFor(Accessible* aAccessible) {
     // their tab is within.  Popups are always in the parent process, and so
     // never proxied, which means this is basically correct.
     Accessible* outerDoc = proxy->OuterDocOfRemoteBrowser();
-    NS_ASSERTION(outerDoc, "no outer doc for accessible remote tab!");
     if (!outerDoc) {
+      // In some cases, the outer document accessible may be unattached from its
+      // document at this point, if it is scheduled for removal. Do not assert
+      // in such case. An example: putting aria-hidden="true" on HTML:iframe
+      // element will destroy iframe's document asynchroniously, but
+      // the document may be a target of selection events until then, and thus
+      // it may attempt to deliever these events to MSAA clients.
       return nullptr;
     }
 
@@ -1242,9 +1260,7 @@ HWND AccessibleWrap::GetHWNDFor(Accessible* aAccessible) {
   if (frame) {
     nsIWidget* widget = frame->GetNearestWidget();
     if (widget && widget->IsVisible()) {
-      nsIPresShell* shell = document->PresShell();
-      nsViewManager* vm = shell->GetViewManager();
-      if (vm) {
+      if (nsViewManager* vm = document->PresShellPtr()->GetViewManager()) {
         nsCOMPtr<nsIWidget> rootWidget;
         vm->GetRootWidget(getter_AddRefs(rootWidget));
         // Make sure the accessible belongs to popup. If not then use
@@ -1294,11 +1310,11 @@ static already_AddRefed<IDispatch> GetProxiedAccessibleInSubtree(
   if (aDoc->IsTopLevel()) {
     wrapper->GetNativeInterface(getter_AddRefs(comProxy));
   } else {
-    auto tab = static_cast<dom::TabParent*>(aDoc->Manager());
+    auto tab = static_cast<dom::BrowserParent*>(aDoc->Manager());
     MOZ_ASSERT(tab);
     DocAccessibleParent* topLevelDoc = tab->GetTopLevelDocAccessible();
     MOZ_ASSERT(topLevelDoc && topLevelDoc->IsTopLevel());
-    VARIANT docId = {VT_I4};
+    VARIANT docId = {{{VT_I4}}};
     docId.lVal = docWrapperChildId;
     RefPtr<IDispatch> disp = GetProxiedAccessibleInSubtree(topLevelDoc, docId);
     if (!disp) {
@@ -1370,7 +1386,7 @@ already_AddRefed<IAccessible> AccessibleWrap::GetIAccessibleFor(
   }
 
   if (varChild.ulVal != GetExistingID() &&
-      (IsProxy() ? Proxy()->MustPruneChildren()
+      (IsProxy() ? nsAccUtils::MustPrune(Proxy())
                  : nsAccUtils::MustPrune(this))) {
     // This accessible should have no subtree in platform, return null for its
     // children.
@@ -1528,7 +1544,8 @@ void AccessibleWrap::UpdateSystemCaretFor(Accessible* aAccessible) {
   UpdateSystemCaretFor(caretWnd, caretRect);
 }
 
-/* static */ void AccessibleWrap::UpdateSystemCaretFor(
+/* static */
+void AccessibleWrap::UpdateSystemCaretFor(
     ProxyAccessible* aProxy, const LayoutDeviceIntRect& aCaretRect) {
   ::DestroyCaret();
 
@@ -1538,7 +1555,8 @@ void AccessibleWrap::UpdateSystemCaretFor(Accessible* aAccessible) {
   UpdateSystemCaretFor(GetHWNDFor(outerDoc), aCaretRect);
 }
 
-/* static */ void AccessibleWrap::UpdateSystemCaretFor(
+/* static */
+void AccessibleWrap::UpdateSystemCaretFor(
     HWND aCaretWnd, const LayoutDeviceIntRect& aCaretRect) {
   if (!aCaretWnd || aCaretRect.IsEmpty()) {
     return;
@@ -1594,12 +1612,12 @@ void AccessibleWrap::SetHandlerControl(DWORD aPid,
     ClearOnShutdown(&sHandlerControllers);
   }
 
-  HandlerControllerData ctrlData(aPid, Move(aCtrl));
+  HandlerControllerData ctrlData(aPid, std::move(aCtrl));
   if (sHandlerControllers->Contains(ctrlData)) {
     return;
   }
 
-  sHandlerControllers->AppendElement(Move(ctrlData));
+  sHandlerControllers->AppendElement(std::move(ctrlData));
 }
 
 /* static */
@@ -1628,7 +1646,7 @@ void AccessibleWrap::InvalidateHandlers() {
     if (hr == CO_E_OBJNOTCONNECTED || hr == kErrorServerDied) {
       sHandlerControllers->RemoveElement(controller);
     } else {
-      NS_WARN_IF(FAILED(hr));
+      Unused << NS_WARN_IF(FAILED(hr));
     }
   }
 }
@@ -1688,12 +1706,12 @@ bool AccessibleWrap::DispatchTextChangeToHandler(bool aIsInsert,
   return SUCCEEDED(hr);
 }
 
-/* static */ void AccessibleWrap::AssignChildIDTo(
-    NotNull<sdnAccessible*> aSdnAcc) {
+/* static */
+void AccessibleWrap::AssignChildIDTo(NotNull<sdnAccessible*> aSdnAcc) {
   aSdnAcc->SetUniqueID(sIDGen.GetID());
 }
 
-/* static */ void AccessibleWrap::ReleaseChildID(
-    NotNull<sdnAccessible*> aSdnAcc) {
+/* static */
+void AccessibleWrap::ReleaseChildID(NotNull<sdnAccessible*> aSdnAcc) {
   sIDGen.ReleaseID(aSdnAcc);
 }

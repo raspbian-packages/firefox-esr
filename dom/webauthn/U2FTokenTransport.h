@@ -28,7 +28,7 @@ class U2FTokenTransport {
   U2FTokenTransport() {}
 
   virtual RefPtr<U2FRegisterPromise> Register(
-      const WebAuthnMakeCredentialInfo& aInfo) = 0;
+      const WebAuthnMakeCredentialInfo& aInfo, bool aForceNoneAttestation) = 0;
 
   virtual RefPtr<U2FSignPromise> Sign(
       const WebAuthnGetAssertionInfo& aInfo) = 0;

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,7 +7,6 @@
 #define nsJARProtocolHandler_h__
 
 #include "mozilla/StaticPtr.h"
-#include "nsIJARProtocolHandler.h"
 #include "nsIProtocolHandler.h"
 #include "nsIJARURI.h"
 #include "nsIZipReader.h"
@@ -15,12 +14,11 @@
 #include "nsWeakReference.h"
 #include "nsCOMPtr.h"
 
-class nsJARProtocolHandler final : public nsIJARProtocolHandler,
+class nsJARProtocolHandler final : public nsIProtocolHandler,
                                    public nsSupportsWeakReference {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIPROTOCOLHANDLER
-  NS_DECL_NSIJARPROTOCOLHANDLER
 
   // nsJARProtocolHandler methods:
   nsJARProtocolHandler();
@@ -30,8 +28,8 @@ class nsJARProtocolHandler final : public nsIJARProtocolHandler,
   nsresult Init();
 
   // returns non addref'ed pointer.
-  nsIMIMEService *MimeService();
-  nsIZipReaderCache *JarCache() { return mJARCache; }
+  nsIMIMEService* MimeService();
+  nsIZipReaderCache* JarCache() const { return mJARCache; }
 
  protected:
   virtual ~nsJARProtocolHandler();

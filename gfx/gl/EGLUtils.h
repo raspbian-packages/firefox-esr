@@ -25,7 +25,7 @@ class EGLImageWrapper {
   static EGLImageWrapper* Create(GLContext* gl, GLuint tex);
 
  private:
-  GLLibraryEGL& mLibrary;
+  const RefPtr<GLLibraryEGL> mLibrary;
   const EGLDisplay mDisplay;
 
  public:
@@ -34,10 +34,7 @@ class EGLImageWrapper {
  private:
   EGLSync mSync;
 
-  EGLImageWrapper(GLLibraryEGL& library, EGLDisplay display, EGLImage image)
-      : mLibrary(library), mDisplay(display), mImage(image), mSync(0) {
-    MOZ_ASSERT(mImage);
-  }
+  EGLImageWrapper(GLLibraryEGL* library, EGLDisplay display, EGLImage image);
 
  public:
   ~EGLImageWrapper();

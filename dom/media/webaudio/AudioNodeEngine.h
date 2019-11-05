@@ -40,7 +40,7 @@ class ThreadSharedFloatArrayBufferList final : public ThreadSharedObject {
   }
   /**
    * Create with buffers suitable for transfer to
-   * JS_NewArrayBufferWithContents().  The buffer contents are uninitialized
+   * JS::NewArrayBufferWithContents().  The buffer contents are uninitialized
    * and so should be set using GetDataForWrite().
    */
   static already_AddRefed<ThreadSharedFloatArrayBufferList> Create(
@@ -193,6 +193,16 @@ void AudioBlockInPlaceScale(float aBlock[WEBAUDIO_BLOCK_SIZE], float aScale);
 void AudioBufferInPlaceScale(float* aBlock, float aScale, uint32_t aSize);
 
 /**
+ * a-rate in place gain.
+ */
+void AudioBlockInPlaceScale(float aBlock[WEBAUDIO_BLOCK_SIZE],
+                            float aScale[WEBAUDIO_BLOCK_SIZE]);
+/**
+ * a-rate in place gain.
+ */
+void AudioBufferInPlaceScale(float* aBlock, float* aScale, uint32_t aSize);
+
+/**
  * Upmix a mono input to a stereo output, scaling the two output channels by two
  * different gain value.
  * This algorithm is specified in the WebAudio spec.
@@ -295,7 +305,7 @@ class AudioNodeEngine {
    */
   virtual void ProduceBlockBeforeInput(AudioNodeStream* aStream,
                                        GraphTime aFrom, AudioBlock* aOutput) {
-    NS_NOTREACHED("ProduceBlockBeforeInput called on wrong engine\n");
+    MOZ_ASSERT_UNREACHABLE("ProduceBlockBeforeInput called on wrong engine");
   }
 
   /**

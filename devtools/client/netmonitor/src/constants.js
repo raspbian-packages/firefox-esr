@@ -9,12 +9,15 @@ const actionTypes = {
   ADD_TIMING_MARKER: "ADD_TIMING_MARKER",
   BATCH_ACTIONS: "BATCH_ACTIONS",
   BATCH_ENABLE: "BATCH_ENABLE",
+  BATCH_FLUSH: "BATCH_FLUSH",
   CLEAR_REQUESTS: "CLEAR_REQUESTS",
   CLEAR_TIMING_MARKERS: "CLEAR_TIMING_MARKERS",
+  CLONE_REQUEST: "CLONE_REQUEST",
   CLONE_SELECTED_REQUEST: "CLONE_SELECTED_REQUEST",
   ENABLE_REQUEST_FILTER_TYPE_ONLY: "ENABLE_REQUEST_FILTER_TYPE_ONLY",
   OPEN_NETWORK_DETAILS: "OPEN_NETWORK_DETAILS",
   RESIZE_NETWORK_DETAILS: "RESIZE_NETWORK_DETAILS",
+  RIGHT_CLICK_REQUEST: "RIGHT_CLICK_REQUEST",
   ENABLE_PERSISTENT_LOGS: "ENABLE_PERSISTENT_LOGS",
   DISABLE_BROWSER_CACHE: "DISABLE_BROWSER_CACHE",
   OPEN_STATISTICS: "OPEN_STATISTICS",
@@ -30,6 +33,7 @@ const actionTypes = {
   TOGGLE_REQUEST_FILTER_TYPE: "TOGGLE_REQUEST_FILTER_TYPE",
   UPDATE_REQUEST: "UPDATE_REQUEST",
   WATERFALL_RESIZE: "WATERFALL_RESIZE",
+  SET_COLUMNS_WIDTH: "SET_COLUMNS_WIDTH",
 };
 
 // Descriptions for what this frontend is currently doing.
@@ -41,12 +45,12 @@ const ACTIVITY_TYPE = {
   RELOAD: {
     WITH_CACHE_ENABLED: 1,
     WITH_CACHE_DISABLED: 2,
-    WITH_CACHE_DEFAULT: 3
+    WITH_CACHE_DEFAULT: 3,
   },
 
   // Enabling or disabling the cache without triggering a reload.
   ENABLE_CACHE: 3,
-  DISABLE_CACHE: 4
+  DISABLE_CACHE: 4,
 };
 
 // The panel's window global is an EventEmitter firing the following events:
@@ -97,11 +101,17 @@ const EVENTS = {
   // When stack-trace finishes receiving.
   RECEIVED_EVENT_STACKTRACE: "NetMonitor:NetworkEventUpdated:StackTrace",
 
+  UPDATING_RESPONSE_CACHE: "NetMonitor:NetworkEventUpdating:ResponseCache",
+  RECEIVED_RESPONSE_CACHE: "NetMonitor:NetworkEventUpdated:ResponseCache",
+
   // Fired once the connection is established
   CONNECTED: "connected",
 
   // When request payload (HTTP details data) are fetched from the backend.
   PAYLOAD_READY: "NetMonitor:PayloadReady",
+
+  // When throttling is set on the backend.
+  THROTTLING_CHANGED: "NetMonitor:ThrottlingChanged",
 };
 
 const UPDATE_PROPS = [
@@ -112,6 +122,7 @@ const UPDATE_PROPS = [
   "status",
   "statusText",
   "httpVersion",
+  "isRacing",
   "securityState",
   "securityInfo",
   "securityInfoAvailable",
@@ -136,8 +147,13 @@ const UPDATE_PROPS = [
   "responseCookiesAvailable",
   "responseContent",
   "responseContentAvailable",
+  "responseCache",
+  "responseCacheAvailable",
   "formDataSections",
   "stacktrace",
+  "isThirdPartyTrackingResource",
+  "referrerPolicy",
+  "blockedReason",
 ];
 
 const PANELS = {
@@ -145,6 +161,7 @@ const PANELS = {
   HEADERS: "headers",
   PARAMS: "params",
   RESPONSE: "response",
+  CACHE: "cache",
   SECURITY: "security",
   STACK_TRACE: "stack-trace",
   TIMINGS: "timings",
@@ -159,7 +176,7 @@ const RESPONSE_HEADERS = [
   "Keep-Alive",
   "Last-Modified",
   "Server",
-  "Vary"
+  "Vary",
 ];
 
 const HEADERS = [
@@ -167,10 +184,14 @@ const HEADERS = [
     name: "status",
     label: "status3",
     canFilter: true,
-    filterKey: "status-code"
+    filterKey: "status-code",
   },
   {
     name: "method",
+    canFilter: true,
+  },
+  {
+    name: "domain",
     canFilter: true,
   },
   {
@@ -183,10 +204,6 @@ const HEADERS = [
   },
   {
     name: "scheme",
-    canFilter: true,
-  },
-  {
-    name: "domain",
     canFilter: true,
   },
   {
@@ -249,23 +266,22 @@ const HEADERS = [
     canFilter: false,
     subMenu: "timings",
   },
-  ...RESPONSE_HEADERS
-    .map(header => ({
-      name: header,
-      boxName: "response-header",
-      canFilter: false,
-      subMenu: "responseHeaders",
-      noLocalization: true
-    })),
+  ...RESPONSE_HEADERS.map(header => ({
+    name: header,
+    boxName: "response-header",
+    canFilter: false,
+    subMenu: "responseHeaders",
+    noLocalization: true,
+  })),
   {
     name: "waterfall",
     canFilter: false,
-  }
+  },
 ];
 
-const HEADER_FILTERS = HEADERS
-  .filter(h => h.canFilter)
-  .map(h => h.filterKey || h.name);
+const HEADER_FILTERS = HEADERS.filter(h => h.canFilter).map(
+  h => h.filterKey || h.name
+);
 
 const FILTER_FLAGS = [
   ...HEADER_FILTERS,
@@ -321,6 +337,64 @@ const TIMING_KEYS = [
   "receive",
 ];
 
+// Minimal width of Network Monitor column is 30px, for Waterfall 150px
+// Default width of columns (which are not defined in DEFAULT_COLUMNS_DATA) is 8%
+const MIN_COLUMN_WIDTH = 30; // in px
+const DEFAULT_COLUMN_WIDTH = 8; // in %
+/**
+ * A mapping of HTTP status codes.
+ */
+const SUPPORTED_HTTP_CODES = [
+  "100",
+  "101",
+  "200",
+  "201",
+  "202",
+  "203",
+  "204",
+  "205",
+  "206",
+  "300",
+  "301",
+  "302",
+  "303",
+  "304",
+  "307",
+  "308",
+  "400",
+  "401",
+  "403",
+  "404",
+  "405",
+  "406",
+  "407",
+  "408",
+  "409",
+  "410",
+  "411",
+  "412",
+  "413",
+  "414",
+  "415",
+  "416",
+  "417",
+  "418",
+  "422",
+  "425",
+  "426",
+  "428",
+  "429",
+  "431",
+  "451",
+  "500",
+  "501",
+  "502",
+  "503",
+  "504",
+  "505",
+  "511",
+];
+
 const general = {
   ACTIVITY_TYPE,
   EVENTS,
@@ -333,6 +407,9 @@ const general = {
   REQUESTS_WATERFALL,
   PANELS,
   TIMING_KEYS,
+  MIN_COLUMN_WIDTH,
+  DEFAULT_COLUMN_WIDTH,
+  SUPPORTED_HTTP_CODES,
 };
 
 // flatten constants

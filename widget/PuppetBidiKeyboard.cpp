@@ -6,12 +6,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "PuppetBidiKeyboard.h"
+#include "nsIWidget.h"
 
 using namespace mozilla::widget;
 
 NS_IMPL_ISUPPORTS(PuppetBidiKeyboard, nsIBidiKeyboard)
 
-PuppetBidiKeyboard::PuppetBidiKeyboard() : nsIBidiKeyboard() {}
+PuppetBidiKeyboard::PuppetBidiKeyboard()
+    : nsIBidiKeyboard(), mIsLangRTL(false), mHaveBidiKeyboards(false) {}
 
 PuppetBidiKeyboard::~PuppetBidiKeyboard() {}
 
@@ -34,4 +36,10 @@ NS_IMETHODIMP
 PuppetBidiKeyboard::GetHaveBidiKeyboards(bool* aResult) {
   *aResult = mHaveBidiKeyboards;
   return NS_OK;
+}
+
+// static
+already_AddRefed<nsIBidiKeyboard>
+nsIWidget::CreateBidiKeyboardContentProcess() {
+  return do_AddRef(new PuppetBidiKeyboard());
 }

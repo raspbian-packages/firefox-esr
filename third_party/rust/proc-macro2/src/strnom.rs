@@ -4,23 +4,23 @@ use std::str::{Bytes, CharIndices, Chars};
 
 use unicode_xid::UnicodeXID;
 
-use imp::LexError;
+use fallback::LexError;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Cursor<'a> {
     pub rest: &'a str,
-    #[cfg(procmacro2_semver_exempt)]
+    #[cfg(span_locations)]
     pub off: u32,
 }
 
 impl<'a> Cursor<'a> {
-    #[cfg(not(procmacro2_semver_exempt))]
+    #[cfg(not(span_locations))]
     pub fn advance(&self, amt: usize) -> Cursor<'a> {
         Cursor {
             rest: &self.rest[amt..],
         }
     }
-    #[cfg(procmacro2_semver_exempt)]
+    #[cfg(span_locations)]
     pub fn advance(&self, amt: usize) -> Cursor<'a> {
         Cursor {
             rest: &self.rest[amt..],
@@ -73,7 +73,8 @@ pub fn whitespace(input: Cursor) -> PResult<()> {
     while i < bytes.len() {
         let s = input.advance(i);
         if bytes[i] == b'/' {
-            if s.starts_with("//") && (!s.starts_with("///") || s.starts_with("////"))
+            if s.starts_with("//")
+                && (!s.starts_with("///") || s.starts_with("////"))
                 && !s.starts_with("//!")
             {
                 if let Some(len) = s.find('\n') {
@@ -84,7 +85,8 @@ pub fn whitespace(input: Cursor) -> PResult<()> {
             } else if s.starts_with("/**/") {
                 i += 4;
                 continue;
-            } else if s.starts_with("/*") && (!s.starts_with("/**") || s.starts_with("/***"))
+            } else if s.starts_with("/*")
+                && (!s.starts_with("/**") || s.starts_with("/***"))
                 && !s.starts_with("/*!")
             {
                 let (_, com) = block_comment(s)?;

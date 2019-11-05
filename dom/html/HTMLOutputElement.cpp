@@ -20,8 +20,9 @@ namespace mozilla {
 namespace dom {
 
 HTMLOutputElement::HTMLOutputElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, FromParser aFromParser)
-    : nsGenericHTMLFormElement(aNodeInfo, NS_FORM_OUTPUT),
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
+    FromParser aFromParser)
+    : nsGenericHTMLFormElement(std::move(aNodeInfo), NS_FORM_OUTPUT),
       mValueModeFlag(eModeDefault),
       mIsDoneAddingChildren(!aFromParser) {
   AddMutationObserver(this);
@@ -99,12 +100,10 @@ EventStates HTMLOutputElement::IntrinsicState() const {
   return states;
 }
 
-nsresult HTMLOutputElement::BindToTree(nsIDocument* aDocument,
-                                       nsIContent* aParent,
-                                       nsIContent* aBindingParent,
-                                       bool aCompileEventHandlers) {
-  nsresult rv = nsGenericHTMLFormElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+nsresult HTMLOutputElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                       nsIContent* aBindingParent) {
+  nsresult rv =
+      nsGenericHTMLFormElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Unfortunately, we can actually end up having to change our state
@@ -171,7 +170,7 @@ void HTMLOutputElement::ContentRemoved(nsIContent* aChild,
 
 JSObject* HTMLOutputElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return HTMLOutputElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLOutputElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

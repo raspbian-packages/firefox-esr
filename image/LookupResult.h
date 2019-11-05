@@ -48,12 +48,12 @@ class MOZ_STACK_CLASS LookupResult {
   }
 
   LookupResult(LookupResult&& aOther)
-      : mSurface(Move(aOther.mSurface)),
+      : mSurface(std::move(aOther.mSurface)),
         mMatchType(aOther.mMatchType),
         mSuggestedSize(aOther.mSuggestedSize) {}
 
   LookupResult(DrawableSurface&& aSurface, MatchType aMatchType)
-      : mSurface(Move(aSurface)), mMatchType(aMatchType) {
+      : mSurface(std::move(aSurface)), mMatchType(aMatchType) {
     MOZ_ASSERT(!mSurface || !(mMatchType == MatchType::NOT_FOUND ||
                               mMatchType == MatchType::PENDING),
                "Only NOT_FOUND or PENDING make sense with no surface");
@@ -62,9 +62,16 @@ class MOZ_STACK_CLASS LookupResult {
                "NOT_FOUND or PENDING do not make sense with a surface");
   }
 
+  LookupResult(MatchType aMatchType, const gfx::IntSize& aSuggestedSize)
+      : mMatchType(aMatchType), mSuggestedSize(aSuggestedSize) {
+    MOZ_ASSERT(
+        mMatchType == MatchType::NOT_FOUND || mMatchType == MatchType::PENDING,
+        "Only NOT_FOUND or PENDING make sense with no surface");
+  }
+
   LookupResult(DrawableSurface&& aSurface, MatchType aMatchType,
                const gfx::IntSize& aSuggestedSize)
-      : mSurface(Move(aSurface)),
+      : mSurface(std::move(aSurface)),
         mMatchType(aMatchType),
         mSuggestedSize(aSuggestedSize) {
     MOZ_ASSERT(!mSurface || !(mMatchType == MatchType::NOT_FOUND ||
@@ -77,7 +84,7 @@ class MOZ_STACK_CLASS LookupResult {
 
   LookupResult& operator=(LookupResult&& aOther) {
     MOZ_ASSERT(&aOther != this, "Self-move-assignment is not supported");
-    mSurface = Move(aOther.mSurface);
+    mSurface = std::move(aOther.mSurface);
     mMatchType = aOther.mMatchType;
     mSuggestedSize = aOther.mSuggestedSize;
     return *this;
@@ -100,8 +107,11 @@ class MOZ_STACK_CLASS LookupResult {
   DrawableSurface mSurface;
   MatchType mMatchType;
 
-  /// If given, the size the caller should request a decode at. This may or may
-  /// not match the size the caller requested from the cache.
+  /// mSuggestedSize will be the size of the returned surface if the result is
+  /// SUBSTITUTE_BECAUSE_BEST. It will be empty for EXACT, and can contain a
+  /// non-empty size possibly different from the returned surface (if any) for
+  /// all other results. If non-empty, it will always be the size the caller
+  /// should request any decodes at.
   gfx::IntSize mSuggestedSize;
 };
 

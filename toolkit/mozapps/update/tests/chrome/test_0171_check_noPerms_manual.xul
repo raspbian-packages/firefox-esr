@@ -11,8 +11,7 @@
 <window title="Update Wizard pages: manual"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="runTestDefault();">
-<script type="application/javascript"
-        src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+<script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
 <script type="application/javascript"
         src="utils.js"/>
 
@@ -42,9 +41,7 @@ function runTest() {
 }
 
 function getWriteTestFile() {
-  let file = getUpdatesRootDir();
-  file.append(FILE_UPDATE_TEST);
-  file.QueryInterface(Ci.nsILocalFileWin);
+  let file = getUpdateDirFile(FILE_UPDATE_TEST).QueryInterface(Ci.nsILocalFileWin);
   if (file.exists()) {
     file.fileAttributesWin |= file.WFA_READWRITE;
     file.fileAttributesWin &= ~file.WFA_READONLY;

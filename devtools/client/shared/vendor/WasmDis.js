@@ -1,4 +1,14 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 /* Copyright 2016 Mozilla Foundation
  *
@@ -21,6 +31,7 @@ function typeToString(type) {
         case -2 /* i64 */: return 'i64';
         case -3 /* f32 */: return 'f32';
         case -4 /* f64 */: return 'f64';
+        case -5 /* v128 */: return 'v128';
         case -16 /* anyfunc */: return 'anyfunc';
         default: throw new Error('Unexpected type');
     }
@@ -62,9 +73,20 @@ function formatFloat64(n) {
         return '-nan';
     return (data2 < 0 ? '-' : '+') + 'nan:0x' + payload.toString(16);
 }
+function formatI32Array(bytes, count) {
+    var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    var result = [];
+    for (var i = 0; i < count; i++)
+        result.push("0x" + formatHex(dv.getInt32(i << 2, true), 8));
+    return result.join(' ');
+}
 function memoryAddressToString(address, code) {
     var defaultAlignFlags;
     switch (code) {
+        case 64768 /* v128_load */:
+        case 64769 /* v128_store */:
+            defaultAlignFlags = 4;
+            break;
         case 41 /* i64_load */:
         case 55 /* i64_store */:
         case 43 /* f64_load */:
@@ -179,7 +201,7 @@ function limitsToString(limits) {
 }
 var paddingCache = ['0', '00', '000'];
 function formatHex(n, width) {
-    var s = n.toString(16).toUpperCase();
+    var s = (n >>> 0).toString(16).toUpperCase();
     if (width === undefined || s.length >= width)
         return s;
     var paddingIndex = width - s.length - 1;
@@ -608,6 +630,8 @@ var WasmDisassembler = /** @class */ (function () {
             case 65100 /* i64_atomic_rmw8_u_cmpxchg */:
             case 65101 /* i64_atomic_rmw16_u_cmpxchg */:
             case 65102 /* i64_atomic_rmw32_u_cmpxchg */:
+            case 64768 /* v128_load */:
+            case 64769 /* v128_store */:
                 var memoryAddress = memoryAddressToString(operator.memoryAddress, operator.code);
                 if (memoryAddress !== null) {
                     this.appendBuffer(' ');
@@ -621,13 +645,35 @@ var WasmDisassembler = /** @class */ (function () {
                 this.appendBuffer(" " + operator.literal.toString());
                 break;
             case 66 /* i64_const */:
-                this.appendBuffer(" " + operator.literal.toDouble());
+                this.appendBuffer(" " + operator.literal.toString());
                 break;
             case 67 /* f32_const */:
                 this.appendBuffer(" " + formatFloat32(operator.literal));
                 break;
             case 68 /* f64_const */:
                 this.appendBuffer(" " + formatFloat64(operator.literal));
+                break;
+            case 64770 /* v128_const */:
+                this.appendBuffer(" i32 " + formatI32Array(operator.literal, 4));
+                break;
+            case 64771 /* v8x16_shuffle */:
+                this.appendBuffer(" " + formatI32Array(operator.lines, 4));
+                break;
+            case 64773 /* i8x16_extract_lane_s */:
+            case 64774 /* i8x16_extract_lane_u */:
+            case 64775 /* i8x16_replace_lane */:
+            case 64777 /* i16x8_extract_lane_s */:
+            case 64778 /* i16x8_extract_lane_u */:
+            case 64779 /* i16x8_replace_lane */:
+            case 64781 /* i32x4_extract_lane */:
+            case 64782 /* i32x4_replace_lane */:
+            case 64787 /* f32x4_extract_lane */:
+            case 64788 /* f32x4_replace_lane */:
+            case 64784 /* i64x2_extract_lane */:
+            case 64785 /* i64x2_replace_lane */:
+            case 64790 /* f64x2_extract_lane */:
+            case 64791 /* f64x2_replace_lane */:
+                this.appendBuffer(" " + operator.lineIndex);
                 break;
         }
     };
@@ -946,7 +992,9 @@ var WasmDisassembler = /** @class */ (function () {
                 case 30 /* CODE_OPERATOR */:
                     var operator = reader.result;
                     if (operator.code == 11 /* end */ && this._indentLevel == 0) {
-                        // reached of the function, skipping the operator
+                        // reached of the function, closing function body
+                        this.appendBuffer("  )");
+                        this.newLine();
                         break;
                     }
                     switch (operator.code) {
@@ -970,8 +1018,7 @@ var WasmDisassembler = /** @class */ (function () {
                 case 31 /* END_FUNCTION_BODY */:
                     this._funcIndex++;
                     this._backrefLabels = null;
-                    this.appendBuffer("  )");
-                    this.newLine();
+                    // See case BinaryReaderState.CODE_OPERATOR for closing of body
                     break;
                 default:
                     throw new Error("Expectected state: " + reader.state);
@@ -981,3 +1028,119 @@ var WasmDisassembler = /** @class */ (function () {
     return WasmDisassembler;
 }());
 exports.WasmDisassembler = WasmDisassembler;
+var UNKNOWN_FUNCTION_PREFIX = "unknown";
+var NameSectionNameResolver = /** @class */ (function (_super) {
+    __extends(NameSectionNameResolver, _super);
+    function NameSectionNameResolver(names) {
+        var _this = _super.call(this) || this;
+        _this._names = names;
+        return _this;
+    }
+    NameSectionNameResolver.prototype.getFunctionName = function (index, isImport, isRef) {
+        var name = this._names[index];
+        if (!name)
+            return "$" + UNKNOWN_FUNCTION_PREFIX + index;
+        return isRef ? "$" + name : "$" + name + " (;" + index + ";)";
+    };
+    return NameSectionNameResolver;
+}(DefaultNameResolver));
+var NameSectionReader = /** @class */ (function () {
+    function NameSectionReader() {
+        this._done = false;
+        this._functionsCount = 0;
+        this._functionImportsCount = 0;
+        this._functionNames = null;
+        this._hasNames = false;
+    }
+    NameSectionReader.prototype.read = function (reader) {
+        var _this = this;
+        if (this._done)
+            throw new Error('Invalid state: disassembly process was already finished.');
+        while (true) {
+            if (!reader.read())
+                return false;
+            switch (reader.state) {
+                case 2 /* END_WASM */:
+                    if (!reader.hasMoreBytes()) {
+                        this._done = true;
+                        return true;
+                    }
+                    break;
+                case -1 /* ERROR */:
+                    throw reader.error;
+                case 1 /* BEGIN_WASM */:
+                    this._functionsCount = 0;
+                    this._functionImportsCount = 0;
+                    this._functionNames = [];
+                    this._hasNames = false;
+                    break;
+                case 4 /* END_SECTION */:
+                    break;
+                case 3 /* BEGIN_SECTION */:
+                    var sectionInfo = reader.result;
+                    if (sectionInfo.id === 0 /* Custom */ &&
+                        WasmParser_1.bytesToString(sectionInfo.name) === "name") {
+                        break;
+                    }
+                    if (sectionInfo.id === 3 /* Function */ ||
+                        sectionInfo.id === 2 /* Import */) {
+                        break;
+                    }
+                    reader.skipSection();
+                    break;
+                case 12 /* IMPORT_SECTION_ENTRY */:
+                    var importInfo = reader.result;
+                    if (importInfo.kind === 0 /* Function */)
+                        this._functionImportsCount++;
+                    break;
+                case 13 /* FUNCTION_SECTION_ENTRY */:
+                    this._functionsCount++;
+                    break;
+                case 19 /* NAME_SECTION_ENTRY */:
+                    var nameInfo = reader.result;
+                    if (nameInfo.type !== 1 /* Function */)
+                        break;
+                    var functionNameInfo = nameInfo;
+                    functionNameInfo.names.forEach(function (naming) {
+                        _this._functionNames[naming.index] = WasmParser_1.bytesToString(naming.name);
+                    });
+                    this._hasNames = true;
+                    break;
+                default:
+                    throw new Error("Expectected state: " + reader.state);
+            }
+        }
+    };
+    NameSectionReader.prototype.hasValidNames = function () {
+        return this._hasNames;
+    };
+    NameSectionReader.prototype.getNameResolver = function () {
+        if (!this.hasValidNames())
+            throw new Error("Has no valid name section");
+        // Fix bad names.
+        var functionNamesLength = this._functionImportsCount + this._functionsCount;
+        var functionNames = this._functionNames.slice(0, functionNamesLength);
+        var usedNameAt = Object.create(null);
+        for (var i = 0; i < functionNames.length; i++) {
+            var name_1 = functionNames[i];
+            if (!name_1)
+                continue;
+            var goodName = !(name_1 in usedNameAt) &&
+                !/[^0-9A-Za-z!#$%&'*+.:<=>?@^_`|~\/\-]/.test(name_1) &&
+                name_1.indexOf(UNKNOWN_FUNCTION_PREFIX) !== 0;
+            if (!goodName) {
+                if (usedNameAt[name_1] >= 0) {
+                    // Remove all non-unique names.
+                    functionNames[usedNameAt[name_1]] = null;
+                    usedNameAt[name_1] = -1;
+                }
+                functionNames[i] = null;
+                continue;
+            }
+            usedNameAt[name_1] = i;
+        }
+        return new NameSectionNameResolver(functionNames);
+    };
+    return NameSectionReader;
+}());
+exports.NameSectionReader = NameSectionReader;

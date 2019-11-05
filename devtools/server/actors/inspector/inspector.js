@@ -52,19 +52,59 @@
 
 const Services = require("Services");
 const protocol = require("devtools/shared/protocol");
-const {LongStringActor} = require("devtools/server/actors/string");
+const { LongStringActor } = require("devtools/server/actors/string");
 const defer = require("devtools/shared/defer");
+const ReplayInspector = require("devtools/server/actors/replay/inspector");
 
-const {inspectorSpec} = require("devtools/shared/specs/inspector");
+const { inspectorSpec } = require("devtools/shared/specs/inspector");
 
-loader.lazyRequireGetter(this, "InspectorActorUtils", "devtools/server/actors/inspector/utils");
-loader.lazyRequireGetter(this, "WalkerActor", "devtools/server/actors/inspector/walker", true);
-loader.lazyRequireGetter(this, "EyeDropper", "devtools/server/actors/highlighters/eye-dropper", true);
-loader.lazyRequireGetter(this, "PageStyleActor", "devtools/server/actors/styles", true);
-loader.lazyRequireGetter(this, "HighlighterActor", "devtools/server/actors/highlighters", true);
-loader.lazyRequireGetter(this, "CustomHighlighterActor", "devtools/server/actors/highlighters", true);
-loader.lazyRequireGetter(this, "isTypeRegistered", "devtools/server/actors/highlighters", true);
-loader.lazyRequireGetter(this, "HighlighterEnvironment", "devtools/server/actors/highlighters", true);
+loader.lazyRequireGetter(
+  this,
+  "InspectorActorUtils",
+  "devtools/server/actors/inspector/utils"
+);
+loader.lazyRequireGetter(
+  this,
+  "WalkerActor",
+  "devtools/server/actors/inspector/walker",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "EyeDropper",
+  "devtools/server/actors/highlighters/eye-dropper",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "PageStyleActor",
+  "devtools/server/actors/styles",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "HighlighterActor",
+  "devtools/server/actors/highlighters",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "CustomHighlighterActor",
+  "devtools/server/actors/highlighters",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "isTypeRegistered",
+  "devtools/server/actors/highlighters",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "HighlighterEnvironment",
+  "devtools/server/actors/highlighters",
+  true
+);
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
@@ -74,44 +114,47 @@ const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
  * inspector-related actors, including the walker.
  */
 exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
-  initialize: function (conn, tabActor) {
+  initialize: function(conn, targetActor) {
     protocol.Actor.prototype.initialize.call(this, conn);
-    this.tabActor = tabActor;
+    this.targetActor = targetActor;
 
     this._onColorPicked = this._onColorPicked.bind(this);
     this._onColorPickCanceled = this._onColorPickCanceled.bind(this);
     this.destroyEyeDropper = this.destroyEyeDropper.bind(this);
   },
 
-  destroy: function () {
+  destroy: function() {
     protocol.Actor.prototype.destroy.call(this);
-
     this.destroyEyeDropper();
 
     this._highlighterPromise = null;
     this._pageStylePromise = null;
     this._walkerPromise = null;
     this.walker = null;
-    this.tabActor = null;
+    this.targetActor = null;
   },
 
   get window() {
-    return this.tabActor.window;
+    return isReplaying ? ReplayInspector.window : this.targetActor.window;
   },
 
-  getWalker: function (options = {}) {
+  getWalker: function(options = {}) {
     if (this._walkerPromise) {
       return this._walkerPromise;
     }
 
-    let deferred = defer();
+    const deferred = defer();
     this._walkerPromise = deferred.promise;
 
-    let window = this.window;
-    let domReady = () => {
-      let tabActor = this.tabActor;
-      window.removeEventListener("DOMContentLoaded", domReady, true);
-      this.walker = WalkerActor(this.conn, tabActor, options);
+    const isXULDocument =
+      this.targetActor.window.document.documentElement.namespaceURI === XUL_NS;
+    const loadEvent = isXULDocument ? "load" : "DOMContentLoaded";
+
+    const window = this.window;
+    const domReady = () => {
+      const targetActor = this.targetActor;
+      window.removeEventListener(loadEvent, domReady, true);
+      this.walker = WalkerActor(this.conn, targetActor, options);
       this.manage(this.walker);
       this.walker.once("destroyed", () => {
         this._walkerPromise = null;
@@ -121,7 +164,7 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
     };
 
     if (window.document.readyState === "loading") {
-      window.addEventListener("DOMContentLoaded", domReady, true);
+      window.addEventListener(loadEvent, domReady, true);
     } else {
       domReady();
     }
@@ -129,13 +172,13 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
     return this._walkerPromise;
   },
 
-  getPageStyle: function () {
+  getPageStyle: function() {
     if (this._pageStylePromise) {
       return this._pageStylePromise;
     }
 
     this._pageStylePromise = this.getWalker().then(walker => {
-      let pageStyle = PageStyleActor(this);
+      const pageStyle = PageStyleActor(this);
       this.manage(pageStyle);
       return pageStyle;
     });
@@ -155,13 +198,13 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * element has been picked
    * @return {HighlighterActor}
    */
-  getHighlighter: function (autohide) {
+  getHighlighter: function(autohide) {
     if (this._highlighterPromise) {
       return this._highlighterPromise;
     }
 
     this._highlighterPromise = this.getWalker().then(walker => {
-      let highlighter = HighlighterActor(this, autohide);
+      const highlighter = HighlighterActor(this, autohide);
       this.manage(highlighter);
       return highlighter;
     });
@@ -179,7 +222,7 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * @return {Highlighter} The highlighter actor instance or null if the
    * typeName passed doesn't match any available highlighter
    */
-  getHighlighterByType: function (typeName) {
+  getHighlighterByType: function(typeName) {
     if (isTypeRegistered(typeName)) {
       return CustomHighlighterActor(this, typeName);
     }
@@ -197,15 +240,15 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * is important as the resizing occurs server-side so that image-data being
    * transfered in the longstring back to the client will be that much smaller
    */
-  getImageDataFromURL: function (url, maxDim) {
-    let img = new this.window.Image();
+  getImageDataFromURL: function(url, maxDim) {
+    const img = new this.window.Image();
     img.src = url;
 
     // imageToImageData waits for the image to load.
     return InspectorActorUtils.imageToImageData(img, maxDim).then(imageData => {
       return {
         data: LongStringActor(this.conn, imageData.data),
-        size: imageData.size
+        size: imageData.size,
       };
     });
   },
@@ -218,16 +261,16 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * used instead.
    * @return {String} url.
    */
-  resolveRelativeURL: function (url, node) {
-    let document = InspectorActorUtils.isNodeDead(node)
-                   ? this.window.document
-                   : InspectorActorUtils.nodeDocument(node.rawNode);
+  resolveRelativeURL: function(url, node) {
+    const document = InspectorActorUtils.isNodeDead(node)
+      ? this.window.document
+      : InspectorActorUtils.nodeDocument(node.rawNode);
 
     if (!document) {
       return url;
     }
 
-    let baseURI = Services.io.newURI(document.location.href);
+    const baseURI = Services.io.newURI(document.location.href);
     return Services.io.newURI(url, null, baseURI).spec;
   },
 
@@ -235,17 +278,17 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * Create an instance of the eye-dropper highlighter and store it on this._eyeDropper.
    * Note that for now, a new instance is created every time to deal with page navigation.
    */
-  createEyeDropper: function () {
+  createEyeDropper: function() {
     this.destroyEyeDropper();
     this._highlighterEnv = new HighlighterEnvironment();
-    this._highlighterEnv.initFromTabActor(this.tabActor);
+    this._highlighterEnv.initFromTargetActor(this.targetActor);
     this._eyeDropper = new EyeDropper(this._highlighterEnv);
   },
 
   /**
    * Destroy the current eye-dropper highlighter instance.
    */
-  destroyEyeDropper: function () {
+  destroyEyeDropper: function() {
     if (this._eyeDropper) {
       this.cancelPickColorFromPage();
       this._eyeDropper.destroy();
@@ -261,12 +304,12 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * cancels the picker.
    * @param {Object} options
    */
-  pickColorFromPage: function (options) {
+  pickColorFromPage: function(options) {
     this.createEyeDropper();
     this._eyeDropper.show(this.window.document.documentElement, options);
     this._eyeDropper.once("selected", this._onColorPicked);
     this._eyeDropper.once("canceled", this._onColorPickCanceled);
-    this.tabActor.once("will-navigate", this.destroyEyeDropper);
+    this.targetActor.once("will-navigate", this.destroyEyeDropper);
   },
 
   /**
@@ -274,12 +317,12 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * highlighter is for the user to click in the page and select a color. If you need to
    * dismiss the eye-dropper programatically instead, use this method.
    */
-  cancelPickColorFromPage: function () {
+  cancelPickColorFromPage: function() {
     if (this._eyeDropper) {
       this._eyeDropper.hide();
       this._eyeDropper.off("selected", this._onColorPicked);
       this._eyeDropper.off("canceled", this._onColorPickCanceled);
-      this.tabActor.off("will-navigate", this.destroyEyeDropper);
+      this.targetActor.off("will-navigate", this.destroyEyeDropper);
     }
   },
 
@@ -289,9 +332,9 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
    * It is impossible to detect the feature programmatically as some document types simply
    * don't render the canvasFrame without throwing any error.
    */
-  supportsHighlighters: function () {
-    let doc = this.tabActor.window.document;
-    let ns = doc.documentElement.namespaceURI;
+  supportsHighlighters: function() {
+    const doc = this.targetActor.window.document;
+    const ns = doc.documentElement.namespaceURI;
 
     // XUL documents do not support insertAnonymousContent().
     if (ns === XUL_NS) {
@@ -306,11 +349,11 @@ exports.InspectorActor = protocol.ActorClassWithSpec(inspectorSpec, {
     return true;
   },
 
-  _onColorPicked: function (color) {
+  _onColorPicked: function(color) {
     this.emit("color-picked", color);
   },
 
-  _onColorPickCanceled: function () {
+  _onColorPickCanceled: function() {
     this.emit("color-pick-canceled");
-  }
+  },
 });

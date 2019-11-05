@@ -39,8 +39,8 @@ void ScrollAreaEvent::InitScrollAreaEvent(const nsAString& aEventType,
   mClientArea->SetRect(aX, aY, aWidth, aHeight);
 }
 
-NS_IMETHODIMP_(void)
-ScrollAreaEvent::Serialize(IPC::Message* aMsg, bool aSerializeInterfaceType) {
+void ScrollAreaEvent::Serialize(IPC::Message* aMsg,
+                                bool aSerializeInterfaceType) {
   if (aSerializeInterfaceType) {
     IPC::WriteParam(aMsg, NS_LITERAL_STRING("scrollareaevent"));
   }
@@ -53,8 +53,8 @@ ScrollAreaEvent::Serialize(IPC::Message* aMsg, bool aSerializeInterfaceType) {
   IPC::WriteParam(aMsg, Height());
 }
 
-NS_IMETHODIMP_(bool)
-ScrollAreaEvent::Deserialize(const IPC::Message* aMsg, PickleIterator* aIter) {
+bool ScrollAreaEvent::Deserialize(const IPC::Message* aMsg,
+                                  PickleIterator* aIter) {
   NS_ENSURE_TRUE(Event::Deserialize(aMsg, aIter), false);
 
   float x, y, width, height;

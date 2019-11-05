@@ -30,17 +30,26 @@ class ChildDNSService final : public nsPIDNSService, public nsIObserver {
 
   static already_AddRefed<ChildDNSService> GetSingleton();
 
-  void NotifyRequestDone(DNSRequestChild *aDnsRequest);
+  void NotifyRequestDone(DNSRequestChild* aDnsRequest);
 
   bool GetOffline() const;
 
  private:
-  virtual ~ChildDNSService();
+  virtual ~ChildDNSService() = default;
 
   void MOZ_ALWAYS_INLINE GetDNSRecordHashKey(
-      const nsACString &aHost, const OriginAttributes &aOriginAttributes,
-      uint32_t aFlags, const nsACString &aNetworkInterface,
-      nsIDNSListener *aListener, nsACString &aHashKey);
+      const nsACString& aHost, uint16_t aType,
+      const OriginAttributes& aOriginAttributes, uint32_t aFlags,
+      nsIDNSListener* aListener, nsACString& aHashKey);
+  nsresult AsyncResolveInternal(const nsACString& hostname, uint16_t type,
+                                uint32_t flags, nsIDNSListener* listener,
+                                nsIEventTarget* target_,
+                                const OriginAttributes& aOriginAttributes,
+                                nsICancelable** result);
+  nsresult CancelAsyncResolveInternal(
+      const nsACString& aHostname, uint16_t aType, uint32_t aFlags,
+      nsIDNSListener* aListener, nsresult aReason,
+      const OriginAttributes& aOriginAttributes);
 
   bool mFirstTime;
   bool mDisablePrefetch;

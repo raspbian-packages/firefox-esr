@@ -9,6 +9,7 @@
 
 #include "mozilla/dom/quota/QuotaCommon.h"
 
+#include "mozilla/dom/LocalStorageCommon.h"
 #include "mozilla/dom/ipc/IdType.h"
 
 #include "PersistenceType.h"
@@ -17,11 +18,16 @@ class nsIFile;
 class nsIRunnable;
 
 #define IDB_DIRECTORY_NAME "idb"
-#define ASMJSCACHE_DIRECTORY_NAME "asmjs"
 #define DOMCACHE_DIRECTORY_NAME "cache"
+#define SDB_DIRECTORY_NAME "sdb"
+#define LS_DIRECTORY_NAME "ls"
+
+// Deprecated
+#define ASMJSCACHE_DIRECTORY_NAME "asmjs"
 
 BEGIN_QUOTA_NAMESPACE
 
+class OriginScope;
 class QuotaManager;
 class UsageInfo;
 
@@ -36,12 +42,19 @@ class Client {
 
   enum Type {
     IDB = 0,
-    // LS,
     // APPCACHE,
-    ASMJS,
     DOMCACHE,
+    SDB,
+    LS,
     TYPE_MAX
   };
+
+  static Type TypeMax() {
+    if (CachedNextGenLocalStorageEnabled()) {
+      return TYPE_MAX;
+    }
+    return LS;
+  }
 
   virtual Type GetType() = 0;
 
@@ -51,17 +64,24 @@ class Client {
         aText.AssignLiteral(IDB_DIRECTORY_NAME);
         break;
 
-      case ASMJS:
-        aText.AssignLiteral(ASMJSCACHE_DIRECTORY_NAME);
-        break;
-
       case DOMCACHE:
         aText.AssignLiteral(DOMCACHE_DIRECTORY_NAME);
         break;
 
+      case SDB:
+        aText.AssignLiteral(SDB_DIRECTORY_NAME);
+        break;
+
+      case LS:
+        if (CachedNextGenLocalStorageEnabled()) {
+          aText.AssignLiteral(LS_DIRECTORY_NAME);
+          break;
+        }
+        MOZ_FALLTHROUGH;
+
       case TYPE_MAX:
       default:
-        NS_NOTREACHED("Bad id value!");
+        MOZ_ASSERT_UNREACHABLE("Bad id value!");
         return NS_ERROR_UNEXPECTED;
     }
 
@@ -71,15 +91,39 @@ class Client {
   static nsresult TypeFromText(const nsAString& aText, Type& aType) {
     if (aText.EqualsLiteral(IDB_DIRECTORY_NAME)) {
       aType = IDB;
-    } else if (aText.EqualsLiteral(ASMJSCACHE_DIRECTORY_NAME)) {
-      aType = ASMJS;
     } else if (aText.EqualsLiteral(DOMCACHE_DIRECTORY_NAME)) {
       aType = DOMCACHE;
+    } else if (aText.EqualsLiteral(SDB_DIRECTORY_NAME)) {
+      aType = SDB;
+    } else if (CachedNextGenLocalStorageEnabled() &&
+               aText.EqualsLiteral(LS_DIRECTORY_NAME)) {
+      aType = LS;
     } else {
       return NS_ERROR_FAILURE;
     }
 
     return NS_OK;
+  }
+
+  static nsresult NullableTypeFromText(const nsAString& aText,
+                                       Nullable<Type>* aType) {
+    if (aText.IsVoid()) {
+      *aType = Nullable<Type>();
+      return NS_OK;
+    }
+
+    Type type;
+    nsresult rv = TypeFromText(aText, type);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+
+    *aType = Nullable<Type>(type);
+    return NS_OK;
+  }
+
+  static bool IsDeprecatedClient(const nsAString& aText) {
+    return aText.EqualsLiteral(ASMJSCACHE_DIRECTORY_NAME);
   }
 
   // Methods which are called on the IO thread.
@@ -91,11 +135,15 @@ class Client {
     return NS_OK;
   }
 
+  virtual nsresult UpgradeStorageFrom2_1To2_2(nsIFile* aDirectory) {
+    return NS_OK;
+  }
+
   virtual nsresult InitOrigin(PersistenceType aPersistenceType,
                               const nsACString& aGroup,
                               const nsACString& aOrigin,
                               const AtomicBool& aCanceled,
-                              UsageInfo* aUsageInfo) = 0;
+                              UsageInfo* aUsageInfo, bool aForGetUsage) = 0;
 
   virtual nsresult GetUsageForOrigin(PersistenceType aPersistenceType,
                                      const nsACString& aGroup,
@@ -103,10 +151,20 @@ class Client {
                                      const AtomicBool& aCanceled,
                                      UsageInfo* aUsageInfo) = 0;
 
+  // This method is called when origins are about to be cleared
+  // (except the case when clearing is triggered by the origin eviction).
+  virtual nsresult AboutToClearOrigins(
+      const Nullable<PersistenceType>& aPersistenceType,
+      const OriginScope& aOriginScope) {
+    return NS_OK;
+  }
+
   virtual void OnOriginClearCompleted(PersistenceType aPersistenceType,
                                       const nsACString& aOrigin) = 0;
 
   virtual void ReleaseIOThreadObjects() = 0;
+
+  virtual void OnStorageInitFailed(){};
 
   // Methods which are called on the background thread.
   virtual void AbortOperations(const nsACString& aOrigin) = 0;
@@ -118,11 +176,6 @@ class Client {
   virtual void StopIdleMaintenance() = 0;
 
   virtual void ShutdownWorkThreads() = 0;
-
-  // Methods which are called on the main thread.
-  virtual void DidInitialize(QuotaManager* aQuotaManager) {}
-
-  virtual void WillShutdown() {}
 
  protected:
   virtual ~Client() {}

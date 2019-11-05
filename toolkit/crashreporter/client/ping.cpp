@@ -9,16 +9,18 @@
 #include <string>
 
 #if defined(XP_LINUX)
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
+#  include <fcntl.h>
+#  include <unistd.h>
+#  include <sys/stat.h>
 #elif defined(XP_MACOSX)
-#include <CoreFoundation/CoreFoundation.h>
+#  include <CoreFoundation/CoreFoundation.h>
 #elif defined(XP_WIN)
-#include <objbase.h>
+#  include <objbase.h>
 #endif
 
 #include "json/json.h"
+
+#include "CrashAnnotations.h"
 
 using std::string;
 
@@ -114,44 +116,15 @@ const int kTelemetryVersion = 4;
 // Create the payload.metadata node of the crash ping using fields extracted
 // from the .extra file
 static Json::Value CreateMetadataNode(StringTable& strings) {
-  // The following list should be kept in sync with the one in CrashManager.jsm
-  const char* entries[] = {
-      "AsyncShutdownTimeout",
-      "AvailablePageFile",
-      "AvailablePhysicalMemory",
-      "AvailableVirtualMemory",
-      "BlockedDllList",
-      "BlocklistInitFailed",
-      "BuildID",
-      "ContainsMemoryReport",
-      "CrashTime",
-      "EventLoopNestingLevel",
-      "ipc_channel_error",
-      "IsGarbageCollecting",
-      "MozCrashReason",
-      "OOMAllocationSize",
-      "ProductID",
-      "ProductName",
-      "ReleaseChannel",
-      "RemoteType",
-      "SecondsSinceLastCrash",
-      "ShutdownProgress",
-      "StartupCrash",
-      "SystemMemoryUsePercentage",
-      "TextureUsage",
-      "TotalPageFile",
-      "TotalPhysicalMemory",
-      "TotalVirtualMemory",
-      "UptimeTS",
-      "User32BeforeBlocklist",
-      "Version",
-  };
-
   Json::Value node;
 
-  for (auto entry : entries) {
-    if ((strings.find(entry) != strings.end()) && !strings[entry].empty()) {
-      node[entry] = strings[entry];
+  for (auto line : strings) {
+    Annotation annotation;
+
+    if (AnnotationFromString(annotation, line.first.c_str())) {
+      if (IsAnnotationWhitelistedForPing(annotation)) {
+        node[line.first] = line.second;
+      }
     }
   }
 
@@ -190,6 +163,7 @@ static Json::Value CreatePayloadNode(StringTable& strings, const string& aHash,
 // Create the application node of the crash ping
 static Json::Value CreateApplicationNode(
     const string& aVendor, const string& aName, const string& aVersion,
+    const string& aDisplayVersion, const string& aPlatformVersion,
     const string& aChannel, const string& aBuildId, const string& aArchitecture,
     const string& aXpcomAbi) {
   Json::Value application;
@@ -197,8 +171,8 @@ static Json::Value CreateApplicationNode(
   application["vendor"] = aVendor;
   application["name"] = aName;
   application["buildId"] = aBuildId;
-  application["displayVersion"] = aVersion;
-  application["platformVersion"] = aVersion;
+  application["displayVersion"] = aDisplayVersion;
+  application["platformVersion"] = aPlatformVersion;
   application["version"] = aVersion;
   application["channel"] = aChannel;
   if (!aArchitecture.empty()) {
@@ -230,6 +204,8 @@ static Json::Value CreateRootNode(StringTable& strings, const string& aUuid,
   Json::Reader reader;
   string architecture;
   string xpcomAbi;
+  string displayVersion;
+  string platformVersion;
 
   if (reader.parse(strings["TelemetryEnvironment"], environment,
                    /* collectComments */ false)) {
@@ -241,15 +217,23 @@ static Json::Value CreateRootNode(StringTable& strings, const string& aUuid,
       if (build.isMember("xpcomAbi") && build["xpcomAbi"].isString()) {
         xpcomAbi = build["xpcomAbi"].asString();
       }
+      if (build.isMember("displayVersion") &&
+          build["displayVersion"].isString()) {
+        displayVersion = build["displayVersion"].asString();
+      }
+      if (build.isMember("platformVersion") &&
+          build["platformVersion"].isString()) {
+        platformVersion = build["platformVersion"].asString();
+      }
     }
 
     root["environment"] = environment;
   }
 
   root["payload"] = CreatePayloadNode(strings, aHash, aSessionId);
-  root["application"] =
-      CreateApplicationNode(strings["Vendor"], aName, aVersion, aChannel,
-                            aBuildId, architecture, xpcomAbi);
+  root["application"] = CreateApplicationNode(
+      strings["Vendor"], aName, aVersion, displayVersion, platformVersion,
+      aChannel, aBuildId, architecture, xpcomAbi);
 
   return root;
 }

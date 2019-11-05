@@ -39,6 +39,12 @@
 <!ENTITY newFeedAccountCmd.accesskey		"d">
 <!ENTITY newIMContactCmd.label			"チャット連絡先...">
 <!ENTITY newIMContactCmd.accesskey		"h">
+<!ENTITY  newMessageCmd2.key			"N">
+<!ENTITY  newMessageCmd.key			"M">
+<!ENTITY  newMessageCmd.label			"メッセージ">
+<!ENTITY  newMessageCmd.accesskey		"m">
+<!ENTITY  newContactCmd.label			"アドレス帳の連絡先...">
+<!ENTITY  newContactCmd.accesskey		"C">
 <!ENTITY openMessageFileCmd.label		"メッセージファイルを開く...">
 <!ENTITY openMessageFileCmd.accesskey		"O">
 <!ENTITY saveAsMenu.label			"名前を付けて保存">
@@ -438,9 +444,9 @@
 <!ENTITY openMessageWindowCmd.label	"メッセージを開く">
 <!ENTITY openMessageWindowCmd.accesskey	"O">
 <!ENTITY openMessageWindowCmd.key	"o">
-<!ENTITY openConversationCmd.label	"スレッドを新しいタブで開く"><!-- en-US: "Open in Conversation" -->
-<!ENTITY openConversationCmd.accesskey	"s">
-<!ENTITY openConversationCmd.key	"o">
+<!ENTITY openInConversationCmd.label	"スレッドを新しいタブで開く"><!-- en-US: "Open in Conversation" -->
+<!ENTITY openInConversationCmd.accesskey "s">
+<!ENTITY openInConversationCmd.key	"o">
 <!ENTITY openAttachmentListCmd.label	"添付ファイル">
 <!ENTITY openAttachmentListCmd.accesskey "h">
 <!ENTITY openFeedMessage1.label		"フィードメッセージを開く">
@@ -603,6 +609,8 @@
 <!ENTITY compactButton.tooltip		"削除したメッセージをフォルダーから消去します"><!-- (^^; わかりにくい... -->
 <!ENTITY appmenuButton1.tooltip		"&brandShortName; のメニューを表示します">
 
+<!ENTITY addonsButton.tooltip		"アドオンを管理します">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label	"メッセージ本文として転送"><!-- en-US: "Forward Inline" -->
 <!ENTITY buttonMenuForwardAsAttachment.label	"添付ファイルとして転送">
@@ -646,6 +654,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label			"メッセージを受信する">
 <!ENTITY folderContextGetMessages.accesskey		"G">
+<!ENTITY folderContextMarkAllFoldersRead.label		"すべてのフォルダーを既読にする">
 <!ENTITY folderContextPauseAllUpdates.label		"すべての更新を一時停止">
 <!ENTITY folderContextPauseUpdates.label		"更新を一時停止">
 <!ENTITY folderContextPauseUpdates.accesskey		"U">
@@ -788,6 +797,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey		"M">
 <!ENTITY contextMoveCopyMsgRecentMenu.label	"使用履歴">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey	"R">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label	"お気に入り">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey	"F">
 <!ENTITY contextCopyMsgMenu.label		"メッセージをコピー">
 <!ENTITY contextCopyMsgMenu.accesskey		"C">
 <!ENTITY contextKillThreadMenu.label		"スレッドを無視">
@@ -807,12 +818,6 @@
 <!ENTITY contextPrintPreview.label		"印刷プレビュー">
 <!ENTITY contextPrintPreview.accesskey		"v">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label	"初期状態に戻す">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -853,7 +858,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label		"このフォルダー">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label		"再生">
 <!ENTITY contextPlay.accesskey		"P">
@@ -871,7 +875,7 @@
   -->
 <!ENTITY quickSearchCmd.key		"k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

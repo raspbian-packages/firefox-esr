@@ -15,6 +15,10 @@
 #include "nsCRT.h"
 #include "nsIUUIDGenerator.h"
 
+#include "mozilla/GkRustUtils.h"
+
+using namespace mozilla;
+
 ////////////////////////////////////////////////////////////////////////////////
 //// NullPrincipalURI
 
@@ -25,18 +29,7 @@ NullPrincipalURI::NullPrincipalURI(const NullPrincipalURI& aOther) {
 }
 
 nsresult NullPrincipalURI::Init() {
-  // FIXME: bug 327161 -- make sure the uuid generator is reseeding-resistant.
-  nsCOMPtr<nsIUUIDGenerator> uuidgen = services::GetUUIDGenerator();
-  NS_ENSURE_TRUE(uuidgen, NS_ERROR_NOT_AVAILABLE);
-
-  nsID id;
-  nsresult rv = uuidgen->GenerateUUIDInPlace(&id);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  mPath.SetLength(NSID_LENGTH - 1);  // -1 because NSID_LENGTH counts the '\0'
-  id.ToProvidedString(
-      *reinterpret_cast<char(*)[NSID_LENGTH]>(mPath.BeginWriting()));
-
+  GkRustUtils::GenerateUUID(mPath);
   MOZ_ASSERT(mPath.Length() == NSID_LENGTH - 1);
   MOZ_ASSERT(strlen(mPath.get()) == NSID_LENGTH - 1);
 
@@ -64,7 +57,6 @@ NS_INTERFACE_MAP_BEGIN(NullPrincipalURI)
   else
     NS_INTERFACE_MAP_ENTRY(nsIURI)
   NS_INTERFACE_MAP_ENTRY(nsISizeOf)
-  NS_INTERFACE_MAP_ENTRY(nsIIPCSerializableURI)
 NS_INTERFACE_MAP_END
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -228,25 +220,10 @@ nsresult NullPrincipalURI::SetUserPass(const nsACString& aUserPass) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-NS_IMETHODIMP
-NullPrincipalURI::Clone(nsIURI** _newURI) {
+nsresult NullPrincipalURI::Clone(nsIURI** _newURI) {
   nsCOMPtr<nsIURI> uri = new NullPrincipalURI(*this);
   uri.forget(_newURI);
   return NS_OK;
-}
-
-NS_IMETHODIMP
-NullPrincipalURI::CloneIgnoringRef(nsIURI** _newURI) {
-  // GetRef/SetRef not supported by NullPrincipalURI, so
-  // CloneIgnoringRef() is the same as Clone().
-  return Clone(_newURI);
-}
-
-NS_IMETHODIMP
-NullPrincipalURI::CloneWithNewRef(const nsACString& newRef, nsIURI** _newURI) {
-  // GetRef/SetRef not supported by NullPrincipalURI, so
-  // CloneWithNewRef() is the same as Clone().
-  return Clone(_newURI);
 }
 
 NS_IMPL_ISUPPORTS(NullPrincipalURI::Mutator, nsIURISetters, nsIURIMutator)
@@ -314,9 +291,6 @@ NullPrincipalURI::GetDisplayPrePath(nsACString& aPrePath) {
   return GetPrePath(aPrePath);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//// nsIIPCSerializableURI
-
 void NullPrincipalURI::Serialize(mozilla::ipc::URIParams& aParams) {
   aParams = mozilla::ipc::NullPrincipalURIParams();
 }
@@ -336,12 +310,10 @@ bool NullPrincipalURI::Deserialize(const mozilla::ipc::URIParams& aParams) {
 ////////////////////////////////////////////////////////////////////////////////
 //// nsISizeOf
 
-size_t NullPrincipalURI::SizeOfExcludingThis(
-    mozilla::MallocSizeOf aMallocSizeOf) const {
+size_t NullPrincipalURI::SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const {
   return mPath.SizeOfExcludingThisIfUnshared(aMallocSizeOf);
 }
 
-size_t NullPrincipalURI::SizeOfIncludingThis(
-    mozilla::MallocSizeOf aMallocSizeOf) const {
+size_t NullPrincipalURI::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
   return aMallocSizeOf(this) + SizeOfExcludingThis(aMallocSizeOf);
 }

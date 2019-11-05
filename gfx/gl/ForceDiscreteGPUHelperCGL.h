@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,7 +18,7 @@ class ForceDiscreteGPUHelperCGL {
   CGLPixelFormatObj mPixelFormatObj;
 
  public:
-  ForceDiscreteGPUHelperCGL() {
+  ForceDiscreteGPUHelperCGL() : mPixelFormatObj(nullptr) {
     // the code in this function is taken from Chromium,
     // src/ui/gfx/gl/gl_context_cgl.cc, r122013
     // BSD-style license, (c) The Chromium Authors

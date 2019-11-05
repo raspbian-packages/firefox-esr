@@ -54,7 +54,7 @@ class TestLayerManager : public LayerManager {
   }
   virtual void GetBackendName(nsAString& aName) {}
   virtual LayersBackend GetBackendType() { return LayersBackend::LAYERS_BASIC; }
-  virtual bool BeginTransaction() { return true; }
+  virtual bool BeginTransaction(const nsCString& = nsCString()) { return true; }
   virtual already_AddRefed<ImageLayer> CreateImageLayer() {
     MOZ_CRASH("Not implemented.");
   }
@@ -65,11 +65,11 @@ class TestLayerManager : public LayerManager {
   virtual already_AddRefed<ColorLayer> CreateColorLayer() {
     MOZ_CRASH("Not implemented.");
   }
-  virtual already_AddRefed<BorderLayer> CreateBorderLayer() {
-    MOZ_CRASH("Not implemented.");
-  }
   virtual void SetRoot(Layer* aLayer) {}
-  virtual bool BeginTransactionWithTarget(gfxContext* aTarget) { return true; }
+  virtual bool BeginTransactionWithTarget(gfxContext* aTarget,
+                                          const nsCString& = nsCString()) {
+    return true;
+  }
   virtual already_AddRefed<CanvasLayer> CreateCanvasLayer() {
     MOZ_CRASH("Not implemented.");
   }
@@ -85,9 +85,11 @@ class TestUserData : public LayerUserData {
   virtual ~TestUserData() { Die(); }
 };
 
-TEST(Layers, LayerConstructor) { TestContainerLayer layer(nullptr); }
+TEST(Layers, LayerConstructor)
+{ TestContainerLayer layer(nullptr); }
 
-TEST(Layers, Defaults) {
+TEST(Layers, Defaults)
+{
   TestContainerLayer layer(nullptr);
   ASSERT_EQ(1.0, layer.GetOpacity());
   ASSERT_EQ(1.0f, layer.GetPostXScale());
@@ -99,7 +101,8 @@ TEST(Layers, Defaults) {
   ASSERT_EQ(nullptr, layer.GetLastChild());
 }
 
-TEST(Layers, Transform) {
+TEST(Layers, Transform)
+{
   TestContainerLayer layer(nullptr);
 
   Matrix4x4 identity;
@@ -108,14 +111,16 @@ TEST(Layers, Transform) {
   ASSERT_EQ(identity, layer.GetTransform());
 }
 
-TEST(Layers, Type) {
+TEST(Layers, Type)
+{
   TestContainerLayer layer(nullptr);
   ASSERT_EQ(nullptr, layer.AsPaintedLayer());
   ASSERT_EQ(nullptr, layer.AsRefLayer());
   ASSERT_EQ(nullptr, layer.AsColorLayer());
 }
 
-TEST(Layers, UserData) {
+TEST(Layers, UserData)
+{
   UniquePtr<TestContainerLayer> layerPtr(new TestContainerLayer(nullptr));
   TestContainerLayer& layer = *layerPtr;
 
@@ -235,7 +240,8 @@ already_AddRefed<Layer> CreateLayerTree(const char* aLayerTreeDescription,
   return rootLayer.forget();
 }
 
-TEST(Layers, LayerTree) {
+TEST(Layers, LayerTree)
+{
   const char* layerTreeSyntax = "c(c(tt))";
   nsIntRegion layerVisibleRegion[] = {
       nsIntRegion(IntRect(0, 0, 100, 100)),
@@ -289,7 +295,8 @@ static void ValidateTreePointers(nsTArray<RefPtr<Layer> >& aLayers) {
   }
 }
 
-TEST(Layers, RepositionChild) {
+TEST(Layers, RepositionChild)
+{
   const char* layerTreeSyntax = "c(ttt)";
 
   nsTArray<RefPtr<Layer> > layers;
@@ -389,7 +396,7 @@ TEST_F(LayerMetricsWrapperTester, SimpleTree) {
   ASSERT_TRUE(rootWrapper == wrapper.GetParent());
 }
 
-static ScrollMetadata MakeMetadata(FrameMetrics::ViewID aId) {
+static ScrollMetadata MakeMetadata(ScrollableLayerGuid::ViewID aId) {
   ScrollMetadata metadata;
   metadata.GetMetrics().SetScrollId(aId);
   return metadata;
@@ -402,31 +409,42 @@ TEST_F(LayerMetricsWrapperTester, MultiFramemetricsTree) {
       CreateLayerTree("c(c(c(tt)c(t)))", nullptr, nullptr, lm, layers);
 
   nsTArray<ScrollMetadata> metadata;
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::START_SCROLL_ID +
-                                           0));  // topmost of root layer
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::NULL_SCROLL_ID));
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::START_SCROLL_ID + 1));
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::START_SCROLL_ID + 2));
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::NULL_SCROLL_ID));
+  metadata.InsertElementAt(0,
+                           MakeMetadata(ScrollableLayerGuid::START_SCROLL_ID +
+                                        0));  // topmost of root layer
+  metadata.InsertElementAt(0,
+                           MakeMetadata(ScrollableLayerGuid::NULL_SCROLL_ID));
   metadata.InsertElementAt(
-      0, MakeMetadata(FrameMetrics::NULL_SCROLL_ID));  // bottom of root layer
+      0, MakeMetadata(ScrollableLayerGuid::START_SCROLL_ID + 1));
+  metadata.InsertElementAt(
+      0, MakeMetadata(ScrollableLayerGuid::START_SCROLL_ID + 2));
+  metadata.InsertElementAt(0,
+                           MakeMetadata(ScrollableLayerGuid::NULL_SCROLL_ID));
+  metadata.InsertElementAt(
+      0, MakeMetadata(
+             ScrollableLayerGuid::NULL_SCROLL_ID));  // bottom of root layer
   root->SetScrollMetadata(metadata);
 
   metadata.Clear();
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::START_SCROLL_ID + 3));
+  metadata.InsertElementAt(
+      0, MakeMetadata(ScrollableLayerGuid::START_SCROLL_ID + 3));
   layers[1]->SetScrollMetadata(metadata);
 
   metadata.Clear();
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::NULL_SCROLL_ID));
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::START_SCROLL_ID + 4));
+  metadata.InsertElementAt(0,
+                           MakeMetadata(ScrollableLayerGuid::NULL_SCROLL_ID));
+  metadata.InsertElementAt(
+      0, MakeMetadata(ScrollableLayerGuid::START_SCROLL_ID + 4));
   layers[2]->SetScrollMetadata(metadata);
 
   metadata.Clear();
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::START_SCROLL_ID + 5));
+  metadata.InsertElementAt(
+      0, MakeMetadata(ScrollableLayerGuid::START_SCROLL_ID + 5));
   layers[4]->SetScrollMetadata(metadata);
 
   metadata.Clear();
-  metadata.InsertElementAt(0, MakeMetadata(FrameMetrics::START_SCROLL_ID + 6));
+  metadata.InsertElementAt(
+      0, MakeMetadata(ScrollableLayerGuid::START_SCROLL_ID + 6));
   layers[5]->SetScrollMetadata(metadata);
 
   LayerMetricsWrapper wrapper(root, LayerMetricsWrapper::StartAt::TOP);
@@ -441,17 +459,17 @@ TEST_F(LayerMetricsWrapperTester, MultiFramemetricsTree) {
   expectedLayers.AppendElement(layers[2].get());
   expectedLayers.AppendElement(layers[2].get());
   expectedLayers.AppendElement(layers[3].get());
-  nsTArray<FrameMetrics::ViewID> expectedIds;
-  expectedIds.AppendElement(FrameMetrics::START_SCROLL_ID + 0);
-  expectedIds.AppendElement(FrameMetrics::NULL_SCROLL_ID);
-  expectedIds.AppendElement(FrameMetrics::START_SCROLL_ID + 1);
-  expectedIds.AppendElement(FrameMetrics::START_SCROLL_ID + 2);
-  expectedIds.AppendElement(FrameMetrics::NULL_SCROLL_ID);
-  expectedIds.AppendElement(FrameMetrics::NULL_SCROLL_ID);
-  expectedIds.AppendElement(FrameMetrics::START_SCROLL_ID + 3);
-  expectedIds.AppendElement(FrameMetrics::NULL_SCROLL_ID);
-  expectedIds.AppendElement(FrameMetrics::START_SCROLL_ID + 4);
-  expectedIds.AppendElement(FrameMetrics::NULL_SCROLL_ID);
+  nsTArray<ScrollableLayerGuid::ViewID> expectedIds;
+  expectedIds.AppendElement(ScrollableLayerGuid::START_SCROLL_ID + 0);
+  expectedIds.AppendElement(ScrollableLayerGuid::NULL_SCROLL_ID);
+  expectedIds.AppendElement(ScrollableLayerGuid::START_SCROLL_ID + 1);
+  expectedIds.AppendElement(ScrollableLayerGuid::START_SCROLL_ID + 2);
+  expectedIds.AppendElement(ScrollableLayerGuid::NULL_SCROLL_ID);
+  expectedIds.AppendElement(ScrollableLayerGuid::NULL_SCROLL_ID);
+  expectedIds.AppendElement(ScrollableLayerGuid::START_SCROLL_ID + 3);
+  expectedIds.AppendElement(ScrollableLayerGuid::NULL_SCROLL_ID);
+  expectedIds.AppendElement(ScrollableLayerGuid::START_SCROLL_ID + 4);
+  expectedIds.AppendElement(ScrollableLayerGuid::NULL_SCROLL_ID);
   for (int i = 0; i < 10; i++) {
     ASSERT_EQ(expectedLayers[i], wrapper.GetLayer());
     ASSERT_EQ(expectedIds[i], wrapper.Metrics().GetScrollId());
@@ -469,15 +487,19 @@ TEST_F(LayerMetricsWrapperTester, MultiFramemetricsTree) {
 
   wrapper =
       LayerMetricsWrapper(layers[4], LayerMetricsWrapper::StartAt::BOTTOM);
-  ASSERT_EQ(FrameMetrics::START_SCROLL_ID + 5, wrapper.Metrics().GetScrollId());
+  ASSERT_EQ(ScrollableLayerGuid::START_SCROLL_ID + 5,
+            wrapper.Metrics().GetScrollId());
   wrapper = wrapper.GetParent();
-  ASSERT_EQ(FrameMetrics::START_SCROLL_ID + 4, wrapper.Metrics().GetScrollId());
+  ASSERT_EQ(ScrollableLayerGuid::START_SCROLL_ID + 4,
+            wrapper.Metrics().GetScrollId());
   ASSERT_EQ(layers[2].get(), wrapper.GetLayer());
   ASSERT_FALSE(wrapper.GetNextSibling().IsValid());
   wrapper = wrapper.GetParent();
-  ASSERT_EQ(FrameMetrics::NULL_SCROLL_ID, wrapper.Metrics().GetScrollId());
+  ASSERT_EQ(ScrollableLayerGuid::NULL_SCROLL_ID,
+            wrapper.Metrics().GetScrollId());
   ASSERT_EQ(layers[2].get(), wrapper.GetLayer());
   wrapper = wrapper.GetNextSibling();
-  ASSERT_EQ(FrameMetrics::START_SCROLL_ID + 6, wrapper.Metrics().GetScrollId());
+  ASSERT_EQ(ScrollableLayerGuid::START_SCROLL_ID + 6,
+            wrapper.Metrics().GetScrollId());
   ASSERT_EQ(layers[5].get(), wrapper.GetLayer());
 }

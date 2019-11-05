@@ -4,23 +4,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #ifdef XP_WIN
-#include "WMF.h"
+#  include "WMF.h"
 #endif
 #include "GPUParent.h"
 #include "gfxConfig.h"
+#include "gfxCrashReporterUtils.h"
 #include "gfxPlatform.h"
 #include "gfxPrefs.h"
+#include "GLContextProvider.h"
 #include "GPUProcessHost.h"
+#include "GPUProcessManager.h"
 #include "mozilla/Assertions.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/TimeStamp.h"
+#include "mozilla/VideoDecoderManagerChild.h"
+#include "mozilla/VideoDecoderManagerParent.h"
 #include "mozilla/dom/MemoryReportRequest.h"
-#include "mozilla/dom/VideoDecoderManagerChild.h"
-#include "mozilla/dom/VideoDecoderManagerParent.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/gfxVars.h"
+#include "mozilla/image/ImageMemoryReporter.h"
 #include "mozilla/ipc/CrashReporterClient.h"
 #include "mozilla/ipc/ProcessChild.h"
+#include "mozilla/layers/APZInputBridgeParent.h"
 #include "mozilla/layers/APZThreadUtils.h"
 #include "mozilla/layers/APZUtils.h"  // for apz::InitializeGlobalState
 #include "mozilla/layers/CompositorBridgeParent.h"
@@ -30,30 +35,36 @@
 #include "mozilla/layers/LayerTreeOwnerTracker.h"
 #include "mozilla/layers/UiCompositorControllerParent.h"
 #include "mozilla/layers/MemoryReportingMLGPU.h"
-#include "mozilla/layers/SharedSurfacesParent.h"
 #include "mozilla/webrender/RenderThread.h"
 #include "mozilla/webrender/WebRenderAPI.h"
 #include "mozilla/HangDetails.h"
+#include "nscore.h"
 #include "nsDebugImpl.h"
 #include "nsIGfxInfo.h"
 #include "nsThreadManager.h"
 #include "prenv.h"
 #include "ProcessUtils.h"
+#include "VRGPUChild.h"
 #include "VRManager.h"
 #include "VRManagerParent.h"
-#include "VRThread.h"
 #include "VsyncBridgeParent.h"
+#include "cairo.h"
+#include "skia/include/core/SkGraphics.h"
 #if defined(XP_WIN)
-#include "mozilla/gfx/DeviceManagerDx.h"
-#include <process.h>
-#include <dwrite.h>
+#  include "mozilla/gfx/DeviceManagerDx.h"
+#  include "mozilla/widget/WinCompositorWindowThread.h"
+#  include "mozilla/WindowsVersion.h"
+#  include <process.h>
+#  include <dwrite.h>
 #endif
 #ifdef MOZ_WIDGET_GTK
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
+#  include "skia/include/ports/SkTypeface_cairo.h"
 #endif
 #ifdef MOZ_GECKO_PROFILER
-#include "ChildProfilerController.h"
+#  include "ChildProfilerController.h"
 #endif
+#include "nsAppRunner.h"
 
 namespace mozilla {
 namespace gfx {
@@ -67,10 +78,11 @@ GPUParent::GPUParent() : mLaunchTime(TimeStamp::Now()) { sGPUParent = this; }
 
 GPUParent::~GPUParent() { sGPUParent = nullptr; }
 
-/* static */ GPUParent* GPUParent::GetSingleton() { return sGPUParent; }
+/* static */
+GPUParent* GPUParent::GetSingleton() { return sGPUParent; }
 
-bool GPUParent::Init(base::ProcessId aParentPid, MessageLoop* aIOLoop,
-                     IPC::Channel* aChannel) {
+bool GPUParent::Init(base::ProcessId aParentPid, const char* aParentBuildID,
+                     MessageLoop* aIOLoop, IPC::Channel* aChannel) {
   // Initialize the thread manager before starting IPC. Otherwise, messages
   // may be posted to the main thread and we won't be able to process them.
   if (NS_WARN_IF(NS_FAILED(nsThreadManager::get().Init()))) {
@@ -84,10 +96,15 @@ bool GPUParent::Init(base::ProcessId aParentPid, MessageLoop* aIOLoop,
 
   nsDebugImpl::SetMultiprocessMode("GPU");
 
-  // This must be sent before any IPDL message, which may hit sentinel
+  // This must be checked before any IPDL message, which may hit sentinel
   // errors due to parent and content processes having different
   // versions.
-  GetIPCChannel()->SendBuildID();
+  MessageChannel* channel = GetIPCChannel();
+  if (channel && !channel->SendBuildIDsMatchMessage(aParentBuildID)) {
+    // We need to quit this process if the buildID doesn't match the parent's.
+    // This can occur when an update occurred in the background.
+    ProcessChild::QuickExit();
+  }
 
   // Init crash reporter support.
   CrashReporterClient::InitSingleton(this);
@@ -109,9 +126,7 @@ bool GPUParent::Init(base::ProcessId aParentPid, MessageLoop* aIOLoop,
   }
 
   CompositorThreadHolder::Start();
-  // TODO: Bug 1406327, Start VRListenerThreadHolder when loading VR content.
-  VRListenerThreadHolder::Start();
-  APZThreadUtils::SetControllerThread(CompositorThreadHolder::Loop());
+  APZThreadUtils::SetControllerThread(MessageLoop::current());
   apz::InitializeGlobalState();
   LayerTreeOwnerTracker::Initialize();
   mozilla::ipc::SetThisProcessName("GPU Process");
@@ -129,7 +144,7 @@ void GPUParent::NotifyDeviceReset() {
     return;
   }
 
-    // Reset and reinitialize the compositor devices
+  // Reset and reinitialize the compositor devices
 #ifdef XP_WIN
   if (!DeviceManagerDx::Get()->MaybeResetAndReacquireDevices()) {
     // If the device doesn't need to be reset then the device
@@ -143,6 +158,19 @@ void GPUParent::NotifyDeviceReset() {
   GPUDeviceData data;
   RecvGetDeviceStatus(&data);
   Unused << SendNotifyDeviceReset(data);
+}
+
+PAPZInputBridgeParent* GPUParent::AllocPAPZInputBridgeParent(
+    const LayersId& aLayersId) {
+  APZInputBridgeParent* parent = new APZInputBridgeParent(aLayersId);
+  parent->AddRef();
+  return parent;
+}
+
+bool GPUParent::DeallocPAPZInputBridgeParent(PAPZInputBridgeParent* aActor) {
+  APZInputBridgeParent* parent = static_cast<APZInputBridgeParent*>(aActor);
+  parent->Release();
+  return true;
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvInit(
@@ -165,15 +193,29 @@ mozilla::ipc::IPCResult GPUParent::RecvInit(
   gfxConfig::Inherit(Feature::ADVANCED_LAYERS, devicePrefs.advancedLayers());
   gfxConfig::Inherit(Feature::DIRECT2D, devicePrefs.useD2D1());
 
+  {  // Let the crash reporter know if we've got WR enabled or not. For other
+    // processes this happens in gfxPlatform::InitWebRenderConfig.
+    ScopedGfxFeatureReporter reporter("WR",
+                                      gfxPlatform::WebRenderPrefEnabled());
+    if (gfxVars::UseWebRender()) {
+      reporter.SetSuccessful();
+    }
+  }
+
   for (const LayerTreeIdMapping& map : aMappings) {
     LayerTreeOwnerTracker::Get()->Map(map.layersId(), map.ownerId());
   }
+
+  // We bypass gfxPlatform::Init, so we must initialize any relevant libraries
+  // here that would normally be initialized there.
+  SkGraphics::Init();
 
 #if defined(XP_WIN)
   if (gfxConfig::IsEnabled(Feature::D3D11_COMPOSITING)) {
     DeviceManagerDx::Get()->CreateCompositorDevices();
   }
   if (gfxVars::UseWebRender()) {
+    DeviceManagerDx::Get()->CreateDirectCompositionDevice();
     // Ensure to initialize GfxInfo
     nsCOMPtr<nsIGfxInfo> gfxInfo = services::GetGfxInfo();
     Unused << gfxInfo;
@@ -183,7 +225,16 @@ mozilla::ipc::IPCResult GPUParent::RecvInit(
 #endif
 
 #if defined(MOZ_WIDGET_GTK)
-  char* display_name = PR_GetEnv("DISPLAY");
+  char* display_name = PR_GetEnv("MOZ_GDK_DISPLAY");
+  if (!display_name) {
+    bool waylandDisabled = true;
+#  ifdef MOZ_WAYLAND
+    waylandDisabled = IsWaylandDisabled();
+#  endif
+    if (waylandDisabled) {
+      display_name = PR_GetEnv("DISPLAY");
+    }
+  }
   if (display_name) {
     int argc = 3;
     char option_name[] = "--display";
@@ -203,16 +254,25 @@ mozilla::ipc::IPCResult GPUParent::RecvInit(
     FT_Library library = Factory::NewFTLibrary();
     MOZ_ASSERT(library);
     Factory::SetFTLibrary(library);
+
+    SkInitCairoFT(true);
   }
 #endif
 
   // Make sure to do this *after* we update gfxVars above.
   if (gfxVars::UseWebRender()) {
-    wr::WebRenderAPI::InitExternalLogHandler();
-
     wr::RenderThread::Start();
-    SharedSurfacesParent::Initialize();
+    image::ImageMemoryReporter::InitForWebRender();
   }
+#ifdef XP_WIN
+  else {
+    if (gfxPrefs::Direct3D11UseDoubleBuffering() && IsWin10OrLater()) {
+      // This is needed to avoid freezing the window on a device crash on double
+      // buffering, see bug 1549674.
+      widget::WinCompositorWindowThread::Start();
+    }
+  }
+#endif
 
   VRManager::ManagerInit();
   // Send a message to the UI process that we're done.
@@ -227,39 +287,45 @@ mozilla::ipc::IPCResult GPUParent::RecvInit(
 
 mozilla::ipc::IPCResult GPUParent::RecvInitCompositorManager(
     Endpoint<PCompositorManagerParent>&& aEndpoint) {
-  CompositorManagerParent::Create(Move(aEndpoint));
+  CompositorManagerParent::Create(std::move(aEndpoint), /* aIsRoot */ true);
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvInitVsyncBridge(
     Endpoint<PVsyncBridgeParent>&& aVsyncEndpoint) {
-  mVsyncBridge = VsyncBridgeParent::Start(Move(aVsyncEndpoint));
+  mVsyncBridge = VsyncBridgeParent::Start(std::move(aVsyncEndpoint));
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvInitImageBridge(
     Endpoint<PImageBridgeParent>&& aEndpoint) {
-  ImageBridgeParent::CreateForGPUProcess(Move(aEndpoint));
+  ImageBridgeParent::CreateForGPUProcess(std::move(aEndpoint));
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvInitVRManager(
     Endpoint<PVRManagerParent>&& aEndpoint) {
-  VRManagerParent::CreateForGPUProcess(Move(aEndpoint));
+  VRManagerParent::CreateForGPUProcess(std::move(aEndpoint));
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult GPUParent::RecvInitVR(
+    Endpoint<PVRGPUChild>&& aEndpoint) {
+  gfx::VRGPUChild::InitForGPUProcess(std::move(aEndpoint));
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvInitUiCompositorController(
-    const uint64_t& aRootLayerTreeId,
+    const LayersId& aRootLayerTreeId,
     Endpoint<PUiCompositorControllerParent>&& aEndpoint) {
-  UiCompositorControllerParent::Start(aRootLayerTreeId, Move(aEndpoint));
+  UiCompositorControllerParent::Start(aRootLayerTreeId, std::move(aEndpoint));
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvInitProfiler(
     Endpoint<PProfilerChild>&& aEndpoint) {
 #ifdef MOZ_GECKO_PROFILER
-  mProfilerController = ChildProfilerController::Create(Move(aEndpoint));
+  mProfilerController = ChildProfilerController::Create(std::move(aEndpoint));
 #endif
   return IPC_OK();
 }
@@ -276,7 +342,7 @@ mozilla::ipc::IPCResult GPUParent::RecvUpdateVar(const GfxVarUpdate& aUpdate) {
   return IPC_OK();
 }
 
-static void CopyFeatureChange(Feature aFeature, FeatureChange* aOut) {
+static void CopyFeatureChange(Feature aFeature, Maybe<FeatureFailure>* aOut) {
   FeatureState& feature = gfxConfig::GetFeature(aFeature);
   if (feature.DisabledByDefault() || feature.IsEnabled()) {
     // No change:
@@ -285,7 +351,7 @@ static void CopyFeatureChange(Feature aFeature, FeatureChange* aOut) {
     //   - Enabled means we were told to use this feature, and we didn't
     //   discover anything
     //     that would prevent us from doing so.
-    *aOut = null_t();
+    *aOut = Nothing();
     return;
   }
 
@@ -294,7 +360,8 @@ static void CopyFeatureChange(Feature aFeature, FeatureChange* aOut) {
   nsCString message;
   message.AssignASCII(feature.GetFailureMessage());
 
-  *aOut = FeatureFailure(feature.GetValue(), message, feature.GetFailureId());
+  *aOut =
+      Some(FeatureFailure(feature.GetValue(), message, feature.GetFailureId()));
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvGetDeviceStatus(GPUDeviceData* aOut) {
@@ -306,10 +373,10 @@ mozilla::ipc::IPCResult GPUParent::RecvGetDeviceStatus(GPUDeviceData* aOut) {
   if (DeviceManagerDx* dm = DeviceManagerDx::Get()) {
     D3D11DeviceStatus deviceStatus;
     dm->ExportDeviceInfo(&deviceStatus);
-    aOut->gpuDevice() = deviceStatus;
+    aOut->gpuDevice() = Some(deviceStatus);
   }
 #else
-  aOut->gpuDevice() = null_t();
+  aOut->gpuDevice() = Nothing();
 #endif
 
   return IPC_OK();
@@ -321,6 +388,9 @@ mozilla::ipc::IPCResult GPUParent::RecvSimulateDeviceReset(
   DeviceManagerDx::Get()->ForceDeviceReset(
       ForcedDeviceResetReason::COMPOSITOR_UPDATED);
   DeviceManagerDx::Get()->MaybeResetAndReacquireDevices();
+  if (gfxVars::UseWebRender()) {
+    wr::RenderThread::Get()->SimulateDeviceReset();
+  }
 #endif
   RecvGetDeviceStatus(aOut);
   return IPC_OK();
@@ -328,13 +398,13 @@ mozilla::ipc::IPCResult GPUParent::RecvSimulateDeviceReset(
 
 mozilla::ipc::IPCResult GPUParent::RecvNewContentCompositorManager(
     Endpoint<PCompositorManagerParent>&& aEndpoint) {
-  CompositorManagerParent::Create(Move(aEndpoint));
+  CompositorManagerParent::Create(std::move(aEndpoint), /* aIsRoot */ false);
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult GPUParent::RecvNewContentImageBridge(
     Endpoint<PImageBridgeParent>&& aEndpoint) {
-  if (!ImageBridgeParent::CreateForContent(Move(aEndpoint))) {
+  if (!ImageBridgeParent::CreateForContent(std::move(aEndpoint))) {
     return IPC_FAIL_NO_REASON(this);
   }
   return IPC_OK();
@@ -342,7 +412,7 @@ mozilla::ipc::IPCResult GPUParent::RecvNewContentImageBridge(
 
 mozilla::ipc::IPCResult GPUParent::RecvNewContentVRManager(
     Endpoint<PVRManagerParent>&& aEndpoint) {
-  if (!VRManagerParent::CreateForContent(Move(aEndpoint))) {
+  if (!VRManagerParent::CreateForContent(std::move(aEndpoint))) {
     return IPC_FAIL_NO_REASON(this);
   }
   return IPC_OK();
@@ -350,7 +420,7 @@ mozilla::ipc::IPCResult GPUParent::RecvNewContentVRManager(
 
 mozilla::ipc::IPCResult GPUParent::RecvNewContentVideoDecoderManager(
     Endpoint<PVideoDecoderManagerParent>&& aEndpoint) {
-  if (!dom::VideoDecoderManagerParent::CreateForContent(Move(aEndpoint))) {
+  if (!VideoDecoderManagerParent::CreateForContent(std::move(aEndpoint))) {
     return IPC_FAIL_NO_REASON(this);
   }
   return IPC_OK();
@@ -379,13 +449,42 @@ mozilla::ipc::IPCResult GPUParent::RecvNotifyGpuObservers(
   return IPC_OK();
 }
 
+/* static */
+void GPUParent::GetGPUProcessName(nsACString& aStr) {
+  auto processType = XRE_GetProcessType();
+  unsigned pid = 0;
+  if (processType == GeckoProcessType_GPU) {
+    pid = getpid();
+  } else {
+    MOZ_DIAGNOSTIC_ASSERT(processType == GeckoProcessType_Default);
+    pid = GPUProcessManager::Get()->GPUProcessPid();
+  }
+
+  nsPrintfCString processName("GPU (pid %u)", pid);
+  aStr.Assign(processName);
+}
+
 mozilla::ipc::IPCResult GPUParent::RecvRequestMemoryReport(
     const uint32_t& aGeneration, const bool& aAnonymize,
-    const bool& aMinimizeMemoryUsage, const MaybeFileDesc& aDMDFile) {
-  nsPrintfCString processName("GPU (pid %u)", (unsigned)getpid());
+    const bool& aMinimizeMemoryUsage, const Maybe<FileDescriptor>& aDMDFile) {
+  nsAutoCString processName;
+  GetGPUProcessName(processName);
 
   mozilla::dom::MemoryReportRequestClient::Start(
-      aGeneration, aAnonymize, aMinimizeMemoryUsage, aDMDFile, processName);
+      aGeneration, aAnonymize, aMinimizeMemoryUsage, aDMDFile, processName,
+      [&](const MemoryReport& aReport) {
+        Unused << GetSingleton()->SendAddMemoryReport(aReport);
+      },
+      [&](const uint32_t& aGeneration) {
+        return GetSingleton()->SendFinishMemoryReport(aGeneration);
+      });
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult GPUParent::RecvShutdownVR() {
+  if (gfxPrefs::VRProcessEnabled()) {
+    VRGPUChild::Shutdown();
+  }
   return IPC_OK();
 }
 
@@ -416,18 +515,43 @@ void GPUParent::ActorDestroy(ActorDestroyReason aWhy) {
     mVsyncBridge->Shutdown();
     mVsyncBridge = nullptr;
   }
-  dom::VideoDecoderManagerParent::ShutdownVideoBridge();
+  VideoDecoderManagerParent::ShutdownVideoBridge();
   CompositorThreadHolder::Shutdown();
-  VRListenerThreadHolder::Shutdown();
   // There is a case that RenderThread exists when gfxVars::UseWebRender() is
   // false. This could happen when WebRender was fallbacked to compositor.
   if (wr::RenderThread::Get()) {
-    SharedSurfacesParent::Shutdown();
     wr::RenderThread::ShutDown();
-
-    wr::WebRenderAPI::ShutdownExternalLogHandler();
   }
+#ifdef XP_WIN
+  else if (gfxPrefs::Direct3D11UseDoubleBuffering() && IsWin10OrLater()) {
+    widget::WinCompositorWindowThread::ShutDown();
+  }
+#endif
+
+  image::ImageMemoryReporter::ShutdownForWebRender();
+
+  // Shut down the default GL context provider.
+  gl::GLContextProvider::Shutdown();
+
+#if defined(XP_WIN)
+  // The above shutdown calls operate on the available context providers on
+  // most platforms.  Windows is a "special snowflake", though, and has three
+  // context providers available, so we have to shut all of them down.
+  // We should only support the default GL provider on Windows; then, this
+  // could go away. Unfortunately, we currently support WGL (the default) for
+  // WebGL on Optimus.
+  gl::GLContextProviderEGL::Shutdown();
+#endif
+
   Factory::ShutDown();
+
+  // We bypass gfxPlatform shutdown, so we must shutdown any libraries here
+  // that would normally be handled by it.
+#ifdef NS_FREE_PERMANENT_DATA
+  SkGraphics::PurgeFontCache();
+  cairo_debug_reset_static_data();
+#endif
+
 #if defined(XP_WIN)
   DeviceManagerDx::Shutdown();
 #endif

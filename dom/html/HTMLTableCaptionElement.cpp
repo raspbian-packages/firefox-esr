@@ -6,7 +6,7 @@
 
 #include "mozilla/dom/HTMLTableCaptionElement.h"
 
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsAttrValueInlines.h"
 #include "nsMappedAttributes.h"
 #include "mozilla/dom/HTMLTableCaptionElementBinding.h"
@@ -20,7 +20,7 @@ HTMLTableCaptionElement::~HTMLTableCaptionElement() {}
 
 JSObject* HTMLTableCaptionElement::WrapNode(JSContext* aCx,
                                             JS::Handle<JSObject*> aGivenProto) {
-  return HTMLTableCaptionElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLTableCaptionElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_ELEMENT_CLONE(HTMLTableCaptionElement)
@@ -44,22 +44,19 @@ bool HTMLTableCaptionElement::ParseAttribute(
 }
 
 void HTMLTableCaptionElement::MapAttributesIntoRule(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  if (aData->ShouldComputeStyleStruct(NS_STYLE_INHERIT_BIT(TableBorder))) {
-    if (!aData->PropertyIsSet(eCSSProperty_caption_side)) {
-      const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::align);
-      if (value && value->Type() == nsAttrValue::eEnum)
-        aData->SetKeywordValue(eCSSProperty_caption_side,
-                               value->GetEnumValue());
-    }
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  if (!aDecls.PropertyIsSet(eCSSProperty_caption_side)) {
+    const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::align);
+    if (value && value->Type() == nsAttrValue::eEnum)
+      aDecls.SetKeywordValue(eCSSProperty_caption_side, value->GetEnumValue());
   }
 
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
 HTMLTableCaptionElement::IsAttributeMapped(const nsAtom* aAttribute) const {
-  static const MappedAttributeEntry attributes[] = {{&nsGkAtoms::align},
+  static const MappedAttributeEntry attributes[] = {{nsGkAtoms::align},
                                                     {nullptr}};
 
   static const MappedAttributeEntry* const map[] = {

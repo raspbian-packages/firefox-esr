@@ -53,24 +53,24 @@ int NS_strcmp(const char16_t* aStrA, const char16_t* aStrB);
 int NS_strncmp(const char16_t* aStrA, const char16_t* aStrB, size_t aLen);
 
 /**
- * "strdup" for char16_t strings, uses the moz_xmalloc allocator.
+ * "strdup" for char16_t strings, uses the infallible moz_xmalloc allocator.
  */
-char16_t* NS_strdup(const char16_t* aString);
+char16_t* NS_xstrdup(const char16_t* aString);
 
 /**
- * "strdup", but using the moz_xmalloc allocator.
+ * "strdup", but using the infallible moz_xmalloc allocator.
  */
-char* NS_strdup(const char* aString);
+char* NS_xstrdup(const char* aString);
 
 /**
  * strndup for char16_t or char strings (normal strndup is not available on
  * windows). This function will ensure that the new string is
- * null-terminated. Uses the moz_xmalloc allocator.
+ * null-terminated. Uses the infallible moz_xmalloc allocator.
  *
  * CharT may be either char16_t or char.
  */
 template <typename CharT>
-CharT* NS_strndup(const CharT* aString, uint32_t aLen);
+CharT* NS_xstrndup(const CharT* aString, uint32_t aLen);
 
 // The following case-conversion methods only deal in the ascii repertoire
 // A-Z and a-z
@@ -93,13 +93,30 @@ inline char NS_ToLower(char aChar) {
 bool NS_IsUpper(char aChar);
 bool NS_IsLower(char aChar);
 
-bool NS_IsAscii(char16_t aChar);
-bool NS_IsAscii(const char16_t* aString);
-bool NS_IsAsciiAlpha(char16_t aChar);
-bool NS_IsAsciiDigit(char16_t aChar);
-bool NS_IsAsciiWhitespace(char16_t aChar);
-bool NS_IsAscii(const char* aString);
-bool NS_IsAscii(const char* aString, uint32_t aLength);
+constexpr bool NS_IsAscii(const char* aString) {
+  while (*aString) {
+    if (0x80 & *aString) {
+      return false;
+    }
+    aString++;
+  }
+  return true;
+}
+
+constexpr bool NS_IsAscii(const char* aString, uint32_t aLength) {
+  const char* end = aString + aLength;
+  while (aString < end) {
+    if (0x80 & *aString) {
+      return false;
+    }
+    aString++;
+  }
+  return true;
+}
+
+constexpr bool NS_IsAsciiWhitespace(char16_t aChar) {
+  return aChar == ' ' || aChar == '\r' || aChar == '\n' || aChar == '\t';
+}
 
 #ifndef XPCOM_GLUE_AVOID_NSPR
 void NS_MakeRandomString(char* aBuf, int32_t aBufLen);
@@ -121,13 +138,13 @@ void NS_MakeRandomString(char* aBuf, int32_t aBufLen);
 #define KNOWN_PATH_SEPARATORS "\\/"
 
 #if defined(XP_MACOSX)
-#define FILE_PATH_SEPARATOR "/"
+#  define FILE_PATH_SEPARATOR "/"
 #elif defined(XP_WIN)
-#define FILE_PATH_SEPARATOR "\\"
+#  define FILE_PATH_SEPARATOR "\\"
 #elif defined(XP_UNIX)
-#define FILE_PATH_SEPARATOR "/"
+#  define FILE_PATH_SEPARATOR "/"
 #else
-#error need_to_define_your_file_path_separator_and_maybe_illegal_characters
+#  error need_to_define_your_file_path_separator_and_maybe_illegal_characters
 #endif
 
 // Not all these control characters are illegal in all OSs, but we don't really

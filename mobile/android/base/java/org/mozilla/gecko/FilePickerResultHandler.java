@@ -32,8 +32,9 @@ import android.text.format.Time;
 import android.util.Log;
 
 class FilePickerResultHandler implements ActivityResultHandler {
-    private static final String LOGTAG = "GeckoFilePickerResultHandler";
+    private static final String LOGTAG = "FilePickerResultHandler";
     private static final String UPLOADS_DIR = "uploads";
+    private static final String ACTION_INLINE_DATA = "inline-data";
 
     private final FilePicker.ResultHandler handler;
     private final int tabId;
@@ -77,7 +78,10 @@ class FilePickerResultHandler implements ActivityResultHandler {
 
         // Camera results won't return an Intent. Use the file name we passed to the original intent.
         // In Android M, camera results return an empty Intent rather than null.
-        if (intent == null || (intent.getAction() == null && intent.getData() == null)) {
+        final boolean emptyResult = intent == null || (intent.getAction() == null && intent.getData() == null);
+        // Camera returned a thumbnail of the photo. Use the file name we passed to the original intent.
+        final boolean haveThumbnail = intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_INLINE_DATA);
+        if (emptyResult || haveThumbnail) {
             if (mImageName != null) {
                 File file = new File(Environment.getExternalStorageDirectory(), mImageName);
                 sendResult(file.getAbsolutePath());
@@ -219,38 +223,40 @@ class FilePickerResultHandler implements ActivityResultHandler {
                         fileName += fileExt;
                     }
                 }
+                final String tempFileName = fileName;
+                ThreadUtils.postToBackgroundThread(() -> {
+                    // Now write the data to the temp file
+                    FileOutputStream fos = null;
+                    try {
+                        tempDir = FileUtils.createTempDir(cacheDir, "tmp_");
 
-                // Now write the data to the temp file
-                FileOutputStream fos = null;
-                try {
-                    tempDir = FileUtils.createTempDir(cacheDir, "tmp_");
+                        File file = new File(tempDir, tempFileName);
+                        fos = new FileOutputStream(file);
+                        InputStream is = cr.openInputStream(uri);
+                        byte[] buf = new byte[4096];
+                        int len = is.read(buf);
+                        while (len != -1) {
+                            fos.write(buf, 0, len);
+                            len = is.read(buf);
+                        }
+                        fos.close();
+                        is.close();
+                        String tempFile = file.getAbsolutePath();
+                        sendResult(tempFile);
 
-                    File file = new File(tempDir, fileName);
-                    fos = new FileOutputStream(file);
-                    InputStream is = cr.openInputStream(uri);
-                    byte[] buf = new byte[4096];
-                    int len = is.read(buf);
-                    while (len != -1) {
-                        fos.write(buf, 0, len);
-                        len = is.read(buf);
+                        if (tabId > -1 && tempDir != null) {
+                            Tabs.registerOnTabsChangedListener(this);
+                        }
+                    } catch (IOException ex) {
+                        Log.i(LOGTAG, "Error writing file", ex);
+                    } finally {
+                        if (fos != null) {
+                            try {
+                                fos.close();
+                            } catch (IOException e) { /* not much to do here */ }
+                        }
                     }
-                    fos.close();
-                    is.close();
-                    String tempFile = file.getAbsolutePath();
-                    sendResult((tempFile == null) ? "" : tempFile);
-
-                    if (tabId > -1 && tempDir != null) {
-                        Tabs.registerOnTabsChangedListener(this);
-                    }
-                } catch (IOException ex) {
-                    Log.i(LOGTAG, "Error writing file", ex);
-                } finally {
-                    if (fos != null) {
-                        try {
-                            fos.close();
-                        } catch (IOException e) { /* not much to do here */ }
-                    }
-                }
+                });
             } else {
                 sendResult("");
             }

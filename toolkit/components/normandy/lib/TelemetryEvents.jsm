@@ -3,8 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 var EXPORTED_SYMBOLS = ["TelemetryEvents"];
 
@@ -12,31 +11,16 @@ const TELEMETRY_CATEGORY = "normandy";
 
 const TelemetryEvents = {
   init() {
-    Services.telemetry.registerEvents(TELEMETRY_CATEGORY, {
-      enroll: {
-        methods: ["enroll"],
-        objects: ["preference_study", "addon_study"],
-        extra_keys: ["experimentType", "branch", "addonId", "addonVersion"],
-        record_on_release: true,
-      },
-
-      enroll_failure: {
-        methods: ["enrollFailed"],
-        objects: ["addon_study"],
-        extra_keys: ["reason"],
-        record_on_release: true,
-      },
-
-      unenroll: {
-        methods: ["unenroll"],
-        objects: ["preference_study", "addon_study"],
-        extra_keys: ["reason", "didResetValue", "addonId", "addonVersion"],
-        record_on_release: true,
-      },
-    });
+    Services.telemetry.setEventRecordingEnabled(TELEMETRY_CATEGORY, true);
   },
 
   sendEvent(method, object, value, extra) {
-    Services.telemetry.recordEvent(TELEMETRY_CATEGORY, method, object, value, extra);
+    Services.telemetry.recordEvent(
+      TELEMETRY_CATEGORY,
+      method,
+      object,
+      value,
+      extra
+    );
   },
 };

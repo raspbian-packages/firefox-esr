@@ -10,10 +10,12 @@
 #include <time.h>
 
 #include "mozilla/ClearOnShutdown.h"
+#include "mozilla/dom/Element.h"
 #include "mozilla/Logging.h"
 #include "mozilla/Mutex.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Services.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/TextEvents.h"
 #include "mozilla/dom/KeyboardEventBinding.h"
@@ -650,9 +652,44 @@ uint32_t nsRFPService::GetSpoofedPresentedFrames(double aTime, uint32_t aWidth,
                       ((100 - boundedDroppedRatio) / 100.0));
 }
 
+static uint32_t GetSpoofedVersion() {
+  // If we can't get the current Firefox version, use a hard-coded ESR version.
+  const uint32_t kKnownEsrVersion = 60;
+
+  nsresult rv;
+  nsCOMPtr<nsIXULAppInfo> appInfo =
+      do_GetService("@mozilla.org/xre/app-info;1", &rv);
+  NS_ENSURE_SUCCESS(rv, kKnownEsrVersion);
+
+  nsAutoCString appVersion;
+  rv = appInfo->GetVersion(appVersion);
+  NS_ENSURE_SUCCESS(rv, kKnownEsrVersion);
+
+  // The browser version will be spoofed as the last ESR version.
+  // By doing so, the anonymity group will cover more versions instead of one
+  // version.
+  uint32_t firefoxVersion = appVersion.ToInteger(&rv);
+  NS_ENSURE_SUCCESS(rv, kKnownEsrVersion);
+
+#ifdef DEBUG
+  // If we are running in Firefox ESR, determine whether the formula of ESR
+  // version has changed.  Once changed, we must update the formula in this
+  // function.
+  if (!strcmp(MOZ_STRINGIFY(MOZ_UPDATE_CHANNEL), "esr")) {
+    MOZ_ASSERT(((firefoxVersion % 8) == 4),
+               "Please update ESR version formula in nsRFPService.cpp");
+  }
+#endif  // DEBUG
+
+  // Starting with Firefox 52, a new ESR version will be released every
+  // eight Firefox versions: 52, 60, 68, ...
+  // We infer the last and closest ESR version based on this rule.
+  return firefoxVersion - ((firefoxVersion - 4) % 8);
+}
+
 /* static */
-nsresult nsRFPService::GetSpoofedUserAgent(nsACString& userAgent,
-                                           bool isForHTTPHeader) {
+void nsRFPService::GetSpoofedUserAgent(nsACString& userAgent,
+                                       bool isForHTTPHeader) {
   // This function generates the spoofed value of User Agent.
   // We spoof the values of the platform and Firefox version, which could be
   // used as fingerprinting sources to identify individuals.
@@ -660,41 +697,17 @@ nsresult nsRFPService::GetSpoofedUserAgent(nsACString& userAgent,
   // https://developer.mozilla.org/en-US/docs/Web/API/NavigatorID/userAgent
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
 
-  nsresult rv;
-  nsCOMPtr<nsIXULAppInfo> appInfo =
-      do_GetService("@mozilla.org/xre/app-info;1", &rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  nsAutoCString appVersion;
-  rv = appInfo->GetVersion(appVersion);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  // The browser version will be spoofed as the last ESR version.
-  // By doing so, the anonymity group will cover more versions instead of one
-  // version.
-  uint32_t firefoxVersion = appVersion.ToInteger(&rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  // If we are running in Firefox ESR, determine whether the formula of ESR
-  // version has changed.  Once changed, we must update the formula in this
-  // function.
-  if (!strcmp(NS_STRINGIFY(MOZ_UPDATE_CHANNEL), "esr")) {
-    MOZ_ASSERT(((firefoxVersion % 7) == 4),
-               "Please update ESR version formula in nsRFPService.cpp");
-  }
-
-  // Starting from Firefox 10, Firefox ESR was released once every seven
-  // Firefox releases, e.g. Firefox 10, 17, 24, 31, and so on.
-  // Except we used 60 as an ESR instead of 59.
-  // We infer the last and closest ESR version based on this rule.
-  uint32_t spoofedVersion = firefoxVersion - ((firefoxVersion - 4) % 7);
+  uint32_t spoofedVersion = GetSpoofedVersion();
   const char* spoofedOS = isForHTTPHeader ? SPOOFED_HTTP_UA_OS : SPOOFED_UA_OS;
   userAgent.Assign(nsPrintfCString(
       "Mozilla/5.0 (%s; rv:%d.0) Gecko/%s Firefox/%d.0", spoofedOS,
-      spoofedVersion, LEGACY_BUILD_ID, spoofedVersion));
-
-  return rv;
+      spoofedVersion, LEGACY_UA_GECKO_TRAIL, spoofedVersion));
 }
+
+static const char* gCallbackPrefs[] = {
+    RESIST_FINGERPRINTING_PREF, RFP_TIMER_PREF, RFP_TIMER_VALUE_PREF,
+    RFP_JITTER_VALUE_PREF,      nullptr,
+};
 
 nsresult nsRFPService::Init() {
   MOZ_ASSERT(NS_IsMainThread());
@@ -712,20 +725,8 @@ nsresult nsRFPService::Init() {
   NS_ENSURE_SUCCESS(rv, rv);
 #endif
 
-  nsCOMPtr<nsIPrefBranch> prefs = do_GetService(NS_PREFSERVICE_CONTRACTID);
-  NS_ENSURE_TRUE(prefs, NS_ERROR_NOT_AVAILABLE);
-
-  rv = prefs->AddObserver(RESIST_FINGERPRINTING_PREF, this, false);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  rv = prefs->AddObserver(RFP_TIMER_PREF, this, false);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  rv = prefs->AddObserver(RFP_TIMER_VALUE_PREF, this, false);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  rv = prefs->AddObserver(RFP_JITTER_VALUE_PREF, this, false);
-  NS_ENSURE_SUCCESS(rv, rv);
+  Preferences::RegisterCallbacks(PREF_CHANGE_METHOD(nsRFPService::PrefChanged),
+                                 gCallbackPrefs, this);
 
   Preferences::AddAtomicBoolVarCache(&sPrivacyTimerPrecisionReduction,
                                      RFP_TIMER_PREF, true);
@@ -816,6 +817,14 @@ void nsRFPService::UpdateRFPPref() {
     }
   }
 
+  // localtime_r (and other functions) may not call tzset, so do this here after
+  // changing TZ to ensure all <time.h> functions use the new time zone.
+#if defined(XP_WIN)
+  _tzset();
+#else
+  tzset();
+#endif
+
   nsJSUtils::ResetTimeZone();
 }
 
@@ -829,16 +838,9 @@ void nsRFPService::StartShutdown() {
 
   if (obs) {
     obs->RemoveObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID);
-
-    nsCOMPtr<nsIPrefBranch> prefs = do_GetService(NS_PREFSERVICE_CONTRACTID);
-
-    if (prefs) {
-      prefs->RemoveObserver(RESIST_FINGERPRINTING_PREF, this);
-      prefs->RemoveObserver(RFP_TIMER_PREF, this);
-      prefs->RemoveObserver(RFP_TIMER_VALUE_PREF, this);
-      prefs->RemoveObserver(RFP_JITTER_VALUE_PREF, this);
-    }
   }
+  Preferences::UnregisterCallbacks(
+      PREF_CHANGE_METHOD(nsRFPService::PrefChanged), gCallbackPrefs, this);
 }
 
 /* static */
@@ -934,7 +936,7 @@ void nsRFPService::GetKeyboardLangAndRegion(const nsAString& aLanguage,
 
 /* static */
 bool nsRFPService::GetSpoofedKeyCodeInfo(
-    const nsIDocument* aDoc, const WidgetKeyboardEvent* aKeyboardEvent,
+    const dom::Document* aDoc, const WidgetKeyboardEvent* aKeyboardEvent,
     SpoofingKeyboardCode& aOut) {
   MOZ_ASSERT(aKeyboardEvent);
 
@@ -949,7 +951,7 @@ bool nsRFPService::GetSpoofedKeyCodeInfo(
     // If the content-langauge is not given, we try to get langauge from the
     // HTML lang attribute.
     if (language.IsEmpty()) {
-      Element* elm = aDoc->GetHtmlElement();
+      dom::Element* elm = aDoc->GetHtmlElement();
 
       if (elm) {
         elm->GetLang(language);
@@ -986,7 +988,7 @@ bool nsRFPService::GetSpoofedKeyCodeInfo(
 
 /* static */
 bool nsRFPService::GetSpoofedModifierStates(
-    const nsIDocument* aDoc, const WidgetKeyboardEvent* aKeyboardEvent,
+    const dom::Document* aDoc, const WidgetKeyboardEvent* aKeyboardEvent,
     const Modifiers aModifier, bool& aOut) {
   MOZ_ASSERT(aKeyboardEvent);
 
@@ -1011,7 +1013,7 @@ bool nsRFPService::GetSpoofedModifierStates(
 }
 
 /* static */
-bool nsRFPService::GetSpoofedCode(const nsIDocument* aDoc,
+bool nsRFPService::GetSpoofedCode(const dom::Document* aDoc,
                                   const WidgetKeyboardEvent* aKeyboardEvent,
                                   nsAString& aOut) {
   MOZ_ASSERT(aKeyboardEvent);
@@ -1027,7 +1029,7 @@ bool nsRFPService::GetSpoofedCode(const nsIDocument* aDoc,
   // We need to change the 'Left' with 'Right' if the location indicates
   // it's a right key.
   if (aKeyboardEvent->mLocation ==
-          dom::KeyboardEventBinding::DOM_KEY_LOCATION_RIGHT &&
+          dom::KeyboardEvent_Binding::DOM_KEY_LOCATION_RIGHT &&
       StringEndsWith(aOut, NS_LITERAL_STRING("Left"))) {
     aOut.ReplaceLiteral(aOut.Length() - 4, 4, u"Right");
   }
@@ -1036,7 +1038,7 @@ bool nsRFPService::GetSpoofedCode(const nsIDocument* aDoc,
 }
 
 /* static */
-bool nsRFPService::GetSpoofedKeyCode(const nsIDocument* aDoc,
+bool nsRFPService::GetSpoofedKeyCode(const dom::Document* aDoc,
                                      const WidgetKeyboardEvent* aKeyboardEvent,
                                      uint32_t& aOut) {
   MOZ_ASSERT(aKeyboardEvent);
@@ -1051,30 +1053,30 @@ bool nsRFPService::GetSpoofedKeyCode(const nsIDocument* aDoc,
   return false;
 }
 
+void nsRFPService::PrefChanged(const char* aPref) {
+  nsDependentCString pref(aPref);
+
+  if (pref.EqualsLiteral(RFP_TIMER_PREF) ||
+      pref.EqualsLiteral(RFP_TIMER_VALUE_PREF) ||
+      pref.EqualsLiteral(RFP_JITTER_VALUE_PREF)) {
+    UpdateTimers();
+  } else if (pref.EqualsLiteral(RESIST_FINGERPRINTING_PREF)) {
+    UpdateRFPPref();
+
+#if defined(XP_WIN)
+    if (!XRE_IsE10sParentProcess()) {
+      // Windows does not follow POSIX. Updates to the TZ environment variable
+      // are not reflected immediately on that platform as they are on UNIX
+      // systems without this call.
+      _tzset();
+    }
+#endif
+  }
+}
+
 NS_IMETHODIMP
 nsRFPService::Observe(nsISupports* aObject, const char* aTopic,
                       const char16_t* aMessage) {
-  if (!strcmp(NS_PREFBRANCH_PREFCHANGE_TOPIC_ID, aTopic)) {
-    NS_ConvertUTF16toUTF8 pref(aMessage);
-
-    if (pref.EqualsLiteral(RFP_TIMER_PREF) ||
-        pref.EqualsLiteral(RFP_TIMER_VALUE_PREF) ||
-        pref.EqualsLiteral(RFP_JITTER_VALUE_PREF)) {
-      UpdateTimers();
-    } else if (pref.EqualsLiteral(RESIST_FINGERPRINTING_PREF)) {
-      UpdateRFPPref();
-
-#if defined(XP_WIN)
-      if (!XRE_IsE10sParentProcess()) {
-        // Windows does not follow POSIX. Updates to the TZ environment variable
-        // are not reflected immediately on that platform as they are on UNIX
-        // systems without this call.
-        _tzset();
-      }
-#endif
-    }
-  }
-
   if (!strcmp(NS_XPCOM_SHUTDOWN_OBSERVER_ID, aTopic)) {
     StartShutdown();
   }

@@ -16,23 +16,26 @@ namespace mozilla {
 namespace dom {
 
 class HTMLFormSubmission;
+template <typename T>
+struct Nullable;
+class WindowProxyHolder;
 
 class HTMLObjectElement final : public nsGenericHTMLFormElement,
                                 public nsObjectLoadingContent,
                                 public nsIConstraintValidation {
  public:
   explicit HTMLObjectElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
       FromParser aFromParser = NOT_FROM_PARSER);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLObjectElement, object)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLObjectElement, object)
   virtual int32_t TabIndexDefault() override;
 
 #ifdef XP_MACOSX
-  // nsIDOMEventTarget
+  // EventTarget
   NS_IMETHOD PostHandleEvent(EventChainPostVisitor& aVisitor) override;
   // Helper methods
   static void OnFocusBlurPlugin(Element* aElement, bool aFocus);
@@ -49,9 +52,8 @@ class HTMLObjectElement final : public nsGenericHTMLFormElement,
   // EventTarget
   virtual void AsyncEventRunning(AsyncEventDispatcher* aEvent) override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
@@ -79,10 +81,9 @@ class HTMLObjectElement final : public nsGenericHTMLFormElement,
   // nsObjectLoadingContent
   virtual uint32_t GetCapabilities() const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
-  nsresult CopyInnerTo(Element* aDest, bool aPreallocateChildren);
+  nsresult CopyInnerTo(Element* aDest);
 
   void StartObjectLoad() { StartObjectLoad(true, false); }
 
@@ -99,10 +100,6 @@ class HTMLObjectElement final : public nsGenericHTMLFormElement,
   void GetType(DOMString& aValue) { GetHTMLAttr(nsGkAtoms::type, aValue); }
   void SetType(const nsAString& aValue, ErrorResult& aRv) {
     SetHTMLAttr(nsGkAtoms::type, aValue, aRv);
-  }
-  bool TypeMustMatch() { return GetBoolAttr(nsGkAtoms::typemustmatch); }
-  void SetTypeMustMatch(bool aValue, ErrorResult& aRv) {
-    SetHTMLBoolAttr(nsGkAtoms::typemustmatch, aValue, aRv);
   }
   void GetName(DOMString& aValue) { GetHTMLAttr(nsGkAtoms::name, aValue); }
   void SetName(const nsAString& aValue, ErrorResult& aRv) {
@@ -123,7 +120,7 @@ class HTMLObjectElement final : public nsGenericHTMLFormElement,
   }
   using nsObjectLoadingContent::GetContentDocument;
 
-  nsPIDOMWindowOuter* GetContentWindow(nsIPrincipal& aSubjectPrincipal);
+  Nullable<WindowProxyHolder> GetContentWindow(nsIPrincipal& aSubjectPrincipal);
 
   using nsIConstraintValidation::GetValidationMessage;
   using nsIConstraintValidation::SetCustomValidity;
@@ -176,7 +173,7 @@ class HTMLObjectElement final : public nsGenericHTMLFormElement,
     SetHTMLAttr(nsGkAtoms::border, aValue, aRv);
   }
 
-  nsIDocument* GetSVGDocument(nsIPrincipal& aSubjectPrincipal) {
+  Document* GetSVGDocument(nsIPrincipal& aSubjectPrincipal) {
     return GetContentDocument(aSubjectPrincipal);
   }
 
@@ -184,8 +181,6 @@ class HTMLObjectElement final : public nsGenericHTMLFormElement,
    * Calls LoadObject with the correct arguments to start the plugin load.
    */
   void StartObjectLoad(bool aNotify, bool aForceLoad);
-
-  NS_FORWARD_NSIFRAMELOADEROWNER(nsObjectLoadingContent::)
 
  protected:
   // Override for nsImageLoadingContent.
@@ -217,7 +212,7 @@ class HTMLObjectElement final : public nsGenericHTMLFormElement,
                              JS::Handle<JSObject*> aGivenProto) override;
 
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 
   /**
    * This function is called by AfterSetAttr and OnAttrSetButNotChanged.

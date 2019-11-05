@@ -13,20 +13,20 @@
 #include "NotificationController.h"
 #include "States.h"
 #include "nsIScrollableFrame.h"
-#include "nsIDocumentInlines.h"
+#include "mozilla/dom/DocumentInlines.h"
 
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 namespace mozilla {
 namespace a11y {
 
 inline Accessible* DocAccessible::AccessibleOrTrueContainer(
-    nsINode* aNode) const {
+    nsINode* aNode, bool aNoContainerIfPruned) const {
   // HTML comboboxes have no-content list accessible as an intermediate
   // containing all options.
-  Accessible* container = GetAccessibleOrContainer(aNode);
+  Accessible* container = GetAccessibleOrContainer(aNode, aNoContainerIfPruned);
   if (container && container->IsHTMLCombobox()) {
     return container->FirstChild();
   }
@@ -59,13 +59,13 @@ inline void DocAccessible::BindChildDocument(DocAccessible* aDocument) {
   mNotificationController->ScheduleChildDocBinding(aDocument);
 }
 
-template <class Class, class Arg>
+template <class Class, class... Args>
 inline void DocAccessible::HandleNotification(
-    Class* aInstance, typename TNotification<Class, Arg>::Callback aMethod,
-    Arg* aArg) {
+    Class* aInstance, typename TNotification<Class, Args...>::Callback aMethod,
+    Args*... aArgs) {
   if (mNotificationController) {
-    mNotificationController->HandleNotification<Class, Arg>(aInstance, aMethod,
-                                                            aArg);
+    mNotificationController->HandleNotification<Class, Args...>(
+        aInstance, aMethod, aArgs...);
   }
 }
 
@@ -152,6 +152,50 @@ inline void DocAccessible::CreateSubtree(Accessible* aChild) {
     FocusMgr()->DispatchFocusEvent(this, focusedAcc);
     SelectionMgr()->SetControlSelectionListener(
         focusedAcc->GetNode()->AsElement());
+  }
+}
+
+inline DocAccessible::AttrRelProviders* DocAccessible::GetRelProviders(
+    dom::Element* aElement, const nsAString& aID) const {
+  DependentIDsHashtable* hash = mDependentIDsHashes.Get(
+      aElement->GetUncomposedDocOrConnectedShadowRoot());
+  if (hash) {
+    return hash->Get(aID);
+  }
+  return nullptr;
+}
+
+inline DocAccessible::AttrRelProviders* DocAccessible::GetOrCreateRelProviders(
+    dom::Element* aElement, const nsAString& aID) {
+  dom::DocumentOrShadowRoot* docOrShadowRoot =
+      aElement->GetUncomposedDocOrConnectedShadowRoot();
+  DependentIDsHashtable* hash = mDependentIDsHashes.Get(docOrShadowRoot);
+  if (!hash) {
+    hash = new DependentIDsHashtable();
+    mDependentIDsHashes.Put(docOrShadowRoot, hash);
+  }
+
+  AttrRelProviders* providers = hash->Get(aID);
+  if (!providers) {
+    providers = new AttrRelProviders();
+    hash->Put(aID, providers);
+  }
+  return providers;
+}
+
+inline void DocAccessible::RemoveRelProvidersIfEmpty(dom::Element* aElement,
+                                                     const nsAString& aID) {
+  dom::DocumentOrShadowRoot* docOrShadowRoot =
+      aElement->GetUncomposedDocOrConnectedShadowRoot();
+  DependentIDsHashtable* hash = mDependentIDsHashes.Get(docOrShadowRoot);
+  if (hash) {
+    AttrRelProviders* providers = hash->Get(aID);
+    if (providers && providers->Length() == 0) {
+      hash->Remove(aID);
+      if (mDependentIDsHashes.IsEmpty()) {
+        mDependentIDsHashes.Remove(docOrShadowRoot);
+      }
+    }
   }
 }
 

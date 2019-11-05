@@ -5,15 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if defined(XP_WIN)
-#include "CompositorD3D11.h"
-#include "TextureD3D11.h"
-#include "mozilla/gfx/DeviceManagerDx.h"
+#  include "CompositorD3D11.h"
+#  include "TextureD3D11.h"
+#  include "mozilla/gfx/DeviceManagerDx.h"
 #elif defined(XP_MACOSX)
-#include "mozilla/gfx/MacIOSurface.h"
+#  include "mozilla/gfx/MacIOSurface.h"
 #endif
 
 #include "mozilla/Base64.h"
 #include "mozilla/gfx/DataSurfaceHelpers.h"
+#include "mozilla/layers/CompositorThread.h"  // for CompositorThreadHolder
 #include "gfxPrefs.h"
 #include "gfxUtils.h"
 #include "gfxVRPuppet.h"
@@ -48,99 +49,102 @@ static const uint32_t kNumPuppetAxis = 3;
 static const uint32_t kNumPuppetHaptcs = 1;
 
 VRDisplayPuppet::VRDisplayPuppet()
-    : VRDisplayHost(VRDeviceType::Puppet),
+    : VRDisplayLocal(VRDeviceType::Puppet),
       mIsPresenting(false),
       mSensorState{} {
-  MOZ_COUNT_CTOR_INHERITED(VRDisplayPuppet, VRDisplayHost);
+  MOZ_COUNT_CTOR_INHERITED(VRDisplayPuppet, VRDisplayLocal);
 
-  mDisplayInfo.mDisplayName.AssignLiteral("Puppet HMD");
-  mDisplayInfo.mIsConnected = true;
-  mDisplayInfo.mIsMounted = false;
-  mDisplayInfo.mCapabilityFlags = VRDisplayCapabilityFlags::Cap_None |
-                                  VRDisplayCapabilityFlags::Cap_Orientation |
-                                  VRDisplayCapabilityFlags::Cap_Position |
-                                  VRDisplayCapabilityFlags::Cap_External |
-                                  VRDisplayCapabilityFlags::Cap_Present |
-                                  VRDisplayCapabilityFlags::Cap_StageParameters;
-  mDisplayInfo.mEyeResolution.width = 1836;   // 1080 * 1.7
-  mDisplayInfo.mEyeResolution.height = 2040;  // 1200 * 1.7
+  VRDisplayState& state = mDisplayInfo.mDisplayState;
+  strncpy(state.displayName, "Puppet HMD", kVRDisplayNameMaxLen);
+  state.isConnected = true;
+  state.isMounted = false;
+  state.capabilityFlags = VRDisplayCapabilityFlags::Cap_None |
+                          VRDisplayCapabilityFlags::Cap_Orientation |
+                          VRDisplayCapabilityFlags::Cap_Position |
+                          VRDisplayCapabilityFlags::Cap_External |
+                          VRDisplayCapabilityFlags::Cap_Present |
+                          VRDisplayCapabilityFlags::Cap_StageParameters;
+  state.eyeResolution.width = 1836;   // 1080 * 1.7
+  state.eyeResolution.height = 2040;  // 1200 * 1.7
 
   // SteamVR gives the application a single FOV to use; it's not configurable as
   // with Oculus
   for (uint32_t eye = 0; eye < 2; ++eye) {
-    mDisplayInfo.mEyeTranslation[eye].x = 0.0f;
-    mDisplayInfo.mEyeTranslation[eye].y = 0.0f;
-    mDisplayInfo.mEyeTranslation[eye].z = 0.0f;
-    mDisplayInfo.mEyeFOV[eye] = VRFieldOfView(45.0, 45.0, 45.0, 45.0);
+    state.eyeTranslation[eye].x = 0.0f;
+    state.eyeTranslation[eye].y = 0.0f;
+    state.eyeTranslation[eye].z = 0.0f;
+    state.eyeFOV[eye] = VRFieldOfView(45.0, 45.0, 45.0, 45.0);
   }
 
   // default: 1m x 1m space, 0.75m high in seated position
-  mDisplayInfo.mStageSize.width = 1.0f;
-  mDisplayInfo.mStageSize.height = 1.0f;
+  state.stageSize.width = 1.0f;
+  state.stageSize.height = 1.0f;
 
-  mDisplayInfo.mSittingToStandingTransform._11 = 1.0f;
-  mDisplayInfo.mSittingToStandingTransform._12 = 0.0f;
-  mDisplayInfo.mSittingToStandingTransform._13 = 0.0f;
-  mDisplayInfo.mSittingToStandingTransform._14 = 0.0f;
+  state.sittingToStandingTransform[0] = 1.0f;
+  state.sittingToStandingTransform[1] = 0.0f;
+  state.sittingToStandingTransform[2] = 0.0f;
+  state.sittingToStandingTransform[3] = 0.0f;
 
-  mDisplayInfo.mSittingToStandingTransform._21 = 0.0f;
-  mDisplayInfo.mSittingToStandingTransform._22 = 1.0f;
-  mDisplayInfo.mSittingToStandingTransform._23 = 0.0f;
-  mDisplayInfo.mSittingToStandingTransform._24 = 0.0f;
+  state.sittingToStandingTransform[4] = 0.0f;
+  state.sittingToStandingTransform[5] = 1.0f;
+  state.sittingToStandingTransform[6] = 0.0f;
+  state.sittingToStandingTransform[7] = 0.0f;
 
-  mDisplayInfo.mSittingToStandingTransform._31 = 0.0f;
-  mDisplayInfo.mSittingToStandingTransform._32 = 0.0f;
-  mDisplayInfo.mSittingToStandingTransform._33 = 1.0f;
-  mDisplayInfo.mSittingToStandingTransform._34 = 0.0f;
+  state.sittingToStandingTransform[8] = 0.0f;
+  state.sittingToStandingTransform[9] = 0.0f;
+  state.sittingToStandingTransform[10] = 1.0f;
+  state.sittingToStandingTransform[11] = 0.0f;
 
-  mDisplayInfo.mSittingToStandingTransform._41 = 0.0f;
-  mDisplayInfo.mSittingToStandingTransform._42 = 0.75f;
-  mDisplayInfo.mSittingToStandingTransform._43 = 0.0f;
+  state.sittingToStandingTransform[12] = 0.0f;
+  state.sittingToStandingTransform[13] = 0.75f;
+  state.sittingToStandingTransform[14] = 0.0f;
+  state.sittingToStandingTransform[15] = 1.0f;
 
   gfx::Quaternion rot;
 
   mSensorState.flags |= VRDisplayCapabilityFlags::Cap_Orientation;
-  mSensorState.orientation[0] = rot.x;
-  mSensorState.orientation[1] = rot.y;
-  mSensorState.orientation[2] = rot.z;
-  mSensorState.orientation[3] = rot.w;
-  mSensorState.angularVelocity[0] = 0.0f;
-  mSensorState.angularVelocity[1] = 0.0f;
-  mSensorState.angularVelocity[2] = 0.0f;
+  mSensorState.pose.orientation[0] = rot.x;
+  mSensorState.pose.orientation[1] = rot.y;
+  mSensorState.pose.orientation[2] = rot.z;
+  mSensorState.pose.orientation[3] = rot.w;
+  mSensorState.pose.angularVelocity[0] = 0.0f;
+  mSensorState.pose.angularVelocity[1] = 0.0f;
+  mSensorState.pose.angularVelocity[2] = 0.0f;
 
   mSensorState.flags |= VRDisplayCapabilityFlags::Cap_Position;
-  mSensorState.position[0] = 0.0f;
-  mSensorState.position[1] = 0.0f;
-  mSensorState.position[2] = 0.0f;
-  mSensorState.linearVelocity[0] = 0.0f;
-  mSensorState.linearVelocity[1] = 0.0f;
-  mSensorState.linearVelocity[2] = 0.0f;
+  mSensorState.pose.position[0] = 0.0f;
+  mSensorState.pose.position[1] = 0.0f;
+  mSensorState.pose.position[2] = 0.0f;
+  mSensorState.pose.linearVelocity[0] = 0.0f;
+  mSensorState.pose.linearVelocity[1] = 0.0f;
+  mSensorState.pose.linearVelocity[2] = 0.0f;
 }
 
 VRDisplayPuppet::~VRDisplayPuppet() {
-  MOZ_COUNT_DTOR_INHERITED(VRDisplayPuppet, VRDisplayHost);
+  MOZ_COUNT_DTOR_INHERITED(VRDisplayPuppet, VRDisplayLocal);
 }
 
 void VRDisplayPuppet::SetDisplayInfo(const VRDisplayInfo& aDisplayInfo) {
   // We are only interested in the eye and mount info of the display info.
-  mDisplayInfo.mEyeResolution = aDisplayInfo.mEyeResolution;
-  mDisplayInfo.mIsMounted = aDisplayInfo.mIsMounted;
-  memcpy(&mDisplayInfo.mEyeFOV, &aDisplayInfo.mEyeFOV,
-         sizeof(mDisplayInfo.mEyeFOV[0]) * VRDisplayInfo::NumEyes);
-  memcpy(&mDisplayInfo.mEyeTranslation, &aDisplayInfo.mEyeTranslation,
-         sizeof(mDisplayInfo.mEyeTranslation[0]) * VRDisplayInfo::NumEyes);
+  VRDisplayState& state = mDisplayInfo.mDisplayState;
+  state.eyeResolution = aDisplayInfo.mDisplayState.eyeResolution;
+  state.isMounted = aDisplayInfo.mDisplayState.isMounted;
+  memcpy(&state.eyeFOV, &aDisplayInfo.mDisplayState.eyeFOV,
+         sizeof(state.eyeFOV[0]) * VRDisplayState::NumEyes);
+  memcpy(&state.eyeTranslation, &aDisplayInfo.mDisplayState.eyeTranslation,
+         sizeof(state.eyeTranslation[0]) * VRDisplayState::NumEyes);
 }
 
 void VRDisplayPuppet::Destroy() { StopPresentation(); }
 
 void VRDisplayPuppet::ZeroSensor() {}
 
-VRHMDSensorState VRDisplayPuppet::GetSensorState() {
+VRHMDSensorState& VRDisplayPuppet::GetSensorState() {
   mSensorState.inputFrameID = mDisplayInfo.mFrameId;
 
   Matrix4x4 matHeadToEye[2];
   for (uint32_t eye = 0; eye < 2; ++eye) {
-    matHeadToEye[eye].PreTranslate(mDisplayInfo.mEyeTranslation[eye]);
+    matHeadToEye[eye].PreTranslate(mDisplayInfo.GetEyeTranslation(eye));
   }
   mSensorState.CalcViewMatrices(matHeadToEye);
 
@@ -369,7 +373,7 @@ bool VRDisplayPuppet::SubmitFrame(ID3D11Texture2D* aSource,
       }
       // Dispatch the base64 encoded string to the DOM side. Then, it will be
       // decoded and convert to a PNG image there.
-      MessageLoop* loop = VRListenerThreadHolder::Loop();
+      MessageLoop* loop = CompositorThreadHolder::Loop();
       loop->PostTask(NewRunnableMethod<const uint32_t, VRSubmitFrameResultInfo>(
           "VRManager::DispatchSubmitFrameResult", vm,
           &VRManager::DispatchSubmitFrameResult, mDisplayInfo.mDisplayID,
@@ -517,7 +521,7 @@ bool VRDisplayPuppet::SubmitFrame(MacIOSurface* aMacIOSurface,
         }
         // Dispatch the base64 encoded string to the DOM side. Then, it will be
         // decoded and convert to a PNG image there.
-        MessageLoop* loop = VRListenerThreadHolder::Loop();
+        MessageLoop* loop = CompositorThreadHolder::Loop();
         loop->PostTask(
             NewRunnableMethod<const uint32_t, VRSubmitFrameResultInfo>(
                 "VRManager::DispatchSubmitFrameResult", vm,
@@ -535,10 +539,10 @@ bool VRDisplayPuppet::SubmitFrame(MacIOSurface* aMacIOSurface,
   return false;
 }
 
-#elif defined(MOZ_ANDROID_GOOGLE_VR)
+#elif defined(MOZ_WIDGET_ANDROID)
 
 bool VRDisplayPuppet::SubmitFrame(
-    const mozilla::layers::EGLImageDescriptor* aDescriptor,
+    const mozilla::layers::SurfaceTextureDescriptor& aDescriptor,
     const gfx::Rect& aLeftEyeRect, const gfx::Rect& aRightEyeRect) {
   MOZ_ASSERT(mSubmitThread->GetThread() == NS_GetCurrentThread());
   return false;
@@ -548,7 +552,7 @@ bool VRDisplayPuppet::SubmitFrame(
 
 void VRDisplayPuppet::Refresh() {
   // We update mIsConneced once per refresh.
-  mDisplayInfo.mIsConnected = true;
+  mDisplayInfo.mDisplayState.isConnected = true;
 }
 
 VRControllerPuppet::VRControllerPuppet(dom::GamepadHand aHand,
@@ -557,10 +561,11 @@ VRControllerPuppet::VRControllerPuppet(dom::GamepadHand aHand,
       mButtonPressState(0),
       mButtonTouchState(0) {
   MOZ_COUNT_CTOR_INHERITED(VRControllerPuppet, VRControllerHost);
-  mControllerInfo.mControllerName.AssignLiteral("Puppet Gamepad");
-  mControllerInfo.mNumButtons = kNumPuppetButtonMask;
-  mControllerInfo.mNumAxes = kNumPuppetAxis;
-  mControllerInfo.mNumHaptics = kNumPuppetHaptcs;
+  VRControllerState& state = mControllerInfo.mControllerState;
+  strncpy(state.controllerName, "Puppet Gamepad", kVRControllerNameMaxLen);
+  state.numButtons = kNumPuppetButtonMask;
+  state.numAxes = kNumPuppetAxis;
+  state.numHaptics = kNumPuppetHaptcs;
 }
 
 VRControllerPuppet::~VRControllerPuppet() {
@@ -621,11 +626,11 @@ const dom::GamepadPoseState& VRControllerPuppet::GetPoseMoveState() {
 }
 
 float VRControllerPuppet::GetAxisMove(uint32_t aAxis) {
-  return mAxisMove[aAxis];
+  return mControllerInfo.mControllerState.axisValue[aAxis];
 }
 
 void VRControllerPuppet::SetAxisMove(uint32_t aAxis, float aValue) {
-  mAxisMove[aAxis] = aValue;
+  mControllerInfo.mControllerState.axisValue[aAxis] = aValue;
 }
 
 VRSystemManagerPuppet::VRSystemManagerPuppet()
@@ -633,8 +638,8 @@ VRSystemManagerPuppet::VRSystemManagerPuppet()
       mPuppetDisplayInfo{},
       mPuppetDisplaySensorState{} {}
 
-/*static*/ already_AddRefed<VRSystemManagerPuppet>
-VRSystemManagerPuppet::Create() {
+/*static*/
+already_AddRefed<VRSystemManagerPuppet> VRSystemManagerPuppet::Create() {
   if (!gfxPrefs::VREnabled() || !gfxPrefs::VRPuppetEnabled()) {
     return nullptr;
   }
@@ -646,6 +651,19 @@ VRSystemManagerPuppet::Create() {
 void VRSystemManagerPuppet::Destroy() { Shutdown(); }
 
 void VRSystemManagerPuppet::Shutdown() { mPuppetHMDs.Clear(); }
+
+void VRSystemManagerPuppet::Run10msTasks() {
+  VRSystemManager::Run10msTasks();
+
+  /**
+   * When running headless mochitests on some of our automated test
+   * infrastructure, 2d display vsyncs are not always generated.
+   * To workaround, we produce a vsync manually.
+   */
+  VRManager* vm = VRManager::Get();
+  MOZ_ASSERT(vm);
+  vm->NotifyVsync(TimeStamp::Now());
+}
 
 void VRSystemManagerPuppet::NotifyVSync() {
   VRSystemManager::NotifyVSync();
@@ -674,7 +692,7 @@ void VRSystemManagerPuppet::Enumerate() {
     mPuppetHMDs.AppendElement(puppetDisplay);
   }
   while (mPuppetHMDs.Length() > mPuppetDisplayCount) {
-    mPuppetHMDs.RemoveElementAt(mPuppetHMDs.Length() - 1);
+    mPuppetHMDs.RemoveLastElement();
   }
 }
 

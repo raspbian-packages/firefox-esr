@@ -9,6 +9,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import concurrent.futures as futures
 import logging
 import os
+import requests
 
 from taskgraph.util.taskcluster import (
     list_task_group_incomplete_tasks,
@@ -32,10 +33,20 @@ logger = logging.getLogger(__name__)
     order=400,
     context=[]
 )
-def cancel_all_action(parameters, graph_config, input, task_group_id, task_id, task):
+def cancel_all_action(parameters, graph_config, input, task_group_id, task_id):
     def do_cancel_task(task_id):
         logger.info('Cancelling task {}'.format(task_id))
-        cancel_task(task_id, use_proxy=True)
+        try:
+            cancel_task(task_id, use_proxy=True)
+        except requests.HTTPError as e:
+            if e.response.status_code == 409:
+                # A 409 response indicates that this task is past its deadline.  It
+                # cannot be cancelled at this time, but it's also not running
+                # anymore, so we can ignore this error.
+                logger.info(
+                    'Task {} is past its deadline and cannot be cancelled.'.format(task_id))
+                return
+            raise
 
     own_task_id = os.environ.get('TASK_ID', '')
     to_cancel = [t for t in list_task_group_incomplete_tasks(task_group_id) if t != own_task_id]

@@ -13,6 +13,8 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import org.mozilla.gecko.firstrun.PanelConfig;
+
 import java.util.Map;
 
 
@@ -30,7 +32,13 @@ public interface MmaInterface {
 
     void stop();
 
+    void setToken(String token);
+
     @CheckResult boolean handleGcmMessage(Context context, String from, Bundle bundle);
 
     void setDeviceId(@NonNull String deviceId);
+
+    PanelConfig getPanelConfig(@NonNull Context context, PanelConfig.TYPE panelConfigType, final boolean useLocalValues);
+
+    void listenOnceForVariableChanges(@NonNull final MmaDelegate.MmaVariablesChangedListener listener);
 }

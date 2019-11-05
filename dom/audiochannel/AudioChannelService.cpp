@@ -27,7 +27,7 @@
 using namespace mozilla;
 using namespace mozilla::dom;
 
-static mozilla::LazyLogModule gAudioChannelLog("AudioChannel");
+mozilla::LazyLogModule gAudioChannelLog("AudioChannel");
 
 namespace {
 
@@ -102,15 +102,15 @@ class AudioPlaybackRunnable final : public Runnable {
   }
 
  private:
-  void GetActiveState(nsAString& astate) {
+  void GetActiveState(nsAString& aState) {
     if (mActive) {
-      CopyASCIItoUTF16("active", astate);
+      aState.AssignLiteral("active");
     } else {
       if (mReason ==
           AudioChannelService::AudibleChangedReasons::ePauseStateChanged) {
-        CopyASCIItoUTF16("inactive-pause", astate);
+        aState.AssignLiteral("inactive-pause");
       } else {
-        CopyASCIItoUTF16("inactive-nonaudible", astate);
+        aState.AssignLiteral("inactive-nonaudible");
       }
     }
   }
@@ -121,12 +121,12 @@ class AudioPlaybackRunnable final : public Runnable {
 };
 
 bool IsEnableAudioCompetingForAllAgents() {
-// In general, the audio competing should only be for audible media and it
-// helps user can focus on one media at the same time. However, we hope to
-// treat all media as the same in the mobile device. First reason is we have
-// media control on fennec and we just want to control one media at once time.
-// Second reason is to reduce the bandwidth, avoiding to play any non-audible
-// media in background which user doesn't notice about.
+  // In general, the audio competing should only be for audible media and it
+  // helps user can focus on one media at the same time. However, we hope to
+  // treat all media as the same in the mobile device. First reason is we have
+  // media control on fennec and we just want to control one media at once time.
+  // Second reason is to reduce the bandwidth, avoiding to play any non-audible
+  // media in background which user doesn't notice about.
 #ifdef MOZ_WIDGET_ANDROID
   return true;
 #else
@@ -203,7 +203,8 @@ const char* AudibleChangedReasonToStr(
 
 StaticRefPtr<AudioChannelService> gAudioChannelService;
 
-/* static */ void AudioChannelService::CreateServiceIfNeeded() {
+/* static */
+void AudioChannelService::CreateServiceIfNeeded() {
   MOZ_ASSERT(NS_IsMainThread());
 
   if (!gAudioChannelService) {
@@ -211,8 +212,8 @@ StaticRefPtr<AudioChannelService> gAudioChannelService;
   }
 }
 
-/* static */ already_AddRefed<AudioChannelService>
-AudioChannelService::GetOrCreate() {
+/* static */
+already_AddRefed<AudioChannelService> AudioChannelService::GetOrCreate() {
   if (sXPCOMShuttingDown) {
     return nullptr;
   }
@@ -222,7 +223,8 @@ AudioChannelService::GetOrCreate() {
   return service.forget();
 }
 
-/* static */ already_AddRefed<AudioChannelService> AudioChannelService::Get() {
+/* static */
+already_AddRefed<AudioChannelService> AudioChannelService::Get() {
   if (sXPCOMShuttingDown) {
     return nullptr;
   }
@@ -231,11 +233,13 @@ AudioChannelService::GetOrCreate() {
   return service.forget();
 }
 
-/* static */ LogModule* AudioChannelService::GetAudioChannelLog() {
+/* static */
+LogModule* AudioChannelService::GetAudioChannelLog() {
   return gAudioChannelLog;
 }
 
-/* static */ void AudioChannelService::Shutdown() {
+/* static */
+void AudioChannelService::Shutdown() {
   if (gAudioChannelService) {
     nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
     if (obs) {
@@ -249,7 +253,8 @@ AudioChannelService::GetOrCreate() {
   }
 }
 
-/* static */ bool AudioChannelService::IsEnableAudioCompeting() {
+/* static */
+bool AudioChannelService::IsEnableAudioCompeting() {
   CreateServiceIfNeeded();
   return sAudioChannelCompeting;
 }
@@ -346,7 +351,7 @@ AudioPlaybackConfig AudioChannelService::GetMediaConfig(
       break;
     }
 
-    window = do_QueryInterface(win);
+    window = win;
 
     // If there is no parent, or we are the toplevel we don't continue.
   } while (window && window != aWindow);
@@ -732,23 +737,9 @@ void AudioChannelService::AudioChannelWindow::RemoveAgent(
 
 void AudioChannelService::AudioChannelWindow::NotifyMediaBlockStop(
     nsPIDOMWindowOuter* aWindow) {
-  // Can't use raw pointer for lamba variable capturing, use smart ptr.
-  nsCOMPtr<nsPIDOMWindowOuter> window = aWindow;
-  NS_DispatchToCurrentThread(NS_NewRunnableFunction(
-      "dom::AudioChannelService::AudioChannelWindow::NotifyMediaBlockStop",
-      [window]() -> void {
-        nsCOMPtr<nsIObserverService> observerService =
-            services::GetObserverService();
-        if (NS_WARN_IF(!observerService)) {
-          return;
-        }
-
-        observerService->NotifyObservers(ToSupports(window), "audio-playback",
-                                         u"mediaBlockStop");
-      }));
-
   if (mShouldSendActiveMediaBlockStopEvent) {
     mShouldSendActiveMediaBlockStopEvent = false;
+    nsCOMPtr<nsPIDOMWindowOuter> window = aWindow;
     NS_DispatchToCurrentThread(NS_NewRunnableFunction(
         "dom::AudioChannelService::AudioChannelWindow::NotifyMediaBlockStop",
         [window]() -> void {
@@ -891,7 +882,7 @@ void AudioChannelService::AudioChannelWindow::MaybeNotifyMediaBlockStart(
     return;
   }
 
-  nsCOMPtr<nsIDocument> doc = inner->GetExtantDoc();
+  nsCOMPtr<Document> doc = inner->GetExtantDoc();
   if (!doc) {
     return;
   }

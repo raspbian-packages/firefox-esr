@@ -35,7 +35,7 @@ APP_NAME=''
 HGHOST="hg.mozilla.org"
 STAGEHOST="archive.mozilla.org"
 WGET="wget -nv"
-UNZIP="unzip -q"
+UNTAR="tar -zxf"
 DIFF="$(command -v diff) -u"
 BASEDIR="${HOME}"
 TOOLSDIR="${HOME}/tools"
@@ -155,9 +155,9 @@ function download_shared_artifacts_from_tc {
 
   # Download everything we need to run js with xpcshell
   echo "INFO: Downloading all the necessary pieces from the taskcluster index..."
-  TASKID_URL="$index_base/task/gecko.v2.${REPODIR}.latest.${PRODUCT}.linux64-opt"
+  TASKID_URL="$index_base/task/gecko.v2.${REPODIR}.shippable.latest.${PRODUCT}.linux64-opt"
   if [ "${USE_MC}" == "true" ]; then
-    TASKID_URL="$index_base/task/gecko.v2.mozilla-central.latest.${PRODUCT}.linux64-opt"
+    TASKID_URL="$index_base/task/gecko.v2.mozilla-central.shippable.latest.${PRODUCT}.linux64-opt"
   fi
   ${WGET} -O ${TASKID_FILE} "${TASKID_URL}"
   INDEX_TASK_ID="$($JQ -r '.taskId' ${TASKID_FILE})"
@@ -198,7 +198,7 @@ function unpack_artifacts {
   ${UNPACK_CMD} "${BROWSER_ARCHIVE}"
   mkdir -p tests
   cd tests
-  ${UNZIP} "../${TESTS_ARCHIVE}"
+  ${UNTAR} "../${TESTS_ARCHIVE}"
   cd "${BASEDIR}"
   cp tests/bin/xpcshell "${PRODUCT}"
 }
@@ -548,15 +548,15 @@ if [ "${USE_MC}" == "true" ]; then
 fi
 
 BROWSER_ARCHIVE="${PRODUCT}-${VERSION}.en-US.${PLATFORM}.${PLATFORM_EXT}"
-TESTS_ARCHIVE="${PRODUCT}-${VERSION}.en-US.${PLATFORM}.common.tests.zip"
+TESTS_ARCHIVE="${PRODUCT}-${VERSION}.en-US.${PLATFORM}.common.tests.tar.gz"
 if [ "${USE_MC}" == "true" ]; then
   BROWSER_ARCHIVE="${PRODUCT}-${MCVERSION}.en-US.${PLATFORM}.${PLATFORM_EXT}"
-  TESTS_ARCHIVE="${PRODUCT}-${MCVERSION}.en-US.${PLATFORM}.common.tests.zip"
+  TESTS_ARCHIVE="${PRODUCT}-${MCVERSION}.en-US.${PLATFORM}.common.tests.tar.gz"
 fi
 # Simple name builds on >=53.0.0
 if [ "${MAJOR_VERSION}" -ge 53 ] ; then
   BROWSER_ARCHIVE="target.${PLATFORM_EXT}"
-  TESTS_ARCHIVE="target.common.tests.zip"
+  TESTS_ARCHIVE="target.common.tests.tar.gz"
 fi
 # End 'remove once 52esr is off support'
 

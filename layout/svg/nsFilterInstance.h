@@ -11,16 +11,15 @@
 #include "gfxPoint.h"
 #include "gfxRect.h"
 #include "nsCOMPtr.h"
+#include "FilterSupport.h"
 #include "nsHashKeys.h"
 #include "nsPoint.h"
 #include "nsRect.h"
 #include "nsSize.h"
-#include "nsSVGFilters.h"
-#include "nsSVGNumber2.h"
-#include "nsSVGNumberPair.h"
 #include "nsTArray.h"
 #include "nsIFrame.h"
 #include "mozilla/gfx/2D.h"
+#include "mozilla/webrender/WebRenderTypes.h"
 
 class gfxContext;
 class nsIFrame;
@@ -62,11 +61,11 @@ class nsFilterInstance {
    * Create a FilterDescription for the supplied filter. All coordinates in
    * the description are in filter space.
    * @param aFilterInputIsTainted Describes whether the SourceImage /
-   * SourceAlpha input is tainted. This affects whether feDisplacementMap will
-   * respect the filter input as its map input, and it affects the IsTainted()
-   * state on the filter primitives in the FilterDescription. "Tainted" is a
-   * term from the filters spec and means security-sensitive content, i.e.
-   * pixels that JS should not be able to read in any way.
+   *   SourceAlpha input is tainted. This affects whether feDisplacementMap
+   *   will respect the filter input as its map input, and it affects the
+   *   IsTainted() state on the filter primitives in the FilterDescription.
+   *   "Tainted" is a term from the filters spec and means security-sensitive
+   *   content, i.e. pixels that JS should not be able to read in any way.
    * @param aOutAdditionalImages Will contain additional images needed to
    *   render the filter (from feImage primitives).
    * @return A FilterDescription describing the filter.
@@ -86,13 +85,14 @@ class nsFilterInstance {
   static void PaintFilteredFrame(nsIFrame* aFilteredFrame, gfxContext* aCtx,
                                  nsSVGFilterPaintCallback* aPaintCallback,
                                  const nsRegion* aDirtyArea,
-                                 imgDrawingParams& aImgParams);
+                                 imgDrawingParams& aImgParams,
+                                 float aOpacity = 1.0f);
 
   /**
    * Returns the post-filter area that could be dirtied when the given
    * pre-filter area of aFilteredFrame changes.
-   * @param aPreFilterDirtyRegion The pre-filter area of aFilteredFrame that has
-   *   changed, relative to aFilteredFrame, in app units.
+   * @param aPreFilterDirtyRegion The pre-filter area of aFilteredFrame that
+   *   has changed, relative to aFilteredFrame, in app units.
    */
   static nsRegion GetPostFilterDirtyArea(nsIFrame* aFilteredFrame,
                                          const nsRegion& aPreFilterDirtyRegion);
@@ -118,6 +118,14 @@ class nsFilterInstance {
                                     const gfxRect* aOverrideBBox = nullptr,
                                     const nsRect* aPreFilterBounds = nullptr);
 
+  /**
+   * Try to build WebRender filters for a frame if the filters applied to it are
+   * supported.
+   */
+  static bool BuildWebRenderFilters(nsIFrame* aFilteredFrame,
+                                    WrFiltersHolder& aWrFilters,
+                                    mozilla::Maybe<nsRect>& aPostFilterClip);
+
  private:
   /**
    * @param aTargetFrame The frame of the filtered element under consideration,
@@ -126,8 +134,8 @@ class nsFilterInstance {
    * @param aMetrics The metrics to resolve SVG lengths against.
    * @param aFilterChain The list of filters to apply.
    * @param aFilterInputIsTainted Describes whether the SourceImage /
-   * SourceAlpha input is tainted. This affects whether feDisplacementMap will
-   * respect the filter input as its map input.
+   *   SourceAlpha input is tainted. This affects whether feDisplacementMap
+   *   will respect the filter input as its map input.
    * @param aPaintCallback [optional] The callback that Render() should use to
    *   paint. Only required if you will call Render().
    * @param aPaintTransform The transform to apply to convert to
@@ -138,7 +146,7 @@ class nsFilterInstance {
    * @param aPreFilterDirtyRegion [optional] The pre-filter area of
    *   the filtered element that changed, in app units. Only required if you
    *   will call ComputePostFilterDirtyRegion().
-   * @param aOverridePreFilterVisualOverflowRect [optional] Use a different
+   * @param aPreFilterVisualOverflowRectOverride [optional] Use a different
    *   visual overflow rect for the target element.
    * @param aOverrideBBox [optional] Use a different SVG bbox for the target
    *   element. Must be non-null if aTargetFrame is null.
@@ -151,7 +159,7 @@ class nsFilterInstance {
                    const gfxMatrix& aPaintTransform,
                    const nsRegion* aPostFilterDirtyRegion = nullptr,
                    const nsRegion* aPreFilterDirtyRegion = nullptr,
-                   const nsRect* aOverridePreFilterVisualOverflowRect = nullptr,
+                   const nsRect* aPreFilterVisualOverflowRectOverride = nullptr,
                    const gfxRect* aOverrideBBox = nullptr);
 
   /**
@@ -165,7 +173,8 @@ class nsFilterInstance {
    * by passing it as the aPostFilterDirtyRegion argument to the
    * nsFilterInstance constructor.
    */
-  void Render(gfxContext* aCtx, imgDrawingParams& aImgParams);
+  void Render(gfxContext* aCtx, imgDrawingParams& aImgParams,
+              float aOpacity = 1.0f);
 
   const FilterDescription& ExtractDescriptionAndAdditionalImages(
       nsTArray<RefPtr<SourceSurface>>& aOutAdditionalImages) {
@@ -218,7 +227,7 @@ class nsFilterInstance {
    * Creates a SourceSurface for either the FillPaint or StrokePaint graph
    * nodes
    */
-  void BuildSourcePaint(SourceInfo* aPrimitive, imgDrawingParams& aImgParams);
+  void BuildSourcePaint(SourceInfo* aSource, imgDrawingParams& aImgParams);
 
   /**
    * Creates a SourceSurface for either the FillPaint and StrokePaint graph
@@ -231,7 +240,10 @@ class nsFilterInstance {
    * Creates the SourceSurface for the SourceGraphic graph node, paints its
    * contents, and assigns it to mSourceGraphic.mSourceSurface.
    */
-  void BuildSourceImage(DrawTarget* aDest, imgDrawingParams& aImgParams);
+  void BuildSourceImage(DrawTarget* aDest, imgDrawingParams& aImgParams,
+                        mozilla::gfx::FilterNode* aFilter,
+                        mozilla::gfx::FilterNode* aSource,
+                        const mozilla::gfx::Rect& aSourceRect);
 
   /**
    * Build the list of FilterPrimitiveDescriptions that describes the filter's
@@ -248,9 +260,10 @@ class nsFilterInstance {
    * mInputImages. aInputIsTainted describes whether the input to aFilter is
    * tainted.
    */
-  nsresult BuildPrimitivesForFilter(const nsStyleFilter& aFilter,
-                                    nsIFrame* aTargetFrame,
-                                    bool aInputIsTainted);
+  nsresult BuildPrimitivesForFilter(
+      const nsStyleFilter& aFilter, nsIFrame* aTargetFrame,
+      bool aInputIsTainted,
+      nsTArray<FilterPrimitiveDescription>& aPrimitiveDescriptions);
 
   /**
    * Computes the filter space bounds of the areas that we actually *need* from
@@ -367,7 +380,6 @@ class nsFilterInstance {
   gfxMatrix mPaintTransform;
 
   nsTArray<RefPtr<SourceSurface>> mInputImages;
-  nsTArray<FilterPrimitiveDescription> mPrimitiveDescriptions;
   FilterDescription mFilterDescription;
   bool mInitialized;
 };

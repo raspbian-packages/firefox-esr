@@ -131,7 +131,6 @@ class HeapSnapshot final : public nsISupports, public nsWrapperCache {
 
   // Get the root node of this heap snapshot's graph.
   JS::ubi::Node getRoot() {
-    MOZ_ASSERT(nodes.initialized());
     auto p = nodes.lookup(rootId);
     MOZ_ASSERT(p);
     const DeserializedNode& node = *p;

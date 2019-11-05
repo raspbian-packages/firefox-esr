@@ -2,16 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var EXPORTED_SYMBOLS = [ "SitePermissions" ];
+var EXPORTED_SYMBOLS = ["SitePermissions"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-var gStringBundle =
-  Services.strings.createBundle("chrome://browser/locale/sitePermissions.properties");
+var gStringBundle = Services.strings.createBundle(
+  "chrome://browser/locale/sitePermissions.properties"
+);
 
 /**
- * A helper module to manage temporarily blocked permissions.
+ * A helper module to manage temporary permissions.
  *
  * Permissions are keyed by browser, so methods take a Browser
  * element to identify the corresponding permission set.
@@ -20,17 +23,17 @@ var gStringBundle =
  * automatically cleared once the browser stops existing
  * (once there are no other references to the browser object);
  */
-const TemporaryBlockedPermissions = {
+const TemporaryPermissions = {
   // This is a three level deep map with the following structure:
   //
   // Browser => {
-  //   <prePath>: {
+  //   <baseDomain>: {
   //     <permissionID>: {Number} <timeStamp>
   //   }
   // }
   //
   // Only the top level browser elements are stored via WeakMap. The WeakMap
-  // value is an object with URI prePaths as keys. The keys of that object
+  // value is an object with URI baseDomains as keys. The keys of that object
   // are ids that identify permissions that were set for the specific URI.
   // The final value is an object containing the timestamp of when the permission
   // was set (in order to invalidate after a certain amount of time has passed).
@@ -38,20 +41,42 @@ const TemporaryBlockedPermissions = {
 
   // Private helper method that bundles some shared behavior for
   // get() and getAll(), e.g. deleting permissions when they have expired.
-  _get(entry, prePath, id, timeStamp) {
-    if (timeStamp == null) {
-      delete entry[prePath][id];
+  _get(entry, baseDomain, id, permission) {
+    if (permission == null || permission.timeStamp == null) {
+      delete entry[baseDomain][id];
       return null;
     }
-    if (timeStamp + SitePermissions.temporaryPermissionExpireTime < Date.now()) {
-      delete entry[prePath][id];
+    if (
+      permission.timeStamp + SitePermissions.temporaryPermissionExpireTime <
+      Date.now()
+    ) {
+      delete entry[baseDomain][id];
       return null;
     }
-    return {id, state: SitePermissions.BLOCK, scope: SitePermissions.SCOPE_TEMPORARY};
+    return {
+      id,
+      state: permission.state,
+      scope: SitePermissions.SCOPE_TEMPORARY,
+    };
+  },
+
+  // Extract baseDomain from uri. Fallback to hostname on conversion error.
+  _uriToBaseDomain(uri) {
+    try {
+      return Services.eTLD.getBaseDomain(uri);
+    } catch (error) {
+      if (
+        error.result !== Cr.NS_ERROR_HOST_IS_IP_ADDRESS &&
+        error.result !== Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS
+      ) {
+        throw error;
+      }
+      return uri.host;
+    }
   },
 
   // Sets a new permission for the specified browser.
-  set(browser, id) {
+  set(browser, id, state) {
     if (!browser) {
       return;
     }
@@ -59,35 +84,35 @@ const TemporaryBlockedPermissions = {
       this._stateByBrowser.set(browser, {});
     }
     let entry = this._stateByBrowser.get(browser);
-    let prePath = browser.currentURI.prePath;
-    if (!entry[prePath]) {
-      entry[prePath] = {};
+    let baseDomain = this._uriToBaseDomain(browser.currentURI);
+    if (!entry[baseDomain]) {
+      entry[baseDomain] = {};
     }
-    entry[prePath][id] = Date.now();
+    entry[baseDomain][id] = { timeStamp: Date.now(), state };
   },
 
   // Removes a permission with the specified id for the specified browser.
   remove(browser, id) {
-    if (!browser) {
+    if (!browser || !this._stateByBrowser.has(browser)) {
       return;
     }
     let entry = this._stateByBrowser.get(browser);
-    let prePath = browser.currentURI.prePath;
-    if (entry && entry[prePath]) {
-      delete entry[prePath][id];
+    let baseDomain = this._uriToBaseDomain(browser.currentURI);
+    if (entry[baseDomain]) {
+      delete entry[baseDomain][id];
     }
   },
 
   // Gets a permission with the specified id for the specified browser.
   get(browser, id) {
-    if (!browser || !browser.currentURI) {
+    if (!browser || !browser.currentURI || !this._stateByBrowser.has(browser)) {
       return null;
     }
     let entry = this._stateByBrowser.get(browser);
-    let prePath = browser.currentURI.prePath;
-    if (entry && entry[prePath]) {
-      let permission = entry[prePath][id];
-      return this._get(entry, prePath, id, permission);
+    let baseDomain = this._uriToBaseDomain(browser.currentURI);
+    if (entry[baseDomain]) {
+      let permission = entry[baseDomain][id];
+      return this._get(entry, baseDomain, id, permission);
     }
     return null;
   },
@@ -97,12 +122,15 @@ const TemporaryBlockedPermissions = {
   // of the passed browser element will be returned.
   getAll(browser) {
     let permissions = [];
+    if (!this._stateByBrowser.has(browser)) {
+      return permissions;
+    }
     let entry = this._stateByBrowser.get(browser);
-    let prePath = browser.currentURI.prePath;
-    if (entry && entry[prePath]) {
-      let timeStamps = entry[prePath];
+    let baseDomain = this._uriToBaseDomain(browser.currentURI);
+    if (entry[baseDomain]) {
+      let timeStamps = entry[baseDomain];
       for (let id of Object.keys(timeStamps)) {
-        let permission = this._get(entry, prePath, id, timeStamps[id]);
+        let permission = this._get(entry, baseDomain, id, timeStamps[id]);
         // _get() returns null when the permission has expired.
         if (permission) {
           permissions.push(permission);
@@ -120,6 +148,94 @@ const TemporaryBlockedPermissions = {
   },
 
   // Copies the temporary permission state of one browser
+  // into a new entry for the other browser.
+  copy(browser, newBrowser) {
+    let entry = this._stateByBrowser.get(browser);
+    if (entry) {
+      this._stateByBrowser.set(newBrowser, entry);
+    }
+  },
+};
+
+// This hold a flag per browser to indicate whether we should show the
+// user a notification as a permission has been requested that has been
+// blocked globally. We only want to notify the user in the case that
+// they actually requested the permission within the current page load
+// so will clear the flag on navigation.
+const GloballyBlockedPermissions = {
+  _stateByBrowser: new WeakMap(),
+
+  set(browser, id) {
+    if (!this._stateByBrowser.has(browser)) {
+      this._stateByBrowser.set(browser, {});
+    }
+    let entry = this._stateByBrowser.get(browser);
+    let prePath = browser.currentURI.prePath;
+    if (!entry[prePath]) {
+      entry[prePath] = {};
+    }
+
+    if (entry[prePath][id]) {
+      return;
+    }
+    entry[prePath][id] = true;
+
+    // Clear the flag and remove the listener once the user has navigated.
+    // WebProgress will report various things including hashchanges to us, the
+    // navigation we care about is either leaving the current page or reloading.
+    browser.addProgressListener({
+      QueryInterface: ChromeUtils.generateQI([
+        Ci.nsIWebProgressListener,
+        Ci.nsISupportsWeakReference,
+      ]),
+      onLocationChange(aWebProgress, aRequest, aLocation, aFlags) {
+        let hasLeftPage =
+          aLocation.prePath != prePath ||
+          !(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
+        let isReload = !!(
+          aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_RELOAD
+        );
+
+        if (aWebProgress.isTopLevel && (hasLeftPage || isReload)) {
+          GloballyBlockedPermissions.remove(browser, id, prePath);
+          browser.removeProgressListener(this);
+        }
+      },
+    });
+  },
+
+  // Removes a permission with the specified id for the specified browser.
+  remove(browser, id, prePath = null) {
+    let entry = this._stateByBrowser.get(browser);
+    if (!prePath) {
+      prePath = browser.currentURI.prePath;
+    }
+    if (entry && entry[prePath]) {
+      delete entry[prePath][id];
+    }
+  },
+
+  // Gets all permissions for the specified browser.
+  // Note that only permissions that apply to the current URI
+  // of the passed browser element will be returned.
+  getAll(browser) {
+    let permissions = [];
+    let entry = this._stateByBrowser.get(browser);
+    let prePath = browser.currentURI.prePath;
+    if (entry && entry[prePath]) {
+      let timeStamps = entry[prePath];
+      for (let id of Object.keys(timeStamps)) {
+        permissions.push({
+          id,
+          state: SitePermissions.BLOCK,
+          scope: SitePermissions.SCOPE_GLOBAL,
+        });
+      }
+    }
+    return permissions;
+  },
+
+  // Copies the globally blocked permission state of one browser
   // into a new entry for the other browser.
   copy(browser, newBrowser) {
     let entry = this._stateByBrowser.get(browser);
@@ -153,7 +269,9 @@ var SitePermissions = {
   SCOPE_SESSION: "{SitePermissions.SCOPE_SESSION}",
   SCOPE_PERSISTENT: "{SitePermissions.SCOPE_PERSISTENT}",
   SCOPE_POLICY: "{SitePermissions.SCOPE_POLICY}",
+  SCOPE_GLOBAL: "{SitePermissions.SCOPE_GLOBAL}",
 
+  _permissionsArray: null,
   _defaultPrefBranch: Services.prefs.getBranch("permissions.default."),
 
   /**
@@ -167,6 +285,9 @@ var SitePermissions = {
    *            (e.g. SitePermissions.ALLOW)
    */
   getAllByURI(uri) {
+    if (!(uri instanceof Ci.nsIURI)) {
+      throw new Error("uri parameter should be an nsIURI");
+    }
     let result = [];
     if (!this.isSupportedURI(uri)) {
       return result;
@@ -178,14 +299,8 @@ var SitePermissions = {
 
       // filter out unknown permissions
       if (gPermissionObject[permission.type]) {
-        // XXX Bug 1303108 - Control Center should only show non-default permissions
-        if (permission.type == "install") {
-          continue;
-        }
-
         // Hide canvas permission when privacy.resistFingerprinting is false.
-        if ((permission.type == "canvas") &&
-            !Services.prefs.getBoolPref("privacy.resistFingerprinting")) {
+        if (permission.type == "canvas" && !this.resistFingerprinting) {
           continue;
         }
 
@@ -226,8 +341,12 @@ var SitePermissions = {
   getAllForBrowser(browser) {
     let permissions = {};
 
-    for (let permission of TemporaryBlockedPermissions.getAll(browser)) {
+    for (let permission of TemporaryPermissions.getAll(browser)) {
       permission.scope = this.SCOPE_TEMPORARY;
+      permissions[permission.id] = permission;
+    }
+
+    for (let permission of GloballyBlockedPermissions.getAll(browser)) {
       permissions[permission.id] = permission;
     }
 
@@ -251,11 +370,15 @@ var SitePermissions = {
    *             (e.g. SitePermissions.ALLOW)
    *           - scope: a constant representing how long the permission will
    *             be kept.
-   *           - label: the localized label
+   *           - label: the localized label, or null if none is available.
    */
   getAllPermissionDetailsForBrowser(browser) {
-    return this.getAllForBrowser(browser).map(({id, scope, state}) =>
-      ({id, scope, state, label: this.getPermissionLabel(id)}));
+    return this.getAllForBrowser(browser).map(({ id, scope, state }) => ({
+      id,
+      scope,
+      state,
+      label: this.getPermissionLabel(id),
+    }));
   },
 
   /**
@@ -278,14 +401,33 @@ var SitePermissions = {
    * @return {Array<String>} an array of all permission IDs.
    */
   listPermissions() {
-    let permissions = Object.keys(gPermissionObject);
+    if (this._permissionsArray === null) {
+      let permissions = Object.keys(gPermissionObject);
 
-    // Hide canvas permission when privacy.resistFingerprinting is false.
-    if (!Services.prefs.getBoolPref("privacy.resistFingerprinting")) {
-      permissions = permissions.filter(permission => permission !== "canvas");
+      // Hide canvas permission when privacy.resistFingerprinting is false.
+      if (!this.resistFingerprinting) {
+        permissions = permissions.filter(permission => permission !== "canvas");
+      }
+      this._permissionsArray = permissions;
     }
 
-    return permissions;
+    return this._permissionsArray;
+  },
+
+  /**
+   * Called when the privacy.resistFingerprinting preference changes its value.
+   *
+   * @param {string} data
+   *        The last argument passed to the preference change observer
+   * @param {string} previous
+   *        The previous value of the preference
+   * @param {string} latest
+   *        The latest value of the preference
+   */
+  onResistFingerprintingChanged(data, previous, latest) {
+    // Ensure that listPermissions() will reconstruct its return value the next
+    // time it's called.
+    this._permissionsArray = null;
   },
 
   /**
@@ -298,17 +440,29 @@ var SitePermissions = {
    * @return {Array<SitePermissions state>} an array of all permission states.
    */
   getAvailableStates(permissionID) {
-    if (permissionID in gPermissionObject &&
-        gPermissionObject[permissionID].states)
+    if (
+      permissionID in gPermissionObject &&
+      gPermissionObject[permissionID].states
+    ) {
       return gPermissionObject[permissionID].states;
+    }
 
     /* Since the permissions we are dealing with have adopted the convention
      * of treating UNKNOWN == PROMPT, we only include one of either UNKNOWN
      * or PROMPT in this list, to avoid duplicating states. */
-    if (this.getDefault(permissionID) == this.UNKNOWN)
-      return [ SitePermissions.UNKNOWN, SitePermissions.ALLOW, SitePermissions.BLOCK ];
+    if (this.getDefault(permissionID) == this.UNKNOWN) {
+      return [
+        SitePermissions.UNKNOWN,
+        SitePermissions.ALLOW,
+        SitePermissions.BLOCK,
+      ];
+    }
 
-    return [ SitePermissions.PROMPT, SitePermissions.ALLOW, SitePermissions.BLOCK ];
+    return [
+      SitePermissions.PROMPT,
+      SitePermissions.ALLOW,
+      SitePermissions.BLOCK,
+    ];
   },
 
   /**
@@ -322,9 +476,12 @@ var SitePermissions = {
   getDefault(permissionID) {
     // If the permission has custom logic for getting its default value,
     // try that first.
-    if (permissionID in gPermissionObject &&
-        gPermissionObject[permissionID].getDefault)
+    if (
+      permissionID in gPermissionObject &&
+      gPermissionObject[permissionID].getDefault
+    ) {
       return gPermissionObject[permissionID].getDefault();
+    }
 
     // Otherwise try to get the default preference for that permission.
     return this._defaultPrefBranch.getIntPref(permissionID, this.UNKNOWN);
@@ -350,15 +507,30 @@ var SitePermissions = {
    *             (e.g. SitePermissions.SCOPE_PERSISTENT)
    */
   get(uri, permissionID, browser) {
+    if ((!uri && !browser) || (uri && !(uri instanceof Ci.nsIURI))) {
+      throw new Error(
+        "uri parameter should be an nsIURI or a browser parameter is needed"
+      );
+    }
     let defaultState = this.getDefault(permissionID);
     let result = { state: defaultState, scope: this.SCOPE_PERSISTENT };
     if (this.isSupportedURI(uri)) {
       let permission = null;
-      if (permissionID in gPermissionObject &&
-        gPermissionObject[permissionID].exactHostMatch) {
-        permission = Services.perms.getPermissionObjectForURI(uri, permissionID, true);
+      if (
+        permissionID in gPermissionObject &&
+        gPermissionObject[permissionID].exactHostMatch
+      ) {
+        permission = Services.perms.getPermissionObjectForURI(
+          uri,
+          permissionID,
+          true
+        );
       } else {
-        permission = Services.perms.getPermissionObjectForURI(uri, permissionID, false);
+        permission = Services.perms.getPermissionObjectForURI(
+          uri,
+          permissionID,
+          false
+        );
       }
 
       if (permission) {
@@ -374,7 +546,7 @@ var SitePermissions = {
     if (result.state == defaultState) {
       // If there's no persistent permission saved, check if we have something
       // set temporarily.
-      let value = TemporaryBlockedPermissions.get(browser, permissionID);
+      let value = TemporaryPermissions.get(browser, permissionID);
 
       if (value) {
         result.state = value.state;
@@ -404,13 +576,33 @@ var SitePermissions = {
    *        This needs to be provided if the scope is SCOPE_TEMPORARY!
    */
   set(uri, permissionID, state, scope = this.SCOPE_PERSISTENT, browser = null) {
-    if (state == this.UNKNOWN || state == this.getDefault(permissionID)) {
-      this.remove(uri, permissionID, browser);
+    if ((!uri && !browser) || (uri && !(uri instanceof Ci.nsIURI))) {
+      throw new Error(
+        "uri parameter should be an nsIURI or a browser parameter is needed"
+      );
+    }
+    if (scope == this.SCOPE_GLOBAL && state == this.BLOCK) {
+      GloballyBlockedPermissions.set(browser, permissionID);
+      browser.dispatchEvent(
+        new browser.ownerGlobal.CustomEvent("PermissionStateChange")
+      );
       return;
     }
 
+    if (state == this.UNKNOWN || state == this.getDefault(permissionID)) {
+      // Because they are controlled by two prefs with many states that do not
+      // correspond to the classical ALLOW/DENY/PROMPT model, we want to always
+      // allow the user to add exceptions to their cookie rules without removing them.
+      if (permissionID != "cookie") {
+        this.remove(uri, permissionID, browser);
+        return;
+      }
+    }
+
     if (state == this.ALLOW_COOKIES_FOR_SESSION && permissionID != "cookie") {
-      throw "ALLOW_COOKIES_FOR_SESSION can only be set on the cookie permission";
+      throw new Error(
+        "ALLOW_COOKIES_FOR_SESSION can only be set on the cookie permission"
+      );
     }
 
     // Save temporary permissions.
@@ -421,20 +613,25 @@ var SitePermissions = {
       // URI and only consider the current browser URI, to avoid notification spamming.
       //
       // If you ever consider removing this line, you likely want to implement
-      // a more fine-grained TemporaryBlockedPermissions that temporarily blocks for the
+      // a more fine-grained TemporaryPermissions that temporarily blocks for the
       // entire browser, but temporarily allows only for specific frames.
       if (state != this.BLOCK) {
-        throw "'Block' is the only permission we can save temporarily on a browser";
+        throw new Error(
+          "'Block' is the only permission we can save temporarily on a browser"
+        );
       }
 
       if (!browser) {
-        throw "TEMPORARY scoped permissions require a browser object";
+        throw new Error(
+          "TEMPORARY scoped permissions require a browser object"
+        );
       }
 
-      TemporaryBlockedPermissions.set(browser, permissionID);
+      TemporaryPermissions.set(browser, permissionID, state);
 
-      browser.dispatchEvent(new browser.ownerGlobal
-                                       .CustomEvent("PermissionStateChange"));
+      browser.dispatchEvent(
+        new browser.ownerGlobal.CustomEvent("PermissionStateChange")
+      );
     } else if (this.isSupportedURI(uri)) {
       let perms_scope = Services.perms.EXPIRE_NEVER;
       if (scope == this.SCOPE_SESSION) {
@@ -460,16 +657,23 @@ var SitePermissions = {
    *        The browser object to remove temporary permissions on.
    */
   remove(uri, permissionID, browser) {
-    if (this.isSupportedURI(uri))
+    if ((!uri && !browser) || (uri && !(uri instanceof Ci.nsIURI))) {
+      throw new Error(
+        "uri parameter should be an nsIURI or a browser parameter is needed"
+      );
+    }
+    if (this.isSupportedURI(uri)) {
       Services.perms.remove(uri, permissionID);
+    }
 
-    // TemporaryBlockedPermissions.get() deletes expired permissions automatically,
-    if (TemporaryBlockedPermissions.get(browser, permissionID)) {
+    // TemporaryPermissions.get() deletes expired permissions automatically,
+    if (TemporaryPermissions.get(browser, permissionID)) {
       // If it exists but has not expired, remove it explicitly.
-      TemporaryBlockedPermissions.remove(browser, permissionID);
+      TemporaryPermissions.remove(browser, permissionID);
       // Send a PermissionStateChange event only if the permission hasn't expired.
-      browser.dispatchEvent(new browser.ownerGlobal
-                                       .CustomEvent("PermissionStateChange"));
+      browser.dispatchEvent(
+        new browser.ownerGlobal.CustomEvent("PermissionStateChange")
+      );
     }
   },
 
@@ -480,7 +684,7 @@ var SitePermissions = {
    *        The browser object to clear.
    */
   clearTemporaryPermissions(browser) {
-    TemporaryBlockedPermissions.clear(browser);
+    TemporaryPermissions.clear(browser);
   },
 
   /**
@@ -493,7 +697,8 @@ var SitePermissions = {
    *        The browser object to copy to.
    */
   copyTemporaryPermissions(browser, newBrowser) {
-    TemporaryBlockedPermissions.copy(browser, newBrowser);
+    TemporaryPermissions.copy(browser, newBrowser);
+    GloballyBlockedPermissions.copy(browser, newBrowser);
   },
 
   /**
@@ -503,9 +708,20 @@ var SitePermissions = {
    * @param {string} permissionID
    *        The permission to get the label for.
    *
-   * @return {String} the localized label.
+   * @return {String} the localized label or null if none is available.
    */
   getPermissionLabel(permissionID) {
+    if (!(permissionID in gPermissionObject)) {
+      // Permission can't be found.
+      return null;
+    }
+    if (
+      "labelID" in gPermissionObject[permissionID] &&
+      gPermissionObject[permissionID].labelID === null
+    ) {
+      // Permission doesn't support having a label.
+      return null;
+    }
     let labelID = gPermissionObject[permissionID].labelID || permissionID;
     return gStringBundle.GetStringFromName("permission." + labelID + ".label");
   },
@@ -528,7 +744,9 @@ var SitePermissions = {
       case this.ALLOW:
         return gStringBundle.GetStringFromName("state.multichoice.allow");
       case this.ALLOW_COOKIES_FOR_SESSION:
-        return gStringBundle.GetStringFromName("state.multichoice.allowForSession");
+        return gStringBundle.GetStringFromName(
+          "state.multichoice.allowForSession"
+        );
       case this.BLOCK:
         return gStringBundle.GetStringFromName("state.multichoice.block");
       default:
@@ -560,14 +778,31 @@ var SitePermissions = {
       case this.PROMPT:
         return gStringBundle.GetStringFromName("state.current.prompt");
       case this.ALLOW:
-        if (scope && scope != this.SCOPE_PERSISTENT && scope != this.SCOPE_POLICY)
-          return gStringBundle.GetStringFromName("state.current.allowedTemporarily");
+        if (
+          scope &&
+          scope != this.SCOPE_PERSISTENT &&
+          scope != this.SCOPE_POLICY
+        ) {
+          return gStringBundle.GetStringFromName(
+            "state.current.allowedTemporarily"
+          );
+        }
         return gStringBundle.GetStringFromName("state.current.allowed");
       case this.ALLOW_COOKIES_FOR_SESSION:
-        return gStringBundle.GetStringFromName("state.current.allowedForSession");
+        return gStringBundle.GetStringFromName(
+          "state.current.allowedForSession"
+        );
       case this.BLOCK:
-        if (scope && scope != this.SCOPE_PERSISTENT && scope != this.SCOPE_POLICY)
-          return gStringBundle.GetStringFromName("state.current.blockedTemporarily");
+        if (
+          scope &&
+          scope != this.SCOPE_PERSISTENT &&
+          scope != this.SCOPE_POLICY &&
+          scope != this.SCOPE_GLOBAL
+        ) {
+          return gStringBundle.GetStringFromName(
+            "state.current.blockedTemporarily"
+          );
+        }
         return gStringBundle.GetStringFromName("state.current.blocked");
       default:
         return null;
@@ -600,95 +835,130 @@ var gPermissionObject = {
    *    don't want to expose a "Hide Prompt" button to the user through pageinfo.
    */
 
-  "image": {
-    states: [ SitePermissions.ALLOW, SitePermissions.BLOCK ],
+  "autoplay-media": {
+    exactHostMatch: true,
+    getDefault() {
+      let state = Services.prefs.getIntPref(
+        "media.autoplay.default",
+        Ci.nsIAutoplay.BLOCKED
+      );
+      if (state == Ci.nsIAutoplay.ALLOWED) {
+        return SitePermissions.ALLOW;
+      } else if (state == Ci.nsIAutoplay.BLOCKED) {
+        return SitePermissions.BLOCK;
+      }
+      return SitePermissions.UNKNOWN;
+    },
+    labelID: "autoplay-media2",
+    states: [SitePermissions.ALLOW, SitePermissions.BLOCK],
   },
 
-  "cookie": {
-    states: [ SitePermissions.ALLOW, SitePermissions.ALLOW_COOKIES_FOR_SESSION, SitePermissions.BLOCK ],
-    getDefault() {
-      if (Services.prefs.getIntPref("network.cookie.cookieBehavior") == 2)
-        return SitePermissions.BLOCK;
+  image: {
+    states: [SitePermissions.ALLOW, SitePermissions.BLOCK],
+  },
 
-      if (Services.prefs.getIntPref("network.cookie.lifetimePolicy") == 2)
+  cookie: {
+    states: [
+      SitePermissions.ALLOW,
+      SitePermissions.ALLOW_COOKIES_FOR_SESSION,
+      SitePermissions.BLOCK,
+    ],
+    getDefault() {
+      if (
+        Services.prefs.getIntPref("network.cookie.cookieBehavior") ==
+        Ci.nsICookieService.BEHAVIOR_REJECT
+      ) {
+        return SitePermissions.BLOCK;
+      }
+
+      if (
+        Services.prefs.getIntPref("network.cookie.lifetimePolicy") ==
+        Ci.nsICookieService.ACCEPT_SESSION
+      ) {
         return SitePermissions.ALLOW_COOKIES_FOR_SESSION;
+      }
 
       return SitePermissions.ALLOW;
-    }
+    },
   },
 
   "desktop-notification": {
     exactHostMatch: true,
-    labelID: "desktop-notification2",
+    labelID: "desktop-notification3",
   },
 
-  "camera": {
+  camera: {
     exactHostMatch: true,
   },
 
-  "microphone": {
+  microphone: {
     exactHostMatch: true,
   },
 
-  "screen": {
+  screen: {
     exactHostMatch: true,
-    states: [ SitePermissions.UNKNOWN, SitePermissions.BLOCK ],
+    states: [SitePermissions.UNKNOWN, SitePermissions.BLOCK],
   },
 
-  "popup": {
+  popup: {
     getDefault() {
-      return Services.prefs.getBoolPref("dom.disable_open_during_load") ?
-               SitePermissions.BLOCK : SitePermissions.ALLOW;
+      return Services.prefs.getBoolPref("dom.disable_open_during_load")
+        ? SitePermissions.BLOCK
+        : SitePermissions.ALLOW;
     },
-    states: [ SitePermissions.ALLOW, SitePermissions.BLOCK ],
+    states: [SitePermissions.ALLOW, SitePermissions.BLOCK],
   },
 
-  "install": {
+  install: {
     getDefault() {
-      return Services.prefs.getBoolPref("xpinstall.whitelist.required") ?
-               SitePermissions.BLOCK : SitePermissions.ALLOW;
+      return Services.prefs.getBoolPref("xpinstall.whitelist.required")
+        ? SitePermissions.UNKNOWN
+        : SitePermissions.ALLOW;
     },
-    states: [ SitePermissions.ALLOW, SitePermissions.BLOCK ],
   },
 
-  "geo": {
-    exactHostMatch: true
+  geo: {
+    exactHostMatch: true,
   },
 
   "focus-tab-by-prompt": {
     exactHostMatch: true,
-    states: [ SitePermissions.UNKNOWN, SitePermissions.ALLOW ],
+    states: [SitePermissions.UNKNOWN, SitePermissions.ALLOW],
   },
   "persistent-storage": {
-    exactHostMatch: true
+    exactHostMatch: true,
   },
 
-  "shortcuts": {
-    states: [ SitePermissions.ALLOW, SitePermissions.BLOCK ],
+  shortcuts: {
+    states: [SitePermissions.ALLOW, SitePermissions.BLOCK],
   },
 
-  "canvas": {
-  },
+  canvas: {},
 
   "plugin:flash": {
     labelID: "flash-plugin",
-    states: [ SitePermissions.UNKNOWN, SitePermissions.ALLOW, SitePermissions.BLOCK ],
+    states: [
+      SitePermissions.UNKNOWN,
+      SitePermissions.ALLOW,
+      SitePermissions.BLOCK,
+    ],
   },
 
-  "midi": {
-    exactHostMatch: true
+  midi: {
+    exactHostMatch: true,
   },
 
   "midi-sysex": {
-    exactHostMatch: true
-  }
-};
+    exactHostMatch: true,
+  },
 
-// Delete this entry while being pre-off
-// or the persistent-storage permission would appear in Page info's Permission section
-if (!Services.prefs.getBoolPref("browser.storageManager.enabled")) {
-  delete gPermissionObject["persistent-storage"];
-}
+  "storage-access": {
+    labelID: null,
+    getDefault() {
+      return SitePermissions.UNKNOWN;
+    },
+  },
+};
 
 if (!Services.prefs.getBoolPref("dom.webmidi.enabled")) {
   // ESLint gets angry about array versus dot notation here, but some permission
@@ -698,5 +968,16 @@ if (!Services.prefs.getBoolPref("dom.webmidi.enabled")) {
   delete gPermissionObject["midi-sysex"];
 }
 
-XPCOMUtils.defineLazyPreferenceGetter(SitePermissions, "temporaryPermissionExpireTime",
-                                      "privacy.temporary_permission_expire_time_ms", 3600 * 1000);
+XPCOMUtils.defineLazyPreferenceGetter(
+  SitePermissions,
+  "temporaryPermissionExpireTime",
+  "privacy.temporary_permission_expire_time_ms",
+  3600 * 1000
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  SitePermissions,
+  "resistFingerprinting",
+  "privacy.resistFingerprinting",
+  false,
+  SitePermissions.onResistFingerprintingChanged.bind(SitePermissions)
+);

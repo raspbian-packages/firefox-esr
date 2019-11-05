@@ -74,7 +74,7 @@ class ResolveReplyRunnable final : public Runnable {
                        const nsACString& aHostTarget, uint16_t aPort,
                        uint16_t aTxtLen, const unsigned char* aTxtRecord,
                        ResolveOperator* aContext);
-  ~ResolveReplyRunnable();
+  ~ResolveReplyRunnable() = default;
 
   NS_IMETHOD Run() override;
 
@@ -105,7 +105,7 @@ class GetAddrInfoReplyRunnable final : public Runnable {
                            const nsACString& aHostName,
                            const mozilla::net::NetAddr& aAddress, uint32_t aTTL,
                            GetAddrInfoOperator* aContext);
-  ~GetAddrInfoReplyRunnable();
+  ~GetAddrInfoReplyRunnable() = default;
 
   NS_IMETHOD Run() override;
 

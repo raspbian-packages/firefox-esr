@@ -4,24 +4,23 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Log.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-const logger = Log.repository.getLogger("Marionette");
+const { ElementNotAccessibleError } = ChromeUtils.import(
+  "chrome://marionette/content/error.js"
+);
+const { Log } = ChromeUtils.import("chrome://marionette/content/log.js");
 
-const {ElementNotAccessibleError} =
-    ChromeUtils.import("chrome://marionette/content/error.js", {});
-
-ChromeUtils.defineModuleGetter(
-    this, "setInterval", "resource://gre/modules/Timer.jsm");
-ChromeUtils.defineModuleGetter(
-    this, "clearInterval", "resource://gre/modules/Timer.jsm");
+XPCOMUtils.defineLazyGetter(this, "logger", Log.get);
 
 XPCOMUtils.defineLazyGetter(this, "service", () => {
   try {
-    return Cc["@mozilla.org/accessibilityService;1"]
-        .getService(Ci.nsIAccessibilityService);
+    return Cc["@mozilla.org/accessibilityService;1"].getService(
+      Ci.nsIAccessibilityService
+    );
   } catch (e) {
     logger.warn("Accessibility module is not present");
     return undefined;
@@ -87,7 +86,6 @@ accessibility.ActionableRoles = new Set([
   "switch",
 ]);
 
-
 /**
  * Factory function that constructs a new {@code accessibility.Checks}
  * object with enforced strictness or not.
@@ -104,7 +102,6 @@ accessibility.get = function(strict = false) {
  * accessibility as well as accessibility of user interactions.
  */
 accessibility.Checks = class {
-
   /**
    * @param {boolean} strict
    *     Flag indicating whether the accessibility issue should be logged
@@ -138,8 +135,9 @@ accessibility.Checks = class {
       }
 
       // First, check if accessibility is ready.
-      let docAcc = accessibility.service
-          .getAccessibleFor(element.ownerDocument);
+      let docAcc = accessibility.service.getAccessibleFor(
+        element.ownerDocument
+      );
       let state = {};
       docAcc.getState(state, {});
       if ((state.value & Ci.nsIAccessibleStates.STATE_BUSY) == 0) {
@@ -181,8 +179,9 @@ accessibility.Checks = class {
         },
       };
       Services.obs.addObserver(eventObserver, "accessible-event");
-    }).catch(() => this.error(
-        "Element does not have an accessible object", element));
+    }).catch(() =>
+      this.error("Element does not have an accessible object", element)
+    );
   }
 
   /**
@@ -198,7 +197,8 @@ accessibility.Checks = class {
    */
   isActionableRole(accessible) {
     return accessibility.ActionableRoles.has(
-        accessibility.service.getStringRole(accessible.role));
+      accessibility.service.getStringRole(accessible.role)
+    );
   }
 
   /**
@@ -276,6 +276,10 @@ accessibility.Checks = class {
    *     True if element is hidden from user, false otherwise.
    */
   isHidden(accessible) {
+    if (!accessible) {
+      return true;
+    }
+
     while (accessible) {
       if (this.hasHiddenAttribute(accessible)) {
         return true;
@@ -301,19 +305,17 @@ accessibility.Checks = class {
    *     |accessible|'s.
    */
   assertVisible(accessible, element, visible) {
-    if (!accessible) {
-      return;
-    }
-
     let hiddenAccessibility = this.isHidden(accessible);
 
     let message;
     if (visible && hiddenAccessibility) {
-      message = "Element is not currently visible via the accessibility API " +
-          "and may not be manipulated by it";
+      message =
+        "Element is not currently visible via the accessibility API " +
+        "and may not be manipulated by it";
     } else if (!visible && !hiddenAccessibility) {
-      message = "Element is currently only visible via the accessibility API " +
-          "and can be manipulated by it";
+      message =
+        "Element is currently only visible via the accessibility API " +
+        "and can be manipulated by it";
     }
     this.error(message, element);
   }
@@ -339,14 +341,18 @@ accessibility.Checks = class {
 
     let win = element.ownerGlobal;
     let disabledAccessibility = this.matchState(
-        accessible, accessibility.State.Unavailable);
-    let explorable = win.getComputedStyle(element)
-        .getPropertyValue("pointer-events") !== "none";
+      accessible,
+      accessibility.State.Unavailable
+    );
+    let explorable =
+      win.getComputedStyle(element).getPropertyValue("pointer-events") !==
+      "none";
 
     let message;
     if (!explorable && !disabledAccessibility) {
-      message = "Element is enabled but is not explorable via the " +
-          "accessibility API";
+      message =
+        "Element is enabled but is not explorable via the " +
+        "accessibility API";
     } else if (enabled && disabledAccessibility) {
       message = "Element is enabled but disabled via the accessibility API";
     } else if (!enabled && !disabledAccessibility) {
@@ -376,8 +382,9 @@ accessibility.Checks = class {
     if (!this.hasActionCount(accessible)) {
       message = "Element does not support any accessible actions";
     } else if (!this.isActionableRole(accessible)) {
-      message = "Element does not have a correct accessibility role " +
-          "and may not be manipulated via the accessibility API";
+      message =
+        "Element does not have a correct accessibility role " +
+        "and may not be manipulated via the accessibility API";
     } else if (!this.hasValidName(accessible)) {
       message = "Element is missing an accessible name";
     } else if (!this.matchState(accessible, accessibility.State.Focusable)) {
@@ -412,14 +419,18 @@ accessibility.Checks = class {
       return;
     }
 
-    let selectedAccessibility =
-        this.matchState(accessible, accessibility.State.Selected);
+    let selectedAccessibility = this.matchState(
+      accessible,
+      accessibility.State.Selected
+    );
 
     let message;
     if (selected && !selectedAccessibility) {
-      message = "Element is selected but not selected via the accessibility API";
+      message =
+        "Element is selected but not selected via the accessibility API";
     } else if (!selected && selectedAccessibility) {
-      message = "Element is not selected but selected via the accessibility API";
+      message =
+        "Element is not selected but selected via the accessibility API";
     }
     this.error(message, element);
   }
@@ -440,11 +451,10 @@ accessibility.Checks = class {
       return;
     }
     if (element) {
-      let {id, tagName, className} = element;
+      let { id, tagName, className } = element;
       message += `: id: ${id}, tagName: ${tagName}, className: ${className}`;
     }
 
     throw new ElementNotAccessibleError(message);
   }
-
 };

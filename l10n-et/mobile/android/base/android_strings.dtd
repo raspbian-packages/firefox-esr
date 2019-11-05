@@ -27,12 +27,6 @@
 <!ENTITY firstrun_button_next "Edasi">
 
 <!ENTITY firstrun_tabqueue_title "Lingid">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Luba ootel kaartide nimekiri">
-<!ENTITY firstrun_tabqueue_subtext_off "Teistes äppides avatud lingid salvestatakse nimekirja, et neid hiljem &brandShortName;is vaadata.">
-
-<!ENTITY firstrun_tabqueue_message_on "Õnnestus!">
-<!ENTITY firstrun_tabqueue_subtext_on "Sa võid selle funktsionaalsuse alati välja lülitada, liikudes &settings; -> &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Artiklid">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -69,6 +63,14 @@
 <!ENTITY  crash_restart_label "Taaskäivita &brandShortName;">
 
 <!ENTITY url_bar_default_text2 "Otsi või sisesta aadress">
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Kasuta otsimiseks või aadressi sisestamiseks oma QR-lugejat">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Kasuta otsimiseks või aadressi sisestamiseks oma mikrofoni">
 
 <!ENTITY bookmark "Järjehoidja">
 <!ENTITY bookmark_remove "Eemalda järjehoidja">
@@ -206,7 +208,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "kaartide taastamine, andmemahu säästmine, arendaja tööriistad">
 <!ENTITY pref_category_notifications "Teavitused">
-<!ENTITY pref_category_notifications_summary "uus funktsionaalsus, veebilehe uuendused">
+<!ENTITY pref_category_notifications_summary2 "uued funktsionaalsused, toote näpunäited">
 <!ENTITY pref_developer_remotedebugging_usb "Remote debugging via USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Remote debugging via Wi-Fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Wi-Fi debugging requires your device to have a QR code reader app installed.">
@@ -279,8 +281,27 @@
 <!ENTITY pref_tracking_protection_enabled_pb "lubatud privaatse veebilehitsemise ajal">
 <!ENTITY pref_tracking_protection_disabled "keelatud">
 
-<!ENTITY pref_whats_new_notification "Mis on uut &brandShortName;is?">
+<!ENTITY pref_whats_new_notification "Vaata, mida uut &brandShortName; pakub">
 <!ENTITY pref_whats_new_notification_summary "uuendamisjärgsed teavitused uue funktsionaalsuse kohta">
+
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Toote ja funktsionaalsuste näpunäited">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "rohkem teavet &brandShortName;i ja teiste &vendorShortName; toodete kasutamise kohta">
+
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference
+     Will be used in the context "<Turn on> ... to enable this feature" -->
+<!ENTITY pref_feature_tips_notification_enabling_hint "Lülita sisse">
+
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Selle valiku lubamiseks peab &pref_feature_tips_notification_enabling_path; olema juba lubatud.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -295,9 +316,11 @@
 <!-- Localization note (custom_tabs_menu_item_open_in): The variable is replaced by the name of
      default browser from user's preference, such as "Open in Firefox" -->
 <!ENTITY custom_tabs_menu_item_open_in "Ava brauseris &formatS;">
+<!ENTITY custom_tabs_menu_footer "Rakenduse toob sinuni &brandShortName;">
 <!-- Long-click title of CustomTabsActivity will copy URL to clipboard and display this hint -->
 <!ENTITY custom_tabs_hint_url_copy "URL kopeeritud">
 
+<!ENTITY pref_pwa "Progressiivsed veebirakendused">
 <!ENTITY pref_pwa_summary "Veebirakenduste lisamine avaekraanile lubatakse">
 
 <!ENTITY tracking_protection_prompt_title "Nüüd jälitamisvastase kaitsega">
@@ -352,7 +375,8 @@
 <!ENTITY pref_use_system_font_size_summary "Veebisisu skaleeritakse vastavalt süsteemi fondi suurusele">
 
 <!ENTITY pref_media_autoplay_enabled "Automaatne esitamine">
-<!ENTITY pref_media_autoplay_enabled_summary "kas veebilehed tohivad videoid ja muud meediat automaatselt esitada?">
+<!ENTITY pref_media_autoplay_allow "Luba automaatne esitamine">
+<!ENTITY pref_media_autoplay_block "Bloki automaatne esitamine">
 <!ENTITY pref_zoom_force_enabled "Suurendamine lubatakse alati">
 <!ENTITY pref_zoom_force_enabled_summary "suurendamine tehakse võimalikuks kõigil lehtedel">
 <!ENTITY pref_voice_input "Häälkäsklused">
@@ -428,6 +452,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Vigade raporteerimine">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName; asukohateenus">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Aita &vendorShortName;l kaardistada kogu maailm! Jaga oma seadme Wi-Fi ja mobiilsidevõrkude tugijaamade abil tuvastatud umbkaudset asukohta, et parandada meie asukohateenust.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName; asukoha teenus töötab">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -534,7 +563,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Vertikaalasendis paigutatakse kaardid kahte tulpa">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Leht eemaldatud">
 <!ENTITY folder_removed "Kaust eemaldati">
@@ -752,7 +781,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Viimati sünkroniseeritud: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Viimati sünkroniseeritud: mitte kunagi">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -813,13 +842,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "&brandShortName;i avamine pole võimalik. Palun paigalda ja proovi uuesti.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; ei saa rohkem uuendusi">
-<!ENTITY eol_notification_summary "Rohkema teabe saamiseks puuduta">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName;i on uuendatud">
-<!ENTITY whatsnew_notification_summary "Vaata, mis on uut selles versioonis">
+<!ENTITY whatsnew_notification_summary "Vaata uuendusi selles versioonis">
 
 <!ENTITY promotion_add_page_shortcut "Lisa otsetee lehele">
 
@@ -872,3 +898,29 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Lisa avaekraanile">
 <!ENTITY pwa_continue_to_website "Mine veebilehele">
 <!ENTITY pwa_onboarding_sumo "Sa võid lisada selle lehe oma avaekraanile, et pääseda sellele kiirelt ligi ja kasutada seda äpi sarnase kasutuskogemusega.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Esita">
+<!ENTITY pip_play_button_description "Jätka esitamist">
+<!ENTITY pip_pause_button_title "Paus">
+<!ENTITY pip_pause_button_description "Pane esitamine pausile">
+
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel "&brandShortName;">
+
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Brauser">
+<!ENTITY mls_notification_channel "&vendorShortName; asukohateenus">
+<!ENTITY download_notification_channel "Allalaadimised">
+<!ENTITY media_notification_channel "Meedia taasesitamine">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel "&brandShortName;i teavitused">
+<!ENTITY media_notification_channel2 "Heli ja video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName;i näpunäited ja trikid">
+<!ENTITY updater_notification_channel "Rakenduse uuendused">
+<!ENTITY synced_tabs_notification_channel "Sünkroniseeritud kaardid">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Saitide teavitused">

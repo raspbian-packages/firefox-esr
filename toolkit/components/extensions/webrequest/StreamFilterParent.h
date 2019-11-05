@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -20,9 +20,9 @@
 #include "nsThreadUtils.h"
 
 #if defined(_MSC_VER)
-#define FUNC __FUNCSIG__
+#  define FUNC __FUNCSIG__
 #else
-#define FUNC __PRETTY_FUNCTION__
+#  define FUNC __PRETTY_FUNCTION__
 #endif
 
 namespace mozilla {
@@ -42,10 +42,14 @@ using mozilla::ipc::IPCResult;
 class StreamFilterParent final : public PStreamFilterParent,
                                  public nsIStreamListener,
                                  public nsIThreadRetargetableStreamListener,
+                                 public nsIRequest,
                                  public StreamFilterBase {
+  friend class PStreamFilterParent;
+
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSISTREAMLISTENER
+  NS_DECL_NSIREQUEST
   NS_DECL_NSIREQUESTOBSERVER
   NS_DECL_NSITHREADRETARGETABLESTREAMLISTENER
 
@@ -84,13 +88,13 @@ class StreamFilterParent final : public PStreamFilterParent,
  protected:
   virtual ~StreamFilterParent();
 
-  virtual IPCResult RecvWrite(Data&& aData) override;
-  virtual IPCResult RecvFlushedData() override;
-  virtual IPCResult RecvSuspend() override;
-  virtual IPCResult RecvResume() override;
-  virtual IPCResult RecvClose() override;
-  virtual IPCResult RecvDisconnect() override;
-  virtual IPCResult RecvDestroy() override;
+  IPCResult RecvWrite(Data&& aData);
+  IPCResult RecvFlushedData();
+  IPCResult RecvSuspend();
+  IPCResult RecvResume();
+  IPCResult RecvClose();
+  IPCResult RecvDisconnect();
+  IPCResult RecvDestroy();
 
   virtual void DeallocPStreamFilterParent() override;
 
@@ -119,6 +123,7 @@ class StreamFilterParent final : public PStreamFilterParent,
   virtual void ActorDestroy(ActorDestroyReason aWhy) override;
 
   void Broken();
+  void FinishDisconnect();
 
   void CheckResult(bool aResult) {
     if (NS_WARN_IF(!aResult)) {
@@ -154,6 +159,7 @@ class StreamFilterParent final : public PStreamFilterParent,
   void RunOnIOThread(already_AddRefed<Runnable>);
 
   nsCOMPtr<nsIChannel> mChannel;
+  nsCOMPtr<nsILoadGroup> mLoadGroup;
   nsCOMPtr<nsIStreamListener> mOrigListener;
 
   nsCOMPtr<nsIEventTarget> mMainThread;

@@ -27,6 +27,12 @@ class DOMPointReadOnly : public nsWrapperCache {
                    double aW)
       : mParent(aParent), mX(aX), mY(aY), mZ(aZ), mW(aW) {}
 
+  static already_AddRefed<DOMPointReadOnly> FromPoint(
+      const GlobalObject& aGlobal, const DOMPointInit& aParams);
+  static already_AddRefed<DOMPointReadOnly> Constructor(
+      const GlobalObject& aGlobal, double aX, double aY, double aZ, double aW,
+      ErrorResult& aRV);
+
   NS_INLINE_DECL_CYCLE_COLLECTING_NATIVE_REFCOUNTING(DOMPointReadOnly)
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_NATIVE_CLASS(DOMPointReadOnly)
 
@@ -34,6 +40,10 @@ class DOMPointReadOnly : public nsWrapperCache {
   double Y() const { return mY; }
   double Z() const { return mZ; }
   double W() const { return mW; }
+
+  nsISupports* GetParentObject() const { return mParent; }
+  virtual JSObject* WrapObject(JSContext* aCx,
+                               JS::Handle<JSObject*> aGivenProto) override;
 
  protected:
   virtual ~DOMPointReadOnly() {}
@@ -48,14 +58,12 @@ class DOMPoint final : public DOMPointReadOnly {
                     double aZ = 0.0, double aW = 1.0)
       : DOMPointReadOnly(aParent, aX, aY, aZ, aW) {}
 
-  static already_AddRefed<DOMPoint> Constructor(const GlobalObject& aGlobal,
-                                                const DOMPointInit& aParams,
-                                                ErrorResult& aRV);
+  static already_AddRefed<DOMPoint> FromPoint(const GlobalObject& aGlobal,
+                                              const DOMPointInit& aParams);
   static already_AddRefed<DOMPoint> Constructor(const GlobalObject& aGlobal,
                                                 double aX, double aY, double aZ,
                                                 double aW, ErrorResult& aRV);
 
-  nsISupports* GetParentObject() const { return mParent; }
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 

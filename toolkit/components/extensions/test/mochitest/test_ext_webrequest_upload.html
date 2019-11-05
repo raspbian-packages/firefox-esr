@@ -3,9 +3,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/SpawnTask.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
   <script type="text/javascript" src="head.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
@@ -98,6 +97,10 @@ function background() {
   browser.webRequest.onCompleted.addListener(
     details => {
       browser.test.log(`onCompleted ${details.requestId} ${details.url}`);
+      // See bug 1471387
+      if (details.url.endsWith("/favicon.ico") || details.originUrl == "about:newtab") {
+        return;
+      }
 
       browser.test.sendMessage("done");
     },
@@ -105,6 +108,10 @@ function background() {
 
   let onBeforeRequest = details => {
     browser.test.log(`${name} ${details.requestId} ${details.url}`);
+    // See bug 1471387
+    if (details.url.endsWith("/favicon.ico") || details.originUrl == "about:newtab") {
+      return;
+    }
 
     onUpload(details);
   };

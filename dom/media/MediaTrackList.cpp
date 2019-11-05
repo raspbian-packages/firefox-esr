@@ -17,9 +17,9 @@
 namespace mozilla {
 namespace dom {
 
-MediaTrackList::MediaTrackList(nsPIDOMWindowInner* aOwnerWindow,
+MediaTrackList::MediaTrackList(nsIGlobalObject* aOwnerObject,
                                HTMLMediaElement* aMediaElement)
-    : DOMEventTargetHelper(aOwnerWindow), mMediaElement(aMediaElement) {}
+    : DOMEventTargetHelper(aOwnerObject), mMediaElement(aMediaElement) {}
 
 MediaTrackList::~MediaTrackList() {}
 
@@ -53,8 +53,9 @@ MediaTrack* MediaTrackList::GetTrackById(const nsAString& aId) {
 }
 
 void MediaTrackList::AddTrack(MediaTrack* aTrack) {
+  MOZ_ASSERT(aTrack->GetOwnerGlobal() == GetOwnerGlobal(),
+             "Where is this track from?");
   mTracks.AppendElement(aTrack);
-  aTrack->Init(GetOwner());
   aTrack->SetTrackList(this);
   CreateAndDispatchTrackEventRunner(aTrack, NS_LITERAL_STRING("addtrack"));
 
@@ -84,18 +85,19 @@ void MediaTrackList::RemoveTracks() {
 }
 
 already_AddRefed<AudioTrack> MediaTrackList::CreateAudioTrack(
-    const nsAString& aId, const nsAString& aKind, const nsAString& aLabel,
-    const nsAString& aLanguage, bool aEnabled) {
+    nsIGlobalObject* aOwnerGlobal, const nsAString& aId, const nsAString& aKind,
+    const nsAString& aLabel, const nsAString& aLanguage, bool aEnabled) {
   RefPtr<AudioTrack> track =
-      new AudioTrack(aId, aKind, aLabel, aLanguage, aEnabled);
+      new AudioTrack(aOwnerGlobal, aId, aKind, aLabel, aLanguage, aEnabled);
   return track.forget();
 }
 
 already_AddRefed<VideoTrack> MediaTrackList::CreateVideoTrack(
-    const nsAString& aId, const nsAString& aKind, const nsAString& aLabel,
-    const nsAString& aLanguage, VideoStreamTrack* aVideoTrack) {
+    nsIGlobalObject* aOwnerGlobal, const nsAString& aId, const nsAString& aKind,
+    const nsAString& aLabel, const nsAString& aLanguage,
+    VideoStreamTrack* aVideoTrack) {
   RefPtr<VideoTrack> track =
-      new VideoTrack(aId, aKind, aLabel, aLanguage, aVideoTrack);
+      new VideoTrack(aOwnerGlobal, aId, aKind, aLabel, aLanguage, aVideoTrack);
   return track.forget();
 }
 
@@ -108,8 +110,8 @@ void MediaTrackList::EmptyTracks() {
 }
 
 void MediaTrackList::CreateAndDispatchChangeEvent() {
-  RefPtr<AsyncEventDispatcher> asyncDispatcher =
-      new AsyncEventDispatcher(this, NS_LITERAL_STRING("change"), false);
+  RefPtr<AsyncEventDispatcher> asyncDispatcher = new AsyncEventDispatcher(
+      this, NS_LITERAL_STRING("change"), CanBubble::eNo);
   asyncDispatcher->PostDOMEvent();
 }
 

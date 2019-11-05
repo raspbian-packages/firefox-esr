@@ -9,25 +9,32 @@ const DATA_URI_SOURCE = "view-source:" + DATA_URI;
 add_task(async function() {
   let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, DATA_URI);
   registerCleanupFunction(async function() {
-    await BrowserTestUtils.removeTab(tab);
+    BrowserTestUtils.removeTab(tab);
   });
 
   let promiseTab = BrowserTestUtils.waitForNewTab(gBrowser, DATA_URI_SOURCE);
   BrowserViewSource(tab.linkedBrowser);
   let viewSourceTab = await promiseTab;
   registerCleanupFunction(async function() {
-    await BrowserTestUtils.removeTab(viewSourceTab);
+    BrowserTestUtils.removeTab(viewSourceTab);
   });
 
   let dummyPage = getChromeDir(getResolvedURI(gTestPath));
   dummyPage.append(DUMMY_FILE);
+  dummyPage.normalize();
   const uriString = Services.io.newFileURI(dummyPage).spec;
 
   let viewSourceBrowser = viewSourceTab.linkedBrowser;
-  let promiseLoad =
-    BrowserTestUtils.browserLoaded(viewSourceBrowser, false, uriString);
-  viewSourceBrowser.loadURI(uriString);
+  let promiseLoad = BrowserTestUtils.browserLoaded(
+    viewSourceBrowser,
+    false,
+    uriString
+  );
+  BrowserTestUtils.loadURI(viewSourceBrowser, uriString);
   let href = await promiseLoad;
-  is(href, uriString,
-    "Check file:// URI loads in a browser that was previously for view-source");
+  is(
+    href,
+    uriString,
+    "Check file:// URI loads in a browser that was previously for view-source"
+  );
 });

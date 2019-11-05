@@ -5,25 +5,24 @@
 /* eslint-env browser */
 /* global addMessageListener, sendAsyncMessage, content */
 "use strict";
-const {require} = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
-const { Task } = require("devtools/shared/task");
+const { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm");
 const Services = require("Services");
 
-addMessageListener("devtools:test:history", function ({ data }) {
+addMessageListener("devtools:test:history", function({ data }) {
   content.history[data.direction]();
 });
 
-addMessageListener("devtools:test:navigate", function ({ data }) {
+addMessageListener("devtools:test:navigate", function({ data }) {
   content.location = data.location;
 });
 
-addMessageListener("devtools:test:reload", function ({ data }) {
+addMessageListener("devtools:test:reload", function({ data }) {
   data = data || {};
   content.location.reload(data.forceget);
 });
 
-addMessageListener("devtools:test:console", function ({ data }) {
-  let { method, args, id } = data;
+addMessageListener("devtools:test:console", function({ data }) {
+  const { method, args, id } = data;
   content.console[method].apply(content.console, args);
   sendAsyncMessage("devtools:test:console:response", { id });
 });
@@ -47,19 +46,23 @@ addMessageListener("devtools:test:console", function ({ data }) {
  */
 function promiseXHR(data) {
   return new Promise((resolve, reject) => {
-    let xhr = new content.XMLHttpRequest();
+    const xhr = new content.XMLHttpRequest();
 
-    let method = data.method || "GET";
+    const method = data.method || "GET";
     let url = data.url || content.location.href;
-    let body = data.body || "";
+    const body = data.body || "";
 
     if (data.nocache) {
       url += "?devtools-cachebust=" + Math.random();
     }
 
-    xhr.addEventListener("loadend", function (event) {
-      resolve({ status: xhr.status, response: xhr.response });
-    }, {once: true});
+    xhr.addEventListener(
+      "loadend",
+      function(event) {
+        resolve({ status: xhr.status, response: xhr.response });
+      },
+      { once: true }
+    );
 
     xhr.open(method, url);
 
@@ -71,6 +74,50 @@ function promiseXHR(data) {
     }
 
     xhr.send(body);
+  });
+}
+
+/**
+ * Performs a single websocket request and returns a promise that resolves once
+ * the request has loaded.
+ *
+ * @param Object data
+ *        { url: the url to request (default: content.location.href),
+ *          nocache: append an unique token to the query string (default: true),
+ *        }
+ *
+ * @return Promise A promise that's resolved with object
+ *         { status: websocket status(101),
+ *           response: empty string }
+ *
+ */
+function promiseWS(data) {
+  return new Promise((resolve, reject) => {
+    let url = data.url;
+
+    if (data.nocache) {
+      url += "?devtools-cachebust=" + Math.random();
+    }
+
+    /* Create websocket instance */
+    const socket = new content.WebSocket(url);
+
+    /* Since we only use HTTP server to mock websocket, so just ignore the error */
+    socket.onclose = e => {
+      socket.close();
+      resolve({
+        status: 101,
+        response: "",
+      });
+    };
+
+    socket.onerror = e => {
+      socket.close();
+      resolve({
+        status: 101,
+        response: "",
+      });
+    };
   });
 }
 
@@ -101,38 +148,47 @@ function promiseXHR(data) {
  *   response: XMLHttpRequest.response
  * }
  */
-addMessageListener("devtools:test:xhr", Task.async(function* ({ data }) {
-  let requests = Array.isArray(data) ? data : [data];
-  let responses = [];
+addMessageListener("devtools:test:xhr", async function({ data }) {
+  const requests = Array.isArray(data) ? data : [data];
+  const responses = [];
 
-  for (let request of requests) {
-    let response = yield promiseXHR(request);
+  for (const request of requests) {
+    let response = null;
+    if (request.ws) {
+      response = await promiseWS(request);
+    } else {
+      response = await promiseXHR(request);
+    }
     responses.push(response);
   }
 
   sendAsyncMessage("devtools:test:xhr", responses);
-}));
+});
 
-addMessageListener("devtools:test:profiler", function ({ data }) {
-  let { method, args, id } = data;
-  let result = Services.profiler[method](...args);
+addMessageListener("devtools:test:profiler", function({ data }) {
+  const { method, args, id } = data;
+  const result = Services.profiler[method](...args);
   sendAsyncMessage("devtools:test:profiler:response", {
     data: result,
-    id: id
+    id: id,
   });
 });
 
 // To eval in content, look at `evalInDebuggee` in the shared-head.js.
-addMessageListener("devtools:test:eval", function ({ data }) {
+addMessageListener("devtools:test:eval", function({ data }) {
   sendAsyncMessage("devtools:test:eval:response", {
     value: content.eval(data.script),
-    id: data.id
+    id: data.id,
   });
 });
 
-addEventListener("load", function () {
-  sendAsyncMessage("devtools:test:load");
-}, true);
+addEventListener(
+  "load",
+  function() {
+    sendAsyncMessage("devtools:test:load");
+  },
+  true
+);
 
 /**
  * Set a given style property value on a node.
@@ -142,9 +198,9 @@ addEventListener("load", function () {
  * - {String} propertyName The name of the property to set.
  * - {String} propertyValue The value for the property.
  */
-addMessageListener("devtools:test:setStyle", function (msg) {
-  let {selector, propertyName, propertyValue} = msg.data;
-  let node = superQuerySelector(selector);
+addMessageListener("devtools:test:setStyle", function(msg) {
+  const { selector, propertyName, propertyValue } = msg.data;
+  const node = superQuerySelector(selector);
   if (!node) {
     return;
   }
@@ -155,6 +211,33 @@ addMessageListener("devtools:test:setStyle", function (msg) {
 });
 
 /**
+ * Set multiple styles to the node for the given selector at once.
+ * @param {Object} data
+ * - {String} selector The CSS selector to get the node (can be a "super"
+ *   selector).
+ * - {Object} properties
+ *            e.g. {
+ *              opacity: 0,
+ *              color: "red",
+ *              animationTimingFunction: "linear",
+ *            }
+ */
+addMessageListener("devtools:test:setMultipleStyles", function(msg) {
+  const { selector, properties } = msg.data;
+  const node = superQuerySelector(selector);
+  if (!node) {
+    return;
+  }
+
+  for (const propertyName in properties) {
+    const propertyValue = properties[propertyName];
+    node.style[propertyName] = propertyValue;
+  }
+
+  sendAsyncMessage("devtools:test:setMultipleStyles");
+});
+
+/**
  * Set a given attribute value on a node.
  * @param {Object} data
  * - {String} selector The CSS selector to get the node (can be a "super"
@@ -162,9 +245,9 @@ addMessageListener("devtools:test:setStyle", function (msg) {
  * - {String} attributeName The name of the attribute to set.
  * - {String} attributeValue The value for the attribute.
  */
-addMessageListener("devtools:test:setAttribute", function (msg) {
-  let {selector, attributeName, attributeValue} = msg.data;
-  let node = superQuerySelector(selector);
+addMessageListener("devtools:test:setAttribute", function(msg) {
+  const { selector, attributeName, attributeValue } = msg.data;
+  const node = superQuerySelector(selector);
   if (!node) {
     return;
   }
@@ -185,12 +268,12 @@ addMessageListener("devtools:test:setAttribute", function (msg) {
  * @return {DOMNode} The node, or null if not found.
  */
 function superQuerySelector(superSelector, root = content.document) {
-  let frameIndex = superSelector.indexOf("||");
+  const frameIndex = superSelector.indexOf("||");
   if (frameIndex === -1) {
     return root.querySelector(superSelector);
   }
-  let rootSelector = superSelector.substring(0, frameIndex).trim();
-  let childSelector = superSelector.substring(frameIndex + 2).trim();
+  const rootSelector = superSelector.substring(0, frameIndex).trim();
+  const childSelector = superSelector.substring(frameIndex + 2).trim();
   root = root.querySelector(rootSelector);
   if (!root || !root.contentWindow) {
     return null;

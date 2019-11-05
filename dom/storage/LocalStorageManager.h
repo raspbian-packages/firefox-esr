@@ -8,6 +8,7 @@
 #define mozilla_dom_StorageManager_h
 
 #include "nsIDOMStorageManager.h"
+#include "nsILocalStorageManager.h"
 #include "StorageObserver.h"
 
 #include "LocalStorage.h"
@@ -26,9 +27,11 @@ class OriginAttributesPattern;
 namespace dom {
 
 class LocalStorageManager final : public nsIDOMStorageManager,
+                                  public nsILocalStorageManager,
                                   public StorageObserverSink {
   NS_DECL_ISUPPORTS
   NS_DECL_NSIDOMSTORAGEMANAGER
+  NS_DECL_NSILOCALSTORAGEMANAGER
 
  public:
   LocalStorageManager();
@@ -44,8 +47,8 @@ class LocalStorageManager final : public nsIDOMStorageManager,
   already_AddRefed<StorageUsage> GetOriginUsage(
       const nsACString& aOriginNoSuffix);
 
-  static nsCString CreateOrigin(const nsACString& aOriginSuffix,
-                                const nsACString& aOriginNoSuffix);
+  static nsAutoCString CreateOrigin(const nsACString& aOriginSuffix,
+                                    const nsACString& aOriginNoSuffix);
 
  private:
   ~LocalStorageManager();
@@ -62,8 +65,10 @@ class LocalStorageManager final : public nsIDOMStorageManager,
     explicit LocalStorageCacheHashKey(const nsACString* aKey)
         : nsCStringHashKey(aKey), mCache(new LocalStorageCache(aKey)) {}
 
-    LocalStorageCacheHashKey(const LocalStorageCacheHashKey& aOther)
-        : nsCStringHashKey(aOther) {
+    LocalStorageCacheHashKey(LocalStorageCacheHashKey&& aOther)
+        : nsCStringHashKey(std::move(aOther)),
+          mCache(std::move(aOther.mCache)),
+          mCacheRef(std::move(aOther.mCacheRef)) {
       NS_ERROR("Shouldn't be called");
     }
 
@@ -96,25 +101,20 @@ class LocalStorageManager final : public nsIDOMStorageManager,
   // Helper for creation of DOM storage objects
   nsresult GetStorageInternal(CreateMode aCreate, mozIDOMWindow* aWindow,
                               nsIPrincipal* aPrincipal,
+                              nsIPrincipal* aStoragePrincipal,
                               const nsAString& aDocumentURI, bool aPrivate,
-                              nsIDOMStorage** aRetval);
+                              Storage** aRetval);
 
   // Suffix->origin->cache map
   typedef nsTHashtable<LocalStorageCacheHashKey> CacheOriginHashtable;
   nsClassHashtable<nsCStringHashKey, CacheOriginHashtable> mCaches;
-
-  // If mLowDiskSpace is true it indicates a low device storage situation and
-  // so no localStorage writes are allowed. sessionStorage writes are still
-  // allowed.
-  bool mLowDiskSpace;
-  bool IsLowDiskSpace() const { return mLowDiskSpace; };
 
   void ClearCaches(uint32_t aUnloadFlags,
                    const OriginAttributesPattern& aPattern,
                    const nsACString& aKeyPrefix);
 
   // Global getter of localStorage manager service
-  static LocalStorageManager* Self() { return sSelf; }
+  static LocalStorageManager* Self();
 
   // Like Self, but creates an instance if we're not yet initialized.
   static LocalStorageManager* Ensure();

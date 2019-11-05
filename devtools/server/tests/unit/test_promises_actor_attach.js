@@ -8,30 +8,17 @@
  * states.
  */
 
-const { PromisesFront } = require("devtools/shared/fronts/promises");
-
-add_task(async function () {
-  let client = await startTestDebuggerServer("promises-actor-test");
-  let chromeActors = await getChromeActors(client);
-
-  // We have to attach the chrome TabActor before playing with the PromiseActor
-  await attachTab(client, chromeActors);
-  await testAttach(client, chromeActors);
-
-  let response = await listTabs(client);
-  let targetTab = findTab(response.tabs, "promises-actor-test");
-  ok(targetTab, "Found our target tab.");
-
-  let [ tabResponse ] = await attachTab(client, targetTab);
-
-  await testAttach(client, tabResponse);
-
-  await close(client);
+add_task(async function() {
+  const { promisesFront } = await createMainProcessPromisesFront();
+  await testAttach(promisesFront);
 });
 
-async function testAttach(client, parent) {
-  let promises = PromisesFront(client, parent);
+add_task(async function() {
+  const { promisesFront } = await createTabPromisesFront();
+  await testAttach(promisesFront);
+});
 
+async function testAttach(promises) {
   try {
     await promises.detach();
     ok(false, "Should not be able to detach when in a detached state.");

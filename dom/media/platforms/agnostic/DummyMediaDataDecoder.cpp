@@ -16,7 +16,7 @@ DummyDataCreator::~DummyDataCreator() {}
 DummyMediaDataDecoder::DummyMediaDataDecoder(
     UniquePtr<DummyDataCreator>&& aCreator, const nsACString& aDescription,
     const CreateDecoderParams& aParams)
-    : mCreator(Move(aCreator)),
+    : mCreator(std::move(aCreator)),
       mIsH264(MP4Decoder::IsH264(aParams.mConfig.mMimeType)),
       mMaxRefFrames(mIsH264 ? H264::HasSPS(aParams.VideoConfig().mExtraData)
                                   ? H264::ComputeMaxRefFrames(
@@ -57,7 +57,7 @@ RefPtr<MediaDataDecoder::DecodePromise> DummyMediaDataDecoder::Drain() {
   while (!mReorderQueue.IsEmpty()) {
     samples.AppendElement(mReorderQueue.Pop().get());
   }
-  return DecodePromise::CreateAndResolve(samples, __func__);
+  return DecodePromise::CreateAndResolve(std::move(samples), __func__);
 }
 
 RefPtr<MediaDataDecoder::FlushPromise> DummyMediaDataDecoder::Flush() {

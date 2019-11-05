@@ -9,14 +9,12 @@
 
 #include "mozilla/Attributes.h"
 #include "mozilla/dom/IDBTransactionBinding.h"
-#include "mozilla/dom/IDBWrapperCache.h"
+#include "mozilla/DOMEventTargetHelper.h"
 #include "nsAutoPtr.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsIRunnable.h"
 #include "nsString.h"
 #include "nsTArray.h"
-
-class nsPIDOMWindowInner;
 
 namespace mozilla {
 
@@ -31,6 +29,7 @@ class IDBDatabase;
 class IDBObjectStore;
 class IDBOpenDBRequest;
 class IDBRequest;
+class StrongWorkerRef;
 
 namespace indexedDB {
 class BackgroundCursorChild;
@@ -43,7 +42,7 @@ class OpenCursorParams;
 class RequestParams;
 }  // namespace indexedDB
 
-class IDBTransaction final : public IDBWrapperCache, public nsIRunnable {
+class IDBTransaction final : public DOMEventTargetHelper, public nsIRunnable {
   friend class indexedDB::BackgroundCursorChild;
   friend class indexedDB::BackgroundRequestChild;
 
@@ -70,7 +69,7 @@ class IDBTransaction final : public IDBWrapperCache, public nsIRunnable {
   nsTArray<nsString> mObjectStoreNames;
   nsTArray<RefPtr<IDBObjectStore>> mObjectStores;
   nsTArray<RefPtr<IDBObjectStore>> mDeletedObjectStores;
-  nsAutoPtr<WorkerHolder> mWorkerHolder;
+  RefPtr<StrongWorkerRef> mWorkerRef;
 
   // Tagged with mMode. If mMode is VERSION_CHANGE then mBackgroundActor will be
   // a BackgroundVersionChangeTransactionChild. Otherwise it will be a
@@ -229,7 +228,7 @@ class IDBTransaction final : public IDBWrapperCache, public nsIRunnable {
     return mLoggingSerialNumber;
   }
 
-  nsPIDOMWindowInner* GetParentObject() const;
+  nsIGlobalObject* GetParentObject() const;
 
   IDBTransactionMode GetMode(ErrorResult& aRv) const;
 
@@ -256,15 +255,14 @@ class IDBTransaction final : public IDBWrapperCache, public nsIRunnable {
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_NSIRUNNABLE
-  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(IDBTransaction, IDBWrapperCache)
+  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(IDBTransaction, DOMEventTargetHelper)
 
   // nsWrapperCache
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
-  // nsIDOMEventTarget
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
+  // EventTarget
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
 
  private:
   IDBTransaction(IDBDatabase* aDatabase,

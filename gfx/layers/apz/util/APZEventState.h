@@ -9,10 +9,11 @@
 
 #include <stdint.h>
 
-#include "FrameMetrics.h"  // for ScrollableLayerGuid
 #include "Units.h"
 #include "mozilla/EventForwards.h"
 #include "mozilla/layers/GeckoContentController.h"  // for APZStateChange
+#include "mozilla/layers/ScrollableLayerGuid.h"     // for ScrollableLayerGuid
+#include "mozilla/layers/TouchCounter.h"            // for TouchCounter
 #include "mozilla/RefPtr.h"
 #include "nsCOMPtr.h"
 #include "nsISupportsImpl.h"        // for NS_INLINE_DECL_REFCOUNTING
@@ -23,17 +24,17 @@
 template <class>
 class nsCOMPtr;
 class nsIContent;
-class nsIDocument;
-class nsIPresShell;
 class nsIWidget;
 
 namespace mozilla {
+
+class PresShell;
+
 namespace layers {
 
 class ActiveElementManager;
 
-typedef std::function<void(const ScrollableLayerGuid&,
-                           uint64_t /* input block id */,
+typedef std::function<void(uint64_t /* input block id */,
                            bool /* prevent default */)>
     ContentReceivedInputBlockCallback;
 
@@ -41,9 +42,9 @@ typedef std::function<void(const ScrollableLayerGuid&,
  * A content-side component that keeps track of state for handling APZ
  * gestures and sending APZ notifications.
  */
-class APZEventState {
+class APZEventState final {
   typedef GeckoContentController::APZStateChange APZStateChange;
-  typedef FrameMetrics::ViewID ViewID;
+  typedef ScrollableLayerGuid::ViewID ViewID;
 
  public:
   APZEventState(nsIWidget* aWidget,
@@ -53,15 +54,13 @@ class APZEventState {
 
   void ProcessSingleTap(const CSSPoint& aPoint,
                         const CSSToLayoutDeviceScale& aScale,
-                        Modifiers aModifiers, const ScrollableLayerGuid& aGuid,
-                        int32_t aClickCount);
-  void ProcessLongTap(const nsCOMPtr<nsIPresShell>& aUtils,
-                      const CSSPoint& aPoint,
+                        Modifiers aModifiers, int32_t aClickCount);
+  MOZ_CAN_RUN_SCRIPT
+  void ProcessLongTap(PresShell* aPresShell, const CSSPoint& aPoint,
                       const CSSToLayoutDeviceScale& aScale,
-                      Modifiers aModifiers, const ScrollableLayerGuid& aGuid,
-                      uint64_t aInputBlockId);
-  void ProcessLongTapUp(const nsCOMPtr<nsIPresShell>& aPresShell,
-                        const CSSPoint& aPoint,
+                      Modifiers aModifiers, uint64_t aInputBlockId);
+  MOZ_CAN_RUN_SCRIPT
+  void ProcessLongTapUp(PresShell* aPresShell, const CSSPoint& aPoint,
                         const CSSToLayoutDeviceScale& aScale,
                         Modifiers aModifiers);
   void ProcessTouchEvent(const WidgetTouchEvent& aEvent,
@@ -69,10 +68,8 @@ class APZEventState {
                          uint64_t aInputBlockId, nsEventStatus aApzResponse,
                          nsEventStatus aContentResponse);
   void ProcessWheelEvent(const WidgetWheelEvent& aEvent,
-                         const ScrollableLayerGuid& aGuid,
                          uint64_t aInputBlockId);
   void ProcessMouseEvent(const WidgetMouseEvent& aEvent,
-                         const ScrollableLayerGuid& aGuid,
                          uint64_t aInputBlockId);
   void ProcessAPZStateChange(ViewID aViewId, APZStateChange aChange, int aArg);
   void ProcessClusterHit();
@@ -80,8 +77,8 @@ class APZEventState {
  private:
   ~APZEventState();
   bool SendPendingTouchPreventedResponse(bool aPreventDefault);
-  bool FireContextmenuEvents(const nsCOMPtr<nsIPresShell>& aPresShell,
-                             const CSSPoint& aPoint,
+  MOZ_CAN_RUN_SCRIPT
+  bool FireContextmenuEvents(PresShell* aPresShell, const CSSPoint& aPoint,
                              const CSSToLayoutDeviceScale& aScale,
                              Modifiers aModifiers,
                              const nsCOMPtr<nsIWidget>& aWidget);
@@ -92,10 +89,12 @@ class APZEventState {
   nsWeakPtr mWidget;
   RefPtr<ActiveElementManager> mActiveElementManager;
   ContentReceivedInputBlockCallback mContentReceivedInputBlockCallback;
+  TouchCounter mTouchCounter;
   bool mPendingTouchPreventedResponse;
   ScrollableLayerGuid mPendingTouchPreventedGuid;
   uint64_t mPendingTouchPreventedBlockId;
   bool mEndTouchIsClick;
+  bool mFirstTouchCancelled;
   bool mTouchEndCancelled;
   int32_t mLastTouchIdentifier;
 

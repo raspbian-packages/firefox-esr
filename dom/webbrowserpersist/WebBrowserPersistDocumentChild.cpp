@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,7 +8,7 @@
 
 #include "mozilla/dom/ContentChild.h"
 #include "mozilla/ipc/IPCStreamUtils.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIInputStream.h"
 #include "WebBrowserPersistLocalDocument.h"
 #include "WebBrowserPersistResourcesChild.h"
@@ -20,7 +20,7 @@ WebBrowserPersistDocumentChild::WebBrowserPersistDocumentChild() {}
 
 WebBrowserPersistDocumentChild::~WebBrowserPersistDocumentChild() = default;
 
-void WebBrowserPersistDocumentChild::Start(nsIDocument* aDocument) {
+void WebBrowserPersistDocumentChild::Start(dom::Document* aDocument) {
   RefPtr<WebBrowserPersistLocalDocument> doc;
   if (aDocument) {
     doc = new WebBrowserPersistLocalDocument(aDocument);
@@ -36,6 +36,7 @@ void WebBrowserPersistDocumentChild::Start(
     return;
   }
 
+  nsCOMPtr<nsIPrincipal> principal;
   WebBrowserPersistDocumentAttrs attrs;
   nsCOMPtr<nsIInputStream> postDataStream;
 #define ENSURE(e)          \
@@ -56,6 +57,10 @@ void WebBrowserPersistDocumentChild::Start(
   ENSURE(aDocument->GetContentDisposition(attrs.contentDisposition()));
   ENSURE(aDocument->GetCacheKey(&(attrs.cacheKey())));
   ENSURE(aDocument->GetPersistFlags(&(attrs.persistFlags())));
+
+  ENSURE(aDocument->GetPrincipal(getter_AddRefs(principal)));
+  ENSURE(ipc::PrincipalToPrincipalInfo(principal, &(attrs.principal())));
+
   ENSURE(aDocument->GetPostData(getter_AddRefs(postDataStream)));
 #undef ENSURE
 

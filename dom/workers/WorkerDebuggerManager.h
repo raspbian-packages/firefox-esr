@@ -67,6 +67,10 @@ class WorkerDebuggerManager final : public nsIObserver,
 
   void UnregisterDebuggerMainThread(WorkerPrivate* aWorkerPrivate);
 
+  uint32_t GetDebuggersLength() const;
+
+  WorkerDebugger* GetDebuggerAt(uint32_t aIndex) const;
+
  private:
   virtual ~WorkerDebuggerManager();
 };

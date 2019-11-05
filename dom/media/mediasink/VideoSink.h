@@ -12,19 +12,17 @@
 #include "MediaEventSource.h"
 #include "MediaSink.h"
 #include "MediaTimer.h"
+#include "VideoFrameContainer.h"
 #include "mozilla/AbstractThread.h"
 #include "mozilla/MozPromise.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/TimeStamp.h"
-#include "VideoFrameContainer.h"
 
 namespace mozilla {
 
 class VideoFrameContainer;
 template <class T>
 class MediaQueue;
-
-namespace media {
 
 class VideoSink : public MediaSink {
   typedef mozilla::layers::ImageContainer::ProducerID ProducerID;
@@ -38,7 +36,7 @@ class VideoSink : public MediaSink {
 
   void SetPlaybackParams(const PlaybackParams& aParams) override;
 
-  RefPtr<GenericPromise> OnEnded(TrackType aType) override;
+  RefPtr<EndedPromise> OnEnded(TrackType aType) override;
 
   TimeUnit GetEndTime(TrackType aType) const override;
 
@@ -56,7 +54,7 @@ class VideoSink : public MediaSink {
 
   void Redraw(const VideoInfo& aInfo) override;
 
-  void Start(const TimeUnit& aStartTime, const MediaInfo& aInfo) override;
+  nsresult Start(const TimeUnit& aStartTime, const MediaInfo& aInfo) override;
 
   void Stop() override;
 
@@ -65,6 +63,9 @@ class VideoSink : public MediaSink {
   bool IsPlaying() const override;
 
   void Shutdown() override;
+
+  void SetSecondaryVideoContainer(VideoFrameContainer* aSecondary) override;
+  void ClearSecondaryVideoContainer() override;
 
   nsCString GetDebugInfo() override;
 
@@ -76,6 +77,8 @@ class VideoSink : public MediaSink {
   void OnVideoQueueFinished();
   void ConnectListener();
   void DisconnectListener();
+
+  void EnsureHighResTimersOnOnlyIfPlaying();
 
   // Sets VideoQueue images into the VideoFrameContainer. Called on the shared
   // state machine thread. The first aMaxFrames (at most) are set.
@@ -109,6 +112,7 @@ class VideoSink : public MediaSink {
   RefPtr<MediaSink> mAudioSink;
   MediaQueue<VideoData>& mVideoQueue;
   VideoFrameContainer* mContainer;
+  RefPtr<VideoFrameContainer> mSecondaryContainer;
 
   // Producer ID to help ImageContainer distinguish different streams of
   // FrameIDs. A unique and immutable value per VideoSink.
@@ -117,12 +121,15 @@ class VideoSink : public MediaSink {
   // Used to notify MediaDecoder's frame statistics
   FrameStatistics& mFrameStats;
 
-  RefPtr<GenericPromise> mEndPromise;
-  MozPromiseHolder<GenericPromise> mEndPromiseHolder;
-  MozPromiseRequestHolder<GenericPromise> mVideoSinkEndRequest;
+  RefPtr<EndedPromise> mEndPromise;
+  MozPromiseHolder<EndedPromise> mEndPromiseHolder;
+  MozPromiseRequestHolder<EndedPromise> mVideoSinkEndRequest;
 
   // The presentation end time of the last video frame which has been displayed.
   TimeUnit mVideoFrameEndTime;
+
+  uint32_t mOldCompositorDroppedCount;
+  uint32_t mPendingDroppedCount;
 
   // Event listeners for VideoQueue
   MediaEventListener mPushListener;
@@ -146,9 +153,20 @@ class VideoSink : public MediaSink {
   // otherwise A/V sync will be ruined! *Only* make this non-zero for
   // testing purposes.
   const uint32_t mMinVideoQueueSize;
+
+#ifdef XP_WIN
+  // Whether we've called timeBeginPeriod(1) to request high resolution
+  // timers. We request high resolution timers when playback starts, and
+  // turn them off when playback is paused. Enabling high resolution
+  // timers can cause higher CPU usage and battery drain on Windows 7,
+  // but reduces our frame drop rate.
+  bool mHiResTimersRequested;
+#endif
+
+  RefPtr<layers::Image> mBlankImage;
+  bool InitializeBlankImage();
 };
 
-}  // namespace media
 }  // namespace mozilla
 
 #endif

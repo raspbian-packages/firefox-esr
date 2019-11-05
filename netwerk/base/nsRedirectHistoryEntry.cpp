@@ -21,8 +21,6 @@ nsRedirectHistoryEntry::nsRedirectHistoryEntry(nsIPrincipal* aPrincipal,
       mReferrer(aReferrer),
       mRemoteAddress(aRemoteAddress) {}
 
-nsRedirectHistoryEntry::~nsRedirectHistoryEntry() {}
-
 NS_IMETHODIMP
 nsRedirectHistoryEntry::GetRemoteAddress(nsACString& result) {
   result = mRemoteAddress;

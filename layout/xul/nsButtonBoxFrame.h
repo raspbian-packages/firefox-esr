@@ -10,13 +10,17 @@
 #include "nsIDOMEventListener.h"
 #include "nsBoxFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsButtonBoxFrame : public nsBoxFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsButtonBoxFrame)
 
-  friend nsIFrame* NS_NewButtonBoxFrame(nsIPresShell* aPresShell);
+  friend nsIFrame* NS_NewButtonBoxFrame(mozilla::PresShell* aPresShell);
 
-  explicit nsButtonBoxFrame(nsStyleContext* aContext, ClassID = kClassID);
+  nsButtonBoxFrame(ComputedStyle*, nsPresContext*, ClassID = kClassID);
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
@@ -31,9 +35,8 @@ class nsButtonBoxFrame : public nsBoxFrame {
                                mozilla::WidgetGUIEvent* aEvent,
                                nsEventStatus* aEventStatus) override;
 
-  virtual void MouseClicked(mozilla::WidgetGUIEvent* aEvent) {
-    DoMouseClick(aEvent, false);
-  }
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  virtual void MouseClicked(mozilla::WidgetGUIEvent* aEvent);
 
   void Blurred();
 
@@ -43,12 +46,6 @@ class nsButtonBoxFrame : public nsBoxFrame {
   }
 #endif
 
-  /**
-   * Our implementation of MouseClicked.
-   * @param aTrustEvent if true and aEvent as null, then assume the event was
-   * trusted
-   */
-  void DoMouseClick(mozilla::WidgetGUIEvent* aEvent, bool aTrustEvent);
   void UpdateMouseThrough() override {
     AddStateBits(NS_FRAME_MOUSE_THROUGH_NEVER);
   }
@@ -59,7 +56,7 @@ class nsButtonBoxFrame : public nsBoxFrame {
     explicit nsButtonBoxListener(nsButtonBoxFrame* aButtonBoxFrame)
         : mButtonBoxFrame(aButtonBoxFrame) {}
 
-    NS_IMETHOD HandleEvent(nsIDOMEvent* aEvent) override;
+    NS_DECL_NSIDOMEVENTLISTENER
 
     NS_DECL_ISUPPORTS
 

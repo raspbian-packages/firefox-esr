@@ -7,8 +7,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=591249
 <window title="Mozilla Bug 591249" onload="RunTest()"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
 
 <body xmlns="http://www.w3.org/1999/xhtml">
   <a target="_blank" href="https://bugzilla.mozilla.org/show_bug.cgi?id=591249">Mozilla Bug 591249</a>
@@ -30,10 +30,8 @@ function completeTest(aBox) {
 
 function fireEvent(target, event) {
   var win = target.ownerGlobal;
-  var utils =
-    win.QueryInterface(Ci.nsIInterfaceRequestor).
-        getInterface(Ci.nsIDOMWindowUtils);
-  utils.dispatchDOMEventViaPresShell(target, event, true);
+  var utils = win.windowUtils;
+  utils.dispatchDOMEventViaPresShell(target, event);
 }
 
 function RunTest() {

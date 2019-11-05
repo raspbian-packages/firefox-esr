@@ -2,8 +2,7 @@
 <html>
 <head>
   <title>Test for OOP Blobs in MessageManager</title>
-  <script type="application/javascript"
-          src="/tests/SimpleTest/SimpleTest.js">
+  <script src="/tests/SimpleTest/SimpleTest.js">
   </script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
@@ -19,8 +18,10 @@
     function childFrameScript() {
       "use strict";
 
+      Cu.importGlobalProperties(["Blob"]);
+
       addMessageListener("test:ipcClonedMessage", function(message) {
-        if (!(message.json instanceof Ci.nsIDOMBlob)) {
+        if (!Blob.isInstance(message.json)) {
           sendAsyncMessage(message.name, message.json);
           return;
         }
@@ -72,10 +73,10 @@
         let receivedMessageIndex = 0;
 
         let mm = SpecialPowers.getBrowserFrameMessageManager(iframe);
-        mm.addMessageListener("test:ipcClonedMessage", function(message) {
+        mm.addMessageListener("test:ipcClonedMessage", SpecialPowers.wrapCallback(function(message) {
           let data = message.json;
 
-          if (data instanceof Blob) {
+          if (SpecialPowers.call_Instanceof(data, Blob)) {
             is(receivedMessageIndex, messages.length - 1, "Blob is last");
             is (data.size,
                 messages[receivedMessageIndex].size,
@@ -104,7 +105,7 @@
               }
             };
 
-            reader1.readAsText(data);
+            SpecialPowers.wrap(reader1).readAsText(data);
             reader2.readAsText(messages[receivedMessageIndex]);
             return;
           }
@@ -112,7 +113,7 @@
           is(message.json,
              messages[receivedMessageIndex++],
              "Got correct round-tripped response");
-        });
+        }));
         mm.loadFrameScript("data:,(" + childFrameScript.toString() + ")();",
                            false);
 

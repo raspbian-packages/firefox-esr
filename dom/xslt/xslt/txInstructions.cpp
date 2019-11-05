@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,8 +18,6 @@
 #include "txNodeSorter.h"
 #include "txXSLTNumber.h"
 #include "txExecutionState.h"
-
-using mozilla::Move;
 
 nsresult txApplyDefaultElementTemplate::execute(txExecutionState& aEs) {
   txExecutionState::TemplateRule* rule = aEs.getCurrentTemplateRule();
@@ -91,7 +89,9 @@ nsresult txApplyTemplates::execute(txExecutionState& aEs) {
 
 txAttribute::txAttribute(nsAutoPtr<Expr>&& aName, nsAutoPtr<Expr>&& aNamespace,
                          txNamespaceMap* aMappings)
-    : mName(Move(aName)), mNamespace(Move(aNamespace)), mMappings(aMappings) {}
+    : mName(std::move(aName)),
+      mNamespace(std::move(aNamespace)),
+      mMappings(aMappings) {}
 
 nsresult txAttribute::execute(txExecutionState& aEs) {
   nsAutoPtr<txTextHandler> handler(
@@ -167,7 +167,7 @@ nsresult txCheckParam::execute(txExecutionState& aEs) {
 
 txConditionalGoto::txConditionalGoto(nsAutoPtr<Expr>&& aCondition,
                                      txInstruction* aTarget)
-    : mCondition(Move(aCondition)), mTarget(aTarget) {}
+    : mCondition(std::move(aCondition)), mTarget(aTarget) {}
 
 nsresult txConditionalGoto::execute(txExecutionState& aEs) {
   bool exprRes;
@@ -319,7 +319,7 @@ nsresult txCopy::execute(txExecutionState& aEs) {
   return NS_OK;
 }
 
-txCopyOf::txCopyOf(nsAutoPtr<Expr>&& aSelect) : mSelect(Move(aSelect)) {}
+txCopyOf::txCopyOf(nsAutoPtr<Expr>&& aSelect) : mSelect(std::move(aSelect)) {}
 
 nsresult txCopyOf::execute(txExecutionState& aEs) {
   RefPtr<txAExprResult> exprRes;
@@ -415,7 +415,7 @@ txLREAttribute::txLREAttribute(int32_t aNamespaceID, nsAtom* aLocalName,
     : mNamespaceID(aNamespaceID),
       mLocalName(aLocalName),
       mPrefix(aPrefix),
-      mValue(Move(aValue)) {
+      mValue(std::move(aValue)) {
   if (aNamespaceID == kNameSpaceID_None) {
     mLowercaseLocalName = TX_ToLowerCaseAtom(aLocalName);
   }
@@ -461,12 +461,12 @@ txNumber::txNumber(txXSLTNumber::LevelType aLevel,
                    nsAutoPtr<Expr>&& aGroupingSeparator,
                    nsAutoPtr<Expr>&& aGroupingSize)
     : mLevel(aLevel),
-      mCount(Move(aCount)),
-      mFrom(Move(aFrom)),
-      mValue(Move(aValue)),
-      mFormat(Move(aFormat)),
-      mGroupingSeparator(Move(aGroupingSeparator)),
-      mGroupingSize(Move(aGroupingSize)) {}
+      mCount(std::move(aCount)),
+      mFrom(std::move(aFrom)),
+      mValue(std::move(aValue)),
+      mFormat(std::move(aFormat)),
+      mGroupingSeparator(std::move(aGroupingSeparator)),
+      mGroupingSize(std::move(aGroupingSize)) {}
 
 nsresult txNumber::execute(txExecutionState& aEs) {
   nsAutoString res;
@@ -485,7 +485,7 @@ nsresult txPopParams::execute(txExecutionState& aEs) {
 }
 
 txProcessingInstruction::txProcessingInstruction(nsAutoPtr<Expr>&& aName)
-    : mName(Move(aName)) {}
+    : mName(std::move(aName)) {}
 
 nsresult txProcessingInstruction::execute(txExecutionState& aEs) {
   nsAutoPtr<txTextHandler> handler(
@@ -508,7 +508,7 @@ nsresult txProcessingInstruction::execute(txExecutionState& aEs) {
 }
 
 txPushNewContext::txPushNewContext(nsAutoPtr<Expr>&& aSelect)
-    : mSelect(Move(aSelect)), mBailTarget(nullptr) {}
+    : mSelect(std::move(aSelect)), mBailTarget(nullptr) {}
 
 txPushNewContext::~txPushNewContext() {}
 
@@ -566,11 +566,11 @@ nsresult txPushNewContext::addSort(nsAutoPtr<Expr>&& aSelectExpr,
                                    nsAutoPtr<Expr>&& aCaseOrderExpr) {
   if (SortKey* key = mSortKeys.AppendElement()) {
     // workaround for not triggering the Copy Constructor
-    key->mSelectExpr = Move(aSelectExpr);
-    key->mLangExpr = Move(aLangExpr);
-    key->mDataTypeExpr = Move(aDataTypeExpr);
-    key->mOrderExpr = Move(aOrderExpr);
-    key->mCaseOrderExpr = Move(aCaseOrderExpr);
+    key->mSelectExpr = std::move(aSelectExpr);
+    key->mLangExpr = std::move(aLangExpr);
+    key->mDataTypeExpr = std::move(aDataTypeExpr);
+    key->mOrderExpr = std::move(aOrderExpr);
+    key->mCaseOrderExpr = std::move(aCaseOrderExpr);
     return NS_OK;
   }
   return NS_ERROR_OUT_OF_MEMORY;
@@ -628,7 +628,7 @@ nsresult txReturn::execute(txExecutionState& aEs) {
 }
 
 txSetParam::txSetParam(const txExpandedName& aName, nsAutoPtr<Expr>&& aValue)
-    : mName(aName), mValue(Move(aValue)) {}
+    : mName(aName), mValue(std::move(aValue)) {}
 
 nsresult txSetParam::execute(txExecutionState& aEs) {
   nsresult rv = NS_OK;
@@ -655,7 +655,7 @@ nsresult txSetParam::execute(txExecutionState& aEs) {
 
 txSetVariable::txSetVariable(const txExpandedName& aName,
                              nsAutoPtr<Expr>&& aValue)
-    : mName(aName), mValue(Move(aValue)) {}
+    : mName(aName), mValue(std::move(aValue)) {}
 
 nsresult txSetVariable::execute(txExecutionState& aEs) {
   nsresult rv = NS_OK;
@@ -676,7 +676,9 @@ nsresult txSetVariable::execute(txExecutionState& aEs) {
 txStartElement::txStartElement(nsAutoPtr<Expr>&& aName,
                                nsAutoPtr<Expr>&& aNamespace,
                                txNamespaceMap* aMappings)
-    : mName(Move(aName)), mNamespace(Move(aNamespace)), mMappings(aMappings) {}
+    : mName(std::move(aName)),
+      mNamespace(std::move(aNamespace)),
+      mMappings(aMappings) {}
 
 nsresult txStartElement::execute(txExecutionState& aEs) {
   nsAutoString name;
@@ -758,7 +760,7 @@ nsresult txText::execute(txExecutionState& aEs) {
 }
 
 txValueOf::txValueOf(nsAutoPtr<Expr>&& aExpr, bool aDOE)
-    : mExpr(Move(aExpr)), mDOE(aDOE) {}
+    : mExpr(std::move(aExpr)), mDOE(aDOE) {}
 
 nsresult txValueOf::execute(txExecutionState& aEs) {
   RefPtr<txAExprResult> exprRes;

@@ -7,6 +7,8 @@
 #ifndef mozilla_dom_workers_WorkerDebugger_h
 #define mozilla_dom_workers_WorkerDebugger_h
 
+#include "mozilla/PerformanceTypes.h"
+#include "mozilla/dom/DOMTypes.h"
 #include "mozilla/dom/WorkerCommon.h"
 #include "nsIWorkerDebugger.h"
 
@@ -37,6 +39,12 @@ class WorkerDebugger : public nsIWorkerDebugger {
 
   void ReportErrorToDebugger(const nsAString& aFilename, uint32_t aLineno,
                              const nsAString& aMessage);
+
+  /*
+   * Sends back a PerformanceInfo struct from the counters
+   * in mWorkerPrivate. Counters are reset to zero after this call.
+   */
+  RefPtr<PerformanceInfoPromise> ReportPerformanceInfo();
 
  private:
   virtual ~WorkerDebugger();

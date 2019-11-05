@@ -28,9 +28,9 @@ HTMLLinkAccessible::HTMLLinkAccessible(nsIContent* aContent,
 ////////////////////////////////////////////////////////////////////////////////
 // nsIAccessible
 
-role HTMLLinkAccessible::NativeRole() { return roles::LINK; }
+role HTMLLinkAccessible::NativeRole() const { return roles::LINK; }
 
-uint64_t HTMLLinkAccessible::NativeState() {
+uint64_t HTMLLinkAccessible::NativeState() const {
   return HyperTextAccessibleWrap::NativeState() & ~states::READONLY;
 }
 
@@ -59,7 +59,7 @@ uint64_t HTMLLinkAccessible::NativeInteractiveState() const {
   return state;
 }
 
-void HTMLLinkAccessible::Value(nsString& aValue) {
+void HTMLLinkAccessible::Value(nsString& aValue) const {
   aValue.Truncate();
 
   HyperTextAccessible::Value(aValue);
@@ -67,7 +67,7 @@ void HTMLLinkAccessible::Value(nsString& aValue) {
     nsContentUtils::GetLinkLocation(mContent->AsElement(), aValue);
 }
 
-uint8_t HTMLLinkAccessible::ActionCount() {
+uint8_t HTMLLinkAccessible::ActionCount() const {
   return IsLinked() ? 1 : HyperTextAccessible::ActionCount();
 }
 
@@ -83,7 +83,7 @@ void HTMLLinkAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
   if (aIndex == eAction_Jump) aName.AssignLiteral("jump");
 }
 
-bool HTMLLinkAccessible::DoAction(uint8_t aIndex) {
+bool HTMLLinkAccessible::DoAction(uint8_t aIndex) const {
   if (!IsLinked()) return HyperTextAccessible::DoAction(aIndex);
 
   // Action 0 (default action): Jump to link
@@ -96,13 +96,13 @@ bool HTMLLinkAccessible::DoAction(uint8_t aIndex) {
 ////////////////////////////////////////////////////////////////////////////////
 // HyperLinkAccessible
 
-bool HTMLLinkAccessible::IsLink() {
+bool HTMLLinkAccessible::IsLink() const {
   // Expose HyperLinkAccessible unconditionally.
   return true;
 }
 
 already_AddRefed<nsIURI> HTMLLinkAccessible::AnchorURIAt(
-    uint32_t aAnchorIndex) {
+    uint32_t aAnchorIndex) const {
   return aAnchorIndex == 0 ? mContent->GetHrefURI() : nullptr;
 }
 

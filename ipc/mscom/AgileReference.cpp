@@ -6,10 +6,16 @@
 
 #include "mozilla/mscom/AgileReference.h"
 
-#include "DynamicallyLinkedFunctionPtr.h"
-#include "mozilla/DebugOnly.h"
 #include "mozilla/Assertions.h"
+#include "mozilla/DebugOnly.h"
+#include "mozilla/DynamicallyLinkedFunctionPtr.h"
 #include "mozilla/Move.h"
+#include "mozilla/mscom/Utils.h"
+
+#if defined(MOZILLA_INTERNAL_API)
+#  include "nsDebug.h"
+#  include "nsPrintfCString.h"
+#endif  // defined(MOZILLA_INTERNAL_API)
 
 #if NTDDI_VERSION < NTDDI_WINBLUE
 
@@ -29,8 +35,24 @@ HRESULT WINAPI RoGetAgileReference(AgileReferenceOptions options, REFIID riid,
 namespace mozilla {
 namespace mscom {
 
+AgileReference::AgileReference() : mIid(), mGitCookie(0) {}
+
 AgileReference::AgileReference(REFIID aIid, IUnknown* aObject)
     : mIid(aIid), mGitCookie(0) {
+  AssignInternal(aObject);
+}
+
+void AgileReference::Assign(REFIID aIid, IUnknown* aObject) {
+  Clear();
+  mIid = aIid;
+  AssignInternal(aObject);
+}
+
+void AgileReference::AssignInternal(IUnknown* aObject) {
+  // We expect mIid to already be set
+  DebugOnly<IID> zeroIid = {};
+  MOZ_ASSERT(mIid != zeroIid);
+
   /*
    * There are two possible techniques for creating agile references. Starting
    * with Windows 8.1, we may use the RoGetAgileReference API, which is faster.
@@ -43,7 +65,7 @@ AgileReference::AgileReference(REFIID aIid, IUnknown* aObject)
   MOZ_ASSERT(aObject);
 
   if (pRoGetAgileReference &&
-      SUCCEEDED(pRoGetAgileReference(AGILEREFERENCE_DEFAULT, aIid, aObject,
+      SUCCEEDED(pRoGetAgileReference(AGILEREFERENCE_DEFAULT, mIid, aObject,
                                      getter_AddRefs(mAgileRef)))) {
     return;
   }
@@ -55,19 +77,24 @@ AgileReference::AgileReference(REFIID aIid, IUnknown* aObject)
   }
 
   DebugOnly<HRESULT> hr =
-      git->RegisterInterfaceInGlobal(aObject, aIid, &mGitCookie);
+      git->RegisterInterfaceInGlobal(aObject, mIid, &mGitCookie);
   MOZ_ASSERT(SUCCEEDED(hr));
 }
 
 AgileReference::AgileReference(AgileReference&& aOther)
     : mIid(aOther.mIid),
-      mAgileRef(Move(aOther.mAgileRef)),
+      mAgileRef(std::move(aOther.mAgileRef)),
       mGitCookie(aOther.mGitCookie) {
   aOther.mGitCookie = 0;
 }
 
-AgileReference::~AgileReference() {
+AgileReference::~AgileReference() { Clear(); }
+
+void AgileReference::Clear() {
+  mIid = {};
+
   if (!mGitCookie) {
+    mAgileRef = nullptr;
     return;
   }
 
@@ -78,13 +105,35 @@ AgileReference::~AgileReference() {
   }
 
   DebugOnly<HRESULT> hr = git->RevokeInterfaceFromGlobal(mGitCookie);
+#if defined(MOZILLA_INTERNAL_API)
+  NS_WARNING_ASSERTION(
+      SUCCEEDED(hr),
+      nsPrintfCString("IGlobalInterfaceTable::RevokeInterfaceFromGlobal failed "
+                      "with HRESULT "
+                      "0x%08lX",
+                      ((HRESULT)hr))
+          .get());
+#else
   MOZ_ASSERT(SUCCEEDED(hr));
+#endif  // defined(MOZILLA_INTERNAL_API)
+  mGitCookie = 0;
+}
+
+AgileReference& AgileReference::operator=(AgileReference&& aOther) {
+  Clear();
+  mIid = aOther.mIid;
+  aOther.mIid = {};
+  mAgileRef = std::move(aOther.mAgileRef);
+  mGitCookie = aOther.mGitCookie;
+  aOther.mGitCookie = 0;
+  return *this;
 }
 
 HRESULT
-AgileReference::Resolve(REFIID aIid, void** aOutInterface) {
+AgileReference::Resolve(REFIID aIid, void** aOutInterface) const {
   MOZ_ASSERT(aOutInterface);
   MOZ_ASSERT(mAgileRef || mGitCookie);
+  MOZ_ASSERT(IsCOMInitializedOnCurrentThread());
 
   if (!aOutInterface) {
     return E_INVALIDARG;
@@ -124,6 +173,7 @@ AgileReference::Resolve(REFIID aIid, void** aOutInterface) {
   return originalInterface->QueryInterface(aIid, aOutInterface);
 }
 
+/* static */
 IGlobalInterfaceTable* AgileReference::ObtainGit() {
   // Internally to COM, the Global Interface Table is a singleton, therefore we
   // don't worry about holding onto this reference indefinitely.

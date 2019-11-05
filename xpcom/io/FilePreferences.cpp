@@ -8,20 +8,25 @@
 
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/StaticMutex.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/Tokenizer.h"
-#include "mozilla/Unused.h"
 #include "nsAppDirectoryServiceDefs.h"
 #include "nsDirectoryServiceDefs.h"
 #include "nsDirectoryServiceUtils.h"
+#include "nsString.h"
 
 namespace mozilla {
 namespace FilePreferences {
+
+static StaticMutex sMutex;
 
 static bool sBlockUNCPaths = false;
 typedef nsTArray<nsString> WinPaths;
 
 static WinPaths& PathWhitelist() {
+  sMutex.AssertCurrentThreadOwns();
+
   static WinPaths sPaths;
   return sPaths;
 }
@@ -32,10 +37,14 @@ typedef char16_t char_path_t;
 typedef char char_path_t;
 #endif
 
+// Initially false to make concurrent consumers acquire the lock and sync
+static bool sBlacklistEmpty = false;
+
 typedef nsTArray<nsTString<char_path_t>> Paths;
 static StaticAutoPtr<Paths> sBlacklist;
 
 static Paths& PathBlacklist() {
+  sMutex.AssertCurrentThreadOwns();
   if (!sBlacklist) {
     sBlacklist = new nsTArray<nsTString<char_path_t>>();
     ClearOnShutdown(&sBlacklist);
@@ -62,6 +71,8 @@ static void AllowUNCDirectory(char const* directory) {
     return;
   }
 
+  StaticMutexAutoLock lock(sMutex);
+
   if (!PathWhitelist().Contains(path)) {
     PathWhitelist().AppendElement(path);
   }
@@ -71,24 +82,33 @@ void InitPrefs() {
   sBlockUNCPaths =
       Preferences::GetBool("network.file.disable_unc_paths", false);
 
-  PathBlacklist().Clear();
-  nsAutoCString blacklist;
+  nsTAutoString<char_path_t> blacklist;
+#ifdef XP_WIN
+  Preferences::GetString("network.file.path_blacklist", blacklist);
+#else
   Preferences::GetCString("network.file.path_blacklist", blacklist);
+#endif
 
-  Tokenizer p(blacklist);
+  StaticMutexAutoLock lock(sMutex);
+
+  if (blacklist.IsEmpty()) {
+    sBlacklistEmpty = true;
+    return;
+  }
+
+  PathBlacklist().Clear();
+  TTokenizer<char_path_t> p(blacklist);
   while (!p.CheckEOF()) {
-    nsCString path;
-    Unused << p.ReadUntil(Tokenizer::Token::Char(','), path);
+    nsTString<char_path_t> path;
+    Unused << p.ReadUntil(TTokenizer<char_path_t>::Token::Char(','), path);
     path.Trim(" ");
     if (!path.IsEmpty()) {
-#ifdef XP_WIN
-      PathBlacklist().AppendElement(NS_ConvertASCIItoUTF16(path));
-#else
       PathBlacklist().AppendElement(path);
-#endif
     }
     Unused << p.CheckChar(',');
   }
+
+  sBlacklistEmpty = PathBlacklist().Length() == 0;
 }
 
 void InitDirectoriesWhitelist() {
@@ -103,12 +123,14 @@ void InitDirectoriesWhitelist() {
 namespace {  // anon
 
 template <typename TChar>
-class TNormalizer {
+class TNormalizer : public TTokenizer<TChar> {
+  typedef TTokenizer<TChar> base;
+
  public:
-  TNormalizer(const nsTSubstring<TChar>& aFilePath, const TChar aSeparator)
-      : mFilePathCursor(aFilePath.BeginReading()),
-        mFilePathEnd(aFilePath.EndReading()),
-        mSeparator(aSeparator) {}
+  typedef typename base::Token Token;
+
+  TNormalizer(const nsTSubstring<TChar>& aFilePath, const Token& aSeparator)
+      : TTokenizer<TChar>(aFilePath), mSeparator(aSeparator) {}
 
   bool Get(nsTSubstring<TChar>& aNormalizedFilePath) {
     aNormalizedFilePath.Truncate();
@@ -118,22 +140,16 @@ class TNormalizer {
     // If we want to use the normalizer for regular windows paths this code
     // will need to be updated.
 #ifdef XP_WIN
-    if (IsEOF()) {
-      return true;
-    }
-    if (ConsumeSeparator()) {
-      aNormalizedFilePath.Append(mSeparator);
+    if (base::Check(mSeparator)) {
+      aNormalizedFilePath.Append(mSeparator.AsChar());
     }
 #endif
 
-    if (IsEOF()) {
-      return true;
-    }
-    if (ConsumeSeparator()) {
-      aNormalizedFilePath.Append(mSeparator);
+    if (base::Check(mSeparator)) {
+      aNormalizedFilePath.Append(mSeparator.AsChar());
     }
 
-    while (!IsEOF()) {
+    while (base::HasInput()) {
       if (!ConsumeName()) {
         return false;
       }
@@ -147,40 +163,8 @@ class TNormalizer {
   }
 
  private:
-  bool ConsumeItem() {
-    if (IsEOF()) {
-      return false;
-    }
-
-    typename nsTString<TChar>::const_char_iterator nameBegin = mFilePathCursor;
-    while (mFilePathCursor != mFilePathEnd) {
-      if (*mFilePathCursor == mSeparator) {
-        break;  // don't include the separator
-      }
-      ++mFilePathCursor;
-    }
-
-    mItem.Rebind(nameBegin, mFilePathCursor);
-    return true;
-  }
-
-  bool ConsumeSeparator() {
-    if (IsEOF()) {
-      return false;
-    }
-
-    if (*mFilePathCursor != mSeparator) {
-      return false;
-    }
-
-    ++mFilePathCursor;
-    return true;
-  }
-
-  bool IsEOF() { return mFilePathCursor == mFilePathEnd; }
-
   bool ConsumeName() {
-    if (!ConsumeItem()) {
+    if (base::CheckEOF()) {
       return true;
     }
 
@@ -194,48 +178,44 @@ class TNormalizer {
         return false;
       }
 
-      mStack.RemoveElementAt(mStack.Length() - 1);
+      mStack.RemoveLastElement();
       return true;
     }
 
-    if (mItem.IsEmpty()) {
+    nsTDependentSubstring<TChar> name;
+    if (base::ReadUntil(mSeparator, name, base::INCLUDE_LAST) &&
+        name.Length() == 1) {
       // this means an empty name (a lone slash), which is illegal
       return false;
     }
-
-    if (ConsumeSeparator()) {
-      mItem.Rebind(mItem.BeginReading(), mFilePathCursor);
-    }
-    mStack.AppendElement(mItem);
+    mStack.AppendElement(name);
 
     return true;
   }
 
   bool CheckParentDir() {
-    if (mItem.EqualsLiteral("..")) {
-      ConsumeSeparator();
-      // EOF is acceptable
+    typename nsTString<TChar>::const_char_iterator cursor = base::mCursor;
+    if (base::CheckChar('.') && base::CheckChar('.') && CheckSeparator()) {
       return true;
     }
 
+    base::mCursor = cursor;
     return false;
   }
 
   bool CheckCurrentDir() {
-    if (mItem.EqualsLiteral(".")) {
-      ConsumeSeparator();
-      // EOF is acceptable
+    typename nsTString<TChar>::const_char_iterator cursor = base::mCursor;
+    if (base::CheckChar('.') && CheckSeparator()) {
       return true;
     }
 
+    base::mCursor = cursor;
     return false;
   }
 
-  typename nsTString<TChar>::const_char_iterator mFilePathCursor;
-  typename nsTString<TChar>::const_char_iterator mFilePathEnd;
+  bool CheckSeparator() { return base::Check(mSeparator) || base::CheckEOF(); }
 
-  nsTDependentSubstring<TChar> mItem;
-  TChar const mSeparator;
+  Token const mSeparator;
   nsTArray<nsTDependentSubstring<TChar>> mStack;
 };
 
@@ -243,7 +223,6 @@ class TNormalizer {
 
 bool IsBlockedUNCPath(const nsAString& aFilePath) {
   typedef TNormalizer<char16_t> Normalizer;
-
   if (!sBlockUNCPaths) {
     return false;
   }
@@ -253,10 +232,12 @@ bool IsBlockedUNCPath(const nsAString& aFilePath) {
   }
 
   nsAutoString normalized;
-  if (!Normalizer(aFilePath, L'\\').Get(normalized)) {
+  if (!Normalizer(aFilePath, Normalizer::Token::Char('\\')).Get(normalized)) {
     // Broken paths are considered invalid and thus inaccessible
     return true;
   }
+
+  StaticMutexAutoLock lock(sMutex);
 
   for (const auto& allowedPrefix : PathWhitelist()) {
     if (StringBeginsWith(normalized, allowedPrefix)) {
@@ -279,25 +260,35 @@ bool IsBlockedUNCPath(const nsAString& aFilePath) {
 }
 
 #ifdef XP_WIN
-const char16_t kPathSeparator = L'\\';
+const char kPathSeparator = '\\';
 #else
 const char kPathSeparator = '/';
 #endif
 
 bool IsAllowedPath(const nsTSubstring<char_path_t>& aFilePath) {
   typedef TNormalizer<char_path_t> Normalizer;
+
+  // A quick check out of the lock.
+  if (sBlacklistEmpty) {
+    return true;
+  }
+
+  StaticMutexAutoLock lock(sMutex);
+
+  // Recheck the flag under the lock to reload it.
+  if (sBlacklistEmpty) {
+    return true;
+  }
+
   // If sBlacklist has been cleared at shutdown, we must avoid calling
   // PathBlacklist() again, as that will recreate the array and we will leak.
   if (!sBlacklist) {
     return true;
   }
 
-  if (PathBlacklist().Length() == 0) {
-    return true;
-  }
-
   nsTAutoString<char_path_t> normalized;
-  if (!Normalizer(aFilePath, kPathSeparator).Get(normalized)) {
+  if (!Normalizer(aFilePath, Normalizer::Token::Char(kPathSeparator))
+           .Get(normalized)) {
     // Broken paths are considered invalid and thus inaccessible
     return false;
   }
@@ -318,12 +309,13 @@ bool IsAllowedPath(const nsTSubstring<char_path_t>& aFilePath) {
 void testing::SetBlockUNCPaths(bool aBlock) { sBlockUNCPaths = aBlock; }
 
 void testing::AddDirectoryToWhitelist(nsAString const& aPath) {
+  StaticMutexAutoLock lock(sMutex);
   PathWhitelist().AppendElement(aPath);
 }
 
 bool testing::NormalizePath(nsAString const& aPath, nsAString& aNormalized) {
   typedef TNormalizer<char16_t> Normalizer;
-  Normalizer normalizer(aPath, L'\\');
+  Normalizer normalizer(aPath, Normalizer::Token::Char('\\'));
   return normalizer.Get(aNormalized);
 }
 

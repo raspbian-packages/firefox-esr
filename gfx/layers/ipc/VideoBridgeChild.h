@@ -29,8 +29,8 @@ class VideoBridgeChild final : public PVideoBridgeChild,
                                     const ReadLockDescriptor& aReadLock,
                                     const LayersBackend& aLayersBackend,
                                     const TextureFlags& aFlags,
-                                    const uint64_t& aSerial) override;
-  bool DeallocPTextureChild(PTextureChild* actor) override;
+                                    const uint64_t& aSerial);
+  bool DeallocPTextureChild(PTextureChild* actor);
 
   void ActorDestroy(ActorDestroyReason aWhy) override;
   void DeallocPVideoBridgeChild() override;
@@ -66,7 +66,7 @@ class VideoBridgeChild final : public PVideoBridgeChild,
 
  private:
   VideoBridgeChild();
-  ~VideoBridgeChild();
+  virtual ~VideoBridgeChild();
 
   RefPtr<VideoBridgeChild> mIPDLSelfRef;
   MessageLoop* mMessageLoop;

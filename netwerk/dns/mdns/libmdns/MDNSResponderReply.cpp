@@ -124,8 +124,6 @@ ResolveReplyRunnable::ResolveReplyRunnable(
   }
 }
 
-ResolveReplyRunnable::~ResolveReplyRunnable() {}
-
 NS_IMETHODIMP
 ResolveReplyRunnable::Run() {
   MOZ_ASSERT(mContext);
@@ -175,8 +173,6 @@ GetAddrInfoReplyRunnable::GetAddrInfoReplyRunnable(
       mAddress(aAddress),
       mTTL(aTTL),
       mContext(aContext) {}
-
-GetAddrInfoReplyRunnable::~GetAddrInfoReplyRunnable() {}
 
 NS_IMETHODIMP
 GetAddrInfoReplyRunnable::Run() {

@@ -8,9 +8,9 @@
 #define nsPrintSettingsImpl_h__
 
 #include "nsIPrintSettings.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsMargin.h"
 #include "nsString.h"
-#include "nsWeakReference.h"
 
 #define NUM_HEAD_FOOT 3
 
@@ -59,8 +59,8 @@ class nsPrintSettings : public nsIPrintSettings {
   int16_t mPrintFrameType;
   int16_t mHowToEnableFrameUI;
   bool mIsCancelled;
+  bool mSaveOnCancel;
   bool mPrintSilent;
-  bool mPrintPreview;
   bool mShrinkToFit;
   bool mShowPrintProgress;
   int32_t mPrintPageDelay;

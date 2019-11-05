@@ -13,6 +13,7 @@
 
 #include "mozilla/Attributes.h"  // for final
 #include "mozilla/dom/NodeInfo.h"
+#include "mozilla/MruCache.h"
 #include "nsCOMPtr.h"                      // for member
 #include "nsCycleCollectionParticipant.h"  // for NS_DECL_CYCLE_*
 #include "nsDataHashtable.h"
@@ -20,16 +21,16 @@
 
 class nsBindingManager;
 class nsAtom;
-class nsIDocument;
-class nsIDOMDocumentType;
 class nsIPrincipal;
 class nsWindowSizes;
-struct PLHashEntry;
-struct PLHashTable;
 template <class T>
 struct already_AddRefed;
 
-#define RECENTLY_USED_NODEINFOS_SIZE 31
+namespace mozilla {
+namespace dom {
+class Document;
+}
+}  // namespace mozilla
 
 class nsNodeInfoManager final {
  private:
@@ -45,7 +46,7 @@ class nsNodeInfoManager final {
   /**
    * Initialize the nodeinfo manager with a document.
    */
-  nsresult Init(nsIDocument* aDocument);
+  nsresult Init(mozilla::dom::Document*);
 
   /**
    * Release the reference to the document, this will be called when
@@ -85,7 +86,7 @@ class nsNodeInfoManager final {
    * Retrieve a pointer to the document that owns this node info
    * manager.
    */
-  nsIDocument* GetDocument() const { return mDocument; }
+  mozilla::dom::Document* GetDocument() const { return mDocument; }
 
   /**
    * Gets the principal of the document this nodeinfo manager belongs to.
@@ -99,35 +100,23 @@ class nsNodeInfoManager final {
 
   nsBindingManager* GetBindingManager() const { return mBindingManager; }
 
-  enum Tri { eTriUnset = 0, eTriFalse, eTriTrue };
-
   /**
    * Returns true if SVG nodes in this document have real SVG semantics.
    */
-  bool SVGEnabled() {
-    return mSVGEnabled == eTriTrue
-               ? true
-               : mSVGEnabled == eTriFalse ? false : InternalSVGEnabled();
-  }
+  bool SVGEnabled() { return mSVGEnabled.valueOr(InternalSVGEnabled()); }
 
   /**
    * Returns true if MathML nodes in this document have real MathML semantics.
    */
   bool MathMLEnabled() {
-    return mMathMLEnabled == eTriTrue
-               ? true
-               : mMathMLEnabled == eTriFalse ? false : InternalMathMLEnabled();
+    return mMathMLEnabled.valueOr(InternalMathMLEnabled());
   }
 
   void AddSizeOfIncludingThis(nsWindowSizes& aSizes) const;
 
  protected:
-  friend class nsDocument;
+  friend class mozilla::dom::Document;
   friend class nsXULPrototypeDocument;
-  friend nsresult NS_NewDOMDocumentType(nsIDOMDocumentType**,
-                                        nsNodeInfoManager*, nsAtom*,
-                                        const nsAString&, const nsAString&,
-                                        const nsAString&);
 
   /**
    * Sets the principal of the document this nodeinfo manager belongs to.
@@ -142,13 +131,27 @@ class nsNodeInfoManager final {
       : public nsPtrHashKey<mozilla::dom::NodeInfo::NodeInfoInner> {
    public:
     explicit NodeInfoInnerKey(KeyTypePointer aKey) : nsPtrHashKey(aKey) {}
+    NodeInfoInnerKey(NodeInfoInnerKey&&) = default;
     ~NodeInfoInnerKey() = default;
     bool KeyEquals(KeyTypePointer aKey) const { return *mKey == *aKey; }
     static PLDHashNumber HashKey(KeyTypePointer aKey) { return aKey->Hash(); }
   };
 
+  struct NodeInfoCache
+      : public mozilla::MruCache<mozilla::dom::NodeInfo::NodeInfoInner,
+                                 mozilla::dom::NodeInfo*, NodeInfoCache> {
+    static mozilla::HashNumber Hash(
+        const mozilla::dom::NodeInfo::NodeInfoInner& aKey) {
+      return aKey.Hash();
+    }
+    static bool Match(const mozilla::dom::NodeInfo::NodeInfoInner& aKey,
+                      const mozilla::dom::NodeInfo* aVal) {
+      return aKey == aVal->mInner;
+    }
+  };
+
   nsDataHashtable<NodeInfoInnerKey, mozilla::dom::NodeInfo*> mNodeInfoHash;
-  nsIDocument* MOZ_NON_OWNING_REF mDocument;  // WEAK
+  mozilla::dom::Document* MOZ_NON_OWNING_REF mDocument;  // WEAK
   uint32_t mNonDocumentNodeInfos;
   nsCOMPtr<nsIPrincipal> mPrincipal;  // Never null after Init() succeeds.
   nsCOMPtr<nsIPrincipal> mDefaultPrincipal;  // Never null after Init() succeeds
@@ -159,9 +162,9 @@ class nsNodeInfoManager final {
   mozilla::dom::NodeInfo* MOZ_NON_OWNING_REF
       mDocumentNodeInfo;  // WEAK to avoid circular ownership
   RefPtr<nsBindingManager> mBindingManager;
-  mozilla::dom::NodeInfo* mRecentlyUsedNodeInfos[RECENTLY_USED_NODEINFOS_SIZE];
-  Tri mSVGEnabled;
-  Tri mMathMLEnabled;
+  NodeInfoCache mRecentlyUsedNodeInfos;
+  mozilla::Maybe<bool> mSVGEnabled;     // Lazily initialized.
+  mozilla::Maybe<bool> mMathMLEnabled;  // Lazily initialized.
 };
 
 #endif /* nsNodeInfoManager_h___ */

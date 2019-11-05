@@ -4,7 +4,10 @@
 
 "use strict";
 
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  PureComponent,
+} = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 
@@ -18,13 +21,14 @@ class BoxModel extends PureComponent {
   static get propTypes() {
     return {
       boxModel: PropTypes.shape(Types.boxModel).isRequired,
-      setSelectedNode: PropTypes.func.isRequired,
-      showBoxModelProperties: PropTypes.bool.isRequired,
       onHideBoxModelHighlighter: PropTypes.func.isRequired,
       onShowBoxModelEditor: PropTypes.func.isRequired,
       onShowBoxModelHighlighter: PropTypes.func.isRequired,
       onShowBoxModelHighlighterForNode: PropTypes.func.isRequired,
+      onShowRulePreviewTooltip: PropTypes.func.isRequired,
       onToggleGeometryEditor: PropTypes.func.isRequired,
+      showBoxModelProperties: PropTypes.bool.isRequired,
+      setSelectedNode: PropTypes.func.isRequired,
     };
   }
 
@@ -34,7 +38,7 @@ class BoxModel extends PureComponent {
   }
 
   onKeyDown(event) {
-    let { target } = event;
+    const { target } = event;
 
     if (target == this.boxModelContainer) {
       this.boxModelMain.onKeyDown(event);
@@ -42,15 +46,16 @@ class BoxModel extends PureComponent {
   }
 
   render() {
-    let {
+    const {
       boxModel,
-      setSelectedNode,
-      showBoxModelProperties,
       onHideBoxModelHighlighter,
       onShowBoxModelEditor,
       onShowBoxModelHighlighter,
       onShowBoxModelHighlighterForNode,
+      onShowRulePreviewTooltip,
       onToggleGeometryEditor,
+      setSelectedNode,
+      showBoxModelProperties,
     } = this.props;
 
     return dom.div(
@@ -71,20 +76,20 @@ class BoxModel extends PureComponent {
         onHideBoxModelHighlighter,
         onShowBoxModelEditor,
         onShowBoxModelHighlighter,
+        onShowRulePreviewTooltip,
       }),
       BoxModelInfo({
         boxModel,
         onToggleGeometryEditor,
       }),
-      showBoxModelProperties ?
-        BoxModelProperties({
-          boxModel,
-          setSelectedNode,
-          onHideBoxModelHighlighter,
-          onShowBoxModelHighlighterForNode,
-        })
-        :
-        null
+      showBoxModelProperties
+        ? BoxModelProperties({
+            boxModel,
+            setSelectedNode,
+            onHideBoxModelHighlighter,
+            onShowBoxModelHighlighterForNode,
+          })
+        : null
     );
   }
 }

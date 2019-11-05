@@ -1,29 +1,62 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Generic types for counters-related CSS values.
 
-use std::fmt;
-use std::fmt::Write;
+#[cfg(feature = "servo")]
+use crate::computed_values::list_style_type::T as ListStyleType;
+#[cfg(feature = "gecko")]
+use crate::values::generics::CounterStyleOrNone;
+#[cfg(feature = "gecko")]
+use crate::values::specified::Attr;
+use crate::values::CustomIdent;
 use std::ops::Deref;
-use style_traits::{CssWriter, ToCss};
-use values::CustomIdent;
+
+/// A name / value pair for counters.
+#[derive(
+    Clone,
+    Debug,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+pub struct CounterPair<Integer> {
+    /// The name of the counter.
+    pub name: CustomIdent,
+    /// The value of the counter / increment / etc.
+    pub value: Integer,
+}
 
 /// A generic value for the `counter-increment` property.
-#[derive(Clone, Debug, Default, MallocSizeOf, PartialEq, ToComputedValue, ToCss)]
-pub struct CounterIncrement<I>(Counters<I>);
+#[derive(
+    Clone,
+    Debug,
+    Default,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+pub struct CounterIncrement<I>(pub Counters<I>);
 
 impl<I> CounterIncrement<I> {
     /// Returns a new value for `counter-increment`.
     #[inline]
-    pub fn new(counters: Vec<(CustomIdent, I)>) -> Self {
+    pub fn new(counters: Vec<CounterPair<I>>) -> Self {
         CounterIncrement(Counters(counters.into_boxed_slice()))
     }
 }
 
 impl<I> Deref for CounterIncrement<I> {
-    type Target = [(CustomIdent, I)];
+    type Target = [CounterPair<I>];
 
     #[inline]
     fn deref(&self) -> &Self::Target {
@@ -31,20 +64,31 @@ impl<I> Deref for CounterIncrement<I> {
     }
 }
 
-/// A generic value for the `counter-reset` property.
-#[derive(Clone, Debug, Default, MallocSizeOf, PartialEq, ToComputedValue, ToCss)]
-pub struct CounterReset<I>(Counters<I>);
+/// A generic value for the `counter-set` and `counter-reset` properties.
+#[derive(
+    Clone,
+    Debug,
+    Default,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+pub struct CounterSetOrReset<I>(pub Counters<I>);
 
-impl<I> CounterReset<I> {
-    /// Returns a new value for `counter-reset`.
+impl<I> CounterSetOrReset<I> {
+    /// Returns a new value for `counter-set` / `counter-reset`.
     #[inline]
-    pub fn new(counters: Vec<(CustomIdent, I)>) -> Self {
-        CounterReset(Counters(counters.into_boxed_slice()))
+    pub fn new(counters: Vec<CounterPair<I>>) -> Self {
+        CounterSetOrReset(Counters(counters.into_boxed_slice()))
     }
 }
 
-impl<I> Deref for CounterReset<I> {
-    type Target = [(CustomIdent, I)];
+impl<I> Deref for CounterSetOrReset<I> {
+    type Target = [CounterPair<I>];
 
     #[inline]
     fn deref(&self) -> &Self::Target {
@@ -55,39 +99,120 @@ impl<I> Deref for CounterReset<I> {
 /// A generic value for lists of counters.
 ///
 /// Keyword `none` is represented by an empty vector.
-#[derive(Clone, Debug, MallocSizeOf, PartialEq, ToComputedValue)]
-pub struct Counters<I>(Box<[(CustomIdent, I)]>);
+#[derive(
+    Clone,
+    Debug,
+    Default,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+pub struct Counters<I>(#[css(iterable, if_empty = "none")] Box<[CounterPair<I>]>);
 
-impl<I> Default for Counters<I> {
+impl<I> Counters<I> {
+    /// Move out the Box into a vector. This could just return the Box<>, but
+    /// Vec<> is a bit more convenient because Box<[T]> doesn't implement
+    /// IntoIter: https://github.com/rust-lang/rust/issues/59878
     #[inline]
-    fn default() -> Self {
-        Counters(vec![].into_boxed_slice())
+    pub fn into_vec(self) -> Vec<CounterPair<I>> {
+        self.0.into_vec()
     }
 }
 
-impl<I> ToCss for Counters<I>
-where
-    I: ToCss,
-{
-    #[inline]
-    fn to_css<W>(&self, dest: &mut CssWriter<W>) -> fmt::Result
-    where
-        W: fmt::Write,
-    {
-        if self.0.is_empty() {
-            return dest.write_str("none")
-        }
+#[cfg(feature = "servo")]
+type CounterStyleType = ListStyleType;
 
-        let mut first = true;
-        for &(ref name, ref value) in &*self.0 {
-            if !first {
-                dest.write_str(" ")?;
-            }
-            first = false;
-            name.to_css(dest)?;
-            dest.write_str(" ")?;
-            value.to_css(dest)?;
-        }
-        Ok(())
+#[cfg(feature = "gecko")]
+type CounterStyleType = CounterStyleOrNone;
+
+#[cfg(feature = "servo")]
+#[inline]
+fn is_decimal(counter_type: &CounterStyleType) -> bool {
+    *counter_type == ListStyleType::Decimal
+}
+
+#[cfg(feature = "gecko")]
+#[inline]
+fn is_decimal(counter_type: &CounterStyleType) -> bool {
+    *counter_type == CounterStyleOrNone::decimal()
+}
+
+/// The specified value for the `content` property.
+///
+/// https://drafts.csswg.org/css-content/#propdef-content
+#[derive(
+    Clone,
+    Debug,
+    Eq,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+pub enum Content<ImageUrl> {
+    /// `normal` reserved keyword.
+    Normal,
+    /// `none` reserved keyword.
+    None,
+    /// `-moz-alt-content`.
+    #[cfg(feature = "gecko")]
+    MozAltContent,
+    /// Content items.
+    Items(#[css(iterable)] Box<[ContentItem<ImageUrl>]>),
+}
+
+impl<ImageUrl> Content<ImageUrl> {
+    /// Set `content` property to `normal`.
+    #[inline]
+    pub fn normal() -> Self {
+        Content::Normal
     }
+}
+
+/// Items for the `content` property.
+#[derive(
+    Clone,
+    Debug,
+    Eq,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+pub enum ContentItem<ImageUrl> {
+    /// Literal string content.
+    String(Box<str>),
+    /// `counter(name, style)`.
+    #[css(comma, function)]
+    Counter(CustomIdent, #[css(skip_if = "is_decimal")] CounterStyleType),
+    /// `counters(name, separator, style)`.
+    #[css(comma, function)]
+    Counters(
+        CustomIdent,
+        Box<str>,
+        #[css(skip_if = "is_decimal")] CounterStyleType,
+    ),
+    /// `open-quote`.
+    OpenQuote,
+    /// `close-quote`.
+    CloseQuote,
+    /// `no-open-quote`.
+    NoOpenQuote,
+    /// `no-close-quote`.
+    NoCloseQuote,
+    /// `attr([namespace? `|`]? ident)`
+    #[cfg(feature = "gecko")]
+    Attr(Attr),
+    /// `url(url)`
+    Url(ImageUrl),
 }

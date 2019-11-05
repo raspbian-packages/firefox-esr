@@ -112,7 +112,7 @@
 <!ENTITY  event.menu.edit.select.all.accesskey            "e">
 
 <!ENTITY  event.menu.view.label                           "Görünüm">
-<!ENTITY  event.menu.view.accesskey                       "G">
+<!ENTITY  event.menu.view.accesskey                       "n">
 <!ENTITY  event.menu.view.toolbars.label                  "Araç çubukları">
 <!ENTITY  event.menu.view.toolbars.accesskey              "A">
 <!ENTITY  event.menu.view.toolbars.event.label            "Etkinlik araç çubuğu">
@@ -215,8 +215,8 @@
 <!ENTITY task.from.accesskey                              "B">
 <!ENTITY event.to.label                                   "Bitiş:" >
 <!ENTITY event.to.accesskey                               "t">
-<!ENTITY task.to.label                                    "Son tarih:" >
-<!ENTITY task.to.accesskey                                "S">
+<!ENTITY task.to.label                                    "Bitiş tarihi:" >
+<!ENTITY task.to.accesskey                                "i">
 <!ENTITY task.status.label                                "Durum:" >
 <!ENTITY task.status.accesskey                            "D">
 <!ENTITY event.repeat.label                               "Tekrarla:" >
@@ -371,7 +371,7 @@
 
 <!-- Attendees dialog -->
 <!ENTITY invite.title.label                     "Katılımcıları davet et">
-<!ENTITY event.organizer.label                  "Düzenleyici">
+<!ENTITY event.organizer.label                  "Düzenleyen">
 <!ENTITY event.freebusy.suggest.slot            "Zaman aralığı öner:">
 <!ENTITY event.freebusy.button.next.slot        "Sonraki zaman aralığı">
 <!ENTITY event.freebusy.button.previous.slot    "Önceki zaman aralığı">
@@ -407,11 +407,6 @@
 <!ENTITY read.only.location.label        "Konum:">
 <!ENTITY read.only.category.label        "Kategori:">
 <!ENTITY read.only.organizer.label       "Düzenleyen:">
-<!ENTITY read.only.reply.label           "Yanıtla:">
-<!ENTITY read.only.accept.label          "Katılacağım">
-<!ENTITY read.only.decline.label         "Katılmayacağım">
-<!ENTITY read.only.tentative.label       "Katılabilirim">
-<!ENTITY read.only.needs.action.label    "Daha sonra onaylayacağım">
 <!ENTITY read.only.reminder.label        "Anımsatıcı:">
 <!ENTITY read.only.attachments.label     "Ekler:">
 <!ENTITY read.only.attendees.label       "Katılımcılar">
@@ -420,7 +415,14 @@
 
 <!-- Summary dialog -->
 <!ENTITY summary.dialog.saveclose.label         "Kaydet ve kapat">
+<!ENTITY summary.dialog.saveclose.tooltiptext   "Katılım durumunu değiştirmeden ve yanıt göndermeden değişiklikleri kaydedin ve pencereyi kapatın">
 <!ENTITY summary.dialog.accept.label            "Kabul et">
 <!ENTITY summary.dialog.accept.tooltiptext      "Daveti kabul et">
+<!ENTITY summary.dialog.tentative.label         "Kesin değil">
+<!ENTITY summary.dialog.tentative.tooltiptext   "Daveti kesin olmadan kabul et">
 <!ENTITY summary.dialog.decline.label           "Reddet">
 <!ENTITY summary.dialog.decline.tooltiptext     "Daveti reddet">
+<!ENTITY summary.dialog.dontsend.label          "Yanıt gönderme">
+<!ENTITY summary.dialog.dontsend.tooltiptext    "Düzenleyene yanıt göndermeden katılım durumunuzu değiştirin ve pencereyi kapatın">
+<!ENTITY summary.dialog.send.label              "Şimdi yanıt gönder">
+<!ENTITY summary.dialog.send.tooltiptext        "Düzenleyene yanıt gönder  ve pencereyi kapat">

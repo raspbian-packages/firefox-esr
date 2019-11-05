@@ -22,12 +22,10 @@ class nsMIMEInfoUIKit final : public nsMIMEInfoImpl {
   virtual nsresult LoadUriInternal(nsIURI* aURI);
 #ifdef DEBUG
   virtual nsresult LaunchDefaultWithFile(nsIFile* aFile) {
-    NS_NOTREACHED("do not call this method, use LaunchWithFile");
+    MOZ_ASSERT_UNREACHABLE("do not call this method, use LaunchWithFile");
     return NS_ERROR_UNEXPECTED;
   }
 #endif
-  static nsresult OpenApplicationWithURI(nsIFile* aApplication,
-                                         const nsCString& aURI);
 };
 
 #endif

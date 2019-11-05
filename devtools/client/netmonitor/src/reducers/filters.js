@@ -8,11 +8,11 @@ const {
   ENABLE_REQUEST_FILTER_TYPE_ONLY,
   TOGGLE_REQUEST_FILTER_TYPE,
   SET_REQUEST_FILTER_TEXT,
-  FILTER_TAGS
+  FILTER_TAGS,
 } = require("../constants");
 
 function FilterTypes(overrideParams = {}) {
-  let allFilterTypes = ["all"].concat(FILTER_TAGS);
+  const allFilterTypes = ["all"].concat(FILTER_TAGS);
   // filter only those keys which are valid filter tags
   overrideParams = Object.keys(overrideParams)
     .filter(key => allFilterTypes.includes(key))
@@ -20,20 +20,25 @@ function FilterTypes(overrideParams = {}) {
       obj[key] = overrideParams[key];
       return obj;
     }, {});
-  let filterTypes = allFilterTypes
-    .reduce((o, tag) => Object.assign(o, { [tag]: false }), {});
+  const filterTypes = allFilterTypes.reduce(
+    (o, tag) => Object.assign(o, { [tag]: false }),
+    {}
+  );
   return Object.assign({}, filterTypes, overrideParams);
 }
 
 function Filters(overrideParams = {}) {
-  return Object.assign({
-    requestFilterTypes: new FilterTypes({ all: true }),
-    requestFilterText: "",
-  }, overrideParams);
+  return Object.assign(
+    {
+      requestFilterTypes: new FilterTypes({ all: true }),
+      requestFilterText: "",
+    },
+    overrideParams
+  );
 }
 
 function toggleRequestFilterType(state, action) {
-  let { filter } = action;
+  const { filter } = action;
   let newState;
 
   // Ignore unknown filter type
@@ -56,7 +61,7 @@ function toggleRequestFilterType(state, action) {
 }
 
 function enableRequestFilterTypeOnly(state, action) {
-  let { filter } = action;
+  const { filter } = action;
 
   // Ignore unknown filter type
   if (!state.hasOwnProperty(filter)) {
@@ -70,12 +75,16 @@ function filters(state = new Filters(), action) {
   state = { ...state };
   switch (action.type) {
     case ENABLE_REQUEST_FILTER_TYPE_ONLY:
-      state.requestFilterTypes =
-        enableRequestFilterTypeOnly(state.requestFilterTypes, action);
+      state.requestFilterTypes = enableRequestFilterTypeOnly(
+        state.requestFilterTypes,
+        action
+      );
       break;
     case TOGGLE_REQUEST_FILTER_TYPE:
-      state.requestFilterTypes =
-        toggleRequestFilterType(state.requestFilterTypes, action);
+      state.requestFilterTypes = toggleRequestFilterType(
+        state.requestFilterTypes,
+        action
+      );
       break;
     case SET_REQUEST_FILTER_TEXT:
       state.requestFilterText = action.text;
@@ -89,5 +98,5 @@ function filters(state = new Filters(), action) {
 module.exports = {
   FilterTypes,
   Filters,
-  filters
+  filters,
 };

@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Misc information about a given computed style.
 
@@ -41,10 +41,6 @@ bitflags! {
         /// A flag used to mark styles which are a pseudo-element or under one.
         const IS_IN_PSEUDO_ELEMENT_SUBTREE = 1 << 4;
 
-        /// A flag used to mark styles which are in a display: none subtree, or
-        /// under one.
-        const IS_IN_DISPLAY_NONE_SUBTREE = 1 << 5;
-
         /// Whether this style inherits the `display` property.
         ///
         /// This is important because it may affect our optimizations to avoid
@@ -60,8 +56,8 @@ bitflags! {
         /// Whether the child explicitly inherits any reset property.
         const INHERITS_RESET_STYLE = 1 << 8;
 
-        /// A flag to mark a style which is a visited style.
-        const IS_STYLE_IF_VISITED = 1 << 9;
+        /// Whether any value on our style is font-metric-dependent.
+        const DEPENDS_ON_FONT_METRICS = 1 << 9;
 
         /// Whether the style or any of the ancestors has a multicol style.
         ///
@@ -74,10 +70,8 @@ impl ComputedValueFlags {
     /// Flags that are unconditionally propagated to descendants.
     #[inline]
     fn inherited_flags() -> Self {
-        ComputedValueFlags::IS_STYLE_IF_VISITED |
         ComputedValueFlags::IS_RELEVANT_LINK_VISITED |
         ComputedValueFlags::CAN_BE_FRAGMENTED |
-        ComputedValueFlags::IS_IN_DISPLAY_NONE_SUBTREE |
         ComputedValueFlags::IS_IN_PSEUDO_ELEMENT_SUBTREE |
         ComputedValueFlags::HAS_TEXT_DECORATION_LINES
     }
@@ -102,4 +96,23 @@ impl ComputedValueFlags {
     pub fn maybe_inherited(self) -> Self {
         self & Self::maybe_inherited_flags()
     }
+}
+
+/// Asserts that the relevant servo and Gecko representations match.
+#[cfg(feature = "gecko")]
+#[inline]
+pub fn assert_match() {
+    use crate::gecko_bindings::structs;
+    macro_rules! assert_bit {
+        ($rust:ident, $cpp:ident) => {
+            debug_assert_eq!(ComputedValueFlags::$rust.bits, structs::$cpp);
+        }
+    }
+
+    assert_bit!(HAS_TEXT_DECORATION_LINES, ComputedStyleBit_HasTextDecorationLines);
+    assert_bit!(IS_IN_PSEUDO_ELEMENT_SUBTREE, ComputedStyleBit_HasPseudoElementData);
+    assert_bit!(SHOULD_SUPPRESS_LINEBREAK, ComputedStyleBit_SuppressLineBreak);
+    assert_bit!(IS_TEXT_COMBINED, ComputedStyleBit_IsTextCombined);
+    assert_bit!(IS_RELEVANT_LINK_VISITED, ComputedStyleBit_RelevantLinkVisited);
+    assert_bit!(DEPENDS_ON_FONT_METRICS, ComputedStyleBit_DependsOnFontMetrics);
 }

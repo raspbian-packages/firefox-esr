@@ -22,7 +22,12 @@ namespace ImageDataSerializer {
 using namespace gfx;
 
 int32_t ComputeRGBStride(SurfaceFormat aFormat, int32_t aWidth) {
+#ifdef XP_MACOSX
+  // Some drivers require an alignment of 32 bytes for efficient texture upload.
+  return GetAlignedStride<32>(aWidth, BytesPerPixel(aFormat));
+#else
   return GetAlignedStride<4>(aWidth, BytesPerPixel(aFormat));
+#endif
 }
 
 int32_t GetRGBStride(const RGBDescriptor& aDescriptor) {
@@ -153,7 +158,7 @@ Maybe<gfx::IntSize> CbCrSizeFromBufferDescriptor(
   }
 }
 
-Maybe<YUVColorSpace> YUVColorSpaceFromBufferDescriptor(
+Maybe<gfx::YUVColorSpace> YUVColorSpaceFromBufferDescriptor(
     const BufferDescriptor& aDescriptor) {
   switch (aDescriptor.type()) {
     case BufferDescriptor::TRGBDescriptor:
@@ -165,15 +170,15 @@ Maybe<YUVColorSpace> YUVColorSpaceFromBufferDescriptor(
   }
 }
 
-Maybe<uint32_t> BitDepthFromBufferDescriptor(
+Maybe<gfx::ColorDepth> ColorDepthFromBufferDescriptor(
     const BufferDescriptor& aDescriptor) {
   switch (aDescriptor.type()) {
     case BufferDescriptor::TRGBDescriptor:
       return Nothing();
     case BufferDescriptor::TYCbCrDescriptor:
-      return Some(aDescriptor.get_YCbCrDescriptor().bitDepth());
+      return Some(aDescriptor.get_YCbCrDescriptor().colorDepth());
     default:
-      MOZ_CRASH("GFX:  BitDepthFromBufferDescriptor");
+      MOZ_CRASH("GFX:  ColorDepthFromBufferDescriptor");
   }
 }
 
@@ -239,7 +244,7 @@ already_AddRefed<DataSourceSurface> DataSourceSurfaceFromYCbCrDescriptor(
   ycbcrData.mCbCrSize = aDescriptor.cbCrSize();
   ycbcrData.mPicSize = ySize;
   ycbcrData.mYUVColorSpace = aDescriptor.yUVColorSpace();
-  ycbcrData.mBitDepth = aDescriptor.bitDepth();
+  ycbcrData.mColorDepth = aDescriptor.colorDepth();
 
   gfx::ConvertYCbCrToRGB(ycbcrData, gfx::SurfaceFormat::B8G8R8X8, ySize,
                          map.mData, map.mStride);
@@ -267,7 +272,7 @@ void ConvertAndScaleFromYCbCrDescriptor(uint8_t* aBuffer,
   ycbcrData.mCbCrSize = aDescriptor.cbCrSize();
   ycbcrData.mPicSize = aDescriptor.ySize();
   ycbcrData.mYUVColorSpace = aDescriptor.yUVColorSpace();
-  ycbcrData.mBitDepth = aDescriptor.bitDepth();
+  ycbcrData.mColorDepth = aDescriptor.colorDepth();
 
   gfx::ConvertYCbCrToRGB(ycbcrData, aDestFormat, aDestSize, aDestBuffer,
                          aStride);

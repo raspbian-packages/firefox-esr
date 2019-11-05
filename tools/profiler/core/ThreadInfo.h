@@ -8,7 +8,7 @@
 #define ThreadInfo_h
 
 #include "mozilla/TimeStamp.h"
-
+#include "nsISupportsImpl.h"
 #include "nsString.h"
 
 // This class contains information about a thread which needs to be stored
@@ -19,9 +19,11 @@ class ThreadInfo final {
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(ThreadInfo)
 
-  ThreadInfo(const char* aName, int aThreadId, bool aIsMainThread)
+  ThreadInfo(
+      const char* aName, int aThreadId, bool aIsMainThread,
+      const mozilla::TimeStamp& aRegisterTime = mozilla::TimeStamp::Now())
       : mName(aName),
-        mRegisterTime(TimeStamp::Now()),
+        mRegisterTime(aRegisterTime),
         mThreadId(aThreadId),
         mIsMainThread(aIsMainThread) {
     // I don't know if we can assert this. But we should warn.

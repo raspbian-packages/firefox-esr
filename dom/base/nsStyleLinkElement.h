@@ -16,18 +16,18 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/CORSMode.h"
 #include "mozilla/StyleSheetInlines.h"
+#include "mozilla/Unused.h"
 #include "mozilla/net/ReferrerPolicy.h"
 #include "nsCOMPtr.h"
 #include "nsIStyleSheetLinkingElement.h"
 #include "nsTArray.h"
-#include "nsAttrValue.h"
 
-class nsIDocument;
 class nsIURI;
 
 namespace mozilla {
 class CSSStyleSheet;
 namespace dom {
+class Document;
 class ShadowRoot;
 }  // namespace dom
 }  // namespace mozilla
@@ -45,14 +45,18 @@ class nsStyleLinkElement : public nsIStyleSheetLinkingElement {
   void SetStyleSheet(mozilla::StyleSheet* aStyleSheet) override;
   mozilla::StyleSheet* GetStyleSheet() override;
   void InitStyleLinkElement(bool aDontLoadStyle) override;
-  nsresult UpdateStyleSheet(nsICSSLoaderObserver* aObserver, bool* aWillNotify,
-                            bool* aIsAlternate, bool aForceReload) override;
+
+  mozilla::Result<Update, nsresult> UpdateStyleSheet(
+      nsICSSLoaderObserver*) override;
+
   void SetEnableUpdates(bool aEnableUpdates) override;
   void GetCharset(nsAString& aCharset) override;
 
-  virtual void OverrideBaseURI(nsIURI* aNewBaseURI) override;
-  virtual void SetLineNumber(uint32_t aLineNumber) override;
-  virtual uint32_t GetLineNumber() override;
+  void OverrideBaseURI(nsIURI* aNewBaseURI) override;
+  void SetLineNumber(uint32_t aLineNumber) override;
+  uint32_t GetLineNumber() override;
+  void SetColumnNumber(uint32_t aColumnNumber) override;
+  uint32_t GetColumnNumber() override;
 
   enum RelValue {
     ePREFETCH = 0x00000001,
@@ -68,43 +72,39 @@ class nsStyleLinkElement : public nsIStyleSheetLinkingElement {
   // The return value is a bitwise or of 0 or more RelValues.
   static uint32_t ParseLinkTypes(const nsAString& aTypes);
 
-  static bool CheckPreloadAttrs(const nsAttrValue& aAs, const nsAString& aType,
-                                const nsAString& aMedia,
-                                nsIDocument* aDocument);
-
   void UpdateStyleSheetInternal() {
-    UpdateStyleSheetInternal(nullptr, nullptr);
+    mozilla::Unused << UpdateStyleSheetInternal(nullptr, nullptr);
   }
 
  protected:
   /**
-   * @param aOldDocument should be non-null only if we're updating because we
-   *                     removed the node from the document.
+   * @param aOldDocument   should be non-null only if we're updating because we
+   *                       removed the node from the document.
+   * @param aOldShadowRoot should be non-null only if we're updating because we
+   *                       removed the node from a shadow tree.
    * @param aForceUpdate true will force the update even if the URI has not
    *                     changed.  This should be used in cases when something
    *                     about the content that affects the resulting sheet
    *                     changed but the URI may not have changed.
+   *
+   * TODO(emilio): Should probably pass a single DocumentOrShadowRoot.
    */
-  nsresult UpdateStyleSheetInternal(nsIDocument* aOldDocument,
-                                    mozilla::dom::ShadowRoot* aOldShadowRoot,
-                                    bool aForceUpdate = false);
+  mozilla::Result<Update, nsresult> UpdateStyleSheetInternal(
+      mozilla::dom::Document* aOldDocument,
+      mozilla::dom::ShadowRoot* aOldShadowRoot, ForceUpdate = ForceUpdate::No);
 
-  void UpdateStyleSheetScopedness(bool aIsNowScoped);
+  // Gets a suitable title and media for SheetInfo out of an element, which
+  // needs to be `this`.
+  //
+  // NOTE(emilio): Needs nsString instead of nsAString because of
+  // CompressWhitespace.
+  static void GetTitleAndMediaForElement(const mozilla::dom::Element&,
+                                         nsString& aTitle, nsString& aMedia);
 
-  virtual already_AddRefed<nsIURI> GetStyleSheetURL(
-      bool* aIsInline, nsIPrincipal** aTriggeringPrincipal) = 0;
-  virtual void GetStyleSheetInfo(nsAString& aTitle, nsAString& aType,
-                                 nsAString& aMedia, bool* aIsScoped,
-                                 bool* aIsAlternate) = 0;
+  // Returns whether the type attribute specifies the text/css mime type.
+  static bool IsCSSMimeTypeAttribute(const mozilla::dom::Element&);
 
-  virtual mozilla::CORSMode GetCORSMode() const {
-    // Default to no CORS
-    return mozilla::CORS_NONE;
-  }
-
-  virtual mozilla::net::ReferrerPolicy GetLinkReferrerPolicy() {
-    return mozilla::net::RP_Unset;
-  }
+  virtual mozilla::Maybe<SheetInfo> GetStyleSheetInfo() = 0;
 
   // CC methods
   void Unlink();
@@ -123,11 +123,10 @@ class nsStyleLinkElement : public nsIStyleSheetLinkingElement {
    *                     about the content that affects the resulting sheet
    *                     changed but the URI may not have changed.
    */
-  nsresult DoUpdateStyleSheet(nsIDocument* aOldDocument,
-                              mozilla::dom::ShadowRoot* aOldShadowRoot,
-                              nsICSSLoaderObserver* aObserver,
-                              bool* aWillNotify, bool* aIsAlternate,
-                              bool aForceUpdate);
+  mozilla::Result<Update, nsresult> DoUpdateStyleSheet(
+      mozilla::dom::Document* aOldDocument,
+      mozilla::dom::ShadowRoot* aOldShadowRoot, nsICSSLoaderObserver* aObserver,
+      ForceUpdate);
 
   RefPtr<mozilla::StyleSheet> mStyleSheet;
 
@@ -136,6 +135,7 @@ class nsStyleLinkElement : public nsIStyleSheetLinkingElement {
   bool mDontLoadStyle;
   bool mUpdatesEnabled;
   uint32_t mLineNumber;
+  uint32_t mColumnNumber;
 };
 
 #endif /* nsStyleLinkElement_h___ */

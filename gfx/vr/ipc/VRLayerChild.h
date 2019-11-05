@@ -38,7 +38,7 @@ class VRLayerChild : public PVRLayerChild {
   void Initialize(dom::HTMLCanvasElement* aCanvasElement,
                   const gfx::Rect& aLeftEyeRect,
                   const gfx::Rect& aRightEyeRect);
-  void SubmitFrame(uint64_t aFrameId);
+  void SubmitFrame(const VRDisplayInfo& aDisplayInfo);
   bool IsIPCOpen();
 
  private:

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,12 +11,12 @@
 
 #include "nsCOMArray.h"
 #include "nsCOMPtr.h"
-#include "nsIDOMDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIObserver.h"
 #include "nsIObserverService.h"
 #include "nsIURI.h"
+#include "nsIWeakReference.h"
 #include "nsString.h"
-#include "nsWeakReference.h"
 
 class nsPIDOMWindowInner;
 
@@ -29,23 +29,23 @@ class OfflineCacheUpdateChild : public nsIOfflineCacheUpdate,
   NS_DECL_ISUPPORTS
   NS_DECL_NSIOFFLINECACHEUPDATE
 
-  virtual mozilla::ipc::IPCResult RecvNotifyStateEvent(
-      const uint32_t& stateEvent, const uint64_t& byteProgress) override;
+  mozilla::ipc::IPCResult RecvNotifyStateEvent(const uint32_t& stateEvent,
+                                               const uint64_t& byteProgress);
 
-  virtual mozilla::ipc::IPCResult RecvAssociateDocuments(
-      const nsCString& cacheGroupId, const nsCString& cacheClientId) override;
+  mozilla::ipc::IPCResult RecvAssociateDocuments(
+      const nsCString& cacheGroupId, const nsCString& cacheClientId);
 
-  virtual mozilla::ipc::IPCResult RecvFinish(const bool& succeeded,
-                                             const bool& isUpgrade) override;
+  mozilla::ipc::IPCResult RecvFinish(const bool& succeeded,
+                                     const bool& isUpgrade);
 
   explicit OfflineCacheUpdateChild(nsPIDOMWindowInner* aWindow);
 
-  void SetDocument(nsIDOMDocument* aDocument);
+  void SetDocument(dom::Document* aDocument);
 
  private:
   ~OfflineCacheUpdateChild();
 
-  nsresult AssociateDocument(nsIDOMDocument* aDocument,
+  nsresult AssociateDocument(dom::Document* aDocument,
                              nsIApplicationCache* aApplicationCache);
   void GatherObservers(nsCOMArray<nsIOfflineCacheUpdateObserver>& aObservers);
   nsresult Finish();
@@ -74,7 +74,7 @@ class OfflineCacheUpdateChild : public nsIOfflineCacheUpdate,
   nsCOMArray<nsIOfflineCacheUpdateObserver> mObservers;
 
   /* Document that requested this update */
-  nsCOMPtr<nsIDOMDocument> mDocument;
+  nsCOMPtr<dom::Document> mDocument;
 
   /* Keep reference to the window that owns this update to call the
      parent offline cache update construcor */

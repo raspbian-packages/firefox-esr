@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #if !defined(DXVA2Manager_h_)
-#define DXVA2Manager_h_
+#  define DXVA2Manager_h_
 
-#include "MediaInfo.h"
-#include "WMF.h"
-#include "mozilla/Mutex.h"
-#include "nsAutoPtr.h"
-#include "mozilla/gfx/Rect.h"
-#include "d3d11.h"
+#  include "MediaInfo.h"
+#  include "WMF.h"
+#  include "mozilla/Mutex.h"
+#  include "nsAutoPtr.h"
+#  include "mozilla/gfx/Rect.h"
+#  include "d3d11.h"
 
 namespace mozilla {
 
@@ -49,7 +49,9 @@ class DXVA2Manager {
     return E_FAIL;
   }
 
-  virtual HRESULT ConfigureForSize(uint32_t aWidth, uint32_t aHeight) {
+  virtual HRESULT ConfigureForSize(IMFMediaType* aInputType,
+                                   gfx::YUVColorSpace aColorSpace,
+                                   uint32_t aWidth, uint32_t aHeight) {
     return S_OK;
   }
 

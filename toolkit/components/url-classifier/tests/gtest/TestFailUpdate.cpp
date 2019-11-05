@@ -8,7 +8,7 @@ using namespace mozilla;
 using namespace mozilla::safebrowsing;
 
 static const char* kFilesInV2[] = {".pset", ".sbstore"};
-static const char* kFilesInV4[] = {".pset", ".metadata"};
+static const char* kFilesInV4[] = {".vlpset", ".metadata"};
 
 #define V2_TABLE "gtest-malware-simple"
 #define V4_TABLE1 "goog-malware-proto"
@@ -32,13 +32,15 @@ void CheckFileExist(const char* table, const T (&files)[N], bool expectExists) {
   }
 }
 
-TEST(FailUpdate, CheckTableReset) {
+TEST(UrlClassifierFailUpdate, CheckTableReset)
+{
   const bool FULL_UPDATE = true;
   const bool PARTIAL_UPDATE = false;
 
   // Apply V2 update
   {
-    auto update = new TableUpdateV2(NS_LITERAL_CSTRING(V2_TABLE));
+    RefPtr<TableUpdateV2> update =
+        new TableUpdateV2(NS_LITERAL_CSTRING(V2_TABLE));
     Unused << update->NewAddChunk(1);
 
     ApplyUpdate(update);
@@ -48,26 +50,28 @@ TEST(FailUpdate, CheckTableReset) {
   }
 
   // Helper function to generate table update data
-  auto func = [](TableUpdateV4* update, bool full, const char* str) {
+  auto func = [](RefPtr<TableUpdateV4> update, bool full, const char* str) {
     update->SetFullUpdate(full);
-    std::string prefix(str);
-    update->NewPrefixes(prefix.length(), prefix);
+    nsCString prefix(str);
+    update->NewPrefixes(prefix.Length(), prefix);
   };
 
   // Apply V4 update for table1
   {
-    auto update = new TableUpdateV4(NS_LITERAL_CSTRING(V4_TABLE1));
+    RefPtr<TableUpdateV4> update =
+        new TableUpdateV4(NS_LITERAL_CSTRING(V4_TABLE1));
     func(update, FULL_UPDATE, "test_prefix");
 
     ApplyUpdate(update);
 
-    // A successful V4 update should create .pset & .metadata files
+    // A successful V4 update should create .vlpset & .metadata files
     CheckFileExist(V4_TABLE1, kFilesInV4, true);
   }
 
   // Apply V4 update for table2
   {
-    auto update = new TableUpdateV4(NS_LITERAL_CSTRING(V4_TABLE2));
+    RefPtr<TableUpdateV4> update =
+        new TableUpdateV4(NS_LITERAL_CSTRING(V4_TABLE2));
     func(update, FULL_UPDATE, "test_prefix");
 
     ApplyUpdate(update);
@@ -78,7 +82,8 @@ TEST(FailUpdate, CheckTableReset) {
   // Apply V4 update with the same prefix in previous full udpate
   // This should cause an update error.
   {
-    auto update = new TableUpdateV4(NS_LITERAL_CSTRING(V4_TABLE1));
+    RefPtr<TableUpdateV4> update =
+        new TableUpdateV4(NS_LITERAL_CSTRING(V4_TABLE1));
     func(update, PARTIAL_UPDATE, "test_prefix");
 
     ApplyUpdate(update);

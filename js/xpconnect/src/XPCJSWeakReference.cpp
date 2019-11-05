@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,14 +16,16 @@ xpcJSWeakReference::xpcJSWeakReference() {}
 NS_IMPL_ISUPPORTS(xpcJSWeakReference, xpcIJSWeakReference)
 
 nsresult xpcJSWeakReference::Init(JSContext* cx, const JS::Value& object) {
-  if (!object.isObject()) return NS_OK;
+  if (!object.isObject()) {
+    return NS_OK;
+  }
 
   JS::RootedObject obj(cx, &object.toObject());
 
   XPCCallContext ccx(cx);
 
   // See if the object is a wrapped native that supports weak references.
-  nsCOMPtr<nsISupports> supports = xpc::UnwrapReflectorToISupports(obj);
+  nsCOMPtr<nsISupports> supports = xpc::ReflectorToISupportsDynamic(obj, cx);
   nsCOMPtr<nsISupportsWeakReference> supportsWeakRef =
       do_QueryInterface(supports);
   if (supportsWeakRef) {
@@ -37,7 +39,7 @@ nsresult xpcJSWeakReference::Init(JSContext* cx, const JS::Value& object) {
 
   // See if object is a wrapped JSObject.
   RefPtr<nsXPCWrappedJS> wrapped;
-  nsresult rv = nsXPCWrappedJS::GetNewOrUsed(obj, NS_GET_IID(nsISupports),
+  nsresult rv = nsXPCWrappedJS::GetNewOrUsed(cx, obj, NS_GET_IID(nsISupports),
                                              getter_AddRefs(wrapped));
   if (!wrapped) {
     NS_ERROR("can't get nsISupportsWeakReference wrapper for obj");

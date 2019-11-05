@@ -14,10 +14,12 @@
 #include "mozilla/RefPtr.h"                 // for already_AddRefed
 #include "mozilla/ipc/CrossProcessMutex.h"  // for CrossProcessMutex, etc
 #include "mozilla/layers/CompositorTypes.h"
-#include "mozilla/layers/ImageBridgeChild.h"  // for ImageBridgeChild
-#include "mozilla/layers/ImageClient.h"       // for ImageClient
+#include "mozilla/layers/ImageBridgeChild.h"     // for ImageBridgeChild
+#include "mozilla/layers/ImageClient.h"          // for ImageClient
+#include "mozilla/layers/ImageDataSerializer.h"  // for SurfaceDescriptorBuffer
 #include "mozilla/layers/LayersMessages.h"
 #include "mozilla/layers/SharedPlanarYCbCrImage.h"
+#include "mozilla/layers/SharedSurfacesChild.h"  // for SharedSurfacesAnimation
 #include "mozilla/layers/SharedRGBImage.h"
 #include "mozilla/layers/TextureClientRecycleAllocator.h"
 #include "mozilla/gfx/gfxVars.h"
@@ -28,26 +30,29 @@
 #include "mozilla/CheckedInt.h"
 
 #ifdef XP_MACOSX
-#include "mozilla/gfx/QuartzSupport.h"
+#  include "mozilla/gfx/QuartzSupport.h"
 #endif
 
 #ifdef XP_WIN
-#include "gfxWindowsPlatform.h"
-#include <d3d10_1.h>
-#include "mozilla/gfx/DeviceManagerDx.h"
-#include "mozilla/layers/D3D11YCbCrImage.h"
+#  include "gfxWindowsPlatform.h"
+#  include <d3d10_1.h>
+#  include "mozilla/gfx/DeviceManagerDx.h"
+#  include "mozilla/layers/D3D11YCbCrImage.h"
 #endif
 
 namespace mozilla {
 namespace layers {
 
-using namespace mozilla::ipc;
-using namespace android;
 using namespace mozilla::gfx;
+using namespace mozilla::ipc;
 
 Atomic<int32_t> Image::sSerialCounter(0);
 
 Atomic<uint32_t> ImageContainer::sGenerationCounter(0);
+
+static void CopyPlane(uint8_t* aDst, const uint8_t* aSrc,
+                      const gfx::IntSize& aSize, int32_t aStride,
+                      int32_t aSkip);
 
 RefPtr<PlanarYCbCrImage> ImageFactory::CreatePlanarYCbCrImage(
     const gfx::IntSize& aScaleHint, BufferRecycleBin* aRecycleBin) {
@@ -70,7 +75,7 @@ void BufferRecycleBin::RecycleBuffer(UniquePtr<uint8_t[]> aBuffer,
     mRecycledBuffers.Clear();
   }
   mRecycledBufferSize = aSize;
-  mRecycledBuffers.AppendElement(Move(aBuffer));
+  mRecycledBuffers.AppendElement(std::move(aBuffer));
 }
 
 UniquePtr<uint8_t[]> BufferRecycleBin::GetBuffer(uint32_t aSize) {
@@ -81,7 +86,7 @@ UniquePtr<uint8_t[]> BufferRecycleBin::GetBuffer(uint32_t aSize) {
   }
 
   uint32_t last = mRecycledBuffers.Length() - 1;
-  UniquePtr<uint8_t[]> result = Move(mRecycledBuffers[last]);
+  UniquePtr<uint8_t[]> result = std::move(mRecycledBuffers[last]);
   mRecycledBuffers.RemoveElementAt(last);
   return result;
 }
@@ -105,6 +110,13 @@ void ImageContainerListener::NotifyComposite(
   MutexAutoLock lock(mLock);
   if (mImageContainer) {
     mImageContainer->NotifyComposite(aNotification);
+  }
+}
+
+void ImageContainerListener::NotifyDropped(uint32_t aDropped) {
+  MutexAutoLock lock(mLock);
+  if (mImageContainer) {
+    mImageContainer->NotifyDropped(aDropped);
   }
 }
 
@@ -161,6 +173,13 @@ void ImageContainer::EnsureImageClient() {
   }
 }
 
+SharedSurfacesAnimation* ImageContainer::EnsureSharedSurfacesAnimation() {
+  if (!mSharedAnimation) {
+    mSharedAnimation = new SharedSurfacesAnimation();
+  }
+  return mSharedAnimation;
+}
+
 ImageContainer::ImageContainer(Mode flag)
     : mRecursiveMutex("ImageContainer.mRecursiveMutex"),
       mGenerationCounter(++sGenerationCounter),
@@ -199,6 +218,9 @@ ImageContainer::~ImageContainer() {
       imageBridge->ForgetImageContainer(mAsyncContainerHandle);
     }
   }
+  if (mSharedAnimation) {
+    mSharedAnimation->Destroy();
+  }
 }
 
 RefPtr<PlanarYCbCrImage> ImageContainer::CreatePlanarYCbCrImage() {
@@ -231,29 +253,7 @@ void ImageContainer::SetCurrentImageInternal(
                      mCurrentImages[0].mFrameID <= aImages[0].mFrameID,
                  "frame IDs shouldn't go backwards");
     if (aImages[0].mProducerID != mCurrentProducerID) {
-      mFrameIDsNotYetComposited.Clear();
       mCurrentProducerID = aImages[0].mProducerID;
-    } else if (!aImages[0].mTimeStamp.IsNull()) {
-      // Check for expired frames
-      for (auto& img : mCurrentImages) {
-        if (img.mProducerID != aImages[0].mProducerID ||
-            img.mTimeStamp.IsNull() ||
-            img.mTimeStamp >= aImages[0].mTimeStamp) {
-          break;
-        }
-        if (!img.mComposited && !img.mTimeStamp.IsNull() &&
-            img.mFrameID != aImages[0].mFrameID) {
-          mFrameIDsNotYetComposited.AppendElement(img.mFrameID);
-        }
-      }
-
-      // Remove really old frames, assuming they'll never be composited.
-      const uint32_t maxFrames = 100;
-      if (mFrameIDsNotYetComposited.Length() > maxFrames) {
-        uint32_t dropFrames = mFrameIDsNotYetComposited.Length() - maxFrames;
-        mDroppedImageCount += dropFrames;
-        mFrameIDsNotYetComposited.RemoveElementsAt(0, dropFrames);
-      }
     }
   }
 
@@ -276,7 +276,7 @@ void ImageContainer::SetCurrentImageInternal(
     img->mTimeStamp = aImages[i].mTimeStamp;
     img->mFrameID = aImages[i].mFrameID;
     img->mProducerID = aImages[i].mProducerID;
-    for (auto& oldImg : mCurrentImages) {
+    for (const auto& oldImg : mCurrentImages) {
       if (oldImg.mFrameID == img->mFrameID &&
           oldImg.mProducerID == img->mProducerID) {
         img->mComposited = oldImg.mComposited;
@@ -394,17 +394,6 @@ void ImageContainer::NotifyComposite(
   ++mPaintCount;
 
   if (aNotification.producerID() == mCurrentProducerID) {
-    uint32_t i;
-    for (i = 0; i < mFrameIDsNotYetComposited.Length(); ++i) {
-      if (mFrameIDsNotYetComposited[i] <= aNotification.frameID()) {
-        if (mFrameIDsNotYetComposited[i] < aNotification.frameID()) {
-          ++mDroppedImageCount;
-        }
-      } else {
-        break;
-      }
-    }
-    mFrameIDsNotYetComposited.RemoveElementsAt(0, i);
     for (auto& img : mCurrentImages) {
       if (img.mFrameID == aNotification.frameID()) {
         img.mComposited = true;
@@ -418,6 +407,10 @@ void ImageContainer::NotifyComposite(
   }
 }
 
+void ImageContainer::NotifyDropped(uint32_t aDropped) {
+  mDroppedImageCount += aDropped;
+}
+
 #ifdef XP_WIN
 D3D11YCbCrRecycleAllocator* ImageContainer::GetD3D11YCbCrRecycleAllocator(
     KnowsCompositor* aAllocator) {
@@ -426,26 +419,12 @@ D3D11YCbCrRecycleAllocator* ImageContainer::GetD3D11YCbCrRecycleAllocator(
     return mD3D11YCbCrRecycleAllocator;
   }
 
-  RefPtr<ID3D11Device> device = gfx::DeviceManagerDx::Get()->GetContentDevice();
-  if (!device) {
-    device = gfx::DeviceManagerDx::Get()->GetCompositorDevice();
-  }
-
-  if (!device || !aAllocator->SupportsD3D11()) {
+  if (!aAllocator->SupportsD3D11() ||
+      !gfx::DeviceManagerDx::Get()->GetImageDevice()) {
     return nullptr;
   }
 
-  RefPtr<ID3D10Multithread> multi;
-  HRESULT hr =
-      device->QueryInterface((ID3D10Multithread**)getter_AddRefs(multi));
-  if (FAILED(hr) || !multi) {
-    gfxWarning() << "Multithread safety interface not supported. " << hr;
-    return nullptr;
-  }
-  multi->SetMultithreadProtected(TRUE);
-
-  mD3D11YCbCrRecycleAllocator =
-      new D3D11YCbCrRecycleAllocator(aAllocator, device);
+  mD3D11YCbCrRecycleAllocator = new D3D11YCbCrRecycleAllocator(aAllocator);
   return mD3D11YCbCrRecycleAllocator;
 }
 #endif
@@ -455,9 +434,57 @@ PlanarYCbCrImage::PlanarYCbCrImage()
       mOffscreenFormat(SurfaceFormat::UNKNOWN),
       mBufferSize(0) {}
 
+nsresult PlanarYCbCrImage::BuildSurfaceDescriptorBuffer(
+    SurfaceDescriptorBuffer& aSdBuffer) {
+  const PlanarYCbCrData* pdata = GetData();
+  MOZ_ASSERT(pdata, "must have PlanarYCbCrData");
+  MOZ_ASSERT(pdata->mYSkip == 0 && pdata->mCbSkip == 0 && pdata->mCrSkip == 0,
+             "YCbCrDescriptor doesn't hold skip values");
+  MOZ_ASSERT(pdata->mPicX == 0 && pdata->mPicY == 0,
+             "YCbCrDescriptor doesn't hold picx or picy");
+
+  uint32_t yOffset;
+  uint32_t cbOffset;
+  uint32_t crOffset;
+  ImageDataSerializer::ComputeYCbCrOffsets(
+      pdata->mYStride, pdata->mYSize.height, pdata->mCbCrStride,
+      pdata->mCbCrSize.height, yOffset, cbOffset, crOffset);
+
+  aSdBuffer.desc() = YCbCrDescriptor(
+      pdata->mYSize, pdata->mYStride, pdata->mCbCrSize, pdata->mCbCrStride,
+      yOffset, cbOffset, crOffset, pdata->mStereoMode, pdata->mColorDepth,
+      pdata->mYUVColorSpace,
+      /*hasIntermediateBuffer*/ false);
+
+  uint8_t* buffer = nullptr;
+  const MemoryOrShmem& memOrShmem = aSdBuffer.data();
+  switch (memOrShmem.type()) {
+    case MemoryOrShmem::Tuintptr_t:
+      buffer = reinterpret_cast<uint8_t*>(memOrShmem.get_uintptr_t());
+      break;
+    case MemoryOrShmem::TShmem:
+      buffer = memOrShmem.get_Shmem().get<uint8_t>();
+      break;
+    default:
+      MOZ_ASSERT(false, "Unknown MemoryOrShmem type");
+  }
+  MOZ_ASSERT(buffer, "no valid buffer available to copy image data");
+  if (!buffer) {
+    return NS_ERROR_INVALID_ARG;
+  }
+
+  CopyPlane(buffer + yOffset, pdata->mYChannel, pdata->mYSize, pdata->mYStride,
+            pdata->mYSkip);
+  CopyPlane(buffer + cbOffset, pdata->mCbChannel, pdata->mCbCrSize,
+            pdata->mCbCrStride, pdata->mCbSkip);
+  CopyPlane(buffer + crOffset, pdata->mCrChannel, pdata->mCbCrSize,
+            pdata->mCbCrStride, pdata->mCrSkip);
+  return NS_OK;
+}
+
 RecyclingPlanarYCbCrImage::~RecyclingPlanarYCbCrImage() {
   if (mBuffer) {
-    mRecycleBin->RecycleBuffer(Move(mBuffer), mBufferSize);
+    mRecycleBin->RecycleBuffer(std::move(mBuffer), mBufferSize);
   }
 }
 
@@ -763,7 +790,7 @@ TextureClient* SourceSurfaceImage::GetTextureClient(
   }
 
   // Remove the speculatively added entry.
-  mTextureClients.Remove(aForwarder->GetSerial());
+  entry.OrRemove();
   return nullptr;
 }
 

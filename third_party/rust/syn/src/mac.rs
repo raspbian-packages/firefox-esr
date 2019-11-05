@@ -1,15 +1,11 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 use super::*;
 use proc_macro2::TokenStream;
+#[cfg(feature = "parsing")]
+use proc_macro2::{Delimiter, TokenTree};
 use token::{Brace, Bracket, Paren};
 
+#[cfg(feature = "parsing")]
+use parse::{ParseStream, Result};
 #[cfg(feature = "extra-traits")]
 use std::hash::{Hash, Hasher};
 #[cfg(feature = "extra-traits")]
@@ -46,7 +42,8 @@ impl Eq for Macro {}
 #[cfg(feature = "extra-traits")]
 impl PartialEq for Macro {
     fn eq(&self, other: &Self) -> bool {
-        self.path == other.path && self.bang_token == other.bang_token
+        self.path == other.path
+            && self.bang_token == other.bang_token
             && self.delimiter == other.delimiter
             && TokenStreamHelper(&self.tts) == TokenStreamHelper(&other.tts)
     }
@@ -66,26 +63,44 @@ impl Hash for Macro {
 }
 
 #[cfg(feature = "parsing")]
+pub fn parse_delimiter(input: ParseStream) -> Result<(MacroDelimiter, TokenStream)> {
+    input.step(|cursor| {
+        if let Some((TokenTree::Group(g), rest)) = cursor.token_tree() {
+            let span = g.span();
+            let delimiter = match g.delimiter() {
+                Delimiter::Parenthesis => MacroDelimiter::Paren(Paren(span)),
+                Delimiter::Brace => MacroDelimiter::Brace(Brace(span)),
+                Delimiter::Bracket => MacroDelimiter::Bracket(Bracket(span)),
+                Delimiter::None => {
+                    return Err(cursor.error("expected delimiter"));
+                }
+            };
+            Ok(((delimiter, g.stream().clone()), rest))
+        } else {
+            Err(cursor.error("expected delimiter"))
+        }
+    })
+}
+
+#[cfg(feature = "parsing")]
 pub mod parsing {
     use super::*;
 
-    use synom::Synom;
+    use parse::{Parse, ParseStream, Result};
 
-    impl Synom for Macro {
-        named!(parse -> Self, do_parse!(
-            what: call!(Path::parse_mod_style) >>
-            bang: punct!(!) >>
-            body: call!(tt::delimited) >>
-            (Macro {
-                path: what,
-                bang_token: bang,
-                delimiter: body.0,
-                tts: body.1,
+    impl Parse for Macro {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let tts;
+            Ok(Macro {
+                path: input.call(Path::parse_mod_style)?,
+                bang_token: input.parse()?,
+                delimiter: {
+                    let (delimiter, content) = parse_delimiter(input)?;
+                    tts = content;
+                    delimiter
+                },
+                tts: tts,
             })
-        ));
-
-        fn description() -> Option<&'static str> {
-            Some("macro invocation")
         }
     }
 }
@@ -93,10 +108,11 @@ pub mod parsing {
 #[cfg(feature = "printing")]
 mod printing {
     use super::*;
-    use quote::{ToTokens, Tokens};
+    use proc_macro2::TokenStream;
+    use quote::ToTokens;
 
     impl ToTokens for Macro {
-        fn to_tokens(&self, tokens: &mut Tokens) {
+        fn to_tokens(&self, tokens: &mut TokenStream) {
             self.path.to_tokens(tokens);
             self.bang_token.to_tokens(tokens);
             match self.delimiter {

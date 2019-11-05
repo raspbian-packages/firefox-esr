@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sw=4 et tw=80:
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: set ts=8 sw=2 et tw=80:
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,8 +16,8 @@
 #include "nsTArray.h"
 
 #ifdef XP_WIN
-#undef GetClassName
-#undef GetClassInfo
+#  undef GetClassName
+#  undef GetClassInfo
 #endif
 
 namespace mozilla {

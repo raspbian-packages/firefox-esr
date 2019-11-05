@@ -17,8 +17,8 @@ namespace dom {
 class HTMLSharedListElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLSharedListElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -30,8 +30,7 @@ class HTMLSharedListElement final : public nsGenericHTMLElement {
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   bool Reversed() const { return GetBoolAttr(nsGkAtoms::reversed); }
   void SetReversed(bool aReversed, mozilla::ErrorResult& rv) {
@@ -58,7 +57,9 @@ class HTMLSharedListElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
+  static void MapOLAttributesIntoRule(const nsMappedAttributes* aAttributes,
+                                      MappedDeclarations&);
 };
 
 }  // namespace dom

@@ -21,7 +21,7 @@
 #include "mozilla/Unused.h"
 
 #ifdef XPCOM_GLUE_AVOID_NSPR
-#error NS_ProxyRelease implementation depends on NSPR.
+#  error NS_ProxyRelease implementation depends on NSPR.
 #endif
 
 namespace detail {
@@ -39,18 +39,16 @@ class ProxyReleaseEvent : public mozilla::CancelableRunnable {
 
   nsresult Cancel() override { return Run(); }
 
+#ifdef MOZ_COLLECTING_RUNNABLE_TELEMETRY
   NS_IMETHOD GetName(nsACString& aName) override {
-#ifdef RELEASE_OR_BETA
-    aName.Truncate();
-#else
     if (mName) {
       aName.Append(nsPrintfCString("ProxyReleaseEvent for %s", mName));
     } else {
       aName.AssignLiteral("ProxyReleaseEvent");
     }
-#endif
     return NS_OK;
   }
+#endif
 
  private:
   T* MOZ_OWNING_REF mDoomed;
@@ -90,8 +88,7 @@ struct ProxyReleaseChooser {
   template <typename T>
   static void ProxyRelease(const char* aName, nsIEventTarget* aTarget,
                            already_AddRefed<T> aDoomed, bool aAlwaysProxy) {
-    ::detail::ProxyRelease(aName, aTarget, mozilla::Move(aDoomed),
-                           aAlwaysProxy);
+    ::detail::ProxyRelease(aName, aTarget, std::move(aDoomed), aAlwaysProxy);
   }
 };
 
@@ -132,7 +129,7 @@ inline NS_HIDDEN_(void)
     NS_ProxyRelease(const char* aName, nsIEventTarget* aTarget,
                     already_AddRefed<T> aDoomed, bool aAlwaysProxy = false) {
   ::detail::ProxyReleaseChooser<mozilla::IsBaseOf<nsISupports, T>::value>::
-      ProxyRelease(aName, aTarget, mozilla::Move(aDoomed), aAlwaysProxy);
+      ProxyRelease(aName, aTarget, std::move(aDoomed), aAlwaysProxy);
 }
 
 /**
@@ -168,7 +165,7 @@ inline NS_HIDDEN_(void)
     }
   }
 
-  NS_ProxyRelease(aName, systemGroupEventTarget, mozilla::Move(aDoomed),
+  NS_ProxyRelease(aName, systemGroupEventTarget, std::move(aDoomed),
                   aAlwaysProxy);
 }
 
@@ -177,7 +174,7 @@ inline NS_HIDDEN_(void)
     NS_ReleaseOnMainThreadSystemGroup(already_AddRefed<T> aDoomed,
                                       bool aAlwaysProxy = false) {
   NS_ReleaseOnMainThreadSystemGroup("NS_ReleaseOnMainThreadSystemGroup",
-                                    mozilla::Move(aDoomed), aAlwaysProxy);
+                                    std::move(aDoomed), aAlwaysProxy);
 }
 
 /**
@@ -219,7 +216,7 @@ inline NS_HIDDEN_(void)
  * an nsMainThreadPtrHandle<T> rather than an nsCOMPtr<T>.
  */
 template <class T>
-class nsMainThreadPtrHolder final {
+class MOZ_IS_SMARTPTR_TO_REFCOUNTED nsMainThreadPtrHolder final {
  public:
   // We can only acquire a pointer on the main thread. We to fail fast for
   // threading bugs, so by default we assert if our pointer is used or acquired
@@ -313,7 +310,7 @@ class nsMainThreadPtrHolder final {
 };
 
 template <class T>
-class nsMainThreadPtrHandle {
+class MOZ_IS_SMARTPTR_TO_REFCOUNTED nsMainThreadPtrHandle {
   RefPtr<nsMainThreadPtrHolder<T>> mPtr;
 
  public:
@@ -372,5 +369,22 @@ template <typename T>
 using PtrHandle = nsMainThreadPtrHandle<T>;
 
 }  // namespace mozilla
+
+class nsCycleCollectionTraversalCallback;
+template <typename T>
+void CycleCollectionNoteChild(nsCycleCollectionTraversalCallback& aCallback,
+                              T* aChild, const char* aName, uint32_t aFlags);
+
+template <typename T>
+inline void ImplCycleCollectionTraverse(
+    nsCycleCollectionTraversalCallback& aCallback,
+    nsMainThreadPtrHandle<T>& aField, const char* aName, uint32_t aFlags = 0) {
+  CycleCollectionNoteChild(aCallback, aField.get(), aName, aFlags);
+}
+
+template <typename T>
+inline void ImplCycleCollectionUnlink(nsMainThreadPtrHandle<T>& aField) {
+  aField = nullptr;
+}
 
 #endif

@@ -6,11 +6,13 @@
 
 #include "WindowsLocationProvider.h"
 #include "nsGeoPosition.h"
-#include "nsIDOMGeoPositionError.h"
 #include "nsComponentManagerUtils.h"
 #include "prtime.h"
 #include "MLSFallback.h"
+#include "mozilla/Attributes.h"
+#include "mozilla/FloatingPoint.h"
 #include "mozilla/Telemetry.h"
+#include "mozilla/dom/PositionErrorBinding.h"
 
 namespace mozilla {
 namespace dom {
@@ -39,7 +41,8 @@ WindowsLocationProvider::MLSUpdate::NotifyError(uint16_t aError) {
   if (!mCallback) {
     return NS_ERROR_FAILURE;
   }
-  return mCallback->NotifyError(aError);
+  nsCOMPtr<nsIGeolocationUpdate> callback(mCallback);
+  return callback->NotifyError(aError);
 }
 
 class LocationEvent final : public ILocationEvents {
@@ -54,6 +57,7 @@ class LocationEvent final : public ILocationEvents {
   STDMETHODIMP QueryInterface(REFIID iid, void** ppv) override;
 
   // ILocationEvents interface
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   STDMETHODIMP OnStatusChanged(REFIID aReportType,
                                LOCATION_REPORT_STATUS aStatus) override;
   STDMETHODIMP OnLocationChanged(REFIID aReportType,
@@ -117,16 +121,17 @@ LocationEvent::OnStatusChanged(REFIID aReportType,
   uint16_t err;
   switch (aStatus) {
     case REPORT_ACCESS_DENIED:
-      err = nsIDOMGeoPositionError::PERMISSION_DENIED;
+      err = PositionError_Binding::PERMISSION_DENIED;
       break;
     case REPORT_NOT_SUPPORTED:
     case REPORT_ERROR:
-      err = nsIDOMGeoPositionError::POSITION_UNAVAILABLE;
+      err = PositionError_Binding::POSITION_UNAVAILABLE;
       break;
     default:
       return S_OK;
   }
-  mCallback->NotifyError(err);
+  nsCOMPtr<nsIGeolocationUpdate> callback(mCallback);
+  callback->NotifyError(err);
   return S_OK;
 }
 
@@ -148,18 +153,23 @@ LocationEvent::OnLocationChanged(REFIID aReportType, ILocationReport* aReport) {
   DOUBLE longitude = 0.0;
   latLongReport->GetLongitude(&longitude);
 
-  DOUBLE alt = 0.0;
+  DOUBLE alt = UnspecifiedNaN<double>();
   latLongReport->GetAltitude(&alt);
 
   DOUBLE herror = 0.0;
   latLongReport->GetErrorRadius(&herror);
 
-  DOUBLE verror = 0.0;
+  DOUBLE verror = UnspecifiedNaN<double>();
   latLongReport->GetAltitudeError(&verror);
 
+  double heading = UnspecifiedNaN<double>();
+  double speed = UnspecifiedNaN<double>();
+
+  // nsGeoPositionCoords will convert NaNs to null for optional properties of
+  // the JavaScript Coordinates object.
   RefPtr<nsGeoPosition> position =
-      new nsGeoPosition(latitude, longitude, alt, herror, verror, 0.0, 0.0,
-                        PR_Now() / PR_USEC_PER_MSEC);
+      new nsGeoPosition(latitude, longitude, alt, herror, verror, heading,
+                        speed, PR_Now() / PR_USEC_PER_MSEC);
   mCallback->Update(position);
 
   Telemetry::Accumulate(Telemetry::GEOLOCATION_WIN8_SOURCE_IS_MLS, false);
@@ -245,7 +255,7 @@ nsresult WindowsLocationProvider::CreateAndWatchMLSProvider(
     return NS_OK;
   }
 
-  mMLSProvider = new MLSFallback();
+  mMLSProvider = new MLSFallback(0);
   return mMLSProvider->Startup(new MLSUpdate(aCallback));
 }
 

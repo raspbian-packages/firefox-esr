@@ -74,13 +74,13 @@ fonts-langgroup-other =
 ## Default fonts and their sizes
 
 fonts-proportional-header = Mütənasib
-    .accesskey = P
+    .accesskey = M
 fonts-default-serif =
     .label = Serif
 fonts-default-sans-serif =
     .label = Sans Serif
 fonts-proportional-size = Ölçü
-    .accesskey = o
+    .accesskey = l
 fonts-serif = Serif
     .accesskey = S
 fonts-sans-serif = Sans-serif
@@ -88,9 +88,9 @@ fonts-sans-serif = Sans-serif
 fonts-monospace = Monospace
     .accesskey = M
 fonts-monospace-size = Ölçü
-    .accesskey = a
+    .accesskey = l
 fonts-minsize = Ən kiçik şrift ölçüsü
-    .accesskey = o
+    .accesskey = f
 fonts-minsize-none =
     .label = Yoxdur
 fonts-allow-own =
@@ -138,3 +138,12 @@ fonts-languages-fallback-name-vietnamese =
     .label = Vyetnamca
 fonts-languages-fallback-name-other =
     .label = Digər (Qərbi Avropa daxil olmaqla)
+fonts-very-large-warning-title = Böyük minimum şrift ölçüsü
+fonts-very-large-warning-message = Çox böyük minimum şrift ölçüsü seçmisiniz (24 pikseldən çox). Bu bu səhifə kimi vacib quraşdırma səhifələrinin istifadəsini çətin və ya mümkünsüz edə bilər.
+fonts-very-large-warning-accept = Yenə də mənim dəyişiklərimi tut
+# Variables:
+#   $name {string, "Arial"} - Name of the default font
+fonts-label-default =
+    .label = Standart ({ $name })
+fonts-label-default-unnamed =
+    .label = Standart

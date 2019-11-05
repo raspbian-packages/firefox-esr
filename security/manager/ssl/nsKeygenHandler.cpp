@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,19 +17,19 @@
    including Element.h.  Looks like it's an inherent part of -Wextra,
    so we can't just disable it in a targeted way in moz.build. */
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wextra"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wextra"
 #elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wextra"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wextra"
 #endif  // __clang__ || __GNUC__
 
 #include "mozilla/dom/Element.h"
 
 #if defined(__clang__)
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined(__GNUC__)
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif  // __clang__ || __GNUC__
 
 #include "nsDependentString.h"
@@ -40,7 +40,6 @@
 #include "nsKeygenHandlerContent.h"
 #include "nsKeygenThread.h"
 #include "nsMemory.h"
-#include "nsNSSComponent.h"  // for PIPNSS string bundle calls.
 #include "nsNSSHelper.h"
 #include "nsReadableUtils.h"
 #include "nsUnicharUtils.h"
@@ -247,21 +246,11 @@ nsresult nsKeygenFormProcessor::Create(nsISupports* aOuter, const nsIID& aIID,
 }
 
 nsresult nsKeygenFormProcessor::Init() {
-  static NS_DEFINE_CID(kNSSComponentCID, NS_NSSCOMPONENT_CID);
-
-  nsresult rv;
-
-  nsCOMPtr<nsINSSComponent> nssComponent;
-  nssComponent = do_GetService(kNSSComponentCID, &rv);
-  if (NS_FAILED(rv)) return rv;
-
   // Init possible key size choices.
-  nssComponent->GetPIPNSSBundleString("HighGrade",
-                                      mSECKeySizeChoiceList[0].name);
+  GetPIPNSSBundleString("HighGrade", mSECKeySizeChoiceList[0].name);
   mSECKeySizeChoiceList[0].size = 2048;
 
-  nssComponent->GetPIPNSSBundleString("MediumGrade",
-                                      mSECKeySizeChoiceList[1].name);
+  GetPIPNSSBundleString("MediumGrade", mSECKeySizeChoiceList[1].name);
   mSECKeySizeChoiceList[1].size = 1024;
 
   return NS_OK;
@@ -337,10 +326,6 @@ nsresult GetSlotWithMechanism(uint32_t aMechanism, nsIInterfaceRequestor* m_ctx,
     // Allocate the slot name buffer //
     tokenNameList =
         static_cast<char16_t**>(moz_xmalloc(sizeof(char16_t*) * numSlots));
-    if (!tokenNameList) {
-      rv = NS_ERROR_OUT_OF_MEMORY;
-      goto loser;
-    }
 
     i = 0;
     slotElement = PK11_GetFirstSafe(slotList);
@@ -411,7 +396,7 @@ loser:
 
 nsresult nsKeygenFormProcessor::GetPublicKey(const nsAString& aValue,
                                              const nsAString& aChallenge,
-                                             const nsString& aKeyType,
+                                             const nsAString& aKeyType,
                                              nsAString& aOutPublicKey,
                                              const nsAString& aKeyParams) {
   nsresult rv = NS_ERROR_FAILURE;
@@ -561,7 +546,7 @@ nsresult nsKeygenFormProcessor::GetPublicKey(const nsAString& aValue,
     KeygenRunnable->SetParams(slot, attrFlags, nullptr, 0, keyGenMechanism,
                               params, m_ctx);
 
-    runnable = do_QueryInterface(KeygenRunnable);
+    runnable = KeygenRunnable;
     if (runnable) {
       rv = dialogs->DisplayGeneratingKeypairInfo(m_ctx, runnable);
       // We call join on the thread so we can be sure that no
@@ -715,8 +700,7 @@ nsresult nsKeygenFormProcessor::ProcessValueIPC(const nsAString& aOldValue,
                                                 const nsAString& aKeyType,
                                                 const nsAString& aKeyParams,
                                                 nsAString& newValue) {
-  return GetPublicKey(aOldValue, aChallenge, PromiseFlatString(aKeyType),
-                      newValue, aKeyParams);
+  return GetPublicKey(aOldValue, aChallenge, aKeyType, newValue, aKeyParams);
 }
 
 nsresult nsKeygenFormProcessor::ProvideContent(const nsAString& aFormType,

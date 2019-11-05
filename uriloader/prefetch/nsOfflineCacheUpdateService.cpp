@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,7 +9,6 @@
 #include "OfflineCacheUpdateGlue.h"
 #include "nsOfflineCacheUpdate.h"
 
-#include "nsCPrefetchService.h"
 #include "nsCURILoader.h"
 #include "nsIApplicationCacheContainer.h"
 #include "nsIApplicationCacheChannel.h"
@@ -18,10 +17,8 @@
 #include "nsIContent.h"
 #include "nsIDocShell.h"
 #include "nsIDocumentLoader.h"
-#include "nsIDOMElement.h"
 #include "nsIDOMWindow.h"
-#include "nsIDOMOfflineResourceList.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIObserverService.h"
 #include "nsIURL.h"
 #include "nsIWebProgress.h"
@@ -30,16 +27,17 @@
 #include "nsIPermissionManager.h"
 #include "nsIPrincipal.h"
 #include "nsNetCID.h"
+#include "nsNetUtil.h"
 #include "nsServiceManagerUtils.h"
 #include "nsStreamUtils.h"
 #include "nsThreadUtils.h"
 #include "nsProxyRelease.h"
 #include "mozilla/Logging.h"
 #include "nsIAsyncVerifyRedirectCallback.h"
+#include "mozilla/Components.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/Unused.h"
-#include "nsIDiskSpaceWatcher.h"
 #include "nsIDocShell.h"
 #include "nsIDocShellTreeItem.h"
 #include "nsIDocShellTreeOwner.h"
@@ -51,14 +49,14 @@
 using namespace mozilla;
 using namespace mozilla::dom;
 
-static nsOfflineCacheUpdateService *gOfflineCacheUpdateService = nullptr;
+static nsOfflineCacheUpdateService* gOfflineCacheUpdateService = nullptr;
 static bool sAllowOfflineCache = true;
 static bool sAllowInsecureOfflineCache = true;
 
-nsTHashtable<nsCStringHashKey> *nsOfflineCacheUpdateService::mAllowedDomains =
+nsTHashtable<nsCStringHashKey>* nsOfflineCacheUpdateService::mAllowedDomains =
     nullptr;
 
-nsTHashtable<nsCStringHashKey> *nsOfflineCacheUpdateService::AllowedDomains() {
+nsTHashtable<nsCStringHashKey>* nsOfflineCacheUpdateService::AllowedDomains() {
   if (!mAllowedDomains) mAllowedDomains = new nsTHashtable<nsCStringHashKey>();
 
   return mAllowedDomains;
@@ -97,10 +95,10 @@ class nsOfflineCachePendingUpdate final : public nsIWebProgressListener,
   NS_DECL_ISUPPORTS
   NS_DECL_NSIWEBPROGRESSLISTENER
 
-  nsOfflineCachePendingUpdate(nsOfflineCacheUpdateService *aService,
-                              nsIURI *aManifestURI, nsIURI *aDocumentURI,
-                              nsIPrincipal *aLoadingPrincipal,
-                              nsIDOMDocument *aDocument)
+  nsOfflineCachePendingUpdate(nsOfflineCacheUpdateService* aService,
+                              nsIURI* aManifestURI, nsIURI* aDocumentURI,
+                              nsIPrincipal* aLoadingPrincipal,
+                              Document* aDocument)
       : mService(aService),
         mManifestURI(aManifestURI),
         mDocumentURI(aDocumentURI),
@@ -116,7 +114,7 @@ class nsOfflineCachePendingUpdate final : public nsIWebProgressListener,
   nsCOMPtr<nsIURI> mManifestURI;
   nsCOMPtr<nsIURI> mDocumentURI;
   nsCOMPtr<nsIPrincipal> mLoadingPrincipal;
-  nsCOMPtr<nsIWeakReference> mDocument;
+  nsWeakPtr mDocument;
   bool mDidReleaseThis;
 };
 
@@ -128,25 +126,25 @@ NS_IMPL_ISUPPORTS(nsOfflineCachePendingUpdate, nsIWebProgressListener,
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsOfflineCachePendingUpdate::OnProgressChange(nsIWebProgress *aProgress,
-                                              nsIRequest *aRequest,
+nsOfflineCachePendingUpdate::OnProgressChange(nsIWebProgress* aProgress,
+                                              nsIRequest* aRequest,
                                               int32_t curSelfProgress,
                                               int32_t maxSelfProgress,
                                               int32_t curTotalProgress,
                                               int32_t maxTotalProgress) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsOfflineCachePendingUpdate::OnStateChange(nsIWebProgress *aWebProgress,
-                                           nsIRequest *aRequest,
+nsOfflineCachePendingUpdate::OnStateChange(nsIWebProgress* aWebProgress,
+                                           nsIRequest* aRequest,
                                            uint32_t progressStateFlags,
                                            nsresult aStatus) {
   if (mDidReleaseThis) {
     return NS_OK;
   }
-  nsCOMPtr<nsIDOMDocument> updateDoc = do_QueryReferent(mDocument);
+  nsCOMPtr<Document> updateDoc = do_QueryReferent(mDocument);
   if (!updateDoc) {
     // The document that scheduled this update has gone away,
     // we don't need to listen anymore.
@@ -165,13 +163,11 @@ nsOfflineCachePendingUpdate::OnStateChange(nsIWebProgress *aWebProgress,
   aWebProgress->GetDOMWindow(getter_AddRefs(windowProxy));
   if (!windowProxy) return NS_OK;
 
-  auto *outerWindow = nsPIDOMWindowOuter::From(windowProxy);
-  nsPIDOMWindowInner *innerWindow = outerWindow->GetCurrentInnerWindow();
+  auto* outerWindow = nsPIDOMWindowOuter::From(windowProxy);
+  nsPIDOMWindowInner* innerWindow = outerWindow->GetCurrentInnerWindow();
 
-  nsCOMPtr<nsIDocument> progressDoc = outerWindow->GetDoc();
-  if (!progressDoc) return NS_OK;
-
-  if (!SameCOMIdentity(progressDoc, updateDoc)) {
+  nsCOMPtr<Document> progressDoc = outerWindow->GetDoc();
+  if (!progressDoc || progressDoc != updateDoc) {
     return NS_OK;
   }
 
@@ -197,28 +193,35 @@ nsOfflineCachePendingUpdate::OnStateChange(nsIWebProgress *aWebProgress,
 }
 
 NS_IMETHODIMP
-nsOfflineCachePendingUpdate::OnLocationChange(nsIWebProgress *aWebProgress,
-                                              nsIRequest *aRequest,
-                                              nsIURI *location,
+nsOfflineCachePendingUpdate::OnLocationChange(nsIWebProgress* aWebProgress,
+                                              nsIRequest* aRequest,
+                                              nsIURI* location,
                                               uint32_t aFlags) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsOfflineCachePendingUpdate::OnStatusChange(nsIWebProgress *aWebProgress,
-                                            nsIRequest *aRequest,
+nsOfflineCachePendingUpdate::OnStatusChange(nsIWebProgress* aWebProgress,
+                                            nsIRequest* aRequest,
                                             nsresult aStatus,
-                                            const char16_t *aMessage) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+                                            const char16_t* aMessage) {
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsOfflineCachePendingUpdate::OnSecurityChange(nsIWebProgress *aWebProgress,
-                                              nsIRequest *aRequest,
-                                              uint32_t state) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+nsOfflineCachePendingUpdate::OnSecurityChange(nsIWebProgress* aWebProgress,
+                                              nsIRequest* aRequest,
+                                              uint32_t aState) {
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsOfflineCachePendingUpdate::OnContentBlockingEvent(
+    nsIWebProgress* aWebProgress, nsIRequest* aRequest, uint32_t aEvent) {
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
@@ -234,7 +237,7 @@ NS_IMPL_ISUPPORTS(nsOfflineCacheUpdateService, nsIOfflineCacheUpdateService,
 //-----------------------------------------------------------------------------
 
 nsOfflineCacheUpdateService::nsOfflineCacheUpdateService()
-    : mDisabled(false), mUpdateRunning(false), mLowFreeSpace(false) {
+    : mDisabled(false), mUpdateRunning(false) {
   MOZ_ASSERT(NS_IsMainThread());
   Preferences::AddBoolVarCache(&sAllowOfflineCache,
                                "browser.cache.offline.enable", true);
@@ -260,19 +263,6 @@ nsresult nsOfflineCacheUpdateService::Init() {
       observerService->AddObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, true);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // Get the current status of the disk in terms of free space and observe
-  // low device storage notifications.
-  nsCOMPtr<nsIDiskSpaceWatcher> diskSpaceWatcherService =
-      do_GetService("@mozilla.org/toolkit/disk-space-watcher;1");
-  if (diskSpaceWatcherService) {
-    diskSpaceWatcherService->GetIsDiskFull(&mLowFreeSpace);
-  } else {
-    NS_WARNING("Could not get disk status from nsIDiskSpaceWatcher");
-  }
-
-  rv = observerService->AddObserver(this, "disk-space-watcher", false);
-  NS_ENSURE_SUCCESS(rv, rv);
-
   gOfflineCacheUpdateService = this;
 
   return NS_OK;
@@ -292,18 +282,19 @@ nsOfflineCacheUpdateService::GetInstance() {
 }
 
 /* static */
-nsOfflineCacheUpdateService *nsOfflineCacheUpdateService::EnsureService() {
+nsOfflineCacheUpdateService* nsOfflineCacheUpdateService::EnsureService() {
   if (!gOfflineCacheUpdateService) {
     // Make the service manager hold a long-lived reference to the service
     nsCOMPtr<nsIOfflineCacheUpdateService> service =
-        do_GetService(NS_OFFLINECACHEUPDATESERVICE_CONTRACTID);
+        components::OfflineCacheUpdate::Service();
+    Unused << service;
   }
 
   return gOfflineCacheUpdateService;
 }
 
 nsresult nsOfflineCacheUpdateService::ScheduleUpdate(
-    nsOfflineCacheUpdate *aUpdate) {
+    nsOfflineCacheUpdate* aUpdate) {
   LOG(("nsOfflineCacheUpdateService::Schedule [%p, update=%p]", this, aUpdate));
 
   aUpdate->SetOwner(this);
@@ -316,15 +307,15 @@ nsresult nsOfflineCacheUpdateService::ScheduleUpdate(
 
 NS_IMETHODIMP
 nsOfflineCacheUpdateService::ScheduleOnDocumentStop(
-    nsIURI *aManifestURI, nsIURI *aDocumentURI, nsIPrincipal *aLoadingPrincipal,
-    nsIDOMDocument *aDocument) {
+    nsIURI* aManifestURI, nsIURI* aDocumentURI, nsIPrincipal* aLoadingPrincipal,
+    Document* aDocument) {
   LOG(
       ("nsOfflineCacheUpdateService::ScheduleOnDocumentStop [%p, "
        "manifestURI=%p, documentURI=%p doc=%p]",
        this, aManifestURI, aDocumentURI, aDocument));
 
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(aDocument);
-  nsCOMPtr<nsIWebProgress> progress = do_QueryInterface(doc->GetContainer());
+  nsCOMPtr<nsIWebProgress> progress =
+      do_QueryInterface(aDocument->GetContainer());
   NS_ENSURE_TRUE(progress, NS_ERROR_INVALID_ARG);
 
   // Proceed with cache update
@@ -343,7 +334,7 @@ nsOfflineCacheUpdateService::ScheduleOnDocumentStop(
 }
 
 nsresult nsOfflineCacheUpdateService::UpdateFinished(
-    nsOfflineCacheUpdate *aUpdate) {
+    nsOfflineCacheUpdate* aUpdate) {
   LOG(("nsOfflineCacheUpdateService::UpdateFinished [%p, update=%p]", this,
        aUpdate));
 
@@ -375,11 +366,7 @@ nsresult nsOfflineCacheUpdateService::ProcessNextUpdate() {
 
   if (mUpdates.Length() > 0) {
     mUpdateRunning = true;
-    // Canceling the update before Begin() call will make the update
-    // asynchronously finish with an error.
-    if (mLowFreeSpace) {
-      mUpdates[0]->Cancel();
-    }
+
     return mUpdates[0]->Begin();
   }
 
@@ -391,7 +378,7 @@ nsresult nsOfflineCacheUpdateService::ProcessNextUpdate() {
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsOfflineCacheUpdateService::GetNumUpdates(uint32_t *aNumUpdates) {
+nsOfflineCacheUpdateService::GetNumUpdates(uint32_t* aNumUpdates) {
   LOG(("nsOfflineCacheUpdateService::GetNumUpdates [%p]", this));
 
   *aNumUpdates = mUpdates.Length();
@@ -400,7 +387,7 @@ nsOfflineCacheUpdateService::GetNumUpdates(uint32_t *aNumUpdates) {
 
 NS_IMETHODIMP
 nsOfflineCacheUpdateService::GetUpdate(uint32_t aIndex,
-                                       nsIOfflineCacheUpdate **aUpdate) {
+                                       nsIOfflineCacheUpdate** aUpdate) {
   LOG(("nsOfflineCacheUpdateService::GetUpdate [%p, %d]", this, aIndex));
 
   if (aIndex < mUpdates.Length()) {
@@ -413,8 +400,8 @@ nsOfflineCacheUpdateService::GetUpdate(uint32_t aIndex,
 }
 
 nsresult nsOfflineCacheUpdateService::FindUpdate(
-    nsIURI *aManifestURI, nsACString const &aOriginSuffix,
-    nsIFile *aCustomProfileDir, nsOfflineCacheUpdate **aUpdate) {
+    nsIURI* aManifestURI, nsACString const& aOriginSuffix,
+    nsIFile* aCustomProfileDir, nsOfflineCacheUpdate** aUpdate) {
   nsresult rv;
 
   nsCOMPtr<nsIApplicationCacheService> cacheService =
@@ -450,9 +437,9 @@ nsresult nsOfflineCacheUpdateService::FindUpdate(
 }
 
 nsresult nsOfflineCacheUpdateService::Schedule(
-    nsIURI *aManifestURI, nsIURI *aDocumentURI, nsIPrincipal *aLoadingPrincipal,
-    nsIDOMDocument *aDocument, nsPIDOMWindowInner *aWindow,
-    nsIFile *aCustomProfileDir, nsIOfflineCacheUpdate **aUpdate) {
+    nsIURI* aManifestURI, nsIURI* aDocumentURI, nsIPrincipal* aLoadingPrincipal,
+    Document* aDocument, nsPIDOMWindowInner* aWindow,
+    nsIFile* aCustomProfileDir, nsIOfflineCacheUpdate** aUpdate) {
   nsCOMPtr<nsIOfflineCacheUpdate> update;
   if (GeckoProcessType_Default != XRE_GetProcessType()) {
     update = new OfflineCacheUpdateChild(aWindow);
@@ -466,8 +453,7 @@ nsresult nsOfflineCacheUpdateService::Schedule(
     // Ensure there is window.applicationCache object that is
     // responsible for association of the new applicationCache
     // with the corresponding document.  Just ignore the result.
-    nsCOMPtr<nsIDOMOfflineResourceList> appCacheWindowObject =
-        aWindow->GetApplicationCache();
+    aWindow->GetApplicationCache();
   }
 
   rv = update->Init(aManifestURI, aDocumentURI, aLoadingPrincipal, aDocument,
@@ -483,26 +469,26 @@ nsresult nsOfflineCacheUpdateService::Schedule(
 }
 
 NS_IMETHODIMP
-nsOfflineCacheUpdateService::ScheduleUpdate(nsIURI *aManifestURI,
-                                            nsIURI *aDocumentURI,
-                                            nsIPrincipal *aLoadingPrincipal,
-                                            mozIDOMWindow *aWindow,
-                                            nsIOfflineCacheUpdate **aUpdate) {
+nsOfflineCacheUpdateService::ScheduleUpdate(nsIURI* aManifestURI,
+                                            nsIURI* aDocumentURI,
+                                            nsIPrincipal* aLoadingPrincipal,
+                                            mozIDOMWindow* aWindow,
+                                            nsIOfflineCacheUpdate** aUpdate) {
   return Schedule(aManifestURI, aDocumentURI, aLoadingPrincipal, nullptr,
                   nsPIDOMWindowInner::From(aWindow), nullptr, aUpdate);
 }
 
 NS_IMETHODIMP
 nsOfflineCacheUpdateService::ScheduleAppUpdate(
-    nsIURI *aManifestURI, nsIURI *aDocumentURI, nsIPrincipal *aLoadingPrincipal,
-    nsIFile *aProfileDir, nsIOfflineCacheUpdate **aUpdate) {
+    nsIURI* aManifestURI, nsIURI* aDocumentURI, nsIPrincipal* aLoadingPrincipal,
+    nsIFile* aProfileDir, nsIOfflineCacheUpdate** aUpdate) {
   return Schedule(aManifestURI, aDocumentURI, aLoadingPrincipal, nullptr,
                   nullptr, aProfileDir, aUpdate);
 }
 
 NS_IMETHODIMP nsOfflineCacheUpdateService::CheckForUpdate(
-    nsIURI *aManifestURI, nsIPrincipal *aLoadingPrincipal,
-    nsIObserver *aObserver) {
+    nsIURI* aManifestURI, nsIPrincipal* aLoadingPrincipal,
+    nsIObserver* aObserver) {
   if (GeckoProcessType_Default != XRE_GetProcessType()) {
     // Not intended to support this on child processes
     return NS_ERROR_NOT_IMPLEMENTED;
@@ -526,22 +512,11 @@ NS_IMETHODIMP nsOfflineCacheUpdateService::CheckForUpdate(
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsOfflineCacheUpdateService::Observe(nsISupports *aSubject, const char *aTopic,
-                                     const char16_t *aData) {
+nsOfflineCacheUpdateService::Observe(nsISupports* aSubject, const char* aTopic,
+                                     const char16_t* aData) {
   if (!strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID)) {
     if (mUpdates.Length() > 0) mUpdates[0]->Cancel();
     mDisabled = true;
-  }
-
-  if (!strcmp(aTopic, "disk-space-watcher")) {
-    if (NS_LITERAL_STRING("full").Equals(aData)) {
-      mLowFreeSpace = true;
-      for (uint32_t i = 0; i < mUpdates.Length(); i++) {
-        mUpdates[i]->Cancel();
-      }
-    } else if (NS_LITERAL_STRING("free").Equals(aData)) {
-      mLowFreeSpace = false;
-    }
   }
 
   return NS_OK;
@@ -551,9 +526,9 @@ nsOfflineCacheUpdateService::Observe(nsISupports *aSubject, const char *aTopic,
 // nsOfflineCacheUpdateService::nsIOfflineCacheUpdateService
 //-----------------------------------------------------------------------------
 
-static nsresult OfflineAppPermForPrincipal(nsIPrincipal *aPrincipal,
-                                           nsIPrefBranch *aPrefBranch,
-                                           bool pinned, bool *aAllowed) {
+static nsresult OfflineAppPermForPrincipal(nsIPrincipal* aPrincipal,
+                                           nsIPrefBranch* aPrefBranch,
+                                           bool pinned, bool* aAllowed) {
   *aAllowed = false;
 
   if (!sAllowOfflineCache) {
@@ -603,7 +578,8 @@ static nsresult OfflineAppPermForPrincipal(nsIPrincipal *aPrincipal,
   }
 
   uint32_t perm;
-  const char *permName = pinned ? "pin-app" : "offline-app";
+  const nsLiteralCString permName = pinned ? NS_LITERAL_CSTRING("pin-app")
+                                           : NS_LITERAL_CSTRING("offline-app");
   permissionManager->TestExactPermissionFromPrincipal(aPrincipal, permName,
                                                       &perm);
 
@@ -619,16 +595,16 @@ static nsresult OfflineAppPermForPrincipal(nsIPrincipal *aPrincipal,
 }
 
 NS_IMETHODIMP
-nsOfflineCacheUpdateService::OfflineAppAllowed(nsIPrincipal *aPrincipal,
-                                               nsIPrefBranch *aPrefBranch,
-                                               bool *aAllowed) {
+nsOfflineCacheUpdateService::OfflineAppAllowed(nsIPrincipal* aPrincipal,
+                                               nsIPrefBranch* aPrefBranch,
+                                               bool* aAllowed) {
   return OfflineAppPermForPrincipal(aPrincipal, aPrefBranch, false, aAllowed);
 }
 
 NS_IMETHODIMP
-nsOfflineCacheUpdateService::OfflineAppAllowedForURI(nsIURI *aURI,
-                                                     nsIPrefBranch *aPrefBranch,
-                                                     bool *aAllowed) {
+nsOfflineCacheUpdateService::OfflineAppAllowedForURI(nsIURI* aURI,
+                                                     nsIPrefBranch* aPrefBranch,
+                                                     bool* aAllowed) {
   OriginAttributes attrs;
   nsCOMPtr<nsIPrincipal> principal =
       BasePrincipal::CreateCodebasePrincipal(aURI, attrs);
@@ -636,7 +612,7 @@ nsOfflineCacheUpdateService::OfflineAppAllowedForURI(nsIURI *aURI,
 }
 
 nsresult nsOfflineCacheUpdateService::OfflineAppPinnedForURI(
-    nsIURI *aDocumentURI, nsIPrefBranch *aPrefBranch, bool *aPinned) {
+    nsIURI* aDocumentURI, nsIPrefBranch* aPrefBranch, bool* aPinned) {
   OriginAttributes attrs;
   nsCOMPtr<nsIPrincipal> principal =
       BasePrincipal::CreateCodebasePrincipal(aDocumentURI, attrs);
@@ -644,7 +620,7 @@ nsresult nsOfflineCacheUpdateService::OfflineAppPinnedForURI(
 }
 
 NS_IMETHODIMP
-nsOfflineCacheUpdateService::AllowOfflineApp(nsIPrincipal *aPrincipal) {
+nsOfflineCacheUpdateService::AllowOfflineApp(nsIPrincipal* aPrincipal) {
   nsresult rv;
 
   if (!sAllowOfflineCache) {
@@ -675,7 +651,7 @@ nsOfflineCacheUpdateService::AllowOfflineApp(nsIPrincipal *aPrincipal) {
   }
 
   if (GeckoProcessType_Default != XRE_GetProcessType()) {
-    ContentChild *child = ContentChild::GetSingleton();
+    ContentChild* child = ContentChild::GetSingleton();
 
     if (!child->SendSetOfflinePermission(IPC::Principal(aPrincipal))) {
       return NS_ERROR_FAILURE;
@@ -692,8 +668,9 @@ nsOfflineCacheUpdateService::AllowOfflineApp(nsIPrincipal *aPrincipal) {
     if (!permissionManager) return NS_ERROR_NOT_AVAILABLE;
 
     rv = permissionManager->AddFromPrincipal(
-        aPrincipal, "offline-app", nsIPermissionManager::ALLOW_ACTION,
-        nsIPermissionManager::EXPIRE_NEVER, 0);
+        aPrincipal, NS_LITERAL_CSTRING("offline-app"),
+        nsIPermissionManager::ALLOW_ACTION, nsIPermissionManager::EXPIRE_NEVER,
+        0);
     NS_ENSURE_SUCCESS(rv, rv);
   }
 

@@ -9,12 +9,32 @@
 #include "RenderThread.h"
 #include "nsThreadUtils.h"
 #include "mtransport/runnable_utils.h"
+#include "mozilla/layers/AsyncImagePipelineManager.h"
+#include "mozilla/gfx/GPUParent.h"
 #include "mozilla/layers/CompositorThread.h"
 #include "mozilla/layers/CompositorBridgeParent.h"
+#include "mozilla/layers/WebRenderBridgeParent.h"
+#include "mozilla/layers/SharedSurfacesParent.h"
 #include "mozilla/StaticPtr.h"
+#include "mozilla/Telemetry.h"
 #include "mozilla/webrender/RendererOGL.h"
 #include "mozilla/webrender/RenderTextureHost.h"
 #include "mozilla/widget/CompositorWidget.h"
+
+#ifdef XP_WIN
+#  include "GLLibraryEGL.h"
+#  include "mozilla/widget/WinCompositorWindowThread.h"
+#endif
+
+#ifdef MOZ_WIDGET_ANDROID
+#  include "GLLibraryEGL.h"
+#endif
+
+using namespace mozilla;
+
+static already_AddRefed<gl::GLContext> CreateGLContext();
+
+MOZ_DEFINE_MALLOC_SIZE_OF(WebRenderRendererMallocSizeOf)
 
 namespace mozilla {
 namespace wr {
@@ -23,11 +43,15 @@ static StaticRefPtr<RenderThread> sRenderThread;
 
 RenderThread::RenderThread(base::Thread* aThread)
     : mThread(aThread),
-      mFrameCountMapLock("RenderThread.mFrameCountMapLock"),
+      mWindowInfos("RenderThread.mWindowInfos"),
       mRenderTextureMapLock("RenderThread.mRenderTextureMapLock"),
-      mHasShutdown(false) {}
+      mHasShutdown(false),
+      mHandlingDeviceReset(false) {}
 
-RenderThread::~RenderThread() { delete mThread; }
+RenderThread::~RenderThread() {
+  MOZ_ASSERT(mRenderTexturesDeferred.empty());
+  delete mThread;
+}
 
 // static
 RenderThread* RenderThread::Get() { return sRenderThread; }
@@ -48,6 +72,14 @@ void RenderThread::Start() {
   }
 
   sRenderThread = new RenderThread(thread);
+#ifdef XP_WIN
+  widget::WinCompositorWindowThread::Start();
+#endif
+  layers::SharedSurfacesParent::Initialize();
+
+  RefPtr<Runnable> runnable = WrapRunnable(
+      RefPtr<RenderThread>(sRenderThread.get()), &RenderThread::InitDeviceTask);
+  sRenderThread->Loop()->PostTask(runnable.forget());
 }
 
 // static
@@ -68,11 +100,23 @@ void RenderThread::ShutDown() {
   task.Wait();
 
   sRenderThread = nullptr;
+#ifdef XP_WIN
+  widget::WinCompositorWindowThread::ShutDown();
+#endif
 }
+
+extern void ClearAllBlobImageResources();
 
 void RenderThread::ShutDownTask(layers::SynchronousTask* aTask) {
   layers::AutoCompleteTask complete(aTask);
   MOZ_ASSERT(IsInRenderThread());
+
+  // Releasing on the render thread will allow us to avoid dispatching to remove
+  // remaining textures from the texture map.
+  layers::SharedSurfacesParent::Shutdown();
+
+  ClearAllBlobImageResources();
+  ClearSharedGL();
 }
 
 // static
@@ -86,6 +130,50 @@ bool RenderThread::IsInRenderThread() {
          sRenderThread->mThread->thread_id() == PlatformThread::CurrentId();
 }
 
+void RenderThread::DoAccumulateMemoryReport(
+    MemoryReport aReport,
+    const RefPtr<MemoryReportPromise::Private>& aPromise) {
+  MOZ_ASSERT(IsInRenderThread());
+
+  for (auto& r : mRenderers) {
+    r.second->AccumulateMemoryReport(&aReport);
+  }
+
+  // Note memory used by the shader cache, which is shared across all WR
+  // instances.
+  MOZ_ASSERT(aReport.shader_cache == 0);
+  if (mProgramCache) {
+    aReport.shader_cache = wr_program_cache_report_memory(
+        mProgramCache->Raw(), &WebRenderRendererMallocSizeOf);
+  }
+
+  aPromise->Resolve(aReport, __func__);
+}
+
+// static
+RefPtr<MemoryReportPromise> RenderThread::AccumulateMemoryReport(
+    MemoryReport aInitial) {
+  RefPtr<MemoryReportPromise::Private> p =
+      new MemoryReportPromise::Private(__func__);
+  MOZ_ASSERT(!IsInRenderThread());
+  if (!Get() || !Get()->Loop()) {
+    // This happens when the GPU process fails to start and we fall back to the
+    // basic compositor in the parent process. We could assert against this if
+    // we made the webrender detection code in gfxPlatform.cpp smarter. See bug
+    // 1494430 comment 12.
+    NS_WARNING("No render thread, returning empty memory report");
+    p->Resolve(aInitial, __func__);
+    return p;
+  }
+
+  Get()->Loop()->PostTask(
+      NewRunnableMethod<MemoryReport, RefPtr<MemoryReportPromise::Private>>(
+          "wr::RenderThread::DoAccumulateMemoryReport", Get(),
+          &RenderThread::DoAccumulateMemoryReport, aInitial, p));
+
+  return p;
+}
+
 void RenderThread::AddRenderer(wr::WindowId aWindowId,
                                UniquePtr<RendererOGL> aRenderer) {
   MOZ_ASSERT(IsInRenderThread());
@@ -94,10 +182,10 @@ void RenderThread::AddRenderer(wr::WindowId aWindowId,
     return;
   }
 
-  mRenderers[aWindowId] = Move(aRenderer);
+  mRenderers[aWindowId] = std::move(aRenderer);
 
-  MutexAutoLock lock(mFrameCountMapLock);
-  mWindowInfos.Put(AsUint64(aWindowId), WindowInfo());
+  auto windows = mWindowInfos.Lock();
+  windows->emplace(AsUint64(aWindowId), new WindowInfo());
 }
 
 void RenderThread::RemoveRenderer(wr::WindowId aWindowId) {
@@ -109,8 +197,16 @@ void RenderThread::RemoveRenderer(wr::WindowId aWindowId) {
 
   mRenderers.erase(aWindowId);
 
-  MutexAutoLock lock(mFrameCountMapLock);
-  mWindowInfos.Remove(AsUint64(aWindowId));
+  if (mRenderers.size() == 0 && mHandlingDeviceReset) {
+    mHandlingDeviceReset = false;
+  }
+
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  MOZ_ASSERT(it != windows->end());
+  WindowInfo* toDelete = it->second;
+  windows->erase(it);
+  delete toDelete;
 }
 
 RendererOGL* RenderThread::GetRenderer(wr::WindowId aWindowId) {
@@ -126,15 +222,20 @@ RendererOGL* RenderThread::GetRenderer(wr::WindowId aWindowId) {
   return it->second.get();
 }
 
-void RenderThread::NewFrameReady(wr::WindowId aWindowId) {
+size_t RenderThread::RendererCount() {
+  MOZ_ASSERT(IsInRenderThread());
+  return mRenderers.size();
+}
+
+void RenderThread::HandleFrame(wr::WindowId aWindowId, bool aRender) {
   if (mHasShutdown) {
     return;
   }
 
   if (!IsInRenderThread()) {
-    Loop()->PostTask(NewRunnableMethod<wr::WindowId>(
-        "wr::RenderThread::NewFrameReady", this, &RenderThread::NewFrameReady,
-        aWindowId));
+    Loop()->PostTask(NewRunnableMethod<wr::WindowId, bool>(
+        "wr::RenderThread::NewFrameReady", this, &RenderThread::HandleFrame,
+        aWindowId, aRender));
     return;
   }
 
@@ -142,8 +243,31 @@ void RenderThread::NewFrameReady(wr::WindowId aWindowId) {
     return;
   }
 
-  UpdateAndRender(aWindowId);
-  DecPendingFrameCount(aWindowId);
+  if (mHandlingDeviceReset) {
+    return;
+  }
+
+  TimeStamp startTime;
+  VsyncId startId;
+
+  bool hadSlowFrame;
+  {  // scope lock
+    auto windows = mWindowInfos.Lock();
+    auto it = windows->find(AsUint64(aWindowId));
+    MOZ_ASSERT(it != windows->end());
+    WindowInfo* info = it->second;
+    MOZ_ASSERT(info->mPendingCount > 0);
+    startTime = info->mStartTimes.front();
+    startId = info->mStartIds.front();
+    hadSlowFrame = info->mHadSlowFrame;
+    info->mHadSlowFrame = false;
+  }
+
+  UpdateAndRender(aWindowId, startId, startTime, aRender,
+                  /* aReadbackSize */ Nothing(),
+                  /* aReadbackFormat */ Nothing(),
+                  /* aReadbackBuffer */ Nothing(), hadSlowFrame);
+  FrameRenderingComplete(aWindowId);
 }
 
 void RenderThread::WakeUp(wr::WindowId aWindowId) {
@@ -161,6 +285,10 @@ void RenderThread::WakeUp(wr::WindowId aWindowId) {
     return;
   }
 
+  if (mHandlingDeviceReset) {
+    return;
+  }
+
   auto it = mRenderers.find(aWindowId);
   MOZ_ASSERT(it != mRenderers.end());
   if (it != mRenderers.end()) {
@@ -174,7 +302,7 @@ void RenderThread::RunEvent(wr::WindowId aWindowId,
     Loop()->PostTask(
         NewRunnableMethod<wr::WindowId, UniquePtr<RendererEvent>&&>(
             "wr::RenderThread::RunEvent", this, &RenderThread::RunEvent,
-            aWindowId, Move(aEvent)));
+            aWindowId, std::move(aEvent)));
     return;
   }
 
@@ -182,24 +310,49 @@ void RenderThread::RunEvent(wr::WindowId aWindowId,
   aEvent = nullptr;
 }
 
-static void NotifyDidRender(layers::CompositorBridgeParentBase* aBridge,
-                            wr::WrPipelineInfo* aInfo, TimeStamp aStart,
-                            TimeStamp aEnd) {
-  wr::WrPipelineId pipeline;
-  wr::WrEpoch epoch;
-  while (wr_pipeline_info_next_epoch(aInfo, &pipeline, &epoch)) {
-    aBridge->NotifyDidCompositeToPipeline(pipeline, epoch, aStart, aEnd);
-  }
-  while (wr_pipeline_info_next_removed_pipeline(aInfo, &pipeline)) {
-    aBridge->NotifyPipelineRemoved(pipeline);
+static void NotifyDidRender(layers::CompositorBridgeParent* aBridge,
+                            RefPtr<WebRenderPipelineInfo> aInfo,
+                            VsyncId aCompositeStartId,
+                            TimeStamp aCompositeStart, TimeStamp aRenderStart,
+                            TimeStamp aEnd, bool aRender,
+                            RendererStats aStats) {
+  if (aRender && aBridge->GetWrBridge()) {
+    // We call this here to mimic the behavior in LayerManagerComposite, as to
+    // not change what Talos measures. That is, we do not record an empty frame
+    // as a frame.
+    aBridge->GetWrBridge()->RecordFrame();
   }
 
-  wr_pipeline_info_delete(aInfo);
+  auto info = aInfo->Raw();
+
+  for (uintptr_t i = 0; i < info.epochs.length; i++) {
+    aBridge->NotifyPipelineRendered(
+        info.epochs.data[i].pipeline_id, info.epochs.data[i].epoch,
+        aCompositeStartId, aCompositeStart, aRenderStart, aEnd, &aStats);
+  }
+
+  if (aBridge->GetWrBridge()) {
+    aBridge->GetWrBridge()->CompositeIfNeeded();
+  }
 }
 
-void RenderThread::UpdateAndRender(wr::WindowId aWindowId, bool aReadback) {
-  AUTO_PROFILER_TRACING("Paint", "Composite");
+static void NotifyDidStartRender(layers::CompositorBridgeParent* aBridge) {
+  // Starting a render will change increment mRenderingCount, and potentially
+  // change whether we can allow the bridge to intiate another frame.
+  if (aBridge->GetWrBridge()) {
+    aBridge->GetWrBridge()->CompositeIfNeeded();
+  }
+}
+
+void RenderThread::UpdateAndRender(
+    wr::WindowId aWindowId, const VsyncId& aStartId,
+    const TimeStamp& aStartTime, bool aRender,
+    const Maybe<gfx::IntSize>& aReadbackSize,
+    const Maybe<wr::ImageFormat>& aReadbackFormat,
+    const Maybe<Range<uint8_t>>& aReadbackBuffer, bool aHadSlowFrame) {
+  AUTO_PROFILER_TRACING("Paint", "Composite", GRAPHICS);
   MOZ_ASSERT(IsInRenderThread());
+  MOZ_ASSERT(aRender || aReadbackBuffer.isNothing());
 
   auto it = mRenderers.find(aWindowId);
   MOZ_ASSERT(it != mRenderers.end());
@@ -207,21 +360,51 @@ void RenderThread::UpdateAndRender(wr::WindowId aWindowId, bool aReadback) {
     return;
   }
 
-  auto& renderer = it->second;
   TimeStamp start = TimeStamp::Now();
 
-  bool ret = renderer->UpdateAndRender(aReadback);
-  if (!ret) {
-    // Render did not happen, do not call NotifyDidRender.
-    return;
+  auto& renderer = it->second;
+
+  layers::CompositorThreadHolder::Loop()->PostTask(
+      NewRunnableFunction("NotifyDidStartRenderRunnable", &NotifyDidStartRender,
+                          renderer->GetCompositorBridge()));
+
+  bool rendered = false;
+  RendererStats stats = {0};
+  if (aRender) {
+    rendered = renderer->UpdateAndRender(
+        aReadbackSize, aReadbackFormat, aReadbackBuffer, aHadSlowFrame, &stats);
+  } else {
+    renderer->Update();
   }
+  // Check graphics reset status even when rendering is skipped.
+  renderer->CheckGraphicsResetStatus();
 
   TimeStamp end = TimeStamp::Now();
-
   auto info = renderer->FlushPipelineInfo();
+
   layers::CompositorThreadHolder::Loop()->PostTask(
       NewRunnableFunction("NotifyDidRenderRunnable", &NotifyDidRender,
-                          renderer->GetCompositorBridge(), info, start, end));
+                          renderer->GetCompositorBridge(), info, aStartId,
+                          aStartTime, start, end, aRender, stats));
+
+  if (rendered) {
+    // Wait for GPU after posting NotifyDidRender, since the wait is not
+    // necessary for the NotifyDidRender.
+    // The wait is necessary for Textures recycling of AsyncImagePipelineManager
+    // and for avoiding GPU queue is filled with too much tasks.
+    // WaitForGPU's implementation is different for each platform.
+    renderer->WaitForGPU();
+  }
+
+  RefPtr<layers::AsyncImagePipelineManager> pipelineMgr =
+      renderer->GetCompositorBridge()->GetAsyncImagePipelineManager();
+  // pipelineMgr should always be non-null here because it is only nulled out
+  // after the WebRenderAPI instance for the CompositorBridgeParent is
+  // destroyed, and that destruction blocks until the renderer thread has
+  // removed the relevant renderer. And after that happens we should never reach
+  // this code at all; it would bail out at the mRenderers.find check above.
+  MOZ_ASSERT(pipelineMgr);
+  pipelineMgr->NotifyPipelinesUpdated(info, aRender);
 }
 
 void RenderThread::Pause(wr::WindowId aWindowId) {
@@ -254,84 +437,116 @@ bool RenderThread::TooManyPendingFrames(wr::WindowId aWindowId) {
   // Too many pending frames if pending frames exit more than maxFrameCount
   // or if RenderBackend is still processing a frame.
 
-  MutexAutoLock lock(mFrameCountMapLock);
-  WindowInfo info;
-  if (!mWindowInfos.Get(AsUint64(aWindowId), &info)) {
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  if (it == windows->end()) {
     MOZ_ASSERT(false);
     return true;
   }
+  WindowInfo* info = it->second;
 
-  if (info.mPendingCount > maxFrameCount) {
+  if (info->mPendingCount > maxFrameCount) {
     return true;
   }
-  MOZ_ASSERT(info.mPendingCount >= info.mRenderingCount);
-  return info.mPendingCount > info.mRenderingCount;
+  MOZ_ASSERT(info->mPendingCount >= info->mRenderingCount);
+  return info->mPendingCount > info->mRenderingCount;
 }
 
 bool RenderThread::IsDestroyed(wr::WindowId aWindowId) {
-  MutexAutoLock lock(mFrameCountMapLock);
-  WindowInfo info;
-  if (!mWindowInfos.Get(AsUint64(aWindowId), &info)) {
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  if (it == windows->end()) {
     return true;
   }
 
-  return info.mIsDestroyed;
+  return it->second->mIsDestroyed;
 }
 
 void RenderThread::SetDestroyed(wr::WindowId aWindowId) {
-  MutexAutoLock lock(mFrameCountMapLock);
-  WindowInfo info;
-  if (!mWindowInfos.Get(AsUint64(aWindowId), &info)) {
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  if (it == windows->end()) {
     MOZ_ASSERT(false);
     return;
   }
-  info.mIsDestroyed = true;
-  mWindowInfos.Put(AsUint64(aWindowId), info);
+  it->second->mIsDestroyed = true;
 }
 
-void RenderThread::IncPendingFrameCount(wr::WindowId aWindowId) {
-  MutexAutoLock lock(mFrameCountMapLock);
-  // Get the old count.
-  WindowInfo info;
-  if (!mWindowInfos.Get(AsUint64(aWindowId), &info)) {
+void RenderThread::IncPendingFrameCount(wr::WindowId aWindowId,
+                                        const VsyncId& aStartId,
+                                        const TimeStamp& aStartTime,
+                                        uint8_t aDocFrameCount) {
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  if (it == windows->end()) {
     MOZ_ASSERT(false);
     return;
   }
-  // Update pending frame count.
-  info.mPendingCount = info.mPendingCount + 1;
-  mWindowInfos.Put(AsUint64(aWindowId), info);
+  it->second->mPendingCount++;
+  it->second->mStartTimes.push(aStartTime);
+  it->second->mStartIds.push(aStartId);
+  it->second->mDocFrameCounts.push(aDocFrameCount);
 }
 
-void RenderThread::IncRenderingFrameCount(wr::WindowId aWindowId) {
-  MutexAutoLock lock(mFrameCountMapLock);
-  // Get the old count.
-  WindowInfo info;
-  if (!mWindowInfos.Get(AsUint64(aWindowId), &info)) {
+mozilla::Pair<bool, bool> RenderThread::IncRenderingFrameCount(
+    wr::WindowId aWindowId, bool aRender) {
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  if (it == windows->end()) {
     MOZ_ASSERT(false);
-    return;
+    return MakePair(false, false);
   }
-  // Update rendering frame count.
-  info.mRenderingCount = info.mRenderingCount + 1;
-  mWindowInfos.Put(AsUint64(aWindowId), info);
+
+  it->second->mDocFramesSeen++;
+  if (it->second->mDocFramesSeen < it->second->mDocFrameCounts.front()) {
+    it->second->mRender |= aRender;
+    return MakePair(false, it->second->mRender);
+  } else {
+    MOZ_ASSERT(it->second->mDocFramesSeen ==
+               it->second->mDocFrameCounts.front());
+    bool render = it->second->mRender || aRender;
+    it->second->mRender = false;
+    it->second->mRenderingCount++;
+    it->second->mDocFrameCounts.pop();
+    it->second->mDocFramesSeen = 0;
+    return MakePair(true, render);
+  }
 }
 
-void RenderThread::DecPendingFrameCount(wr::WindowId aWindowId) {
-  MutexAutoLock lock(mFrameCountMapLock);
-  // Get the old count.
-  WindowInfo info;
-  if (!mWindowInfos.Get(AsUint64(aWindowId), &info)) {
+void RenderThread::FrameRenderingComplete(wr::WindowId aWindowId) {
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  if (it == windows->end()) {
     MOZ_ASSERT(false);
     return;
   }
-  MOZ_ASSERT(info.mPendingCount > 0);
-  MOZ_ASSERT(info.mRenderingCount > 0);
-  if (info.mPendingCount <= 0) {
+  WindowInfo* info = it->second;
+  MOZ_ASSERT(info->mPendingCount > 0);
+  MOZ_ASSERT(info->mRenderingCount > 0);
+  if (info->mPendingCount <= 0) {
     return;
   }
-  // Update frame counts.
-  info.mPendingCount = info.mPendingCount - 1;
-  info.mRenderingCount = info.mRenderingCount - 1;
-  mWindowInfos.Put(AsUint64(aWindowId), info);
+  info->mPendingCount--;
+  info->mRenderingCount--;
+
+  // The start time is from WebRenderBridgeParent::CompositeToTarget. From that
+  // point until now (when the frame is finally pushed to the screen) is
+  // equivalent to the COMPOSITE_TIME metric in the non-WR codepath.
+  mozilla::Telemetry::AccumulateTimeDelta(mozilla::Telemetry::COMPOSITE_TIME,
+                                          info->mStartTimes.front());
+  info->mStartTimes.pop();
+  info->mStartIds.pop();
+}
+
+void RenderThread::NotifySlowFrame(wr::WindowId aWindowId) {
+  auto windows = mWindowInfos.Lock();
+  auto it = windows->find(AsUint64(aWindowId));
+  if (it == windows->end()) {
+    MOZ_ASSERT(false);
+    return;
+  }
+  WindowInfo* info = it->second;
+  info->mHadSlowFrame = true;
 }
 
 void RenderThread::RegisterExternalImage(
@@ -341,8 +556,8 @@ void RenderThread::RegisterExternalImage(
   if (mHasShutdown) {
     return;
   }
-  MOZ_ASSERT(!mRenderTextures.GetWeak(aExternalImageId));
-  mRenderTextures.Put(aExternalImageId, Move(aTexture));
+  MOZ_ASSERT(mRenderTextures.find(aExternalImageId) == mRenderTextures.end());
+  mRenderTextures.emplace(aExternalImageId, std::move(aTexture));
 }
 
 void RenderThread::UnregisterExternalImage(uint64_t aExternalImageId) {
@@ -350,7 +565,11 @@ void RenderThread::UnregisterExternalImage(uint64_t aExternalImageId) {
   if (mHasShutdown) {
     return;
   }
-  MOZ_ASSERT(mRenderTextures.GetWeak(aExternalImageId));
+  auto it = mRenderTextures.find(aExternalImageId);
+  MOZ_ASSERT(it != mRenderTextures.end());
+  if (it == mRenderTextures.end()) {
+    return;
+  }
   if (!IsInRenderThread()) {
     // The RenderTextureHost should be released in render thread. So, post the
     // deletion task here.
@@ -359,18 +578,113 @@ void RenderThread::UnregisterExternalImage(uint64_t aExternalImageId) {
     // deletion. Then the buffer in RenderTextureHost becomes invalid. It's fine
     // for this situation. Gecko will only release the buffer if WR doesn't need
     // it. So, no one will access the invalid buffer in RenderTextureHost.
-    RefPtr<RenderTextureHost> texture;
-    mRenderTextures.Remove(aExternalImageId, getter_AddRefs(texture));
-    Loop()->PostTask(NewRunnableMethod<RefPtr<RenderTextureHost>>(
+    RefPtr<RenderTextureHost> texture = it->second;
+    mRenderTextures.erase(it);
+    mRenderTexturesDeferred.emplace_back(std::move(texture));
+    Loop()->PostTask(NewRunnableMethod(
         "RenderThread::DeferredRenderTextureHostDestroy", this,
-        &RenderThread::DeferredRenderTextureHostDestroy, Move(texture)));
+        &RenderThread::DeferredRenderTextureHostDestroy));
   } else {
-    mRenderTextures.Remove(aExternalImageId);
+    mRenderTextures.erase(it);
   }
 }
 
-void RenderThread::DeferredRenderTextureHostDestroy(RefPtr<RenderTextureHost>) {
-  // Do nothing. Just decrease the ref-count of RenderTextureHost.
+void RenderThread::PrepareForUse(uint64_t aExternalImageId) {
+  if (!IsInRenderThread()) {
+    Loop()->PostTask(NewRunnableMethod<uint64_t>(
+        "RenderThread::PrepareForUse", this, &RenderThread::PrepareForUse,
+        aExternalImageId));
+    return;
+  }
+
+  MutexAutoLock lock(mRenderTextureMapLock);
+  if (mHasShutdown) {
+    return;
+  }
+
+  auto it = mRenderTextures.find(aExternalImageId);
+  MOZ_ASSERT(it != mRenderTextures.end());
+  if (it == mRenderTextures.end()) {
+    return;
+  }
+
+  RefPtr<RenderTextureHost> texture = it->second;
+  texture->PrepareForUse();
+}
+
+void RenderThread::NotifyNotUsed(uint64_t aExternalImageId) {
+  if (!IsInRenderThread()) {
+    Loop()->PostTask(NewRunnableMethod<uint64_t>(
+        "RenderThread::NotifyNotUsed", this, &RenderThread::NotifyNotUsed,
+        aExternalImageId));
+    return;
+  }
+
+  MutexAutoLock lock(mRenderTextureMapLock);
+  if (mHasShutdown) {
+    return;
+  }
+
+  auto it = mRenderTextures.find(aExternalImageId);
+  MOZ_ASSERT(it != mRenderTextures.end());
+  if (it == mRenderTextures.end()) {
+    return;
+  }
+
+  RefPtr<RenderTextureHost> texture = it->second;
+  texture->NotifyNotUsed();
+}
+
+void RenderThread::UpdateRenderTextureHost(uint64_t aSrcExternalImageId,
+                                           uint64_t aWrappedExternalImageId) {
+  MOZ_ASSERT(aSrcExternalImageId != aWrappedExternalImageId);
+  MOZ_ASSERT(RenderThread::IsInRenderThread());
+
+  MutexAutoLock lock(mRenderTextureMapLock);
+  if (mHasShutdown) {
+    return;
+  }
+  auto src = mRenderTextures.find(aSrcExternalImageId);
+  auto wrapped = mRenderTextures.find(aWrappedExternalImageId);
+  if (src == mRenderTextures.end() || wrapped == mRenderTextures.end()) {
+    return;
+  }
+  MOZ_ASSERT(src->second->AsRenderTextureHostWrapper());
+  MOZ_ASSERT(!wrapped->second->AsRenderTextureHostWrapper());
+  RenderTextureHostWrapper* wrapper = src->second->AsRenderTextureHostWrapper();
+  if (!wrapper) {
+    MOZ_ASSERT_UNREACHABLE("unexpected to happen");
+    return;
+  }
+  wrapper->UpdateRenderTextureHost(wrapped->second);
+}
+
+void RenderThread::NofityForUse(uint64_t aExternalImageId) {
+  MOZ_ASSERT(RenderThread::IsInRenderThread());
+
+  MutexAutoLock lock(mRenderTextureMapLock);
+  if (mHasShutdown) {
+    return;
+  }
+  auto it = mRenderTextures.find(aExternalImageId);
+  if (it == mRenderTextures.end()) {
+    return;
+  }
+  it->second->NofityForUse();
+}
+
+void RenderThread::UnregisterExternalImageDuringShutdown(
+    uint64_t aExternalImageId) {
+  MOZ_ASSERT(IsInRenderThread());
+  MutexAutoLock lock(mRenderTextureMapLock);
+  MOZ_ASSERT(mHasShutdown);
+  MOZ_ASSERT(mRenderTextures.find(aExternalImageId) != mRenderTextures.end());
+  mRenderTextures.erase(aExternalImageId);
+}
+
+void RenderThread::DeferredRenderTextureHostDestroy() {
+  MutexAutoLock lock(mRenderTextureMapLock);
+  mRenderTexturesDeferred.clear();
 }
 
 RenderTextureHost* RenderThread::GetRenderTexture(
@@ -378,17 +692,107 @@ RenderTextureHost* RenderThread::GetRenderTexture(
   MOZ_ASSERT(IsInRenderThread());
 
   MutexAutoLock lock(mRenderTextureMapLock);
-  MOZ_ASSERT(mRenderTextures.GetWeak(aExternalImageId.mHandle));
-  return mRenderTextures.GetWeak(aExternalImageId.mHandle);
+  auto it = mRenderTextures.find(aExternalImageId.mHandle);
+  MOZ_ASSERT(it != mRenderTextures.end());
+  if (it == mRenderTextures.end()) {
+    return nullptr;
+  }
+  return it->second;
 }
 
-WebRenderProgramCache* RenderThread::ProgramCache() {
+void RenderThread::InitDeviceTask() {
+  MOZ_ASSERT(IsInRenderThread());
+  MOZ_ASSERT(!mSharedGL);
+
+  mSharedGL = CreateGLContext();
+  if (gfx::gfxVars::UseWebRenderProgramBinaryDisk()) {
+    mProgramCache = MakeUnique<WebRenderProgramCache>(ThreadPool().Raw());
+  }
+  // Query the shared GL context to force the
+  // lazy initialization to happen now.
+  SharedGL();
+}
+
+void RenderThread::HandleDeviceReset(const char* aWhere, bool aNotify) {
   MOZ_ASSERT(IsInRenderThread());
 
-  if (!mProgramCache) {
-    mProgramCache = MakeUnique<WebRenderProgramCache>();
+  if (mHandlingDeviceReset) {
+    return;
   }
-  return mProgramCache.get();
+
+  if (aNotify) {
+    gfxCriticalNote << "GFX: RenderThread detected a device reset in "
+                    << aWhere;
+    if (XRE_IsGPUProcess()) {
+      gfx::GPUParent::GetSingleton()->NotifyDeviceReset();
+    }
+  }
+
+  {
+    MutexAutoLock lock(mRenderTextureMapLock);
+    mRenderTexturesDeferred.clear();
+    for (const auto& entry : mRenderTextures) {
+      entry.second->ClearCachedResources();
+    }
+  }
+
+  mHandlingDeviceReset = true;
+  // All RenderCompositors will be destroyed by
+  // GPUChild::RecvNotifyDeviceReset()
+}
+
+bool RenderThread::IsHandlingDeviceReset() {
+  MOZ_ASSERT(IsInRenderThread());
+  return mHandlingDeviceReset;
+}
+
+void RenderThread::SimulateDeviceReset() {
+  if (!IsInRenderThread()) {
+    Loop()->PostTask(NewRunnableMethod("RenderThread::SimulateDeviceReset",
+                                       this,
+                                       &RenderThread::SimulateDeviceReset));
+  } else {
+    // When this function is called GPUProcessManager::SimulateDeviceReset()
+    // already triggers destroying all CompositorSessions before re-creating
+    // them.
+    HandleDeviceReset("SimulateDeviceReset", /* aNotify */ false);
+  }
+}
+
+gl::GLContext* RenderThread::SharedGL() {
+  MOZ_ASSERT(IsInRenderThread());
+  if (!mSharedGL) {
+    mSharedGL = CreateGLContext();
+    mShaders = nullptr;
+  }
+  if (mSharedGL && !mShaders) {
+    mShaders = MakeUnique<WebRenderShaders>(mSharedGL, mProgramCache.get());
+  }
+
+  return mSharedGL.get();
+}
+
+void RenderThread::ClearSharedGL() {
+  MOZ_ASSERT(IsInRenderThread());
+  mShaders = nullptr;
+  mSharedGL = nullptr;
+}
+
+WebRenderShaders::WebRenderShaders(gl::GLContext* gl,
+                                   WebRenderProgramCache* programCache) {
+  mGL = gl;
+  mShaders = wr_shaders_new(gl, programCache ? programCache->Raw() : nullptr);
+}
+
+WebRenderShaders::~WebRenderShaders() {
+  wr_shaders_delete(mShaders, mGL.get());
+}
+
+WebRenderPipelineInfo::WebRenderPipelineInfo(wr::WrPipelineInfo aPipelineInfo)
+    : mPipelineInfo(aPipelineInfo) {}
+
+WebRenderPipelineInfo::~WebRenderPipelineInfo() {
+  wr_pipeline_info_delete(mPipelineInfo);
 }
 
 WebRenderThreadPool::WebRenderThreadPool() {
@@ -399,8 +803,17 @@ WebRenderThreadPool::~WebRenderThreadPool() {
   wr_thread_pool_delete(mThreadPool);
 }
 
-WebRenderProgramCache::WebRenderProgramCache() {
-  mProgramCache = wr_program_cache_new();
+WebRenderProgramCache::WebRenderProgramCache(wr::WrThreadPool* aThreadPool) {
+  MOZ_ASSERT(aThreadPool);
+
+  nsAutoString path;
+  if (gfxVars::UseWebRenderProgramBinaryDisk()) {
+    path.Append(gfx::gfxVars::ProfDirectory());
+  }
+  mProgramCache = wr_program_cache_new(&path, aThreadPool);
+  if (gfxVars::UseWebRenderProgramBinaryDisk()) {
+    wr_try_load_shader_from_disk(mProgramCache);
+  }
 }
 
 WebRenderProgramCache::~WebRenderProgramCache() {
@@ -410,31 +823,104 @@ WebRenderProgramCache::~WebRenderProgramCache() {
 }  // namespace wr
 }  // namespace mozilla
 
+#ifdef XP_WIN
+static already_AddRefed<gl::GLContext> CreateGLContextANGLE() {
+  nsCString discardFailureId;
+  if (!gl::GLLibraryEGL::EnsureInitialized(/* forceAccel */ true,
+                                           &discardFailureId)) {
+    gfxCriticalNote << "Failed to load EGL library: " << discardFailureId.get();
+    return nullptr;
+  }
+
+  auto* egl = gl::GLLibraryEGL::Get();
+  auto flags = gl::CreateContextFlags::PREFER_ES3;
+
+  if (egl->IsExtensionSupported(
+          gl::GLLibraryEGL::MOZ_create_context_provoking_vertex_dont_care)) {
+    flags |= gl::CreateContextFlags::PROVOKING_VERTEX_DONT_CARE;
+  }
+
+  // Create GLContext with dummy EGLSurface, the EGLSurface is not used.
+  // Instread we override it with EGLSurface of SwapChain's back buffer.
+  RefPtr<gl::GLContext> gl =
+      gl::GLContextProviderEGL::CreateHeadless(flags, &discardFailureId);
+  if (!gl || !gl->IsANGLE()) {
+    gfxCriticalNote << "Failed ANGLE GL context creation for WebRender: "
+                    << gfx::hexa(gl.get());
+    return nullptr;
+  }
+
+  if (!gl->MakeCurrent()) {
+    gfxCriticalNote << "Failed GL context creation for WebRender: "
+                    << gfx::hexa(gl.get());
+    return nullptr;
+  }
+
+  return gl.forget();
+}
+#endif
+
+#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WAYLAND)
+static already_AddRefed<gl::GLContext> CreateGLContextEGL() {
+  nsCString discardFailureId;
+  if (!gl::GLLibraryEGL::EnsureInitialized(/* forceAccel */ true,
+                                           &discardFailureId)) {
+    gfxCriticalNote << "Failed to load EGL library: " << discardFailureId.get();
+    return nullptr;
+  }
+  // Create GLContext with dummy EGLSurface.
+  RefPtr<gl::GLContext> gl =
+      gl::GLContextProviderEGL::CreateForCompositorWidget(
+          nullptr, /* aWebRender */ true, /* aForceAccelerated */ true);
+  if (!gl || !gl->MakeCurrent()) {
+    gfxCriticalNote << "Failed GL context creation for WebRender: "
+                    << gfx::hexa(gl.get());
+    return nullptr;
+  }
+  return gl.forget();
+}
+#endif
+
+static already_AddRefed<gl::GLContext> CreateGLContext() {
+#ifdef XP_WIN
+  if (gfx::gfxVars::UseWebRenderANGLE()) {
+    return CreateGLContextANGLE();
+  }
+#endif
+
+#if defined(MOZ_WIDGET_ANDROID)
+  return CreateGLContextEGL();
+#elif defined(MOZ_WAYLAND)
+  if (!GDK_IS_X11_DISPLAY(gdk_display_get_default())) {
+    return CreateGLContextEGL();
+  }
+#endif
+  // We currently only support a shared GLContext
+  // with ANGLE.
+  return nullptr;
+}
+
 extern "C" {
 
-static void NewFrameReady(mozilla::wr::WrWindowId aWindowId) {
-  mozilla::wr::RenderThread::Get()->IncRenderingFrameCount(aWindowId);
-  mozilla::wr::RenderThread::Get()->NewFrameReady(
-      mozilla::wr::WindowId(aWindowId));
+static void HandleFrame(mozilla::wr::WrWindowId aWindowId, bool aRender) {
+  auto incResult = mozilla::wr::RenderThread::Get()->IncRenderingFrameCount(
+      aWindowId, aRender);
+  if (incResult.first()) {
+    mozilla::wr::RenderThread::Get()->HandleFrame(aWindowId,
+                                                  incResult.second());
+  }
 }
 
 void wr_notifier_wake_up(mozilla::wr::WrWindowId aWindowId) {
-  mozilla::wr::RenderThread::Get()->WakeUp(mozilla::wr::WindowId(aWindowId));
+  mozilla::wr::RenderThread::Get()->WakeUp(aWindowId);
 }
 
 void wr_notifier_new_frame_ready(mozilla::wr::WrWindowId aWindowId) {
-  NewFrameReady(aWindowId);
+  HandleFrame(aWindowId, /* aRender */ true);
 }
 
-void wr_notifier_new_scroll_frame_ready(mozilla::wr::WrWindowId aWindowId,
-                                        bool aCompositeNeeded) {
-  // If we sent a transaction that contained both scrolling updates and a
-  // GenerateFrame, we can get this function called with aCompositeNeeded=true
-  // instead of wr_notifier_new_frame_ready. In that case we want to update the
-  // rendering.
-  if (aCompositeNeeded) {
-    NewFrameReady(aWindowId);
-  }
+void wr_notifier_nop_frame_done(mozilla::wr::WrWindowId aWindowId) {
+  HandleFrame(aWindowId, /* aRender */ false);
 }
 
 void wr_notifier_external_event(mozilla::wr::WrWindowId aWindowId,
@@ -442,7 +928,45 @@ void wr_notifier_external_event(mozilla::wr::WrWindowId aWindowId,
   mozilla::UniquePtr<mozilla::wr::RendererEvent> evt(
       reinterpret_cast<mozilla::wr::RendererEvent*>(aRawEvent));
   mozilla::wr::RenderThread::Get()->RunEvent(mozilla::wr::WindowId(aWindowId),
-                                             mozilla::Move(evt));
+                                             std::move(evt));
+}
+
+void wr_schedule_render(mozilla::wr::WrWindowId aWindowId,
+                        const mozilla::wr::WrDocumentId* aDocumentIds,
+                        size_t aDocumentIdsCount) {
+  RefPtr<mozilla::layers::CompositorBridgeParent> cbp = mozilla::layers::
+      CompositorBridgeParent::GetCompositorBridgeParentFromWindowId(aWindowId);
+  if (cbp) {
+    wr::RenderRootSet renderRoots;
+    for (size_t i = 0; i < aDocumentIdsCount; ++i) {
+      renderRoots += wr::RenderRootFromId(aDocumentIds[i]);
+    }
+    cbp->ScheduleRenderOnCompositorThread(renderRoots);
+  }
+}
+
+static void NotifyDidSceneBuild(RefPtr<layers::CompositorBridgeParent> aBridge,
+                                const nsTArray<wr::RenderRoot>& aRenderRoots,
+                                RefPtr<wr::WebRenderPipelineInfo> aInfo) {
+  aBridge->NotifyDidSceneBuild(aRenderRoots, aInfo);
+}
+
+void wr_finished_scene_build(mozilla::wr::WrWindowId aWindowId,
+                             const mozilla::wr::WrDocumentId* aDocumentIds,
+                             size_t aDocumentIdsCount,
+                             mozilla::wr::WrPipelineInfo aInfo) {
+  RefPtr<mozilla::layers::CompositorBridgeParent> cbp = mozilla::layers::
+      CompositorBridgeParent::GetCompositorBridgeParentFromWindowId(aWindowId);
+  RefPtr<wr::WebRenderPipelineInfo> info = new wr::WebRenderPipelineInfo(aInfo);
+  if (cbp) {
+    InfallibleTArray<wr::RenderRoot> renderRoots;
+    renderRoots.SetLength(aDocumentIdsCount);
+    for (size_t i = 0; i < aDocumentIdsCount; ++i) {
+      renderRoots[i] = wr::RenderRootFromId(aDocumentIds[i]);
+    }
+    layers::CompositorThreadHolder::Loop()->PostTask(NewRunnableFunction(
+        "NotifyDidSceneBuild", &NotifyDidSceneBuild, cbp, renderRoots, info));
+  }
 }
 
 }  // extern C

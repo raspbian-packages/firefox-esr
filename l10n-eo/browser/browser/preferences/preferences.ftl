@@ -4,8 +4,8 @@
 
 do-not-track-description = Sendi al retejoj sciigon, ke vi ne volas esti spurata
 do-not-track-learn-more = Pli da informo
-do-not-track-option-default =
-    .label = Nur dum uzo de protekto kontraŭ spurado
+do-not-track-option-default-content-blocking-known =
+    .label = Nur kiam { -brand-short-name } estas agordita por bloki konatajn spurilojn
 do-not-track-option-always =
     .label = Ĉiam
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Elektebloj
            *[other] Preferoj
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 16.5em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -37,20 +29,29 @@ search-input-box =
             [windows] Serĉi en elektebloj
            *[other] Serĉi en preferoj
         }
+policies-notice =
+    { PLATFORM() ->
+        [windows] Via organizaĵo malŝaltis la eblon ŝanĝi kelkajn elekteblojn.
+       *[other] Via organizaĵo malŝaltis la eblon ŝanĝi kelkajn preferojn.
+    }
+managed-notice = Via retumilo estas administrata de via organizo.
 pane-general-title = Ĉefaj
 category-general =
     .tooltiptext = { pane-general-title }
+pane-home-title = Eka paĝo
+category-home =
+    .tooltiptext = { pane-home-title }
 pane-search-title = Serĉi
 category-search =
     .tooltiptext = { pane-search-title }
 pane-privacy-title = Privateco kaj sekureco
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Konto de Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Helpo pri { -brand-short-name }
+addons-button-label = Etendaĵoj kaj etosoj
 focus-search =
     .key = f
 close-button =
@@ -64,6 +65,44 @@ should-restart-title = Restartigi { -brand-short-name }
 should-restart-ok = Restartigi { -brand-short-name } nun
 cancel-no-restart-button = Nuligi
 restart-later = Restartigi poste
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = La etendaĵo <img data-l10n-name="icon"/> { $name } nuntempe regas vian ekan paĝon.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = La etendaĵo <img data-l10n-name="icon"/> { $name } nuntempe regas vian paĝon por novaj langetoj.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = La etendaĵo <img data-l10n-name="icon"/>{ $name } nuntempe regas tiun ĉi agordon.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = La etendaĵo <img data-l10n-name="icon"/> { $name } difinis vian norman serĉilon.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = La etendaĵo <img data-l10n-name="icon"/> { $name } postulas ingajn langetojn.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = La etendaĵo <img data-l10n-name="icon"/> { $name } regas tiun ĉi agordon.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = La etendaĵo <img data-l10n-name="icon"/> { $name } regas la manieron, kiel { -brand-short-name } konektiĝas al la reto.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Por aktivigi la etendaĵon iru al <img data-l10n-name="addons-icon"/> Aldonaĵoj en la <img data-l10n-name="menu-icon"/> menuo.
 
 ## Preferences UI Search Results
 
@@ -83,7 +122,7 @@ startup-header = Starto
 # since this setting is only exposed in Firefox Developer Edition
 separate-profile-mode =
     .label = Permesi ke { -brand-short-name } kaj Firefox funkciu samtempe
-use-firefox-sync = Konsileto: tio ĉi uzas apartajn profilojn. Uzu Speguli por dividi datumojn inter ili.
+use-firefox-sync = Konsileto: tio ĉi uzas apartajn profilojn. Uzu { -sync-brand-short-name } por dividi datumojn inter ili.
 get-started-not-logged-in = Komenci seancon en { -sync-brand-short-name }…
 get-started-configured = Malfermi preferojn de { -sync-brand-short-name }
 always-check-default =
@@ -94,17 +133,13 @@ is-not-default = { -brand-short-name } ne estas via ĉefa retumilo
 set-as-my-default-browser =
     .label = Elekti kiel norman…
     .accesskey = E
-startup-page = Kiam { -brand-short-name } startas
-    .accesskey = s
-startup-user-homepage =
-    .label = Montri vian ekan paĝon
-startup-blank-page =
-    .label = Montri malplenan paĝon
-startup-prev-session =
-    .label = Montri viajn lastajn fenestrojn kaj langetojn
+startup-restore-previous-session =
+    .label = Restarigi antaŭan seancon
+    .accesskey = R
+startup-restore-warn-on-quit =
+    .label = Averti min antaŭ ol fini la retumilon.
 disable-extension =
     .label = Malaktivigi etendaĵon
-home-page-header = Eka paĝo
 tabs-group-header = Langetoj
 ctrl-tab-recently-used-order =
     .label = Stir+Tabo rondiras inter langetoj ordigitaj laŭ ĵuseco
@@ -173,6 +208,12 @@ choose-language-description = Elektu vian preferatan lingvon por retpaĝoj
 choose-button =
     .label = Elekti…
     .accesskey = l
+choose-browser-language-description = Elektu la lingvojn, kiuj estos uzata por montri menuojn, mesaĝojn kaj sciigojn de { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Elekti alternativojn…
+    .accesskey = E
+confirm-browser-language-change-description = Restartigi { -brand-short-name } por apliki tiun ĉi ŝanĝojn
+confirm-browser-language-change-button = Apliki kaj restartigi
 translate-web-pages =
     .label = Traduki teksaĵan enhavon
     .accesskey = T
@@ -224,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Pli da informo
 update-application-title = Ĝisdatigoj de { -brand-short-name }
 update-application-description = Tenu { -brand-short-name } ĝisdatigita por havi la plej bonan efikecon, stabilecon kaj sekurecon.
-update-application-info = Versio { $version } <a>Kio estas nova</a>
 update-application-version = Versio { $version } <a data-l10n-name="learn-more">Kio estas nova</a>
 update-history =
     .label = Montri historion de ĝisdatigoj…
@@ -239,12 +279,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Neniam kontroli ĉu estas ĝisdatigoj (malkonsilinda)
     .accesskey = N
+update-application-warning-cross-user-setting = Tiu ĉi agordo estos aplikita al ĉiuj kontoj de Windows kaj profiloj de { -brand-short-name }, kiuj uzas tiun ĉi instalitan version de { -brand-short-name }.
 update-application-use-service =
     .label = Uzi fonan servon por instali ĝisdatigojn
     .accesskey = f
 update-enable-search-update =
     .label = Aŭtomate ĝisdatigi serĉilojn
     .accesskey = t
+update-pref-write-failure-title = Malsukcesa skribo
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Ne eblis konservi preferon. Ne eblis skribi en la dosiero: { $path }
+update-setting-write-failure-title = Eraro dum konservo de ĝisdatigoj
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } trovis eraron kaj ne konservis tiun ĉi ŝanĝon. Bonvolu noti ke oni bezonas povi skribi la suban dosieron, por povi agordi tiun ĉi ĝisdatigan preferon. Vi, aŭ sisteman administranton povus eble solvi la eraron jene: rajtigi al la grupo Users plenan regadon de tiu ĉi dosiero.
+    
+    Ne eblis skribi la dosieron: { $path }
+update-in-progress-title = Ĝisdatigo plenumata
+update-in-progress-message = Ĉu vi volas ke { -brand-short-name } daŭrigu tiun ĉi ĝisdatigon?
+update-in-progress-ok-button = &Abandoni
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Daŭrigi
 
 ## General Section - Performance
 
@@ -260,7 +320,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Maksimuma nombro de enhavaj taskoj
     .accesskey = M
 performance-limit-content-process-enabled-desc = Pli da enhavaj taskoj povas plibonigi efikecon dum uzo de pluraj langetoj, sed ili ankaŭ uzos pli da memoro.
-performance-limit-content-process-disabled-desc = Nur eblas modifi la nombron de enhavaj taskoj en plurproceza { -brand-short-name }. <a>Pli da informo, pri kiel eltrovi ĉu plurprocezo estas aktiva</a>
 performance-limit-content-process-blocked-desc = Nur eblas modifi la nombron de enhavaj taskoj en plurproceza { -brand-short-name }. <a data-l10n-name="learn-more">Pli da informo, pri kiel eltrovi ĉu plurprocezo estas aktiva</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -285,10 +344,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Serĉi tekston kiam vi ektajpas
     .accesskey = t
+browsing-cfr-recommendations =
+    .label = Sugesti etendaĵojn dum retumo
+    .accesskey = S
+browsing-cfr-features =
+    .label = Sugesti funkciojn dum retumo
+    .accesskey = f
+browsing-cfr-recommendations-learn-more = Pli da informo
 
 ## General Section - Proxy
 
-network-proxy-title = Retperanto
+network-settings-title = Retaj agordoj
+network-proxy-connection-description = Agordi la manieron, kiel { -brand-short-name } konektiĝas al la reto.
 network-proxy-connection-learn-more = Pli da informo
 network-proxy-connection-settings =
     .label = Agordoj…
@@ -297,9 +364,25 @@ network-proxy-connection-settings =
 ## Home Section
 
 home-new-windows-tabs-header = Novaj fenestroj kaj langetoj
+home-new-windows-tabs-description2 = Elektu tion, kion vi volas vidi je malfermo de via eka paĝo, novaj fenestroj aŭ novaj langetoj.
 
 ## Home Section - Home Page Customization
 
+home-homepage-mode-label = Eka paĝo kaj novaj fenestroj
+home-newtabs-mode-label = Novaj langetoj
+home-restore-defaults =
+    .label = Remeti normojn
+    .accesskey = R
+# "Firefox" should be treated as a brand and kept in English,
+# while "Home" and "(Default)" can be localized.
+home-mode-choice-default =
+    .label = Eka paĝo de Firefox (norma)
+home-mode-choice-custom =
+    .label = Personecigitaj URL…
+home-mode-choice-blank =
+    .label = Malplena paĝo
+home-homepage-custom-url =
+    .placeholder = Alglui retadreson…
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -314,9 +397,6 @@ use-current-pages =
 choose-bookmark =
     .label = Uzi legosignon…
     .accesskey = s
-restore-default =
-    .label = Norma paĝo
-    .accesskey = N
 
 ## Search Section
 
@@ -408,6 +488,9 @@ sync-signedin-login-failure = Bonvolu komenci seancon por rekonekti { $email }
 sync-resend-verification =
     .label = Resendi kontrolon
     .accesskey = k
+sync-remove-account =
+    .label = Forigi konton
+    .accesskey = F
 sync-sign-in =
     .label = Komenci seancon
     .accesskey = K
@@ -424,15 +507,15 @@ sync-engine-tabs =
     .tooltiptext = Listo de ĉio, kio estas malfermita, en ĉiuj spegulitaj aparatoj
     .accesskey = g
 sync-engine-logins =
-    .label = Akreditiloj
+    .label = akreditilojn
     .tooltiptext = Nomoj de uzanto kaj pasvortoj konservitaj de vi
     .accesskey = A
 sync-engine-addresses =
-    .label = Adresoj
+    .label = adresojn
     .tooltiptext = Poŝtaj adresoj konservitaj de vi (nur en komputilo)
     .accesskey = e
 sync-engine-creditcards =
-    .label = Kreditkartoj
+    .label = kreditkartojn
     .tooltiptext = Nomoj, numeroj kaj datoj de senvalidiĝo (nur en komputilo)
     .accesskey = K
 sync-engine-addons =
@@ -457,8 +540,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Konservi
     .accesskey = K
-sync-mobilepromo-single = Konekti alian aparaton
-sync-mobilepromo-multi = Administri aparatojn
+sync-connect-another-device = Konekti alian aparaton
+sync-manage-devices = Administri aparatojn
+sync-fxa-begin-pairing = Asocii aparaton
 sync-tos-link = Kondiĉoj de uzado
 sync-fxa-privacy-notice = Rimarko pri privateco
 
@@ -468,10 +552,16 @@ privacy-header = Retumila privateco
 
 ## Privacy Section - Forms
 
-forms-header = Formularoj kaj pasvortoj
+logins-header = Akreditiloj kaj pasvortoj
+forms-ask-to-save-logins =
+    .label = Demandi ĉu konservi akreditilojn kaj pasvortojn por retejoj
+    .accesskey = D
 forms-exceptions =
     .label = Esceptoj…
     .accesskey = c
+forms-generate-passwords =
+    .label = Sugesti kaj krei fortikajn pasvortojn
+    .accesskey = S
 forms-saved-logins =
     .label = Konservitaj akreditiloj…
     .accesskey = a
@@ -502,13 +592,14 @@ history-remember-option-never =
     .label = neniam memoros historion
 history-remember-option-custom =
     .label = uzos personajn agordojn por la historio
+history-remember-description = { -brand-short-name } memoros vian retuman, elŝutan, formularan kaj serĉan historiojn.
 history-dontremember-description = { -brand-short-name } uzos la samajn agordojn de privata retumo, kaj ĝi ne memoros iun historion dum vi esploras la reton.
 history-private-browsing-permanent =
     .label = Ĉiam uzi la reĝimon de privata retumo
     .accesskey = p
-history-remember-option =
-    .label = Memori mian historion de retumo kaj elŝutoj
-    .accesskey = h
+history-remember-browser-option =
+    .label = Memori retuman kaj elŝutan historiojn
+    .accesskey = r
 history-remember-search-option =
     .label = Memori historion de serĉadoj kaj formularoj
     .accesskey = s
@@ -525,26 +616,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Kuketoj kaj retejaj datumoj
+sitedata-total-size-calculating = Kalkulo de datuma kaj stapla grando de retejo…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Viaj konservitaj kuketoj, retejaj datumoj kaj staplo uzas nuntempe { $value } { $unit } da diska spaco.
 sitedata-learn-more = Pli da informo
-sitedata-block-cookies-option =
-    .label = Bloki kuketojn kaj retejajn datumojn (tio povus misfunkciigi retejojn)
+sitedata-delete-on-close =
+    .label = Forigi kuketojn kaj retejajn datumojn je fermo de { -brand-short-name }
+    .accesskey = F
+sitedata-delete-on-close-private-browsing = En la konstanta reĝimo de privata retumo, kuketoj kaj retejaj datumoj estos forviŝitaj je ĉiu fermo de { -brand-short-name }.
+sitedata-allow-cookies-option =
+    .label = Akcepti kuketojn kaj retejajn datumojn
+    .accesskey = A
+sitedata-disallow-cookies-option =
+    .label = Bloki kuketojn kaj retejajn datumojn
     .accesskey = B
-sitedata-keep-until = Konservi ĝis
-    .accesskey = K
-sitedata-accept-third-party-desc = Akcepti nerektajn kuketojn kaj retejajn datumojn
-    .accesskey = n
-sitedata-accept-third-party-always-option =
-    .label = Ĉiam
-sitedata-accept-third-party-visited-option =
-    .label = El vizititaj retejoj
-sitedata-accept-third-party-never-option =
-    .label = Neniam
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Blokita tipo
+    .accesskey = B
+sitedata-option-block-trackers =
+    .label = Nerektaj spuriloj
+sitedata-option-block-unvisited =
+    .label = Kuketoj el nevizititaj retejoj
+sitedata-option-block-all-third-party =
+    .label = Ĉiuj nerektaj kuketoj (tio povus misfunkciigi retejojn)
+sitedata-option-block-all =
+    .label = Ĉiuj kuketoj (tio misfunkciigos retejojn)
 sitedata-clear =
     .label = Viŝi datumojn…
     .accesskey = V
-sitedata-cookies-exceptions =
-    .label = Esceptoj…
-    .accesskey = t
+sitedata-settings =
+    .label = Administri datumojn…
+    .accesskey = d
+sitedata-cookies-permissions =
+    .label = Administri permesojn…
+    .accesskey = A
 
 ## Privacy Section - Address Bar
 
@@ -561,30 +669,73 @@ addressbar-locbar-openpage-option =
     .accesskey = m
 addressbar-suggestions-settings = Ŝanĝi preferojn pri serĉilaj sugestoj
 
-## Privacy Section - Tracking
+## Privacy Section - Content Blocking
 
-tracking-header = Protekto kontraŭ spurado
-tracking-desc = La protekto kontraŭ spurado blokas retajn spurilojn, kiuj kolektas viajn retumajn datumojn tra pluraj retejoj. <a data-l10n-name="learn-more">Pli da informo pri protekto kontraŭ spurado kaj via privateco</a>
-tracking-mode-label = Uzi protekton kontraŭ spurado por bloki konatajn spurilojn
-tracking-mode-always =
-    .label = Ĉiam
-    .accesskey = m
-tracking-mode-private =
+content-blocking-header = Blokado de enhavo
+content-blocking-description = Bloku nerektan enhavon, kiu spuras vin tra la reto. Regu kiom multe de via retuma informo estas konservita kaj dividita inter retejoj.
+content-blocking-section-description = Protektu vian privatecon dum vi retumas. Bloku nevideblan enhavon, kiu registras la retejojn, kiujn vi vizitas por konstrui profilon pri vi. Bloki parton de tiu enhavo povas rapidigi la ŝargadon de paĝoj.
+content-blocking-learn-more = Pli da informo
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Norma
+    .accesskey = N
+content-blocking-setting-strict =
+    .label = Strikta
+    .accesskey = S
+content-blocking-setting-custom =
+    .label = Personecigita
+    .accesskey = P
+content-blocking-standard-description = Bloki nur konatajn spurilojn en privataj fenestroj.
+content-blocking-standard-desc = Ekvilibro inter protekto kaj efikeco. Kelkaj spuriloj estas permesataj, por ke retejoj funkciu bone.
+content-blocking-strict-desc = Ĉiuj spuriloj trovitaj de { -brand-short-name } estos blokitaj. Tio povas misfunkciigi kelkajn retejojn.
+content-blocking-strict-description = Pli severa protekto, kiu povus misfunkciigi kelkajn retejojn.
+content-blocking-custom-desc = Elektu kion bloki.
+content-blocking-private-trackers = Konataj spuriloj nur en fenestroj de privata retumo.
+content-blocking-third-party-cookies = Spurantaj nerektaj kuketoj
+content-blocking-all-cookies = Ĉiuj kuketoj
+content-blocking-unvisited-cookies = Kuketoj el ne vizititaj retejoj
+content-blocking-all-windows-trackers = Konataj spuriloj en ĉiuj fenestroj
+content-blocking-all-third-party-cookies = Ĉiuj nerektaj kuketoj
+content-blocking-cryptominers = Miniloj de ĉifromono
+content-blocking-fingerprinters = Identigiloj de ciferecaj spuroj
+content-blocking-warning-title = Atentu!
+content-blocking-warning-description = La blokado de enhavo povas misfunkciigi kelkajn retejojn. Estas facile malaktivigi la blokadon por retejoj, kiujn vi fidas.
+content-blocking-learn-how = Pli da informo
+content-blocking-reload-description = Vi bezonos reŝargi viajn langetojn por apliki tiujn ĉi ŝanĝojn.
+content-blocking-reload-tabs-button =
+    .label = Reŝargi ĉiujn langetojn
+    .accesskey = R
+content-blocking-trackers-label =
+    .label = Spuriloj
+    .accesskey = S
+content-blocking-tracking-protection-option-all-windows =
+    .label = En ĉiuj fenestroj
+    .accesskey = f
+content-blocking-option-private =
     .label = Nur en privataj fenestroj
     .accesskey = p
-tracking-mode-never =
-    .label = Neniam
-    .accesskey = N
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Uzi protekton kontraŭ spurado dum privata retumo por bloki konatajn spurilojn
-    .accesskey = U
-tracking-exceptions =
-    .label = Esceptoj…
-    .accesskey = E
-tracking-change-block-list =
-    .label = Ŝanĝi liston de blokado…
-    .accesskey = b
+content-blocking-tracking-protection-change-block-list = Ŝanĝi liston de blokado
+content-blocking-cookies-label =
+    .label = Kuketoj
+    .accesskey = K
+content-blocking-expand-section =
+    .tooltiptext = Pli da informo
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Miniloj de ĉifromono
+    .accesskey = M
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Identigiloj de ciferecaj spuroj
+    .accesskey = I
+
+## Privacy Section - Tracking
+
+tracking-manage-exceptions =
+    .label = Administri esceptojn…
+    .accesskey = e
 
 ## Privacy Section - Permissions
 
@@ -609,6 +760,16 @@ permissions-notification-link = Pli da informo
 permissions-notification-pause =
     .label = Paŭzigi sciigojn ĝis kiam { -brand-short-name } restartos
     .accesskey = P
+permissions-block-autoplay-media2 =
+    .label = Bloki aŭtomatan ludadon de sono en retejoj
+    .accesskey = B
+permissions-block-autoplay-media-exceptions =
+    .label = Esceptoj
+    .accesskey = E
+permissions-autoplay = Aŭtomata ludado
+permissions-autoplay-settings =
+    .label = Agordoj…
+    .accesskey = A
 permissions-block-popups =
     .label = Bloki ŝprucfenestrojn
     .accesskey = B
@@ -635,16 +796,18 @@ collection-health-report =
     .label = Permesi al { -brand-short-name } sendi teĥnikajn kaj interagajn datumojn al { -vendor-short-name }
     .accesskey = P
 collection-health-report-link = Pli da informo
+collection-studies =
+    .label = Permesi al { -brand-short-name } instali kaj fari studojn
+collection-studies-link = Vidi studojn de { -brand-short-name }
+addon-recommendations =
+    .label = Permesi al { -brand-short-name } fari personecigitajn proponojn pri etendaĵoj
+addon-recommendations-link = Pli da informo
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = La raporto de datumoj estas malŝaltita pro la agordoj de konstruo
-collection-browser-errors =
-    .label = Permesi al { -brand-short-name } sendi retumilajn raportojn pri eraroj (tio inkuzivas erarmesaĝojn) al { -vendor-short-name }
-    .accesskey = e
-collection-browser-errors-link = Pli da informo
 collection-backlogged-crash-reports =
-    .label = Permesi al { -brand-short-name } sendi nome via antaŭe registritajn raportojn pri paneo
-    .accesskey = P
+    .label = Permesi al { -brand-short-name } sendi antaŭe kolektitajn raportojn pri paneo
+    .accesskey = p
 collection-backlogged-crash-reports-link = Pli da informo
 
 ## Privacy Section - Security
@@ -684,3 +847,36 @@ certs-view =
 certs-devices =
     .label = Sekurecaj aparatoj…
     .accesskey = S
+space-alert-learn-more-button =
+    .label = Pli da informo
+    .accesskey = P
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Malfermi elekteblojn
+           *[other] Malfermi preferojn
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] M
+           *[other] M
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] Elĉerpiĝas la diska spaco por { -brand-short-name }. Enhavo de retejoj povas aperi malĝuste. Vi povas viŝi konservitajn retejajn datumojn en Elektebloj > Privateco kaj sekureco > Kuketoj kaj retejaj datumoj.
+       *[other] Elĉerpiĝas la diska spaco por { -brand-short-name }. Enhavo de retejoj povas aperi malĝuste. Vi povas viŝi konservitajn retejajn datumojn en Preferoj > Privateco kaj sekureco > Kuketoj kaj retejaj datumoj.
+    }
+space-alert-under-5gb-ok-button =
+    .label = En ordo, mi komprenis
+    .accesskey = o
+space-alert-under-5gb-message = Elĉerpiĝas la diska spaco por { -brand-short-name }. Enhavo de retejoj povas aperi malĝuste. Vizitu “Pli da informo” por optimumigi la uzon de diska spaco, por pli bona retuma sperto.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Labortablo
+downloads-folder-name = Elŝutoj
+choose-download-folder-title = Elekti dosierujon por elŝutoj:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Konservi dosierojn en { $service-name }

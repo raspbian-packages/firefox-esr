@@ -9,10 +9,9 @@
 #include "nsHttp.h"
 #include "mozilla/net/NeckoChild.h"
 #include "mozilla/dom/ContentChild.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "mozilla/net/HttpChannelChild.h"
 #include "mozilla/net/CookieServiceChild.h"
-#include "mozilla/net/WyciwygChannelChild.h"
 #include "mozilla/net/FTPChannelChild.h"
 #include "mozilla/net/WebSocketChannelChild.h"
 #include "mozilla/net/WebSocketEventListenerChild.h"
@@ -23,8 +22,11 @@
 #include "mozilla/dom/network/TCPServerSocketChild.h"
 #include "mozilla/dom/network/UDPSocketChild.h"
 #include "mozilla/net/AltDataOutputStreamChild.h"
+#include "mozilla/net/ClassifierDummyChannelChild.h"
+#include "mozilla/net/SocketProcessBridgeChild.h"
 #ifdef MOZ_WEBRTC
-#include "mozilla/net/StunAddrsRequestChild.h"
+#  include "mozilla/net/StunAddrsRequestChild.h"
+#  include "mozilla/net/WebrtcProxyChannelChild.h"
 #endif
 
 #include "SerializedLoadContext.h"
@@ -32,6 +34,8 @@
 #include "nsIOService.h"
 #include "nsINetworkPredictor.h"
 #include "nsINetworkPredictorVerifier.h"
+#include "nsINetworkLinkService.h"
+#include "nsQueryObject.h"
 #include "mozilla/ipc/URIUtils.h"
 #include "nsNetUtil.h"
 
@@ -45,7 +49,6 @@ namespace net {
 PNeckoChild* gNeckoChild = nullptr;
 
 // C++ file contents
-NeckoChild::NeckoChild() {}
 
 NeckoChild::~NeckoChild() {
   // Send__delete__(gNeckoChild);
@@ -64,6 +67,7 @@ void NeckoChild::InitNeckoChild() {
     }
     gNeckoChild = cpc->SendPNeckoConstructor();
     NS_ASSERTION(gNeckoChild, "PNecko Protocol init failed!");
+    SocketProcessBridgeChild::GetSocketProcessBridge();
   }
 }
 
@@ -72,7 +76,9 @@ PHttpChannelChild* NeckoChild::AllocPHttpChannelChild(
     const HttpChannelCreationArgs& aOpenArgs) {
   // We don't allocate here: instead we always use IPDL constructor that takes
   // an existing HttpChildChannel
-  NS_NOTREACHED("AllocPHttpChannelChild should not be called on child");
+  MOZ_ASSERT_UNREACHABLE(
+      "AllocPHttpChannelChild should not be called on "
+      "child");
   return nullptr;
 }
 
@@ -87,7 +93,9 @@ bool NeckoChild::DeallocPHttpChannelChild(PHttpChannelChild* channel) {
 PStunAddrsRequestChild* NeckoChild::AllocPStunAddrsRequestChild() {
   // We don't allocate here: instead we always use IPDL constructor that takes
   // an existing object
-  NS_NOTREACHED("AllocPStunAddrsRequestChild should not be called on child");
+  MOZ_ASSERT_UNREACHABLE(
+      "AllocPStunAddrsRequestChild should not be called "
+      "on child");
   return nullptr;
 }
 
@@ -99,10 +107,31 @@ bool NeckoChild::DeallocPStunAddrsRequestChild(PStunAddrsRequestChild* aActor) {
   return true;
 }
 
+PWebrtcProxyChannelChild* NeckoChild::AllocPWebrtcProxyChannelChild(
+    const TabId& tabId) {
+  // We don't allocate here: instead we always use IPDL constructor that takes
+  // an existing object
+  MOZ_ASSERT_UNREACHABLE(
+      "AllocPWebrtcProxyChannelChild should not be called on"
+      " child");
+  return nullptr;
+}
+
+bool NeckoChild::DeallocPWebrtcProxyChannelChild(
+    PWebrtcProxyChannelChild* aActor) {
+#ifdef MOZ_WEBRTC
+  WebrtcProxyChannelChild* child =
+      static_cast<WebrtcProxyChannelChild*>(aActor);
+  child->ReleaseIPDLReference();
+#endif
+  return true;
+}
+
 PAltDataOutputStreamChild* NeckoChild::AllocPAltDataOutputStreamChild(
-    const nsCString& type, PHttpChannelChild* channel) {
+    const nsCString& type, const int64_t& predictedSize,
+    PHttpChannelChild* channel) {
   // We don't allocate here: see HttpChannelChild::OpenAlternativeOutputStream()
-  NS_NOTREACHED("AllocPAltDataOutputStreamChild should not be called");
+  MOZ_ASSERT_UNREACHABLE("AllocPAltDataOutputStreamChild should not be called");
   return nullptr;
 }
 
@@ -132,7 +161,7 @@ bool NeckoChild::DeallocPFTPChannelChild(PFTPChannelChild* channel) {
 
 PCookieServiceChild* NeckoChild::AllocPCookieServiceChild() {
   // We don't allocate here: see nsCookieService::GetSingleton()
-  NS_NOTREACHED("AllocPCookieServiceChild should not be called");
+  MOZ_ASSERT_UNREACHABLE("AllocPCookieServiceChild should not be called");
   return nullptr;
 }
 
@@ -145,25 +174,10 @@ bool NeckoChild::DeallocPCookieServiceChild(PCookieServiceChild* cs) {
   return true;
 }
 
-PWyciwygChannelChild* NeckoChild::AllocPWyciwygChannelChild() {
-  // We don't allocate here: see nsWyciwygProtocolHandler::NewChannel2()
-  NS_NOTREACHED("AllocPWyciwygChannelChild should not be called");
-  return nullptr;
-}
-
-bool NeckoChild::DeallocPWyciwygChannelChild(PWyciwygChannelChild* channel) {
-  MOZ_ASSERT(IsNeckoChild(),
-             "DeallocPWyciwygChannelChild called by non-child!");
-
-  WyciwygChannelChild* p = static_cast<WyciwygChannelChild*>(channel);
-  p->ReleaseIPDLReference();
-  return true;
-}
-
 PWebSocketChild* NeckoChild::AllocPWebSocketChild(
     const PBrowserOrId& browser, const SerializedLoadContext& aSerialized,
     const uint32_t& aSerial) {
-  NS_NOTREACHED("AllocPWebSocketChild should not be called");
+  MOZ_ASSERT_UNREACHABLE("AllocPWebSocketChild should not be called");
   return nullptr;
 }
 
@@ -248,7 +262,7 @@ bool NeckoChild::DeallocPTCPSocketChild(PTCPSocketChild* child) {
 PTCPServerSocketChild* NeckoChild::AllocPTCPServerSocketChild(
     const uint16_t& aLocalPort, const uint16_t& aBacklog,
     const bool& aUseArrayBuffers) {
-  NS_NOTREACHED("AllocPTCPServerSocket should not be called");
+  MOZ_ASSERT_UNREACHABLE("AllocPTCPServerSocket should not be called");
   return nullptr;
 }
 
@@ -258,9 +272,9 @@ bool NeckoChild::DeallocPTCPServerSocketChild(PTCPServerSocketChild* child) {
   return true;
 }
 
-PUDPSocketChild* NeckoChild::AllocPUDPSocketChild(const Principal& aPrincipal,
+PUDPSocketChild* NeckoChild::AllocPUDPSocketChild(nsIPrincipal* aPrincipal,
                                                   const nsCString& aFilter) {
-  NS_NOTREACHED("AllocPUDPSocket should not be called");
+  MOZ_ASSERT_UNREACHABLE("AllocPUDPSocket should not be called");
   return nullptr;
 }
 
@@ -272,10 +286,10 @@ bool NeckoChild::DeallocPUDPSocketChild(PUDPSocketChild* child) {
 
 PDNSRequestChild* NeckoChild::AllocPDNSRequestChild(
     const nsCString& aHost, const OriginAttributes& aOriginAttributes,
-    const uint32_t& aFlags, const nsCString& aNetworkInterface) {
+    const uint32_t& aFlags) {
   // We don't allocate here: instead we always use IPDL constructor that takes
   // an existing object
-  NS_NOTREACHED("AllocPDNSRequestChild should not be called on child");
+  MOZ_ASSERT_UNREACHABLE("AllocPDNSRequestChild should not be called on child");
   return nullptr;
 }
 
@@ -312,12 +326,13 @@ bool NeckoChild::DeallocPTransportProviderChild(
 mozilla::ipc::IPCResult NeckoChild::RecvAsyncAuthPromptForNestedFrame(
     const TabId& aNestedFrameId, const nsCString& aUri, const nsString& aRealm,
     const uint64_t& aCallbackId) {
-  RefPtr<dom::TabChild> tabChild = dom::TabChild::FindTabChild(aNestedFrameId);
-  if (!tabChild) {
+  RefPtr<dom::BrowserChild> browserChild =
+      dom::BrowserChild::FindBrowserChild(aNestedFrameId);
+  if (!browserChild) {
     MOZ_CRASH();
     return IPC_FAIL_NO_REASON(this);
   }
-  tabChild->SendAsyncAuthPrompt(aUri, aRealm, aCallbackId);
+  browserChild->SendAsyncAuthPrompt(aUri, aRealm, aCallbackId);
   return IPC_OK();
 }
 
@@ -383,6 +398,28 @@ mozilla::ipc::IPCResult NeckoChild::RecvSpeculativeConnectRequest() {
                                 nullptr);
   }
   return IPC_OK();
+}
+
+mozilla::ipc::IPCResult NeckoChild::RecvNetworkChangeNotification(
+    nsCString const& type) {
+  nsCOMPtr<nsIObserverService> obsService = services::GetObserverService();
+  if (obsService) {
+    obsService->NotifyObservers(nullptr, NS_NETWORK_LINK_TOPIC,
+                                NS_ConvertUTF8toUTF16(type).get());
+  }
+  return IPC_OK();
+}
+
+PClassifierDummyChannelChild* NeckoChild::AllocPClassifierDummyChannelChild(
+    nsIURI* aURI, nsIURI* aTopWindowURI, const nsresult& aTopWindowURIResult,
+    const Maybe<LoadInfoArgs>& aLoadInfo) {
+  return new ClassifierDummyChannelChild();
+}
+
+bool NeckoChild::DeallocPClassifierDummyChannelChild(
+    PClassifierDummyChannelChild* aActor) {
+  delete static_cast<ClassifierDummyChannelChild*>(aActor);
+  return true;
 }
 
 }  // namespace net

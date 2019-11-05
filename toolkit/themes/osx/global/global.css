@@ -4,23 +4,26 @@
 
 /* all localizable skin settings shall live here */
 @import url("chrome://global/locale/intl.css");
+@import url("chrome://global/content/widgets.css");
 
 %include shared.inc
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
 
-/* ::::: XBL bindings ::::: */
-
-menulist > menupopup {
-  -moz-binding: url("chrome://global/content/bindings/popup.xml#popup-scrollbars");
-}
+%include ../../shared/global.inc.css
 
 /* ::::: Variables ::::: */
 :root {
   --arrowpanel-padding: 16px;
-  --arrowpanel-background: hsla(0,0%,99%,.975);
-  --arrowpanel-color: hsl(0,0%,10%);
-  --arrowpanel-border-color: hsla(210,4%,10%,.05);
+  --default-arrowpanel-background: #fff;
+  --default-arrowpanel-color: hsl(0,0%,10%);
+  --default-arrowpanel-border-color: hsla(210,4%,10%,.05);
+  --arrowpanel-background: var(--default-arrowpanel-background);
+  --arrowpanel-color: var(--default-arrowpanel-color);
+  --arrowpanel-border-color: var(--default-arrowpanel-border-color);
   --arrowpanel-border-radius: 3.5px;
+  --panel-disabled-color: GrayText;
+
   --focus-ring-box-shadow: @focusRingShadow@;
 }
 
@@ -34,14 +37,6 @@ wizard {
   background-color: #FFFFFF;
   color: -moz-DialogText;
   font: message-box;
-}
-
-/* deprecated */
-window.dialog {
-  padding-top: 8px;
-  padding-bottom: 10px;
-  padding-inline-start: 8px;
-  padding-inline-end: 10px;
 }
 
 /* ::::: alert icons :::::*/
@@ -111,19 +106,6 @@ sidebarheader {
   text-shadow: 1px 1px 1.5px black;
 }
 
-.inset {
-  border: 1px solid ThreeDShadow;
-  border-right-color: ThreeDHighlight;
-  border-bottom-color: ThreeDHighlight;
-  margin: 0 5px 5px;
-}
-
-.outset {
-  border: 1px solid ThreeDShadow;
-  border-left-color: ThreeDHighlight;
-  border-top-color: ThreeDHighlight;
-}
-
 separator:not([orient="vertical"]) {
   height: 1.5em;
 }
@@ -151,13 +133,6 @@ separator.groove[orient="vertical"] {
   margin-right: 0.4em;
 }
 
-.plain {
-  -moz-appearance: none;
-  margin: 0 !important;
-  border: none;
-  padding: 0;
-}
-
 description,
 label {
   cursor: default;
@@ -183,20 +158,12 @@ label[disabled="true"] {
   font-weight: bold;
 }
 
-.monospace {
-  font-family: monospace;
-}
-
 .indent {
   margin-inline-start: 23px;
 }
 
 .box-padded {
   padding: 5px;
-}
-
-.spaced {
-  margin: 3px 5px 4px;
 }
 
 .text-link {
@@ -212,39 +179,35 @@ label[disabled="true"] {
   box-shadow: var(--focus-ring-box-shadow);
 }
 
-.toolbar-focustarget {
-  -moz-user-focus: ignore !important;
-}
-
-notification > button {
+notification > hbox > button {
   margin: 0 3px;
   padding: 1px 10px;
   min-width: 60px;
   min-height: 16px;
   -moz-appearance: none;
   border-radius: 10000px;
-  border: @roundButtonBorder@;
+  border: @roundButtonBorderWidth@ @roundButtonBorderStyle@ @roundButtonBorderColor@;
   text-shadow: @loweredShadow@;
   color: @roundButtonColor@;
-  background: @roundButtonBackground@;
+  background: @roundButtonBackgroundImage@;
   box-shadow: @roundButtonShadow@;
 }
 
-notification > button:active:hover {
+notification > hbox > button:active:hover {
   color: @roundButtonColor@;
-  background: @roundButtonPressedBackground@;
+  background: @roundButtonPressedBackgroundImage@;
   box-shadow: @roundButtonPressedShadow@;
 }
 
-notification > button:-moz-focusring {
+notification > hbox > button:-moz-focusring {
   box-shadow: var(--focus-ring-box-shadow), @roundButtonShadow@;
 }
 
-notification > button:active:hover:-moz-focusring {
+notification > hbox > button:active:hover:-moz-focusring {
   box-shadow: var(--focus-ring-box-shadow), @roundButtonPressedShadow@;
 }
 
-notification > button > .button-box > .button-text {
+notification > hbox > button > .button-box > .button-text {
   margin: 0 !important;
 }
 
@@ -254,31 +217,10 @@ popupnotificationcontent {
 
 %include ../../shared/notification-popup.inc.css
 
-/* :::::: autoscroll popup ::::: */
-
-.autoscroller {
-  border: none;
-  padding: 0;
-  background-image: url("chrome://global/skin/icons/autoscroll.svg");
-  background-size: contain;
-  background-color: transparent;
-  background-position: right top;
-  background-repeat: no-repeat;
-  -moz-appearance: none;
-  -moz-window-shadow: none;
-}
-
-.autoscroller[scrolldir="NS"] {
-  background-image: url("chrome://global/skin/icons/autoscroll-vertical.svg");
-}
-
-.autoscroller[scrolldir="EW"] {
-  background-image: url("chrome://global/skin/icons/autoscroll-horizontal.svg");
-}
-
 /* autorepeatbuttons in menus */
 
-.popup-internal-box > autorepeatbutton {
+.popup-internal-box > .scrollbutton-up,
+.popup-internal-box > .scrollbutton-down {
   height: 15px;
   position: relative;
   list-style-image: none;
@@ -294,28 +236,25 @@ popupnotificationcontent {
   -moz-appearance: menuitem;
 }
 
-.popup-internal-box > .autorepeatbutton-up {
+.popup-internal-box > .scrollbutton-up {
   padding-top: 1px; /* 4px padding-top from the .popup-internal-box. */
   margin-bottom: -15px;
 }
 
-.popup-internal-box > .autorepeatbutton-up > .autorepeatbutton-icon {
+.popup-internal-box > .scrollbutton-up > .toolbarbutton-icon {
   -moz-appearance: button-arrow-up;
 }
 
-.popup-internal-box > .autorepeatbutton-down {
+.popup-internal-box > .scrollbutton-down {
   padding-top: 5px;
   margin-top: -15px;
 }
 
-.popup-internal-box > .autorepeatbutton-down > .autorepeatbutton-icon {
+.popup-internal-box > .scrollbutton-down > .toolbarbutton-icon {
   -moz-appearance: button-arrow-down;
 }
 
-.popup-internal-box > autorepeatbutton[disabled="true"] {
+.popup-internal-box > .scrollbutton-up[disabled="true"],
+.popup-internal-box > .scrollbutton-down[disabled="true"] {
   visibility: collapse;
 }
-
-/* :::::: Close button icons ::::: */
-
-%include ../../shared/close-icon.inc.css

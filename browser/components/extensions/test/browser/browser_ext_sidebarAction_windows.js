@@ -4,8 +4,8 @@
 
 let extData = {
   manifest: {
-    "sidebar_action": {
-      "default_panel": "sidebar.html",
+    sidebar_action: {
+      default_panel: "sidebar.html",
     },
   },
   useAddonManager: "temporary",
@@ -35,7 +35,10 @@ add_task(async function sidebar_windows() {
   await extension.startup();
   // Test sidebar is opened on install
   await extension.awaitMessage("sidebar");
-  ok(!document.getElementById("sidebar-box").hidden, "sidebar box is visible in first window");
+  ok(
+    !document.getElementById("sidebar-box").hidden,
+    "sidebar box is visible in first window"
+  );
   // Check that the menuitem has our image styling.
   let elements = document.getElementsByClassName("webextension-menuitem");
   // ui is in flux, at time of writing we potentially have 3 menuitems, later
@@ -48,10 +51,13 @@ add_task(async function sidebar_windows() {
 
   // SidebarUI relies on window.opener being set, which is normal behavior when
   // using menu or key commands to open a new browser window.
-  let win = await BrowserTestUtils.openNewBrowserWindow({opener: window});
+  let win = await BrowserTestUtils.openNewBrowserWindow();
 
   await secondSidebar;
-  ok(!win.document.getElementById("sidebar-box").hidden, "sidebar box is visible in second window");
+  ok(
+    !win.document.getElementById("sidebar-box").hidden,
+    "sidebar box is visible in second window"
+  );
   // Check that the menuitem has our image styling.
   elements = win.document.getElementsByClassName("webextension-menuitem");
   ok(elements.length > 0, "have a menuitem");
@@ -60,10 +66,4 @@ add_task(async function sidebar_windows() {
 
   await extension.unload();
   await BrowserTestUtils.closeWindow(win);
-
-  // Move toolbar button back to customization.
-  CustomizableUI.removeWidgetFromArea("sidebar-button", CustomizableUI.AREA_NAVBAR);
-  ok(!document.getElementById("sidebar-button"), "sidebar button is not in UI");
-  // This is set on initial sidebar install.
-  Services.prefs.clearUserPref("extensions.sidebar-button.shown");
 });

@@ -440,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Открыть">
 <!ENTITY openMessageWindowCmd.accesskey "О">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Открыть в разговоре">
-<!ENTITY openConversationCmd.accesskey "т">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Открыть в разговоре">
+<!ENTITY openInConversationCmd.accesskey "г">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Вложения">
 <!ENTITY openAttachmentListCmd.accesskey "ж">
 <!ENTITY openFeedMessage1.label "При открытии сообщений из ленты новостей">
@@ -605,6 +605,8 @@
 <!ENTITY tagButton.tooltip "Присвоить сообщению метку">
 <!ENTITY compactButton.tooltip "Убрать удалённые сообщения из выбранной папки">
 <!ENTITY appmenuButton1.tooltip "Открыть меню &brandShortName;">
+
+<!ENTITY addonsButton.tooltip "Управление вашими дополнениями">
 
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Переслать внутри сообщения">
@@ -792,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "е">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Недавно открытые">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "Н">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Избранное">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "о">
 <!ENTITY contextCopyMsgMenu.label "Копировать в папку">
 <!ENTITY contextCopyMsgMenu.accesskey "К">
 <!ENTITY contextKillThreadMenu.label "Пропустить обсуждение">
@@ -811,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Предварительный просмотр">
 <!ENTITY contextPrintPreview.accesskey "р">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Набор колонок по умолчанию">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -857,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "Этой папке">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Воспроизвести">
 <!ENTITY contextPlay.accesskey "с">
@@ -875,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

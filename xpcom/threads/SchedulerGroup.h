@@ -15,7 +15,6 @@
 #include "mozilla/ThreadLocal.h"
 #include "mozilla/TimeStamp.h"
 #include "nsCOMPtr.h"
-#include "nsILabelableRunnable.h"
 #include "nsISupportsImpl.h"
 #include "nsThreadUtils.h"
 
@@ -97,19 +96,17 @@ class SchedulerGroup : public LinkedListElement<SchedulerGroup> {
     return mEventCount == 0 ? NoLongerQueued : StillQueued;
   }
 
-  class Runnable final : public mozilla::Runnable,
-                         public nsIRunnablePriority,
-                         public nsILabelableRunnable {
+  class Runnable final : public mozilla::Runnable, public nsIRunnablePriority {
    public:
     Runnable(already_AddRefed<nsIRunnable>&& aRunnable, SchedulerGroup* aGroup,
              dom::DocGroup* aDocGroup);
 
-    bool GetAffectedSchedulerGroups(SchedulerGroupSet& aGroups) override;
-
     SchedulerGroup* Group() const { return mGroup; }
     dom::DocGroup* DocGroup() const;
 
+#ifdef MOZ_COLLECTING_RUNNABLE_TELEMETRY
     NS_IMETHOD GetName(nsACString& aName) override;
+#endif
 
     bool IsBackground() const { return mGroup->IsBackground(); }
 
@@ -171,7 +168,7 @@ class SchedulerGroup : public LinkedListElement<SchedulerGroup> {
 
   using RunnableEpochQueue = Queue<EpochQueueEntry, 32>;
 
-  RunnableEpochQueue& GetQueue(mozilla::EventPriority aPriority) {
+  RunnableEpochQueue& GetQueue(mozilla::EventQueuePriority aPriority) {
     return mEventQueues[size_t(aPriority)];
   }
 
@@ -216,7 +213,7 @@ class SchedulerGroup : public LinkedListElement<SchedulerGroup> {
 
   nsCOMPtr<nsISerialEventTarget> mEventTargets[size_t(TaskCategory::Count)];
   RefPtr<AbstractThread> mAbstractThreads[size_t(TaskCategory::Count)];
-  RunnableEpochQueue mEventQueues[size_t(mozilla::EventPriority::Count)];
+  RunnableEpochQueue mEventQueues[size_t(mozilla::EventQueuePriority::Count)];
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(SchedulerGroup::Runnable,

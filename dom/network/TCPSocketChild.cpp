@@ -10,12 +10,14 @@
 #include "mozilla/UniquePtr.h"
 #include "mozilla/net/NeckoChild.h"
 #include "mozilla/dom/PBrowserChild.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 #include "nsITCPSocketCallback.h"
 #include "TCPSocket.h"
 #include "nsContentUtils.h"
-#include "jsapi.h"
-#include "jsfriendapi.h"
+#include "js/ArrayBuffer.h"  // JS::NewArrayBufferWithContents
+#include "js/RootingAPI.h"   // JS::MutableHandle
+#include "js/Utility.h"  // js::ArrayBufferContentsArena, JS::FreePolicy, js_pod_arena_malloc
+#include "js/Value.h"  // JS::Value
 
 using mozilla::net::gNeckoChild;
 
@@ -25,14 +27,15 @@ bool DeserializeArrayBuffer(JSContext* cx,
                             const InfallibleTArray<uint8_t>& aBuffer,
                             JS::MutableHandle<JS::Value> aVal) {
   mozilla::UniquePtr<uint8_t[], JS::FreePolicy> data(
-      js_pod_malloc<uint8_t>(aBuffer.Length()));
+      js_pod_arena_malloc<uint8_t>(js::ArrayBufferContentsArena,
+                                   aBuffer.Length()));
   if (!data) return false;
   memcpy(data.get(), aBuffer.Elements(), aBuffer.Length());
 
   JSObject* obj =
-      JS_NewArrayBufferWithContents(cx, aBuffer.Length(), data.get());
+      JS::NewArrayBufferWithContents(cx, aBuffer.Length(), data.get());
   if (!obj) return false;
-  // If JS_NewArrayBufferWithContents returns non-null, the ownership of
+  // If JS::NewArrayBufferWithContents returns non-null, the ownership of
   // the data is transfered to obj, so we release the ownership here.
   mozilla::Unused << data.release();
 

@@ -15,16 +15,21 @@ function test() {
 
   Services.prefs.setBoolPref(DEVTOOLS_CHROME_ENABLED, false);
   gBrowser.selectedTab = BrowserTestUtils.addTab(gBrowser);
-  BrowserTestUtils.browserLoaded(gBrowser.selectedBrowser).then(function () {
+  BrowserTestUtils.browserLoaded(gBrowser.selectedBrowser).then(function() {
     openScratchpad(runTests);
   });
 
-  gBrowser.loadURI("data:text/html,<p>test file open and save in Scratchpad");
+  BrowserTestUtils.loadURI(
+    gBrowser,
+    "data:text/html,<p>test file open and save in Scratchpad"
+  );
 }
 
 function runTests() {
   gScratchpad = gScratchpadWindow.Scratchpad;
-  function size(obj) { return Object.keys(obj).length; }
+  function size(obj) {
+    return Object.keys(obj).length;
+  }
 
   // Test Scratchpad._scanModeLine method.
   let obj = gScratchpad._scanModeLine();
@@ -48,15 +53,19 @@ function runTests() {
   obj = gScratchpad._scanModeLine("/* -sp-context:browser, other:true */");
   is(size(obj), 2, "Mode-line object has two properties");
   is(obj["-sp-context"], "browser");
-  is(obj["other"], "true");
+  is(obj.other, "true");
 
   // Test importing files with a mode-line in them.
-  let content = "/* -sp-context:browser */\n" + gFileContent;
-  createTempFile("fileForBug644413.tmp", content, function (aStatus, aFile) {
+  const content = "/* -sp-context:browser */\n" + gFileContent;
+  createTempFile("fileForBug644413.tmp", content, function(aStatus, aFile) {
     ok(Components.isSuccessCode(aStatus), "File was saved successfully");
 
     gFile = aFile;
-    gScratchpad.importFromFile(gFile.QueryInterface(Ci.nsIFile), true, fileImported);
+    gScratchpad.importFromFile(
+      gFile.QueryInterface(Ci.nsIFile),
+      true,
+      fileImported
+    );
   });
 }
 
@@ -65,14 +74,23 @@ function fileImported(status, content) {
 
   // Since devtools.chrome.enabled is off, Scratchpad should still be in
   // the content context.
-  is(gScratchpad.executionContext, gScratchpadWindow.SCRATCHPAD_CONTEXT_CONTENT);
+  is(
+    gScratchpad.executionContext,
+    gScratchpadWindow.SCRATCHPAD_CONTEXT_CONTENT
+  );
 
   // Set the pref and try again.
   Services.prefs.setBoolPref(DEVTOOLS_CHROME_ENABLED, true);
 
-  gScratchpad.importFromFile(gFile.QueryInterface(Ci.nsIFile), true, function (status, content) {
+  gScratchpad.importFromFile(gFile.QueryInterface(Ci.nsIFile), true, function(
+    status,
+    content
+  ) {
     ok(Components.isSuccessCode(status), "File was imported successfully");
-    is(gScratchpad.executionContext, gScratchpadWindow.SCRATCHPAD_CONTEXT_BROWSER);
+    is(
+      gScratchpad.executionContext,
+      gScratchpadWindow.SCRATCHPAD_CONTEXT_BROWSER
+    );
 
     gFile.remove(false);
     gFile = null;
@@ -81,6 +99,6 @@ function fileImported(status, content) {
   });
 }
 
-registerCleanupFunction(function () {
+registerCleanupFunction(function() {
   Services.prefs.clearUserPref(DEVTOOLS_CHROME_ENABLED);
 });

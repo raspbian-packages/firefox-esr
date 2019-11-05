@@ -45,6 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "logging.h"
 #include "nsError.h"
+#include "nsThreadUtils.h"
 
 // nICEr includes
 extern "C" {
@@ -71,7 +72,7 @@ namespace mozilla {
 
 MOZ_MTLOG_MODULE("mtransport")
 
-static bool ToNrIceAddr(nr_transport_addr &addr, NrIceAddr *out) {
+static bool ToNrIceAddr(nr_transport_addr& addr, NrIceAddr* out) {
   int r;
   char addrstring[INET6_ADDRSTRLEN + 1];
 
@@ -104,12 +105,12 @@ static bool ToNrIceAddr(nr_transport_addr &addr, NrIceAddr *out) {
   return true;
 }
 
-static bool ToNrIceCandidate(const nr_ice_candidate &candc,
-                             NrIceCandidate *out) {
+static bool ToNrIceCandidate(const nr_ice_candidate& candc,
+                             NrIceCandidate* out) {
   MOZ_ASSERT(out);
   int r;
   // Const-cast because the internal nICEr code isn't const-correct.
-  nr_ice_candidate *cand = const_cast<nr_ice_candidate *>(&candc);
+  nr_ice_candidate* cand = const_cast<nr_ice_candidate*>(&candc);
 
   if (!ToNrIceAddr(cand->addr, &out->cand_addr)) return false;
 
@@ -161,6 +162,7 @@ static bool ToNrIceCandidate(const nr_ice_candidate &candc,
   out->codeword = candc.codeword;
   out->label = candc.label;
   out->trickled = candc.trickled;
+  out->priority = candc.priority;
   return true;
 }
 
@@ -168,7 +170,7 @@ static bool ToNrIceCandidate(const nr_ice_candidate &candc,
 // This is not a member fxn because we want to hide the
 // defn of nr_ice_candidate but we pass by reference.
 static UniquePtr<NrIceCandidate> MakeNrIceCandidate(
-    const nr_ice_candidate &candc) {
+    const nr_ice_candidate& candc) {
   UniquePtr<NrIceCandidate> out(new NrIceCandidate());
 
   if (!ToNrIceCandidate(candc, out.get())) {
@@ -177,82 +179,124 @@ static UniquePtr<NrIceCandidate> MakeNrIceCandidate(
   return out;
 }
 
-// NrIceMediaStream
-RefPtr<NrIceMediaStream> NrIceMediaStream::Create(NrIceCtx *ctx,
-                                                  const std::string &name,
-                                                  int components) {
-  RefPtr<NrIceMediaStream> stream = new NrIceMediaStream(ctx, name, components);
-  MOZ_ASSERT(stream->ctx_ == ctx->ctx());
-
-  int r = nr_ice_add_media_stream(ctx->ctx(), const_cast<char *>(name.c_str()),
-                                  components, &stream->stream_);
-  if (r) {
-    MOZ_MTLOG(ML_ERROR,
-              "Couldn't create ICE media stream for '" << name << "'");
-    return nullptr;
-  }
-
-  return stream;
+static bool Matches(const nr_ice_media_stream* stream, const std::string& ufrag,
+                    const std::string& pwd) {
+  return stream && (stream->ufrag == ufrag) && (stream->pwd == pwd);
 }
 
-NrIceMediaStream::NrIceMediaStream(NrIceCtx *ctx, const std::string &name,
-                                   size_t components)
+NrIceMediaStream::NrIceMediaStream(NrIceCtx* ctx, const std::string& id,
+                                   const std::string& name, size_t components)
     : state_(ICE_CONNECTING),
       ctx_(ctx->ctx()),
       ctx_peer_(ctx->peer()),
       name_(name),
       components_(components),
       stream_(nullptr),
-      level_(0),
-      has_parsed_attrs_(false) {}
+      old_stream_(nullptr),
+      id_(id) {}
 
 NrIceMediaStream::~NrIceMediaStream() {
   // We do not need to destroy anything. All major resources
   // are attached to the ice ctx.
 }
 
-nsresult NrIceMediaStream::ParseAttributes(
-    std::vector<std::string> &attributes) {
-  if (!stream_) return NS_ERROR_FAILURE;
+nsresult NrIceMediaStream::ConnectToPeer(
+    const std::string& ufrag, const std::string& pwd,
+    const std::vector<std::string>& attributes) {
+  MOZ_ASSERT(stream_);
 
-  std::vector<char *> attributes_in;
-
-  for (auto &attribute : attributes) {
-    attributes_in.push_back(const_cast<char *>(attribute.c_str()));
+  if (Matches(old_stream_, ufrag, pwd)) {
+    // Roll back to old stream, since we apparently aren't using the new one
+    // (We swap before we close so we never have stream_ == nullptr)
+    std::swap(stream_, old_stream_);
+    CloseStream(&old_stream_);
+  } else if (old_stream_) {
+    // Right now we wait for ICE to complete before closing the old stream.
+    // It might be worth it to close it sooner, but we don't want to close it
+    // right away.
+    nr_ice_media_stream_set_obsolete(old_stream_);
   }
 
-  // Still need to call nr_ice_ctx_parse_stream_attributes.
-  int r = nr_ice_peer_ctx_parse_stream_attributes(
-      ctx_peer_, stream_, attributes_in.empty() ? nullptr : &attributes_in[0],
-      attributes_in.size());
+  nr_ice_media_stream* peer_stream;
+  if (nr_ice_peer_ctx_find_pstream(ctx_peer_, stream_, &peer_stream)) {
+    // No peer yet
+    std::vector<char*> attributes_in;
+    attributes_in.reserve(attributes.size());
+    for (auto& attribute : attributes) {
+      MOZ_MTLOG(ML_DEBUG, "Setting " << attribute << " on stream " << name_);
+      attributes_in.push_back(const_cast<char*>(attribute.c_str()));
+    }
+
+    // Still need to call nr_ice_ctx_parse_stream_attributes.
+    int r = nr_ice_peer_ctx_parse_stream_attributes(
+        ctx_peer_, stream_, attributes_in.empty() ? nullptr : &attributes_in[0],
+        attributes_in.size());
+    if (r) {
+      MOZ_MTLOG(ML_ERROR,
+                "Couldn't parse attributes for stream " << name_ << "'");
+      return NS_ERROR_FAILURE;
+    }
+  }
+
+  return NS_OK;
+}
+
+nsresult NrIceMediaStream::SetIceCredentials(const std::string& ufrag,
+                                             const std::string& pwd) {
+  if (Matches(stream_, ufrag, pwd)) {
+    return NS_OK;
+  }
+
+  MOZ_MTLOG(ML_DEBUG, "Setting ICE credentials for " << name_ << " - " << ufrag
+                                                     << ":" << pwd);
+  CloseStream(&old_stream_);
+  old_stream_ = stream_;
+
+  std::string name(name_ + " - " + ufrag + ":" + pwd);
+
+  int r = nr_ice_add_media_stream(ctx_, name.c_str(), ufrag.c_str(),
+                                  pwd.c_str(), components_, &stream_);
   if (r) {
-    MOZ_MTLOG(ML_ERROR,
-              "Couldn't parse attributes for stream " << name_ << "'");
+    MOZ_MTLOG(ML_ERROR, "Couldn't create ICE media stream for '"
+                            << name_ << "': error=" << r);
+    stream_ = old_stream_;
+    old_stream_ = nullptr;
     return NS_ERROR_FAILURE;
   }
 
-  has_parsed_attrs_ = true;
+  state_ = ICE_CONNECTING;
   return NS_OK;
 }
 
 // Parse trickle ICE candidate
-nsresult NrIceMediaStream::ParseTrickleCandidate(const std::string &candidate) {
-  int r;
+nsresult NrIceMediaStream::ParseTrickleCandidate(const std::string& candidate,
+                                                 const std::string& ufrag) {
+  nr_ice_media_stream* stream = GetStreamForRemoteUfrag(ufrag);
+  if (!stream) {
+    return NS_ERROR_FAILURE;
+  }
 
   MOZ_MTLOG(ML_DEBUG, "NrIceCtx(" << ctx_->label << ")/STREAM(" << name()
                                   << ") : parsing trickle candidate "
                                   << candidate);
 
-  r = nr_ice_peer_ctx_parse_trickle_candidate(
-      ctx_peer_, stream_, const_cast<char *>(candidate.c_str()));
+  int r = nr_ice_peer_ctx_parse_trickle_candidate(
+      ctx_peer_, stream, const_cast<char*>(candidate.c_str()));
+
   if (r) {
     if (r == R_ALREADY) {
-      MOZ_MTLOG(ML_ERROR, "Trickle candidates are redundant for stream '"
-                              << name_ << "' because it is completed");
-
+      MOZ_MTLOG(ML_INFO, "Trickle candidate is redundant for stream '"
+                             << name_
+                             << "' because it is completed: " << candidate);
+    } else if (r == R_REJECTED) {
+      MOZ_MTLOG(ML_INFO,
+                "Trickle candidate is ignored for stream '"
+                    << name_
+                    << "', probably because it is for an unused component"
+                    << ": " << candidate);
     } else {
       MOZ_MTLOG(ML_ERROR, "Couldn't parse trickle candidate for stream '"
-                              << name_ << "'");
+                              << name_ << "': " << candidate);
       return NS_ERROR_FAILURE;
     }
   }
@@ -262,11 +306,11 @@ nsresult NrIceMediaStream::ParseTrickleCandidate(const std::string &candidate) {
 
 // Returns NS_ERROR_NOT_AVAILABLE if component is unpaired or disabled.
 nsresult NrIceMediaStream::GetActivePair(int component,
-                                         UniquePtr<NrIceCandidate> *localp,
-                                         UniquePtr<NrIceCandidate> *remotep) {
+                                         UniquePtr<NrIceCandidate>* localp,
+                                         UniquePtr<NrIceCandidate>* remotep) {
   int r;
-  nr_ice_candidate *local_int;
-  nr_ice_candidate *remote_int;
+  nr_ice_candidate* local_int;
+  nr_ice_candidate* remote_int;
 
   if (!stream_) {
     return NS_ERROR_NOT_AVAILABLE;
@@ -285,14 +329,14 @@ nsresult NrIceMediaStream::GetActivePair(int component,
   UniquePtr<NrIceCandidate> remote(MakeNrIceCandidate(*remote_int));
   if (!remote) return NS_ERROR_FAILURE;
 
-  if (localp) *localp = Move(local);
-  if (remotep) *remotep = Move(remote);
+  if (localp) *localp = std::move(local);
+  if (remotep) *remotep = std::move(remote);
 
   return NS_OK;
 }
 
 nsresult NrIceMediaStream::GetCandidatePairs(
-    std::vector<NrIceCandidatePair> *out_pairs) const {
+    std::vector<NrIceCandidatePair>* out_pairs) const {
   MOZ_ASSERT(out_pairs);
   if (!stream_) {
     return NS_ERROR_NOT_AVAILABLE;
@@ -305,7 +349,7 @@ nsresult NrIceMediaStream::GetCandidatePairs(
 
   // Get the check_list on the peer stream (this is where the check_list
   // actually lives, not in stream_)
-  nr_ice_media_stream *peer_stream;
+  nr_ice_media_stream* peer_stream;
   int r = nr_ice_peer_ctx_find_pstream(ctx_peer_, stream_, &peer_stream);
   if (r != 0) {
     return NS_ERROR_FAILURE;
@@ -406,13 +450,22 @@ nsresult NrIceMediaStream::GetCandidatePairs(
 }
 
 nsresult NrIceMediaStream::GetDefaultCandidate(
-    int component, NrIceCandidate *candidate) const {
-  nr_ice_candidate *cand;
+    int component, NrIceCandidate* candidate) const {
+  if (!stream_) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+
+  nr_ice_candidate* cand;
 
   int r = nr_ice_media_stream_get_default_candidate(stream_, component, &cand);
   if (r) {
-    MOZ_MTLOG(ML_ERROR,
-              "Couldn't get default ICE candidate for '" << name_ << "'");
+    if (r == R_NOT_FOUND) {
+      MOZ_MTLOG(ML_INFO, "Couldn't get default ICE candidate for '"
+                             << name_ << "', no candidates.");
+    } else {
+      MOZ_MTLOG(ML_ERROR, "Couldn't get default ICE candidate for '"
+                              << name_ << "', " << r);
+    }
     return NS_ERROR_FAILURE;
   }
 
@@ -425,8 +478,8 @@ nsresult NrIceMediaStream::GetDefaultCandidate(
   return NS_OK;
 }
 
-std::vector<std::string> NrIceMediaStream::GetCandidates() const {
-  char **attrs = nullptr;
+std::vector<std::string> NrIceMediaStream::GetAttributes() const {
+  char** attrs = nullptr;
   int attrct;
   int r;
   std::vector<std::string> ret;
@@ -452,12 +505,12 @@ std::vector<std::string> NrIceMediaStream::GetCandidates() const {
 }
 
 static nsresult GetCandidatesFromStream(
-    nr_ice_media_stream *stream, std::vector<NrIceCandidate> *candidates) {
+    nr_ice_media_stream* stream, std::vector<NrIceCandidate>* candidates) {
   MOZ_ASSERT(candidates);
-  nr_ice_component *comp = STAILQ_FIRST(&stream->components);
+  nr_ice_component* comp = STAILQ_FIRST(&stream->components);
   while (comp) {
     if (comp->state != NR_ICE_COMPONENT_DISABLED) {
-      nr_ice_candidate *cand = TAILQ_FIRST(&comp->candidates);
+      nr_ice_candidate* cand = TAILQ_FIRST(&comp->candidates);
       while (cand) {
         NrIceCandidate new_cand;
         // This can fail if the candidate is server reflexive or relayed, and
@@ -477,7 +530,7 @@ static nsresult GetCandidatesFromStream(
 }
 
 nsresult NrIceMediaStream::GetLocalCandidates(
-    std::vector<NrIceCandidate> *candidates) const {
+    std::vector<NrIceCandidate>* candidates) const {
   if (!stream_) {
     return NS_ERROR_NOT_AVAILABLE;
   }
@@ -486,7 +539,7 @@ nsresult NrIceMediaStream::GetLocalCandidates(
 }
 
 nsresult NrIceMediaStream::GetRemoteCandidates(
-    std::vector<NrIceCandidate> *candidates) const {
+    std::vector<NrIceCandidate>* candidates) const {
   if (!stream_) {
     return NS_ERROR_NOT_AVAILABLE;
   }
@@ -496,7 +549,7 @@ nsresult NrIceMediaStream::GetRemoteCandidates(
     return NS_OK;
   }
 
-  nr_ice_media_stream *peer_stream;
+  nr_ice_media_stream* peer_stream;
   int r = nr_ice_peer_ctx_find_pstream(ctx_peer_, stream_, &peer_stream);
   if (r != 0) {
     return NS_ERROR_FAILURE;
@@ -517,11 +570,11 @@ nsresult NrIceMediaStream::DisableComponent(int component_id) {
   return NS_OK;
 }
 
-nsresult NrIceMediaStream::GetConsentStatus(int component_id, bool *can_send,
-                                            struct timeval *ts) {
+nsresult NrIceMediaStream::GetConsentStatus(int component_id, bool* can_send,
+                                            struct timeval* ts) {
   if (!stream_) return NS_ERROR_FAILURE;
 
-  nr_ice_media_stream *peer_stream;
+  nr_ice_media_stream* peer_stream;
   int r = nr_ice_peer_ctx_find_pstream(ctx_peer_, stream_, &peer_stream);
   if (r) {
     MOZ_MTLOG(ML_ERROR, "Failed to find peer stream for '"
@@ -542,12 +595,19 @@ nsresult NrIceMediaStream::GetConsentStatus(int component_id, bool *can_send,
   return NS_OK;
 }
 
-nsresult NrIceMediaStream::SendPacket(int component_id,
-                                      const unsigned char *data, size_t len) {
-  if (!stream_) return NS_ERROR_FAILURE;
+bool NrIceMediaStream::HasStream(nr_ice_media_stream* stream) const {
+  return (stream == stream_) || (stream == old_stream_);
+}
 
-  int r = nr_ice_media_stream_send(ctx_peer_, stream_, component_id,
-                                   const_cast<unsigned char *>(data), len);
+nsresult NrIceMediaStream::SendPacket(int component_id,
+                                      const unsigned char* data, size_t len) {
+  nr_ice_media_stream* stream = old_stream_ ? old_stream_ : stream_;
+  if (!stream) {
+    return NS_ERROR_FAILURE;
+  }
+
+  int r = nr_ice_media_stream_send(ctx_peer_, stream, component_id,
+                                   const_cast<unsigned char*>(data), len);
   if (r) {
     MOZ_MTLOG(ML_ERROR, "Couldn't send media on '" << name_ << "'");
     if (r == R_WOULDBLOCK) {
@@ -566,6 +626,9 @@ void NrIceMediaStream::Ready() {
   if (state_ != ICE_OPEN) {
     MOZ_MTLOG(ML_DEBUG, "Marking stream ready '" << name_ << "'");
     state_ = ICE_OPEN;
+    NS_DispatchToCurrentThread(NewRunnableMethod<nr_ice_media_stream*>(
+        "NrIceMediaStream::DeferredCloseOldStream", this,
+        &NrIceMediaStream::DeferredCloseOldStream, old_stream_));
     SignalReady(this);
   } else {
     MOZ_MTLOG(ML_DEBUG,
@@ -573,17 +636,63 @@ void NrIceMediaStream::Ready() {
   }
 }
 
+void NrIceMediaStream::Failed() {
+  if (state_ != ICE_CLOSED) {
+    MOZ_MTLOG(ML_DEBUG, "Marking stream failed '" << name_ << "'");
+    state_ = ICE_CLOSED;
+    // We don't need the old stream anymore.
+    NS_DispatchToCurrentThread(NewRunnableMethod<nr_ice_media_stream*>(
+        "NrIceMediaStream::DeferredCloseOldStream", this,
+        &NrIceMediaStream::DeferredCloseOldStream, old_stream_));
+    SignalFailed(this);
+  }
+}
+
 void NrIceMediaStream::Close() {
   MOZ_MTLOG(ML_DEBUG, "Marking stream closed '" << name_ << "'");
   state_ = ICE_CLOSED;
 
-  if (stream_) {
-    int r = nr_ice_remove_media_stream(ctx_, &stream_);
+  CloseStream(&old_stream_);
+  CloseStream(&stream_);
+}
+
+void NrIceMediaStream::CloseStream(nr_ice_media_stream** stream) {
+  if (*stream) {
+    int r = nr_ice_remove_media_stream(ctx_, stream);
     if (r) {
       MOZ_ASSERT(false, "Failed to remove stream");
       MOZ_MTLOG(ML_ERROR, "Failed to remove stream, error=" << r);
     }
+    *stream = nullptr;
   }
+}
+
+void NrIceMediaStream::DeferredCloseOldStream(const nr_ice_media_stream* old) {
+  if (old == old_stream_) {
+    CloseStream(&old_stream_);
+  }
+}
+
+nr_ice_media_stream* NrIceMediaStream::GetStreamForRemoteUfrag(
+    const std::string& aUfrag) {
+  if (aUfrag.empty()) {
+    return stream_;
+  }
+
+  nr_ice_media_stream* peer_stream = nullptr;
+
+  if (!nr_ice_peer_ctx_find_pstream(ctx_peer_, stream_, &peer_stream) &&
+      aUfrag == peer_stream->ufrag) {
+    return stream_;
+  }
+
+  if (old_stream_ &&
+      !nr_ice_peer_ctx_find_pstream(ctx_peer_, old_stream_, &peer_stream) &&
+      aUfrag == peer_stream->ufrag) {
+    return old_stream_;
+  }
+
+  return nullptr;
 }
 
 }  // namespace mozilla

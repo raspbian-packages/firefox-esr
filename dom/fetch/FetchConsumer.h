@@ -19,15 +19,14 @@ namespace mozilla {
 namespace dom {
 
 class Promise;
-class WorkerHolder;
-class WorkerPrivate;
+class ThreadSafeWorkerRef;
 
 template <class Derived>
 class FetchBody;
 
-// FetchBody is not thread-safe but we need to move it around threads.
-// In order to keep it alive all the time, we use a WorkerHolder, if created on
-// workers, plus a this consumer.
+// FetchBody is not thread-safe but we need to move it around threads.  In order
+// to keep it alive all the time, we use a ThreadSafeWorkerRef, if created on
+// workers.
 template <class Derived>
 class FetchBodyConsumer final : public nsIObserver,
                                 public nsSupportsWeakReference,
@@ -38,21 +37,24 @@ class FetchBodyConsumer final : public nsIObserver,
 
   static already_AddRefed<Promise> Create(
       nsIGlobalObject* aGlobal, nsIEventTarget* aMainThreadEventTarget,
-      FetchBody<Derived>* aBody, AbortSignal* aSignal, FetchConsumeType aType,
-      ErrorResult& aRv);
+      FetchBody<Derived>* aBody, nsIInputStream* aBodyStream,
+      AbortSignalImpl* aSignalImpl, FetchConsumeType aType, ErrorResult& aRv);
 
   void ReleaseObject();
 
-  void BeginConsumeBodyMainThread();
+  void BeginConsumeBodyMainThread(ThreadSafeWorkerRef* aWorkerRef);
+
+  void OnBlobResult(Blob* aBlob, ThreadSafeWorkerRef* aWorkerRef = nullptr);
 
   void ContinueConsumeBody(nsresult aStatus, uint32_t aLength, uint8_t* aResult,
                            bool aShuttingDown = false);
 
   void ContinueConsumeBlobBody(BlobImpl* aBlobImpl, bool aShuttingDown = false);
 
-  void ShutDownMainThreadConsuming();
+  void DispatchContinueConsumeBlobBody(BlobImpl* aBlobImpl,
+                                       ThreadSafeWorkerRef* aWorkerRef);
 
-  WorkerPrivate* GetWorkerPrivate() const { return mWorkerPrivate; }
+  void ShutDownMainThreadConsuming();
 
   void NullifyConsumeBodyPump() {
     mShuttingDown = true;
@@ -64,16 +66,15 @@ class FetchBodyConsumer final : public nsIObserver,
 
  private:
   FetchBodyConsumer(nsIEventTarget* aMainThreadEventTarget,
-                    nsIGlobalObject* aGlobalObject,
-                    WorkerPrivate* aWorkerPrivate, FetchBody<Derived>* aBody,
+                    nsIGlobalObject* aGlobalObject, FetchBody<Derived>* aBody,
                     nsIInputStream* aBodyStream, Promise* aPromise,
                     FetchConsumeType aType);
 
   ~FetchBodyConsumer();
 
-  void AssertIsOnTargetThread() const;
+  nsresult GetBodyLocalFile(nsIFile** aFile) const;
 
-  bool RegisterWorkerHolder();
+  void AssertIsOnTargetThread() const;
 
   nsCOMPtr<nsIThread> mTargetThread;
   nsCOMPtr<nsIEventTarget> mMainThreadEventTarget;
@@ -89,15 +90,10 @@ class FetchBodyConsumer final : public nsIObserver,
   MutableBlobStorage::MutableBlobStorageType mBlobStorageType;
   nsCString mBodyMimeType;
 
-  // Set when consuming the body is attempted on a worker.
-  // Unset when consumption is done/aborted.
-  // This WorkerHolder keeps alive the consumer via a cycle.
-  UniquePtr<WorkerHolder> mWorkerHolder;
+  nsCString mBodyBlobURISpec;
+  nsString mBodyLocalPath;
 
   nsCOMPtr<nsIGlobalObject> mGlobal;
-
-  // Always set whenever the FetchBodyConsumer is created on the worker thread.
-  WorkerPrivate* mWorkerPrivate;
 
   // Touched on the main-thread only.
   nsCOMPtr<nsIInputStreamPump> mConsumeBodyPump;

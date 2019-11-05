@@ -27,6 +27,7 @@ namespace dom {
 
 class AudioNode;
 class Blob;
+class Document;
 class DOMException;
 
 /**
@@ -82,10 +83,10 @@ class MediaRecorder final : public DOMEventTargetHelper,
   void RequestData(ErrorResult& aResult);
   // Return the The DOMMediaStream passed from UA.
   DOMMediaStream* Stream() const { return mDOMStream; }
-  // The current state of the MediaRecorder object.
-  RecordingState State() const { return mState; }
   // Return the current encoding MIME type selected by the MediaEncoder.
   void GetMimeType(nsString& aMimeType);
+  // The current state of the MediaRecorder object.
+  RecordingState State() const { return mState; }
 
   static bool IsTypeSupported(GlobalObject& aGlobal, const nsAString& aType);
   static bool IsTypeSupported(const nsAString& aType);
@@ -108,10 +109,12 @@ class MediaRecorder final : public DOMEventTargetHelper,
   RefPtr<SizeOfPromise> SizeOfExcludingThis(
       mozilla::MallocSizeOf aMallocSizeOf);
   // EventHandler
-  IMPL_EVENT_HANDLER(dataavailable)
-  IMPL_EVENT_HANDLER(error)
   IMPL_EVENT_HANDLER(start)
   IMPL_EVENT_HANDLER(stop)
+  IMPL_EVENT_HANDLER(dataavailable)
+  IMPL_EVENT_HANDLER(pause)
+  IMPL_EVENT_HANDLER(resume)
+  IMPL_EVENT_HANDLER(error)
   IMPL_EVENT_HANDLER(warning)
 
   NS_DECL_NSIDOCUMENTACTIVITY
@@ -164,7 +167,7 @@ class MediaRecorder final : public DOMEventTargetHelper,
   // session is running.
   nsTArray<RefPtr<Session>> mSessions;
 
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<Document> mDocument;
 
   // It specifies the container format as well as the audio and video capture
   // formats.

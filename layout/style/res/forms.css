@@ -8,10 +8,9 @@
 
 
 @namespace url(http://www.w3.org/1999/xhtml); /* set default namespace to HTML */
-@namespace xul url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
 
 *|*::-moz-fieldset-content {
-  display: block; /* nsRuleNode::ComputeDisplayData overrules this in some cases */
+  display: block; /* StyleAdjuster::adjust_for_fieldset_content overrides this in some cases */
   unicode-bidi: inherit;
   text-overflow: inherit;
   overflow: inherit;
@@ -56,13 +55,13 @@
 /* miscellaneous form elements */
 
 fieldset > legend {
-  padding-inline-start: 2px;
-  padding-inline-end: 2px;
   inline-size: -moz-fit-content;
 }
 
 legend {
   display: block;
+  padding-inline-start: 2px;
+  padding-inline-end: 2px;
 }
 
 fieldset {
@@ -70,11 +69,11 @@ fieldset {
   margin-inline-start: 2px;
   margin-inline-end: 2px;
   padding-block-start: 0.35em;
-  padding-block-end: 0.75em;
-  padding-inline-start: 0.625em;
-  padding-inline-end: 0.625em;
+  padding-block-end: 0.625em;
+  padding-inline-start: 0.75em;
+  padding-inline-end: 0.75em;
   border: 2px groove ThreeDLightShadow;
-  min-width: -moz-min-content;
+  min-inline-size: min-content;
 }
 
 label {
@@ -103,7 +102,6 @@ input {
   word-spacing: normal;
   letter-spacing: normal;
   cursor: text;
-  -moz-binding: url("chrome://global/content/platformHTMLBindings.xml#inputFields");
   text-indent: 0;
   -moz-user-select: text;
   text-shadow: none;
@@ -118,6 +116,7 @@ input::placeholder {
 }
 
 textarea {
+  -moz-appearance: textarea;
   margin-block-start: 1px;
   margin-block-end: 1px;
   border: 2px inset ThreeDLightShadow;
@@ -128,21 +127,20 @@ textarea {
   color: -moz-FieldText;
   font: medium -moz-fixed;
   text-rendering: optimizeLegibility;
-  text-align: start;
-  text-transform: none;
-  word-spacing: normal;
-  letter-spacing: normal;
   vertical-align: text-bottom;
   cursor: text;
   resize: both;
-  -moz-binding: url("chrome://global/content/platformHTMLBindings.xml#textAreas");
-  -moz-appearance: textfield-multiline;
-  text-indent: 0;
   -moz-user-select: text;
-  text-shadow: none;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-clip-box: content-box;
+  /* A few properties that we don't want to inherit by default: */
+  text-align: initial;
+  text-indent: initial;
+  text-shadow: initial;
+  text-transform: initial;
+  word-spacing: initial;
+  letter-spacing: initial;
 }
 
 textarea > scrollbar {
@@ -160,11 +158,10 @@ textarea > .preview-div {
   padding: inherit !important;
   margin: 0px;
   text-decoration: inherit;
-  text-decoration-color: inherit;
-  text-decoration-style: inherit;
   display: inline-block;
   ime-mode: inherit;
   resize: inherit;
+  scrollbar-width: inherit;
   -moz-control-character-visibility: visible;
   overflow-clip-box: inherit;
 }
@@ -175,17 +172,13 @@ input > .preview-div {
   white-space: pre;
 }
 
-input > .anonymous-div.wrap {
-  white-space: pre-wrap;
-}
-textarea > .anonymous-div.inherit-overflow,
-input > .anonymous-div.inherit-overflow {
-  overflow: inherit;
-}
-textarea > .anonymous-div.inherit-scroll-behavior,
-input > .anonymous-div.inherit-scroll-behavior {
+textarea > .anonymous-div {
   scroll-behavior: inherit;
   overscroll-behavior: inherit;
+}
+
+textarea > .anonymous-div.inherit-overflow {
+  overflow: inherit;
 }
 
 input::placeholder,
@@ -232,13 +225,7 @@ select {
   background-color: -moz-Combobox;
   color: -moz-ComboboxText;
   font: -moz-list;
-  /*
-   * Note that the "UA !important" tests in
-   * layout/style/test/test_animations.html depend on this rule, because
-   * they need some UA !important rule to test.  If this changes, use a
-   * different one there.
-   */
-  line-height: normal !important;
+  line-height: initial;
   white-space: nowrap !important;
   word-wrap: normal !important;
   text-align: start;
@@ -256,6 +243,14 @@ select {
   page-break-inside: avoid;
   overflow-clip-box: padding-box !important; /* bug 992447 */
 }
+
+%ifdef MOZ_WIDGET_GTK
+/* Comboboxes use button styles on Gtk so it's safe to
+ * use a button style here. */
+select:active:hover {
+  color: -moz-gtk-buttonactivetext;
+}
+%endif
 
 /* Need the "select[size][multiple]" selector to override the settings on
    'select[size="1"]', eg if one has <select size="1" multiple> */
@@ -280,7 +275,7 @@ select[size="1"] {
   background-color: -moz-Combobox;
   color: -moz-ComboboxText;
   vertical-align: baseline;
-  padding: 0;
+  padding: unset;
   -moz-appearance: menulist;
 }
 
@@ -291,7 +286,7 @@ select > button {
   background-image: url("arrow.gif") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  -moz-appearance: menulist-button;
+  -moz-appearance: -moz-menulist-button;
 
   /* Make sure to size correctly if the combobox has a non-auto height. */
   block-size: 100% ! important;
@@ -325,10 +320,6 @@ select > button[orientation="right"]:active {
   background-image: url("arrowd-right.gif") !important;
 }
 
-select:empty {
-  inline-size: 2.5em;
-}
-
 *|*::-moz-display-comboboxcontrol-frame {
   overflow: -moz-hidden-unscrollable;
   /* This block-start/end padding plus the combobox block-start/end border need to
@@ -336,10 +327,10 @@ select:empty {
   padding-block-start: 1px;
   padding-block-end: 1px;
   padding-inline-start: 4px;
-  padding-inline-end: 0;
-  color: inherit;
+  padding-inline-end: 4px;
+  color: unset;
   white-space: nowrap;
-  text-align: inherit;
+  text-align: unset;
   -moz-user-select: none;
   /* Make sure to size correctly if the combobox has a non-auto block-size. */
   block-size: 100% ! important;
@@ -352,6 +343,12 @@ option {
   float: none !important;
   position: static !important;
   min-block-size: 1em;
+  /*
+   * Note that the "UA !important" tests in
+   * layout/style/test/test_animations.html depend on this rule, because
+   * they need some UA !important rule to test.  If this changes, use a
+   * different one there.
+   */
   line-height: normal !important;
   -moz-user-select: none;
   text-indent: 0;
@@ -386,7 +383,7 @@ optgroup {
   line-height: normal !important;
   font-style: italic;
   font-weight: bold;
-  font-size: inherit;
+  font-size: unset;
   -moz-user-select: none;
   text-indent: 0;
   white-space: nowrap !important;
@@ -422,13 +419,6 @@ optgroup:before {
   border-inline-start-width: 2px ! important;
 }
 
-@supports -moz-bool-pref("dom.select_popup_in_content.enabled") {
-  *|*::-moz-dropdown-list {
-    -moz-top-layer: top !important;
-    position: absolute !important;
-  }
-}
-
 input:disabled,
 textarea:disabled,
 option:disabled,
@@ -438,7 +428,7 @@ select:disabled:disabled /* Need the pseudo-class twice to have the specificity
 {
   color: GrayText;
   background-color: ThreeDLightShadow;
-  cursor: inherit;
+  cursor: unset;
 }
 
 input:disabled,
@@ -455,27 +445,25 @@ optgroup:disabled {
 input[type="hidden"] {
   -moz-appearance: none;
   display: none !important;
-  padding: 0;
+  padding: unset;
   border: 0;
   cursor: auto;
   -moz-user-focus: ignore;
-  -moz-binding: none;
 }
 
 /* image buttons */
 input[type="image"] {
   -moz-appearance: none;
-  padding: 0;
+  padding: unset;
   border: none;
   background-color: transparent;
   font-family: sans-serif;
   font-size: small;
   cursor: pointer;
-  -moz-binding: none;
 }
 
 input[type="image"]:disabled {
-  cursor: inherit;
+  cursor: unset;
 }
 
 input[type="image"]:-moz-focusring {
@@ -486,43 +474,40 @@ input[type="image"]:-moz-focusring {
 /* file selector */
 input[type="file"] {
   display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
+  white-space: nowrap !important;
+  overflow: hidden !important;
   overflow-clip-box: padding-box;
-  color: inherit;
+  color: unset;
 
   /* Revert rules which apply on all inputs. */
   -moz-appearance: none;
-  -moz-binding: none;
   cursor: default;
 
   border: none;
   background-color: transparent;
-  padding: 0;
+  padding: unset;
 }
 
-input[type="file"] > xul|label {
+input[type="file"] > label {
+  display: inline-block;
   min-inline-size: 12em;
   padding-inline-start: 5px;
   text-align: match-parent;
 
-  color: inherit;
-  font-size: inherit;
-  letter-spacing: inherit;
+  color: unset;
+  font-size: unset;
+  letter-spacing: unset;
 
-  /*
-   * Force the text to have LTR directionality. Otherwise filenames containing
-   * RTL characters will be reordered with chaotic results.
-   */
-  direction: ltr !important;
+  -moz-user-select: none;
+  unicode-bidi: plaintext;
 }
 
 /* button part of file selector */
-input[type="file"] > button[type="button"] {
+input[type="file"] > button {
   block-size: inherit;
-  font-size: inherit;
-  letter-spacing: inherit;
-  cursor: inherit;
+  font-size: unset;
+  letter-spacing: unset;
+  cursor: unset;
 }
 
 /* colored part of the color selector button */
@@ -536,14 +521,6 @@ input[type="color"]::-moz-color-swatch {
   box-sizing: border-box;
   border: 1px solid grey;
   display: block;
-}
-
-/* Try to make RTL <input type='file'> look nicer. */
-/* TODO: find a better solution than forcing direction: ltr on all file
-   input labels and remove this override -- bug 1161482 */
-input[type="file"]:dir(rtl) > xul|label {
-  padding-inline-start: 0px;
-  padding-inline-end: 5px;
 }
 
 /* radio buttons */
@@ -574,7 +551,6 @@ input[type="checkbox"] {
   cursor: default;
   /* unset some values from the general 'input' rule above: */
   padding: unset;
-  -moz-binding: unset;
   border: unset;
   background-color: unset;
   color: unset;
@@ -588,7 +564,7 @@ input[type="checkbox"]:disabled,
 input[type="checkbox"]:disabled:active,
 input[type="checkbox"]:disabled:hover,
 input[type="checkbox"]:disabled:hover:active {
-  cursor: inherit;
+  cursor: unset;
 }
 
 % On Mac, the native theme takes care of this.
@@ -630,7 +606,6 @@ input[type="submit"] {
   cursor: default;
   box-sizing: border-box;
   -moz-user-select: none;
-  -moz-binding: none;
 }
 
 /* Text-related properties for buttons: these ones are not shared with
@@ -655,7 +630,7 @@ input[type="color"] {
 
 button {
   /* Buttons should lay out like "normal" html, mostly */
-  white-space: inherit;
+  white-space: unset;
   text-indent: 0;
   /* But no text-decoration reaching inside, by default */
   display: inline-block;
@@ -729,15 +704,19 @@ button:active:hover,
 input[type="reset"]:active:hover,
 input[type="button"]:active:hover,
 input[type="submit"]:active:hover {
+%ifdef MOZ_WIDGET_GTK
+  color: -moz-gtk-buttonactivetext;
+%else
   color: ButtonText;
+%endif
 }
+
 
 button::-moz-focus-inner,
 input[type="color"]::-moz-focus-inner,
 input[type="reset"]::-moz-focus-inner,
 input[type="button"]::-moz-focus-inner,
-input[type="submit"]::-moz-focus-inner,
-input[type="file"] > button[type="button"]::-moz-focus-inner {
+input[type="submit"]::-moz-focus-inner {
   /* Note this padding only affects the -moz-focus-inner ring, not the button itself */
   padding-block-start: 0px;
   padding-inline-end: 2px;
@@ -750,8 +729,7 @@ button:-moz-focusring::-moz-focus-inner,
 input[type="color"]:-moz-focusring::-moz-focus-inner,
 input[type="reset"]:-moz-focusring::-moz-focus-inner,
 input[type="button"]:-moz-focusring::-moz-focus-inner,
-input[type="submit"]:-moz-focusring::-moz-focus-inner,
-input[type="file"] > button[type="button"]:-moz-focusring::-moz-focus-inner {
+input[type="submit"]:-moz-focusring::-moz-focus-inner {
   border-color: ButtonText;
 }
 
@@ -773,7 +751,7 @@ input[type="submit"]:disabled {
   padding-block-end: 0px;
   padding-inline-start: 8px;
   border: 2px outset ThreeDLightShadow;
-  cursor: inherit;
+  cursor: unset;
 }
 
 button:disabled:active, button:disabled,
@@ -841,7 +819,7 @@ output:-moz-ui-invalid {
 }
 
 progress {
-  -moz-appearance: progressbar;
+  -moz-appearance: progress-bar;
   display: inline-block;
   vertical-align: -0.2em;
 
@@ -870,7 +848,7 @@ progress {
 }
 
 meter {
-  -moz-appearance: meterbar;
+  -moz-appearance: meter;
   display: inline-block;
   vertical-align: -0.2em;
 
@@ -905,40 +883,13 @@ meter {
 input[type=range] {
   -moz-appearance: range;
   display: inline-block;
-  inline-size: 12em;
-  block-size: 1.3em;
-  margin-inline-start: 0.7em;
-  margin-inline-end: 0.7em;
-  margin-block-start: 0;
-  margin-block-end: 0;
+  margin: 2px;
   /* Override some rules that apply on all input types: */
   cursor: default;
-  background: none;
-  border: none;
-  -moz-binding: none; /* we don't want any of platformHTMLBindings.xml#inputFields */
+  padding: unset;
+  border: unset;
   /* Prevent nsFrame::HandlePress setting mouse capture to this element. */
   -moz-user-select: none ! important;
-}
-
-input[type=range][orient=block] {
-  inline-size: 1.3em;
-  block-size: 12em;
-  margin-inline-start: 0;
-  margin-inline-end: 0;
-  margin-block-start: 0.7em;
-  margin-block-end: 0.7em;
-}
-
-input[type=range][orient=horizontal] {
-  width: 12em;
-  height: 1.3em;
-  margin: 0 0.7em;
-}
-
-input[type=range][orient=vertical] {
-  width: 1.3em;
-  height: 12em;
-  margin: 0.7em 0;
 }
 
 /**
@@ -962,30 +913,14 @@ input[type=range]::-moz-focus-outer {
  */
 input[type=range]::-moz-range-track {
   /* Prevent styling that would change the type of frame we construct. */
-  display: inline-block !important;
+  display: block !important;
   float: none !important;
   position: static !important;
-  border: none;
-  background-color: #999;
-  inline-size: 100%;
+  writing-mode: unset !important;
+  direction: unset !important;
   block-size: 0.2em;
   /* Prevent nsFrame::HandlePress setting mouse capture to this element. */
   -moz-user-select: none ! important;
-}
-
-input[type=range][orient=block]::-moz-range-track {
-  inline-size: 0.2em;
-  block-size: 100%;
-}
-
-input[type=range][orient=horizontal]::-moz-range-track {
-  width: 100%;
-  height: 0.2em;
-}
-
-input[type=range][orient=vertical]::-moz-range-track {
-  width: 0.2em;
-  height: 100%;
 }
 
 /**
@@ -998,9 +933,11 @@ input[type=range][orient=vertical]::-moz-range-track {
  */
 input[type=range]::-moz-range-progress {
   /* Prevent styling that would change the type of frame we construct. */
-  display: inline-block !important;
+  display: block !important;
   float: none !important;
   position: static !important;
+  writing-mode: unset !important;
+  direction: unset !important;
   /* Since one of width/height will be ignored, this just sets the "other"
      dimension.
    */
@@ -1022,9 +959,11 @@ input[type=range]::-moz-range-thumb {
    */
   -moz-appearance: range-thumb !important;
   /* Prevent styling that would change the type of frame we construct. */
-  display: inline-block !important;
+  display: block !important;
   float: none !important;
   position: static !important;
+  writing-mode: unset !important;
+  direction: unset !important;
   width: 1em;
   height: 1em;
   border: 0.1em solid #999;
@@ -1034,9 +973,13 @@ input[type=range]::-moz-range-thumb {
   -moz-user-select: none ! important;
 }
 
-/* As a temporary workaround until bug 677302 the rule for input[type=number]
- * has moved to number-control.css
- */
+input[type="number"] {
+  -moz-appearance: number-input;
+  /* Has to revert some properties applied by the generic input rule. */
+  inline-size: 20ch; /* It'd be nice if this matched the default inline-size
+                        of <input type=text>, but that's not easy to achieve
+                        due to platform differences. */
+}
 
 input[type=number]::-moz-number-wrapper {
   /* Prevent styling that would change the type of frame we construct. */
@@ -1059,10 +1002,12 @@ input[type=number]::-moz-number-text {
    * above. We want to inherit its value from its <input type=number>
    * ancestor, not have that general CSS rule reset it.
    */
-  text-align: inherit;
+  text-align: unset;
+  text-decoration: inherit;
+  ime-mode: inherit;
   flex: 1;
   min-inline-size: 0;
-  padding: 0;
+  padding: unset;
   border: 0;
   margin: 0;
 }
@@ -1133,6 +1078,14 @@ input[type="date"],
 input[type="time"] {
   overflow: hidden !important;
   font-family: -moz-fixed;
+  cursor: default;
+}
+
+input[type="date"]:disabled,
+input[type="time"]:disabled,
+input[type="date"]:-moz-read-only,
+input[type="time"]:-moz-read-only {
+  color: GrayText;
 }
 
 :-moz-autofill, :-moz-autofill-preview {

@@ -12,11 +12,11 @@
 #include "nsString.h"
 
 #ifdef USE_SKIA
-#include "skia/include/ports/SkTypeface_win.h"
+#  include "skia/include/ports/SkTypeface_win.h"
 #endif
 
 #ifdef USE_CAIRO_SCALED_FONT
-#include "cairo-win32.h"
+#  include "cairo-win32.h"
 #endif
 
 #include "HelpersWinFonts.h"
@@ -99,17 +99,10 @@ already_AddRefed<ScaledFont> UnscaledFontGDI::CreateScaledFont(
   }
 
   NativeFont nativeFont;
-  nativeFont.mType = NativeFontType::GDI_FONT_FACE;
+  nativeFont.mType = NativeFontType::GDI_LOGFONT;
   nativeFont.mFont = (void*)aInstanceData;
 
-  RefPtr<ScaledFont> font =
-      Factory::CreateScaledFontForNativeFont(nativeFont, this, aGlyphSize);
-
-#ifdef USE_CAIRO_SCALED_FONT
-  static_cast<ScaledFontBase*>(font.get())->PopulateCairoScaledFont();
-#endif
-
-  return font.forget();
+  return Factory::CreateScaledFontForNativeFont(nativeFont, this, aGlyphSize);
 }
 
 AntialiasMode ScaledFontWin::GetDefaultAAMode() {
@@ -117,11 +110,8 @@ AntialiasMode ScaledFontWin::GetDefaultAAMode() {
 }
 
 #ifdef USE_SKIA
-SkTypeface* ScaledFontWin::GetSkTypeface() {
-  if (!mTypeface) {
-    mTypeface = SkCreateTypefaceFromLOGFONT(mLogFont);
-  }
-  return mTypeface;
+SkTypeface* ScaledFontWin::CreateSkTypeface() {
+  return SkCreateTypefaceFromLOGFONT(mLogFont);
 }
 #endif
 

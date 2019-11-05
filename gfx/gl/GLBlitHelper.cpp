@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -19,15 +19,20 @@
 #include "GPUVideoImage.h"
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "GeneratedJNIWrappers.h"
-#include "AndroidSurfaceTexture.h"
-#include "GLImages.h"
-#include "GLLibraryEGL.h"
+#  include "GeneratedJNIWrappers.h"
+#  include "AndroidSurfaceTexture.h"
+#  include "GLImages.h"
+#  include "GLLibraryEGL.h"
 #endif
 
 #ifdef XP_MACOSX
-#include "MacIOSurfaceImage.h"
-#include "GLContextCGL.h"
+#  include "MacIOSurfaceImage.h"
+#  include "GLContextCGL.h"
+#endif
+
+#ifdef XP_WIN
+#  include "mozilla/layers/D3D11ShareHandleImage.h"
+#  include "mozilla/layers/D3D11YCbCrImage.h"
 #endif
 
 using mozilla::layers::PlanarYCbCrData;
@@ -349,14 +354,13 @@ DrawBlitProg::DrawBlitProg(const GLBlitHelper* const parent, const GLuint prog)
       mLoc_uTexMatrix0(mParent.mGL->fGetUniformLocation(mProg, "uTexMatrix0")),
       mLoc_uTexMatrix1(mParent.mGL->fGetUniformLocation(mProg, "uTexMatrix1")),
       mLoc_uColorMatrix(
-          mParent.mGL->fGetUniformLocation(mProg, "uColorMatrix")),
-      mType_uColorMatrix(0) {
-  MOZ_ASSERT(mLoc_uDestMatrix != -1);
-  MOZ_ASSERT(mLoc_uTexMatrix0 != -1);
+          mParent.mGL->fGetUniformLocation(mProg, "uColorMatrix")) {
+  const auto& gl = mParent.mGL;
+  MOZ_GL_ASSERT(gl, mLoc_uDestMatrix != -1);
+  MOZ_GL_ASSERT(gl, mLoc_uTexMatrix0 != -1);
   if (mLoc_uColorMatrix != -1) {
-    MOZ_ASSERT(mLoc_uTexMatrix1 != -1);
+    MOZ_GL_ASSERT(gl, mLoc_uTexMatrix1 != -1);
 
-    const auto& gl = mParent.mGL;
     int32_t numActiveUniforms = 0;
     gl->fGetProgramiv(mProg, LOCAL_GL_ACTIVE_UNIFORMS, &numActiveUniforms);
 
@@ -372,7 +376,7 @@ DrawBlitProg::DrawBlitProg(const GLBlitHelper* const parent, const GLuint prog)
         break;
       }
     }
-    MOZ_ASSERT(mType_uColorMatrix);
+    MOZ_GL_ASSERT(gl, mType_uColorMatrix);
   }
 }
 
@@ -486,12 +490,10 @@ void DrawBlitProg::Draw(const BaseArgs& args,
 
 GLBlitHelper::GLBlitHelper(GLContext* const gl)
     : mGL(gl),
-      mQuadVAO(0),
-      mQuadVBO(0),
-      mDrawBlitProg_VertShader(mGL->fCreateShader(LOCAL_GL_VERTEX_SHADER)),
-      mYuvUploads{0},
-      mYuvUploads_YSize(0, 0),
-      mYuvUploads_UVSize(0, 0) {
+      mDrawBlitProg_VertShader(mGL->fCreateShader(LOCAL_GL_VERTEX_SHADER))
+//, mYuvUploads_YSize(0, 0)
+//, mYuvUploads_UVSize(0, 0)
+{
   mGL->fGenBuffers(1, &mQuadVBO);
   {
     const ScopedBindArrayBuffer bindVBO(mGL, mQuadVBO);
@@ -633,7 +635,7 @@ const DrawBlitProg* GLBlitHelper::CreateDrawBlitProg(
 
   GLenum status = 0;
   mGL->fGetProgramiv(prog, LOCAL_GL_LINK_STATUS, (GLint*)&status);
-  if (status == LOCAL_GL_TRUE) {
+  if (status == LOCAL_GL_TRUE || !mGL->CheckContextLost()) {
     const SaveRestoreCurrentProgram oldProg(mGL);
     mGL->fUseProgram(prog);
     const char* samplerNames[] = {"uTex0", "uTex1", "uTex2"};
@@ -669,7 +671,7 @@ const DrawBlitProg* GLBlitHelper::CreateDrawBlitProg(
                      << "progLog: " << progLog.get() << "\n"
                      << "vsLog: " << vsLog.get() << "\n"
                      << "fsLog: " << fsLog.get() << "\n";
-  return nullptr;
+  MOZ_CRASH();
 }
 
 // -----------------------------------------------------------------------------
@@ -695,9 +697,12 @@ bool GLBlitHelper::BlitImageToFramebuffer(layers::Image* const srcImage,
     case ImageFormat::GPU_VIDEO:
       return BlitImage(static_cast<layers::GPUVideoImage*>(srcImage), destSize,
                        destOrigin);
+    case ImageFormat::D3D11_SHARE_HANDLE_TEXTURE:
+      return BlitImage(static_cast<layers::D3D11ShareHandleImage*>(srcImage),
+                       destSize, destOrigin);
     case ImageFormat::D3D11_YCBCR_IMAGE:
-      return BlitImage((layers::D3D11YCbCrImage*)srcImage, destSize,
-                       destOrigin);
+      return BlitImage(static_cast<layers::D3D11YCbCrImage*>(srcImage),
+                       destSize, destOrigin);
     case ImageFormat::D3D9_RGB32_TEXTURE:
       return false;  // todo
 #endif
@@ -708,7 +713,7 @@ bool GLBlitHelper::BlitImageToFramebuffer(layers::Image* const srcImage,
   }
 }
 
-  // -------------------------------------
+// -------------------------------------
 
 #ifdef MOZ_WIDGET_ANDROID
 bool GLBlitHelper::BlitImage(layers::SurfaceTextureImage* srcImage,
@@ -766,7 +771,6 @@ bool GLBlitHelper::BlitImage(layers::SurfaceTextureImage* srcImage,
   const bool yFlip = (srcOrigin == destOrigin);
 
   const auto& prog = GetDrawBlitProg({kFragHeader_TexExt, kFragBody_RGBA});
-  MOZ_RELEASE_ASSERT(prog);
 
   // There is no padding on these images, so we can use the GetTransformMatrix
   // directly.
@@ -800,7 +804,6 @@ bool GLBlitHelper::BlitImage(layers::PlanarYCbCrImage* const yuvImage,
                              const gfx::IntSize& destSize,
                              const OriginPos destOrigin) {
   const auto& prog = GetDrawBlitProg({kFragHeader_Tex2D, kFragBody_PlanarYUV});
-  MOZ_RELEASE_ASSERT(prog);
 
   if (!mYuvUploads[0]) {
     mGL->fGenTextures(3, mYuvUploads);
@@ -911,7 +914,7 @@ bool GLBlitHelper::BlitImage(layers::PlanarYCbCrImage* const yuvImage,
   return true;
 }
 
-  // -------------------------------------
+// -------------------------------------
 
 #ifdef XP_MACOSX
 bool GLBlitHelper::BlitImage(layers::MacIOSurfaceImage* const srcImage,
@@ -932,7 +935,7 @@ bool GLBlitHelper::BlitImage(layers::MacIOSurfaceImage* const srcImage,
   baseArgs.destSize = destSize;
 
   DrawBlitProg::YUVArgs yuvArgs;
-  yuvArgs.colorSpace = YUVColorSpace::BT601;
+  yuvArgs.colorSpace = gfx::YUVColorSpace::BT601;
 
   const DrawBlitProg::YUVArgs* pYuvArgs = nullptr;
 
@@ -1043,8 +1046,6 @@ bool GLBlitHelper::BlitImage(layers::MacIOSurfaceImage* const srcImage,
   }
 
   const auto& prog = GetDrawBlitProg({fragHeader, fragBody});
-  if (!prog) return false;
-
   prog->Draw(baseArgs, pYuvArgs);
   return true;
 }
@@ -1072,7 +1073,6 @@ void GLBlitHelper::DrawBlitTextureToFramebuffer(const GLuint srcTex,
       return;
   }
   const auto& prog = GetDrawBlitProg({fragHeader, kFragBody_RGBA});
-  MOZ_ASSERT(prog);
 
   const ScopedSaveMultiTex saveTex(mGL, 1, srcTarget);
   mGL->fBindTexture(srcTarget, srcTex);
@@ -1086,36 +1086,39 @@ void GLBlitHelper::DrawBlitTextureToFramebuffer(const GLuint srcTex,
 // -----------------------------------------------------------------------------
 
 void GLBlitHelper::BlitFramebuffer(const gfx::IntSize& srcSize,
-                                   const gfx::IntSize& destSize) const {
+                                   const gfx::IntSize& destSize,
+                                   GLuint filter) const {
   MOZ_ASSERT(mGL->IsSupported(GLFeature::framebuffer_blit));
 
   const ScopedGLState scissor(mGL, LOCAL_GL_SCISSOR_TEST, false);
   mGL->fBlitFramebuffer(0, 0, srcSize.width, srcSize.height, 0, 0,
                         destSize.width, destSize.height,
-                        LOCAL_GL_COLOR_BUFFER_BIT, LOCAL_GL_NEAREST);
+                        LOCAL_GL_COLOR_BUFFER_BIT, filter);
 }
 
 // --
 
-void GLBlitHelper::BlitFramebufferToFramebuffer(
-    const GLuint srcFB, const GLuint destFB, const gfx::IntSize& srcSize,
-    const gfx::IntSize& destSize) const {
+void GLBlitHelper::BlitFramebufferToFramebuffer(const GLuint srcFB,
+                                                const GLuint destFB,
+                                                const gfx::IntSize& srcSize,
+                                                const gfx::IntSize& destSize,
+                                                GLuint filter) const {
   MOZ_ASSERT(mGL->IsSupported(GLFeature::framebuffer_blit));
-  MOZ_ASSERT(!srcFB || mGL->fIsFramebuffer(srcFB));
-  MOZ_ASSERT(!destFB || mGL->fIsFramebuffer(destFB));
+  MOZ_GL_ASSERT(mGL, !srcFB || mGL->fIsFramebuffer(srcFB));
+  MOZ_GL_ASSERT(mGL, !destFB || mGL->fIsFramebuffer(destFB));
 
   const ScopedBindFramebuffer boundFB(mGL);
   mGL->fBindFramebuffer(LOCAL_GL_READ_FRAMEBUFFER, srcFB);
   mGL->fBindFramebuffer(LOCAL_GL_DRAW_FRAMEBUFFER, destFB);
 
-  BlitFramebuffer(srcSize, destSize);
+  BlitFramebuffer(srcSize, destSize, filter);
 }
 
 void GLBlitHelper::BlitTextureToFramebuffer(GLuint srcTex,
                                             const gfx::IntSize& srcSize,
                                             const gfx::IntSize& destSize,
                                             GLenum srcTarget) const {
-  MOZ_ASSERT(mGL->fIsTexture(srcTex));
+  MOZ_GL_ASSERT(mGL, mGL->fIsTexture(srcTex));
 
   if (mGL->IsSupported(GLFeature::framebuffer_blit)) {
     const ScopedFramebufferForTexture srcWrapper(mGL, srcTex, srcTarget);
@@ -1132,7 +1135,7 @@ void GLBlitHelper::BlitFramebufferToTexture(GLuint destTex,
                                             const gfx::IntSize& srcSize,
                                             const gfx::IntSize& destSize,
                                             GLenum destTarget) const {
-  MOZ_ASSERT(mGL->fIsTexture(destTex));
+  MOZ_GL_ASSERT(mGL, mGL->fIsTexture(destTex));
 
   if (mGL->IsSupported(GLFeature::framebuffer_blit)) {
     const ScopedFramebufferForTexture destWrapper(mGL, destTex, destTarget);
@@ -1153,8 +1156,8 @@ void GLBlitHelper::BlitTextureToTexture(GLuint srcTex, GLuint destTex,
                                         const gfx::IntSize& destSize,
                                         GLenum srcTarget,
                                         GLenum destTarget) const {
-  MOZ_ASSERT(mGL->fIsTexture(srcTex));
-  MOZ_ASSERT(mGL->fIsTexture(destTex));
+  MOZ_GL_ASSERT(mGL, mGL->fIsTexture(srcTex));
+  MOZ_GL_ASSERT(mGL, mGL->fIsTexture(destTex));
 
   // Start down the CopyTexSubImage path, not the DrawBlit path.
   const ScopedFramebufferForTexture srcWrapper(mGL, srcTex, srcTarget);

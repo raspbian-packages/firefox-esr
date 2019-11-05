@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "mozilla/dom/EventTarget.h"
+#include "mozilla/layers/LayersTypes.h"
 #include "mozilla/EventForwards.h"
 #include "mozilla/TimeStamp.h"
 #include "nsCOMPtr.h"
@@ -19,7 +20,7 @@
 #include "Units.h"
 
 #ifdef DEBUG
-#include "nsXULAppAPI.h"
+#  include "nsXULAppAPI.h"
 #endif  // #ifdef DEBUG
 
 namespace IPC {
@@ -30,6 +31,16 @@ struct ParamTraits;
 namespace mozilla {
 
 class EventTargetChainItem;
+
+enum class CrossProcessForwarding {
+  // eStop prevents the event to be sent to remote process.
+  eStop,
+  // eAllow keeps current state of the event whether it's sent to remote
+  // process.  In other words, eAllow does NOT mean that making the event
+  // sent to remote process when IsCrossProcessForwardingStopped() returns
+  // true.
+  eAllow,
+};
 
 /******************************************************************************
  * mozilla::BaseEventFlags
@@ -83,6 +94,8 @@ struct BaseEventFlags {
   // the first <label> element is clicked, that one may set this true.
   // Then, the second <label> element won't handle the event.
   bool mMultipleActionsPrevented : 1;
+  // Similar to above but expected to be used during PreHandleEvent phase.
+  bool mMultiplePreActionsPrevented : 1;
   // If mIsBeingDispatched is true, the DOM event created from the event is
   // dispatching into the DOM tree and not completed.
   bool mIsBeingDispatched : 1;
@@ -119,9 +132,11 @@ struct BaseEventFlags {
   // listener is added to chrome node, so, don't set this to true for the
   // events which are fired a lot of times like eMouseMove.
   bool mOnlySystemGroupDispatchInContent : 1;
+  // If mOnlySystemGroupDispatch is true, the event will be dispatched only to
+  // event listeners added in the system group.
+  bool mOnlySystemGroupDispatch : 1;
   // The event's action will be handled by APZ. The main thread should not
-  // perform its associated action. This is currently only relevant for
-  // wheel and touch events.
+  // perform its associated action.
   bool mHandledByAPZ : 1;
   // True if the event is currently being handled by an event listener that
   // was registered as a passive listener.
@@ -183,17 +198,22 @@ struct BaseEventFlags {
     // mDefaultPreventedByContent to true because in such case, defaultPrevented
     // must be true when web apps check it after they call preventDefault().
     if (aCalledByDefaultHandler) {
+      StopCrossProcessForwarding();
       mDefaultPreventedByChrome = true;
     } else {
       mDefaultPreventedByContent = true;
     }
   }
   // This should be used only before dispatching events into the DOM tree.
-  inline void PreventDefaultBeforeDispatch() {
+  inline void PreventDefaultBeforeDispatch(
+      CrossProcessForwarding aCrossProcessForwarding) {
     if (!mCancelable) {
       return;
     }
     mDefaultPrevented = true;
+    if (aCrossProcessForwarding == CrossProcessForwarding::eStop) {
+      StopCrossProcessForwarding();
+    }
   }
   inline bool DefaultPrevented() const { return mDefaultPrevented; }
   inline bool DefaultPreventedByContent() const {
@@ -304,7 +324,7 @@ struct BaseEventFlags {
    * ParamTraits<mozilla::WidgetEvent>.  Therefore, it *might* be possible
    * that posting the event failed even if this returns true.  But that must
    * really rare.  If that'd be problem for you, you should unmark this in
-   * TabParent or somewhere.
+   * BrowserParent or somewhere.
    */
   inline bool HasBeenPostedToRemoteProcess() const {
     return mPostedToRemoteProcess;
@@ -438,7 +458,8 @@ class WidgetEvent : public WidgetEventTime {
         mFlags.mBubbles = true;
         break;
       default:
-        if (mMessage == eResize) {
+        if (mMessage == eResize || mMessage == eMozVisualResize ||
+            mMessage == eMozVisualScroll || mMessage == eEditorInput) {
           mFlags.mCancelable = false;
         } else {
           mFlags.mCancelable = true;
@@ -458,7 +479,8 @@ class WidgetEvent : public WidgetEventTime {
         mLastRefPoint(0, 0),
         mFocusSequenceNumber(0),
         mSpecifiedEventType(nullptr),
-        mPath(nullptr) {
+        mPath(nullptr),
+        mLayersId(layers::LayersId{0}) {
     MOZ_COUNT_CTOR(WidgetEvent);
     mFlags.Clear();
     mFlags.mIsTrusted = aIsTrusted;
@@ -484,21 +506,21 @@ class WidgetEvent : public WidgetEventTime {
   WidgetEvent& operator=(const WidgetEvent& aOther) = default;
 
   WidgetEvent(WidgetEvent&& aOther)
-      : WidgetEventTime(Move(aOther)),
+      : WidgetEventTime(std::move(aOther)),
         mClass(aOther.mClass),
         mMessage(aOther.mMessage),
-        mRefPoint(Move(aOther.mRefPoint)),
-        mLastRefPoint(Move(aOther.mLastRefPoint)),
+        mRefPoint(std::move(aOther.mRefPoint)),
+        mLastRefPoint(std::move(aOther.mLastRefPoint)),
         mFocusSequenceNumber(aOther.mFocusSequenceNumber),
-        mFlags(Move(aOther.mFlags)),
-        mSpecifiedEventType(Move(aOther.mSpecifiedEventType)),
-        mSpecifiedEventTypeString(Move(aOther.mSpecifiedEventTypeString)),
-        mTarget(Move(aOther.mTarget)),
-        mCurrentTarget(Move(aOther.mCurrentTarget)),
-        mOriginalTarget(Move(aOther.mOriginalTarget)),
-        mRelatedTarget(Move(aOther.mRelatedTarget)),
-        mOriginalRelatedTarget(Move(aOther.mOriginalRelatedTarget)),
-        mPath(Move(aOther.mPath)) {
+        mFlags(std::move(aOther.mFlags)),
+        mSpecifiedEventType(std::move(aOther.mSpecifiedEventType)),
+        mSpecifiedEventTypeString(std::move(aOther.mSpecifiedEventTypeString)),
+        mTarget(std::move(aOther.mTarget)),
+        mCurrentTarget(std::move(aOther.mCurrentTarget)),
+        mOriginalTarget(std::move(aOther.mOriginalTarget)),
+        mRelatedTarget(std::move(aOther.mRelatedTarget)),
+        mOriginalRelatedTarget(std::move(aOther.mOriginalRelatedTarget)),
+        mPath(std::move(aOther.mPath)) {
     MOZ_COUNT_CTOR(WidgetEvent);
   }
   WidgetEvent& operator=(WidgetEvent&& aOther) = default;
@@ -528,7 +550,8 @@ class WidgetEvent : public WidgetEventTime {
 
   // If JS creates an event with unknown event type or known event type but
   // for different event interface, the event type is stored to this.
-  // NOTE: This is always used if the instance is a WidgetCommandEvent instance.
+  // NOTE: This is always used if the instance is a WidgetCommandEvent instance
+  //       or "input" event is dispatched with dom::Event class.
   RefPtr<nsAtom> mSpecifiedEventType;
 
   // nsAtom isn't available on non-main thread due to unsafe.  Therefore,
@@ -549,6 +572,11 @@ class WidgetEvent : public WidgetEventTime {
 
   nsTArray<EventTargetChainItem>* mPath;
 
+  // The LayersId of the content process that this event should be
+  // dispatched to. This field is only used in the chrome process
+  // and doesn't get remoted to child processes.
+  layers::LayersId mLayersId;
+
   dom::EventTarget* GetDOMEventTarget() const;
   dom::EventTarget* GetCurrentDOMEventTarget() const;
   dom::EventTarget* GetOriginalDOMEventTarget() const;
@@ -559,6 +587,7 @@ class WidgetEvent : public WidgetEventTime {
     mRefPoint = aEvent.mRefPoint;
     // mLastRefPoint doesn't need to be copied.
     mFocusSequenceNumber = aEvent.mFocusSequenceNumber;
+    // mLayersId intentionally not copied, since it's not used within content
     AssignEventTime(aEvent);
     // mFlags should be copied manually if it's necessary.
     mSpecifiedEventType = aEvent.mSpecifiedEventType;
@@ -579,7 +608,10 @@ class WidgetEvent : public WidgetEventTime {
   void PreventDefault(bool aCalledByDefaultHandler = true,
                       nsIPrincipal* aPrincipal = nullptr);
 
-  void PreventDefaultBeforeDispatch() { mFlags.PreventDefaultBeforeDispatch(); }
+  void PreventDefaultBeforeDispatch(
+      CrossProcessForwarding aCrossProcessForwarding) {
+    mFlags.PreventDefaultBeforeDispatch(aCrossProcessForwarding);
+  }
   bool DefaultPrevented() const { return mFlags.DefaultPrevented(); }
   bool DefaultPreventedByContent() const {
     return mFlags.DefaultPreventedByContent();
@@ -670,14 +702,14 @@ class WidgetEvent : public WidgetEventTime {
    */
   inline bool IsReservedByChrome() const { return mFlags.IsReservedByChrome(); }
 
-    /**
-     * Utils for checking event types
-     */
+  /**
+   * Utils for checking event types
+   */
 
-    /**
-     * As*Event() returns the pointer of the instance only when the instance is
-     * the class or one of its derived class.
-     */
+  /**
+   * As*Event() returns the pointer of the instance only when the instance is
+   * the class or one of its derived class.
+   */
 #define NS_ROOT_EVENT_CLASS(aPrefix, aName)
 #define NS_EVENT_CLASS(aPrefix, aName) \
   virtual aPrefix##aName* As##aName(); \
@@ -818,20 +850,22 @@ class WidgetEvent : public WidgetEventTime {
         mFlags.mComposed = mMessage == eEditorInput;
         break;
       case eFocusEventClass:
-        mFlags.mComposed = mMessage == eBlur || mMessage == eFocus;
+        mFlags.mComposed = mMessage == eBlur || mMessage == eFocus ||
+                           mMessage == eFocusOut || mMessage == eFocusIn;
         break;
       case eKeyboardEventClass:
         mFlags.mComposed =
             mMessage == eKeyDown || mMessage == eKeyUp || mMessage == eKeyPress;
         break;
       case eMouseEventClass:
-        mFlags.mComposed = mMessage == eMouseClick ||
-                           mMessage == eMouseDoubleClick ||
-                           mMessage == eMouseAuxClick ||
-                           mMessage == eMouseDown || mMessage == eMouseUp ||
-                           mMessage == eMouseEnter || mMessage == eMouseLeave ||
-                           mMessage == eMouseOver || mMessage == eMouseOut ||
-                           mMessage == eMouseMove || mMessage == eContextMenu;
+        mFlags.mComposed =
+            mMessage == eMouseClick || mMessage == eMouseDoubleClick ||
+            mMessage == eMouseAuxClick || mMessage == eMouseDown ||
+            mMessage == eMouseUp || mMessage == eMouseOver ||
+            mMessage == eMouseOut || mMessage == eMouseMove ||
+            mMessage == eContextMenu || mMessage == eXULPopupShowing ||
+            mMessage == eXULPopupHiding || mMessage == eXULPopupShown ||
+            mMessage == eXULPopupHidden || mMessage == eXULPopupPositioned;
         break;
       case ePointerEventClass:
         // All pointer events are composed
@@ -839,7 +873,6 @@ class WidgetEvent : public WidgetEventTime {
             mMessage == ePointerDown || mMessage == ePointerMove ||
             mMessage == ePointerUp || mMessage == ePointerCancel ||
             mMessage == ePointerOver || mMessage == ePointerOut ||
-            mMessage == ePointerEnter || mMessage == ePointerLeave ||
             mMessage == ePointerGotCapture || mMessage == ePointerLostCapture;
         break;
       case eTouchEventClass:

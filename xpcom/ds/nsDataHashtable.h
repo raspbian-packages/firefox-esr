@@ -56,7 +56,7 @@ class nsDataHashtable : public nsBaseHashtable<KeyClass, DataType, DataType> {
   mozilla::Maybe<DataType> GetAndRemove(KeyType aKey) {
     mozilla::Maybe<DataType> value;
     if (EntryType* ent = this->GetEntry(aKey)) {
-      value.emplace(mozilla::Move(ent->mData));
+      value.emplace(std::move(ent->mData));
       this->RemoveEntry(ent);
     }
     return value;

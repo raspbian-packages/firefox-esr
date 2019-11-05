@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=4 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,7 +12,6 @@
 #include "mozilla/Maybe.h"
 #include "nsIPrincipal.h"
 #include "nsCOMPtr.h"
-#include "nsIObserver.h"
 #include "nsServiceManagerUtils.h"
 #include "nsStringFwd.h"
 #include "plstr.h"
@@ -22,10 +21,10 @@
 
 class nsIIOService;
 class nsIStringBundle;
-class SystemPrincipal;
 
 namespace mozilla {
 class OriginAttributes;
+class SystemPrincipal;
 }  // namespace mozilla
 
 /////////////////////////////
@@ -38,8 +37,7 @@ class OriginAttributes;
     }                                                \
   }
 
-class nsScriptSecurityManager final : public nsIScriptSecurityManager,
-                                      public nsIObserver {
+class nsScriptSecurityManager final : public nsIScriptSecurityManager {
  public:
   static void Shutdown();
 
@@ -47,14 +45,13 @@ class nsScriptSecurityManager final : public nsIScriptSecurityManager,
 
   NS_DECL_ISUPPORTS
   NS_DECL_NSISCRIPTSECURITYMANAGER
-  NS_DECL_NSIOBSERVER
 
   static nsScriptSecurityManager* GetScriptSecurityManager();
 
   // Invoked exactly once, by XPConnect.
   static void InitStatics();
 
-  static already_AddRefed<SystemPrincipal>
+  static already_AddRefed<mozilla::SystemPrincipal>
   SystemPrincipalSingletonConstructor();
 
   /**
@@ -66,8 +63,8 @@ class nsScriptSecurityManager final : public nsIScriptSecurityManager,
   static bool SecurityCompareURIs(nsIURI* aSourceURI, nsIURI* aTargetURI);
   static uint32_t SecurityHashURI(nsIURI* aURI);
 
-  static nsresult ReportError(JSContext* cx, const char* aMessageTag,
-                              nsIURI* aSource, nsIURI* aTarget);
+  static nsresult ReportError(const char* aMessageTag, nsIURI* aSource,
+                              nsIURI* aTarget, bool aFromPrivateWindow);
 
   static uint32_t HashPrincipalByOrigin(nsIPrincipal* aPrincipal);
 
@@ -81,21 +78,18 @@ class nsScriptSecurityManager final : public nsIScriptSecurityManager,
   virtual ~nsScriptSecurityManager();
 
   // Decides, based on CSP, whether or not eval() and stuff can be executed.
-  static bool ContentSecurityPolicyPermitsJSAction(JSContext* cx);
+  static bool ContentSecurityPolicyPermitsJSAction(JSContext* cx,
+                                                   JS::HandleValue aValue);
 
   static bool JSPrincipalsSubsume(JSPrincipals* first, JSPrincipals* second);
-
-  // Returns null if a principal cannot be found; generally callers
-  // should error out at that point.
-  static nsIPrincipal* doGetObjectPrincipal(JSObject* obj);
 
   nsresult Init();
 
   nsresult InitPrefs();
 
-  inline void ScriptSecurityPrefChanged();
+  void ScriptSecurityPrefChanged(const char* aPref = nullptr);
 
-  inline void AddSitesToFileURIWhitelist(const nsCString& aSiteList);
+  inline void AddSitesToFileURIAllowlist(const nsCString& aSiteList);
 
   nsresult GetChannelResultPrincipal(nsIChannel* aChannel,
                                      nsIPrincipal** aPrincipal,
@@ -103,20 +97,20 @@ class nsScriptSecurityManager final : public nsIScriptSecurityManager,
 
   nsresult CheckLoadURIFlags(nsIURI* aSourceURI, nsIURI* aTargetURI,
                              nsIURI* aSourceBaseURI, nsIURI* aTargetBaseURI,
-                             uint32_t aFlags);
+                             uint32_t aFlags, bool aFromPrivateWindow);
 
-  // Returns the file URI whitelist, initializing it if it has not been
+  // Returns the file URI allowlist, initializing it if it has not been
   // initialized.
-  const nsTArray<nsCOMPtr<nsIURI>>& EnsureFileURIWhitelist();
+  const nsTArray<nsCOMPtr<nsIURI>>& EnsureFileURIAllowlist();
 
   nsCOMPtr<nsIPrincipal> mSystemPrincipal;
   bool mPrefInitialized;
   bool mIsJavaScriptEnabled;
 
-  // List of URIs whose domains and sub-domains are whitelisted to allow
+  // List of URIs whose domains and sub-domains are allowlisted to allow
   // access to file: URIs.  Lazily initialized; isNothing() when not yet
   // initialized.
-  mozilla::Maybe<nsTArray<nsCOMPtr<nsIURI>>> mFileURIWhitelist;
+  mozilla::Maybe<nsTArray<nsCOMPtr<nsIURI>>> mFileURIAllowlist;
 
   // This machinery controls new-style domain policies. The old-style
   // policy machinery will be removed soon.

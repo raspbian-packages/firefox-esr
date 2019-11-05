@@ -4,25 +4,21 @@
 
 "use strict";
 
-const {
-  UPDATE_FONTS,
-} = require("../actions/index");
+const { UPDATE_FONTS } = require("../actions/index");
 
 const INITIAL_FONT_DATA = {
-  fonts: [],
-  otherFonts: []
+  // All fonts on the current page.
+  allFonts: [],
 };
 
-let reducers = {
-
-  [UPDATE_FONTS](_, { fonts, otherFonts }) {
-    return { fonts, otherFonts };
+const reducers = {
+  [UPDATE_FONTS](_, { allFonts }) {
+    return { allFonts };
   },
-
 };
 
-module.exports = function (fontData = INITIAL_FONT_DATA, action) {
-  let reducer = reducers[action.type];
+module.exports = function(fontData = INITIAL_FONT_DATA, action) {
+  const reducer = reducers[action.type];
   if (!reducer) {
     return fontData;
   }

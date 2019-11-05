@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,9 +6,7 @@
 #include "txMozillaTextOutput.h"
 #include "nsContentCID.h"
 #include "nsIContent.h"
-#include "nsIDocument.h"
-#include "nsIDOMDocument.h"
-#include "nsIDOMDocumentFragment.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDocumentTransformer.h"
 #include "nsCharsetSource.h"
 #include "nsIPrincipal.h"
@@ -19,6 +17,7 @@
 #include "mozilla/Encoding.h"
 #include "nsTextNode.h"
 #include "nsNameSpaceManager.h"
+#include "mozilla/dom/DocumentFragment.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
@@ -28,9 +27,9 @@ txMozillaTextOutput::txMozillaTextOutput(nsITransformObserver* aObserver) {
   mObserver = do_GetWeakReference(aObserver);
 }
 
-txMozillaTextOutput::txMozillaTextOutput(nsIDOMDocumentFragment* aDest) {
+txMozillaTextOutput::txMozillaTextOutput(DocumentFragment* aDest) {
   MOZ_COUNT_CTOR(txMozillaTextOutput);
-  mTextParent = do_QueryInterface(aDest);
+  mTextParent = aDest;
   mDocument = mTextParent->OwnerDoc();
 }
 
@@ -67,17 +66,16 @@ nsresult txMozillaTextOutput::endDocument(nsresult aResult) {
   nsresult rv = mTextParent->AppendChildTo(text, true);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // This should really be handled by nsIDocument::EndLoad
+  // This should really be handled by Document::EndLoad
   if (mObserver) {
-    MOZ_ASSERT(
-        mDocument->GetReadyStateEnum() == nsIDocument::READYSTATE_LOADING,
-        "Bad readyState");
+    MOZ_ASSERT(mDocument->GetReadyStateEnum() == Document::READYSTATE_LOADING,
+               "Bad readyState");
   } else {
     MOZ_ASSERT(
-        mDocument->GetReadyStateEnum() == nsIDocument::READYSTATE_INTERACTIVE,
+        mDocument->GetReadyStateEnum() == Document::READYSTATE_INTERACTIVE,
         "Bad readyState");
   }
-  mDocument->SetReadyStateInternal(nsIDocument::READYSTATE_INTERACTIVE);
+  mDocument->SetReadyStateInternal(Document::READYSTATE_INTERACTIVE);
 
   if (NS_SUCCEEDED(aResult)) {
     nsCOMPtr<nsITransformObserver> observer = do_QueryReferent(mObserver);
@@ -98,7 +96,7 @@ nsresult txMozillaTextOutput::processingInstruction(const nsString& aTarget,
 
 nsresult txMozillaTextOutput::startDocument() { return NS_OK; }
 
-nsresult txMozillaTextOutput::createResultDocument(nsIDocument* aSourceDocument,
+nsresult txMozillaTextOutput::createResultDocument(Document* aSourceDocument,
                                                    bool aLoadedAsData) {
   /*
    * Create an XHTML document to hold the text.
@@ -119,11 +117,11 @@ nsresult txMozillaTextOutput::createResultDocument(nsIDocument* aSourceDocument,
   // Create the document
   nsresult rv = NS_NewXMLDocument(getter_AddRefs(mDocument), aLoadedAsData);
   NS_ENSURE_SUCCESS(rv, rv);
-  // This should really be handled by nsIDocument::BeginLoad
+  // This should really be handled by Document::BeginLoad
   MOZ_ASSERT(
-      mDocument->GetReadyStateEnum() == nsIDocument::READYSTATE_UNINITIALIZED,
+      mDocument->GetReadyStateEnum() == Document::READYSTATE_UNINITIALIZED,
       "Bad readyState");
-  mDocument->SetReadyStateInternal(nsIDocument::READYSTATE_LOADING);
+  mDocument->SetReadyStateInternal(Document::READYSTATE_LOADING);
   bool hasHadScriptObject = false;
   nsIScriptGlobalObject* sgo =
       aSourceDocument->GetScriptHandlingObject(hasHadScriptObject);
@@ -220,8 +218,8 @@ nsresult txMozillaTextOutput::startElement(nsAtom* aPrefix,
   return NS_OK;
 }
 
-void txMozillaTextOutput::getOutputDocument(nsIDOMDocument** aDocument) {
-  CallQueryInterface(mDocument, aDocument);
+void txMozillaTextOutput::getOutputDocument(Document** aDocument) {
+  NS_IF_ADDREF(*aDocument = mDocument);
 }
 
 nsresult txMozillaTextOutput::createXHTMLElement(nsAtom* aName,

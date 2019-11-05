@@ -23,22 +23,24 @@ const breakdown = {
     by: "internalType",
     then: { by: "count", count: true, bytes: true },
   },
+  domNode: {
+    by: "descriptiveType",
+    then: { by: "count", count: true, bytes: true },
+  },
 };
 
 const description = {
   objects: {
     Function: { count: 1, bytes: 32 },
-    other: { count: 0, bytes: 0 }
+    other: { count: 0, bytes: 0 },
   },
   strings: {},
   scripts: {},
-  other: {}
+  other: {},
+  domNode: {},
 };
 
-const expected = [
-  "objects",
-  "Function"
-];
+const expected = ["objects", "Function"];
 
 const shallowSize = 32;
 

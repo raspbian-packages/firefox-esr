@@ -9,7 +9,8 @@
 
 #include "mozilla/Assertions.h"
 #include "mozilla/Unused.h"
-#include "nsISupports.h"
+#include "nsIChannel.h"
+#include "mozilla/dom/Document.h"
 #include "nsThreadUtils.h"
 
 namespace mozilla {
@@ -23,7 +24,7 @@ ChannelEvent* ChannelEventQueue::TakeEvent() {
     return nullptr;
   }
 
-  UniquePtr<ChannelEvent> event(Move(mEventQueue[0]));
+  UniquePtr<ChannelEvent> event(std::move(mEventQueue[0]));
   mEventQueue.RemoveElementAt(0);
 
   return event.release();
@@ -149,7 +150,7 @@ void ChannelEventQueue::ResumeInternal() {
       }
 
      private:
-      virtual ~CompleteResumeRunnable() {}
+      virtual ~CompleteResumeRunnable() = default;
 
       RefPtr<ChannelEventQueue> mQueue;
       nsCOMPtr<nsISupports> mOwner;
@@ -165,6 +166,52 @@ void ChannelEventQueue::ResumeInternal() {
     Unused << NS_WARN_IF(
         NS_FAILED(target->Dispatch(event.forget(), NS_DISPATCH_NORMAL)));
   }
+}
+
+bool ChannelEventQueue::MaybeSuspendIfEventsAreSuppressed() {
+  // We only ever need to suppress events on the main thread, since this is
+  // where content scripts can run.
+  if (!NS_IsMainThread()) {
+    return false;
+  }
+
+  // Only suppress events for queues associated with XHRs, as these can cause
+  // content scripts to run.
+  if (mHasCheckedForXMLHttpRequest && !mForXMLHttpRequest) {
+    return false;
+  }
+
+  nsCOMPtr<nsIChannel> channel(do_QueryInterface(mOwner));
+  if (!channel) {
+    return false;
+  }
+
+  nsCOMPtr<nsILoadInfo> loadInfo = channel->LoadInfo();
+  // Figure out if this is for an XHR, if we haven't done so already.
+  if (!mHasCheckedForXMLHttpRequest) {
+    nsContentPolicyType contentType = loadInfo->InternalContentPolicyType();
+    mForXMLHttpRequest =
+        (contentType == nsIContentPolicy::TYPE_INTERNAL_XMLHTTPREQUEST);
+    mHasCheckedForXMLHttpRequest = true;
+
+    if (!mForXMLHttpRequest) {
+      return false;
+    }
+  }
+
+  // Suspend the queue if the associated document has suppressed event handling,
+  // *and* it is not in the middle of a synchronous operation that might require
+  // XHR events to be processed (such as a synchronous XHR).
+  RefPtr<dom::Document> document;
+  loadInfo->GetLoadingDocument(getter_AddRefs(document));
+  if (document && document->EventHandlingSuppressed() &&
+      !document->IsInSyncOperation()) {
+    document->AddSuspendedChannelEventQueue(this);
+    SuspendInternal();
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace net

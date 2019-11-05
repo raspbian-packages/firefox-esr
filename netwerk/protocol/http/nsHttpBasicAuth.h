@@ -7,6 +7,8 @@
 #define nsBasicAuth_h__
 
 #include "nsIHttpAuthenticator.h"
+#include "mozilla/RefPtr.h"
+#include "mozilla/StaticPtr.h"
 
 namespace mozilla {
 namespace net {
@@ -21,10 +23,14 @@ class nsHttpBasicAuth : public nsIHttpAuthenticator {
   NS_DECL_ISUPPORTS
   NS_DECL_NSIHTTPAUTHENTICATOR
 
-  nsHttpBasicAuth();
+  nsHttpBasicAuth() = default;
+
+  static already_AddRefed<nsIHttpAuthenticator> GetOrCreate();
 
  private:
-  virtual ~nsHttpBasicAuth();
+  virtual ~nsHttpBasicAuth() = default;
+
+  static StaticRefPtr<nsHttpBasicAuth> gSingleton;
 };
 
 }  // namespace net

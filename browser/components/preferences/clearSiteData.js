@@ -2,55 +2,79 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-ChromeUtils.import("resource://gre/modules/DownloadUtils.jsm");
-ChromeUtils.import("resource:///modules/SiteDataManager.jsm");
+const { SiteDataManager } = ChromeUtils.import(
+  "resource:///modules/SiteDataManager.jsm"
+);
+
+ChromeUtils.defineModuleGetter(
+  this,
+  "DownloadUtils",
+  "resource://gre/modules/DownloadUtils.jsm"
+);
 
 var gClearSiteDataDialog = {
   _clearSiteDataCheckbox: null,
   _clearCacheCheckbox: null,
   _clearButton: null,
 
-  init() {
-    this._bundle = Services.strings
-      .createBundle("chrome://browser/locale/preferences/clearSiteData.properties");
+  onLoad() {
+    document.mozSubdialogReady = this.init();
+  },
 
-    SiteDataManager.getTotalUsage().then(bytes => {
-      // Size is an array of amount and unit, e.g. [20, "MB"].
-      let size = DownloadUtils.convertByteUnits(bytes);
-      document.getElementById("clearSiteDataLabel").value =
-        this._bundle.formatStringFromName("clearSiteDataWithEstimates.label", size, 2);
-    });
-    SiteDataManager.getCacheSize().then(bytes => {
-      // Size is an array of amount and unit, e.g. [20, "MB"].
-      let size = DownloadUtils.convertByteUnits(bytes);
-      document.getElementById("clearCacheLabel").value =
-        this._bundle.formatStringFromName("clearCacheWithEstimates.label", size, 2);
-    });
-
+  async init() {
     this._clearButton = document.getElementById("clearButton");
     this._cancelButton = document.getElementById("cancelButton");
     this._clearSiteDataCheckbox = document.getElementById("clearSiteData");
     this._clearCacheCheckbox = document.getElementById("clearCache");
+
+    // We'll block init() on this because the result values may impact
+    // subdialog sizing.
+    await Promise.all([
+      SiteDataManager.getTotalUsage().then(bytes => {
+        let [amount, unit] = DownloadUtils.convertByteUnits(bytes);
+        document.l10n.setAttributes(
+          this._clearSiteDataCheckbox,
+          "clear-site-data-cookies-with-data",
+          { amount, unit }
+        );
+      }),
+      SiteDataManager.getCacheSize().then(bytes => {
+        let [amount, unit] = DownloadUtils.convertByteUnits(bytes);
+        document.l10n.setAttributes(
+          this._clearCacheCheckbox,
+          "clear-site-data-cache-with-data",
+          { amount, unit }
+        );
+      }),
+    ]);
+    await document.l10n.translateElements([
+      this._clearCacheCheckbox,
+      this._clearSiteDataCheckbox,
+    ]);
 
     window.addEventListener("keypress", this.onWindowKeyPress);
 
     this._cancelButton.addEventListener("command", window.close);
     this._clearButton.addEventListener("command", () => this.onClear());
 
-    this._clearSiteDataCheckbox.addEventListener("command", e => this.onCheckboxCommand(e));
-    this._clearCacheCheckbox.addEventListener("command", e => this.onCheckboxCommand(e));
+    this._clearSiteDataCheckbox.addEventListener("command", e =>
+      this.onCheckboxCommand(e)
+    );
+    this._clearCacheCheckbox.addEventListener("command", e =>
+      this.onCheckboxCommand(e)
+    );
   },
 
   onWindowKeyPress(event) {
-    if (event.keyCode == KeyEvent.DOM_VK_ESCAPE)
+    if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
       window.close();
+    }
   },
 
   onCheckboxCommand(event) {
-    this._clearButton.disabled =
-      !(this._clearSiteDataCheckbox.checked || this._clearCacheCheckbox.checked);
+    this._clearButton.disabled = !(
+      this._clearSiteDataCheckbox.checked || this._clearCacheCheckbox.checked
+    );
   },
 
   onClear() {
@@ -78,4 +102,4 @@ var gClearSiteDataDialog = {
   },
 };
 
-window.addEventListener("load", () => gClearSiteDataDialog.init());
+window.addEventListener("load", () => gClearSiteDataDialog.onLoad());

@@ -11,6 +11,7 @@
 #include "nsStreamUtils.h"
 #include "nsTArray.h"
 #include "mozilla/CheckedInt.h"
+#include "BMPHeaders.h"
 
 using namespace mozilla;
 using namespace mozilla::image;
@@ -20,14 +21,19 @@ NS_IMPL_ISUPPORTS(nsBMPEncoder, imgIEncoder, nsIInputStream,
                   nsIAsyncInputStream)
 
 nsBMPEncoder::nsBMPEncoder()
-    : mImageBufferStart(nullptr),
+    : mBMPInfoHeader{},
+      mImageBufferStart(nullptr),
       mImageBufferCurr(0),
       mImageBufferSize(0),
       mImageBufferReadPoint(0),
       mFinished(false),
       mCallback(nullptr),
       mCallbackTarget(nullptr),
-      mNotifyThreshold(0) {}
+      mNotifyThreshold(0) {
+  this->mBMPFileHeader.filesize = 0;
+  this->mBMPFileHeader.reserved = 0;
+  this->mBMPFileHeader.dataoffset = 0;
+}
 
 nsBMPEncoder::~nsBMPEncoder() {
   if (mImageBufferStart) {
@@ -229,7 +235,7 @@ nsBMPEncoder::AddImageFrame(const uint8_t* aData,
       }
     }
   } else {
-    NS_NOTREACHED("Bad format type");
+    MOZ_ASSERT_UNREACHABLE("Bad format type");
     return NS_ERROR_INVALID_ARG;
   }
 

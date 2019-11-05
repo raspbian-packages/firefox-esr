@@ -5,8 +5,10 @@
 #include "mozilla/HTMLEditor.h"
 
 #include "mozilla/Attributes.h"
-#include "mozilla/dom/CSSPrimitiveValueBinding.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/PresShellInlines.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/dom/EventTarget.h"
 #include "mozilla/mozalloc.h"
 #include "nsAString.h"
 #include "nsCOMPtr.h"
@@ -18,18 +20,14 @@
 #include "nsAtom.h"
 #include "nsIContent.h"
 #include "nsID.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMEventTarget.h"
-#include "nsIDOMNode.h"
 #include "nsIDOMWindow.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDocumentObserver.h"
 #include "nsIHTMLAbsPosEditor.h"
 #include "nsIHTMLInlineTableEditor.h"
 #include "nsIHTMLObjectResizer.h"
 #include "nsStubMutationObserver.h"
 #include "nsINode.h"
-#include "nsIPresShell.h"
 #include "nsISupportsImpl.h"
 #include "nsISupportsUtils.h"
 #include "nsLiteralString.h"
@@ -43,58 +41,33 @@
 #include "nsROCSSPrimitiveValue.h"
 
 class nsIDOMEventListener;
-class nsISelection;
 
 namespace mozilla {
 
 using namespace dom;
 
-// retrieve an integer stored into a CSS computed float value
+// Retrieve the rounded number of CSS pixels from a computed CSS property.
+//
+// Note that this should only be called for properties whose resolved value
+// is CSS pixels (like width, height, left, top, right, bottom, margin, padding,
+// border-*-width, ...).
+//
+// See: https://drafts.csswg.org/cssom/#resolved-values
 static int32_t GetCSSFloatValue(nsComputedDOMStyle* aComputedStyle,
                                 const nsAString& aProperty) {
   MOZ_ASSERT(aComputedStyle);
 
   // get the computed CSSValue of the property
-  ErrorResult rv;
-  RefPtr<CSSValue> value = aComputedStyle->GetPropertyCSSValue(aProperty, rv);
-  if (rv.Failed() || !value) {
+  nsAutoString value;
+  nsresult rv = aComputedStyle->GetPropertyValue(aProperty, value);
+  if (NS_FAILED(rv)) {
     return 0;
   }
 
-  // check the type of the returned CSSValue; we handle here only
-  // pixel and enum types
-  RefPtr<nsROCSSPrimitiveValue> val = value->AsPrimitiveValue();
-  uint16_t type = val->PrimitiveType();
-
-  float f = 0;
-  switch (type) {
-    case CSSPrimitiveValueBinding::CSS_PX:
-      // the value is in pixels, just get it
-      f = val->GetFloatValue(CSSPrimitiveValueBinding::CSS_PX, rv);
-      if (rv.Failed()) {
-        return 0;
-      }
-      break;
-    case CSSPrimitiveValueBinding::CSS_IDENT: {
-      // the value is keyword, we have to map these keywords into
-      // numeric values
-      nsAutoString str;
-      val->GetStringValue(str, rv);
-      if (rv.Failed()) {
-        return 0;
-      }
-      if (str.EqualsLiteral("thin")) {
-        f = 1;
-      } else if (str.EqualsLiteral("medium")) {
-        f = 3;
-      } else if (str.EqualsLiteral("thick")) {
-        f = 5;
-      }
-      break;
-    }
-  }
-
-  return (int32_t)f;
+  // We only care about resolved values, not a big deal if the element is
+  // undisplayed, for example, and the value is "auto" or what not.
+  int32_t val = value.ToInteger(&rv);
+  return NS_SUCCEEDED(rv) ? val : 0;
 }
 
 class ElementDeletionObserver final : public nsStubMutationObserver {
@@ -137,7 +110,7 @@ void ElementDeletionObserver::ParentChainChanged(nsIContent* aContent) {
     // node so that the subtree root points to the right object etc.
     mNativeAnonNode->UnbindFromTree();
     mNativeAnonNode->BindToTree(mObservedNode->GetUncomposedDoc(),
-                                mObservedNode, mObservedNode, true);
+                                mObservedNode, mObservedNode);
   }
 }
 
@@ -168,14 +141,14 @@ ManualNACPtr HTMLEditor::CreateAnonymousElement(nsAtom* aTag,
     return nullptr;
   }
 
-  nsCOMPtr<nsIDocument> doc = GetDocument();
+  RefPtr<Document> doc = GetDocument();
   if (NS_WARN_IF(!doc)) {
     return nullptr;
   }
 
   // Get the pres shell
-  nsCOMPtr<nsIPresShell> ps = GetPresShell();
-  if (NS_WARN_IF(!ps)) {
+  RefPtr<PresShell> presShell = GetPresShell();
+  if (NS_WARN_IF(!presShell)) {
     return nullptr;
   }
 
@@ -209,7 +182,7 @@ ManualNACPtr HTMLEditor::CreateAnonymousElement(nsAtom* aTag,
     // establish parenthood of the element
     newContentRaw->SetIsNativeAnonymousRoot();
     nsresult rv =
-        newContentRaw->BindToTree(doc, &aParentContent, &aParentContent, true);
+        newContentRaw->BindToTree(doc, &aParentContent, &aParentContent);
     if (NS_FAILED(rv)) {
       newContentRaw->UnbindFromTree();
       return nullptr;
@@ -220,12 +193,11 @@ ManualNACPtr HTMLEditor::CreateAnonymousElement(nsAtom* aTag,
 
   // Must style the new element, otherwise the PostRecreateFramesFor call
   // below will do nothing.
-  if (ServoStyleSet* styleSet = ps->StyleSet()->GetAsServo()) {
-    // Sometimes editor likes to append anonymous content to elements
-    // in display:none subtrees, so avoid styling in those cases.
-    if (styleSet->MayTraverseFrom(newContent)) {
-      styleSet->StyleNewSubtree(newContent);
-    }
+  ServoStyleSet* styleSet = presShell->StyleSet();
+  // Sometimes editor likes to append anonymous content to elements
+  // in display:none subtrees, so avoid styling in those cases.
+  if (ServoStyleSet::MayTraverseFrom(newContent)) {
+    styleSet->StyleNewSubtree(newContent);
   }
 
   ElementDeletionObserver* observer =
@@ -244,9 +216,9 @@ ManualNACPtr HTMLEditor::CreateAnonymousElement(nsAtom* aTag,
 #endif  // DEBUG
 
   // display the element
-  ps->PostRecreateFramesFor(newContent);
+  presShell->PostRecreateFramesFor(newContent);
 
-  return Move(newContent);
+  return newContent;
 }
 
 // Removes event listener and calls DeleteRefToAnonymousNode.
@@ -254,17 +226,16 @@ void HTMLEditor::RemoveListenerAndDeleteRef(const nsAString& aEvent,
                                             nsIDOMEventListener* aListener,
                                             bool aUseCapture,
                                             ManualNACPtr aElement,
-                                            nsIPresShell* aShell) {
-  nsCOMPtr<nsIDOMEventTarget> evtTarget(do_QueryInterface(aElement));
-  if (evtTarget) {
-    evtTarget->RemoveEventListener(aEvent, aListener, aUseCapture);
+                                            PresShell* aPresShell) {
+  if (aElement) {
+    aElement->RemoveEventListener(aEvent, aListener, aUseCapture);
   }
-  DeleteRefToAnonymousNode(Move(aElement), aShell);
+  DeleteRefToAnonymousNode(std::move(aElement), aPresShell);
 }
 
 // Deletes all references to an anonymous element
 void HTMLEditor::DeleteRefToAnonymousNode(ManualNACPtr aContent,
-                                          nsIPresShell* aShell) {
+                                          PresShell* aPresShell) {
   // call ContentRemoved() for the anonymous content
   // node so its references get removed from the frame manager's
   // undisplay map, and its layout frames get destroyed!
@@ -280,46 +251,88 @@ void HTMLEditor::DeleteRefToAnonymousNode(ManualNACPtr aContent,
   }
 
   nsAutoScriptBlocker scriptBlocker;
-  // Need to check whether aShell has been destroyed (but not yet deleted).
+  // Need to check whether aPresShell has been destroyed (but not yet deleted).
   // See bug 338129.
-  if (aContent->IsInComposedDoc() && aShell && !aShell->IsDestroying()) {
-    // Call BeginUpdate() so that the nsCSSFrameConstructor/PresShell
-    // knows we're messing with the frame tree.
-    //
-    // FIXME(emilio): Shouldn't this use the document update mechanism instead?
-    // Also, is it really needed? This is NAC anyway.
-    nsCOMPtr<nsIDocument> document = GetDocument();
-    if (document) {
-      aShell->BeginUpdate(document, UPDATE_CONTENT_MODEL);
-    }
-
+  if (aContent->IsInComposedDoc() && aPresShell &&
+      !aPresShell->IsDestroying()) {
     MOZ_ASSERT(aContent->IsRootOfAnonymousSubtree());
     MOZ_ASSERT(!aContent->GetPreviousSibling(), "NAC has no siblings");
 
     // FIXME(emilio): This is the only caller to PresShell::ContentRemoved that
     // passes NAC into it. This is not great!
-    aShell->ContentRemoved(aContent, nullptr);
-
-    if (document) {
-      aShell->EndUpdate(document, UPDATE_CONTENT_MODEL);
-    }
+    aPresShell->ContentRemoved(aContent, nullptr);
   }
 
   // The ManualNACPtr destructor will invoke UnbindFromTree.
 }
 
-// The following method is mostly called by a selection listener. When a
-// selection change is notified, the method is called to check if resizing
-// handles, a grabber and/or inline table editing UI need to be displayed
-// or refreshed
+void HTMLEditor::HideAnonymousEditingUIs() {
+  if (mAbsolutelyPositionedObject) {
+    HideGrabberInternal();
+    NS_ASSERTION(!mAbsolutelyPositionedObject, "HideGrabber failed");
+  }
+  if (mInlineEditedCell) {
+    HideInlineTableEditingUIInternal();
+    NS_ASSERTION(!mInlineEditedCell, "HideInlineTableEditingUIInternal failed");
+  }
+  if (mResizedObject) {
+    DebugOnly<nsresult> rv = HideResizersInternal();
+    NS_WARNING_ASSERTION(NS_SUCCEEDED(rv), "HideResizersInternal() failed");
+    NS_ASSERTION(!mResizedObject, "HideResizersInternal() failed");
+  }
+}
+
+void HTMLEditor::HideAnonymousEditingUIsIfUnnecessary() {
+  // XXX Perhaps, this is wrong approach to hide multiple UIs because
+  //     hiding one UI may causes overwriting existing UI with newly
+  //     created one.  In such case, we will leak ovewritten UI.
+  if (!IsAbsolutePositionEditorEnabled() && mAbsolutelyPositionedObject) {
+    // XXX If we're moving something, we need to cancel or commit the
+    //     operation now.
+    HideGrabberInternal();
+    NS_ASSERTION(!mAbsolutelyPositionedObject, "HideGrabber failed");
+  }
+  if (!IsInlineTableEditorEnabled() && mInlineEditedCell) {
+    // XXX If we're resizing a table element, we need to cancel or commit the
+    //     operation now.
+    HideInlineTableEditingUIInternal();
+    NS_ASSERTION(!mInlineEditedCell, "HideInlineTableEditingUIInternal failed");
+  }
+  if (!IsObjectResizerEnabled() && mResizedObject) {
+    // XXX If we're resizing something, we need to cancel or commit the
+    //     operation now.
+    DebugOnly<nsresult> rv = HideResizersInternal();
+    NS_WARNING_ASSERTION(NS_SUCCEEDED(rv), "HideResizersInternal() failed");
+    NS_ASSERTION(!mResizedObject, "HideResizersInternal() failed");
+  }
+}
+
 NS_IMETHODIMP
-HTMLEditor::CheckSelectionStateForAnonymousButtons(nsISelection* aSelection) {
-  NS_ENSURE_ARG_POINTER(aSelection);
+HTMLEditor::CheckSelectionStateForAnonymousButtons() {
+  AutoEditActionDataSetter editActionData(*this, EditAction::eNotEditing);
+  if (NS_WARN_IF(!editActionData.CanHandle())) {
+    return NS_ERROR_NOT_INITIALIZED;
+  }
+
+  nsresult rv = RefreshEditingUI();
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return EditorBase::ToGenericNSResult(rv);
+  }
+  return NS_OK;
+}
+
+nsresult HTMLEditor::RefreshEditingUI() {
+  MOZ_ASSERT(IsEditActionDataAvailable());
+
+  // First, we need to remove unnecessary editing UI now since some of them
+  // may be disabled while them are visible.
+  HideAnonymousEditingUIsIfUnnecessary();
 
   // early way out if all contextual UI extensions are disabled
-  NS_ENSURE_TRUE(mIsObjectResizingEnabled || mIsAbsolutelyPositioningEnabled ||
-                     mIsInlineTableEditingEnabled,
-                 NS_OK);
+  if (!IsObjectResizerEnabled() && !IsAbsolutePositionEditorEnabled() &&
+      !IsInlineTableEditorEnabled()) {
+    return NS_OK;
+  }
 
   // Don't change selection state if we're moving.
   if (mIsMoving) {
@@ -327,8 +340,10 @@ HTMLEditor::CheckSelectionStateForAnonymousButtons(nsISelection* aSelection) {
   }
 
   // let's get the containing element of the selection
-  RefPtr<Element> focusElement = GetSelectionContainer();
-  NS_ENSURE_TRUE(focusElement, NS_OK);
+  RefPtr<Element> focusElement = GetSelectionContainerElement();
+  if (NS_WARN_IF(!focusElement)) {
+    return NS_OK;
+  }
 
   // If we're not in a document, don't try to add resizers
   if (!focusElement->IsInUncomposedDoc()) {
@@ -339,20 +354,20 @@ HTMLEditor::CheckSelectionStateForAnonymousButtons(nsISelection* aSelection) {
   nsAtom* focusTagAtom = focusElement->NodeInfo()->NameAtom();
 
   RefPtr<Element> absPosElement;
-  if (mIsAbsolutelyPositioningEnabled) {
+  if (IsAbsolutePositionEditorEnabled()) {
     // Absolute Positioning support is enabled, is the selection contained
     // in an absolutely positioned element ?
     absPosElement = GetAbsolutelyPositionedSelectionContainer();
   }
 
   RefPtr<Element> cellElement;
-  if (mIsObjectResizingEnabled || mIsInlineTableEditingEnabled) {
+  if (IsObjectResizerEnabled() || IsInlineTableEditorEnabled()) {
     // Resizing or Inline Table Editing is enabled, we need to check if the
     // selection is contained in a table cell
-    cellElement = GetElementOrParentByTagName(NS_LITERAL_STRING("td"), nullptr);
+    cellElement = GetElementOrParentByTagNameAtSelection(*nsGkAtoms::td);
   }
 
-  if (mIsObjectResizingEnabled && cellElement) {
+  if (IsObjectResizerEnabled() && cellElement) {
     // we are here because Resizing is enabled AND selection is contained in
     // a cell
 
@@ -360,6 +375,9 @@ HTMLEditor::CheckSelectionStateForAnonymousButtons(nsISelection* aSelection) {
     if (nsGkAtoms::img != focusTagAtom) {
       // the element container of the selection is not an image, so we'll show
       // the resizers around the table
+      // XXX There may be a bug.  cellElement may be not in <table> in invalid
+      //     tree.  So, perhaps, GetEnclosingTable() returns nullptr, we should
+      //     not set focusTagAtom to nsGkAtoms::table.
       focusElement = GetEnclosingTable(cellElement);
       focusTagAtom = nsGkAtoms::table;
     }
@@ -379,71 +397,75 @@ HTMLEditor::CheckSelectionStateForAnonymousButtons(nsISelection* aSelection) {
   // content which means a DOMAttrModified handler may cause arbitrary
   // side effects while this code runs (bug 420439).
 
-  if (mIsAbsolutelyPositioningEnabled && mAbsolutelyPositionedObject &&
+  if (IsAbsolutePositionEditorEnabled() && mAbsolutelyPositionedObject &&
       absPosElement != mAbsolutelyPositionedObject) {
-    HideGrabber();
+    HideGrabberInternal();
     NS_ASSERTION(!mAbsolutelyPositionedObject, "HideGrabber failed");
   }
 
-  if (mIsObjectResizingEnabled && mResizedObject &&
+  if (IsObjectResizerEnabled() && mResizedObject &&
       mResizedObject != focusElement) {
-    nsresult rv = HideResizers();
-    NS_ENSURE_SUCCESS(rv, rv);
-    NS_ASSERTION(!mResizedObject, "HideResizers failed");
+    // Perhaps, even if HideResizersInternal() failed, we should try to hide
+    // inline table editing UI.  However, it returns error only when we cannot
+    // do anything.  So, it's okay for now.
+    nsresult rv = HideResizersInternal();
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+    NS_ASSERTION(!mResizedObject, "HideResizersInternal() failed");
   }
 
-  if (mIsInlineTableEditingEnabled && mInlineEditedCell &&
+  if (IsInlineTableEditorEnabled() && mInlineEditedCell &&
       mInlineEditedCell != cellElement) {
-    nsresult rv = HideInlineTableEditingUI();
-    NS_ENSURE_SUCCESS(rv, rv);
-    NS_ASSERTION(!mInlineEditedCell, "HideInlineTableEditingUI failed");
+    HideInlineTableEditingUIInternal();
+    NS_ASSERTION(!mInlineEditedCell, "HideInlineTableEditingUIInternal failed");
   }
 
   // now, let's display all contextual UI for good
   nsIContent* hostContent = GetActiveEditingHost();
 
-  if (mIsObjectResizingEnabled && focusElement &&
-      IsModifiableNode(focusElement) && focusElement != hostContent) {
+  if (IsObjectResizerEnabled() && focusElement &&
+      IsModifiableNode(*focusElement) && focusElement != hostContent) {
     if (nsGkAtoms::img == focusTagAtom) {
       mResizedObjectIsAnImage = true;
     }
     if (mResizedObject) {
-      nsresult rv = RefreshResizers();
+      nsresult rv = RefreshResizersInternal();
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
     } else {
-      nsresult rv = ShowResizers(*focusElement);
+      nsresult rv = ShowResizersInternal(*focusElement);
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
     }
   }
 
-  if (mIsAbsolutelyPositioningEnabled && absPosElement &&
-      IsModifiableNode(absPosElement) && absPosElement != hostContent) {
+  if (IsAbsolutePositionEditorEnabled() && absPosElement &&
+      IsModifiableNode(*absPosElement) && absPosElement != hostContent) {
     if (mAbsolutelyPositionedObject) {
-      nsresult rv = RefreshGrabber();
+      nsresult rv = RefreshGrabberInternal();
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
     } else {
-      nsresult rv = ShowGrabber(*absPosElement);
+      nsresult rv = ShowGrabberInternal(*absPosElement);
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
     }
   }
 
-  if (mIsInlineTableEditingEnabled && cellElement &&
-      IsModifiableNode(cellElement) && cellElement != hostContent) {
+  if (IsInlineTableEditorEnabled() && cellElement &&
+      IsModifiableNode(*cellElement) && cellElement != hostContent) {
     if (mInlineEditedCell) {
-      nsresult rv = RefreshInlineTableEditingUI();
+      nsresult rv = RefreshInlineTableEditingUIInternal();
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
     } else {
-      nsresult rv = ShowInlineTableEditingUI(cellElement);
+      nsresult rv = ShowInlineTableEditingUIInternal(*cellElement);
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
@@ -497,7 +519,7 @@ nsresult HTMLEditor::GetPositionAndDimensions(Element& aElement, int32_t& aX,
   } else {
     mResizedObjectIsAbsolutelyPositioned = false;
     RefPtr<nsGenericHTMLElement> htmlElement =
-        nsGenericHTMLElement::FromContent(&aElement);
+        nsGenericHTMLElement::FromNode(aElement);
     if (!htmlElement) {
       return NS_ERROR_NULL_POINTER;
     }

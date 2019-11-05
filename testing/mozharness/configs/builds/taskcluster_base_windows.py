@@ -8,10 +8,12 @@ config = {
     ],
     'app_ini_path': '%(obj_dir)s/dist/bin/application.ini',
     'vcs_share_base': os.path.join('y:', os.sep, 'hg-shared'),
-    'enable_count_ctors': False,
     'max_build_output_timeout': 60 * 80,
 
     'env': {
+        'BINSCOPE': os.path.join(
+            os.environ['ProgramFiles'], 'Microsoft BinScope 2014', 'Binscope.exe'
+        ),
         'HG_SHARE_BASE_DIR': os.path.join('y:', os.sep, 'hg-shared'),
         'MOZBUILD_STATE_PATH': os.path.join(os.getcwd(), '.mozbuild'),
         'MOZ_CRASHREPORTER_NO_REPORT': '1',
@@ -26,9 +28,6 @@ config = {
         'UPLOAD_PATH': os.path.join(os.getcwd(), 'public', 'build'),
     },
     'secret_files': [
-        {'filename': 'gapi.data',
-         'secret_name': 'project/releng/gecko/build/level-%(scm-level)s/gapi.data',
-         'min_scm_level': 1},
         {'filename': 'gls-gapi.data',
          'secret_name': 'project/releng/gecko/build/level-%(scm-level)s/gls-gapi.data',
          'min_scm_level': 1},

@@ -5,7 +5,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=376075
 -->
 <head>
   <title>Test for Bug 376075</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
 <body>
@@ -237,7 +237,7 @@ is(e.style.animation, "", "should not have animation shorthand (lists different 
 // (bug 482692).
 e.setAttribute("style", 'border-image: url("foo.png") 5 5 5 5 / 5 5 5 5 / 5 5 5 5 repeat repeat; border-left: medium solid green');
 is(e.style.cssText,
-   'border-image: url("foo.png") 5 / 5 / 5 repeat repeat; border-left: medium solid green;',
+   'border-image: url("foo.png") 5 / 5 / 5 repeat; border-left: medium solid green;',
    "border-left does NOT reset border-image");
 e.setAttribute("style", 'border-image: url("foo.png") 5 5 5 5; border: medium solid green');
 is(e.style.cssText,

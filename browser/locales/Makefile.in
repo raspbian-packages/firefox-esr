@@ -37,21 +37,11 @@ MOZ_PKG_MAC_ICON=$(ABS_DIST)/branding/disk.icns
 MOZ_PKG_MAC_EXTRA=--symlink '/Applications:/ '
 endif
 
-MOZ_SFX_PACKAGE=$(topsrcdir)/other-licenses/7zstub/firefox/7zSD.sfx
-
-SEARCHPLUGINS_FILENAMES := $(or $(shell $(call py_action,output_searchplugins_list,$(srcdir)/search/list.json $(AB_CD))), $(error Missing search plugins))
-SEARCHPLUGINS_PATH := .deps/generated_$(AB_CD)
-SEARCHPLUGINS_TARGET := libs searchplugins
-SEARCHPLUGINS := $(foreach plugin,$(addsuffix .xml,$(SEARCHPLUGINS_FILENAMES)),$(or $(wildcard $(srcdir)/searchplugins/$(plugin)),$(error Missing searchplugin: $(plugin))))
-# Some locale-specific search plugins may have preprocessor directives, but the
-# default en-US ones do not.
-SEARCHPLUGINS_FLAGS := --silence-missing-directive-warnings
-PP_TARGETS += SEARCHPLUGINS
-
-list-json = $(SEARCHPLUGINS_PATH)/list.json
-GARBAGE += $(list-json)
-
-libs:: searchplugins
+ifeq ($(CPU_ARCH), aarch64)
+MOZ_SFX_PACKAGE=$(topsrcdir)/other-licenses/7zstub/firefox/7zSD.ARM64.sfx
+else
+MOZ_SFX_PACKAGE=$(topsrcdir)/other-licenses/7zstub/firefox/7zSD.Win32.sfx
+endif
 
 # Required for l10n.mk - defines a list of app sub dirs that should
 # be included in langpack xpis.
@@ -60,12 +50,6 @@ DIST_SUBDIRS = $(DIST_SUBDIR)
 include $(topsrcdir)/config/rules.mk
 
 include $(topsrcdir)/toolkit/locales/l10n.mk
-
-$(list-json): $(call mkdir_deps,$(SEARCHPLUGINS_PATH)) $(if $(IS_LANGUAGE_REPACK),FORCE)
-	$(call py_action,generate_searchjson,$(srcdir)/search/list.json $(AB_CD) $(list-json))
-searchplugins:: $(list-json)
-
-DEFINES += -DBOOKMARKS_INCLUDE_DIR=$(dir $(call MERGE_FILE,profile/bookmarks.inc))
 
 libs-%: AB_CD=$*
 libs-%:
@@ -77,18 +61,10 @@ libs-%:
 ifneq (,$(wildcard ../extensions/formautofill/locales))
 	@$(MAKE) -C ../extensions/formautofill/locales AB_CD=$* XPI_NAME=locale-$*
 endif
-	@$(MAKE) -C ../extensions/jaws-esr/locales AB_CD=$* XPI_NAME=locale-$*
-	@$(MAKE) -C ../extensions/onboarding/locales AB_CD=$* XPI_NAME=locale-$*
-	@$(MAKE) -C ../extensions/pocket/locale AB_CD=$* XPI_NAME=locale-$*
-ifndef RELEASE_OR_BETA
-	@$(MAKE) -C ../extensions/presentation/locale AB_CD=$* XPI_NAME=locale-$*
-endif
-ifneq '$(or $(MOZ_DEV_EDITION),$(NIGHTLY_BUILD))' ''
-	@$(MAKE) -C ../extensions/webcompat-reporter/locales AB_CD=$* XPI_NAME=locale-$*
-endif
+	@$(MAKE) -C ../extensions/fxmonitor/locales AB_CD=$* XPI_NAME=locale-$*
+	@$(MAKE) -C ../extensions/report-site-issue/locales AB_CD=$* XPI_NAME=locale-$*
 	@$(MAKE) -C ../../devtools/client/locales AB_CD=$* XPI_NAME=locale-$* XPI_ROOT_APPID='$(XPI_ROOT_APPID)'
-	@$(MAKE) -C ../../devtools/shim/locales AB_CD=$* XPI_NAME=locale-$* XPI_ROOT_APPID='$(XPI_ROOT_APPID)'
-	@$(MAKE) -B searchplugins AB_CD=$* XPI_NAME=locale-$*
+	@$(MAKE) -C ../../devtools/startup/locales AB_CD=$* XPI_NAME=locale-$* XPI_ROOT_APPID='$(XPI_ROOT_APPID)'
 	@$(MAKE) libs AB_CD=$* XPI_NAME=locale-$* PREF_DIR=$(PREF_DIR)
 	@$(MAKE) multilocale.txt-$* AB_CD=$* XPI_NAME=locale-$*
 	@$(MAKE) -C $(DEPTH)/$(MOZ_BRANDING_DIRECTORY)/locales AB_CD=$* XPI_NAME=locale-$*
@@ -103,18 +79,12 @@ chrome-%:
 ifneq (,$(wildcard ../extensions/formautofill/locales))
 	@$(MAKE) -C ../extensions/formautofill/locales chrome AB_CD=$*
 endif
-	@$(MAKE) -C ../extensions/jaws-esr/locales chrome AB_CD=$*
-	@$(MAKE) -C ../extensions/pocket/locale chrome AB_CD=$*
-ifndef RELEASE_OR_BETA
-	@$(MAKE) -C ../extensions/presentation/locale chrome AB_CD=$*
-endif
+	@$(MAKE) -C ../extensions/fxmonitor/locales chrome AB_CD=$*
 	@$(MAKE) -C ../../devtools/client/locales chrome AB_CD=$*
-	@$(MAKE) -C ../../devtools/shim/locales chrome AB_CD=$*
+	@$(MAKE) -C ../../devtools/startup/locales chrome AB_CD=$*
 	@$(MAKE) chrome AB_CD=$*
 	@$(MAKE) -C $(DEPTH)/$(MOZ_BRANDING_DIRECTORY)/locales chrome AB_CD=$*
-ifdef NIGHTLY_BUILD
-	@$(MAKE) -C ../extensions/webcompat-reporter/locales chrome AB_CD=$*
-endif
+	@$(MAKE) -C ../extensions/report-site-issue/locales chrome AB_CD=$*
 
 package-win32-installer: $(SUBMAKEFILES)
 	$(MAKE) -C ../installer/windows CONFIG_DIR=l10ngen ZIP_IN='$(ZIP_OUT)' installer

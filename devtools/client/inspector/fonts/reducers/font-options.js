@@ -4,24 +4,20 @@
 
 "use strict";
 
-const {
-  UPDATE_PREVIEW_TEXT,
-} = require("../actions/index");
+const { UPDATE_PREVIEW_TEXT } = require("../actions/index");
 
 const INITIAL_FONT_OPTIONS = {
-  previewText: "Abc",
+  previewText: "",
 };
 
-let reducers = {
-
+const reducers = {
   [UPDATE_PREVIEW_TEXT](fontOptions, { previewText }) {
     return Object.assign({}, fontOptions, { previewText });
   },
-
 };
 
-module.exports = function (fontOptions = INITIAL_FONT_OPTIONS, action) {
-  let reducer = reducers[action.type];
+module.exports = function(fontOptions = INITIAL_FONT_OPTIONS, action) {
+  const reducer = reducers[action.type];
   if (!reducer) {
     return fontOptions;
   }

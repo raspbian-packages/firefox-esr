@@ -57,7 +57,6 @@ nsresult DoListAddresses(AddrMapType& aAddrMap) {
     i += len;
   }
 
-  autoCloseSocket.release();
   return NS_OK;
 }
 

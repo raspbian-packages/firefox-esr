@@ -23,17 +23,22 @@ class ShmemCreated : public IPC::Message {
                SharedMemory::SharedMemoryType aType)
       : IPC::Message(routingId, SHMEM_CREATED_MESSAGE_TYPE, 0,
                      HeaderFlags(NESTED_INSIDE_CPOW)) {
+    MOZ_RELEASE_ASSERT(aSize < std::numeric_limits<uint32_t>::max(),
+                       "Tried to create Shmem with size larger than 4GB");
     IPC::WriteParam(this, aIPDLId);
-    IPC::WriteParam(this, aSize);
+    IPC::WriteParam(this, uint32_t(aSize));
     IPC::WriteParam(this, int32_t(aType));
   }
 
   static bool ReadInfo(const Message* msg, PickleIterator* iter, id_t* aIPDLId,
                        size_t* aSize, SharedMemory::SharedMemoryType* aType) {
+    uint32_t size = 0;
     if (!IPC::ReadParam(msg, iter, aIPDLId) ||
-        !IPC::ReadParam(msg, iter, aSize) ||
-        !IPC::ReadParam(msg, iter, reinterpret_cast<int32_t*>(aType)))
+        !IPC::ReadParam(msg, iter, &size) ||
+        !IPC::ReadParam(msg, iter, reinterpret_cast<int32_t*>(aType))) {
       return false;
+    }
+    *aSize = size;
     return true;
   }
 
@@ -214,8 +219,7 @@ static void Unprotect(SharedMemory* aSegment) {
 // to touch the segment, it dies with SIGSEGV.
 //
 
-Shmem::Shmem(IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
-             SharedMemory* aSegment, id_t aId)
+Shmem::Shmem(PrivateIPDLCaller, SharedMemory* aSegment, id_t aId)
     : mSegment(aSegment), mData(nullptr), mSize(0) {
   MOZ_ASSERT(mSegment, "null segment");
   MOZ_ASSERT(aId != 0, "invalid ID");
@@ -261,8 +265,7 @@ void Shmem::AssertInvariants() const {
   Unused << checkMappingBack;
 }
 
-void Shmem::RevokeRights(
-    IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead) {
+void Shmem::RevokeRights(PrivateIPDLCaller) {
   AssertInvariants();
 
   size_t pageSize = SharedMemory::SystemPageSize();
@@ -279,9 +282,11 @@ void Shmem::RevokeRights(
 }
 
 // static
-already_AddRefed<Shmem::SharedMemory> Shmem::Alloc(
-    IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead, size_t aNBytes,
-    SharedMemoryType aType, bool aUnsafe, bool aProtect) {
+already_AddRefed<Shmem::SharedMemory> Shmem::Alloc(PrivateIPDLCaller,
+                                                   size_t aNBytes,
+                                                   SharedMemoryType aType,
+                                                   bool aUnsafe,
+                                                   bool aProtect) {
   NS_ASSERTION(aNBytes <= UINT32_MAX, "Will truncate shmem segment size!");
   MOZ_ASSERT(!aProtect || !aUnsafe, "protect => !unsafe");
 
@@ -315,8 +320,8 @@ already_AddRefed<Shmem::SharedMemory> Shmem::Alloc(
 
 // static
 already_AddRefed<Shmem::SharedMemory> Shmem::OpenExisting(
-    IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
-    const IPC::Message& aDescriptor, id_t* aId, bool aProtect) {
+    PrivateIPDLCaller, const IPC::Message& aDescriptor, id_t* aId,
+    bool aProtect) {
   size_t size;
   size_t pageSize = SharedMemory::SystemPageSize();
   // |2*pageSize| is for the front and back sentinels
@@ -348,8 +353,7 @@ already_AddRefed<Shmem::SharedMemory> Shmem::OpenExisting(
 }
 
 // static
-void Shmem::Dealloc(IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
-                    SharedMemory* aSegment) {
+void Shmem::Dealloc(PrivateIPDLCaller, SharedMemory* aSegment) {
   if (!aSegment) return;
 
   size_t pageSize = SharedMemory::SystemPageSize();
@@ -370,9 +374,11 @@ void Shmem::Dealloc(IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
 #else  // !defined(DEBUG)
 
 // static
-already_AddRefed<Shmem::SharedMemory> Shmem::Alloc(
-    IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead, size_t aNBytes,
-    SharedMemoryType aType, bool /*unused*/, bool /*unused*/) {
+already_AddRefed<Shmem::SharedMemory> Shmem::Alloc(PrivateIPDLCaller,
+                                                   size_t aNBytes,
+                                                   SharedMemoryType aType,
+                                                   bool /*unused*/,
+                                                   bool /*unused*/) {
   RefPtr<SharedMemory> segment =
       CreateSegment(aType, aNBytes, sizeof(uint32_t));
   if (!segment) {
@@ -386,8 +392,8 @@ already_AddRefed<Shmem::SharedMemory> Shmem::Alloc(
 
 // static
 already_AddRefed<Shmem::SharedMemory> Shmem::OpenExisting(
-    IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
-    const IPC::Message& aDescriptor, id_t* aId, bool /*unused*/) {
+    PrivateIPDLCaller, const IPC::Message& aDescriptor, id_t* aId,
+    bool /*unused*/) {
   size_t size;
   RefPtr<SharedMemory> segment =
       ReadSegment(aDescriptor, aId, &size, sizeof(uint32_t));
@@ -404,16 +410,14 @@ already_AddRefed<Shmem::SharedMemory> Shmem::OpenExisting(
 }
 
 // static
-void Shmem::Dealloc(IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
-                    SharedMemory* aSegment) {
+void Shmem::Dealloc(PrivateIPDLCaller, SharedMemory* aSegment) {
   DestroySegment(aSegment);
 }
 
 #endif  // if defined(DEBUG)
 
-IPC::Message* Shmem::ShareTo(
-    IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
-    base::ProcessId aTargetPid, int32_t routingId) {
+IPC::Message* Shmem::ShareTo(PrivateIPDLCaller, base::ProcessId aTargetPid,
+                             int32_t routingId) {
   AssertInvariants();
 
   IPC::Message* msg = new ShmemCreated(routingId, mId, mSize, mSegment->Type());
@@ -425,21 +429,17 @@ IPC::Message* Shmem::ShareTo(
   return msg;
 }
 
-IPC::Message* Shmem::UnshareFrom(
-    IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead,
-    base::ProcessId aTargetPid, int32_t routingId) {
+IPC::Message* Shmem::UnshareFrom(PrivateIPDLCaller, int32_t routingId) {
   AssertInvariants();
   return new ShmemDestroyed(routingId, mId);
 }
 
 void IPDLParamTraits<Shmem>::Write(IPC::Message* aMsg, IProtocol* aActor,
-                                   Shmem& aParam) {
+                                   Shmem&& aParam) {
   WriteIPDLParam(aMsg, aActor, aParam.mId);
 
-  aParam.RevokeRights(
-      Shmem::IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead());
-  aParam.forget(
-      Shmem::IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead());
+  aParam.RevokeRights(Shmem::PrivateIPDLCaller());
+  aParam.forget(Shmem::PrivateIPDLCaller());
 }
 
 bool IPDLParamTraits<Shmem>::Read(const IPC::Message* aMsg,
@@ -452,9 +452,7 @@ bool IPDLParamTraits<Shmem>::Read(const IPC::Message* aMsg,
 
   Shmem::SharedMemory* rawmem = aActor->LookupSharedMemory(id);
   if (rawmem) {
-    *aResult =
-        Shmem(Shmem::IHadBetterBeIPDLCodeCallingThis_OtherwiseIAmADoodyhead(),
-              rawmem, id);
+    *aResult = Shmem(Shmem::PrivateIPDLCaller(), rawmem, id);
     return true;
   }
   *aResult = Shmem();

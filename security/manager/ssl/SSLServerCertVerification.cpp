@@ -121,17 +121,17 @@
 #include "nsICertOverrideService.h"
 #include "nsISiteSecurityService.h"
 #include "nsISocketProvider.h"
-#include "nsIThreadPool.h"
+#include "nsThreadPool.h"
+#include "nsNetUtil.h"
 #include "nsNSSCertificate.h"
 #include "nsNSSComponent.h"
 #include "nsNSSIOLayer.h"
-#include "nsSSLStatus.h"
 #include "nsServiceManagerUtils.h"
 #include "nsString.h"
 #include "nsURLHelper.h"
 #include "nsXPCOMCIDInternal.h"
-#include "pkix/pkix.h"
-#include "pkix/pkixnss.h"
+#include "mozpkix/pkix.h"
+#include "mozpkix/pkixnss.h"
 #include "secerr.h"
 #include "secoidt.h"
 #include "secport.h"
@@ -164,14 +164,8 @@ nsIThreadPool* gCertVerificationThreadPool = nullptr;
 // transport thread.
 void InitializeSSLServerCertVerificationThreads() {
   // TODO: tuning, make parameters preferences
-  // XXX: instantiate nsThreadPool directly, to make this more bulletproof.
-  // Currently, the nsThreadPool.h header isn't exported for us to do so.
-  nsresult rv = CallCreateInstance(NS_THREADPOOL_CONTRACTID,
-                                   &gCertVerificationThreadPool);
-  if (NS_FAILED(rv)) {
-    NS_WARNING("Failed to create SSL cert verification threads.");
-    return;
-  }
+  gCertVerificationThreadPool = new nsThreadPool();
+  NS_ADDREF(gCertVerificationThreadPool);
 
   (void)gCertVerificationThreadPool->SetIdleThreadLimit(5);
   (void)gCertVerificationThreadPool->SetIdleThreadTimeout(30 * 1000);
@@ -198,15 +192,6 @@ void StopSSLServerCertVerificationThreads() {
 
 namespace {
 
-void LogInvalidCertError(nsNSSSocketInfo* socketInfo, PRErrorCode errorCode,
-                         ::mozilla::psm::SSLErrorMessageType errorMessageType) {
-  nsString message;
-  socketInfo->GetErrorLogMessage(errorCode, errorMessageType, message);
-  if (!message.IsEmpty()) {
-    nsContentUtils::LogSimpleConsoleError(message, "SSL");
-  }
-}
-
 // Dispatched to the STS thread to notify the infoObject of the verification
 // result.
 //
@@ -220,8 +205,7 @@ class SSLServerCertVerificationResult : public Runnable {
   SSLServerCertVerificationResult(
       nsNSSSocketInfo* infoObject, PRErrorCode errorCode,
       Telemetry::HistogramID telemetryID = Telemetry::HistogramCount,
-      uint32_t telemetryValue = -1,
-      SSLErrorMessageType errorMessageType = SSLErrorMessageType::Plain);
+      uint32_t telemetryValue = -1);
 
   void Dispatch();
 
@@ -230,7 +214,6 @@ class SSLServerCertVerificationResult : public Runnable {
 
  public:
   const PRErrorCode mErrorCode;
-  const SSLErrorMessageType mErrorMessageType;
   const Telemetry::HistogramID mTelemetryID;
   const uint32_t mTelemetryValue;
 };
@@ -308,6 +291,10 @@ uint32_t MapOverridableErrorToProbeValue(PRErrorCode errorCode) {
       return 17;
     case mozilla::pkix::MOZILLA_PKIX_ERROR_ADDITIONAL_POLICY_CONSTRAINT_FAILED:
       return 18;
+    case mozilla::pkix::MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT:
+      return 19;
+    case mozilla::pkix::MOZILLA_PKIX_ERROR_MITM_DETECTED:
+      return 20;
   }
   NS_WARNING(
       "Unknown certificate error code. Does MapOverridableErrorToProbeValue "
@@ -318,7 +305,7 @@ uint32_t MapOverridableErrorToProbeValue(PRErrorCode errorCode) {
 static uint32_t MapCertErrorToProbeValue(PRErrorCode errorCode) {
   uint32_t probeValue;
   switch (errorCode) {
-  // see security/pkix/include/pkix/Result.h
+    // see security/pkix/include/pkix/Result.h
 #define MOZILLA_PKIX_MAP(name, value, nss_name) \
   case nss_name:                                \
     probeValue = value;                         \
@@ -368,10 +355,12 @@ SECStatus DetermineCertOverrideErrors(const UniqueCERTCertificate& cert,
     case SEC_ERROR_CA_CERT_INVALID:
     case mozilla::pkix::MOZILLA_PKIX_ERROR_ADDITIONAL_POLICY_CONSTRAINT_FAILED:
     case mozilla::pkix::MOZILLA_PKIX_ERROR_CA_CERT_USED_AS_END_ENTITY:
+    case mozilla::pkix::MOZILLA_PKIX_ERROR_EMPTY_ISSUER_NAME:
     case mozilla::pkix::MOZILLA_PKIX_ERROR_INADEQUATE_KEY_SIZE:
-    case mozilla::pkix::MOZILLA_PKIX_ERROR_V1_CERT_USED_AS_CA:
+    case mozilla::pkix::MOZILLA_PKIX_ERROR_MITM_DETECTED:
     case mozilla::pkix::MOZILLA_PKIX_ERROR_NOT_YET_VALID_ISSUER_CERTIFICATE:
-    case mozilla::pkix::MOZILLA_PKIX_ERROR_EMPTY_ISSUER_NAME: {
+    case mozilla::pkix::MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT:
+    case mozilla::pkix::MOZILLA_PKIX_ERROR_V1_CERT_USED_AS_CA: {
       collectedErrors = nsICertOverrideService::ERROR_UNTRUSTED;
       errorCodeTrust = defaultErrorCodeToReport;
 
@@ -475,7 +464,7 @@ nsresult CertErrorRunnable::OverrideAllowedForHost(
   // to have Necko provide an nsIURI to PSM and to use that here (and
   // everywhere). However, that would be a wide-spanning change.
   const nsACString& hostname = mInfoObject->GetHostName();
-  if (net_IsValidIPv6Addr(hostname.BeginReading(), hostname.Length())) {
+  if (net_IsValidIPv6Addr(hostname)) {
     overrideAllowed = true;
     return NS_OK;
   }
@@ -620,8 +609,8 @@ SSLServerCertVerificationResult* CertErrorRunnable::CheckCertOverrides() {
         nsIInterfaceRequestor* csi =
             static_cast<nsIInterfaceRequestor*>(mInfoObject);
         bool suppressMessage = false;  // obsolete, ignored
-        Unused << bcl->NotifyCertProblem(csi, mInfoObject->SSLStatus(),
-                                         hostWithPortString, &suppressMessage);
+        Unused << bcl->NotifyCertProblem(csi, mInfoObject, hostWithPortString,
+                                         &suppressMessage);
       }
     }
   }
@@ -635,11 +624,7 @@ SSLServerCertVerificationResult* CertErrorRunnable::CheckCertOverrides() {
                 : mErrorCodeTime ? mErrorCodeTime : mDefaultErrorCodeToReport;
 
   SSLServerCertVerificationResult* result = new SSLServerCertVerificationResult(
-      mInfoObject, errorCodeToReport, Telemetry::HistogramCount, -1,
-      SSLErrorMessageType::OverridableCert);
-
-  LogInvalidCertError(mInfoObject, result->mErrorCode,
-                      result->mErrorMessageType);
+      mInfoObject, errorCodeToReport, Telemetry::HistogramCount, -1);
 
   return result;
 }
@@ -784,7 +769,7 @@ SSLServerCertVerificationJob::SSLServerCertVerificationJob(
       mFdForLogging(fdForLogging),
       mInfoObject(infoObject),
       mCert(CERT_DupCertificate(cert.get())),
-      mPeerCertChain(Move(peerCertChain)),
+      mPeerCertChain(std::move(peerCertChain)),
       mProviderFlags(providerFlags),
       mTime(time),
       mPRTime(prtime),
@@ -809,18 +794,16 @@ static SECStatus BlockServerCertChangeForSpdy(
   // no cert change to worry about.
   nsCOMPtr<nsIX509Cert> cert;
 
-  RefPtr<nsSSLStatus> status(infoObject->SSLStatus());
-  if (!status) {
-    // If we didn't have a status, then this is the
+  if (!infoObject->IsHandshakeCompleted()) {
     // first handshake on this connection, not a
     // renegotiation.
     return SECSuccess;
   }
 
-  status->GetServerCert(getter_AddRefs(cert));
+  infoObject->GetServerCert(getter_AddRefs(cert));
   if (!cert) {
     MOZ_ASSERT_UNREACHABLE(
-        "nsSSLStatus must have a cert implementing nsIX509Cert");
+        "TransportSecurityInfo must have a cert implementing nsIX509Cert");
     PR_SetError(SEC_ERROR_LIBRARY_FAILURE, 0);
     return SECFailure;
   }
@@ -975,8 +958,7 @@ void GatherBaselineRequirementsTelemetry(const UniqueCERTCertList& certList) {
       // Note that the net_IsValidHostName check will catch things like
       // "a.*.example.com".
       if (!net_IsValidHostName(altNameWithoutWildcard) ||
-          net_IsValidIPv4Addr(altName.get(), altName.Length()) ||
-          net_IsValidIPv6Addr(altName.get(), altName.Length())) {
+          net_IsValidIPv4Addr(altName) || net_IsValidIPv6Addr(altName)) {
         MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
                 ("BR telemetry: DNSName '%s' not valid (for '%s')\n",
                  altName.get(), commonName.get()));
@@ -1158,50 +1140,12 @@ void GatherRootCATelemetry(const UniqueCERTCertList& certList) {
 const uint64_t ONE_WEEK_IN_SECONDS = (7 * (24 * 60 * 60));
 const uint64_t ONE_YEAR_IN_WEEKS = 52;
 
-// Gathers telemetry on the certificate lifetimes we observe in the wild
-void GatherEndEntityTelemetry(const UniqueCERTCertList& certList) {
-  CERTCertListNode* endEntityNode = CERT_LIST_HEAD(certList);
-  MOZ_ASSERT(endEntityNode && !CERT_LIST_END(endEntityNode, certList));
-  if (!endEntityNode || CERT_LIST_END(endEntityNode, certList)) {
-    return;
-  }
-
-  CERTCertificate* endEntityCert = endEntityNode->cert;
-  MOZ_ASSERT(endEntityCert);
-  if (!endEntityCert) {
-    return;
-  }
-
-  PRTime notBefore;
-  PRTime notAfter;
-
-  if (CERT_GetCertTimes(endEntityCert, &notBefore, &notAfter) != SECSuccess) {
-    return;
-  }
-
-  MOZ_ASSERT(notAfter > notBefore);
-  if (notAfter <= notBefore) {
-    return;
-  }
-
-  uint64_t durationInWeeks =
-      (notAfter - notBefore) / PR_USEC_PER_SEC / ONE_WEEK_IN_SECONDS;
-
-  if (durationInWeeks > (2 * ONE_YEAR_IN_WEEKS)) {
-    durationInWeeks = (2 * ONE_YEAR_IN_WEEKS) + 1;
-  }
-
-  Telemetry::Accumulate(Telemetry::SSL_OBSERVED_END_ENTITY_CERTIFICATE_LIFETIME,
-                        durationInWeeks);
-}
-
 // There are various things that we want to measure about certificate
 // chains that we accept.  This is a single entry point for all of them.
 void GatherSuccessfulValidationTelemetry(const UniqueCERTCertList& certList) {
   GatherBaselineRequirementsTelemetry(certList);
   GatherEKUTelemetry(certList);
   GatherRootCATelemetry(certList);
-  GatherEndEntityTelemetry(certList);
 }
 
 void GatherTelemetryForSingleSCT(const ct::VerifiedSCT& verifiedSct) {
@@ -1267,7 +1211,7 @@ void GatherCertificateTransparencyTelemetry(
 
   // Handle the histogram of SCTs counts.
   uint32_t sctsCount =
-      static_cast<uint32_t>(info.verifyResult.verifiedScts.length());
+      static_cast<uint32_t>(info.verifyResult.verifiedScts.size());
   // Note that sctsCount can also be 0 in case we've received SCT binary data,
   // but it failed to parse (e.g. due to unsupported CT protocol version).
   Telemetry::Accumulate(Telemetry::SSL_SCTS_PER_CONNECTION, sctsCount);
@@ -1388,28 +1332,21 @@ SECStatus AuthCertificate(CertVerifier& certVerifier,
   }
 
   if (pinningTelemetryInfo.accumulateResult) {
-    Telemetry::Accumulate(pinningTelemetryInfo.certPinningResultHistogram,
-                          pinningTelemetryInfo.certPinningResultBucket);
+    MOZ_ASSERT(pinningTelemetryInfo.certPinningResultHistogram.isSome());
+    Telemetry::Accumulate(
+        pinningTelemetryInfo.certPinningResultHistogram.value(),
+        pinningTelemetryInfo.certPinningResultBucket);
   }
 
   if (rv == Success) {
     // Certificate verification succeeded. Delete any potential record of
     // certificate error bits.
-    RememberCertErrorsTable::GetInstance().RememberCertHasError(
-        infoObject, nullptr, SECSuccess);
+    RememberCertErrorsTable::GetInstance().RememberCertHasError(infoObject,
+                                                                SECSuccess);
     GatherSuccessfulValidationTelemetry(builtCertChain);
     GatherCertificateTransparencyTelemetry(
         builtCertChain,
         /*isEV*/ evOidPolicy != SEC_OID_UNKNOWN, certificateTransparencyInfo);
-
-    // The connection may get terminated, for example, if the server requires
-    // a client cert. Let's provide a minimal SSLStatus
-    // to the caller that contains at least the cert and its status.
-    RefPtr<nsSSLStatus> status(infoObject->SSLStatus());
-    if (!status) {
-      status = new nsSSLStatus();
-      infoObject->SetSSLStatus(status);
-    }
 
     EVStatus evStatus;
     if (evOidPolicy == SEC_OID_UNKNOWN) {
@@ -1419,26 +1356,27 @@ SECStatus AuthCertificate(CertVerifier& certVerifier,
     }
 
     RefPtr<nsNSSCertificate> nsc = nsNSSCertificate::Create(cert.get());
-    status->SetServerCert(nsc, evStatus);
+    infoObject->SetServerCert(nsc, evStatus);
 
-    status->SetSucceededCertChain(Move(builtCertChain));
+    infoObject->SetSucceededCertChain(std::move(builtCertChain));
     MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
             ("AuthCertificate setting NEW cert %p", nsc.get()));
 
-    status->SetCertificateTransparencyInfo(certificateTransparencyInfo);
+    infoObject->SetCertificateTransparencyInfo(certificateTransparencyInfo);
   }
 
   if (rv != Success) {
     // Certificate validation failed; store the peer certificate chain on
     // infoObject so it can be used for error reporting.
-    infoObject->SetFailedCertChain(Move(peerCertChain));
+    infoObject->SetFailedCertChain(std::move(peerCertChain));
     PR_SetError(MapResultToPRErrorCode(rv), 0);
   }
 
   return rv == Success ? SECSuccess : SECFailure;
 }
 
-/*static*/ SECStatus SSLServerCertVerificationJob::Dispatch(
+/*static*/
+SECStatus SSLServerCertVerificationJob::Dispatch(
     const RefPtr<SharedCertVerifier>& certVerifier, const void* fdForLogging,
     nsNSSSocketInfo* infoObject, const UniqueCERTCertificate& serverCert,
     const UniqueCERTCertList& peerCertChain, const SECItem* stapledOCSPResponse,
@@ -1467,7 +1405,7 @@ SECStatus AuthCertificate(CertVerifier& certVerifier,
 
   RefPtr<SSLServerCertVerificationJob> job(new SSLServerCertVerificationJob(
       certVerifier, fdForLogging, infoObject, serverCert,
-      Move(peerCertChainCopy), stapledOCSPResponse, sctsFromTLSExtension,
+      std::move(peerCertChainCopy), stapledOCSPResponse, sctsFromTLSExtension,
       providerFlags, time, prtime));
 
   nsresult nrv = gCertVerificationThreadPool->Dispatch(job, NS_DISPATCH_NORMAL);
@@ -1728,13 +1666,7 @@ SECStatus AuthCertificateHook(void* arg, PRFileDesc* fd, PRBool checkSig,
         return SECSuccess;  // cert error override occurred.
       }
 
-      // We must call SetCanceled here to set the error message type
-      // in case it isn't SSLErrorMessageType::Plain, which is what we would
-      // default to if we just called
-      // PR_SetError(runnable->mResult->mErrorCode, 0) and returned
-      // SECFailure without doing this.
-      socketInfo->SetCanceled(runnable->mResult->mErrorCode,
-                              runnable->mResult->mErrorMessageType);
+      socketInfo->SetCanceled(runnable->mResult->mErrorCode);
       error = runnable->mResult->mErrorCode;
     }
   }
@@ -1750,12 +1682,10 @@ SECStatus AuthCertificateHook(void* arg, PRFileDesc* fd, PRBool checkSig,
 
 SSLServerCertVerificationResult::SSLServerCertVerificationResult(
     nsNSSSocketInfo* infoObject, PRErrorCode errorCode,
-    Telemetry::HistogramID telemetryID, uint32_t telemetryValue,
-    SSLErrorMessageType errorMessageType)
+    Telemetry::HistogramID telemetryID, uint32_t telemetryValue)
     : Runnable("psm::SSLServerCertVerificationResult"),
       mInfoObject(infoObject),
       mErrorCode(errorCode),
-      mErrorMessageType(errorMessageType),
       mTelemetryID(telemetryID),
       mTelemetryValue(telemetryValue) {
   // We accumulate telemetry for (only) successful validations on the main
@@ -1781,7 +1711,7 @@ SSLServerCertVerificationResult::Run() {
   if (mTelemetryID != Telemetry::HistogramCount) {
     Telemetry::Accumulate(mTelemetryID, mTelemetryValue);
   }
-  mInfoObject->SetCertVerificationResult(mErrorCode, mErrorMessageType);
+  mInfoObject->SetCertVerificationResult(mErrorCode);
   return NS_OK;
 }
 

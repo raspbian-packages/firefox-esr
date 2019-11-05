@@ -13,7 +13,8 @@
 namespace mozilla {
 namespace dom {
 
-/* static */ already_AddRefed<ChromeWorker> ChromeWorker::Constructor(
+/* static */
+already_AddRefed<ChromeWorker> ChromeWorker::Constructor(
     const GlobalObject& aGlobal, const nsAString& aScriptURL,
     ErrorResult& aRv) {
   JSContext* cx = aGlobal.Context();
@@ -33,8 +34,8 @@ namespace dom {
   return worker.forget();
 }
 
-/* static */ bool ChromeWorker::WorkerAvailable(JSContext* aCx,
-                                                JSObject* /* unused */) {
+/* static */
+bool ChromeWorker::WorkerAvailable(JSContext* aCx, JSObject* /* unused */) {
   // Chrome is always allowed to use workers, and content is never
   // allowed to use ChromeWorker, so all we have to check is the
   // caller.  However, chrome workers apparently might not have a
@@ -48,14 +49,14 @@ namespace dom {
 
 ChromeWorker::ChromeWorker(nsIGlobalObject* aGlobalObject,
                            already_AddRefed<WorkerPrivate> aWorkerPrivate)
-    : Worker(aGlobalObject, Move(aWorkerPrivate)) {}
+    : Worker(aGlobalObject, std::move(aWorkerPrivate)) {}
 
 ChromeWorker::~ChromeWorker() = default;
 
 JSObject* ChromeWorker::WrapObject(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
   JS::Rooted<JSObject*> wrapper(
-      aCx, ChromeWorkerBinding::Wrap(aCx, this, aGivenProto));
+      aCx, ChromeWorker_Binding::Wrap(aCx, this, aGivenProto));
   if (wrapper) {
     // Most DOM objects don't assume they have a reflector. If they don't have
     // one and need one, they create it. But in workers code, we assume that the

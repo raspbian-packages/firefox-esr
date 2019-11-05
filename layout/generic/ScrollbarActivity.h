@@ -18,6 +18,12 @@ class nsIScrollbarMediator;
 class nsITimer;
 
 namespace mozilla {
+
+namespace dom {
+class Element;
+class EventTarget;
+}  // namespace dom
+
 namespace layout {
 
 /**
@@ -114,8 +120,8 @@ class ScrollbarActivity final : public nsIDOMEventListener,
   void StartListeningForScrollAreaEvents();
   void StopListeningForScrollbarEvents();
   void StopListeningForScrollAreaEvents();
-  void AddScrollbarEventListeners(nsIDOMEventTarget* aScrollbar);
-  void RemoveScrollbarEventListeners(nsIDOMEventTarget* aScrollbar);
+  void AddScrollbarEventListeners(dom::EventTarget* aScrollbar);
+  void RemoveScrollbarEventListeners(dom::EventTarget* aScrollbar);
 
   void RegisterWithRefreshDriver();
   void UnregisterFromRefreshDriver();
@@ -135,8 +141,8 @@ class ScrollbarActivity final : public nsIDOMEventListener,
   nsIScrollbarMediator* mScrollableFrame;
   TimeStamp mFadeBeginTime;
   nsCOMPtr<nsITimer> mFadeBeginTimer;
-  nsCOMPtr<nsIDOMEventTarget> mHorizontalScrollbar;  // null while inactive
-  nsCOMPtr<nsIDOMEventTarget> mVerticalScrollbar;    // null while inactive
+  nsCOMPtr<dom::EventTarget> mHorizontalScrollbar;  // null while inactive
+  nsCOMPtr<dom::EventTarget> mVerticalScrollbar;    // null while inactive
   int mNestedActivityCounter;
   bool mIsActive;
   bool mIsFading;

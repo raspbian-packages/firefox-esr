@@ -1,11 +1,11 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/MemoryReporting.h"
 #if defined(HAVE_POSIX_MEMALIGN)
-#include "gfxAlphaRecovery.h"
+#  include "gfxAlphaRecovery.h"
 #endif
 #include "gfxImageSurface.h"
 
@@ -21,6 +21,7 @@ using namespace mozilla::gfx;
 gfxImageSurface::gfxImageSurface()
     : mSize(0, 0),
       mOwnsData(false),
+      mData(nullptr),
       mFormat(SurfaceFormat::UNKNOWN),
       mStride(0) {}
 
@@ -74,7 +75,7 @@ void gfxImageSurface::InitWithData(unsigned char* aData, const IntSize& aSize,
 }
 
 static void* TryAllocAlignedBytes(size_t aSize) {
-// Use fallible allocators here
+  // Use fallible allocators here
 #if defined(HAVE_POSIX_MEMALIGN)
   void* ptr;
   // Try to align for fast alpha recovery.  This should only help
@@ -150,8 +151,9 @@ gfxImageSurface::~gfxImageSurface() {
   if (mOwnsData) free(mData);
 }
 
-/*static*/ long gfxImageSurface::ComputeStride(const IntSize& aSize,
-                                               gfxImageFormat aFormat) {
+/*static*/
+long gfxImageSurface::ComputeStride(const IntSize& aSize,
+                                    gfxImageFormat aFormat) {
   long stride;
 
   if (aFormat == SurfaceFormat::A8R8G8B8_UINT32)

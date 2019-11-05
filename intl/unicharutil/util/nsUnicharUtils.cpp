@@ -25,12 +25,6 @@ static const uint8_t gASCIIToLower[128] = {
     0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f,
 };
 
-#define IS_ASCII(u) ((u) < 0x80)
-#define IS_ASCII_UPPER(u) (('A' <= (u)) && ((u) <= 'Z'))
-#define IS_ASCII_LOWER(u) (('a' <= (u)) && ((u) <= 'z'))
-#define IS_ASCII_ALPHA(u) (IS_ASCII_UPPER(u) || IS_ASCII_LOWER(u))
-#define IS_ASCII_SPACE(u) (' ' == (u))
-
 // We want ToLowerCase(uint32_t) and ToLowerCaseASCII(uint32_t) to be fast
 // when they're called from within the case-insensitive comparators, so we
 // define inlined versions.
@@ -56,6 +50,53 @@ void ToLowerCase(nsAString& aString) {
   ToLowerCase(buf, buf, aString.Length());
 }
 
+void ToLowerCaseASCII(nsAString& aString) {
+  char16_t* buf = aString.BeginWriting();
+  ToLowerCaseASCII(buf, buf, aString.Length());
+}
+
+char ToLowerCaseASCII(char aChar) {
+  if (aChar >= 'A' && aChar <= 'Z') {
+    return aChar + 0x20;
+  }
+  return aChar;
+}
+
+char16_t ToLowerCaseASCII(char16_t aChar) {
+  if (aChar >= 'A' && aChar <= 'Z') {
+    return aChar + 0x20;
+  }
+  return aChar;
+}
+
+char32_t ToLowerCaseASCII(char32_t aChar) {
+  if (aChar >= 'A' && aChar <= 'Z') {
+    return aChar + 0x20;
+  }
+  return aChar;
+}
+
+char ToUpperCaseASCII(char aChar) {
+  if (aChar >= 'a' && aChar <= 'z') {
+    return aChar - 0x20;
+  }
+  return aChar;
+}
+
+char16_t ToUpperCaseASCII(char16_t aChar) {
+  if (aChar >= 'a' && aChar <= 'z') {
+    return aChar - 0x20;
+  }
+  return aChar;
+}
+
+char32_t ToUpperCaseASCII(char32_t aChar) {
+  if (aChar >= 'a' && aChar <= 'z') {
+    return aChar - 0x20;
+  }
+  return aChar;
+}
+
 void ToLowerCase(const nsAString& aSource, nsAString& aDest) {
   const char16_t* in = aSource.BeginReading();
   uint32_t len = aSource.Length();
@@ -64,6 +105,16 @@ void ToLowerCase(const nsAString& aSource, nsAString& aDest) {
   char16_t* out = aDest.BeginWriting();
 
   ToLowerCase(in, out, len);
+}
+
+void ToLowerCaseASCII(const nsAString& aSource, nsAString& aDest) {
+  const char16_t* in = aSource.BeginReading();
+  uint32_t len = aSource.Length();
+
+  aDest.SetLength(len);
+  char16_t* out = aDest.BeginWriting();
+
+  ToLowerCaseASCII(in, out, len);
 }
 
 uint32_t ToLowerCaseASCII(const uint32_t aChar) {
@@ -145,6 +196,13 @@ void ToLowerCase(const char16_t* aIn, char16_t* aOut, uint32_t aLen) {
       continue;
     }
     aOut[i] = ToLowerCase(ch);
+  }
+}
+
+void ToLowerCaseASCII(const char16_t* aIn, char16_t* aOut, uint32_t aLen) {
+  for (uint32_t i = 0; i < aLen; i++) {
+    char16_t ch = aIn[i];
+    aOut[i] = IS_ASCII_UPPER(ch) ? (ch + 0x20) : ch;
   }
 }
 

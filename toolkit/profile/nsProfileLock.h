@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,12 +11,12 @@
 class nsIProfileUnlocker;
 
 #if defined(XP_WIN)
-#include <windows.h>
+#  include <windows.h>
 #endif
 
 #if defined(XP_UNIX)
-#include <signal.h>
-#include "prclist.h"
+#  include <signal.h>
+#  include "prclist.h"
 #endif
 
 class nsProfileLock
@@ -76,10 +76,10 @@ class nsProfileLock
 
   static void RemovePidLockFiles(bool aFatalSignal);
   static void FatalSignalHandler(int signo
-#ifdef SA_SIGINFO
+#  ifdef SA_SIGINFO
                                  ,
                                  siginfo_t* info, void* context
-#endif
+#  endif
   );
   static PRCList mPidLockList;
 

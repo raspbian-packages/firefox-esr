@@ -11,22 +11,26 @@
 #include "nsMathMLTokenFrame.h"
 #include "nsMathMLChar.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <mo> -- operator, fence, or separator
 //
 
-class nsMathMLmoFrame : public nsMathMLTokenFrame {
+class nsMathMLmoFrame final : public nsMathMLTokenFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmoFrame)
 
-  friend nsIFrame* NS_NewMathMLmoFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmoFrame(mozilla::PresShell* aPresShell,
+                                       ComputedStyle* aStyle);
 
   virtual eMathMLFrameType GetMathMLFrameType() override;
 
-  virtual void SetAdditionalStyleContext(
-      int32_t aIndex, nsStyleContext* aStyleContext) override;
-  virtual nsStyleContext* GetAdditionalStyleContext(
+  virtual void SetAdditionalComputedStyle(
+      int32_t aIndex, ComputedStyle* aComputedStyle) override;
+  virtual ComputedStyle* GetAdditionalComputedStyle(
       int32_t aIndex) const override;
 
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
@@ -69,8 +73,8 @@ class nsMathMLmoFrame : public nsMathMLTokenFrame {
   }
 
  protected:
-  explicit nsMathMLmoFrame(nsStyleContext* aContext)
-      : nsMathMLTokenFrame(aContext, kClassID),
+  explicit nsMathMLmoFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsMathMLTokenFrame(aStyle, aPresContext, kClassID),
         mFlags(0),
         mMinSize(0),
         mMaxSize(0) {}

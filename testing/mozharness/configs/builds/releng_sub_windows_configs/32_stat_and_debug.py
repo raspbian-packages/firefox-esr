@@ -11,7 +11,6 @@ config = {
 releng.manifest",
     #### 32 bit build specific #####
     'env': {
-        'BINSCOPE': 'C:/Program Files (x86)/Microsoft/SDL BinScope/BinScope.exe',
         'HG_SHARE_BASE_DIR': 'C:/builds/hg-shared',
         'MOZBUILD_STATE_PATH': os.path.join(os.getcwd(), '.mozbuild'),
         'MOZ_CRASHREPORTER_NO_REPORT': '1',
@@ -24,6 +23,4 @@ releng.manifest",
         'TOOLTOOL_HOME': '/c/builds',
     },
     'mozconfig_variant': 'debug-static-analysis',
-    'artifact_flag_build_variant_in_try': None,
-    #######################
 }

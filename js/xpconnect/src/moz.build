@@ -6,7 +6,6 @@
 
 EXPORTS += [
     'BackstagePass.h',
-    'qsObjectHelper.h',
     'XPCJSMemoryReporter.h',
     'xpcObjectHelper.h',
     'xpcpublic.h',
@@ -36,12 +35,17 @@ UNIFIED_SOURCES += [
     'XPCVariant.cpp',
     'XPCWrappedJS.cpp',
     'XPCWrappedJSClass.cpp',
+    'XPCWrappedJSIterator.cpp',
     'XPCWrappedNative.cpp',
     'XPCWrappedNativeInfo.cpp',
     'XPCWrappedNativeJSOps.cpp',
     'XPCWrappedNativeProto.cpp',
     'XPCWrappedNativeScope.cpp',
     'XPCWrapper.cpp',
+]
+
+XPCOM_MANIFESTS += [
+    'components.conf',
 ]
 
 include('/ipc/chromium/chromium-config.mozbuild')
@@ -58,7 +62,6 @@ LOCAL_INCLUDES += [
     '/dom/svg',
     '/layout/base',
     '/layout/style',
-    '/xpcom/reflect/xptinfo',
 ]
 
 if CONFIG['CC_TYPE'] in ('clang', 'gcc'):

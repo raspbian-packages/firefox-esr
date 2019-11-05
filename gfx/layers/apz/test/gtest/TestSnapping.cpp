@@ -8,34 +8,40 @@
 #include "APZTestCommon.h"
 #include "gfxPrefs.h"
 #include "InputUtils.h"
+#include "mozilla/StaticPrefs.h"
 
 class APZCSnappingTester : public APZCTreeManagerTester {};
 
 TEST_F(APZCSnappingTester, Bug1265510) {
-  SCOPED_GFX_PREF(WebRenderHitTest, bool, false);
+  SCOPED_GFX_VAR(UseWebRender, bool, false);
 
   const char* layerTreeSyntax = "c(t)";
   nsIntRegion layerVisibleRegion[] = {nsIntRegion(IntRect(0, 0, 100, 100)),
                                       nsIntRegion(IntRect(0, 100, 100, 100))};
   root =
       CreateLayerTree(layerTreeSyntax, layerVisibleRegion, nullptr, lm, layers);
-  SetScrollableFrameMetrics(root, FrameMetrics::START_SCROLL_ID,
+  SetScrollableFrameMetrics(root, ScrollableLayerGuid::START_SCROLL_ID,
                             CSSRect(0, 0, 100, 200));
-  SetScrollableFrameMetrics(layers[1], FrameMetrics::START_SCROLL_ID + 1,
+  SetScrollableFrameMetrics(layers[1], ScrollableLayerGuid::START_SCROLL_ID + 1,
                             CSSRect(0, 0, 100, 200));
   SetScrollHandoff(layers[1], root);
 
   ScrollSnapInfo snap;
-  snap.mScrollSnapTypeY = NS_STYLE_SCROLL_SNAP_TYPE_MANDATORY;
-  snap.mScrollSnapIntervalY = Some(100 * AppUnitsPerCSSPixel());
+  snap.mScrollSnapTypeY = StyleScrollSnapStrictness::Mandatory;
+  if (StaticPrefs::layout_css_scroll_snap_v1_enabled()) {
+    snap.mSnapPositionY.AppendElement(0 * AppUnitsPerCSSPixel());
+    snap.mSnapPositionY.AppendElement(100 * AppUnitsPerCSSPixel());
+  } else {
+    snap.mScrollSnapIntervalY = Some(100 * AppUnitsPerCSSPixel());
+  }
 
   ScrollMetadata metadata = root->GetScrollMetadata(0);
   metadata.SetSnapInfo(ScrollSnapInfo(snap));
   root->SetScrollMetadata(metadata);
 
   UniquePtr<ScopedLayerTreeRegistration> registration =
-      MakeUnique<ScopedLayerTreeRegistration>(manager, 0, root, mcc);
-  manager->UpdateHitTestingTree(0, root, false, 0, 0);
+      MakeUnique<ScopedLayerTreeRegistration>(manager, LayersId{0}, root, mcc);
+  manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
 
   TestAsyncPanZoomController* outer = ApzcOf(layers[0]);
   TestAsyncPanZoomController* inner = ApzcOf(layers[1]);
@@ -83,7 +89,7 @@ TEST_F(APZCSnappingTester, Bug1265510) {
 }
 
 TEST_F(APZCSnappingTester, Snap_After_Pinch) {
-  SCOPED_GFX_PREF(WebRenderHitTest, bool, false);
+  SCOPED_GFX_VAR(UseWebRender, bool, false);
 
   const char* layerTreeSyntax = "c";
   nsIntRegion layerVisibleRegion[] = {
@@ -91,13 +97,19 @@ TEST_F(APZCSnappingTester, Snap_After_Pinch) {
   };
   root =
       CreateLayerTree(layerTreeSyntax, layerVisibleRegion, nullptr, lm, layers);
-  SetScrollableFrameMetrics(root, FrameMetrics::START_SCROLL_ID,
+  SetScrollableFrameMetrics(root, ScrollableLayerGuid::START_SCROLL_ID,
                             CSSRect(0, 0, 100, 200));
 
   // Set up some basic scroll snapping
   ScrollSnapInfo snap;
-  snap.mScrollSnapTypeY = NS_STYLE_SCROLL_SNAP_TYPE_MANDATORY;
-  snap.mScrollSnapIntervalY = Some(100 * AppUnitsPerCSSPixel());
+  snap.mScrollSnapTypeY = StyleScrollSnapStrictness::Mandatory;
+
+  if (StaticPrefs::layout_css_scroll_snap_v1_enabled()) {
+    snap.mSnapPositionY.AppendElement(0 * AppUnitsPerCSSPixel());
+    snap.mSnapPositionY.AppendElement(100 * AppUnitsPerCSSPixel());
+  } else {
+    snap.mScrollSnapIntervalY = Some(100 * AppUnitsPerCSSPixel());
+  }
 
   // Save the scroll snap info on the root APZC.
   // Also mark the root APZC as "root content", since APZC only allows
@@ -108,8 +120,8 @@ TEST_F(APZCSnappingTester, Snap_After_Pinch) {
   root->SetScrollMetadata(metadata);
 
   UniquePtr<ScopedLayerTreeRegistration> registration =
-      MakeUnique<ScopedLayerTreeRegistration>(manager, 0, root, mcc);
-  manager->UpdateHitTestingTree(0, root, false, 0, 0);
+      MakeUnique<ScopedLayerTreeRegistration>(manager, LayersId{0}, root, mcc);
+  manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
 
   RefPtr<TestAsyncPanZoomController> apzc = ApzcOf(root);
 

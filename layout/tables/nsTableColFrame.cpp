@@ -6,12 +6,13 @@
 #include "nsTableColFrame.h"
 #include "nsTableFrame.h"
 #include "nsContainerFrame.h"
-#include "nsStyleContext.h"
 #include "nsStyleConsts.h"
 #include "nsPresContext.h"
 #include "nsGkAtoms.h"
 #include "nsCSSRendering.h"
 #include "nsIContent.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 
 using namespace mozilla;
 
@@ -22,8 +23,9 @@ using namespace mozilla;
 
 using namespace mozilla;
 
-nsTableColFrame::nsTableColFrame(nsStyleContext* aContext)
-    : nsSplittableFrame(aContext, kClassID),
+nsTableColFrame::nsTableColFrame(ComputedStyle* aStyle,
+                                 nsPresContext* aPresContext)
+    : nsSplittableFrame(aStyle, aPresContext, kClassID),
       mMinCoord(0),
       mPrefCoord(0),
       mSpanMinCoord(0),
@@ -61,16 +63,16 @@ void nsTableColFrame::SetColType(nsTableColType aType) {
   AddStateBits(nsFrameState(type << COL_TYPE_OFFSET));
 }
 
-/* virtual */ void nsTableColFrame::DidSetStyleContext(
-    nsStyleContext* aOldStyleContext) {
-  nsSplittableFrame::DidSetStyleContext(aOldStyleContext);
+/* virtual */
+void nsTableColFrame::DidSetComputedStyle(ComputedStyle* aOldComputedStyle) {
+  nsSplittableFrame::DidSetComputedStyle(aOldComputedStyle);
 
-  if (!aOldStyleContext)  // avoid this on init
+  if (!aOldComputedStyle)  // avoid this on init
     return;
 
   nsTableFrame* tableFrame = GetTableFrame();
   if (tableFrame->IsBorderCollapse() &&
-      tableFrame->BCRecalcNeeded(aOldStyleContext, StyleContext())) {
+      tableFrame->BCRecalcNeeded(aOldComputedStyle, Style())) {
     TableArea damageArea(GetColIndex(), 0, 1, tableFrame->GetRowCount());
     tableFrame->AddBCDamageArea(damageArea);
   }
@@ -153,9 +155,9 @@ void nsTableColFrame::Dump(int32_t aIndent) {
 #endif
 /* ----- global methods ----- */
 
-nsTableColFrame* NS_NewTableColFrame(nsIPresShell* aPresShell,
-                                     nsStyleContext* aContext) {
-  return new (aPresShell) nsTableColFrame(aContext);
+nsTableColFrame* NS_NewTableColFrame(PresShell* aPresShell,
+                                     ComputedStyle* aStyle) {
+  return new (aPresShell) nsTableColFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsTableColFrame)
@@ -177,24 +179,24 @@ nsresult nsTableColFrame::GetFrameName(nsAString& aResult) const {
 }
 #endif
 
-nsSplittableType nsTableColFrame::GetSplittableType() const {
-  return NS_FRAME_NOT_SPLITTABLE;
-}
-
-void nsTableColFrame::InvalidateFrame(uint32_t aDisplayItemKey) {
-  nsIFrame::InvalidateFrame(aDisplayItemKey);
+void nsTableColFrame::InvalidateFrame(uint32_t aDisplayItemKey,
+                                      bool aRebuildDisplayItems) {
+  nsIFrame::InvalidateFrame(aDisplayItemKey, aRebuildDisplayItems);
   if (GetTableFrame()->IsBorderCollapse()) {
     GetParent()->InvalidateFrameWithRect(
-        GetVisualOverflowRect() + GetPosition(), aDisplayItemKey);
+        GetVisualOverflowRect() + GetPosition(), aDisplayItemKey, false);
   }
 }
 
 void nsTableColFrame::InvalidateFrameWithRect(const nsRect& aRect,
-                                              uint32_t aDisplayItemKey) {
-  nsIFrame::InvalidateFrameWithRect(aRect, aDisplayItemKey);
+                                              uint32_t aDisplayItemKey,
+                                              bool aRebuildDisplayItems) {
+  nsIFrame::InvalidateFrameWithRect(aRect, aDisplayItemKey,
+                                    aRebuildDisplayItems);
 
   // If we have filters applied that would affects our bounds, then
   // we get an inactive layer created and this is computed
   // within FrameLayerBuilder
-  GetParent()->InvalidateFrameWithRect(aRect + GetPosition(), aDisplayItemKey);
+  GetParent()->InvalidateFrameWithRect(aRect + GetPosition(), aDisplayItemKey,
+                                       false);
 }

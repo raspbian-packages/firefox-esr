@@ -296,10 +296,9 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsXPCOMCycleCollectionParticipant,
     if (LowWordEquals(aIID, NS_GET_IID(nsCycleCollectionISupports))) {         \
       *aInstancePtr = NS_CYCLE_COLLECTION_CLASSNAME(_class)::Upcast(this);     \
       return NS_OK;                                                            \
-    } else {                                                                   \
-      /* Avoid warnings about foundInterface being left uninitialized. */      \
-      foundInterface = nullptr;                                                \
     }                                                                          \
+    /* Avoid warnings about foundInterface being left uninitialized. */        \
+    foundInterface = nullptr;                                                  \
   } else
 
 #define NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(_class) \
@@ -318,7 +317,7 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsXPCOMCycleCollectionParticipant,
 // deal with.
 #define NS_INTERFACE_TABLE_HEAD_CYCLE_COLLECTION_INHERITED(_class)           \
   NS_IMETHODIMP _class::QueryInterface(REFNSIID aIID, void** aInstancePtr) { \
-    NS_PRECONDITION(aInstancePtr, "null out param");                         \
+    MOZ_ASSERT(aInstancePtr, "null out param");                              \
                                                                              \
     if (TopThreeWordsEquals(aIID,                                            \
                             NS_GET_IID(nsXPCOMCycleCollectionParticipant),   \
@@ -339,9 +338,9 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsXPCOMCycleCollectionParticipant,
   NS_CYCLE_COLLECTION_CLASSNAME(clazz)::Upcast(obj)
 
 #ifdef DEBUG
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT(_ptr) _ptr->CheckForRightParticipant()
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT(_ptr) _ptr->CheckForRightParticipant()
 #else
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT(_ptr)
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT(_ptr)
 #endif
 
 // The default implementation of this class template is empty, because it
@@ -414,15 +413,15 @@ T* DowncastCCParticipant(void* aPtr) {
   return false;                                    \
   }
 
-  ///////////////////////////////////////////////////////////////////////////////
-  // Helpers for implementing nsCycleCollectionParticipant::Unlink
-  //
-  // You need to use NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED if you want
-  // the base class Unlink version to be called before your own implementation.
-  // You can use NS_IMPL_CYCLE_COLLECTION_UNLINK_END_INHERITED if you want the
-  // base class Unlink to get called after your own implementation.  You should
-  // never use them together.
-  ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Helpers for implementing nsCycleCollectionParticipant::Unlink
+//
+// You need to use NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED if you want
+// the base class Unlink version to be called before your own implementation.
+// You can use NS_IMPL_CYCLE_COLLECTION_UNLINK_END_INHERITED if you want the
+// base class Unlink to get called after your own implementation.  You should
+// never use them together.
+///////////////////////////////////////////////////////////////////////////////
 
 #define NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(_class)      \
   NS_IMETHODIMP_(void)                                     \
@@ -454,9 +453,9 @@ T* DowncastCCParticipant(void* aPtr) {
   NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(_class)   \
   NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 
-  ///////////////////////////////////////////////////////////////////////////////
-  // Helpers for implementing nsCycleCollectionParticipant::Traverse
-  ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Helpers for implementing nsCycleCollectionParticipant::Traverse
+///////////////////////////////////////////////////////////////////////////////
 
 #define NS_IMPL_CYCLE_COLLECTION_DESCRIBE(_class, _refcnt) \
   cb.DescribeRefCountedNode(_refcnt, #_class);
@@ -471,9 +470,9 @@ T* DowncastCCParticipant(void* aPtr) {
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INTERNAL(_class) \
     NS_IMPL_CYCLE_COLLECTION_DESCRIBE(_class, tmp->mRefCnt.get())
 
-  // Base class' CC participant should return NS_SUCCESS_INTERRUPTED_TRAVERSE
-  // from Traverse if it wants derived classes to not traverse anything from
-  // their CC participant.
+// Base class' CC participant should return NS_SUCCESS_INTERRUPTED_TRAVERSE
+// from Traverse if it wants derived classes to not traverse anything from
+// their CC participant.
 
 #define NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(_class, _base_class) \
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INTERNAL(_class)                     \
@@ -497,9 +496,9 @@ T* DowncastCCParticipant(void* aPtr) {
   return NS_OK;                               \
   }
 
-  ///////////////////////////////////////////////////////////////////////////////
-  // Helpers for implementing nsScriptObjectTracer::Trace
-  ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Helpers for implementing nsScriptObjectTracer::Trace
+///////////////////////////////////////////////////////////////////////////////
 
 #define NS_IMPL_CYCLE_COLLECTION_TRACE_BEGIN(_class)               \
   void NS_CYCLE_COLLECTION_CLASSNAME(_class)::Trace(               \
@@ -528,26 +527,26 @@ T* DowncastCCParticipant(void* aPtr) {
 // If a class defines a participant, then QIing an instance of that class to
 // nsXPCOMCycleCollectionParticipant should produce that participant.
 #ifdef DEBUG
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT_BASE \
-  virtual void CheckForRightParticipant()
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT_DERIVED \
-  virtual void CheckForRightParticipant() override
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT_BODY(_class)             \
-  {                                                             \
-    nsXPCOMCycleCollectionParticipant* p;                       \
-    CallQueryInterface(this, &p);                               \
-    MOZ_ASSERT(p == &NS_CYCLE_COLLECTION_INNERNAME,             \
-               #_class " should QI to its own CC participant"); \
-  }
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL(_class) \
-  NS_CHECK_FOR_RIGHT_PARTICIPANT_BASE               \
-  NS_CHECK_FOR_RIGHT_PARTICIPANT_BODY(_class)
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL_INHERITED(_class) \
-  NS_CHECK_FOR_RIGHT_PARTICIPANT_DERIVED                      \
-  NS_CHECK_FOR_RIGHT_PARTICIPANT_BODY(_class)
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT_BASE \
+    virtual void CheckForRightParticipant()
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT_DERIVED \
+    virtual void CheckForRightParticipant() override
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT_BODY(_class)             \
+    {                                                             \
+      nsXPCOMCycleCollectionParticipant* p;                       \
+      CallQueryInterface(this, &p);                               \
+      MOZ_ASSERT(p == &NS_CYCLE_COLLECTION_INNERNAME,             \
+                 #_class " should QI to its own CC participant"); \
+    }
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL(_class) \
+    NS_CHECK_FOR_RIGHT_PARTICIPANT_BASE               \
+    NS_CHECK_FOR_RIGHT_PARTICIPANT_BODY(_class)
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL_INHERITED(_class) \
+    NS_CHECK_FOR_RIGHT_PARTICIPANT_DERIVED                      \
+    NS_CHECK_FOR_RIGHT_PARTICIPANT_BODY(_class)
 #else
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL(_class)
-#define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL_INHERITED(_class)
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL(_class)
+#  define NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL_INHERITED(_class)
 #endif
 
 #define NS_DECL_CYCLE_COLLECTION_CLASS_NAME_METHOD(_class) \
@@ -595,7 +594,7 @@ T* DowncastCCParticipant(void* aPtr) {
 #define NOT_INHERITED_CANT_OVERRIDE virtual void BaseCycleCollectable() final {}
 // clang-format on
 #else
-#define NOT_INHERITED_CANT_OVERRIDE
+#  define NOT_INHERITED_CANT_OVERRIDE
 #endif
 
 #define NS_DECL_CYCLE_COLLECTION_CLASS_AMBIGUOUS(_class, _base)           \
@@ -768,7 +767,7 @@ T* DowncastCCParticipant(void* aPtr) {
   NS_CHECK_FOR_RIGHT_PARTICIPANT_IMPL_INHERITED(_class)                     \
   static NS_CYCLE_COLLECTION_INNERCLASS NS_CYCLE_COLLECTION_INNERNAME;
 
-  // Cycle collector participant declarations.
+// Cycle collector participant declarations.
 
 #define NS_DECL_CYCLE_COLLECTION_NATIVE_CLASS_BODY(_class)                   \
  public:                                                                     \
@@ -891,9 +890,9 @@ T* DowncastCCParticipant(void* aPtr) {
     NS_IMPL_CYCLE_COLLECTION_TRAVERSE(__VA_ARGS__) \
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
-  // If you are looking for NS_IMPL_CYCLE_COLLECTION_INHERITED_0(_class, _base)
-  // you should instead not declare any cycle collected stuff in _class, so it
-  // will just inherit the CC declarations from _base.
+// If you are looking for NS_IMPL_CYCLE_COLLECTION_INHERITED_0(_class, _base)
+// you should instead not declare any cycle collected stuff in _class, so it
+// will just inherit the CC declarations from _base.
 
 #define NS_IMPL_CYCLE_COLLECTION_INHERITED(_class, _base, ...)     \
   NS_IMPL_CYCLE_COLLECTION_CLASS(_class)                           \
@@ -906,10 +905,10 @@ T* DowncastCCParticipant(void* aPtr) {
 
 #define NS_CYCLE_COLLECTION_NOTE_EDGE_NAME CycleCollectionNoteEdgeName
 
-  /**
-   * Convenience macros for defining nISupports methods in a cycle collected
-   * class.
-   */
+/**
+ * Convenience macros for defining nISupports methods in a cycle collected
+ * class.
+ */
 
 #define NS_IMPL_QUERY_INTERFACE_CYCLE_COLLECTION_INHERITED(aClass, aSuper, \
                                                            ...)            \

@@ -20,9 +20,9 @@ class HTMLAudioElement final : public HTMLMediaElement {
  public:
   typedef mozilla::dom::NodeInfo NodeInfo;
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLAudioElement, audio)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLAudioElement, audio)
 
-  explicit HTMLAudioElement(already_AddRefed<NodeInfo>& aNodeInfo);
+  explicit HTMLAudioElement(already_AddRefed<NodeInfo>&& aNodeInfo);
 
   // Element
   virtual bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override;
@@ -30,11 +30,8 @@ class HTMLAudioElement final : public HTMLMediaElement {
   // nsIDOMHTMLMediaElement
   using HTMLMediaElement::GetPaused;
 
-  virtual nsresult Clone(NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(NodeInfo*, nsINode** aResult) const override;
   virtual nsresult SetAcceptHeader(nsIHttpChannel* aChannel) override;
-
-  virtual nsIDOMNode* AsDOMNode() override { return this; }
 
   // WebIDL
 

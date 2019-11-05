@@ -45,3 +45,14 @@
 <!ENTITY  autologinproxy.tooltip        "Bu seçenek, hesap bilgilerini kaydettiğiniz vekil sunucularda sessizce oturum açar. Kimlik doğrulama başarısız olursa bilgileriniz sorulur.">
 <!ENTITY  socksRemoteDNS.label          "SOCKS v5 kullanırken vekil sunucu DNS’i">
 <!ENTITY  socksRemoteDNS.accesskey      "d">
+<!ENTITY  dnsOverHttps.label            "HTTP üzerinden DNS’i etkinleştir">
+<!ENTITY  dnsOverHttps.accesskey        "D">
+<!ENTITY  dnsOverHttpsUrl.label         "URL">
+<!ENTITY  dnsOverHttpsUrl.accesskey     "R">
+<!ENTITY  dnsOverHttpsUrl.tooltip       "HTTPS üzerinden DNS çözümleme adresi">
+<!ENTITY  dnsOverHttpsUrlDefault.label     "Varsayılanı kullan">
+<!ENTITY  dnsOverHttpsUrlDefault.accesskey "l">
+<!ENTITY  dnsOverHttpsUrlDefault.tooltip   "DNS’i HTTPS üzerinden çözümlemek için varsayılan adresi kullan">
+<!ENTITY  dnsOverHttpsUrlCustom.label      "Özel">
+<!ENTITY  dnsOverHttpsUrlCustom.accesskey  "Ö">
+<!ENTITY  dnsOverHttpsUrlCustom.tooltip    "DNS’i HTTPS üzerinden çözümlemek için tercih ettiğiniz adresi girin">

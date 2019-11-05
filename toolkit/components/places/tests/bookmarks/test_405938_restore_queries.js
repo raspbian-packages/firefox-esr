@@ -61,84 +61,64 @@ var test = {
         title: `folder${i}`,
         type: PlacesUtils.bookmarks.TYPE_FOLDER,
         dateAdded,
-        children: [{
-          dateAdded,
-          url: `http://${i}`,
-          title: `bookmark${i}`,
-        }]
+        children: [
+          {
+            dateAdded,
+            url: `http://${i}`,
+            title: `bookmark${i}`,
+          },
+        ],
       });
     }
 
     let bookmarksTree = {
       guid: PlacesUtils.bookmarks.toolbarGuid,
-      children: [{
-        dateAdded,
-        title: this._testRootTitle,
-        type: PlacesUtils.bookmarks.TYPE_FOLDER,
-        children: testFolderItems
-      }]
+      children: [
+        {
+          dateAdded,
+          title: this._testRootTitle,
+          type: PlacesUtils.bookmarks.TYPE_FOLDER,
+          children: testFolderItems,
+        },
+      ],
     };
 
-    let insertedBookmarks = await PlacesUtils.bookmarks.insertTree(bookmarksTree);
+    let insertedBookmarks = await PlacesUtils.bookmarks.insertTree(
+      bookmarksTree
+    );
 
     // create a query URI with 1 folder (ie: folder shortcut)
-    let folderIdsMap = await PlacesUtils.promiseManyItemIds(this._folderGuids);
-    let folderIds = [];
-    for (let id of folderIdsMap.values()) {
-      folderIds.push(id);
-    }
-
-    this._queryURI1 = `place:folder=${folderIdsMap.get(this._folderGuids[0])}&queryType=1`;
+    this._queryURI1 = `place:parent=${this._folderGuids[0]}&queryType=1`;
     this._queryTitle1 = "query1";
     await PlacesUtils.bookmarks.insert({
       parentGuid: insertedBookmarks[0].guid,
       dateAdded,
       url: this._queryURI1,
-      title: this._queryTitle1
+      title: this._queryTitle1,
     });
 
     // create a query URI with _count folders
-    this._queryURI2 = `place:folder=${folderIds.join("&folder=")}&queryType=1`;
+    this._queryURI2 = `place:parent=${this._folderGuids.join(
+      "&parent="
+    )}&queryType=1`;
     this._queryTitle2 = "query2";
     await PlacesUtils.bookmarks.insert({
       parentGuid: insertedBookmarks[0].guid,
       dateAdded,
       url: this._queryURI2,
-      title: this._queryTitle2
+      title: this._queryTitle2,
     });
 
-    // create a query URI with _count queries (each with a folder)
-    // first get a query object for each folder
-    var queries = folderIds.map(function(aFolderId) {
-      var query = PlacesUtils.history.getNewQuery();
-      query.setFolders([aFolderId], 1);
-      return query;
-    });
-
-    var options = PlacesUtils.history.getNewQueryOptions();
-    options.queryType = options.QUERY_TYPE_BOOKMARKS;
+    // Create a query URI for most recent bookmarks with NO folders specified.
     this._queryURI3 =
-      PlacesUtils.history.queriesToQueryString(queries, queries.length, options);
+      "place:queryType=1&sort=12&maxResults=10&excludeQueries=1";
     this._queryTitle3 = "query3";
     await PlacesUtils.bookmarks.insert({
       parentGuid: insertedBookmarks[0].guid,
       dateAdded,
       url: this._queryURI3,
-      title: this._queryTitle3
+      title: this._queryTitle3,
     });
-
-    // Create a query URI for most recent bookmarks with NO folders specified.
-    this._queryURI4 = "place:queryType=1&sort=12&excludeItemIfParentHasAnnotation=livemark%2FfeedURI&maxResults=10&excludeQueries=1";
-    this._queryTitle4 = "query4";
-    await PlacesUtils.bookmarks.insert({
-      parentGuid: insertedBookmarks[0].guid,
-      dateAdded,
-      url: this._queryURI4,
-      title: this._queryTitle4
-    });
-
-    dump_table("moz_bookmarks");
-    dump_table("moz_places");
   },
 
   clean() {},
@@ -147,20 +127,22 @@ var test = {
     if (addExtras) {
       // Throw a wrench in the works by inserting some new bookmarks,
       // ensuring folder ids won't be the same, when restoring.
-      let date = new Date() - (this._extraBookmarksCount * 1000);
+      let date = new Date() - this._extraBookmarksCount * 1000;
       for (let i = 0; i < this._extraBookmarksCount; i++) {
         await PlacesUtils.bookmarks.insert({
           parentGuid: PlacesUtils.bookmarks.menuGuid,
           url: uri("http://aaaa" + i),
-          dateAdded: new Date(date + ((this._extraBookmarksCount - i) * 1000)),
+          dateAdded: new Date(date + (this._extraBookmarksCount - i) * 1000),
         });
       }
     }
 
-    var toolbar =
-      PlacesUtils.getFolderContents(PlacesUtils.toolbarFolderId,
-                                    false, true).root;
-    Assert.ok(toolbar.childCount, 1);
+    var toolbar = PlacesUtils.getFolderContents(
+      PlacesUtils.bookmarks.toolbarGuid,
+      false,
+      true
+    ).root;
+    Assert.equal(toolbar.childCount, 1);
 
     var folderNode = toolbar.getChild(0);
     Assert.equal(folderNode.type, folderNode.RESULT_TYPE_FOLDER);
@@ -169,7 +151,7 @@ var test = {
     folderNode.containerOpen = true;
 
     // |_count| folders + the query nodes
-    Assert.equal(folderNode.childCount, this._count + 4);
+    Assert.equal(folderNode.childCount, this._count + 3);
 
     for (let i = 0; i < this._count; i++) {
       var subFolder = folderNode.getChild(i);
@@ -188,11 +170,8 @@ var test = {
     // validate folders query
     this.validateQueryNode2(folderNode.getChild(this._count + 1));
 
-    // validate multiple queries query
-    this.validateQueryNode3(folderNode.getChild(this._count + 2));
-
     // validate recent folders query
-    this.validateQueryNode4(folderNode.getChild(this._count + 3));
+    this.validateQueryNode3(folderNode.getChild(this._count + 2));
 
     // clean up
     folderNode.containerOpen = false;
@@ -227,23 +206,8 @@ var test = {
     aNode.containerOpen = false;
   },
 
-  validateQueryNode3: function validateQueryNode3(aNode) {
+  validateQueryNode3(aNode) {
     Assert.equal(aNode.title, this._queryTitle3);
-    Assert.ok(PlacesUtils.nodeIsQuery(aNode));
-
-    aNode.QueryInterface(Ci.nsINavHistoryContainerResultNode);
-    aNode.containerOpen = true;
-    Assert.equal(aNode.childCount, this._count);
-    for (var i = 0; i < aNode.childCount; i++) {
-      var child = aNode.getChild(i);
-      Assert.ok(uri(child.uri).equals(uri("http://" + i)));
-      Assert.equal(child.title, "bookmark" + i);
-    }
-    aNode.containerOpen = false;
-  },
-
-  validateQueryNode4(aNode) {
-    Assert.equal(aNode.title, this._queryTitle4);
     Assert.ok(PlacesUtils.nodeIsQuery(aNode));
 
     aNode.QueryInterface(Ci.nsINavHistoryContainerResultNode);
@@ -279,7 +243,7 @@ add_task(async function() {
   }
 
   // restore json file
-  await BookmarkJSONUtils.importFromFile(jsonFile, true);
+  await BookmarkJSONUtils.importFromFile(jsonFile, { replace: true });
 
   // validate
   for (let singleTest of tests) {

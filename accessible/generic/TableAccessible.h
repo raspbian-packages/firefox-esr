@@ -33,7 +33,7 @@ class TableAccessible {
   /**
    * Return the number of columns in the table.
    */
-  virtual uint32_t ColCount() { return 0; }
+  virtual uint32_t ColCount() const { return 0; }
 
   /**
    * Return the number of rows in the table.
@@ -56,27 +56,25 @@ class TableAccessible {
 
   /**
    * Return the column index of the cell with the given index.
+   * This returns -1 if the column count is 0 or an invalid index is being
+   * passed in.
    */
-  virtual int32_t ColIndexAt(uint32_t aCellIdx) {
-    return aCellIdx % ColCount();
-  }
+  virtual int32_t ColIndexAt(uint32_t aCellIdx);
 
   /**
    * Return the row index of the cell with the given index.
+   * This returns -1 if the column count is 0 or an invalid index is being
+   * passed in.
    */
-  virtual int32_t RowIndexAt(uint32_t aCellIdx) {
-    return aCellIdx / ColCount();
-  }
+  virtual int32_t RowIndexAt(uint32_t aCellIdx);
 
   /**
    * Get the row and column indices for the cell at the given index.
+   * This returns -1 for both output parameters if the column count is 0 or an
+   * invalid index is being passed in.
    */
   virtual void RowAndColIndicesAt(uint32_t aCellIdx, int32_t* aRowIdx,
-                                  int32_t* aColIdx) {
-    uint32_t colCount = ColCount();
-    *aRowIdx = aCellIdx / colCount;
-    *aColIdx = aCellIdx % colCount;
-  }
+                                  int32_t* aColIdx);
 
   /**
    * Return the number of columns occupied by the cell at the given row and
@@ -179,12 +177,23 @@ class TableAccessible {
   /**
    * Return true if the table is probably for layout.
    */
-  virtual bool IsProbablyLayoutTable() { return false; }
+  virtual bool IsProbablyLayoutTable();
 
   /**
    * Convert the table to an Accessible*.
    */
   virtual Accessible* AsAccessible() = 0;
+
+ protected:
+  /**
+   * Return row accessible at the given row index.
+   */
+  Accessible* RowAt(int32_t aRow);
+
+  /**
+   * Return cell accessible at the given column index in the row.
+   */
+  Accessible* CellInRowAt(Accessible* aRow, int32_t aColumn);
 };
 
 }  // namespace a11y

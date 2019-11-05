@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 function macWindowMenuDidShow() {
-  let windows = Services.wm.getEnumerator("");
   let frag = document.createDocumentFragment();
-  while (windows.hasMoreElements()) {
-    let win = windows.getNext();
+  for (let win of Services.wm.getEnumerator("")) {
     if (win.document.documentElement.getAttribute("inwindowmenu") == "false") {
       continue;
     }
@@ -21,7 +19,7 @@ function macWindowMenuDidShow() {
       if (win.windowState == window.STATE_MINIMIZED) {
         win.restore();
       }
-      win.document.commandDispatcher.focusedWindow.focus();
+      win.focus();
     });
     frag.appendChild(item);
   }
@@ -37,8 +35,9 @@ function macWindowMenuDidHide() {
 }
 
 function zoomWindow() {
-  if (window.windowState == window.STATE_NORMAL)
+  if (window.windowState == window.STATE_NORMAL) {
     window.maximize();
-  else
+  } else {
     window.restore();
+  }
 }

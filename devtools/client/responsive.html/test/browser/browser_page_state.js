@@ -10,13 +10,13 @@ const DUMMY_1_URL = "http://example.com/";
 const TEST_URL = `${URL_ROOT}doc_page_state.html`;
 const DUMMY_2_URL = "http://example.com/browser/";
 
-add_task(async function () {
+add_task(async function() {
   // Load up a sequence of pages:
   // 0. DUMMY_1_URL
   // 1. TEST_URL
   // 2. DUMMY_2_URL
-  let tab = await addTab(DUMMY_1_URL);
-  let browser = tab.linkedBrowser;
+  const tab = await addTab(DUMMY_1_URL);
+  const browser = tab.linkedBrowser;
   await load(browser, TEST_URL);
   await load(browser, DUMMY_2_URL);
 
@@ -42,11 +42,10 @@ add_task(async function () {
   // Click on content to set an altered state that would be lost on reload
   await BrowserTestUtils.synthesizeMouseAtCenter("body", {}, browser);
 
-  let { ui } = await openRDM(tab);
+  const { ui } = await openRDM(tab);
 
   // Check color inside the viewport
-  let color = await spawnViewportTask(ui, {}, function () {
-    // eslint-disable-next-line mozilla/no-cpows-in-tests
+  let color = await spawnViewportTask(ui, {}, function() {
     return content.getComputedStyle(content.document.body)
                   .getPropertyValue("background-color");
   });
@@ -56,8 +55,7 @@ add_task(async function () {
   await closeRDM(tab);
 
   // Check color back in the browser tab
-  color = await ContentTask.spawn(browser, {}, async function () {
-    // eslint-disable-next-line mozilla/no-cpows-in-tests
+  color = await ContentTask.spawn(browser, {}, async function() {
     return content.getComputedStyle(content.document.body)
                   .getPropertyValue("background-color");
   });

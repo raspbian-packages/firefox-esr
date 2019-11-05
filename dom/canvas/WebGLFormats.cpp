@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,12 +11,37 @@
 #include "mozilla/gfx/Logging.h"
 #include "mozilla/StaticMutex.h"
 
-#ifdef FOO
-#error FOO is already defined! We use FOO() macros to keep things succinct in this file.
-#endif
-
 namespace mozilla {
 namespace webgl {
+
+static TextureBaseType ToBaseType(const ComponentType type) {
+  switch (type) {
+    case ComponentType::Int:
+      return TextureBaseType::Int;
+    case ComponentType::UInt:
+      return TextureBaseType::UInt;
+    case ComponentType::NormInt:
+    case ComponentType::NormUInt:
+    case ComponentType::Float:
+      // case ComponentType::Depth:
+      return TextureBaseType::Float;
+  }
+  MOZ_CRASH("pacify gcc6 warning");
+}
+
+const char* ToString(const TextureBaseType x) {
+  switch (x) {
+    case webgl::TextureBaseType::Float:
+      return "FLOAT";
+    case webgl::TextureBaseType::Int:
+      return "INT";
+    case webgl::TextureBaseType::UInt:
+      return "UINT";
+  }
+  MOZ_CRASH("pacify gcc6 warning");
+}
+
+// -
 
 template <typename K, typename V, typename K2, typename V2>
 static inline void AlwaysInsert(std::map<K, V>& dest, const K2& key,
@@ -66,10 +91,9 @@ static void AddCompressedFormatInfo(EffectiveFormat format,
                                     uint8_t blockHeight,
                                     CompressionFamily family) {
   MOZ_ASSERT(bitsPerBlock % 8 == 0);
-  uint16_t bytesPerBlock =
-      bitsPerBlock / 8;  // The specs always state these in bits,
-                         // but it's only ever useful to us as
-                         // bytes.
+  uint16_t bytesPerBlock = bitsPerBlock / 8;  // The specs always state these in
+                                              // bits, but it's only ever useful
+                                              // to us as bytes.
   MOZ_ASSERT(bytesPerBlock <= 255);
 
   const CompressedFormatInfo info = {format, uint8_t(bytesPerBlock), blockWidth,
@@ -93,10 +117,17 @@ static void InitCompressedFormatInfo() {
     AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 ,  64, 4, 4, CompressionFamily::ES3);
     AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2,  64, 4, 4, CompressionFamily::ES3);
 
-    // AMD_compressed_ATC_texture
-    AddCompressedFormatInfo(EffectiveFormat::ATC_RGB_AMD                    ,  64, 4, 4, CompressionFamily::ATC);
-    AddCompressedFormatInfo(EffectiveFormat::ATC_RGBA_EXPLICIT_ALPHA_AMD    , 128, 4, 4, CompressionFamily::ATC);
-    AddCompressedFormatInfo(EffectiveFormat::ATC_RGBA_INTERPOLATED_ALPHA_AMD, 128, 4, 4, CompressionFamily::ATC);
+    // EXT_texture_compression_bptc
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_RGBA_BPTC_UNORM        , 16*8, 4, 4, CompressionFamily::BPTC);
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_SRGB_ALPHA_BPTC_UNORM  , 16*8, 4, 4, CompressionFamily::BPTC);
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_RGB_BPTC_SIGNED_FLOAT  , 16*8, 4, 4, CompressionFamily::BPTC);
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT, 16*8, 4, 4, CompressionFamily::BPTC);
+
+    // EXT_texture_compression_rgtc
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_RED_RGTC1       ,  8*8, 4, 4, CompressionFamily::RGTC);
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_SIGNED_RED_RGTC1,  8*8, 4, 4, CompressionFamily::RGTC);
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_RG_RGTC2        , 16*8, 4, 4, CompressionFamily::RGTC);
+    AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_SIGNED_RG_RGTC2 , 16*8, 4, 4, CompressionFamily::RGTC);
 
     // EXT_texture_compression_s3tc
     AddCompressedFormatInfo(EffectiveFormat::COMPRESSED_RGB_S3TC_DXT1_EXT ,  64, 4, 4, CompressionFamily::S3TC);
@@ -225,6 +256,7 @@ static void AddFormatInfo(EffectiveFormat format, const char* name,
                            sizedFormat,
                            unsizedFormat,
                            componentType,
+                           ToBaseType(componentType),
                            isSRGB,
                            compressedFormatInfo,
                            bytesPerPixel,
@@ -238,8 +270,8 @@ static void AddFormatInfo(EffectiveFormat format, const char* name,
 }
 
 static void InitFormatInfo() {
-// This function is full of expressive formatting, so:
-// clang-format off
+  // This function is full of expressive formatting, so:
+  // clang-format off
 
 #define FOO(x) EffectiveFormat::x, #x, LOCAL_GL_ ## x
 
@@ -305,11 +337,12 @@ static void InitFormatInfo() {
     AddFormatInfo(FOO(DEPTH_COMPONENT16 ), 2, 0,0,0,0, 16,0, UnsizedFormat::D , false, ComponentType::NormUInt);
     AddFormatInfo(FOO(DEPTH_COMPONENT24 ), 3, 0,0,0,0, 24,0, UnsizedFormat::D , false, ComponentType::NormUInt);
     AddFormatInfo(FOO(DEPTH_COMPONENT32F), 4, 0,0,0,0, 32,0, UnsizedFormat::D , false, ComponentType::Float);
-    AddFormatInfo(FOO(DEPTH24_STENCIL8  ), 4, 0,0,0,0, 24,8, UnsizedFormat::DEPTH_STENCIL, false, ComponentType::Special);
-    AddFormatInfo(FOO(DEPTH32F_STENCIL8 ), 5, 0,0,0,0, 32,8, UnsizedFormat::DEPTH_STENCIL, false, ComponentType::Special);
+    // DEPTH_STENCIL types are sampled as their depth component.
+    AddFormatInfo(FOO(DEPTH24_STENCIL8  ), 4, 0,0,0,0, 24,8, UnsizedFormat::DEPTH_STENCIL, false, ComponentType::NormUInt);
+    AddFormatInfo(FOO(DEPTH32F_STENCIL8 ), 5, 0,0,0,0, 32,8, UnsizedFormat::DEPTH_STENCIL, false, ComponentType::Float);
 
     // GLES 3.0.4, p205-206, "Required Renderbuffer Formats"
-    AddFormatInfo(FOO(STENCIL_INDEX8), 1, 0,0,0,0, 0,8, UnsizedFormat::S, false, ComponentType::UInt);
+    AddFormatInfo(FOO(STENCIL_INDEX8), 1, 0,0,0,0, 0,8, UnsizedFormat::S, false, ComponentType::Int);
 
     // GLES 3.0.4, p147, table 3.19
     // GLES 3.0.4  p286+  $C.1 "ETC Compressed Texture Image Formats"
@@ -324,10 +357,17 @@ static void InitFormatInfo() {
     AddFormatInfo(FOO(COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 ), 0, 1,1,1,1, 0,0, UnsizedFormat::RGBA, false, ComponentType::NormUInt);
     AddFormatInfo(FOO(COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2), 0, 1,1,1,1, 0,0, UnsizedFormat::RGBA, true , ComponentType::NormUInt);
 
-    // AMD_compressed_ATC_texture
-    AddFormatInfo(FOO(ATC_RGB_AMD                    ), 0, 1,1,1,0, 0,0, UnsizedFormat::RGB , false, ComponentType::NormUInt);
-    AddFormatInfo(FOO(ATC_RGBA_EXPLICIT_ALPHA_AMD    ), 0, 1,1,1,1, 0,0, UnsizedFormat::RGBA, false, ComponentType::NormUInt);
-    AddFormatInfo(FOO(ATC_RGBA_INTERPOLATED_ALPHA_AMD), 0, 1,1,1,1, 0,0, UnsizedFormat::RGBA, false, ComponentType::NormUInt);
+    // EXT_texture_compression_bptc
+    AddFormatInfo(FOO(COMPRESSED_RGBA_BPTC_UNORM        ), 0, 1,1,1,1, 0,0, UnsizedFormat::RGBA, false, ComponentType::NormUInt);
+    AddFormatInfo(FOO(COMPRESSED_SRGB_ALPHA_BPTC_UNORM  ), 0, 1,1,1,1, 0,0, UnsizedFormat::RGBA, true , ComponentType::NormUInt);
+    AddFormatInfo(FOO(COMPRESSED_RGB_BPTC_SIGNED_FLOAT  ), 0, 1,1,1,0, 0,0, UnsizedFormat::RGB , false, ComponentType::Float   );
+    AddFormatInfo(FOO(COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT), 0, 1,1,1,0, 0,0, UnsizedFormat::RGB , false, ComponentType::Float   );
+
+    // EXT_texture_compression_rgtc
+    AddFormatInfo(FOO(COMPRESSED_RED_RGTC1       ), 0, 1,0,0,0, 0,0, UnsizedFormat::R , false, ComponentType::NormUInt);
+    AddFormatInfo(FOO(COMPRESSED_SIGNED_RED_RGTC1), 0, 1,0,0,0, 0,0, UnsizedFormat::R , false, ComponentType::NormInt );
+    AddFormatInfo(FOO(COMPRESSED_RG_RGTC2        ), 0, 1,1,0,0, 0,0, UnsizedFormat::RG, false, ComponentType::NormUInt);
+    AddFormatInfo(FOO(COMPRESSED_SIGNED_RG_RGTC2 ), 0, 1,1,0,0, 0,0, UnsizedFormat::RG, false, ComponentType::NormInt );
 
     // EXT_texture_compression_s3tc
     AddFormatInfo(FOO(COMPRESSED_RGB_S3TC_DXT1_EXT ), 0, 1,1,1,0, 0,0, UnsizedFormat::RGB , false, ComponentType::NormUInt);
@@ -631,24 +671,21 @@ bool FormatUsageInfo::IsUnpackValid(
   return true;
 }
 
-void FormatUsageInfo::ResolveMaxSamples(gl::GLContext* gl) {
+void FormatUsageInfo::ResolveMaxSamples(gl::GLContext& gl) const {
+  MOZ_ASSERT(gl.IsCurrent());
   MOZ_ASSERT(!this->maxSamplesKnown);
-  MOZ_ASSERT(this->maxSamples == 0);
-  MOZ_ASSERT(gl->IsCurrent());
-
+  MOZ_ASSERT(!this->maxSamples);
   this->maxSamplesKnown = true;
 
   const GLenum internalFormat = this->format->sizedFormat;
   if (!internalFormat) return;
+  if (!gl.IsSupported(gl::GLFeature::internalformat_query)) return;
 
-  if (!gl->IsSupported(gl::GLFeature::internalformat_query))
-    return;  // Leave it at 0.
-
-  GLint maxSamplesGL = 0;
-  gl->fGetInternalformativ(LOCAL_GL_RENDERBUFFER, internalFormat,
-                           LOCAL_GL_SAMPLES, 1, &maxSamplesGL);
-
-  this->maxSamples = maxSamplesGL;
+  // GL_SAMPLES returns a list in descending order, so ask for just one elem to
+  // get the max.
+  gl.fGetInternalformativ(LOCAL_GL_RENDERBUFFER, internalFormat,
+                          LOCAL_GL_SAMPLES, 1,
+                          reinterpret_cast<GLint*>(&this->maxSamples));
 }
 
 ////////////////////////////////////////
@@ -781,11 +818,13 @@ UniquePtr<FormatUsageAuthority> FormatUsageAuthority::CreateForWebGL1(
   fnSet(EffectiveFormat::Luminance8, false, true);
   fnSet(EffectiveFormat::Alpha8, false, true);
 
-  fnSet(EffectiveFormat::DEPTH_COMPONENT16, true, false);
+  fnSet(EffectiveFormat::DEPTH_COMPONENT16, true, true);
+  fnSet(EffectiveFormat::DEPTH_COMPONENT24, true,
+        true);  // Requires WEBGL_depth_texture.
   fnSet(EffectiveFormat::STENCIL_INDEX8, true, false);
 
   // Added in WebGL 1.0 spec:
-  fnSet(EffectiveFormat::DEPTH24_STENCIL8, true, false);
+  fnSet(EffectiveFormat::DEPTH24_STENCIL8, true, true);
 
   ////////////////////////////////////
   // RB formats
@@ -810,7 +849,7 @@ UniquePtr<FormatUsageAuthority> FormatUsageAuthority::CreateForWebGL1(
 
   if (!AddUnsizedFormats(ptr, gl)) return nullptr;
 
-  return Move(ret);
+  return ret;
 }
 
 UniquePtr<FormatUsageAuthority> FormatUsageAuthority::CreateForWebGL2(
@@ -1011,11 +1050,14 @@ UniquePtr<FormatUsageAuthority> FormatUsageAuthority::CreateForWebGL2(
   fnAllowES3TexFormat(FOO(RGBA32UI), true, false);
 
   // GLES 3.0.4, p133, table 3.14
-  fnAllowES3TexFormat(FOO(DEPTH_COMPONENT16), true, false);
-  fnAllowES3TexFormat(FOO(DEPTH_COMPONENT24), true, false);
-  fnAllowES3TexFormat(FOO(DEPTH_COMPONENT32F), true, false);
-  fnAllowES3TexFormat(FOO(DEPTH24_STENCIL8), true, false);
-  fnAllowES3TexFormat(FOO(DEPTH32F_STENCIL8), true, false);
+  // p151:
+  //   Depth textures and the depth components of depth/stencil textures can be
+  //   treated as `RED` textures during texture filtering and application.
+  fnAllowES3TexFormat(FOO(DEPTH_COMPONENT16), true, true);
+  fnAllowES3TexFormat(FOO(DEPTH_COMPONENT24), true, true);
+  fnAllowES3TexFormat(FOO(DEPTH_COMPONENT32F), true, true);
+  fnAllowES3TexFormat(FOO(DEPTH24_STENCIL8), true, true);
+  fnAllowES3TexFormat(FOO(DEPTH32F_STENCIL8), true, true);
 
 #undef FOO
 
@@ -1036,21 +1078,9 @@ UniquePtr<FormatUsageAuthority> FormatUsageAuthority::CreateForWebGL2(
   ptr->AllowRBFormat(LOCAL_GL_DEPTH_STENCIL,
                      ptr->GetUsage(EffectiveFormat::DEPTH24_STENCIL8));
 
-  if (gfxPrefs::WebGL2CompatMode()) {
-    AddSimpleUnsized(ptr, LOCAL_GL_RGBA, LOCAL_GL_FLOAT,
-                     EffectiveFormat::RGBA32F);
-    AddSimpleUnsized(ptr, LOCAL_GL_RGB, LOCAL_GL_FLOAT,
-                     EffectiveFormat::RGB32F);
-
-    AddSimpleUnsized(ptr, LOCAL_GL_RGBA, LOCAL_GL_HALF_FLOAT_OES,
-                     EffectiveFormat::RGBA16F);
-    AddSimpleUnsized(ptr, LOCAL_GL_RGB, LOCAL_GL_HALF_FLOAT_OES,
-                     EffectiveFormat::RGB16F);
-  }
-
   ////////////////////////////////////
 
-  return Move(ret);
+  return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1090,10 +1120,11 @@ bool FormatUsageAuthority::AreUnpackEnumsValid(GLenum unpackFormat,
 ////////////////////
 
 void FormatUsageAuthority::AllowRBFormat(GLenum sizedFormat,
-                                         const FormatUsageInfo* usage) {
+                                         const FormatUsageInfo* usage,
+                                         const bool expectRenderable) {
   MOZ_ASSERT(!usage->format->compression);
   MOZ_ASSERT(usage->format->sizedFormat);
-  MOZ_ASSERT(usage->IsRenderable());
+  MOZ_ASSERT(usage->IsRenderable() || !expectRenderable);
 
   AlwaysInsert(mRBFormatMap, sizedFormat, usage);
 }

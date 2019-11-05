@@ -17,11 +17,11 @@
 #include "WebMDemuxer.h"
 
 #ifdef MOZ_ANDROID_HLS_SUPPORT
-#include "HLSDecoder.h"
+#  include "HLSDecoder.h"
 #endif
 #ifdef MOZ_FMP4
-#include "MP4Decoder.h"
-#include "MP4Demuxer.h"
+#  include "MP4Decoder.h"
+#  include "MP4Demuxer.h"
 #endif
 #include "MediaFormatReader.h"
 
@@ -38,12 +38,11 @@
 #include "FlacDemuxer.h"
 
 #include "nsPluginHost.h"
-#include "MediaPrefs.h"
 
 namespace mozilla {
 
-/* static */ bool DecoderTraits::IsHttpLiveStreamingType(
-    const MediaContainerType& aType) {
+/* static */
+bool DecoderTraits::IsHttpLiveStreamingType(const MediaContainerType& aType) {
   const auto& mimeType = aType.Type();
   return  // For m3u8.
           // https://tools.ietf.org/html/draft-pantos-http-live-streaming-19#section-10
@@ -54,16 +53,17 @@ namespace mozilla {
       mimeType == MEDIAMIMETYPE("audio/x-mpegurl");
 }
 
-/* static */ bool DecoderTraits::IsMatroskaType(
-    const MediaContainerType& aType) {
+/* static */
+bool DecoderTraits::IsMatroskaType(const MediaContainerType& aType) {
   const auto& mimeType = aType.Type();
   // https://matroska.org/technical/specs/notes.html
   return mimeType == MEDIAMIMETYPE("audio/x-matroska") ||
          mimeType == MEDIAMIMETYPE("video/x-matroska");
 }
 
-/* static */ bool DecoderTraits::IsMP4SupportedType(
-    const MediaContainerType& aType, DecoderDoctorDiagnostics* aDiagnostics) {
+/* static */
+bool DecoderTraits::IsMP4SupportedType(const MediaContainerType& aType,
+                                       DecoderDoctorDiagnostics* aDiagnostics) {
 #ifdef MOZ_FMP4
   return MP4Decoder::IsSupportedType(aType, aDiagnostics);
 #else
@@ -91,8 +91,8 @@ static CanPlayStatus CanHandleCodecsType(
     if (WaveDecoder::IsSupportedType(aType)) {
       return CANPLAY_YES;
     }
-    // We can only reach this position if a particular codec was requested,
-    // ogg is supported and working: the codec must be invalid.
+    // We can only reach this position if a particular codec was requested, wave
+    // is supported and working: the codec must be invalid or not supported.
     return CANPLAY_NO;
   }
   if (WebMDecoder::IsSupportedType(mimeType)) {
@@ -114,14 +114,29 @@ static CanPlayStatus CanHandleCodecsType(
     return CANPLAY_NO;
   }
 #endif
-  if (MP3Decoder::IsSupportedType(aType)) {
-    return CANPLAY_YES;
+  if (MP3Decoder::IsSupportedType(mimeType)) {
+    if (MP3Decoder::IsSupportedType(aType)) {
+      return CANPLAY_YES;
+    }
+    // We can only reach this position if a particular codec was requested,
+    // mp3 is supported and working: the codec must be invalid.
+    return CANPLAY_NO;
   }
-  if (ADTSDecoder::IsSupportedType(aType)) {
-    return CANPLAY_YES;
+  if (ADTSDecoder::IsSupportedType(mimeType)) {
+    if (ADTSDecoder::IsSupportedType(aType)) {
+      return CANPLAY_YES;
+    }
+    // We can only reach this position if a particular codec was requested,
+    // adts is supported and working: the codec must be invalid.
+    return CANPLAY_NO;
   }
-  if (FlacDecoder::IsSupportedType(aType)) {
-    return CANPLAY_YES;
+  if (FlacDecoder::IsSupportedType(mimeType)) {
+    if (FlacDecoder::IsSupportedType(aType)) {
+      return CANPLAY_YES;
+    }
+    // We can only reach this position if a particular codec was requested,
+    // flac is supported and working: the codec must be invalid.
+    return CANPLAY_NO;
   }
 
   return CANPLAY_MAYBE;
@@ -129,8 +144,6 @@ static CanPlayStatus CanHandleCodecsType(
 
 static CanPlayStatus CanHandleMediaType(
     const MediaContainerType& aType, DecoderDoctorDiagnostics* aDiagnostics) {
-  MOZ_ASSERT(NS_IsMainThread());
-
 #ifdef MOZ_ANDROID_HLS_SUPPORT
   if (HLSDecoder::IsSupportedType(aType)) {
     return CANPLAY_MAYBE;
@@ -303,9 +316,35 @@ bool DecoderTraits::IsSupportedInVideoDocument(const nsACString& aType) {
 }
 
 /* static */
-bool DecoderTraits::CrossOriginRedirectsProhibited(
+nsTArray<UniquePtr<TrackInfo>> DecoderTraits::GetTracksInfo(
     const MediaContainerType& aType) {
-  return WaveDecoder::IsSupportedType(aType);
+  // Container type with just the MIME type/subtype, no codecs.
+  const MediaContainerType mimeType(aType.Type());
+
+  if (OggDecoder::IsSupportedType(mimeType)) {
+    return OggDecoder::GetTracksInfo(aType);
+  }
+  if (WaveDecoder::IsSupportedType(mimeType)) {
+    return WaveDecoder::GetTracksInfo(aType);
+  }
+#ifdef MOZ_FMP4
+  if (MP4Decoder::IsSupportedType(mimeType, nullptr)) {
+    return MP4Decoder::GetTracksInfo(aType);
+  }
+#endif
+  if (WebMDecoder::IsSupportedType(mimeType)) {
+    return WebMDecoder::GetTracksInfo(aType);
+  }
+  if (MP3Decoder::IsSupportedType(mimeType)) {
+    return MP3Decoder::GetTracksInfo(aType);
+  }
+  if (ADTSDecoder::IsSupportedType(mimeType)) {
+    return ADTSDecoder::GetTracksInfo(aType);
+  }
+  if (FlacDecoder::IsSupportedType(mimeType)) {
+    return FlacDecoder::GetTracksInfo(aType);
+  }
+  return nsTArray<UniquePtr<TrackInfo>>();
 }
 
 }  // namespace mozilla

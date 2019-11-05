@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -24,9 +24,11 @@ class gfxDrawable;
 struct gfxQuad;
 class nsIInputStream;
 class nsIGfxInfo;
-class nsIPresShell;
 
 namespace mozilla {
+namespace dom {
+class Element;
+}
 namespace layers {
 class WebRenderBridgeChild;
 class GlyphArray;
@@ -40,6 +42,13 @@ namespace wr {
 class DisplayListBuilder;
 }  // namespace wr
 }  // namespace mozilla
+
+enum class ImageType {
+  BMP,
+  ICO,
+  JPEG,
+  PNG,
+};
 
 class gfxUtils {
  public:
@@ -92,7 +101,8 @@ class gfxUtils {
                                const mozilla::gfx::SurfaceFormat aFormat,
                                mozilla::gfx::SamplingFilter aSamplingFilter,
                                uint32_t aImageFlags = imgIContainer::FLAG_NONE,
-                               gfxFloat aOpacity = 1.0);
+                               gfxFloat aOpacity = 1.0,
+                               bool aUseOptimalFillOp = true);
 
   /**
    * Clip aContext to the region aRegion.
@@ -157,11 +167,11 @@ class gfxUtils {
   static void ClearThebesSurface(gfxASurface* aSurface);
 
   static const float* YuvToRgbMatrix4x3RowMajor(
-      mozilla::YUVColorSpace aYUVColorSpace);
+      mozilla::gfx::YUVColorSpace aYUVColorSpace);
   static const float* YuvToRgbMatrix3x3ColumnMajor(
-      mozilla::YUVColorSpace aYUVColorSpace);
+      mozilla::gfx::YUVColorSpace aYUVColorSpace);
   static const float* YuvToRgbMatrix4x4ColumnMajor(
-      mozilla::YUVColorSpace aYUVColorSpace);
+      mozilla::gfx::YUVColorSpace aYUVColorSpace);
 
   /**
    * Creates a copy of aSurface, but having the SurfaceFormat aFormat.
@@ -221,10 +231,11 @@ class gfxUtils {
 
   /**
    * Encodes the given surface to PNG/JPEG/BMP/etc. using imgIEncoder.
+   * If both aFile and aString are null, the encoded data is copied to the
+   * clipboard.
    *
-   * @param aMimeType The MIME-type of the image type that the surface is to
-   *   be encoded to. Used to create an appropriate imgIEncoder instance to
-   *   do the encoding.
+   * @param aImageType The image type that the surface is to be encoded to.
+   *   Used to create an appropriate imgIEncoder instance to do the encoding.
    *
    * @param aOutputOptions Passed directly to imgIEncoder::InitFromData as
    *   the value of the |outputOptions| parameter. Callers are responsible
@@ -235,16 +246,18 @@ class gfxUtils {
    *   to the requested binary image format, or if the binary image is
    *   further converted to base-64 and written out as a 'data:' URI.
    *
-   * @aFile If specified, the encoded data is written out to aFile, otherwise
-   *   it is copied to the clipboard.
+   * @aFile If specified, the encoded data is written out to aFile.
+   *
+   * @aString If specified, the encoded data is written out to aString.
    *
    * TODO: Copying to the clipboard as a binary file is not currently
    * supported.
    */
   static nsresult EncodeSourceSurface(SourceSurface* aSurface,
-                                      const nsACString& aMimeType,
+                                      const ImageType aImageType,
                                       const nsAString& aOutputOptions,
-                                      BinaryOrData aBinaryOrData, FILE* aFile);
+                                      BinaryOrData aBinaryOrData, FILE* aFile,
+                                      nsACString* aString = nullptr);
 
   /**
    * Write as a PNG file to the path aFile.
@@ -253,7 +266,6 @@ class gfxUtils {
   static void WriteAsPNG(SourceSurface* aSurface, const char* aFile);
   static void WriteAsPNG(DrawTarget* aDT, const nsAString& aFile);
   static void WriteAsPNG(DrawTarget* aDT, const char* aFile);
-  static void WriteAsPNG(nsIPresShell* aShell, const char* aFile);
 
   /**
    * Dump as a PNG encoded Data URL to a FILE stream (using stdout by
@@ -281,12 +293,14 @@ class gfxUtils {
   static nsresult GetInputStream(DataSourceSurface* aSurface,
                                  bool aIsAlphaPremultiplied,
                                  const char* aMimeType,
-                                 const char16_t* aEncoderOptions,
+                                 const nsAString& aEncoderOptions,
                                  nsIInputStream** outStream);
 
   static nsresult ThreadSafeGetFeatureStatus(
       const nsCOMPtr<nsIGfxInfo>& gfxInfo, int32_t feature,
       nsACString& failureId, int32_t* status);
+
+  static void RemoveShaderCacheFromDiskIfNecessary();
 
   /**
    * Copy to the clipboard as a PNG encoded Data URL.
@@ -297,9 +311,23 @@ class gfxUtils {
   static bool DumpDisplayList();
 
   static FILE* sDumpPaintFile;
+
+  static mozilla::wr::RenderRoot GetContentRenderRoot();
+
+  static mozilla::Maybe<mozilla::wr::RenderRoot> GetRenderRootForFrame(
+      const nsIFrame* aFrame);
+  static mozilla::Maybe<mozilla::wr::RenderRoot> GetRenderRootForElement(
+      const mozilla::dom::Element* aElement);
+  static mozilla::wr::RenderRoot RecursivelyGetRenderRootForFrame(
+      const nsIFrame* aFrame);
+  static mozilla::wr::RenderRoot RecursivelyGetRenderRootForElement(
+      const mozilla::dom::Element* aElement);
 };
 
 namespace mozilla {
+
+struct StyleRGBA;
+
 namespace gfx {
 
 /**
@@ -310,6 +338,7 @@ namespace gfx {
  * applicable).
  */
 Color ToDeviceColor(Color aColor);
+Color ToDeviceColor(const StyleRGBA& aColor);
 Color ToDeviceColor(nscolor aColor);
 
 /**

@@ -7,6 +7,7 @@ const ROLE_ANIMATION = nsIAccessibleRole.ROLE_ANIMATION;
 const ROLE_APPLICATION = nsIAccessibleRole.ROLE_APPLICATION;
 const ROLE_APP_ROOT = nsIAccessibleRole.ROLE_APP_ROOT;
 const ROLE_AUTOCOMPLETE = nsIAccessibleRole.ROLE_AUTOCOMPLETE;
+const ROLE_BLOCKQUOTE = nsIAccessibleRole.ROLE_BLOCKQUOTE;
 const ROLE_BUTTONDROPDOWNGRID = nsIAccessibleRole.ROLE_BUTTONDROPDOWNGRID;
 const ROLE_CANVAS = nsIAccessibleRole.ROLE_CANVAS;
 const ROLE_CAPTION = nsIAccessibleRole.ROLE_CAPTION;
@@ -14,10 +15,12 @@ const ROLE_CELL = nsIAccessibleRole.ROLE_CELL;
 const ROLE_CHECKBUTTON = nsIAccessibleRole.ROLE_CHECKBUTTON;
 const ROLE_CHECK_MENU_ITEM = nsIAccessibleRole.ROLE_CHECK_MENU_ITEM;
 const ROLE_CHROME_WINDOW = nsIAccessibleRole.ROLE_CHROME_WINDOW;
+const ROLE_COLUMNHEADER = nsIAccessibleRole.ROLE_COLUMNHEADER;
 const ROLE_COMBOBOX = nsIAccessibleRole.ROLE_COMBOBOX;
 const ROLE_COMBOBOX_LIST = nsIAccessibleRole.ROLE_COMBOBOX_LIST;
 const ROLE_COMBOBOX_OPTION = nsIAccessibleRole.ROLE_COMBOBOX_OPTION;
-const ROLE_COLUMNHEADER = nsIAccessibleRole.ROLE_COLUMNHEADER;
+const ROLE_CONTENT_DELETION = nsIAccessibleRole.ROLE_CONTENT_DELETION;
+const ROLE_CONTENT_INSERTION = nsIAccessibleRole.ROLE_CONTENT_INSERTION;
 const ROLE_DATE_EDITOR = nsIAccessibleRole.ROLE_DATE_EDITOR;
 const ROLE_DEFINITION = nsIAccessibleRole.ROLE_DEFINITION;
 const ROLE_DEFINITION_LIST = nsIAccessibleRole.ROLE_DEFINITION_LIST;
@@ -34,6 +37,7 @@ const ROLE_FOOTER = nsIAccessibleRole.ROLE_FOOTER;
 const ROLE_FOOTNOTE = nsIAccessibleRole.ROLE_FOOTNOTE;
 const ROLE_FLAT_EQUATION = nsIAccessibleRole.ROLE_FLAT_EQUATION;
 const ROLE_FORM = nsIAccessibleRole.ROLE_FORM;
+const ROLE_FORM_LANDMARK = nsIAccessibleRole.ROLE_FORM_LANDMARK;
 const ROLE_GRAPHIC = nsIAccessibleRole.ROLE_GRAPHIC;
 const ROLE_GRID_CELL = nsIAccessibleRole.ROLE_GRID_CELL;
 const ROLE_GROUPING = nsIAccessibleRole.ROLE_GROUPING;
@@ -150,8 +154,9 @@ function testRole(aAccOrElmOrID, aRole) {
  */
 function getRole(aAccOrElmOrID) {
   var acc = getAccessible(aAccOrElmOrID);
-  if (!acc)
+  if (!acc) {
     return -1;
+  }
 
   var role = -1;
   try {
@@ -168,8 +173,9 @@ function getRole(aAccOrElmOrID) {
  */
 function isRole(aIdentifier, aRole, aMsg) {
   var role = getRole(aIdentifier);
-  if (role == -1)
+  if (role == -1) {
     return;
+  }
 
   if (role == aRole) {
     ok(true, aMsg);

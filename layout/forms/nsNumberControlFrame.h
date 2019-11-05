@@ -17,7 +17,8 @@ class nsITextControlFrame;
 class nsPresContext;
 
 namespace mozilla {
-enum class CSSPseudoElementType : uint8_t;
+enum class PseudoStyleType : uint8_t;
+class PresShell;
 class WidgetEvent;
 class WidgetGUIEvent;
 namespace dom {
@@ -31,16 +32,17 @@ class HTMLInputElement;
 class nsNumberControlFrame final : public nsContainerFrame,
                                    public nsIAnonymousContentCreator,
                                    public nsIFormControlFrame {
-  friend nsIFrame* NS_NewNumberControlFrame(nsIPresShell* aPresShell,
-                                            nsStyleContext* aContext);
+  friend nsIFrame* NS_NewNumberControlFrame(mozilla::PresShell* aPresShell,
+                                            ComputedStyle* aStyle);
 
-  typedef mozilla::CSSPseudoElementType CSSPseudoElementType;
+  typedef mozilla::PseudoStyleType PseudoStyleType;
   typedef mozilla::dom::Element Element;
   typedef mozilla::dom::HTMLInputElement HTMLInputElement;
   typedef mozilla::WidgetEvent WidgetEvent;
   typedef mozilla::WidgetGUIEvent WidgetGUIEvent;
 
-  explicit nsNumberControlFrame(nsStyleContext* aContext);
+  explicit nsNumberControlFrame(ComputedStyle* aStyle,
+                                nsPresContext* aPresContext);
 
  public:
   NS_DECL_QUERYFRAME
@@ -153,16 +155,13 @@ class nsNumberControlFrame final : public nsContainerFrame,
    */
   void HandleSelectCall();
 
-  virtual Element* GetPseudoElement(CSSPseudoElementType aType) override;
-
   bool ShouldUseNativeStyleForSpinner() const;
 
  private:
   nsITextControlFrame* GetTextFieldFrame();
-  nsresult MakeAnonymousElement(Element** aResult,
-                                nsTArray<ContentInfo>& aElements,
-                                nsAtom* aTagName,
-                                CSSPseudoElementType aPseudoType);
+  already_AddRefed<Element> MakeAnonymousElement(Element* aParent,
+                                                 nsAtom* aTagName,
+                                                 PseudoStyleType aPseudoType);
 
   class SyncDisabledStateEvent;
   friend class SyncDisabledStateEvent;

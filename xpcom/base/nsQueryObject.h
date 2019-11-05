@@ -88,6 +88,6 @@ inline nsQueryObjectWithError<T> do_QueryObject(RefPtr<T>& aRawPtr,
   return nsQueryObjectWithError<T>(aRawPtr, aErrorPtr);
 }
 
-  /*****************************************************************************/
+/*****************************************************************************/
 
 #endif  // !defined(nsQueryObject_h)

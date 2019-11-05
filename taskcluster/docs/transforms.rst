@@ -147,6 +147,7 @@ following ``run-using`` are available
   * ``toolchain-script``
   * ``always-optimized``
   * ``fetch-url``
+  * ``python-test``
 
 
 Task Descriptions
@@ -154,7 +155,7 @@ Task Descriptions
 
 Every kind needs to create tasks, and all of those tasks have some things in
 common.  They all run on one of a small set of worker implementations, each
-with their own idiosyncracies.  And they all report to TreeHerder in a similar
+with their own idiosyncrasies.  And they all report to TreeHerder in a similar
 way.
 
 The transforms in ``taskcluster/taskgraph/transforms/task.py`` implement

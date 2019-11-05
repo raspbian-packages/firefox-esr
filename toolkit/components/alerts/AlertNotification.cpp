@@ -225,7 +225,7 @@ AlertImageRequest::Notify(imgIRequest* aRequest, int32_t aType,
       image->GetWidth(&width);
       image->GetHeight(&height);
       image->RequestDecodeForSize(gfx::IntSize(width, height),
-                                  imgIContainer::FLAG_NONE);
+                                  imgIContainer::FLAG_HIGH_QUALITY_SCALING);
     }
     return NS_OK;
   }

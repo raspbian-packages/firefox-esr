@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,12 +14,12 @@ class nsAboutBlank : public nsIAboutModule {
 
   NS_DECL_NSIABOUTMODULE
 
-  nsAboutBlank() {}
+  nsAboutBlank() = default;
 
-  static nsresult Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
+  static nsresult Create(nsISupports* aOuter, REFNSIID aIID, void** aResult);
 
  private:
-  virtual ~nsAboutBlank() {}
+  virtual ~nsAboutBlank() = default;
 };
 
 #define NS_ABOUT_BLANK_MODULE_CID                    \

@@ -3,23 +3,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict;";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "Services",
-  "resource://gre/modules/Services.jsm");
-ChromeUtils.defineModuleGetter(this, "FileUtils",
-  "resource://gre/modules/FileUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "Log",
-  "resource://gre/modules/Log.jsm");
-ChromeUtils.defineModuleGetter(this, "OS",
-  "resource://gre/modules/osfile.jsm");
-ChromeUtils.defineModuleGetter(this, "CommonUtils",
-  "resource://services-common/utils.js");
+ChromeUtils.defineModuleGetter(
+  this,
+  "Services",
+  "resource://gre/modules/Services.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "FileUtils",
+  "resource://gre/modules/FileUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(this, "Log", "resource://gre/modules/Log.jsm");
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "CommonUtils",
+  "resource://services-common/utils.js"
+);
 
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
+const { Preferences } = ChromeUtils.import(
+  "resource://gre/modules/Preferences.jsm"
+);
 
-var EXPORTED_SYMBOLS = [
-  "LogManager",
-];
+var EXPORTED_SYMBOLS = ["LogManager"];
 
 const DEFAULT_MAX_ERROR_AGE = 20 * 24 * 60 * 60; // 20 days
 
@@ -42,29 +48,118 @@ var consoleAppender;
 // A set of all preference roots used by all instances.
 var allBranches = new Set();
 
+const ONE_BYTE = 1;
+const ONE_KILOBYTE = 1024 * ONE_BYTE;
+const ONE_MEGABYTE = 1024 * ONE_KILOBYTE;
+
+const STREAM_SEGMENT_SIZE = 4096;
+const PR_UINT32_MAX = 0xffffffff;
+
+/**
+ * Append to an nsIStorageStream
+ *
+ * This writes logging output to an in-memory stream which can later be read
+ * back as an nsIInputStream. It can be used to avoid expensive I/O operations
+ * during logging. Instead, one can periodically consume the input stream and
+ * e.g. write it to disk asynchronously.
+ */
+class StorageStreamAppender extends Log.Appender {
+  constructor(formatter) {
+    super(formatter);
+    this._name = "StorageStreamAppender";
+
+    this._converterStream = null; // holds the nsIConverterOutputStream
+    this._outputStream = null; // holds the underlying nsIOutputStream
+
+    this._ss = null;
+  }
+
+  get outputStream() {
+    if (!this._outputStream) {
+      // First create a raw stream. We can bail out early if that fails.
+      this._outputStream = this.newOutputStream();
+      if (!this._outputStream) {
+        return null;
+      }
+
+      // Wrap the raw stream in an nsIConverterOutputStream. We can reuse
+      // the instance if we already have one.
+      if (!this._converterStream) {
+        this._converterStream = Cc[
+          "@mozilla.org/intl/converter-output-stream;1"
+        ].createInstance(Ci.nsIConverterOutputStream);
+      }
+      this._converterStream.init(this._outputStream, "UTF-8");
+    }
+    return this._converterStream;
+  }
+
+  newOutputStream() {
+    let ss = (this._ss = Cc["@mozilla.org/storagestream;1"].createInstance(
+      Ci.nsIStorageStream
+    ));
+    ss.init(STREAM_SEGMENT_SIZE, PR_UINT32_MAX, null);
+    return ss.getOutputStream(0);
+  }
+
+  getInputStream() {
+    if (!this._ss) {
+      return null;
+    }
+    return this._ss.newInputStream(0);
+  }
+
+  reset() {
+    if (!this._outputStream) {
+      return;
+    }
+    this.outputStream.close();
+    this._outputStream = null;
+    this._ss = null;
+  }
+
+  doAppend(formatted) {
+    if (!formatted) {
+      return;
+    }
+    try {
+      this.outputStream.writeString(formatted + "\n");
+    } catch (ex) {
+      if (ex.result == Cr.NS_BASE_STREAM_CLOSED) {
+        // The underlying output stream is closed, so let's open a new one
+        // and try again.
+        this._outputStream = null;
+      }
+      try {
+        this.outputStream.writeString(formatted + "\n");
+      } catch (ex) {
+        // Ah well, we tried, but something seems to be hosed permanently.
+      }
+    }
+  }
+}
+
 // A storage appender that is flushable to a file on disk.  Policies for
 // when to flush, to what file, log rotation etc are up to the consumer
 // (although it does maintain a .sawError property to help the consumer decide
 // based on its policies)
-function FlushableStorageAppender(formatter) {
-  Log.StorageStreamAppender.call(this, formatter);
-  this.sawError = false;
-}
-
-FlushableStorageAppender.prototype = {
-  __proto__: Log.StorageStreamAppender.prototype,
+class FlushableStorageAppender extends StorageStreamAppender {
+  constructor(formatter) {
+    super(formatter);
+    this.sawError = false;
+  }
 
   append(message) {
     if (message.level >= Log.Level.Error) {
       this.sawError = true;
     }
-    Log.StorageStreamAppender.prototype.append.call(this, message);
-  },
+    StorageStreamAppender.prototype.append.call(this, message);
+  }
 
   reset() {
-    Log.StorageStreamAppender.prototype.reset.call(this);
+    super.reset();
     this.sawError = false;
-  },
+  }
 
   // Flush the current stream to a file. Somewhat counter-intuitively, you
   // must pass a log which will be written to with details of the operation.
@@ -83,7 +178,7 @@ FlushableStorageAppender.prototype = {
     } catch (ex) {
       log.error("Failed to copy log stream to file", ex);
     }
-  },
+  }
 
   /**
    * Copy an input stream to the named file, doing everything off the main
@@ -99,20 +194,30 @@ FlushableStorageAppender.prototype = {
     const BUFFER_SIZE = 8192;
 
     // get a binary stream
-    let binaryStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
+    let binaryStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(
+      Ci.nsIBinaryInputStream
+    );
     binaryStream.setInputStream(inputStream);
 
-    let outputDirectory = OS.Path.join(OS.Constants.Path.profileDir, ...subdirArray);
-    await OS.File.makeDir(outputDirectory, { ignoreExisting: true, from: OS.Constants.Path.profileDir });
+    let outputDirectory = OS.Path.join(
+      OS.Constants.Path.profileDir,
+      ...subdirArray
+    );
+    await OS.File.makeDir(outputDirectory, {
+      ignoreExisting: true,
+      from: OS.Constants.Path.profileDir,
+    });
     let fullOutputFileName = OS.Path.join(outputDirectory, outputFileName);
-    let output = await OS.File.open(fullOutputFileName, { write: true} );
+    let output = await OS.File.open(fullOutputFileName, { write: true });
     try {
       while (true) {
         let available = binaryStream.available();
         if (!available) {
           break;
         }
-        let chunk = binaryStream.readByteArray(Math.min(available, BUFFER_SIZE));
+        let chunk = binaryStream.readByteArray(
+          Math.min(available, BUFFER_SIZE)
+        );
         await output.write(new Uint8Array(chunk));
       }
     } finally {
@@ -124,14 +229,16 @@ FlushableStorageAppender.prototype = {
       }
     }
     log.trace("finished copy to", fullOutputFileName);
-  },
-};
+  }
+}
 
 // The public LogManager object.
 function LogManager(prefRoot, logNames, logFilePrefix) {
   this._prefObservers = [];
   this.init(prefRoot, logNames, logFilePrefix);
 }
+
+LogManager.StorageStreamAppender = StorageStreamAppender;
 
 LogManager.prototype = {
   _cleaningUpFileLogs: false,
@@ -154,7 +261,12 @@ LogManager.prototype = {
     allBranches.add(this._prefs._branchStr);
     // We create a preference observer for all our prefs so they are magically
     // reflected if the pref changes after creation.
-    let setupAppender = (appender, prefName, defaultLevel, findSmallest = false) => {
+    let setupAppender = (
+      appender,
+      prefName,
+      defaultLevel,
+      findSmallest = false
+    ) => {
       let observer = newVal => {
         let level = Log.Level[newVal] || defaultLevel;
         if (findSmallest) {
@@ -180,14 +292,28 @@ LogManager.prototype = {
       return observer;
     };
 
-    this._observeConsolePref = setupAppender(consoleAppender, "log.appender.console", Log.Level.Fatal, true);
-    this._observeDumpPref = setupAppender(dumpAppender, "log.appender.dump", Log.Level.Error, true);
+    this._observeConsolePref = setupAppender(
+      consoleAppender,
+      "log.appender.console",
+      Log.Level.Fatal,
+      true
+    );
+    this._observeDumpPref = setupAppender(
+      dumpAppender,
+      "log.appender.dump",
+      Log.Level.Error,
+      true
+    );
 
     // The file appender doesn't get the special singleton behaviour.
-    let fapp = this._fileAppender = new FlushableStorageAppender(formatter);
+    let fapp = (this._fileAppender = new FlushableStorageAppender(formatter));
     // the stream gets a default of Debug as the user must go out of their way
     // to see the stuff spewed to it.
-    this._observeStreamPref = setupAppender(fapp, "log.appender.file.level", Log.Level.Debug);
+    this._observeStreamPref = setupAppender(
+      fapp,
+      "log.appender.file.level",
+      Log.Level.Debug
+    );
 
     // now attach the appenders to all our logs.
     for (let logName of logNames) {
@@ -262,8 +388,13 @@ LogManager.prototype = {
 
       // We have reasonPrefix at the start of the filename so all "error"
       // logs are grouped in about:sync-log.
-      let filename = reasonPrefix + "-" + this.logFilePrefix + "-" + Date.now() + ".txt";
-      await this._fileAppender.flushToFile(this._logFileSubDirectoryEntries, filename, this._log);
+      let filename =
+        reasonPrefix + "-" + this.logFilePrefix + "-" + Date.now() + ".txt";
+      await this._fileAppender.flushToFile(
+        this._logFileSubDirectoryEntries,
+        filename,
+        this._log
+      );
       // It's not completely clear to markh why we only do log cleanups
       // for errors, but for now the Sync semantics have been copied...
       // (one theory is that only cleaning up on error makes it less
@@ -287,35 +418,64 @@ LogManager.prototype = {
   /**
    * Finds all logs older than maxErrorAge and deletes them using async I/O.
    */
-  async cleanupLogs() {
+  cleanupLogs() {
+    let maxAge = this._prefs.get(
+      "log.appender.file.maxErrorAge",
+      DEFAULT_MAX_ERROR_AGE
+    );
+    let threshold = Date.now() - 1000 * maxAge;
+    this._log.debug("Log cleanup threshold time: " + threshold);
+
+    let shouldDelete = fileInfo => {
+      return fileInfo.lastModificationDate.getTime() < threshold;
+    };
+    return this._deleteLogFiles(shouldDelete);
+  },
+
+  /**
+   * Finds all logs and removes them.
+   */
+  removeAllLogs() {
+    return this._deleteLogFiles(() => true);
+  },
+
+  // Delete some log files. A callback is invoked for each found log file to
+  // determine if that file should be removed.
+  async _deleteLogFiles(cbShouldDelete) {
     this._cleaningUpFileLogs = true;
     let logDir = FileUtils.getDir("ProfD", this._logFileSubDirectoryEntries);
     let iterator = new OS.File.DirectoryIterator(logDir.path);
-    let maxAge = this._prefs.get("log.appender.file.maxErrorAge", DEFAULT_MAX_ERROR_AGE);
-    let threshold = Date.now() - 1000 * maxAge;
 
-    this._log.debug("Log cleanup threshold time: " + threshold);
-    await iterator.forEach(async (entry) => {
+    await iterator.forEach(async entry => {
       // Note that we don't check this.logFilePrefix is in the name - we cleanup
       // all files in this directory regardless of that prefix so old logfiles
       // for prefixes no longer in use are still cleaned up. See bug 1279145.
-      if (!entry.name.startsWith("error-") &&
-          !entry.name.startsWith("success-")) {
+      if (
+        !entry.name.startsWith("error-") &&
+        !entry.name.startsWith("success-")
+      ) {
         return;
       }
       try {
         // need to call .stat() as the enumerator doesn't give that to us on *nix.
         let info = await OS.File.stat(entry.path);
-        if (info.lastModificationDate.getTime() >= threshold) {
+        if (!cbShouldDelete(info)) {
           return;
         }
-        this._log.trace(" > Cleanup removing " + entry.name +
-                        " (" + info.lastModificationDate.getTime() + ")");
+        this._log.trace(
+          " > Cleanup removing " +
+            entry.name +
+            " (" +
+            info.lastModificationDate.getTime() +
+            ")"
+        );
         await OS.File.remove(entry.path);
         this._log.trace("Deleted " + entry.name);
       } catch (ex) {
-        this._log.debug("Encountered error trying to clean up old log file "
-                        + entry.name, ex);
+        this._log.debug(
+          "Encountered error trying to clean up old log file " + entry.name,
+          ex
+        );
       }
     });
     // Wait for this to close if we need to (but it might fail if OS.File has
@@ -328,6 +488,9 @@ LogManager.prototype = {
     this._cleaningUpFileLogs = false;
     this._log.debug("Done deleting files.");
     // This notification is used only for tests.
-    Services.obs.notifyObservers(null, "services-tests:common:log-manager:cleanup-logs");
+    Services.obs.notifyObservers(
+      null,
+      "services-tests:common:log-manager:cleanup-logs"
+    );
   },
 };

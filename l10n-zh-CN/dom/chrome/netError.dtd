@@ -23,7 +23,7 @@
 <!ENTITY fileAccessDenied.longDesc "<ul><li>文件可能已被移走、移除，或者没有访问该文件的权限。</li></ul>">
 
 <!ENTITY generic.title "无法完成请求">
-<!ENTITY generic.longDesc "<p>暂无关于此问题或错误的详细解释信息。</p>">
+<!ENTITY generic.longDesc "<p>暂无此问题或错误的详细解释信息。</p>">
 
 <!ENTITY malformedURI.title "不正确的网址">
 <!ENTITY malformedURI.longDesc "<p>无法识别这种格式的网址。请检查网址是否有误再重试。</p>">
@@ -55,7 +55,7 @@
 <!ENTITY unknownProtocolFound.longDesc "<p>浏览器无法识别该网址的协议。（例如 <q>wxyz://</q>），因此浏览器无法连接至该站点。</p><ul><li>您是否在尝试访问多媒体或其他非文字服务？请检查该站点是否有其他要求。</li><li>某些协议可能需要安装第三方软件或插件后浏览器才能识别。</li></ul>">
 
 <!ENTITY proxyConnectFailure.title "代理服务器拒绝连接">
-<!ENTITY proxyConnectFailure.longDesc "<p>浏览器被设置为使用代理服务器，但是该代理服务器拒绝了该连接。</p><ul><li>浏览器的代理服务器设置是否正确？请检查并重试。</li><li>该代理服务是否允许来自此网络的连接？</li><li>仍然不行？请联系您的网络管理员或者互联网服务提供商以寻求协助。</li></ul>">
+<!ENTITY proxyConnectFailure.longDesc "<p>浏览器被设置为使用代理服务器，但是该代理服务器拒绝了该连接。</p><ul><li>浏览器的代理服务器设置是否正确？请检查并重试。</li><li>该代理服务是否允许来自此网络的连接？</li><li>仍然不行？请联系您的网络管理员或者电信运营商以寻求协助。</li></ul>">
 
 <!ENTITY proxyResolveFailure.title "无法找到代理服务器">
 <!ENTITY proxyResolveFailure.longDesc "<p>浏览器被设置为使用代理服务器，但是无法找到该代理服务器。</p><ul><li>浏览器的代理服务器设置是否正确？请检查并重试。</li><li>计算机是否连接到了可用的网络？</li><li>仍然不行？请联系您的网络管理员或者互联网服务提供商以寻求协助。</li></ul>">
@@ -96,3 +96,6 @@
 <!ENTITY inadequateSecurityError.longDesc "<p><span class='hostname'></span> 使用了过时的安全技术，容易遭受攻击。攻击者可能轻易获取您认为安全传输的信息。需要网站管理员先修正服务器，然后您才能访问此网站。</p><p>错误代码：NS_ERROR_NET_INADEQUATE_SECURITY</p>">
 
 <!ENTITY blockedByPolicy.title "页面已封锁">
+
+<!ENTITY networkProtocolError.title "网络协议错误">
+<!ENTITY networkProtocolError.longDesc "<p>您尝试查看的页面无法显示，因为检测到了网络协议中的错误。</p><ul><li>建议向此网站的管理员反馈这个问题。</li></ul>">

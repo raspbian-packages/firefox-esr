@@ -8,7 +8,7 @@
 <!ENTITY syncBrand.shortName.label "სინქრონიზაცია">
 
 <!-- Main titles. -->
-<!ENTITY sync.title.connect.label 'დაკავშირება - &syncBrand.shortName.label;'>
+<!ENTITY sync.title.connect.label 'დაკავშირება – &syncBrand.shortName.label;'>
 
 <!-- J-PAKE Key Screen -->
 <!ENTITY sync.subtitle.connect.label 'თქვენი ახალი მოწყობილობის გასააქტივებლად, მოწყობილობაზე შეარჩიეთ «&syncBrand.shortName.label;-ის გამართვა».'>
@@ -47,7 +47,7 @@
 <!ENTITY fxaccount_back_to_browsing 'დათვალიერებაზე დაბრუნება'>
 
 <!ENTITY fxaccount_getting_started_welcome_to_sync 'მოგესალმებათ &syncBrand.shortName.label;'>
-<!ENTITY fxaccount_getting_started_description2 'შედით სისტემაში თქვენი ჩანართების, სანიშნების, პაროლების და ა.შ. დასინქრონებისთვის.'>
+<!ENTITY fxaccount_getting_started_description2 'შედით სისტემაში თქვენი ჩანართების, სანიშნების, პაროლების და ა. შ. დასინქრონებისთვის.'>
 <!ENTITY fxaccount_getting_started_get_started 'დაიწყეთ'>
 <!ENTITY fxaccount_getting_started_old_firefox '&syncBrand.shortName.label;-ის ძველ ვერსიას იყენებთ?'>
 
@@ -61,7 +61,7 @@
 <!ENTITY fxaccount_status_needs_upgrade 'შესასვლელად უნდა განაახლოთ &brandShortName;.'>
 <!ENTITY fxaccount_status_needs_master_sync_automatically_enabled '&syncBrand.shortName.label; გამართულია, მაგრამ ავტომატურად არ სინქრონირდება. შეამოწმეთ \&quot;ავტომატური სინქრონიზაცია\&quot; მისამართზე Android-ის პარამეტრები &gt; მონაცემების გამოყენება.'>
 <!ENTITY fxaccount_status_needs_master_sync_automatically_enabled_v21 '&syncBrand.shortName.label; გამართულია, მაგრამ ავტომატურად არ სინქრონირდება. შეამოწმეთ \&quot;ავტომატური სინქრონიზაცია\&quot; მისამართზე Android-ის პარამეტრები &gt; ანგარიშები.'>
-<!ENTITY fxaccount_status_needs_finish_migrating 'შეეხეთ თქვენს Firefox ანგარიშში შესასვლელად.'>
+<!ENTITY fxaccount_status_needs_finish_migrating 'შეეხეთ თქვენს Firefox-ანგარიშში შესასვლელად.'>
 <!ENTITY fxaccount_status_choose_what 'მიუთითეთ, რისი დასინქრონება გსურთ'>
 <!ENTITY fxaccount_status_bookmarks 'სანიშნები'>
 <!ENTITY fxaccount_status_history 'ისტორია'>
@@ -72,7 +72,7 @@
 <!-- Localization note: Only affects background syncing, user initiated
      syncs will still be done regardless of the connection -->
 <!ENTITY fxaccount_pref_sync_use_metered_summary2 '&brandShortName;-სთვის სინქრონიზაციის აკრძალვა, მობილური, ან ტარიფით შეზღუდული კავშირის პირობებში'>
-<!ENTITY fxaccount_status_legal 'იურიდიული ინფორმაცია' >
+<!ENTITY fxaccount_status_legal 'სამართლებრივი საკითხები' >
 <!-- Localization note: when tapped, the following two strings link to
      external web pages.  Compare fxaccount_policy_{linktos,linkprivacy}:
      these strings are separated to accommodate languages that decline
@@ -85,7 +85,7 @@
 <!ENTITY fxaccount_remove_account_dialog_message2 'მონახულებული გვერდების მონაცემები ამ მოწყობილობაზე დარჩება, მაგრამ აღარ დასინქრონდება თქვენს ანგარიშთან.'>
 <!-- Localization note: format string below will be replaced
      with the Firefox Account's email address. -->
-<!ENTITY fxaccount_remove_account_toast2 'Firefox ანგარიშთან &formatS; კავშირი გათიშულია.'>
+<!ENTITY fxaccount_remove_account_toast2 'Firefox-ანგარიშთან &formatS; კავშირი გათიშულია.'>
 <!-- Localization note (fxaccount_remove_account_dialog_action_confirm): This is the label for the
  confirm button in the dialog that shows up when disconnecting from sync. -->
 <!ENTITY fxaccount_remove_account_dialog_action_confirm 'გათიშვა'>

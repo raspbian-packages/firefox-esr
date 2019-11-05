@@ -37,9 +37,11 @@ typedef struct gif_struct {
   int tpixel;                // Index of transparent pixel
   int32_t disposal_method;   // Restore to background, leave in place, etc.
   uint32_t* local_colormap;  // Per-image colormap
-  int local_colormap_size;   // Size of local colormap array.
-  uint32_t delay_time;       // Display time, in milliseconds,
-                             // for this image in a multi-image GIF
+  uint32_t local_colormap_buffer_size;  // Size of the buffer containing the
+                                        // local colormap.
+  int local_colormap_size;              // Size of local colormap array.
+  uint32_t delay_time;                  // Display time, in milliseconds,
+                                        // for this image in a multi-image GIF
 
   // Global (multi-image) state
   int version;           // Either 89 for GIF89 or 87 for GIF87

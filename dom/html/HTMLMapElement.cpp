@@ -17,8 +17,8 @@ namespace mozilla {
 namespace dom {
 
 HTMLMapElement::HTMLMapElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(HTMLMapElement)
 
@@ -44,7 +44,7 @@ nsIHTMLCollection* HTMLMapElement::Areas() {
 
 JSObject* HTMLMapElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return HTMLMapElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLMapElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

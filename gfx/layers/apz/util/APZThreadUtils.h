@@ -40,18 +40,11 @@ class APZThreadUtils {
   static void AssertOnControllerThread();
 
   /**
-   * This can be used to assert that the current thread is the
-   * sampler thread (which samples the async transform).
-   * This does nothing if thread assertions are disabled.
-   */
-  static void AssertOnSamplerThread();
-
-  /**
    * Run the given task on the APZ "controller thread" for this platform. If
    * this function is called from the controller thread itself then the task is
    * run immediately without getting queued.
    */
-  static void RunOnControllerThread(already_AddRefed<Runnable> aTask);
+  static void RunOnControllerThread(RefPtr<Runnable>&& aTask);
 
   /**
    * Returns true if currently on APZ "controller thread".
@@ -67,7 +60,7 @@ class GenericNamedTimerCallbackBase : public nsITimerCallback, public nsINamed {
   NS_DECL_THREADSAFE_ISUPPORTS
 
  protected:
-  virtual ~GenericNamedTimerCallbackBase() {}
+  virtual ~GenericNamedTimerCallbackBase() = default;
 };
 
 // An nsITimerCallback implementation with nsINamed that can be used with any
@@ -75,8 +68,7 @@ class GenericNamedTimerCallbackBase : public nsITimerCallback, public nsINamed {
 template <typename Function>
 class GenericNamedTimerCallback final : public GenericNamedTimerCallbackBase {
  public:
-  explicit GenericNamedTimerCallback(const Function& aFunction,
-                                     const char* aName)
+  GenericNamedTimerCallback(const Function& aFunction, const char* aName)
       : mFunction(aFunction), mName(aName) {}
 
   NS_IMETHOD Notify(nsITimer*) override {

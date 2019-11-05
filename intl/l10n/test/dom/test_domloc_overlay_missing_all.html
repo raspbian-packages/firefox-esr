@@ -3,35 +3,33 @@
 <head>
   <meta charset="utf-8">
   <title>Test DOMLocalization's DOMOverlay functionality</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript">
   "use strict";
   const { DOMLocalization } =
-    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm", {});
-  const { MessageContext } =
-    ChromeUtils.import("resource://gre/modules/MessageContext.jsm", {});
+    ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm");
+  const { FluentBundle } =
+    ChromeUtils.import("resource://gre/modules/Fluent.jsm");
 
   async function* mockGenerateMessages(locales, resourceIds) {
-    const mc = new MessageContext(locales);
+    const bundle = new FluentBundle(locales);
     // No translations!
-    yield mc;
+    yield bundle;
   }
 
   SimpleTest.waitForExplicitFinish();
   addLoadEvent(async () => {
-
     const domLoc = new DOMLocalization(
-      window,
       [],
       mockGenerateMessages
     );
 
-    await domLoc.translateFragment(document.body);
-
-    // we just care that it doesn't throw here.
-    ok(1);
-
+    await domLoc.translateFragment(document.body).then(() => {
+      ok(false, "Expected translateFragment to throw on missing l10n-id");
+    }, () => {
+      ok(true, "Expected translateFragment to throw on missing l10n-id");
+    });
     SimpleTest.finish();
   });
   </script>

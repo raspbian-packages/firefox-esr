@@ -10,30 +10,37 @@
 // Load the shared-head file first.
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/devtools/client/shared/test/shared-head.js",
-  this);
+  this
+);
 
-const { AddonManager } = ChromeUtils.import("resource://gre/modules/AddonManager.jsm", {});
-const { Management } = ChromeUtils.import("resource://gre/modules/Extension.jsm", {});
+const { AddonManager } = ChromeUtils.import(
+  "resource://gre/modules/AddonManager.jsm"
+);
+const { Management } = ChromeUtils.import(
+  "resource://gre/modules/Extension.jsm",
+  null
+);
+const { ExtensionTestCommon } = ChromeUtils.import(
+  "resource://testing-common/ExtensionTestCommon.jsm"
+);
 
-flags.testing = true;
-registerCleanupFunction(() => {
-  flags.testing = false;
-});
+async function openAboutDebugging(page, win) {
+  info("Turn off the new about:debugging for the test");
+  await pushPref("devtools.aboutdebugging.new-enabled", false);
 
-function* openAboutDebugging(page, win) {
   info("opening about:debugging");
   let url = "about:debugging";
   if (page) {
     url += "#" + page;
   }
 
-  let tab = yield addTab(url, { window: win });
-  let browser = tab.linkedBrowser;
-  let document = browser.contentDocument;
-  let window = browser.contentWindow;
+  const tab = await addTab(url, { window: win });
+  const browser = tab.linkedBrowser;
+  const document = browser.contentDocument;
+  const window = browser.contentWindow;
 
   info("Wait until the main about debugging container is available");
-  yield waitUntilElement(".app", document);
+  await waitUntilElement(".app", document);
 
   return { tab, document, window };
 }
@@ -44,10 +51,11 @@ function closeAboutDebugging(tab) {
 }
 
 function getSupportsFile(path) {
-  let cr = Cc["@mozilla.org/chrome/chrome-registry;1"]
-    .getService(Ci.nsIChromeRegistry);
-  let uri = Services.io.newURI(CHROME_URL_ROOT + path);
-  let fileurl = cr.convertChromeURL(uri);
+  const cr = Cc["@mozilla.org/chrome/chrome-registry;1"].getService(
+    Ci.nsIChromeRegistry
+  );
+  const uri = Services.io.newURI(CHROME_URL_ROOT + path);
+  const fileurl = cr.convertChromeURL(uri);
   return fileurl.QueryInterface(Ci.nsIFileURL);
 }
 
@@ -58,8 +66,10 @@ function getSupportsFile(path) {
  * @return {DOMNode}                 target list or container element
  */
 function getAddonList(document) {
-  return document.querySelector("#addons .target-list") ||
-    document.querySelector("#addons .targets");
+  return (
+    document.querySelector("#addons .target-list") ||
+    document.querySelector("#addons .targets")
+  );
 }
 
 /**
@@ -69,8 +79,10 @@ function getAddonList(document) {
  * @return {DOMNode}                 target list or container element
  */
 function getTemporaryAddonList(document) {
-  return document.querySelector("#temporary-addons .target-list") ||
-    document.querySelector("#temporary-addons .targets");
+  return (
+    document.querySelector("#temporary-addons .target-list") ||
+    document.querySelector("#temporary-addons .targets")
+  );
 }
 
 /**
@@ -100,8 +112,10 @@ function getInstalledAddonNames(document) {
  * @return {DOMNode}                 target list or container element
  */
 function getServiceWorkerList(document) {
-  return document.querySelector("#service-workers .target-list") ||
-    document.querySelector("#service-workers.targets");
+  return (
+    document.querySelector("#service-workers .target-list") ||
+    document.querySelector("#service-workers.targets")
+  );
 }
 
 /**
@@ -115,8 +129,12 @@ function getServiceWorkerList(document) {
  * @return {DOMNode} container element
  */
 function getServiceWorkerContainer(name, document) {
-  let nameElements = [...document.querySelectorAll("#service-workers .target-name")];
-  let nameElement = nameElements.filter(element => element.textContent === name)[0];
+  const nameElements = [
+    ...document.querySelectorAll("#service-workers .target-name"),
+  ];
+  const nameElement = nameElements.filter(
+    element => element.textContent === name
+  )[0];
   if (nameElement) {
     return nameElement.closest(".target-container");
   }
@@ -135,8 +153,8 @@ function getServiceWorkerContainer(name, document) {
  *         #service-workers section container document
  * @return {Promise} promise that resolves the service worker container element.
  */
-function* waitUntilServiceWorkerContainer(name, document) {
-  yield waitUntil(() => {
+async function waitUntilServiceWorkerContainer(name, document) {
+  await waitUntil(() => {
     return getServiceWorkerContainer(name, document);
   }, 100);
   return getServiceWorkerContainer(name, document);
@@ -152,8 +170,8 @@ function* waitUntilServiceWorkerContainer(name, document) {
  *        Parent that should contain the element.
  * @return {Promise} promise that resolves the matched DOMNode.
  */
-function* waitUntilElement(selector, parent) {
-  yield waitUntil(() => {
+async function waitUntilElement(selector, parent) {
+  await waitUntil(() => {
     return parent.querySelector(selector);
   }, 100);
   return parent.querySelector(selector);
@@ -166,76 +184,76 @@ function* waitUntilElement(selector, parent) {
  * @return {DOMNode}                 target list or container element
  */
 function getTabList(document) {
-  return document.querySelector("#tabs .target-list") ||
-    document.querySelector("#tabs.targets");
+  return (
+    document.querySelector("#tabs .target-list") ||
+    document.querySelector("#tabs.targets")
+  );
 }
 
-function* installAddon({document, path, name, isWebExtension}) {
+async function installAddon({ document, path, file, name }) {
   // Mock the file picker to select a test addon
-  let MockFilePicker = SpecialPowers.MockFilePicker;
+  const MockFilePicker = SpecialPowers.MockFilePicker;
   MockFilePicker.init(window);
-  let file = getSupportsFile(path);
-  MockFilePicker.setFiles([file.file]);
-
-  let onAddonInstalled;
-
-  if (isWebExtension) {
-    onAddonInstalled = new Promise(done => {
-      Management.on("startup", function listener(event, extension) {
-        if (extension.name != name) {
-          return;
-        }
-
-        Management.off("startup", listener);
-        done();
-      });
-    });
+  if (path) {
+    file = getSupportsFile(path);
+    MockFilePicker.setFiles([file.file]);
   } else {
-    // Wait for a "test-devtools" message sent by the addon's bootstrap.js file
-    onAddonInstalled = new Promise(done => {
-      Services.obs.addObserver(function listener() {
-        Services.obs.removeObserver(listener, "test-devtools");
-
-        done();
-      }, "test-devtools");
-    });
+    MockFilePicker.setFiles([file]);
   }
+
+  const onAddonInstalled = new Promise(done => {
+    Management.on("startup", function listener(event, extension) {
+      if (extension.name != name) {
+        return;
+      }
+
+      Management.off("startup", listener);
+      done();
+    });
+  });
+  const AboutDebugging = document.defaultView.AboutDebugging;
+
+  // List updated twice:
+  // - AddonManager's onInstalled event
+  // - WebExtension's Management's startup event.
+  const onListUpdated = waitForNEvents(AboutDebugging, "addons-updated", 2);
+
   // Trigger the file picker by clicking on the button
   document.getElementById("load-addon-from-file").click();
 
-  yield onAddonInstalled;
+  await onListUpdated;
+  await onAddonInstalled;
   ok(true, "Addon installed and running its bootstrap.js file");
 
   info("Wait for the addon to appear in the UI");
-  yield waitUntilAddonContainer(name, document);
+  await waitUntilAddonContainer(name, document);
 }
 
-function* uninstallAddon({document, id, name}) {
+async function uninstallAddon({ document, id, name }) {
   // Now uninstall this addon
-  yield new Promise(done => {
-    AddonManager.getAddonByID(id, addon => {
-      let listener = {
-        onUninstalled: function (uninstalledAddon) {
-          if (uninstalledAddon != addon) {
-            return;
-          }
-          AddonManager.removeAddonListener(listener);
-
-          done();
+  await new Promise(async done => {
+    const addon = await AddonManager.getAddonByID(id);
+    const listener = {
+      onUninstalled: function(uninstalledAddon) {
+        if (uninstalledAddon != addon) {
+          return;
         }
-      };
-      AddonManager.addAddonListener(listener);
-      addon.uninstall();
-    });
+        AddonManager.removeAddonListener(listener);
+
+        done();
+      },
+    };
+    AddonManager.addAddonListener(listener);
+    addon.uninstall();
   });
 
   info("Wait until the addon is removed from about:debugging");
-  yield waitUntil(() => !getAddonContainer(name, document), 100);
+  await waitUntil(() => !getAddonContainer(name, document), 100);
 }
 
 function getAddonCount(document) {
   const addonListContainer = getAddonList(document);
-  let addonElements = addonListContainer.querySelectorAll(".target");
+  const addonElements = addonListContainer.querySelectorAll(".target");
   return addonElements.length;
 }
 
@@ -246,13 +264,20 @@ function getAddonCount(document) {
  * @return {Promise}
  */
 function waitForInitialAddonList(document) {
-  info("Waiting for add-ons to load. Current add-on count: " + getAddonCount(document));
+  info(
+    "Waiting for add-ons to load. Current add-on count: " +
+      getAddonCount(document)
+  );
   return waitUntil(() => getAddonCount(document) > 0, 100);
 }
 
 function getAddonContainer(name, document) {
-  let nameElements = [...document.querySelectorAll("#addons-panel .target-name")];
-  let nameElement = nameElements.filter(element => element.textContent === name)[0];
+  const nameElements = [
+    ...document.querySelectorAll("#addons-panel .target-name"),
+  ];
+  const nameElement = nameElements.filter(
+    element => element.textContent === name
+  )[0];
   if (nameElement) {
     return nameElement.closest(".addon-target-container");
   }
@@ -260,8 +285,8 @@ function getAddonContainer(name, document) {
   return null;
 }
 
-function* waitUntilAddonContainer(name, document) {
-  yield waitUntil(() => {
+async function waitUntilAddonContainer(name, document) {
+  await waitUntil(() => {
     return getAddonContainer(name, document);
   });
   return getAddonContainer(name, document);
@@ -278,8 +303,11 @@ function* waitUntilAddonContainer(name, document) {
 function assertHasTarget(expected, document, type, name) {
   let names = [...document.querySelectorAll("#" + type + " .target-name")];
   names = names.map(element => element.textContent);
-  is(names.includes(name), expected,
-    "The " + type + " url appears in the list: " + names);
+  is(
+    names.includes(name),
+    expected,
+    "The " + type + " url appears in the list: " + names
+  );
 }
 
 /**
@@ -289,10 +317,10 @@ function assertHasTarget(expected, document, type, name) {
  * @return {Promise} Resolves when the service worker is registered.
  */
 function waitForServiceWorkerRegistered(tab) {
-  return ContentTask.spawn(tab.linkedBrowser, {}, function* () {
+  return ContentTask.spawn(tab.linkedBrowser, {}, async function() {
     // Retrieve the `sw` promise created in the html page.
-    let { sw } = content.wrappedJSObject;
-    yield sw;
+    const { sw } = content.wrappedJSObject;
+    await sw;
   });
 }
 
@@ -305,23 +333,25 @@ function waitForServiceWorkerRegistered(tab) {
  * @param {Node} serviceWorkersElement
  * @return {Promise} Resolves when the service worker is unregistered.
  */
-function* unregisterServiceWorker(tab, serviceWorkersElement) {
+async function unregisterServiceWorker(tab, serviceWorkersElement) {
   // Get the initial count of service worker registrations.
-  let registrations = serviceWorkersElement.querySelectorAll(".target-container");
-  let registrationCount = registrations.length;
+  let registrations = serviceWorkersElement.querySelectorAll(
+    ".target-container"
+  );
+  const registrationCount = registrations.length;
 
   // Wait until the registration count is decreased by one.
-  let isRemoved = waitUntil(() => {
+  const isRemoved = waitUntil(() => {
     registrations = serviceWorkersElement.querySelectorAll(".target-container");
     return registrations.length === registrationCount - 1;
   }, 100);
 
   // Unregister the service worker from the content page
-  yield ContentTask.spawn(tab.linkedBrowser, {}, function* () {
+  await ContentTask.spawn(tab.linkedBrowser, {}, async function() {
     // Retrieve the `sw` promise created in the html page
-    let { sw } = content.wrappedJSObject;
-    let registration = yield sw;
-    yield registration.unregister();
+    const { sw } = content.wrappedJSObject;
+    const registration = await sw;
+    await registration.unregister();
   });
 
   return isRemoved;
@@ -334,7 +364,7 @@ function* unregisterServiceWorker(tab, serviceWorkersElement) {
  * @param {window} win
  */
 function waitForDelayedStartupFinished(win) {
-  return new Promise(function (resolve) {
+  return new Promise(function(resolve) {
     Services.obs.addObserver(function observer(subject, topic) {
       if (win == subject) {
         Services.obs.removeObserver(observer, topic);
@@ -347,36 +377,37 @@ function waitForDelayedStartupFinished(win) {
 /**
  * open the about:debugging page and install an addon
  */
-function* setupTestAboutDebuggingWebExtension(name, path) {
-  yield new Promise(resolve => {
-    let options = {"set": [
-      // Force enabling of addons debugging
-      ["devtools.chrome.enabled", true],
-      ["devtools.debugger.remote-enabled", true],
-      // Disable security prompt
-      ["devtools.debugger.prompt-connection", false],
-      // Enable Browser toolbox test script execution via env variable
-      ["devtools.browser-toolbox.allow-unsafe-script", true],
-    ]};
+async function setupTestAboutDebuggingWebExtension(name, file) {
+  await new Promise(resolve => {
+    const options = {
+      set: [
+        // Force enabling of addons debugging
+        ["devtools.chrome.enabled", true],
+        ["devtools.debugger.remote-enabled", true],
+        // Disable security prompt
+        ["devtools.debugger.prompt-connection", false],
+        // Enable Browser toolbox test script execution via env variable
+        ["devtools.browser-toolbox.allow-unsafe-script", true],
+      ],
+    };
     SpecialPowers.pushPrefEnv(options, resolve);
   });
 
-  let { tab, document } = yield openAboutDebugging("addons");
-  yield waitForInitialAddonList(document);
+  const { tab, document } = await openAboutDebugging("addons");
+  await waitForInitialAddonList(document);
 
-  yield installAddon({
+  await installAddon({
     document,
-    path,
+    file,
     name,
-    isWebExtension: true,
   });
 
   // Retrieve the DEBUG button for the addon
-  let names = getInstalledAddonNames(document);
-  let nameEl = names.filter(element => element.textContent === name)[0];
+  const names = getInstalledAddonNames(document);
+  const nameEl = names.filter(element => element.textContent === name)[0];
   ok(name, "Found the addon in the list");
-  let targetElement = nameEl.parentNode.parentNode;
-  let debugBtn = targetElement.querySelector(".debug-button");
+  const targetElement = nameEl.parentNode.parentNode;
+  const debugBtn = targetElement.querySelector(".debug-button");
   ok(debugBtn, "Found its debug button");
 
   return { tab, document, debugBtn };
@@ -386,14 +417,14 @@ function* setupTestAboutDebuggingWebExtension(name, path) {
  * Wait for aboutdebugging to be notified about the activation of the service worker
  * corresponding to the provided service worker url.
  */
-function* waitForServiceWorkerActivation(swUrl, document) {
-  let serviceWorkersElement = getServiceWorkerList(document);
-  let names = serviceWorkersElement.querySelectorAll(".target-name");
-  let name = [...names].filter(element => element.textContent === swUrl)[0];
+async function waitForServiceWorkerActivation(swUrl, document) {
+  const serviceWorkersElement = getServiceWorkerList(document);
+  const names = serviceWorkersElement.querySelectorAll(".target-name");
+  const name = [...names].filter(element => element.textContent === swUrl)[0];
 
-  let targetElement = name.parentNode.parentNode;
-  let targetStatus = targetElement.querySelector(".target-status");
-  yield waitUntil(() => {
+  const targetElement = name.parentNode.parentNode;
+  const targetStatus = targetElement.querySelector(".target-status");
+  await waitUntil(() => {
     return targetStatus.textContent !== "Registering";
   }, 100);
 }
@@ -401,19 +432,21 @@ function* waitForServiceWorkerActivation(swUrl, document) {
 /**
  * Set all preferences needed to enable service worker debugging and testing.
  */
-function* enableServiceWorkerDebugging() {
-  let options = { "set": [
-    // Enable service workers.
-    ["dom.serviceWorkers.enabled", true],
-    ["dom.push.enabled", true],
-    // Accept workers from mochitest's http.
-    ["dom.serviceWorkers.testing.enabled", true],
-    // Force single content process.
-    ["dom.ipc.processCount", 1],
-  ]};
+async function enableServiceWorkerDebugging() {
+  const options = {
+    set: [
+      // Enable service workers.
+      ["dom.serviceWorkers.enabled", true],
+      ["dom.push.enabled", true],
+      // Accept workers from mochitest's http.
+      ["dom.serviceWorkers.testing.enabled", true],
+      // Force single content process.
+      ["dom.ipc.processCount", 1],
+    ],
+  };
 
   // Wait for dom.ipc.processCount to be updated before releasing processes.
-  yield new Promise(done => {
+  await new Promise(done => {
     SpecialPowers.pushPrefEnv(options, done);
   });
 
@@ -426,11 +459,11 @@ function* enableServiceWorkerDebugging() {
  */
 function promiseAddonEvent(event) {
   return new Promise(resolve => {
-    let listener = {
-      [event]: function (...args) {
+    const listener = {
+      [event]: function(...args) {
         AddonManager.removeAddonListener(listener);
         resolve(args);
-      }
+      },
     };
 
     AddonManager.addAddonListener(listener);
@@ -441,36 +474,38 @@ function promiseAddonEvent(event) {
  * Install an add-on using the AddonManager so it does not show up as temporary.
  */
 function installAddonWithManager(filePath) {
-  return new Promise((resolve, reject) => {
-    AddonManager.getInstallForFile(filePath, install => {
-      if (!install) {
-        throw new Error(`An install was not created for ${filePath}`);
-      }
-      install.addListener({
-        onDownloadFailed: reject,
-        onDownloadCancelled: reject,
-        onInstallFailed: reject,
-        onInstallCancelled: reject,
-        onInstallEnded: resolve
-      });
-      install.install();
+  return new Promise(async (resolve, reject) => {
+    const install = await AddonManager.getInstallForFile(filePath);
+    if (!install) {
+      throw new Error(`An install was not created for ${filePath}`);
+    }
+    install.addListener({
+      onDownloadFailed: reject,
+      onDownloadCancelled: reject,
+      onInstallFailed: reject,
+      onInstallCancelled: reject,
+      onInstallEnded: resolve,
     });
+    install.install();
   });
 }
 
 function getAddonByID(addonId) {
-  return new Promise(resolve => {
-    AddonManager.getAddonByID(addonId, addon => resolve(addon));
-  });
+  return AddonManager.getAddonByID(addonId);
 }
 
 /**
  * Uninstall an add-on.
  */
-function* tearDownAddon(addon) {
+async function tearDownAddon(AboutDebugging, addon) {
   const onUninstalled = promiseAddonEvent("onUninstalled");
+  const onListUpdated = once(AboutDebugging, "addons-updated");
   addon.uninstall();
-  const [uninstalledAddon] = yield onUninstalled;
-  is(uninstalledAddon.id, addon.id,
-     `Add-on was uninstalled: ${uninstalledAddon.id}`);
+  await onListUpdated;
+  const [uninstalledAddon] = await onUninstalled;
+  is(
+    uninstalledAddon.id,
+    addon.id,
+    `Add-on was uninstalled: ${uninstalledAddon.id}`
+  );
 }

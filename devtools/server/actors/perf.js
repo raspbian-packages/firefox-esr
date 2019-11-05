@@ -9,8 +9,11 @@ const { perfSpec } = require("devtools/shared/specs/perf");
 const { Ci } = require("chrome");
 const Services = require("Services");
 
-loader.lazyImporter(this, "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm");
+loader.lazyImporter(
+  this,
+  "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
 
 // Some platforms are built without the Gecko Profiler.
 const IS_SUPPORTED_PLATFORM = "nsIProfiler" in Ci;
@@ -25,11 +28,14 @@ exports.PerfActor = ActorClassWithSpec(perfSpec, {
     // Only setup the observers on a supported platform.
     if (IS_SUPPORTED_PLATFORM) {
       this._observer = {
-        observe: this._observe.bind(this)
+        observe: this._observe.bind(this),
       };
       Services.obs.addObserver(this._observer, "profiler-started");
       Services.obs.addObserver(this._observer, "profiler-stopped");
-      Services.obs.addObserver(this._observer, "chrome-document-global-created");
+      Services.obs.addObserver(
+        this._observer,
+        "chrome-document-global-created"
+      );
       Services.obs.addObserver(this._observer, "last-pb-context-exited");
     }
   },
@@ -40,12 +46,15 @@ exports.PerfActor = ActorClassWithSpec(perfSpec, {
     }
     Services.obs.removeObserver(this._observer, "profiler-started");
     Services.obs.removeObserver(this._observer, "profiler-stopped");
-    Services.obs.removeObserver(this._observer, "chrome-document-global-created");
+    Services.obs.removeObserver(
+      this._observer,
+      "chrome-document-global-created"
+    );
     Services.obs.removeObserver(this._observer, "last-pb-context-exited");
     Actor.prototype.destroy.call(this);
   },
 
-  startProfiler() {
+  startProfiler(options) {
     if (!IS_SUPPORTED_PLATFORM) {
       return false;
     }
@@ -53,10 +62,19 @@ exports.PerfActor = ActorClassWithSpec(perfSpec, {
     // For a quick implementation, decide on some default values. These may need
     // to be tweaked or made configurable as needed.
     const settings = {
-      entries: 1000000,
-      interval: 1,
-      features: ["js", "stackwalk", "threads", "leaf"],
-      threads: ["GeckoMain", "Compositor"]
+      entries: options.entries || 1000000,
+      // Window length should be Infinite if nothing's been passed.
+      // options.duration is supported for `perfActorVersion > 0`.
+      duration: options.duration || 0,
+      interval: options.interval || 1,
+      features: options.features || [
+        "js",
+        "stackwalk",
+        "responsiveness",
+        "threads",
+        "leaf",
+      ],
+      threads: options.threads || ["GeckoMain", "Compositor"],
     };
 
     try {
@@ -67,7 +85,8 @@ exports.PerfActor = ActorClassWithSpec(perfSpec, {
         settings.features,
         settings.features.length,
         settings.threads,
-        settings.threads.length
+        settings.threads.length,
+        settings.duration
       );
     } catch (e) {
       // In case any errors get triggered, bailout with a false.
@@ -84,10 +103,22 @@ exports.PerfActor = ActorClassWithSpec(perfSpec, {
     Services.profiler.StopProfiler();
   },
 
+  async getSymbolTable(debugPath, breakpadId) {
+    const [addr, index, buffer] = await Services.profiler.getSymbolTable(
+      debugPath,
+      breakpadId
+    );
+    // The protocol does not support the transfer of typed arrays, so we convert
+    // these typed arrays to plain JS arrays of numbers now.
+    // Our return value type is declared as "array:array:number".
+    return [Array.from(addr), Array.from(index), Array.from(buffer)];
+  },
+
   async getProfileAndStopProfiler() {
     if (!IS_SUPPORTED_PLATFORM) {
       return null;
     }
+
     let profile;
     try {
       // Attempt to pull out the data.
@@ -141,9 +172,18 @@ exports.PerfActor = ActorClassWithSpec(perfSpec, {
         this.emit("profile-unlocked-from-private-browsing");
         break;
       case "profiler-started":
+        const param = subject.QueryInterface(Ci.nsIProfilerStartParams);
+        this.emit(
+          topic,
+          param.entries,
+          param.interval,
+          param.features,
+          param.duration
+        );
+        break;
       case "profiler-stopped":
         this.emit(topic);
         break;
     }
-  }
+  },
 });

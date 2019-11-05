@@ -1,19 +1,20 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=2 et sw=2 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-#ifndef include_dom_ipc_VideoDecoderManagerParent_h
-#define include_dom_ipc_VideoDecoderManagerParent_h
+#ifndef include_ipc_VideoDecoderManagerParent_h
+#define include_ipc_VideoDecoderManagerParent_h
 
-#include "mozilla/dom/PVideoDecoderManagerParent.h"
+#include "mozilla/PVideoDecoderManagerParent.h"
 
 namespace mozilla {
-namespace dom {
 
 class VideoDecoderManagerThreadHolder;
 
 class VideoDecoderManagerParent final : public PVideoDecoderManagerParent {
+  friend class PVideoDecoderManagerParent;
+
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(VideoDecoderManagerParent)
 
@@ -34,15 +35,16 @@ class VideoDecoderManagerParent final : public PVideoDecoderManagerParent {
  protected:
   PVideoDecoderParent* AllocPVideoDecoderParent(
       const VideoInfo& aVideoInfo, const float& aFramerate,
+      const CreateDecoderParams::OptionSet& aOptions,
       const layers::TextureFactoryIdentifier& aIdentifier, bool* aSuccess,
       nsCString* aBlacklistedD3D11Driver, nsCString* aBlacklistedD3D9Driver,
-      nsCString* aErrorDescription) override;
-  bool DeallocPVideoDecoderParent(PVideoDecoderParent* actor) override;
+      nsCString* aErrorDescription);
+  bool DeallocPVideoDecoderParent(PVideoDecoderParent* actor);
 
   mozilla::ipc::IPCResult RecvReadback(const SurfaceDescriptorGPUVideo& aSD,
-                                       SurfaceDescriptor* aResult) override;
+                                       SurfaceDescriptor* aResult);
   mozilla::ipc::IPCResult RecvDeallocateSurfaceDescriptorGPUVideo(
-      const SurfaceDescriptorGPUVideo& aSD) override;
+      const SurfaceDescriptorGPUVideo& aSD);
 
   void ActorDestroy(mozilla::ipc::IProtocol::ActorDestroyReason) override;
 
@@ -61,7 +63,6 @@ class VideoDecoderManagerParent final : public PVideoDecoderManagerParent {
   RefPtr<VideoDecoderManagerThreadHolder> mThreadHolder;
 };
 
-}  // namespace dom
 }  // namespace mozilla
 
 #endif  // include_dom_ipc_VideoDecoderManagerParent_h

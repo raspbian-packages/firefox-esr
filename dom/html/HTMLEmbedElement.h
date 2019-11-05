@@ -20,25 +20,24 @@ class HTMLEmbedElement final : public nsGenericHTMLElement,
                                public nsObjectLoadingContent {
  public:
   explicit HTMLEmbedElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
       mozilla::dom::FromParser aFromParser = mozilla::dom::NOT_FROM_PARSER);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLEmbedElement, embed)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLEmbedElement, embed)
   virtual int32_t TabIndexDefault() override;
 
 #ifdef XP_MACOSX
-  // nsIDOMEventTarget
+  // EventTarget
   NS_IMETHOD PostHandleEvent(EventChainPostVisitor& aVisitor) override;
 #endif
 
   // EventTarget
   virtual void AsyncEventRunning(AsyncEventDispatcher* aEvent) override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
@@ -59,10 +58,9 @@ class HTMLEmbedElement final : public nsGenericHTMLElement,
   // nsObjectLoadingContent
   virtual uint32_t GetCapabilities() const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
-  nsresult CopyInnerTo(Element* aDest, bool aPreallocateChildren);
+  nsresult CopyInnerTo(HTMLEmbedElement* aDest);
 
   void StartObjectLoad() { StartObjectLoad(true, false); }
 
@@ -97,7 +95,7 @@ class HTMLEmbedElement final : public nsGenericHTMLElement,
   void SetType(const nsAString& aValue, ErrorResult& aRv) {
     SetHTMLAttr(nsGkAtoms::type, aValue, aRv);
   }
-  nsIDocument* GetSVGDocument(nsIPrincipal& aSubjectPrincipal) {
+  Document* GetSVGDocument(nsIPrincipal& aSubjectPrincipal) {
     return GetContentDocument(aSubjectPrincipal);
   }
 
@@ -105,8 +103,6 @@ class HTMLEmbedElement final : public nsGenericHTMLElement,
    * Calls LoadObject with the correct arguments to start the plugin load.
    */
   void StartObjectLoad(bool aNotify, bool aForceLoad);
-
-  NS_FORWARD_NSIFRAMELOADEROWNER(nsObjectLoadingContent::)
 
  protected:
   // Override for nsImageLoadingContent.
@@ -130,7 +126,7 @@ class HTMLEmbedElement final : public nsGenericHTMLElement,
                              JS::Handle<JSObject*> aGivenProto) override;
 
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 
   /**
    * This function is called by AfterSetAttr and OnAttrSetButNotChanged.

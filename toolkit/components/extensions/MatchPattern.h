@@ -197,6 +197,8 @@ class MatchPattern final : public nsISupports, public nsWrapperCache {
 
   bool Subsumes(const MatchPattern& aPattern) const;
 
+  bool SubsumesDomain(const MatchPattern& aPattern) const;
+
   bool Overlaps(const MatchPattern& aPattern) const;
 
   bool DomainIsWildcard() const { return mMatchSubdomain && mDomain.IsEmpty(); }
@@ -216,8 +218,6 @@ class MatchPattern final : public nsISupports, public nsWrapperCache {
 
   void Init(JSContext* aCx, const nsAString& aPattern, bool aIgnorePath,
             bool aRestrictSchemes, ErrorResult& aRv);
-
-  bool SubsumesDomain(const MatchPattern& aPattern) const;
 
   nsCOMPtr<nsISupports> mParent;
 
@@ -272,6 +272,8 @@ class MatchPatternSet final : public nsISupports, public nsWrapperCache {
 
   bool Subsumes(const MatchPattern& aPattern) const;
 
+  bool SubsumesDomain(const MatchPattern& aPattern) const;
+
   bool Overlaps(const MatchPattern& aPattern) const;
 
   bool Overlaps(const MatchPatternSet& aPatternSet) const;
@@ -292,7 +294,7 @@ class MatchPatternSet final : public nsISupports, public nsWrapperCache {
 
  private:
   explicit MatchPatternSet(nsISupports* aParent, ArrayType&& aPatterns)
-      : mParent(aParent), mPatterns(Forward<ArrayType>(aPatterns)) {}
+      : mParent(aParent), mPatterns(std::forward<ArrayType>(aPatterns)) {}
 
   nsCOMPtr<nsISupports> mParent;
 

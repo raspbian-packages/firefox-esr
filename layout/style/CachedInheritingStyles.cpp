@@ -6,19 +6,20 @@
 
 #include "mozilla/CachedInheritingStyles.h"
 
-#include "mozilla/ServoStyleContext.h"
+#include "mozilla/ComputedStyle.h"
 #include "nsCOMPtr.h"
 #include "nsIMemoryReporter.h"
+#include "nsWindowSizes.h"
 
 namespace mozilla {
 
-void CachedInheritingStyles::Insert(ServoStyleContext* aStyle) {
+void CachedInheritingStyles::Insert(ComputedStyle* aStyle) {
   MOZ_ASSERT(aStyle);
   MOZ_ASSERT(aStyle->IsInheritingAnonBox() ||
              aStyle->IsLazilyCascadedPseudoElement());
 
   if (IsEmpty()) {
-    RefPtr<ServoStyleContext> s = aStyle;
+    RefPtr<ComputedStyle> s = aStyle;
     mBits = reinterpret_cast<uintptr_t>(s.forget().take());
     MOZ_ASSERT(!IsEmpty() && !IsIndirect());
   } else if (IsIndirect()) {
@@ -32,12 +33,12 @@ void CachedInheritingStyles::Insert(ServoStyleContext* aStyle) {
   }
 }
 
-ServoStyleContext* CachedInheritingStyles::Lookup(nsAtom* aPseudoTag) const {
-  MOZ_ASSERT(nsCSSAnonBoxes::IsInheritingAnonBox(aPseudoTag) ||
-             nsCSSPseudoElements::IsPseudoElement(aPseudoTag));
+ComputedStyle* CachedInheritingStyles::Lookup(PseudoStyleType aType) const {
+  MOZ_ASSERT(PseudoStyle::IsPseudoElement(aType) ||
+             PseudoStyle::IsInheritingAnonBox(aType));
   if (IsIndirect()) {
     for (auto& style : *AsIndirect()) {
-      if (style->GetPseudo() == aPseudoTag) {
+      if (style->GetPseudoType() == aType) {
         return style;
       }
     }
@@ -45,8 +46,8 @@ ServoStyleContext* CachedInheritingStyles::Lookup(nsAtom* aPseudoTag) const {
     return nullptr;
   }
 
-  ServoStyleContext* direct = AsDirect();
-  return direct && direct->GetPseudo() == aPseudoTag ? direct : nullptr;
+  ComputedStyle* direct = AsDirect();
+  return direct && direct->GetPseudoType() == aType ? direct : nullptr;
 }
 
 void CachedInheritingStyles::AddSizeOfIncludingThis(nsWindowSizes& aSizes,
@@ -61,7 +62,7 @@ void CachedInheritingStyles::AddSizeOfIncludingThis(nsWindowSizes& aSizes,
     return;
   }
 
-  ServoStyleContext* direct = AsDirect();
+  ComputedStyle* direct = AsDirect();
   if (direct && !aSizes.mState.HaveSeenPtr(direct)) {
     direct->AddSizeOfIncludingThis(aSizes, aCVsSize);
   }

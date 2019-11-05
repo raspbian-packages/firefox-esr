@@ -3,7 +3,7 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Import common head.
 {
@@ -15,28 +15,35 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Put any other stuff relative to this test folder below.
 
-const DB_FILENAME = "places.sqlite";
+const CURRENT_SCHEMA_VERSION = 52;
+const FIRST_UPGRADABLE_SCHEMA_VERSION = 30;
 
-/**
- * Sets the database to use for the given test.  This should be the very first
- * thing in the test, otherwise this database will not be used!
- *
- * @param aFileName
- *        The filename of the database to use.  This database must exist in
- *        toolkit/components/places/tests/migration!
- * @return {Promise}
- */
-var setupPlacesDatabase = async function(aFileName, aDestFileName = DB_FILENAME) {
-  let currentDir = await OS.File.getCurrentDirectory();
+async function assertAnnotationsRemoved(db, expectedAnnos) {
+  for (let anno of expectedAnnos) {
+    let rows = await db.execute(
+      `
+      SELECT id FROM moz_anno_attributes
+      WHERE name = :anno
+    `,
+      { anno }
+    );
 
-  let src = OS.Path.join(currentDir, aFileName);
-  Assert.ok((await OS.File.exists(src)), "Database file found");
+    Assert.equal(rows.length, 0, `${anno} should not exist in the database`);
+  }
+}
 
-  // Ensure that our database doesn't already exist.
-  let dest = OS.Path.join(OS.Constants.Path.profileDir, aDestFileName);
-  Assert.ok(!(await OS.File.exists(dest)), "Database file should not exist yet");
+async function assertNoOrphanAnnotations(db) {
+  let rows = await db.execute(`
+    SELECT item_id FROM moz_items_annos
+    WHERE item_id NOT IN (SELECT id from moz_bookmarks)
+  `);
 
-  await OS.File.copy(src, dest);
-};
+  Assert.equal(rows.length, 0, `Should have no orphan annotations.`);
 
-// This works provided all tests in this folder use add_task.
+  rows = await db.execute(`
+    SELECT id FROM moz_anno_attributes
+    WHERE id NOT IN (SELECT id from moz_items_annos)
+  `);
+
+  Assert.equal(rows.length, 0, `Should have no orphan annotation attributes.`);
+}

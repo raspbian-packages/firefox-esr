@@ -9,7 +9,7 @@
 
 #include "nsNSSCertificate.h"
 #include "nsNSSCertValidity.h"
-#include "mozilla/PodOperations.h"
+#include "mozilla/ArrayUtils.h"
 
 using namespace mozilla;
 
@@ -28,7 +28,7 @@ static bool CertDNIsInList(const CERTCertificate* aCert,
 
   for (auto& dn : aDnList) {
     if (aCert->derSubject.len == dn.len &&
-        mozilla::PodEqual(aCert->derSubject.data, dn.data, dn.len)) {
+        mozilla::ArrayEqual(aCert->derSubject.data, dn.data, dn.len)) {
       return true;
     }
   }
@@ -45,7 +45,7 @@ static bool CertSPKIIsInList(const CERTCertificate* aCert,
 
   for (auto& spki : aSpkiList) {
     if (aCert->derPublicKey.len == spki.len &&
-        mozilla::PodEqual(aCert->derPublicKey.data, spki.data, spki.len)) {
+        mozilla::ArrayEqual(aCert->derPublicKey.data, spki.data, spki.len)) {
       return true;
     }
   }
@@ -61,9 +61,9 @@ static bool CertMatchesStaticData(const CERTCertificate* cert,
     return false;
   }
   return cert->derSubject.len == T &&
-         mozilla::PodEqual(cert->derSubject.data, subject, T) &&
+         mozilla::ArrayEqual(cert->derSubject.data, subject, T) &&
          cert->derPublicKey.len == R &&
-         mozilla::PodEqual(cert->derPublicKey.data, spki, R);
+         mozilla::ArrayEqual(cert->derPublicKey.data, spki, R);
 }
 
 // Implements the graduated Symantec distrust algorithm from Bug 1409257.

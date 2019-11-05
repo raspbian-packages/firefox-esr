@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,18 +20,18 @@
 #include "mozilla/layers/TextureClientSharedSurface.h"
 
 #ifdef XP_WIN
-#include "SharedSurfaceANGLE.h"         // for SurfaceFactory_ANGLEShareHandle
-#include "SharedSurfaceD3D11Interop.h"  // for SurfaceFactory_D3D11Interop
-#include "mozilla/gfx/DeviceManagerDx.h"
+#  include "SharedSurfaceANGLE.h"         // for SurfaceFactory_ANGLEShareHandle
+#  include "SharedSurfaceD3D11Interop.h"  // for SurfaceFactory_D3D11Interop
+#  include "mozilla/gfx/DeviceManagerDx.h"
 #endif
 
 #ifdef XP_MACOSX
-#include "SharedSurfaceIO.h"
+#  include "SharedSurfaceIO.h"
 #endif
 
-#ifdef GL_PROVIDER_GLX
-#include "GLXLibrary.h"
-#include "SharedSurfaceGLX.h"
+#ifdef MOZ_X11
+#  include "GLXLibrary.h"
+#  include "SharedSurfaceGLX.h"
 #endif
 
 namespace mozilla {
@@ -44,7 +44,7 @@ UniquePtr<GLScreenBuffer> GLScreenBuffer::Create(GLContext* gl,
                                                  const SurfaceCaps& caps) {
   UniquePtr<GLScreenBuffer> ret;
   if (caps.antialias && !gl->IsSupported(GLFeature::framebuffer_multisample)) {
-    return Move(ret);
+    return ret;
   }
 
   layers::TextureFlags flags = layers::TextureFlags::ORIGIN_BOTTOM_LEFT;
@@ -55,11 +55,12 @@ UniquePtr<GLScreenBuffer> GLScreenBuffer::Create(GLContext* gl,
   UniquePtr<SurfaceFactory> factory =
       MakeUnique<SurfaceFactory_Basic>(gl, caps, flags);
 
-  ret.reset(new GLScreenBuffer(gl, caps, Move(factory)));
-  return Move(ret);
+  ret.reset(new GLScreenBuffer(gl, caps, std::move(factory)));
+  return ret;
 }
 
-/* static */ UniquePtr<SurfaceFactory> GLScreenBuffer::CreateFactory(
+/* static */
+UniquePtr<SurfaceFactory> GLScreenBuffer::CreateFactory(
     GLContext* gl, const SurfaceCaps& caps,
     KnowsCompositor* compositorConnection, const layers::TextureFlags& flags) {
   LayersIPCChannel* ipcChannel = compositorConnection->GetTextureForwarder();
@@ -80,7 +81,7 @@ UniquePtr<GLScreenBuffer> GLScreenBuffer::Create(GLContext* gl,
   if (useGl) {
 #if defined(XP_MACOSX)
     factory = SurfaceFactory_IOSurface::Create(gl, caps, ipcChannel, flags);
-#elif defined(GL_PROVIDER_GLX)
+#elif defined(MOZ_X11)
     if (sGLXLibrary.UseTextureFromPixmap())
       factory = SurfaceFactory_GLXDrawable::Create(gl, caps, ipcChannel, flags);
 #elif defined(MOZ_WIDGET_UIKIT)
@@ -102,6 +103,11 @@ UniquePtr<GLScreenBuffer> GLScreenBuffer::Create(GLContext* gl,
 #endif
   } else if (useD3D) {
 #ifdef XP_WIN
+    // Ensure devices initialization. SharedSurfaceANGLE and
+    // SharedSurfaceD3D11Interop use them. The devices are lazily initialized
+    // with WebRender to reduce memory usage.
+    gfxPlatform::GetPlatform()->EnsureDevicesInitialized();
+
     // Enable surface sharing only if ANGLE and compositing devices
     // are both WARP or both not WARP
     gfx::DeviceManagerDx* dm = gfx::DeviceManagerDx::Get();
@@ -118,7 +124,7 @@ UniquePtr<GLScreenBuffer> GLScreenBuffer::Create(GLContext* gl,
 #endif
   }
 
-#ifdef GL_PROVIDER_GLX
+#ifdef MOZ_X11
   if (!factory && sGLXLibrary.UseTextureFromPixmap()) {
     factory = SurfaceFactory_GLXDrawable::Create(gl, caps, ipcChannel, flags);
   }
@@ -131,7 +137,7 @@ GLScreenBuffer::GLScreenBuffer(GLContext* gl, const SurfaceCaps& caps,
                                UniquePtr<SurfaceFactory> factory)
     : mGL(gl),
       mCaps(caps),
-      mFactory(Move(factory)),
+      mFactory(std::move(factory)),
       mNeedsBlit(true),
       mUserReadBufferMode(LOCAL_GL_BACK),
       mUserDrawBufferMode(LOCAL_GL_BACK),
@@ -274,7 +280,6 @@ void GLScreenBuffer::BindReadFB_Internal(GLuint fb) {
 
 GLuint GLScreenBuffer::GetDrawFB() const {
 #ifdef DEBUG
-  MOZ_ASSERT(mGL->IsCurrent());
   MOZ_ASSERT(!mInInternalMode_DrawFB);
 
   // Don't need a branch here, because:
@@ -285,7 +290,7 @@ GLuint GLScreenBuffer::GetDrawFB() const {
   mGL->raw_fGetIntegerv(LOCAL_GL_DRAW_FRAMEBUFFER_BINDING_EXT, (GLint*)&actual);
 
   GLuint predicted = mInternalDrawFB;
-  if (predicted != actual) {
+  if (predicted != actual && !mGL->CheckContextLost()) {
     printf_stderr("Misprediction: Bound draw FB predicted: %d. Was: %d.\n",
                   predicted, actual);
     MOZ_ASSERT(false, "Draw FB binding misprediction!");
@@ -297,7 +302,6 @@ GLuint GLScreenBuffer::GetDrawFB() const {
 
 GLuint GLScreenBuffer::GetReadFB() const {
 #ifdef DEBUG
-  MOZ_ASSERT(mGL->IsCurrent());
   MOZ_ASSERT(!mInInternalMode_ReadFB);
 
   // We use raw_ here because this is debug code and we need to see what
@@ -310,7 +314,7 @@ GLuint GLScreenBuffer::GetReadFB() const {
     mGL->raw_fGetIntegerv(LOCAL_GL_FRAMEBUFFER_BINDING, (GLint*)&actual);
 
   GLuint predicted = mInternalReadFB;
-  if (predicted != actual) {
+  if (predicted != actual && !mGL->CheckContextLost()) {
     printf_stderr("Misprediction: Bound read FB predicted: %d. Was: %d.\n",
                   predicted, actual);
     MOZ_ASSERT(false, "Read FB binding misprediction!");
@@ -427,7 +431,7 @@ void GLScreenBuffer::AssureBlitted() {
 
 void GLScreenBuffer::Morph(UniquePtr<SurfaceFactory> newFactory) {
   MOZ_RELEASE_ASSERT(newFactory, "newFactory must not be null");
-  mFactory = Move(newFactory);
+  mFactory = std::move(newFactory);
 }
 
 bool GLScreenBuffer::Attach(SharedSurface* surf, const gfx::IntSize& size) {
@@ -471,9 +475,9 @@ bool GLScreenBuffer::Attach(SharedSurface* surf, const gfx::IntSize& size) {
       return false;
     }
 
-    if (draw) mDraw = Move(draw);
+    if (draw) mDraw = std::move(draw);
 
-    mRead = Move(read);
+    mRead = std::move(read);
   }
 
   // Check that we're all set up.
@@ -763,7 +767,7 @@ bool DrawBuffer::Create(GLContext* const gl, const SurfaceCaps& caps,
   MOZ_ASSERT_IF(err != LOCAL_GL_NO_ERROR, err == LOCAL_GL_OUT_OF_MEMORY);
   if (err || !gl->IsFramebufferComplete(fb)) return false;
 
-  *out_buffer = Move(ret);
+  *out_buffer = std::move(ret);
   return true;
 }
 
@@ -844,7 +848,7 @@ UniquePtr<ReadBuffer> ReadBuffer::Create(GLContext* gl, const SurfaceCaps& caps,
 
   if (!isComplete) return nullptr;
 
-  return Move(ret);
+  return ret;
 }
 
 ReadBuffer::~ReadBuffer() {
@@ -888,7 +892,7 @@ void ReadBuffer::Attach(SharedSurface* surf) {
 
     mGL->AttachBuffersToFB(colorTex, colorRB, 0, 0, mFB, target);
     mGL->mFBOMapping[mFB] = surf;
-    MOZ_ASSERT(mGL->IsFramebufferComplete(mFB));
+    MOZ_GL_ASSERT(mGL, mGL->IsFramebufferComplete(mFB));
   }
 
   mSurf = surf;

@@ -200,7 +200,8 @@ class MulticastTimerCallback : public nsITimerCallback {
   virtual ~MulticastTimerCallback();
 
  public:
-  explicit MulticastTimerCallback(WaitForCondition* waiter) : mWaiter(waiter) {}
+  explicit MulticastTimerCallback(WaitForCondition* waiter)
+      : mResult(NS_ERROR_NOT_INITIALIZED), mWaiter(waiter) {}
 
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSITIMERCALLBACK
@@ -227,7 +228,8 @@ MulticastTimerCallback::Notify(nsITimer* timer) {
 
 /**** Main ****/
 
-TEST(TestUDPSocket, TestUDPSocketMain) {
+TEST(TestUDPSocket, TestUDPSocketMain)
+{
   nsresult rv;
 
   // Create UDPSocket

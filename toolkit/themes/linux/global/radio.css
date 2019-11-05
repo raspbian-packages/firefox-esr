@@ -16,10 +16,6 @@ radio {
   margin: 2px 4px;
 }
 
-radio:hover {
-  color: -moz-buttonhovertext;
-}
-
 .radio-check {
   -moz-appearance: radio;
   margin: 2px;
@@ -34,7 +30,7 @@ radio:hover {
 }
 
 .radio-label {
-  margin: 0 !important;
+  margin: 0;
 }
 
 /* ..... focused state ..... */

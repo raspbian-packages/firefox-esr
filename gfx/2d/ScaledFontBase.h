@@ -11,15 +11,15 @@
 
 // Skia uses cairo_scaled_font_t as the internal font type in ScaledFont
 #if defined(USE_SKIA) || defined(USE_CAIRO)
-#define USE_CAIRO_SCALED_FONT
+#  define USE_CAIRO_SCALED_FONT
 #endif
 
 #ifdef USE_SKIA
-#include "skia/include/core/SkPath.h"
-#include "skia/include/core/SkTypeface.h"
+#  include "skia/include/core/SkPath.h"
+#  include "skia/include/core/SkTypeface.h"
 #endif
 #ifdef USE_CAIRO_SCALED_FONT
-#include "cairo.h"
+#  include "cairo.h"
 #endif
 
 namespace mozilla {
@@ -46,11 +46,8 @@ class ScaledFontBase : public ScaledFont {
   virtual Float GetSize() const override { return mSize; }
 
 #ifdef USE_SKIA
-  virtual SkTypeface* GetSkTypeface() { return mTypeface; }
+  SkTypeface* GetSkTypeface();
 #endif
-
-  // Not true, but required to instantiate a ScaledFontBase.
-  virtual FontType GetType() const override { return FontType::SKIA; }
 
 #ifdef USE_CAIRO_SCALED_FONT
   bool PopulateCairoScaledFont();
@@ -63,7 +60,8 @@ class ScaledFontBase : public ScaledFont {
  protected:
   friend class DrawTargetSkia;
 #ifdef USE_SKIA
-  SkTypeface* mTypeface;
+  Atomic<SkTypeface*> mTypeface;
+  virtual SkTypeface* CreateSkTypeface() { return nullptr; }
   SkPath GetSkiaPathForGlyphs(const GlyphBuffer& aBuffer);
 #endif
 #ifdef USE_CAIRO_SCALED_FONT

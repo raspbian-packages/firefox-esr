@@ -17,7 +17,8 @@ namespace mozilla {
 namespace layers {
 
 bool ComputeHasIntermediateBuffer(gfx::SurfaceFormat aFormat,
-                                  LayersBackend aLayersBackend);
+                                  LayersBackend aLayersBackend,
+                                  bool aSupportsTextureDirectMapping);
 
 class BufferTextureData : public TextureData {
  public:
@@ -32,41 +33,34 @@ class BufferTextureData : public TextureData {
   static BufferTextureData* CreateForYCbCr(
       KnowsCompositor* aAllocator, gfx::IntSize aYSize, uint32_t aYStride,
       gfx::IntSize aCbCrSize, uint32_t aCbCrStride, StereoMode aStereoMode,
-      YUVColorSpace aYUVColorSpace, uint32_t aBitDepth,
+      gfx::ColorDepth aColorDepth, gfx::YUVColorSpace aYUVColorSpace,
       TextureFlags aTextureFlags);
 
-  // It is generally better to use CreateForYCbCr instead.
-  // This creates a half-initialized texture since we don't know the sizes and
-  // offsets in the buffer.
-  static BufferTextureData* CreateForYCbCrWithBufferSize(
-      KnowsCompositor* aAllocator, int32_t aSize, YUVColorSpace aYUVColorSpace,
-      uint32_t aBitDepth, TextureFlags aTextureFlags);
+  bool Lock(OpenMode aMode) override { return true; }
 
-  virtual bool Lock(OpenMode aMode) override { return true; }
+  void Unlock() override {}
 
-  virtual void Unlock() override {}
+  void FillInfo(TextureData::Info& aInfo) const override;
 
-  virtual void FillInfo(TextureData::Info& aInfo) const override;
+  already_AddRefed<gfx::DrawTarget> BorrowDrawTarget() override;
 
-  virtual already_AddRefed<gfx::DrawTarget> BorrowDrawTarget() override;
+  bool BorrowMappedData(MappedTextureData& aMap) override;
 
-  virtual bool BorrowMappedData(MappedTextureData& aMap) override;
-
-  virtual bool BorrowMappedYCbCrData(MappedYCbCrTextureData& aMap) override;
+  bool BorrowMappedYCbCrData(MappedYCbCrTextureData& aMap) override;
 
   // use TextureClient's default implementation
-  virtual bool UpdateFromSurface(gfx::SourceSurface* aSurface) override;
+  bool UpdateFromSurface(gfx::SourceSurface* aSurface) override;
 
-  virtual BufferTextureData* AsBufferTextureData() override { return this; }
+  BufferTextureData* AsBufferTextureData() override { return this; }
 
   // Don't use this.
-  void SetDesciptor(const BufferDescriptor& aDesc);
+  void SetDescriptor(BufferDescriptor&& aDesc);
 
   Maybe<gfx::IntSize> GetCbCrSize() const;
 
-  Maybe<YUVColorSpace> GetYUVColorSpace() const;
+  Maybe<gfx::YUVColorSpace> GetYUVColorSpace() const;
 
-  Maybe<uint32_t> GetBitDepth() const;
+  Maybe<gfx::ColorDepth> GetColorDepth() const;
 
   Maybe<StereoMode> GetStereoMode() const;
 

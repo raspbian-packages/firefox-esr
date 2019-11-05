@@ -7,29 +7,32 @@
  * Bug 1360457 - Mis-alignment between headers and columns on overflow
  */
 
-add_task(async function () {
+add_task(async function() {
   requestLongerTimeout(4);
 
-  let { tab, monitor } = await initNetMonitor(INFINITE_GET_URL, true);
-  let { document, windowRequire, store } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { tab, monitor } = await initNetMonitor(INFINITE_GET_URL, true);
+  const { document, windowRequire, store } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
 
   store.dispatch(Actions.batchEnable(false));
 
   // Wait until the first request makes the empty notice disappear
   await waitForRequestListToAppear();
 
-  let requestsContainer = document.querySelector(".requests-list-contents");
-  ok(requestsContainer, "Container element exists as expected.");
-  let headers = document.querySelector(".requests-list-headers");
+  const requestsContainerScroll = document.querySelector(
+    ".requests-list-scroll"
+  );
+  ok(requestsContainerScroll, "Container element exists as expected.");
+  const requestsContainer = document.querySelector(".requests-list-row-group");
+  const headers = document.querySelector(".requests-list-headers");
   ok(headers, "Headers element exists as expected.");
 
-  await waitForRequestsToOverflowContainer(monitor, requestsContainer);
+  await waitForRequestsToOverflowContainer(monitor, requestsContainerScroll);
 
   testColumnsAlignment(headers, requestsContainer);
 
   // Stop doing requests.
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
+  await ContentTask.spawn(tab.linkedBrowser, {}, async function() {
     content.wrappedJSObject.stopRequests();
   });
 
@@ -37,8 +40,12 @@ add_task(async function () {
   return teardown(monitor);
 
   function waitForRequestListToAppear() {
-    info("Waiting until the empty notice disappears and is replaced with the list");
-    return waitUntil(() => !!document.querySelector(".requests-list-contents"));
+    info(
+      "Waiting until the empty notice disappears and is replaced with the list"
+    );
+    return waitUntil(
+      () => !!document.querySelector(".requests-list-row-group")
+    );
   }
 });
 
@@ -47,7 +54,7 @@ async function waitForRequestsToOverflowContainer(monitor, requestList) {
   while (true) {
     info("Waiting for one network request");
     await waitForNetworkEvents(monitor, 1);
-    if (requestList.scrollHeight > requestList.clientHeight) {
+    if (requestList.scrollHeight > requestList.clientHeight + 50) {
       info("The list is long enough, returning");
       return;
     }

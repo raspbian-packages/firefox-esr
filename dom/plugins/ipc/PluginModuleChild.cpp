@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set sw=4 ts=4 et : */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set sw=2 ts=4 et : */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,7 +13,7 @@
 #include "mozilla/ipc/MessageChannel.h"
 
 #ifdef MOZ_WIDGET_GTK
-#include <gtk/gtk.h>
+#  include <gtk/gtk.h>
 #endif
 
 #include "nsIFile.h"
@@ -25,8 +25,8 @@
 #include "nsXULAppAPI.h"
 
 #ifdef MOZ_X11
-#include "nsX11ErrorHandler.h"
-#include "mozilla/X11Util.h"
+#  include "nsX11ErrorHandler.h"
+#  include "mozilla/X11Util.h"
 #endif
 
 #include "mozilla/ipc/CrashReporterClient.h"
@@ -42,21 +42,21 @@
 #include "FunctionBrokerChild.h"
 
 #ifdef XP_WIN
-#include "mozilla/widget/AudioSession.h"
-#include <knownfolders.h>
+#  include "mozilla/widget/AudioSession.h"
+#  include <knownfolders.h>
 #endif
 
 #ifdef MOZ_WIDGET_COCOA
-#include "PluginInterposeOSX.h"
-#include "PluginUtilsOSX.h"
+#  include "PluginInterposeOSX.h"
+#  include "PluginUtilsOSX.h"
 #endif
 
 #ifdef MOZ_GECKO_PROFILER
-#include "ChildProfilerController.h"
+#  include "ChildProfilerController.h"
 #endif
 
 #if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
-#include "mozilla/Sandbox.h"
+#  include "mozilla/Sandbox.h"
 #endif
 
 using namespace mozilla;
@@ -66,6 +66,9 @@ using namespace mozilla::widget;
 
 #if defined(XP_WIN)
 const wchar_t* kFlashFullscreenClass = L"ShockwaveFlashFullScreen";
+#  if defined(MOZ_SANDBOX)
+std::wstring sRoamingPath;
+#  endif
 #endif
 
 namespace {
@@ -82,7 +85,7 @@ static bool gDelayFlashFocusReplyUntilEval = false;
 bool PluginModuleChild::CreateForContentProcess(
     Endpoint<PPluginModuleChild>&& aEndpoint) {
   auto* child = new PluginModuleChild(false);
-  return child->InitForContent(Move(aEndpoint));
+  return child->InitForContent(std::move(aEndpoint));
 }
 
 PluginModuleChild::PluginModuleChild(bool aIsChrome)
@@ -108,7 +111,7 @@ PluginModuleChild::PluginModuleChild(bool aIsChrome)
 #endif
 #if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
       ,
-      mEnableFlashSandbox(false),
+      mFlashSandboxLevel(0),
       mEnableFlashSandboxLogging(false)
 #endif
 {
@@ -180,7 +183,7 @@ bool PluginModuleChild::InitForContent(
 mozilla::ipc::IPCResult PluginModuleChild::RecvInitProfiler(
     Endpoint<mozilla::PProfilerChild>&& aEndpoint) {
 #ifdef MOZ_GECKO_PROFILER
-  mProfilerController = ChildProfilerController::Create(Move(aEndpoint));
+  mProfilerController = ChildProfilerController::Create(std::move(aEndpoint));
 #endif
   return IPC_OK();
 }
@@ -196,9 +199,22 @@ mozilla::ipc::IPCResult PluginModuleChild::RecvDisableFlashProtectedMode() {
 }
 
 #if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
-void PluginModuleChild::EnableFlashSandbox(bool aShouldEnableLogging) {
-  mEnableFlashSandbox = true;
+void PluginModuleChild::EnableFlashSandbox(int aLevel,
+                                           bool aShouldEnableLogging) {
+  mFlashSandboxLevel = aLevel;
   mEnableFlashSandboxLogging = aShouldEnableLogging;
+}
+#endif
+
+#if defined(OS_WIN) && defined(MOZ_SANDBOX)
+/* static */
+void PluginModuleChild::SetFlashRoamingPath(const std::wstring& aRoamingPath) {
+  MOZ_ASSERT(sRoamingPath.empty());
+  sRoamingPath = aRoamingPath;
+}
+
+/* static */ std::wstring PluginModuleChild::GetFlashRoamingPath() {
+  return sRoamingPath;
 }
 #endif
 
@@ -207,6 +223,11 @@ bool PluginModuleChild::InitForChrome(const std::string& aPluginFilename,
                                       MessageLoop* aIOLoop,
                                       IPC::Channel* aChannel) {
   NS_ASSERTION(aChannel, "need a channel");
+
+#if defined(OS_WIN) && defined(MOZ_SANDBOX)
+  MOZ_ASSERT(!sRoamingPath.empty(),
+             "Should have already called SetFlashRoamingPath");
+#endif
 
   if (!InitGraphics()) return false;
 
@@ -285,16 +306,16 @@ bool PluginModuleChild::InitForChrome(const std::string& aPluginFilename,
   NS_ENSURE_TRUE(mInitializeFunc, false);
 #else
 
-#error Please copy the initialization code from nsNPAPIPlugin.cpp
+#  error Please copy the initialization code from nsNPAPIPlugin.cpp
 
 #endif
 
 #if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
-  if (mEnableFlashSandbox) {
+  if (mFlashSandboxLevel > 0) {
     MacSandboxInfo flashSandboxInfo;
-    flashSandboxInfo.type = MacSandboxType_Plugin;
-    flashSandboxInfo.pluginInfo.type = MacSandboxPluginType_Flash;
-    flashSandboxInfo.pluginInfo.pluginBinaryPath = aPluginFilename;
+    flashSandboxInfo.type = MacSandboxType_Flash;
+    flashSandboxInfo.pluginBinaryPath = aPluginFilename;
+    flashSandboxInfo.level = mFlashSandboxLevel;
     flashSandboxInfo.shouldLog = mEnableFlashSandboxLogging;
 
     std::string sbError;
@@ -410,15 +431,15 @@ static gboolean gtk_plug_scroll_event(GtkWidget* widget,
   xevent.xbutton.y_root = gdk_event->y_root;
   xevent.xbutton.state = gdk_event->state;
   xevent.xbutton.button = button;
-  xevent.xbutton.same_screen = True;
+  xevent.xbutton.same_screen = X11True;
 
   gdk_error_trap_push();
 
-  XSendEvent(dpy, xevent.xbutton.window, True, ButtonPressMask, &xevent);
+  XSendEvent(dpy, xevent.xbutton.window, X11True, ButtonPressMask, &xevent);
 
   xevent.xbutton.type = ButtonRelease;
   xevent.xbutton.state |= button_mask;
-  XSendEvent(dpy, xevent.xbutton.window, True, ButtonReleaseMask, &xevent);
+  XSendEvent(dpy, xevent.xbutton.window, X11True, ButtonReleaseMask, &xevent);
 
   gdk_display_sync(gdk_screen_get_display(screen));
   gdk_error_trap_pop();
@@ -498,9 +519,9 @@ void PluginModuleChild::EnteredCxxStack() {
       kNestedLoopDetectorPriority, kNestedLoopDetectorIntervalMs,
       PluginModuleChild::DetectNestedEventLoop, this, nullptr);
 
-#ifdef DEBUG
+#  ifdef DEBUG
   mTopLoopDepth = g_main_depth();
-#endif
+#  endif
 }
 
 void PluginModuleChild::ExitedCxxStack() {
@@ -564,7 +585,7 @@ bool PluginModuleChild::InitGraphics() {
   *embedded = wrap_gtk_plug_embedded;
 
 #else
-// may not be necessary on all platforms
+  // may not be necessary on all platforms
 #endif
 #ifdef MOZ_X11
   // Do this after initializing GDK, or GDK will install its own handler.
@@ -671,7 +692,7 @@ mozilla::ipc::IPCResult PluginModuleChild::RecvSetAudioSessionData(
 
 mozilla::ipc::IPCResult PluginModuleChild::RecvInitPluginModuleChild(
     Endpoint<PPluginModuleChild>&& aEndpoint) {
-  if (!CreateForContentProcess(Move(aEndpoint))) {
+  if (!CreateForContentProcess(std::move(aEndpoint))) {
     return IPC_FAIL(this, "CreateForContentProcess failed");
   }
   return IPC_OK();
@@ -681,7 +702,7 @@ mozilla::ipc::IPCResult PluginModuleChild::RecvInitPluginFunctionBroker(
     Endpoint<PFunctionBrokerChild>&& aEndpoint) {
 #if defined(XP_WIN)
   MOZ_ASSERT(mIsChrome);
-  if (!FunctionBrokerChild::Initialize(Move(aEndpoint))) {
+  if (!FunctionBrokerChild::Initialize(std::move(aEndpoint))) {
     return IPC_FAIL(
         this, "InitPluginFunctionBroker failed to initialize broker child.");
   }
@@ -875,9 +896,9 @@ const NPNetscapeFuncs PluginModuleChild::sBrowserFuncs = {
     mozilla::plugins::child::_geturl,
     mozilla::plugins::child::_posturl,
     mozilla::plugins::child::_requestread,
-    nullptr,
-    nullptr,
-    nullptr,
+    nullptr,  // _newstream, unimplemented
+    nullptr,  // _write, unimplemented
+    nullptr,  // _destroystream, unimplemented
     mozilla::plugins::child::_status,
     mozilla::plugins::child::_useragent,
     mozilla::plugins::child::_memalloc,
@@ -957,8 +978,10 @@ NPError _geturlnotify(NPP aNPP, const char* aRelativeURL, const char* aTarget,
   auto* sn = new StreamNotifyChild(url);
 
   NPError err;
-  InstCast(aNPP)->CallPStreamNotifyConstructor(sn, url, NullableString(aTarget),
-                                               false, nsCString(), false, &err);
+  if (!InstCast(aNPP)->CallPStreamNotifyConstructor(
+          sn, url, NullableString(aTarget), false, nsCString(), false, &err)) {
+    return NPERR_GENERIC_ERROR;
+  }
 
   if (NPERR_NO_ERROR == err) {
     // If NPN_PostURLNotify fails, the parent will immediately send us
@@ -1022,7 +1045,7 @@ NPError _getvalue(NPP aNPP, NPNVariable aVariable, void* aValue) {
     }
   }
 
-  NS_NOTREACHED("Shouldn't get here!");
+  MOZ_ASSERT_UNREACHABLE("Shouldn't get here!");
   return NPERR_GENERIC_ERROR;
 }
 
@@ -1060,9 +1083,11 @@ NPError _posturlnotify(NPP aNPP, const char* aRelativeURL, const char* aTarget,
   auto* sn = new StreamNotifyChild(url);
 
   NPError err;
-  InstCast(aNPP)->CallPStreamNotifyConstructor(
-      sn, url, NullableString(aTarget), true, nsCString(aBuffer, aLength),
-      aIsFile, &err);
+  if (!InstCast(aNPP)->CallPStreamNotifyConstructor(
+          sn, url, NullableString(aTarget), true, nsCString(aBuffer, aLength),
+          aIsFile, &err)) {
+    return NPERR_GENERIC_ERROR;
+  }
 
   if (NPERR_NO_ERROR == err) {
     // If NPN_PostURLNotify fails, the parent will immediately send us
@@ -1509,7 +1534,7 @@ mozilla::ipc::IPCResult PluginModuleChild::AnswerNP_GetEntryPoints(
   *_retval = mGetEntryPointsFunc(&mFunctions);
   return IPC_OK();
 #else
-#error Please implement me for your platform
+#  error Please implement me for your platform
 #endif
 }
 
@@ -1543,7 +1568,7 @@ NPError PluginModuleChild::DoNP_Initialize(const PluginSettings& aSettings) {
 #elif defined(OS_WIN) || defined(OS_MACOSX)
   result = mInitializeFunc(&sBrowserFuncs);
 #else
-#error Please implement me for your platform
+#  error Please implement me for your platform
 #endif
 
   return result;
@@ -1584,7 +1609,7 @@ mozilla::ipc::IPCResult PluginModuleChild::AnswerModuleSupportsAsyncRender(
   *aResult = gChromeInstance->mAsyncRenderSupport;
   return IPC_OK();
 #else
-  NS_NOTREACHED("Shouldn't get here!");
+  MOZ_ASSERT_UNREACHABLE("Shouldn't get here!");
   return IPC_FAIL_NO_REASON(this);
 #endif
 }
@@ -1650,6 +1675,10 @@ NPObject* PluginModuleChild::NPN_CreateObject(NPP aNPP, NPClass* aClass) {
 
 NPObject* PluginModuleChild::NPN_RetainObject(NPObject* aNPObj) {
   AssertPluginThread();
+
+  if (NS_WARN_IF(!aNPObj)) {
+    return nullptr;
+  }
 
 #ifdef NS_BUILD_REFCNT_LOGGING
   int32_t refCnt =
@@ -1933,5 +1962,23 @@ PluginModuleChild::RecvNPP_SetValue_NPNVaudioDeviceChangeDetails(
 #else
   MOZ_CRASH(
       "NPP_SetValue_NPNVaudioDeviceChangeDetails is a Windows-only message");
+#endif
+}
+
+mozilla::ipc::IPCResult
+PluginModuleChild::RecvNPP_SetValue_NPNVaudioDeviceStateChanged(
+    const NPAudioDeviceStateChangedIPC& aDeviceStateIPC) {
+#if defined(XP_WIN)
+  NPAudioDeviceStateChanged stateChange;
+  stateChange.newState = aDeviceStateIPC.state;
+  stateChange.device = aDeviceStateIPC.device.c_str();
+  for (auto iter = mAudioNotificationSet.ConstIter(); !iter.Done();
+       iter.Next()) {
+    PluginInstanceChild* pluginInst = iter.Get()->GetKey();
+    pluginInst->AudioDeviceStateChanged(stateChange);
+  }
+  return IPC_OK();
+#else
+  MOZ_CRASH("NPP_SetValue_NPNVaudioDeviceRemoved is a Windows-only message");
 #endif
 }

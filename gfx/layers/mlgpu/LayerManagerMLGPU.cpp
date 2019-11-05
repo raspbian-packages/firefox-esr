@@ -10,6 +10,7 @@
 #include "ImageLayerMLGPU.h"
 #include "CanvasLayerMLGPU.h"
 #include "GeckoProfiler.h"  // for profiler_*
+#include "gfxEnv.h"         // for gfxEnv
 #include "MLGDevice.h"
 #include "RenderPassMLGPU.h"
 #include "RenderViewMLGPU.h"
@@ -21,12 +22,13 @@
 #include "FrameBuilder.h"
 #include "LayersLogging.h"
 #include "UtilityMLGPU.h"
+#include "CompositionRecorder.h"
 #include "mozilla/layers/Diagnostics.h"
 #include "mozilla/layers/TextRenderer.h"
 
 #ifdef XP_WIN
-#include "mozilla/widget/WinCompositorWidget.h"
-#include "mozilla/gfx/DeviceManagerDx.h"
+#  include "mozilla/widget/WinCompositorWidget.h"
+#  include "mozilla/gfx/DeviceManagerDx.h"
 #endif
 
 using namespace std;
@@ -40,6 +42,49 @@ static const int kDebugOverlayX = 2;
 static const int kDebugOverlayY = 5;
 static const int kDebugOverlayMaxWidth = 600;
 static const int kDebugOverlayMaxHeight = 96;
+
+class RecordedFrameMLGPU : public RecordedFrame {
+ public:
+  RecordedFrameMLGPU(MLGDevice* aDevice, MLGTexture* aTexture,
+                     const TimeStamp& aTimestamp)
+      : RecordedFrame(aTimestamp), mDevice(aDevice) {
+    mSoftTexture =
+        aDevice->CreateTexture(aTexture->GetSize(), SurfaceFormat::B8G8R8A8,
+                               MLGUsage::Staging, MLGTextureFlags::None);
+
+    aDevice->CopyTexture(mSoftTexture, IntPoint(), aTexture,
+                         IntRect(IntPoint(), aTexture->GetSize()));
+  }
+
+  ~RecordedFrameMLGPU() {
+    if (mIsMapped) {
+      mDevice->Unmap(mSoftTexture);
+    }
+  }
+
+  virtual already_AddRefed<gfx::DataSourceSurface> GetSourceSurface() override {
+    if (mDataSurf) {
+      return RefPtr<DataSourceSurface>(mDataSurf).forget();
+    }
+    MLGMappedResource map;
+    if (!mDevice->Map(mSoftTexture, MLGMapType::READ, &map)) {
+      return nullptr;
+    }
+
+    mIsMapped = true;
+    mDataSurf = Factory::CreateWrappingDataSourceSurface(
+        map.mData, map.mStride, mSoftTexture->GetSize(),
+        SurfaceFormat::B8G8R8A8);
+    return RefPtr<DataSourceSurface>(mDataSurf).forget();
+  }
+
+ private:
+  RefPtr<MLGDevice> mDevice;
+  // Software texture in VRAM.
+  RefPtr<MLGTexture> mSoftTexture;
+  RefPtr<DataSourceSurface> mDataSurf;
+  bool mIsMapped = false;
+};
 
 LayerManagerMLGPU::LayerManagerMLGPU(widget::CompositorWidget* aWidget)
     : mWidget(aWidget),
@@ -90,6 +135,7 @@ void LayerManagerMLGPU::Destroy() {
   }
 
   LayerManager::Destroy();
+  mProfilerScreenshotGrabber.Destroy();
 
   if (mDevice && mDevice->IsValid()) {
     mDevice->Flush();
@@ -139,11 +185,6 @@ already_AddRefed<ImageLayer> LayerManagerMLGPU::CreateImageLayer() {
   return MakeAndAddRef<ImageLayerMLGPU>(this);
 }
 
-already_AddRefed<BorderLayer> LayerManagerMLGPU::CreateBorderLayer() {
-  MOZ_ASSERT_UNREACHABLE("Not yet implemented");
-  return nullptr;
-}
-
 already_AddRefed<CanvasLayer> LayerManagerMLGPU::CreateCanvasLayer() {
   return MakeAndAddRef<CanvasLayerMLGPU>(this);
 }
@@ -163,10 +204,7 @@ LayersBackend LayerManagerMLGPU::GetBackendType() {
 
 void LayerManagerMLGPU::SetRoot(Layer* aLayer) { mRoot = aLayer; }
 
-bool LayerManagerMLGPU::BeginTransaction() {
-  MOZ_ASSERT(!mTarget);
-  return true;
-}
+bool LayerManagerMLGPU::BeginTransaction(const nsCString& aURL) { return true; }
 
 void LayerManagerMLGPU::BeginTransactionWithDrawTarget(
     gfx::DrawTarget* aTarget, const gfx::IntRect& aRect) {
@@ -178,7 +216,7 @@ void LayerManagerMLGPU::BeginTransactionWithDrawTarget(
 }
 
 // Helper class for making sure textures are unlocked.
-class MOZ_STACK_CLASS AutoUnlockAllTextures {
+class MOZ_STACK_CLASS AutoUnlockAllTextures final {
  public:
   explicit AutoUnlockAllTextures(MLGDevice* aDevice) : mDevice(aDevice) {}
   ~AutoUnlockAllTextures() { mDevice->UnlockAllTextures(); }
@@ -196,6 +234,11 @@ void LayerManagerMLGPU::EndTransaction(const TimeStamp& aTimeStamp,
   TextureSourceProvider::AutoReadUnlockTextures unlock(mTextureSourceProvider);
 
   if (!mRoot || (aFlags & END_NO_IMMEDIATE_REDRAW) || !mWidget) {
+    return;
+  }
+
+  if (!mDevice->IsValid()) {
+    // Waiting device reset handling.
     return;
   }
 
@@ -242,6 +285,10 @@ void LayerManagerMLGPU::EndTransaction(const TimeStamp& aTimeStamp,
 }
 
 void LayerManagerMLGPU::Composite() {
+  if (gfxEnv::SkipComposition()) {
+    return;
+  }
+
   AUTO_PROFILER_LABEL("LayerManagerMLGPU::Composite", GRAPHICS);
 
   // Don't composite if we're minimized/hidden, or if there is nothing to draw.
@@ -262,8 +309,9 @@ void LayerManagerMLGPU::Composite() {
 
   // Now that we have the final invalid region, give it to the swap chain which
   // will tell us if we still need to render.
-  if (!mSwapChain->ApplyNewInvalidRegion(Move(mInvalidRegion),
+  if (!mSwapChain->ApplyNewInvalidRegion(std::move(mInvalidRegion),
                                          diagnosticRect)) {
+    mProfilerScreenshotGrabber.NotifyEmptyFrame();
     return;
   }
 
@@ -304,6 +352,10 @@ void LayerManagerMLGPU::Composite() {
   // performs invalidation against the clean layer tree.
   mClonedLayerTreeProperties = nullptr;
   mClonedLayerTreeProperties = LayerProperties::CloneFrom(mRoot);
+
+  PayloadPresented();
+
+  mPayload.Clear();
 }
 
 void LayerManagerMLGPU::RenderLayers() {
@@ -342,6 +394,25 @@ void LayerManagerMLGPU::RenderLayers() {
 
   // Execute all render passes.
   builder.Render();
+
+  mProfilerScreenshotGrabber.MaybeGrabScreenshot(
+      mDevice, builder.GetWidgetRT()->GetTexture());
+
+  if (mCompositionRecorder) {
+    bool hasContentPaint = false;
+    for (CompositionPayload& payload : mPayload) {
+      if (payload.mType == CompositionPayloadType::eContentPaint) {
+        hasContentPaint = true;
+        break;
+      }
+    }
+
+    if (hasContentPaint) {
+      RefPtr<RecordedFrame> frame = new RecordedFrameMLGPU(
+          mDevice, builder.GetWidgetRT()->GetTexture(), TimeStamp::Now());
+      mCompositionRecorder->RecordFrame(frame);
+    }
+  }
   mCurrentFrame = nullptr;
 
   if (mDrawDiagnostics) {
@@ -436,7 +507,7 @@ void LayerManagerMLGPU::ComputeInvalidRegion() {
     mInvalidRegion = mTargetRect;
     mNextFrameInvalidRegion.OrWith(changed);
   } else {
-    mInvalidRegion = Move(mNextFrameInvalidRegion);
+    mInvalidRegion = std::move(mNextFrameInvalidRegion);
     mInvalidRegion.OrWith(changed);
   }
 }
@@ -501,6 +572,7 @@ bool LayerManagerMLGPU::PreRender() {
 
 void LayerManagerMLGPU::PostRender() {
   mWidget->PostRender(mWidgetContext.ptr());
+  mProfilerScreenshotGrabber.MaybeProcessQueue();
   mWidgetContext = Nothing();
 }
 

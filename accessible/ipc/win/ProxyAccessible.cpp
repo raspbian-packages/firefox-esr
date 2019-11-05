@@ -13,7 +13,7 @@
 #include "DocAccessible.h"
 #include "mozilla/a11y/DocManager.h"
 #include "mozilla/dom/Element.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "mozilla/Unused.h"
 #include "mozilla/a11y/Platform.h"
 #include "RelationType.h"
@@ -22,7 +22,7 @@
 
 #include <comutil.h>
 
-static const VARIANT kChildIdSelf = {VT_I4};
+static const VARIANT kChildIdSelf = {{{VT_I4}}};
 
 namespace mozilla {
 namespace a11y {
@@ -40,7 +40,7 @@ bool ProxyAccessible::GetCOMInterface(void** aOutAccessible) const {
     // NB: Don't pass CHILDID_SELF here, use the absolute MSAA ID. Otherwise
     // GetIAccessibleFor will recurse into this function and we will just
     // overflow the stack.
-    VARIANT realId = {VT_I4};
+    VARIANT realId = {{{VT_I4}}};
     realId.ulVal = wrap->GetExistingID();
     thisPtr->mCOMProxy = wrap->GetIAccessibleFor(realId, &isDefunct);
   }
@@ -215,6 +215,18 @@ nsIntRect ProxyAccessible::Bounds() {
   return rect;
 }
 
+nsIntRect ProxyAccessible::BoundsInCSSPixels() {
+  RefPtr<IGeckoCustom> custom = QueryInterface<IGeckoCustom>(this);
+  if (!custom) {
+    return nsIntRect();
+  }
+
+  nsIntRect rect;
+  Unused << custom->get_boundsInCSSPixels(&rect.x, &rect.y, &rect.width,
+                                          &rect.height);
+  return rect;
+}
+
 void ProxyAccessible::Language(nsString& aLocale) {
   aLocale.Truncate();
 
@@ -340,7 +352,7 @@ nsTArray<ProxyAccessible*> ProxyAccessible::RelationByType(
     RelationType aType) const {
   RefPtr<IAccessible2_2> acc = QueryInterface<IAccessible2_2>(this);
   if (!acc) {
-    nsTArray<ProxyAccessible*>();
+    return nsTArray<ProxyAccessible*>();
   }
 
   _bstr_t relationType;
@@ -352,7 +364,7 @@ nsTArray<ProxyAccessible*> ProxyAccessible::RelationByType(
   }
 
   if (!relationType) {
-    nsTArray<ProxyAccessible*>();
+    return nsTArray<ProxyAccessible*>();
   }
 
   IUnknown** targets;
@@ -360,7 +372,7 @@ nsTArray<ProxyAccessible*> ProxyAccessible::RelationByType(
   HRESULT hr =
       acc->get_relationTargetsOfType(relationType, 0, &targets, &nTargets);
   if (FAILED(hr)) {
-    nsTArray<ProxyAccessible*>();
+    return nsTArray<ProxyAccessible*>();
   }
 
   nsTArray<ProxyAccessible*> proxies;
@@ -371,7 +383,7 @@ nsTArray<ProxyAccessible*> ProxyAccessible::RelationByType(
   }
   CoTaskMemFree(targets);
 
-  return Move(proxies);
+  return proxies;
 }
 
 double ProxyAccessible::CurValue() {
@@ -443,7 +455,7 @@ static IA2TextBoundaryType GetIA2TextBoundary(
     case nsIAccessibleText::BOUNDARY_LINE_START:
       return IA2_TEXT_BOUNDARY_LINE;
     default:
-      MOZ_RELEASE_ASSERT(false);
+      MOZ_CRASH();
   }
 }
 
@@ -616,7 +628,7 @@ void ProxyAccessible::ScrollSubstringToPoint(int32_t aStartOffset,
              nsIAccessibleCoordinateType::COORDTYPE_PARENT_RELATIVE) {
     coordType = IA2_COORDTYPE_PARENT_RELATIVE;
   } else {
-    MOZ_RELEASE_ASSERT(false, "unsupported coord type");
+    MOZ_CRASH("unsupported coord type");
   }
 
   acc->scrollSubstringToPoint(static_cast<long>(aStartOffset),

@@ -6,7 +6,7 @@
 
 #include "InputBlockState.h"
 
-#include "APZCTreeManager.h"         // for APZCTreeManager::GetDPI
+#include "APZUtils.h"
 #include "AsyncPanZoomController.h"  // for AsyncPanZoomController
 #include "ScrollAnimationPhysics.h"  // for kScrollSeriesTimeoutMs
 #include "gfxPrefs.h"                // for gfxPrefs
@@ -57,8 +57,8 @@ bool InputBlockState::SetConfirmedTargetApzc(
   // a different target than the main thread. If this happens for a drag
   // block created for a scrollbar drag, the consequences can be fairly
   // user-unfriendly, such as the scrollbar not being draggable at all,
-  // or it scrolling the contents of the wrong scrollframe. In Nightly
-  // builds, we issue a diagnostic assert in this situation, so that the
+  // or it scrolling the contents of the wrong scrollframe. In debug
+  // builds, we assert in this situation, so that the
   // underlying compositor hit testing bug can be fixed. In release builds,
   // however, we just silently accept the main thread's confirmed target,
   // which will produce the expected behaviour (apart from drag events
@@ -67,9 +67,9 @@ bool InputBlockState::SetConfirmedTargetApzc(
       mTargetConfirmed == TargetConfirmationState::eConfirmed &&
       aState == TargetConfirmationState::eConfirmed && mTargetApzc &&
       aTargetApzc && mTargetApzc->GetGuid() != aTargetApzc->GetGuid()) {
-    MOZ_DIAGNOSTIC_ASSERT(false,
-                          "APZ and main thread confirmed scrollbar drag block "
-                          "with different targets");
+    MOZ_ASSERT(false,
+               "APZ and main thread confirmed scrollbar drag block with "
+               "different targets");
     UpdateTargetApzc(aTargetApzc);
     return true;
   }
@@ -607,6 +607,10 @@ bool TouchBlockState::GetAllowedTouchBehaviors(
   return true;
 }
 
+bool TouchBlockState::HasAllowedTouchBehaviors() const {
+  return mAllowedTouchBehaviorSet;
+}
+
 void TouchBlockState::CopyPropertiesFrom(const TouchBlockState& aOther) {
   TBS_LOG("%p copying properties from %p\n", this, &aOther);
   if (gfxPrefs::TouchActionEnabled()) {
@@ -741,10 +745,13 @@ bool TouchBlockState::UpdateSlopState(const MultiTouchInput& aInput,
     return false;
   }
   if (mInSlop) {
-    ScreenCoord threshold =
-        aApzcCanConsumeEvents ? AsyncPanZoomController::GetTouchStartTolerance()
-                              : ScreenCoord(gfxPrefs::APZTouchMoveTolerance() *
-                                            APZCTreeManager::GetDPI());
+    ScreenCoord threshold = 0;
+    // If the target was confirmed to null then the threshold doesn't
+    // matter anyway since the events will never be processed.
+    if (const RefPtr<AsyncPanZoomController>& apzc = GetTargetApzc()) {
+      threshold = aApzcCanConsumeEvents ? apzc->GetTouchStartTolerance()
+                                        : apzc->GetTouchMoveTolerance();
+    }
     bool stayInSlop =
         (aInput.mType == MultiTouchInput::MULTITOUCH_MOVE) &&
         (aInput.mTouches.Length() == 1) &&
@@ -757,6 +764,28 @@ bool TouchBlockState::UpdateSlopState(const MultiTouchInput& aInput,
     }
   }
   return mInSlop;
+}
+
+Maybe<ScrollDirection> TouchBlockState::GetBestGuessPanDirection(
+    const MultiTouchInput& aInput) {
+  if (aInput.mType != MultiTouchInput::MULTITOUCH_MOVE ||
+      aInput.mTouches.Length() != 1) {
+    return Nothing();
+  }
+  ScreenPoint vector = aInput.mTouches[0].mScreenPoint - mSlopOrigin;
+  double angle = atan2(vector.y, vector.x);  // range [-pi, pi]
+  angle = fabs(angle);                       // range [0, pi]
+
+  double angleThreshold = TouchActionAllowsPanningXY()
+                              ? gfxPrefs::APZAxisLockAngle()
+                              : gfxPrefs::APZAllowedDirectPanAngle();
+  if (apz::IsCloseToHorizontal(angle, angleThreshold)) {
+    return Some(ScrollDirection::eHorizontal);
+  }
+  if (apz::IsCloseToVertical(angle, angleThreshold)) {
+    return Some(ScrollDirection::eVertical);
+  }
+  return Nothing();
 }
 
 uint32_t TouchBlockState::GetActiveTouchCount() const {

@@ -15,8 +15,7 @@
 class nsIContent;
 class nsMenuBarX;
 
-// Namespace containing utility functions used in our native menu
-// implementation.
+// Namespace containing utility functions used in our native menu implementation.
 namespace nsMenuUtilsX {
 void DispatchCommandTo(nsIContent* aTargetContent);
 NSString* GetTruncatedCocoaLabel(const nsString& itemLabel);
@@ -25,8 +24,7 @@ unsigned int MacModifiersForGeckoModifiers(uint8_t geckoModifiers);
 nsMenuBarX* GetHiddenWindowMenuBar();   // returned object is not retained
 NSMenuItem* GetStandardEditMenuItem();  // returned object is not retained
 bool NodeIsHiddenOrCollapsed(nsIContent* inContent);
-int CalculateNativeInsertionPoint(nsMenuObjectX* aParent,
-                                  nsMenuObjectX* aChild);
+int CalculateNativeInsertionPoint(nsMenuObjectX* aParent, nsMenuObjectX* aChild);
 }  // namespace nsMenuUtilsX
 
 #endif  // nsMenuUtilsX_h_

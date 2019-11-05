@@ -7,17 +7,15 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="test()">
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
 
-  <script type="application/javascript"><![CDATA[
+  <script><![CDATA[
 function test()
 {
   SimpleTest.waitForExplicitFinish();
 
-  ChromeUtils.import("resource://gre/modules/PerfMeasurement.jsm");
+  const {PerfMeasurement} = ChromeUtils.import("resource://gre/modules/PerfMeasurement.jsm");
   let pm = new PerfMeasurement(PerfMeasurement.ALL);
   if (pm.eventsMeasured == 0) {
     todo(false, "stub, skipping test");

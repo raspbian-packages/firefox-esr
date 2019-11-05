@@ -17,12 +17,13 @@
 #include "mozilla/ArenaAllocator.h"
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/BinarySearch.h"
+#include "mozilla/OperatorNewExtensions.h"
 
 #include <math.h>
 
 using namespace mozilla;
 #ifdef MOZ_TASK_TRACER
-#include "GeckoTaskTracerImpl.h"
+#  include "GeckoTaskTracerImpl.h"
 using namespace mozilla::tasktracer;
 #endif
 
@@ -103,7 +104,11 @@ class TimerEventAllocator {
 
  public:
   TimerEventAllocator()
-      : mPool(), mFirstFree(nullptr), mMonitor("TimerEventAllocator") {}
+      : mPool(),
+        mFirstFree(nullptr),
+        // Timer thread state may be accessed during GC, so uses of this monitor
+        // are not preserved when recording/replaying.
+        mMonitor("TimerEventAllocator", recordreplay::Behavior::DontPreserve) {}
 
   ~TimerEventAllocator() {}
 
@@ -125,16 +130,22 @@ class nsTimerEvent final : public CancelableRunnable {
     return NS_OK;
   }
 
+#ifdef MOZ_COLLECTING_RUNNABLE_TELEMETRY
   NS_IMETHOD GetName(nsACString& aName) override;
+#endif
 
-  nsTimerEvent()
-      : mozilla::CancelableRunnable("nsTimerEvent"), mTimer(), mGeneration(0) {
+  explicit nsTimerEvent(already_AddRefed<nsTimerImpl> aTimer)
+      : mozilla::CancelableRunnable("nsTimerEvent"),
+        mTimer(aTimer),
+        mGeneration(mTimer->GetGeneration()) {
     // Note: We override operator new for this class, and the override is
     // fallible!
     sAllocatorUsers++;
-  }
 
-  TimeStamp mInitTime;
+    if (MOZ_LOG_TEST(GetTimerLog(), LogLevel::Debug)) {
+      mInitTime = TimeStamp::Now();
+    }
+  }
 
   static void Init();
   static void Shutdown();
@@ -150,11 +161,6 @@ class nsTimerEvent final : public CancelableRunnable {
 
   already_AddRefed<nsTimerImpl> ForgetTimer() { return mTimer.forget(); }
 
-  void SetTimer(already_AddRefed<nsTimerImpl> aTimer) {
-    mTimer = aTimer;
-    mGeneration = mTimer->GetGeneration();
-  }
-
  private:
   nsTimerEvent(const nsTimerEvent&) = delete;
   nsTimerEvent& operator=(const nsTimerEvent&) = delete;
@@ -167,16 +173,23 @@ class nsTimerEvent final : public CancelableRunnable {
     sAllocatorUsers--;
   }
 
+  TimeStamp mInitTime;
   RefPtr<nsTimerImpl> mTimer;
-  int32_t mGeneration;
+  const int32_t mGeneration;
 
   static TimerEventAllocator* sAllocator;
-  static Atomic<int32_t> sAllocatorUsers;
+
+  // Timer thread state may be accessed during GC, so uses of this atomic are
+  // not preserved when recording/replaying.
+  static Atomic<int32_t, SequentiallyConsistent,
+                recordreplay::Behavior::DontPreserve>
+      sAllocatorUsers;
   static bool sCanDeleteAllocator;
 };
 
 TimerEventAllocator* nsTimerEvent::sAllocator = nullptr;
-Atomic<int32_t> nsTimerEvent::sAllocatorUsers;
+Atomic<int32_t, SequentiallyConsistent, recordreplay::Behavior::DontPreserve>
+    nsTimerEvent::sAllocatorUsers;
 bool nsTimerEvent::sCanDeleteAllocator = false;
 
 namespace {
@@ -222,6 +235,7 @@ void nsTimerEvent::DeleteAllocatorIfNeeded() {
   }
 }
 
+#ifdef MOZ_COLLECTING_RUNNABLE_TELEMETRY
 NS_IMETHODIMP
 nsTimerEvent::GetName(nsACString& aName) {
   bool current;
@@ -232,6 +246,7 @@ nsTimerEvent::GetName(nsACString& aName) {
   mTimer->GetName(aName);
   return NS_OK;
 }
+#endif
 
 NS_IMETHODIMP
 nsTimerEvent::Run() {
@@ -370,7 +385,7 @@ TimerThread::Run() {
 
   while (!mShutdown) {
     // Have to use PRIntervalTime here, since PR_WaitCondVar takes it
-    PRIntervalTime waitFor;
+    TimeDuration waitFor;
     bool forceRunThisTimer = forceRunNextTimer;
     forceRunNextTimer = false;
 
@@ -380,9 +395,9 @@ TimerThread::Run() {
       if (ChaosMode::isActive(ChaosFeature::TimerScheduling)) {
         milliseconds = ChaosMode::randomUint32LessThan(200);
       }
-      waitFor = PR_MillisecondsToInterval(milliseconds);
+      waitFor = TimeDuration::FromMilliseconds(milliseconds);
     } else {
-      waitFor = PR_INTERVAL_NO_TIMEOUT;
+      waitFor = TimeDuration::Forever();
       TimeStamp now = TimeStamp::Now();
 
       RemoveLeadingCanceledTimersInternal();
@@ -468,20 +483,19 @@ TimerThread::Run() {
           forceRunNextTimer = false;
           goto next;  // round down; execute event now
         }
-        waitFor = PR_MicrosecondsToInterval(
-            static_cast<uint32_t>(microseconds));  // Floor is accurate enough.
-        if (waitFor == 0) {
-          waitFor = 1;  // round up, wait the minimum time we can wait
+        waitFor = TimeDuration::FromMicroseconds(microseconds);
+        if (waitFor.IsZero()) {
+          // round up, wait the minimum time we can wait
+          waitFor = TimeDuration::FromMicroseconds(1);
         }
       }
 
       if (MOZ_LOG_TEST(GetTimerLog(), LogLevel::Debug)) {
-        if (waitFor == PR_INTERVAL_NO_TIMEOUT)
-          MOZ_LOG(GetTimerLog(), LogLevel::Debug,
-                  ("waiting for PR_INTERVAL_NO_TIMEOUT\n"));
+        if (waitFor == TimeDuration::Forever())
+          MOZ_LOG(GetTimerLog(), LogLevel::Debug, ("waiting forever\n"));
         else
           MOZ_LOG(GetTimerLog(), LogLevel::Debug,
-                  ("waiting for %u\n", PR_IntervalToMilliseconds(waitFor)));
+                  ("waiting for %f\n", waitFor.ToMilliseconds()));
       }
     }
 
@@ -680,7 +694,7 @@ void TimerThread::RemoveFirstTimerInternal() {
   mMonitor.AssertCurrentThreadOwns();
   MOZ_ASSERT(!mTimers.IsEmpty());
   std::pop_heap(mTimers.begin(), mTimers.end(), Entry::UniquePtrLessThan);
-  mTimers.RemoveElementAt(mTimers.Length() - 1);
+  mTimers.RemoveLastElement();
 }
 
 already_AddRefed<nsTimerImpl> TimerThread::PostTimerEvent(
@@ -701,15 +715,6 @@ already_AddRefed<nsTimerImpl> TimerThread::PostTimerEvent(
   // event, so we can avoid firing a timer that was re-initialized after being
   // canceled.
 
-  RefPtr<nsTimerEvent> event = new nsTimerEvent;
-  if (!event) {
-    return timer.forget();
-  }
-
-  if (MOZ_LOG_TEST(GetTimerLog(), LogLevel::Debug)) {
-    event->mInitTime = TimeStamp::Now();
-  }
-
 #ifdef MOZ_TASK_TRACER
   // During the dispatch of TimerEvent, we overwrite the current TraceInfo
   // partially with the info saved in timer earlier, and restore it back by
@@ -719,7 +724,13 @@ already_AddRefed<nsTimerImpl> TimerThread::PostTimerEvent(
 #endif
 
   nsCOMPtr<nsIEventTarget> target = timer->mEventTarget;
-  event->SetTimer(timer.forget());
+
+  void* p = nsTimerEvent::operator new(sizeof(nsTimerEvent));
+  if (!p) {
+    return timer.forget();
+  }
+  RefPtr<nsTimerEvent> event =
+      ::new (KnownNotNull, p) nsTimerEvent(timer.forget());
 
   nsresult rv;
   {

@@ -1,9 +1,10 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "GLContextTypes.h"
+#include "GLLibraryLoader.h"
 #include "mozilla/UniquePtr.h"
 #include <windows.h>
 
@@ -38,8 +39,6 @@ struct PBufferDC final : public ScopedDC
 */
 class WGLLibrary {
  public:
-  WGLLibrary() : mSymbols{} {}
-
   ~WGLLibrary() { Reset(); }
 
  private:
@@ -87,7 +86,7 @@ class WGLLibrary {
     (HANDLE hDevice, GLint count, HANDLE* hObjects);
     BOOL(GLAPIENTRY* fDXUnlockObjectsNV)
     (HANDLE hDevice, GLint count, HANDLE* hObjects);
-  } mSymbols;
+  } mSymbols = {};
 
   bool EnsureInitialized();
   // UniquePtr<WindowDC> CreateDummyWindow();
@@ -97,6 +96,7 @@ class WGLLibrary {
   bool IsInitialized() const { return mInitialized; }
   auto GetOGLLibrary() const { return mOGLLibrary; }
   auto RootDc() const { return mRootDc; }
+  SymbolLoader GetSymbolLoader() const;
 
  private:
   bool mInitialized = false;

@@ -19,9 +19,12 @@ RELEASE_PROJECTS = {
     'mozilla-beta',
     'mozilla-release',
     'mozilla-esr60',
+    'mozilla-esr68',
     'comm-central',
     'comm-beta',
     'comm-esr60',
+    'comm-esr68',
+    'oak',
 }
 
 RELEASE_PROMOTION_PROJECTS = {
@@ -42,6 +45,8 @@ _OPTIONAL_ATTRIBUTES = (
     'shipping_product',
     'stub-installer',
     'update-channel',
+    'shippable',
+    'release-type',
 )
 
 
@@ -145,6 +150,6 @@ def release_level(project):
     """
     Whether this is a staging release or not.
 
-    :return basestring: One of "production" or "staging".
+    :return six.text_type: One of "production" or "staging".
     """
     return 'production' if project in RELEASE_PROJECTS else 'staging'

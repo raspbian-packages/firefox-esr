@@ -41,7 +41,7 @@ sentence. -->
 <!ENTITY  play.accesskey                      "h">
 <!ENTITY  systemSound.label                   "Zvuk nové pošty v systému">
 <!ENTITY  systemSound.accesskey               "u">
-<!ENTITY  customsound.label                   "Vlastní .wav soubor">
+<!ENTITY  customsound.label                   "Vlastní zvukový soubor">
 <!ENTITY  customsound.accesskey               "V">
 <!ENTITY  browse.label                        "Procházet…">
 <!ENTITY  browse.accesskey                    "c">
@@ -61,4 +61,4 @@ sentence. -->
 <!ENTITY messageStyleShowHeader.label      "Zobrazit hlavičku">
 <!ENTITY messageStyleShowHeader.accesskey  "h">
 <!ENTITY messageStyleNoPreview.title       "Náhled není k dispozici">
-<!ENTITY messageStyleNoPreview.description "Tento motiv není platný, nebo je momentálně nedostupný (zakázaný doplněk, nouzový režim, …).">
+<!ENTITY messageStyleNoPreview.description "Tento motiv vzhledu není platný, nebo je momentálně nedostupný (zakázaný doplněk, nouzový režim, …).">

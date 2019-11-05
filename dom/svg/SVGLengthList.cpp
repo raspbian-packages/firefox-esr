@@ -8,7 +8,7 @@
 #include "nsCharSeparatedTokenizer.h"
 #include "nsError.h"
 #include "nsString.h"
-#include "nsSVGElement.h"
+#include "SVGElement.h"
 #include "SVGAnimatedLengthList.h"
 #include "SVGContentUtils.h"
 #include "SVGLength.h"
@@ -39,7 +39,7 @@ void SVGLengthList::GetValueAsString(nsAString& aValue) const {
 nsresult SVGLengthList::SetValueFromString(const nsAString& aValue) {
   SVGLengthList temp;
 
-  nsCharSeparatedTokenizerTemplate<IsSVGWhitespace> tokenizer(
+  nsCharSeparatedTokenizerTemplate<nsContentUtils::IsHTMLWhitespace> tokenizer(
       aValue, ',', nsCharSeparatedTokenizer::SEPARATOR_OPTIONAL);
 
   while (tokenizer.hasMoreTokens()) {

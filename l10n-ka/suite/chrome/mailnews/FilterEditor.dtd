@@ -30,6 +30,8 @@
 <!ENTITY contextArchive.label "დაარქივება">
 <!ENTITY contextArchive.accesskey "დ">
 
+<!ENTITY contextPeriodic.accesskey "დ">
+
 <!ENTITY filterActionDesc.label "შესრულდეს ეს ქმედებები:">
 <!ENTITY filterActionDesc.accesskey "ქ">
 
@@ -38,7 +40,7 @@
 
 <!-- New Style Filter Rule Actions -->
 <!ENTITY moveMessage.label "წერილის გადატანა -">
-<!ENTITY copyMessage.label "წერილის კოპირება -">
+<!ENTITY copyMessage.label "წერილის ასლი –">
 <!ENTITY forwardTo.label "წერილის გადაგზავნა -">
 <!ENTITY replyWithTemplate.label "პასუხი თარგით">
 <!ENTITY markMessageRead.label "მონიშვნა წაკითხულად">
@@ -50,13 +52,13 @@
 <!ENTITY deleteMessage.label "წერილის წაშლა">
 <!ENTITY deleteFromPOP.label "წაშლა POP სერვერიდან">
 <!ENTITY fetchFromPOP.label "მიღება POP სერვერიდან">
-<!ENTITY ignoreThread.label "საქაღალდის იგნორირება">
-<!ENTITY ignoreSubthread.label "ქვეთემის იგნორირება">
-<!ENTITY watchThread.label "საქაღალდის თვალმიდევნება">
+<!ENTITY ignoreThread.label "მიმოწერის უგულებელყოფა">
+<!ENTITY ignoreSubthread.label "მიმოწერის განშტოების უგულებელყოფა">
+<!ENTITY watchThread.label "მიმოწერისთვის თვალის მიდევნება">
 <!ENTITY stopExecution.label "ფილტრის გამოყენების შეწყვეტა">
 
 <!ENTITY addAction.tooltip "ახალი ქმედების დამატება">
-<!ENTITY removeAction.tooltip "ამ ქმედების ამოღება">
+<!ENTITY removeAction.tooltip "ამ ქმედების მოცილება">
 <!-- LOCALIZATION NOTE
      The values below are used to control the widths of the filter action widgets.
      Change the values only when the localized strings in the popup menus

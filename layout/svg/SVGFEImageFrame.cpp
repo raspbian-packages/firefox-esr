@@ -5,26 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Keep in (case-insensitive) order:
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/SVGFEImageElement.h"
+#include "mozilla/dom/MutationEventBinding.h"
 #include "nsContainerFrame.h"
-#include "nsContentUtils.h"
 #include "nsFrame.h"
 #include "nsGkAtoms.h"
 #include "nsLiteralString.h"
 #include "SVGObserverUtils.h"
-#include "nsSVGFilters.h"
-#include "mozilla/dom/SVGFEImageElement.h"
-#include "mozilla/dom/MutationEventBinding.h"
+#include "SVGFilters.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
 
 class SVGFEImageFrame final : public nsFrame {
-  friend nsIFrame* NS_NewSVGFEImageFrame(nsIPresShell* aPresShell,
-                                         nsStyleContext* aContext);
+  friend nsIFrame* NS_NewSVGFEImageFrame(mozilla::PresShell* aPresShell,
+                                         ComputedStyle* aStyle);
 
  protected:
-  explicit SVGFEImageFrame(nsStyleContext* aContext)
-      : nsFrame(aContext, kClassID) {
+  explicit SVGFEImageFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsFrame(aStyle, aPresContext, kClassID) {
     AddStateBits(NS_FRAME_SVG_LAYOUT | NS_FRAME_IS_NONDISPLAY);
 
     // This frame isn't actually displayed, but it contains an image and we want
@@ -43,6 +43,10 @@ class SVGFEImageFrame final : public nsFrame {
                            PostDestroyData& aPostDestroyData) override;
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsFrame::IsFrameOfType(aFlags & ~(nsIFrame::eSVG));
   }
 
@@ -65,15 +69,15 @@ class SVGFEImageFrame final : public nsFrame {
   }
 };
 
-nsIFrame* NS_NewSVGFEImageFrame(nsIPresShell* aPresShell,
-                                nsStyleContext* aContext) {
-  return new (aPresShell) SVGFEImageFrame(aContext);
+nsIFrame* NS_NewSVGFEImageFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) SVGFEImageFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(SVGFEImageFrame)
 
-/* virtual */ void SVGFEImageFrame::DestroyFrom(
-    nsIFrame* aDestructRoot, PostDestroyData& aPostDestroyData) {
+/* virtual */
+void SVGFEImageFrame::DestroyFrom(nsIFrame* aDestructRoot,
+                                  PostDestroyData& aPostDestroyData) {
   DecApproximateVisibleCount();
 
   nsCOMPtr<nsIImageLoadingContent> imageLoader =
@@ -123,7 +127,8 @@ nsresult SVGFEImageFrame::AttributeChanged(int32_t aNameSpaceID,
   // Currently our SMIL implementation does not modify the DOM attributes. Once
   // we implement the SVG 2 SMIL behaviour this can be removed
   // SVGFEImageElement::AfterSetAttr's implementation will be sufficient.
-  if (aModType == MutationEventBinding::SMIL && aAttribute == nsGkAtoms::href &&
+  if (aModType == MutationEvent_Binding::SMIL &&
+      aAttribute == nsGkAtoms::href &&
       (aNameSpaceID == kNameSpaceID_XLink ||
        aNameSpaceID == kNameSpaceID_None)) {
     bool hrefIsSet =

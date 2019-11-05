@@ -268,18 +268,18 @@ inline bool HasRTLChars(mozilla::Span<const char16_t> aBuffer) {
   (IS_ARABIC_CHAR(c) &&         \
    !(IS_HINDI_DIGIT(c) || IS_FARSI_DIGIT(c) || IS_ARABIC_SEPARATOR(c)))
 
-  /**
-   * The codepoint ranges in the following macros are based on the blocks
-   *  allocated, or planned to be allocated, to right-to-left characters in the
-   *  BMP (Basic Multilingual Plane) and SMP (Supplementary Multilingual Plane)
-   *  according to
-   *  http://unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt and
-   *  http://www.unicode.org/roadmaps/
-   */
+/**
+ * The codepoint ranges in the following macros are based on the blocks
+ *  allocated, or planned to be allocated, to right-to-left characters in the
+ *  BMP (Basic Multilingual Plane) and SMP (Supplementary Multilingual Plane)
+ *  according to
+ *  http://unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt and
+ *  http://www.unicode.org/roadmaps/
+ */
 
 #define IS_IN_BMP_RTL_BLOCK(c) ((0x590 <= (c)) && ((c) <= 0x8ff))
 #define IS_RTL_PRESENTATION_FORM(c) \
-  (((0xfb1d <= (c)) && ((c) <= 0xfdff)) || ((0xfe70 <= (c)) && ((c) <= 0xfefc)))
+  (((0xfb1d <= (c)) && ((c) <= 0xfdff)) || ((0xfe70 <= (c)) && ((c) <= 0xfefe)))
 #define IS_IN_SMP_RTL_BLOCK(c)               \
   (((0x10800 <= (c)) && ((c) <= 0x10fff)) || \
    ((0x1e800 <= (c)) && ((c) <= 0x1eFFF)))

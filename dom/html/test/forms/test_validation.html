@@ -5,7 +5,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=345624
 -->
 <head>
   <title>Test for Bug 345624</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <style>
     input, textarea, fieldset, button, select, keygen, output, object { background-color: rgb(0,0,0) !important; }
@@ -35,11 +35,11 @@ var gInvalid = false;
 
 function invalidEventHandler(aEvent)
 {
-  function checkInvalidEvent(aEvent)
+  function checkInvalidEvent(event)
   {
-    is(aEvent.type, "invalid", "Invalid event type should be invalid");
-    ok(!aEvent.bubbles, "Invalid event should not bubble");
-    ok(aEvent.cancelable, "Invalid event should be cancelable");
+    is(event.type, "invalid", "Invalid event type should be invalid");
+    ok(!event.bubbles, "Invalid event should not bubble");
+    ok(event.cancelable, "Invalid event should be cancelable");
   }
 
   checkInvalidEvent(aEvent);

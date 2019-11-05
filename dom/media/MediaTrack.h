@@ -32,8 +32,9 @@ class AudioTrack;
  */
 class MediaTrack : public DOMEventTargetHelper {
  public:
-  MediaTrack(const nsAString& aId, const nsAString& aKind,
-             const nsAString& aLabel, const nsAString& aLanguage);
+  MediaTrack(nsIGlobalObject* aOwnerGlobal, const nsAString& aId,
+             const nsAString& aKind, const nsAString& aLabel,
+             const nsAString& aLanguage);
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(MediaTrack, DOMEventTargetHelper)
@@ -65,7 +66,6 @@ class MediaTrack : public DOMEventTargetHelper {
   virtual ~MediaTrack();
 
   void SetTrackList(MediaTrackList* aList);
-  void Init(nsPIDOMWindowInner* aOwnerWindow);
 
   RefPtr<MediaTrackList> mList;
   nsString mId;

@@ -21,15 +21,17 @@ const {
   TOGGLE_COLUMN,
   WATERFALL_RESIZE,
   PANELS,
+  MIN_COLUMN_WIDTH,
+  SET_COLUMNS_WIDTH,
 } = require("../constants");
 
 const cols = {
   status: true,
   method: true,
+  domain: true,
   file: true,
   protocol: false,
   scheme: false,
-  domain: true,
   remoteip: false,
   cause: true,
   type: true,
@@ -44,21 +46,37 @@ const cols = {
   latency: false,
   waterfall: true,
 };
+
 function Columns() {
   return Object.assign(
     cols,
-    RESPONSE_HEADERS.reduce((acc, header) => Object.assign(acc, { [header]: false }), {})
+    RESPONSE_HEADERS.reduce(
+      (acc, header) => Object.assign(acc, { [header]: false }),
+      {}
+    )
   );
+}
+
+function ColumnsData() {
+  const defaultColumnsData = JSON.parse(
+    Services.prefs
+      .getDefaultBranch(null)
+      .getCharPref("devtools.netmonitor.columnsData")
+  );
+  return new Map(defaultColumnsData.map(i => [i.name, i]));
 }
 
 function UI(initialState = {}) {
   return {
     columns: Columns(),
+    columnsData: ColumnsData(),
     detailsPanelSelectedTab: PANELS.HEADERS,
     networkDetailsOpen: false,
     networkDetailsWidth: null,
     networkDetailsHeight: null,
-    persistentLogsEnabled: Services.prefs.getBoolPref("devtools.netmonitor.persistlog"),
+    persistentLogsEnabled: Services.prefs.getBoolPref(
+      "devtools.netmonitor.persistlog"
+    ),
     browserCacheDisabled: Services.prefs.getBoolPref("devtools.cache.disabled"),
     statisticsOpen: false,
     waterfallWidth: null,
@@ -69,21 +87,22 @@ function UI(initialState = {}) {
 function resetColumns(state) {
   return {
     ...state,
-    columns: Columns()
+    columns: Columns(),
+    columnsData: ColumnsData(),
   };
 }
 
 function resizeWaterfall(state, action) {
   return {
     ...state,
-    waterfallWidth: action.width
+    waterfallWidth: action.width,
   };
 }
 
 function openNetworkDetails(state, action) {
   return {
     ...state,
-    networkDetailsOpen: action.open
+    networkDetailsOpen: action.open,
   };
 }
 
@@ -98,33 +117,33 @@ function resizeNetworkDetails(state, action) {
 function enablePersistentLogs(state, action) {
   return {
     ...state,
-    persistentLogsEnabled: action.enabled
+    persistentLogsEnabled: action.enabled,
   };
 }
 
 function disableBrowserCache(state, action) {
   return {
     ...state,
-    browserCacheDisabled: action.disabled
+    browserCacheDisabled: action.disabled,
   };
 }
 
 function openStatistics(state, action) {
   return {
     ...state,
-    statisticsOpen: action.open
+    statisticsOpen: action.open,
   };
 }
 
 function setDetailsPanelTab(state, action) {
   return {
     ...state,
-    detailsPanelSelectedTab: action.id
+    detailsPanelSelectedTab: action.id,
   };
 }
 
 function toggleColumn(state, action) {
-  let { column } = action;
+  const { column } = action;
 
   if (!state.columns.hasOwnProperty(column)) {
     return state;
@@ -134,8 +153,32 @@ function toggleColumn(state, action) {
     ...state,
     columns: {
       ...state.columns,
-      [column]: !state.columns[column]
+      [column]: !state.columns[column],
+    },
+  };
+}
+
+function setColumnsWidth(state, action) {
+  const { widths } = action;
+  const columnsData = new Map(state.columnsData);
+
+  widths.forEach(col => {
+    let data = columnsData.get(col.name);
+    if (!data) {
+      data = {
+        name: col.name,
+        minWidth: MIN_COLUMN_WIDTH,
+      };
     }
+    columnsData.set(col.name, {
+      ...data,
+      width: col.width,
+    });
+  });
+
+  return {
+    ...state,
+    columnsData: columnsData,
   };
 }
 
@@ -156,6 +199,7 @@ function ui(state = UI(), action) {
     case RESET_COLUMNS:
       return resetColumns(state);
     case REMOVE_SELECTED_CUSTOM_REQUEST:
+      return openNetworkDetails(state, { open: true });
     case SEND_CUSTOM_REQUEST:
       return openNetworkDetails(state, { open: false });
     case SELECT_DETAILS_PANEL_TAB:
@@ -166,6 +210,8 @@ function ui(state = UI(), action) {
       return toggleColumn(state, action);
     case WATERFALL_RESIZE:
       return resizeWaterfall(state, action);
+    case SET_COLUMNS_WIDTH:
+      return setColumnsWidth(state, action);
     default:
       return state;
   }
@@ -173,6 +219,7 @@ function ui(state = UI(), action) {
 
 module.exports = {
   Columns,
+  ColumnsData,
   UI,
-  ui
+  ui,
 };

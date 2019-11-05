@@ -20,11 +20,11 @@ namespace dom {
 
 class SVGIRect : public nsISupports, public nsWrapperCache {
  public:
-  virtual ~SVGIRect() {}
+  virtual ~SVGIRect() = default;
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override {
-    return SVGRectBinding::Wrap(aCx, this, aGivenProto);
+    return SVGRect_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   virtual nsIContent* GetParentObject() const = 0;

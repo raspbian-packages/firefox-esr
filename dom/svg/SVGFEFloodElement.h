@@ -7,7 +7,7 @@
 #ifndef mozilla_dom_SVGFEFloodElement_h
 #define mozilla_dom_SVGFEFloodElement_h
 
-#include "nsSVGFilters.h"
+#include "SVGFilters.h"
 
 nsresult NS_NewSVGFEFloodElement(
     nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
@@ -15,7 +15,7 @@ nsresult NS_NewSVGFEFloodElement(
 namespace mozilla {
 namespace dom {
 
-typedef nsSVGFE SVGFEFloodElementBase;
+typedef SVGFE SVGFEFloodElementBase;
 
 class SVGFEFloodElement : public SVGFEFloodElementBase {
   friend nsresult(::NS_NewSVGFEFloodElement(
@@ -24,8 +24,8 @@ class SVGFEFloodElement : public SVGFEFloodElementBase {
 
  protected:
   explicit SVGFEFloodElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : SVGFEFloodElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : SVGFEFloodElementBase(std::move(aNodeInfo)) {}
   virtual JSObject* WrapNode(JSContext* cx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
@@ -36,15 +36,14 @@ class SVGFEFloodElement : public SVGFEFloodElementBase {
       nsSVGFilterInstance* aInstance, const IntRect& aFilterSubregion,
       const nsTArray<bool>& aInputsAreTainted,
       nsTArray<RefPtr<SourceSurface>>& aInputImages) override;
-  virtual nsSVGString& GetResultImageName() override {
+  virtual SVGAnimatedString& GetResultImageName() override {
     return mStringAttributes[RESULT];
   }
 
   // nsIContent interface
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual bool ProducesSRGB() override { return true; }
@@ -52,7 +51,7 @@ class SVGFEFloodElement : public SVGFEFloodElementBase {
   virtual StringAttributesInfo GetStringInfo() override;
 
   enum { RESULT };
-  nsSVGString mStringAttributes[1];
+  SVGAnimatedString mStringAttributes[1];
   static StringInfo sStringInfo[1];
 };
 

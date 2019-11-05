@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -31,14 +31,13 @@ class mozJSSubScriptLoader : public mozIJSSubScriptLoader {
  private:
   virtual ~mozJSSubScriptLoader();
 
-  bool ReadScript(nsIURI* uri, JSContext* cx, JS::HandleObject targetObj,
-                  const nsAString& charset, const char* uriStr,
-                  nsIIOService* serv, bool wantReturnValue,
-                  JS::MutableHandleScript script);
+  JSScript* ReadScript(nsIURI* uri, JSContext* cx, JS::HandleObject targetObj,
+                       const char* uriStr, nsIIOService* serv,
+                       bool wantReturnValue, bool useCompilationScope);
 
   nsresult ReadScriptAsync(nsIURI* uri, JS::HandleObject targetObj,
-                           JS::HandleObject loadScope, const nsAString& charset,
-                           nsIIOService* serv, bool wantReturnValue, bool cache,
+                           JS::HandleObject loadScope, nsIIOService* serv,
+                           bool wantReturnValue, bool cache,
                            JS::MutableHandleValue retval);
 
   nsresult DoLoadSubScriptWithOptions(const nsAString& url,

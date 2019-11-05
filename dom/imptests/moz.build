@@ -5,16 +5,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 with Files("**"):
-    BUG_COMPONENT = ("Core", "DOM")
+    BUG_COMPONENT = ("Core", "DOM: Core & HTML")
 
 with Files("html/webgl/**"):
-    BUG_COMPONENT = ("Core", "Canvas 2D")
+    BUG_COMPONENT = ("Core", "Canvas: 2D")
 
 with Files("html/typedarrays/**"):
-    BUG_COMPONENT = ("Core", "Javascript: Standard Library")
+    BUG_COMPONENT = ("Core", "JavaScript: Standard Library")
 
 with Files("html/js/**"):
-    BUG_COMPONENT = ("Core", "Javascript: Standard Library")
+    BUG_COMPONENT = ("Core", "JavaScript: Standard Library")
 
 with Files("html/html/**"):
     BUG_COMPONENT = ("Core", "DOM: Core & HTML")

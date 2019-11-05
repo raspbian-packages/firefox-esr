@@ -12,15 +12,17 @@ class PanelHeader extends Component {
   static get propTypes() {
     return {
       id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
+      name: PropTypes.string.isRequired,
     };
   }
 
   render() {
-    let { name, id } = this.props;
+    const { name, id } = this.props;
 
-    return dom.div({ className: "header" },
-      dom.h1({ id, className: "header-name" }, name));
+    return dom.div(
+      { className: "header" },
+      dom.h1({ id, className: "header-name" }, name)
+    );
   }
 }
 

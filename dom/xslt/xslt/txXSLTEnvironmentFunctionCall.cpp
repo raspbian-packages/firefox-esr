@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -115,13 +115,12 @@ bool txXSLTEnvironmentFunctionCall::isSensitiveTo(ContextSensitivity aContext) {
 }
 
 #ifdef TX_TO_STRING
-nsresult txXSLTEnvironmentFunctionCall::getNameAtom(nsAtom** aAtom) {
-  *aAtom = mType == SYSTEM_PROPERTY
-               ? nsGkAtoms::systemProperty
-               : mType == ELEMENT_AVAILABLE ? nsGkAtoms::elementAvailable
-                                            : nsGkAtoms::functionAvailable;
-  NS_ADDREF(*aAtom);
-
-  return NS_OK;
+void txXSLTEnvironmentFunctionCall::appendName(nsAString& aDest) {
+  nsStaticAtom* atom = mType == SYSTEM_PROPERTY
+                           ? nsGkAtoms::systemProperty
+                           : mType == ELEMENT_AVAILABLE
+                                 ? nsGkAtoms::elementAvailable
+                                 : nsGkAtoms::functionAvailable;
+  aDest.Append(atom->GetUTF16String());
 }
 #endif

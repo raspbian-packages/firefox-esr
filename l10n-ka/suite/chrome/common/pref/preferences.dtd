@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY  windowClose.key "w">
+<!ENTITY  windowClose.key "ტ">
 <!ENTITY  preferencesDefaultTitleMac.title "პარამეტრები">
 <!ENTITY  preferencesDefaultTitleWin.title "პარამეტრები">
 <!ENTITY  preferencesCloseButton.label "დახურვა">
@@ -33,11 +33,11 @@
 <!ENTITY privatedata.label "პირადი მონაცემები">
 <!ENTITY cookies.label "ფუნთუშები">
 <!ENTITY images.label "გამოსახულებები">
-<!ENTITY popups.label "ფირნიშები">
+<!ENTITY popups.label "ამომხტომი ფანჯრები">
 <!ENTITY passwords.label "პაროლები">
 <!ENTITY masterpass.label "მთავარი პაროლები">
 <!ENTITY ssltls.label "SSL/TLS">
-<!ENTITY certs.label "სერთიფიკატები">
+<!ENTITY certs.label "სერტიფიკატები">
 
 <!ENTITY sync.label "სინქრონიზაცია">
 

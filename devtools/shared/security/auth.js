@@ -11,12 +11,9 @@ var Services = require("Services");
 var defer = require("devtools/shared/defer");
 var DevToolsUtils = require("devtools/shared/DevToolsUtils");
 var { dumpn, dumpv } = DevToolsUtils;
-loader.lazyRequireGetter(this, "prompt",
-  "devtools/shared/security/prompt");
-loader.lazyRequireGetter(this, "cert",
-  "devtools/shared/security/cert");
-loader.lazyRequireGetter(this, "asyncStorage",
-  "devtools/shared/async-storage");
+loader.lazyRequireGetter(this, "prompt", "devtools/shared/security/prompt");
+loader.lazyRequireGetter(this, "cert", "devtools/shared/security/cert");
+loader.lazyRequireGetter(this, "asyncStorage", "devtools/shared/async-storage");
 
 /**
  * A simple enum-like object with keys mirrored to values.
@@ -24,7 +21,7 @@ loader.lazyRequireGetter(this, "asyncStorage",
  * mis-type the value.
  */
 function createEnum(obj) {
-  for (let key in obj) {
+  for (const key in obj) {
     obj[key] = key;
   }
   return obj;
@@ -36,8 +33,7 @@ function createEnum(obj) {
  * centralize the common actions available, while still allowing embedders to
  * present their UI in whatever way they choose.
  */
-var AuthenticationResult = exports.AuthenticationResult = createEnum({
-
+var AuthenticationResult = (exports.AuthenticationResult = createEnum({
   /**
    * Close all listening sockets, and disable them from opening again.
    */
@@ -63,9 +59,8 @@ var AuthenticationResult = exports.AuthenticationResult = createEnum({
    * connections from the same client.  This requires a trustable mechanism to
    * identify the client in the future, such as the cert used during OOB_CERT.
    */
-  ALLOW_PERSIST: null
-
-});
+  ALLOW_PERSIST: null,
+}));
 
 /**
  * An |Authenticator| implements an authentication mechanism via various hooks
@@ -86,13 +81,12 @@ var Authenticators = {};
  * no cryptographic properties at work here, so it is up to the user to be sure
  * that the client can be trusted.
  */
-var Prompt = Authenticators.Prompt = {};
+var Prompt = (Authenticators.Prompt = {});
 
 Prompt.mode = "PROMPT";
 
-Prompt.Client = function () {};
+Prompt.Client = function() {};
 Prompt.Client.prototype = {
-
   mode: Prompt.mode,
 
   /**
@@ -140,12 +134,10 @@ Prompt.Client.prototype = {
    * @return A promise can be used if there is async behavior.
    */
   authenticate() {},
-
 };
 
-Prompt.Server = function () {};
+Prompt.Server = function() {};
 Prompt.Server.prototype = {
-
   mode: Prompt.mode,
 
   /**
@@ -207,7 +199,7 @@ Prompt.Server.prototype = {
     return this.allowConnection({
       authentication: this.mode,
       client,
-      server
+      server,
     });
   },
 
@@ -236,7 +228,6 @@ Prompt.Server.prototype = {
    *         A promise that will be resolved to the above is also allowed.
    */
   allowConnection: prompt.Server.defaultAllowConnection,
-
 };
 
 /**
@@ -257,13 +248,12 @@ Prompt.Server.prototype = {
  *
  * See docs/wifi.md for details of the authentication design.
  */
-var OOBCert = Authenticators.OOBCert = {};
+var OOBCert = (Authenticators.OOBCert = {});
 
 OOBCert.mode = "OOB_CERT";
 
-OOBCert.Client = function () {};
+OOBCert.Client = function() {};
 OOBCert.Client.prototype = {
-
   mode: OOBCert.mode,
 
   /**
@@ -294,14 +284,16 @@ OOBCert.Client.prototype = {
    * @return boolean
    *         Whether the connection is valid.
    */
+  // eslint-disable-next-line no-shadow
   validateConnection({ cert, socket }) {
     // Step B.7
     // Client verifies that Server's cert matches hash(ServerCert) from the
     // advertisement
     dumpv("Validate server cert hash");
-    let serverCert = socket.securityInfo.QueryInterface(Ci.nsISSLStatusProvider)
-                           .SSLStatus.serverCert;
-    let advertisedCert = cert;
+    const serverCert = socket.securityInfo.QueryInterface(
+      Ci.nsITransportSecurityInfo
+    ).serverCert;
+    const advertisedCert = cert;
     if (serverCert.sha256Fingerprint != advertisedCert.sha256) {
       dumpn("Server cert hash doesn't match advertisement");
       return false;
@@ -327,12 +319,13 @@ OOBCert.Client.prototype = {
    *        A transport that can be used to communicate with the server.
    * @return A promise can be used if there is async behavior.
    */
+  // eslint-disable-next-line no-shadow
   authenticate({ host, port, cert, transport }) {
-    let deferred = defer();
+    const deferred = defer();
     let oobData;
 
     let activeSendDialog;
-    let closeDialog = () => {
+    const closeDialog = () => {
       // Close any prompts the client may have been showing from previous
       // authentication steps
       if (activeSendDialog && activeSendDialog.close) {
@@ -342,9 +335,9 @@ OOBCert.Client.prototype = {
     };
 
     transport.hooks = {
-      onPacket: async (packet) => {
+      onPacket: async packet => {
         closeDialog();
-        let { authResult } = packet;
+        const { authResult } = packet;
         switch (authResult) {
           case AuthenticationResult.PENDING:
             // Step B.8
@@ -355,7 +348,7 @@ OOBCert.Client.prototype = {
               port,
               cert,
               authResult,
-              oob: oobData
+              oob: oobData,
             });
             break;
           case AuthenticationResult.ALLOW:
@@ -387,7 +380,7 @@ OOBCert.Client.prototype = {
         // Transport died before auth completed
         transport.hooks = null;
         deferred.reject(reason);
-      }
+      },
     };
     transport.ready();
     return deferred.promise;
@@ -398,19 +391,20 @@ OOBCert.Client.prototype = {
    * channel.
    */
   async _createOOB() {
-    let clientCert = await cert.local.getOrCreate();
+    const clientCert = await cert.local.getOrCreate();
     return {
       sha256: clientCert.sha256Fingerprint,
-      k: this._createRandom()
+      k: this._createRandom(),
     };
   },
 
   _createRandom() {
     // 16 bytes / 128 bits
     const length = 16;
-    let rng = Cc["@mozilla.org/security/random-generator;1"]
-              .createInstance(Ci.nsIRandomGenerator);
-    let bytes = rng.generateRandomBytes(length);
+    const rng = Cc["@mozilla.org/security/random-generator;1"].createInstance(
+      Ci.nsIRandomGenerator
+    );
+    const bytes = rng.generateRandomBytes(length);
     return bytes.map(byte => byte.toString(16)).join("");
   },
 
@@ -433,12 +427,10 @@ OOBCert.Client.prototype = {
    *         * close: Function to hide the notification
    */
   sendOOB: prompt.Client.defaultSendOOB,
-
 };
 
-OOBCert.Server = function () {};
+OOBCert.Server = function() {};
 OOBCert.Server.prototype = {
-
   mode: OOBCert.mode,
 
   /**
@@ -463,7 +455,7 @@ OOBCert.Server.prototype = {
    *        The socket that is about to start listening.
    */
   augmentSocketOptions(listener, socket) {
-    let requestCert = Ci.nsITLSServerSocket.REQUIRE_ALWAYS;
+    const requestCert = Ci.nsITLSServerSocket.REQUIRE_ALWAYS;
     socket.setRequestClientCertificate(requestCert);
   },
 
@@ -514,11 +506,11 @@ OOBCert.Server.prototype = {
     // Step B.3 / C.3
     // TLS connection established, authentication begins
     const storageKey = `devtools.auth.${this.mode}.approved-clients`;
-    let approvedClients = (await asyncStorage.getItem(storageKey)) || {};
+    const approvedClients = (await asyncStorage.getItem(storageKey)) || {};
     // Step C.4
     // Server sees that ClientCert is from a known client via hash(ClientCert)
     if (approvedClients[client.cert.sha256]) {
-      let authResult = AuthenticationResult.ALLOW_PERSIST;
+      const authResult = AuthenticationResult.ALLOW_PERSIST;
       transport.send({ authResult });
       // Step C.5
       // Debugging begins
@@ -529,16 +521,16 @@ OOBCert.Server.prototype = {
     // Server sees that ClientCert is from a unknown client
     // Tell client they are unknown and should display OOB client UX
     transport.send({
-      authResult: AuthenticationResult.PENDING
+      authResult: AuthenticationResult.PENDING,
     });
 
     // Step B.5
     // User is shown a Allow / Deny / Always Allow prompt on the Server
     // with Client name and hash(ClientCert)
-    let authResult = await this.allowConnection({
+    const authResult = await this.allowConnection({
       authentication: this.mode,
       client,
-      server
+      server,
     });
 
     switch (authResult) {
@@ -552,13 +544,13 @@ OOBCert.Server.prototype = {
     }
 
     // Examine additional data for authentication
-    let oob = await this.receiveOOB();
+    const oob = await this.receiveOOB();
     if (!oob) {
       dumpn("Invalid OOB data received");
       return AuthenticationResult.DENY;
     }
 
-    let { sha256, k } = oob;
+    const { sha256, k } = oob;
     // The OOB auth prompt should have transferred:
     // hash(ClientCert) + K(random 128-bit number)
     // from the client.
@@ -635,7 +627,6 @@ OOBCert.Server.prototype = {
    *         A promise that will be resolved to the above is also allowed.
    */
   receiveOOB: prompt.Server.defaultReceiveOOB,
-
 };
 
 exports.Authenticators = {
@@ -643,12 +634,12 @@ exports.Authenticators = {
     if (!mode) {
       mode = Prompt.mode;
     }
-    for (let key in Authenticators) {
-      let auth = Authenticators[key];
+    for (const key in Authenticators) {
+      const auth = Authenticators[key];
       if (auth.mode === mode) {
         return auth;
       }
     }
     throw new Error("Unknown authenticator mode: " + mode);
-  }
+  },
 };

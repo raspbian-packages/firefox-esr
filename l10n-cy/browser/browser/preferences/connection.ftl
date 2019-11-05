@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = DNS dirprwyol wrth ddefnyddio SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Galluogi DNS dros HTTPS
+    .accesskey = D
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Defnyddiwch y rhagosodedig ({ $url })
+    .accesskey = D
+    .tooltiptext = Defnyddiwch yr URL rhagosodedig ar gyfer datrys DNS dros HTTPS
+connection-dns-over-https-url-resolver = Defnyddio'r Darparwr
+    .accesskey = D
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } Rhagosodedig
+    .tooltiptext = Defnyddiwch yr URL rhagosodedig i ddatrys DNS dros HTTPS
+connection-dns-over-https-url-custom =
+    .label = Cyfaddasu
+    .accesskey = C
+    .tooltiptext = Rhowch eich hoff URL ar gyfer datrys DNS dros HTTPS
+connection-dns-over-https-custom-label = Cyfaddas

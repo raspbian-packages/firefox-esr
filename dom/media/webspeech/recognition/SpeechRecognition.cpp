@@ -9,6 +9,7 @@
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
 
+#include "mozilla/dom/AudioStreamTrack.h"
 #include "mozilla/dom/BindingUtils.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/SpeechRecognitionBinding.h"
@@ -16,29 +17,29 @@
 #include "mozilla/dom/MediaStreamError.h"
 #include "mozilla/MediaManager.h"
 #include "mozilla/Preferences.h"
-#include "MediaPrefs.h"
 #include "mozilla/Services.h"
+#include "mozilla/StaticPrefs.h"
 
 #include "AudioSegment.h"
-#include "DOMMediaStream.h"
 #include "MediaEnginePrefs.h"
 #include "endpointer.h"
 
 #include "mozilla/dom/SpeechRecognitionEvent.h"
 #include "nsContentUtils.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIObserverService.h"
 #include "nsIPermissionManager.h"
 #include "nsIPrincipal.h"
 #include "nsPIDOMWindow.h"
 #include "nsServiceManagerUtils.h"
 #include "nsQueryObject.h"
+#include "SpeechTrackListener.h"
 
 #include <algorithm>
 
 // Undo the windows.h damage
 #if defined(XP_WIN) && defined(GetMessage)
-#undef GetMessage
+#  undef GetMessage
 #endif
 
 namespace mozilla {
@@ -87,7 +88,7 @@ already_AddRefed<nsISpeechRecognitionService> GetSpeechRecognitionService(
     speechRecognitionService = DEFAULT_RECOGNITION_SERVICE;
   }
 
-  if (MediaPrefs::WebSpeechFakeRecognitionService()) {
+  if (StaticPrefs::MediaWebspeechTextFakeRecognitionService()) {
     speechRecognitionServiceCID =
         NS_SPEECH_RECOGNITION_SERVICE_CONTRACTID_PREFIX "fake";
   } else {
@@ -102,8 +103,27 @@ already_AddRefed<nsISpeechRecognitionService> GetSpeechRecognitionService(
   return recognitionService.forget();
 }
 
+class SpeechRecognitionShutdownBlocker : public media::ShutdownBlocker {
+ public:
+  explicit SpeechRecognitionShutdownBlocker(SpeechRecognition* aRecognition)
+      : media::ShutdownBlocker(NS_LITERAL_STRING("SpeechRecognition shutdown")),
+        mRecognition(aRecognition) {}
+
+  NS_IMETHOD BlockShutdown(nsIAsyncShutdownClient*) override {
+    MOZ_ASSERT(NS_IsMainThread());
+
+    // AbortSilently will eventually clear the blocker.
+    mRecognition->Abort();
+    return NS_OK;
+  }
+
+ private:
+  const RefPtr<SpeechRecognition> mRecognition;
+};
+
 NS_IMPL_CYCLE_COLLECTION_INHERITED(SpeechRecognition, DOMEventTargetHelper,
-                                   mDOMStream, mSpeechGrammarList)
+                                   mStream, mTrack, mRecognitionService,
+                                   mSpeechGrammarList)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(SpeechRecognition)
   NS_INTERFACE_MAP_ENTRY(nsIObserver)
@@ -122,7 +142,7 @@ SpeechRecognition::SpeechRecognition(nsPIDOMWindowInner* aOwnerWindow)
       mMaxAlternatives(1) {
   SR_LOG("created SpeechRecognition");
 
-  if (MediaPrefs::WebSpeechTestEnabled()) {
+  if (StaticPrefs::MediaWebspeechTestEnable()) {
     nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
     obs->AddObserver(this, SPEECH_RECOGNITION_TEST_EVENT_REQUEST_TOPIC, false);
     obs->AddObserver(this, SPEECH_RECOGNITION_TEST_END_TOPIC, false);
@@ -137,6 +157,8 @@ SpeechRecognition::SpeechRecognition(nsPIDOMWindowInner* aOwnerWindow)
   Reset();
 }
 
+SpeechRecognition::~SpeechRecognition() = default;
+
 bool SpeechRecognition::StateBetween(FSMState begin, FSMState end) {
   return mCurrentState >= begin && mCurrentState <= end;
 }
@@ -148,7 +170,7 @@ void SpeechRecognition::SetState(FSMState state) {
 
 JSObject* SpeechRecognition::WrapObject(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return SpeechRecognitionBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechRecognition_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 bool SpeechRecognition::IsAuthorized(JSContext* aCx, JSObject* aGlobal) {
@@ -162,8 +184,8 @@ bool SpeechRecognition::IsAuthorized(JSContext* aCx, JSObject* aGlobal) {
   }
 
   uint32_t speechRecognition = nsIPermissionManager::UNKNOWN_ACTION;
-  rv = mgr->TestExactPermissionFromPrincipal(principal, "speech-recognition",
-                                             &speechRecognition);
+  rv = mgr->TestExactPermissionFromPrincipal(
+      principal, NS_LITERAL_CSTRING("speech-recognition"), &speechRecognition);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return false;
   }
@@ -171,9 +193,10 @@ bool SpeechRecognition::IsAuthorized(JSContext* aCx, JSObject* aGlobal) {
   bool hasPermission =
       (speechRecognition == nsIPermissionManager::ALLOW_ACTION);
 
-  return (hasPermission || MediaPrefs::WebSpeechRecognitionForceEnabled() ||
-          MediaPrefs::WebSpeechTestEnabled()) &&
-         MediaPrefs::WebSpeechRecognitionEnabled();
+  return (hasPermission ||
+          StaticPrefs::MediaWebspeechRecognitionForceEnable() ||
+          StaticPrefs::MediaWebspeechTestEnable()) &&
+         StaticPrefs::MediaWebspeechRecognitionEnable();
 }
 
 already_AddRefed<SpeechRecognition> SpeechRecognition::Constructor(
@@ -488,8 +511,7 @@ void SpeechRecognition::NotifyFinalResult(SpeechEvent* aEvent) {
       this, NS_LITERAL_STRING("result"), init);
   event->SetTrusted(true);
 
-  bool defaultActionEnabled;
-  this->DispatchEvent(event, &defaultActionEnabled);
+  DispatchEvent(*event);
 }
 
 void SpeechRecognition::DoNothing(SpeechEvent* aEvent) {}
@@ -499,7 +521,7 @@ void SpeechRecognition::AbortSilently(SpeechEvent* aEvent) {
     mRecognitionService->Abort();
   }
 
-  if (mDOMStream) {
+  if (mTrack) {
     StopRecording();
   }
 
@@ -514,24 +536,28 @@ void SpeechRecognition::AbortError(SpeechEvent* aEvent) {
 void SpeechRecognition::NotifyError(SpeechEvent* aEvent) {
   aEvent->mError->SetTrusted(true);
 
-  bool defaultActionEnabled;
-  this->DispatchEvent(aEvent->mError, &defaultActionEnabled);
+  DispatchEvent(*aEvent->mError);
 }
 
 /**************************************
  * Event triggers and other functions *
  **************************************/
 NS_IMETHODIMP
-SpeechRecognition::StartRecording(DOMMediaStream* aDOMStream) {
+SpeechRecognition::StartRecording(RefPtr<AudioStreamTrack>& aTrack) {
   // hold a reference so that the underlying stream
   // doesn't get Destroy()'ed
-  mDOMStream = aDOMStream;
+  mTrack = aTrack;
 
-  if (NS_WARN_IF(!mDOMStream->GetPlaybackStream())) {
+  if (NS_WARN_IF(mTrack->Ended())) {
     return NS_ERROR_UNEXPECTED;
   }
-  mSpeechListener = new SpeechStreamListener(this);
-  mDOMStream->GetPlaybackStream()->AddListener(mSpeechListener);
+  mSpeechListener = new SpeechTrackListener(this);
+  mTrack->AddListener(mSpeechListener);
+
+  mShutdownBlocker = MakeAndAddRef<SpeechRecognitionShutdownBlocker>(this);
+  RefPtr<nsIAsyncShutdownClient> shutdown = media::GetShutdownBarrier();
+  shutdown->AddBlocker(mShutdownBlocker, NS_LITERAL_STRING(__FILE__), __LINE__,
+                       NS_LITERAL_STRING("SpeechRecognition shutdown"));
 
   mEndpointer.StartSession();
 
@@ -541,12 +567,26 @@ SpeechRecognition::StartRecording(DOMMediaStream* aDOMStream) {
 
 NS_IMETHODIMP
 SpeechRecognition::StopRecording() {
-  // we only really need to remove the listener explicitly when testing,
-  // as our JS code still holds a reference to mDOMStream and only assigning
-  // it to nullptr isn't guaranteed to free the stream and the listener.
-  mDOMStream->GetPlaybackStream()->RemoveListener(mSpeechListener);
+  if (mShutdownBlocker) {
+    // Block shutdown until the speech track listener has been removed from the
+    // MSG, as it holds a reference to us, and we reference the world, which we
+    // don't want to leak.
+    mSpeechListener->mRemovedPromise->Then(
+        GetCurrentThreadSerialEventTarget(), __func__,
+        [blocker = std::move(mShutdownBlocker)] {
+          RefPtr<nsIAsyncShutdownClient> shutdown = media::GetShutdownBarrier();
+          nsresult rv = shutdown->RemoveBlocker(blocker);
+          MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
+          Unused << rv;
+        });
+  }
+  MOZ_ASSERT(!mShutdownBlocker);
+
+  mStream->UnregisterTrackListener(this);
+  mTrack->RemoveListener(mSpeechListener);
+  mStream = nullptr;
   mSpeechListener = nullptr;
-  mDOMStream = nullptr;
+  mTrack = nullptr;
 
   mEndpointer.EndSession();
   DispatchTrustedEvent(NS_LITERAL_STRING("audioend"));
@@ -568,7 +608,7 @@ SpeechRecognition::Observe(nsISupports* aSubject, const char* aTopic,
     nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
     obs->RemoveObserver(this, SPEECH_RECOGNITION_TEST_EVENT_REQUEST_TOPIC);
     obs->RemoveObserver(this, SPEECH_RECOGNITION_TEST_END_TOPIC);
-  } else if (MediaPrefs::WebSpeechFakeFSMEvents() &&
+  } else if (StaticPrefs::MediaWebspeechTextFakeFsmEvents() &&
              !strcmp(aTopic, SPEECH_RECOGNITION_TEST_EVENT_REQUEST_TOPIC)) {
     ProcessTestEventRequest(aSubject, nsDependentString(aData));
   }
@@ -586,9 +626,9 @@ void SpeechRecognition::ProcessTestEventRequest(nsISupports* aSubject,
         SpeechRecognitionErrorCode::Audio_capture,  // TODO different codes?
         NS_LITERAL_STRING("AUDIO_ERROR test event"));
   } else {
-    NS_ASSERTION(MediaPrefs::WebSpeechFakeRecognitionService(),
-                 "Got request for fake recognition service event, "
-                 "but " TEST_PREFERENCE_FAKE_RECOGNITION_SERVICE " is unset");
+    NS_ASSERTION(StaticPrefs::MediaWebspeechTextFakeRecognitionService(),
+                 "Got request for fake recognition service event, but "
+                 "media.webspeech.test.fake_recognition_service is unset");
 
     // let the fake recognition service handle the request
   }
@@ -660,13 +700,45 @@ void SpeechRecognition::Start(const Optional<NonNull<DOMMediaStream>>& aStream,
   constraints.mAudio.SetAsBoolean() = true;
 
   if (aStream.WasPassed()) {
-    StartRecording(&aStream.Value());
+    mStream = &aStream.Value();
+    mStream->RegisterTrackListener(this);
+    nsTArray<RefPtr<AudioStreamTrack>> tracks;
+    mStream->GetAudioTracks(tracks);
+    for (const RefPtr<AudioStreamTrack>& track : tracks) {
+      if (!track->Ended()) {
+        NotifyTrackAdded(track);
+        break;
+      }
+    }
   } else {
-    AutoNoJSAPI();
-    MediaManager* manager = MediaManager::Get();
-    manager->GetUserMedia(GetOwner(), constraints,
-                          new GetUserMediaSuccessCallback(this),
-                          new GetUserMediaErrorCallback(this), aCallerType);
+    AutoNoJSAPI nojsapi;
+    RefPtr<SpeechRecognition> self(this);
+    MediaManager::Get()
+        ->GetUserMedia(GetOwner(), constraints, aCallerType)
+        ->Then(
+            GetCurrentThreadSerialEventTarget(), __func__,
+            [this, self](RefPtr<DOMMediaStream>&& aStream) {
+              mStream = std::move(aStream);
+              mStream->RegisterTrackListener(this);
+              nsTArray<RefPtr<AudioStreamTrack>> tracks;
+              mStream->GetAudioTracks(tracks);
+              for (const RefPtr<AudioStreamTrack>& track : tracks) {
+                if (!track->Ended()) {
+                  NotifyTrackAdded(track);
+                }
+              }
+            },
+            [this, self](RefPtr<MediaMgrError>&& error) {
+              SpeechRecognitionErrorCode errorCode;
+
+              if (error->mName == MediaMgrError::Name::NotAllowedError) {
+                errorCode = SpeechRecognitionErrorCode::Not_allowed;
+              } else {
+                errorCode = SpeechRecognitionErrorCode::Audio_capture;
+              }
+              DispatchError(SpeechRecognition::EVENT_AUDIO_ERROR, errorCode,
+                            error->mMessage);
+            });
   }
 
   RefPtr<SpeechEvent> event = new SpeechEvent(this, EVENT_START);
@@ -692,7 +764,7 @@ bool SpeechRecognition::SetRecognitionService(ErrorResult& aRv) {
     aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
     return false;
   }
-  nsCOMPtr<nsIDocument> document = window->GetExtantDoc();
+  nsCOMPtr<Document> document = window->GetExtantDoc();
   if (!document) {
     aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
     return false;
@@ -755,6 +827,24 @@ void SpeechRecognition::Abort() {
   mAborted = true;
   RefPtr<SpeechEvent> event = new SpeechEvent(this, EVENT_ABORT);
   NS_DispatchToMainThread(event);
+}
+
+void SpeechRecognition::NotifyTrackAdded(
+    const RefPtr<MediaStreamTrack>& aTrack) {
+  if (mTrack) {
+    return;
+  }
+
+  RefPtr<AudioStreamTrack> audioTrack = aTrack->AsAudioStreamTrack();
+  if (!audioTrack) {
+    return;
+  }
+
+  if (audioTrack->Ended()) {
+    return;
+  }
+
+  StartRecording(audioTrack);
 }
 
 void SpeechRecognition::DispatchError(EventType aErrorType,
@@ -841,7 +931,7 @@ AudioSegment* SpeechRecognition::CreateAudioSegment(
 
 void SpeechRecognition::FeedAudioData(already_AddRefed<SharedBuffer> aSamples,
                                       uint32_t aDuration,
-                                      MediaStreamListener* aProvider,
+                                      MediaStreamTrackListener* aProvider,
                                       TrackRate aTrackRate) {
   NS_ASSERTION(!NS_IsMainThread(),
                "FeedAudioData should not be called in the main thread");
@@ -919,51 +1009,21 @@ const char* SpeechRecognition::GetName(SpeechEvent* aEvent) {
   return names[aEvent->mType];
 }
 
+SpeechEvent::SpeechEvent(SpeechRecognition* aRecognition,
+                         SpeechRecognition::EventType aType)
+    : Runnable("dom::SpeechEvent"),
+      mAudioSegment(nullptr),
+      mRecognitionResultList(nullptr),
+      mError(nullptr),
+      mRecognition(aRecognition),
+      mType(aType),
+      mTrackRate(0) {}
+
 SpeechEvent::~SpeechEvent() { delete mAudioSegment; }
 
 NS_IMETHODIMP
 SpeechEvent::Run() {
   mRecognition->ProcessEvent(this);
-  return NS_OK;
-}
-
-NS_IMPL_ISUPPORTS(SpeechRecognition::GetUserMediaSuccessCallback,
-                  nsIDOMGetUserMediaSuccessCallback)
-
-NS_IMETHODIMP
-SpeechRecognition::GetUserMediaSuccessCallback::OnSuccess(
-    nsISupports* aStream) {
-  RefPtr<DOMMediaStream> stream = do_QueryObject(aStream);
-  if (!stream) {
-    return NS_ERROR_NO_INTERFACE;
-  }
-  mRecognition->StartRecording(stream);
-  return NS_OK;
-}
-
-NS_IMPL_ISUPPORTS(SpeechRecognition::GetUserMediaErrorCallback,
-                  nsIDOMGetUserMediaErrorCallback)
-
-NS_IMETHODIMP
-SpeechRecognition::GetUserMediaErrorCallback::OnError(nsISupports* aError) {
-  RefPtr<MediaStreamError> error = do_QueryObject(aError);
-  if (!error) {
-    return NS_OK;
-  }
-  SpeechRecognitionErrorCode errorCode;
-
-  nsAutoString name;
-  error->GetName(name);
-  if (name.EqualsLiteral("PERMISSION_DENIED")) {
-    errorCode = SpeechRecognitionErrorCode::Not_allowed;
-  } else {
-    errorCode = SpeechRecognitionErrorCode::Audio_capture;
-  }
-
-  nsAutoString message;
-  error->GetMessage(message);
-  mRecognition->DispatchError(SpeechRecognition::EVENT_AUDIO_ERROR, errorCode,
-                              message);
   return NS_OK;
 }
 

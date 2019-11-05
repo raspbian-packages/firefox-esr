@@ -7,32 +7,30 @@
 #include "mozilla/dom/SVGTitleElement.h"
 #include "mozilla/dom/SVGTitleElementBinding.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Title)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Title)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGTitleElement::WrapNode(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return SVGTitleElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGTitleElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
 // nsISupports methods
 
-NS_IMPL_ISUPPORTS_INHERITED(SVGTitleElement, SVGTitleElementBase, nsIDOMNode,
-                            nsIDOMElement, nsIMutationObserver)
+NS_IMPL_ISUPPORTS_INHERITED(SVGTitleElement, SVGTitleElementBase,
+                            nsIMutationObserver)
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGTitleElement::SVGTitleElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGTitleElementBase(aNodeInfo) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGTitleElementBase(std::move(aNodeInfo)) {
   AddMutationObserver(this);
 }
-
-SVGTitleElement::~SVGTitleElement() {}
 
 void SVGTitleElement::CharacterDataChanged(nsIContent* aContent,
                                            const CharacterDataChangeInfo&) {
@@ -52,13 +50,11 @@ void SVGTitleElement::ContentRemoved(nsIContent* aChild,
   SendTitleChangeEvent(false);
 }
 
-nsresult SVGTitleElement::BindToTree(nsIDocument* aDocument,
-                                     nsIContent* aParent,
-                                     nsIContent* aBindingParent,
-                                     bool aCompileEventHandlers) {
+nsresult SVGTitleElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                     nsIContent* aBindingParent) {
   // Let this fall through.
-  nsresult rv = SVGTitleElementBase::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+  nsresult rv =
+      SVGTitleElementBase::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   SendTitleChangeEvent(true);
@@ -80,14 +76,14 @@ void SVGTitleElement::DoneAddingChildren(bool aHaveNotified) {
 }
 
 void SVGTitleElement::SendTitleChangeEvent(bool aBound) {
-  nsIDocument* doc = GetUncomposedDoc();
+  Document* doc = GetUncomposedDoc();
   if (doc) {
     doc->NotifyPossibleTitleChange(aBound);
   }
 }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGTitleElement)
 

@@ -78,7 +78,10 @@ nsresult NS_NewPlainTextSerializer(nsIContentSerializer** aSerializer) {
 }
 
 nsPlainTextSerializer::nsPlainTextSerializer()
-    : kSpace(NS_LITERAL_STRING(" "))  // Init of "constant"
+    : mFlags(0),
+      mFloatingLines(-1),
+      mLineBreakDue(false),
+      kSpace(NS_LITERAL_STRING(" "))  // Init of "constant"
 {
   mOutputString = nullptr;
   mHeadLevel = 0;
@@ -259,6 +262,19 @@ bool nsPlainTextSerializer::IsIgnorableRubyAnnotation(nsAtom* aTag) {
          aTag == nsGkAtoms::rtc;
 }
 
+// Return true if aElement has 'display:none' or if we just don't know.
+static bool IsDisplayNone(Element* aElement) {
+  RefPtr<ComputedStyle> computedStyle =
+      nsComputedDOMStyle::GetComputedStyleNoFlush(aElement, nullptr);
+  return !computedStyle ||
+         computedStyle->StyleDisplay()->mDisplay == StyleDisplay::None;
+}
+
+static bool IsIgnorableScriptOrStyle(Element* aElement) {
+  return aElement->IsAnyOfHTMLElements(nsGkAtoms::script, nsGkAtoms::style) &&
+         IsDisplayNone(aElement);
+}
+
 NS_IMETHODIMP
 nsPlainTextSerializer::AppendText(nsIContent* aText, int32_t aStartOffset,
                                   int32_t aEndOffset, nsAString& aStr) {
@@ -422,7 +438,7 @@ nsPlainTextSerializer::Flush(nsAString& aStr) {
 }
 
 NS_IMETHODIMP
-nsPlainTextSerializer::AppendDocumentStart(nsIDocument* aDocument,
+nsPlainTextSerializer::AppendDocumentStart(Document* aDocument,
                                            nsAString& aStr) {
   return NS_OK;
 }
@@ -442,6 +458,10 @@ nsresult nsPlainTextSerializer::DoOpenContainer(nsAtom* aTag) {
   if (IsIgnorableRubyAnnotation(aTag)) {
     // Ignorable ruby annotation shouldn't be replaced by a placeholder
     // character, neither any of its descendants.
+    mIgnoredChildNodeLevel++;
+    return NS_OK;
+  }
+  if (IsIgnorableScriptOrStyle(mElement)) {
     mIgnoredChildNodeLevel++;
     return NS_OK;
   }
@@ -753,6 +773,10 @@ nsresult nsPlainTextSerializer::DoCloseContainer(nsAtom* aTag) {
     mIgnoredChildNodeLevel--;
     return NS_OK;
   }
+  if (IsIgnorableScriptOrStyle(mElement)) {
+    mIgnoredChildNodeLevel--;
+    return NS_OK;
+  }
 
   if (mFlags & nsIDocumentEncoder::OutputForPlainTextClipboardCopy) {
     if (DoOutput() && IsInPre() && IsElementBlock(mElement)) {
@@ -865,7 +889,7 @@ nsresult nsPlainTextSerializer::DoCloseContainer(nsAtom* aTag) {
     mLineBreakDue = true;
   } else if (aTag == nsGkAtoms::q) {
     Write(NS_LITERAL_STRING("\""));
-  } else if (IsElementBlock(mElement) && aTag != nsGkAtoms::script) {
+  } else if (IsElementBlock(mElement)) {
     // All other blocks get 1 vertical space after them
     // in formatted mode, otherwise 0.
     // This is hard. Sometimes 0 is a better number, but
@@ -940,13 +964,6 @@ bool nsPlainTextSerializer::MustSuppressLeaf() {
     // Don't output the contents of SELECT elements;
     // Might be nice, eventually, to output just the selected element.
     // Read more in bug 31994.
-    return true;
-  }
-
-  if (mTagStackIndex > 0 &&
-      (mTagStack[mTagStackIndex - 1] == nsGkAtoms::script ||
-       mTagStack[mTagStackIndex - 1] == nsGkAtoms::style)) {
-    // Don't output the contents of <script> or <style> tags;
     return true;
   }
 
@@ -1485,7 +1502,7 @@ void nsPlainTextSerializer::Write(const nsAString& aStr) {
     // Have to put it in before every line.
     while (bol < totLen) {
       bool outputQuotes = mAtFirstColumn;
-      bool atFirstColumn = mAtFirstColumn;
+      bool atFirstColumn;
       bool outputLineBreak = false;
       bool spacesOnly = true;
 
@@ -1687,10 +1704,10 @@ bool nsPlainTextSerializer::IsInPre() {
 }
 
 bool nsPlainTextSerializer::IsElementPreformatted(Element* aElement) {
-  RefPtr<nsStyleContext> styleContext =
-      nsComputedDOMStyle::GetStyleContextNoFlush(aElement, nullptr);
-  if (styleContext) {
-    const nsStyleText* textStyle = styleContext->StyleText();
+  RefPtr<ComputedStyle> computedStyle =
+      nsComputedDOMStyle::GetComputedStyleNoFlush(aElement, nullptr);
+  if (computedStyle) {
+    const nsStyleText* textStyle = computedStyle->StyleText();
     return textStyle->WhiteSpaceOrNewlineIsSignificant();
   }
   // Fall back to looking at the tag, in case there is no style information.
@@ -1698,10 +1715,10 @@ bool nsPlainTextSerializer::IsElementPreformatted(Element* aElement) {
 }
 
 bool nsPlainTextSerializer::IsElementBlock(Element* aElement) {
-  RefPtr<nsStyleContext> styleContext =
-      nsComputedDOMStyle::GetStyleContextNoFlush(aElement, nullptr);
-  if (styleContext) {
-    const nsStyleDisplay* displayStyle = styleContext->StyleDisplay();
+  RefPtr<ComputedStyle> computedStyle =
+      nsComputedDOMStyle::GetComputedStyleNoFlush(aElement, nullptr);
+  if (computedStyle) {
+    const nsStyleDisplay* displayStyle = computedStyle->StyleDisplay();
     return displayStyle->IsBlockOutsideStyle();
   }
   // Fall back to looking at the tag, in case there is no style information.

@@ -9,17 +9,14 @@
 #include "nsCOMPtr.h"
 #include "nsIEventTarget.h"
 #include "nsTArray.h"
-#include "mozilla/OwningNonNull.h"
 #include "mozilla/dom/MediaStreamTrack.h"
 #include "ErrorList.h"
-#include "mtransport/transportflow.h"
 #include "signaling/src/jsep/JsepTransceiver.h"
 
 class nsIPrincipal;
 
 namespace mozilla {
 class PeerIdentity;
-class PeerConnectionMedia;
 class JsepTransceiver;
 enum class MediaSessionConduitLocalDirection : int;
 class MediaSessionConduit;
@@ -29,6 +26,7 @@ class MediaPipelineReceive;
 class MediaPipelineTransmit;
 class MediaPipeline;
 class MediaPipelineFilter;
+class MediaTransportHandler;
 class WebRtcCallWrapper;
 class JsepTrackNegotiatedDetails;
 
@@ -41,7 +39,7 @@ struct RTCRtpSourceEntry;
  * This is what ties all the various pieces that make up a transceiver
  * together. This includes:
  * MediaStreamTrack for rendering and capture
- * TransportFlow for RTP transmission/reception
+ * MediaTransportHandler for RTP transmission/reception
  * Audio/VideoConduit for feeding RTP/RTCP into webrtc.org for decoding, and
  * feeding audio/video frames into webrtc.org for encoding into RTP/RTCP.
  */
@@ -53,6 +51,7 @@ class TransceiverImpl : public nsISupports {
    * set.
    */
   TransceiverImpl(const std::string& aPCHandle,
+                  MediaTransportHandler* aTransportHandler,
                   JsepTransceiver* aJsepTransceiver,
                   nsIEventTarget* aMainThread, nsIEventTarget* aStsThread,
                   dom::MediaStreamTrack* aReceiveTrack,
@@ -67,13 +66,14 @@ class TransceiverImpl : public nsISupports {
                               nsIPrincipal* aPrincipal,
                               const PeerIdentity* aSinkIdentity);
 
-  nsresult UpdateTransport(PeerConnectionMedia& aTransportManager);
+  nsresult UpdateTransport();
 
   nsresult UpdateConduit();
 
   nsresult UpdatePrincipal(nsIPrincipal* aPrincipal);
 
-  // TODO: We probably need to de-Sync when transceivers are stopped.
+  void ResetSync();
+
   nsresult SyncWithMatchingVideoConduits(
       std::vector<RefPtr<TransceiverImpl>>& transceivers);
 
@@ -103,11 +103,20 @@ class TransceiverImpl : public nsISupports {
 
   RefPtr<MediaPipeline> GetReceivePipeline();
 
+  std::string GetTransportId() const {
+    return mJsepTransceiver->mTransport.mTransportId;
+  }
+
   void AddRIDExtension(unsigned short aExtensionId);
 
   void AddRIDFilter(const nsAString& aRid);
 
   bool IsVideo() const;
+
+  bool IsSending() const {
+    return !mJsepTransceiver->IsStopped() &&
+           mJsepTransceiver->mSendTrack.GetActive();
+  }
 
   void GetRtpSources(const int64_t aTimeNow,
                      nsTArray<dom::RTCRtpSourceEntry>& outSources) const;
@@ -131,6 +140,7 @@ class TransceiverImpl : public nsISupports {
   void Stop();
 
   const std::string mPCHandle;
+  RefPtr<MediaTransportHandler> mTransportHandler;
   RefPtr<JsepTransceiver> mJsepTransceiver;
   std::string mMid;
   bool mHaveStartedReceiving;
@@ -141,8 +151,6 @@ class TransceiverImpl : public nsISupports {
   RefPtr<dom::MediaStreamTrack> mSendTrack;
   // state for webrtc.org that is shared between all transceivers
   RefPtr<WebRtcCallWrapper> mCallWrapper;
-  RefPtr<TransportFlow> mRtpFlow;
-  RefPtr<TransportFlow> mRtcpFlow;
   RefPtr<MediaSessionConduit> mConduit;
   RefPtr<MediaPipelineReceive> mReceivePipeline;
   RefPtr<MediaPipelineTransmit> mTransmitPipeline;

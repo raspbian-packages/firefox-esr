@@ -28,15 +28,15 @@ struct Nullable {
  public:
   Nullable() : mValue() {}
 
-  MOZ_IMPLICIT Nullable(const decltype(nullptr) &) : mValue() {}
+  MOZ_IMPLICIT Nullable(const decltype(nullptr)&) : mValue() {}
 
   explicit Nullable(const T& aValue) : mValue() { mValue.emplace(aValue); }
 
   MOZ_IMPLICIT Nullable(T&& aValue) : mValue() {
-    mValue.emplace(mozilla::Move(aValue));
+    mValue.emplace(std::move(aValue));
   }
 
-  Nullable(Nullable<T>&& aOther) : mValue(mozilla::Move(aOther.mValue)) {}
+  Nullable(Nullable<T>&& aOther) : mValue(std::move(aOther.mValue)) {}
 
   Nullable(const Nullable<T>& aOther) : mValue(aOther.mValue) {}
 
@@ -49,7 +49,7 @@ struct Nullable {
 
   void SetValue(T&& aArgs) {
     mValue.reset();
-    mValue.emplace(mozilla::Move(aArgs));
+    mValue.emplace(std::move(aArgs));
   }
 
   // For cases when |T| is some type with nontrivial copy behavior, we may want

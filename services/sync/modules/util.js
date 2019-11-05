@@ -4,34 +4,62 @@
 
 var EXPORTED_SYMBOLS = ["Utils", "Svc", "SerializableSet"];
 
-ChromeUtils.import("resource://services-common/observers.js");
-ChromeUtils.import("resource://services-common/utils.js");
-ChromeUtils.import("resource://services-crypto/utils.js");
-ChromeUtils.import("resource://services-sync/constants.js");
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "OS",
-                               "resource://gre/modules/osfile.jsm");
+const { Observers } = ChromeUtils.import(
+  "resource://services-common/observers.js"
+);
+const { CommonUtils } = ChromeUtils.import(
+  "resource://services-common/utils.js"
+);
+const { CryptoUtils } = ChromeUtils.import(
+  "resource://services-crypto/utils.js"
+);
+const {
+  DEVICE_TYPE_DESKTOP,
+  MAXIMUM_BACKOFF_INTERVAL,
+  PREFS_BRANCH,
+  SYNC_KEY_DECODED_LENGTH,
+  SYNC_KEY_ENCODED_LENGTH,
+  WEAVE_VERSION,
+} = ChromeUtils.import("resource://services-sync/constants.js");
+const { Preferences } = ChromeUtils.import(
+  "resource://gre/modules/Preferences.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
 
 // FxAccountsCommon.js doesn't use a "namespace", so create one here.
 XPCOMUtils.defineLazyGetter(this, "FxAccountsCommon", function() {
   let FxAccountsCommon = {};
-  ChromeUtils.import("resource://gre/modules/FxAccountsCommon.js", FxAccountsCommon);
+  ChromeUtils.import(
+    "resource://gre/modules/FxAccountsCommon.js",
+    FxAccountsCommon
+  );
   return FxAccountsCommon;
 });
 
-XPCOMUtils.defineLazyServiceGetter(this, "cryptoSDR",
-                                   "@mozilla.org/login-manager/crypto/SDR;1",
-                                   "nsILoginManagerCrypto");
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "cryptoSDR",
+  "@mozilla.org/login-manager/crypto/SDR;1",
+  "nsILoginManagerCrypto"
+);
 
-XPCOMUtils.defineLazyPreferenceGetter(this, "localDeviceName",
-                                      "services.sync.client.name",
-                                      "");
+XPCOMUtils.defineLazyPreferenceGetter(
+  this,
+  "localDeviceName",
+  "services.sync.client.name",
+  ""
+);
 
-XPCOMUtils.defineLazyPreferenceGetter(this, "localDeviceType",
-                                      "services.sync.client.type",
-                                      DEVICE_TYPE_DESKTOP);
+XPCOMUtils.defineLazyPreferenceGetter(
+  this,
+  "localDeviceType",
+  "services.sync.client.type",
+  DEVICE_TYPE_DESKTOP
+);
 
 /*
  * Custom exception types.
@@ -55,12 +83,10 @@ class HMACMismatch extends Error {
  */
 var Utils = {
   // Aliases from CryptoUtils.
-  generateRandomBytes: CryptoUtils.generateRandomBytes,
+  generateRandomBytesLegacy: CryptoUtils.generateRandomBytesLegacy,
   computeHTTPMACSHA1: CryptoUtils.computeHTTPMACSHA1,
   digestUTF8: CryptoUtils.digestUTF8,
   digestBytes: CryptoUtils.digestBytes,
-  sha1: CryptoUtils.sha1,
-  sha1Base32: CryptoUtils.sha1Base32,
   sha256: CryptoUtils.sha256,
   makeHMACKey: CryptoUtils.makeHMACKey,
   makeHMACHasher: CryptoUtils.makeHMACHasher,
@@ -77,13 +103,22 @@ var Utils = {
   _userAgent: null,
   get userAgent() {
     if (!this._userAgent) {
-      let hph = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler);
+      let hph = Cc["@mozilla.org/network/protocol;1?name=http"].getService(
+        Ci.nsIHttpProtocolHandler
+      );
       /* eslint-disable no-multi-spaces */
       this._userAgent =
-        Services.appinfo.name + "/" + Services.appinfo.version +  // Product.
-        " (" + hph.oscpu + ")" +                                  // (oscpu)
-        " FxSync/" + WEAVE_VERSION + "." +                        // Sync.
-        Services.appinfo.appBuildID + ".";                        // Build.
+        Services.appinfo.name +
+        "/" +
+        Services.appinfo.version + // Product.
+        " (" +
+        hph.oscpu +
+        ")" + // (oscpu)
+        " FxSync/" +
+        WEAVE_VERSION +
+        "." + // Sync.
+        Services.appinfo.appBuildID +
+        "."; // Build.
       /* eslint-enable no-multi-spaces */
     }
     return this._userAgent + localDeviceType;
@@ -104,7 +139,10 @@ var Utils = {
       try {
         return await func.call(thisArg);
       } catch (ex) {
-        thisArg._log.debug("Exception calling " + (func.name || "anonymous function"), ex);
+        thisArg._log.debug(
+          "Exception calling " + (func.name || "anonymous function"),
+          ex
+        );
         if (exceptionCallback) {
           return exceptionCallback.call(thisArg, ex);
         }
@@ -192,7 +230,7 @@ var Utils = {
    * That makes them 12 characters long with 72 bits of entropy.
    */
   makeGUID: function makeGUID() {
-    return CommonUtils.encodeBase64URL(Utils.generateRandomBytes(9));
+    return CommonUtils.encodeBase64URL(Utils.generateRandomBytesLegacy(9));
   },
 
   _base64url_regex: /^[-abcdefghijklmnopqrstuvwxyz0123456789_]{12}$/i,
@@ -212,8 +250,9 @@ var Utils = {
    *        Property name to defer (or an array of property names)
    */
   deferGetSet: function Utils_deferGetSet(obj, defer, prop) {
-    if (Array.isArray(prop))
+    if (Array.isArray(prop)) {
       return prop.map(prop => Utils.deferGetSet(obj, defer, prop));
+    }
 
     let prot = obj.prototype;
 
@@ -234,26 +273,33 @@ var Utils = {
 
   deepEquals: function eq(a, b) {
     // If they're triple equals, then it must be equals!
-    if (a === b)
+    if (a === b) {
       return true;
+    }
 
     // If they weren't equal, they must be objects to be different
-    if (typeof a != "object" || typeof b != "object")
+    if (typeof a != "object" || typeof b != "object") {
       return false;
+    }
 
     // But null objects won't have properties to compare
-    if (a === null || b === null)
+    if (a === null || b === null) {
       return false;
+    }
 
     // Make sure all of a's keys have a matching value in b
-    for (let k in a)
-      if (!eq(a[k], b[k]))
+    for (let k in a) {
+      if (!eq(a[k], b[k])) {
         return false;
+      }
+    }
 
     // Do the same for b's keys but skip those that we already checked
-    for (let k in b)
-      if (!(k in a) && !eq(a[k], b[k]))
+    for (let k in b) {
+      if (!(k in a) && !eq(a[k], b[k])) {
         return false;
+      }
+    }
 
     return true;
   },
@@ -263,7 +309,8 @@ var Utils = {
   // avoid inevitable confusion if the message changes.
   throwHMACMismatch: function throwHMACMismatch(shouldBe, is) {
     throw new HMACMismatch(
-        `Record SHA256 HMAC mismatch: should be ${shouldBe}, is ${is}`);
+      `Record SHA256 HMAC mismatch: should be ${shouldBe}, is ${is}`
+    );
   },
 
   isHMACMismatch: function isHMACMismatch(ex) {
@@ -277,15 +324,17 @@ var Utils = {
    *   abcdefghijk8mn9pqrstuvwxyz234567
    */
   base32ToFriendly: function base32ToFriendly(input) {
-    return input.toLowerCase()
-                .replace(/l/g, "8")
-                .replace(/o/g, "9");
+    return input
+      .toLowerCase()
+      .replace(/l/g, "8")
+      .replace(/o/g, "9");
   },
 
   base32FromFriendly: function base32FromFriendly(input) {
-    return input.toUpperCase()
-                .replace(/8/g, "L")
-                .replace(/9/g, "O");
+    return input
+      .toUpperCase()
+      .replace(/8/g, "L")
+      .replace(/9/g, "O");
   },
 
   /**
@@ -294,20 +343,22 @@ var Utils = {
 
   // Return an octet string in friendly base32 *with no trailing =*.
   encodeKeyBase32: function encodeKeyBase32(keyData) {
-    return Utils.base32ToFriendly(
-             CommonUtils.encodeBase32(keyData))
-           .slice(0, SYNC_KEY_ENCODED_LENGTH);
+    return Utils.base32ToFriendly(CommonUtils.encodeBase32(keyData)).slice(
+      0,
+      SYNC_KEY_ENCODED_LENGTH
+    );
   },
 
   decodeKeyBase32: function decodeKeyBase32(encoded) {
     return CommonUtils.decodeBase32(
-             Utils.base32FromFriendly(
-               Utils.normalizePassphrase(encoded)))
-           .slice(0, SYNC_KEY_DECODED_LENGTH);
+      Utils.base32FromFriendly(Utils.normalizePassphrase(encoded))
+    ).slice(0, SYNC_KEY_DECODED_LENGTH);
   },
 
   jsonFilePath(filePath) {
-    return OS.Path.normalize(OS.Path.join(OS.Constants.Path.profileDir, "weave", filePath + ".json"));
+    return OS.Path.normalize(
+      OS.Path.join(OS.Constants.Path.profileDir, "weave", filePath + ".json")
+    );
   },
 
   /**
@@ -358,8 +409,11 @@ var Utils = {
    *        Promise resolved when the write has been performed.
    */
   async jsonSave(filePath, that, obj) {
-    let path = OS.Path.join(OS.Constants.Path.profileDir, "weave",
-                            ...(filePath + ".json").split("/"));
+    let path = OS.Path.join(
+      OS.Constants.Path.profileDir,
+      "weave",
+      ...(filePath + ".json").split("/")
+    );
     let dir = OS.Path.dirname(path);
 
     await OS.File.makeDir(dir, { from: OS.Constants.Path.profileDir });
@@ -388,7 +442,7 @@ var Utils = {
     // We use byteLength here because the data is not encrypted in ascii yet.
     let size = computeSerializedSize();
     // See bug 535326 comment 8 for an explanation of the estimation
-    const maxSerializedSize = payloadSizeMaxBytes / 4 * 3 - 1500;
+    const maxSerializedSize = (payloadSizeMaxBytes / 4) * 3 - 1500;
     if (maxSerializedSize < 0) {
       // This is probably due to a test, but it causes very bad behavior if a
       // test causes this accidentally. We could throw, but there's an obvious/
@@ -398,7 +452,7 @@ var Utils = {
     }
     if (size > maxSerializedSize) {
       // Estimate a little more than the direct fraction to maximize packing
-      let cutoff = Math.ceil(records.length * maxSerializedSize / size);
+      let cutoff = Math.ceil((records.length * maxSerializedSize) / size);
       records = records.slice(0, cutoff + 1);
 
       // Keep dropping off the last entry until the data fits.
@@ -425,10 +479,16 @@ var Utils = {
    *        Object to use for logging
    */
   jsonMove(aFrom, aTo, that) {
-    let pathFrom = OS.Path.join(OS.Constants.Path.profileDir, "weave",
-                                ...(aFrom + ".json").split("/"));
-    let pathTo = OS.Path.join(OS.Constants.Path.profileDir, "weave",
-                              ...(aTo + ".json").split("/"));
+    let pathFrom = OS.Path.join(
+      OS.Constants.Path.profileDir,
+      "weave",
+      ...(aFrom + ".json").split("/")
+    );
+    let pathTo = OS.Path.join(
+      OS.Constants.Path.profileDir,
+      "weave",
+      ...(aTo + ".json").split("/")
+    );
     if (that._log) {
       that._log.trace("Moving " + pathFrom + " to " + pathTo);
     }
@@ -447,8 +507,11 @@ var Utils = {
    *        Object to use for logging
    */
   jsonRemove(filePath, that) {
-    let path = OS.Path.join(OS.Constants.Path.profileDir, "weave",
-                            ...(filePath + ".json").split("/"));
+    let path = OS.Path.join(
+      OS.Constants.Path.profileDir,
+      "weave",
+      ...(filePath + ".json").split("/")
+    );
     if (that._log) {
       that._log.trace("Deleting " + path);
     }
@@ -469,7 +532,9 @@ var Utils = {
 
   isPassphrase(s) {
     if (s) {
-      return /^[abcdefghijkmnpqrstuvwxyz23456789]{26}$/.test(Utils.normalizePassphrase(s));
+      return /^[abcdefghijkmnpqrstuvwxyz23456789]{26}$/.test(
+        Utils.normalizePassphrase(s)
+      );
     }
     return false;
   },
@@ -480,20 +545,22 @@ var Utils = {
     pp = pp.trim().toLowerCase();
 
     // 20-char sync key.
-    if (pp.length == 23 &&
-        [5, 11, 17].every(i => pp[i] == "-")) {
-
-      return pp.slice(0, 5) + pp.slice(6, 11)
-             + pp.slice(12, 17) + pp.slice(18, 23);
+    if (pp.length == 23 && [5, 11, 17].every(i => pp[i] == "-")) {
+      return (
+        pp.slice(0, 5) + pp.slice(6, 11) + pp.slice(12, 17) + pp.slice(18, 23)
+      );
     }
 
     // "Modern" 26-char key.
-    if (pp.length == 31 &&
-        [1, 7, 13, 19, 25].every(i => pp[i] == "-")) {
-
-      return pp.slice(0, 1) + pp.slice(2, 7)
-             + pp.slice(8, 13) + pp.slice(14, 19)
-             + pp.slice(20, 25) + pp.slice(26, 31);
+    if (pp.length == 31 && [1, 7, 13, 19, 25].every(i => pp[i] == "-")) {
+      return (
+        pp.slice(0, 1) +
+        pp.slice(2, 7) +
+        pp.slice(8, 13) +
+        pp.slice(14, 19) +
+        pp.slice(20, 25) +
+        pp.slice(26, 31)
+      );
     }
 
     // Something else -- just return.
@@ -505,8 +572,9 @@ var Utils = {
    * arrays if possible.
    */
   arraySub: function arraySub(minuend, subtrahend) {
-    if (!minuend.length || !subtrahend.length)
+    if (!minuend.length || !subtrahend.length) {
       return minuend;
+    }
     let setSubtrahend = new Set(subtrahend);
     return minuend.filter(i => !setSubtrahend.has(i));
   },
@@ -515,10 +583,12 @@ var Utils = {
    * Build the union of two arrays. Reuse arrays if possible.
    */
   arrayUnion: function arrayUnion(foo, bar) {
-    if (!foo.length)
+    if (!foo.length) {
       return bar;
-    if (!bar.length)
+    }
+    if (!bar.length) {
       return foo;
+    }
     return foo.concat(Utils.arraySub(bar, foo));
   },
 
@@ -564,7 +634,9 @@ var Utils = {
   },
 
   bind2: function Async_bind2(object, method) {
-    return function innerBind() { return method.apply(object, arguments); };
+    return function innerBind() {
+      return method.apply(object, arguments);
+    };
   },
 
   /**
@@ -592,13 +664,17 @@ var Utils = {
    * Status.backoffInterval is higher.
    *
    */
-  calculateBackoff: function calculateBackoff(attempts, baseInterval,
-                                              statusInterval) {
-    let backoffInterval = attempts *
-                          (Math.floor(Math.random() * baseInterval) +
-                           baseInterval);
-    return Math.max(Math.min(backoffInterval, MAXIMUM_BACKOFF_INTERVAL),
-                    statusInterval);
+  calculateBackoff: function calculateBackoff(
+    attempts,
+    baseInterval,
+    statusInterval
+  ) {
+    let backoffInterval =
+      attempts * (Math.floor(Math.random() * baseInterval) + baseInterval);
+    return Math.max(
+      Math.min(backoffInterval, MAXIMUM_BACKOFF_INTERVAL),
+      statusInterval
+    );
   },
 
   /**
@@ -619,10 +695,14 @@ var Utils = {
 
   getDefaultDeviceName() {
     // Generate a client name if we don't have a useful one yet
-    let env = Cc["@mozilla.org/process/environment;1"]
-                .getService(Ci.nsIEnvironment);
-    let user = env.get("USER") || env.get("USERNAME") ||
-               Svc.Prefs.get("account") || Svc.Prefs.get("username");
+    let env = Cc["@mozilla.org/process/environment;1"].getService(
+      Ci.nsIEnvironment
+    );
+    let user =
+      env.get("USER") ||
+      env.get("USERNAME") ||
+      Svc.Prefs.get("account") ||
+      Svc.Prefs.get("username");
     // A little hack for people using the the moz-build environment on Windows
     // which sets USER to the literal "%USERNAME%" (yes, really)
     if (user == "%USERNAME%" && env.get("USERNAME")) {
@@ -630,7 +710,8 @@ var Utils = {
     }
 
     let brand = Services.strings.createBundle(
-      "chrome://branding/locale/brand.properties");
+      "chrome://branding/locale/brand.properties"
+    );
     let brandName = brand.GetStringFromName("brandShortName");
 
     // The DNS service may fail to provide a hostname in edge-cases we don't
@@ -638,7 +719,9 @@ var Utils = {
     let hostname;
     try {
       // hostname of the system, usually assigned by the user or admin
-      hostname = Cc["@mozilla.org/network/dns-service;1"].getService(Ci.nsIDNSService).myHostName;
+      hostname = Cc["@mozilla.org/network/dns-service;1"].getService(
+        Ci.nsIDNSService
+      ).myHostName;
     } catch (ex) {
       Cu.reportError(ex);
     }
@@ -647,10 +730,18 @@ var Utils = {
       Services.sysinfo.get("device") ||
       hostname ||
       // fall back on ua info string
-      Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler).oscpu;
+      Cc["@mozilla.org/network/protocol;1?name=http"].getService(
+        Ci.nsIHttpProtocolHandler
+      ).oscpu;
 
-    let syncStrings = Services.strings.createBundle("chrome://weave/locale/sync.properties");
-    return syncStrings.formatStringFromName("client.name2", [user, brandName, system], 3);
+    let syncStrings = Services.strings.createBundle(
+      "chrome://weave/locale/sync.properties"
+    );
+    return syncStrings.formatStringFromName(
+      "client.name2",
+      [user, brandName, system],
+      3
+    );
   },
 
   getDeviceName() {
@@ -702,7 +793,7 @@ var Utils = {
       },
       set(value) {
         Services.prefs.setStringPref(prefName, value);
-      }
+      },
     });
   },
 
@@ -722,7 +813,7 @@ var Utils = {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   },
 
-  * walkTree(tree, parent = null) {
+  *walkTree(tree, parent = null) {
     if (tree) {
       // Skip root node
       if (parent) {
@@ -747,14 +838,18 @@ class SerializableSet extends Set {
 }
 
 XPCOMUtils.defineLazyGetter(Utils, "_utf8Converter", function() {
-  let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
-                    .createInstance(Ci.nsIScriptableUnicodeConverter);
+  let converter = Cc[
+    "@mozilla.org/intl/scriptableunicodeconverter"
+  ].createInstance(Ci.nsIScriptableUnicodeConverter);
   converter.charset = "UTF-8";
   return converter;
 });
 
-XPCOMUtils.defineLazyGetter(Utils, "utf8Encoder", () =>
-  new TextEncoder("utf-8"));
+XPCOMUtils.defineLazyGetter(
+  Utils,
+  "utf8Encoder",
+  () => new TextEncoder("utf-8")
+);
 
 /*
  * Commonly-used services
@@ -764,6 +859,7 @@ Svc.Prefs = new Preferences(PREFS_BRANCH);
 Svc.Obs = Observers;
 
 Svc.Obs.add("xpcom-shutdown", function() {
-  for (let name in Svc)
+  for (let name in Svc) {
     delete Svc[name];
+  }
 });

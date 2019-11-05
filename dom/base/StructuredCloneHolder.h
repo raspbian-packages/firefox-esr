@@ -17,7 +17,7 @@
 #include "nsTArray.h"
 
 #ifdef DEBUG
-#include "nsIThread.h"
+#  include "nsIThread.h"
 #endif
 
 class nsIInputStream;
@@ -42,7 +42,10 @@ class StructuredCloneHolderBase {
                                 StructuredCloneScope::SameProcessSameThread);
   virtual ~StructuredCloneHolderBase();
 
-  StructuredCloneHolderBase(StructuredCloneHolderBase&& aOther) = default;
+  // Note, it is unsafe to std::move() a StructuredCloneHolderBase since a raw
+  // this pointer is passed to mBuffer as a callback closure.  That must
+  // be fixed if you want to implement a move constructor here.
+  StructuredCloneHolderBase(StructuredCloneHolderBase&& aOther) = delete;
 
   // These methods should be implemented in order to clone data.
   // Read more documentation in js/public/StructuredClone.h.
@@ -81,6 +84,9 @@ class StructuredCloneHolderBase {
   virtual void CustomFreeTransferHandler(uint32_t aTag,
                                          JS::TransferableOwnership aOwnership,
                                          void* aContent, uint64_t aExtraData);
+
+  virtual bool CustomCanTransferHandler(JSContext* aCx,
+                                        JS::Handle<JSObject*> aObj);
 
   // These methods are what you should use to read/write data.
 
@@ -146,7 +152,7 @@ class StructuredCloneHolder : public StructuredCloneHolderBase {
                                  StructuredCloneScope aStructuredCloneScope);
   virtual ~StructuredCloneHolder();
 
-  StructuredCloneHolder(StructuredCloneHolder&& aOther) = default;
+  StructuredCloneHolder(StructuredCloneHolder&& aOther) = delete;
 
   // Normally you should just use Write() and Read().
 
@@ -194,7 +200,7 @@ class StructuredCloneHolder : public StructuredCloneHolderBase {
   // where they are created.
   nsTArray<RefPtr<MessagePort>>&& TakeTransferredPorts() {
     MOZ_ASSERT(mSupportsTransferring);
-    return Move(mTransferredPorts);
+    return std::move(mTransferredPorts);
   }
 
   // This method uses TakeTransferredPorts() to populate a sequence of
@@ -238,6 +244,9 @@ class StructuredCloneHolder : public StructuredCloneHolderBase {
                                          JS::TransferableOwnership aOwnership,
                                          void* aContent,
                                          uint64_t aExtraData) override;
+
+  virtual bool CustomCanTransferHandler(JSContext* aCx,
+                                        JS::Handle<JSObject*> aObj) override;
 
   // These 2 static methods are useful to read/write fully serializable objects.
   // They can be used by custom StructuredCloneHolderBase classes to

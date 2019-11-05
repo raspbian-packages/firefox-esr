@@ -3,12 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 app-manager-window =
-    .title = ਐਪਲੀਕੇਸ਼ਨ ਵੇਰਵਾ
+    .title = ਐਪਲੀਕੇਸ਼ਨ ਵੇਰਵੇ
     .style = width: 30em; min-height: 20em;
 app-manager-remove =
     .label = ਹਟਾਓ
-    .accesskey = R
-app-manager-handle-webfeeds = ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ ਵੈੱਬ ਫੀਡ ਹੈਂਡਲ ਕਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ।
+    .accesskey = ਹ
 # Variables:
 #   $type (String) - the URI scheme of the link (e.g. mailto:)
 app-manager-handle-protocol = ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ { $type } ਲਿੰਕ ਹੈਂਡਲ ਕਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ।

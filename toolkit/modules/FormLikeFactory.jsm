@@ -6,17 +6,17 @@
 
 var EXPORTED_SYMBOLS = ["FormLikeFactory"];
 
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+
 /**
  * A factory to generate FormLike objects that represent a set of related fields
  * which aren't necessarily marked up with a <form> element. FormLike's emulate
  * the properties of an HTMLFormElement which are relevant to form tasks.
  */
 let FormLikeFactory = {
-  _propsFromForm: [
-    "action",
-    "autocomplete",
-    "ownerDocument",
-  ],
+  _propsFromForm: ["action", "autocomplete", "ownerDocument"],
 
   /**
    * Create a FormLike object from a <form>.
@@ -26,8 +26,8 @@ let FormLikeFactory = {
    * @throws Error if aForm isn't an HTMLFormElement
    */
   createFromForm(aForm) {
-    if (!(aForm instanceof Ci.nsIDOMHTMLFormElement)) {
-      throw new Error("createFromForm: aForm must be a nsIDOMHTMLFormElement");
+    if (ChromeUtils.getClassName(aForm) !== "HTMLFormElement") {
+      throw new Error("createFromForm: aForm must be a HTMLFormElement");
     }
 
     let formLike = {
@@ -61,33 +61,45 @@ let FormLikeFactory = {
    * @throws Error if aField isn't a password or username field in a document
    */
   createFromField(aField) {
-    if ((!(aField instanceof Ci.nsIDOMHTMLInputElement) &&
-         ChromeUtils.getClassName(aField) !== "HTMLSelectElement") ||
-        !aField.ownerDocument) {
+    if (
+      (ChromeUtils.getClassName(aField) !== "HTMLInputElement" &&
+        ChromeUtils.getClassName(aField) !== "HTMLSelectElement") ||
+      !aField.ownerDocument
+    ) {
       throw new Error("createFromField requires a field in a document");
     }
 
     let rootElement = this.findRootForField(aField);
-    if (rootElement instanceof Ci.nsIDOMHTMLFormElement) {
+    if (ChromeUtils.getClassName(rootElement) === "HTMLFormElement") {
       return this.createFromForm(rootElement);
     }
 
     let doc = aField.ownerDocument;
-    let elements = [];
-    for (let el of rootElement.querySelectorAll("input, select")) {
-      // Exclude elements inside the rootElement that are already in a <form> as
-      // they will be handled by their own FormLike.
-      if (!el.form) {
-        elements.push(el);
-      }
-    }
+
     let formLike = {
       action: doc.baseURI,
       autocomplete: "on",
-      elements,
       ownerDocument: doc,
       rootElement,
     };
+
+    // FormLikes can be created when fields are inserted into the DOM. When
+    // many, many fields are inserted one after the other, we create many
+    // FormLikes, and computing the elements list becomes more and more
+    // expensive. Making the elements list lazy means that it'll only
+    // be computed when it's eventually needed (if ever).
+    XPCOMUtils.defineLazyGetter(formLike, "elements", function() {
+      let elements = [];
+      for (let el of this.rootElement.querySelectorAll("input, select")) {
+        // Exclude elements inside the rootElement that are already in a <form> as
+        // they will be handled by their own FormLike.
+        if (!el.form) {
+          elements.push(el);
+        }
+      }
+
+      return elements;
+    });
 
     this._addToJSONProperty(formLike);
     return formLike;
@@ -159,7 +171,7 @@ let FormLikeFactory = {
           cleansed[key] = cleansedValue;
         }
         return cleansed;
-      }
+      },
     });
   },
 };

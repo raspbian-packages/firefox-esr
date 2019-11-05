@@ -8,8 +8,8 @@
 #include "WindowIdentifier.h"
 #include "AndroidBridge.h"
 #include "mozilla/dom/network/Constants.h"
-#include "mozilla/dom/ScreenOrientation.h"
 #include "nsIScreenManager.h"
+#include "nsPIDOMWindow.h"
 #include "nsServiceManagerUtils.h"
 
 using namespace mozilla::dom;
@@ -103,7 +103,7 @@ void GetCurrentScreenConfiguration(ScreenConfiguration* aScreenConfiguration) {
 
   int32_t colorDepth, pixelDepth;
   int16_t angle;
-  ScreenOrientationInternal orientation;
+  hal::ScreenOrientation orientation;
   nsCOMPtr<nsIScreen> screen;
 
   int32_t rectX, rectY, rectWidth, rectHeight;
@@ -114,7 +114,7 @@ void GetCurrentScreenConfiguration(ScreenConfiguration* aScreenConfiguration) {
   screen->GetColorDepth(&colorDepth);
   screen->GetPixelDepth(&pixelDepth);
   orientation =
-      static_cast<ScreenOrientationInternal>(bridge->GetScreenOrientation());
+    static_cast<hal::ScreenOrientation>(bridge->GetScreenOrientation());
   angle = bridge->GetScreenAngle();
 
   *aScreenConfiguration =
@@ -122,9 +122,9 @@ void GetCurrentScreenConfiguration(ScreenConfiguration* aScreenConfiguration) {
                                orientation, angle, colorDepth, pixelDepth);
 }
 
-bool LockScreenOrientation(const ScreenOrientationInternal& aOrientation) {
+bool LockScreenOrientation(const hal::ScreenOrientation& aOrientation) {
   // Force the default orientation to be portrait-primary.
-  ScreenOrientationInternal orientation =
+  hal::ScreenOrientation orientation =
       aOrientation == eScreenOrientation_Default
           ? eScreenOrientation_PortraitPrimary
           : aOrientation;

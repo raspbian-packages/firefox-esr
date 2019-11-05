@@ -42,7 +42,7 @@ template <typename Class, typename... Args>
 inline bool InvokeOnMainThread(const char* aName, Class* aObject,
                                void (Class::*aMethod)(Args...), Args... aArgs) {
   nsCOMPtr<nsIRunnable> runnable(NewNonOwningRunnableMethod<Args...>(
-      aName, aObject, aMethod, Forward<Args>(aArgs)...));
+      aName, aObject, aMethod, std::forward<Args>(aArgs)...));
 
   MainThreadInvoker invoker;
   return invoker.Invoke(runnable.forget());

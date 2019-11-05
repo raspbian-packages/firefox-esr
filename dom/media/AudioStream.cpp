@@ -21,7 +21,7 @@
 #include "gfxPrefs.h"
 #include "AudioConverter.h"
 #if defined(XP_WIN)
-#include "nsXULAppAPI.h"
+#  include "nsXULAppAPI.h"
 #endif
 
 namespace mozilla {
@@ -321,11 +321,12 @@ struct ToCubebFormat<AUDIO_FORMAT_S16> {
 template <typename Function, typename... Args>
 int AudioStream::InvokeCubeb(Function aFunction, Args&&... aArgs) {
   MonitorAutoUnlock mon(mMonitor);
-  return aFunction(mCubebStream.get(), Forward<Args>(aArgs)...);
+  return aFunction(mCubebStream.get(), std::forward<Args>(aArgs)...);
 }
 
-nsresult AudioStream::Init(uint32_t aNumChannels, uint32_t aChannelMap,
-                           uint32_t aRate) {
+nsresult AudioStream::Init(uint32_t aNumChannels,
+                           AudioConfig::ChannelLayout::ChannelMap aChannelMap,
+                           uint32_t aRate, AudioDeviceInfo* aSinkInfo) {
   auto startTime = TimeStamp::Now();
 
   LOG("%s channels: %d, rate: %d", __FUNCTION__, aNumChannels, aRate);
@@ -334,12 +335,14 @@ nsresult AudioStream::Init(uint32_t aNumChannels, uint32_t aChannelMap,
 
   mDumpFile = OpenDumpFile(aNumChannels, aRate);
 
+  mSinkInfo = aSinkInfo;
+
   cubeb_stream_params params;
   params.rate = aRate;
   params.channels = mOutChannels;
-  params.layout = CubebUtils::ConvertChannelMapToCubebLayout(aChannelMap);
+  params.layout = static_cast<uint32_t>(aChannelMap);
   params.format = ToCubebFormat<AUDIO_OUTPUT_FORMAT>::value;
-  params.prefs = CUBEB_STREAM_PREF_NONE;
+  params.prefs = CubebUtils::GetDefaultStreamPrefs();
 
   mAudioClock.Init(aRate);
 
@@ -366,8 +369,12 @@ nsresult AudioStream::OpenCubeb(cubeb* aContext, cubeb_stream_params& aParams,
   /* Convert from milliseconds to frames. */
   uint32_t latency_frames =
       CubebUtils::GetCubebPlaybackLatencyInMilliseconds() * aParams.rate / 1000;
+  cubeb_devid deviceID = nullptr;
+  if (mSinkInfo && mSinkInfo->DeviceID()) {
+    deviceID = mSinkInfo->DeviceID();
+  }
   if (cubeb_stream_init(aContext, &stream, "AudioStream", nullptr, nullptr,
-                        nullptr, &aParams, latency_frames, DataCallback_S,
+                        deviceID, &aParams, latency_frames, DataCallback_S,
                         StateCallback_S, this) == CUBEB_OK) {
     mCubebStream.reset(stream);
     CubebUtils::ReportCubebBackendUsed();
@@ -390,6 +397,14 @@ nsresult AudioStream::OpenCubeb(cubeb* aContext, cubeb_stream_params& aParams,
 void AudioStream::SetVolume(double aVolume) {
   MOZ_ASSERT(aVolume >= 0.0 && aVolume <= 1.0, "Invalid volume");
 
+  {
+    MonitorAutoLock mon(mMonitor);
+    MOZ_ASSERT(mState != SHUTDOWN, "Don't set volume after shutdown.");
+    if (mState == ERRORED) {
+      return;
+    }
+  }
+
   if (cubeb_stream_set_volume(mCubebStream.get(),
                               aVolume * CubebUtils::GetVolumeScale()) !=
       CUBEB_OK) {
@@ -397,7 +412,7 @@ void AudioStream::SetVolume(double aVolume) {
   }
 }
 
-void AudioStream::Start() {
+nsresult AudioStream::Start() {
   MonitorAutoLock mon(mMonitor);
   MOZ_ASSERT(mState == INITIALIZED);
   mState = STARTED;
@@ -408,6 +423,10 @@ void AudioStream::Start() {
   LOG("started, state %s", mState == STARTED
                                ? "STARTED"
                                : mState == DRAINED ? "DRAINED" : "ERRORED");
+  if (mState == STARTED || mState == DRAINED) {
+    return NS_OK;
+  }
+  return NS_ERROR_FAILURE;
 }
 
 void AudioStream::Pause() {
@@ -608,8 +627,10 @@ long AudioStream::DataCallback(void* aBuffer, long aFrames) {
   MonitorAutoLock mon(mMonitor);
   MOZ_ASSERT(mState != SHUTDOWN, "No data callback after shutdown");
 
-  auto writer = AudioBufferWriter(reinterpret_cast<AudioDataValue*>(aBuffer),
-                                  mOutChannels, aFrames);
+  auto writer = AudioBufferWriter(
+      MakeSpan<AudioDataValue>(reinterpret_cast<AudioDataValue*>(aBuffer),
+                               mOutChannels * aFrames),
+      mOutChannels, aFrames);
 
   if (mPrefillQuirk) {
     // Don't consume audio data until Start() is called.

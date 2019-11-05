@@ -440,7 +440,7 @@ class AudioBufferSourceNodeEngine final : public AudioNodeEngine {
   }
 
   int32_t ComputeFinalOutSampleRate(float aPlaybackRate, float aDetune) {
-    float computedPlaybackRate = aPlaybackRate * pow(2, aDetune / 1200.f);
+    float computedPlaybackRate = aPlaybackRate * exp2(aDetune / 1200.f);
     // Make sure the playback rate and the doppler shift are something
     // our resampler can work with.
     int32_t rate = WebAudioUtils::TruncateFloatToInt<int32_t>(
@@ -588,13 +588,12 @@ AudioBufferSourceNode::AudioBufferSourceNode(AudioContext* aContext)
     : AudioScheduledSourceNode(aContext, 2, ChannelCountMode::Max,
                                ChannelInterpretation::Speakers),
       mLoopStart(0.0),
-      mLoopEnd(0.0)
+      mLoopEnd(0.0),
       // mOffset and mDuration are initialized in Start().
-      ,
-      mPlaybackRate(new AudioParam(this, PLAYBACKRATE, "playbackRate", 1.0f)),
-      mDetune(new AudioParam(this, DETUNE, "detune", 0.0f)),
       mLoop(false),
       mStartCalled(false) {
+  CreateAudioParam(mPlaybackRate, PLAYBACKRATE, "playbackRate", 1.0f);
+  CreateAudioParam(mDetune, DETUNE, "detune", 0.0f);
   AudioBufferSourceNodeEngine* engine =
       new AudioBufferSourceNodeEngine(this, aContext->Destination());
   mStream = AudioNodeStream::Create(aContext, engine,
@@ -604,14 +603,10 @@ AudioBufferSourceNode::AudioBufferSourceNode(AudioContext* aContext)
   mStream->AddMainThreadListener(this);
 }
 
-/* static */ already_AddRefed<AudioBufferSourceNode>
-AudioBufferSourceNode::Create(JSContext* aCx, AudioContext& aAudioContext,
-                              const AudioBufferSourceOptions& aOptions,
-                              ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
+/* static */
+already_AddRefed<AudioBufferSourceNode> AudioBufferSourceNode::Create(
+    JSContext* aCx, AudioContext& aAudioContext,
+    const AudioBufferSourceOptions& aOptions, ErrorResult& aRv) {
   RefPtr<AudioBufferSourceNode> audioNode =
       new AudioBufferSourceNode(&aAudioContext);
 
@@ -634,9 +629,6 @@ void AudioBufferSourceNode::DestroyMediaStream() {
     mStream->RemoveMainThreadListener(this);
   }
   AudioNode::DestroyMediaStream();
-  if (hadStream && Context()) {
-    Context()->UnregisterAudioBufferSourceNode(this);
-  }
 }
 
 size_t AudioBufferSourceNode::SizeOfExcludingThis(
@@ -657,16 +649,23 @@ size_t AudioBufferSourceNode::SizeOfIncludingThis(
 
 JSObject* AudioBufferSourceNode::WrapObject(JSContext* aCx,
                                             JS::Handle<JSObject*> aGivenProto) {
-  return AudioBufferSourceNodeBinding::Wrap(aCx, this, aGivenProto);
+  return AudioBufferSourceNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void AudioBufferSourceNode::Start(double aWhen, double aOffset,
                                   const Optional<double>& aDuration,
                                   ErrorResult& aRv) {
-  if (!WebAudioUtils::IsTimeValid(aWhen) ||
-      (aDuration.WasPassed() &&
-       !WebAudioUtils::IsTimeValid(aDuration.Value()))) {
-    aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+  if (!WebAudioUtils::IsTimeValid(aWhen)) {
+    aRv.ThrowRangeError<MSG_VALUE_OUT_OF_RANGE>(
+        NS_LITERAL_STRING("start time"));
+    return;
+  }
+  if (aOffset < 0) {
+    aRv.ThrowRangeError<MSG_VALUE_OUT_OF_RANGE>(NS_LITERAL_STRING("offset"));
+    return;
+  }
+  if (aDuration.WasPassed() && !WebAudioUtils::IsTimeValid(aDuration.Value())) {
+    aRv.ThrowRangeError<MSG_VALUE_OUT_OF_RANGE>(NS_LITERAL_STRING("duration"));
     return;
   }
 
@@ -700,6 +699,8 @@ void AudioBufferSourceNode::Start(double aWhen, double aOffset,
   if (aWhen > 0.0) {
     ns->SetDoubleParameter(START, aWhen);
   }
+
+  Context()->StartBlockedAudioContextIfAllowed();
 }
 
 void AudioBufferSourceNode::Start(double aWhen, ErrorResult& aRv) {
@@ -714,7 +715,7 @@ void AudioBufferSourceNode::SendBufferParameterToStream(JSContext* aCx) {
 
   if (mBuffer) {
     AudioChunk data = mBuffer->GetThreadSharedChannelsForRate(aCx);
-    ns->SetBuffer(Move(data));
+    ns->SetBuffer(std::move(data));
 
     if (mStartCalled) {
       SendOffsetAndDurationParametersToStream(ns);
@@ -761,7 +762,7 @@ void AudioBufferSourceNode::SendOffsetAndDurationParametersToStream(
 
 void AudioBufferSourceNode::Stop(double aWhen, ErrorResult& aRv) {
   if (!WebAudioUtils::IsTimeValid(aWhen)) {
-    aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
+    aRv.ThrowRangeError<MSG_VALUE_OUT_OF_RANGE>(NS_LITERAL_STRING("stop time"));
     return;
   }
 

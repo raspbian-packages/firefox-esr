@@ -44,7 +44,7 @@ class MOZ_RAII AutoMemMap {
 
  public:
   explicit AutoMemMap(MOZ_GUARD_OBJECT_NOTIFIER_ONLY_PARAM)
-      : fd(nullptr), fileMap(nullptr), addr(nullptr) {
+      : fileInfo(), fd(nullptr), fileMap(nullptr), addr(nullptr) {
     MOZ_GUARD_OBJECT_NOTIFIER_INIT;
   };
   ~AutoMemMap();

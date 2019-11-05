@@ -9,29 +9,35 @@
  */
 
 add_task(async function() {
-  let startupRecorder = Cc["@mozilla.org/test/startuprecorder;1"].getService().wrappedJSObject;
+  let startupRecorder = Cc["@mozilla.org/test/startuprecorder;1"].getService()
+    .wrappedJSObject;
   await startupRecorder.done;
 
   // Ensure all the frame data is in the test compartment to avoid traversing
   // a cross compartment wrapper for each pixel.
   let frames = Cu.cloneInto(startupRecorder.data.frames, {});
+  ok(frames.length > 0, "Should have captured some frames.");
 
   let unexpectedRects = 0;
   let alreadyFocused = false;
   for (let i = 1; i < frames.length; ++i) {
-    let frame = frames[i], previousFrame = frames[i - 1];
+    let frame = frames[i],
+      previousFrame = frames[i - 1];
     let rects = compareFrames(frame, previousFrame);
 
-    // The first screenshot we get shows an unfocused browser window for some
-    // reason. This is likely due to the test harness, so we want to ignore it.
+    // The first screenshot we get in OSX / Windows shows an unfocused browser
+    // window for some reason. See bug 1445161.
+    //
     // We'll assume the changes we are seeing are due to this focus change if
     // there are at least 5 areas that changed near the top of the screen, but
     // will only ignore this once (hence the alreadyFocused variable).
     if (!alreadyFocused && rects.length > 5 && rects.every(r => r.y2 < 100)) {
       alreadyFocused = true;
-      // This is likely an issue caused by the test harness, but log it anyway.
-      todo(false,
-           "the window should be focused at first paint, " + rects.toSource());
+      todo(
+        false,
+        "bug 1445161 - the window should be focused at first paint, " +
+          rects.toSource()
+      );
       continue;
     }
 

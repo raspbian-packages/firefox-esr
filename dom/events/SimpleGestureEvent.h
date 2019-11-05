@@ -25,7 +25,7 @@ class SimpleGestureEvent : public MouseEvent {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return SimpleGestureEventBinding::Wrap(aCx, this, aGivenProto);
+    return SimpleGestureEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   uint32_t AllowedDirections() const;

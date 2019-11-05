@@ -1,17 +1,12 @@
 import os
 
 ABS_WORK_DIR = os.path.join(os.getcwd(), "build")
-NEW_ESR_REPO = "https://hg.mozilla.org/releases/mozilla-esr59"
-# ESR-specific branding (logo) lives in the old repo:
-OLD_ESR_REPO = "https://hg.mozilla.org/releases/mozilla-esr52"
-OLD_ESR_CHANGESET = "df0931ac8b02"
+NEW_ESR_REPO = "https://hg.mozilla.org/releases/mozilla-esr68"
 
 config = {
     "log_name": "relese_to_esr",
     "version_files": [
-        {"file": "browser/config/version.txt", "suffix": ""},
-        {"file": "browser/config/version_display.txt", "suffix": ""},
-        {"file": "config/milestone.txt", "suffix": ""},
+        {"file": "browser/config/version_display.txt", "suffix": "esr"},
     ],
     "replacements": [
         # File, from, to
@@ -22,12 +17,6 @@ config = {
          "MAR_CHANNEL_ID=firefox-mozilla-release",
          "MAR_CHANNEL_ID=firefox-mozilla-esr"),
         ("build/mozconfig.common",
-         "# Enable checking that add-ons are signed by the trusted root",
-         "# Disable checking that add-ons are signed by the trusted root"),
-        ("build/mozconfig.common",
-         "MOZ_ADDON_SIGNING=${MOZ_ADDON_SIGNING-1}",
-         "MOZ_ADDON_SIGNING=${MOZ_ADDON_SIGNING-0}"),
-        ("build/mozconfig.common",
          "# Enable enforcing that add-ons are signed by the trusted root",
          "# Disable enforcing that add-ons are signed by the trusted root"),
         ("build/mozconfig.common",
@@ -35,17 +24,14 @@ config = {
          "MOZ_REQUIRE_SIGNING=${MOZ_REQUIRE_SIGNING-0}"),
     ],
     "vcs_share_base": os.path.join(ABS_WORK_DIR, 'hg-shared'),
-    # "hg_share_base": None,
-    "from_repo_url": "https://hg.mozilla.org/releases/mozilla-release",
+    # Pull from ESR repo, since we have already branched it and have landed esr-specific patches on it
+    # We will need to manually merge mozilla-release into before runnning this.
+    "from_repo_url": NEW_ESR_REPO,
     "to_repo_url": NEW_ESR_REPO,
 
     "base_tag": "FIREFOX_ESR_%(major_version)s_BASE",
     "migration_behavior": "release_to_esr",
     "require_remove_locales": False,
-    "graft_patches": [
-        {"repo": OLD_ESR_REPO,
-         "changeset": OLD_ESR_CHANGESET},
-    ],
     "requires_head_merge": False,
     "pull_all_branches": False,
 }

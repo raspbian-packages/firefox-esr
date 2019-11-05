@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "WebAuthnCoseIdentifiers.h"
 #include "mozilla/dom/U2FSoftTokenManager.h"
 #include "CryptoBuffer.h"
 #include "mozilla/Base64.h"
@@ -565,7 +566,7 @@ nsresult U2FSoftTokenManager::IsRegistered(const nsTArray<uint8_t>& aKeyHandle,
 // *      attestation signature
 //
 RefPtr<U2FRegisterPromise> U2FSoftTokenManager::Register(
-    const WebAuthnMakeCredentialInfo& aInfo) {
+    const WebAuthnMakeCredentialInfo& aInfo, bool aForceNoneAttestation) {
   if (!mInitialized) {
     nsresult rv = Init();
     if (NS_WARN_IF(NS_FAILED(rv))) {
@@ -573,20 +574,71 @@ RefPtr<U2FRegisterPromise> U2FSoftTokenManager::Register(
     }
   }
 
-  const WebAuthnAuthenticatorSelection& sel = aInfo.AuthenticatorSelection();
+  if (aInfo.Extra().isSome()) {
+    const auto& extra = aInfo.Extra().ref();
+    const WebAuthnAuthenticatorSelection& sel = extra.AuthenticatorSelection();
 
-  // The U2F softtoken neither supports resident keys or
-  // user verification, nor is it a platform authenticator.
-  if (sel.requireResidentKey() || sel.requireUserVerification() ||
-      sel.requirePlatformAttachment()) {
-    return U2FRegisterPromise::CreateAndReject(NS_ERROR_DOM_NOT_ALLOWED_ERR,
+    UserVerificationRequirement userVerificaitonRequirement =
+        sel.userVerificationRequirement();
+
+    bool requireUserVerification =
+        userVerificaitonRequirement == UserVerificationRequirement::Required;
+
+    bool requirePlatformAttachment = false;
+    if (sel.authenticatorAttachment().isSome()) {
+      const AuthenticatorAttachment authenticatorAttachment =
+          sel.authenticatorAttachment().value();
+      if (authenticatorAttachment == AuthenticatorAttachment::Platform) {
+        requirePlatformAttachment = true;
+      }
+    }
+
+    // The U2F softtoken neither supports resident keys or
+    // user verification, nor is it a platform authenticator.
+    if (sel.requireResidentKey() || requireUserVerification ||
+        requirePlatformAttachment) {
+      return U2FRegisterPromise::CreateAndReject(NS_ERROR_DOM_NOT_ALLOWED_ERR,
+                                                 __func__);
+    }
+
+    nsTArray<CoseAlg> coseAlgos;
+    for (const auto& coseAlg : extra.coseAlgs()) {
+      switch (static_cast<CoseAlgorithmIdentifier>(coseAlg.alg())) {
+        case CoseAlgorithmIdentifier::ES256:
+          coseAlgos.AppendElement(coseAlg);
+          break;
+        default:
+          continue;
+      }
+    }
+
+    // Only if no algorithms were specified, default to the one the soft token
+    // supports.
+    if (extra.coseAlgs().IsEmpty()) {
+      coseAlgos.AppendElement(
+          static_cast<int32_t>(CoseAlgorithmIdentifier::ES256));
+    }
+
+    // If there are no acceptable/supported algorithms, reject the promise.
+    if (coseAlgos.IsEmpty()) {
+      return U2FRegisterPromise::CreateAndReject(NS_ERROR_DOM_NOT_SUPPORTED_ERR,
+                                                 __func__);
+    }
+  }
+
+  CryptoBuffer rpIdHash, clientDataHash;
+  NS_ConvertUTF16toUTF8 rpId(aInfo.RpId());
+  nsresult rv = BuildTransactionHashes(rpId, aInfo.ClientDataJSON(), rpIdHash,
+                                       clientDataHash);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return U2FRegisterPromise::CreateAndReject(NS_ERROR_DOM_UNKNOWN_ERR,
                                                __func__);
   }
 
   // Optional exclusion list.
   for (const WebAuthnScopedCredential& cred : aInfo.ExcludeList()) {
     bool isRegistered = false;
-    nsresult rv = IsRegistered(cred.id(), aInfo.RpIdHash(), isRegistered);
+    nsresult rv = IsRegistered(cred.id(), rpIdHash, isRegistered);
     if (NS_FAILED(rv)) {
       return U2FRegisterPromise::CreateAndReject(rv, __func__);
     }
@@ -605,7 +657,7 @@ RefPtr<U2FRegisterPromise> U2FSoftTokenManager::Register(
   // Construct a one-time-use Attestation Certificate
   UniqueSECKEYPrivateKey attestPrivKey;
   UniqueCERTCertificate attestCert;
-  nsresult rv = GetAttestationCertificate(slot, attestPrivKey, attestCert);
+  rv = GetAttestationCertificate(slot, attestPrivKey, attestCert);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return U2FRegisterPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
   }
@@ -622,8 +674,8 @@ RefPtr<U2FRegisterPromise> U2FSoftTokenManager::Register(
 
   // The key handle will be the result of keywrap(privKey, key=mWrappingKey)
   UniqueSECItem keyHandleItem = KeyHandleFromPrivateKey(
-      slot, mWrappingKey, const_cast<uint8_t*>(aInfo.RpIdHash().Elements()),
-      aInfo.RpIdHash().Length(), privKey);
+      slot, mWrappingKey, const_cast<uint8_t*>(rpIdHash.Elements()),
+      rpIdHash.Length(), privKey);
   if (NS_WARN_IF(!keyHandleItem.get())) {
     return U2FRegisterPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
   }
@@ -631,8 +683,8 @@ RefPtr<U2FRegisterPromise> U2FSoftTokenManager::Register(
   // Sign the challenge using the Attestation privkey (from attestCert)
   mozilla::dom::CryptoBuffer signedDataBuf;
   if (NS_WARN_IF(!signedDataBuf.SetCapacity(
-          1 + aInfo.RpIdHash().Length() + aInfo.ClientDataHash().Length() +
-              keyHandleItem->len + kPublicKeyLen,
+          1 + rpIdHash.Length() + clientDataHash.Length() + keyHandleItem->len +
+              kPublicKeyLen,
           mozilla::fallible))) {
     return U2FRegisterPromise::CreateAndReject(NS_ERROR_OUT_OF_MEMORY,
                                                __func__);
@@ -641,8 +693,8 @@ RefPtr<U2FRegisterPromise> U2FSoftTokenManager::Register(
   // // It's OK to ignore the return values here because we're writing into
   // // pre-allocated space
   signedDataBuf.AppendElement(0x00, mozilla::fallible);
-  signedDataBuf.AppendElements(aInfo.RpIdHash(), mozilla::fallible);
-  signedDataBuf.AppendElements(aInfo.ClientDataHash(), mozilla::fallible);
+  signedDataBuf.AppendElements(rpIdHash, mozilla::fallible);
+  signedDataBuf.AppendElements(clientDataHash, mozilla::fallible);
   signedDataBuf.AppendSECItem(keyHandleItem.get());
   signedDataBuf.AppendSECItem(pubKey->u.ec.publicValue);
 
@@ -672,11 +724,39 @@ RefPtr<U2FRegisterPromise> U2FSoftTokenManager::Register(
   registrationBuf.AppendSECItem(attestCert.get()->derCert);
   registrationBuf.AppendSECItem(signatureItem);
 
-  // Will be set by the U2FTokenManager.
-  bool directAttestationPermitted = false;
-  WebAuthnMakeCredentialResult result((nsTArray<uint8_t>(registrationBuf)),
-                                      directAttestationPermitted);
-  return U2FRegisterPromise::CreateAndResolve(Move(result), __func__);
+  CryptoBuffer keyHandleBuf;
+  if (!keyHandleBuf.AppendSECItem(keyHandleItem.get())) {
+    return U2FRegisterPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+  }
+
+  CryptoBuffer attestCertBuf;
+  if (!attestCertBuf.AppendSECItem(attestCert.get()->derCert)) {
+    return U2FRegisterPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+  }
+
+  CryptoBuffer signatureBuf;
+  if (!signatureBuf.AppendSECItem(signatureItem)) {
+    return U2FRegisterPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+  }
+
+  CryptoBuffer pubKeyBuf;
+  if (!pubKeyBuf.AppendSECItem(pubKey->u.ec.publicValue)) {
+    return U2FRegisterPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+  }
+
+  CryptoBuffer attObj;
+  rv = AssembleAttestationObject(rpIdHash, pubKeyBuf, keyHandleBuf,
+                                 attestCertBuf, signatureBuf,
+                                 aForceNoneAttestation, attObj);
+  if (NS_FAILED(rv)) {
+    return U2FRegisterPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+  }
+
+  nsTArray<WebAuthnExtensionResult> extensions;
+  WebAuthnMakeCredentialResult result(aInfo.ClientDataJSON(), attObj,
+                                      keyHandleBuf, registrationBuf,
+                                      extensions);
+  return U2FRegisterPromise::CreateAndResolve(std::move(result), __func__);
 }
 
 bool U2FSoftTokenManager::FindRegisteredKeyHandle(
@@ -724,19 +804,34 @@ RefPtr<U2FSignPromise> U2FSoftTokenManager::Sign(
     }
   }
 
-  // The U2F softtoken doesn't support user verification.
-  if (aInfo.RequireUserVerification()) {
-    return U2FSignPromise::CreateAndReject(NS_ERROR_DOM_NOT_ALLOWED_ERR,
-                                           __func__);
+  CryptoBuffer rpIdHash, clientDataHash;
+  NS_ConvertUTF16toUTF8 rpId(aInfo.RpId());
+  nsresult rv = BuildTransactionHashes(rpId, aInfo.ClientDataJSON(), rpIdHash,
+                                       clientDataHash);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return U2FSignPromise::CreateAndReject(NS_ERROR_DOM_UNKNOWN_ERR, __func__);
   }
 
   nsTArray<nsTArray<uint8_t>> appIds;
-  appIds.AppendElement(aInfo.RpIdHash());
+  appIds.AppendElement(rpIdHash);
 
-  // Process extensions.
-  for (const WebAuthnExtension& ext : aInfo.Extensions()) {
-    if (ext.type() == WebAuthnExtension::TWebAuthnExtensionAppId) {
-      appIds.AppendElement(ext.get_WebAuthnExtensionAppId().AppId());
+  if (aInfo.Extra().isSome()) {
+    const auto& extra = aInfo.Extra().ref();
+
+    UserVerificationRequirement userVerificaitonReq =
+        extra.userVerificationRequirement();
+
+    // The U2F softtoken doesn't support user verification.
+    if (userVerificaitonReq == UserVerificationRequirement::Required) {
+      return U2FSignPromise::CreateAndReject(NS_ERROR_DOM_NOT_ALLOWED_ERR,
+                                             __func__);
+    }
+
+    // Process extensions.
+    for (const WebAuthnExtension& ext : extra.Extensions()) {
+      if (ext.type() == WebAuthnExtension::TWebAuthnExtensionAppId) {
+        appIds.AppendElement(ext.get_WebAuthnExtensionAppId().AppId());
+      }
     }
   }
 
@@ -755,12 +850,12 @@ RefPtr<U2FSignPromise> U2FSoftTokenManager::Sign(
   UniquePK11SlotInfo slot(PK11_GetInternalSlot());
   MOZ_ASSERT(slot.get());
 
-  if (NS_WARN_IF((aInfo.ClientDataHash().Length() != kParamLen) ||
+  if (NS_WARN_IF((clientDataHash.Length() != kParamLen) ||
                  (chosenAppId.Length() != kParamLen))) {
     MOZ_LOG(gNSSTokenLog, LogLevel::Warning,
             ("Parameter lengths are wrong! challenge=%d app=%d expected=%d",
-             (uint32_t)aInfo.ClientDataHash().Length(),
-             (uint32_t)chosenAppId.Length(), kParamLen));
+             (uint32_t)clientDataHash.Length(), (uint32_t)chosenAppId.Length(),
+             kParamLen));
 
     return U2FSignPromise::CreateAndReject(NS_ERROR_ILLEGAL_VALUE, __func__);
   }
@@ -802,9 +897,8 @@ RefPtr<U2FSignPromise> U2FSoftTokenManager::Sign(
                                mozilla::fallible);
   signedDataBuf.AppendElement(0x01, mozilla::fallible);
   signedDataBuf.AppendSECItem(counterItem);
-  signedDataBuf.AppendElements(aInfo.ClientDataHash().Elements(),
-                               aInfo.ClientDataHash().Length(),
-                               mozilla::fallible);
+  signedDataBuf.AppendElements(clientDataHash.Elements(),
+                               clientDataHash.Length(), mozilla::fallible);
 
   if (MOZ_LOG_TEST(gNSSTokenLog, LogLevel::Debug)) {
     nsAutoCString base64;
@@ -830,29 +924,54 @@ RefPtr<U2FSignPromise> U2FSoftTokenManager::Sign(
   }
 
   // Assemble the signature data into a buffer for return
-  mozilla::dom::CryptoBuffer signatureBuf;
-  if (NS_WARN_IF(!signatureBuf.SetCapacity(
+  mozilla::dom::CryptoBuffer signatureDataBuf;
+  if (NS_WARN_IF(!signatureDataBuf.SetCapacity(
           1 + counterItem.len + signatureItem.len, mozilla::fallible))) {
     return U2FSignPromise::CreateAndReject(NS_ERROR_OUT_OF_MEMORY, __func__);
   }
 
   // It's OK to ignore the return values here because we're writing into
   // pre-allocated space
-  signatureBuf.AppendElement(0x01, mozilla::fallible);
-  signatureBuf.AppendSECItem(counterItem);
-  signatureBuf.AppendSECItem(signatureItem);
+  signatureDataBuf.AppendElement(0x01, mozilla::fallible);
+  signatureDataBuf.AppendSECItem(counterItem);
+  signatureDataBuf.AppendSECItem(signatureItem);
 
-  nsTArray<uint8_t> signature(signatureBuf);
   nsTArray<WebAuthnExtensionResult> extensions;
 
-  if (chosenAppId != aInfo.RpIdHash()) {
+  if (chosenAppId != rpIdHash) {
     // Indicate to the RP that we used the FIDO appId.
     extensions.AppendElement(WebAuthnExtensionResultAppId(true));
   }
 
-  WebAuthnGetAssertionResult result(chosenAppId, keyHandle, signature,
-                                    extensions);
-  return U2FSignPromise::CreateAndResolve(Move(result), __func__);
+  CryptoBuffer counterBuf;
+  if (!counterBuf.AppendSECItem(counterItem)) {
+    return U2FSignPromise::CreateAndReject(NS_ERROR_OUT_OF_MEMORY, __func__);
+  }
+
+  CryptoBuffer signatureBuf;
+  if (!signatureBuf.AppendSECItem(signatureItem)) {
+    return U2FSignPromise::CreateAndReject(NS_ERROR_OUT_OF_MEMORY, __func__);
+  }
+
+  CryptoBuffer chosenAppIdBuf;
+  if (!chosenAppIdBuf.Assign(chosenAppId)) {
+    return U2FSignPromise::CreateAndReject(NS_ERROR_OUT_OF_MEMORY, __func__);
+  }
+
+  CryptoBuffer authenticatorData;
+  CryptoBuffer emptyAttestationData;
+  rv = AssembleAuthenticatorData(chosenAppIdBuf, 0x01, counterBuf,
+                                 emptyAttestationData, authenticatorData);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return U2FSignPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+  }
+
+  nsTArray<uint8_t> userHandle;
+
+  WebAuthnGetAssertionResult result(aInfo.ClientDataJSON(), keyHandle,
+                                    signatureBuf, authenticatorData, extensions,
+                                    signatureDataBuf, userHandle);
+  return U2FSignPromise::CreateAndResolve(std::move(result), __func__);
 }
 
 void U2FSoftTokenManager::Cancel() {

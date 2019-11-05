@@ -20,7 +20,7 @@
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/PContent.h"
 #include "nsIRunnable.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsPIDOMWindow.h"
 #include "nsContentPermissionHelper.h"
 #include "nsISupportsImpl.h"  // for MOZ_COUNT_CTOR, MOZ_COUNT_DTOR
@@ -89,11 +89,11 @@ void MIDIAccess::FireConnectionEvent(MIDIPort* aPort) {
   ErrorResult rv;
   if (aPort->State() == MIDIPortDeviceState::Disconnected) {
     if (aPort->Type() == MIDIPortType::Input &&
-        MIDIInputMapBinding::MaplikeHelpers::Has(mInputMap, id, rv)) {
-      MIDIInputMapBinding::MaplikeHelpers::Delete(mInputMap, id, rv);
+        MIDIInputMap_Binding::MaplikeHelpers::Has(mInputMap, id, rv)) {
+      MIDIInputMap_Binding::MaplikeHelpers::Delete(mInputMap, id, rv);
     } else if (aPort->Type() == MIDIPortType::Output &&
-               MIDIOutputMapBinding::MaplikeHelpers::Has(mOutputMap, id, rv)) {
-      MIDIOutputMapBinding::MaplikeHelpers::Delete(mOutputMap, id, rv);
+               MIDIOutputMap_Binding::MaplikeHelpers::Has(mOutputMap, id, rv)) {
+      MIDIOutputMap_Binding::MaplikeHelpers::Delete(mOutputMap, id, rv);
     }
     // Check to make sure Has()/Delete() calls haven't failed.
     if (NS_WARN_IF(rv.Failed())) {
@@ -105,21 +105,22 @@ void MIDIAccess::FireConnectionEvent(MIDIPort* aPort) {
     // port owner holding the object during that time, and we should add that
     // port object to our maps again.
     if (aPort->Type() == MIDIPortType::Input &&
-        !MIDIInputMapBinding::MaplikeHelpers::Has(mInputMap, id, rv)) {
+        !MIDIInputMap_Binding::MaplikeHelpers::Has(mInputMap, id, rv)) {
       if (NS_WARN_IF(rv.Failed())) {
         return;
       }
-      MIDIInputMapBinding::MaplikeHelpers::Set(
+      MIDIInputMap_Binding::MaplikeHelpers::Set(
           mInputMap, id, *(static_cast<MIDIInput*>(aPort)), rv);
       if (NS_WARN_IF(rv.Failed())) {
         return;
       }
     } else if (aPort->Type() == MIDIPortType::Output &&
-               !MIDIOutputMapBinding::MaplikeHelpers::Has(mOutputMap, id, rv)) {
+               !MIDIOutputMap_Binding::MaplikeHelpers::Has(mOutputMap, id,
+                                                           rv)) {
       if (NS_WARN_IF(rv.Failed())) {
         return;
       }
-      MIDIOutputMapBinding::MaplikeHelpers::Set(
+      MIDIOutputMap_Binding::MaplikeHelpers::Set(
           mOutputMap, id, *(static_cast<MIDIOutput*>(aPort)), rv);
       if (NS_WARN_IF(rv.Failed())) {
         return;
@@ -137,7 +138,8 @@ void MIDIAccess::MaybeCreateMIDIPort(const MIDIPortInfo& aInfo,
   MIDIPortType type = static_cast<MIDIPortType>(aInfo.type());
   RefPtr<MIDIPort> port;
   if (type == MIDIPortType::Input) {
-    bool hasPort = MIDIInputMapBinding::MaplikeHelpers::Has(mInputMap, id, aRv);
+    bool hasPort =
+        MIDIInputMap_Binding::MaplikeHelpers::Has(mInputMap, id, aRv);
     if (hasPort || NS_WARN_IF(aRv.Failed())) {
       // We already have the port in our map.
       return;
@@ -147,14 +149,14 @@ void MIDIAccess::MaybeCreateMIDIPort(const MIDIPortInfo& aInfo,
       aRv.Throw(NS_ERROR_FAILURE);
       return;
     }
-    MIDIInputMapBinding::MaplikeHelpers::Set(
+    MIDIInputMap_Binding::MaplikeHelpers::Set(
         mInputMap, id, *(static_cast<MIDIInput*>(port.get())), aRv);
     if (NS_WARN_IF(aRv.Failed())) {
       return;
     }
   } else if (type == MIDIPortType::Output) {
     bool hasPort =
-        MIDIOutputMapBinding::MaplikeHelpers::Has(mOutputMap, id, aRv);
+        MIDIOutputMap_Binding::MaplikeHelpers::Has(mOutputMap, id, aRv);
     if (hasPort || NS_WARN_IF(aRv.Failed())) {
       // We already have the port in our map.
       return;
@@ -164,7 +166,7 @@ void MIDIAccess::MaybeCreateMIDIPort(const MIDIPortInfo& aInfo,
       aRv.Throw(NS_ERROR_FAILURE);
       return;
     }
-    MIDIOutputMapBinding::MaplikeHelpers::Set(
+    MIDIOutputMap_Binding::MaplikeHelpers::Set(
         mOutputMap, id, *(static_cast<MIDIOutput*>(port.get())), aRv);
     if (NS_WARN_IF(aRv.Failed())) {
       return;
@@ -211,7 +213,7 @@ void MIDIAccess::Notify(const MIDIPortList& aEvent) {
 
 JSObject* MIDIAccess::WrapObject(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return MIDIAccessBinding::Wrap(aCx, this, aGivenProto);
+  return MIDIAccess_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void MIDIAccess::RemovePortListener(MIDIAccessDestructionObserver* aObs) {

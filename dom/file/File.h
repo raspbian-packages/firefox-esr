@@ -85,14 +85,12 @@ class File final : public Blob {
 
   int64_t GetLastModified(ErrorResult& aRv);
 
-  Date GetLastModifiedDate(ErrorResult& aRv);
-
   void GetRelativePath(nsAString& aPath) const;
 
   void GetMozFullPath(nsAString& aFilename, SystemCallerGuarantee aGuarantee,
-                      ErrorResult& aRv) const;
+                      ErrorResult& aRv);
 
-  void GetMozFullPathInternal(nsAString& aName, ErrorResult& aRv) const;
+  void GetMozFullPathInternal(nsAString& aName, ErrorResult& aRv);
 
  protected:
   virtual bool HasFileInterface() const override { return true; }

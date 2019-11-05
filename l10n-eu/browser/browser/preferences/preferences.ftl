@@ -4,8 +4,8 @@
 
 do-not-track-description = Bidali webguneei "Do Not Track" seinalea zure jarraipena ez egitea adierazteko
 do-not-track-learn-more = Argibide gehiago
-do-not-track-option-default =
-    .label = Jarraipenaren babesa erabiltzean soilik
+do-not-track-option-default-content-blocking-known =
+    .label = Bakarrik { -brand-short-name } jarraipen-elementu ezagunak blokeatzeko ezarrita dagoenean
 do-not-track-option-always =
     .label = Beti
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Aukerak
            *[other] Hobespenak
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Zure erakundeak hainbat aukera aldatzeko modua desgaitu du.
        *[other] Zure erakundeak hainbat hobespen aldatzeko modua desgaitu du.
     }
+managed-notice = Nabigatzailea zure erakundeak kudeatzen du.
 pane-general-title = Orokorra
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Pribatutasuna eta segurtasuna
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox kontua
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = { -brand-short-name } laguntza
+addons-button-label = Hedapenak eta itxurak
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Berrabiarazi { -brand-short-name }
 should-restart-ok = Berrabiarazi { -brand-short-name } orain
 cancel-no-restart-button = Utzi
 restart-later = Berrabiarazi geroago
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = <img data-l10n-name="icon"/> { $name } hedapenak zure hasiera-orria kontrolatzen du.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = <img data-l10n-name="icon"/> { $name } hedapenak zure fitxa berriaren orria kontrolatzen du.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Hedapen bat, <img data-l10n-name="icon"/> { $name }, ezarpen hau kontrolatzen ari da.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Hedapen batek (<img data-l10n-name="icon"/> { $name }) zure bilaketa-motor lehenetsia ezarri du.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = <img data-l10n-name="icon"/> { $name } hedapenak edukiontzi-fitxak behar ditu.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Hedapen bat, <img data-l10n-name="icon"/> { $name }, ezarpen hau kontrolatzen ari da.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = <img data-l10n-name="icon"/> { $name } hedapenak { -brand-short-name } Internetera nola konektatzen den kontrolatzen du.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Hedapena gaitzeko, zoaz <img data-l10n-name="addons-icon"/> Gehigarriak aukerara <img data-l10n-name="menu-icon"/> menuan.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } ez da zure nabigatzaile lehenetsia
 set-as-my-default-browser =
     .label = Lehenetsi…
     .accesskey = L
-startup-page = { -brand-short-name } abiatzean
-    .accesskey = z
-startup-user-homepage =
-    .label = Erakutsi hasiera-orria
-startup-blank-page =
-    .label = Erakutsi orri hutsa
-startup-prev-session =
-    .label = Berreskuratu azken saioko fitxak eta leihoak
+startup-restore-previous-session =
+    .label = Berreskuratu aurreko saioa
+    .accesskey = B
+startup-restore-warn-on-quit =
+    .label = Abisatu nabigatzailetik irtetean
 disable-extension =
     .label = Desgaitu hedapena
-home-page-header = Hasiera-orria
 tabs-group-header = Fitxak
 ctrl-tab-recently-used-order =
     .label = Ktrl+Tab konbinazioak fitxaz aldatzen du azkenekoz erabilitako ordenan
@@ -181,6 +208,12 @@ choose-language-description = Aukeratu orriak bistaratzeko hizkuntza hobetsia
 choose-button =
     .label = Aukeratu…
     .accesskey = A
+choose-browser-language-description = Aukeratu { -brand-short-name }(r)en menuak, mezuak eta jakinarazpenak bistaratzeko hizkuntzak.
+manage-browser-languages-button =
+    .label = Ezarri ordezkoak…
+    .accesskey = d
+confirm-browser-language-change-description = Berrabiarazi { -brand-short-name } aldaketa hauek aplikatzeko
+confirm-browser-language-change-button = Aplikatu eta berrabiarazi
 translate-web-pages =
     .label = Itzuli webeko edukia
     .accesskey = I
@@ -199,7 +232,7 @@ check-user-spelling =
 files-and-applications-title = Fitxategiak eta aplikazioak
 download-header = Deskargak
 download-save-to =
-    .label = Gorde fitxategiak hemen: 
+    .label = Gorde fitxategiak hemen:
     .accesskey = G
 download-choose-folder =
     .label =
@@ -232,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Argibide gehiago
 update-application-title = { -brand-short-name } eguneraketak
 update-application-description = Mantendu { -brand-short-name } eguneratuta errendimendu, egonkortasun eta segurtasun onena bermatzeko.
-update-application-info = ​{ $version }bertsioa <a>Nobedadeak</a>
 update-application-version = { $version }bertsioa <a data-l10n-name="learn-more">Nobedadeak</a>
 update-history =
     .label = Erakutsi eguneraketen historia…
@@ -247,12 +279,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Ez egiaztatu inoiz eguneraketarik dagoen (ez gomendatua)
     .accesskey = n
+update-application-warning-cross-user-setting = Ezarpen honek Windows kontu guztiei eta { -brand-short-name }(r)en instalazio hau darabilten profilei eragingo die.
 update-application-use-service =
     .label = Erabili atzeko planoko zerbitzua eguneraketak instalatzeko
     .accesskey = z
 update-enable-search-update =
     .label = Eguneratu automatikoki bilaketa-motorrak
     .accesskey = E
+update-pref-write-failure-title = Idazketa-akatsa
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Ezin da hobespena gorde. Ezin da fitxategira idatzi: { $path }
+update-setting-write-failure-title = Errorea eguneraketen hobespenak gordetzean
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name }(e)k errore bat aurkitu du eta ez du aldaketa hau gorde. Kontuan izan eguneraketen hobespen hau ezartzeak azpiko fitxategia idazteko baimenak behar dituela. Zu edo sistema-kudeatzaile bat errorea konpontzeko moduan izan zaitezkete erabiltzaileen taldeari fitxategi honetarako kontrol osoa emanez.
+    
+     Ezin da fitxategira idatzi: { $path }
+update-in-progress-title = Eguneraketa burutzen ari da
+update-in-progress-message = { -brand-short-name }(e)k eguneraketa honekin jarraitzea nahi duzu?
+update-in-progress-ok-button = &Baztertu
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Jarraitu
 
 ## General Section - Performance
 
@@ -268,7 +320,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Eduki-prozesuen muga
     .accesskey = m
 performance-limit-content-process-enabled-desc = Eduki-prozesu gehigarriek errendimendua hobe dezakete hainbat fitxa erabiltzean baina memoria gehiago ere erabiliko du.
-performance-limit-content-process-disabled-desc = Edukien prozesu kopurua multiprozesu moduko { -brand-short-name }(r)ekin alda daiteke soilik. <a>Argibide gehiago multiprozesu modua gaituta dagoen egiaztatzeko</a>
 performance-limit-content-process-blocked-desc = Edukien prozesu kopurua multiprozesu moduko { -brand-short-name }(r)ekin alda daiteke soilik. <a data-l10n-name="learn-more">Argibide gehiago multiprozesu modua gaituta dagoen egiaztatzeko</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -293,10 +344,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Bilatu testua idazten hasi bezain laster
     .accesskey = B
+browsing-cfr-recommendations =
+    .label = Gomendatu hedapenak nabigatu ahala
+    .accesskey = G
+browsing-cfr-features =
+    .label = Gomendatu eginbideak nabigatu ahala
+    .accesskey = G
+browsing-cfr-recommendations-learn-more = Argibide gehiago
 
 ## General Section - Proxy
 
-network-proxy-title = Sareko proxy-a
+network-settings-title = Sareko ezarpenak
+network-proxy-connection-description = Konfiguratu { -brand-short-name } nola konektatzen den Internetera.
 network-proxy-connection-learn-more = Argibide gehiago
 network-proxy-connection-settings =
     .label = Ezarpenak…
@@ -305,6 +364,7 @@ network-proxy-connection-settings =
 ## Home Section
 
 home-new-windows-tabs-header = Leiho eta fitxa berriak
+home-new-windows-tabs-description2 = Aukeratu zer ikusi nahi duzun zure hasiera-orria, leiho berriak eta fitxa berriak irekitzean.
 
 ## Home Section - Home Page Customization
 
@@ -337,9 +397,6 @@ use-current-pages =
 choose-bookmark =
     .label = Erabili laster-marka…
     .accesskey = b
-restore-default =
-    .label = Berrezarri lehenetsiak
-    .accesskey = r
 
 ## Search Section
 
@@ -431,6 +488,9 @@ sync-signedin-login-failure = Hasi saioa berriro konektatzeko { $email }
 sync-resend-verification =
     .label = Birbidali egiaztapena
     .accesskey = B
+sync-remove-account =
+    .label = Kendu kontua
+    .accesskey = K
 sync-sign-in =
     .label = Hasi saioa
     .accesskey = H
@@ -480,8 +540,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Gorde
     .accesskey = G
-sync-mobilepromo-single = Konektatu beste gailu bat
-sync-mobilepromo-multi = Kudeatu gailuak
+sync-connect-another-device = Konektatu beste gailu bat
+sync-manage-devices = Kudeatu gailuak
+sync-fxa-begin-pairing = Parekatu gailua
 sync-tos-link = Zerbitzuaren baldintzak
 sync-fxa-privacy-notice = Pribatutasun-oharra
 
@@ -491,10 +552,16 @@ privacy-header = Nabigatzailearen pribatutasuna
 
 ## Privacy Section - Forms
 
-forms-header = Inprimakiak eta pasahitzak
+logins-header = Saio-hasierak eta pasahitzak
+forms-ask-to-save-logins =
+    .label = Galdetu webguneetako saio-hasierak eta pasahitzak gordetzeko
+    .accesskey = G
 forms-exceptions =
     .label = Salbuespenak…
     .accesskey = n
+forms-generate-passwords =
+    .label = Iradoki eta sortu pasahitz sendoak
+    .accesskey = d
 forms-saved-logins =
     .label = Gordetako saio-hasierak…
     .accesskey = s
@@ -525,13 +592,14 @@ history-remember-option-never =
     .label = Ez du historia gogoratuko inoiz
 history-remember-option-custom =
     .label = Ezarpen pertsonalizatuak erabiliko ditu historiarako
+history-remember-description = { -brand-short-name }(e)k zure nabigazio-, deskarga-, inprimaki- eta bilaketa-historia gogoratuko ditu.
 history-dontremember-description = { -brand-short-name }(e)k nabigatze pribatuaren ezarpen berak erabiliko ditu, eta ez du gogoratuko historia webean nabigatzen ari zarenean.
 history-private-browsing-permanent =
     .label = Erabili beti nabigatze pribatuko modua
     .accesskey = a
-history-remember-option =
-    .label = Gogoratu nire nabigazioaren eta deskargen historia
-    .accesskey = G
+history-remember-browser-option =
+    .label = Gogoratu nabigazioaren eta deskargen historia
+    .accesskey = n
 history-remember-search-option =
     .label = Gogoratu bilaketa- eta inprimaki-historia
     .accesskey = n
@@ -548,32 +616,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookieak eta guneetako datuak
+sitedata-total-size-calculating = Gunearen datuen eta cachearen tamaina kalkulatzen…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Gordetako zure cookiek, gunearen datuek eta cacheak une honetan { $value } { $unit } hartzen dute diskoan.
 sitedata-learn-more = Argibide gehiago
-sitedata-accept-cookies-option =
-    .label = Onartu webguneetako cookie eta datuak (gomendatua)
+sitedata-delete-on-close =
+    .label = Ezabatu cookieak eta guneetako datuak { -brand-short-name } ixtean
+    .accesskey = c
+sitedata-delete-on-close-private-browsing = Nabigatze pribatu modu iraunkorrean cookieak eta guneetako datuak beti garbituko dira { -brand-short-name } ixtean.
+sitedata-allow-cookies-option =
+    .label = Onartu cookieak eta guneetako datuak
     .accesskey = O
-sitedata-block-cookies-option =
-    .label = Blokeatu webguneetako cookie eta datuak (webguneak haustea eragin lezake)
+sitedata-disallow-cookies-option =
+    .label = Blokeatu cookieak eta guneetako datuak
     .accesskey = B
-sitedata-keep-until = Mantentze-epea
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Mota blokeatuta
     .accesskey = M
-sitedata-accept-third-party-desc = Onartu hirugarren guneetako cookie eta datuak
-    .accesskey = h
-sitedata-accept-third-party-always-option =
-    .label = Beti
-sitedata-accept-third-party-visited-option =
-    .label = Bisitatutako guneetatik
-sitedata-accept-third-party-never-option =
-    .label = Inoiz ez
+sitedata-option-block-trackers =
+    .label = Hirugarren jarraipen-elementuak
+sitedata-option-block-unvisited =
+    .label = Bisitatu gabeko guneetako cookieak
+sitedata-option-block-all-third-party =
+    .label = Hirugarrenen cookie guztiak (webguneak haustea eragin lezake)
+sitedata-option-block-all =
+    .label = Cookie guztiak (webguneak haustea eragingo du)
 sitedata-clear =
     .label = Garbitu datuak…
     .accesskey = G
 sitedata-settings =
     .label = Kudeatu datuak…
     .accesskey = K
-sitedata-cookies-exceptions =
-    .label = Salbuespenak…
-    .accesskey = S
+sitedata-cookies-permissions =
+    .label = Kudeatu baimenak
+    .accesskey = b
 
 ## Privacy Section - Address Bar
 
@@ -590,30 +669,73 @@ addressbar-locbar-openpage-option =
     .accesskey = I
 addressbar-suggestions-settings = Aldatu bilaketa-motorren iradokizunetarako hobespenak
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Edukia blokeatzea
+content-blocking-description = Blokeatu webean zure jarraipena egiten duen hirugarrenen edukia. Kontrolatu zure lineako jarduera zenbateraino gordetzen eta partekatzen den webguneen artean.
+content-blocking-section-description = Nabigatzean, babestu zure pribatutasuna. Blokeatu bisitatutako guneen jarraipena egin eta zure profila sortzeko erabiltzen den eduki ikusgaitza. Eduki hauetako batzuk blokeatzean orriak azkarrago karga litezke.
+content-blocking-learn-more = Argibide gehiago
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Oinarrizkoa
+    .accesskey = O
+content-blocking-setting-strict =
+    .label = Zorrotza
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Pertsonalizatua
+    .accesskey = s
+content-blocking-standard-description = Jarraipen-elementu ezagunak leiho pribatuetan blokeatzen ditu soilik.
+content-blocking-standard-desc = Orekatua babeserako eta errendimendurako. Zenbait jarraipen-elementu onartzen ditu, beraz webguneak ondo ibiliko dira.
+content-blocking-strict-desc = { -brand-short-name }(e)k antzemandako jarraipen-elementu guztiak blokeatzen ditu. Zenbait webgune haustea eragin lezake.
+content-blocking-strict-description = Babes sendoagoa, hainbat gune haustea eragin lezake.
+content-blocking-custom-desc = Aukeratu zer blokeatu.
+content-blocking-private-trackers = Jarraipen-elementu ezagunak soilik leiho pribatuetan
+content-blocking-third-party-cookies = Hirugarrenen jarraipen-cookieak
+content-blocking-all-cookies = Cookie guztiak
+content-blocking-unvisited-cookies = Bisitatu gabeko guneetako cookieak
+content-blocking-all-windows-trackers = Jarraipen-elementu ezagunak leiho guztietan
+content-blocking-all-third-party-cookies = Hirugarrenen cookie guztiak
+content-blocking-cryptominers = Kriptomeatzariak
+content-blocking-fingerprinters = Hatz-marka bidezko jarraipena egiten duten elementuak
+content-blocking-warning-title = Argi!
+content-blocking-warning-description = Edukia blokeatzeak zenbait webgune haustea eragin lezake. Erraza da konfiantzazko guneetarako blokeoa desgaitzea.
+content-blocking-learn-how = Ikasi nola
+content-blocking-reload-description = Zure fitxak berritu beharko dituzu aldaketa hauek eragina izan dezaten.
+content-blocking-reload-tabs-button =
+    .label = Berritu fitxa guztiak
+    .accesskey = B
+content-blocking-trackers-label =
+    .label = Jarraipen-elementuak
+    .accesskey = r
+content-blocking-tracking-protection-option-all-windows =
+    .label = Leiho guztietan
+    .accesskey = z
+content-blocking-option-private =
+    .label = Leiho pribatuetan soilik
+    .accesskey = r
+content-blocking-tracking-protection-change-block-list = Aldatu blokeo-zerrenda
+content-blocking-cookies-label =
+    .label = Cookieak
+    .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = Informazio gehiago
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Kriptomeatzariak
+    .accesskey = K
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Hatz-marka bidezko jarraipena
+    .accesskey = H
+
 ## Privacy Section - Tracking
 
-tracking-header = Jarraipenaren babesa
-tracking-desc = Jarraipenaren babesarekin hainbat webguneren artean zure nabigazio-datuak biltzea blokeatuko da. <a data-l10n-name="learn-more">Argibide gehiago jarraipenaren babesari eta zure pribatutasunari buruz</a>
-tracking-mode-label = Babestu jarraipena egiteaz ezagunak diren guneetatik
-tracking-mode-always =
-    .label = Beti
-    .accesskey = B
-tracking-mode-private =
-    .label = Leiho pribatuak soilik
+tracking-manage-exceptions =
+    .label = Kudeatu salbuespenak…
     .accesskey = s
-tracking-mode-never =
-    .label = Inoiz ez
-    .accesskey = I
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Babestu jarraipena egiteaz ezagunak diren guneetatik nabigatze pribatuan
-    .accesskey = b
-tracking-exceptions =
-    .label = Salbuespenak…
-    .accesskey = S
-tracking-change-block-list =
-    .label = Aldatu blokeo-zerrenda…
-    .accesskey = A
 
 ## Privacy Section - Permissions
 
@@ -638,6 +760,16 @@ permissions-notification-link = Argibide gehiago
 permissions-notification-pause =
     .label = Pausatu jakinarazpenak { -brand-short-name } berrabiarazi arte
     .accesskey = n
+permissions-block-autoplay-media2 =
+    .label = Blokeatu webguneei soinudun multimedia erreproduzitzea
+    .accesskey = B
+permissions-block-autoplay-media-exceptions =
+    .label = Salbuespenak…
+    .accesskey = S
+permissions-autoplay = Erreprodukzio automatikoa
+permissions-autoplay-settings =
+    .label = Ezarpenak…
+    .accesskey = E
 permissions-block-popups =
     .label = Blokeatu pop-up leihoak
     .accesskey = B
@@ -664,13 +796,15 @@ collection-health-report =
     .label = Baimendu { -brand-short-name }(r)i datu tekniko eta interakziozkoak { -vendor-short-name }ra bidaltzea
     .accesskey = r
 collection-health-report-link = Argibide gehiago
+collection-studies =
+    .label = Baimendu { -brand-short-name }(e)k esperimentuak instalatu eta exekutatzea
+collection-studies-link = Ikusi { -brand-short-name } esperimentuak
+addon-recommendations =
+    .label = Baimendu { -brand-short-name }(r)i hedapenen gomendio pertsonalizatuak egitea
+addon-recommendations-link = Argibide gehiago
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Datuen berri ematea desgaituta dago eraikitze-konfigurazio honetarako
-collection-browser-errors =
-    .label = Baimendu { -brand-short-name }(r)i nabigatzailearen errore-txostenak { -vendor-short-name }ra bidaltzea (errore-mezuak barne)
-    .accesskey = B
-collection-browser-errors-link = Argibide gehiago
 collection-backlogged-crash-reports =
     .label = Baimendu { -brand-short-name }(r)i atzeratutako hutsegite-txostenak zuregatik bidaltzea
     .accesskey = h
@@ -713,3 +847,36 @@ certs-view =
 certs-devices =
     .label = Segurtasun-gailuak…
     .accesskey = S
+space-alert-learn-more-button =
+    .label = Argibide gehiago
+    .accesskey = A
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Ireki aukerak
+           *[other] Ireki hobespenak
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] I
+           *[other] I
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } leku erabilgarririk gabe gelditzen ari da diskoan. Webgunearen edukiak agian ez dira ondo bistaratuko. Biltegiratutako gunearen datuak Aukerak > Pribatutasuna eta segurtasuna > Cookieak eta guneetako datuak atalean garbi ditzakezu.
+       *[other] { -brand-short-name } leku erabilgarririk gabe gelditzen ari da diskoan. Webgunearen edukiak agian ez dira ondo bistaratuko. Biltegiratutako gunearen datuak Hobespenak > Pribatutasuna eta segurtasuna > Cookieak eta guneetako datuak atalean garbi ditzakezu.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Ados, ulertu dut
+    .accesskey = A
+space-alert-under-5gb-message = { -brand-short-name } leku erabilgarririk gabe gelditzen ari da diskoan. Webgunearen edukiak agian ez dira ondo bistaratuko. Bisitatu "Argibide gehiago" diskoaren erabilpena optimizatu eta nabigatze-esperientzia hobetzeko.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Mahaigaina
+downloads-folder-name = Deskargak
+choose-download-folder-title = Aukeratu deskarga-karpeta:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Gorde fitxategiak { $service-name } zerbitzura

@@ -39,6 +39,7 @@ class nsDeviceContextSpecWin : public nsIDeviceContextSpec {
   float GetDPI() final;
 
   float GetPrintingScale() final;
+  gfxPoint GetPrintingTranslate() final;
 
   void GetDriverName(nsAString& aDriverName) const {
     aDriverName = mDriverName;

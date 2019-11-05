@@ -8,15 +8,14 @@
 
 #include "ipc/ErrorIPCUtils.h"
 #include "mozilla/dom/DOMPrefs.h"
-#include "mozilla/dom/Notification.h"
 #include "mozilla/dom/Promise.h"
-#include "mozilla/dom/PromiseWindowProxy.h"
 #include "mozilla/dom/PromiseWorkerProxy.h"
 #include "mozilla/dom/PushManagerBinding.h"
 #include "mozilla/dom/PushManager.h"
 #include "mozilla/dom/ServiceWorkerRegistrationBinding.h"
-#include "mozilla/dom/WorkerPrivate.h"
 #include "mozilla/dom/WorkerCommon.h"
+#include "mozilla/dom/WorkerPrivate.h"
+#include "mozilla/dom/WorkerRef.h"
 #include "mozilla/dom/WorkerScope.h"
 #include "mozilla/Services.h"
 #include "mozilla/Unused.h"
@@ -27,8 +26,9 @@
 #include "ServiceWorkerManager.h"
 #include "ServiceWorkerPrivate.h"
 #include "ServiceWorkerRegistration.h"
+#include "ServiceWorkerUnregisterCallback.h"
 
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIServiceWorkerManager.h"
 #include "nsISupportsPrimitives.h"
 #include "nsPIDOMWindow.h"
@@ -43,6 +43,7 @@ namespace dom {
 ServiceWorkerRegistrationMainThread::ServiceWorkerRegistrationMainThread(
     const ServiceWorkerRegistrationDescriptor& aDescriptor)
     : mOuter(nullptr),
+      mDescriptor(aDescriptor),
       mScope(NS_ConvertUTF8toUTF16(aDescriptor.Scope())),
       mListeningForEvents(false) {
   MOZ_ASSERT(NS_IsMainThread());
@@ -58,11 +59,17 @@ ServiceWorkerRegistrationMainThread::~ServiceWorkerRegistrationMainThread() {
 void ServiceWorkerRegistrationMainThread::StartListeningForEvents() {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!mListeningForEvents);
+  MOZ_DIAGNOSTIC_ASSERT(!mInfo);
+
   RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
-  if (swm) {
-    swm->AddRegistrationEventListener(mScope, this);
-    mListeningForEvents = true;
-  }
+  NS_ENSURE_TRUE_VOID(swm);
+
+  mInfo =
+      swm->GetRegistration(mDescriptor.PrincipalInfo(), mDescriptor.Scope());
+  NS_ENSURE_TRUE_VOID(mInfo);
+
+  mInfo->AddInstance(this, mDescriptor);
+  mListeningForEvents = true;
 }
 
 void ServiceWorkerRegistrationMainThread::StopListeningForEvents() {
@@ -71,33 +78,69 @@ void ServiceWorkerRegistrationMainThread::StopListeningForEvents() {
     return;
   }
 
-  RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
-  if (swm) {
-    swm->RemoveRegistrationEventListener(mScope, this);
-  }
+  MOZ_DIAGNOSTIC_ASSERT(mInfo);
+  mInfo->RemoveInstance(this);
+  mInfo = nullptr;
+
   mListeningForEvents = false;
 }
 
 void ServiceWorkerRegistrationMainThread::RegistrationRemovedInternal() {
   MOZ_ASSERT(NS_IsMainThread());
-
+  // Its possible for the binding object to be collected while we the
+  // runnable to call this method is in the event queue.  Double check
+  // whether there is still anything to do here.
+  if (mOuter) {
+    mOuter->RegistrationRemoved();
+  }
   StopListeningForEvents();
-
-  // Since the registration is effectively dead in the SWM we can break
-  // the ref-cycle and let the binding object clean up.
-  mOuter = nullptr;
 }
 
-void ServiceWorkerRegistrationMainThread::UpdateFound() {
-  mOuter->DispatchTrustedEvent(NS_LITERAL_STRING("updatefound"));
-}
-
+// NB: These functions use NS_ENSURE_TRUE_VOID to be noisy about preconditions
+// that would otherwise cause things to silently not happen if they were false.
 void ServiceWorkerRegistrationMainThread::UpdateState(
     const ServiceWorkerRegistrationDescriptor& aDescriptor) {
-  mOuter->UpdateState(aDescriptor);
+  NS_ENSURE_TRUE_VOID(mOuter);
+
+  nsIGlobalObject* global = mOuter->GetParentObject();
+  NS_ENSURE_TRUE_VOID(global);
+
+  RefPtr<ServiceWorkerRegistrationMainThread> self = this;
+  nsCOMPtr<nsIRunnable> r =
+      NS_NewRunnableFunction("ServiceWorkerRegistrationMainThread::UpdateState",
+                             [self, desc = std::move(aDescriptor)]() mutable {
+                               self->mDescriptor = std::move(desc);
+                               NS_ENSURE_TRUE_VOID(self->mOuter);
+                               self->mOuter->UpdateState(self->mDescriptor);
+                             });
+
+  Unused << global->EventTargetFor(TaskCategory::Other)
+                ->Dispatch(r.forget(), NS_DISPATCH_NORMAL);
+}
+
+void ServiceWorkerRegistrationMainThread::FireUpdateFound() {
+  NS_ENSURE_TRUE_VOID(mOuter);
+
+  nsIGlobalObject* global = mOuter->GetParentObject();
+  NS_ENSURE_TRUE_VOID(global);
+
+  RefPtr<ServiceWorkerRegistrationMainThread> self = this;
+  nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
+      "ServiceWorkerRegistrationMainThread::FireUpdateFound", [self]() mutable {
+        NS_ENSURE_TRUE_VOID(self->mOuter);
+        self->mOuter->MaybeDispatchUpdateFoundRunnable();
+      });
+
+  Unused << global->EventTargetFor(TaskCategory::Other)
+                ->Dispatch(r.forget(), NS_DISPATCH_NORMAL);
 }
 
 void ServiceWorkerRegistrationMainThread::RegistrationRemoved() {
+  NS_ENSURE_TRUE_VOID(mOuter);
+
+  nsIGlobalObject* global = mOuter->GetParentObject();
+  NS_ENSURE_TRUE_VOID(global);
+
   // Queue a runnable to clean up the registration.  This is necessary
   // because there may be runnables in the event queue already to
   // update the registration state.  We want to let those run
@@ -105,7 +148,9 @@ void ServiceWorkerRegistrationMainThread::RegistrationRemoved() {
   nsCOMPtr<nsIRunnable> r = NewRunnableMethod(
       "ServiceWorkerRegistrationMainThread::RegistrationRemoved", this,
       &ServiceWorkerRegistrationMainThread::RegistrationRemovedInternal);
-  MOZ_ALWAYS_SUCCEEDS(SystemGroup::Dispatch(TaskCategory::Other, r.forget()));
+
+  Unused << global->EventTargetFor(TaskCategory::Other)
+                ->Dispatch(r.forget(), NS_DISPATCH_NORMAL);
 }
 
 bool ServiceWorkerRegistrationMainThread::MatchesDescriptor(
@@ -147,108 +192,50 @@ void UpdateInternal(nsIPrincipal* aPrincipal, const nsACString& aScope,
 
 class MainThreadUpdateCallback final
     : public ServiceWorkerUpdateFinishCallback {
-  PromiseWindowProxy mPromise;
+  RefPtr<ServiceWorkerRegistrationPromise::Private> mPromise;
 
-  ~MainThreadUpdateCallback() {}
-
- public:
-  explicit MainThreadUpdateCallback(nsPIDOMWindowInner* aWindow,
-                                    Promise* aPromise)
-      : mPromise(aWindow, aPromise) {
-    MOZ_ASSERT(NS_IsMainThread());
+  ~MainThreadUpdateCallback() {
+    mPromise->Reject(NS_ERROR_DOM_ABORT_ERR, __func__);
   }
 
-  void UpdateSucceeded(ServiceWorkerRegistrationInfo* aRegistration) override {
-    RefPtr<Promise> promise = mPromise.Get();
-    nsCOMPtr<nsPIDOMWindowInner> win = mPromise.GetWindow();
-    if (!promise || !win) {
-      return;
-    }
+ public:
+  MainThreadUpdateCallback()
+      : mPromise(new ServiceWorkerRegistrationPromise::Private(__func__)) {}
 
-    nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
-        "MainThreadUpdateCallback::UpdateSucceeded", [promise =
-                                                          Move(promise)]() {
-          promise->MaybeResolveWithUndefined();
-        });
-    MOZ_ALWAYS_SUCCEEDS(
-        win->EventTargetFor(TaskCategory::Other)->Dispatch(r.forget()));
+  void UpdateSucceeded(ServiceWorkerRegistrationInfo* aRegistration) override {
+    mPromise->Resolve(aRegistration->Descriptor(), __func__);
   }
 
   void UpdateFailed(ErrorResult& aStatus) override {
-    if (RefPtr<Promise> promise = mPromise.Get()) {
-      promise->MaybeReject(aStatus);
-    }
-  }
-};
-
-class UpdateResultRunnable final : public WorkerRunnable {
-  RefPtr<PromiseWorkerProxy> mPromiseProxy;
-  IPC::Message mSerializedErrorResult;
-
-  ~UpdateResultRunnable() {}
-
- public:
-  UpdateResultRunnable(PromiseWorkerProxy* aPromiseProxy, ErrorResult& aStatus)
-      : WorkerRunnable(aPromiseProxy->GetWorkerPrivate()),
-        mPromiseProxy(aPromiseProxy) {
-    // ErrorResult is not thread safe.  Serialize it for transfer across
-    // threads.
-    IPC::WriteParam(&mSerializedErrorResult, aStatus);
-    aStatus.SuppressException();
+    mPromise->Reject(std::move(aStatus), __func__);
   }
 
-  bool WorkerRun(JSContext* aCx, WorkerPrivate* aWorkerPrivate) override {
-    // Deserialize the ErrorResult now that we are back in the worker
-    // thread.
-    ErrorResult status;
-    PickleIterator iter = PickleIterator(mSerializedErrorResult);
-    Unused << IPC::ReadParam(&mSerializedErrorResult, &iter, &status);
-
-    Promise* promise = mPromiseProxy->WorkerPromise();
-    if (status.Failed()) {
-      promise->MaybeReject(status);
-    } else {
-      promise->MaybeResolveWithUndefined();
-    }
-    status.SuppressException();
-    mPromiseProxy->CleanUp();
-    return true;
-  }
+  RefPtr<ServiceWorkerRegistrationPromise> Promise() const { return mPromise; }
 };
 
 class WorkerThreadUpdateCallback final
     : public ServiceWorkerUpdateFinishCallback {
-  RefPtr<PromiseWorkerProxy> mPromiseProxy;
+  RefPtr<ThreadSafeWorkerRef> mWorkerRef;
+  RefPtr<ServiceWorkerRegistrationPromise::Private> mPromise;
 
-  ~WorkerThreadUpdateCallback() {}
+  ~WorkerThreadUpdateCallback() = default;
 
  public:
-  explicit WorkerThreadUpdateCallback(PromiseWorkerProxy* aPromiseProxy)
-      : mPromiseProxy(aPromiseProxy) {
+  WorkerThreadUpdateCallback(
+      RefPtr<ThreadSafeWorkerRef>&& aWorkerRef,
+      ServiceWorkerRegistrationPromise::Private* aPromise)
+      : mWorkerRef(std::move(aWorkerRef)), mPromise(aPromise) {
     MOZ_ASSERT(NS_IsMainThread());
   }
 
   void UpdateSucceeded(ServiceWorkerRegistrationInfo* aRegistration) override {
-    ErrorResult rv(NS_OK);
-    Finish(rv);
+    mPromise->Resolve(aRegistration->Descriptor(), __func__);
+    mWorkerRef = nullptr;
   }
 
-  void UpdateFailed(ErrorResult& aStatus) override { Finish(aStatus); }
-
-  void Finish(ErrorResult& aStatus) {
-    if (!mPromiseProxy) {
-      return;
-    }
-
-    RefPtr<PromiseWorkerProxy> proxy = mPromiseProxy.forget();
-
-    MutexAutoLock lock(proxy->Lock());
-    if (proxy->CleanedUp()) {
-      return;
-    }
-
-    RefPtr<UpdateResultRunnable> r = new UpdateResultRunnable(proxy, aStatus);
-    r->Dispatch();
+  void UpdateFailed(ErrorResult& aStatus) override {
+    mPromise->Reject(std::move(aStatus), __func__);
+    mWorkerRef = nullptr;
   }
 };
 
@@ -279,19 +266,17 @@ class SWRUpdateRunnable final : public Runnable {
   };
 
  public:
-  explicit SWRUpdateRunnable(PromiseWorkerProxy* aPromiseProxy)
+  SWRUpdateRunnable(StrongWorkerRef* aWorkerRef,
+                    ServiceWorkerRegistrationPromise::Private* aPromise,
+                    const ServiceWorkerDescriptor& aDescriptor)
       : Runnable("dom::SWRUpdateRunnable"),
-        mPromiseProxy(aPromiseProxy),
-        mDescriptor(
-            aPromiseProxy->GetWorkerPrivate()->GetServiceWorkerDescriptor()),
+        mMutex("SWRUpdateRunnable"),
+        mWorkerRef(new ThreadSafeWorkerRef(aWorkerRef)),
+        mPromise(aPromise),
+        mDescriptor(aDescriptor),
         mDelayed(false) {
-    MOZ_ASSERT(mPromiseProxy);
-
-    // This runnable is used for update calls originating from a worker thread,
-    // which may be delayed in some cases.
-    MOZ_ASSERT(mPromiseProxy->GetWorkerPrivate()->IsServiceWorker());
-    MOZ_ASSERT(mPromiseProxy->GetWorkerPrivate());
-    mPromiseProxy->GetWorkerPrivate()->AssertIsOnWorkerThread();
+    MOZ_DIAGNOSTIC_ASSERT(mWorkerRef);
+    MOZ_DIAGNOSTIC_ASSERT(mPromise);
   }
 
   NS_IMETHOD
@@ -299,21 +284,15 @@ class SWRUpdateRunnable final : public Runnable {
     MOZ_ASSERT(NS_IsMainThread());
     ErrorResult result;
 
-    nsCOMPtr<nsIPrincipal> principal;
-    // UpdateInternal may try to reject the promise synchronously leading
-    // to a deadlock.
-    {
-      MutexAutoLock lock(mPromiseProxy->Lock());
-      if (mPromiseProxy->CleanedUp()) {
-        return NS_OK;
-      }
-
-      principal = mPromiseProxy->GetWorkerPrivate()->GetPrincipal();
+    nsCOMPtr<nsIPrincipal> principal = mDescriptor.GetPrincipal();
+    if (NS_WARN_IF(!principal)) {
+      mPromise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
+      return NS_OK;
     }
-    MOZ_ASSERT(principal);
 
     RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
     if (NS_WARN_IF(!swm)) {
+      mPromise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
       return NS_OK;
     }
 
@@ -361,141 +340,69 @@ class SWRUpdateRunnable final : public Runnable {
       return NS_OK;
     }
 
+    RefPtr<ServiceWorkerRegistrationPromise::Private> promise;
+    {
+      MutexAutoLock lock(mMutex);
+      promise.swap(mPromise);
+    }
+
     RefPtr<WorkerThreadUpdateCallback> cb =
-        new WorkerThreadUpdateCallback(mPromiseProxy);
+        new WorkerThreadUpdateCallback(std::move(mWorkerRef), promise);
     UpdateInternal(principal, mDescriptor.Scope(), cb);
+
     return NS_OK;
   }
 
  private:
-  ~SWRUpdateRunnable() { MOZ_ASSERT(NS_IsMainThread()); }
+  ~SWRUpdateRunnable() {
+    MutexAutoLock lock(mMutex);
+    if (mPromise) {
+      mPromise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
+    }
+  }
 
-  RefPtr<PromiseWorkerProxy> mPromiseProxy;
+  // Protects promise access across threads
+  Mutex mMutex;
+
+  RefPtr<ThreadSafeWorkerRef> mWorkerRef;
+  RefPtr<ServiceWorkerRegistrationPromise::Private> mPromise;
   const ServiceWorkerDescriptor mDescriptor;
   bool mDelayed;
 };
 
 NS_IMPL_ISUPPORTS(SWRUpdateRunnable::TimerCallback, nsITimerCallback)
 
-class UnregisterCallback final : public nsIServiceWorkerUnregisterCallback {
-  PromiseWindowProxy mPromise;
-
- public:
-  NS_DECL_ISUPPORTS
-
-  explicit UnregisterCallback(nsPIDOMWindowInner* aWindow, Promise* aPromise)
-      : mPromise(aWindow, aPromise) {
-    MOZ_ASSERT(aPromise);
-  }
-
-  NS_IMETHOD
-  UnregisterSucceeded(bool aState) override {
-    MOZ_ASSERT(NS_IsMainThread());
-    RefPtr<Promise> promise = mPromise.Get();
-    nsCOMPtr<nsPIDOMWindowInner> win = mPromise.GetWindow();
-    if (!promise || !win) {
-      return NS_OK;
-    }
-
-    nsCOMPtr<nsIRunnable> r =
-        NS_NewRunnableFunction("UnregisterCallback::UnregisterSucceeded",
-                               [ promise = Move(promise), aState ]() {
-                                 promise->MaybeResolve(aState);
-                               });
-    MOZ_ALWAYS_SUCCEEDS(
-        win->EventTargetFor(TaskCategory::Other)->Dispatch(r.forget()));
-    return NS_OK;
-  }
-
-  NS_IMETHOD
-  UnregisterFailed() override {
-    MOZ_ASSERT(NS_IsMainThread());
-
-    if (RefPtr<Promise> promise = mPromise.Get()) {
-      promise->MaybeReject(NS_ERROR_DOM_SECURITY_ERR);
-    }
-    return NS_OK;
-  }
-
- private:
-  ~UnregisterCallback() {}
-};
-
-NS_IMPL_ISUPPORTS(UnregisterCallback, nsIServiceWorkerUnregisterCallback)
-
-class FulfillUnregisterPromiseRunnable final : public WorkerRunnable {
-  RefPtr<PromiseWorkerProxy> mPromiseWorkerProxy;
-  Maybe<bool> mState;
-
- public:
-  FulfillUnregisterPromiseRunnable(PromiseWorkerProxy* aProxy,
-                                   const Maybe<bool>& aState)
-      : WorkerRunnable(aProxy->GetWorkerPrivate()),
-        mPromiseWorkerProxy(aProxy),
-        mState(aState) {
-    MOZ_ASSERT(NS_IsMainThread());
-    MOZ_ASSERT(mPromiseWorkerProxy);
-  }
-
-  bool WorkerRun(JSContext* aCx, WorkerPrivate* aWorkerPrivate) override {
-    RefPtr<Promise> promise = mPromiseWorkerProxy->WorkerPromise();
-    if (mState.isSome()) {
-      promise->MaybeResolve(mState.value());
-    } else {
-      promise->MaybeReject(NS_ERROR_DOM_SECURITY_ERR);
-    }
-
-    mPromiseWorkerProxy->CleanUp();
-    return true;
-  }
-};
-
 class WorkerUnregisterCallback final
     : public nsIServiceWorkerUnregisterCallback {
-  RefPtr<PromiseWorkerProxy> mPromiseWorkerProxy;
+  RefPtr<ThreadSafeWorkerRef> mWorkerRef;
+  RefPtr<GenericPromise::Private> mPromise;
 
  public:
   NS_DECL_ISUPPORTS
 
-  explicit WorkerUnregisterCallback(PromiseWorkerProxy* aProxy)
-      : mPromiseWorkerProxy(aProxy) {
-    MOZ_ASSERT(aProxy);
+  WorkerUnregisterCallback(RefPtr<ThreadSafeWorkerRef>&& aWorkerRef,
+                           RefPtr<GenericPromise::Private>&& aPromise)
+      : mWorkerRef(std::move(aWorkerRef)), mPromise(std::move(aPromise)) {
+    MOZ_DIAGNOSTIC_ASSERT(mWorkerRef);
+    MOZ_DIAGNOSTIC_ASSERT(mPromise);
   }
 
   NS_IMETHOD
   UnregisterSucceeded(bool aState) override {
-    MOZ_ASSERT(NS_IsMainThread());
-    Finish(Some(aState));
+    mPromise->Resolve(aState, __func__);
+    mWorkerRef = nullptr;
     return NS_OK;
   }
 
   NS_IMETHOD
   UnregisterFailed() override {
-    MOZ_ASSERT(NS_IsMainThread());
-    Finish(Nothing());
+    mPromise->Reject(NS_ERROR_DOM_SECURITY_ERR, __func__);
+    mWorkerRef = nullptr;
     return NS_OK;
   }
 
  private:
-  ~WorkerUnregisterCallback() {}
-
-  void Finish(const Maybe<bool>& aState) {
-    MOZ_ASSERT(NS_IsMainThread());
-    if (!mPromiseWorkerProxy) {
-      return;
-    }
-
-    RefPtr<PromiseWorkerProxy> proxy = mPromiseWorkerProxy.forget();
-    MutexAutoLock lock(proxy->Lock());
-    if (proxy->CleanedUp()) {
-      return;
-    }
-
-    RefPtr<WorkerRunnable> r =
-        new FulfillUnregisterPromiseRunnable(proxy, aState);
-
-    r->Dispatch();
-  }
+  ~WorkerUnregisterCallback() = default;
 };
 
 NS_IMPL_ISUPPORTS(WorkerUnregisterCallback, nsIServiceWorkerUnregisterCallback);
@@ -505,265 +412,210 @@ NS_IMPL_ISUPPORTS(WorkerUnregisterCallback, nsIServiceWorkerUnregisterCallback);
  * resolve the worker Promise (which doesn't exist by that point).
  */
 class StartUnregisterRunnable final : public Runnable {
-  RefPtr<PromiseWorkerProxy> mPromiseWorkerProxy;
-  const nsString mScope;
+  // The promise is protected by the mutex.
+  Mutex mMutex;
+
+  RefPtr<ThreadSafeWorkerRef> mWorkerRef;
+  RefPtr<GenericPromise::Private> mPromise;
+  const ServiceWorkerRegistrationDescriptor mDescriptor;
+
+  ~StartUnregisterRunnable() {
+    MutexAutoLock lock(mMutex);
+    if (mPromise) {
+      mPromise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
+    }
+  }
 
  public:
-  StartUnregisterRunnable(PromiseWorkerProxy* aProxy, const nsAString& aScope)
+  StartUnregisterRunnable(
+      StrongWorkerRef* aWorkerRef, GenericPromise::Private* aPromise,
+      const ServiceWorkerRegistrationDescriptor& aDescriptor)
       : Runnable("dom::StartUnregisterRunnable"),
-        mPromiseWorkerProxy(aProxy),
-        mScope(aScope) {
-    MOZ_ASSERT(aProxy);
+        mMutex("StartUnregisterRunnable"),
+        mWorkerRef(new ThreadSafeWorkerRef(aWorkerRef)),
+        mPromise(aPromise),
+        mDescriptor(aDescriptor) {
+    MOZ_DIAGNOSTIC_ASSERT(mWorkerRef);
+    MOZ_DIAGNOSTIC_ASSERT(mPromise);
   }
 
   NS_IMETHOD
   Run() override {
     MOZ_ASSERT(NS_IsMainThread());
 
-    // XXXnsm: There is a rare chance of this failing if the worker gets
-    // destroyed. In that case, unregister() called from a SW is no longer
-    // guaranteed to run. We should fix this by having a main thread proxy
-    // maintain a strongref to ServiceWorkerRegistrationInfo and use its
-    // principal. Can that be trusted?
-    nsCOMPtr<nsIPrincipal> principal;
-    {
-      MutexAutoLock lock(mPromiseWorkerProxy->Lock());
-      if (mPromiseWorkerProxy->CleanedUp()) {
-        return NS_OK;
-      }
-
-      WorkerPrivate* worker = mPromiseWorkerProxy->GetWorkerPrivate();
-      MOZ_ASSERT(worker);
-      principal = worker->GetPrincipal();
+    nsCOMPtr<nsIPrincipal> principal = mDescriptor.GetPrincipal();
+    if (!principal) {
+      mPromise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
+      return NS_OK;
     }
-    MOZ_ASSERT(principal);
 
-    RefPtr<WorkerUnregisterCallback> cb =
-        new WorkerUnregisterCallback(mPromiseWorkerProxy);
     nsCOMPtr<nsIServiceWorkerManager> swm =
         mozilla::services::GetServiceWorkerManager();
-    nsresult rv = swm->Unregister(principal, cb, mScope);
+    if (!swm) {
+      mPromise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
+      return NS_OK;
+    }
+
+    RefPtr<GenericPromise::Private> promise;
+    {
+      MutexAutoLock lock(mMutex);
+      promise = mPromise.forget();
+    }
+
+    RefPtr<WorkerUnregisterCallback> cb =
+        new WorkerUnregisterCallback(std::move(mWorkerRef), std::move(promise));
+
+    nsresult rv = swm->Unregister(principal, cb,
+                                  NS_ConvertUTF8toUTF16(mDescriptor.Scope()));
     if (NS_WARN_IF(NS_FAILED(rv))) {
-      cb->UnregisterFailed();
+      mPromise->Reject(rv, __func__);
+      return NS_OK;
     }
 
     return NS_OK;
   }
 };
+
 }  // namespace
 
-already_AddRefed<Promise> ServiceWorkerRegistrationMainThread::Update(
-    ErrorResult& aRv) {
+void ServiceWorkerRegistrationMainThread::Update(
+    ServiceWorkerRegistrationCallback&& aSuccessCB,
+    ServiceWorkerFailureCallback&& aFailureCB) {
   MOZ_ASSERT(NS_IsMainThread());
-  if (!mOuter) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return nullptr;
+  MOZ_DIAGNOSTIC_ASSERT(mOuter);
+
+  nsIGlobalObject* global = mOuter->GetParentObject();
+  if (!global) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
-  nsCOMPtr<nsIGlobalObject> go = mOuter->GetParentObject();
-  if (!go) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
+  nsCOMPtr<nsIPrincipal> principal = mDescriptor.GetPrincipal();
+  if (!principal) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
-  RefPtr<Promise> promise = Promise::Create(go, aRv);
-  if (NS_WARN_IF(aRv.Failed())) {
-    return nullptr;
-  }
+  RefPtr<MainThreadUpdateCallback> cb = new MainThreadUpdateCallback();
+  UpdateInternal(principal, NS_ConvertUTF16toUTF8(mScope), cb);
 
-  nsCOMPtr<nsIDocument> doc = mOuter->GetOwner()->GetExtantDoc();
-  MOZ_ASSERT(doc);
+  auto holder =
+      MakeRefPtr<DOMMozPromiseRequestHolder<ServiceWorkerRegistrationPromise>>(
+          global);
 
-  RefPtr<MainThreadUpdateCallback> cb =
-      new MainThreadUpdateCallback(mOuter->GetOwner(), promise);
-  UpdateInternal(doc->NodePrincipal(), NS_ConvertUTF16toUTF8(mScope), cb);
-
-  return promise.forget();
+  cb->Promise()
+      ->Then(
+          global->EventTargetFor(TaskCategory::Other), __func__,
+          [successCB = std::move(aSuccessCB),
+           holder](const ServiceWorkerRegistrationDescriptor& aDescriptor) {
+            holder->Complete();
+            successCB(aDescriptor);
+          },
+          [failureCB = std::move(aFailureCB),
+           holder](const CopyableErrorResult& aRv) {
+            holder->Complete();
+            failureCB(CopyableErrorResult(aRv));
+          })
+      ->Track(*holder);
 }
 
-already_AddRefed<Promise> ServiceWorkerRegistrationMainThread::Unregister(
-    ErrorResult& aRv) {
+void ServiceWorkerRegistrationMainThread::Unregister(
+    ServiceWorkerBoolCallback&& aSuccessCB,
+    ServiceWorkerFailureCallback&& aFailureCB) {
   MOZ_ASSERT(NS_IsMainThread());
-  if (!mOuter) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return nullptr;
-  }
+  MOZ_DIAGNOSTIC_ASSERT(mOuter);
 
-  nsCOMPtr<nsIGlobalObject> go = mOuter->GetParentObject();
-  if (!go) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  // Although the spec says that the same-origin checks should also be done
-  // asynchronously, we do them in sync because the Promise created by the
-  // WebIDL infrastructure due to a returned error will be resolved
-  // asynchronously. We aren't making any internal state changes in these
-  // checks, so ordering of multiple calls is not affected.
-  nsCOMPtr<nsIDocument> document = mOuter->GetOwner()->GetExtantDoc();
-  if (!document) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  nsCOMPtr<nsIURI> scopeURI;
-  nsCOMPtr<nsIURI> baseURI = document->GetBaseURI();
-  // "If the origin of scope is not client's origin..."
-  nsresult rv = NS_NewURI(getter_AddRefs(scopeURI), mScope, nullptr, baseURI);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    aRv.Throw(NS_ERROR_DOM_SECURITY_ERR);
-    return nullptr;
-  }
-
-  nsCOMPtr<nsIPrincipal> documentPrincipal = document->NodePrincipal();
-  rv = documentPrincipal->CheckMayLoad(scopeURI, true /* report */,
-                                       false /* allowIfInheritsPrinciple */);
-  if (NS_FAILED(rv)) {
-    aRv.Throw(NS_ERROR_DOM_SECURITY_ERR);
-    return nullptr;
-  }
-
-  nsAutoCString uriSpec;
-  aRv = scopeURI->GetSpecIgnoringRef(uriSpec);
-  if (NS_WARN_IF(aRv.Failed())) {
-    return nullptr;
+  nsIGlobalObject* global = mOuter->GetParentObject();
+  if (!global) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
   nsCOMPtr<nsIServiceWorkerManager> swm =
       mozilla::services::GetServiceWorkerManager();
-
-  RefPtr<Promise> promise = Promise::Create(go, aRv);
-  if (NS_WARN_IF(aRv.Failed())) {
-    return nullptr;
+  if (!swm) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
-  RefPtr<UnregisterCallback> cb =
-      new UnregisterCallback(mOuter->GetOwner(), promise);
-
-  NS_ConvertUTF8toUTF16 scope(uriSpec);
-  aRv = swm->Unregister(documentPrincipal, cb, scope);
-  if (aRv.Failed()) {
-    return nullptr;
+  nsCOMPtr<nsIPrincipal> principal = mDescriptor.GetPrincipal();
+  if (!principal) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
-  return promise.forget();
-}
+  RefPtr<UnregisterCallback> cb = new UnregisterCallback();
 
-// Notification API extension.
-already_AddRefed<Promise> ServiceWorkerRegistrationMainThread::ShowNotification(
-    JSContext* aCx, const nsAString& aTitle,
-    const NotificationOptions& aOptions, ErrorResult& aRv) {
-  MOZ_ASSERT(NS_IsMainThread());
-  if (!mOuter) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return nullptr;
+  nsresult rv = swm->Unregister(principal, cb,
+                                NS_ConvertUTF8toUTF16(mDescriptor.Scope()));
+  if (NS_FAILED(rv)) {
+    aFailureCB(CopyableErrorResult(rv));
+    return;
   }
 
-  nsCOMPtr<nsPIDOMWindowInner> window = mOuter->GetOwner();
-  if (NS_WARN_IF(!window)) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
+  auto holder = MakeRefPtr<DOMMozPromiseRequestHolder<GenericPromise>>(global);
 
-  nsCOMPtr<nsIDocument> doc = window->GetExtantDoc();
-  if (NS_WARN_IF(!doc)) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  RefPtr<ServiceWorker> worker = mOuter->GetActive();
-  if (!worker) {
-    aRv.ThrowTypeError<MSG_NO_ACTIVE_WORKER>(mScope);
-    return nullptr;
-  }
-
-  RefPtr<Promise> p = Notification::ShowPersistentNotification(
-      aCx, window->AsGlobal(), mScope, aTitle, aOptions, aRv);
-  if (NS_WARN_IF(aRv.Failed())) {
-    return nullptr;
-  }
-
-  return p.forget();
-}
-
-already_AddRefed<Promise> ServiceWorkerRegistrationMainThread::GetNotifications(
-    const GetNotificationOptions& aOptions, ErrorResult& aRv) {
-  MOZ_ASSERT(NS_IsMainThread());
-  if (!mOuter) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return nullptr;
-  }
-  nsCOMPtr<nsPIDOMWindowInner> window = mOuter->GetOwner();
-  if (NS_WARN_IF(!window)) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return nullptr;
-  }
-  return Notification::Get(window, aOptions, mScope, aRv);
-}
-
-already_AddRefed<PushManager>
-ServiceWorkerRegistrationMainThread::GetPushManager(JSContext* aCx,
-                                                    ErrorResult& aRv) {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  if (!mOuter) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return nullptr;
-  }
-
-  nsCOMPtr<nsIGlobalObject> globalObject = mOuter->GetParentObject();
-
-  if (!globalObject) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  GlobalObject global(aCx, globalObject->GetGlobalJSObject());
-  RefPtr<PushManager> ret = PushManager::Constructor(global, mScope, aRv);
-  if (aRv.Failed()) {
-    return nullptr;
-  }
-
-  return ret.forget();
+  cb->Promise()
+      ->Then(
+          global->EventTargetFor(TaskCategory::Other), __func__,
+          [successCB = std::move(aSuccessCB), holder](bool aResult) {
+            holder->Complete();
+            successCB(aResult);
+          },
+          [failureCB = std::move(aFailureCB), holder](nsresult aRv) {
+            holder->Complete();
+            failureCB(CopyableErrorResult(aRv));
+          })
+      ->Track(*holder);
 }
 
 ////////////////////////////////////////////////////
 // Worker Thread implementation
 
 class WorkerListener final : public ServiceWorkerRegistrationListener {
-  // Accessed on the main thread.
-  WorkerPrivate* mWorkerPrivate;
-  const nsString mScope;
+  ServiceWorkerRegistrationDescriptor mDescriptor;
+  nsMainThreadPtrHandle<ServiceWorkerRegistrationInfo> mInfo;
+  nsCOMPtr<nsISerialEventTarget> mEventTarget;
   bool mListeningForEvents;
 
-  // Accessed on the worker thread.
+  // Set and unset on worker thread, used on main-thread and protected by mutex.
   ServiceWorkerRegistrationWorkerThread* mRegistration;
+
+  Mutex mMutex;
 
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(WorkerListener, override)
 
-  WorkerListener(WorkerPrivate* aWorkerPrivate,
-                 ServiceWorkerRegistrationWorkerThread* aReg,
-                 const nsAString& aScope)
-      : mWorkerPrivate(aWorkerPrivate),
-        mScope(aScope),
+  WorkerListener(ServiceWorkerRegistrationWorkerThread* aReg,
+                 const ServiceWorkerRegistrationDescriptor& aDescriptor,
+                 nsISerialEventTarget* aEventTarget)
+      : mDescriptor(aDescriptor),
+        mEventTarget(aEventTarget),
         mListeningForEvents(false),
-        mRegistration(aReg) {
-    MOZ_ASSERT(mWorkerPrivate);
-    mWorkerPrivate->AssertIsOnWorkerThread();
+        mRegistration(aReg),
+        mMutex("WorkerListener::mMutex") {
+    MOZ_ASSERT(IsCurrentThreadRunningWorker());
+    MOZ_ASSERT(mEventTarget);
     MOZ_ASSERT(mRegistration);
   }
 
   void StartListeningForEvents() {
     MOZ_ASSERT(NS_IsMainThread());
-    MOZ_ASSERT(!mListeningForEvents);
-    MOZ_ASSERT(mWorkerPrivate);
+    MOZ_DIAGNOSTIC_ASSERT(!mListeningForEvents);
+    MOZ_DIAGNOSTIC_ASSERT(!mInfo);
+
     RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
-    if (swm) {
-      // FIXME(nsm): Maybe the function shouldn't take an explicit scope.
-      swm->AddRegistrationEventListener(mScope, this);
-      mListeningForEvents = true;
-    }
+    NS_ENSURE_TRUE_VOID(swm);
+
+    RefPtr<ServiceWorkerRegistrationInfo> info =
+        swm->GetRegistration(mDescriptor.PrincipalInfo(), mDescriptor.Scope());
+    NS_ENSURE_TRUE_VOID(info);
+
+    mInfo = new nsMainThreadPtrHolder<ServiceWorkerRegistrationInfo>(
+        "WorkerListener::mInfo", info);
+
+    mInfo->AddInstance(this, mDescriptor);
+    mListeningForEvents = true;
   }
 
   void StopListeningForEvents() {
@@ -773,31 +625,56 @@ class WorkerListener final : public ServiceWorkerRegistrationListener {
       return;
     }
 
-    RefPtr<ServiceWorkerManager> swm = ServiceWorkerManager::GetInstance();
-
-    // We aren't going to need this anymore and we shouldn't hold on since the
-    // worker will go away soon.
-    mWorkerPrivate = nullptr;
-
-    if (swm) {
-      // FIXME(nsm): Maybe the function shouldn't take an explicit scope.
-      swm->RemoveRegistrationEventListener(mScope, this);
-      mListeningForEvents = false;
-    }
+    MOZ_DIAGNOSTIC_ASSERT(mInfo);
+    mInfo->RemoveInstance(this);
+    mListeningForEvents = false;
   }
 
   // ServiceWorkerRegistrationListener
-  void UpdateFound() override;
-
   void UpdateState(
       const ServiceWorkerRegistrationDescriptor& aDescriptor) override {
     MOZ_ASSERT(NS_IsMainThread());
-    // TODO: Not implemented
+
+    mDescriptor = aDescriptor;
+
+    nsCOMPtr<nsIRunnable> r =
+        NewCancelableRunnableMethod<ServiceWorkerRegistrationDescriptor>(
+            "WorkerListener::UpdateState", this,
+            &WorkerListener::UpdateStateOnWorkerThread, aDescriptor);
+
+    Unused << mEventTarget->Dispatch(r.forget(), NS_DISPATCH_NORMAL);
+  }
+
+  void FireUpdateFound() override {
+    MOZ_ASSERT(NS_IsMainThread());
+
+    nsCOMPtr<nsIRunnable> r = NewCancelableRunnableMethod(
+        "WorkerListener::FireUpdateFound", this,
+        &WorkerListener::FireUpdateFoundOnWorkerThread);
+
+    Unused << mEventTarget->Dispatch(r.forget(), NS_DISPATCH_NORMAL);
+  }
+
+  void UpdateStateOnWorkerThread(
+      const ServiceWorkerRegistrationDescriptor& aDescriptor) {
+    MOZ_ASSERT(IsCurrentThreadRunningWorker());
+    if (mRegistration) {
+      mRegistration->UpdateState(aDescriptor);
+    }
+  }
+
+  void FireUpdateFoundOnWorkerThread() {
+    MOZ_ASSERT(IsCurrentThreadRunningWorker());
+    if (mRegistration) {
+      mRegistration->FireUpdateFound();
+    }
   }
 
   void RegistrationRemoved() override;
 
-  void GetScope(nsAString& aScope) const override { aScope = mScope; }
+  void GetScope(nsAString& aScope) const override {
+    CopyUTF8toUTF16(mDescriptor.Scope(), aScope);
+  }
 
   bool MatchesDescriptor(
       const ServiceWorkerRegistrationDescriptor& aDescriptor) override {
@@ -805,17 +682,9 @@ class WorkerListener final : public ServiceWorkerRegistrationListener {
     return false;
   }
 
-  ServiceWorkerRegistrationWorkerThread* GetRegistration() const {
-    if (mWorkerPrivate) {
-      mWorkerPrivate->AssertIsOnWorkerThread();
-    }
-    return mRegistration;
-  }
-
   void ClearRegistration() {
-    if (mWorkerPrivate) {
-      mWorkerPrivate->AssertIsOnWorkerThread();
-    }
+    MOZ_ASSERT(IsCurrentThreadRunningWorker());
+    MutexAutoLock lock(mMutex);
     mRegistration = nullptr;
   }
 
@@ -824,11 +693,9 @@ class WorkerListener final : public ServiceWorkerRegistrationListener {
 };
 
 ServiceWorkerRegistrationWorkerThread::ServiceWorkerRegistrationWorkerThread(
-    WorkerPrivate* aWorkerPrivate,
     const ServiceWorkerRegistrationDescriptor& aDescriptor)
-    : WorkerHolder("ServiceWorkerRegistrationWorkerThread"),
-      mOuter(nullptr),
-      mWorkerPrivate(aWorkerPrivate),
+    : mOuter(nullptr),
+      mDescriptor(aDescriptor),
       mScope(NS_ConvertUTF8toUTF16(aDescriptor.Scope())) {}
 
 ServiceWorkerRegistrationWorkerThread::
@@ -838,7 +705,12 @@ ServiceWorkerRegistrationWorkerThread::
 }
 
 void ServiceWorkerRegistrationWorkerThread::RegistrationRemoved() {
-  mOuter = nullptr;
+  // The SWM notifying us that the registration was removed on the MT may
+  // race with ClearServiceWorkerRegistration() on the worker thread.  So
+  // double-check that mOuter is still valid.
+  if (mOuter) {
+    mOuter->RegistrationRemoved();
+  }
 }
 
 void ServiceWorkerRegistrationWorkerThread::SetServiceWorkerRegistration(
@@ -856,69 +728,125 @@ void ServiceWorkerRegistrationWorkerThread::ClearServiceWorkerRegistration(
   mOuter = nullptr;
 }
 
-already_AddRefed<Promise> ServiceWorkerRegistrationWorkerThread::Update(
-    ErrorResult& aRv) {
-  WorkerPrivate* worker = GetCurrentThreadWorkerPrivate();
-  MOZ_ASSERT(worker);
-  worker->AssertIsOnWorkerThread();
+void ServiceWorkerRegistrationWorkerThread::Update(
+    ServiceWorkerRegistrationCallback&& aSuccessCB,
+    ServiceWorkerFailureCallback&& aFailureCB) {
+  if (NS_WARN_IF(!mWorkerRef->GetPrivate())) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
+  }
 
-  RefPtr<Promise> promise = Promise::Create(worker->GlobalScope(), aRv);
-  if (aRv.Failed()) {
-    return nullptr;
+  RefPtr<StrongWorkerRef> workerRef = StrongWorkerRef::Create(
+      mWorkerRef->GetPrivate(), "ServiceWorkerRegistration::Update");
+  if (NS_WARN_IF(!workerRef)) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
+  }
+
+  nsIGlobalObject* global = workerRef->Private()->GlobalScope();
+  if (NS_WARN_IF(!global)) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
+  }
+
+  // Eventually we need to support all workers, but for right now this
+  // code assumes we're on a service worker global as self.registration.
+  if (NS_WARN_IF(!workerRef->Private()->IsServiceWorker())) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
   // Avoid infinite update loops by ignoring update() calls during top
   // level script evaluation.  See:
   // https://github.com/slightlyoff/ServiceWorker/issues/800
-  if (worker->LoadScriptAsPartOfLoadingServiceWorkerScript()) {
-    promise->MaybeResolveWithUndefined();
-    return promise.forget();
+  if (workerRef->Private()->IsLoadingWorkerScript()) {
+    aSuccessCB(mDescriptor);
+    return;
   }
 
-  RefPtr<PromiseWorkerProxy> proxy =
-      PromiseWorkerProxy::Create(worker, promise);
-  if (!proxy) {
-    aRv.Throw(NS_ERROR_DOM_ABORT_ERR);
-    return nullptr;
+  auto promise =
+      MakeRefPtr<ServiceWorkerRegistrationPromise::Private>(__func__);
+  auto holder =
+      MakeRefPtr<DOMMozPromiseRequestHolder<ServiceWorkerRegistrationPromise>>(
+          global);
+
+  promise
+      ->Then(
+          global->EventTargetFor(TaskCategory::Other), __func__,
+          [successCB = std::move(aSuccessCB),
+           holder](const ServiceWorkerRegistrationDescriptor& aDescriptor) {
+            holder->Complete();
+            successCB(aDescriptor);
+          },
+          [failureCB = std::move(aFailureCB),
+           holder](const CopyableErrorResult& aRv) {
+            holder->Complete();
+            failureCB(CopyableErrorResult(aRv));
+          })
+      ->Track(*holder);
+
+  RefPtr<SWRUpdateRunnable> r = new SWRUpdateRunnable(
+      workerRef, promise, workerRef->Private()->GetServiceWorkerDescriptor());
+
+  nsresult rv = workerRef->Private()->DispatchToMainThread(r.forget());
+  if (NS_FAILED(rv)) {
+    promise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
+    return;
   }
-
-  RefPtr<SWRUpdateRunnable> r = new SWRUpdateRunnable(proxy);
-  MOZ_ALWAYS_SUCCEEDS(worker->DispatchToMainThread(r.forget()));
-
-  return promise.forget();
 }
 
-already_AddRefed<Promise> ServiceWorkerRegistrationWorkerThread::Unregister(
-    ErrorResult& aRv) {
-  WorkerPrivate* worker = GetCurrentThreadWorkerPrivate();
-  MOZ_ASSERT(worker);
-  worker->AssertIsOnWorkerThread();
-
-  if (!worker->IsServiceWorker()) {
-    // For other workers, the registration probably originated from
-    // getRegistration(), so we may have to validate origin etc. Let's do this
-    // this later.
-    aRv.Throw(NS_ERROR_DOM_SECURITY_ERR);
-    return nullptr;
+void ServiceWorkerRegistrationWorkerThread::Unregister(
+    ServiceWorkerBoolCallback&& aSuccessCB,
+    ServiceWorkerFailureCallback&& aFailureCB) {
+  if (NS_WARN_IF(!mWorkerRef->GetPrivate())) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
-  RefPtr<Promise> promise = Promise::Create(worker->GlobalScope(), aRv);
-  if (aRv.Failed()) {
-    return nullptr;
+  RefPtr<StrongWorkerRef> workerRef =
+      StrongWorkerRef::Create(mWorkerRef->GetPrivate(), __func__);
+  if (NS_WARN_IF(!workerRef)) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
 
-  RefPtr<PromiseWorkerProxy> proxy =
-      PromiseWorkerProxy::Create(worker, promise);
-  if (!proxy) {
-    aRv.Throw(NS_ERROR_DOM_ABORT_ERR);
-    return nullptr;
+  // Eventually we need to support all workers, but for right now this
+  // code assumes we're on a service worker global as self.registration.
+  if (NS_WARN_IF(!workerRef->Private()->IsServiceWorker())) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
   }
+
+  nsIGlobalObject* global = workerRef->Private()->GlobalScope();
+  if (!global) {
+    aFailureCB(CopyableErrorResult(NS_ERROR_DOM_INVALID_STATE_ERR));
+    return;
+  }
+
+  auto promise = MakeRefPtr<GenericPromise::Private>(__func__);
+  auto holder = MakeRefPtr<DOMMozPromiseRequestHolder<GenericPromise>>(global);
+
+  promise
+      ->Then(
+          global->EventTargetFor(TaskCategory::Other), __func__,
+          [successCB = std::move(aSuccessCB), holder](bool aResult) {
+            holder->Complete();
+            successCB(aResult);
+          },
+          [failureCB = std::move(aFailureCB), holder](nsresult aRv) {
+            holder->Complete();
+            failureCB(CopyableErrorResult(aRv));
+          })
+      ->Track(*holder);
 
   RefPtr<StartUnregisterRunnable> r =
-      new StartUnregisterRunnable(proxy, mScope);
-  MOZ_ALWAYS_SUCCEEDS(worker->DispatchToMainThread(r.forget()));
+      new StartUnregisterRunnable(workerRef, promise, mDescriptor);
 
-  return promise.forget();
+  nsresult rv = workerRef->Private()->DispatchToMainThread(r);
+  if (NS_FAILED(rv)) {
+    promise->Reject(NS_ERROR_DOM_INVALID_STATE_ERR, __func__);
+    return;
+  }
 }
 
 void ServiceWorkerRegistrationWorkerThread::InitListener() {
@@ -927,12 +855,24 @@ void ServiceWorkerRegistrationWorkerThread::InitListener() {
   MOZ_ASSERT(worker);
   worker->AssertIsOnWorkerThread();
 
-  mListener = new WorkerListener(worker, this, mScope);
-  if (!HoldWorker(worker, Closing)) {
-    mListener = nullptr;
-    NS_WARNING("Could not add feature");
+  RefPtr<ServiceWorkerRegistrationWorkerThread> self = this;
+  mWorkerRef = WeakWorkerRef::Create(worker, [self]() {
+    self->ReleaseListener();
+
+    // Break the ref-cycle immediately when the worker thread starts to
+    // teardown.  We must make sure its GC'd before the worker RuntimeService is
+    // destroyed.  The WorkerListener may not be able to post a runnable
+    // clearing this value after shutdown begins and thus delaying cleanup too
+    // late.
+    self->mOuter = nullptr;
+  });
+
+  if (NS_WARN_IF(!mWorkerRef)) {
     return;
   }
+
+  mListener =
+      new WorkerListener(this, mDescriptor, worker->HybridEventTarget());
 
   nsCOMPtr<nsIRunnable> r =
       NewRunnableMethod("dom::WorkerListener::StartListeningForEvents",
@@ -945,69 +885,32 @@ void ServiceWorkerRegistrationWorkerThread::ReleaseListener() {
     return;
   }
 
-  // We can assert worker here, because:
-  // 1) We always HoldWorker, so if the worker has shutdown already, we'll
-  //    have received Notify and removed it. If HoldWorker had failed,
-  //    mListener will be null and we won't reach here.
-  // 2) Otherwise, worker is still around even if we are going away.
-  mWorkerPrivate->AssertIsOnWorkerThread();
-  ReleaseWorker();
+  MOZ_ASSERT(IsCurrentThreadRunningWorker());
 
   mListener->ClearRegistration();
 
-  nsCOMPtr<nsIRunnable> r =
-      NewRunnableMethod("dom::WorkerListener::StopListeningForEvents",
-                        mListener, &WorkerListener::StopListeningForEvents);
-  MOZ_ALWAYS_SUCCEEDS(mWorkerPrivate->DispatchToMainThread(r.forget()));
+  nsCOMPtr<nsIRunnable> r = NewCancelableRunnableMethod(
+      "dom::WorkerListener::StopListeningForEvents", mListener,
+      &WorkerListener::StopListeningForEvents);
+  // Calling GetPrivate() is safe because this method is called when the
+  // WorkerRef is notified.
+  MOZ_ALWAYS_SUCCEEDS(
+      mWorkerRef->GetPrivate()->DispatchToMainThread(r.forget()));
 
   mListener = nullptr;
-  mWorkerPrivate = nullptr;
+  mWorkerRef = nullptr;
 }
 
-bool ServiceWorkerRegistrationWorkerThread::Notify(WorkerStatus aStatus) {
-  ReleaseListener();
-
-  // Break the ref-cycle immediately when the worker thread starts to
-  // teardown.  We must make sure its GC'd before the worker RuntimeService
-  // is destroyed.  The WorkerListener may not be able to post a runnable
-  // clearing this value after shutdown begins and thus delaying cleanup
-  // too late.
-  mOuter = nullptr;
-
-  return true;
+void ServiceWorkerRegistrationWorkerThread::UpdateState(
+    const ServiceWorkerRegistrationDescriptor& aDescriptor) {
+  if (mOuter) {
+    mOuter->UpdateState(aDescriptor);
+  }
 }
 
-class FireUpdateFoundRunnable final : public WorkerRunnable {
-  RefPtr<WorkerListener> mListener;
-
- public:
-  FireUpdateFoundRunnable(WorkerPrivate* aWorkerPrivate,
-                          WorkerListener* aListener)
-      : WorkerRunnable(aWorkerPrivate), mListener(aListener) {
-    // Need this assertion for now since runnables which modify busy count can
-    // only be dispatched from parent thread to worker thread and we don't deal
-    // with nested workers. SW threads can't be nested.
-    MOZ_ASSERT(aWorkerPrivate->IsServiceWorker());
-  }
-
-  bool WorkerRun(JSContext* aCx, WorkerPrivate* aWorkerPrivate) override {
-    MOZ_ASSERT(aWorkerPrivate);
-    aWorkerPrivate->AssertIsOnWorkerThread();
-
-    ServiceWorkerRegistrationWorkerThread* reg = mListener->GetRegistration();
-    if (reg) {
-      reg->UpdateFound();
-    }
-    return true;
-  }
-};
-
-void WorkerListener::UpdateFound() {
-  MOZ_ASSERT(NS_IsMainThread());
-  if (mWorkerPrivate) {
-    RefPtr<FireUpdateFoundRunnable> r =
-        new FireUpdateFoundRunnable(mWorkerPrivate, this);
-    Unused << NS_WARN_IF(!r->Dispatch());
+void ServiceWorkerRegistrationWorkerThread::FireUpdateFound() {
+  if (mOuter) {
+    mOuter->MaybeDispatchUpdateFoundRunnable();
   }
 }
 
@@ -1027,66 +930,35 @@ class RegistrationRemovedWorkerRunnable final : public WorkerRunnable {
   bool WorkerRun(JSContext* aCx, WorkerPrivate* aWorkerPrivate) override {
     MOZ_ASSERT(aWorkerPrivate);
     aWorkerPrivate->AssertIsOnWorkerThread();
-
-    ServiceWorkerRegistrationWorkerThread* reg = mListener->GetRegistration();
-    if (reg) {
-      reg->RegistrationRemoved();
-    }
+    mListener->RegistrationRemoved();
     return true;
   }
 };
 
 void WorkerListener::RegistrationRemoved() {
-  MOZ_ASSERT(NS_IsMainThread());
-  if (!mWorkerPrivate) {
+  MutexAutoLock lock(mMutex);
+  if (!mRegistration) {
     return;
   }
 
-  RefPtr<WorkerRunnable> r =
-      new RegistrationRemovedWorkerRunnable(mWorkerPrivate, this);
-  Unused << r->Dispatch();
+  if (NS_IsMainThread()) {
+    RefPtr<WorkerRunnable> r = new RegistrationRemovedWorkerRunnable(
+        mRegistration->GetWorkerPrivate(lock), this);
+    Unused << r->Dispatch();
 
-  StopListeningForEvents();
-}
-
-// Notification API extension.
-already_AddRefed<Promise>
-ServiceWorkerRegistrationWorkerThread::ShowNotification(
-    JSContext* aCx, const nsAString& aTitle,
-    const NotificationOptions& aOptions, ErrorResult& aRv) {
-  if (!mWorkerPrivate) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return nullptr;
+    StopListeningForEvents();
+    return;
   }
 
-  // Until Bug 1131324 exposes ServiceWorkerContainer on workers,
-  // ShowPersistentNotification() checks for valid active worker while it is
-  // also verifying scope so that we block the worker on the main thread only
-  // once.
-  RefPtr<Promise> p = Notification::ShowPersistentNotification(
-      aCx, mWorkerPrivate->GlobalScope(), mScope, aTitle, aOptions, aRv);
-  if (NS_WARN_IF(aRv.Failed())) {
-    return nullptr;
-  }
-
-  return p.forget();
+  mRegistration->RegistrationRemoved();
 }
 
-already_AddRefed<Promise>
-ServiceWorkerRegistrationWorkerThread::GetNotifications(
-    const GetNotificationOptions& aOptions, ErrorResult& aRv) {
-  return Notification::WorkerGet(mWorkerPrivate, aOptions, mScope, aRv);
-}
-
-already_AddRefed<PushManager>
-ServiceWorkerRegistrationWorkerThread::GetPushManager(JSContext* aCx,
-                                                      ErrorResult& aRv) {
-  RefPtr<PushManager> ret = new PushManager(mScope);
-  return ret.forget();
-}
-
-void ServiceWorkerRegistrationWorkerThread::UpdateFound() {
-  mOuter->DispatchTrustedEvent(NS_LITERAL_STRING("updatefound"));
+WorkerPrivate* ServiceWorkerRegistrationWorkerThread::GetWorkerPrivate(
+    const MutexAutoLock& aProofOfLock) {
+  // In this case, calling GetUnsafePrivate() is ok because we have a proof of
+  // mutex lock.
+  MOZ_ASSERT(mWorkerRef && mWorkerRef->GetUnsafePrivate());
+  return mWorkerRef->GetUnsafePrivate();
 }
 
 }  // namespace dom

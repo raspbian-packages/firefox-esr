@@ -40,10 +40,12 @@ gboolean toplevel_event_watcher(GSignalInvocationHint* ihint,
   if (!GTK_IS_WINDOW(object)) return TRUE;
 
   AtkObject* child = gtk_widget_get_accessible(GTK_WIDGET(object));
+  AtkRole role = atk_object_get_role(child);
 
   // GTK native dialog
   if (!IS_MAI_OBJECT(child) &&
-      (atk_object_get_role(child) == ATK_ROLE_DIALOG)) {
+      (role == ATK_ROLE_DIALOG || role == ATK_ROLE_FILE_CHOOSER ||
+       role == ATK_ROLE_COLOR_CHOOSER || role == ATK_ROLE_FONT_CHOOSER)) {
     if (data == reinterpret_cast<gpointer>(nsIAccessibleEvent::EVENT_SHOW)) {
       // Attach the dialog accessible to app accessible tree
       Accessible* windowAcc = GetAccService()->AddNativeRootAccessible(child);
@@ -64,7 +66,7 @@ gboolean toplevel_event_watcher(GSignalInvocationHint* ihint,
   return TRUE;
 }
 
-ENameValueFlag ApplicationAccessibleWrap::Name(nsString& aName) {
+ENameValueFlag ApplicationAccessibleWrap::Name(nsString& aName) const {
   // ATK doesn't provide a way to obtain an application name (for example,
   // Firefox or Thunderbird) like IA2 does. Thus let's return an application
   // name as accessible name that was used to get a branding name (for example,

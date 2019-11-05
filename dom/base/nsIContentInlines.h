@@ -8,7 +8,7 @@
 #define nsIContentInlines_h
 
 #include "nsIContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsBindingManager.h"
 #include "nsContentUtils.h"
 #include "nsAtom.h"
@@ -16,6 +16,23 @@
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/HTMLSlotElement.h"
 #include "mozilla/dom/ShadowRoot.h"
+
+inline bool nsINode::IsUAWidget() const {
+  auto* shadow = mozilla::dom::ShadowRoot::FromNode(this);
+  return shadow && shadow->IsUAWidget();
+}
+
+inline bool nsINode::IsInUAWidget() const {
+  if (!IsInShadowTree()) {
+    return false;
+  }
+  mozilla::dom::ShadowRoot* shadow = AsContent()->GetContainingShadow();
+  return shadow && shadow->IsUAWidget();
+}
+
+inline bool nsINode::IsRootOfChromeAccessOnlySubtree() const {
+  return IsRootOfNativeAnonymousSubtree() || IsUAWidget();
+}
 
 inline bool nsIContent::IsInHTMLDocument() const {
   return OwnerDoc()->IsHTMLDocument();
@@ -27,10 +44,13 @@ inline bool nsIContent::IsInChromeDocument() const {
 
 inline void nsIContent::SetPrimaryFrame(nsIFrame* aFrame) {
   MOZ_ASSERT(IsInUncomposedDoc() || IsInShadowTree(), "This will end badly!");
-  NS_PRECONDITION(!aFrame || !mPrimaryFrame || aFrame == mPrimaryFrame,
-                  "Losing track of existing primary frame");
+
+  // FIXME bug 749326
+  NS_ASSERTION(!aFrame || !mPrimaryFrame || aFrame == mPrimaryFrame,
+               "Losing track of existing primary frame");
 
   if (aFrame) {
+    MOZ_ASSERT(!aFrame->IsPlaceholderFrame());
     if (MOZ_LIKELY(!IsHTMLElement(nsGkAtoms::area)) ||
         aFrame->GetContent() == this) {
       aFrame->SetIsPrimaryFrame(true);
@@ -86,8 +106,7 @@ static inline nsINode* GetFlattenedTreeParentNode(const nsINode* aNode) {
   }
 
   if (parentAsContent->IsInShadowTree()) {
-    if (auto* slot =
-            mozilla::dom::HTMLSlotElement::FromContent(parentAsContent)) {
+    if (auto* slot = mozilla::dom::HTMLSlotElement::FromNode(parentAsContent)) {
       // If the assigned nodes list is empty, we're fallback content which is
       // active, otherwise we are not part of the flat tree.
       return slot->AssignedNodes().IsEmpty() ? parent : nullptr;
@@ -144,6 +163,62 @@ inline nsINode* nsINode::GetFlattenedTreeParentNodeForStyle() const {
 
 inline bool nsINode::NodeOrAncestorHasDirAuto() const {
   return AncestorHasDirAuto() || (IsElement() && AsElement()->HasDirAuto());
+}
+
+inline bool nsINode::IsEditable() const {
+  if (HasFlag(NODE_IS_EDITABLE)) {
+    // The node is in an editable contentEditable subtree.
+    return true;
+  }
+
+  // All editable anonymous content should be made explicitly editable via the
+  // NODE_IS_EDITABLE flag.
+  if (IsInNativeAnonymousSubtree()) {
+    return false;
+  }
+
+  // Check if the node is in a document and the document is in designMode.
+  Document* doc = GetUncomposedDoc();
+  return doc && doc->HasFlag(NODE_IS_EDITABLE);
+}
+
+inline bool nsIContent::IsActiveChildrenElement() const {
+  if (!mNodeInfo->Equals(nsGkAtoms::children, kNameSpaceID_XBL)) {
+    return false;
+  }
+
+  nsIContent* bindingParent = GetBindingParent();
+  if (!bindingParent) {
+    return false;
+  }
+
+  // We reuse the binding parent machinery for Shadow DOM too, so prevent that
+  // from getting us confused in this case.
+  return !bindingParent->GetShadowRoot();
+}
+
+inline bool nsIContent::IsInAnonymousSubtree() const {
+  NS_ASSERTION(
+      !IsInNativeAnonymousSubtree() || GetBindingParent() ||
+          (!IsInUncomposedDoc() && static_cast<nsIContent*>(SubtreeRoot())
+                                       ->IsInNativeAnonymousSubtree()),
+      "Must have binding parent when in native anonymous subtree which is in "
+      "document.\n"
+      "Native anonymous subtree which is not in document must have native "
+      "anonymous root.");
+
+  if (IsInNativeAnonymousSubtree()) {
+    return true;
+  }
+
+  nsIContent* bindingParent = GetBindingParent();
+  if (!bindingParent) {
+    return false;
+  }
+
+  // We reuse the binding parent machinery for Shadow DOM too, so prevent that
+  // from getting us confused in this case.
+  return !bindingParent->GetShadowRoot();
 }
 
 #endif  // nsIContentInlines_h

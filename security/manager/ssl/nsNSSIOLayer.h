@@ -59,7 +59,10 @@ class nsNSSSocketInfo final : public mozilla::psm::TransportSecurityInfo,
   void SetNegotiatedNPN(const char* value, uint32_t length);
   void SetEarlyDataAccepted(bool aAccepted);
 
+  void SetResumed(bool aResumed);
+
   void SetHandshakeCompleted();
+  bool IsHandshakeCompleted() const { return mHandshakeCompleted; }
   void NoteTimeUntilReady();
 
   void SetFalseStartCallbackCalled() { mFalseStartCallbackCalled = true; }
@@ -71,7 +74,6 @@ class nsNSSSocketInfo final : public mozilla::psm::TransportSecurityInfo,
   bool IsFullHandshake() const { return mIsFullHandshake; }
 
   bool GetJoined() { return mJoined; }
-  bool GetDenyClientCert() { return mDenyClientCert; }
   void SetSentClientCert() { mSentClientCert = true; }
 
   uint32_t GetProviderFlags() const { return mProviderFlags; }
@@ -86,11 +88,8 @@ class nsNSSSocketInfo final : public mozilla::psm::TransportSecurityInfo,
     after_cert_verification
   };
   void SetCertVerificationWaiting();
-  // Use errorCode == 0 to indicate success; in that case, errorMessageType is
-  // ignored.
-  void SetCertVerificationResult(
-      PRErrorCode errorCode,
-      ::mozilla::psm::SSLErrorMessageType errorMessageType);
+  // Use errorCode == 0 to indicate success;
+  void SetCertVerificationResult(PRErrorCode errorCode);
 
   // for logging only
   PRBool IsWaitingForCertVerification() const {
@@ -172,6 +171,7 @@ class nsNSSSocketInfo final : public mozilla::psm::TransportSecurityInfo,
   nsresult ActivateSSL();
 
   nsCString mNegotiatedNPN;
+  nsCString mEsniTxt;
   bool mNPNCompleted;
   bool mEarlyDataAccepted;
   bool mDenyClientCert;
@@ -183,6 +183,7 @@ class nsNSSSocketInfo final : public mozilla::psm::TransportSecurityInfo,
   bool mSentClientCert;
   bool mNotedTimeUntilReady;
   bool mFailedVerification;
+  mozilla::Atomic<bool, mozilla::Relaxed> mResumed;
 
   // True when SSL layer has indicated an "SSL short write", i.e. need
   // to call on send one or more times to push all pending data to write.
@@ -303,6 +304,5 @@ nsresult nsSSLIOLayerAddToSocket(int32_t family, const char* host, int32_t port,
                                  uint32_t tlsFlags);
 
 nsresult nsSSLIOLayerFreeTLSIntolerantSites();
-nsresult displayUnknownCertErrorAlert(nsNSSSocketInfo* infoObject, int error);
 
 #endif  // nsNSSIOLayer_h

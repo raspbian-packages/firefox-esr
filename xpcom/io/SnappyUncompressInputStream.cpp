@@ -33,12 +33,12 @@ SnappyUncompressInputStream::SnappyUncompressInputStream(
       mNextChunkType(Unknown),
       mNextChunkDataLength(0),
       mNeedFirstStreamIdentifier(true) {
-// This implementation only supports sync base streams.  Verify this in debug
-// builds.  Note, this is a bit complicated because the streams we support
-// advertise different capabilities:
-//  - nsFileInputStream - blocking and sync
-//  - nsStringInputStream - non-blocking and sync
-//  - nsPipeInputStream - can be blocking, but provides async interface
+  // This implementation only supports sync base streams.  Verify this in debug
+  // builds.  Note, this is a bit complicated because the streams we support
+  // advertise different capabilities:
+  //  - nsFileInputStream - blocking and sync
+  //  - nsStringInputStream - non-blocking and sync
+  //  - nsPipeInputStream - can be blocking, but provides async interface
 #ifdef DEBUG
   bool baseNonBlocking;
   nsresult rv = mBaseStream->IsNonBlocking(&baseNonBlocking);

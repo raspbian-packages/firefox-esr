@@ -9,16 +9,20 @@
 #include "EventQueue.h"
 #include "EventTree.h"
 
-#include "mozilla/IndexSequence.h"
 #include "mozilla/Tuple.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsRefreshDriver.h"
 
+#include <utility>
+
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 namespace mozilla {
+
+class PresShell;
+
 namespace a11y {
 
 class DocAccessible;
@@ -65,7 +69,7 @@ class TNotification : public Notification {
   virtual ~TNotification() { mInstance = nullptr; }
 
   virtual void Process() override {
-    ProcessHelper(typename IndexSequenceFor<Args...>::Type());
+    ProcessHelper(std::index_sequence_for<Args...>{});
   }
 
  private:
@@ -73,7 +77,7 @@ class TNotification : public Notification {
   TNotification& operator=(const TNotification&);
 
   template <size_t... Indices>
-  void ProcessHelper(IndexSequence<Indices...>) {
+  void ProcessHelper(std::index_sequence<Indices...>) {
     (mInstance->*mCallback)(Get<Indices>(mArgs)...);
   }
 
@@ -88,7 +92,7 @@ class TNotification : public Notification {
 class NotificationController final : public EventQueue,
                                      public nsARefreshObserver {
  public:
-  NotificationController(DocAccessible* aDocument, nsIPresShell* aPresShell);
+  NotificationController(DocAccessible* aDocument, PresShell* aPresShell);
 
   NS_IMETHOD_(MozExternalRefCountType) AddRef(void) override;
   NS_IMETHOD_(MozExternalRefCountType) Release(void) override;
@@ -187,8 +191,7 @@ class NotificationController final : public EventQueue,
   /**
    * Pend accessible tree update for content insertion.
    */
-  void ScheduleContentInsertion(Accessible* aContainer,
-                                nsIContent* aStartChildNode,
+  void ScheduleContentInsertion(nsIContent* aStartChildNode,
                                 nsIContent* aEndChildNode);
 
   /**
@@ -214,22 +217,23 @@ class NotificationController final : public EventQueue,
    * @note  The caller must guarantee that the given instance still exists when
    *        the notification is processed.
    */
-  template <class Class, class Arg>
+  template <class Class, class... Args>
   inline void HandleNotification(
-      Class* aInstance, typename TNotification<Class, Arg>::Callback aMethod,
-      Arg* aArg) {
+      Class* aInstance,
+      typename TNotification<Class, Args...>::Callback aMethod,
+      Args*... aArgs) {
     if (!IsUpdatePending()) {
 #ifdef A11Y_LOG
       if (mozilla::a11y::logging::IsEnabled(
               mozilla::a11y::logging::eNotifications))
         mozilla::a11y::logging::Text("sync notification processing");
 #endif
-      (aInstance->*aMethod)(aArg);
+      (aInstance->*aMethod)(aArgs...);
       return;
     }
 
     RefPtr<Notification> notification =
-        new TNotification<Class, Arg>(aInstance, aMethod, aArg);
+        new TNotification<Class, Args...>(aInstance, aMethod, aArgs...);
     if (notification && mNotifications.AppendElement(notification))
       ScheduleProcessing();
   }
@@ -247,6 +251,17 @@ class NotificationController final : public EventQueue,
         new TNotification<Class>(aInstance, aMethod);
     if (notification && mNotifications.AppendElement(notification))
       ScheduleProcessing();
+  }
+
+  template <class Class, class Arg>
+  inline void ScheduleNotification(
+      Class* aInstance, typename TNotification<Class, Arg>::Callback aMethod,
+      Arg* aArg) {
+    RefPtr<Notification> notification =
+        new TNotification<Class, Arg>(aInstance, aMethod, aArg);
+    if (notification && mNotifications.AppendElement(notification)) {
+      ScheduleProcessing();
+    }
   }
 
 #ifdef DEBUG
@@ -284,7 +299,7 @@ class NotificationController final : public EventQueue,
    */
   void WithdrawPrecedingEvents(nsTArray<RefPtr<AccHideEvent>>* aEvs) {
     if (mPrecedingEvents.Length() > 0) {
-      aEvs->AppendElements(mozilla::Move(mPrecedingEvents));
+      aEvs->AppendElements(std::move(mPrecedingEvents));
     }
   }
   void StorePrecedingEvent(AccHideEvent* aEv) {
@@ -322,7 +337,7 @@ class NotificationController final : public EventQueue,
   /**
    * The presshell of the document accessible.
    */
-  nsIPresShell* mPresShell;
+  PresShell* mPresShell;
 
   /**
    * Child documents that needs to be bound to the tree.
@@ -342,8 +357,8 @@ class NotificationController final : public EventQueue,
     typedef const T* KeyTypePointer;
 
     explicit nsCOMPtrHashKey(const T* aKey) : mKey(const_cast<T*>(aKey)) {}
-    explicit nsCOMPtrHashKey(const nsPtrHashKey<T>& aToCopy)
-        : mKey(aToCopy.mKey) {}
+    nsCOMPtrHashKey(nsCOMPtrHashKey<T>&& aOther)
+        : PLDHashEntryHdr(std::move(aOther)), mKey(std::move(aOther.mKey)) {}
     ~nsCOMPtrHashKey() {}
 
     KeyType GetKey() const { return mKey; }

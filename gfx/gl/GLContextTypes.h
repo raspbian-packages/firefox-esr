@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -34,7 +34,7 @@ struct GLFormats {
   GLsizei samples;
 };
 
-enum class CreateContextFlags : int8_t {
+enum class CreateContextFlags : uint8_t {
   NONE = 0,
   REQUIRE_COMPAT_PROFILE = 1 << 0,
   // Force the use of hardware backed GL, don't allow software implementations.
@@ -46,6 +46,10 @@ enum class CreateContextFlags : int8_t {
 
   NO_VALIDATION = 1 << 4,
   PREFER_ROBUSTNESS = 1 << 5,
+
+  HIGH_POWER = 1 << 6,
+
+  PROVOKING_VERTEX_DONT_CARE = 1 << 7,
 };
 MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(CreateContextFlags)
 

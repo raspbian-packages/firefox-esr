@@ -13,9 +13,9 @@
 #include "GLLibraryEGL.h"
 
 #ifdef MOZ_WIDGET_ANDROID
-#include <jni.h>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
+#  include <jni.h>
+#  include <android/native_window.h>
+#  include <android/native_window_jni.h>
 #endif
 
 using namespace mozilla::gl;
@@ -32,20 +32,24 @@ class CompositableForwarder;
 
 already_AddRefed<TextureClient> AndroidSurfaceTextureData::CreateTextureClient(
     AndroidSurfaceTextureHandle aHandle, gfx::IntSize aSize, bool aContinuous,
-    gl::OriginPos aOriginPos, LayersIPCChannel* aAllocator,
+    gl::OriginPos aOriginPos, bool aHasAlpha, LayersIPCChannel* aAllocator,
     TextureFlags aFlags) {
   if (aOriginPos == gl::OriginPos::BottomLeft) {
     aFlags |= TextureFlags::ORIGIN_BOTTOM_LEFT;
   }
 
   return TextureClient::CreateWithData(
-      new AndroidSurfaceTextureData(aHandle, aSize, aContinuous), aFlags,
-      aAllocator);
+      new AndroidSurfaceTextureData(aHandle, aSize, aContinuous, aHasAlpha),
+      aFlags, aAllocator);
 }
 
 AndroidSurfaceTextureData::AndroidSurfaceTextureData(
-    AndroidSurfaceTextureHandle aHandle, gfx::IntSize aSize, bool aContinuous)
-    : mHandle(aHandle), mSize(aSize), mContinuous(aContinuous) {
+    AndroidSurfaceTextureHandle aHandle, gfx::IntSize aSize, bool aContinuous,
+    bool aHasAlpha)
+    : mHandle(aHandle),
+      mSize(aSize),
+      mContinuous(aContinuous),
+      mHasAlpha(aHasAlpha) {
   MOZ_ASSERT(mHandle);
 }
 
@@ -62,25 +66,26 @@ void AndroidSurfaceTextureData::FillInfo(TextureData::Info& aInfo) const {
 
 bool AndroidSurfaceTextureData::Serialize(SurfaceDescriptor& aOutDescriptor) {
   aOutDescriptor = SurfaceTextureDescriptor(
-      mHandle, mSize, gfx::SurfaceFormat::R8G8B8A8, mContinuous,
-      false /* do not ignore transform */);
+      mHandle, mSize,
+      mHasAlpha ? gfx::SurfaceFormat::R8G8B8A8 : gfx::SurfaceFormat::R8G8B8X8,
+      mContinuous, false /* do not ignore transform */);
   return true;
 }
 
 #endif  // MOZ_WIDGET_ANDROID
 
-  ////////////////////////////////////////////////////////////////////////
-  // AndroidNativeWindow
+////////////////////////////////////////////////////////////////////////
+// AndroidNativeWindow
 
 #ifdef MOZ_WIDGET_ANDROID
 
 AndroidNativeWindowTextureData* AndroidNativeWindowTextureData::Create(
-    gfx::IntSize aSize, SurfaceFormat aFormat) {
-  if (aFormat != SurfaceFormat::R8G8B8A8 &&
-      aFormat != SurfaceFormat::R8G8B8X8 &&
-      aFormat != SurfaceFormat::B8G8R8A8 &&
-      aFormat != SurfaceFormat::B8G8R8X8 &&
-      aFormat != SurfaceFormat::R5G6B5_UINT16) {
+    gfx::IntSize aSize, gfx::SurfaceFormat aFormat) {
+  if (aFormat != gfx::SurfaceFormat::R8G8B8A8 &&
+      aFormat != gfx::SurfaceFormat::R8G8B8X8 &&
+      aFormat != gfx::SurfaceFormat::B8G8R8A8 &&
+      aFormat != gfx::SurfaceFormat::B8G8R8X8 &&
+      aFormat != gfx::SurfaceFormat::R5G6B5_UINT16) {
     return nullptr;
   }
 
@@ -96,7 +101,7 @@ AndroidNativeWindowTextureData* AndroidNativeWindowTextureData::Create(
 
 AndroidNativeWindowTextureData::AndroidNativeWindowTextureData(
     java::GeckoSurface::Param aSurface, gfx::IntSize aSize,
-    SurfaceFormat aFormat)
+    gfx::SurfaceFormat aFormat)
     : mSurface(aSurface), mIsLocked(false), mSize(aSize), mFormat(aFormat) {
   mNativeWindow =
       ANativeWindow_fromSurface(jni::GetEnvForThread(), mSurface.Get());
@@ -106,17 +111,17 @@ AndroidNativeWindowTextureData::AndroidNativeWindowTextureData(
   // be RGB.
   int32_t format = WINDOW_FORMAT_RGBA_8888;
   switch (aFormat) {
-    case SurfaceFormat::R8G8B8A8:
-    case SurfaceFormat::B8G8R8A8:
+    case gfx::SurfaceFormat::R8G8B8A8:
+    case gfx::SurfaceFormat::B8G8R8A8:
       format = WINDOW_FORMAT_RGBA_8888;
       break;
 
-    case SurfaceFormat::R8G8B8X8:
-    case SurfaceFormat::B8G8R8X8:
+    case gfx::SurfaceFormat::R8G8B8X8:
+    case gfx::SurfaceFormat::B8G8R8X8:
       format = WINDOW_FORMAT_RGBX_8888;
       break;
 
-    case SurfaceFormat::R5G6B5_UINT16:
+    case gfx::SurfaceFormat::R5G6B5_UINT16:
       format = WINDOW_FORMAT_RGB_565;
       break;
 
@@ -181,14 +186,14 @@ void AndroidNativeWindowTextureData::Forget(LayersIPCChannel*) {
   mSurface = nullptr;
 }
 
-already_AddRefed<DrawTarget>
+already_AddRefed<gfx::DrawTarget>
 AndroidNativeWindowTextureData::BorrowDrawTarget() {
-  const int bpp = (mFormat == SurfaceFormat::R5G6B5_UINT16) ? 2 : 4;
+  const int bpp = (mFormat == gfx::SurfaceFormat::R5G6B5_UINT16) ? 2 : 4;
 
   return gfx::Factory::CreateDrawTargetForData(
       gfx::BackendType::SKIA, static_cast<unsigned char*>(mBuffer.bits),
-      IntSize(mBuffer.width, mBuffer.height), mBuffer.stride * bpp, mFormat,
-      true);
+      gfx::IntSize(mBuffer.width, mBuffer.height), mBuffer.stride * bpp,
+      mFormat, true);
 }
 
 void AndroidNativeWindowTextureData::OnForwardedToHost() {

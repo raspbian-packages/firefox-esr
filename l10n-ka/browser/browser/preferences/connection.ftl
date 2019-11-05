@@ -31,7 +31,7 @@ connection-proxy-http = HTTP პროქსი
 connection-proxy-http-port = პორტი
     .accesskey = პ
 connection-proxy-http-share =
-    .label = ყველა პროტოკოლისთვის ამ პროქსი-სერვერის გამოყენება
+    .label = ყველა ოქმისთვის ამ პროქსი-სერვერის გამოყენება
     .accesskey = ყ
 connection-proxy-ssl = SSL პროქსი
     .accesskey = L
@@ -55,7 +55,7 @@ connection-proxy-noproxy = არ გამოიყენება შემდ
     .accesskey = ა
 connection-proxy-noproxy-desc = მაგალითი: .mozilla.org, .net.nz, 192.168.1.0/24
 connection-proxy-autotype =
-    .label = პროქსის ავტომატური გამართვის URL
+    .label = პროქსის თვითგამართვის URL
     .accesskey = ა
 connection-proxy-reload =
     .label = ხელახლა ჩატვირთვა
@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = პროქსის DNS SOCKS v5-ის გამოყენებისას
     .accesskey = d
+connection-dns-over-https =
+    .label = DNS-სთან HTTPS-კავშირი
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = ნაგულისხმევის გამოყენება ({ $url })
+    .accesskey = ნ
+    .tooltiptext = ნაგულისხმევი URL-ს გამოყენება DNS-გადაყვანებისთვის HTTPS-ით
+connection-dns-over-https-url-resolver = მომსახურების გამოყენება
+    .accesskey = ხ
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (ნაგულისხმევი)
+    .tooltiptext = ნაგულისხმევი URL-ბმულის გამოყენება DNS-გადაყვანებისთვის HTTPS-ით
+connection-dns-over-https-url-custom =
+    .label = მითითებული
+    .accesskey = მ
+    .tooltiptext = შეიყვანეთ სასურველი URL-მისამართი DNS-გადაყვანებისთვის HTTPS-ით
+connection-dns-over-https-custom-label = მითითებული

@@ -64,11 +64,10 @@ PresentationConnection::PresentationConnection(
 
 /* virtual */ PresentationConnection::~PresentationConnection() {}
 
-/* static */ already_AddRefed<PresentationConnection>
-PresentationConnection::Create(nsPIDOMWindowInner* aWindow,
-                               const nsAString& aId, const nsAString& aUrl,
-                               const uint8_t aRole,
-                               PresentationConnectionList* aList) {
+/* static */
+already_AddRefed<PresentationConnection> PresentationConnection::Create(
+    nsPIDOMWindowInner* aWindow, const nsAString& aId, const nsAString& aUrl,
+    const uint8_t aRole, PresentationConnectionList* aList) {
   MOZ_ASSERT(aRole == nsIPresentationService::ROLE_CONTROLLER ||
              aRole == nsIPresentationService::ROLE_RECEIVER);
   RefPtr<PresentationConnection> connection =
@@ -131,14 +130,16 @@ void PresentationConnection::Shutdown() {
   }
 }
 
-/* virtual */ void PresentationConnection::DisconnectFromOwner() {
+/* virtual */
+void PresentationConnection::DisconnectFromOwner() {
   Unused << NS_WARN_IF(NS_FAILED(ProcessConnectionWentAway()));
   DOMEventTargetHelper::DisconnectFromOwner();
 }
 
-/* virtual */ JSObject* PresentationConnection::WrapObject(
+/* virtual */
+JSObject* PresentationConnection::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return PresentationConnectionBinding::Wrap(aCx, this, aGivenProto);
+  return PresentationConnection_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void PresentationConnection::GetId(nsAString& aId) const {
@@ -414,8 +415,8 @@ nsresult PresentationConnection::ProcessStateChanged(nsresult aReason) {
         return NS_OK;
       }
 
-      RefPtr<AsyncEventDispatcher> asyncDispatcher =
-          new AsyncEventDispatcher(this, NS_LITERAL_STRING("connect"), false);
+      RefPtr<AsyncEventDispatcher> asyncDispatcher = new AsyncEventDispatcher(
+          this, NS_LITERAL_STRING("connect"), CanBubble::eNo);
       return asyncDispatcher->PostDOMEvent();
     }
     case PresentationConnectionState::Closed: {
@@ -445,7 +446,7 @@ nsresult PresentationConnection::ProcessStateChanged(nsresult aReason) {
       if (!nsContentUtils::ShouldResistFingerprinting()) {
         // Ensure onterminate event is fired.
         RefPtr<AsyncEventDispatcher> asyncDispatcher = new AsyncEventDispatcher(
-            this, NS_LITERAL_STRING("terminate"), false);
+            this, NS_LITERAL_STRING("terminate"), CanBubble::eNo);
         Unused << NS_WARN_IF(NS_FAILED(asyncDispatcher->PostDOMEvent()));
       }
 
@@ -559,12 +560,13 @@ nsresult PresentationConnection::DispatchConnectionCloseEvent(
   closedEvent->SetTrusted(true);
 
   if (aDispatchNow) {
-    bool ignore;
-    return DOMEventTargetHelper::DispatchEvent(closedEvent, &ignore);
+    ErrorResult rv;
+    DispatchEvent(*closedEvent, rv);
+    return rv.StealNSResult();
   }
 
   RefPtr<AsyncEventDispatcher> asyncDispatcher =
-      new AsyncEventDispatcher(this, static_cast<Event*>(closedEvent));
+      new AsyncEventDispatcher(this, closedEvent);
   return asyncDispatcher->PostDOMEvent();
 }
 
@@ -584,13 +586,14 @@ nsresult PresentationConnection::DispatchMessageEvent(
 
   RefPtr<MessageEvent> messageEvent = new MessageEvent(this, nullptr, nullptr);
 
-  messageEvent->InitMessageEvent(nullptr, NS_LITERAL_STRING("message"), false,
-                                 false, aData, origin, EmptyString(), nullptr,
+  messageEvent->InitMessageEvent(nullptr, NS_LITERAL_STRING("message"),
+                                 CanBubble::eNo, Cancelable::eNo, aData, origin,
+                                 EmptyString(), nullptr,
                                  Sequence<OwningNonNull<MessagePort>>());
   messageEvent->SetTrusted(true);
 
   RefPtr<AsyncEventDispatcher> asyncDispatcher =
-      new AsyncEventDispatcher(this, static_cast<Event*>(messageEvent));
+      new AsyncEventDispatcher(this, messageEvent);
   return asyncDispatcher->PostDOMEvent();
 }
 
@@ -648,7 +651,7 @@ NS_IMETHODIMP
 PresentationConnection::GetLoadGroup(nsILoadGroup** aLoadGroup) {
   *aLoadGroup = nullptr;
 
-  nsCOMPtr<nsIDocument> doc = GetOwner() ? GetOwner()->GetExtantDoc() : nullptr;
+  nsCOMPtr<Document> doc = GetOwner() ? GetOwner()->GetExtantDoc() : nullptr;
   if (!doc) {
     return NS_ERROR_FAILURE;
   }

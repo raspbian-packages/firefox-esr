@@ -11,14 +11,16 @@
 
 // Interfaces
 #include "nsCOMPtr.h"
-#include "nsIPresShell.h"
 #include "nsViewManager.h"
 #include "nsIDocShell.h"
 #include "nsIDocShellTreeOwner.h"
 
 class nsIContent;
-class nsIDocument;
 class nsPresContext;
+
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
 
 // nsPrintObject Document Type
 enum PrintObjectType { eDoc = 0, eFrame = 1, eIFrame = 2, eFrameSet = 3 };
@@ -32,7 +34,7 @@ class nsPrintObject {
   ~nsPrintObject();  // non-virtual
 
   // Methods
-  nsresult Init(nsIDocShell* aDocShell, nsIDOMDocument* aDoc,
+  nsresult Init(nsIDocShell* aDocShell, mozilla::dom::Document* aDoc,
                 bool aPrintPreview);
 
   bool IsPrintable() { return !mDontPrint; }
@@ -41,10 +43,10 @@ class nsPrintObject {
   // Data Members
   nsCOMPtr<nsIDocShell> mDocShell;
   nsCOMPtr<nsIDocShellTreeOwner> mTreeOwner;
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<mozilla::dom::Document> mDocument;
 
   RefPtr<nsPresContext> mPresContext;
-  nsCOMPtr<nsIPresShell> mPresShell;
+  RefPtr<mozilla::PresShell> mPresShell;
   RefPtr<nsViewManager> mViewManager;
 
   nsCOMPtr<nsIContent> mContent;

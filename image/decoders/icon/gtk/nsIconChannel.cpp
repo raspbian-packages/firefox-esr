@@ -10,6 +10,7 @@
 
 #include "mozilla/DebugOnly.h"
 #include "mozilla/EndianUtils.h"
+#include "mozilla/NullPrincipal.h"
 #include <algorithm>
 
 #include <gio/gio.h>
@@ -25,7 +26,6 @@
 #include "nsComponentManagerUtils.h"
 #include "nsIStringStream.h"
 #include "nsServiceManagerUtils.h"
-#include "NullPrincipal.h"
 #include "nsIURL.h"
 #include "prlink.h"
 #include "gfxPlatform.h"
@@ -46,7 +46,6 @@ static nsresult moz_gdk_pixbuf_to_channel(GdkPixbuf* aPixbuf, nsIURI* aURI,
   const int n_channels = 4;
   gsize buf_size = 2 + n_channels * height * width;
   uint8_t* const buf = (uint8_t*)moz_xmalloc(buf_size);
-  NS_ENSURE_TRUE(buf, NS_ERROR_OUT_OF_MEMORY);
   uint8_t* out = buf;
 
   *(out++) = width;
@@ -99,10 +98,11 @@ static nsresult moz_gdk_pixbuf_to_channel(GdkPixbuf* aPixbuf, nsIURI* aURI,
   MOZ_ASSERT(NS_SUCCEEDED(rv));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // nsIconProtocolHandler::NewChannel2 will provide the correct loadInfo for
+  // nsIconProtocolHandler::NewChannel will provide the correct loadInfo for
   // this iconChannel. Use the most restrictive security settings for the
   // temporary loadInfo to make sure the channel can not be openend.
-  nsCOMPtr<nsIPrincipal> nullPrincipal = NullPrincipal::Create();
+  nsCOMPtr<nsIPrincipal> nullPrincipal =
+      mozilla::NullPrincipal::CreateWithoutOriginAttributes();
   return NS_NewInputStreamChannel(
       aChannel, aURI, stream.forget(), nullPrincipal,
       nsILoadInfo::SEC_REQUIRE_SAME_ORIGIN_DATA_IS_BLOCKED,

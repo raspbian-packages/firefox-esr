@@ -11,7 +11,7 @@
  *
  * It must have two arguments, (aDOMKeyName, aDOMKeyCode)
  * aDOMKeyName is a key name in DOM.
- * aDOMKeyCode is one of mozilla::dom::KeyboardEventBinding::DOM_VK_*.
+ * aDOMKeyCode is one of mozilla::dom::KeyboardEvent_Binding::DOM_VK_*.
  *
  * Optionally, you can define NS_DISALLOW_SAME_KEYCODE.
  *
@@ -21,12 +21,12 @@
 
 #define DEFINE_VK_INTERNAL(aKeyName) \
   NS_DEFINE_VK(VK##aKeyName,         \
-               mozilla::dom::KeyboardEventBinding::DOM_VK##aKeyName)
+               mozilla::dom::KeyboardEvent_Binding::DOM_VK##aKeyName)
 
 // Some keycode may have different name in KeyboardEvent from its key name.
 #define DEFINE_VK_INTERNAL2(aKeyName, aKeyCodeName) \
   NS_DEFINE_VK(VK##aKeyName,                        \
-               mozilla::dom::KeyboardEventBinding::DOM_VK##aKeyCodeName)
+               mozilla::dom::KeyboardEvent_Binding::DOM_VK##aKeyCodeName)
 
 DEFINE_VK_INTERNAL(_CANCEL)
 DEFINE_VK_INTERNAL(_HELP)
@@ -214,6 +214,9 @@ DEFINE_VK_INTERNAL(_ALTGR)
 
 DEFINE_VK_INTERNAL(_WIN_ICO_HELP)
 DEFINE_VK_INTERNAL(_WIN_ICO_00)
+
+DEFINE_VK_INTERNAL(_PROCESSKEY)
+
 DEFINE_VK_INTERNAL(_WIN_ICO_CLEAR)
 DEFINE_VK_INTERNAL(_WIN_OEM_RESET)
 DEFINE_VK_INTERNAL(_WIN_OEM_JUMP)

@@ -7,8 +7,6 @@
 #ifndef MOZILLA_DOMRECT_H_
 #define MOZILLA_DOMRECT_H_
 
-#include "nsIDOMClientRect.h"
-#include "nsIDOMClientRectList.h"
 #include "nsTArray.h"
 #include "nsCOMPtr.h"
 #include "nsWrapperCache.h"
@@ -31,19 +29,26 @@ class DOMRectReadOnly : public nsISupports, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(DOMRectReadOnly)
 
-  explicit DOMRectReadOnly(nsISupports* aParent) : mParent(aParent) {}
+  explicit DOMRectReadOnly(nsISupports* aParent, double aX = 0, double aY = 0,
+                           double aWidth = 0, double aHeight = 0)
+      : mParent(aParent), mX(aX), mY(aY), mWidth(aWidth), mHeight(aHeight) {}
 
   nsISupports* GetParentObject() const {
     MOZ_ASSERT(mParent);
     return mParent;
   }
+
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
-  virtual double X() const = 0;
-  virtual double Y() const = 0;
-  virtual double Width() const = 0;
-  virtual double Height() const = 0;
+  static already_AddRefed<DOMRectReadOnly> Constructor(
+      const GlobalObject& aGlobal, double aX, double aY, double aWidth,
+      double aHeight, ErrorResult& aRv);
+
+  double X() const { return mX; }
+  double Y() const { return mY; }
+  double Width() const { return mWidth; }
+  double Height() const { return mHeight; }
 
   double Left() const {
     double x = X(), w = Width();
@@ -64,27 +69,21 @@ class DOMRectReadOnly : public nsISupports, public nsWrapperCache {
 
  protected:
   nsCOMPtr<nsISupports> mParent;
+  double mX, mY, mWidth, mHeight;
 };
 
-class DOMRect final : public DOMRectReadOnly, public nsIDOMClientRect {
+class DOMRect final : public DOMRectReadOnly {
  public:
   explicit DOMRect(nsISupports* aParent, double aX = 0, double aY = 0,
                    double aWidth = 0, double aHeight = 0)
-      : DOMRectReadOnly(aParent),
-        mX(aX),
-        mY(aY),
-        mWidth(aWidth),
-        mHeight(aHeight) {}
+      : DOMRectReadOnly(aParent, aX, aY, aWidth, aHeight) {}
 
-  NS_DECL_ISUPPORTS_INHERITED
-  NS_DECL_NSIDOMCLIENTRECT
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(DOMRect, DOMRectReadOnly)
 
-  static already_AddRefed<DOMRect> Constructor(const GlobalObject& aGlobal,
-                                               ErrorResult& aRV);
   static already_AddRefed<DOMRect> Constructor(const GlobalObject& aGlobal,
                                                double aX, double aY,
                                                double aWidth, double aHeight,
-                                               ErrorResult& aRV);
+                                               ErrorResult& aRv);
 
   virtual JSObject* WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) override;
@@ -97,24 +96,20 @@ class DOMRect final : public DOMRectReadOnly, public nsIDOMClientRect {
   }
   void SetLayoutRect(const nsRect& aLayoutRect);
 
-  virtual double X() const override { return mX; }
-  virtual double Y() const override { return mY; }
-  virtual double Width() const override { return mWidth; }
-  virtual double Height() const override { return mHeight; }
-
   void SetX(double aX) { mX = aX; }
   void SetY(double aY) { mY = aY; }
   void SetWidth(double aWidth) { mWidth = aWidth; }
   void SetHeight(double aHeight) { mHeight = aHeight; }
 
- protected:
-  double mX, mY, mWidth, mHeight;
+  static DOMRect* FromSupports(nsISupports* aSupports) {
+    return static_cast<DOMRect*>(aSupports);
+  }
 
  private:
-  ~DOMRect(){};
+  ~DOMRect() {}
 };
 
-class DOMRectList final : public nsIDOMClientRectList, public nsWrapperCache {
+class DOMRectList final : public nsISupports, public nsWrapperCache {
   ~DOMRectList() {}
 
  public:
@@ -123,30 +118,12 @@ class DOMRectList final : public nsIDOMClientRectList, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(DOMRectList)
 
-  NS_DECL_NSIDOMCLIENTRECTLIST
-
   virtual JSObject* WrapObject(JSContext* cx,
                                JS::Handle<JSObject*> aGivenProto) override;
 
   nsISupports* GetParentObject() { return mParent; }
 
   void Append(DOMRect* aElement) { mArray.AppendElement(aElement); }
-
-  static DOMRectList* FromSupports(nsISupports* aSupports) {
-#ifdef DEBUG
-    {
-      nsCOMPtr<nsIDOMClientRectList> list_qi = do_QueryInterface(aSupports);
-
-      // If this assertion fires the QI implementation for the object in
-      // question doesn't use the nsIDOMClientRectList pointer as the
-      // nsISupports pointer. That must be fixed, or we'll crash...
-      NS_ASSERTION(list_qi == static_cast<nsIDOMClientRectList*>(aSupports),
-                   "Uh, fix QI!");
-    }
-#endif
-
-    return static_cast<DOMRectList*>(aSupports);
-  }
 
   uint32_t Length() { return mArray.Length(); }
   DOMRect* Item(uint32_t aIndex) { return mArray.SafeElementAt(aIndex); }

@@ -33,6 +33,7 @@ namespace dom {
 
 struct UDPOptions;
 class StringOrBlobOrArrayBufferOrArrayBufferView;
+class UDPSocketChild;
 
 class UDPSocket final : public DOMEventTargetHelper,
                         public nsIUDPSocketListener,
@@ -42,7 +43,6 @@ class UDPSocket final : public DOMEventTargetHelper,
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(UDPSocket, DOMEventTargetHelper)
   NS_DECL_NSIUDPSOCKETLISTENER
   NS_DECL_NSIUDPSOCKETINTERNAL
-  NS_REALLY_FORWARD_NSIDOMEVENTTARGET(DOMEventTargetHelper)
 
  public:
   nsPIDOMWindowInner* GetParentObject() const { return GetOwner(); }
@@ -129,13 +129,12 @@ class UDPSocket final : public DOMEventTargetHelper,
                       const uint16_t& aLocalPort);
 
   void HandleReceivedData(const nsACString& aRemoteAddress,
-                          const uint16_t& aRemotePort, const uint8_t* aData,
-                          const uint32_t& aDataLength);
+                          const uint16_t& aRemotePort,
+                          const nsTArray<uint8_t>& aData);
 
   nsresult DispatchReceivedData(const nsACString& aRemoteAddress,
                                 const uint16_t& aRemotePort,
-                                const uint8_t* aData,
-                                const uint32_t& aDataLength);
+                                const nsTArray<uint8_t>& aData);
 
   void CloseWithReason(nsresult aReason);
 
@@ -152,7 +151,7 @@ class UDPSocket final : public DOMEventTargetHelper,
   RefPtr<Promise> mClosed;
 
   nsCOMPtr<nsIUDPSocket> mSocket;
-  nsCOMPtr<nsIUDPSocketChild> mSocketChild;
+  RefPtr<UDPSocketChild> mSocketChild;
   RefPtr<ListenerProxy> mListenerProxy;
 
   struct MulticastCommand {

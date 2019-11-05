@@ -7,223 +7,253 @@
 #include "mozilla/AvailableMemoryTracker.h"
 
 #if defined(XP_WIN)
-#include "prinrval.h"
-#include "prenv.h"
-#include "nsIMemoryReporter.h"
-#include "nsMemoryPressure.h"
+#  include "nsExceptionHandler.h"
+#  include "nsICrashReporter.h"
+#  include "nsIMemoryReporter.h"
+#  include "nsMemoryPressure.h"
 #endif
 
 #include "nsIObserver.h"
 #include "nsIObserverService.h"
 #include "nsIRunnable.h"
 #include "nsISupports.h"
+#include "nsITimer.h"
 #include "nsThreadUtils.h"
+#include "nsXULAppAPI.h"
 
-#include "mozilla/Preferences.h"
+#include "mozilla/ResultExtensions.h"
 #include "mozilla/Services.h"
-
-#if defined(XP_WIN)
-#include "nsWindowsDllInterceptor.h"
-#include <windows.h>
-#endif
+#include "mozilla/Unused.h"
 
 #if defined(MOZ_MEMORY)
-#include "mozmemory.h"
+#  include "mozmemory.h"
 #endif  // MOZ_MEMORY
 
 using namespace mozilla;
 
 namespace {
 
-#if defined(_M_IX86) && defined(XP_WIN)
+#if defined(XP_WIN)
 
-// Fire a low-memory notification if we have less than this many MiB of virtual
-// address space available.
-static const uint32_t kLowVirtualMemoryThresholdMiB = 256;
+Atomic<uint32_t, MemoryOrdering::Relaxed> sNumLowVirtualMemEvents;
+Atomic<uint32_t, MemoryOrdering::Relaxed> sNumLowCommitSpaceEvents;
+Atomic<uint32_t, MemoryOrdering::Relaxed> sNumLowPhysicalMemEvents;
 
-// Fire a low-memory notification if we have less than this many MiB of commit
-// space (physical memory plus page file) left.
-static const uint32_t kLowCommitSpaceThresholdMiB = 256;
+class nsAvailableMemoryWatcher final : public nsIObserver,
+                                       public nsITimerCallback {
+ public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIOBSERVER
+  NS_DECL_NSITIMERCALLBACK
 
-// Fire a low-memory notification if we have less than this many MiB of
-// physical memory available on the whole machine.
-static const uint32_t kLowPhysicalMemoryThresholdMiB = 0;
+  nsAvailableMemoryWatcher();
+  nsresult Init();
 
-// Don't fire a low-memory notification because of low available physical
-// memory or low commit space more often than this interval.
-static const uint32_t kLowMemoryNotificationIntervalMS = 10000;
+ private:
+  // Fire a low-memory notification if we have less than this many bytes of
+  // virtual address space available.
+#  if defined(HAVE_64BIT_BUILD)
+  static const size_t kLowVirtualMemoryThreshold = 0;
+#  else
+  static const size_t kLowVirtualMemoryThreshold = 384 * 1024 * 1024;
+#  endif
 
-Atomic<uint32_t> sNumLowVirtualMemEvents;
-Atomic<uint32_t> sNumLowCommitSpaceEvents;
-Atomic<uint32_t> sNumLowPhysicalMemEvents;
+  // Fire a low-memory notification if we have less than this many bytes of
+  // commit space (physical memory plus page file) left.
+  static const size_t kLowCommitSpaceThreshold = 384 * 1024 * 1024;
 
-WindowsDllInterceptor sKernel32Intercept;
-WindowsDllInterceptor sGdi32Intercept;
+  // Fire a low-memory notification if we have less than this many bytes of
+  // physical memory available on the whole machine.
+  static const size_t kLowPhysicalMemoryThreshold = 0;
 
-// Has Init() been called?
-bool sInitialized = false;
+  // Don't fire a low-memory notification because of low available physical
+  // memory or low commit space more often than this interval.
+  static const uint32_t kLowMemoryNotificationIntervalMS = 10000;
 
-// Has Activate() been called?  The hooks don't do anything until this happens.
-bool sHooksActive = false;
+  // Poll the amount of free memory at this rate.
+  static const uint32_t kPollingIntervalMS = 1000;
 
-// Alas, we'd like to use mozilla::TimeStamp, but we can't, because it acquires
-// a lock!
-volatile bool sHasScheduledOneLowMemoryNotification = false;
-volatile PRIntervalTime sLastLowMemoryNotificationTime;
+  // Observer topics we subscribe to, see below.
+  static const char* const kObserverTopics[];
 
-// These are function pointers to the functions we wrap in Init().
+  static bool IsVirtualMemoryLow(const MEMORYSTATUSEX& aStat);
+  static bool IsCommitSpaceLow(const MEMORYSTATUSEX& aStat);
+  static bool IsPhysicalMemoryLow(const MEMORYSTATUSEX& aStat);
 
-void*(WINAPI* sVirtualAllocOrig)(LPVOID aAddress, SIZE_T aSize,
-                                 DWORD aAllocationType, DWORD aProtect);
+  ~nsAvailableMemoryWatcher(){};
+  bool OngoingMemoryPressure() { return mUnderMemoryPressure; }
+  void AdjustPollingInterval(const bool aLowMemory);
+  void SendMemoryPressureEvent();
+  void MaybeSaveMemoryReport();
+  void Shutdown();
 
-void*(WINAPI* sMapViewOfFileOrig)(HANDLE aFileMappingObject,
-                                  DWORD aDesiredAccess, DWORD aFileOffsetHigh,
-                                  DWORD aFileOffsetLow, SIZE_T aNumBytesToMap);
+  nsCOMPtr<nsITimer> mTimer;
+  bool mUnderMemoryPressure;
+  bool mSavedReport;
+};
 
-HBITMAP(WINAPI* sCreateDIBSectionOrig)
-(HDC aDC, const BITMAPINFO* aBitmapInfo, UINT aUsage, VOID** aBits,
- HANDLE aSection, DWORD aOffset);
+const char* const nsAvailableMemoryWatcher::kObserverTopics[] = {
+    "quit-application",
+    "user-interaction-active",
+    "user-interaction-inactive",
+};
 
-/**
- * Fire a memory pressure event if it's been long enough since the last one we
- * fired.
- */
-bool MaybeScheduleMemoryPressureEvent() {
-  // If this interval rolls over, we may fire an extra memory pressure
-  // event, but that's not a big deal.
-  PRIntervalTime interval = PR_IntervalNow() - sLastLowMemoryNotificationTime;
-  if (sHasScheduledOneLowMemoryNotification &&
-      PR_IntervalToMilliseconds(interval) < kLowMemoryNotificationIntervalMS) {
-    return false;
+NS_IMPL_ISUPPORTS(nsAvailableMemoryWatcher, nsIObserver, nsITimerCallback)
+
+nsAvailableMemoryWatcher::nsAvailableMemoryWatcher()
+    : mTimer(nullptr), mUnderMemoryPressure(false), mSavedReport(false) {}
+
+nsresult nsAvailableMemoryWatcher::Init() {
+  mTimer = NS_NewTimer();
+
+  nsCOMPtr<nsIObserverService> observerService = services::GetObserverService();
+  MOZ_ASSERT(observerService);
+
+  for (auto topic : kObserverTopics) {
+    nsresult rv = observerService->AddObserver(this, topic,
+                                               /* ownsWeak */ false);
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
-  // There's a bit of a race condition here, since an interval may be a
-  // 64-bit number, and 64-bit writes aren't atomic on x86-32.  But let's
-  // not worry about it -- the races only happen when we're already
-  // experiencing memory pressure and firing notifications, so the worst
-  // thing that can happen is that we fire two notifications when we
-  // should have fired only one.
-  sHasScheduledOneLowMemoryNotification = true;
-  sLastLowMemoryNotificationTime = PR_IntervalNow();
-
-  NS_DispatchEventualMemoryPressure(MemPressure_New);
-  return true;
+  MOZ_TRY(mTimer->InitWithCallback(this, kPollingIntervalMS,
+                                   nsITimer::TYPE_REPEATING_SLACK));
+  return NS_OK;
 }
 
-void CheckMemAvailable() {
-  if (!sHooksActive) {
-    return;
+void nsAvailableMemoryWatcher::Shutdown() {
+  nsCOMPtr<nsIObserverService> observerService = services::GetObserverService();
+  MOZ_ASSERT(observerService);
+
+  for (auto topic : kObserverTopics) {
+    Unused << observerService->RemoveObserver(this, topic);
   }
 
+  if (mTimer) {
+    mTimer->Cancel();
+    mTimer = nullptr;
+  }
+}
+
+/* static */
+bool nsAvailableMemoryWatcher::IsVirtualMemoryLow(const MEMORYSTATUSEX& aStat) {
+  if ((kLowVirtualMemoryThreshold != 0) &&
+      (aStat.ullAvailVirtual < kLowVirtualMemoryThreshold)) {
+    sNumLowVirtualMemEvents++;
+    return true;
+  }
+
+  return false;
+}
+
+/* static */
+bool nsAvailableMemoryWatcher::IsCommitSpaceLow(const MEMORYSTATUSEX& aStat) {
+  if ((kLowCommitSpaceThreshold != 0) &&
+      (aStat.ullAvailPageFile < kLowCommitSpaceThreshold)) {
+    sNumLowCommitSpaceEvents++;
+    CrashReporter::AnnotateCrashReport(
+        CrashReporter::Annotation::LowCommitSpaceEvents,
+        uint32_t(sNumLowCommitSpaceEvents));
+    return true;
+  }
+
+  return false;
+}
+
+/* static */
+bool nsAvailableMemoryWatcher::IsPhysicalMemoryLow(
+    const MEMORYSTATUSEX& aStat) {
+  if ((kLowPhysicalMemoryThreshold != 0) &&
+      (aStat.ullAvailPhys < kLowPhysicalMemoryThreshold)) {
+    sNumLowPhysicalMemEvents++;
+    return true;
+  }
+
+  return false;
+}
+
+void nsAvailableMemoryWatcher::SendMemoryPressureEvent() {
+  MemoryPressureState state =
+      OngoingMemoryPressure() ? MemPressure_Ongoing : MemPressure_New;
+  NS_DispatchEventualMemoryPressure(state);
+}
+
+void nsAvailableMemoryWatcher::MaybeSaveMemoryReport() {
+  if (!mSavedReport && OngoingMemoryPressure()) {
+    nsCOMPtr<nsICrashReporter> cr =
+        do_GetService("@mozilla.org/toolkit/crash-reporter;1");
+    if (cr) {
+      if (NS_SUCCEEDED(cr->SaveMemoryReport())) {
+        mSavedReport = true;
+      }
+    }
+  }
+}
+
+void nsAvailableMemoryWatcher::AdjustPollingInterval(const bool aLowMemory) {
+  if (aLowMemory) {
+    // We entered a low-memory state, wait for a longer interval before polling
+    // again as there's no point in rapidly sending further notifications.
+    mTimer->SetDelay(kLowMemoryNotificationIntervalMS);
+  } else if (OngoingMemoryPressure()) {
+    // We were under memory pressure but we're not anymore, resume polling at
+    // a faster pace.
+    mTimer->SetDelay(kPollingIntervalMS);
+  }
+}
+
+// Timer callback, polls memory stats to detect low-memory conditions. This
+// will send memory-pressure events if memory is running low and adjust the
+// polling interval accordingly.
+NS_IMETHODIMP
+nsAvailableMemoryWatcher::Notify(nsITimer* aTimer) {
   MEMORYSTATUSEX stat;
   stat.dwLength = sizeof(stat);
   bool success = GlobalMemoryStatusEx(&stat);
 
   if (success) {
-    // kLowVirtualMemoryThresholdMiB is in MiB, but ullAvailVirtual is in bytes.
-    if (stat.ullAvailVirtual < kLowVirtualMemoryThresholdMiB * 1024 * 1024) {
-      // If we're running low on virtual memory, unconditionally schedule the
-      // notification.  We'll probably crash if we run out of virtual memory,
-      // so don't worry about firing this notification too often.
-      ++sNumLowVirtualMemEvents;
-      NS_DispatchEventualMemoryPressure(MemPressure_New);
-    } else if (stat.ullAvailPageFile <
-               kLowCommitSpaceThresholdMiB * 1024 * 1024) {
-      if (MaybeScheduleMemoryPressureEvent()) {
-        ++sNumLowCommitSpaceEvents;
-      }
-    } else if (stat.ullAvailPhys <
-               kLowPhysicalMemoryThresholdMiB * 1024 * 1024) {
-      if (MaybeScheduleMemoryPressureEvent()) {
-        ++sNumLowPhysicalMemEvents;
-      }
+    bool lowMemory = IsVirtualMemoryLow(stat) || IsCommitSpaceLow(stat) ||
+                     IsPhysicalMemoryLow(stat);
+
+    if (lowMemory) {
+      SendMemoryPressureEvent();
+      MaybeSaveMemoryReport();
+    } else {
+      mSavedReport = false;  // Save a new report if memory gets low again
     }
+
+    AdjustPollingInterval(lowMemory);
+    mUnderMemoryPressure = lowMemory;
   }
+
+  return NS_OK;
 }
 
-LPVOID WINAPI VirtualAllocHook(LPVOID aAddress, SIZE_T aSize,
-                               DWORD aAllocationType, DWORD aProtect) {
-  // It's tempting to see whether we have enough free virtual address space for
-  // this allocation and, if we don't, synchronously fire a low-memory
-  // notification to free some before we allocate.
-  //
-  // Unfortunately that doesn't work, principally because code doesn't expect a
-  // call to malloc could trigger a GC (or call into the other routines which
-  // are triggered by a low-memory notification).
-  //
-  // I think the best we can do here is try to allocate the memory and check
-  // afterwards how much free virtual address space we have.  If we're running
-  // low, we schedule a low-memory notification to run as soon as possible.
-
-  LPVOID result = sVirtualAllocOrig(aAddress, aSize, aAllocationType, aProtect);
-
-  // Don't call CheckMemAvailable for MEM_RESERVE if we're not tracking low
-  // virtual memory.  Similarly, don't call CheckMemAvailable for MEM_COMMIT if
-  // we're not tracking low physical memory.
-  if ((kLowVirtualMemoryThresholdMiB != 0 && aAllocationType & MEM_RESERVE) ||
-      (kLowPhysicalMemoryThresholdMiB != 0 && aAllocationType & MEM_COMMIT)) {
-    CheckMemAvailable();
+// Observer service callback, used to stop the polling timer when the user
+// stops interacting with Firefox and resuming it when they interact again.
+// Also used to shut down the service if the application is quitting.
+NS_IMETHODIMP
+nsAvailableMemoryWatcher::Observe(nsISupports* aSubject, const char* aTopic,
+                                  const char16_t* aData) {
+  if (strcmp(aTopic, "quit-application") == 0) {
+    Shutdown();
+  } else if (strcmp(aTopic, "user-interaction-inactive") == 0) {
+    mTimer->Cancel();
+  } else if (strcmp(aTopic, "user-interaction-active") == 0) {
+    mTimer->InitWithCallback(this, kPollingIntervalMS,
+                             nsITimer::TYPE_REPEATING_SLACK);
+  } else {
+    MOZ_ASSERT_UNREACHABLE("Unknown topic");
   }
 
-  return result;
-}
-
-LPVOID WINAPI MapViewOfFileHook(HANDLE aFileMappingObject, DWORD aDesiredAccess,
-                                DWORD aFileOffsetHigh, DWORD aFileOffsetLow,
-                                SIZE_T aNumBytesToMap) {
-  LPVOID result =
-      sMapViewOfFileOrig(aFileMappingObject, aDesiredAccess, aFileOffsetHigh,
-                         aFileOffsetLow, aNumBytesToMap);
-  CheckMemAvailable();
-  return result;
-}
-
-HBITMAP WINAPI CreateDIBSectionHook(HDC aDC, const BITMAPINFO* aBitmapInfo,
-                                    UINT aUsage, VOID** aBits, HANDLE aSection,
-                                    DWORD aOffset) {
-  // There are a lot of calls to CreateDIBSection, so we make some effort not
-  // to CheckMemAvailable() for calls to CreateDIBSection which allocate only
-  // a small amount of memory.
-
-  // If aSection is non-null, CreateDIBSection won't allocate any new memory.
-  bool doCheck = false;
-  if (sHooksActive && !aSection && aBitmapInfo) {
-    uint16_t bitCount = aBitmapInfo->bmiHeader.biBitCount;
-    if (bitCount == 0) {
-      // MSDN says bitCount == 0 means that it figures out how many bits each
-      // pixel gets by examining the corresponding JPEG or PNG data.  We'll just
-      // assume the worst.
-      bitCount = 32;
-    }
-
-    // |size| contains the expected allocation size in *bits*.  Height may be
-    // negative (indicating the direction the DIB is drawn in), so we take the
-    // absolute value.
-    int64_t size = bitCount * aBitmapInfo->bmiHeader.biWidth *
-                   aBitmapInfo->bmiHeader.biHeight;
-    if (size < 0) {
-      size *= -1;
-    }
-
-    // If we're allocating more than 1MB, check how much memory is left after
-    // the allocation.
-    if (size > 1024 * 1024 * 8) {
-      doCheck = true;
-    }
-  }
-
-  HBITMAP result =
-      sCreateDIBSectionOrig(aDC, aBitmapInfo, aUsage, aBits, aSection, aOffset);
-
-  if (doCheck) {
-    CheckMemAvailable();
-  }
-
-  return result;
+  return NS_OK;
 }
 
 static int64_t LowMemoryEventsVirtualDistinguishedAmount() {
   return sNumLowVirtualMemEvents;
+}
+
+static int64_t LowMemoryEventsCommitSpaceDistinguishedAmount() {
+  return sNumLowCommitSpaceEvents;
 }
 
 static int64_t LowMemoryEventsPhysicalDistinguishedAmount() {
@@ -250,7 +280,7 @@ class LowEventsReporter final : public nsIMemoryReporter {
 
     MOZ_COLLECT_REPORT(
       "low-memory-events/commit-space", KIND_OTHER, UNITS_COUNT_CUMULATIVE,
-      sNumLowCommitSpaceEvents,
+      LowMemoryEventsCommitSpaceDistinguishedAmount(),
 "Number of low-commit-space events fired since startup. We fire such an "
 "event if we notice there is less than memory.low_commit_space_threshold_mb of "
 "commit space available (if zero, this behavior is disabled). Windows will "
@@ -272,7 +302,7 @@ class LowEventsReporter final : public nsIMemoryReporter {
 };
 NS_IMPL_ISUPPORTS(LowEventsReporter, nsIMemoryReporter)
 
-#endif  // defined(_M_IX86) && defined(XP_WIN)
+#endif  // defined(XP_WIN)
 
 /**
  * This runnable is executed in response to a memory-pressure event; we spin
@@ -352,56 +382,28 @@ nsMemoryPressureWatcher::Observe(nsISupports* aSubject, const char* aTopic,
 namespace mozilla {
 namespace AvailableMemoryTracker {
 
-void Activate() {
-#if defined(_M_IX86) && defined(XP_WIN)
-  MOZ_ASSERT(sInitialized);
-  MOZ_ASSERT(!sHooksActive);
+void Init() {
+  // The watchers are held alive by the observer service.
+  RefPtr<nsMemoryPressureWatcher> watcher = new nsMemoryPressureWatcher();
+  watcher->Init();
 
+#if defined(XP_WIN)
   RegisterStrongMemoryReporter(new LowEventsReporter());
   RegisterLowMemoryEventsVirtualDistinguishedAmount(
       LowMemoryEventsVirtualDistinguishedAmount);
+  RegisterLowMemoryEventsCommitSpaceDistinguishedAmount(
+      LowMemoryEventsCommitSpaceDistinguishedAmount);
   RegisterLowMemoryEventsPhysicalDistinguishedAmount(
       LowMemoryEventsPhysicalDistinguishedAmount);
-  sHooksActive = true;
-#endif
 
-  // This object is held alive by the observer service.
-  RefPtr<nsMemoryPressureWatcher> watcher = new nsMemoryPressureWatcher();
-  watcher->Init();
-}
+  if (XRE_IsParentProcess()) {
+    RefPtr<nsAvailableMemoryWatcher> poller = new nsAvailableMemoryWatcher();
 
-void Init() {
-// Do nothing on x86-64, because nsWindowsDllInterceptor is not thread-safe
-// on 64-bit.  (On 32-bit, it's probably thread-safe.)  Even if we run Init()
-// before any other of our threads are running, another process may have
-// started a remote thread which could call VirtualAlloc!
-//
-// Moreover, the benefit of this code is less clear when we're a 64-bit
-// process, because we aren't going to run out of virtual memory, and the
-// system is likely to have a fair bit of physical memory.
-
-#if defined(_M_IX86) && defined(XP_WIN)
-  // Don't register the hooks if we're a build instrumented for PGO: If we're
-  // an instrumented build, the compiler adds function calls all over the place
-  // which may call VirtualAlloc; this makes it hard to prevent
-  // VirtualAllocHook from reentering itself.
-  if (!PR_GetEnv("MOZ_PGO_INSTRUMENTED")) {
-    sKernel32Intercept.Init("Kernel32.dll");
-    sKernel32Intercept.AddHook("VirtualAlloc",
-                               reinterpret_cast<intptr_t>(VirtualAllocHook),
-                               reinterpret_cast<void**>(&sVirtualAllocOrig));
-    sKernel32Intercept.AddHook("MapViewOfFile",
-                               reinterpret_cast<intptr_t>(MapViewOfFileHook),
-                               reinterpret_cast<void**>(&sMapViewOfFileOrig));
-
-    sGdi32Intercept.Init("Gdi32.dll");
-    sGdi32Intercept.AddHook("CreateDIBSection",
-                            reinterpret_cast<intptr_t>(CreateDIBSectionHook),
-                            reinterpret_cast<void**>(&sCreateDIBSectionOrig));
+    if (NS_FAILED(poller->Init())) {
+      NS_WARNING("Could not start the available memory watcher");
+    }
   }
-
-  sInitialized = true;
-#endif
+#endif  // defined(XP_WIN)
 }
 
 }  // namespace AvailableMemoryTracker

@@ -27,16 +27,16 @@ function throttle(func, wait, scope) {
   let timeout = null;
   let previous = 0;
 
-  let later = function () {
+  const later = function() {
     previous = Date.now();
     timeout = null;
     result = func.apply(scope, args);
     args = null;
   };
 
-  return function () {
-    let now = Date.now();
-    let remaining = wait - (now - previous);
+  return function() {
+    const now = Date.now();
+    const remaining = wait - (now - previous);
     args = arguments;
     if (remaining <= 0) {
       clearTimeout(timeout);

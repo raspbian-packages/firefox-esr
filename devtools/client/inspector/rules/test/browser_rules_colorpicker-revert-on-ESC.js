@@ -15,36 +15,54 @@ const TEST_URI = `
   </style>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let {view} = yield openRuleView();
-  yield testPressingEscapeRevertsChanges(view);
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { view } = await openRuleView();
+  await testPressingEscapeRevertsChanges(view);
 });
 
-function* testPressingEscapeRevertsChanges(view) {
-  let {swatch, propEditor, cPicker} = yield openColorPickerAndSelectColor(view,
-    1, 0, [0, 0, 0, 1], {
+async function testPressingEscapeRevertsChanges(view) {
+  const { swatch, propEditor, cPicker } = await openColorPickerAndSelectColor(
+    view,
+    1,
+    0,
+    [0, 0, 0, 1],
+    {
       selector: "body",
       name: "background-color",
-      value: "rgb(0, 0, 0)"
-    });
+      value: "rgb(0, 0, 0)",
+    }
+  );
 
-  is(swatch.style.backgroundColor, "rgb(0, 0, 0)",
-    "The color swatch's background was updated");
-  is(propEditor.valueSpan.textContent, "#000",
-    "The text of the background-color css property was updated");
+  is(
+    swatch.style.backgroundColor,
+    "rgb(0, 0, 0)",
+    "The color swatch's background was updated"
+  );
+  is(
+    propEditor.valueSpan.textContent,
+    "#000",
+    "The text of the background-color css property was updated"
+  );
 
-  let spectrum = cPicker.spectrum;
+  const spectrum = cPicker.spectrum;
 
   info("Pressing ESCAPE to close the tooltip");
-  let onHidden = cPicker.tooltip.once("hidden");
-  let onModifications = view.once("ruleview-changed");
+  const onHidden = cPicker.tooltip.once("hidden");
+  const onModifications = view.once("ruleview-changed");
   EventUtils.sendKey("ESCAPE", spectrum.element.ownerDocument.defaultView);
-  yield onHidden;
-  yield onModifications;
+  await onHidden;
+  await onModifications;
 
-  yield waitForComputedStyleProperty("body", null, "background-color",
-    "rgb(237, 237, 237)");
-  is(propEditor.valueSpan.textContent, "#EDEDED",
-    "Got expected property value.");
+  await waitForComputedStyleProperty(
+    "body",
+    null,
+    "background-color",
+    "rgb(237, 237, 237)"
+  );
+  is(
+    propEditor.valueSpan.textContent,
+    "#EDEDED",
+    "Got expected property value."
+  );
 }

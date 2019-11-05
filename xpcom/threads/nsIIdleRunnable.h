@@ -33,7 +33,7 @@ class nsIIdleRunnable : public nsISupports {
    */
   virtual void SetDeadline(mozilla::TimeStamp aDeadline){};
   virtual void SetTimer(uint32_t aDelay, nsIEventTarget* aTarget) {
-    NS_NOTREACHED(
+    MOZ_ASSERT_UNREACHABLE(
         "The nsIIdleRunnable instance does not support "
         "idle dispatch with timeout!");
   };

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,45 +10,39 @@
 #include "nsWrapperCache.h"
 #include "WebGLObjectModel.h"
 #include "WebGLStrongTypes.h"
+#include "WebGLTexture.h"
 
 namespace mozilla {
 
 class WebGLSampler final : public nsWrapperCache,
                            public WebGLRefCountedObject<WebGLSampler>,
-                           public LinkedListElement<WebGLSampler> {
-  friend class WebGLContext2;
-  friend class WebGLTexture;
+                           public LinkedListElement<WebGLSampler>,
+                           public CacheInvalidator {
+  NS_INLINE_DECL_CYCLE_COLLECTING_NATIVE_REFCOUNTING(WebGLSampler)
+  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_NATIVE_CLASS(WebGLSampler)
 
  public:
-  WebGLSampler(WebGLContext* webgl, GLuint sampler);
-
   const GLuint mGLName;
 
+ private:
+  webgl::SamplingState mState;
+
+ public:
+  explicit WebGLSampler(WebGLContext* webgl);
+
+ private:
+  ~WebGLSampler();
+
+ public:
   void Delete();
   WebGLContext* GetParentObject() const;
 
   virtual JSObject* WrapObject(JSContext* cx,
                                JS::Handle<JSObject*> givenProto) override;
 
-  void SamplerParameter(const char* funcName, GLenum pname,
-                        const FloatOrInt& param);
+  void SamplerParameter(GLenum pname, const FloatOrInt& param);
 
- private:
-  NS_INLINE_DECL_CYCLE_COLLECTING_NATIVE_REFCOUNTING(WebGLSampler)
-  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_NATIVE_CLASS(WebGLSampler)
-
-  TexMinFilter mMinFilter;
-  TexMagFilter mMagFilter;
-  TexWrap mWrapS;
-  TexWrap mWrapT;
-  TexWrap mWrapR;
-  GLfloat mMinLod;
-  GLfloat mMaxLod;
-  TexCompareMode mCompareMode;
-  TexCompareFunc mCompareFunc;
-
- private:
-  ~WebGLSampler();
+  const auto& State() const { return mState; }
 };
 
 }  // namespace mozilla

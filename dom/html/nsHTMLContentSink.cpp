@@ -36,19 +36,18 @@
 
 #include "nsGenericHTMLElement.h"
 
-#include "nsIDOMDocument.h"
-#include "nsIDOMDocumentType.h"
 #include "nsIScriptElement.h"
 
 #include "nsIComponentManager.h"
 #include "nsIServiceManager.h"
 
+#include "nsDocElementCreatedNotificationRunner.h"
 #include "nsGkAtoms.h"
 #include "nsContentUtils.h"
 #include "nsIChannel.h"
 #include "nsIHttpChannel.h"
 #include "nsIDocShell.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsStubDocumentObserver.h"
 #include "nsIHTMLDocument.h"
 #include "nsICookieService.h"
@@ -66,7 +65,6 @@
 #include "nsIScriptContext.h"
 #include "nsStyleLinkElement.h"
 
-#include "nsWeakReference.h"  // nsHTMLElementFactory supports weak references
 #include "nsIPrompt.h"
 #include "nsLayoutCID.h"
 #include "nsIDocShellTreeItem.h"
@@ -85,7 +83,7 @@ using namespace mozilla::dom;
 nsGenericHTMLElement* NS_NewHTMLNOTUSEDElement(
     already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
     FromParser aFromParser) {
-  NS_NOTREACHED("The element ctor should never be called");
+  MOZ_ASSERT_UNREACHABLE("The element ctor should never be called");
   return nullptr;
 }
 
@@ -112,7 +110,7 @@ class HTMLContentSink : public nsContentSink, public nsIHTMLContentSink {
 
   HTMLContentSink();
 
-  nsresult Init(nsIDocument* aDoc, nsIURI* aURI, nsISupports* aContainer,
+  nsresult Init(Document* aDoc, nsIURI* aURI, nsISupports* aContainer,
                 nsIChannel* aChannel);
 
   // nsISupports
@@ -248,7 +246,7 @@ already_AddRefed<nsGenericHTMLElement> CreateHTMLElement(
   NS_ASSERTION(cb != NS_NewHTMLNOTUSEDElement,
                "Don't know how to construct tag element!");
 
-  RefPtr<nsGenericHTMLElement> result = cb(Move(aNodeInfo), aFromParser);
+  RefPtr<nsGenericHTMLElement> result = cb(std::move(aNodeInfo), aFromParser);
 
   return result.forget();
 }
@@ -459,15 +457,13 @@ nsresult SinkContext::GrowStack() {
  */
 nsresult SinkContext::FlushTags() {
   mSink->mDeferredFlushTags = false;
-  bool oldBeganUpdate = mSink->mBeganUpdate;
   uint32_t oldUpdates = mSink->mUpdatesInNotification;
 
   ++(mSink->mInNotification);
   mSink->mUpdatesInNotification = 0;
   {
     // Scope so we call EndUpdate before we decrease mInNotification
-    mozAutoDocUpdate updateBatch(mSink->mDocument, UPDATE_CONTENT_MODEL, true);
-    mSink->mBeganUpdate = true;
+    mozAutoDocUpdate updateBatch(mSink->mDocument, true);
 
     // Start from the base of the stack (growing downward) and do
     // a notification from the node that is closest to the root of
@@ -517,7 +513,6 @@ nsresult SinkContext::FlushTags() {
   }
 
   mSink->mUpdatesInNotification = oldUpdates;
-  mSink->mBeganUpdate = oldBeganUpdate;
 
   return NS_OK;
 }
@@ -542,7 +537,7 @@ void SinkContext::UpdateChildCounts() {
   mNotifyLevel = mStackPos - 1;
 }
 
-nsresult NS_NewHTMLContentSink(nsIHTMLContentSink** aResult, nsIDocument* aDoc,
+nsresult NS_NewHTMLContentSink(nsIHTMLContentSink** aResult, Document* aDoc,
                                nsIURI* aURI, nsISupports* aContainer,
                                nsIChannel* aChannel) {
   NS_ENSURE_ARG_POINTER(aResult);
@@ -606,7 +601,7 @@ NS_IMPL_CYCLE_COLLECTION_INHERITED(HTMLContentSink, nsContentSink,
 NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED(HTMLContentSink, nsContentSink,
                                              nsIContentSink, nsIHTMLContentSink)
 
-nsresult HTMLContentSink::Init(nsIDocument* aDoc, nsIURI* aURI,
+nsresult HTMLContentSink::Init(Document* aDoc, nsIURI* aURI,
                                nsISupports* aContainer, nsIChannel* aChannel) {
   NS_ENSURE_TRUE(aContainer, NS_ERROR_NULL_POINTER);
 
@@ -730,7 +725,7 @@ HTMLContentSink::DidBuildModel(bool aTerminated) {
 
 NS_IMETHODIMP
 HTMLContentSink::SetParser(nsParserBase* aParser) {
-  NS_PRECONDITION(aParser, "Should have a parser here!");
+  MOZ_ASSERT(aParser, "Should have a parser here!");
   mParser = aParser;
   return NS_OK;
 }
@@ -872,17 +867,13 @@ void HTMLContentSink::CloseHeadContext() {
 
 void HTMLContentSink::NotifyInsert(nsIContent* aContent,
                                    nsIContent* aChildContent) {
-  if (aContent && aContent->GetUncomposedDoc() != mDocument) {
-    // aContent is not actually in our document anymore.... Just bail out of
-    // here; notifying on our document for this insert would be wrong.
-    return;
-  }
-
   mInNotification++;
 
   {
     // Scope so we call EndUpdate before we decrease mInNotification
-    MOZ_AUTO_DOC_UPDATE(mDocument, UPDATE_CONTENT_MODEL, !mBeganUpdate);
+    // Note that aContent->OwnerDoc() may be different to mDocument already.
+    MOZ_AUTO_DOC_UPDATE(aContent ? aContent->OwnerDoc() : mDocument.get(),
+                        true);
     nsNodeUtils::ContentInserted(NODE_FROM(aContent, mDocument), aChildContent);
     mLastNotificationTime = PR_Now();
   }
@@ -891,7 +882,7 @@ void HTMLContentSink::NotifyInsert(nsIContent* aContent,
 }
 
 void HTMLContentSink::NotifyRootInsertion() {
-  NS_PRECONDITION(!mNotifiedRootInsertion, "Double-notifying on root?");
+  MOZ_ASSERT(!mNotifiedRootInsertion, "Double-notifying on root?");
   NS_ASSERTION(!mLayoutStarted,
                "How did we start layout without notifying on root?");
   // Now make sure to notify that we have now inserted our root.  If
@@ -908,6 +899,9 @@ void HTMLContentSink::NotifyRootInsertion() {
   // contexts, since we just inserted the root and notified on
   // our whole tree
   UpdateChildCounts();
+
+  nsContentUtils::AddScriptRunner(
+      new nsDocElementCreatedNotificationRunner(mDocument));
 }
 
 void HTMLContentSink::UpdateChildCounts() {
@@ -953,7 +947,7 @@ void HTMLContentSink::SetDocumentCharset(NotNull<const Encoding*> aEncoding) {
   MOZ_ASSERT_UNREACHABLE("<meta charset> case doesn't occur with about:blank");
 }
 
-nsISupports* HTMLContentSink::GetTarget() { return mDocument; }
+nsISupports* HTMLContentSink::GetTarget() { return ToSupports(mDocument); }
 
 bool HTMLContentSink::IsScriptExecuting() { return IsScriptExecutingImpl(); }
 
@@ -968,6 +962,6 @@ void HTMLContentSink::ContinueInterruptedParsingAsync() {
       "HTMLContentSink::ContinueInterruptedParsingIfEnabled", this,
       &HTMLContentSink::ContinueInterruptedParsingIfEnabled);
 
-  nsCOMPtr<nsIDocument> doc = do_QueryInterface(mHTMLDocument);
+  nsCOMPtr<Document> doc = do_QueryInterface(mHTMLDocument);
   doc->Dispatch(mozilla::TaskCategory::Other, ev.forget());
 }

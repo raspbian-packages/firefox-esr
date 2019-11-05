@@ -7,15 +7,19 @@ DIRS += [
     'components',
     'modules',
     'test',
+    'views',
 ]
 
 DevToolsModules(
     'events.js',
-    'panel.js'
+    'initializer.js',
+    'panel.js',
+    'performance-controller.js',
+    'performance-view.js',
 )
 
 BROWSER_CHROME_MANIFESTS += ['test/browser.ini']
 XPCSHELL_TESTS_MANIFESTS += ['test/unit/xpcshell.ini']
 
 with Files('**'):
-    BUG_COMPONENT = ('Firefox', 'Developer Tools: Performance Tools (Profiler/Timeline)')
+    BUG_COMPONENT = ('DevTools', 'Performance Tools (Profiler/Timeline)')

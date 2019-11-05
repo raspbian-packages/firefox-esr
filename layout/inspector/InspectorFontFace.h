@@ -7,13 +7,13 @@
 #ifndef mozilla_InspectorFontFace_h
 #define mozilla_InspectorFontFace_h
 
+#include "mozilla/dom/CSSFontFaceRule.h"
 #include "mozilla/dom/InspectorUtilsBinding.h"
 #include "mozilla/dom/NonRefcountedDOMObject.h"
 #include "nsRange.h"
 
 class gfxFontEntry;
 class gfxFontGroup;
-class nsCSSFontFaceRule;
 
 namespace mozilla {
 namespace dom {
@@ -25,15 +25,12 @@ namespace dom {
 class InspectorFontFace final : public NonRefcountedDOMObject {
  public:
   InspectorFontFace(gfxFontEntry* aFontEntry, gfxFontGroup* aFontGroup,
-                    uint8_t aMatchType)
-      : mFontEntry(aFontEntry), mFontGroup(aFontGroup), mMatchType(aMatchType) {
-    MOZ_COUNT_CTOR(InspectorFontFace);
-  }
+                    FontMatchType aMatchType);
 
-  ~InspectorFontFace() { MOZ_COUNT_DTOR(InspectorFontFace); }
+  ~InspectorFontFace();
 
   gfxFontEntry* GetFontEntry() const { return mFontEntry; }
-  void AddMatchType(uint8_t aMatchType) { mMatchType |= aMatchType; }
+  void AddMatchType(FontMatchType aMatchType) { mMatchType |= aMatchType; }
 
   void AddRange(nsRange* aRange);
   size_t RangeCount() const { return mRanges.Length(); }
@@ -44,7 +41,8 @@ class InspectorFontFace final : public NonRefcountedDOMObject {
   bool FromSystemFallback();
   void GetName(nsAString& aName);
   void GetCSSFamilyName(nsAString& aCSSFamilyName);
-  nsCSSFontFaceRule* GetRule();
+  void GetCSSGeneric(nsAString& aGeneric);
+  CSSFontFaceRule* GetRule();
   int32_t SrcIndex();
   void GetURI(nsAString& aURI);
   void GetLocalName(nsAString& aLocalName);
@@ -61,13 +59,14 @@ class InspectorFontFace final : public NonRefcountedDOMObject {
 
   bool WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto,
                   JS::MutableHandle<JSObject*> aReflector) {
-    return InspectorFontFaceBinding::Wrap(aCx, this, aGivenProto, aReflector);
+    return InspectorFontFace_Binding::Wrap(aCx, this, aGivenProto, aReflector);
   }
 
  protected:
   RefPtr<gfxFontEntry> mFontEntry;
   RefPtr<gfxFontGroup> mFontGroup;
-  uint8_t mMatchType;
+  RefPtr<CSSFontFaceRule> mRule;
+  FontMatchType mMatchType;
 
   nsTArray<RefPtr<nsRange>> mRanges;
 };

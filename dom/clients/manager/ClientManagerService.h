@@ -11,10 +11,17 @@
 
 namespace mozilla {
 
+namespace ipc {
+
+class PrincipalInfo;
+
+}  // namespace ipc
+
 namespace dom {
 
 class ClientManagerParent;
 class ClientSourceParent;
+class ContentParent;
 
 // Define a singleton service to manage client activity throughout the
 // browser.  This service runs on the PBackground thread.  To interact
@@ -62,6 +69,10 @@ class ClientManagerService final {
   RefPtr<ClientOpPromise> OpenWindow(
       const ClientOpenWindowArgs& aArgs,
       already_AddRefed<ContentParent> aSourceProcess);
+
+  bool HasWindow(const Maybe<ContentParentId>& aContentParentId,
+                 const mozilla::ipc::PrincipalInfo& aPrincipalInfo,
+                 const nsID& aClientId);
 
   NS_INLINE_DECL_REFCOUNTING(mozilla::dom::ClientManagerService)
 };

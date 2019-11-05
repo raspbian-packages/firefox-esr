@@ -1,13 +1,16 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsReadConfig.h"
+#include "nsJSConfigTriggers.h"
+
+#include "mozilla/Components.h"
 #include "nsAppDirectoryServiceDefs.h"
 #include "nsIAppStartup.h"
+#include "nsContentUtils.h"
 #include "nsDirectoryServiceDefs.h"
-#include "nsIAutoConfig.h"
 #include "nsIComponentManager.h"
 #include "nsIFile.h"
 #include "nsIObserverService.h"
@@ -16,21 +19,19 @@
 #include "nsIPromptService.h"
 #include "nsIServiceManager.h"
 #include "nsIStringBundle.h"
-#include "nsToolkitCompsCID.h"
 #include "nsNetUtil.h"
 #include "nsString.h"
 #include "nsCRT.h"
 #include "nspr.h"
 #include "nsXULAppAPI.h"
-#include "nsContentUtils.h"
+
+using namespace mozilla;
+
+extern bool sandboxEnabled;
 
 extern mozilla::LazyLogModule MCD;
 
-extern nsresult EvaluateAdminConfigScript(const char *js_buffer, size_t length,
-                                          const char *filename,
-                                          bool bGlobalContext, bool bCallbacks,
-                                          bool skipFirstLine);
-extern nsresult CentralizedAdminPrefManagerInit();
+extern nsresult CentralizedAdminPrefManagerInit(bool aSandboxEnabled);
 extern nsresult CentralizedAdminPrefManagerFinish();
 
 static nsresult DisplayError(void) {
@@ -63,7 +64,7 @@ static nsresult DisplayError(void) {
 
 // nsISupports Implementation
 
-NS_IMPL_ISUPPORTS(nsReadConfig, nsIReadConfig, nsIObserver)
+NS_IMPL_ISUPPORTS(nsReadConfig, nsIObserver)
 
 nsReadConfig::nsReadConfig() : mRead(false) {}
 
@@ -82,18 +83,29 @@ nsresult nsReadConfig::Init() {
 
 nsReadConfig::~nsReadConfig() { CentralizedAdminPrefManagerFinish(); }
 
-NS_IMETHODIMP nsReadConfig::Observe(nsISupports *aSubject, const char *aTopic,
-                                    const char16_t *someData) {
+NS_IMETHODIMP nsReadConfig::Observe(nsISupports* aSubject, const char* aTopic,
+                                    const char16_t* someData) {
   nsresult rv = NS_OK;
 
   if (!nsCRT::strcmp(aTopic, NS_PREFSERVICE_READ_TOPIC_ID)) {
     rv = readConfigFile();
+    // Don't show error alerts if the sandbox is enabled, just show
+    // sandbox warning.
     if (NS_FAILED(rv)) {
-      rv = DisplayError();
-      if (NS_FAILED(rv)) {
-        nsCOMPtr<nsIAppStartup> appStartup =
-            do_GetService(NS_APPSTARTUP_CONTRACTID);
-        if (appStartup) appStartup->Quit(nsIAppStartup::eAttemptQuit);
+      if (sandboxEnabled) {
+        nsContentUtils::ReportToConsoleNonLocalized(
+            NS_LITERAL_STRING("Autoconfig is sandboxed by default. See "
+                              "https://support.mozilla.org/products/"
+                              "firefox-enterprise for more information."),
+            nsIScriptError::warningFlag, NS_LITERAL_CSTRING("autoconfig"),
+            nullptr);
+      } else {
+        rv = DisplayError();
+        if (NS_FAILED(rv)) {
+          nsCOMPtr<nsIAppStartup> appStartup =
+              components::AppStartup::Service();
+          if (appStartup) appStartup->Quit(nsIAppStartup::eAttemptQuit);
+        }
       }
     }
   }
@@ -103,7 +115,7 @@ NS_IMETHODIMP nsReadConfig::Observe(nsISupports *aSubject, const char *aTopic,
 /**
  * This is the blocklist for known bad autoconfig files.
  */
-static const char *gBlockedConfigs[] = {"dsengine.cfg"};
+static const char* gBlockedConfigs[] = {"dsengine.cfg"};
 
 nsresult nsReadConfig::readConfigFile() {
   nsresult rv = NS_OK;
@@ -120,14 +132,20 @@ nsresult nsReadConfig::readConfigFile() {
       prefService->GetDefaultBranch(nullptr, getter_AddRefs(defaultPrefBranch));
   if (NS_FAILED(rv)) return rv;
 
-  // This preference is set in the all.js or all-ns.js (depending whether
-  // running mozilla or netscp6)
+  NS_NAMED_LITERAL_CSTRING(channel, MOZ_STRINGIFY(MOZ_UPDATE_CHANNEL));
+
+  bool sandboxEnabled =
+      channel.EqualsLiteral("beta") || channel.EqualsLiteral("release");
+
+  mozilla::Unused << defaultPrefBranch->GetBoolPref(
+      "general.config.sandbox_enabled", &sandboxEnabled);
 
   rv = defaultPrefBranch->GetCharPref("general.config.filename", lockFileName);
 
+  if (NS_FAILED(rv)) return rv;
+
   MOZ_LOG(MCD, LogLevel::Debug,
           ("general.config.filename = %s\n", lockFileName.get()));
-  if (NS_FAILED(rv)) return rv;
 
   for (size_t index = 0, len = mozilla::ArrayLength(gBlockedConfigs);
        index < len; ++index) {
@@ -142,7 +160,7 @@ nsresult nsReadConfig::readConfigFile() {
   if (!mRead) {
     // Initiate the new JS Context for Preference management
 
-    rv = CentralizedAdminPrefManagerInit();
+    rv = CentralizedAdminPrefManagerInit(sandboxEnabled);
     if (NS_FAILED(rv)) return rv;
 
     // Open and evaluate function calls to set/lock/unlock prefs
@@ -200,17 +218,20 @@ nsresult nsReadConfig::readConfigFile() {
   rv = prefBranch->GetCharPref("autoadmin.global_config_url", urlName);
   if (NS_SUCCEEDED(rv) && !urlName.IsEmpty()) {
     // Instantiating nsAutoConfig object if the pref is present
-    mAutoConfig = do_CreateInstance(NS_AUTOCONFIG_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) return NS_ERROR_OUT_OF_MEMORY;
+    mAutoConfig = new nsAutoConfig();
 
-    rv = mAutoConfig->SetConfigURL(urlName.get());
-    if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
+    rv = mAutoConfig->Init();
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+
+    mAutoConfig->SetConfigURL(urlName.get());
   }
 
   return NS_OK;
 }  // ReadConfigFile
 
-nsresult nsReadConfig::openAndEvaluateJSFile(const char *aFileName,
+nsresult nsReadConfig::openAndEvaluateJSFile(const char* aFileName,
                                              int32_t obscureValue,
                                              bool isEncoded, bool isBinDir) {
   nsresult rv;
@@ -242,7 +263,7 @@ nsresult nsReadConfig::openAndEvaluateJSFile(const char *aFileName,
                        nsIContentPolicy::TYPE_OTHER);
     NS_ENSURE_SUCCESS(rv, rv);
 
-    rv = channel->Open2(getter_AddRefs(inStr));
+    rv = channel->Open(getter_AddRefs(inStr));
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
@@ -254,7 +275,7 @@ nsresult nsReadConfig::openAndEvaluateJSFile(const char *aFileName,
   if (fs64 > UINT32_MAX) return NS_ERROR_FILE_TOO_BIG;
   uint32_t fs = (uint32_t)fs64;
 
-  char *buf = (char *)malloc(fs * sizeof(char));
+  char* buf = (char*)malloc(fs * sizeof(char));
   if (!buf) return NS_ERROR_OUT_OF_MEMORY;
 
   rv = inStr->Read(buf, (uint32_t)fs, &amt);
@@ -264,8 +285,8 @@ nsresult nsReadConfig::openAndEvaluateJSFile(const char *aFileName,
       // Unobscure file by subtracting some value from every char.
       for (uint32_t i = 0; i < amt; i++) buf[i] -= obscureValue;
     }
-    rv = EvaluateAdminConfigScript(buf, amt, aFileName, false, true,
-                                   isEncoded ? true : false);
+    rv = EvaluateAdminConfigScript(buf, amt, aFileName, false, true, isEncoded,
+                                   !isBinDir);
   }
   inStr->Close();
   free(buf);

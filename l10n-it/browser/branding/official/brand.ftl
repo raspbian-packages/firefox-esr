@@ -13,5 +13,9 @@
 ##
 ## Reference: https://www.mozilla.org/styleguide/communications/translation/
 
+-brand-shorter-name = Firefox
 -brand-short-name = Firefox
+-brand-full-name = Mozilla Firefox
+-brand-product-name = Firefox
 -vendor-short-name = Mozilla
+trademarkInfo = Firefox e i logo di Firefox sono marchi registrati di Mozilla Foundation.

@@ -7,6 +7,7 @@
 #include "DOMPrefs.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/StaticPrefs.h"
 
 namespace mozilla {
 namespace dom {
@@ -19,40 +20,29 @@ void DOMPrefs::Initialize() {
   DOMPrefs::DumpEnabled();
 #endif
 
-#define DOM_PREF(name, pref) DOMPrefs::name();
 #define DOM_WEBIDL_PREF(name)
 
 #include "DOMPrefsInternal.h"
 
-#undef DOM_PREF
 #undef DOM_WEBIDL_PREF
 }
 
-#define DOM_PREF(name, pref)                                         \
-  /* static */ bool DOMPrefs::name() {                               \
-    static bool initialized = false;                                 \
-    static Atomic<bool> cachedValue;                                 \
-    if (!initialized) {                                              \
-      initialized = true;                                            \
-      Preferences::AddAtomicBoolVarCache(&cachedValue, pref, false); \
-    }                                                                \
-    return cachedValue;                                              \
-  }
+/* static */
+bool DOMPrefs::DumpEnabled() {
+#if !(defined(DEBUG) || defined(MOZ_ENABLE_JS_DUMP))
+  return StaticPrefs::browser_dom_window_dump_enabled();
+#else
+  return true;
+#endif
+}
 
 #define DOM_WEBIDL_PREF(name)                                        \
   /* static */ bool DOMPrefs::name(JSContext* aCx, JSObject* aObj) { \
-    return DOMPrefs::name();                                         \
+    return StaticPrefs::name();                                      \
   }
-
-#if !(defined(DEBUG) || defined(MOZ_ENABLE_JS_DUMP))
-DOM_PREF(DumpEnabled, "browser.dom.window.dump.enabled")
-#else
-/* static */ bool DOMPrefs::DumpEnabled() { return true; }
-#endif
 
 #include "DOMPrefsInternal.h"
 
-#undef DOM_PREF
 #undef DOM_WEBIDL_PREF
 
 }  // namespace dom

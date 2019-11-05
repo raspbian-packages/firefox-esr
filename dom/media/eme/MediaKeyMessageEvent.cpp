@@ -39,7 +39,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(MediaKeyMessageEvent)
 NS_INTERFACE_MAP_END_INHERITING(Event)
 
 MediaKeyMessageEvent::MediaKeyMessageEvent(EventTarget* aOwner)
-    : Event(aOwner, nullptr, nullptr) {
+    : Event(aOwner, nullptr, nullptr),
+      mMessageType(static_cast<MediaKeyMessageType>(0)) {
   mozilla::HoldJSObjects(this);
 }
 
@@ -54,7 +55,7 @@ MediaKeyMessageEvent* MediaKeyMessageEvent::AsMediaKeyMessageEvent() {
 
 JSObject* MediaKeyMessageEvent::WrapObjectInternal(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return MediaKeyMessageEventBinding::Wrap(aCx, this, aGivenProto);
+  return MediaKeyMessageEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<MediaKeyMessageEvent> MediaKeyMessageEvent::Constructor(

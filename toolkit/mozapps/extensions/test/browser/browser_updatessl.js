@@ -3,10 +3,13 @@
  */
 
 var tempScope = {};
-ChromeUtils.import("resource://gre/modules/addons/AddonUpdateChecker.jsm", tempScope);
+ChromeUtils.import(
+  "resource://gre/modules/addons/AddonUpdateChecker.jsm",
+  tempScope
+);
 var AddonUpdateChecker = tempScope.AddonUpdateChecker;
 
-const updaterdf = RELATIVE_DIR + "browser_updatessl.rdf";
+const updatejson = RELATIVE_DIR + "browser_updatessl.json";
 const redirect = RELATIVE_DIR + "redirect.sjs?";
 const SUCCESS = 0;
 const DOWNLOAD_ERROR = AddonManager.ERROR_DOWNLOAD_ERROR;
@@ -25,13 +28,26 @@ var gStart = 0;
 var gLast = 0;
 
 var HTTPObserver = {
-  observeActivity(aChannel, aType, aSubtype, aTimestamp, aSizeData,
-                            aStringData) {
+  observeActivity(
+    aChannel,
+    aType,
+    aSubtype,
+    aTimestamp,
+    aSizeData,
+    aStringData
+  ) {
     aChannel.QueryInterface(Ci.nsIChannel);
 
-    dump("*** HTTP Activity 0x" + aType.toString(16) + " 0x" + aSubtype.toString(16) +
-         " " + aChannel.URI.spec + "\n");
-  }
+    dump(
+      "*** HTTP Activity 0x" +
+        aType.toString(16) +
+        " 0x" +
+        aSubtype.toString(16) +
+        " " +
+        aChannel.URI.spec +
+        "\n"
+    );
+  },
 };
 
 function test() {
@@ -39,8 +55,9 @@ function test() {
   requestLongerTimeout(4);
   waitForExplicitFinish();
 
-  let observerService = Cc["@mozilla.org/network/http-activity-distributor;1"].
-                        getService(Ci.nsIHttpActivityDistributor);
+  let observerService = Cc[
+    "@mozilla.org/network/http-activity-distributor;1"
+  ].getService(Ci.nsIHttpActivityDistributor);
   observerService.addObserver(HTTPObserver);
 
   registerCleanupFunction(function() {
@@ -53,8 +70,9 @@ function test() {
 function end_test() {
   Services.prefs.clearUserPref(PREF_UPDATE_REQUIREBUILTINCERTS);
 
-  var cos = Cc["@mozilla.org/security/certoverride;1"].
-            getService(Ci.nsICertOverrideService);
+  var cos = Cc["@mozilla.org/security/certoverride;1"].getService(
+    Ci.nsICertOverrideService
+  );
   cos.clearValidityOverride("nocert.example.com", -1);
   cos.clearValidityOverride("self-signed.example.com", -1);
   cos.clearValidityOverride("untrusted.example.com", -1);
@@ -78,17 +96,19 @@ function run_update_tests(callback) {
 
     let [mainURL, redirectURL, expectedStatus] = gTests.shift();
     if (redirectURL) {
-      var url = mainURL + redirect + redirectURL + updaterdf;
-      var message = "Should have seen the right result for an update check redirected from " +
-                    mainURL + " to " + redirectURL;
+      var url = mainURL + redirect + redirectURL + updatejson;
+      var message =
+        "Should have seen the right result for an update check redirected from " +
+        mainURL +
+        " to " +
+        redirectURL;
     } else {
-      url = mainURL + updaterdf;
-      message = "Should have seen the right result for an update check from " +
-                mainURL;
+      url = mainURL + updatejson;
+      message =
+        "Should have seen the right result for an update check from " + mainURL;
     }
 
-    AddonUpdateChecker.checkForUpdates("addon1@tests.mozilla.org",
-                                       null, url, {
+    AddonUpdateChecker.checkForUpdates("addon1@tests.mozilla.org", url, {
       onUpdateCheckComplete(updates) {
         is(updates.length, 1, "Should be the right number of results");
         is(SUCCESS, expectedStatus, message);
@@ -100,24 +120,16 @@ function run_update_tests(callback) {
         is(status, expectedStatus, message);
         info("Update test ran in " + (Date.now() - gLast) + "ms");
         run_next_update_test();
-      }
+      },
     });
   }
 
   run_next_update_test();
 }
 
-// Add overrides for the bad certificates
-function addCertOverrides() {
-  addCertOverride("nocert.example.com", Ci.nsICertOverrideService.ERROR_MISMATCH);
-  addCertOverride("self-signed.example.com", Ci.nsICertOverrideService.ERROR_UNTRUSTED);
-  addCertOverride("untrusted.example.com", Ci.nsICertOverrideService.ERROR_UNTRUSTED);
-  addCertOverride("expired.example.com", Ci.nsICertOverrideService.ERROR_TIME);
-}
-
 // Runs tests with built-in certificates required and no certificate exceptions.
 add_test(function() {
-  // Tests that a simple update.rdf retrieval works as expected.
+  // Tests that a simple update.json retrieval works as expected.
   add_update_test(HTTP, null, SUCCESS);
   add_update_test(HTTPS, null, DOWNLOAD_ERROR);
   add_update_test(NOCERT, null, DOWNLOAD_ERROR);
@@ -181,7 +193,7 @@ add_test(function() {
 add_test(function() {
   Services.prefs.setBoolPref(PREF_UPDATE_REQUIREBUILTINCERTS, false);
 
-  // Tests that a simple update.rdf retrieval works as expected.
+  // Tests that a simple update.json retrieval works as expected.
   add_update_test(HTTP, null, SUCCESS);
   add_update_test(HTTPS, null, SUCCESS);
   add_update_test(NOCERT, null, DOWNLOAD_ERROR);
@@ -240,12 +252,16 @@ add_test(function() {
   run_update_tests(run_next_test);
 });
 
+// Set up overrides for the next test.
+add_test(() => {
+  addCertOverrides().then(run_next_test);
+});
+
 // Runs tests with built-in certificates required and all certificate exceptions.
 add_test(function() {
   Services.prefs.clearUserPref(PREF_UPDATE_REQUIREBUILTINCERTS);
-  addCertOverrides();
 
-  // Tests that a simple update.rdf retrieval works as expected.
+  // Tests that a simple update.json retrieval works as expected.
   add_update_test(HTTP, null, SUCCESS);
   add_update_test(HTTPS, null, DOWNLOAD_ERROR);
   add_update_test(NOCERT, null, DOWNLOAD_ERROR);
@@ -309,7 +325,7 @@ add_test(function() {
 add_test(function() {
   Services.prefs.setBoolPref(PREF_UPDATE_REQUIREBUILTINCERTS, false);
 
-  // Tests that a simple update.rdf retrieval works as expected.
+  // Tests that a simple update.json retrieval works as expected.
   add_update_test(HTTP, null, SUCCESS);
   add_update_test(HTTPS, null, SUCCESS);
   add_update_test(NOCERT, null, SUCCESS);

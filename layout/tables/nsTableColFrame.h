@@ -13,6 +13,10 @@
 #include "nsTableColGroupFrame.h"
 #include "mozilla/WritingModes.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsTableColFrame final : public nsSplittableFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsTableColFrame)
@@ -20,20 +24,22 @@ class nsTableColFrame final : public nsSplittableFrame {
   enum {
     eWIDTH_SOURCE_NONE = 0,  // no cell has contributed to the width style
     eWIDTH_SOURCE_CELL = 1,  // a cell specified a width
-    eWIDTH_SOURCE_CELL_WITH_SPAN =
-        2  // a cell implicitly specified a width via colspan
+    eWIDTH_SOURCE_CELL_WITH_SPAN = 2  // a cell implicitly specified a width via
+                                      // colspan
   };
 
   nsTableColType GetColType() const;
   void SetColType(nsTableColType aType);
 
-  /** instantiate a new instance of nsTableRowFrame.
+  /**
+   * instantiate a new instance of nsTableRowFrame.
+   *
    * @param aPresShell the pres shell for this frame
    *
    * @return           the frame that was created
    */
-  friend nsTableColFrame* NS_NewTableColFrame(nsIPresShell* aPresShell,
-                                              nsStyleContext* aContext);
+  friend nsTableColFrame* NS_NewTableColFrame(mozilla::PresShell* aPresShell,
+                                              ComputedStyle* aContext);
 
   // nsIFrame overrides
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
@@ -44,8 +50,8 @@ class nsTableColFrame final : public nsSplittableFrame {
     }
   }
 
-  /** @see nsIFrame::DidSetStyleContext */
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  /** @see nsIFrame::DidSetComputedStyle */
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   virtual void Reflow(nsPresContext* aPresContext, ReflowOutput& aDesiredSize,
                       const ReflowInput& aReflowInput,
@@ -57,8 +63,6 @@ class nsTableColFrame final : public nsSplittableFrame {
 #ifdef DEBUG_FRAME_DUMP
   virtual nsresult GetFrameName(nsAString& aResult) const override;
 #endif
-
-  virtual nsSplittableType GetSplittableType() const override;
 
   nsTableColGroupFrame* GetTableColGroupFrame() const {
     nsIFrame* parent = GetParent();
@@ -82,8 +86,8 @@ class nsTableColFrame final : public nsSplittableFrame {
   /** convenience method, calls into cellmap */
   int32_t Count() const;
 
-  nscoord GetIStartBorderWidth() const { return mIStartBorderWidth; }
-  nscoord GetIEndBorderWidth() const { return mIEndBorderWidth; }
+  BCPixelSize GetIStartBorderWidth() const { return mIStartBorderWidth; }
+  BCPixelSize GetIEndBorderWidth() const { return mIEndBorderWidth; }
   void SetIStartBorderWidth(BCPixelSize aWidth) { mIStartBorderWidth = aWidth; }
   void SetIEndBorderWidth(BCPixelSize aWidth) { mIEndBorderWidth = aWidth; }
 
@@ -257,18 +261,24 @@ class nsTableColFrame final : public nsSplittableFrame {
   nscoord GetFinalISize() { return mFinalISize; }
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsSplittableFrame::IsFrameOfType(aFlags & ~(nsIFrame::eTablePart));
   }
 
-  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0) override;
-  virtual void InvalidateFrameWithRect(const nsRect& aRect,
-                                       uint32_t aDisplayItemKey = 0) override;
+  virtual void InvalidateFrame(uint32_t aDisplayItemKey = 0,
+                               bool aRebuildDisplayItems = true) override;
+  virtual void InvalidateFrameWithRect(
+      const nsRect& aRect, uint32_t aDisplayItemKey = 0,
+      bool aRebuildDisplayItems = true) override;
   virtual void InvalidateFrameForRemoval() override {
     InvalidateFrameSubtree();
   }
 
  protected:
-  explicit nsTableColFrame(nsStyleContext* aContext);
+  explicit nsTableColFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
   ~nsTableColFrame();
 
   nscoord mMinCoord;

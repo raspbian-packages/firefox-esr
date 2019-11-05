@@ -21,6 +21,7 @@ from .graph import Graph
 from . import files_changed
 from .taskgraph import TaskGraph
 from .util.seta import is_low_value_task
+from .util.perfile import perfile_number_of_chunks
 from .util.taskcluster import find_task_id
 from .util.parameterization import resolve_task_references
 from mozbuild.util import memoize
@@ -213,6 +214,15 @@ def get_subgraph(target_task_graph, removed_tasks, replaced_tasks, label_to_task
         named_task_dependencies = {
             name: label_to_taskid[label]
             for name, label in named_links_dict.get(label, {}).iteritems()}
+
+        # Add remaining soft dependencies
+        if task.soft_dependencies:
+            named_task_dependencies.update({
+                label: label_to_taskid[label]
+                for label in task.soft_dependencies
+                if label in label_to_taskid and label not in omit
+            })
+
         task.task = resolve_task_references(task.label, task.task, named_task_dependencies)
         deps = task.task.setdefault('dependencies', [])
         deps.extend(sorted(named_task_dependencies.itervalues()))
@@ -365,4 +375,19 @@ class SkipUnlessSchedules(OptimizationStrategy):
         if conditions & scheduled:
             return False
 
+        return True
+
+
+class TestVerify(OptimizationStrategy):
+    def should_remove_task(self, task, params, _):
+        # we would like to return 'False, None' while it's high_value_task
+        # and we wouldn't optimize it. Otherwise, it will return 'True, None'
+        env = params.get('try_task_config', {}) or {}
+        env = env.get('templates', {}).get('env', {})
+        if perfile_number_of_chunks(params.is_try(),
+                                    env.get('MOZHARNESS_TEST_PATHS', ''),
+                                    params.get('head_repository', ''),
+                                    params.get('head_rev', ''),
+                                    task):
+            return False
         return True

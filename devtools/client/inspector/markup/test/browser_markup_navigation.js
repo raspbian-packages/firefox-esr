@@ -73,22 +73,22 @@ const TEST_DATA = [
   ["KEY_PageUp", "*doctype*"],
   ["KEY_ArrowDown", "html"],
   ["KEY_ArrowLeft", "html"],
-  ["KEY_ArrowDown", "head"]
+  ["KEY_ArrowDown", "head"],
 ];
 
-add_task(function* () {
-  let {inspector} = yield openInspectorForURL(TEST_URL);
+add_task(async function() {
+  const { inspector } = await openInspectorForURL(TEST_URL);
 
   info("Making sure the markup-view frame is focused");
   inspector.markup._frame.focus();
 
   info("Starting to iterate through the test data");
-  for (let [key, className] of TEST_DATA) {
+  for (const [key, className] of TEST_DATA) {
     info("Testing step: " + key + " to navigate to " + className);
     EventUtils.synthesizeKey(key);
 
     info("Making sure markup-view children get updated");
-    yield waitForChildrenUpdated(inspector);
+    await waitForChildrenUpdated(inspector);
 
     info("Checking the right node is selected");
     checkSelectedNode(key, className, inspector);
@@ -99,23 +99,31 @@ add_task(function* () {
   // changing the current node ends up refreshing the rule-view, breadcrumbs,
   // ...), but this would make this test a *lot* slower. Instead, having a final
   // catch-all event works too.
-  yield inspector.once("inspector-updated");
+  await inspector.once("inspector-updated");
 });
 
 function checkSelectedNode(key, className, inspector) {
-  let node = inspector.selection.nodeFront;
+  const node = inspector.selection.nodeFront;
 
   if (className == "*comment*") {
-    is(node.nodeType, Node.COMMENT_NODE,
-       "Found a comment after pressing " + key);
+    is(
+      node.nodeType,
+      Node.COMMENT_NODE,
+      "Found a comment after pressing " + key
+    );
   } else if (className == "*text*") {
-    is(node.nodeType, Node.TEXT_NODE,
-       "Found text after pressing " + key);
+    is(node.nodeType, Node.TEXT_NODE, "Found text after pressing " + key);
   } else if (className == "*doctype*") {
-    is(node.nodeType, Node.DOCUMENT_TYPE_NODE,
-       "Found the doctype after pressing " + key);
+    is(
+      node.nodeType,
+      Node.DOCUMENT_TYPE_NODE,
+      "Found the doctype after pressing " + key
+    );
   } else {
-    is(node.className, className,
-       "Found node: " + className + " after pressing " + key);
+    is(
+      node.className,
+      className,
+      "Found node: " + className + " after pressing " + key
+    );
   }
 }

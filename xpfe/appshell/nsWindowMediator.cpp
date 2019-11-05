@@ -184,24 +184,6 @@ nsWindowMediator::GetXULWindowEnumerator(const char16_t* inType,
 }
 
 NS_IMETHODIMP
-nsWindowMediator::GetZOrderDOMWindowEnumerator(const char16_t* aWindowType,
-                                               bool aFrontToBack,
-                                               nsISimpleEnumerator** _retval) {
-  MOZ_RELEASE_ASSERT(NS_IsMainThread());
-  NS_ENSURE_ARG_POINTER(_retval);
-  NS_ENSURE_STATE(mReady);
-
-  RefPtr<nsAppShellWindowEnumerator> enumerator;
-  if (aFrontToBack)
-    enumerator = new nsASDOMWindowFrontToBackEnumerator(aWindowType, *this);
-  else
-    enumerator = new nsASDOMWindowBackToFrontEnumerator(aWindowType, *this);
-
-  enumerator.forget(_retval);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
 nsWindowMediator::GetZOrderXULWindowEnumerator(const char16_t* aWindowType,
                                                bool aFrontToBack,
                                                nsISimpleEnumerator** _retval) {
@@ -250,6 +232,21 @@ nsWindowMediator::GetMostRecentWindow(const char16_t* inType,
     }
     return NS_ERROR_FAILURE;
   }
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsWindowMediator::GetMostRecentBrowserWindow(mozIDOMWindowProxy** outWindow) {
+  nsresult rv = GetMostRecentWindow(u"navigator:browser", outWindow);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+#ifdef MOZ_WIDGET_ANDROID
+  if (!*outWindow) {
+    rv = GetMostRecentWindow(u"navigator:geckoview", outWindow);
+    NS_ENSURE_SUCCESS(rv, rv);
+  }
+#endif
 
   return NS_OK;
 }
@@ -324,8 +321,7 @@ nsWindowMediator::GetOuterWindowWithId(uint64_t aWindowID,
                                        mozIDOMWindowProxy** aWindow) {
   RefPtr<nsGlobalWindowOuter> window =
       nsGlobalWindowOuter::GetOuterWindowWithId(aWindowID);
-  nsCOMPtr<nsPIDOMWindowOuter> outer = window ? window->AsOuter() : nullptr;
-  outer.forget(aWindow);
+  window.forget(aWindow);
   return NS_OK;
 }
 
@@ -338,14 +334,13 @@ nsWindowMediator::GetCurrentInnerWindowWithId(uint64_t aWindowID,
   // not found
   if (!window) return NS_OK;
 
-  nsCOMPtr<nsPIDOMWindowInner> inner = window->AsInner();
-  nsCOMPtr<nsPIDOMWindowOuter> outer = inner->GetOuterWindow();
+  nsCOMPtr<nsPIDOMWindowOuter> outer = window->GetOuterWindow();
   NS_ENSURE_TRUE(outer, NS_ERROR_UNEXPECTED);
 
   // outer is already using another inner, so it's same as not found
-  if (outer->GetCurrentInnerWindow() != inner) return NS_OK;
+  if (outer->GetCurrentInnerWindow() != window) return NS_OK;
 
-  inner.forget(aWindow);
+  window.forget(aWindow);
   return NS_OK;
 }
 
@@ -696,8 +691,8 @@ void nsWindowMediator::SortZOrderBackToFront() {
   mSortingZOrder = false;
 }
 
-NS_IMPL_ISUPPORTS(nsWindowMediator, nsIWindowMediator_44, nsIWindowMediator,
-                  nsIObserver, nsISupportsWeakReference)
+NS_IMPL_ISUPPORTS(nsWindowMediator, nsIWindowMediator, nsIObserver,
+                  nsISupportsWeakReference)
 
 NS_IMETHODIMP
 nsWindowMediator::AddListener(nsIWindowMediatorListener* aListener) {

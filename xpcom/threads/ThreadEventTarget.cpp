@@ -15,10 +15,11 @@
 #include "nsThreadSyncDispatch.h"
 #include "nsThreadUtils.h"
 #include "nsXPCOMPrivate.h"  // for gXPCOMThreadsShutDown
+#include "ThreadDelay.h"
 
 #ifdef MOZ_TASK_TRACER
-#include "GeckoTaskTracer.h"
-#include "TracedTaskCommon.h"
+#  include "GeckoTaskTracer.h"
+#  include "TracedTaskCommon.h"
 using namespace mozilla::tasktracer;
 #endif
 
@@ -107,7 +108,7 @@ ThreadEventTarget::Dispatch(already_AddRefed<nsIRunnable> aEvent,
                             uint32_t aFlags) {
   // We want to leak the reference when we fail to dispatch it, so that
   // we won't release the event in a wrong thread.
-  LeakRefPtr<nsIRunnable> event(Move(aEvent));
+  LeakRefPtr<nsIRunnable> event(std::move(aEvent));
   if (NS_WARN_IF(!event)) {
     return NS_ERROR_INVALID_ARG;
   }
@@ -137,7 +138,7 @@ ThreadEventTarget::Dispatch(already_AddRefed<nsIRunnable> aEvent,
     RefPtr<nsThreadSyncDispatch> wrapper =
         new nsThreadSyncDispatch(current.forget(), event.take());
     bool success = mSink->PutEvent(do_AddRef(wrapper),
-                                   EventPriority::Normal);  // hold a ref
+                                   EventQueuePriority::Normal);  // hold a ref
     if (!success) {
       // PutEvent leaked the wrapper runnable object on failure, so we
       // explicitly release this object once for that. Note that this
@@ -155,9 +156,11 @@ ThreadEventTarget::Dispatch(already_AddRefed<nsIRunnable> aEvent,
 
   NS_ASSERTION(aFlags == NS_DISPATCH_NORMAL || aFlags == NS_DISPATCH_AT_END,
                "unexpected dispatch flags");
-  if (!mSink->PutEvent(event.take(), EventPriority::Normal)) {
+  if (!mSink->PutEvent(event.take(), EventQueuePriority::Normal)) {
     return NS_ERROR_UNEXPECTED;
   }
+  // Delay to encourage the receiving task to run before we do work.
+  DelayForChaosMode(ChaosFeature::TaskDispatching, 1000);
   return NS_OK;
 }
 
@@ -167,7 +170,7 @@ ThreadEventTarget::DelayedDispatch(already_AddRefed<nsIRunnable> aEvent,
   NS_ENSURE_TRUE(!!aDelayMs, NS_ERROR_UNEXPECTED);
 
   RefPtr<DelayedRunnable> r =
-      new DelayedRunnable(do_AddRef(this), Move(aEvent), aDelayMs);
+      new DelayedRunnable(do_AddRef(this), std::move(aEvent), aDelayMs);
   nsresult rv = r->Init();
   NS_ENSURE_SUCCESS(rv, rv);
 

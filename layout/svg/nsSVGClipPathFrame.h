@@ -15,17 +15,23 @@
 class gfxContext;
 class nsSVGDisplayableFrame;
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsSVGClipPathFrame final : public nsSVGContainerFrame {
-  friend nsIFrame* NS_NewSVGClipPathFrame(nsIPresShell* aPresShell,
-                                          nsStyleContext* aContext);
+  friend nsIFrame* NS_NewSVGClipPathFrame(mozilla::PresShell* aPresShell,
+                                          ComputedStyle* aStyle);
 
   typedef mozilla::gfx::Matrix Matrix;
   typedef mozilla::gfx::SourceSurface SourceSurface;
   typedef mozilla::image::imgDrawingParams imgDrawingParams;
 
  protected:
-  explicit nsSVGClipPathFrame(nsStyleContext* aContext)
-      : nsSVGContainerFrame(aContext, kClassID), mIsBeingProcessed(false) {
+  explicit nsSVGClipPathFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext)
+      : nsSVGContainerFrame(aStyle, aPresContext, kClassID),
+        mIsBeingProcessed(false) {
     AddStateBits(NS_FRAME_IS_NONDISPLAY);
   }
 
@@ -35,6 +41,9 @@ class nsSVGClipPathFrame final : public nsSVGContainerFrame {
   // nsIFrame methods:
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                 const nsDisplayListSet& aLists) override {}
+
+  virtual bool IsSVGTransformed(Matrix* aOwnTransforms,
+                                Matrix* aFromParentTransforms) const override;
 
   // nsSVGClipPathFrame methods:
 
@@ -125,7 +134,7 @@ class nsSVGClipPathFrame final : public nsSVGContainerFrame {
 #endif
 
   SVGBBox GetBBoxForClipPathFrame(const SVGBBox& aBBox,
-                                  const gfxMatrix& aMatrix);
+                                  const gfxMatrix& aMatrix, uint32_t aFlags);
 
   /**
    * If the clipPath element transforms its children due to
@@ -143,7 +152,7 @@ class nsSVGClipPathFrame final : public nsSVGContainerFrame {
                                               mozilla::gfx::IntPoint& aOffset);
 
   void PaintFrameIntoMask(nsIFrame* aFrame, nsIFrame* aClippedFrame,
-                          gfxContext& aTarget, const gfxMatrix& aMatrix);
+                          gfxContext& aTarget);
 
   // Set, during a GetClipMask() call, to the transform that still needs to be
   // concatenated to the transform of the DrawTarget that was passed to

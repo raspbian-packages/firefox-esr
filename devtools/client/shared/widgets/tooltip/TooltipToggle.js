@@ -6,8 +6,6 @@
 
 "use strict";
 
-const {Task} = require("devtools/shared/task");
-
 const DEFAULT_TOGGLE_DELAY = 50;
 
 /**
@@ -69,8 +67,11 @@ TooltipToggle.prototype = {
    *          target element and enters the tooltip. Allows the tooltip
    *          content to be interactive.
    */
-  start: function (baseNode, targetNodeCb,
-                   {toggleDelay = DEFAULT_TOGGLE_DELAY, interactive = false} = {}) {
+  start: function(
+    baseNode,
+    targetNodeCb,
+    { toggleDelay = DEFAULT_TOGGLE_DELAY, interactive = false } = {}
+  ) {
     this.stop();
 
     if (!baseNode) {
@@ -87,8 +88,14 @@ TooltipToggle.prototype = {
     baseNode.addEventListener("mouseout", this._onMouseOut);
 
     if (this._interactive) {
-      this.tooltip.container.addEventListener("mouseover", this._onTooltipMouseOver);
-      this.tooltip.container.addEventListener("mouseout", this._onTooltipMouseOut);
+      this.tooltip.container.addEventListener(
+        "mouseover",
+        this._onTooltipMouseOver
+      );
+      this.tooltip.container.addEventListener(
+        "mouseout",
+        this._onTooltipMouseOut
+      );
     }
   },
 
@@ -97,7 +104,7 @@ TooltipToggle.prototype = {
    * of this behavior, then call this function to remove the mouse movement
    * tracking
    */
-  stop: function () {
+  stop: function() {
     this.win.clearTimeout(this.toggleTimer);
 
     if (!this._baseNode) {
@@ -108,8 +115,14 @@ TooltipToggle.prototype = {
     this._baseNode.removeEventListener("mouseout", this._onMouseOut);
 
     if (this._interactive) {
-      this.tooltip.container.removeEventListener("mouseover", this._onTooltipMouseOver);
-      this.tooltip.container.removeEventListener("mouseout", this._onTooltipMouseOut);
+      this.tooltip.container.removeEventListener(
+        "mouseover",
+        this._onTooltipMouseOver
+      );
+      this.tooltip.container.removeEventListener(
+        "mouseout",
+        this._onTooltipMouseOut
+      );
     }
 
     this._baseNode = null;
@@ -117,23 +130,28 @@ TooltipToggle.prototype = {
     this._lastHovered = null;
   },
 
-  _onMouseMove: function (event) {
+  _onMouseMove: function(event) {
     if (event.target !== this._lastHovered) {
       this._lastHovered = event.target;
 
       this.win.clearTimeout(this.toggleTimer);
       this.toggleTimer = this.win.setTimeout(() => {
         this.tooltip.hide();
-        this.isValidHoverTarget(event.target).then(target => {
-          if (target === null || !this._baseNode) {
-            // bail out if no target or if the toggle has been destroyed.
-            return;
+        this.isValidHoverTarget(event.target).then(
+          target => {
+            if (target === null || !this._baseNode) {
+              // bail out if no target or if the toggle has been destroyed.
+              return;
+            }
+            this.tooltip.show(target);
+          },
+          reason => {
+            console.error(
+              "isValidHoverTarget rejected with unexpected reason:"
+            );
+            console.error(reason);
           }
-          this.tooltip.show(target);
-        }, reason => {
-          console.error("isValidHoverTarget rejected with unexpected reason:");
-          console.error(reason);
-        });
+        );
       }, this._toggleDelay);
     }
   },
@@ -144,18 +162,22 @@ TooltipToggle.prototype = {
    * @return {Promise} a promise that will resolve the anchor to use for the
    *         tooltip or null if no valid target was found.
    */
-  isValidHoverTarget: Task.async(function* (target) {
-    let res = yield this._targetNodeCb(target, this.tooltip);
+  async isValidHoverTarget(target) {
+    const res = await this._targetNodeCb(target, this.tooltip);
     if (res) {
       return res.nodeName ? res : target;
     }
 
     return null;
-  }),
+  },
 
-  _onMouseOut: function (event) {
+  _onMouseOut: function(event) {
     // Only hide the tooltip if the mouse leaves baseNode.
-    if (event && this._baseNode && this._baseNode.contains(event.relatedTarget)) {
+    if (
+      event &&
+      this._baseNode &&
+      this._baseNode.contains(event.relatedTarget)
+    ) {
       return;
     }
 
@@ -177,7 +199,7 @@ TooltipToggle.prototype = {
     }, this._toggleDelay);
   },
 
-  destroy: function () {
+  destroy: function() {
     this.stop();
-  }
+  },
 };

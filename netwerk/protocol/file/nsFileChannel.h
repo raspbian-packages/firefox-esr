@@ -19,25 +19,31 @@ class nsFileChannel : public nsBaseChannel,
   NS_DECL_NSIFILECHANNEL
   NS_DECL_NSIUPLOADCHANNEL
 
-  explicit nsFileChannel(nsIURI *uri);
+  explicit nsFileChannel(nsIURI* uri);
 
   nsresult Init();
 
  protected:
-  ~nsFileChannel();
+  ~nsFileChannel() = default;
 
   // Called to construct a blocking file input stream for the given file.  This
   // method also returns a best guess at the content-type for the data stream.
   // NOTE: If the channel has a type hint set, contentType will be left
   // untouched. The caller should not use it in that case.
-  MOZ_MUST_USE nsresult MakeFileInputStream(nsIFile *file,
-                                            nsCOMPtr<nsIInputStream> &stream,
-                                            nsCString &contentType, bool async);
+  MOZ_MUST_USE nsresult MakeFileInputStream(nsIFile* file,
+                                            nsCOMPtr<nsIInputStream>& stream,
+                                            nsCString& contentType, bool async);
 
   virtual MOZ_MUST_USE nsresult OpenContentStream(
-      bool async, nsIInputStream **result, nsIChannel **channel) override;
+      bool async, nsIInputStream** result, nsIChannel** channel) override;
+
+  // Implementing the pump blocking promise to fixup content length on a
+  // background thread prior to calling on mListener
+  virtual nsresult ListenerBlockingPromise(BlockingPromise** promise) override;
 
  private:
+  nsresult FixupContentLength(bool async);
+
   nsCOMPtr<nsIInputStream> mUploadStream;
   int64_t mUploadLength;
   nsCOMPtr<nsIURI> mFileURI;

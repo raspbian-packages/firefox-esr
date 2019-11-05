@@ -19,11 +19,11 @@ class MediaContainerType {
   explicit MediaContainerType(const MediaMIMEType& aType)
       : mExtendedMIMEType(aType) {}
   explicit MediaContainerType(MediaMIMEType&& aType)
-      : mExtendedMIMEType(Move(aType)) {}
+      : mExtendedMIMEType(std::move(aType)) {}
   explicit MediaContainerType(const MediaExtendedMIMEType& aType)
       : mExtendedMIMEType(aType) {}
   explicit MediaContainerType(MediaExtendedMIMEType&& aType)
-      : mExtendedMIMEType(Move(aType)) {}
+      : mExtendedMIMEType(std::move(aType)) {}
 
   const MediaMIMEType& Type() const { return mExtendedMIMEType.Type(); }
   const MediaExtendedMIMEType& ExtendedType() const {

@@ -16,7 +16,7 @@
 #include "nsPresContext.h"
 #include "nsLayoutUtils.h"
 #include "nsRange.h"
-#include "gfxFont.h"
+#include "gfxTextRun.h"
 #include "nsIAccessibleTypes.h"
 #include "mozilla/gfx/2D.h"
 
@@ -142,11 +142,12 @@ sdnTextAccessible::get_fontFamily(BSTR __RPC_FAR* aFontFamily) {
 
   RefPtr<nsFontMetrics> fm = nsLayoutUtils::GetFontMetricsForFrame(frame, 1.0f);
 
-  const nsString& name =
+  const nsCString& name =
       fm->GetThebesFontGroup()->GetFirstValidFont()->GetName();
   if (name.IsEmpty()) return S_FALSE;
 
-  *aFontFamily = ::SysAllocStringLen(name.get(), name.Length());
+  NS_ConvertUTF8toUTF16 str(name);
+  *aFontFamily = ::SysAllocStringLen(str.get(), str.Length());
   return *aFontFamily ? S_OK : E_OUTOFMEMORY;
 }
 

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -43,13 +43,13 @@ class DrawTarget;
  * any desired content onto the context acquired through GetContext, and lastly
  * calls Paint to apply the blurred content as an alpha mask.
  */
-class gfxAlphaBoxBlur {
+class gfxAlphaBoxBlur final {
   typedef mozilla::gfx::Color Color;
   typedef mozilla::gfx::DrawTarget DrawTarget;
   typedef mozilla::gfx::RectCornerRadii RectCornerRadii;
 
  public:
-  gfxAlphaBoxBlur();
+  gfxAlphaBoxBlur() = default;
 
   ~gfxAlphaBoxBlur();
 
@@ -189,7 +189,7 @@ class gfxAlphaBoxBlur {
   /**
    * The temporary alpha surface.
    */
-  uint8_t* mData;
+  uint8_t* mData = nullptr;
 
   /**
    * The object that actually does the blurring for us.
@@ -199,7 +199,7 @@ class gfxAlphaBoxBlur {
   /**
    * Indicates using DrawTarget-accelerated blurs.
    */
-  bool mAccelerated;
+  bool mAccelerated = false;
 };
 
 #endif /* GFX_BLUR_H */

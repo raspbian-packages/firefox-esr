@@ -4,10 +4,13 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 const {
   InvalidArgumentError,
@@ -16,19 +19,21 @@ const {
   NoSuchWindowError,
   UnexpectedAlertOpenError,
   UnsupportedOperationError,
-} = ChromeUtils.import("chrome://marionette/content/error.js", {});
-const {pprint} = ChromeUtils.import("chrome://marionette/content/format.js", {});
+} = ChromeUtils.import("chrome://marionette/content/error.js");
+const { pprint } = ChromeUtils.import("chrome://marionette/content/format.js");
 
-XPCOMUtils.defineLazyGetter(this, "browser", () => {
-  const {browser} = ChromeUtils.import("chrome://marionette/content/browser.js", {});
-  return browser;
+XPCOMUtils.defineLazyModuleGetters(this, {
+  evaluate: "chrome://marionette/content/evaluate.js",
+  browser: "chrome://marionette/content/browser.js",
 });
 
 this.EXPORTED_SYMBOLS = ["assert"];
 
 const isFennec = () => AppConstants.platform == "android";
 const isFirefox = () =>
-    Services.appinfo.ID == "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}";
+  Services.appinfo.ID == "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}";
+const isThunderbird = () =>
+  Services.appinfo.ID == "{3550f703-e582-4d05-9a08-453d09bdfdc6}";
 
 /**
  * Shorthands for common assertions made in Marionette.
@@ -38,26 +43,22 @@ const isFirefox = () =>
 this.assert = {};
 
 /**
- * Asserts that an arbitrary object, <var>obj</var> is not acyclic.
+ * Asserts that an arbitrary object is not acyclic.
  *
  * @param {*} obj
- *     Object test.  This assertion is only meaningful if passed
+ *     Object to test.  This assertion is only meaningful if passed
  *     an actual object or array.
  * @param {Error=} [error=JavaScriptError] error
  *     Error to throw if assertion fails.
  * @param {string=} message
- *     Message to use for <var>error</var> if assertion fails.  By default
- *     it will use the error message provided by
- *     <code>JSON.stringify</code>.
+ *     Custom message to use for `error` if assertion fails.
  *
  * @throws {JavaScriptError}
- *     If <var>obj</var> is cyclic.
+ *     If the object is cyclic.
  */
 assert.acyclic = function(obj, msg = "", error = JavaScriptError) {
-  try {
-    JSON.stringify(obj);
-  } catch (e) {
-    throw new error(msg || e);
+  if (evaluate.isCyclic(obj)) {
+    throw new error(msg || "Cyclic object value");
   }
 };
 
@@ -76,8 +77,9 @@ assert.acyclic = function(obj, msg = "", error = JavaScriptError) {
  *     If <var>driver</var> does not have a session ID.
  */
 assert.session = function(driver, msg = "") {
-  assert.that(sessionID => sessionID,
-      msg, InvalidSessionIDError)(driver.sessionID);
+  assert.that(sessionID => sessionID, msg, InvalidSessionIDError)(
+    driver.sessionID
+  );
   return driver.sessionID;
 };
 
@@ -93,6 +95,24 @@ assert.session = function(driver, msg = "") {
 assert.firefox = function(msg = "") {
   msg = msg || "Only supported in Firefox";
   assert.that(isFirefox, msg, UnsupportedOperationError)();
+};
+
+/**
+ * Asserts that the current browser is Firefox Desktop or Thunderbird.
+ *
+ * @param {string=} msg
+ *     Custom error message.
+ *
+ * @throws {UnsupportedOperationError}
+ *     If current browser is not Firefox or Thunderbird.
+ */
+assert.desktop = function(msg = "") {
+  msg = msg || "Only supported in desktop applications";
+  assert.that(
+    obj => isFirefox(obj) || isThunderbird(obj),
+    msg,
+    UnsupportedOperationError
+  )();
 };
 
 /**
@@ -125,7 +145,9 @@ assert.fennec = function(msg = "") {
  */
 assert.content = function(context, msg = "") {
   msg = msg || "Only supported in content context";
-  assert.that(c => c.toString() == "content", msg, UnsupportedOperationError)(context);
+  assert.that(c => c.toString() == "content", msg, UnsupportedOperationError)(
+    context
+  );
 };
 
 /**
@@ -158,9 +180,9 @@ assert.open = function(context, msg = "") {
   }
 
   msg = msg || "Browsing context has been discarded";
-  return assert.that(ctx => ctx && !ctx.closed,
-      msg,
-      NoSuchWindowError)(context);
+  return assert.that(ctx => ctx && !ctx.closed, msg, NoSuchWindowError)(
+    context
+  );
 };
 
 /**
@@ -175,9 +197,11 @@ assert.open = function(context, msg = "") {
  *     If there is a user prompt.
  */
 assert.noUserPrompt = function(dialog, msg = "") {
-  assert.that(d => d === null || typeof d == "undefined",
-      msg,
-      UnexpectedAlertOpenError)(dialog);
+  assert.that(
+    d => d === null || typeof d == "undefined",
+    msg,
+    UnexpectedAlertOpenError
+  )(dialog);
 };
 
 /**
@@ -398,8 +422,7 @@ assert.array = function(obj, msg = "") {
  *     and which may throw <var>error</var> with <var>message</var>
  *     if <var>predicate</var> evaluates to false.
  */
-assert.that = function(
-    predicate, message = "", error = InvalidArgumentError) {
+assert.that = function(predicate, message = "", error = InvalidArgumentError) {
   return obj => {
     if (!predicate(obj)) {
       throw new error(message);

@@ -30,19 +30,28 @@ class CompositorOptions {
  public:
   // This constructor needed for IPDL purposes, don't use it anywhere else.
   CompositorOptions()
-      : mUseAPZ(false), mUseWebRender(false), mUseAdvancedLayers(false) {}
+      : mUseAPZ(false),
+        mUseWebRender(false),
+        mUseAdvancedLayers(false),
+        mInitiallyPaused(false) {}
 
-  explicit CompositorOptions(bool aUseAPZ, bool aUseWebRender)
+  CompositorOptions(bool aUseAPZ, bool aUseWebRender)
       : mUseAPZ(aUseAPZ),
         mUseWebRender(aUseWebRender),
-        mUseAdvancedLayers(false) {}
+        mUseAdvancedLayers(false),
+        mInitiallyPaused(false) {}
 
   bool UseAPZ() const { return mUseAPZ; }
   bool UseWebRender() const { return mUseWebRender; }
   bool UseAdvancedLayers() const { return mUseAdvancedLayers; }
+  bool InitiallyPaused() const { return mInitiallyPaused; }
 
   void SetUseAdvancedLayers(bool aUseAdvancedLayers) {
     mUseAdvancedLayers = aUseAdvancedLayers;
+  }
+
+  void SetInitiallyPaused(bool aPauseAtStartup) {
+    mInitiallyPaused = aPauseAtStartup;
   }
 
   bool operator==(const CompositorOptions& aOther) const {
@@ -56,8 +65,10 @@ class CompositorOptions {
   bool mUseAPZ;
   bool mUseWebRender;
   bool mUseAdvancedLayers;
+  bool mInitiallyPaused;
 
   // Make sure to add new fields to the ParamTraits implementation
+  // in LayersMessageUtils.h
 };
 
 }  // namespace layers

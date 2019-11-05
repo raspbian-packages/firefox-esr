@@ -7,6 +7,8 @@
 #ifndef NSCOORD_H
 #define NSCOORD_H
 
+#include "mozilla/FloatingPoint.h"
+
 #include "nsAlgorithm.h"
 #include "nscore.h"
 #include "nsMathUtils.h"
@@ -30,30 +32,12 @@
 // want to eventually use floats.
 //#define NS_COORD_IS_FLOAT
 
-inline float NS_IEEEPositiveInfinity() {
-  union {
-    uint32_t mPRUint32;
-    float mFloat;
-  } pun;
-  pun.mPRUint32 = 0x7F800000;
-  return pun.mFloat;
-}
-inline bool NS_IEEEIsNan(float aF) {
-  union {
-    uint32_t mBits;
-    float mFloat;
-  } pun;
-  pun.mFloat = aF;
-  return (pun.mBits & 0x7F800000) == 0x7F800000 &&
-         (pun.mBits & 0x007FFFFF) != 0;
-}
-
 #ifdef NS_COORD_IS_FLOAT
 typedef float nscoord;
-#define nscoord_MAX NS_IEEEPositiveInfinity()
+#  define nscoord_MAX (mozilla::PositiveInfinity<float>())
 #else
 typedef int32_t nscoord;
-#define nscoord_MAX nscoord((1 << 30) - 1)
+#  define nscoord_MAX nscoord((1 << 30) - 1)
 #endif
 
 #define nscoord_MIN (-nscoord_MAX)
@@ -88,21 +72,21 @@ inline nscoord NSCoordMulDiv(nscoord aMult1, nscoord aMult2, nscoord aDiv) {
 }
 
 inline nscoord NSToCoordRound(float aValue) {
-#if defined(XP_WIN32) && defined(_M_IX86) && !defined(__GNUC__) && \
+#if defined(XP_WIN) && defined(_M_IX86) && !defined(__GNUC__) && \
     !defined(__clang__)
   return NS_lroundup30(aValue);
 #else
   return nscoord(floorf(aValue + 0.5f));
-#endif /* XP_WIN32 && _M_IX86 && !__GNUC__ */
+#endif /* XP_WIN && _M_IX86 && !__GNUC__ */
 }
 
 inline nscoord NSToCoordRound(double aValue) {
-#if defined(XP_WIN32) && defined(_M_IX86) && !defined(__GNUC__) && \
+#if defined(XP_WIN) && defined(_M_IX86) && !defined(__GNUC__) && \
     !defined(__clang__)
   return NS_lroundup30((float)aValue);
 #else
   return nscoord(floor(aValue + 0.5f));
-#endif /* XP_WIN32 && _M_IX86 && !__GNUC__ */
+#endif /* XP_WIN && _M_IX86 && !__GNUC__ */
 }
 
 inline nscoord NSToCoordRoundWithClamp(float aValue) {
@@ -216,7 +200,7 @@ inline nscoord NSCoordSaturatingSubtract(nscoord a, nscoord b,
       return infMinusInfResult;
     } else {
       // case (b)
-      NS_NOTREACHED("Attempted to subtract [n - nscoord_MAX]");
+      MOZ_ASSERT_UNREACHABLE("Attempted to subtract [n - nscoord_MAX]");
       return 0;
     }
   } else {
@@ -239,7 +223,7 @@ inline nscoord NSCoordSaturatingSubtract(nscoord a, nscoord b,
 inline float NSCoordToFloat(nscoord aCoord) {
   VERIFY_COORD(aCoord);
 #ifdef NS_COORD_IS_FLOAT
-  NS_ASSERTION(!NS_IEEEIsNan(aCoord), "NaN encountered in float conversion");
+  NS_ASSERTION(!mozilla::IsNaN(aCoord), "NaN encountered in float conversion");
 #endif
   return (float)aCoord;
 }
@@ -408,6 +392,6 @@ inline float NSTwipsToUnits(float aTwips, float aUnitsPerPoint) {
 
 #define NS_TWIPS_TO_MILLIMETERS(x) \
   NSTwipsToUnits((x), 1.0f / (POINTS_PER_INCH_FLOAT * 0.03937f))
-  //@}
+//@}
 
 #endif /* NSCOORD_H */

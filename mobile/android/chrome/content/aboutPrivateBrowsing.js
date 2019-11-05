@@ -4,26 +4,31 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
+const { PrivateBrowsingUtils } = ChromeUtils.import(
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
 
 XPCOMUtils.defineLazyGetter(window, "gChromeWin", () =>
-  window.QueryInterface(Ci.nsIInterfaceRequestor)
-    .getInterface(Ci.nsIWebNavigation)
-    .QueryInterface(Ci.nsIDocShellTreeItem)
-    .rootTreeItem
-    .QueryInterface(Ci.nsIInterfaceRequestor)
-    .getInterface(Ci.nsIDOMWindow)
-    .QueryInterface(Ci.nsIDOMChromeWindow));
+  window.docShell.rootTreeItem.domWindow.QueryInterface(Ci.nsIDOMChromeWindow)
+);
 
 document.addEventListener("DOMContentLoaded", function() {
-    let BrowserApp = window.gChromeWin.BrowserApp;
+  let BrowserApp = window.gChromeWin.BrowserApp;
 
-    if (!PrivateBrowsingUtils.isContentWindowPrivate(window)) {
-      document.body.setAttribute("class", "normal");
-      document.getElementById("newPrivateTabLink").addEventListener("click", function() {
-        BrowserApp.addTab("about:privatebrowsing", { selected: true, parentId: BrowserApp.selectedTab.id, isPrivate: true });
+  if (!PrivateBrowsingUtils.isContentWindowPrivate(window)) {
+    document.body.setAttribute("class", "normal");
+    document
+      .getElementById("newPrivateTabLink")
+      .addEventListener("click", function() {
+        BrowserApp.addTab("about:privatebrowsing", {
+          selected: true,
+          parentId: BrowserApp.selectedTab.id,
+          isPrivate: true,
+        });
       });
-    }
-  });
+  }
+});

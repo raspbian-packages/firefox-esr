@@ -47,6 +47,13 @@ void ScrollAnimationBezierPhysics::Update(const TimeStamp& aTime,
   mIsFirstIteration = false;
 }
 
+void ScrollAnimationBezierPhysics::ApplyContentShift(
+    const CSSPoint& aShiftDelta) {
+  nsPoint shiftDelta = CSSPoint::ToAppUnits(aShiftDelta);
+  mStartPos += shiftDelta;
+  mDestination += shiftDelta;
+}
+
 TimeDuration ScrollAnimationBezierPhysics::ComputeDuration(
     const TimeStamp& aTime) {
   // Average last 3 delta durations (rounding errors up to 2ms are negligible
@@ -83,7 +90,7 @@ void ScrollAnimationBezierPhysics::InitializeHistory(const TimeStamp& aTime) {
 }
 
 void ScrollAnimationBezierPhysics::InitTimingFunction(
-    nsSMILKeySpline& aTimingFunction, nscoord aCurrentPos,
+    SMILKeySpline& aTimingFunction, nscoord aCurrentPos,
     nscoord aCurrentVelocity, nscoord aDestination) {
   if (aDestination == aCurrentPos ||
       gfxPrefs::SmoothScrollCurrentVelocityWeighting() == 0) {
@@ -130,8 +137,8 @@ nsSize ScrollAnimationBezierPhysics::VelocityAt(const TimeStamp& aTime) {
 }
 
 nscoord ScrollAnimationBezierPhysics::VelocityComponent(
-    double aTimeProgress, const nsSMILKeySpline& aTimingFunction,
-    nscoord aStart, nscoord aDestination) const {
+    double aTimeProgress, const SMILKeySpline& aTimingFunction, nscoord aStart,
+    nscoord aDestination) const {
   double dt, dxy;
   aTimingFunction.GetSplineDerivativeValues(aTimeProgress, dt, dxy);
   if (dt == 0) return dxy >= 0 ? nscoord_MAX : nscoord_MIN;

@@ -11,17 +11,12 @@ textbox[nomatch="true"][highlightnonmatches="true"] {
 
 /* ::::: autocomplete popups ::::: */
 
-panel[type="autocomplete-richlistbox"],
-.autocomplete-history-popup {
+panel[type="autocomplete-richlistbox"] {
   padding: 0px !important;
   color: -moz-FieldText;
   background-color: -moz-Field;
   font: icon;
   -moz-appearance: none;
-}
-
-.autocomplete-history-popup {
-  max-height: 180px;
 }
 
 /* ::::: richlistbox autocomplete ::::: */
@@ -48,7 +43,7 @@ panel[type="autocomplete-richlistbox"],
   max-width: 16px;
   max-height: 16px;
   margin-inline-start: 6px;
-  margin-inline-end: 9px;
+  margin-inline-end: 8px;
   list-style-image: url("chrome://mozapps/skin/places/defaultFavicon.svg");
   -moz-context-properties: fill;
   fill: currentColor;
@@ -101,7 +96,7 @@ html|span.ac-tag {
 
 /* ::::: textboxes inside toolbarpaletteitems ::::: */
 
-toolbarpaletteitem > toolbaritem > textbox > .textbox-input-box > html|*.textbox-input,
-toolbarpaletteitem > toolbaritem > * > textbox > .textbox-input-box > html|*.textbox-input {
+toolbarpaletteitem > toolbaritem > textbox > moz-input-box > html|*.textbox-input,
+toolbarpaletteitem > toolbaritem > * > textbox > moz-input-box > html|*.textbox-input {
   visibility: hidden;
 }

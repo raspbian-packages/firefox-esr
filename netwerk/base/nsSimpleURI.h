@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,9 +11,7 @@
 #include "nsISerializable.h"
 #include "nsString.h"
 #include "nsIClassInfo.h"
-#include "nsIMutable.h"
 #include "nsISizeOf.h"
-#include "nsIIPCSerializableURI.h"
 #include "nsIURIMutator.h"
 
 namespace mozilla {
@@ -29,27 +27,22 @@ namespace net {
 class nsSimpleURI : public nsIURI,
                     public nsISerializable,
                     public nsIClassInfo,
-                    public nsIMutable,
-                    public nsISizeOf,
-                    public nsIIPCSerializableURI {
+                    public nsISizeOf {
  protected:
-  virtual ~nsSimpleURI();
+  nsSimpleURI();
+  virtual ~nsSimpleURI() = default;
 
  public:
-  NS_DECL_ISUPPORTS
+  NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIURI
   NS_DECL_NSISERIALIZABLE
   NS_DECL_NSICLASSINFO
-  NS_DECL_NSIMUTABLE
-  NS_DECL_NSIIPCSERIALIZABLEURI
 
-  static already_AddRefed<nsSimpleURI> From(nsIURI *aURI);
+  static already_AddRefed<nsSimpleURI> From(nsIURI* aURI);
 
   // nsSimpleURI methods:
 
-  nsSimpleURI();
-
-  bool Equals(nsSimpleURI *aOther) { return EqualsInternal(aOther, eHonorRef); }
+  bool Equals(nsSimpleURI* aOther) { return EqualsInternal(aOther, eHonorRef); }
 
   // nsISizeOf
   // Among the sub-classes that inherit (directly or indirectly) from
@@ -65,49 +58,51 @@ class nsSimpleURI : public nsIURI,
   // enum used in a few places to specify how .ref attribute should be handled
   enum RefHandlingEnum { eIgnoreRef, eHonorRef, eReplaceRef };
 
-  virtual nsresult SetSpecInternal(const nsACString &input);
-  virtual nsresult SetScheme(const nsACString &input);
-  virtual nsresult SetUserPass(const nsACString &input);
-  virtual nsresult SetUsername(const nsACString &input);
-  virtual nsresult SetPassword(const nsACString &input);
-  virtual nsresult SetHostPort(const nsACString &aValue);
-  virtual nsresult SetHost(const nsACString &input);
+  virtual nsresult Clone(nsIURI** aURI);
+  virtual nsresult SetSpecInternal(const nsACString& input);
+  virtual nsresult SetScheme(const nsACString& input);
+  virtual nsresult SetUserPass(const nsACString& input);
+  nsresult SetUsername(const nsACString& input);
+  virtual nsresult SetPassword(const nsACString& input);
+  virtual nsresult SetHostPort(const nsACString& aValue);
+  virtual nsresult SetHost(const nsACString& input);
   virtual nsresult SetPort(int32_t port);
-  virtual nsresult SetPathQueryRef(const nsACString &input);
-  virtual nsresult SetRef(const nsACString &input);
-  virtual nsresult SetFilePath(const nsACString &input);
-  virtual nsresult SetQuery(const nsACString &input);
-  virtual nsresult SetQueryWithEncoding(const nsACString &input,
-                                        const Encoding *encoding);
+  virtual nsresult SetPathQueryRef(const nsACString& input);
+  virtual nsresult SetRef(const nsACString& input);
+  virtual nsresult SetFilePath(const nsACString& input);
+  virtual nsresult SetQuery(const nsACString& input);
+  virtual nsresult SetQueryWithEncoding(const nsACString& input,
+                                        const Encoding* encoding);
+  nsresult ReadPrivate(nsIObjectInputStream* stream);
 
   // Helper to share code between Equals methods.
-  virtual nsresult EqualsInternal(nsIURI *other,
+  virtual nsresult EqualsInternal(nsIURI* other,
                                   RefHandlingEnum refHandlingMode,
-                                  bool *result);
+                                  bool* result);
 
   // Helper to be used by inherited classes who want to test
   // equality given an assumed nsSimpleURI.  This must NOT check
   // the passed-in other for QI to our CID.
-  bool EqualsInternal(nsSimpleURI *otherUri, RefHandlingEnum refHandlingMode);
+  bool EqualsInternal(nsSimpleURI* otherUri, RefHandlingEnum refHandlingMode);
 
   // Used by StartClone (and versions of StartClone in subclasses) to
   // handle the ref in the right way for clones.
-  void SetRefOnClone(nsSimpleURI *url, RefHandlingEnum refHandlingMode,
-                     const nsACString &newRef);
+  void SetRefOnClone(nsSimpleURI* url, RefHandlingEnum refHandlingMode,
+                     const nsACString& newRef);
 
   // NOTE: This takes the refHandlingMode as an argument because
   // nsSimpleNestedURI's specialized version needs to know how to clone
   // its inner URI.
-  virtual nsSimpleURI *StartClone(RefHandlingEnum refHandlingMode,
-                                  const nsACString &newRef);
+  virtual nsSimpleURI* StartClone(RefHandlingEnum refHandlingMode,
+                                  const nsACString& newRef);
 
   // Helper to share code between Clone methods.
   virtual nsresult CloneInternal(RefHandlingEnum refHandlingMode,
-                                 const nsACString &newRef, nsIURI **clone);
+                                 const nsACString& newRef, nsIURI** clone);
 
-  nsresult SetPathQueryRefEscaped(const nsACString &aPath, bool aNeedsEscape);
+  nsresult SetPathQueryRefEscaped(const nsACString& aPath, bool aNeedsEscape);
 
-  bool Deserialize(const mozilla::ipc::URIParams &);
+  bool Deserialize(const mozilla::ipc::URIParams&);
 
   nsCString mScheme;
   nsCString mPath;  // NOTE: mPath does not include ref, as an optimization
@@ -120,15 +115,25 @@ class nsSimpleURI : public nsIURI,
 
  public:
   class Mutator final : public nsIURIMutator,
-                        public BaseURIMutator<nsSimpleURI> {
+                        public BaseURIMutator<nsSimpleURI>,
+                        public nsISerializable {
     NS_DECL_ISUPPORTS
     NS_FORWARD_SAFE_NSIURISETTERS_RET(mURI)
     NS_DEFINE_NSIMUTATOR_COMMON
 
-    explicit Mutator() {}
+    NS_IMETHOD
+    Write(nsIObjectOutputStream* aOutputStream) override {
+      return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    MOZ_MUST_USE NS_IMETHOD Read(nsIObjectInputStream* aStream) override {
+      return InitFromInputStream(aStream);
+    }
+
+    explicit Mutator() = default;
 
    private:
-    virtual ~Mutator() {}
+    virtual ~Mutator() = default;
 
     friend class nsSimpleURI;
   };

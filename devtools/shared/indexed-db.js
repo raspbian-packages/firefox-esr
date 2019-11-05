@@ -13,8 +13,10 @@ const Services = require("Services");
 
 const PSEUDOURI = "indexeddb://fx-devtools";
 const principaluri = Services.io.newURI(PSEUDOURI);
-const principal =
-  Services.scriptSecurityManager.createCodebasePrincipal(principaluri, {});
+const principal = Services.scriptSecurityManager.createCodebasePrincipal(
+  principaluri,
+  {}
+);
 
 /**
  * Create the DevTools dedicated DB, by relying on the real indexedDB object passed as a
@@ -25,13 +27,13 @@ const principal =
  * @return {Object} Wrapper object that implements IDBFactory methods, but for a devtools
  *         specific principal.
  */
-exports.createDevToolsIndexedDB = function (indexedDB) {
+exports.createDevToolsIndexedDB = function(indexedDB) {
   return Object.freeze({
     /**
      * Only the standard version of indexedDB.open is supported.
      */
     open(name, version) {
-      let options = { storage: "persistent" };
+      const options = {};
       if (typeof version === "number") {
         options.version = version;
       }
@@ -41,7 +43,7 @@ exports.createDevToolsIndexedDB = function (indexedDB) {
      * Only the standard version of indexedDB.deleteDatabase is supported.
      */
     deleteDatabase(name) {
-      return indexedDB.deleteForPrincipal(principal, name, { storage: "persistent" });
+      return indexedDB.deleteForPrincipal(principal, name);
     },
     cmp: indexedDB.cmp.bind(indexedDB),
   });

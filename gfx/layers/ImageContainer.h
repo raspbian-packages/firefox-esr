@@ -16,6 +16,7 @@
 #include "mozilla/RecursiveMutex.h"      // for RecursiveMutex, etc
 #include "mozilla/TimeStamp.h"           // for TimeStamp
 #include "mozilla/gfx/Point.h"           // For IntSize
+#include "mozilla/gfx/Types.h"           // For ColorDepth
 #include "mozilla/layers/LayersTypes.h"  // for LayersBackend, etc
 #include "mozilla/layers/CompositorTypes.h"
 #include "mozilla/mozalloc.h"  // for operator delete, etc
@@ -149,6 +150,7 @@ class ImageCompositeNotification;
 class ImageContainer;
 class ImageContainerChild;
 class SharedPlanarYCbCrImage;
+class SharedSurfacesAnimation;
 class PlanarYCbCrImage;
 class TextureClient;
 class KnowsCompositor;
@@ -156,9 +158,10 @@ class NVImage;
 #ifdef XP_WIN
 class D3D11YCbCrRecycleAllocator;
 #endif
+class SurfaceDescriptorBuffer;
 
 struct ImageBackendData {
-  virtual ~ImageBackendData() {}
+  virtual ~ImageBackendData() = default;
 
  protected:
   ImageBackendData() {}
@@ -214,8 +217,6 @@ class Image {
 
   virtual bool IsValid() const { return true; }
 
-  virtual uint8_t* GetBuffer() const { return nullptr; }
-
   /**
    * For use with the TextureForwarder only (so that the later can
    * synchronize the TextureClient with the TextureHost).
@@ -241,7 +242,7 @@ class Image {
       : mImplData(aImplData), mSerial(++sSerialCounter), mFormat(aFormat) {}
 
   // Protected destructor, to discourage deletion outside of Release():
-  virtual ~Image() {}
+  virtual ~Image() = default;
 
   mozilla::EnumeratedArray<mozilla::layers::LayersBackend,
                            mozilla::layers::LayersBackend::LAYERS_LAST,
@@ -314,7 +315,7 @@ class ImageFactory {
   friend class ImageContainer;
 
   ImageFactory() {}
-  virtual ~ImageFactory() {}
+  virtual ~ImageFactory() = default;
 
   virtual RefPtr<PlanarYCbCrImage> CreatePlanarYCbCrImage(
       const gfx::IntSize& aScaleHint, BufferRecycleBin* aRecycleBin);
@@ -328,6 +329,7 @@ class ImageContainerListener final {
   explicit ImageContainerListener(ImageContainer* aImageContainer);
 
   void NotifyComposite(const ImageCompositeNotification& aNotification);
+  void NotifyDropped(uint32_t aDropped);
   void ClearImageContainer();
   void DropImageClient();
 
@@ -383,8 +385,8 @@ class ImageContainer final : public SupportsWeakPtr<ImageContainer> {
    */
   explicit ImageContainer(const CompositableHandle& aHandle);
 
-  typedef uint32_t FrameID;
-  typedef uint32_t ProducerID;
+  typedef ContainerFrameID FrameID;
+  typedef ContainerProducerID ProducerID;
 
   RefPtr<PlanarYCbCrImage> CreatePlanarYCbCrImage();
 
@@ -531,6 +533,12 @@ class ImageContainer final : public SupportsWeakPtr<ImageContainer> {
 
   const gfx::IntSize& GetScaleHint() const { return mScaleHint; }
 
+  void SetTransformHint(const gfx::Matrix& aTransformHint) {
+    mTransformHint = aTransformHint;
+  }
+
+  const gfx::Matrix& GetTransformHint() const { return mTransformHint; }
+
   void SetImageFactory(ImageFactory* aFactory) {
     RecursiveMutexAutoLock lock(mRecursiveMutex);
     mImageFactory = aFactory ? aFactory : new ImageFactory();
@@ -573,12 +581,10 @@ class ImageContainer final : public SupportsWeakPtr<ImageContainer> {
    * frameID is not the same as the entry's.
    * Every expired image that is never composited is counted as dropped.
    */
-  uint32_t GetDroppedImageCount() {
-    RecursiveMutexAutoLock lock(mRecursiveMutex);
-    return mDroppedImageCount;
-  }
+  uint32_t GetDroppedImageCount() { return mDroppedImageCount; }
 
   void NotifyComposite(const ImageCompositeNotification& aNotification);
+  void NotifyDropped(uint32_t aDropped);
 
   ImageContainerListener* GetImageContainerListener() {
     return mNotifyCompositeListener;
@@ -597,6 +603,12 @@ class ImageContainer final : public SupportsWeakPtr<ImageContainer> {
   static ProducerID AllocateProducerID();
 
   void DropImageClient();
+
+  SharedSurfacesAnimation* GetSharedSurfacesAnimation() const {
+    return mSharedAnimation;
+  }
+
+  SharedSurfacesAnimation* EnsureSharedSurfacesAnimation();
 
  private:
   typedef mozilla::RecursiveMutex RecursiveMutex;
@@ -635,8 +647,8 @@ class ImageContainer final : public SupportsWeakPtr<ImageContainer> {
   // See GetPaintDelay. Accessed only with mRecursiveMutex held.
   TimeDuration mPaintDelay;
 
-  // See GetDroppedImageCount. Accessed only with mRecursiveMutex held.
-  uint32_t mDroppedImageCount;
+  // See GetDroppedImageCount.
+  mozilla::Atomic<uint32_t> mDroppedImageCount;
 
   // This is the image factory used by this container, layer managers using
   // this container can set an alternative image factory that will be used to
@@ -644,6 +656,8 @@ class ImageContainer final : public SupportsWeakPtr<ImageContainer> {
   RefPtr<ImageFactory> mImageFactory;
 
   gfx::IntSize mScaleHint;
+
+  gfx::Matrix mTransformHint;
 
   RefPtr<BufferRecycleBin> mRecycleBin;
 
@@ -656,12 +670,12 @@ class ImageContainer final : public SupportsWeakPtr<ImageContainer> {
   // than asynchronusly using the ImageBridge IPDL protocol.
   RefPtr<ImageClient> mImageClient;
 
+  RefPtr<SharedSurfacesAnimation> mSharedAnimation;
+
   bool mIsAsync;
   CompositableHandle mAsyncContainerHandle;
 
-  nsTArray<FrameID> mFrameIDsNotYetComposited;
-  // ProducerID for last current image(s), including the frames in
-  // mFrameIDsNotYetComposited
+  // ProducerID for last current image(s)
   ProducerID mCurrentProducerID;
 
   RefPtr<ImageContainerListener> mNotifyCompositeListener;
@@ -718,8 +732,8 @@ struct PlanarYCbCrData {
   uint32_t mPicY;
   gfx::IntSize mPicSize;
   StereoMode mStereoMode;
-  YUVColorSpace mYUVColorSpace;
-  uint32_t mBitDepth;
+  gfx::YUVColorSpace mYUVColorSpace;
+  gfx::ColorDepth mColorDepth;
 
   gfx::IntRect GetPictureRect() const {
     return gfx::IntRect(mPicX, mPicY, mPicSize.width, mPicSize.height);
@@ -740,8 +754,8 @@ struct PlanarYCbCrData {
         mPicY(0),
         mPicSize(0, 0),
         mStereoMode(StereoMode::MONO),
-        mYUVColorSpace(YUVColorSpace::BT601),
-        mBitDepth(8) {}
+        mYUVColorSpace(gfx::YUVColorSpace::BT601),
+        mColorDepth(gfx::ColorDepth::COLOR_8) {}
 };
 
 /****** Image subtypes for the different formats ******/
@@ -786,7 +800,7 @@ class PlanarYCbCrImage : public Image {
 
   enum { MAX_DIMENSION = 16384 };
 
-  virtual ~PlanarYCbCrImage() {}
+  virtual ~PlanarYCbCrImage() = default;
 
   /**
    * This makes a copy of the data buffers, in order to support functioning
@@ -831,6 +845,14 @@ class PlanarYCbCrImage : public Image {
   virtual size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const = 0;
 
   PlanarYCbCrImage* AsPlanarYCbCrImage() override { return this; }
+
+  /**
+   * Build a SurfaceDescriptorBuffer with this image.  The provided
+   * SurfaceDescriptorBuffer must already have a valid MemoryOrShmem set
+   * with a capacity large enough to hold |GetDataSize|.
+   */
+  virtual nsresult BuildSurfaceDescriptorBuffer(
+      SurfaceDescriptorBuffer& aSdBuffer);
 
  protected:
   already_AddRefed<gfx::SourceSurface> GetAsSourceSurface() override;

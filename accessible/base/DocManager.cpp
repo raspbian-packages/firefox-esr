@@ -17,22 +17,23 @@
 #include "xpcAccessibleDocument.h"
 
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
+#include "mozilla/Components.h"
 #include "mozilla/EventListenerManager.h"
-#include "mozilla/dom/Event.h"  // for nsIDOMEvent::InternalDOMEvent()
-#include "nsCURILoader.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/Event.h"  // for Event
+#include "nsContentUtils.h"
 #include "nsDocShellLoadTypes.h"
 #include "nsIChannel.h"
-#include "nsIDOMDocument.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIWebNavigation.h"
 #include "nsServiceManagerUtils.h"
 #include "nsIWebProgress.h"
 #include "nsCoreUtils.h"
 #include "nsXULAppAPI.h"
-#include "mozilla/dom/TabChild.h"
+#include "mozilla/dom/BrowserChild.h"
 
 using namespace mozilla;
 using namespace mozilla::a11y;
@@ -52,7 +53,7 @@ DocManager::DocManager() : mDocAccessibleCache(2), mXPCDocumentCache(0) {}
 ////////////////////////////////////////////////////////////////////////////////
 // DocManager public
 
-DocAccessible* DocManager::GetDocAccessible(nsIDocument* aDocument) {
+DocAccessible* DocManager::GetDocAccessible(Document* aDocument) {
   if (!aDocument) return nullptr;
 
   DocAccessible* docAcc = GetExistingDocAccessible(aDocument);
@@ -90,7 +91,7 @@ void DocManager::RemoveFromXPCDocumentCache(DocAccessible* aDocument) {
 }
 
 void DocManager::NotifyOfDocumentShutdown(DocAccessible* aDocument,
-                                          nsIDocument* aDOMDocument) {
+                                          Document* aDOMDocument) {
   // We need to remove listeners in both cases, when document is being shutdown
   // or when accessibility service is being shut down as well.
   RemoveListeners(aDOMDocument);
@@ -171,8 +172,7 @@ bool DocManager::IsProcessingRefreshDriverNotification() const {
 // DocManager protected
 
 bool DocManager::Init() {
-  nsCOMPtr<nsIWebProgress> progress =
-      do_GetService(NS_DOCUMENTLOADER_SERVICE_CONTRACTID);
+  nsCOMPtr<nsIWebProgress> progress = components::DocLoader::Service();
 
   if (!progress) return false;
 
@@ -183,8 +183,7 @@ bool DocManager::Init() {
 }
 
 void DocManager::Shutdown() {
-  nsCOMPtr<nsIWebProgress> progress =
-      do_GetService(NS_DOCUMENTLOADER_SERVICE_CONTRACTID);
+  nsCOMPtr<nsIWebProgress> progress = components::DocLoader::Service();
 
   if (progress)
     progress->RemoveProgressListener(
@@ -218,7 +217,7 @@ DocManager::OnStateChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
   nsPIDOMWindowOuter* piWindow = nsPIDOMWindowOuter::From(DOMWindow);
   MOZ_ASSERT(piWindow);
 
-  nsCOMPtr<nsIDocument> document = piWindow->GetDoc();
+  nsCOMPtr<Document> document = piWindow->GetDoc();
   NS_ENSURE_STATE(document);
 
   // Document was loaded.
@@ -250,7 +249,7 @@ DocManager::OnStateChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
     return NS_OK;
   }
 
-    // Document loading was started.
+  // Document loading was started.
 #ifdef A11Y_LOG
   if (logging::IsEnabled(logging::eDocLoad))
     logging::DocLoad("start document loading", aWebProgress, aRequest,
@@ -283,28 +282,35 @@ DocManager::OnProgressChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
                              int32_t aCurSelfProgress, int32_t aMaxSelfProgress,
                              int32_t aCurTotalProgress,
                              int32_t aMaxTotalProgress) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
 NS_IMETHODIMP
 DocManager::OnLocationChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
                              nsIURI* aLocation, uint32_t aFlags) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
 NS_IMETHODIMP
 DocManager::OnStatusChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
                            nsresult aStatus, const char16_t* aMessage) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
 NS_IMETHODIMP
 DocManager::OnSecurityChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
                              uint32_t aState) {
-  NS_NOTREACHED("notification excluded in AddProgressListener(...)");
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+DocManager::OnContentBlockingEvent(nsIWebProgress* aWebProgress,
+                                   nsIRequest* aRequest, uint32_t aEvent) {
+  MOZ_ASSERT_UNREACHABLE("notification excluded in AddProgressListener(...)");
   return NS_OK;
 }
 
@@ -312,20 +318,19 @@ DocManager::OnSecurityChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
 // nsIDOMEventListener
 
 NS_IMETHODIMP
-DocManager::HandleEvent(nsIDOMEvent* aEvent) {
+DocManager::HandleEvent(Event* aEvent) {
   nsAutoString type;
   aEvent->GetType(type);
 
-  nsCOMPtr<nsIDocument> document =
-      do_QueryInterface(aEvent->InternalDOMEvent()->GetTarget());
+  nsCOMPtr<Document> document = do_QueryInterface(aEvent->GetTarget());
   NS_ASSERTION(document, "pagehide or DOMContentLoaded for non document!");
   if (!document) return NS_OK;
 
   if (type.EqualsLiteral("pagehide")) {
-  // 'pagehide' event is registered on every DOM document we create an
-  // accessible for, process the event for the target. This document
-  // accessible and all its sub document accessible are shutdown as result of
-  // processing.
+    // 'pagehide' event is registered on every DOM document we create an
+    // accessible for, process the event for the target. This document
+    // accessible and all its sub document accessible are shutdown as result of
+    // processing.
 
 #ifdef A11Y_LOG
     if (logging::IsEnabled(logging::eDocDestroy))
@@ -362,7 +367,7 @@ DocManager::HandleEvent(nsIDOMEvent* aEvent) {
 ////////////////////////////////////////////////////////////////////////////////
 // DocManager private
 
-void DocManager::HandleDOMDocumentLoad(nsIDocument* aDocument,
+void DocManager::HandleDOMDocumentLoad(Document* aDocument,
                                        uint32_t aLoadEventType) {
   // Document accessible can be created before we were notified the DOM document
   // was loaded completely. However if it's not created yet then create it.
@@ -375,7 +380,7 @@ void DocManager::HandleDOMDocumentLoad(nsIDocument* aDocument,
   docAcc->NotifyOfLoad(aLoadEventType);
 }
 
-void DocManager::AddListeners(nsIDocument* aDocument,
+void DocManager::AddListeners(Document* aDocument,
                               bool aAddDOMContentLoadedListener) {
   nsPIDOMWindowOuter* window = aDocument->GetWindow();
   EventTarget* target = window->GetChromeEventHandler();
@@ -398,7 +403,7 @@ void DocManager::AddListeners(nsIDocument* aDocument,
   }
 }
 
-void DocManager::RemoveListeners(nsIDocument* aDocument) {
+void DocManager::RemoveListeners(Document* aDocument) {
   nsPIDOMWindowOuter* window = aDocument->GetWindow();
   if (!window) return;
 
@@ -413,7 +418,7 @@ void DocManager::RemoveListeners(nsIDocument* aDocument) {
                                  TrustedEventsAtCapture());
 }
 
-DocAccessible* DocManager::CreateDocOrRootAccessible(nsIDocument* aDocument) {
+DocAccessible* DocManager::CreateDocOrRootAccessible(Document* aDocument) {
   // Ignore hidden documents, resource documents, static clone
   // (printing) documents and documents without a docshell.
   if (!aDocument->IsVisibleConsideringAncestors() ||
@@ -422,9 +427,21 @@ DocAccessible* DocManager::CreateDocOrRootAccessible(nsIDocument* aDocument) {
     return nullptr;
   }
 
+  nsIDocShell* docShell = aDocument->GetDocShell();
+  if (!docShell || docShell->IsInvisible()) {
+    return nullptr;
+  }
+
+  nsIWidget* widget = nsContentUtils::WidgetForDocument(aDocument);
+  if (!widget || widget->WindowType() == eWindowType_invisible) {
+    return nullptr;
+  }
+
   // Ignore documents without presshell and not having root frame.
-  nsIPresShell* presShell = aDocument->GetShell();
-  if (!presShell || presShell->IsDestroying()) return nullptr;
+  PresShell* presShell = aDocument->GetPresShell();
+  if (!presShell || presShell->IsDestroying()) {
+    return nullptr;
+  }
 
   bool isRootDoc = nsCoreUtils::IsRootDocument(aDocument);
 

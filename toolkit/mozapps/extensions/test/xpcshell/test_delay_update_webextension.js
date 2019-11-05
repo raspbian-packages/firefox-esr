@@ -7,8 +7,6 @@
 // The test extension uses an insecure update url.
 Services.prefs.setBoolPref(PREF_EM_CHECK_UPDATE_SECURITY, false);
 
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-
 if (AppConstants.platform == "win" && AppConstants.DEBUG) {
   // Shutdown timing is flaky in this test, and remote extensions
   // sometimes wind up leaving the XPI locked at the point when we try
@@ -16,9 +14,7 @@ if (AppConstants.platform == "win" && AppConstants.DEBUG) {
   Services.prefs.setBoolPref("extensions.webextensions.remote", false);
 }
 
-ChromeUtils.import("resource://testing-common/PromiseTestUtils.jsm");
-
-PromiseTestUtils.expectUncaughtRejection(/Message manager disconnected/);
+PromiseTestUtils.whitelistRejectionsGlobally(/Message manager disconnected/);
 
 /* globals browser*/
 
@@ -33,46 +29,83 @@ const DEFER_ID = "test_delay_update_defer_webext@tests.mozilla.org";
 const NOUPDATE_ID = "test_no_update_webext@tests.mozilla.org";
 
 // Create and configure the HTTP server.
-let testserver = createHttpServer();
-gPort = testserver.identity.primaryPort;
-mapFile("/data/test_delay_updates_complete.json", testserver);
-mapFile("/data/test_delay_updates_ignore.json", testserver);
-mapFile("/data/test_delay_updates_defer.json", testserver);
-mapFile("/data/test_no_update.json", testserver);
-testserver.registerDirectory("/addons/", do_get_file("addons"));
+var testserver = AddonTestUtils.createHttpServer({ hosts: ["example.com"] });
+testserver.registerDirectory("/data/", do_get_file("data"));
 
-createAppInfo("xpcshell@tests.mozilla.org", "XPCShell", "1", "42");
+createAppInfo("xpcshell@tests.mozilla.org", "XPCShell", "42", "42");
+
+const ADDONS = {
+  test_delay_update_complete_webextension_v2: {
+    "manifest.json": {
+      manifest_version: 2,
+      name: "Delay Upgrade",
+      version: "2.0",
+      applications: {
+        gecko: { id: COMPLETE_ID },
+      },
+    },
+  },
+  test_delay_update_defer_webextension_v2: {
+    "manifest.json": {
+      manifest_version: 2,
+      name: "Delay Upgrade",
+      version: "2.0",
+      applications: {
+        gecko: { id: DEFER_ID },
+      },
+    },
+  },
+  test_delay_update_ignore_webextension_v2: {
+    "manifest.json": {
+      manifest_version: 2,
+      name: "Delay Upgrade",
+      version: "2.0",
+      applications: {
+        gecko: { id: IGNORE_ID },
+      },
+    },
+  },
+};
+
+const XPIS = {};
+for (let [name, files] of Object.entries(ADDONS)) {
+  XPIS[name] = AddonTestUtils.createTempXPIFile(files);
+  testserver.registerFile(`/addons/${name}.xpi`, XPIS[name]);
+}
 
 // add-on registers upgrade listener, and ignores update.
 add_task(async function delay_updates_ignore() {
-  startupManager();
+  await promiseStartupManager();
 
-  let extension = ExtensionTestUtils.loadExtension({
-    useAddonManager: "permanent",
-    manifest: {
-      "version": "1.0",
-      "applications": {
-        "gecko": {
-          "id": IGNORE_ID,
-          "update_url": `http://localhost:${gPort}/data/test_delay_updates_ignore.json`,
+  let extension = ExtensionTestUtils.loadExtension(
+    {
+      useAddonManager: "permanent",
+      manifest: {
+        version: "1.0",
+        applications: {
+          gecko: {
+            id: IGNORE_ID,
+            update_url: `http://example.com/data/test_delay_updates_ignore.json`,
+          },
         },
       },
-    },
-    background() {
-      browser.runtime.onUpdateAvailable.addListener(details => {
-        if (details) {
-          if (details.version) {
-            // This should be the version of the pending update.
-            browser.test.assertEq("2.0", details.version, "correct version");
-            browser.test.notifyPass("delay");
+      background() {
+        browser.runtime.onUpdateAvailable.addListener(details => {
+          if (details) {
+            if (details.version) {
+              // This should be the version of the pending update.
+              browser.test.assertEq("2.0", details.version, "correct version");
+              browser.test.notifyPass("delay");
+            }
+          } else {
+            browser.test.fail("no details object passed");
           }
-        } else {
-          browser.test.fail("no details object passed");
-        }
-      });
-      browser.test.sendMessage("ready");
+        });
+        browser.test.sendMessage("ready");
+      },
     },
-  }, IGNORE_ID);
+    IGNORE_ID
+  );
 
   await Promise.all([extension.startup(), extension.awaitMessage("ready")]);
 
@@ -124,27 +157,30 @@ add_task(async function delay_updates_ignore() {
 
 // add-on registers upgrade listener, and allows update.
 add_task(async function delay_updates_complete() {
-  startupManager();
+  await promiseStartupManager();
 
-  let extension = ExtensionTestUtils.loadExtension({
-    useAddonManager: "permanent",
-    manifest: {
-      "version": "1.0",
-      "applications": {
-        "gecko": {
-          "id": COMPLETE_ID,
-          "update_url": `http://localhost:${gPort}/data/test_delay_updates_complete.json`,
+  let extension = ExtensionTestUtils.loadExtension(
+    {
+      useAddonManager: "permanent",
+      manifest: {
+        version: "1.0",
+        applications: {
+          gecko: {
+            id: COMPLETE_ID,
+            update_url: `http://example.com/data/test_delay_updates_complete.json`,
+          },
         },
       },
+      background() {
+        browser.runtime.onUpdateAvailable.addListener(details => {
+          browser.test.notifyPass("reload");
+          browser.runtime.reload();
+        });
+        browser.test.sendMessage("ready");
+      },
     },
-    background() {
-      browser.runtime.onUpdateAvailable.addListener(details => {
-        browser.test.notifyPass("reload");
-        browser.runtime.reload();
-      });
-      browser.test.sendMessage("ready");
-    },
-  }, COMPLETE_ID);
+    COMPLETE_ID
+  );
 
   await Promise.all([extension.startup(), extension.awaitMessage("ready")]);
 
@@ -177,8 +213,12 @@ add_task(async function delay_updates_complete() {
   Assert.ok(addon_allowed.isActive);
   Assert.equal(addon_allowed.type, "extension");
 
+  await new Promise(executeSoon);
+
   if (stageDir.exists()) {
-    do_throw("Staging directory should not exist for formerly-postponed extension");
+    do_throw(
+      "Staging directory should not exist for formerly-postponed extension"
+    );
   }
 
   await extension.unload();
@@ -187,35 +227,38 @@ add_task(async function delay_updates_complete() {
 
 // add-on registers upgrade listener, initially defers update then allows upgrade
 add_task(async function delay_updates_defer() {
-  startupManager();
+  await promiseStartupManager();
 
-  let extension = ExtensionTestUtils.loadExtension({
-    useAddonManager: "permanent",
-    manifest: {
-      "version": "1.0",
-      "applications": {
-        "gecko": {
-          "id": DEFER_ID,
-          "update_url": `http://localhost:${gPort}/data/test_delay_updates_defer.json`,
+  let extension = ExtensionTestUtils.loadExtension(
+    {
+      useAddonManager: "permanent",
+      manifest: {
+        version: "1.0",
+        applications: {
+          gecko: {
+            id: DEFER_ID,
+            update_url: `http://example.com/data/test_delay_updates_defer.json`,
+          },
         },
       },
-    },
-    background() {
-      browser.runtime.onUpdateAvailable.addListener(details => {
-        // Upgrade will only proceed when "allow" message received.
-        browser.test.onMessage.addListener(msg => {
-          if (msg == "allow") {
-            browser.test.notifyPass("allowed");
-            browser.runtime.reload();
-          } else {
-            browser.test.fail(`wrong message: ${msg}`);
-          }
+      background() {
+        browser.runtime.onUpdateAvailable.addListener(details => {
+          // Upgrade will only proceed when "allow" message received.
+          browser.test.onMessage.addListener(msg => {
+            if (msg == "allow") {
+              browser.test.notifyPass("allowed");
+              browser.runtime.reload();
+            } else {
+              browser.test.fail(`wrong message: ${msg}`);
+            }
+          });
+          browser.test.sendMessage("truly ready");
         });
-        browser.test.sendMessage("truly ready");
-      });
-      browser.test.sendMessage("ready");
+        browser.test.sendMessage("ready");
+      },
     },
-  }, DEFER_ID);
+    DEFER_ID
+  );
 
   await Promise.all([extension.startup(), extension.awaitMessage("ready")]);
 
@@ -283,30 +326,33 @@ add_task(async function delay_updates_defer() {
 
 // browser.runtime.reload() without a pending upgrade should just reload.
 add_task(async function runtime_reload() {
-  startupManager();
+  await promiseStartupManager();
 
-  let extension = ExtensionTestUtils.loadExtension({
-    useAddonManager: "permanent",
-    manifest: {
-      "version": "1.0",
-      "applications": {
-        "gecko": {
-          "id": NOUPDATE_ID,
-          "update_url": `http://localhost:${gPort}/data/test_no_update.json`,
+  let extension = ExtensionTestUtils.loadExtension(
+    {
+      useAddonManager: "permanent",
+      manifest: {
+        version: "1.0",
+        applications: {
+          gecko: {
+            id: NOUPDATE_ID,
+            update_url: `http://example.com/data/test_no_update.json`,
+          },
         },
       },
+      background() {
+        browser.test.onMessage.addListener(msg => {
+          if (msg == "reload") {
+            browser.runtime.reload();
+          } else {
+            browser.test.fail(`wrong message: ${msg}`);
+          }
+        });
+        browser.test.sendMessage("ready");
+      },
     },
-    background() {
-      browser.test.onMessage.addListener(msg => {
-        if (msg == "reload") {
-          browser.runtime.reload();
-        } else {
-          browser.test.fail(`wrong message: ${msg}`);
-        }
-      });
-      browser.test.sendMessage("ready");
-    },
-  }, NOUPDATE_ID);
+    NOUPDATE_ID
+  );
 
   await Promise.all([extension.startup(), extension.awaitMessage("ready")]);
 

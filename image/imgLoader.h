@@ -33,9 +33,7 @@ class imgCacheExpirationTracker;
 class imgMemoryReporter;
 
 namespace mozilla {
-namespace image {
-class ImageURL;
-}  // namespace image
+namespace image {}  // namespace image
 }  // namespace mozilla
 
 class imgCacheEntry {
@@ -47,7 +45,7 @@ class imgCacheEntry {
   ~imgCacheEntry();
 
   nsrefcnt AddRef() {
-    NS_PRECONDITION(int32_t(mRefCnt) >= 0, "illegal refcnt");
+    MOZ_ASSERT(int32_t(mRefCnt) >= 0, "illegal refcnt");
     NS_ASSERT_OWNINGTHREAD(imgCacheEntry);
     ++mRefCnt;
     NS_LOG_ADDREF(this, mRefCnt, "imgCacheEntry", sizeof(*this));
@@ -55,7 +53,7 @@ class imgCacheEntry {
   }
 
   nsrefcnt Release() {
-    NS_PRECONDITION(0 != mRefCnt, "dup release");
+    MOZ_ASSERT(0 != mRefCnt, "dup release");
     NS_ASSERT_OWNINGTHREAD(imgCacheEntry);
     --mRefCnt;
     NS_LOG_RELEASE(this, mRefCnt, "imgCacheEntry");
@@ -190,7 +188,6 @@ class imgLoader final : public imgILoader,
 
  public:
   typedef mozilla::image::ImageCacheKey ImageCacheKey;
-  typedef mozilla::image::ImageURL ImageURL;
   typedef nsRefPtrHashtable<nsGenericHashKey<ImageCacheKey>, imgCacheEntry>
       imgCacheTable;
   typedef nsTHashtable<nsPtrHashKey<imgRequest>> imgSet;
@@ -249,7 +246,7 @@ class imgLoader final : public imgILoader,
             ReferrerPolicy aReferrerPolicy, nsIPrincipal* aLoadingPrincipal,
             uint64_t aRequestContextID, nsILoadGroup* aLoadGroup,
             imgINotificationObserver* aObserver, nsINode* aContext,
-            nsIDocument* aLoadingDocument, nsLoadFlags aLoadFlags,
+            mozilla::dom::Document* aLoadingDocument, nsLoadFlags aLoadFlags,
             nsISupports* aCacheKey, nsContentPolicyType aContentPolicyType,
             const nsAString& initiatorType, bool aUseUrgentStartForChannel,
             imgRequestProxy** _retval);
@@ -347,26 +344,32 @@ class imgLoader final : public imgILoader,
  private:  // methods
   static already_AddRefed<imgLoader> CreateImageLoader();
 
+  bool PreferLoadFromCache(nsIURI* aURI) const;
+
   bool ValidateEntry(imgCacheEntry* aEntry, nsIURI* aKey,
                      nsIURI* aInitialDocumentURI, nsIURI* aReferrerURI,
                      ReferrerPolicy aReferrerPolicy, nsILoadGroup* aLoadGroup,
                      imgINotificationObserver* aObserver, nsISupports* aCX,
-                     nsIDocument* aLoadingDocument, nsLoadFlags aLoadFlags,
+                     mozilla::dom::Document* aLoadingDocument,
+                     nsLoadFlags aLoadFlags,
                      nsContentPolicyType aContentPolicyType,
-                     bool aCanMakeNewChannel, imgRequestProxy** aProxyRequest,
+                     bool aCanMakeNewChannel, bool* aNewChannelCreated,
+                     imgRequestProxy** aProxyRequest,
                      nsIPrincipal* aLoadingPrincipal, int32_t aCORSMode);
 
   bool ValidateRequestWithNewChannel(
       imgRequest* request, nsIURI* aURI, nsIURI* aInitialDocumentURI,
       nsIURI* aReferrerURI, ReferrerPolicy aReferrerPolicy,
       nsILoadGroup* aLoadGroup, imgINotificationObserver* aObserver,
-      nsISupports* aCX, nsIDocument* aLoadingDocument, nsLoadFlags aLoadFlags,
+      nsISupports* aCX, mozilla::dom::Document* aLoadingDocument,
+      uint64_t aInnerWindowId, nsLoadFlags aLoadFlags,
       nsContentPolicyType aContentPolicyType, imgRequestProxy** aProxyRequest,
-      nsIPrincipal* aLoadingPrincipal, int32_t aCORSMode);
+      nsIPrincipal* aLoadingPrincipal, int32_t aCORSMode,
+      bool* aNewChannelCreated);
 
   nsresult CreateNewProxyForRequest(imgRequest* aRequest,
                                     nsILoadGroup* aLoadGroup,
-                                    nsIDocument* aLoadingDocument,
+                                    mozilla::dom::Document* aLoadingDocument,
                                     imgINotificationObserver* aObserver,
                                     nsLoadFlags aLoadFlags,
                                     imgRequestProxy** _retval);
@@ -478,6 +481,7 @@ class imgCacheValidator : public nsIStreamListener,
  public:
   imgCacheValidator(nsProgressNotificationProxy* progress, imgLoader* loader,
                     imgRequest* aRequest, nsISupports* aContext,
+                    uint64_t aInnerWindowId,
                     bool forcePrincipalCheckForCacheEntry);
 
   void AddProxy(imgRequestProxy* aProxy);
@@ -507,6 +511,7 @@ class imgCacheValidator : public nsIStreamListener,
   RefPtr<imgCacheEntry> mNewEntry;
 
   nsCOMPtr<nsISupports> mContext;
+  uint64_t mInnerWindowId;
 
   imgLoader* mImgLoader;
 

@@ -8,16 +8,15 @@
 #define mozilla_ipc_IPCStreamSource_h
 
 #include "mozilla/AlreadyAddRefed.h"
-#include "mozilla/dom/WorkerHolder.h"
-#include "mozilla/dom/WorkerPrivate.h"
+#include "mozilla/dom/WorkerRef.h"
 
 class nsIAsyncInputStream;
 
 namespace mozilla {
 
 namespace dom {
-class nsIContentChild;
-class nsIContentParent;
+class ContentChild;
+class ContentParent;
 }  // namespace dom
 
 namespace wr {
@@ -28,6 +27,8 @@ namespace ipc {
 
 class PBackgroundChild;
 class PBackgroundParent;
+class PChildToParentStreamChild;
+class PParentToChildStreamParent;
 
 // The IPCStream IPC actor is designed to push an nsIInputStream from child to
 // parent or parent to child incrementally.  This is mainly needed for streams
@@ -54,13 +55,13 @@ class PBackgroundParent;
 //
 // In general you should probably use the AutoIPCStreamSource RAII class
 // defined in InputStreamUtils.h instead of using IPCStreamSource directly.
-class IPCStreamSource : public dom::WorkerHolder {
+class IPCStreamSource {
  public:
   // Create a IPCStreamSource using a PContent IPC manager on the
   // main thread.  This can return nullptr if the provided stream is
   // blocking.
   static PChildToParentStreamChild* Create(nsIAsyncInputStream* aInputStream,
-                                           dom::nsIContentChild* aManager);
+                                           dom::ContentChild* aManager);
 
   // Create a IPCStreamSource using a PBackground IPC manager on the
   // main thread or a Worker thread.  This can return nullptr if the provided
@@ -72,7 +73,7 @@ class IPCStreamSource : public dom::WorkerHolder {
   // main thread.  This can return nullptr if the provided stream is
   // blocking.
   static PParentToChildStreamParent* Create(nsIAsyncInputStream* aInputStream,
-                                            dom::nsIContentParent* aManager);
+                                            dom::ContentParent* aManager);
 
   // Create a IPCStreamSource using a PBackground IPC manager on the
   // main thread or a Worker thread.  This can return nullptr if the provided
@@ -113,9 +114,6 @@ class IPCStreamSource : public dom::WorkerHolder {
  private:
   class Callback;
 
-  // WorkerHolder methods
-  virtual bool Notify(dom::WorkerStatus aStatus) override;
-
   void DoRead();
 
   void Wait();
@@ -125,10 +123,7 @@ class IPCStreamSource : public dom::WorkerHolder {
   nsCOMPtr<nsIAsyncInputStream> mStream;
   RefPtr<Callback> mCallback;
 
-  // Raw pointer because this IPCStreamSource keeps the worker alive using a
-  // WorkerHolder. The worker is kept alive when the actor is created and,
-  // released when the actor is destroyed.
-  dom::WorkerPrivate* mWorkerPrivate;
+  RefPtr<dom::StrongWorkerRef> mWorkerRef;
 
 #ifdef DEBUG
  protected:

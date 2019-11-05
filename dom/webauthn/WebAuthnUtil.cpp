@@ -7,7 +7,7 @@
 #include "mozilla/dom/WebAuthnUtil.h"
 #include "nsIEffectiveTLDService.h"
 #include "nsNetUtil.h"
-#include "pkixutil.h"
+#include "mozpkix/pkixutil.h"
 
 namespace mozilla {
 namespace dom {
@@ -19,8 +19,11 @@ NS_NAMED_LITERAL_STRING(
     kGoogleAccountsAppId2,
     "https://www.gstatic.com/securitykey/a/google.com/origins.json");
 
+const uint8_t FLAG_TUP = 0x01;  // Test of User Presence required
+const uint8_t FLAG_AT = 0x40;   // Authenticator Data is provided
+
 bool EvaluateAppID(nsPIDOMWindowInner* aParent, const nsString& aOrigin,
-                   const U2FOperation& aOp, /* in/out */ nsString& aAppId) {
+                   /* in/out */ nsString& aAppId) {
   // Facet is the specification's way of referring to the web origin.
   nsAutoCString facetString = NS_ConvertUTF16toUTF8(aOrigin);
   nsCOMPtr<nsIURI> facetUri;
@@ -73,15 +76,12 @@ bool EvaluateAppID(nsPIDOMWindowInner* aParent, const nsString& aOrigin,
   // Run the HTML5 algorithm to relax the same-origin policy, copied from W3C
   // Web Authentication. See Bug 1244959 comment #8 for context on why we are
   // doing this instead of implementing the external-fetch FacetID logic.
-  nsCOMPtr<nsIDocument> document = aParent->GetDoc();
+  nsCOMPtr<Document> document = aParent->GetDoc();
   if (!document || !document->IsHTMLDocument()) {
     return false;
   }
-  nsHTMLDocument* html = document->AsHTMLDocument();
-  if (NS_WARN_IF(!html)) {
-    return false;
-  }
 
+  nsHTMLDocument* html = document->AsHTMLDocument();
   // Use the base domain as the facet for evaluation. This lets this algorithm
   // relax the whole eTLD+1.
   nsCOMPtr<nsIEffectiveTLDService> tldService =
@@ -101,8 +101,7 @@ bool EvaluateAppID(nsPIDOMWindowInner* aParent, const nsString& aOrigin,
   }
 
   // Bug #1436078 - Permit Google Accounts. Remove in Bug #1436085 in Jan 2023.
-  if (aOp == U2FOperation::Sign &&
-      lowestFacetHost.EqualsLiteral("google.com") &&
+  if (lowestFacetHost.EqualsLiteral("google.com") &&
       (aAppId.Equals(kGoogleAccountsAppId1) ||
        aAppId.Equals(kGoogleAccountsAppId2))) {
     return true;
@@ -153,13 +152,8 @@ nsresult AssembleAuthenticatorData(const CryptoBuffer& rpIdHashBuf,
     return NS_ERROR_INVALID_ARG;
   }
 
-  uint8_t flagSet = flags;
-  if (!attestationDataBuf.IsEmpty()) {
-    flagSet |= FLAG_AT;
-  }
-
   authDataBuf.AppendElements(rpIdHashBuf, mozilla::fallible);
-  authDataBuf.AppendElement(flagSet, mozilla::fallible);
+  authDataBuf.AppendElement(flags, mozilla::fallible);
   authDataBuf.AppendElements(counterBuf, mozilla::fallible);
   authDataBuf.AppendElements(attestationDataBuf, mozilla::fallible);
   return NS_OK;
@@ -191,6 +185,72 @@ nsresult AssembleAttestationData(const CryptoBuffer& aaguidBuf,
   attestationDataBuf.AppendElements(keyHandleBuf, mozilla::fallible);
   attestationDataBuf.AppendElements(pubKeyObj, mozilla::fallible);
   return NS_OK;
+}
+
+nsresult AssembleAttestationObject(const CryptoBuffer& aRpIdHash,
+                                   const CryptoBuffer& aPubKeyBuf,
+                                   const CryptoBuffer& aKeyHandleBuf,
+                                   const CryptoBuffer& aAttestationCertBuf,
+                                   const CryptoBuffer& aSignatureBuf,
+                                   bool aForceNoneAttestation,
+                                   /* out */ CryptoBuffer& aAttestationObjBuf) {
+  // Construct the public key object
+  CryptoBuffer pubKeyObj;
+  nsresult rv = CBOREncodePublicKeyObj(aPubKeyBuf, pubKeyObj);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+
+  mozilla::dom::CryptoBuffer aaguidBuf;
+  if (NS_WARN_IF(!aaguidBuf.SetCapacity(16, mozilla::fallible))) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
+  // FIDO U2F devices have no AAGUIDs, so they'll be all zeros until we add
+  // support for CTAP2 devices.
+  for (int i = 0; i < 16; i++) {
+    aaguidBuf.AppendElement(0x00, mozilla::fallible);
+  }
+
+  // During create credential, counter is always 0 for U2F
+  // See https://github.com/w3c/webauthn/issues/507
+  mozilla::dom::CryptoBuffer counterBuf;
+  if (NS_WARN_IF(!counterBuf.SetCapacity(4, mozilla::fallible))) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+  counterBuf.AppendElement(0x00, mozilla::fallible);
+  counterBuf.AppendElement(0x00, mozilla::fallible);
+  counterBuf.AppendElement(0x00, mozilla::fallible);
+  counterBuf.AppendElement(0x00, mozilla::fallible);
+
+  // Construct the Attestation Data, which slots into the end of the
+  // Authentication Data buffer.
+  CryptoBuffer attDataBuf;
+  rv = AssembleAttestationData(aaguidBuf, aKeyHandleBuf, pubKeyObj, attDataBuf);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+
+  CryptoBuffer authDataBuf;
+  // attDataBuf always contains data, so per [1] we have to set the AT flag.
+  // [1] https://w3c.github.io/webauthn/#sec-authenticator-data
+  const uint8_t flags = FLAG_TUP | FLAG_AT;
+  rv = AssembleAuthenticatorData(aRpIdHash, flags, counterBuf, attDataBuf,
+                                 authDataBuf);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+
+  // Direct attestation might have been requested by the RP.
+  // The user might override this and request anonymization anyway.
+  if (aForceNoneAttestation) {
+    rv = CBOREncodeNoneAttestationObj(authDataBuf, aAttestationObjBuf);
+  } else {
+    rv = CBOREncodeFidoU2FAttestationObj(authDataBuf, aAttestationCertBuf,
+                                         aSignatureBuf, aAttestationObjBuf);
+  }
+
+  return rv;
 }
 
 nsresult U2FDecomposeSignResponse(const CryptoBuffer& aResponse,
@@ -315,6 +375,82 @@ nsresult U2FDecomposeECKey(const CryptoBuffer& aPubKeyBuf,
   }
 
   MOZ_ASSERT(input.AtEnd());
+  return NS_OK;
+}
+
+static nsresult HashCString(nsICryptoHash* aHashService, const nsACString& aIn,
+                            /* out */ CryptoBuffer& aOut) {
+  MOZ_ASSERT(aHashService);
+
+  nsresult rv = aHashService->Init(nsICryptoHash::SHA256);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  rv = aHashService->Update(
+      reinterpret_cast<const uint8_t*>(aIn.BeginReading()), aIn.Length());
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  nsAutoCString fullHash;
+  // Passing false below means we will get a binary result rather than a
+  // base64-encoded string.
+  rv = aHashService->Finish(false, fullHash);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  if (NS_WARN_IF(!aOut.Assign(fullHash))) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
+  return NS_OK;
+}
+
+nsresult HashCString(const nsACString& aIn, /* out */ CryptoBuffer& aOut) {
+  nsresult srv;
+  nsCOMPtr<nsICryptoHash> hashService =
+      do_CreateInstance(NS_CRYPTO_HASH_CONTRACTID, &srv);
+  if (NS_FAILED(srv)) {
+    return srv;
+  }
+
+  srv = HashCString(hashService, aIn, aOut);
+  if (NS_WARN_IF(NS_FAILED(srv))) {
+    return NS_ERROR_FAILURE;
+  }
+
+  return NS_OK;
+}
+
+nsresult BuildTransactionHashes(const nsCString& aRpId,
+                                const nsCString& aClientDataJSON,
+                                /* out */ CryptoBuffer& aRpIdHash,
+                                /* out */ CryptoBuffer& aClientDataHash) {
+  nsresult srv;
+  nsCOMPtr<nsICryptoHash> hashService =
+      do_CreateInstance(NS_CRYPTO_HASH_CONTRACTID, &srv);
+  if (NS_FAILED(srv)) {
+    return srv;
+  }
+
+  if (!aRpIdHash.SetLength(SHA256_LENGTH, fallible)) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+  srv = HashCString(hashService, aRpId, aRpIdHash);
+  if (NS_WARN_IF(NS_FAILED(srv))) {
+    return NS_ERROR_FAILURE;
+  }
+
+  if (!aClientDataHash.SetLength(SHA256_LENGTH, fallible)) {
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+  srv = HashCString(hashService, aClientDataJSON, aClientDataHash);
+  if (NS_WARN_IF(NS_FAILED(srv))) {
+    return NS_ERROR_FAILURE;
+  }
+
   return NS_OK;
 }
 

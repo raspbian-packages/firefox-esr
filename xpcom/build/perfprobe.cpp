@@ -19,9 +19,9 @@ namespace probes {
 
 #if defined(MOZ_LOGGING)
 static LazyLogModule sProbeLog("SysProbe");
-#define LOG(x) MOZ_LOG(sProbeLog, mozilla::LogLevel::Debug, x)
+#  define LOG(x) MOZ_LOG(sProbeLog, mozilla::LogLevel::Debug, x)
 #else
-#define LOG(x)
+#  define LOG(x)
 #endif
 
 // Utility function
@@ -179,7 +179,8 @@ nsresult ProbeManager::StartSession(nsTArray<RefPtr<Probe>>& aProbes) {
                          /*RequestContext: Passed to ControlCallback*/,
                          (LPGUID)&mApplicationUID
                          /*ControlGuid:    Tracing GUID
-                        the cast comes from MSDN examples*/,
+                          the cast comes from MSDN examples*/
+                         ,
                          probesCount
                          /*GuidCount:      Number of probes*/,
                          probes

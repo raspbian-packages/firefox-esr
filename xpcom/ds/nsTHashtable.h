@@ -4,6 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// See the comment at the top of mfbt/HashTable.h for a comparison between
+// PLDHashTable and mozilla::HashTable.
+
 #ifndef nsTHashtable_h__
 #define nsTHashtable_h__
 
@@ -92,6 +95,7 @@ class MOZ_NEEDS_NO_VTABLE_TYPE nsTHashtable {
   ~nsTHashtable();
 
   nsTHashtable(nsTHashtable<EntryType>&& aOther);
+  nsTHashtable<EntryType>& operator=(nsTHashtable<EntryType>&& aOther);
 
   /**
    * Return the generation number for the table. This increments whenever
@@ -127,8 +131,8 @@ class MOZ_NEEDS_NO_VTABLE_TYPE nsTHashtable {
    *            key doesn't exist
    */
   EntryType* GetEntry(KeyType aKey) const {
-    return static_cast<EntryType*>(const_cast<PLDHashTable*>(&mTable)->Search(
-        EntryType::KeyToPointer(aKey)));
+    return static_cast<EntryType*>(
+        mTable.Search(EntryType::KeyToPointer(aKey)));
   }
 
   /**
@@ -367,7 +371,14 @@ static void FixedSizeEntryMover(PLDHashTable*, const PLDHashEntryHdr* aFrom,
 
 template <class EntryType>
 nsTHashtable<EntryType>::nsTHashtable(nsTHashtable<EntryType>&& aOther)
-    : mTable(mozilla::Move(aOther.mTable)) {}
+    : mTable(std::move(aOther.mTable)) {}
+
+template <class EntryType>
+nsTHashtable<EntryType>& nsTHashtable<EntryType>::operator=(
+    nsTHashtable<EntryType>&& aOther) {
+  mTable = std::move(aOther.mTable);
+  return *this;
+}
 
 template <class EntryType>
 nsTHashtable<EntryType>::~nsTHashtable() {}
@@ -396,7 +407,7 @@ PLDHashNumber nsTHashtable<EntryType>::s_HashKey(const void* aKey) {
 template <class EntryType>
 bool nsTHashtable<EntryType>::s_MatchEntry(const PLDHashEntryHdr* aEntry,
                                            const void* aKey) {
-  return ((const EntryType*)aEntry)
+  return (static_cast<const EntryType*>(aEntry))
       ->KeyEquals(static_cast<KeyTypePointer>(aKey));
 }
 
@@ -407,7 +418,7 @@ void nsTHashtable<EntryType>::s_CopyEntry(PLDHashTable* aTable,
   EntryType* fromEntry =
       const_cast<EntryType*>(static_cast<const EntryType*>(aFrom));
 
-  new (mozilla::KnownNotNull, aTo) EntryType(mozilla::Move(*fromEntry));
+  new (mozilla::KnownNotNull, aTo) EntryType(std::move(*fromEntry));
 
   fromEntry->~EntryType();
 }
@@ -549,7 +560,7 @@ class nsTHashtable<nsPtrHashKey<T>>
     typedef nsTHashtable::Base::Iterator Base;
 
     explicit Iterator(nsTHashtable* aTable) : Base(aTable) {}
-    Iterator(Iterator&& aOther) : Base(mozilla::Move(aOther)) {}
+    Iterator(Iterator&& aOther) : Base(std::move(aOther)) {}
     ~Iterator() = default;
 
     EntryType* Get() const { return reinterpret_cast<EntryType*>(Base::Get()); }

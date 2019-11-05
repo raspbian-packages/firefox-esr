@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,7 +7,6 @@
 #include "WebBrowserPersistResourcesChild.h"
 
 #include "WebBrowserPersistDocumentChild.h"
-#include "mozilla/dom/ContentChild.h"
 
 namespace mozilla {
 
@@ -20,9 +19,10 @@ WebBrowserPersistResourcesChild::~WebBrowserPersistResourcesChild() = default;
 
 NS_IMETHODIMP
 WebBrowserPersistResourcesChild::VisitResource(
-    nsIWebBrowserPersistDocument* aDocument, const nsACString& aURI) {
+    nsIWebBrowserPersistDocument* aDocument, const nsACString& aURI,
+    nsContentPolicyType aContentPolicyType) {
   nsCString copiedURI(aURI);  // Yay, XPIDL/IPDL mismatch.
-  SendVisitResource(copiedURI);
+  SendVisitResource(copiedURI, aContentPolicyType);
   return NS_OK;
 }
 
@@ -34,7 +34,7 @@ WebBrowserPersistResourcesChild::VisitDocument(
   // As a consequence of how PWebBrowserPersistDocumentConstructor
   // can be sent by both the parent and the child, we must pass the
   // aBrowser and outerWindowID arguments here, but the values are
-  // ignored by the parent.  In particular, the TabChild in which
+  // ignored by the parent.  In particular, the BrowserChild in which
   // persistence started does not necessarily exist at this point;
   // see bug 1203602.
   if (!Manager()->Manager()->SendPWebBrowserPersistDocumentConstructor(

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -50,7 +50,7 @@ class nsBaseContentStream : public nsIAsyncInputStream {
   bool HasPendingCallback() { return mCallback != nullptr; }
 
   // The current dispatch target (may be null) for the pending callback if any.
-  nsIEventTarget *CallbackTarget() { return mCallbackTarget; }
+  nsIEventTarget* CallbackTarget() { return mCallbackTarget; }
 
   // Called to dispatch a pending callback.  If there is no pending callback,
   // then this function does nothing.  Pass true to this function to cause the
@@ -62,7 +62,7 @@ class nsBaseContentStream : public nsIAsyncInputStream {
   void DispatchCallbackSync() { DispatchCallback(false); }
 
  protected:
-  virtual ~nsBaseContentStream() {}
+  virtual ~nsBaseContentStream() = default;
 
  private:
   // Called from the base stream's AsyncWait method when a pending callback

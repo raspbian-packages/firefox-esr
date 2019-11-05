@@ -7,8 +7,6 @@
 #define nsNavHistory_h_
 
 #include "nsINavHistoryService.h"
-#include "nsPIPlacesDatabase.h"
-#include "nsIBrowserHistory.h"
 #include "nsINavBookmarksService.h"
 #include "nsIFaviconService.h"
 
@@ -30,8 +28,8 @@
 #include "mozilla/Atomics.h"
 
 #ifdef XP_WIN
-#include "WinUtils.h"
-#include <wincrypt.h>
+#  include "WinUtils.h"
+#  include <wincrypt.h>
 #endif
 
 #define QUERYUPDATE_TIME 0
@@ -40,6 +38,7 @@
 #define QUERYUPDATE_COMPLEX_WITH_BOOKMARKS 3
 #define QUERYUPDATE_HOST 4
 #define QUERYUPDATE_MOBILEPREF 5
+#define QUERYUPDATE_NONE 6
 
 // Clamp title and URL to generously large, but not too large, length.
 // See bug 319004 for details.
@@ -52,34 +51,35 @@
 
 #ifdef MOZ_XUL
 // Fired after autocomplete feedback has been updated.
-#define TOPIC_AUTOCOMPLETE_FEEDBACK_UPDATED \
-  "places-autocomplete-feedback-updated"
+#  define TOPIC_AUTOCOMPLETE_FEEDBACK_UPDATED \
+    "places-autocomplete-feedback-updated"
 #endif
-
-// Fired after frecency has been updated.
-#define TOPIC_FRECENCY_UPDATED "places-frecency-updated"
 
 // The preference we watch to know when the mobile bookmarks folder is filled by
 // sync.
 #define MOBILE_BOOKMARKS_PREF "browser.bookmarks.showMobileBookmarks"
 
 // The guid of the mobile bookmarks virtual query.
-#define MOBILE_BOOKMARKS_VIRTUAL_GUID "mobile____v"
+#define MOBILE_BOOKMARKS_VIRTUAL_GUID "mobile_____v"
 
-class nsNavHistory;
-class QueryKeyValuePair;
+#define ROOT_GUID "root________"
+#define MENU_ROOT_GUID "menu________"
+#define TOOLBAR_ROOT_GUID "toolbar_____"
+#define UNFILED_ROOT_GUID "unfiled_____"
+#define TAGS_ROOT_GUID "tags________"
+#define MOBILE_ROOT_GUID "mobile______"
+
+class nsIAutoCompleteController;
 class nsIEffectiveTLDService;
 class nsIIDNService;
+class nsNavHistory;
 class PlacesSQLQueryBuilder;
-class nsIAutoCompleteController;
 
 // nsNavHistory
 
 class nsNavHistory final : public nsSupportsWeakReference,
                            public nsINavHistoryService,
                            public nsIObserver,
-                           public nsIBrowserHistory,
-                           public nsPIPlacesDatabase,
                            public mozIStorageVacuumParticipant {
   friend class PlacesSQLQueryBuilder;
 
@@ -88,9 +88,7 @@ class nsNavHistory final : public nsSupportsWeakReference,
 
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSINAVHISTORYSERVICE
-  NS_DECL_NSIBROWSERHISTORY
   NS_DECL_NSIOBSERVER
-  NS_DECL_NSPIPLACESDATABASE
   NS_DECL_MOZISTORAGEVACUUMPARTICIPANT
 
   /**
@@ -172,48 +170,6 @@ class nsNavHistory final : public nsSupportsWeakReference,
   nsresult UpdateFrecency(int64_t aPlaceId);
 
   /**
-   * Recalculates frecency for all pages requesting that (frecency < 0). Those
-   * may be generated:
-   *  * After a "clear private data"
-   *  * After removing visits
-   *  * After migrating from older versions
-   */
-  nsresult FixInvalidFrecencies();
-
-  /**
-   * Invalidate the frecencies of a list of places, so they will be recalculated
-   * at the first idle-daily notification.
-   *
-   * @param aPlacesIdsQueryString
-   *        Query string containing list of places to be invalidated.  If it's
-   *        an empty string all places will be invalidated.
-   */
-  nsresult invalidateFrecencies(const nsCString& aPlaceIdsQueryString);
-
-  /**
-   * Calls onDeleteVisits and onDeleteURI notifications on registered listeners
-   * with the history service.
-   *
-   * @param aURI
-   *        The nsIURI object representing the URI of the page being expired.
-   * @param aVisitTime
-   *        The time, in microseconds, that the page being expired was visited.
-   * @param aWholeEntry
-   *        Indicates if this is the last visit for this URI.
-   * @param aGUID
-   *        The unique ID associated with the page.
-   * @param aReason
-   *        Indicates the reason for the removal.
-   *        See nsINavHistoryObserver::REASON_* constants.
-   * @param aTransitionType
-   *        If it's a valid TRANSITION_* value, all visits of the specified type
-   *        have been removed.
-   */
-  nsresult NotifyOnPageExpired(nsIURI* aURI, PRTime aVisitTime,
-                               bool aWholeEntry, const nsACString& aGUID,
-                               uint16_t aReason, uint32_t aTransitionType);
-
-  /**
    * These functions return non-owning references to the locale-specific
    * objects for places components.
    */
@@ -252,8 +208,8 @@ class nsNavHistory final : public nsSupportsWeakReference,
   // this actually executes a query and gives you results, it is used by
   // nsNavHistoryQueryResultNode
   nsresult GetQueryResults(nsNavHistoryQueryResultNode* aResultNode,
-                           const nsCOMArray<nsNavHistoryQuery>& aQueries,
-                           nsNavHistoryQueryOptions* aOptions,
+                           const RefPtr<nsNavHistoryQuery>& aQuery,
+                           const RefPtr<nsNavHistoryQueryOptions>& aOptions,
                            nsCOMArray<nsNavHistoryResultNode>* aResults);
 
   // Take a row of kGetInfoIndex_* columns and construct a ResultNode.
@@ -287,34 +243,8 @@ class nsNavHistory final : public nsSupportsWeakReference,
    */
   int32_t GetDaysOfHistory();
 
-  // used by query result nodes to update: see comment on body of
-  // CanLiveUpdateQuery
-  static uint32_t GetUpdateRequirements(
-      const nsCOMArray<nsNavHistoryQuery>& aQueries,
-      nsNavHistoryQueryOptions* aOptions, bool* aHasSearchTerms);
-  bool EvaluateQueryForNode(const nsCOMArray<nsNavHistoryQuery>& aQueries,
-                            nsNavHistoryQueryOptions* aOptions,
-                            nsNavHistoryResultNode* aNode);
-
-  static nsresult AsciiHostNameFromHostString(const nsACString& aHostName,
-                                              nsACString& aAscii);
   void DomainNameFromURI(nsIURI* aURI, nsACString& aDomainName);
   static PRTime NormalizeTime(uint32_t aRelative, PRTime aOffset);
-
-  // Don't use these directly, inside nsNavHistory use UpdateBatchScoper,
-  // else use nsINavHistoryService::RunInBatchMode
-  nsresult BeginUpdateBatch();
-  nsresult EndUpdateBatch();
-
-  // The level of batches' nesting, 0 when no batches are open.
-  int32_t mBatchLevel;
-  // Current active transaction for a batch.
-  mozStorageTransaction* mBatchDBTransaction;
-
-  // better alternative to QueryStringToQueries (in nsNavHistoryQuery.cpp)
-  nsresult QueryStringToQueryArray(const nsACString& aQueryString,
-                                   nsCOMArray<nsNavHistoryQuery>* aQueries,
-                                   nsNavHistoryQueryOptions** aOptions);
 
   typedef nsDataHashtable<nsCStringHashKey, nsCString> StringHash;
 
@@ -339,6 +269,12 @@ class nsNavHistory final : public nsSupportsWeakReference,
   uint32_t GetRecentFlags(nsIURI* aURI);
 
   /**
+   * Whether there are visits.
+   * Note: This may cause synchronous I/O.
+   */
+  bool hasHistoryEntries();
+
+  /**
    * Registers a TRANSITION_EMBED visit for the session.
    *
    * @param aURI
@@ -356,11 +292,6 @@ class nsNavHistory final : public nsSupportsWeakReference,
    * @return whether the page has a embed visit.
    */
   bool hasEmbedVisit(nsIURI* aURI);
-
-  /**
-   * Clears all registered embed visits.
-   */
-  void clearEmbedVisits();
 
   int32_t GetFrecencyAgedWeight(int32_t aAgeInDays) const {
     if (aAgeInDays <= mFirstBucketCutoffInDays) {
@@ -429,9 +360,10 @@ class nsNavHistory final : public nsSupportsWeakReference,
   int32_t GetNumVisitsForFrecency() const { return mNumVisitsForFrecency; }
 
   /**
-   * Fires onVisits event to nsINavHistoryService observers
+   * Updates and invalidates the mDaysOfHistory cache. Should be
+   * called whenever a visit is added.
    */
-  void NotifyOnVisits(nsIVisitData** aVisits, uint32_t aVisitsCount);
+  void UpdateDaysOfHistory(PRTime visitTime);
 
   /**
    * Fires onTitleChanged event to nsINavHistoryService observers
@@ -442,7 +374,7 @@ class nsNavHistory final : public nsSupportsWeakReference,
   /**
    * Fires onFrecencyChanged event to nsINavHistoryService observers
    */
-  void NotifyFrecencyChanged(nsIURI* aURI, int32_t aNewFrecency,
+  void NotifyFrecencyChanged(const nsACString& aSpec, int32_t aNewFrecency,
                              const nsACString& aGUID, bool aHidden,
                              PRTime aLastVisitDate);
 
@@ -461,6 +393,13 @@ class nsNavHistory final : public nsSupportsWeakReference,
                                            PRTime aLastVisitDate) const;
 
   /**
+   * Returns true if frecency is currently being decayed.
+   *
+   * @return True if frecency is being decayed, false if not.
+   */
+  bool IsFrecencyDecaying() const;
+
+  /**
    * Store last insterted id for a table.
    */
   static mozilla::Atomic<int64_t> sLastInsertedPlaceId;
@@ -468,8 +407,6 @@ class nsNavHistory final : public nsSupportsWeakReference,
 
   static void StoreLastInsertedId(const nsACString& aTable,
                                   const int64_t aLastInsertedId);
-
-  bool isBatching() { return mBatchLevel > 0; }
 
 #ifdef XP_WIN
   /**
@@ -482,6 +419,15 @@ class nsNavHistory final : public nsSupportsWeakReference,
   }
 #endif
 
+  static nsresult FilterResultSet(
+      nsNavHistoryQueryResultNode* aParentNode,
+      const nsCOMArray<nsNavHistoryResultNode>& aSet,
+      nsCOMArray<nsNavHistoryResultNode>* aFiltered,
+      const RefPtr<nsNavHistoryQuery>& aQuery,
+      nsNavHistoryQueryOptions* aOptions);
+
+  void DecayFrecencyCompleted(uint16_t reason);
+
  private:
   ~nsNavHistory();
 
@@ -491,14 +437,6 @@ class nsNavHistory final : public nsSupportsWeakReference,
  protected:
   // Database handle.
   RefPtr<mozilla::places::Database> mDB;
-
-  /**
-   * Decays frecency and inputhistory values.  Runs on idle-daily.
-   */
-  nsresult DecayFrecency();
-
-  nsresult RemovePagesInternal(const nsCString& aPlaceIdsQueryString);
-  nsresult CleanupPlacesOnVisitsDelete(const nsCString& aPlaceIdsQueryString);
 
   /**
    * Loads all of the preferences that we use into member variables.
@@ -521,30 +459,22 @@ class nsNavHistory final : public nsSupportsWeakReference,
    */
   static void expireNowTimerCallback(nsITimer* aTimer, void* aClosure);
 
-  nsresult ConstructQueryString(const nsCOMArray<nsNavHistoryQuery>& aQueries,
-                                nsNavHistoryQueryOptions* aOptions,
-                                nsCString& queryString, bool& aParamsPresent,
-                                StringHash& aAddParams);
+  nsresult ConstructQueryString(
+      const RefPtr<nsNavHistoryQuery>& aQuery,
+      const RefPtr<nsNavHistoryQueryOptions>& aOptions, nsCString& queryString,
+      bool& aParamsPresent, StringHash& aAddParams);
 
-  nsresult QueryToSelectClause(nsNavHistoryQuery* aQuery,
-                               nsNavHistoryQueryOptions* aOptions,
-                               int32_t aQueryIndex, nsCString* aClause);
-  nsresult BindQueryClauseParameters(mozIStorageBaseStatement* statement,
-                                     int32_t aQueryIndex,
-                                     nsNavHistoryQuery* aQuery,
-                                     nsNavHistoryQueryOptions* aOptions);
+  nsresult QueryToSelectClause(const RefPtr<nsNavHistoryQuery>& aQuery,
+                               const RefPtr<nsNavHistoryQueryOptions>& aOptions,
+                               nsCString* aClause);
+  nsresult BindQueryClauseParameters(
+      mozIStorageBaseStatement* statement,
+      const RefPtr<nsNavHistoryQuery>& aQuery,
+      const RefPtr<nsNavHistoryQueryOptions>& aOptions);
 
   nsresult ResultsAsList(mozIStorageStatement* statement,
                          nsNavHistoryQueryOptions* aOptions,
                          nsCOMArray<nsNavHistoryResultNode>* aResults);
-
-  void TitleForDomain(const nsCString& domain, nsACString& aTitle);
-
-  nsresult FilterResultSet(nsNavHistoryQueryResultNode* aParentNode,
-                           const nsCOMArray<nsNavHistoryResultNode>& aSet,
-                           nsCOMArray<nsNavHistoryResultNode>* aFiltered,
-                           const nsCOMArray<nsNavHistoryQuery>& aQueries,
-                           nsNavHistoryQueryOptions* aOptions);
 
   // observers
   nsMaybeWeakPtrArray<nsINavHistoryObserver> mObservers;
@@ -567,8 +497,8 @@ class nsNavHistory final : public nsSupportsWeakReference,
   class VisitHashKey : public nsURIHashKey {
    public:
     explicit VisitHashKey(const nsIURI* aURI) : nsURIHashKey(aURI) {}
-    VisitHashKey(const VisitHashKey& aOther) : nsURIHashKey(aOther) {
-      NS_NOTREACHED("Do not call me!");
+    VisitHashKey(VisitHashKey&& aOther) : nsURIHashKey(std::move(aOther)) {
+      MOZ_ASSERT_UNREACHABLE("Do not call me!");
     }
     PRTime visitTime;
   };
@@ -612,10 +542,14 @@ class nsNavHistory final : public nsSupportsWeakReference,
   int32_t mUnvisitedTypedBonus;
   int32_t mReloadVisitBonus;
 
+  uint32_t mDecayFrecencyPendingCount;
+
+  nsresult RecalculateOriginFrecencyStatsInternal();
+
   // in nsNavHistoryQuery.cpp
-  nsresult TokensToQueries(const nsTArray<QueryKeyValuePair>& aTokens,
-                           nsCOMArray<nsNavHistoryQuery>* aQueries,
-                           nsNavHistoryQueryOptions* aOptions);
+  nsresult TokensToQuery(
+      const nsTArray<mozilla::places::QueryKeyValuePair>& aTokens,
+      nsNavHistoryQuery* aQuery, nsNavHistoryQueryOptions* aOptions);
 
   int64_t mTagsFolder;
 

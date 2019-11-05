@@ -13,10 +13,10 @@ to disable the "set as default browser" dialog.
  1 file changed, 2 insertions(+)
 
 diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
-index ff5d35b57d60..547ce1352a4d 100644
+index 4fd58c7585fe..c065b6fdc9d8 100644
 --- a/toolkit/xre/nsXREDirProvider.cpp
 +++ b/toolkit/xre/nsXREDirProvider.cpp
-@@ -762,6 +762,7 @@ static nsresult DeleteDirIfExists(nsIFile* dir) {
+@@ -848,6 +848,7 @@ static nsresult DeleteDirIfExists(nsIFile* dir) {
  
  static const char* const kAppendPrefDir[] = {"defaults", "preferences",
                                               nullptr};
@@ -24,11 +24,11 @@ index ff5d35b57d60..547ce1352a4d 100644
  
  #ifdef DEBUG_bsmedberg
  static void DumpFileArray(const char* key, nsCOMArray<nsIFile> dirs) {
-@@ -795,6 +796,7 @@ nsresult nsXREDirProvider::GetFilesInternal(const char* aProperty,
+@@ -879,6 +880,7 @@ nsresult nsXREDirProvider::GetFilesInternal(const char* aProperty,
  
      LoadDirIntoArray(mXULAppDir, kAppendPrefDir, directories);
      LoadDirsIntoArray(mAppBundleDirectories, kAppendPrefDir, directories);
 +    LoadDirIntoArray(mXULAppDir, kAppendSysPrefDir, directories);
  
-     rv = NS_NewArrayEnumerator(aResult, directories);
+     rv = NS_NewArrayEnumerator(aResult, directories, NS_GET_IID(nsIFile));
    } else if (!strcmp(aProperty, NS_APP_CHROME_DIR_LIST)) {

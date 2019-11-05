@@ -451,7 +451,7 @@ SECStatus ConfigSecureServerWithNamedCert(
   }
 
   if (certOut) {
-    *certOut = Move(cert);
+    *certOut = std::move(cert);
   }
 
   if (keaOut) {

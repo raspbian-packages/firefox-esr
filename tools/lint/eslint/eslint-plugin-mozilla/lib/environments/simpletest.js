@@ -17,12 +17,15 @@ var path = require("path");
 var helpers = require("../helpers");
 var globals = require("../globals");
 
+// When updating this list, be sure to also update the 'support-files' config
+// in `tools/lint/eslint.yml`.
 const simpleTestFiles = [
   "ExtensionTestUtils.js",
   "EventUtils.js",
   "MockObjects.js",
   "SimpleTest.js",
-  "WindowSnapshot.js"
+  "WindowSnapshot.js",
+  "paint_listener.js",
 ];
 const simpleTestPath = "testing/mochitest/tests/SimpleTest";
 
@@ -51,7 +54,7 @@ function mapGlobals(fileGlobals) {
 }
 
 module.exports = {
-  globals: helpers.isMozillaCentralBased() ?
-    mapGlobals(getScriptGlobals()) :
-    helpers.getSavedEnvironmentItems("simpletest").globals
+  globals: helpers.isMozillaCentralBased()
+    ? mapGlobals(getScriptGlobals())
+    : helpers.getSavedEnvironmentItems("simpletest").globals,
 };

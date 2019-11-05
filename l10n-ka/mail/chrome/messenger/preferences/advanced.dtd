@@ -6,12 +6,13 @@
 <!ENTITY dataChoicesTab.label    "მონაცემთა შერჩევა">
 <!ENTITY itemUpdate.label        "განახლება">
 <!ENTITY itemNetworking.label    "ქსელი და ადგილი დისკზე">
-<!ENTITY itemCertificates.label  "სერთიფიკატები">
+<!ENTITY itemCertificates.label  "სერტიფიკატები">
 
 <!-- General Settings -->
 <!ENTITY enableGlodaSearch.label       "გლობალური ძიებისა და გზავნილთა ინდექსაციის ჩართვა">
 <!ENTITY enableGlodaSearch.accesskey   "E">
 <!ENTITY dateTimeFormatting.label      "რიცხვისა და დროის გაფორმება">
+<!ENTITY languageSelector.label        "ენა">
 <!ENTITY allowHWAccel.label            "ხელმისაწვდომობის შემთხვევაში აპარატული აჩქარების გამოყენება">
 <!ENTITY allowHWAccel.accesskey        "პ">
 <!ENTITY storeType.label               "შეტყობინების შენახვის სახე ახალი ანაგირშებისთვის:">
@@ -20,10 +21,10 @@
 <!ENTITY maildirStore.label            "თითოეული წერილი ფაილში (maildir)">
 
 <!ENTITY scrolling.label               "გადახვევა">
-<!ENTITY useAutoScroll.label           "თვითგადახვევა">
-<!ENTITY useAutoScroll.accesskey       "U">
-<!ENTITY useSmoothScrolling.label      "მდორე გადახვევა">
-<!ENTITY useSmoothScrolling.accesskey  "m">
+<!ENTITY useAutoScroll.label           "თვითგადაადგილების გამოყენება">
+<!ENTITY useAutoScroll.accesskey       "თ">
+<!ENTITY useSmoothScrolling.label      "გლუვი გადაადგილების გამოყენება">
+<!ENTITY useSmoothScrolling.accesskey  "გ">
 
 <!ENTITY systemIntegration.label       "სისტემური ინტეგრაცია">
 <!ENTITY alwaysCheckDefault.label      "გახსნისას &brandShortName; პროგრამის ყოველთვის შემოწმება ნაგულისხმებ საფოსტო პროგრამად">
@@ -37,7 +38,7 @@
 <!ENTITY configEdit.accesskey          "C">
 <!ENTITY returnReceiptsInfo.label      "როგორ მოეპყრას &brandShortName; მიღების დასტურებს">
 <!ENTITY showReturnReceipts.label      "მიღების დასტურები…">
-<!ENTITY showReturnReceipts.accesskey  "R">
+<!ENTITY showReturnReceipts.accesskey  "რ">
 
 <!-- Data Choices -->
 <!ENTITY telemetrySection.label          "მონაცემთა აღრიცხვა">
@@ -46,9 +47,9 @@
 <!ENTITY enableTelemetry.accesskey       "ღ">
 <!ENTITY telemetryLearnMore.label        "ვრცლად">
 
-<!ENTITY crashReporterSection.label      "ავარიული დახურვის მომხსენებელი">
-<!ENTITY crashReporterDesc.label         "&brandShortName; აგზავნის ავარიული დახურვის მოხსენებებს, რაც &vendorShortName;-ს თქვენი ელფოსტის კლიენტის მდგრადობისა და უსაფრთხოების გაუმჯობესებაში ეხმარება">
-<!ENTITY enableCrashReporter.label       "ავარიული დახურვის მომხსენებლის ჩართვა">
+<!ENTITY crashReporterSection.label      "უეცარი გათიშვების მომხსენებელი">
+<!ENTITY crashReporterDesc.label         "&brandShortName; აგზავნის უეცარი გათიშვების მოხსენებებს, რაც &vendorShortName;-ს თქვენი ელფოსტის პროგრამის მდგრადობისა და უსაფრთხოების გაუმჯობესებაში ეხმარება">
+<!ENTITY enableCrashReporter.label       "უეცარი გათიშვების მომხსენებლის ჩართვა">
 <!ENTITY enableCrashReporter.accesskey   "რ">
 <!ENTITY crashReporterLearnMore.label    "ვრცლად">
 
@@ -57,7 +58,7 @@
   Strings from aboutDialog.dtd are displayed in this section of the preferences.
   Please check for possible accesskey conflicts.
 -->
-<!ENTITY updateApp2.label                "&brandShortName;-ის განახლებები">
+<!ENTITY updateApp2.label                "&brandShortName; – განახლებები">
 <!-- LOCALIZATION NOTE (updateApp.version.*): updateApp.version.pre is
   followed by a version number, keep the trailing space or replace it with
   a different character as needed. updateApp.version.post is displayed after
@@ -66,26 +67,27 @@
  -->
 <!ENTITY updateApp.version.pre           "ვერსია ">
 <!ENTITY updateApp.version.post          "">
-<!ENTITY updateAuto.label                "თავად დააყენოს განახლებები (სასურველია უსაფრთხოების გასაუმჯობესებლად)">
+<!ENTITY updateAppAllow.description      "ნებართვა, რომ &brandShortName; შეძლებს,">
+<!ENTITY updateAuto.label                "თავად დააყენებს განახლებებს (სასურველია უსაფრთხოების გასაუმჯობესებლად)">
 <!ENTITY updateAuto.accesskey            "თ">
 <!ENTITY updateCheck.label               "შემოწმდეს განახლებებზე, მაგრამ თავად გადაწყვეტთ, დააყენებთ თუ არა">
 <!ENTITY updateCheck.accesskey           "შ">
-<!ENTITY updateManual.label              "არასდროს შემოწმდეს განახლებებზე (არაა სასურველი: მაღალი საფრთხისშემცველია)">
-<!ENTITY updateManual.accesskey          "ა">
 <!ENTITY updateHistory.label             "განახლების ისტორიის ჩვენება">
 <!ENTITY updateHistory.accesskey         "ნ">
 
 <!ENTITY useService.label                "ფონური მოსახურებით სარგებლობა განახლებათა ჩადგმისას">
 <!ENTITY useService.accesskey            "b">
 
+<!ENTITY updateCrossUserSettingWarning.description "ეს პარამეტრები აისახება Windows-ის ყველა ანგარიშზე და &brandShortName;-ის ყველა პროფილზე, რომელიც &brandShortName;-ის ამ დაყენებულ ვერსიას ექვემდებარება.">
+
 <!-- Networking and Disk Space -->
 <!ENTITY showSettings.label            "პარამეტრები…">
 <!ENTITY showSettings.accesskey        "S">
 <!ENTITY proxiesConfigure.label        "როგორ დაუკავშირდეს &brandShortName; პროგრამა ინტერნეტს.">
 <!ENTITY connectionsInfo.caption       "კავშირი">
-<!ENTITY offlineInfo.caption           "ავტონომიური რეჟიმი">
-<!ENTITY offlineInfo.label             "ავტონომიური რეჟიმის პარამეტრები">
-<!ENTITY showOffline.label             "ავტონომიური რეჟიმი…">
+<!ENTITY offlineInfo.caption           "კავშირგარეშე">
+<!ENTITY offlineInfo.label             "კავშირგარეშე რეჟიმის პარამეტრები">
+<!ENTITY showOffline.label             "კავშირგარეშე…">
 <!ENTITY showOffline.accesskey         "O">
 
 <!ENTITY Diskspace                       "ადგილი დისკზე">
@@ -108,10 +110,10 @@
 <!ENTITY clearCacheNow.accesskey         "C">
 
 <!-- Certificates -->
-<!ENTITY certSelection.description       "როცა სერვერი ჩემს პირად სერთიფიკატს ითხოვს:">
+<!ENTITY certSelection.description       "როცა სერვერი ჩემს პირად სერტიფიკატს ითხოვს:">
 <!ENTITY certs.auto                      "ავტომატური შერჩევა">
 <!ENTITY certs.auto.accesskey            "m">
-<!ENTITY certs.ask                       "დამეკითხე ყოველთვის">
+<!ENTITY certs.ask                       "შეკითხვა ყოველ ჯერზე">
 <!ENTITY certs.ask.accesskey             "A">
 <!ENTITY enableOCSP.label                "OCSP სერვერებისთვის სერტიფიკატების მიმდინარე მდგომარეობის კითხვა">
 <!ENTITY enableOCSP.accesskey            "ს">

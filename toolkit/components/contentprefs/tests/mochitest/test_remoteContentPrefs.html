@@ -2,22 +2,18 @@
 <html>
 <head>
   <title>Test for nsIContentPrefService2 in child processes</title>
-  <script type="application/javascript"
-          src="/tests/SimpleTest/SimpleTest.js">
+  <script src="/tests/SimpleTest/SimpleTest.js">
   </script>
-  <script type="text/javascript" src="/tests/SimpleTest/SpawnTask.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
 <body>
 
   <script type="application/javascript">
     "use strict";
-    /* import-globals-from ../../../../../testing/mochitest/tests/SimpleTest/SpawnTask.js */
 
-    let loadContext = SpecialPowers.Cc["@mozilla.org/loadcontext;1"].
-                        createInstance(SpecialPowers.Ci.nsILoadContext);
-    let privateLoadContext = SpecialPowers.Cc["@mozilla.org/privateloadcontext;1"].
-                        createInstance(SpecialPowers.Ci.nsILoadContext);
+    let Cu = SpecialPowers.Cu;
+    let loadContext = Cu.createLoadContext();
+    let privateLoadContext = Cu.createPrivateLoadContext();
 
     SimpleTest.waitForExplicitFinish();
 
@@ -69,7 +65,7 @@
           handleCompletion(reason) {
             tester.is(reason, 0, "set a pref?");
             setPref.resolve();
-          }
+          },
         });
 
         await setPref.promise;
@@ -87,7 +83,7 @@
             tester.is(reason, 0, "get a pref?");
             tester.is(numResults, 1, "got the right number of prefs");
             gotGlobal.resolve();
-          }
+          },
         });
 
         await gotGlobal.promise;
@@ -125,7 +121,7 @@
             removed = true;
 
             gotRemoved.resolve();
-          }
+          },
         });
 
         mm.sendAsyncMessage("testRemoteContentPrefs:test2poke", {});
@@ -147,9 +143,9 @@
               handleCompletion(reason) {
                 tester.is(reason, 0, "set a pref");
                 setGlobalDone.resolve();
-              }
+              },
             });
-          }
+          },
         });
 
         await setGlobalDone.promise;
@@ -169,9 +165,9 @@
               handleError(rv) {
                 mm.sendAsyncMessage("testRemoteContentPrefs:fail",
                                     { reason: `got a pref error ${rv}` });
-              }
+              },
             });
-          }
+          },
         });
 
         await removeDone.promise;
@@ -187,13 +183,12 @@
           },
           onContentPrefRemoved(group, name, isPrivate) {
             observed.reject("got unexpected notification");
-          }
+          },
         };
 
         cps.addObserverForName("test", prefObserver);
 
-        let privateLoadContext = Cc["@mozilla.org/privateloadcontext;1"].
-                            createInstance(Ci.nsILoadContext);
+        let privateLoadContext = Cu.createPrivateLoadContext();
         cps.set("http://mochi.test", "test", 42, privateLoadContext);
         let event = await observed.promise;
         tester.is(event.name, "test", "got the right event");
@@ -220,8 +215,7 @@
 
       for (let test of Object.getOwnPropertyNames(tests)) {
         addMessageListener(`testRemoteContentPrefs:${test}`, function(message) {
-          let mm = message.target.QueryInterface(Ci.nsIMessageSender);
-          testHandler(mm, test);
+          testHandler(message.target, test);
         });
       }
     }
@@ -237,28 +231,28 @@
 
     async function testStructure(mm, isPrivate) {
       var curTest;
-      function testDone(msg) {
+      var testDone = SpecialPowers.wrapCallback(function testDone(msg) {
         info(`in testDone ${msg.name}`);
         curTest.resolve();
-      }
+      });
 
       mm.addMessageListener("testRemoteContentPrefs:test1Finished", testDone);
       mm.addMessageListener("testRemoteContentPrefs:test2Finished", testDone);
       mm.addMessageListener("testRemoteContentPrefs:test3Finished", testDone);
       mm.addMessageListener("testRemoteContentPrefs:test4Finished", testDone);
 
-      mm.addMessageListener("testRemoteContentPrefs:fail", function(msg) {
+      mm.addMessageListener("testRemoteContentPrefs:fail", SpecialPowers.wrapCallback(function(msg) {
         ok(false, msg.data.reason);
         SimpleTest.finish();
-      });
+      }));
 
-      mm.addMessageListener("testRemoteContentPrefs:ok", (msg) => {
+      mm.addMessageListener("testRemoteContentPrefs:ok", SpecialPowers.wrapCallback((msg) => {
         let test = msg.data.test;
         ok(...test);
-      });
-      mm.addMessageListener("testRemoteContentPrefs:info", (msg) => {
+      }));
+      mm.addMessageListener("testRemoteContentPrefs:info", SpecialPowers.wrapCallback((msg) => {
         info(msg.data.note);
-      });
+      }));
 
       curTest = Defer();
       mm.sendAsyncMessage("testRemoteContentPrefs:test1", {});
@@ -283,7 +277,7 @@
       await curTest.promise;
 
       curTest = Defer();
-      mm.addMessageListener("testRemoteContentPrefs:getPref", function(msg) {
+      mm.addMessageListener("testRemoteContentPrefs:getPref", SpecialPowers.wrapCallback(function(msg) {
         let results = [];
         cps.getByDomainAndName(msg.data.group, msg.data.name, null, {
           handleResult(pref) {
@@ -297,9 +291,9 @@
           handleError(rv) {
             ok(false, `failed to get pref ${rv}`);
             curTest.reject("got unexpected error");
-          }
+          },
         });
-      });
+      }));
 
       mm.sendAsyncMessage("testRemoteContentPrefs:test4", {});
       await curTest.promise;
@@ -325,8 +319,8 @@
                            false);
 
         // Chain testStructure to runTests's promise.
-        spawn_task(testStructure(mm, isPrivate)).then(deferred.resolve)
-                                                .catch((e) => { info(`caught failing test ${e}`); });
+        testStructure(mm, isPrivate).then(deferred.resolve)
+                                    .catch((e) => { info(`caught failing test ${e}`); });
       });
 
       document.body.appendChild(iframe);
@@ -347,8 +341,8 @@
         "set": [
           ["dom.ipc.browser_frames.oop_by_default", true],
           ["dom.mozBrowserFramesEnabled", true],
-          ["browser.pagethumbnails.capturing_disabled", true]
-        ]
+          ["browser.pagethumbnails.capturing_disabled", true],
+        ],
       }, runTests);
     });
   </script>

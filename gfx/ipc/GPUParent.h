@@ -25,50 +25,58 @@ class GPUParent final : public PGPUParent {
 
   static GPUParent* GetSingleton();
 
-  bool Init(base::ProcessId aParentPid, MessageLoop* aIOLoop,
-            IPC::Channel* aChannel);
+  // Gets the name of the GPU process, in the format expected by about:memory.
+  // There must be a GPU process active, and the caller must be either in that
+  // process or the parent process.
+  static void GetGPUProcessName(nsACString& aStr);
+
+  bool Init(base::ProcessId aParentPid, const char* aParentBuildID,
+            MessageLoop* aIOLoop, IPC::Channel* aChannel);
   void NotifyDeviceReset();
 
-  mozilla::ipc::IPCResult RecvInit(
-      nsTArray<GfxPrefSetting>&& prefs, nsTArray<GfxVarUpdate>&& vars,
-      const DevicePrefs& devicePrefs,
-      nsTArray<LayerTreeIdMapping>&& mappings) override;
+  PAPZInputBridgeParent* AllocPAPZInputBridgeParent(const LayersId& aLayersId);
+  bool DeallocPAPZInputBridgeParent(PAPZInputBridgeParent* aActor);
+
+  mozilla::ipc::IPCResult RecvInit(nsTArray<GfxPrefSetting>&& prefs,
+                                   nsTArray<GfxVarUpdate>&& vars,
+                                   const DevicePrefs& devicePrefs,
+                                   nsTArray<LayerTreeIdMapping>&& mappings);
   mozilla::ipc::IPCResult RecvInitCompositorManager(
-      Endpoint<PCompositorManagerParent>&& aEndpoint) override;
+      Endpoint<PCompositorManagerParent>&& aEndpoint);
   mozilla::ipc::IPCResult RecvInitVsyncBridge(
-      Endpoint<PVsyncBridgeParent>&& aVsyncEndpoint) override;
+      Endpoint<PVsyncBridgeParent>&& aVsyncEndpoint);
   mozilla::ipc::IPCResult RecvInitImageBridge(
-      Endpoint<PImageBridgeParent>&& aEndpoint) override;
+      Endpoint<PImageBridgeParent>&& aEndpoint);
   mozilla::ipc::IPCResult RecvInitVRManager(
-      Endpoint<PVRManagerParent>&& aEndpoint) override;
+      Endpoint<PVRManagerParent>&& aEndpoint);
+  mozilla::ipc::IPCResult RecvInitVR(Endpoint<PVRGPUChild>&& aVRGPUChild);
   mozilla::ipc::IPCResult RecvInitUiCompositorController(
-      const uint64_t& aRootLayerTreeId,
-      Endpoint<PUiCompositorControllerParent>&& aEndpoint) override;
+      const LayersId& aRootLayerTreeId,
+      Endpoint<PUiCompositorControllerParent>&& aEndpoint);
   mozilla::ipc::IPCResult RecvInitProfiler(
-      Endpoint<PProfilerChild>&& aEndpoint) override;
-  mozilla::ipc::IPCResult RecvUpdatePref(const GfxPrefSetting& pref) override;
-  mozilla::ipc::IPCResult RecvUpdateVar(const GfxVarUpdate& pref) override;
+      Endpoint<PProfilerChild>&& aEndpoint);
+  mozilla::ipc::IPCResult RecvUpdatePref(const GfxPrefSetting& pref);
+  mozilla::ipc::IPCResult RecvUpdateVar(const GfxVarUpdate& pref);
   mozilla::ipc::IPCResult RecvNewContentCompositorManager(
-      Endpoint<PCompositorManagerParent>&& aEndpoint) override;
+      Endpoint<PCompositorManagerParent>&& aEndpoint);
   mozilla::ipc::IPCResult RecvNewContentImageBridge(
-      Endpoint<PImageBridgeParent>&& aEndpoint) override;
+      Endpoint<PImageBridgeParent>&& aEndpoint);
   mozilla::ipc::IPCResult RecvNewContentVRManager(
-      Endpoint<PVRManagerParent>&& aEndpoint) override;
+      Endpoint<PVRManagerParent>&& aEndpoint);
   mozilla::ipc::IPCResult RecvNewContentVideoDecoderManager(
-      Endpoint<PVideoDecoderManagerParent>&& aEndpoint) override;
-  mozilla::ipc::IPCResult RecvGetDeviceStatus(
-      GPUDeviceData* aOutStatus) override;
-  mozilla::ipc::IPCResult RecvSimulateDeviceReset(
-      GPUDeviceData* aOutStatus) override;
+      Endpoint<PVideoDecoderManagerParent>&& aEndpoint);
+  mozilla::ipc::IPCResult RecvGetDeviceStatus(GPUDeviceData* aOutStatus);
+  mozilla::ipc::IPCResult RecvSimulateDeviceReset(GPUDeviceData* aOutStatus);
   mozilla::ipc::IPCResult RecvAddLayerTreeIdMapping(
-      const LayerTreeIdMapping& aMapping) override;
+      const LayerTreeIdMapping& aMapping);
   mozilla::ipc::IPCResult RecvRemoveLayerTreeIdMapping(
-      const LayerTreeIdMapping& aMapping) override;
-  mozilla::ipc::IPCResult RecvNotifyGpuObservers(
-      const nsCString& aTopic) override;
+      const LayerTreeIdMapping& aMapping);
+  mozilla::ipc::IPCResult RecvNotifyGpuObservers(const nsCString& aTopic);
   mozilla::ipc::IPCResult RecvRequestMemoryReport(
       const uint32_t& generation, const bool& anonymize,
-      const bool& minimizeMemoryUsage, const MaybeFileDesc& DMDFile) override;
+      const bool& minimizeMemoryUsage,
+      const Maybe<ipc::FileDescriptor>& DMDFile);
+  mozilla::ipc::IPCResult RecvShutdownVR();
 
   void ActorDestroy(ActorDestroyReason aWhy) override;
 

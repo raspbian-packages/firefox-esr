@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Test for CSS Selectors</title>
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
 </head>
 <body onload="run()">
@@ -16,7 +16,9 @@ SimpleTest.requestLongerTimeout(2);
 var cloneiframe;
 
 function run() {
-
+  SpecialPowers.pushPrefEnv({ set: [["layout.css.xul-tree-pseudos.content.enabled", true]] }, runTests);
+}
+function runTests() {
     var iframe = document.getElementById("iframe");
     var ifwin = iframe.contentWindow;
     var ifdoc = iframe.contentDocument;
@@ -73,13 +75,13 @@ function run() {
             ok(false, "nothing to check");
         }
 
-        for (var i = 0; i < should_match.length; ++i) {
-            var e = should_match[i];
+        for (let i = 0; i < should_match.length; ++i) {
+            let e = should_match[i];
             is(ifwin.getComputedStyle(e).zIndex, String(zi),
                "element in " + body_contents + " matched " + selector);
         }
-        for (var i = 0; i < should_not_match.length; ++i) {
-            var e = should_not_match[i];
+        for (let i = 0; i < should_not_match.length; ++i) {
+            let e = should_not_match[i];
             is(ifwin.getComputedStyle(e).zIndex, "auto",
                "element in " + body_contents + " did not match " + selector);
         }
@@ -91,14 +93,14 @@ function run() {
         zi = ++gCounter;
         var ser1 = style_text.parentNode.sheet.cssRules[idx].selectorText;
         style_text.data = namespaces + ser1 + "{ z-index: " + zi + " }";
-        for (var i = 0; i < should_match.length; ++i) {
-            var e = should_match[i];
+        for (let i = 0; i < should_match.length; ++i) {
+            let e = should_match[i];
             is(ifwin.getComputedStyle(e).zIndex, String(zi),
                "element in " + body_contents + " matched " + ser1 +
                " which is the reserialization of " + selector);
         }
-        for (var i = 0; i < should_not_match.length; ++i) {
-            var e = should_not_match[i];
+        for (let i = 0; i < should_not_match.length; ++i) {
+            let e = should_not_match[i];
             is(ifwin.getComputedStyle(e).zIndex, "auto",
                "element in " + body_contents + " did not match " + ser1 +
                " which is the reserialization of " + selector);
@@ -148,21 +150,21 @@ function run() {
             // remove the uncloned sheet
             links[0].remove();
 
-            var should_match = match_fn(clonedoc);
-            var should_not_match = notmatch_fn(clonedoc);
+            var should_match1 = match_fn(clonedoc);
+            var should_not_match1 = notmatch_fn(clonedoc);
 
-            if (should_match.length + should_not_match.length == 0) {
+            if (should_match1.length + should_not_match1.length == 0) {
                 ok(false, "nothing to check");
             }
 
-            for (var i = 0; i < should_match.length; ++i) {
-                var e = should_match[i];
+            for (let i = 0; i < should_match1.length; ++i) {
+                let e = should_match1[i];
                 is(clonewin.getComputedStyle(e).zIndex, String(zi),
                    "element in " + body_contents + " matched clone of " +
                    selector);
             }
-            for (var i = 0; i < should_not_match.length; ++i) {
-                var e = should_not_match[i];
+            for (let i = 0; i < should_not_match1.length; ++i) {
+                let e = should_not_match1[i];
                 is(clonewin.getComputedStyle(e).zIndex, "auto",
                    "element in " + body_contents + " did not match clone of " +
                    selector);
@@ -303,6 +305,14 @@ function run() {
     // [attr] selector
     test_parseable("[attr]")
     test_parseable_via_api("[attr");
+    test_parseable("[ATTR]")
+    should_serialize_to("[attr]", "[attr]");
+    should_serialize_to("[ATTR]", "[ATTR]");
+
+    // Whether we should drop the bar is debatable. This matches Edge
+    // and Safari at the time of writing.
+    should_serialize_to("[|attr]", "[attr]");
+    should_serialize_to("[|ATTR]", "[ATTR]");
 
     // [attr= ] selector
     test_parseable("[attr=\"x\"]");
@@ -960,8 +970,10 @@ function run() {
     should_serialize_to("input::placeholder", "input::placeholder");
     should_serialize_to("input:placeholder-shown", "input:placeholder-shown");
 
-    // Test serialization of non CSS2 pseudo-element.
-    should_serialize_to("input::-moz-placeholder", "input::-moz-placeholder");
+    // Test serialization of ::-moz-placeholder.
+    should_serialize_to("input::-moz-placeholder", "input::placeholder");
+
+    should_serialize_to(':lang("foo\\"bar")', ':lang(foo\\"bar)');
 
     // Test default namespaces, including inside :not().
     var html_default_ns = "@namespace url(http://www.w3.org/1999/xhtml);";
@@ -1090,14 +1102,15 @@ function run() {
     test_parseable(":-moz-lwtheme-brighttext");
     test_parseable(":-moz-lwtheme-darktext");
 
-    test_parseable(":-moz-tree-row(selected)");
+    test_balanced_unparseable(":-moz-tree-row(selected)");
     test_parseable("::-moz-tree-row(selected)");
-    test_parseable(":-moz-tree-row(selected focus)");
-    test_parseable(":-moz-tree-row(selected , focus)");
+    test_parseable("::-MoZ-trEE-RoW(sElEcTeD)");
+    test_balanced_unparseable(":-moz-tree-row(selected focus)");
+    test_balanced_unparseable(":-moz-tree-row(selected , focus)");
     test_parseable("::-moz-tree-row(selected ,focus)");
-    test_parseable(":-moz-tree-row(selected, focus)");
+    test_balanced_unparseable(":-moz-tree-row(selected, focus)");
     test_parseable("::-moz-tree-row(selected,focus)");
-    test_parseable(":-moz-tree-row(selected     focus)");
+    test_balanced_unparseable(":-moz-tree-row(selected     focus)");
     test_parseable("::-moz-tree-row(selected    ,   focus)");
     test_parseable("::-moz-tree-twisty(  hover open  )");
     test_balanced_unparseable("::-moz-tree-row(selected {[]} )");

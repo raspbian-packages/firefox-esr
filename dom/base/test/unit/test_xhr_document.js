@@ -2,17 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-ChromeUtils.import("resource://testing-common/httpd.js");
-ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+Cu.importGlobalProperties(["DOMParser"]);
+
+var { HttpServer } = ChromeUtils.import("resource://testing-common/httpd.js");
 
 var server = new HttpServer();
 server.start(-1);
 
-var docbody = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body></body></html>';
+var docbody =
+  '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body></body></html>';
 
 function handler(metadata, response) {
-  let body = NetUtil.readInputStreamToString(metadata.bodyInputStream,
-                                             metadata.bodyInputStream.available());
+  var { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+
+  let body = NetUtil.readInputStreamToString(
+    metadata.bodyInputStream,
+    metadata.bodyInputStream.available()
+  );
   response.setStatusLine(metadata.httpVersion, 200, "OK");
   response.write(body, body.length);
 }
@@ -21,8 +27,7 @@ function run_test() {
   do_test_pending();
   server.registerPathHandler("/foo", handler);
 
-  var parser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
-  parser.init();
+  var parser = new DOMParser();
   let doc = parser.parseFromString(docbody, "text/html");
   let xhr = new XMLHttpRequest();
   xhr.onload = function() {
@@ -33,6 +38,10 @@ function run_test() {
     Assert.equal(false, false);
     server.stop(do_test_finished);
   };
-  xhr.open("POST", "http://localhost:" + server.identity.primaryPort + "/foo", true);
+  xhr.open(
+    "POST",
+    "http://localhost:" + server.identity.primaryPort + "/foo",
+    true
+  );
   xhr.send(doc);
 }

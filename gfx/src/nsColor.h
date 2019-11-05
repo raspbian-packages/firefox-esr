@@ -48,18 +48,6 @@ inline uint8_t ClampColor(T aColor) {
 
 }  // namespace mozilla
 
-// Fast approximate division by 255. It has the property that
-// for all 0 <= n <= 255*255, FAST_DIVIDE_BY_255(n) == n/255.
-// But it only uses two adds and two shifts instead of an
-// integer division (which is expensive on many processors).
-//
-// equivalent to target=v/255
-#define FAST_DIVIDE_BY_255(target, v)        \
-  PR_BEGIN_MACRO                             \
-  unsigned tmp_ = v;                         \
-  target = ((tmp_ << 8) + tmp_ + 255) >> 16; \
-  PR_END_MACRO
-
 enum class nsHexColorType : uint8_t {
   NoAlpha,     // 3 or 6 digit hex colors only
   AllowAlpha,  // 3, 4, 6, or 8 digit hex colors
@@ -84,10 +72,6 @@ inline uint32_t RoundingDivideBy255(uint32_t n) {
   return (n + 127) / 255;
 }
 
-// Blend one RGBA color with another based on a given ratio.
-// It is a linear interpolation on each channel with alpha premultipled.
-nscolor LinearBlendColors(nscolor aBg, nscolor aFg, uint_fast8_t aFgRatio);
-
 }  // namespace mozilla
 
 // Translate a hex string to a color. Return true if it parses ok,
@@ -101,14 +85,6 @@ bool NS_LooseHexToRGB(const nsString& aBuf, nscolor* aResult);
 // Translate a color name to a color. Return true if it parses ok,
 // otherwise return false.
 bool NS_ColorNameToRGB(const nsAString& aBuf, nscolor* aResult);
-
-// Returns an array of all possible color names, and sets
-// *aSizeArray to the size of that array. Do NOT call |free()| on this array.
-const char* const* NS_AllColorNames(size_t* aSizeArray);
-
-// function to convert from HSL color space to RGB color space
-// the float parameters are all expected to be in the range 0-1
-nscolor NS_HSL2RGB(float h, float s, float l);
 
 // Return a color name for the given nscolor.  If there is no color
 // name for it, returns null.  If there are multiple possible color

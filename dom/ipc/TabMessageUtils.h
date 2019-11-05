@@ -8,16 +8,20 @@
 #define TABMESSAGE_UTILS_H
 
 #include "ipc/IPCMessageUtils.h"
+#include "mozilla/RefPtr.h"
+#include "mozilla/dom/Event.h"
 #include "nsExceptionHandler.h"
-#include "nsIDOMEvent.h"
+#include "nsIRemoteTab.h"
 #include "nsPIDOMWindow.h"
 #include "nsCOMPtr.h"
 
 namespace mozilla {
 namespace dom {
+class Event;
+
 struct RemoteDOMEvent {
   // Make sure to set the owner after deserializing.
-  nsCOMPtr<nsIDOMEvent> mEvent;
+  RefPtr<Event> mEvent;
 };
 
 bool ReadRemoteEvent(const IPC::Message* aMsg, PickleIterator* aIter,
@@ -61,6 +65,13 @@ struct ParamTraits<UIStateChangeType>
     : public ContiguousEnumSerializer<UIStateChangeType,
                                       UIStateChangeType_NoChange,
                                       UIStateChangeType_Invalid> {};
+
+template <>
+struct ParamTraits<nsIRemoteTab::NavigationType>
+    : public ContiguousEnumSerializerInclusive<
+          nsIRemoteTab::NavigationType,
+          nsIRemoteTab::NavigationType::NAVIGATE_BACK,
+          nsIRemoteTab::NavigationType::NAVIGATE_URL> {};
 
 }  // namespace IPC
 

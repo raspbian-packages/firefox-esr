@@ -123,9 +123,6 @@ struct nr_ice_ctx_ {
   UINT4 flags;
   char *label;
 
-  char *ufrag;
-  char *pwd;
-
   UINT4 Ta;
 
   nr_ice_stun_server *stun_servers;           /* The list of stun servers */
@@ -181,7 +178,7 @@ int nr_ice_set_local_addresses(nr_ice_ctx *ctx, nr_local_addr* stun_addrs, int s
 int nr_ice_gather(nr_ice_ctx *ctx, NR_async_cb done_cb, void *cb_arg);
 int nr_ice_add_candidate(nr_ice_ctx *ctx, nr_ice_candidate *cand);
 void nr_ice_gather_finished_cb(NR_SOCKET s, int h, void *cb_arg);
-int nr_ice_add_media_stream(nr_ice_ctx *ctx,char *label,int components, nr_ice_media_stream **streamp);
+int nr_ice_add_media_stream(nr_ice_ctx *ctx,const char *label,const char *ufrag,const char *pwd,int components, nr_ice_media_stream **streamp);
 int nr_ice_remove_media_stream(nr_ice_ctx *ctx,nr_ice_media_stream **streamp);
 int nr_ice_get_global_attributes(nr_ice_ctx *ctx,char ***attrsp, int *attrctp);
 int nr_ice_ctx_deliver_packet(nr_ice_ctx *ctx, nr_ice_component *comp, nr_transport_addr *source_addr, UCHAR *data, int len);
@@ -199,8 +196,6 @@ int nr_ice_ctx_set_trickle_cb(nr_ice_ctx *ctx, nr_ice_trickle_candidate_cb cb, v
 int nr_ice_ctx_hide_candidate(nr_ice_ctx *ctx, nr_ice_candidate *cand);
 int nr_ice_get_new_ice_ufrag(char** ufrag);
 int nr_ice_get_new_ice_pwd(char** pwd);
-// accumulate a count without worrying about rollover
-void nr_ice_accumulate_count(UINT2* orig_count, UINT2 new_count);
 
 #define NR_ICE_MAX_ATTRIBUTE_SIZE 256
 

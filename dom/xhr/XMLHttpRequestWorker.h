@@ -10,17 +10,17 @@
 #include "XMLHttpRequest.h"
 #include "XMLHttpRequestString.h"
 #include "mozilla/dom/TypedArray.h"
-#include "mozilla/dom/WorkerHolder.h"
 
 namespace mozilla {
 namespace dom {
 
 class Proxy;
-class SendRunnable;
 class DOMString;
+class SendRunnable;
+class StrongWorkerRef;
 class WorkerPrivate;
 
-class XMLHttpRequestWorker final : public XMLHttpRequest, public WorkerHolder {
+class XMLHttpRequestWorker final : public XMLHttpRequest {
  public:
   struct StateData {
     XMLHttpRequestStringSnapshot mResponseText;
@@ -49,19 +49,21 @@ class XMLHttpRequestWorker final : public XMLHttpRequest, public WorkerHolder {
  private:
   RefPtr<XMLHttpRequestUpload> mUpload;
   WorkerPrivate* mWorkerPrivate;
+  RefPtr<StrongWorkerRef> mWorkerRef;
   RefPtr<Proxy> mProxy;
   XMLHttpRequestResponseType mResponseType;
   StateData mStateData;
 
   uint32_t mTimeout;
 
-  bool mRooted;
   bool mBackgroundRequest;
   bool mWithCredentials;
   bool mCanceled;
 
   bool mMozAnon;
   bool mMozSystem;
+
+  nsString mMimeTypeOverride;
 
  public:
   NS_DECL_ISUPPORTS_INHERITED
@@ -73,8 +75,6 @@ class XMLHttpRequestWorker final : public XMLHttpRequest, public WorkerHolder {
       ErrorResult& aRv);
 
   void Unpin();
-
-  bool Notify(WorkerStatus aStatus) override;
 
   virtual uint16_t ReadyState() const override {
     return mStateData.mReadyState;
@@ -121,14 +121,6 @@ class XMLHttpRequestWorker final : public XMLHttpRequest, public WorkerHolder {
                                        ErrorResult& aRv) override;
 
   virtual nsIChannel* GetChannel() const override {
-    MOZ_CRASH("This method cannot be called on workers.");
-  }
-
-  virtual void GetNetworkInterfaceId(nsACString& aId) const override {
-    MOZ_CRASH("This method cannot be called on workers.");
-  }
-
-  virtual void SetNetworkInterfaceId(const nsACString& aId) override {
     MOZ_CRASH("This method cannot be called on workers.");
   }
 
@@ -186,11 +178,11 @@ class XMLHttpRequestWorker final : public XMLHttpRequest, public WorkerHolder {
   virtual void GetResponseText(DOMString& aResponseText,
                                ErrorResult& aRv) override;
 
-  virtual nsIDocument* GetResponseXML(ErrorResult& aRv) override {
+  virtual Document* GetResponseXML(ErrorResult& aRv) override {
     MOZ_CRASH("This method should not be called.");
   }
 
-  virtual void GetInterface(JSContext* aCx, nsIJSID* aIID,
+  virtual void GetInterface(JSContext* aCx, JS::Handle<JS::Value> aIID,
                             JS::MutableHandle<JS::Value> aRetval,
                             ErrorResult& aRv) override {
     aRv.Throw(NS_ERROR_FAILURE);
@@ -219,7 +211,7 @@ class XMLHttpRequestWorker final : public XMLHttpRequest, public WorkerHolder {
 
   virtual bool MozSystem() const override { return mMozSystem; }
 
-  bool SendInProgress() const { return mRooted; }
+  bool SendInProgress() const { return !!mWorkerRef; }
 
  private:
   explicit XMLHttpRequestWorker(WorkerPrivate* aWorkerPrivate);

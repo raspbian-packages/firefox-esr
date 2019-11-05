@@ -11,7 +11,7 @@
 #include "nsColor.h"
 #include "nsIFrame.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(FEFlood)
+NS_IMPL_NS_NEW_SVG_ELEMENT(FEFlood)
 
 using namespace mozilla::gfx;
 
@@ -20,14 +20,14 @@ namespace dom {
 
 JSObject* SVGFEFloodElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return SVGFEFloodElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGFEFloodElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::StringInfo SVGFEFloodElement::sStringInfo[1] = {
-    {&nsGkAtoms::result, kNameSpaceID_None, true}};
+SVGElement::StringInfo SVGFEFloodElement::sStringInfo[1] = {
+    {nsGkAtoms::result, kNameSpaceID_None, true}};
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGFEFloodElement)
 
@@ -35,17 +35,17 @@ FilterPrimitiveDescription SVGFEFloodElement::GetPrimitiveDescription(
     nsSVGFilterInstance* aInstance, const IntRect& aFilterSubregion,
     const nsTArray<bool>& aInputsAreTainted,
     nsTArray<RefPtr<SourceSurface>>& aInputImages) {
-  FilterPrimitiveDescription descr(PrimitiveType::Flood);
+  FloodAttributes atts;
   nsIFrame* frame = GetPrimaryFrame();
   if (frame) {
-    nsStyleContext* style = frame->StyleContext();
-    Color color(Color::FromABGR(style->StyleSVGReset()->mFloodColor));
-    color.a *= style->StyleSVGReset()->mFloodOpacity;
-    descr.Attributes().Set(eFloodColor, color);
+    const nsStyleSVGReset* styleSVGReset = frame->Style()->StyleSVGReset();
+    Color color(Color::FromABGR(styleSVGReset->mFloodColor.CalcColor(frame)));
+    color.a *= styleSVGReset->mFloodOpacity;
+    atts.mColor = color;
   } else {
-    descr.Attributes().Set(eFloodColor, Color());
+    atts.mColor = Color();
   }
-  return descr;
+  return FilterPrimitiveDescription(AsVariant(std::move(atts)));
 }
 
 //----------------------------------------------------------------------
@@ -53,16 +53,16 @@ FilterPrimitiveDescription SVGFEFloodElement::GetPrimitiveDescription(
 
 NS_IMETHODIMP_(bool)
 SVGFEFloodElement::IsAttributeMapped(const nsAtom* name) const {
-  static const MappedAttributeEntry* const map[] = {sFEFloodMap};
+  static const MappedAttributeEntry* const map[] = {sColorMap, sFEFloodMap};
 
   return FindAttributeDependence(name, map) ||
          SVGFEFloodElementBase::IsAttributeMapped(name);
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-nsSVGElement::StringAttributesInfo SVGFEFloodElement::GetStringInfo() {
+SVGElement::StringAttributesInfo SVGFEFloodElement::GetStringInfo() {
   return StringAttributesInfo(mStringAttributes, sStringInfo,
                               ArrayLength(sStringInfo));
 }

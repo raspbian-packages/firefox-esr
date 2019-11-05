@@ -10,12 +10,12 @@
 #include "nscore.h"
 #include "nsWinGesture.h"
 #include "nsUXThemeData.h"
-#include "nsIDOMWheelEvent.h"
 #include "mozilla/Logging.h"
 #include "mozilla/MouseEvents.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/TouchEvents.h"
 #include "mozilla/dom/SimpleGestureEventBinding.h"
+#include "mozilla/dom/WheelEventBinding.h"
 
 #include <cmath>
 
@@ -189,9 +189,9 @@ bool nsWinGesture::ProcessGestureMessage(HWND hWnd, WPARAM wParam,
 
       if (evt.mDelta > 0) {
         evt.mDirection =
-            dom::SimpleGestureEventBinding::ROTATION_COUNTERCLOCKWISE;
+            dom::SimpleGestureEvent_Binding::ROTATION_COUNTERCLOCKWISE;
       } else if (evt.mDelta < 0) {
-        evt.mDirection = dom::SimpleGestureEventBinding::ROTATION_CLOCKWISE;
+        evt.mDirection = dom::SimpleGestureEvent_Binding::ROTATION_CLOCKWISE;
       }
 
       if (gi.dwFlags & GF_BEGIN) {
@@ -367,7 +367,7 @@ bool nsWinGesture::PanDeltaToPixelScroll(WidgetWheelEvent& aWheelEvent) {
   aWheelEvent.mLineOrPageDeltaX = aWheelEvent.mLineOrPageDeltaY = 0;
 
   aWheelEvent.mRefPoint = LayoutDeviceIntPoint(mPanRefPoint.x, mPanRefPoint.y);
-  aWheelEvent.mDeltaMode = nsIDOMWheelEvent::DOM_DELTA_PIXEL;
+  aWheelEvent.mDeltaMode = dom::WheelEvent_Binding::DOM_DELTA_PIXEL;
   aWheelEvent.mScrollType = WidgetWheelEvent::SCROLL_SYNCHRONOUSLY;
   aWheelEvent.mIsNoLineOrPageDelta = true;
 

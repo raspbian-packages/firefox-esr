@@ -9,7 +9,7 @@
 #include "nsSVGUtils.h"
 #include "nsSVGFilterInstance.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(FESpecularLighting)
+NS_IMPL_NS_NEW_SVG_ELEMENT(FESpecularLighting)
 
 using namespace mozilla::gfx;
 
@@ -18,47 +18,47 @@ namespace dom {
 
 JSObject* SVGFESpecularLightingElement::WrapNode(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return SVGFESpecularLightingElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGFESpecularLightingElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGFESpecularLightingElement)
 
-already_AddRefed<SVGAnimatedString> SVGFESpecularLightingElement::In1() {
+already_AddRefed<DOMSVGAnimatedString> SVGFESpecularLightingElement::In1() {
   return mStringAttributes[IN1].ToDOMAnimatedString(this);
 }
 
-already_AddRefed<SVGAnimatedNumber>
+already_AddRefed<DOMSVGAnimatedNumber>
 SVGFESpecularLightingElement::SurfaceScale() {
   return mNumberAttributes[SURFACE_SCALE].ToDOMAnimatedNumber(this);
 }
 
-already_AddRefed<SVGAnimatedNumber>
+already_AddRefed<DOMSVGAnimatedNumber>
 SVGFESpecularLightingElement::SpecularConstant() {
   return mNumberAttributes[SPECULAR_CONSTANT].ToDOMAnimatedNumber(this);
 }
 
-already_AddRefed<SVGAnimatedNumber>
+already_AddRefed<DOMSVGAnimatedNumber>
 SVGFESpecularLightingElement::SpecularExponent() {
   return mNumberAttributes[SPECULAR_EXPONENT].ToDOMAnimatedNumber(this);
 }
 
-already_AddRefed<SVGAnimatedNumber>
+already_AddRefed<DOMSVGAnimatedNumber>
 SVGFESpecularLightingElement::KernelUnitLengthX() {
   return mNumberPairAttributes[KERNEL_UNIT_LENGTH].ToDOMAnimatedNumber(
-      nsSVGNumberPair::eFirst, this);
+      SVGAnimatedNumberPair::eFirst, this);
 }
 
-already_AddRefed<SVGAnimatedNumber>
+already_AddRefed<DOMSVGAnimatedNumber>
 SVGFESpecularLightingElement::KernelUnitLengthY() {
   return mNumberPairAttributes[KERNEL_UNIT_LENGTH].ToDOMAnimatedNumber(
-      nsSVGNumberPair::eSecond, this);
+      SVGAnimatedNumberPair::eSecond, this);
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
 FilterPrimitiveDescription
 SVGFESpecularLightingElement::GetPrimitiveDescription(
@@ -70,13 +70,18 @@ SVGFESpecularLightingElement::GetPrimitiveDescription(
 
   // specification defined range (15.22)
   if (specularExponent < 1 || specularExponent > 128) {
-    return FilterPrimitiveDescription(PrimitiveType::Empty);
+    return FilterPrimitiveDescription();
   }
 
-  FilterPrimitiveDescription descr(PrimitiveType::SpecularLighting);
-  descr.Attributes().Set(eSpecularLightingSpecularConstant, specularConstant);
-  descr.Attributes().Set(eSpecularLightingSpecularExponent, specularExponent);
-  return AddLightingAttributes(descr, aInstance);
+  SpecularLightingAttributes atts;
+  atts.mLightingConstant = specularConstant;
+  atts.mSpecularExponent = specularExponent;
+  if (!AddLightingAttributes(static_cast<DiffuseLightingAttributes*>(&atts),
+                             aInstance)) {
+    return FilterPrimitiveDescription();
+  }
+
+  return FilterPrimitiveDescription(AsVariant(std::move(atts)));
 }
 
 bool SVGFESpecularLightingElement::AttributeAffectsRendering(

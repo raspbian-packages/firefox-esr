@@ -39,7 +39,7 @@ function mockAddonProvider(aName) {
 
 // Helper to find a particular shutdown blocker's status in the JSON blob
 function findInStatus(aStatus, aName) {
-  for (let {name, state} of aStatus.state) {
+  for (let { name, state } of aStatus.state) {
     if (name == aName) {
       return state;
     }
@@ -60,8 +60,12 @@ add_task(async function blockRepoShutdown() {
 
   let mockProvider = mockAddonProvider("Mock provider");
 
-  startupManager();
+  await promiseStartupManager();
   AddonManagerPrivate.registerProvider(mockProvider);
+
+  let {
+    fetchState,
+  } = MockAsyncShutdown.profileBeforeChange.blockers[0].options;
 
   // Start shutting the manager down
   let managerDown = promiseShutdownManager();
@@ -69,28 +73,28 @@ add_task(async function blockRepoShutdown() {
   // Wait for manager to call provider shutdown.
   await mockProvider.shutdownPromise;
   // check AsyncShutdown state
-  let status = MockAsyncShutdown.status();
-  equal(findInStatus(status[0], "Mock provider"), "(none)");
-  equal(status[1].name, "AddonRepository: async shutdown");
-  equal(status[1].state, "pending");
+  let status = fetchState();
+  equal(findInStatus(status[1], "Mock provider"), "(none)");
+  equal(status[2].name, "AddonRepository: async shutdown");
+  equal(status[2].state, "pending");
   // let the provider finish
   mockProvider.doneResolve();
 
   // Wait for manager to call repo shutdown and start waiting for it
   await mockRepo.shutdownPromise;
   // Check the shutdown state
-  status = MockAsyncShutdown.status();
-  equal(status[0].name, "AddonManager: Waiting for providers to shut down.");
-  equal(status[0].state, "Complete");
-  equal(status[1].name, "AddonRepository: async shutdown");
-  equal(status[1].state, "in progress");
+  status = fetchState();
+  equal(status[1].name, "AddonManager: Waiting for providers to shut down.");
+  equal(status[1].state, "Complete");
+  equal(status[2].name, "AddonRepository: async shutdown");
+  equal(status[2].state, "in progress");
 
   // Now finish our shutdown, and wait for the manager to wrap up
   mockRepo.doneResolve();
   await managerDown;
 
   // Check the shutdown state again
-  status = MockAsyncShutdown.status();
+  status = fetchState();
   equal(status[0].name, "AddonRepository: async shutdown");
   equal(status[0].state, "done");
 });

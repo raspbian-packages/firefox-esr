@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "mozilla/EventForwards.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/UniquePtr.h"
 #include "nsMenuBaseX.h"
@@ -23,7 +24,7 @@ class nsIWidget;
 
 // MenuDelegate is used to receive Cocoa notifications for setting
 // up carbon events. Protocol is defined as of 10.6 SDK.
-@interface MenuDelegate : NSObject<NSMenuDelegate> {
+@interface MenuDelegate : NSObject <NSMenuDelegate> {
   nsMenuX* mGeckoMenu;  // weak ref
 }
 - (id)initWithGeckoMenu:(nsMenuX*)geckoMenu;

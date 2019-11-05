@@ -8,6 +8,8 @@
 #define ChildIterator_h
 
 #include "nsIContent.h"
+#include "nsIContentInlines.h"
+#include <stdint.h>
 
 /**
  * Iterates over the children on a node. If a child is an insertion point,
@@ -17,9 +19,6 @@
  * The FlattenedChildIterator expands any anonymous content bound from an XBL
  * binding's <xbl:content> element.
  */
-
-#include <stdint.h>
-#include "nsAutoPtr.h"
 
 class nsIContent;
 
@@ -136,7 +135,7 @@ class FlattenedChildIterator : public ExplicitChildIterator {
   }
 
   FlattenedChildIterator(FlattenedChildIterator&& aOther)
-      : ExplicitChildIterator(Move(aOther)),
+      : ExplicitChildIterator(std::move(aOther)),
         mOriginalContent(aOther.mOriginalContent),
         mXBLInvolved(aOther.mXBLInvolved) {}
 
@@ -201,8 +200,8 @@ class AllChildrenIterator : private FlattenedChildIterator {
         mPhase(aStartAtBeginning ? eAtBegin : eAtEnd) {}
 
   AllChildrenIterator(AllChildrenIterator&& aOther)
-      : FlattenedChildIterator(Move(aOther)),
-        mAnonKids(Move(aOther.mAnonKids)),
+      : FlattenedChildIterator(std::move(aOther)),
+        mAnonKids(std::move(aOther.mAnonKids)),
         mAnonKidsIdx(aOther.mAnonKidsIdx),
         mFlags(aOther.mFlags),
         mPhase(aOther.mPhase)
@@ -211,6 +210,12 @@ class AllChildrenIterator : private FlattenedChildIterator {
         mMutationGuard(aOther.mMutationGuard)
 #endif
   {
+  }
+
+  AllChildrenIterator& operator=(AllChildrenIterator&& aOther) {
+    this->~AllChildrenIterator();
+    new (this) AllChildrenIterator(std::move(aOther));
+    return *this;
   }
 
 #ifdef DEBUG
@@ -231,6 +236,7 @@ class AllChildrenIterator : private FlattenedChildIterator {
 
   enum IteratorPhase {
     eAtBegin,
+    eAtMarkerKid,
     eAtBeforeKid,
     eAtExplicitKids,
     eAtAnonKids,
@@ -281,16 +287,36 @@ class AllChildrenIterator : private FlattenedChildIterator {
 class MOZ_NEEDS_MEMMOVABLE_MEMBERS StyleChildrenIterator
     : private AllChildrenIterator {
  public:
-  explicit StyleChildrenIterator(const nsIContent* aContent)
+  static nsIContent* GetParent(const nsIContent& aContent) {
+    nsINode* node = aContent.GetFlattenedTreeParentNodeForStyle();
+    return node && node->IsContent() ? node->AsContent() : nullptr;
+  }
+
+  explicit StyleChildrenIterator(const nsIContent* aContent,
+                                 bool aStartAtBeginning = true)
       : AllChildrenIterator(
             aContent,
             nsIContent::eAllChildren |
-                nsIContent::eSkipDocumentLevelNativeAnonymousContent) {
+                nsIContent::eSkipDocumentLevelNativeAnonymousContent,
+            aStartAtBeginning) {
     MOZ_COUNT_CTOR(StyleChildrenIterator);
   }
+
+  StyleChildrenIterator(StyleChildrenIterator&& aOther)
+      : AllChildrenIterator(std::move(aOther)) {
+    MOZ_COUNT_CTOR(StyleChildrenIterator);
+  }
+
+  StyleChildrenIterator& operator=(StyleChildrenIterator&& aOther) {
+    AllChildrenIterator::operator=(std::move(aOther));
+    return *this;
+  }
+
   ~StyleChildrenIterator() { MOZ_COUNT_DTOR(StyleChildrenIterator); }
 
-  nsIContent* GetNextChild();
+  using AllChildrenIterator::GetNextChild;
+  using AllChildrenIterator::GetPreviousChild;
+  using AllChildrenIterator::Seek;
 };
 
 }  // namespace dom

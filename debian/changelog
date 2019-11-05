@@ -1,4 +1,4 @@
-firefox-esr (60.8.0esr-1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (68.2.0esr-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -7,153 +7,405 @@ firefox-esr (60.8.0esr-1+rpi1) bullseye-staging; urgency=medium
 
   [changes introduce in 60.8.0esr-1+rpi1 by Peter Michael Green]
   * Use a fake homedir for build (Closes: 933757).
-  * Don't use system libvpx (changes adapted from https://salsa.debian.org/mozilla-team/firefox/commit/f26d0387eea70b2ebceabeb86ec728227199f302 )
 
- -- Peter Michael Green <plugwash@raspbian.org>  Wed, 14 Aug 2019 22:49:11 +0000
+ -- Peter Michael Green <plugwash@raspbian.org>  Tue, 05 Nov 2019 19:37:30 +0000
 
-firefox-esr (60.8.0esr-1) unstable; urgency=medium
+firefox-esr (68.2.0esr-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-22, also known as:
+  * Fixes for mfsa2019-33, also known as:
+    CVE-2019-15903, CVE-2019-11757, CVE-2019-11758, CVE-2019-11759,
+    CVE-2019-11760, CVE-2019-11761, CVE-2019-11762, CVE-2019-11763,
+    CVE-2019-11764.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 23 Oct 2019 06:50:01 +0900
+
+firefox-esr (68.1.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-26, also known as
+    CVE-2019-11746, CVE-2019-11744, CVE-2019-11742, CVE-2019-11752,
+    CVE-2019-9812, CVE-2019-11743, CVE-2019-11748, CVE-2019-11749,
+    CVE-2019-11750, CVE-2019-11738, CVE-2019-11747, CVE-2019-11735,
+    CVE-2019-11740.
+
+  * debian/upstream.mk: Read source repo and revision from json when
+    getting upstream info. Instead of the .txt file that doesn't exist
+    as of 69.
+  * debian/control*:
+    - Remove unused build dependency against python-ply.
+    - Remove python-minimal build dependency. All supported versions
+      of Debian have a new enough version.
+  * debian/l10n/gen, debian/latest_nightly.py, debian/rules,
+    debian/symbols.mk, debian/upstream.mk, debian/watch: Use explicit
+    python2.7 instead of python.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 04 Sep 2019 10:22:21 +0900
+
+firefox-esr (68.0.2esr-1) unstable; urgency=medium
+
+  * New upstream ESR release.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 18 Aug 2019 22:27:52 +0900
+
+firefox (68.0.2-3) unstable; urgency=medium
+
+  * debian/control.in: Take source package name from preprocessing.
+
+  * build/moz.configure/old.configure: Avoid race condition creating
+    old-configure. bz#1574761.
+  * dom/media/systemservices/CamerasChild.cpp,
+    dom/media/systemservices/CamerasParent.cpp,
+    dom/media/systemservices/VideoEngine.cpp,
+    dom/media/webrtc/MediaEngineRemoteVideoSource.cpp: Don't use
+    __PRETTY_FUNCTION__ or __FUNCTION__ as format strings. bz#1531309.
+    Closes: #925680.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 18 Aug 2019 20:47:26 +0900
+
+firefox (68.0.2-2) unstable; urgency=medium
+
+  * debian/rules: Fix MOZ_APP_REMOTINGNAME. Upstream build system changes
+    made the config.status editing trick stop working. Export the variable for
+    configure to pick it instead. Closes: #932256
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 18 Aug 2019 08:41:43 +0900
+
+firefox (68.0.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-24, also known as CVE-2019-11733.
+
+  * debian/control*, debian/rules: Don't build against system vpx >= 1.8.0.
+    It has API changes that cause FTBFS.
+
+ -- Mike Hommey <glandium@debian.org>  Thu, 15 Aug 2019 08:06:59 +0900
+
+firefox (68.0.1-2) unstable; urgency=medium
+
+  * debian/rules: Work around https://github.com/rust-lang/cargo/issues/7147.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 19 Jul 2019 10:51:09 +0900
+
+firefox (68.0.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+  * debian/rules:
+    - Hook stamps/dh_install-l10n to override_dh_install-indep rather than
+      binary-indep.
+    - Pass make job server down through dh_auto_build.
+  * debian/rules, debian/dh: Wrap dh to ensure debian/rules is invoked with
+    parallelism.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 19 Jul 2019 07:53:19 +0900
+
+firefox (68.0-3) unstable; urgency=medium
+
+  * debian/browser.README.Debian.in: Fix a reference to iceweasel in
+    README.Debian. Thanks Edward Betts.
+  * debian/rules:
+    - Only exclude "-g" from dpkg-buildflags output. All the other flags
+      that used to be excluded either already match upstream or add
+      reproducibility.
+    - Don't unexpectedly reset LDFLAGS.
+    - [firefox-esr] Remove iceweasel transitional packages on bullseye.
+    - Disable dh_strip_nondeterminism. Upstream build system already avoids
+      non-determinism it would strip, so there is no need for it further
+      modifying files.
+    - Avoid arch:all builds building arch:any stuff.
+    - Move AUTOCONF_DIRS cleanup after dh_clean.
+    - Add rust flags to improve reproducibility.
+    - Only touch or remove configure when it wasn't there to begin with.
+    - Call configure using its full path.
+    - Factor common configure arguments.
+    - Build langpacks with --disable-compile-environment, and pass less
+      configure arguments.
+    - Build each langpack from a separate build directory. This means time
+      wasted running configure more times, but all locales can now be built
+      in parallel.
+  * debian/symbols.mk, debian/symbols.apt.conf, debian/symbols.sources.list:
+    Miscellaneous changes to symbols download script.
+  * debian/make.mk: Exclude symbols.mk variables from dump output.
+  * debian/browser.mozconfig.in: Remove redundant --prefix=/usr.
+  * debian/control.in, debian/rules, debian/symbols.mk, debian/upstream.mk:
+    Remove packaging scripts compatibility with Wheezy.
+
+  * moz.configure: Only add confvars.sh as a dependency to config.status
+    when it exists. bz#1560340.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 14 Jul 2019 15:20:45 +0900
+
+firefox (68.0-2) unstable; urgency=medium
+
+  * debian/rules, debian/upstream.mk: Account for next Debian release.
+  * debian/rules, debian/control: Build against system sqlite again.
+
+  * gfx/skia/skia/third_party/skcms/src/Transform_inl.h: Work around GCC ICE
+    on mips*, i386 and s390x.  Closes: #931757
+  * python/mozbuild/mozbuild/action/langpack_manifest.py: Use build id as
+    langpack version for reproducibility. bz#1565504.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 12 Jul 2019 20:37:51 +0900
+
+firefox (68.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-21, also known as:
     CVE-2019-9811, CVE-2019-11711, CVE-2019-11712, CVE-2019-11713,
-    CVE-2019-11729, CVE-2019-11715, CVE-2019-11717, CVE-2019-11719,
-    CVE-2019-11730, CVE-2019-11709.
+    CVE-2019-11714, CVE-2019-11715, CVE-2019-11716, CVE-2019-11717,
+    CVE-2019-11718, CVE-2019-11720, CVE-2019-11721, CVE-2019-11730,
+    CVE-2019-11723, CVE-2019-11724, CVE-2019-11725, CVE-2019-11727,
+    CVE-2019-11728, CVE-2019-11710, CVE-2019-11709.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 10 Jul 2019 07:13:23 +0900
+  * debian/control*: Bump nss, sqlite, rustc, cargo and cbindgen build
+    dependencies. Remove Build-Conflicts with nss 3.44-1, since we now
+    build-depend on a more recent version.
+  * debian/rules, debian/control: Don't build against system sqlite, as
+    Debian doesn't have the required version yet.
+  * [firefox-esr] debian/l10n/browser-l10n.control*, debian/l10n/gen:
+    Don't generate iceweasel l10n transition packages for locales that
+    were never offered with iceweasel.
+  * debian/control, debian/l10n/browser-l10n.control.in: Add transition
+    dependencies for Bengali l10n. There is now only one Bengali l10n
+    package instead of two.
+  * debian/rules: Disable JIT at build time on mips because it fails to build.
 
-firefox-esr (60.7.2esr-1) unstable; urgency=medium
+  * build/gyp.mozbuild: Revert patch that disables libyuv assembly on
+    mips64. It apparently compiles, now.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 10 Jul 2019 08:22:05 +0900
+
+firefox (67.0.4-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2019-19, also known as CVE-2019-11708.
 
- -- Mike Hommey <glandium@debian.org>  Thu, 20 Jun 2019 10:48:50 -0700
+ -- Mike Hommey <glandium@debian.org>  Thu, 20 Jun 2019 11:05:27 -0700
 
-firefox-esr (60.7.1esr-1) unstable; urgency=medium
+firefox (67.0.3-2) unstable; urgency=medium
+
+  * python/mozbuild/mozbuild/action/node.py: Attempt to work around make issue
+    happening on arch: all buildd.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 19 Jun 2019 13:16:37 -0700
+
+firefox (67.0.3-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2019-18, also known as CVE-2019-11707.
 
- -- Mike Hommey <glandium@debian.org>  Tue, 18 Jun 2019 11:15:36 -0700
+ -- Mike Hommey <glandium@debian.org>  Tue, 18 Jun 2019 11:35:40 -0700
 
-firefox-esr (60.7.0esr-1) unstable; urgency=medium
+firefox (67.0.2-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-14, also known as:
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 12 Jun 2019 06:01:15 +0900
+
+firefox (67.0.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 05 Jun 2019 07:14:08 +0900
+
+firefox (67.0-4) unstable; urgency=medium
+
+  * debian/rules: Work around FTBFS on mips* by disabling webrtc
+    Build fails because of missing configurations for mips*.
+  * debian/control*: Build-Conflicts with libnss3-dev 2:3.44-1.
+    Closes: #929846.
+
+  * js/src/jit/mips32/MacroAssembler-mips32-inl.h: Fix FTBFS on mips/mipsel.
+    bz#1556197.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 02 Jun 2019 13:13:13 +0900
+
+firefox (67.0-3) unstable; urgency=medium
+
+  * media/webrtc/trunk/webrtc/system_wrappers/source/cpu_features.cc: Remove
+    WebRtc_GetCPUFeaturesARM from cpu_features.cc. It is already in
+    cpu_features_linux.c (and is not in cpu_features.cc in webrtc upstream).
+    Fixes FTBFS on armhf. bz#1523162.
+
+ -- Mike Hommey <glandium@debian.org>  Sat, 01 Jun 2019 13:44:05 +0900
+
+firefox (67.0-2) unstable; urgency=medium
+
+  * debian/extra-stuff/addonsInfo.jsm:
+    - Avoid running -dumps-addons-info without a running Firefox counting as a
+      crash.
+    - Support addons in resource:// locations in -dump-addons-info
+
+  * js/src/wasm/WasmSignalHandlers.cpp: Include struct definitions for
+    user_vfp and user_vfp_exc. Fixes FTBFS on armhf. bz#1526653.
+  * js/src/jit/mips*/MacroAssembler-mips*-inl.h,
+    js/src/jit/mips*/Trampoline-mips*.cpp: Fix functions: branchTestBigInt,
+    negPtr, generateVMWrapper on MIPS. bz#1544631.
+  * toolkit/modules/sessionstore/PrivacyFilter.jsm: Update and harden form
+    data filtering for privacy to account for no data being passed in.
+    bz#1553413.
+
+ -- Mike Hommey <glandium@debian.org>  Sat, 01 Jun 2019 09:18:27 +0900
+
+firefox (67.0-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-13, also known as:
     CVE-2019-9816, CVE-2019-9817, CVE-2019-9819, CVE-2019-9820,
-    CVE-2019-11691, CVE-2019-11692, CVE-2019-11693, CVE-2019-7317,
-    CVE-2019-9797, CVE-2018-18511, CVE-2019-11698, CVE-2019-5798,
+    CVE-2019-9821, CVE-2019-11691, CVE-2019-11692, CVE-2019-11693,
+    CVE-2019-7317, CVE-2019-11695, CVE-2019-11696, CVE-2019-11697,
+    CVE-2019-11698, CVE-2019-11699, CVE-2019-11701, CVE-2019-9814,
     CVE-2019-9800.
+  * Upload to experimental because the required cbindgen is not available in
+    unstable.
 
-  * debian/rules: Avoid rust build errors with newer versions of rustc by
-    capping lints to warnings.
+  * debian/control*: Bump nspr, sqlite, rustc, cargo and cbindgen build
+    dependencies.
+  * debian/extra-stuff/addonsInfo.*, debian/extra-stuff/moz.build,
+    debian/installer/package-manifest.browser, debian/rules:
+    Modernize addonsInfo per bz#1431533, bz#1432992, bz#1514594, bz#1524688,
+    etc.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 22 May 2019 07:23:08 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 22 May 2019 09:28:01 +0900
 
-firefox-esr (60.6.3esr-1) unstable; urgency=medium
+firefox (66.0.5-1) unstable; urgency=medium
 
   * New upstream release.
     - Additional fixes for addon signature validation.
 
- -- Mike Hommey <glandium@debian.org>  Thu, 09 May 2019 05:14:54 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 08 May 2019 08:07:21 +0900
 
-firefox-esr (60.6.2esr-1) unstable; urgency=medium
+firefox (66.0.4-1) unstable; urgency=medium
 
   * New upstream release.
-    - Fixes issues with addon signature validation. Closes: #928415, #928449.
+    - Fixes issues with addon signature validation. Closes: #928417.
     Note: this didn't affect addons installed via Debian packages.
 
- -- Mike Hommey <glandium@debian.org>  Sun, 05 May 2019 20:12:37 +0900
+ -- Mike Hommey <glandium@debian.org>  Sun, 05 May 2019 22:52:24 +0900
 
-firefox-esr (60.6.1esr-1) unstable; urgency=medium
+firefox (66.0.1-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-10, also known as:
+  * Fixes for mfsa2019-09, also known as:
     CVE-2019-9810, CVE-2019-9813.
 
- -- Mike Hommey <glandium@debian.org>  Sun, 24 Mar 2019 08:15:11 +0900
+  * debian/control*: Bump nss, sqlite, rustc, cargo and cbindgen build
+    dependencies.
 
-firefox-esr (60.6.0esr-1) unstable; urgency=medium
+ -- Mike Hommey <glandium@debian.org>  Sun, 24 Mar 2019 08:17:24 +0900
+
+firefox (66.0-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-08, also known as:
+  * Fixes for mfsa2019-07, also known as:
     CVE-2019-9790, CVE-2019-9791, CVE-2019-9792, CVE-2019-9793,
-    CVE-2019-9795, CVE-2019-9796, CVE-2018-18506, CVE-2019-9788.
+    CVE-2019-9795, CVE-2019-9796, CVE-2019-9797, CVE-2019-9799,
+    CVE-2019-9802, CVE-2019-9803, CVE-2019-9805, CVE-2019-9806,
+    CVE-2019-9807, CVE-2019-9809, CVE-2019-9808, CVE-2019-9789,
+    CVE-2019-9788.
 
-  * debian/rules: Disable debug symbols on mips/mipsel on buster.
-    The rust compiler can't deal with them in the available address space.
   * debian/browser.mozconfig.in: Adjust to the upstream change wrt Google
     API key configure options.
+  * debian/control*: Add nasm build dependency on amd64 and i386.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 20 Mar 2019 10:18:56 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 20 Mar 2019 18:35:38 +0900
 
-firefox-esr (60.5.1esr-1) unstable; urgency=medium
+firefox (65.0.1-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-05, also known as:
-    CVE-2018-18356, CVE-2019-5785.
+  * Fixes for mfsa2019-04, also known as:
+    CVE-2018-18356, CVE-2019-5795, CVE-2018-18511.
 
   * debian/rules, debian/upstream.mk: Manually set the update channel.
     Closes: #921381, #921121, #921654.
-  * debian/rules: Disable ion JIT on mips and mipsel. This should fix the
+  * debian/rules: Build with -mfp32 on mips and mipsel. This should fix the
     FTBFS.
 
- -- Mike Hommey <glandium@debian.org>  Thu, 14 Feb 2019 18:35:06 +0900
+ -- Mike Hommey <glandium@debian.org>  Thu, 14 Feb 2019 19:33:05 +0900
 
-firefox-esr (60.5.0esr-1) unstable; urgency=medium
-
-  * New upstream release.
-  * Fixes for mfsa2019-02, also known as:
-    CVE-2018-18500, CVE-2018-18505, CVE-2018-18501.
-
- -- Mike Hommey <glandium@debian.org>  Wed, 30 Jan 2019 09:53:01 +0900
-
-firefox-esr (60.4.0esr-1) unstable; urgency=medium
+firefox (65.0-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2018-30, also known as:
-    CVE-2018-17466, CVE-2018-18492, CVE-2018-18493, CVE-2018-18494,
-    CVE-2018-18498, CVE-2018-12405.
+  * Fixes for mfsa2019-01, also known as:
+    CVE-2018-18500, CVE-2018-18503, CVE-2018-18504, CVE-2018-18505,
+    CVE-2018-18506, CVE-2018-18502, CVE-2018-18501.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 12 Dec 2018 08:29:04 +0900
+  * debian/control*: Bump nss, sqlite, rustc, cargo and cbindgen build
+    dependencies.
+  * debian/browser.install.in: Install libmozwayland.so.
 
-firefox-esr (60.3.0esr-3) unstable; urgency=medium
+ -- Mike Hommey <glandium@debian.org>  Wed, 30 Jan 2019 11:04:24 +0900
 
-  * debian/browser.install.in, debian/rules: Properly copy the watermark to
-    /usr/share/icons/hicolor/symbolic/apps.
-  * debian/rules: Pass compiler and compiler flags environment variables
-    down to ICU configure. That will make it use GCC instead of defaulting
-    to clang now it's in PATH, avoiding the failing to build the ICU data
-    file on big endian platforms because clang doesn't know some of the GCC
-    flags it somehow got from the environment.
+firefox (64.0-1) unstable; urgency=medium
 
- -- Mike Hommey <glandium@debian.org>  Wed, 28 Nov 2018 14:28:56 +0900
+  * New upstream release.
+  * Fixes for mfsa2018-29, also known as:
+    CVE-2018-12407, CVE-2018-17466, CVE-2018-18492, CVE-2018-18493,
+    CVE-2018-18494, CVE-2018-18495, CVE-2018-18496, CVE-2018-18497,
+    CVE-2018-18498, CVE-2018-12406, CVE-2018-12405.
 
-firefox-esr (60.3.0esr-2) unstable; urgency=medium
+  * debian/rules, debian/browser.install.in: Properly copy the watermark
+    to /usr/share/icons/hicolor/symbolic/apps.
+  * debian/rules: Disable debug symbols on 32-bits architectures, that
+    requires too much memory.
+  * debian/browser.mozconfig.in:
+    - Remove --enable-pie option, it's the default, now.
+    - Remove --disable-nodejs now that it's required.
+  * debian/control*:
+    - Bump rustc, cargo, cbindgen, nss and sqlite dependencies.
+    - Add nodejs build dependency.
+  * debian/browser-symbolic.svg.in: Import the watermark used for the
+    symbolic icon in the debian/ directory.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 12 Dec 2018 09:26:47 +0900
+
+firefox (63.0.3-1) unstable; urgency=medium
+
+  * New upstream release.
 
   * debian/control*: Build depend on unversioned clang/llvm.
-    Closes: #912804.
+    Closes: #912802.
   * debian/rules: Use embedded libevent in backports. Closes: #910397.
+  * debian/rules: Use GNU gold linker on i386 because BFD ld fails to link
+    libxul.so (memory exhausted).
 
   * build/unix/elfhack/test.c: Try to ensure the bss section of the
     elfhack testcase stays large enough. bz#1505608.
   * memory/build/mozjemalloc.cpp: Fix run sizes for size classes >= 16KB
     on systems with large pages. bz#1507035. Closes: #911898.
+  * media/libaom/moz.build: Use NEON_FLAGS instead of VPX_ASFLAGS for
+    libaom neon code.
+  * gfx/cairo/libpixman/src/pixman-vmx.c: Protect #include <config.h> in
+    pixman-vmx.c like in other pixman-*.c files
 
- -- Mike Hommey <glandium@debian.org>  Mon, 26 Nov 2018 10:42:42 +0900
+ -- Mike Hommey <glandium@debian.org>  Mon, 26 Nov 2018 10:17:08 +0900
 
-firefox-esr (60.3.0esr-1) unstable; urgency=medium
+firefox (63.0.1-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2018-27, also known as:
+  * debian/google.key: Use new Google API key, courtesy of Francois Marier.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 02 Nov 2018 10:50:57 +0900
+
+firefox (63.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2018-26, also known as:
     CVE-2018-12392, CVE-2018-12393, CVE-2018-12395, CVE-2018-12396,
-    CVE-2018-12397, CVE-2018-12389, CVE-2018-12390.
+    CVE-2018-12397, CVE-2018-12398, CVE-2018-12399, CVE-2018-12401,
+    CVE-2018-12402, CVE-2018-12403, CVE-2018-12388, CVE-2018-12390.
 
-  * debian/rules: Work around armel FTBFS from conflicting __sync_* symbols
-    between libgcc and rust's compiler_builtins.
+  * debian/control*:
+    - Bump nss dependency.
+    - Add build dependency on cbindgen.
+  * debian/browser.mozconfig.in: Disable nodejs until it's actually necessary.
+  * debian/rules: Add -Wl,--compress-debug-sections=zlib to LDFLAGS to work
+    around elfhack failing with unstripped binaries larger than 2GiB.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 24 Oct 2018 07:08:43 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 24 Oct 2018 08:32:15 +0900
 
-firefox-esr (60.2.2esr-1) unstable; urgency=medium
+firefox (62.0.3-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2018-24, also known as:
@@ -164,13 +416,14 @@ firefox-esr (60.2.2esr-1) unstable; urgency=medium
   * debian/control*, debian/browser.mozconfig.in: Build ALSA support.
     Closes: #864987, #900062, #908349
 
- -- Mike Hommey <glandium@debian.org>  Wed, 03 Oct 2018 07:28:38 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 03 Oct 2018 16:21:53 +0900
 
-firefox-esr (60.2.1esr-1) unstable; urgency=medium
+firefox (62.0.2-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2018-23, also known as:
-    CVE-2018-12385, CVE-2018-12383.
+  * Fixes for mfsa2018-22, also known as CVE-2018-12385.
+  * Ignore locale change events for the search service on shutdown.
+    bz#1489820. Closes: #908932.
 
   * debian/control*:
     - Remove the sqlite and nss dependencies when not building against the
@@ -179,7 +432,7 @@ firefox-esr (60.2.1esr-1) unstable; urgency=medium
       build dependencies. There are subtle non-ABI differences between
       versions that Firefox might be relying on (be it features, behavior
       changes/fixes, etc.) and can cause subtle problems when older
-      versions are used.
+      versions are used. Closes: #908225, #908520.
     - Add a suggestion for pulseaudio.
   * debian/rules, debian/control: Add libavcodec-extra* packages to the list
     of recommends. Closes: #909130
@@ -189,49 +442,48 @@ firefox-esr (60.2.1esr-1) unstable; urgency=medium
   * gfx/2d/Swizzle.cpp: Use Swizzle fallback when SSE2 is not supported.
     bz#1492065. Closes: #877445.
 
- -- Mike Hommey <glandium@debian.org>  Sat, 22 Sep 2018 08:10:27 +0900
+ -- Mike Hommey <glandium@debian.org>  Sat, 22 Sep 2018 09:02:25 +0900
 
-firefox-esr (60.2.0esr-1) unstable; urgency=medium
+firefox (62.0-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2018-21, also known as:
-    CVE-2018-12377, CVE-2018-12378, CVE-2018-12376.
+  * Fixes for mfsa2018-20, also known as:
+    CVE-2018-12377, CVE-2018-12378, CVE-2018-12383, CVE-2018-12375,
+    CVE-2018-12376.
 
+  * debian/control*:
+    - Bump nss and sqlite build dependencies.
+    - Build depend on llvm/clang 6.0 for buster. Closes: #906175.
+  * debian/browser.mozconfig.in, debian/control*, debian/rules: Remove
+    build dependency on libbz2-dev. It's not used anymore.
+  * debian/noinstall.in: Remove the dictionaries directory, not part
+    of the packaged Firefox anymore.
   * debian/l10n/gen: Use iso-codes json data instead of XML when present.
     Closes: #907611.
 
   * widget/gtk/nsAppShell.cpp: Use remoting name for call to
     gdk_set_program_class. Closes: #907574.
 
- -- Mike Hommey <glandium@debian.org>  Thu, 06 Sep 2018 06:18:15 +0900
+ -- Mike Hommey <glandium@debian.org>  Thu, 06 Sep 2018 07:42:45 +0900
 
-firefox-esr (60.1.0esr-3) unstable; urgency=medium
+firefox (61.0.1-1) unstable; urgency=medium
 
-  * debian/control*:
-    - Build depend on llvm/clang 6.0 for buster. Closes: #906174.
-    - Bump NSS build dependency to 3.36.4. Closes: #902573.
+  * New upstream release.
 
-  * gfx/skia/skia/include/core/SkColorPriv.h,
-    gfx/skia/skia/include/core/SkImageInfo.h,
-    gfx/skia/skia/include/gpu/GrTypes.h,
-    gfx/skia/skia/src/core/SkColorData.h: fix big-endian Skia builds.
-    bz#1144632.
+ -- Mike Hommey <glandium@debian.org>  Thu, 19 Jul 2018 06:54:40 +0900
 
- -- Mike Hommey <glandium@debian.org>  Sat, 18 Aug 2018 08:30:36 +0900
+firefox (61.0-2) unstable; urgency=medium
 
-firefox-esr (60.1.0esr-2) unstable; urgency=medium
-
-  * Upload to unstable.
-  * debian/upstream.mk: Use the same logic for betas as for releases to find
-    the source.
+  * debian/browser.mozconfig.in, debian/control*, debian/rules: Remove
+    build dependency on system libhunspell. Using system hunspell lacks
+    features required by Firefox. Next version of Firefox doesn't allow
+    to build against system hunspell anyways. Closes: #900469.
   * debian/browser.links.in, debian/rules, debian/vendor.js: Use the
     spellchecker.dictionary_path pref to set the hunspell directory.
   * debian/browser.mozconfig.in: Allow unsigned addons in app and system
     scopes.
   * debian/rules: Work around the effect the above has on the
     --{enable,with}-system-* check.
-  * debian/vendor.js: Remove extensions.unsignedScopes. The patch that added
-    the pref was changed to use a configure flag instead.
   * debian/control*: Remove old conflicts. Thanks Sylvestre Ledru.
     Closes: #882956.
   * debian/l10n/recommends, debian/l10n/browser-l10n.control,
@@ -246,46 +498,86 @@ firefox-esr (60.1.0esr-2) unstable; urgency=medium
   * debian/control*, debian/rules: Add Recommends on all supported libavcodec
     libraries for h264 playback. Closes: #901600.
 
-  * js/src/jit/mips-shared/MacroAssembler-mips-shared.cpp: Stubout
-    MacroAssembler::speculationBarrier. bz#1444834
   * toolkit/modules/AppConstants.jsm, toolkit/modules/moz.build,
     toolkit/moz.configure, toolkit/mozapps/extensions/internal/XPIInstall.jsm,
     toolkit/mozapps/extensions/content/extensions.js,
     toolkit/mozapps/extensions/internal/XPIDatabase.jsm: Change how addon
     signature requirement relaxation is done. Closes: #899390.
 
- -- Mike Hommey <glandium@debian.org>  Sun, 12 Aug 2018 13:43:20 +0900
+ -- Mike Hommey <glandium@debian.org>  Sun, 08 Jul 2018 10:39:03 +0900
 
-firefox-esr (60.1.0esr-1) experimental; urgency=medium
+firefox (61.0-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2018-16, also known as:
-    CVE-2018-12359, CVE-2018-12360, CVE-2018-12361, CVE-2018-12362,
-    CVE-2018-5156, CVE-2018-12363, CVE-2018-12364, CVE-2018-12365,
-    CVE-2018-12371, CVE-2018-12366, CVE-2018-12367, CVE-2018-12369,
-    CVE-2018-5187, CVE-2018-5188.
+  * Fixes for mfsa2018-15, also known as:
+    CVE-2018-12359, CVE-2018-12360, CVE-2018-12361, CVE-2018-12358,
+    CVE-2018-12362, CVE-2018-5156, CVE-2018-12363, CVE-2018-12364,
+    CVE-2018-12365, CVE-2018-12371, CVE-2018-12366, CVE-2018-12367,
+    CVE-2018-12369, CVE-2018-12370, CVE-2018-5186, CVE-2018-5187,
+    CVE-2018-5188.
 
+  * debian/control*:
+    - Bump nss and sqlite build dependencies.
+    - Add a build dependency on python3.
+  * debian/browser.install.in: Adjust to upstream changes.
   * debian/vendor.js: Relax the addon signature requirements.
 
-  * build/unix/elfhack/elfhack.cpp, build/unix/elfhack/inject.c,
-    build/unix/elfhack/test.c: Use run-time page size when changing mapping
-    permissions in elfhack injected code. bz#1470701. Closes: #902231.
   * toolkit/mozapps/extensions/content/extensions.js,
     toolkit/mozapps/extensions/internal/XPIDatabase.jsm: Allow to relax the
     addon signature requirements.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 27 Jun 2018 10:15:42 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 27 Jun 2018 10:25:44 +0900
 
-firefox-esr (60.0.2esr-1) experimental; urgency=medium
+firefox (60.0.2-2) unstable; urgency=medium
+
+  * build/unix/elfhack/elfhack.cpp, build/unix/elfhack/inject.c,
+    build/unix/elfhack/test.c: Use run-time page size when changing mapping
+    permissions in elfhack injected code. bz#1470701. Closes: #902231.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 24 Jun 2018 09:23:16 +0900
+
+firefox (60.0.2-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2018-14, also known as CVE-2018-6126.
 
+  * debian/upstream.mk: Use the same logic for betas as for releases to find
+    the source.
   * debian/browser.NEWS.in: Adjust to show the ESR version.
 
- -- Mike Hommey <glandium@debian.org>  Fri, 08 Jun 2018 17:49:37 +0900
+ -- Mike Hommey <glandium@debian.org>  Fri, 08 Jun 2018 18:25:04 +0900
 
-firefox-esr (60.0.1esr-2) experimental; urgency=medium
+firefox (60.0.1-5) unstable; urgency=medium
+
+  * gfx/skia/moz.build: Revert change from 60.0.1-4.
+  * dom/media/webaudio/blink/DenormalDisabler.h: Avoid using vmrs/vmsr on
+    armel.
+  * mfbt/LinuxSignal.h, mfbt/moz.build,
+    tools/profiler/core/platform-linux-android.cpp: Remove
+    MOZ_SIGNAL_TRAMPOLINE. bz#1463035.
+  * build/autoconf/arch.m4: Add -mfloat-abi=softfp to NEON_FLAGS when it makes
+    sense. bz#1463036.
+  * xpcom/string/moz.build: Use HAVE_ARM_NEON instead of BUILD_ARM_NEON for
+    nsUTF8UtilsNEON.cpp. bz#1463036.
+
+ -- Mike Hommey <glandium@debian.org>  Tue, 22 May 2018 08:01:55 +0900
+
+firefox (60.0.1-4) unstable; urgency=medium
+
+  * gfx/skia/moz.build: Don't build skia neon on armel.
+
+ -- Mike Hommey <glandium@debian.org>  Mon, 21 May 2018 07:58:43 +0900
+
+firefox (60.0.1-3) unstable; urgency=medium
+
+  * debian/browser.links.in: Remove /usr/lib/*/browser/icons symlink, leftover
+    after the removal of /usr/share/*/browser/icons. Closes: #893323.
+
+  * media/webrtc/trunk/moz.build: Only build webrtc neon on aarch64.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 20 May 2018 10:12:15 +0900
+
+firefox (60.0.1-2) unstable; urgency=medium
 
   * third_party/rust/libc/.cargo-checksum.json,
     third_party/rust/libc/src/unix/notbsd/linux/mod.rs,
@@ -299,30 +591,13 @@ firefox-esr (60.0.1esr-2) experimental; urgency=medium
     configure. bz#1462859.
   * media/webrtc/trunk/gtest/moz.build: Link chromium_atomics to webrtc tests.
     bz#1462873.
-  * media/webrtc/trunk/moz.build: Only build webrtc neon on aarch64.
-  * browser/locales/Makefile.in,
-    python/mozbuild/mozbuild/action/langpack_manifest.py,
-    python/mozbuild/mozbuild/test/action/test_langpack_manifest.py,
-    toolkit/locales/l10n.mk: Use MOZ_LANGPACK_EID in langpacks manifest.json.
-    bz#1455100. Closes: #899160.
-  * dom/media/webaudio/blink/DenormalDisabler.h: Avoid using vmrs/vmsr on
-    armel.
-  * mfbt/LinuxSignal.h, mfbt/moz.build,
-    tools/profiler/core/platform-linux-android.cpp: Remove
-    MOZ_SIGNAL_TRAMPOLINE. bz#1463035.
-  * build/autoconf/arch.m4: Add -mfloat-abi=softfp to NEON_FLAGS when it makes
-    sense. bz#1463036.
-  * xpcom/string/moz.build: Use HAVE_ARM_NEON instead of BUILD_ARM_NEON for
-    nsUTF8UtilsNEON.cpp. bz#1463036.
 
- -- Mike Hommey <glandium@debian.org>  Tue, 22 May 2018 10:05:55 +0900
+ -- Mike Hommey <glandium@debian.org>  Sat, 19 May 2018 13:07:39 +0900
 
-firefox-esr (60.0.1esr-1) experimental; urgency=medium
+firefox (60.0.1-1) unstable; urgency=medium
 
   * New upstream release.
 
-  * debian/browser.links.in: Remove /usr/lib/*/browser/icons symlink, leftover
-    after the removal of /usr/share/*/browser/icons. Closes: #893323.
   * debian/control*: Remove mozplugger suggestion. Closes: #888396.
   * debian/browser.install.in, debian/browser.mozconfig.in, debian/control.in,
     debian/rules: Remove the option to build against gtk+2, it is not
@@ -336,7 +611,7 @@ firefox-esr (60.0.1esr-1) experimental; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Sat, 19 May 2018 07:25:23 +0900
 
-firefox-esr (60.0esr-1) experimental; urgency=medium
+firefox (60.0-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2018-11, also known as
@@ -358,8 +633,6 @@ firefox-esr (60.0esr-1) experimental; urgency=medium
   * debian/browser.mozconfig.in: Revert workaround for bz#1341234.
   * debian/browser.install.in, debian/rules: Don't install the ICU data
     file, it's linked as a data section in libxul.
-  * debian/control, debian/rules: Remove iceweasel transitional packages
-    in non-backports.
 
   * modules/libpref/parser/src/lib.rs: Adapt to upstream changes to
     keep supporting lockPref() for transition purposes, now that upstream

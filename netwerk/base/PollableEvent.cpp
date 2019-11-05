@@ -15,10 +15,10 @@
 #include "prnetdb.h"
 
 #ifdef XP_WIN
-#include "ShutdownLayer.h"
+#  include "ShutdownLayer.h"
 #else
-#include <fcntl.h>
-#define USEPIPE 1
+#  include <fcntl.h>
+#  define USEPIPE 1
 #endif
 
 namespace mozilla {
@@ -27,7 +27,7 @@ namespace net {
 #ifndef USEPIPE
 static PRDescIdentity sPollableEventLayerIdentity;
 static PRIOMethods sPollableEventLayerMethods;
-static PRIOMethods *sPollableEventLayerMethodsPtr = nullptr;
+static PRIOMethods* sPollableEventLayerMethodsPtr = nullptr;
 
 static void LazyInitSocket() {
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
@@ -39,7 +39,7 @@ static void LazyInitSocket() {
   sPollableEventLayerMethodsPtr = &sPollableEventLayerMethods;
 }
 
-static bool NewTCPSocketPair(PRFileDesc *fd[], bool aSetRecvBuff) {
+static bool NewTCPSocketPair(PRFileDesc* fd[], bool aSetRecvBuff) {
   // this is a replacement for PR_NewTCPSocketPair that manually
   // sets the recv buffer to 64K. A windows bug (1248358)
   // can result in using an incompatible rwin and window
@@ -48,9 +48,9 @@ static bool NewTCPSocketPair(PRFileDesc *fd[], bool aSetRecvBuff) {
   SOCKET_LOG(("NewTCPSocketPair %s a recv buffer tuning\n",
               aSetRecvBuff ? "with" : "without"));
 
-  PRFileDesc *listener = nullptr;
-  PRFileDesc *writer = nullptr;
-  PRFileDesc *reader = nullptr;
+  PRFileDesc* listener = nullptr;
+  PRFileDesc* writer = nullptr;
+  PRFileDesc* reader = nullptr;
   PRSocketOptionData recvBufferOpt;
   recvBufferOpt.option = PR_SockOpt_RecvBufferSize;
   recvBufferOpt.value.recv_buffer_size = 65535;
@@ -104,11 +104,13 @@ static bool NewTCPSocketPair(PRFileDesc *fd[], bool aSetRecvBuff) {
       goto failed;
     }
   }
+  PR_SetFDInheritable(writer, false);
 
   reader = PR_Accept(listener, &listenAddr, PR_MillisecondsToInterval(200));
   if (!reader) {
     goto failed;
   }
+  PR_SetFDInheritable(reader, false);
   if (aSetRecvBuff) {
     PR_SetSocketOption(reader, &recvBufferOpt);
   }
@@ -136,7 +138,11 @@ failed:
 #endif
 
 PollableEvent::PollableEvent()
-    : mWriteFD(nullptr), mReadFD(nullptr), mSignaled(false) {
+    : mWriteFD(nullptr),
+      mReadFD(nullptr),
+      mSignaled(false),
+      mWriteFailed(false),
+      mSignalTimestampAdjusted(false) {
   MOZ_COUNT_CTOR(PollableEvent);
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
   // create pair of prfiledesc that can be used as a poll()ble
@@ -160,7 +166,7 @@ PollableEvent::PollableEvent()
   }
 #else
   SOCKET_LOG(("PollableEvent() using socket pair\n"));
-  PRFileDesc *fd[2];
+  PRFileDesc* fd[2];
   LazyInitSocket();
 
   // Try with a increased recv buffer first (bug 1248358).
@@ -194,7 +200,7 @@ PollableEvent::PollableEvent()
     // compatibility with LSPs such as McAfee that assume a NSPR
     // layer for read ala the nspr Pollable Event - Bug 698882. This layer is a
     // nop.
-    PRFileDesc *topLayer = PR_CreateIOLayerStub(sPollableEventLayerIdentity,
+    PRFileDesc* topLayer = PR_CreateIOLayerStub(sPollableEventLayerIdentity,
                                                 sPollableEventLayerMethodsPtr);
     if (topLayer) {
       if (PR_PushIOLayer(fd[0], PR_TOP_IO_LAYER, topLayer) == PR_FAILURE) {
@@ -214,6 +220,7 @@ PollableEvent::PollableEvent()
     // prime the system to deal with races invovled in [dc]tor cycle
     SOCKET_LOG(("PollableEvent() ctor ok\n"));
     mSignaled = true;
+    MarkFirstSignalTimestamp();
     PR_Write(mWriteFD, "I", 1);
   }
 }
@@ -267,13 +274,20 @@ bool PollableEvent::Signal() {
   }
 #endif
 
-  mSignaled = true;
+  if (!mSignaled) {
+    mSignaled = true;
+    MarkFirstSignalTimestamp();
+  }
+
   int32_t status = PR_Write(mWriteFD, "M", 1);
   SOCKET_LOG(("PollableEvent::Signal PR_Write %d\n", status));
   if (status != 1) {
     NS_WARNING("PollableEvent::Signal Failed\n");
     SOCKET_LOG(("PollableEvent::Signal Failed\n"));
     mSignaled = false;
+    mWriteFailed = true;
+  } else {
+    mWriteFailed = false;
   }
   return (status == 1);
 }
@@ -283,11 +297,22 @@ bool PollableEvent::Clear() {
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
 
   SOCKET_LOG(("PollableEvent::Clear\n"));
+
+  if (!mFirstSignalAfterClear.IsNull()) {
+    SOCKET_LOG(("PollableEvent::Clear time to signal %ums",
+                (uint32_t)(TimeStamp::NowLoRes() - mFirstSignalAfterClear)
+                    .ToMilliseconds()));
+  }
+
+  mFirstSignalAfterClear = TimeStamp();
+  mSignalTimestampAdjusted = false;
   mSignaled = false;
+
   if (!mReadFD) {
     SOCKET_LOG(("PollableEvent::Clear mReadFD is null\n"));
     return false;
   }
+
   char buf[2048];
   int32_t status;
 #ifdef XP_WIN
@@ -295,7 +320,7 @@ bool PollableEvent::Clear() {
   // do not have any deadlock read from the socket as much as we can.
   while (true) {
     status = PR_Read(mReadFD, buf, 2048);
-    SOCKET_LOG(("PollableEvent::Signal PR_Read %d\n", status));
+    SOCKET_LOG(("PollableEvent::Clear PR_Read %d\n", status));
     if (status == 0) {
       SOCKET_LOG(("PollableEvent::Clear EOF!\n"));
       return false;
@@ -312,7 +337,7 @@ bool PollableEvent::Clear() {
   }
 #else
   status = PR_Read(mReadFD, buf, 2048);
-  SOCKET_LOG(("PollableEvent::Signal PR_Read %d\n", status));
+  SOCKET_LOG(("PollableEvent::Clear PR_Read %d\n", status));
 
   if (status == 1) {
     return true;
@@ -335,5 +360,42 @@ bool PollableEvent::Clear() {
   return false;
 #endif  // XP_WIN
 }
+
+void PollableEvent::MarkFirstSignalTimestamp() {
+  if (mFirstSignalAfterClear.IsNull()) {
+    SOCKET_LOG(("PollableEvent::MarkFirstSignalTimestamp"));
+    mFirstSignalAfterClear = TimeStamp::NowLoRes();
+  }
+}
+
+void PollableEvent::AdjustFirstSignalTimestamp() {
+  if (!mSignalTimestampAdjusted && !mFirstSignalAfterClear.IsNull()) {
+    SOCKET_LOG(("PollableEvent::AdjustFirstSignalTimestamp"));
+    mFirstSignalAfterClear = TimeStamp::NowLoRes();
+    mSignalTimestampAdjusted = true;
+  }
+}
+
+bool PollableEvent::IsSignallingAlive(TimeDuration const& timeout) {
+  if (mWriteFailed) {
+    return false;
+  }
+
+#ifdef DEBUG
+  // The timeout would be just a disturbance in a debug build.
+  return true;
+#else
+  if (!mSignaled || mFirstSignalAfterClear.IsNull() ||
+      timeout == TimeDuration()) {
+    return true;
+  }
+
+  TimeDuration delay = (TimeStamp::NowLoRes() - mFirstSignalAfterClear);
+  bool timedOut = delay > timeout;
+
+  return !timedOut;
+#endif  // DEBUG
+}
+
 }  // namespace net
 }  // namespace mozilla

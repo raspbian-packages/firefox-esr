@@ -1,8 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
 loader: taskgraph.loader.test:loader
 
 kind-dependencies:
     - build
     - build-signing
+    - fetch
+    - toolchain
 
 transforms:
     - taskgraph.transforms.tests:transforms
@@ -26,6 +32,8 @@ jobs-from:
     - marionette.yml
     - misc.yml
     - mochitest.yml
+    - raptor.yml
+    - raptor-chromium.yml
     - reftest.yml
     - talos.yml
     - web-platform.yml

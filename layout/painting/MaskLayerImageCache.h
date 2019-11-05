@@ -47,6 +47,8 @@ class MaskLayerImageCache {
    * an nsRect, so this class is easier to use with transforms.
    */
   struct PixelRoundedRect {
+    PixelRoundedRect() = delete;
+
     PixelRoundedRect(const DisplayItemClip::RoundedRect& aRRect,
                      nsPresContext* aPresContext)
         : mRect(aPresContext->AppUnitsToGfxUnits(aRRect.mRect.x),
@@ -59,6 +61,7 @@ class MaskLayerImageCache {
             aPresContext->AppUnitsToGfxUnits(aRRect.mRadii[corner]);
       }
     }
+
     PixelRoundedRect(const PixelRoundedRect& aPRR) : mRect(aPRR.mRect) {
       MOZ_COUNT_CTOR(PixelRoundedRect);
       NS_FOR_CSS_HALF_CORNERS(corner) { mRadii[corner] = aPRR.mRadii[corner]; }
@@ -108,9 +111,6 @@ class MaskLayerImageCache {
     gfx::Rect mRect;
     // Indices into mRadii are the enum HalfCorner constants in gfx/2d/Types.h
     gfxFloat mRadii[8];
-
-   private:
-    PixelRoundedRect() = delete;
   };
 
   struct MaskLayerImageKeyRef;

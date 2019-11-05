@@ -30,7 +30,7 @@ using namespace testing;
 struct DevTools : public ::testing::Test {
   bool _initialized;
   JSContext* cx;
-  JSCompartment* compartment;
+  JS::Compartment* compartment;
   JS::Zone* zone;
   JS::PersistentRootedObject global;
 
@@ -42,11 +42,9 @@ struct DevTools : public ::testing::Test {
     cx = getContext();
     if (!cx) return;
 
-    JS_BeginRequest(cx);
-
     global.init(cx, createGlobal());
     if (!global) return;
-    JS_EnterCompartment(cx, global);
+    JS::EnterRealm(cx, global);
 
     compartment = js::GetContextCompartment(cx);
     zone = js::GetContextZone(cx);
@@ -64,47 +62,25 @@ struct DevTools : public ::testing::Test {
   }
 
   static const JSClass* getGlobalClass() {
-    static const JSClassOps globalClassOps = {nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              nullptr,
-                                              JS_GlobalObjectTraceHook};
     static const JSClass globalClass = {"global", JSCLASS_GLOBAL_FLAGS,
-                                        &globalClassOps};
+                                        &JS::DefaultGlobalClassOps};
     return &globalClass;
   }
 
   JSObject* createGlobal() {
     /* Create the global object. */
-    JS::RootedObject newGlobal(cx);
-    JS::CompartmentOptions options;
-    newGlobal = JS_NewGlobalObject(cx, getGlobalClass(), nullptr,
-                                   JS::FireOnNewGlobalHook, options);
-    if (!newGlobal) return nullptr;
-
-    JSAutoCompartment ac(cx, newGlobal);
-
-    /* Populate the global object with the standard globals, like Object and
-       Array. */
-    if (!JS_InitStandardClasses(cx, newGlobal)) return nullptr;
-
-    return newGlobal;
+    JS::RealmOptions options;
+    return JS_NewGlobalObject(cx, getGlobalClass(), nullptr,
+                              JS::FireOnNewGlobalHook, options);
   }
 
   virtual void TearDown() {
     _initialized = false;
 
     if (global) {
-      JS_LeaveCompartment(cx, nullptr);
+      JS::LeaveRealm(cx, nullptr);
       global = nullptr;
     }
-    if (cx) JS_EndRequest(cx);
   }
 };
 
@@ -119,7 +95,7 @@ struct DevTools : public ::testing::Test {
 class MOZ_STACK_CLASS FakeNode {
  public:
   JS::ubi::EdgeVector edges;
-  JSCompartment* compartment;
+  JS::Compartment* compartment;
   JS::Zone* zone;
   size_t size;
 
@@ -141,7 +117,7 @@ class Concrete<FakeNode> : public Base {
 
   JS::Zone* zone() const override { return get().zone; }
 
-  JSCompartment* compartment() const override { return get().compartment; }
+  JS::Compartment* compartment() const override { return get().compartment; }
 
  protected:
   explicit Concrete(FakeNode* ptr) : Base(ptr) {}
@@ -163,12 +139,11 @@ void AddEdge(FakeNode& node, FakeNode& referent,
              const char16_t* edgeName = nullptr) {
   char16_t* ownedEdgeName = nullptr;
   if (edgeName) {
-    ownedEdgeName = NS_strdup(edgeName);
-    ASSERT_NE(ownedEdgeName, nullptr);
+    ownedEdgeName = NS_xstrdup(edgeName);
   }
 
   JS::ubi::Edge edge(ownedEdgeName, &referent);
-  ASSERT_TRUE(node.edges.append(mozilla::Move(edge)));
+  ASSERT_TRUE(node.edges.append(std::move(edge)));
 }
 
 // Custom GMock Matchers

@@ -5,7 +5,7 @@
 "use strict";
 
 const { Request, Header, PostData } = require("./request");
-const { State, ResponseContent, Timings} = require("./response");
+const { State, ResponseContent, Timings } = require("./response");
 const { getBulkLoader } = require("./bulk-loader");
 
 class Payload {
@@ -14,39 +14,44 @@ class Payload {
     this.update = this.update.bind(this);
   }
   async update(payload) {
-    let { request, response, requestId, timestamp,
-          content, dataLength, encodedDataLength } = payload;
-    let {
-      headers,
-      postData,
-      timing
-    } = (request ? request : response) || {};
+    const {
+      request,
+      response,
+      requestId,
+      timestamp,
+      content,
+      dataLength,
+      encodedDataLength,
+    } = payload;
+    const { headers, postData, timing } = (request ? request : response) || {};
 
     const header = await this.mappingHeader(requestId, headers);
 
     this.requestId = requestId;
 
     this.updateTimestamp(timestamp);
-    let data = await this.mappingAll(
-      requestId,
-      {
-        payload, response, postData,
-        header, content, timing,
-        dataLength, encodedDataLength
-      }
-    );
+    const data = await this.mappingAll(requestId, {
+      payload,
+      response,
+      postData,
+      header,
+      content,
+      timing,
+      dataLength,
+      encodedDataLength,
+    });
     return data;
   }
 
   log(reason, info) {
     this.updatePayload({
       type: reason,
-      log: info
+      log: info,
     });
   }
 
   updateTimestamp(timestamp) {
-    let {request} = this.payload;
+    const { request } = this.payload;
     this.updatePayload(
       request ? { response: timestamp } : { request: timestamp }
     );
@@ -57,24 +62,42 @@ class Payload {
   }
 
   async mappingAll(requestId, data) {
-    let {payload, response, postData,
-         header, content, timing,
-         dataLength, encodedDataLength } = data;
-    let [requests, headers, post,
-         status, timings, responses]
-        = await Promise.all(
-          [
-            this.mappingRequest(requestId, payload),
-            header,
-            this.mappingRequestPostData(requestId, postData, header),
-            this.mappingResponseStatus(requestId, response, header),
-            this.mappingTiming(requestId, timing),
-            this.mappingResponseContent(requestId, response, content)
-          ]);
+    const {
+      payload,
+      response,
+      postData,
+      header,
+      content,
+      timing,
+      dataLength,
+      encodedDataLength,
+    } = data;
+    const [
+      requests,
+      headers,
+      post,
+      status,
+      timings,
+      responses,
+    ] = await Promise.all([
+      this.mappingRequest(requestId, payload),
+      header,
+      this.mappingRequestPostData(requestId, postData, header),
+      this.mappingResponseStatus(requestId, response, header),
+      this.mappingTiming(requestId, timing),
+      this.mappingResponseContent(requestId, response, content),
+    ]);
     this.updatePayload({
-      requests, headers, post, status, timings, responses, dataLength, encodedDataLength
+      requests,
+      headers,
+      post,
+      status,
+      timings,
+      responses,
+      dataLength,
+      encodedDataLength,
     });
-    return [ requests, headers, post, status, timings, responses ];
+    return [requests, headers, post, status, timings, responses];
   }
 
   async mappingTiming(requestId, timing) {
@@ -82,7 +105,7 @@ class Payload {
   }
 
   async mappingRequest(requestId, payload) {
-    let {request} = payload;
+    const { request } = payload;
     return !request ? undefined : Request(requestId, payload);
   }
 
@@ -99,8 +122,9 @@ class Payload {
   }
 
   async mappingResponseContent(requestId, response, content) {
-    return !response || !content ?
-      undefined : ResponseContent(requestId, response, content);
+    return !response || !content
+      ? undefined
+      : ResponseContent(requestId, response, content);
   }
 }
 class Payloads {
@@ -116,17 +140,17 @@ class Payloads {
   }
 
   get(id) {
-    return this.payloads.has(id) ?
-      this.payloads.get(id) : undefined;
+    return this.payloads.has(id) ? this.payloads.get(id) : undefined;
   }
 
   clear() {
     this.payloads.clear();
-    let loader = getBulkLoader();
+    const loader = getBulkLoader();
     loader.reset();
   }
 }
 
 module.exports = {
-  Payload, Payloads
+  Payload,
+  Payloads,
 };

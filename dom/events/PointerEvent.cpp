@@ -6,9 +6,11 @@
  *
  * Portions Copyright 2013 Microsoft Open Technologies, Inc. */
 
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/dom/PointerEvent.h"
 #include "mozilla/dom/PointerEventBinding.h"
 #include "mozilla/MouseEvents.h"
+#include "nsContentUtils.h"
 #include "prtime.h"
 
 namespace mozilla {
@@ -29,7 +31,7 @@ PointerEvent::PointerEvent(EventTarget* aOwner, nsPresContext* aPresContext,
     mEventIsInternal = true;
     mEvent->mTime = PR_Now();
     mEvent->mRefPoint = LayoutDeviceIntPoint(0, 0);
-    mouseEvent->inputSource = nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN;
+    mouseEvent->mInputSource = MouseEvent_Binding::MOZ_SOURCE_UNKNOWN;
   }
   // 5.2 Pointer Event types, for all pointer events, |detail| attribute SHOULD
   // be 0.
@@ -38,33 +40,33 @@ PointerEvent::PointerEvent(EventTarget* aOwner, nsPresContext* aPresContext,
 
 JSObject* PointerEvent::WrapObjectInternal(JSContext* aCx,
                                            JS::Handle<JSObject*> aGivenProto) {
-  return PointerEventBinding::Wrap(aCx, this, aGivenProto);
+  return PointerEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 static uint16_t ConvertStringToPointerType(const nsAString& aPointerTypeArg) {
   if (aPointerTypeArg.EqualsLiteral("mouse")) {
-    return nsIDOMMouseEvent::MOZ_SOURCE_MOUSE;
+    return MouseEvent_Binding::MOZ_SOURCE_MOUSE;
   }
   if (aPointerTypeArg.EqualsLiteral("pen")) {
-    return nsIDOMMouseEvent::MOZ_SOURCE_PEN;
+    return MouseEvent_Binding::MOZ_SOURCE_PEN;
   }
   if (aPointerTypeArg.EqualsLiteral("touch")) {
-    return nsIDOMMouseEvent::MOZ_SOURCE_TOUCH;
+    return MouseEvent_Binding::MOZ_SOURCE_TOUCH;
   }
 
-  return nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN;
+  return MouseEvent_Binding::MOZ_SOURCE_UNKNOWN;
 }
 
 void ConvertPointerTypeToString(uint16_t aPointerTypeSrc,
                                 nsAString& aPointerTypeDest) {
   switch (aPointerTypeSrc) {
-    case nsIDOMMouseEvent::MOZ_SOURCE_MOUSE:
+    case MouseEvent_Binding::MOZ_SOURCE_MOUSE:
       aPointerTypeDest.AssignLiteral("mouse");
       break;
-    case nsIDOMMouseEvent::MOZ_SOURCE_PEN:
+    case MouseEvent_Binding::MOZ_SOURCE_PEN:
       aPointerTypeDest.AssignLiteral("pen");
       break;
-    case nsIDOMMouseEvent::MOZ_SOURCE_TOUCH:
+    case MouseEvent_Binding::MOZ_SOURCE_TOUCH:
       aPointerTypeDest.AssignLiteral("touch");
       break;
     default:
@@ -90,14 +92,14 @@ already_AddRefed<PointerEvent> PointerEvent::Constructor(
   widgetEvent->pointerId = aParam.mPointerId;
   widgetEvent->mWidth = aParam.mWidth;
   widgetEvent->mHeight = aParam.mHeight;
-  widgetEvent->pressure = aParam.mPressure;
+  widgetEvent->mPressure = aParam.mPressure;
   widgetEvent->tangentialPressure = aParam.mTangentialPressure;
   widgetEvent->tiltX = aParam.mTiltX;
   widgetEvent->tiltY = aParam.mTiltY;
   widgetEvent->twist = aParam.mTwist;
-  widgetEvent->inputSource = ConvertStringToPointerType(aParam.mPointerType);
+  widgetEvent->mInputSource = ConvertStringToPointerType(aParam.mPointerType);
   widgetEvent->mIsPrimary = aParam.mIsPrimary;
-  widgetEvent->buttons = aParam.mButtons;
+  widgetEvent->mButtons = aParam.mButtons;
 
   if (!aParam.mCoalescedEvents.IsEmpty()) {
     e->mCoalescedEvents.AppendElements(aParam.mCoalescedEvents);
@@ -131,30 +133,77 @@ NS_INTERFACE_MAP_END_INHERITING(MouseEvent)
 NS_IMPL_ADDREF_INHERITED(PointerEvent, MouseEvent)
 NS_IMPL_RELEASE_INHERITED(PointerEvent, MouseEvent)
 
-void PointerEvent::GetPointerType(nsAString& aPointerType) {
-  ConvertPointerTypeToString(mEvent->AsPointerEvent()->inputSource,
+void PointerEvent::GetPointerType(nsAString& aPointerType,
+                                  CallerType aCallerType) {
+  if (ShouldResistFingerprinting(aCallerType)) {
+    aPointerType.AssignLiteral("mouse");
+    return;
+  }
+
+  ConvertPointerTypeToString(mEvent->AsPointerEvent()->mInputSource,
                              aPointerType);
 }
 
-int32_t PointerEvent::PointerId() {
-  return mEvent->AsPointerEvent()->pointerId;
+int32_t PointerEvent::PointerId(CallerType aCallerType) {
+  return ShouldResistFingerprinting(aCallerType)
+             ? PointerEventHandler::GetSpoofedPointerIdForRFP()
+             : mEvent->AsPointerEvent()->pointerId;
 }
 
-int32_t PointerEvent::Width() { return mEvent->AsPointerEvent()->mWidth; }
-
-int32_t PointerEvent::Height() { return mEvent->AsPointerEvent()->mHeight; }
-
-float PointerEvent::Pressure() { return mEvent->AsPointerEvent()->pressure; }
-
-float PointerEvent::TangentialPressure() {
-  return mEvent->AsPointerEvent()->tangentialPressure;
+int32_t PointerEvent::Width(CallerType aCallerType) {
+  return ShouldResistFingerprinting(aCallerType)
+             ? 1
+             : mEvent->AsPointerEvent()->mWidth;
 }
 
-int32_t PointerEvent::TiltX() { return mEvent->AsPointerEvent()->tiltX; }
+int32_t PointerEvent::Height(CallerType aCallerType) {
+  return ShouldResistFingerprinting(aCallerType)
+             ? 1
+             : mEvent->AsPointerEvent()->mHeight;
+}
 
-int32_t PointerEvent::TiltY() { return mEvent->AsPointerEvent()->tiltY; }
+float PointerEvent::Pressure(CallerType aCallerType) {
+  if (mEvent->mMessage == ePointerUp ||
+      !ShouldResistFingerprinting(aCallerType)) {
+    return mEvent->AsPointerEvent()->mPressure;
+  }
 
-int32_t PointerEvent::Twist() { return mEvent->AsPointerEvent()->twist; }
+  // According to [1], we should use 0.5 when it is in active buttons state and
+  // 0 otherwise for devices that don't support pressure. And a pointerup event
+  // always reports 0, so we don't need to spoof that.
+  //
+  // [1] https://www.w3.org/TR/pointerevents/#dom-pointerevent-pressure
+  float spoofedPressure = 0.0;
+  if (mEvent->AsPointerEvent()->mButtons) {
+    spoofedPressure = 0.5;
+  }
+
+  return spoofedPressure;
+}
+
+float PointerEvent::TangentialPressure(CallerType aCallerType) {
+  return ShouldResistFingerprinting(aCallerType)
+             ? 0
+             : mEvent->AsPointerEvent()->tangentialPressure;
+}
+
+int32_t PointerEvent::TiltX(CallerType aCallerType) {
+  return ShouldResistFingerprinting(aCallerType)
+             ? 0
+             : mEvent->AsPointerEvent()->tiltX;
+}
+
+int32_t PointerEvent::TiltY(CallerType aCallerType) {
+  return ShouldResistFingerprinting(aCallerType)
+             ? 0
+             : mEvent->AsPointerEvent()->tiltY;
+}
+
+int32_t PointerEvent::Twist(CallerType aCallerType) {
+  return ShouldResistFingerprinting(aCallerType)
+             ? 0
+             : mEvent->AsPointerEvent()->twist;
+}
 
 bool PointerEvent::IsPrimary() { return mEvent->AsPointerEvent()->mIsPrimary; }
 
@@ -199,6 +248,27 @@ void PointerEvent::GetCoalescedEvents(
     }
   }
   aPointerEvents.AppendElements(mCoalescedEvents);
+}
+
+bool PointerEvent::ShouldResistFingerprinting(CallerType aCallerType) {
+  // There are four situations we don't need to spoof this pointer event.
+  //   1. This event is generated by scripts.
+  //   2. This event is a mouse pointer event.
+  //   3. The caller type is system.
+  //   4. The pref privcy.resistFingerprinting' is false, we fast return here
+  //      since we don't need to do any QI of following codes.
+  //  We don't need to check for the system group since pointer events won't be
+  //  dispatched to the system group.
+  if (!mEvent->IsTrusted() || aCallerType == CallerType::System ||
+      !nsContentUtils::ShouldResistFingerprinting() ||
+      mEvent->AsPointerEvent()->mInputSource ==
+          MouseEvent_Binding::MOZ_SOURCE_MOUSE) {
+    return false;
+  }
+
+  nsCOMPtr<Document> doc = GetDocument();
+
+  return doc && !nsContentUtils::IsChromeDoc(doc);
 }
 
 }  // namespace dom

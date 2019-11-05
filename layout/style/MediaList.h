@@ -11,13 +11,11 @@
 
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/ErrorResult.h"
+#include "mozilla/ServoBindingTypes.h"
 #include "mozilla/ServoUtils.h"
-#include "mozilla/StyleBackendType.h"
 
 #include "nsWrapperCache.h"
 
-class nsIDocument;
-class nsPresContext;
 class nsMediaQueryResultCacheKey;
 
 namespace mozilla {
@@ -25,58 +23,61 @@ class StyleSheet;
 
 namespace dom {
 
-// XXX This class doesn't use the branch dispatch approach that we use
-//     elsewhere for stylo, but instead just relies on virtual call.
-//     That's because this class should not be critical to performance,
-//     and using branch dispatch would make it much more complicated.
-//     Performance critical path should hold a subclass of this class
-//     directly. We may want to determine in the future whether the
-//     above is correct.
+class Document;
 
-class MediaList : public nsISupports, public nsWrapperCache {
+class MediaList final : public nsISupports, public nsWrapperCache {
  public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(MediaList)
 
-  /**
-   * Creates a MediaList backed by the given StyleBackendType.
-   */
-  static already_AddRefed<MediaList> Create(
-      StyleBackendType, const nsAString& aMedia,
-      CallerType aCallerType = CallerType::NonSystem);
+  // Needed for CSSOM, but please don't use it outside of that :)
+  explicit MediaList(already_AddRefed<RawServoMediaList> aRawList)
+      : mRawList(aRawList) {}
 
-  virtual already_AddRefed<MediaList> Clone() = 0;
+  static already_AddRefed<MediaList> Create(
+      const nsAString& aMedia, CallerType aCallerType = CallerType::NonSystem);
+
+  already_AddRefed<MediaList> Clone();
 
   JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) final;
   nsISupports* GetParentObject() const { return nullptr; }
 
-  virtual void GetText(nsAString& aMediaText) = 0;
-  virtual void SetText(const nsAString& aMediaText) = 0;
-  virtual bool Matches(nsPresContext* aPresContext) const = 0;
-
-#ifdef DEBUG
-  virtual bool IsServo() const = 0;
-#endif
+  void GetText(nsAString& aMediaText);
+  void SetText(const nsAString& aMediaText);
+  bool Matches(const Document&) const;
 
   void SetStyleSheet(StyleSheet* aSheet);
 
   // WebIDL
+  void Stringify(nsAString& aString) { GetMediaText(aString); }
   void GetMediaText(nsAString& aMediaText);
   void SetMediaText(const nsAString& aMediaText);
-  virtual uint32_t Length() = 0;
-  virtual void IndexedGetter(uint32_t aIndex, bool& aFound,
-                             nsAString& aReturn) = 0;
+  uint32_t Length();
+  void IndexedGetter(uint32_t aIndex, bool& aFound, nsAString& aReturn);
   void Item(uint32_t aIndex, nsAString& aResult);
   void DeleteMedium(const nsAString& aMedium, ErrorResult& aRv);
   void AppendMedium(const nsAString& aMedium, ErrorResult& aRv);
 
- protected:
-  virtual nsresult Delete(const nsAString& aOldMedium) = 0;
-  virtual nsresult Append(const nsAString& aNewMedium) = 0;
+  size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const;
 
-  virtual ~MediaList() {
+  size_t SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
+    return aMallocSizeOf(this) + SizeOfExcludingThis(aMallocSizeOf);
+  }
+
+ protected:
+  MediaList(const nsAString& aMedia, CallerType);
+  MediaList();
+
+  void SetTextInternal(const nsAString& aMediaText, CallerType);
+
+  nsresult Delete(const nsAString& aOldMedium);
+  nsresult Append(const nsAString& aNewMedium);
+
+  ~MediaList() {
     MOZ_ASSERT(!mStyleSheet, "Backpointer should have been cleared");
   }
+
+  bool IsReadOnly() const;
 
   // not refcounted; sheet will let us know when it goes away
   // mStyleSheet is the sheet that needs to be dirtied when this
@@ -86,6 +87,7 @@ class MediaList : public nsISupports, public nsWrapperCache {
  private:
   template <typename Func>
   inline nsresult DoMediaChange(Func aCallback);
+  RefPtr<RawServoMediaList> mRawList;
 };
 
 }  // namespace dom

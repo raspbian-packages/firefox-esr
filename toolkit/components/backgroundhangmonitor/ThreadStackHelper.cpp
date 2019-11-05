@@ -9,8 +9,8 @@
 #include "nsJSPrincipals.h"
 #include "nsScriptSecurityManager.h"
 #include "jsfriendapi.h"
-#ifdef MOZ_THREADSTACKHELPER_PSEUDO
-#include "js/ProfilingStack.h"
+#ifdef MOZ_THREADSTACKHELPER_PROFILING_STACK
+#  include "js/ProfilingStack.h"
 #endif
 
 #include "mozilla/Assertions.h"
@@ -25,12 +25,12 @@
 #include "mozilla/HangTypes.h"
 
 #ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wshadow"
 #endif
 
 #if defined(MOZ_VALGRIND)
-#include <valgrind/valgrind.h>
+#  include <valgrind/valgrind.h>
 #endif
 
 #include <string.h>
@@ -38,30 +38,30 @@
 #include <cstdlib>
 
 #ifdef XP_LINUX
-#include <ucontext.h>
-#include <unistd.h>
-#include <sys/syscall.h>
+#  include <ucontext.h>
+#  include <unistd.h>
+#  include <sys/syscall.h>
 #endif
 
 #ifdef __GNUC__
-#pragma GCC diagnostic pop  // -Wshadow
+#  pragma GCC diagnostic pop  // -Wshadow
 #endif
 
 #if defined(XP_LINUX) || defined(XP_MACOSX)
-#include <pthread.h>
+#  include <pthread.h>
 #endif
 
 #ifdef ANDROID
-#ifndef SYS_gettid
-#define SYS_gettid __NR_gettid
-#endif
-#if defined(__arm__) && !defined(__NR_rt_tgsigqueueinfo)
+#  ifndef SYS_gettid
+#    define SYS_gettid __NR_gettid
+#  endif
+#  if defined(__arm__) && !defined(__NR_rt_tgsigqueueinfo)
 // Some NDKs don't define this constant even though the kernel supports it.
-#define __NR_rt_tgsigqueueinfo (__NR_SYSCALL_BASE + 363)
-#endif
-#ifndef SYS_rt_tgsigqueueinfo
-#define SYS_rt_tgsigqueueinfo __NR_rt_tgsigqueueinfo
-#endif
+#    define __NR_rt_tgsigqueueinfo (__NR_SYSCALL_BASE + 363)
+#  endif
+#  ifndef SYS_rt_tgsigqueueinfo
+#    define SYS_rt_tgsigqueueinfo __NR_rt_tgsigqueueinfo
+#  endif
 #endif
 
 namespace mozilla {
@@ -92,7 +92,7 @@ bool ThreadStackHelper::PrepareStackBuffer(HangStack& aStack) {
   aStack.strbuffer().ClearAndRetainStorage();
   aStack.modules().Clear();
 
-#ifdef MOZ_THREADSTACKHELPER_PSEUDO
+#ifdef MOZ_THREADSTACKHELPER_PROFILING_STACK
   // Ensure we have enough space in our stack and string buffers for the data we
   // want to collect.
   if (!aStack.stack().SetCapacity(mMaxStackSize, fallible) ||
@@ -184,7 +184,7 @@ void ThreadStackHelper::TryAppendFrame(HangEntry aFrame) {
 
   // Perform the append if we have enough space to do so.
   if (mStackToFill->stack().Capacity() > mStackToFill->stack().Length()) {
-    mStackToFill->stack().AppendElement(mozilla::Move(aFrame));
+    mStackToFill->stack().AppendElement(std::move(aFrame));
   }
 }
 
@@ -210,12 +210,9 @@ namespace {
 bool IsChromeJSScript(JSScript* aScript) {
   // May be called from another thread or inside a signal handler.
   // We assume querying the script is safe but we must not manipulate it.
-  nsIScriptSecurityManager* const secman =
-      nsScriptSecurityManager::GetScriptSecurityManager();
-  NS_ENSURE_TRUE(secman, false);
 
   JSPrincipals* const principals = JS_GetScriptPrincipals(aScript);
-  return secman->IsSystemPrincipal(nsJSPrincipals::get(principals));
+  return nsJSPrincipals::get(principals)->IsSystemPrincipal();
 }
 
 // Get the full path after the URI scheme, if the URI matches the scheme.
@@ -249,12 +246,13 @@ const char* GetPathAfterComponent(const char* filename,
 
 }  // namespace
 
-void ThreadStackHelper::CollectPseudoEntry(const js::ProfileEntry& aEntry) {
+void ThreadStackHelper::CollectProfilingStackFrame(
+    const js::ProfilingStackFrame& aFrame) {
   // For non-js frames we just include the raw label.
-  if (!aEntry.isJs()) {
-    const char* entryLabel = aEntry.label();
+  if (!aFrame.isJsFrame()) {
+    const char* frameLabel = aFrame.label();
 
-    // entryLabel is a statically allocated string, so we want to store a
+    // frameLabel is a statically allocated string, so we want to store a
     // reference to it without performing any allocations. This is important, as
     // we aren't allowed to allocate within this function.
     //
@@ -268,23 +266,23 @@ void ThreadStackHelper::CollectPseudoEntry(const js::ProfileEntry& aEntry) {
     // which has the LITERAL flag set. Without this optimization, this code
     // would be incorrect.
     nsCString label;
-    label.AssignLiteral(entryLabel, strlen(entryLabel));
+    label.AssignLiteral(frameLabel, strlen(frameLabel));
 
     // Let's make sure we don't deadlock here, by asserting that `label`'s
     // backing data matches.
-    MOZ_RELEASE_ASSERT(
-        label.BeginReading() == entryLabel,
-        "String copy performed during ThreadStackHelper::CollectPseudoEntry");
+    MOZ_RELEASE_ASSERT(label.BeginReading() == frameLabel,
+                       "String copy performed during "
+                       "ThreadStackHelper::CollectProfilingStackFrame");
     TryAppendFrame(label);
     return;
   }
 
-  if (!aEntry.script()) {
+  if (!aFrame.script()) {
     TryAppendFrame(HangEntrySuppressed());
     return;
   }
 
-  if (!IsChromeJSScript(aEntry.script())) {
+  if (!IsChromeJSScript(aFrame.script())) {
     TryAppendFrame(HangEntryContent());
     return;
   }
@@ -293,8 +291,8 @@ void ThreadStackHelper::CollectPseudoEntry(const js::ProfileEntry& aEntry) {
   // This is because we want to do some size-saving strategies, and throw out
   // information which won't help us as much.
   // XXX: We currently don't collect the function name which hung.
-  const char* filename = JS_GetScriptFilename(aEntry.script());
-  unsigned lineno = JS_PCToLineNumber(aEntry.script(), aEntry.pc());
+  const char* filename = JS_GetScriptFilename(aFrame.script());
+  unsigned lineno = JS_PCToLineNumber(aFrame.script(), aFrame.pc());
 
   // Some script names are in the form "foo -> bar -> baz".
   // Here we find the origin of these redirected scripts.

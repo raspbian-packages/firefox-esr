@@ -23,13 +23,13 @@ XULAlertAccessible::XULAlertAccessible(nsIContent* aContent,
 
 XULAlertAccessible::~XULAlertAccessible() {}
 
-role XULAlertAccessible::NativeRole() { return roles::ALERT; }
+role XULAlertAccessible::NativeRole() const { return roles::ALERT; }
 
-uint64_t XULAlertAccessible::NativeState() {
+uint64_t XULAlertAccessible::NativeState() const {
   return Accessible::NativeState() | states::ALERT;
 }
 
-ENameValueFlag XULAlertAccessible::Name(nsString& aName) {
+ENameValueFlag XULAlertAccessible::Name(nsString& aName) const {
   // Screen readers need to read contents of alert, not the accessible name.
   // If we have both some screen readers will read the alert twice.
   aName.Truncate();
@@ -41,8 +41,4 @@ ENameValueFlag XULAlertAccessible::Name(nsString& aName) {
 
 bool XULAlertAccessible::IsWidget() const { return true; }
 
-Accessible* XULAlertAccessible::ContainerWidget() const {
-  // If a part of colorpicker widget.
-  if (mParent && mParent->IsMenuButton()) return mParent;
-  return nullptr;
-}
+Accessible* XULAlertAccessible::ContainerWidget() const { return nullptr; }

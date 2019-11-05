@@ -12,7 +12,7 @@
 #include "nsAccessibilityService.h"
 #include "nsTextEquivUtils.h"
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 using namespace mozilla;
@@ -103,7 +103,8 @@ void EventQueue::CoalesceEvents() {
           return;
         }
       }
-    } break;  // case eCoalesceOfSameType
+      break;  // case eCoalesceOfSameType
+    }
 
     case AccEvent::eCoalesceSelectionChange: {
       AccSelChangeEvent* tailSelChangeEvent = downcast_accEvent(tailEvent);
@@ -120,8 +121,8 @@ void EventQueue::CoalesceEvents() {
           }
         }
       }
-
-    } break;  // eCoalesceSelectionChange
+      break;  // eCoalesceSelectionChange
+    }
 
     case AccEvent::eCoalesceStateChange: {
       // If state change event is duped then ignore previous event. If state
@@ -160,7 +161,8 @@ void EventQueue::CoalesceEvents() {
             thisEvent->mEventRule = AccEvent::eDoNotEmit;
         }
       }
-    } break;  // eCoalesceTextSelChange
+      break;  // eCoalesceTextSelChange
+    }
 
     case AccEvent::eRemoveDupes: {
       // Check for repeat events, coalesce newly appended event by more older
@@ -174,7 +176,8 @@ void EventQueue::CoalesceEvents() {
           return;
         }
       }
-    } break;  // case eRemoveDupes
+      break;  // case eRemoveDupes
+    }
 
     default:
       break;  // case eAllowDupes, eDoNotEmit

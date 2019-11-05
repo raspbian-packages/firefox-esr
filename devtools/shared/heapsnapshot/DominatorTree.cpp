@@ -122,9 +122,10 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DominatorTree)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-/* virtual */ JSObject* DominatorTree::WrapObject(
-    JSContext* aCx, JS::HandleObject aGivenProto) {
-  return dom::DominatorTreeBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* DominatorTree::WrapObject(JSContext* aCx,
+                                    JS::HandleObject aGivenProto) {
+  return dom::DominatorTree_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace devtools

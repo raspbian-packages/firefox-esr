@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 
+using namespace mozilla;
+using namespace mozilla::net;
+
 void testServerTimingHeader(
     const char* headerValue,
     std::vector<std::vector<std::string>> expectedResults) {
@@ -34,7 +37,8 @@ void testServerTimingHeader(
   }
 }
 
-TEST(TestServerTimingHeader, HeaderParsing) {
+TEST(TestServerTimingHeader, HeaderParsing)
+{
   // Test cases below are copied from
   // https://cs.chromium.org/chromium/src/third_party/WebKit/Source/platform/network/HTTPParsersTest.cpp
 
@@ -178,9 +182,8 @@ TEST(TestServerTimingHeader, HeaderParsing) {
   testServerTimingHeader("metric;dur=foo;dur=567.8", {{"metric", "", ""}});
 
   // unspecified param values
-  testServerTimingHeader("metric;dur;dur=123.4", {{"metric", "123.4", ""}});
-  testServerTimingHeader("metric;desc;desc=description",
-                         {{"metric", "0", "description"}});
+  testServerTimingHeader("metric;dur;dur=123.4", {{"metric", "0", ""}});
+  testServerTimingHeader("metric;desc;desc=description", {{"metric", "0", ""}});
 
   // param name case
   testServerTimingHeader("metric;DuR=123.4;DeSc=description",
@@ -188,9 +191,9 @@ TEST(TestServerTimingHeader, HeaderParsing) {
 
   // nonsense
   testServerTimingHeader("metric=foo;dur;dur=123.4,metric2",
-                         {{"metric", "123.4", ""}, {"metric2", "0", ""}});
+                         {{"metric", "0", ""}, {"metric2", "0", ""}});
   testServerTimingHeader("metric\"foo;dur;dur=123.4,metric2",
-                         {{"metric", "", ""}});
+                         {{"metric", "0", ""}});
 
   // nonsense - return zero entries
   testServerTimingHeader(" ", {});

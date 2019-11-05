@@ -4,13 +4,21 @@
 
 var EXPORTED_SYMBOLS = ["Resource"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Log.jsm");
-ChromeUtils.import("resource://services-common/observers.js");
-ChromeUtils.import("resource://services-common/utils.js");
-ChromeUtils.import("resource://services-sync/util.js");
-const {setTimeout, clearTimeout} = ChromeUtils.import("resource://gre/modules/Timer.jsm", {});
-Cu.importGlobalProperties(["fetch"]);
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { Log } = ChromeUtils.import("resource://gre/modules/Log.jsm");
+const { Observers } = ChromeUtils.import(
+  "resource://services-common/observers.js"
+);
+const { CommonUtils } = ChromeUtils.import(
+  "resource://services-common/utils.js"
+);
+const { Utils } = ChromeUtils.import("resource://services-sync/util.js");
+const { setTimeout, clearTimeout } = ChromeUtils.import(
+  "resource://gre/modules/Timer.jsm"
+);
+XPCOMUtils.defineLazyGlobalGetters(this, ["fetch", "Headers", "Request"]);
 /* global AbortController */
 
 /*
@@ -36,10 +44,12 @@ function Resource(uri) {
 // (static) Caches the latest server timestamp (X-Weave-Timestamp header).
 Resource.serverTime = null;
 
-XPCOMUtils.defineLazyPreferenceGetter(Resource,
-                                      "SEND_VERSION_INFO",
-                                      "services.sync.sendVersionInfo",
-                                      true);
+XPCOMUtils.defineLazyPreferenceGetter(
+  Resource,
+  "SEND_VERSION_INFO",
+  "services.sync.sendVersionInfo",
+  true
+);
 Resource.prototype = {
   _logName: "Sync.Resource",
 
@@ -117,12 +127,16 @@ Resource.prototype = {
 
     if (this._log.level <= Log.Level.Trace) {
       for (const [k, v] of headers) {
-        if (k == "authorization") {
+        if (k == "authorization" || k == "x-client-state") {
           this._log.trace(`HTTP Header ${k}: ***** (suppressed)`);
         } else {
           this._log.trace(`HTTP Header ${k}: ${v}`);
         }
       }
+    }
+
+    if (!headers.has("accept")) {
+      headers.append("accept", "application/json;q=0.9,*/*;q=0.2");
     }
 
     return headers;
@@ -141,8 +155,8 @@ Resource.prototype = {
       headers,
       method,
       signal,
-      mozErrors: true // Return nsresult error codes instead of a generic
-                      // NetworkError when fetch rejects.
+      mozErrors: true, // Return nsresult error codes instead of a generic
+      // NetworkError when fetch rejects.
     };
 
     if (data) {
@@ -168,7 +182,9 @@ Resource.prototype = {
     let didTimeout = false;
     const timeoutId = setTimeout(() => {
       didTimeout = true;
-      this._log.error(`Request timed out after ${this.ABORT_TIMEOUT}ms. Aborting.`);
+      this._log.error(
+        `Request timed out after ${this.ABORT_TIMEOUT}ms. Aborting.`
+      );
       controller.abort();
     }, this.ABORT_TIMEOUT);
     let response;
@@ -179,7 +195,10 @@ Resource.prototype = {
       if (!didTimeout) {
         throw e;
       }
-      throw Components.Exception("Request aborted (timeout)", Cr.NS_ERROR_NET_TIMEOUT);
+      throw Components.Exception(
+        "Request aborted (timeout)",
+        Cr.NS_ERROR_NET_TIMEOUT
+      );
     } finally {
       clearTimeout(timeoutId);
     }
@@ -191,13 +210,13 @@ Resource.prototype = {
     this._logResponse(response, method, data);
     this._processResponseHeaders(response);
 
-    // Changes below need to be processed in bug 1295510 that's why eslint is ignored
-    // eslint-disable-next-line no-new-wrappers
-    const ret   = new String(data);
-    ret.url     = response.url;
-    ret.status  = response.status;
-    ret.success = response.ok;
-    ret.headers = {};
+    const ret = {
+      data,
+      url: response.url,
+      status: response.status,
+      success: response.ok,
+      headers: {},
+    };
     for (const [k, v] of response.headers) {
       ret.headers[k] = v;
     }
@@ -207,13 +226,14 @@ Resource.prototype = {
     // actual fetch, so be warned!
     XPCOMUtils.defineLazyGetter(ret, "obj", () => {
       try {
-        return JSON.parse(ret);
+        return JSON.parse(ret.data);
       } catch (ex) {
         this._log.warn("Got exception parsing response body", ex);
         // Stringify to avoid possibly printing non-printable characters.
-        this._log.debug("Parse fail: Response body starts: \"" +
-                        JSON.stringify((ret + "").slice(0, 100)) +
-                        "\".");
+        this._log.debug(
+          "Parse fail: Response body starts",
+          (ret.data + "").slice(0, 100)
+        );
         throw ex;
       }
     });
@@ -225,7 +245,9 @@ Resource.prototype = {
     const { status, ok: success, url } = response;
 
     // Log the status of the request.
-    this._log.debug(`${method} ${success ? "success" : "fail"} ${status} ${url}`);
+    this._log.debug(
+      `${method} ${success ? "success" : "fail"} ${status} ${url}`
+    );
 
     // Additionally give the full response body when Trace logging.
     if (this._log.level <= Log.Level.Trace) {
@@ -233,7 +255,9 @@ Resource.prototype = {
     }
 
     if (!success) {
-      this._log.warn(`${method} request to ${url} failed with status ${status}`);
+      this._log.warn(
+        `${method} request to ${url} failed with status ${status}`
+      );
     }
   },
 
@@ -246,13 +270,14 @@ Resource.prototype = {
     if (headers.has("x-weave-backoff")) {
       let backoff = headers.get("x-weave-backoff");
       this._log.debug(`Got X-Weave-Backoff: ${backoff}`);
-      Observers.notify("weave:service:backoff:interval",
-                       parseInt(backoff, 10));
+      Observers.notify("weave:service:backoff:interval", parseInt(backoff, 10));
     }
 
     if (success && headers.has("x-weave-quota-remaining")) {
-      Observers.notify("weave:service:quota:remaining",
-                       parseInt(headers.get("x-weave-quota-remaining"), 10));
+      Observers.notify(
+        "weave:service:quota:remaining",
+        parseInt(headers.get("x-weave-quota-remaining"), 10)
+      );
     }
   },
 
@@ -270,5 +295,5 @@ Resource.prototype = {
 
   delete() {
     return this._doRequest("DELETE");
-  }
+  },
 };

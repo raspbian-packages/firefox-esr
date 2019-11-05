@@ -42,7 +42,7 @@ NS_INTERFACE_MAP_END_INHERITING(EditTransactionBase)
 
 bool DeleteNodeTransaction::CanDoIt() const {
   if (NS_WARN_IF(!mNodeToDelete) || NS_WARN_IF(!mEditorBase) || !mParentNode ||
-      !mEditorBase->IsModifiableNode(mParentNode)) {
+      !mEditorBase->IsModifiableNode(*mParentNode)) {
     return false;
   }
   return true;

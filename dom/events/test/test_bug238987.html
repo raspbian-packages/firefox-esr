@@ -5,8 +5,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=238987
 -->
 <head>
   <title>Test for Bug 238987</title>
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/EventUtils.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/EventUtils.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
 </head>
 <body>
@@ -60,7 +60,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=238987
     if ("id" in e.target) {
       s = s + ", id=\"" + e.target.id + "\"";
     }
-    ok(e.eventPhase == Components.interfaces.nsIDOMEvent.CAPTURING_PHASE,
+    ok(e.eventPhase == Event.CAPTURING_PHASE,
        "|window| should not have got a focus event, " + s);
   }
 
@@ -86,7 +86,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=238987
     if ("id" in e.target) {
       s = s + ", id=\"" + e.target.id + "\"";
     }
-    ok(e.eventPhase == Components.interfaces.nsIDOMEvent.CAPTURING_PHASE,
+    ok(e.eventPhase == Event.CAPTURING_PHASE,
        "|window| should not have got a blur event, " + s);
   }
 

@@ -6,6 +6,8 @@
  * The origin of this IDL file is
  * http://www.whatwg.org/specs/web-apps/current-work/#the-iframe-element
  * http://www.whatwg.org/specs/web-apps/current-work/#other-elements,-attributes-and-apis
+ * https://wicg.github.io/feature-policy/#policy
+ *
  * © Copyright 2004-2011 Apple Computer, Inc., Mozilla Foundation, and
  * Opera Software ASA. You are granted a license to use, reproduce
  * and create derivative works of this document.
@@ -47,10 +49,10 @@ partial interface HTMLIFrameElement {
   [CEReactions, SetterThrows, Pure]
            attribute DOMString longDesc;
 
-  [CEReactions, TreatNullAs=EmptyString, SetterThrows, Pure]
-           attribute DOMString marginHeight;
-  [CEReactions, TreatNullAs=EmptyString, SetterThrows, Pure]
-           attribute DOMString marginWidth;
+  [CEReactions, SetterThrows, Pure]
+           attribute [TreatNullAs=EmptyString] DOMString marginHeight;
+  [CEReactions, SetterThrows, Pure]
+           attribute [TreatNullAs=EmptyString] DOMString marginWidth;
 };
 
 partial interface HTMLIFrameElement {
@@ -67,3 +69,12 @@ partial interface HTMLIFrameElement {
 
 HTMLIFrameElement implements MozFrameLoaderOwner;
 HTMLIFrameElement implements BrowserElement;
+
+// https://wicg.github.io/feature-policy/#policy
+partial interface HTMLIFrameElement {
+  [SameObject, Pref="dom.security.featurePolicy.webidl.enabled"]
+  readonly attribute Policy policy;
+
+  [CEReactions, SetterThrows, Pure, Pref="dom.security.featurePolicy.enabled"]
+           attribute DOMString allow;
+};

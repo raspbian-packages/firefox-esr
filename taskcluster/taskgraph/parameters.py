@@ -9,7 +9,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 import json
 import time
-import yaml
 from datetime import datetime
 
 from mozbuild.util import ReadOnlyDict, memoize
@@ -34,16 +33,17 @@ def get_contents(path):
     return contents
 
 
-def get_version(product_dir='browser'):
-    version_path = os.path.join(GECKO, product_dir, 'config',
-                                'version_display.txt')
+def get_version(version_dir='browser/config'):
+    return _get_version(version_dir, 'version_display.txt')
+
+
+def get_app_version(version_dir='browser/config'):
+    return _get_version(version_dir, 'version.txt')
+
+
+def _get_version(version_dir, version_file):
+    version_path = os.path.join(GECKO, version_dir, version_file)
     return get_contents(version_path)
-
-
-def get_app_version(product_dir='browser'):
-    app_version_path = os.path.join(GECKO, product_dir, 'config',
-                                    'version.txt')
-    return get_contents(app_version_path)
 
 
 # Please keep this list sorted and in sync with taskcluster/docs/parameters.rst
@@ -69,6 +69,7 @@ PARAMETERS = {
     'project': 'mozilla-central',
     'pushdate': lambda: int(time.time()),
     'pushlog_id': '0',
+    'phabricator_diff': None,
     'release_enable_emefree': False,
     'release_enable_partners': False,
     'release_eta': '',
@@ -159,12 +160,13 @@ class Parameters(ReadOnlyDict):
         """
         return 'try' in self['project'] or self['try_mode'] == 'try_select'
 
-    def file_url(self, path):
+    def file_url(self, path, endpoint="file"):
         """
         Determine the VCS URL for viewing a file in the tree, suitable for
         viewing by a human.
 
         :param basestring path: The path, relative to the root of the repository.
+        :param basestring endpoint: The endpoint. Defaults to "file"
 
         :return basestring: The URL displaying the given path.
         """
@@ -176,18 +178,18 @@ class Parameters(ReadOnlyDict):
             repo = self['head_repository']
             rev = self['head_rev']
 
-        return '{}/file/{}/{}'.format(repo, rev, path)
+        return '{}/{}/{}/{}'.format(repo, endpoint, rev, path)
 
     def release_level(self):
         """
         Whether this is a staging release or not.
 
-        :return basestring: One of "production" or "staging".
+        :return six.text_type: One of "production" or "staging".
         """
         return release_level(self['project'])
 
 
-def load_parameters_file(filename, strict=True, overrides=None):
+def load_parameters_file(filename, strict=True, overrides=None, trust_domain=None):
     """
     Load parameters from a path, url, decision task-id or project.
 
@@ -197,6 +199,7 @@ def load_parameters_file(filename, strict=True, overrides=None):
     """
     import urllib
     from taskgraph.util.taskcluster import get_artifact_url, find_task_id
+    from taskgraph.util import yaml
 
     if overrides is None:
         overrides = {}
@@ -213,7 +216,13 @@ def load_parameters_file(filename, strict=True, overrides=None):
         if filename.startswith("task-id="):
             task_id = filename.split("=")[1]
         elif filename.startswith("project="):
-            index = "gecko.v2.{project}.latest.taskgraph.decision".format(
+            if trust_domain is None:
+                raise ValueError(
+                    "Can't specify parameters by project "
+                    "if trust domain isn't supplied.",
+                )
+            index = "{trust_domain}.v2.{project}.latest.taskgraph.decision".format(
+                trust_domain=trust_domain,
                 project=filename.split("=")[1],
             )
             task_id = find_task_id(index)
@@ -223,7 +232,7 @@ def load_parameters_file(filename, strict=True, overrides=None):
         f = urllib.urlopen(filename)
 
     if filename.endswith('.yml'):
-        kwargs = yaml.safe_load(f)
+        kwargs = yaml.load_stream(f)
     elif filename.endswith('.json'):
         kwargs = json.load(f)
     else:
@@ -232,3 +241,16 @@ def load_parameters_file(filename, strict=True, overrides=None):
     kwargs.update(overrides)
 
     return Parameters(strict=strict, **kwargs)
+
+
+def parameters_loader(filename, strict=True, overrides=None):
+    def get_parameters(graph_config):
+        parameters = load_parameters_file(
+            filename,
+            strict=strict,
+            overrides=overrides,
+            trust_domain=graph_config["trust-domain"],
+        )
+        parameters.check()
+        return parameters
+    return get_parameters

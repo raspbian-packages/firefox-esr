@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -44,6 +44,19 @@ void XPCStringConvert::FinalizeDOMString(const JSStringFinalizer* fin,
 const JSStringFinalizer XPCStringConvert::sDOMStringFinalizer = {
     XPCStringConvert::FinalizeDOMString};
 
+// static
+void XPCStringConvert::FinalizeDynamicAtom(const JSStringFinalizer* fin,
+                                           char16_t* chars) {
+  nsDynamicAtom* atom = nsDynamicAtom::FromChars(chars);
+  // nsDynamicAtom::Release is always-inline and defined in a translation unit
+  // we can't get to here.  So we need to go through nsAtom::Release to call
+  // it.
+  static_cast<nsAtom*>(atom)->Release();
+}
+
+const JSStringFinalizer XPCStringConvert::sDynamicAtomFinalizer = {
+    XPCStringConvert::FinalizeDynamicAtom};
+
 // convert a readable to a JSString, copying string data
 // static
 bool XPCStringConvert::ReadableToJSVal(JSContext* cx, const nsAString& readable,
@@ -60,14 +73,20 @@ bool XPCStringConvert::ReadableToJSVal(JSContext* cx, const nsAString& readable,
   nsStringBuffer* buf = nsStringBuffer::FromString(readable);
   if (buf) {
     bool shared;
-    if (!StringBufferToJSVal(cx, buf, length, vp, &shared)) return false;
-    if (shared) *sharedBuffer = buf;
+    if (!StringBufferToJSVal(cx, buf, length, vp, &shared)) {
+      return false;
+    }
+    if (shared) {
+      *sharedBuffer = buf;
+    }
     return true;
   }
 
   // blech, have to copy.
   JSString* str = JS_NewUCStringCopyN(cx, readable.BeginReading(), length);
-  if (!str) return false;
+  if (!str) {
+    return false;
+  }
   vp.setString(str);
   return true;
 }
@@ -77,8 +96,9 @@ namespace xpc {
 bool NonVoidStringToJsval(JSContext* cx, nsAString& str,
                           MutableHandleValue rval) {
   nsStringBuffer* sharedBuffer;
-  if (!XPCStringConvert::ReadableToJSVal(cx, str, &sharedBuffer, rval))
+  if (!XPCStringConvert::ReadableToJSVal(cx, str, &sharedBuffer, rval)) {
     return false;
+  }
 
   if (sharedBuffer) {
     // The string was shared but ReadableToJSVal didn't addref it.

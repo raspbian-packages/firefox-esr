@@ -8,31 +8,34 @@
 
 #include "mozilla/URLExtraData.h"
 
+#include "mozilla/NullPrincipalURI.h"
 #include "nsProxyRelease.h"
-#include "NullPrincipalURI.h"
+#include "mozilla/net/ReferrerPolicy.h"
 
 namespace mozilla {
 
 StaticRefPtr<URLExtraData> URLExtraData::sDummy;
 
-/* static */ void URLExtraData::InitDummy() {
+/* static */
+void URLExtraData::InitDummy() {
   RefPtr<nsIURI> baseURI = NullPrincipalURI::Create();
   RefPtr<nsIURI> referrer = baseURI;
   sDummy = new URLExtraData(baseURI.forget(), referrer.forget(),
-                            NullPrincipal::Create());
+                            NullPrincipal::CreateWithoutOriginAttributes(),
+                            net::RP_Unset);
 }
 
-/* static */ void URLExtraData::ReleaseDummy() { sDummy = nullptr; }
+/* static */
+void URLExtraData::ReleaseDummy() { sDummy = nullptr; }
 
 URLExtraData::~URLExtraData() {
   if (!NS_IsMainThread()) {
-    NS_ReleaseOnMainThreadSystemGroup("URLExtraData::mBaseURI",
-                                      mBaseURI.forget());
-    NS_ReleaseOnMainThreadSystemGroup("URLExtraData::mReferrer",
-                                      mReferrer.forget());
     NS_ReleaseOnMainThreadSystemGroup("URLExtraData::mPrincipal",
                                       mPrincipal.forget());
   }
 }
+
+StaticRefPtr<URLExtraData>
+    URLExtraData::sShared[size_t(UserAgentStyleSheetID::Count)];
 
 }  // namespace mozilla

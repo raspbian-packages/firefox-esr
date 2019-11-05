@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,9 +9,6 @@
 #include "nsError.h"
 #include "mozilla/dom/Attr.h"
 #include "mozilla/dom/Element.h"
-#include "nsDOMClassInfoID.h"
-#include "nsIDOMNode.h"
-#include "nsIDOMDocument.h"
 #include "nsDOMString.h"
 #include "txXPathTreeWalker.h"
 #include "nsCycleCollectionParticipant.h"
@@ -71,7 +68,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* XPathResult::WrapObject(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto) {
-  return XPathResultBinding::Wrap(aCx, this, aGivenProto);
+  return XPathResult_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void XPathResult::RemoveObserver() {
@@ -168,7 +165,9 @@ nsresult XPathResult::SetExprResult(txAExprResult* aExprResult,
       mResult->stringValue(mStringResult);
       break;
     }
-    default: { MOZ_ASSERT(isNode() || isIterator() || isSnapshot()); }
+    default: {
+      MOZ_ASSERT(isNode() || isIterator() || isSnapshot());
+    }
   }
 
   if (aExprResult->getResultType() == txAExprResult::NODESET) {
@@ -188,6 +187,7 @@ nsresult XPathResult::SetExprResult(txAExprResult* aExprResult,
     return NS_OK;
   }
 
+  mCurrentPos = 0;
   mInvalidIteratorState = false;
 
   if (mResultNodes.Count() > 0) {
@@ -213,9 +213,8 @@ void XPathResult::Invalidate(const nsIContent* aChangeRoot) {
     nsIContent* ctxBindingParent = nullptr;
     if (contextNode->IsContent()) {
       ctxBindingParent = contextNode->AsContent()->GetBindingParent();
-    } else if (contextNode->IsNodeOfType(nsINode::eATTRIBUTE)) {
-      Element* parent = static_cast<Attr*>(contextNode.get())->GetElement();
-      if (parent) {
+    } else if (auto* attr = Attr::FromNode(contextNode)) {
+      if (Element* parent = attr->GetElement()) {
         ctxBindingParent = parent->GetBindingParent();
       }
     }

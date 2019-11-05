@@ -9,7 +9,7 @@ element to which code is attached (if any), and how.
 <head>
   <meta charset="utf-8">
   <title>Debugger.Source.prototype.element should return owning element</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -17,10 +17,10 @@ element to which code is attached (if any), and how.
 <script>
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/jsdebugger.jsm");
-addDebuggerToGlobal(this);
+const {addSandboxedDebuggerToGlobal} = ChromeUtils.import("resource://gre/modules/jsdebugger.jsm");
+addSandboxedDebuggerToGlobal(this);
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
 
   let log = "";
@@ -31,7 +31,7 @@ window.onload = function () {
   // We can't use a data: URL here, because we want to test script elements
   // that refer to the JavaScript via 'src' attributes, and data: documents
   // can't refer to those. So we use a separate HTML document.
-  let iframe = document.createElement("iframe");
+  const iframe = document.createElement("iframe");
   iframe.src = "Debugger.Source.prototype.element.html";
   iframe.onload = onLoadHandler;
   document.body.appendChild(iframe);

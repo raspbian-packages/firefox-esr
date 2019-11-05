@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,7 +17,6 @@
 #include "txXPathTreeWalker.h"
 
 using mozilla::LogLevel;
-using mozilla::Move;
 
 txStylesheet::txStylesheet() : mRootFrame(nullptr) {}
 
@@ -32,7 +31,7 @@ nsresult txStylesheet::init() {
   nsAutoPtr<Expr> nodeExpr(new LocationStep(nt, LocationStep::CHILD_AXIS));
   nt.forget();
 
-  txPushNewContext* pushContext = new txPushNewContext(Move(nodeExpr));
+  txPushNewContext* pushContext = new txPushNewContext(std::move(nodeExpr));
   mContainerTemplate->mNext = pushContext;
 
   txApplyDefaultElementTemplate* applyTemplates =
@@ -52,7 +51,7 @@ nsresult txStylesheet::init() {
   nodeExpr = new LocationStep(nt, LocationStep::SELF_AXIS);
   nt.forget();
 
-  mCharactersTemplate = new txValueOf(Move(nodeExpr), false);
+  mCharactersTemplate = new txValueOf(std::move(nodeExpr), false);
   mCharactersTemplate->mNext = new txReturn();
 
   // pi/comment/namespace template
@@ -360,10 +359,10 @@ nsresult txStylesheet::addTemplate(txTemplateItem* aTemplate,
 
   // Add the simple patterns to the list of matchable templates, according
   // to default priority
-  nsAutoPtr<txPattern> simple = Move(aTemplate->mMatch);
+  nsAutoPtr<txPattern> simple = std::move(aTemplate->mMatch);
   nsAutoPtr<txPattern> unionPattern;
   if (simple->getType() == txPattern::UNION_PATTERN) {
-    unionPattern = Move(simple);
+    unionPattern = std::move(simple);
     simple = unionPattern->getSubPatternAt(0);
     unionPattern->setSubPatternAt(0, nullptr);
   }
@@ -388,7 +387,7 @@ nsresult txStylesheet::addTemplate(txTemplateItem* aTemplate,
     NS_ENSURE_TRUE(nt, NS_ERROR_OUT_OF_MEMORY);
 
     nt->mFirstInstruction = instr;
-    nt->mMatch = Move(simple);
+    nt->mMatch = std::move(simple);
     nt->mPriority = priority;
 
     if (unionPattern) {
@@ -492,7 +491,7 @@ nsresult txStylesheet::addGlobalVariable(txVariableItem* aVariable) {
     return NS_OK;
   }
   nsAutoPtr<GlobalVariable> var(new GlobalVariable(
-      Move(aVariable->mValue), Move(aVariable->mFirstInstruction),
+      std::move(aVariable->mValue), std::move(aVariable->mFirstInstruction),
       aVariable->mIsParam));
   nsresult rv = mGlobalVariables.add(aVariable->mName, var);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -516,7 +515,7 @@ nsresult txStylesheet::addKey(const txExpandedName& aName,
       return rv;
     }
   }
-  if (!xslKey->addKey(Move(aMatch), Move(aUse))) {
+  if (!xslKey->addKey(std::move(aMatch), std::move(aUse))) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
   return NS_OK;
@@ -549,4 +548,6 @@ txStylesheet::ImportFrame::~ImportFrame() {
 txStylesheet::GlobalVariable::GlobalVariable(nsAutoPtr<Expr>&& aExpr,
                                              nsAutoPtr<txInstruction>&& aInstr,
                                              bool aIsParam)
-    : mExpr(Move(aExpr)), mFirstInstruction(Move(aInstr)), mIsParam(aIsParam) {}
+    : mExpr(std::move(aExpr)),
+      mFirstInstruction(std::move(aInstr)),
+      mIsParam(aIsParam) {}

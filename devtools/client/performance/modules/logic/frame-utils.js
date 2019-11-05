@@ -6,10 +6,17 @@
 const global = require("devtools/client/performance/modules/global");
 const demangle = require("devtools/client/shared/demangle");
 const { assert } = require("devtools/shared/DevToolsUtils");
-const { isChromeScheme, isContentScheme, isWASM, parseURL } =
-  require("devtools/client/shared/source-utils");
+const {
+  isChromeScheme,
+  isContentScheme,
+  isWASM,
+  parseURL,
+} = require("devtools/client/shared/source-utils");
 
-const { CATEGORY_MASK, CATEGORY_MAPPINGS } = require("devtools/client/performance/modules/categories");
+const {
+  CATEGORY_INDEX,
+  CATEGORIES,
+} = require("devtools/client/performance/modules/categories");
 
 // Character codes used in various parsing helper functions.
 const CHAR_CODE_R = "r".charCodeAt(0);
@@ -80,7 +87,7 @@ function parseLocation(location, fallbackLine, fallbackColumn) {
   let parenIndex = -1;
   let lineAndColumnIndex = -1;
 
-  let lastCharCode = location.charCodeAt(location.length - 1);
+  const lastCharCode = location.charCodeAt(location.length - 1);
   let i;
   if (lastCharCode === CHAR_CODE_RPAREN) {
     // Case 1)
@@ -126,9 +133,11 @@ function parseLocation(location, fallbackLine, fallbackColumn) {
   // Look for the last occurrence of ' (' in case 1).
   if (lastCharCode === CHAR_CODE_RPAREN) {
     for (; i >= 0; i--) {
-      if (location.charCodeAt(i) === CHAR_CODE_LPAREN &&
-          i > 0 &&
-          location.charCodeAt(i - 1) === CHAR_CODE_SPACE) {
+      if (
+        location.charCodeAt(i) === CHAR_CODE_LPAREN &&
+        i > 0 &&
+        location.charCodeAt(i - 1) === CHAR_CODE_SPACE
+      ) {
         parenIndex = i;
         break;
       }
@@ -137,7 +146,7 @@ function parseLocation(location, fallbackLine, fallbackColumn) {
 
   let parsedUrl;
   if (lineAndColumnIndex > 0) {
-    let resource = location.substring(parenIndex + 1, lineAndColumnIndex);
+    const resource = location.substring(parenIndex + 1, lineAndColumnIndex);
     url = resource.split(" -> ").pop();
     if (url) {
       parsedUrl = parseURL(url);
@@ -157,23 +166,29 @@ function parseLocation(location, fallbackLine, fallbackColumn) {
 
     // Check for the case of the filename containing eval
     // e.g. "file.js%20line%2065%20%3E%20eval"
-    let evalIndex = fileName.indexOf(EVAL_TOKEN);
-    if (evalIndex !== -1 && evalIndex === (fileName.length - EVAL_TOKEN.length)) {
+    const evalIndex = fileName.indexOf(EVAL_TOKEN);
+    if (evalIndex !== -1 && evalIndex === fileName.length - EVAL_TOKEN.length) {
       // Match the filename
-      let evalLine = line;
-      let [, _fileName, , _line] = fileName.match(/(.+)(%20line%20(\d+)%20%3E%20eval)/)
-                                   || [];
+      const evalLine = line;
+      const [, _fileName, , _line] =
+        fileName.match(/(.+)(%20line%20(\d+)%20%3E%20eval)/) || [];
       fileName = `${_fileName} (eval:${evalLine})`;
       line = _line;
-      assert(_fileName !== undefined,
-             "Filename could not be found from an eval location site");
-      assert(_line !== undefined,
-             "Line could not be found from an eval location site");
+      assert(
+        _fileName !== undefined,
+        "Filename could not be found from an eval location site"
+      );
+      assert(
+        _line !== undefined,
+        "Line could not be found from an eval location site"
+      );
 
       // Match the url as well
       [, url] = url.match(/(.+)( line (\d+) > eval)/) || [];
-      assert(url !== undefined,
-             "The URL could not be parsed correctly from an eval location site");
+      assert(
+        url !== undefined,
+        "The URL could not be parsed correctly from an eval location site"
+      );
     }
   } else {
     functionName = location;
@@ -190,18 +205,18 @@ function parseLocation(location, fallbackLine, fallbackColumn) {
  */
 function computeIsContentAndCategory(frame) {
   // Only C++ stack frames have associated category information.
-  if (frame.category) {
+  if (frame.category !== null && frame.category !== undefined) {
     return;
   }
 
-  let location = frame.location;
+  const location = frame.location;
 
   // There are 3 variants of location strings in the profiler (with optional
   // column numbers):
   //   1) "name (resource:line)"
   //   2) "resource:line"
   //   3) "resource"
-  let lastCharCode = location.charCodeAt(location.length - 1);
+  const lastCharCode = location.charCodeAt(location.length - 1);
   let schemeStartIndex = -1;
   if (lastCharCode === CHAR_CODE_RPAREN) {
     // Case 1)
@@ -209,9 +224,11 @@ function computeIsContentAndCategory(frame) {
     // Need to search for the last occurrence of ' (' to find the start of the
     // resource string.
     for (let i = location.length - 2; i >= 0; i--) {
-      if (location.charCodeAt(i) === CHAR_CODE_LPAREN &&
-          i > 0 &&
-          location.charCodeAt(i - 1) === CHAR_CODE_SPACE) {
+      if (
+        location.charCodeAt(i) === CHAR_CODE_LPAREN &&
+        i > 0 &&
+        location.charCodeAt(i - 1) === CHAR_CODE_SPACE
+      ) {
         schemeStartIndex = i + 1;
         break;
       }
@@ -230,22 +247,24 @@ function computeIsContentAndCategory(frame) {
 
   if (schemeStartIndex !== 0) {
     for (let j = schemeStartIndex; j < location.length; j++) {
-      if (location.charCodeAt(j) === CHAR_CODE_R &&
-          isChromeScheme(location, j) &&
-          (location.includes("resource://devtools") ||
-           location.includes("resource://devtools"))) {
-        frame.category = CATEGORY_MASK("tools");
+      if (
+        location.charCodeAt(j) === CHAR_CODE_R &&
+        isChromeScheme(location, j) &&
+        (location.includes("resource://devtools") ||
+          location.includes("resource://devtools"))
+      ) {
+        frame.category = CATEGORY_INDEX("tools");
         return;
       }
     }
   }
 
   if (location === "EnterJIT") {
-    frame.category = CATEGORY_MASK("js");
+    frame.category = CATEGORY_INDEX("js");
     return;
   }
 
-  frame.category = CATEGORY_MASK("other");
+  frame.category = CATEGORY_INDEX("other");
 }
 
 /**
@@ -278,7 +297,11 @@ function getInflatedFrameCache(frameTable) {
 function getOrAddInflatedFrame(cache, index, frameTable, stringTable) {
   let inflatedFrame = cache[index];
   if (inflatedFrame === null) {
-    inflatedFrame = cache[index] = new InflatedFrame(index, frameTable, stringTable);
+    inflatedFrame = cache[index] = new InflatedFrame(
+      index,
+      frameTable,
+      stringTable
+    );
   }
   return inflatedFrame;
 }
@@ -297,8 +320,8 @@ function InflatedFrame(index, frameTable, stringTable) {
   const LINE_SLOT = frameTable.schema.line;
   const CATEGORY_SLOT = frameTable.schema.category;
 
-  let frame = frameTable.data[index];
-  let category = frame[CATEGORY_SLOT];
+  const frame = frameTable.data[index];
+  const category = frame[CATEGORY_SLOT];
   this.location = stringTable[frame[LOCATION_SLOT]];
   this.implementation = frame[IMPLEMENTATION_SLOT];
   this.optimizations = frame[OPTIMIZATIONS_SLOT];
@@ -358,10 +381,13 @@ function isNumeric(c) {
 }
 
 function shouldDemangle(name) {
-  return name && name.charCodeAt &&
-         name.charCodeAt(0) === CHAR_CODE_UNDERSCORE &&
-         name.charCodeAt(1) === CHAR_CODE_UNDERSCORE &&
-         name.charCodeAt(2) === CHAR_CODE_CAP_Z;
+  return (
+    name &&
+    name.charCodeAt &&
+    name.charCodeAt(0) === CHAR_CODE_UNDERSCORE &&
+    name.charCodeAt(1) === CHAR_CODE_UNDERSCORE &&
+    name.charCodeAt(2) === CHAR_CODE_CAP_Z
+  );
 }
 
 /**
@@ -393,7 +419,10 @@ function getFrameInfo(node, options) {
       data.isMetaCategory = node.isMetaCategory;
     }
     data.samples = node.youngestFrameSamples;
-    data.categoryData = CATEGORY_MAPPINGS[node.category] || {};
+    const hasCategory = node.category !== null && node.category !== undefined;
+    data.categoryData = hasCategory
+      ? CATEGORIES[node.category] || CATEGORIES[CATEGORY_INDEX("other")]
+      : {};
     data.nodeType = node.nodeType;
 
     // Frame name (function location or some meta information)
@@ -405,9 +434,9 @@ function getFrameInfo(node, options) {
       data.name = data.functionName;
     }
 
-    data.tooltiptext = data.isMetaCategory ?
-      data.categoryData.label :
-      node.location || "";
+    data.tooltiptext = data.isMetaCategory
+      ? data.categoryData.label
+      : node.location || "";
 
     gFrameData.set(node, data);
   }
@@ -420,26 +449,27 @@ function getFrameInfo(node, options) {
   // If a root specified, calculate the relative costs in the context of
   // this call tree. The cached store may already have this, but generate
   // if it does not.
-  let totalSamples = options.root.samples;
-  let totalDuration = options.root.duration;
+  const totalSamples = options.root.samples;
+  const totalDuration = options.root.duration;
   if (options && options.root && !data.COSTS_CALCULATED) {
-    data.selfDuration = node.youngestFrameSamples / totalSamples * totalDuration;
-    data.selfPercentage = node.youngestFrameSamples / totalSamples * 100;
-    data.totalDuration = node.samples / totalSamples * totalDuration;
-    data.totalPercentage = node.samples / totalSamples * 100;
+    data.selfDuration =
+      (node.youngestFrameSamples / totalSamples) * totalDuration;
+    data.selfPercentage = (node.youngestFrameSamples / totalSamples) * 100;
+    data.totalDuration = (node.samples / totalSamples) * totalDuration;
+    data.totalPercentage = (node.samples / totalSamples) * 100;
     data.COSTS_CALCULATED = true;
   }
 
   if (options && options.allocations && !data.ALLOCATION_DATA_CALCULATED) {
-    let totalBytes = options.root.byteSize;
+    const totalBytes = options.root.byteSize;
     data.selfCount = node.youngestFrameSamples;
     data.totalCount = node.samples;
-    data.selfCountPercentage = node.youngestFrameSamples / totalSamples * 100;
-    data.totalCountPercentage = node.samples / totalSamples * 100;
+    data.selfCountPercentage = (node.youngestFrameSamples / totalSamples) * 100;
+    data.totalCountPercentage = (node.samples / totalSamples) * 100;
     data.selfSize = node.youngestFrameByteSize;
     data.totalSize = node.byteSize;
-    data.selfSizePercentage = node.youngestFrameByteSize / totalBytes * 100;
-    data.totalSizePercentage = node.byteSize / totalBytes * 100;
+    data.selfSizePercentage = (node.youngestFrameByteSize / totalBytes) * 100;
+    data.totalSizePercentage = (node.byteSize / totalBytes) * 100;
     data.ALLOCATION_DATA_CALCULATED = true;
   }
 
@@ -459,10 +489,11 @@ exports.getFrameInfo = getFrameInfo;
 function findFrameByLocation(threadNode, location) {
   if (!threadNode.inverted) {
     throw new Error(
-      "FrameUtils.findFrameByLocation only supports leaf nodes in an inverted tree.");
+      "FrameUtils.findFrameByLocation only supports leaf nodes in an inverted tree."
+    );
   }
 
-  let calls = threadNode.calls;
+  const calls = threadNode.calls;
   for (let i = 0; i < calls.length; i++) {
     if (calls[i].location === location) {
       return calls[i];

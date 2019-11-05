@@ -54,7 +54,7 @@ class nsPrintDialogServiceX : public nsIPrintDialogService {
 
 @end
 
-@interface PrintPanelAccessoryController : NSViewController<NSPrintPanelAccessorizing>
+@interface PrintPanelAccessoryController : NSViewController <NSPrintPanelAccessorizing>
 
 - (id)initWithSettings:(nsIPrintSettings*)aSettings;
 

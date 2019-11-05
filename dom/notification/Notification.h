@@ -269,7 +269,6 @@ class Notification : public DOMEventTargetHelper,
   static NotificationPermission TestPermission(nsIPrincipal* aPrincipal);
 
   bool DispatchClickEvent();
-  bool DispatchNotificationClickEvent();
 
   static nsresult RemovePermission(nsIPrincipal* aPrincipal);
   static nsresult OpenSettings(nsIPrincipal* aPrincipal);

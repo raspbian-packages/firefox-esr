@@ -5,16 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "BufferTexture.h"
-#include "mozilla/layers/ImageDataSerializer.h"
-#include "mozilla/layers/ISurfaceAllocator.h"
-#include "mozilla/layers/CompositableForwarder.h"
-#include "mozilla/gfx/Logging.h"
-#include "mozilla/gfx/2D.h"
-#include "mozilla/fallible.h"
 #include "libyuv.h"
+#include "mozilla/Move.h"
+#include "mozilla/fallible.h"
+#include "mozilla/gfx/2D.h"
+#include "mozilla/gfx/Logging.h"
+#include "mozilla/layers/CompositableForwarder.h"
+#include "mozilla/layers/ISurfaceAllocator.h"
+#include "mozilla/layers/ImageDataSerializer.h"
 
 #ifdef MOZ_WIDGET_GTK
-#include "gfxPlatformGtk.h"
+#  include "gfxPlatformGtk.h"
 #endif
 
 namespace mozilla {
@@ -99,7 +100,12 @@ static bool UsingX11Compositor() {
 }
 
 bool ComputeHasIntermediateBuffer(gfx::SurfaceFormat aFormat,
-                                  LayersBackend aLayersBackend) {
+                                  LayersBackend aLayersBackend,
+                                  bool aSupportsTextureDirectMapping) {
+  if (aSupportsTextureDirectMapping) {
+    return false;
+  }
+
   return aLayersBackend != LayersBackend::LAYERS_BASIC ||
          UsingX11Compositor() || aFormat == gfx::SurfaceFormat::UNKNOWN;
 }
@@ -145,36 +151,10 @@ BufferTextureData* BufferTextureData::CreateInternal(
   }
 }
 
-BufferTextureData* BufferTextureData::CreateForYCbCrWithBufferSize(
-    KnowsCompositor* aAllocator, int32_t aBufferSize,
-    YUVColorSpace aYUVColorSpace, uint32_t aBitDepth,
-    TextureFlags aTextureFlags) {
-  if (aBufferSize == 0 || !gfx::Factory::CheckBufferSize(aBufferSize)) {
-    return nullptr;
-  }
-
-  bool hasIntermediateBuffer =
-      aAllocator
-          ? ComputeHasIntermediateBuffer(gfx::SurfaceFormat::YUV,
-                                         aAllocator->GetCompositorBackendType())
-          : true;
-
-  // Initialize the metadata with something, even if it will have to be
-  // rewritten afterwards since we don't know the dimensions of the texture at
-  // this point.
-  BufferDescriptor desc = YCbCrDescriptor(
-      gfx::IntSize(), 0, gfx::IntSize(), 0, 0, 0, 0, StereoMode::MONO,
-      aYUVColorSpace, aBitDepth, hasIntermediateBuffer);
-
-  return CreateInternal(
-      aAllocator ? aAllocator->GetTextureForwarder() : nullptr, desc,
-      gfx::BackendType::NONE, aBufferSize, aTextureFlags);
-}
-
 BufferTextureData* BufferTextureData::CreateForYCbCr(
     KnowsCompositor* aAllocator, gfx::IntSize aYSize, uint32_t aYStride,
     gfx::IntSize aCbCrSize, uint32_t aCbCrStride, StereoMode aStereoMode,
-    YUVColorSpace aYUVColorSpace, uint32_t aBitDepth,
+    gfx::ColorDepth aColorDepth, gfx::YUVColorSpace aYUVColorSpace,
     TextureFlags aTextureFlags) {
   uint32_t bufSize = ImageDataSerializer::ComputeYCbCrBufferSize(
       aYSize, aYStride, aCbCrSize, aCbCrStride);
@@ -189,15 +169,23 @@ BufferTextureData* BufferTextureData::CreateForYCbCr(
                                            aCbCrSize.height, yOffset, cbOffset,
                                            crOffset);
 
+  bool supportsTextureDirectMapping =
+      aAllocator->SupportsTextureDirectMapping() &&
+      aAllocator->GetMaxTextureSize() >
+          std::max(aYSize.width,
+                   std::max(aYSize.height,
+                            std::max(aCbCrSize.width, aCbCrSize.height)));
+
   bool hasIntermediateBuffer =
       aAllocator
           ? ComputeHasIntermediateBuffer(gfx::SurfaceFormat::YUV,
-                                         aAllocator->GetCompositorBackendType())
+                                         aAllocator->GetCompositorBackendType(),
+                                         supportsTextureDirectMapping)
           : true;
 
   YCbCrDescriptor descriptor = YCbCrDescriptor(
       aYSize, aYStride, aCbCrSize, aCbCrStride, yOffset, cbOffset, crOffset,
-      aStereoMode, aYUVColorSpace, aBitDepth, hasIntermediateBuffer);
+      aStereoMode, aColorDepth, aYUVColorSpace, hasIntermediateBuffer);
 
   return CreateInternal(
       aAllocator ? aAllocator->GetTextureForwarder() : nullptr, descriptor,
@@ -236,12 +224,12 @@ Maybe<gfx::IntSize> BufferTextureData::GetCbCrSize() const {
   return ImageDataSerializer::CbCrSizeFromBufferDescriptor(mDescriptor);
 }
 
-Maybe<YUVColorSpace> BufferTextureData::GetYUVColorSpace() const {
+Maybe<gfx::YUVColorSpace> BufferTextureData::GetYUVColorSpace() const {
   return ImageDataSerializer::YUVColorSpaceFromBufferDescriptor(mDescriptor);
 }
 
-Maybe<uint32_t> BufferTextureData::GetBitDepth() const {
-  return ImageDataSerializer::BitDepthFromBufferDescriptor(mDescriptor);
+Maybe<gfx::ColorDepth> BufferTextureData::GetColorDepth() const {
+  return ImageDataSerializer::ColorDepthFromBufferDescriptor(mDescriptor);
 }
 
 Maybe<StereoMode> BufferTextureData::GetStereoMode() const {
@@ -309,7 +297,8 @@ bool BufferTextureData::BorrowMappedYCbCrData(MappedYCbCrTextureData& aMap) {
 
   aMap.stereoMode = desc.stereoMode();
   aMap.metadata = nullptr;
-  uint32_t bytesPerPixel = desc.bitDepth() > 8 ? 2 : 1;
+  uint32_t bytesPerPixel =
+      BytesPerPixel(SurfaceFormatForColorDepth(desc.colorDepth()));
 
   aMap.y.data = data + desc.yOffset();
   aMap.y.size = ySize;
@@ -392,10 +381,10 @@ bool BufferTextureData::UpdateFromSurface(gfx::SourceSurface* aSurface) {
   return true;
 }
 
-void BufferTextureData::SetDesciptor(const BufferDescriptor& aDescriptor) {
+void BufferTextureData::SetDescriptor(BufferDescriptor&& aDescriptor) {
   MOZ_ASSERT(mDescriptor.type() == BufferDescriptor::TYCbCrDescriptor);
   MOZ_ASSERT(mDescriptor.get_YCbCrDescriptor().ySize() == gfx::IntSize());
-  mDescriptor = aDescriptor;
+  mDescriptor = std::move(aDescriptor);
 }
 
 bool MemoryTextureData::Serialize(SurfaceDescriptor& aOutDescriptor) {
@@ -463,8 +452,8 @@ MemoryTextureData* MemoryTextureData::Create(gfx::IntSize aSize,
     return nullptr;
   }
 
-  bool hasIntermediateBuffer =
-      ComputeHasIntermediateBuffer(aFormat, aLayersBackend);
+  bool hasIntermediateBuffer = ComputeHasIntermediateBuffer(
+      aFormat, aLayersBackend, aAllocFlags & ALLOC_ALLOW_DIRECT_MAPPING);
 
   GfxMemoryImageReporter::DidAlloc(buf);
 
@@ -495,7 +484,8 @@ bool ShmemTextureData::Serialize(SurfaceDescriptor& aOutDescriptor) {
     return false;
   }
 
-  aOutDescriptor = SurfaceDescriptorBuffer(mDescriptor, MemoryOrShmem(mShmem));
+  aOutDescriptor =
+      SurfaceDescriptorBuffer(mDescriptor, MemoryOrShmem(std::move(mShmem)));
 
   return true;
 }
@@ -536,15 +526,13 @@ ShmemTextureData* ShmemTextureData::Create(gfx::IntSize aSize,
     return nullptr;
   }
 
-  bool hasIntermediateBuffer =
-      ComputeHasIntermediateBuffer(aFormat, aLayersBackend);
+  bool hasIntermediateBuffer = ComputeHasIntermediateBuffer(
+      aFormat, aLayersBackend, aAllocFlags & ALLOC_ALLOW_DIRECT_MAPPING);
 
   BufferDescriptor descriptor =
       RGBDescriptor(aSize, aFormat, hasIntermediateBuffer);
 
   return new ShmemTextureData(descriptor, aMoz2DBackend, shm);
-
-  return nullptr;
 }
 
 TextureData* ShmemTextureData::CreateSimilar(

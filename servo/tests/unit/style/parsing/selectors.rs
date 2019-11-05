@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 use cssparser::{Parser, ParserInput, ToCss};
 use selectors::parser::SelectorList;
@@ -10,7 +10,7 @@ use style_traits::ParseError;
 
 fn parse_selector<'i, 't>(input: &mut Parser<'i, 't>) -> Result<SelectorList<SelectorImpl>, ParseError<'i>> {
     let mut ns = Namespaces::default();
-    ns.prefixes.insert("svg".into(), (ns!(svg), ()));
+    ns.prefixes.insert("svg".into(), ns!(svg));
     let parser = SelectorParser {
         stylesheet_origin: Origin::UserAgent,
         namespaces: &ns,

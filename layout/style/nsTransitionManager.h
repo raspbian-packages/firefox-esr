@@ -12,21 +12,19 @@
 #include "mozilla/ComputedTiming.h"
 #include "mozilla/EffectCompositor.h"  // For EffectCompositor::CascadeLevel
 #include "mozilla/dom/Animation.h"
-#include "mozilla/dom/KeyframeEffectReadOnly.h"
+#include "mozilla/dom/KeyframeEffect.h"
 #include "AnimationCommon.h"
 #include "nsISupportsImpl.h"
 
 class nsIGlobalObject;
-class nsStyleContext;
 class nsPresContext;
 class nsCSSPropertyIDSet;
 
 namespace mozilla {
-enum class CSSPseudoElementType : uint8_t;
-class GeckoStyleContext;
+class ComputedStyle;
+enum class PseudoStyleType : uint8_t;
 struct Keyframe;
 struct StyleTransition;
-class ServoStyleContext;
 }  // namespace mozilla
 
 /*****************************************************************************
@@ -35,15 +33,15 @@ class ServoStyleContext;
 
 namespace mozilla {
 
-struct ElementPropertyTransition : public dom::KeyframeEffectReadOnly {
-  ElementPropertyTransition(nsIDocument* aDocument,
+struct ElementPropertyTransition : public dom::KeyframeEffect {
+  ElementPropertyTransition(dom::Document* aDocument,
                             Maybe<OwningAnimationTarget>& aTarget,
-                            const TimingParams& aTiming,
+                            TimingParams&& aTiming,
                             AnimationValue aStartForReversingTest,
                             double aReversePortion,
                             const KeyframeEffectParams& aEffectOptions)
-      : dom::KeyframeEffectReadOnly(aDocument, aTarget, aTiming,
-                                    aEffectOptions),
+      : dom::KeyframeEffect(aDocument, aTarget, std::move(aTiming),
+                            aEffectOptions),
         mStartForReversingTest(aStartForReversingTest),
         mReversePortion(aReversePortion) {}
 
@@ -144,7 +142,7 @@ class CSSTransition final : public Animation {
     MOZ_ASSERT(!rv.Failed(), "Unexpected exception playing transition");
   }
 
-  void CancelFromStyle() override {
+  void CancelFromStyle(PostRestyleMode aPostRestyle) {
     // The animation index to use for compositing will be established when
     // this transition next transitions out of the idle state but we still
     // update it now so that the sort order of this transition remains
@@ -154,17 +152,17 @@ class CSSTransition final : public Animation {
     mAnimationIndex = sNextAnimationIndex++;
     mNeedsNewAnimationIndexWhenRun = true;
 
-    Animation::CancelFromStyle();
+    Animation::Cancel(aPostRestyle);
 
-    // It is important we do this *after* calling CancelFromStyle().
-    // This is because CancelFromStyle() will end up posting a restyle and
+    // It is important we do this *after* calling Cancel().
+    // This is because Cancel() will end up posting a restyle and
     // that restyle should target the *transitions* level of the cascade.
     // However, once we clear the owning element, CascadeLevel() will begin
     // returning CascadeLevel::Animations.
     mOwningElement = OwningElementRef();
   }
 
-  void SetEffectFromStyle(AnimationEffectReadOnly* aEffect);
+  void SetEffectFromStyle(AnimationEffect* aEffect);
 
   void Tick() override;
 
@@ -278,6 +276,9 @@ struct AnimationTypeTraits<dom::CSSTransition> {
   static nsAtom* AfterPropertyAtom() {
     return nsGkAtoms::transitionsOfAfterProperty;
   }
+  static nsAtom* MarkerPropertyAtom() {
+    return nsGkAtoms::transitionsOfMarkerProperty;
+  }
 };
 
 }  // namespace mozilla
@@ -287,73 +288,22 @@ class nsTransitionManager final
  public:
   explicit nsTransitionManager(nsPresContext* aPresContext)
       : mozilla::CommonAnimationManager<mozilla::dom::CSSTransition>(
-            aPresContext)
-#ifdef MOZ_OLD_STYLE
-        ,
-        mInAnimationOnlyStyleUpdate(false)
-#endif
-  {
-  }
+            aPresContext) {}
 
-  NS_INLINE_DECL_REFCOUNTING(nsTransitionManager)
+  ~nsTransitionManager() final = default;
 
   typedef mozilla::AnimationCollection<mozilla::dom::CSSTransition>
       CSSTransitionCollection;
-
-#ifdef MOZ_OLD_STYLE
-  /**
-   * StyleContextChanged
-   *
-   * To be called from RestyleManager::TryInitiatingTransition when the
-   * style of an element has changed, to initiate transitions from
-   * that style change.  For style contexts with :before and :after
-   * pseudos, aElement is expected to be the generated before/after
-   * element.
-   *
-   * It may modify the new style context (by replacing
-   * *aNewStyleContext) to cover up some of the changes for the duration
-   * of the restyling of descendants.  If it does, this function will
-   * take care of causing the necessary restyle afterwards.
-   */
-  void StyleContextChanged(
-      mozilla::dom::Element* aElement,
-      mozilla::GeckoStyleContext* aOldStyleContext,
-      RefPtr<mozilla::GeckoStyleContext>* aNewStyleContext /* inout */);
-#endif
 
   /**
    * Update transitions for stylo.
    */
   bool UpdateTransitions(mozilla::dom::Element* aElement,
-                         mozilla::CSSPseudoElementType aPseudoType,
-                         const mozilla::ServoStyleContext* aOldStyle,
-                         const mozilla::ServoStyleContext* aNewStyle);
-
-#ifdef MOZ_OLD_STYLE
-  /**
-   * When we're resolving style for an element that previously didn't have
-   * style, we might have some old finished transitions for it, if,
-   * say, it was display:none for a while, but previously displayed.
-   *
-   * This method removes any finished transitions that don't match the
-   * new style.
-   */
-  void PruneCompletedTransitions(mozilla::dom::Element* aElement,
-                                 mozilla::CSSPseudoElementType aPseudoType,
-                                 mozilla::GeckoStyleContext* aNewStyleContext);
-
-  void SetInAnimationOnlyStyleUpdate(bool aInAnimationOnlyUpdate) {
-    mInAnimationOnlyStyleUpdate = aInAnimationOnlyUpdate;
-  }
-
-  bool InAnimationOnlyStyleUpdate() const {
-    return mInAnimationOnlyStyleUpdate;
-  }
-#endif
+                         mozilla::PseudoStyleType aPseudoType,
+                         const mozilla::ComputedStyle& aOldStyle,
+                         const mozilla::ComputedStyle& aNewStyle);
 
  protected:
-  virtual ~nsTransitionManager() {}
-
   typedef nsTArray<RefPtr<mozilla::dom::CSSTransition>>
       OwningCSSTransitionPtrArray;
 
@@ -362,25 +312,22 @@ class nsTransitionManager final
   // as needed. aDisp and aElement must be non-null.
   // aElementTransitions is the collection of current transitions, and it
   // could be a nullptr if we don't have any transitions.
-  template <typename StyleType>
   bool DoUpdateTransitions(const nsStyleDisplay& aDisp,
                            mozilla::dom::Element* aElement,
-                           mozilla::CSSPseudoElementType aPseudoType,
+                           mozilla::PseudoStyleType aPseudoType,
                            CSSTransitionCollection*& aElementTransitions,
-                           StyleType aOldStyle, StyleType aNewStyle);
+                           const mozilla::ComputedStyle& aOldStyle,
+                           const mozilla::ComputedStyle& aNewStyle);
 
-  template <typename StyleType>
-  void ConsiderInitiatingTransition(
+  // Returns whether the transition actually started.
+  bool ConsiderInitiatingTransition(
       nsCSSPropertyID aProperty, const nsStyleDisplay& aStyleDisplay,
       uint32_t transitionIdx, mozilla::dom::Element* aElement,
-      mozilla::CSSPseudoElementType aPseudoType,
-      CSSTransitionCollection*& aElementTransitions, StyleType aOldStyle,
-      StyleType aNewStyle, bool* aStartedAny,
-      nsCSSPropertyIDSet* aWhichStarted);
-
-#ifdef MOZ_OLD_STYLE
-  bool mInAnimationOnlyStyleUpdate;
-#endif
+      mozilla::PseudoStyleType aPseudoType,
+      CSSTransitionCollection*& aElementTransitions,
+      const mozilla::ComputedStyle& aOldStyle,
+      const mozilla::ComputedStyle& aNewStyle,
+      nsCSSPropertyIDSet& aPropertiesChecked);
 };
 
 #endif /* !defined(nsTransitionManager_h_) */

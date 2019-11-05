@@ -8,17 +8,21 @@
 #include "nsIRunnable.h"
 #include "nsISupportsImpl.h"
 #include "nsPrintfCString.h"
+#include "nsThread.h"
+#include "nsThreadManager.h"
 #include "nsThreadUtils.h"
+#include "mozilla/EventQueue.h"
 #include "mozilla/IOInterposer.h"
+#include "mozilla/ThreadEventQueue.h"
 #include "GeckoProfiler.h"
 
 #ifdef XP_WIN
-#include <windows.h>
+#  include <windows.h>
 #endif
 
 #ifdef MOZ_TASK_TRACER
-#include "GeckoTaskTracer.h"
-#include "TracedTaskCommon.h"
+#  include "GeckoTaskTracer.h"
+#  include "TracedTaskCommon.h"
 #endif
 
 namespace mozilla {
@@ -125,7 +129,7 @@ BlockingIOWatcher::BlockingIOWatcher()
 
   mCancelSynchronousIo = reinterpret_cast<TCancelSynchronousIo>(ptr);
 
-  mEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+  mEvent = ::CreateEventW(NULL, TRUE, FALSE, NULL);
 }
 
 BlockingIOWatcher::~BlockingIOWatcher() {
@@ -195,8 +199,8 @@ void BlockingIOWatcher::NotifyOperationDone() {
 
 // Stub code only (we don't implement IO cancelation for this platform)
 
-BlockingIOWatcher::BlockingIOWatcher() {}
-BlockingIOWatcher::~BlockingIOWatcher() {}
+BlockingIOWatcher::BlockingIOWatcher() = default;
+BlockingIOWatcher::~BlockingIOWatcher() = default;
 void BlockingIOWatcher::InitThread() {}
 void BlockingIOWatcher::WatchAndCancel(Monitor&) {}
 void BlockingIOWatcher::NotifyOperationDone() {}
@@ -225,8 +229,8 @@ CacheIOThread::CacheIOThread()
       mInsideLoop(true)
 #endif
 {
-  for (uint32_t i = 0; i < LAST_LEVEL; ++i) {
-    mQueueLength[i] = 0;
+  for (auto& item : mQueueLength) {
+    item = 0;
   }
 
   sSelf = this;
@@ -240,8 +244,8 @@ CacheIOThread::~CacheIOThread() {
 
   sSelf = nullptr;
 #ifdef DEBUG
-  for (uint32_t level = 0; level < LAST_LEVEL; ++level) {
-    MOZ_ASSERT(!mEventQueue[level].Length());
+  for (auto& event : mEventQueue) {
+    MOZ_ASSERT(!event.Length());
   }
 #endif
 }
@@ -430,8 +434,11 @@ void CacheIOThread::ThreadFunc() {
     MOZ_ASSERT(mBlockingIOWatcher);
     mBlockingIOWatcher->InitThread();
 
-    // This creates nsThread for this PRThread
-    nsCOMPtr<nsIThread> xpcomThread = NS_GetCurrentThread();
+    auto queue = MakeRefPtr<ThreadEventQueue<mozilla::EventQueue>>(
+        MakeUnique<mozilla::EventQueue>());
+    nsCOMPtr<nsIThread> xpcomThread =
+        nsThreadManager::get().CreateCurrentThread(queue,
+                                                   nsThread::NOT_MAIN_THREAD);
 
     threadInternal = do_QueryInterface(xpcomThread);
     if (threadInternal) threadInternal->SetObserver(this);
@@ -487,7 +494,9 @@ void CacheIOThread::ThreadFunc() {
         break;
       }
 
-      lock.Wait(PR_INTERVAL_NO_TIMEOUT);
+      AUTO_PROFILER_LABEL("CacheIOThread::ThreadFunc::Wait", IDLE);
+      AUTO_PROFILER_THREAD_SLEEP;
+      lock.Wait();
 
     } while (true);
 
@@ -553,9 +562,22 @@ void CacheIOThread::LoopOneLevel(uint32_t aLevel) {
     }
   }
 
-  if (returnEvents)
-    mEventQueue[aLevel].InsertElementsAt(0, events.Elements() + index,
-                                         length - index);
+  if (returnEvents) {
+    // This code must prevent any AddRef/Release calls on the stored COMPtrs as
+    // it might be exhaustive and block the monitor's lock for an excessive
+    // amout of time.
+
+    // 'index' points at the event that was interrupted and asked for re-run,
+    // all events before have run, been nullified, and can be removed.
+    events.RemoveElementsAt(0, index);
+    // Move events that might have been scheduled on this queue to the tail to
+    // preserve the expected per-queue FIFO order.
+    if (!events.AppendElements(std::move(mEventQueue[aLevel]))) {
+      MOZ_CRASH("Can't allocate memory for cache IO thread queue");
+    }
+    // And finally move everything back to the main queue.
+    events.SwapElements(mEventQueue[aLevel]);
+  }
 }
 
 bool CacheIOThread::EventsPending(uint32_t aLastLevel) {
@@ -587,9 +609,8 @@ size_t CacheIOThread::SizeOfExcludingThis(
   MonitorAutoLock lock(const_cast<CacheIOThread*>(this)->mMonitor);
 
   size_t n = 0;
-  n += mallocSizeOf(mThread);
-  for (uint32_t level = 0; level < LAST_LEVEL; ++level) {
-    n += mEventQueue[level].ShallowSizeOfExcludingThis(mallocSizeOf);
+  for (const auto& event : mEventQueue) {
+    n += event.ShallowSizeOfExcludingThis(mallocSizeOf);
     // Events referenced by the queues are arbitrary objects we cannot be sure
     // are reported elsewhere as well as probably not implementing nsISizeOf
     // interface.  Deliberatly omitting them from reporting here.

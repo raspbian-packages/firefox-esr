@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(MP4Demuxer_h_)
-#define MP4Demuxer_h_
+#  define MP4Demuxer_h_
 
-#include "mozilla/Maybe.h"
-#include "mozilla/Monitor.h"
-#include "MediaDataDemuxer.h"
-#include "MediaResource.h"
+#  include "mozilla/Maybe.h"
+#  include "mozilla/Monitor.h"
+#  include "MediaDataDemuxer.h"
+#  include "MediaResource.h"
 
 namespace mozilla {
 class MP4TrackDemuxer;
@@ -39,7 +39,6 @@ class MP4Demuxer : public MediaDataDemuxer,
   void NotifyDataRemoved() override;
 
  private:
-  friend class MP4TrackDemuxer;
   RefPtr<MediaResource> mResource;
   RefPtr<ResourceStream> mStream;
   AutoTArray<RefPtr<MP4TrackDemuxer>, 1> mAudioDemuxers;

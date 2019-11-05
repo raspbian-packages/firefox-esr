@@ -68,15 +68,16 @@ class JsepCodecDescription {
   }
 
   virtual bool Negotiate(const std::string& pt,
-                         const SdpMediaSection& remoteMsection) {
-    mDefaultPt = pt;
+                         const SdpMediaSection& remoteMsection, bool isOffer) {
+    if (mDirection == sdp::kSend || isOffer) {
+      mDefaultPt = pt;
+    }
     return true;
   }
 
   virtual void AddToMediaSection(SdpMediaSection& msection) const {
     if (mEnabled && msection.GetMediaType() == mType) {
-      // Both send and recv codec will have the same pt, so don't add twice
-      if (!msection.HasFormat(mDefaultPt)) {
+      if (mDirection == sdp::kRecv) {
         msection.AddCodec(mDefaultPt, mName, mClock, mChannels);
       }
 
@@ -102,12 +103,9 @@ class JsepAudioCodecDescription : public JsepCodecDescription {
  public:
   JsepAudioCodecDescription(const std::string& defaultPt,
                             const std::string& name, uint32_t clock,
-                            uint32_t channels, uint32_t packetSize,
-                            uint32_t bitRate, bool enabled = true)
+                            uint32_t channels, bool enabled = true)
       : JsepCodecDescription(mozilla::SdpMediaSection::kAudio, defaultPt, name,
                              clock, channels, enabled),
-        mPacketSize(packetSize),
-        mBitrate(bitRate),
         mMaxPlaybackRate(0),
         mForceMono(false),
         mFECEnabled(false),
@@ -170,9 +168,9 @@ class JsepAudioCodecDescription : public JsepCodecDescription {
     }
   }
 
-  bool Negotiate(const std::string& pt,
-                 const SdpMediaSection& remoteMsection) override {
-    JsepCodecDescription::Negotiate(pt, remoteMsection);
+  bool Negotiate(const std::string& pt, const SdpMediaSection& remoteMsection,
+                 bool isOffer) override {
+    JsepCodecDescription::Negotiate(pt, remoteMsection, isOffer);
     if (mName == "opus" && mDirection == sdp::kSend) {
       SdpFmtpAttributeList::OpusParameters opusParams(
           GetOpusParameters(mDefaultPt, remoteMsection));
@@ -188,8 +186,6 @@ class JsepAudioCodecDescription : public JsepCodecDescription {
     return true;
   }
 
-  uint32_t mPacketSize;
-  uint32_t mBitrate;
   uint32_t mMaxPlaybackRate;
   bool mForceMono;
   bool mFECEnabled;
@@ -206,6 +202,9 @@ class JsepVideoCodecDescription : public JsepCodecDescription {
         mTmmbrEnabled(false),
         mRembEnabled(false),
         mFECEnabled(false),
+        mREDPayloadType(0),
+        mULPFECPayloadType(0),
+        mProfileLevelId(0),
         mPacketizationMode(0) {
     // Add supported rtcp-fb types
     mNackFbTypes.push_back("");
@@ -406,8 +405,9 @@ class JsepVideoCodecDescription : public JsepCodecDescription {
   }
 
   virtual bool Negotiate(const std::string& pt,
-                         const SdpMediaSection& remoteMsection) override {
-    JsepCodecDescription::Negotiate(pt, remoteMsection);
+                         const SdpMediaSection& remoteMsection,
+                         bool isOffer) override {
+    JsepCodecDescription::Negotiate(pt, remoteMsection, isOffer);
     if (mName == "H264") {
       SdpFmtpAttributeList::H264Parameters h264Params(
           GetH264Parameters(mDefaultPt, remoteMsection));
@@ -652,8 +652,8 @@ class JsepVideoCodecDescription : public JsepCodecDescription {
   }
 
   virtual void UpdateRedundantEncodings(
-      std::vector<JsepCodecDescription*> codecs) {
-    for (const auto codec : codecs) {
+      const std::vector<UniquePtr<JsepCodecDescription>>& codecs) {
+    for (const auto& codec : codecs) {
       if (codec->mType == SdpMediaSection::kVideo && codec->mEnabled &&
           codec->mName != "red") {
         uint16_t pt;
@@ -696,7 +696,8 @@ class JsepApplicationCodecDescription : public JsepCodecDescription {
         mLocalPort(localPort),
         mLocalMaxMessageSize(localMaxMessageSize),
         mRemotePort(0),
-        mRemoteMaxMessageSize(0) {}
+        mRemoteMaxMessageSize(0),
+        mRemoteMMSSet(false) {}
 
   JSEP_CODEC_CLONE(JsepApplicationCodecDescription)
 
@@ -728,7 +729,7 @@ class JsepApplicationCodecDescription : public JsepCodecDescription {
 
   virtual void AddToMediaSection(SdpMediaSection& msection) const override {
     if (mEnabled && msection.GetMediaType() == mType) {
-      if (msection.GetFormats().empty()) {
+      if (mDirection == sdp::kRecv) {
         msection.AddDataChannel(mName, mLocalPort, mChannels,
                                 mLocalMaxMessageSize);
       }
@@ -737,9 +738,9 @@ class JsepApplicationCodecDescription : public JsepCodecDescription {
     }
   }
 
-  bool Negotiate(const std::string& pt,
-                 const SdpMediaSection& remoteMsection) override {
-    JsepCodecDescription::Negotiate(pt, remoteMsection);
+  bool Negotiate(const std::string& pt, const SdpMediaSection& remoteMsection,
+                 bool isOffer) override {
+    JsepCodecDescription::Negotiate(pt, remoteMsection, isOffer);
 
     uint32_t message_size;
     mRemoteMMSSet = remoteMsection.GetMaxMessageSize(&message_size);

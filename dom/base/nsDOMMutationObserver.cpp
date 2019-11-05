@@ -11,7 +11,7 @@
 #include "mozilla/OwningNonNull.h"
 
 #include "mozilla/dom/Animation.h"
-#include "mozilla/dom/KeyframeEffectReadOnly.h"
+#include "mozilla/dom/KeyframeEffect.h"
 #include "mozilla/dom/DocGroup.h"
 
 #include "nsContentUtils.h"
@@ -23,10 +23,9 @@
 #include "nsThreadUtils.h"
 
 using namespace mozilla;
-
-using mozilla::dom::Animation;
-using mozilla::dom::Element;
-using mozilla::dom::TreeOrderComparator;
+using namespace mozilla::dom;
+using mozilla::dom::DocGroup;
+using mozilla::dom::HTMLSlotElement;
 
 AutoTArray<RefPtr<nsDOMMutationObserver>, 4>*
     nsDOMMutationObserver::sScheduledMutationObservers = nullptr;
@@ -140,8 +139,7 @@ void nsMutationReceiver::NativeAnonymousChildListChange(nsIContent* aContent,
 void nsMutationReceiver::AttributeWillChange(mozilla::dom::Element* aElement,
                                              int32_t aNameSpaceID,
                                              nsAtom* aAttribute,
-                                             int32_t aModType,
-                                             const nsAttrValue* aNewValue) {
+                                             int32_t aModType) {
   if (nsAutoMutationBatch::IsBatching() ||
       !ObservesAttr(RegisterTarget(), aElement, aNameSpaceID, aAttribute)) {
     return;
@@ -345,13 +343,12 @@ void nsMutationReceiver::NodeWillBeDestroyed(const nsINode* aNode) {
 
 void nsAnimationReceiver::RecordAnimationMutation(
     Animation* aAnimation, AnimationMutation aMutationType) {
-  mozilla::dom::AnimationEffectReadOnly* effect = aAnimation->GetEffect();
+  mozilla::dom::AnimationEffect* effect = aAnimation->GetEffect();
   if (!effect) {
     return;
   }
 
-  mozilla::dom::KeyframeEffectReadOnly* keyframeEffect =
-      effect->AsKeyframeEffect();
+  mozilla::dom::KeyframeEffect* keyframeEffect = effect->AsKeyframeEffect();
   if (!keyframeEffect) {
     return;
   }
@@ -368,8 +365,7 @@ void nsAnimationReceiver::RecordAnimationMutation(
   }
 
   // Record animations targeting to a pseudo element only when subtree is true.
-  if (animationTarget->mPseudoType !=
-          mozilla::CSSPseudoElementType::NotPseudo &&
+  if (animationTarget->mPseudoType != PseudoStyleType::NotPseudo &&
       !Subtree()) {
     return;
   }
@@ -540,6 +536,7 @@ void nsDOMMutationObserver::ScheduleForRun() {
 
 class MutationObserverMicroTask final : public MicroTaskRunnable {
  public:
+  MOZ_CAN_RUN_SCRIPT
   virtual void Run(AutoSlowOperation& aAso) override {
     nsDOMMutationObserver::HandleMutations(aAso);
   }
@@ -549,7 +546,8 @@ class MutationObserverMicroTask final : public MicroTaskRunnable {
   }
 };
 
-/* static */ void nsDOMMutationObserver::QueueMutationObserverMicroTask() {
+/* static */
+void nsDOMMutationObserver::QueueMutationObserverMicroTask() {
   CycleCollectedJSContext* ccjs = CycleCollectedJSContext::Get();
   if (!ccjs) {
     return;
@@ -668,7 +666,7 @@ void nsDOMMutationObserver::Observe(
   r->SetAttributeOldValue(attributeOldValue);
   r->SetCharacterDataOldValue(characterDataOldValue);
   r->SetNativeAnonymousChildList(nativeAnonymousChildList);
-  r->SetAttributeFilter(Move(filters));
+  r->SetAttributeFilter(std::move(filters));
   r->SetAllAttributes(allAttrs);
   r->SetAnimations(animations);
   r->RemoveClones();
@@ -807,23 +805,22 @@ void nsDOMMutationObserver::HandleMutation() {
   }
   ClearPendingRecords();
 
-  mCallback->Call(this, mutations, *this);
+  RefPtr<dom::MutationCallback> callback(mCallback);
+  callback->Call(this, mutations, *this);
 }
 
 void nsDOMMutationObserver::HandleMutationsInternal(AutoSlowOperation& aAso) {
   nsTArray<RefPtr<nsDOMMutationObserver>>* suppressedObservers = nullptr;
 
-  // Let signalList be a copy of unit of related similar-origin browsing
-  // contexts' signal slot list.
+  // This loop implements:
+  //  * Let signalList be a copy of unit of related similar-origin browsing
+  //    contexts' signal slot list.
+  //  * Empty unit of related similar-origin browsing contexts' signal slot
+  //    list.
   nsTArray<RefPtr<HTMLSlotElement>> signalList;
   if (DocGroup::sPendingDocGroups) {
-    for (uint32_t i = 0; i < DocGroup::sPendingDocGroups->Length(); ++i) {
-      DocGroup* docGroup = DocGroup::sPendingDocGroups->ElementAt(i);
-      signalList.AppendElements(docGroup->SignalSlotList());
-
-      // Empty unit of related similar-origin browsing contexts' signal slot
-      // list.
-      docGroup->ClearSignalSlotList();
+    for (DocGroup* docGroup : *DocGroup::sPendingDocGroups) {
+      docGroup->MoveSignalSlotListTo(signalList);
     }
     delete DocGroup::sPendingDocGroups;
     DocGroup::sPendingDocGroups = nullptr;

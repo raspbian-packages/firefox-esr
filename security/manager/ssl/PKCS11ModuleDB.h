@@ -33,7 +33,8 @@ class PKCS11ModuleDB : public nsIPKCS11ModuleDB {
 
 void GetModuleNameForTelemetry(/*in*/ const SECMODModule* module,
                                /*out*/ nsString& result);
-}
+
+}  // namespace psm
 }  // namespace mozilla
 
 #endif  // PKCS11ModuleDB_h

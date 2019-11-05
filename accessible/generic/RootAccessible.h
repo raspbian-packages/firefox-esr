@@ -11,26 +11,27 @@
 
 #include "nsIDOMEventListener.h"
 
-class nsIDocument;
-
 namespace mozilla {
+
+class PresShell;
+
 namespace a11y {
 
 class RootAccessible : public DocAccessibleWrap, public nsIDOMEventListener {
   NS_DECL_ISUPPORTS_INHERITED
 
  public:
-  RootAccessible(nsIDocument* aDocument, nsIPresShell* aPresShell);
+  RootAccessible(dom::Document* aDocument, PresShell* aPresShell);
 
   // nsIDOMEventListener
-  NS_IMETHOD HandleEvent(nsIDOMEvent* aEvent) override;
+  NS_DECL_NSIDOMEVENTLISTENER
 
   // Accessible
   virtual void Shutdown() override;
-  virtual mozilla::a11y::ENameValueFlag Name(nsString& aName) override;
-  virtual Relation RelationByType(RelationType aType) override;
-  virtual mozilla::a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
+  virtual mozilla::a11y::ENameValueFlag Name(nsString& aName) const override;
+  virtual Relation RelationByType(RelationType aType) const override;
+  virtual mozilla::a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
 
   // RootAccessible
 
@@ -56,7 +57,7 @@ class RootAccessible : public DocAccessibleWrap, public nsIDOMEventListener {
   /**
    * Process the DOM event.
    */
-  void ProcessDOMEvent(nsIDOMEvent* aEvent);
+  void ProcessDOMEvent(dom::Event* aDOMEvent, nsINode* aTarget);
 
   /**
    * Process "popupshown" event. Used by HandleEvent().
@@ -69,12 +70,12 @@ class RootAccessible : public DocAccessibleWrap, public nsIDOMEventListener {
   void HandlePopupHidingEvent(nsINode* aNode);
 
 #ifdef MOZ_XUL
-  void HandleTreeRowCountChangedEvent(nsIDOMEvent* aEvent,
+  void HandleTreeRowCountChangedEvent(dom::Event* aEvent,
                                       XULTreeAccessible* aAccessible);
-  void HandleTreeInvalidatedEvent(nsIDOMEvent* aEvent,
+  void HandleTreeInvalidatedEvent(dom::Event* aEvent,
                                   XULTreeAccessible* aAccessible);
 
-  uint32_t GetChromeFlags();
+  uint32_t GetChromeFlags() const;
 #endif
 };
 

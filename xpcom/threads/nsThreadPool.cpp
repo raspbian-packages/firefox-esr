@@ -6,6 +6,7 @@
 
 #include "nsCOMArray.h"
 #include "nsIClassInfoImpl.h"
+#include "ThreadDelay.h"
 #include "nsThreadPool.h"
 #include "nsThreadManager.h"
 #include "nsThread.h"
@@ -20,7 +21,7 @@ using namespace mozilla;
 
 static LazyLogModule sThreadPoolLog("nsThreadPool");
 #ifdef LOG
-#undef LOG
+#  undef LOG
 #endif
 #define LOG(args) MOZ_LOG(sThreadPoolLog, mozilla::LogLevel::Debug, args)
 
@@ -50,7 +51,8 @@ nsThreadPool::nsThreadPool()
       mIdleThreadTimeout(DEFAULT_IDLE_THREAD_TIMEOUT),
       mIdleCount(0),
       mStackSize(nsIThreadManager::DEFAULT_STACK_SIZE),
-      mShutdown(false) {
+      mShutdown(false),
+      mRegressiveMaxIdleTime(false) {
   LOG(("THRD-P(%p) constructor!!!\n", this));
 }
 
@@ -90,10 +92,15 @@ nsresult nsThreadPool::PutEvent(already_AddRefed<nsIRunnable> aEvent,
       spawnThread = true;
     }
 
-    mEvents.PutEvent(Move(aEvent), EventPriority::Normal, lock);
+    mEvents.PutEvent(std::move(aEvent), EventQueuePriority::Normal, lock);
     mEventsAvailable.Notify();
     stackSize = mStackSize;
   }
+
+  auto delay = MakeScopeExit([&]() {
+    // Delay to encourage the receiving task to run before we do work.
+    DelayForChaosMode(ChaosFeature::TaskDispatching, 1000);
+  });
 
   LOG(("THRD-P(%p) put [spawn=%d]\n", this, spawnThread));
   if (!spawnThread) {
@@ -110,7 +117,9 @@ nsresult nsThreadPool::PutEvent(already_AddRefed<nsIRunnable> aEvent,
   bool killThread = false;
   {
     MutexAutoLock lock(mMutex);
-    if (mThreads.Count() < (int32_t)mThreadLimit) {
+    if (mShutdown) {
+      killThread = true;
+    } else if (mThreads.Count() < (int32_t)mThreadLimit) {
       mThreads.AppendObject(thread);
     } else {
       killThread = true;  // okay, we don't need this thread anymore
@@ -156,7 +165,7 @@ nsThreadPool::Run() {
   bool shutdownThreadOnExit = false;
   bool exitThread = false;
   bool wasIdle = false;
-  PRIntervalTime idleSince;
+  TimeStamp idleSince;
 
   nsCOMPtr<nsIThreadPoolListener> listener;
   {
@@ -175,8 +184,11 @@ nsThreadPool::Run() {
 
       event = mEvents.GetEvent(nullptr, lock);
       if (!event) {
-        PRIntervalTime now = PR_IntervalNow();
-        PRIntervalTime timeout = PR_MillisecondsToInterval(mIdleThreadTimeout);
+        TimeStamp now = TimeStamp::Now();
+        uint32_t idleTimeoutDivider =
+            (mIdleCount && mRegressiveMaxIdleTime) ? mIdleCount : 1;
+        TimeDuration timeout = TimeDuration::FromMilliseconds(
+            static_cast<double>(mIdleThreadTimeout) / idleTimeoutDivider);
 
         // If we are shutting down, then don't keep any idle threads
         if (mShutdown) {
@@ -207,10 +219,15 @@ nsThreadPool::Run() {
           }
           shutdownThreadOnExit = mThreads.RemoveObject(current);
         } else {
-          PRIntervalTime delta = timeout - (now - idleSince);
-          LOG(("THRD-P(%p) %s waiting [%d]\n", this, mName.BeginReading(),
-               delta));
-          mEventsAvailable.Wait(delta);
+          AUTO_PROFILER_LABEL("nsThreadPool::Run::Wait", IDLE);
+
+          TimeDuration delta = timeout - (now - idleSince);
+          LOG(("THRD-P(%p) %s waiting [%f]\n", this, mName.BeginReading(),
+               delta.ToMilliseconds()));
+          {
+            AUTO_PROFILER_THREAD_SLEEP;
+            mEventsAvailable.Wait(delta);
+          }
           LOG(("THRD-P(%p) done waiting\n", this));
         }
       } else if (wasIdle) {
@@ -221,6 +238,11 @@ nsThreadPool::Run() {
     if (event) {
       LOG(("THRD-P(%p) %s running [%p]\n", this, mName.BeginReading(),
            event.get()));
+
+      // Delay event processing to encourage whoever dispatched this event
+      // to run.
+      DelayForChaosMode(ChaosFeature::TaskRunning, 1000);
+
       event->Run();
     }
   } while (!exitThread);
@@ -259,7 +281,7 @@ nsThreadPool::Dispatch(already_AddRefed<nsIRunnable> aEvent, uint32_t aFlags) {
     }
 
     RefPtr<nsThreadSyncDispatch> wrapper =
-        new nsThreadSyncDispatch(thread.forget(), Move(aEvent));
+        new nsThreadSyncDispatch(thread.forget(), std::move(aEvent));
     PutEvent(wrapper);
 
     SpinEventLoopUntil(
@@ -267,7 +289,7 @@ nsThreadPool::Dispatch(already_AddRefed<nsIRunnable> aEvent, uint32_t aFlags) {
   } else {
     NS_ASSERTION(aFlags == NS_DISPATCH_NORMAL || aFlags == NS_DISPATCH_AT_END,
                  "unexpected dispatch flags");
-    PutEvent(Move(aEvent), aFlags);
+    PutEvent(std::move(aEvent), aFlags);
   }
   return NS_OK;
 }
@@ -336,6 +358,99 @@ nsThreadPool::Shutdown() {
   return NS_OK;
 }
 
+template <typename Pred>
+static void SpinMTEventLoopUntil(Pred&& aPredicate, nsIThread* aThread,
+                                 TimeDuration aTimeout) {
+  MOZ_ASSERT(NS_IsMainThread(), "Must be run on the main thread");
+
+  // From a latency perspective, spinning the event loop is like leaving script
+  // and returning to the event loop. Tell the watchdog we stopped running
+  // script (until we return).
+  mozilla::Maybe<xpc::AutoScriptActivity> asa;
+  asa.emplace(false);
+
+  TimeStamp deadline = TimeStamp::Now() + aTimeout;
+  while (!aPredicate() && TimeStamp::Now() < deadline) {
+    if (!NS_ProcessNextEvent(aThread, false)) {
+      PR_Sleep(PR_MillisecondsToInterval(1));
+    }
+  }
+}
+
+NS_IMETHODIMP
+nsThreadPool::ShutdownWithTimeout(int32_t aTimeoutMs) {
+  if (!NS_IsMainThread()) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+
+  nsCOMArray<nsIThread> threads;
+  nsCOMPtr<nsIThreadPoolListener> listener;
+  {
+    MutexAutoLock lock(mMutex);
+    mShutdown = true;
+    mEventsAvailable.NotifyAll();
+
+    threads.AppendObjects(mThreads);
+    mThreads.Clear();
+
+    // Swap in a null listener so that we release the listener at the end of
+    // this method. The listener will be kept alive as long as the other threads
+    // that were created when it was set.
+    mListener.swap(listener);
+  }
+
+  // IMPORTANT! Never dereference these pointers, as the objects may go away at
+  // any time. We just use the pointers values for comparison, to check if the
+  // thread has been shut down or not.
+  nsTArray<nsThreadShutdownContext*> contexts;
+
+  // It's important that we shutdown the threads while outside the event queue
+  // monitor.  Otherwise, we could end up dead-locking.
+  for (int32_t i = 0; i < threads.Count(); ++i) {
+    // Shutdown async
+    nsThreadShutdownContext* maybeContext =
+        static_cast<nsThread*>(threads[i])->ShutdownInternal(false);
+    contexts.AppendElement(maybeContext);
+  }
+
+  NotNull<nsThread*> currentThread =
+      WrapNotNull(nsThreadManager::get().GetCurrentThread());
+
+  // We spin the event loop until all of the threads in the thread pool
+  // have shut down, or the timeout expires.
+  SpinMTEventLoopUntil(
+      [&]() {
+        for (nsIThread* thread : threads) {
+          if (static_cast<nsThread*>(thread)->mThread) {
+            return false;
+          }
+        }
+        return true;
+      },
+      currentThread, TimeDuration::FromMilliseconds(aTimeoutMs));
+
+  // For any threads that have not shutdown yet, we need to remove them from
+  // mRequestedShutdownContexts so the thread manager does not wait for them
+  // at shutdown.
+  for (int32_t i = 0; i < threads.Count(); ++i) {
+    nsThread* thread = static_cast<nsThread*>(threads[i]);
+    // If mThread is not null on the thread it means that it hasn't shutdown
+    // context[i] corresponds to thread[i]
+    if (thread->mThread && contexts[i]) {
+      auto index =
+          currentThread->mRequestedShutdownContexts.IndexOf(contexts[i]);
+      if (index != nsThread::ShutdownContexts::NoIndex) {
+        // We must leak the shutdown context just in case the leaked thread
+        // does get unstuck and completes before the main thread is done.
+        currentThread->mRequestedShutdownContexts[index].forget();
+        currentThread->mRequestedShutdownContexts.RemoveElementsAt(index, 1);
+      }
+    }
+  }
+
+  return NS_OK;
+}
+
 NS_IMETHODIMP
 nsThreadPool::GetThreadLimit(uint32_t* aValue) {
   *aValue = mThreadLimit;
@@ -395,6 +510,26 @@ nsThreadPool::SetIdleThreadTimeout(uint32_t aValue) {
 
   // Do we need to notify any idle threads that their sleep time has shortened?
   if (mIdleThreadTimeout < oldTimeout && mIdleCount > 0) {
+    mEventsAvailable
+        .NotifyAll();  // wake up threads so they observe this change
+  }
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsThreadPool::GetIdleThreadTimeoutRegressive(bool* aValue) {
+  *aValue = mRegressiveMaxIdleTime;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsThreadPool::SetIdleThreadTimeoutRegressive(bool aValue) {
+  MutexAutoLock lock(mMutex);
+  bool oldRegressive = mRegressiveMaxIdleTime;
+  mRegressiveMaxIdleTime = aValue;
+
+  // Would setting regressive timeout effect idle threads?
+  if (mRegressiveMaxIdleTime > oldRegressive && mIdleCount > 1) {
     mEventsAvailable
         .NotifyAll();  // wake up threads so they observe this change
   }

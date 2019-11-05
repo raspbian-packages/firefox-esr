@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,13 +17,17 @@
 #include "mozilla/dom/Element.h"
 
 class nsIContent;
-class nsIDOMDocument;
 class nsAtom;
-class nsIDOMDocumentFragment;
 class nsITransformObserver;
 class nsNodeInfoManager;
-class nsIDocument;
 class nsINode;
+
+namespace mozilla {
+namespace dom {
+class Document;
+class DocumentFragment;
+}  // namespace dom
+}  // namespace mozilla
 
 class txTransformNotifier final : public nsIScriptLoaderObserver,
                                   public nsICSSLoaderObserver {
@@ -42,13 +46,13 @@ class txTransformNotifier final : public nsIScriptLoaderObserver,
   void AddPendingStylesheet();
   void OnTransformEnd(nsresult aResult = NS_OK);
   void OnTransformStart();
-  nsresult SetOutputDocument(nsIDocument* aDocument);
+  nsresult SetOutputDocument(mozilla::dom::Document* aDocument);
 
  private:
   ~txTransformNotifier();
   void SignalTransformEnd(nsresult aResult = NS_OK);
 
-  nsCOMPtr<nsIDocument> mDocument;
+  nsCOMPtr<mozilla::dom::Document> mDocument;
   nsCOMPtr<nsITransformObserver> mObserver;
   nsCOMArray<nsIScriptElement> mScriptElements;
   uint32_t mPendingStylesheetCount;
@@ -58,8 +62,8 @@ class txTransformNotifier final : public nsIScriptLoaderObserver,
 class txMozillaXMLOutput : public txAOutputXMLEventHandler {
  public:
   txMozillaXMLOutput(txOutputFormat* aFormat, nsITransformObserver* aObserver);
-  txMozillaXMLOutput(txOutputFormat* aFormat, nsIDOMDocumentFragment* aFragment,
-                     bool aNoFixup);
+  txMozillaXMLOutput(txOutputFormat* aFormat,
+                     mozilla::dom::DocumentFragment* aFragment, bool aNoFixup);
   ~txMozillaXMLOutput();
 
   TX_DECL_TXAXMLEVENTHANDLER
@@ -68,7 +72,7 @@ class txMozillaXMLOutput : public txAOutputXMLEventHandler {
   nsresult closePrevious(bool aFlushText);
 
   nsresult createResultDocument(const nsAString& aName, int32_t aNsID,
-                                nsIDocument* aSourceDocument,
+                                mozilla::dom::Document* aSourceDocument,
                                 bool aLoadedAsData);
 
  private:
@@ -83,7 +87,7 @@ class txMozillaXMLOutput : public txAOutputXMLEventHandler {
   nsresult startElementInternal(nsAtom* aPrefix, nsAtom* aLocalName,
                                 int32_t aNsID);
 
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<mozilla::dom::Document> mDocument;
   nsCOMPtr<nsINode> mCurrentNode;  // This is updated once an element is
                                    // 'closed' (i.e. once we're done
                                    // adding attributes to it).

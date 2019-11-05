@@ -6,9 +6,13 @@
 
 const { createEnum } = require("devtools/client/shared/enum");
 
-createEnum([
+createEnum(
+  [
+    // Remove all changes
+    "RESET_CHANGES",
 
-  // Update the entire changes state with the new list of changes.
-  "UPDATE_CHANGES",
-
-], module.exports);
+    // Track a style change
+    "TRACK_CHANGE",
+  ],
+  module.exports
+);

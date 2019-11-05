@@ -64,13 +64,10 @@ ChannelMergerNode::ChannelMergerNode(AudioContext* aContext,
                                     aContext->Graph());
 }
 
-/* static */ already_AddRefed<ChannelMergerNode> ChannelMergerNode::Create(
+/* static */
+already_AddRefed<ChannelMergerNode> ChannelMergerNode::Create(
     AudioContext& aAudioContext, const ChannelMergerOptions& aOptions,
     ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
   if (aOptions.mNumberOfInputs == 0 ||
       aOptions.mNumberOfInputs > WebAudioUtils::MaxChannelCount) {
     aRv.Throw(NS_ERROR_DOM_INDEX_SIZE_ERR);
@@ -90,7 +87,7 @@ ChannelMergerNode::ChannelMergerNode(AudioContext* aContext,
 
 JSObject* ChannelMergerNode::WrapObject(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return ChannelMergerNodeBinding::Wrap(aCx, this, aGivenProto);
+  return ChannelMergerNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

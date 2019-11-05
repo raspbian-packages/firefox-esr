@@ -12,13 +12,11 @@
 
 #include "nsIDOMWindow.h"
 #include "nsPIDOMWindow.h"
-#include "nsIDOMDocument.h"
 #include "nsIScriptObjectPrincipal.h"
 #include "nsIServiceManager.h"
 #include "nsIServiceManager.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/Attributes.h"
-#include "mozilla/Services.h"
 #include "nsIPermissionManager.h"
 #include "mozilla/dom/DeviceLightEvent.h"
 #include "mozilla/dom/DeviceOrientationEvent.h"
@@ -158,7 +156,6 @@ class DeviceSensorTestEvent : public Runnable {
     sensorData.values().AppendElement(0.5f);
     sensorData.values().AppendElement(0.5f);
     sensorData.values().AppendElement(0.5f);
-    sensorData.accuracy() = SENSOR_ACCURACY_UNRELIABLE;
     mTarget->Notify(sensorData);
     return NS_OK;
   }
@@ -217,42 +214,33 @@ NS_IMETHODIMP nsDeviceSensors::RemoveWindowAsListener(nsIDOMWindow* aWindow) {
 }
 
 static bool WindowCannotReceiveSensorEvent(nsPIDOMWindowInner* aWindow) {
-  // Check to see if this window is in the background.  If
-  // it is and it does not have the "background-sensors" permission,
-  // don't send any device motion events to it.
+  // Check to see if this window is in the background.
   if (!aWindow || !aWindow->IsCurrentInnerWindow()) {
     return true;
   }
 
-  bool disabled = aWindow->GetOuterWindow()->IsBackground() ||
-                  !aWindow->IsTopLevelWindowActive();
-  if (!disabled) {
-    nsCOMPtr<nsPIDOMWindowOuter> top = aWindow->GetScriptableTop();
-    nsCOMPtr<nsIScriptObjectPrincipal> sop = do_QueryInterface(aWindow);
-    nsCOMPtr<nsIScriptObjectPrincipal> topSop = do_QueryInterface(top);
-    if (!sop || !topSop) {
-      return true;
-    }
-
-    nsIPrincipal* principal = sop->GetPrincipal();
-    nsIPrincipal* topPrincipal = topSop->GetPrincipal();
-    if (!principal || !topPrincipal) {
-      return true;
-    }
-
-    disabled = !principal->Subsumes(topPrincipal);
-  }
-
+  nsPIDOMWindowOuter* windowOuter = aWindow->GetOuterWindow();
+  bool disabled =
+      windowOuter->IsBackground() || !windowOuter->IsTopLevelWindowActive();
   if (disabled) {
-    nsCOMPtr<nsIPermissionManager> permMgr = services::GetPermissionManager();
-    NS_ENSURE_TRUE(permMgr, true);
-    uint32_t permission = nsIPermissionManager::DENY_ACTION;
-    permMgr->TestPermissionFromWindow(aWindow, "background-sensors",
-                                      &permission);
-    return permission != nsIPermissionManager::ALLOW_ACTION;
+    return true;
   }
 
-  return false;
+  // Check to see if this window is a cross-origin iframe
+  nsCOMPtr<nsPIDOMWindowOuter> top = aWindow->GetScriptableTop();
+  nsCOMPtr<nsIScriptObjectPrincipal> sop = do_QueryInterface(aWindow);
+  nsCOMPtr<nsIScriptObjectPrincipal> topSop = do_QueryInterface(top);
+  if (!sop || !topSop) {
+    return true;
+  }
+
+  nsIPrincipal* principal = sop->GetPrincipal();
+  nsIPrincipal* topPrincipal = topSop->GetPrincipal();
+  if (!principal || !topPrincipal) {
+    return true;
+  }
+
+  return !principal->Subsumes(topPrincipal);
 }
 
 // Holds the device orientation in Euler angle degrees (azimuth, pitch, roll).
@@ -346,7 +334,7 @@ void nsDeviceSensors::Notify(const mozilla::hal::SensorData& aSensorData) {
       continue;
     }
 
-    if (nsCOMPtr<nsIDocument> doc = pwindow->GetDoc()) {
+    if (nsCOMPtr<Document> doc = pwindow->GetDoc()) {
       nsCOMPtr<mozilla::dom::EventTarget> target =
           do_QueryInterface(windowListeners[i]);
       if (type == nsIDeviceSensorData::TYPE_ACCELERATION ||
@@ -383,8 +371,7 @@ void nsDeviceSensors::FireDOMLightEvent(mozilla::dom::EventTarget* aTarget,
 
   event->SetTrusted(true);
 
-  bool defaultActionEnabled;
-  aTarget->DispatchEvent(event, &defaultActionEnabled);
+  aTarget->DispatchEvent(*event);
 }
 
 void nsDeviceSensors::FireDOMProximityEvent(mozilla::dom::EventTarget* aTarget,
@@ -400,8 +387,7 @@ void nsDeviceSensors::FireDOMProximityEvent(mozilla::dom::EventTarget* aTarget,
       aTarget, NS_LITERAL_STRING("deviceproximity"), init);
   event->SetTrusted(true);
 
-  bool defaultActionEnabled;
-  aTarget->DispatchEvent(event, &defaultActionEnabled);
+  aTarget->DispatchEvent(*event);
 
   // Some proximity sensors only support a binary near or
   // far measurement. In this case, the sensor should report
@@ -426,8 +412,7 @@ void nsDeviceSensors::FireDOMUserProximityEvent(
 
   event->SetTrusted(true);
 
-  bool defaultActionEnabled;
-  aTarget->DispatchEvent(event, &defaultActionEnabled);
+  aTarget->DispatchEvent(*event);
 }
 
 void nsDeviceSensors::FireDOMOrientationEvent(EventTarget* aTarget,
@@ -445,8 +430,7 @@ void nsDeviceSensors::FireDOMOrientationEvent(EventTarget* aTarget,
     RefPtr<DeviceOrientationEvent> event =
         DeviceOrientationEvent::Constructor(aEventTarget, aType, init);
     event->SetTrusted(true);
-    bool dummy;
-    aEventTarget->DispatchEvent(event, &dummy);
+    aEventTarget->DispatchEvent(*event);
   };
 
   Dispatch(aTarget, aIsAbsolute ? NS_LITERAL_STRING("absolutedeviceorientation")
@@ -469,7 +453,7 @@ void nsDeviceSensors::FireDOMOrientationEvent(EventTarget* aTarget,
   }
 }
 
-void nsDeviceSensors::FireDOMMotionEvent(nsIDocument* doc, EventTarget* target,
+void nsDeviceSensors::FireDOMMotionEvent(Document* doc, EventTarget* target,
                                          uint32_t type, PRTime timestamp,
                                          double x, double y, double z) {
   // Attempt to coalesce events
@@ -537,8 +521,7 @@ void nsDeviceSensors::FireDOMMotionEvent(nsIDocument* doc, EventTarget* target,
 
   event->SetTrusted(true);
 
-  bool defaultActionEnabled = true;
-  target->DispatchEvent(event, &defaultActionEnabled);
+  target->DispatchEvent(*event);
 
   mLastRotationRate.reset();
   mLastAccelerationIncludingGravity.reset();
@@ -554,7 +537,7 @@ bool nsDeviceSensors::IsSensorAllowedByPref(uint32_t aType,
   }
 
   nsCOMPtr<nsPIDOMWindowInner> window = do_QueryInterface(aWindow);
-  nsCOMPtr<nsIDocument> doc;
+  nsCOMPtr<Document> doc;
   if (window) {
     doc = window->GetExtantDoc();
   }
@@ -567,7 +550,7 @@ bool nsDeviceSensors::IsSensorAllowedByPref(uint32_t aType,
       if (!gPrefMotionSensorEnabled) {
         return false;
       } else if (doc) {
-        doc->WarnOnceAbout(nsIDocument::eMotionEvent);
+        doc->WarnOnceAbout(Document::eMotionEvent);
       }
       break;
     case nsIDeviceSensorData::TYPE_GAME_ROTATION_VECTOR:
@@ -577,7 +560,7 @@ bool nsDeviceSensors::IsSensorAllowedByPref(uint32_t aType,
       if (!gPrefOrientationSensorEnabled) {
         return false;
       } else if (doc) {
-        doc->WarnOnceAbout(nsIDocument::eOrientationEvent);
+        doc->WarnOnceAbout(Document::eOrientationEvent);
       }
       break;
     case nsIDeviceSensorData::TYPE_PROXIMITY:
@@ -585,7 +568,7 @@ bool nsDeviceSensors::IsSensorAllowedByPref(uint32_t aType,
       if (!gPrefProximitySensorEnabled) {
         return false;
       } else if (doc) {
-        doc->WarnOnceAbout(nsIDocument::eProximityEvent, true);
+        doc->WarnOnceAbout(Document::eProximityEvent, true);
       }
       break;
     case nsIDeviceSensorData::TYPE_LIGHT:
@@ -593,7 +576,7 @@ bool nsDeviceSensors::IsSensorAllowedByPref(uint32_t aType,
       if (!gPrefAmbientLightSensorEnabled) {
         return false;
       } else if (doc) {
-        doc->WarnOnceAbout(nsIDocument::eAmbientLightEvent, true);
+        doc->WarnOnceAbout(Document::eAmbientLightEvent, true);
       }
       break;
     default:

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -21,6 +21,7 @@
 #include "nsIPrefBranch.h"
 #include "nsIPrefService.h"
 #include "mozilla/Unused.h"
+#include "mozilla/net/CookieSettings.h"
 #include "nsIURI.h"
 
 using mozilla::Unused;
@@ -30,20 +31,15 @@ static NS_DEFINE_CID(kPrefServiceCID, NS_PREFSERVICE_CID);
 
 // various pref strings
 static const char kCookiesPermissions[] = "network.cookie.cookieBehavior";
-static const char kCookiesLifetimeEnabled[] = "network.cookie.lifetime.enabled";
-static const char kCookiesLifetimeDays[] = "network.cookie.lifetime.days";
-static const char kCookiesLifetimeCurrentSession[] =
-    "network.cookie.lifetime.behavior";
+static const char kPrefCookieQuotaPerHost[] = "network.cookie.quotaPerHost";
 static const char kCookiesMaxPerHost[] = "network.cookie.maxPerHost";
-static const char kCookieLeaveSecurityAlone[] =
-    "network.cookie.leave-secure-alone";
 
 #define OFFSET_ONE_WEEK int64_t(604800) * PR_USEC_PER_SEC
 #define OFFSET_ONE_DAY int64_t(86400) * PR_USEC_PER_SEC
 
 // Set server time or expiry time
-void SetTime(PRTime offsetTime, nsAutoCString &serverString,
-             nsAutoCString &cookieString, bool expiry) {
+void SetTime(PRTime offsetTime, nsAutoCString& serverString,
+             nsAutoCString& cookieString, bool expiry) {
   char timeStringPreset[40];
   PRTime CurrentTime = PR_Now();
   PRTime SetCookieTime = CurrentTime + offsetTime;
@@ -69,23 +65,23 @@ void SetTime(PRTime offsetTime, nsAutoCString &serverString,
   cookieString.Append(timeStringPreset);
 }
 
-void SetACookie(nsICookieService *aCookieService, const char *aSpec1,
-                const char *aSpec2, const char *aCookieString,
-                const char *aServerTime) {
+void SetACookie(nsICookieService* aCookieService, const char* aSpec1,
+                const char* aSpec2, const char* aCookieString,
+                const char* aServerTime) {
   nsCOMPtr<nsIURI> uri1, uri2;
   NS_NewURI(getter_AddRefs(uri1), aSpec1);
   if (aSpec2) NS_NewURI(getter_AddRefs(uri2), aSpec2);
 
   nsresult rv = aCookieService->SetCookieStringFromHttp(
-      uri1, uri2, nullptr, (char *)aCookieString, aServerTime, nullptr);
+      uri1, uri2, nullptr, (char*)aCookieString, aServerTime, nullptr);
   EXPECT_TRUE(NS_SUCCEEDED(rv));
 }
 
 // Custom Cookie Generator specifically for the needs of same-site cookies!
 // Hands off unless you know exactly what you are doing!
-void SetASameSiteCookie(nsICookieService *aCookieService, const char *aSpec1,
-                        const char *aSpec2, const char *aCookieString,
-                        const char *aServerTime) {
+void SetASameSiteCookie(nsICookieService* aCookieService, const char* aSpec1,
+                        const char* aSpec2, const char* aCookieString,
+                        const char* aServerTime, bool aAllowed) {
   nsCOMPtr<nsIURI> uri1, uri2;
   NS_NewURI(getter_AddRefs(uri1), aSpec1);
   if (aSpec2) NS_NewURI(getter_AddRefs(uri2), aSpec2);
@@ -102,27 +98,34 @@ void SetASameSiteCookie(nsICookieService *aCookieService, const char *aSpec1,
 
   nsCOMPtr<nsIChannel> dummyChannel;
   NS_NewChannel(getter_AddRefs(dummyChannel), uri1, spec1Principal,
-                nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_DATA_IS_NULL,
+                nsILoadInfo::SEC_ONLY_FOR_EXPLICIT_CONTENTSEC_CHECK,
                 nsIContentPolicy::TYPE_OTHER);
 
+  nsCOMPtr<nsICookieSettings> cookieSettings =
+      aAllowed ? CookieSettings::Create() : CookieSettings::CreateBlockingAll();
+  MOZ_ASSERT(cookieSettings);
+
+  nsCOMPtr<nsILoadInfo> loadInfo = dummyChannel->LoadInfo();
+  loadInfo->SetCookieSettings(cookieSettings);
+
   nsresult rv = aCookieService->SetCookieStringFromHttp(
-      uri1, uri2, nullptr, (char *)aCookieString, aServerTime, dummyChannel);
+      uri1, uri2, nullptr, (char*)aCookieString, aServerTime, dummyChannel);
   EXPECT_TRUE(NS_SUCCEEDED(rv));
 }
 
-void SetACookieNoHttp(nsICookieService *aCookieService, const char *aSpec,
-                      const char *aCookieString) {
+void SetACookieNoHttp(nsICookieService* aCookieService, const char* aSpec,
+                      const char* aCookieString) {
   nsCOMPtr<nsIURI> uri;
   NS_NewURI(getter_AddRefs(uri), aSpec);
 
   nsresult rv = aCookieService->SetCookieString(uri, nullptr,
-                                                (char *)aCookieString, nullptr);
+                                                (char*)aCookieString, nullptr);
   EXPECT_TRUE(NS_SUCCEEDED(rv));
 }
 
 // The cookie string is returned via aCookie.
-void GetACookie(nsICookieService *aCookieService, const char *aSpec1,
-                const char *aSpec2, nsACString &aCookie) {
+void GetACookie(nsICookieService* aCookieService, const char* aSpec1,
+                const char* aSpec2, nsACString& aCookie) {
   nsCOMPtr<nsIURI> uri1, uri2;
   NS_NewURI(getter_AddRefs(uri1), aSpec1);
   if (aSpec2) NS_NewURI(getter_AddRefs(uri2), aSpec2);
@@ -132,8 +135,8 @@ void GetACookie(nsICookieService *aCookieService, const char *aSpec1,
 }
 
 // The cookie string is returned via aCookie.
-void GetACookieNoHttp(nsICookieService *aCookieService, const char *aSpec,
-                      nsACString &aCookie) {
+void GetACookieNoHttp(nsICookieService* aCookieService, const char* aSpec,
+                      nsACString& aCookie) {
   nsCOMPtr<nsIURI> uri;
   NS_NewURI(getter_AddRefs(uri), aSpec);
 
@@ -151,8 +154,8 @@ void GetACookieNoHttp(nsICookieService *aCookieService, const char *aSpec,
 // a simple helper function to improve readability:
 // takes one of the #defined rules above, and performs the appropriate test.
 // true means the test passed; false means the test failed.
-static inline bool CheckResult(const char *aLhs, uint32_t aRule,
-                               const char *aRhs = nullptr) {
+static inline bool CheckResult(const char* aLhs, uint32_t aRule,
+                               const char* aRhs = nullptr) {
   switch (aRule) {
     case MUST_BE_NULL:
       return !aLhs || !*aLhs;
@@ -174,20 +177,20 @@ static inline bool CheckResult(const char *aLhs, uint32_t aRule,
   }
 }
 
-void InitPrefs(nsIPrefBranch *aPrefBranch) {
+void InitPrefs(nsIPrefBranch* aPrefBranch) {
   // init some relevant prefs, so the tests don't go awry.
   // we use the most restrictive set of prefs we can;
   // however, we don't test third party blocking here.
   aPrefBranch->SetIntPref(kCookiesPermissions, 0);  // accept all
-  aPrefBranch->SetBoolPref(kCookiesLifetimeEnabled, true);
-  aPrefBranch->SetIntPref(kCookiesLifetimeCurrentSession, 0);
-  aPrefBranch->SetIntPref(kCookiesLifetimeDays, 1);
-  aPrefBranch->SetBoolPref(kCookieLeaveSecurityAlone, true);
+  // Set quotaPerHost to maxPerHost - 1, so there is only one cookie
+  // will be evicted everytime.
+  aPrefBranch->SetIntPref(kPrefCookieQuotaPerHost, 49);
   // Set the base domain limit to 50 so we have a known value.
   aPrefBranch->SetIntPref(kCookiesMaxPerHost, 50);
 }
 
-TEST(TestCookie, TestCookieMain) {
+TEST(TestCookie, TestCookieMain)
+{
   nsresult rv0;
 
   nsCOMPtr<nsICookieService> cookieService =
@@ -366,86 +369,86 @@ TEST(TestCookie, TestCookieMain) {
   // and cookies with paths or names containing tabs, are rejected.
   // the following cookie has a path > 1024 bytes explicitly specified in the
   // cookie
-  SetACookie(cookieService, "http://path.net/", nullptr,
-             "test=path; "
-             "path=/"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "6789012345678901234567890123456789012345678901234567890/",
-             nullptr);
-  GetACookie(cookieService,
-             "http://path.net/"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "6789012345678901234567890123456789012345678901234567890",
-             nullptr, cookie);
+  SetACookie(
+      cookieService, "http://path.net/", nullptr,
+      "test=path; "
+      "path=/"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "9012345678901234567890/",
+      nullptr);
+  GetACookie(
+      cookieService,
+      "http://path.net/"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "9012345678901234567890",
+      nullptr, cookie);
   EXPECT_TRUE(CheckResult(cookie.get(), MUST_BE_NULL));
   // the following cookie has a path > 1024 bytes implicitly specified by the
   // uri path
-  SetACookie(cookieService,
-             "http://path.net/"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "6789012345678901234567890123456789012345678901234567890/",
-             nullptr, "test=path", nullptr);
-  GetACookie(cookieService,
-             "http://path.net/"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "67890123456789012345678901234567890123456789012345678901234567890"
-             "12345678901234567890123456789012345678901234567890123456789012345"
-             "6789012345678901234567890123456789012345678901234567890/",
-             nullptr, cookie);
+  SetACookie(
+      cookieService,
+      "http://path.net/"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "9012345678901234567890/",
+      nullptr, "test=path", nullptr);
+  GetACookie(
+      cookieService,
+      "http://path.net/"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "901234567890123456789012345678901234567890123456789012345678901234567890"
+      "123456789012345678901234567890123456789012345678901234567890123456789012"
+      "345678901234567890123456789012345678901234567890123456789012345678901234"
+      "567890123456789012345678901234567890123456789012345678901234567890123456"
+      "789012345678901234567890123456789012345678901234567890123456789012345678"
+      "9012345678901234567890/",
+      nullptr, cookie);
   EXPECT_TRUE(CheckResult(cookie.get(), MUST_BE_NULL));
   // the following cookie includes a tab in the path
   SetACookie(cookieService, "http://path.net/", nullptr,
@@ -912,8 +915,9 @@ TEST(TestCookie, TestCookieMain) {
   EXPECT_EQ(hostCookies, 2u);
   // check CookieExistsNative() using the third cookie
   bool found;
-  EXPECT_TRUE(NS_SUCCEEDED(
-      cookieMgr2->CookieExistsNative(newDomainCookie, &attrs, &found)));
+  EXPECT_TRUE(NS_SUCCEEDED(cookieMgr2->CookieExistsNative(
+      NS_LITERAL_CSTRING("new.domain"), NS_LITERAL_CSTRING("/rabbit"),
+      NS_LITERAL_CSTRING("test3"), &attrs, &found)));
   EXPECT_TRUE(found);
 
   // remove the cookie, block it, and ensure it can't be added again
@@ -923,8 +927,9 @@ TEST(TestCookie, TestCookieMain) {
                               NS_LITERAL_CSTRING("/rabbit"),     // path
                               true,                              // is blocked
                               &attrs)));  // originAttributes
-  EXPECT_TRUE(NS_SUCCEEDED(
-      cookieMgr2->CookieExistsNative(newDomainCookie, &attrs, &found)));
+  EXPECT_TRUE(NS_SUCCEEDED(cookieMgr2->CookieExistsNative(
+      NS_LITERAL_CSTRING("new.domain"), NS_LITERAL_CSTRING("/rabbit"),
+      NS_LITERAL_CSTRING("test3"), &attrs, &found)));
   EXPECT_FALSE(found);
   EXPECT_TRUE(NS_SUCCEEDED(
       cookieMgr2->AddNative(NS_LITERAL_CSTRING("new.domain"),  // domain
@@ -937,8 +942,9 @@ TEST(TestCookie, TestCookieMain) {
                             INT64_MIN,                         // expiry time
                             &attrs,  // originAttributes
                             nsICookie2::SAMESITE_UNSET)));
-  EXPECT_TRUE(NS_SUCCEEDED(
-      cookieMgr2->CookieExistsNative(newDomainCookie, &attrs, &found)));
+  EXPECT_TRUE(NS_SUCCEEDED(cookieMgr2->CookieExistsNative(
+      NS_LITERAL_CSTRING("new.domain"), NS_LITERAL_CSTRING("/rabbit"),
+      NS_LITERAL_CSTRING("test3"), &attrs, &found)));
   EXPECT_FALSE(found);
   // sleep four seconds, to make sure the second cookie has expired
   PR_Sleep(4 * PR_TicksPerSecond());
@@ -947,8 +953,9 @@ TEST(TestCookie, TestCookieMain) {
   EXPECT_TRUE(NS_SUCCEEDED(cookieMgr2->CountCookiesFromHost(
       NS_LITERAL_CSTRING("cookiemgr.test"), &hostCookies)));
   EXPECT_EQ(hostCookies, 2u);
-  EXPECT_TRUE(NS_SUCCEEDED(
-      cookieMgr2->CookieExistsNative(expiredCookie, &attrs, &found)));
+  EXPECT_TRUE(NS_SUCCEEDED(cookieMgr2->CookieExistsNative(
+      NS_LITERAL_CSTRING("cookiemgr.test"), NS_LITERAL_CSTRING("/foo"),
+      NS_LITERAL_CSTRING("test2"), &attrs, &found)));
   EXPECT_TRUE(found);
   // double-check RemoveAll() using the enumerator
   EXPECT_TRUE(NS_SUCCEEDED(cookieMgr->RemoveAll()));
@@ -979,8 +986,6 @@ TEST(TestCookie, TestCookieMain) {
   GetACookie(cookieService, "http://creation.ordering.tests/", nullptr, cookie);
   EXPECT_TRUE(CheckResult(cookie.get(), MUST_EQUAL, expected.get()));
 
-  // *** eviction and creation ordering tests after enable
-  // network.cookie.leave-secure-alone reset cookie
   cookieMgr->RemoveAll();
 
   for (int32_t i = 0; i < 60; ++i) {
@@ -1008,25 +1013,53 @@ TEST(TestCookie, TestCookieMain) {
   // Clear the cookies
   EXPECT_TRUE(NS_SUCCEEDED(cookieMgr->RemoveAll()));
 
+  // None of these cookies will be set because using
+  // CookieSettings::CreateBlockingAll().
+  SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
+                     "unset=yes", nullptr, false);
+  SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
+                     "unspecified=yes; samesite", nullptr, false);
+  SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
+                     "empty=yes; samesite=", nullptr, false);
+  SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
+                     "bogus=yes; samesite=bogus", nullptr, false);
+  SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
+                     "strict=yes; samesite=strict", nullptr, false);
+  SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
+                     "lax=yes; samesite=lax", nullptr, false);
+
+  EXPECT_TRUE(
+      NS_SUCCEEDED(cookieMgr->GetEnumerator(getter_AddRefs(enumerator))));
+  i = 0;
+
+  // check the cookies for the required samesite value
+  while (NS_SUCCEEDED(enumerator->HasMoreElements(&more)) && more) {
+    nsCOMPtr<nsISupports> cookie;
+    if (NS_FAILED(enumerator->GetNext(getter_AddRefs(cookie)))) break;
+    ++i;
+  }
+
+  EXPECT_TRUE(i == 0);
+
   // Set cookies with various incantations of the samesite attribute:
   // No same site attribute present
   SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
-                     "unset=yes", nullptr);
+                     "unset=yes", nullptr, true);
   // samesite attribute present but with no value
   SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
-                     "unspecified=yes; samesite", nullptr);
+                     "unspecified=yes; samesite", nullptr, true);
   // samesite attribute present but with an empty value
   SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
-                     "empty=yes; samesite=", nullptr);
+                     "empty=yes; samesite=", nullptr, true);
   // samesite attribute present but with an invalid value
   SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
-                     "bogus=yes; samesite=bogus", nullptr);
+                     "bogus=yes; samesite=bogus", nullptr, true);
   // samesite=strict
   SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
-                     "strict=yes; samesite=strict", nullptr);
+                     "strict=yes; samesite=strict", nullptr, true);
   // samesite=lax
   SetASameSiteCookie(cookieService, "http://samesite.test", nullptr,
-                     "lax=yes; samesite=lax", nullptr);
+                     "lax=yes; samesite=lax", nullptr, true);
 
   EXPECT_TRUE(
       NS_SUCCEEDED(cookieMgr->GetEnumerator(getter_AddRefs(enumerator))));

@@ -55,8 +55,9 @@ class nsClientAuthRememberEntry final : public PLDHashEntryHdr {
   explicit nsClientAuthRememberEntry(KeyTypePointer aHostWithCertUTF8) {}
 
   nsClientAuthRememberEntry(nsClientAuthRememberEntry&& aToMove)
-      : mSettings(mozilla::Move(aToMove.mSettings)),
-        mEntryKey(mozilla::Move(aToMove.mEntryKey)) {}
+      : PLDHashEntryHdr(std::move(aToMove)),
+        mSettings(std::move(aToMove.mSettings)),
+        mEntryKey(std::move(aToMove.mEntryKey)) {}
 
   ~nsClientAuthRememberEntry() {}
 

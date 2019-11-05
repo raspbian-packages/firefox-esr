@@ -3,19 +3,21 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+#include "core/TelemetryScalar.h"
 #include "gtest/gtest.h"
-
 #include "js/Conversions.h"
+#include "mozilla/Telemetry.h"
+#include "mozilla/TelemetryProcessEnums.h"
 #include "mozilla/Unused.h"
 #include "nsJSUtils.h"  // nsAutoJSString
 #include "nsITelemetry.h"
 #include "nsThreadUtils.h"
-#include "Telemetry.h"
 #include "TelemetryFixture.h"
 #include "TelemetryTestHelpers.h"
 
 using namespace mozilla;
 using namespace TelemetryTestHelpers;
+using mozilla::Telemetry::ProcessID;
 
 #define EXPECTED_STRING "Nice, expected and creative string."
 
@@ -257,7 +259,8 @@ TEST_F(TelemetryTestFixture, ScalarUnknownID) {
     // Make sure that nothing was recorded in the plain scalars.
     JS::RootedValue scalarsSnapshot(cx.GetJSContext());
     GetScalarsSnapshot(false, cx.GetJSContext(), &scalarsSnapshot);
-    ASSERT_TRUE(scalarsSnapshot.isUndefined()) << "No scalar must be recorded";
+    ASSERT_TRUE(scalarsSnapshot.isUndefined())
+    << "No scalar must be recorded";
 
     // Same for the keyed scalars.
     Telemetry::ScalarSet(scalarId, NS_LITERAL_STRING("key1"),
@@ -270,7 +273,149 @@ TEST_F(TelemetryTestFixture, ScalarUnknownID) {
     JS::RootedValue keyedSnapshot(cx.GetJSContext());
     GetScalarsSnapshot(true, cx.GetJSContext(), &keyedSnapshot);
     ASSERT_TRUE(keyedSnapshot.isUndefined())
-        << "No keyed scalar must be recorded";
+    << "No keyed scalar must be recorded";
   }
 #endif
+}
+
+TEST_F(TelemetryTestFixture, ScalarEventSummary) {
+  AutoJSContextWithGlobal cx(mCleanGlobal);
+
+  // Make sure we don't get scalars from other tests.
+  Unused << mTelemetry->ClearScalars();
+
+  const char* kScalarName = "telemetry.event_counts";
+
+  const char* kLongestEvent =
+      "oohwowlookthiscategoryissolong#thismethodislongtooo#"
+      "thisobjectisnoslouch";
+  TelemetryScalar::SummarizeEvent(nsCString(kLongestEvent), ProcessID::Parent,
+                                  false /* aDynamic */);
+
+  // Check the recorded value.
+  JS::RootedValue scalarsSnapshot(cx.GetJSContext());
+  GetScalarsSnapshot(true, cx.GetJSContext(), &scalarsSnapshot);
+
+  CheckKeyedUintScalar(kScalarName, kLongestEvent, cx.GetJSContext(),
+                       scalarsSnapshot, 1);
+
+// Don't run this part in debug builds as that intentionally asserts.
+#ifndef DEBUG
+  const char* kTooLongEvent =
+      "oohwowlookthiscategoryissolong#thismethodislongtooo#"
+      "thisobjectisnoslouch2";
+  TelemetryScalar::SummarizeEvent(nsCString(kTooLongEvent), ProcessID::Parent,
+                                  false /* aDynamic */);
+
+  GetScalarsSnapshot(true, cx.GetJSContext(), &scalarsSnapshot);
+  CheckNumberOfProperties(kScalarName, cx.GetJSContext(), scalarsSnapshot, 1);
+#endif  // #ifndef DEBUG
+
+  // Test we can fill the next 499 keys up to our 500 maximum
+  for (int i = 1; i < 500; i++) {
+    std::ostringstream eventName;
+    eventName << "category#method#object" << i;
+    TelemetryScalar::SummarizeEvent(nsCString(eventName.str().c_str()),
+                                    ProcessID::Parent, false /* aDynamic */);
+  }
+
+  GetScalarsSnapshot(true, cx.GetJSContext(), &scalarsSnapshot);
+  CheckNumberOfProperties(kScalarName, cx.GetJSContext(), scalarsSnapshot, 500);
+
+// Don't run this part in debug builds as that intentionally asserts.
+#ifndef DEBUG
+  TelemetryScalar::SummarizeEvent(nsCString("whoops#too#many"),
+                                  ProcessID::Parent, false /* aDynamic */);
+
+  GetScalarsSnapshot(true, cx.GetJSContext(), &scalarsSnapshot);
+  CheckNumberOfProperties(kScalarName, cx.GetJSContext(), scalarsSnapshot, 500);
+#endif  // #ifndef DEBUG
+}
+
+TEST_F(TelemetryTestFixture, ScalarEventSummary_Dynamic) {
+  AutoJSContextWithGlobal cx(mCleanGlobal);
+
+  // Make sure we don't get scalars from other tests.
+  Unused << mTelemetry->ClearScalars();
+
+  const char* kScalarName = "telemetry.dynamic_event_counts";
+  const char* kLongestEvent =
+      "oohwowlookthiscategoryissolong#thismethodislongtooo#"
+      "thisobjectisnoslouch";
+  TelemetryScalar::SummarizeEvent(nsCString(kLongestEvent), ProcessID::Parent,
+                                  true /* aDynamic */);
+  TelemetryScalar::SummarizeEvent(nsCString(kLongestEvent), ProcessID::Content,
+                                  true /* aDynamic */);
+
+  // Check the recorded value.
+  JS::RootedValue scalarsSnapshot(cx.GetJSContext());
+  GetScalarsSnapshot(true, cx.GetJSContext(), &scalarsSnapshot,
+                     ProcessID::Dynamic);
+
+  // Recording in parent or content doesn't matter for dynamic scalars
+  // which all end up in the same place.
+  CheckKeyedUintScalar(kScalarName, kLongestEvent, cx.GetJSContext(),
+                       scalarsSnapshot, 2);
+}
+
+TEST_F(TelemetryTestFixture, WrongScalarOperator) {
+  AutoJSContextWithGlobal cx(mCleanGlobal);
+
+  // Make sure we don't get scalars from other tests.
+  Unused << mTelemetry->ClearScalars();
+
+  const uint32_t expectedValue = 1172015;
+
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_UNSIGNED_INT_KIND,
+                       expectedValue);
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_STRING_KIND,
+                       NS_LITERAL_STRING(EXPECTED_STRING));
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_BOOLEAN_KIND, true);
+
+  TelemetryScalar::DeserializationStarted();
+
+  Telemetry::ScalarAdd(Telemetry::ScalarID::TELEMETRY_TEST_STRING_KIND, 1447);
+  Telemetry::ScalarAdd(Telemetry::ScalarID::TELEMETRY_TEST_BOOLEAN_KIND, 1447);
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_UNSIGNED_INT_KIND,
+                       true);
+  TelemetryScalar::ApplyPendingOperations();
+
+  JS::RootedValue scalarsSnapshot(cx.GetJSContext());
+  GetScalarsSnapshot(false, cx.GetJSContext(), &scalarsSnapshot);
+  CheckStringScalar("telemetry.test.string_kind", cx.GetJSContext(),
+                    scalarsSnapshot, EXPECTED_STRING);
+  CheckBoolScalar("telemetry.test.boolean_kind", cx.GetJSContext(),
+                  scalarsSnapshot, true);
+  CheckUintScalar("telemetry.test.unsigned_int_kind", cx.GetJSContext(),
+                  scalarsSnapshot, expectedValue);
+}
+
+TEST_F(TelemetryTestFixture, WrongKeyedScalarOperator) {
+  AutoJSContextWithGlobal cx(mCleanGlobal);
+
+  // Make sure we don't get scalars from other tests.
+  Unused << mTelemetry->ClearScalars();
+
+  const uint32_t kExpectedUint = 1172017;
+
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_KEYED_UNSIGNED_INT,
+                       NS_LITERAL_STRING("key1"), kExpectedUint);
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_KEYED_BOOLEAN_KIND,
+                       NS_LITERAL_STRING("key2"), true);
+
+  TelemetryScalar::DeserializationStarted();
+
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_KEYED_UNSIGNED_INT,
+                       NS_LITERAL_STRING("key1"), false);
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_KEYED_BOOLEAN_KIND,
+                       NS_LITERAL_STRING("key2"), static_cast<uint32_t>(13));
+
+  TelemetryScalar::ApplyPendingOperations();
+
+  JS::RootedValue scalarsSnapshot(cx.GetJSContext());
+  GetScalarsSnapshot(true, cx.GetJSContext(), &scalarsSnapshot);
+  CheckKeyedUintScalar("telemetry.test.keyed_unsigned_int", "key1",
+                       cx.GetJSContext(), scalarsSnapshot, kExpectedUint);
+  CheckKeyedBoolScalar("telemetry.test.keyed_boolean_kind", "key2",
+                       cx.GetJSContext(), scalarsSnapshot, true);
 }

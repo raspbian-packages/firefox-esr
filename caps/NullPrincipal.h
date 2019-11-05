@@ -9,8 +9,8 @@
  * same-origin with anything but themselves.
  */
 
-#ifndef NullPrincipal_h
-#define NullPrincipal_h
+#ifndef mozilla_NullPrincipal_h
+#define mozilla_NullPrincipal_h
 
 #include "nsIPrincipal.h"
 #include "nsJSPrincipals.h"
@@ -33,7 +33,9 @@ class nsIURI;
 
 #define NS_NULLPRINCIPAL_SCHEME "moz-nullprincipal"
 
-class NullPrincipal final : public mozilla::BasePrincipal {
+namespace mozilla {
+
+class NullPrincipal final : public BasePrincipal {
  public:
   // This should only be used by deserialization, and the factory constructor.
   // Other consumers should use the Create and CreateWithInheritedAttributes
@@ -45,7 +47,7 @@ class NullPrincipal final : public mozilla::BasePrincipal {
   NS_DECL_NSISERIALIZABLE
 
   NS_IMETHOD QueryInterface(REFNSIID aIID, void** aInstancePtr) override;
-  NS_IMETHOD GetHashValue(uint32_t* aHashValue) override;
+  uint32_t GetHashValue() override;
   NS_IMETHOD SetCsp(nsIContentSecurityPolicy* aCsp) override;
   NS_IMETHOD GetURI(nsIURI** aURI) override;
   NS_IMETHOD GetDomain(nsIURI** aDomain) override;
@@ -62,24 +64,31 @@ class NullPrincipal final : public mozilla::BasePrincipal {
   // to an unique value.
   static already_AddRefed<NullPrincipal> CreateWithInheritedAttributes(
       nsIDocShell* aDocShell, bool aIsFirstParty = false);
+  static already_AddRefed<NullPrincipal> CreateWithInheritedAttributes(
+      const OriginAttributes& aOriginAttributes, bool aIsFirstParty = false);
 
   static already_AddRefed<NullPrincipal> Create(
-      const mozilla::OriginAttributes& aOriginAttributes =
-          mozilla::OriginAttributes(),
-      nsIURI* aURI = nullptr);
+      const OriginAttributes& aOriginAttributes, nsIURI* aURI = nullptr);
 
-  nsresult Init(const mozilla::OriginAttributes& aOriginAttributes =
-                    mozilla::OriginAttributes(),
+  static already_AddRefed<NullPrincipal> CreateWithoutOriginAttributes();
+
+  nsresult Init(const OriginAttributes& aOriginAttributes = OriginAttributes(),
                 nsIURI* aURI = nullptr);
 
   virtual nsresult GetScriptLocation(nsACString& aStr) override;
+
+  nsresult GetSiteIdentifier(SiteIdentifier& aSite) override {
+    aSite.Init(this);
+    return NS_OK;
+  }
 
  protected:
   virtual ~NullPrincipal() = default;
 
   bool SubsumesInternal(nsIPrincipal* aOther,
                         DocumentDomainConsideration aConsideration) override {
-    return aOther == this;
+    MOZ_ASSERT(aOther);
+    return FastEquals(aOther);
   }
 
   bool MayLoadInternal(nsIURI* aURI) override;
@@ -91,8 +100,9 @@ class NullPrincipal final : public mozilla::BasePrincipal {
   // the aOriginAttributes with FirstPartyDomain set to an unique value, and
   // this value is generated from mURI.path, with ".mozilla" appending at the
   // end.
-  nsresult Init(const mozilla::OriginAttributes& aOriginAttributes,
-                bool aIsFirstParty);
+  nsresult Init(const OriginAttributes& aOriginAttributes, bool aIsFirstParty);
 };
 
-#endif  // NullPrincipal_h__
+}  // namespace mozilla
+
+#endif  // mozilla_NullPrincipal_h

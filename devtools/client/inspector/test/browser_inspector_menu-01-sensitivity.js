@@ -18,7 +18,7 @@ const PASTE_MENU_ITEMS = [
 
 const ACTIVE_ON_DOCTYPE_ITEMS = [
   "node-menu-showdomproperties",
-  "node-menu-useinconsole"
+  "node-menu-useinconsole",
 ];
 
 const ALL_MENU_ITEMS = [
@@ -33,16 +33,18 @@ const ALL_MENU_ITEMS = [
   "node-menu-pseudo-hover",
   "node-menu-pseudo-active",
   "node-menu-pseudo-focus",
+  "node-menu-pseudo-focus-within",
   "node-menu-scrollnodeintoview",
   "node-menu-screenshotnode",
   "node-menu-add-attribute",
   "node-menu-copy-attribute",
   "node-menu-edit-attribute",
-  "node-menu-remove-attribute"
+  "node-menu-remove-attribute",
 ].concat(PASTE_MENU_ITEMS, ACTIVE_ON_DOCTYPE_ITEMS);
 
-const INACTIVE_ON_DOCTYPE_ITEMS =
-  ALL_MENU_ITEMS.filter(item => !ACTIVE_ON_DOCTYPE_ITEMS.includes(item));
+const INACTIVE_ON_DOCTYPE_ITEMS = ALL_MENU_ITEMS.filter(
+  item => !ACTIVE_ON_DOCTYPE_ITEMS.includes(item)
+);
 
 /**
  * Test cases, each item of this array may define the following properties:
@@ -74,7 +76,7 @@ const TEST_CASES = [
       "node-menu-copyimagedatauri",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ],
     selector: "#sensitivity",
   },
@@ -92,7 +94,7 @@ const TEST_CASES = [
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
       "node-menu-remove-attribute",
-      "node-menu-delete"
+      "node-menu-delete",
     ],
   },
   {
@@ -106,8 +108,8 @@ const TEST_CASES = [
       "node-menu-pasteafter",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
-    ]
+      "node-menu-remove-attribute",
+    ],
   },
   {
     desc: "<img> with HTML on clipboard",
@@ -117,8 +119,8 @@ const TEST_CASES = [
     disabled: [
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
-    ]
+      "node-menu-remove-attribute",
+    ],
   },
   {
     desc: "<head> with HTML on clipboard",
@@ -132,7 +134,7 @@ const TEST_CASES = [
       "node-menu-screenshotnode",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ],
   },
   {
@@ -143,7 +145,7 @@ const TEST_CASES = [
       "node-menu-screenshotnode",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ]),
   },
   {
@@ -155,8 +157,8 @@ const TEST_CASES = [
       "node-menu-copyimagedatauri",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
-    ]
+      "node-menu-remove-attribute",
+    ],
   },
   {
     desc: "<element> with base64 encoded image data uri on clipboard",
@@ -169,7 +171,7 @@ const TEST_CASES = [
       "node-menu-copyimagedatauri",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ]),
   },
   {
@@ -181,7 +183,7 @@ const TEST_CASES = [
       "node-menu-copyimagedatauri",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ]),
   },
   {
@@ -193,7 +195,7 @@ const TEST_CASES = [
       "node-menu-copyimagedatauri",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ]),
   },
   {
@@ -204,7 +206,7 @@ const TEST_CASES = [
       "node-menu-screenshotnode",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ]),
   },
   {
@@ -215,15 +217,15 @@ const TEST_CASES = [
       "node-menu-screenshotnode",
       "node-menu-copy-attribute",
       "node-menu-edit-attribute",
-      "node-menu-remove-attribute"
+      "node-menu-remove-attribute",
     ]),
   },
   {
     desc: "<element> with context menu triggered on attribute, empty clipboard",
     selector: "#attributes",
     disabled: PASTE_MENU_ITEMS.concat(["node-menu-copyimagedatauri"]),
-    attributeTrigger: "data-edit"
-  }
+    attributeTrigger: "data-edit",
+  },
 ];
 
 var clipboard = require("devtools/shared/platform/clipboard");
@@ -232,36 +234,40 @@ registerCleanupFunction(() => {
   clipboard = null;
 });
 
-add_task(function* () {
-  let { inspector } = yield openInspectorForURL(TEST_URL);
-  for (let test of TEST_CASES) {
-    let { desc, disabled, selector, attributeTrigger } = test;
+add_task(async function() {
+  const { inspector } = await openInspectorForURL(TEST_URL);
+  for (const test of TEST_CASES) {
+    const { desc, disabled, selector, attributeTrigger } = test;
 
     info(`Test ${desc}`);
     setupClipboard(test.clipboardData, test.clipboardDataType);
 
-    let front = yield getNodeFrontForSelector(selector, inspector);
+    const front = await getNodeFrontForSelector(selector, inspector);
 
     info("Selecting the specified node.");
-    yield selectNode(front, inspector);
+    await selectNode(front, inspector);
 
     info("Simulating context menu click on the selected node container.");
-    let nodeFrontContainer = getContainerForNodeFront(front, inspector);
-    let contextMenuTrigger = attributeTrigger
+    const nodeFrontContainer = getContainerForNodeFront(front, inspector);
+    const contextMenuTrigger = attributeTrigger
       ? nodeFrontContainer.tagLine.querySelector(
-          `[data-attr="${attributeTrigger}"]`)
+          `[data-attr="${attributeTrigger}"]`
+        )
       : nodeFrontContainer.tagLine;
 
-    let allMenuItems = openContextMenuAndGetAllItems(inspector, {
+    const allMenuItems = openContextMenuAndGetAllItems(inspector, {
       target: contextMenuTrigger,
     });
 
-    for (let id of ALL_MENU_ITEMS) {
-      let menuItem = allMenuItems.find(item => item.id === id);
-      let shouldBeDisabled = disabled.includes(id);
-      let shouldBeDisabledText = shouldBeDisabled ? "disabled" : "enabled";
-      is(menuItem.disabled, shouldBeDisabled,
-        `#${id} should be ${shouldBeDisabledText} for test case ${desc}`);
+    for (const id of ALL_MENU_ITEMS) {
+      const menuItem = allMenuItems.find(item => item.id === id);
+      const shouldBeDisabled = disabled.includes(id);
+      const shouldBeDisabledText = shouldBeDisabled ? "disabled" : "enabled";
+      is(
+        menuItem.disabled,
+        shouldBeDisabled,
+        `#${id} should be ${shouldBeDisabledText} for test case ${desc}`
+      );
     }
   }
 });
@@ -270,14 +276,14 @@ add_task(function* () {
  * A helper that fetches a front for a node that matches the given selector or
  * doctype node if the selector is falsy.
  */
-function* getNodeFrontForSelector(selector, inspector) {
+async function getNodeFrontForSelector(selector, inspector) {
   if (selector) {
     info("Retrieving front for selector " + selector);
     return getNodeFront(selector, inspector);
   }
 
   info("Retrieving front for doctype node");
-  let {nodes} = yield inspector.walker.children(inspector.walker.rootNode);
+  const { nodes } = await inspector.walker.children(inspector.walker.rootNode);
   return nodes[0];
 }
 
@@ -302,21 +308,30 @@ function setupClipboard(data, type) {
  * The code below is a simplified version of the sdk/clipboard helper set() method.
  */
 function copyImageToClipboard(data) {
-  let imageTools = Cc["@mozilla.org/image/tools;1"]
-                     .getService(Ci.imgITools);
+  const imageTools = Cc["@mozilla.org/image/tools;1"].getService(Ci.imgITools);
 
   // Image data is stored as base64 in the test.
-  let image = atob(data);
+  const image = atob(data);
 
-  let imgPtr = Cc["@mozilla.org/supports-interface-pointer;1"]
-                 .createInstance(Ci.nsISupportsInterfacePointer);
-  imgPtr.data = imageTools.decodeImageFromBuffer(image, image.length, "image/png");
+  const imgPtr = Cc["@mozilla.org/supports-interface-pointer;1"].createInstance(
+    Ci.nsISupportsInterfacePointer
+  );
+  imgPtr.data = imageTools.decodeImageFromBuffer(
+    image,
+    image.length,
+    "image/png"
+  );
 
-  let xferable = Cc["@mozilla.org/widget/transferable;1"]
-                   .createInstance(Ci.nsITransferable);
+  const xferable = Cc["@mozilla.org/widget/transferable;1"].createInstance(
+    Ci.nsITransferable
+  );
   xferable.init(null);
   xferable.addDataFlavor("image/png");
   xferable.setTransferData("image/png", imgPtr, -1);
 
-  Services.clipboard.setData(xferable, null, Services.clipboard.kGlobalClipboard);
+  Services.clipboard.setData(
+    xferable,
+    null,
+    Services.clipboard.kGlobalClipboard
+  );
 }

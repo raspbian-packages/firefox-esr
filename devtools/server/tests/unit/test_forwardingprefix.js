@@ -37,12 +37,12 @@ function run_test() {
  */
 function newConnection(prefix) {
   let conn;
-  DebuggerServer.createRootActor = function (connection) {
+  DebuggerServer.createRootActor = function(connection) {
     conn = connection;
     return new RootActor(connection, {});
   };
 
-  let transport = DebuggerServer.connectPipe(prefix);
+  const transport = DebuggerServer.connectPipe(prefix);
 
   return { conn: conn, transport: transport };
 }
@@ -72,33 +72,50 @@ function tryActors(reachables, completed) {
   let count = 0;
 
   let outerActor;
-  for (outerActor of [ "root",
-                       "prefix1/root", "prefix1/actor",
-                       "prefix2/root", "prefix2/actor" ]) {
+  for (outerActor of [
+    "root",
+    "prefix1/root",
+    "prefix1/actor",
+    "prefix2/root",
+    "prefix2/actor",
+  ]) {
     /*
      * Let each callback capture its own iteration's value; outerActor is
      * local to the whole loop, not to a single iteration.
      */
-    let actor = outerActor;
+    const actor = outerActor;
 
     count++;
 
+    let promise;
     // phone home
-    gClient.request(
-      { to: actor, type: "echo", value: "tango"},
-      (response) => {
-        if (reachables.has(actor)) {
-          Assert.deepEqual({ from: actor, to: actor,
-                             type: "echo", value: "tango" }, response);
-        } else {
-          Assert.deepEqual({ from: actor, error: "noSuchActor",
-                             message: "No such actor for ID: " + actor }, response);
-        }
+    if (actor == "root") {
+      promise = gClient.mainRoot.echo({ value: "tango" });
+    } else {
+      promise = gClient.request({ to: actor, type: "echo", value: "tango" });
+    }
+    const callback = response => {
+      if (reachables.has(actor)) {
+        Assert.deepEqual(
+          { from: actor, to: actor, type: "echo", value: "tango" },
+          response
+        );
+      } else {
+        Assert.deepEqual(
+          {
+            from: actor,
+            error: "noSuchActor",
+            message: "No such actor for ID: " + actor,
+          },
+          response
+        );
+      }
 
-        if (--count == 0) {
-          executeSoon(completed, "tryActors callback " + completed.name);
-        }
-      });
+      if (--count == 0) {
+        executeSoon(completed, "tryActors callback " + completed.name);
+      }
+    };
+    promise.then(callback, callback);
   }
 }
 
@@ -119,10 +136,10 @@ function TestNoForwardingYet() {
  * Return an object { conn, transport }, as for newConnection.
  */
 function newSubconnection(prefix) {
-  let { conn, transport } = newConnection(prefix);
+  const { conn, transport } = newConnection(prefix);
   transport.hooks = {
-    onPacket: (packet) => gMainConnection.send(packet),
-    onClosed: () => {}
+    onPacket: packet => gMainConnection.send(packet),
+    onClosed: () => {},
   };
   gMainConnection.setForwarding(prefix, transport);
 
@@ -131,10 +148,10 @@ function newSubconnection(prefix) {
 
 /* Create a second root actor, to which we can forward things. */
 function createSubconnection1() {
-  let { conn, transport } = newSubconnection("prefix1");
+  const { conn, transport } = newSubconnection("prefix1");
   gSubconnection1 = conn;
   transport.ready();
-  gClient.expectReply("prefix1/root", (reply) => run_next_test());
+  gClient.expectReply("prefix1/root", reply => run_next_test());
 }
 
 // Establish forwarding, but don't put any actors in that server.
@@ -144,10 +161,10 @@ function TestForwardPrefix1OnlyRoot() {
 
 /* Create a third root actor, to which we can forward things. */
 function createSubconnection2() {
-  let { conn, transport } = newSubconnection("prefix2");
+  const { conn, transport } = newSubconnection("prefix2");
   gSubconnection2 = conn;
   transport.ready();
-  gClient.expectReply("prefix2/root", (reply) => run_next_test());
+  gClient.expectReply("prefix2/root", reply => run_next_test());
 }
 
 function TestForwardPrefix12OnlyRoot() {
@@ -164,7 +181,7 @@ function EchoActor(connection) {
   this.conn = connection;
 }
 EchoActor.prototype.actorPrefix = "EchoActor";
-EchoActor.prototype.onEcho = function (request) {
+EchoActor.prototype.onEcho = function(request) {
   /*
    * Request packets are frozen. Copy request, so that
    * DebuggerServerConnection.onPacket can attach a 'from' property.
@@ -172,11 +189,11 @@ EchoActor.prototype.onEcho = function (request) {
   return JSON.parse(JSON.stringify(request));
 };
 EchoActor.prototype.requestTypes = {
-  "echo": EchoActor.prototype.onEcho
+  echo: EchoActor.prototype.onEcho,
 };
 
 function TestForwardPrefix12WithActor1() {
-  let actor = new EchoActor(gSubconnection1);
+  const actor = new EchoActor(gSubconnection1);
   actor.actorID = "prefix1/actor";
   gSubconnection1.addActor(actor);
 
@@ -187,12 +204,18 @@ function TestForwardPrefix12WithActor1() {
 }
 
 function TestForwardPrefix12WithActor12() {
-  let actor = new EchoActor(gSubconnection2);
+  const actor = new EchoActor(gSubconnection2);
   actor.actorID = "prefix2/actor";
   gSubconnection2.addActor(actor);
 
   tryActors(
-    new Set(["root", "prefix1/root", "prefix1/actor", "prefix2/root", "prefix2/actor"]),
+    new Set([
+      "root",
+      "prefix1/root",
+      "prefix1/actor",
+      "prefix2/root",
+      "prefix2/actor",
+    ]),
     run_next_test
   );
 }

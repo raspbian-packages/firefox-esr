@@ -9,7 +9,7 @@
 //! Data-driven tests
 
 extern crate rustc_serialize;
-extern crate test;
+extern crate rustc_test as test;
 extern crate url;
 
 use rustc_serialize::json::{self, Json};
@@ -29,6 +29,7 @@ fn check_invariants(url: &Url) {
 fn run_parsing(input: &str, base: &str, expected: Result<ExpectedAttributes, ()>) {
     let base = match Url::parse(&base) {
         Ok(base) => base,
+        Err(_) if expected.is_err() => return,
         Err(message) => panic!("Error parsing base {:?}: {}", base, message)
     };
     let (url, expected) = match (base.join(&input), expected) {

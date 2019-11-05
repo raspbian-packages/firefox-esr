@@ -9,13 +9,13 @@
 // formal protocols
 #include "mozView.h"
 #ifdef ACCESSIBILITY
-#include "mozilla/a11y/Accessible.h"
-#include "mozAccessibleProtocol.h"
+#  include "mozilla/a11y/Accessible.h"
+#  include "mozAccessibleProtocol.h"
 #endif
 
 #include "nsISupports.h"
 #include "nsBaseWidget.h"
-#include "nsWeakPtr.h"
+#include "nsIWeakReferenceUtils.h"
 #include "TextInputHandler.h"
 #include "nsCocoaUtils.h"
 #include "gfxQuartzSurface.h"
@@ -56,6 +56,8 @@ class RectTextureImage;
 class WidgetRenderingContext;
 }  // namespace widget
 }  // namespace mozilla
+
+@class PixelHostingView;
 
 @interface NSEvent (Undocumented)
 
@@ -113,11 +115,14 @@ class WidgetRenderingContext;
 - (void)viewDidChangeBackingProperties;
 @end
 
-@interface ChildView : NSView<
+@interface ChildView : NSView <
 #ifdef ACCESSIBILITY
                            mozAccessible,
 #endif
-                           mozView, NSTextInputClient, NSDraggingSource, NSDraggingDestination,
+                           mozView,
+                           NSTextInputClient,
+                           NSDraggingSource,
+                           NSDraggingDestination,
                            NSPasteboardItemDataProvider> {
  @private
   // the nsChildView that created the view. It retains this NSView, so
@@ -144,11 +149,6 @@ class WidgetRenderingContext;
 
   // when acceptsFirstMouse: is called, we store the event here (strong)
   NSEvent* mClickThroughMouseDownEvent;
-
-  // rects that were invalidated during a draw, so have pending drawing
-  NSMutableArray* mPendingDirtyRects;
-  BOOL mPendingFullDisplay;
-  BOOL mPendingDisplay;
 
   // WheelStart/Stop events should always come in pairs. This BOOL records the
   // last received event so that, when we receive one of the events, we make sure
@@ -191,8 +191,6 @@ class WidgetRenderingContext;
   float mCumulativeMagnification;
   float mCumulativeRotation;
 
-  BOOL mWaitingForPaint;
-
 #ifdef __LP64__
   // Support for fluid swipe tracking.
   BOOL* mCancelSwipeAnimation;
@@ -204,6 +202,15 @@ class WidgetRenderingContext;
   // The mask image that's used when painting into the titlebar using basic
   // CGContext painting (i.e. non-accelerated).
   CGImageRef mTopLeftCornerMask;
+
+  // Subviews of self, which act as container views for vibrancy views and
+  // non-draggable views.
+  NSView* mVibrancyViewsContainer;      // [STRONG]
+  NSView* mNonDraggableViewsContainer;  // [STRONG]
+
+  // The view that does our drawing. This is a subview of self so that it can
+  // be ordered on top of mVibrancyViewsContainer.
+  PixelHostingView* mPixelHostingView;
 
   // Last pressure stage by trackpad's force click
   NSInteger mLastPressureStage;
@@ -233,6 +240,10 @@ class WidgetRenderingContext;
 - (bool)preRender:(NSOpenGLContext*)aGLContext;
 - (void)postRender:(NSOpenGLContext*)aGLContext;
 
+- (NSView*)vibrancyViewsContainer;
+- (NSView*)nonDraggableViewsContainer;
+- (NSView*)pixelHostingView;
+
 - (BOOL)isCoveringTitlebar;
 
 - (void)viewWillStartLiveResize;
@@ -257,7 +268,6 @@ class WidgetRenderingContext;
 - (void)endGestureWithEvent:(NSEvent*)anEvent;
 
 - (void)scrollWheel:(NSEvent*)anEvent;
-- (void)handleAsyncScrollEvent:(CGEventRef)cgEvent ofType:(CGEventType)type;
 
 - (void)setUsingOMTCompositor:(BOOL)aUseOMTC;
 
@@ -327,6 +337,13 @@ class nsChildView final : public nsBaseWidget {
   virtual LayoutDeviceIntRect GetClientBounds() override;
   virtual LayoutDeviceIntRect GetScreenBounds() override;
 
+  // Refresh mBounds with up-to-date values from [mView frame].
+  // Only called if this nsChildView is the popup content view of a popup window.
+  // For popup windows, the nsIWidget interface to Gecko is provided by
+  // nsCocoaWindow, not by nsChildView. So nsCocoaWindow manages resize requests
+  // from Gecko, fires resize events, and resizes the native NSWindow and NSView.
+  void UpdateBoundsFromView();
+
   // Returns the "backing scale factor" of the view's window, which is the
   // ratio of pixels in the window's backing store to Cocoa points. Prior to
   // HiDPI support in OS X 10.7, this was always 1.0, but in HiDPI mode it
@@ -352,7 +369,7 @@ class nsChildView final : public nsBaseWidget {
   virtual void* GetNativeData(uint32_t aDataType) override;
   virtual nsresult ConfigureChildren(const nsTArray<Configuration>& aConfigurations) override;
   virtual LayoutDeviceIntPoint WidgetToScreenOffset() override;
-  virtual bool ShowsResizeIndicator(LayoutDeviceIntRect* aResizerRect) override;
+  virtual bool ShowsResizeIndicator(LayoutDeviceIntRect* aResizerRect) override { return false; }
 
   static bool ConvertStatus(nsEventStatus aStatus) {
     return aStatus == nsEventStatus_eConsumeNoDefault;
@@ -362,9 +379,8 @@ class nsChildView final : public nsBaseWidget {
   virtual bool WidgetTypeSupportsAcceleration() override;
   virtual bool ShouldUseOffMainThreadCompositing() override;
 
-  virtual void SetCursor(nsCursor aCursor) override;
-  virtual nsresult SetCursor(imgIContainer* aCursor, uint32_t aHotspotX,
-                             uint32_t aHotspotY) override;
+  virtual void SetCursor(nsCursor aDefaultCursor, imgIContainer* aCursor, uint32_t aHotspotX,
+                         uint32_t aHotspotY) override;
 
   virtual nsresult SetTitle(const nsAString& title) override;
 
@@ -424,6 +440,8 @@ class nsChildView final : public nsBaseWidget {
 
   void WillPaintWindow();
   bool PaintWindow(LayoutDeviceIntRegion aRegion);
+  bool PaintWindowInDrawTarget(mozilla::gfx::DrawTarget* aDT, const LayoutDeviceIntRegion& aRegion,
+                               const mozilla::gfx::IntSize& aSurfaceSize);
   bool PaintWindowInContext(CGContextRef aContext, const LayoutDeviceIntRegion& aRegion,
                             mozilla::gfx::IntSize aSurfaceSize);
 
@@ -470,7 +488,6 @@ class nsChildView final : public nsBaseWidget {
 
   mozilla::widget::TextInputHandler* GetTextInputHandler() { return mTextInputHandler; }
 
-  void ClearVibrantAreas();
   NSColor* VibrancyFillColorForThemeGeometryType(nsITheme::ThemeGeometryType aThemeGeometryType);
   NSColor* VibrancyFontSmoothingBackgroundColorForThemeGeometryType(
       nsITheme::ThemeGeometryType aThemeGeometryType);
@@ -501,8 +518,6 @@ class nsChildView final : public nsBaseWidget {
   void CleanupRemoteDrawing() override;
   bool InitCompositor(mozilla::layers::Compositor* aCompositor) override;
 
-  IAPZCTreeManager* APZCTM() { return mAPZC; }
-
   virtual MOZ_MUST_USE nsresult StartPluginIME(const mozilla::WidgetKeyboardEvent& aKeyboardEvent,
                                                int32_t aPanelX, int32_t aPanelY,
                                                nsString& aCommitted) override;
@@ -514,8 +529,12 @@ class nsChildView final : public nsBaseWidget {
   virtual LayoutDeviceIntPoint GetClientOffset() override;
 
   void DispatchAPZWheelInputEvent(mozilla::InputData& aEvent, bool aCanTriggerSwipe);
+  nsEventStatus DispatchAPZInputEvent(mozilla::InputData& aEvent);
 
   void SwipeFinished();
+
+  nsresult SetPrefersReducedMotionOverrideForTest(bool aValue) override;
+  nsresult ResetPrefersReducedMotionOverrideForTest() override;
 
  protected:
   virtual ~nsChildView();
@@ -523,15 +542,10 @@ class nsChildView final : public nsBaseWidget {
   void ReportMoveEvent();
   void ReportSizeEvent();
 
-  // override to create different kinds of child views. Autoreleases, so
-  // caller must retain.
-  virtual NSView* CreateCocoaView(NSRect inFrame);
   void TearDownView();
 
   virtual already_AddRefed<nsIWidget> AllocateChildPopupWidget() override {
-    static NS_DEFINE_IID(kCPopUpCID, NS_POPUP_CID);
-    nsCOMPtr<nsIWidget> widget = do_CreateInstance(kCPopUpCID);
-    return widget.forget();
+    return nsIWidget::CreateTopLevelWindow();
   }
 
   void ConfigureAPZCTreeManager() override;
@@ -541,7 +555,6 @@ class nsChildView final : public nsBaseWidget {
 
   // Overlay drawing functions for OpenGL drawing
   void DrawWindowOverlay(mozilla::layers::GLManager* aManager, LayoutDeviceIntRect aRect);
-  void MaybeDrawResizeIndicator(mozilla::layers::GLManager* aManager);
   void MaybeDrawRoundedCorners(mozilla::layers::GLManager* aManager,
                                const LayoutDeviceIntRect& aRect);
   void MaybeDrawTitlebar(mozilla::layers::GLManager* aManager);
@@ -566,11 +579,11 @@ class nsChildView final : public nsBaseWidget {
                                uint32_t aAllowedDirections);
 
  protected:
-  NSView<mozView>* mView;  // my parallel cocoa view (ChildView or NativeScrollbarView), [STRONG]
+  ChildView* mView;  // my parallel cocoa view, [STRONG]
   RefPtr<mozilla::widget::TextInputHandler> mTextInputHandler;
   InputContext mInputContext;
 
-  NSView<mozView>* mParentView;
+  NSView* mParentView;
   nsIWidget* mParentWidget;
 
 #ifdef ACCESSIBILITY
@@ -587,8 +600,6 @@ class nsChildView final : public nsBaseWidget {
 
   // May be accessed from any thread, protected
   // by mEffectsLock.
-  bool mShowsResizeIndicator;
-  LayoutDeviceIntRect mResizeIndicatorRect;
   bool mHasRoundedBottomCorners;
   int mDevPixelCornerRadius;
   bool mIsCoveringTitlebar;
@@ -602,7 +613,6 @@ class nsChildView final : public nsBaseWidget {
   CGContextRef mTitlebarCGContext;
 
   // Compositor thread only
-  mozilla::UniquePtr<mozilla::widget::RectTextureImage> mResizerImage;
   mozilla::UniquePtr<mozilla::widget::RectTextureImage> mCornerMaskImage;
   mozilla::UniquePtr<mozilla::widget::RectTextureImage> mTitlebarImage;
   mozilla::UniquePtr<mozilla::widget::RectTextureImage> mBasicCompositorImage;

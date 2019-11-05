@@ -12,6 +12,7 @@
 <!ENTITY enableGlodaSearch.label       "Globális keresés és indexelő engedélyezése">
 <!ENTITY enableGlodaSearch.accesskey   "G">
 <!ENTITY dateTimeFormatting.label      "Dátum és idő formázás">
+<!ENTITY languageSelector.label        "Nyelv">
 <!ENTITY allowHWAccel.label            "Hardveres gyorsítás használata, ha elérhető">
 <!ENTITY allowHWAccel.accesskey        "H">
 <!ENTITY storeType.label               "Üzenettároló és típus új fiókokhoz:">
@@ -32,7 +33,7 @@
 <!ENTITY searchIntegration.accesskey   "s">
 <!ENTITY checkDefaultsNow.label        "Ellenőrzés most…">
 <!ENTITY checkDefaultsNow.accesskey    "E">
-<!ENTITY configEditDesc.label          "Haladó beállítások">
+<!ENTITY configEditDesc.label          "Speciális beállítások">
 <!ENTITY configEdit.label              "Konfigurációszerkesztő…">
 <!ENTITY configEdit.accesskey          "K">
 <!ENTITY returnReceiptsInfo.label      "A &brandShortName; tértivevény-kezelésének beállítása">
@@ -66,17 +67,18 @@
  -->
 <!ENTITY updateApp.version.pre           "Verzió: ">
 <!ENTITY updateApp.version.post          "">
+<!ENTITY updateAppAllow.description      "A &brandShortName; megteheti:">
 <!ENTITY updateAuto.label                "Frissítések automatikus telepítése (ez ajánlott a maximális biztonság érdekében)">
 <!ENTITY updateAuto.accesskey            "a">
 <!ENTITY updateCheck.label               "Frissítések keresése, de a telepítés kézzel történik">
 <!ENTITY updateCheck.accesskey           "k">
-<!ENTITY updateManual.label              "Ne legyen frissítve (nem ajánlott a biztonsági kockázat miatt">
-<!ENTITY updateManual.accesskey          "N">
 <!ENTITY updateHistory.label             "Frissítési előzmények megjelenítése">
 <!ENTITY updateHistory.accesskey         "z">
 
 <!ENTITY useService.label                "Háttérben futó szolgáltatás intézze a frissítést">
 <!ENTITY useService.accesskey            "H">
+
+<!ENTITY updateCrossUserSettingWarning.description "Ez a beállítás érvényes lesz minden Windows-fiókra és &brandShortName;-profilra, amely a &brandShortName; ezen telepítését használja.">
 
 <!-- Networking and Disk Space -->
 <!ENTITY showSettings.label            "Beállítások…">

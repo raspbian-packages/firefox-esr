@@ -35,12 +35,12 @@ Accessible* LeafAccessible::ChildAtPoint(int32_t aX, int32_t aY,
 }
 
 bool LeafAccessible::InsertChildAt(uint32_t aIndex, Accessible* aChild) {
-  NS_NOTREACHED("InsertChildAt called on leaf accessible!");
+  MOZ_ASSERT_UNREACHABLE("InsertChildAt called on leaf accessible!");
   return false;
 }
 
 bool LeafAccessible::RemoveChild(Accessible* aChild) {
-  NS_NOTREACHED("RemoveChild called on leaf accessible!");
+  MOZ_ASSERT_UNREACHABLE("RemoveChild called on leaf accessible!");
   return false;
 }
 
@@ -56,8 +56,8 @@ bool LeafAccessible::IsAcceptableChild(nsIContent* aEl) const {
 ////////////////////////////////////////////////////////////////////////////////
 // LinkableAccessible. nsIAccessible
 
-void LinkableAccessible::TakeFocus() {
-  if (Accessible* actionAcc = ActionWalk()) {
+void LinkableAccessible::TakeFocus() const {
+  if (const Accessible* actionAcc = ActionWalk()) {
     actionAcc->TakeFocus();
   } else {
     AccessibleWrap::TakeFocus();
@@ -66,8 +66,7 @@ void LinkableAccessible::TakeFocus() {
 
 uint64_t LinkableAccessible::NativeLinkState() const {
   bool isLink;
-  Accessible* actionAcc =
-      const_cast<LinkableAccessible*>(this)->ActionWalk(&isLink);
+  const Accessible* actionAcc = ActionWalk(&isLink);
   if (isLink) {
     return states::LINKED | (actionAcc->LinkState() & states::TRAVERSED);
   }
@@ -75,7 +74,7 @@ uint64_t LinkableAccessible::NativeLinkState() const {
   return 0;
 }
 
-void LinkableAccessible::Value(nsString& aValue) {
+void LinkableAccessible::Value(nsString& aValue) const {
   aValue.Truncate();
 
   Accessible::Value(aValue);
@@ -84,20 +83,20 @@ void LinkableAccessible::Value(nsString& aValue) {
   }
 
   bool isLink;
-  Accessible* actionAcc = ActionWalk(&isLink);
+  const Accessible* actionAcc = ActionWalk(&isLink);
   if (isLink) {
     actionAcc->Value(aValue);
   }
 }
 
-uint8_t LinkableAccessible::ActionCount() {
+uint8_t LinkableAccessible::ActionCount() const {
   bool isLink, isOnclick, isLabelWithControl;
   ActionWalk(&isLink, &isOnclick, &isLabelWithControl);
   return (isLink || isOnclick || isLabelWithControl) ? 1 : 0;
 }
 
-Accessible* LinkableAccessible::ActionWalk(bool* aIsLink, bool* aIsOnclick,
-                                           bool* aIsLabelWithControl) {
+const Accessible* LinkableAccessible::ActionWalk(
+    bool* aIsLink, bool* aIsOnclick, bool* aIsLabelWithControl) const {
   if (aIsOnclick) {
     *aIsOnclick = false;
   }
@@ -118,7 +117,7 @@ Accessible* LinkableAccessible::ActionWalk(bool* aIsLink, bool* aIsOnclick,
   // XXX: The logic looks broken since the click listener may be registered
   // on non accessible node in parent chain but this node is skipped when tree
   // is traversed.
-  Accessible* walkUpAcc = this;
+  const Accessible* walkUpAcc = this;
   while ((walkUpAcc = walkUpAcc->Parent()) && !walkUpAcc->IsDoc()) {
     if (walkUpAcc->LinkState() & states::LINKED) {
       if (aIsLink) {
@@ -159,12 +158,12 @@ void LinkableAccessible::ActionNameAt(uint8_t aIndex, nsAString& aName) {
   }
 }
 
-bool LinkableAccessible::DoAction(uint8_t aIndex) {
+bool LinkableAccessible::DoAction(uint8_t aIndex) const {
   if (aIndex != eAction_Jump) {
     return false;
   }
 
-  if (Accessible* actionAcc = ActionWalk()) {
+  if (const Accessible* actionAcc = ActionWalk()) {
     return actionAcc->DoAction(aIndex);
   }
 
@@ -184,9 +183,9 @@ KeyBinding LinkableAccessible::AccessKey() const {
 // LinkableAccessible: HyperLinkAccessible
 
 already_AddRefed<nsIURI> LinkableAccessible::AnchorURIAt(
-    uint32_t aAnchorIndex) {
+    uint32_t aAnchorIndex) const {
   bool isLink;
-  Accessible* actionAcc = ActionWalk(&isLink);
+  const Accessible* actionAcc = ActionWalk(&isLink);
   if (isLink) {
     NS_ASSERTION(actionAcc->IsLink(), "HyperLink isn't implemented.");
 
@@ -202,7 +201,7 @@ already_AddRefed<nsIURI> LinkableAccessible::AnchorURIAt(
 // DummyAccessible
 ////////////////////////////////////////////////////////////////////////////////
 
-uint64_t DummyAccessible::NativeState() { return 0; }
+uint64_t DummyAccessible::NativeState() const { return 0; }
 uint64_t DummyAccessible::NativeInteractiveState() const { return 0; }
 
 uint64_t DummyAccessible::NativeLinkState() const { return 0; }

@@ -8,8 +8,8 @@
 
 #include "BaseAccessibles.h"
 
-#if defined(MOZ_CONTENT_SANDBOX)
-#include "mozilla/mscom/Ptr.h"
+#if defined(MOZ_SANDBOX)
+#  include "mozilla/mscom/Ptr.h"
 #endif
 
 struct IAccessible;
@@ -31,7 +31,7 @@ class HTMLWin32ObjectOwnerAccessible : public AccessibleWrap {
 
   // Accessible
   virtual void Shutdown();
-  virtual mozilla::a11y::role NativeRole();
+  virtual mozilla::a11y::role NativeRole() const override;
   virtual bool NativelyUnavailable() const;
 
  protected:
@@ -57,7 +57,7 @@ class HTMLWin32ObjectAccessible : public DummyAccessible {
 
  protected:
   void* mHwnd;
-#if defined(MOZ_CONTENT_SANDBOX)
+#if defined(MOZ_SANDBOX)
   mscom::ProxyUniquePtr<IAccessible> mCOMProxy;
 #endif
 };

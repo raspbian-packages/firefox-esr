@@ -6,10 +6,11 @@
 
 "use strict";
 
-const {Cc, Ci} = require("chrome");
+const { Cc, Ci } = require("chrome");
 const Services = require("Services");
-const clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"]
-      .getService(Ci.nsIClipboardHelper);
+const clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(
+  Ci.nsIClipboardHelper
+);
 
 function copyString(string) {
   clipboardHelper.copyString(string);
@@ -21,28 +22,28 @@ function copyString(string) {
  * @return {String} Clipboard text content, null if no text clipboard data is available.
  */
 function getText() {
-  let flavor = "text/unicode";
+  const flavor = "text/unicode";
 
-  let xferable = Cc["@mozilla.org/widget/transferable;1"]
-                 .createInstance(Ci.nsITransferable);
+  const xferable = Cc["@mozilla.org/widget/transferable;1"].createInstance(
+    Ci.nsITransferable
+  );
 
   if (!xferable) {
-    throw new Error("Couldn't get the clipboard data due to an internal error " +
-                    "(couldn't create a Transferable object).");
+    throw new Error(
+      "Couldn't get the clipboard data due to an internal error " +
+        "(couldn't create a Transferable object)."
+    );
   }
 
   xferable.init(null);
   xferable.addDataFlavor(flavor);
 
   // Get the data into our transferable.
-  Services.clipboard.getData(
-    xferable,
-    Services.clipboard.kGlobalClipboard
-  );
+  Services.clipboard.getData(xferable, Services.clipboard.kGlobalClipboard);
 
-  let data = {};
+  const data = {};
   try {
-    xferable.getTransferData(flavor, data, {});
+    xferable.getTransferData(flavor, data);
   } catch (e) {
     // Clipboard doesn't contain data in flavor, return null.
     return null;

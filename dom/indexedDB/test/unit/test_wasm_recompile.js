@@ -5,8 +5,7 @@
 
 var testGenerator = testSteps();
 
-function* testSteps()
-{
+function* testSteps() {
   const name = "test_wasm_recompile.js";
 
   const objectStoreName = "Wasm";
@@ -21,7 +20,9 @@ function* testSteps()
     yield undefined;
   }
 
-  getWasmBinary("(module (func (nop)))");
+  getWasmBinary(
+    '(module (func $f (result i32) (i32.const 42)) (func (export "run") (result i32) (call $f)))'
+  );
   let binary = yield undefined;
 
   wasmData.wasm = getWasmModule(binary);
@@ -31,7 +32,7 @@ function* testSteps()
   clearAllDatabases(continueToNextStepSync);
   yield undefined;
 
-  // The profile was created by an older build (buildId: 20161116145318,
+  // The profile was created with a mythical build (buildId: 20180309213541,
   // cpuId: X64=0x2). It contains one stored wasm module (file id 1 - bytecode
   // and file id 2 - compiled/machine code). The file create_db.js in the
   // package was run locally (specifically it was temporarily added to
@@ -71,8 +72,10 @@ function* testSteps()
 
   info("Getting wasm");
 
-  request = db.transaction([objectStoreName])
-              .objectStore(objectStoreName).get(wasmData.key);
+  request = db
+    .transaction([objectStoreName])
+    .objectStore(objectStoreName)
+    .get(wasmData.key);
   request.onsuccess = continueToNextStepSync;
   yield undefined;
 
@@ -94,14 +97,16 @@ function* testSteps()
 
   let newCompiledBuffer = fileReader.result;
 
-  info("Verifying blobs differ");
+  info("Verifying that re-storing of re-compiled code has been disabled");
 
-  ok(!compareBuffers(newCompiledBuffer, compiledBuffer), "Blobs differ");
+  ok(compareBuffers(newCompiledBuffer, compiledBuffer), "Blobs don't differ");
 
   info("Getting wasm again");
 
-  request = db.transaction([objectStoreName])
-              .objectStore(objectStoreName).get(wasmData.key);
+  request = db
+    .transaction([objectStoreName])
+    .objectStore(objectStoreName)
+    .get(wasmData.key);
   request.onsuccess = continueToNextStepSync;
   yield undefined;
 
@@ -125,8 +130,10 @@ function* testSteps()
 
   info("Verifying blob didn't change");
 
-  ok(compareBuffers(newCompiledBuffer2, newCompiledBuffer),
-     "Blob didn't change");
+  ok(
+    compareBuffers(newCompiledBuffer2, newCompiledBuffer),
+    "Blob didn't change"
+  );
 
   finishTest();
   yield undefined;

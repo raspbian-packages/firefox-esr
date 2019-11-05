@@ -25,11 +25,19 @@ XPIDL_SOURCES += [
 XPIDL_MODULE = 'pref'
 
 EXPORTS.mozilla += [
+    'init/StaticPrefList.h',
+    'nsRelativeFilePref.h',
     'Preferences.h',
+    'StaticPrefs.h',
 ]
 
 UNIFIED_SOURCES += [
     'Preferences.cpp',
+    'SharedPrefMap.cpp',
+]
+
+XPCOM_MANIFESTS += [
+    'components.conf',
 ]
 
 include('/ipc/chromium/chromium-config.mozbuild')

@@ -13,26 +13,47 @@
 #include "mozilla/widget/CompositorWidget.h"
 
 #ifdef XP_WIN
-#include "mozilla/webrender/RenderCompositorANGLE.h"
+#  include "mozilla/webrender/RenderCompositorANGLE.h"
+#endif
+
+#if defined(MOZ_WAYLAND) || defined(MOZ_WIDGET_ANDROID)
+#  include "mozilla/webrender/RenderCompositorEGL.h"
 #endif
 
 namespace mozilla {
 namespace wr {
 
-/* static */ UniquePtr<RenderCompositor> RenderCompositor::Create(
+/* static */
+UniquePtr<RenderCompositor> RenderCompositor::Create(
     RefPtr<widget::CompositorWidget>&& aWidget) {
 #ifdef XP_WIN
   if (gfx::gfxVars::UseWebRenderANGLE()) {
-    return RenderCompositorANGLE::Create(Move(aWidget));
+    return RenderCompositorANGLE::Create(std::move(aWidget));
   }
 #endif
-  return RenderCompositorOGL::Create(Move(aWidget));
+
+#if defined(MOZ_WAYLAND) || defined(MOZ_WIDGET_ANDROID)
+  UniquePtr<RenderCompositor> eglCompositor =
+      RenderCompositorEGL::Create(aWidget);
+  if (eglCompositor) {
+    return eglCompositor;
+  }
+#endif
+
+#if defined(MOZ_WIDGET_ANDROID)
+  // RenderCompositorOGL is not used on android
+  return nullptr;
+#else
+  return RenderCompositorOGL::Create(std::move(aWidget));
+#endif
 }
 
 RenderCompositor::RenderCompositor(RefPtr<widget::CompositorWidget>&& aWidget)
     : mWidget(aWidget) {}
 
 RenderCompositor::~RenderCompositor() {}
+
+bool RenderCompositor::MakeCurrent() { return gl()->MakeCurrent(); }
 
 }  // namespace wr
 }  // namespace mozilla

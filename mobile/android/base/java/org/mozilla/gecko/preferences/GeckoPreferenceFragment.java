@@ -7,7 +7,6 @@ package org.mozilla.gecko.preferences;
 
 import java.util.Locale;
 
-import org.mozilla.gecko.AppConstants.Versions;
 import org.mozilla.gecko.BrowserLocaleManager;
 import org.mozilla.gecko.GeckoApplication;
 import org.mozilla.gecko.GeckoSharedPrefs;
@@ -19,9 +18,9 @@ import org.mozilla.gecko.TelemetryContract;
 import org.mozilla.gecko.TelemetryContract.Method;
 import org.mozilla.gecko.fxa.AccountLoader;
 import org.mozilla.gecko.fxa.authenticator.AndroidFxAccount;
+import org.mozilla.gecko.util.PackageUtil;
 
 import android.accounts.Account;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -29,14 +28,12 @@ import android.content.Loader;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-
-import com.squareup.leakcanary.RefWatcher;
 
 /* A simple implementation of PreferenceFragment for large screen devices
  * This will strip category headers (so that they aren't shown to the user twice)
@@ -45,6 +42,7 @@ import com.squareup.leakcanary.RefWatcher;
 public class GeckoPreferenceFragment extends PreferenceFragment {
 
     public static final int ACCOUNT_LOADER_ID = 1;
+    public static final int HEADER_ID_UNDEFINED = -1;
     private AccountLoaderCallbacks accountLoaderCallbacks;
     private SyncPreference syncPreference;
 
@@ -72,54 +70,36 @@ public class GeckoPreferenceFragment extends PreferenceFragment {
 
         // Write prefs to our custom GeckoSharedPrefs file.
         getPreferenceManager().setSharedPreferencesName(GeckoSharedPrefs.APP_PREFS_NAME);
-
-        int res = getResource();
-        if (res == R.xml.preferences) {
-            Telemetry.startUISession(TelemetryContract.Session.SETTINGS);
-        } else {
-            final String resourceName = getArguments().getString("resource");
-            Telemetry.sendUIEvent(TelemetryContract.Event.ACTION, Method.SETTINGS, resourceName);
-        }
-
-        // Display a menu for Search preferences.
-        if (res == R.xml.preferences_search) {
-            setHasOptionsMenu(true);
-        }
-
-        addPreferencesFromResource(res);
-
-        PreferenceScreen screen = getPreferenceScreen();
-        setPreferenceScreen(screen);
-        mPrefsRequest = ((GeckoPreferences)getActivity()).setupPreferences(screen);
-        syncPreference = (SyncPreference) findPreference(GeckoPreferences.PREFS_SYNC);
+        loadPreferences();
     }
 
     /**
      * Return the title to use for this preference fragment.
      *
-     * We only return titles for the preference screens that are
-     * launched directly, and thus might need to be redisplayed.
-     *
-     * This method sets the title that you see on non-multi-pane devices.
+     * The result will be used to set the title that you see on non-multi-pane devices.
      */
     private String getTitle() {
         final int res = getResource();
         if (res == R.xml.preferences) {
             return getString(R.string.settings_title);
-        }
-
-        // We can launch this category from the Data Reporting notification.
-        if (res == R.xml.preferences_privacy) {
-            return getString(R.string.pref_category_privacy_short);
-        }
-
-        // We can launch this category from the the magnifying glass in the quick search bar.
-        if (res == R.xml.preferences_search) {
+        } else if (res == R.xml.preferences_general || res == R.xml.preferences_general_tablet) {
+            return getString(R.string.pref_category_general);
+        } else if (res == R.xml.preferences_home) {
+            return getString(R.string.pref_category_home);
+        } else if (res == R.xml.preferences_locale) {
+            return getString(R.string.pref_category_language);
+        } else if (res == R.xml.preferences_search) {
             return getString(R.string.pref_category_search);
-        }
-
-        if (res == R.xml.preferences_notifications) {
+        } else if (res == R.xml.preferences_privacy) {
+            return getString(R.string.pref_category_privacy_short);
+        } else if (res == R.xml.preferences_accessibility) {
+            return getString(R.string.pref_category_accessibility);
+        } else if (res == R.xml.preferences_notifications) {
             return getString(R.string.pref_category_notifications);
+        } else if (res == R.xml.preferences_advanced) {
+            return getString(R.string.pref_category_advanced);
+        } else if (res == R.xml.preferences_vendor) {
+            return getString(R.string.pref_category_vendor);
         }
 
         return null;
@@ -153,10 +133,10 @@ public class GeckoPreferenceFragment extends PreferenceFragment {
             return R.id.pref_header_notifications;
         }
 
-        return -1;
+        return HEADER_ID_UNDEFINED;
     }
 
-    private void updateTitle() {
+    private void updateParentTitle() {
         final String newTitle = getTitle();
         if (newTitle == null) {
             Log.d(LOGTAG, "No new title to show.");
@@ -165,13 +145,9 @@ public class GeckoPreferenceFragment extends PreferenceFragment {
 
         final GeckoPreferences activity = (GeckoPreferences) getActivity();
         if (activity.isMultiPane()) {
-            // In a multi-pane activity, the title is "Settings", and the action
-            // bar is along the top of the screen. We don't want to change those.
-            activity.showBreadCrumbs(newTitle, newTitle);
-            activity.switchToHeader(getHeader());
+            activity.trySwitchToHeader(getHeader());
             return;
         }
-
         Log.v(LOGTAG, "Setting activity title to " + newTitle);
         activity.setTitle(newTitle);
     }
@@ -187,11 +163,42 @@ public class GeckoPreferenceFragment extends PreferenceFragment {
     public void onResume() {
         // This is a little delicate. Ensure that you do nothing prior to
         // super.onResume that you wouldn't do in onCreate.
+        // This will also set the title in the parent activity's ActionBar to the title of the current PreferenceScreen
         applyLocale(Locale.getDefault());
         super.onResume();
 
         // Force reload as the account may have been deleted while the app was in background.
         getLoaderManager().restartLoader(ACCOUNT_LOADER_ID, null, accountLoaderCallbacks);
+
+        PreferenceScreen screen = getPreferenceScreen();
+
+        Preference defaultBrowser = screen.findPreference(GeckoPreferences.PREFS_DEFAULT_BROWSER);
+        if (defaultBrowser == null && !PackageUtil.isDefaultBrowser(this.getActivity().getBaseContext())) {
+            // force a reload of all preferences to add/remove the default browser one if conditions were changed while the app was backgrounded
+            getPreferenceScreen().removeAll();
+            loadPreferences();
+        }
+
+        setPreferenceScreen(screen);
+        mPrefsRequest = ((GeckoPreferences)getActivity()).setupPreferences(screen);
+        syncPreference = (SyncPreference) findPreference(GeckoPreferences.PREFS_SYNC);
+    }
+
+    private void loadPreferences() {
+        int res = getResource();
+        if (res == R.xml.preferences) {
+            Telemetry.startUISession(TelemetryContract.Session.SETTINGS);
+        } else {
+            final String resourceName = getArguments().getString("resource");
+            Telemetry.sendUIEvent(TelemetryContract.Event.ACTION, Method.SETTINGS, resourceName);
+        }
+
+        // Display a menu for Search preferences.
+        if (res == R.xml.preferences_search) {
+            setHasOptionsMenu(true);
+        }
+
+        addPreferencesFromResource(res);
     }
 
     private void applyLocale(final Locale currentLocale) {
@@ -207,10 +214,11 @@ public class GeckoPreferenceFragment extends PreferenceFragment {
             // Rebuild the list to reflect the current locale.
             getPreferenceScreen().removeAll();
             addPreferencesFromResource(getResource());
+            syncPreference = (SyncPreference) findPreference(GeckoPreferences.PREFS_SYNC);
         }
 
         // Fix the parent title regardless.
-        updateTitle();
+        updateParentTitle();
     }
 
     /*

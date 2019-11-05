@@ -7,6 +7,7 @@
 #ifndef mozilla_dom_WebAuthnManager_h
 #define mozilla_dom_WebAuthnManager_h
 
+#include "mozilla/Maybe.h"
 #include "mozilla/MozPromise.h"
 #include "mozilla/dom/PWebAuthnTransaction.h"
 #include "mozilla/dom/WebAuthnManagerBase.h"
@@ -41,50 +42,25 @@
  *
  */
 
-// Forward decl because of nsHTMLDocument.h's complex dependency on
-// /layout/style
-class nsHTMLDocument {
- public:
-  bool IsRegistrableDomainSuffixOfOrEqualTo(const nsAString& aHostSuffixString,
-                                            const nsACString& aOrigHost);
-};
-
 namespace mozilla {
 namespace dom {
 
 class WebAuthnTransaction {
  public:
-  WebAuthnTransaction(const RefPtr<Promise>& aPromise,
-                      const nsTArray<uint8_t>& aRpIdHash,
-                      const nsCString& aClientData, bool aDirectAttestation,
-                      AbortSignal* aSignal)
-      : mPromise(aPromise),
-        mRpIdHash(aRpIdHash),
-        mClientData(aClientData),
-        mDirectAttestation(aDirectAttestation),
-        mSignal(aSignal),
-        mId(NextId()) {
+  explicit WebAuthnTransaction(const RefPtr<Promise>& aPromise)
+      : mPromise(aPromise), mId(NextId()), mVisibilityChanged(false) {
     MOZ_ASSERT(mId > 0);
   }
 
   // JS Promise representing the transaction status.
   RefPtr<Promise> mPromise;
 
-  // The RP ID hash.
-  nsTArray<uint8_t> mRpIdHash;
-
-  // Client data used to assemble reply objects.
-  nsCString mClientData;
-
-  // The RP might request direct attestation.
-  // Only used by the MakeCredential operation.
-  bool mDirectAttestation;
-
-  // An optional AbortSignal instance.
-  RefPtr<AbortSignal> mSignal;
-
   // Unique transaction id.
   uint64_t mId;
+
+  // Whether or not visibility has changed for the window during this
+  // transaction
+  bool mVisibilityChanged;
 
  private:
   // Generates a unique id for new transactions. This doesn't have to be unique
@@ -98,7 +74,8 @@ class WebAuthnTransaction {
 
 class WebAuthnManager final : public WebAuthnManagerBase, public AbortFollower {
  public:
-  NS_DECL_ISUPPORTS
+  NS_DECL_ISUPPORTS_INHERITED
+  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(WebAuthnManager, WebAuthnManagerBase)
 
   explicit WebAuthnManager(nsPIDOMWindowInner* aParent)
       : WebAuthnManagerBase(aParent) {}
@@ -132,19 +109,32 @@ class WebAuthnManager final : public WebAuthnManagerBase, public AbortFollower {
  protected:
   // Cancels the current transaction (by sending a Cancel message to the
   // parent) and rejects it by calling RejectTransaction().
-  void CancelTransaction(const nsresult& aError) override;
+  void CancelTransaction(const nsresult& aError);
+  // Upon a visibility change, makes note of it in the current transaction.
+  void HandleVisibilityChange() override;
 
  private:
   virtual ~WebAuthnManager();
 
-  // Clears all information we have about the current transaction.
-  void ClearTransaction();
   // Rejects the current transaction and calls ClearTransaction().
   void RejectTransaction(const nsresult& aError);
+
+  // Clears all information we have about the current transaction.
+  void ClearTransaction();
 
   // The current transaction, if any.
   Maybe<WebAuthnTransaction> mTransaction;
 };
+
+inline void ImplCycleCollectionTraverse(
+    nsCycleCollectionTraversalCallback& aCallback,
+    WebAuthnTransaction& aTransaction, const char* aName, uint32_t aFlags = 0) {
+  ImplCycleCollectionTraverse(aCallback, aTransaction.mPromise, aName, aFlags);
+}
+
+inline void ImplCycleCollectionUnlink(WebAuthnTransaction& aTransaction) {
+  ImplCycleCollectionUnlink(aTransaction.mPromise);
+}
 
 }  // namespace dom
 }  // namespace mozilla

@@ -1,34 +1,36 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Types and traits used to access the DOM from style calculation.
 
 #![allow(unsafe_code)]
 #![deny(missing_docs)]
 
-use {Atom, Namespace, LocalName, WeakAtom};
-use applicable_declarations::ApplicableDeclarationBlock;
+use crate::applicable_declarations::ApplicableDeclarationBlock;
+#[cfg(feature = "gecko")]
+use crate::context::PostAnimationTasks;
+#[cfg(feature = "gecko")]
+use crate::context::UpdateAnimationsTasks;
+use crate::data::ElementData;
+use crate::element_state::ElementState;
+use crate::font_metrics::FontMetricsProvider;
+use crate::media_queries::Device;
+use crate::properties::{AnimationRules, ComputedValues, PropertyDeclarationBlock};
+use crate::selector_parser::{AttrValue, Lang, PseudoElement, SelectorImpl};
+use crate::shared_lock::Locked;
+use crate::stylist::CascadeData;
+use crate::traversal_flags::TraversalFlags;
+use crate::{Atom, LocalName, Namespace, WeakAtom};
 use atomic_refcell::{AtomicRef, AtomicRefCell, AtomicRefMut};
-#[cfg(feature = "gecko")] use context::PostAnimationTasks;
-#[cfg(feature = "gecko")] use context::UpdateAnimationsTasks;
-use data::ElementData;
-use element_state::ElementState;
-use font_metrics::FontMetricsProvider;
-use media_queries::Device;
-use properties::{AnimationRules, ComputedValues, PropertyDeclarationBlock};
-use selector_parser::{AttrValue, PseudoClassStringArg, PseudoElement, SelectorImpl};
-use selectors::Element as SelectorsElement;
 use selectors::matching::{ElementSelectorFlags, QuirksMode, VisitedHandlingMode};
 use selectors::sink::Push;
+use selectors::Element as SelectorsElement;
 use servo_arc::{Arc, ArcBorrow};
-use shared_lock::Locked;
 use std::fmt;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::ops::Deref;
-use stylist::CascadeData;
-use traversal_flags::TraversalFlags;
 
 /// An opaque handle to a node, which, unlike UnsafeNode, cannot be transformed
 /// back into a non-opaque representation. The only safe operation that can be
@@ -77,7 +79,7 @@ where
             let n = self.0.next()?;
             // Filter out nodes that layout should ignore.
             if n.is_text_node() || n.is_element() {
-                return Some(n)
+                return Some(n);
             }
         }
     }
@@ -87,7 +89,7 @@ where
 pub struct DomChildren<N>(Option<N>);
 impl<N> Iterator for DomChildren<N>
 where
-    N: TNode
+    N: TNode,
 {
     type Item = N;
 
@@ -106,7 +108,7 @@ pub struct DomDescendants<N> {
 
 impl<N> Iterator for DomDescendants<N>
 where
-    N: TNode
+    N: TNode,
 {
     type Item = N;
 
@@ -119,7 +121,7 @@ where
 }
 
 /// The `TDocument` trait, to represent a document node.
-pub trait TDocument : Sized + Copy + Clone {
+pub trait TDocument: Sized + Copy + Clone {
     /// The concrete `TNode` type.
     type ConcreteNode: TNode<ConcreteDocument = Self>;
 
@@ -133,21 +135,24 @@ pub trait TDocument : Sized + Copy + Clone {
     fn quirks_mode(&self) -> QuirksMode;
 
     /// Get a list of elements with a given ID in this document, sorted by
-    /// document position.
+    /// tree position.
     ///
     /// Can return an error to signal that this list is not available, or also
     /// return an empty slice.
-    fn elements_with_id(
+    fn elements_with_id<'a>(
         &self,
         _id: &Atom,
-    ) -> Result<&[<Self::ConcreteNode as TNode>::ConcreteElement], ()> {
+    ) -> Result<&'a [<Self::ConcreteNode as TNode>::ConcreteElement], ()>
+    where
+        Self: 'a,
+    {
         Err(())
     }
 }
 
 /// The `TNode` trait. This is the main generic trait over which the style
 /// system can be implemented.
-pub trait TNode : Sized + Copy + Clone + Debug + NodeInfo + PartialEq {
+pub trait TNode: Sized + Copy + Clone + Debug + NodeInfo + PartialEq {
     /// The concrete `TElement` type.
     type ConcreteElement: TElement<ConcreteNode = Self>;
 
@@ -278,12 +283,13 @@ impl<N: TNode> Debug for ShowSubtreeDataAndPrimaryValues<N> {
 fn fmt_with_data<N: TNode>(f: &mut fmt::Formatter, n: N) -> fmt::Result {
     if let Some(el) = n.as_element() {
         write!(
-            f, "{:?} dd={} aodd={} data={:?}",
+            f,
+            "{:?} dd={} aodd={} data={:?}",
             el,
             el.has_dirty_descendants(),
             el.has_animation_only_dirty_descendants(),
             el.borrow_data(),
-       )
+        )
     } else {
         write!(f, "{:?}", n)
     }
@@ -296,15 +302,19 @@ fn fmt_with_data_and_primary_values<N: TNode>(f: &mut fmt::Formatter, n: N) -> f
         let aodd = el.has_animation_only_dirty_descendants();
         let data = el.borrow_data();
         let values = data.as_ref().and_then(|d| d.styles.get_primary());
-        write!(f, "{:?} dd={} aodd={} data={:?} values={:?}", el, dd, aodd, &data, values)
+        write!(
+            f,
+            "{:?} dd={} aodd={} data={:?} values={:?}",
+            el, dd, aodd, &data, values
+        )
     } else {
         write!(f, "{:?}", n)
     }
 }
 
-fn fmt_subtree<F, N: TNode>(f: &mut fmt::Formatter, stringify: &F, n: N, indent: u32)
-                            -> fmt::Result
-    where F: Fn(&mut fmt::Formatter, N) -> fmt::Result
+fn fmt_subtree<F, N: TNode>(f: &mut fmt::Formatter, stringify: &F, n: N, indent: u32) -> fmt::Result
+where
+    F: Fn(&mut fmt::Formatter, N) -> fmt::Result,
 {
     for _ in 0..indent {
         write!(f, "  ")?;
@@ -321,7 +331,7 @@ fn fmt_subtree<F, N: TNode>(f: &mut fmt::Formatter, stringify: &F, n: N, indent:
 }
 
 /// The ShadowRoot trait.
-pub trait TShadowRoot : Sized + Copy + Clone {
+pub trait TShadowRoot: Sized + Copy + Clone + PartialEq {
     /// The concrete node type.
     type ConcreteNode: TNode<ConcreteShadowRoot = Self>;
 
@@ -332,21 +342,29 @@ pub trait TShadowRoot : Sized + Copy + Clone {
     fn host(&self) -> <Self::ConcreteNode as TNode>::ConcreteElement;
 
     /// Get the style data for this ShadowRoot.
-    fn style_data<'a>(&self) -> &'a CascadeData
+    fn style_data<'a>(&self) -> Option<&'a CascadeData>
     where
         Self: 'a;
+
+    /// Get a list of elements with a given ID in this shadow root, sorted by
+    /// tree position.
+    ///
+    /// Can return an error to signal that this list is not available, or also
+    /// return an empty slice.
+    fn elements_with_id<'a>(
+        &self,
+        _id: &Atom,
+    ) -> Result<&'a [<Self::ConcreteNode as TNode>::ConcreteElement], ()>
+    where
+        Self: 'a,
+    {
+        Err(())
+    }
 }
 
 /// The element trait, the main abstraction the style crate acts over.
-pub trait TElement
-    : Eq
-    + PartialEq
-    + Debug
-    + Hash
-    + Sized
-    + Copy
-    + Clone
-    + SelectorsElement<Impl = SelectorImpl>
+pub trait TElement:
+    Eq + PartialEq + Debug + Hash + Sized + Copy + Clone + SelectorsElement<Impl = SelectorImpl>
 {
     /// The concrete node type.
     type ConcreteNode: TNode<ConcreteElement = Self>;
@@ -371,12 +389,16 @@ pub trait TElement
     ///
     /// Otherwise we may set document-level state incorrectly, like the root
     /// font-size used for rem units.
-    fn owner_doc_matches_for_testing(&self, _: &Device) -> bool { true }
+    fn owner_doc_matches_for_testing(&self, _: &Device) -> bool {
+        true
+    }
 
     /// Whether this element should match user and author rules.
     ///
     /// We use this for Native Anonymous Content in Gecko.
-    fn matches_user_and_author_rules(&self) -> bool { true }
+    fn matches_user_and_author_rules(&self) -> bool {
+        true
+    }
 
     /// Returns the depth of this element in the DOM.
     fn depth(&self) -> usize {
@@ -388,15 +410,6 @@ pub trait TElement
         }
 
         depth
-    }
-
-    /// The style scope of this element is a node that represents which rules
-    /// apply to the element.
-    ///
-    /// In Servo, where we don't know about Shadow DOM or XBL, the style scope
-    /// is always the document.
-    fn style_scope(&self) -> Self::ConcreteNode {
-        self.as_node().owner_doc().as_node()
     }
 
     /// Get this node's parent element from the perspective of a restyle
@@ -428,25 +441,36 @@ pub trait TElement
         None
     }
 
+    /// The ::marker pseudo-element of this element, if it exists.
+    fn marker_pseudo_element(&self) -> Option<Self> {
+        None
+    }
+
     /// Execute `f` for each anonymous content child (apart from ::before and
     /// ::after) whose originating element is `self`.
     fn each_anonymous_content_child<F>(&self, _f: F)
     where
         F: FnMut(Self),
-    {}
+    {
+    }
 
     /// Return whether this element is an element in the HTML namespace.
     fn is_html_element(&self) -> bool;
 
+    /// Return whether this element is an element in the MathML namespace.
+    fn is_mathml_element(&self) -> bool;
+
+    /// Return whether this element is an element in the SVG namespace.
+    fn is_svg_element(&self) -> bool;
+
+    /// Return whether this element is an element in the XUL namespace.
+    fn is_xul_element(&self) -> bool {
+        false
+    }
+
     /// Return the list of slotted nodes of this node.
     fn slotted_nodes(&self) -> &[Self::ConcreteNode] {
         &[]
-    }
-
-    /// For a given NAC element, return the closest non-NAC ancestor, which is
-    /// guaranteed to exist.
-    fn closest_non_native_anonymous_ancestor(&self) -> Option<Self> {
-        unreachable!("Servo doesn't know about NAC");
     }
 
     /// Get this element's style attribute.
@@ -454,8 +478,7 @@ pub trait TElement
 
     /// Unset the style attribute's dirty bit.
     /// Servo doesn't need to manage ditry bit for style attribute.
-    fn unset_dirty_style_attribute(&self) {
-    }
+    fn unset_dirty_style_attribute(&self) {}
 
     /// Get this element's SMIL override declarations.
     fn smil_override(&self) -> Option<ArcBorrow<Locked<PropertyDeclarationBlock>>> {
@@ -467,7 +490,7 @@ pub trait TElement
     /// FIXME(emilio): Is this really useful?
     fn animation_rules(&self) -> AnimationRules {
         if !self.may_have_animations() {
-            return AnimationRules(None, None)
+            return AnimationRules(None, None);
         }
 
         AnimationRules(self.animation_rule(), self.transition_rule())
@@ -493,7 +516,9 @@ pub trait TElement
     fn id(&self) -> Option<&WeakAtom>;
 
     /// Internal iterator for the classes of this element.
-    fn each_class<F>(&self, callback: F) where F: FnMut(&Atom);
+    fn each_class<F>(&self, callback: F)
+    where
+        F: FnMut(&Atom);
 
     /// Whether a given element may generate a pseudo-element.
     ///
@@ -501,11 +526,7 @@ pub trait TElement
     /// `::-first-line` or `::-first-letter`, when we know it won't affect us.
     ///
     /// TODO(emilio, bz): actually implement the logic for it.
-    fn may_generate_pseudo(
-        &self,
-        pseudo: &PseudoElement,
-        _primary_style: &ComputedValues,
-    ) -> bool {
+    fn may_generate_pseudo(&self, pseudo: &PseudoElement, _primary_style: &ComputedValues) -> bool {
         // ::before/::after are always supported for now, though we could try to
         // optimize out leaf elements.
 
@@ -514,8 +535,10 @@ pub trait TElement
         // block-inside things that might have any computed display value due to
         // things like fieldsets, legends, etc.  Need to figure out how this
         // should work.
-        debug_assert!(pseudo.is_eager(),
-                      "Someone called may_generate_pseudo with a non-eager pseudo.");
+        debug_assert!(
+            pseudo.is_eager(),
+            "Someone called may_generate_pseudo with a non-eager pseudo."
+        );
         true
     }
 
@@ -551,8 +574,7 @@ pub trait TElement
             // animation-name in normal restyle and creating a new CSS
             // animation in a SequentialTask) is processed after the normal
             // traversal in that we had elements that handled snapshot.
-            return data.has_styles() &&
-                   !data.hint.has_animation_hint_or_recascade();
+            return data.has_styles() && !data.hint.has_animation_hint_or_recascade();
         }
 
         if self.has_snapshot() && !self.handled_snapshot() {
@@ -604,37 +626,33 @@ pub trait TElement
     /// processing.
     ///
     /// Only safe to call with exclusive access to the element.
-    unsafe fn set_animation_only_dirty_descendants(&self) {
-    }
+    unsafe fn set_animation_only_dirty_descendants(&self) {}
 
     /// Flag that this element has no descendant for animation-only restyle processing.
     ///
     /// Only safe to call with exclusive access to the element.
-    unsafe fn unset_animation_only_dirty_descendants(&self) {
-    }
+    unsafe fn unset_animation_only_dirty_descendants(&self) {}
 
     /// Clear all bits related describing the dirtiness of descendants.
     ///
     /// In Gecko, this corresponds to the regular dirty descendants bit, the
     /// animation-only dirty descendants bit, and the lazy frame construction
     /// descendants bit.
-    unsafe fn clear_descendant_bits(&self) { self.unset_dirty_descendants(); }
-
-    /// Clear all element flags related to dirtiness.
-    ///
-    /// In Gecko, this corresponds to the regular dirty descendants bit, the
-    /// animation-only dirty descendants bit, the lazy frame construction bit,
-    /// and the lazy frame construction descendants bit.
-    unsafe fn clear_dirty_bits(&self) { self.unset_dirty_descendants(); }
+    unsafe fn clear_descendant_bits(&self) {
+        self.unset_dirty_descendants();
+    }
 
     /// Returns true if this element is a visited link.
     ///
     /// Servo doesn't support visited styles yet.
-    fn is_visited_link(&self) -> bool { false }
+    fn is_visited_link(&self) -> bool {
+        false
+    }
 
-    /// Returns true if this element is native anonymous (only Gecko has native
-    /// anonymous content).
-    fn is_native_anonymous(&self) -> bool { false }
+    /// Returns true if this element is in a native anonymous subtree.
+    fn is_in_native_anonymous_subtree(&self) -> bool {
+        false
+    }
 
     /// Returns the pseudo-element implemented by this element, if any.
     ///
@@ -646,7 +664,9 @@ pub trait TElement
     /// given otherwise we don't know if we need to create an element or not.
     ///
     /// Servo doesn't have to deal with this.
-    fn implemented_pseudo_element(&self) -> Option<PseudoElement> { None }
+    fn implemented_pseudo_element(&self) -> Option<PseudoElement> {
+        None
+    }
 
     /// Atomically stores the number of children of this node that we will
     /// need to process during bottom-up traversal.
@@ -701,13 +721,17 @@ pub trait TElement
     /// In Gecko, element has a flag that represents the element may have
     /// any type of animations or not to bail out animation stuff early.
     /// Whereas Servo doesn't have such flag.
-    fn may_have_animations(&self) -> bool { false }
+    fn may_have_animations(&self) -> bool {
+        false
+    }
 
     /// Creates a task to update various animation state on a given (pseudo-)element.
     #[cfg(feature = "gecko")]
-    fn update_animations(&self,
-                         before_change_style: Option<Arc<ComputedValues>>,
-                         tasks: UpdateAnimationsTasks);
+    fn update_animations(
+        &self,
+        before_change_style: Option<Arc<ComputedValues>>,
+        tasks: UpdateAnimationsTasks,
+    );
 
     /// Creates a task to process post animation on a given element.
     #[cfg(feature = "gecko")]
@@ -731,13 +755,13 @@ pub trait TElement
             Some(d) => d,
             None => return false,
         };
-        return data.hint.has_animation_hint()
+        return data.hint.has_animation_hint();
     }
 
     /// Returns the anonymous content for the current element's XBL binding,
     /// given if any.
     ///
-    /// This is used in Gecko for XBL and shadow DOM.
+    /// This is used in Gecko for XBL.
     fn xbl_binding_anonymous_content(&self) -> Option<Self::ConcreteNode> {
         None
     }
@@ -756,46 +780,51 @@ pub trait TElement
     /// element.
     fn rule_hash_target(&self) -> Self {
         if self.implemented_pseudo_element().is_some() {
-            self.closest_non_native_anonymous_ancestor()
+            self.pseudo_element_originating_element()
                 .expect("Trying to collect rules for a detached pseudo-element")
         } else {
             *self
         }
     }
 
-    /// Implements Gecko's `nsBindingManager::WalkRules`.
-    ///
-    /// Returns whether to cut off the binding inheritance, that is, whether
-    /// document rules should _not_ apply.
-    fn each_xbl_cascade_data<'a, F>(&self, _: F) -> bool
-    where
-        Self: 'a,
-        F: FnMut(&'a CascadeData, QuirksMode),
-    {
-        false
-    }
-
     /// Executes the callback for each applicable style rule data which isn't
     /// the main document's data (which stores UA / author rules).
+    ///
+    /// The element passed to the callback is the containing shadow host for the
+    /// data if it comes from Shadow DOM.
     ///
     /// Returns whether normal document author rules should apply.
     fn each_applicable_non_document_style_rule_data<'a, F>(&self, mut f: F) -> bool
     where
         Self: 'a,
-        F: FnMut(&'a CascadeData, QuirksMode),
+        F: FnMut(&'a CascadeData, Self),
     {
-        let mut doc_rules_apply = !self.each_xbl_cascade_data(&mut f);
+        use rule_collector::containing_shadow_ignoring_svg_use;
 
-        if let Some(shadow) = self.containing_shadow() {
+        let mut doc_rules_apply = self.matches_user_and_author_rules();
+
+        // Use the same rules to look for the containing host as we do for rule
+        // collection.
+        if let Some(shadow) = containing_shadow_ignoring_svg_use(*self) {
             doc_rules_apply = false;
-            f(shadow.style_data(), self.as_node().owner_doc().quirks_mode());
+            if let Some(data) = shadow.style_data() {
+                f(data, shadow.host());
+            }
+        }
+
+        if let Some(shadow) = self.shadow_root() {
+            if let Some(data) = shadow.style_data() {
+                f(data, shadow.host());
+            }
         }
 
         let mut current = self.assigned_slot();
         while let Some(slot) = current {
             // Slots can only have assigned nodes when in a shadow tree.
-            let data = slot.containing_shadow().unwrap().style_data();
-            f(data, self.as_node().owner_doc().quirks_mode());
+            let shadow = slot.containing_shadow().unwrap();
+            if let Some(data) = shadow.style_data() {
+                f(data, shadow.host());
+            }
             current = slot.assigned_slot();
         }
 
@@ -811,7 +840,7 @@ pub trait TElement
     fn might_need_transitions_update(
         &self,
         old_values: Option<&ComputedValues>,
-        new_values: &ComputedValues
+        new_values: &ComputedValues,
     ) -> bool;
 
     /// Returns true if one of the transitions needs to be updated on this element. We check all
@@ -822,7 +851,7 @@ pub trait TElement
     fn needs_transitions_update(
         &self,
         before_change_style: &ComputedValues,
-        after_change_style: &ComputedValues
+        after_change_style: &ComputedValues,
     ) -> bool;
 
     /// Returns the value of the `xml:lang=""` attribute (or, if appropriate,
@@ -834,11 +863,7 @@ pub trait TElement
     /// of the `xml:lang=""` or `lang=""` attribute to use in place of
     /// looking at the element and its ancestors.  (This argument is used
     /// to implement matching of `:lang()` against snapshots.)
-    fn match_element_lang(
-        &self,
-        override_lang: Option<Option<AttrValue>>,
-        value: &PseudoClassStringArg
-    ) -> bool;
+    fn match_element_lang(&self, override_lang: Option<Option<AttrValue>>, value: &Lang) -> bool;
 
     /// Returns whether this element is the main body element of the HTML
     /// document it is on.
@@ -850,8 +875,7 @@ pub trait TElement
         &self,
         visited_handling: VisitedHandlingMode,
         hints: &mut V,
-    )
-    where
+    ) where
         V: Push<ApplicableDeclarationBlock>;
 }
 

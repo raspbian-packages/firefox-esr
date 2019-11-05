@@ -4,7 +4,7 @@
   <meta charset="utf8">
   <title>Test that WebIDL attributes with the LenientThis extended attribute
          do not appear in the wrong objects</title>
-  <script type="text/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <script type="text/javascript" src="common.js"></script>
   <!-- Any copyright is dedicated to the Public Domain.
      - http://creativecommons.org/publicdomain/zero/1.0/ -->
@@ -25,17 +25,15 @@ function startTest()
 function onAttach(aState, aResponse)
 {
   onConsoleCall = onConsoleCall.bind(null, aState);
-  aState.dbgClient.addListener("consoleAPICall", onConsoleCall);
+  aState.client.on("consoleAPICall", onConsoleCall);
 
   let docAsProto = Object.create(document);
 
   top.console.log("hello", docAsProto);
 }
 
-function onConsoleCall(aState, aType, aPacket)
+function onConsoleCall(aState, aPacket)
 {
-  is(aPacket.from, aState.actor, "console API call actor");
-
   info("checking the console API call packet");
 
   checkConsoleAPICall(aPacket.message, {
@@ -48,7 +46,7 @@ function onConsoleCall(aState, aType, aPacket)
     }],
   });
 
-  aState.dbgClient.removeListener("consoleAPICall", onConsoleCall);
+  aState.client.off("consoleAPICall", onConsoleCall);
 
   info("inspecting object properties");
   let args = aPacket.message.arguments;
@@ -66,11 +64,7 @@ function onProperties(aState, aResponse)
 
   is(keys.length, 0, "number of properties");
   keys = Object.keys(aResponse.safeGetterValues);
-  // There is one "safe getter" as far as the code in _findSafeGetterValues is
-  // concerned, because it treats any Promise-returning attribute as a "safe
-  // getter".  See bug 1438015.
-  is(keys.length, 1, "number of safe getters");
-  is(keys[0], "documentReadyForIdle", "Unexpected safe getter");
+  is(keys.length, 0, "number of safe getters");
 
   closeDebugger(aState, function() {
     SimpleTest.finish();

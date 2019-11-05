@@ -29,13 +29,13 @@
 
 namespace mozilla {
 
-static const int MAY_ACCESS = SandboxBroker::MAY_ACCESS;
-static const int MAY_READ = SandboxBroker::MAY_READ;
-static const int MAY_WRITE = SandboxBroker::MAY_WRITE;
-static const int MAY_CREATE = SandboxBroker::MAY_CREATE;
-static const auto AddAlways = SandboxBroker::Policy::AddAlways;
-
 class SandboxBrokerTest : public ::testing::Test {
+  static const int MAY_ACCESS = SandboxBroker::MAY_ACCESS;
+  static const int MAY_READ = SandboxBroker::MAY_READ;
+  static const int MAY_WRITE = SandboxBroker::MAY_WRITE;
+  static const int MAY_CREATE = SandboxBroker::MAY_CREATE;
+  static const auto AddAlways = SandboxBroker::Policy::AddAlways;
+
   UniquePtr<SandboxBroker> mServer;
   UniquePtr<SandboxBrokerClient> mClient;
 
@@ -131,7 +131,7 @@ UniquePtr<const SandboxBroker::Policy> SandboxBrokerTest::GetPolicy() const {
   // This should be non-writable by the user running the test:
   policy->AddPath(MAY_READ | MAY_WRITE, "/etc", AddAlways);
 
-  return Move(policy);
+  return std::move(policy);
 }
 
 TEST_F(SandboxBrokerTest, OpenForRead) {
@@ -316,9 +316,9 @@ TEST_F(SandboxBrokerTest, Mkdir) {
   EXPECT_EQ(0, rmdir("/tmp/blublu"));
   EXPECT_EQ(-EEXIST, Mkdir("/proc/self", 0600))
       << "Creating uncreatable dir that already exists didn't fail correctly.";
-  EXPECT_EQ(-EEXIST, Mkdir("/dev/zero", 0600)) << "Creating uncreatable dir "
-                                                  "over preexisting file "
-                                                  "didn't fail correctly.";
+  EXPECT_EQ(-EEXIST, Mkdir("/dev/zero", 0600))
+      << "Creating uncreatable dir over preexisting file didn't fail "
+         "correctly.";
 
   PrePostTestCleanup();
 }
@@ -423,7 +423,8 @@ void SandboxBrokerTest::MultiThreadStatWorker() {
   ASSERT_EQ(0, statsyscall("/dev/null", &nullStat)) << "Shouldn't ever fail!";
   ASSERT_EQ(0, statsyscall("/dev/zero", &zeroStat)) << "Shouldn't ever fail!";
   ASSERT_EQ(0, lstatsyscall("/proc/self", &selfStat)) << "Shouldn't ever fail!";
-  ASSERT_TRUE(S_ISLNK(selfStat.st_mode)) << "Shouldn't ever fail!";
+  ASSERT_TRUE(S_ISLNK(selfStat.st_mode))
+  << "Shouldn't ever fail!";
   realNullDev = nullStat.st_rdev;
   realZeroDev = zeroStat.st_rdev;
   realSelfInode = selfStat.st_ino;
@@ -439,7 +440,8 @@ void SandboxBrokerTest::MultiThreadStatWorker() {
         << "Loop " << i << "/" << kNumLoops;
     ASSERT_EQ(realZeroDev, zeroStat.st_rdev)
         << "Loop " << i << "/" << kNumLoops;
-    ASSERT_TRUE(S_ISLNK(selfStat.st_mode)) << "Loop " << i << "/" << kNumLoops;
+    ASSERT_TRUE(S_ISLNK(selfStat.st_mode))
+    << "Loop " << i << "/" << kNumLoops;
     ASSERT_EQ(realSelfInode, selfStat.st_ino)
         << "Loop " << i << "/" << kNumLoops;
   }

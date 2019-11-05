@@ -14,7 +14,13 @@ namespace wr {
 
 RenderBufferTextureHost::RenderBufferTextureHost(
     uint8_t* aBuffer, const layers::BufferDescriptor& aDescriptor)
-    : mBuffer(aBuffer), mDescriptor(aDescriptor), mLocked(false) {
+    : mBuffer(aBuffer),
+      mDescriptor(aDescriptor),
+      mMap(),
+      mYMap(),
+      mCbMap(),
+      mCrMap(),
+      mLocked(false) {
   MOZ_COUNT_CTOR_INHERITED(RenderBufferTextureHost, RenderTextureHost);
 
   switch (mDescriptor.type()) {
@@ -41,8 +47,8 @@ RenderBufferTextureHost::~RenderBufferTextureHost() {
   MOZ_COUNT_DTOR_INHERITED(RenderBufferTextureHost, RenderTextureHost);
 }
 
-wr::WrExternalImage RenderBufferTextureHost::Lock(uint8_t aChannelIndex,
-                                                  gl::GLContext* aGL) {
+wr::WrExternalImage RenderBufferTextureHost::Lock(
+    uint8_t aChannelIndex, gl::GLContext* aGL, wr::ImageRendering aRendering) {
   if (!mLocked) {
     if (!GetBuffer()) {
       // We hit some problems to get the shmem.

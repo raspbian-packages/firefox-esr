@@ -12,20 +12,26 @@ use approxeq::ApproxEq;
 use length::Length;
 use scale::TypedScale;
 use size::TypedSize2D;
+#[cfg(feature = "mint")]
+use mint;
 use num::*;
 use num_traits::{Float, NumCast};
 use vector::{TypedVector2D, TypedVector3D, vec2, vec3};
-use std::fmt;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
-use std::marker::PhantomData;
+use core::fmt;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use core::marker::PhantomData;
 
-define_matrix! {
-    /// A 2d Point tagged with a unit.
-    pub struct TypedPoint2D<T, U> {
-        pub x: T,
-        pub y: T,
-    }
+/// A 2d Point tagged with a unit.
+#[derive(EuclidMatrix)]
+#[repr(C)]
+pub struct TypedPoint2D<T, U> {
+    pub x: T,
+    pub y: T,
+    #[doc(hidden)]
+    pub _unit: PhantomData<U>,
 }
+
+mint_vec!(TypedPoint2D[x, y] = Point2);
 
 /// Default 2d point type with no unit.
 ///
@@ -68,8 +74,8 @@ impl<T, U> TypedPoint2D<T, U> {
     #[inline]
     pub fn new(x: T, y: T) -> Self {
         TypedPoint2D {
-            x: x,
-            y: y,
+            x,
+            y,
             _unit: PhantomData,
         }
     }
@@ -195,6 +201,11 @@ impl<T: Float, U> TypedPoint2D<T, U> {
     pub fn max(self, other: Self) -> Self {
         point2(self.x.max(other.x), self.y.max(other.y))
     }
+
+    #[inline]
+    pub fn clamp(&self, start: Self, end: Self) -> Self {
+        self.max(start).min(end)
+    }
 }
 
 impl<T: Copy + Mul<T, Output = T>, U> Mul<T> for TypedPoint2D<T, U> {
@@ -286,7 +297,16 @@ impl<T: NumCast + Copy, U> TypedPoint2D<T, U> {
     /// as one would expect from a simple cast, but this behavior does not always make sense
     /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
     #[inline]
-    pub fn cast<NewT: NumCast + Copy>(&self) -> Option<TypedPoint2D<NewT, U>> {
+    pub fn cast<NewT: NumCast + Copy>(&self) -> TypedPoint2D<NewT, U> {
+        self.try_cast().unwrap()
+    }
+
+    /// Fallible cast from one numeric representation to another, preserving the units.
+    ///
+    /// When casting from floating point to integer coordinates, the decimals are truncated
+    /// as one would expect from a simple cast, but this behavior does not always make sense
+    /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
+    pub fn try_cast<NewT: NumCast + Copy>(&self) -> Option<TypedPoint2D<NewT, U>> {
         match (NumCast::from(self.x), NumCast::from(self.y)) {
             (Some(x), Some(y)) => Some(point2(x, y)),
             _ => None,
@@ -298,13 +318,13 @@ impl<T: NumCast + Copy, U> TypedPoint2D<T, U> {
     /// Cast into an `f32` point.
     #[inline]
     pub fn to_f32(&self) -> TypedPoint2D<f32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `f64` point.
     #[inline]
     pub fn to_f64(&self) -> TypedPoint2D<f64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `usize` point, truncating decimals if any.
@@ -314,7 +334,7 @@ impl<T: NumCast + Copy, U> TypedPoint2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_usize(&self) -> TypedPoint2D<usize, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `u32` point, truncating decimals if any.
@@ -324,7 +344,7 @@ impl<T: NumCast + Copy, U> TypedPoint2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_u32(&self) -> TypedPoint2D<u32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an i32 point, truncating decimals if any.
@@ -334,7 +354,7 @@ impl<T: NumCast + Copy, U> TypedPoint2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i32(&self) -> TypedPoint2D<i32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an i64 point, truncating decimals if any.
@@ -344,7 +364,7 @@ impl<T: NumCast + Copy, U> TypedPoint2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i64(&self) -> TypedPoint2D<i64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 }
 
@@ -391,14 +411,18 @@ impl<T: Copy, U> From<[T; 2]> for TypedPoint2D<T, U> {
     }
 }
 
-define_matrix! {
-    /// A 3d Point tagged with a unit.
-    pub struct TypedPoint3D<T, U> {
-        pub x: T,
-        pub y: T,
-        pub z: T,
-    }
+/// A 3d Point tagged with a unit.
+#[derive(EuclidMatrix)]
+#[repr(C)]
+pub struct TypedPoint3D<T, U> {
+    pub x: T,
+    pub y: T,
+    pub z: T,
+    #[doc(hidden)]
+    pub _unit: PhantomData<U>,
 }
+
+mint_vec!(TypedPoint3D[x, y, z] = Point3);
 
 /// Default 3d point type with no unit.
 ///
@@ -406,7 +430,7 @@ define_matrix! {
 pub type Point3D<T> = TypedPoint3D<T, UnknownUnit>;
 
 impl<T: Copy + Zero, U> TypedPoint3D<T, U> {
-    /// Constructor, setting all copmonents to zero.
+    /// Constructor, setting all components to zero.
     #[inline]
     pub fn origin() -> Self {
         point3(Zero::zero(), Zero::zero(), Zero::zero())
@@ -455,9 +479,9 @@ impl<T: Copy, U> TypedPoint3D<T, U> {
     #[inline]
     pub fn new(x: T, y: T, z: T) -> Self {
         TypedPoint3D {
-            x: x,
-            y: y,
-            z: z,
+            x,
+            y,
+            z,
             _unit: PhantomData,
         }
     }
@@ -470,7 +494,7 @@ impl<T: Copy, U> TypedPoint3D<T, U> {
 
     /// Cast this point into a vector.
     ///
-    /// Equivalent to substracting the origin to this point.
+    /// Equivalent to subtracting the origin to this point.
     #[inline]
     pub fn to_vector(&self) -> TypedVector3D<T, U> {
         vec3(self.x, self.y, self.z)
@@ -608,6 +632,11 @@ impl<T: Float, U> TypedPoint3D<T, U> {
             self.z.max(other.z),
         )
     }
+
+    #[inline]
+    pub fn clamp(&self, start: Self, end: Self) -> Self {
+        self.max(start).min(end)
+    }
 }
 
 impl<T: Round, U> TypedPoint3D<T, U> {
@@ -650,7 +679,17 @@ impl<T: NumCast + Copy, U> TypedPoint3D<T, U> {
     /// as one would expect from a simple cast, but this behavior does not always make sense
     /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
     #[inline]
-    pub fn cast<NewT: NumCast + Copy>(&self) -> Option<TypedPoint3D<NewT, U>> {
+    pub fn cast<NewT: NumCast + Copy>(&self) -> TypedPoint3D<NewT, U> {
+        self.try_cast().unwrap()
+    }
+
+    /// Fallible cast from one numeric representation to another, preserving the units.
+    ///
+    /// When casting from floating point to integer coordinates, the decimals are truncated
+    /// as one would expect from a simple cast, but this behavior does not always make sense
+    /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
+    #[inline]
+    pub fn try_cast<NewT: NumCast + Copy>(&self) -> Option<TypedPoint3D<NewT, U>> {
         match (
             NumCast::from(self.x),
             NumCast::from(self.y),
@@ -666,13 +705,13 @@ impl<T: NumCast + Copy, U> TypedPoint3D<T, U> {
     /// Cast into an `f32` point.
     #[inline]
     pub fn to_f32(&self) -> TypedPoint3D<f32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `f64` point.
     #[inline]
     pub fn to_f64(&self) -> TypedPoint3D<f64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `usize` point, truncating decimals if any.
@@ -682,7 +721,7 @@ impl<T: NumCast + Copy, U> TypedPoint3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_usize(&self) -> TypedPoint3D<usize, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `u32` point, truncating decimals if any.
@@ -692,7 +731,7 @@ impl<T: NumCast + Copy, U> TypedPoint3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_u32(&self) -> TypedPoint3D<u32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `i32` point, truncating decimals if any.
@@ -702,7 +741,7 @@ impl<T: NumCast + Copy, U> TypedPoint3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i32(&self) -> TypedPoint3D<i32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `i64` point, truncating decimals if any.
@@ -712,7 +751,7 @@ impl<T: NumCast + Copy, U> TypedPoint3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i64(&self) -> TypedPoint3D<i64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 }
 
@@ -758,9 +797,12 @@ pub fn point3<T: Copy, U>(x: T, y: T, z: T) -> TypedPoint3D<T, U> {
     TypedPoint3D::new(x, y, z)
 }
 
+
 #[cfg(test)]
 mod point2d {
     use super::Point2D;
+    #[cfg(feature = "mint")]
+    use mint;
 
     #[test]
     pub fn test_scalar_mul() {
@@ -789,6 +831,16 @@ mod point2d {
         let result = p1.max(p2);
 
         assert_eq!(result, Point2D::new(2.0, 3.0));
+    }
+
+    #[cfg(feature = "mint")]
+    #[test]
+    pub fn test_mint() {
+        let p1 = Point2D::new(1.0, 3.0);
+        let pm: mint::Point2<_> = p1.into();
+        let p2 = Point2D::from(pm);
+
+        assert_eq!(p1, p2);
     }
 }
 
@@ -855,6 +907,8 @@ mod typedpoint2d {
 #[cfg(test)]
 mod point3d {
     use super::{Point3D, point2, point3};
+    #[cfg(feature = "mint")]
+    use mint;
 
     #[test]
     pub fn test_min() {
@@ -896,4 +950,15 @@ mod point3d {
         assert_eq!(p.xz(), point2(1, 3));
         assert_eq!(p.yz(), point2(2, 3));
     }
+
+    #[cfg(feature = "mint")]
+    #[test]
+    pub fn test_mint() {
+        let p1 = Point3D::new(1.0, 3.0, 5.0);
+        let pm: mint::Point3<_> = p1.into();
+        let p2 = Point3D::from(pm);
+
+        assert_eq!(p1, p2);
+    }
+
 }

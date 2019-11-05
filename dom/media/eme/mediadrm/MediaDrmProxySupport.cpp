@@ -8,7 +8,6 @@
 #include "mozilla/EMEUtils.h"
 #include "FennecJNINatives.h"
 #include "MediaCodec.h"  // For MediaDrm::KeyStatus
-#include "MediaPrefs.h"
 
 using namespace mozilla::java;
 
@@ -29,7 +28,8 @@ class MediaDrmJavaCallbacksSupport
   using MediaDrmProxyNativeCallbacks::AttachNative;
   using MediaDrmProxyNativeCallbacks::DisposeNative;
 
-  MediaDrmJavaCallbacksSupport(DecryptorProxyCallback* aDecryptorProxyCallback)
+  explicit MediaDrmJavaCallbacksSupport(
+      DecryptorProxyCallback* aDecryptorProxyCallback)
       : mDecryptorProxyCallback(aDecryptorProxyCallback) {
     MOZ_ASSERT(aDecryptorProxyCallback);
   }
@@ -162,7 +162,7 @@ void MediaDrmJavaCallbacksSupport::OnSessionBatchedKeyChanged(
   nsTArray<CDMKeyInfo> keyInfosArray;
 
   for (auto&& keyInfoObject : keyInfosObjectArray) {
-    java::SessionKeyInfo::LocalRef keyInfo(mozilla::Move(keyInfoObject));
+    java::SessionKeyInfo::LocalRef keyInfo(std::move(keyInfoObject));
     mozilla::jni::ByteArray::LocalRef keyIdByteArray = keyInfo->KeyId();
     nsTArray<int8_t> keyIdInt8Array = keyIdByteArray->GetElements();
     // Cast nsTArray<int8_t> to nsTArray<uint8_t>
@@ -259,6 +259,13 @@ void MediaDrmProxySupport::Shutdown() {
   }
   mBridgeProxy->Destroy();
   mDestroyed = true;
+}
+
+bool MediaDrmProxySupport::SetServerCertificate(
+    const nsTArray<uint8_t>& aCert) {
+  jni::ByteArray::LocalRef cert = jni::ByteArray::New(
+      reinterpret_cast<const int8_t*>(aCert.Elements()), aCert.Length());
+  return mBridgeProxy->SetServerCertificate(cert);
 }
 
 }  // namespace mozilla

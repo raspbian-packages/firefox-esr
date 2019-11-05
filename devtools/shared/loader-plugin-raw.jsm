@@ -4,7 +4,7 @@
 
 "use strict";
 
-const { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm", {});
+const { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
 
 /**
  * A function that can be used as part of a require hook for a
@@ -12,9 +12,9 @@ const { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm", {})
  * This function handles "raw!" and "theme-loader!" requires.
  * See also: https://github.com/webpack/raw-loader.
  */
-this.requireRawId = function (id, require) {
-  let index = id.indexOf("!");
-  let rawId = id.slice(index + 1);
+this.requireRawId = function(id, require) {
+  const index = id.indexOf("!");
+  const rawId = id.slice(index + 1);
   let uri = require.resolve(rawId);
   // If the original string did not end with ".js", then
   // require.resolve might have added the suffix.  We don't want to
@@ -24,14 +24,14 @@ this.requireRawId = function (id, require) {
     uri = uri.slice(0, -3);
   }
 
-  let stream = NetUtil.newChannel({
+  const stream = NetUtil.newChannel({
     uri: NetUtil.newURI(uri, "UTF-8"),
-    loadUsingSystemPrincipal: true
-  }).open2();
+    loadUsingSystemPrincipal: true,
+  }).open();
 
-  let count = stream.available();
-  let data = NetUtil.readInputStreamToString(stream, count, {
-    charset: "UTF-8"
+  const count = stream.available();
+  const data = NetUtil.readInputStreamToString(stream, count, {
+    charset: "UTF-8",
   });
   stream.close();
 

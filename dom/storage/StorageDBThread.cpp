@@ -25,8 +25,12 @@
 #include "mozilla/BasePrincipal.h"
 #include "mozilla/ipc/BackgroundParent.h"
 #include "nsIObserverService.h"
+#include "nsThread.h"
+#include "nsThreadManager.h"
 #include "nsVariant.h"
+#include "mozilla/EventQueue.h"
 #include "mozilla/IOInterposer.h"
+#include "mozilla/ThreadEventQueue.h"
 #include "mozilla/Services.h"
 #include "mozilla/Tokenizer.h"
 #include "GeckoProfiler.h"
@@ -53,61 +57,6 @@ StorageDBThread* sStorageThread = nullptr;
 
 // False until we shut the storage thread down.
 bool sStorageThreadDown = false;
-
-// This is only a compatibility code for schema version 0.  Returns the 'scope'
-// key in the schema version 0 format for the scope column.
-nsCString Scheme0Scope(LocalStorageCacheBridge* aCache) {
-  nsCString result;
-
-  nsCString suffix = aCache->OriginSuffix();
-
-  OriginAttributes oa;
-  if (!suffix.IsEmpty()) {
-    DebugOnly<bool> success = oa.PopulateFromSuffix(suffix);
-    MOZ_ASSERT(success);
-  }
-
-  if (oa.mAppId != nsIScriptSecurityManager::NO_APP_ID ||
-      oa.mInIsolatedMozBrowser) {
-    result.AppendInt(oa.mAppId);
-    result.Append(':');
-    result.Append(oa.mInIsolatedMozBrowser ? 't' : 'f');
-    result.Append(':');
-  }
-
-  // If there is more than just appid and/or inbrowser stored in origin
-  // attributes, put it to the schema 0 scope as well.  We must do that
-  // to keep the scope column unique (same resolution as schema 1 has
-  // with originAttributes and originKey columns) so that switch between
-  // schema 1 and 0 always works in both ways.
-  nsAutoCString remaining;
-  oa.mAppId = 0;
-  oa.mInIsolatedMozBrowser = false;
-  oa.CreateSuffix(remaining);
-  if (!remaining.IsEmpty()) {
-    MOZ_ASSERT(!suffix.IsEmpty());
-
-    if (result.IsEmpty()) {
-      // Must contain the old prefix, otherwise we won't search for the whole
-      // origin attributes suffix.
-      result.AppendLiteral("0:f:");
-    }
-
-    // Append the whole origin attributes suffix despite we have already stored
-    // appid and inbrowser.  We are only looking for it when the scope string
-    // starts with "$appid:$inbrowser:" (with whatever valid values).
-    //
-    // The OriginAttributes suffix is a string in a form like:
-    // "^addonId=101&userContextId=5" and it's ensured it always starts with '^'
-    // and never contains ':'.  See OriginAttributes::CreateSuffix.
-    result.Append(suffix);
-    result.Append(':');
-  }
-
-  result.Append(aCache->OriginNoSuffix());
-
-  return result;
-}
 
 }  // namespace
 
@@ -171,7 +120,6 @@ StorageDBThread::StorageDBThread()
       mStatus(NS_OK),
       mWorkerStatements(mWorkerConnection),
       mReaderStatements(mReaderConnection),
-      mDirtyEpoch(0),
       mFlushImmediately(false),
       mPriorityCounter(0) {}
 
@@ -311,7 +259,7 @@ nsresult StorageDBThread::Shutdown() {
 
 void StorageDBThread::SyncPreload(LocalStorageCacheBridge* aCache,
                                   bool aForceSync) {
-  AUTO_PROFILER_LABEL("StorageDBThread::SyncPreload", STORAGE);
+  AUTO_PROFILER_LABEL("StorageDBThread::SyncPreload", OTHER);
   if (!aForceSync && aCache->LoadedCount()) {
     // Preload already started for this cache, just wait for it to finish.
     // LoadWait will exit after LoadDone on the cache has been called.
@@ -459,6 +407,13 @@ void StorageDBThread::SetDefaultPriority() {
 }
 
 void StorageDBThread::ThreadFunc(void* aArg) {
+  {
+    auto queue =
+        MakeRefPtr<ThreadEventQueue<EventQueue>>(MakeUnique<EventQueue>());
+    Unused << nsThreadManager::get().CreateCurrentThread(
+        queue, nsThread::NOT_MAIN_THREAD);
+  }
+
   AUTO_PROFILER_REGISTER_THREAD("localStorage DB");
   NS_SetCurrentThreadName("localStorage DB");
   mozilla::IOInterposer::RegisterCurrentThread();
@@ -499,7 +454,8 @@ void StorageDBThread::ThreadFunc() {
       } while (NS_SUCCEEDED(rv) && processedEvent);
     }
 
-    if (MOZ_UNLIKELY(TimeUntilFlush() == 0)) {
+    TimeDuration timeUntilFlush = TimeUntilFlush();
+    if (MOZ_UNLIKELY(timeUntilFlush.IsZero())) {
       // Flush time is up or flush has been forced, do it now.
       UnscheduleFlush();
       if (mPendingTasks.Prepare()) {
@@ -526,7 +482,9 @@ void StorageDBThread::ThreadFunc() {
         SetDefaultPriority();  // urgent preload unscheduled
       }
     } else if (MOZ_UNLIKELY(!mStopIOThread)) {
-      lockMonitor.Wait(TimeUntilFlush());
+      AUTO_PROFILER_LABEL("StorageDBThread::ThreadFunc::Wait", IDLE);
+      AUTO_PROFILER_THREAD_SLEEP;
+      lockMonitor.Wait(timeUntilFlush);
     }
   }  // thread loop
 
@@ -777,7 +735,7 @@ void StorageDBThread::ScheduleFlush() {
   }
 
   // Must be non-zero to indicate we are scheduled
-  mDirtyEpoch = PR_IntervalNow() | 1;
+  mDirtyEpoch = TimeStamp::Now();
 
   // Wake the monitor from indefinite sleep...
   (mThreadObserver->GetMonitor()).Notify();
@@ -786,31 +744,27 @@ void StorageDBThread::ScheduleFlush() {
 void StorageDBThread::UnscheduleFlush() {
   // We are just about to do the flush, drop flags
   mFlushImmediately = false;
-  mDirtyEpoch = 0;
+  mDirtyEpoch = TimeStamp();
 }
 
-PRIntervalTime StorageDBThread::TimeUntilFlush() {
+TimeDuration StorageDBThread::TimeUntilFlush() {
   if (mFlushImmediately) {
     return 0;  // Do it now regardless the timeout.
   }
 
-  static_assert(PR_INTERVAL_NO_TIMEOUT != 0,
-                "PR_INTERVAL_NO_TIMEOUT must be non-zero");
-
   if (!mDirtyEpoch) {
-    return PR_INTERVAL_NO_TIMEOUT;  // No pending task...
+    return TimeDuration::Forever();  // No pending task...
   }
 
-  static const PRIntervalTime kMaxAge =
-      PR_MillisecondsToInterval(FLUSHING_INTERVAL_MS);
-
-  PRIntervalTime now = PR_IntervalNow() | 1;
-  PRIntervalTime age = now - mDirtyEpoch;
+  TimeStamp now = TimeStamp::Now();
+  TimeDuration age = now - mDirtyEpoch;
+  static const TimeDuration kMaxAge =
+      TimeDuration::FromMilliseconds(FLUSHING_INTERVAL_MS);
   if (age > kMaxAge) {
     return 0;  // It is time.
   }
 
-  return kMaxAge - age;  // Time left, this is used to sleep the monitor
+  return kMaxAge - age;  // Time left. This is used to sleep the monitor.
 }
 
 void StorageDBThread::NotifyFlushCompletion() {
@@ -1064,8 +1018,9 @@ nsresult StorageDBThread::DBOperation::Perform(StorageDBThread* aThread) {
                                       mCache->OriginNoSuffix());
       NS_ENSURE_SUCCESS(rv, rv);
       // Filling the 'scope' column just for downgrade compatibility reasons
-      rv = stmt->BindUTF8StringByName(NS_LITERAL_CSTRING("scope"),
-                                      Scheme0Scope(mCache));
+      rv = stmt->BindUTF8StringByName(
+          NS_LITERAL_CSTRING("scope"),
+          Scheme0Scope(mCache->OriginSuffix(), mCache->OriginNoSuffix()));
       NS_ENSURE_SUCCESS(rv, rv);
       rv = stmt->BindStringByName(NS_LITERAL_CSTRING("key"), mKey);
       NS_ENSURE_SUCCESS(rv, rv);

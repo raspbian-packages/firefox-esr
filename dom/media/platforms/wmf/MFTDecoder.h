@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(MFTDecoder_h_)
-#define MFTDecoder_h_
+#  define MFTDecoder_h_
 
-#include "WMF.h"
-#include "mozilla/ReentrantMonitor.h"
-#include "mozilla/RefPtr.h"
-#include "nsIThread.h"
+#  include "WMF.h"
+#  include "mozilla/ReentrantMonitor.h"
+#  include "mozilla/RefPtr.h"
+#  include "nsIThread.h"
 
 namespace mozilla {
 
@@ -28,7 +28,6 @@ class MFTDecoder final {
   //  - aMFTClsID the clsid used by CoCreateInstance to instantiate the
   //    decoder MFT.
   HRESULT Create(const GUID& aMFTClsID);
-  HRESULT Create(HMODULE aDecoderDLL, const GUID& aMFTClsID);
 
   // Sets the input and output media types. Call after Init().
   //
@@ -37,11 +36,10 @@ class MFTDecoder final {
   //  - aOutputType needs at least major and minor types set.
   //    This is used to select the matching output type out
   //    of all the available output types of the MFT.
-  typedef HRESULT (*ConfigureOutputCallback)(IMFMediaType* aOutputType,
-                                             void* aData);
-  HRESULT SetMediaTypes(IMFMediaType* aInputType, IMFMediaType* aOutputType,
-                        ConfigureOutputCallback aCallback = nullptr,
-                        void* aData = nullptr);
+  HRESULT SetMediaTypes(
+      IMFMediaType* aInputType, IMFMediaType* aOutputType,
+      std::function<HRESULT(IMFMediaType*)>&& aCallback =
+          [](IMFMediaType* aOutput) { return S_OK; });
 
   // Returns the MFT's IMFAttributes object.
   already_AddRefed<IMFAttributes> GetAttributes();
@@ -49,6 +47,7 @@ class MFTDecoder final {
   // Retrieves the media type being output. This may not be valid until
   //  the first sample is decoded.
   HRESULT GetOutputMediaType(RefPtr<IMFMediaType>& aMediaType);
+  const GUID& GetOutputMediaSubType() const { return mOutputSubType; }
 
   // Submits data into the MFT for processing.
   //
@@ -84,10 +83,15 @@ class MFTDecoder final {
   // Sends a message to the MFT.
   HRESULT SendMFTMessage(MFT_MESSAGE_TYPE aMsg, ULONG_PTR aData);
 
-  HRESULT SetDecoderOutputType(bool aMatchAllAttributes,
-                               ConfigureOutputCallback aCallback, void* aData);
+  HRESULT FindDecoderOutputTypeWithSubtype(const GUID& aSubType);
+  HRESULT FindDecoderOutputType();
 
  private:
+  // Will search a suitable MediaType using aTypeToUse if set, if not will
+  // use the current mOutputType.
+  HRESULT SetDecoderOutputType(
+      const GUID& aSubType, IMFMediaType* aTypeToUse,
+      std::function<HRESULT(IMFMediaType*)>&& aCallback);
   HRESULT CreateOutputSample(RefPtr<IMFSample>* aOutSample);
 
   MFT_INPUT_STREAM_INFO mInputStreamInfo;
@@ -96,6 +100,7 @@ class MFTDecoder final {
   RefPtr<IMFTransform> mDecoder;
 
   RefPtr<IMFMediaType> mOutputType;
+  GUID mOutputSubType;
 
   // True if the IMFTransform allocates the samples that it returns.
   bool mMFTProvidesOutputSamples = false;

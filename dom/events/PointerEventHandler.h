@@ -70,13 +70,18 @@ class PointerEventHandler final {
 
   // CheckPointerCaptureState checks cases, when got/lostpointercapture events
   // should be fired.
+  MOZ_CAN_RUN_SCRIPT
   static void MaybeProcessPointerCapture(WidgetGUIEvent* aEvent);
+  MOZ_CAN_RUN_SCRIPT
   static void ProcessPointerCaptureForMouse(WidgetMouseEvent* aEvent);
+  MOZ_CAN_RUN_SCRIPT
   static void ProcessPointerCaptureForTouch(WidgetTouchEvent* aEvent);
+  MOZ_CAN_RUN_SCRIPT
   static void CheckPointerCaptureState(WidgetPointerEvent* aEvent);
 
   // Implicitly get and release capture of current pointer for touch.
   static void ImplicitlyCapturePointer(nsIFrame* aFrame, WidgetEvent* aEvent);
+  MOZ_CAN_RUN_SCRIPT
   static void ImplicitlyReleasePointerCapture(WidgetEvent* aEvent);
 
   /**
@@ -127,6 +132,7 @@ class PointerEventHandler final {
   static void PostHandlePointerEventsPreventDefault(
       WidgetPointerEvent* aPointerEvent, WidgetGUIEvent* aMouseOrTouchEvent);
 
+  MOZ_CAN_RUN_SCRIPT
   static void DispatchPointerFromMouseOrTouch(
       PresShell* aShell, nsIFrame* aFrame, nsIContent* aContent,
       WidgetGUIEvent* aEvent, bool aDontRetargetEvents, nsEventStatus* aStatus,
@@ -152,19 +158,35 @@ class PointerEventHandler final {
            aEvent->mMessage == eTouchPointerCancel;
   }
 
+  static MOZ_ALWAYS_INLINE int32_t GetSpoofedPointerIdForRFP() {
+    return sSpoofedPointerId.valueOr(0);
+  }
+
  private:
   // GetPointerType returns pointer type like mouse, pen or touch for pointer
   // event with pointerId. The return value must be one of
-  // nsIDOMMouseEvent::MOZ_SOURCE_*
+  // MouseEvent_Binding::MOZ_SOURCE_*
   static uint16_t GetPointerType(uint32_t aPointerId);
 
   // GetPointerPrimaryState returns state of attribute isPrimary for pointer
   // event with pointerId
   static bool GetPointerPrimaryState(uint32_t aPointerId);
 
+  MOZ_CAN_RUN_SCRIPT
   static void DispatchGotOrLostPointerCaptureEvent(
       bool aIsGotCapture, const WidgetPointerEvent* aPointerEvent,
       nsIContent* aCaptureTarget);
+
+  // The cached spoofed pointer ID for fingerprinting resistance. We will use a
+  // mouse pointer id for desktop. For mobile, we should use the touch pointer
+  // id as the spoofed one, and this work will be addressed in Bug 1492775.
+  static Maybe<int32_t> sSpoofedPointerId;
+
+  // A helper function to cache the pointer id of the spoofed interface, we
+  // would only cache the pointer id once. After that, we would always stick to
+  // that pointer id for fingerprinting resistance.
+  static void MaybeCacheSpoofedPointerID(uint16_t aInputSource,
+                                         uint32_t aPointerId);
 };
 
 }  // namespace mozilla

@@ -16,14 +16,8 @@ from taskgraph.util.scriptworker import (
     get_beetmover_bucket_scope, add_scope_prefix,
     get_worker_type_for_scope,
 )
-from taskgraph.transforms.job import job_description_schema
 from taskgraph.transforms.task import task_description_schema
 from voluptuous import Required, Optional
-
-# Voluptuous uses marker objects as dictionary *keys*, but they are not
-# comparable, so we cast all of the keys back to regular strings
-task_description_schema = {str(k): v for k, v in task_description_schema.schema.iteritems()}
-job_description_schema = {str(k): v for k, v in job_description_schema.schema.iteritems()}
 
 
 beetmover_push_to_release_description_schema = Schema({
@@ -63,7 +57,9 @@ def make_beetmover_push_to_release_description(config, jobs):
             )
         )
 
-        bucket_scope = get_beetmover_bucket_scope(config)
+        bucket_scope = get_beetmover_bucket_scope(
+            config, job_release_type=job.get('attributes', {}).get('release-type')
+        )
         action_scope = add_scope_prefix(config, 'beetmover:action:push-to-releases')
 
         task = {

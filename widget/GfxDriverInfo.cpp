@@ -14,13 +14,15 @@ int32_t GfxDriverInfo::allFeatures = 0;
 uint64_t GfxDriverInfo::allDriverVersions = ~(uint64_t(0));
 GfxDeviceFamily* const GfxDriverInfo::allDevices = nullptr;
 
-GfxDeviceFamily* GfxDriverInfo::mDeviceFamilies[DeviceFamilyMax];
-nsAString* GfxDriverInfo::mDeviceVendors[DeviceVendorMax];
+GfxDeviceFamily* GfxDriverInfo::sDeviceFamilies[DeviceFamilyMax];
+nsAString* GfxDriverInfo::sDeviceVendors[DeviceVendorMax];
+nsAString* GfxDriverInfo::sDriverVendors[DriverVendorMax];
 
 GfxDriverInfo::GfxDriverInfo()
     : mOperatingSystem(OperatingSystem::Unknown),
       mOperatingSystemVersion(0),
       mAdapterVendor(GfxDriverInfo::GetDeviceVendor(VendorAll)),
+      mDriverVendor(GfxDriverInfo::GetDriverVendor(DriverVendorAll)),
       mDevices(allDevices),
       mDeleteDevices(false),
       mFeature(allFeatures),
@@ -32,7 +34,8 @@ GfxDriverInfo::GfxDriverInfo()
       mRuleId(nullptr),
       mGpu2(false) {}
 
-GfxDriverInfo::GfxDriverInfo(OperatingSystem os, nsAString& vendor,
+GfxDriverInfo::GfxDriverInfo(OperatingSystem os, const nsAString& vendor,
+                             const nsAString& driverVendor,
                              GfxDeviceFamily* devices, int32_t feature,
                              int32_t featureStatus, VersionComparisonOp op,
                              uint64_t driverVersion, const char* ruleId,
@@ -42,6 +45,7 @@ GfxDriverInfo::GfxDriverInfo(OperatingSystem os, nsAString& vendor,
     : mOperatingSystem(os),
       mOperatingSystemVersion(0),
       mAdapterVendor(vendor),
+      mDriverVendor(driverVendor),
       mDevices(devices),
       mDeleteDevices(ownDevices),
       mFeature(feature),
@@ -57,6 +61,7 @@ GfxDriverInfo::GfxDriverInfo(const GfxDriverInfo& aOrig)
     : mOperatingSystem(aOrig.mOperatingSystem),
       mOperatingSystemVersion(aOrig.mOperatingSystemVersion),
       mAdapterVendor(aOrig.mAdapterVendor),
+      mDriverVendor(aOrig.mDriverVendor),
       mFeature(aOrig.mFeature),
       mFeatureStatus(aOrig.mFeatureStatus),
       mComparisonOp(aOrig.mComparisonOp),
@@ -93,10 +98,10 @@ const GfxDeviceFamily* GfxDriverInfo::GetDeviceFamily(DeviceFamily id) {
                "DeviceFamily id is out of range");
 
   // If it already exists, we must have processed it once, so return it now.
-  if (mDeviceFamilies[id]) return mDeviceFamilies[id];
+  if (sDeviceFamilies[id]) return sDeviceFamilies[id];
 
-  mDeviceFamilies[id] = new GfxDeviceFamily;
-  GfxDeviceFamily* deviceFamily = mDeviceFamilies[id];
+  sDeviceFamilies[id] = new GfxDeviceFamily;
+  GfxDeviceFamily* deviceFamily = sDeviceFamilies[id];
 
   switch (id) {
     case IntelGMA500:
@@ -166,6 +171,43 @@ const GfxDeviceFamily* GfxDriverInfo::GetDeviceFamily(DeviceFamily id) {
       APPEND_DEVICE(0x0122); /* IntelSandyBridge_5 */
       APPEND_DEVICE(0x0126); /* IntelSandyBridge_6 */
       APPEND_DEVICE(0x010a); /* IntelSandyBridge_7 */
+      break;
+    case IntelHDGraphicsToHaswell:
+      APPEND_DEVICE(0x0402); /* IntelHaswell_GT1_1 */
+      APPEND_DEVICE(0x0406); /* IntelHaswell_GT1_2 */
+      APPEND_DEVICE(0x040A); /* IntelHaswell_GT1_3 */
+      APPEND_DEVICE(0x040B); /* IntelHaswell_GT1_4 */
+      APPEND_DEVICE(0x040E); /* IntelHaswell_GT1_5 */
+      APPEND_DEVICE(0x0A02); /* IntelHaswell_GT1_6 */
+      APPEND_DEVICE(0x0A06); /* IntelHaswell_GT1_7 */
+      APPEND_DEVICE(0x0A0A); /* IntelHaswell_GT1_8 */
+      APPEND_DEVICE(0x0A0B); /* IntelHaswell_GT1_9 */
+      APPEND_DEVICE(0x0A0E); /* IntelHaswell_GT1_10 */
+      APPEND_DEVICE(0x0412); /* IntelHaswell_GT2_1 */
+      APPEND_DEVICE(0x0416); /* IntelHaswell_GT2_2 */
+      APPEND_DEVICE(0x041A); /* IntelHaswell_GT2_3 */
+      APPEND_DEVICE(0x041B); /* IntelHaswell_GT2_4 */
+      APPEND_DEVICE(0x041E); /* IntelHaswell_GT2_5 */
+      APPEND_DEVICE(0x0A12); /* IntelHaswell_GT2_6 */
+      APPEND_DEVICE(0x0A16); /* IntelHaswell_GT2_7 */
+      APPEND_DEVICE(0x0A1A); /* IntelHaswell_GT2_8 */
+      APPEND_DEVICE(0x0A1B); /* IntelHaswell_GT2_9 */
+      APPEND_DEVICE(0x0A1E); /* IntelHaswell_GT2_10 */
+      APPEND_DEVICE(0x0422); /* IntelHaswell_GT3_1 */
+      APPEND_DEVICE(0x0426); /* IntelHaswell_GT3_2 */
+      APPEND_DEVICE(0x042A); /* IntelHaswell_GT3_3 */
+      APPEND_DEVICE(0x042B); /* IntelHaswell_GT3_4 */
+      APPEND_DEVICE(0x042E); /* IntelHaswell_GT3_5 */
+      APPEND_DEVICE(0x0A22); /* IntelHaswell_GT3_6 */
+      APPEND_DEVICE(0x0A26); /* IntelHaswell_GT3_7 */
+      APPEND_DEVICE(0x0A2A); /* IntelHaswell_GT3_8 */
+      APPEND_DEVICE(0x0A2B); /* IntelHaswell_GT3_9 */
+      APPEND_DEVICE(0x0A2E); /* IntelHaswell_GT3_10 */
+      APPEND_DEVICE(0x0D22); /* IntelHaswell_GT3e_1 */
+      APPEND_DEVICE(0x0D26); /* IntelHaswell_GT3e_2 */
+      APPEND_DEVICE(0x0D2A); /* IntelHaswell_GT3e_3 */
+      APPEND_DEVICE(0x0D2B); /* IntelHaswell_GT3e_4 */
+      APPEND_DEVICE(0x0D2E); /* IntelHaswell_GT3e_5 */
       break;
     case IntelHD3000:
       APPEND_DEVICE(0x0126);
@@ -276,6 +318,40 @@ const GfxDeviceFamily* GfxDriverInfo::GetDeviceFamily(DeviceFamily id) {
       APPEND_DEVICE(0xa011);
       APPEND_DEVICE(0xa012);
       break;
+    case NvidiaBlockWebRender:
+      /* GT218 */
+      APPEND_DEVICE(0x0a60);
+      APPEND_DEVICE(0x0a62);
+      APPEND_DEVICE(0x0a63);
+      APPEND_DEVICE(0x0a64);
+      APPEND_DEVICE(0x0a65);
+      APPEND_DEVICE(0x0a66);
+      APPEND_DEVICE(0x0a67);
+      APPEND_DEVICE(0x0a7b);
+      APPEND_DEVICE(0x10c0);
+      APPEND_DEVICE(0x10c3);
+      APPEND_DEVICE(0x10c5);
+      APPEND_DEVICE(0x10d8);
+      /* GT218M */
+      APPEND_DEVICE(0x0a68);
+      APPEND_DEVICE(0x0a69);
+      APPEND_DEVICE(0x0a6a);
+      APPEND_DEVICE(0x0a6c);
+      APPEND_DEVICE(0x0a6e);
+      APPEND_DEVICE(0x0a6f);
+      APPEND_DEVICE(0x0a70);
+      APPEND_DEVICE(0x0a71);
+      APPEND_DEVICE(0x0a72);
+      APPEND_DEVICE(0x0a73);
+      APPEND_DEVICE(0x0a74);
+      APPEND_DEVICE(0x0a75);
+      APPEND_DEVICE(0x0a76);
+      APPEND_DEVICE(0x0a7a);
+      /* GT218GL */
+      APPEND_DEVICE(0x0a78);
+      /* GT218GLM */
+      APPEND_DEVICE(0x0a7c);
+      break;
     // This should never happen, but we get a warning if we don't handle this.
     case DeviceFamilyMax:
       NS_WARNING("Invalid DeviceFamily id");
@@ -288,16 +364,16 @@ const GfxDeviceFamily* GfxDriverInfo::GetDeviceFamily(DeviceFamily id) {
 // Macro for assigning a device vendor id to a string.
 #define DECLARE_VENDOR_ID(name, deviceId)        \
   case name:                                     \
-    mDeviceVendors[id]->AssignLiteral(deviceId); \
+    sDeviceVendors[id]->AssignLiteral(deviceId); \
     break;
 
 const nsAString& GfxDriverInfo::GetDeviceVendor(DeviceVendor id) {
   NS_ASSERTION(id >= 0 && id < DeviceVendorMax,
                "DeviceVendor id is out of range");
 
-  if (mDeviceVendors[id]) return *mDeviceVendors[id];
+  if (sDeviceVendors[id]) return *sDeviceVendors[id];
 
-  mDeviceVendors[id] = new nsString();
+  sDeviceVendors[id] = new nsString();
 
   switch (id) {
     DECLARE_VENDOR_ID(VendorAll, "");
@@ -314,5 +390,34 @@ const nsAString& GfxDriverInfo::GetDeviceVendor(DeviceVendor id) {
     DECLARE_VENDOR_ID(DeviceVendorMax, "");
   }
 
-  return *mDeviceVendors[id];
+  return *sDeviceVendors[id];
+}
+
+// Macro for assigning a driver vendor id to a string.
+#define DECLARE_DRIVER_VENDOR_ID(name, driverVendorId) \
+  case name:                                           \
+    sDriverVendors[id]->AssignLiteral(driverVendorId); \
+    break;
+
+const nsAString& GfxDriverInfo::GetDriverVendor(DriverVendor id) {
+  NS_ASSERTION(id >= 0 && id < DriverVendorMax,
+               "DriverVendor id is out of range");
+
+  if (sDriverVendors[id]) return *sDriverVendors[id];
+
+  sDriverVendors[id] = new nsString();
+
+  switch (id) {
+    DECLARE_DRIVER_VENDOR_ID(DriverVendorAll, "");
+    DECLARE_DRIVER_VENDOR_ID(DriverMesaAll, "mesa/all");
+    DECLARE_DRIVER_VENDOR_ID(DriverMesaLLVMPipe, "mesa/llvmpipe");
+    DECLARE_DRIVER_VENDOR_ID(DriverMesaSoftPipe, "mesa/softpipe");
+    DECLARE_DRIVER_VENDOR_ID(DriverMesaSWRast, "mesa/swrast");
+    DECLARE_DRIVER_VENDOR_ID(DriverMesaUnknown, "mesa/unknown");
+    DECLARE_DRIVER_VENDOR_ID(DriverNonMesaAll, "non-mesa/all");
+    // Suppress a warning.
+    DECLARE_DRIVER_VENDOR_ID(DriverVendorMax, "");
+  }
+
+  return *sDriverVendors[id];
 }

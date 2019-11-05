@@ -11,8 +11,7 @@
 <window title="Update Wizard pages: errors (partial and complete patches with invalid sizes)"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="runTestDefault();">
-<script type="application/javascript"
-        src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+<script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
 <script type="application/javascript"
         src="utils.js"/>
 
@@ -32,7 +31,8 @@ function runTest() {
                     state: STATE_DOWNLOADING};
   let patches = getLocalPatchString(patchProps);
   patchProps = {size: "1234",
-                selected: "false"};
+                selected: "false",
+                state: null};
   patches += getLocalPatchString(patchProps);
   let updateProps = {isCompleteUpdate: "false"};
   let updates = getLocalUpdateString(updateProps, patches);

@@ -18,7 +18,7 @@ connection-proxy-option-no =
     .label = ללא שרת מתווך
     .accesskey = ל
 connection-proxy-option-system =
-    .label = השתמש בהגדרות השרת המתווך של המערכת
+    .label = שימוש בהגדרות השרת המתווך של המערכת
     .accesskey = מ
 connection-proxy-option-auto =
     .label = זיהוי אוטומטי של הגדרות שרת המתווך עבור רשת זו
@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = שימוש ב־DNS דרך מתווך בעת שימוש ב־SOCKS v5
     .accesskey = מ
+connection-dns-over-https =
+    .label = הפעלת DNS על גבי HTTPS
+    .accesskey = פ
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = שימוש בברירת המחדל ({ $url })
+    .accesskey = ב
+    .tooltiptext = שימוש בכתובת בררת המחדל כדי לפתור שאילתות DNS על גבי HTTPS
+connection-dns-over-https-url-resolver = שימוש בספק
+    .accesskey = ש
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = ‏{ $name } (ברירת מחדל)
+    .tooltiptext = שימוש בכתובת ברירת המחדל כדי לפתור שאילתות DNS על גבי HTTPS
+connection-dns-over-https-url-custom =
+    .label = התאמה אישית
+    .accesskey = א
+    .tooltiptext = נא להקליד את הכתובת המועדפת עליך לפתרון DNS על גבי HTTPS
+connection-dns-over-https-custom-label = מותאם אישית

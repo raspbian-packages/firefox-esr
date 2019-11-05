@@ -7,8 +7,8 @@
 #ifndef mozilla_dom_SVGLineElement_h
 #define mozilla_dom_SVGLineElement_h
 
+#include "SVGAnimatedLength.h"
 #include "SVGGeometryElement.h"
-#include "nsSVGLength2.h"
 
 nsresult NS_NewSVGLineElement(
     nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
@@ -20,7 +20,7 @@ typedef SVGGeometryElement SVGLineElementBase;
 
 class SVGLineElement final : public SVGLineElementBase {
  protected:
-  explicit SVGLineElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit SVGLineElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
   virtual JSObject* WrapNode(JSContext* cx,
                              JS::Handle<JSObject*> aGivenProto) override;
   friend nsresult(::NS_NewSVGLineElement(
@@ -37,7 +37,7 @@ class SVGLineElement final : public SVGLineElementBase {
 
   // SVGGeometryElement methods:
   virtual bool IsMarkable() override { return true; }
-  virtual void GetMarkPoints(nsTArray<nsSVGMark>* aMarks) override;
+  virtual void GetMarkPoints(nsTArray<SVGMark>* aMarks) override;
   virtual void GetAsSimplePath(SimplePath* aSimplePath) override;
   virtual already_AddRefed<Path> BuildPath(PathBuilder* aBuilder) override;
   virtual bool GetGeometryBounds(
@@ -45,20 +45,19 @@ class SVGLineElement final : public SVGLineElementBase {
       const Matrix& aToBoundsSpace,
       const Matrix* aToNonScalingStrokeSpace = nullptr) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL
-  already_AddRefed<SVGAnimatedLength> X1();
-  already_AddRefed<SVGAnimatedLength> Y1();
-  already_AddRefed<SVGAnimatedLength> X2();
-  already_AddRefed<SVGAnimatedLength> Y2();
+  already_AddRefed<DOMSVGAnimatedLength> X1();
+  already_AddRefed<DOMSVGAnimatedLength> Y1();
+  already_AddRefed<DOMSVGAnimatedLength> X2();
+  already_AddRefed<DOMSVGAnimatedLength> Y2();
 
  protected:
   virtual LengthAttributesInfo GetLengthInfo() override;
 
   enum { ATTR_X1, ATTR_Y1, ATTR_X2, ATTR_Y2 };
-  nsSVGLength2 mLengthAttributes[4];
+  SVGAnimatedLength mLengthAttributes[4];
   static LengthInfo sLengthInfo[4];
 };
 

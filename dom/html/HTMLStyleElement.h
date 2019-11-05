@@ -12,8 +12,6 @@
 #include "nsStyleLinkElement.h"
 #include "nsStubMutationObserver.h"
 
-class nsIDocument;
-
 namespace mozilla {
 namespace dom {
 
@@ -22,7 +20,7 @@ class HTMLStyleElement final : public nsGenericHTMLElement,
                                public nsStubMutationObserver {
  public:
   explicit HTMLStyleElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -31,7 +29,7 @@ class HTMLStyleElement final : public nsGenericHTMLElement,
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLStyleElement,
                                            nsGenericHTMLElement)
 
-  NS_IMETHOD GetInnerHTML(nsAString& aInnerHTML) override;
+  void GetInnerHTML(nsAString& aInnerHTML, OOMReporter& aError) override;
   using nsGenericHTMLElement::SetInnerHTML;
   virtual void SetInnerHTML(const nsAString& aInnerHTML,
                             nsIPrincipal* aSubjectPrincipal,
@@ -40,9 +38,8 @@ class HTMLStyleElement final : public nsGenericHTMLElement,
                                       nsIPrincipal* aSubjectPrincipal,
                                       mozilla::ErrorResult& aError) override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual nsresult AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
@@ -51,8 +48,7 @@ class HTMLStyleElement final : public nsGenericHTMLElement,
                                 nsIPrincipal* aSubjectPrincipal,
                                 bool aNotify) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // nsIMutationObserver
   NS_DECL_NSIMUTATIONOBSERVER_CHARACTERDATACHANGED
@@ -60,7 +56,7 @@ class HTMLStyleElement final : public nsGenericHTMLElement,
   NS_DECL_NSIMUTATIONOBSERVER_CONTENTINSERTED
   NS_DECL_NSIMUTATIONOBSERVER_CONTENTREMOVED
 
-  bool Disabled();
+  bool Disabled() const;
   void SetDisabled(bool aDisabled);
   void GetMedia(nsAString& aValue) { GetHTMLAttr(nsGkAtoms::media, aValue); }
   void SetMedia(const nsAString& aMedia, ErrorResult& aError) {
@@ -70,10 +66,6 @@ class HTMLStyleElement final : public nsGenericHTMLElement,
   void SetType(const nsAString& aType, ErrorResult& aError) {
     SetHTMLAttr(nsGkAtoms::type, aType, aError);
   }
-  bool Scoped() { return GetBoolAttr(nsGkAtoms::scoped); }
-  void SetScoped(bool aScoped, ErrorResult& aError) {
-    SetHTMLBoolAttr(nsGkAtoms::scoped, aScoped, aError);
-  }
 
   virtual JSObject* WrapNode(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) override;
@@ -81,10 +73,8 @@ class HTMLStyleElement final : public nsGenericHTMLElement,
  protected:
   virtual ~HTMLStyleElement();
 
-  already_AddRefed<nsIURI> GetStyleSheetURL(
-      bool* aIsInline, nsIPrincipal** aTriggeringPrincipal) override;
-  void GetStyleSheetInfo(nsAString& aTitle, nsAString& aType, nsAString& aMedia,
-                         bool* aIsScoped, bool* aIsAlternate) override;
+  Maybe<SheetInfo> GetStyleSheetInfo() final;
+
   /**
    * Common method to call from the various mutation observer methods.
    * aContent is a content node that's either the one that changed or its

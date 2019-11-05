@@ -26,11 +26,12 @@ class RenderSharedSurfaceTextureHost final : public RenderTextureHost {
   explicit RenderSharedSurfaceTextureHost(
       gfx::SourceSurfaceSharedDataWrapper* aSurface);
 
-  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL) override;
+  wr::WrExternalImage Lock(uint8_t aChannelIndex, gl::GLContext* aGL,
+                           wr::ImageRendering aRendering) override;
   void Unlock() override;
 
  private:
-  ~RenderSharedSurfaceTextureHost() override;
+  virtual ~RenderSharedSurfaceTextureHost();
 
   RefPtr<gfx::SourceSurfaceSharedDataWrapper> mSurface;
   gfx::DataSourceSurface::MappedSurface mMap;

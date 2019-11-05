@@ -24,11 +24,22 @@
 #include "nsITimer.h"
 #include "mozilla/Attributes.h"
 
-nsIFrame* NS_NewMenuFrame(nsIPresShell* aPresShell, nsStyleContext* aContext);
-nsIFrame* NS_NewMenuItemFrame(nsIPresShell* aPresShell,
-                              nsStyleContext* aContext);
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
+nsIFrame* NS_NewMenuFrame(mozilla::PresShell* aPresShell,
+                          mozilla::ComputedStyle*);
+nsIFrame* NS_NewMenuItemFrame(mozilla::PresShell* aPresShell,
+                              mozilla::ComputedStyle*);
 
 class nsIContent;
+
+namespace mozilla {
+namespace dom {
+class Element;
+}  // namespace dom
+}  // namespace mozilla
 
 #define NS_STATE_ACCELTEXT_IS_DERIVED NS_STATE_BOX_CHILD_RESERVED
 
@@ -41,12 +52,6 @@ enum nsMenuType {
   // a radio menuitem where only one of it and its siblings with the same
   // name attribute can be checked at a time
   eMenuType_Radio = 2
-};
-
-enum nsMenuListType {
-  eNotMenuList,       // not a menulist
-  eReadonlyMenuList,  // <menulist/>
-  eEditableMenuList   // <menulist editable="true"/>
 };
 
 class nsMenuFrame;
@@ -77,7 +82,7 @@ class nsMenuTimerMediator final : public nsITimerCallback, public nsINamed {
 
 class nsMenuFrame final : public nsBoxFrame, public nsIReflowCallback {
  public:
-  explicit nsMenuFrame(nsStyleContext* aContext);
+  explicit nsMenuFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
 
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsMenuFrame)
@@ -88,10 +93,6 @@ class nsMenuFrame final : public nsBoxFrame, public nsIReflowCallback {
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
-
-#ifdef DEBUG_LAYOUT
-  virtual nsresult SetXULDebug(nsBoxLayoutState& aState, bool aDebug) override;
-#endif
 
   // The following methods are all overridden so that the menupopup
   // can be stored in a separate list, so that it doesn't impact reflow of the
@@ -137,8 +138,8 @@ class nsMenuFrame final : public nsBoxFrame, public nsIReflowCallback {
 
   bool IsChecked() { return mChecked; }
 
-  NS_IMETHOD GetActiveChild(nsIDOMElement** aResult);
-  NS_IMETHOD SetActiveChild(nsIDOMElement* aChild);
+  NS_IMETHOD GetActiveChild(mozilla::dom::Element** aResult);
+  NS_IMETHOD SetActiveChild(mozilla::dom::Element* aChild);
 
   // called when the Enter key is pressed while the menuitem is the current
   // one in its parent popup. This will carry out the command attached to
@@ -172,7 +173,7 @@ class nsMenuFrame final : public nsBoxFrame, public nsIReflowCallback {
   }
   virtual bool IsOpen();
   virtual bool IsMenu();
-  nsMenuListType GetParentMenuListType();
+  bool IsParentMenuList();
   bool IsDisabled();
   void ToggleMenuState();
 
@@ -256,9 +257,6 @@ class nsMenuFrame final : public nsBoxFrame, public nsIReflowCallback {
   void PassMenuCommandEventToPopupManager();
 
  protected:
-#ifdef DEBUG_LAYOUT
-  nsresult SetXULDebug(nsBoxLayoutState& aState, nsIFrame* aList, bool aDebug);
-#endif
   nsresult Notify(nsITimer* aTimer);
 
   bool mIsMenu;   // Whether or not we can even have children or not.

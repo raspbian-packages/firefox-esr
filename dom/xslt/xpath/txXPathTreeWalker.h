@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,7 +12,6 @@
 #include "nsTArray.h"
 
 class nsAtom;
-class nsIDOMDocument;
 
 class txXPathTreeWalker {
  public:
@@ -89,20 +88,12 @@ class txXPathNativeNode {
  public:
   static txXPathNode* createXPathNode(nsINode* aNode,
                                       bool aKeepRootAlive = false);
-  static txXPathNode* createXPathNode(nsIDOMNode* aNode,
-                                      bool aKeepRootAlive = false) {
-    nsCOMPtr<nsINode> node = do_QueryInterface(aNode);
-    return createXPathNode(node, aKeepRootAlive);
-  }
   static txXPathNode* createXPathNode(nsIContent* aContent,
                                       bool aKeepRootAlive = false);
-  static txXPathNode* createXPathNode(nsIDOMDocument* aDocument);
+  static txXPathNode* createXPathNode(mozilla::dom::Document* aDocument);
   static nsINode* getNode(const txXPathNode& aNode);
-  static nsresult getNode(const txXPathNode& aNode, nsIDOMNode** aResult) {
-    return CallQueryInterface(getNode(aNode), aResult);
-  }
   static nsIContent* getContent(const txXPathNode& aNode);
-  static nsIDocument* getDocument(const txXPathNode& aNode);
+  static mozilla::dom::Document* getDocument(const txXPathNode& aNode);
   static void addRef(const txXPathNode& aNode) { NS_ADDREF(aNode.mNode); }
   static void release(const txXPathNode& aNode) {
     nsINode* node = aNode.mNode;
@@ -155,7 +146,7 @@ inline bool txXPathTreeWalker::isOnNode(const txXPathNode& aNode) const {
 
 /* static */
 inline int32_t txXPathNodeUtils::getUniqueIdentifier(const txXPathNode& aNode) {
-  NS_PRECONDITION(!aNode.isAttribute(), "Not implemented for attributes.");
+  MOZ_ASSERT(!aNode.isAttribute(), "Not implemented for attributes.");
   return NS_PTR_TO_INT32(aNode.mNode);
 }
 
@@ -194,18 +185,17 @@ inline bool txXPathNodeUtils::isAttribute(const txXPathNode& aNode) {
 /* static */
 inline bool txXPathNodeUtils::isProcessingInstruction(
     const txXPathNode& aNode) {
-  return aNode.isContent() &&
-         aNode.Content()->IsNodeOfType(nsINode::ePROCESSING_INSTRUCTION);
+  return aNode.isContent() && aNode.Content()->IsProcessingInstruction();
 }
 
 /* static */
 inline bool txXPathNodeUtils::isComment(const txXPathNode& aNode) {
-  return aNode.isContent() && aNode.Content()->IsNodeOfType(nsINode::eCOMMENT);
+  return aNode.isContent() && aNode.Content()->IsComment();
 }
 
 /* static */
 inline bool txXPathNodeUtils::isText(const txXPathNode& aNode) {
-  return aNode.isContent() && aNode.Content()->IsNodeOfType(nsINode::eTEXT);
+  return aNode.isContent() && aNode.Content()->IsText();
 }
 
 #endif /* txXPathTreeWalker_h__ */

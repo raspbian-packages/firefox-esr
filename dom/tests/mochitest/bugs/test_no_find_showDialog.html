@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Test for Bug 1348409</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="application/javascript" src="/tests/SimpleTest/SpawnTask.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <iframe src="about:blank"></iframe>
   <script type="text/javascript">
@@ -12,7 +11,7 @@
   function checkForFindDialog() {
     let chromeScript = SpecialPowers.loadChromeScript(_ => {
       addMessageListener("test:check", () => {
-        ChromeUtils.import("resource://gre/modules/Services.jsm");
+        const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
         let sawFind = false;
         let findDialog = Services.wm.getMostRecentWindow("findInPage");

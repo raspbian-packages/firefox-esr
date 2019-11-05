@@ -14,11 +14,11 @@
 #include "MediaContainerType.h"
 #include "MediaDecoderStateMachine.h"
 #include "MediaFormatReader.h"
-#include "MediaPrefs.h"
 #include "MediaShutdownManager.h"
 #include "nsContentUtils.h"
 #include "nsNetUtil.h"
 #include "nsThreadUtils.h"
+#include "mozilla/StaticPrefs.h"
 
 using namespace mozilla::java;
 
@@ -35,7 +35,7 @@ class HLSResourceCallbacksSupport
   using NativeCallbacks::AttachNative;
   using NativeCallbacks::DisposeNative;
 
-  HLSResourceCallbacksSupport(HLSDecoder* aResource);
+  explicit HLSResourceCallbacksSupport(HLSDecoder* aResource);
   void Detach();
   void OnDataArrived();
   void OnError(int aErrorCode);
@@ -52,6 +52,7 @@ HLSResourceCallbacksSupport::HLSResourceCallbacksSupport(HLSDecoder* aDecoder)
 }
 
 void HLSResourceCallbacksSupport::Detach() {
+  MOZ_ASSERT(NS_IsMainThread());
   MutexAutoLock lock(mMutex);
   mDecoder = nullptr;
 }
@@ -65,7 +66,6 @@ void HLSResourceCallbacksSupport::OnDataArrived() {
   RefPtr<HLSResourceCallbacksSupport> self = this;
   NS_DispatchToMainThread(NS_NewRunnableFunction(
       "HLSResourceCallbacksSupport::OnDataArrived", [self]() -> void {
-        MutexAutoLock lock(self->mMutex);
         if (self->mDecoder) {
           self->mDecoder->NotifyDataArrived();
         }
@@ -80,8 +80,7 @@ void HLSResourceCallbacksSupport::OnError(int aErrorCode) {
   }
   RefPtr<HLSResourceCallbacksSupport> self = this;
   NS_DispatchToMainThread(NS_NewRunnableFunction(
-      "HLSResourceCallbacksSupport::OnDataArrived", [self]() -> void {
-        MutexAutoLock lock(self->mMutex);
+      "HLSResourceCallbacksSupport::OnError", [self]() -> void {
         if (self->mDecoder) {
           // Since HLS source should be from the Internet, we treat all resource
           // errors from GeckoHlsPlayer as network errors.
@@ -91,7 +90,29 @@ void HLSResourceCallbacksSupport::OnError(int aErrorCode) {
       }));
 }
 
-HLSDecoder::HLSDecoder(MediaDecoderInit& aInit) : MediaDecoder(aInit) {}
+size_t HLSDecoder::sAllocatedInstances = 0;
+
+// static
+RefPtr<HLSDecoder> HLSDecoder::Create(MediaDecoderInit& aInit) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  return sAllocatedInstances < StaticPrefs::MediaHlsMaxAllocations()
+             ? new HLSDecoder(aInit)
+             : nullptr;
+}
+
+HLSDecoder::HLSDecoder(MediaDecoderInit& aInit) : MediaDecoder(aInit) {
+  MOZ_ASSERT(NS_IsMainThread());
+  sAllocatedInstances++;
+  HLS_DEBUG("HLSDecoder", "HLSDecoder(): allocated=%zu", sAllocatedInstances);
+}
+
+HLSDecoder::~HLSDecoder() {
+  MOZ_ASSERT(NS_IsMainThread());
+  MOZ_ASSERT(sAllocatedInstances > 0);
+  sAllocatedInstances--;
+  HLS_DEBUG("HLSDecoder", "~HLSDecoder(): allocated=%zu", sAllocatedInstances);
+}
 
 MediaDecoderStateMachine* HLSDecoder::CreateStateMachine() {
   MOZ_ASSERT(NS_IsMainThread());
@@ -109,7 +130,7 @@ MediaDecoderStateMachine* HLSDecoder::CreateStateMachine() {
 }
 
 bool HLSDecoder::IsEnabled() {
-  return MediaPrefs::HLSEnabled() && (jni::GetAPIVersion() >= 16);
+  return StaticPrefs::MediaHlsEnabled() && (jni::GetAPIVersion() >= 16);
 }
 
 bool HLSDecoder::IsSupportedType(const MediaContainerType& aContainerType) {
@@ -161,7 +182,7 @@ already_AddRefed<nsIPrincipal> HLSDecoder::GetCurrentPrincipal() {
   return nullptr;
 }
 
-nsresult HLSDecoder::Play() {
+void HLSDecoder::Play() {
   MOZ_ASSERT(NS_IsMainThread());
   HLS_DEBUG("HLSDecoder", "MediaElement called Play");
   mHLSResourceWrapper->Play();

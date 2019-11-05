@@ -29,9 +29,9 @@ class PerformanceNavigationTiming final : public PerformanceResourceTiming {
   // zeroTime initialized to navigationStart
   PerformanceNavigationTiming(
       UniquePtr<PerformanceTimingData>&& aPerformanceTiming,
-      Performance* aPerformance)
-      : PerformanceResourceTiming(Move(aPerformanceTiming), aPerformance,
-                                  NS_LITERAL_STRING("document")) {
+      Performance* aPerformance, const nsAString& aName)
+      : PerformanceResourceTiming(std::move(aPerformanceTiming), aPerformance,
+                                  aName) {
     SetEntryType(NS_LITERAL_STRING("navigation"));
     SetInitiatorType(NS_LITERAL_STRING("navigation"));
   }
@@ -61,6 +61,9 @@ class PerformanceNavigationTiming final : public PerformanceResourceTiming {
   DOMHighResTimeStamp LoadEventEnd() const;
   NavigationType Type() const;
   uint16_t RedirectCount() const;
+
+  void UpdatePropertiesFromHttpChannel(nsIHttpChannel* aHttpChannel,
+                                       nsITimedChannel* aChannel);
 
  private:
   ~PerformanceNavigationTiming() {}

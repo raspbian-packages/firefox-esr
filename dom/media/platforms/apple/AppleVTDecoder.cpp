@@ -4,13 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include <CoreFoundation/CFString.h>
-
 #include "AppleVTDecoder.h"
-#include "AppleCMLinker.h"
+
 #include "AppleDecoderModule.h"
 #include "AppleUtils.h"
-#include "AppleVTLinker.h"
+#include "MacIOSurfaceImage.h"
 #include "MediaData.h"
 #include "mozilla/ArrayUtils.h"
 #include "H264.h"
@@ -19,6 +17,7 @@
 #include "mozilla/Logging.h"
 #include "VideoUtils.h"
 #include "gfxPlatform.h"
+#include "MacIOSurfaceImage.h"
 
 #define LOG(...) DDMOZ_LOG(sPDMLog, mozilla::LogLevel::Debug, __VA_ARGS__)
 #define LOGEX(_this, ...) \
@@ -26,15 +25,21 @@
 
 namespace mozilla {
 
+using namespace layers;
+
 AppleVTDecoder::AppleVTDecoder(const VideoInfo& aConfig, TaskQueue* aTaskQueue,
-                               layers::ImageContainer* aImageContainer)
+                               layers::ImageContainer* aImageContainer,
+                               CreateDecoderParams::OptionSet aOptions)
     : mExtraData(aConfig.mExtraData),
       mPictureWidth(aConfig.mImage.width),
       mPictureHeight(aConfig.mImage.height),
       mDisplayWidth(aConfig.mDisplay.width),
       mDisplayHeight(aConfig.mDisplay.height),
+      mColorSpace(aConfig.mColorSpace),
       mTaskQueue(aTaskQueue),
-      mMaxRefFrames(H264::ComputeMaxRefFrames(aConfig.mExtraData)),
+      mMaxRefFrames(aOptions.contains(CreateDecoderParams::Option::LowLatency)
+                        ? 0
+                        : H264::ComputeMaxRefFrames(aConfig.mExtraData)),
       mImageContainer(aImageContainer)
 #ifdef MOZ_WIDGET_UIKIT
       ,
@@ -229,9 +234,9 @@ RefPtr<MediaDataDecoder::DecodePromise> AppleVTDecoder::ProcessDrain() {
   MonitorAutoLock mon(mMonitor);
   DecodedData samples;
   while (!mReorderQueue.IsEmpty()) {
-    samples.AppendElement(Move(mReorderQueue.Pop()));
+    samples.AppendElement(mReorderQueue.Pop());
   }
-  return DecodePromise::CreateAndResolve(Move(samples), __func__);
+  return DecodePromise::CreateAndResolve(std::move(samples), __func__);
 }
 
 AppleVTDecoder::AppleFrameRef* AppleVTDecoder::CreateAppleFrameRef(
@@ -241,8 +246,11 @@ AppleVTDecoder::AppleFrameRef* AppleVTDecoder::CreateAppleFrameRef(
 }
 
 void AppleVTDecoder::SetSeekThreshold(const media::TimeUnit& aTime) {
-  LOG("SetSeekThreshold %lld", aTime.ToMicroseconds());
-  mSeekTargetThreshold = Some(aTime);
+  if (aTime.IsValid()) {
+    mSeekTargetThreshold = Some(aTime);
+  } else {
+    mSeekTargetThreshold.reset();
+  }
 }
 
 //
@@ -366,6 +374,8 @@ void AppleVTDecoder::OutputFrame(CVPixelBufferRef aImage,
     buffer.mPlanes[2].mOffset = 0;
     buffer.mPlanes[2].mSkip = 0;
 
+    buffer.mYUVColorSpace = mColorSpace;
+
     gfx::IntRect visible = gfx::IntRect(0, 0, mPictureWidth, mPictureHeight);
 
     // Copy the image data into our own format.
@@ -381,8 +391,9 @@ void AppleVTDecoder::OutputFrame(CVPixelBufferRef aImage,
     MOZ_ASSERT(surface, "Decoder didn't return an IOSurface backed buffer");
 
     RefPtr<MacIOSurface> macSurface = new MacIOSurface(surface);
+    macSurface->SetYUVColorSpace(mColorSpace);
 
-    RefPtr<layers::Image> image = new MacIOSurfaceImage(macSurface);
+    RefPtr<layers::Image> image = new layers::MacIOSurfaceImage(macSurface);
 
     data = VideoData::CreateFromImage(
         info.mDisplay, aFrameRef.byte_offset, aFrameRef.composition_timestamp,
@@ -408,7 +419,7 @@ void AppleVTDecoder::OutputFrame(CVPixelBufferRef aImage,
   while (mReorderQueue.Length() > mMaxRefFrames) {
     results.AppendElement(mReorderQueue.Pop());
   }
-  mPromise.Resolve(Move(results), __func__);
+  mPromise.Resolve(std::move(results), __func__);
 
   LOG("%llu decoded frames queued",
       static_cast<unsigned long long>(mReorderQueue.Length()));
@@ -455,19 +466,18 @@ MediaResult AppleVTDecoder::InitializeSession() {
                        RESULT_DETAIL("Couldn't create decompression session!"));
   }
 
-  if (AppleVTLinker::skPropUsingHWAccel) {
-    CFBooleanRef isUsingHW = nullptr;
-    rv = VTSessionCopyProperty(mSession, AppleVTLinker::skPropUsingHWAccel,
-                               kCFAllocatorDefault, &isUsingHW);
-    if (rv != noErr) {
-      LOG("AppleVTDecoder: system doesn't support hardware acceleration");
-    }
-    mIsHardwareAccelerated = rv == noErr && isUsingHW == kCFBooleanTrue;
-    LOG("AppleVTDecoder: %s hardware accelerated decoding",
-        mIsHardwareAccelerated ? "using" : "not using");
-  } else {
-    LOG("AppleVTDecoder: couldn't determine hardware acceleration status.");
+  CFBooleanRef isUsingHW = nullptr;
+  rv = VTSessionCopyProperty(
+      mSession,
+      kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder,
+      kCFAllocatorDefault, &isUsingHW);
+  if (rv != noErr) {
+    LOG("AppleVTDecoder: system doesn't support hardware acceleration");
   }
+  mIsHardwareAccelerated = rv == noErr && isUsingHW == kCFBooleanTrue;
+  LOG("AppleVTDecoder: %s hardware accelerated decoding",
+      mIsHardwareAccelerated ? "using" : "not using");
+
   return NS_OK;
 }
 
@@ -484,9 +494,10 @@ CFDictionaryRef AppleVTDecoder::CreateDecoderExtensions() {
       kCFAllocatorDefault, atomsKey, atomsValue, ArrayLength(atomsKey),
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 
-  const void* extensionKeys[] = {kCVImageBufferChromaLocationBottomFieldKey,
-                                 kCVImageBufferChromaLocationTopFieldKey,
-                                 AppleCMLinker::skPropExtensionAtoms};
+  const void* extensionKeys[] = {
+      kCVImageBufferChromaLocationBottomFieldKey,
+      kCVImageBufferChromaLocationTopFieldKey,
+      kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms};
 
   const void* extensionValues[] = {kCVImageBufferChromaLocation_Left,
                                    kCVImageBufferChromaLocation_Left, atoms};
@@ -500,11 +511,8 @@ CFDictionaryRef AppleVTDecoder::CreateDecoderExtensions() {
 }
 
 CFDictionaryRef AppleVTDecoder::CreateDecoderSpecification() {
-  if (!AppleVTLinker::skPropEnableHWAccel) {
-    return nullptr;
-  }
-
-  const void* specKeys[] = {AppleVTLinker::skPropEnableHWAccel};
+  const void* specKeys[] = {
+      kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder};
   const void* specValues[1];
   if (AppleDecoderModule::sCanUseHardwareVideoDecoder) {
     specValues[0] = kCFBooleanTrue;
@@ -538,7 +546,7 @@ CFDictionaryRef AppleVTDecoder::CreateOutputConfiguration() {
 
 #ifndef MOZ_WIDGET_UIKIT
   // Output format type:
-  SInt32 PixelFormatTypeValue = kCVPixelFormatType_422YpCbCr8;
+  SInt32 PixelFormatTypeValue = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
   AutoCFRelease<CFNumberRef> PixelFormatTypeNumber = CFNumberCreate(
       kCFAllocatorDefault, kCFNumberSInt32Type, &PixelFormatTypeValue);
   // Construct IOSurface Properties

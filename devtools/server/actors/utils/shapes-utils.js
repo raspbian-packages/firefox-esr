@@ -9,7 +9,7 @@
  * @returns {Number} the distance between the two points
  */
 const getDistance = (x1, y1, x2, y2) => {
-  return Math.hypot(x2 - x1, y2 - y1);
+  return Math.round(Math.hypot(x2 - x1, y2 - y1));
 };
 
 /**
@@ -27,16 +27,27 @@ const getDistance = (x1, y1, x2, y2) => {
  *                             along the y radius.
  * @returns {Boolean} whether the click counts as being on the edge of the ellipse.
  */
-const clickedOnEllipseEdge = (x, y, cx, cy, rx, ry, clickWidthX, clickWidthY) => {
+const clickedOnEllipseEdge = (
+  x,
+  y,
+  cx,
+  cy,
+  rx,
+  ry,
+  clickWidthX,
+  clickWidthY
+) => {
   // The formula to determine if something is inside or on the edge of an ellipse is:
   // (x - cx)^2/rx^2 + (y - cy)^2/ry^2 <= 1. If > 1, it's outside.
   // We make two ellipses, adjusting rx and ry with clickWidthX and clickWidthY
   // to allow for an area around the edge of the ellipse that can be clicked on.
   // If the click was outside the inner ellipse and inside the outer ellipse, return true.
-  let inner = ((x - cx) ** 2) / (rx - clickWidthX) ** 2 +
-              ((y - cy) ** 2) / (ry - clickWidthY) ** 2;
-  let outer = ((x - cx) ** 2) / (rx + clickWidthX) ** 2 +
-              ((y - cy) ** 2) / (ry + clickWidthY) ** 2;
+  const inner =
+    (x - cx) ** 2 / (rx - clickWidthX) ** 2 +
+    (y - cy) ** 2 / (ry - clickWidthY) ** 2;
+  const outer =
+    (x - cx) ** 2 / (rx + clickWidthX) ** 2 +
+    (y - cy) ** 2 / (ry + clickWidthY) ** 2;
   return inner >= 1 && outer <= 1;
 };
 
@@ -53,8 +64,8 @@ const clickedOnEllipseEdge = (x, y, cx, cy, rx, ry, clickWidthX, clickWidthY) =>
  */
 const distanceToLine = (x1, y1, x2, y2, x3, y3) => {
   // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Line_defined_by_two_points
-  let num = Math.abs((y2 - y1) * x3 - (x2 - x1) * y3 + x2 * y1 - y2 * x1);
-  let denom = getDistance(x1, y1, x2, y2);
+  const num = Math.abs((y2 - y1) * x3 - (x2 - x1) * y3 + x2 * y1 - y2 * x1);
+  const denom = getDistance(x1, y1, x2, y2);
   return num / denom;
 };
 
@@ -70,9 +81,9 @@ const distanceToLine = (x1, y1, x2, y2, x3, y3) => {
  */
 const projection = (ax, ay, bx, by, cx, cy) => {
   // https://en.wikipedia.org/wiki/Vector_projection#Vector_projection_2
-  let ab = [bx - ax, by - ay];
-  let ac = [cx - ax, cy - ay];
-  let scalar = dotProduct(ab, ac) / dotProduct(ab, ab);
+  const ab = [bx - ax, by - ay];
+  const ac = [cx - ax, cy - ay];
+  const scalar = dotProduct(ab, ac) / dotProduct(ab, ab);
   return [ax + scalar * ab[0], ay + scalar * ab[1]];
 };
 
@@ -99,8 +110,12 @@ const dotProduct = (a, b) => {
  * @returns {Boolean} whether the click was on the point
  */
 const clickedOnPoint = (x, y, pointX, pointY, radiusX, radiusY) => {
-  return x >= pointX - radiusX && x <= pointX + radiusX &&
-         y >= pointY - radiusY && y <= pointY + radiusY;
+  return (
+    x >= pointX - radiusX &&
+    x <= pointX + radiusX &&
+    y >= pointY - radiusY &&
+    y <= pointY + radiusY
+  );
 };
 
 const roundTo = (value, exp) => {
@@ -116,10 +131,10 @@ const roundTo = (value, exp) => {
   }
   // Shift
   value = value.toString().split("e");
-  value = Math.round(+(value[0] + "e" + (value[1] ? (+value[1] - exp) : -exp)));
+  value = Math.round(+(value[0] + "e" + (value[1] ? +value[1] - exp : -exp)));
   // Shift back
   value = value.toString().split("e");
-  return +(value[0] + "e" + (value[1] ? (+value[1] + exp) : exp));
+  return +(value[0] + "e" + (value[1] ? +value[1] + exp : exp));
 };
 
 exports.getDistance = getDistance;

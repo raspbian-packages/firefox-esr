@@ -7,12 +7,25 @@
 const { Component } = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
-const { getSourceNames, parseURL, isScratchpadScheme, getSourceMappedFile } =
-  require("devtools/client/shared/source-utils");
+const {
+  getUnicodeUrl,
+  getUnicodeUrlPath,
+  getUnicodeHostname,
+} = require("devtools/client/shared/unicode-url");
+const {
+  getSourceNames,
+  parseURL,
+  isScratchpadScheme,
+  getSourceMappedFile,
+} = require("devtools/client/shared/source-utils");
 const { LocalizationHelper } = require("devtools/shared/l10n");
 
-const l10n = new LocalizationHelper("devtools/client/locales/components.properties");
-const webl10n = new LocalizationHelper("devtools/client/locales/webconsole.properties");
+const l10n = new LocalizationHelper(
+  "devtools/client/locales/components.properties"
+);
+const webl10n = new LocalizationHelper(
+  "devtools/client/locales/webconsole.properties"
+);
 
 class Frame extends Component {
   static get propTypes() {
@@ -21,8 +34,8 @@ class Frame extends Component {
       frame: PropTypes.shape({
         functionDisplayName: PropTypes.string,
         source: PropTypes.string.isRequired,
-        line: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ]),
-        column: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ]),
+        line: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        column: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       }).isRequired,
       // Clicking on the frame link -- probably should link to the debugger.
       onClick: PropTypes.func,
@@ -60,21 +73,23 @@ class Frame extends Component {
   componentWillMount() {
     if (this.props.sourceMapService) {
       const { source, line, column } = this.props.frame;
-      this.props.sourceMapService.subscribe(source, line, column,
-                                            this._locationChanged);
+      this.unsubscribeSourceMapService = this.props.sourceMapService.subscribe(
+        source,
+        line,
+        column,
+        this._locationChanged
+      );
     }
   }
 
   componentWillUnmount() {
-    if (this.props.sourceMapService) {
-      const { source, line, column } = this.props.frame;
-      this.props.sourceMapService.unsubscribe(source, line, column,
-                                              this._locationChanged);
+    if (typeof this.unsubscribeSourceMapService === "function") {
+      this.unsubscribeSourceMapService();
     }
   }
 
   _locationChanged(isSourceMapped, url, line, column) {
-    let newState = {
+    const newState = {
       isSourceMapped,
     };
     if (isSourceMapped) {
@@ -96,24 +111,25 @@ class Frame extends Component {
    * @returns {{url: *, line: *, column: *, functionDisplayName: *}}
    */
   getSourceForClick(frame) {
-    const { source, line, column } = frame;
+    const { source, line, column, sourceId } = frame;
     return {
       url: source,
       line,
       column,
       functionDisplayName: this.props.frame.functionDisplayName,
+      sourceId,
     };
   }
 
   render() {
     let frame, isSourceMapped;
-    let {
+    const {
       onClick,
       showFunctionName,
       showAnonymousFunctionName,
       showHost,
       showEmptyPathAsHost,
-      showFullSourceUrl
+      showFullSourceUrl,
     } = this.props;
 
     if (this.state && this.state.isSourceMapped && this.state.frame) {
@@ -123,28 +139,31 @@ class Frame extends Component {
       frame = this.props.frame;
     }
 
-    // If the resource was loaded by browser-loader.js, `frame.source` looks like:
-    // resource://devtools/shared/base-loader.js -> resource://devtools/path/to/file.js .
-    // What's needed is only the last part after " -> ".
-    let source = frame.source
-      ? String(frame.source).split(" -> ").pop()
-      : "";
-    let line = frame.line != void 0 ? Number(frame.line) : null;
-    let column = frame.column != void 0 ? Number(frame.column) : null;
+    const source = frame.source || "";
+    const sourceId = frame.sourceId;
+    const line = frame.line != void 0 ? Number(frame.line) : null;
+    const column = frame.column != void 0 ? Number(frame.column) : null;
 
     const { short, long, host } = getSourceNames(source);
+    const unicodeShort = getUnicodeUrlPath(short);
+    const unicodeLong = getUnicodeUrl(long);
+    const unicodeHost = host ? getUnicodeHostname(host) : "";
+
     // Reparse the URL to determine if we should link this; `getSourceNames`
     // has already cached this indirectly. We don't want to attempt to
     // link to "self-hosted" and "(unknown)". However, we do want to link
     // to Scratchpad URIs.
     // Source mapped sources might not necessary linkable, but they
     // are still valid in the debugger.
-    const isLinkable = !!(isScratchpadScheme(source) || parseURL(source))
-      || isSourceMapped;
+    // If we have a source ID then we can show the source in the debugger.
+    const isLinkable =
+      !!(isScratchpadScheme(source) || parseURL(source)) ||
+      isSourceMapped ||
+      sourceId;
     const elements = [];
     const sourceElements = [];
     let sourceEl;
-    let tooltip = long;
+    let tooltip = unicodeLong;
 
     // Exclude all falsy values, including `0`, as line numbers start with 1.
     if (line) {
@@ -155,7 +174,7 @@ class Frame extends Component {
       }
     }
 
-    let attributes = {
+    const attributes = {
       "data-url": long,
       className: "frame-link",
     };
@@ -168,26 +187,37 @@ class Frame extends Component {
 
       if (functionDisplayName) {
         elements.push(
-          dom.span({
-            key: "function-display-name",
-            className: "frame-link-function-display-name",
-          }, functionDisplayName),
+          dom.span(
+            {
+              key: "function-display-name",
+              className: "frame-link-function-display-name",
+            },
+            functionDisplayName
+          ),
           " "
         );
       }
     }
 
-    let displaySource = showFullSourceUrl ? long : short;
+    let displaySource = showFullSourceUrl ? unicodeLong : unicodeShort;
     if (isSourceMapped) {
       displaySource = getSourceMappedFile(displaySource);
-    } else if (showEmptyPathAsHost && (displaySource === "" || displaySource === "/")) {
+    } else if (
+      showEmptyPathAsHost &&
+      (displaySource === "" || displaySource === "/")
+    ) {
       displaySource = host;
     }
 
-    sourceElements.push(dom.span({
-      key: "filename",
-      className: "frame-link-filename",
-    }, displaySource));
+    sourceElements.push(
+      dom.span(
+        {
+          key: "filename",
+          className: "frame-link-filename",
+        },
+        displaySource
+      )
+    );
 
     // If we have a line number > 0.
     if (line) {
@@ -202,48 +232,68 @@ class Frame extends Component {
         attributes["data-column"] = column;
       }
 
-      sourceElements.push(dom.span({
-        key: "line",
-        className: "frame-link-line"
-      }, lineInfo));
+      sourceElements.push(
+        dom.span(
+          {
+            key: "line",
+            className: "frame-link-line",
+          },
+          lineInfo
+        )
+      );
     }
 
     // Inner el is useful for achieving ellipsis on the left and correct LTR/RTL
     // ordering. See CSS styles for frame-link-source-[inner] and bug 1290056.
-    let sourceInnerEl = dom.span({
-      key: "source-inner",
-      className: "frame-link-source-inner",
-      title: isLinkable ?
-        l10n.getFormatStr("frame.viewsourceindebugger", tooltip) : tooltip,
-    }, sourceElements);
+    const sourceInnerEl = dom.span(
+      {
+        key: "source-inner",
+        className: "frame-link-source-inner",
+        title: isLinkable
+          ? l10n.getFormatStr("frame.viewsourceindebugger", tooltip)
+          : tooltip,
+      },
+      sourceElements
+    );
 
     // If source is not a URL (self-hosted, eval, etc.), don't make
     // it an anchor link, as we can't link to it.
     if (isLinkable) {
-      sourceEl = dom.a({
-        onClick: e => {
-          e.preventDefault();
-          e.stopPropagation();
-          onClick(this.getSourceForClick({...frame, source}));
+      sourceEl = dom.a(
+        {
+          onClick: e => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick(this.getSourceForClick({ ...frame, source, sourceId }));
+          },
+          href: source,
+          className: "frame-link-source",
+          draggable: false,
         },
-        href: source,
-        className: "frame-link-source",
-        draggable: false,
-      }, sourceInnerEl);
+        sourceInnerEl
+      );
     } else {
-      sourceEl = dom.span({
-        key: "source",
-        className: "frame-link-source",
-      }, sourceInnerEl);
+      sourceEl = dom.span(
+        {
+          key: "source",
+          className: "frame-link-source",
+        },
+        sourceInnerEl
+      );
     }
     elements.push(sourceEl);
 
-    if (showHost && host) {
+    if (showHost && unicodeHost) {
       elements.push(" ");
-      elements.push(dom.span({
-        key: "host",
-        className: "frame-link-host",
-      }, host));
+      elements.push(
+        dom.span(
+          {
+            key: "host",
+            className: "frame-link-host",
+          },
+          unicodeHost
+        )
+      );
     }
 
     return dom.span(attributes, ...elements);

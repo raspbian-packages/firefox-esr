@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 40; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 40; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -202,9 +202,14 @@ struct NativeIMEContext final {
   // Process ID of the origin of mNativeIMEContext.
   uint64_t mOriginProcessID;
 
-  NativeIMEContext() { Init(nullptr); }
+  NativeIMEContext() : mRawNativeIMEContext(0), mOriginProcessID(0) {
+    Init(nullptr);
+  }
 
-  explicit NativeIMEContext(nsIWidget* aWidget) { Init(aWidget); }
+  explicit NativeIMEContext(nsIWidget* aWidget)
+      : mRawNativeIMEContext(0), mOriginProcessID(0) {
+    Init(aWidget);
+  }
 
   bool IsValid() const {
     return mRawNativeIMEContext &&
@@ -237,11 +242,9 @@ struct InputContext final {
   // of its members need to be deleted at XPCOM shutdown.  Otherwise, it's
   // detected as memory leak.
   void ShutDown() {
-    // The buffer for nsString will be released with a call of SetCapacity(0).
-    // Truncate() isn't enough because it just sets length to 0.
-    mHTMLInputType.SetCapacity(0);
-    mHTMLInputInputmode.SetCapacity(0);
-    mActionHint.SetCapacity(0);
+    mHTMLInputType.Truncate();
+    mHTMLInputInputmode.Truncate();
+    mActionHint.Truncate();
   }
 
   bool IsPasswordEditor() const {
@@ -447,7 +450,7 @@ enum IMEMessage : IMEMessageType {
 const char* ToChar(IMEMessage aIMEMessage);
 
 struct IMENotification final {
-  IMENotification() : mMessage(NOTIFY_IME_OF_NOTHING) {}
+  IMENotification() : mMessage(NOTIFY_IME_OF_NOTHING), mSelectionChangeData() {}
 
   IMENotification(const IMENotification& aOther)
       : mMessage(NOTIFY_IME_OF_NOTHING) {
@@ -456,7 +459,8 @@ struct IMENotification final {
 
   ~IMENotification() { Clear(); }
 
-  MOZ_IMPLICIT IMENotification(IMEMessage aMessage) : mMessage(aMessage) {
+  MOZ_IMPLICIT IMENotification(IMEMessage aMessage)
+      : mMessage(aMessage), mSelectionChangeData() {
     switch (aMessage) {
       case NOTIFY_IME_OF_SELECTION_CHANGE:
         mSelectionChangeData.mString = new nsString();

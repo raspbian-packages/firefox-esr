@@ -19,10 +19,10 @@
 #include "nsIDTD.h"
 #include "mozilla/dom/FromParser.h"
 
-class nsIDocument;
 class nsIURI;
 class nsIContent;
 class nsIParser;
+class nsTextNode;
 
 namespace mozilla {
 namespace dom {
@@ -49,8 +49,8 @@ class nsXMLContentSink : public nsContentSink,
  public:
   nsXMLContentSink();
 
-  nsresult Init(nsIDocument* aDoc, nsIURI* aURL, nsISupports* aContainer,
-                nsIChannel* aChannel);
+  nsresult Init(mozilla::dom::Document* aDoc, nsIURI* aURL,
+                nsISupports* aContainer, nsIChannel* aChannel);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -67,6 +67,7 @@ class nsXMLContentSink : public nsContentSink,
   NS_IMETHOD WillInterrupt(void) override;
   NS_IMETHOD WillResume(void) override;
   NS_IMETHOD SetParser(nsParserBase* aParser) override;
+  virtual void InitialDocumentTranslationCompleted() override;
   virtual void FlushPendingNotifications(mozilla::FlushType aType) override;
   virtual void SetDocumentCharset(NotNull<const Encoding*> aEncoding) override;
   virtual nsISupports* GetTarget() override;
@@ -74,9 +75,10 @@ class nsXMLContentSink : public nsContentSink,
   virtual void ContinueInterruptedParsingAsync() override;
 
   // nsITransformObserver
-  NS_IMETHOD OnDocumentCreated(nsIDocument* aResultDocument) override;
+  NS_IMETHOD OnDocumentCreated(
+      mozilla::dom::Document* aResultDocument) override;
   NS_IMETHOD OnTransformDone(nsresult aResult,
-                             nsIDocument* aResultDocument) override;
+                             mozilla::dom::Document* aResultDocument) override;
 
   // nsICSSLoaderObserver
   NS_IMETHOD StyleSheetLoaded(mozilla::StyleSheet* aSheet, bool aWasAlternate,
@@ -113,8 +115,8 @@ class nsXMLContentSink : public nsContentSink,
   virtual bool NotifyForDocElement() { return true; }
   virtual nsresult CreateElement(const char16_t** aAtts, uint32_t aAttsCount,
                                  mozilla::dom::NodeInfo* aNodeInfo,
-                                 uint32_t aLineNumber, nsIContent** aResult,
-                                 bool* aAppendContent,
+                                 uint32_t aLineNumber, uint32_t aColumnNumber,
+                                 nsIContent** aResult, bool* aAppendContent,
                                  mozilla::dom::FromParser aFromParser);
 
   // aParent is allowed to be null here if this is the root content
@@ -169,7 +171,7 @@ class nsXMLContentSink : public nsContentSink,
 
   nsresult HandleStartElement(const char16_t* aName, const char16_t** aAtts,
                               uint32_t aAttsCount, uint32_t aLineNumber,
-                              bool aInterruptable);
+                              uint32_t aColumnNumber, bool aInterruptable);
   nsresult HandleEndElement(const char16_t* aName, bool aInterruptable);
   nsresult HandleCharacterData(const char16_t* aData, uint32_t aLength,
                                bool aInterruptable);
@@ -183,7 +185,7 @@ class nsXMLContentSink : public nsContentSink,
   int32_t mTextLength;
 
   int32_t mNotifyLevel;
-  nsCOMPtr<nsIContent> mLastTextNode;
+  RefPtr<nsTextNode> mLastTextNode;
 
   uint8_t mPrettyPrintXML : 1;
   uint8_t mPrettyPrintHasSpecialRoot : 1;

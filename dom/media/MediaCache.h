@@ -408,7 +408,8 @@ class MediaCacheStream : public DecoderDoctorLifeLogger<MediaCacheStream> {
 
    private:
     struct Entry : public nsUint32HashKey {
-      explicit Entry(KeyTypePointer aKey) : nsUint32HashKey(aKey) {}
+      explicit Entry(KeyTypePointer aKey)
+          : nsUint32HashKey(aKey), mNextBlock(0), mPrevBlock(0) {}
       Entry(const Entry& toCopy)
           : nsUint32HashKey(&toCopy.GetKey()),
             mNextBlock(toCopy.mNextBlock),

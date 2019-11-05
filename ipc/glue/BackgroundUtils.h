@@ -47,15 +47,15 @@ struct ParamTraits<mozilla::OriginAttributes>
 
 namespace mozilla {
 namespace net {
-class OptionalLoadInfoArgs;
+class ChildLoadInfoForwarderArgs;
+class LoadInfoArgs;
 class ParentLoadInfoForwarderArgs;
 class RedirectHistoryEntryInfo;
 }  // namespace net
 
-using namespace mozilla::net;
-
 namespace ipc {
 
+class ContentSecurityPolicy;
 class PrincipalInfo;
 
 /**
@@ -67,12 +67,21 @@ already_AddRefed<nsIPrincipal> PrincipalInfoToPrincipal(
     const PrincipalInfo& aPrincipalInfo, nsresult* aOptionalResult = nullptr);
 
 /**
+ * Populate an array of ContentSecurityPolicy objects from a CSP object.
+ *
+ * MUST be called on the main thread only.
+ */
+nsresult PopulateContentSecurityPolicies(
+    nsIContentSecurityPolicy* aCSP, nsTArray<ContentSecurityPolicy>& aPolicies);
+
+/**
  * Convert an nsIPrincipal to a PrincipalInfo.
  *
  * MUST be called on the main thread only.
  */
 nsresult PrincipalToPrincipalInfo(nsIPrincipal* aPrincipal,
-                                  PrincipalInfo* aPrincipalInfo);
+                                  PrincipalInfo* aPrincipalInfo,
+                                  bool aSkipBaseDomain = false);
 
 /**
  * Return true if this PrincipalInfo is a content principal and it has
@@ -85,26 +94,28 @@ bool IsPincipalInfoPrivate(const PrincipalInfo& aPrincipalInfo);
  */
 
 already_AddRefed<nsIRedirectHistoryEntry> RHEntryInfoToRHEntry(
-    const RedirectHistoryEntryInfo& aRHEntryInfo);
+    const mozilla::net::RedirectHistoryEntryInfo& aRHEntryInfo);
 
 /**
  * Convert an nsIRedirectHistoryEntry to a RedirectHistoryEntryInfo.
  */
 
-nsresult RHEntryToRHEntryInfo(nsIRedirectHistoryEntry* aRHEntry,
-                              RedirectHistoryEntryInfo* aRHEntryInfo);
+nsresult RHEntryToRHEntryInfo(
+    nsIRedirectHistoryEntry* aRHEntry,
+    mozilla::net::RedirectHistoryEntryInfo* aRHEntryInfo);
 
 /**
  * Convert a LoadInfo to LoadInfoArgs struct.
  */
-nsresult LoadInfoToLoadInfoArgs(nsILoadInfo* aLoadInfo,
-                                OptionalLoadInfoArgs* outOptionalLoadInfoArgs);
+nsresult LoadInfoToLoadInfoArgs(
+    nsILoadInfo* aLoadInfo,
+    Maybe<mozilla::net::LoadInfoArgs>* outOptionalLoadInfoArgs);
 
 /**
  * Convert LoadInfoArgs to a LoadInfo.
  */
 nsresult LoadInfoArgsToLoadInfo(
-    const OptionalLoadInfoArgs& aOptionalLoadInfoArgs,
+    const Maybe<mozilla::net::LoadInfoArgs>& aOptionalLoadInfoArgs,
     nsILoadInfo** outLoadInfo);
 
 /**
@@ -113,14 +124,30 @@ nsresult LoadInfoArgsToLoadInfo(
  */
 void LoadInfoToParentLoadInfoForwarder(
     nsILoadInfo* aLoadInfo,
-    ParentLoadInfoForwarderArgs* outLoadInfoChildForwardArgs);
+    mozilla::net::ParentLoadInfoForwarderArgs* aForwarderArgsOut);
 
 /**
  * Merges (replaces) properties of an existing LoadInfo on a child process
  * with properties carried down through ParentLoadInfoForwarderArgs.
  */
 nsresult MergeParentLoadInfoForwarder(
-    ParentLoadInfoForwarderArgs const& outLoadInfoChildForwardArgs,
+    mozilla::net::ParentLoadInfoForwarderArgs const& aForwarderArgs,
+    nsILoadInfo* aLoadInfo);
+
+/**
+ * Fills ChildLoadInfoForwarderArgs with properties we want to carry to the
+ * parent process after the initial channel creation.
+ */
+void LoadInfoToChildLoadInfoForwarder(
+    nsILoadInfo* aLoadInfo,
+    mozilla::net::ChildLoadInfoForwarderArgs* aForwarderArgsOut);
+
+/**
+ * Merges (replaces) properties of an existing LoadInfo on the parent process
+ * with properties contained in a ChildLoadInfoForwarderArgs.
+ */
+nsresult MergeChildLoadInfoForwarder(
+    const mozilla::net::ChildLoadInfoForwarderArgs& aForwardArgs,
     nsILoadInfo* aLoadInfo);
 
 }  // namespace ipc

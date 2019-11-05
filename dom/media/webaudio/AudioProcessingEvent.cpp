@@ -30,7 +30,7 @@ AudioProcessingEvent::~AudioProcessingEvent() {}
 
 JSObject* AudioProcessingEvent::WrapObjectInternal(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return AudioProcessingEventBinding::Wrap(aCx, this, aGivenProto);
+  return AudioProcessingEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<AudioBuffer> AudioProcessingEvent::LazilyCreateBuffer(

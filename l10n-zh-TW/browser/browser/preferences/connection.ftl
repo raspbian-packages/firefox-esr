@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = 使用 SOCKS v5 時也代理 DNS 查詢
     .accesskey = d
+connection-dns-over-https =
+    .label = 開啟 DNS over HTTPS
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = 使用預設值（{ $url }）
+    .accesskey = Ｕ
+    .tooltiptext = 使用預設網址來解析 DNS over HTTPS
+connection-dns-over-https-url-resolver = 使用供應商
+    .accesskey = P
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name }（預設）
+    .tooltiptext = 使用預設網址來解析 DNS over HTTPS
+connection-dns-over-https-url-custom =
+    .label = 自訂
+    .accesskey = C
+    .tooltiptext = 輸入您想要用來解析 DNS over HTTPS 的網址
+connection-dns-over-https-custom-label = 自訂

@@ -3,16 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
-
-const nsIPK11TokenDB = Ci.nsIPK11TokenDB;
-const nsPKCS11ModuleDB = "@mozilla.org/security/pkcs11moduledb;1";
-const nsIPKCS11ModuleDB = Ci.nsIPKCS11ModuleDB;
-const nsIPKCS11Slot = Ci.nsIPKCS11Slot;
-const nsIPK11Token = Ci.nsIPK11Token;
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 var params;
-var tokenName = "";
+var token;
 var pw1;
 
 function doPrompt(msg) {
@@ -21,73 +15,51 @@ function doPrompt(msg) {
 
 function onLoad() {
   document.documentElement.getButton("accept").disabled = true;
+  document.addEventListener("dialogaccept", setPassword);
 
   pw1 = document.getElementById("pw1");
   params = window.arguments[0].QueryInterface(Ci.nsIDialogParamBlock);
-  tokenName = params.GetString(1);
+  token = params.objects.GetElementAt(0).QueryInterface(Ci.nsIPK11Token);
 
-  document.getElementById("tokenName").setAttribute("value", tokenName);
+  document.getElementById("tokenName").setAttribute("value", token.name);
 
   process();
 }
 
 function process() {
   let bundle = document.getElementById("pippki_bundle");
-
+  let oldpwbox = document.getElementById("oldpw");
+  let msgBox = document.getElementById("message");
   // If the token is unitialized, don't use the old password box.
   // Otherwise, do.
+  if ((token.needsLogin() && token.needsUserInit) || !token.needsLogin()) {
+    oldpwbox.setAttribute("hidden", "true");
+    msgBox.setAttribute("value", bundle.getString("password_not_set"));
+    msgBox.setAttribute("hidden", "false");
 
-  let tokenDB = Cc["@mozilla.org/security/pk11tokendb;1"]
-                  .getService(Ci.nsIPK11TokenDB);
-  let token;
-  if (tokenName.length > 0) {
-    token = tokenDB.findTokenByName(tokenName);
-  } else {
-    token = tokenDB.getInternalKeyToken();
-  }
-  if (token) {
-    let oldpwbox = document.getElementById("oldpw");
-    let msgBox = document.getElementById("message");
-    if ((token.needsLogin() && token.needsUserInit) || !token.needsLogin()) {
-      oldpwbox.setAttribute("hidden", "true");
-      msgBox.setAttribute("value", bundle.getString("password_not_set"));
-      msgBox.setAttribute("hidden", "false");
-
-      if (!token.needsLogin()) {
-        oldpwbox.setAttribute("inited", "empty");
-      } else {
-        oldpwbox.setAttribute("inited", "true");
-      }
-
-      // Select first password field
-      document.getElementById("pw1").focus();
+    if (!token.needsLogin()) {
+      oldpwbox.setAttribute("inited", "empty");
     } else {
-      // Select old password field
-      oldpwbox.setAttribute("hidden", "false");
-      msgBox.setAttribute("hidden", "true");
-      oldpwbox.setAttribute("inited", "false");
-      oldpwbox.focus();
+      oldpwbox.setAttribute("inited", "true");
     }
+
+    // Select first password field
+    document.getElementById("pw1").focus();
+  } else {
+    // Select old password field
+    oldpwbox.setAttribute("hidden", "false");
+    msgBox.setAttribute("hidden", "true");
+    oldpwbox.setAttribute("inited", "false");
+    oldpwbox.focus();
   }
 
-  if (params) {
-    // Return value 0 means "canceled"
-    params.SetInt(1, 0);
-  }
+  // Return value 0 means "canceled"
+  params.SetInt(1, 0);
 
   checkPasswords();
 }
 
-function setPassword() {
-  let tokenDB = Cc["@mozilla.org/security/pk11tokendb;1"]
-                  .getService(Ci.nsIPK11TokenDB);
-  let token;
-  if (tokenName.length > 0) {
-    token = tokenDB.findTokenByName(tokenName);
-  } else {
-    token = tokenDB.getInternalKeyToken();
-  }
-
+function setPassword(event) {
   var oldpwbox = document.getElementById("oldpw");
   var initpw = oldpwbox.getAttribute("inited");
   var bundle = document.getElementById("pippki_bundle");
@@ -111,7 +83,9 @@ function setPassword() {
           // checkPasswords() should have prevented this path from being reached.
         } else {
           if (pw1.value == "") {
-            var secmoddb = Cc[nsPKCS11ModuleDB].getService(nsIPKCS11ModuleDB);
+            var secmoddb = Cc[
+              "@mozilla.org/security/pkcs11moduledb;1"
+            ].getService(Ci.nsIPKCS11ModuleDB);
             if (secmoddb.isFIPSEnabled) {
               // empty passwords are not allowed in FIPS mode
               doPrompt(bundle.getString("pw_change2empty_in_fips_mode"));
@@ -121,9 +95,11 @@ function setPassword() {
           if (passok) {
             token.changePassword(oldpw, pw1.value);
             if (pw1.value == "") {
-              doPrompt(bundle.getString("pw_erased_ok")
-                    + " "
-                    + bundle.getString("pw_empty_warning"));
+              doPrompt(
+                bundle.getString("pw_erased_ok") +
+                  " " +
+                  bundle.getString("pw_empty_warning")
+              );
             } else {
               doPrompt(bundle.getString("pw_change_ok"));
             }
@@ -141,8 +117,11 @@ function setPassword() {
   } else {
     token.initPassword(pw1.value);
     if (pw1.value == "") {
-      doPrompt(bundle.getString("pw_not_wanted") + " " +
-               bundle.getString("pw_empty_warning"));
+      doPrompt(
+        bundle.getString("pw_not_wanted") +
+          " " +
+          bundle.getString("pw_empty_warning")
+      );
     }
     success = true;
   }
@@ -153,7 +132,9 @@ function setPassword() {
   }
 
   // Terminate dialog
-  return success;
+  if (!success) {
+    event.preventDefault();
+  }
 }
 
 function setPasswordStrength() {
@@ -188,8 +169,8 @@ function setPasswordStrength() {
     upper = 3;
   }
 
-  let pwstrength = (pwlength * 10) - 20 + (numeric * 10) + (numsymbols * 15) +
-                   (upper * 10);
+  let pwstrength =
+    pwlength * 10 - 20 + numeric * 10 + numsymbols * 15 + upper * 10;
 
   // Clamp strength to [0, 100].
   if (pwstrength < 0) {
@@ -221,5 +202,5 @@ function checkPasswords() {
     }
   }
 
-  document.documentElement.getButton("accept").disabled = (pw1 != pw2);
+  document.documentElement.getButton("accept").disabled = pw1 != pw2;
 }

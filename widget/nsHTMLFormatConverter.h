@@ -23,9 +23,6 @@ class nsHTMLFormatConverter : public nsIFormatConverter {
  protected:
   virtual ~nsHTMLFormatConverter();
 
-  nsresult AddFlavorToList(nsCOMPtr<nsIMutableArray>& inList,
-                           const char* inFlavor);
-
   NS_IMETHOD ConvertFromHTMLToUnicode(const nsAutoString& aFromStr,
                                       nsAutoString& aToStr);
   NS_IMETHOD ConvertFromHTMLToAOLMail(const nsAutoString& aFromStr,

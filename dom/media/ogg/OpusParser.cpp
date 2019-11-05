@@ -15,6 +15,8 @@ extern "C" {
 #include "opus/opus_multistream.h"
 }
 
+#include <cmath>
+
 namespace mozilla {
 
 extern LazyLogModule gMediaDecoderLog;
@@ -32,7 +34,8 @@ OpusParser::OpusParser()
 #endif
       mChannelMapping(0),
       mStreams(0),
-      mCoupledStreams(0) {
+      mCoupledStreams(0),
+      mPrevPacketGranulepos(0) {
 }
 
 bool OpusParser::DecodeHeader(unsigned char* aData, size_t aLength) {
@@ -81,20 +84,27 @@ bool OpusParser::DecodeHeader(unsigned char* aData, size_t aLength) {
     mCoupledStreams = mChannels - 1;
     mMappingTable[0] = 0;
     mMappingTable[1] = 1;
-  } else if (mChannelMapping == 1 || mChannelMapping == 255) {
-    // Currently only up to 8 channels are defined for mapping family 1 and we
-    // only supports only up to 8 channels for mapping family 255.
-    if (mChannels > 8) {
+  } else if (mChannelMapping == 1 || mChannelMapping == 2 ||
+             mChannelMapping == 255) {
+    // Currently only up to 8 channels are defined for mapping family 1
+    if (mChannelMapping == 1 && mChannels > 8) {
       OPUS_LOG(LogLevel::Debug, ("Invalid Opus file: too many channels (%d) for"
                                  " mapping family 1.",
                                  mChannels));
       return false;
     }
+    if (mChannelMapping == 2) {
+      if (!IsValidMapping2ChannelsCount(mChannels)) {
+        return false;
+      }
+    }
     if (aLength > static_cast<unsigned>(20 + mChannels)) {
       mStreams = aData[19];
       mCoupledStreams = aData[20];
       int i;
-      for (i = 0; i < mChannels; i++) mMappingTable[i] = aData[21 + i];
+      for (i = 0; i < mChannels; i++) {
+        mMappingTable[i] = aData[21 + i];
+      }
     } else {
       OPUS_LOG(LogLevel::Debug, ("Invalid Opus file: channel mapping %d,"
                                  " but no channel mapping table",
@@ -179,6 +189,27 @@ bool OpusParser::DecodeTags(unsigned char* aData, size_t aLength) {
   }
 #endif
   return true;
+}
+
+/* static */
+bool OpusParser::IsValidMapping2ChannelsCount(uint8_t aChannels) {
+  // https://tools.ietf.org/html/draft-ietf-codec-ambisonics-08#page-4
+  // For both channel mapping family 2 and family 3, the allowed numbers
+  // of channels: (1 + n)^2 + 2j for n = 0, 1, ..., 14 and j = 0 or 1,
+  // where n denotes the (highest) ambisonic order and j denotes whether
+  // or not there is a separate non-diegetic stereo stream Explicitly the
+  // allowed number of channels are 1, 3, 4, 6, 9, 11, 16, 18, 25, 27, 36,
+  // 38, 49, 51, 64, 66, 81, 83, 100, 102, 121, 123, 144, 146, 169, 171,
+  // 196, 198, 225, and 227.
+
+  // We use the property that int(sqrt(n)) == int(sqrt(n+2)) for n != 3
+  // which is handled by the test n^2 + 2 != channel
+  if (aChannels < 1 || aChannels > 227) {
+    return false;
+  }
+  double val = sqrt(aChannels);
+  int32_t valInt = int32_t(val);
+  return val == valInt || valInt * valInt + 2 == aChannels;
 }
 
 }  // namespace mozilla

@@ -11,12 +11,13 @@
  */
 
 /*
- * Created on Wed Nov  1 19:09:25 2017 from UCD data files with version info:
+ * Created on Fri Apr 12 13:11:07 2019 from UCD data files with version info:
  *
 
 # Unicode Character Database
-# Date: 2017-06-18, 23:32:00 GMT [KW]
-# © 2017 Unicode®, Inc.
+# Date: 2019-03-05, 22:57:00 GMT [KW]
+# © 2019 Unicode®, Inc.
+# Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # For documentation, see the following:
@@ -24,17 +25,17 @@
 # UAX #38, "Unicode Han Database (Unihan)"
 # UAX #44, "Unicode Character Database."
 #
-# The UAXes can be accessed at http://www.unicode.org/versions/Unicode10.0.0/
+# The UAXes can be accessed at http://www.unicode.org/versions/Unicode12.0.0/
 
-This directory contains the final data files
-for the Unicode Character Database, for Version 10.0.0 of the Unicode Standard.
+This directory contains the preliminary data files under development
+for the Unicode Character Database, for Version 12.1.0 of the Unicode Standard.
 
 # IdentifierStatus.txt
-# Date: 2017-04-08, 16:13:41 GMT
+# Date: 2019-01-30, 12:52:06 GMT
 
 #
 # Unihan_Variants.txt
-# Date: 2017-05-14 07:01:48 GMT [JHJ]
+# Date: 2018-11-09 21:36:19 GMT [JHJ]
 
 # VerticalOrientation-17.txt
 # Date: 2016-10-20, 07:00:00 GMT [EM, KI, LI]
@@ -46,8 +47,6 @@ for the Unicode Character Database, for Version 10.0.0 of the Unicode Standard.
 #ifndef NS_UNICODE_SCRIPT_CODES
 #define NS_UNICODE_SCRIPT_CODES
 
-#pragma pack(1)
-
 
 struct nsCharProps2 {
   // Currently only 4 bits are defined here, so 4 more could be added without
@@ -56,8 +55,6 @@ struct nsCharProps2 {
   unsigned char mVertOrient:2;
   unsigned char mIdType:2;
 };
-
-#pragma pack()
 
 namespace mozilla {
 namespace unicode {
@@ -240,8 +237,19 @@ enum class Script : int16_t {
   MASARAM_GONDI = 175,
   SOYOMBO = 176,
   ZANABAZAR_SQUARE = 177,
+  DOGRA = 178,
+  GUNJALA_GONDI = 179,
+  MAKASAR = 180,
+  MEDEFAIDRIN = 181,
+  HANIFI_ROHINGYA = 182,
+  SOGDIAN = 183,
+  OLD_SOGDIAN = 184,
+  ELYMAIC = 185,
+  NYIAKENG_PUACHUE_HMONG = 186,
+  NANDINAGARI = 187,
+  WANCHO = 188,
 
-  NUM_SCRIPT_CODES = 178,
+  NUM_SCRIPT_CODES = 189,
 
   INVALID = -1
 };

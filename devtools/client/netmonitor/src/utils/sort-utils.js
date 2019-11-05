@@ -13,18 +13,30 @@ function sortObjectKeys(object) {
   if (object == null) {
     return null;
   }
-  return Object.keys(object).sort(function (left, right) {
-    return left.toLowerCase().localeCompare(right.toLowerCase());
-  }).reduce((acc, key) => {
-    if (typeof object[key] === "object") {
-      acc[key] = sortObjectKeys(object[key]);
-    } else {
-      acc[key] = object[key];
+
+  if (Array.isArray(object)) {
+    for (let i = 0; i < object.length; i++) {
+      if (typeof object[i] === "object") {
+        object[i] = sortObjectKeys(object[i]);
+      }
     }
-    return acc;
-  }, {});
+    return object;
+  }
+
+  return Object.keys(object)
+    .sort(function(left, right) {
+      return left.toLowerCase().localeCompare(right.toLowerCase());
+    })
+    .reduce((acc, key) => {
+      if (typeof object[key] === "object") {
+        acc[key] = sortObjectKeys(object[key]);
+      } else {
+        acc[key] = object[key];
+      }
+      return acc;
+    }, {});
 }
 
 module.exports = {
-  sortObjectKeys
+  sortObjectKeys,
 };

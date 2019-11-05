@@ -69,7 +69,7 @@ PresentationSessionTransportIPC::SendBinaryMsg(const nsACString& aData) {
 }
 
 NS_IMETHODIMP
-PresentationSessionTransportIPC::SendBlob(nsIDOMBlob* aBlob) { return NS_OK; }
+PresentationSessionTransportIPC::SendBlob(Blob* aBlob) { return NS_OK; }
 
 NS_IMETHODIMP
 PresentationSessionTransportIPC::Close(nsresult aReason) {

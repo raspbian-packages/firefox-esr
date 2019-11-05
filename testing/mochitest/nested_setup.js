@@ -1,26 +1,26 @@
+/* global SpecialPowers */
 
-var gTestURL = '';
+var gTestURL = "";
 
-function addPermissions()
-{
+function addPermissions() {
   SpecialPowers.pushPermissions(
     [{ type: "browser", allow: true, context: document }],
-    addPreferences);
+    addPreferences
+  );
 }
 
-function addPreferences()
-{
+function addPreferences() {
   SpecialPowers.pushPrefEnv(
-    {"set": [["dom.mozBrowserFramesEnabled", true]]},
-    insertFrame);
+    { set: [["dom.mozBrowserFramesEnabled", true]] },
+    insertFrame
+  );
 }
 
-function insertFrame()
-{
+function insertFrame() {
   SpecialPowers.nestedFrameSetup();
 
-  var iframe = document.createElement('iframe');
-  iframe.id = 'nested-parent-frame';
+  var iframe = document.createElement("iframe");
+  iframe.id = "nested-parent-frame";
   iframe.width = "100%";
   iframe.height = "100%";
   iframe.scoring = "no";

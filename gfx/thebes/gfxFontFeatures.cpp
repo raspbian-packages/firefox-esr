@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,12 +12,11 @@ using namespace mozilla;
 gfxFontFeatureValueSet::gfxFontFeatureValueSet() : mFontFeatureValues(8) {}
 
 bool gfxFontFeatureValueSet::GetFontFeatureValuesFor(
-    const nsAString& aFamily, uint32_t aVariantProperty, const nsAString& aName,
-    nsTArray<uint32_t>& aValues) {
-  nsAutoString family(aFamily), name(aName);
+    const nsACString& aFamily, uint32_t aVariantProperty,
+    const nsAString& aName, nsTArray<uint32_t>& aValues) {
+  nsAutoCString family(aFamily);
   ToLowerCase(family);
-  ToLowerCase(name);
-  FeatureValueHashKey key(family, aVariantProperty, name);
+  FeatureValueHashKey key(family, aVariantProperty, aName);
 
   aValues.Clear();
   FeatureValueHashEntry* entry = mFontFeatureValues.GetEntry(key);
@@ -32,9 +31,9 @@ bool gfxFontFeatureValueSet::GetFontFeatureValuesFor(
 }
 
 void gfxFontFeatureValueSet::AddFontFeatureValues(
-    const nsAString& aFamily,
+    const nsACString& aFamily,
     const nsTArray<gfxFontFeatureValueSet::FeatureValues>& aValues) {
-  nsAutoString family(aFamily);
+  nsAutoCString family(aFamily);
   ToLowerCase(family);
 
   uint32_t i, numFeatureValues = aValues.Length();
@@ -51,10 +50,8 @@ void gfxFontFeatureValueSet::AddFontFeatureValues(
 }
 
 nsTArray<uint32_t>* gfxFontFeatureValueSet::AppendFeatureValueHashEntry(
-    const nsAString& aFamily, const nsAString& aName, uint32_t aAlternate) {
-  nsAutoString name(aName);
-  ToLowerCase(name);
-  FeatureValueHashKey key(aFamily, aAlternate, name);
+    const nsACString& aFamily, const nsAString& aName, uint32_t aAlternate) {
+  FeatureValueHashKey key(aFamily, aAlternate, aName);
   FeatureValueHashEntry* entry = mFontFeatureValues.PutEntry(key);
   entry->mKey = key;
   return &entry->mValues;

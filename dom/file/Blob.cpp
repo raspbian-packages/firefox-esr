@@ -13,6 +13,7 @@
 #include "nsPIDOMWindow.h"
 #include "StreamBlobImpl.h"
 #include "StringBlobImpl.h"
+#include "js/GCAPI.h"
 
 namespace mozilla {
 namespace dom {
@@ -34,8 +35,8 @@ NS_IMPL_CYCLE_COLLECTION_TRACE_END
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(Blob)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
-  NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIDOMBlob)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMBlob)
+  NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIMutable)
+  NS_INTERFACE_MAP_ENTRY_CONCRETE(Blob)
   NS_INTERFACE_MAP_ENTRY(nsIMutable)
   NS_INTERFACE_MAP_ENTRY(nsISupportsWeakReference)
 NS_INTERFACE_MAP_END
@@ -61,24 +62,28 @@ void Blob::MakeValidBlobType(nsAString& aType) {
   }
 }
 
-/* static */ Blob* Blob::Create(nsISupports* aParent, BlobImpl* aImpl) {
+/* static */
+Blob* Blob::Create(nsISupports* aParent, BlobImpl* aImpl) {
   MOZ_ASSERT(aImpl);
 
   return aImpl->IsFile() ? new File(aParent, aImpl) : new Blob(aParent, aImpl);
 }
 
-/* static */ already_AddRefed<Blob> Blob::CreateStringBlob(
-    nsISupports* aParent, const nsACString& aData,
-    const nsAString& aContentType) {
+/* static */
+already_AddRefed<Blob> Blob::CreateStringBlob(nsISupports* aParent,
+                                              const nsACString& aData,
+                                              const nsAString& aContentType) {
   RefPtr<BlobImpl> blobImpl = StringBlobImpl::Create(aData, aContentType);
   RefPtr<Blob> blob = Blob::Create(aParent, blobImpl);
   MOZ_ASSERT(!blob->mImpl->IsFile());
   return blob.forget();
 }
 
-/* static */ already_AddRefed<Blob> Blob::CreateMemoryBlob(
-    nsISupports* aParent, void* aMemoryBuffer, uint64_t aLength,
-    const nsAString& aContentType) {
+/* static */
+already_AddRefed<Blob> Blob::CreateMemoryBlob(nsISupports* aParent,
+                                              void* aMemoryBuffer,
+                                              uint64_t aLength,
+                                              const nsAString& aContentType) {
   RefPtr<Blob> blob = Blob::Create(
       aParent, new MemoryBlobImpl(aMemoryBuffer, aLength, aContentType));
   MOZ_ASSERT(!blob->mImpl->IsFile());
@@ -121,7 +126,7 @@ already_AddRefed<File> Blob::ToFile(const nsAString& aName,
   mImpl->GetType(contentType);
 
   RefPtr<MultipartBlobImpl> impl =
-      MultipartBlobImpl::Create(Move(blobImpls), aName, contentType, aRv);
+      MultipartBlobImpl::Create(std::move(blobImpls), aName, contentType, aRv);
   if (NS_WARN_IF(aRv.Failed())) {
     return nullptr;
   }
@@ -146,6 +151,10 @@ already_AddRefed<Blob> Blob::CreateSlice(uint64_t aStart, uint64_t aLength,
 uint64_t Blob::GetSize(ErrorResult& aRv) { return mImpl->GetSize(aRv); }
 
 void Blob::GetType(nsAString& aType) { mImpl->GetType(aType); }
+
+void Blob::GetBlobImplType(nsAString& aBlobImplType) {
+  mImpl->GetBlobImplType(aBlobImplType);
+}
 
 already_AddRefed<Blob> Blob::Slice(const Optional<int64_t>& aStart,
                                    const Optional<int64_t>& aEnd,
@@ -183,10 +192,11 @@ NS_IMETHODIMP
 Blob::SetMutable(bool aMutable) { return mImpl->SetMutable(aMutable); }
 
 JSObject* Blob::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return BlobBinding::Wrap(aCx, this, aGivenProto);
+  return Blob_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-/* static */ already_AddRefed<Blob> Blob::Constructor(
+/* static */
+already_AddRefed<Blob> Blob::Constructor(
     const GlobalObject& aGlobal, const Optional<Sequence<BlobPart>>& aData,
     const BlobPropertyBag& aBag, ErrorResult& aRv) {
   RefPtr<MultipartBlobImpl> impl = new MultipartBlobImpl();
@@ -220,6 +230,12 @@ void Blob::CreateInputStream(nsIInputStream** aStream, ErrorResult& aRv) {
 
 size_t BindingJSObjectMallocBytes(Blob* aBlob) {
   MOZ_ASSERT(aBlob);
+
+  // TODO: The hazard analysis currently can't see that none of the
+  // implementations of the GetAllocationSize virtual method call can GC (see
+  // bug 1531951).
+  JS::AutoSuppressGCAnalysis nogc;
+
   return aBlob->GetAllocationSize();
 }
 

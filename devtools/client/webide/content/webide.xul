@@ -24,12 +24,11 @@
         width="800" height="600"
         persist="screenX screenY width height sizemode">
 
-  <script type="application/javascript" src="chrome://global/content/globalOverlay.js"></script>
-  <script type="application/javascript" src="project-panel.js"></script>
-  <script type="application/javascript" src="runtime-panel.js"></script>
-  <script type="application/javascript" src="webide.js"></script>
-
-#include ../../../../toolkit/content/editMenuCommands.inc.xul
+  <script src="chrome://global/content/globalOverlay.js"></script>
+  <script src="project-panel.js"></script>
+  <script src="runtime-panel.js"></script>
+  <script src="webide.js"></script>
+  <script src="chrome://global/content/editMenuOverlay.js"/>
 
   <commandset id="mainCommandSet">
     <commandset id="webideCommands">
@@ -38,6 +37,7 @@
       <command id="cmd_importPackagedApp" oncommand="Cmds.importPackagedApp()" label="&projectMenu_importPackagedApp_label;"/>
       <command id="cmd_importHostedApp" oncommand="Cmds.importHostedApp()" label="&projectMenu_importHostedApp_label;"/>
       <command id="cmd_showDevicePrefs" label="&runtimeMenu_showDevicePrefs_label;" oncommand="Cmds.showDevicePrefs()"/>
+      <command id="cmd_showPerformancePanel" label="&runtimeMenu_showPerformancePanel_label;" oncommand="Cmds.showPerformancePanel()"/>
       <command id="cmd_showSettings" label="&runtimeMenu_showSettings_label;" oncommand="Cmds.showSettings()"/>
       <command id="cmd_removeProject" oncommand="Cmds.removeProject()" label="&projectMenu_remove_label;"/>
       <command id="cmd_showProjectPanel" oncommand="Cmds.showProjectPanel()"/>
@@ -57,6 +57,7 @@
     </commandset>
   </commandset>
 
+  <toolbar type="menubar">
   <menubar id="main-menubar">
     <menu id="menu-project" label="&projectMenu_label;" accesskey="&projectMenu_accesskey;">
       <menupopup id="menu-project-popup">
@@ -82,6 +83,7 @@
         <menuitem command="cmd_showRuntimeDetails" accesskey="&runtimeMenu_showDetails_accesskey;"/>
         <menuitem command="cmd_showDevicePrefs" accesskey="&runtimeMenu_showDevicePrefs_accesskey;"/>
         <menuitem command="cmd_showSettings" accesskey="&runtimeMenu_showSettings_accesskey;"/>
+        <menuitem command="cmd_showPerformancePanel" accesskey="&runtimeMenu_showPerformancePanel_accesskey;"/>
         <menuseparator/>
         <menuitem command="cmd_disconnectRuntime" accesskey="&runtimeMenu_disconnect_accesskey;"/>
       </menupopup>
@@ -97,6 +99,7 @@
     </menu>
 
   </menubar>
+  </toolbar>
 
   <keyset id="mainKeyset">
     <key key="&key_quit;" id="key_quit" command="cmd_quit" modifiers="accel"/>
@@ -120,7 +123,7 @@
         <toolbarbutton id="action-button-debug" class="action-button" command="cmd_toggleToolbox" tooltiptext="&projectMenu_debug_label;"/>
         <hbox id="action-busy" align="center">
           <html:img id="action-busy-undetermined" src="chrome://webide/skin/throbber.svg"/>
-          <progressmeter id="action-busy-determined"/>
+          <html:progress id="action-busy-determined"/>
         </hbox>
       </hbox>
 
@@ -135,7 +138,7 @@
     </vbox>
   </toolbar>
 
-  <notificationbox flex="1" id="notificationbox">
+  <vbox flex="1" id="containerbox">
     <div flex="1" id="deck-panels">
       <vbox id="project-listing-panel" class="project-listing panel-list" flex="1">
         <div id="project-listing-wrapper" class="panel-list-wrapper">
@@ -149,6 +152,7 @@
         <iframe id="deck-panel-prefs" flex="1" src="prefs.xhtml"/>
         <iframe id="deck-panel-runtimedetails" flex="1" lazysrc="runtimedetails.xhtml"/>
         <iframe id="deck-panel-devicepreferences" flex="1" lazysrc="devicepreferences.xhtml"/>
+        <iframe id="deck-panel-performance" flex="1" lazysrc="chrome://devtools/content/performance-new/index.xhtml"/>
       </deck>
       <splitter class="devtools-side-splitter" id="runtime-listing-splitter"/>
       <vbox id="runtime-listing-panel" class="runtime-listing panel-list" flex="1">
@@ -159,6 +163,6 @@
     </div>
     <splitter hidden="true" class="devtools-horizontal-splitter" orient="vertical"/>
     <!-- toolbox iframe will be inserted here -->
-  </notificationbox>
+  </vbox>
 
 </window>

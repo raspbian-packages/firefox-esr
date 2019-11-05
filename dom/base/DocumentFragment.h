@@ -10,20 +10,18 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/dom/BorrowedAttrInfo.h"
 #include "mozilla/dom/FragmentOrElement.h"
-#include "nsIDOMDocumentFragment.h"
 #include "nsStringFwd.h"
 
 class nsAtom;
-class nsIDocument;
 class nsIContent;
 
 namespace mozilla {
 namespace dom {
 
+class Document;
 class Element;
 
-class DocumentFragment : public FragmentOrElement,
-                         public nsIDOMDocumentFragment {
+class DocumentFragment : public FragmentOrElement {
  private:
   void Init() {
     MOZ_ASSERT(mNodeInfo->NodeType() == DOCUMENT_FRAGMENT_NODE &&
@@ -43,11 +41,8 @@ class DocumentFragment : public FragmentOrElement,
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(DocumentFragment, FragmentOrElement)
 
-  // interface nsIDOMDocumentFragment
-  NS_DECL_NSIDOMDOCUMENTFRAGMENT
-
-  explicit DocumentFragment(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : FragmentOrElement(aNodeInfo), mHost(nullptr) {
+  explicit DocumentFragment(already_AddRefed<dom::NodeInfo>&& aNodeInfo)
+      : FragmentOrElement(std::move(aNodeInfo)), mHost(nullptr) {
     Init();
   }
 
@@ -64,11 +59,8 @@ class DocumentFragment : public FragmentOrElement,
 
   virtual bool IsNodeOfType(uint32_t aFlags) const override;
 
-  virtual nsIDOMNode* AsDOMNode() override { return this; }
-
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override {
+  nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                      nsIContent* aBindingParent) override {
     NS_ASSERTION(false, "Trying to bind a fragment to a tree");
     return NS_ERROR_NOT_IMPLEMENTED;
   }
@@ -95,12 +87,22 @@ class DocumentFragment : public FragmentOrElement,
  protected:
   virtual ~DocumentFragment() {}
 
-  nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                 bool aPreallocateChildren) const override;
+  nsresult Clone(dom::NodeInfo* aNodeInfo, nsINode** aResult) const override;
   RefPtr<Element> mHost;
 };
 
 }  // namespace dom
 }  // namespace mozilla
+
+inline mozilla::dom::DocumentFragment* nsINode::AsDocumentFragment() {
+  MOZ_ASSERT(IsDocumentFragment());
+  return static_cast<mozilla::dom::DocumentFragment*>(this);
+}
+
+inline const mozilla::dom::DocumentFragment* nsINode::AsDocumentFragment()
+    const {
+  MOZ_ASSERT(IsDocumentFragment());
+  return static_cast<const mozilla::dom::DocumentFragment*>(this);
+}
 
 #endif  // mozilla_dom_DocumentFragment_h__

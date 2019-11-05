@@ -18,8 +18,10 @@
 <!ENTITY htmlComposeHeader.label              "HTML">
 <!ENTITY font.label                           "Písmo:">
 <!ENTITY font.accesskey                       "m">
-<!ENTITY size.label                           "Velikost:">
-<!ENTITY size.accesskey                       "V">
+<!ENTITY fontSize.label                       "Velikost:">
+<!ENTITY fontSize.accesskey                   "s">
+<!ENTITY useReaderDefaults.label              "Použít výchozí barvy čtečky">
+<!ENTITY useReaderDefaults.accesskey          "d">
 <!ENTITY fontColor.label                      "Text:">
 <!ENTITY fontColor.accesskey                  "T">
 <!ENTITY bgColor.label                        "Barva pozadí:">
@@ -54,7 +56,7 @@
 <!ENTITY directoriesNone.label                 "Žádný">
 <!ENTITY editDirectories.label                 "Upravit adresáře…">
 <!ENTITY editDirectories.accesskey             "U">
-<!ENTITY showAsDefault.label                   "Výchozí spouštěcí složka v okně kontaktů:">
+<!ENTITY showAsDefault.label                   "Výchozí počáteční složka v okně kontaktů:">
 <!ENTITY showAsDefault.accesskey               "c">
 <!ENTITY showAsDefaultLast.label               "Poslední používaná složka">
 

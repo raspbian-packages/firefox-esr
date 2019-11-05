@@ -8,6 +8,7 @@ package org.mozilla.gecko.toolbar;
 import org.mozilla.gecko.AboutPages;
 import org.mozilla.gecko.CustomEditText;
 import org.mozilla.gecko.InputMethods;
+import org.mozilla.gecko.toolbar.BrowserToolbar.CommitEventSource;
 import org.mozilla.gecko.toolbar.BrowserToolbar.OnCommitListener;
 import org.mozilla.gecko.toolbar.BrowserToolbar.OnDismissListener;
 import org.mozilla.gecko.toolbar.BrowserToolbar.OnFilterListener;
@@ -321,9 +322,18 @@ public class ToolbarEditText extends CustomEditText
 
             beginSettingAutocomplete();
 
-            // Should we force capitalisation from result
-            if (pathStart != -1) {
+            // If we're autocompleting the path part of an URL, force using the autocomplete
+            // result's capitalisation.
+            // Because replacing the text can mess up the composition spans and confuse certain
+            // IMEs, requiring further workarounds afterwards, we only do this if we actually have
+            // to fix up the capitalisation.
+            if (pathStart != -1 &&
+                    !TextUtils.regionMatches(text, pathStart,
+                            result, pathStart, autoCompleteStart - pathStart)) {
                 text.replace(pathStart, autoCompleteStart, result, pathStart, autoCompleteStart);
+                if (InputMethods.needsRestartOnReplaceRemove(mContext)) {
+                    InputMethods.restartInput(mContext, this);
+                }
             }
 
             // Replace the existing autocomplete text with new one.
@@ -473,7 +483,6 @@ public class ToolbarEditText extends CustomEditText
                     // Make the IME aware that we interrupted the setComposingText call,
                     // by having finishComposingText() send change notifications to the IME.
                     finishComposingText();
-                    setComposingRegion(composingStart, composingEnd);
                     return true;
                 }
                 return false;
@@ -490,7 +499,7 @@ public class ToolbarEditText extends CustomEditText
             @Override
             public boolean setComposingText(final CharSequence text, final int newCursorPosition) {
                 if (removeAutocompleteOnComposing(text)) {
-                    if (InputMethods.needsRemoveAutocompleteHack(mContext)) {
+                    if (InputMethods.needsRestartOnReplaceRemove(mContext)) {
                         InputMethods.restartInput(mContext, ToolbarEditText.this);
                     }
                     return false;
@@ -597,7 +606,7 @@ public class ToolbarEditText extends CustomEditText
                 final Editable content = getText();
                 if (!hasCompositionString(content)) {
                     if (mCommitListener != null) {
-                        mCommitListener.onCommit();
+                        mCommitListener.onCommit(CommitEventSource.PRE_IME_KEY_EVENT);
                     }
 
                     return true;
@@ -623,7 +632,7 @@ public class ToolbarEditText extends CustomEditText
                 }
 
                 if (mCommitListener != null) {
-                    mCommitListener.onCommit();
+                    mCommitListener.onCommit(CommitEventSource.KEY_EVENT);
                 }
 
                 return true;

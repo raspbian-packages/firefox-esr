@@ -9,7 +9,7 @@
 #include "nsImageMap.h"
 
 #include "mozilla/dom/Element.h"
-#include "mozilla/dom/Event.h"  // for nsIDOMEvent::InternalDOMEvent()
+#include "mozilla/dom/Event.h"  // for Event
 #include "mozilla/dom/HTMLAreaElement.h"
 #include "mozilla/gfx/PathHelpers.h"
 #include "mozilla/UniquePtr.h"
@@ -27,7 +27,7 @@
 #include "ImageLayers.h"
 
 #ifdef ACCESSIBILITY
-#include "nsAccessibilityService.h"
+#  include "nsAccessibilityService.h"
 #endif
 
 using namespace mozilla;
@@ -73,10 +73,8 @@ inline bool is_space(char c) {
 
 static void logMessage(nsIContent* aContent, const nsAString& aCoordsSpec,
                        int32_t aFlags, const char* aMessageName) {
-  nsIDocument* doc = aContent->OwnerDoc();
-
   nsContentUtils::ReportToConsole(
-      aFlags, NS_LITERAL_CSTRING("Layout: ImageMap"), doc,
+      aFlags, NS_LITERAL_CSTRING("Layout: ImageMap"), aContent->OwnerDoc(),
       nsContentUtils::eLAYOUT_PROPERTIES, aMessageName, nullptr, /* params */
       0, /* params length */
       nullptr,
@@ -85,7 +83,7 @@ static void logMessage(nsIContent* aContent, const nsAString& aCoordsSpec,
 }
 
 void Area::ParseCoords(const nsAString& aSpec) {
-  char* cp = ToNewCString(aSpec);
+  char* cp = ToNewUTF8String(aSpec);
   if (cp) {
     char* tptr;
     char* n_str;
@@ -217,7 +215,7 @@ void Area::ParseCoords(const nsAString& aSpec) {
     }
 
     mNumCoords = cnt;
-    mCoords = Move(value_list);
+    mCoords = std::move(value_list);
 
     free(cp);
   }
@@ -227,7 +225,7 @@ void Area::HasFocus(bool aHasFocus) { mHasFocus = aHasFocus; }
 
 //----------------------------------------------------------------------
 
-class DefaultArea : public Area {
+class DefaultArea final : public Area {
  public:
   explicit DefaultArea(HTMLAreaElement* aArea);
 
@@ -263,7 +261,7 @@ void DefaultArea::GetRect(nsIFrame* aFrame, nsRect& aRect) {
 
 //----------------------------------------------------------------------
 
-class RectArea : public Area {
+class RectArea final : public Area {
  public:
   explicit RectArea(HTMLAreaElement* aArea);
 
@@ -362,7 +360,7 @@ void RectArea::GetRect(nsIFrame* aFrame, nsRect& aRect) {
 
 //----------------------------------------------------------------------
 
-class PolyArea : public Area {
+class PolyArea final : public Area {
  public:
   explicit PolyArea(HTMLAreaElement* aArea);
 
@@ -511,7 +509,7 @@ void PolyArea::GetRect(nsIFrame* aFrame, nsRect& aRect) {
 
 //----------------------------------------------------------------------
 
-class CircleArea : public Area {
+class CircleArea final : public Area {
  public:
   explicit CircleArea(HTMLAreaElement* aArea);
 
@@ -627,10 +625,7 @@ nsresult nsImageMap::GetBoundsForAreaContent(nsIContent* aContent,
 }
 
 void nsImageMap::AreaRemoved(HTMLAreaElement* aArea) {
-  if (aArea->IsInUncomposedDoc()) {
-    NS_ASSERTION(aArea->GetPrimaryFrame() == mImageFrame,
-                 "Unexpected primary frame");
-
+  if (aArea->GetPrimaryFrame() == mImageFrame) {
     aArea->SetPrimaryFrame(nullptr);
   }
 
@@ -662,7 +657,7 @@ void nsImageMap::SearchForAreas(nsIContent* aParent) {
   // Look for <area> elements.
   for (nsIContent* child = aParent->GetFirstChild(); child;
        child = child->GetNextSibling()) {
-    if (auto* area = HTMLAreaElement::FromContent(child)) {
+    if (auto* area = HTMLAreaElement::FromNode(child)) {
       AddArea(area);
 
       // Continue to next child. This stops mConsiderWholeSubtree from
@@ -695,10 +690,10 @@ void nsImageMap::UpdateAreas() {
 
 void nsImageMap::AddArea(HTMLAreaElement* aArea) {
   static Element::AttrValuesArray strings[] = {
-      &nsGkAtoms::rect,     &nsGkAtoms::rectangle,
-      &nsGkAtoms::circle,   &nsGkAtoms::circ,
-      &nsGkAtoms::_default, &nsGkAtoms::poly,
-      &nsGkAtoms::polygon,  nullptr};
+      nsGkAtoms::rect,     nsGkAtoms::rectangle,
+      nsGkAtoms::circle,   nsGkAtoms::circ,
+      nsGkAtoms::_default, nsGkAtoms::poly,
+      nsGkAtoms::polygon,  nullptr};
 
   UniquePtr<Area> area;
   switch (aArea->FindAttrValueIn(kNameSpaceID_None, nsGkAtoms::shape, strings,
@@ -740,10 +735,10 @@ void nsImageMap::AddArea(HTMLAreaElement* aArea) {
   nsAutoString coords;
   aArea->GetAttr(kNameSpaceID_None, nsGkAtoms::coords, coords);
   area->ParseCoords(coords);
-  mAreas.AppendElement(Move(area));
+  mAreas.AppendElement(std::move(area));
 }
 
-nsIContent* nsImageMap::GetArea(nscoord aX, nscoord aY) const {
+HTMLAreaElement* nsImageMap::GetArea(nscoord aX, nscoord aY) const {
   NS_ASSERTION(mMap, "Not initialized");
   for (const auto& area : mAreas) {
     if (area->IsInside(aX, aY)) {
@@ -754,7 +749,7 @@ nsIContent* nsImageMap::GetArea(nscoord aX, nscoord aY) const {
   return nullptr;
 }
 
-nsIContent* nsImageMap::GetAreaAt(uint32_t aIndex) const {
+HTMLAreaElement* nsImageMap::GetAreaAt(uint32_t aIndex) const {
   return mAreas.ElementAt(aIndex)->mArea;
 }
 
@@ -806,7 +801,7 @@ static UniquePtr<Area> TakeArea(nsImageMap::AreaList& aAreas,
   size_t index = 0;
   for (UniquePtr<Area>& area : aAreas) {
     if (area->mArea == aArea) {
-      result = Move(area);
+      result = std::move(area);
       break;
     }
     index++;
@@ -825,7 +820,7 @@ void nsImageMap::ContentRemoved(nsIContent* aChild,
     return;
   }
 
-  auto* areaElement = HTMLAreaElement::FromContent(aChild);
+  auto* areaElement = HTMLAreaElement::FromNode(aChild);
   if (!areaElement) {
     return;
   }
@@ -851,7 +846,7 @@ void nsImageMap::ParentChainChanged(nsIContent* aContent) {
   }
 }
 
-nsresult nsImageMap::HandleEvent(nsIDOMEvent* aEvent) {
+nsresult nsImageMap::HandleEvent(Event* aEvent) {
   nsAutoString eventType;
   aEvent->GetType(eventType);
   bool focus = eventType.EqualsLiteral("focus");
@@ -859,8 +854,7 @@ nsresult nsImageMap::HandleEvent(nsIDOMEvent* aEvent) {
              "Unexpected event type");
 
   // Set which one of our areas changed focus
-  nsCOMPtr<nsIContent> targetContent =
-      do_QueryInterface(aEvent->InternalDOMEvent()->GetTarget());
+  nsCOMPtr<nsIContent> targetContent = do_QueryInterface(aEvent->GetTarget());
   if (!targetContent) {
     return NS_OK;
   }

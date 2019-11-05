@@ -61,6 +61,12 @@ unit tests, source-code analysis, or measurement work. While source-test tasks r
 a source checkout, it is still possible for them to depend on a build artifact, though
 often they do not.
 
+code-review
+-----------
+
+Publish issues found by source-test tasks on Phabricator.
+This is a part of Release Management code review Bot.
+
 upload-symbols
 --------------
 
@@ -82,13 +88,11 @@ searchfox
 
 Searchfox builds generate C++ index data for Searchfox.
 
-static-analysis
----------------
+static-analysis-autotest
+------------------------
 
-Static analysis builds use the compiler to perform some detailed analysis of
-the source code while building.  The useful output from these tasks are their
-build logs, and while they produce a binary, they do not upload it as an
-artifact.
+Static analysis autotest utility in order to be sure that there is no regression
+when upgrading utilities that impact static-analysis.
 
 toolchain
 ---------
@@ -192,10 +196,17 @@ release-beetmover-push-to-release publishes promoted releases from the
 candidates directory to the release directory. This is part of release
 promotion.
 
+beetmover-snap
+--------------
+Beetmover-source publishes Ubuntu's snap. This is part of release promotion.
+
 beetmover-source
 ----------------
-
 Beetmover-source publishes release source. This is part of release promotion.
+
+beetmover-geckoview
+-------------------
+Beetmover-geckoview publishes the Android library called "geckoview".
 
 checksums-signing
 -----------------
@@ -221,16 +232,15 @@ Beetmover, takes source specific artifact checksums and pushes it to a location 
 of Taskcluster's task artifacts (archive.mozilla.org as one place) and in the
 process determines the final location and "pretty" names it (version product name)
 
-google-play-strings
--------------------
-Download strings to display on Google Play from https://l10n.mozilla-community.org/stores_l10n/.
-Artifact is then used by push-apk.
-
 push-apk
 --------
 PushApk publishes Android packages onto Google Play Store. Jobs of this kind take
 all the signed multi-locales (aka "multi") APKs for a given release and upload them
 all at once.
+
+push-apk-checks
+---------------
+Runs the checks done in push-apk to ensure APKs are sane before submitting them
 
 release-balrog-submit-toplevel
 ------------------------------
@@ -267,6 +277,11 @@ Generate an installer using Ubuntu's Snap format.
 release-snap-push
 -----------------
 Pushes Snap repackage on Snap store.
+
+release-secondary-snap-push
+---------------------------
+Performs the same function as `release-snap-push`, except for the beta channel as part of RC
+Releases.
 
 release-notify-push
 -------------------
@@ -347,10 +362,13 @@ Publishes signed langpacks to archive.mozilla.org
 release-update-verify
 ---------------------
 Verifies the contents and package of release update MARs.
-
 release-secondary-update-verify
 -------------------------------
 Verifies the contents and package of release update MARs.
+
+release-update-verify-next
+--------------------------
+Verifies the contents and package of release and updare MARs from the previous ESR release.
 
 release-update-verify-config
 ----------------------------
@@ -359,6 +377,10 @@ Creates configs for release-update-verify tasks
 release-secondary-update-verify-config
 --------------------------------------
 Creates configs for release-secondary-update-verify tasks
+
+release-update-verify-config-next
+---------------------------------
+Creates configs for release-update-verify-next tasks
 
 release-updates-builder
 -----------------------
@@ -400,6 +422,11 @@ release-partner-repack-beetmover
 --------------------------------
 Moves the partner repacks to S3 buckets.
 
+release-partner-repack-bouncer-sub
+----------------------------------
+Sets up bouncer products for partners.
+
+
 release-early-tagging
 ---------------------
 Utilises treescript to perform tagging that should happen near the start of a release.
@@ -428,46 +455,6 @@ release-eme-free-repack-beetmover-checksums
 -------------------------------------------
 Moves the beetmover checksum for eme-free repacks to S3 buckets.
 
-release-partner-repack-chunking-dummy
-----------------------
-Chunks the partner repacks by locale.
-
-release-partner-repack-signing
-------------------------------
-Internal signing of partner repacks.
-
-release-partner-repack-repackage
-------------------------------
-Repackaging of partner repacks.
-
-release-partner-repack-repackage-signing
-------------------------------
-External signing of partner repacks.
-
-release-partner-repack-beetmover
-------------------------------
-Moves the partner repacks to S3 buckets.
-
-release-eme-free-repack
-----------------------
-Generates customized versions of releases for eme-free repacks.
-
-release-eme-free-repack-signing
-------------------------------
-Internal signing of eme-free repacks
-
-release-eme-free-repack-repackage
-------------------------------
-Repackaging of eme-free repacks.
-
-release-eme-free-repack-repackage-signing
-------------------------------
-External signing of eme-free repacks.
-
-release-eme-free-repack-beetmover
-------------------------------
-Moves the eme-free repacks to S3 buckets.
-
 repackage
 ---------
 Repackage tasks take a signed output and package them up into something suitable
@@ -494,6 +481,19 @@ Mar-signing takes the complete update MARs and signs them.
 mar-signing-l10n
 ----------------
 Mar-signing-l10n takes the complete update MARs and signs them for localized versions.
+
+mar-signing-autograph-stage
+---------------------------
+These tasks are only to test autograph-stage, when the autograph team asks for their staging environment to be tested.
+
+repackage-msi
+-------------
+Repackage-msi takes the signed full installer and produces an msi installer (that wraps the full installer)
+Using the ```./mach repackage``` command
+
+repackage-signing-msi
+---------------------
+Repackage-signing-msi takes the repackaged msi installers and signs them.
 
 repo-update
 -----------
@@ -546,3 +546,41 @@ diffoscope
 Tasks used to compare pairs of Firefox builds using https://diffoscope.org/.
 As of writing, this is mainly meant to be used in try builds, by editing
 taskcluster/ci/diffoscope/kind.yml for your needs.
+
+addon
+-----
+Tasks used to build/package add-ons.
+
+openh264-plugin
+---------------
+Tasks used to build the openh264 plugin.
+
+openh264-signing
+----------------
+Signing for the openh264 plugin.
+
+webrender
+---------
+Tasks used to do testing of WebRender standalone (without gecko). The
+WebRender code lives in gfx/wr and has its own testing infrastructure.
+
+instrumented-build
+------------------
+Tasks that generate builds with PGO instrumentation enabled. This is an
+intermediate build that can be used to generate profiling information for a
+final PGO build. This is the 1st stage of the full 3-step PGO process.
+
+generate-profile
+----------------
+Tasks that take a build configured for PGO and run the binary against a sample
+set to generate profile data. This is the 2nd stage of the full 3-step PGO
+process.
+
+geckodriver-repack
+------------------
+Tasks to repackage the geckodriver binary from a build tasks's common
+test archive into it's own archive.
+
+geckodriver-signing
+-------------------
+Signing for geckodriver binary.

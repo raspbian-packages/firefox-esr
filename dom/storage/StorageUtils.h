@@ -7,6 +7,8 @@
 #ifndef mozilla_dom_StorageUtils_h
 #define mozilla_dom_StorageUtils_h
 
+#include "nsStringFwd.h"
+
 class nsIPrincipal;
 
 namespace mozilla {
@@ -23,6 +25,9 @@ bool PrincipalsEqual(nsIPrincipal* aObjectPrincipal,
 void ReverseString(const nsACString& aSource, nsACString& aResult);
 
 nsresult CreateReversedDomain(const nsACString& aAsciiDomain, nsACString& aKey);
+
+nsCString Scheme0Scope(const nsACString& aOriginSuffix,
+                       const nsACString& aOriginNoSuffix);
 
 }  // namespace StorageUtils
 }  // namespace dom

@@ -6,13 +6,14 @@
 // A regression test for bug 665880 to make sure elements inside <object> can
 // be inspected without exceptions.
 
-const TEST_URI = "data:text/html;charset=utf-8," +
+const TEST_URI =
+  "data:text/html;charset=utf-8," +
   "<object><p>browser_inspector_inspect-object-element.js</p></object>";
 
-add_task(function* () {
-  let { inspector } = yield openInspectorForURL(TEST_URI);
+add_task(async function() {
+  const { inspector } = await openInspectorForURL(TEST_URI);
 
-  yield selectNode("object", inspector);
+  await selectNode("object", inspector);
 
   ok(true, "Selected <object> without throwing");
 });

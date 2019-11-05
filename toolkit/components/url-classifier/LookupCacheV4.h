@@ -17,15 +17,18 @@ class TableUpdateV4;
 class LookupCacheV4 final : public LookupCache {
  public:
   explicit LookupCacheV4(const nsACString& aTableName,
-                         const nsACString& aProvider, nsIFile* aStoreFile)
+                         const nsACString& aProvider,
+                         nsCOMPtr<nsIFile>& aStoreFile)
       : LookupCache(aTableName, aProvider, aStoreFile) {}
-  ~LookupCacheV4() {}
 
   virtual nsresult Init() override;
   virtual nsresult Has(const Completion& aCompletion, bool* aHas,
                        uint32_t* aMatchLength, bool* aConfirmed) override;
 
-  virtual bool IsEmpty() override;
+  virtual nsresult StoreToFile(nsCOMPtr<nsIFile>& aFile) override;
+  virtual nsresult LoadFromFile(nsCOMPtr<nsIFile>& aFile) override;
+
+  virtual bool IsEmpty() const override;
 
   nsresult Build(PrefixStringMap& aPrefixMap);
 
@@ -34,12 +37,12 @@ class LookupCacheV4 final : public LookupCache {
 
   // ApplyUpdate will merge data stored in aTableUpdate with prefixes in
   // aInputMap.
-  nsresult ApplyUpdate(TableUpdateV4* aTableUpdate, PrefixStringMap& aInputMap,
-                       PrefixStringMap& aOutputMap);
+  nsresult ApplyUpdate(RefPtr<TableUpdateV4> aTableUpdate,
+                       PrefixStringMap& aInputMap, PrefixStringMap& aOutputMap);
 
   nsresult AddFullHashResponseToCache(const FullHashResponseMap& aResponseMap);
 
-  nsresult WriteMetadata(TableUpdateV4* aTableUpdate);
+  nsresult WriteMetadata(RefPtr<const TableUpdateV4> aTableUpdate);
   nsresult LoadMetadata(nsACString& aState, nsACString& aChecksum);
 
   static const int VER;
@@ -47,15 +50,25 @@ class LookupCacheV4 final : public LookupCache {
 
  protected:
   virtual nsresult ClearPrefixes() override;
-  virtual nsresult StoreToFile(nsIFile* aFile) override;
-  virtual nsresult LoadFromFile(nsIFile* aFile) override;
-  virtual size_t SizeOfPrefixSet() override;
+  virtual size_t SizeOfPrefixSet() const override;
+  virtual nsCString GetPrefixSetSuffix() const override;
+  nsCString GetMetadataSuffix() const;
 
  private:
+  ~LookupCacheV4() {}
+
   virtual int Ver() const override { return VER; }
 
-  nsresult InitCrypto(nsCOMPtr<nsICryptoHash>& aCrypto);
-  nsresult VerifyChecksum(const nsACString& aChecksum);
+  virtual nsresult LoadLegacyFile() override;
+
+  struct Header {
+    uint32_t magic;
+    uint32_t version;
+  };
+
+  nsresult SanityCheck(const Header& aHeader);
+  nsresult VerifyCRC32(nsCOMPtr<nsIInputStream>& aIn);
+  nsresult CleanOldPrefixSet();
 
   RefPtr<VariableLengthPrefixSet> mVLPrefixSet;
 };

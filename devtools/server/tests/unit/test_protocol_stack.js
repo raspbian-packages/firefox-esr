@@ -11,7 +11,7 @@
  */
 
 var protocol = require("devtools/shared/protocol");
-var {RetVal} = protocol;
+var { RetVal } = protocol;
 
 function simpleHello() {
   return {
@@ -27,12 +27,12 @@ const rootSpec = protocol.generateActorSpec({
   methods: {
     simpleReturn: {
       response: { value: RetVal() },
-    }
-  }
+    },
+  },
 });
 
 var RootActor = protocol.ActorClassWithSpec(rootSpec, {
-  initialize: function (conn) {
+  initialize: function(conn) {
     protocol.Actor.prototype.initialize.call(this, conn);
     // Root actor owns itself.
     this.manage(this);
@@ -42,19 +42,19 @@ var RootActor = protocol.ActorClassWithSpec(rootSpec, {
 
   sayHello: simpleHello,
 
-  simpleReturn: function () {
+  simpleReturn: function() {
     return this.sequence++;
-  }
+  },
 });
 
-var RootFront = protocol.FrontClassWithSpec(rootSpec, {
-  initialize: function (client) {
+class RootFront extends protocol.FrontClassWithSpec(rootSpec) {
+  constructor(client) {
+    super(client);
     this.actorID = "root";
-    protocol.Front.prototype.initialize.call(this, client);
     // Root owns itself.
     this.manage(this);
   }
-});
+}
 
 function run_test() {
   if (!Services.prefs.getBoolPref("javascript.options.asyncstack")) {
@@ -65,32 +65,38 @@ function run_test() {
   DebuggerServer.createRootActor = RootActor;
   DebuggerServer.init();
 
-  let trace = connectPipeTracing();
-  let client = new DebuggerClient(trace);
-  let rootClient;
+  const trace = connectPipeTracing();
+  const client = new DebuggerClient(trace);
+  let rootFront;
 
   client.connect().then(function onConnect() {
-    rootClient = RootFront(client);
+    rootFront = new RootFront(client);
 
-    rootClient.simpleReturn().then(() => {
-      let stack = Components.stack;
-      while (stack) {
-        info(stack.name);
-        if (stack.name == "onConnect") {
-          // Reached back to outer function before request
-          ok(true, "Complete stack");
-          return;
+    rootFront
+      .simpleReturn()
+      .then(
+        () => {
+          let stack = Components.stack;
+          while (stack) {
+            info(stack.name);
+            if (stack.name.includes("run_test/onConnect")) {
+              // Reached back to outer function before request
+              ok(true, "Complete stack");
+              return;
+            }
+            stack = stack.asyncCaller || stack.caller;
+          }
+          ok(false, "Incomplete stack");
+        },
+        () => {
+          ok(false, "Request failed unexpectedly");
         }
-        stack = stack.asyncCaller || stack.caller;
-      }
-      ok(false, "Incomplete stack");
-    }, () => {
-      ok(false, "Request failed unexpectedly");
-    }).then(() => {
-      client.close().then(() => {
-        do_test_finished();
+      )
+      .then(() => {
+        client.close().then(() => {
+          do_test_finished();
+        });
       });
-    });
   });
 
   do_test_pending();

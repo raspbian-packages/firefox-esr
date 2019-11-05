@@ -62,6 +62,8 @@ class nsAlertsIconListener : public nsIAlertNotificationImageListener,
                                                    NotifyActionCallback,
                                                    gpointer, GFreeFunc);
   typedef bool (*notify_notification_close_t)(void*, GError**);
+  typedef void (*notify_notification_set_hint_t)(NotifyNotification*,
+                                                 const char*, GVariant*);
 
   nsCOMPtr<nsICancelable> mIconRequest;
   nsCString mAlertTitle;
@@ -86,6 +88,7 @@ class nsAlertsIconListener : public nsIAlertNotificationImageListener,
       notify_notification_set_icon_from_pixbuf;
   static notify_notification_add_action_t notify_notification_add_action;
   static notify_notification_close_t notify_notification_close;
+  static notify_notification_set_hint_t notify_notification_set_hint;
   NotifyNotification* mNotification;
   gulong mClosureHandler;
 

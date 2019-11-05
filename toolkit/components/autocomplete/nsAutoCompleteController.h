@@ -18,6 +18,7 @@
 #include "nsTArray.h"
 #include "nsCOMArray.h"
 #include "nsCycleCollectionParticipant.h"
+#include "mozilla/dom/Element.h"
 
 class nsAutoCompleteController final : public nsIAutoCompleteController,
                                        public nsIAutoCompleteObserver,
@@ -35,51 +36,75 @@ class nsAutoCompleteController final : public nsIAutoCompleteController,
   nsAutoCompleteController();
 
  protected:
-  virtual ~nsAutoCompleteController();
+  MOZ_CAN_RUN_SCRIPT virtual ~nsAutoCompleteController();
 
   /**
    * SetValueOfInputTo() sets value of mInput to aValue and notifies the input
    * of setting reason.
    */
-  void SetValueOfInputTo(const nsString &aValue, uint16_t aReason);
+  void SetValueOfInputTo(const nsString& aValue, uint16_t aReason);
 
   /**
    * SetSearchStringInternal() sets both mSearchString and mSetValue to
    * aSearchString.
    */
-  void SetSearchStringInternal(const nsAString &aSearchString) {
+  void SetSearchStringInternal(const nsAString& aSearchString) {
     mSearchString = mSetValue = aSearchString;
   }
 
-  nsresult OpenPopup();
-  nsresult ClosePopup();
+  MOZ_CAN_RUN_SCRIPT nsresult OpenPopup();
+  MOZ_CAN_RUN_SCRIPT nsresult ClosePopup();
 
   nsresult StartSearch(uint16_t aSearchType);
 
   nsresult BeforeSearches();
-  nsresult StartSearches();
-  void AfterSearches();
+  MOZ_CAN_RUN_SCRIPT nsresult StartSearches();
+  MOZ_CAN_RUN_SCRIPT void AfterSearches();
   nsresult ClearSearchTimer();
   void MaybeCompletePlaceholder();
 
-  nsresult ProcessResult(int32_t aSearchIndex, nsIAutoCompleteResult *aResult);
-  nsresult PostSearchCleanup();
+  MOZ_CAN_RUN_SCRIPT nsresult ProcessResult(int32_t aSearchIndex,
+                                            nsIAutoCompleteResult* aResult);
+  MOZ_CAN_RUN_SCRIPT nsresult PostSearchCleanup();
 
-  nsresult EnterMatch(bool aIsPopupSelection, nsIDOMEvent *aEvent);
+  MOZ_CAN_RUN_SCRIPT nsresult EnterMatch(bool aIsPopupSelection,
+                                         mozilla::dom::Event* aEvent);
   nsresult RevertTextValue();
 
   nsresult CompleteDefaultIndex(int32_t aResultIndex);
-  nsresult CompleteValue(nsString &aValue);
+  nsresult CompleteValue(nsString& aValue);
 
-  nsresult GetResultAt(int32_t aIndex, nsIAutoCompleteResult **aResult,
-                       int32_t *aMatchIndex);
+  nsresult GetResultAt(int32_t aIndex, nsIAutoCompleteResult** aResult,
+                       int32_t* aMatchIndex);
   nsresult GetResultValueAt(int32_t aIndex, bool aGetFinalValue,
-                            nsAString &_retval);
-  nsresult GetResultLabelAt(int32_t aIndex, nsAString &_retval);
+                            nsAString& _retval);
+  nsresult GetResultLabelAt(int32_t aIndex, nsAString& _retval);
+
+  /**
+   * Returns autocomplete popup for the autocomplete input. nsIAutoCompleteInput
+   * can be implemented two different ways to return a popup. The first one is
+   * to return a popup object implementing nsIAutoCompletePopup interface,
+   * the second one is a DOM element representing a popup and implementing
+   * that interface.
+   */
+  already_AddRefed<nsIAutoCompletePopup> GetPopup() {
+    nsCOMPtr<nsIAutoCompletePopup> popup;
+    mInput->GetPopup(getter_AddRefs(popup));
+    if (popup) {
+      return popup.forget();
+    }
+
+    nsCOMPtr<Element> popupEl;
+    mInput->GetPopupElement(getter_AddRefs(popupEl));
+    if (popupEl) {
+      return popupEl->AsAutoCompletePopup();
+    }
+    return nullptr;
+  }
 
  private:
   nsresult GetResultValueLabelAt(int32_t aIndex, bool aGetFinalValue,
-                                 bool aGetValue, nsAString &_retval);
+                                 bool aGetValue, nsAString& _retval);
 
   /**
    * Gets and validates the defaultComplete result and the relative
@@ -94,8 +119,8 @@ class nsAutoCompleteController final : public nsIAutoCompleteController,
    *        The defaultIndex relative to _result.
    */
   nsresult GetDefaultCompleteResult(int32_t aResultIndex,
-                                    nsIAutoCompleteResult **_result,
-                                    int32_t *_defaultIndex);
+                                    nsIAutoCompleteResult** _result,
+                                    int32_t* _defaultIndex);
 
   /**
    * Gets the defaultComplete value to be suggested to the user.
@@ -108,7 +133,7 @@ class nsAutoCompleteController final : public nsIAutoCompleteController,
    *        The value to be completed.
    */
   nsresult GetDefaultCompleteValue(int32_t aResultIndex, bool aPreserveCasing,
-                                   nsAString &_retval);
+                                   nsAString& _retval);
 
   /**
    * Gets the defaultComplete value to be used when the user confirms the
@@ -121,12 +146,12 @@ class nsAutoCompleteController final : public nsIAutoCompleteController,
    * @param _retval
    *        The value to be completed.
    */
-  nsresult GetFinalDefaultCompleteValue(nsAString &_retval);
+  nsresult GetFinalDefaultCompleteValue(nsAString& _retval);
 
   nsresult ClearResults(bool aIsSearching = false);
 
-  nsresult MatchIndexToSearch(int32_t aMatchIndex, int32_t *aSearchIndex,
-                              int32_t *aItemIndex);
+  nsresult MatchIndexToSearch(int32_t aMatchIndex, int32_t* aSearchIndex,
+                              int32_t* aItemIndex);
 
   // members //////////////////////////////////////////
 

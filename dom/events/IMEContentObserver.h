@@ -23,7 +23,6 @@
 
 class nsIContent;
 class nsINode;
-class nsISelection;
 class nsPresContext;
 
 namespace mozilla {
@@ -145,7 +144,7 @@ class IMEContentObserver final : public nsStubMutationObserver,
   void SuppressNotifyingIME();
   void UnsuppressNotifyingIME();
   nsPresContext* GetPresContext() const;
-  nsresult GetSelectionAndRoot(nsISelection** aSelection,
+  nsresult GetSelectionAndRoot(dom::Selection** aSelection,
                                nsIContent** aRoot) const;
 
   /**
@@ -295,7 +294,7 @@ class IMEContentObserver final : public nsStubMutationObserver,
    *
    * Note that this does nothing if WasInitializedWithPlugin() returns true.
    */
-  bool UpdateSelectionCache();
+  bool UpdateSelectionCache(bool aRequireFlush = true);
 
   nsCOMPtr<nsIWidget> mWidget;
   // mFocusedWidget has the editor observed by the instance.  E.g., if the
@@ -390,7 +389,7 @@ class IMEContentObserver final : public nsStubMutationObserver,
     NS_DECL_NSIDOCUMENTOBSERVER_BEGINUPDATE
     NS_DECL_NSIDOCUMENTOBSERVER_ENDUPDATE
 
-    void Observe(nsIDocument* aDocument);
+    void Observe(dom::Document*);
     void StopObserving();
     void Destroy();
 
@@ -403,7 +402,7 @@ class IMEContentObserver final : public nsStubMutationObserver,
     virtual ~DocumentObserver() { Destroy(); }
 
     RefPtr<IMEContentObserver> mIMEContentObserver;
-    nsCOMPtr<nsIDocument> mDocument;
+    RefPtr<dom::Document> mDocument;
     uint32_t mDocumentUpdating;
   };
   RefPtr<DocumentObserver> mDocumentObserver;

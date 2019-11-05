@@ -6,20 +6,14 @@
 
 "use strict";
 
-loader.lazyImporter(this, "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm");
 const { Component } = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const Services = require("Services");
 const { Ci } = require("chrome");
 
-loader.lazyImporter(this, "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm");
-
-loader.lazyRequireGetter(this, "DebuggerClient",
-  "devtools/shared/client/debugger-client", true);
-
-const Strings = Services.strings.createBundle("chrome://devtools/locale/aboutdebugging.properties");
+const Strings = Services.strings.createBundle(
+  "chrome://devtools/locale/aboutdebugging.properties"
+);
 const MULTI_OPT_OUT_PREF = "dom.ipc.multiOptOut";
 
 class multiE10SWarning extends Component {
@@ -29,30 +23,33 @@ class multiE10SWarning extends Component {
   }
 
   onUpdatePreferenceClick() {
-    let message = Strings.GetStringFromName("multiProcessWarningConfirmUpdate2");
+    const message = Strings.GetStringFromName(
+      "multiProcessWarningConfirmUpdate2"
+    );
     if (window.confirm(message)) {
       // Disable multi until at least the next experiment.
-      Services.prefs.setIntPref(MULTI_OPT_OUT_PREF,
-                                Services.appinfo.E10S_MULTI_EXPERIMENT);
+      Services.prefs.setIntPref(
+        MULTI_OPT_OUT_PREF,
+        Services.appinfo.E10S_MULTI_EXPERIMENT
+      );
       // Restart the browser.
-      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+      Services.startup.quit(
+        Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+      );
     }
   }
 
   render() {
     return dom.div(
       {
-        className: "service-worker-multi-process"
+        className: "service-worker-multi-process",
       },
       dom.div(
         {},
         dom.div({ className: "warning" }),
         dom.b({}, Strings.GetStringFromName("multiProcessWarningTitle"))
       ),
-      dom.div(
-        {},
-        Strings.GetStringFromName("multiProcessWarningMessage2")
-      ),
+      dom.div({}, Strings.GetStringFromName("multiProcessWarningMessage2")),
       dom.button(
         {
           className: "update-button",

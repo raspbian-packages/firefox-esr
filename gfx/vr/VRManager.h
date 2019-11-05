@@ -14,6 +14,7 @@
 #include "mozilla/TimeStamp.h"
 #include "gfxVR.h"
 
+class nsITimer;
 namespace mozilla {
 namespace layers {
 class TextureHost;
@@ -23,7 +24,11 @@ namespace gfx {
 class VRLayerParent;
 class VRManagerParent;
 class VRDisplayHost;
+#if !defined(MOZ_WIDGET_ANDROID)
+class VRService;
+#endif
 class VRSystemManagerPuppet;
+class VRSystemManagerExternal;
 
 class VRManager {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(mozilla::gfx::VRManager)
@@ -49,6 +54,7 @@ class VRManager {
   void GetVRControllerInfo(nsTArray<VRControllerInfo>& aControllerInfo);
   void CreateVRTestSystem();
   VRSystemManagerPuppet* GetPuppetManager();
+  VRSystemManagerExternal* GetExternalManager();
 
   void VibrateHaptic(uint32_t aControllerIdx, uint32_t aHapticIndex,
                      double aIntensity, double aDuration,
@@ -57,15 +63,28 @@ class VRManager {
   void NotifyVibrateHapticCompleted(const VRManagerPromise& aPromise);
   void DispatchSubmitFrameResult(uint32_t aDisplayID,
                                  const VRSubmitFrameResultInfo& aResult);
+  void StartVRNavigation(const uint32_t& aDisplayID);
+  void StopVRNavigation(const uint32_t& aDisplayID,
+                        const TimeDuration& aTimeout);
+
+  void Shutdown();
+  bool IsPresenting();
 
  protected:
   VRManager();
   ~VRManager();
 
  private:
-  void Init();
   void Destroy();
-  void Shutdown();
+  void Init();
+  void StartTasks();
+  void StopTasks();
+  static void TaskTimerCallback(nsITimer* aTimer, void* aClosure);
+  void RunTasks();
+  void Run1msTasks(double aDeltaTime);
+  void Run10msTasks();
+  void Run100msTasks();
+  uint32_t GetOptimalTaskInterval();
 
   void DispatchVRDisplayInfoUpdate();
   void UpdateRequestedDevices();
@@ -77,23 +96,24 @@ class VRManager {
 
   typedef nsTArray<RefPtr<VRSystemManager>> VRSystemManagerArray;
   VRSystemManagerArray mManagers;
-
-  typedef nsRefPtrHashtable<nsUint32HashKey, gfx::VRDisplayHost>
-      VRDisplayHostHashMap;
-  VRDisplayHostHashMap mVRDisplays;
-
-  typedef nsRefPtrHashtable<nsUint32HashKey, gfx::VRControllerHost>
-      VRControllerHostHashMap;
-  VRControllerHostHashMap mVRControllers;
+  nsTArray<uint32_t> mVRDisplayIDs;
+  nsTArray<uint32_t> mVRControllerIDs;
 
   Atomic<bool> mInitialized;
 
   TimeStamp mLastControllerEnumerationTime;
   TimeStamp mLastDisplayEnumerationTime;
   TimeStamp mLastActiveTime;
+  TimeStamp mLastTickTime;
+  double mAccumulator100ms;
   RefPtr<VRSystemManagerPuppet> mPuppetManager;
+  RefPtr<VRSystemManagerExternal> mExternalManager;
   bool mVRDisplaysRequested;
+  bool mVRDisplaysRequestedNonFocus;
   bool mVRControllersRequested;
+  bool mVRServiceStarted;
+  uint32_t mTaskInterval;
+  RefPtr<nsITimer> mTaskTimer;
 };
 
 }  // namespace gfx

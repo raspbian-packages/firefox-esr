@@ -6,8 +6,7 @@
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <title>Plugin Hang UI Test</title>
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js" />
   <script type="application/javascript"
           src="plugin-utils.js" />
   <script type="application/javascript"
@@ -22,9 +21,9 @@
 <![CDATA[
 SimpleTest.waitForExplicitFinish();
 SimpleTest.expectChildProcessCrash();
+SpecialPowers.pushPrefEnv({"set": [["security.allow_eval_with_system_principal",
+                                    true]]});
 setTestPluginEnabledState(SpecialPowers.Ci.nsIPluginTag.STATE_ENABLED);
-
-ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const hangUITimeoutPref = "dom.ipc.plugins.hangUITimeoutSecs";
 const hangUIMinDisplayPref = "dom.ipc.plugins.hangUIMinDisplaySecs";

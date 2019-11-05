@@ -10,12 +10,14 @@
 #include "mozilla/ipc/BackgroundChild.h"
 #include "EventQueue.h"
 #include "mozilla/ThreadEventQueue.h"
+#include "mozilla/PerformanceCounter.h"
+#include "mozilla/StaticPrefs.h"
 #include "nsIThreadInternal.h"
 #include "WorkerPrivate.h"
 #include "WorkerRunnable.h"
 
 #ifdef DEBUG
-#include "nsThreadManager.h"
+#  include "nsThreadManager.h"
 #endif
 
 namespace mozilla {
@@ -28,7 +30,12 @@ namespace {
 
 // The C stack size. We use the same stack size on all platforms for
 // consistency.
-const uint32_t kWorkerStackSize = 256 * sizeof(size_t) * 1024;
+//
+// Note: Our typical equation of 256 machine words works out to 2MB on 64-bit
+// platforms. Since that works out to the size of a VM huge page, that can
+// sometimes lead to an OS allocating an entire huge page for the stack at once.
+// To avoid this, we subtract the size of 2 pages, to be safe.
+const uint32_t kWorkerStackSize = 256 * sizeof(size_t) * 1024 - 8192;
 
 }  // namespace
 
@@ -135,6 +142,17 @@ void WorkerThread::SetWorker(const WorkerThreadFriendKey& /* aKey */,
   }
 }
 
+void WorkerThread::IncrementDispatchCounter() {
+  MutexAutoLock lock(mLock);
+  if (mWorkerPrivate) {
+    PerformanceCounter* performanceCounter =
+        mWorkerPrivate->GetPerformanceCounter();
+    if (performanceCounter) {
+      performanceCounter->IncrementDispatchCounter(DispatchCategory::Worker);
+    }
+  }
+}
+
 nsresult WorkerThread::DispatchPrimaryRunnable(
     const WorkerThreadFriendKey& /* aKey */,
     already_AddRefed<nsIRunnable> aRunnable) {
@@ -162,7 +180,7 @@ nsresult WorkerThread::DispatchPrimaryRunnable(
 nsresult WorkerThread::DispatchAnyThread(
     const WorkerThreadFriendKey& /* aKey */,
     already_AddRefed<WorkerRunnable> aWorkerRunnable) {
-// May be called on any thread!
+  // May be called on any thread!
 
 #ifdef DEBUG
   {
@@ -179,6 +197,10 @@ nsresult WorkerThread::DispatchAnyThread(
     }
   }
 #endif
+
+  // Increment the PerformanceCounter dispatch count
+  // to keep track of how many runnables are executed.
+  IncrementDispatchCounter();
   nsCOMPtr<nsIRunnable> runnable(aWorkerRunnable);
 
   nsresult rv = nsThread::Dispatch(runnable.forget(), NS_DISPATCH_NORMAL);
@@ -249,6 +271,9 @@ WorkerThread::Dispatch(already_AddRefed<nsIRunnable> aRunnable,
     }
   }
 
+  // Increment the PerformanceCounter dispatch count
+  // to keep track of how many runnables are executed.
+  IncrementDispatchCounter();
   nsresult rv;
   if (runnable && onWorkerThread) {
     RefPtr<WorkerRunnable> workerRunnable =
@@ -296,6 +321,13 @@ uint32_t WorkerThread::RecursionDepth(
   MOZ_ASSERT(PR_GetCurrentThread() == mThread);
 
   return mNestedEventLoopDepth;
+}
+
+PerformanceCounter* WorkerThread::GetPerformanceCounter(nsIRunnable* aEvent) {
+  if (mWorkerPrivate) {
+    return mWorkerPrivate->GetPerformanceCounter();
+  }
+  return nullptr;
 }
 
 NS_IMPL_ISUPPORTS(WorkerThread::Observer, nsIThreadObserver)

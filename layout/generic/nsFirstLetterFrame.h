@@ -17,8 +17,9 @@ class nsFirstLetterFrame final : public nsContainerFrame {
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsFirstLetterFrame)
 
-  explicit nsFirstLetterFrame(nsStyleContext* aContext)
-      : nsContainerFrame(aContext, kClassID) {}
+  explicit nsFirstLetterFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext)
+      : nsContainerFrame(aStyle, aPresContext, kClassID) {}
 
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                 const nsDisplayListSet& aLists) override;

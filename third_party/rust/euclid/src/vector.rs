@@ -10,6 +10,8 @@
 use super::UnknownUnit;
 use approxeq::ApproxEq;
 use length::Length;
+#[cfg(feature = "mint")]
+use mint;
 use point::{TypedPoint2D, TypedPoint3D, point2, point3};
 use size::{TypedSize2D, size2};
 use scale::TypedScale;
@@ -17,17 +19,21 @@ use trig::Trig;
 use Angle;
 use num::*;
 use num_traits::{Float, NumCast, Signed};
-use std::fmt;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use std::marker::PhantomData;
+use core::fmt;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use core::marker::PhantomData;
 
-define_matrix! {
-    /// A 2d Vector tagged with a unit.
-    pub struct TypedVector2D<T, U> {
-        pub x: T,
-        pub y: T,
-    }
+/// A 2d Vector tagged with a unit.
+#[derive(EuclidMatrix)]
+#[repr(C)]
+pub struct TypedVector2D<T, U> {
+    pub x: T,
+    pub y: T,
+    #[doc(hidden)]
+    pub _unit: PhantomData<U>,
 }
+
+mint_vec!(TypedVector2D[x, y] = Vector2);
 
 /// Default 2d vector type with no unit.
 ///
@@ -65,8 +71,8 @@ impl<T, U> TypedVector2D<T, U> {
     #[inline]
     pub fn new(x: T, y: T) -> Self {
         TypedVector2D {
-            x: x,
-            y: y,
+            x,
+            y,
             _unit: PhantomData,
         }
     }
@@ -123,7 +129,7 @@ impl<T: Copy, U> TypedVector2D<T, U> {
         vec2(self.x, self.y)
     }
 
-    /// Tag a unitless value with units.
+    /// Tag a unit-less value with units.
     #[inline]
     pub fn from_untyped(p: &Vector2D<T>) -> Self {
         vec2(p.x, p.y)
@@ -167,6 +173,21 @@ where
         T: Float,
     {
         self / self.length()
+    }
+
+    /// Return the normalized vector even if the length is larger than the max value of Float.
+    #[inline]
+    pub fn robust_normalize(self) -> Self
+    where
+        T: Float,
+    {
+        let length = self.length();
+        if length.is_infinite() {
+            let scaled = self / T::max_value();
+            scaled / scaled.length()
+        } else {
+            self / length
+        }
     }
 
     #[inline]
@@ -244,6 +265,11 @@ impl<T: Float, U> TypedVector2D<T, U> {
     pub fn max(self, other: Self) -> Self {
         vec2(self.x.max(other.x), self.y.max(other.y))
     }
+
+    #[inline]
+    pub fn clamp(&self, start: Self, end: Self) -> Self {
+        self.max(start).min(end)
+    }
 }
 
 impl<T: Copy + Mul<T, Output = T>, U> Mul<T> for TypedVector2D<T, U> {
@@ -279,7 +305,7 @@ impl<T: Copy + Div<T, Output = T>, U> DivAssign<T> for TypedVector2D<T, U> {
 impl<T: Copy + Mul<T, Output = T>, U1, U2> Mul<TypedScale<T, U1, U2>> for TypedVector2D<T, U1> {
     type Output = TypedVector2D<T, U2>;
     #[inline]
-    fn mul(self, scale: TypedScale<T, U1, U2>) -> TypedVector2D<T, U2> {
+    fn mul(self, scale: TypedScale<T, U1, U2>) -> Self::Output {
         vec2(self.x * scale.get(), self.y * scale.get())
     }
 }
@@ -287,7 +313,7 @@ impl<T: Copy + Mul<T, Output = T>, U1, U2> Mul<TypedScale<T, U1, U2>> for TypedV
 impl<T: Copy + Div<T, Output = T>, U1, U2> Div<TypedScale<T, U1, U2>> for TypedVector2D<T, U2> {
     type Output = TypedVector2D<T, U1>;
     #[inline]
-    fn div(self, scale: TypedScale<T, U1, U2>) -> TypedVector2D<T, U1> {
+    fn div(self, scale: TypedScale<T, U1, U2>) -> Self::Output {
         vec2(self.x / scale.get(), self.y / scale.get())
     }
 }
@@ -335,7 +361,17 @@ impl<T: NumCast + Copy, U> TypedVector2D<T, U> {
     /// as one would expect from a simple cast, but this behavior does not always make sense
     /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
     #[inline]
-    pub fn cast<NewT: NumCast + Copy>(&self) -> Option<TypedVector2D<NewT, U>> {
+    pub fn cast<NewT: NumCast + Copy>(&self) -> TypedVector2D<NewT, U> {
+        self.try_cast().unwrap()
+    }
+
+    /// Fallible cast from one numeric representation to another, preserving the units.
+    ///
+    /// When casting from floating vector to integer coordinates, the decimals are truncated
+    /// as one would expect from a simple cast, but this behavior does not always make sense
+    /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
+    #[inline]
+    pub fn try_cast<NewT: NumCast + Copy>(&self) -> Option<TypedVector2D<NewT, U>> {
         match (NumCast::from(self.x), NumCast::from(self.y)) {
             (Some(x), Some(y)) => Some(TypedVector2D::new(x, y)),
             _ => None,
@@ -347,13 +383,13 @@ impl<T: NumCast + Copy, U> TypedVector2D<T, U> {
     /// Cast into an `f32` vector.
     #[inline]
     pub fn to_f32(&self) -> TypedVector2D<f32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `f64` vector.
     #[inline]
     pub fn to_f64(&self) -> TypedVector2D<f64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `usize` vector, truncating decimals if any.
@@ -363,7 +399,7 @@ impl<T: NumCast + Copy, U> TypedVector2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_usize(&self) -> TypedVector2D<usize, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `u32` vector, truncating decimals if any.
@@ -373,7 +409,7 @@ impl<T: NumCast + Copy, U> TypedVector2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_u32(&self) -> TypedVector2D<u32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an i32 vector, truncating decimals if any.
@@ -383,7 +419,7 @@ impl<T: NumCast + Copy, U> TypedVector2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i32(&self) -> TypedVector2D<i32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an i64 vector, truncating decimals if any.
@@ -393,7 +429,7 @@ impl<T: NumCast + Copy, U> TypedVector2D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i64(&self) -> TypedVector2D<i64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 }
 
@@ -435,14 +471,18 @@ where
     }
 }
 
-define_matrix! {
-    /// A 3d Vector tagged with a unit.
-    pub struct TypedVector3D<T, U> {
-        pub x: T,
-        pub y: T,
-        pub z: T,
-    }
+/// A 3d Vector tagged with a unit.
+#[derive(EuclidMatrix)]
+#[repr(C)]
+pub struct TypedVector3D<T, U> {
+    pub x: T,
+    pub y: T,
+    pub z: T,
+    #[doc(hidden)]
+    pub _unit: PhantomData<U>,
 }
+
+mint_vec!(TypedVector3D[x, y, z] = Vector3);
 
 /// Default 3d vector type with no unit.
 ///
@@ -479,9 +519,9 @@ impl<T, U> TypedVector3D<T, U> {
     #[inline]
     pub fn new(x: T, y: T, z: T) -> Self {
         TypedVector3D {
-            x: x,
-            y: y,
-            z: z,
+            x,
+            y,
+            z,
             _unit: PhantomData,
         }
     }
@@ -586,6 +626,21 @@ impl<T: Mul<T, Output = T> + Add<T, Output = T> + Sub<T, Output = T> + Copy, U>
         T: Float,
     {
         self / self.length()
+    }
+
+    /// Return the normalized vector even if the length is larger than the max value of Float.
+    #[inline]
+    pub fn robust_normalize(self) -> Self
+    where
+        T: Float,
+    {
+        let length = self.length();
+        if length.is_infinite() {
+            let scaled = self / T::max_value();
+            scaled / scaled.length()
+        } else {
+            self / length
+        }
     }
 
     #[inline]
@@ -702,6 +757,27 @@ impl<T: Float, U> TypedVector3D<T, U> {
             self.z.max(other.z),
         )
     }
+
+    #[inline]
+    pub fn clamp(&self, start: Self, end: Self) -> Self {
+        self.max(start).min(end)
+    }
+}
+
+impl<T: Copy + Mul<T, Output = T>, U1, U2> Mul<TypedScale<T, U1, U2>> for TypedVector3D<T, U1> {
+    type Output = TypedVector3D<T, U2>;
+    #[inline]
+    fn mul(self, scale: TypedScale<T, U1, U2>) -> Self::Output {
+        vec3(self.x * scale.get(), self.y * scale.get(), self.z * scale.get())
+    }
+}
+
+impl<T: Copy + Div<T, Output = T>, U1, U2> Div<TypedScale<T, U1, U2>> for TypedVector3D<T, U2> {
+    type Output = TypedVector3D<T, U1>;
+    #[inline]
+    fn div(self, scale: TypedScale<T, U1, U2>) -> Self::Output {
+        vec3(self.x / scale.get(), self.y / scale.get(), self.z / scale.get())
+    }
 }
 
 impl<T: Round, U> TypedVector3D<T, U> {
@@ -744,7 +820,17 @@ impl<T: NumCast + Copy, U> TypedVector3D<T, U> {
     /// as one would expect from a simple cast, but this behavior does not always make sense
     /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
     #[inline]
-    pub fn cast<NewT: NumCast + Copy>(&self) -> Option<TypedVector3D<NewT, U>> {
+    pub fn cast<NewT: NumCast + Copy>(&self) -> TypedVector3D<NewT, U> {
+        self.try_cast().unwrap()
+    }
+
+    /// Fallible cast from one numeric representation to another, preserving the units.
+    ///
+    /// When casting from floating vector to integer coordinates, the decimals are truncated
+    /// as one would expect from a simple cast, but this behavior does not always make sense
+    /// geometrically. Consider using `round()`, `ceil()` or `floor()` before casting.
+    #[inline]
+    pub fn try_cast<NewT: NumCast + Copy>(&self) -> Option<TypedVector3D<NewT, U>> {
         match (
             NumCast::from(self.x),
             NumCast::from(self.y),
@@ -760,13 +846,13 @@ impl<T: NumCast + Copy, U> TypedVector3D<T, U> {
     /// Cast into an `f32` vector.
     #[inline]
     pub fn to_f32(&self) -> TypedVector3D<f32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `f64` vector.
     #[inline]
     pub fn to_f64(&self) -> TypedVector3D<f64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `usize` vector, truncating decimals if any.
@@ -776,7 +862,7 @@ impl<T: NumCast + Copy, U> TypedVector3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_usize(&self) -> TypedVector3D<usize, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `u32` vector, truncating decimals if any.
@@ -786,7 +872,7 @@ impl<T: NumCast + Copy, U> TypedVector3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_u32(&self) -> TypedVector3D<u32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `i32` vector, truncating decimals if any.
@@ -796,7 +882,7 @@ impl<T: NumCast + Copy, U> TypedVector3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i32(&self) -> TypedVector3D<i32, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 
     /// Cast into an `i64` vector, truncating decimals if any.
@@ -806,7 +892,7 @@ impl<T: NumCast + Copy, U> TypedVector3D<T, U> {
     /// the desired conversion behavior.
     #[inline]
     pub fn to_i64(&self) -> TypedVector3D<i64, U> {
-        self.cast().unwrap()
+        self.cast()
     }
 }
 
@@ -853,6 +939,241 @@ where
     }
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct BoolVector2D {
+    pub x: bool,
+    pub y: bool,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct BoolVector3D {
+    pub x: bool,
+    pub y: bool,
+    pub z: bool,
+}
+
+impl BoolVector2D {
+    #[inline]
+    pub fn all(&self) -> bool {
+        self.x && self.y
+    }
+
+    #[inline]
+    pub fn any(&self) -> bool {
+        self.x || self.y
+    }
+
+    #[inline]
+    pub fn none(&self) -> bool {
+        !self.any()
+    }
+
+    #[inline]
+    pub fn and(&self, other: Self) -> Self {
+        BoolVector2D {
+            x: self.x && other.x,
+            y: self.y && other.y,
+        }
+    }
+
+    #[inline]
+    pub fn or(&self, other: Self) -> Self {
+        BoolVector2D {
+            x: self.x || other.x,
+            y: self.y || other.y,
+        }
+    }
+
+    #[inline]
+    pub fn not(&self) -> Self {
+        BoolVector2D {
+            x: !self.x,
+            y: !self.y,
+        }
+    }
+
+    #[inline]
+    pub fn select_point<T: Copy, U>(&self, a: &TypedPoint2D<T, U>, b: &TypedPoint2D<T, U>) -> TypedPoint2D<T, U> {
+        point2(
+            if self.x { a.x } else { b.x },
+            if self.y { a.y } else { b.y },
+        )
+    }
+
+    #[inline]
+    pub fn select_vector<T: Copy, U>(&self, a: &TypedVector2D<T, U>, b: &TypedVector2D<T, U>) -> TypedVector2D<T, U> {
+        vec2(
+            if self.x { a.x } else { b.x },
+            if self.y { a.y } else { b.y },
+        )
+    }
+
+    #[inline]
+    pub fn select_size<T: Copy, U>(&self, a: &TypedSize2D<T, U>, b: &TypedSize2D<T, U>) -> TypedSize2D<T, U> {
+        size2(
+            if self.x { a.width } else { b.width },
+            if self.y { a.height } else { b.height },
+        )
+    }
+}
+
+impl BoolVector3D {
+    #[inline]
+    pub fn all(&self) -> bool {
+        self.x && self.y && self.z
+    }
+
+    #[inline]
+    pub fn any(&self) -> bool {
+        self.x || self.y || self.z
+    }
+
+    #[inline]
+    pub fn none(&self) -> bool {
+        !self.any()
+    }
+
+    #[inline]
+    pub fn and(&self, other: Self) -> Self {
+        BoolVector3D {
+            x: self.x && other.x,
+            y: self.y && other.y,
+            z: self.z && other.z,
+        }
+    }
+
+    #[inline]
+    pub fn or(&self, other: Self) -> Self {
+        BoolVector3D {
+            x: self.x || other.x,
+            y: self.y || other.y,
+            z: self.z || other.z,
+        }
+    }
+
+    #[inline]
+    pub fn not(&self) -> Self {
+        BoolVector3D {
+            x: !self.x,
+            y: !self.y,
+            z: !self.z,
+        }
+    }
+
+
+    #[inline]
+    pub fn select_point<T: Copy, U>(&self, a: &TypedPoint3D<T, U>, b: &TypedPoint3D<T, U>) -> TypedPoint3D<T, U> {
+        point3(
+            if self.x { a.x } else { b.x },
+            if self.y { a.y } else { b.y },
+            if self.z { a.z } else { b.z },
+        )
+    }
+
+    #[inline]
+    pub fn select_vector<T: Copy, U>(&self, a: &TypedVector3D<T, U>, b: &TypedVector3D<T, U>) -> TypedVector3D<T, U> {
+        vec3(
+            if self.x { a.x } else { b.x },
+            if self.y { a.y } else { b.y },
+            if self.z { a.z } else { b.z },
+        )
+    }
+
+    #[inline]
+    pub fn xy(&self) -> BoolVector2D {
+        BoolVector2D {
+            x: self.x,
+            y: self.y,
+        }
+    }
+
+    #[inline]
+    pub fn xz(&self) -> BoolVector2D {
+        BoolVector2D {
+            x: self.x,
+            y: self.z,
+        }
+    }
+
+    #[inline]
+    pub fn yz(&self) -> BoolVector2D {
+        BoolVector2D {
+            x: self.y,
+            y: self.z,
+        }
+    }
+}
+
+impl<T: PartialOrd, U> TypedVector2D<T, U> {
+    pub fn greater_than(&self, other: &Self) -> BoolVector2D {
+        BoolVector2D {
+            x: self.x > other.x,
+            y: self.y > other.y,
+        }
+    }
+
+    pub fn lower_than(&self, other: &Self) -> BoolVector2D {
+        BoolVector2D {
+            x: self.x < other.x,
+            y: self.y < other.y,
+        }
+    }
+}
+
+
+impl<T: PartialEq, U> TypedVector2D<T, U> {
+    pub fn equal(&self, other: &Self) -> BoolVector2D {
+        BoolVector2D {
+            x: self.x == other.x,
+            y: self.y == other.y,
+        }
+    }
+
+    pub fn not_equal(&self, other: &Self) -> BoolVector2D {
+        BoolVector2D {
+            x: self.x != other.x,
+            y: self.y != other.y,
+        }
+    }
+}
+
+impl<T: PartialOrd, U> TypedVector3D<T, U> {
+    pub fn greater_than(&self, other: &Self) -> BoolVector3D {
+        BoolVector3D {
+            x: self.x > other.x,
+            y: self.y > other.y,
+            z: self.z > other.z,
+        }
+    }
+
+    pub fn lower_than(&self, other: &Self) -> BoolVector3D {
+        BoolVector3D {
+            x: self.x < other.x,
+            y: self.y < other.y,
+            z: self.z < other.z,
+        }
+    }
+}
+
+
+impl<T: PartialEq, U> TypedVector3D<T, U> {
+    pub fn equal(&self, other: &Self) -> BoolVector3D {
+        BoolVector3D {
+            x: self.x == other.x,
+            y: self.y == other.y,
+            z: self.z == other.z,
+        }
+    }
+
+    pub fn not_equal(&self, other: &Self) -> BoolVector3D {
+        BoolVector3D {
+            x: self.x != other.x,
+            y: self.y != other.y,
+            z: self.z != other.z,
+        }
+    }
+}
+
 /// Convenience constructor.
 #[inline]
 pub fn vec2<T, U>(x: T, y: T) -> TypedVector2D<T, U> {
@@ -865,9 +1186,22 @@ pub fn vec3<T, U>(x: T, y: T, z: T) -> TypedVector3D<T, U> {
     TypedVector3D::new(x, y, z)
 }
 
+#[inline]
+pub fn bvec2(x: bool, y: bool) -> BoolVector2D {
+    BoolVector2D { x, y }
+}
+
+#[inline]
+pub fn bvec3(x: bool, y: bool, z: bool) -> BoolVector3D {
+    BoolVector3D { x, y, z }
+}
+
+
 #[cfg(test)]
 mod vector2d {
     use super::{Vector2D, vec2};
+    #[cfg(feature = "mint")]
+    use mint;
     type Vec2 = Vector2D<f32>;
 
     #[test]
@@ -902,6 +1236,10 @@ mod vector2d {
         assert!(p0.normalize().x.is_nan() && p0.normalize().y.is_nan());
         assert_eq!(p1.normalize(), vec2(1.0, 0.0));
         assert_eq!(p2.normalize(), vec2(0.6, -0.8));
+
+        let p3: Vec2 = vec2(::std::f32::MAX, ::std::f32::MAX);
+        assert_ne!(p3.normalize(), vec2(1.0 / 2.0f32.sqrt(), 1.0 / 2.0f32.sqrt()));
+        assert_eq!(p3.robust_normalize(), vec2(1.0 / 2.0f32.sqrt(), 1.0 / 2.0f32.sqrt()));
     }
 
     #[test]
@@ -923,10 +1261,9 @@ mod vector2d {
 
         assert_eq!(result, vec2(2.0, 3.0));
     }
-
     #[test]
     pub fn test_angle_from_x_axis() {
-        use std::f32::consts::FRAC_PI_2;
+        use core::f32::consts::FRAC_PI_2;
         use approxeq::ApproxEq;
 
         let right: Vec2 = vec2(10.0, 0.0);
@@ -936,6 +1273,16 @@ mod vector2d {
         assert!(right.angle_from_x_axis().get().approx_eq(&0.0));
         assert!(down.angle_from_x_axis().get().approx_eq(&FRAC_PI_2));
         assert!(up.angle_from_x_axis().get().approx_eq(&-FRAC_PI_2));
+    }
+
+    #[cfg(feature = "mint")]
+    #[test]
+    pub fn test_mint() {
+        let v1 = Vec2::new(1.0, 3.0);
+        let vm: mint::Vector2<_> = v1.into();
+        let v2 = Vec2::from(vm);
+
+        assert_eq!(v1, v2);
     }
 }
 
@@ -971,7 +1318,7 @@ mod typedvector2d {
     #[test]
     pub fn test_scalar_mul() {
         let p1 = Vector2DMm::new(1.0, 2.0);
-        let cm_per_mm: TypedScale<f32, Mm, Cm> = TypedScale::new(0.1);
+        let cm_per_mm = TypedScale::<f32, Mm, Cm>::new(0.1);
 
         let result: Vector2DCm<f32> = p1 * cm_per_mm;
 
@@ -987,7 +1334,11 @@ mod typedvector2d {
 
 #[cfg(test)]
 mod vector3d {
-    use super::{Vector3D, vec2, vec3};
+    #[cfg(feature = "mint")]
+    use mint;
+    use super::{TypedVector3D, Vector3D, vec2, vec3};
+    use scale::TypedScale;
+
     type Vec3 = Vector3D<f32>;
 
     #[test]
@@ -1015,6 +1366,10 @@ mod vector3d {
         );
         assert_eq!(p1.normalize(), vec3(0.0, -1.0, 0.0));
         assert_eq!(p2.normalize(), vec3(1.0 / 3.0, 2.0 / 3.0, -2.0 / 3.0));
+
+        let p3: Vec3 = vec3(::std::f32::MAX, ::std::f32::MAX, 0.0);
+        assert_ne!(p3.normalize(), vec3(1.0 / 2.0f32.sqrt(), 1.0 / 2.0f32.sqrt(), 0.0));
+        assert_eq!(p3.robust_normalize(), vec3(1.0 / 2.0f32.sqrt(), 1.0 / 2.0f32.sqrt(), 0.0));
     }
 
     #[test]
@@ -1038,10 +1393,138 @@ mod vector3d {
     }
 
     #[test]
+    pub fn test_clamp() {
+        let p1: Vec3 = vec3(1.0, -1.0, 5.0);
+        let p2: Vec3 = vec3(2.0, 5.0, 10.0);
+        let p3: Vec3 = vec3(-1.0, 2.0, 20.0);
+
+        let result = p3.clamp(p1, p2);
+
+        assert_eq!(result, vec3(1.0, 2.0, 10.0));
+    }
+
+    #[test]
+    pub fn test_scalar_mul() {
+        enum Mm {}
+        enum Cm {}
+
+        let p1 = TypedVector3D::<f32, Mm>::new(1.0, 2.0, 3.0);
+        let cm_per_mm = TypedScale::<f32, Mm, Cm>::new(0.1);
+
+        let result: TypedVector3D<f32, Cm> = p1 * cm_per_mm;
+
+        assert_eq!(result, vec3(0.1, 0.2, 0.3));
+    }
+
+    #[test]
     pub fn test_swizzling() {
         let p: Vector3D<i32> = vec3(1, 2, 3);
         assert_eq!(p.xy(), vec2(1, 2));
         assert_eq!(p.xz(), vec2(1, 3));
         assert_eq!(p.yz(), vec2(2, 3));
     }
+
+    #[cfg(feature = "mint")]
+    #[test]
+    pub fn test_mint() {
+        let v1 = Vec3::new(1.0, 3.0, 5.0);
+        let vm: mint::Vector3<_> = v1.into();
+        let v2 = Vec3::from(vm);
+
+        assert_eq!(v1, v2);
+    }
+}
+
+#[cfg(test)]
+mod bool_vector {
+    use super::*;
+    type Vec2 = Vector2D<f32>;
+    type Vec3 = Vector3D<f32>;
+
+    #[test]
+    fn test_bvec2() {
+
+        assert_eq!(
+            Vec2::new(1.0, 2.0).greater_than(&Vec2::new(2.0, 1.0)),
+            bvec2(false, true),
+        );
+
+        assert_eq!(
+            Vec2::new(1.0, 2.0).lower_than(&Vec2::new(2.0, 1.0)),
+            bvec2(true, false),
+        );
+
+        assert_eq!(
+            Vec2::new(1.0, 2.0).equal(&Vec2::new(1.0, 3.0)),
+            bvec2(true, false),
+        );
+
+        assert_eq!(
+            Vec2::new(1.0, 2.0).not_equal(&Vec2::new(1.0, 3.0)),
+            bvec2(false, true),
+        );
+
+        assert!(bvec2(true, true).any());
+        assert!(bvec2(false, true).any());
+        assert!(bvec2(true, false).any());
+        assert!(!bvec2(false, false).any());
+        assert!(bvec2(false, false).none());
+        assert!(bvec2(true, true).all());
+        assert!(!bvec2(false, true).all());
+        assert!(!bvec2(true, false).all());
+        assert!(!bvec2(false, false).all());
+
+        assert_eq!(bvec2(true, false).not(), bvec2(false, true));
+        assert_eq!(bvec2(true, false).and(bvec2(true, true)), bvec2(true, false));
+        assert_eq!(bvec2(true, false).or(bvec2(true, true)), bvec2(true, true));
+
+        assert_eq!(
+            bvec2(true, false).select_vector(&Vec2::new(1.0, 2.0), &Vec2::new(3.0, 4.0)),
+            Vec2::new(1.0, 4.0),
+        );
+    }
+
+    #[test]
+    fn test_bvec3() {
+
+        assert_eq!(
+            Vec3::new(1.0, 2.0, 3.0).greater_than(&Vec3::new(3.0, 2.0, 1.0)),
+            bvec3(false, false, true),
+        );
+
+        assert_eq!(
+            Vec3::new(1.0, 2.0, 3.0).lower_than(&Vec3::new(3.0, 2.0, 1.0)),
+            bvec3(true, false, false),
+        );
+
+        assert_eq!(
+            Vec3::new(1.0, 2.0, 3.0).equal(&Vec3::new(3.0, 2.0, 1.0)),
+            bvec3(false, true, false),
+        );
+
+        assert_eq!(
+            Vec3::new(1.0, 2.0, 3.0).not_equal(&Vec3::new(3.0, 2.0, 1.0)),
+            bvec3(true, false, true),
+        );
+
+        assert!(bvec3(true, true, false).any());
+        assert!(bvec3(false, true, false).any());
+        assert!(bvec3(true, false, false).any());
+        assert!(!bvec3(false, false, false).any());
+        assert!(bvec3(false, false, false).none());
+        assert!(bvec3(true, true, true).all());
+        assert!(!bvec3(false, true, false).all());
+        assert!(!bvec3(true, false, false).all());
+        assert!(!bvec3(false, false, false).all());
+
+        assert_eq!(bvec3(true, false, true).not(), bvec3(false, true, false));
+        assert_eq!(bvec3(true, false, true).and(bvec3(true, true, false)), bvec3(true, false, false));
+        assert_eq!(bvec3(true, false, false).or(bvec3(true, true, false)), bvec3(true, true, false));
+
+        assert_eq!(
+            bvec3(true, false, true).select_vector(&Vec3::new(1.0, 2.0, 3.0), &Vec3::new(4.0, 5.0, 6.0)),
+            Vec3::new(1.0, 5.0, 3.0),
+        );
+    }
+
 }

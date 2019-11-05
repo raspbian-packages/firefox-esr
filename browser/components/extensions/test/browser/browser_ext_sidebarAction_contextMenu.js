@@ -4,9 +4,9 @@
 
 let extData = {
   manifest: {
-    "permissions": ["contextMenus"],
-    "sidebar_action": {
-      "default_panel": "sidebar.html",
+    permissions: ["contextMenus"],
+    sidebar_action: {
+      default_panel: "sidebar.html",
     },
   },
   useAddonManager: "temporary",
@@ -50,6 +50,7 @@ let contextMenuItems = {
   "context-viewinfo": "",
   "inspect-separator": "hidden",
   "context-inspect": "hidden",
+  "context-inspect-a11y": "hidden",
   "context-bookmarkpage": "hidden",
 };
 
@@ -60,17 +61,23 @@ add_task(async function sidebar_contextmenu() {
   await extension.awaitMessage("sidebar");
 
   let contentAreaContextMenu = await openContextMenuInSidebar();
-  let item = contentAreaContextMenu.getElementsByAttribute("label", "Click me!");
+  let item = contentAreaContextMenu.getElementsByAttribute(
+    "label",
+    "Click me!"
+  );
   is(item.length, 1, "contextMenu item for page was found");
 
   item[0].click();
   await closeContextMenu(contentAreaContextMenu);
   let tab = await extension.awaitMessage("menu-click");
-  is(tab, null, "tab argument is optional, and missing in clicks from sidebars");
+  is(
+    tab,
+    null,
+    "tab argument is optional, and missing in clicks from sidebars"
+  );
 
   await extension.unload();
 });
-
 
 add_task(async function sidebar_contextmenu_hidden_items() {
   let extension = ExtensionTestUtils.loadExtension(extData);
@@ -117,9 +124,4 @@ add_task(async function sidebar_image_contextmenu() {
   await closeContextMenu(contentAreaContextMenu);
 
   await extension.unload();
-});
-
-add_task(async function cleanup() {
-  // This is set on initial sidebar install.
-  Services.prefs.clearUserPref("extensions.sidebar-button.shown");
 });

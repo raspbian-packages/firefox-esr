@@ -14,38 +14,6 @@ class TextEditor;
 namespace a11y {
 
 /**
- * Accessible for HTML progress element.
- */
-typedef ProgressMeterAccessible<1> HTMLProgressMeterAccessible;
-
-/**
- * Accessible for HTML input@type="checkbox".
- */
-class HTMLCheckboxAccessible : public LeafAccessible {
- public:
-  enum { eAction_Click = 0 };
-
-  HTMLCheckboxAccessible(nsIContent* aContent, DocAccessible* aDoc)
-      : LeafAccessible(aContent, aDoc) {
-    // Ignore "CheckboxStateChange" DOM event in lieu of document observer
-    // state change notification.
-    mStateFlags |= eIgnoreDOMUIEvent;
-  }
-
-  // Accessible
-  virtual mozilla::a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
-
-  // ActionAccessible
-  virtual uint8_t ActionCount() override;
-  virtual void ActionNameAt(uint8_t aIndex, nsAString& aName) override;
-  virtual bool DoAction(uint8_t aIndex) override;
-
-  // Widgets
-  virtual bool IsWidget() const override;
-};
-
-/**
  * Accessible for HTML input@type="radio" element.
  */
 class HTMLRadioButtonAccessible : public RadioButtonAccessible {
@@ -58,7 +26,7 @@ class HTMLRadioButtonAccessible : public RadioButtonAccessible {
   }
 
   // Accessible
-  virtual uint64_t NativeState() override;
+  virtual uint64_t NativeState() const override;
   virtual void GetPositionAndSizeInternal(int32_t* aPosInSet,
                                           int32_t* aSetSize) override;
 };
@@ -74,21 +42,21 @@ class HTMLButtonAccessible : public HyperTextAccessibleWrap {
   HTMLButtonAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual mozilla::a11y::role NativeRole() override;
+  virtual mozilla::a11y::role NativeRole() const override;
   virtual uint64_t State() override;
-  virtual uint64_t NativeState() override;
+  virtual uint64_t NativeState() const override;
 
   // ActionAccessible
-  virtual uint8_t ActionCount() override;
+  virtual uint8_t ActionCount() const override;
   virtual void ActionNameAt(uint8_t aIndex, nsAString& aName) override;
-  virtual bool DoAction(uint8_t aIndex) override;
+  virtual bool DoAction(uint8_t aIndex) const override;
 
   // Widgets
   virtual bool IsWidget() const override;
 
  protected:
   // Accessible
-  virtual ENameValueFlag NativeName(nsString& aName) override;
+  virtual ENameValueFlag NativeName(nsString& aName) const override;
 };
 
 /**
@@ -108,16 +76,16 @@ class HTMLTextFieldAccessible final : public HyperTextAccessibleWrap {
   virtual already_AddRefed<TextEditor> GetEditor() const override;
 
   // Accessible
-  virtual void Value(nsString& aValue) override;
+  virtual void Value(nsString& aValue) const override;
   virtual void ApplyARIAState(uint64_t* aState) const override;
-  virtual mozilla::a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
+  virtual mozilla::a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
   virtual already_AddRefed<nsIPersistentProperties> NativeAttributes() override;
 
   // ActionAccessible
-  virtual uint8_t ActionCount() override;
+  virtual uint8_t ActionCount() const override;
   virtual void ActionNameAt(uint8_t aIndex, nsAString& aName) override;
-  virtual bool DoAction(uint8_t aIndex) override;
+  virtual bool DoAction(uint8_t aIndex) const override;
 
   // Widgets
   virtual bool IsWidget() const override;
@@ -127,12 +95,21 @@ class HTMLTextFieldAccessible final : public HyperTextAccessibleWrap {
   virtual ~HTMLTextFieldAccessible() {}
 
   // Accessible
-  virtual ENameValueFlag NativeName(nsString& aName) override;
+  virtual ENameValueFlag NativeName(nsString& aName) const override;
 
   /**
-   * Return a XUL widget element this input is part of.
+   * Return a widget element this input is part of, for example, XUL:textbox or
+   * HTML:input@type="number".
    */
-  nsIContent* XULWidgetElm() const { return mContent->GetBindingParent(); }
+  nsIContent* BindingOrWidgetParent() const {
+    nsIContent * el = mContent->GetBindingParent();
+    if (el) {
+      return el;
+    }
+    // XUL textboxes custom elements implementation.
+    ErrorResult rv;
+    return Elm()->Closest(NS_LITERAL_STRING("textbox"), rv);
+  }
 };
 
 /**
@@ -143,8 +120,9 @@ class HTMLFileInputAccessible : public HyperTextAccessibleWrap {
   HTMLFileInputAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual mozilla::a11y::role NativeRole() override;
+  virtual mozilla::a11y::role NativeRole() const override;
   virtual nsresult HandleAccEvent(AccEvent* aAccEvent) override;
+  virtual Accessible* CurrentItem() const override;
 };
 
 /**
@@ -158,8 +136,8 @@ class HTMLSpinnerAccessible : public AccessibleWrap {
   }
 
   // Accessible
-  virtual mozilla::a11y::role NativeRole() override;
-  virtual void Value(nsString& aValue) override;
+  virtual mozilla::a11y::role NativeRole() const override;
+  virtual void Value(nsString& aValue) const override;
 
   virtual double MaxValue() const override;
   virtual double MinValue() const override;
@@ -179,8 +157,8 @@ class HTMLRangeAccessible : public LeafAccessible {
   }
 
   // Accessible
-  virtual void Value(nsString& aValue) override;
-  virtual mozilla::a11y::role NativeRole() override;
+  virtual void Value(nsString& aValue) const override;
+  virtual mozilla::a11y::role NativeRole() const override;
 
   // Value
   virtual double MaxValue() const override;
@@ -201,12 +179,12 @@ class HTMLGroupboxAccessible : public HyperTextAccessibleWrap {
   HTMLGroupboxAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual mozilla::a11y::role NativeRole() override;
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual mozilla::a11y::role NativeRole() const override;
+  virtual Relation RelationByType(RelationType aType) const override;
 
  protected:
   // Accessible
-  virtual ENameValueFlag NativeName(nsString& aName) override;
+  virtual ENameValueFlag NativeName(nsString& aName) const override;
 
   // HTMLGroupboxAccessible
   nsIContent* GetLegend() const;
@@ -220,7 +198,7 @@ class HTMLLegendAccessible : public HyperTextAccessibleWrap {
   HTMLLegendAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual Relation RelationByType(RelationType aType) const override;
 };
 
 /**
@@ -231,11 +209,11 @@ class HTMLFigureAccessible : public HyperTextAccessibleWrap {
   HTMLFigureAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual Relation RelationByType(RelationType aType) const override;
 
  protected:
   // Accessible
-  virtual ENameValueFlag NativeName(nsString& aName) override;
+  virtual ENameValueFlag NativeName(nsString& aName) const override;
 
   // HTMLLegendAccessible
   nsIContent* Caption() const;
@@ -249,7 +227,59 @@ class HTMLFigcaptionAccessible : public HyperTextAccessibleWrap {
   HTMLFigcaptionAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual Relation RelationByType(RelationType aType) const override;
+};
+
+/**
+ * Used for HTML form element.
+ */
+class HTMLFormAccessible : public HyperTextAccessibleWrap {
+ public:
+  HTMLFormAccessible(nsIContent* aContent, DocAccessible* aDoc)
+      : HyperTextAccessibleWrap(aContent, aDoc) {}
+
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLFormAccessible,
+                                       HyperTextAccessibleWrap)
+
+  // Accessible
+  virtual nsAtom* LandmarkRole() const override;
+  virtual a11y::role NativeRole() const override;
+
+ protected:
+  virtual ~HTMLFormAccessible() = default;
+};
+
+/**
+ * Accessible for HTML progress element.
+ */
+
+class HTMLProgressAccessible : public LeafAccessible {
+ public:
+  HTMLProgressAccessible(nsIContent* aContent, DocAccessible* aDoc)
+      : LeafAccessible(aContent, aDoc) {
+    // Ignore 'ValueChange' DOM event in lieu of @value attribute change
+    // notifications.
+    mStateFlags |= eHasNumericValue | eIgnoreDOMUIEvent;
+    mType = eProgressType;
+  }
+
+  // Accessible
+  virtual void Value(nsString& aValue) const override;
+  virtual mozilla::a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
+
+  // Value
+  virtual double MaxValue() const override;
+  virtual double MinValue() const override;
+  virtual double CurValue() const override;
+  virtual double Step() const override;
+  virtual bool SetCurValue(double aValue) override;
+
+  // Widgets
+  virtual bool IsWidget() const override;
+
+ protected:
+  virtual ~HTMLProgressAccessible() {}
 };
 
 }  // namespace a11y

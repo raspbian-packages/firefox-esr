@@ -17,5 +17,13 @@ int GetEffectiveContentSandboxLevel();
 // Checks whether the effective content sandbox level is > 0.
 bool IsContentSandboxEnabled();
 
+#if defined(XP_MACOSX)
+int ClampFlashSandboxLevel(const int aLevel);
+#endif
+
+#if defined(__OpenBSD__)
+bool StartOpenBSDSandbox(GeckoProcessType type);
+#endif
+
 }  // namespace mozilla
 #endif  // mozilla_SandboxPolicies_h

@@ -8,6 +8,8 @@
 #include "mozilla/dom/EventTarget.h"
 #include "mozilla/dom/EventTargetBinding.h"
 #include "mozilla/dom/ConstructibleEventTarget.h"
+#include "mozilla/dom/Nullable.h"
+#include "mozilla/dom/WindowProxyHolder.h"
 #include "nsIGlobalObject.h"
 #include "nsThreadUtils.h"
 
@@ -26,6 +28,62 @@ already_AddRefed<EventTarget> EventTarget::Constructor(
   return target.forget();
 }
 
+bool EventTarget::ComputeWantsUntrusted(
+    const Nullable<bool>& aWantsUntrusted,
+    const AddEventListenerOptionsOrBoolean* aOptions, ErrorResult& aRv) {
+  if (aOptions && aOptions->IsAddEventListenerOptions()) {
+    const auto& options = aOptions->GetAsAddEventListenerOptions();
+    if (options.mWantUntrusted.WasPassed()) {
+      return options.mWantUntrusted.Value();
+    }
+  }
+
+  if (!aWantsUntrusted.IsNull()) {
+    return aWantsUntrusted.Value();
+  }
+
+  bool defaultWantsUntrusted = ComputeDefaultWantsUntrusted(aRv);
+  if (aRv.Failed()) {
+    return false;
+  }
+
+  return defaultWantsUntrusted;
+}
+
+void EventTarget::AddEventListener(
+    const nsAString& aType, EventListener* aCallback,
+    const AddEventListenerOptionsOrBoolean& aOptions,
+    const Nullable<bool>& aWantsUntrusted, ErrorResult& aRv) {
+  bool wantsUntrusted = ComputeWantsUntrusted(aWantsUntrusted, &aOptions, aRv);
+  if (aRv.Failed()) {
+    return;
+  }
+
+  EventListenerManager* elm = GetOrCreateListenerManager();
+  if (!elm) {
+    aRv.Throw(NS_ERROR_UNEXPECTED);
+    return;
+  }
+
+  elm->AddEventListener(aType, aCallback, aOptions, wantsUntrusted);
+}
+
+nsresult EventTarget::AddEventListener(const nsAString& aType,
+                                       nsIDOMEventListener* aListener,
+                                       bool aUseCapture,
+                                       const Nullable<bool>& aWantsUntrusted) {
+  ErrorResult rv;
+  bool wantsUntrusted = ComputeWantsUntrusted(aWantsUntrusted, nullptr, rv);
+  if (rv.Failed()) {
+    return rv.StealNSResult();
+  }
+
+  EventListenerManager* elm = GetOrCreateListenerManager();
+  NS_ENSURE_STATE(elm);
+  elm->AddEventListener(aType, aListener, aUseCapture, wantsUntrusted);
+  return NS_OK;
+}
+
 void EventTarget::RemoveEventListener(
     const nsAString& aType, EventListener* aListener,
     const EventListenerOptionsOrBoolean& aOptions, ErrorResult& aRv) {
@@ -35,10 +93,50 @@ void EventTarget::RemoveEventListener(
   }
 }
 
-EventHandlerNonNull* EventTarget::GetEventHandler(
-    nsAtom* aType, const nsAString& aTypeString) {
+void EventTarget::RemoveEventListener(const nsAString& aType,
+                                      nsIDOMEventListener* aListener,
+                                      bool aUseCapture) {
   EventListenerManager* elm = GetExistingListenerManager();
-  return elm ? elm->GetEventHandler(aType, aTypeString) : nullptr;
+  if (elm) {
+    elm->RemoveEventListener(aType, aListener, aUseCapture);
+  }
+}
+
+nsresult EventTarget::AddSystemEventListener(
+    const nsAString& aType, nsIDOMEventListener* aListener, bool aUseCapture,
+    const Nullable<bool>& aWantsUntrusted) {
+  ErrorResult rv;
+  bool wantsUntrusted = ComputeWantsUntrusted(aWantsUntrusted, nullptr, rv);
+  if (rv.Failed()) {
+    return rv.StealNSResult();
+  }
+
+  EventListenerManager* elm = GetOrCreateListenerManager();
+  NS_ENSURE_STATE(elm);
+
+  EventListenerFlags flags;
+  flags.mInSystemGroup = true;
+  flags.mCapture = aUseCapture;
+  flags.mAllowUntrustedEvents = wantsUntrusted;
+  elm->AddEventListenerByType(aListener, aType, flags);
+  return NS_OK;
+}
+
+void EventTarget::RemoveSystemEventListener(const nsAString& aType,
+                                            nsIDOMEventListener* aListener,
+                                            bool aUseCapture) {
+  EventListenerManager* elm = GetExistingListenerManager();
+  if (elm) {
+    EventListenerFlags flags;
+    flags.mInSystemGroup = true;
+    flags.mCapture = aUseCapture;
+    elm->RemoveEventListenerByType(aListener, aType, flags);
+  }
+}
+
+EventHandlerNonNull* EventTarget::GetEventHandler(nsAtom* aType) {
+  EventListenerManager* elm = GetExistingListenerManager();
+  return elm ? elm->GetEventHandler(aType) : nullptr;
 }
 
 void EventTarget::SetEventHandler(const nsAString& aType,
@@ -48,18 +146,13 @@ void EventTarget::SetEventHandler(const nsAString& aType,
     aRv.Throw(NS_ERROR_INVALID_ARG);
     return;
   }
-  if (NS_IsMainThread()) {
-    RefPtr<nsAtom> type = NS_Atomize(aType);
-    SetEventHandler(type, EmptyString(), aHandler);
-    return;
-  }
-  SetEventHandler(nullptr, Substring(aType, 2),  // Remove "on"
-                  aHandler);
+  RefPtr<nsAtom> type = NS_Atomize(aType);
+  SetEventHandler(type, aHandler);
 }
 
-void EventTarget::SetEventHandler(nsAtom* aType, const nsAString& aTypeString,
+void EventTarget::SetEventHandler(nsAtom* aType,
                                   EventHandlerNonNull* aHandler) {
-  GetOrCreateListenerManager()->SetEventHandler(aType, aTypeString, aHandler);
+  GetOrCreateListenerManager()->SetEventHandler(aType, aHandler);
 }
 
 bool EventTarget::HasNonSystemGroupListenersForUntrustedKeyEvents() const {
@@ -79,11 +172,25 @@ bool EventTarget::IsApzAware() const {
   return elm && elm->HasApzAwareListeners();
 }
 
-bool EventTarget::DispatchEvent(Event& aEvent, CallerType aCallerType,
-                                ErrorResult& aRv) {
-  bool result = false;
-  aRv = DispatchEvent(&aEvent, &result);
-  return !aEvent.DefaultPrevented(aCallerType);
+void EventTarget::DispatchEvent(Event& aEvent) {
+  // The caller type doesn't really matter if we don't care about the
+  // return value, but let's be safe and pass NonSystem.
+  Unused << DispatchEvent(aEvent, CallerType::NonSystem, IgnoreErrors());
+}
+
+void EventTarget::DispatchEvent(Event& aEvent, ErrorResult& aRv) {
+  // The caller type doesn't really matter if we don't care about the
+  // return value, but let's be safe and pass NonSystem.
+  Unused << DispatchEvent(aEvent, CallerType::NonSystem, IgnoreErrors());
+}
+
+Nullable<WindowProxyHolder> EventTarget::GetOwnerGlobalForBindings() {
+  nsPIDOMWindowOuter* win = GetOwnerGlobalForBindingsInternal();
+  if (!win) {
+    return nullptr;
+  }
+
+  return WindowProxyHolder(win->GetBrowsingContext());
 }
 
 }  // namespace dom

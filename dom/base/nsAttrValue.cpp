@@ -20,25 +20,47 @@
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/ServoBindingTypes.h"
 #include "mozilla/ServoUtils.h"
-#include "mozilla/DeclarationBlockInlines.h"
+#include "mozilla/DeclarationBlock.h"
 #include "nsContentUtils.h"
 #include "nsReadableUtils.h"
 #include "nsHTMLCSSStyleSheet.h"
-#include "nsCSSParser.h"
 #include "nsStyledElement.h"
 #include "nsIURI.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include <algorithm>
-
-#ifdef LoadImage
-// Undefine LoadImage to prevent naming conflict with Windows.
-#undef LoadImage
-#endif
 
 using namespace mozilla;
 
 #define MISC_STR_PTR(_cont) \
   reinterpret_cast<void*>((_cont)->mStringBits & NS_ATTRVALUE_POINTERVALUE_MASK)
+
+/* static */
+MiscContainer* nsAttrValue::AllocMiscContainer() {
+  MOZ_ASSERT(NS_IsMainThread());
+  MiscContainer* cont = nullptr;
+  Swap(cont, sMiscContainerCache);
+
+  if (cont) {
+    return new (cont) MiscContainer;
+  }
+
+  return new MiscContainer;
+}
+
+/* static */
+void nsAttrValue::DeallocMiscContainer(MiscContainer* aCont) {
+  MOZ_ASSERT(NS_IsMainThread());
+  if (!aCont) {
+    return;
+  }
+
+  if (!sMiscContainerCache) {
+    aCont->~MiscContainer();
+    sMiscContainerCache = aCont;
+  } else {
+    delete aCont;
+  }
+}
 
 bool MiscContainer::GetString(nsAString& aString) const {
   void* ptr = MISC_STR_PTR(this);
@@ -122,6 +144,7 @@ void MiscContainer::Evict() {
 }
 
 nsTArray<const nsAttrValue::EnumTable*>* nsAttrValue::sEnumTableArray = nullptr;
+MiscContainer* nsAttrValue::sMiscContainerCache = nullptr;
 
 nsAttrValue::nsAttrValue() : mBits(0) {}
 
@@ -136,7 +159,7 @@ nsAttrValue::nsAttrValue(nsAtom* aValue) : mBits(0) { SetTo(aValue); }
 nsAttrValue::nsAttrValue(already_AddRefed<DeclarationBlock> aValue,
                          const nsAString* aSerialized)
     : mBits(0) {
-  SetTo(Move(aValue), aSerialized);
+  SetTo(std::move(aValue), aSerialized);
 }
 
 nsAttrValue::nsAttrValue(const nsIntMargin& aValue) : mBits(0) {
@@ -154,8 +177,14 @@ nsresult nsAttrValue::Init() {
 
 /* static */
 void nsAttrValue::Shutdown() {
+  MOZ_ASSERT(NS_IsMainThread());
   delete sEnumTableArray;
   sEnumTableArray = nullptr;
+  // The MiscContainer pointed to by sMiscContainerCache has already
+  // be destructed so `delete sMiscContainerCache` is
+  // dangerous. Invoke `operator delete` to free the memory.
+  ::operator delete(sMiscContainerCache);
+  sMiscContainerCache = nullptr;
 }
 
 void nsAttrValue::Reset() {
@@ -175,7 +204,7 @@ void nsAttrValue::Reset() {
         break;
       }
 
-      delete ClearMiscContainer();
+      DeallocMiscContainer(ClearMiscContainer());
 
       break;
     }
@@ -227,7 +256,7 @@ void nsAttrValue::SetTo(const nsAttrValue& aOther) {
 
   MiscContainer* otherCont = aOther.GetMiscContainer();
   if (otherCont->IsRefCounted()) {
-    delete ClearMiscContainer();
+    DeallocMiscContainer(ClearMiscContainer());
     NS_ADDREF(otherCont);
     SetPtrValueAndType(otherCont, eOtherBase);
     return;
@@ -258,10 +287,6 @@ void nsAttrValue::SetTo(const nsAttrValue& aOther) {
       NS_ADDREF(cont->mValue.mURL = otherCont->mValue.mURL);
       break;
     }
-    case eImage: {
-      NS_ADDREF(cont->mValue.mImage = otherCont->mValue.mImage);
-      break;
-    }
     case eAtomArray: {
       if (!EnsureEmptyAtomArray() ||
           !GetAtomArrayValue()->AppendElements(*otherCont->mValue.mAtomArray)) {
@@ -284,9 +309,9 @@ void nsAttrValue::SetTo(const nsAttrValue& aOther) {
       if (IsSVGType(otherCont->mType)) {
         // All SVG types are just pointers to classes and will therefore have
         // the same size so it doesn't really matter which one we assign
-        cont->mValue.mSVGAngle = otherCont->mValue.mSVGAngle;
+        cont->mValue.mSVGLength = otherCont->mValue.mSVGLength;
       } else {
-        NS_NOTREACHED("unknown type stored in MiscContainer");
+        MOZ_ASSERT_UNREACHABLE("unknown type stored in MiscContainer");
       }
       break;
     }
@@ -351,7 +376,7 @@ void nsAttrValue::SetTo(already_AddRefed<DeclarationBlock> aValue,
   MOZ_ASSERT(cont->mValue.mRefCount == 1);
 }
 
-void nsAttrValue::SetTo(css::URLValue* aValue, const nsAString* aSerialized) {
+void nsAttrValue::SetTo(nsIURI* aValue, const nsAString* aSerialized) {
   MiscContainer* cont = EnsureEmptyMiscContainer();
   NS_ADDREF(cont->mValue.mURL = aValue);
   cont->mType = eURL;
@@ -375,17 +400,17 @@ void nsAttrValue::SetToSerialized(const nsAttrValue& aOther) {
   }
 }
 
-void nsAttrValue::SetTo(const nsSVGAngle& aValue,
+void nsAttrValue::SetTo(const SVGAnimatedOrient& aValue,
                         const nsAString* aSerialized) {
-  SetSVGType(eSVGAngle, &aValue, aSerialized);
+  SetSVGType(eSVGOrient, &aValue, aSerialized);
 }
 
-void nsAttrValue::SetTo(const nsSVGIntegerPair& aValue,
+void nsAttrValue::SetTo(const SVGAnimatedIntegerPair& aValue,
                         const nsAString* aSerialized) {
   SetSVGType(eSVGIntegerPair, &aValue, aSerialized);
 }
 
-void nsAttrValue::SetTo(const nsSVGLength2& aValue,
+void nsAttrValue::SetTo(const SVGAnimatedLength& aValue,
                         const nsAString* aSerialized) {
   SetSVGType(eSVGLength, &aValue, aSerialized);
 }
@@ -410,7 +435,7 @@ void nsAttrValue::SetTo(const SVGNumberList& aValue,
   SetSVGType(eSVGNumberList, &aValue, aSerialized);
 }
 
-void nsAttrValue::SetTo(const nsSVGNumberPair& aValue,
+void nsAttrValue::SetTo(const SVGAnimatedNumberPair& aValue,
                         const nsAString* aSerialized) {
   SetSVGType(eSVGNumberPair, &aValue, aSerialized);
 }
@@ -460,7 +485,7 @@ void nsAttrValue::SetTo(const SVGTransformList& aValue,
   SetSVGType(eSVGTransformList, &aValue, aSerialized);
 }
 
-void nsAttrValue::SetTo(const nsSVGViewBox& aValue,
+void nsAttrValue::SetTo(const SVGAnimatedViewBox& aValue,
                         const nsAString* aSerialized) {
   SetSVGType(eSVGViewBox, &aValue, aSerialized);
 }
@@ -506,7 +531,7 @@ void nsAttrValue::ToString(nsAString& aResult) const {
     }
 #ifdef DEBUG
     case eColor: {
-      NS_NOTREACHED("color attribute without string data");
+      MOZ_ASSERT_UNREACHABLE("color attribute without string data");
       aResult.Truncate();
       break;
     }
@@ -541,14 +566,14 @@ void nsAttrValue::ToString(nsAString& aResult) const {
       aResult.AppendFloat(GetDoubleValue());
       break;
     }
-    case eSVGAngle: {
-      SVGAttrValueWrapper::ToString(GetMiscContainer()->mValue.mSVGAngle,
-                                    aResult);
+    case eSVGIntegerPair: {
+      SVGAttrValueWrapper::ToString(
+          GetMiscContainer()->mValue.mSVGAnimatedIntegerPair, aResult);
       break;
     }
-    case eSVGIntegerPair: {
-      SVGAttrValueWrapper::ToString(GetMiscContainer()->mValue.mSVGIntegerPair,
-                                    aResult);
+    case eSVGOrient: {
+      SVGAttrValueWrapper::ToString(
+          GetMiscContainer()->mValue.mSVGAnimatedOrient, aResult);
       break;
     }
     case eSVGLength: {
@@ -567,8 +592,8 @@ void nsAttrValue::ToString(nsAString& aResult) const {
       break;
     }
     case eSVGNumberPair: {
-      SVGAttrValueWrapper::ToString(GetMiscContainer()->mValue.mSVGNumberPair,
-                                    aResult);
+      SVGAttrValueWrapper::ToString(
+          GetMiscContainer()->mValue.mSVGAnimatedNumberPair, aResult);
       break;
     }
     case eSVGPathData: {
@@ -583,7 +608,7 @@ void nsAttrValue::ToString(nsAString& aResult) const {
     }
     case eSVGPreserveAspectRatio: {
       SVGAttrValueWrapper::ToString(
-          GetMiscContainer()->mValue.mSVGPreserveAspectRatio, aResult);
+          GetMiscContainer()->mValue.mSVGAnimatedPreserveAspectRatio, aResult);
       break;
     }
     case eSVGStringList: {
@@ -597,8 +622,8 @@ void nsAttrValue::ToString(nsAString& aResult) const {
       break;
     }
     case eSVGViewBox: {
-      SVGAttrValueWrapper::ToString(GetMiscContainer()->mValue.mSVGViewBox,
-                                    aResult);
+      SVGAttrValueWrapper::ToString(
+          GetMiscContainer()->mValue.mSVGAnimatedViewBox, aResult);
       break;
     }
     default: {
@@ -627,7 +652,7 @@ already_AddRefed<nsAtom> nsAttrValue::GetAsAtom() const {
 }
 
 const nsCheapString nsAttrValue::GetStringValue() const {
-  NS_PRECONDITION(Type() == eString, "wrong type");
+  MOZ_ASSERT(Type() == eString, "wrong type");
 
   return nsCheapString(static_cast<nsStringBuffer*>(GetPtr()));
 }
@@ -644,7 +669,7 @@ bool nsAttrValue::GetColorValue(nscolor& aColor) const {
 }
 
 void nsAttrValue::GetEnumString(nsAString& aResult, bool aRealTag) const {
-  NS_PRECONDITION(Type() == eEnum, "wrong type");
+  MOZ_ASSERT(Type() == eEnum, "wrong type");
 
   uint32_t allEnumBits = (BaseType() == eIntegerBase)
                              ? static_cast<uint32_t>(GetIntInternal())
@@ -665,7 +690,7 @@ void nsAttrValue::GetEnumString(nsAString& aResult, bool aRealTag) const {
     table++;
   }
 
-  NS_NOTREACHED("couldn't find value in EnumTable");
+  MOZ_ASSERT_UNREACHABLE("couldn't find value in EnumTable");
 }
 
 uint32_t nsAttrValue::GetAtomCount() const {
@@ -683,8 +708,8 @@ uint32_t nsAttrValue::GetAtomCount() const {
 }
 
 nsAtom* nsAttrValue::AtomAt(int32_t aIndex) const {
-  NS_PRECONDITION(aIndex >= 0, "Index must not be negative");
-  NS_PRECONDITION(GetAtomCount() > uint32_t(aIndex), "aIndex out of range");
+  MOZ_ASSERT(aIndex >= 0, "Index must not be negative");
+  MOZ_ASSERT(GetAtomCount() > uint32_t(aIndex), "aIndex out of range");
 
   if (BaseType() == eAtomBase) {
     return GetAtomValue();
@@ -740,10 +765,7 @@ uint32_t nsAttrValue::HashValue() const {
     case eCSSDeclaration: {
       return NS_PTR_TO_INT32(cont->mValue.mCSSDeclaration);
     }
-    // Intentionally identical, so that loading the image does not change the
-    // hash code.
-    case eURL:
-    case eImage: {
+    case eURL: {
       nsString str;
       ToString(str);
       return HashString(str);
@@ -768,9 +790,9 @@ uint32_t nsAttrValue::HashValue() const {
     default: {
       if (IsSVGType(cont->mType)) {
         // All SVG types are just pointers to classes so we can treat them alike
-        return NS_PTR_TO_INT32(cont->mValue.mSVGAngle);
+        return NS_PTR_TO_INT32(cont->mValue.mSVGLength);
       }
-      NS_NOTREACHED("unknown type stored in MiscContainer");
+      MOZ_ASSERT_UNREACHABLE("unknown type stored in MiscContainer");
       return 0;
     }
   }
@@ -838,9 +860,6 @@ bool nsAttrValue::Equals(const nsAttrValue& aOther) const {
     case eURL: {
       return thisCont->mValue.mURL == otherCont->mValue.mURL;
     }
-    case eImage: {
-      return thisCont->mValue.mImage == otherCont->mValue.mImage;
-    }
     case eAtomArray: {
       // For classlists we could be insensitive to order, however
       // classlists are never mapped attributes so they are never compared.
@@ -868,7 +887,7 @@ bool nsAttrValue::Equals(const nsAttrValue& aOther) const {
         MOZ_ASSERT(false, "Comparing nsAttrValues that point to SVG data");
         return false;
       }
-      NS_NOTREACHED("unknown type stored in MiscContainer");
+      MOZ_ASSERT_UNREACHABLE("unknown type stored in MiscContainer");
       return false;
     }
   }
@@ -922,7 +941,8 @@ bool nsAttrValue::Equals(const nsAString& aValue,
              : nsContentUtils::EqualsIgnoreASCIICase(val, aValue);
 }
 
-bool nsAttrValue::Equals(nsAtom* aValue, nsCaseTreatment aCaseSensitive) const {
+bool nsAttrValue::Equals(const nsAtom* aValue,
+                         nsCaseTreatment aCaseSensitive) const {
   if (aCaseSensitive != eCaseMatters) {
     // Need a better way to handle this!
     nsAutoString value;
@@ -984,15 +1004,13 @@ bool nsAttrValue::Contains(nsAtom* aValue,
   switch (BaseType()) {
     case eAtomBase: {
       nsAtom* atom = GetAtomValue();
-
       if (aCaseSensitive == eCaseMatters) {
         return aValue == atom;
       }
 
       // For performance reasons, don't do a full on unicode case insensitive
       // string comparison. This is only used for quirks mode anyway.
-      return nsContentUtils::EqualsIgnoreASCIICase(
-          nsDependentAtomString(aValue), nsDependentAtomString(atom));
+      return nsContentUtils::EqualsIgnoreASCIICase(aValue, atom);
     }
     default: {
       if (Type() == eAtomArray) {
@@ -1001,16 +1019,11 @@ bool nsAttrValue::Contains(nsAtom* aValue,
           return array->Contains(aValue);
         }
 
-        nsDependentAtomString val1(aValue);
-
-        for (RefPtr<nsAtom>*cur = array->Elements(),
-            *end = cur + array->Length();
-             cur != end; ++cur) {
+        for (RefPtr<nsAtom>& cur : *array) {
           // For performance reasons, don't do a full on unicode case
           // insensitive string comparison. This is only used for quirks mode
           // anyway.
-          if (nsContentUtils::EqualsIgnoreASCIICase(
-                  val1, nsDependentAtomString(*cur))) {
+          if (nsContentUtils::EqualsIgnoreASCIICase(aValue, cur)) {
             return true;
           }
         }
@@ -1105,7 +1118,7 @@ void nsAttrValue::ParseAtomArray(const nsAString& aValue) {
 
   AtomArray* array = GetAtomArrayValue();
 
-  if (!array->AppendElement(Move(classAtom))) {
+  if (!array->AppendElement(std::move(classAtom))) {
     Reset();
     return;
   }
@@ -1120,7 +1133,7 @@ void nsAttrValue::ParseAtomArray(const nsAString& aValue) {
 
     classAtom = NS_AtomizeMainThread(Substring(start, iter));
 
-    if (!array->AppendElement(Move(classAtom))) {
+    if (!array->AppendElement(std::move(classAtom))) {
       Reset();
       return;
     }
@@ -1164,7 +1177,7 @@ void nsAttrValue::SetIntValueAndType(int32_t aValue, ValueType aType,
         break;
       }
       default: {
-        NS_NOTREACHED("unknown integer type");
+        MOZ_ASSERT_UNREACHABLE("unknown integer type");
         break;
       }
     }
@@ -1226,8 +1239,8 @@ bool nsAttrValue::ParseEnumValue(const nsAString& aValue,
   }
 
   if (aDefaultValue) {
-    NS_PRECONDITION(aTable <= aDefaultValue && aDefaultValue < tableEntry,
-                    "aDefaultValue not inside aTable?");
+    MOZ_ASSERT(aTable <= aDefaultValue && aDefaultValue < tableEntry,
+               "aDefaultValue not inside aTable?");
     SetIntValueAndType(EnumTableEntryToValue(aTable, aDefaultValue), eEnum,
                        &aValue);
     return true;
@@ -1266,7 +1279,7 @@ bool nsAttrValue::ParseSpecialIntValue(const nsAString& aString) {
 
 bool nsAttrValue::ParseIntWithBounds(const nsAString& aString, int32_t aMin,
                                      int32_t aMax) {
-  NS_PRECONDITION(aMin < aMax, "bad boundaries");
+  MOZ_ASSERT(aMin < aMax, "bad boundaries");
 
   ResetIfSet();
 
@@ -1474,39 +1487,19 @@ bool nsAttrValue::ParseIntMarginValue(const nsAString& aString) {
   return true;
 }
 
-void nsAttrValue::LoadImage(nsIDocument* aDocument) {
-  NS_ASSERTION(Type() == eURL, "wrong type");
-
-  MiscContainer* cont = GetMiscContainer();
-  mozilla::css::URLValue* url = cont->mValue.mURL;
-
-  NS_ASSERTION(!url->IsStringEmpty(),
-               "How did we end up with an empty string for eURL");
-
-  mozilla::css::ImageValue* image =
-      mozilla::css::ImageValue::CreateFromURLValue(
-          url, aDocument, mozilla::CORSMode::CORS_NONE);
-
-  NS_ADDREF(image);
-  cont->mValue.mImage = image;
-  NS_RELEASE(url);
-  cont->mType = eImage;
-}
-
 bool nsAttrValue::ParseStyleAttribute(const nsAString& aString,
                                       nsIPrincipal* aMaybeScriptedPrincipal,
                                       nsStyledElement* aElement) {
-  nsIDocument* ownerDoc = aElement->OwnerDoc();
+  dom::Document* ownerDoc = aElement->OwnerDoc();
   nsHTMLCSSStyleSheet* sheet = ownerDoc->GetInlineStyleSheet();
-  nsCOMPtr<nsIURI> baseURI = aElement->GetBaseURIForStyleAttr();
+  nsIURI* baseURI = aElement->GetBaseURIForStyleAttr();
   nsIURI* docURI = ownerDoc->GetDocumentURI();
 
   NS_ASSERTION(aElement->NodePrincipal() == ownerDoc->NodePrincipal(),
                "This is unexpected");
 
-  nsCOMPtr<nsIPrincipal> principal =
-      (aMaybeScriptedPrincipal ? aMaybeScriptedPrincipal
-                               : aElement->NodePrincipal());
+  nsIPrincipal* principal = aMaybeScriptedPrincipal ? aMaybeScriptedPrincipal
+                                                    : aElement->NodePrincipal();
 
   // If the (immutable) document URI does not match the element's base URI
   // (the common case is that they do match) do not cache the rule.  This is
@@ -1515,8 +1508,8 @@ bool nsAttrValue::ParseStyleAttribute(const nsAString& aString,
   // Similarly, if the triggering principal does not match the node principal,
   // do not cache the rule, since the principal will be encoded in any parsed
   // URLs in the rule.
-  bool cachingAllowed =
-      (sheet && baseURI == docURI && principal == aElement->NodePrincipal());
+  const bool cachingAllowed =
+      sheet && baseURI == docURI && principal == aElement->NodePrincipal();
   if (cachingAllowed) {
     MiscContainer* cont = sheet->LookupStyleAttr(aString);
     if (cont) {
@@ -1527,20 +1520,10 @@ bool nsAttrValue::ParseStyleAttribute(const nsAString& aString,
     }
   }
 
-  RefPtr<DeclarationBlock> decl;
-  if (ownerDoc->GetStyleBackendType() == StyleBackendType::Servo) {
-    RefPtr<URLExtraData> data = new URLExtraData(baseURI, docURI, principal);
-    decl = ServoDeclarationBlock::FromCssText(
-        aString, data, ownerDoc->GetCompatibilityMode(), ownerDoc->CSSLoader());
-  } else {
-#ifdef MOZ_OLD_STYLE
-    css::Loader* cssLoader = ownerDoc->CSSLoader();
-    nsCSSParser cssParser(cssLoader);
-    decl = cssParser.ParseStyleAttribute(aString, docURI, baseURI, principal);
-#else
-    MOZ_CRASH("old style system disabled");
-#endif
-  }
+  RefPtr<URLExtraData> data = new URLExtraData(baseURI, docURI, principal,
+                                               ownerDoc->GetReferrerPolicy());
+  RefPtr<DeclarationBlock> decl = DeclarationBlock::FromCssText(
+      aString, data, ownerDoc->GetCompatibilityMode(), ownerDoc->CSSLoader());
   if (!decl) {
     return false;
   }
@@ -1627,7 +1610,7 @@ void nsAttrValue::SetSVGType(ValueType aType, const void* aValue,
   // will do. We'll lose type-safety but the signature of the calling
   // function should ensure we don't get anything unexpected, and once we
   // stick aValue in a union we lose type information anyway.
-  cont->mValue.mSVGAngle = static_cast<const nsSVGAngle*>(aValue);
+  cont->mValue.mSVGLength = static_cast<const SVGAnimatedLength*>(aValue);
   cont->mType = aType;
   SetMiscAtomOrString(aSerialized);
 }
@@ -1640,7 +1623,7 @@ MiscContainer* nsAttrValue::ClearMiscContainer() {
       // This MiscContainer is shared, we need a new one.
       NS_RELEASE(cont);
 
-      cont = new MiscContainer;
+      cont = AllocMiscContainer();
       SetPtrValueAndType(cont, eOtherBase);
     } else {
       switch (cont->mType) {
@@ -1655,10 +1638,6 @@ MiscContainer* nsAttrValue::ClearMiscContainer() {
           NS_RELEASE(cont->mValue.mURL);
           break;
         }
-        case eImage: {
-          NS_RELEASE(cont->mValue.mImage);
-          break;
-        }
         case eAtomArray: {
           delete cont->mValue.mAtomArray;
           break;
@@ -1667,7 +1646,9 @@ MiscContainer* nsAttrValue::ClearMiscContainer() {
           delete cont->mValue.mIntMargin;
           break;
         }
-        default: { break; }
+        default: {
+          break;
+        }
       }
     }
     ResetMiscAtomOrString();
@@ -1685,7 +1666,7 @@ MiscContainer* nsAttrValue::EnsureEmptyMiscContainer() {
     ResetMiscAtomOrString();
     cont = GetMiscContainer();
   } else {
-    cont = new MiscContainer;
+    cont = AllocMiscContainer();
     SetPtrValueAndType(cont, eOtherBase);
   }
 
@@ -1764,7 +1745,7 @@ size_t nsAttrValue::SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const {
       if (Type() == eCSSDeclaration && container->mValue.mCSSDeclaration) {
         // TODO: mCSSDeclaration might be owned by another object which
         //       would make us count them twice, bug 677493.
-        // Bug 1281964: For ServoDeclarationBlock if we do measure we'll
+        // Bug 1281964: For DeclarationBlock if we do measure we'll
         // need a way to call the Servo heap_size_of function.
         // n += container->mCSSDeclaration->SizeOfIncludingThis(aMallocSizeOf);
       } else if (Type() == eAtomArray && container->mValue.mAtomArray) {

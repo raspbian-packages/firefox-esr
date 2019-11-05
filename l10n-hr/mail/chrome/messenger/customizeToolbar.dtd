@@ -9,8 +9,11 @@
 <!ENTITY iconsAndText.label       "Ikone i tekst">
 <!ENTITY icons.label              "Ikone">
 <!ENTITY text.label               "Tekst">
+<!ENTITY iconsBesideText.label    "Ikone uz tekst">
 <!ENTITY useSmallIcons.label      "Koristi male ikone">
 <!ENTITY restoreDefaultSet.label  "Vrati zadani set">
 <!ENTITY addNewToolbar.label      "Dodaj novu alatnu traku">
+<!ENTITY showTitlebar.label       "Prikaži naslovnu traku">
+<!ENTITY extraDragSpace.label     "Dodaj prostor za povući">
 <!ENTITY saveChanges.label        "Gotovo">
 <!ENTITY undoChanges.label        "Vrati promjenu">

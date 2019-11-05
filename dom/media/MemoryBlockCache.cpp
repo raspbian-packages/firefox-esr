@@ -6,12 +6,12 @@
 
 #include "MemoryBlockCache.h"
 
-#include "MediaPrefs.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/Logging.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/Services.h"
+#include "mozilla/StaticPrefs.h"
 #include "nsIObserver.h"
 #include "nsIObserverService.h"
 #include "nsWeakReference.h"
@@ -56,17 +56,19 @@ class MemoryBlockCacheTelemetry final : public nsIObserver,
 };
 
 // Initialized to nullptr by non-local static initialization.
-/* static */ StaticRefPtr<MemoryBlockCacheTelemetry>
+/* static */
+StaticRefPtr<MemoryBlockCacheTelemetry>
     MemoryBlockCacheTelemetry::gMemoryBlockCacheTelemetry;
 
 // Initialized to 0 by non-local static initialization.
-/* static */ Atomic<size_t> MemoryBlockCacheTelemetry::gCombinedSizesWatermark;
+/* static */
+Atomic<size_t> MemoryBlockCacheTelemetry::gCombinedSizesWatermark;
 
 NS_IMPL_ISUPPORTS(MemoryBlockCacheTelemetry, nsIObserver,
                   nsISupportsWeakReference)
 
-/* static */ size_t MemoryBlockCacheTelemetry::NotifyCombinedSizeGrown(
-    size_t aNewSize) {
+/* static */
+size_t MemoryBlockCacheTelemetry::NotifyCombinedSizeGrown(size_t aNewSize) {
   // Ensure gMemoryBlockCacheTelemetry exists.
   if (!gMemoryBlockCacheTelemetry) {
     MOZ_ASSERT(NS_IsMainThread());
@@ -130,7 +132,7 @@ enum MemoryBlockCacheTelemetryErrors {
 };
 
 static int32_t CalculateMaxBlocks(int64_t aContentLength) {
-  int64_t maxSize = int64_t(MediaPrefs::MediaMemoryCacheMaxSize()) * 1024;
+  int64_t maxSize = int64_t(StaticPrefs::MediaMemoryCacheMaxSize()) * 1024;
   MOZ_ASSERT(aContentLength <= maxSize);
   MOZ_ASSERT(maxSize % MediaBlockCacheBase::BLOCK_SIZE == 0);
   // Note: It doesn't matter if calculations overflow, Init() would later fail.
@@ -191,8 +193,8 @@ bool MemoryBlockCache::EnsureBufferCanContain(size_t aContentLength) {
     static const size_t sysmem =
         std::max<size_t>(PR_GetPhysicalMemorySize(), 32 * 1024 * 1024);
     const size_t limit = std::min(
-        size_t(MediaPrefs::MediaMemoryCachesCombinedLimitKb()) * 1024,
-        sysmem * MediaPrefs::MediaMemoryCachesCombinedLimitPcSysmem() / 100);
+        size_t(StaticPrefs::MediaMemoryCachesCombinedLimitKb()) * 1024,
+        sysmem * StaticPrefs::MediaMemoryCachesCombinedLimitPcSysmem() / 100);
     const size_t currentSizes = static_cast<size_t>(gCombinedSizes);
     if (currentSizes + extra > limit) {
       LOG("EnsureBufferCanContain(%zu) - buffer size %zu, wanted + %zu = %zu;"

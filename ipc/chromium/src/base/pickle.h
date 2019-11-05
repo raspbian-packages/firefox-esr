@@ -18,11 +18,10 @@
 #include "mozilla/mozalloc.h"
 #include "mozilla/TimeStamp.h"
 #ifdef FUZZING
-#include "base/singleton.h"
-#include "mozilla/ipc/Faulty.h"
+#  include "mozilla/ipc/Faulty.h"
 #endif
-#if (!defined(RELEASE_OR_BETA) && !defined(FUZZING)) || defined(DEBUG)
-#define MOZ_PICKLE_SENTINEL_CHECKING
+#if !defined(FUZZING) && (!defined(RELEASE_OR_BETA) || defined(DEBUG))
+#  define MOZ_PICKLE_SENTINEL_CHECKING
 #endif
 class Pickle;
 class PickleIterator {
@@ -78,6 +77,8 @@ class Pickle {
 
   Pickle& operator=(Pickle&& other);
 
+  void CopyFrom(const Pickle& other);
+
   // Returns the size of the Pickle's data.
   uint32_t size() const { return header_size_ + header_->payload_size; }
 
@@ -99,7 +100,6 @@ class Pickle {
   MOZ_MUST_USE bool ReadLong(PickleIterator* iter, long* result) const;
   MOZ_MUST_USE bool ReadULong(PickleIterator* iter,
                               unsigned long* result) const;
-  MOZ_MUST_USE bool ReadSize(PickleIterator* iter, size_t* result) const;
   MOZ_MUST_USE bool ReadInt32(PickleIterator* iter, int32_t* result) const;
   MOZ_MUST_USE bool ReadUInt32(PickleIterator* iter, uint32_t* result) const;
   MOZ_MUST_USE bool ReadInt64(PickleIterator* iter, int64_t* result) const;
@@ -144,6 +144,13 @@ class Pickle {
   // telemetry probe.
   void EndRead(PickleIterator& iter, uint32_t ipcMessageType = 0) const;
 
+  // Returns true if the given iterator has at least |len| bytes remaining it,
+  // across all segments. If there is not that much data available, returns
+  // false. Generally used when reading a (len, data) pair from the message,
+  // before allocating |len| bytes of space, to ensure that reading |len| bytes
+  // will succeed.
+  bool HasBytesAvailable(const PickleIterator* iter, uint32_t len) const;
+
   // Methods for adding to the payload of the Pickle.  These values are
   // appended to the end of the Pickle's payload.  When reading values from a
   // Pickle, it is important to read them in the order in which they were added
@@ -154,7 +161,6 @@ class Pickle {
   bool WriteInt(int value);
   bool WriteLong(long value);
   bool WriteULong(unsigned long value);
-  bool WriteSize(size_t value);
   bool WriteInt32(int32_t value);
   bool WriteUInt32(uint32_t value);
   bool WriteInt64(int64_t value);

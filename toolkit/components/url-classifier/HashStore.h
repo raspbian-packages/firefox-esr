@@ -8,11 +8,11 @@
 #include "Entries.h"
 #include "ChunkSet.h"
 
-#include "chromium/safebrowsing.pb.h"
 #include "nsString.h"
 #include "nsTArray.h"
 #include "nsIFile.h"
 #include "nsIFileStreams.h"
+#include "nsISupports.h"
 #include "nsCOMPtr.h"
 #include "nsClassHashtable.h"
 #include <string>
@@ -27,7 +27,7 @@ class TableUpdate {
  public:
   TableUpdate(const nsACString& aTable) : mTable(aTable) {}
 
-  virtual ~TableUpdate() {}
+  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(TableUpdate);
 
   // To be overriden.
   virtual bool Empty() const = 0;
@@ -39,12 +39,23 @@ class TableUpdate {
   static T* Cast(TableUpdate* aThat) {
     return (T::TAG == aThat->Tag() ? reinterpret_cast<T*>(aThat) : nullptr);
   }
+  template <typename T>
+  static const T* Cast(const TableUpdate* aThat) {
+    return (T::TAG == aThat->Tag() ? reinterpret_cast<const T*>(aThat)
+                                   : nullptr);
+  }
+
+ protected:
+  virtual ~TableUpdate() {}
 
  private:
   virtual int Tag() const = 0;
 
-  nsCString mTable;
+  const nsCString mTable;
 };
+
+typedef nsTArray<RefPtr<TableUpdate>> TableUpdateArray;
+typedef nsTArray<RefPtr<const TableUpdate>> ConstTableUpdateArray;
 
 // A table update is built from a single update chunk from the server. As the
 // protocol parser processes each chunk, it constructs a table update with the
@@ -85,21 +96,22 @@ class TableUpdateV2 : public TableUpdate {
                                        uint32_t aSubChunk);
   MOZ_MUST_USE nsresult NewMissPrefix(const Prefix& aPrefix);
 
-  ChunkSet& AddChunks() { return mAddChunks; }
-  ChunkSet& SubChunks() { return mSubChunks; }
+  const ChunkSet& AddChunks() const { return mAddChunks; }
+  const ChunkSet& SubChunks() const { return mSubChunks; }
 
   // Expirations for chunks.
-  ChunkSet& AddExpirations() { return mAddExpirations; }
-  ChunkSet& SubExpirations() { return mSubExpirations; }
+  const ChunkSet& AddExpirations() const { return mAddExpirations; }
+  const ChunkSet& SubExpirations() const { return mSubExpirations; }
 
   // Hashes associated with this chunk.
   AddPrefixArray& AddPrefixes() { return mAddPrefixes; }
   SubPrefixArray& SubPrefixes() { return mSubPrefixes; }
+  const AddCompleteArray& AddCompletes() const { return mAddCompletes; }
   AddCompleteArray& AddCompletes() { return mAddCompletes; }
   SubCompleteArray& SubCompletes() { return mSubCompletes; }
 
   // Entries that cannot be completed.
-  MissPrefixArray& MissPrefixes() { return mMissPrefixes; }
+  const MissPrefixArray& MissPrefixes() const { return mMissPrefixes; }
 
   // For downcasting.
   static const int TAG = 2;
@@ -130,21 +142,6 @@ class TableUpdateV2 : public TableUpdate {
 // for addition and indices to removal. See Bug 1283009.
 class TableUpdateV4 : public TableUpdate {
  public:
-  struct PrefixStdString {
-   private:
-    std::string mStorage;
-    nsDependentCSubstring mString;
-
-   public:
-    explicit PrefixStdString(std::string& aString) {
-      aString.swap(mStorage);
-      mString.Rebind(mStorage.data(), mStorage.size());
-    };
-
-    const nsACString& GetPrefixString() const { return mString; };
-  };
-
-  typedef nsClassHashtable<nsUint32HashKey, PrefixStdString> PrefixStdStringMap;
   typedef nsTArray<int32_t> RemovalIndiceArray;
 
  public:
@@ -157,10 +154,12 @@ class TableUpdateV4 : public TableUpdate {
   }
 
   bool IsFullUpdate() const { return mFullUpdate; }
-  PrefixStdStringMap& Prefixes() { return mPrefixesMap; }
-  RemovalIndiceArray& RemovalIndices() { return mRemovalIndiceArray; }
+  const PrefixStringMap& Prefixes() const { return mPrefixesMap; }
+  const RemovalIndiceArray& RemovalIndices() const {
+    return mRemovalIndiceArray;
+  }
   const nsACString& ClientState() const { return mClientState; }
-  const nsACString& Checksum() const { return mChecksum; }
+  const nsACString& SHA256() const { return mSHA256; }
   const FullHashResponseMap& FullHashResponse() const {
     return mFullHashResponseMap;
   }
@@ -169,22 +168,25 @@ class TableUpdateV4 : public TableUpdate {
   static const int TAG = 4;
 
   void SetFullUpdate(bool aIsFullUpdate) { mFullUpdate = aIsFullUpdate; }
-  void NewPrefixes(int32_t aSize, std::string& aPrefixes);
+  void NewPrefixes(int32_t aSize, const nsACString& aPrefixes);
   void SetNewClientState(const nsACString& aState) { mClientState = aState; }
-  void NewChecksum(const std::string& aChecksum);
+  void SetSHA256(const std::string& aSHA256);
 
   nsresult NewRemovalIndices(const uint32_t* aIndices, size_t aNumOfIndices);
   nsresult NewFullHashResponse(const Prefix& aPrefix,
-                               CachedFullHashResponse& aResponse);
+                               const CachedFullHashResponse& aResponse);
+
+  // Clear Prefixes & Removal indice.
+  void Clear();
 
  private:
   virtual int Tag() const override { return TAG; }
 
   bool mFullUpdate;
-  PrefixStdStringMap mPrefixesMap;
+  PrefixStringMap mPrefixesMap;
   RemovalIndiceArray mRemovalIndiceArray;
   nsCString mClientState;
-  nsCString mChecksum;
+  nsCString mSHA256;
 
   // This is used to store response from fullHashes.find.
   FullHashResponseMap mFullHashResponseMap;
@@ -221,7 +223,7 @@ class HashStore {
   nsresult BeginUpdate();
 
   // Imports the data from a TableUpdate.
-  nsresult ApplyUpdate(TableUpdate& aUpdate);
+  nsresult ApplyUpdate(RefPtr<TableUpdateV2> aUpdate);
 
   // Process expired chunks
   nsresult Expire();
@@ -241,7 +243,7 @@ class HashStore {
   nsresult Reset();
 
   nsresult ReadHeader();
-  nsresult SanityCheck();
+  nsresult SanityCheck() const;
   nsresult CalculateChecksum(nsAutoCString& aChecksum, uint32_t aFileSize,
                              bool aChecksumPresent);
   nsresult CheckChecksum(uint32_t aFileSize);
@@ -261,8 +263,8 @@ class HashStore {
 
   nsresult PrepareForUpdate();
 
-  bool AlreadyReadChunkNumbers();
-  bool AlreadyReadCompletions();
+  bool AlreadyReadChunkNumbers() const;
+  bool AlreadyReadCompletions() const;
 
   // This is used for checking that the database is correct and for figuring out
   // the number of chunks, etc. to read from disk on restart.
@@ -281,7 +283,7 @@ class HashStore {
 
   // The name of the table (must end in -shavar or -digest256, or evidently
   // -simple for unittesting.
-  nsCString mTableName;
+  const nsCString mTableName;
   nsCOMPtr<nsIFile> mStoreDirectory;
 
   bool mInUpdate;

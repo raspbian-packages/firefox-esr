@@ -5,37 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(MediaDecoder_h_)
-#define MediaDecoder_h_
+#  define MediaDecoder_h_
 
-#include "BackgroundVideoDecodingPermissionObserver.h"
-#include "DecoderDoctorDiagnostics.h"
-#include "MediaContainerType.h"
-#include "MediaDecoderOwner.h"
-#include "MediaEventSource.h"
-#include "MediaMetadataManager.h"
-#include "MediaPromiseDefs.h"
-#include "MediaResource.h"
-#include "MediaStatistics.h"
-#include "MediaStreamGraph.h"
-#include "SeekTarget.h"
-#include "TimeUnits.h"
-#include "mozilla/Atomics.h"
-#include "mozilla/CDMProxy.h"
-#include "mozilla/MozPromise.h"
-#include "mozilla/ReentrantMonitor.h"
-#include "mozilla/StateMirroring.h"
-#include "mozilla/StateWatching.h"
-#include "nsAutoPtr.h"
-#include "nsCOMPtr.h"
-#include "nsIObserver.h"
-#include "nsISupports.h"
-#include "nsITimer.h"
+#  include "BackgroundVideoDecodingPermissionObserver.h"
+#  include "DecoderDoctorDiagnostics.h"
+#  include "MediaContainerType.h"
+#  include "MediaDecoderOwner.h"
+#  include "MediaEventSource.h"
+#  include "MediaMetadataManager.h"
+#  include "MediaPromiseDefs.h"
+#  include "MediaResource.h"
+#  include "MediaStatistics.h"
+#  include "MediaStreamGraph.h"
+#  include "SeekTarget.h"
+#  include "TimeUnits.h"
+#  include "TrackID.h"
+#  include "mozilla/Atomics.h"
+#  include "mozilla/CDMProxy.h"
+#  include "mozilla/MozPromise.h"
+#  include "mozilla/ReentrantMonitor.h"
+#  include "mozilla/StateMirroring.h"
+#  include "mozilla/StateWatching.h"
+#  include "nsAutoPtr.h"
+#  include "nsCOMPtr.h"
+#  include "nsIObserver.h"
+#  include "nsISupports.h"
+#  include "nsITimer.h"
 
 class nsIPrincipal;
 
 namespace mozilla {
 
+namespace dom {
+class MediaMemoryInfo;
+}
+
 class AbstractThread;
+class DOMMediaStream;
 class FrameStatistics;
 class VideoFrameContainer;
 class MediaFormatReader;
@@ -47,9 +53,9 @@ enum class Visibility : uint8_t;
 // GetCurrentTime is defined in winbase.h as zero argument macro forwarding to
 // GetTickCount() and conflicts with MediaDecoder::GetCurrentTime
 // implementation.
-#ifdef GetCurrentTime
-#undef GetCurrentTime
-#endif
+#  ifdef GetCurrentTime
+#    undef GetCurrentTime
+#  endif
 
 struct MOZ_STACK_CLASS MediaDecoderInit {
   MediaDecoderOwner* const mOwner;
@@ -126,14 +132,14 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   // Seek to the time position in (seconds) from the start of the video.
   // If aDoFastSeek is true, we'll seek to the sync point/keyframe preceeding
   // the seek target.
-  virtual nsresult Seek(double aTime, SeekTarget::Type aSeekType);
+  void Seek(double aTime, SeekTarget::Type aSeekType);
 
   // Initialize state machine and schedule it.
   nsresult InitializeStateMachine();
 
   // Start playback of a video. 'Load' must have previously been
   // called.
-  virtual nsresult Play();
+  virtual void Play();
 
   // Notify activity of the decoder owner is changed.
   virtual void NotifyOwnerActivityChanged(bool aIsDocumentVisible,
@@ -149,6 +155,9 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   void SetPreservesPitch(bool aPreservesPitch);
   void SetLooping(bool aLooping);
 
+  // Set the given device as the output device.
+  RefPtr<GenericPromise> SetSink(AudioDeviceInfo* aSink);
+
   bool GetMinimizePreroll() const { return mMinimizePreroll; }
 
   // All MediaStream-related data is protected by mReentrantMonitor.
@@ -158,16 +167,22 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   // replaying after the input as ended. In the latter case, the new source is
   // not connected to streams created by captureStreamUntilEnded.
 
+  // Sets the CORSMode for MediaStreamTracks that will be created by us.
+  void SetOutputStreamCORSMode(CORSMode aCORSMode);
+
   // Add an output stream. All decoder output will be sent to the stream.
   // The stream is initially blocked. The decoder is responsible for unblocking
   // it while it is playing back.
-  virtual void AddOutputStream(ProcessedMediaStream* aStream,
-                               TrackID aNextAvailableTrackID,
-                               bool aFinishWhenEnded);
+  void AddOutputStream(DOMMediaStream* aStream);
   // Remove an output stream added with AddOutputStream.
-  virtual void RemoveOutputStream(MediaStream* aStream);
-  // The next TrackID that can be used without risk of a collision.
-  virtual TrackID NextAvailableTrackIDFor(MediaStream* aOutputStream) const;
+  void RemoveOutputStream(DOMMediaStream* aStream);
+
+  // Set the TrackID to be used as the initial id by the next DecodedStream
+  // sink.
+  void SetNextOutputStreamTrackID(TrackID aNextTrackID);
+  // Get the next TrackID to be allocated by DecodedStream,
+  // or the last set TrackID if there is no DecodedStream sink.
+  TrackID GetNextOutputStreamTrackID();
 
   // Return the duration of the video in seconds.
   virtual double GetDuration();
@@ -269,6 +284,10 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   // outlined in the specification.
   void FireTimeUpdate();
 
+  // True if we're going to loop back to the head position when media is in
+  // looping.
+  bool IsLoopingBack(double aPrevPos, double aCurPos) const;
+
   // Returns true if we can play the entire media through without stopping
   // to buffer, given the current download and playback rates.
   bool CanPlayThrough();
@@ -289,9 +308,13 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   // Returns true if the decoder can't participate in suspend-video-decoder.
   bool HasSuspendTaint() const;
 
+  void SetCloningVisually(bool aIsCloningVisually);
+
   void UpdateVideoDecodeMode();
 
   void SetIsBackgroundVideoDecodingAllowed(bool aAllowed);
+
+  bool IsVideoDecodingSuspended() const;
 
   /******
    * The following methods must only be called on the main
@@ -347,9 +370,9 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   static bool IsWaveEnabled();
   static bool IsWebMEnabled();
 
-#ifdef MOZ_WMF
+#  ifdef MOZ_WMF
   static bool IsWMFEnabled();
-#endif
+#  endif
 
   // Return the frame decode/paint related statistics.
   FrameStatistics& GetFrameStatistics() { return *mFrameStats; }
@@ -541,6 +564,10 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   // disabled.
   bool mHasSuspendTaint;
 
+  // True if the decoder is sending video to a secondary container, and should
+  // not suspend the decoder.
+  bool mIsCloningVisually;
+
   MediaDecoderOwner::NextFrameStatus mNextFrameStatus =
       MediaDecoderOwner::NEXT_FRAME_UNAVAILABLE;
 
@@ -559,9 +586,15 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   MediaEventListener mOnDecodeWarning;
   MediaEventListener mOnNextFrameStatus;
 
+  // True if we have suspended video decoding.
+  bool mIsVideoDecodingSuspended = false;
+
  protected:
   // PlaybackRate and pitch preservation status we should start at.
   double mPlaybackRate;
+
+  // True if the decoder is seeking.
+  Watchable<bool> mLogicallySeeking;
 
   // Buffered range, mirrored from the reader.
   Mirror<media::TimeIntervals> mBuffered;
@@ -595,16 +628,9 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   // This can only be changed on the main thread.
   PlayState mNextState = PLAY_STATE_PAUSED;
 
-  // True if the decoder is seeking.
-  Canonical<bool> mLogicallySeeking;
-
   // True if the media is same-origin with the element. Data can only be
   // passed to MediaStreams when this is true.
   Canonical<bool> mSameOriginMedia;
-
-  // An identifier for the principal of the media. Used to track when
-  // main-thread induced principal changes get reflected on MSG thread.
-  Canonical<PrincipalHandle> mMediaPrincipalHandle;
 
   // We can allow video decoding in background when we match some special
   // conditions, eg. when the cursor is hovering over the tab. This observer is
@@ -622,14 +648,8 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   }
   AbstractCanonical<bool>* CanonicalLooping() { return &mLooping; }
   AbstractCanonical<PlayState>* CanonicalPlayState() { return &mPlayState; }
-  AbstractCanonical<bool>* CanonicalLogicallySeeking() {
-    return &mLogicallySeeking;
-  }
   AbstractCanonical<bool>* CanonicalSameOriginMedia() {
     return &mSameOriginMedia;
-  }
-  AbstractCanonical<PrincipalHandle>* CanonicalMediaPrincipalHandle() {
-    return &mMediaPrincipalHandle;
   }
 
  private:
@@ -640,6 +660,11 @@ class MediaDecoder : public DecoderDoctorLifeLogger<MediaDecoder> {
   const MediaContainerType mContainerType;
   bool mCanPlayThrough = false;
 };
+
+typedef MozPromise<mozilla::dom::MediaMemoryInfo, nsresult, true>
+    MediaMemoryPromise;
+
+RefPtr<MediaMemoryPromise> GetMediaMemorySizes();
 
 }  // namespace mozilla
 

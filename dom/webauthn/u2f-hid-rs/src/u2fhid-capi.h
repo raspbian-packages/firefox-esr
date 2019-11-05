@@ -23,6 +23,7 @@ const uint64_t U2F_FLAG_REQUIRE_PLATFORM_ATTACHMENT = 4;
 const uint8_t U2F_AUTHENTICATOR_TRANSPORT_USB = 1;
 const uint8_t U2F_AUTHENTICATOR_TRANSPORT_NFC = 2;
 const uint8_t U2F_AUTHENTICATOR_TRANSPORT_BLE = 4;
+const uint8_t CTAP_AUTHENTICATOR_TRANSPORT_INTERNAL = 8;
 
 const uint8_t U2F_ERROR_UKNOWN = 1;
 const uint8_t U2F_ERROR_NOT_SUPPORTED = 2;
@@ -73,7 +74,7 @@ uint64_t rust_u2f_mgr_sign(rust_u2f_manager* mgr, uint64_t flags,
                            const rust_u2f_app_ids* app_ids,
                            const rust_u2f_key_handles* khs);
 
-uint64_t rust_u2f_mgr_cancel(rust_u2f_manager* mgr);
+void rust_u2f_mgr_cancel(rust_u2f_manager* mgr);
 
 /// U2FAppIds functions.
 

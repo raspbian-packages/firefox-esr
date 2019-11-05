@@ -7,50 +7,57 @@
 const CC = Components.Constructor;
 
 const ServerSocket = CC(
-    "@mozilla.org/network/server-socket;1",
-    "nsIServerSocket",
-    "initSpecialConnection");
+  "@mozilla.org/network/server-socket;1",
+  "nsIServerSocket",
+  "initSpecialConnection"
+);
 
-ChromeUtils.import("resource://gre/modules/Log.jsm");
-ChromeUtils.import("resource://gre/modules/Preferences.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-ChromeUtils.import("chrome://marionette/content/assert.js");
-const {GeckoDriver} = ChromeUtils.import("chrome://marionette/content/driver.js", {});
-const {WebElement} = ChromeUtils.import("chrome://marionette/content/element.js", {});
-const {
-  error,
-  UnknownCommandError,
-} = ChromeUtils.import("chrome://marionette/content/error.js", {});
-const {
-  Command,
-  Message,
-  Response,
-} = ChromeUtils.import("chrome://marionette/content/message.js", {});
-const {DebuggerTransport} = ChromeUtils.import("chrome://marionette/content/transport.js", {});
+const { assert } = ChromeUtils.import("chrome://marionette/content/assert.js");
+const { GeckoDriver } = ChromeUtils.import(
+  "chrome://marionette/content/driver.js"
+);
+const { WebElement } = ChromeUtils.import(
+  "chrome://marionette/content/element.js"
+);
+const { error, UnknownCommandError } = ChromeUtils.import(
+  "chrome://marionette/content/error.js"
+);
+const { Command, Message, Response } = ChromeUtils.import(
+  "chrome://marionette/content/message.js"
+);
+const { Log } = ChromeUtils.import("chrome://marionette/content/log.js");
+const { MarionettePrefs } = ChromeUtils.import(
+  "chrome://marionette/content/prefs.js",
+  null
+);
+const { DebuggerTransport } = ChromeUtils.import(
+  "chrome://marionette/content/transport.js",
+  null
+);
 
-const logger = Log.repository.getLogger("Marionette");
+XPCOMUtils.defineLazyGetter(this, "logger", Log.get);
 
-const {KeepWhenOffline, LoopbackOnly} = Ci.nsIServerSocket;
+const { KeepWhenOffline, LoopbackOnly } = Ci.nsIServerSocket;
 
-this.EXPORTED_SYMBOLS = ["server"];
+this.EXPORTED_SYMBOLS = ["TCPConnection", "TCPListener"];
 
 /** @namespace */
 this.server = {};
 
 const PROTOCOL_VERSION = 3;
 
-const PREF_CONTENT_LISTENER = "marionette.contentListener";
-const PREF_PORT = "marionette.port";
-
 /**
  * Bootstraps Marionette and handles incoming client connections.
  *
  * Starting the Marionette server will open a TCP socket sporting the
- * debugger transport interface on the provided <var>port</var>.
- * For every new connection, a {@link server.TCPConnection} is created.
+ * debugger transport interface on the provided `port`.  For every
+ * new connection, a {@link TCPConnection} is created.
  */
-server.TCPListener = class {
+class TCPListener {
   /**
    * @param {number} port
    *     Port for server to listen to.
@@ -64,7 +71,7 @@ server.TCPListener = class {
   }
 
   /**
-   * Function produces a GeckoDriver.
+   * Function produces a {@link GeckoDriver}.
    *
    * Determines the application to initialise the driver with.
    *
@@ -72,8 +79,8 @@ server.TCPListener = class {
    *     A driver instance.
    */
   driverFactory() {
-    Preferences.set(PREF_CONTENT_LISTENER, false);
-    return new GeckoDriver(Services.appinfo.ID, this);
+    MarionettePrefs.contentListener = false;
+    return new GeckoDriver(this);
   }
 
   set acceptConnections(value) {
@@ -90,13 +97,14 @@ server.TCPListener = class {
         this.port = this.socket.port;
 
         this.socket.asyncListen(this);
-        logger.debug("New connections are accepted");
+        logger.info(`Listening on port ${this.port}`);
       }
-
     } else if (this.socket) {
+      // Note that closing the server socket will not close currently active
+      // connections.
       this.socket.close();
       this.socket = null;
-      logger.debug("New connections will no longer be accepted");
+      logger.info(`Stopped listening on port ${this.port}`);
     }
   }
 
@@ -114,7 +122,7 @@ server.TCPListener = class {
 
     // Start socket server and listening for connection attempts
     this.acceptConnections = true;
-    Preferences.set(PREF_PORT, this.port);
+    MarionettePrefs.port = this.port;
     this.alive = true;
   }
 
@@ -133,13 +141,18 @@ server.TCPListener = class {
     let output = clientSocket.openOutputStream(0, 0, 0);
     let transport = new DebuggerTransport(input, output);
 
-    let conn = new server.TCPConnection(
-        this.nextConnID++, transport, this.driverFactory.bind(this));
+    let conn = new TCPConnection(
+      this.nextConnID++,
+      transport,
+      this.driverFactory.bind(this)
+    );
     conn.onclose = this.onConnectionClosed.bind(this);
     this.conns.add(conn);
 
-    logger.debug(`Accepted connection ${conn.id} ` +
-        `from ${clientSocket.host}:${clientSocket.port}`);
+    logger.debug(
+      `Accepted connection ${conn.id} ` +
+        `from ${clientSocket.host}:${clientSocket.port}`
+    );
     conn.sayHello();
     transport.ready();
   }
@@ -148,7 +161,8 @@ server.TCPListener = class {
     logger.debug(`Closed connection ${conn.id}`);
     this.conns.delete(conn);
   }
-};
+}
+this.TCPListener = TCPListener;
 
 /**
  * Marionette client connection.
@@ -163,7 +177,7 @@ server.TCPListener = class {
  * @param {function(): GeckoDriver} driverFactory
  *     Factory function that produces a {@link GeckoDriver}.
  */
-server.TCPConnection = class {
+class TCPConnection {
   constructor(connID, transport, driverFactory) {
     this.id = connID;
     this.conn = transport;
@@ -180,9 +194,6 @@ server.TCPConnection = class {
 
     this.driver = driverFactory();
     this.driver.init();
-
-    // lookup of commands sent by server to client by message ID
-    this.commands_ = new Map();
   }
 
   /**
@@ -213,7 +224,8 @@ server.TCPConnection = class {
     // unable to determine how to respond
     if (!Array.isArray(data)) {
       let e = new TypeError(
-          "Unable to unmarshal packet data: " + JSON.stringify(data));
+        "Unable to unmarshal packet data: " + JSON.stringify(data)
+      );
       error.report(e);
       return;
     }
@@ -230,17 +242,13 @@ server.TCPConnection = class {
       return;
     }
 
-    // look up previous command we received a response for
-    if (msg instanceof Response) {
-      let cmd = this.commands_.get(msg.id);
-      this.commands_.delete(msg.id);
-      cmd.onresponse(msg);
-
     // execute new command
-    } else if (msg instanceof Command) {
+    if (msg instanceof Command) {
       (async () => {
         await this.execute(msg);
       })();
+    } else {
+      logger.fatal("Cannot process messages other than Command");
     }
   }
 
@@ -265,7 +273,8 @@ server.TCPConnection = class {
     let sendError = resp.sendError.bind(resp);
 
     await this.despatch(cmd, resp)
-        .then(sendResponse, sendError).catch(error.report);
+      .then(sendResponse, sendError)
+      .catch(error.report);
   }
 
   /**
@@ -286,15 +295,18 @@ server.TCPConnection = class {
       throw new UnknownCommandError(cmd.name);
     }
 
-    if (!["newSession", "WebDriver:NewSession"].includes(cmd.name)) {
-      assert.session(this.driver);
+    if (cmd.name != "WebDriver:NewSession") {
+      assert.session(
+        this.driver,
+        "Tried to run command without establishing a connection"
+      );
     }
 
-    let rv = await fn.bind(this.driver)(cmd, resp);
+    let rv = await fn.bind(this.driver)(cmd);
 
-    if (typeof rv != "undefined") {
+    if (rv != null) {
       if (rv instanceof WebElement || typeof rv != "object") {
-        resp.body = {value: rv};
+        resp.body = { value: rv };
       } else {
         resp.body = rv;
       }
@@ -308,7 +320,7 @@ server.TCPConnection = class {
    *     Message ID to respond to.  If it is not a number, -1 is used.
    *
    * @return {Response}
-   *     Response to the message with <var>msgID</var>.
+   *     Response to the message with `msgID`.
    */
   createResponse(msgID) {
     if (typeof msgID != "number") {
@@ -352,11 +364,10 @@ server.TCPConnection = class {
    */
   send(msg) {
     msg.origin = Message.Origin.Server;
-    if (msg instanceof Command) {
-      this.commands_.set(msg.id, msg);
-      this.sendToEmulator(msg);
-    } else if (msg instanceof Response) {
+    if (msg instanceof Response) {
       this.sendToClient(msg);
+    } else {
+      logger.fatal("Cannot send messages other than Response");
     }
   }
 
@@ -397,11 +408,12 @@ server.TCPConnection = class {
   }
 
   log_(msg) {
-    let dir = (msg.origin == Message.Origin.Client ? "->" : "<-");
-    logger.trace(`${this.id} ${dir} ${msg}`);
+    let dir = msg.origin == Message.Origin.Client ? "->" : "<-";
+    logger.debug(`${this.id} ${dir} ${msg}`);
   }
 
   toString() {
-    return `[object server.TCPConnection ${this.id}]`;
+    return `[object TCPConnection ${this.id}]`;
   }
-};
+}
+this.TCPConnection = TCPConnection;

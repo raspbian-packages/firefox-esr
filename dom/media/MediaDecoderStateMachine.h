@@ -80,34 +80,31 @@ hardware (via AudioStream).
 
 */
 #if !defined(MediaDecoderStateMachine_h__)
-#define MediaDecoderStateMachine_h__
+#  define MediaDecoderStateMachine_h__
 
-#include "mozilla/Attributes.h"
-#include "mozilla/ReentrantMonitor.h"
-#include "mozilla/StateMirroring.h"
-
-#include "nsAutoPtr.h"
-#include "nsThreadUtils.h"
-#include "MediaDecoder.h"
-#include "MediaDecoderOwner.h"
-#include "MediaEventSource.h"
-#include "MediaFormatReader.h"
-#include "MediaMetadataManager.h"
-#include "MediaQueue.h"
-#include "MediaStatistics.h"
-#include "MediaTimer.h"
-#include "ImageContainer.h"
-#include "SeekJob.h"
+#  include "ImageContainer.h"
+#  include "MediaDecoder.h"
+#  include "MediaDecoderOwner.h"
+#  include "MediaEventSource.h"
+#  include "MediaFormatReader.h"
+#  include "MediaMetadataManager.h"
+#  include "MediaQueue.h"
+#  include "MediaSink.h"
+#  include "MediaStatistics.h"
+#  include "MediaTimer.h"
+#  include "SeekJob.h"
+#  include "mozilla/Attributes.h"
+#  include "mozilla/ReentrantMonitor.h"
+#  include "mozilla/StateMirroring.h"
+#  include "nsAutoPtr.h"
+#  include "nsThreadUtils.h"
 
 namespace mozilla {
-
-namespace media {
-class MediaSink;
-}
 
 class AbstractThread;
 class AudioSegment;
 class DecodedStream;
+class DOMMediaStream;
 class OutputStreamManager;
 class ReaderProxy;
 class TaskQueue;
@@ -121,7 +118,6 @@ struct MediaPlaybackEvent {
     PlaybackProgressed,
     PlaybackEnded,
     SeekStarted,
-    Loop,
     Invalidate,
     EnterVideoSuspend,
     ExitVideoSuspend,
@@ -139,7 +135,7 @@ struct MediaPlaybackEvent {
 
   template <typename T>
   MediaPlaybackEvent(EventType aType, T&& aArg)
-      : mType(aType), mData(Forward<T>(aArg)) {}
+      : mType(aType), mData(std::forward<T>(aArg)) {}
 };
 
 enum class VideoDecodeMode : uint8_t { Normal, Suspend };
@@ -176,6 +172,7 @@ class MediaDecoderStateMachine
     DECODER_STATE_DORMANT,
     DECODER_STATE_DECODING_FIRSTFRAME,
     DECODER_STATE_DECODING,
+    DECODER_STATE_LOOPING_DECODING,
     DECODER_STATE_SEEKING,
     DECODER_STATE_BUFFERING,
     DECODER_STATE_COMPLETED,
@@ -187,11 +184,25 @@ class MediaDecoderStateMachine
 
   RefPtr<MediaDecoder::DebugInfoPromise> RequestDebugInfo();
 
-  void AddOutputStream(ProcessedMediaStream* aStream,
-                       TrackID aNextAvailableTrackID, bool aFinishWhenEnded);
-  // Remove an output stream added with AddOutputStream.
-  void RemoveOutputStream(MediaStream* aStream);
-  TrackID NextAvailableTrackIDFor(MediaStream* aOutputStream) const;
+  void SetOutputStreamPrincipal(const nsCOMPtr<nsIPrincipal>& aPrincipal);
+  void SetOutputStreamCORSMode(CORSMode aCORSMode);
+  // If an OutputStreamManager does not exist, one will be created.
+  void EnsureOutputStreamManager(MediaStreamGraph* aGraph);
+  // If an OutputStreamManager exists, tracks matching aLoadedInfo will be
+  // created unless they already exist in the manager.
+  void EnsureOutputStreamManagerHasTracks(const MediaInfo& aLoadedInfo);
+  // Add an output stream to the output stream manager. The manager must have
+  // been created through EnsureOutputStreamManager() before this.
+  void AddOutputStream(DOMMediaStream* aStream);
+  // Remove an output stream added with AddOutputStream. If the last output
+  // stream was removed, we will also tear down the OutputStreamManager.
+  void RemoveOutputStream(DOMMediaStream* aStream);
+  // Set the TrackID to be used as the initial id by the next DecodedStream
+  // sink.
+  void SetNextOutputStreamTrackID(TrackID aNextTrackID);
+  // Get the next TrackID to be allocated by DecodedStream,
+  // or the last set TrackID if there is no DecodedStream sink.
+  TrackID GetNextOutputStreamTrackID();
 
   // Seeks to the decoder to aTarget asynchronously.
   RefPtr<MediaDecoder::SeekPromise> InvokeSeek(const SeekTarget& aTarget);
@@ -275,12 +286,18 @@ class MediaDecoderStateMachine
   // Sets the video decode mode. Used by the suspend-video-decoder feature.
   void SetVideoDecodeMode(VideoDecodeMode aMode);
 
+  RefPtr<GenericPromise> InvokeSetSink(RefPtr<AudioDeviceInfo> aSink);
+
+  void SetSecondaryVideoContainer(
+      const RefPtr<VideoFrameContainer>& aSecondary);
+
  private:
   class StateObject;
   class DecodeMetadataState;
   class DormantState;
   class DecodingFirstFrameState;
   class DecodingState;
+  class LoopingDecodingState;
   class SeekingState;
   class AccurateSeekingState;
   class NextFrameSeekingState;
@@ -304,7 +321,10 @@ class MediaDecoderStateMachine
   // constructor immediately after the task queue is created.
   void InitializationTask(MediaDecoder* aDecoder);
 
-  void SetAudioCaptured(bool aCaptured);
+  // Sets the audio-captured state and recreates the media sink if needed.
+  // A manager must be passed in if setting the audio-captured state to true.
+  void SetAudioCaptured(bool aCaptured,
+                        OutputStreamManager* aManager = nullptr);
 
   RefPtr<MediaDecoder::SeekPromise> Seek(const SeekTarget& aTarget);
 
@@ -347,6 +367,16 @@ class MediaDecoderStateMachine
                                                TrackInfo::kVideoTrack));
 
   void SetVideoDecodeModeInternal(VideoDecodeMode aMode);
+
+  // Set new sink device and restart MediaSink if playback is started.
+  // Returned promise will be resolved with true if the playback is
+  // started and false if playback is stopped after setting the new sink.
+  // Returned promise will be rejected with value NS_ERROR_ABORT
+  // if the action fails or it is not supported.
+  // If there are multiple pending requests only the last one will be
+  // executed, for all previous requests the promise will be resolved
+  // with true or false similar to above.
+  RefPtr<GenericPromise> SetSink(RefPtr<AudioDeviceInfo> aSink);
 
  protected:
   virtual ~MediaDecoderStateMachine();
@@ -411,10 +441,12 @@ class MediaDecoderStateMachine
   // Called on the state machine thread.
   void UpdatePlaybackPositionPeriodically();
 
-  media::MediaSink* CreateAudioSink();
+  MediaSink* CreateAudioSink();
 
   // Always create mediasink which contains an AudioSink or StreamSink inside.
-  already_AddRefed<media::MediaSink> CreateMediaSink(bool aAudioCaptured);
+  // A manager must be passed in if aAudioCaptured is true.
+  already_AddRefed<MediaSink> CreateMediaSink(
+      bool aAudioCaptured, OutputStreamManager* aManager = nullptr);
 
   // Stops the media sink and shut it down.
   // The decoder monitor must be held with exactly one lock count.
@@ -424,7 +456,8 @@ class MediaDecoderStateMachine
   // Create and start the media sink.
   // The decoder monitor must be held with exactly one lock count.
   // Called on the state machine thread.
-  void StartMediaSink();
+  // If start fails an NS_ERROR_FAILURE is returned.
+  nsresult StartMediaSink();
 
   // Notification method invoked when mPlayState changes.
   void PlayStateChanged();
@@ -542,7 +575,7 @@ class MediaDecoderStateMachine
   media::TimeUnit mFragmentEndTime = media::TimeUnit::Invalid();
 
   // The media sink resource.  Used on the state machine thread.
-  RefPtr<media::MediaSink> mMediaSink;
+  RefPtr<MediaSink> mMediaSink;
 
   const RefPtr<ReaderProxy> mReader;
 
@@ -591,6 +624,8 @@ class MediaDecoderStateMachine
 
   void OnSuspendTimerResolved();
   void CancelSuspendTimer();
+
+  bool IsInSeamlessLooping() const;
 
   bool mCanPlayThrough = false;
 
@@ -643,14 +678,25 @@ class MediaDecoderStateMachine
   DelayedScheduler mVideoDecodeSuspendTimer;
 
   // Data about MediaStreams that are being fed by the decoder.
-  const RefPtr<OutputStreamManager> mOutputStreamManager;
+  // Main thread only.
+  RefPtr<OutputStreamManager> mOutputStreamManager;
+
+  // Principal used by output streams. Main thread only.
+  nsCOMPtr<nsIPrincipal> mOutputStreamPrincipal;
+
+  // CORSMode used by output streams. Main thread only.
+  CORSMode mOutputStreamCORSMode = CORS_NONE;
+
+  // The next TrackID to be used when a DecodedStream allocates a track.
+  // Main thread only.
+  TrackID mNextOutputStreamTrackID = 1;
 
   // Track the current video decode mode.
   VideoDecodeMode mVideoDecodeMode;
 
   // Track the complete & error for audio/video separately
-  MozPromiseRequestHolder<GenericPromise> mMediaSinkAudioPromise;
-  MozPromiseRequestHolder<GenericPromise> mMediaSinkVideoPromise;
+  MozPromiseRequestHolder<MediaSink::EndedPromise> mMediaSinkAudioEndedPromise;
+  MozPromiseRequestHolder<MediaSink::EndedPromise> mMediaSinkVideoEndedPromise;
 
   MediaEventListener mAudioQueueListener;
   MediaEventListener mVideoQueueListener;
@@ -673,6 +719,11 @@ class MediaDecoderStateMachine
   const bool mIsMSE;
 
   bool mSeamlessLoopingAllowed;
+
+  // If media was in looping and had reached to the end before, then we need
+  // to adjust sample time from clock time to media time.
+  void AdjustByLooping(media::TimeUnit& aTime) const;
+  Maybe<media::TimeUnit> mAudioDecodedDuration;
 
   // Current playback position in the stream in bytes.
   int64_t mPlaybackOffset = 0;
@@ -698,10 +749,6 @@ class MediaDecoderStateMachine
   // passed to MediaStreams when this is true.
   Mirror<bool> mSameOriginMedia;
 
-  // An identifier for the principal of the media. Used to track when
-  // main-thread induced principal changes get reflected on MSG thread.
-  Mirror<PrincipalHandle> mMediaPrincipalHandle;
-
   // Duration of the media. This is guaranteed to be non-null after we finish
   // decoding the first frame.
   Canonical<media::NullableTimeUnit> mDuration;
@@ -713,6 +760,9 @@ class MediaDecoderStateMachine
 
   // Used to distinguish whether the audio is producing sound.
   Canonical<bool> mIsAudioDataAudible;
+
+  // Used to count the number of pending requests to set a new sink.
+  Atomic<int> mSetSinkRequestsCount;
 
  public:
   AbstractCanonical<media::TimeIntervals>* CanonicalBuffered() const;
@@ -726,17 +776,6 @@ class MediaDecoderStateMachine
   AbstractCanonical<bool>* CanonicalIsAudioDataAudible() {
     return &mIsAudioDataAudible;
   }
-
-#ifdef XP_WIN
-  // Whether we've called timeBeginPeriod(1) to request high resolution
-  // timers. We request high resolution timers when playback starts, and
-  // turn them off when playback is paused. Enabling high resolution
-  // timers can cause higher CPU usage and battery drain on Windows 7.
-  bool mHiResTimersRequested = false;
-  // Whether we should enable high resolution timers. This is initialized at
-  // MDSM construction, and mirrors the value of media.hi-res-timers.enabled.
-  const bool mShouldUseHiResTimers;
-#endif
 };
 
 }  // namespace mozilla

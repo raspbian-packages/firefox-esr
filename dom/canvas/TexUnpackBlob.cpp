@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,6 +13,7 @@
 #include "nsLayoutUtils.h"
 #include "WebGLBuffer.h"
 #include "WebGLContext.h"
+#include "WebGLFormats.h"
 #include "WebGLTexelConversions.h"
 #include "WebGLTexture.h"
 
@@ -64,11 +65,10 @@ static bool IsPIValidForDOM(const webgl::PackingInfo& pi) {
   return true;
 }
 
-static bool ValidatePIForDOM(WebGLContext* webgl, const char* funcName,
+static bool ValidatePIForDOM(WebGLContext* webgl,
                              const webgl::PackingInfo& pi) {
   if (!IsPIValidForDOM(pi)) {
-    webgl->ErrorInvalidOperation(
-        "%s: Format or type is invalid for DOM sources.", funcName);
+    webgl->ErrorInvalidValue("Format or type is invalid for DOM sources.");
     return false;
   }
   return true;
@@ -178,8 +178,8 @@ static WebGLTexelFormat FormatForPackingInfo(const PackingInfo& pi) {
 
 ////////////////////
 
-static bool ValidateUnpackPixels(WebGLContext* webgl, const char* funcName,
-                                 uint32_t fullRows, uint32_t tailPixels,
+static bool ValidateUnpackPixels(WebGLContext* webgl, uint32_t fullRows,
+                                 uint32_t tailPixels,
                                  webgl::TexUnpackBlob* blob) {
   if (!blob->mWidth || !blob->mHeight || !blob->mDepth) return true;
 
@@ -187,14 +187,13 @@ static bool ValidateUnpackPixels(WebGLContext* webgl, const char* funcName,
   if (!usedPixelsPerRow.isValid() ||
       usedPixelsPerRow.value() > blob->mRowLength) {
     webgl->ErrorInvalidOperation(
-        "%s: UNPACK_SKIP_PIXELS + width >"
-        " UNPACK_ROW_LENGTH.",
-        funcName);
+        "UNPACK_SKIP_PIXELS + width >"
+        " UNPACK_ROW_LENGTH.");
     return false;
   }
 
   if (blob->mHeight > blob->mImageHeight) {
-    webgl->ErrorInvalidOperation("%s: height > UNPACK_IMAGE_HEIGHT.", funcName);
+    webgl->ErrorInvalidOperation("height > UNPACK_IMAGE_HEIGHT.");
     return false;
   }
 
@@ -212,8 +211,7 @@ static bool ValidateUnpackPixels(WebGLContext* webgl, const char* funcName,
 
   const auto fullRowsNeeded = skipFullRows + usedFullRows;
   if (!fullRowsNeeded.isValid()) {
-    webgl->ErrorOutOfMemory("%s: Invalid calculation for required row count.",
-                            funcName);
+    webgl->ErrorOutOfMemory("Invalid calculation for required row count.");
     return false;
   }
 
@@ -226,15 +224,14 @@ static bool ValidateUnpackPixels(WebGLContext* webgl, const char* funcName,
   }
 
   webgl->ErrorInvalidOperation(
-      "%s: Desired upload requires more data than is"
+      "Desired upload requires more data than is"
       " available: (%u rows plus %u pixels needed, %u rows"
       " plus %u pixels available)",
-      funcName, fullRowsNeeded.value(), usedPixelsPerRow.value(), fullRows,
-      tailPixels);
+      fullRowsNeeded.value(), usedPixelsPerRow.value(), fullRows, tailPixels);
   return false;
 }
 
-static bool ValidateUnpackBytes(WebGLContext* webgl, const char* funcName,
+static bool ValidateUnpackBytes(WebGLContext* webgl,
                                 const webgl::PackingInfo& pi,
                                 size_t availByteCount,
                                 webgl::TexUnpackBlob* blob) {
@@ -246,16 +243,14 @@ static bool ValidateUnpackBytes(WebGLContext* webgl, const char* funcName,
 
   const auto fullRows = availByteCount / rowStride;
   if (!fullRows.isValid()) {
-    webgl->ErrorOutOfMemory("%s: Unacceptable upload size calculated.",
-                            funcName);
+    webgl->ErrorOutOfMemory("Unacceptable upload size calculated.");
     return false;
   }
 
   const auto bodyBytes = fullRows.value() * rowStride.value();
   const auto tailPixels = (availByteCount - bodyBytes) / bytesPerPixel;
 
-  return ValidateUnpackPixels(webgl, funcName, fullRows.value(), tailPixels,
-                              blob);
+  return ValidateUnpackPixels(webgl, fullRows.value(), tailPixels, blob);
 }
 
 ////////////////////
@@ -313,11 +308,10 @@ static bool HasColorAndAlpha(const WebGLTexelFormat format) {
 }
 
 bool TexUnpackBlob::ConvertIfNeeded(
-    WebGLContext* webgl, const char* funcName, const uint32_t rowLength,
-    const uint32_t rowCount, WebGLTexelFormat srcFormat,
-    const uint8_t* const srcBegin, const ptrdiff_t srcStride,
-    WebGLTexelFormat dstFormat, const ptrdiff_t dstStride,
-    const uint8_t** const out_begin,
+    WebGLContext* webgl, const uint32_t rowLength, const uint32_t rowCount,
+    WebGLTexelFormat srcFormat, const uint8_t* const srcBegin,
+    const ptrdiff_t srcStride, WebGLTexelFormat dstFormat,
+    const ptrdiff_t dstStride, const uint8_t** const out_begin,
     UniqueBuffer* const out_anchoredBuffer) const {
   MOZ_ASSERT(srcFormat != WebGLTexelFormat::FormatNotSupportingAnyConversion);
   MOZ_ASSERT(dstFormat != WebGLTexelFormat::FormatNotSupportingAnyConversion);
@@ -342,19 +336,17 @@ bool TexUnpackBlob::ConvertIfNeeded(
 
   if (srcFormat != dstFormat) {
     webgl->GeneratePerfWarning(
-        "%s: Conversion requires pixel reformatting. (%u->%u)", funcName,
-        uint32_t(srcFormat), uint32_t(dstFormat));
+        "Conversion requires pixel reformatting. (%u->%u)", uint32_t(srcFormat),
+        uint32_t(dstFormat));
   } else if (fnHasPremultMismatch()) {
     webgl->GeneratePerfWarning(
-        "%s: Conversion requires change in"
-        " alpha-premultiplication.",
-        funcName);
+        "Conversion requires change in"
+        " alpha-premultiplication.");
   } else if (srcOrigin != dstOrigin) {
-    webgl->GeneratePerfWarning("%s: Conversion requires y-flip.", funcName);
+    webgl->GeneratePerfWarning("Conversion requires y-flip.");
   } else if (srcStride != dstStride) {
-    webgl->GeneratePerfWarning(
-        "%s: Conversion requires change in stride. (%u->%u)", funcName,
-        uint32_t(srcStride), uint32_t(dstStride));
+    webgl->GeneratePerfWarning("Conversion requires change in stride. (%u->%u)",
+                               uint32_t(srcStride), uint32_t(dstStride));
   } else {
     return true;
   }
@@ -363,13 +355,13 @@ bool TexUnpackBlob::ConvertIfNeeded(
 
   const auto dstTotalBytes = CheckedUint32(rowCount) * dstStride;
   if (!dstTotalBytes.isValid()) {
-    webgl->ErrorOutOfMemory("%s: Calculation failed.", funcName);
+    webgl->ErrorOutOfMemory("Calculation failed.");
     return false;
   }
 
-  UniqueBuffer dstBuffer = calloc(1, dstTotalBytes.value());
+  UniqueBuffer dstBuffer = calloc(1u, (size_t)dstTotalBytes.value());
   if (!dstBuffer.get()) {
-    webgl->ErrorOutOfMemory("%s: Failed to allocate dest buffer.", funcName);
+    webgl->ErrorOutOfMemory("Failed to allocate dest buffer.");
     return false;
   }
   const auto dstBegin = static_cast<uint8_t*>(dstBuffer.get());
@@ -381,12 +373,12 @@ bool TexUnpackBlob::ConvertIfNeeded(
   if (!ConvertImage(rowLength, rowCount, srcBegin, srcStride, srcOrigin,
                     srcFormat, srcIsPremult, dstBegin, dstStride, dstOrigin,
                     dstFormat, dstIsPremult, &wasTrivial)) {
-    webgl->ErrorImplementationBug("%s: ConvertImage failed.", funcName);
+    webgl->ErrorImplementationBug("ConvertImage failed.");
     return false;
   }
 
   *out_begin = dstBegin;
-  *out_anchoredBuffer = Move(dstBuffer);
+  *out_anchoredBuffer = std::move(dstBuffer);
   return true;
 }
 
@@ -417,16 +409,16 @@ TexUnpackBytes::TexUnpackBytes(const WebGLContext* webgl, TexImageTarget target,
       mPtr(ptr),
       mAvailBytes(availBytes) {}
 
-bool TexUnpackBytes::Validate(WebGLContext* webgl, const char* funcName,
+bool TexUnpackBytes::Validate(WebGLContext* webgl,
                               const webgl::PackingInfo& pi) {
   if (mIsClientData && !mPtr) return true;
 
-  return ValidateUnpackBytes(webgl, funcName, pi, mAvailBytes, this);
+  return ValidateUnpackBytes(webgl, pi, mAvailBytes, this);
 }
 
 bool TexUnpackBytes::TexOrSubImage(bool isSubImage, bool needsRespec,
-                                   const char* funcName, WebGLTexture* tex,
-                                   TexImageTarget target, GLint level,
+                                   WebGLTexture* tex, TexImageTarget target,
+                                   GLint level,
                                    const webgl::DriverUnpackInfo* dui,
                                    GLint xOffset, GLint yOffset, GLint zOffset,
                                    const webgl::PackingInfo& pi,
@@ -452,23 +444,21 @@ bool TexUnpackBytes::TexOrSubImage(bool isSubImage, bool needsRespec,
         webgl->mPixelStore_UnpackSkipRows ||
         webgl->mPixelStore_UnpackSkipPixels) {
       webgl->ErrorInvalidOperation(
-          "%s: Non-DOM-Element uploads with alpha-premult"
-          " or y-flip do not support subrect selection.",
-          funcName);
+          "Non-DOM-Element uploads with alpha-premult"
+          " or y-flip do not support subrect selection.");
       return false;
     }
 
     webgl->GenerateWarning(
-        "%s: Alpha-premult and y-flip are deprecated for"
-        " non-DOM-Element uploads.",
-        funcName);
+        "Alpha-premult and y-flip are deprecated for"
+        " non-DOM-Element uploads.");
 
     const uint32_t rowLength = mWidth;
     const uint32_t rowCount = mHeight * mDepth;
     const auto stride =
         RoundUpToMultipleOf(rowLength * bytesPerPixel, mAlignment);
-    if (!ConvertIfNeeded(webgl, funcName, rowLength, rowCount, format, mPtr,
-                         stride, format, stride, &uploadPtr, &tempBuffer)) {
+    if (!ConvertIfNeeded(webgl, rowLength, rowCount, format, mPtr, stride,
+                         format, stride, &uploadPtr, &tempBuffer)) {
       return false;
     }
   } while (false);
@@ -480,10 +470,9 @@ bool TexUnpackBytes::TexOrSubImage(bool isSubImage, bool needsRespec,
   bool useParanoidHandling = false;
   if (mNeedsExactUpload && webgl->mBoundPixelUnpackBuffer) {
     webgl->GenerateWarning(
-        "%s: Uploads from a buffer with a final row with a byte"
+        "Uploads from a buffer with a final row with a byte"
         " count smaller than the row stride can incur extra"
-        " overhead.",
-        funcName);
+        " overhead.");
 
     if (gl->WorkAroundDriverBugs()) {
       useParanoidHandling |= (gl->Vendor() == gl::GLVendor::NVIDIA);
@@ -600,17 +589,17 @@ TexUnpackImage::TexUnpackImage(const WebGLContext* webgl, TexImageTarget target,
 
 TexUnpackImage::~TexUnpackImage() {}
 
-bool TexUnpackImage::Validate(WebGLContext* webgl, const char* funcName,
+bool TexUnpackImage::Validate(WebGLContext* webgl,
                               const webgl::PackingInfo& pi) {
-  if (!ValidatePIForDOM(webgl, funcName, pi)) return false;
+  if (!ValidatePIForDOM(webgl, pi)) return false;
 
   const auto fullRows = mImage->GetSize().height;
-  return ValidateUnpackPixels(webgl, funcName, fullRows, 0, this);
+  return ValidateUnpackPixels(webgl, fullRows, 0, this);
 }
 
 bool TexUnpackImage::TexOrSubImage(bool isSubImage, bool needsRespec,
-                                   const char* funcName, WebGLTexture* tex,
-                                   TexImageTarget target, GLint level,
+                                   WebGLTexture* tex, TexImageTarget target,
+                                   GLint level,
                                    const webgl::DriverUnpackInfo* dui,
                                    GLint xOffset, GLint yOffset, GLint zOffset,
                                    const webgl::PackingInfo& pi,
@@ -710,8 +699,8 @@ bool TexUnpackImage::TexOrSubImage(bool isSubImage, bool needsRespec,
   } while (false);
 
   const nsPrintfCString perfMsg(
-      "%s: Failed to hit GPU-copy fast-path: %s (src type %u)", funcName,
-      fallbackReason, uint32_t(mImage->GetFormat()));
+      "Failed to hit GPU-copy fast-path: %s (src type %u)", fallbackReason,
+      uint32_t(mImage->GetFormat()));
 
   if (webgl->mPixelStore_RequireFastPath) {
     webgl->ErrorInvalidOperation("%s", perfMsg.BeginReading());
@@ -730,18 +719,16 @@ bool TexUnpackImage::TexOrSubImage(bool isSubImage, bool needsRespec,
   }
   if (!dataSurf) {
     webgl->ErrorOutOfMemory(
-        "%s: GetAsSourceSurface or GetDataSurface failed after"
-        " blit failed for TexUnpackImage.",
-        funcName);
+        "GetAsSourceSurface or GetDataSurface failed after"
+        " blit failed for TexUnpackImage.");
     return false;
   }
 
   const TexUnpackSurface surfBlob(webgl, target, mWidth, mHeight, mDepth,
                                   dataSurf, mSrcAlphaType);
 
-  return surfBlob.TexOrSubImage(isSubImage, needsRespec, funcName, tex, target,
-                                level, dui, xOffset, yOffset, zOffset, pi,
-                                out_error);
+  return surfBlob.TexOrSubImage(isSubImage, needsRespec, tex, target, level,
+                                dui, xOffset, yOffset, zOffset, pi, out_error);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -808,19 +795,19 @@ static bool GetFormatForSurf(gfx::SourceSurface* surf,
 
 //////////
 
-bool TexUnpackSurface::Validate(WebGLContext* webgl, const char* funcName,
+bool TexUnpackSurface::Validate(WebGLContext* webgl,
                                 const webgl::PackingInfo& pi) {
-  if (!ValidatePIForDOM(webgl, funcName, pi)) return false;
+  if (!ValidatePIForDOM(webgl, pi)) return false;
 
   const auto fullRows = mSurf->GetSize().height;
-  return ValidateUnpackPixels(webgl, funcName, fullRows, 0, this);
+  return ValidateUnpackPixels(webgl, fullRows, 0, this);
 }
 
 bool TexUnpackSurface::TexOrSubImage(
-    bool isSubImage, bool needsRespec, const char* funcName, WebGLTexture* tex,
-    TexImageTarget target, GLint level, const webgl::DriverUnpackInfo* dui,
-    GLint xOffset, GLint yOffset, GLint zOffset,
-    const webgl::PackingInfo& dstPI, GLenum* const out_error) const {
+    bool isSubImage, bool needsRespec, WebGLTexture* tex, TexImageTarget target,
+    GLint level, const webgl::DriverUnpackInfo* dui, GLint xOffset,
+    GLint yOffset, GLint zOffset, const webgl::PackingInfo& dstPI,
+    GLenum* const out_error) const {
   const auto& webgl = tex->mContext;
 
   ////
@@ -837,17 +824,16 @@ bool TexUnpackSurface::TexOrSubImage(
   uint8_t srcBPP;
   if (!GetFormatForSurf(mSurf, &srcFormat, &srcBPP)) {
     webgl->ErrorImplementationBug(
-        "%s: GetFormatForSurf failed for"
+        "GetFormatForSurf failed for"
         " WebGLTexelFormat::%u.",
-        funcName, uint32_t(mSurf->GetFormat()));
+        uint32_t(mSurf->GetFormat()));
     return false;
   }
 
   gfx::DataSourceSurface::ScopedMap map(mSurf,
                                         gfx::DataSourceSurface::MapType::READ);
   if (!map.IsMapped()) {
-    webgl->ErrorOutOfMemory("%s: Failed to map source surface for upload.",
-                            funcName);
+    webgl->ErrorOutOfMemory("Failed to map source surface for upload.");
     return false;
   }
 
@@ -875,8 +861,8 @@ bool TexUnpackSurface::TexOrSubImage(
 
   const uint8_t* dstBegin = srcBegin;
   UniqueBuffer tempBuffer;
-  if (!ConvertIfNeeded(webgl, funcName, rowLength, rowCount, srcFormat,
-                       srcBegin, srcStride, dstFormat, dstStride, &dstBegin,
+  if (!ConvertIfNeeded(webgl, rowLength, rowCount, srcFormat, srcBegin,
+                       srcStride, dstFormat, dstStride, &dstBegin,
                        &tempBuffer)) {
     return false;
   }

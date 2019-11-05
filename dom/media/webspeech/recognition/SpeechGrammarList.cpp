@@ -24,7 +24,7 @@ NS_INTERFACE_MAP_END
 
 SpeechGrammarList::SpeechGrammarList(nsISupports* aParent) : mParent(aParent) {}
 
-SpeechGrammarList::~SpeechGrammarList() {}
+SpeechGrammarList::~SpeechGrammarList() = default;
 
 already_AddRefed<SpeechGrammarList> SpeechGrammarList::Constructor(
     const GlobalObject& aGlobal, ErrorResult& aRv) {
@@ -35,7 +35,7 @@ already_AddRefed<SpeechGrammarList> SpeechGrammarList::Constructor(
 
 JSObject* SpeechGrammarList::WrapObject(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return SpeechGrammarListBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechGrammarList_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* SpeechGrammarList::GetParentObject() const { return mParent; }

@@ -26,7 +26,7 @@
 #include "gfxPrefs.h"
 
 #ifdef MOZ_ENABLE_SKIA
-#include "mozilla/gfx/ConvolutionFilter.h"
+#  include "mozilla/gfx/ConvolutionFilter.h"
 #endif
 
 #include "SurfacePipe.h"
@@ -70,7 +70,7 @@ class DownscalingFilter final : public SurfaceFilter {
   Maybe<SurfaceInvalidRect> TakeInvalidRect() override { return Nothing(); }
 
   template <typename... Rest>
-  nsresult Configure(const DownscalingConfig& aConfig, Rest... aRest) {
+  nsresult Configure(const DownscalingConfig& aConfig, const Rest&... aRest) {
     return NS_ERROR_FAILURE;
   }
 
@@ -106,16 +106,12 @@ class DownscalingFilter final : public SurfaceFilter {
   ~DownscalingFilter() { ReleaseWindow(); }
 
   template <typename... Rest>
-  nsresult Configure(const DownscalingConfig& aConfig, Rest... aRest) {
+  nsresult Configure(const DownscalingConfig& aConfig, const Rest&... aRest) {
     nsresult rv = mNext.Configure(aRest...);
     if (NS_FAILED(rv)) {
       return rv;
     }
 
-    if (mNext.IsValidPalettedPipe()) {
-      NS_WARNING("Created a downscaler for a paletted surface?");
-      return NS_ERROR_INVALID_ARG;
-    }
     if (mNext.InputSize() == aConfig.mInputSize) {
       NS_WARNING("Created a downscaler, but not downscaling?");
       return NS_ERROR_INVALID_ARG;
@@ -327,7 +323,7 @@ class DownscalingFilter final : public SurfaceFilter {
                             /// the next filter's input size.
 
   UniquePtr<uint8_t[]> mRowBuffer;  /// The buffer into which input is written.
-  UniquePtr<uint8_t* []> mWindow;   /// The last few rows which were written.
+  UniquePtr<uint8_t*[]> mWindow;    /// The last few rows which were written.
 
   gfx::ConvolutionFilter mXFilter;  /// The Lanczos filter in X.
   gfx::ConvolutionFilter mYFilter;  /// The Lanczos filter in Y.

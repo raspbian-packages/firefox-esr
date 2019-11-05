@@ -10,9 +10,9 @@
 
 using std::string;
 
+using google_breakpad::auto_wasteful_vector;
 using google_breakpad::FileID;
 using google_breakpad::PageAllocator;
-using google_breakpad::auto_wasteful_vector;
 
 int main(int argc, char** argv) {
   if (argc != 2) {

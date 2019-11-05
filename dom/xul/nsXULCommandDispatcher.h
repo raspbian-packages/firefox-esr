@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -15,17 +15,23 @@
 #include "nsCOMPtr.h"
 #include "nsIDOMXULCommandDispatcher.h"
 #include "nsWeakReference.h"
-#include "nsIDOMNode.h"
 #include "nsString.h"
 #include "nsCycleCollectionParticipant.h"
+#include "mozilla/RefPtr.h"
 
-class nsIDOMElement;
 class nsPIWindowRoot;
+
+namespace mozilla {
+namespace dom {
+class Document;
+class Element;
+}  // namespace dom
+}  // namespace mozilla
 
 class nsXULCommandDispatcher : public nsIDOMXULCommandDispatcher,
                                public nsSupportsWeakReference {
  public:
-  explicit nsXULCommandDispatcher(nsIDocument* aDocument);
+  explicit nsXULCommandDispatcher(mozilla::dom::Document* aDocument);
 
   // nsISupports
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
@@ -42,20 +48,21 @@ class nsXULCommandDispatcher : public nsIDOMXULCommandDispatcher,
 
   already_AddRefed<nsPIWindowRoot> GetWindowRoot();
 
-  nsIContent* GetRootFocusedContentAndWindow(nsPIDOMWindowOuter** aWindow);
+  mozilla::dom::Element* GetRootFocusedContentAndWindow(
+      nsPIDOMWindowOuter** aWindow);
 
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<mozilla::dom::Document> mDocument;
 
   class Updater {
    public:
-    Updater(nsIDOMElement* aElement, const nsAString& aEvents,
+    Updater(mozilla::dom::Element* aElement, const nsAString& aEvents,
             const nsAString& aTargets)
         : mElement(aElement),
           mEvents(aEvents),
           mTargets(aTargets),
           mNext(nullptr) {}
 
-    nsCOMPtr<nsIDOMElement> mElement;
+    RefPtr<mozilla::dom::Element> mElement;
     nsString mEvents;
     nsString mTargets;
     Updater* mNext;

@@ -30,6 +30,9 @@ class nsIThread;
 class nsIEventTarget;
 
 namespace mozilla {
+
+class OriginAttributes;
+
 namespace net {
 
 class CacheStorageService;
@@ -302,6 +305,10 @@ class CacheStorageService final : public nsICacheStorageService,
                            bool aSkipSizeCheck, bool aPin, bool aReplace,
                            CacheEntryHandle** aResult);
 
+  nsresult ClearOriginInternal(
+      const nsAString& aOrigin,
+      const mozilla::OriginAttributes& aOriginAttributes, bool aAnonymous);
+
   static CacheStorageService* sSelf;
 
   mozilla::Mutex mLock;
@@ -359,7 +366,7 @@ class CacheStorageService final : public nsICacheStorageService,
           mWhat(aWhat) {}
 
    private:
-    virtual ~PurgeFromMemoryRunnable() {}
+    virtual ~PurgeFromMemoryRunnable() = default;
 
     NS_IMETHOD Run() override;
 
@@ -383,7 +390,7 @@ class CacheStorageService final : public nsICacheStorageService,
     void Notify();
 
    private:
-    virtual ~IOThreadSuspender() {}
+    virtual ~IOThreadSuspender() = default;
     NS_IMETHOD Run() override;
 
     Monitor mMon;

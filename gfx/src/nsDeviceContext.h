@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -81,14 +81,6 @@ class nsDeviceContext final {
   already_AddRefed<gfxContext> CreateReferenceRenderingContext();
 
   /**
-   * Gets the number of app units in one CSS pixel; this number is global,
-   * not unique to each device context.
-   */
-  static int32_t AppUnitsPerCSSPixel() {
-    return mozilla::AppUnitsPerCSSPixel();
-  }
-
-  /**
    * Gets the number of app units in one device pixel; this number
    * is usually a factor of AppUnitsPerCSSPixel(), although that is
    * not guaranteed.
@@ -115,12 +107,6 @@ class nsDeviceContext final {
    * device's DPI times AppUnitsPerDevPixel().
    */
   int32_t AppUnitsPerPhysicalInch() const { return mAppUnitsPerPhysicalInch; }
-
-  /**
-   * Gets the number of app units in one CSS inch; this is
-   * 96 times AppUnitsPerCSSPixel.
-   */
-  static int32_t AppUnitsPerCSSInch() { return mozilla::AppUnitsPerCSSInch(); }
 
   /**
    * Get the ratio of app units to dev pixels that would be used at unit
@@ -308,6 +294,7 @@ class nsDeviceContext final {
   int32_t mAppUnitsPerPhysicalInch;
   float mFullZoom;
   float mPrintingScale;
+  gfxPoint mPrintingTranslate;
 
   RefPtr<nsFontCache> mFontCache;
   nsCOMPtr<nsIWidget> mWidget;

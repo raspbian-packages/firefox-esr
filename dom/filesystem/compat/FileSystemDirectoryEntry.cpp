@@ -35,7 +35,7 @@ FileSystemDirectoryEntry::~FileSystemDirectoryEntry() {}
 
 JSObject* FileSystemDirectoryEntry::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return FileSystemDirectoryEntryBinding::Wrap(aCx, this, aGivenProto);
+  return FileSystemDirectoryEntry_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void FileSystemDirectoryEntry::GetName(nsAString& aName,

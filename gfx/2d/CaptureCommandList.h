@@ -10,6 +10,7 @@
 #include "mozilla/Move.h"
 #include "mozilla/PodOperations.h"
 #include <vector>
+#include <limits>
 
 #include "DrawCommand.h"
 #include "Logging.h"
@@ -21,13 +22,14 @@ class CaptureCommandList {
  public:
   CaptureCommandList() : mLastCommand(nullptr) {}
   CaptureCommandList(CaptureCommandList&& aOther)
-      : mStorage(Move(aOther.mStorage)), mLastCommand(aOther.mLastCommand) {
+      : mStorage(std::move(aOther.mStorage)),
+        mLastCommand(aOther.mLastCommand) {
     aOther.mLastCommand = nullptr;
   }
   ~CaptureCommandList();
 
   CaptureCommandList& operator=(CaptureCommandList&& aOther) {
-    mStorage = Move(aOther.mStorage);
+    mStorage = std::move(aOther.mStorage);
     mLastCommand = aOther.mLastCommand;
     aOther.mLastCommand = nullptr;
     return *this;
@@ -35,22 +37,46 @@ class CaptureCommandList {
 
   template <typename T>
   T* Append() {
-    size_t oldSize = mStorage.size();
-    mStorage.resize(mStorage.size() + sizeof(T) + sizeof(uint32_t));
-    uint8_t* nextDrawLocation = &mStorage.front() + oldSize;
-    *(uint32_t*)(nextDrawLocation) = sizeof(T) + sizeof(uint32_t);
-    T* newCommand = reinterpret_cast<T*>(nextDrawLocation + sizeof(uint32_t));
-    mLastCommand = newCommand;
-    return newCommand;
+    static_assert(sizeof(T) + sizeof(uint16_t) + sizeof(uint16_t) <=
+                      std::numeric_limits<uint16_t>::max(),
+                  "encoding is too small to contain advance");
+    const uint16_t kAdvance = sizeof(T) + sizeof(uint16_t) + sizeof(uint16_t);
+
+    size_t size = mStorage.size();
+    mStorage.resize(size + kAdvance);
+
+    uint8_t* current = &mStorage.front() + size;
+    *(uint16_t*)(current) = kAdvance;
+    current += sizeof(uint16_t);
+    *(uint16_t*)(current) = ~kAdvance;
+    current += sizeof(uint16_t);
+
+    T* command = reinterpret_cast<T*>(current);
+    mLastCommand = command;
+    return command;
   }
 
   template <typename T>
   T* ReuseOrAppend() {
-    if (mLastCommand != nullptr && mLastCommand->GetType() == T::Type) {
-      return reinterpret_cast<T*>(mLastCommand);
+    {  // Scope lock
+      if (mLastCommand != nullptr && mLastCommand->GetType() == T::Type) {
+        return reinterpret_cast<T*>(mLastCommand);
+      }
     }
     return Append<T>();
   }
+
+  bool IsEmpty() const { return mStorage.empty(); }
+
+  template <typename T>
+  bool BufferWillAlloc() const {
+    const uint16_t kAdvance = sizeof(T) + sizeof(uint16_t) + sizeof(uint16_t);
+    return mStorage.size() + kAdvance > mStorage.capacity();
+  }
+
+  size_t BufferCapacity() const { return mStorage.capacity(); }
+
+  void Clear();
 
   class iterator {
    public:
@@ -61,10 +87,15 @@ class CaptureCommandList {
         mEnd = mCurrent + mParent.mStorage.size();
       }
     }
+
     bool Done() const { return mCurrent >= mEnd; }
     void Next() {
       MOZ_ASSERT(!Done());
-      mCurrent += *reinterpret_cast<uint32_t*>(mCurrent);
+      uint16_t advance = *reinterpret_cast<uint16_t*>(mCurrent);
+      uint16_t redundant =
+          ~*reinterpret_cast<uint16_t*>(mCurrent + sizeof(uint16_t));
+      MOZ_RELEASE_ASSERT(advance == redundant);
+      mCurrent += advance;
     }
     DrawingCommand* Get() {
       MOZ_ASSERT(!Done());
@@ -77,7 +108,7 @@ class CaptureCommandList {
     uint8_t* mEnd;
   };
 
-  void Log(TreeLog& aStream) {
+  void Log(TreeLog<>& aStream) {
     for (iterator iter(*this); !iter.Done(); iter.Next()) {
       DrawingCommand* cmd = iter.Get();
       cmd->Log(aStream);

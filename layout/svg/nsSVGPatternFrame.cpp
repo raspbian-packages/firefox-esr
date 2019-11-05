@@ -14,30 +14,31 @@
 #include "gfxMatrix.h"
 #include "gfxPattern.h"
 #include "gfxPlatform.h"
-#include "mozilla/gfx/2D.h"
-#include "nsContentUtils.h"
-#include "nsGkAtoms.h"
-#include "nsSVGDisplayableFrame.h"
-#include "nsStyleContext.h"
-#include "SVGObserverUtils.h"
-#include "SVGGeometryFrame.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/dom/SVGPatternElement.h"
 #include "mozilla/dom/SVGUnitTypesBinding.h"
+#include "mozilla/gfx/2D.h"
+#include "nsGkAtoms.h"
+#include "nsSVGDisplayableFrame.h"
+#include "SVGObserverUtils.h"
+#include "SVGGeometryFrame.h"
 #include "nsSVGUtils.h"
-#include "nsSVGAnimatedTransformList.h"
+#include "SVGAnimatedTransformList.h"
 #include "SVGContentUtils.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
-using namespace mozilla::dom::SVGUnitTypesBinding;
+using namespace mozilla::dom::SVGUnitTypes_Binding;
 using namespace mozilla::gfx;
 using namespace mozilla::image;
 
 //----------------------------------------------------------------------
 // Implementation
 
-nsSVGPatternFrame::nsSVGPatternFrame(nsStyleContext *aContext)
-    : nsSVGPaintServerFrame(aContext, kClassID),
+nsSVGPatternFrame::nsSVGPatternFrame(ComputedStyle* aStyle,
+                                     nsPresContext* aPresContext)
+    : nsSVGPaintServerFrame(aStyle, aPresContext, kClassID),
       mSource(nullptr),
       mLoopFlag(false),
       mNoHRefURI(false) {}
@@ -48,7 +49,7 @@ NS_IMPL_FRAMEARENA_HELPERS(nsSVGPatternFrame)
 // nsIFrame methods:
 
 nsresult nsSVGPatternFrame::AttributeChanged(int32_t aNameSpaceID,
-                                             nsAtom *aAttribute,
+                                             nsAtom* aAttribute,
                                              int32_t aModType) {
   if (aNameSpaceID == kNameSpaceID_None &&
       (aAttribute == nsGkAtoms::patternUnits ||
@@ -65,7 +66,7 @@ nsresult nsSVGPatternFrame::AttributeChanged(int32_t aNameSpaceID,
        aNameSpaceID == kNameSpaceID_None) &&
       aAttribute == nsGkAtoms::href) {
     // Blow away our reference, if any
-    DeleteProperty(SVGObserverUtils::HrefAsPaintingProperty());
+    SVGObserverUtils::RemoveTemplateObserver(this);
     mNoHRefURI = false;
     // And update whoever references us
     SVGObserverUtils::InvalidateDirectRenderingObservers(this);
@@ -76,8 +77,8 @@ nsresult nsSVGPatternFrame::AttributeChanged(int32_t aNameSpaceID,
 }
 
 #ifdef DEBUG
-void nsSVGPatternFrame::Init(nsIContent *aContent, nsContainerFrame *aParent,
-                             nsIFrame *aPrevInFlow) {
+void nsSVGPatternFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
+                             nsIFrame* aPrevInFlow) {
   NS_ASSERTION(aContent->IsSVGElement(nsGkAtoms::pattern),
                "Content is not an SVG pattern");
 
@@ -112,7 +113,7 @@ gfxMatrix nsSVGPatternFrame::GetCanvasTM() {
 // -------------------------------------------------------------------------
 
 /** Calculate the maximum expansion of a matrix */
-static float MaxExpansion(const Matrix &aMatrix) {
+static float MaxExpansion(const Matrix& aMatrix) {
   // maximum expansion derivation from
   // http://lists.cairographics.org/archives/cairo/2004-October/001980.html
   // and also implemented in cairo_matrix_transformed_circle_major_axis
@@ -131,7 +132,7 @@ static float MaxExpansion(const Matrix &aMatrix) {
 // scale if the viewBox is specified and _patternUnits_ is set to or defaults to
 // objectBoundingBox though, since in that case the viewBox is relative to the
 // bbox
-static bool IncludeBBoxScale(const nsSVGViewBox &aViewBox,
+static bool IncludeBBoxScale(const SVGAnimatedViewBox& aViewBox,
                              uint32_t aPatternContentUnits,
                              uint32_t aPatternUnits) {
   return (!aViewBox.IsExplicitlySet() &&
@@ -143,9 +144,9 @@ static bool IncludeBBoxScale(const nsSVGViewBox &aViewBox,
 // Given the matrix for the pattern element's own transform, this returns a
 // combined matrix including the transforms applicable to its target.
 static Matrix GetPatternMatrix(uint16_t aPatternUnits,
-                               const Matrix &patternTransform,
-                               const gfxRect &bbox, const gfxRect &callerBBox,
-                               const Matrix &callerCTM) {
+                               const Matrix& patternTransform,
+                               const gfxRect& bbox, const gfxRect& callerBBox,
+                               const Matrix& callerCTM) {
   // We really want the pattern matrix to handle translations
   gfxFloat minx = bbox.X();
   gfxFloat miny = bbox.Y();
@@ -163,11 +164,12 @@ static Matrix GetPatternMatrix(uint16_t aPatternUnits,
   return patternMatrix;
 }
 
-static nsresult GetTargetGeometry(gfxRect *aBBox, const nsSVGViewBox &aViewBox,
+static nsresult GetTargetGeometry(gfxRect* aBBox,
+                                  const SVGAnimatedViewBox& aViewBox,
                                   uint16_t aPatternContentUnits,
-                                  uint16_t aPatternUnits, nsIFrame *aTarget,
-                                  const Matrix &aContextMatrix,
-                                  const gfxRect *aOverrideBounds) {
+                                  uint16_t aPatternUnits, nsIFrame* aTarget,
+                                  const Matrix& aContextMatrix,
+                                  const gfxRect* aOverrideBounds) {
   *aBBox = aOverrideBounds
                ? *aOverrideBounds
                : nsSVGUtils::GetBBox(aTarget,
@@ -191,10 +193,10 @@ static nsresult GetTargetGeometry(gfxRect *aBBox, const nsSVGViewBox &aViewBox,
 }
 
 already_AddRefed<SourceSurface> nsSVGPatternFrame::PaintPattern(
-    const DrawTarget *aDrawTarget, Matrix *patternMatrix,
-    const Matrix &aContextMatrix, nsIFrame *aSource,
+    const DrawTarget* aDrawTarget, Matrix* patternMatrix,
+    const Matrix& aContextMatrix, nsIFrame* aSource,
     nsStyleSVGPaint nsStyleSVG::*aFillOrStroke, float aGraphicOpacity,
-    const gfxRect *aOverrideBounds, imgDrawingParams &aImgParams) {
+    const gfxRect* aOverrideBounds, imgDrawingParams& aImgParams) {
   /*
    * General approach:
    *    Set the content geometry stuff
@@ -207,14 +209,14 @@ already_AddRefed<SourceSurface> nsSVGPatternFrame::PaintPattern(
    *    Return
    */
 
-  nsSVGPatternFrame *patternWithChildren = GetPatternWithChildren();
+  nsSVGPatternFrame* patternWithChildren = GetPatternWithChildren();
   if (!patternWithChildren) {
     // Either no kids or a bad reference
     return nullptr;
   }
-  nsIFrame *firstKid = patternWithChildren->mFrames.FirstChild();
+  nsIFrame* firstKid = patternWithChildren->mFrames.FirstChild();
 
-  const nsSVGViewBox &viewBox = GetViewBox();
+  const SVGAnimatedViewBox& viewBox = GetViewBox();
 
   uint16_t patternContentUnits =
       GetEnumValue(SVGPatternElement::PATTERNCONTENTUNITS);
@@ -344,7 +346,7 @@ already_AddRefed<SourceSurface> nsSVGPatternFrame::PaintPattern(
 
   if (aSource->IsFrameOfType(nsIFrame::eSVGGeometry)) {
     // Set the geometrical parent of the pattern we are rendering
-    patternWithChildren->mSource = static_cast<SVGGeometryFrame *>(aSource);
+    patternWithChildren->mSource = static_cast<SVGGeometryFrame*>(aSource);
   }
 
   // Delay checking NS_FRAME_DRAWING_AS_PAINTSERVER bit until here so we can
@@ -352,16 +354,14 @@ already_AddRefed<SourceSurface> nsSVGPatternFrame::PaintPattern(
   if (!(patternWithChildren->GetStateBits() &
         NS_FRAME_DRAWING_AS_PAINTSERVER)) {
     AutoSetRestorePaintServerState paintServer(patternWithChildren);
-    for (nsIFrame *kid = firstKid; kid; kid = kid->GetNextSibling()) {
+    for (nsIFrame* kid = firstKid; kid; kid = kid->GetNextSibling()) {
+      gfxMatrix tm = *(patternWithChildren->mCTM);
+
       // The CTM of each frame referencing us can be different
-      nsSVGDisplayableFrame *SVGFrame = do_QueryFrame(kid);
+      nsSVGDisplayableFrame* SVGFrame = do_QueryFrame(kid);
       if (SVGFrame) {
         SVGFrame->NotifySVGChanged(nsSVGDisplayableFrame::TRANSFORM_CHANGED);
-      }
-      gfxMatrix tm = *(patternWithChildren->mCTM);
-      if (kid->GetContent()->IsSVGElement()) {
-        tm = static_cast<nsSVGElement *>(kid->GetContent())
-                 ->PrependLocalTransformsTo(tm, eUserSpaceToParent);
+        tm = nsSVGUtils::GetTransformMatrixInUserSpace(kid) * tm;
       }
 
       nsSVGUtils::PaintFrameWithEffects(kid, *ctx, tm, aImgParams);
@@ -383,9 +383,11 @@ already_AddRefed<SourceSurface> nsSVGPatternFrame::PaintPattern(
 // How do we handle the insertion of a new frame?
 // We really don't want to rerender this every time,
 // do we?
-nsSVGPatternFrame *nsSVGPatternFrame::GetPatternWithChildren() {
+nsSVGPatternFrame* nsSVGPatternFrame::GetPatternWithChildren() {
   // Do we have any children ourselves?
-  if (!mFrames.IsEmpty()) return this;
+  if (!mFrames.IsEmpty()) {
+    return this;
+  }
 
   // No, see if we chain to someone who does
 
@@ -399,18 +401,22 @@ nsSVGPatternFrame *nsSVGPatternFrame::GetPatternWithChildren() {
     return nullptr;
   }
 
-  nsSVGPatternFrame *next = GetReferencedPattern();
-  if (!next) return nullptr;
+  nsSVGPatternFrame* next = GetReferencedPattern();
+  if (!next) {
+    return nullptr;
+  }
 
   return next->GetPatternWithChildren();
 }
 
 uint16_t nsSVGPatternFrame::GetEnumValue(uint32_t aIndex,
-                                         nsIContent *aDefault) {
-  nsSVGEnum &thisEnum =
-      static_cast<SVGPatternElement *>(GetContent())->mEnumAttributes[aIndex];
+                                         nsIContent* aDefault) {
+  SVGAnimatedEnumeration& thisEnum =
+      static_cast<SVGPatternElement*>(GetContent())->mEnumAttributes[aIndex];
 
-  if (thisEnum.IsExplicitlySet()) return thisEnum.GetAnimValue();
+  if (thisEnum.IsExplicitlySet()) {
+    return thisEnum.GetAnimValue();
+  }
 
   // Before we recurse, make sure we'll break reference loops and over long
   // reference chains:
@@ -419,23 +425,22 @@ uint16_t nsSVGPatternFrame::GetEnumValue(uint32_t aIndex,
                                         &sRefChainLengthCounter);
   if (MOZ_UNLIKELY(!refChainGuard.Reference())) {
     // Break reference chain
-    return static_cast<SVGPatternElement *>(aDefault)
+    return static_cast<SVGPatternElement*>(aDefault)
         ->mEnumAttributes[aIndex]
         .GetAnimValue();
   }
 
-  nsSVGPatternFrame *next = GetReferencedPattern();
+  nsSVGPatternFrame* next = GetReferencedPattern();
   return next ? next->GetEnumValue(aIndex, aDefault)
-              : static_cast<SVGPatternElement *>(aDefault)
+              : static_cast<SVGPatternElement*>(aDefault)
                     ->mEnumAttributes[aIndex]
                     .GetAnimValue();
 }
 
-nsSVGAnimatedTransformList *nsSVGPatternFrame::GetPatternTransformList(
-    nsIContent *aDefault) {
-  nsSVGAnimatedTransformList *thisTransformList =
-      static_cast<SVGPatternElement *>(GetContent())
-          ->GetAnimatedTransformList();
+SVGAnimatedTransformList* nsSVGPatternFrame::GetPatternTransformList(
+    nsIContent* aDefault) {
+  SVGAnimatedTransformList* thisTransformList =
+      static_cast<SVGPatternElement*>(GetContent())->GetAnimatedTransformList();
 
   if (thisTransformList && thisTransformList->IsExplicitlySet())
     return thisTransformList;
@@ -447,28 +452,32 @@ nsSVGAnimatedTransformList *nsSVGPatternFrame::GetPatternTransformList(
                                         &sRefChainLengthCounter);
   if (MOZ_UNLIKELY(!refChainGuard.Reference())) {
     // Break reference chain
-    return static_cast<SVGPatternElement *>(aDefault)->mPatternTransform.get();
+    return static_cast<SVGPatternElement*>(aDefault)->mPatternTransform.get();
   }
 
-  nsSVGPatternFrame *next = GetReferencedPattern();
+  nsSVGPatternFrame* next = GetReferencedPattern();
   return next ? next->GetPatternTransformList(aDefault)
-              : static_cast<SVGPatternElement *>(aDefault)
+              : static_cast<SVGPatternElement*>(aDefault)
                     ->mPatternTransform.get();
 }
 
 gfxMatrix nsSVGPatternFrame::GetPatternTransform() {
-  nsSVGAnimatedTransformList *animTransformList =
+  SVGAnimatedTransformList* animTransformList =
       GetPatternTransformList(GetContent());
-  if (!animTransformList) return gfxMatrix();
+  if (!animTransformList) {
+    return gfxMatrix();
+  }
 
   return animTransformList->GetAnimValue().GetConsolidationMatrix();
 }
 
-const nsSVGViewBox &nsSVGPatternFrame::GetViewBox(nsIContent *aDefault) {
-  const nsSVGViewBox &thisViewBox =
-      static_cast<SVGPatternElement *>(GetContent())->mViewBox;
+const SVGAnimatedViewBox& nsSVGPatternFrame::GetViewBox(nsIContent* aDefault) {
+  const SVGAnimatedViewBox& thisViewBox =
+      static_cast<SVGPatternElement*>(GetContent())->mViewBox;
 
-  if (thisViewBox.IsExplicitlySet()) return thisViewBox;
+  if (thisViewBox.IsExplicitlySet()) {
+    return thisViewBox;
+  }
 
   // Before we recurse, make sure we'll break reference loops and over long
   // reference chains:
@@ -477,44 +486,46 @@ const nsSVGViewBox &nsSVGPatternFrame::GetViewBox(nsIContent *aDefault) {
                                         &sRefChainLengthCounter);
   if (MOZ_UNLIKELY(!refChainGuard.Reference())) {
     // Break reference chain
-    return static_cast<SVGPatternElement *>(aDefault)->mViewBox;
+    return static_cast<SVGPatternElement*>(aDefault)->mViewBox;
   }
 
-  nsSVGPatternFrame *next = GetReferencedPattern();
+  nsSVGPatternFrame* next = GetReferencedPattern();
   return next ? next->GetViewBox(aDefault)
-              : static_cast<SVGPatternElement *>(aDefault)->mViewBox;
+              : static_cast<SVGPatternElement*>(aDefault)->mViewBox;
 }
 
-const SVGAnimatedPreserveAspectRatio &nsSVGPatternFrame::GetPreserveAspectRatio(
-    nsIContent *aDefault) {
-  const SVGAnimatedPreserveAspectRatio &thisPar =
-      static_cast<SVGPatternElement *>(GetContent())->mPreserveAspectRatio;
+const SVGAnimatedPreserveAspectRatio& nsSVGPatternFrame::GetPreserveAspectRatio(
+    nsIContent* aDefault) {
+  const SVGAnimatedPreserveAspectRatio& thisPar =
+      static_cast<SVGPatternElement*>(GetContent())->mPreserveAspectRatio;
 
-  if (thisPar.IsExplicitlySet()) return thisPar;
-
-  // Before we recurse, make sure we'll break reference loops and over long
-  // reference chains:
-  static int16_t sRefChainLengthCounter = AutoReferenceChainGuard::noChain;
-  AutoReferenceChainGuard refChainGuard(this, &mLoopFlag,
-                                        &sRefChainLengthCounter);
-  if (MOZ_UNLIKELY(!refChainGuard.Reference())) {
-    // Break reference chain
-    return static_cast<SVGPatternElement *>(aDefault)->mPreserveAspectRatio;
+  if (thisPar.IsExplicitlySet()) {
+    return thisPar;
   }
 
-  nsSVGPatternFrame *next = GetReferencedPattern();
-  return next
-             ? next->GetPreserveAspectRatio(aDefault)
-             : static_cast<SVGPatternElement *>(aDefault)->mPreserveAspectRatio;
+  // Before we recurse, make sure we'll break reference loops and over long
+  // reference chains:
+  static int16_t sRefChainLengthCounter = AutoReferenceChainGuard::noChain;
+  AutoReferenceChainGuard refChainGuard(this, &mLoopFlag,
+                                        &sRefChainLengthCounter);
+  if (MOZ_UNLIKELY(!refChainGuard.Reference())) {
+    // Break reference chain
+    return static_cast<SVGPatternElement*>(aDefault)->mPreserveAspectRatio;
+  }
+
+  nsSVGPatternFrame* next = GetReferencedPattern();
+  return next ? next->GetPreserveAspectRatio(aDefault)
+              : static_cast<SVGPatternElement*>(aDefault)->mPreserveAspectRatio;
 }
 
-const nsSVGLength2 *nsSVGPatternFrame::GetLengthValue(uint32_t aIndex,
-                                                      nsIContent *aDefault) {
-  const nsSVGLength2 *thisLength =
-      &static_cast<SVGPatternElement *>(GetContent())
-           ->mLengthAttributes[aIndex];
+const SVGAnimatedLength* nsSVGPatternFrame::GetLengthValue(
+    uint32_t aIndex, nsIContent* aDefault) {
+  const SVGAnimatedLength* thisLength =
+      &static_cast<SVGPatternElement*>(GetContent())->mLengthAttributes[aIndex];
 
-  if (thisLength->IsExplicitlySet()) return thisLength;
+  if (thisLength->IsExplicitlySet()) {
+    return thisLength;
+  }
 
   // Before we recurse, make sure we'll break reference loops and over long
   // reference chains:
@@ -523,69 +534,59 @@ const nsSVGLength2 *nsSVGPatternFrame::GetLengthValue(uint32_t aIndex,
                                         &sRefChainLengthCounter);
   if (MOZ_UNLIKELY(!refChainGuard.Reference())) {
     // Break reference chain
-    return &static_cast<SVGPatternElement *>(aDefault)
+    return &static_cast<SVGPatternElement*>(aDefault)
                 ->mLengthAttributes[aIndex];
   }
 
-  nsSVGPatternFrame *next = GetReferencedPattern();
+  nsSVGPatternFrame* next = GetReferencedPattern();
   return next ? next->GetLengthValue(aIndex, aDefault)
-              : &static_cast<SVGPatternElement *>(aDefault)
+              : &static_cast<SVGPatternElement*>(aDefault)
                      ->mLengthAttributes[aIndex];
 }
 
 // Private (helper) methods
-nsSVGPatternFrame *nsSVGPatternFrame::GetReferencedPattern() {
-  if (mNoHRefURI) return nullptr;
 
-  nsSVGPaintingProperty *property =
-      GetProperty(SVGObserverUtils::HrefAsPaintingProperty());
+nsSVGPatternFrame* nsSVGPatternFrame::GetReferencedPattern() {
+  if (mNoHRefURI) {
+    return nullptr;
+  }
 
-  if (!property) {
-    // Fetch our pattern element's href or xlink:href attribute
-    SVGPatternElement *pattern = static_cast<SVGPatternElement *>(GetContent());
-    nsAutoString href;
+  auto GetHref = [this](nsAString& aHref) {
+    SVGPatternElement* pattern =
+        static_cast<SVGPatternElement*>(this->GetContent());
     if (pattern->mStringAttributes[SVGPatternElement::HREF].IsExplicitlySet()) {
-      pattern->mStringAttributes[SVGPatternElement::HREF].GetAnimValue(href,
+      pattern->mStringAttributes[SVGPatternElement::HREF].GetAnimValue(aHref,
                                                                        pattern);
     } else {
       pattern->mStringAttributes[SVGPatternElement::XLINK_HREF].GetAnimValue(
-          href, pattern);
+          aHref, pattern);
     }
+    this->mNoHRefURI = aHref.IsEmpty();
+  };
 
-    if (href.IsEmpty()) {
-      mNoHRefURI = true;
-      return nullptr;  // no URL
+  nsIFrame* tframe = SVGObserverUtils::GetAndObserveTemplate(this, GetHref);
+  if (tframe) {
+    LayoutFrameType frameType = tframe->Type();
+    if (frameType == LayoutFrameType::SVGPattern) {
+      return static_cast<nsSVGPatternFrame*>(tframe);
     }
-
-    // Convert href to an nsIURI
-    nsCOMPtr<nsIURI> targetURI;
-    nsCOMPtr<nsIURI> base = mContent->GetBaseURI();
-    nsContentUtils::NewURIWithDocumentCharset(
-        getter_AddRefs(targetURI), href, mContent->GetUncomposedDoc(), base);
-
-    property = SVGObserverUtils::GetPaintingProperty(
-        targetURI, this, SVGObserverUtils::HrefAsPaintingProperty());
-    if (!property) return nullptr;
+    // We don't call SVGObserverUtils::RemoveTemplateObserver and set
+    // `mNoHRefURI = false` here since we want to be invalidated if the ID
+    // specified by our href starts resolving to a different/valid element.
   }
 
-  nsIFrame *result = property->GetReferencedFrame();
-  if (!result) return nullptr;
-
-  LayoutFrameType frameType = result->Type();
-  if (frameType != LayoutFrameType::SVGPattern) return nullptr;
-
-  return static_cast<nsSVGPatternFrame *>(result);
+  return nullptr;
 }
 
 gfxRect nsSVGPatternFrame::GetPatternRect(uint16_t aPatternUnits,
-                                          const gfxRect &aTargetBBox,
-                                          const Matrix &aTargetCTM,
-                                          nsIFrame *aTarget) {
+                                          const gfxRect& aTargetBBox,
+                                          const Matrix& aTargetCTM,
+                                          nsIFrame* aTarget) {
   // We need to initialize our box
   float x, y, width, height;
 
   // Get the pattern x,y,width, and height
-  const nsSVGLength2 *tmpX, *tmpY, *tmpHeight, *tmpWidth;
+  const SVGAnimatedLength *tmpX, *tmpY, *tmpHeight, *tmpWidth;
   tmpX = GetLengthValue(SVGPatternElement::ATTR_X);
   tmpY = GetLengthValue(SVGPatternElement::ATTR_Y);
   tmpHeight = GetLengthValue(SVGPatternElement::ATTR_HEIGHT);
@@ -607,14 +608,14 @@ gfxRect nsSVGPatternFrame::GetPatternRect(uint16_t aPatternUnits,
   return gfxRect(x, y, width, height);
 }
 
-gfxMatrix nsSVGPatternFrame::ConstructCTM(const nsSVGViewBox &aViewBox,
+gfxMatrix nsSVGPatternFrame::ConstructCTM(const SVGAnimatedViewBox& aViewBox,
                                           uint16_t aPatternContentUnits,
                                           uint16_t aPatternUnits,
-                                          const gfxRect &callerBBox,
-                                          const Matrix &callerCTM,
-                                          nsIFrame *aTarget) {
-  SVGViewportElement *ctx = nullptr;
-  nsIContent *targetContent = aTarget->GetContent();
+                                          const gfxRect& callerBBox,
+                                          const Matrix& callerCTM,
+                                          nsIFrame* aTarget) {
+  SVGViewportElement* ctx = nullptr;
+  nsIContent* targetContent = aTarget->GetContent();
   gfxFloat scaleX, scaleY;
 
   // The objectBoundingBox conversion must be handled in the CTM:
@@ -623,7 +624,7 @@ gfxMatrix nsSVGPatternFrame::ConstructCTM(const nsSVGViewBox &aViewBox,
     scaleY = callerBBox.Height();
   } else {
     if (targetContent->IsSVGElement()) {
-      ctx = static_cast<nsSVGElement *>(targetContent)->GetCtx();
+      ctx = static_cast<SVGElement*>(targetContent)->GetCtx();
     }
     scaleX = scaleY = MaxExpansion(callerCTM);
   }
@@ -631,9 +632,9 @@ gfxMatrix nsSVGPatternFrame::ConstructCTM(const nsSVGViewBox &aViewBox,
   if (!aViewBox.IsExplicitlySet()) {
     return gfxMatrix(scaleX, 0.0, 0.0, scaleY, 0.0, 0.0);
   }
-  const nsSVGViewBoxRect viewBoxRect = aViewBox.GetAnimValue();
+  const SVGViewBox& viewBox = aViewBox.GetAnimValue();
 
-  if (viewBoxRect.height <= 0.0f || viewBoxRect.width <= 0.0f) {
+  if (viewBox.height <= 0.0f || viewBox.width <= 0.0f) {
     return gfxMatrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);  // singular
   }
 
@@ -659,9 +660,8 @@ gfxMatrix nsSVGPatternFrame::ConstructCTM(const nsSVGViewBox &aViewBox,
   }
 
   Matrix tm = SVGContentUtils::GetViewBoxTransform(
-      viewportWidth * scaleX, viewportHeight * scaleY, viewBoxRect.x,
-      viewBoxRect.y, viewBoxRect.width, viewBoxRect.height,
-      GetPreserveAspectRatio());
+      viewportWidth * scaleX, viewportHeight * scaleY, viewBox.x, viewBox.y,
+      viewBox.width, viewBox.height, GetPreserveAspectRatio());
 
   return ThebesMatrix(tm);
 }
@@ -669,10 +669,10 @@ gfxMatrix nsSVGPatternFrame::ConstructCTM(const nsSVGViewBox &aViewBox,
 //----------------------------------------------------------------------
 // nsSVGPaintServerFrame methods:
 already_AddRefed<gfxPattern> nsSVGPatternFrame::GetPaintServerPattern(
-    nsIFrame *aSource, const DrawTarget *aDrawTarget,
-    const gfxMatrix &aContextMatrix, nsStyleSVGPaint nsStyleSVG::*aFillOrStroke,
-    float aGraphicOpacity, imgDrawingParams &aImgParams,
-    const gfxRect *aOverrideBounds) {
+    nsIFrame* aSource, const DrawTarget* aDrawTarget,
+    const gfxMatrix& aContextMatrix, nsStyleSVGPaint nsStyleSVG::*aFillOrStroke,
+    float aGraphicOpacity, imgDrawingParams& aImgParams,
+    const gfxRect* aOverrideBounds) {
   if (aGraphicOpacity == 0.0f) {
     return do_AddRef(new gfxPattern(Color()));
   }
@@ -701,7 +701,7 @@ already_AddRefed<gfxPattern> nsSVGPatternFrame::GetPaintServerPattern(
 // Public functions
 // -------------------------------------------------------------------------
 
-nsIFrame *NS_NewSVGPatternFrame(nsIPresShell *aPresShell,
-                                nsStyleContext *aContext) {
-  return new (aPresShell) nsSVGPatternFrame(aContext);
+nsIFrame* NS_NewSVGPatternFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsSVGPatternFrame(aStyle, aPresShell->GetPresContext());
 }

@@ -19,13 +19,17 @@ const RECORDED_CONTENT_EVENTS = [
   ["telemetry.test", "content_only", "object1"],
   ["telemetry.test", "main_and_content", "object1"],
   ["telemetry.test", "content_only", "object1", "some value"],
-  ["telemetry.test", "content_only", "object1", null, {foo: "x", bar: "y"}],
-  ["telemetry.test", "content_only", "object1", "some value", {foo: "x", bar: "y"}],
+  ["telemetry.test", "content_only", "object1", null, { foo: "x", bar: "y" }],
+  [
+    "telemetry.test",
+    "content_only",
+    "object1",
+    "some value",
+    { foo: "x", bar: "y" },
+  ],
 ];
 
-const UNRECORDED_CONTENT_EVENTS = [
-  ["telemetry.test", "main_only", "object1"],
-];
+const UNRECORDED_CONTENT_EVENTS = [["telemetry.test", "main_only", "object1"]];
 
 const RECORDED_PARENT_EVENTS = [
   ["telemetry.test", "main_and_content", "object1"],
@@ -56,10 +60,14 @@ function run_child_test() {
  */
 async function waitForContentEvents() {
   await ContentTaskUtils.waitForCondition(() => {
-    const snapshot =
-      Telemetry.snapshotEvents(Ci.nsITelemetry.DATASET_RELEASE_CHANNEL_OPTIN, false);
-    return Object.keys(snapshot).includes("content") &&
-           Object.keys(snapshot).includes("dynamic");
+    const snapshot = Telemetry.snapshotEvents(
+      Ci.nsITelemetry.DATASET_PRERELEASE_CHANNELS,
+      false
+    );
+    return (
+      Object.keys(snapshot).includes("content") &&
+      Object.keys(snapshot).includes("dynamic")
+    );
   });
 }
 
@@ -75,6 +83,7 @@ add_task(async function() {
   do_get_profile(true);
   loadAddonManager(APP_ID, APP_NAME, APP_VERSION, PLATFORM_VERSION);
   finishAddonManagerStartup();
+  fakeIntlReady();
   await TelemetryController.testSetup();
   // Make sure we don't generate unexpected pings due to pref changes.
   await setEmptyPrefWatchlist();
@@ -84,12 +93,12 @@ add_task(async function() {
   // Register dynamic test events.
   Telemetry.registerEvents("telemetry.test.dynamic", {
     // Event with only required fields.
-    "test1": {
+    test1: {
       methods: ["test1"],
       objects: ["object1"],
     },
     // Event with extra_keys.
-    "test2": {
+    test2: {
       methods: ["test2", "test2b"],
       objects: ["object1"],
       extra_keys: ["key1", "key2"],
@@ -112,55 +121,106 @@ add_task(async function() {
   RECORDED_PARENT_EVENTS.forEach(e => Telemetry.recordEvent(...e));
   UNRECORDED_PARENT_EVENTS.forEach(e => Telemetry.recordEvent(...e));
 
-  // Get an "environment-changed" ping rather than a "test-ping", as
-  // event measurements are only supported in subsession pings.
-  const payload = TelemetrySession.getPayload("environment-change");
+  let snapshot = Telemetry.snapshotEvents(
+    Ci.nsITelemetry.DATASET_PRERELEASE_CHANNELS,
+    false
+  );
 
-  // Validate the event data is present in the payload.
-  Assert.ok("processes" in payload, "Should have processes section");
-  Assert.ok("parent" in payload.processes, "Should have main process section");
-  Assert.ok("events" in payload.processes.parent, "Main process section should have events.");
-  Assert.ok("content" in payload.processes, "Should have child process section");
-  Assert.ok("events" in payload.processes.content, "Child process section should have events.");
-  Assert.ok("dynamic" in payload.processes, "Should have dynamic process section");
-  Assert.ok("events" in payload.processes.dynamic, "Dynamic process section should have events.");
+  Assert.ok("parent" in snapshot, "Should have main process section");
+  Assert.ok(
+    snapshot.parent.length > 0,
+    "Main process section should have events."
+  );
+  Assert.ok("content" in snapshot, "Should have child process section");
+  Assert.ok(
+    snapshot.content.length > 0,
+    "Child process section should have events."
+  );
+  Assert.ok("dynamic" in snapshot, "Should have dynamic process section");
+  Assert.ok(
+    snapshot.dynamic.length > 0,
+    "Dynamic process section should have events."
+  );
 
   // Check that the expected events are present from the content process.
-  let contentEvents = payload.processes.content.events.map(e => e.slice(1));
-  Assert.equal(contentEvents.length, RECORDED_CONTENT_EVENTS.length, "Should match expected event count.");
+  let contentEvents = snapshot.content.map(e => e.slice(1));
+  Assert.equal(
+    contentEvents.length,
+    RECORDED_CONTENT_EVENTS.length,
+    "Should match expected event count."
+  );
   for (let i = 0; i < RECORDED_CONTENT_EVENTS.length; ++i) {
-    Assert.deepEqual(contentEvents[i], RECORDED_CONTENT_EVENTS[i], "Should have recorded expected event.");
+    Assert.deepEqual(
+      contentEvents[i],
+      RECORDED_CONTENT_EVENTS[i],
+      "Should have recorded expected event."
+    );
   }
 
   // Check that the expected events are present from the parent process.
-  let parentEvents = payload.processes.parent.events.map(e => e.slice(1));
-  Assert.equal(parentEvents.length, RECORDED_PARENT_EVENTS.length, "Should match expected event count.");
+  let parentEvents = snapshot.parent.map(e => e.slice(1));
+  Assert.equal(
+    parentEvents.length,
+    RECORDED_PARENT_EVENTS.length,
+    "Should match expected event count."
+  );
   for (let i = 0; i < RECORDED_PARENT_EVENTS.length; ++i) {
-    Assert.deepEqual(parentEvents[i], RECORDED_PARENT_EVENTS[i], "Should have recorded expected event.");
+    Assert.deepEqual(
+      parentEvents[i],
+      RECORDED_PARENT_EVENTS[i],
+      "Should have recorded expected event."
+    );
   }
 
   // Check that the expected dynamic events are present.
-  let dynamicEvents = payload.processes.dynamic.events.map(e => e.slice(1));
-  Assert.equal(dynamicEvents.length, RECORDED_DYNAMIC_EVENTS.length, "Should match expected event count.");
+  let dynamicEvents = snapshot.dynamic.map(e => e.slice(1));
+  Assert.equal(
+    dynamicEvents.length,
+    RECORDED_DYNAMIC_EVENTS.length,
+    "Should match expected event count."
+  );
   for (let i = 0; i < RECORDED_DYNAMIC_EVENTS.length; ++i) {
-    Assert.deepEqual(dynamicEvents[i], RECORDED_DYNAMIC_EVENTS[i], "Should have recorded expected event.");
+    Assert.deepEqual(
+      dynamicEvents[i],
+      RECORDED_DYNAMIC_EVENTS[i],
+      "Should have recorded expected event."
+    );
   }
 
   // Check that the event timestamps are in the expected ranges.
-  let contentTimestamps = payload.processes.content.events.map(e => e[0]);
-  let parentTimestamps = payload.processes.parent.events.map(e => e[0]);
+  let contentTimestamps = snapshot.content.map(e => e[0]);
+  let parentTimestamps = snapshot.parent.map(e => e[0]);
 
-  Assert.ok(contentTimestamps.every(ts => (ts > Math.floor(timestampBeforeChildEvents)) &&
-                                          (ts < timestampAfterChildEvents)),
-            "All content event timestamps should be in the expected time range.");
-  Assert.ok(parentTimestamps.every(ts => (ts >= Math.floor(timestampAfterChildEvents))),
-            "All parent event timestamps should be in the expected time range.");
+  Assert.ok(
+    contentTimestamps.every(
+      ts =>
+        ts > Math.floor(timestampBeforeChildEvents) &&
+        ts < timestampAfterChildEvents
+    ),
+    "All content event timestamps should be in the expected time range."
+  );
+  Assert.ok(
+    parentTimestamps.every(ts => ts >= Math.floor(timestampAfterChildEvents)),
+    "All parent event timestamps should be in the expected time range."
+  );
 
   // Make sure all events are cleared from storage properly.
-  let snapshot =
-      Telemetry.snapshotEvents(Ci.nsITelemetry.DATASET_RELEASE_CHANNEL_OPTIN, true);
-  Assert.greaterOrEqual(Object.keys(snapshot).length, 2, "Should have events from at least two processes.");
-  snapshot =
-      Telemetry.snapshotEvents(Ci.nsITelemetry.DATASET_RELEASE_CHANNEL_OPTIN, true);
-  Assert.equal(Object.keys(snapshot).length, 0, "Should have cleared all events from storage.");
+  snapshot = Telemetry.snapshotEvents(
+    Ci.nsITelemetry.DATASET_PRERELEASE_CHANNELS,
+    true
+  );
+  Assert.greaterOrEqual(
+    Object.keys(snapshot).length,
+    2,
+    "Should have events from at least two processes."
+  );
+  snapshot = Telemetry.snapshotEvents(
+    Ci.nsITelemetry.DATASET_PRERELEASE_CHANNELS,
+    true
+  );
+  Assert.equal(
+    Object.keys(snapshot).length,
+    0,
+    "Should have cleared all events from storage."
+  );
 });

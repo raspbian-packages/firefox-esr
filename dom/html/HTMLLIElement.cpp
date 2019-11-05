@@ -7,7 +7,7 @@
 #include "mozilla/dom/HTMLLIElement.h"
 #include "mozilla/dom/HTMLLIElementBinding.h"
 
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsAttrValueInlines.h"
 #include "nsGkAtoms.h"
 #include "nsStyleConsts.h"
@@ -58,24 +58,31 @@ bool HTMLLIElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
 }
 
 void HTMLLIElement::MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                          GenericSpecifiedValues* aData) {
-  if (aData->ShouldComputeStyleStruct(NS_STYLE_INHERIT_BIT(List))) {
-    if (!aData->PropertyIsSet(eCSSProperty_list_style_type)) {
-      // type: enum
-      const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::type);
-      if (value && value->Type() == nsAttrValue::eEnum)
-        aData->SetKeywordValue(eCSSProperty_list_style_type,
-                               value->GetEnumValue());
+                                          MappedDeclarations& aDecls) {
+  if (!aDecls.PropertyIsSet(eCSSProperty_list_style_type)) {
+    // type: enum
+    const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::type);
+    if (value && value->Type() == nsAttrValue::eEnum)
+      aDecls.SetKeywordValue(eCSSProperty_list_style_type,
+                             value->GetEnumValue());
+  }
+
+  // Map <li value=INTEGER> to 'counter-set: list-item INTEGER'.
+  const nsAttrValue* attrVal = aAttributes->GetAttr(nsGkAtoms::value);
+  if (attrVal && attrVal->Type() == nsAttrValue::eInteger) {
+    if (!aDecls.PropertyIsSet(eCSSProperty_counter_set)) {
+      aDecls.SetCounterSetListItem(attrVal->GetIntegerValue());
     }
   }
 
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
 HTMLLIElement::IsAttributeMapped(const nsAtom* aAttribute) const {
   static const MappedAttributeEntry attributes[] = {
-      {&nsGkAtoms::type},
+      {nsGkAtoms::type},
+      {nsGkAtoms::value},
       {nullptr},
   };
 
@@ -93,7 +100,7 @@ nsMapRuleToAttributesFunc HTMLLIElement::GetAttributeMappingFunction() const {
 
 JSObject* HTMLLIElement::WrapNode(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto) {
-  return HTMLLIElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLLIElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

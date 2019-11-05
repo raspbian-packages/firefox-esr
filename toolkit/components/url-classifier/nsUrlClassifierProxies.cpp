@@ -7,7 +7,9 @@
 #include "nsUrlClassifierDBService.h"
 
 #include "mozilla/SyncRunnable.h"
+#include "Classifier.h"
 
+using namespace mozilla;
 using namespace mozilla::safebrowsing;
 using mozilla::NewRunnableMethod;
 
@@ -50,7 +52,7 @@ UrlClassifierDBServiceWorkerProxy::GetTablesRunnable::Run() {
 NS_IMETHODIMP
 UrlClassifierDBServiceWorkerProxy::SetHashCompleter(
     const nsACString&, nsIUrlClassifierHashCompleter*) {
-  NS_NOTREACHED("This method should not be called!");
+  MOZ_ASSERT_UNREACHABLE("This method should not be called!");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -101,29 +103,6 @@ UrlClassifierDBServiceWorkerProxy::FinishStream() {
 }
 
 NS_IMETHODIMP
-UrlClassifierDBServiceWorkerProxy::DoLocalLookupRunnable::Run() {
-  mTarget->DoLocalLookup(mSpec, mTables, mResults);
-  return NS_OK;
-}
-
-nsresult UrlClassifierDBServiceWorkerProxy::DoLocalLookup(
-    const nsACString& spec, const nsACString& tables,
-    LookupResultArray* results)
-
-{
-  // Run synchronously on background thread. NS_DISPATCH_SYNC does *not* do
-  // what we want -- it continues processing events on the main thread loop
-  // before the Dispatch returns.
-  nsCOMPtr<nsIRunnable> r =
-      new DoLocalLookupRunnable(mTarget, spec, tables, results);
-  nsIThread* t = nsUrlClassifierDBService::BackgroundThread();
-  if (!t) return NS_ERROR_FAILURE;
-
-  mozilla::SyncRunnable::DispatchToThread(t, r);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
 UrlClassifierDBServiceWorkerProxy::FinishUpdate() {
   nsCOMPtr<nsIRunnable> r =
       NewRunnableMethod("nsUrlClassifierDBServiceWorker::FinishUpdate", mTarget,
@@ -163,21 +142,21 @@ UrlClassifierDBServiceWorkerProxy::ClearCache() {
   return DispatchToWorkerThread(r);
 }
 
-nsresult UrlClassifierDBServiceWorkerProxy::OpenDb() {
+nsresult UrlClassifierDBServiceWorkerProxy::OpenDb() const {
   nsCOMPtr<nsIRunnable> r =
       NewRunnableMethod("nsUrlClassifierDBServiceWorker::OpenDb", mTarget,
                         &nsUrlClassifierDBServiceWorker::OpenDb);
   return DispatchToWorkerThread(r);
 }
 
-nsresult UrlClassifierDBServiceWorkerProxy::CloseDb() {
+nsresult UrlClassifierDBServiceWorkerProxy::CloseDb() const {
   nsCOMPtr<nsIRunnable> r =
       NewRunnableMethod("nsUrlClassifierDBServiceWorker::CloseDb", mTarget,
                         &nsUrlClassifierDBServiceWorker::CloseDb);
   return DispatchToWorkerThread(r);
 }
 
-nsresult UrlClassifierDBServiceWorkerProxy::PreShutdown() {
+nsresult UrlClassifierDBServiceWorkerProxy::PreShutdown() const {
   nsCOMPtr<nsIRunnable> r =
       NewRunnableMethod("nsUrlClassifierDBServiceWorker::PreShutdown", mTarget,
                         &nsUrlClassifierDBServiceWorker::PreShutdown);
@@ -185,7 +164,7 @@ nsresult UrlClassifierDBServiceWorkerProxy::PreShutdown() {
 }
 
 nsresult UrlClassifierDBServiceWorkerProxy::CacheCompletions(
-    CacheResultArray* aEntries) {
+    const ConstCacheResultArray& aEntries) const {
   nsCOMPtr<nsIRunnable> r = new CacheCompletionsRunnable(mTarget, aEntries);
   return DispatchToWorkerThread(r);
 }
@@ -208,7 +187,8 @@ UrlClassifierDBServiceWorkerProxy::ClearLastResultsRunnable::Run() {
 }
 
 nsresult UrlClassifierDBServiceWorkerProxy::GetCacheInfo(
-    const nsACString& aTable, nsIUrlClassifierGetCacheCallback* aCallback) {
+    const nsACString& aTable,
+    nsIUrlClassifierGetCacheCallback* aCallback) const {
   nsCOMPtr<nsIRunnable> r =
       new GetCacheInfoRunnable(mTarget, aTable, aCallback);
   return DispatchToWorkerThread(r);
@@ -218,7 +198,7 @@ NS_IMETHODIMP
 UrlClassifierDBServiceWorkerProxy::GetCacheInfoRunnable::Run() {
   MOZ_ASSERT(mCallback);
 
-  mTarget->GetCacheInfo(mTable, &mCache);
+  mTarget->GetCacheInfo(mTable, getter_AddRefs(mCache));
 
   nsCOMPtr<nsIRunnable> r = new GetCacheInfoCallbackRunnable(mCache, mCallback);
   return NS_DispatchToMainThread(r);
@@ -230,7 +210,6 @@ UrlClassifierDBServiceWorkerProxy::GetCacheInfoCallbackRunnable::Run() {
   MOZ_ASSERT(mCallback);
 
   mCallback->OnGetCacheComplete(mCache);
-  NS_RELEASE(mCache);
 
   return NS_OK;
 }
@@ -239,14 +218,16 @@ NS_IMPL_ISUPPORTS(UrlClassifierLookupCallbackProxy,
                   nsIUrlClassifierLookupCallback)
 
 NS_IMETHODIMP
-UrlClassifierLookupCallbackProxy::LookupComplete(LookupResultArray* aResults) {
-  nsCOMPtr<nsIRunnable> r = new LookupCompleteRunnable(mTarget, aResults);
+UrlClassifierLookupCallbackProxy::LookupComplete(
+    UniquePtr<LookupResultArray> aResults) {
+  nsCOMPtr<nsIRunnable> r =
+      new LookupCompleteRunnable(mTarget, std::move(aResults));
   return NS_DispatchToMainThread(r);
 }
 
 NS_IMETHODIMP
 UrlClassifierLookupCallbackProxy::LookupCompleteRunnable::Run() {
-  mTarget->LookupComplete(mResults);
+  mTarget->LookupComplete(std::move(mResults));
   return NS_OK;
 }
 

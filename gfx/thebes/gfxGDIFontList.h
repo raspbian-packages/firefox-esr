@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,6 +6,7 @@
 #ifndef GFX_GDIFONTLIST_H
 #define GFX_GDIFONTLIST_H
 
+#include "mozilla/FontPropertyTypes.h"
 #include "mozilla/MemoryReporting.h"
 #include "gfxWindowsPlatform.h"
 #include "gfxPlatformFontList.h"
@@ -97,7 +98,7 @@ class GDIFontEntry : public gfxFontEntry {
 
   nsresult ReadCMAP(FontInfoData* aFontInfoData = nullptr) override;
 
-  void FillLogFont(LOGFONTW* aLogFont, uint16_t aWeight, gfxFloat aSize);
+  void FillLogFont(LOGFONTW* aLogFont, LONG aWeight, gfxFloat aSize);
 
   static gfxWindowsFontType DetermineFontType(const NEWTEXTMETRICW& metrics,
                                               DWORD fontType) {
@@ -143,17 +144,18 @@ class GDIFontEntry : public gfxFontEntry {
 
   gfxFontEntry* Clone() const override;
 
-  // create a font entry for a font with a given name
-  static GDIFontEntry* CreateFontEntry(const nsAString& aName,
-                                       gfxWindowsFontType aFontType,
-                                       uint8_t aStyle, uint16_t aWeight,
-                                       int16_t aStretch,
-                                       gfxUserFontData* aUserFontData);
+  // GDI backend doesn't support font variations:
+  bool HasVariations() override { return false; }
+  void GetVariationAxes(nsTArray<gfxFontVariationAxis>&) override {}
+  void GetVariationInstances(nsTArray<gfxFontVariationInstance>&) override {}
 
-  // create a font entry for a font referenced by its fullname
-  static GDIFontEntry* LoadLocalFont(const nsAString& aFontName,
-                                     uint16_t aWeight, int16_t aStretch,
-                                     uint8_t aStyle);
+  // create a font entry for a font with a given name
+  static GDIFontEntry* CreateFontEntry(const nsACString& aName,
+                                       gfxWindowsFontType aFontType,
+                                       SlantStyleRange aStyle,
+                                       WeightRange aWeight,
+                                       StretchRange aStretch,
+                                       gfxUserFontData* aUserFontData);
 
   gfxWindowsFontType mFontType;
   bool mForceGDI;
@@ -163,14 +165,13 @@ class GDIFontEntry : public gfxFontEntry {
  protected:
   friend class gfxGDIFont;
 
-  GDIFontEntry(const nsAString& aFaceName, gfxWindowsFontType aFontType,
-               uint8_t aStyle, uint16_t aWeight, int16_t aStretch,
-               gfxUserFontData* aUserFontData);
+  GDIFontEntry(const nsACString& aFaceName, gfxWindowsFontType aFontType,
+               SlantStyleRange aStyle, WeightRange aWeight,
+               StretchRange aStretch, gfxUserFontData* aUserFontData);
 
-  void InitLogFont(const nsAString& aName, gfxWindowsFontType aFontType);
+  void InitLogFont(const nsACString& aName, gfxWindowsFontType aFontType);
 
-  virtual gfxFont* CreateFontInstance(const gfxFontStyle* aFontStyle,
-                                      bool aNeedsBold) override;
+  gfxFont* CreateFontInstance(const gfxFontStyle* aFontStyle) override;
 
   virtual nsresult CopyFontTable(uint32_t aTableTag,
                                  nsTArray<uint8_t>& aBuffer) override;
@@ -186,7 +187,7 @@ class GDIFontEntry : public gfxFontEntry {
 // a single font family, referencing one or more faces
 class GDIFontFamily : public gfxFontFamily {
  public:
-  explicit GDIFontFamily(const nsAString& aName)
+  explicit GDIFontFamily(const nsACString& aName)
       : gfxFontFamily(aName), mWindowsFamily(0), mWindowsPitch(0), mCharset() {}
 
   virtual void FindStyleVariations(FontInfoData* aFontInfoData = nullptr);
@@ -257,7 +258,7 @@ class GDIFontFamily : public gfxFontFamily {
       bit = GB2312_CHARSET;
     } else if (aLangGroup == nsGkAtoms::zh_tw) {
       bit = CHINESEBIG5_CHARSET;
-    } else if (aLangGroup == nsGkAtoms::el_) {
+    } else if (aLangGroup == nsGkAtoms::el) {
       bit = GREEK_CHARSET;
     } else if (aLangGroup == nsGkAtoms::he) {
       bit = HEBREW_CHARSET;
@@ -296,21 +297,24 @@ class gfxGDIFontList : public gfxPlatformFontList {
   // initialize font lists
   virtual nsresult InitFontListForPlatform() override;
 
-  gfxFontFamily* CreateFontFamily(const nsAString& aName) const override;
+  gfxFontFamily* CreateFontFamily(const nsACString& aName) const override;
 
-  bool FindAndAddFamilies(const nsAString& aFamily,
-                          nsTArray<gfxFontFamily*>* aOutput,
+  bool FindAndAddFamilies(mozilla::StyleGenericFontFamily aGeneric,
+                          const nsACString& aFamily,
+                          nsTArray<FamilyAndGeneric>* aOutput,
                           FindFamiliesFlags aFlags,
                           gfxFontStyle* aStyle = nullptr,
                           gfxFloat aDevToCssSize = 1.0) override;
 
-  virtual gfxFontEntry* LookupLocalFont(const nsAString& aFontName,
-                                        uint16_t aWeight, int16_t aStretch,
-                                        uint8_t aStyle);
+  virtual gfxFontEntry* LookupLocalFont(const nsACString& aFontName,
+                                        WeightRange aWeightForEntry,
+                                        StretchRange aStretchForEntry,
+                                        SlantStyleRange aStyleForEntry);
 
-  virtual gfxFontEntry* MakePlatformFont(const nsAString& aFontName,
-                                         uint16_t aWeight, int16_t aStretch,
-                                         uint8_t aStyle,
+  virtual gfxFontEntry* MakePlatformFont(const nsACString& aFontName,
+                                         WeightRange aWeightForEntry,
+                                         StretchRange aStretchForEntry,
+                                         SlantStyleRange aStyleForEntry,
                                          const uint8_t* aFontData,
                                          uint32_t aLength);
 
@@ -320,8 +324,7 @@ class gfxGDIFontList : public gfxPlatformFontList {
                                       FontListSizes* aSizes) const;
 
  protected:
-  virtual gfxFontFamily* GetDefaultFontForPlatform(
-      const gfxFontStyle* aStyle) override;
+  FontFamily GetDefaultFontForPlatform(const gfxFontStyle* aStyle) override;
 
  private:
   friend class gfxWindowsPlatform;
@@ -341,7 +344,7 @@ class gfxGDIFontList : public gfxPlatformFontList {
 #endif
 
   FontFamilyTable mFontSubstitutes;
-  nsTArray<nsString> mNonExistingFonts;
+  nsTArray<nsCString> mNonExistingFonts;
 };
 
 #endif /* GFX_GDIFONTLIST_H */

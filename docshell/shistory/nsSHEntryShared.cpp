@@ -11,11 +11,9 @@
 #include "nsIContentViewer.h"
 #include "nsIDocShell.h"
 #include "nsIDocShellTreeItem.h"
-#include "nsIDocument.h"
-#include "nsIDOMDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsILayoutHistoryState.h"
 #include "nsISHistory.h"
-#include "nsISHistoryInternal.h"
 #include "nsIWebNavigation.h"
 #include "nsThreadUtils.h"
 
@@ -34,6 +32,7 @@ void nsSHEntryShared::Shutdown() {}
 
 nsSHEntryShared::nsSHEntryShared()
     : mDocShellID({0}),
+      mCacheKey(0),
       mLastTouched(0),
       mID(gSHEntrySharedID++),
       mViewerBounds(0, 0, 0, 0),
@@ -71,6 +70,7 @@ already_AddRefed<nsSHEntryShared> nsSHEntryShared::Duplicate(
   newEntry->mChildShells.AppendObjects(aEntry->mChildShells);
   newEntry->mTriggeringPrincipal = aEntry->mTriggeringPrincipal;
   newEntry->mPrincipalToInherit = aEntry->mPrincipalToInherit;
+  newEntry->mCsp = aEntry->mCsp;
   newEntry->mContentType.Assign(aEntry->mContentType);
   newEntry->mIsFrameNavigation = aEntry->mIsFrameNavigation;
   newEntry->mSaveLayoutState = aEntry->mSaveLayoutState;
@@ -83,21 +83,19 @@ already_AddRefed<nsSHEntryShared> nsSHEntryShared::Duplicate(
 }
 
 void nsSHEntryShared::RemoveFromExpirationTracker() {
-  nsCOMPtr<nsISHistoryInternal> shistory = do_QueryReferent(mSHistory);
+  nsCOMPtr<nsISHistory> shistory = do_QueryReferent(mSHistory);
   if (shistory && GetExpirationState()->IsTracked()) {
     shistory->RemoveFromExpirationTracker(this);
   }
 }
 
-nsresult nsSHEntryShared::SyncPresentationState() {
+void nsSHEntryShared::SyncPresentationState() {
   if (mContentViewer && mWindowState) {
     // If we have a content viewer and a window state, we should be ok.
-    return NS_OK;
+    return;
   }
 
   DropPresentationState();
-
-  return NS_OK;
 }
 
 void nsSHEntryShared::DropPresentationState() {
@@ -123,8 +121,8 @@ void nsSHEntryShared::DropPresentationState() {
 }
 
 nsresult nsSHEntryShared::SetContentViewer(nsIContentViewer* aViewer) {
-  NS_PRECONDITION(!aViewer || !mContentViewer,
-                  "SHEntryShared already contains viewer");
+  MOZ_ASSERT(!aViewer || !mContentViewer,
+             "SHEntryShared already contains viewer");
 
   if (mContentViewer || !aViewer) {
     DropPresentationState();
@@ -140,7 +138,7 @@ nsresult nsSHEntryShared::SetContentViewer(nsIContentViewer* aViewer) {
     // mSHistory is only set for root entries, but in general bfcache only
     // applies to root entries as well. BFCache for subframe navigation has been
     // disabled since 2005 in bug 304860.
-    if (nsCOMPtr<nsISHistoryInternal> shistory = do_QueryReferent(mSHistory)) {
+    if (nsCOMPtr<nsISHistory> shistory = do_QueryReferent(mSHistory)) {
       shistory->AddToExpirationTracker(this);
     }
 
@@ -173,7 +171,7 @@ nsresult nsSHEntryShared::RemoveFromBFCacheSync() {
 
   // Now that we've dropped the viewer, we have to clear associated dynamic
   // subframe entries.
-  nsCOMPtr<nsISHistoryInternal> shistory = do_QueryReferent(mSHistory);
+  nsCOMPtr<nsISHistory> shistory = do_QueryReferent(mSHistory);
   if (shistory) {
     shistory->RemoveDynEntriesForBFCacheEntry(this);
   }
@@ -193,23 +191,22 @@ nsresult nsSHEntryShared::RemoveFromBFCacheAsync() {
   // release the references asynchronously so that the document doesn't get
   // nuked mid-mutation.
   nsCOMPtr<nsIContentViewer> viewer = mContentViewer;
-  nsCOMPtr<nsIDocument> document = mDocument;
+  RefPtr<dom::Document> document = mDocument;
   RefPtr<nsSHEntryShared> self = this;
   nsresult rv = mDocument->Dispatch(
       mozilla::TaskCategory::Other,
-      NS_NewRunnableFunction("nsSHEntryShared::RemoveFromBFCacheAsync",
-                             [self, viewer, document]() {
-                               if (viewer) {
-                                 viewer->Destroy();
-                               }
+      NS_NewRunnableFunction(
+          "nsSHEntryShared::RemoveFromBFCacheAsync",
+          [self, viewer, document]() {
+            if (viewer) {
+              viewer->Destroy();
+            }
 
-                               nsCOMPtr<nsISHistoryInternal> shistory =
-                                   do_QueryReferent(self->mSHistory);
-                               if (shistory) {
-                                 shistory->RemoveDynEntriesForBFCacheEntry(
-                                     self);
-                               }
-                             }));
+            nsCOMPtr<nsISHistory> shistory = do_QueryReferent(self->mSHistory);
+            if (shistory) {
+              shistory->RemoveDynEntriesForBFCacheEntry(self);
+            }
+          }));
 
   if (NS_FAILED(rv)) {
     NS_WARNING("Failed to dispatch RemoveFromBFCacheAsync runnable.");
@@ -228,25 +225,10 @@ nsresult nsSHEntryShared::GetID(uint64_t* aID) {
   return NS_OK;
 }
 
-void nsSHEntryShared::NodeWillBeDestroyed(const nsINode* aNode) {
-  NS_NOTREACHED("Document destroyed while we're holding a strong ref to it");
-}
-
-void nsSHEntryShared::CharacterDataWillChange(nsIContent* aContent,
-                                              const CharacterDataChangeInfo&) {}
-
 void nsSHEntryShared::CharacterDataChanged(nsIContent* aContent,
                                            const CharacterDataChangeInfo&) {
   RemoveFromBFCacheAsync();
 }
-
-void nsSHEntryShared::AttributeWillChange(dom::Element* aContent,
-                                          int32_t aNameSpaceID,
-                                          nsAtom* aAttribute, int32_t aModType,
-                                          const nsAttrValue* aNewValue) {}
-
-void nsSHEntryShared::NativeAnonymousChildListChange(nsIContent* aContent,
-                                                     bool aIsRemove) {}
 
 void nsSHEntryShared::AttributeChanged(dom::Element* aElement,
                                        int32_t aNameSpaceID, nsAtom* aAttribute,
@@ -267,5 +249,3 @@ void nsSHEntryShared::ContentRemoved(nsIContent* aChild,
                                      nsIContent* aPreviousSibling) {
   RemoveFromBFCacheAsync();
 }
-
-void nsSHEntryShared::ParentChainChanged(nsIContent* aContent) {}

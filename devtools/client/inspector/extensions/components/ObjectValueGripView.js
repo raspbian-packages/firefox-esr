@@ -4,11 +4,18 @@
 
 "use strict";
 
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  PureComponent,
+} = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 
-const Accordion = createFactory(require("devtools/client/inspector/layout/components/Accordion"));
-const reps = require("devtools/client/shared/components/reps/reps");
+const Accordion = createFactory(
+  require("devtools/client/inspector/layout/components/Accordion")
+);
+
+// TODO: Upgrade to the current version reps https://bugzilla.mozilla.org/show_bug.cgi?id=1494680
+const reps = require("devtools/client/shared/components/reps/reps-old");
 const Types = require("../types");
 
 const { REPS, MODE } = reps;
@@ -31,11 +38,7 @@ class ObjectValueGripView extends PureComponent {
   }
 
   render() {
-    const {
-      objectValueGrip,
-      serviceContainer,
-      rootTitle,
-    } = this.props;
+    const { objectValueGrip, serviceContainer, rootTitle } = this.props;
 
     const objectInspectorProps = {
       autoExpandDepth: 1,
@@ -43,12 +46,16 @@ class ObjectValueGripView extends PureComponent {
       // TODO: we disable focus since it's not currently working well in ObjectInspector.
       // Let's remove the property below when problem are fixed in OI.
       disabledFocus: true,
-      roots: [{
-        path: objectValueGrip && objectValueGrip.actor || JSON.stringify(objectValueGrip),
-        contents: {
-          value: objectValueGrip,
-        }
-      }],
+      roots: [
+        {
+          path:
+            (objectValueGrip && objectValueGrip.actor) ||
+            JSON.stringify(objectValueGrip),
+          contents: {
+            value: objectValueGrip,
+          },
+        },
+      ],
       createObjectClient: serviceContainer.createObjectClient,
       releaseActor: serviceContainer.releaseActor,
       // TODO: evaluate if there should also be a serviceContainer.openLink.

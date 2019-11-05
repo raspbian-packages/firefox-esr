@@ -1,5 +1,5 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* vim: set sw=2 ts=2 et tw=79: */
+/* vim: set sw=2 ts=2 et tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -121,7 +121,10 @@ class nsParserContinueEvent : public Runnable {
 /**
  *  default constructor
  */
-nsParser::nsParser() : mCharset(WINDOWS_1252_ENCODING) { Initialize(true); }
+nsParser::nsParser()
+    : mParserContext(nullptr), mCharset(WINDOWS_1252_ENCODING) {
+  Initialize(true);
+}
 
 nsParser::~nsParser() { Cleanup(); }
 
@@ -283,7 +286,7 @@ void nsParser::SetSinkCharset(NotNull<const Encoding*> aCharset) {
  */
 NS_IMETHODIMP_(void)
 nsParser::SetContentSink(nsIContentSink* aSink) {
-  NS_PRECONDITION(aSink, "sink cannot be null!");
+  MOZ_ASSERT(aSink, "sink cannot be null!");
   mSink = aSink;
 
   if (mSink) {
@@ -664,9 +667,11 @@ void nsParser::HandleParserContinueEvent(nsParserContinueEvent* ev) {
 
 bool nsParser::IsInsertionPointDefined() { return false; }
 
-void nsParser::PushDefinedInsertionPoint() {}
+void nsParser::IncrementScriptNestingLevel() {}
 
-void nsParser::PopDefinedInsertionPoint() {}
+void nsParser::DecrementScriptNestingLevel() {}
+
+bool nsParser::HasNonzeroScriptNestingLevel() const { return false; }
 
 void nsParser::MarkAsNotScriptCreated(const char* aCommand) {}
 
@@ -682,7 +687,7 @@ bool nsParser::IsScriptCreated() { return false; }
 NS_IMETHODIMP
 nsParser::Parse(nsIURI* aURL, nsIRequestObserver* aListener, void* aKey,
                 nsDTDMode aMode) {
-  NS_PRECONDITION(aURL, "Error: Null URL given");
+  MOZ_ASSERT(aURL, "Error: Null URL given");
 
   nsresult result = NS_ERROR_HTMLPARSER_BADURL;
   mObserver = aListener;
@@ -1066,12 +1071,13 @@ nsresult nsParser::BuildModel() {
   These methods are used to talk to the netlib system...
  *******************************************************************/
 
-nsresult nsParser::OnStartRequest(nsIRequest* request, nsISupports* aContext) {
-  NS_PRECONDITION(eNone == mParserContext->mStreamListenerState,
-                  "Parser's nsIStreamListener API was not setup "
-                  "correctly in constructor.");
+nsresult nsParser::OnStartRequest(nsIRequest* request) {
+  MOZ_ASSERT(eNone == mParserContext->mStreamListenerState,
+             "Parser's nsIStreamListener API was not setup "
+             "correctly in constructor.");
+
   if (mObserver) {
-    mObserver->OnStartRequest(request, aContext);
+    mObserver->OnStartRequest(request);
   }
   mParserContext->mStreamListenerState = eOnStart;
   mParserContext->mAutoDetectStatus = eUnknownDetect;
@@ -1255,15 +1261,14 @@ static nsresult ParserWriteFunc(nsIInputStream* in, void* closure,
   return result;
 }
 
-nsresult nsParser::OnDataAvailable(nsIRequest* request, nsISupports* aContext,
+nsresult nsParser::OnDataAvailable(nsIRequest* request,
                                    nsIInputStream* pIStream,
                                    uint64_t sourceOffset, uint32_t aLength) {
-  NS_PRECONDITION(
-      (eOnStart == mParserContext->mStreamListenerState ||
-       eOnDataAvail == mParserContext->mStreamListenerState),
-      "Error: OnStartRequest() must be called before OnDataAvailable()");
-  NS_PRECONDITION(NS_InputStreamIsBuffered(pIStream),
-                  "Must have a buffered input stream");
+  MOZ_ASSERT((eOnStart == mParserContext->mStreamListenerState ||
+              eOnDataAvail == mParserContext->mStreamListenerState),
+             "Error: OnStartRequest() must be called before OnDataAvailable()");
+  MOZ_ASSERT(NS_InputStreamIsBuffered(pIStream),
+             "Must have a buffered input stream");
 
   nsresult rv = NS_OK;
 
@@ -1327,8 +1332,7 @@ nsresult nsParser::OnDataAvailable(nsIRequest* request, nsISupports* aContext,
  *  This is called by the networking library once the last block of data
  *  has been collected from the net.
  */
-nsresult nsParser::OnStopRequest(nsIRequest* request, nsISupports* aContext,
-                                 nsresult status) {
+nsresult nsParser::OnStopRequest(nsIRequest* request, nsresult status) {
   nsresult rv = NS_OK;
 
   CParserContext* pc = mParserContext;
@@ -1359,7 +1363,7 @@ nsresult nsParser::OnStopRequest(nsIRequest* request, nsISupports* aContext,
   // XXX Should we wait to notify our observers as well if the
   // parser isn't yet enabled?
   if (mObserver) {
-    mObserver->OnStopRequest(request, aContext, status);
+    mObserver->OnStopRequest(request, status);
   }
 
   return rv;

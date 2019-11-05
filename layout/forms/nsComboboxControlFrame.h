@@ -25,20 +25,20 @@
 #include "mozilla/Attributes.h"
 #include "nsBlockFrame.h"
 #include "nsIFormControlFrame.h"
-#include "nsIComboboxControlFrame.h"
 #include "nsIAnonymousContentCreator.h"
 #include "nsISelectControlFrame.h"
 #include "nsIRollupListener.h"
 #include "nsIStatefulFrame.h"
 #include "nsThreadUtils.h"
 
-class nsStyleContext;
-class nsIListControlFrame;
+class nsListControlFrame;
 class nsComboboxDisplayFrame;
 class nsIDOMEventListener;
 class nsIScrollableFrame;
+class nsTextNode;
 
 namespace mozilla {
+class PresShell;
 namespace gfx {
 class DrawTarget;
 }  // namespace gfx
@@ -46,7 +46,6 @@ class DrawTarget;
 
 class nsComboboxControlFrame final : public nsBlockFrame,
                                      public nsIFormControlFrame,
-                                     public nsIComboboxControlFrame,
                                      public nsIAnonymousContentCreator,
                                      public nsISelectControlFrame,
                                      public nsIRollupListener,
@@ -55,10 +54,12 @@ class nsComboboxControlFrame final : public nsBlockFrame,
 
  public:
   friend nsComboboxControlFrame* NS_NewComboboxControlFrame(
-      nsIPresShell* aPresShell, nsStyleContext* aContext, nsFrameState aFlags);
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle,
+      nsFrameState aFlags);
   friend class nsComboboxDisplayFrame;
 
-  explicit nsComboboxControlFrame(nsStyleContext* aContext);
+  explicit nsComboboxControlFrame(ComputedStyle* aStyle,
+                                  nsPresContext* aPresContext);
   ~nsComboboxControlFrame();
 
   NS_DECL_QUERYFRAME
@@ -70,7 +71,7 @@ class nsComboboxControlFrame final : public nsBlockFrame,
   virtual void AppendAnonymousContentTo(nsTArray<nsIContent*>& aElements,
                                         uint32_t aFilter) override;
 
-  nsIContent* GetDisplayNode() { return mDisplayContent; }
+  nsIContent* GetDisplayNode() const;
   nsIFrame* CreateFrameForDisplayNode();
 
 #ifdef ACCESSIBILITY
@@ -85,6 +86,7 @@ class nsComboboxControlFrame final : public nsBlockFrame,
                       const ReflowInput& aReflowInput,
                       nsReflowStatus& aStatus) override;
 
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual nsresult HandleEvent(nsPresContext* aPresContext,
                                mozilla::WidgetGUIEvent* aEvent,
                                nsEventStatus* aEventStatus) override;
@@ -127,23 +129,17 @@ class nsComboboxControlFrame final : public nsBlockFrame,
    * and FireOnChange() will be called.
    * @param aOn true if got focus, false if lost focus.
    * @param aRepaint if true then force repaint (NOTE: we always force repaint
-   * currently)
+   *        currently)
    * @note This method might destroy |this|.
    */
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual void SetFocus(bool aOn, bool aRepaint) override;
 
-  // nsIComboboxControlFrame
-  virtual bool IsDroppedDown() override { return mDroppedDown; }
-  /**
-   * @note This method might destroy |this|.
-   */
-  virtual void ShowDropDown(bool aDoDropDown) override;
-  virtual nsIFrame* GetDropDown() override;
-  virtual void SetDropDown(nsIFrame* aDropDownFrame) override;
-  /**
-   * @note This method might destroy |this|.
-   */
-  virtual void RollupFromList() override;
+  bool IsDroppedDown() { return mDroppedDown; }
+  MOZ_CAN_RUN_SCRIPT void ShowDropDown(bool aDoDropDown);
+  nsIFrame* GetDropDown();
+  void SetDropDown(nsIFrame* aDropDownFrame);
+  MOZ_CAN_RUN_SCRIPT void RollupFromList();
 
   /**
    * Return the available space before and after this frame for
@@ -154,18 +150,20 @@ class nsComboboxControlFrame final : public nsBlockFrame,
   void GetAvailableDropdownSpace(mozilla::WritingMode aWM, nscoord* aBefore,
                                  nscoord* aAfter,
                                  mozilla::LogicalPoint* aTranslation);
-  virtual int32_t GetIndexOfDisplayArea() override;
+  int32_t GetIndexOfDisplayArea();
   /**
    * @note This method might destroy |this|.
    */
-  NS_IMETHOD RedisplaySelectedText() override;
-  virtual int32_t UpdateRecentIndex(int32_t aIndex) override;
-  virtual void OnContentReset() override;
+  nsresult RedisplaySelectedText();
+  int32_t UpdateRecentIndex(int32_t aIndex);
+  void OnContentReset();
 
-  bool IsOpenInParentProcess() override { return mIsOpenInParentProcess; }
+  bool IsOpenInParentProcess() { return mIsOpenInParentProcess; }
 
-  void SetOpenInParentProcess(bool aVal) override {
-    mIsOpenInParentProcess = aVal;
+  void SetOpenInParentProcess(bool aVal) { mIsOpenInParentProcess = aVal; }
+
+  bool IsDroppedDownOrHasParentPopup() {
+    return IsDroppedDown() || IsOpenInParentProcess();
   }
 
   // nsISelectControlFrame
@@ -173,13 +171,15 @@ class nsComboboxControlFrame final : public nsBlockFrame,
   NS_IMETHOD RemoveOption(int32_t index) override;
   NS_IMETHOD DoneAddingChildren(bool aIsDone) override;
   NS_IMETHOD OnOptionSelected(int32_t aIndex, bool aSelected) override;
-  NS_IMETHOD OnSetSelectedIndex(int32_t aOldIndex, int32_t aNewIndex) override;
+  NS_IMETHOD_(void)
+  OnSetSelectedIndex(int32_t aOldIndex, int32_t aNewIndex) override;
 
   // nsIRollupListener
   /**
    * Hide the dropdown menu and stop capturing mouse events.
    * @note This method might destroy |this|.
    */
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual bool Rollup(uint32_t aCount, bool aFlush, const nsIntPoint* pos,
                       nsIContent** aLastRolledUp) override;
   virtual void NotifyGeometryChange() override;
@@ -206,9 +206,11 @@ class nsComboboxControlFrame final : public nsBlockFrame,
   virtual nsIWidget* GetRollupWidget() override;
 
   // nsIStatefulFrame
-  NS_IMETHOD SaveState(nsPresState** aState) override;
-  NS_IMETHOD RestoreState(nsPresState* aState) override;
-  NS_IMETHOD GenerateStateKey(nsIContent* aContent, nsIDocument* aDocument,
+  mozilla::UniquePtr<mozilla::PresState> SaveState() override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  NS_IMETHOD RestoreState(mozilla::PresState* aState) override;
+  NS_IMETHOD GenerateStateKey(nsIContent* aContent,
+                              mozilla::dom::Document* aDocument,
                               nsACString& aKey) override;
 
   static bool ToolkitHasNativePopup();
@@ -255,7 +257,7 @@ class nsComboboxControlFrame final : public nsBlockFrame,
    * Show or hide the dropdown list.
    * @note This method might destroy |this|.
    */
-  void ShowPopup(bool aShowPopup);
+  MOZ_CAN_RUN_SCRIPT void ShowPopup(bool aShowPopup);
 
   /**
    * Show or hide the dropdown list.
@@ -263,7 +265,7 @@ class nsComboboxControlFrame final : public nsBlockFrame,
    * @note This method might destroy |this|.
    * @return false if this frame is destroyed, true if still alive.
    */
-  bool ShowList(bool aShowList);
+  MOZ_CAN_RUN_SCRIPT bool ShowList(bool aShowList);
   void CheckFireOnChange();
   void FireValueChangeEvent();
   nsresult RedisplayText();
@@ -276,15 +278,14 @@ class nsComboboxControlFrame final : public nsBlockFrame,
   nsPoint GetCSSTransformTranslation();
 
  protected:
-  nsFrameList mPopupFrames;              // additional named child list
-  nsCOMPtr<nsIContent> mDisplayContent;  // Anonymous content used to display
-                                         // the current selection
-  RefPtr<Element> mButtonContent;        // Anonymous content for the button
-  nsContainerFrame* mDisplayFrame;       // frame to display selection
-  nsIFrame* mButtonFrame;                // button frame
-  nsIFrame* mDropdownFrame;              // dropdown list frame
-  nsIListControlFrame*
-      mListControlFrame;  // ListControl Interface for the dropdown frame
+  nsFrameList mPopupFrames;            // additional named child list
+  RefPtr<nsTextNode> mDisplayContent;  // Anonymous content used to display the
+                                       // current selection
+  RefPtr<Element> mButtonContent;      // Anonymous content for the button
+  nsContainerFrame* mDisplayFrame;     // frame to display selection
+  nsIFrame* mButtonFrame;              // button frame
+  nsIFrame* mDropdownFrame;            // dropdown list frame
+  nsListControlFrame* mListControlFrame;  // ListControl for the dropdown frame
 
   // The inline size of our display area.  Used by that frame's reflow
   // to size to the full inline size except the drop-marker.

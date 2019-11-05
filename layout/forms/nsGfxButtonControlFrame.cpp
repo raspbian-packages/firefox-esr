@@ -7,20 +7,21 @@
 #include "nsGfxButtonControlFrame.h"
 #include "nsIFormControl.h"
 #include "nsGkAtoms.h"
-#include "mozilla/StyleSetHandle.h"
-#include "mozilla/StyleSetHandleInlines.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/dom/HTMLInputElement.h"
 #include "nsContentUtils.h"
 #include "nsTextNode.h"
 
 using namespace mozilla;
 
-nsGfxButtonControlFrame::nsGfxButtonControlFrame(nsStyleContext* aContext)
-    : nsHTMLButtonControlFrame(aContext, kClassID) {}
+nsGfxButtonControlFrame::nsGfxButtonControlFrame(ComputedStyle* aStyle,
+                                                 nsPresContext* aPresContext)
+    : nsHTMLButtonControlFrame(aStyle, aPresContext, kClassID) {}
 
-nsContainerFrame* NS_NewGfxButtonControlFrame(nsIPresShell* aPresShell,
-                                              nsStyleContext* aContext) {
-  return new (aPresShell) nsGfxButtonControlFrame(aContext);
+nsContainerFrame* NS_NewGfxButtonControlFrame(PresShell* aPresShell,
+                                              ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsGfxButtonControlFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsGfxButtonControlFrame)
@@ -63,7 +64,7 @@ void nsGfxButtonControlFrame::AppendAnonymousContentTo(
 }
 
 NS_QUERYFRAME_HEAD(nsGfxButtonControlFrame)
-NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
+  NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
 NS_QUERYFRAME_TAIL_INHERITING(nsHTMLButtonControlFrame)
 
 // Initially we hardcoded the default strings here.
@@ -94,7 +95,7 @@ nsresult nsGfxButtonControlFrame::GetDefaultLabel(nsAString& aString) const {
 nsresult nsGfxButtonControlFrame::GetLabel(nsString& aLabel) {
   // Get the text from the "value" property on our content if there is
   // one; otherwise set it to a default value (localized).
-  dom::HTMLInputElement* elt = dom::HTMLInputElement::FromContent(mContent);
+  dom::HTMLInputElement* elt = dom::HTMLInputElement::FromNode(mContent);
   if (elt && elt->HasAttr(kNameSpaceID_None, nsGkAtoms::value)) {
     elt->GetValue(aLabel, dom::CallerType::System);
   } else {

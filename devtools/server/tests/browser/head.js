@@ -9,10 +9,14 @@
 
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/devtools/client/shared/test/shared-head.js",
-  this);
+  this
+);
 
-const {DebuggerClient} = require("devtools/shared/client/debugger-client");
-const {DebuggerServer} = require("devtools/server/main");
+const { DebuggerClient } = require("devtools/shared/client/debugger-client");
+const {
+  ActorRegistry,
+} = require("devtools/server/actors/utils/actor-registry");
+const { DebuggerServer } = require("devtools/server/main");
 
 const PATH = "browser/devtools/server/tests/browser/";
 const MAIN_DOMAIN = "http://test1.example.org/" + PATH;
@@ -35,63 +39,55 @@ waitForExplicitFinish();
  *         directly, since this would be a CPOW in the e10s case,
  *         and Promises cannot be resolved with CPOWs (see bug 1233497).
  */
-var addTab = async function (url) {
+var addTab = async function(url) {
   info(`Adding a new tab with URL: ${url}`);
-  let tab = gBrowser.selectedTab = BrowserTestUtils.addTab(gBrowser, url);
+  const tab = (gBrowser.selectedTab = BrowserTestUtils.addTab(gBrowser, url));
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
 
-  info(`Tab added and URL ${url} loaded`);
+  info(`Tab added a URL ${url} loaded`);
 
   return tab.linkedBrowser;
 };
 
+// does almost the same thing as addTab, but directly returns an object
+async function addTabTarget(url) {
+  info(`Adding a new tab with URL: ${url}`);
+  const tab = (gBrowser.selectedTab = BrowserTestUtils.addTab(gBrowser, url));
+  await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
+  info(`Tab added a URL ${url} loaded`);
+  return getTargetForTab(tab);
+}
+
+async function getTargetForTab(tab) {
+  const target = await TargetFactory.forTab(tab);
+  info("Attaching to the active tab.");
+  await target.attach();
+  return target;
+}
+
 async function initAnimationsFrontForUrl(url) {
-  const {AnimationsFront} = require("devtools/shared/fronts/animation");
-  const {InspectorFront} = require("devtools/shared/fronts/inspector");
+  const { inspector, walker, target } = await initInspectorFront(url);
+  const animations = await target.getFront("animations");
 
-  await addTab(url);
-
-  initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
-  let form = await connectDebuggerClient(client);
-  let inspector = InspectorFront(client, form);
-  let walker = await inspector.getWalker();
-  let animations = AnimationsFront(client, form);
-
-  return {inspector, walker, animations, client};
+  return { inspector, walker, animations, target };
 }
 
 async function initLayoutFrontForUrl(url) {
-  const {InspectorFront} = require("devtools/shared/fronts/inspector");
+  const { inspector, walker, target } = await initInspectorFront(url);
+  const layout = await walker.getLayoutInspector();
 
-  await addTab(url);
-
-  initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
-  let form = await connectDebuggerClient(client);
-  let inspector = InspectorFront(client, form);
-  let walker = await inspector.getWalker();
-  let layout = await walker.getLayoutInspector();
-
-  return {inspector, walker, layout, client};
+  return { inspector, walker, layout, target };
 }
 
 async function initAccessibilityFrontForUrl(url) {
-  const {AccessibilityFront} = require("devtools/shared/fronts/accessibility");
-  const {InspectorFront} = require("devtools/shared/fronts/inspector");
-
-  await addTab(url);
-
-  initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
-  let form = await connectDebuggerClient(client);
-  let inspector = InspectorFront(client, form);
-  let walker = await inspector.getWalker();
-  let accessibility = AccessibilityFront(client, form);
+  const target = await addTabTarget(url);
+  const inspector = await target.getInspector();
+  const walker = inspector.walker;
+  const accessibility = await target.getFront("accessibility");
 
   await accessibility.bootstrap();
 
-  return {inspector, walker, accessibility, client};
+  return { inspector, walker, accessibility, target };
 }
 
 function initDebuggerServer() {
@@ -107,23 +103,20 @@ function initDebuggerServer() {
 }
 
 async function initPerfFront() {
-  const {PerfFront} = require("devtools/shared/fronts/perf");
-
   initDebuggerServer();
-  let client = new DebuggerClient(DebuggerServer.connectPipe());
+  const client = new DebuggerClient(DebuggerServer.connectPipe());
   await waitUntilClientConnected(client);
-  const rootForm = await getRootForm(client);
-  const front = PerfFront(client, rootForm);
-  return {front, client};
+  const front = await client.mainRoot.getFront("perf");
+  return { front, client };
 }
 
-/**
- * Gets the RootActor form from a DebuggerClient.
- * @param {DebuggerClient} client
- * @return {RootActor} Resolves when connected.
- */
-function getRootForm(client) {
-  return client.listTabs();
+async function initInspectorFront(url) {
+  const target = await addTabTarget(url);
+
+  const inspector = await target.getInspector();
+  const walker = inspector.walker;
+
+  return { inspector, walker, target };
 }
 
 /**
@@ -138,20 +131,6 @@ function waitUntilClientConnected(client) {
 }
 
 /**
- * Connect a debugger client.
- * @param {DebuggerClient}
- * @return {Promise} Resolves to the selected tabActor form when the client is
- * connected.
- */
-function connectDebuggerClient(client) {
-  return client.connect()
-    .then(() => client.listTabs())
-    .then(tabs => {
-      return tabs.tabs[tabs.selected];
-    });
-}
-
-/**
  * Wait for eventName on target.
  * @param {Object} target An observable object that either supports on/off or
  * addEventListener/removeEventListener
@@ -163,17 +142,21 @@ function once(target, eventName, useCapture = false) {
   info("Waiting for event: '" + eventName + "' on " + target + ".");
 
   return new Promise(resolve => {
-    for (let [add, remove] of [
+    for (const [add, remove] of [
       ["addEventListener", "removeEventListener"],
       ["addListener", "removeListener"],
-      ["on", "off"]
+      ["on", "off"],
     ]) {
-      if ((add in target) && (remove in target)) {
-        target[add](eventName, function onEvent(...aArgs) {
-          info("Got event: '" + eventName + "' on " + target + ".");
-          target[remove](eventName, onEvent, useCapture);
-          resolve(...aArgs);
-        }, useCapture);
+      if (add in target && remove in target) {
+        target[add](
+          eventName,
+          function onEvent(...aArgs) {
+            info("Got event: '" + eventName + "' on " + target + ".");
+            target[remove](eventName, onEvent, useCapture);
+            resolve(...aArgs);
+          },
+          useCapture
+        );
         break;
       }
     }
@@ -190,20 +173,6 @@ function forceCollections() {
   Cu.forceShrinkingGC();
 }
 
-/**
- * Get a mock tabActor from a given window.
- * This is sometimes useful to test actors or classes that use the tabActor in
- * isolation.
- * @param {DOMWindow} win
- * @return {Object}
- */
-function getMockTabActor(win) {
-  return {
-    window: win,
-    isRootActor: true
-  };
-}
-
 registerCleanupFunction(function tearDown() {
   Services.cookies.removeAll();
 
@@ -217,7 +186,7 @@ function idleWait(time) {
 }
 
 function busyWait(time) {
-  let start = Date.now();
+  const start = Date.now();
   // eslint-disable-next-line
   let stack;
   while (Date.now() - start < time) {
@@ -238,21 +207,27 @@ function waitUntil(predicate, interval = 10) {
     return Promise.resolve(true);
   }
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       waitUntil(predicate).then(() => resolve(true));
     }, interval);
   });
 }
 
-function waitForMarkerType(front, types, predicate,
-                           unpackFun = (name, data) => data.markers,
-                           eventName = "timeline-data") {
+function waitForMarkerType(
+  front,
+  types,
+  predicate,
+  unpackFun = (name, data) => data.markers,
+  eventName = "timeline-data"
+) {
   types = [].concat(types);
-  predicate = predicate || function () {
-    return true;
-  };
+  predicate =
+    predicate ||
+    function() {
+      return true;
+    };
   let filteredMarkers = [];
-  let { promise, resolve } = defer();
+  const { promise, resolve } = defer();
 
   info("Waiting for markers of type: " + types);
 
@@ -261,14 +236,17 @@ function waitForMarkerType(front, types, predicate,
       return;
     }
 
-    let markers = unpackFun(name, data);
-    info("Got markers: " + JSON.stringify(markers, null, 2));
+    const markers = unpackFun(name, data);
+    info("Got markers");
 
     filteredMarkers = filteredMarkers.concat(
-      markers.filter(m => types.includes(m.name)));
+      markers.filter(m => types.includes(m.name))
+    );
 
-    if (types.every(t => filteredMarkers.some(m => m.name === t)) &&
-        predicate(filteredMarkers)) {
+    if (
+      types.every(t => filteredMarkers.some(m => m.name === t)) &&
+      predicate(filteredMarkers)
+    ) {
       front.off(eventName, handler);
       resolve(filteredMarkers);
     }
@@ -290,7 +268,7 @@ function getCookieId(name, domain, path) {
  * @param  {Promise} task     A promise that resolves when DOM activity is done.
  */
 async function emitA11yEvent(emitter, name, handler, task) {
-  let promise = emitter.once(name, handler);
+  const promise = emitter.once(name, handler);
   await task();
   await promise;
 }
@@ -309,10 +287,23 @@ function checkA11yFront(front, expected, expectedFront) {
     is(front, expectedFront, "Matching accessibility front");
   }
 
-  for (let key in expected) {
-    if (["actions", "states", "attributes"].includes(key)) {
-      SimpleTest.isDeeply(front[key], expected[key],
-        `Accessible Front has correct ${key}`);
+  // Clone the front so we could modify some values for comparison.
+  front = Object.assign(front);
+  for (const key in expected) {
+    if (key === "checks") {
+      const { CONTRAST } = front[key];
+      // Contrast values are rounded to two digits after the decimal point.
+      if (CONTRAST && CONTRAST.value) {
+        CONTRAST.value = parseFloat(CONTRAST.value.toFixed(2));
+      }
+    }
+
+    if (["actions", "states", "attributes", "checks"].includes(key)) {
+      SimpleTest.isDeeply(
+        front[key],
+        expected[key],
+        `Accessible Front has correct ${key}`
+      );
     } else {
       is(front[key], expected[key], `accessibility front has correct ${key}`);
     }
@@ -321,7 +312,7 @@ function checkA11yFront(front, expected, expectedFront) {
 
 function getA11yInitOrShutdownPromise() {
   return new Promise(resolve => {
-    let observe = (subject, topic, data) => {
+    const observe = (subject, topic, data) => {
       Services.obs.removeObserver(observe, "a11y-init-or-shutdown");
       resolve(data);
     };
@@ -339,7 +330,8 @@ async function waitForA11yShutdown() {
   }
 
   await getA11yInitOrShutdownPromise().then(data =>
-    data === "0" ? Promise.resolve() : Promise.reject());
+    data === "0" ? Promise.resolve() : Promise.reject()
+  );
 }
 
 /**
@@ -352,5 +344,6 @@ async function waitForA11yInit() {
   }
 
   await getA11yInitOrShutdownPromise().then(data =>
-    data === "1" ? Promise.resolve() : Promise.reject());
+    data === "1" ? Promise.resolve() : Promise.reject()
+  );
 }

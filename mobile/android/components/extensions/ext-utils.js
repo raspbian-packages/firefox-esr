@@ -2,26 +2,35 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
-                               "resource://gre/modules/PrivateBrowsingUtils.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
 
-/* globals TabBase, WindowBase, TabTrackerBase, WindowTrackerBase, TabManagerBase, WindowManagerBase */
 /* globals EventDispatcher */
-ChromeUtils.import("resource://gre/modules/Messaging.jsm");
+var { EventDispatcher } = ChromeUtils.import(
+  "resource://gre/modules/Messaging.jsm"
+);
 
-ChromeUtils.import("resource://gre/modules/ExtensionUtils.jsm");
+var { ExtensionCommon } = ChromeUtils.import(
+  "resource://gre/modules/ExtensionCommon.jsm"
+);
+var { ExtensionUtils } = ChromeUtils.import(
+  "resource://gre/modules/ExtensionUtils.jsm"
+);
 
-var {
-  DefaultWeakMap,
-  ExtensionError,
-  defineLazyGetter,
-} = ExtensionUtils;
+var { DefaultWeakMap, ExtensionError } = ExtensionUtils;
+
+var { defineLazyGetter } = ExtensionCommon;
 
 global.GlobalEventDispatcher = EventDispatcher.instance;
 
 const BrowserStatusFilter = Components.Constructor(
-  "@mozilla.org/appshell/component/browser-status-filter;1", "nsIWebProgress",
-  "addProgressListener");
+  "@mozilla.org/appshell/component/browser-status-filter;1",
+  "nsIWebProgress",
+  "addProgressListener"
+);
 
 let tabTracker;
 let windowTracker;
@@ -96,8 +105,8 @@ class ProgressListenerWrapper {
     this.listener = listener;
     this.listeners = new WeakMap();
 
-    this.flags = Ci.nsIWebProgress.NOTIFY_STATE_ALL |
-                 Ci.nsIWebProgress.NOTIFY_LOCATION;
+    this.flags =
+      Ci.nsIWebProgress.NOTIFY_STATE_ALL | Ci.nsIWebProgress.NOTIFY_LOCATION;
 
     for (let nativeTab of this.window.BrowserApp.tabs) {
       this.addBrowserProgressListener(nativeTab.browser);
@@ -127,7 +136,11 @@ class ProgressListenerWrapper {
   addBrowserProgressListener(browser) {
     this.removeProgressListener(browser);
 
-    let listener = new BrowserProgressListener(browser, this.listener, this.flags);
+    let listener = new BrowserProgressListener(
+      browser,
+      this.listener,
+      this.flags
+    );
     this.listeners.set(browser, listener);
   }
 
@@ -168,6 +181,13 @@ class WindowTracker extends WindowTrackerBase {
     this.progressListeners = new DefaultWeakMap(() => new WeakMap());
   }
 
+  get topWindow() {
+    return (
+      Services.wm.getMostRecentWindow("navigator:browser") ||
+      Services.wm.getMostRecentWindow("navigator:geckoview")
+    );
+  }
+
   addProgressListener(window, listener) {
     let listeners = this.progressListeners.get(window);
     if (!listeners.has(listener)) {
@@ -187,11 +207,11 @@ class WindowTracker extends WindowTrackerBase {
 }
 
 /**
- * An event manager API provider which listens for an event in the Android
- * global EventDispatcher, and calls the given listener function whenever an event
- * is received. That listener function receives a `fire` object, which it can
- * use to dispatch events to the extension, and an object detailing the
- * EventDispatcher event that was received.
+ * Helper to create an event manager which listens for an event in the Android
+ * global EventDispatcher, and calls the given listener function whenever the
+ * event is received. That listener function receives a `fire` object,
+ * which it can use to dispatch events to the extension, and an object
+ * detailing the EventDispatcher event that was received.
  *
  * @param {BaseContext} context
  *        The extension context which the event manager belongs to.
@@ -202,10 +222,19 @@ class WindowTracker extends WindowTrackerBase {
  * @param {function} listener
  *        The listener function to call when an EventDispatcher event is
  *        recieved.
+ *
+ * @returns {object} An injectable api for the new event.
  */
-global.GlobalEventManager = class extends EventManager {
-  constructor(context, name, event, listener) {
-    super(context, name, fire => {
+global.makeGlobalEvent = function makeGlobalEvent(
+  context,
+  name,
+  event,
+  listener
+) {
+  return new EventManager({
+    context,
+    name,
+    register: fire => {
       let listener2 = {
         onEvent(event, data, callback) {
           listener(fire, data);
@@ -216,36 +245,8 @@ global.GlobalEventManager = class extends EventManager {
       return () => {
         GlobalEventDispatcher.unregisterListener(listener2, [event]);
       };
-    });
-  }
-};
-
-/**
- * An event manager API provider which listens for a DOM event in any browser
- * window, and calls the given listener function whenever an event is received.
- * That listener function receives a `fire` object, which it can use to dispatch
- * events to the extension, and a DOM event object.
- *
- * @param {BaseContext} context
- *        The extension context which the event manager belongs to.
- * @param {string} name
- *        The API name of the event manager, e.g.,"runtime.onMessage".
- * @param {string} event
- *        The name of the DOM event to listen for.
- * @param {function} listener
- *        The listener function to call when a DOM event is received.
- */
-global.WindowEventManager = class extends EventManager {
-  constructor(context, name, event, listener) {
-    super(context, name, fire => {
-      let listener2 = listener.bind(null, fire);
-
-      windowTracker.addListener(event, listener2);
-      return () => {
-        windowTracker.removeListener(event, listener2);
-      };
-    });
-  }
+    },
+  }).api();
 };
 
 class TabTracker extends TabTrackerBase {
@@ -270,9 +271,7 @@ class TabTracker extends TabTrackerBase {
     // Register a listener for the Tab:Selected global event,
     // so that we can close the popup when a popup tab has been
     // unselected.
-    GlobalEventDispatcher.registerListener(this, [
-      "Tab:Selected",
-    ]);
+    GlobalEventDispatcher.registerListener(this, ["Tab:Selected"]);
   }
 
   /**
@@ -306,7 +305,9 @@ class TabTracker extends TabTrackerBase {
   openExtensionPopupTab(popup) {
     let win = windowTracker.topWindow;
     if (!win) {
-      throw new ExtensionError(`Unable to open a popup without an active window`);
+      throw new ExtensionError(
+        `Unable to open a popup without an active window`
+      );
     }
 
     if (this.extensionPopupTab) {
@@ -315,10 +316,15 @@ class TabTracker extends TabTrackerBase {
 
     this.init();
 
-    this._extensionPopupTabWeak = Cu.getWeakReference(win.BrowserApp.addTab(popup, {
-      selected: true,
-      parentId: win.BrowserApp.selectedTab.id,
-    }));
+    let { browser, id } = win.BrowserApp.selectedTab;
+    let isPrivate = PrivateBrowsingUtils.isBrowserPrivate(browser);
+    this._extensionPopupTabWeak = Cu.getWeakReference(
+      win.BrowserApp.addTab(popup, {
+        selected: true,
+        parentId: id,
+        isPrivate,
+      })
+    );
   }
 
   getId(nativeTab) {
@@ -348,7 +354,7 @@ class TabTracker extends TabTrackerBase {
    * @private
    */
   handleEvent(event) {
-    const {BrowserApp} = event.target.ownerGlobal;
+    const { BrowserApp } = event.target.ownerGlobal;
     const nativeTab = BrowserApp.getTabForBrowser(event.target);
 
     switch (event.type) {
@@ -369,7 +375,7 @@ class TabTracker extends TabTrackerBase {
    * @param {object} data Information about the event which fired.
    */
   onEvent(event, data) {
-    const {BrowserApp} = windowTracker.topWindow;
+    const { BrowserApp } = windowTracker.topWindow;
 
     switch (event) {
       case "Tab:Selected": {
@@ -397,7 +403,7 @@ class TabTracker extends TabTrackerBase {
    * @private
    */
   emitCreated(nativeTab) {
-    this.emit("tab-created", {nativeTab});
+    this.emit("tab-created", { nativeTab });
   }
 
   /**
@@ -424,7 +430,7 @@ class TabTracker extends TabTrackerBase {
       }
 
       // Select the parent tab when the closed tab was an extension popup tab.
-      const {BrowserApp} = windowTracker.topWindow;
+      const { BrowserApp } = windowTracker.topWindow;
       const popupParentTab = BrowserApp.getTabForId(nativeTab.parentId);
       if (popupParentTab) {
         BrowserApp.selectTab(popupParentTab);
@@ -432,7 +438,7 @@ class TabTracker extends TabTrackerBase {
     }
 
     Services.tm.dispatchToMainThread(() => {
-      this.emit("tab-removed", {nativeTab, tabId, windowId, isWindowClosing});
+      this.emit("tab-removed", { nativeTab, tabId, windowId, isWindowClosing });
     });
   }
 
@@ -442,7 +448,7 @@ class TabTracker extends TabTrackerBase {
       windowId: -1,
     };
 
-    let {BrowserApp} = browser.ownerGlobal;
+    let { BrowserApp } = browser.ownerGlobal;
     if (BrowserApp) {
       result.windowId = windowTracker.getId(browser.ownerGlobal);
 
@@ -476,11 +482,15 @@ class TabTracker extends TabTrackerBase {
 windowTracker = new WindowTracker();
 tabTracker = new TabTracker();
 
-Object.assign(global, {tabTracker, windowTracker});
+Object.assign(global, { tabTracker, windowTracker });
 
 class Tab extends TabBase {
   get _favIconUrl() {
     return undefined;
+  }
+
+  get attention() {
+    return false;
   }
 
   get audible() {
@@ -512,7 +522,7 @@ class Tab extends TabBase {
   }
 
   get mutedInfo() {
-    return {muted: false};
+    return { muted: false };
   }
 
   get lastAccessed() {
@@ -529,8 +539,10 @@ class Tab extends TabBase {
     // (while the extension popup tab will not be included in the
     // tabs.query results).
     if (tabTracker.extensionPopupTab) {
-      if (tabTracker.extensionPopupTab.getActive() &&
-          this.nativeTab.id === tabTracker.extensionPopupTab.parentId) {
+      if (
+        tabTracker.extensionPopupTab.getActive() &&
+        this.nativeTab.id === tabTracker.extensionPopupTab.parentId
+      ) {
         return true;
       }
 
@@ -545,7 +557,7 @@ class Tab extends TabBase {
   }
 
   get highlighted() {
-    return this.nativeTab.getActive();
+    return this.active;
   }
 
   get selected() {
@@ -557,6 +569,10 @@ class Tab extends TabBase {
       return "loading";
     }
     return "complete";
+  }
+
+  get successorTabId() {
+    return -1;
   }
 
   get width() {
@@ -596,11 +612,10 @@ class Tab extends TabBase {
 
 // Manages tab-specific context data and dispatches tab select and close events.
 class TabContext extends EventEmitter {
-  constructor(getDefaults, extension) {
+  constructor(getDefaultPrototype) {
     super();
 
-    this.extension = extension;
-    this.getDefaults = getDefaults;
+    this.getDefaultPrototype = getDefaultPrototype;
     this.tabData = new Map();
 
     GlobalEventDispatcher.registerListener(this, [
@@ -611,7 +626,8 @@ class TabContext extends EventEmitter {
 
   get(tabId) {
     if (!this.tabData.has(tabId)) {
-      this.tabData.set(tabId, this.getDefaults());
+      let data = Object.create(this.getDefaultPrototype(tabId));
+      this.tabData.set(tabId, data);
     }
 
     return this.tabData.get(tabId);
@@ -683,22 +699,41 @@ class Window extends WindowBase {
     return "fullscreen";
   }
 
-  * getTabs() {
-    let {tabManager} = this.extension;
+  *getTabs() {
+    let { tabManager } = this.extension;
 
     for (let nativeTab of this.window.BrowserApp.tabs) {
       yield tabManager.getWrapper(nativeTab);
     }
   }
 
-  get activeTab() {
-    let {tabManager} = this.extension;
+  *getHighlightedTabs() {
+    yield this.activeTab;
+  }
 
-    return tabManager.getWrapper(this.window.BrowserApp.selectedTab);
+  get activeTab() {
+    let { BrowserApp } = this.window;
+    let { selectedTab } = BrowserApp;
+
+    // If the current tab is an extension popup tab, we use the parentId to retrieve
+    // and return the tab that was selected when the popup tab has been opened.
+    if (selectedTab === tabTracker.extensionPopupTab) {
+      selectedTab = BrowserApp.getTabForId(selectedTab.parentId);
+    }
+
+    let { tabManager } = this.extension;
+    return tabManager.getWrapper(selectedTab);
+  }
+
+  getTabAtIndex(index) {
+    let nativeTab = this.window.BrowserApp.tabs[index];
+    if (nativeTab) {
+      return this.extension.tabManager.getWrapper(nativeTab);
+    }
   }
 }
 
-Object.assign(global, {Tab, TabContext, Window});
+Object.assign(global, { Tab, TabContext, Window });
 
 class TabManager extends TabManagerBase {
   get(tabId, default_ = undefined) {
@@ -718,6 +753,13 @@ class TabManager extends TabManagerBase {
     return super.revokeActiveTabPermission(nativeTab);
   }
 
+  canAccessTab(nativeTab) {
+    return (
+      this.extension.privateBrowsingAllowed ||
+      !PrivateBrowsingUtils.isBrowserPrivate(nativeTab.browser)
+    );
+  }
+
   wrapTab(nativeTab) {
     return new Tab(this.extension, nativeTab, nativeTab.id);
   }
@@ -730,7 +772,7 @@ class WindowManager extends WindowManagerBase {
     return this.getWrapper(window);
   }
 
-  * getAll() {
+  *getAll() {
     for (let window of windowTracker.browserWindows()) {
       yield this.getWrapper(window);
     }
@@ -741,10 +783,12 @@ class WindowManager extends WindowManagerBase {
   }
 }
 
-
-extensions.on("startup", (type, extension) => { // eslint-disable-line mozilla/balanced-listeners
-  defineLazyGetter(extension, "tabManager",
-                   () => new TabManager(extension));
-  defineLazyGetter(extension, "windowManager",
-                   () => new WindowManager(extension));
+// eslint-disable-next-line mozilla/balanced-listeners
+extensions.on("startup", (type, extension) => {
+  defineLazyGetter(extension, "tabManager", () => new TabManager(extension));
+  defineLazyGetter(
+    extension,
+    "windowManager",
+    () => new WindowManager(extension)
+  );
 });

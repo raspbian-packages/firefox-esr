@@ -5,7 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ContentEventHandler.h"
+
+#include "mozilla/ContentIterator.h"
 #include "mozilla/IMEStateManager.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/TextComposition.h"
 #include "mozilla/TextEvents.h"
 #include "mozilla/dom/Element.h"
@@ -19,9 +22,6 @@
 #include "nsFocusManager.h"
 #include "nsFontMetrics.h"
 #include "nsFrameSelection.h"
-#include "nsIContentIterator.h"
-#include "nsIPresShell.h"
-#include "nsISelection.h"
 #include "nsIFrame.h"
 #include "nsIObjectFrame.h"
 #include "nsLayoutUtils.h"
@@ -200,7 +200,7 @@ nsresult ContentEventHandler::RawRange::SelectNodeContents(
 //        When before an element node (meaning before the open tag of the
 //        element) is end of a range, end node is previous node causing text.
 //        Note that this case shouldn't be handled directly.  If rule 2.1 and
-//        2.3 are handled correctly, the loop with nsContentIterator shouldn't
+//        2.3 are handled correctly, the loop with ContentIterator shouldn't
 //        reach the element node since the loop should've finished already at
 //        handling the last node which caused some text.
 //   2.3. Case: <element>]
@@ -230,11 +230,13 @@ nsresult ContentEventHandler::RawRange::SelectNodeContents(
 ContentEventHandler::ContentEventHandler(nsPresContext* aPresContext)
     : mDocument(aPresContext->Document()) {}
 
-nsresult ContentEventHandler::InitBasic() {
+nsresult ContentEventHandler::InitBasic(bool aRequireFlush) {
   NS_ENSURE_TRUE(mDocument, NS_ERROR_NOT_AVAILABLE);
-  // If text frame which has overflowing selection underline is dirty,
-  // we need to flush the pending reflow here.
-  mDocument->FlushPendingNotifications(FlushType::Layout);
+  if (aRequireFlush) {
+    // If text frame which has overflowing selection underline is dirty,
+    // we need to flush the pending reflow here.
+    mDocument->FlushPendingNotifications(FlushType::Layout);
+  }
   return NS_OK;
 }
 
@@ -250,11 +252,7 @@ nsresult ContentEventHandler::InitRootContent(Selection* aNormalSelection) {
   if (!aNormalSelection->RangeCount()) {
     // If there is no selection range, we should compute the selection root
     // from ancestor limiter or root content of the document.
-    nsresult rv =
-        aNormalSelection->GetAncestorLimiter(getter_AddRefs(mRootContent));
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return NS_ERROR_FAILURE;
-    }
+    mRootContent = aNormalSelection->GetAncestorLimiter();
     if (!mRootContent) {
       mRootContent = mDocument->GetRootElement();
       if (NS_WARN_IF(!mRootContent)) {
@@ -289,7 +287,7 @@ nsresult ContentEventHandler::InitRootContent(Selection* aNormalSelection) {
   NS_ASSERTION(startNode->GetComposedDoc() == endNode->GetComposedDoc(),
                "firstNormalSelectionRange crosses the document boundary");
 
-  mRootContent = startNode->GetSelectionRootContent(mDocument->GetShell());
+  mRootContent = startNode->GetSelectionRootContent(mDocument->GetPresShell());
   if (NS_WARN_IF(!mRootContent)) {
     return NS_ERROR_FAILURE;
   }
@@ -297,7 +295,8 @@ nsresult ContentEventHandler::InitRootContent(Selection* aNormalSelection) {
   return NS_OK;
 }
 
-nsresult ContentEventHandler::InitCommon(SelectionType aSelectionType) {
+nsresult ContentEventHandler::InitCommon(SelectionType aSelectionType,
+                                         bool aRequireFlush) {
   if (mSelection && mSelection->Type() == aSelectionType) {
     return NS_OK;
   }
@@ -306,24 +305,19 @@ nsresult ContentEventHandler::InitCommon(SelectionType aSelectionType) {
   mRootContent = nullptr;
   mFirstSelectedRawRange.Clear();
 
-  nsresult rv = InitBasic();
+  nsresult rv = InitBasic(aRequireFlush);
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsISelectionController> selectionController;
-  if (nsIPresShell* shell = mDocument->GetShell()) {
-    selectionController = shell->GetSelectionControllerForFocusedContent();
+  if (PresShell* presShell = mDocument->GetPresShell()) {
+    selectionController = presShell->GetSelectionControllerForFocusedContent();
   }
   if (NS_WARN_IF(!selectionController)) {
     return NS_ERROR_NOT_AVAILABLE;
   }
-  nsCOMPtr<nsISelection> selection;
-  rv = selectionController->GetSelection(ToRawSelectionType(aSelectionType),
-                                         getter_AddRefs(selection));
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return NS_ERROR_UNEXPECTED;
-  }
 
-  mSelection = static_cast<Selection*>(selection.get());
+  mSelection =
+      selectionController->GetSelection(ToRawSelectionType(aSelectionType));
   if (NS_WARN_IF(!mSelection)) {
     return NS_ERROR_NOT_AVAILABLE;
   }
@@ -332,16 +326,8 @@ nsresult ContentEventHandler::InitCommon(SelectionType aSelectionType) {
   if (mSelection->Type() == SelectionType::eNormal) {
     normalSelection = mSelection;
   } else {
-    nsCOMPtr<nsISelection> domSelection;
-    nsresult rv = selectionController->GetSelection(
-        nsISelectionController::SELECTION_NORMAL, getter_AddRefs(domSelection));
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return NS_ERROR_UNEXPECTED;
-    }
-    if (NS_WARN_IF(!domSelection)) {
-      return NS_ERROR_NOT_AVAILABLE;
-    }
-    normalSelection = domSelection->AsSelection();
+    normalSelection = selectionController->GetSelection(
+        nsISelectionController::SELECTION_NORMAL);
     if (NS_WARN_IF(!normalSelection)) {
       return NS_ERROR_NOT_AVAILABLE;
     }
@@ -392,7 +378,7 @@ nsresult ContentEventHandler::Init(WidgetQueryContentEvent* aEvent) {
     return NS_ERROR_FAILURE;
   }
 
-  nsresult rv = InitCommon(selectionType);
+  nsresult rv = InitCommon(selectionType, aEvent->NeedsToFlushLayout());
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Be aware, WidgetQueryContentEvent::mInput::mOffset should be made absolute
@@ -467,7 +453,7 @@ bool ContentEventHandler::IsPlugin(nsIContent* aContent) {
 
 nsresult ContentEventHandler::QueryContentRect(
     nsIContent* aContent, WidgetQueryContentEvent* aEvent) {
-  NS_PRECONDITION(aContent, "aContent must not be null");
+  MOZ_ASSERT(aContent, "aContent must not be null");
 
   nsIFrame* frame = aContent->GetPrimaryFrame();
   NS_ENSURE_TRUE(frame, NS_ERROR_FAILURE);
@@ -521,8 +507,7 @@ static void ConvertToNativeNewlines(nsString& aString) {
 }
 
 static void AppendString(nsAString& aString, nsIContent* aContent) {
-  NS_ASSERTION(aContent->IsNodeOfType(nsINode::eTEXT),
-               "aContent is not a text node!");
+  NS_ASSERTION(aContent->IsText(), "aContent is not a text node!");
   const nsTextFragment* text = aContent->GetText();
   if (!text) {
     return;
@@ -532,8 +517,7 @@ static void AppendString(nsAString& aString, nsIContent* aContent) {
 
 static void AppendSubString(nsAString& aString, nsIContent* aContent,
                             uint32_t aXPOffset, uint32_t aXPLength) {
-  NS_ASSERTION(aContent->IsNodeOfType(nsINode::eTEXT),
-               "aContent is not a text node!");
+  NS_ASSERTION(aContent->IsText(), "aContent is not a text node!");
   const nsTextFragment* text = aContent->GetText();
   if (!text) {
     return;
@@ -544,8 +528,7 @@ static void AppendSubString(nsAString& aString, nsIContent* aContent,
 #if defined(XP_WIN)
 static uint32_t CountNewlinesInXPLength(nsIContent* aContent,
                                         uint32_t aXPLength) {
-  NS_ASSERTION(aContent->IsNodeOfType(nsINode::eTEXT),
-               "aContent is not a text node!");
+  NS_ASSERTION(aContent->IsText(), "aContent is not a text node!");
   const nsTextFragment* text = aContent->GetText();
   if (!text) {
     return 0;
@@ -565,8 +548,7 @@ static uint32_t CountNewlinesInXPLength(nsIContent* aContent,
 
 static uint32_t CountNewlinesInNativeLength(nsIContent* aContent,
                                             uint32_t aNativeLength) {
-  NS_ASSERTION(aContent->IsNodeOfType(nsINode::eTEXT),
-               "aContent is not a text node!");
+  NS_ASSERTION(aContent->IsText(), "aContent is not a text node!");
   const nsTextFragment* text = aContent->GetText();
   if (!text) {
     return 0;
@@ -590,11 +572,13 @@ static uint32_t CountNewlinesInNativeLength(nsIContent* aContent,
 }
 #endif
 
-/* static */ uint32_t ContentEventHandler::GetNativeTextLength(
-    nsIContent* aContent, uint32_t aStartOffset, uint32_t aEndOffset) {
+/* static */
+uint32_t ContentEventHandler::GetNativeTextLength(nsIContent* aContent,
+                                                  uint32_t aStartOffset,
+                                                  uint32_t aEndOffset) {
   MOZ_ASSERT(aEndOffset >= aStartOffset,
              "aEndOffset must be equals or larger than aStartOffset");
-  if (NS_WARN_IF(!aContent->IsNodeOfType(nsINode::eTEXT))) {
+  if (NS_WARN_IF(!aContent->IsText())) {
     return 0;
   }
   if (aStartOffset == aEndOffset) {
@@ -604,17 +588,19 @@ static uint32_t CountNewlinesInNativeLength(nsIContent* aContent,
          GetTextLength(aContent, LINE_BREAK_TYPE_NATIVE, aStartOffset);
 }
 
-/* static */ uint32_t ContentEventHandler::GetNativeTextLength(
-    nsIContent* aContent, uint32_t aMaxLength) {
-  if (NS_WARN_IF(!aContent->IsNodeOfType(nsINode::eTEXT))) {
+/* static */
+uint32_t ContentEventHandler::GetNativeTextLength(nsIContent* aContent,
+                                                  uint32_t aMaxLength) {
+  if (NS_WARN_IF(!aContent->IsText())) {
     return 0;
   }
   return GetTextLength(aContent, LINE_BREAK_TYPE_NATIVE, aMaxLength);
 }
 
-/* static */ uint32_t ContentEventHandler::GetNativeTextLengthBefore(
-    nsIContent* aContent, nsINode* aRootNode) {
-  if (NS_WARN_IF(aContent->IsNodeOfType(nsINode::eTEXT))) {
+/* static */
+uint32_t ContentEventHandler::GetNativeTextLengthBefore(nsIContent* aContent,
+                                                        nsINode* aRootNode) {
+  if (NS_WARN_IF(aContent->IsText())) {
     return 0;
   }
   return ShouldBreakLineBefore(aContent, aRootNode)
@@ -622,8 +608,8 @@ static uint32_t CountNewlinesInNativeLength(nsIContent* aContent,
              : 0;
 }
 
-/* static inline */ uint32_t ContentEventHandler::GetBRLength(
-    LineBreakType aLineBreakType) {
+/* static inline */
+uint32_t ContentEventHandler::GetBRLength(LineBreakType aLineBreakType) {
 #if defined(XP_WIN)
   // Length of \r\n
   return (aLineBreakType == LINE_BREAK_TYPE_NATIVE) ? 2 : 1;
@@ -632,9 +618,11 @@ static uint32_t CountNewlinesInNativeLength(nsIContent* aContent,
 #endif
 }
 
-/* static */ uint32_t ContentEventHandler::GetTextLength(
-    nsIContent* aContent, LineBreakType aLineBreakType, uint32_t aMaxLength) {
-  MOZ_ASSERT(aContent->IsNodeOfType(nsINode::eTEXT));
+/* static */
+uint32_t ContentEventHandler::GetTextLength(nsIContent* aContent,
+                                            LineBreakType aLineBreakType,
+                                            uint32_t aMaxLength) {
+  MOZ_ASSERT(aContent->IsText());
 
   uint32_t textLengthDifference =
 #if defined(XP_WIN)
@@ -670,8 +658,9 @@ static uint32_t ConvertToXPOffset(nsIContent* aContent,
 #endif
 }
 
-/* static */ bool ContentEventHandler::ShouldBreakLineBefore(
-    nsIContent* aContent, nsINode* aRootNode) {
+/* static */
+bool ContentEventHandler::ShouldBreakLineBefore(nsIContent* aContent,
+                                                nsINode* aRootNode) {
   // We don't need to append linebreak at the start of the root element.
   if (aContent == aRootNode) {
     return false;
@@ -741,7 +730,7 @@ nsresult ContentEventHandler::GenerateFlatTextContent(
     return NS_ERROR_FAILURE;
   }
 
-  if (startNode == endNode && startNode->IsNodeOfType(nsINode::eTEXT)) {
+  if (startNode == endNode && startNode->IsText()) {
     nsIContent* content = startNode->AsContent();
     AppendSubString(aString, content, aRawRange.StartOffset(),
                     aRawRange.EndOffset() - aRawRange.StartOffset());
@@ -749,13 +738,14 @@ nsresult ContentEventHandler::GenerateFlatTextContent(
     return NS_OK;
   }
 
-  nsCOMPtr<nsIContentIterator> iter = NS_NewPreContentIterator();
-  nsresult rv = iter->Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
+  PreContentIterator preOrderIter;
+  nsresult rv =
+      preOrderIter.Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
-  for (; !iter->IsDone(); iter->Next()) {
-    nsINode* node = iter->GetCurrentNode();
+  for (; !preOrderIter.IsDone(); preOrderIter.Next()) {
+    nsINode* node = preOrderIter.GetCurrentNode();
     if (NS_WARN_IF(!node)) {
       break;
     }
@@ -764,7 +754,7 @@ nsresult ContentEventHandler::GenerateFlatTextContent(
     }
     nsIContent* content = node->AsContent();
 
-    if (content->IsNodeOfType(nsINode::eTEXT)) {
+    if (content->IsText()) {
       if (content == startNode) {
         AppendSubString(aString, content, aRawRange.StartOffset(),
                         content->TextLength() - aRawRange.StartOffset());
@@ -790,21 +780,25 @@ static FontRange* AppendFontRange(nsTArray<FontRange>& aFontRanges,
   return fontRange;
 }
 
-/* static */ uint32_t ContentEventHandler::GetTextLengthInRange(
+/* static */
+uint32_t ContentEventHandler::GetTextLengthInRange(
     nsIContent* aContent, uint32_t aXPStartOffset, uint32_t aXPEndOffset,
     LineBreakType aLineBreakType) {
-  MOZ_ASSERT(aContent->IsNodeOfType(nsINode::eTEXT));
+  MOZ_ASSERT(aContent->IsText());
 
   return aLineBreakType == LINE_BREAK_TYPE_NATIVE
              ? GetNativeTextLength(aContent, aXPStartOffset, aXPEndOffset)
              : aXPEndOffset - aXPStartOffset;
 }
 
-/* static */ void ContentEventHandler::AppendFontRanges(
-    FontRangeArray& aFontRanges, nsIContent* aContent, uint32_t aBaseOffset,
-    uint32_t aXPStartOffset, uint32_t aXPEndOffset,
-    LineBreakType aLineBreakType) {
-  MOZ_ASSERT(aContent->IsNodeOfType(nsINode::eTEXT));
+/* static */
+void ContentEventHandler::AppendFontRanges(FontRangeArray& aFontRanges,
+                                           nsIContent* aContent,
+                                           uint32_t aBaseOffset,
+                                           uint32_t aXPStartOffset,
+                                           uint32_t aXPEndOffset,
+                                           LineBreakType aLineBreakType) {
+  MOZ_ASSERT(aContent->IsText());
 
   nsIFrame* frame = aContent->GetPrimaryFrame();
   if (!frame) {
@@ -868,7 +862,7 @@ static FontRange* AppendFontRange(nsTArray<FontRange>& aFontRanges,
       }
 
       FontRange* fontRange = AppendFontRange(aFontRanges, baseOffset);
-      fontRange->mFontName = font->GetName();
+      fontRange->mFontName.Append(NS_ConvertUTF8toUTF16(font->GetName()));
       fontRange->mFontSize = font->GetAdjustedSize();
 
       // The converted original offset may exceed the range,
@@ -909,13 +903,14 @@ nsresult ContentEventHandler::GenerateFlatFontRanges(
 
   // baseOffset is the flattened offset of each content node.
   int32_t baseOffset = 0;
-  nsCOMPtr<nsIContentIterator> iter = NS_NewPreContentIterator();
-  nsresult rv = iter->Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
+  PreContentIterator preOrderIter;
+  nsresult rv =
+      preOrderIter.Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
-  for (; !iter->IsDone(); iter->Next()) {
-    nsINode* node = iter->GetCurrentNode();
+  for (; !preOrderIter.IsDone(); preOrderIter.Next()) {
+    nsINode* node = preOrderIter.GetCurrentNode();
     if (NS_WARN_IF(!node)) {
       break;
     }
@@ -924,7 +919,7 @@ nsresult ContentEventHandler::GenerateFlatFontRanges(
     }
     nsIContent* content = node->AsContent();
 
-    if (content->IsNodeOfType(nsINode::eTEXT)) {
+    if (content->IsText()) {
       uint32_t startOffset = content != startNode ? 0 : aRawRange.StartOffset();
       uint32_t endOffset =
           content != endNode ? content->TextLength() : aRawRange.EndOffset();
@@ -943,7 +938,9 @@ nsresult ContentEventHandler::GenerateFlatFontRanges(
           const FontFamilyName& fontName =
               fontList.IsEmpty() ? FontFamilyName(fontList.GetDefaultFontType())
                                  : fontList.GetFontlist()->mNames[0];
-          fontName.AppendToString(fontRange->mFontName, false);
+          nsAutoCString name;
+          fontName.AppendToString(name, false);
+          AppendUTF8toUTF16(name, fontRange->mFontName);
           fontRange->mFontSize =
               frame->PresContext()->AppUnitsToDevPixels(font.size);
         }
@@ -961,15 +958,15 @@ nsresult ContentEventHandler::ExpandToClusterBoundary(nsIContent* aContent,
                                                       uint32_t* aXPOffset) {
   // XXX This method assumes that the frame boundaries must be cluster
   // boundaries. It's false, but no problem now, maybe.
-  if (!aContent->IsNodeOfType(nsINode::eTEXT) || *aXPOffset == 0 ||
+  if (!aContent->IsText() || *aXPOffset == 0 ||
       *aXPOffset == aContent->TextLength()) {
     return NS_OK;
   }
 
   NS_ASSERTION(*aXPOffset <= aContent->TextLength(), "offset is out of range.");
 
-  MOZ_DIAGNOSTIC_ASSERT(mDocument->GetShell());
-  RefPtr<nsFrameSelection> fs = mDocument->GetShell()->FrameSelection();
+  MOZ_DIAGNOSTIC_ASSERT(mDocument->GetPresShell());
+  RefPtr<nsFrameSelection> fs = mDocument->GetPresShell()->FrameSelection();
   int32_t offsetInFrame;
   CaretAssociationHint hint =
       aForward ? CARET_ASSOCIATE_BEFORE : CARET_ASSOCIATE_AFTER;
@@ -1032,8 +1029,8 @@ nsresult ContentEventHandler::SetRawRangeFromFlatTextOffset(
     }
   }
 
-  nsCOMPtr<nsIContentIterator> iter = NS_NewPreContentIterator();
-  nsresult rv = iter->Init(mRootContent);
+  PreContentIterator preOrderIter;
+  nsresult rv = preOrderIter.Init(mRootContent);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -1041,8 +1038,8 @@ nsresult ContentEventHandler::SetRawRangeFromFlatTextOffset(
   uint32_t offset = 0;
   uint32_t endOffset = aOffset + aLength;
   bool startSet = false;
-  for (; !iter->IsDone(); iter->Next()) {
-    nsINode* node = iter->GetCurrentNode();
+  for (; !preOrderIter.IsDone(); preOrderIter.Next()) {
+    nsINode* node = preOrderIter.GetCurrentNode();
     if (NS_WARN_IF(!node)) {
       break;
     }
@@ -1052,12 +1049,12 @@ nsresult ContentEventHandler::SetRawRangeFromFlatTextOffset(
     }
     nsIContent* content = node->AsContent();
 
-    if (aLastTextNode && content->IsNodeOfType(nsINode::eTEXT)) {
+    if (aLastTextNode && content->IsText()) {
       NS_IF_RELEASE(*aLastTextNode);
       NS_ADDREF(*aLastTextNode = content);
     }
 
-    uint32_t textLength = content->IsNodeOfType(nsINode::eTEXT)
+    uint32_t textLength = content->IsText()
                               ? GetTextLength(content, aLineBreakType)
                               : (ShouldBreakLineBefore(content, mRootContent)
                                      ? GetBRLength(aLineBreakType)
@@ -1071,7 +1068,7 @@ nsresult ContentEventHandler::SetRawRangeFromFlatTextOffset(
     if (!startSet && aOffset <= offset + textLength) {
       nsINode* startNode = nullptr;
       int32_t startNodeOffset = -1;
-      if (content->IsNodeOfType(nsINode::eTEXT)) {
+      if (content->IsText()) {
         // Rule #1.1: [textNode or text[Node or textNode[
         uint32_t xpOffset = aOffset - offset;
         if (aLineBreakType == LINE_BREAK_TYPE_NATIVE) {
@@ -1142,7 +1139,7 @@ nsresult ContentEventHandler::SetRawRangeFromFlatTextOffset(
     // range.
     if (endOffset <= offset + textLength) {
       MOZ_ASSERT(startSet, "The start of the range should've been set already");
-      if (content->IsNodeOfType(nsINode::eTEXT)) {
+      if (content->IsText()) {
         // Rule #2.1: ]textNode or text]Node or textNode]
         uint32_t xpOffset = endOffset - offset;
         if (aLineBreakType == LINE_BREAK_TYPE_NATIVE) {
@@ -1216,7 +1213,7 @@ nsresult ContentEventHandler::SetRawRangeFromFlatTextOffset(
   }
 
   if (!startSet) {
-    MOZ_ASSERT(!mRootContent->IsNodeOfType(nsINode::eTEXT));
+    MOZ_ASSERT(!mRootContent->IsText());
     if (!offset) {
       // Rule #1.5: <root>[</root>
       // When there are no nodes causing text, the start of the DOM range
@@ -1253,18 +1250,20 @@ nsresult ContentEventHandler::SetRawRangeFromFlatTextOffset(
   return NS_OK;
 }
 
-/* static */ LineBreakType ContentEventHandler::GetLineBreakType(
+/* static */
+LineBreakType ContentEventHandler::GetLineBreakType(
     WidgetQueryContentEvent* aEvent) {
   return GetLineBreakType(aEvent->mUseNativeLineBreak);
 }
 
-/* static */ LineBreakType ContentEventHandler::GetLineBreakType(
+/* static */
+LineBreakType ContentEventHandler::GetLineBreakType(
     WidgetSelectionEvent* aEvent) {
   return GetLineBreakType(aEvent->mUseNativeLineBreak);
 }
 
-/* static */ LineBreakType ContentEventHandler::GetLineBreakType(
-    bool aUseNativeLineBreak) {
+/* static */
+LineBreakType ContentEventHandler::GetLineBreakType(bool aUseNativeLineBreak) {
   return aUseNativeLineBreak ? LINE_BREAK_TYPE_NATIVE : LINE_BREAK_TYPE_XP;
 }
 
@@ -1460,59 +1459,18 @@ void ContentEventHandler::EnsureNonEmptyRect(LayoutDeviceIntRect& aRect) const {
   aRect.width = std::max(1, aRect.width);
 }
 
-ContentEventHandler::NodePosition
-ContentEventHandler::GetNodePositionHavingFlatText(
-    const NodePosition& aNodePosition) {
-  return GetNodePositionHavingFlatText(aNodePosition.Container(),
-                                       aNodePosition.Offset());
-}
-
-ContentEventHandler::NodePosition
-ContentEventHandler::GetNodePositionHavingFlatText(nsINode* aNode,
-                                                   int32_t aNodeOffset) {
-  if (aNode->IsNodeOfType(nsINode::eTEXT)) {
-    return NodePosition(aNode, aNodeOffset);
-  }
-
-  int32_t childCount = static_cast<int32_t>(aNode->GetChildCount());
-
-  // If it's a empty element node, returns itself.
-  if (!childCount) {
-    MOZ_ASSERT(!aNodeOffset || aNodeOffset == 1);
-    return NodePosition(aNode, aNodeOffset);
-  }
-
-  // If there is a node at given position, return the start of it.
-  if (aNodeOffset < childCount) {
-    return NodePosition(aNode->GetChildAt_Deprecated(aNodeOffset), 0);
-  }
-
-  // If the offset represents "after" the node, we need to return the last
-  // child of it.  For example, if a range is |<p>[<br>]</p>|, then, the
-  // end point is {<p>, 1}.  In such case, callers need the <br> node.
-  if (aNodeOffset == childCount) {
-    nsINode* node = aNode->GetChildAt_Deprecated(childCount - 1);
-    return NodePosition(
-        node, node->IsNodeOfType(nsINode::eTEXT)
-                  ? static_cast<int32_t>(node->AsContent()->TextLength())
-                  : 1);
-  }
-
-  NS_WARNING("aNodeOffset is invalid value");
-  return NodePosition();
-}
-
 ContentEventHandler::FrameAndNodeOffset
 ContentEventHandler::GetFirstFrameInRangeForTextRect(
     const RawRange& aRawRange) {
   NodePosition nodePosition;
-  nsCOMPtr<nsIContentIterator> iter = NS_NewPreContentIterator();
-  nsresult rv = iter->Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
+  PreContentIterator preOrderIter;
+  nsresult rv =
+      preOrderIter.Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return FrameAndNodeOffset();
   }
-  for (; !iter->IsDone(); iter->Next()) {
-    nsINode* node = iter->GetCurrentNode();
+  for (; !preOrderIter.IsDone(); preOrderIter.Next()) {
+    nsINode* node = preOrderIter.GetCurrentNode();
     if (NS_WARN_IF(!node)) {
       break;
     }
@@ -1521,7 +1479,7 @@ ContentEventHandler::GetFirstFrameInRangeForTextRect(
       continue;
     }
 
-    if (node->IsNodeOfType(nsINode::eTEXT)) {
+    if (node->IsText()) {
       // If the range starts at the end of a text node, we need to find
       // next node which causes text.
       int32_t offsetInNode =
@@ -1554,14 +1512,15 @@ ContentEventHandler::GetFirstFrameInRangeForTextRect(
 ContentEventHandler::FrameAndNodeOffset
 ContentEventHandler::GetLastFrameInRangeForTextRect(const RawRange& aRawRange) {
   NodePosition nodePosition;
-  nsCOMPtr<nsIContentIterator> iter = NS_NewPreContentIterator();
-  nsresult rv = iter->Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
+  PreContentIterator preOrderIter;
+  nsresult rv =
+      preOrderIter.Init(aRawRange.Start().AsRaw(), aRawRange.End().AsRaw());
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return FrameAndNodeOffset();
   }
 
-  nsINode* endNode = aRawRange.GetEndContainer();
-  uint32_t endOffset = aRawRange.EndOffset();
+  const RangeBoundary& endPoint = aRawRange.End();
+  MOZ_ASSERT(endPoint.IsSet());
   // If the end point is start of a text node or specified by its parent and
   // index, the node shouldn't be included into the range.  For example,
   // with this case, |<p>abc[<br>]def</p>|, the range ends at 3rd children of
@@ -1579,20 +1538,21 @@ ContentEventHandler::GetLastFrameInRangeForTextRect(const RawRange& aRawRange) {
   // of "d" instead of right-bottom of "c").  Therefore, this method shouldn't
   // include the last frame when its content isn't really in aRawRange.
   nsINode* nextNodeOfRangeEnd = nullptr;
-  if (endNode->IsNodeOfType(nsINode::eTEXT)) {
+  if (endPoint.Container()->IsText()) {
     // Don't set nextNodeOfRangeEnd to the start node of aRawRange because if
-    // endNode is same as start node of the range, the text node shouldn't be
-    // next of range end even if the offset is 0.  This could occur with empty
-    // text node.
-    if (!endOffset && aRawRange.GetStartContainer() != endNode) {
-      nextNodeOfRangeEnd = endNode;
+    // the container of the end is same as start node of the range, the text
+    // node shouldn't be next of range end even if the offset is 0.  This
+    // could occur with empty text node.
+    if (endPoint.IsStartOfContainer() &&
+        aRawRange.GetStartContainer() != endPoint.Container()) {
+      nextNodeOfRangeEnd = endPoint.Container();
     }
-  } else if (endOffset < endNode->GetChildCount()) {
-    nextNodeOfRangeEnd = endNode->GetChildAt_Deprecated(endOffset);
+  } else if (endPoint.IsSetAndValid()) {
+    nextNodeOfRangeEnd = endPoint.GetChildAtOffset();
   }
 
-  for (iter->Last(); !iter->IsDone(); iter->Prev()) {
-    nsINode* node = iter->GetCurrentNode();
+  for (preOrderIter.Last(); !preOrderIter.IsDone(); preOrderIter.Prev()) {
+    nsINode* node = preOrderIter.GetCurrentNode();
     if (NS_WARN_IF(!node)) {
       break;
     }
@@ -1601,7 +1561,7 @@ ContentEventHandler::GetLastFrameInRangeForTextRect(const RawRange& aRawRange) {
       continue;
     }
 
-    if (node->IsNodeOfType(nsINode::eTEXT)) {
+    if (node->IsText()) {
       uint32_t offset;
       if (node == aRawRange.GetEndContainer()) {
         offset = aRawRange.EndOffset();
@@ -1747,7 +1707,7 @@ ContentEventHandler::GetLineBreakerRectBefore(nsIFrame* aFrame) {
 ContentEventHandler::FrameRelativeRect
 ContentEventHandler::GuessLineBreakerRectAfter(nsIContent* aTextContent) {
   // aTextContent should be a text node.
-  MOZ_ASSERT(aTextContent->IsNodeOfType(nsINode::eTEXT));
+  MOZ_ASSERT(aTextContent->IsText());
 
   FrameRelativeRect result;
   int32_t length = static_cast<int32_t>(aTextContent->Length());
@@ -2163,8 +2123,8 @@ nsresult ContentEventHandler::OnQueryTextRect(WidgetQueryContentEvent* aEvent) {
   NS_ENSURE_SUCCESS(rv, rv);
 
   // used to iterate over all contents and their frames
-  nsCOMPtr<nsIContentIterator> iter = NS_NewContentIterator();
-  rv = iter->Init(rawRange.Start().AsRaw(), rawRange.End().AsRaw());
+  PostContentIterator postOrderIter;
+  rv = postOrderIter.Init(rawRange.Start().AsRaw(), rawRange.End().AsRaw());
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return NS_ERROR_FAILURE;
   }
@@ -2351,8 +2311,8 @@ nsresult ContentEventHandler::OnQueryTextRect(WidgetQueryContentEvent* aEvent) {
     frame = frame->GetNextContinuation();
     if (!frame) {
       do {
-        iter->Next();
-        nsINode* node = iter->GetCurrentNode();
+        postOrderIter.Next();
+        nsINode* node = postOrderIter.GetCurrentNode();
         if (!node) {
           break;
         }
@@ -2372,7 +2332,7 @@ nsresult ContentEventHandler::OnQueryTextRect(WidgetQueryContentEvent* aEvent) {
         if (primaryFrame->IsTextFrame() || primaryFrame->IsBrFrame()) {
           frame = primaryFrame;
         }
-      } while (!frame && !iter->IsDone());
+      } while (!frame && !postOrderIter.IsDone());
       if (!frame) {
         break;
       }
@@ -2551,9 +2511,9 @@ nsresult ContentEventHandler::OnQueryCharacterAtPoint(
   aEvent->mReply.mOffset = aEvent->mReply.mTentativeCaretOffset =
       WidgetQueryContentEvent::NOT_FOUND;
 
-  nsIPresShell* shell = mDocument->GetShell();
-  NS_ENSURE_TRUE(shell, NS_ERROR_FAILURE);
-  nsIFrame* rootFrame = shell->GetRootFrame();
+  PresShell* presShell = mDocument->GetPresShell();
+  NS_ENSURE_TRUE(presShell, NS_ERROR_FAILURE);
+  nsIFrame* rootFrame = presShell->GetRootFrame();
   NS_ENSURE_TRUE(rootFrame, NS_ERROR_FAILURE);
   nsIWidget* rootWidget = rootFrame->GetNearestWidget();
   NS_ENSURE_TRUE(rootWidget, NS_ERROR_FAILURE);
@@ -2561,7 +2521,7 @@ nsresult ContentEventHandler::OnQueryCharacterAtPoint(
   // The root frame's widget might be different, e.g., the event was fired on
   // a popup but the rootFrame is the document root.
   if (rootWidget != aEvent->mWidget) {
-    NS_PRECONDITION(aEvent->mWidget, "The event must have the widget");
+    MOZ_ASSERT(aEvent->mWidget, "The event must have the widget");
     nsView* view = nsView::GetViewFor(aEvent->mWidget);
     NS_ENSURE_TRUE(view, NS_ERROR_FAILURE);
     rootFrame = view->GetFrame();
@@ -2663,9 +2623,9 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
 
   NS_ENSURE_TRUE(aEvent->mWidget, NS_ERROR_FAILURE);
 
-  nsIPresShell* shell = mDocument->GetShell();
-  NS_ENSURE_TRUE(shell, NS_ERROR_FAILURE);
-  nsIFrame* docFrame = shell->GetRootFrame();
+  PresShell* presShell = mDocument->GetPresShell();
+  NS_ENSURE_TRUE(presShell, NS_ERROR_FAILURE);
+  nsIFrame* docFrame = presShell->GetRootFrame();
   NS_ENSURE_TRUE(docFrame, NS_ERROR_FAILURE);
 
   LayoutDeviceIntPoint eventLoc =
@@ -2697,7 +2657,8 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
   return NS_OK;
 }
 
-/* static */ nsresult ContentEventHandler::GetFlatTextLengthInRange(
+/* static */
+nsresult ContentEventHandler::GetFlatTextLengthInRange(
     const NodePosition& aStartPosition, const NodePosition& aEndPosition,
     nsIContent* aRootContent, uint32_t* aLength, LineBreakType aLineBreakType,
     bool aIsRemovingNode /* = false */) {
@@ -2711,9 +2672,7 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
     return NS_OK;
   }
 
-  // Don't create nsContentIterator instance until it's really necessary since
-  // destroying without initializing causes unexpected NS_ASSERTION() call.
-  nsCOMPtr<nsIContentIterator> iter;
+  PreContentIterator preOrderIter;
 
   // Working with ContentIterator, we may need to adjust the end position for
   // including it forcibly.
@@ -2737,8 +2696,7 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
         static_cast<uint32_t>(endPosition.Offset()) ==
             endPosition.Container()->GetChildCount(),
         "When the node is being removed, the end offset should be child count");
-    iter = NS_NewPreContentIterator();
-    nsresult rv = iter->Init(aStartPosition.Container());
+    nsresult rv = preOrderIter.Init(aStartPosition.Container());
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
     }
@@ -2782,8 +2740,8 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
-      iter = NS_NewPreContentIterator();
-      rv = iter->Init(prevRawRange.Start().AsRaw(), prevRawRange.End().AsRaw());
+      rv = preOrderIter.Init(prevRawRange.Start().AsRaw(),
+                             prevRawRange.End().AsRaw());
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
@@ -2793,15 +2751,14 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
-      iter = NS_NewPreContentIterator();
-      rv = iter->Init(prevRawRange.Start().AsRaw(), prevRawRange.End().AsRaw());
+      rv = preOrderIter.Init(prevRawRange.Start().AsRaw(),
+                             prevRawRange.End().AsRaw());
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
     } else {
       // Offset is past the root node; set end of range to end of root node
-      iter = NS_NewPreContentIterator();
-      rv = iter->Init(aRootContent);
+      rv = preOrderIter.Init(aRootContent);
       if (NS_WARN_IF(NS_FAILED(rv))) {
         return rv;
       }
@@ -2809,8 +2766,8 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
   }
 
   *aLength = 0;
-  for (; !iter->IsDone(); iter->Next()) {
-    nsINode* node = iter->GetCurrentNode();
+  for (; !preOrderIter.IsDone(); preOrderIter.Next()) {
+    nsINode* node = preOrderIter.GetCurrentNode();
     if (NS_WARN_IF(!node)) {
       break;
     }
@@ -2819,7 +2776,7 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
     }
     nsIContent* content = node->AsContent();
 
-    if (node->IsNodeOfType(nsINode::eTEXT)) {
+    if (node->IsText()) {
       // Note: our range always starts from offset 0
       if (node == endPosition.Container()) {
         // NOTE: We should have an offset here, as endPosition.Container() is a
@@ -2850,7 +2807,7 @@ nsresult ContentEventHandler::OnQueryDOMWidgetHittest(
 nsresult ContentEventHandler::GetStartOffset(const RawRange& aRawRange,
                                              uint32_t* aOffset,
                                              LineBreakType aLineBreakType) {
-  // To match the "no skip start" hack in nsContentIterator::Init, when range
+  // To match the "no skip start" hack in ContentIterator::Init, when range
   // offset is 0 and the range node is not a container, we have to assume the
   // range _includes_ the node, which means the start offset should _not_
   // include the node.
@@ -2885,43 +2842,45 @@ nsresult ContentEventHandler::AdjustCollapsedRangeMaybeIntoTextNode(
     return NS_ERROR_INVALID_ARG;
   }
 
-  nsCOMPtr<nsINode> container = aRawRange.GetStartContainer();
-  int32_t offsetInParentNode = aRawRange.StartOffset();
-  if (NS_WARN_IF(!container) || NS_WARN_IF(offsetInParentNode < 0)) {
+  const RangeBoundary& startPoint = aRawRange.Start();
+  if (NS_WARN_IF(!startPoint.IsSet())) {
     return NS_ERROR_INVALID_ARG;
   }
 
-  // If the node is text node, we don't need to modify aRawRange.
-  if (container->IsNodeOfType(nsINode::eTEXT)) {
+  // If the node does not have children like a text node, we don't need to
+  // modify aRawRange.
+  if (!startPoint.Container()->HasChildren()) {
     return NS_OK;
   }
 
   // If the container is not a text node but it has a text node at the offset,
   // we should adjust the range into the text node.
   // NOTE: This is emulating similar situation of EditorBase.
-  nsINode* childNode = nullptr;
-  int32_t offsetInChildNode = -1;
-  if (!offsetInParentNode && container->HasChildren()) {
+  if (startPoint.IsStartOfContainer()) {
     // If the range is the start of the container, adjusted the range to the
     // start of the first child.
-    childNode = container->GetFirstChild();
-    offsetInChildNode = 0;
-  } else if (static_cast<uint32_t>(offsetInParentNode) <
-             container->GetChildCount()) {
-    // If the range is next to a child node, adjust the range to the end of
-    // the previous child.
-    childNode = container->GetChildAt_Deprecated(offsetInParentNode - 1);
-    offsetInChildNode = childNode->Length();
-  }
-
-  // But if the found node isn't a text node, we cannot modify the range.
-  if (!childNode || !childNode->IsNodeOfType(nsINode::eTEXT) ||
-      NS_WARN_IF(offsetInChildNode < 0)) {
+    if (!startPoint.Container()->GetFirstChild()->IsText()) {
+      return NS_OK;
+    }
+    nsresult rv = aRawRange.CollapseTo(
+        RawRangeBoundary(startPoint.Container()->GetFirstChild(), 0));
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
     return NS_OK;
   }
 
-  nsresult rv =
-      aRawRange.CollapseTo(RawRangeBoundary(childNode, offsetInChildNode));
+  if (!startPoint.IsSetAndValid()) {
+    return NS_OK;
+  }
+
+  // If start of the range is next to a child node, adjust the range to the
+  // end of the previous child (i.e., startPoint.Ref()).
+  if (!startPoint.Ref()->IsText()) {
+    return NS_OK;
+  }
+  nsresult rv = aRawRange.CollapseTo(
+      RawRangeBoundary(startPoint.Ref(), startPoint.Ref()->Length()));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -2957,8 +2916,7 @@ static void AdjustRangeForSelection(nsIContent* aRoot, nsINode** aNode,
                                     int32_t* aNodeOffset) {
   nsINode* node = *aNode;
   int32_t nodeOffset = *aNodeOffset;
-  if (aRoot == node || NS_WARN_IF(!node->GetParent()) ||
-      !node->IsNodeOfType(nsINode::eTEXT)) {
+  if (aRoot == node || NS_WARN_IF(!node->GetParent()) || !node->IsText()) {
     return;
   }
 
@@ -2994,10 +2952,10 @@ nsresult ContentEventHandler::OnSelectionEvent(WidgetSelectionEvent* aEvent) {
   // Get selection to manipulate
   // XXX why do we need to get them from ISM? This method should work fine
   //     without ISM.
-  nsCOMPtr<nsISelection> sel;
+  RefPtr<Selection> sel;
   nsresult rv = IMEStateManager::GetFocusSelectionAndRoot(
       getter_AddRefs(sel), getter_AddRefs(mRootContent));
-  mSelection = sel ? sel->AsSelection() : nullptr;
+  mSelection = sel;
   if (rv != NS_ERROR_NOT_AVAILABLE) {
     NS_ENSURE_SUCCESS(rv, rv);
   } else {
@@ -3023,35 +2981,30 @@ nsresult ContentEventHandler::OnSelectionEvent(WidgetSelectionEvent* aEvent) {
     return NS_ERROR_UNEXPECTED;
   }
 
-  mSelection->StartBatchChanges();
-
-  // Clear selection first before setting
-  rv = mSelection->RemoveAllRangesTemporarily();
-  // Need to call EndBatchChanges at the end even if call failed
-  if (NS_SUCCEEDED(rv)) {
-    if (aEvent->mReversed) {
-      rv = mSelection->Collapse(endNode, endNodeOffset);
-    } else {
-      rv = mSelection->Collapse(startNode, startNodeOffset);
+  if (aEvent->mReversed) {
+    nsCOMPtr<nsINode> startNodeStrong(startNode);
+    nsCOMPtr<nsINode> endNodeStrong(endNode);
+    ErrorResult error;
+    MOZ_KnownLive(mSelection)
+        ->SetBaseAndExtentInLimiter(*endNodeStrong, endNodeOffset,
+                                    *startNodeStrong, startNodeOffset, error);
+    if (NS_WARN_IF(error.Failed())) {
+      return error.StealNSResult();
     }
-    if (NS_SUCCEEDED(rv) &&
-        (startNode != endNode || startNodeOffset != endNodeOffset)) {
-      if (aEvent->mReversed) {
-        rv = mSelection->Extend(startNode, startNodeOffset);
-      } else {
-        rv = mSelection->Extend(endNode, endNodeOffset);
-      }
+  } else {
+    nsCOMPtr<nsINode> startNodeStrong(startNode);
+    nsCOMPtr<nsINode> endNodeStrong(endNode);
+    ErrorResult error;
+    MOZ_KnownLive(mSelection)
+        ->SetBaseAndExtentInLimiter(*startNodeStrong, startNodeOffset,
+                                    *endNodeStrong, endNodeOffset, error);
+    if (NS_WARN_IF(error.Failed())) {
+      return error.StealNSResult();
     }
   }
 
-  // Pass the eSetSelection events reason along with the BatchChange-end
-  // selection change notifications.
-  mSelection->EndBatchChanges(aEvent->mReason);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  mSelection->ScrollIntoViewInternal(
-      nsISelectionController::SELECTION_FOCUS_REGION, false,
-      nsIPresShell::ScrollAxis(), nsIPresShell::ScrollAxis());
+  mSelection->ScrollIntoView(nsISelectionController::SELECTION_FOCUS_REGION,
+                             ScrollAxis(), ScrollAxis(), 0);
   aEvent->mSucceeded = true;
   return NS_OK;
 }

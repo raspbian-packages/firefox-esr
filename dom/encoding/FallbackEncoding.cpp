@@ -6,6 +6,7 @@
 
 #include "mozilla/dom/FallbackEncoding.h"
 
+#include "mozilla/ArrayUtils.h"
 #include "mozilla/Encoding.h"
 #include "mozilla/intl/LocaleService.h"
 #include "mozilla/Preferences.h"
@@ -28,11 +29,12 @@ static NotNull<const Encoding*> SearchEncodingProp(
     const EncodingProp (&aProperties)[N], const nsACString& aKey) {
   const nsCString& flat = PromiseFlatCString(aKey);
   size_t index;
-  if (!BinarySearchIf(aProperties, 0, ArrayLength(aProperties),
-                      [&flat](const EncodingProp& aProperty) {
-                        return flat.Compare(aProperty.mKey);
-                      },
-                      &index)) {
+  if (!BinarySearchIf(
+          aProperties, 0, ArrayLength(aProperties),
+          [&flat](const EncodingProp& aProperty) {
+            return flat.Compare(aProperty.mKey);
+          },
+          &index)) {
     return WINDOWS_1252_ENCODING;
   }
   return aProperties[index].mValue;
@@ -52,9 +54,8 @@ static constexpr nsUConvProp nonParticipatingDomains[] = {
 
 NS_IMPL_ISUPPORTS(FallbackEncoding, nsIObserver)
 
-FallbackEncoding* FallbackEncoding::sInstance = nullptr;
+StaticRefPtr<FallbackEncoding> FallbackEncoding::sInstance;
 bool FallbackEncoding::sGuessFallbackFromTopLevelDomain = true;
-bool FallbackEncoding::sFallbackToUTF8ForFile = false;
 
 FallbackEncoding::FallbackEncoding() : mFallback(nullptr) {
   MOZ_ASSERT(!FallbackEncoding::sInstance, "Singleton already exists.");
@@ -137,11 +138,9 @@ void FallbackEncoding::Initialize() {
              "Initializing pre-existing fallback cache.");
   FallbackEncoding::sInstance = new FallbackEncoding;
   Preferences::RegisterCallback(FallbackEncoding::PrefChanged,
-                                "intl.charset.fallback.override", nullptr);
+                                "intl.charset.fallback.override");
   Preferences::AddBoolVarCache(&sGuessFallbackFromTopLevelDomain,
                                "intl.charset.fallback.tld");
-  Preferences::AddBoolVarCache(&sFallbackToUTF8ForFile,
-                               "intl.charset.fallback.utf8_for_file");
 
   nsCOMPtr<nsIObserverService> obs = mozilla::services::GetObserverService();
   if (obs) {
@@ -156,7 +155,6 @@ void FallbackEncoding::Shutdown() {
   if (obs) {
     obs->RemoveObserver(sInstance, "intl:requested-locales-changed");
   }
-  delete FallbackEncoding::sInstance;
   FallbackEncoding::sInstance = nullptr;
 }
 

@@ -6,10 +6,8 @@
   -->
 <window title="Button Test"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>      
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"></script>      
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>      
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"></script>      
 
 <button id="one" label="One" />
 <button id="two" label="Two"/>
@@ -18,8 +16,7 @@
 </hbox>
 <hbox>
   <button id="four" type="menu" label="Four"/>
-  <button id="five" type="panel" label="Five"/>
-  <button id="six" label="Six"/>
+  <button id="five" label="Five"/>
 </hbox>
 
   <!-- test results are displayed in the html:body -->
@@ -48,9 +45,6 @@ function test_button()
     is(document.activeElement, $("four"), "key cursor right on button");
     synthesizeKey("KEY_ArrowDown");
     is(document.activeElement, $("four"), "key cursor down on menu button");
-    $("five").focus();
-    synthesizeKey("KEY_ArrowDown");
-    is(document.activeElement, $("five"), "key cursor down on panel button");
 
     $("three").focus();
     synthesizeKey("KEY_ArrowUp");

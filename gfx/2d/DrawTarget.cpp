@@ -7,12 +7,16 @@
 #include "2D.h"
 #include "Logging.h"
 #include "PathHelpers.h"
+#include "Tools.h"
 
 #include "DrawTargetCapture.h"
 
-#ifdef BUILD_ARM_NEON
-#include "mozilla/arm.h"
-#include "LuminanceNEON.h"
+#include "BufferEdgePad.h"
+#include "BufferUnrotate.h"
+
+#ifdef USE_NEON
+#  include "mozilla/arm.h"
+#  include "LuminanceNEON.h"
 #endif
 
 namespace mozilla {
@@ -22,15 +26,15 @@ namespace gfx {
  * Byte offsets of channels in a native packed gfxColor or cairo image surface.
  */
 #ifdef IS_BIG_ENDIAN
-#define GFX_ARGB32_OFFSET_A 0
-#define GFX_ARGB32_OFFSET_R 1
-#define GFX_ARGB32_OFFSET_G 2
-#define GFX_ARGB32_OFFSET_B 3
+#  define GFX_ARGB32_OFFSET_A 0
+#  define GFX_ARGB32_OFFSET_R 1
+#  define GFX_ARGB32_OFFSET_G 2
+#  define GFX_ARGB32_OFFSET_B 3
 #else
-#define GFX_ARGB32_OFFSET_A 3
-#define GFX_ARGB32_OFFSET_R 2
-#define GFX_ARGB32_OFFSET_G 1
-#define GFX_ARGB32_OFFSET_B 0
+#  define GFX_ARGB32_OFFSET_A 3
+#  define GFX_ARGB32_OFFSET_R 2
+#  define GFX_ARGB32_OFFSET_G 1
+#  define GFX_ARGB32_OFFSET_B 0
 #endif
 
 // c = n / 255
@@ -55,11 +59,11 @@ static const uint8_t gsRGBToLinearRGBMap[256] = {
     222, 224, 226, 229, 231, 233, 235, 237, 239, 242, 244, 246, 248, 250, 253,
     255};
 
-static void ComputesRGBLuminanceMask(const uint8_t *aSourceData,
-                                     int32_t aSourceStride, uint8_t *aDestData,
-                                     int32_t aDestStride, const IntSize &aSize,
+static void ComputesRGBLuminanceMask(const uint8_t* aSourceData,
+                                     int32_t aSourceStride, uint8_t* aDestData,
+                                     int32_t aDestStride, const IntSize& aSize,
                                      float aOpacity) {
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
   if (mozilla::supports_neon()) {
     ComputesRGBLuminanceMask_NEON(aSourceData, aSourceStride, aDestData,
                                   aDestStride, aSize, aOpacity);
@@ -71,9 +75,9 @@ static void ComputesRGBLuminanceMask(const uint8_t *aSourceData,
   int32_t greenFactor = 183 * aOpacity;  // 255 * 0.7154 * opacity
   int32_t blueFactor = 18 * aOpacity;    // 255 * 0.0721
   int32_t sourceOffset = aSourceStride - 4 * aSize.width;
-  const uint8_t *sourcePixel = aSourceData;
+  const uint8_t* sourcePixel = aSourceData;
   int32_t destOffset = aDestStride - aSize.width;
-  uint8_t *destPixel = aDestData;
+  uint8_t* destPixel = aDestData;
 
   for (int32_t y = 0; y < aSize.height; y++) {
     for (int32_t x = 0; x < aSize.width; x++) {
@@ -96,15 +100,15 @@ static void ComputesRGBLuminanceMask(const uint8_t *aSourceData,
 }
 
 static void ComputeLinearRGBLuminanceMask(
-    const uint8_t *aSourceData, int32_t aSourceStride, uint8_t *aDestData,
-    int32_t aDestStride, const IntSize &aSize, float aOpacity) {
+    const uint8_t* aSourceData, int32_t aSourceStride, uint8_t* aDestData,
+    int32_t aDestStride, const IntSize& aSize, float aOpacity) {
   int32_t redFactor = 55 * aOpacity;     // 255 * 0.2125 * opacity
   int32_t greenFactor = 183 * aOpacity;  // 255 * 0.7154 * opacity
   int32_t blueFactor = 18 * aOpacity;    // 255 * 0.0721
   int32_t sourceOffset = aSourceStride - 4 * aSize.width;
-  const uint8_t *sourcePixel = aSourceData;
+  const uint8_t* sourcePixel = aSourceData;
   int32_t destOffset = aDestStride - aSize.width;
-  uint8_t *destPixel = aDestData;
+  uint8_t* destPixel = aDestData;
 
   for (int32_t y = 0; y < aSize.height; y++) {
     for (int32_t x = 0; x < aSize.width; x++) {
@@ -153,18 +157,18 @@ static void ComputeLinearRGBLuminanceMask(
   }
 }
 
-void DrawTarget::DrawCapturedDT(DrawTargetCapture *aCaptureDT,
-                                const Matrix &aTransform) {
+void DrawTarget::DrawCapturedDT(DrawTargetCapture* aCaptureDT,
+                                const Matrix& aTransform) {
   if (aTransform.HasNonIntegerTranslation()) {
     gfxWarning() << "Non integer translations are not supported for "
                     "DrawCaptureDT at this time!";
     return;
   }
-  static_cast<DrawTargetCaptureImpl *>(aCaptureDT)
+  static_cast<DrawTargetCaptureImpl*>(aCaptureDT)
       ->ReplayToDrawTarget(this, aTransform);
 }
 
-void DrawTarget::PushDeviceSpaceClipRects(const IntRect *aRects,
+void DrawTarget::PushDeviceSpaceClipRects(const IntRect* aRects,
                                           uint32_t aCount) {
   Matrix oldTransform = GetTransform();
   SetTransform(Matrix());
@@ -179,10 +183,17 @@ void DrawTarget::PushDeviceSpaceClipRects(const IntRect *aRects,
   SetTransform(oldTransform);
 }
 
-void DrawTarget::StrokeGlyphs(ScaledFont *aFont, const GlyphBuffer &aBuffer,
-                              const Pattern &aPattern,
-                              const StrokeOptions &aStrokeOptions,
-                              const DrawOptions &aOptions) {
+void DrawTarget::FillRoundedRect(const RoundedRect& aRect,
+                                 const Pattern& aPattern,
+                                 const DrawOptions& aOptions) {
+  RefPtr<Path> path = MakePathForRoundedRect(*this, aRect.rect, aRect.corners);
+  Fill(path, aPattern, aOptions);
+}
+
+void DrawTarget::StrokeGlyphs(ScaledFont* aFont, const GlyphBuffer& aBuffer,
+                              const Pattern& aPattern,
+                              const StrokeOptions& aStrokeOptions,
+                              const DrawOptions& aOptions) {
   RefPtr<Path> path = aFont->GetPathForGlyphs(aBuffer, this);
   Stroke(path, aPattern, aStrokeOptions, aOptions);
 }
@@ -236,8 +247,8 @@ already_AddRefed<SourceSurface> DrawTarget::IntoLuminanceSource(
   return destMaskSurface.forget();
 }
 
-void DrawTarget::Blur(const AlphaBoxBlur &aBlur) {
-  uint8_t *data;
+void DrawTarget::Blur(const AlphaBoxBlur& aBlur) {
+  uint8_t* data;
   IntSize size;
   int32_t stride;
   SurfaceFormat format;
@@ -252,6 +263,26 @@ void DrawTarget::Blur(const AlphaBoxBlur &aBlur) {
   aBlur.Blur(data);
 
   ReleaseBits(data);
+}
+
+void DrawTarget::PadEdges(const IntRegion& aRegion) {
+  PadDrawTargetOutFromRegion(this, aRegion);
+}
+
+bool DrawTarget::Unrotate(IntPoint aRotation) {
+  unsigned char* data;
+  IntSize size;
+  int32_t stride;
+  SurfaceFormat format;
+
+  if (LockBits(&data, &size, &stride, &format)) {
+    uint8_t bytesPerPixel = BytesPerPixel(format);
+    BufferUnrotate(data, size.width * bytesPerPixel, size.height, stride,
+                   aRotation.x * bytesPerPixel, aRotation.y);
+    ReleaseBits(data);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace gfx

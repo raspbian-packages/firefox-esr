@@ -56,7 +56,7 @@ Naming standards for class names:
 
 ## Light and Dark theme support
 
-DevTools supports 3 different themes: the dark theme, the light theme and the firebug theme. In order to support them, there are 3 class names available (`theme-dark`, `theme-light` and `theme-firebug`).
+DevTools supports 2 different themes: the dark theme and the light theme. In order to support them, there are 2 class names available (`theme-dark` and `theme-light`).
 
 * Use [pre-defined CSS variables](https://developer.mozilla.org/en-US/docs/Tools/DevToolsColors) instead of hardcoding colors when possible.
 * If you need to support themes and the pre-defined variables don't fit, define a variable with your custom colors at the beginning of the CSS file. This avoids selector duplication in the code.
@@ -68,9 +68,6 @@ Example:
   --some-variable-name: <color-for-light-theme>;
 }
 .theme-dark {
-  --some-variable-name: <color-for-dark-theme>;
-}
-.theme-firebug {
   --some-variable-name: <color-for-dark-theme>;
 }
 #myElement {
@@ -95,7 +92,7 @@ It's recommended to use SVG since it keeps the CSS clean when supporting multipl
 ### Text Direction
 * For margins, padding and borders, use `inline-start`/`inline-end` rather than `left`/`right`.
  * Example: Use `margin-inline-start: 3px;` not `margin-left: 3px`.
-* For RTL-aware positioning (left/right), use `offset-inline-start/end`.
+* For RTL-aware positioning (left/right), use `inset-inline-start/end`.
 * When there is no special RTL-aware property (eg. `float: left|right`) available, use the pseudo `:-moz-locale-dir(ltr|rtl)` (for XUL files) or `:dir(ltr|rtl)` (for HTML files).
 * Remember that while a tab content's scrollbar still shows on the right in RTL, an overflow scrollbar will show on the left.
 * Write `padding: 0 3px 4px;` instead of `padding: 0 3px 4px 3px;`. This makes it more obvious that the padding is symmetrical (so RTL won't be an issue).

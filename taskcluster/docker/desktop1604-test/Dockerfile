@@ -35,10 +35,6 @@ ADD topsrcdir/taskcluster/docker/recipes/install-mercurial.sh /setup/install-mer
 # %include taskcluster/docker/recipes/install-node.sh
 ADD topsrcdir/taskcluster/docker/recipes/install-node.sh /setup/install-node.sh
 
-# Add the tooltool manifest containing the minidump_stackwalk binary.
-# %include testing/config/tooltool-manifests/linux64/releng.manifest
-ADD topsrcdir/testing/config/tooltool-manifests/linux64/releng.manifest /tmp/minidump_stackwalk.manifest
-
 # %include taskcluster/docker/recipes/ubuntu1604-test-system-setup.sh
 ADD topsrcdir/taskcluster/docker/recipes/ubuntu1604-test-system-setup.sh /setup/system-setup.sh
 RUN           bash /setup/system-setup.sh
@@ -113,6 +109,12 @@ ADD taskcluster-interactive-shell /bin/taskcluster-interactive-shell
 RUN chmod +x /bin/taskcluster-interactive-shell
 
 RUN chown -R worker:worker /builds/worker
+
+# gnome-keyring-daemon is configured to have the IPC_LOCK capability (to lock pages with secrets in
+# memory), but docker isn't run with that capability granted. So, if we were to try running
+# gnome-keyring-daemon without first clearing the capability, it would just exit with the message
+# "Operation not permitted". Luckily it doesn't actually require the capability.
+RUN setcap -r /usr/bin/gnome-keyring-daemon
 
 # Set a default command useful for debugging
 CMD ["/bin/bash", "--login"]

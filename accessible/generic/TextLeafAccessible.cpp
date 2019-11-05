@@ -25,7 +25,7 @@ TextLeafAccessible::TextLeafAccessible(nsIContent* aContent,
 
 TextLeafAccessible::~TextLeafAccessible() {}
 
-role TextLeafAccessible::NativeRole() {
+role TextLeafAccessible::NativeRole() const {
   nsIFrame* frame = GetFrame();
   if (frame && frame->IsGeneratedContentFrame()) return roles::STATICTEXT;
 
@@ -37,7 +37,7 @@ void TextLeafAccessible::AppendTextTo(nsAString& aText, uint32_t aStartOffset,
   aText.Append(Substring(mText, aStartOffset, aLength));
 }
 
-ENameValueFlag TextLeafAccessible::Name(nsString& aName) {
+ENameValueFlag TextLeafAccessible::Name(nsString& aName) const {
   // Text node, ARIA can't be used.
   aName = mText;
   return eNameOK;

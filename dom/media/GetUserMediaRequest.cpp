@@ -26,8 +26,14 @@ GetUserMediaRequest::GetUserMediaRequest(
 
 GetUserMediaRequest::GetUserMediaRequest(nsPIDOMWindowInner* aInnerWindow,
                                          const nsAString& aRawId,
-                                         const nsAString& aMediaSource)
-    : mRawID(aRawId), mMediaSource(aMediaSource) {
+                                         const nsAString& aMediaSource,
+                                         bool aIsHandlingUserInput)
+    : mInnerWindowID(0),
+      mOuterWindowID(0),
+      mRawID(aRawId),
+      mMediaSource(aMediaSource),
+      mIsSecure(false),
+      mIsHandlingUserInput(aIsHandlingUserInput) {
   if (aInnerWindow && aInnerWindow->GetOuterWindow()) {
     mOuterWindowID = aInnerWindow->GetOuterWindow()->WindowID();
   }
@@ -43,7 +49,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* GetUserMediaRequest::WrapObject(JSContext* aCx,
                                           JS::Handle<JSObject*> aGivenProto) {
-  return GetUserMediaRequestBinding::Wrap(aCx, this, aGivenProto);
+  return GetUserMediaRequest_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* GetUserMediaRequest::GetParentObject() { return nullptr; }

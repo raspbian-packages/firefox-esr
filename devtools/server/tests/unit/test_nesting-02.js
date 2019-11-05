@@ -14,17 +14,20 @@ function run_test() {
   initTestDebuggerServer();
   addTestGlobal("test-nesting");
   gClient = new DebuggerClient(DebuggerServer.connectPipe());
-  gClient.connect().then(function () {
-    attachTestTabAndResume(
-      gClient, "test-nesting",
-      function (response, tabClient, threadClient) {
-        // Reach over the protocol connection and get a reference to the thread
-        // actor.
-        gThreadActor =
-          threadClient._transport._serverConnection.getActor(threadClient._actor);
+  gClient.connect().then(function() {
+    attachTestTabAndResume(gClient, "test-nesting", function(
+      response,
+      targetFront,
+      threadClient
+    ) {
+      // Reach over the protocol connection and get a reference to the thread
+      // actor.
+      gThreadActor = threadClient._transport._serverConnection.getActor(
+        threadClient._actor
+      );
 
-        test_nesting();
-      });
+      test_nesting();
+    });
   });
   do_test_pending();
 }
@@ -40,17 +43,15 @@ function test_nesting() {
   // 4. Be after the unsafeSynchronize call
   let currentStep = 0;
 
-  executeSoon(function () {
-    let eventLoop;
-
-    executeSoon(function () {
+  executeSoon(function() {
+    executeSoon(function() {
       // Should be at step 2
       Assert.equal(++currentStep, 2);
       // Before resolving, should have the unsafeSynchronize event loop and the
       // one just created.
       Assert.equal(thread._nestedEventLoops.size, 2);
 
-      executeSoon(function () {
+      executeSoon(function() {
         // Should be at step 3
         Assert.equal(++currentStep, 3);
         // Before exiting the manually created event loop, should have the
@@ -71,7 +72,7 @@ function test_nesting() {
     Assert.equal(++currentStep, 1);
     // Should have only the unsafeSynchronize event loop
     Assert.equal(thread._nestedEventLoops.size, 1);
-    eventLoop = thread._nestedEventLoops.push();
+    const eventLoop = thread._nestedEventLoops.push();
     eventLoop.enter();
   });
 

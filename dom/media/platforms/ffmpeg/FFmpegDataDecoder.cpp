@@ -6,7 +6,7 @@
 
 #include <string.h>
 #ifdef __GNUC__
-#include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #include "FFmpegLog.h"
@@ -28,7 +28,7 @@ FFmpegDataDecoder<LIBAV_VER>::FFmpegDataDecoder(FFmpegLibWrapper* aLib,
       mExtraData(nullptr),
       mCodecID(aCodecID),
       mTaskQueue(aTaskQueue),
-      mLastInputDts(media::TimeUnit::FromMicroseconds(INT64_MIN)) {
+      mLastInputDts(media::TimeUnit::FromNegativeInfinity()) {
   MOZ_ASSERT(aLib);
   MOZ_COUNT_CTOR(FFmpegDataDecoder);
 }
@@ -133,7 +133,7 @@ FFmpegDataDecoder<LIBAV_VER>::ProcessDecode(MediaRawData* aSample) {
   if (NS_FAILED(rv)) {
     return DecodePromise::CreateAndReject(rv, __func__);
   }
-  return DecodePromise::CreateAndResolve(Move(results), __func__);
+  return DecodePromise::CreateAndResolve(std::move(results), __func__);
 }
 
 MediaResult FFmpegDataDecoder<LIBAV_VER>::DoDecode(
@@ -144,11 +144,11 @@ MediaResult FFmpegDataDecoder<LIBAV_VER>::DoDecode(
 
   mLastInputDts = aSample->mTimecode;
 
-  if (mCodecParser) {
+  if (inputData && mCodecParser) {  // inputData is null when draining.
     if (aGotFrame) {
       *aGotFrame = false;
     }
-    do {
+    while (inputSize) {
       uint8_t* data = inputData;
       int size = inputSize;
       int len = mLib->av_parser_parse2(
@@ -158,7 +158,7 @@ MediaResult FFmpegDataDecoder<LIBAV_VER>::DoDecode(
       if (size_t(len) > inputSize) {
         return NS_ERROR_DOM_MEDIA_DECODE_ERR;
       }
-      if (size || !inputSize) {
+      if (size) {
         bool gotFrame = false;
         MediaResult rv = DoDecode(aSample, data, size, &gotFrame, aResults);
         if (NS_FAILED(rv)) {
@@ -170,7 +170,7 @@ MediaResult FFmpegDataDecoder<LIBAV_VER>::DoDecode(
       }
       inputData += len;
       inputSize -= len;
-    } while (inputSize > 0);
+    }
     return NS_OK;
   }
   return DoDecode(aSample, inputData, inputSize, aGotFrame, aResults);
@@ -192,9 +192,12 @@ FFmpegDataDecoder<LIBAV_VER>::ProcessDrain() {
   empty->mTimecode = mLastInputDts;
   bool gotFrame = false;
   DecodedData results;
+  // When draining the FFmpeg decoder will return either a single frame at a
+  // time until gotFrame is set to false; or return a block of frames with
+  // NS_ERROR_DOM_MEDIA_END_OF_STREAM
   while (NS_SUCCEEDED(DoDecode(empty, &gotFrame, results)) && gotFrame) {
   }
-  return DecodePromise::CreateAndResolve(Move(results), __func__);
+  return DecodePromise::CreateAndResolve(std::move(results), __func__);
 }
 
 RefPtr<MediaDataDecoder::FlushPromise>

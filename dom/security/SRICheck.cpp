@@ -18,7 +18,6 @@
 #include "nsIProtocolHandler.h"
 #include "nsIScriptError.h"
 #include "nsIIncrementalStreamLoader.h"
-#include "nsIUnicharStreamLoader.h"
 #include "nsIURI.h"
 #include "nsNetUtil.h"
 #include "nsWhitespaceTokenizer.h"
@@ -89,9 +88,11 @@ static nsresult IsEligible(nsIChannel* aChannel,
   return NS_ERROR_SRI_NOT_ELIGIBLE;
 }
 
-/* static */ nsresult SRICheck::IntegrityMetadata(
-    const nsAString& aMetadataList, const nsACString& aSourceFileURI,
-    nsIConsoleReportCollector* aReporter, SRIMetadata* outMetadata) {
+/* static */
+nsresult SRICheck::IntegrityMetadata(const nsAString& aMetadataList,
+                                     const nsACString& aSourceFileURI,
+                                     nsIConsoleReportCollector* aReporter,
+                                     SRIMetadata* outMetadata) {
   NS_ENSURE_ARG_POINTER(outMetadata);
   NS_ENSURE_ARG_POINTER(aReporter);
   MOZ_ASSERT(outMetadata->IsEmpty());  // caller must pass empty metadata
@@ -102,12 +103,11 @@ static nsresult IsEligible(nsIChannel* aChannel,
   }
 
   // put a reasonable bound on the length of the metadata
-  NS_LossyConvertUTF16toASCII metadataList(aMetadataList);
+  NS_ConvertUTF16toUTF8 metadataList(aMetadataList);
   if (metadataList.Length() > SRICheck::MAX_METADATA_LENGTH) {
     metadataList.Truncate(SRICheck::MAX_METADATA_LENGTH);
   }
   SRILOG(("SRICheck::IntegrityMetadata, metadataList=%s", metadataList.get()));
-  MOZ_ASSERT(metadataList.Length() <= aMetadataList.Length());
 
   // the integrity attribute is a list of whitespace-separated hashes
   // and options so we need to look at them one by one and pick the
@@ -175,31 +175,6 @@ static nsresult IsEligible(nsIChannel* aChannel,
   return NS_OK;
 }
 
-/* static */ nsresult SRICheck::VerifyIntegrity(
-    const SRIMetadata& aMetadata, nsIChannel* aChannel,
-    const nsACString& aBytes, const nsACString& aSourceFileURI,
-    nsIConsoleReportCollector* aReporter) {
-  NS_ENSURE_ARG_POINTER(aReporter);
-
-  if (MOZ_LOG_TEST(SRILogHelper::GetSriLog(), mozilla::LogLevel::Debug)) {
-    nsAutoCString requestURL;
-    nsCOMPtr<nsIURI> originalURI;
-    if (aChannel &&
-        NS_SUCCEEDED(aChannel->GetOriginalURI(getter_AddRefs(originalURI))) &&
-        originalURI) {
-      originalURI->GetAsciiSpec(requestURL);
-    }
-    SRILOG(("SRICheck::VerifyIntegrity (unichar stream)"));
-  }
-
-  SRICheckDataVerifier verifier(aMetadata, aSourceFileURI, aReporter);
-  nsresult rv =
-      verifier.Update(aBytes.Length(), (const uint8_t*)aBytes.BeginReading());
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  return verifier.Verify(aMetadata, aChannel, aSourceFileURI, aReporter);
-}
-
 //////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////
@@ -208,6 +183,8 @@ SRICheckDataVerifier::SRICheckDataVerifier(const SRIMetadata& aMetadata,
                                            nsIConsoleReportCollector* aReporter)
     : mCryptoHash(nullptr),
       mBytesHashed(0),
+      mHashLength(0),
+      mHashType('\0'),
       mInvalidMetadata(false),
       mComplete(false) {
   MOZ_ASSERT(!aMetadata.IsEmpty());  // should be checked by caller
@@ -343,8 +320,7 @@ nsresult SRICheckDataVerifier::Verify(const SRIMetadata& aMetadata,
 
   if (MOZ_LOG_TEST(SRILogHelper::GetSriLog(), mozilla::LogLevel::Debug)) {
     nsAutoCString requestURL;
-    nsCOMPtr<nsIRequest> request;
-    request = do_QueryInterface(aChannel);
+    nsCOMPtr<nsIRequest> request = aChannel;
     request->GetName(requestURL);
     SRILOG(("SRICheckDataVerifier::Verify, url=%s (length=%zu)",
             requestURL.get(), mBytesHashed));
@@ -353,8 +329,7 @@ nsresult SRICheckDataVerifier::Verify(const SRIMetadata& aMetadata,
   nsresult rv = Finish();
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->GetLoadInfo();
-  NS_ENSURE_TRUE(loadInfo, NS_ERROR_FAILURE);
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
   LoadTainting tainting = loadInfo->GetTainting();
 
   if (NS_FAILED(IsEligible(aChannel, tainting, aSourceFileURI, aReporter))) {

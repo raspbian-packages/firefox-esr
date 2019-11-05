@@ -7,16 +7,16 @@
 #include "ServiceWorkerRegisterJob.h"
 
 #include "mozilla/dom/WorkerCommon.h"
+#include "ServiceWorkerManager.h"
 
 namespace mozilla {
 namespace dom {
 
 ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     nsIPrincipal* aPrincipal, const nsACString& aScope,
-    const nsACString& aScriptSpec, nsILoadGroup* aLoadGroup,
-    ServiceWorkerUpdateViaCache aUpdateViaCache)
+    const nsACString& aScriptSpec, ServiceWorkerUpdateViaCache aUpdateViaCache)
     : ServiceWorkerUpdateJob(Type::Register, aPrincipal, aScope, aScriptSpec,
-                             aLoadGroup, aUpdateViaCache) {}
+                             aUpdateViaCache) {}
 
 void ServiceWorkerRegisterJob::AsyncExecute() {
   MOZ_ASSERT(NS_IsMainThread());
@@ -34,13 +34,8 @@ void ServiceWorkerRegisterJob::AsyncExecute() {
     bool sameUVC = GetUpdateViaCache() == registration->GetUpdateViaCache();
     registration->SetUpdateViaCache(GetUpdateViaCache());
 
-    // If we are resurrecting an uninstalling registration, then persist
-    // it to disk again.  We preemptively removed it earlier during
-    // unregister so that closing the window by shutting down the browser
-    // results in the registration being gone on restart.
     if (registration->IsPendingUninstall()) {
       registration->ClearPendingUninstall();
-      swm->StoreRegistration(mPrincipal, registration);
       // Its possible that a ready promise is created between when the
       // uninstalling flag is set and when we resurrect the registration
       // here.  In that case we might need to fire the ready promise

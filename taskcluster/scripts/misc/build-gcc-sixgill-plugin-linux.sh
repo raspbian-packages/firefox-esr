@@ -18,20 +18,19 @@ data_dir=$HOME_DIR/src/build/unix/build-gcc
 # Download and unpack upstream toolchain artifacts (ie, the gcc binary).
 . $(dirname $0)/tooltool-download.sh
 
-gcc_version=4.9.4
-gcc_ext=bz2
-binutils_version=2.25.1
-binutils_ext=bz2
-sixgill_rev=59b74c2e21bd
+gcc_version=6.4.0
+gcc_ext=xz
+binutils_version=2.28.1
+binutils_ext=xz
+sixgill_rev=bc0ef9258470
 sixgill_repo=https://hg.mozilla.org/users/sfink_mozilla.com/sixgill
 
 . $data_dir/build-gcc.sh
 
 pushd $root_dir/gcc-$gcc_version
-ln -sf ../binutils-2.25.1 binutils
-ln -sf ../cloog-0.18.1 cloog
+ln -sf ../binutils-2.31.1 binutils
 ln -sf ../gmp-5.1.3 gmp
-ln -sf ../isl-0.12.2 isl
+ln -sf ../isl-0.15 isl
 ln -sf ../mpc-0.8.2 mpc
 ln -sf ../mpfr-3.1.5 mpfr
 popd
@@ -71,6 +70,8 @@ build_sixgill() {(
     cd $root_dir/sixgill
     export CC=$gcc_bindir/gcc
     export CXX=$gcc_bindir/g++
+    export PATH="$gcc_bindir:$PATH"
+    export LD_LIBRARY_PATH="${gcc_bindir%/bin}/lib64"
     export TARGET_CC=$CC
     export CPPFLAGS=-I$gmp_dir/include
     export EXTRA_LDFLAGS=-L$gmp_dir/lib

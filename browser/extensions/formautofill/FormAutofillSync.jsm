@@ -6,18 +6,24 @@
 
 var EXPORTED_SYMBOLS = ["AddressesEngine", "CreditCardsEngine"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://services-sync/engines.js");
-ChromeUtils.import("resource://services-sync/record.js");
-ChromeUtils.import("resource://services-sync/util.js");
-ChromeUtils.import("resource://services-sync/constants.js");
-ChromeUtils.import("resource://formautofill/FormAutofillUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { Changeset, Store, SyncEngine, Tracker } = ChromeUtils.import(
+  "resource://services-sync/engines.js"
+);
+const { CryptoWrapper } = ChromeUtils.import(
+  "resource://services-sync/record.js"
+);
+const { Utils } = ChromeUtils.import("resource://services-sync/util.js");
+const { SCORE_INCREMENT_XLARGE } = ChromeUtils.import(
+  "resource://services-sync/constants.js"
+);
 
-ChromeUtils.defineModuleGetter(this, "Log",
-                               "resource://gre/modules/Log.jsm");
-ChromeUtils.defineModuleGetter(this, "formAutofillStorage",
-                               "resource://formautofill/FormAutofillStorage.jsm");
+ChromeUtils.defineModuleGetter(this, "Log", "resource://gre/modules/Log.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "formAutofillStorage",
+  "resource://formautofill/FormAutofillStorage.jsm"
+);
 
 // A helper to sanitize address and creditcard records suitable for logging.
 function sanitizeStorageObject(ob) {
@@ -33,12 +39,11 @@ function sanitizeStorageObject(ob) {
     } else if (typeof origVal == "string") {
       result[key] = "X".repeat(origVal.length);
     } else {
-      result[key] = typeof(origVal); // *shrug*
+      result[key] = typeof origVal; // *shrug*
     }
   }
   return result;
 }
-
 
 function AutofillRecord(collection, id) {
   CryptoWrapper.call(this, collection, id);
@@ -48,9 +53,12 @@ AutofillRecord.prototype = {
   __proto__: CryptoWrapper.prototype,
 
   toEntry() {
-    return Object.assign({
-      guid: this.id,
-    }, this.entry);
+    return Object.assign(
+      {
+        guid: this.id,
+      },
+      this.entry
+    );
   },
 
   fromEntry(entry) {
@@ -65,7 +73,7 @@ AutofillRecord.prototype = {
   cleartextToString() {
     // And a helper so logging a *Sync* record auto sanitizes.
     let record = this.cleartext;
-    return JSON.stringify({entry: sanitizeStorageObject(record.entry)});
+    return JSON.stringify({ entry: sanitizeStorageObject(record.entry) });
   },
 };
 
@@ -91,7 +99,7 @@ FormAutofillStore.prototype = {
 
   async getAllIDs() {
     let result = {};
-    for (let {guid} of this.storage.getAll({includeDeleted: true})) {
+    for (let { guid } of await this.storage.getAll({ includeDeleted: true })) {
       result[guid] = true;
     }
     return result;
@@ -104,13 +112,13 @@ FormAutofillStore.prototype = {
   // Note: this function intentionally returns false in cases where we only have
   // a (local) tombstone - and formAutofillStorage.get() filters them for us.
   async itemExists(id) {
-    return Boolean(this.storage.get(id));
+    return Boolean(await this.storage.get(id));
   },
 
   async applyIncoming(remoteRecord) {
     if (remoteRecord.deleted) {
       this._log.trace("Deleting record", remoteRecord);
-      this.storage.remove(remoteRecord.id, {sourceSync: true});
+      this.storage.remove(remoteRecord.id, { sourceSync: true });
       return;
     }
 
@@ -121,9 +129,14 @@ FormAutofillStore.prototype = {
     }
 
     // No matching local record. Try to dedupe a NEW local record.
-    let localDupeID = this.storage.findDuplicateGUID(remoteRecord.toEntry());
+    let localDupeID = await this.storage.findDuplicateGUID(
+      remoteRecord.toEntry()
+    );
     if (localDupeID) {
-      this._log.trace(`Deduping local record ${localDupeID} to remote`, remoteRecord);
+      this._log.trace(
+        `Deduping local record ${localDupeID} to remote`,
+        remoteRecord
+      );
       // Change the local GUID to match the incoming record, then apply the
       // incoming record.
       await this.changeItemID(localDupeID, remoteRecord.id);
@@ -136,20 +149,22 @@ FormAutofillStore.prototype = {
     // handles for us.)
     this._log.trace("Add record", remoteRecord);
     let entry = remoteRecord.toEntry();
-    this.storage.add(entry, {sourceSync: true});
+    await this.storage.add(entry, { sourceSync: true });
   },
 
   async createRecord(id, collection) {
     this._log.trace("Create record", id);
     let record = new AutofillRecord(collection, id);
-    let entry = this.storage.get(id, {
+    let entry = await this.storage.get(id, {
       rawData: true,
     });
     if (entry) {
       record.fromEntry(entry);
     } else {
       // We should consider getting a more authortative indication it's actually deleted.
-      this._log.debug(`Failed to get autofill record with id "${id}", assuming deleted`);
+      this._log.debug(
+        `Failed to get autofill record with id "${id}", assuming deleted`
+      );
       record.deleted = true;
     }
     return record;
@@ -159,10 +174,10 @@ FormAutofillStore.prototype = {
     this._log.trace("Updating record", record);
 
     let entry = record.toEntry();
-    let {forkedGUID} = this.storage.reconcile(entry);
+    let { forkedGUID } = await this.storage.reconcile(entry);
     if (this._log.level <= Log.Level.Debug) {
-      let forkedRecord = forkedGUID ? this.storage.get(forkedGUID) : null;
-      let reconciledRecord = this.storage.get(record.id);
+      let forkedRecord = forkedGUID ? await this.storage.get(forkedGUID) : null;
+      let reconciledRecord = await this.storage.get(record.id);
       this._log.debug("Updated local record", {
         forked: sanitizeStorageObject(forkedRecord),
         updated: sanitizeStorageObject(reconciledRecord),
@@ -186,7 +201,11 @@ FormAutofillTracker.prototype = {
     if (topic != "formautofill-storage-changed") {
       return;
     }
-    if (subject && subject.wrappedJSObject && subject.wrappedJSObject.sourceSync) {
+    if (
+      subject &&
+      subject.wrappedJSObject &&
+      subject.wrappedJSObject.sourceSync
+    ) {
       return;
     }
     switch (data) {
@@ -331,6 +350,11 @@ FormAutofillEngine.prototype = {
   async _resetClient() {
     await formAutofillStorage.initialize();
     this._store.storage.resetSync();
+  },
+
+  async _wipeClient() {
+    await formAutofillStorage.initialize();
+    this._store.storage.removeAll({ sourceSync: true });
   },
 };
 

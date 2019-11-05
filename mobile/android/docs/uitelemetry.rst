@@ -177,6 +177,9 @@ Events
   Sent when a user has accepted the data notification policy. Can be ``false``
   instead of ``true`` if an error occurs.
 
+``pwa.1``
+  When the user interacts with a Progressive Web Application
+
 ``sanitize.1``
   Sent when the user chooses to clear private data.
 
@@ -194,6 +197,9 @@ Events
 
 ``search.setdefault.1``
   Sent when the user sets a search engine to be the default.
+
+``search.widget.1``
+  Sent when the user initiates a search through the widget.
 
 ``share.1``
   Sharing content.
@@ -275,6 +281,32 @@ Methods
 
 ``widget``
   Action triggered from a widget placed on the homescreen.
+
+Buttons
+-------
+``preferences``
+  Button action triggered by the "Sign in" Settings menu item.
+
+``notification``
+  Button action triggered by signing in from a Leanplum notification.
+
+``firstrun-welcome``
+  Button action triggered by the Onboarding "WELCOME" panel's "Sign up" button.
+
+``firstrun-sync``
+  Button action triggered by the Onboarding "SYNC" panel's "Sign up" button.
+
+``firstrun-sendtab``
+  Button action triggered by the Onboarding "SEND TAB" panel's "Sign up" button.
+
+``awesomescreen-signin``
+  Button action triggered by the Awesomescreen's "Sign in" link.
+
+``awesomescreen-signup``
+  Button action triggered by the Awesomescreen's "Sign up" button.
+
+``awesomescreen-signup-dismiss``
+  Button action triggered by dismissing the Awesomescreen's "Welcome to Firefox" panel
 
 Sessions
 --------

@@ -2,47 +2,40 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { GeckoViewUtils } = ChromeUtils.import(
+  "resource://gre/modules/GeckoViewUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  GeckoViewUtils: "resource://gre/modules/GeckoViewUtils.jsm",
+  ActorManagerParent: "resource://gre/modules/ActorManagerParent.jsm",
+  EventDispatcher: "resource://gre/modules/Messaging.jsm",
+  FileSource: "resource://gre/modules/L10nRegistry.jsm",
+  GeckoViewTelemetryController:
+    "resource://gre/modules/GeckoViewTelemetryController.jsm",
+  L10nRegistry: "resource://gre/modules/L10nRegistry.jsm",
+  Preferences: "resource://gre/modules/Preferences.jsm",
+  SafeBrowsing: "resource://gre/modules/SafeBrowsing.jsm",
   Services: "resource://gre/modules/Services.jsm",
 });
 
-function GeckoViewStartup() {
-}
+const { debug, warn } = GeckoViewUtils.initLogging("Startup"); // eslint-disable-line no-unused-vars
+
+function GeckoViewStartup() {}
 
 GeckoViewStartup.prototype = {
   classID: Components.ID("{8e993c34-fdd6-432c-967e-f995d888777f}"),
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver]),
-
-  /**
-   * Register resource://android as the APK root.
-   *
-   * Consumers can access Android assets using resource://android/assets/FILENAME.
-   */
-  setResourceSubstitutions: function() {
-    let registry = Cc["@mozilla.org/chrome/chrome-registry;1"].getService(Ci.nsIChromeRegistry);
-    // Like jar:jar:file:///data/app/org.mozilla.geckoview.test.apk!/assets/omni.ja!/chrome/geckoview/content/geckoview.js
-    let url = registry.convertChromeURL(Services.io.newURI("chrome://geckoview/content/geckoview.js")).spec;
-    // Like jar:file:///data/app/org.mozilla.geckoview.test.apk!/
-    url = url.substring(4, url.indexOf("!/") + 2);
-
-    let protocolHandler = Services.io.getProtocolHandler("resource").QueryInterface(Ci.nsIResProtocolHandler);
-    protocolHandler.setSubstitution("android", Services.io.newURI(url));
-  },
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIObserver]),
 
   /* ----------  nsIObserver  ---------- */
   observe: function(aSubject, aTopic, aData) {
+    debug`observe: ${aTopic}`;
     switch (aTopic) {
       case "app-startup": {
-        this.setResourceSubstitutions();
-
         // Parent and content process.
-        Services.obs.addObserver(this, "chrome-document-global-created");
-        Services.obs.addObserver(this, "content-document-global-created");
-
         GeckoViewUtils.addLazyGetter(this, "GeckoViewPermission", {
           service: "@mozilla.org/content-permission/prompt;1",
           observers: [
@@ -50,12 +43,71 @@ GeckoViewStartup.prototype = {
             "getUserMedia:request",
             "PeerConnection:request",
           ],
+          ppmm: ["GeckoView:AddCameraPermission"],
         });
 
-        if (Services.appinfo.processType != Services.appinfo.PROCESS_TYPE_DEFAULT) {
-          // Content process only.
-          GeckoViewUtils.addLazyGetter(this, "GeckoViewPrompt", {
-            service: "@mozilla.org/prompter;1",
+        GeckoViewUtils.addLazyGetter(this, "GeckoViewRecordingMedia", {
+          module: "resource://gre/modules/GeckoViewMedia.jsm",
+          observers: ["recording-device-events"],
+        });
+
+        GeckoViewUtils.addLazyGetter(this, "GeckoViewConsole", {
+          module: "resource://gre/modules/GeckoViewConsole.jsm",
+        });
+
+        GeckoViewUtils.addLazyGetter(this, "GeckoViewWebExtension", {
+          module: "resource://gre/modules/GeckoViewWebExtension.jsm",
+          ged: [
+            "GeckoView:RegisterWebExtension",
+            "GeckoView:UnregisterWebExtension",
+            "GeckoView:WebExtension:PortDisconnect",
+            "GeckoView:WebExtension:PortMessageFromApp",
+          ],
+        });
+
+        GeckoViewUtils.addLazyGetter(this, "GeckoViewStorageController", {
+          module: "resource://gre/modules/GeckoViewStorageController.jsm",
+          ged: ["GeckoView:ClearData", "GeckoView:ClearHostData"],
+        });
+
+        GeckoViewUtils.addLazyPrefObserver(
+          {
+            name: "geckoview.console.enabled",
+            default: false,
+          },
+          {
+            handler: _ => this.GeckoViewConsole,
+          }
+        );
+
+        // Handle invalid form submission. If we don't hook up to this,
+        // invalid forms are allowed to be submitted!
+        Services.obs.addObserver(
+          {
+            QueryInterface: ChromeUtils.generateQI([
+              Ci.nsIObserver,
+              Ci.nsIFormSubmitObserver,
+            ]),
+            notifyInvalidSubmit: (form, element) => {
+              // We should show the validation message here, bug 1510450.
+            },
+          },
+          "invalidformsubmit"
+        );
+
+        if (
+          Services.appinfo.processType == Services.appinfo.PROCESS_TYPE_DEFAULT
+        ) {
+          ActorManagerParent.flush();
+
+          Services.mm.loadFrameScript(
+            "chrome://geckoview/content/GeckoViewPromptChild.js",
+            true
+          );
+
+          GeckoViewUtils.addLazyGetter(this, "ContentCrashHandler", {
+            module: "resource://gre/modules/ContentCrashHandler.jsm",
+            observers: ["ipc:content-shutdown"],
           });
         }
         break;
@@ -74,32 +126,86 @@ GeckoViewStartup.prototype = {
           ],
         });
 
-        GeckoViewUtils.addLazyGetter(this, "GeckoViewPrompt", {
-          service: "@mozilla.org/prompter;1",
-          mm: [
-            "GeckoView:Prompt",
-          ],
+        GeckoViewUtils.addLazyGetter(this, "GeckoViewRemoteDebugger", {
+          module: "resource://gre/modules/GeckoViewRemoteDebugger.jsm",
+          init: gvrd => gvrd.onInit(),
         });
-        break;
-      }
 
-      case "chrome-document-global-created":
-      case "content-document-global-created": {
-        let win = GeckoViewUtils.getChromeWindow(aSubject);
-        if (win !== aSubject) {
-          // Only attach to top-level windows.
-          return;
-        }
-
-        GeckoViewUtils.addLazyEventListener(win, ["click", "contextmenu"], {
-          handler: _ => this.GeckoViewPrompt,
-          options: {
-            capture: false,
-            mozSystemGroup: true,
+        GeckoViewUtils.addLazyPrefObserver(
+          {
+            name: "devtools.debugger.remote-enabled",
+            default: false,
           },
-        });
+          {
+            handler: _ => this.GeckoViewRemoteDebugger,
+          }
+        );
+
+        // This initializes Telemetry for GeckoView only in the parent process.
+        // The Telemetry initialization for the content process is performed in
+        // ContentProcessSingleton.js for consistency with Desktop Telemetry.
+        GeckoViewTelemetryController.setup();
+
+        // Initialize the default l10n resource sources for L10nRegistry.
+        let locales = Services.locale.packagedLocales;
+        const greSource = new FileSource(
+          "toolkit",
+          locales,
+          "resource://gre/localization/{locale}/"
+        );
+        L10nRegistry.registerSource(greSource);
+
+        ChromeUtils.import("resource://gre/modules/NotificationDB.jsm");
+
+        // Initialize safe browsing module. This is required for content
+        // blocking features and manages blocklist downloads and updates.
+        SafeBrowsing.init();
+
+        // Listen for global EventDispatcher messages
+        EventDispatcher.instance.registerListener(this, [
+          "GeckoView:ResetUserPrefs",
+          "GeckoView:SetDefaultPrefs",
+          "GeckoView:SetLocale",
+        ]);
         break;
       }
+    }
+  },
+
+  onEvent(aEvent, aData, aCallback) {
+    debug`onEvent ${aEvent}`;
+
+    switch (aEvent) {
+      case "GeckoView:ResetUserPrefs": {
+        const prefs = new Preferences();
+        prefs.reset(aData.names);
+        break;
+      }
+      case "GeckoView:SetDefaultPrefs": {
+        const prefs = new Preferences({ defaultBranch: true });
+        for (const name of Object.keys(aData)) {
+          try {
+            prefs.set(name, aData[name]);
+          } catch (e) {
+            warn`Failed to set preference ${name}: ${e}`;
+          }
+        }
+        break;
+      }
+      case "GeckoView:SetLocale":
+        if (aData.requestedLocales) {
+          Services.locale.requestedLocales = aData.requestedLocales;
+        }
+        let pls = Cc["@mozilla.org/pref-localizedstring;1"].createInstance(
+          Ci.nsIPrefLocalizedString
+        );
+        pls.data = aData.acceptLanguages;
+        Services.prefs.setComplexValue(
+          "intl.accept_languages",
+          Ci.nsIPrefLocalizedString,
+          pls
+        );
+        break;
     }
   },
 };

@@ -3,6 +3,9 @@
 
 "use strict";
 
+// Uses the same scope as test_add_actors.js
+/* import-globals-from head_dbg.js */
+
 function PreInitGlobalActor(connection) {}
 
 PreInitGlobalActor.prototype = {
@@ -13,7 +16,6 @@ PreInitGlobalActor.prototype = {
 };
 
 PreInitGlobalActor.prototype.requestTypes = {
-  "ping": PreInitGlobalActor.prototype.onPing,
+  ping: PreInitGlobalActor.prototype.onPing,
 };
-
-DebuggerServer.addGlobalActor(PreInitGlobalActor, "preInitGlobalActor");
+exports.PreInitGlobalActor = PreInitGlobalActor;

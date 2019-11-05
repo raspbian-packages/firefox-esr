@@ -20,7 +20,6 @@
 #include "xpcpublic.h"
 
 class nsICycleCollectorListener;
-class nsScriptNameSpaceManager;
 class nsIDocShell;
 
 namespace mozilla {
@@ -66,17 +65,14 @@ class nsJSContext : public nsIScriptContext {
   virtual void SetWindowProxy(JS::Handle<JSObject*> aWindowProxy) override;
   virtual JSObject* GetWindowProxy() override;
 
-  static void LoadStart();
-  static void LoadEnd();
-
   enum IsShrinking { ShrinkingGC, NonShrinkingGC };
 
   enum IsIncremental { IncrementalGC, NonIncrementalGC };
 
   // Setup all the statics etc - safe to call multiple times after Startup().
-  void EnsureStatics();
+  static void EnsureStatics();
 
-  static void GarbageCollectNow(JS::gcreason::Reason reason,
+  static void GarbageCollectNow(JS::GCReason reason,
                                 IsIncremental aIncremental = NonIncrementalGC,
                                 IsShrinking aShrinking = NonShrinkingGC,
                                 int64_t aSliceMillis = 0);
@@ -101,17 +97,16 @@ class nsJSContext : public nsIScriptContext {
 
   // If there is some pending CC or GC timer/runner, this will run it.
   static void RunNextCollectorTimer(
-      JS::gcreason::Reason aReason,
+      JS::GCReason aReason,
       mozilla::TimeStamp aDeadline = mozilla::TimeStamp());
   // If user has been idle and aDocShell is for an iframe being loaded in an
   // already loaded top level docshell, this will run a CC or GC
   // timer/runner if there is such pending.
   static void MaybeRunNextCollectorSlice(nsIDocShell* aDocShell,
-                                         JS::gcreason::Reason aReason);
+                                         JS::GCReason aReason);
 
   // The GC should probably run soon, in the zone of object aObj (if given).
-  static void PokeGC(JS::gcreason::Reason aReason, JSObject* aObj,
-                     int aDelay = 0);
+  static void PokeGC(JS::GCReason aReason, JSObject* aObj, int aDelay = 0);
   static void KillGCTimer();
 
   static void PokeShrinkingGC();
@@ -139,11 +134,12 @@ class nsJSContext : public nsIScriptContext {
   virtual ~nsJSContext();
 
   // Helper to convert xpcom datatypes to jsvals.
-  nsresult ConvertSupportsTojsvals(nsISupports* aArgs,
+  nsresult ConvertSupportsTojsvals(JSContext* aCx, nsISupports* aArgs,
                                    JS::Handle<JSObject*> aScope,
-                                   JS::AutoValueVector& aArgsOut);
+                                   JS::MutableHandleVector<JS::Value> aArgsOut);
 
-  nsresult AddSupportsPrimitiveTojsvals(nsISupports* aArg, JS::Value* aArgv);
+  nsresult AddSupportsPrimitiveTojsvals(JSContext* aCx, nsISupports* aArg,
+                                        JS::Value* aArgv);
 
  private:
   void Destroy();
@@ -153,9 +149,6 @@ class nsJSContext : public nsIScriptContext {
   bool mIsInitialized;
   bool mGCOnDestruction;
   bool mProcessingScriptTag;
-
-  PRTime mModalStateTime;
-  uint32_t mModalStateDepth;
 
   // mGlobalObjectRef ensures that the outer window stays alive as long as the
   // context does. It is eventually collected by the cycle collector.
@@ -169,12 +162,6 @@ namespace dom {
 
 void StartupJSEnvironment();
 void ShutdownJSEnvironment();
-
-// Get the NameSpaceManager, creating if necessary
-nsScriptNameSpaceManager* GetNameSpaceManager();
-
-// Peek the NameSpaceManager, without creating it.
-nsScriptNameSpaceManager* PeekNameSpaceManager();
 
 // Runnable that's used to do async error reporting
 class AsyncErrorReporter final : public mozilla::Runnable {

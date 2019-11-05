@@ -25,7 +25,6 @@ class CompositionEvent : public UIEvent {
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(CompositionEvent, UIEvent)
-  NS_FORWARD_TO_UIEVENT
 
   static already_AddRefed<CompositionEvent> Constructor(
       const GlobalObject& aGlobal, const nsAString& aType,
@@ -33,7 +32,7 @@ class CompositionEvent : public UIEvent {
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return CompositionEventBinding::Wrap(aCx, this, aGivenProto);
+    return CompositionEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   void InitCompositionEvent(const nsAString& aType, bool aCanBubble,

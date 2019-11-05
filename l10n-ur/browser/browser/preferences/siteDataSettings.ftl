@@ -18,14 +18,30 @@ site-data-column-storage =
     .label = ذخیرہ
 site-data-column-last-used =
     .label = آخری استعمال
+site-data-remove-selected =
+    .label = نبتخب شدہ ہٹائیں
+    .accesskey = R
 site-data-button-cancel =
     .label = منسوخ کریں
-    .accesskey = م
+    .accesskey = C
 site-data-button-save =
     .label = تبدیلیاں محفوظ کریں
     .accesskey = a
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-storage-usage =
+    .value = { $value } { $unit }
+site-data-remove-all =
+    .label = تمام ہٹائیں
+    .accesskey = e
+site-data-remove-shown =
+    .label = تمام دکھایا ہوا ہٹائیں
+    .accesskey = e
 
 ## Removing
 
-site-data-removing-window =
+site-data-removing-dialog =
     .title = { site-data-removing-header }
+    .buttonlabelaccept = ہٹائیں
+site-data-removing-header = کوکیاں اور سائٹ کوائف ہٹا رہے ہیں

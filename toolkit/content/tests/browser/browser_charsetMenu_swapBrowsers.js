@@ -8,7 +8,10 @@ add_task(async function test() {
   }
 
   const PAGE = "data:text/html,<!DOCTYPE html><body>hello";
-  let tab1 = await BrowserTestUtils.openNewForegroundTab({ gBrowser, url: PAGE });
+  let tab1 = await BrowserTestUtils.openNewForegroundTab({
+    gBrowser,
+    url: PAGE,
+  });
   ok(charsetMenuEnabled(), "should have a charset menu here");
 
   let tab2 = await BrowserTestUtils.openNewForegroundTab({ gBrowser });
@@ -16,7 +19,10 @@ add_task(async function test() {
 
   await BrowserTestUtils.switchTab(gBrowser, tab1);
 
-  let swapped = BrowserTestUtils.waitForEvent(tab2.linkedBrowser, "SwapDocShells");
+  let swapped = BrowserTestUtils.waitForEvent(
+    tab2.linkedBrowser,
+    "SwapDocShells"
+  );
 
   // NB: Closes tab1.
   gBrowser.swapBrowsersAndCloseOther(tab2, tab1);
@@ -24,5 +30,5 @@ add_task(async function test() {
 
   ok(charsetMenuEnabled(), "should have a charset after the swap");
 
-  await BrowserTestUtils.removeTab(tab2);
+  BrowserTestUtils.removeTab(tab2);
 });

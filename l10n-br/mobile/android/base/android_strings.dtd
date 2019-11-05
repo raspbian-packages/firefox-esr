@@ -2,12 +2,15 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY firstrun_panel_title_welcome "Degemer mat">
+<!ENTITY firstrun_panel_title_welcome "Donemat">
 <!ENTITY firstrun_urlbar_message2 "Trugarez deoc\&apos;h evit bezañ dibabet &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Donemat war &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Ur merdeer hezoug arnevez savet gant Mozilla, an aozadur hep pal arc\&apos;hantel gouestlet d\&apos;ur web frank ha digor.">
+<!ENTITY newfirstrun_urlbar_subtext "Prim, prevez, ha deus ho tu.">
 <!ENTITY firstrun_panel_title_privacy "Buhez prevez">
 <!ENTITY firstrun_privacy_message "Merdeit evel ma ne vefe den o sellet">
 <!ENTITY firstrun_privacy_subtext "Ar merdeiñ prevez gant ar gwarez heuliañ a stank an heulierien e-pad m\&apos;emaoc\&apos;h o verdeiñ ha ne enroll ket ho roll istor.">
+<!ENTITY newfirstrun_privacy_subtext "Ar merdeiñ prevez a stank an heulierien bruderezh a heuilh ac\&apos;hanoc\&apos;h enlinenn.">
 <!ENTITY firstrun_panel_title_customize "Personelaat">
 <!ENTITY firstrun_customize_message "Adperc\&apos;hennit &brandShortName;.">
 <!ENTITY firstrun_customize_subtext "Personelait &brandShortName; gant askouezhioù. Stankit ar bruderezh, ouzhpennit keweriusterioù pe dibabit un neuz nevez evit ezteurel ho personelezh.">
@@ -20,19 +23,17 @@
 <!ENTITY firstrun_sync_title "Sync">
 <!ENTITY firstrun_sync_message2 "Adloc\&apos;hit el lec\&apos;h m\&apos;ho peus paouezet.">
 <!ENTITY firstrun_sync_subtext2 "Grit gant Sync evit adkavout ar sinedoù, ar gerioù-tremen, hag an holl draoù enrollet e &brandShortName; war ho holl drevnadoù.">
+<!ENTITY newfirstrun_sync_subtext "Goubredit ar pezh a enrollit war hoc\&apos;h hezougell evit Firefox war urzhiataer, en un doare prevez ha diogel.">
+<!ENTITY updatednewfirstrun_sync_subtext "Kennaskit d\&apos;ho kont evit kaout ar muiañ eus &brandShortName;">
 <!ENTITY firstrun_signin_message "Kennaskit, krogit ganti">
 <!ENTITY firstrun_signin_button "Kennaskañ ouzh Sync">
+<!ENTITY newfirstrun_signin_button "Gweredekaat Sync">
+<!ENTITY updatednewfirstrun_signin_button "Kennaskit da &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Krog da verdeiñ">
 <!ENTITY firstrun_button_notnow "Ket evit ar mare">
 <!ENTITY firstrun_button_next "War-lerc\&apos;h">
 
 <!ENTITY firstrun_tabqueue_title "Ereoù">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Gweredekaat al lost ivinelloù">
-<!ENTITY firstrun_tabqueue_subtext_off "Enrollit ereoù e &brandShortName; en ur stekiñ anezho en arloadoù all.">
-
-<!ENTITY firstrun_tabqueue_message_on "Taol berzh !">
-<!ENTITY firstrun_tabqueue_subtext_on "Gallout a rit diweredekaat an dra-mañ en &settings;, &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Pennadoù">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -68,7 +69,27 @@
 <!ENTITY  crash_close_label "Serriñ">
 <!ENTITY  crash_restart_label "Adloc\&apos;hañ &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "Sac\&apos;het eo &brandShortName;">
+<!ENTITY  crash_notification_message "Stokit evit danevelliñ da &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Leuskel a-gostez">
+
 <!ENTITY url_bar_default_text2 "Bizskrivit un termen da glask pe ur chomlec\&apos;h">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Klask er web">
+<!ENTITY search_widget_default_cropped_text "Klask">
+<!ENTITY search_widget_logo_description "Klask er web gant &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Arverit ho lenner QR evit klask pe enankañ chomlec\&apos;hioù">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Implijit ho mikrofon evit klask pe enankañ chomlec\&apos;hioù">
 
 <!ENTITY bookmark "Sined">
 <!ENTITY bookmark_remove "Dilemel ar sined">
@@ -95,6 +116,10 @@
 <!ENTITY bookmark_folder_updated "Teuliad hizivaet">
 <!ENTITY bookmark_parent_folder "Teuliad kar">
 <!ENTITY bookmark_add_folder "Ouzhpennañ un teuliad">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(titl ebet)">
 
 <!ENTITY reader_saved_offline "Enrollet ezlinenn">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -126,7 +151,7 @@
 <!-- Localization note (switch_button_message): This string should be as short
      as possible because it's shown as a label in a toast.  Ideally, this string
      is upper-case, to match Google and Android's convention. -->
-<!ENTITY switch_button_message "TREC\&apos;HAOLER">
+<!ENTITY switch_button_message "MONT">
 <!-- Localization note (tab_title_prefix_is_playing_audio): This string is not
      visible in the UI, but rather used as a text-to-speech content description
      for sight-impaired a11y users. The content description is set on a tab
@@ -206,7 +231,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Assav an ivinelloù, esperner roadennoù, ostilhoù diorroer">
 <!ENTITY pref_category_notifications "Rebuziñ">
-<!ENTITY pref_category_notifications_summary "Keweriusterioù nevez, hizivadennoù lec\&apos;hienn">
+<!ENTITY pref_category_notifications_summary2 "Keweriusterioù nevez, tunioù evit ar meziant">
 <!ENTITY pref_developer_remotedebugging_usb "Diveugañ a-bell dre USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Diveugañ a-bell dre Wi-Fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Rankout a rit kaout un arload evit lenn bonegoù QR a-benn arverañ an diveugañ dre Wi-Fi.">
@@ -282,6 +307,19 @@
 <!ENTITY pref_whats_new_notification "Petra nevez e &brandShortName;">
 <!ENTITY pref_whats_new_notification_summary "Gouzout hiroc\&apos;h a-zivout ar c\&apos;heweriusterioù nevez goude un hizivadenn">
 
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Tunioù meziant ha keweriusterioù">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "Deskit hiroc\&apos;h a-zivout arverañ &brandShortName; hag aozadoù all &vendorShortName;">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Evit gweredekaat an dibarzh-mañ e rank &pref_feature_tips_notification_enabling_path; bezañ gweredekaet endeo.)">
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "Keweriusterioù arnodel">
@@ -320,6 +358,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Mont d\&apos;an arventennoù">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Oc\&apos;h ouzhpennañ un ivinell nevez el lost &#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -354,7 +395,8 @@
 <!ENTITY pref_use_system_font_size_summary "Skeuliadañ an endalc\&apos;had web e-keñver ment nodrezh ar reizhiad">
 
 <!ENTITY pref_media_autoplay_enabled "Aotre al lenn emgefreek">
-<!ENTITY pref_media_autoplay_enabled_summary "Mestroniañ lenn emgefreek ar videoioù ha ar mediaoù all gant al lec\&apos;hiennoù ">
+<!ENTITY pref_media_autoplay_allow "Aotren an emlenn">
+<!ENTITY pref_media_autoplay_block "Paouez an emlenn">
 <!ENTITY pref_zoom_force_enabled "Gweredekaat ar zoum bepred">
 <!ENTITY pref_zoom_force_enabled_summary "Bountañ dre zorn a-benn ma vo zoumet war an holl bajennoù ">
 <!ENTITY pref_voice_input "Enankad mouezh">
@@ -377,14 +419,17 @@
 <!ENTITY pref_private_data_searchHistory "Roll istor klask">
 <!ENTITY pref_private_data_formdata2 "Roll istor furmskridoù">
 <!ENTITY pref_private_data_cookies2 "Toupinoù ha kennaskoù oberiant">
-<!ENTITY pref_private_data_passwords2 "Gerioù-tremen enrollet">
 <!ENTITY pref_private_data_cache "Krubuilh">
 <!ENTITY pref_private_data_offlineApps "Roadennoù ezlinenn al lec\&apos;hiennoù">
 <!ENTITY pref_private_data_siteSettings2 "Arventennoù al lec\&apos;hienn">
 <!ENTITY pref_private_data_downloadFiles2 "Pellgargadurioù">
 <!ENTITY pref_private_data_syncedTabs "Ivinelloù goubredet">
 
-<!ENTITY pref_default_browser "Lakaat da verdeer dre ziouer">
+<!ENTITY pref_default_browser2 "Lakaat &brandShortName; da vezañ ho merdeer dre ziouer">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Stokit an arload Merdeer &amp; dibabit &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Gweladennit Skor Mozilla">
 <!ENTITY pref_about_firefox "Diwar-benn &brandShortName;">
 <!ENTITY pref_vendor_faqs "FAG">
@@ -422,7 +467,6 @@
      crashReporterDesc.label). -->
 <!ENTITY datareporting_fhr_title "Danevell yec\&apos;hed &brandShortName;">
 <!ENTITY datareporting_fhr_summary2 "Rannañ a ra roadennoù gant &vendorShortName; diwar-benn yec\&apos;hed ho merdeer ha skoazellañ ac\&apos;hanoc\&apos;h da gompren digonusted ho merdeer.">
-<!ENTITY datareporting_abouthr_title "Gwelout ma danevell a-fet yec\&apos;hed">
 <!ENTITY datareporting_telemetry_title "Telemetry">
 <!ENTITY datareporting_telemetry_summary "Rannañ a ra roadennoù a-fet digonusted, arver, periant ha personelaat gant &vendorShortName; evit skoazellañ ac\&apos;hanomp gwellaat &brandShortName;">
 <!ENTITY datareporting_crashreporter_summary "&brandShortName; a dreuzkas danevelloù sac\&apos;hadenn evit skoazellañ &vendorShortName; lakaat ho merdeer da vezañ stabiloc\&apos;h ha diogeloc\&apos;h.">
@@ -431,6 +475,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Daneveller sac\&apos;hadenn">
 <!ENTITY datareporting_wifi_title2 "Gwazerezh spislec\&apos;hiañ &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Roit skoazell da &vendorShortName; da sevel kartenn ar bed ! Roit lec\&apos;hiadur arnesadek ho wi-fi hag ho hezougell da wellaat hor gwazerezh douarlec\&apos;hiañ.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "Gwazerezh spislec\&apos;hiañ &vendorShortName; lañset">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -476,6 +525,10 @@
 <!ENTITY find_next "War-lerc\&apos;h">
 <!ENTITY find_close "Serriñ">
 
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "N\&apos;haller ket kavout ar frazenn">
+
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
 <!ENTITY media_sending_to "Kas d\&apos;an drobarzhell">
@@ -486,7 +539,7 @@
 <!ENTITY contextmenu_open_new_tab "Digeriñ war un ivinell nevez">
 <!ENTITY contextmenu_open_private_tab "Digeriñ war un ivinell brevez">
 <!ENTITY contextmenu_remove "Dilemel">
-<!ENTITY contextmenu_add_page_shortcut "Ouzhpennañ ur verradenn bajenn">
+<!ENTITY contextmenu_add_page_shortcut "Ouzhpennañ ur verradenn">
 <!ENTITY contextmenu_set_as_homepage "Dibab ur bennbajenn">
 <!ENTITY contextmenu_share "Rannañ">
 <!ENTITY contextmenu_pasteandgo "Pegañ &amp; Mont">
@@ -537,7 +590,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Aozañ an ivinelloù e daou vann e mod poltred">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Pajenn dilamet">
 <!ENTITY folder_removed "Teuliad dilamet">
@@ -548,6 +601,8 @@
 <!ENTITY bookmark_edit_location "Lec\&apos;h">
 <!ENTITY bookmark_edit_keyword "Gerioù alc\&apos;hwez">
 <!ENTITY bookmark_select_folder "Dibab un teuliad">
+
+<!ENTITY bookmark_edit_undo "Dizober">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -636,6 +691,8 @@
 <!ENTITY filepicker_audio_title "Dibab pe enrollañ ur son">
 <!ENTITY filepicker_image_title "Dibab pe dapout ur skeudenn">
 <!ENTITY filepicker_video_title "Dibab pe enrollañ ur video">
+
+<!ENTITY filepicker_permission_denied "N\&apos;eo ket bet roet an aotreoù a-zere, distreiñ a raio da zibaber restroù ar reizhiad.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Kennasket oc\&apos;h ouzh">
@@ -752,7 +809,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Goubredañ diwezhañ : &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Goubredañ diwezhañ : morse">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -813,15 +870,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "N\&apos;haller ket digeriñ &brandShortName;. Stailhit anezhañ en-dro hag adklaskit.">
 
-<!ENTITY eol_notification_title2 "Ne vo ket hizivaet &brandShortName; ken">
-<!ENTITY eol_notification_summary "Stokit da c\&apos;houzout hiroc\&apos;h">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "Hizivaet eo &brandShortName;">
 <!ENTITY whatsnew_notification_summary "Kavit petra zo nevez en handelv-mañ">
-
-<!ENTITY promotion_add_page_shortcut "Ouzhpennañ ur verradenn bajenn">
 
 <!ENTITY helper_first_offline_bookmark_title "Lenn ezlinenn">
 <!ENTITY helper_first_offline_bookmark_message "Kavit hoc\&apos;h elfennoù mod lenn en ho sinedoù, zoken pa \&apos;z oc\&apos;h ezlinenn.">
@@ -872,3 +924,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Ouzhpennañ d\&apos;ar bennbajenn">
 <!ENTITY pwa_continue_to_website "Kenderc\&apos;hel etrezek al lec\&apos;hienn">
 <!ENTITY pwa_onboarding_sumo "Gallout a rit ouzhpennañ al lec\&apos;hienn d\&apos;ho pennbajenn en un doare aes evit gallout he haeziñ ha merdeiñ buanoc\&apos;h, evel un arload.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Lenn">
+<!ENTITY pip_play_button_description "Kenderc\&apos;hel gant al lenn">
+<!ENTITY pip_pause_button_title "Ehan">
+<!ENTITY pip_pause_button_description "Ehaniñ al lenn">
+
+<!ENTITY pref_notification_settings_link "Merañ an arventennoù rebuziñ">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Merdeer">
+<!ENTITY mls_notification_channel "&vendorShortName; Servij lec\&apos;heladur">
+<!ENTITY download_notification_channel "Pellgargadennoù">
+<!ENTITY media_notification_channel2 "Son ha video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "Tunioù &vendorShortName;">
+<!ENTITY updater_notification_channel "Hizivadennoù an arload">
+<!ENTITY synced_tabs_notification_channel "Ivinelloù goubredet">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Rebuzadurioù al lec\&apos;hienn">
+<!ENTITY crash_handler_notifications_channel "Daneveller sac\&apos;hadennoù &brandShortName;">

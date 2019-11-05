@@ -7,9 +7,9 @@
 #define DeleteTextTransaction_h
 
 #include "mozilla/EditTransactionBase.h"
+#include "mozilla/dom/CharacterData.h"
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
-#include "nsGenericDOMDataNode.h"
 #include "nsID.h"
 #include "nsString.h"
 #include "nscore.h"
@@ -24,9 +24,8 @@ class RangeUpdater;
  */
 class DeleteTextTransaction final : public EditTransactionBase {
  protected:
-  DeleteTextTransaction(EditorBase& aEditorBase,
-                        nsGenericDOMDataNode& aCharData, uint32_t aOffset,
-                        uint32_t aLengthToDelete);
+  DeleteTextTransaction(EditorBase& aEditorBase, dom::CharacterData& aCharData,
+                        uint32_t aOffset, uint32_t aLengthToDelete);
 
  public:
   /**
@@ -39,8 +38,8 @@ class DeleteTextTransaction final : public EditTransactionBase {
    * @param aLenthToDelete      The length to delete.
    */
   static already_AddRefed<DeleteTextTransaction> MaybeCreate(
-      EditorBase& aEditorBase, nsGenericDOMDataNode& aCharData,
-      uint32_t aOffset, uint32_t aLengthToDelete);
+      EditorBase& aEditorBase, dom::CharacterData& aCharData, uint32_t aOffset,
+      uint32_t aLengthToDelete);
 
   /**
    * Creates a delete text transaction to remove a previous or next character.
@@ -52,11 +51,10 @@ class DeleteTextTransaction final : public EditTransactionBase {
    */
   static already_AddRefed<DeleteTextTransaction>
   MaybeCreateForPreviousCharacter(EditorBase& aEditorBase,
-                                  nsGenericDOMDataNode& aCharData,
+                                  dom::CharacterData& aCharData,
                                   uint32_t aOffset);
   static already_AddRefed<DeleteTextTransaction> MaybeCreateForNextCharacter(
-      EditorBase& aEditorBase, nsGenericDOMDataNode& aCharData,
-      uint32_t aOffset);
+      EditorBase& aEditorBase, dom::CharacterData& aCharData, uint32_t aOffset);
 
   /**
    * CanDoIt() returns true if there are enough members and can modify the
@@ -79,7 +77,7 @@ class DeleteTextTransaction final : public EditTransactionBase {
   RefPtr<EditorBase> mEditorBase;
 
   // The CharacterData node to operate upon.
-  RefPtr<nsGenericDOMDataNode> mCharData;
+  RefPtr<dom::CharacterData> mCharData;
 
   // The offset into mCharData where the deletion is to take place.
   uint32_t mOffset;

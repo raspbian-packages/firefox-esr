@@ -36,6 +36,12 @@
 <!ENTITY newFeedAccountCmd.accesskey "u">
 <!ENTITY newIMContactCmd.label "Kontakt za razgovor…">
 <!ENTITY newIMContactCmd.accesskey "K">
+<!ENTITY  newMessageCmd2.key "N">
+<!ENTITY  newMessageCmd.key "M">
+<!ENTITY  newMessageCmd.label "Poruka">
+<!ENTITY  newMessageCmd.accesskey "p">
+<!ENTITY  newContactCmd.label "Kontakt adresara…">
+<!ENTITY  newContactCmd.accesskey "K">
 <!ENTITY openMessageFileCmd.label "Otvori spremljenu poruku…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "Spremi kao">
@@ -434,9 +440,9 @@
 <!ENTITY openMessageWindowCmd.label "Otvori poruku">
 <!ENTITY openMessageWindowCmd.accesskey "u">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Otvori kao razgovor">
-<!ENTITY openConversationCmd.accesskey "k">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Otvori kao razgovor">
+<!ENTITY openInConversationCmd.accesskey "r">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Privitci">
 <!ENTITY openAttachmentListCmd.accesskey "i">
 <!ENTITY openFeedMessage1.label "Prilikom otvaranja poruka iz kanala">
@@ -509,8 +515,6 @@
 <!ENTITY devToolboxCmd.label "Alati za razvijatelje">
 <!ENTITY devToolboxCmd.accesskey "t">
 <!ENTITY devToolboxCmd.commandkey "i">
-<!ENTITY addonDebugCmd.label "Debugger za dodatke">
-<!ENTITY addonDebugCmd.accesskey "a">
 <!ENTITY debugAddonsCmd.label "Otklanjanje grešaka u dodacima">
 <!ENTITY debugAddonsCmd.accesskey "g">
 <!ENTITY tabsDebugCmd.label "Debugger za sadržaj okvira">
@@ -602,6 +606,8 @@
 <!ENTITY compactButton.tooltip "Ukloni obrisane poruke iz odabrane mape">
 <!ENTITY appmenuButton1.tooltip "Otvori &brandShortName; izbornik">
 
+<!ENTITY addonsButton.tooltip "Upravljajte svojim dodacima">
+
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Proslijedi umetnuto">
 <!ENTITY buttonMenuForwardAsAttachment.label "Proslijedi kao privitak">
@@ -645,6 +651,7 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Dohvati poruke">
 <!ENTITY folderContextGetMessages.accesskey "D">
+<!ENTITY folderContextMarkAllFoldersRead.label "Označi sve mape pročitanima">
 <!ENTITY folderContextPauseAllUpdates.label "Zaustavi sva ažuriranja">
 <!ENTITY folderContextPauseUpdates.label "Zaustavi ažuriranja">
 <!ENTITY folderContextPauseUpdates.accesskey "u">
@@ -787,6 +794,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "m">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Nedavno">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "N">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Favoriti">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "F">
 <!ENTITY contextCopyMsgMenu.label "Kopiraj u">
 <!ENTITY contextCopyMsgMenu.accesskey "K">
 <!ENTITY contextKillThreadMenu.label "Ignoriraj temu">
@@ -806,12 +815,6 @@
 <!ENTITY contextPrintPreview.label "Pregled ispisa">
 <!ENTITY contextPrintPreview.accesskey "g">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Vrati stupce na zadane postavke">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -852,7 +855,6 @@
   -->
 <!ENTITY columnPicker.thisFolder.label "Ovu mapu">
 
-
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Pokreni">
 <!ENTITY contextPlay.accesskey "P">
@@ -870,7 +872,7 @@
   -->
 <!ENTITY quickSearchCmd.key "k">
 <!-- LOCALIZATION NOTE (search.label.base1):
-      This is the base of the empty text for the global search box. We replace
+     This is the base of the empty text for the global search box. We replace
      #1 with the contents of the appropriate search.keyLabel.* value for the
      platform.
      The goal is to convey to the user that typing in the box will allow them

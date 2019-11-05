@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -32,50 +32,50 @@ class JSObject2WrappedJSMap {
 
  public:
   static JSObject2WrappedJSMap* newMap(int length) {
-    auto* map = new JSObject2WrappedJSMap();
-    if (!map->mTable.init(length)) {
-      // This is a decent estimate of the size of the hash table's
-      // entry storage. The |2| is because on average the capacity is
-      // twice the requested length.
-      NS_ABORT_OOM(length * 2 * sizeof(Map::Entry));
-    }
-    return map;
+    return new JSObject2WrappedJSMap(length);
   }
 
   inline nsXPCWrappedJS* Find(JSObject* Obj) {
-    NS_PRECONDITION(Obj, "bad param");
+    MOZ_ASSERT(Obj, "bad param");
     Map::Ptr p = mTable.lookup(Obj);
     return p ? p->value() : nullptr;
   }
 
 #ifdef DEBUG
   inline bool HasWrapper(nsXPCWrappedJS* wrapper) {
-    for (auto r = mTable.all(); !r.empty(); r.popFront()) {
-      if (r.front().value() == wrapper) return true;
+    for (auto iter = mTable.iter(); !iter.done(); iter.next()) {
+      if (iter.get().value() == wrapper) {
+        return true;
+      }
     }
     return false;
   }
 #endif
 
   inline nsXPCWrappedJS* Add(JSContext* cx, nsXPCWrappedJS* wrapper) {
-    NS_PRECONDITION(wrapper, "bad param");
+    MOZ_ASSERT(wrapper, "bad param");
     JSObject* obj = wrapper->GetJSObjectPreserveColor();
     Map::AddPtr p = mTable.lookupForAdd(obj);
-    if (p) return p->value();
-    if (!mTable.add(p, obj, wrapper)) return nullptr;
+    if (p) {
+      return p->value();
+    }
+    if (!mTable.add(p, obj, wrapper)) {
+      return nullptr;
+    }
     return wrapper;
   }
 
   inline void Remove(nsXPCWrappedJS* wrapper) {
-    NS_PRECONDITION(wrapper, "bad param");
+    MOZ_ASSERT(wrapper, "bad param");
     mTable.remove(wrapper->GetJSObjectPreserveColor());
   }
 
   inline uint32_t Count() { return mTable.count(); }
 
   inline void Dump(int16_t depth) {
-    for (Map::Range r = mTable.all(); !r.empty(); r.popFront())
-      r.front().value()->DebugDump(depth);
+    for (auto iter = mTable.iter(); !iter.done(); iter.next()) {
+      iter.get().value()->DebugDump(depth);
+    }
   }
 
   void UpdateWeakPointersAfterGC();
@@ -89,7 +89,7 @@ class JSObject2WrappedJSMap {
   size_t SizeOfWrappedJS(mozilla::MallocSizeOf mallocSizeOf) const;
 
  private:
-  JSObject2WrappedJSMap() {}
+  explicit JSObject2WrappedJSMap(size_t length) : mTable(length) {}
 
   Map mTable;
 };
@@ -105,26 +105,30 @@ class Native2WrappedNativeMap {
 
   static Native2WrappedNativeMap* newMap(int length);
 
-  inline XPCWrappedNative* Find(nsISupports* Obj) {
-    NS_PRECONDITION(Obj, "bad param");
+  inline XPCWrappedNative* Find(nsISupports* Obj) const {
+    MOZ_ASSERT(Obj, "bad param");
     auto entry = static_cast<Entry*>(mTable.Search(Obj));
     return entry ? entry->value : nullptr;
   }
 
   inline XPCWrappedNative* Add(XPCWrappedNative* wrapper) {
-    NS_PRECONDITION(wrapper, "bad param");
+    MOZ_ASSERT(wrapper, "bad param");
     nsISupports* obj = wrapper->GetIdentityObject();
     MOZ_ASSERT(!Find(obj), "wrapper already in new scope!");
     auto entry = static_cast<Entry*>(mTable.Add(obj, mozilla::fallible));
-    if (!entry) return nullptr;
-    if (entry->key) return entry->value;
+    if (!entry) {
+      return nullptr;
+    }
+    if (entry->key) {
+      return entry->value;
+    }
     entry->key = obj;
     entry->value = wrapper;
     return wrapper;
   }
 
   inline void Remove(XPCWrappedNative* wrapper) {
-    NS_PRECONDITION(wrapper, "bad param");
+    MOZ_ASSERT(wrapper, "bad param");
 #ifdef DEBUG
     XPCWrappedNative* wrapperInMap = Find(wrapper->GetIdentityObject());
     MOZ_ASSERT(!wrapperInMap || wrapperInMap == wrapper,
@@ -153,54 +157,6 @@ class Native2WrappedNativeMap {
 
 /*************************/
 
-class IID2WrappedJSClassMap {
- public:
-  struct Entry : public PLDHashEntryHdr {
-    const nsIID* key;
-    nsXPCWrappedJSClass* value;
-
-    static const struct PLDHashTableOps sOps;
-  };
-
-  static IID2WrappedJSClassMap* newMap(int length);
-
-  inline nsXPCWrappedJSClass* Find(REFNSIID iid) {
-    auto entry = static_cast<Entry*>(mTable.Search(&iid));
-    return entry ? entry->value : nullptr;
-  }
-
-  inline nsXPCWrappedJSClass* Add(nsXPCWrappedJSClass* clazz) {
-    NS_PRECONDITION(clazz, "bad param");
-    const nsIID* iid = &clazz->GetIID();
-    auto entry = static_cast<Entry*>(mTable.Add(iid, mozilla::fallible));
-    if (!entry) return nullptr;
-    if (entry->key) return entry->value;
-    entry->key = iid;
-    entry->value = clazz;
-    return clazz;
-  }
-
-  inline void Remove(nsXPCWrappedJSClass* clazz) {
-    NS_PRECONDITION(clazz, "bad param");
-    mTable.Remove(&clazz->GetIID());
-  }
-
-  inline uint32_t Count() { return mTable.EntryCount(); }
-
-#ifdef DEBUG
-  PLDHashTable::Iterator Iter() { return mTable.Iter(); }
-#endif
-
- private:
-  IID2WrappedJSClassMap();  // no implementation
-  explicit IID2WrappedJSClassMap(int size);
-
- private:
-  PLDHashTable mTable;
-};
-
-/*************************/
-
 class IID2NativeInterfaceMap {
  public:
   struct Entry : public PLDHashEntryHdr {
@@ -212,24 +168,28 @@ class IID2NativeInterfaceMap {
 
   static IID2NativeInterfaceMap* newMap(int length);
 
-  inline XPCNativeInterface* Find(REFNSIID iid) {
+  inline XPCNativeInterface* Find(REFNSIID iid) const {
     auto entry = static_cast<Entry*>(mTable.Search(&iid));
     return entry ? entry->value : nullptr;
   }
 
   inline XPCNativeInterface* Add(XPCNativeInterface* iface) {
-    NS_PRECONDITION(iface, "bad param");
+    MOZ_ASSERT(iface, "bad param");
     const nsIID* iid = iface->GetIID();
     auto entry = static_cast<Entry*>(mTable.Add(iid, mozilla::fallible));
-    if (!entry) return nullptr;
-    if (entry->key) return entry->value;
+    if (!entry) {
+      return nullptr;
+    }
+    if (entry->key) {
+      return entry->value;
+    }
     entry->key = iid;
     entry->value = iface;
     return iface;
   }
 
   inline void Remove(XPCNativeInterface* iface) {
-    NS_PRECONDITION(iface, "bad param");
+    MOZ_ASSERT(iface, "bad param");
     mTable.Remove(iface->GetIID());
   }
 
@@ -263,23 +223,27 @@ class ClassInfo2NativeSetMap {
 
   static ClassInfo2NativeSetMap* newMap(int length);
 
-  inline XPCNativeSet* Find(nsIClassInfo* info) {
+  inline XPCNativeSet* Find(nsIClassInfo* info) const {
     auto entry = static_cast<Entry*>(mTable.Search(info));
     return entry ? entry->value : nullptr;
   }
 
   inline XPCNativeSet* Add(nsIClassInfo* info, XPCNativeSet* set) {
-    NS_PRECONDITION(info, "bad param");
+    MOZ_ASSERT(info, "bad param");
     auto entry = static_cast<Entry*>(mTable.Add(info, mozilla::fallible));
-    if (!entry) return nullptr;
-    if (entry->key) return entry->value;
+    if (!entry) {
+      return nullptr;
+    }
+    if (entry->key) {
+      return entry->value;
+    }
     entry->key = info;
     NS_ADDREF(entry->value = set);
     return set;
   }
 
   inline void Remove(nsIClassInfo* info) {
-    NS_PRECONDITION(info, "bad param");
+    MOZ_ASSERT(info, "bad param");
     mTable.Remove(info);
   }
 
@@ -310,24 +274,28 @@ class ClassInfo2WrappedNativeProtoMap {
 
   static ClassInfo2WrappedNativeProtoMap* newMap(int length);
 
-  inline XPCWrappedNativeProto* Find(nsIClassInfo* info) {
+  inline XPCWrappedNativeProto* Find(nsIClassInfo* info) const {
     auto entry = static_cast<Entry*>(mTable.Search(info));
     return entry ? entry->value : nullptr;
   }
 
   inline XPCWrappedNativeProto* Add(nsIClassInfo* info,
                                     XPCWrappedNativeProto* proto) {
-    NS_PRECONDITION(info, "bad param");
+    MOZ_ASSERT(info, "bad param");
     auto entry = static_cast<Entry*>(mTable.Add(info, mozilla::fallible));
-    if (!entry) return nullptr;
-    if (entry->key) return entry->value;
+    if (!entry) {
+      return nullptr;
+    }
+    if (entry->key) {
+      return entry->value;
+    }
     entry->key = info;
     entry->value = proto;
     return proto;
   }
 
   inline void Remove(nsIClassInfo* info) {
-    NS_PRECONDITION(info, "bad param");
+    MOZ_ASSERT(info, "bad param");
     mTable.Remove(info);
   }
 
@@ -361,7 +329,7 @@ class NativeSetMap {
 
   static NativeSetMap* newMap(int length);
 
-  inline XPCNativeSet* Find(XPCNativeSetKey* key) {
+  inline XPCNativeSet* Find(XPCNativeSetKey* key) const {
     auto entry = static_cast<Entry*>(mTable.Search(key));
     return entry ? entry->key_value : nullptr;
   }
@@ -370,8 +338,12 @@ class NativeSetMap {
     MOZ_ASSERT(key, "bad param");
     MOZ_ASSERT(set, "bad param");
     auto entry = static_cast<Entry*>(mTable.Add(key, mozilla::fallible));
-    if (!entry) return nullptr;
-    if (entry->key_value) return entry->key_value;
+    if (!entry) {
+      return nullptr;
+    }
+    if (entry->key_value) {
+      return entry->key_value;
+    }
     entry->key_value = set;
     return set;
   }
@@ -412,52 +384,6 @@ class NativeSetMap {
 
 /***************************************************************************/
 
-class IID2ThisTranslatorMap {
- public:
-  struct Entry : public PLDHashEntryHdr {
-    nsIID key;
-    nsCOMPtr<nsIXPCFunctionThisTranslator> value;
-
-    static bool Match(const PLDHashEntryHdr* entry, const void* key);
-
-    static void Clear(PLDHashTable* table, PLDHashEntryHdr* entry);
-
-    static const struct PLDHashTableOps sOps;
-  };
-
-  static IID2ThisTranslatorMap* newMap(int length);
-
-  inline nsIXPCFunctionThisTranslator* Find(REFNSIID iid) {
-    auto entry = static_cast<Entry*>(mTable.Search(&iid));
-    if (!entry) {
-      return nullptr;
-    }
-    return entry->value;
-  }
-
-  inline nsIXPCFunctionThisTranslator* Add(REFNSIID iid,
-                                           nsIXPCFunctionThisTranslator* obj) {
-    auto entry = static_cast<Entry*>(mTable.Add(&iid, mozilla::fallible));
-    if (!entry) return nullptr;
-    entry->value = obj;
-    entry->key = iid;
-    return obj;
-  }
-
-  inline void Remove(REFNSIID iid) { mTable.Remove(&iid); }
-
-  inline uint32_t Count() { return mTable.EntryCount(); }
-
- private:
-  IID2ThisTranslatorMap();  // no implementation
-  explicit IID2ThisTranslatorMap(int size);
-
- private:
-  PLDHashTable mTable;
-};
-
-/***************************************************************************/
-
 class XPCWrappedNativeProtoMap {
  public:
   typedef PLDHashEntryStub Entry;
@@ -465,17 +391,21 @@ class XPCWrappedNativeProtoMap {
   static XPCWrappedNativeProtoMap* newMap(int length);
 
   inline XPCWrappedNativeProto* Add(XPCWrappedNativeProto* proto) {
-    NS_PRECONDITION(proto, "bad param");
+    MOZ_ASSERT(proto, "bad param");
     auto entry =
         static_cast<PLDHashEntryStub*>(mTable.Add(proto, mozilla::fallible));
-    if (!entry) return nullptr;
-    if (entry->key) return (XPCWrappedNativeProto*)entry->key;
+    if (!entry) {
+      return nullptr;
+    }
+    if (entry->key) {
+      return (XPCWrappedNativeProto*)entry->key;
+    }
     entry->key = proto;
     return proto;
   }
 
   inline void Remove(XPCWrappedNativeProto* proto) {
-    NS_PRECONDITION(proto, "bad param");
+    MOZ_ASSERT(proto, "bad param");
     mTable.Remove(proto);
   }
 
@@ -500,34 +430,35 @@ class JSObject2JSObjectMap {
 
  public:
   static JSObject2JSObjectMap* newMap(int length) {
-    auto* map = new JSObject2JSObjectMap();
-    if (!map->mTable.init(length)) {
-      // This is a decent estimate of the size of the hash table's
-      // entry storage. The |2| is because on average the capacity is
-      // twice the requested length.
-      NS_ABORT_OOM(length * 2 * sizeof(Map::Entry));
-    }
-    return map;
+    return new JSObject2JSObjectMap(length);
   }
 
   inline JSObject* Find(JSObject* key) {
-    NS_PRECONDITION(key, "bad param");
-    if (Map::Ptr p = mTable.lookup(key)) return p->value();
+    MOZ_ASSERT(key, "bad param");
+    if (Map::Ptr p = mTable.lookup(key)) {
+      return p->value();
+    }
     return nullptr;
   }
 
   /* Note: If the entry already exists, return the old value. */
   inline JSObject* Add(JSContext* cx, JSObject* key, JSObject* value) {
-    NS_PRECONDITION(key, "bad param");
+    MOZ_ASSERT(key, "bad param");
     Map::AddPtr p = mTable.lookupForAdd(key);
-    if (p) return p->value();
-    if (!mTable.add(p, key, value)) return nullptr;
-    MOZ_ASSERT(xpc::RealmPrivate::Get(key)->scope->mWaiverWrapperMap == this);
+    if (p) {
+      JSObject* oldValue = p->value();
+      p->value() = value;
+      return oldValue;
+    }
+    if (!mTable.add(p, key, value)) {
+      return nullptr;
+    }
+    MOZ_ASSERT(xpc::ObjectScope(key)->mWaiverWrapperMap == this);
     return value;
   }
 
   inline void Remove(JSObject* key) {
-    NS_PRECONDITION(key, "bad param");
+    MOZ_ASSERT(key, "bad param");
     mTable.remove(key);
   }
 
@@ -536,7 +467,7 @@ class JSObject2JSObjectMap {
   void Sweep() { mTable.sweep(); }
 
  private:
-  JSObject2JSObjectMap() {}
+  explicit JSObject2JSObjectMap(size_t length) : mTable(length) {}
 
   Map mTable;
 };

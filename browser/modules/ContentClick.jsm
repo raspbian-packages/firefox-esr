@@ -5,26 +5,32 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [ "ContentClick" ];
+var EXPORTED_SYMBOLS = ["ContentClick"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-ChromeUtils.defineModuleGetter(this, "PlacesUIUtils",
-                               "resource:///modules/PlacesUIUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
-                               "resource://gre/modules/PrivateBrowsingUtils.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesUIUtils",
+  "resource:///modules/PlacesUIUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "E10SUtils",
+  "resource://gre/modules/E10SUtils.jsm"
+);
 
 var ContentClick = {
-  // Listeners are added in nsBrowserGlue.js
+  // Listeners are added in BrowserGlue.jsm
   receiveMessage(message) {
     switch (message.name) {
       case "Content:Click":
-        // Bug 1446913 - Ensure this happens in the next tick so TabOpen/TabMove
-        // events are processed correctly in webextensions.
-        Promise.resolve().then(() => {
-          this.contentAreaClick(message.json, message.target);
-        });
+        this.contentAreaClick(message.json, message.target);
         break;
     }
   },
@@ -42,56 +48,50 @@ var ContentClick = {
 
     if (!json.href) {
       // Might be middle mouse navigation.
-      if (Services.prefs.getBoolPref("middlemouse.contentLoadURL") &&
-          !Services.prefs.getBoolPref("general.autoScroll")) {
+      if (
+        Services.prefs.getBoolPref("middlemouse.contentLoadURL") &&
+        !Services.prefs.getBoolPref("general.autoScroll")
+      ) {
         window.middleMousePaste(json);
       }
       return;
     }
 
-    if (json.bookmark) {
-      // This is the Opera convention for a special link that, when clicked,
-      // allows to add a sidebar panel.  The link's title attribute contains
-      // the title that should be used for the sidebar panel.
-      PlacesUIUtils.showBookmarkDialog({ action: "add",
-                                         type: "bookmark",
-                                         uri: Services.io.newURI(json.href),
-                                         title: json.title,
-                                         loadBookmarkInSidebar: true,
-                                         hiddenRows: [ "description",
-                                                        "location",
-                                                        "keyword" ]
-                                       }, window);
+    // If the browser is not in a place where we can open links, bail out.
+    // This can happen in osx sheets, dialogs, etc. that are not browser
+    // windows.  Specifically the payments UI is in an osx sheet.
+    if (window.openLinkIn === undefined) {
       return;
     }
-
-    // Note: We don't need the sidebar code here.
 
     // Mark the page as a user followed link.  This is done so that history can
     // distinguish automatic embed visits from user activated ones.  For example
     // pages loaded in frames are embed visits and lost with the session, while
     // visits across frames should be preserved.
     try {
-      if (!PrivateBrowsingUtils.isWindowPrivate(window))
+      if (!PrivateBrowsingUtils.isWindowPrivate(window)) {
         PlacesUIUtils.markPageAsFollowedLink(json.href);
-    } catch (ex) { /* Skip invalid URIs. */ }
+      }
+    } catch (ex) {
+      /* Skip invalid URIs. */
+    }
 
     // This part is based on handleLinkClick.
     var where = window.whereToOpenLink(json);
-    if (where == "current")
+    if (where == "current") {
       return;
+    }
 
     // Todo(903022): code for where == save
 
     let params = {
       charset: browser.characterSet,
-      referrerURI: browser.documentURI,
-      referrerPolicy: json.referrerPolicy,
-      noReferrer: json.noReferrer,
+      referrerInfo: E10SUtils.deserializeReferrerInfo(json.referrerInfo),
       allowMixedContent: json.allowMixedContent,
       isContentWindowPrivate: json.isContentWindowPrivate,
       originPrincipal: json.originPrincipal,
       triggeringPrincipal: json.triggeringPrincipal,
+      csp: json.csp ? E10SUtils.deserializeCSP(json.csp) : null,
       frameOuterWindowID: json.frameOuterWindowID,
     };
 
@@ -100,6 +100,8 @@ var ContentClick = {
       params.userContextId = json.originAttributes.userContextId;
     }
 
+    params.allowInheritPrincipal = true;
+
     window.openLinkIn(json.href, where, params);
-  }
+  },
 };

@@ -18,8 +18,9 @@ class nsPresContext;
 class nsHTMLButtonControlFrame : public nsContainerFrame,
                                  public nsIFormControlFrame {
  public:
-  explicit nsHTMLButtonControlFrame(nsStyleContext* aContext)
-      : nsHTMLButtonControlFrame(aContext, kClassID) {}
+  explicit nsHTMLButtonControlFrame(ComputedStyle* aStyle,
+                                    nsPresContext* aPresContext)
+      : nsHTMLButtonControlFrame(aStyle, aPresContext, kClassID) {}
 
   ~nsHTMLButtonControlFrame();
 
@@ -54,10 +55,9 @@ class nsHTMLButtonControlFrame : public nsContainerFrame,
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
 
-  virtual nsStyleContext* GetAdditionalStyleContext(
-      int32_t aIndex) const override;
-  virtual void SetAdditionalStyleContext(
-      int32_t aIndex, nsStyleContext* aStyleContext) override;
+  ComputedStyle* GetAdditionalComputedStyle(int32_t aIndex) const override;
+  void SetAdditionalComputedStyle(int32_t aIndex,
+                                  ComputedStyle* aComputedStyle) override;
 
 #ifdef DEBUG
   virtual void AppendFrames(ChildListID aListID,
@@ -98,7 +98,8 @@ class nsHTMLButtonControlFrame : public nsContainerFrame,
   void AppendDirectlyOwnedAnonBoxes(nsTArray<OwnedAnonBox>& aResult) override;
 
  protected:
-  nsHTMLButtonControlFrame(nsStyleContext* aContext, nsIFrame::ClassID aID);
+  nsHTMLButtonControlFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                           nsIFrame::ClassID aID);
 
   virtual bool IsInput() { return false; }
 

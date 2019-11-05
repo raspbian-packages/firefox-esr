@@ -6,11 +6,29 @@
 
 // Load the shared-head file first.
 /* import-globals-from ../shared-head.js */
+
+/* exported getContentDPR */
+
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/accessible/tests/browser/shared-head.js",
-  this);
+  this
+);
 
 // Loading and common.js from accessible/tests/mochitest/ for all tests, as
 // well as events.js.
-loadScripts({ name: "common.js", dir: MOCHITESTS_DIR },
-            { name: "layout.js", dir: MOCHITESTS_DIR }, "events.js");
+loadScripts(
+  { name: "common.js", dir: MOCHITESTS_DIR },
+  { name: "layout.js", dir: MOCHITESTS_DIR },
+  "events.js"
+);
+
+/**
+ * Get content window DPR that can be different from parent window DPR.
+ */
+async function getContentDPR(browser) {
+  return ContentTask.spawn(
+    browser,
+    null,
+    () => content.window.devicePixelRatio
+  );
+}

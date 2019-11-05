@@ -90,35 +90,29 @@ void nsDisplaySolidColorRegionGeometry::MoveBy(const nsPoint& aOffset) {
 }
 
 nsDisplaySVGEffectGeometry::nsDisplaySVGEffectGeometry(
-    nsDisplaySVGEffects* aItem, nsDisplayListBuilder* aBuilder)
+    nsDisplayEffectsBase* aItem, nsDisplayListBuilder* aBuilder)
     : nsDisplayItemGeometry(aItem, aBuilder),
       mBBox(aItem->BBoxInUserSpace()),
       mUserSpaceOffset(aItem->UserSpaceOffset()),
-      mFrameOffsetToReferenceFrame(aItem->ToReferenceFrame()) {}
+      mFrameOffsetToReferenceFrame(aItem->ToReferenceFrame()),
+      mOpacity(aItem->Frame()->StyleEffects()->mOpacity),
+      mHandleOpacity(aItem->ShouldHandleOpacity()) {}
 
 void nsDisplaySVGEffectGeometry::MoveBy(const nsPoint& aOffset) {
   mBounds.MoveBy(aOffset);
   mFrameOffsetToReferenceFrame += aOffset;
 }
 
-nsDisplayMaskGeometry::nsDisplayMaskGeometry(nsDisplayMask* aItem,
-                                             nsDisplayListBuilder* aBuilder)
+nsDisplayMasksAndClipPathsGeometry::nsDisplayMasksAndClipPathsGeometry(
+    nsDisplayMasksAndClipPaths* aItem, nsDisplayListBuilder* aBuilder)
     : nsDisplaySVGEffectGeometry(aItem, aBuilder),
       nsImageGeometryMixin(aItem, aBuilder),
-      mDestRects(aItem->GetDestRects()),
-      mOpacity(aItem->Frame()->StyleEffects()->mOpacity),
-      mHandleOpacity(aItem->ShouldHandleOpacity()) {}
+      mDestRects(aItem->GetDestRects()) {}
 
-nsDisplayFilterGeometry::nsDisplayFilterGeometry(nsDisplayFilter* aItem,
-                                                 nsDisplayListBuilder* aBuilder)
+nsDisplayFiltersGeometry::nsDisplayFiltersGeometry(
+    nsDisplayFilters* aItem, nsDisplayListBuilder* aBuilder)
     : nsDisplaySVGEffectGeometry(aItem, aBuilder),
       nsImageGeometryMixin(aItem, aBuilder) {}
-
-nsCharClipGeometry::nsCharClipGeometry(nsCharClipDisplayItem* aItem,
-                                       nsDisplayListBuilder* aBuilder)
-    : nsDisplayItemGenericGeometry(aItem, aBuilder),
-      mVisIStartEdge(aItem->mVisIStartEdge),
-      mVisIEndEdge(aItem->mVisIEndEdge) {}
 
 nsDisplayTableItemGeometry::nsDisplayTableItemGeometry(
     nsDisplayTableItem* aItem, nsDisplayListBuilder* aBuilder,

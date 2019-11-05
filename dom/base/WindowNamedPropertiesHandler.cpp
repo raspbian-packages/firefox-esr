@@ -7,8 +7,8 @@
 #include "WindowNamedPropertiesHandler.h"
 #include "mozilla/dom/EventTargetBinding.h"
 #include "mozilla/dom/WindowBinding.h"
+#include "mozilla/dom/WindowProxyHolder.h"
 #include "nsContentUtils.h"
-#include "nsDOMClassInfo.h"
 #include "nsDOMWindowList.h"
 #include "nsGlobalWindow.h"
 #include "nsHTMLDocument.h"
@@ -19,14 +19,15 @@ namespace mozilla {
 namespace dom {
 
 static bool ShouldExposeChildWindow(nsString& aNameBeingResolved,
-                                    nsPIDOMWindowOuter* aChild) {
-  Element* e = aChild->GetFrameElementInternal();
+                                    BrowsingContext* aChild) {
+  nsPIDOMWindowOuter* child = aChild->GetDOMWindow();
+  Element* e = child->GetFrameElementInternal();
   if (e && e->IsInShadowTree()) {
     return false;
   }
 
   // If we're same-origin with the child, go ahead and expose it.
-  nsCOMPtr<nsIScriptObjectPrincipal> sop = do_QueryInterface(aChild);
+  nsCOMPtr<nsIScriptObjectPrincipal> sop = do_QueryInterface(child);
   NS_ENSURE_TRUE(sop, false);
   if (nsContentUtils::SubjectPrincipal()->Equals(sop->GetPrincipal())) {
     return true;
@@ -99,16 +100,15 @@ bool WindowNamedPropertiesHandler::getOwnPropDescriptor(
   }
 
   // Grab the DOM window.
-  JS::Rooted<JSObject*> global(aCx, JS_GetGlobalForObject(aCx, aProxy));
-  nsGlobalWindowInner* win = xpc::WindowOrNull(global);
+  nsGlobalWindowInner* win = xpc::WindowGlobalOrNull(aProxy);
   if (win->Length() > 0) {
-    nsCOMPtr<nsPIDOMWindowOuter> childWin = win->GetChildWindow(str);
-    if (childWin && ShouldExposeChildWindow(str, childWin)) {
+    RefPtr<BrowsingContext> child = win->GetChildWindow(str);
+    if (child && ShouldExposeChildWindow(str, child)) {
       // We found a subframe of the right name. Shadowing via |var foo| in
       // global scope is still allowed, since |var| only looks up |own|
       // properties. But unqualified shadowing will fail, per-spec.
       JS::Rooted<JS::Value> v(aCx);
-      if (!WrapObject(aCx, childWin, &v)) {
+      if (!ToJSValue(aCx, WindowProxyHolder(child.forget()), &v)) {
         return false;
       }
       FillPropertyDescriptor(aDesc, aProxy, 0, v);
@@ -123,27 +123,25 @@ bool WindowNamedPropertiesHandler::getOwnPropDescriptor(
   }
   nsHTMLDocument* document = static_cast<nsHTMLDocument*>(htmlDoc.get());
 
+  JS::Rooted<JS::Value> v(aCx);
   Element* element = document->GetElementById(str);
   if (element) {
-    JS::Rooted<JS::Value> v(aCx);
-    if (!WrapObject(aCx, element, &v)) {
+    if (!ToJSValue(aCx, element, &v)) {
       return false;
     }
     FillPropertyDescriptor(aDesc, aProxy, 0, v);
     return true;
   }
 
-  nsWrapperCache* cache;
-  nsISupports* result = document->ResolveName(str, &cache);
-  if (!result) {
-    return true;
-  }
-
-  JS::Rooted<JS::Value> v(aCx);
-  if (!WrapObject(aCx, result, cache, nullptr, &v)) {
+  ErrorResult rv;
+  bool found = document->ResolveName(aCx, str, &v, rv);
+  if (rv.MaybeSetPendingException(aCx)) {
     return false;
   }
-  FillPropertyDescriptor(aDesc, aProxy, 0, v);
+
+  if (found) {
+    FillPropertyDescriptor(aDesc, aProxy, 0, v);
+  }
   return true;
 }
 
@@ -159,20 +157,19 @@ bool WindowNamedPropertiesHandler::defineProperty(
 
 bool WindowNamedPropertiesHandler::ownPropNames(
     JSContext* aCx, JS::Handle<JSObject*> aProxy, unsigned flags,
-    JS::AutoIdVector& aProps) const {
+    JS::MutableHandleVector<jsid> aProps) const {
   if (!(flags & JSITER_HIDDEN)) {
     // None of our named properties are enumerable.
     return true;
   }
 
   // Grab the DOM window.
-  nsGlobalWindowInner* win =
-      xpc::WindowOrNull(JS_GetGlobalForObject(aCx, aProxy));
+  nsGlobalWindowInner* win = xpc::WindowGlobalOrNull(aProxy);
   nsTArray<nsString> names;
   // The names live on the outer window, which might be null
   nsGlobalWindowOuter* outer = win->GetOuterWindowInternal();
   if (outer) {
-    nsDOMWindowList* childWindows = outer->GetWindowList();
+    nsDOMWindowList* childWindows = outer->GetFrames();
     if (childWindows) {
       uint32_t length = childWindows->GetLength();
       for (uint32_t i = 0; i < length; ++i) {
@@ -187,8 +184,8 @@ bool WindowNamedPropertiesHandler::ownPropNames(
         item->GetName(name);
         if (!names.Contains(name)) {
           // Make sure we really would expose it from getOwnPropDescriptor.
-          nsCOMPtr<nsPIDOMWindowOuter> childWin = win->GetChildWindow(name);
-          if (childWin && ShouldExposeChildWindow(name, childWin)) {
+          RefPtr<BrowsingContext> child = win->GetChildWindow(name);
+          if (child && ShouldExposeChildWindow(name, child)) {
             names.AppendElement(name);
           }
         }
@@ -209,8 +206,8 @@ bool WindowNamedPropertiesHandler::ownPropNames(
   // is.
   document->GetSupportedNames(names);
 
-  JS::AutoIdVector docProps(aCx);
-  if (!AppendNamedPropertyIds(aCx, aProxy, names, false, docProps)) {
+  JS::RootedVector<jsid> docProps(aCx);
+  if (!AppendNamedPropertyIds(aCx, aProxy, names, false, &docProps)) {
     return false;
   }
 
@@ -235,7 +232,7 @@ static const DOMIfaceAndProtoJSClass WindowNamedPropertiesClass = {
     0,
     &sEmptyNativePropertyHooks,
     "[object WindowProperties]",
-    EventTargetBinding::GetProtoObject};
+    EventTarget_Binding::GetProtoObject};
 
 // static
 JSObject* WindowNamedPropertiesHandler::Create(JSContext* aCx,

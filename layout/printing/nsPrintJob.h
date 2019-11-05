@@ -26,11 +26,17 @@
 // Classes
 class nsPagePrintTimer;
 class nsIDocShell;
-class nsIDocument;
 class nsIDocumentViewerPrint;
 class nsPrintObject;
 class nsIDocShell;
 class nsIPageSequenceFrame;
+
+namespace mozilla {
+class PresShell;
+namespace dom {
+class Document;
+}
+}  // namespace mozilla
 
 /**
  * A print job may be instantiated either for printing to an actual physical
@@ -53,21 +59,23 @@ class nsPrintJob final : public nsIObserver,
 
   NS_DECL_NSIWEBPROGRESSLISTENER
 
-  // Old nsIWebBrowserPrint methods; not cleaned up yet
-  NS_IMETHOD Print(nsIPrintSettings* aPrintSettings,
-                   nsIWebProgressListener* aWebProgressListener);
-  NS_IMETHOD PrintPreview(nsIPrintSettings* aPrintSettings,
-                          mozIDOMWindowProxy* aChildDOMWin,
-                          nsIWebProgressListener* aWebProgressListener);
-  NS_IMETHOD GetIsFramesetDocument(bool* aIsFramesetDocument);
-  NS_IMETHOD GetIsIFrameSelected(bool* aIsIFrameSelected);
-  NS_IMETHOD GetIsRangeSelection(bool* aIsRangeSelection);
-  NS_IMETHOD GetIsFramesetFrameSelected(bool* aIsFramesetFrameSelected);
-  NS_IMETHOD GetPrintPreviewNumPages(int32_t* aPrintPreviewNumPages);
-  NS_IMETHOD EnumerateDocumentNames(uint32_t* aCount, char16_t*** aResult);
-  NS_IMETHOD GetDoingPrint(bool* aDoingPrint);
-  NS_IMETHOD GetDoingPrintPreview(bool* aDoingPrintPreview);
-  NS_IMETHOD GetCurrentPrintSettings(nsIPrintSettings** aCurrentPrintSettings);
+  // Our nsIWebBrowserPrint implementation defers to these methods.
+  nsresult Print(nsIPrintSettings* aPrintSettings,
+                 nsIWebProgressListener* aWebProgressListener);
+  nsresult PrintPreview(nsIPrintSettings* aPrintSettings,
+                        mozIDOMWindowProxy* aChildDOMWin,
+                        nsIWebProgressListener* aWebProgressListener);
+  bool IsDoingPrint() const { return mIsDoingPrinting; }
+  bool IsDoingPrintPreview() const { return mIsDoingPrintPreview; }
+  bool IsFramesetDocument() const;
+  bool IsIFrameSelected();
+  bool IsRangeSelection();
+  bool IsFramesetFrameSelected() const;
+  /// If the returned value is not greater than zero, an error occurred.
+  int32_t GetPrintPreviewNumPages();
+  /// Callers are responsible for free'ing aResult.
+  nsresult EnumerateDocumentNames(uint32_t* aCount, char16_t*** aResult);
+  already_AddRefed<nsIPrintSettings> GetCurrentPrintSettings();
 
   // This enum tells indicates what the default should be for the title
   // if the title from the document is null
@@ -77,8 +85,8 @@ class nsPrintJob final : public nsIObserver,
   void DestroyPrintingData();
 
   nsresult Initialize(nsIDocumentViewerPrint* aDocViewerPrint,
-                      nsIDocShell* aContainer, nsIDocument* aDocument,
-                      float aScreenDPI);
+                      nsIDocShell* aContainer,
+                      mozilla::dom::Document* aDocument, float aScreenDPI);
 
   nsresult GetSeqFrameAndCountPages(nsIFrame*& aSeqFrame, int32_t& aCount);
 
@@ -87,7 +95,7 @@ class nsPrintJob final : public nsIObserver,
   //
   nsresult DocumentReadyForPrinting();
   nsresult GetSelectionDocument(nsIDeviceContextSpec* aDevSpec,
-                                nsIDocument** aNewDoc);
+                                mozilla::dom::Document** aNewDoc);
 
   nsresult SetupToPrintContent();
   nsresult EnablePOsForPrinting();
@@ -101,7 +109,13 @@ class nsPrintJob final : public nsIObserver,
 
   void TurnScriptingOn(bool aDoTurnOn);
   bool CheckDocumentForPPCaching();
-  void InstallPrintPreviewListener();
+
+  /**
+   * Filters out certain user events while Print Preview is open to prevent
+   * the user from interacting with the Print Preview document and breaking
+   * printing invariants.
+   */
+  void SuppressPrintPreviewUserEvents();
 
   // nsIDocumentViewerPrint Printing Methods
   bool HasPrintCallbackCanvas();
@@ -116,6 +130,7 @@ class nsPrintJob final : public nsIObserver,
   nsresult ReflowDocList(const mozilla::UniquePtr<nsPrintObject>& aPO,
                          bool aSetPixelScale);
 
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   nsresult ReflowPrintObject(const mozilla::UniquePtr<nsPrintObject>& aPO);
 
   void CheckForChildFrameSets(const mozilla::UniquePtr<nsPrintObject>& aPO);
@@ -126,10 +141,10 @@ class nsPrintJob final : public nsIObserver,
   // If FinishPrintPreview() fails, caller may need to reset the state of the
   // object, for example by calling CleanupOnFailure().
   nsresult FinishPrintPreview();
-  void SetDocAndURLIntoProgress(const mozilla::UniquePtr<nsPrintObject>& aPO,
-                                nsIPrintProgressParams* aParams);
+  void SetURLAndTitleOnProgressParams(
+      const mozilla::UniquePtr<nsPrintObject>& aPO,
+      nsIPrintProgressParams* aParams);
   void EllipseLongString(nsAString& aStr, const uint32_t aLen, bool aDoFront);
-  nsresult CheckForPrinters(nsIPrintSettings* aPrintSettings);
   void CleanupDocTitleArray(char16_t**& aArray, int32_t& aCount);
 
   bool IsThereARangeSelection(nsPIDOMWindowOuter* aDOMWin);
@@ -140,13 +155,13 @@ class nsPrintJob final : public nsIObserver,
   // Timer Methods
   nsresult StartPagePrintTimer(const mozilla::UniquePtr<nsPrintObject>& aPO);
 
-  bool IsWindowsInOurSubTree(nsPIDOMWindowOuter* aDOMWindow);
+  bool IsWindowsInOurSubTree(nsPIDOMWindowOuter* aDOMWindow) const;
   bool IsThereAnIFrameSelected(nsIDocShell* aDocShell,
                                nsPIDOMWindowOuter* aDOMWin,
                                bool& aIsParentFrameSet);
 
   // get the currently infocus frame for the document viewer
-  already_AddRefed<nsPIDOMWindowOuter> FindFocusedDOMWindow();
+  already_AddRefed<nsPIDOMWindowOuter> FindFocusedDOMWindow() const;
 
   void GetDisplayTitleAndURL(const mozilla::UniquePtr<nsPrintObject>& aPO,
                              nsAString& aTitle, nsAString& aURLStr,
@@ -155,7 +170,7 @@ class nsPrintJob final : public nsIObserver,
   bool CheckBeforeDestroy();
   nsresult Cancelled();
 
-  nsIPresShell* GetPrintPreviewPresShell() {
+  mozilla::PresShell* GetPrintPreviewPresShell() {
     return mPrtPreview->mPrintObject->mPresShell;
   }
 
@@ -181,23 +196,33 @@ class nsPrintJob final : public nsIObserver,
 
   nsresult CommonPrint(bool aIsPrintPreview, nsIPrintSettings* aPrintSettings,
                        nsIWebProgressListener* aWebProgressListener,
-                       nsIDOMDocument* aDoc);
+                       mozilla::dom::Document* aDoc);
 
   nsresult DoCommonPrint(bool aIsPrintPreview, nsIPrintSettings* aPrintSettings,
                          nsIWebProgressListener* aWebProgressListener,
-                         nsIDOMDocument* aDoc);
+                         mozilla::dom::Document* aDoc);
 
   void FirePrintCompletionEvent();
 
   void DisconnectPagePrintTimer();
 
-  nsresult AfterNetworkPrint(bool aHandleError);
+  /**
+   * This method is called to resume printing after all outstanding resources
+   * referenced by the static clone have finished loading.  (It is possibly
+   * called synchronously if there are no resources to load.)  While a static
+   * clone will generally just be able to reference the (already loaded)
+   * resources that the original document references, the static clone may
+   * reference additional resources that have not previously been loaded
+   * (if it has a 'print' style sheet, for example).
+   */
+  nsresult ResumePrintAfterResourcesLoaded(bool aCleanupOnError);
 
   nsresult SetRootView(nsPrintObject* aPO, bool& aDoReturn,
                        bool& aDocumentIsTopLevel, nsSize& aAdjSize);
   nsView* GetParentViewForRoot();
   bool DoSetPixelScale();
   void UpdateZoomRatio(nsPrintObject* aPO, bool aSetPixelScale);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   nsresult ReconstructAndReflow(bool aDoSetPixelScale);
   nsresult UpdateSelectionAndShrinkPrintObject(nsPrintObject* aPO,
                                                bool aDocumentIsTopLevel);
@@ -206,7 +231,7 @@ class nsPrintJob final : public nsIObserver,
 
   void PageDone(nsresult aResult);
 
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<mozilla::dom::Document> mDocument;
   nsCOMPtr<nsIDocumentViewerPrint> mDocViewerPrint;
 
   nsWeakPtr mContainer;

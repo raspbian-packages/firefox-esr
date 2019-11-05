@@ -185,7 +185,7 @@ LexerTransition<ICOState> nsICODecoder::IterateUnsizedDirEntry() {
     // The first time we are here, there is no entry selected. We must prepare a
     // new iterator for the contained decoder to advance as it wills. Cloning at
     // this point ensures it will begin at the end of the dir entries.
-    mReturnIterator = Move(mLexer.Clone(*mIterator, SIZE_MAX));
+    mReturnIterator = mLexer.Clone(*mIterator, SIZE_MAX);
     if (mReturnIterator.isNothing()) {
       // If we cannot read further than this point, then there is no resource
       // data to read.
@@ -205,7 +205,7 @@ LexerTransition<ICOState> nsICODecoder::IterateUnsizedDirEntry() {
 
     // Our iterator is at an unknown point, so reset it to the point that we
     // saved.
-    mIterator = Move(mLexer.Clone(*mReturnIterator, SIZE_MAX));
+    mIterator = mLexer.Clone(*mReturnIterator, SIZE_MAX);
     if (mIterator.isNothing()) {
       MOZ_ASSERT_UNREACHABLE("Cannot re-clone return iterator");
       return Transition::TerminateFailure();
@@ -346,7 +346,7 @@ LexerTransition<ICOState> nsICODecoder::SniffResource(const char* aData) {
     Maybe<IntSize> expectedSize =
         metadataDecode ? Nothing() : Some(mDirEntry->mSize);
     mContainedDecoder = DecoderFactory::CreateDecoderForICOResource(
-        DecoderType::PNG, Move(containedIterator.ref()), WrapNotNull(this),
+        DecoderType::PNG, std::move(containedIterator.ref()), WrapNotNull(this),
         metadataDecode, expectedSize);
 
     // Read in the rest of the PNG unbuffered.
@@ -410,7 +410,7 @@ LexerTransition<ICOState> nsICODecoder::ReadBIH(const char* aData) {
   Maybe<IntSize> expectedSize =
       metadataDecode ? Nothing() : Some(mDirEntry->mSize);
   mContainedDecoder = DecoderFactory::CreateDecoderForICOResource(
-      DecoderType::BMP, Move(containedIterator.ref()), WrapNotNull(this),
+      DecoderType::BMP, std::move(containedIterator.ref()), WrapNotNull(this),
       metadataDecode, expectedSize, Some(dataOffset));
 
   RefPtr<nsBMPDecoder> bmpDecoder =

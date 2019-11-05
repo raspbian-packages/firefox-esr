@@ -64,10 +64,9 @@ const static OCSPResponseName kOCSPResponseNameList[] = {
      ORTLongValidityAlmostExpired},  // the response is
                                      // still valid, but the generation
                                      // is almost a year old
-    {"ancientstillvalid",
-     ORTAncientAlmostExpired},  // The response is still
-                                // valid but the generation is almost
-                                // two years old
+    {"ancientstillvalid", ORTAncientAlmostExpired},  // The response is still
+                                                     // valid but the generation
+                                                     // is almost two years old
 };
 
 bool StringToOCSPResponseType(const char* respText,

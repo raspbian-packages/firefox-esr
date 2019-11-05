@@ -15,6 +15,7 @@
 #include "FrameLayerBuilder.h"
 
 namespace mozilla {
+class PresShell;
 namespace layers {
 class Layer;
 class LayerManager;
@@ -25,8 +26,8 @@ class WebRenderCanvasData;
 class nsPresContext;
 class nsDisplayItem;
 
-nsIFrame* NS_NewHTMLCanvasFrame(nsIPresShell* aPresShell,
-                                nsStyleContext* aContext);
+nsIFrame* NS_NewHTMLCanvasFrame(mozilla::PresShell* aPresShell,
+                                mozilla::ComputedStyle* aStyle);
 
 class nsHTMLCanvasFrame final : public nsContainerFrame {
  public:
@@ -39,8 +40,8 @@ class nsHTMLCanvasFrame final : public nsContainerFrame {
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsHTMLCanvasFrame)
 
-  explicit nsHTMLCanvasFrame(nsStyleContext* aContext)
-      : nsContainerFrame(aContext, kClassID),
+  explicit nsHTMLCanvasFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsContainerFrame(aStyle, aPresContext, kClassID),
         mBorderPadding(GetWritingMode()) {}
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
@@ -63,7 +64,7 @@ class nsHTMLCanvasFrame final : public nsContainerFrame {
   virtual nscoord GetMinISize(gfxContext* aRenderingContext) override;
   virtual nscoord GetPrefISize(gfxContext* aRenderingContext) override;
   virtual mozilla::IntrinsicSize GetIntrinsicSize() override;
-  virtual nsSize GetIntrinsicRatio() override;
+  virtual mozilla::AspectRatio GetIntrinsicRatio() override;
 
   virtual mozilla::LogicalSize ComputeSize(
       gfxContext* aRenderingContext, mozilla::WritingMode aWritingMode,

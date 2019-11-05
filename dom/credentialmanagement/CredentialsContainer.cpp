@@ -46,7 +46,7 @@ static bool IsInActiveTab(nsPIDOMWindowInner* aParent) {
   // The active tab is the selected (i.e. visible) tab in the focused window.
   MOZ_ASSERT(aParent);
 
-  nsCOMPtr<nsIDocument> doc(aParent->GetExtantDoc());
+  RefPtr<Document> doc = aParent->GetExtantDoc();
   if (NS_WARN_IF(!doc)) {
     return false;
   }
@@ -136,7 +136,7 @@ void CredentialsContainer::EnsureWebAuthnManager() {
 
 JSObject* CredentialsContainer::WrapObject(JSContext* aCx,
                                            JS::Handle<JSObject*> aGivenProto) {
-  return CredentialsContainerBinding::Wrap(aCx, this, aGivenProto);
+  return CredentialsContainer_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<Promise> CredentialsContainer::Get(

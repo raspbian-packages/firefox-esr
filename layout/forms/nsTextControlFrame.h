@@ -21,7 +21,7 @@ class EditorInitializerEntryTracker;
 class nsTextEditorState;
 namespace mozilla {
 class TextEditor;
-enum class CSSPseudoElementType : uint8_t;
+enum class PseudoStyleType : uint8_t;
 namespace dom {
 class Element;
 }  // namespace dom
@@ -36,7 +36,8 @@ class nsTextControlFrame final : public nsContainerFrame,
 
   NS_DECLARE_FRAME_PROPERTY_DELETABLE(ContentScrollPos, nsPoint)
 
-  explicit nsTextControlFrame(nsStyleContext* aContext);
+  explicit nsTextControlFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext);
   virtual ~nsTextControlFrame();
 
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
@@ -61,7 +62,7 @@ class nsTextControlFrame final : public nsContainerFrame,
 
   bool GetVerticalAlignBaseline(mozilla::WritingMode aWM,
                                 nscoord* aBaseline) const override {
-    return GetNaturalBaselineBOffset(aWM, BaselineSharingGroup::eFirst,
+    return GetNaturalBaselineBOffset(aWM, BaselineSharingGroup::First,
                                      aBaseline);
   }
 
@@ -71,9 +72,9 @@ class nsTextControlFrame final : public nsContainerFrame,
     if (!IsSingleLineTextControl()) {
       return false;
     }
-    NS_ASSERTION(mFirstBaseline != NS_INTRINSIC_WIDTH_UNKNOWN,
+    NS_ASSERTION(mFirstBaseline != NS_INTRINSIC_ISIZE_UNKNOWN,
                  "please call Reflow before asking for the baseline");
-    if (aBaselineGroup == BaselineSharingGroup::eFirst) {
+    if (aBaselineGroup == BaselineSharingGroup::First) {
       *aBaseline = mFirstBaseline;
     } else {
       *aBaseline = BSize(aWM) - mFirstBaseline;
@@ -105,7 +106,7 @@ class nsTextControlFrame final : public nsContainerFrame,
 #ifdef DEBUG
   void MarkIntrinsicISizesDirty() override {
     // Need another Reflow to have a correct baseline value again.
-    mFirstBaseline = NS_INTRINSIC_WIDTH_UNKNOWN;
+    mFirstBaseline = NS_INTRINSIC_ISIZE_UNKNOWN;
   }
 #endif
 
@@ -120,9 +121,6 @@ class nsTextControlFrame final : public nsContainerFrame,
 
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                 const nsDisplayListSet& aLists) override;
-
-  virtual mozilla::dom::Element* GetPseudoElement(
-      mozilla::CSSPseudoElementType aType) override;
 
   //==== BEGIN NSIFORMCONTROLFRAME
   virtual void SetFocus(bool aOn, bool aRepaint) override;
@@ -151,8 +149,8 @@ class nsTextControlFrame final : public nsContainerFrame,
 
   //==== NSISTATEFULFRAME
 
-  NS_IMETHOD SaveState(nsPresState** aState) override;
-  NS_IMETHOD RestoreState(nsPresState* aState) override;
+  mozilla::UniquePtr<mozilla::PresState> SaveState() override;
+  NS_IMETHOD RestoreState(mozilla::PresState* aState) override;
 
   //=== END NSISTATEFULFRAME
 
@@ -182,8 +180,6 @@ class nsTextControlFrame final : public nsContainerFrame,
 
   mozilla::dom::Element* GetRootNode() const { return mRootNode; }
 
-  mozilla::dom::Element* GetPlaceholderNode() const { return mPlaceholderDiv; }
-
   mozilla::dom::Element* GetPreviewNode() const { return mPreviewDiv; }
 
   // called by the focus listener
@@ -201,7 +197,6 @@ class nsTextControlFrame final : public nsContainerFrame,
   DEFINE_TEXTCTRL_CONST_FORWARDER(bool, IsTextArea)
   DEFINE_TEXTCTRL_CONST_FORWARDER(bool, IsPasswordTextControl)
   DEFINE_TEXTCTRL_CONST_FORWARDER(int32_t, GetCols)
-  DEFINE_TEXTCTRL_CONST_FORWARDER(int32_t, GetWrapCols)
   DEFINE_TEXTCTRL_CONST_FORWARDER(int32_t, GetRows)
 
 #undef DEFINE_TEXTCTRL_CONST_FORWARDER
@@ -302,16 +297,6 @@ class nsTextControlFrame final : public nsContainerFrame,
   nsresult SetSelectionEndPoints(uint32_t aSelStart, uint32_t aSelEnd,
                                  SelectionDirection aDirection = eNone);
 
-  /**
-   * Return the root DOM element, and implicitly initialize the editor if
-   * needed.
-   *
-   * XXXbz This function is slow.  Very slow.  Consider using
-   * EnsureEditorInitialized() if you need that, and
-   * nsITextControlElement::GetRootEditorNode on our content if you need that.
-   */
-  nsresult GetRootNodeAndInitializeEditor(nsIDOMElement** aRootElement);
-
   void FinishedInitializer() { DeleteProperty(TextControlInitializer()); }
 
   const nsAString& CachedValue() const { return mCachedValue; }
@@ -351,7 +336,7 @@ class nsTextControlFrame final : public nsContainerFrame,
   // FIXME(bug 1402545): Consider using an nsAutoString here.
   nsString mCachedValue;
 
-  // Our first baseline, or NS_INTRINSIC_WIDTH_UNKNOWN if we have a pending
+  // Our first baseline, or NS_INTRINSIC_ISIZE_UNKNOWN if we have a pending
   // Reflow.
   nscoord mFirstBaseline;
 

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,6 +16,8 @@
 #include "nsIIPCSerializableInputStream.h"
 #include "nsIAsyncInputStream.h"
 #include "nsICloneableInputStream.h"
+#include "nsIInputStreamLength.h"
+#include "mozilla/Mutex.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -23,6 +25,7 @@ class nsBufferedStream : public nsISeekableStream {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSISEEKABLESTREAM
+  NS_DECL_NSITELLABLESTREAM
 
   nsBufferedStream();
 
@@ -51,7 +54,7 @@ class nsBufferedStream : public nsISeekableStream {
   // is relative to mBufferStartOffset.
   uint32_t mFillPoint;
 
-  nsISupports* mStream;  // cast to appropriate subclass
+  nsCOMPtr<nsISupports> mStream;  // cast to appropriate subclass
 
   bool mBufferDisabled;
   bool mEOF;  // True if mStream is at EOF
@@ -60,13 +63,16 @@ class nsBufferedStream : public nsISeekableStream {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class nsBufferedInputStream : public nsBufferedStream,
-                              public nsIBufferedInputStream,
-                              public nsIStreamBufferAccess,
-                              public nsIIPCSerializableInputStream,
-                              public nsIAsyncInputStream,
-                              public nsIInputStreamCallback,
-                              public nsICloneableInputStream {
+class nsBufferedInputStream final : public nsBufferedStream,
+                                    public nsIBufferedInputStream,
+                                    public nsIStreamBufferAccess,
+                                    public nsIIPCSerializableInputStream,
+                                    public nsIAsyncInputStream,
+                                    public nsIInputStreamCallback,
+                                    public nsICloneableInputStream,
+                                    public nsIInputStreamLength,
+                                    public nsIAsyncInputStreamLength,
+                                    public nsIInputStreamLengthCallback {
  public:
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_NSIINPUTSTREAM
@@ -76,23 +82,41 @@ class nsBufferedInputStream : public nsBufferedStream,
   NS_DECL_NSIASYNCINPUTSTREAM
   NS_DECL_NSIINPUTSTREAMCALLBACK
   NS_DECL_NSICLONEABLEINPUTSTREAM
+  NS_DECL_NSIINPUTSTREAMLENGTH
+  NS_DECL_NSIASYNCINPUTSTREAMLENGTH
+  NS_DECL_NSIINPUTSTREAMLENGTHCALLBACK
 
   nsBufferedInputStream();
 
   static nsresult Create(nsISupports* aOuter, REFNSIID aIID, void** aResult);
 
-  nsIInputStream* Source() { return (nsIInputStream*)mStream; }
+  nsIInputStream* Source() { return (nsIInputStream*)mStream.get(); }
 
  protected:
-  virtual ~nsBufferedInputStream() {}
+  virtual ~nsBufferedInputStream() = default;
+
+  template <typename M>
+  void SerializeInternal(mozilla::ipc::InputStreamParams& aParams,
+                         FileDescriptorArray& aFileDescriptors,
+                         bool aDelayedStart, uint32_t aMaxSize,
+                         uint32_t* aSizeUsed, M* aManager);
 
   NS_IMETHOD Fill() override;
   NS_IMETHOD Flush() override { return NS_OK; }  // no-op for input streams
 
+  mozilla::Mutex mMutex;
+
+  // This value is protected by mutex.
   nsCOMPtr<nsIInputStreamCallback> mAsyncWaitCallback;
+
+  // This value is protected by mutex.
+  nsCOMPtr<nsIInputStreamLengthCallback> mAsyncInputStreamLengthCallback;
+
   bool mIsIPCSerializable;
   bool mIsAsyncInputStream;
   bool mIsCloneableInputStream;
+  bool mIsInputStreamLength;
+  bool mIsAsyncInputStreamLength;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +136,7 @@ class nsBufferedOutputStream : public nsBufferedStream,
 
   static nsresult Create(nsISupports* aOuter, REFNSIID aIID, void** aResult);
 
-  nsIOutputStream* Sink() { return (nsIOutputStream*)mStream; }
+  nsIOutputStream* Sink() { return (nsIOutputStream*)mStream.get(); }
 
  protected:
   virtual ~nsBufferedOutputStream() { nsBufferedOutputStream::Close(); }

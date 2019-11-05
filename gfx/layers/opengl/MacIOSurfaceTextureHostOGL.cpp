@@ -18,9 +18,9 @@ MacIOSurfaceTextureHostOGL::MacIOSurfaceTextureHostOGL(
     TextureFlags aFlags, const SurfaceDescriptorMacIOSurface& aDescriptor)
     : TextureHost(aFlags) {
   MOZ_COUNT_CTOR(MacIOSurfaceTextureHostOGL);
-  mSurface = MacIOSurface::LookupSurface(aDescriptor.surfaceId(),
-                                         aDescriptor.scaleFactor(),
-                                         !aDescriptor.isOpaque());
+  mSurface = MacIOSurface::LookupSurface(
+      aDescriptor.surfaceId(), aDescriptor.scaleFactor(),
+      !aDescriptor.isOpaque(), aDescriptor.yUVColorSpace());
 }
 
 MacIOSurfaceTextureHostOGL::~MacIOSurfaceTextureHostOGL() {
@@ -115,6 +115,13 @@ gl::GLContext* MacIOSurfaceTextureHostOGL::gl() const {
   return mProvider ? mProvider->GetGLContext() : nullptr;
 }
 
+gfx::YUVColorSpace MacIOSurfaceTextureHostOGL::GetYUVColorSpace() const {
+  if (!mSurface) {
+    return gfx::YUVColorSpace::UNKNOWN;
+  }
+  return mSurface->GetYUVColorSpace();
+}
+
 void MacIOSurfaceTextureHostOGL::CreateRenderTexture(
     const wr::ExternalImageId& aExternalImageId) {
   RefPtr<wr::RenderTextureHost> texture =
@@ -193,7 +200,9 @@ void MacIOSurfaceTextureHostOGL::PushResourceUpdates(
       (aResources.*method)(aImageKeys[1], descriptor1, aExtID, bufferType, 1);
       break;
     }
-    default: { MOZ_ASSERT_UNREACHABLE("unexpected to be called"); }
+    default: {
+      MOZ_ASSERT_UNREACHABLE("unexpected to be called");
+    }
   }
 }
 
@@ -215,20 +224,27 @@ void MacIOSurfaceTextureHostOGL::PushDisplayItems(
     case gfx::SurfaceFormat::YUV422: {
       MOZ_ASSERT(aImageKeys.length() == 1);
       MOZ_ASSERT(mSurface->GetPlaneCount() == 0);
+      // Those images can only be generated at present by the Apple H264 decoder
+      // which only supports 8 bits color depth.
       aBuilder.PushYCbCrInterleavedImage(
-          aBounds, aClip, true, aImageKeys[0],
-          wr::ToWrYuvColorSpace(YUVColorSpace::BT601), aFilter);
+          aBounds, aClip, true, aImageKeys[0], wr::ColorDepth::Color8,
+          wr::ToWrYuvColorSpace(GetYUVColorSpace()), aFilter);
       break;
     }
     case gfx::SurfaceFormat::NV12: {
       MOZ_ASSERT(aImageKeys.length() == 2);
       MOZ_ASSERT(mSurface->GetPlaneCount() == 2);
+      // Those images can only be generated at present by the Apple H264 decoder
+      // which only supports 8 bits color depth.
       aBuilder.PushNV12Image(aBounds, aClip, true, aImageKeys[0], aImageKeys[1],
-                             wr::ToWrYuvColorSpace(YUVColorSpace::BT601),
+                             wr::ColorDepth::Color8,
+                             wr::ToWrYuvColorSpace(GetYUVColorSpace()),
                              aFilter);
       break;
     }
-    default: { MOZ_ASSERT_UNREACHABLE("unexpected to be called"); }
+    default: {
+      MOZ_ASSERT_UNREACHABLE("unexpected to be called");
+    }
   }
 }
 

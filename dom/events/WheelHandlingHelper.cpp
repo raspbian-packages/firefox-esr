@@ -6,15 +6,20 @@
 
 #include "WheelHandlingHelper.h"
 
+#include <utility>  // for std::swap
+
 #include "mozilla/EventDispatcher.h"
 #include "mozilla/EventStateManager.h"
 #include "mozilla/MouseEvents.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/WheelEventBinding.h"
 #include "nsCOMPtr.h"
 #include "nsContentUtils.h"
 #include "nsIContent.h"
-#include "nsIDocument.h"
-#include "nsIPresShell.h"
+#include "nsIContentInlines.h"
+#include "mozilla/dom/Document.h"
+#include "DocumentInlines.h"  // for Document and HTMLBodyElement
 #include "nsIScrollableFrame.h"
 #include "nsITextControlElement.h"
 #include "nsITimer.h"
@@ -37,17 +42,16 @@ DeltaValues::DeltaValues(WidgetWheelEvent* aEvent)
 /* mozilla::WheelHandlingUtils                                    */
 /******************************************************************/
 
-/* static */ bool WheelHandlingUtils::CanScrollInRange(nscoord aMin,
-                                                       nscoord aValue,
-                                                       nscoord aMax,
-                                                       double aDirection) {
+/* static */
+bool WheelHandlingUtils::CanScrollInRange(nscoord aMin, nscoord aValue,
+                                          nscoord aMax, double aDirection) {
   return aDirection > 0.0 ? aValue < static_cast<double>(aMax)
                           : static_cast<double>(aMin) < aValue;
 }
 
-/* static */ bool WheelHandlingUtils::CanScrollOn(nsIFrame* aFrame,
-                                                  double aDirectionX,
-                                                  double aDirectionY) {
+/* static */
+bool WheelHandlingUtils::CanScrollOn(nsIFrame* aFrame, double aDirectionX,
+                                     double aDirectionY) {
   nsIScrollableFrame* scrollableFrame = do_QueryFrame(aFrame);
   if (scrollableFrame) {
     return CanScrollOn(scrollableFrame, aDirectionX, aDirectionY);
@@ -56,8 +60,9 @@ DeltaValues::DeltaValues(WidgetWheelEvent* aEvent)
   return pluginFrame && pluginFrame->WantsToHandleWheelEventAsDefaultAction();
 }
 
-/* static */ bool WheelHandlingUtils::CanScrollOn(
-    nsIScrollableFrame* aScrollFrame, double aDirectionX, double aDirectionY) {
+/* static */
+bool WheelHandlingUtils::CanScrollOn(nsIScrollableFrame* aScrollFrame,
+                                     double aDirectionX, double aDirectionY) {
   MOZ_ASSERT(aScrollFrame);
   NS_ASSERTION(aDirectionX || aDirectionY,
                "One of the delta values must be non-zero at least");
@@ -108,18 +113,18 @@ nsITimer* WheelTransaction::sTimer = nullptr;
 int32_t WheelTransaction::sScrollSeriesCounter = 0;
 bool WheelTransaction::sOwnScrollbars = false;
 
-/* static */ bool WheelTransaction::OutOfTime(uint32_t aBaseTime,
-                                              uint32_t aThreshold) {
+/* static */
+bool WheelTransaction::OutOfTime(uint32_t aBaseTime, uint32_t aThreshold) {
   uint32_t now = PR_IntervalToMilliseconds(PR_IntervalNow());
   return (now - aBaseTime > aThreshold);
 }
 
-/* static */ void WheelTransaction::OwnScrollbars(bool aOwn) {
-  sOwnScrollbars = aOwn;
-}
+/* static */
+void WheelTransaction::OwnScrollbars(bool aOwn) { sOwnScrollbars = aOwn; }
 
-/* static */ void WheelTransaction::BeginTransaction(
-    nsIFrame* aTargetFrame, const WidgetWheelEvent* aEvent) {
+/* static */
+void WheelTransaction::BeginTransaction(nsIFrame* aTargetFrame,
+                                        const WidgetWheelEvent* aEvent) {
   NS_ASSERTION(!sTargetFrame, "previous transaction is not finished!");
   MOZ_ASSERT(aEvent->mMessage == eWheel,
              "Transaction must be started with a wheel event");
@@ -132,8 +137,8 @@ bool WheelTransaction::sOwnScrollbars = false;
   }
 }
 
-/* static */ bool WheelTransaction::UpdateTransaction(
-    const WidgetWheelEvent* aEvent) {
+/* static */
+bool WheelTransaction::UpdateTransaction(const WidgetWheelEvent* aEvent) {
   nsIFrame* scrollToFrame = GetTargetFrame();
   nsIScrollableFrame* scrollableFrame = scrollToFrame->GetScrollTargetFrame();
   if (scrollableFrame) {
@@ -164,7 +169,8 @@ bool WheelTransaction::sOwnScrollbars = false;
   return true;
 }
 
-/* static */ void WheelTransaction::MayEndTransaction() {
+/* static */
+void WheelTransaction::MayEndTransaction() {
   if (!sOwnScrollbars && ScrollbarsForWheel::IsActive()) {
     ScrollbarsForWheel::OwnWheelTransaction(true);
   } else {
@@ -172,7 +178,8 @@ bool WheelTransaction::sOwnScrollbars = false;
   }
 }
 
-/* static */ void WheelTransaction::EndTransaction() {
+/* static */
+void WheelTransaction::EndTransaction() {
   if (sTimer) {
     sTimer->Cancel();
   }
@@ -185,7 +192,8 @@ bool WheelTransaction::sOwnScrollbars = false;
   }
 }
 
-/* static */ bool WheelTransaction::WillHandleDefaultAction(
+/* static */
+bool WheelTransaction::WillHandleDefaultAction(
     WidgetWheelEvent* aWheelEvent, AutoWeakFrame& aTargetWeakFrame) {
   nsIFrame* lastTargetFrame = GetTargetFrame();
   if (!lastTargetFrame) {
@@ -209,7 +217,8 @@ bool WheelTransaction::sOwnScrollbars = false;
   return true;
 }
 
-/* static */ void WheelTransaction::OnEvent(WidgetEvent* aEvent) {
+/* static */
+void WheelTransaction::OnEvent(WidgetEvent* aEvent) {
   if (!sTargetFrame) {
     return;
   }
@@ -274,16 +283,19 @@ bool WheelTransaction::sOwnScrollbars = false;
   }
 }
 
-/* static */ void WheelTransaction::Shutdown() { NS_IF_RELEASE(sTimer); }
+/* static */
+void WheelTransaction::Shutdown() { NS_IF_RELEASE(sTimer); }
 
-/* static */ void WheelTransaction::OnFailToScrollTarget() {
-  NS_PRECONDITION(sTargetFrame, "We don't have mouse scrolling transaction");
+/* static */
+void WheelTransaction::OnFailToScrollTarget() {
+  MOZ_ASSERT(sTargetFrame, "We don't have mouse scrolling transaction");
 
   if (Prefs::sTestMouseScroll) {
     // This event is used for automated tests, see bug 442774.
     nsContentUtils::DispatchTrustedEvent(
         sTargetFrame->GetContent()->OwnerDoc(), sTargetFrame->GetContent(),
-        NS_LITERAL_STRING("MozMouseScrollFailed"), true, true);
+        NS_LITERAL_STRING("MozMouseScrollFailed"), CanBubble::eYes,
+        Cancelable::eYes);
   }
   // The target frame might be destroyed in the event handler, at that time,
   // we need to finish the current transaction
@@ -292,8 +304,8 @@ bool WheelTransaction::sOwnScrollbars = false;
   }
 }
 
-/* static */ void WheelTransaction::OnTimeout(nsITimer* aTimer,
-                                              void* aClosure) {
+/* static */
+void WheelTransaction::OnTimeout(nsITimer* aTimer, void* aClosure) {
   if (!sTargetFrame) {
     // The transaction target was destroyed already
     EndTransaction();
@@ -309,11 +321,13 @@ bool WheelTransaction::sOwnScrollbars = false;
     // This event is used for automated tests, see bug 442774.
     nsContentUtils::DispatchTrustedEvent(
         frame->GetContent()->OwnerDoc(), frame->GetContent(),
-        NS_LITERAL_STRING("MozMouseScrollTransactionTimeout"), true, true);
+        NS_LITERAL_STRING("MozMouseScrollTransactionTimeout"), CanBubble::eYes,
+        Cancelable::eYes);
   }
 }
 
-/* static */ void WheelTransaction::SetTimeout() {
+/* static */
+void WheelTransaction::SetTimeout() {
   if (!sTimer) {
     sTimer = NS_NewTimer().take();
     if (!sTimer) {
@@ -328,19 +342,20 @@ bool WheelTransaction::sOwnScrollbars = false;
                        "nsITimer::InitWithFuncCallback failed");
 }
 
-/* static */ LayoutDeviceIntPoint WheelTransaction::GetScreenPoint(
-    WidgetGUIEvent* aEvent) {
+/* static */
+LayoutDeviceIntPoint WheelTransaction::GetScreenPoint(WidgetGUIEvent* aEvent) {
   NS_ASSERTION(aEvent, "aEvent is null");
   NS_ASSERTION(aEvent->mWidget, "aEvent-mWidget is null");
   return aEvent->mRefPoint + aEvent->mWidget->WidgetToScreenOffset();
 }
 
-/* static */ DeltaValues WheelTransaction::AccelerateWheelDelta(
+/* static */
+DeltaValues WheelTransaction::AccelerateWheelDelta(
     WidgetWheelEvent* aEvent, bool aAllowScrollSpeedOverride) {
   DeltaValues result(aEvent);
 
   // Don't accelerate the delta values if the event isn't line scrolling.
-  if (aEvent->mDeltaMode != nsIDOMWheelEvent::DOM_DELTA_LINE) {
+  if (aEvent->mDeltaMode != dom::WheelEvent_Binding::DOM_DELTA_LINE) {
     return result;
   }
 
@@ -361,16 +376,18 @@ bool WheelTransaction::sOwnScrollbars = false;
   return result;
 }
 
-/* static */ double WheelTransaction::ComputeAcceleratedWheelDelta(
-    double aDelta, int32_t aFactor) {
+/* static */
+double WheelTransaction::ComputeAcceleratedWheelDelta(double aDelta,
+                                                      int32_t aFactor) {
   return mozilla::ComputeAcceleratedWheelDelta(aDelta, sScrollSeriesCounter,
                                                aFactor);
 }
 
-/* static */ DeltaValues WheelTransaction::OverrideSystemScrollSpeed(
+/* static */
+DeltaValues WheelTransaction::OverrideSystemScrollSpeed(
     WidgetWheelEvent* aEvent) {
   MOZ_ASSERT(sTargetFrame, "We don't have mouse scrolling transaction");
-  MOZ_ASSERT(aEvent->mDeltaMode == nsIDOMWheelEvent::DOM_DELTA_LINE);
+  MOZ_ASSERT(aEvent->mDeltaMode == WheelEvent_Binding::DOM_DELTA_LINE);
 
   // If the event doesn't scroll to both X and Y, we don't need to do anything
   // here.
@@ -396,8 +413,10 @@ AutoWeakFrame ScrollbarsForWheel::sActivatedScrollTargets[kNumberOfTargets] = {
 bool ScrollbarsForWheel::sHadWheelStart = false;
 bool ScrollbarsForWheel::sOwnWheelTransaction = false;
 
-/* static */ void ScrollbarsForWheel::PrepareToScrollText(
-    EventStateManager* aESM, nsIFrame* aTargetFrame, WidgetWheelEvent* aEvent) {
+/* static */
+void ScrollbarsForWheel::PrepareToScrollText(EventStateManager* aESM,
+                                             nsIFrame* aTargetFrame,
+                                             WidgetWheelEvent* aEvent) {
   if (aEvent->mMessage == eWheelOperationStart) {
     WheelTransaction::OwnScrollbars(false);
     if (!IsActive()) {
@@ -409,7 +428,8 @@ bool ScrollbarsForWheel::sOwnWheelTransaction = false;
   }
 }
 
-/* static */ void ScrollbarsForWheel::SetActiveScrollTarget(
+/* static */
+void ScrollbarsForWheel::SetActiveScrollTarget(
     nsIScrollableFrame* aScrollTarget) {
   if (!sHadWheelStart) {
     return;
@@ -423,7 +443,8 @@ bool ScrollbarsForWheel::sOwnWheelTransaction = false;
   scrollbarMediator->ScrollbarActivityStarted();
 }
 
-/* static */ void ScrollbarsForWheel::MayInactivate() {
+/* static */
+void ScrollbarsForWheel::MayInactivate() {
   if (!sOwnWheelTransaction && WheelTransaction::GetTargetFrame()) {
     WheelTransaction::OwnScrollbars(true);
   } else {
@@ -431,7 +452,8 @@ bool ScrollbarsForWheel::sOwnWheelTransaction = false;
   }
 }
 
-/* static */ void ScrollbarsForWheel::Inactivate() {
+/* static */
+void ScrollbarsForWheel::Inactivate() {
   nsIScrollbarMediator* scrollbarMediator = do_QueryFrame(sActiveOwner);
   if (scrollbarMediator) {
     scrollbarMediator->ScrollbarActivityStopped();
@@ -445,7 +467,8 @@ bool ScrollbarsForWheel::sOwnWheelTransaction = false;
   }
 }
 
-/* static */ bool ScrollbarsForWheel::IsActive() {
+/* static */
+bool ScrollbarsForWheel::IsActive() {
   if (sActiveOwner) {
     return true;
   }
@@ -457,12 +480,13 @@ bool ScrollbarsForWheel::sOwnWheelTransaction = false;
   return false;
 }
 
-/* static */ void ScrollbarsForWheel::OwnWheelTransaction(bool aOwn) {
+/* static */
+void ScrollbarsForWheel::OwnWheelTransaction(bool aOwn) {
   sOwnWheelTransaction = aOwn;
 }
 
-/* static */ void
-ScrollbarsForWheel::TemporarilyActivateAllPossibleScrollTargets(
+/* static */
+void ScrollbarsForWheel::TemporarilyActivateAllPossibleScrollTargets(
     EventStateManager* aESM, nsIFrame* aTargetFrame, WidgetWheelEvent* aEvent) {
   for (size_t i = 0; i < kNumberOfTargets; i++) {
     const DeltaValues* dir = &directions[i];
@@ -480,8 +504,8 @@ ScrollbarsForWheel::TemporarilyActivateAllPossibleScrollTargets(
   }
 }
 
-/* static */ void
-ScrollbarsForWheel::DeactivateAllTemporarilyActivatedScrollTargets() {
+/* static */
+void ScrollbarsForWheel::DeactivateAllTemporarilyActivatedScrollTargets() {
   for (size_t i = 0; i < kNumberOfTargets; i++) {
     AutoWeakFrame* scrollTarget = &sActivatedScrollTargets[i];
     if (*scrollTarget) {
@@ -504,7 +528,8 @@ uint32_t WheelTransaction::Prefs::sMouseWheelTransactionTimeout = 1500;
 uint32_t WheelTransaction::Prefs::sMouseWheelTransactionIgnoreMoveDelay = 100;
 bool WheelTransaction::Prefs::sTestMouseScroll = false;
 
-/* static */ void WheelTransaction::Prefs::InitializeStatics() {
+/* static */
+void WheelTransaction::Prefs::InitializeStatics() {
   static bool sIsInitialized = false;
   if (!sIsInitialized) {
     Preferences::AddIntVarCache(&sMouseWheelAccelerationStart,
@@ -521,35 +546,39 @@ bool WheelTransaction::Prefs::sTestMouseScroll = false;
 }
 
 /******************************************************************/
-/* mozilla::AutoWheelDeltaAdjuster                                */
+/* mozilla::WheelDeltaHorizontalizer                              */
 /******************************************************************/
 
-AutoWheelDeltaAdjuster::AutoWheelDeltaAdjuster(WidgetWheelEvent& aWheelEvent)
-    : mWheelEvent(aWheelEvent),
-      mOldDeltaX(aWheelEvent.mDeltaX),
-      mOldDeltaZ(aWheelEvent.mDeltaZ),
-      mOldOverflowDeltaX(aWheelEvent.mOverflowDeltaX),
-      mOldLineOrPageDeltaX(aWheelEvent.mLineOrPageDeltaX),
-      mTreatedVerticalWheelAsHorizontalScroll(false) {
-  MOZ_ASSERT(!aWheelEvent.mDeltaValuesAdjustedForDefaultHandler);
+void WheelDeltaHorizontalizer::Horizontalize() {
+  MOZ_ASSERT(!mWheelEvent.mDeltaValuesHorizontalizedForDefaultHandler,
+             "Wheel delta values in one wheel scroll event are being adjusted "
+             "a second time");
 
-  if (EventStateManager::WheelEventIsHorizontalScrollAction(&aWheelEvent)) {
-    // Move deltaY values to deltaX and set both deltaY and deltaZ to 0.
-    mWheelEvent.mDeltaX = mWheelEvent.mDeltaY;
-    mWheelEvent.mDeltaY = 0.0;
-    mWheelEvent.mDeltaZ = 0.0;
-    mWheelEvent.mOverflowDeltaX = mWheelEvent.mOverflowDeltaY;
-    mWheelEvent.mOverflowDeltaY = 0.0;
-    mWheelEvent.mLineOrPageDeltaX = mWheelEvent.mLineOrPageDeltaY;
-    mWheelEvent.mLineOrPageDeltaY = 0;
-    mWheelEvent.mDeltaValuesAdjustedForDefaultHandler = true;
-    mTreatedVerticalWheelAsHorizontalScroll = true;
-  }
+  // Log the old values.
+  mOldDeltaX = mWheelEvent.mDeltaX;
+  mOldDeltaZ = mWheelEvent.mDeltaZ;
+  mOldOverflowDeltaX = mWheelEvent.mOverflowDeltaX;
+  mOldLineOrPageDeltaX = mWheelEvent.mLineOrPageDeltaX;
+
+  // Move deltaY values to deltaX and set both deltaY and deltaZ to 0.
+  mWheelEvent.mDeltaX = mWheelEvent.mDeltaY;
+  mWheelEvent.mDeltaY = 0.0;
+  mWheelEvent.mDeltaZ = 0.0;
+  mWheelEvent.mOverflowDeltaX = mWheelEvent.mOverflowDeltaY;
+  mWheelEvent.mOverflowDeltaY = 0.0;
+  mWheelEvent.mLineOrPageDeltaX = mWheelEvent.mLineOrPageDeltaY;
+  mWheelEvent.mLineOrPageDeltaY = 0;
+
+  // Mark it horizontalized in order to restore the delta values when this
+  // instance is being destroyed.
+  mWheelEvent.mDeltaValuesHorizontalizedForDefaultHandler = true;
+  mHorizontalized = true;
 }
 
-AutoWheelDeltaAdjuster::~AutoWheelDeltaAdjuster() {
-  if (mTreatedVerticalWheelAsHorizontalScroll &&
-      mWheelEvent.mDeltaValuesAdjustedForDefaultHandler) {
+void WheelDeltaHorizontalizer::CancelHorizontalization() {
+  // Restore the horizontalized delta.
+  if (mHorizontalized &&
+      mWheelEvent.mDeltaValuesHorizontalizedForDefaultHandler) {
     mWheelEvent.mDeltaY = mWheelEvent.mDeltaX;
     mWheelEvent.mDeltaX = mOldDeltaX;
     mWheelEvent.mDeltaZ = mOldDeltaZ;
@@ -557,7 +586,261 @@ AutoWheelDeltaAdjuster::~AutoWheelDeltaAdjuster() {
     mWheelEvent.mOverflowDeltaX = mOldOverflowDeltaX;
     mWheelEvent.mLineOrPageDeltaY = mWheelEvent.mLineOrPageDeltaX;
     mWheelEvent.mLineOrPageDeltaX = mOldLineOrPageDeltaX;
-    mWheelEvent.mDeltaValuesAdjustedForDefaultHandler = false;
+    mWheelEvent.mDeltaValuesHorizontalizedForDefaultHandler = false;
+    mHorizontalized = false;
+  }
+}
+
+WheelDeltaHorizontalizer::~WheelDeltaHorizontalizer() {
+  CancelHorizontalization();
+}
+
+/******************************************************************/
+/* mozilla::AutoDirWheelDeltaAdjuster                             */
+/******************************************************************/
+
+bool AutoDirWheelDeltaAdjuster::ShouldBeAdjusted() {
+  // Sometimes, this function can be called more than one time. If we have
+  // already checked if the scroll should be adjusted, there's no need to check
+  // it again.
+  if (mCheckedIfShouldBeAdjusted) {
+    return mShouldBeAdjusted;
+  }
+  mCheckedIfShouldBeAdjusted = true;
+
+  // For an auto-dir wheel scroll, if all the following conditions are met, we
+  // should adjust X and Y values:
+  // 1. There is only one non-zero value between DeltaX and DeltaY.
+  // 2. There is only one direction for the target that overflows and is
+  //    scrollable with wheel.
+  // 3. The direction described in Condition 1 is orthogonal to the one
+  // described in Condition 2.
+  if ((mDeltaX && mDeltaY) || (!mDeltaX && !mDeltaY)) {
+    return false;
+  }
+  if (mDeltaX) {
+    if (CanScrollAlongXAxis()) {
+      return false;
+    }
+    if (IsHorizontalContentRightToLeft()) {
+      mShouldBeAdjusted =
+          mDeltaX > 0 ? CanScrollUpwards() : CanScrollDownwards();
+    } else {
+      mShouldBeAdjusted =
+          mDeltaX < 0 ? CanScrollUpwards() : CanScrollDownwards();
+    }
+    return mShouldBeAdjusted;
+  }
+  MOZ_ASSERT(0 != mDeltaY);
+  if (CanScrollAlongYAxis()) {
+    return false;
+  }
+  if (IsHorizontalContentRightToLeft()) {
+    mShouldBeAdjusted =
+        mDeltaY > 0 ? CanScrollLeftwards() : CanScrollRightwards();
+  } else {
+    mShouldBeAdjusted =
+        mDeltaY < 0 ? CanScrollLeftwards() : CanScrollRightwards();
+  }
+  return mShouldBeAdjusted;
+}
+
+void AutoDirWheelDeltaAdjuster::Adjust() {
+  if (!ShouldBeAdjusted()) {
+    return;
+  }
+  std::swap(mDeltaX, mDeltaY);
+  if (IsHorizontalContentRightToLeft()) {
+    mDeltaX *= -1;
+    mDeltaY *= -1;
+  }
+  mShouldBeAdjusted = false;
+  OnAdjusted();
+}
+
+/******************************************************************/
+/* mozilla::ESMAutoDirWheelDeltaAdjuster                          */
+/******************************************************************/
+
+ESMAutoDirWheelDeltaAdjuster::ESMAutoDirWheelDeltaAdjuster(
+    WidgetWheelEvent& aEvent, nsIFrame& aScrollFrame, bool aHonoursRoot)
+    : AutoDirWheelDeltaAdjuster(aEvent.mDeltaX, aEvent.mDeltaY),
+      mLineOrPageDeltaX(aEvent.mLineOrPageDeltaX),
+      mLineOrPageDeltaY(aEvent.mLineOrPageDeltaY),
+      mOverflowDeltaX(aEvent.mOverflowDeltaX),
+      mOverflowDeltaY(aEvent.mOverflowDeltaY) {
+  mScrollTargetFrame = aScrollFrame.GetScrollTargetFrame();
+  MOZ_ASSERT(mScrollTargetFrame);
+
+  nsIFrame* honouredFrame = nullptr;
+  if (aHonoursRoot) {
+    // If we are going to honour root, first try to get the frame for <body> as
+    // the honoured root, because <body> is in preference to <html> if the
+    // current document is an HTML document.
+    Document* document = aScrollFrame.PresShell()->GetDocument();
+    if (document) {
+      Element* bodyElement = document->GetBodyElement();
+      if (bodyElement) {
+        honouredFrame = bodyElement->GetPrimaryFrame();
+      }
+    }
+
+    if (!honouredFrame) {
+      // If there is no <body> frame, fall back to the real root frame.
+      honouredFrame = aScrollFrame.PresShell()->GetRootScrollFrame();
+    }
+
+    if (!honouredFrame) {
+      // If there is no root scroll frame, fall back to the current scrolling
+      // frame.
+      honouredFrame = &aScrollFrame;
+    }
+  } else {
+    honouredFrame = &aScrollFrame;
+  }
+
+  WritingMode writingMode = honouredFrame->GetWritingMode();
+  WritingMode::BlockDir blockDir = writingMode.GetBlockDir();
+  WritingMode::InlineDir inlineDir = writingMode.GetInlineDir();
+  // Get whether the honoured frame's content in the horizontal direction starts
+  // from right to left(E.g. it's true either if "writing-mode: vertical-rl", or
+  // if "writing-mode: horizontal-tb; direction: rtl;" in CSS).
+  mIsHorizontalContentRightToLeft =
+      (blockDir == WritingMode::BlockDir::eBlockRL ||
+       (blockDir == WritingMode::BlockDir::eBlockTB &&
+        inlineDir == WritingMode::InlineDir::eInlineRTL));
+}
+
+void ESMAutoDirWheelDeltaAdjuster::OnAdjusted() {
+  // Adjust() only adjusted basic deltaX and deltaY, which are not enough for
+  // ESM, we should continue to adjust line-or-page and overflow values.
+  if (mDeltaX) {
+    // A vertical scroll was adjusted to be horizontal.
+    MOZ_ASSERT(0 == mDeltaY);
+
+    mLineOrPageDeltaX = mLineOrPageDeltaY;
+    mLineOrPageDeltaY = 0;
+    mOverflowDeltaX = mOverflowDeltaY;
+    mOverflowDeltaY = 0;
+  } else {
+    // A horizontal scroll was adjusted to be vertical.
+    MOZ_ASSERT(0 != mDeltaY);
+
+    mLineOrPageDeltaY = mLineOrPageDeltaX;
+    mLineOrPageDeltaX = 0;
+    mOverflowDeltaY = mOverflowDeltaX;
+    mOverflowDeltaX = 0;
+  }
+  if (mIsHorizontalContentRightToLeft) {
+    // If in RTL writing mode, reverse the side the scroll will go towards.
+    mLineOrPageDeltaX *= -1;
+    mLineOrPageDeltaY *= -1;
+    mOverflowDeltaX *= -1;
+    mOverflowDeltaY *= -1;
+  }
+}
+
+bool ESMAutoDirWheelDeltaAdjuster::CanScrollAlongXAxis() const {
+  return mScrollTargetFrame->GetPerceivedScrollingDirections() &
+         nsIScrollableFrame::HORIZONTAL;
+}
+
+bool ESMAutoDirWheelDeltaAdjuster::CanScrollAlongYAxis() const {
+  return mScrollTargetFrame->GetPerceivedScrollingDirections() &
+         nsIScrollableFrame::VERTICAL;
+}
+
+bool ESMAutoDirWheelDeltaAdjuster::CanScrollUpwards() const {
+  nsPoint scrollPt = mScrollTargetFrame->GetScrollPosition();
+  nsRect scrollRange = mScrollTargetFrame->GetScrollRange();
+  return static_cast<double>(scrollRange.y) < scrollPt.y;
+}
+
+bool ESMAutoDirWheelDeltaAdjuster::CanScrollDownwards() const {
+  nsPoint scrollPt = mScrollTargetFrame->GetScrollPosition();
+  nsRect scrollRange = mScrollTargetFrame->GetScrollRange();
+  return static_cast<double>(scrollRange.YMost()) > scrollPt.y;
+}
+
+bool ESMAutoDirWheelDeltaAdjuster::CanScrollLeftwards() const {
+  nsPoint scrollPt = mScrollTargetFrame->GetScrollPosition();
+  nsRect scrollRange = mScrollTargetFrame->GetScrollRange();
+  return static_cast<double>(scrollRange.x) < scrollPt.x;
+}
+
+bool ESMAutoDirWheelDeltaAdjuster::CanScrollRightwards() const {
+  nsPoint scrollPt = mScrollTargetFrame->GetScrollPosition();
+  nsRect scrollRange = mScrollTargetFrame->GetScrollRange();
+  return static_cast<double>(scrollRange.XMost()) > scrollPt.x;
+}
+
+bool ESMAutoDirWheelDeltaAdjuster::IsHorizontalContentRightToLeft() const {
+  return mIsHorizontalContentRightToLeft;
+}
+
+/******************************************************************/
+/* mozilla::ESMAutoDirWheelDeltaRestorer                          */
+/******************************************************************/
+
+/*explicit*/
+ESMAutoDirWheelDeltaRestorer::ESMAutoDirWheelDeltaRestorer(
+    WidgetWheelEvent& aEvent)
+    : mEvent(aEvent),
+      mOldDeltaX(aEvent.mDeltaX),
+      mOldDeltaY(aEvent.mDeltaY),
+      mOldLineOrPageDeltaX(aEvent.mLineOrPageDeltaX),
+      mOldLineOrPageDeltaY(aEvent.mLineOrPageDeltaY),
+      mOldOverflowDeltaX(aEvent.mOverflowDeltaX),
+      mOldOverflowDeltaY(aEvent.mOverflowDeltaY) {}
+
+ESMAutoDirWheelDeltaRestorer::~ESMAutoDirWheelDeltaRestorer() {
+  if (mOldDeltaX == mEvent.mDeltaX || mOldDeltaY == mEvent.mDeltaY) {
+    // The delta of the event wasn't adjusted during the lifetime of this
+    // |ESMAutoDirWheelDeltaRestorer| instance. No need to restore it.
+    return;
+  }
+
+  bool forRTL = false;
+
+  // First, restore the basic deltaX and deltaY.
+  std::swap(mEvent.mDeltaX, mEvent.mDeltaY);
+  if (mOldDeltaX != mEvent.mDeltaX || mOldDeltaY != mEvent.mDeltaY) {
+    // If X and Y still don't equal to their original values after being
+    // swapped, then it must be because they were adjusted for RTL.
+    forRTL = true;
+    mEvent.mDeltaX *= -1;
+    mEvent.mDeltaY *= -1;
+    MOZ_ASSERT(mOldDeltaX == mEvent.mDeltaX && mOldDeltaY == mEvent.mDeltaY);
+  }
+
+  if (mEvent.mDeltaX) {
+    // A horizontal scroll was adjusted to be vertical during the lifetime of
+    // this instance.
+    MOZ_ASSERT(0 == mEvent.mDeltaY);
+
+    // Restore the line-or-page and overflow values to be horizontal.
+    mEvent.mOverflowDeltaX = mEvent.mOverflowDeltaY;
+    mEvent.mLineOrPageDeltaX = mEvent.mLineOrPageDeltaY;
+    if (forRTL) {
+      mEvent.mOverflowDeltaX *= -1;
+      mEvent.mLineOrPageDeltaX *= -1;
+    }
+    mEvent.mOverflowDeltaY = mOldOverflowDeltaY;
+    mEvent.mLineOrPageDeltaY = mOldLineOrPageDeltaY;
+  } else {
+    // A vertical scroll was adjusted to be horizontal during the lifetime of
+    // this instance.
+    MOZ_ASSERT(0 != mEvent.mDeltaY);
+
+    // Restore the line-or-page and overflow values to be vertical.
+    mEvent.mOverflowDeltaY = mEvent.mOverflowDeltaX;
+    mEvent.mLineOrPageDeltaY = mEvent.mLineOrPageDeltaX;
+    if (forRTL) {
+      mEvent.mOverflowDeltaY *= -1;
+      mEvent.mLineOrPageDeltaY *= -1;
+    }
+    mEvent.mOverflowDeltaX = mOldOverflowDeltaX;
+    mEvent.mLineOrPageDeltaX = mOldLineOrPageDeltaX;
   }
 }
 

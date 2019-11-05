@@ -2,27 +2,29 @@
 
 do_get_profile();
 
-ChromeUtils.import("resource://gre/modules/Promise.jsm");
-ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm");
-ChromeUtils.import("resource://gre/modules/osfile.jsm");
-ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/Sqlite.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm");
+const { Promise } = ChromeUtils.import("resource://gre/modules/Promise.jsm");
+const { PromiseUtils } = ChromeUtils.import(
+  "resource://gre/modules/PromiseUtils.jsm"
+);
+const { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+const { FileUtils } = ChromeUtils.import(
+  "resource://gre/modules/FileUtils.jsm"
+);
+const { Sqlite } = ChromeUtils.import("resource://gre/modules/Sqlite.jsm");
 
 function sleep(ms) {
   return new Promise(resolve => {
+    let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
 
-    let timer = Cc["@mozilla.org/timer;1"]
-                  .createInstance(Ci.nsITimer);
-
-    timer.initWithCallback({
-      notify() {
-        resolve();
+    timer.initWithCallback(
+      {
+        notify() {
+          resolve();
+        },
       },
-    }, ms, timer.TYPE_ONE_SHOT);
-
+      ms,
+      timer.TYPE_ONE_SHOT
+    );
   });
 }
 
@@ -34,7 +36,7 @@ function failTestsOnAutoClose(enabled) {
 
 function getConnection(dbName, extraOptions = {}) {
   let path = dbName + ".sqlite";
-  let options = {path};
+  let options = { path };
   for (let [k, v] of Object.entries(extraOptions)) {
     options[k] = v;
   }
@@ -49,7 +51,10 @@ async function getDummyDatabase(name, extraOptions = {}) {
   if (!extraOptions.readOnly) {
     const TABLES = new Map([
       ["dirs", "id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT"],
-      ["files", "id INTEGER PRIMARY KEY AUTOINCREMENT, dir_id INTEGER, path TEXT"],
+      [
+        "files",
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, dir_id INTEGER, path TEXT",
+      ],
     ]);
     for (let [k, v] of TABLES) {
       await c.execute("CREATE TABLE " + k + "(" + v + ")");
@@ -78,12 +83,23 @@ async function getDummyTempDatabase(name, extraOptions = {}) {
 }
 
 add_task(async function test_setup() {
-  ChromeUtils.import("resource://testing-common/services/common/logging.js");
+  const { initTestLogging } = ChromeUtils.import(
+    "resource://testing-common/services/common/logging.js"
+  );
   initTestLogging("Trace");
 });
 
 add_task(async function test_open_normal() {
-  let c = await Sqlite.openConnection({path: "test_open_normal.sqlite"});
+  let c = await Sqlite.openConnection({ path: "test_open_normal.sqlite" });
+  Assert.equal(c.defaultTransactionType, "DEFERRED");
+  await c.close();
+});
+
+add_task(async function test_open_with_defaultTransactionType() {
+  let c = await getConnection("execute_transaction_types", {
+    defaultTransactionType: "IMMEDIATE",
+  });
+  Assert.equal(c.defaultTransactionType, "IMMEDIATE");
   await c.close();
 });
 
@@ -91,31 +107,41 @@ add_task(async function test_open_normal_error() {
   let currentDir = await OS.File.getCurrentDirectory();
 
   let src = OS.Path.join(currentDir, "corrupt.sqlite");
-  Assert.ok((await OS.File.exists(src)), "Database file found");
+  Assert.ok(await OS.File.exists(src), "Database file found");
 
   // Ensure that our database doesn't already exist.
   let path = OS.Path.join(OS.Constants.Path.profileDir, "corrupt.sqlite");
-  Assert.ok(!(await OS.File.exists(path)), "Database file should not exist yet");
+  Assert.ok(
+    !(await OS.File.exists(path)),
+    "Database file should not exist yet"
+  );
 
   await OS.File.copy(src, path);
 
-  let openPromise = Sqlite.openConnection({path});
-  await Assert.rejects(openPromise, reason => {
-    return reason.status == Cr.NS_ERROR_FILE_CORRUPTED;
-  }, "Check error status");
+  let openPromise = Sqlite.openConnection({ path });
+  await Assert.rejects(
+    openPromise,
+    reason => {
+      return reason.result == Cr.NS_ERROR_FILE_CORRUPTED;
+    },
+    "Check error status"
+  );
 });
 
 add_task(async function test_open_unshared() {
-  let path = OS.Path.join(OS.Constants.Path.profileDir, "test_open_unshared.sqlite");
+  let path = OS.Path.join(
+    OS.Constants.Path.profileDir,
+    "test_open_unshared.sqlite"
+  );
 
-  let c = await Sqlite.openConnection({path, sharedMemoryCache: false});
+  let c = await Sqlite.openConnection({ path, sharedMemoryCache: false });
   await c.close();
 });
 
 add_task(async function test_get_dummy_database() {
   let db = await getDummyDatabase("get_dummy_database");
 
-  Assert.equal(typeof(db), "object");
+  Assert.equal(typeof db, "object");
   await db.close();
 });
 
@@ -136,8 +162,9 @@ add_task(async function test_schema_version() {
       info("Schema version " + v + " should have been rejected");
       success = false;
     } catch (ex) {
-      if (!ex.message.startsWith("Schema version must be an integer."))
+      if (!ex.message.startsWith("Schema version must be an integer.")) {
         throw ex;
+      }
       success = true;
     }
     Assert.ok(success);
@@ -149,21 +176,30 @@ add_task(async function test_schema_version() {
   await db.execute("ATTACH :memory AS attached");
 
   let attachedVersion = await db.getSchemaVersion("attached");
-  Assert.equal(attachedVersion, 0,
-    "Should return 0 for initial attached schema version");
+  Assert.equal(
+    attachedVersion,
+    0,
+    "Should return 0 for initial attached schema version"
+  );
 
   await db.setSchemaVersion(3, "attached");
   attachedVersion = await db.getSchemaVersion("attached");
   Assert.equal(attachedVersion, 3, "Should set attached schema version");
 
   version = await db.getSchemaVersion();
-  Assert.equal(version, 14,
-    "Setting attached schema version should not change main schema version");
+  Assert.equal(
+    version,
+    14,
+    "Setting attached schema version should not change main schema version"
+  );
 
   await db.setSchemaVersion(15);
   attachedVersion = await db.getSchemaVersion("attached");
-  Assert.equal(attachedVersion, 3,
-    "Setting main schema version should not change attached schema version");
+  Assert.equal(
+    attachedVersion,
+    3,
+    "Setting main schema version should not change attached schema version"
+  );
 
   await db.close();
 });
@@ -187,8 +223,10 @@ add_task(async function test_simple_bound_array() {
 
 add_task(async function test_simple_bound_object() {
   let c = await getDummyDatabase("simple_bound_object");
-  let result = await c.execute("INSERT INTO dirs VALUES (:id, :path)",
-                               {id: 1, path: "foo"});
+  let result = await c.execute("INSERT INTO dirs VALUES (:id, :path)", {
+    id: 1,
+    path: "foo",
+  });
   Assert.equal(result.length, 0);
   result = await c.execute("SELECT id, path FROM dirs");
   Assert.equal(result.length, 1);
@@ -214,7 +252,7 @@ add_task(async function test_simple_insert_then_select() {
     Assert.equal(row.numEntries, 2);
     Assert.equal(row.getResultByIndex(0), i);
 
-    let expected = {1: "foo", 2: "bar"}[i];
+    let expected = { 1: "foo", 2: "bar" }[i];
     Assert.equal(row.getResultByName("path"), expected);
   }
 
@@ -225,7 +263,7 @@ add_task(async function test_repeat_execution() {
   let c = await getDummyDatabase("repeat_execution");
 
   let sql = "INSERT INTO dirs (path) VALUES (:path)";
-  await c.executeCached(sql, {path: "foo"});
+  await c.executeCached(sql, { path: "foo" });
   await c.executeCached(sql);
 
   let result = await c.execute("SELECT * FROM dirs");
@@ -290,13 +328,13 @@ add_task(async function test_execute_invalid_statement() {
   let c = await getDummyDatabase("invalid_statement");
 
   await new Promise(resolve => {
-
     Assert.equal(c._connectionData._anonymousStatements.size, 0);
 
-    c.execute("SELECT invalid FROM unknown").then(do_throw, function onError(error) {
+    c.execute("SELECT invalid FROM unknown").then(do_throw, function onError(
+      error
+    ) {
       resolve();
     });
-
   });
 
   // Ensure we don't leak the statement instance.
@@ -323,7 +361,9 @@ add_task(async function test_on_row_exception_ignored() {
   }
 
   let i = 0;
-  let hasResult = await c.execute("SELECT * FROM DIRS", null, function onRow(row) {
+  let hasResult = await c.execute("SELECT * FROM DIRS", null, function onRow(
+    row
+  ) {
     i++;
 
     throw new Error("Some silly error.");
@@ -345,7 +385,10 @@ add_task(async function test_on_row_stop_iteration() {
   }
 
   let i = 0;
-  let hasResult = await c.execute("SELECT * FROM dirs", null, function onRow(row, cancel) {
+  let hasResult = await c.execute("SELECT * FROM dirs", null, function onRow(
+    row,
+    cancel
+  ) {
     i++;
 
     if (i == 5) {
@@ -364,9 +407,13 @@ add_task(async function test_on_row_stop_iteration() {
   let c = await getDummyDatabase("no_on_row");
 
   let i = 0;
-  let hasResult = await c.execute(`SELECT * FROM dirs WHERE path="nonexistent"`, null, function onRow(row) {
-    i++;
-  });
+  let hasResult = await c.execute(
+    `SELECT * FROM dirs WHERE path="nonexistent"`,
+    null,
+    function onRow(row) {
+      i++;
+    }
+  );
 
   Assert.equal(hasResult, false);
   Assert.equal(i, 0);
@@ -377,9 +424,11 @@ add_task(async function test_on_row_stop_iteration() {
 add_task(async function test_invalid_transaction_type() {
   let c = await getDummyDatabase("invalid_transaction_type");
 
-  Assert.throws(() => c.executeTransaction(function() {}, "foobar"),
-                /Unknown transaction type/,
-                "Unknown transaction type should throw");
+  Assert.throws(
+    () => c.executeTransaction(function() {}, "foobar"),
+    /Unknown transaction type/,
+    "Unknown transaction type should throw"
+  );
 
   await c.close();
 });
@@ -438,9 +487,11 @@ add_task(async function test_close_during_transaction() {
   });
   await c.close();
 
-  await Assert.rejects(promise,
-                       /Transaction canceled due to a closed connection/,
-                       "closing a connection in the middle of a transaction should reject it");
+  await Assert.rejects(
+    promise,
+    /Transaction canceled due to a closed connection/,
+    "closing a connection in the middle of a transaction should reject it"
+  );
 
   let c2 = await getConnection("close_during_transaction");
   let rows = await c2.execute("SELECT * FROM dirs");
@@ -456,15 +507,17 @@ add_task(async function test_multiple_transactions() {
   for (let i = 0; i < 10; ++i) {
     // We don't wait for these transactions.
     c.executeTransaction(async function() {
-      await c.execute("INSERT INTO dirs (path) VALUES (:path)",
-                      { path: `foo${i}` });
+      await c.execute("INSERT INTO dirs (path) VALUES (:path)", {
+        path: `foo${i}`,
+      });
       await c.execute("SELECT * FROM dirs");
     });
   }
   for (let i = 0; i < 10; ++i) {
     await c.executeTransaction(async function() {
-      await c.execute("INSERT INTO dirs (path) VALUES (:path)",
-                      { path: `bar${i}` });
+      await c.execute("INSERT INTO dirs (path) VALUES (:path)", {
+        path: `bar${i}`,
+      });
       await c.execute("SELECT * FROM dirs");
     });
   }
@@ -478,8 +531,12 @@ add_task(async function test_multiple_transactions() {
 // Verify that wrapped transactions ignore a BEGIN TRANSACTION failure, when
 // an externally opened transaction exists.
 add_task(async function test_wrapped_connection_transaction() {
-  let file = new FileUtils.File(OS.Path.join(OS.Constants.Path.profileDir,
-                                             "test_wrapStorageConnection.sqlite"));
+  let file = new FileUtils.File(
+    OS.Path.join(
+      OS.Constants.Path.profileDir,
+      "test_wrapStorageConnection.sqlite"
+    )
+  );
   let c = await new Promise((resolve, reject) => {
     Services.storage.openAsyncDatabase(file, null, (status, db) => {
       if (Components.isSuccessCode(status)) {
@@ -495,7 +552,9 @@ add_task(async function test_wrapped_connection_transaction() {
   await c.executeSimpleSQLAsync("BEGIN");
   // Now use executeTransaction, it will be executed, but not in a transaction.
   await wrapper.executeTransaction(async function() {
-    await wrapper.execute("CREATE TABLE test (id INTEGER PRIMARY KEY AUTOINCREMENT)");
+    await wrapper.execute(
+      "CREATE TABLE test (id INTEGER PRIMARY KEY AUTOINCREMENT)"
+    );
   });
   // This should not fail cause the internal transaction has not been created.
   await c.executeSimpleSQLAsync("COMMIT");
@@ -519,8 +578,9 @@ add_task(async function test_shrink_memory() {
 });
 
 add_task(async function test_no_shrink_on_init() {
-  let c = await getConnection("no_shrink_on_init",
-                              {shrinkMemoryOnConnectionIdleMS: 200});
+  let c = await getConnection("no_shrink_on_init", {
+    shrinkMemoryOnConnectionIdleMS: 200,
+  });
 
   let count = 0;
   Object.defineProperty(c._connectionData, "shrinkMemory", {
@@ -541,8 +601,9 @@ add_task(async function test_no_shrink_on_init() {
 });
 
 add_task(async function test_idle_shrink_fires() {
-  let c = await getDummyDatabase("idle_shrink_fires",
-                                 {shrinkMemoryOnConnectionIdleMS: 200});
+  let c = await getDummyDatabase("idle_shrink_fires", {
+    shrinkMemoryOnConnectionIdleMS: 200,
+  });
   c._connectionData._clearIdleShrinkTimer();
 
   let oldShrink = c._connectionData.shrinkMemory;
@@ -584,8 +645,9 @@ add_task(async function test_idle_shrink_fires() {
 
 add_task(async function test_idle_shrink_reset_on_operation() {
   const INTERVAL = 500;
-  let c = await getDummyDatabase("idle_shrink_reset_on_operation",
-                                 {shrinkMemoryOnConnectionIdleMS: INTERVAL});
+  let c = await getDummyDatabase("idle_shrink_reset_on_operation", {
+    shrinkMemoryOnConnectionIdleMS: INTERVAL,
+  });
 
   c._connectionData._clearIdleShrinkTimer();
 
@@ -635,12 +697,14 @@ add_task(async function test_in_progress_counts() {
   Assert.equal(c._connectionData._statementCounter, c._initialStatementCount);
   Assert.equal(c._connectionData._pendingStatements.size, 0);
   await c.executeCached("INSERT INTO dirs (path) VALUES ('foo')");
-  Assert.equal(c._connectionData._statementCounter, c._initialStatementCount + 1);
+  Assert.equal(
+    c._connectionData._statementCounter,
+    c._initialStatementCount + 1
+  );
   Assert.equal(c._connectionData._pendingStatements.size, 0);
 
   let expectOne;
   let expectTwo;
-
 
   // We want to make sure that two queries executing simultaneously
   // result in `_pendingStatements.size` reaching 2, then dropping back to 0.
@@ -664,7 +728,10 @@ add_task(async function test_in_progress_counts() {
 
   Assert.equal(expectOne, 1);
   Assert.equal(expectTwo, 2);
-  Assert.equal(c._connectionData._statementCounter, c._initialStatementCount + 3);
+  Assert.equal(
+    c._connectionData._statementCounter,
+    c._initialStatementCount + 3
+  );
   Assert.equal(c._connectionData._pendingStatements.size, 0);
 
   await c.close();
@@ -718,9 +785,9 @@ add_task(async function test_programmatic_binding() {
   let c = await getDummyDatabase("programmatic_binding");
 
   let bindings = [
-    {id: 1,    path: "foobar"},
-    {id: null, path: "baznoo"},
-    {id: 5,    path: "toofoo"},
+    { id: 1, path: "foobar" },
+    { id: null, path: "baznoo" },
+    { id: 5, path: "toofoo" },
   ];
 
   let sql = "INSERT INTO dirs VALUES (:id, :path)";
@@ -736,9 +803,9 @@ add_task(async function test_programmatic_binding_transaction() {
   let c = await getDummyDatabase("programmatic_binding_transaction");
 
   let bindings = [
-    {id: 1,    path: "foobar"},
-    {id: null, path: "baznoo"},
-    {id: 5,    path: "toofoo"},
+    { id: 1, path: "foobar" },
+    { id: null, path: "baznoo" },
+    { id: 5, path: "toofoo" },
   ];
 
   let sql = "INSERT INTO dirs VALUES (:id, :path)";
@@ -756,58 +823,56 @@ add_task(async function test_programmatic_binding_transaction() {
   await c.close();
 });
 
-add_task(async function test_programmatic_binding_transaction_partial_rollback() {
-  let c = await getDummyDatabase("programmatic_binding_transaction_partial_rollback");
+add_task(
+  async function test_programmatic_binding_transaction_partial_rollback() {
+    let c = await getDummyDatabase(
+      "programmatic_binding_transaction_partial_rollback"
+    );
 
-  let bindings = [
-    {id: 2, path: "foobar"},
-    {id: 3, path: "toofoo"},
-  ];
+    let bindings = [{ id: 2, path: "foobar" }, { id: 3, path: "toofoo" }];
 
-  let sql = "INSERT INTO dirs VALUES (:id, :path)";
+    let sql = "INSERT INTO dirs VALUES (:id, :path)";
 
-  // Add some data in an implicit transaction before beginning the batch insert.
-  await c.execute(sql, {id: 1, path: "works"});
+    // Add some data in an implicit transaction before beginning the batch insert.
+    await c.execute(sql, { id: 1, path: "works" });
 
-  let secondSucceeded = false;
-  try {
-    await c.executeTransaction(async function transaction() {
-      // Insert one row. This won't implicitly start a transaction.
-      await c.execute(sql, bindings[0]);
+    let secondSucceeded = false;
+    try {
+      await c.executeTransaction(async function transaction() {
+        // Insert one row. This won't implicitly start a transaction.
+        await c.execute(sql, bindings[0]);
 
-      // Insert multiple rows. mozStorage will want to start a transaction.
-      // One of the inserts will fail, so the transaction should be rolled back.
-      await c.execute(sql, bindings);
-      secondSucceeded = true;
-    });
-  } catch (ex) {
-    print("Caught expected exception: " + ex);
+        // Insert multiple rows. mozStorage will want to start a transaction.
+        // One of the inserts will fail, so the transaction should be rolled back.
+        await c.execute(sql, bindings);
+        secondSucceeded = true;
+      });
+    } catch (ex) {
+      print("Caught expected exception: " + ex);
+    }
+
+    // We did not get to the end of our in-transaction block.
+    Assert.ok(!secondSucceeded);
+
+    // Everything that happened in *our* transaction, not mozStorage's, got
+    // rolled back, but the first row still exists.
+    let rows = await c.executeCached("SELECT * from dirs");
+    Assert.equal(rows.length, 1);
+    Assert.equal(rows[0].getResultByName("path"), "works");
+    await c.close();
   }
-
-  // We did not get to the end of our in-transaction block.
-  Assert.ok(!secondSucceeded);
-
-  // Everything that happened in *our* transaction, not mozStorage's, got
-  // rolled back, but the first row still exists.
-  let rows = await c.executeCached("SELECT * from dirs");
-  Assert.equal(rows.length, 1);
-  Assert.equal(rows[0].getResultByName("path"), "works");
-  await c.close();
-});
+);
 
 // Just like the previous test, but relying on the implicit
 // transaction established by mozStorage.
 add_task(async function test_programmatic_binding_implicit_transaction() {
   let c = await getDummyDatabase("programmatic_binding_implicit_transaction");
 
-  let bindings = [
-    {id: 2, path: "foobar"},
-    {id: 1, path: "toofoo"},
-  ];
+  let bindings = [{ id: 2, path: "foobar" }, { id: 1, path: "toofoo" }];
 
   let sql = "INSERT INTO dirs VALUES (:id, :path)";
   let secondSucceeded = false;
-  await c.execute(sql, {id: 1, path: "works"});
+  await c.execute(sql, { id: 1, path: "works" });
   try {
     await c.execute(sql, bindings);
     secondSucceeded = true;
@@ -834,10 +899,14 @@ add_task(async function test_direct() {
   let db = Services.storage.openDatabase(file);
   print("Opened " + db);
 
-  db.executeSimpleSQL("CREATE TABLE types (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, UNIQUE (name))");
+  db.executeSimpleSQL(
+    "CREATE TABLE types (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, UNIQUE (name))"
+  );
   print("Executed setup.");
 
-  let statement = db.createAsyncStatement("INSERT INTO types (name) VALUES (:name)");
+  let statement = db.createAsyncStatement(
+    "INSERT INTO types (name) VALUES (:name)"
+  );
   let params = statement.newBindingParamsArray();
   let one = params.newBindingParams();
   one.bindByName("name", null);
@@ -854,7 +923,7 @@ add_task(async function test_direct() {
   begin.executeAsync({
     handleCompletion(reason) {
       deferred.resolve();
-    }
+    },
   });
   await deferred.promise;
 
@@ -863,12 +932,12 @@ add_task(async function test_direct() {
   deferred = Promise.defer();
   print("Executing async.");
   statement.executeAsync({
-    handleResult(resultSet) {
-    },
+    handleResult(resultSet) {},
 
     handleError(error) {
-      print("Error when executing SQL (" + error.result + "): " +
-            error.message);
+      print(
+        "Error when executing SQL (" + error.result + "): " + error.message
+      );
       print("Original error: " + error.error);
       deferred.reject();
     },
@@ -876,7 +945,7 @@ add_task(async function test_direct() {
     handleCompletion(reason) {
       print("Completed.");
       deferred.resolve();
-    }
+    },
   });
 
   await deferred.promise;
@@ -885,7 +954,7 @@ add_task(async function test_direct() {
   end.executeAsync({
     handleCompletion(reason) {
       deferred.resolve();
-    }
+    },
   });
   await deferred.promise;
 
@@ -902,8 +971,12 @@ add_task(async function test_direct() {
 
 // Test Sqlite.cloneStorageConnection.
 add_task(async function test_cloneStorageConnection() {
-  let file = new FileUtils.File(OS.Path.join(OS.Constants.Path.profileDir,
-                                             "test_cloneStorageConnection.sqlite"));
+  let file = new FileUtils.File(
+    OS.Path.join(
+      OS.Constants.Path.profileDir,
+      "test_cloneStorageConnection.sqlite"
+    )
+  );
   let c = await new Promise((resolve, reject) => {
     Services.storage.openAsyncDatabase(file, null, (status, db) => {
       if (Components.isSuccessCode(status)) {
@@ -914,11 +987,22 @@ add_task(async function test_cloneStorageConnection() {
     });
   });
 
-  let clone = await Sqlite.cloneStorageConnection({ connection: c, readOnly: true });
+  let clone = await Sqlite.cloneStorageConnection({
+    connection: c,
+    readOnly: true,
+  });
+  Assert.equal(clone.defaultTransactionType, "DEFERRED");
   // Just check that it works.
   await clone.execute("SELECT 1");
 
-  let clone2 = await Sqlite.cloneStorageConnection({ connection: c, readOnly: false });
+  info("Set default transaction type on storage connection");
+  c.defaultTransactionType = Ci.mozIStorageConnection.TRANSACTION_IMMEDIATE;
+
+  let clone2 = await Sqlite.cloneStorageConnection({
+    connection: c,
+    readOnly: false,
+  });
+  Assert.equal(clone2.defaultTransactionType, "IMMEDIATE");
   // Just check that it works.
   await clone2.execute("CREATE TABLE test (id INTEGER PRIMARY KEY)");
 
@@ -954,16 +1038,21 @@ add_task(async function test_clone() {
 
 // Test clone(readOnly) method.
 add_task(async function test_readOnly_clone() {
-  let path = OS.Path.join(OS.Constants.Path.profileDir, "test_readOnly_clone.sqlite");
-  let c = await Sqlite.openConnection({path, sharedMemoryCache: false});
+  let path = OS.Path.join(
+    OS.Constants.Path.profileDir,
+    "test_readOnly_clone.sqlite"
+  );
+  let c = await Sqlite.openConnection({ path, sharedMemoryCache: false });
 
   let clone = await c.clone(true);
   // Just check that it works.
   await clone.execute("SELECT 1");
   // But should not be able to write.
 
-  await Assert.rejects(clone.execute("CREATE TABLE test (id INTEGER PRIMARY KEY)"),
-                       /readonly/);
+  await Assert.rejects(
+    clone.execute("CREATE TABLE test (id INTEGER PRIMARY KEY)"),
+    /readonly/
+  );
   // Closing order should not matter.
   await c.close();
   await clone.close();
@@ -971,8 +1060,12 @@ add_task(async function test_readOnly_clone() {
 
 // Test Sqlite.wrapStorageConnection.
 add_task(async function test_wrapStorageConnection() {
-  let file = new FileUtils.File(OS.Path.join(OS.Constants.Path.profileDir,
-                                             "test_wrapStorageConnection.sqlite"));
+  let file = new FileUtils.File(
+    OS.Path.join(
+      OS.Constants.Path.profileDir,
+      "test_wrapStorageConnection.sqlite"
+    )
+  );
   let c = await new Promise((resolve, reject) => {
     Services.storage.openAsyncDatabase(file, null, (status, db) => {
       if (Components.isSuccessCode(status)) {
@@ -984,6 +1077,7 @@ add_task(async function test_wrapStorageConnection() {
   });
 
   let wrapper = await Sqlite.wrapStorageConnection({ connection: c });
+  Assert.equal(wrapper.defaultTransactionType, "DEFERRED");
   // Just check that it works.
   await wrapper.execute("SELECT 1");
   await wrapper.executeCached("SELECT 1");
@@ -991,6 +1085,17 @@ add_task(async function test_wrapStorageConnection() {
   // Closing the wrapper should just finalize statements but not close the
   // database.
   await wrapper.close();
+
+  info("Set default transaction type on storage connection");
+  c.defaultTransactionType = Ci.mozIStorageConnection.TRANSACTION_EXCLUSIVE;
+
+  let wrapper2 = await Sqlite.wrapStorageConnection({ connection: c });
+  Assert.equal(wrapper2.defaultTransactionType, "EXCLUSIVE");
+  // Just check that it works.
+  await wrapper2.execute("SELECT 1");
+
+  await wrapper2.close();
+
   await c.asyncClose();
 });
 
@@ -999,8 +1104,11 @@ add_task(async function test_closed_by_witness() {
   failTestsOnAutoClose(false);
   let c = await getDummyDatabase("closed_by_witness");
 
-  Services.obs.notifyObservers(null, "sqlite-finalization-witness",
-                               c._connectionData._identifier);
+  Services.obs.notifyObservers(
+    null,
+    "sqlite-finalization-witness",
+    c._connectionData._identifier
+  );
   // Since we triggered finalization ourselves, tell the witness to
   // forget the connection so it does not trigger a finalization again
   c._witness.forget();
@@ -1020,10 +1128,12 @@ add_task(async function test_warning_message_on_finalization() {
       let messageText = msg.message;
       // Make sure the message starts with a warning containing the
       // connection identifier
-      if (messageText.includes("Warning: Sqlite connection '" + identifier + "'")) {
+      if (
+        messageText.includes("Warning: Sqlite connection '" + identifier + "'")
+      ) {
         deferred.resolve();
       }
-    }
+    },
   };
   Services.console.registerListener(listener);
 
@@ -1044,11 +1154,14 @@ add_task(async function test_error_message_on_unknown_finalization() {
   let listener = {
     observe(msg) {
       let messageText = msg.message;
-      if (messageText.includes("Error: Attempt to finalize unknown " +
-                              "Sqlite connection: foo")) {
+      if (
+        messageText.includes(
+          "Error: Attempt to finalize unknown Sqlite connection: foo"
+        )
+      ) {
         deferred.resolve();
       }
-    }
+    },
   };
   Services.console.registerListener(listener);
   Services.obs.notifyObservers(null, "sqlite-finalization-witness", "foo");
@@ -1123,39 +1236,44 @@ add_task(async function test_datatypes() {
       null_col: null,
       integer_col: 12345,
       text_col: "qwerty",
-      blob_col: new Uint8Array(256).map( (value, index) => index % 256 ),
+      blob_col: new Uint8Array(256).map((value, index) => index % 256),
       real_col: 3.14159265359,
-      numeric_col: true
+      numeric_col: true,
     },
     {
       null_col: null,
       integer_col: -12345,
       text_col: "",
-      blob_col: new Uint8Array(256 * 2).map( (value, index) => index % 256 ),
+      blob_col: new Uint8Array(256 * 2).map((value, index) => index % 256),
       real_col: Number.NEGATIVE_INFINITY,
-      numeric_col: false
-    }
+      numeric_col: false,
+    },
   ];
 
-  await c.execute(`INSERT INTO datatypes VALUES (
+  await c.execute(
+    `INSERT INTO datatypes VALUES (
                      :null_col,
                      :integer_col,
                      :text_col,
                      :blob_col,
                      :real_col,
                      :numeric_col
-                   )`, bindings);
+                   )`,
+    bindings
+  );
 
   let rows = await c.execute("SELECT * FROM datatypes");
   Assert.ok(Array.isArray(rows));
   Assert.equal(rows.length, bindings.length);
-  for (let i = 0 ; i < bindings.length; ++i) {
+  for (let i = 0; i < bindings.length; ++i) {
     let binding = bindings[i];
     let row = rows[i];
     for (let colName in binding) {
       // In Sqlite bool is stored and then retrieved as numeric.
-      let val = typeof binding[colName] == "boolean" ? +binding[colName]
-                                                       : binding[colName];
+      let val =
+        typeof binding[colName] == "boolean"
+          ? +binding[colName]
+          : binding[colName];
       Assert.deepEqual(val, row.getResultByName(colName));
     }
   }
@@ -1166,11 +1284,15 @@ add_task(async function test_interrupt() {
   // Testing the interrupt functionality is left to mozStorage unit tests, here
   // we'll just test error conditions.
   let c = await getDummyDatabase("interrupt");
-  Assert.throws(() => c.interrupt(),
-                /NS_ERROR_ILLEGAL_VALUE/,
-                "Sqlite.interrupt() should throw on a writable connection");
+  Assert.throws(
+    () => c.interrupt(),
+    /NS_ERROR_ILLEGAL_VALUE/,
+    "Sqlite.interrupt() should throw on a writable connection"
+  );
   await c.close();
-  Assert.throws(() => c.interrupt(),
-                /Connection is not open/,
-                "Sqlite.interrupt() should throw on a closed connection");
+  Assert.throws(
+    () => c.interrupt(),
+    /Connection is not open/,
+    "Sqlite.interrupt() should throw on a closed connection"
+  );
 });

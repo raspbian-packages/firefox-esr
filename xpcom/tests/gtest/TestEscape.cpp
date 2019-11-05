@@ -72,45 +72,38 @@ TEST(Escape, BadEscapeSequences)
 TEST(Escape, nsAppendEscapedHTML)
 {
   const char* srcs[] = {
-    "a",
-    "bcdefgh",
-    "<",
-    ">",
-    "&",
-    "\"",
-    "'",
-    "'bad'",
-    "Foo<T>& foo",
-    "'\"&><abc",
-    "",
+      "a", "bcdefgh", "<",           ">",         "&", "\"",
+      "'", "'bad'",   "Foo<T>& foo", "'\"&><abc", "",
   };
 
   const char* dsts1[] = {
-    "a",
-    "bcdefgh",
-    "&lt;",
-    "&gt;",
-    "&amp;",
-    "&quot;",
-    "&#39;",
-    "&#39;bad&#39;",
-    "Foo&lt;T&gt;&amp; foo",
-    "&#39;&quot;&amp;&gt;&lt;abc",
-    "",
+      "a",
+      "bcdefgh",
+      "&lt;",
+      "&gt;",
+      "&amp;",
+      "&quot;",
+      "&#39;",
+      "&#39;bad&#39;",
+      "Foo&lt;T&gt;&amp; foo",
+      "&#39;&quot;&amp;&gt;&lt;abc",
+      "",
   };
 
   const char* dsts2[] = {
-    "a",
-    "abcdefgh",
-    "abcdefgh&lt;",
-    "abcdefgh&lt;&gt;",
-    "abcdefgh&lt;&gt;&amp;",
-    "abcdefgh&lt;&gt;&amp;&quot;",
-    "abcdefgh&lt;&gt;&amp;&quot;&#39;",
-    "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;",
-    "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;Foo&lt;T&gt;&amp; foo",
-    "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;Foo&lt;T&gt;&amp; foo&#39;&quot;&amp;&gt;&lt;abc",
-    "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;Foo&lt;T&gt;&amp; foo&#39;&quot;&amp;&gt;&lt;abc",
+      "a",
+      "abcdefgh",
+      "abcdefgh&lt;",
+      "abcdefgh&lt;&gt;",
+      "abcdefgh&lt;&gt;&amp;",
+      "abcdefgh&lt;&gt;&amp;&quot;",
+      "abcdefgh&lt;&gt;&amp;&quot;&#39;",
+      "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;",
+      "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;Foo&lt;T&gt;&amp; foo",
+      "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;Foo&lt;T&gt;&amp; "
+      "foo&#39;&quot;&amp;&gt;&lt;abc",
+      "abcdefgh&lt;&gt;&amp;&quot;&#39;&#39;bad&#39;Foo&lt;T&gt;&amp; "
+      "foo&#39;&quot;&amp;&gt;&lt;abc",
   };
 
   ASSERT_EQ(ArrayLength(srcs), ArrayLength(dsts1));
@@ -133,3 +126,19 @@ TEST(Escape, nsAppendEscapedHTML)
   }
 }
 
+TEST(Escape, EscapeSpaces)
+{
+  // Tests the fallible version of NS_EscapeURL works as expected when no
+  // escaping is necessary.
+  nsCString toEscape("data:\x0D\x0A spa ces\xC4\x9F");
+  nsCString escaped;
+  nsresult rv = NS_EscapeURL(toEscape, esc_OnlyNonASCII, escaped, fallible);
+  EXPECT_EQ(rv, NS_OK);
+  // Only non-ASCII and C0
+  EXPECT_STREQ(escaped.BeginReading(), "data:%0D%0A spa ces%C4%9F");
+
+  escaped.Truncate();
+  rv = NS_EscapeURL(toEscape, esc_OnlyNonASCII | esc_Spaces, escaped, fallible);
+  EXPECT_EQ(rv, NS_OK);
+  EXPECT_STREQ(escaped.BeginReading(), "data:%0D%0A%20spa%20ces%C4%9F");
+}

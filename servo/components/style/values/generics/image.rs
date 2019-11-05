@@ -1,22 +1,24 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Generic types for the handling of [images].
 //!
 //! [images]: https://drafts.csswg.org/css-images/#image-values
 
-use Atom;
-use custom_properties;
+use crate::custom_properties;
+use crate::values::serialize_atom_identifier;
+use crate::Atom;
 use servo_arc::Arc;
 use std::fmt::{self, Write};
 use style_traits::{CssWriter, ToCss};
-use values::serialize_atom_identifier;
 
 /// An [image].
 ///
 /// [image]: https://drafts.csswg.org/css-images/#image-values
-#[derive(Clone, MallocSizeOf, PartialEq, ToComputedValue)]
+#[derive(
+    Clone, MallocSizeOf, PartialEq, SpecifiedValueInfo, ToComputedValue, ToResolvedValue, ToShmem,
+)]
 pub enum Image<Gradient, MozImageRect, ImageUrl> {
     /// A `<url()>` image.
     Url(ImageUrl),
@@ -26,6 +28,7 @@ pub enum Image<Gradient, MozImageRect, ImageUrl> {
     /// A `-moz-image-rect` image.  Also fairly large and rare.
     Rect(Box<MozImageRect>),
     /// A `-moz-element(# <element-id>)`
+    #[css(function = "-moz-element")]
     Element(Atom),
     /// A paint worklet image.
     /// <https://drafts.css-houdini.org/css-paint-api/>
@@ -35,19 +38,19 @@ pub enum Image<Gradient, MozImageRect, ImageUrl> {
 
 /// A CSS gradient.
 /// <https://drafts.csswg.org/css-images/#gradients>
-#[derive(Clone, Debug, MallocSizeOf, PartialEq, ToComputedValue)]
-pub struct Gradient<LineDirection, Length, LengthOrPercentage, Position, Color, Angle> {
+#[derive(Clone, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToResolvedValue, ToShmem)]
+pub struct Gradient<LineDirection, Length, LengthPercentage, Position, Color, Angle> {
     /// Gradients can be linear or radial.
-    pub kind: GradientKind<LineDirection, Length, LengthOrPercentage, Position, Angle>,
+    pub kind: GradientKind<LineDirection, Length, LengthPercentage, Position, Angle>,
     /// The color stops and interpolation hints.
-    pub items: Vec<GradientItem<Color, LengthOrPercentage>>,
+    pub items: Vec<GradientItem<Color, LengthPercentage>>,
     /// True if this is a repeating gradient.
     pub repeating: bool,
     /// Compatibility mode.
     pub compat_mode: CompatMode,
 }
 
-#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue)]
+#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToResolvedValue, ToShmem)]
 /// Whether we used the modern notation or the compatibility `-webkit`, `-moz` prefixes.
 pub enum CompatMode {
     /// Modern syntax.
@@ -59,25 +62,31 @@ pub enum CompatMode {
 }
 
 /// A gradient kind.
-#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue)]
-pub enum GradientKind<LineDirection, Length, LengthOrPercentage, Position, Angle> {
+#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToResolvedValue, ToShmem)]
+pub enum GradientKind<LineDirection, Length, LengthPercentage, Position, Angle> {
     /// A linear gradient.
     Linear(LineDirection),
     /// A radial gradient.
-    Radial(EndingShape<Length, LengthOrPercentage>, Position, Option<Angle>),
+    Radial(
+        EndingShape<Length, LengthPercentage>,
+        Position,
+        Option<Angle>,
+    ),
 }
 
 /// A radial gradient's ending shape.
-#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss)]
-pub enum EndingShape<Length, LengthOrPercentage> {
+#[derive(
+    Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss, ToResolvedValue, ToShmem,
+)]
+pub enum EndingShape<Length, LengthPercentage> {
     /// A circular gradient.
     Circle(Circle<Length>),
     /// An elliptic gradient.
-    Ellipse(Ellipse<LengthOrPercentage>),
+    Ellipse(Ellipse<LengthPercentage>),
 }
 
 /// A circle shape.
-#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue)]
+#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToResolvedValue, ToShmem)]
 pub enum Circle<Length> {
     /// A circle radius.
     Radius(Length),
@@ -86,10 +95,12 @@ pub enum Circle<Length> {
 }
 
 /// An ellipse shape.
-#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss)]
-pub enum Ellipse<LengthOrPercentage> {
+#[derive(
+    Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss, ToResolvedValue, ToShmem,
+)]
+pub enum Ellipse<LengthPercentage> {
     /// An ellipse pair of radii.
-    Radii(LengthOrPercentage, LengthOrPercentage),
+    Radii(LengthPercentage, LengthPercentage),
     /// An ellipse extent.
     Extent(ShapeExtent),
 }
@@ -97,8 +108,19 @@ pub enum Ellipse<LengthOrPercentage> {
 /// <https://drafts.csswg.org/css-images/#typedef-extent-keyword>
 #[allow(missing_docs)]
 #[cfg_attr(feature = "servo", derive(Deserialize, Serialize))]
-#[derive(Clone, Copy, Debug, Eq, MallocSizeOf, Parse, PartialEq)]
-#[derive(ToComputedValue, ToCss)]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    MallocSizeOf,
+    Parse,
+    PartialEq,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
 pub enum ShapeExtent {
     ClosestSide,
     FarthestSide,
@@ -110,28 +132,56 @@ pub enum ShapeExtent {
 
 /// A gradient item.
 /// <https://drafts.csswg.org/css-images-4/#color-stop-syntax>
-#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss)]
-pub enum GradientItem<Color, LengthOrPercentage> {
-    /// A color stop.
-    ColorStop(ColorStop<Color, LengthOrPercentage>),
+#[derive(
+    Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss, ToResolvedValue, ToShmem,
+)]
+#[repr(C, u8)]
+pub enum GenericGradientItem<Color, LengthPercentage> {
+    /// A simple color stop, without position.
+    SimpleColorStop(Color),
+    /// A complex color stop, with a position.
+    ComplexColorStop {
+        /// The color for the stop.
+        color: Color,
+        /// The position for the stop.
+        position: LengthPercentage,
+    },
     /// An interpolation hint.
-    InterpolationHint(LengthOrPercentage),
+    InterpolationHint(LengthPercentage),
 }
+
+pub use self::GenericGradientItem as GradientItem;
 
 /// A color stop.
 /// <https://drafts.csswg.org/css-images/#typedef-color-stop-list>
-#[derive(Clone, Copy, MallocSizeOf, PartialEq, ToComputedValue, ToCss)]
-pub struct ColorStop<Color, LengthOrPercentage> {
+#[derive(
+    Clone, Copy, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss, ToResolvedValue, ToShmem,
+)]
+pub struct ColorStop<Color, LengthPercentage> {
     /// The color of this stop.
     pub color: Color,
     /// The position of this stop.
-    pub position: Option<LengthOrPercentage>,
+    pub position: Option<LengthPercentage>,
+}
+
+impl<Color, LengthPercentage> ColorStop<Color, LengthPercentage> {
+    /// Convert the color stop into an appropriate `GradientItem`.
+    #[inline]
+    pub fn into_item(self) -> GradientItem<Color, LengthPercentage> {
+        match self.position {
+            Some(position) => GradientItem::ComplexColorStop {
+                color: self.color,
+                position,
+            },
+            None => GradientItem::SimpleColorStop(self.color),
+        }
+    }
 }
 
 /// Specified values for a paint worklet.
 /// <https://drafts.css-houdini.org/css-paint-api/>
 #[cfg_attr(feature = "servo", derive(MallocSizeOf))]
-#[derive(Clone, Debug, PartialEq, ToComputedValue)]
+#[derive(Clone, Debug, PartialEq, ToComputedValue, ToResolvedValue, ToShmem)]
 pub struct PaintWorklet {
     /// The name the worklet was registered with.
     pub name: Atom,
@@ -140,6 +190,8 @@ pub struct PaintWorklet {
     #[cfg_attr(feature = "servo", ignore_malloc_size_of = "Arc")]
     pub arguments: Vec<Arc<custom_properties::SpecifiedValue>>,
 }
+
+impl ::style_traits::SpecifiedValueInfo for PaintWorklet {}
 
 impl ToCss for PaintWorklet {
     fn to_css<W>(&self, dest: &mut CssWriter<W>) -> fmt::Result
@@ -161,7 +213,17 @@ impl ToCss for PaintWorklet {
 /// `-moz-image-rect(<uri>, top, right, bottom, left);`
 #[allow(missing_docs)]
 #[css(comma, function)]
-#[derive(Clone, Debug, MallocSizeOf, PartialEq, ToComputedValue, ToCss)]
+#[derive(
+    Clone,
+    Debug,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
 pub struct MozImageRect<NumberOrPercentage, MozImageRectUrl> {
     pub url: MozImageRectUrl,
     pub top: NumberOrPercentage,
@@ -182,7 +244,10 @@ where
 }
 
 impl<G, R, U> ToCss for Image<G, R, U>
-    where G: ToCss, R: ToCss, U: ToCss
+where
+    G: ToCss,
+    R: ToCss,
+    U: ToCss,
 {
     fn to_css<W>(&self, dest: &mut CssWriter<W>) -> fmt::Result
     where
@@ -204,7 +269,13 @@ impl<G, R, U> ToCss for Image<G, R, U>
 }
 
 impl<D, L, LoP, P, C, A> ToCss for Gradient<D, L, LoP, P, C, A>
-    where D: LineDirection, L: ToCss, LoP: ToCss, P: ToCss, C: ToCss, A: ToCss
+where
+    D: LineDirection,
+    L: ToCss,
+    LoP: ToCss,
+    P: ToCss,
+    C: ToCss,
+    A: ToCss,
 {
     fn to_css<W>(&self, dest: &mut CssWriter<W>) -> fmt::Result
     where
@@ -222,8 +293,9 @@ impl<D, L, LoP, P, C, A> ToCss for Gradient<D, L, LoP, P, C, A>
         dest.write_str(self.kind.label())?;
         dest.write_str("-gradient(")?;
         let mut skip_comma = match self.kind {
-            GradientKind::Linear(ref direction)
-                if direction.points_downwards(self.compat_mode) => true,
+            GradientKind::Linear(ref direction) if direction.points_downwards(self.compat_mode) => {
+                true
+            },
             GradientKind::Linear(ref direction) => {
                 direction.to_css(dest, self.compat_mode)?;
                 false
@@ -231,9 +303,7 @@ impl<D, L, LoP, P, C, A> ToCss for Gradient<D, L, LoP, P, C, A>
             GradientKind::Radial(ref shape, ref position, ref angle) => {
                 let omit_shape = match *shape {
                     EndingShape::Ellipse(Ellipse::Extent(ShapeExtent::Cover)) |
-                    EndingShape::Ellipse(Ellipse::Extent(ShapeExtent::FarthestCorner)) => {
-                        true
-                    },
+                    EndingShape::Ellipse(Ellipse::Extent(ShapeExtent::FarthestCorner)) => true,
                     _ => false,
                 };
                 if self.compat_mode == CompatMode::Modern {
@@ -284,7 +354,8 @@ pub trait LineDirection {
 
     /// Serialises this direction according to the compatibility mode.
     fn to_css<W>(&self, dest: &mut CssWriter<W>, compat_mode: CompatMode) -> fmt::Result
-        where W: Write;
+    where
+        W: Write;
 }
 
 impl<L> ToCss for Circle<L>
@@ -296,29 +367,14 @@ where
         W: Write,
     {
         match *self {
-            Circle::Extent(ShapeExtent::FarthestCorner) |
-            Circle::Extent(ShapeExtent::Cover) => {
+            Circle::Extent(ShapeExtent::FarthestCorner) | Circle::Extent(ShapeExtent::Cover) => {
                 dest.write_str("circle")
             },
             Circle::Extent(keyword) => {
                 dest.write_str("circle ")?;
                 keyword.to_css(dest)
             },
-            Circle::Radius(ref length) => {
-                length.to_css(dest)
-            },
+            Circle::Radius(ref length) => length.to_css(dest),
         }
-    }
-}
-
-impl<C, L> fmt::Debug for ColorStop<C, L>
-    where C: fmt::Debug, L: fmt::Debug,
-{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self.color)?;
-        if let Some(ref pos) = self.position {
-            write!(f, " {:?}", pos)?;
-        }
-        Ok(())
     }
 }

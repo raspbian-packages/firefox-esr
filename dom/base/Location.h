@@ -9,6 +9,7 @@
 
 #include "js/TypeDecls.h"
 #include "mozilla/ErrorResult.h"
+#include "mozilla/dom/BrowsingContext.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsIWeakReferenceUtils.h"
 #include "nsPIDOMWindow.h"
@@ -16,8 +17,8 @@
 #include "nsWrapperCache.h"
 
 class nsIDocShell;
-class nsIDocShellLoadInfo;
 class nsIURI;
+class nsDocShellLoadState;
 
 namespace mozilla {
 namespace dom {
@@ -28,6 +29,8 @@ namespace dom {
 
 class Location final : public nsISupports, public nsWrapperCache {
  public:
+  typedef BrowsingContext::LocationProxy RemoteProxy;
+
   Location(nsPIDOMWindowInner* aWindow, nsIDocShell* aDocShell);
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
@@ -60,7 +63,8 @@ class Location final : public nsISupports, public nsWrapperCache {
     aError = GetHref(aHref);
   }
 
-  void SetHref(const nsAString& aHref, ErrorResult& aError);
+  void SetHref(const nsAString& aHref, nsIPrincipal& aSubjectPrincipal,
+               ErrorResult& aError);
 
   void GetOrigin(nsAString& aOrigin, nsIPrincipal& aSubjectPrincipal,
                  ErrorResult& aError);
@@ -135,19 +139,27 @@ class Location final : public nsISupports, public nsWrapperCache {
   // Note, this method can return NS_OK with a null value for aURL. This happens
   // if the docShell is null.
   nsresult GetURI(nsIURI** aURL, bool aGetInnermostURI = false);
-  // Note, this method can return NS_OK with a null value for aURL. This happens
-  // if the docShell is null.
-  nsresult GetWritableURI(nsIURI** aURL,
-                          // If not null, give it the new ref
-                          const nsACString* aNewRef = nullptr);
-  nsresult SetURI(nsIURI* aURL, bool aReplace = false);
-  nsresult SetHrefWithBase(const nsAString& aHref, nsIURI* aBase,
-                           bool aReplace);
-  nsresult SetHrefWithContext(JSContext* cx, const nsAString& aHref,
-                              bool aReplace);
 
-  nsresult GetSourceBaseURL(JSContext* cx, nsIURI** sourceURL);
-  nsresult CheckURL(nsIURI* url, nsIDocShellLoadInfo** aLoadInfo);
+  void SetURI(nsIURI* aURL, nsIPrincipal& aSubjectPrincipal, ErrorResult& aRv,
+              bool aReplace = false);
+  void SetHrefWithBase(const nsAString& aHref, nsIURI* aBase,
+                       nsIPrincipal& aSubjectPrincipal, bool aReplace,
+                       ErrorResult& aRv);
+
+  // Helper for Assign/SetHref/Replace
+  void DoSetHref(const nsAString& aHref, nsIPrincipal& aSubjectPrincipal,
+                 bool aReplace, ErrorResult& aRv);
+
+  // Get the base URL we should be using for our relative URL
+  // resolution for SetHref/Assign/Replace.
+  already_AddRefed<nsIURI> GetSourceBaseURL();
+
+  // Check whether it's OK to load the given url with the given subject
+  // principal, and if so construct the right nsDocShellLoadInfo for the load
+  // and return it.
+  already_AddRefed<nsDocShellLoadState> CheckURL(
+      nsIURI* url, nsIPrincipal& aSubjectPrincipal, ErrorResult& aRv);
+
   bool CallerSubsumes(nsIPrincipal* aSubjectPrincipal);
 
   nsString mCachedHash;

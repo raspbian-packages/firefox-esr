@@ -20,39 +20,54 @@ const TEST_URI = `
 
 const GRID_OPENED_PREF = "devtools.layout.grid.opened";
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let { inspector, gridInspector, toolbox } = yield openLayoutView();
-  let { document: doc } = gridInspector;
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { inspector, gridInspector, toolbox } = await openLayoutView();
+  const { document: doc } = gridInspector;
 
-  yield testAccordionStateAfterClickingHeader(doc);
-  yield testAccordionStateAfterSwitchingSidebars(inspector, doc);
-  yield testAccordionStateAfterReopeningLayoutView(toolbox);
+  await testAccordionStateAfterClickingHeader(doc);
+  await testAccordionStateAfterSwitchingSidebars(inspector, doc);
+  await testAccordionStateAfterReopeningLayoutView(toolbox);
 
   Services.prefs.clearUserPref(GRID_OPENED_PREF);
 });
 
-function* testAccordionStateAfterClickingHeader(doc) {
-  let header = doc.querySelector(".grid-pane ._header");
-  let gContent = doc.querySelector(".grid-pane ._content");
+function testAccordionStateAfterClickingHeader(doc) {
+  const header = doc.querySelector(".grid-pane ._header");
+  const gContent = doc.querySelector(".grid-pane ._content");
 
   info("Checking initial state of the grid panel.");
-  is(gContent.style.display, "block", "The grid panel content is 'display: block'.");
-  ok(Services.prefs.getBoolPref(GRID_OPENED_PREF),
-    `${GRID_OPENED_PREF} is pref on by default.`);
+  is(
+    gContent.style.display,
+    "block",
+    "The grid panel content is 'display: block'."
+  );
+  ok(
+    Services.prefs.getBoolPref(GRID_OPENED_PREF),
+    `${GRID_OPENED_PREF} is pref on by default.`
+  );
 
   info("Clicking the grid header to hide the grid panel.");
   header.click();
 
   info("Checking the new state of the grid panel.");
-  is(gContent.style.display, "none", "The grid panel content is 'display: none'.");
-  ok(!Services.prefs.getBoolPref(GRID_OPENED_PREF), `${GRID_OPENED_PREF} is pref off.`);
+  is(
+    gContent.style.display,
+    "none",
+    "The grid panel content is 'display: none'."
+  );
+  ok(
+    !Services.prefs.getBoolPref(GRID_OPENED_PREF),
+    `${GRID_OPENED_PREF} is pref off.`
+  );
 }
 
-function* testAccordionStateAfterSwitchingSidebars(inspector, doc) {
-  info("Checking the grid accordion state is persistent after switching sidebars.");
+function testAccordionStateAfterSwitchingSidebars(inspector, doc) {
+  info(
+    "Checking the grid accordion state is persistent after switching sidebars."
+  );
 
-  let gContent = doc.querySelector(".grid-pane ._content");
+  const gContent = doc.querySelector(".grid-pane ._content");
 
   info("Selecting the computed view.");
   inspector.sidebar.select("computedview");
@@ -61,24 +76,35 @@ function* testAccordionStateAfterSwitchingSidebars(inspector, doc) {
   inspector.sidebar.select("layoutview");
 
   info("Checking the state of the grid panel.");
-  is(gContent.style.display, "none", "The grid panel content is 'display: none'.");
-  ok(!Services.prefs.getBoolPref(GRID_OPENED_PREF), `${GRID_OPENED_PREF} is pref off.`);
+  is(
+    gContent.style.display,
+    "none",
+    "The grid panel content is 'display: none'."
+  );
+  ok(
+    !Services.prefs.getBoolPref(GRID_OPENED_PREF),
+    `${GRID_OPENED_PREF} is pref off.`
+  );
 }
 
-function* testAccordionStateAfterReopeningLayoutView(toolbox) {
-  info("Checking the grid accordion state is persistent after closing and re-opening the "
-  + "layout view.");
+async function testAccordionStateAfterReopeningLayoutView(toolbox) {
+  info(
+    "Checking the grid accordion state is persistent after closing and re-opening the " +
+      "layout view."
+  );
 
   info("Closing the toolbox.");
-  yield toolbox.destroy();
+  await toolbox.destroy();
 
   info("Re-opening the layout view.");
-  let { gridInspector } = yield openLayoutView();
-  let { document: doc } = gridInspector;
-  let gContent = doc.querySelector(".grid-pane ._content");
+  const { gridInspector } = await openLayoutView();
+  const { document: doc } = gridInspector;
+  const gContent = doc.querySelector(".grid-pane ._content");
 
   info("Checking the state of the grid panel.");
   ok(!gContent, "The grid panel content is not rendered.");
-  ok(!Services.prefs.getBoolPref(GRID_OPENED_PREF),
-    `${GRID_OPENED_PREF} is pref off.`);
+  ok(
+    !Services.prefs.getBoolPref(GRID_OPENED_PREF),
+    `${GRID_OPENED_PREF} is pref off.`
+  );
 }

@@ -24,8 +24,8 @@ namespace dom {
  */
 
 HTMLOptGroupElement::HTMLOptGroupElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {
   // We start off enabled
   AddStatesSilently(NS_EVENT_STATE_ENABLED);
 }
@@ -34,24 +34,18 @@ HTMLOptGroupElement::~HTMLOptGroupElement() {}
 
 NS_IMPL_ELEMENT_CLONE(HTMLOptGroupElement)
 
-nsresult HTMLOptGroupElement::GetEventTargetParent(
-    EventChainPreVisitor& aVisitor) {
+void HTMLOptGroupElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   aVisitor.mCanHandle = false;
-  // Do not process any DOM events if the element is disabled
-  // XXXsmaug This is not the right thing to do. But what is?
-  if (IsDisabled()) {
-    return NS_OK;
-  }
 
   if (nsIFrame* frame = GetPrimaryFrame()) {
     // FIXME(emilio): This poking at the style of the frame is broken unless we
     // flush before every event handling, which we don't really want to.
-    if (frame->StyleUserInterface()->mUserInput == StyleUserInput::None) {
-      return NS_OK;
+    if (frame->StyleUI()->mUserInput == StyleUserInput::None) {
+      return;
     }
   }
 
-  return nsGenericHTMLElement::GetEventTargetParent(aVisitor);
+  nsGenericHTMLElement::GetEventTargetParent(aVisitor);
 }
 
 Element* HTMLOptGroupElement::GetSelect() {
@@ -73,25 +67,6 @@ nsresult HTMLOptGroupElement::InsertChildBefore(nsIContent* aKid,
     safeMutation.MutationFailed();
   }
   return rv;
-}
-
-nsresult HTMLOptGroupElement::InsertChildAt_Deprecated(nsIContent* aKid,
-                                                       uint32_t aIndex,
-                                                       bool aNotify) {
-  SafeOptionListMutation safeMutation(GetSelect(), this, aKid, aIndex, aNotify);
-  nsresult rv =
-      nsGenericHTMLElement::InsertChildAt_Deprecated(aKid, aIndex, aNotify);
-  if (NS_FAILED(rv)) {
-    safeMutation.MutationFailed();
-  }
-  return rv;
-}
-
-void HTMLOptGroupElement::RemoveChildAt_Deprecated(uint32_t aIndex,
-                                                   bool aNotify) {
-  SafeOptionListMutation safeMutation(GetSelect(), this, nullptr, aIndex,
-                                      aNotify);
-  nsGenericHTMLElement::RemoveChildAt_Deprecated(aIndex, aNotify);
 }
 
 void HTMLOptGroupElement::RemoveChildNode(nsIContent* aKid, bool aNotify) {
@@ -123,7 +98,7 @@ nsresult HTMLOptGroupElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
       // disabled attribute. We should make sure their state is updated.
       for (nsIContent* child = nsINode::GetFirstChild(); child;
            child = child->GetNextSibling()) {
-        if (auto optElement = HTMLOptionElement::FromContent(child)) {
+        if (auto optElement = HTMLOptionElement::FromNode(child)) {
           optElement->OptGroupDisabledChanged(true);
         }
       }
@@ -136,7 +111,7 @@ nsresult HTMLOptGroupElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
 
 JSObject* HTMLOptGroupElement::WrapNode(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return HTMLOptGroupElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLOptGroupElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

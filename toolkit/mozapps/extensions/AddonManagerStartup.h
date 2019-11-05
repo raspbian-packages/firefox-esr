@@ -36,21 +36,10 @@ class AddonManagerStartup final : public amIAddonManagerStartup,
     return inst.forget();
   }
 
-  const nsCOMArray<nsIFile>& ExtensionPaths() { return mExtensionPaths; }
-
-  const nsCOMArray<nsIFile>& ThemePaths() { return mExtensionPaths; }
-
  private:
-  Result<Ok, nsresult> AddInstallLocation(Addon& addon);
-
   nsIFile* ProfileDir();
 
   nsCOMPtr<nsIFile> mProfileDir;
-
-  nsCOMArray<nsIFile> mExtensionPaths;
-  nsCOMArray<nsIFile> mThemePaths;
-
-  bool mInitialized;
 
  protected:
   virtual ~AddonManagerStartup() = default;

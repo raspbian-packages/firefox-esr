@@ -48,16 +48,11 @@ SimpleTest.waitForFocus(function() {
   is(allHas.value, false, "Test for Courier: allHas: false expected");
 
   SimpleTest.finish();
-
 });
 
 function getEditor() {
   var Ci = SpecialPowers.Ci;
-  var editingSession = SpecialPowers.wrap(window)
-                             .QueryInterface(Ci.nsIInterfaceRequestor)
-                             .getInterface(Ci.nsIWebNavigation)
-                             .QueryInterface(Ci.nsIInterfaceRequestor)
-                             .getInterface(Ci.nsIEditingSession);
+  var editingSession = SpecialPowers.wrap(window).docShell.editingSession;
   var editor = editingSession.getEditorForWindow(window);
   editor.QueryInterface(Ci.nsIHTMLEditor);
   return editor;

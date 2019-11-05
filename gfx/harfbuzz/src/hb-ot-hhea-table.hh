@@ -27,24 +27,25 @@
 #ifndef HB_OT_HHEA_TABLE_HH
 #define HB_OT_HHEA_TABLE_HH
 
-#include "hb-open-type-private.hh"
+#include "hb-open-type.hh"
+
+/*
+ * hhea -- Horizontal Header
+ * https://docs.microsoft.com/en-us/typography/opentype/spec/hhea
+ * vhea -- Vertical Header
+ * https://docs.microsoft.com/en-us/typography/opentype/spec/vhea
+ */
+#define HB_OT_TAG_hhea HB_TAG('h','h','e','a')
+#define HB_OT_TAG_vhea HB_TAG('v','h','e','a')
 
 
 namespace OT {
 
 
-/*
- * hhea -- The Horizontal Header Table
- * vhea -- The Vertical Header Table
- */
-
-#define HB_OT_TAG_hhea HB_TAG('h','h','e','a')
-#define HB_OT_TAG_vhea HB_TAG('v','h','e','a')
-
 template <typename T>
 struct _hea
 {
-  inline bool sanitize (hb_sanitize_context_t *c) const
+  bool sanitize (hb_sanitize_context_t *c) const
   {
     TRACE_SANITIZE (this);
     return_trace (c->check_struct (this) && likely (version.major == 1));
@@ -85,10 +86,10 @@ struct _hea
 };
 
 struct hhea : _hea<hhea> {
-  static const hb_tag_t tableTag	= HB_OT_TAG_hhea;
+  static constexpr hb_tag_t tableTag = HB_OT_TAG_hhea;
 };
 struct vhea : _hea<vhea> {
-  static const hb_tag_t tableTag	= HB_OT_TAG_vhea;
+  static constexpr hb_tag_t tableTag = HB_OT_TAG_vhea;
 };
 
 

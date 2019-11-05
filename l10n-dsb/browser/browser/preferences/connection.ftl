@@ -13,7 +13,7 @@ connection-close-key =
     .key = w
 connection-disable-extension =
     .label = Rozšyrjenje znjemóžniś
-connection-proxy-configure = Proksy za pśistup na internet konfigurěrowaś
+connection-proxy-configure = Proksy za pśistup k internetoju konfigurěrowaś
 connection-proxy-option-no =
     .label = Žeden proksy
     .accesskey = y
@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Proksy-DNS, gaž se SOCKS v5 wužywa
     .accesskey = d
+connection-dns-over-https =
+    .label = DNS pśez HTTPS zmóžniś
+    .accesskey = H
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Standard wužywaś ({ $url })
+    .accesskey = S
+    .tooltiptext = Standardny URL za rozpušćowaje DNS pśez HTTPS wužywaś
+connection-dns-over-https-url-resolver = Póbitowarja wužywaś
+    .accesskey = P
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (standard)
+    .tooltiptext = Standardny URL za rozpušćowanje DNS pśez HTTPS wužywaś
+connection-dns-over-https-url-custom =
+    .label = Swójski
+    .accesskey = S
+    .tooltiptext = Zapodajće preferowany URL za rozpušćenje DNS přez HTTPS
+connection-dns-over-https-custom-label = Swójski

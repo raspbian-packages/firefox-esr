@@ -168,12 +168,12 @@ NS_IMETHODIMP
 nsNSSASN1Tree::GetRowProperties(int32_t, nsAString&) { return NS_OK; }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::GetCellProperties(int32_t, nsITreeColumn*, nsAString&) {
+nsNSSASN1Tree::GetCellProperties(int32_t, nsTreeColumn*, nsAString&) {
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::GetColumnProperties(nsITreeColumn*, nsAString&) { return NS_OK; }
+nsNSSASN1Tree::GetColumnProperties(nsTreeColumn*, nsAString&) { return NS_OK; }
 
 NS_IMETHODIMP
 nsNSSASN1Tree::IsContainer(int32_t index, bool* _retval) {
@@ -226,17 +226,15 @@ nsNSSASN1Tree::GetLevel(int32_t index, int32_t* _retval) {
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::GetImageSrc(int32_t, nsITreeColumn*, nsAString&) {
+nsNSSASN1Tree::GetImageSrc(int32_t, nsTreeColumn*, nsAString&) { return NS_OK; }
+
+NS_IMETHODIMP
+nsNSSASN1Tree::GetCellValue(int32_t, nsTreeColumn*, nsAString&) {
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::GetCellValue(int32_t, nsITreeColumn*, nsAString&) {
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSASN1Tree::GetCellText(int32_t row, nsITreeColumn*, nsAString& _retval) {
+nsNSSASN1Tree::GetCellText(int32_t row, nsTreeColumn*, nsAString& _retval) {
   NS_ENSURE_ARG_MIN(row, 0);
 
   _retval.Truncate();
@@ -257,7 +255,7 @@ nsNSSASN1Tree::GetDisplayData(uint32_t index, nsAString& _retval) {
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::SetTree(nsITreeBoxObject* tree) {
+nsNSSASN1Tree::SetTree(mozilla::dom::XULTreeElement* tree) {
   // Note: |tree| is allowed to be null.
   mTree = tree;
   return NS_OK;
@@ -287,35 +285,28 @@ nsNSSASN1Tree::ToggleOpenState(int32_t index) {
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::CycleHeader(nsITreeColumn*) { return NS_OK; }
+nsNSSASN1Tree::CycleHeader(nsTreeColumn*) { return NS_OK; }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::SelectionChanged() { return NS_ERROR_NOT_IMPLEMENTED; }
+nsNSSASN1Tree::SelectionChangedXPCOM() { return NS_ERROR_NOT_IMPLEMENTED; }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::CycleCell(int32_t, nsITreeColumn*) { return NS_OK; }
+nsNSSASN1Tree::CycleCell(int32_t, nsTreeColumn*) { return NS_OK; }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::IsEditable(int32_t, nsITreeColumn*, bool* _retval) {
+nsNSSASN1Tree::IsEditable(int32_t, nsTreeColumn*, bool* _retval) {
   NS_ENSURE_ARG_POINTER(_retval);
   *_retval = false;
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::IsSelectable(int32_t, nsITreeColumn*, bool* _retval) {
-  NS_ENSURE_ARG_POINTER(_retval);
-  *_retval = false;
+nsNSSASN1Tree::SetCellValue(int32_t, nsTreeColumn*, const nsAString&) {
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::SetCellValue(int32_t, nsITreeColumn*, const nsAString&) {
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSASN1Tree::SetCellText(int32_t, nsITreeColumn*, const nsAString&) {
+nsNSSASN1Tree::SetCellText(int32_t, nsTreeColumn*, const nsAString&) {
   return NS_OK;
 }
 
@@ -326,19 +317,22 @@ NS_IMETHODIMP
 nsNSSASN1Tree::PerformActionOnRow(const char16_t*, int32_t) { return NS_OK; }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::PerformActionOnCell(const char16_t*, int32_t, nsITreeColumn*) {
+nsNSSASN1Tree::PerformActionOnCell(const char16_t*, int32_t, nsTreeColumn*) {
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::CanDrop(int32_t, int32_t, nsIDOMDataTransfer*, bool* _retval) {
+nsNSSASN1Tree::CanDrop(int32_t, int32_t, mozilla::dom::DataTransfer*,
+                       bool* _retval) {
   NS_ENSURE_ARG_POINTER(_retval);
   *_retval = false;
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsNSSASN1Tree::Drop(int32_t, int32_t, nsIDOMDataTransfer*) { return NS_OK; }
+nsNSSASN1Tree::Drop(int32_t, int32_t, mozilla::dom::DataTransfer*) {
+  return NS_OK;
+}
 
 NS_IMETHODIMP
 nsNSSASN1Tree::IsSorted(bool* _retval) {

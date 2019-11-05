@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Բարի գալուստ">
 <!ENTITY firstrun_urlbar_message2 "Շնորհակալություն &brandShortName;-ը նախընտրելու համար">
+<!ENTITY newfirstrun_urlbar_message "Բարի գալուստ &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Ժամանակակից բջջային դիտարկիչ Mozilla-ից, ոչ առևտրային և անվճար:">
+<!ENTITY newfirstrun_urlbar_subtext "Արագ է, գաղտնի և ձեր կողմից:">
 <!ENTITY firstrun_panel_title_privacy "Գաղտնիություն">
 <!ENTITY firstrun_privacy_message "Դիտարկեք այնպես, կարծես ոչ ոք չի նայում">
 <!ENTITY firstrun_privacy_subtext "Գաղտնի դիտարկում Հետագծման պաշտպանությամբ, որը արգելափակում է հետագծումները և չի հիշում պատմությունը, երբ ավարտում եք դիտարկումը:">
+<!ENTITY newfirstrun_privacy_subtext "Գաղտնի դիտարկումը արգելափակում է գովազդային հետագծումները, որոնք հետևում են ձեզ առցանց:">
 <!ENTITY firstrun_panel_title_customize "Հարմարեցնել">
 <!ENTITY firstrun_customize_message "Դարձրեք &brandShortName;-ը ձերը:">
 <!ENTITY firstrun_customize_subtext "Հարմարեցրեք &brandShortName;-ը հավելումներով: Արգելափակեք գովազդները, ավելացրեք ուրահատկություններ կամ նտրեք նոր ձևավորում՝ ձեր անձնականը:">
@@ -20,19 +23,17 @@
 <!ENTITY firstrun_sync_title "Սինք">
 <!ENTITY firstrun_sync_message2 "Շարունակեք այնտեղից, որտեղ ընդհատել եք:">
 <!ENTITY firstrun_sync_subtext2 "Օգտագործեք համաժամեցում՝ գտնելու համար էջանիշները, գաղտնաբառերը և այլն, որոնք պահպանել եք &brandShortName;-ում՝ ցանկացած սարքում:">
+<!ENTITY newfirstrun_sync_subtext "Համաժամեցրեք Firefox-ի բոլոր տարբերակները՝ գաղտնի և ապահով:">
+<!ENTITY updatednewfirstrun_sync_subtext "Մուտք գործեք ձեր հաշիվ՝ ավլին ստանալու համար &brandShortName;-ից">
 <!ENTITY firstrun_signin_message "Եղեք կապակցված, սկսեք">
 <!ENTITY firstrun_signin_button "Մուտք գործեք՝ Սինքը սկսելու համար">
+<!ENTITY newfirstrun_signin_button "Միացնել Սինքը">
+<!ENTITY updatednewfirstrun_signin_button "Մուտք գործել &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Սկսել">
 <!ENTITY firstrun_button_notnow "Ոչ հիմա">
 <!ENTITY firstrun_button_next "Հաջորդ">
 
 <!ENTITY firstrun_tabqueue_title "Հղումներ">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Միացնել  Ներդիրների հերթագրումը">
-<!ENTITY firstrun_tabqueue_subtext_off "Պահպանել հղումները &brandShortName;-ում՝ դրանք այլ հավելվածներում մուտքագրելիս">
-
-<!ENTITY firstrun_tabqueue_message_on "Պատրաստ է">
-<!ENTITY firstrun_tabqueue_subtext_on "Միշտ կարող եք անջատել &settings;-ում՝ &pref_category_general;:">
 
 <!ENTITY firstrun_readerview_title "Հոդվածներ">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -69,6 +70,20 @@
 <!ENTITY  crash_restart_label "Վերամեկնարկել &brandShortName; -ը">
 
 <!ENTITY url_bar_default_text2 "Մուտքագրեք կայքի հասցե կամ որոնում">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Որոնել համացանցում">
+<!ENTITY search_widget_default_cropped_text "Որոնել">
+<!ENTITY search_widget_logo_description "Որոնել համացանցում &brandShortName;-ով">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Օգտագործեք ձեր QR ընթերցիչը՝ որոնելու կամ հասցեն մուտքագրելու համար">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Օգտագործեք ձեր խոսափողը՝ որոնելու կամ հասցեն մուտքագրելու համար">
 
 <!ENTITY bookmark "Էջանիշ">
 <!ENTITY bookmark_remove "Հեռացնել էջանիշը">
@@ -206,7 +221,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Վերականգնել ներդիրները, տվյալների սպասարկիչ, ծրագրավորողի գործիքներ">
 <!ENTITY pref_category_notifications "Ծանուցումներ">
-<!ENTITY pref_category_notifications_summary "Նոր յուրահատկություններ, կայքի թարմացումներ">
+<!ENTITY pref_category_notifications_summary2 "Նոր յուրահատկություններ, ծրագրի հուշումներ">
 <!ENTITY pref_developer_remotedebugging_usb "Հեռակա վրիպազերծում USB-ով">
 <!ENTITY pref_developer_remotedebugging_wifi "Հեռակա վրիպազերծում Wi-Fi-ով">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Wi-Fi վրիպազերծումը պահանջում է QR կոդը ընթերցող հավելված:">
@@ -282,6 +297,19 @@
 <!ENTITY pref_whats_new_notification "Ինչն է նոր &brandShortName;-ում">
 <!ENTITY pref_whats_new_notification_summary "Իմացեք նոր յուրահատկությունների մասին թարմացումից հետո">
 
+<!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Ծրագրի և յուրահատկությունների խորհուրդներ">
+<!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
+     Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "Իմացեք ավելին &brandShortName;-ը օգտագործելու և &vendorShortName;-ի այլ ծրագրերի մասին">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Միացնելու համար այս ընտրանքը &pref_feature_tips_notification_enabling_path;-ը պետք է արդեն միացված լինի):">
+
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
 <!ENTITY pref_category_experimental "Փորձարարական յուրահատկություններ">
@@ -320,6 +348,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Անցնել Կարգավորումներին">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Նոր ներդիրի ավելացում հերթացուցակում&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -354,7 +385,8 @@
 <!ENTITY pref_use_system_font_size_summary "Սանդղել բովանդակությունը՝ համաձայն համակարգային տառատեսակի չափի">
 
 <!ENTITY pref_media_autoplay_enabled "Թույլատրել ինքնանվագարկումը">
-<!ENTITY pref_media_autoplay_enabled_summary "Վերահսկել, եթե կայքերը փորձեն ինքնանվագարկել տեսանյութեր և այլ մեդիա">
+<!ENTITY pref_media_autoplay_allow "Թույլատրել ինքնանվագարկումը">
+<!ENTITY pref_media_autoplay_block "Արգելել ինքնանվագարկումը">
 <!ENTITY pref_zoom_force_enabled "Մշտապես միացնել դիտափոխումը">
 <!ENTITY pref_zoom_force_enabled_summary "Շրջանցել վրագրումը՝ ցանացած էջ դիտափոխելու համար">
 <!ENTITY pref_voice_input "Ձայնային մուտքագրում">
@@ -377,14 +409,17 @@
 <!ENTITY pref_private_data_searchHistory "Որոնման պատմություն">
 <!ENTITY pref_private_data_formdata2 "Ձևերի պատմություն">
 <!ENTITY pref_private_data_cookies2 "Cookie-ներ և ակտիվ մուտքեր">
-<!ENTITY pref_private_data_passwords2 "Պահպանված մուտքագրումներ">
 <!ENTITY pref_private_data_cache "Պահոցը">
 <!ENTITY pref_private_data_offlineApps "Անցանց կայքերի տվյալներ">
 <!ENTITY pref_private_data_siteSettings2 "Կայքի կարգավորումներ">
 <!ENTITY pref_private_data_downloadFiles2 "Ներբեռնումներ">
 <!ENTITY pref_private_data_syncedTabs "Համաժամեցված ներդիրներ">
 
-<!ENTITY pref_default_browser "Դարձնել հիմնական դիտարկիչ">
+<!ENTITY pref_default_browser2 "Դարձնել &brandShortName;-ը սկզբնադիր զննիչ">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Հպեք զննիչ հավելվածին և ընտրեք &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Այցելել Mozilla Support">
 <!ENTITY pref_about_firefox "&brandShortName;-ի մասին">
 <!ENTITY pref_vendor_faqs "ՀՏՀ">
@@ -422,7 +457,6 @@
      crashReporterDesc.label). -->
 <!ENTITY datareporting_fhr_title "&brandShortName;-ի Վիճակի Զեկույց">
 <!ENTITY datareporting_fhr_summary2 "Տվյալներ է ուղարկում &vendorShortName;-ին՝ ձեր դիտարկիչի վիճակի մասին և որոշում է ձեր դիտարկիչի արագագործությունը:">
-<!ENTITY datareporting_abouthr_title "Դիտել Վիճակի զեկույցը">
 <!ENTITY datareporting_telemetry_title "Telemetry">
 <!ENTITY datareporting_telemetry_summary "Կիսվում է արագագործության, օգտագործման, սարքակազմի և ձեր դիտարկիչի կարգավորումներով &vendorShortName;-ի հետ՝ &brandShortName;-ն էլ ավելի լավարկելու համար">
 <!ENTITY datareporting_crashreporter_summary "&brandShortName;-ը ուղարկում է Վթարների Զեկույց՝ օգնելու համար դարձնել &vendorShortName;-ը էլ ավելի կայուն և անվտանգ">
@@ -431,6 +465,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Վթարի Զեկույց">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName;-ի տեղադրության ծառայությունը">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Օգնեք &vendorShortName;-ին աշխարհի քարտեզը գծելու գործում: Տարածեք ձեր սարքի Wi-Fi և բջջային տեղադրությունը՝ լավարկելու համար տեղորոշման ծառայությունը:">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName;-ի տեղադրության ծառայությունը աշխատեցված է">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -475,6 +514,10 @@
 <!ENTITY find_prev "Նախորդը">
 <!ENTITY find_next "Հաջորդ">
 <!ENTITY find_close "Փակել">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Չի գտնվել">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -537,7 +580,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Դասավորել ներդիրները երկու սյուներով՝ դիմանկար կերպով">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Էջը հեռացվել է">
 <!ENTITY folder_removed "Թղթապանակը հեռացվել է">
@@ -636,6 +679,8 @@
 <!ENTITY filepicker_audio_title "Ընտրեք կամ ձայնագրեք">
 <!ENTITY filepicker_image_title "Ընտրեք կամ նկարեք">
 <!ENTITY filepicker_video_title "Ընտրեք կամ տեսագրեք տեսանյութ">
+
+<!ENTITY filepicker_permission_denied "Պահանջվող թույլտվությունները տրամադրված չեն, վերադարձվում է ֆայլային համակարգի հավաքիչին:">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Դուք կապակցված եք՝">
@@ -752,7 +797,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Վերջին Սինքը. &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Վերջին սինքը. երբեք">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -813,15 +858,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Ահնար է բացել &brandShortName;-ը: Ապատեղադրեք և կրկին փորձեք:">
 
-<!ENTITY eol_notification_title2 "&brandShortName;-ը այլևս չի թարմացվի">
-<!ENTITY eol_notification_summary "Հպվեք՝ ավելին իմանալու համար">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName;-ը թարմ է">
 <!ENTITY whatsnew_notification_summary "Ինչն է նոր այս տարբերակում">
-
-<!ENTITY promotion_add_page_shortcut "Հավելել էջի դյուրանցումը">
 
 <!ENTITY helper_first_offline_bookmark_title "Կարդալ անցանց">
 <!ENTITY helper_first_offline_bookmark_message "Գտեք Ընթերցելու տեսքի միույթները Էջանիշերում, անգամ անցանց">
@@ -872,3 +912,24 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Հավելել Տնային էկրանին">
 <!ENTITY pwa_continue_to_website "Շարունակել կայքում">
 <!ENTITY pwa_onboarding_sumo "Կարող եք հեշտությամբ հավելել այս կայքը ձեր Տնայինէկրանին՝ անմիջական մատչում ունենալու և արագորեն դիտարկելու համար հավելվածները:">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Նվագարկել">
+<!ENTITY pip_play_button_description "Վերսկսել նվագարկումը">
+<!ENTITY pip_pause_button_title "Դադարեցնել">
+<!ENTITY pip_pause_button_description "Դադարեցնել նվագարկումը">
+
+<!ENTITY pref_notification_settings_link "Կառավարել ծանուցումները">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Դիտարկիչ">
+<!ENTITY mls_notification_channel "&vendorShortName;-ի տեղադրության ծառայություն">
+<!ENTITY download_notification_channel "Ներբեռնումներ">
+<!ENTITY media_notification_channel2 "Ձայն և տեսանյութ">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName;-ի խորհուրդներ և հնարքներ">
+<!ENTITY updater_notification_channel "Թարմացումներ">
+<!ENTITY synced_tabs_notification_channel "Համաժամեցված ներդիրներ">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Կայքի ծանուցումները">

@@ -23,15 +23,15 @@ class XULLabelAccessible : public HyperTextAccessibleWrap {
 
   // Accessible
   virtual void Shutdown() override;
-  virtual a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
-  virtual Relation RelationByType(RelationType aType) override;
+  virtual a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
+  virtual Relation RelationByType(RelationType aType) const override;
 
   void UpdateLabelValue(const nsString& aValue);
 
  protected:
   // Accessible
-  virtual ENameValueFlag NativeName(nsString& aName) override;
+  virtual ENameValueFlag NativeName(nsString& aName) const override;
 
  private:
   RefPtr<XULLabelTextLeafAccessible> mValueTextLeaf;
@@ -55,8 +55,8 @@ class XULLabelTextLeafAccessible final : public TextLeafAccessibleWrap {
   virtual ~XULLabelTextLeafAccessible() {}
 
   // Accessible
-  virtual a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
+  virtual a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
 };
 
 /**
@@ -67,8 +67,8 @@ class XULTooltipAccessible : public LeafAccessible {
   XULTooltipAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual a11y::role NativeRole() override;
-  virtual uint64_t NativeState() override;
+  virtual a11y::role NativeRole() const override;
+  virtual uint64_t NativeState() const override;
 };
 
 class XULLinkAccessible : public XULLabelAccessible {
@@ -76,26 +76,27 @@ class XULLinkAccessible : public XULLabelAccessible {
   XULLinkAccessible(nsIContent* aContent, DocAccessible* aDoc);
 
   // Accessible
-  virtual void Value(nsString& aValue) override;
-  virtual a11y::role NativeRole() override;
+  virtual void Value(nsString& aValue) const override;
+  virtual a11y::role NativeRole() const override;
   virtual uint64_t NativeLinkState() const override;
 
   // ActionAccessible
-  virtual uint8_t ActionCount() override;
+  virtual uint8_t ActionCount() const override;
   virtual void ActionNameAt(uint8_t aIndex, nsAString& aName) override;
-  virtual bool DoAction(uint8_t aIndex) override;
+  virtual bool DoAction(uint8_t aIndex) const override;
 
   // HyperLinkAccessible
-  virtual bool IsLink() override;
+  virtual bool IsLink() const override;
   virtual uint32_t StartOffset() override;
   virtual uint32_t EndOffset() override;
-  virtual already_AddRefed<nsIURI> AnchorURIAt(uint32_t aAnchorIndex) override;
+  virtual already_AddRefed<nsIURI> AnchorURIAt(
+      uint32_t aAnchorIndex) const override;
 
  protected:
   virtual ~XULLinkAccessible();
 
   // Accessible
-  virtual ENameValueFlag NativeName(nsString& aName) override;
+  virtual ENameValueFlag NativeName(nsString& aName) const override;
 
   enum { eAction_Jump = 0 };
 };

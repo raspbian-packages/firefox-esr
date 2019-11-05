@@ -22,18 +22,27 @@ namespace mozilla {
 
 using namespace dom;
 
+template already_AddRefed<InsertNodeTransaction> InsertNodeTransaction::Create(
+    EditorBase& aEditorBase, nsIContent& aContentToInsert,
+    const EditorDOMPoint& aPointToInsert);
+template already_AddRefed<InsertNodeTransaction> InsertNodeTransaction::Create(
+    EditorBase& aEditorBase, nsIContent& aContentToInsert,
+    const EditorRawDOMPoint& aPointToInsert);
+
 // static
+template <typename PT, typename CT>
 already_AddRefed<InsertNodeTransaction> InsertNodeTransaction::Create(
     EditorBase& aEditorBase, nsIContent& aContentToInsert,
-    const EditorRawDOMPoint& aPointToInsert) {
+    const EditorDOMPointBase<PT, CT>& aPointToInsert) {
   RefPtr<InsertNodeTransaction> transaction =
       new InsertNodeTransaction(aEditorBase, aContentToInsert, aPointToInsert);
   return transaction.forget();
 }
 
+template <typename PT, typename CT>
 InsertNodeTransaction::InsertNodeTransaction(
     EditorBase& aEditorBase, nsIContent& aContentToInsert,
-    const EditorRawDOMPoint& aPointToInsert)
+    const EditorDOMPointBase<PT, CT>& aPointToInsert)
     : mContentToInsert(&aContentToInsert),
       mPointToInsert(aPointToInsert),
       mEditorBase(&aEditorBase) {
@@ -82,7 +91,7 @@ InsertNodeTransaction::DoTransaction() {
     }
   }
 
-  mEditorBase->MarkNodeDirty(GetAsDOMNode(mContentToInsert));
+  mEditorBase->MarkNodeDirty(mContentToInsert);
 
   ErrorResult error;
   mPointToInsert.GetContainer()->InsertBefore(*mContentToInsert,
@@ -92,21 +101,23 @@ InsertNodeTransaction::DoTransaction() {
     return error.StealNSResult();
   }
 
-  // Only set selection to insertion point if editor gives permission
-  if (mEditorBase->GetShouldTxnSetSelection()) {
-    RefPtr<Selection> selection = mEditorBase->GetSelection();
-    if (NS_WARN_IF(!selection)) {
-      return NS_ERROR_FAILURE;
-    }
-    // Place the selection just after the inserted element
-    EditorRawDOMPoint afterInsertedNode(mContentToInsert);
-    DebugOnly<bool> advanced = afterInsertedNode.AdvanceOffset();
-    NS_WARNING_ASSERTION(advanced,
-                         "Failed to advance offset after the inserted node");
-    selection->Collapse(afterInsertedNode, error);
-    if (NS_WARN_IF(error.Failed())) {
-      error.SuppressException();
-    }
+  if (!mEditorBase->AllowsTransactionsToChangeSelection()) {
+    return NS_OK;
+  }
+
+  RefPtr<Selection> selection = mEditorBase->GetSelection();
+  if (NS_WARN_IF(!selection)) {
+    return NS_ERROR_FAILURE;
+  }
+
+  // Place the selection just after the inserted element.
+  EditorRawDOMPoint afterInsertedNode(mContentToInsert);
+  DebugOnly<bool> advanced = afterInsertedNode.AdvanceOffset();
+  NS_WARNING_ASSERTION(advanced,
+                       "Failed to advance offset after the inserted node");
+  selection->Collapse(afterInsertedNode, error);
+  if (NS_WARN_IF(error.Failed())) {
+    error.SuppressException();
   }
   return NS_OK;
 }

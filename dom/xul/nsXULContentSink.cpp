@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,10 +17,9 @@
 #include "jsfriendapi.h"
 
 #include "nsCOMPtr.h"
-#include "nsForwardReference.h"
 #include "nsHTMLStyleSheet.h"
 #include "nsIContentSink.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDOMEventListener.h"
 #include "nsIFormControl.h"
 #include "mozilla/dom/NodeInfo.h"
@@ -34,7 +33,6 @@
 #include "nsIScriptSecurityManager.h"
 #include "nsLayoutCID.h"
 #include "nsNetUtil.h"
-#include "nsRDFCID.h"
 #include "nsString.h"
 #include "nsReadableUtils.h"
 #include "nsXULElement.h"
@@ -71,10 +69,7 @@ XULContentSinkImpl::ContextStack::~ContextStack() {
 
 nsresult XULContentSinkImpl::ContextStack::Push(nsXULPrototypeNode* aNode,
                                                 State aState) {
-  Entry* entry = new Entry;
-  entry->mNode = aNode;
-  entry->mState = aState;
-  entry->mNext = mTop;
+  Entry* entry = new Entry(aNode, aState, mTop);
 
   mTop = entry;
 
@@ -197,9 +192,9 @@ XULContentSinkImpl::WillBuildModel(nsDTDMode aDTDMode) {
 
 NS_IMETHODIMP
 XULContentSinkImpl::DidBuildModel(bool aTerminated) {
-  nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument);
+  nsCOMPtr<Document> doc = do_QueryReferent(mDocument);
   if (doc) {
-    doc->EndLoad();
+    mPrototype->NotifyLoadDone();
     mDocument = nullptr;
   }
 
@@ -229,45 +224,28 @@ XULContentSinkImpl::SetParser(nsParserBase* aParser) {
 
 void XULContentSinkImpl::SetDocumentCharset(
     NotNull<const Encoding*> aEncoding) {
-  nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument);
+  nsCOMPtr<Document> doc = do_QueryReferent(mDocument);
   if (doc) {
     doc->SetDocumentCharacterSet(aEncoding);
   }
 }
 
 nsISupports* XULContentSinkImpl::GetTarget() {
-  nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument);
-  return doc;
+  nsCOMPtr<Document> doc = do_QueryReferent(mDocument);
+  return ToSupports(doc);
 }
 
 //----------------------------------------------------------------------
 
-nsresult XULContentSinkImpl::Init(nsIDocument* aDocument,
+nsresult XULContentSinkImpl::Init(Document* aDocument,
                                   nsXULPrototypeDocument* aPrototype) {
-  NS_PRECONDITION(aDocument != nullptr, "null ptr");
+  MOZ_ASSERT(aDocument != nullptr, "null ptr");
   if (!aDocument) return NS_ERROR_NULL_POINTER;
-
-  nsresult rv;
 
   mDocument = do_GetWeakReference(aDocument);
   mPrototype = aPrototype;
 
   mDocumentURL = mPrototype->GetURI();
-
-  // XXX this presumes HTTP header info is already set in document
-  // XXX if it isn't we need to set it here...
-  // XXXbz not like GetHeaderData on the proto doc _does_ anything....
-  nsAutoString preferredStyle;
-  rv = mPrototype->GetHeaderData(nsGkAtoms::headerDefaultStyle, preferredStyle);
-  if (NS_FAILED(rv)) return rv;
-
-  if (!preferredStyle.IsEmpty()) {
-    aDocument->SetHeaderData(nsGkAtoms::headerDefaultStyle, preferredStyle);
-  }
-
-  // Set the right preferred style on the document's CSSLoader.
-  aDocument->CSSLoader()->SetPreferredSheet(preferredStyle);
-
   mNodeInfoManager = aPrototype->GetNodeInfoManager();
   if (!mNodeInfoManager) return NS_ERROR_UNEXPECTED;
 
@@ -377,11 +355,13 @@ NS_IMETHODIMP
 XULContentSinkImpl::HandleStartElement(const char16_t* aName,
                                        const char16_t** aAtts,
                                        uint32_t aAttsCount,
-                                       uint32_t aLineNumber) {
+                                       uint32_t aLineNumber,
+                                       uint32_t aColumnNumber) {
   // XXX Hopefully the parser will flag this before we get here. If
   // we're in the epilog, there should be no new elements
-  NS_PRECONDITION(mState != eInEpilog, "tag in XUL doc epilog");
-  NS_PRECONDITION(aAttsCount % 2 == 0, "incorrect aAttsCount");
+  MOZ_ASSERT(mState != eInEpilog, "tag in XUL doc epilog");
+  MOZ_ASSERT(aAttsCount % 2 == 0, "incorrect aAttsCount");
+
   // Adjust aAttsCount so it's the actual number of attributes
   aAttsCount /= 2;
 
@@ -466,12 +446,13 @@ XULContentSinkImpl::HandleEndElement(const char16_t* aName) {
 
       // If given a src= attribute, we must ignore script tag content.
       if (!script->mSrcURI && !script->HasScriptObject()) {
-        nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument);
+        nsCOMPtr<Document> doc = do_QueryReferent(mDocument);
 
         script->mOutOfLine = false;
-        if (doc)
-          script->Compile(mText, mTextLength, mDocumentURL, script->mLineNo,
-                          doc);
+        if (doc) {
+          script->Compile(mText, mTextLength, JS::SourceOwnership::Borrowed,
+                          mDocumentURL, script->mLineNo, doc);
+        }
       }
 
       FlushText(false);
@@ -581,7 +562,7 @@ NS_IMETHODIMP
 XULContentSinkImpl::ReportError(const char16_t* aErrorText,
                                 const char16_t* aSourceText,
                                 nsIScriptError* aError, bool* _retval) {
-  NS_PRECONDITION(aError && aSourceText && aErrorText, "Check arguments!!!");
+  MOZ_ASSERT(aError && aSourceText && aErrorText, "Check arguments!!!");
 
   // The expat driver should report the error.
   *_retval = true;
@@ -601,16 +582,10 @@ XULContentSinkImpl::ReportError(const char16_t* aErrorText,
 
   // return leaving the document empty if we're asked to not add a <parsererror>
   // root node
-  nsCOMPtr<nsIDocument> idoc = do_QueryReferent(mDocument);
+  nsCOMPtr<Document> idoc = do_QueryReferent(mDocument);
   if (idoc && idoc->SuppressParserErrorElement()) {
     return NS_OK;
   };
-
-  XULDocument* doc = idoc ? idoc->AsXULDocument() : nullptr;
-  if (doc && !doc->OnDocumentParserError()) {
-    // The overlay was broken.  Don't add a messy element to the master doc.
-    return NS_OK;
-  }
 
   const char16_t* noAtts[] = {0, 0};
 
@@ -621,7 +596,7 @@ XULContentSinkImpl::ReportError(const char16_t* aErrorText,
   parsererror.Append((char16_t)0xFFFF);
   parsererror.AppendLiteral("parsererror");
 
-  rv = HandleStartElement(parsererror.get(), noAtts, 0, 0);
+  rv = HandleStartElement(parsererror.get(), noAtts, 0, 0, 0);
   NS_ENSURE_SUCCESS(rv, rv);
 
   rv = HandleCharacterData(aErrorText, NS_strlen(aErrorText));
@@ -631,7 +606,7 @@ XULContentSinkImpl::ReportError(const char16_t* aErrorText,
   sourcetext.Append((char16_t)0xFFFF);
   sourcetext.AppendLiteral("sourcetext");
 
-  rv = HandleStartElement(sourcetext.get(), noAtts, 0, 0);
+  rv = HandleStartElement(sourcetext.get(), noAtts, 0, 0, 0);
   NS_ENSURE_SUCCESS(rv, rv);
 
   rv = HandleCharacterData(aSourceText, NS_strlen(aSourceText));
@@ -819,7 +794,7 @@ nsresult XULContentSinkImpl::OpenScript(const char16_t** aAttributes,
     return NS_OK;
   }
 
-  nsCOMPtr<nsIDocument> doc(do_QueryReferent(mDocument));
+  nsCOMPtr<Document> doc(do_QueryReferent(mDocument));
   nsCOMPtr<nsIScriptGlobalObject> globalObject;
   if (doc) globalObject = do_QueryInterface(doc->GetWindow());
   RefPtr<nsXULPrototypeScript> script = new nsXULPrototypeScript(aLineNumber);
@@ -836,7 +811,7 @@ nsresult XULContentSinkImpl::OpenScript(const char16_t** aAttributes,
       if (!mSecMan)
         mSecMan = do_GetService(NS_SCRIPTSECURITYMANAGER_CONTRACTID, &rv);
       if (NS_SUCCEEDED(rv)) {
-        nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocument, &rv);
+        nsCOMPtr<Document> doc = do_QueryReferent(mDocument, &rv);
 
         if (NS_SUCCEEDED(rv)) {
           rv = mSecMan->CheckLoadURIWithPrincipal(

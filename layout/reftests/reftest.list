@@ -106,6 +106,9 @@ include css-ruby/reftest.list
 # css required
 include css-required/reftest.list
 
+# css scroll snap
+include css-scroll-snap/reftest.list
+
 # css shapes
 include css-shapes/reftest.list
 
@@ -123,6 +126,9 @@ include css-submit-invalid/reftest.list
 
 # css text-overflow
 include text-overflow/reftest.list
+
+# css scrollbars
+include css-scrollbars/reftest.list
 
 # css selectors
 include css-selectors/reftest.list
@@ -262,6 +268,9 @@ include margin-collapsing/reftest.list
 # marquee/
 include marquee/reftest.list
 
+# meta viewport
+include meta-viewport/reftest.list
+
 # native-theme/
 # (no XUL theme on Android)
 skip-if(Android) include native-theme/reftest.list
@@ -300,13 +309,10 @@ include position-dynamic-changes/reftest.list
 
 # printing
 # SkiaPDF is required for printing tests to control printing to PDF files.
-skip-if(!skiaPdf||styloVsGecko) include printing/reftest.list
+skip-if(!skiaPdf) include printing/reftest.list
 
 # pagination
 include pagination/reftest.list
-
-# <style scoped>
-include scoped-style/reftest.list
 
 # scrolling
 include scrolling/reftest.list

@@ -5,10 +5,15 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "VideoEngine.h"
-#include "webrtc/video_engine/browser_capture_impl.h"
+#include "video_engine/browser_capture_impl.h"
+#include "video_engine/desktop_capture_impl.h"
 #include "webrtc/system_wrappers/include/clock.h"
 #ifdef WEBRTC_ANDROID
-#include "webrtc/modules/video_capture/video_capture.h"
+#  include "webrtc/modules/video_capture/video_capture.h"
+#endif
+
+#ifdef MOZ_WIDGET_ANDROID
+#  include "mozilla/jni/Utils.h"
 #endif
 
 namespace mozilla {
@@ -22,26 +27,27 @@ mozilla::LazyLogModule gVideoEngineLog("VideoEngine");
 
 int VideoEngine::sId = 0;
 #if defined(ANDROID)
-int VideoEngine::SetAndroidObjects(JavaVM* javaVM) {
-  LOG((__PRETTY_FUNCTION__));
+int VideoEngine::SetAndroidObjects() {
+  LOG(("%s", __PRETTY_FUNCTION__));
 
-  if (webrtc::SetCaptureAndroidVM(javaVM) != 0) {
+  JavaVM* const javaVM = mozilla::jni::GetVM();
+  if (!javaVM || webrtc::SetCaptureAndroidVM(javaVM) != 0) {
     LOG(("Could not set capture Android VM"));
     return -1;
   }
-#ifdef WEBRTC_INCLUDE_INTERNAL_VIDEO_RENDER
+#  ifdef WEBRTC_INCLUDE_INTERNAL_VIDEO_RENDER
   if (webrtc::SetRenderAndroidVM(javaVM) != 0) {
     LOG(("Could not set render Android VM"));
     return -1;
   }
-#endif
+#  endif
   return 0;
 }
 #endif
 
 void VideoEngine::CreateVideoCapture(int32_t& id,
                                      const char* deviceUniqueIdUTF8) {
-  LOG((__PRETTY_FUNCTION__));
+  LOG(("%s", __PRETTY_FUNCTION__));
   MOZ_ASSERT(deviceUniqueIdUTF8);
 
   id = GenerateId();
@@ -62,9 +68,12 @@ void VideoEngine::CreateVideoCapture(int32_t& id,
   if (mCaptureDevInfo.type == webrtc::CaptureDeviceType::Camera) {
     entry = CaptureEntry(
         id, webrtc::VideoCaptureFactory::Create(deviceUniqueIdUTF8));
+    if (entry.VideoCapture()) {
+      entry.VideoCapture()->SetApplyRotation(true);
+    }
   } else {
 #ifndef WEBRTC_ANDROID
-#ifdef MOZ_X11
+#  ifdef MOZ_X11
     webrtc::VideoCaptureModule* captureModule;
     auto type = mCaptureDevInfo.type;
     nsresult result = NS_DispatchToMainThread(
@@ -81,10 +90,10 @@ void VideoEngine::CreateVideoCapture(int32_t& id,
     } else {
       return;
     }
-#else
+#  else
     entry = CaptureEntry(id, webrtc::DesktopCaptureImpl::Create(
                                  id, deviceUniqueIdUTF8, mCaptureDevInfo.type));
-#endif
+#  endif
 #else
     MOZ_ASSERT("CreateVideoCapture NO DESKTOP CAPTURE IMPL ON ANDROID" ==
                nullptr);
@@ -131,7 +140,7 @@ int VideoEngine::ReleaseVideoCapture(const int32_t id) {
 
 std::shared_ptr<webrtc::VideoCaptureModule::DeviceInfo>
 VideoEngine::GetOrCreateVideoCaptureDeviceInfo() {
-  LOG((__PRETTY_FUNCTION__));
+  LOG(("%s", __PRETTY_FUNCTION__));
   int64_t currentTime = 0;
 
   const char* capDevTypeName =
@@ -164,6 +173,12 @@ VideoEngine::GetOrCreateVideoCaptureDeviceInfo() {
 
   switch (mCaptureDevInfo.type) {
     case webrtc::CaptureDeviceType::Camera: {
+#ifdef MOZ_WIDGET_ANDROID
+      if (SetAndroidObjects()) {
+        LOG(("VideoEngine::SetAndroidObjects Failed"));
+        break;
+      }
+#endif
       mDeviceInfo.reset(webrtc::VideoCaptureFactory::CreateDeviceInfo());
       LOG(("webrtc::CaptureDeviceType::Camera: Finished creating new device."));
       break;
@@ -174,9 +189,8 @@ VideoEngine::GetOrCreateVideoCaptureDeviceInfo() {
           "webrtc::CaptureDeviceType::Browser: Finished creating new device."));
       break;
     }
-    // Window, Application, and Screen types are handled by DesktopCapture
+    // Window and Screen types are handled by DesktopCapture
     case webrtc::CaptureDeviceType::Window:
-    case webrtc::CaptureDeviceType::Application:
     case webrtc::CaptureDeviceType::Screen: {
 #if !defined(WEBRTC_ANDROID) && !defined(WEBRTC_IOS)
       mDeviceInfo.reset(webrtc::DesktopCaptureImpl::CreateDeviceInfo(
@@ -201,10 +215,10 @@ const UniquePtr<const webrtc::Config>& VideoEngine::GetConfiguration() {
 
 already_AddRefed<VideoEngine> VideoEngine::Create(
     UniquePtr<const webrtc::Config>&& aConfig) {
-  LOG((__PRETTY_FUNCTION__));
+  LOG(("%s", __PRETTY_FUNCTION__));
   LOG(("Creating new VideoEngine with CaptureDeviceType %s",
        aConfig->Get<webrtc::CaptureDeviceInfo>().TypeName()));
-  return do_AddRef(new VideoEngine(Move(aConfig)));
+  return do_AddRef(new VideoEngine(std::move(aConfig)));
 }
 
 VideoEngine::CaptureEntry::CaptureEntry(
@@ -245,10 +259,12 @@ int32_t VideoEngine::GenerateId() {
 }
 
 VideoEngine::VideoEngine(UniquePtr<const webrtc::Config>&& aConfig)
-    : mCaptureDevInfo(aConfig->Get<webrtc::CaptureDeviceInfo>()),
+    : mId(0),
+      mCaptureDevInfo(aConfig->Get<webrtc::CaptureDeviceInfo>()),
       mDeviceInfo(nullptr),
       mConfig(std::move(aConfig)) {
-  LOG((__PRETTY_FUNCTION__));
+  LOG(("%s", __PRETTY_FUNCTION__));
 }
-}
+
+}  // namespace camera
 }  // namespace mozilla

@@ -8,9 +8,11 @@
 #include <algorithm>
 #include "AudioNodeEngine.h"
 #include "AudioNodeStream.h"
+#include "DriftCompensation.h"
 #include "GeckoProfiler.h"
 #include "MediaDecoder.h"
-#include "MediaStreamVideoSink.h"
+#include "MediaStreamGraphImpl.h"
+#include "MediaStreamListener.h"
 #include "mozilla/dom/AudioNode.h"
 #include "mozilla/dom/AudioStreamTrack.h"
 #include "mozilla/dom/MediaStreamTrack.h"
@@ -19,22 +21,25 @@
 #include "mozilla/Logging.h"
 #include "mozilla/media/MediaUtils.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/TaskQueue.h"
 #include "mozilla/Unused.h"
 #include "nsIPrincipal.h"
 #include "nsMimeTypes.h"
+#include "nsThreadUtils.h"
 #include "OggWriter.h"
 #include "OpusTrackEncoder.h"
 #include "TimeUnits.h"
+#include "Tracing.h"
 
 #ifdef MOZ_WEBM_ENCODER
-#include "VP8TrackEncoder.h"
-#include "WebMWriter.h"
+#  include "VP8TrackEncoder.h"
+#  include "WebMWriter.h"
 #endif
 
 #ifdef LOG
-#undef LOG
+#  undef LOG
 #endif
 
 mozilla::LazyLogModule gMediaEncoderLog("MediaEncoder");
@@ -47,10 +52,12 @@ using namespace media;
 
 class MediaEncoder::AudioTrackListener : public DirectMediaStreamTrackListener {
  public:
-  AudioTrackListener(AudioTrackEncoder* aEncoder, TaskQueue* aEncoderThread)
+  AudioTrackListener(DriftCompensator* aDriftCompensator,
+                     AudioTrackEncoder* aEncoder, TaskQueue* aEncoderThread)
       : mDirectConnected(false),
         mInitialized(false),
         mRemoved(false),
+        mDriftCompensator(aDriftCompensator),
         mEncoder(aEncoder),
         mEncoderThread(aEncoderThread) {
     MOZ_ASSERT(mEncoder);
@@ -80,6 +87,7 @@ class MediaEncoder::AudioTrackListener : public DirectMediaStreamTrackListener {
 
   void NotifyQueuedChanges(MediaStreamGraph* aGraph, StreamTime aTrackOffset,
                            const MediaSegment& aQueuedMedia) override {
+    TRACE_COMMENT("Encoder %p", mEncoder.get());
     MOZ_ASSERT(mEncoder);
     MOZ_ASSERT(mEncoderThread);
 
@@ -88,46 +96,13 @@ class MediaEncoder::AudioTrackListener : public DirectMediaStreamTrackListener {
     }
 
     if (!mInitialized) {
-      nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<StreamTime>(
-          "mozilla::AudioTrackEncoder::SetStartOffset", mEncoder,
-          &AudioTrackEncoder::SetStartOffset, aTrackOffset));
-      MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
-      Unused << rv;
+      mDriftCompensator->NotifyAudioStart(TimeStamp::Now());
       mInitialized = true;
     }
 
-    if (mDirectConnected) {
-      if (aQueuedMedia.IsNull()) {
-        nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<StreamTime>(
-            "mozilla::AudioTrackEncoder::AdvanceBlockedInput", mEncoder,
-            &AudioTrackEncoder::AdvanceBlockedInput,
-            aQueuedMedia.GetDuration()));
-        MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
-        Unused << rv;
-        return;
-      }
-    } else {
-      NotifyRealtimeTrackData(aGraph, aTrackOffset, aQueuedMedia);
-    }
+    mDriftCompensator->NotifyAudio(aQueuedMedia.GetDuration());
 
-    nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<StreamTime>(
-        "mozilla::AudioTrackEncoder::AdvanceCurrentTime", mEncoder,
-        &AudioTrackEncoder::AdvanceCurrentTime, aQueuedMedia.GetDuration()));
-    MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
-    Unused << rv;
-  }
-
-  void NotifyRealtimeTrackData(MediaStreamGraph* aGraph,
-                               StreamTime aTrackOffset,
-                               const MediaSegment& aMedia) override {
-    MOZ_ASSERT(mEncoder);
-    MOZ_ASSERT(mEncoderThread);
-
-    if (mShutdown) {
-      return;
-    }
-
-    const AudioSegment& audio = static_cast<const AudioSegment&>(aMedia);
+    const AudioSegment& audio = static_cast<const AudioSegment&>(aQueuedMedia);
 
     AudioSegment copy;
     copy.AppendSlice(audio, 0, audio.GetDuration());
@@ -135,7 +110,7 @@ class MediaEncoder::AudioTrackListener : public DirectMediaStreamTrackListener {
     nsresult rv = mEncoderThread->Dispatch(
         NewRunnableMethod<StoreCopyPassByRRef<AudioSegment>>(
             "mozilla::AudioTrackEncoder::AppendAudioSegment", mEncoder,
-            &AudioTrackEncoder::AppendAudioSegment, Move(copy)));
+            &AudioTrackEncoder::AppendAudioSegment, std::move(copy)));
     MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
     Unused << rv;
   }
@@ -178,11 +153,12 @@ class MediaEncoder::AudioTrackListener : public DirectMediaStreamTrackListener {
   bool mDirectConnected;
   bool mInitialized;
   bool mRemoved;
+  const RefPtr<DriftCompensator> mDriftCompensator;
   RefPtr<AudioTrackEncoder> mEncoder;
   RefPtr<TaskQueue> mEncoderThread;
 };
 
-class MediaEncoder::VideoTrackListener : public MediaStreamVideoSink {
+class MediaEncoder::VideoTrackListener : public DirectMediaStreamTrackListener {
  public:
   VideoTrackListener(VideoTrackEncoder* aEncoder, TaskQueue* aEncoderThread)
       : mDirectConnected(false),
@@ -218,6 +194,7 @@ class MediaEncoder::VideoTrackListener : public MediaStreamVideoSink {
 
   void NotifyQueuedChanges(MediaStreamGraph* aGraph, StreamTime aTrackOffset,
                            const MediaSegment& aQueuedMedia) override {
+    TRACE_COMMENT("Encoder %p", mEncoder.get());
     MOZ_ASSERT(mEncoder);
     MOZ_ASSERT(mEncoderThread);
 
@@ -225,32 +202,54 @@ class MediaEncoder::VideoTrackListener : public MediaStreamVideoSink {
       return;
     }
 
+    const TimeStamp now = TimeStamp::Now();
     if (!mInitialized) {
-      nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<StreamTime>(
+      nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<TimeStamp>(
           "mozilla::VideoTrackEncoder::SetStartOffset", mEncoder,
-          &VideoTrackEncoder::SetStartOffset, aTrackOffset));
+          &VideoTrackEncoder::SetStartOffset, now));
       MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
       Unused << rv;
       mInitialized = true;
     }
 
-    if (aQueuedMedia.IsNull()) {
-      nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<StreamTime>(
-          "mozilla::VideoTrackEncoder::AdvanceBlockedInput", mEncoder,
-          &VideoTrackEncoder::AdvanceBlockedInput, aQueuedMedia.GetDuration()));
-      MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
-      Unused << rv;
-      return;
-    }
-
-    nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<StreamTime>(
+    nsresult rv = mEncoderThread->Dispatch(NewRunnableMethod<TimeStamp>(
         "mozilla::VideoTrackEncoder::AdvanceCurrentTime", mEncoder,
-        &VideoTrackEncoder::AdvanceCurrentTime, aQueuedMedia.GetDuration()));
+        &VideoTrackEncoder::AdvanceCurrentTime, now));
     MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
     Unused << rv;
   }
 
-  void SetCurrentFrames(const VideoSegment& aMedia) override {
+  void NotifyRealtimeTrackData(MediaStreamGraph* aGraph,
+                               StreamTime aTrackOffset,
+                               const MediaSegment& aMedia) override {
+    TRACE_COMMENT("Encoder %p", mEncoder.get());
+    MOZ_ASSERT(mEncoder);
+    MOZ_ASSERT(mEncoderThread);
+    MOZ_ASSERT(aMedia.GetType() == MediaSegment::VIDEO);
+
+    if (mShutdown) {
+      return;
+    }
+
+    const VideoSegment& video = static_cast<const VideoSegment&>(aMedia);
+    VideoSegment copy;
+    for (VideoSegment::ConstChunkIterator iter(video); !iter.IsEnded();
+         iter.Next()) {
+      copy.AppendFrame(do_AddRef(iter->mFrame.GetImage()),
+                       iter->mFrame.GetIntrinsicSize(),
+                       iter->mFrame.GetPrincipalHandle(),
+                       iter->mFrame.GetForceBlack(), iter->mTimeStamp);
+    }
+
+    nsresult rv = mEncoderThread->Dispatch(
+        NewRunnableMethod<StoreCopyPassByRRef<VideoSegment>>(
+            "mozilla::VideoTrackEncoder::AppendVideoSegment", mEncoder,
+            &VideoTrackEncoder::AppendVideoSegment, std::move(copy)));
+    MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
+    Unused << rv;
+  }
+
+  void NotifyEnabledStateChanged(bool aEnabled) override {
     MOZ_ASSERT(mEncoder);
     MOZ_ASSERT(mEncoderThread);
 
@@ -258,18 +257,19 @@ class MediaEncoder::VideoTrackListener : public MediaStreamVideoSink {
       return;
     }
 
-    VideoSegment copy;
-    copy.AppendSlice(aMedia, 0, aMedia.GetDuration());
-
-    nsresult rv = mEncoderThread->Dispatch(
-        NewRunnableMethod<StoreCopyPassByRRef<VideoSegment>>(
-            "mozilla::VideoTrackEncoder::AppendVideoSegment", mEncoder,
-            &VideoTrackEncoder::AppendVideoSegment, Move(copy)));
+    nsresult rv;
+    if (aEnabled) {
+      rv = mEncoderThread->Dispatch(NewRunnableMethod<TimeStamp>(
+          "mozilla::VideoTrackEncoder::Enable", mEncoder,
+          &VideoTrackEncoder::Enable, TimeStamp::Now()));
+    } else {
+      rv = mEncoderThread->Dispatch(NewRunnableMethod<TimeStamp>(
+          "mozilla::VideoTrackEncoder::Disable", mEncoder,
+          &VideoTrackEncoder::Disable, TimeStamp::Now()));
+    }
     MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
     Unused << rv;
   }
-
-  void ClearFrames() override {}
 
   void NotifyEnded() override {
     MOZ_ASSERT(mEncoder);
@@ -392,12 +392,13 @@ class MediaEncoder::EncoderListener : public TrackEncoderListener {
 };
 
 MediaEncoder::MediaEncoder(TaskQueue* aEncoderThread,
+                           RefPtr<DriftCompensator> aDriftCompensator,
                            UniquePtr<ContainerWriter> aWriter,
                            AudioTrackEncoder* aAudioEncoder,
                            VideoTrackEncoder* aVideoEncoder,
-                           const nsAString& aMIMEType)
+                           TrackRate aTrackRate, const nsAString& aMIMEType)
     : mEncoderThread(aEncoderThread),
-      mWriter(Move(aWriter)),
+      mWriter(std::move(aWriter)),
       mAudioEncoder(aAudioEncoder),
       mVideoEncoder(aVideoEncoder),
       mEncoderListener(MakeAndAddRef<EncoderListener>(mEncoderThread, this)),
@@ -410,8 +411,8 @@ MediaEncoder::MediaEncoder(TaskQueue* aEncoderThread,
       mCanceled(false),
       mShutdown(false) {
   if (mAudioEncoder) {
-    mAudioListener =
-        MakeAndAddRef<AudioTrackListener>(mAudioEncoder, mEncoderThread);
+    mAudioListener = MakeAndAddRef<AudioTrackListener>(
+        aDriftCompensator, mAudioEncoder, mEncoderThread);
     nsresult rv =
         mEncoderThread->Dispatch(NewRunnableMethod<RefPtr<EncoderListener>>(
             "mozilla::AudioTrackEncoder::RegisterListener", mAudioEncoder,
@@ -433,36 +434,66 @@ MediaEncoder::MediaEncoder(TaskQueue* aEncoderThread,
 
 MediaEncoder::~MediaEncoder() { MOZ_ASSERT(mListeners.IsEmpty()); }
 
-void MediaEncoder::Suspend(TimeStamp aTime) {
-  auto& ae = mAudioEncoder;
-  auto& ve = mVideoEncoder;
-  nsresult rv = mEncoderThread->Dispatch(NewRunnableFrom([ae, ve, aTime]() {
-    if (ae) {
-      ae->Suspend(aTime);
-    }
-    if (ve) {
-      ve->Suspend(aTime);
-    }
-    return NS_OK;
-  }));
-  MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
-  Unused << rv;
+void MediaEncoder::RunOnGraph(already_AddRefed<Runnable> aRunnable) {
+  MediaStreamGraphImpl* graph;
+  if (mAudioTrack) {
+    graph = mAudioTrack->GraphImpl();
+  } else if (mVideoTrack) {
+    graph = mVideoTrack->GraphImpl();
+  } else if (mPipeStream) {
+    graph = mPipeStream->GraphImpl();
+  } else {
+    MOZ_CRASH("No graph");
+  }
+  class Message : public ControlMessage {
+   public:
+    explicit Message(already_AddRefed<Runnable> aRunnable)
+        : ControlMessage(nullptr), mRunnable(aRunnable) {}
+    void Run() override { mRunnable->Run(); }
+    const RefPtr<Runnable> mRunnable;
+  };
+  graph->AppendMessage(MakeUnique<Message>(std::move(aRunnable)));
 }
 
-void MediaEncoder::Resume(TimeStamp aTime) {
-  auto& ae = mAudioEncoder;
-  auto& ve = mVideoEncoder;
-  nsresult rv = mEncoderThread->Dispatch(NewRunnableFrom([ae, ve, aTime]() {
-    if (ae) {
-      ae->Resume(aTime);
-    }
-    if (ve) {
-      ve->Resume(aTime);
-    }
-    return NS_OK;
-  }));
-  MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
-  Unused << rv;
+void MediaEncoder::Suspend() {
+  RunOnGraph(NS_NewRunnableFunction(
+      "MediaEncoder::Suspend",
+      [thread = mEncoderThread, audio = mAudioEncoder, video = mVideoEncoder] {
+        if (audio) {
+          nsresult rv = thread->Dispatch(
+              NewRunnableMethod("AudioTrackEncoder::Suspend", audio,
+                                &AudioTrackEncoder::Suspend));
+          MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
+          Unused << rv;
+        }
+        if (video) {
+          nsresult rv = thread->Dispatch(NewRunnableMethod<TimeStamp>(
+              "VideoTrackEncoder::Suspend", video, &VideoTrackEncoder::Suspend,
+              TimeStamp::Now()));
+          MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
+          Unused << rv;
+        }
+      }));
+}
+
+void MediaEncoder::Resume() {
+  RunOnGraph(NS_NewRunnableFunction(
+      "MediaEncoder::Resume",
+      [thread = mEncoderThread, audio = mAudioEncoder, video = mVideoEncoder] {
+        if (audio) {
+          nsresult rv = thread->Dispatch(NewRunnableMethod(
+              "AudioTrackEncoder::Resume", audio, &AudioTrackEncoder::Resume));
+          MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
+          Unused << rv;
+        }
+        if (video) {
+          nsresult rv = thread->Dispatch(NewRunnableMethod<TimeStamp>(
+              "VideoTrackEncoder::Resume", video, &VideoTrackEncoder::Resume,
+              TimeStamp::Now()));
+          MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
+          Unused << rv;
+        }
+      }));
 }
 
 void MediaEncoder::ConnectAudioNode(AudioNode* aNode, uint32_t aOutput) {
@@ -546,7 +577,7 @@ void MediaEncoder::ConnectMediaStreamTrack(MediaStreamTrack* aTrack) {
     }
 
     mVideoTrack = video;
-    video->AddVideoOutput(mVideoListener);
+    video->AddDirectListener(mVideoListener);
     video->AddListener(mVideoListener);
   } else {
     MOZ_ASSERT(false, "Unknown track type");
@@ -577,7 +608,7 @@ void MediaEncoder::RemoveMediaStreamTrack(MediaStreamTrack* aTrack) {
     }
 
     if (mVideoListener) {
-      video->RemoveVideoOutput(mVideoListener);
+      video->RemoveDirectListener(mVideoListener);
       video->RemoveListener(mVideoListener);
     }
     mVideoTrack = nullptr;
@@ -594,6 +625,8 @@ already_AddRefed<MediaEncoder> MediaEncoder::CreateEncoder(
   UniquePtr<ContainerWriter> writer;
   RefPtr<AudioTrackEncoder> audioEncoder;
   RefPtr<VideoTrackEncoder> videoEncoder;
+  auto driftCompensator =
+      MakeRefPtr<DriftCompensator>(aEncoderThread, aTrackRate);
   nsString mimeType;
 
   if (!aTrackTypes) {
@@ -611,11 +644,11 @@ already_AddRefed<MediaEncoder> MediaEncoder::CreateEncoder(
       NS_ENSURE_TRUE(audioEncoder, nullptr);
     }
     if (Preferences::GetBool("media.recorder.video.frame_drops", true)) {
-      videoEncoder =
-          MakeAndAddRef<VP8TrackEncoder>(aTrackRate, FrameDroppingMode::ALLOW);
+      videoEncoder = MakeAndAddRef<VP8TrackEncoder>(
+          driftCompensator, aTrackRate, FrameDroppingMode::ALLOW);
     } else {
       videoEncoder = MakeAndAddRef<VP8TrackEncoder>(
-          aTrackRate, FrameDroppingMode::DISALLOW);
+          driftCompensator, aTrackRate, FrameDroppingMode::DISALLOW);
     }
     writer = MakeUnique<WebMWriter>(aTrackTypes);
     NS_ENSURE_TRUE(writer, nullptr);
@@ -654,8 +687,9 @@ already_AddRefed<MediaEncoder> MediaEncoder::CreateEncoder(
       videoEncoder->SetBitrate(aVideoBitrate);
     }
   }
-  return MakeAndAddRef<MediaEncoder>(aEncoderThread, Move(writer), audioEncoder,
-                                     videoEncoder, mimeType);
+  return MakeAndAddRef<MediaEncoder>(
+      aEncoderThread, std::move(driftCompensator), std::move(writer),
+      audioEncoder, videoEncoder, aTrackRate, mimeType);
 }
 
 nsresult MediaEncoder::GetEncodedMetadata(
@@ -956,7 +990,7 @@ void MediaEncoder::Stop() {
 
 #ifdef MOZ_WEBM_ENCODER
 bool MediaEncoder::IsWebMEncoderEnabled() {
-  return Preferences::GetBool("media.encoder.webm.enabled");
+  return StaticPrefs::MediaEncoderWebMEnabled();
 }
 #endif
 

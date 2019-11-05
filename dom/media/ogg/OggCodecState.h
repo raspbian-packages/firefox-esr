@@ -4,29 +4,29 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #if !defined(OggCodecState_h_)
-#define OggCodecState_h_
+#  define OggCodecState_h_
 
-#include <ogg/ogg.h>
+#  include <ogg/ogg.h>
 // For MOZ_SAMPLE_TYPE_*
-#include "FlacFrameParser.h"
-#include "VideoUtils.h"
-#include <nsDeque.h>
-#include <nsTArray.h>
-#include <nsClassHashtable.h>
+#  include "FlacFrameParser.h"
+#  include "VideoUtils.h"
+#  include <nsDeque.h>
+#  include <nsTArray.h>
+#  include <nsClassHashtable.h>
 
-#include <theora/theoradec.h>
-#ifdef MOZ_TREMOR
-#include <tremor/ivorbiscodec.h>
-#else
-#include <vorbis/codec.h>
-#endif
+#  include <theora/theoradec.h>
+#  ifdef MOZ_TREMOR
+#    include <tremor/ivorbiscodec.h>
+#  else
+#    include <vorbis/codec.h>
+#  endif
 
 // Uncomment the following to validate that we're predicting the number
 // of Vorbis samples in each packet correctly.
-#define VALIDATE_VORBIS_SAMPLE_CALCULATION
-#ifdef VALIDATE_VORBIS_SAMPLE_CALCULATION
-#include <map>
-#endif
+#  define VALIDATE_VORBIS_SAMPLE_CALCULATION
+#  ifdef VALIDATE_VORBIS_SAMPLE_CALCULATION
+#    include <map>
+#  endif
 
 struct OpusMSDecoder;
 
@@ -118,7 +118,7 @@ class OggCodecState {
   }
 
   // Build a hash table with tag metadata parsed from the stream.
-  virtual MetadataTags* GetTags() { return nullptr; }
+  virtual UniquePtr<MetadataTags> GetTags() { return nullptr; }
 
   // Returns the end time that a granulepos represents.
   virtual int64_t Time(int64_t granulepos) { return -1; }
@@ -241,8 +241,8 @@ class OggCodecState {
   // Utility method to parse and add a vorbis-style comment
   // to a metadata hash table. Most Ogg-encapsulated codecs
   // use the vorbis comment format for metadata.
-  static bool AddVorbisComment(MetadataTags* aTags, const char* aComment,
-                               uint32_t aLength);
+  static bool AddVorbisComment(UniquePtr<MetadataTags>& aTags,
+                               const char* aComment, uint32_t aLength);
 
  protected:
   // Constructs a new OggCodecState. aActive denotes whether the stream is
@@ -289,7 +289,7 @@ class VorbisState : public OggCodecState {
   const TrackInfo* GetInfo() const override { return &mInfo; }
 
   // Return a hash table with tag metadata.
-  MetadataTags* GetTags() override;
+  UniquePtr<MetadataTags> GetTags() override;
 
  private:
   AudioInfo mInfo;
@@ -317,12 +317,12 @@ class VorbisState : public OggCodecState {
   // back-propagate from.
   int64_t mGranulepos;
 
-#ifdef VALIDATE_VORBIS_SAMPLE_CALCULATION
+#  ifdef VALIDATE_VORBIS_SAMPLE_CALCULATION
   // When validating that we've correctly predicted Vorbis packets' number
   // of samples, we store each packet's predicted number of samples in this
   // map, and verify we decode the predicted number of samples.
   std::map<ogg_packet*, long> mVorbisPacketSamples;
-#endif
+#  endif
 
   // Records that aPacket is predicted to have aSamples samples.
   // This function has no effect if VALIDATE_VORBIS_SAMPLE_CALCULATION
@@ -408,7 +408,7 @@ class OpusState : public OggCodecState {
   static int64_t Time(int aPreSkip, int64_t aGranulepos);
 
   // Construct and return a table of tags from the metadata header.
-  MetadataTags* GetTags() override;
+  UniquePtr<MetadataTags> GetTags() override;
 
  private:
   nsAutoPtr<OpusParser> mParser;
@@ -435,7 +435,7 @@ class OpusState : public OggCodecState {
 
 // Constructs a 32bit version number out of two 16 bit major,minor
 // version numbers.
-#define SKELETON_VERSION(major, minor) (((major) << 16) | (minor))
+#  define SKELETON_VERSION(major, minor) (((major) << 16) | (minor))
 
 enum EMsgHeaderType {
   eContentType,
@@ -582,7 +582,7 @@ class FlacState : public OggCodecState {
   nsresult PageIn(ogg_page* aPage) override;
 
   // Return a hash table with tag metadata.
-  MetadataTags* GetTags() override;
+  UniquePtr<MetadataTags> GetTags() override;
 
   const TrackInfo* GetInfo() const override;
 

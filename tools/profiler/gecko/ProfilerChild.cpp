@@ -4,8 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "GeckoProfiler.h"
 #include "ProfilerChild.h"
+
+#include "GeckoProfiler.h"
+#include "platform.h"
+
 #include "nsThreadUtils.h"
 
 namespace mozilla {
@@ -25,7 +28,8 @@ mozilla::ipc::IPCResult ProfilerChild::RecvStart(
   }
 
   profiler_start(params.entries(), params.interval(), params.features(),
-                 filterArray.Elements(), filterArray.Length());
+                 filterArray.Elements(), filterArray.Length(),
+                 params.duration());
 
   return IPC_OK();
 }
@@ -39,7 +43,7 @@ mozilla::ipc::IPCResult ProfilerChild::RecvEnsureStarted(
 
   profiler_ensure_started(params.entries(), params.interval(),
                           params.features(), filterArray.Elements(),
-                          filterArray.Length());
+                          filterArray.Length(), params.duration());
 
   return IPC_OK();
 }
@@ -59,12 +63,18 @@ mozilla::ipc::IPCResult ProfilerChild::RecvResume() {
   return IPC_OK();
 }
 
+mozilla::ipc::IPCResult ProfilerChild::RecvClearAllPages() {
+  profiler_clear_all_pages();
+  return IPC_OK();
+}
+
 static nsCString CollectProfileOrEmptyString(bool aIsShuttingDown) {
   nsCString profileCString;
   UniquePtr<char[]> profile =
       profiler_get_profile(/* aSinceTime */ 0, aIsShuttingDown);
   if (profile) {
-    profileCString = nsCString(profile.get(), strlen(profile.get()));
+    size_t len = strlen(profile.get());
+    profileCString.Adopt(profile.release(), len);
   } else {
     profileCString = EmptyCString();
   }
@@ -73,7 +83,18 @@ static nsCString CollectProfileOrEmptyString(bool aIsShuttingDown) {
 
 mozilla::ipc::IPCResult ProfilerChild::RecvGatherProfile(
     GatherProfileResolver&& aResolve) {
-  aResolve(CollectProfileOrEmptyString(/* aIsShuttingDown */ false));
+  mozilla::ipc::Shmem shmem;
+  profiler_get_profile_json_into_lazily_allocated_buffer(
+      [&](size_t allocationSize) -> char* {
+        if (AllocShmem(allocationSize,
+                       mozilla::ipc::Shmem::SharedMemory::TYPE_BASIC, &shmem)) {
+          return shmem.get<char>();
+        }
+        return nullptr;
+      },
+      /* aSinceTime */ 0,
+      /* aIsShuttingDown */ false);
+  aResolve(std::move(shmem));
   return IPC_OK();
 }
 

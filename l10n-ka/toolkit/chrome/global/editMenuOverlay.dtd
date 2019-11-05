@@ -13,15 +13,15 @@
 <!ENTITY cutCmd.label              "ამოჭრა">
 <!ENTITY cutCmd.key                "X">
 <!ENTITY cutCmd.accesskey          "ა">
-<!ENTITY copyCmd.label             "დაკოპირება">
+<!ENTITY copyCmd.label             "ასლი">
 <!ENTITY copyCmd.key               "C">
-<!ENTITY copyCmd.accesskey         "კ">
+<!ENTITY copyCmd.accesskey         "ლ">
 <!ENTITY pasteCmd.label            "ჩასმა">
 <!ENTITY pasteCmd.key              "V">
 <!ENTITY pasteCmd.accesskey        "ჩ">
 <!ENTITY deleteCmd.label           "წაშლა">
 <!ENTITY deleteCmd.accesskey       "წ">
-<!ENTITY selectAllCmd.label        "ყველას არჩევა">
+<!ENTITY selectAllCmd.label        "ყველაფრის მონიშვნა">
 <!ENTITY selectAllCmd.key          "A">
 <!ENTITY selectAllCmd.accesskey    "ყ">
 <!ENTITY findCmd.label             "ძებნა">

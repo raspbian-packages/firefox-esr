@@ -7,7 +7,11 @@
 #include "nsMathMLmpaddedFrame.h"
 #include "nsMathMLElement.h"
 #include "mozilla/gfx/2D.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/TextUtils.h"
 #include <algorithm>
+
+using namespace mozilla;
 
 //
 // <mpadded> -- adjust space around content - implementation
@@ -25,9 +29,10 @@
 #define NS_MATHML_PSEUDO_UNIT_DEPTH 4
 #define NS_MATHML_PSEUDO_UNIT_NAMEDSPACE 5
 
-nsIFrame* NS_NewMathMLmpaddedFrame(nsIPresShell* aPresShell,
-                                   nsStyleContext* aContext) {
-  return new (aPresShell) nsMathMLmpaddedFrame(aContext);
+nsIFrame* NS_NewMathMLmpaddedFrame(PresShell* aPresShell,
+                                   ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsMathMLmpaddedFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsMathMLmpaddedFrame)
@@ -45,16 +50,17 @@ nsMathMLmpaddedFrame::InheritAutomaticData(nsIFrame* aParent) {
 }
 
 void nsMathMLmpaddedFrame::ProcessAttributes() {
+  // clang-format off
   /*
   parse the attributes
 
-  width  = [+|-] unsigned-number (% [pseudo-unit] | pseudo-unit | h-unit |
-  namedspace) height = [+|-] unsigned-number (% [pseudo-unit] | pseudo-unit |
-  v-unit | namedspace) depth  = [+|-] unsigned-number (% [pseudo-unit] |
-  pseudo-unit | v-unit | namedspace) lspace = [+|-] unsigned-number (%
-  [pseudo-unit] | pseudo-unit | h-unit | namedspace) voffset= [+|-]
-  unsigned-number (% [pseudo-unit] | pseudo-unit | v-unit | namedspace)
+  width  = [+|-] unsigned-number (% [pseudo-unit] | pseudo-unit | h-unit | namedspace)
+  height = [+|-] unsigned-number (% [pseudo-unit] | pseudo-unit | v-unit | namedspace)
+  depth  = [+|-] unsigned-number (% [pseudo-unit] | pseudo-unit | v-unit | namedspace)
+  lspace = [+|-] unsigned-number (% [pseudo-unit] | pseudo-unit | h-unit | namedspace)
+  voffset= [+|-] unsigned-number (% [pseudo-unit] | pseudo-unit | v-unit | namedspace)
   */
+  // clang-format on
 
   nsAutoString value;
 
@@ -147,7 +153,7 @@ bool nsMathMLmpaddedFrame::ParseAttribute(nsString& aString, int32_t& aSign,
 
     if (c == '.')
       gotDot = true;
-    else if (!nsCRT::IsAsciiDigit(c)) {
+    else if (!IsAsciiDigit(c)) {
       break;
     }
     number.Append(c);
@@ -276,7 +282,7 @@ void nsMathMLmpaddedFrame::UpdateValue(int32_t aSign, int32_t aPseudoUnit,
     else if (eCSSUnit_Percent == unit)
       amount = NSToCoordRound(float(scaler) * aCSSValue.GetPercentValue());
     else
-      amount = CalcLength(PresContext(), mStyleContext, aCSSValue,
+      amount = CalcLength(PresContext(), mComputedStyle, aCSSValue,
                           aFontSizeInflation);
 
     if (NS_MATHML_SIGN_PLUS == aSign)
@@ -304,9 +310,9 @@ void nsMathMLmpaddedFrame::Reflow(nsPresContext* aPresContext,
   // NS_ASSERTION(aStatus.IsComplete(), "bad status");
 }
 
-/* virtual */ nsresult nsMathMLmpaddedFrame::Place(DrawTarget* aDrawTarget,
-                                                   bool aPlaceOrigin,
-                                                   ReflowOutput& aDesiredSize) {
+/* virtual */
+nsresult nsMathMLmpaddedFrame::Place(DrawTarget* aDrawTarget, bool aPlaceOrigin,
+                                     ReflowOutput& aDesiredSize) {
   nsresult rv = nsMathMLContainerFrame::Place(aDrawTarget, false, aDesiredSize);
   if (NS_MATHML_HAS_ERROR(mPresentationData.flags) || NS_FAILED(rv)) {
     DidReflowChildren(PrincipalChildList().FirstChild());
@@ -426,8 +432,9 @@ void nsMathMLmpaddedFrame::Reflow(nsPresContext* aPresContext,
   return NS_OK;
 }
 
-/* virtual */ nsresult nsMathMLmpaddedFrame::MeasureForWidth(
-    DrawTarget* aDrawTarget, ReflowOutput& aDesiredSize) {
+/* virtual */
+nsresult nsMathMLmpaddedFrame::MeasureForWidth(DrawTarget* aDrawTarget,
+                                               ReflowOutput& aDesiredSize) {
   ProcessAttributes();
   return Place(aDrawTarget, false, aDesiredSize);
 }

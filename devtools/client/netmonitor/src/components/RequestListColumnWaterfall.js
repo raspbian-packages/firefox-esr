@@ -37,48 +37,69 @@ class RequestListColumnWaterfall extends Component {
   }
 
   componentDidMount() {
-    let { connector, item } = this.props;
+    const { connector, item } = this.props;
     fetchNetworkUpdatePacket(connector.requestData, item, ["eventTimings"]);
   }
 
   componentWillReceiveProps(nextProps) {
-    let { connector, item } = nextProps;
+    const { connector, item } = nextProps;
     fetchNetworkUpdatePacket(connector.requestData, item, ["eventTimings"]);
   }
 
   shouldComponentUpdate(nextProps) {
-    return !propertiesEqual(UPDATED_WATERFALL_PROPS, this.props.item, nextProps.item) ||
-      this.props.firstRequestStartedMillis !== nextProps.firstRequestStartedMillis;
+    return (
+      !propertiesEqual(
+        UPDATED_WATERFALL_PROPS,
+        this.props.item,
+        nextProps.item
+      ) ||
+      this.props.firstRequestStartedMillis !==
+        nextProps.firstRequestStartedMillis
+    );
   }
 
   timingTooltip() {
-    let { eventTimings, fromCache, fromServiceWorker, totalTime } = this.props.item;
-    let tooltip = [];
+    const {
+      eventTimings,
+      fromCache,
+      fromServiceWorker,
+      totalTime,
+    } = this.props.item;
+    const tooltip = [];
 
     if (fromCache || fromServiceWorker) {
       return tooltip;
     }
 
     if (eventTimings) {
-      for (let key of TIMING_KEYS) {
-        let width = eventTimings.timings[key];
+      for (const key of TIMING_KEYS) {
+        const width = eventTimings.timings[key];
 
         if (width > 0) {
-          tooltip.push(L10N.getFormatStr("netmonitor.waterfall.tooltip." + key, width));
+          tooltip.push(
+            L10N.getFormatStr("netmonitor.waterfall.tooltip." + key, width)
+          );
         }
       }
     }
 
     if (typeof totalTime === "number") {
-      tooltip.push(L10N.getFormatStr("netmonitor.waterfall.tooltip.total", totalTime));
+      tooltip.push(
+        L10N.getFormatStr("netmonitor.waterfall.tooltip.total", totalTime)
+      );
     }
 
     return tooltip.join(L10N.getStr("netmonitor.waterfall.tooltip.separator"));
   }
 
   timingBoxes() {
-    let { eventTimings, fromCache, fromServiceWorker, totalTime } = this.props.item;
-    let boxes = [];
+    const {
+      eventTimings,
+      fromCache,
+      fromServiceWorker,
+      totalTime,
+    } = this.props.item;
+    const boxes = [];
 
     if (fromCache || fromServiceWorker) {
       return boxes;
@@ -86,8 +107,8 @@ class RequestListColumnWaterfall extends Component {
 
     if (eventTimings) {
       // Add a set of boxes representing timing information.
-      for (let key of TIMING_KEYS) {
-        let width = eventTimings.timings[key];
+      for (const key of TIMING_KEYS) {
+        const width = eventTimings.timings[key];
 
         // Don't render anything if it surely won't be visible.
         // One millisecond == one unscaled pixel.
@@ -104,13 +125,16 @@ class RequestListColumnWaterfall extends Component {
     }
 
     if (typeof totalTime === "number") {
-      let title = L10N.getFormatStr("networkMenu.totalMS", totalTime);
+      const title = L10N.getFormatStr("networkMenu.totalMS2", totalTime);
       boxes.push(
-        div({
-          key: "total",
-          className: "requests-list-timings-total",
-          title,
-        }, title)
+        div(
+          {
+            key: "total",
+            className: "requests-list-timings-total",
+            title,
+          },
+          title
+        )
       );
     }
 
@@ -118,30 +142,31 @@ class RequestListColumnWaterfall extends Component {
   }
 
   render() {
-    let {
+    const {
       firstRequestStartedMillis,
       item,
       onWaterfallMouseDown,
     } = this.props;
 
-    return (
-      div({
+    return dom.td(
+      {
         className: "requests-list-column requests-list-waterfall",
         onMouseOver: ({ target }) => {
           if (!target.title) {
             target.title = this.timingTooltip();
           }
-        }
+        },
       },
-        div({
+      div(
+        {
           className: "requests-list-timings",
           style: {
-            paddingInlineStart: `${item.startedMillis - firstRequestStartedMillis}px`,
+            paddingInlineStart: `${item.startedMillis -
+              firstRequestStartedMillis}px`,
           },
           onMouseDown: onWaterfallMouseDown,
         },
-          this.timingBoxes(),
-        )
+        this.timingBoxes()
       )
     );
   }

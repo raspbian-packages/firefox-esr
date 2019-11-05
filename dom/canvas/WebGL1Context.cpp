@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,9 +11,8 @@
 
 namespace mozilla {
 
-/*static*/ WebGL1Context* WebGL1Context::Create() {
-  return new WebGL1Context();
-}
+/*static*/
+WebGL1Context* WebGL1Context::Create() { return new WebGL1Context(); }
 
 WebGL1Context::WebGL1Context() : WebGLContext() {}
 
@@ -26,7 +25,7 @@ UniquePtr<webgl::FormatUsageAuthority> WebGL1Context::CreateFormatUsage(
 
 JSObject* WebGL1Context::WrapObject(JSContext* cx,
                                     JS::Handle<JSObject*> givenProto) {
-  return dom::WebGLRenderingContextBinding::Wrap(cx, this, givenProto);
+  return dom::WebGLRenderingContext_Binding::Wrap(cx, this, givenProto);
 }
 
 }  // namespace mozilla

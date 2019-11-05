@@ -44,42 +44,16 @@ git -C ${tmpclonedir} log -1 > ${icu_dir}/GIT-INFO
 # Clean up after ourselves.
 rm -rf ${tmpclonedir}
 
-# remove layoutex, tests, and samples, but leave makefiles in place
+# Remove layoutex, tests, and samples, but leave makefiles and test data in place.
 find ${icu_dir}/source/layoutex -name '*Makefile.in' -prune -or -type f -print | xargs rm
-find ${icu_dir}/source/test -name '*Makefile.in' -prune -or -type f -print | xargs rm
+find ${icu_dir}/source/test -name '*Makefile.in' -prune -or -name 'testdata' -prune -or -type f -print | xargs rm
 find ${icu_dir}/source/samples -name '*Makefile.in' -prune -or -type f -print | xargs rm
-
-# remove data that we currently don't need
-rm -rf ${icu_dir}/source/data/brkitr/*
-rm ${icu_dir}/source/data/lang/*.mk
-rm ${icu_dir}/source/data/lang/*.txt
-rm ${icu_dir}/source/data/mappings/*.mk
-find ${icu_dir}/source/data/mappings \
-    -name ibm-37_P100-1995.ucm -prune -or \
-    -name ibm-1047_P100-1995.ucm -prune -or \
-    -name '*.ucm' -print | xargs rm
-rm ${icu_dir}/source/data/rbnf/*
-rm ${icu_dir}/source/data/region/*.mk
-rm ${icu_dir}/source/data/region/*.txt
-rm ${icu_dir}/source/data/translit/*
-rm ${icu_dir}/source/data/unit/*.mk
-rm ${icu_dir}/source/data/unit/*.txt
-# bug 1225401 and bug1345336 to remove unused zone name
-find ${icu_dir}/source/data/zone \
-    -name root.txt -prune -or \
-    -name tzdbNames.txt -prune -or \
-    -name '*.txt' -print | xargs sed -i '/^\s\{8\}\"[A-Z]/, /^\s\{8\}}/ { d }'
-find ${icu_dir}/source/data/zone \
-    -name root.txt -prune -or \
-    -name tzdbNames.txt -prune -or \
-    -name '*.txt' -print | xargs sed -i '/^\s\{4\}zoneStrings{/{N; s/^\s\{4\}zoneStrings{\n\s\{4\}}// }; /^$/d'
 
 for patch in \
  bug-915735 \
  suppress-warnings.diff \
  bug-1172609-timezone-recreateDefault.diff \
  bug-1198952-workaround-make-3.82-bug.diff \
- bug-1422415-numberformat-sprintfl-windows.diff \
 ; do
   echo "Applying local patch $patch"
   patch -d ${icu_dir}/../../ -p1 --no-backup-if-mismatch < ${icu_dir}/../icu-patches/$patch

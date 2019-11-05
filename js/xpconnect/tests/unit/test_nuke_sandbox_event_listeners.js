@@ -4,7 +4,7 @@
 
 // See https://bugzilla.mozilla.org/show_bug.cgi?id=1273251
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 function promiseEvent(target, event) {
   return new Promise(resolve => {
@@ -18,8 +18,7 @@ add_task(async function() {
 
   let webnav = Services.appShell.createWindowlessBrowser(false);
 
-  let docShell = webnav.QueryInterface(Ci.nsIInterfaceRequestor)
-                       .getInterface(Ci.nsIDocShell);
+  let docShell = webnav.docShell;
 
   docShell.createAboutBlankContentViewer(principal);
 

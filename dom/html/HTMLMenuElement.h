@@ -17,9 +17,10 @@ namespace dom {
 
 class HTMLMenuElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLMenuElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit HTMLMenuElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLMenuElement, menu)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLMenuElement, menu)
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLMenuElement, nsGenericHTMLElement)
@@ -34,8 +35,7 @@ class HTMLMenuElement final : public nsGenericHTMLElement {
                               nsIPrincipal* aMaybeScriptedPrincipal,
                               nsAttrValue& aResult) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   uint8_t GetType() const { return mType; }
 

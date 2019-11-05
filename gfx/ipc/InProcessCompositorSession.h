@@ -21,7 +21,7 @@ class InProcessCompositorSession final : public CompositorSession {
  public:
   static RefPtr<InProcessCompositorSession> Create(
       nsBaseWidget* baseWidget, LayerManager* aLayerManager,
-      const uint64_t& aRootLayerTreeId, CSSToLayoutDeviceScale aScale,
+      const LayersId& aRootLayerTreeId, CSSToLayoutDeviceScale aScale,
       const CompositorOptions& aOptions, bool aUseExternalSurfaceSize,
       const gfx::IntSize& aSurfaceSize, uint32_t aNamespace);
 

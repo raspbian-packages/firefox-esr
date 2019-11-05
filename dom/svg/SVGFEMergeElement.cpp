@@ -8,7 +8,7 @@
 #include "mozilla/dom/SVGFEMergeElementBinding.h"
 #include "mozilla/dom/SVGFEMergeNodeElement.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(FEMerge)
+NS_IMPL_NS_NEW_SVG_ELEMENT(FEMerge)
 
 using namespace mozilla::gfx;
 
@@ -17,11 +17,11 @@ namespace dom {
 
 JSObject* SVGFEMergeElement::WrapNode(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return SVGFEMergeElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGFEMergeElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-nsSVGElement::StringInfo SVGFEMergeElement::sStringInfo[1] = {
-    {&nsGkAtoms::result, kNameSpaceID_None, true}};
+SVGElement::StringInfo SVGFEMergeElement::sStringInfo[1] = {
+    {nsGkAtoms::result, kNameSpaceID_None, true}};
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGFEMergeElement)
 
@@ -29,24 +29,23 @@ FilterPrimitiveDescription SVGFEMergeElement::GetPrimitiveDescription(
     nsSVGFilterInstance* aInstance, const IntRect& aFilterSubregion,
     const nsTArray<bool>& aInputsAreTainted,
     nsTArray<RefPtr<SourceSurface>>& aInputImages) {
-  return FilterPrimitiveDescription(PrimitiveType::Merge);
+  return FilterPrimitiveDescription(AsVariant(MergeAttributes()));
 }
 
-void SVGFEMergeElement::GetSourceImageNames(
-    nsTArray<nsSVGStringInfo>& aSources) {
+void SVGFEMergeElement::GetSourceImageNames(nsTArray<SVGStringInfo>& aSources) {
   for (nsIContent* child = nsINode::GetFirstChild(); child;
        child = child->GetNextSibling()) {
     if (child->IsSVGElement(nsGkAtoms::feMergeNode)) {
       SVGFEMergeNodeElement* node = static_cast<SVGFEMergeNodeElement*>(child);
-      aSources.AppendElement(nsSVGStringInfo(node->GetIn1(), node));
+      aSources.AppendElement(SVGStringInfo(node->GetIn1(), node));
     }
   }
 }
 
 //----------------------------------------------------------------------
-// nsSVGElement methods
+// SVGElement methods
 
-nsSVGElement::StringAttributesInfo SVGFEMergeElement::GetStringInfo() {
+SVGElement::StringAttributesInfo SVGFEMergeElement::GetStringInfo() {
   return StringAttributesInfo(mStringAttributes, sStringInfo,
                               ArrayLength(sStringInfo));
 }

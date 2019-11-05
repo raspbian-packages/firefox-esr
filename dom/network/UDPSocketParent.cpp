@@ -10,6 +10,7 @@
 #include "nsIUDPSocket.h"
 #include "nsINetAddr.h"
 #include "mozilla/Unused.h"
+#include "mozilla/dom/ContentParent.h"
 #include "mozilla/ipc/InputStreamUtils.h"
 #include "mozilla/net/DNS.h"
 #include "mozilla/net/NeckoCommon.h"
@@ -20,6 +21,9 @@
 #include "mtransport/runnable_utils.h"
 
 namespace mozilla {
+
+using namespace net;
+
 namespace dom {
 
 NS_IMPL_ISUPPORTS(UDPSocketParent, nsIUDPSocketListener)
@@ -32,7 +36,7 @@ UDPSocketParent::UDPSocketParent(PNeckoParent* aManager)
 
 UDPSocketParent::~UDPSocketParent() {}
 
-bool UDPSocketParent::Init(const IPC::Principal& aPrincipal,
+bool UDPSocketParent::Init(nsIPrincipal* aPrincipal,
                            const nsACString& aFilter) {
   MOZ_ASSERT_IF(mBackgroundManager, !aPrincipal);
   // will be used once we move all UDPSocket to PBackground, or
@@ -49,8 +53,8 @@ bool UDPSocketParent::Init(const IPC::Principal& aPrincipal,
     }
 
     uint32_t permission = nsIPermissionManager::DENY_ACTION;
-    permMgr->TestExactPermissionFromPrincipal(mPrincipal, "udp-socket",
-                                              &permission);
+    permMgr->TestExactPermissionFromPrincipal(
+        mPrincipal, NS_LITERAL_CSTRING("udp-socket"), &permission);
     if (permission != nsIPermissionManager::ALLOW_ACTION) {
       return false;
     }
@@ -421,6 +425,12 @@ void UDPSocketParent::Send(const IPCStream& aStream,
 
 mozilla::ipc::IPCResult UDPSocketParent::RecvJoinMulticast(
     const nsCString& aMulticastAddress, const nsCString& aInterface) {
+  if (!mSocket) {
+    NS_WARNING("multicast socket is closed");
+    FireInternalError(__LINE__);
+    return IPC_OK();
+  }
+
   nsresult rv = mSocket->JoinMulticast(aMulticastAddress, aInterface);
 
   if (NS_WARN_IF(NS_FAILED(rv))) {
@@ -432,6 +442,12 @@ mozilla::ipc::IPCResult UDPSocketParent::RecvJoinMulticast(
 
 mozilla::ipc::IPCResult UDPSocketParent::RecvLeaveMulticast(
     const nsCString& aMulticastAddress, const nsCString& aInterface) {
+  if (!mSocket) {
+    NS_WARNING("multicast socket is closed");
+    FireInternalError(__LINE__);
+    return IPC_OK();
+  }
+
   nsresult rv = mSocket->LeaveMulticast(aMulticastAddress, aInterface);
 
   if (NS_WARN_IF(NS_FAILED(rv))) {

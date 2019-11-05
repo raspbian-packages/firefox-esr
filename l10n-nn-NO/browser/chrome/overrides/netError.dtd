@@ -8,7 +8,12 @@
 <!ENTITY loadError.label "Problem med lasting av sida">
 <!ENTITY retry.label "Prøv på nytt">
 <!ENTITY returnToPreviousPage.label "Gå tilbake">
+<!ENTITY returnToPreviousPage1.label "Gå tilbake (Tilrådd)">
 <!ENTITY advanced.label "Avansert">
+<!ENTITY continue2.label "Meir…">
+<!ENTITY advanced2.label "Avansert…">
+<!ENTITY moreInformation.label "Meir informasjon">
+<!ENTITY viewCertificate.label "Vis sertifikat">
 
 <!-- Specific error messages -->
 
@@ -90,10 +95,34 @@
 <!ENTITY nssFailure2.longDesc2 "<ul> <li>Sida du prøver å opne kan ikkje visast fordi det ikkje kan stadfestast at overførte data er autentiske.</li> <li>Kontakt nettstadeigarane og informer om problemet.</li> </ul>">
 
 <!ENTITY certerror.longpagetitle1 "Tilkoplinga di er ikkje trygg">
-<!-- Localization note (certerror.introPara) - The text content of the span tag
+<!ENTITY certerror.longpagetitle2 "Åtvaring: Potensiell sikkerheitsrisiko forut">
+<!ENTITY certerror.sts.longpagetitle  "Kopla ikkje til: Potensielt tryggingsproblem">
+<!-- Localization note (certerror.introPara, certerror.introPara2) - The text content of the span tag
 will be replaced at runtime with the name of the server to which the user
 was trying to connect. -->
 <!ENTITY certerror.introPara "Eigaren av <span class='hostname'/> har konfigurert nettstaden sin feil.  For å verne informasjonen din frå å bli stolen, har &brandShortName; ikkje kopla seg til denne nettstaden.">
+<!ENTITY certerror.introPara2 "&brandShortName; oppdaga ein potensiell sikkerheitstrussel og fortsette ikkje til <span class='hostname'/>. Viss du besøkjer denne nettstaden, kan angriparane prøve å stele informasjon som passord, e-post eller kredittkortdetaljar.">
+<!ENTITY certerror.sts.introPara "&brandShortName; oppdaga ein potensiell sikkerheitstrussel og held ikkje fram til <span class='hostname'/> fordi denne nettstaden krev ei sikker tilkopling.">
+
+<!ENTITY certerror.expiredCert.introPara "&brandShortName; oppdaga eit problem og held ikkje fram til <span class='hostname'/>. Nettstaden er anten feilkonfigurert eller klokka på datamaskina er stilt inn på feil tid.">
+<!ENTITY certerror.expiredCert.secondPara2 "Sannsynlegvis har sertifikatet til nettsida gått ut, noko som hindrar &brandShortName; frå å kople til sikkert. Viss du besøkjer dene nettsida, kan angriparar prøve å stele informasjon som passord, e-post eller kredittkortdetaljar.">
+<!ENTITY certerror.expiredCert.sts.secondPara "Sannsynlegvis har sertifikatet til nettsida gått ut, noko som hindrar &brandShortName; frå å opprette eit sikkert samband.">
+
+<!ENTITY certerror.whatCanYouDoAboutItTitle "Kva kan du gjere med det?">
+
+<!ENTITY certerror.unknownIssuer.whatCanYouDoAboutIt "
+<p>Problemet er mest sannsynleg med nettstaden, og det er ingenting du kan gjere for å løyse det.</p>
+<p>Viss du er på eit bedriftsnettverk eller brukar antivirusprogramvare, kan du kontakte brukarstøtta for hjelp. Du kan også varsle administrator for nettstaden om problemet.</p>
+">
+
+<!ENTITY certerror.expiredCert.whatCanYouDoAboutIt2 "
+<p>Klokka på datamaskina er sett til <span id='wrongSystemTime_systemDate2'/>. Kontroller at datamaskina er sett til rett dato, klokkeslett og tidssone i systeminnstillingane, og last deretter <span class='hostname'/> på nytt.</p>
+<p>Viss klokka di allereie er sett til rett tidspunkt, er nettstaden sannsynlegvis feilkonfigurert, og det er ingenting du kan gjere for å løyse problemet. Du kan varsle administrator for nettstaden om problemet.</p>
+">
+
+<!ENTITY certerror.badCertDomain.whatCanYouDoAboutIt "
+<p>Problemet er mest sannsynleg med nettstaden, og det er ingenting du kan gjere for å løyse det. Du kan varsle administrator for nettstaden om problemet.</p>
+">
 
 <!ENTITY sharedLongDesc "<ul> <li>Nettstaden kan vere mellombels utilgjengeleg eller oppteken. Prøv på nytt om ei lita stund.</li> <li>Dersom ingen sider vert lasta, kontroller at nettverkstilkoplinga til datamaskina er i orden.</li> <li>Dersom datamaskina er verna av ein brannmur eller mellomtenar, kontroller at &brandShortName; har løyve til å bruke nettet.</li> </ul>">
 
@@ -105,6 +134,7 @@ was trying to connect. -->
 
 
 <!ENTITY securityOverride.exceptionButtonLabel "Legg til eit unntak…">
+<!ENTITY securityOverride.exceptionButton1Label "Godta risikoen og fortset">
 
 <!ENTITY errorReporting.automatic2 "Rapporter feil som dette for å hjelpe Mozilla med å identifisere og blokkere skadelege nettstadar">
 <!ENTITY errorReporting.learnMore "Les meir…">
@@ -124,15 +154,31 @@ was trying to connect. -->
 <!ENTITY certerror.wrongSystemTimeWithoutReference "<p>&brandShortName; kopla ikkje til <span id='wrongSystemTimeWithoutReference_URL'/> fordi datamaskinklokka di ser ut til å vise feil tid, og dette hindrar ei trygg tilkopling</p> <p>Datamaskina di er innstillt på <span id='wrongSystemTimeWithoutReference_systemDate'/>. For å rette opp feilen, endrar du dato- og tidsinnstillingar slik at rett tid vert vist.</p>">
 
 <!ENTITY certerror.pagetitle1  "Usikker tilkopling">
+<!ENTITY certerror.pagetitle2  "Åtvaring: Potensiell sikkerheitsrisiko forut">
+<!ENTITY certerror.sts.pagetitle  "Kopla ikkje til: Potensielt tryggingsproblem">
 <!ENTITY certerror.whatShouldIDo.badStsCertExplanation "Denne nettstaden brukar HTTP Strict Transport Security (HSTS) for å spesifisere at &brandShortName; berre skal kople til trygt. Derfor kan ein ikkje leggje til eit unntak for dette sertifikatet.">
+<!ENTITY certerror.whatShouldIDo.badStsCertExplanation1 "<span class='hostname'></span> har ein sikkerhetspolicy kalt HTTP Strict Transport Security (HSTS), som betyr at &brandShortName; berre kan kople til den sikkert. Du kan ikkje leggje til eit unntak for å besøkje denne nettstaden.">
 <!ENTITY certerror.copyToClipboard.label "Kopier tekst til utklippstavla">
 
 <!ENTITY inadequateSecurityError.title "Tilkoplinga di er ikkje trygg">
 <!-- LOCALIZATION NOTE (inadequateSecurityError.longDesc) - Do not translate
      "NS_ERROR_NET_INADEQUATE_SECURITY". -->
-<!ENTITY inadequateSecurityError.longDesc "<p><span class='hostname'></span> brukar tryggingsteknologi som er forelda og sårbar for åtak. Ein angripar kan lett avsløre informasjon som du trudde skulle vere sikker. Administrator på nettstaden må fikse tenaren før du kan besøke nettsida.</p><p>Feilkode: NS_ERROR_NET_INADEQUATE_SECURITY</p>">
+<!ENTITY inadequateSecurityError.longDesc "<p><span class='hostname'></span> brukar tryggingsteknologi som er forelda og sårbar for åtak. Ein angripar kan lett avsløre informasjon som du trudde skulle vere sikker. Administrator på nettstaden må fikse tenaren før du kan besøkje nettsida.</p><p>Feilkode: NS_ERROR_NET_INADEQUATE_SECURITY</p>">
 
 <!ENTITY blockedByPolicy.title "Blokkert side">
 
+<!ENTITY certerror.mitm.title "Programvara hindrar &brandShortName; frå trygg tilkopling til denne nettstaden">
+<!ENTITY certerror.mitm.longDesc "<span class='hostname'></span> er sannsynlegvis ein sikker nettstad, men ei sikker tilkopling kunne ikkje etablerast. Problemet er forårsaka av <span class='mitm-name'/> som anten er eit program på datamaskina di eller på nettverket ditt.">
+<!ENTITY certerror.mitm.whatCanYouDoAboutIt1 "Viss antivirusprogrammet ditt inneheld ein funksjon som skannar krypterte tilkoplingar (ofte kalla «webscanning» eller «https-skanning»), kan du deaktivere denne funksjonen. Viss det ikkje verkar, kan du fjerne og installere antivirusprogrammet på nytt.">
+<!ENTITY certerror.mitm.whatCanYouDoAboutIt2 "Om du er i eit bedriftsnettverk, kan du kontakte IT-avdelinga di.">
+<!ENTITY certerror.mitm.whatCanYouDoAboutIt3 "Viss du ikkje kjenner til <span class='mitm-name'/>, kan dette vere eit angrep, og du bør ikkje fortsette til nettstaden.">
+<!ENTITY certerror.mitm.sts.whatCanYouDoAboutIt3 "Viss du ikkje kjenner til <span class='mitm-name'/>, kan dette vere eit angrep, og det er ingenting du kan gjere for å få tilgang til nettstaden.">
+
+<!ENTITY clockSkewError.title "Klokka på datamaskina di er feil">
+<!ENTITY clockSkewError.longDesc "Datamaskina di trur det er <span id='wrongSystemTime_systemDate1'/>, som hindrar &brandShortName; frå å kople til sikkert. For å besøke <span class='hostname'></span>, oppdater klokka til datamaskina i systeminnstillingane til gjeldende dato, klokkeslett og tidssone, og oppdater deretter <span class='hostname'></span>.">
+
 <!ENTITY prefReset.longDesc "Det ser ut til at sikkerheitsinnstillingane i nettverket kan vere årsak til dette. Vil du stille tilbake til standard innstillingar?">
 <!ENTITY prefReset.label "Still tilbake til standard innstillingar">
+
+<!ENTITY networkProtocolError.title "Nettverksprotokollfeil">
+<!ENTITY networkProtocolError.longDesc "<p>Sida du forsøker å vise kan ikkje opnast fordi ein feil i nettverksprotokollen vart oppdaga.</p><ul><li>Kontakt nettstadseigarane og informer dei om dette problemet.</li></ul>">

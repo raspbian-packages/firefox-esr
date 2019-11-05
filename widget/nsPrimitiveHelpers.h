@@ -33,7 +33,7 @@ class nsPrimitiveHelpers {
   // length parameter does not reflect that.
   static void CreateDataFromPrimitive(const nsACString& aFlavor,
                                       nsISupports* aPrimitive, void** aDataBuff,
-                                      uint32_t aDataLen);
+                                      uint32_t* aDataLen);
 
 };  // class nsPrimitiveHelpers
 

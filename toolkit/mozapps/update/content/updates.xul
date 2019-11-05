@@ -13,28 +13,27 @@
 <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
 %updateDTD;
 %brandDTD;
-]>
-
 #if defined(XP_MACOSX) && MOZ_BUILD_APP == browser
-<?xul-overlay href="chrome://browser/content/macBrowserOverlay.xul"?>
+#include ../../../../browser/base/content/browser-doctype.inc
 #endif
+]>
 
 <wizard id="updates"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         title="&updateWizard.title;"
         windowtype="Update:Wizard"
         style="width: auto; height: auto"
-        onwizardfinish="gUpdates.onWizardFinish();"
-        onwizardcancel="gUpdates.onWizardCancel();"
-        onwizardnext="gUpdates.onWizardNext();"
         onload="gUpdates.onLoad();"
         onunload="gUpdates.onUnload();">
 
-  <script type="application/javascript" src="chrome://global/content/contentAreaUtils.js"/>
-  <script type="application/javascript" src="chrome://mozapps/content/update/updates.js"/>
+  <script src="chrome://global/content/contentAreaUtils.js"/>
+  <script src="chrome://mozapps/content/update/updates.js"/>
+  <script src="chrome://global/content/globalOverlay.js"/>
+  <script src="chrome://global/content/editMenuOverlay.js"/>
 
 #if defined(XP_MACOSX) && MOZ_BUILD_APP == browser
-#include ../../../../browser/base/content/browserMountPoints.inc
+#include ../../../../browser/base/content/macWindow.inc.xul
 #endif
 
   <stringbundleset id="updateSet">
@@ -45,17 +44,17 @@
   <wizardpage id="dummy" pageid="dummy" firstpage="true"/>
 
   <wizardpage id="checking" pageid="checking" next="noupdatesfound"
-              object="gCheckingPage" onpageshow="gCheckingPage.onPageShow();">
+              object="gCheckingPage">
     <updateheader label="&checking.title;"/>
     <vbox class="update-content" flex="1">
       <label>&updateCheck.label;</label>
       <separator class="thin"/>
-      <progressmeter id="checkingProgress" mode="undetermined"/>
+      <html:progress id="checkingProgress"/>
     </vbox>
   </wizardpage>
 
   <wizardpage id="noupdatesfound" pageid="noupdatesfound"
-              object="gNoUpdatesPage" onpageshow="gNoUpdatesPage.onPageShow();">
+              object="gNoUpdatesPage">
     <updateheader label="&noupdatesfound.title;"/>
     <vbox class="update-content" flex="1">
       <label id="noUpdatesAutoEnabled" hidden="true">&noupdatesautoenabled.intro;</label>
@@ -63,8 +62,7 @@
     </vbox>
   </wizardpage>
 
-  <wizardpage id="manualUpdate" pageid="manualUpdate" object="gManualUpdatePage"
-              onpageshow="gManualUpdatePage.onPageShow();">
+  <wizardpage id="manualUpdate" pageid="manualUpdate" object="gManualUpdatePage">
     <updateheader label="&manualUpdate.title;"/>
     <vbox class="update-content" flex="1">
       <label id="manualUpdateDesc">&manualUpdate.desc;</label>
@@ -73,19 +71,18 @@
       <separator class="thin"/>
       <label>&manualUpdateGetMsg.label;</label>
       <hbox>
-        <label class="text-link" id="manualUpdateLinkLabel" value=""
+        <label id="manualUpdateLinkLabel" value="" is="text-link"
                onclick="openUpdateURL(event);"/>
       </hbox>
     </vbox>
   </wizardpage>
 
   <wizardpage id="unsupported" pageid="unsupported"
-              object="gUnsupportedPage"
-              onpageshow="gUnsupportedPage.onPageShow();">
+              object="gUnsupportedPage">
     <updateheader label="&unsupported.title;"/>
     <vbox class="update-content" flex="1">
       <description flex="1">&unsupported.label;
-        <label id="unsupportedLinkLabel" class="text-link inline-link" onclick="openUpdateURL(event);">
+        <label id="unsupportedLinkLabel" class="inline-link" onclick="openUpdateURL(event);" is="text-link">
           &unsupportedLink.label;
         </label>
       </description>
@@ -93,10 +90,7 @@
   </wizardpage>
 
   <wizardpage id="updatesfoundbasic" pageid="updatesfoundbasic"
-              object="gUpdatesFoundBasicPage" next="downloading"
-              onpageshow="gUpdatesFoundBasicPage.onPageShow();"
-              onextra1="gUpdatesFoundBasicPage.onExtra1();"
-              onextra2="gUpdatesFoundBasicPage.onExtra2();">
+              object="gUpdatesFoundBasicPage" next="downloading">
     <updateheader id="updatesFoundBasicHeader" label=""/>
     <vbox class="update-content" flex="1">
       <label id="updatesFoundInto"/>
@@ -107,7 +101,7 @@
       <separator id="upgradeEvangelismSep" flex="1"/>
       <vbox flex="1">
         <hbox id="moreInfoURL">
-          <label class="text-link" id="updateMoreInfoURL"
+          <label id="updateMoreInfoURL" is="text-link"
                  value="&clickHere.label;" onclick="openUpdateURL(event);"/>
         </hbox>
       </vbox>
@@ -115,14 +109,11 @@
   </wizardpage>
 
   <wizardpage id="downloading" pageid="downloading"
-              object="gDownloadingPage" onextra1="gDownloadingPage.onHide();"
-              onpageshow="gDownloadingPage.onPageShow();">
+              object="gDownloadingPage">
     <updateheader label="&downloadPage.title;"/>
     <vbox class="update-content" flex="1">
       <hbox id="downloadStatusProgress">
-        <progressmeter id="downloadProgress" mode="undetermined" flex="1"/>
-        <button id="pauseButton" oncommand="gDownloadingPage.onPause();"
-                paused="false"/>
+        <html:progress id="downloadProgress" max="100"/>
       </hbox>
       <separator class="thin"/>
       <hbox id="downloadStatusLine">
@@ -136,48 +127,42 @@
     </vbox>
   </wizardpage>
 
-  <wizardpage id="errors" pageid="errors" object="gErrorsPage"
-              onpageshow="gErrorsPage.onPageShow();">
+  <wizardpage id="errors" pageid="errors" object="gErrorsPage">
     <updateheader label="&error.title;"/>
     <vbox class="update-content" flex="1">
       <label id="errorIntro">&error.label;</label>
       <separator/>
-      <textbox class="plain" readonly="true" id="errorReason" multiline="true"
-               rows="3"/>
+      <html:textarea class="plain" readonly="readonly" id="errorReason" rows="3"/>
       <separator/>
       <label id="errorManual">&errorManual.label;</label>
       <hbox>
-        <label class="text-link" id="errorLinkLabel" value=""
+        <label id="errorLinkLabel" value="" is="text-link"
                onclick="openUpdateURL(event);"/>
       </hbox>
     </vbox>
   </wizardpage>
 
   <wizardpage id="errorextra" pageid="errorextra"
-              object="gErrorExtraPage"
-              onpageshow="gErrorExtraPage.onPageShow();">
+              object="gErrorExtraPage">
     <updateheader label="&error.title;"/>
     <vbox class="update-content" flex="1">
       <label id="bgErrorLabel">&genericBackgroundError.label;</label>
       <hbox>
-        <label id="errorExtraLinkLabel" class="text-link"
+        <label id="errorExtraLinkLabel" is="text-link"
                value="" onclick="openUpdateURL(event);"/>
       </hbox>
     </vbox>
   </wizardpage>
 
   <wizardpage id="errorpatching" pageid="errorpatching" next="downloading"
-              object="gErrorPatchingPage"
-              onpageshow="gErrorPatchingPage.onPageShow();">
+              object="gErrorPatchingPage">
     <updateheader label="&error.title;"/>
     <vbox class="update-content" flex="1">
       <label>&errorpatching.intro;</label>
     </vbox>
   </wizardpage>
 
-  <wizardpage id="finished" pageid="finished" object="gFinishedPage"
-              onpageshow="gFinishedPage.onPageShow();"
-              onextra1="gFinishedPage.onExtra1()">
+  <wizardpage id="finished" pageid="finished" object="gFinishedPage">
     <updateheader label="&finishedPage.title;"/>
     <vbox class="update-content" flex="1">
       <label>&finishedPage.text;</label>
@@ -185,9 +170,7 @@
   </wizardpage>
 
   <wizardpage id="finishedBackground" pageid="finishedBackground"
-              object="gFinishedPage" onextra1="gFinishedPage.onExtra1()"
-              onextra2="gFinishedPage.onExtra2()"
-              onpageshow="gFinishedPage.onPageShowBackground();">
+              object="gFinishedPage">
     <updateheader label="&finishedPage.title;"/>
     <vbox class="update-content" flex="1">
       <label>&finishedBackgroundPage.text;</label>
@@ -195,7 +178,7 @@
       <hbox align="center">
         <label>&finishedBackground.name;</label>
         <label id="updateFinishedName" flex="1" crop="right" value=""/>
-        <label id="finishedBackgroundLink" class="text-link" disabled="true"
+        <label id="finishedBackgroundLink" disabled="true" is="text-link"
                value="&details.link;" onclick="openUpdateURL(event);"/>
       </hbox>
       <spacer flex="1"/>
@@ -205,7 +188,7 @@
       <label id="finishedBackgroundMoreElevatedLink"
              hidden="true">&errorManual.label;</label>
       <hbox>
-        <label class="text-link" id="finishedBackgroundMoreElevatedLinkLabel"
+        <label id="finishedBackgroundMoreElevatedLinkLabel" is="text-link"
                value="" onclick="openUpdateURL(event);" hidden="true"/>
       </hbox>
     </vbox>

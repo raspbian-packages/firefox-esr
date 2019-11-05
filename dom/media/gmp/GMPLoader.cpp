@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,19 +11,19 @@
 #include "prlink.h"
 #include "prenv.h"
 #if defined(XP_WIN) && defined(MOZ_SANDBOX)
-#include "mozilla/sandboxTarget.h"
-#include "mozilla/sandboxing/SandboxInitialization.h"
-#include "mozilla/sandboxing/sandboxLogging.h"
+#  include "mozilla/sandboxTarget.h"
+#  include "mozilla/sandboxing/SandboxInitialization.h"
+#  include "mozilla/sandboxing/sandboxLogging.h"
 #endif
-#if defined(XP_LINUX) && defined(MOZ_GMP_SANDBOX)
-#include "mozilla/Sandbox.h"
-#include "mozilla/SandboxInfo.h"
+#if defined(XP_LINUX) && defined(MOZ_SANDBOX)
+#  include "mozilla/Sandbox.h"
+#  include "mozilla/SandboxInfo.h"
 #endif
 
 #include <string>
 
 #ifdef XP_WIN
-#include "windows.h"
+#  include "windows.h"
 #endif
 
 namespace mozilla {
@@ -132,7 +132,7 @@ void GMPLoader::Shutdown() {
   }
 }
 
-#if defined(XP_MACOSX) && defined(MOZ_GMP_SANDBOX)
+#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
 void GMPLoader::SetSandboxInfo(MacSandboxInfo* aSandboxInfo) {
   if (mSandboxStarter) {
     mSandboxStarter->SetSandboxInfo(aSandboxInfo);
@@ -156,7 +156,7 @@ class WinSandboxStarter : public mozilla::gmp::SandboxStarter {
 };
 #endif
 
-#if defined(XP_MACOSX) && defined(MOZ_GMP_SANDBOX)
+#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
 class MacSandboxStarter : public mozilla::gmp::SandboxStarter {
  public:
   bool Start(const char* aLibPath) override {
@@ -176,7 +176,7 @@ class MacSandboxStarter : public mozilla::gmp::SandboxStarter {
 };
 #endif
 
-#if defined(XP_LINUX) && defined(MOZ_GMP_SANDBOX)
+#if defined(XP_LINUX) && defined(MOZ_SANDBOX)
 namespace {
 class LinuxSandboxStarter : public mozilla::gmp::SandboxStarter {
  private:
@@ -199,14 +199,14 @@ class LinuxSandboxStarter : public mozilla::gmp::SandboxStarter {
   }
 };
 }  // anonymous namespace
-#endif  // XP_LINUX && MOZ_GMP_SANDBOX
+#endif  // XP_LINUX && MOZ_SANDBOX
 
 static UniquePtr<SandboxStarter> MakeSandboxStarter() {
 #if defined(XP_WIN) && defined(MOZ_SANDBOX)
   return mozilla::MakeUnique<WinSandboxStarter>();
-#elif defined(XP_MACOSX) && defined(MOZ_GMP_SANDBOX)
+#elif defined(XP_MACOSX) && defined(MOZ_SANDBOX)
   return mozilla::MakeUnique<MacSandboxStarter>();
-#elif defined(XP_LINUX) && defined(MOZ_GMP_SANDBOX)
+#elif defined(XP_LINUX) && defined(MOZ_SANDBOX)
   return LinuxSandboxStarter::Make();
 #else
   return nullptr;

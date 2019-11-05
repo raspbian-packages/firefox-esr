@@ -7,15 +7,17 @@
 #ifndef mozilla_dom_workerscope_h__
 #define mozilla_dom_workerscope_h__
 
+#include "mozilla/Attributes.h"
 #include "mozilla/dom/WorkerCommon.h"
 #include "mozilla/DOMEventTargetHelper.h"
+#include "mozilla/dom/DOMPrefs.h"
 #include "mozilla/dom/Headers.h"
 #include "mozilla/dom/RequestBinding.h"
 #include "nsWeakReference.h"
 #include "mozilla/dom/ImageBitmapSource.h"
 
 #ifdef XP_WIN
-#undef PostMessage
+#  undef PostMessage
 #endif
 
 namespace mozilla {
@@ -32,6 +34,7 @@ class Function;
 class IDBFactory;
 enum class ImageBitmapFormat : uint8_t;
 class Performance;
+struct PostMessageOptions;
 class Promise;
 class RequestOrUSVString;
 class WorkerLocation;
@@ -74,13 +77,18 @@ class WorkerGlobalScope : public DOMEventTargetHelper,
   virtual bool WrapGlobalObject(JSContext* aCx,
                                 JS::MutableHandle<JSObject*> aReflector) = 0;
 
-  virtual JSObject* GetGlobalJSObject(void) override { return GetWrapper(); }
+  JSObject* GetGlobalJSObject() override { return GetWrapper(); }
+  JSObject* GetGlobalJSObjectPreserveColor() const override {
+    return GetWrapperPreserveColor();
+  }
 
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_INHERITED(WorkerGlobalScope,
                                                          DOMEventTargetHelper)
 
   WorkerGlobalScope* Self() { return this; }
+
+  void NoteTerminating();
 
   already_AddRefed<Console> GetConsole(ErrorResult& aRv);
 
@@ -97,7 +105,8 @@ class WorkerGlobalScope : public DOMEventTargetHelper,
   OnErrorEventHandlerNonNull* GetOnerror();
   void SetOnerror(OnErrorEventHandlerNonNull* aHandler);
 
-  void ImportScripts(const Sequence<nsString>& aScriptURLs, ErrorResult& aRv);
+  void ImportScripts(JSContext* aCx, const Sequence<nsString>& aScriptURLs,
+                     ErrorResult& aRv);
 
   int32_t SetTimeout(JSContext* aCx, Function& aHandler, const int32_t aTimeout,
                      const Sequence<JS::Value>& aArguments, ErrorResult& aRv);
@@ -106,10 +115,10 @@ class WorkerGlobalScope : public DOMEventTargetHelper,
                      const Sequence<JS::Value>& /* unused */, ErrorResult& aRv);
   void ClearTimeout(int32_t aHandle);
   int32_t SetInterval(JSContext* aCx, Function& aHandler,
-                      const Optional<int32_t>& aTimeout,
+                      const int32_t aTimeout,
                       const Sequence<JS::Value>& aArguments, ErrorResult& aRv);
   int32_t SetInterval(JSContext* aCx, const nsAString& aHandler,
-                      const Optional<int32_t>& aTimeout,
+                      const int32_t aTimeout,
                       const Sequence<JS::Value>& /* unused */,
                       ErrorResult& aRv);
   void ClearInterval(int32_t aHandle);
@@ -121,6 +130,8 @@ class WorkerGlobalScope : public DOMEventTargetHelper,
 
   IMPL_EVENT_HANDLER(online)
   IMPL_EVENT_HANDLER(offline)
+  IMPL_EVENT_HANDLER(rejectionhandled)
+  IMPL_EVENT_HANDLER(unhandledrejection)
 
   void Dump(const Optional<nsAString>& aString) const;
 
@@ -153,12 +164,6 @@ class WorkerGlobalScope : public DOMEventTargetHelper,
                                               int32_t aSw, int32_t aSh,
                                               ErrorResult& aRv);
 
-  already_AddRefed<mozilla::dom::Promise> CreateImageBitmap(
-      JSContext* aCx, const ImageBitmapSource& aImage, int32_t aOffset,
-      int32_t aLength, mozilla::dom::ImageBitmapFormat aFormat,
-      const mozilla::dom::Sequence<mozilla::dom::ChannelPixelLayout>& aLayout,
-      mozilla::ErrorResult& aRv);
-
   bool WindowInteractionAllowed() const {
     return mWindowInteractionsAllowed > 0;
   }
@@ -185,9 +190,14 @@ class WorkerGlobalScope : public DOMEventTargetHelper,
 
   Maybe<ServiceWorkerDescriptor> GetController() const override;
 
+  RefPtr<mozilla::dom::ServiceWorkerRegistration> GetServiceWorkerRegistration(
+      const ServiceWorkerRegistrationDescriptor& aDescriptor) const override;
+
   RefPtr<mozilla::dom::ServiceWorkerRegistration>
   GetOrCreateServiceWorkerRegistration(
       const ServiceWorkerRegistrationDescriptor& aDescriptor) override;
+
+  void FirstPartyStorageAccessGranted();
 };
 
 class DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
@@ -206,8 +216,10 @@ class DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
 
   void PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
                    const Sequence<JSObject*>& aTransferable, ErrorResult& aRv);
+  void PostMessage(JSContext* aCx, JS::Handle<JS::Value> aMessage,
+                   const PostMessageOptions& aOptions, ErrorResult& aRv);
 
-  void Close(JSContext* aCx);
+  void Close();
 
   IMPL_EVENT_HANDLER(message)
   IMPL_EVENT_HANDLER(messageerror)
@@ -226,7 +238,7 @@ class SharedWorkerGlobalScope final : public WorkerGlobalScope {
 
   void GetName(DOMString& aName) const { aName.AsAString() = mName; }
 
-  void Close(JSContext* aCx);
+  void Close();
 
   IMPL_EVENT_HANDLER(connect)
 };
@@ -263,6 +275,7 @@ class ServiceWorkerGlobalScope final : public WorkerGlobalScope {
   IMPL_EVENT_HANDLER(activate)
   IMPL_EVENT_HANDLER(install)
   IMPL_EVENT_HANDLER(message)
+  IMPL_EVENT_HANDLER(messageerror)
 
   IMPL_EVENT_HANDLER(push)
   IMPL_EVENT_HANDLER(pushsubscriptionchange)
@@ -271,11 +284,7 @@ class ServiceWorkerGlobalScope final : public WorkerGlobalScope {
 
   void SetOnfetch(mozilla::dom::EventHandlerNonNull* aCallback);
 
-  using DOMEventTargetHelper::AddEventListener;
-  virtual void AddEventListener(
-      const nsAString& aType, dom::EventListener* aListener,
-      const dom::AddEventListenerOptionsOrBoolean& aOptions,
-      const dom::Nullable<bool>& aWantsUntrusted, ErrorResult& aRv) override;
+  void EventListenerAdded(nsAtom* aType) override;
 };
 
 class WorkerDebuggerGlobalScope final : public DOMEventTargetHelper,
@@ -299,7 +308,10 @@ class WorkerDebuggerGlobalScope final : public DOMEventTargetHelper,
   virtual bool WrapGlobalObject(JSContext* aCx,
                                 JS::MutableHandle<JSObject*> aReflector);
 
-  virtual JSObject* GetGlobalJSObject(void) override { return GetWrapper(); }
+  JSObject* GetGlobalJSObject(void) override { return GetWrapper(); }
+  JSObject* GetGlobalJSObjectPreserveColor(void) const override {
+    return GetWrapperPreserveColor();
+  }
 
   void GetGlobal(JSContext* aCx, JS::MutableHandle<JSObject*> aGlobal,
                  ErrorResult& aRv);
@@ -312,7 +324,7 @@ class WorkerDebuggerGlobalScope final : public DOMEventTargetHelper,
                      const Optional<JS::Handle<JSObject*>>& aSandbox,
                      ErrorResult& aRv);
 
-  void EnterEventLoop();
+  MOZ_CAN_RUN_SCRIPT void EnterEventLoop();
 
   void LeaveEventLoop();
 
@@ -337,6 +349,9 @@ class WorkerDebuggerGlobalScope final : public DOMEventTargetHelper,
 
   void Dump(JSContext* aCx, const Optional<nsAString>& aString) const;
 
+  void Atob(const nsAString& aAtob, nsAString& aOutput, ErrorResult& aRv) const;
+  void Btoa(const nsAString& aBtoa, nsAString& aOutput, ErrorResult& aRv) const;
+
   // Override DispatchTrait API to target the worker thread.  Dispatch may
   // return failure if the worker thread is not alive.
   nsresult Dispatch(TaskCategory aCategory,
@@ -354,7 +369,7 @@ class WorkerDebuggerGlobalScope final : public DOMEventTargetHelper,
 }  // namespace mozilla
 
 inline nsISupports* ToSupports(mozilla::dom::WorkerGlobalScope* aScope) {
-  return static_cast<nsIDOMEventTarget*>(aScope);
+  return static_cast<mozilla::dom::EventTarget*>(aScope);
 }
 
 #endif /* mozilla_dom_workerscope_h__ */

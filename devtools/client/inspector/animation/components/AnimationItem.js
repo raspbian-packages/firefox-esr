@@ -5,14 +5,17 @@
 "use strict";
 
 const { connect } = require("devtools/client/shared/vendor/react-redux");
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  Component,
+  createFactory,
+} = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 
 const AnimationTarget = createFactory(require("./AnimationTarget"));
 const SummaryGraph = createFactory(require("./graph/SummaryGraph"));
 
-class AnimationItem extends PureComponent {
+class AnimationItem extends Component {
   static get propTypes() {
     return {
       animation: PropTypes.object.isRequired,
@@ -23,6 +26,7 @@ class AnimationItem extends PureComponent {
       onShowBoxModelHighlighterForNode: PropTypes.func.isRequired,
       selectAnimation: PropTypes.func.isRequired,
       selectedAnimation: PropTypes.object.isRequired,
+      setHighlightedNode: PropTypes.func.isRequired,
       setSelectedNode: PropTypes.func.isRequired,
       simulateAnimation: PropTypes.func.isRequired,
       timeScale: PropTypes.object.isRequired,
@@ -33,23 +37,29 @@ class AnimationItem extends PureComponent {
     super(props);
 
     this.state = {
-      isSelected: false,
+      isSelected: this.isSelected(props),
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    const { animation } = this.props;
-
     this.setState({
-      isSelected: nextProps.selectedAnimation &&
-                  animation.actorID === nextProps.selectedAnimation.actorID
+      isSelected: this.isSelected(nextProps),
     });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return this.state.isSelected !== nextState.isSelected ||
-           this.props.animation !== nextProps.animation ||
-           this.props.timeScale !== nextProps.timeScale;
+    return (
+      this.state.isSelected !== nextState.isSelected ||
+      this.props.animation !== nextProps.animation ||
+      this.props.timeScale !== nextProps.timeScale
+    );
+  }
+
+  isSelected(props) {
+    return (
+      props.selectedAnimation &&
+      props.animation.actorID === props.selectedAnimation.actorID
+    );
   }
 
   render() {
@@ -61,39 +71,36 @@ class AnimationItem extends PureComponent {
       onHideBoxModelHighlighter,
       onShowBoxModelHighlighterForNode,
       selectAnimation,
+      setHighlightedNode,
       setSelectedNode,
       simulateAnimation,
       timeScale,
     } = this.props;
-    const {
-      isSelected,
-    } = this.state;
+    const { isSelected } = this.state;
 
     return dom.li(
       {
-        className: `animation-item ${ animation.state.type } ` +
-                   (isSelected ? "selected" : ""),
+        className:
+          `animation-item ${animation.state.type} ` +
+          (isSelected ? "selected" : ""),
       },
-      AnimationTarget(
-        {
-          animation,
-          emitEventForTest,
-          getNodeFromActor,
-          onHideBoxModelHighlighter,
-          onShowBoxModelHighlighterForNode,
-          setSelectedNode,
-        }
-      ),
-      SummaryGraph(
-        {
-          animation,
-          emitEventForTest,
-          getAnimatedPropertyMap,
-          selectAnimation,
-          simulateAnimation,
-          timeScale,
-        }
-      )
+      AnimationTarget({
+        animation,
+        emitEventForTest,
+        getNodeFromActor,
+        onHideBoxModelHighlighter,
+        onShowBoxModelHighlighterForNode,
+        setHighlightedNode,
+        setSelectedNode,
+      }),
+      SummaryGraph({
+        animation,
+        emitEventForTest,
+        getAnimatedPropertyMap,
+        selectAnimation,
+        simulateAnimation,
+        timeScale,
+      })
     );
   }
 }

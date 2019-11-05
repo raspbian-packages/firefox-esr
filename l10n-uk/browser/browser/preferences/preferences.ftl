@@ -4,8 +4,8 @@
 
 do-not-track-description = Передавати веб-сайтам сигнал “Не стежити”
 do-not-track-learn-more = Докладніше
-do-not-track-option-default =
-    .label = Лише при використанні захисту від стеження
+do-not-track-option-default-content-blocking-known =
+    .label = Лише якщо { -brand-short-name } налаштовано блокувати відомі елементи стеження
 do-not-track-option-always =
     .label = Завжди
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Налаштування
            *[other] Налаштування
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Ваша організація вимкнула можливість зміни деяких налаштувань.
        *[other] Ваша організація вимкнула можливість зміни деяких налаштувань.
     }
+managed-notice = Вашим браузером керує ваша організація.
 pane-general-title = Загальні
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Приватність і Безпека
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Обліковий запис Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Підтримка { -brand-short-name }
+addons-button-label = Розширення і теми
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Перезапустити { -brand-short-name }
 should-restart-ok = Перезапустити { -brand-short-name } зараз
 cancel-no-restart-button = Скасувати
 restart-later = Перезапустити потім
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Розширення <img data-l10n-name="icon"/> { $name } контролює вашу домівку.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Розширення <img data-l10n-name="icon"/> { $name } контролює вашу сторінку нової вкладки.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Розширення <img data-l10n-name="icon"/> { $name } контролює це налаштування.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Розширення <img data-l10n-name="icon"/> { $name } встановило ваш типовий засіб пошуку.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Для роботи розширення <img data-l10n-name="icon"/> { $name } необхідні вкладки в контейнері.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Розширення <img data-l10n-name="icon"/> { $name } контролює ці налаштування.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Розширення <img data-l10n-name="icon"/> { $name } контролює спосіб з'єднання { -brand-short-name } з Інтернетом.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Щоб увімкнути розширення, відкрийте <img data-l10n-name="addons-icon"/> Додатки в <img data-l10n-name="menu-icon"/> меню.
 
 ## Preferences UI Search Results
 
@@ -91,9 +122,9 @@ startup-header = Запуск
 # since this setting is only exposed in Firefox Developer Edition
 separate-profile-mode =
     .label = Дозволити { -brand-short-name } та Firefox виконуватись одночасно
-use-firefox-sync = Підказка: При цьому використовуються окремі профілі. Скористайтеся синхронізацією для обміну даними між ними.
-get-started-not-logged-in = Увійти в Синхронізацію…
-get-started-configured = Відкрити налаштування Синхронізації
+use-firefox-sync = Підказка: При цьому використовуються окремі профілі. Скористайтеся { -sync-brand-short-name(case: "abl", capitalization: "lower") } для обміну даними між ними.
+get-started-not-logged-in = Увійти в { -sync-brand-short-name(case: "acc") }…
+get-started-configured = Відкрити налаштування { -sync-brand-short-name(case: "dat") }
 always-check-default =
     .label = Завжди перевіряти чи є { -brand-short-name } типовим браузером
     .accesskey = б
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } не є вашим типовим бра�
 set-as-my-default-browser =
     .label = Зробити типовим…
     .accesskey = т
-startup-page = При запуску { -brand-short-name }
-    .accesskey = з
-startup-user-homepage =
-    .label = Показувати домівку
-startup-blank-page =
-    .label = Показувати чисту сторінку
-startup-prev-session =
-    .label = Показувати вікна і вкладки з минулого разу
+startup-restore-previous-session =
+    .label = Відновити попередній сеанс
+    .accesskey = В
+startup-restore-warn-on-quit =
+    .label = Попереджати при виході з браузера
 disable-extension =
     .label = Вимкнути розширення
-home-page-header = Домівка
 tabs-group-header = Вкладки
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab перемикає між вкладками в порядку недавнього їх використання
@@ -142,9 +169,9 @@ browser-containers-settings =
 containers-disable-alert-title = Закрити всі вкладки контейнера?
 containers-disable-alert-desc =
     { $tabCount ->
-        [one] Якщо ви вимкнете всі вкладки контейнера, буде закрито { $tabCount } вкладку контейнера. Ви дійсно хочете вимкнути контейнер?
-        [few] Якщо ви вимкнете всі вкладки контейнера, буде закрито { $tabCount } вкладки контейнера. Ви дійсно хочете вимкнути контейнер?
-       *[many] Якщо ви вимкнете всі вкладки контейнера, буде закрито { $tabCount } вкладок контейнера. Ви дійсно хочете вимкнути контейнер?
+        [one] Якщо ви вимкнете вкладки в контейнері, закриється { $tabCount } вкладка контейнера. Ви дійсно хочете вимкнути вкладки в контейнері?
+        [few] Якщо ви вимкнете вкладки в контейнері, закриється { $tabCount } вкладки контейнера. Ви дійсно хочете вимкнути вкладки в контейнері?
+       *[many] Якщо ви вимкнете вкладки в контейнері, закриються { $tabCount } вкладок контейнера. Ви дійсно хочете вимкнути вкладки в контейнері?
     }
 containers-disable-alert-ok-button =
     { $tabCount ->
@@ -158,9 +185,9 @@ containers-remove-alert-title = Вилучити цей контейнер?
 #   $count (Number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
-        [one] Якщо ви вилучите цей контейнер зараз, буде закрита { $count } вкладка контейнер. Ви справді хочете вилучити цей контейнер?
-        [few] Якщо ви вилучите цей контейнер зараз, буде закрито { $count } вкладки контейнери. Ви справді хочете вилучити цей контейнер?
-       *[many] Якщо ви вилучите цей контейнер зараз, буде закрито { $count } вкладок контейнерів. Ви справді хочете вилучити цей контейнер?
+        [one] Якщо ви вилучите цей контейнер зараз, закриється { $count } вкладка контейнера. Ви дійсно хочете вилучити цей контейнер?
+        [few] Якщо ви вилучите цей контейнер зараз, закриється { $count } вкладки контейнера. Ви дійсно хочете вилучити цей контейнер?
+       *[many] Якщо ви вилучите цей контейнер зараз, закриються { $count } вкладок контейнера. Ви дійсно хочете вилучити цей контейнер?
     }
 containers-remove-ok-button = Вилучити цей контейнер
 containers-remove-cancel-button = Не вилучати цей контейнер
@@ -184,6 +211,12 @@ choose-language-description = Оберіть бажану мову для пок
 choose-button =
     .label = Вибрати…
     .accesskey = а
+choose-browser-language-description = Оберіть мови для відображення меню, повідомлень та сповіщень { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Встановити альтернативи…
+    .accesskey = л
+confirm-browser-language-change-description = Перезапуск { -brand-short-name } для застосування змін
+confirm-browser-language-change-button = Застосувати й перезапустити
 translate-web-pages =
     .label = Перекладати веб вміст
     .accesskey = П
@@ -219,7 +252,7 @@ download-always-ask-where =
     .label = Завжди запитувати де зберегти файли
     .accesskey = ж
 applications-header = Програми
-applications-description = Оберіть, як { -brand-short-name } буде поводитися з файлами, які ви завантажуєте з Інтернету, або з програмами, які ви використовуєте під час перегляду.
+applications-description = Оберіть, як { -brand-short-name } оброблятиме файли, які ви завантажуєте з Інтернету, або програми, якими ви користуєтесь під час перегляду.
 applications-filter =
     .placeholder = Пошук типів файлів чи програм
 applications-type-column =
@@ -235,7 +268,6 @@ play-drm-content =
 play-drm-content-learn-more = Докладніше
 update-application-title = Оновлення { -brand-short-name }
 update-application-description = Використовуйте найновішу версію { -brand-short-name } для найкращої швидкодії, стабільності й безпеки.
-update-application-info = Версія { $version } <a>Що нового</a>
 update-application-version = Версія { $version } <a data-l10n-name="learn-more">Що нового</a>
 update-history =
     .label = Показати історію оновлень…
@@ -250,12 +282,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Ніколи не перевіряти наявність оновлень (не рекомендовано)
     .accesskey = Н
+update-application-warning-cross-user-setting = Цей параметр застосується для всіх облікових записів Windows та профілів { -brand-short-name }, що використовують це встановлення { -brand-short-name }.
 update-application-use-service =
     .label = Використовувати фонову службу для встановлення оновлень
     .accesskey = с
 update-enable-search-update =
     .label = Автоматично оновлювати засоби пошуку
     .accesskey = з
+update-pref-write-failure-title = Записати збій
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Не вдалося зберегти налаштування. Неможливо записати в файл: { $path }
+update-setting-write-failure-title = Помилка збереження налаштувань оновлення
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } зіткнувся з помилкою і не зберіг цю зміну. Зверніть увагу, що для встановлення цього налаштування оновлення необхідний дозвіл запису в файл нижче. Ви або системний адміністратор можуть вирішити цю помилку, надавши користувачам групи повний контроль над цим файлом.
+    
+    Не вдалося записати в файл: { $path }
+update-in-progress-title = Триває оновлення
+update-in-progress-message = Ви хочете, щоб { -brand-short-name } продовжив це оновлення?
+update-in-progress-ok-button = &Відхилити
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Продовжити
 
 ## General Section - Performance
 
@@ -271,7 +323,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Обмеження процесів вмісту
     .accesskey = О
 performance-limit-content-process-enabled-desc = Додаткова кількість процесів вмісту може пришвидшити роботу при використанні багатьох вкладок, але при цьому споживатиметься більше пам'яті.
-performance-limit-content-process-disabled-desc = Зміна числа процесів вмісту можлива лише в багатопроцесній версії { -brand-short-name }. <a>Дізнайтеся, як перевірити, чи увімкнено багатопроцесність</a>
 performance-limit-content-process-blocked-desc = Зміна числа процесів вмісту можлива лише в багатопроцесній версії { -brand-short-name }. <a data-l10n-name="learn-more">Дізнайтеся, як перевірити, чи увімкнено багатопроцесність</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -296,10 +347,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Шукати текст під час його введення
     .accesskey = й
+browsing-cfr-recommendations =
+    .label = Рекомендувати розширення при перегляді
+    .accesskey = Р
+browsing-cfr-features =
+    .label = Рекомендувати функції під час перегляду
+    .accesskey = Р
+browsing-cfr-recommendations-learn-more = Докладніше
 
 ## General Section - Proxy
 
-network-proxy-title = Проксі-сервер
+network-settings-title = Налаштування мережі
+network-proxy-connection-description = Налаштувати спосіб з'єднання { -brand-short-name } з Інтернетом.
 network-proxy-connection-learn-more = Докладніше
 network-proxy-connection-settings =
     .label = Налаштувати…
@@ -341,9 +400,6 @@ use-current-pages =
 choose-bookmark =
     .label = Використати закладку…
     .accesskey = к
-restore-default =
-    .label = Відновити типову
-    .accesskey = д
 
 ## Search Section
 
@@ -405,9 +461,9 @@ containers-remove-button =
 
 sync-signedout-caption = Візьміть свій інтернет з собою
 sync-signedout-description = Синхронізуйте закладки, історію, вкладки, паролі, додатки, а також налаштування на всіх своїх пристроях.
-sync-signedout-account-title = Під’єднайтеся до облікового запису Firefox
-sync-signedout-account-create = Не маєте облікового запису? Давайте створимо
-    .accesskey = й
+sync-signedout-account-title = Під’єднайтеся до { -fxaccount-brand-name(case: "gen") }
+sync-signedout-account-create = Не маєте облікового запису? Створімо його!
+    .accesskey = С
 sync-signedout-account-signin =
     .label = Увійти…
     .accesskey = У
@@ -419,7 +475,7 @@ sync-signedout-account-signin =
 #
 # They can be moved within the sentence as needed to adapt
 # to your language, but should not be changed or translated.
-sync-mobile-promo = Завантажте Firefox для <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> або <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a> для синхронізації з вашим мобільним пристроєм.
+sync-mobile-promo = Завантажте Firefox для <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> або <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a>, щоб синхронізувати дані з вашим мобільним пристроєм.
 
 ## Sync Section - Signed in
 
@@ -487,8 +543,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Зберегти
     .accesskey = б
-sync-mobilepromo-single = Під'єднати інший пристрій
-sync-mobilepromo-multi = Керувати пристроями
+sync-connect-another-device = Під'єднати інший пристрій
+sync-manage-devices = Керувати пристроями
+sync-fxa-begin-pairing = Сполучити пристрій
 sync-tos-link = Умови надання послуги
 sync-fxa-privacy-notice = Повідомлення про приватність
 
@@ -498,13 +555,16 @@ privacy-header = Приватність браузера
 
 ## Privacy Section - Forms
 
-forms-header = Форми і Паролі
+logins-header = Входи і паролі
 forms-ask-to-save-logins =
     .label = Запит збереження паролів для веб-сайтів
     .accesskey = п
 forms-exceptions =
     .label = Винятки…
     .accesskey = и
+forms-generate-passwords =
+    .label = Пропонувати й генерувати надійні паролі
+    .accesskey = г
 forms-saved-logins =
     .label = Збережені паролі…
     .accesskey = л
@@ -527,22 +587,22 @@ history-header = Історія відвідувань
 #   - Simply as "Firefox", moving the verb into each option.
 #     This will result in "Firefox" + "Will remember history", etc.
 #   - As a stand-alone message, for example "Firefox history settings:".
-history-remember-label = { -brand-short-name } буде
-    .accesskey = б
+history-remember-label = Поведінка { -brand-short-name }
+    .accesskey = П
 history-remember-option-all =
     .label = Пам’ятати історію
 history-remember-option-never =
     .label = Ніколи не пам’ятати історії
 history-remember-option-custom =
     .label = Використовувати власні налаштування історії
-history-remember-description = { -brand-short-name } збереже історію переглядів, завантажень, а також надісланих форм та пошукових запитів.
-history-dontremember-description = { -brand-short-name } буде використовувати ті ж налаштування, що й у приватному режимі, та не буде пам’ятати історію вашого перегляду.
+history-remember-description = { -brand-short-name } зберігатиме історію переглядів, завантажень, заповнених форм і пошукових запитів.
+history-dontremember-description = { -brand-short-name } використовуватиме такі самі налаштування, що й у приватному режимі, та не буде пам’ятати історію перегляду.
 history-private-browsing-permanent =
     .label = Завжди використовувати режим приватного перегляду
     .accesskey = п
-history-remember-option =
+history-remember-browser-option =
     .label = Пам’ятати історію переглядів та завантажень
-    .accesskey = і
+    .accesskey = П
 history-remember-search-option =
     .label = Пам’ятати історію пошуків та форм
     .accesskey = м
@@ -559,36 +619,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Куки і дані сайтів
+sitedata-total-size-calculating = Обчислення розміру даних сайтів і кешу…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Ваші збережені куки, дані сайтів і кеш використовують { $value } { $unit } дискового простору.
 sitedata-learn-more = Докладніше
-sitedata-accept-cookies-option =
-    .label = Приймати куки і дані з веб-сайтів (рекомендовано)
-    .accesskey = к
-sitedata-block-cookies-option =
-    .label = Блокувати куки і дані (може призвести до пошкодження веб-сайтів)
+sitedata-delete-on-close =
+    .label = Видаляти куки і дані сайтів при закритті { -brand-short-name }
+    .accesskey = я
+sitedata-delete-on-close-private-browsing = В режимі постійного приватного перегляду, куки і дані сайтів завжди очищатимуться при закритті { -brand-short-name }.
+sitedata-allow-cookies-option =
+    .label = Приймати куки і дані сайтів
+    .accesskey = П
+sitedata-disallow-cookies-option =
+    .label = Блокувати куки і дані сайтів
     .accesskey = Б
-sitedata-keep-until = Зберігати доки
-    .accesskey = г
-sitedata-keep-until-expire =
-    .label = Термін їх дії завершується
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } закрито
-sitedata-accept-third-party-desc = Приймати сторонні куки і дані сайтів
-    .accesskey = к
-sitedata-accept-third-party-always-option =
-    .label = Завжди
-sitedata-accept-third-party-visited-option =
-    .label = Від відвіданих
-sitedata-accept-third-party-never-option =
-    .label = Ніколи
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Тип блокування
+    .accesskey = и
+sitedata-option-block-trackers =
+    .label = Стороннє стеження
+sitedata-option-block-unvisited =
+    .label = Куки з невідвіданих веб-сайтів
+sitedata-option-block-all-third-party =
+    .label = Усі сторонні куки (може пошкодити веб-сайти)
+sitedata-option-block-all =
+    .label = Усі куки (порушить роботу веб-сайтів)
 sitedata-clear =
     .label = Стерти дані…
     .accesskey = С
 sitedata-settings =
     .label = Керувати даними…
     .accesskey = К
-sitedata-cookies-exceptions =
-    .label = Винятки…
-    .accesskey = и
+sitedata-cookies-permissions =
+    .label = Керувати дозволами…
+    .accesskey = з
 
 ## Privacy Section - Address Bar
 
@@ -605,30 +672,73 @@ addressbar-locbar-openpage-option =
     .accesskey = в
 addressbar-suggestions-settings = Змінити налаштування пропозицій засобів пошуку
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Блокування вмісту
+content-blocking-description = Блокуйте сторонній вміст, що стежить за вами в інтернеті. Контролюйте обсяг вашої онлайн-активності, що зберігається і передається між веб-сайтами.
+content-blocking-section-description = Захищайте свою приватність під час перегляду. Блокуйте невидимий вміст, що відстежує відвідані вами сайти і створює ваш профіль. Блокування деякого вмісту може пришвидшити завантаження сторінок.
+content-blocking-learn-more = Докладніше
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Звичайне
+    .accesskey = ч
+content-blocking-setting-strict =
+    .label = Суворе
+    .accesskey = в
+content-blocking-setting-custom =
+    .label = Власне
+    .accesskey = л
+content-blocking-standard-description = Блокує лише відомі елементи стеження у приватних вікнах.
+content-blocking-standard-desc = Збалансовано для захисту і швидкодії. Дозволяє деякі елементи стеження для належної роботи веб-сайтів.
+content-blocking-strict-desc = Блокує все виявлене { -brand-short-name } стеження. Може пошкодити роботу деяких сайтів.
+content-blocking-strict-description = Сильніший захист. Може пошкодити роботу деяких сайтів.
+content-blocking-custom-desc = Оберіть, що блокувати.
+content-blocking-private-trackers = Відомі елементи стеження лише у приватних вікнах
+content-blocking-third-party-cookies = Сторонні куки стеження
+content-blocking-all-cookies = Усі куки
+content-blocking-unvisited-cookies = Куки з невідвіданих сайтів
+content-blocking-all-windows-trackers = Відомі елементи стеження у всіх вікнах
+content-blocking-all-third-party-cookies = Усі сторонні куки
+content-blocking-cryptominers = Криптомайнери
+content-blocking-fingerprinters = Зчитування відбитку браузера
+content-blocking-warning-title = Увага!
+content-blocking-warning-description = Блокування вмісту може пошкоджувати роботу деяких веб-сайтів. Можна легко вимкнути блокування для сайтів, яким ви довіряєте.
+content-blocking-learn-how = Навчитися
+content-blocking-reload-description = Вам необхідно перезавантажити вкладки для застосування змін.
+content-blocking-reload-tabs-button =
+    .label = Перезавантажити всі вкладки
+    .accesskey = з
+content-blocking-trackers-label =
+    .label = Стеження
+    .accesskey = т
+content-blocking-tracking-protection-option-all-windows =
+    .label = У всіх вікнах
+    .accesskey = х
+content-blocking-option-private =
+    .label = Лише у приватних вікнах
+    .accesskey = п
+content-blocking-tracking-protection-change-block-list = Змінити список блокування
+content-blocking-cookies-label =
+    .label = Куки
+    .accesskey = К
+content-blocking-expand-section =
+    .tooltiptext = Докладніше
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Криптомайнери
+    .accesskey = К
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Зчитування відбитку браузера
+    .accesskey = к
+
 ## Privacy Section - Tracking
 
-tracking-header = Захист від стеження
-tracking-desc = Захист від стеження блокує елементи, що збирають ваші дані під час перегляду на багатьох веб-сайтах. <a data-l10n-name="learn-more">Дізнайтеся більше про захист від стеження і вашу приватність</a>
-tracking-mode-label = Використовуйте захист від стеження для блокування відомих елементів стеження
-tracking-mode-always =
-    .label = Завжди
-    .accesskey = З
-tracking-mode-private =
-    .label = Лише у приватних вікнах
-    .accesskey = Л
-tracking-mode-never =
-    .label = Ніколи
-    .accesskey = Н
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Блокувати відомі елементи стеження в приватному перегляді
-    .accesskey = с
-tracking-exceptions =
-    .label = Винятки…
-    .accesskey = В
-tracking-change-block-list =
-    .label = Змінити список блокування…
-    .accesskey = м
+tracking-manage-exceptions =
+    .label = Керувати винятками…
+    .accesskey = н
 
 ## Privacy Section - Permissions
 
@@ -653,6 +763,16 @@ permissions-notification-link = Докладніше
 permissions-notification-pause =
     .label = Призупинити сповіщення до перезапуску { -brand-short-name }
     .accesskey = П
+permissions-block-autoplay-media2 =
+    .label = Блокувати автоматичне відтворення звуку веб-сайтами
+    .accesskey = з
+permissions-block-autoplay-media-exceptions =
+    .label = Винятки…
+    .accesskey = и
+permissions-autoplay = Автовідтворення
+permissions-autoplay-settings =
+    .label = Налаштування…
+    .accesskey = т
 permissions-block-popups =
     .label = Блокувати виринаючі вікна
     .accesskey = Б
@@ -673,19 +793,21 @@ permissions-a11y-privacy-link = Докладніше
 ## Privacy Section - Data Collection
 
 collection-header = Збір та використання даних { -brand-short-name }
-collection-description = Ми прагнемо надати вам вибір і збирати лише те, що нам потрібно для випуску та вдосконалення { -brand-short-name } для кожного. Ми завжди питаємо про дозвіл перед отриманням особистої інформації.
+collection-description = Ми прагнемо надати вам вибір і збирати лише дані, необхідні для роботи і вдосконалення { -brand-short-name }. Ми завжди запитуємо дозвіл перед отриманням особистої інформації.
 collection-privacy-notice = Повідомлення про приватність
 collection-health-report =
     .label = Дозволити { -brand-short-name } надсилати технічні та користувацькі дані в { -vendor-short-name }
     .accesskey = к
 collection-health-report-link = Докладніше
+collection-studies =
+    .label = Дозволити { -brand-short-name } встановлювати й виконувати дослідження
+collection-studies-link = Переглянути дослідження { -brand-short-name }
+addon-recommendations =
+    .label = Дозволити { -brand-short-name } робити персоналізовані рекомендації розширень
+addon-recommendations-link = Докладніше
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Відправлення даних вимкнено для цієї конфігурації збірки
-collection-browser-errors =
-    .label = Дозволити { -brand-short-name } надсилати звіти і повідомлення про помилки в { -vendor-short-name }
-    .accesskey = з
-collection-browser-errors-link = Докладніше
 collection-backlogged-crash-reports =
     .label = Дозволити { -brand-short-name } надсилати від вашого імені зібрані звіти про збої
     .accesskey = н
@@ -728,3 +850,36 @@ certs-view =
 certs-devices =
     .label = Пристрої захисту…
     .accesskey = и
+space-alert-learn-more-button =
+    .label = Докладніше
+    .accesskey = к
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Відкрити налаштування
+           *[other] Відкрити налаштування
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] л
+           *[other] н
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } - закінчується місце на диску. Вміст веб-сайтів може показуватись неналежним чином. Ви можете стерти збережені дані в меню Налаштування > Приватність і безпека > Куки і дані сайтів.
+       *[other] { -brand-short-name } - закінчується місце на диску. Вміст веб-сайтів може показуватись неналежним чином. Ви можете стерти збережені дані в меню Налаштування > Приватність і безпека > Куки і дані сайтів.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Гаразд, зрозуміло
+    .accesskey = Г
+space-alert-under-5gb-message = У { -brand-short-name } закінчується місце на диску. Вміст веб-сайтів може показуватись неправильно. Натисніть “Докладніше”, щоб оптимізувати використання вашого диска для кращої роботи.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Робочий стіл
+downloads-folder-name = Завантаження
+choose-download-folder-title = Виберіть теку для завантажень:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Зберігати файли до { $service-name }

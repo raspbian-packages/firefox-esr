@@ -248,7 +248,7 @@ void GamepadServiceTest::NewPoseMove(
 
 JSObject* GamepadServiceTest::WrapObject(JSContext* aCx,
                                          JS::HandleObject aGivenProto) {
-  return GamepadServiceTestBinding::Wrap(aCx, this, aGivenProto);
+  return GamepadServiceTest_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

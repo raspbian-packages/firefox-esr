@@ -7,33 +7,29 @@
  * Tests if very long JSON responses are handled correctly.
  */
 
-add_task(async function () {
-  let { L10N } = require("devtools/client/netmonitor/src/utils/l10n");
+add_task(async function() {
+  const { L10N } = require("devtools/client/netmonitor/src/utils/l10n");
 
-  let { tab, monitor } = await initNetMonitor(JSON_LONG_URL);
+  const { tab, monitor } = await initNetMonitor(JSON_LONG_URL);
   info("Starting test... ");
 
   // This is receiving over 80 KB of json and will populate over 6000 items
   // in a variables view instance. Debug builds are slow.
   requestLongerTimeout(4);
 
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let {
-    getDisplayedRequests,
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { getDisplayedRequests, getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
-  let wait = waitForNetworkEvents(monitor, 1);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests();
-  });
-  await wait;
+  // Execute requests.
+  await performRequests(monitor, tab, 1);
 
-  let requestItem = document.querySelector(".request-list-item");
-  let requestsListStatus = requestItem.querySelector(".requests-list-status");
+  const requestItem = document.querySelector(".request-list-item");
+  const requestsListStatus = requestItem.querySelector(".status-code");
   EventUtils.sendMouseEvent({ type: "mouseover" }, requestsListStatus);
   await waitUntil(() => requestsListStatus.title);
 
@@ -48,16 +44,20 @@ add_task(async function () {
       statusText: "OK",
       type: "json",
       fullMimeType: "text/json; charset=utf-8",
-      size: L10N.getFormatStr("networkMenu.sizeKB",
-        L10N.numberWithDecimals(85975 / 1024, 2)),
-      time: true
-    });
+      size: L10N.getFormatStr(
+        "networkMenu.sizeKB",
+        L10N.numberWithDecimals(85975 / 1024, 2)
+      ),
+      time: true,
+    }
+  );
 
   wait = waitForDOM(document, "#response-panel .CodeMirror-code");
-  EventUtils.sendMouseEvent({ type: "click" },
-    document.querySelector(".network-details-panel-toggle"));
-  EventUtils.sendMouseEvent({ type: "click" },
-    document.querySelector("#response-tab"));
+  store.dispatch(Actions.toggleNetworkDetails());
+  EventUtils.sendMouseEvent(
+    { type: "click" },
+    document.querySelector("#response-tab")
+  );
   await wait;
 
   testResponseTab();
@@ -65,42 +65,84 @@ add_task(async function () {
   await teardown(monitor);
 
   function testResponseTab() {
-    let tabpanel = document.querySelector("#response-panel");
+    const tabpanel = document.querySelector("#response-panel");
 
-    is(tabpanel.querySelector(".response-error-header") === null, true,
-      "The response error header doesn't have the intended visibility.");
-    let jsonView = tabpanel.querySelector(".tree-section .treeLabel") || {};
-    is(jsonView.textContent === L10N.getStr("jsonScopeName"), true,
-      "The response json view has the intended visibility.");
-    is(tabpanel.querySelector(".CodeMirror-code") === null, false,
-      "The response editor has the intended visibility.");
-    is(tabpanel.querySelector(".response-image-box") === null, true,
-      "The response image box doesn't have the intended visibility.");
+    is(
+      tabpanel.querySelector(".response-error-header") === null,
+      true,
+      "The response error header doesn't have the intended visibility."
+    );
+    const jsonView = tabpanel.querySelector(".tree-section .treeLabel") || {};
+    is(
+      jsonView.textContent === L10N.getStr("jsonScopeName"),
+      true,
+      "The response json view has the intended visibility."
+    );
+    is(
+      tabpanel.querySelector(".editor-row-container").clientHeight !== 0,
+      true,
+      "The source editor container has visible height."
+    );
+    is(
+      tabpanel.querySelector(".CodeMirror-code") === null,
+      false,
+      "The response editor has the intended visibility."
+    );
+    is(
+      tabpanel.querySelector(".response-image-box") === null,
+      true,
+      "The response image box doesn't have the intended visibility."
+    );
 
-    is(tabpanel.querySelectorAll(".tree-section").length, 2,
-      "There should be 2 tree sections displayed in this tabpanel.");
-    is(tabpanel.querySelectorAll(".treeRow:not(.tree-section)").length, 2047,
-      "There should be 2047 json properties displayed in this tabpanel.");
-    is(tabpanel.querySelectorAll(".empty-notice").length, 0,
-      "The empty notice should not be displayed in this tabpanel.");
+    is(
+      tabpanel.querySelectorAll(".tree-section").length,
+      2,
+      "There should be 2 tree sections displayed in this tabpanel."
+    );
+    is(
+      tabpanel.querySelectorAll(".treeRow:not(.tree-section)").length,
+      2047,
+      "There should be 2047 json properties displayed in this tabpanel."
+    );
+    is(
+      tabpanel.querySelectorAll(".empty-notice").length,
+      0,
+      "The empty notice should not be displayed in this tabpanel."
+    );
 
-    is(tabpanel.querySelector(".tree-section .treeLabel").textContent,
+    is(
+      tabpanel.querySelector(".tree-section .treeLabel").textContent,
       L10N.getStr("jsonScopeName"),
-      "The json view section doesn't have the correct title.");
+      "The json view section doesn't have the correct title."
+    );
 
-    let labels = tabpanel
-      .querySelectorAll("tr:not(.tree-section) .treeLabelCell .treeLabel");
-    let values = tabpanel
-      .querySelectorAll("tr:not(.tree-section) .treeValueCell .objectBox");
+    const labels = tabpanel.querySelectorAll(
+      "tr:not(.tree-section) .treeLabelCell .treeLabel"
+    );
+    const values = tabpanel.querySelectorAll(
+      "tr:not(.tree-section) .treeValueCell .objectBox"
+    );
 
-    is(labels[0].textContent, "0",
-      "The first json property name was incorrect.");
-    is(values[0].textContent, "{\u2026}",
-      "The first json property value was incorrect.");
+    is(
+      labels[0].textContent,
+      "0",
+      "The first json property name was incorrect."
+    );
+    is(
+      values[0].textContent,
+      "{\u2026}",
+      "The first json property value was incorrect."
+    );
 
-    is(labels[1].textContent, "1",
-      "The second json property name was incorrect.");
-    is(values[1].textContent, "{\u2026}",
-      "The second json property value was incorrect.");
+    is(
+      labels[1].textContent,
+      "1",
+      "The second json property name was incorrect."
+    );
+    is(
+      values[1].textContent,
+      "{\u2026}",
+      "The second json property value was incorrect."
+    );
   }
 });

@@ -31,6 +31,11 @@ class CrashReporterClient {
   // crash reporter needs metadata), the shmem should be parsed.
   template <typename T>
   static bool InitSingleton(T* aToplevelProtocol) {
+    // The crash reporter is not enabled in recording/replaying processes.
+    if (recordreplay::IsRecordingOrReplaying()) {
+      return true;
+    }
+
     Shmem shmem;
     if (!AllocShmem(aToplevelProtocol, &shmem)) {
       return false;
@@ -38,7 +43,7 @@ class CrashReporterClient {
 
     InitSingletonWithShmem(shmem);
     Unused << aToplevelProtocol->SendInitCrashReporter(
-        shmem, CrashReporter::CurrentThreadId());
+        std::move(shmem), CrashReporter::CurrentThreadId());
     return true;
   }
 
@@ -56,7 +61,8 @@ class CrashReporterClient {
   static void DestroySingleton();
   static RefPtr<CrashReporterClient> GetSingleton();
 
-  void AnnotateCrashReport(const nsCString& aKey, const nsCString& aData);
+  void AnnotateCrashReport(CrashReporter::Annotation aKey,
+                           const nsCString& aData);
   void AppendAppNotes(const nsCString& aData);
 
  private:

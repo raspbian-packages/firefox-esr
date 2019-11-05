@@ -1,21 +1,16 @@
 /// Quasi-quotation macro that accepts input like the [`quote!`] macro but uses
 /// type inference to figure out a return type for those tokens.
 ///
-/// [`quote!`]: https://docs.rs/quote/0.4/quote/index.html
+/// [`quote!`]: https://docs.rs/quote/0.6/quote/index.html
 ///
-/// The return type can be any syntax tree node that implements the [`Synom`]
+/// The return type can be any syntax tree node that implements the [`Parse`]
 /// trait.
 ///
-/// [`Synom`]: synom/trait.Synom.html
+/// [`Parse`]: parse/trait.Parse.html
 ///
-/// ```
-/// #[macro_use]
-/// extern crate syn;
-///
-/// #[macro_use]
-/// extern crate quote;
-///
-/// use syn::Stmt;
+/// ```edition2018
+/// use quote::quote;
+/// use syn::{parse_quote, Stmt};
 ///
 /// fn main() {
 ///     let name = quote!(v);
@@ -38,15 +33,9 @@
 /// The following helper function adds a bound `T: HeapSize` to every type
 /// parameter `T` in the input generics.
 ///
-/// ```
-/// # #[macro_use]
-/// # extern crate syn;
-/// #
-/// # #[macro_use]
-/// # extern crate quote;
-/// #
-/// # use syn::{Generics, GenericParam};
-/// #
+/// ```edition2018
+/// use syn::{parse_quote, Generics, GenericParam};
+///
 /// // Add a bound `T: HeapSize` to every type parameter T.
 /// fn add_trait_bounds(mut generics: Generics) -> Generics {
 ///     for param in &mut generics.params {
@@ -56,14 +45,12 @@
 ///     }
 ///     generics
 /// }
-/// #
-/// # fn main() {}
 /// ```
 ///
 /// # Special cases
 ///
 /// This macro can parse the following additional types as a special case even
-/// though they do not implement the `Synom` trait.
+/// though they do not implement the `Parse` trait.
 ///
 /// - [`Attribute`] — parses one attribute, allowing either outer like `#[...]`
 ///   or inner like `#![...]`
@@ -78,23 +65,37 @@
 /// Panics if the tokens fail to parse as the expected syntax tree type. The
 /// caller is responsible for ensuring that the input tokens are syntactically
 /// valid.
-#[macro_export]
+#[macro_export(local_inner_macros)]
 macro_rules! parse_quote {
     ($($tt:tt)*) => {
-        $crate::parse_quote::parse($crate::parse_quote::From::from(quote!($($tt)*)))
+        $crate::parse_quote::parse($crate::export::From::from(quote_impl!($($tt)*)))
+    };
+}
+
+#[cfg(not(syn_can_call_macro_by_path))]
+#[doc(hidden)]
+#[macro_export]
+macro_rules! quote_impl {
+    ($($tt:tt)*) => {
+        // Require caller to have their own `#[macro_use] extern crate quote`.
+        quote!($($tt)*)
+    };
+}
+
+#[cfg(syn_can_call_macro_by_path)]
+#[doc(hidden)]
+#[macro_export]
+macro_rules! quote_impl {
+    ($($tt:tt)*) => {
+        $crate::export::quote::quote!($($tt)*)
     };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Can parse any type that implements Synom.
+// Can parse any type that implements Parse.
 
-use synom::{Synom, Parser, PResult};
-use buffer::Cursor;
+use parse::{Parse, ParseStream, Parser, Result};
 use proc_macro2::TokenStream;
-
-// Not public API.
-#[doc(hidden)]
-pub use std::convert::From;
 
 // Not public API.
 #[doc(hidden)]
@@ -102,27 +103,19 @@ pub fn parse<T: ParseQuote>(token_stream: TokenStream) -> T {
     let parser = T::parse;
     match parser.parse2(token_stream) {
         Ok(t) => t,
-        Err(err) => match T::description() {
-            Some(s) => panic!("failed to parse {}: {}", s, err),
-            None => panic!("{}", err),
-        }
+        Err(err) => panic!("{}", err),
     }
 }
 
 // Not public API.
 #[doc(hidden)]
 pub trait ParseQuote: Sized {
-    fn parse(input: Cursor) -> PResult<Self>;
-    fn description() -> Option<&'static str>;
+    fn parse(input: ParseStream) -> Result<Self>;
 }
 
-impl<T> ParseQuote for T where T: Synom {
-    fn parse(input: Cursor) -> PResult<Self> {
-        <T as Synom>::parse(input)
-    }
-
-    fn description() -> Option<&'static str> {
-        <T as Synom>::description()
+impl<T: Parse> ParseQuote for T {
+    fn parse(input: ParseStream) -> Result<Self> {
+        <T as Parse>::parse(input)
     }
 }
 
@@ -130,31 +123,22 @@ impl<T> ParseQuote for T where T: Synom {
 // Any other types that we want `parse_quote!` to be able to parse.
 
 use punctuated::Punctuated;
-
 #[cfg(any(feature = "full", feature = "derive"))]
-use Attribute;
-
-impl<T, P> ParseQuote for Punctuated<T, P>
-where
-    T: Synom,
-    P: Synom,
-{
-    named!(parse -> Self, call!(Punctuated::parse_terminated));
-
-    fn description() -> Option<&'static str> {
-        Some("punctuated sequence")
-    }
-}
+use {attr, Attribute};
 
 #[cfg(any(feature = "full", feature = "derive"))]
 impl ParseQuote for Attribute {
-    named!(parse -> Self, alt!(
-        call!(Attribute::parse_outer)
-        |
-        call!(Attribute::parse_inner)
-    ));
+    fn parse(input: ParseStream) -> Result<Self> {
+        if input.peek(Token![#]) && input.peek2(Token![!]) {
+            attr::parsing::single_parse_inner(input)
+        } else {
+            attr::parsing::single_parse_outer(input)
+        }
+    }
+}
 
-    fn description() -> Option<&'static str> {
-        Some("attribute")
+impl<T: Parse, P: Parse> ParseQuote for Punctuated<T, P> {
+    fn parse(input: ParseStream) -> Result<Self> {
+        Self::parse_terminated(input)
     }
 }

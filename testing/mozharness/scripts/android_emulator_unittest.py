@@ -7,29 +7,37 @@
 
 import copy
 import datetime
-import glob
+import json
 import os
-import re
 import sys
-import signal
 import subprocess
-import time
-import tempfile
 
 # load modules from parent dir
 sys.path.insert(1, os.path.dirname(sys.path[0]))
 
-from mozprocess import ProcessHandler
-
 from mozharness.base.log import FATAL
-from mozharness.base.script import BaseScript, PreScriptAction, PostScriptAction
-from mozharness.mozilla.automation import TBPL_RETRY, EXIT_STATUS_DICT
+from mozharness.base.script import BaseScript, PreScriptAction
+from mozharness.mozilla.automation import TBPL_RETRY
 from mozharness.mozilla.mozbase import MozbaseMixin
+from mozharness.mozilla.testing.android import AndroidMixin
 from mozharness.mozilla.testing.testbase import TestingMixin, testing_config_options
-from mozharness.mozilla.testing.unittest import EmulatorMixin
+from mozharness.mozilla.testing.codecoverage import (
+    CodeCoverageMixin,
+    code_coverage_config_options
+)
+
+SUITE_DEFAULT_E10S = ['geckoview-junit', 'mochitest', 'reftest', 'robocop']
+SUITE_NO_E10S = ['cppunittest', 'geckoview-junit', 'xpcshell']
 
 
-class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin):
+class AndroidEmulatorTest(TestingMixin, BaseScript, MozbaseMixin, CodeCoverageMixin,
+                          AndroidMixin):
+    """
+       A mozharness script for Android functional tests (like mochitests and reftests)
+       run on an Android emulator. This script starts and manages an Android emulator
+       for the duration of the required tests. This is like desktop_unittest.py, but
+       for Android emulator test platforms.
+    """
     config_options = [[
         ["--test-suite"],
         {"action": "store",
@@ -57,9 +65,43 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
          "default": False,
          "help": "Run additional verification on modified tests using gpu instances.",
          }
-    ]] + copy.deepcopy(testing_config_options)
-
-    app_name = None
+    ], [
+        ["--log-raw-level"],
+        {"action": "store",
+         "dest": "log_raw_level",
+         "default": "info",
+         "help": "Set log level (debug|info|warning|error|critical|fatal)",
+         }
+    ], [
+        ["--log-tbpl-level"],
+        {"action": "store",
+         "dest": "log_tbpl_level",
+         "default": "info",
+         "help": "Set log level (debug|info|warning|error|critical|fatal)",
+         }
+    ], [
+        ['--disable-e10s', ],
+        {"action": "store_false",
+         "dest": "e10s",
+         "default": True,
+         "help": "Run tests without multiple processes (e10s).",
+         }
+    ], [
+        ['--enable-webrender'],
+        {"action": "store_true",
+         "dest": "enable_webrender",
+         "default": False,
+         "help": "Run with WebRender enabled.",
+         }
+    ], [
+        ['--disable-webrender'],
+        {"action": "store_true",
+         "dest": "disable_webrender",
+         "default": False,
+         "help": "Run with WebRender force-disabled.",
+         }
+    ]] + copy.deepcopy(testing_config_options) + \
+        copy.deepcopy(code_coverage_config_options)
 
     def __init__(self, require_config_file=False):
         super(AndroidEmulatorTest, self).__init__(
@@ -69,7 +111,7 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
                          'start-emulator',
                          'download-and-extract',
                          'create-virtualenv',
-                         'verify-emulator',
+                         'verify-device',
                          'install',
                          'run-tests',
                          ],
@@ -78,42 +120,35 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
                 'virtualenv_modules': [],
                 'virtualenv_requirements': [],
                 'require_test_zip': True,
-                # IP address of the host as seen from the emulator
-                'remote_webserver': '10.0.2.2',
             }
         )
 
         # these are necessary since self.config is read only
         c = self.config
         abs_dirs = self.query_abs_dirs()
-        self.adb_path = self.query_exe('adb')
         self.installer_url = c.get('installer_url')
         self.installer_path = c.get('installer_path')
         self.test_url = c.get('test_url')
         self.test_packages_url = c.get('test_packages_url')
         self.test_manifest = c.get('test_manifest')
         self.robocop_path = os.path.join(abs_dirs['abs_work_dir'], "robocop.apk")
-        self.emulator = c.get('emulator')
-        self.test_suite = c.get('test_suite')
+        suite = c.get('test_suite')
+        if suite and '-chunked' in suite:
+            suite = suite[:suite.index('-chunked')]
+        self.test_suite = suite
         self.this_chunk = c.get('this_chunk')
         self.total_chunks = c.get('total_chunks')
-        if self.test_suite and self.test_suite not in self.config["suite_definitions"]:
-            # accept old-style test suite name like "mochitest-3"
-            m = re.match("(.*)-(\d*)", self.test_suite)
-            if m:
-                self.test_suite = m.group(1)
-                if self.this_chunk is None:
-                    self.this_chunk = m.group(2)
-        self.sdk_level = None
         self.xre_path = None
-
-    def _query_tests_dir(self):
-        dirs = self.query_abs_dirs()
-        try:
-            test_dir = self.config["suite_definitions"][self.test_suite]["testsdir"]
-        except Exception:
-            test_dir = self.test_suite
-        return os.path.join(dirs['abs_test_install_dir'], test_dir)
+        self.device_serial = 'emulator-5554'
+        self.log_raw_level = c.get('log_raw_level')
+        self.log_tbpl_level = c.get('log_tbpl_level')
+        self.e10s = c.get('e10s')
+        self.enable_webrender = c.get('enable_webrender')
+        self.disable_webrender = c.get('disable_webrender')
+        if self.enable_webrender:
+            # AndroidMixin uses this when launching the emulator. We only want
+            # GLES3 if we're running WebRender
+            self.use_gles3 = True
 
     def query_abs_dirs(self):
         if self.abs_dirs:
@@ -122,13 +157,14 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
         dirs = {}
         dirs['abs_test_install_dir'] = os.path.join(
             abs_dirs['abs_work_dir'], 'tests')
+        dirs['abs_test_bin_dir'] = os.path.join(
+            abs_dirs['abs_work_dir'], 'tests', 'bin')
         dirs['abs_xre_dir'] = os.path.join(
             abs_dirs['abs_work_dir'], 'hostutils')
         dirs['abs_modules_dir'] = os.path.join(
             dirs['abs_test_install_dir'], 'modules')
         dirs['abs_blob_upload_dir'] = os.path.join(
             abs_dirs['abs_work_dir'], 'blobber_upload_dir')
-        dirs['abs_emulator_dir'] = abs_dirs['abs_work_dir']
         dirs['abs_mochitest_dir'] = os.path.join(
             dirs['abs_test_install_dir'], 'mochitest')
         dirs['abs_reftest_dir'] = os.path.join(
@@ -148,265 +184,20 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
         self.abs_dirs = abs_dirs
         return self.abs_dirs
 
-    @PreScriptAction('create-virtualenv')
-    def _pre_create_virtualenv(self, action):
+    def _query_tests_dir(self, test_suite):
         dirs = self.query_abs_dirs()
-        requirements = None
-        if self.test_suite == 'mochitest-media':
-            # mochitest-media is the only thing that needs this
-            requirements = os.path.join(dirs['abs_mochitest_dir'],
-                                        'websocketprocessbridge',
-                                        'websocketprocessbridge_requirements.txt')
-        elif self.test_suite == 'marionette':
-            requirements = os.path.join(dirs['abs_test_install_dir'],
-                                        'config', 'marionette_requirements.txt')
-        if requirements:
-            self.register_virtualenv_module(requirements=[requirements],
-                                            two_pass=True)
-
-    def _launch_emulator(self):
-        env = self.query_env()
-
-        # Set $LD_LIBRARY_PATH to self.dirs['abs_work_dir'] so that
-        # the emulator picks up the symlink to libGL.so.1 that we
-        # constructed in start_emulator.
-        env['LD_LIBRARY_PATH'] = self.abs_dirs['abs_work_dir']
-
-        # Write a default ddms.cfg to avoid unwanted prompts
-        avd_home_dir = self.abs_dirs['abs_avds_dir']
-        DDMS_FILE = os.path.join(avd_home_dir, "ddms.cfg")
-        with open(DDMS_FILE, 'w') as f:
-            f.write("pingOptIn=false\npingId=0\n")
-        self.info("wrote dummy %s" % DDMS_FILE)
-
-        # Delete emulator auth file, so it doesn't prompt
-        AUTH_FILE = os.path.join(os.path.expanduser('~'), '.emulator_console_auth_token')
-        if os.path.exists(AUTH_FILE):
-            try:
-                os.remove(AUTH_FILE)
-                self.info("deleted %s" % AUTH_FILE)
-            except Exception:
-                self.warning("failed to remove %s" % AUTH_FILE)
-
-        avd_path = os.path.join(avd_home_dir, 'avd')
-        if os.path.exists(avd_path):
-            env['ANDROID_AVD_HOME'] = avd_path
-            self.info("Found avds at %s" % avd_path)
-        else:
-            self.warning("AVDs missing? Not found at %s" % avd_path)
-
-        if "deprecated_sdk_path" in self.config:
-            sdk_path = os.path.abspath(os.path.join(avd_home_dir, '..'))
-        else:
-            sdk_path = os.path.join(self.abs_dirs['abs_work_dir'], 'android-sdk-linux')
-        if os.path.exists(sdk_path):
-            env['ANDROID_SDK_HOME'] = sdk_path
-            self.info("Found sdk at %s" % sdk_path)
-        else:
-            self.warning("Android sdk missing? Not found at %s" % sdk_path)
-
-        command = ["emulator", "-avd", self.emulator["name"]]
-        if "emulator_extra_args" in self.config:
-            command += self.config["emulator_extra_args"].split()
-
-        tmp_file = tempfile.NamedTemporaryFile(mode='w')
-        tmp_stdout = open(tmp_file.name, 'w')
-        self.info("Trying to start the emulator with this command: %s" % ' '.join(command))
-        proc = subprocess.Popen(command, stdout=tmp_stdout, stderr=tmp_stdout, env=env, bufsize=0)
-        return {
-            "process": proc,
-            "tmp_file": tmp_file,
-        }
-
-    def _retry(self, max_attempts, interval, func, description, max_time=0):
-        '''
-        Execute func until it returns True, up to max_attempts times, waiting for
-        interval seconds between each attempt. description is logged on each attempt.
-        If max_time is specified, no further attempts will be made once max_time
-        seconds have elapsed; this provides some protection for the case where
-        the run-time for func is long or highly variable.
-        '''
-        status = False
-        attempts = 0
-        if max_time > 0:
-            end_time = datetime.datetime.now() + datetime.timedelta(seconds=max_time)
-        else:
-            end_time = None
-        while attempts < max_attempts and not status:
-            if (end_time is not None) and (datetime.datetime.now() > end_time):
-                self.info("Maximum retry run-time of %d seconds exceeded; "
-                          "remaining attempts abandoned" % max_time)
-                break
-            if attempts != 0:
-                self.info("Sleeping %d seconds" % interval)
-                time.sleep(interval)
-            attempts += 1
-            self.info(">> %s: Attempt #%d of %d" % (description, attempts, max_attempts))
-            status = func()
-        return status
-
-    def _run_with_timeout(self, timeout, cmd, quiet=False):
-        timeout_cmd = ['timeout', '%s' % timeout] + cmd
-        return self._run_proc(timeout_cmd, quiet=quiet)
-
-    def _run_proc(self, cmd, quiet=False):
-        self.info('Running %s' % subprocess.list2cmdline(cmd))
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
-        out, err = p.communicate()
-        if out and not quiet:
-            self.info('%s' % str(out.strip()))
-        if err and not quiet:
-            self.info('stderr: %s' % str(err.strip()))
-        return out, err
-
-    def _verify_adb(self):
-        self.info('Verifying adb connectivity')
-        self._run_with_timeout(180, [self.adb_path, 'wait-for-device'])
-        return True
-
-    def _verify_adb_device(self):
-        out, _ = self._run_with_timeout(30, [self.adb_path, 'devices'])
-        if (self.emulator['device_id'] in out) and ("device" in out):
-            return True
-        return False
-
-    def _is_boot_completed(self):
-        boot_cmd = [self.adb_path, '-s', self.emulator['device_id'],
-                    'shell', 'getprop', 'sys.boot_completed']
-        out, _ = self._run_with_timeout(30, boot_cmd)
-        if out.strip() == '1':
-            return True
-        return False
-
-    def _verify_emulator(self):
-        adb_ok = self._verify_adb()
-        if not adb_ok:
-            self.warning('Unable to communicate with adb')
-            return False
-        adb_device_ok = self._retry(4, 30, self._verify_adb_device,
-                                    "Verify emulator visible to adb")
-        if not adb_device_ok:
-            self.warning('Unable to communicate with emulator via adb')
-            return False
-        self._restart_adbd()
-        boot_ok = self._retry(30, 10, self._is_boot_completed, "Verify Android boot completed",
-                              max_time=330)
-        if not boot_ok:
-            self.warning('Unable to verify Android boot completion')
-            return False
-        return True
-
-    def _verify_emulator_and_restart_on_fail(self):
-        emulator_ok = self._verify_emulator()
-        if not emulator_ok:
-            self._dump_host_state()
-            self._screenshot("emulator-startup-screenshot-")
-            self._kill_processes(self.config["emulator_process_name"])
-            self._run_proc(['ps', '-ef'])
-            self._dump_emulator_log()
-            # remove emulator tmp files
-            for dir in glob.glob("/tmp/android-*"):
-                self.rmtree(dir)
-            self._restart_adbd()
-            time.sleep(5)
-            self.emulator_proc = self._launch_emulator()
-        return emulator_ok
-
-    def _install_fennec_apk(self):
-        install_ok = False
-        if int(self.sdk_level) >= 23:
-            cmd = [self.adb_path, '-s', self.emulator['device_id'], 'install', '-r', '-g',
-                   self.installer_path]
-        else:
-            cmd = [self.adb_path, '-s', self.emulator['device_id'], 'install', '-r',
-                   self.installer_path]
-        out, err = self._run_with_timeout(300, cmd, True)
-        if 'Success' in out or 'Success' in err:
-            install_ok = True
-        return install_ok
-
-    def _install_robocop_apk(self):
-        install_ok = False
-        if int(self.sdk_level) >= 23:
-            cmd = [self.adb_path, '-s', self.emulator['device_id'], 'install', '-r', '-g',
-                   self.robocop_path]
-        else:
-            cmd = [self.adb_path, '-s', self.emulator['device_id'], 'install', '-r',
-                   self.robocop_path]
-        out, err = self._run_with_timeout(300, cmd, True)
-        if 'Success' in out or 'Success' in err:
-            install_ok = True
-        return install_ok
-
-    def _dump_host_state(self):
-        self._run_proc(['ps', '-ef'])
-        self._run_proc(['netstat', '-a', '-p', '-n', '-t', '-u'])
-
-    def _dump_emulator_log(self):
-        self.info("##### %s emulator log begins" % self.emulator["name"])
-        output = self.read_from_file(self.emulator_proc["tmp_file"].name, verbose=False)
-        if output:
-            self.info(output)
-        self.info("##### %s emulator log ends" % self.emulator["name"])
-
-    def _kill_processes(self, process_name):
-        p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE, bufsize=0)
-        out, err = p.communicate()
-        self.info("Let's kill every process called %s" % process_name)
-        for line in out.splitlines():
-            if process_name in line:
-                pid = int(line.split(None, 1)[0])
-                self.info("Killing pid %d." % pid)
-                os.kill(pid, signal.SIGKILL)
-
-    def _restart_adbd(self):
-        self._run_with_timeout(30, [self.adb_path, 'kill-server'])
-        self._run_with_timeout(30, [self.adb_path, 'root'])
-
-    def _screenshot(self, prefix):
-        """
-           Save a screenshot of the entire screen to the blob upload directory.
-        """
-        dirs = self.query_abs_dirs()
-        utility = os.path.join(self.xre_path, "screentopng")
-        if not os.path.exists(utility):
-            self.warning("Unable to take screenshot: %s does not exist" % utility)
-            return
         try:
-            tmpfd, filename = tempfile.mkstemp(prefix=prefix, suffix='.png',
-                                               dir=dirs['abs_blob_upload_dir'])
-            os.close(tmpfd)
-            self.info("Taking screenshot with %s; saving to %s" % (utility, filename))
-            subprocess.call([utility, filename], env=self.query_env())
-        except OSError, err:
-            self.warning("Failed to take screenshot: %s" % err.strerror)
+            test_dir = self.config["suite_definitions"][test_suite]["testsdir"]
+        except Exception:
+            test_dir = test_suite
+        return os.path.join(dirs['abs_test_install_dir'], test_dir)
 
-    def _query_package_name(self):
-        if self.app_name is None:
-            # For convenience, assume geckoview_example when install target
-            # looks like geckoview.
-            if 'geckoview' in self.installer_path:
-                self.app_name = 'org.mozilla.geckoview_example'
-        if self.app_name is None:
-            # Find appname from package-name.txt - assumes download-and-extract
-            # has completed successfully.
-            # The app/package name will typically be org.mozilla.fennec,
-            # but org.mozilla.firefox for release builds, and there may be
-            # other variations. 'aapt dump badging <apk>' could be used as an
-            # alternative to package-name.txt, but introduces a dependency
-            # on aapt, found currently in the Android SDK build-tools component.
-            apk_dir = self.abs_dirs['abs_work_dir']
-            self.apk_path = os.path.join(apk_dir, self.installer_path)
-            unzip = self.query_exe("unzip")
-            package_path = os.path.join(apk_dir, 'package-name.txt')
-            unzip_cmd = [unzip, '-q', '-o',  self.apk_path]
-            self.run_command(unzip_cmd, cwd=apk_dir, halt_on_failure=True)
-            self.app_name = str(self.read_from_file(package_path, verbose=True)).rstrip()
-        return self.app_name
+    def _get_mozharness_test_paths(self, suite):
+        test_paths = os.environ.get('MOZHARNESS_TEST_PATHS')
+        if not test_paths:
+            return
 
-    def preflight_install(self):
-        # in the base class, this checks for mozinstall, but we don't use it
-        pass
+        return json.loads(test_paths).get(suite)
 
     def _build_command(self):
         c = self.config
@@ -419,7 +210,7 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
             self.query_python_path('python'),
             '-u',
             os.path.join(
-                self._query_tests_dir(),
+                self._query_tests_dir(self.test_suite),
                 self.config["suite_definitions"][self.test_suite]["run_filename"]
             ),
         ]
@@ -430,9 +221,13 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
         error_summary_file = os.path.join(dirs['abs_blob_upload_dir'],
                                           '%s_errorsummary.log' % self.test_suite)
         str_format_values = {
-            'remote_webserver': c['remote_webserver'],
+            'device_serial': self.device_serial,
+            # IP address of the host as seen from the emulator
+            'remote_webserver': '10.0.2.2',
             'xre_path': self.xre_path,
             'utility_path': self.xre_path,
+            'http_port': '8854',  # starting http port  to use for the mochitest server
+            'ssl_port': '4454',  # starting ssl port to use for the server
             'certs_path': os.path.join(dirs['abs_work_dir'], 'tests/certs'),
             # TestingMixin._download_and_extract_symbols() will set
             # self.symbols_path when downloading/extracting.
@@ -440,16 +235,23 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
             'modules_dir': dirs['abs_modules_dir'],
             'installer_path': self.installer_path,
             'raw_log_file': raw_log_file,
+            'log_tbpl_level': self.log_tbpl_level,
+            'log_raw_level': self.log_raw_level,
             'error_summary_file': error_summary_file,
+            'gecko_log': '-',
             # marionette options
             'address': c.get('marionette_address'),
+            'marionette_extra': c.get('marionette_extra', ''),
+            'xpcshell_extra': c.get('xpcshell_extra', ''),
             'test_manifest': os.path.join(
                 dirs['abs_marionette_tests_dir'],
                 self.config.get('marionette_test_manifest', '')
             ),
+            'gtest_dir': os.path.join(dirs['abs_test_install_dir'], 'gtest'),
         }
 
-        user_paths = os.environ.get('MOZHARNESS_TEST_PATHS')
+        user_paths = self._get_mozharness_test_paths(self.test_suite)
+
         for option in self.config["suite_definitions"][self.test_suite]["options"]:
             opt = option.split('=')[0]
             # override configured chunk options with script args, if specified
@@ -459,227 +261,106 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
 
             if '%(app)' in option:
                 # only query package name if requested
-                cmd.extend([option % {'app': self._query_package_name()}])
+                cmd.extend([option % {'app': self.query_package_name()}])
             else:
-                cmd.extend([option % str_format_values])
+                option = option % str_format_values
+                if option:
+                    cmd.extend([option])
 
-        if user_paths:
-            cmd.extend(user_paths.split(':'))
+        if 'mochitest' in self.test_suite:
+            category = 'mochitest'
+        elif 'reftest' in self.test_suite or 'crashtest' in self.test_suite:
+            category = 'reftest'
         else:
-            if self.this_chunk is not None:
-                cmd.extend(['--this-chunk', self.this_chunk])
-            if self.total_chunks is not None:
-                cmd.extend(['--total-chunks', self.total_chunks])
+            category = self.test_suite
+        if category not in SUITE_NO_E10S:
+            if category in SUITE_DEFAULT_E10S and not self.e10s:
+                cmd.extend(['--disable-e10s'])
+            elif category not in SUITE_DEFAULT_E10S and self.e10s:
+                cmd.extend(['--e10s'])
+
+        if not (self.verify_enabled or self.per_test_coverage):
+            if user_paths:
+                cmd.extend(user_paths)
+            elif not (self.verify_enabled or self.per_test_coverage):
+                if self.this_chunk is not None:
+                    cmd.extend(['--this-chunk', self.this_chunk])
+                if self.total_chunks is not None:
+                    cmd.extend(['--total-chunks', self.total_chunks])
+
+        if self.disable_webrender:
+            cmd.extend(['--setenv', 'MOZ_WEBRENDER=0'])
+        elif self.enable_webrender:
+            cmd.extend(['--setenv', 'MOZ_WEBRENDER=1'])
 
         try_options, try_tests = self.try_args(self.test_suite)
         cmd.extend(try_options)
-        if self.config.get('verify') is not True:
+        if not self.verify_enabled and not self.per_test_coverage:
             cmd.extend(self.query_tests_args(
                 self.config["suite_definitions"][self.test_suite].get("tests"),
                 None,
                 try_tests))
 
+        if self.java_code_coverage_enabled:
+            cmd.extend(['--enable-coverage',
+                        '--coverage-output-dir', self.java_coverage_output_dir])
+
         return cmd
 
-    def _get_repo_url(self, path):
-        """
-           Return a url for a file (typically a tooltool manifest) in this hg repo
-           and using this revision (or mozilla-central/default if repo/rev cannot
-           be determined).
+    def _query_suites(self):
+        if self.test_suite:
+            return [(self.test_suite, self.test_suite)]
+        # per-test mode: determine test suites to run
 
-           :param path specifies the directory path to the file of interest.
-        """
-        if 'GECKO_HEAD_REPOSITORY' in os.environ and 'GECKO_HEAD_REV' in os.environ:
-            # probably taskcluster
-            repo = os.environ['GECKO_HEAD_REPOSITORY']
-            revision = os.environ['GECKO_HEAD_REV']
+        # For each test category, provide a list of supported sub-suites and a mapping
+        # between the per_test_base suite name and the android suite name.
+        all = [('mochitest', {'mochitest-plain': 'mochitest-plain',
+                              'mochitest-chrome': 'mochitest-chrome',
+                              'mochitest-media': 'mochitest-media',
+                              'mochitest-plain-gpu': 'mochitest-plain-gpu'}),
+               ('reftest', {'reftest': 'reftest',
+                            'crashtest': 'crashtest',
+                            'jsreftest': 'jsreftest'}),
+               ('xpcshell', {'xpcshell': 'xpcshell'})]
+        suites = []
+        for (category, all_suites) in all:
+            cat_suites = self.query_per_test_category_suites(category, all_suites)
+            for k in cat_suites.keys():
+                suites.append((k, cat_suites[k]))
+        return suites
+
+    def _query_suite_categories(self):
+        if self.test_suite:
+            categories = [self.test_suite]
         else:
-            # something unexpected!
-            repo = 'https://hg.mozilla.org/mozilla-central'
-            revision = 'default'
-            self.warning('Unable to find repo/revision for manifest; '
-                         'using mozilla-central/default')
-        url = '%s/raw-file/%s/%s' % (
-            repo,
-            revision,
-            path)
-        return url
-
-    def _tooltool_fetch(self, url, dir):
-        c = self.config
-
-        manifest_path = self.download_file(
-            url,
-            file_name='releng.manifest',
-            parent_dir=dir
-        )
-
-        if not os.path.exists(manifest_path):
-            self.fatal("Could not retrieve manifest needed to retrieve "
-                       "artifacts from %s" % manifest_path)
-
-        self.tooltool_fetch(manifest_path,
-                            output_dir=dir,
-                            cache=c.get("tooltool_cache", None))
+            # per-test mode
+            categories = ['mochitest', 'reftest', 'xpcshell']
+        return categories
 
     ##########################################
     # Actions for AndroidEmulatorTest        #
     ##########################################
-    def setup_avds(self):
-        '''
-        If tooltool cache mechanism is enabled, the cached version is used by
-        the fetch command. If the manifest includes an "unpack" field, tooltool
-        will unpack all compressed archives mentioned in the manifest.
-        '''
-        c = self.config
+
+    def preflight_install(self):
+        # in the base class, this checks for mozinstall, but we don't use it
+        pass
+
+    @PreScriptAction('create-virtualenv')
+    def pre_create_virtualenv(self, action):
         dirs = self.query_abs_dirs()
-
-        # Always start with a clean AVD: AVD includes Android images
-        # which can be stateful.
-        self.rmtree(dirs['abs_avds_dir'])
-        self.mkdir_p(dirs['abs_avds_dir'])
-        if 'avd_url' in c:
-            # Intended for experimental setups to evaluate an avd prior to
-            # tooltool deployment.
-            url = c['avd_url']
-            self.download_unpack(url, dirs['abs_avds_dir'])
-        else:
-            url = self._get_repo_url(c["tooltool_manifest_path"])
-            self._tooltool_fetch(url, dirs['abs_avds_dir'])
-
-        avd_home_dir = self.abs_dirs['abs_avds_dir']
-        if avd_home_dir != "/home/cltbld/.android":
-            # Modify the downloaded avds to point to the right directory.
-            cmd = [
-                'bash', '-c',
-                'sed -i "s|/home/cltbld/.android|%s|" %s/test-*.ini' %
-                (avd_home_dir, os.path.join(avd_home_dir, 'avd'))
-            ]
-            proc = ProcessHandler(cmd)
-            proc.run()
-            proc.wait()
-
-    def start_emulator(self):
-        '''
-        Starts the emulator
-        '''
-        if 'emulator_url' in self.config or 'emulator_manifest' in self.config or \
-           'tools_manifest' in self.config:
-            self.install_emulator()
-
-        if not os.path.isfile(self.adb_path):
-            self.fatal("The adb binary '%s' is not a valid file!" % self.adb_path)
-        self._restart_adbd()
-
-        if not self.config.get("developer_mode"):
-            # We kill compiz because it sometimes prevents us from starting the emulator
-            self._kill_processes("compiz")
-            self._kill_processes("xpcshell")
-
-        # We add a symlink for libGL.so because the emulator dlopen()s it by that name
-        # even though the installed library on most systems without dev packages is
-        # libGL.so.1
-        linkfile = os.path.join(self.abs_dirs['abs_work_dir'], "libGL.so")
-        self.info("Attempting to establish symlink for %s" % linkfile)
-        try:
-            os.unlink(linkfile)
-        except OSError:
-            pass
-        for libdir in ["/usr/lib/x86_64-linux-gnu/mesa",
-                       "/usr/lib/i386-linux-gnu/mesa",
-                       "/usr/lib/mesa"]:
-            libfile = os.path.join(libdir, "libGL.so.1")
-            if os.path.exists(libfile):
-                self.info("Symlinking %s -> %s" % (linkfile, libfile))
-                self.mkdir_p(self.abs_dirs['abs_work_dir'])
-                os.symlink(libfile, linkfile)
-                break
-        self.emulator_proc = self._launch_emulator()
-
-    def _dump_perf_info(self):
-        '''
-        Dump some host and emulator performance-related information
-        to an artifact file, to help understand why jobs run slowly
-        sometimes. This is hopefully a temporary diagnostic.
-        See bug 1321605.
-        '''
-        dir = self.query_abs_dirs()['abs_blob_upload_dir']
-        perf_path = os.path.join(dir, "android-performance.log")
-        with open(perf_path, "w") as f:
-
-            f.write('\n\nHost /proc/cpuinfo:\n')
-            out, _ = self._run_proc(['cat', '/proc/cpuinfo'], quiet=True)
-            f.write(out)
-
-            f.write('\n\nHost /proc/meminfo:\n')
-            out, _ = self._run_proc(['cat', '/proc/meminfo'], quiet=True)
-            f.write(out)
-
-            f.write('\n\nHost process list:\n')
-            out, _ = self._run_proc(['ps', '-ef'], quiet=True)
-            f.write(out)
-
-            f.write('\n\nEmulator /proc/cpuinfo:\n')
-            cmd = [self.adb_path, '-s', self.emulator['device_id'],
-                   'shell', 'cat', '/proc/cpuinfo']
-            out, _ = self._run_with_timeout(30, cmd, quiet=True)
-            f.write(out)
-            cpuinfo = out
-
-            f.write('\n\nEmulator /proc/meminfo:\n')
-            cmd = [self.adb_path, '-s', self.emulator['device_id'],
-                   'shell', 'cat', '/proc/meminfo']
-            out, _ = self._run_with_timeout(30, cmd, quiet=True)
-            f.write(out)
-
-            f.write('\n\nEmulator process list:\n')
-            cmd = [self.adb_path, '-s', self.emulator['device_id'],
-                   'shell', 'ps']
-            out, _ = self._run_with_timeout(30, cmd, quiet=True)
-            f.write(out)
-
-        # Search android cpuinfo for "BogoMIPS"; if found and < 250, retry
-        # this task, in hopes of getting a higher-powered environment.
-        # (Carry on silently if BogoMIPS is not found -- this may vary by
-        # Android implementation -- no big deal.)
-        # See bug 1321605: Sometimes the emulator is really slow, and
-        # low bogomips can be a good predictor of that condition.
-        for line in cpuinfo.split('\n'):
-            m = re.match("BogoMIPS.*: (\d*)", line)
-            if m:
-                bogomips = int(m.group(1))
-                if bogomips < 250:
-                    self.fatal('INFRA-ERROR: insufficient Android bogomips (%d < 250)' % bogomips,
-                               EXIT_STATUS_DICT[TBPL_RETRY])
-                self.info("Found Android bogomips: %d" % bogomips)
-                break
-
-    def verify_emulator(self):
-        '''
-        Check to see if the emulator can be contacted via adb.
-        If any communication attempt fails, kill the emulator, re-launch, and re-check.
-        '''
-        self.mkdir_p(self.query_abs_dirs()['abs_blob_upload_dir'])
-        max_restarts = 5
-        emulator_ok = self._retry(max_restarts, 10, self._verify_emulator_and_restart_on_fail,
-                                  "Check emulator")
-        if not emulator_ok:
-            self.fatal('INFRA-ERROR: Unable to start emulator after %d attempts' % max_restarts,
-                       EXIT_STATUS_DICT[TBPL_RETRY])
-        self._dump_perf_info()
-        # Start logcat for the emulator. The adb process runs until the
-        # corresponding emulator is killed. Output is written directly to
-        # the blobber upload directory so that it is uploaded automatically
-        # at the end of the job.
-        logcat_filename = 'logcat-%s.log' % self.emulator["device_id"]
-        logcat_path = os.path.join(self.abs_dirs['abs_blob_upload_dir'], logcat_filename)
-        logcat_cmd = '%s -s %s logcat -v threadtime Trace:S StrictMode:S '\
-            ' ExchangeService:S > %s &' % (self.adb_path, self.emulator["device_id"], logcat_path)
-        self.info(logcat_cmd)
-        os.system(logcat_cmd)
-        # Get a post-boot emulator process list for diagnostics
-        ps_cmd = [self.adb_path, '-s', self.emulator["device_id"], 'shell', 'ps']
-        self._run_with_timeout(30, ps_cmd)
+        requirements = None
+        suites = self._query_suites()
+        if ('mochitest-media', 'mochitest-media') in suites:
+            # mochitest-media is the only thing that needs this
+            requirements = os.path.join(dirs['abs_mochitest_dir'],
+                                        'websocketprocessbridge',
+                                        'websocketprocessbridge_requirements.txt')
+        elif ('marionette', 'marionette') in suites:
+            requirements = os.path.join(dirs['abs_test_install_dir'],
+                                        'config', 'marionette_requirements.txt')
+        if requirements:
+            self.register_virtualenv_module(requirements=[requirements],
+                                            two_pass=True)
 
     def download_and_extract(self):
         """
@@ -692,97 +373,45 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
             robocop_url = self.installer_url[:self.installer_url.rfind('/')] + '/robocop.apk'
             self.info("Downloading robocop...")
             self.download_file(robocop_url, 'robocop.apk', dirs['abs_work_dir'], error_level=FATAL)
-        self.rmtree(dirs['abs_xre_dir'])
-        self.mkdir_p(dirs['abs_xre_dir'])
-        if self.config["hostutils_manifest_path"]:
-            url = self._get_repo_url(self.config["hostutils_manifest_path"])
-            self._tooltool_fetch(url, dirs['abs_xre_dir'])
-            for p in glob.glob(os.path.join(dirs['abs_xre_dir'], 'host-utils-*')):
-                if os.path.isdir(p) and os.path.isfile(os.path.join(p, 'xpcshell')):
-                    self.xre_path = p
-            if not self.xre_path:
-                self.fatal("xre path not found in %s" % dirs['abs_xre_dir'])
-        else:
-            self.fatal("configure hostutils_manifest_path!")
+        self.xre_path = self.download_hostutils(dirs['abs_xre_dir'])
 
     def install(self):
         """
-        Install APKs on the emulator
+        Install APKs on the device.
         """
         install_needed = (not self.test_suite) or \
             self.config["suite_definitions"][self.test_suite].get("install")
         if install_needed is False:
             self.info("Skipping apk installation for %s" % self.test_suite)
             return
-
         assert self.installer_path is not None, \
             "Either add installer_path to the config or use --installer-path."
-
-        cmd = [self.adb_path, '-s', self.emulator['device_id'], 'shell',
-               'getprop', 'ro.build.version.sdk']
-        self.sdk_level, _ = self._run_with_timeout(30, cmd)
-
-        # Install Fennec
-        install_ok = self._retry(3, 30, self._install_fennec_apk, "Install app APK")
-        if not install_ok:
-            self.fatal('INFRA-ERROR: Failed to install %s on %s' %
-                       (self.installer_path, self.emulator["name"]),
-                       EXIT_STATUS_DICT[TBPL_RETRY])
-
+        self.install_apk(self.installer_path)
         # Install Robocop if required
         if self.test_suite and self.test_suite.startswith('robocop'):
-            install_ok = self._retry(3, 30, self._install_robocop_apk, "Install Robocop APK")
-            if not install_ok:
-                self.fatal('INFRA-ERROR: Failed to install %s on %s' %
-                           (self.robocop_path, self.emulator["name"]),
-                           EXIT_STATUS_DICT[TBPL_RETRY])
-
-        self.info("Finished installing apps for %s" % self.emulator["name"])
-
-    def _query_suites(self):
-        if self.test_suite:
-            return [(self.test_suite, self.test_suite)]
-        # test-verification: determine test suites to be verified
-        all = [('mochitest', {'plain': 'mochitest',
-                              'chrome': 'mochitest-chrome',
-                              'plain-clipboard': 'mochitest-plain-clipboard',
-                              'plain-gpu': 'mochitest-plain-gpu'}),
-               ('reftest', {'reftest': 'reftest', 'crashtest': 'crashtest'}),
-               ('xpcshell', {'xpcshell': 'xpcshell'})]
-        suites = []
-        for (category, all_suites) in all:
-            cat_suites = self.query_verify_category_suites(category, all_suites)
-            for k in cat_suites.keys():
-                suites.append((k, cat_suites[k]))
-        return suites
-
-    def _query_suite_categories(self):
-        if self.test_suite:
-            categories = [self.test_suite]
-        else:
-            # test-verification
-            categories = ['mochitest', 'reftest', 'xpcshell']
-        return categories
+            self.install_apk(self.robocop_path)
+        self.info("Finished installing apps for %s" % self.device_serial)
 
     def run_tests(self):
         """
         Run the tests
         """
         self.start_time = datetime.datetime.now()
-        max_verify_time = datetime.timedelta(minutes=60)
+        max_per_test_time = datetime.timedelta(minutes=60)
 
-        verify_args = []
+        per_test_args = []
         suites = self._query_suites()
         minidump = self.query_minidump_stackwalk()
-        for (verify_suite, suite) in suites:
+        for (per_test_suite, suite) in suites:
             self.test_suite = suite
 
             cmd = self._build_command()
 
             try:
-                cwd = self._query_tests_dir()
+                cwd = self._query_tests_dir(self.test_suite)
             except Exception:
                 self.fatal("Don't know how to run --test-suite '%s'!" % self.test_suite)
+
             env = self.query_env()
             if minidump:
                 env['MINIDUMP_STACKWALK'] = minidump
@@ -790,27 +419,27 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
             env['MINIDUMP_SAVE_PATH'] = self.query_abs_dirs()['abs_blob_upload_dir']
             env['RUST_BACKTRACE'] = 'full'
 
-            for verify_args in self.query_verify_args(verify_suite):
-                if (datetime.datetime.now() - self.start_time) > max_verify_time:
-                    # Verification has run out of time. That is okay! Stop running
-                    # tests so that a task timeout is not triggered, and so that
+            summary = {}
+            for per_test_args in self.query_args(per_test_suite):
+                if (datetime.datetime.now() - self.start_time) > max_per_test_time:
+                    # Running tests has run out of time. That is okay! Stop running
+                    # them so that a task timeout is not triggered, and so that
                     # (partial) results are made available in a timely manner.
-                    self.info("TinderboxPrint: Verification too long: "
-                              "Not all tests were verified.<br/>")
-                    # Signal verify time exceeded, to break out of suites and
+                    self.info("TinderboxPrint: Running tests took too long: "
+                              "Not all tests were executed.<br/>")
+                    # Signal per-test time exceeded, to break out of suites and
                     # suite categories loops also.
-                    return False
+                    return
 
                 final_cmd = copy.copy(cmd)
-                if len(verify_args) > 0:
-                    # in verify mode, remove any chunk arguments from command
+                if len(per_test_args) > 0:
+                    # in per-test mode, remove any chunk arguments from command
                     for arg in final_cmd:
                         if 'total-chunk' in arg or 'this-chunk' in arg:
                             final_cmd.remove(arg)
-                final_cmd.extend(verify_args)
+                final_cmd.extend(per_test_args)
 
-                self.info("Running on %s the command %s" % (self.emulator["name"],
-                          subprocess.list2cmdline(final_cmd)))
+                self.info("Running the command %s" % subprocess.list2cmdline(final_cmd))
                 self.info("##### %s log begins" % self.test_suite)
 
                 suite_category = self.test_suite
@@ -820,31 +449,24 @@ class AndroidEmulatorTest(TestingMixin, EmulatorMixin, BaseScript, MozbaseMixin)
                     log_obj=self.log_obj,
                     error_list=[])
                 self.run_command(final_cmd, cwd=cwd, env=env, output_parser=parser)
-                tbpl_status, log_level = parser.evaluate_parser(0)
+                tbpl_status, log_level, summary = parser.evaluate_parser(0,
+                                                                         previous_summary=summary)
                 parser.append_tinderboxprint_line(self.test_suite)
 
                 self.info("##### %s log ends" % self.test_suite)
 
-                if len(verify_args) > 0:
+                if len(per_test_args) > 0:
                     self.record_status(tbpl_status, level=log_level)
-                    self.log_verify_status(verify_args[-1], tbpl_status, log_level)
+                    self.log_per_test_status(per_test_args[-1], tbpl_status, log_level)
+                    if tbpl_status == TBPL_RETRY:
+                        self.info("Per-test run abandoned due to RETRY status")
+                        return
                 else:
-                    self._dump_emulator_log()
                     self.record_status(tbpl_status, level=log_level)
                     self.log("The %s suite: %s ran with return status: %s" %
                              (suite_category, suite, tbpl_status), level=log_level)
 
-        if len(verify_args) > 0:
-            self._dump_emulator_log()
-
-    @PostScriptAction('run-tests')
-    def stop_emulator(self, action, success=None):
-        '''
-        Make sure that the emulator has been stopped
-        '''
-        self._kill_processes(self.config["emulator_process_name"])
-
 
 if __name__ == '__main__':
-    emulatorTest = AndroidEmulatorTest()
-    emulatorTest.run_and_exit()
+    test = AndroidEmulatorTest()
+    test.run_and_exit()

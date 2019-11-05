@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -60,17 +60,17 @@ class gfxFontFeatureValueSet final {
   };
 
   // returns true if found, false otherwise
-  bool GetFontFeatureValuesFor(const nsAString& aFamily,
+  bool GetFontFeatureValuesFor(const nsACString& aFamily,
                                uint32_t aVariantProperty,
                                const nsAString& aName,
                                nsTArray<uint32_t>& aValues);
   void AddFontFeatureValues(
-      const nsAString& aFamily,
+      const nsACString& aFamily,
       const nsTArray<gfxFontFeatureValueSet::FeatureValues>& aValues);
 
   // Appends a new hash entry with given key values and returns a pointer to
   // mValues array to fill. This should be filled first.
-  nsTArray<uint32_t>* AppendFeatureValueHashEntry(const nsAString& aFamily,
+  nsTArray<uint32_t>* AppendFeatureValueHashEntry(const nsACString& aFamily,
                                                   const nsAString& aName,
                                                   uint32_t aAlternate);
 
@@ -79,12 +79,12 @@ class gfxFontFeatureValueSet final {
   ~gfxFontFeatureValueSet() {}
 
   struct FeatureValueHashKey {
-    nsString mFamily;
+    nsCString mFamily;
     uint32_t mPropVal;
     nsString mName;
 
     FeatureValueHashKey() : mPropVal(0) {}
-    FeatureValueHashKey(const nsAString& aFamily, uint32_t aPropVal,
+    FeatureValueHashKey(const nsACString& aFamily, uint32_t aPropVal,
                         const nsAString& aName)
         : mFamily(aFamily), mPropVal(aPropVal), mName(aName) {}
     FeatureValueHashKey(const FeatureValueHashKey& aKey)
@@ -97,7 +97,10 @@ class gfxFontFeatureValueSet final {
     typedef const FeatureValueHashKey* KeyTypePointer;
 
     explicit FeatureValueHashEntry(KeyTypePointer aKey) {}
-    FeatureValueHashEntry(const FeatureValueHashEntry& toCopy) {
+    FeatureValueHashEntry(FeatureValueHashEntry&& other)
+        : PLDHashEntryHdr(std::move(other)),
+          mKey(std::move(other.mKey)),
+          mValues(std::move(other.mValues)) {
       NS_ERROR("Should not be called");
     }
     ~FeatureValueHashEntry() {}

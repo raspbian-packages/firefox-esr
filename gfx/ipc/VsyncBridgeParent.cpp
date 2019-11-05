@@ -4,7 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #include "VsyncBridgeParent.h"
+#include "mozilla/layers/CompositorBridgeParent.h"
 #include "mozilla/layers/CompositorThread.h"
+
+using mozilla::layers::CompositorBridgeParent;
+using mozilla::layers::CompositorThreadHolder;
 
 namespace mozilla {
 namespace gfx {
@@ -15,7 +19,7 @@ RefPtr<VsyncBridgeParent> VsyncBridgeParent::Start(
 
   RefPtr<Runnable> task = NewRunnableMethod<Endpoint<PVsyncBridgeParent>&&>(
       "gfx::VsyncBridgeParent::Open", parent, &VsyncBridgeParent::Open,
-      Move(aEndpoint));
+      std::move(aEndpoint));
   CompositorThreadHolder::Loop()->PostTask(task.forget());
 
   return parent;
@@ -38,8 +42,8 @@ void VsyncBridgeParent::Open(Endpoint<PVsyncBridgeParent>&& aEndpoint) {
 }
 
 mozilla::ipc::IPCResult VsyncBridgeParent::RecvNotifyVsync(
-    const TimeStamp& aTimeStamp, const uint64_t& aLayersId) {
-  CompositorBridgeParent::NotifyVsync(aTimeStamp, aLayersId);
+    const VsyncEvent& aVsync, const LayersId& aLayersId) {
+  CompositorBridgeParent::NotifyVsync(aVsync, aLayersId);
   return IPC_OK();
 }
 

@@ -15,14 +15,13 @@
 #include "mozilla/StickyTimeDuration.h"
 #include "mozilla/TimeStamp.h"  // for TimeDuration
 
-#include "mozilla/dom/AnimationEffectReadOnlyBinding.h"  // for FillMode
-// and PlaybackDirection
-
-class nsIDocument;
+#include "mozilla/dom/AnimationEffectBinding.h"  // for FillMode
+                                                 // and PlaybackDirection
 
 namespace mozilla {
 
 namespace dom {
+class Document;
 class UnrestrictedDoubleOrKeyframeEffectOptions;
 class UnrestrictedDoubleOrKeyframeAnimationOptions;
 }  // namespace dom
@@ -56,13 +55,27 @@ struct TimingParams {
 
   template <class OptionsType>
   static TimingParams FromOptionsType(const OptionsType& aOptions,
-                                      nsIDocument* aDocument, ErrorResult& aRv);
+                                      dom::Document* aDocument,
+                                      ErrorResult& aRv);
   static TimingParams FromOptionsUnion(
       const dom::UnrestrictedDoubleOrKeyframeEffectOptions& aOptions,
-      nsIDocument* aDocument, ErrorResult& aRv);
+      dom::Document* aDocument, ErrorResult& aRv);
   static TimingParams FromOptionsUnion(
       const dom::UnrestrictedDoubleOrKeyframeAnimationOptions& aOptions,
-      nsIDocument* aDocument, ErrorResult& aRv);
+      dom::Document* aDocument, ErrorResult& aRv);
+  static TimingParams FromEffectTiming(const dom::EffectTiming& aEffectTiming,
+                                       dom::Document* aDocument,
+                                       ErrorResult& aRv);
+  // Returns a copy of |aSource| where each timing property in |aSource| that
+  // is also specified in |aEffectTiming| is replaced with the value from
+  // |aEffectTiming|.
+  //
+  // If any of the values in |aEffectTiming| are invalid, |aRv.Failed()| will be
+  // true and an unmodified copy of |aSource| will be returned.
+  static TimingParams MergeOptionalEffectTiming(
+      const TimingParams& aSource,
+      const dom::OptionalEffectTiming& aEffectTiming, dom::Document* aDocument,
+      ErrorResult& aRv);
 
   // Range-checks and validates an UnrestrictedDoubleOrString or
   // OwningUnrestrictedDoubleOrString object and converts to a
@@ -102,7 +115,7 @@ struct TimingParams {
   }
 
   static Maybe<ComputedTimingFunction> ParseEasing(const nsAString& aEasing,
-                                                   nsIDocument* aDocument,
+                                                   dom::Document* aDocument,
                                                    ErrorResult& aRv);
 
   static StickyTimeDuration CalcActiveDuration(
@@ -138,7 +151,7 @@ struct TimingParams {
   }
 
   void SetDuration(Maybe<StickyTimeDuration>&& aDuration) {
-    mDuration = Move(aDuration);
+    mDuration = std::move(aDuration);
     Update();
   }
   const Maybe<StickyTimeDuration>& Duration() const { return mDuration; }
@@ -175,7 +188,7 @@ struct TimingParams {
   dom::FillMode Fill() const { return mFill; }
 
   void SetTimingFunction(Maybe<ComputedTimingFunction>&& aFunction) {
-    mFunction = Move(aFunction);
+    mFunction = std::move(aFunction);
   }
   const Maybe<ComputedTimingFunction>& TimingFunction() const {
     return mFunction;

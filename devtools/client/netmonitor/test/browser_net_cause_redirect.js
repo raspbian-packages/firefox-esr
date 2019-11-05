@@ -8,22 +8,23 @@
  * redirected without hitting the network (HSTS is one of such cases)
  */
 
-add_task(async function () {
+add_task(async function() {
   const EXPECTED_REQUESTS = [
-    // Request to HTTP URL, redirects to HTTPS, has callstack
-    { status: 302, hasStack: true },
-    // Serves HTTPS, sets the Strict-Transport-Security header, no stack
-    { status: 200, hasStack: false },
+    // Request to HTTP URL, redirects to HTTPS
+    { status: 302 },
+    // Serves HTTPS, sets the Strict-Transport-Security header
+    // This request is the redirection caused by the first one
+    { status: 200 },
     // Second request to HTTP redirects to HTTPS internally
-    { status: 200, hasStack: true },
+    { status: 200 },
   ];
 
-  let { tab, monitor } = await initNetMonitor(CUSTOM_GET_URL);
-  let { store, windowRequire, connector } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let {
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+  const { tab, monitor } = await initNetMonitor(CUSTOM_GET_URL);
+  const { store, windowRequire, connector } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
@@ -33,26 +34,22 @@ add_task(async function () {
 
   // Fetch stack-trace data from the backend and wait till
   // all packets are received.
-  let requests = getSortedRequests(store.getState())
-    .filter((req) => !req.stacktrace)
-    .map((req) => connector.requestData(req.id, "stackTrace"));
+  const requests = getSortedRequests(store.getState())
+    .filter(req => !req.stacktrace)
+    .map(req => connector.requestData(req.id, "stackTrace"));
 
   await Promise.all(requests);
 
-  EXPECTED_REQUESTS.forEach(({status, hasStack}, i) => {
-    let item = getSortedRequests(store.getState()).get(i);
+  EXPECTED_REQUESTS.forEach(({ status }, i) => {
+    const item = getSortedRequests(store.getState()).get(i);
 
     is(item.status, status, `Request #${i} has the expected status`);
 
-    let { stacktrace } = item;
-    let stackLen = stacktrace ? stacktrace.length : 0;
+    const { stacktrace } = item;
+    const stackLen = stacktrace ? stacktrace.length : 0;
 
-    if (hasStack) {
-      ok(stacktrace, `Request #${i} has a stacktrace`);
-      ok(stackLen > 0, `Request #${i} has a stacktrace with ${stackLen} items`);
-    } else {
-      is(stackLen, 0, `Request #${i} has an empty stacktrace`);
-    }
+    ok(stacktrace, `Request #${i} has a stacktrace`);
+    ok(stackLen > 0, `Request #${i} has a stacktrace with ${stackLen} items`);
   });
 
   // Send a request to reset the HSTS policy to state before the test
@@ -63,7 +60,9 @@ add_task(async function () {
   await teardown(monitor);
 
   function performRequests(count, url) {
-    return ContentTask.spawn(tab.linkedBrowser, { count, url }, async function (args) {
+    return ContentTask.spawn(tab.linkedBrowser, { count, url }, async function(
+      args
+    ) {
       content.wrappedJSObject.performRequests(args.count, args.url);
     });
   }

@@ -39,7 +39,7 @@ function getStringifiableFragment(fragment) {
   return {
     areas: getStringifiableAreas(fragment.areas),
     cols: getStringifiableDimension(fragment.cols),
-    rows: getStringifiableDimension(fragment.rows)
+    rows: getStringifiableDimension(fragment.rows),
   };
 }
 
@@ -54,7 +54,14 @@ function getStringifiableDimension(dimension) {
   };
 }
 
-function getStringifiableArea({ columnEnd, columnStart, name, rowEnd, rowStart, type }) {
+function getStringifiableArea({
+  columnEnd,
+  columnStart,
+  name,
+  rowEnd,
+  rowStart,
+  type,
+}) {
   return { columnEnd, columnStart, name, rowEnd, rowStart, type };
 }
 

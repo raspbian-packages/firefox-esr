@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,25 +9,25 @@
 #include "nsString.h"
 
 #if defined(XP_WIN)
-#include "ProfileUnlockerWin.h"
-#include "nsAutoPtr.h"
+#  include "ProfileUnlockerWin.h"
+#  include "nsAutoPtr.h"
 #endif
 
 #if defined(XP_MACOSX)
-#include <Carbon/Carbon.h>
-#include <CoreFoundation/CoreFoundation.h>
+#  include <Carbon/Carbon.h>
+#  include <CoreFoundation/CoreFoundation.h>
 #endif
 
 #ifdef XP_UNIX
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <signal.h>
-#include <stdlib.h>
-#include "prnetdb.h"
-#include "prsystem.h"
-#include "prenv.h"
-#include "mozilla/Printf.h"
+#  include <unistd.h>
+#  include <fcntl.h>
+#  include <errno.h>
+#  include <signal.h>
+#  include <stdlib.h>
+#  include "prnetdb.h"
+#  include "prsystem.h"
+#  include "prenv.h"
+#  include "mozilla/Printf.h"
 #endif
 
 // **********************************************************************
@@ -58,9 +58,9 @@ nsProfileLock::nsProfileLock()
 #endif
 }
 
-nsProfileLock::nsProfileLock(nsProfileLock &src) { *this = src; }
+nsProfileLock::nsProfileLock(nsProfileLock& src) { *this = src; }
 
-nsProfileLock &nsProfileLock::operator=(nsProfileLock &rhs) {
+nsProfileLock& nsProfileLock::operator=(nsProfileLock& rhs) {
   Unlock();
 
   mHaveLock = rhs.mHaveLock;
@@ -95,7 +95,7 @@ PRCList nsProfileLock::mPidLockList =
 
 void nsProfileLock::RemovePidLockFiles(bool aFatalSignal) {
   while (!PR_CLIST_IS_EMPTY(&mPidLockList)) {
-    nsProfileLock *lock = static_cast<nsProfileLock *>(mPidLockList.next);
+    nsProfileLock* lock = static_cast<nsProfileLock*>(mPidLockList.next);
     lock->Unlock(aFatalSignal);
   }
 }
@@ -109,16 +109,16 @@ static struct sigaction SIGSEGV_oldact;
 static struct sigaction SIGTERM_oldact;
 
 void nsProfileLock::FatalSignalHandler(int signo
-#ifdef SA_SIGINFO
+#  ifdef SA_SIGINFO
                                        ,
-                                       siginfo_t *info, void *context
-#endif
+                                       siginfo_t* info, void* context
+#  endif
 ) {
   // Remove any locks still held.
   RemovePidLockFiles(true);
 
   // Chain to the old handler, which may exit.
-  struct sigaction *oldact = nullptr;
+  struct sigaction* oldact = nullptr;
 
   switch (signo) {
     case SIGHUP:
@@ -143,7 +143,7 @@ void nsProfileLock::FatalSignalHandler(int signo
       oldact = &SIGTERM_oldact;
       break;
     default:
-      NS_NOTREACHED("bad signo");
+      MOZ_ASSERT_UNREACHABLE("bad signo");
       break;
   }
 
@@ -164,12 +164,12 @@ void nsProfileLock::FatalSignalHandler(int signo
 
       raise(signo);
     }
-#ifdef SA_SIGINFO
+#  ifdef SA_SIGINFO
     else if (oldact->sa_sigaction &&
              (oldact->sa_flags & SA_SIGINFO) == SA_SIGINFO) {
       oldact->sa_sigaction(signo, info, context);
     }
-#endif
+#  endif
     else if (oldact->sa_handler && oldact->sa_handler != SIG_IGN) {
       oldact->sa_handler(signo);
     }
@@ -179,7 +179,7 @@ void nsProfileLock::FatalSignalHandler(int signo
   _exit(signo);
 }
 
-nsresult nsProfileLock::LockWithFcntl(nsIFile *aLockFile) {
+nsresult nsProfileLock::LockWithFcntl(nsIFile* aLockFile) {
   nsresult rv = NS_OK;
 
   nsAutoCString lockFilePath;
@@ -213,9 +213,9 @@ nsresult nsProfileLock::LockWithFcntl(nsIFile *aLockFile) {
 
       // With OS X, on NFS, errno == ENOTSUP
       // XXX Check for that and return specific rv for it?
-#ifdef DEBUG
+#  ifdef DEBUG
       printf("fcntl(F_SETLK) failed. errno = %d\n", errno);
-#endif
+#  endif
       if (errno == EAGAIN || errno == EACCES)
         rv = NS_ERROR_FILE_ACCESS_DENIED;
       else
@@ -228,7 +228,7 @@ nsresult nsProfileLock::LockWithFcntl(nsIFile *aLockFile) {
   return rv;
 }
 
-static bool IsSymlinkStaleLock(struct in_addr *aAddr, const char *aFileName,
+static bool IsSymlinkStaleLock(struct in_addr* aAddr, const char* aFileName,
                                bool aHaveFcntlLock) {
   // the link exists; see if it's from this machine, and if
   // so if the process is still active
@@ -236,7 +236,7 @@ static bool IsSymlinkStaleLock(struct in_addr *aAddr, const char *aFileName,
   int len = readlink(aFileName, buf, sizeof buf - 1);
   if (len > 0) {
     buf[len] = '\0';
-    char *colon = strchr(buf, ':');
+    char* colon = strchr(buf, ':');
     if (colon) {
       *colon++ = '\0';
       unsigned long addr = inet_addr(buf);
@@ -248,7 +248,7 @@ static bool IsSymlinkStaleLock(struct in_addr *aAddr, const char *aFileName,
           return true;
         }
 
-        char *after = nullptr;
+        char* after = nullptr;
         pid_t pid = strtol(colon, &after, 0);
         if (pid != 0 && *after == '\0') {
           if (addr != aAddr->s_addr) {
@@ -272,7 +272,7 @@ static bool IsSymlinkStaleLock(struct in_addr *aAddr, const char *aFileName,
   return true;
 }
 
-nsresult nsProfileLock::LockWithSymlink(nsIFile *aLockFile,
+nsresult nsProfileLock::LockWithSymlink(nsIFile* aLockFile,
                                         bool aHaveFcntlLock) {
   nsresult rv;
   nsAutoCString lockFilePath;
@@ -301,7 +301,7 @@ nsresult nsProfileLock::LockWithSymlink(nsIFile *aLockFile,
   mozilla::SmprintfPointer signature =
       mozilla::Smprintf("%s:%s%lu", inet_ntoa(inaddr),
                         aHaveFcntlLock ? "+" : "", (unsigned long)getpid());
-  const char *fileName = lockFilePath.get();
+  const char* fileName = lockFilePath.get();
   int symlink_rv, symlink_errno = 0, tries = 0;
 
   // use ns4.x-compatible symlinks if the FS supports them
@@ -336,21 +336,21 @@ nsresult nsProfileLock::LockWithSymlink(nsIFile *aLockFile,
         // because mozilla is run via nohup.
         if (!sDisableSignalHandling) {
           struct sigaction act, oldact;
-#ifdef SA_SIGINFO
+#  ifdef SA_SIGINFO
           act.sa_sigaction = FatalSignalHandler;
           act.sa_flags = SA_SIGINFO | SA_ONSTACK;
-#else
+#  else
           act.sa_handler = FatalSignalHandler;
-#endif
+#  endif
           sigfillset(&act.sa_mask);
 
-#define CATCH_SIGNAL(signame)                      \
-  PR_BEGIN_MACRO                                   \
-  if (sigaction(signame, nullptr, &oldact) == 0 && \
-      oldact.sa_handler != SIG_IGN) {              \
-    sigaction(signame, &act, &signame##_oldact);   \
-  }                                                \
-  PR_END_MACRO
+#  define CATCH_SIGNAL(signame)                      \
+    PR_BEGIN_MACRO                                   \
+    if (sigaction(signame, nullptr, &oldact) == 0 && \
+        oldact.sa_handler != SIG_IGN) {              \
+      sigaction(signame, &act, &signame##_oldact);   \
+    }                                                \
+    PR_END_MACRO
 
           CATCH_SIGNAL(SIGHUP);
           CATCH_SIGNAL(SIGINT);
@@ -360,29 +360,29 @@ nsresult nsProfileLock::LockWithSymlink(nsIFile *aLockFile,
           CATCH_SIGNAL(SIGSEGV);
           CATCH_SIGNAL(SIGTERM);
 
-#undef CATCH_SIGNAL
+#  undef CATCH_SIGNAL
         }
       }
     }
   } else if (symlink_errno == EEXIST)
     rv = NS_ERROR_FILE_ACCESS_DENIED;
   else {
-#ifdef DEBUG
+#  ifdef DEBUG
     printf("symlink() failed. errno = %d\n", errno);
-#endif
+#  endif
     rv = NS_ERROR_FAILURE;
   }
   return rv;
 }
 #endif /* XP_UNIX */
 
-nsresult nsProfileLock::GetReplacedLockTime(PRTime *aResult) {
+nsresult nsProfileLock::GetReplacedLockTime(PRTime* aResult) {
   *aResult = mReplacedLockTime;
   return NS_OK;
 }
 
-nsresult nsProfileLock::Lock(nsIFile *aProfileDir,
-                             nsIProfileUnlocker **aUnlocker) {
+nsresult nsProfileLock::Lock(nsIFile* aProfileDir,
+                             nsIProfileUnlocker** aUnlocker) {
 #if defined(XP_MACOSX)
   NS_NAMED_LITERAL_STRING(LOCKFILE_NAME, ".parentlock");
   NS_NAMED_LITERAL_STRING(OLD_LOCKFILE_NAME, "parent.lock");
@@ -435,7 +435,7 @@ nsresult nsProfileLock::Lock(nsIFile *aProfileDir,
       unsigned long launchDate;
     };
 
-    PRFileDesc *fd = nullptr;
+    PRFileDesc* fd = nullptr;
     int32_t ioBytes;
     ProcessInfoRec processInfo;
     LockProcessInfo lockProcessInfo;
@@ -448,11 +448,11 @@ nsresult nsProfileLock::Lock(nsIFile *aProfileDir,
       PR_Close(fd);
 
       if (ioBytes == sizeof(LockProcessInfo)) {
-#ifdef __LP64__
+#  ifdef __LP64__
         processInfo.processAppRef = nullptr;
-#else
+#  else
         processInfo.processAppSpec = nullptr;
-#endif
+#  endif
         processInfo.processName = nullptr;
         processInfo.processInfoLength = sizeof(ProcessInfoRec);
         if (::GetProcessInformation(&lockProcessInfo.psn, &processInfo) ==

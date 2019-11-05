@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -6,20 +6,24 @@
 #include "ipc/IPCMessageUtils.h"
 
 #if defined(XP_UNIX) || defined(XP_BEOS)
-#include <unistd.h>
+#  include <unistd.h>
 #elif defined(XP_WIN)
-#include <windows.h>
-#include "nsILocalFileWin.h"
+#  include <windows.h>
+#  include "nsILocalFileWin.h"
 #else
 // XXX add necessary include file for ftruncate (or equivalent)
 #endif
 
 #include "private/pprio.h"
+#include "prerror.h"
 
+#include "IOActivityMonitor.h"
 #include "nsFileStreams.h"
 #include "nsIFile.h"
 #include "nsReadLine.h"
 #include "nsIClassInfoImpl.h"
+#include "nsLiteralString.h"
+#include "nsSocketTransport2.h"  // for ErrorAccordingToNSPR()
 #include "mozilla/ipc/InputStreamUtils.h"
 #include "mozilla/Unused.h"
 #include "mozilla/FileUtils.h"
@@ -29,6 +33,8 @@
 typedef mozilla::ipc::FileDescriptor::PlatformHandleType FileHandleType;
 
 using namespace mozilla::ipc;
+using namespace mozilla::net;
+
 using mozilla::DebugOnly;
 using mozilla::Maybe;
 using mozilla::Nothing;
@@ -50,7 +56,8 @@ nsFileStreamBase::~nsFileStreamBase() {
   Close();
 }
 
-NS_IMPL_ISUPPORTS(nsFileStreamBase, nsISeekableStream, nsIFileMetadata)
+NS_IMPL_ISUPPORTS(nsFileStreamBase, nsISeekableStream, nsITellableStream,
+                  nsIFileMetadata)
 
 NS_IMETHODIMP
 nsFileStreamBase::Seek(int32_t whence, int64_t offset) {
@@ -241,7 +248,7 @@ nsresult nsFileStreamBase::Write(const char* buf, uint32_t count,
 
 nsresult nsFileStreamBase::WriteFrom(nsIInputStream* inStr, uint32_t count,
                                      uint32_t* _retval) {
-  NS_NOTREACHED("WriteFrom (see source comment)");
+  MOZ_ASSERT_UNREACHABLE("WriteFrom (see source comment)");
   return NS_ERROR_NOT_IMPLEMENTED;
   // File streams intentionally do not support this method.
   // If you need something like this, then you should wrap
@@ -269,7 +276,7 @@ nsresult nsFileStreamBase::MaybeOpen(nsIFile* aFile, int32_t aIoFlags,
     nsresult rv = aFile->Clone(getter_AddRefs(file));
     NS_ENSURE_SUCCESS(rv, rv);
 
-    mOpenParams.localFile = do_QueryInterface(file);
+    mOpenParams.localFile = file.forget();
     NS_ENSURE_TRUE(mOpenParams.localFile, NS_ERROR_UNEXPECTED);
 
     mState = eDeferredOpen;
@@ -319,7 +326,23 @@ nsresult nsFileStreamBase::DoOpen() {
                                                  mOpenParams.perm, &fd);
   }
 
+  if (rv == NS_OK && IOActivityMonitor::IsActive()) {
+    auto nativePath = mOpenParams.localFile->NativePath();
+    if (!nativePath.IsEmpty()) {
+// registering the file to the activity monitor
+#ifdef XP_WIN
+      // 16 bits unicode
+      IOActivityMonitor::MonitorFile(
+          fd, NS_ConvertUTF16toUTF8(nativePath.get()).get());
+#else
+      // 8 bit unicode
+      IOActivityMonitor::MonitorFile(fd, nativePath.get());
+#endif
+    }
+  }
+
   CleanUpOpen();
+
   if (NS_FAILED(rv)) {
     mState = eError;
     mErrorValue = rv;
@@ -380,18 +403,14 @@ NS_INTERFACE_MAP_END_INHERITING(nsFileStreamBase)
 
 NS_IMPL_CI_INTERFACE_GETTER(nsFileInputStream, nsIInputStream,
                             nsIFileInputStream, nsISeekableStream,
-                            nsILineInputStream)
+                            nsITellableStream, nsILineInputStream)
 
 nsresult nsFileInputStream::Create(nsISupports* aOuter, REFNSIID aIID,
                                    void** aResult) {
   NS_ENSURE_NO_AGGREGATION(aOuter);
 
-  nsFileInputStream* stream = new nsFileInputStream();
-  if (stream == nullptr) return NS_ERROR_OUT_OF_MEMORY;
-  NS_ADDREF(stream);
-  nsresult rv = stream->QueryInterface(aIID, aResult);
-  NS_RELEASE(stream);
-  return rv;
+  RefPtr<nsFileInputStream> stream = new nsFileInputStream();
+  return stream->QueryInterface(aIID, aResult);
 }
 
 nsresult nsFileInputStream::Open(nsIFile* aFile, int32_t aIOFlags,
@@ -517,7 +536,51 @@ nsFileInputStream::Available(uint64_t* aResult) {
 }
 
 void nsFileInputStream::Serialize(InputStreamParams& aParams,
-                                  FileDescriptorArray& aFileDescriptors) {
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  mozilla::dom::ContentChild* aManager) {
+  MOZ_ASSERT(aSizeUsed);
+  *aSizeUsed = 0;
+
+  SerializeInternal(aParams, aFileDescriptors);
+}
+
+void nsFileInputStream::Serialize(InputStreamParams& aParams,
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  PBackgroundChild* aManager) {
+  MOZ_ASSERT(aSizeUsed);
+  *aSizeUsed = 0;
+
+  SerializeInternal(aParams, aFileDescriptors);
+}
+
+void nsFileInputStream::Serialize(InputStreamParams& aParams,
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  mozilla::dom::ContentParent* aManager) {
+  MOZ_ASSERT(aSizeUsed);
+  *aSizeUsed = 0;
+
+  SerializeInternal(aParams, aFileDescriptors);
+}
+
+void nsFileInputStream::Serialize(InputStreamParams& aParams,
+                                  FileDescriptorArray& aFileDescriptors,
+                                  bool aDelayedStart, uint32_t aMaxSize,
+                                  uint32_t* aSizeUsed,
+                                  PBackgroundParent* aManager) {
+  MOZ_ASSERT(aSizeUsed);
+  *aSizeUsed = 0;
+
+  SerializeInternal(aParams, aFileDescriptors);
+}
+
+void nsFileInputStream::SerializeInternal(
+    InputStreamParams& aParams, FileDescriptorArray& aFileDescriptors) {
   FileInputStreamParams params;
 
   if (NS_SUCCEEDED(DoPendingOpen())) {
@@ -607,10 +670,6 @@ bool nsFileInputStream::Deserialize(
   return true;
 }
 
-Maybe<uint64_t> nsFileInputStream::ExpectedSerializedLength() {
-  return Nothing();
-}
-
 bool nsFileInputStream::IsCloneable() const {
   // This inputStream is cloneable only if has been created using Init() and
   // it owns a nsIFile. This is not true when it is deserialized from IPC.
@@ -640,12 +699,8 @@ nsresult nsFileOutputStream::Create(nsISupports* aOuter, REFNSIID aIID,
                                     void** aResult) {
   NS_ENSURE_NO_AGGREGATION(aOuter);
 
-  nsFileOutputStream* stream = new nsFileOutputStream();
-  if (stream == nullptr) return NS_ERROR_OUT_OF_MEMORY;
-  NS_ADDREF(stream);
-  nsresult rv = stream->QueryInterface(aIID, aResult);
-  NS_RELEASE(stream);
-  return rv;
+  RefPtr<nsFileOutputStream> stream = new nsFileOutputStream();
+  return stream->QueryInterface(aIID, aResult);
 }
 
 NS_IMETHODIMP
@@ -786,10 +841,10 @@ nsAtomicFileOutputStream::Finish() {
     NS_ENSURE_STATE(mTargetFile);
 
     if (!mTargetFileExists) {
-    // If the target file did not exist when we were initialized, then the
-    // temp file we gave out was actually a reference to the target file.
-    // since we succeeded in writing to the temp file (and hence succeeded
-    // in writing to the target file), there is nothing more to do.
+      // If the target file did not exist when we were initialized, then the
+      // temp file we gave out was actually a reference to the target file.
+      // since we succeeded in writing to the temp file (and hence succeeded
+      // in writing to the target file), there is nothing more to do.
 #ifdef DEBUG
       bool equal;
       if (NS_FAILED(mTargetFile->Equals(mTempFile, &equal)) || !equal)

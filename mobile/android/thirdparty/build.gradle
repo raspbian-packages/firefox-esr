@@ -4,6 +4,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         targetSdkVersion project.ext.targetSdkVersion
@@ -12,8 +13,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     lintOptions {
@@ -43,11 +44,13 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:support-v4:${mozconfig.substs.ANDROID_SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:support-v4:$support_library_version"
     if (mozconfig.substs.MOZ_ANDROID_MMA) {
-        implementation "com.android.support:appcompat-v7:${mozconfig.substs.ANDROID_SUPPORT_LIBRARY_VERSION}"
-        implementation "com.android.support:support-annotations:${mozconfig.substs.ANDROID_GOOGLE_PLAY_SERVICES_VERSION}"
-        implementation "com.google.android.gms:play-services-gcm:${mozconfig.substs.ANDROID_GOOGLE_PLAY_SERVICES_VERSION}"
+        implementation "com.android.support:appcompat-v7:$support_library_version"
+        implementation "com.android.support:support-annotations:$support_library_version"
+        implementation "com.google.android.gms:play-services-gcm:$google_play_services_version"
+        implementation "com.google.android.gms:play-services-basement:$google_play_services_version"
+        implementation "com.google.android.gms:play-services-ads-identifier:$google_play_services_version"
     }
 }
 

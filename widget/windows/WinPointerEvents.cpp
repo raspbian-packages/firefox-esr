@@ -11,6 +11,7 @@
 #include "WinPointerEvents.h"
 #include "mozilla/MouseEvents.h"
 #include "mozilla/WindowsVersion.h"
+#include "mozilla/dom/MouseEventBinding.h"
 
 using namespace mozilla;
 using namespace mozilla::widget;
@@ -89,7 +90,7 @@ bool WinPointerEvents::ShouldHandleWinPointerMessages(UINT aMsg,
 }
 
 bool WinPointerEvents::GetPointerType(uint32_t aPointerId,
-                                      POINTER_INPUT_TYPE *aPointerType) {
+                                      POINTER_INPUT_TYPE* aPointerType) {
   if (!getPointerType) {
     return false;
   }
@@ -104,7 +105,7 @@ WinPointerEvents::GetPointerType(uint32_t aPointerId) {
 }
 
 bool WinPointerEvents::GetPointerInfo(uint32_t aPointerId,
-                                      POINTER_INFO *aPointerInfo) {
+                                      POINTER_INFO* aPointerInfo) {
   if (!getPointerInfo) {
     return false;
   }
@@ -112,7 +113,7 @@ bool WinPointerEvents::GetPointerInfo(uint32_t aPointerId,
 }
 
 bool WinPointerEvents::GetPointerPenInfo(uint32_t aPointerId,
-                                         POINTER_PEN_INFO *aPenInfo) {
+                                         POINTER_PEN_INFO* aPenInfo) {
   if (!getPointerPenInfo) {
     return false;
   }
@@ -138,10 +139,10 @@ bool WinPointerEvents::ShouldFirePointerEventByWinPointerMessages() {
   return sFirePointerEventsByWinPointerMessages;
 }
 
-WinPointerInfo *WinPointerEvents::GetCachedPointerInfo(UINT aMsg,
+WinPointerInfo* WinPointerEvents::GetCachedPointerInfo(UINT aMsg,
                                                        WPARAM aWParam) {
   if (!sLibraryHandle || !sPointerEventEnabled ||
-      MOUSE_INPUT_SOURCE() != nsIDOMMouseEvent::MOZ_SOURCE_PEN ||
+      MOUSE_INPUT_SOURCE() != dom::MouseEvent_Binding::MOZ_SOURCE_PEN ||
       ShouldFirePointerEventByWinPointerMessages()) {
     return nullptr;
   }
@@ -185,7 +186,7 @@ void WinPointerEvents::ConvertAndCachePointerInfo(UINT aMsg, WPARAM aWParam) {
 }
 
 void WinPointerEvents::ConvertAndCachePointerInfo(WPARAM aWParam,
-                                                  WinPointerInfo *aInfo) {
+                                                  WinPointerInfo* aInfo) {
   MOZ_ASSERT(!sFirePointerEventsByWinPointerMessages);
   aInfo->pointerId = GetPointerId(aWParam);
   MOZ_ASSERT(GetPointerType(aInfo->pointerId) == PT_PEN);

@@ -6,7 +6,6 @@
 // Implement shared vtbl methods.
 
 #include "xptcprivate.h"
-#include "xptiprivate.h"
 
 // The Linux/PPC ABI (aka PPC/SYSV ABI) passes the first 8 integral
 // parameters and the first 8 floating point parameters in registers
@@ -40,7 +39,6 @@ PrepareAndDispatch(nsXPTCStubBase* self,
     const nsXPTMethodInfo* info = nullptr;
     uint32_t paramCount;
     uint32_t i;
-    nsresult result = NS_ERROR_FAILURE;
 
     NS_ASSERTION(self,"no self");
 
@@ -61,6 +59,8 @@ PrepareAndDispatch(nsXPTCStubBase* self,
     if (!dispatchParams)
         return NS_ERROR_OUT_OF_MEMORY;
 
+    const uint8_t indexOfJSContext = info->IndexOfJSContext();
+
     uint32_t* ap = args;
     uint32_t gpr = 1;    // skip one GPR register
     uint32_t fpr = 0;
@@ -71,6 +71,13 @@ PrepareAndDispatch(nsXPTCStubBase* self,
         const nsXPTParamInfo& param = info->GetParam(i);
         const nsXPTType& type = param.GetType();
         nsXPTCMiniVariant* dp = &dispatchParams[i];
+
+        if (i == indexOfJSContext) {
+            if (gpr < GPR_COUNT)
+                gpr++;
+            else
+                ap++;
+        }
 
         if (!param.IsOut() && type == nsXPTType::T_DOUBLE) {
             if (fpr < FPR_COUNT)
@@ -136,9 +143,9 @@ PrepareAndDispatch(nsXPTCStubBase* self,
         }
     }
 
-    result = self->mOuter->CallMethod((uint16_t)methodIndex,
-                                      info,
-                                      dispatchParams);
+    nsresult result = self->mOuter->CallMethod((uint16_t)methodIndex,
+                                               info,
+                                               dispatchParams);
 
     if (dispatchParams != paramBuffer)
         delete [] dispatchParams;

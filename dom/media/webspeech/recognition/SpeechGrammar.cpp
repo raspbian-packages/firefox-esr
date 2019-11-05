@@ -21,7 +21,7 @@ NS_INTERFACE_MAP_END
 
 SpeechGrammar::SpeechGrammar(nsISupports* aParent) : mParent(aParent) {}
 
-SpeechGrammar::~SpeechGrammar() {}
+SpeechGrammar::~SpeechGrammar() = default;
 
 already_AddRefed<SpeechGrammar> SpeechGrammar::Constructor(
     const GlobalObject& aGlobal, ErrorResult& aRv) {
@@ -34,7 +34,7 @@ nsISupports* SpeechGrammar::GetParentObject() const { return mParent; }
 
 JSObject* SpeechGrammar::WrapObject(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return SpeechGrammarBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechGrammar_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void SpeechGrammar::GetSrc(nsString& aRetVal, ErrorResult& aRv) const {

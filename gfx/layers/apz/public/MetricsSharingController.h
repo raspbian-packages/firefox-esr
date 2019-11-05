@@ -22,13 +22,13 @@ class MetricsSharingController {
   virtual base::ProcessId RemotePid() = 0;
   virtual bool StartSharingMetrics(
       mozilla::ipc::SharedMemoryBasic::Handle aHandle,
-      CrossProcessMutexHandle aMutexHandle, uint64_t aLayersId,
+      CrossProcessMutexHandle aMutexHandle, LayersId aLayersId,
       uint32_t aApzcId) = 0;
-  virtual bool StopSharingMetrics(FrameMetrics::ViewID aScrollId,
+  virtual bool StopSharingMetrics(ScrollableLayerGuid::ViewID aScrollId,
                                   uint32_t aApzcId) = 0;
 
  protected:
-  virtual ~MetricsSharingController() {}
+  virtual ~MetricsSharingController() = default;
 };
 
 }  // namespace layers

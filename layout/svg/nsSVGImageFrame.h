@@ -22,16 +22,14 @@
 #include "SVGGeometryFrame.h"
 #include "SVGImageContext.h"
 #include "mozilla/dom/SVGImageElement.h"
-#include "nsContentUtils.h"
 #include "nsIReflowCallback.h"
 #include "mozilla/Unused.h"
 
-using namespace mozilla;
-using namespace mozilla::dom;
-using namespace mozilla::gfx;
-using namespace mozilla::image;
-
 class nsSVGImageFrame;
+
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
 
 class nsSVGImageListener final : public imgINotificationObserver {
  public:
@@ -43,19 +41,19 @@ class nsSVGImageListener final : public imgINotificationObserver {
   void SetFrame(nsSVGImageFrame* frame) { mFrame = frame; }
 
  private:
-  ~nsSVGImageListener() {}
+  ~nsSVGImageListener() = default;
 
   nsSVGImageFrame* mFrame;
 };
 
-class nsSVGImageFrame final : public SVGGeometryFrame,
+class nsSVGImageFrame final : public mozilla::SVGGeometryFrame,
                               public nsIReflowCallback {
-  friend nsIFrame* NS_NewSVGImageFrame(nsIPresShell* aPresShell,
-                                       nsStyleContext* aContext);
+  friend nsIFrame* NS_NewSVGImageFrame(mozilla::PresShell* aPresShell,
+                                       ComputedStyle* aStyle);
 
  protected:
-  explicit nsSVGImageFrame(nsStyleContext* aContext)
-      : SVGGeometryFrame(aContext, kClassID),
+  explicit nsSVGImageFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : SVGGeometryFrame(aStyle, aPresContext, kClassID),
         mReflowCallbackPosted(false),
         mForceSyncDecoding(false) {
     EnableVisibilityTracking();
@@ -104,9 +102,9 @@ class nsSVGImageFrame final : public SVGGeometryFrame,
   void SetForceSyncDecoding(bool aForce) { mForceSyncDecoding = aForce; }
 
  private:
-  gfx::Matrix GetRasterImageTransform(int32_t aNativeWidth,
-                                      int32_t aNativeHeight);
-  gfx::Matrix GetVectorImageTransform();
+  mozilla::gfx::Matrix GetRasterImageTransform(int32_t aNativeWidth,
+                                               int32_t aNativeHeight);
+  mozilla::gfx::Matrix GetVectorImageTransform();
   bool TransformContextForPainting(gfxContext* aGfxContext,
                                    const gfxMatrix& aTransform);
 

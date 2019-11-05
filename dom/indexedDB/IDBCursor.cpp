@@ -34,7 +34,6 @@ IDBCursor::IDBCursor(Type aType, BackgroundCursorChild* aBackgroundActor,
       mSourceObjectStore(aBackgroundActor->GetObjectStore()),
       mSourceIndex(aBackgroundActor->GetIndex()),
       mTransaction(mRequest->GetTransaction()),
-      mScriptOwner(mTransaction->Database()->GetScriptOwner()),
       mCachedKey(JS::UndefinedValue()),
       mCachedPrimaryKey(JS::UndefinedValue()),
       mCachedValue(JS::UndefinedValue()),
@@ -55,12 +54,6 @@ IDBCursor::IDBCursor(Type aType, BackgroundCursorChild* aBackgroundActor,
   MOZ_ASSERT_IF(aType == Type_Index || aType == Type_IndexKey, mSourceIndex);
   MOZ_ASSERT(mTransaction);
   MOZ_ASSERT(!aKey.IsUnset());
-  MOZ_ASSERT(mScriptOwner);
-
-  if (mScriptOwner) {
-    mozilla::HoldJSObjects(this);
-    mRooted = true;
-  }
 }
 
 bool IDBCursor::IsLocaleAware() const {
@@ -91,7 +84,7 @@ already_AddRefed<IDBCursor> IDBCursor::Create(
   RefPtr<IDBCursor> cursor =
       new IDBCursor(Type_ObjectStore, aBackgroundActor, aKey);
 
-  cursor->mCloneInfo = Move(aCloneInfo);
+  cursor->mCloneInfo = std::move(aCloneInfo);
 
   return cursor.forget();
 }
@@ -125,9 +118,9 @@ already_AddRefed<IDBCursor> IDBCursor::Create(
 
   RefPtr<IDBCursor> cursor = new IDBCursor(Type_Index, aBackgroundActor, aKey);
 
-  cursor->mSortKey = Move(aSortKey);
-  cursor->mPrimaryKey = Move(aPrimaryKey);
-  cursor->mCloneInfo = Move(aCloneInfo);
+  cursor->mSortKey = std::move(aSortKey);
+  cursor->mPrimaryKey = std::move(aPrimaryKey);
+  cursor->mCloneInfo = std::move(aCloneInfo);
 
   return cursor.forget();
 }
@@ -146,8 +139,8 @@ already_AddRefed<IDBCursor> IDBCursor::Create(
   RefPtr<IDBCursor> cursor =
       new IDBCursor(Type_IndexKey, aBackgroundActor, aKey);
 
-  cursor->mSortKey = Move(aSortKey);
-  cursor->mPrimaryKey = Move(aPrimaryKey);
+  cursor->mSortKey = std::move(aSortKey);
+  cursor->mPrimaryKey = std::move(aPrimaryKey);
 
   return cursor.forget();
 }
@@ -190,7 +183,6 @@ void IDBCursor::DropJSObjects() {
     return;
   }
 
-  mScriptOwner = nullptr;
   mRooted = false;
 
   mozilla::DropJSObjects(this);
@@ -234,7 +226,7 @@ void IDBCursor::Reset() {
   mContinueCalled = false;
 }
 
-nsPIDOMWindowInner* IDBCursor::GetParentObject() const {
+nsIGlobalObject* IDBCursor::GetParentObject() const {
   AssertIsOnOwningThread();
   MOZ_ASSERT(mTransaction);
 
@@ -389,15 +381,21 @@ void IDBCursor::Continue(JSContext* aCx, JS::Handle<JS::Value> aKey,
   }
 
   Key key;
-  aRv = key.SetFromJSVal(aCx, aKey);
-  if (aRv.Failed()) {
+  auto result = key.SetFromJSVal(aCx, aKey, aRv);
+  if (!result.Is(Ok, aRv)) {
+    if (result.Is(Invalid, aRv)) {
+      aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+    }
     return;
   }
 
   if (IsLocaleAware() && !key.IsUnset()) {
     Key tmp;
-    aRv = key.ToLocaleBasedKey(tmp, mSourceIndex->Locale());
-    if (aRv.Failed()) {
+    result = key.ToLocaleBasedKey(tmp, mSourceIndex->Locale(), aRv);
+    if (!result.Is(Ok, aRv)) {
+      if (result.Is(Invalid, aRv)) {
+        aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+      }
       return;
     }
     key = tmp;
@@ -487,15 +485,21 @@ void IDBCursor::ContinuePrimaryKey(JSContext* aCx, JS::Handle<JS::Value> aKey,
   }
 
   Key key;
-  aRv = key.SetFromJSVal(aCx, aKey);
-  if (aRv.Failed()) {
+  auto result = key.SetFromJSVal(aCx, aKey, aRv);
+  if (!result.Is(Ok, aRv)) {
+    if (result.Is(Invalid, aRv)) {
+      aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+    }
     return;
   }
 
   if (IsLocaleAware() && !key.IsUnset()) {
     Key tmp;
-    aRv = key.ToLocaleBasedKey(tmp, mSourceIndex->Locale());
-    if (aRv.Failed()) {
+    result = key.ToLocaleBasedKey(tmp, mSourceIndex->Locale(), aRv);
+    if (!result.Is(Ok, aRv)) {
+      if (result.Is(Invalid, aRv)) {
+        aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+      }
       return;
     }
     key = tmp;
@@ -509,8 +513,11 @@ void IDBCursor::ContinuePrimaryKey(JSContext* aCx, JS::Handle<JS::Value> aKey,
   }
 
   Key primaryKey;
-  aRv = primaryKey.SetFromJSVal(aCx, aPrimaryKey);
-  if (aRv.Failed()) {
+  result = primaryKey.SetFromJSVal(aCx, aPrimaryKey, aRv);
+  if (!result.Is(Ok, aRv)) {
+    if (result.Is(Invalid, aRv)) {
+      aRv.Throw(NS_ERROR_DOM_INDEXEDDB_DATA_ERR);
+    }
     return;
   }
 
@@ -805,8 +812,8 @@ void IDBCursor::Reset(Key&& aKey, StructuredCloneReadInfo&& aValue) {
 
   Reset();
 
-  mKey = Move(aKey);
-  mCloneInfo = Move(aValue);
+  mKey = std::move(aKey);
+  mCloneInfo = std::move(aValue);
 
   mHaveValue = !mKey.IsUnset();
 }
@@ -817,7 +824,7 @@ void IDBCursor::Reset(Key&& aKey) {
 
   Reset();
 
-  mKey = Move(aKey);
+  mKey = std::move(aKey);
 
   mHaveValue = !mKey.IsUnset();
 }
@@ -829,10 +836,10 @@ void IDBCursor::Reset(Key&& aKey, Key&& aSortKey, Key&& aPrimaryKey,
 
   Reset();
 
-  mKey = Move(aKey);
-  mSortKey = Move(aSortKey);
-  mPrimaryKey = Move(aPrimaryKey);
-  mCloneInfo = Move(aValue);
+  mKey = std::move(aKey);
+  mSortKey = std::move(aSortKey);
+  mPrimaryKey = std::move(aPrimaryKey);
+  mCloneInfo = std::move(aValue);
 
   mHaveValue = !mKey.IsUnset();
 }
@@ -843,9 +850,9 @@ void IDBCursor::Reset(Key&& aKey, Key&& aSortKey, Key&& aPrimaryKey) {
 
   Reset();
 
-  mKey = Move(aKey);
-  mSortKey = Move(aSortKey);
-  mPrimaryKey = Move(aPrimaryKey);
+  mKey = std::move(aKey);
+  mSortKey = std::move(aSortKey);
+  mPrimaryKey = std::move(aPrimaryKey);
 
   mHaveValue = !mKey.IsUnset();
 }
@@ -873,7 +880,6 @@ NS_IMPL_CYCLE_COLLECTION_TRACE_BEGIN(IDBCursor)
   MOZ_ASSERT_IF(!tmp->mHaveCachedValue, tmp->mCachedValue.isUndefined());
 
   NS_IMPL_CYCLE_COLLECTION_TRACE_PRESERVED_WRAPPER
-  NS_IMPL_CYCLE_COLLECTION_TRACE_JS_MEMBER_CALLBACK(mScriptOwner)
   NS_IMPL_CYCLE_COLLECTION_TRACE_JS_MEMBER_CALLBACK(mCachedKey)
   NS_IMPL_CYCLE_COLLECTION_TRACE_JS_MEMBER_CALLBACK(mCachedPrimaryKey)
   NS_IMPL_CYCLE_COLLECTION_TRACE_JS_MEMBER_CALLBACK(mCachedValue)
@@ -892,11 +898,11 @@ JSObject* IDBCursor::WrapObject(JSContext* aCx,
   switch (mType) {
     case Type_ObjectStore:
     case Type_Index:
-      return IDBCursorWithValueBinding::Wrap(aCx, this, aGivenProto);
+      return IDBCursorWithValue_Binding::Wrap(aCx, this, aGivenProto);
 
     case Type_ObjectStoreKey:
     case Type_IndexKey:
-      return IDBCursorBinding::Wrap(aCx, this, aGivenProto);
+      return IDBCursor_Binding::Wrap(aCx, this, aGivenProto);
 
     default:
       MOZ_CRASH("Bad type!");

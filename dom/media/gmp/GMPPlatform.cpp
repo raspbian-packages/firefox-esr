@@ -260,7 +260,7 @@ GMPTask* NewGMPTask(std::function<void()>&& aFunction) {
   class Task : public GMPTask {
    public:
     explicit Task(std::function<void()>&& aFunction)
-        : mFunction(Move(aFunction)) {}
+        : mFunction(std::move(aFunction)) {}
     void Destroy() override { delete this; }
     ~Task() override {}
     void Run() override { mFunction(); }
@@ -268,7 +268,7 @@ GMPTask* NewGMPTask(std::function<void()>&& aFunction) {
    private:
     std::function<void()> mFunction;
   };
-  return new Task(Move(aFunction));
+  return new Task(std::move(aFunction));
 }
 
 }  // namespace gmp

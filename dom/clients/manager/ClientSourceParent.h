@@ -10,6 +10,8 @@
 #include "ClientOpPromise.h"
 #include "mozilla/dom/PClientSourceParent.h"
 #include "mozilla/dom/ServiceWorkerDescriptor.h"
+#include "mozilla/dom/ipc/IdType.h"
+#include "mozilla/MozPromise.h"
 
 namespace mozilla {
 namespace dom {
@@ -20,8 +22,10 @@ class ClientManagerService;
 class ClientSourceParent final : public PClientSourceParent {
   ClientInfo mClientInfo;
   Maybe<ServiceWorkerDescriptor> mController;
+  const Maybe<ContentParentId> mContentParentId;
   RefPtr<ClientManagerService> mService;
   nsTArray<ClientHandleParent*> mHandleList;
+  MozPromiseHolder<GenericPromise> mExecutionReadyPromise;
   bool mExecutionReady;
   bool mFrozen;
 
@@ -39,6 +43,11 @@ class ClientSourceParent final : public PClientSourceParent {
 
   mozilla::ipc::IPCResult RecvThaw() override;
 
+  mozilla::ipc::IPCResult RecvInheritController(
+      const ClientControlledArgs& aArgs) override;
+
+  mozilla::ipc::IPCResult RecvNoteDOMContentLoaded() override;
+
   void ActorDestroy(ActorDestroyReason aReason) override;
 
   PClientSourceOpParent* AllocPClientSourceOpParent(
@@ -47,7 +56,8 @@ class ClientSourceParent final : public PClientSourceParent {
   bool DeallocPClientSourceOpParent(PClientSourceOpParent* aActor) override;
 
  public:
-  explicit ClientSourceParent(const ClientSourceConstructorArgs& aArgs);
+  explicit ClientSourceParent(const ClientSourceConstructorArgs& aArgs,
+                              const Maybe<ContentParentId>& aContentParentId);
   ~ClientSourceParent();
 
   void Init();
@@ -58,7 +68,15 @@ class ClientSourceParent final : public PClientSourceParent {
 
   bool ExecutionReady() const;
 
+  RefPtr<GenericPromise> ExecutionReadyPromise();
+
   const Maybe<ServiceWorkerDescriptor>& GetController() const;
+
+  void ClearController();
+
+  bool IsOwnedByProcess(ContentParentId aContentParentId) const {
+    return mContentParentId && mContentParentId.value() == aContentParentId;
+  }
 
   void AttachHandle(ClientHandleParent* aClientSource);
 

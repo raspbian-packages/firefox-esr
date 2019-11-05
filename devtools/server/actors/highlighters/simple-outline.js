@@ -7,14 +7,16 @@
 const {
   isNodeValid,
   addPseudoClassLock,
-  removePseudoClassLock
+  removePseudoClassLock,
 } = require("./utils/markup");
 
 const { loadSheet } = require("devtools/shared/layout/utils");
 
 // SimpleOutlineHighlighter's stylesheet
 const HIGHLIGHTED_PSEUDO_CLASS = ":-moz-devtools-highlighted";
-const SIMPLE_OUTLINE_SHEET = "data:text/css;charset=utf-8," + encodeURIComponent(`
+const SIMPLE_OUTLINE_SHEET =
+  "data:text/css;charset=utf-8," +
+  encodeURIComponent(`
   .__fx-devtools-hide-shortcut__ {
     visibility: hidden !important
   }
@@ -38,7 +40,7 @@ SimpleOutlineHighlighter.prototype = {
   /**
    * Destroy the nodes. Remove listeners.
    */
-  destroy: function () {
+  destroy: function() {
     this.hide();
     this.chromeDoc = null;
   },
@@ -47,7 +49,7 @@ SimpleOutlineHighlighter.prototype = {
    * Show the highlighter on a given node
    * @param {DOMNode} node
    */
-  show: function (node) {
+  show: function(node) {
     if (isNodeValid(node) && (!this.currentNode || node !== this.currentNode)) {
       this.hide();
       this.currentNode = node;
@@ -60,11 +62,11 @@ SimpleOutlineHighlighter.prototype = {
   /**
    * Hide the highlighter, the outline and the infobar.
    */
-  hide: function () {
+  hide: function() {
     if (this.currentNode) {
       removePseudoClassLock(this.currentNode, HIGHLIGHTED_PSEUDO_CLASS);
       this.currentNode = null;
     }
-  }
+  },
 };
 exports.SimpleOutlineHighlighter = SimpleOutlineHighlighter;

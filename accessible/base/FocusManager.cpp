@@ -13,9 +13,11 @@
 #include "Role.h"
 
 #include "nsFocusManager.h"
+#include "mozilla/a11y/DocAccessibleParent.h"
+#include "mozilla/a11y/DocManager.h"
 #include "mozilla/EventStateManager.h"
 #include "mozilla/dom/Element.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 
 namespace mozilla {
 namespace a11y {
@@ -97,6 +99,10 @@ FocusManager::FocusDisposition FocusManager::IsInOrContainsFocus(
   return eNone;
 }
 
+bool FocusManager::WasLastFocused(const Accessible* aAccessible) const {
+  return mLastFocus == aAccessible;
+}
+
 void FocusManager::NotifyOfDOMFocus(nsISupports* aTarget) {
 #ifdef A11Y_LOG
   if (logging::IsEnabled(logging::eFocus))
@@ -132,7 +138,7 @@ void FocusManager::NotifyOfDOMBlur(nsISupports* aTarget) {
   // the case when no element within this DOM document will be focused.
   nsCOMPtr<nsINode> targetNode(do_QueryInterface(aTarget));
   if (targetNode && targetNode->OwnerDoc() == FocusedDOMDocument()) {
-    nsIDocument* DOMDoc = targetNode->OwnerDoc();
+    dom::Document* DOMDoc = targetNode->OwnerDoc();
     DocAccessible* document = GetAccService()->GetDocAccessible(DOMDoc);
     if (document) {
       // Clear selection listener for previously focused element.
@@ -172,9 +178,9 @@ void FocusManager::ActiveItemChanged(Accessible* aItem, bool aCheckIfActive) {
   if (!mActiveItem && XRE_IsParentProcess()) {
     nsFocusManager* domfm = nsFocusManager::GetFocusManager();
     if (domfm) {
-      nsIContent* focusedElm = domfm->GetFocusedContent();
+      nsIContent* focusedElm = domfm->GetFocusedElement();
       if (EventStateManager::IsRemoteTarget(focusedElm)) {
-        dom::TabParent* tab = dom::TabParent::GetFrom(focusedElm);
+        dom::BrowserParent* tab = dom::BrowserParent::GetFrom(focusedElm);
         if (tab) {
           a11y::DocAccessibleParent* dap = tab->GetTopLevelDocAccessible();
           if (dap) {
@@ -208,7 +214,7 @@ void FocusManager::ForceFocusEvent() {
 
 void FocusManager::DispatchFocusEvent(DocAccessible* aDocument,
                                       Accessible* aTarget) {
-  NS_PRECONDITION(aDocument, "No document for focused accessible!");
+  MOZ_ASSERT(aDocument, "No document for focused accessible!");
   if (aDocument) {
     RefPtr<AccEvent> event =
         new AccEvent(nsIAccessibleEvent::EVENT_FOCUS, aTarget, eAutoDetect,
@@ -254,8 +260,8 @@ void FocusManager::ProcessDOMFocus(nsINode* aTarget) {
 }
 
 void FocusManager::ProcessFocusEvent(AccEvent* aEvent) {
-  NS_PRECONDITION(aEvent->GetEventType() == nsIAccessibleEvent::EVENT_FOCUS,
-                  "Focus event is expected!");
+  MOZ_ASSERT(aEvent->GetEventType() == nsIAccessibleEvent::EVENT_FOCUS,
+             "Focus event is expected!");
 
   // Emit focus event if event target is the active item. Otherwise then check
   // if it's still focused and then update active item and emit focus event.
@@ -338,6 +344,7 @@ void FocusManager::ProcessFocusEvent(AccEvent* aEvent) {
   RefPtr<AccEvent> focusEvent = new AccEvent(nsIAccessibleEvent::EVENT_FOCUS,
                                              target, aEvent->FromUserInput());
   nsEventShell::FireEvent(focusEvent);
+  mLastFocus = target;
 
   // Fire scrolling_start event when the document receives the focus if it has
   // an anchor jump. If an accessible within the document receive the focus
@@ -357,7 +364,7 @@ void FocusManager::ProcessFocusEvent(AccEvent* aEvent) {
 
 nsINode* FocusManager::FocusedDOMNode() const {
   nsFocusManager* DOMFocusManager = nsFocusManager::GetFocusManager();
-  nsIContent* focusedElm = DOMFocusManager->GetFocusedContent();
+  nsIContent* focusedElm = DOMFocusManager->GetFocusedElement();
 
   // No focus on remote target elements like xul:browser having DOM focus and
   // residing in chrome process because it means an element in content process
@@ -374,7 +381,7 @@ nsINode* FocusManager::FocusedDOMNode() const {
   return focusedWnd ? focusedWnd->GetExtantDoc() : nullptr;
 }
 
-nsIDocument* FocusManager::FocusedDOMDocument() const {
+dom::Document* FocusManager::FocusedDOMDocument() const {
   nsINode* focusedNode = FocusedDOMNode();
   return focusedNode ? focusedNode->OwnerDoc() : nullptr;
 }

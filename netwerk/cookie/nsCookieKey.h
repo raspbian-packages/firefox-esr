@@ -15,7 +15,7 @@ class nsCookieKey : public PLDHashEntryHdr {
   typedef const nsCookieKey& KeyType;
   typedef const nsCookieKey* KeyTypePointer;
 
-  nsCookieKey() {}
+  nsCookieKey() = default;
 
   nsCookieKey(const nsCString& baseDomain, const OriginAttributes& attrs)
       : mBaseDomain(baseDomain), mOriginAttributes(attrs) {}
@@ -24,11 +24,8 @@ class nsCookieKey : public PLDHashEntryHdr {
       : mBaseDomain(other->mBaseDomain),
         mOriginAttributes(other->mOriginAttributes) {}
 
-  nsCookieKey(KeyType other)
-      : mBaseDomain(other.mBaseDomain),
-        mOriginAttributes(other.mOriginAttributes) {}
-
-  ~nsCookieKey() {}
+  nsCookieKey(nsCookieKey&& other) = default;
+  nsCookieKey& operator=(nsCookieKey&&) = default;
 
   bool KeyEquals(KeyTypePointer other) const {
     return mBaseDomain == other->mBaseDomain &&

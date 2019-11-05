@@ -22,14 +22,15 @@ import java.util.List;
 public class Experiments {
     private static final String LOGTAG = "GeckoExperiments";
 
+    // Enable the Enhanced Search Experiment.
+    public static final String ENHANCED_SEARCH = "enhanced-search";
+    public static final String ENHANCED_SEARCH_CONTROL = "enhanced-search-control";
+
     // Show a system notification linking to a "What's New" page on app update.
     public static final String WHATSNEW_NOTIFICATION = "whatsnew-notification";
 
     // Synchronizing the catalog of downloadable content from Kinto
     public static final String DOWNLOAD_CONTENT_CATALOG_SYNC = "download-content-catalog-sync";
-
-    // Promotion for "Add to homescreen"
-    public static final String PROMOTE_ADD_TO_HOMESCREEN = "promote-add-to-homescreen";
 
     // Promotion to bookmark reader-view items after entering reader view three times (Bug 1247689)
     public static final String TRIPLE_READERVIEW_BOOKMARK_PROMPT = "triple-readerview-bookmark-prompt";

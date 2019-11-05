@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,6 +9,9 @@
 #include "WebBrowserPersistResourcesParent.h"
 #include "WebBrowserPersistSerializeParent.h"
 #include "mozilla/Unused.h"
+#include "mozilla/ipc/BackgroundUtils.h"
+
+#include "nsIPrincipal.h"
 
 namespace mozilla {
 
@@ -17,11 +20,14 @@ NS_IMPL_ISUPPORTS(WebBrowserPersistRemoteDocument, nsIWebBrowserPersistDocument)
 WebBrowserPersistRemoteDocument ::WebBrowserPersistRemoteDocument(
     WebBrowserPersistDocumentParent* aActor, const Attrs& aAttrs,
     nsIInputStream* aPostData)
-    : mActor(aActor), mAttrs(aAttrs), mPostData(aPostData) {}
+    : mActor(aActor), mAttrs(aAttrs), mPostData(aPostData) {
+  nsresult rv;
+  mPrincipal = ipc::PrincipalInfoToPrincipal(mAttrs.principal(), &rv);
+}
 
 WebBrowserPersistRemoteDocument::~WebBrowserPersistRemoteDocument() {
   if (mActor) {
-    Unused << mActor->Send__delete__(mActor);
+    Unused << WebBrowserPersistDocumentParent::Send__delete__(mActor);
     // That will call mActor->ActorDestroy, which calls this->ActorDestroy
     // (whether or not the IPC send succeeds).
   }
@@ -106,6 +112,13 @@ NS_IMETHODIMP
 WebBrowserPersistRemoteDocument::GetPostData(nsIInputStream** aStream) {
   nsCOMPtr<nsIInputStream> stream = mPostData;
   stream.forget(aStream);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+WebBrowserPersistRemoteDocument::GetPrincipal(nsIPrincipal** aPrincipal) {
+  nsCOMPtr<nsIPrincipal> nodePrincipal = mPrincipal;
+  nodePrincipal.forget(aPrincipal);
   return NS_OK;
 }
 

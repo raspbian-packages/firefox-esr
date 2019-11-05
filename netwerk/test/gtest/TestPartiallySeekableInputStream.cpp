@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include "Helpers.h"
 #include "nsCOMPtr.h"
 #include "nsIPipe.h"
 #include "nsStreamUtils.h"
@@ -7,6 +8,8 @@
 #include "nsStringStream.h"
 #include "mozilla/net/PartiallySeekableInputStream.h"
 
+using mozilla::GetCurrentThreadSerialEventTarget;
+using mozilla::SpinEventLoopUntil;
 using mozilla::net::PartiallySeekableInputStream;
 
 class NonSeekableStream final : public nsIInputStream {
@@ -61,7 +64,8 @@ PartiallySeekableInputStream* CreateStream(uint32_t aSize, uint64_t aStreamSize,
 }
 
 // Simple reading.
-TEST(TestPartiallySeekableInputStream, SimpleRead) {
+TEST(TestPartiallySeekableInputStream, SimpleRead)
+{
   const size_t kBufSize = 10;
 
   nsCString buf;
@@ -95,7 +99,8 @@ TEST(TestPartiallySeekableInputStream, SimpleRead) {
 }
 
 // Simple seek
-TEST(TestPartiallySeekableInputStream, SimpleSeek) {
+TEST(TestPartiallySeekableInputStream, SimpleSeek)
+{
   const size_t kBufSize = 10;
 
   nsCString buf;
@@ -183,7 +188,8 @@ TEST(TestPartiallySeekableInputStream, SimpleSeek) {
 }
 
 // Full in cache
-TEST(TestPartiallySeekableInputStream, FullCachedSeek) {
+TEST(TestPartiallySeekableInputStream, FullCachedSeek)
+{
   const size_t kBufSize = 10;
 
   nsCString buf;
@@ -213,4 +219,150 @@ TEST(TestPartiallySeekableInputStream, FullCachedSeek) {
 
   ASSERT_EQ(NS_OK, psi->Available(&length));
   ASSERT_EQ((uint64_t)0, length);
+}
+
+TEST(TestPartiallySeekableInputStream, QIInputStreamLength)
+{
+  nsCString buf;
+  buf.AssignLiteral("Hello world");
+
+  for (int i = 0; i < 4; i++) {
+    nsCOMPtr<nsIInputStream> psis;
+    {
+      RefPtr<testing::LengthInputStream> stream =
+          new testing::LengthInputStream(buf, i % 2, i > 1);
+      psis = new PartiallySeekableInputStream(stream.forget());
+    }
+
+    {
+      nsCOMPtr<nsIInputStreamLength> qi = do_QueryInterface(psis);
+      ASSERT_EQ(!!(i % 2), !!qi);
+    }
+
+    {
+      nsCOMPtr<nsIAsyncInputStreamLength> qi = do_QueryInterface(psis);
+      ASSERT_EQ(i > 1, !!qi);
+    }
+  }
+}
+
+TEST(TestPartiallySeekableInputStream, InputStreamLength)
+{
+  nsCString buf;
+  buf.AssignLiteral("Hello world");
+
+  nsCOMPtr<nsIInputStream> psis;
+  {
+    RefPtr<testing::LengthInputStream> stream =
+        new testing::LengthInputStream(buf, true, false);
+    psis = new PartiallySeekableInputStream(stream.forget());
+  }
+
+  nsCOMPtr<nsIInputStreamLength> qi = do_QueryInterface(psis);
+  ASSERT_TRUE(!!qi);
+
+  int64_t size;
+  nsresult rv = qi->Length(&size);
+  ASSERT_EQ(NS_OK, rv);
+  ASSERT_EQ(buf.Length(), size);
+}
+
+TEST(TestPartiallySeekableInputStream, NegativeInputStreamLength)
+{
+  nsCString buf;
+  buf.AssignLiteral("Hello world");
+
+  nsCOMPtr<nsIInputStream> psis;
+  {
+    RefPtr<testing::LengthInputStream> stream =
+        new testing::LengthInputStream(buf, true, false, NS_OK, true);
+    psis = new PartiallySeekableInputStream(stream.forget());
+  }
+
+  nsCOMPtr<nsIInputStreamLength> qi = do_QueryInterface(psis);
+  ASSERT_TRUE(!!qi);
+
+  int64_t size;
+  nsresult rv = qi->Length(&size);
+  ASSERT_EQ(NS_OK, rv);
+  ASSERT_EQ(-1, size);
+}
+
+TEST(TestPartiallySeekableInputStream, AsyncInputStreamLength)
+{
+  nsCString buf;
+  buf.AssignLiteral("Hello world");
+
+  nsCOMPtr<nsIInputStream> psis;
+  {
+    RefPtr<testing::LengthInputStream> stream =
+        new testing::LengthInputStream(buf, false, true);
+    psis = new PartiallySeekableInputStream(stream.forget());
+  }
+
+  nsCOMPtr<nsIAsyncInputStreamLength> qi = do_QueryInterface(psis);
+  ASSERT_TRUE(!!qi);
+
+  RefPtr<testing::LengthCallback> callback = new testing::LengthCallback();
+
+  nsresult rv =
+      qi->AsyncLengthWait(callback, GetCurrentThreadSerialEventTarget());
+  ASSERT_EQ(NS_OK, rv);
+
+  MOZ_ALWAYS_TRUE(SpinEventLoopUntil([&]() { return callback->Called(); }));
+  ASSERT_EQ(buf.Length(), callback->Size());
+}
+
+TEST(TestPartiallySeekableInputStream, NegativeAsyncInputStreamLength)
+{
+  nsCString buf;
+  buf.AssignLiteral("Hello world");
+
+  nsCOMPtr<nsIInputStream> psis;
+  {
+    RefPtr<testing::LengthInputStream> stream =
+        new testing::LengthInputStream(buf, false, true, NS_OK, true);
+    psis = new PartiallySeekableInputStream(stream.forget());
+  }
+
+  nsCOMPtr<nsIAsyncInputStreamLength> qi = do_QueryInterface(psis);
+  ASSERT_TRUE(!!qi);
+
+  RefPtr<testing::LengthCallback> callback = new testing::LengthCallback();
+
+  nsresult rv =
+      qi->AsyncLengthWait(callback, GetCurrentThreadSerialEventTarget());
+  ASSERT_EQ(NS_OK, rv);
+
+  MOZ_ALWAYS_TRUE(SpinEventLoopUntil([&]() { return callback->Called(); }));
+  ASSERT_EQ(-1, callback->Size());
+}
+
+TEST(TestPartiallySeekableInputStream, AbortLengthCallback)
+{
+  nsCString buf;
+  buf.AssignLiteral("Hello world");
+
+  nsCOMPtr<nsIInputStream> psis;
+  {
+    RefPtr<testing::LengthInputStream> stream =
+        new testing::LengthInputStream(buf, false, true, NS_OK, true);
+    psis = new PartiallySeekableInputStream(stream.forget());
+  }
+
+  nsCOMPtr<nsIAsyncInputStreamLength> qi = do_QueryInterface(psis);
+  ASSERT_TRUE(!!qi);
+
+  RefPtr<testing::LengthCallback> callback1 = new testing::LengthCallback();
+  nsresult rv =
+      qi->AsyncLengthWait(callback1, GetCurrentThreadSerialEventTarget());
+  ASSERT_EQ(NS_OK, rv);
+
+  RefPtr<testing::LengthCallback> callback2 = new testing::LengthCallback();
+  rv = qi->AsyncLengthWait(callback2, GetCurrentThreadSerialEventTarget());
+  ASSERT_EQ(NS_OK, rv);
+
+  MOZ_ALWAYS_TRUE(SpinEventLoopUntil([&]() { return callback2->Called(); }));
+  ASSERT_TRUE(!callback1->Called());
+  ASSERT_EQ(-1, callback2->Size());
 }

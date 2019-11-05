@@ -26,7 +26,6 @@ class AsyncCanvasRenderer;
 class ClientCanvasRenderer;
 class CopyableCanvasRenderer;
 class PersistentBufferProvider;
-class WebRenderCanvasRendererSync;
 class WebRenderCanvasRendererAsync;
 
 struct CanvasInitializeData final {
@@ -45,11 +44,8 @@ struct CanvasInitializeData final {
   TransactionCallback mDidTransCallback = nullptr;
   void* mDidTransCallbackData = nullptr;
 
-  // Frontbuffer override
-  uint32_t mFrontbufferGLTex = 0;
-
   // The size of the canvas content
-  gfx::IntSize mSize = {0,0};
+  gfx::IntSize mSize = {0, 0};
 
   // Whether the canvas drawingbuffer has an alpha channel.
   bool mHasAlpha = false;
@@ -73,8 +69,6 @@ struct CanvasInitializeData final {
 // ClientCanvasLayer.
 // WebRenderCanvasRenderer inherites ShareableCanvasRenderer and provides all
 // functionality that WebRender uses.
-// WebRenderCanvasRendererSync inherites WebRenderCanvasRenderer and be used in
-// WebRenderCanvasLayer.
 // WebRenderCanvasRendererAsync inherites WebRenderCanvasRenderer and be used in
 // layers-free mode of WebRender.
 //
@@ -98,13 +92,12 @@ struct CanvasInitializeData final {
 //           |                            |
 // +--------------------+       +---------+-------------+
 // |ClientCanvasRenderer|       |WebRenderCanvasRenderer|
-// +--------------------+       +--------+--+-----------+
-//                                       ^  ^
-//               +-----------------------+  +----+
-//               |                               |
-// +-------------+-------------+   +-------------+--------------+
-// |WebRenderCanvasRendererSync|   |WebRenderCanvasRendererAsync|
-// +---------------------------+   +----------------------------+
+// +--------------------+       +-----------+-----------+
+//                                          ^
+//                                          |
+//                           +-------------+--------------+
+//                           |WebRenderCanvasRendererAsync|
+//                           +----------------------------+
 class CanvasRenderer {
  public:
   CanvasRenderer();
@@ -125,9 +118,6 @@ class CanvasRenderer {
 
   virtual CopyableCanvasRenderer* AsCopyableCanvasRenderer() { return nullptr; }
   virtual ClientCanvasRenderer* AsClientCanvasRenderer() { return nullptr; }
-  virtual WebRenderCanvasRendererSync* AsWebRenderCanvasRendererSync() {
-    return nullptr;
-  }
   virtual WebRenderCanvasRendererAsync* AsWebRenderCanvasRendererAsync() {
     return nullptr;
   }

@@ -19,8 +19,12 @@
 #include "nsNetUtil.h"
 #include <cctype>
 #include "mozilla/Encoding.h"
-#include "mozilla/dom/ContentChild.h"
 #include "mozilla/dom/FakePluginTagInitBinding.h"
+
+#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
+#  include "mozilla/SandboxSettings.h"
+#  include "nsCocoaFeatures.h"
+#endif
 
 using mozilla::dom::FakePluginTagInit;
 using namespace mozilla;
@@ -116,25 +120,6 @@ static nsCString MakePrefNameForPlugin(const char* const subname,
   pref.Append(pluginName);
 
   return pref;
-}
-
-static nsresult CStringArrayToXPCArray(nsTArray<nsCString>& aArray,
-                                       uint32_t* aCount, char16_t*** aResults) {
-  uint32_t count = aArray.Length();
-  if (!count) {
-    *aResults = nullptr;
-    *aCount = 0;
-    return NS_OK;
-  }
-
-  *aResults = static_cast<char16_t**>(moz_xmalloc(count * sizeof(**aResults)));
-  *aCount = count;
-
-  for (uint32_t i = 0; i < count; i++) {
-    (*aResults)[i] = ToNewUnicode(NS_ConvertUTF8toUTF16(aArray[i]));
-  }
-
-  return NS_OK;
 }
 
 static nsCString GetStatePrefNameForPlugin(nsIInternalPluginTag* aTag) {
@@ -260,6 +245,7 @@ nsPluginTag::nsPluginTag(uint32_t aId, const char* aName,
                            aMimeDescriptions, aExtensions),
       mId(aId),
       mContentProcessRunningCount(0),
+      mHadLocalInstance(false),
       mLibrary(nullptr),
       mIsFlashPlugin(aIsFlashPlugin),
       mSupportsAsyncRender(aSupportsAsyncRender),
@@ -365,29 +351,44 @@ void nsPluginTag::InitSandboxLevel() {
         Preferences::GetInt("dom.ipc.plugins.sandbox-level.default");
   }
 
-#if defined(_AMD64_)
-  // As level 2 is now the default NPAPI sandbox level for 64-bit flash, we
-  // don't want to allow a lower setting. This should be changed if the
-  // firefox.js pref file is changed.
+#  if defined(_AMD64_)
+  // Level 3 is now the default NPAPI sandbox level for 64-bit flash.
+  // We permit the user to drop the sandbox level by at most 1.  This should
+  // be kept up to date with the default value in the firefox.js pref file.
   if (mIsFlashPlugin && mSandboxLevel < 2) {
     mSandboxLevel = 2;
   }
-#endif
-#endif
+#  endif /* defined(_AMD64_) */
 
-#if defined(XP_MACOSX) && defined(MOZ_SANDBOX)
-  // At present, the Mac Flash NPAPI plugin sandbox is controlled via
-  // a boolean with no support for different levels. When the sandbox
-  // is enabled, we set the level to 1.
+#elif defined(XP_MACOSX) && defined(MOZ_SANDBOX)
   if (mIsFlashPlugin) {
-    // Allow enabling the sandbox via the pref
-    // security.sandbox.mac.flash.enabled or via the environment variable
-    // MOZ_SANDBOX_MAC_FLASH_FORCE (which is useful while the sandbox is
-    // off by default).
-    if (Preferences::GetBool("security.sandbox.mac.flash.enabled") ||
-        PR_GetEnv("MOZ_SANDBOX_MAC_FLASH_FORCE")) {
-      mSandboxLevel = 1;
+    // For older OS versions, use a different Flash sandbox level.
+    // The following pref indicates which OS versions this applies to.
+    int legacyOSMinorMax = Preferences::GetInt(
+        "dom.ipc.plugins.sandbox-level.flash.max-legacy-os-minor", 10);
 
+    const char* levelPref = "dom.ipc.plugins.sandbox-level.flash";
+
+    if (PR_GetEnv("MOZ_DISABLE_NPAPI_SANDBOX")) {
+      // Flash sandbox disabled
+      mSandboxLevel = 0;
+    } else if (nsCocoaFeatures::OSXVersionMajor() == 10 &&
+               nsCocoaFeatures::OSXVersionMinor() <= legacyOSMinorMax) {
+      // We're on an older OS version. Use the minimum of both
+      // prefs so that setting the standard level pref to 0 is sufficient
+      // to disable the sandbox regardless of OS version.
+      const char* legacyLevelPref =
+          "dom.ipc.plugins.sandbox-level.flash.legacy";
+      int32_t compatLevel = Preferences::GetInt(legacyLevelPref, 0);
+      int32_t level = Preferences::GetInt(levelPref, 0);
+      mSandboxLevel = std::min(compatLevel, level);
+    } else {
+      // Use standard level
+      mSandboxLevel = Preferences::GetInt(levelPref, 0);
+    }
+
+    mSandboxLevel = ClampFlashSandboxLevel(mSandboxLevel);
+    if (mSandboxLevel > 0) {
       // Enable sandbox logging in the plugin process if it has
       // been turned on via prefs or environment variables.
       if (Preferences::GetBool("security.sandbox.logging.enabled") ||
@@ -396,8 +397,14 @@ void nsPluginTag::InitSandboxLevel() {
         mIsSandboxLoggingEnabled = true;
       }
     }
+  } else {
+    // This isn't the flash plugin. At present, Flash is the only
+    // supported plugin on macOS. Other test plugins are used during
+    // testing and they will use the default plugin sandbox level.
+    mSandboxLevel =
+        Preferences::GetInt("dom.ipc.plugins.sandbox-level.default");
   }
-#endif
+#endif /* defined(XP_MACOSX) && defined(MOZ_SANDBOX) */
 }
 
 #if !defined(XP_WIN) && !defined(XP_MACOSX)
@@ -565,18 +572,21 @@ void nsPluginTag::SetPluginState(PluginState state) {
 }
 
 NS_IMETHODIMP
-nsPluginTag::GetMimeTypes(uint32_t* aCount, char16_t*** aResults) {
-  return CStringArrayToXPCArray(mMimeTypes, aCount, aResults);
+nsPluginTag::GetMimeTypes(nsTArray<nsCString>& aResults) {
+  aResults = mMimeTypes;
+  return NS_OK;
 }
 
 NS_IMETHODIMP
-nsPluginTag::GetMimeDescriptions(uint32_t* aCount, char16_t*** aResults) {
-  return CStringArrayToXPCArray(mMimeDescriptions, aCount, aResults);
+nsPluginTag::GetMimeDescriptions(nsTArray<nsCString>& aResults) {
+  aResults = mMimeDescriptions;
+  return NS_OK;
 }
 
 NS_IMETHODIMP
-nsPluginTag::GetExtensions(uint32_t* aCount, char16_t*** aResults) {
-  return CStringArrayToXPCArray(mExtensions, aCount, aResults);
+nsPluginTag::GetExtensions(nsTArray<nsCString>& aResults) {
+  aResults = mExtensions;
+  return NS_OK;
 }
 
 bool nsPluginTag::HasSameNameAndMimes(const nsPluginTag* aPluginTag) const {
@@ -838,18 +848,21 @@ nsFakePluginTag::SetEnabledState(uint32_t aEnabledState) {
 }
 
 NS_IMETHODIMP
-nsFakePluginTag::GetMimeTypes(uint32_t* aCount, char16_t*** aResults) {
-  return CStringArrayToXPCArray(mMimeTypes, aCount, aResults);
+nsFakePluginTag::GetMimeTypes(nsTArray<nsCString>& aResults) {
+  aResults = mMimeTypes;
+  return NS_OK;
 }
 
 NS_IMETHODIMP
-nsFakePluginTag::GetMimeDescriptions(uint32_t* aCount, char16_t*** aResults) {
-  return CStringArrayToXPCArray(mMimeDescriptions, aCount, aResults);
+nsFakePluginTag::GetMimeDescriptions(nsTArray<nsCString>& aResults) {
+  aResults = mMimeDescriptions;
+  return NS_OK;
 }
 
 NS_IMETHODIMP
-nsFakePluginTag::GetExtensions(uint32_t* aCount, char16_t*** aResults) {
-  return CStringArrayToXPCArray(mExtensions, aCount, aResults);
+nsFakePluginTag::GetExtensions(nsTArray<nsCString>& aResults) {
+  aResults = mExtensions;
+  return NS_OK;
 }
 
 NS_IMETHODIMP

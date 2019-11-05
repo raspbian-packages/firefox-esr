@@ -10,411 +10,374 @@
 // * fill: path
 // * endDelay: path
 
-const TEST_CASES = [
+const TEST_DATA = [
   {
-    targetClassName: "cssanimation-normal",
+    targetClass: "cssanimation-normal",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 25000, y: 40.851 },
-        { x: 50000, y: 80.24},
-        { x: 75000, y: 96.05 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
-    ],
-  },
-  {
-    targetClassName: "cssanimation-linear",
-    expectedIterationPathList: [
-      [
-        { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
-    ],
-  },
-  {
-    targetClassName: "delay-positive",
-    expectedDelayPath: [
-      { x: 0, y: 0 },
-      { x: 50000, y: 0 },
-    ],
-    expectedIterationPathList: [
-      [
-        { x: 50000, y: 0 },
-        { x: 75000, y: 25 },
-        { x: 100000, y: 50 },
-        { x: 125000, y: 75 },
-        { x: 150000, y: 100 },
-        { x: 150000, y: 0 },
-      ]
-    ],
-  },
-  {
-    targetClassName: "delay-negative",
-    expectedIterationPathList: [
-      [
-        { x: 0, y: 0 },
-        { x: 0, y: 50 },
-        { x: 25000, y: 75 },
-        { x: 50000, y: 100 },
-        { x: 50000, y: 0 },
-      ]
-    ],
-  },
-  {
-    targetClassName: "easing-step",
-    expectedIterationPathList: [
-      [
-        { x: 0, y: 0 },
-        { x: 49999, y: 0 },
-        { x: 50000, y: 50 },
-        { x: 99999, y: 50 },
-        { x: 100000, y: 0 },
-      ]
-    ],
-  },
-  {
-    targetClassName: "enddelay-positive",
-    expectedIterationPathList: [
-      [
-        { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
-    ],
-    expectedEndDelayPath: [
-      { x: 100000, y: 0 },
-      { x: 150000, y: 0 },
-    ],
-  },
-  {
-    targetClassName: "enddelay-negative",
-    expectedIterationPathList: [
-      [
-        { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 50000, y: 0 },
-      ]
-    ],
-  },
-  {
-    targetClassName: "enddelay-with-fill-forwards",
-    expectedIterationPathList: [
-      [
-        { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
-    ],
-    expectedEndDelayPath: [
-      { x: 100000, y: 0 },
-      { x: 100000, y: 100 },
-      { x: 150000, y: 100 },
-      { x: 150000, y: 0 },
-    ],
-    expectedForwardsPath: [
-      { x: 150000, y: 0 },
-      { x: 150000, y: 100 },
-      { x: 200000, y: 100 },
-      { x: 200000, y: 0 },
-    ],
-  },
-  {
-    targetClassName: "enddelay-with-iterations-infinity",
-    expectedIterationPathList: [
-      [
-        { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
+        { x: 250000, y: 40.851 },
+        { x: 500000, y: 80.24 },
+        { x: 750000, y: 96.05 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
       ],
+    ],
+  },
+  {
+    targetClass: "cssanimation-linear",
+    expectedIterationPathList: [
       [
-        { x: 100000, y: 0 },
-        { x: 125000, y: 25 },
-        { x: 150000, y: 50 },
-        { x: 175000, y: 75 },
-        { x: 200000, y: 100 },
-        { x: 200000, y: 0 },
-      ]
+        { x: 0, y: 0 },
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
+    ],
+  },
+  {
+    targetClass: "delay-positive",
+    expectedDelayPath: [{ x: 0, y: 0 }, { x: 500000, y: 0 }],
+    expectedIterationPathList: [
+      [
+        { x: 500000, y: 0 },
+        { x: 750000, y: 25 },
+        { x: 1000000, y: 50 },
+        { x: 1250000, y: 75 },
+        { x: 1500000, y: 100 },
+        { x: 1500000, y: 0 },
+      ],
+    ],
+  },
+  {
+    targetClass: "easing-step",
+    expectedIterationPathList: [
+      [
+        { x: 0, y: 0 },
+        { x: 499999, y: 0 },
+        { x: 500000, y: 50 },
+        { x: 999999, y: 50 },
+        { x: 1000000, y: 0 },
+      ],
+    ],
+  },
+  {
+    targetClass: "enddelay-positive",
+    expectedIterationPathList: [
+      [
+        { x: 0, y: 0 },
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
+    ],
+    expectedEndDelayPath: [{ x: 1000000, y: 0 }, { x: 1500000, y: 0 }],
+  },
+  {
+    targetClass: "enddelay-negative",
+    expectedIterationPathList: [
+      [
+        { x: 0, y: 0 },
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 500000, y: 0 },
+      ],
+    ],
+  },
+  {
+    targetClass: "enddelay-with-fill-forwards",
+    expectedIterationPathList: [
+      [
+        { x: 0, y: 0 },
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
+    ],
+    expectedEndDelayPath: [
+      { x: 1000000, y: 0 },
+      { x: 1000000, y: 100 },
+      { x: 1500000, y: 100 },
+      { x: 1500000, y: 0 },
+    ],
+    expectedForwardsPath: [{ x: 1500000, y: 0 }, { x: 1500000, y: 100 }],
+  },
+  {
+    targetClass: "enddelay-with-iterations-infinity",
+    expectedIterationPathList: [
+      [
+        { x: 0, y: 0 },
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
+      [{ x: 1000000, y: 0 }, { x: 1250000, y: 25 }, { x: 1500000, y: 50 }],
     ],
     isInfinity: true,
   },
   {
-    targetClassName: "direction-alternate-with-iterations-infinity",
+    targetClass: "direction-alternate-with-iterations-infinity",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
       ],
       [
-        { x: 100000, y: 0 },
-        { x: 100000, y: 100 },
-        { x: 125000, y: 75 },
-        { x: 150000, y: 50 },
-        { x: 175000, y: 25 },
-        { x: 200000, y: 0 },
-      ]
+        { x: 1000000, y: 0 },
+        { x: 1000000, y: 100 },
+        { x: 1250000, y: 75 },
+        { x: 1500000, y: 50 },
+      ],
     ],
     isInfinity: true,
   },
   {
-    targetClassName: "direction-alternate-reverse-with-iterations-infinity",
+    targetClass: "direction-alternate-reverse-with-iterations-infinity",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
         { x: 0, y: 100 },
-        { x: 25000, y: 75 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 25 },
-        { x: 100000, y: 0 },
+        { x: 250000, y: 75 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 25 },
+        { x: 1000000, y: 0 },
       ],
-      [
-        { x: 100000, y: 0 },
-        { x: 125000, y: 25 },
-        { x: 150000, y: 50 },
-        { x: 175000, y: 75 },
-        { x: 200000, y: 100 },
-        { x: 200000, y: 0 },
-      ]
+      [{ x: 1000000, y: 0 }, { x: 1250000, y: 25 }, { x: 1500000, y: 50 }],
     ],
     isInfinity: true,
   },
   {
-    targetClassName: "direction-reverse-with-iterations-infinity",
+    targetClass: "direction-reverse-with-iterations-infinity",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
         { x: 0, y: 100 },
-        { x: 25000, y: 75 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 25 },
-        { x: 100000, y: 0 },
+        { x: 250000, y: 75 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 25 },
+        { x: 1000000, y: 0 },
       ],
       [
-        { x: 100000, y: 0 },
-        { x: 100000, y: 100 },
-        { x: 125000, y: 75 },
-        { x: 150000, y: 50 },
-        { x: 175000, y: 25 },
-        { x: 200000, y: 0 },
-      ]
+        { x: 1000000, y: 0 },
+        { x: 1000000, y: 100 },
+        { x: 1250000, y: 75 },
+        { x: 1500000, y: 50 },
+      ],
     ],
     isInfinity: true,
   },
   {
-    targetClassName: "fill-backwards",
+    targetClass: "fill-backwards",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
     ],
   },
   {
-    targetClassName: "fill-backwards-with-delay-iterationstart",
+    targetClass: "fill-backwards-with-delay-iterationstart",
     expectedDelayPath: [
       { x: 0, y: 0 },
       { x: 0, y: 50 },
-      { x: 50000, y: 50 },
-      { x: 50000, y: 0 },
+      { x: 500000, y: 50 },
+      { x: 500000, y: 0 },
     ],
     expectedIterationPathList: [
       [
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
       ],
       [
-        { x: 100000, y: 0 },
-        { x: 125000, y: 25 },
-        { x: 150000, y: 50 },
-        { x: 150000, y: 0 },
-      ]
+        { x: 1000000, y: 0 },
+        { x: 1250000, y: 25 },
+        { x: 1500000, y: 50 },
+        { x: 1500000, y: 0 },
+      ],
     ],
   },
   {
-    targetClassName: "fill-both",
+    targetClass: "fill-both",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
     ],
     expectedForwardsPath: [
-      { x: 100000, y: 0 },
-      { x: 100000, y: 100 },
-      { x: 200000, y: 100 },
-      { x: 200000, y: 0 },
+      { x: 1000000, y: 0 },
+      { x: 1000000, y: 100 },
+      { x: 1500000, y: 100 },
+      { x: 1500000, y: 0 },
     ],
   },
   {
-    targetClassName: "fill-both-width-delay-iterationstart",
+    targetClass: "fill-both-width-delay-iterationstart",
     expectedDelayPath: [
       { x: 0, y: 0 },
       { x: 0, y: 50 },
-      { x: 50000, y: 50 },
-      { x: 50000, y: 0 },
+      { x: 500000, y: 50 },
+      { x: 500000, y: 0 },
     ],
     expectedIterationPathList: [
       [
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
       ],
       [
-        { x: 100000, y: 0 },
-        { x: 125000, y: 25 },
-        { x: 150000, y: 50 },
-        { x: 150000, y: 0 },
-      ]
+        { x: 1000000, y: 0 },
+        { x: 1250000, y: 25 },
+        { x: 1500000, y: 50 },
+        { x: 1500000, y: 0 },
+      ],
     ],
-    expectedForwardsPath: [
-      { x: 150000, y: 0 },
-      { x: 150000, y: 50 },
-    ],
+    expectedForwardsPath: [{ x: 1500000, y: 0 }, { x: 1500000, y: 50 }],
   },
   {
-    targetClassName: "fill-forwards",
+    targetClass: "fill-forwards",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
     ],
     expectedForwardsPath: [
-      { x: 100000, y: 0 },
-      { x: 100000, y: 100 },
-      { x: 200000, y: 100 },
-      { x: 200000, y: 0 },
+      { x: 1000000, y: 0 },
+      { x: 1000000, y: 100 },
+      { x: 1500000, y: 100 },
+      { x: 1500000, y: 0 },
     ],
   },
   {
-    targetClassName: "iterationstart",
+    targetClass: "iterationstart",
     expectedIterationPathList: [
       [
         { x: 0, y: 50 },
-        { x: 25000, y: 75 },
-        { x: 50000, y: 100 },
-        { x: 50000, y: 0 },
+        { x: 250000, y: 75 },
+        { x: 500000, y: 100 },
+        { x: 500000, y: 0 },
       ],
       [
-        { x: 50000, y: 0 },
-        { x: 75000, y: 25 },
-        { x: 100000, y: 50 },
-        { x: 100000, y: 0 },
-      ]
+        { x: 500000, y: 0 },
+        { x: 750000, y: 25 },
+        { x: 1000000, y: 50 },
+        { x: 1000000, y: 0 },
+      ],
     ],
   },
   {
-    targetClassName: "no-compositor",
+    targetClass: "no-compositor",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 75000, y: 75 },
-        { x: 100000, y: 100 },
-        { x: 100000, y: 0 },
-      ]
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 750000, y: 75 },
+        { x: 1000000, y: 100 },
+        { x: 1000000, y: 0 },
+      ],
     ],
   },
   {
-    targetClassName: "keyframes-easing-step",
+    targetClass: "keyframes-easing-step",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 49999, y: 0 },
-        { x: 50000, y: 50 },
-        { x: 99999, y: 50 },
-        { x: 100000, y: 0 },
-      ]
+        { x: 499999, y: 0 },
+        { x: 500000, y: 50 },
+        { x: 999999, y: 50 },
+        { x: 1000000, y: 0 },
+      ],
     ],
   },
   {
-    targetClassName: "narrow-keyframes",
+    targetClass: "narrow-keyframes",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 10000, y: 10 },
-        { x: 11000, y: 10 },
-        { x: 11500, y: 10 },
-        { x: 12999, y: 10 },
-        { x: 13000, y: 13 },
-        { x: 13500, y: 13.5 },
-      ]
+        { x: 100000, y: 10 },
+        { x: 110000, y: 10 },
+        { x: 115000, y: 10 },
+        { x: 129999, y: 10 },
+        { x: 130000, y: 13 },
+        { x: 135000, y: 13.5 },
+      ],
     ],
   },
   {
-    targetClassName: "duplicate-offsets",
+    targetClass: "duplicate-offsets",
     expectedIterationPathList: [
       [
         { x: 0, y: 0 },
-        { x: 25000, y: 25 },
-        { x: 50000, y: 50 },
-        { x: 99999, y: 50 },
-      ]
+        { x: 250000, y: 25 },
+        { x: 500000, y: 50 },
+        { x: 999999, y: 50 },
+      ],
     ],
   },
 ];
 
-add_task(async function () {
+add_task(async function() {
   await addTab(URL_ROOT + "doc_multi_timings.html");
-
+  await removeAnimatedElementsExcept(TEST_DATA.map(t => `.${t.targetClass}`));
   const { panel } = await openAnimationInspector();
 
-  for (const testCase of TEST_CASES) {
+  for (const testData of TEST_DATA) {
     const {
       expectedDelayPath,
       expectedEndDelayPath,
       expectedForwardsPath,
       expectedIterationPathList,
       isInfinity,
-      targetClassName,
-    } = testCase;
+      targetClass,
+    } = testData;
 
-    const animationItemEl =
-      findAnimationItemElementsByTargetClassName(panel, targetClassName);
+    const animationItemEl = findAnimationItemElementsByTargetSelector(
+      panel,
+      `.${targetClass}`
+    );
 
-    info(`Checking computed timing path existance for ${ targetClassName }`);
-    const computedTimingPathEl =
-      animationItemEl.querySelector(".animation-computed-timing-path");
-    ok(computedTimingPathEl,
-       "The computed timing path element should be in each animation item element");
+    info(`Checking computed timing path existance for ${targetClass}`);
+    const computedTimingPathEl = animationItemEl.querySelector(
+      ".animation-computed-timing-path"
+    );
+    ok(
+      computedTimingPathEl,
+      "The computed timing path element should be in each animation item element"
+    );
 
-    info(`Checking delay path for ${ targetClassName }`);
-    const delayPathEl = computedTimingPathEl.querySelector(".animation-delay-path");
+    info(`Checking delay path for ${targetClass}`);
+    const delayPathEl = computedTimingPathEl.querySelector(
+      ".animation-delay-path"
+    );
 
     if (expectedDelayPath) {
       ok(delayPathEl, "delay path should be existance");
@@ -423,27 +386,37 @@ add_task(async function () {
       ok(!delayPathEl, "delay path should not be existance");
     }
 
-    info(`Checking iteration path list for ${ targetClassName }`);
-    const iterationPathEls =
-      computedTimingPathEl.querySelectorAll(".animation-iteration-path");
-    is(iterationPathEls.length, expectedIterationPathList.length,
-       `Number of iteration path should be ${ expectedIterationPathList.length }`);
+    info(`Checking iteration path list for ${targetClass}`);
+    const iterationPathEls = computedTimingPathEl.querySelectorAll(
+      ".animation-iteration-path"
+    );
+    is(
+      iterationPathEls.length,
+      expectedIterationPathList.length,
+      `Number of iteration path should be ${expectedIterationPathList.length}`
+    );
 
     for (const [j, iterationPathEl] of iterationPathEls.entries()) {
       assertPathSegments(iterationPathEl, true, expectedIterationPathList[j]);
 
-      info(`Checking infinity ${ targetClassName }`);
+      info(`Checking infinity ${targetClass}`);
       if (isInfinity && j >= 1) {
-        ok(iterationPathEl.classList.contains("infinity"),
-           "iteration path should have 'infinity' class");
+        ok(
+          iterationPathEl.classList.contains("infinity"),
+          "iteration path should have 'infinity' class"
+        );
       } else {
-        ok(!iterationPathEl.classList.contains("infinity"),
-           "iteration path should not have 'infinity' class");
+        ok(
+          !iterationPathEl.classList.contains("infinity"),
+          "iteration path should not have 'infinity' class"
+        );
       }
     }
 
-    info(`Checking endDelay path for ${ targetClassName }`);
-    const endDelayPathEl = computedTimingPathEl.querySelector(".animation-enddelay-path");
+    info(`Checking endDelay path for ${targetClass}`);
+    const endDelayPathEl = computedTimingPathEl.querySelector(
+      ".animation-enddelay-path"
+    );
 
     if (expectedEndDelayPath) {
       ok(endDelayPathEl, "endDelay path should be existance");
@@ -452,9 +425,10 @@ add_task(async function () {
       ok(!endDelayPathEl, "endDelay path should not be existance");
     }
 
-    info(`Checking forwards fill path for ${ targetClassName }`);
-    const forwardsPathEl =
-      computedTimingPathEl.querySelector(".animation-fill-forwards-path");
+    info(`Checking forwards fill path for ${targetClass}`);
+    const forwardsPathEl = computedTimingPathEl.querySelector(
+      ".animation-fill-forwards-path"
+    );
 
     if (expectedForwardsPath) {
       ok(forwardsPathEl, "forwards path should be existance");

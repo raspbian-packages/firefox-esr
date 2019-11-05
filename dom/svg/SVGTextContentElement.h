@@ -8,9 +8,9 @@
 #define mozilla_dom_SVGTextContentElement_h
 
 #include "mozilla/dom/SVGGraphicsElement.h"
-#include "mozilla/dom/SVGAnimatedEnumeration.h"
-#include "nsSVGEnum.h"
-#include "nsSVGLength2.h"
+#include "DOMSVGAnimatedEnumeration.h"
+#include "SVGAnimatedEnumeration.h"
+#include "SVGAnimatedLength.h"
 
 class SVGTextFrame;
 
@@ -30,8 +30,8 @@ class SVGTextContentElement : public SVGTextContentElementBase {
   using FragmentOrElement::TextLength;
 
   // WebIDL
-  already_AddRefed<SVGAnimatedLength> TextLength();
-  already_AddRefed<SVGAnimatedEnumeration> LengthAdjust();
+  already_AddRefed<DOMSVGAnimatedLength> TextLength();
+  already_AddRefed<DOMSVGAnimatedEnumeration> LengthAdjust();
   MOZ_CAN_RUN_SCRIPT int32_t GetNumberOfChars();
   MOZ_CAN_RUN_SCRIPT float GetComputedTextLength();
   MOZ_CAN_RUN_SCRIPT
@@ -51,8 +51,8 @@ class SVGTextContentElement : public SVGTextContentElementBase {
 
  protected:
   explicit SVGTextContentElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : SVGTextContentElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : SVGTextContentElementBase(std::move(aNodeInfo)) {}
 
   MOZ_CAN_RUN_SCRIPT SVGTextFrame* GetSVGTextFrame();
   MOZ_CAN_RUN_SCRIPT SVGTextFrame* GetSVGTextFrameForNonLayoutDependentQuery();
@@ -60,12 +60,12 @@ class SVGTextContentElement : public SVGTextContentElementBase {
   GetNonLayoutDependentNumberOfChars();
 
   enum { LENGTHADJUST };
-  virtual nsSVGEnum* EnumAttributes() = 0;
-  static nsSVGEnumMapping sLengthAdjustMap[];
+  virtual SVGAnimatedEnumeration* EnumAttributes() = 0;
+  static SVGEnumMapping sLengthAdjustMap[];
   static EnumInfo sEnumInfo[1];
 
   enum { TEXTLENGTH };
-  virtual nsSVGLength2* LengthAttributes() = 0;
+  virtual SVGAnimatedLength* LengthAttributes() = 0;
   static LengthInfo sLengthInfo[1];
 };
 

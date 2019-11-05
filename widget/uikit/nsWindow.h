@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -27,10 +27,9 @@ class nsWindow final : public nsBaseWidget {
   // nsIWidget
   //
 
-  virtual MOZ_MUST_USE nsresult
-  Create(nsIWidget* aParent, nsNativeWidget aNativeParent,
-         const LayoutDeviceIntRect& aRect,
-         nsWidgetInitData* aInitData = nullptr) override;
+  virtual MOZ_MUST_USE nsresult Create(nsIWidget* aParent, nsNativeWidget aNativeParent,
+                                       const LayoutDeviceIntRect& aRect,
+                                       nsWidgetInitData* aInitData = nullptr) override;
   virtual void Destroy() override;
   virtual void Show(bool aState) override;
   virtual void Enable(bool aState) override {}
@@ -46,8 +45,7 @@ class nsWindow final : public nsBaseWidget {
   virtual void SetSizeMode(nsSizeMode aMode) override;
   void EnteredFullScreen(bool aFullScreen);
   virtual void Resize(double aWidth, double aHeight, bool aRepaint) override;
-  virtual void Resize(double aX, double aY, double aWidth, double aHeight,
-                      bool aRepaint) override;
+  virtual void Resize(double aX, double aY, double aWidth, double aHeight, bool aRepaint) override;
   virtual LayoutDeviceIntRect GetScreenBounds() override;
   void ReportMoveEvent();
   void ReportSizeEvent();
@@ -59,18 +57,14 @@ class nsWindow final : public nsBaseWidget {
     // XXX: terrible
     return 326.0f;
   }
-  virtual double GetDefaultScaleInternal() override {
-    return BackingScaleFactor();
-  }
+  virtual double GetDefaultScaleInternal() override { return BackingScaleFactor(); }
   virtual int32_t RoundsWidgetCoordinatesTo() override;
 
   virtual nsresult SetTitle(const nsAString& aTitle) override { return NS_OK; }
 
   virtual void Invalidate(const LayoutDeviceIntRect& aRect) override;
-  virtual nsresult ConfigureChildren(
-      const nsTArray<Configuration>& aConfigurations) override;
-  virtual nsresult DispatchEvent(mozilla::WidgetGUIEvent* aEvent,
-                                 nsEventStatus& aStatus) override;
+  virtual nsresult ConfigureChildren(const nsTArray<Configuration>& aConfigurations) override;
+  virtual nsresult DispatchEvent(mozilla::WidgetGUIEvent* aEvent, nsEventStatus& aStatus) override;
 
   void WillPaintWindow();
   bool PaintWindow(LayoutDeviceIntRegion aRegion);
@@ -79,8 +73,7 @@ class nsWindow final : public nsBaseWidget {
 
   // virtual nsresult
   // NotifyIME(const IMENotification& aIMENotification) override;
-  virtual void SetInputContext(const InputContext& aContext,
-                               const InputContextAction& aAction);
+  virtual void SetInputContext(const InputContext& aContext, const InputContextAction& aAction);
   virtual InputContext GetInputContext();
   /*
   virtual bool ExecuteNativeKeyBinding(

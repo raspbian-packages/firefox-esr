@@ -5,6 +5,7 @@
 
 #include "DecoderFactory.h"
 
+#include "gfxPrefs.h"
 #include "nsMimeTypes.h"
 #include "mozilla/RefPtr.h"
 
@@ -19,6 +20,7 @@
 #include "nsBMPDecoder.h"
 #include "nsICODecoder.h"
 #include "nsIconDecoder.h"
+#include "nsWebPDecoder.h"
 
 namespace mozilla {
 
@@ -26,7 +28,8 @@ using namespace gfx;
 
 namespace image {
 
-/* static */ DecoderType DecoderFactory::GetDecoderType(const char* aMimeType) {
+/* static */
+DecoderType DecoderFactory::GetDecoderType(const char* aMimeType) {
   // By default we don't know.
   DecoderType type = DecoderType::UNKNOWN;
 
@@ -56,6 +59,10 @@ namespace image {
   } else if (!strcmp(aMimeType, IMAGE_BMP_MS)) {
     type = DecoderType::BMP;
 
+    // BMP_CLIPBOARD
+  } else if (!strcmp(aMimeType, IMAGE_BMP_MS_CLIPBOARD)) {
+    type = DecoderType::BMP_CLIPBOARD;
+
     // ICO
   } else if (!strcmp(aMimeType, IMAGE_ICO)) {
     type = DecoderType::ICO;
@@ -65,13 +72,19 @@ namespace image {
     // Icon
   } else if (!strcmp(aMimeType, IMAGE_ICON_MS)) {
     type = DecoderType::ICON;
+
+    // WebP
+  } else if (!strcmp(aMimeType, IMAGE_WEBP) && gfxPrefs::ImageWebPEnabled()) {
+    type = DecoderType::WEBP;
   }
 
   return type;
 }
 
-/* static */ already_AddRefed<Decoder> DecoderFactory::GetDecoder(
-    DecoderType aType, RasterImage* aImage, bool aIsRedecode) {
+/* static */
+already_AddRefed<Decoder> DecoderFactory::GetDecoder(DecoderType aType,
+                                                     RasterImage* aImage,
+                                                     bool aIsRedecode) {
   RefPtr<Decoder> decoder;
 
   switch (aType) {
@@ -90,11 +103,17 @@ namespace image {
     case DecoderType::BMP:
       decoder = new nsBMPDecoder(aImage);
       break;
+    case DecoderType::BMP_CLIPBOARD:
+      decoder = new nsBMPDecoder(aImage, /* aForClipboard */ true);
+      break;
     case DecoderType::ICO:
       decoder = new nsICODecoder(aImage);
       break;
     case DecoderType::ICON:
       decoder = new nsIconDecoder(aImage);
+      break;
+    case DecoderType::WEBP:
+      decoder = new nsWebPDecoder(aImage);
       break;
     default:
       MOZ_ASSERT_UNREACHABLE("Unknown decoder type");
@@ -103,7 +122,8 @@ namespace image {
   return decoder.forget();
 }
 
-/* static */ nsresult DecoderFactory::CreateDecoder(
+/* static */
+nsresult DecoderFactory::CreateDecoder(
     DecoderType aType, NotNull<RasterImage*> aImage,
     NotNull<SourceBuffer*> aSourceBuffer, const IntSize& aIntrinsicSize,
     const IntSize& aOutputSize, DecoderFlags aDecoderFlags,
@@ -157,7 +177,8 @@ namespace image {
   return NS_OK;
 }
 
-/* static */ nsresult DecoderFactory::CreateAnimationDecoder(
+/* static */
+nsresult DecoderFactory::CreateAnimationDecoder(
     DecoderType aType, NotNull<RasterImage*> aImage,
     NotNull<SourceBuffer*> aSourceBuffer, const IntSize& aIntrinsicSize,
     DecoderFlags aDecoderFlags, SurfaceFlags aSurfaceFlags,
@@ -166,7 +187,8 @@ namespace image {
     return NS_ERROR_INVALID_ARG;
   }
 
-  MOZ_ASSERT(aType == DecoderType::GIF || aType == DecoderType::PNG,
+  MOZ_ASSERT(aType == DecoderType::GIF || aType == DecoderType::PNG ||
+                 aType == DecoderType::WEBP,
              "Calling CreateAnimationDecoder for non-animating DecoderType");
 
   // Create an anonymous decoder. Interaction with the SurfaceCache and the
@@ -210,7 +232,8 @@ namespace image {
   return NS_OK;
 }
 
-/* static */ already_AddRefed<Decoder> DecoderFactory::CloneAnimationDecoder(
+/* static */
+already_AddRefed<Decoder> DecoderFactory::CloneAnimationDecoder(
     Decoder* aDecoder) {
   MOZ_ASSERT(aDecoder);
 
@@ -219,7 +242,8 @@ namespace image {
   // get scheduled yet, or it has only decoded the first frame and has yet to
   // rediscover it is animated).
   DecoderType type = aDecoder->GetType();
-  MOZ_ASSERT(type == DecoderType::GIF || type == DecoderType::PNG,
+  MOZ_ASSERT(type == DecoderType::GIF || type == DecoderType::PNG ||
+                 type == DecoderType::WEBP,
              "Calling CloneAnimationDecoder for non-animating DecoderType");
 
   RefPtr<Decoder> decoder = GetDecoder(type, nullptr, /* aIsRedecode = */ true);
@@ -230,6 +254,7 @@ namespace image {
   decoder->SetIterator(aDecoder->GetSourceBuffer()->Iterator());
   decoder->SetDecoderFlags(aDecoder->GetDecoderFlags());
   decoder->SetSurfaceFlags(aDecoder->GetSurfaceFlags());
+  decoder->SetFrameRecycler(aDecoder->GetFrameRecycler());
 
   if (NS_FAILED(decoder->Init())) {
     return nullptr;
@@ -238,10 +263,10 @@ namespace image {
   return decoder.forget();
 }
 
-/* static */ already_AddRefed<IDecodingTask>
-DecoderFactory::CreateMetadataDecoder(DecoderType aType,
-                                      NotNull<RasterImage*> aImage,
-                                      NotNull<SourceBuffer*> aSourceBuffer) {
+/* static */
+already_AddRefed<IDecodingTask> DecoderFactory::CreateMetadataDecoder(
+    DecoderType aType, NotNull<RasterImage*> aImage,
+    NotNull<SourceBuffer*> aSourceBuffer) {
   if (aType == DecoderType::UNKNOWN) {
     return nullptr;
   }
@@ -262,14 +287,12 @@ DecoderFactory::CreateMetadataDecoder(DecoderType aType,
   return task.forget();
 }
 
-/* static */ already_AddRefed<Decoder>
-DecoderFactory::CreateDecoderForICOResource(DecoderType aType,
-                                            SourceBufferIterator&& aIterator,
-                                            NotNull<nsICODecoder*> aICODecoder,
-                                            bool aIsMetadataDecode,
-                                            const Maybe<IntSize>& aExpectedSize,
-                                            const Maybe<uint32_t>& aDataOffset
-                                            /* = Nothing() */) {
+/* static */
+already_AddRefed<Decoder> DecoderFactory::CreateDecoderForICOResource(
+    DecoderType aType, SourceBufferIterator&& aIterator,
+    NotNull<nsICODecoder*> aICODecoder, bool aIsMetadataDecode,
+    const Maybe<IntSize>& aExpectedSize, const Maybe<uint32_t>& aDataOffset
+    /* = Nothing() */) {
   // Create the decoder.
   RefPtr<Decoder> decoder;
   switch (aType) {
@@ -293,7 +316,7 @@ DecoderFactory::CreateDecoderForICOResource(DecoderType aType,
 
   // Initialize the decoder, copying settings from @aICODecoder.
   decoder->SetMetadataDecode(aIsMetadataDecode);
-  decoder->SetIterator(Forward<SourceBufferIterator>(aIterator));
+  decoder->SetIterator(std::forward<SourceBufferIterator>(aIterator));
   if (!aIsMetadataDecode) {
     decoder->SetOutputSize(aICODecoder->OutputSize());
   }
@@ -311,9 +334,11 @@ DecoderFactory::CreateDecoderForICOResource(DecoderType aType,
   return decoder.forget();
 }
 
-/* static */ already_AddRefed<Decoder> DecoderFactory::CreateAnonymousDecoder(
+/* static */
+already_AddRefed<Decoder> DecoderFactory::CreateAnonymousDecoder(
     DecoderType aType, NotNull<SourceBuffer*> aSourceBuffer,
-    const Maybe<IntSize>& aOutputSize, SurfaceFlags aSurfaceFlags) {
+    const Maybe<IntSize>& aOutputSize, DecoderFlags aDecoderFlags,
+    SurfaceFlags aSurfaceFlags) {
   if (aType == DecoderType::UNKNOWN) {
     return nullptr;
   }
@@ -330,14 +355,7 @@ DecoderFactory::CreateDecoderForICOResource(DecoderType aType,
   // or do any other expensive work that might be wasted.
   DecoderFlags decoderFlags = DecoderFlags::IMAGE_IS_TRANSIENT;
 
-  // Without an image, the decoder can't store anything in the SurfaceCache, so
-  // callers will only be able to retrieve the most recent frame via
-  // Decoder::GetCurrentFrame(). That means that anonymous decoders should
-  // always be first-frame-only decoders, because nobody ever wants the *last*
-  // frame.
-  decoderFlags |= DecoderFlags::FIRST_FRAME_ONLY;
-
-  decoder->SetDecoderFlags(decoderFlags);
+  decoder->SetDecoderFlags(aDecoderFlags | decoderFlags);
   decoder->SetSurfaceFlags(aSurfaceFlags);
 
   // Set an output size for downscale-during-decode if requested.
@@ -352,8 +370,8 @@ DecoderFactory::CreateDecoderForICOResource(DecoderType aType,
   return decoder.forget();
 }
 
-/* static */ already_AddRefed<Decoder>
-DecoderFactory::CreateAnonymousMetadataDecoder(
+/* static */
+already_AddRefed<Decoder> DecoderFactory::CreateAnonymousMetadataDecoder(
     DecoderType aType, NotNull<SourceBuffer*> aSourceBuffer) {
   if (aType == DecoderType::UNKNOWN) {
     return nullptr;

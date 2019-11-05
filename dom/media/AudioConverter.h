@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(AudioConverter_h)
-#define AudioConverter_h
+#  define AudioConverter_h
 
-#include "MediaInfo.h"
+#  include "MediaInfo.h"
 
 // Forward declaration
 typedef struct SpeexResamplerState_ SpeexResamplerState;
@@ -52,7 +52,8 @@ class AudioDataBuffer {
   AudioDataBuffer(Value* aBuffer, size_t aLength) : mBuffer(aBuffer, aLength) {}
   explicit AudioDataBuffer(const AudioDataBuffer& aOther)
       : mBuffer(aOther.mBuffer) {}
-  AudioDataBuffer(AudioDataBuffer&& aOther) : mBuffer(Move(aOther.mBuffer)) {}
+  AudioDataBuffer(AudioDataBuffer&& aOther)
+      : mBuffer(std::move(aOther.mBuffer)) {}
   template <AudioConfig::SampleFormat OtherFormat, typename OtherValue>
   explicit AudioDataBuffer(
       const AudioDataBuffer<OtherFormat, OtherValue>& other) {
@@ -79,22 +80,22 @@ class AudioDataBuffer {
                   "Conversion not implemented yet");
   }
   explicit AudioDataBuffer(AlignedByteBuffer&& aBuffer)
-      : mBuffer(Move(aBuffer)) {
+      : mBuffer(std::move(aBuffer)) {
     static_assert(Format == AudioConfig::FORMAT_U8,
                   "Conversion not implemented yet");
   }
   explicit AudioDataBuffer(AlignedShortBuffer&& aBuffer)
-      : mBuffer(Move(aBuffer)) {
+      : mBuffer(std::move(aBuffer)) {
     static_assert(Format == AudioConfig::FORMAT_S16,
                   "Conversion not implemented yet");
   }
   explicit AudioDataBuffer(AlignedFloatBuffer&& aBuffer)
-      : mBuffer(Move(aBuffer)) {
+      : mBuffer(std::move(aBuffer)) {
     static_assert(Format == AudioConfig::FORMAT_FLT,
                   "Conversion not implemented yet");
   }
   AudioDataBuffer& operator=(AudioDataBuffer&& aOther) {
-    mBuffer = Move(aOther.mBuffer);
+    mBuffer = std::move(aOther.mBuffer);
     return *this;
   }
   AudioDataBuffer& operator=(const AudioDataBuffer& aOther) {
@@ -107,7 +108,7 @@ class AudioDataBuffer {
   size_t Size() const { return mBuffer.Size(); }
   AlignedBuffer<Value> Forget() {
     // Correct type -> Just give values as-is.
-    return Move(mBuffer);
+    return std::move(mBuffer);
   }
 
  private:
@@ -131,11 +132,11 @@ class AudioConverter {
       AudioDataBuffer<Format, Value>&& aBuffer) {
     MOZ_DIAGNOSTIC_ASSERT(mIn.Format() == mOut.Format() &&
                           mIn.Format() == Format);
-    AudioDataBuffer<Format, Value> buffer = Move(aBuffer);
+    AudioDataBuffer<Format, Value> buffer = std::move(aBuffer);
     if (CanWorkInPlace()) {
       AlignedBuffer<Value> temp = buffer.Forget();
       Process(temp, temp.Data(), SamplesInToFrames(temp.Length()));
-      return AudioDataBuffer<Format, Value>(Move(temp));
+      return AudioDataBuffer<Format, Value>(std::move(temp));
       ;
     }
     return Process(buffer);
@@ -150,12 +151,12 @@ class AudioConverter {
     size_t frames = SamplesInToFrames(aBuffer.Length());
     AlignedBuffer<Value> temp1;
     if (!temp1.SetLength(FramesOutToSamples(frames))) {
-      return AudioDataBuffer<Format, Value>(Move(temp1));
+      return AudioDataBuffer<Format, Value>(std::move(temp1));
     }
     frames = ProcessInternal(temp1.Data(), aBuffer.Data(), frames);
     if (mIn.Rate() == mOut.Rate()) {
       MOZ_ALWAYS_TRUE(temp1.SetLength(FramesOutToSamples(frames)));
-      return AudioDataBuffer<Format, Value>(Move(temp1));
+      return AudioDataBuffer<Format, Value>(std::move(temp1));
     }
 
     // At this point, temp1 contains the buffer reordered and downmixed.
@@ -167,7 +168,7 @@ class AudioConverter {
       // Allocate another temporary buffer where the upsampling will occur.
       if (!temp2.SetLength(
               FramesOutToSamples(ResampleRecipientFrames(frames)))) {
-        return AudioDataBuffer<Format, Value>(Move(temp2));
+        return AudioDataBuffer<Format, Value>(std::move(temp2));
       }
       outputBuffer = &temp2;
     }
@@ -177,7 +178,7 @@ class AudioConverter {
       frames = ResampleAudio(outputBuffer->Data(), temp1.Data(), frames);
     }
     MOZ_ALWAYS_TRUE(outputBuffer->SetLength(FramesOutToSamples(frames)));
-    return AudioDataBuffer<Format, Value>(Move(*outputBuffer));
+    return AudioDataBuffer<Format, Value>(std::move(*outputBuffer));
   }
 
   // Attempt to convert the AudioDataBuffer in place.
@@ -239,7 +240,10 @@ class AudioConverter {
  private:
   const AudioConfig mIn;
   const AudioConfig mOut;
-  uint8_t mChannelOrderMap[MAX_AUDIO_CHANNELS];
+  // mChannelOrderMap will be empty if we do not know how to proceed with this
+  // channel layout.
+  AutoTArray<uint8_t, AudioConfig::ChannelLayout::MAX_CHANNELS>
+      mChannelOrderMap;
   /**
    * ProcessInternal
    * Parameters:

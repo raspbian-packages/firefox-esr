@@ -7,22 +7,22 @@
 #include "mozilla/dom/SVGAnimateTransformElement.h"
 #include "mozilla/dom/SVGAnimateTransformElementBinding.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(AnimateTransform)
+NS_IMPL_NS_NEW_SVG_ELEMENT(AnimateTransform)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGAnimateTransformElement::WrapNode(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return SVGAnimateTransformElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGAnimateTransformElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGAnimateTransformElement::SVGAnimateTransformElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGAnimationElement(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGAnimationElement(std::move(aNodeInfo)) {}
 
 bool SVGAnimateTransformElement::ParseAttribute(
     int32_t aNamespaceID, nsAtom* aAttribute, const nsAString& aValue,
@@ -45,13 +45,13 @@ bool SVGAnimateTransformElement::ParseAttribute(
 }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGAnimateTransformElement)
 
 //----------------------------------------------------------------------
 
-nsSMILAnimationFunction& SVGAnimateTransformElement::AnimationFunction() {
+SMILAnimationFunction& SVGAnimateTransformElement::AnimationFunction() {
   return mAnimationFunction;
 }
 

@@ -107,7 +107,7 @@ class Cache::FetchHandler final : public PromiseNativeHandler {
                nsTArray<RefPtr<Request>>&& aRequestList, Promise* aPromise)
       : mWorkerHolder(aWorkerHolder),
         mCache(aCache),
-        mRequestList(Move(aRequestList)),
+        mRequestList(std::move(aRequestList)),
         mPromise(aPromise) {
     MOZ_ASSERT_IF(!NS_IsMainThread(), mWorkerHolder);
     MOZ_DIAGNOSTIC_ASSERT(mCache);
@@ -182,7 +182,7 @@ class Cache::FetchHandler final : public PromiseNativeHandler {
         return;
       }
 
-      responseList.AppendElement(Move(response));
+      responseList.AppendElement(std::move(response));
     }
 
     MOZ_DIAGNOSTIC_ASSERT(mRequestList.Length() == responseList.Length());
@@ -194,6 +194,7 @@ class Cache::FetchHandler final : public PromiseNativeHandler {
     // about it, yet (bug 1384006)
     RefPtr<Promise> put =
         mCache->PutAll(aCx, mRequestList, responseList, result);
+    result.WouldReportJSException();
     if (NS_WARN_IF(result.Failed())) {
       // TODO: abort the fetch requests we have running (bug 1157434)
       mPromise->MaybeReject(result);
@@ -291,8 +292,8 @@ already_AddRefed<Promise> Cache::MatchAll(
   CacheQueryParams params;
   ToCacheQueryParams(params, aOptions);
 
-  AutoChildOpArgs args(this, CacheMatchAllArgs(void_t(), params, GetOpenMode()),
-                       1);
+  AutoChildOpArgs args(this,
+                       CacheMatchAllArgs(Nothing(), params, GetOpenMode()), 1);
 
   if (aRequest.WasPassed()) {
     RefPtr<InternalRequest> ir =
@@ -340,8 +341,8 @@ already_AddRefed<Promise> Cache::Add(JSContext* aContext,
     return nullptr;
   }
 
-  requestList.AppendElement(Move(request));
-  return AddAll(global, Move(requestList), aCallerType, aRv);
+  requestList.AppendElement(std::move(request));
+  return AddAll(global, std::move(requestList), aCallerType, aRv);
 }
 
 already_AddRefed<Promise> Cache::AddAll(
@@ -385,10 +386,10 @@ already_AddRefed<Promise> Cache::AddAll(
       return nullptr;
     }
 
-    requestList.AppendElement(Move(request));
+    requestList.AppendElement(std::move(request));
   }
 
-  return AddAll(global, Move(requestList), aCallerType, aRv);
+  return AddAll(global, std::move(requestList), aCallerType, aRv);
 }
 
 already_AddRefed<Promise> Cache::Put(JSContext* aCx,
@@ -467,7 +468,8 @@ already_AddRefed<Promise> Cache::Keys(
   CacheQueryParams params;
   ToCacheQueryParams(params, aOptions);
 
-  AutoChildOpArgs args(this, CacheKeysArgs(void_t(), params, GetOpenMode()), 1);
+  AutoChildOpArgs args(this, CacheKeysArgs(Nothing(), params, GetOpenMode()),
+                       1);
 
   if (aRequest.WasPassed()) {
     RefPtr<InternalRequest> ir =
@@ -489,7 +491,7 @@ nsISupports* Cache::GetParentObject() const { return mGlobal; }
 
 JSObject* Cache::WrapObject(JSContext* aContext,
                             JS::Handle<JSObject*> aGivenProto) {
-  return CacheBinding::Wrap(aContext, this, aGivenProto);
+  return Cache_Binding::Wrap(aContext, this, aGivenProto);
 }
 
 void Cache::DestroyInternal(CacheChild* aActor) {
@@ -566,7 +568,7 @@ already_AddRefed<Promise> Cache::AddAll(
       return nullptr;
     }
 
-    fetchList.AppendElement(Move(fetch));
+    fetchList.AppendElement(std::move(fetch));
   }
 
   RefPtr<Promise> promise = Promise::Create(mGlobal, aRv);
@@ -575,7 +577,7 @@ already_AddRefed<Promise> Cache::AddAll(
   }
 
   RefPtr<FetchHandler> handler = new FetchHandler(
-      mActor->GetWorkerHolder(), this, Move(aRequestList), promise);
+      mActor->GetWorkerHolder(), this, std::move(aRequestList), promise);
 
   RefPtr<Promise> fetchPromise =
       Promise::All(aGlobal.Context(), fetchList, aRv);

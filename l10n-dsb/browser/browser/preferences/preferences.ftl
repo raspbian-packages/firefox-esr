@@ -4,8 +4,8 @@
 
 do-not-track-description = Websedłam signal “Njeslědowaś” pósłaś, až njocośo, až wóne was slěduju
 do-not-track-learn-more = Dalšne informacije
-do-not-track-option-default =
-    .label = Jano, gaž se slědowański šćit wužywa
+do-not-track-option-default-content-blocking-known =
+    .label = Janog gaž w { -brand-short-name } jo blokěrowanje znatych pśeslědowakow  nastajone
 do-not-track-option-always =
     .label = Pśecej
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Nastajenja
            *[other] Nastajenja
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Waša organizacija jo změny někotarych nastajenjow znjemóžnił.
        *[other] Waša organizacija jo změny někotarych nastajenjow znjemóžnił.
     }
+managed-notice = Waš wobglědowak se wót wašeje organizacije zastoj.
 pane-general-title = Powšykne
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Priwatnosć a wěstota
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Konto Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Pomoc { -brand-short-name }
+addons-button-label = Rozšyrjenja a drastwy
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = { -brand-short-name } znowego startowaś
 should-restart-ok = { -brand-short-name } něnto znowego startowaś
 cancel-no-restart-button = Pśetergnuś
 restart-later = Pózdźej znowego startowaś
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Rozšyrjenje <img data-l10n-name="icon"/> { $name } waš startowy bok wóźi.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Rozšyrjenje <img data-l10n-name="icon"/> { $name } waš bok nowego rejtarka wóźi.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, toś to nastajenje wóźi.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, jo wašu standardnu pytnicu nastajiło.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, se kontejnerowe rejtark pomina.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, toś to nastajenje kontrolěrujo.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Rozšěrjenje <img data-l10n-name="icon"/> { $name } wóźi, kak { -brand-short-name } z internetom zwězujo.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Aby rozšěrjenje zmóžnił, pśejźćo k <img data-l10n-name="addons-icon"/> dodankam w <img data-l10n-name="menu-icon"/> meniju.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } njejo waš standardny wobglědowak
 set-as-my-default-browser =
     .label = K standardoju cyniś…
     .accesskey = s
-startup-page = Gaž { -brand-short-name } se startujo
-    .accesskey = G
-startup-user-homepage =
-    .label = Waš startowy bok pokazaś
-startup-blank-page =
-    .label = Prozny bok pokazaś
-startup-prev-session =
-    .label = Waše wokna a rejtarki wót slědnego raza pokazaś
+startup-restore-previous-session =
+    .label = Pjerwjejšne pósejźenje wótnowiś
+    .accesskey = t
+startup-restore-warn-on-quit =
+    .label = Warnowaś, gaž se wobglědowak kóńcy
 disable-extension =
     .label = Rozšyrjenje znjemóžniś
-home-page-header = Startowy bok
 tabs-group-header = Rejtarki
 ctrl-tab-recently-used-order =
     .label = Strg+Tab pśejźo rejtarki pó tuchylu póstajonem pórěźe
@@ -187,6 +214,12 @@ choose-language-description = Wubjeŕśo swóju preferěrowanu rěc za zwobraznj
 choose-button =
     .label = Wubraś…
     .accesskey = u
+choose-browser-language-description = Wubjeŕśo rěcy, kótarež se wužywaju, aby menije, powěsći a powěźeńki z { -brand-short-name } pokazali.
+manage-browser-languages-button =
+    .label = Alternatiwy nastajiś…
+    .accesskey = l
+confirm-browser-language-change-description = Startujśo { -brand-short-name } znowego, aby toś te změny nałožył
+confirm-browser-language-change-button = Nałožyś a znowego startowaś
 translate-web-pages =
     .label = Webwopśimjeśe pśełožowaś
     .accesskey = W
@@ -238,7 +271,6 @@ play-drm-content =
 play-drm-content-learn-more = Dalšne informacije
 update-application-title = Aktualizacije { -brand-short-name }
 update-application-description = Źaržćo { -brand-short-name } aktualny, za nejlěpše wugbaśe, stabilnosć a wěstotu.
-update-application-info = Wersija { $version } <a>Nowe funkcije a změny</a>
 update-application-version = Wersija { $version } <a data-l10n-name="learn-more">Nowe funkcije a změny</a>
 update-history =
     .label = Aktualizacisku historiju pokazaś…
@@ -253,12 +285,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Nigda za aktualizacijami njepytaś (njepśiraźijo se)
     .accesskey = i
+update-application-warning-cross-user-setting = Toś to nastajenje se na wšykne konta Windows a profile { -brand-short-name } nałožujo, kótarež toś tu instalaciju { -brand-short-name } wužywaju.
 update-application-use-service =
     .label = Slězynowu słužbu za instalěrowanje aktualizacijow wužywaś
     .accesskey = S
 update-enable-search-update =
     .label = Pytnice awtomatiski aktualizěrowaś
     .accesskey = k
+update-pref-write-failure-title = Pisańska zmólka
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Nastajenje njedajo se składowaś. Njejo było móžno, do dataje pisaś: { $path }
+update-setting-write-failure-title = Zmólka pśi składowanju aktualizěrowańskich nastajenjow
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } jo starcył na zmólku a njejo toś tu změnu składł. Źiwajśo na to, až se toś to aktualizěrowańske nastajenje pisańske pšawo za slědujucu dataju pomina. Wy abo systemowy administrator móžotej zmólku pórěźiś, gaž wužywarskej kupce połnu kontrolu nad toś teju dataju dajotej.
+    
+    Njedajo se do dataje pisaś: { $path }
+update-in-progress-title = Aktualizacija běžy
+update-in-progress-message = Cośo, až { -brand-short-name } z toś teju aktualizaciju pókšacujo?
+update-in-progress-ok-button = &Zachyśiś
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Dalej
 
 ## General Section - Performance
 
@@ -274,7 +326,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Limit wopśimjeśowego procesa
     .accesskey = L
 performance-limit-content-process-enabled-desc = Wěcej wopśimjeśowych procesow móžo wugbaśe pólěpšowaś, gaž se někotare rejtarki wužywaju, buźo pak teke wěcej składa pśetrjebowaś.
-performance-limit-content-process-disabled-desc = Licba wopśimjeśowych procesow dajo se jano z wěcejprocesowym { -brand-short-name } změniś. <a>Zgóńśo, kak móžośo kontrolěrowaś, lěc wěcejprocesowa funkcija jo zmóžnjona</a>
 performance-limit-content-process-blocked-desc = Licba wopśimjeśowych procesow dajo se jano z wěcejprocesowym { -brand-short-name } změniś. <a data-l10n-name="learn-more">Zgóńśo, kak móžośo kontrolěrowaś, lěc wěcejprocesowa funkcija jo zmóžnjona</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -299,10 +350,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Pśi pisanju tekst pytaś
     .accesskey = P
+browsing-cfr-recommendations =
+    .label = Rozšyrjenja dopórucyś, gaž pśeglědujośo
+    .accesskey = R
+browsing-cfr-features =
+    .label = Dopórucćo funkcije, mjaztym až pśeglědujośo
+    .accesskey = f
+browsing-cfr-recommendations-learn-more = Dalšne informacije
 
 ## General Section - Proxy
 
-network-proxy-title = Seśowy proksy
+network-settings-title = Seśowe nastajenja
+network-proxy-connection-description = Konfigurěrowaś, kak { -brand-short-name } z internetom zwězujo.
 network-proxy-connection-learn-more = Dalšne informacije
 network-proxy-connection-settings =
     .label = Nastajenja…
@@ -344,9 +403,6 @@ use-current-pages =
 choose-bookmark =
     .label = Cytańske znamje wužywaś…
     .accesskey = C
-restore-default =
-    .label = Standard wótnowiś
-    .accesskey = t
 
 ## Search Section
 
@@ -408,7 +464,7 @@ containers-remove-button =
 
 sync-signedout-caption = Wzejśo swój web sobu
 sync-signedout-description = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtarki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
-sync-signedout-account-title = Z { -fxaccount-brand-name } zwězaś
+sync-signedout-account-title = Zwězaś z: { -fxaccount-brand-name }
 sync-signedout-account-create = Njamaśo konto? Zachopśo
     .accesskey = k
 sync-signedout-account-signin =
@@ -422,7 +478,7 @@ sync-signedout-account-signin =
 #
 # They can be moved within the sentence as needed to adapt
 # to your language, but should not be changed or translated.
-sync-mobile-promo = Firefox ześěgnuś za <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> abo <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a>, aby ze swójim mobilnym rědom synchronizěrował.
+sync-mobile-promo = Firefox za <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> abo <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a> ześěgnuś, aby ze swójim mobilnym rědom synchronizěrował.
 
 ## Sync Section - Signed in
 
@@ -490,8 +546,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Składowaś
     .accesskey = d
-sync-mobilepromo-single = Z drugim rědom zwězaś
-sync-mobilepromo-multi = Rědy zastojaś
+sync-connect-another-device = Z drugim rědom zwězaś
+sync-manage-devices = Rědy zastojaś
+sync-fxa-begin-pairing = Rěd zwězaś
 sync-tos-link = Słužbne wuměnjenja
 sync-fxa-privacy-notice = Powěźeńka priwatnosći
 
@@ -501,13 +558,16 @@ privacy-header = Priwatnosć wobglědowaka
 
 ## Privacy Section - Forms
 
-forms-header = Formulary a gronidła
+logins-header = Pśizjawjenja a gronidła
 forms-ask-to-save-logins =
     .label = Pšašaś se, lěc se maju pśizjawjenja a gronidła składowaś
     .accesskey = a
 forms-exceptions =
     .label = Wuwześa…
     .accesskey = u
+forms-generate-passwords =
+    .label = Mócne gronidła napóraś a naraźiś
+    .accesskey = r
 forms-saved-logins =
     .label = Skłaźone pśizjawjenja…
     .accesskey = S
@@ -543,9 +603,9 @@ history-dontremember-description = { -brand-short-name } buźo te samske nastaje
 history-private-browsing-permanent =
     .label = Pśecej priwatny modus wužywaś
     .accesskey = p
-history-remember-option =
+history-remember-browser-option =
     .label = Se pśeglědowańsku a ześěgnjeńsku historiju spomnjeś
-    .accesskey = l
+    .accesskey = m
 history-remember-search-option =
     .label = Pytańsku a formularnu historiju se spomnjeś
     .accesskey = f
@@ -562,36 +622,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookieje a sedłowe daty
+sitedata-total-size-calculating = Wjelikosć sedłowych datow a purfowaka se wulicijo…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Waše skłaźone cookieje, sedłowe daty a pufrowak se tuchylu { $value } { $unit } platowego ruma wužywaju.
 sitedata-learn-more = Dalšne informacije
-sitedata-accept-cookies-option =
-    .label = Cookieje a sedłowe daty z websedłow akceptěrowaś (dopórucone)
-    .accesskey = C
-sitedata-block-cookies-option =
-    .label = Cookieje a sedłowe daty blokěrowaś (mógło zawinowaś, až websedła njefunkcioněruju)
+sitedata-delete-on-close =
+    .label = Cookieje a sedłowe daty wulašowaś, gaž se { -brand-short-name } zacynja
     .accesskey = s
-sitedata-keep-until = Wobchowaś
+sitedata-delete-on-close-private-browsing = W stawnem priwatnem modusu se cookieje a sedłowe daty pśecej wulašuju, gaž se { -brand-short-name } zacynja.
+sitedata-allow-cookies-option =
+    .label = Cookieje a sedłowe daty akceptěrowaś
+    .accesskey = C
+sitedata-disallow-cookies-option =
+    .label = Cookieje a sedłowe daty blokěrowaś
     .accesskey = b
-sitedata-keep-until-expire =
-    .label = Pśepadnu
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } jo zacynjony
-sitedata-accept-third-party-desc = Cookieje a sedłowe daty tśeśich póbitowarjow akceptěrowaś
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Blokěrowany typ
     .accesskey = t
-sitedata-accept-third-party-always-option =
-    .label = Pśecej
-sitedata-accept-third-party-visited-option =
-    .label = Jano wót woglědanych tśeśich
-sitedata-accept-third-party-never-option =
-    .label = Nigda
+sitedata-option-block-trackers =
+    .label = Pśeslědowaki tśeśich
+sitedata-option-block-unvisited =
+    .label = Cookieje z njewoglědanych websedłow
+sitedata-option-block-all-third-party =
+    .label = Wšykne cookieje tśeśich (móžo zawinowaś, až websedła wěcej njefunkcioněruju)
+sitedata-option-block-all =
+    .label = Wšykne cookieje (móžo zawinowaś, až websedła wěcej njefunkcioněruju)
 sitedata-clear =
     .label = Daty lašowaś…
     .accesskey = l
 sitedata-settings =
     .label = Daty zastojaś…
     .accesskey = D
-sitedata-cookies-exceptions =
-    .label = Wuwześa…
-    .accesskey = W
+sitedata-cookies-permissions =
+    .label = Pšawa zastojaś
+    .accesskey = P
 
 ## Privacy Section - Address Bar
 
@@ -608,30 +675,73 @@ addressbar-locbar-openpage-option =
     .accesskey = r
 addressbar-suggestions-settings = Nastajenja za naraźenja pytnice změniś
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Blokěrowanje wopśimjeśa
+content-blocking-description = Blokěrujśo wopśimjeśe tśeśich, kótarež wam pó webje slědujo. Kontrolěrujśo, kak cesto se waša aktiwita online składujo a mjazy websedłami źěli.
+content-blocking-section-description = Šćitajśo swóju priwatnosć, mjaztym až pśeglědujośo. Blokěrujśo njewidobne wopśimjeśe, kótarež sedła slědujo, ku kótarymž se woglědujośo, a profil wó was twóri. Gaž take wopśimjeśe blokěrujośo, daju se boki snaź malsnjej zacytaś.
+content-blocking-learn-more = Dalšne informacije
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Standard
+    .accesskey = d
+content-blocking-setting-strict =
+    .label = Striktny
+    .accesskey = r
+content-blocking-setting-custom =
+    .label = Swójski
+    .accesskey = S
+content-blocking-standard-description = Blokěrujo jano znate pśeslědowaki w priwatnych woknach.
+content-blocking-standard-desc = Wurownany za šćit a wugbaśe. Dowólujo někotare pślědowaki, aby websedła pórědnje funkcioněrowali.
+content-blocking-strict-desc = Blokuje wšě přesćěhowaki, kotrež { -brand-short-name } namaka. Tohodla njemóhli někotre websydła korektnje fungować.
+content-blocking-strict-description = Mócnjejšy šćit, móžo zawinowaś, až někotare sedła wěcej njefunkcioněruju.
+content-blocking-custom-desc = Wubjeŕśo, což cośo blokěrowaś.
+content-blocking-private-trackers = Znate pśeslědowaki w priwatnych woknach
+content-blocking-third-party-cookies = Slědujuce cookiejei tśeśich
+content-blocking-all-cookies = Wšykne cookieje
+content-blocking-unvisited-cookies = Cookieje z njewoglědanych sedłow
+content-blocking-all-windows-trackers = Znate pśeslědowaki we wšych woknach
+content-blocking-all-third-party-cookies = Wšykne cookieje tśeśich
+content-blocking-cryptominers = Kryptokopanje
+content-blocking-fingerprinters = Palcowe wótśišće
+content-blocking-warning-title = Glědajśo!
+content-blocking-warning-description = Blokěrowanje wopśimjeśa móžo zawinowaś, až někotare websedła wěcej njefunkcioněruju. Jo lažko, blokěrowanje za sedła znjemóžniś, kótarymž dowěriśo.
+content-blocking-learn-how = Zgóńśo kak
+content-blocking-reload-description = Musyśo swóje rejtarki znowego zacytaś, aby toś te změny nałožył.
+content-blocking-reload-tabs-button =
+    .label = Wšykne rejtarki znowego zacytaś
+    .accesskey = W
+content-blocking-trackers-label =
+    .label = Pśeslědowaki
+    .accesskey = P
+content-blocking-tracking-protection-option-all-windows =
+    .label = We wšych woknach
+    .accesskey = W
+content-blocking-option-private =
+    .label = Jano w priwatnych woknach
+    .accesskey = J
+content-blocking-tracking-protection-change-block-list = Blokěrowańsku lisćinu změniś
+content-blocking-cookies-label =
+    .label = Cookieje
+    .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = Dalšne informacije
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Kryptokopanje
+    .accesskey = y
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Palcowe wótśišće
+    .accesskey = P
+
 ## Privacy Section - Tracking
 
-tracking-header = Slědowański šćit
-tracking-desc = Slědowański šćit pśeslědowaki online blokěrujo, kótarež waše pśeglědowańske daty pśez někotare websedła gromaźe. <a data-l10n-name="learn-more">Zgóńśo wěcej wó slědowańskem šćiśe a swójej priwatnosći</a>
-tracking-mode-label = Slědowański šćit wužywaś, aby blokěrował znate pśeslědowaki
-tracking-mode-always =
-    .label = Pśecej
-    .accesskey = c
-tracking-mode-private =
-    .label = Jano w priwatnych woknach
-    .accesskey = o
-tracking-mode-never =
-    .label = Nigda
-    .accesskey = N
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Slědowański šćit w priwatnem modusu wužywaś, aby znate pśeslědowarje blokěrował
-    .accesskey = r
-tracking-exceptions =
-    .label = Wuwześa…
+tracking-manage-exceptions =
+    .label = Wuwześa zastojaś…
     .accesskey = u
-tracking-change-block-list =
-    .label = Blokěrowańsku lisćinu změniś…
-    .accesskey = z
 
 ## Privacy Section - Permissions
 
@@ -656,6 +766,16 @@ permissions-notification-link = Dalšne informacije
 permissions-notification-pause =
     .label = Z powěźeńkami pśestaś, daniž se { -brand-short-name } znowego njestartujo
     .accesskey = z
+permissions-block-autoplay-media2 =
+    .label = Websedłam awtomatiske wótgrawanje zuka zawoboraś
+    .accesskey = b
+permissions-block-autoplay-media-exceptions =
+    .label = Wuwześa…
+    .accesskey = u
+permissions-autoplay = Awtomatiske wótgraśe
+permissions-autoplay-settings =
+    .label = Nastajenja…
+    .accesskey = N
 permissions-block-popups =
     .label = Wuskokujuce wokno blokěrowaś
     .accesskey = k
@@ -669,7 +789,7 @@ permissions-addon-exceptions =
     .label = Wuwześa…
     .accesskey = W
 permissions-a11y-privacy-checkbox =
-    .label = Słužbam pśistupnosći pśistup na waš wobglědowak zawoboraś
+    .label = Słužbam pśistupnosći pśistup k wašomu wobglědowakoju zawoboraś
     .accesskey = t
 permissions-a11y-privacy-link = Dalšne informacije
 
@@ -682,13 +802,15 @@ collection-health-report =
     .label = { -brand-short-name } zmóžniś, techniske a interakciske daty na { -vendor-short-name } pósłaś
     .accesskey = t
 collection-health-report-link = Dalšne informacije
+collection-studies =
+    .label = { -brand-short-name } dowóliś, studije instalěrowaś a pśewjasć
+collection-studies-link = Studije { -brand-short-name } pokazaś
+addon-recommendations =
+    .label = { -brand-short-name } dowóliś, personalizěrowane pśiraźenja za rozšyrjenja daś
+addon-recommendations-link = Dalšne informacije
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Datowe rozpšawjenje jo znjemóžnjone za toś tu programowu konfiguraciju
-collection-browser-errors =
-    .label = { -brand-short-name } dowóliś, { -vendor-short-name } zmólkowe rozpšawy (inkluziwnje zmólkowe powěźeńki) pósłaś
-    .accesskey = z
-collection-browser-errors-link = Dalšne informacije
 collection-backlogged-crash-reports =
     .label = { -brand-short-name } dowóliś, njewobźěłane wowaleńske rozpšawy we wašom mjenju pósłaś
     .accesskey = r
@@ -731,3 +853,36 @@ certs-view =
 certs-devices =
     .label = Wěstotne rědy…
     .accesskey = t
+space-alert-learn-more-button =
+    .label = Dalšne informacije
+    .accesskey = D
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Nastajenja wócyniś
+           *[other] Nastajenja wócyniś
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] N
+           *[other] N
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } njama wěcej dosć składowańskego ruma. Wopśimjeśe websedła se snaź korektnje njezwobraznijo. Móžośo skłaźone daty w Nastajenja > Priwatnosć a wěstota > Cookieje a sedłowe daty lašowaś.
+       *[other] { -brand-short-name } njama wěcej dosć składowańskego ruma. Wopśimjeśe websedła se snaź korektnje njezwobraznijo. Móžośo skłaźone daty w Nastajenja > Priwatnosć a wěstota > Cookieje a sedłowe daty lašowaś.
+    }
+space-alert-under-5gb-ok-button =
+    .label = W pórěźe, som zrozměł
+    .accesskey = z
+space-alert-under-5gb-message = { -brand-short-name } njama wěcej dosć składowańskego ruma. Wopśimjeśe websedła se snaź korektnje njezwobraznijo. Móžośo na “Dalšne informacije” kliknuś, aby swój składowe wužyśe za lěpše pśeglědowańske dožywjenje opiměrował.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Desktop
+downloads-folder-name = Ześěgnjenja
+choose-download-folder-title = Zarědnik ześěgnjenjow wubraś:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Dataje do { $service-name } składowaś

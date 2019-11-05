@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
-Transform the beetmover task into an actual task description.
+Transform the per-locale balrog task into an actual task description.
 """
 
 from __future__ import absolute_import, print_function, unicode_literals
@@ -20,10 +20,6 @@ from taskgraph.util.treeherder import replace_group
 from taskgraph.transforms.task import task_description_schema
 from voluptuous import Optional
 
-
-# Voluptuous uses marker objects as dictionary *keys*, but they are not
-# comparable, so we cast all of the keys back to regular strings
-task_description_schema = {str(k): v for k, v in task_description_schema.schema.iteritems()}
 
 balrog_description_schema = schema.extend({
     # unique label to describe this balrog task, defaults to balrog-{dep.label}
@@ -82,7 +78,10 @@ def make_task_description(config, jobs):
             'treeherder', {}).get('machine', {}).get('platform', '')
         treeherder.setdefault('platform',
                               "{}/opt".format(dep_th_platform))
-        treeherder.setdefault('tier', 1)
+        treeherder.setdefault(
+            'tier',
+            dep_job.task.get('extra', {}).get('treeherder', {}).get('tier', 1)
+        )
         treeherder.setdefault('kind', 'build')
 
         attributes = copy_attributes_from_dependent_job(dep_job)

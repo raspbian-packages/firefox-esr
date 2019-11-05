@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/dom/HTMLTableSectionElement.h"
-#include "mozilla/GenericSpecifiedValuesInlines.h"
+#include "mozilla/MappedDeclarations.h"
 #include "nsMappedAttributes.h"
 #include "nsAttrValueInlines.h"
 #include "mozilla/dom/BindingUtils.h"
@@ -23,7 +23,7 @@ HTMLTableSectionElement::~HTMLTableSectionElement() {}
 
 JSObject* HTMLTableSectionElement::WrapNode(JSContext* aCx,
                                             JS::Handle<JSObject*> aGivenProto) {
-  return HTMLTableSectionElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLTableSectionElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(HTMLTableSectionElement)
@@ -145,28 +145,24 @@ bool HTMLTableSectionElement::ParseAttribute(
 }
 
 void HTMLTableSectionElement::MapAttributesIntoRule(
-    const nsMappedAttributes* aAttributes, GenericSpecifiedValues* aData) {
-  if (aData->ShouldComputeStyleStruct(NS_STYLE_INHERIT_BIT(Position))) {
-    // height: value
-    if (!aData->PropertyIsSet(eCSSProperty_height)) {
-      const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::height);
-      if (value && value->Type() == nsAttrValue::eInteger)
-        aData->SetPixelValue(eCSSProperty_height,
-                             (float)value->GetIntegerValue());
-    }
+    const nsMappedAttributes* aAttributes, MappedDeclarations& aDecls) {
+  // height: value
+  if (!aDecls.PropertyIsSet(eCSSProperty_height)) {
+    const nsAttrValue* value = aAttributes->GetAttr(nsGkAtoms::height);
+    if (value && value->Type() == nsAttrValue::eInteger)
+      aDecls.SetPixelValue(eCSSProperty_height,
+                           (float)value->GetIntegerValue());
   }
-  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapVAlignAttributeInto(aAttributes, aData);
-  nsGenericHTMLElement::MapBackgroundAttributesInto(aAttributes, aData);
-  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aData);
+  nsGenericHTMLElement::MapDivAlignAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapVAlignAttributeInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapBackgroundAttributesInto(aAttributes, aDecls);
+  nsGenericHTMLElement::MapCommonAttributesInto(aAttributes, aDecls);
 }
 
 NS_IMETHODIMP_(bool)
 HTMLTableSectionElement::IsAttributeMapped(const nsAtom* aAttribute) const {
-  static const MappedAttributeEntry attributes[] = {{&nsGkAtoms::align},
-                                                    {&nsGkAtoms::valign},
-                                                    {&nsGkAtoms::height},
-                                                    {nullptr}};
+  static const MappedAttributeEntry attributes[] = {
+      {nsGkAtoms::align}, {nsGkAtoms::valign}, {nsGkAtoms::height}, {nullptr}};
 
   static const MappedAttributeEntry* const map[] = {
       attributes,

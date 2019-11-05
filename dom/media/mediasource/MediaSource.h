@@ -84,6 +84,7 @@ class MediaSource final : public DOMEventTargetHelper,
                                   DecoderDoctorDiagnostics* aDiagnostics);
 
   static bool Enabled(JSContext* cx, JSObject* aGlobal);
+  static bool ExperimentalEnabled(JSContext* cx, JSObject* aGlobal);
 
   IMPL_EVENT_HANDLER(sourceopen);
   IMPL_EVENT_HANDLER(sourceended);

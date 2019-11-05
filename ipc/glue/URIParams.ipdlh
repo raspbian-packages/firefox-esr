@@ -16,7 +16,6 @@ struct SimpleURIParams
   nsCString path;
   nsCString ref;
   nsCString query;
-  bool isMutable;
 };
 
 struct StandardURLSegment
@@ -43,7 +42,6 @@ struct StandardURLParams
   StandardURLSegment extension;
   StandardURLSegment query;
   StandardURLSegment ref;
-  bool isMutable;
   bool supportsFileURL;
 };
 
@@ -56,7 +54,7 @@ struct JARURIParams
 
 struct IconURIParams
 {
-  OptionalURIParams uri;
+  URIParams? uri;
   uint32_t size;
   nsCString contentType;
   nsCString fileName;
@@ -73,7 +71,7 @@ struct NullPrincipalURIParams
 struct HostObjectURIParams
 {
   SimpleURIParams simpleParams;
-  OptionalPrincipalInfo principal;
+  bool revoked;
 };
 
 union URIParams
@@ -88,16 +86,10 @@ union URIParams
   HostObjectURIParams;
 };
 
-union OptionalURIParams
-{
-  void_t;
-  URIParams;
-};
-
 struct JSURIParams
 {
   SimpleURIParams simpleParams;
-  OptionalURIParams baseURI;
+  URIParams? baseURI;
 };
 
 struct SimpleNestedURIParams

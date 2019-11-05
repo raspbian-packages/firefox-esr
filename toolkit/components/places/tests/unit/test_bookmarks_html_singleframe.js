@@ -7,13 +7,18 @@
 // Test for bug #801450
 
 // Get Services
-ChromeUtils.import("resource://gre/modules/BookmarkHTMLUtils.jsm");
+const { BookmarkHTMLUtils } = ChromeUtils.import(
+  "resource://gre/modules/BookmarkHTMLUtils.jsm"
+);
 
 add_task(async function test_bookmarks_html_singleframe() {
-  let bookmarksFile = OS.Path.join(do_get_cwd().path, "bookmarks_html_singleframe.html");
-  await BookmarkHTMLUtils.importFromFile(bookmarksFile, true);
+  let bookmarksFile = OS.Path.join(
+    do_get_cwd().path,
+    "bookmarks_html_singleframe.html"
+  );
+  await BookmarkHTMLUtils.importFromFile(bookmarksFile, { replace: true });
 
-  let root = PlacesUtils.getFolderContents(PlacesUtils.bookmarksMenuFolderId).root;
+  let root = PlacesUtils.getFolderContents(PlacesUtils.bookmarks.menuGuid).root;
   Assert.equal(root.childCount, 1);
   let folder = root.getChild(0);
   PlacesUtils.asContainer(folder).containerOpen = true;

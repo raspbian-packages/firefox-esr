@@ -10,6 +10,7 @@
 #include "AudioChannelService.h"
 #include "AudioNode.h"
 #include "nsIAudioChannelAgent.h"
+#include "mozilla/TimeStamp.h"
 
 namespace mozilla {
 namespace dom {
@@ -23,8 +24,8 @@ class AudioDestinationNode final : public AudioNode,
   // This node type knows what MediaStreamGraph to use based on
   // whether it's in offline mode.
   AudioDestinationNode(AudioContext* aContext, bool aIsOffline,
-                       uint32_t aNumberOfChannels = 0, uint32_t aLength = 0,
-                       float aSampleRate = 0.0f);
+                       bool aAllowedToStart, uint32_t aNumberOfChannels,
+                       uint32_t aLength);
 
   void DestroyMediaStream() override;
 
@@ -41,7 +42,7 @@ class AudioDestinationNode final : public AudioNode,
   void SetChannelCount(uint32_t aChannelCount, ErrorResult& aRv) override;
 
   // Returns the stream or null after unlink.
-  AudioNodeStream* Stream() { return mStream; }
+  AudioNodeStream* Stream();
 
   void Mute();
   void Unmute();
@@ -64,7 +65,7 @@ class AudioDestinationNode final : public AudioNode,
   size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const override;
   size_t SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const override;
 
-  void InputMuted(bool aInputMuted);
+  void NotifyAudibleStateChanged(bool aAudible);
   void ResolvePromise(AudioBuffer* aRenderedBuffer);
 
   unsigned long Length() {
@@ -89,6 +90,11 @@ class AudioDestinationNode final : public AudioNode,
 
   bool mCaptured;
   AudioChannelService::AudibleState mAudible;
+
+  // These varaibles are used to know how long AudioContext would become audible
+  // since it was created.
+  TimeStamp mCreatedTime;
+  TimeDuration mDurationBeforeFirstTimeAudible;
 };
 
 }  // namespace dom

@@ -16,6 +16,7 @@
 #include "nsIChannel.h"
 #include "nsIChannelEventSink.h"
 #include "nsIDocShell.h"
+#include "nsIHttpChannelInternal.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsIInterfaceRequestorUtils.h"
 
@@ -54,18 +55,13 @@ class ClientChannelHelper final : public nsIInterfaceRequestor,
                          nsIAsyncVerifyRedirectCallback* aCallback) override {
     MOZ_ASSERT(NS_IsMainThread());
 
-    nsCOMPtr<nsILoadInfo> oldLoadInfo;
-    nsresult rv = aOldChannel->GetLoadInfo(getter_AddRefs(oldLoadInfo));
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    nsCOMPtr<nsILoadInfo> newLoadInfo;
-    rv = aNewChannel->GetLoadInfo(getter_AddRefs(newLoadInfo));
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    rv = nsContentUtils::CheckSameOrigin(aOldChannel, aNewChannel);
+    nsresult rv = nsContentUtils::CheckSameOrigin(aOldChannel, aNewChannel);
     if (NS_WARN_IF(NS_FAILED(rv) && rv != NS_ERROR_DOM_BAD_URI)) {
       return rv;
     }
+
+    nsCOMPtr<nsILoadInfo> oldLoadInfo = aOldChannel->LoadInfo();
+    nsCOMPtr<nsILoadInfo> newLoadInfo = aNewChannel->LoadInfo();
 
     UniquePtr<ClientSource> reservedClient =
         oldLoadInfo->TakeReservedClientSource();
@@ -74,7 +70,7 @@ class ClientChannelHelper final : public nsIInterfaceRequestor,
     // new channel.
     if (NS_SUCCEEDED(rv)) {
       if (reservedClient) {
-        newLoadInfo->GiveReservedClientSource(Move(reservedClient));
+        newLoadInfo->GiveReservedClientSource(std::move(reservedClient));
       }
 
       // It seems sometimes necko passes two channels with the same LoadInfo.
@@ -120,20 +116,29 @@ class ClientChannelHelper final : public nsIInterfaceRequestor,
                                                    mEventTarget, principal);
       MOZ_DIAGNOSTIC_ASSERT(reservedClient);
 
-      newLoadInfo->GiveReservedClientSource(Move(reservedClient));
+      newLoadInfo->GiveReservedClientSource(std::move(reservedClient));
+    }
+
+    uint32_t redirectMode = nsIHttpChannelInternal::REDIRECT_MODE_MANUAL;
+    nsCOMPtr<nsIHttpChannelInternal> http = do_QueryInterface(aOldChannel);
+    if (http) {
+      MOZ_ALWAYS_SUCCEEDS(http->GetRedirectMode(&redirectMode));
     }
 
     // Normally we keep the controller across channel redirects, but we must
-    // clear it when a non-subresource load redirects.  Only do this for real
+    // clear it when a document load redirects.  Only do this for real
     // redirects, however.
     //
-    // There is an open spec question about what to do in this case for
-    // worker script redirects.  For now we clear the controller as that
-    // seems most sane. See:
+    // This is effectively described in step 4.2 of:
     //
-    //  https://github.com/w3c/ServiceWorker/issues/1239
+    //  https://fetch.spec.whatwg.org/#http-fetch
     //
-    if (!(aFlags & nsIChannelEventSink::REDIRECT_INTERNAL)) {
+    // The spec sets the service-workers mode to none when the request is
+    // configured to *not* follow redirects.  This prevents any further
+    // service workers from intercepting.  The first service worker that
+    // had a shot at the FetchEvent remains the controller in this case.
+    if (!(aFlags & nsIChannelEventSink::REDIRECT_INTERNAL) &&
+        redirectMode != nsIHttpChannelInternal::REDIRECT_MODE_FOLLOW) {
       newLoadInfo->ClearController();
     }
 
@@ -166,13 +171,12 @@ nsresult AddClientChannelHelper(nsIChannel* aChannel,
                                 nsISerialEventTarget* aEventTarget) {
   MOZ_ASSERT(NS_IsMainThread());
 
-  Maybe<ClientInfo> initialClientInfo(Move(aInitialClientInfo));
-  Maybe<ClientInfo> reservedClientInfo(Move(aReservedClientInfo));
+  Maybe<ClientInfo> initialClientInfo(std::move(aInitialClientInfo));
+  Maybe<ClientInfo> reservedClientInfo(std::move(aReservedClientInfo));
   MOZ_DIAGNOSTIC_ASSERT(reservedClientInfo.isNothing() ||
                         initialClientInfo.isNothing());
 
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->GetLoadInfo();
-  NS_ENSURE_TRUE(loadInfo, NS_ERROR_FAILURE);
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
 
   nsIScriptSecurityManager* ssm = nsContentUtils::GetSecurityManager();
   NS_ENSURE_TRUE(ssm, NS_ERROR_FAILURE);
@@ -237,7 +241,7 @@ nsresult AddClientChannelHelper(nsIChannel* aChannel,
   // Finally preserve the various client values on the nsILoadInfo once the
   // redirect helper has been added to the channel.
   if (reservedClient) {
-    loadInfo->GiveReservedClientSource(Move(reservedClient));
+    loadInfo->GiveReservedClientSource(std::move(reservedClient));
   }
 
   if (initialClientInfo.isSome()) {

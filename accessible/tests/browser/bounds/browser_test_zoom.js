@@ -6,6 +6,8 @@
 
 /* import-globals-from ../../mochitest/layout.js */
 
+/* global getContentDPR */
+
 async function getContentBoundsForDOMElm(browser, id) {
   return ContentTask.spawn(browser, id, contentId => {
     this.ok = ok;
@@ -14,15 +16,20 @@ async function getContentBoundsForDOMElm(browser, id) {
 }
 
 async function testContentBounds(browser, acc) {
-  let [expectedX, expectedY, expectedWidth, expectedHeight] =
-    await getContentBoundsForDOMElm(browser, getAccessibleDOMNodeID(acc));
+  let [
+    expectedX,
+    expectedY,
+    expectedWidth,
+    expectedHeight,
+  ] = await getContentBoundsForDOMElm(browser, getAccessibleDOMNodeID(acc));
 
-  let [x, y, width, height] = getBounds(acc);
+  let contentDPR = await getContentDPR(browser);
+  let [x, y, width, height] = getBounds(acc, contentDPR);
   let prettyAccName = prettyName(acc);
   is(x, expectedX, "Wrong x coordinate of " + prettyAccName);
   is(y, expectedY, "Wrong y coordinate of " + prettyAccName);
   is(width, expectedWidth, "Wrong width of " + prettyAccName);
-  is(height, expectedHeight, "Wrong height of " + prettyAccName);
+  ok(height >= expectedHeight, "Wrong height of " + prettyAccName);
 }
 
 async function runTests(browser, accDoc) {
@@ -44,7 +51,7 @@ async function runTests(browser, accDoc) {
   await testContentBounds(browser, area);
 
   await ContentTask.spawn(browser, {}, () => {
-    zoomDocument(document, 2.0);
+    zoomDocument(content.document, 2.0);
   });
 
   await testContentBounds(browser, p1);
@@ -55,7 +62,8 @@ async function runTests(browser, accDoc) {
 /**
  * Test accessible boundaries when page is zoomed
  */
-addAccessibleTask(`
+addAccessibleTask(
+  `
 <p id="p1">para 1</p><p id="p2">para 2</p>
 <map name="atoz_map" id="map">
   <area id="area1" href="http://mozilla.org"

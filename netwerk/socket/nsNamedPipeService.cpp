@@ -10,6 +10,7 @@
 #include "nsNamedPipeService.h"
 #include "nsNetCID.h"
 #include "nsThreadUtils.h"
+#include "mozilla/ClearOnShutdown.h"
 
 namespace mozilla {
 namespace net {
@@ -19,6 +20,8 @@ static mozilla::LazyLogModule gNamedPipeServiceLog("NamedPipeWin");
   MOZ_LOG(gNamedPipeServiceLog, mozilla::LogLevel::Debug, (__VA_ARGS__))
 #define LOG_NPS_ERROR(...) \
   MOZ_LOG(gNamedPipeServiceLog, mozilla::LogLevel::Error, (__VA_ARGS__))
+
+StaticRefPtr<NamedPipeService> NamedPipeService::gSingleton;
 
 NS_IMPL_ISUPPORTS(NamedPipeService, nsINamedPipeService, nsIObserver,
                   nsIRunnable)
@@ -35,7 +38,7 @@ nsresult NamedPipeService::Init() {
   // register shutdown event to stop NamedPipeSrv thread.
   nsCOMPtr<nsIObserver> self(this);
   nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
-      "NamedPipeService::Init", [self = Move(self)]()->void {
+      "NamedPipeService::Init", [self = std::move(self)]() -> void {
         MOZ_ASSERT(NS_IsMainThread());
 
         nsCOMPtr<nsIObserverService> svc =
@@ -73,6 +76,24 @@ nsresult NamedPipeService::Init() {
   }
 
   return NS_OK;
+}
+
+// static
+already_AddRefed<nsINamedPipeService> NamedPipeService::GetOrCreate() {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  RefPtr<NamedPipeService> inst;
+  if (gSingleton) {
+    inst = gSingleton;
+  } else {
+    inst = new NamedPipeService();
+    nsresult rv = inst->Init();
+    NS_ENSURE_SUCCESS(rv, nullptr);
+    gSingleton = inst;
+    ClearOnShutdown(&gSingleton);
+  }
+
+  return inst.forget();
 }
 
 void NamedPipeService::Shutdown() {
@@ -293,8 +314,6 @@ NamedPipeService::Run() {
 
   return NS_OK;
 }
-
-static NS_DEFINE_CID(kNamedPipeServiceCID, NS_NAMEDPIPESERVICE_CID);
 
 }  // namespace net
 }  // namespace mozilla

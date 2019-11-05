@@ -42,6 +42,11 @@ enum DW_REG_NUMBER {
   DW_REG_ARM_R13 = 13,
   DW_REG_ARM_R14 = 14,
   DW_REG_ARM_R15 = 15,
+#elif defined(GP_ARCH_arm64)
+  // aarch64 registers
+  DW_REG_AARCH64_X29 = 29,
+  DW_REG_AARCH64_X30 = 30,
+  DW_REG_AARCH64_SP = 31,
 #elif defined(GP_ARCH_amd64)
   // Because the X86 (32 bit) and AMD64 (64 bit) summarisers are
   // combined, a merged set of register constants is needed.
@@ -57,7 +62,7 @@ enum DW_REG_NUMBER {
   DW_REG_MIPS_FP = 30,
   DW_REG_MIPS_PC = 34,
 #else
-#error "Unknown arch"
+#  error "Unknown arch"
 #endif
 };
 
@@ -179,7 +184,7 @@ struct LExpr {
 
   // Print a rule for recovery of |aNewReg| whose recovered value
   // is this LExpr.
-  string ShowRule(const char* aNewReg) const;
+  std::string ShowRule(const char* aNewReg) const;
 
   // Evaluate this expression, producing a TaggedUWord.  |aOldRegs|
   // holds register values that may be referred to by the expression.
@@ -271,12 +276,16 @@ class RuleSet {
   LExpr mR12expr;
   LExpr mR11expr;
   LExpr mR7expr;
+#elif defined(GP_ARCH_arm64)
+  LExpr mX29expr;  // frame pointer register
+  LExpr mX30expr;  // link register
+  LExpr mSPexpr;
 #elif defined(GP_ARCH_mips64)
   LExpr mPCexpr;
   LExpr mFPexpr;
   LExpr mSPexpr;
 #else
-#error "Unknown arch"
+#  error "Unknown arch"
 #endif
 };
 
@@ -297,13 +306,18 @@ static inline bool registerIsTracked(DW_REG_NUMBER reg) {
     case DW_REG_ARM_R14:
     case DW_REG_ARM_R15:
       return true;
+#elif defined(GP_ARCH_arm64)
+    case DW_REG_AARCH64_X29:
+    case DW_REG_AARCH64_X30:
+    case DW_REG_AARCH64_SP:
+      return true;
 #elif defined(GP_ARCH_mips64)
     case DW_REG_MIPS_FP:
     case DW_REG_MIPS_SP:
     case DW_REG_MIPS_PC:
       return true;
 #else
-#error "Unknown arch"
+#  error "Unknown arch"
 #endif
     default:
       return false;

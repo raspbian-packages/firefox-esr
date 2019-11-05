@@ -19,10 +19,12 @@
 class gfxContext;
 class nsFrameList;
 class nsIContent;
-class nsIPresShell;
-class nsStyleContext;
 
 struct nsRect;
+
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
 
 /**
  * Base class for SVG container frames. Frame sub-classes that do not
@@ -37,12 +39,13 @@ struct nsRect;
  * warning comment for nsSVGDisplayContainerFrame below).
  */
 class nsSVGContainerFrame : public nsContainerFrame {
-  friend nsIFrame* NS_NewSVGContainerFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext);
+  friend nsIFrame* NS_NewSVGContainerFrame(mozilla::PresShell* aPresShell,
+                                           ComputedStyle* aStyle);
 
  protected:
-  nsSVGContainerFrame(nsStyleContext* aContext, ClassID aID)
-      : nsContainerFrame(aContext, aID) {
+  nsSVGContainerFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                      ClassID aID)
+      : nsContainerFrame(aStyle, aPresContext, aID) {
     AddStateBits(NS_FRAME_SVG_LAYOUT);
   }
 
@@ -72,6 +75,10 @@ class nsSVGContainerFrame : public nsContainerFrame {
   virtual void RemoveFrame(ChildListID aListID, nsIFrame* aOldFrame) override;
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
+    if (aFlags & eSupportsContainLayoutAndPaint) {
+      return false;
+    }
+
     return nsContainerFrame::IsFrameOfType(
         aFlags & ~(nsIFrame::eSVG | nsIFrame::eSVGContainer));
   }
@@ -103,8 +110,9 @@ class nsSVGContainerFrame : public nsContainerFrame {
 class nsSVGDisplayContainerFrame : public nsSVGContainerFrame,
                                    public nsSVGDisplayableFrame {
  protected:
-  nsSVGDisplayContainerFrame(nsStyleContext* aContext, nsIFrame::ClassID aID)
-      : nsSVGContainerFrame(aContext, aID) {
+  nsSVGDisplayContainerFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                             nsIFrame::ClassID aID)
+      : nsSVGContainerFrame(aStyle, aPresContext, aID) {
     AddStateBits(NS_FRAME_MAY_BE_TRANSFORMED);
   }
 

@@ -11,14 +11,17 @@
 #include "nsCOMPtr.h"
 #include "nsGkAtoms.h"
 
+#include "mozilla/PresShell.h"
 #include "mozilla/dom/HTMLVideoElement.h"
-#include "mozilla/layers/WebRenderLayerManager.h"
+#include "mozilla/dom/ShadowRoot.h"
+#include "mozilla/layers/RenderRootStateManager.h"
 #include "nsDisplayList.h"
 #include "nsGenericHTMLElement.h"
 #include "nsPresContext.h"
 #include "nsContentCreatorFunctions.h"
 #include "nsBoxLayoutState.h"
 #include "nsBoxFrame.h"
+#include "nsIContentInlines.h"
 #include "nsImageFrame.h"
 #include "nsIImageLoadingContent.h"
 #include "nsContentUtils.h"
@@ -32,9 +35,8 @@ using namespace mozilla::layers;
 using namespace mozilla::dom;
 using namespace mozilla::gfx;
 
-nsIFrame* NS_NewHTMLVideoFrame(nsIPresShell* aPresShell,
-                               nsStyleContext* aContext) {
-  return new (aPresShell) nsVideoFrame(aContext);
+nsIFrame* NS_NewHTMLVideoFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsVideoFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsVideoFrame)
@@ -69,16 +71,16 @@ static void SwapScaleWidthHeightForRotation(IntSize& aSize,
   }
 }
 
-nsVideoFrame::nsVideoFrame(nsStyleContext* aContext)
-    : nsContainerFrame(aContext, kClassID) {
+nsVideoFrame::nsVideoFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+    : nsContainerFrame(aStyle, aPresContext, kClassID) {
   EnableVisibilityTracking();
 }
 
 nsVideoFrame::~nsVideoFrame() {}
 
 NS_QUERYFRAME_HEAD(nsVideoFrame)
-NS_QUERYFRAME_ENTRY(nsVideoFrame)
-NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
+  NS_QUERYFRAME_ENTRY(nsVideoFrame)
+  NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 nsresult nsVideoFrame::CreateAnonymousContent(
@@ -127,16 +129,6 @@ nsresult nsVideoFrame::CreateAnonymousContent(
     UpdateTextTrack();
   }
 
-  // Set up "videocontrols" XUL element which will be XBL-bound to the
-  // actual controls.
-  nodeInfo =
-      nodeInfoManager->GetNodeInfo(nsGkAtoms::videocontrols, nullptr,
-                                   kNameSpaceID_XUL, nsINode::ELEMENT_NODE);
-  NS_ENSURE_TRUE(nodeInfo, NS_ERROR_OUT_OF_MEMORY);
-
-  NS_TrustedNewXULElement(getter_AddRefs(mVideoControls), nodeInfo.forget());
-  if (!aElements.AppendElement(mVideoControls)) return NS_ERROR_OUT_OF_MEMORY;
-
   return NS_OK;
 }
 
@@ -146,19 +138,27 @@ void nsVideoFrame::AppendAnonymousContentTo(nsTArray<nsIContent*>& aElements,
     aElements.AppendElement(mPosterImage);
   }
 
-  if (mVideoControls) {
-    aElements.AppendElement(mVideoControls);
-  }
-
   if (mCaptionDiv) {
     aElements.AppendElement(mCaptionDiv);
   }
 }
 
+nsIContent* nsVideoFrame::GetVideoControls() {
+  if (!mContent->GetShadowRoot()) {
+    return nullptr;
+  }
+
+  // The video controls <div> is the only child of the UA Widget Shadow Root
+  // if it is present. It is only lazily inserted into the DOM when
+  // the controls attribute is set.
+  MOZ_ASSERT(mContent->GetShadowRoot()->IsUAWidget());
+  MOZ_ASSERT(1 >= mContent->GetShadowRoot()->GetChildCount());
+  return mContent->GetShadowRoot()->GetFirstChild();
+}
+
 void nsVideoFrame::DestroyFrom(nsIFrame* aDestructRoot,
                                PostDestroyData& aPostDestroyData) {
   aPostDestroyData.AddAnonymousContent(mCaptionDiv.forget());
-  aPostDestroyData.AddAnonymousContent(mVideoControls.forget());
   aPostDestroyData.AddAnonymousContent(mPosterImage.forget());
   nsContainerFrame::DestroyFrom(aDestructRoot, aPostDestroyData);
 }
@@ -189,11 +189,11 @@ already_AddRefed<Layer> nsVideoFrame::BuildLayer(
   // Convert video size from pixel units into app units, to get an aspect-ratio
   // (which has to be represented as a nsSize) and an IntrinsicSize that we
   // can pass to ComputeObjectRenderRect.
-  nsSize aspectRatio(nsPresContext::CSSPixelsToAppUnits(videoSizeInPx.width),
-                     nsPresContext::CSSPixelsToAppUnits(videoSizeInPx.height));
-  IntrinsicSize intrinsicSize;
-  intrinsicSize.width.SetCoordValue(aspectRatio.width);
-  intrinsicSize.height.SetCoordValue(aspectRatio.height);
+  auto aspectRatio =
+      AspectRatio::FromSize(videoSizeInPx.width, videoSizeInPx.height);
+  IntrinsicSize intrinsicSize(
+      nsPresContext::CSSPixelsToAppUnits(videoSizeInPx.width),
+      nsPresContext::CSSPixelsToAppUnits(videoSizeInPx.height));
 
   nsRect dest = nsLayoutUtils::ComputeObjectDestRect(
       area, intrinsicSize, aspectRatio, StylePosition());
@@ -230,6 +230,10 @@ already_AddRefed<Layer> nsVideoFrame::BuildLayer(
 
   layer->SetBaseTransform(gfx::Matrix4x4::From2D(transform));
   layer->SetScaleToSize(scaleHint, ScaleMode::STRETCH);
+
+  uint32_t flags = element->HasAlpha() ? 0 : Layer::CONTENT_OPAQUE;
+  layer->SetContentFlags(flags);
+
   RefPtr<Layer> result = layer.forget();
   return result.forget();
 }
@@ -241,7 +245,8 @@ class DispatchResizeToControls : public Runnable {
   NS_IMETHOD Run() override {
     nsContentUtils::DispatchTrustedEvent(
         mContent->OwnerDoc(), mContent,
-        NS_LITERAL_STRING("resizevideocontrols"), false, false);
+        NS_LITERAL_STRING("resizevideocontrols"), CanBubble::eNo,
+        Cancelable::eNo);
     return NS_OK;
   }
   nsCOMPtr<nsIContent> mContent;
@@ -259,7 +264,7 @@ void nsVideoFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
       ("enter nsVideoFrame::Reflow: availSize=%d,%d",
        aReflowInput.AvailableWidth(), aReflowInput.AvailableHeight()));
 
-  NS_PRECONDITION(mState & NS_FRAME_IN_REFLOW, "frame is not in reflow");
+  MOZ_ASSERT(mState & NS_FRAME_IN_REFLOW, "frame is not in reflow");
 
   const WritingMode myWM = aReflowInput.GetWritingMode();
   nscoord contentBoxBSize = aReflowInput.ComputedBSize();
@@ -276,6 +281,8 @@ void nsVideoFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
   }
 
   nsMargin borderPadding = aReflowInput.ComputedPhysicalBorderPadding();
+
+  nsIContent* videoControlsDiv = GetVideoControls();
 
   // Reflow the child frames. We may have up to three: an image
   // frame (for the poster image), a container frame for the controls,
@@ -295,7 +302,7 @@ void nsVideoFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
       LogicalSize cbSize = aMetrics.Size(aMetrics.GetWritingMode())
                                .ConvertTo(wm, aMetrics.GetWritingMode());
       ReflowInput kidReflowInput(aPresContext, aReflowInput, imageFrame,
-                                 availableSize, &cbSize);
+                                 availableSize, Some(cbSize));
 
       nsRect posterRenderRect;
       if (ShouldDisplayPoster()) {
@@ -316,20 +323,8 @@ void nsVideoFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
                         &kidReflowInput, posterRenderRect.x, posterRenderRect.y,
                         0);
 
-// Android still uses XUL media controls & hence needs this XUL-friendly
-// custom reflow code. This will go away in bug 1310907.
-#ifdef ANDROID
-    } else if (child->GetContent() == mVideoControls) {
-      // Reflow the video controls frame.
-      nsBoxLayoutState boxState(PresContext(), aReflowInput.mRenderingContext);
-      nsBoxFrame::LayoutChildAt(
-          boxState, child,
-          nsRect(borderPadding.left, borderPadding.top,
-                 aReflowInput.ComputedWidth(), aReflowInput.ComputedHeight()));
-
-#endif  // ANDROID
     } else if (child->GetContent() == mCaptionDiv ||
-               child->GetContent() == mVideoControls) {
+               child->GetContent() == videoControlsDiv) {
       // Reflow the caption and control bar frames.
       WritingMode wm = child->GetWritingMode();
       LogicalSize availableSize = aReflowInput.ComputedSize(wm);
@@ -344,21 +339,29 @@ void nsVideoFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
                  "We gave our child unconstrained available block-size, "
                  "so it should be complete!");
 
-      if (child->GetContent() == mVideoControls && isBSizeShrinkWrapping) {
-        // Resolve our own BSize based on the controls' size in the same axis.
-        contentBoxBSize = myWM.IsOrthogonalTo(wm) ? kidDesiredSize.ISize(wm)
-                                                  : kidDesiredSize.BSize(wm);
+      if (child->GetContent() == videoControlsDiv && isBSizeShrinkWrapping) {
+        // Resolve our own BSize based on the controls' size in the
+        // same axis. Unless we're size-contained, in which case we
+        // have to behave as if we have an intrinsic size of 0.
+        if (aReflowInput.mStyleDisplay->IsContainSize()) {
+          contentBoxBSize = 0;
+        } else {
+          contentBoxBSize = myWM.IsOrthogonalTo(wm) ? kidDesiredSize.ISize(wm)
+                                                    : kidDesiredSize.BSize(wm);
+        }
       }
 
       FinishReflowChild(child, aPresContext, kidDesiredSize, &kidReflowInput,
                         borderPadding.left, borderPadding.top, 0);
-    }
 
-    if (child->GetContent() == mVideoControls &&
-        child->GetSize() != oldChildSize) {
-      RefPtr<Runnable> event =
-          new DispatchResizeToControls(child->GetContent());
-      nsContentUtils::AddScriptRunner(event);
+      if (child->GetContent() == videoControlsDiv &&
+          child->GetSize() != oldChildSize) {
+        RefPtr<Runnable> event =
+            new DispatchResizeToControls(child->GetContent());
+        nsContentUtils::AddScriptRunner(event);
+      }
+    } else {
+      NS_ERROR("Unexpected extra child frame in nsVideoFrame; skipping");
     }
   }
 
@@ -390,10 +393,10 @@ void nsVideoFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
   NS_FRAME_SET_TRUNCATION(aStatus, aReflowInput, aMetrics);
 }
 
-class nsDisplayVideo : public nsDisplayItem {
+class nsDisplayVideo : public nsPaintedDisplayItem {
  public:
   nsDisplayVideo(nsDisplayListBuilder* aBuilder, nsVideoFrame* aFrame)
-      : nsDisplayItem(aBuilder, aFrame) {
+      : nsPaintedDisplayItem(aBuilder, aFrame) {
     MOZ_COUNT_CTOR(nsDisplayVideo);
   }
 #ifdef NS_BUILD_REFCNT_LOGGING
@@ -406,7 +409,7 @@ class nsDisplayVideo : public nsDisplayItem {
       mozilla::wr::DisplayListBuilder& aBuilder,
       mozilla::wr::IpcResourceUpdateQueue& aResources,
       const mozilla::layers::StackingContextHelper& aSc,
-      mozilla::layers::WebRenderLayerManager* aManager,
+      mozilla::layers::RenderRootStateManager* aManager,
       nsDisplayListBuilder* aDisplayListBuilder) override {
     nsRect area = Frame()->GetContentRectRelativeToSelf() + ToReferenceFrame();
     HTMLVideoElement* element =
@@ -433,12 +436,11 @@ class nsDisplayVideo : public nsDisplayItem {
     // Convert video size from pixel units into app units, to get an
     // aspect-ratio (which has to be represented as a nsSize) and an
     // IntrinsicSize that we can pass to ComputeObjectRenderRect.
-    nsSize aspectRatio(
+    IntrinsicSize intrinsicSize(
         nsPresContext::CSSPixelsToAppUnits(videoSizeInPx.width),
         nsPresContext::CSSPixelsToAppUnits(videoSizeInPx.height));
-    IntrinsicSize intrinsicSize;
-    intrinsicSize.width.SetCoordValue(aspectRatio.width);
-    intrinsicSize.height.SetCoordValue(aspectRatio.height);
+    auto aspectRatio =
+        AspectRatio::FromSize(videoSizeInPx.width, videoSizeInPx.height);
 
     nsRect dest = nsLayoutUtils::ComputeObjectDestRect(
         area, intrinsicSize, aspectRatio, Frame()->StylePosition());
@@ -456,19 +458,25 @@ class nsDisplayVideo : public nsDisplayItem {
     SwapScaleWidthHeightForRotation(scaleHint, rotationDeg);
     container->SetScaleHint(scaleHint);
 
+    Matrix transformHint;
+    if (rotationDeg != VideoInfo::Rotation::kDegree_0) {
+      transformHint = ComputeRotationMatrix(destGFXRect.Width(),
+                                            destGFXRect.Height(), rotationDeg);
+    }
+    container->SetTransformHint(transformHint);
+
+    // If the image container is empty, we don't want to fallback. Any other
+    // failure will be due to resource constraints and fallback is unlikely to
+    // help us. Hence we can ignore the return value from PushImage.
     LayoutDeviceRect rect(destGFXRect.x, destGFXRect.y, destGFXRect.width,
                           destGFXRect.height);
-    return aManager->CommandBuilder().PushImage(this, container, aBuilder,
-                                                aResources, aSc, rect);
+    aManager->CommandBuilder().PushImage(this, container, aBuilder, aResources,
+                                         aSc, rect, rect);
+    return true;
   }
 
-  // It would be great if we could override GetOpaqueRegion to return nonempty
-  // here, but it's probably not safe to do so in general. Video frames are
-  // updated asynchronously from decoder threads, and it's possible that
-  // we might have an opaque video frame when GetOpaqueRegion is called, but
-  // when we come to paint, the video frame is transparent or has gone
-  // away completely (e.g. because of a decoder error). The problem would
-  // be especially acute if we have off-main-thread rendering.
+  // For opaque videos, we will want to override GetOpaqueRegion here.
+  // This is tracked by bug 1545498.
 
   virtual nsRect GetBounds(nsDisplayListBuilder* aBuilder,
                            bool* aSnap) const override {
@@ -494,17 +502,18 @@ class nsDisplayVideo : public nsDisplayItem {
       // managers calling imageContainer->GetCurrentAsSurface can be
       // very expensive. So just always be active when compositing is
       // cheap (i.e. hardware accelerated).
-      return LAYER_ACTIVE;
+      return LayerState::LAYER_ACTIVE;
     }
     HTMLMediaElement* elem =
         static_cast<HTMLMediaElement*>(mFrame->GetContent());
-    return elem->IsPotentiallyPlaying() ? LAYER_ACTIVE_FORCE : LAYER_INACTIVE;
+    return elem->IsPotentiallyPlaying() ? LayerState::LAYER_ACTIVE_FORCE
+                                        : LayerState::LAYER_INACTIVE;
   }
 };
 
 void nsVideoFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                     const nsDisplayListSet& aLists) {
-  if (!IsVisibleForPainting(aBuilder)) return;
+  if (!IsVisibleForPainting()) return;
 
   DO_GLOBAL_REFLOW_COUNT_DSP("nsVideoFrame");
 
@@ -527,8 +536,7 @@ void nsVideoFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
       aBuilder, this, clipFlags);
 
   if (HasVideoElement() && !shouldDisplayPoster) {
-    aLists.Content()->AppendToTop(
-        MakeDisplayItem<nsDisplayVideo>(aBuilder, this));
+    aLists.Content()->AppendNewToTop<nsDisplayVideo>(aBuilder, this);
   }
 
   // Add child frames to display list. We expect various children,
@@ -540,8 +548,7 @@ void nsVideoFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
       nsDisplayListBuilder::AutoBuildingDisplayList buildingForChild(
           aBuilder, child,
           aBuilder->GetVisibleRect() - child->GetOffsetTo(this),
-          aBuilder->GetDirtyRect() - child->GetOffsetTo(this),
-          aBuilder->IsAtRootOfPseudoStackingContext());
+          aBuilder->GetDirtyRect() - child->GetOffsetTo(this));
 
       child->BuildDisplayListForStackingContext(aBuilder, aLists.Content());
     }
@@ -563,25 +570,19 @@ LogicalSize nsVideoFrame::ComputeSize(
     nscoord aAvailableISize, const LogicalSize& aMargin,
     const LogicalSize& aBorder, const LogicalSize& aPadding,
     ComputeSizeFlags aFlags) {
-// When in no video scenario, it should fall back to inherited method.
-// We keep old codepath here since Android still uses XUL media controls.
-// This will go away in bug 1310907.
-#ifndef ANDROID
   if (!HasVideoElement()) {
     return nsContainerFrame::ComputeSize(aRenderingContext, aWM, aCBSize,
                                          aAvailableISize, aMargin, aBorder,
                                          aPadding, aFlags);
   }
-#endif  // ANDROID
 
   nsSize size = GetVideoIntrinsicSize(aRenderingContext);
-
-  IntrinsicSize intrinsicSize;
-  intrinsicSize.width.SetCoordValue(size.width);
-  intrinsicSize.height.SetCoordValue(size.height);
+  IntrinsicSize intrinsicSize(size.width, size.height);
 
   // Only video elements have an intrinsic ratio.
-  nsSize intrinsicRatio = HasVideoElement() ? size : nsSize(0, 0);
+  auto intrinsicRatio = HasVideoElement()
+                            ? AspectRatio::FromSize(size.width, size.height)
+                            : AspectRatio();
 
   return ComputeSizeWithIntrinsicDimensions(
       aRenderingContext, aWM, intrinsicSize, intrinsicRatio, aCBSize, aMargin,
@@ -590,7 +591,7 @@ LogicalSize nsVideoFrame::ComputeSize(
 
 nscoord nsVideoFrame::GetMinISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_MIN_WIDTH(this, result);
+  DISPLAY_MIN_INLINE_SIZE(this, result);
 
   if (HasVideoElement()) {
     nsSize size = GetVideoIntrinsicSize(aRenderingContext);
@@ -599,7 +600,7 @@ nscoord nsVideoFrame::GetMinISize(gfxContext* aRenderingContext) {
     // We expect last and only child of audio elements to be control if
     // "controls" attribute is present.
     nsIFrame* kid = mFrames.LastChild();
-    if (kid) {
+    if (!StyleDisplay()->IsContainSize() && kid) {
       result = nsLayoutUtils::IntrinsicForContainer(aRenderingContext, kid,
                                                     nsLayoutUtils::MIN_ISIZE);
     } else {
@@ -612,7 +613,7 @@ nscoord nsVideoFrame::GetMinISize(gfxContext* aRenderingContext) {
 
 nscoord nsVideoFrame::GetPrefISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_PREF_WIDTH(this, result);
+  DISPLAY_PREF_INLINE_SIZE(this, result);
 
   if (HasVideoElement()) {
     nsSize size = GetVideoIntrinsicSize(aRenderingContext);
@@ -621,7 +622,7 @@ nscoord nsVideoFrame::GetPrefISize(gfxContext* aRenderingContext) {
     // We expect last and only child of audio elements to be control if
     // "controls" attribute is present.
     nsIFrame* kid = mFrames.LastChild();
-    if (kid) {
+    if (!StyleDisplay()->IsContainSize() && kid) {
       result = nsLayoutUtils::IntrinsicForContainer(aRenderingContext, kid,
                                                     nsLayoutUtils::PREF_ISIZE);
     } else {
@@ -632,13 +633,14 @@ nscoord nsVideoFrame::GetPrefISize(gfxContext* aRenderingContext) {
   return result;
 }
 
-nsSize nsVideoFrame::GetIntrinsicRatio() {
+AspectRatio nsVideoFrame::GetIntrinsicRatio() {
   if (!HasVideoElement()) {
     // Audio elements have no intrinsic ratio.
-    return nsSize(0, 0);
+    return AspectRatio();
   }
 
-  return GetVideoIntrinsicSize(nullptr);
+  nsSize size = GetVideoIntrinsicSize(nullptr);
+  return AspectRatio::FromSize(size.width, size.height);
 }
 
 bool nsVideoFrame::ShouldDisplayPoster() {
@@ -665,23 +667,13 @@ bool nsVideoFrame::ShouldDisplayPoster() {
 }
 
 nsSize nsVideoFrame::GetVideoIntrinsicSize(gfxContext* aRenderingContext) {
+  // 'contain:size' replaced elements have intrinsic size 0,0.
+  if (StyleDisplay()->IsContainSize()) {
+    return nsSize(0, 0);
+  }
+
   // Defaulting size to 300x150 if no size given.
   nsIntSize size(300, 150);
-
-// All media controls have been converted to HTML except Android. Hence
-// we keep this codepath for Android until removal in bug 1310907.
-#ifdef ANDROID
-  if (!HasVideoElement()) {
-    if (!mFrames.FirstChild()) {
-      return nsSize(0, 0);
-    }
-
-    // Ask the controls frame what its preferred height is
-    nsBoxLayoutState boxState(PresContext(), aRenderingContext, 0);
-    nscoord prefHeight = mFrames.LastChild()->GetXULPrefSize(boxState).height;
-    return nsSize(nsPresContext::CSSPixelsToAppUnits(size.width), prefHeight);
-  }
-#endif  // ANDROID
 
   HTMLVideoElement* element = static_cast<HTMLVideoElement*>(GetContent());
   if (NS_FAILED(element->GetVideoSize(&size)) && ShouldDisplayPoster()) {

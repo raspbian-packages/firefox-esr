@@ -86,6 +86,10 @@ class ChromeCastPlayer implements GeckoMediaPlayer {
         public void onStatusUpdated() {
             MediaStatus mediaStatus = remoteMediaPlayer.getMediaStatus();
 
+            if (mediaStatus == null) {
+                return;
+            }
+
             switch (mediaStatus.getPlayerState()) {
             case MediaStatus.PLAYER_STATE_PLAYING:
                 EventDispatcher.getInstance().dispatch("MediaPlayer:Playing", null);
@@ -194,7 +198,7 @@ class ChromeCastPlayer implements GeckoMediaPlayer {
         obj.putString("uuid", route.getId());
         obj.putString("version", device.getDeviceVersion());
         obj.putString("friendlyName", device.getFriendlyName());
-        obj.putString("location", device.getIpAddress().toString());
+        obj.putString("location", device.getInetAddress().toString());
         obj.putString("modelName", device.getModelName());
         obj.putBoolean("mirror", canMirror);
         // For now we just assume all of these are Google devices

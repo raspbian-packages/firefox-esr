@@ -6,7 +6,7 @@ Bug 1067491 - Test that frames keep the same index while we are recording.
 <head>
   <meta charset="utf-8">
   <title>Memory monitoring actor test</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -15,11 +15,11 @@ Bug 1067491 - Test that frames keep the same index while we are recording.
 <script>
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
 
-  (async function () {
-    let { memory, client } = await startServerAndGetSelectedTabMemory();
+  (async function() {
+    const { memory, target } = await startServerAndGetSelectedTabMemory();
     await memory.attach();
 
     await memory.startRecordingAllocations();
@@ -28,18 +28,18 @@ window.onload = function () {
     // allocating directly in the generator), but with getAllocations() calls in
     // between.
 
-    let allocs = [];
+    const allocs = [];
     function allocator() {
       allocs.push({});
     }
 
     setTimeout(allocator, 1);
     await waitForTime(2);
-    let first = await memory.getAllocations();
+    const first = await memory.getAllocations();
 
     setTimeout(allocator, 1);
     await waitForTime(2);
-    let second = await memory.getAllocations();
+    const second = await memory.getAllocations();
 
     await memory.stopRecordingAllocations();
 
@@ -71,7 +71,7 @@ window.onload = function () {
     }
 
     await memory.detach();
-    destroyServerAndFinish(client);
+    destroyServerAndFinish(target);
   })();
 };
 </script>

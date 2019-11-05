@@ -2,9 +2,12 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-XPCOMUtils.defineLazyServiceGetter(this, "pluginHost",
-                                   "@mozilla.org/plugin/host;1",
-                                   "nsIPluginHost");
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "pluginHost",
+  "@mozilla.org/plugin/host;1",
+  "nsIPluginHost"
+);
 
 // Returns the chrome side nsIPluginTag for the test plugin.
 function getTestPlugin() {
@@ -16,7 +19,10 @@ function getTestPlugin() {
   return plugin;
 }
 
-const TEST_ROOT = getRootDirectory(gTestPath).replace("chrome://mochitests/content/", "http://127.0.0.1:8888/");
+const TEST_ROOT = getRootDirectory(gTestPath).replace(
+  "chrome://mochitests/content/",
+  "http://127.0.0.1:8888/"
+);
 const TEST_URL = TEST_ROOT + "file_clearplugindata.html";
 const REFERENCE_DATE = Date.now();
 const PLUGIN_TAG = getTestPlugin();
@@ -59,7 +65,7 @@ add_task(async function testPluginData() {
       if (msg == "removePluginData") {
         await browser.browsingData.removePluginData(options);
       } else {
-        await browser.browsingData.remove(options, {pluginData: true});
+        await browser.browsingData.remove(options, { pluginData: true });
       }
       browser.test.sendMessage("pluginDataRemoved");
     });
@@ -79,14 +85,16 @@ add_task(async function testPluginData() {
     let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, TEST_URL);
     await promiseUpdatePluginBindings(gBrowser.selectedBrowser);
 
-    ok(stored(["foo.com", "bar.com", "baz.com", "qux.com"]),
-       "Data stored for sites");
+    ok(
+      stored(["foo.com", "bar.com", "baz.com", "qux.com"]),
+      "Data stored for sites"
+    );
 
     extension.sendMessage(method, {});
     await extension.awaitMessage("pluginDataRemoved");
 
     ok(!stored(null), "All data cleared");
-    await BrowserTestUtils.removeTab(tab);
+    BrowserTestUtils.removeTab(tab);
 
     // Clear history with recent since value.
 
@@ -94,16 +102,18 @@ add_task(async function testPluginData() {
     tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, TEST_URL);
     await promiseUpdatePluginBindings(gBrowser.selectedBrowser);
 
-    ok(stored(["foo.com", "bar.com", "baz.com", "qux.com"]),
-       "Data stored for sites");
+    ok(
+      stored(["foo.com", "bar.com", "baz.com", "qux.com"]),
+      "Data stored for sites"
+    );
 
-    extension.sendMessage(method, {since: REFERENCE_DATE - 20000});
+    extension.sendMessage(method, { since: REFERENCE_DATE - 20000 });
     await extension.awaitMessage("pluginDataRemoved");
 
     ok(stored(["bar.com", "qux.com"]), "Data stored for sites");
     ok(!stored(["foo.com"]), "Data cleared for foo.com");
     ok(!stored(["baz.com"]), "Data cleared for baz.com");
-    await BrowserTestUtils.removeTab(tab);
+    BrowserTestUtils.removeTab(tab);
 
     // Clear history with old since value.
 
@@ -111,14 +121,16 @@ add_task(async function testPluginData() {
     tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, TEST_URL);
     await promiseUpdatePluginBindings(gBrowser.selectedBrowser);
 
-    ok(stored(["foo.com", "bar.com", "baz.com", "qux.com"]),
-       "Data stored for sites");
+    ok(
+      stored(["foo.com", "bar.com", "baz.com", "qux.com"]),
+      "Data stored for sites"
+    );
 
-    extension.sendMessage(method, {since: REFERENCE_DATE - 1000000});
+    extension.sendMessage(method, { since: REFERENCE_DATE - 1000000 });
     await extension.awaitMessage("pluginDataRemoved");
 
     ok(!stored(null), "All data cleared");
-    await BrowserTestUtils.removeTab(tab);
+    BrowserTestUtils.removeTab(tab);
   }
 
   Services.prefs.setBoolPref("plugins.click_to_play", true);

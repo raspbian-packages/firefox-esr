@@ -12,10 +12,11 @@ var EXPORTED_SYMBOLS = [
 ];
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
-Cu.import("chrome://reftest/content/globals.jsm", this);
-Cu.import("chrome://reftest/content/httpd.jsm", this);
-Cu.import("chrome://reftest/content/manifest.jsm", this);
-Cu.import("chrome://reftest/content/StructuredLog.jsm", this);
+Cu.import("resource://reftest/globals.jsm", this);
+Cu.import("resource://reftest/httpd.jsm", this);
+Cu.import("resource://reftest/manifest.jsm", this);
+Cu.import("resource://reftest/StructuredLog.jsm", this);
+Cu.import("resource://reftest/PerTestCoverageUtils.jsm", this);
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import('resource://gre/modules/XPCOMUtils.jsm');
@@ -163,7 +164,7 @@ function OnRefTestLoad(win)
 
     g.browserIsIframe = prefs.getBoolPref("reftest.browser.iframe.enabled", false);
 
-    g.logLevel = prefs.getCharPref("reftest.logLevel", "info");
+    g.logLevel = prefs.getStringPref("reftest.logLevel", "info");
 
     if (win === undefined || win == null) {
       win = window;
@@ -177,7 +178,6 @@ function OnRefTestLoad(win)
       g.browser.setAttribute("mozbrowser", "");
     } else {
       g.browser = g.containingWindow.document.createElementNS(XUL_NS, "xul:browser");
-      g.browser.setAttribute("class", "lightweight");
     }
     g.browser.setAttribute("id", "browser");
     g.browser.setAttribute("type", "content");
@@ -237,7 +237,7 @@ function InitAndStartRefTests()
 
     /* Get the logfile for android tests */
     try {
-        var logFile = prefs.getCharPref("reftest.logFile");
+        var logFile = prefs.getStringPref("reftest.logFile");
         if (logFile) {
             var f = FileUtils.File(logFile);
             g.logFile = FileUtils.openFileOutputStream(f, FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE);
@@ -259,17 +259,12 @@ function InitAndStartRefTests()
     }
 
     try {
-        g.focusFilterMode = prefs.getCharPref("reftest.focusFilterMode");
+        g.focusFilterMode = prefs.getStringPref("reftest.focusFilterMode");
     } catch(e) {}
 
     try {
         g.compareRetainedDisplayLists = prefs.getBoolPref("reftest.compareRetainedDisplayLists");
     } catch (e) {}
-#ifdef MOZ_STYLO
-    try {
-        g.compareStyloToGecko = prefs.getBoolPref("reftest.compareStyloToGecko");
-    } catch(e) {}
-#endif
 
 #ifdef MOZ_ENABLE_SKIA_PDF
     try {
@@ -284,7 +279,7 @@ function InitAndStartRefTests()
     }
 #endif
 
-    g.windowUtils = g.containingWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+    g.windowUtils = g.containingWindow.windowUtils;
     if (!g.windowUtils || !g.windowUtils.compareCanvases)
         throw "nsIDOMWindowUtils inteface missing";
 
@@ -362,9 +357,9 @@ function ReadTests() {
          * The latter two modes are used to pass test data back and forth
          * with python harness.
         */
-        let manifests = prefs.getCharPref("reftest.manifests", null);
-        let dumpTests = prefs.getCharPref("reftest.manifests.dumpTests", null);
-        let testList = prefs.getCharPref("reftest.tests", null);
+        let manifests = prefs.getStringPref("reftest.manifests", null);
+        let dumpTests = prefs.getStringPref("reftest.manifests.dumpTests", null);
+        let testList = prefs.getStringPref("reftest.tests", null);
 
         if ((testList && manifests) || !(testList || manifests)) {
             logger.error("Exactly one of reftest.manifests or reftest.tests must be specified.");
@@ -385,14 +380,12 @@ function ReadTests() {
             });
         } else if (manifests) {
             // Parse reftest manifests
-            // XXX There is a race condition in the manifest parsing code which
-            // sometimes shows up on Android jsreftests (bug 1416125). It seems
-            // adding/removing log statements can change its frequency.
             logger.debug("Reading " + manifests.length + " manifests");
             manifests = JSON.parse(manifests);
             g.urlsFilterRegex = manifests[null];
 
             var globalFilter = manifests.hasOwnProperty("") ? new RegExp(manifests[""]) : null;
+            delete manifests[""];
             var manifestURLs = Object.keys(manifests);
 
             // Ensure we read manifests from higher up the directory tree first so that we
@@ -511,7 +504,7 @@ function StartTests()
             var ids = g.urls.map(function(obj) {
                 return obj.identifier;
             });
-            var suite = prefs.getCharPref('reftest.suite', 'reftest');
+            var suite = prefs.getStringPref('reftest.suite', 'reftest');
             logger.suiteStart(ids, suite, {"skipped": g.urls.length - numActiveTests});
             g.suiteStarted = true
         }
@@ -521,11 +514,17 @@ function StartTests()
         }
 
         g.totalTests = g.urls.length;
-        if (!g.totalTests && !g.verify)
+        if (!g.totalTests && !g.verify && !g.repeat)
             throw "No tests to run";
 
         g.uriCanvases = {};
-        StartCurrentTest();
+
+        PerTestCoverageUtils.beforeTest()
+        .then(StartCurrentTest)
+        .catch(e => {
+            logger.error("EXCEPTION: " + e);
+            DoneTests();
+        });
     } catch (ex) {
         //g.browser.loadURI('data:text/plain,' + ex);
         ++g.testResults.Exception;
@@ -639,7 +638,7 @@ function StartCurrentTest()
     } else if (g.urls.length == 0 && g.repeat > 0) {
         // Repeat
         g.repeat--;
-        StartTests();
+        ReadTests();
     } else {
         if (g.urls[0].chaosMode) {
             g.windowUtils.enterChaosMode();
@@ -683,7 +682,7 @@ function StartCurrentURI(aURLTargetType)
                     }
                 } else if (ps.type == PREF_STRING) {
                     try {
-                        oldVal = prefs.getCharPref(ps.name);
+                        oldVal = prefs.getStringPref(ps.name);
                     } catch (e) {
                         badPref = "string preference '" + ps.name + "'";
                         throw "bad pref";
@@ -706,7 +705,7 @@ function StartCurrentURI(aURLTargetType)
                     if (ps.type == PREF_BOOLEAN) {
                         prefs.setBoolPref(ps.name, value);
                     } else if (ps.type == PREF_STRING) {
-                        prefs.setCharPref(ps.name, value);
+                        prefs.setStringPref(ps.name, value);
                         value = '"' + value + '"';
                     } else if (ps.type == PREF_INTEGER) {
                         prefs.setIntPref(ps.name, value);
@@ -765,28 +764,32 @@ function StartCurrentURI(aURLTargetType)
 
 function DoneTests()
 {
-    if (g.manageSuite) {
-        g.suiteStarted = false
-        logger.suiteEnd({'results': g.testResults});
-    } else {
-        logger._logData('results', {results: g.testResults});
-    }
-    logger.info("Slowest test took " + g.slowestTestTime + "ms (" + g.slowestTestURL + ")");
-    logger.info("Total canvas count = " + g.recycledCanvases.length);
-    if (g.failedUseWidgetLayers) {
-        LogWidgetLayersFailure();
-    }
+    PerTestCoverageUtils.afterTest()
+    .catch(e => logger.error("EXCEPTION: " + e))
+    .then(() => {
+        if (g.manageSuite) {
+            g.suiteStarted = false
+            logger.suiteEnd({'results': g.testResults});
+        } else {
+            logger._logData('results', {results: g.testResults});
+        }
+        logger.info("Slowest test took " + g.slowestTestTime + "ms (" + g.slowestTestURL + ")");
+        logger.info("Total canvas count = " + g.recycledCanvases.length);
+        if (g.failedUseWidgetLayers) {
+            LogWidgetLayersFailure();
+        }
 
-    function onStopped() {
-        let appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
-        appStartup.quit(Ci.nsIAppStartup.eForceQuit);
-    }
-    if (g.server) {
-        g.server.stop(onStopped);
-    }
-    else {
-        onStopped();
-    }
+        function onStopped() {
+            let appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
+            appStartup.quit(Ci.nsIAppStartup.eForceQuit);
+        }
+        if (g.server) {
+            g.server.stop(onStopped);
+        }
+        else {
+            onStopped();
+        }
+    });
 }
 
 function UpdateCanvasCache(url, canvas)
@@ -936,6 +939,12 @@ function RecordResult(testRunTime, errorMsg, typeSpecificResults)
     };
     // for EXPECTED_FUZZY we need special handling because we can have
     // Pass, UnexpectedPass, or UnexpectedFail
+
+    if ((g.currentURLTargetType == URL_TARGET_TYPE_TEST && g.urls[0].wrCapture.test) ||
+        (g.currentURLTargetType == URL_TARGET_TYPE_REFERENCE && g.urls[0].wrCapture.ref)) {
+      logger.info("Running webrender capture");
+      g.windowUtils.wrCapture();
+    }
 
     var output;
     var extra;
@@ -1267,7 +1276,7 @@ function FindUnexpectedCrashDumpFiles()
 
     let foundCrashDumpFile = false;
     while (entries.hasMoreElements()) {
-        let file = entries.getNext().QueryInterface(Ci.nsIFile);
+        let file = entries.nextFile;
         let path = String(file.path);
         if (path.match(/\.(dmp|extra)$/) && !g.unexpectedCrashDumpFiles[path]) {
             if (!foundCrashDumpFile) {
@@ -1293,7 +1302,7 @@ function RemovePendingCrashDumpFiles()
 
     let entries = g.pendingCrashDumpDir.directoryEntries;
     while (entries.hasMoreElements()) {
-        let file = entries.getNext().QueryInterface(Ci.nsIFile);
+        let file = entries.nextFile;
         if (file.isFile()) {
           file.remove(false);
           logger.info("This test left pending crash dumps; deleted "+file.path);
@@ -1375,7 +1384,7 @@ function RestoreChangedPreferences()
             if (ps.type == PREF_BOOLEAN) {
                 prefs.setBoolPref(ps.name, value);
             } else if (ps.type == PREF_STRING) {
-                prefs.setCharPref(ps.name, value);
+                prefs.setStringPref(ps.name, value);
                 value = '"' + value + '"';
             } else if (ps.type == PREF_INTEGER) {
                 prefs.setIntPref(ps.name, value);
@@ -1457,7 +1466,7 @@ function RegisterMessageListenersAndLoadContentScript()
         function (m) { RecvExpectProcessCrash(); }
     );
 
-    g.browserMessageManager.loadFrameScript("chrome://reftest/content/reftest-content.js", true, true);
+    g.browserMessageManager.loadFrameScript("resource://reftest/reftest-content.js", true, true);
 }
 
 function RecvAssertionCount(count)

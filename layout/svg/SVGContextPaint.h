@@ -21,10 +21,14 @@
 #include "ImgDrawResult.h"
 
 class gfxContext;
-class nsIDocument;
+
 class nsSVGPaintServerFrame;
 
 namespace mozilla {
+
+namespace dom {
+class SVGDocument;
+}
 
 /**
  * This class is used to pass information about a context element through to
@@ -58,7 +62,7 @@ class SVGContextPaint : public RefCounted<SVGContextPaint> {
  public:
   MOZ_DECLARE_REFCOUNTED_TYPENAME(SVGContextPaint)
 
-  virtual ~SVGContextPaint() {}
+  virtual ~SVGContextPaint() = default;
 
   virtual already_AddRefed<gfxPattern> GetFillPattern(
       const DrawTarget* aDrawTarget, float aOpacity, const gfxMatrix& aCTM,
@@ -123,15 +127,15 @@ class SVGContextPaint : public RefCounted<SVGContextPaint> {
  */
 class MOZ_RAII AutoSetRestoreSVGContextPaint {
  public:
-  AutoSetRestoreSVGContextPaint(const SVGContextPaint* aContextPaint,
-                                nsIDocument* aSVGDocument);
+  AutoSetRestoreSVGContextPaint(const SVGContextPaint& aContextPaint,
+                                dom::SVGDocument& aSVGDocument);
   ~AutoSetRestoreSVGContextPaint();
 
  private:
-  nsIDocument* mSVGDocument;
+  dom::SVGDocument& mSVGDocument;
   // The context paint that needs to be restored by our dtor after it removes
   // aContextPaint:
-  void* mOuterContextPaint;
+  const SVGContextPaint* mOuterContextPaint;
 };
 
 /**
@@ -161,7 +165,7 @@ struct SVGContextPaintImpl : public SVGContextPaint {
   float GetStrokeOpacity() const override { return mStrokeOpacity; }
 
   struct Paint {
-    Paint() : mPaintType(eStyleSVGPaintType_None) {}
+    Paint() : mPaintDefinition{}, mPaintType(eStyleSVGPaintType_None) {}
 
     void SetPaintServer(nsIFrame* aFrame, const gfxMatrix& aContextMatrix,
                         nsSVGPaintServerFrame* aPaintServerFrame) {

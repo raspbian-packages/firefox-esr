@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,46 +20,46 @@
 using namespace mozilla;
 
 struct txCoreFunctionDescriptor {
-  int8_t mMinParams;
-  int8_t mMaxParams;
-  Expr::ResultType mReturnType;
-  nsStaticAtom** mName;
+  const int8_t mMinParams;
+  const int8_t mMaxParams;
+  const Expr::ResultType mReturnType;
+  const nsStaticAtom* const mName;
 };
 
 // This must be ordered in the same order as txCoreFunctionCall::eType.
 // If you change one, change the other.
 static const txCoreFunctionDescriptor descriptTable[] = {
-    {1, 1, Expr::NUMBER_RESULT, &nsGkAtoms::count},         // COUNT
-    {1, 1, Expr::NODESET_RESULT, &nsGkAtoms::id},           // ID
-    {0, 0, Expr::NUMBER_RESULT, &nsGkAtoms::last},          // LAST
-    {0, 1, Expr::STRING_RESULT, &nsGkAtoms::localName},     // LOCAL_NAME
-    {0, 1, Expr::STRING_RESULT, &nsGkAtoms::namespaceUri},  // NAMESPACE_URI
-    {0, 1, Expr::STRING_RESULT, &nsGkAtoms::name},          // NAME
-    {0, 0, Expr::NUMBER_RESULT, &nsGkAtoms::position},      // POSITION
+    {1, 1, Expr::NUMBER_RESULT, nsGkAtoms::count},         // COUNT
+    {1, 1, Expr::NODESET_RESULT, nsGkAtoms::id},           // ID
+    {0, 0, Expr::NUMBER_RESULT, nsGkAtoms::last},          // LAST
+    {0, 1, Expr::STRING_RESULT, nsGkAtoms::localName},     // LOCAL_NAME
+    {0, 1, Expr::STRING_RESULT, nsGkAtoms::namespaceUri},  // NAMESPACE_URI
+    {0, 1, Expr::STRING_RESULT, nsGkAtoms::name},          // NAME
+    {0, 0, Expr::NUMBER_RESULT, nsGkAtoms::position},      // POSITION
 
-    {2, -1, Expr::STRING_RESULT, &nsGkAtoms::concat},         // CONCAT
-    {2, 2, Expr::BOOLEAN_RESULT, &nsGkAtoms::contains},       // CONTAINS
-    {0, 1, Expr::STRING_RESULT, &nsGkAtoms::normalizeSpace},  // NORMALIZE_SPACE
-    {2, 2, Expr::BOOLEAN_RESULT, &nsGkAtoms::startsWith},     // STARTS_WITH
-    {0, 1, Expr::STRING_RESULT, &nsGkAtoms::string},          // STRING
-    {0, 1, Expr::NUMBER_RESULT, &nsGkAtoms::stringLength},    // STRING_LENGTH
-    {2, 3, Expr::STRING_RESULT, &nsGkAtoms::substring},       // SUBSTRING
-    {2, 2, Expr::STRING_RESULT, &nsGkAtoms::substringAfter},  // SUBSTRING_AFTER
+    {2, -1, Expr::STRING_RESULT, nsGkAtoms::concat},         // CONCAT
+    {2, 2, Expr::BOOLEAN_RESULT, nsGkAtoms::contains},       // CONTAINS
+    {0, 1, Expr::STRING_RESULT, nsGkAtoms::normalizeSpace},  // NORMALIZE_SPACE
+    {2, 2, Expr::BOOLEAN_RESULT, nsGkAtoms::startsWith},     // STARTS_WITH
+    {0, 1, Expr::STRING_RESULT, nsGkAtoms::string},          // STRING
+    {0, 1, Expr::NUMBER_RESULT, nsGkAtoms::stringLength},    // STRING_LENGTH
+    {2, 3, Expr::STRING_RESULT, nsGkAtoms::substring},       // SUBSTRING
+    {2, 2, Expr::STRING_RESULT, nsGkAtoms::substringAfter},  // SUBSTRING_AFTER
     {2, 2, Expr::STRING_RESULT,
-     &nsGkAtoms::substringBefore},                       // SUBSTRING_BEFORE
-    {3, 3, Expr::STRING_RESULT, &nsGkAtoms::translate},  // TRANSLATE
+     nsGkAtoms::substringBefore},                       // SUBSTRING_BEFORE
+    {3, 3, Expr::STRING_RESULT, nsGkAtoms::translate},  // TRANSLATE
 
-    {0, 1, Expr::NUMBER_RESULT, &nsGkAtoms::number},   // NUMBER
-    {1, 1, Expr::NUMBER_RESULT, &nsGkAtoms::round},    // ROUND
-    {1, 1, Expr::NUMBER_RESULT, &nsGkAtoms::floor},    // FLOOR
-    {1, 1, Expr::NUMBER_RESULT, &nsGkAtoms::ceiling},  // CEILING
-    {1, 1, Expr::NUMBER_RESULT, &nsGkAtoms::sum},      // SUM
+    {0, 1, Expr::NUMBER_RESULT, nsGkAtoms::number},   // NUMBER
+    {1, 1, Expr::NUMBER_RESULT, nsGkAtoms::round},    // ROUND
+    {1, 1, Expr::NUMBER_RESULT, nsGkAtoms::floor},    // FLOOR
+    {1, 1, Expr::NUMBER_RESULT, nsGkAtoms::ceiling},  // CEILING
+    {1, 1, Expr::NUMBER_RESULT, nsGkAtoms::sum},      // SUM
 
-    {1, 1, Expr::BOOLEAN_RESULT, &nsGkAtoms::boolean},  // BOOLEAN
-    {0, 0, Expr::BOOLEAN_RESULT, &nsGkAtoms::_false},   // _FALSE
-    {1, 1, Expr::BOOLEAN_RESULT, &nsGkAtoms::lang},     // LANG
-    {1, 1, Expr::BOOLEAN_RESULT, &nsGkAtoms::_not},     // _NOT
-    {0, 0, Expr::BOOLEAN_RESULT, &nsGkAtoms::_true}     // _TRUE
+    {1, 1, Expr::BOOLEAN_RESULT, nsGkAtoms::boolean},  // BOOLEAN
+    {0, 0, Expr::BOOLEAN_RESULT, nsGkAtoms::_false},   // _FALSE
+    {1, 1, Expr::BOOLEAN_RESULT, nsGkAtoms::lang},     // LANG
+    {1, 1, Expr::BOOLEAN_RESULT, nsGkAtoms::_not},     // _NOT
+    {0, 0, Expr::BOOLEAN_RESULT, nsGkAtoms::_true}     // _TRUE
 };
 
 /*
@@ -187,7 +187,9 @@ nsresult txCoreFunctionCall::evaluate(txIEvalContext* aContext,
 
           return NS_OK;
         }
-        default: { MOZ_CRASH("Unexpected mType?!"); }
+        default: {
+          MOZ_CRASH("Unexpected mType?!");
+        }
       }
       MOZ_CRASH("Inner mType switch should have returned!");
     }
@@ -641,7 +643,7 @@ bool txCoreFunctionCall::isSensitiveTo(ContextSensitivity aContext) {
     }
   }
 
-  NS_NOTREACHED("how'd we get here?");
+  MOZ_ASSERT_UNREACHABLE("how'd we get here?");
   return true;
 }
 
@@ -649,7 +651,7 @@ bool txCoreFunctionCall::isSensitiveTo(ContextSensitivity aContext) {
 bool txCoreFunctionCall::getTypeFromAtom(nsAtom* aName, eType& aType) {
   uint32_t i;
   for (i = 0; i < ArrayLength(descriptTable); ++i) {
-    if (aName == *descriptTable[i].mName) {
+    if (aName == descriptTable[i].mName) {
       aType = static_cast<eType>(i);
 
       return true;
@@ -660,8 +662,7 @@ bool txCoreFunctionCall::getTypeFromAtom(nsAtom* aName, eType& aType) {
 }
 
 #ifdef TX_TO_STRING
-nsresult txCoreFunctionCall::getNameAtom(nsAtom** aAtom) {
-  NS_ADDREF(*aAtom = *descriptTable[mType].mName);
-  return NS_OK;
+void txCoreFunctionCall::appendName(nsAString& aDest) {
+  aDest.Append(descriptTable[mType].mName->GetUTF16String());
 }
 #endif

@@ -6,6 +6,8 @@
 #include "nsIThread.h"
 #include "nsThreadUtils.h"
 #include "nsUrlClassifierUtils.h"
+#include "mozilla/Components.h"
+#include "mozilla/Unused.h"
 
 using namespace mozilla;
 using namespace mozilla::safebrowsing;
@@ -13,10 +15,13 @@ using namespace mozilla::safebrowsing;
 #define GTEST_SAFEBROWSING_DIR NS_LITERAL_CSTRING("safebrowsing")
 #define GTEST_TABLE NS_LITERAL_CSTRING("gtest-malware-proto")
 
+typedef nsCString _Prefix;
+typedef nsTArray<_Prefix> _PrefixArray;
+
 template <typename Function>
 void RunTestInNewThread(Function&& aFunction) {
   nsCOMPtr<nsIRunnable> r = NS_NewRunnableFunction(
-      "RunTestInNewThread", mozilla::Forward<Function>(aFunction));
+      "RunTestInNewThread", std::forward<Function>(aFunction));
   nsCOMPtr<nsIThread> testingThread;
   nsresult rv =
       NS_NewNamedThread("Testing Thread", getter_AddRefs(testingThread), r);
@@ -24,8 +29,8 @@ void RunTestInNewThread(Function&& aFunction) {
   testingThread->Shutdown();
 }
 
-nsresult SyncApplyUpdates(Classifier* aClassifier,
-                          nsTArray<TableUpdate*>* aUpdates) {
+nsresult SyncApplyUpdates(RefPtr<Classifier> aClassifier,
+                          TableUpdateArray& aUpdates) {
   // We need to spin a new thread specifically because the callback
   // will be on the caller thread. If we call Classifier::AsyncApplyUpdates
   // and wait on the same thread, this function will never return.
@@ -82,28 +87,23 @@ already_AddRefed<nsIFile> GetFile(const nsTArray<nsString>& path) {
   return file.forget();
 }
 
-void ApplyUpdate(nsTArray<TableUpdate*>& updates) {
+void ApplyUpdate(TableUpdateArray& updates) {
   nsCOMPtr<nsIFile> file;
   NS_GetSpecialDirectory(NS_APP_USER_PROFILE_50_DIR, getter_AddRefs(file));
 
-  UniquePtr<Classifier> classifier(new Classifier());
+  RefPtr<Classifier> classifier = new Classifier();
   classifier->Open(*file);
 
-  {
-    // Force nsIUrlClassifierUtils loading on main thread
-    // because nsIUrlClassifierDBService will not run in advance
-    // in gtest.
-    nsresult rv;
-    nsCOMPtr<nsIUrlClassifierUtils> dummy =
-        do_GetService(NS_URLCLASSIFIERUTILS_CONTRACTID, &rv);
-    ASSERT_TRUE(NS_SUCCEEDED(rv));
-  }
+  // Force nsUrlClassifierUtils loading on main thread
+  // because nsIUrlClassifierDBService will not run in advance
+  // in gtest.
+  nsUrlClassifierUtils::GetInstance();
 
-  SyncApplyUpdates(classifier.get(), &updates);
+  SyncApplyUpdates(classifier, updates);
 }
 
 void ApplyUpdate(TableUpdate* update) {
-  nsTArray<TableUpdate*> updates = {update};
+  TableUpdateArray updates = {update};
   ApplyUpdate(updates);
 }
 
@@ -150,6 +150,59 @@ nsCString GeneratePrefix(const nsCString& aFragment, uint8_t aLength) {
   return hash;
 }
 
+void SetupPrefixMap(const _PrefixArray& array, PrefixStringMap& map) {
+  map.Clear();
+
+  // Buckets are keyed by prefix length and contain an array of
+  // all prefixes of that length.
+  nsClassHashtable<nsUint32HashKey, _PrefixArray> table;
+
+  for (uint32_t i = 0; i < array.Length(); i++) {
+    _PrefixArray* prefixes = table.Get(array[i].Length());
+    if (!prefixes) {
+      prefixes = new _PrefixArray();
+      table.Put(array[i].Length(), prefixes);
+    }
+
+    prefixes->AppendElement(array[i]);
+  }
+
+  // The resulting map entries will be a concatenation of all
+  // prefix data for the prefixes of a given size.
+  for (auto iter = table.Iter(); !iter.Done(); iter.Next()) {
+    uint32_t size = iter.Key();
+    uint32_t count = iter.Data()->Length();
+
+    _Prefix* str = new _Prefix();
+    str->SetLength(size * count);
+
+    char* dst = str->BeginWriting();
+
+    iter.Data()->Sort();
+    for (uint32_t i = 0; i < count; i++) {
+      memcpy(dst, iter.Data()->ElementAt(i).get(), size);
+      dst += size;
+    }
+
+    map.Put(size, str);
+  }
+}
+
+void CheckContent(LookupCacheV4* cache, const _PrefixArray& array) {
+  PrefixStringMap vlPSetMap;
+  cache->GetPrefixes(vlPSetMap);
+
+  PrefixStringMap expected;
+  SetupPrefixMap(array, expected);
+
+  for (auto iter = vlPSetMap.Iter(); !iter.Done(); iter.Next()) {
+    nsCString* expectedPrefix = expected.Get(iter.Key());
+    nsCString* resultPrefix = iter.Data();
+
+    ASSERT_TRUE(resultPrefix->Equals(*expectedPrefix));
+  }
+}
+
 static nsresult BuildCache(LookupCacheV2* cache,
                            const _PrefixArray& prefixArray) {
   AddPrefixArray prefixes;
@@ -171,18 +224,18 @@ static nsresult BuildCache(LookupCacheV4* cache,
 }
 
 template <typename T>
-UniquePtr<T> SetupLookupCache(const _PrefixArray& prefixArray) {
+RefPtr<T> SetupLookupCache(const _PrefixArray& prefixArray) {
   nsCOMPtr<nsIFile> file;
   NS_GetSpecialDirectory(NS_APP_USER_PROFILE_50_DIR, getter_AddRefs(file));
 
   file->AppendNative(GTEST_SAFEBROWSING_DIR);
 
-  UniquePtr<T> cache = MakeUnique<T>(GTEST_TABLE, EmptyCString(), file);
+  RefPtr<T> cache = new T(GTEST_TABLE, EmptyCString(), file);
   nsresult rv = cache->Init();
   EXPECT_EQ(rv, NS_OK);
 
-  rv = BuildCache(cache.get(), prefixArray);
+  rv = BuildCache(cache, prefixArray);
   EXPECT_EQ(rv, NS_OK);
 
-  return Move(cache);
+  return cache;
 }

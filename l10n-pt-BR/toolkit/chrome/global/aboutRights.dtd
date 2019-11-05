@@ -46,7 +46,7 @@
 <!ENTITY rights2.webservices-header "Serviços de informação do &brandFullName; baseados na web">
 
 <!-- point 5 -->
-<!ENTITY rights.intro-point5 "Para poder reproduzir alguns tipos de vídeo, o &brandShortName; descarrega alguns módulos de terceiros para descodificar o conteúdo.">
+<!ENTITY rights.intro-point5 "Para poder reproduzir alguns tipos de vídeo, o &brandShortName; baixa alguns módulos de terceiros para decodificar o conteúdo.">
 
 <!-- Note that this paragraph references a couple of entities from
      preferences/security.dtd, so that we can refer to text the user sees in
@@ -55,7 +55,7 @@
 <!-- intro paragraph for branded builds -->
 <!ENTITY rights2.webservices-a "O &brandFullName; usa serviços de informações baseado na web (&quot;Serviços&quot;) para prover algumas funcionalidades para o seu uso com esta versão binária do &brandShortName; de acordo com os termos descritos abaixo. Se não quiser usar um ou mais Serviços ou não aceitar os termos a seguir, você pode desabilitar a(s) funcionalidade(s) ou o(s) Serviço(s). Instruções sobre como desabilitar uma funcionalidade ou Serviço em particular podem ser encontradas ">
 <!ENTITY rights2.webservices-b "aqui">
-<!ENTITY rights3.webservices-c ". Outras funcionalidades e serviços podem ser desabilitadas nas preferências do aplicativo.">
+<!ENTITY rights3.webservices-c ". Outras funcionalidades e serviços podem ser desativados nas preferências da aplicação.">
 
 <!-- safe browsing points for branded builds -->
 <!ENTITY rights.safebrowsing-a "Navegação segura: ">

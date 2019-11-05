@@ -5,6 +5,7 @@
 <!ENTITY Addrbook.label                        "Adres defteri">
 <!ENTITY Addrbook.accesskey                    "d">
 <!ENTITY GeneratedName.label                   "Adı">
+<!ENTITY GeneratedName.accesskey               "d">
 <!ENTITY PrimaryEmail.label                    "E-posta">
 <!ENTITY PrimaryEmail.accesskey                "E">
 <!ENTITY Company.label                         "Kurum">
@@ -14,6 +15,7 @@
 <!ENTITY NickName.label                        "Takma ad">
 <!ENTITY NickName.accesskey                    "i">
 <!ENTITY SecondEmail.label                     "Ek e-posta">
+<!ENTITY SecondEmail.accesskey                 "o">
 <!ENTITY Department.label                      "Bölüm">
 <!ENTITY Department.accesskey                  "m">
 <!ENTITY JobTitle.label                        "Unvan">

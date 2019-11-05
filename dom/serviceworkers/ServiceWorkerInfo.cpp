@@ -117,32 +117,6 @@ ServiceWorkerInfo::DetachDebugger() {
   return mServiceWorkerPrivate->DetachDebugger();
 }
 
-namespace {
-
-class ChangeStateUpdater final : public Runnable {
- public:
-  ChangeStateUpdater(const nsTArray<RefPtr<ServiceWorker>>& aInstances,
-                     ServiceWorkerState aState)
-      : Runnable("dom::ChangeStateUpdater"), mState(aState) {
-    for (size_t i = 0; i < aInstances.Length(); ++i) {
-      mInstances.AppendElement(aInstances[i]);
-    }
-  }
-
-  NS_IMETHOD Run() override {
-    for (size_t i = 0; i < mInstances.Length(); ++i) {
-      mInstances[i]->SetState(mState);
-    }
-    return NS_OK;
-  }
-
- private:
-  AutoTArray<RefPtr<ServiceWorker>, 1> mInstances;
-  ServiceWorkerState mState;
-};
-
-}  // namespace
-
 void ServiceWorkerInfo::UpdateState(ServiceWorkerState aState) {
   MOZ_ASSERT(NS_IsMainThread());
 #ifdef DEBUG
@@ -170,26 +144,21 @@ void ServiceWorkerInfo::UpdateState(ServiceWorkerState aState) {
     mServiceWorkerPrivate->UpdateState(aState);
   }
   mDescriptor.SetState(aState);
-  nsCOMPtr<nsIRunnable> r = new ChangeStateUpdater(mInstances, State());
-  MOZ_ALWAYS_SUCCEEDS(NS_DispatchToMainThread(r.forget()));
   if (State() == ServiceWorkerState::Redundant) {
     serviceWorkerScriptCache::PurgeCache(mPrincipal, mCacheName);
-
-    // Break the ref-cycle with the binding objects.  We won't need to
-    // fire any more events and they should be able to GC once content
-    // script no longer references them.
-    mInstances.Clear();
   }
 }
 
 ServiceWorkerInfo::ServiceWorkerInfo(nsIPrincipal* aPrincipal,
                                      const nsACString& aScope,
+                                     uint64_t aRegistrationId,
+                                     uint64_t aRegistrationVersion,
                                      const nsACString& aScriptSpec,
                                      const nsAString& aCacheName,
                                      nsLoadFlags aImportsLoadFlags)
     : mPrincipal(aPrincipal),
-      mDescriptor(GetNextID(), aPrincipal, aScope, aScriptSpec,
-                  ServiceWorkerState::Parsed),
+      mDescriptor(GetNextID(), aRegistrationId, aRegistrationVersion,
+                  aPrincipal, aScope, aScriptSpec, ServiceWorkerState::Parsed),
       mCacheName(aCacheName),
       mImportsLoadFlags(aImportsLoadFlags),
       mCreationTime(PR_Now()),
@@ -200,6 +169,8 @@ ServiceWorkerInfo::ServiceWorkerInfo(nsIPrincipal* aPrincipal,
       mServiceWorkerPrivate(new ServiceWorkerPrivate(this)),
       mSkipWaitingFlag(false),
       mHandlesFetch(Unknown) {
+  MOZ_ASSERT_IF(ServiceWorkerParentInterceptEnabled(),
+                XRE_GetProcessType() == GeckoProcessType_Default);
   MOZ_ASSERT(mPrincipal);
   // cache origin attributes so we can use them off main thread
   mOriginAttributes = mPrincipal->OriginAttributesRef();
@@ -224,67 +195,12 @@ uint64_t ServiceWorkerInfo::GetNextID() const {
   return ++gServiceWorkerInfoCurrentID;
 }
 
-void ServiceWorkerInfo::AddServiceWorker(ServiceWorker* aWorker) {
-  MOZ_DIAGNOSTIC_ASSERT(aWorker);
-#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
-  nsAutoString workerURL;
-  aWorker->GetScriptURL(workerURL);
-  MOZ_DIAGNOSTIC_ASSERT(
-      workerURL.Equals(NS_ConvertUTF8toUTF16(mDescriptor.ScriptURL())));
-#endif
-  MOZ_ASSERT(!mInstances.Contains(aWorker));
-
-  mInstances.AppendElement(aWorker);
-  aWorker->SetState(State());
-}
-
-void ServiceWorkerInfo::RemoveServiceWorker(ServiceWorker* aWorker) {
-  MOZ_DIAGNOSTIC_ASSERT(aWorker);
-#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
-  nsAutoString workerURL;
-  aWorker->GetScriptURL(workerURL);
-  MOZ_DIAGNOSTIC_ASSERT(
-      workerURL.Equals(NS_ConvertUTF8toUTF16(mDescriptor.ScriptURL())));
-#endif
-
-  // If the binding layer initiates this call by disconnecting the global,
-  // then we will find an entry in mInstances here.  If the worker transitions
-  // to redundant and we clear mInstances, then we will not find an entry
-  // here.
-  mInstances.RemoveElement(aWorker);
-}
-
-void ServiceWorkerInfo::PostMessage(nsIGlobalObject* aGlobal, JSContext* aCx,
-                                    JS::Handle<JS::Value> aMessage,
-                                    const Sequence<JSObject*>& aTransferable,
-                                    ErrorResult& aRv) {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  nsCOMPtr<nsPIDOMWindowInner> window = do_QueryInterface(aGlobal);
-  if (NS_WARN_IF(!window || !window->GetExtantDoc())) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return;
-  }
-
-  auto storageAllowed = nsContentUtils::StorageAllowedForWindow(window);
-  if (storageAllowed != nsContentUtils::StorageAccess::eAllow) {
-    ServiceWorkerManager::LocalizeAndReportToAllClients(
-        Scope(), "ServiceWorkerPostMessageStorageError",
-        nsTArray<nsString>{NS_ConvertUTF8toUTF16(Scope())});
-    aRv.Throw(NS_ERROR_DOM_SECURITY_ERR);
-    return;
-  }
-
-  Maybe<ClientInfo> clientInfo = window->GetClientInfo();
-  Maybe<ClientState> clientState = window->GetClientState();
-  if (NS_WARN_IF(clientInfo.isNothing() || clientState.isNothing())) {
-    aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
-    return;
-  }
-
-  aRv = mServiceWorkerPrivate->SendMessageEvent(
-      aCx, aMessage, aTransferable,
-      ClientInfoAndState(clientInfo.ref().ToIPC(), clientState.ref().ToIPC()));
+void ServiceWorkerInfo::PostMessage(RefPtr<ServiceWorkerCloneData>&& aData,
+                                    const ClientInfo& aClientInfo,
+                                    const ClientState& aClientState) {
+  mServiceWorkerPrivate->SendMessageEvent(
+      std::move(aData),
+      ClientInfoAndState(aClientInfo.ToIPC(), aClientState.ToIPC()));
 }
 
 void ServiceWorkerInfo::UpdateInstalledTime() {
@@ -315,6 +231,10 @@ void ServiceWorkerInfo::UpdateRedundantTime() {
       mCreationTime +
       static_cast<PRTime>(
           (TimeStamp::Now() - mCreationTimeStamp).ToMicroseconds());
+}
+
+void ServiceWorkerInfo::SetRegistrationVersion(uint64_t aVersion) {
+  mDescriptor.SetRegistrationVersion(aVersion);
 }
 
 }  // namespace dom

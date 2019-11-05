@@ -6,7 +6,12 @@
 
 const Services = require("Services");
 
-loader.lazyRequireGetter(this, "HarAutomation", "devtools/client/netmonitor/src/har/har-automation", true);
+loader.lazyRequireGetter(
+  this,
+  "HarAutomation",
+  "devtools/client/netmonitor/src/har/har-automation",
+  true
+);
 
 // Map of all created overlays. There is always one instance of
 // an overlay per Toolbox instance (i.e. one per browser tab).
@@ -35,9 +40,10 @@ ToolboxOverlay.prototype = {
   /**
    * Executed when the toolbox is ready.
    */
-  onInit: function () {
-    let autoExport = Services.prefs.getBoolPref(
-      "devtools.netmonitor.har.enableAutoExportToFile");
+  onInit: function() {
+    const autoExport = Services.prefs.getBoolPref(
+      "devtools.netmonitor.har.enableAutoExportToFile"
+    );
 
     if (!autoExport) {
       return;
@@ -49,17 +55,17 @@ ToolboxOverlay.prototype = {
   /**
    * Executed when the toolbox is destroyed.
    */
-  onDestroy: function (eventId, toolbox) {
+  onDestroy: function(toolbox) {
     this.destroyAutomation();
   },
 
   // Automation
 
-  initAutomation: function () {
+  initAutomation: function() {
     this.automation = new HarAutomation(this.toolbox);
   },
 
-  destroyAutomation: function () {
+  destroyAutomation: function() {
     if (this.automation) {
       this.automation.destroy();
     }
@@ -73,7 +79,7 @@ function register(toolbox) {
   }
 
   // Instantiate an overlay for the toolbox.
-  let overlay = new ToolboxOverlay(toolbox);
+  const overlay = new ToolboxOverlay(toolbox);
   overlays.set(toolbox, overlay);
 }
 

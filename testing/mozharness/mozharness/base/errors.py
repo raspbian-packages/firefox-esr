@@ -133,10 +133,15 @@ VirtualenvErrorList = [
         r'''Downloading .* \(.*\): *([0-9]+%)? *[0-9\.]+[kmKM]b'''), 'level': DEBUG},
 ] + PythonErrorList
 
+RustErrorList = [
+    {'regex': re.compile(r'''error\[E\d+\]:'''), 'level': ERROR},
+    {'substr': r'''error: Could not compile''', 'level': ERROR},
+    {'substr': r'''error: aborting due to previous error''', 'level': ERROR},
+]
 
 # We may need to have various MakefileErrorLists for differing amounts of
 # warning-ignoring-ness.
-MakefileErrorList = BaseErrorList + PythonErrorList + [
+MakefileErrorList = BaseErrorList + PythonErrorList + RustErrorList + [
     {'substr': r'''No rule to make target ''', 'level': ERROR},
     {'regex': re.compile(r'''akefile.*was not found\.'''), 'level': ERROR},
     {'regex': re.compile(r'''Stop\.$'''), 'level': ERROR},
@@ -155,13 +160,6 @@ TarErrorList = BaseErrorList + [
     {'substr': r'''stdin: not in gzip format''', 'level': ERROR},
     {'substr': r'''Cannot exec: No such file or directory''', 'level': ERROR},
     {'substr': r''': Error is not recoverable: exiting now''', 'level': ERROR},
-]
-
-ADBErrorList = BaseErrorList + [
-    {'substr': r'''INSTALL_FAILED_''', 'level': ERROR},
-    {'substr': r'''Android Debug Bridge version''', 'level': ERROR},
-    {'substr': r'''error: protocol fault''', 'level': ERROR},
-    {'substr': r'''unable to connect to ''', 'level': ERROR},
 ]
 
 JarsignerErrorList = [{

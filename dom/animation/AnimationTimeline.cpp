@@ -11,6 +11,8 @@
 namespace mozilla {
 namespace dom {
 
+AnimationTimeline::~AnimationTimeline() { mAnimationOrder.clear(); }
+
 NS_IMPL_CYCLE_COLLECTION_CLASS(AnimationTimeline)
 
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(AnimationTimeline)
@@ -44,8 +46,8 @@ void AnimationTimeline::NotifyAnimationUpdated(Animation& aAnimation) {
 
 void AnimationTimeline::RemoveAnimation(Animation* aAnimation) {
   MOZ_ASSERT(!aAnimation->GetTimeline() || aAnimation->GetTimeline() == this);
-  if (aAnimation->isInList()) {
-    aAnimation->remove();
+  if (static_cast<LinkedListElement<Animation>*>(aAnimation)->isInList()) {
+    static_cast<LinkedListElement<Animation>*>(aAnimation)->remove();
   }
   mAnimations.RemoveEntry(aAnimation);
 }

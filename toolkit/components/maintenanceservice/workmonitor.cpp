@@ -9,14 +9,18 @@
 #include <shellapi.h>
 
 #ifndef __MINGW32__
-#pragma comment(lib, "wtsapi32.lib")
-#pragma comment(lib, "userenv.lib")
-#pragma comment(lib, "shlwapi.lib")
-#pragma comment(lib, "ole32.lib")
-#pragma comment(lib, "rpcrt4.lib")
+#  pragma comment(lib, "wtsapi32.lib")
+#  pragma comment(lib, "userenv.lib")
+#  pragma comment(lib, "shlwapi.lib")
+#  pragma comment(lib, "ole32.lib")
+#  pragma comment(lib, "rpcrt4.lib")
 #endif
 
+#include "mozilla/CmdLineAndEnvUtils.h"
 #include "nsWindowsHelpers.h"
+#include "mozilla/UniquePtr.h"
+
+using mozilla::UniquePtr;
 
 #include "workmonitor.h"
 #include "serviceinstall.h"
@@ -25,7 +29,8 @@
 #include "uachelper.h"
 #include "updatehelper.h"
 #include "pathhash.h"
-#include "errors.h"
+#include "updatererrors.h"
+#include "commonupdatedir.h"
 
 #define PATCH_DIR_PATH L"\\updates\\0"
 
@@ -33,8 +38,6 @@
 // Updates usually take less than a minute so this seems like a
 // significantly large and safe amount of time to wait.
 static const int TIME_TO_WAIT_ON_UPDATER = 15 * 60 * 1000;
-wchar_t *MakeCommandLine(int argc, wchar_t **argv);
-BOOL WriteStatusFailure(LPCWSTR updateDirPath, int errorCode);
 BOOL PathGetSiblingFilePath(LPWSTR destinationBuffer, LPCWSTR siblingFilePath,
                             LPCWSTR newFileName);
 BOOL DoesFallbackKeyExist();
@@ -48,7 +51,7 @@ BOOL DoesFallbackKeyExist();
  *         is set to applying or not.
  * @return TRUE if the information was filled.
  */
-static BOOL IsStatusApplying(LPCWSTR updateDirPath, BOOL &isApplying) {
+static BOOL IsStatusApplying(LPCWSTR updateDirPath, BOOL& isApplying) {
   isApplying = FALSE;
   WCHAR updateStatusFilePath[MAX_PATH + 1] = {L'\0'};
   wcsncpy(updateStatusFilePath, updateDirPath, MAX_PATH);
@@ -86,10 +89,10 @@ static BOOL IsStatusApplying(LPCWSTR updateDirPath, BOOL &isApplying) {
  * @param  argv    The argv value normally sent to updater.exe
  * @return boolean True if we're staging an update
  */
-static bool IsUpdateBeingStaged(int argc, LPWSTR *argv) {
+static bool IsUpdateBeingStaged(int argc, LPWSTR* argv) {
   // PID will be set to -1 if we're supposed to stage an update.
-  return argc == 4 && !wcscmp(argv[3], L"-1") ||
-         argc == 5 && !wcscmp(argv[4], L"-1");
+  return (argc == 4 && !wcscmp(argv[3], L"-1")) ||
+         (argc == 5 && !wcscmp(argv[4], L"-1"));
 }
 
 /**
@@ -98,7 +101,7 @@ static bool IsUpdateBeingStaged(int argc, LPWSTR *argv) {
  * @param str     The string to check
  * @param boolean True if the param only contains digits
  */
-static bool IsDigits(WCHAR *str) {
+static bool IsDigits(WCHAR* str) {
   while (*str) {
     if (!iswdigit(*str++)) {
       return FALSE;
@@ -117,9 +120,9 @@ static bool IsDigits(WCHAR *str) {
  * @param boolean True if the command line contains just the directory to apply
  *                the update to
  */
-static bool IsOldCommandline(int argc, LPWSTR *argv) {
-  return argc == 4 && !wcscmp(argv[3], L"-1") ||
-         argc >= 4 && (wcsstr(argv[3], L"/replace") || IsDigits(argv[3]));
+static bool IsOldCommandline(int argc, LPWSTR* argv) {
+  return (argc == 4 && !wcscmp(argv[3], L"-1")) ||
+         (argc >= 4 && (wcsstr(argv[3], L"/replace") || IsDigits(argv[3])));
 }
 
 /**
@@ -129,7 +132,7 @@ static bool IsOldCommandline(int argc, LPWSTR *argv) {
  * @param argvTmp    The argv value normally sent to updater.exe
  * @param aResultDir Buffer to hold the installation directory.
  */
-static BOOL GetInstallationDir(int argcTmp, LPWSTR *argvTmp,
+static BOOL GetInstallationDir(int argcTmp, LPWSTR* argvTmp,
                                WCHAR aResultDir[MAX_PATH + 1]) {
   int index = 3;
   if (IsOldCommandline(argcTmp, argvTmp)) {
@@ -141,7 +144,7 @@ static BOOL GetInstallationDir(int argcTmp, LPWSTR *argvTmp,
   }
 
   wcsncpy(aResultDir, argvTmp[2], MAX_PATH);
-  WCHAR *backSlash = wcsrchr(aResultDir, L'\\');
+  WCHAR* backSlash = wcsrchr(aResultDir, L'\\');
   // Make sure that the path does not include trailing backslashes
   if (backSlash && (backSlash[1] == L'\0')) {
     *backSlash = L'\0';
@@ -167,17 +170,22 @@ static BOOL GetInstallationDir(int argcTmp, LPWSTR *argvTmp,
  * @param  processStarted Set to TRUE if the process was started.
  * @return TRUE if the update process was run had a return code of 0.
  */
-BOOL StartUpdateProcess(int argc, LPWSTR *argv, LPCWSTR installDir,
-                        BOOL &processStarted) {
+BOOL StartUpdateProcess(int argc, LPWSTR* argv, LPCWSTR installDir,
+                        BOOL& processStarted) {
+  processStarted = FALSE;
+
   LOG(("Starting update process as the service in session 0."));
-  STARTUPINFO si = {0};
-  si.cb = sizeof(STARTUPINFO);
-  si.lpDesktop = L"winsta0\\Default";
-  PROCESS_INFORMATION pi = {0};
+  STARTUPINFOW si;
+  PROCESS_INFORMATION pi;
+
+  ZeroMemory(&si, sizeof(si));
+  ZeroMemory(&pi, sizeof(pi));
+  si.cb = sizeof(si);
+  si.lpDesktop = const_cast<LPWSTR>(L"winsta0\\Default");  // -Wwritable-strings
 
   // The updater command line is of the form:
   // updater.exe update-dir apply [wait-pid [callback-dir callback-path args]]
-  LPWSTR cmdLine = MakeCommandLine(argc, argv);
+  auto cmdLine = mozilla::MakeCommandLine(argc, argv);
 
   int index = 3;
   if (IsOldCommandline(argc, argv)) {
@@ -190,7 +198,7 @@ BOOL StartUpdateProcess(int argc, LPWSTR *argv, LPCWSTR installDir,
   // across all OS if it's of no harm.
   if (argc >= index) {
     // Setting the desktop to blank will ensure no GUI is displayed
-    si.lpDesktop = L"";
+    si.lpDesktop = const_cast<LPWSTR>(L"");  // -Wwritable-strings
     si.dwFlags |= STARTF_USESHOWWINDOW;
     si.wShowWindow = SW_HIDE;
   }
@@ -198,10 +206,11 @@ BOOL StartUpdateProcess(int argc, LPWSTR *argv, LPCWSTR installDir,
   // Add an env var for MOZ_USING_SERVICE so the updater.exe can
   // do anything special that it needs to do for service updates.
   // Search in updater.cpp for more info on MOZ_USING_SERVICE.
-  putenv(const_cast<char *>("MOZ_USING_SERVICE=1"));
-  LOG(("Starting service with cmdline: %ls", cmdLine));
+  putenv(const_cast<char*>("MOZ_USING_SERVICE=1"));
+
+  LOG(("Starting service with cmdline: %ls", cmdLine.get()));
   processStarted =
-      CreateProcessW(argv[0], cmdLine, nullptr, nullptr, FALSE,
+      CreateProcessW(argv[0], cmdLine.get(), nullptr, nullptr, FALSE,
                      CREATE_DEFAULT_ERROR_MODE, nullptr, nullptr, &si, &pi);
 
   BOOL updateWasSuccessful = FALSE;
@@ -268,13 +277,12 @@ BOOL StartUpdateProcess(int argc, LPWSTR *argv, LPCWSTR installDir,
     LOG_WARN(
         ("Could not create process as current user, "
          "updaterPath: %ls; cmdLine: %ls.  (%d)",
-         argv[0], cmdLine, lastError));
+         argv[0], cmdLine.get(), lastError));
   }
 
   // Empty value on putenv is how you remove an env variable in Windows
-  putenv(const_cast<char *>("MOZ_USING_SERVICE="));
+  putenv(const_cast<char*>("MOZ_USING_SERVICE="));
 
-  free(cmdLine);
   return updateWasSuccessful;
 }
 
@@ -401,9 +409,10 @@ static bool UpdaterIsValid(LPWSTR updater, LPWSTR installDir,
  * @param  argc           The number of arguments in argv
  * @param  argv           The arguments normally passed to updater.exe
  *                        argv[0] must be the path to updater.exe
+ *
  * @return TRUE if the update was successful.
  */
-BOOL ProcessSoftwareUpdateCommand(DWORD argc, LPWSTR *argv) {
+BOOL ProcessSoftwareUpdateCommand(DWORD argc, LPWSTR* argv) {
   BOOL result = TRUE;
   if (argc < 3) {
     LOG_WARN(
@@ -561,13 +570,13 @@ BOOL DeleteSecureUpdater(WCHAR serviceUpdaterPath[MAX_PATH + 1]) {
  * Executes a service command.
  *
  * @param argc The number of arguments in argv
- * @param argv The service command line arguments, argv[0] and argv[1]
- *             and automatically included by Windows.  argv[2] is the
- *             service command.
+ * @param argv The service command line arguments, argv[0] is automatically
+ *             included by Windows, argv[1] is unused but hardcoded to
+ *             "MozillaMaintenance", and argv[2] is the service command.
  *
  * @return FALSE if there was an error executing the service command.
  */
-BOOL ExecuteServiceCommand(int argc, LPWSTR *argv) {
+BOOL ExecuteServiceCommand(int argc, LPWSTR* argv) {
   if (argc < 3) {
     LOG_WARN(
         ("Not enough command line arguments to execute a service command"));
@@ -576,15 +585,19 @@ BOOL ExecuteServiceCommand(int argc, LPWSTR *argv) {
 
   // The tests work by making sure the log has changed, so we put a
   // unique ID in the log.
-  RPC_WSTR guidString = RPC_WSTR(L"");
   GUID guid;
   HRESULT hr = CoCreateGuid(&guid);
   if (SUCCEEDED(hr)) {
-    UuidToString(&guid, &guidString);
+    RPC_WSTR guidString = RPC_WSTR(L"");
+    if (UuidToString(&guid, &guidString) == RPC_S_OK) {
+      LOG(("Executing service command %ls, ID: %ls", argv[2],
+           reinterpret_cast<LPCWSTR>(guidString)));
+      RpcStringFree(&guidString);
+    } else {
+      // The ID is only used by tests, so failure to allocate it isn't fatal.
+      LOG(("Executing service command %ls", argv[2]));
+    }
   }
-  LOG(("Executing service command %ls, ID: %ls", argv[2],
-       reinterpret_cast<LPCWSTR>(guidString)));
-  RpcStringFree(&guidString);
 
   BOOL result = FALSE;
   if (!lstrcmpi(argv[2], L"software-update")) {
@@ -644,7 +657,8 @@ BOOL ExecuteServiceCommand(int argc, LPWSTR *argv) {
       // These checks are also performed in updater.cpp and is performed here
       // as well since the maintenance service can be called directly.
       if (_wcsnicmp(argv[6], argv[5], MAX_PATH) != 0) {
-        if (wcscmp(argv[7], L"-1") != 0 && !wcsstr(argv[7], L"/replace")) {
+        if (argc < 7 ||
+            (wcscmp(argv[7], L"-1") != 0 && !wcsstr(argv[7], L"/replace"))) {
           LOG_WARN(
               ("Installation directory and working directory must be the "
                "same for non-staged updates. Exiting."));
@@ -684,7 +698,7 @@ BOOL ExecuteServiceCommand(int argc, LPWSTR *argv) {
 
     // Use the passed in command line arguments for the update, except for the
     // path to updater.exe. We always look for updater.exe in the installation
-    // directory, then we copy updater.exe to a the directory of the
+    // directory, then we copy that updater.exe to a the directory of the
     // MozillaMaintenance service so that a low integrity process cannot
     // replace the updater.exe at any point and use that for the update.
     // It also makes DLL injection attacks harder.
@@ -736,8 +750,11 @@ BOOL ExecuteServiceCommand(int argc, LPWSTR *argv) {
       result = GetSecureUpdaterPath(secureUpdaterPath);  // Does its own logging
     }
     if (result) {
-      LOG(("Passed in path: '%ls'; Using this path for updating: '%ls'.",
-           installDirUpdater, secureUpdaterPath));
+      LOG(
+          ("Passed in path: '%ls' (ignored); "
+           "Install dir has: '%ls'; "
+           "Using this path for updating: '%ls'.",
+           argv[3], installDirUpdater, secureUpdaterPath));
       DeleteSecureUpdater(secureUpdaterPath);
       result = CopyFileW(installDirUpdater, secureUpdaterPath, FALSE);
     }
@@ -776,6 +793,25 @@ BOOL ExecuteServiceCommand(int argc, LPWSTR *argv) {
     // because the service self updates itself and the service
     // installer will stop the service.
     LOG(("Service command %ls complete.", argv[2]));
+  } else if (!lstrcmpi(argv[2], L"fix-update-directory-perms")) {
+    bool gotInstallDir = true;
+    mozilla::UniquePtr<wchar_t[]> updateDir;
+    if (argc <= 3) {
+      LOG_WARN(("Didn't get an install dir for fix-update-directory-perms"));
+      gotInstallDir = false;
+    }
+    HRESULT permResult =
+        GetCommonUpdateDirectory(gotInstallDir ? argv[3] : nullptr,
+                                 SetPermissionsOf::AllFilesAndDirs, updateDir);
+    if (FAILED(permResult)) {
+      LOG_WARN(
+          ("Unable to set the permissions on the update directory "
+           "('%S'): %d",
+           updateDir.get(), permResult));
+      result = FALSE;
+    } else {
+      result = TRUE;
+    }
   } else {
     LOG_WARN(("Service command not recognized: %ls.", argv[2]));
     // result is already set to FALSE
@@ -783,5 +819,5 @@ BOOL ExecuteServiceCommand(int argc, LPWSTR *argv) {
 
   LOG(("service command %ls complete with result: %ls.", argv[1],
        (result ? L"Success" : L"Failure")));
-  return TRUE;
+  return result;
 }

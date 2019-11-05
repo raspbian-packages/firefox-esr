@@ -13,7 +13,10 @@
 namespace mozilla {
 namespace dom {
 
+class ClientManager;
+
 class ClientManagerOpChild final : public PClientManagerOpChild {
+  RefPtr<ClientManager> mClientManager;
   RefPtr<ClientOpPromise::Private> mPromise;
 
   // PClientManagerOpChild interface
@@ -23,7 +26,8 @@ class ClientManagerOpChild final : public PClientManagerOpChild {
       const ClientOpResult& aResult) override;
 
  public:
-  ClientManagerOpChild(const ClientOpConstructorArgs& aArgs,
+  ClientManagerOpChild(ClientManager* aClientManager,
+                       const ClientOpConstructorArgs& aArgs,
                        ClientOpPromise::Private* aPromise);
 
   ~ClientManagerOpChild();

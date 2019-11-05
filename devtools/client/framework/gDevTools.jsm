@@ -13,9 +13,7 @@
  * - devtools/client/framework/devtools-browser for gDevToolsBrowser
  */
 
-this.EXPORTED_SYMBOLS = [ "gDevTools", "gDevToolsBrowser" ];
-
-const { loader } = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
+this.EXPORTED_SYMBOLS = ["gDevTools", "gDevToolsBrowser"];
 
 /**
  * Do not directly map to the commonjs modules so that callsites of
@@ -25,19 +23,22 @@ const { loader } = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {
  */
 Object.defineProperty(this, "require", {
   get() {
-    let { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
+    const { require } = ChromeUtils.import(
+      "resource://devtools/shared/Loader.jsm"
+    );
     return require;
-  }
+  },
 });
 Object.defineProperty(this, "devtools", {
   get() {
     return require("devtools/client/framework/devtools").gDevTools;
-  }
+  },
 });
 Object.defineProperty(this, "browser", {
   get() {
-    return require("devtools/client/framework/devtools-browser").gDevToolsBrowser;
-  }
+    return require("devtools/client/framework/devtools-browser")
+      .gDevToolsBrowser;
+  },
 });
 
 /**
@@ -46,7 +47,7 @@ Object.defineProperty(this, "browser", {
  * It is an instance of a DevTools class that holds a set of tools. It has the
  * same lifetime as the browser.
  */
-let gDevToolsMethods = [
+const gDevToolsMethods = [
   // Used by: - b2g desktop.js
   //          - nsContextMenu
   //          - /devtools code
@@ -93,11 +94,6 @@ this.gDevTools = {
   get _tools() {
     return devtools._tools;
   },
-  *[Symbol.iterator ]() {
-    for (let toolbox of this._toolboxes) {
-      yield toolbox;
-    }
-  }
 };
 gDevToolsMethods.forEach(name => {
   this.gDevTools[name] = (...args) => {
@@ -105,12 +101,11 @@ gDevToolsMethods.forEach(name => {
   };
 });
 
-
 /**
  * gDevToolsBrowser exposes functions to connect the gDevTools instance with a
  * Firefox instance.
  */
-let gDevToolsBrowserMethods = [
+const gDevToolsBrowserMethods = [
   // used by browser-sets.inc, command
   "toggleToolboxCommand",
 
@@ -137,7 +132,7 @@ let gDevToolsBrowserMethods = [
   "hasToolboxOpened",
 
   // Used by browser.js
-  "forgetBrowserWindow"
+  "forgetBrowserWindow",
 ];
 this.gDevToolsBrowser = {
   // Used by webide.js
@@ -147,7 +142,7 @@ this.gDevToolsBrowser = {
   // Used by a test (should be removed)
   get _trackedBrowserWindows() {
     return browser._trackedBrowserWindows;
-  }
+  },
 };
 gDevToolsBrowserMethods.forEach(name => {
   this.gDevToolsBrowser[name] = (...args) => {

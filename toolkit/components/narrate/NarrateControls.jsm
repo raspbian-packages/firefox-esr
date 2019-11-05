@@ -4,15 +4,22 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/narrate/VoiceSelect.jsm");
-ChromeUtils.import("resource://gre/modules/narrate/Narrator.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/AsyncPrefs.jsm");
-ChromeUtils.import("resource://gre/modules/TelemetryStopwatch.jsm");
+const { VoiceSelect } = ChromeUtils.import(
+  "resource://gre/modules/narrate/VoiceSelect.jsm"
+);
+const { Narrator } = ChromeUtils.import(
+  "resource://gre/modules/narrate/Narrator.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { AsyncPrefs } = ChromeUtils.import(
+  "resource://gre/modules/AsyncPrefs.jsm"
+);
 
 var EXPORTED_SYMBOLS = ["NarrateControls"];
 
-var gStrings = Services.strings.createBundle("chrome://global/locale/narrate.properties");
+var gStrings = Services.strings.createBundle(
+  "chrome://global/locale/narrate.properties"
+);
 
 function NarrateControls(mm, win, languagePromise) {
   this._mm = mm;
@@ -27,83 +34,72 @@ function NarrateControls(mm, win, languagePromise) {
   style.href = "chrome://global/skin/narrate.css";
   win.document.head.appendChild(style);
 
-  function localize(pieces, ...substitutions) {
-    let result = pieces[0];
-    for (let i = 0; i < substitutions.length; ++i) {
-      result += gStrings.GetStringFromName(substitutions[i]) + pieces[i + 1];
-    }
-    return result;
-  }
+  let elemL10nMap = {
+    ".narrate-toggle": "narrate",
+    ".narrate-skip-previous": "back",
+    ".narrate-start-stop": "start",
+    ".narrate-skip-next": "forward",
+    ".narrate-rate-input": "speed",
+  };
 
   let dropdown = win.document.createElement("ul");
   dropdown.className = "dropdown narrate-dropdown";
-  // We need inline svg here for the animation to work (bug 908634 & 1190881).
-  // eslint-disable-next-line no-unsanitized/property
-  dropdown.innerHTML =
-    localize`<li>
-       <button class="dropdown-toggle button narrate-toggle"
-               title="${"narrate"}" hidden>
-         <svg xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              width="24" height="24" viewBox="0 0 24 24">
-          <style>
-            @keyframes grow {
-              0%   { transform: scaleY(1);   }
-              15%  { transform: scaleY(1.5); }
-              15%  { transform: scaleY(1.5); }
-              30%  { transform: scaleY(1);   }
-              100% { transform: scaleY(1);   }
-            }
 
-            .waveform > rect {
-              fill: #808080;
-            }
+  let toggle = win.document.createElement("li");
+  let toggleButton = win.document.createElement("button");
+  toggleButton.className = "dropdown-toggle button narrate-toggle";
+  toggleButton.hidden = true;
+  dropdown.appendChild(toggle);
+  toggle.appendChild(toggleButton);
 
-            .speaking .waveform > rect {
-              fill: #58bf43;
-              transform-box: fill-box;
-              transform-origin: 50% 50%;
-              animation-name: grow;
-              animation-duration: 1750ms;
-              animation-iteration-count: infinite;
-              animation-timing-function: linear;
-            }
+  let dropdownList = win.document.createElement("li");
+  dropdownList.className = "dropdown-popup";
+  dropdown.appendChild(dropdownList);
 
-            .waveform > rect:nth-child(2) { animation-delay: 250ms; }
-            .waveform > rect:nth-child(3) { animation-delay: 500ms; }
-            .waveform > rect:nth-child(4) { animation-delay: 750ms; }
-            .waveform > rect:nth-child(5) { animation-delay: 1000ms; }
-            .waveform > rect:nth-child(6) { animation-delay: 1250ms; }
-            .waveform > rect:nth-child(7) { animation-delay: 1500ms; }
+  let narrateControl = win.document.createElement("div");
+  narrateControl.className = "narrate-row narrate-control";
+  dropdownList.appendChild(narrateControl);
 
-          </style>
-          <g class="waveform">
-            <rect x="1"  y="8" width="2" height="8"  rx=".5" ry=".5" />
-            <rect x="4"  y="5" width="2" height="14" rx=".5" ry=".5" />
-            <rect x="7"  y="8" width="2" height="8"  rx=".5" ry=".5" />
-            <rect x="10" y="4" width="2" height="16" rx=".5" ry=".5" />
-            <rect x="13" y="2" width="2" height="20" rx=".5" ry=".5" />
-            <rect x="16" y="4" width="2" height="16" rx=".5" ry=".5" />
-            <rect x="19" y="7" width="2" height="10" rx=".5" ry=".5" />
-          </g>
-         </svg>
-        </button>
-    </li>
-    <li class="dropdown-popup">
-      <div class="narrate-row narrate-control">
-        <button disabled class="narrate-skip-previous"
-                title="${"back"}"></button>
-        <button class="narrate-start-stop" title="${"start"}"></button>
-        <button disabled class="narrate-skip-next"
-                title="${"forward"}"></button>
-      </div>
-      <div class="narrate-row narrate-rate">
-        <input class="narrate-rate-input" value="0" title="${"speed"}"
-               step="5" max="100" min="-100" type="range">
-      </div>
-      <div class="narrate-row narrate-voices"></div>
-      <div class="dropdown-arrow"></div>
-    </li>`;
+  let narrateRate = win.document.createElement("div");
+  narrateRate.className = "narrate-row narrate-rate";
+  dropdownList.appendChild(narrateRate);
+
+  let narrateVoices = win.document.createElement("div");
+  narrateVoices.className = "narrate-row narrate-voices";
+  dropdownList.appendChild(narrateVoices);
+
+  let dropdownArrow = win.document.createElement("div");
+  dropdownArrow.className = "dropdown-arrow";
+  dropdownList.appendChild(dropdownArrow);
+
+  let narrateSkipPrevious = win.document.createElement("button");
+  narrateSkipPrevious.className = "narrate-skip-previous";
+  narrateSkipPrevious.disabled = true;
+  narrateControl.appendChild(narrateSkipPrevious);
+
+  let narrateStartStop = win.document.createElement("button");
+  narrateStartStop.className = "narrate-start-stop";
+  narrateControl.appendChild(narrateStartStop);
+
+  let narrateSkipNext = win.document.createElement("button");
+  narrateSkipNext.className = "narrate-skip-next";
+  narrateSkipNext.disabled = true;
+  narrateControl.appendChild(narrateSkipNext);
+
+  let narrateRateInput = win.document.createElement("input");
+  narrateRateInput.className = "narrate-rate-input";
+  narrateRateInput.setAttribute("value", "0");
+  narrateRateInput.setAttribute("step", "5");
+  narrateRateInput.setAttribute("max", "100");
+  narrateRateInput.setAttribute("min", "-100");
+  narrateRateInput.setAttribute("type", "range");
+  narrateRate.appendChild(narrateRateInput);
+
+  for (let [selector, stringID] of Object.entries(elemL10nMap)) {
+    dropdown
+      .querySelector(selector)
+      .setAttribute("title", gStrings.GetStringFromName(stringID));
+  }
 
   this.narrator = new Narrator(win, languagePromise);
 
@@ -113,8 +109,9 @@ function NarrateControls(mm, win, languagePromise) {
   this.voiceSelect.element.addEventListener("change", this);
   this.voiceSelect.element.classList.add("voice-select");
   win.speechSynthesis.addEventListener("voiceschanged", this);
-  dropdown.querySelector(".narrate-voices").appendChild(
-    this.voiceSelect.element);
+  dropdown
+    .querySelector(".narrate-voices")
+    .appendChild(this.voiceSelect.element);
 
   dropdown.addEventListener("click", this, true);
 
@@ -161,30 +158,35 @@ NarrateControls.prototype = {
       let win = this._win;
       let voicePrefs = this._getVoicePref();
       let selectedVoice = voicePrefs[language || "default"];
-      let comparer = (new Services.intl.Collator()).compare;
+      let comparer = new Services.intl.Collator().compare;
       let filter = !Services.prefs.getBoolPref("narrate.filter-voices");
-      let options = win.speechSynthesis.getVoices().filter(v => {
-        return filter || !language || v.lang.split("-")[0] == language;
-      }).map(v => {
-        return {
-          label: this._createVoiceLabel(v),
-          value: v.voiceURI,
-          selected: selectedVoice == v.voiceURI
-        };
-      }).sort((a, b) => comparer(a.label, b.label));
+      let options = win.speechSynthesis
+        .getVoices()
+        .filter(v => {
+          return filter || !language || v.lang.split("-")[0] == language;
+        })
+        .map(v => {
+          return {
+            label: this._createVoiceLabel(v),
+            value: v.voiceURI,
+            selected: selectedVoice == v.voiceURI,
+          };
+        })
+        .sort((a, b) => comparer(a.label, b.label));
 
       if (options.length) {
         options.unshift({
           label: gStrings.GetStringFromName("defaultvoice"),
           value: "automatic",
-          selected: selectedVoice == "automatic"
+          selected: selectedVoice == "automatic",
         });
         this.voiceSelect.addOptions(options);
       }
 
       let narrateToggle = win.document.querySelector(".narrate-toggle");
       let histogram = Services.telemetry.getKeyedHistogramById(
-        "NARRATE_CONTENT_BY_LANGUAGE_2");
+        "NARRATE_CONTENT_BY_LANGUAGE_2"
+      );
       let initial = !this._voicesInitialized;
       this._voicesInitialized = true;
 
@@ -241,12 +243,15 @@ NarrateControls.prototype = {
         this._updateSpeechControls(true);
         TelemetryStopwatch.start("NARRATE_CONTENT_SPEAKTIME_MS", this);
         let options = { rate: this.rate, voice: this.voice };
-        this.narrator.start(options).catch(err => {
-          Cu.reportError(`Narrate failed: ${err}.`);
-        }).then(() => {
-          this._updateSpeechControls(false);
-          TelemetryStopwatch.finish("NARRATE_CONTENT_SPEAKTIME_MS", this);
-        });
+        this.narrator
+          .start(options)
+          .catch(err => {
+            Cu.reportError(`Narrate failed: ${err}.`);
+          })
+          .then(() => {
+            this._updateSpeechControls(false);
+            TelemetryStopwatch.finish("NARRATE_CONTENT_SPEAKTIME_MS", this);
+          });
       }
     }
   },
@@ -262,8 +267,9 @@ NarrateControls.prototype = {
     dropdown.classList.toggle("speaking", speaking);
 
     let startStopButton = this._doc.querySelector(".narrate-start-stop");
-    startStopButton.title =
-      gStrings.GetStringFromName(speaking ? "stop" : "start");
+    startStopButton.title = gStrings.GetStringFromName(
+      speaking ? "stop" : "start"
+    );
 
     this._doc.querySelector(".narrate-skip-previous").disabled = !speaking;
     this._doc.querySelector(".narrate-skip-next").disabled = !speaking;
@@ -281,26 +287,30 @@ NarrateControls.prototype = {
         // On Linux, the name is usually the unlocalized language name.
         // Use a localized language name, and have the language tag in
         // parenthisis. This is to avoid six languages called "English".
-        return gStrings.formatStringFromName("voiceLabel",
-          [this._getLanguageName(voice.lang) || voice.name, voice.lang], 2);
+        return gStrings.formatStringFromName(
+          "voiceLabel",
+          [this._getLanguageName(voice.lang) || voice.name, voice.lang],
+          2
+        );
       default:
         // On Mac the language is not included in the name, find a localized
         // language name or show the tag if none exists.
         // This is the ideal naming scheme so it is also the "default".
-        return gStrings.formatStringFromName("voiceLabel",
-          [voice.name, this._getLanguageName(voice.lang) || voice.lang], 2);
+        return gStrings.formatStringFromName(
+          "voiceLabel",
+          [voice.name, this._getLanguageName(voice.lang) || voice.lang],
+          2
+        );
     }
   },
 
   _getLanguageName(lang) {
-    if (!this._langStrings) {
-      this._langStrings = Services.strings.createBundle(
-        "chrome://global/locale/languageNames.properties ");
-    }
-
     try {
-      // language tags will be lower case ascii between 2 and 3 characters long.
-      return this._langStrings.GetStringFromName(lang.match(/^[a-z]{2,3}/)[0]);
+      // This may throw if the lang doesn't match.
+      // XXX: Replace with Intl.Locale once bug 1433303 lands.
+      let langCode = lang.match(/^[a-z]{2,3}/)[0];
+
+      return Services.intl.getLanguageDisplayNames(undefined, [langCode]);
     } catch (e) {
       return "";
     }
@@ -323,10 +333,11 @@ NarrateControls.prototype = {
 
   get rate() {
     return this._convertRate(
-      this._doc.querySelector(".narrate-rate-input").value);
+      this._doc.querySelector(".narrate-rate-input").value
+    );
   },
 
   get voice() {
     return this.voiceSelect.value;
-  }
+  },
 };

@@ -84,29 +84,25 @@ void nsXBLProtoImplProperty::EnsureUncompiledText(PropertyOp& aPropertyOp) {
 }
 
 void nsXBLProtoImplProperty::AppendGetterText(const nsAString& aText) {
-  NS_PRECONDITION(!mIsCompiled,
-                  "Must not be compiled when accessing getter text");
+  MOZ_ASSERT(!mIsCompiled, "Must not be compiled when accessing getter text");
   EnsureUncompiledText(mGetter);
   mGetter.GetUncompiled()->AppendText(aText);
 }
 
 void nsXBLProtoImplProperty::AppendSetterText(const nsAString& aText) {
-  NS_PRECONDITION(!mIsCompiled,
-                  "Must not be compiled when accessing setter text");
+  MOZ_ASSERT(!mIsCompiled, "Must not be compiled when accessing setter text");
   EnsureUncompiledText(mSetter);
   mSetter.GetUncompiled()->AppendText(aText);
 }
 
 void nsXBLProtoImplProperty::SetGetterLineNumber(uint32_t aLineNumber) {
-  NS_PRECONDITION(!mIsCompiled,
-                  "Must not be compiled when accessing getter text");
+  MOZ_ASSERT(!mIsCompiled, "Must not be compiled when accessing getter text");
   EnsureUncompiledText(mGetter);
   mGetter.GetUncompiled()->SetLineNumber(aLineNumber);
 }
 
 void nsXBLProtoImplProperty::SetSetterLineNumber(uint32_t aLineNumber) {
-  NS_PRECONDITION(!mIsCompiled,
-                  "Must not be compiled when accessing setter text");
+  MOZ_ASSERT(!mIsCompiled, "Must not be compiled when accessing setter text");
   EnsureUncompiledText(mSetter);
   mSetter.GetUncompiled()->SetLineNumber(aLineNumber);
 }
@@ -115,17 +111,15 @@ const char* gPropertyArgs[] = {"val"};
 
 nsresult nsXBLProtoImplProperty::InstallMember(
     JSContext* aCx, JS::Handle<JSObject*> aTargetClassObject) {
-  NS_PRECONDITION(mIsCompiled,
-                  "Should not be installing an uncompiled property");
+  MOZ_ASSERT(mIsCompiled, "Should not be installing an uncompiled property");
   MOZ_ASSERT(mGetter.IsCompiled() && mSetter.IsCompiled());
   MOZ_ASSERT(js::IsObjectInContextCompartment(aTargetClassObject, aCx));
 
 #ifdef DEBUG
   {
     JS::Rooted<JSObject*> globalObject(
-        aCx, JS_GetGlobalForObject(aCx, aTargetClassObject));
+        aCx, JS::GetNonCCWObjectGlobal(aTargetClassObject));
     MOZ_ASSERT(xpc::IsInContentXBLScope(globalObject) ||
-               xpc::IsInAddonScope(globalObject) ||
                globalObject == xpc::GetXBLScope(aCx, globalObject));
     MOZ_ASSERT(JS::CurrentGlobalOrNull(aCx) == globalObject);
   }
@@ -145,10 +139,9 @@ nsresult nsXBLProtoImplProperty::InstallMember(
     }
 
     nsDependentString name(mName);
-    if (!::JS_DefineUCProperty(
-            aCx, aTargetClassObject, static_cast<const char16_t*>(mName),
-            name.Length(), JS_DATA_TO_FUNC_PTR(JSNative, getter.get()),
-            JS_DATA_TO_FUNC_PTR(JSNative, setter.get()), mJSAttributes))
+    if (!::JS_DefineUCProperty(aCx, aTargetClassObject,
+                               static_cast<const char16_t*>(mName),
+                               name.Length(), getter, setter, mJSAttributes))
       return NS_ERROR_OUT_OF_MEMORY;
   }
   return NS_OK;
@@ -158,9 +151,8 @@ nsresult nsXBLProtoImplProperty::CompileMember(
     AutoJSAPI& jsapi, const nsString& aClassStr,
     JS::Handle<JSObject*> aClassObject) {
   AssertInCompilationScope();
-  NS_PRECONDITION(!mIsCompiled,
-                  "Trying to compile an already-compiled property");
-  NS_PRECONDITION(aClassObject, "Must have class object to compile");
+  MOZ_ASSERT(!mIsCompiled, "Trying to compile an already-compiled property");
+  MOZ_ASSERT(aClassObject, "Must have class object to compile");
   MOZ_ASSERT(!mGetter.IsCompiled() && !mSetter.IsCompiled());
   JSContext* cx = jsapi.cx();
 
@@ -185,13 +177,13 @@ nsresult nsXBLProtoImplProperty::CompileMember(
   if (getterText && getterText->GetText()) {
     nsDependentString getter(getterText->GetText());
     if (!getter.IsEmpty()) {
-      JSAutoCompartment ac(cx, aClassObject);
+      JSAutoRealm ar(cx, aClassObject);
       JS::CompileOptions options(cx);
       options.setFileAndLine(functionUri.get(), getterText->GetLineNumber());
       nsCString name =
           NS_LITERAL_CSTRING("get_") + NS_ConvertUTF16toUTF8(mName);
       JS::Rooted<JSObject*> getterObject(cx);
-      JS::AutoObjectVector emptyVector(cx);
+      JS::RootedVector<JSObject*> emptyVector(cx);
       rv = nsJSUtils::CompileFunction(jsapi, emptyVector, options, name, 0,
                                       nullptr, getter, getterObject.address());
 
@@ -231,13 +223,13 @@ nsresult nsXBLProtoImplProperty::CompileMember(
   if (setterText && setterText->GetText()) {
     nsDependentString setter(setterText->GetText());
     if (!setter.IsEmpty()) {
-      JSAutoCompartment ac(cx, aClassObject);
+      JSAutoRealm ar(cx, aClassObject);
       JS::CompileOptions options(cx);
       options.setFileAndLine(functionUri.get(), setterText->GetLineNumber());
       nsCString name =
           NS_LITERAL_CSTRING("set_") + NS_ConvertUTF16toUTF8(mName);
       JS::Rooted<JSObject*> setterObject(cx);
-      JS::AutoObjectVector emptyVector(cx);
+      JS::RootedVector<JSObject*> emptyVector(cx);
       rv = nsJSUtils::CompileFunction(jsapi, emptyVector, options, name, 1,
                                       gPropertyArgs, setter,
                                       setterObject.address());

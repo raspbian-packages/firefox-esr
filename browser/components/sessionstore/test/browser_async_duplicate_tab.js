@@ -1,7 +1,9 @@
 "use strict";
 
-const PATH = getRootDirectory(gTestPath)
-             .replace("chrome://mochitests/content/", "http://example.com/");
+const PATH = getRootDirectory(gTestPath).replace(
+  "chrome://mochitests/content/",
+  "http://example.com/"
+);
 const URL = PATH + "file_async_duplicate_tab.html";
 
 add_task(async function test_duplicate() {
@@ -34,12 +36,12 @@ add_task(async function test_duplicate() {
   await TabStateFlusher.flush(tab2.linkedBrowser);
 
   // There should be two history entries now.
-  let {entries} = JSON.parse(ss.getTabState(tab2));
+  let { entries } = JSON.parse(ss.getTabState(tab2));
   is(entries.length, 2, "there are two shistory entries");
 
   // Cleanup.
-  await promiseRemoveTab(tab2);
-  await promiseRemoveTab(tab);
+  BrowserTestUtils.removeTab(tab2);
+  BrowserTestUtils.removeTab(tab);
 });
 
 add_task(async function test_duplicate_remove() {
@@ -68,13 +70,16 @@ add_task(async function test_duplicate_remove() {
   let tab2 = ss.duplicateTab(window, tab);
 
   // Before the duplication finished, remove the tab.
-  await Promise.all([promiseRemoveTab(tab), promiseTabRestored(tab2)]);
+  await Promise.all([
+    promiseRemoveTabAndSessionState(tab),
+    promiseTabRestored(tab2),
+  ]);
   await TabStateFlusher.flush(tab2.linkedBrowser);
 
   // There should be two history entries now.
-  let {entries} = JSON.parse(ss.getTabState(tab2));
+  let { entries } = JSON.parse(ss.getTabState(tab2));
   is(entries.length, 2, "there are two shistory entries");
 
   // Cleanup.
-  await promiseRemoveTab(tab2);
+  BrowserTestUtils.removeTab(tab2);
 });

@@ -22,10 +22,10 @@
 #include "nsIInterfaceRequestor.h"
 #include "nsITimer.h"
 #include "nsIHttpChannel.h"
-#include "nsWeakReference.h"
 #include "nsDeque.h"
 
-class nsPIDOMWindowInner;
+class nsIGlobalObject;
+class nsICookieSettings;
 
 namespace mozilla {
 
@@ -81,7 +81,8 @@ class EventSource final : public DOMEventTargetHelper {
   void Close();
 
  private:
-  EventSource(nsPIDOMWindowInner* aOwnerWindow, bool aWithCredentials);
+  EventSource(nsIGlobalObject* aGlobal, nsICookieSettings* aCookieSettings,
+              bool aWithCredentials);
   virtual ~EventSource();
   // prevent bad usage
   EventSource(const EventSource& x) = delete;

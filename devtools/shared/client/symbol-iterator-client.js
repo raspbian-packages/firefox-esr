@@ -4,7 +4,10 @@
 
 "use strict";
 
-const {arg, DebuggerClient} = require("devtools/shared/client/debugger-client");
+const {
+  arg,
+  DebuggerClient,
+} = require("devtools/shared/client/debugger-client");
 
 /**
  * A SymbolIteratorClient provides a way to access to symbols
@@ -14,7 +17,7 @@ const {arg, DebuggerClient} = require("devtools/shared/client/debugger-client");
  *        The debugger client parent.
  * @param grip Object
  *        A SymbolIteratorActor grip returned by the protocol via
- *        TabActor.enumSymbols request.
+ *        BrowsingContextTargetActor.enumSymbols request.
  */
 function SymbolIteratorClient(client, grip) {
   this._grip = grip;
@@ -44,11 +47,14 @@ SymbolIteratorClient.prototype = {
    * @param callback Function
    *        The function called when we receive the symbols.
    */
-  slice: DebuggerClient.requester({
-    type: "slice",
-    start: arg(0),
-    count: arg(1)
-  }, {}),
+  slice: DebuggerClient.requester(
+    {
+      type: "slice",
+      start: arg(0),
+      count: arg(1),
+    },
+    {}
+  ),
 
   /**
    * Get all the symbols.
@@ -56,9 +62,12 @@ SymbolIteratorClient.prototype = {
    * @param callback Function
    *        The function called when we receive the symbols.
    */
-  all: DebuggerClient.requester({
-    type: "all"
-  }, {}),
+  all: DebuggerClient.requester(
+    {
+      type: "all",
+    },
+    {}
+  ),
 };
 
 module.exports = SymbolIteratorClient;

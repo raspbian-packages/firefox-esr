@@ -18,6 +18,8 @@
 #include "nsStreamUtils.h"
 #include "nsStringStream.h"
 
+#include "js/ArrayBuffer.h"  // JS::NewArrayBufferWithContents
+#include "js/JSON.h"
 #include "mozilla/ErrorResult.h"
 #include "mozilla/dom/Exceptions.h"
 #include "mozilla/dom/FetchUtil.h"
@@ -241,10 +243,6 @@ class MOZ_STACK_CLASS FormDataParser {
       // going to free it. We also need fallible alloc, so we can't just use
       // ToNewCString().
       char* copy = static_cast<char*>(moz_xmalloc(body.Length()));
-      if (!copy) {
-        NS_WARNING("Failed to copy File entry body.");
-        return false;
-      }
       nsCString::const_iterator bodyIter, bodyEnd;
       body.BeginReading(bodyIter);
       body.EndReading(bodyEnd);
@@ -279,6 +277,10 @@ class MOZ_STACK_CLASS FormDataParser {
         mParentObject(aParent) {}
 
   bool Parse() {
+    if (mData.IsEmpty()) {
+      return false;
+    }
+
     // Determine boundary from mimetype.
     const char* boundaryId = nullptr;
     boundaryId = strstr(mMimeType.BeginWriting(), "boundary");
@@ -371,7 +373,7 @@ class MOZ_STACK_CLASS FormDataParser {
       }
     }
 
-    NS_NOTREACHED("Should never reach here.");
+    MOZ_ASSERT_UNREACHABLE("Should never reach here.");
     return false;
   }
 
@@ -385,8 +387,8 @@ void BodyUtil::ConsumeArrayBuffer(JSContext* aCx,
                                   uint32_t aInputLength, uint8_t* aInput,
                                   ErrorResult& aRv) {
   JS::Rooted<JSObject*> arrayBuffer(aCx);
-  arrayBuffer = JS_NewArrayBufferWithContents(aCx, aInputLength,
-                                              reinterpret_cast<void*>(aInput));
+  arrayBuffer = JS::NewArrayBufferWithContents(aCx, aInputLength,
+                                               reinterpret_cast<void*>(aInput));
   if (!arrayBuffer) {
     JS_ClearPendingException(aCx);
     aRv.Throw(NS_ERROR_OUT_OF_MEMORY);

@@ -6,28 +6,28 @@
 #include "nsCOMPtr.h"
 #include "nsButtonBoxFrame.h"
 #include "nsIContent.h"
-#include "nsIDOMEvent.h"
-#include "nsIDOMNodeList.h"
 #include "nsIDOMXULButtonElement.h"
 #include "nsGkAtoms.h"
 #include "nsNameSpaceManager.h"
 #include "nsPresContext.h"
-#include "nsIPresShell.h"
-#include "nsIDOMElement.h"
 #include "nsDisplayList.h"
 #include "nsContentUtils.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/dom/Event.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/EventStateManager.h"
 #include "mozilla/EventStates.h"
 #include "mozilla/MouseEvents.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/TextEvents.h"
 
 using namespace mozilla;
+using namespace mozilla::dom;
 
 NS_IMPL_ISUPPORTS(nsButtonBoxFrame::nsButtonBoxListener, nsIDOMEventListener)
 
 nsresult nsButtonBoxFrame::nsButtonBoxListener::HandleEvent(
-    nsIDOMEvent* aEvent) {
+    dom::Event* aEvent) {
   if (!mButtonBoxFrame) {
     return NS_OK;
   }
@@ -49,15 +49,16 @@ nsresult nsButtonBoxFrame::nsButtonBoxListener::HandleEvent(
 //
 // Creates a new Button frame and returns it
 //
-nsIFrame* NS_NewButtonBoxFrame(nsIPresShell* aPresShell,
-                               nsStyleContext* aContext) {
-  return new (aPresShell) nsButtonBoxFrame(aContext);
+nsIFrame* NS_NewButtonBoxFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsButtonBoxFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsButtonBoxFrame)
 
-nsButtonBoxFrame::nsButtonBoxFrame(nsStyleContext* aContext, ClassID aID)
-    : nsBoxFrame(aContext, aID, false),
+nsButtonBoxFrame::nsButtonBoxFrame(ComputedStyle* aStyle,
+                                   nsPresContext* aPresContext, ClassID aID)
+    : nsBoxFrame(aStyle, aPresContext, aID, false),
       mButtonBoxListener(nullptr),
       mIsHandlingKeyEvent(false) {
   UpdateMouseThrough();
@@ -123,8 +124,9 @@ nsresult nsButtonBoxFrame::HandleEvent(nsPresContext* aPresContext,
         break;
       }
       if (NS_VK_RETURN == keyEvent->mKeyCode) {
-        nsCOMPtr<nsIDOMXULButtonElement> buttonEl(do_QueryInterface(mContent));
-        if (buttonEl) {
+        RefPtr<nsIDOMXULButtonElement> button =
+            mContent->AsElement()->AsXULButton();
+        if (button) {
           MouseClicked(aEvent);
           *aEventStatus = nsEventStatus_eConsumeNoDefault;
         }
@@ -183,38 +185,26 @@ void nsButtonBoxFrame::Blurred() {
   mIsHandlingKeyEvent = false;
 }
 
-void nsButtonBoxFrame::DoMouseClick(WidgetGUIEvent* aEvent, bool aTrustEvent) {
+void nsButtonBoxFrame::MouseClicked(WidgetGUIEvent* aEvent) {
   // Don't execute if we're disabled.
   if (mContent->AsElement()->AttrValueIs(kNameSpaceID_None, nsGkAtoms::disabled,
                                          nsGkAtoms::_true, eCaseMatters))
     return;
 
-  // Execute the oncommand event handler.
-  bool isShift = false;
-  bool isControl = false;
-  bool isAlt = false;
-  bool isMeta = false;
-  uint16_t inputSource = nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN;
-
-  if (aEvent) {
-    WidgetInputEvent* inputEvent = aEvent->AsInputEvent();
-    isShift = inputEvent->IsShift();
-    isControl = inputEvent->IsControl();
-    isAlt = inputEvent->IsAlt();
-    isMeta = inputEvent->IsMeta();
-
-    WidgetMouseEventBase* mouseEvent = aEvent->AsMouseEventBase();
-    if (mouseEvent) {
-      inputSource = mouseEvent->inputSource;
-    }
-  }
-
   // Have the content handle the event, propagating it according to normal DOM
   // rules.
-  nsCOMPtr<nsIPresShell> shell = PresContext()->GetPresShell();
-  if (shell) {
-    nsContentUtils::DispatchXULCommand(
-        mContent, aEvent ? aEvent->IsTrusted() : aTrustEvent, nullptr, shell,
-        isControl, isAlt, isShift, isMeta, inputSource);
+  RefPtr<mozilla::PresShell> presShell = PresContext()->GetPresShell();
+  if (!presShell) {
+    return;
   }
+
+  // Execute the oncommand event handler.
+  nsCOMPtr<nsIContent> content = mContent;
+  WidgetInputEvent* inputEvent = aEvent->AsInputEvent();
+  WidgetMouseEventBase* mouseEvent = aEvent->AsMouseEventBase();
+  nsContentUtils::DispatchXULCommand(
+      content, aEvent->IsTrusted(), nullptr, presShell, inputEvent->IsControl(),
+      inputEvent->IsAlt(), inputEvent->IsShift(), inputEvent->IsMeta(),
+      mouseEvent ? mouseEvent->mInputSource
+                 : MouseEvent_Binding::MOZ_SOURCE_UNKNOWN);
 }

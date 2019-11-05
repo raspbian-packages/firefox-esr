@@ -2,27 +2,46 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "Services",
-  "resource://gre/modules/Services.jsm");
-ChromeUtils.defineModuleGetter(this, "Utils",
-  "resource://gre/modules/accessibility/Utils.jsm");
-ChromeUtils.defineModuleGetter(this, "Logger",
-  "resource://gre/modules/accessibility/Utils.jsm");
-ChromeUtils.defineModuleGetter(this, "Roles",
-  "resource://gre/modules/accessibility/Constants.jsm");
-ChromeUtils.defineModuleGetter(this, "TraversalRules",
-  "resource://gre/modules/accessibility/Traversal.jsm");
-ChromeUtils.defineModuleGetter(this, "TraversalHelper",
-  "resource://gre/modules/accessibility/Traversal.jsm");
-ChromeUtils.defineModuleGetter(this, "Presentation",
-  "resource://gre/modules/accessibility/Presentation.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "Utils",
+  "resource://gre/modules/accessibility/Utils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "Logger",
+  "resource://gre/modules/accessibility/Utils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "Roles",
+  "resource://gre/modules/accessibility/Constants.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "States",
+  "resource://gre/modules/accessibility/Constants.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "TraversalRules",
+  "resource://gre/modules/accessibility/Traversal.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "TraversalHelper",
+  "resource://gre/modules/accessibility/Traversal.jsm"
+);
 
 var EXPORTED_SYMBOLS = ["ContentControl"];
 
 const MOVEMENT_GRANULARITY_CHARACTER = 1;
 const MOVEMENT_GRANULARITY_WORD = 2;
-const MOVEMENT_GRANULARITY_PARAGRAPH = 8;
+const MOVEMENT_GRANULARITY_LINE = 4;
+
+const CLIPBOARD_COPY = 0x4000;
+const CLIPBOARD_PASTE = 0x8000;
+const CLIPBOARD_CUT = 0x10000;
 
 function ContentControl(aContentScope) {
   this._contentScope = Cu.getWeakReference(aContentScope);
@@ -30,21 +49,23 @@ function ContentControl(aContentScope) {
 }
 
 this.ContentControl.prototype = {
-  messagesOfInterest: ["AccessFu:MoveCursor",
-                       "AccessFu:ClearCursor",
-                       "AccessFu:MoveToPoint",
-                       "AccessFu:AutoMove",
-                       "AccessFu:Activate",
-                       "AccessFu:MoveCaret",
-                       "AccessFu:MoveByGranularity",
-                       "AccessFu:AndroidScroll"],
+  messagesOfInterest: [
+    "AccessFu:Activate",
+    "AccessFu:AndroidScroll",
+    "AccessFu:AutoMove",
+    "AccessFu:ClearCursor",
+    "AccessFu:Clipboard",
+    "AccessFu:MoveByGranularity",
+    "AccessFu:MoveCursor",
+    "AccessFu:MoveToPoint",
+    "AccessFu:SetSelection",
+  ],
 
   start: function cc_start() {
     let cs = this._contentScope.get();
     for (let message of this.messagesOfInterest) {
       cs.addMessageListener(message, this);
     }
-    cs.addEventListener("mousemove", this);
   },
 
   stop: function cc_stop() {
@@ -52,7 +73,6 @@ this.ContentControl.prototype = {
     for (let message of this.messagesOfInterest) {
       cs.removeMessageListener(message, this);
     }
-    cs.removeEventListener("mousemove", this);
   },
 
   get document() {
@@ -69,9 +89,11 @@ this.ContentControl.prototype = {
 
   receiveMessage: function cc_receiveMessage(aMessage) {
     Logger.debug(() => {
-      return ["ContentControl.receiveMessage",
+      return [
+        "ContentControl.receiveMessage",
         aMessage.name,
-        JSON.stringify(aMessage.json)];
+        JSON.stringify(aMessage.json),
+      ];
     });
 
     // If we get an explicit message, we should immediately cancel any autoMove
@@ -86,7 +108,9 @@ this.ContentControl.prototype = {
       }
     } catch (x) {
       Logger.logException(
-        x, "Error handling message: " + JSON.stringify(aMessage.json));
+        x,
+        "Error handling message: " + JSON.stringify(aMessage.json)
+      );
     }
   },
 
@@ -105,10 +129,11 @@ this.ContentControl.prototype = {
       return;
     }
 
-    this._contentScope.get().sendAsyncMessage("AccessFu:DoScroll",
-      { bounds: Utils.getBounds(position, true),
-        page: aMessage.json.direction === "forward" ? 1 : -1,
-        horizontal: false });
+    this._contentScope.get().sendAsyncMessage("AccessFu:DoScroll", {
+      bounds: Utils.getBounds(position),
+      page: aMessage.json.direction === "forward" ? 1 : -1,
+      horizontal: false,
+    });
   },
 
   handleMoveCursor: function cc_handleMoveCursor(aMessage) {
@@ -131,8 +156,10 @@ this.ContentControl.prototype = {
     if (moved) {
       if (origin === "child") {
         // We just stepped out of a child, clear child cursor.
-        Utils.getMessageManager(aMessage.target).sendAsyncMessage(
-          "AccessFu:ClearCursor", {});
+        Utils.getMessageManagerForFrame(aMessage.target).sendAsyncMessage(
+          "AccessFu:ClearCursor",
+          {}
+        );
       } else {
         // We potentially landed on a new child cursor. If so, we want to
         // either be on the first or last item in the child doc.
@@ -147,26 +174,13 @@ this.ContentControl.prototype = {
         // new position.
         this.sendToChild(vc, aMessage, { action: childAction }, true);
       }
-    } else if (!this._childMessageSenders.has(aMessage.target) &&
-               origin !== "top") {
+    } else if (
+      !this._childMessageSenders.has(aMessage.target) &&
+      origin !== "top"
+    ) {
       // We failed to move, and the message is not from a parent, so forward
       // to it.
       this.sendToParent(aMessage);
-    } else {
-      this._contentScope.get().sendAsyncMessage("AccessFu:Present",
-        Presentation.noMove(action));
-    }
-  },
-
-  handleEvent: function cc_handleEvent(aEvent) {
-    if (aEvent.type === "mousemove") {
-      this.handleMoveToPoint(
-        { json: { x: aEvent.screenX, y: aEvent.screenY, rule: "Simple" } });
-    }
-    if (!Utils.getMessageManager(aEvent.target)) {
-      aEvent.preventDefault();
-    } else {
-      aEvent.target.focus();
     }
   },
 
@@ -174,8 +188,7 @@ this.ContentControl.prototype = {
     let [x, y] = [aMessage.json.x, aMessage.json.y];
     let rule = TraversalRules[aMessage.json.rule];
 
-    let dpr = this.window.devicePixelRatio;
-    this.vc.moveToPoint(rule, x * dpr, y * dpr, true);
+    this.vc.moveToPoint(rule, x, y, true);
   },
 
   handleClearCursor: function cc_handleClearCursor(aMessage) {
@@ -184,7 +197,6 @@ this.ContentControl.prototype = {
     if (!forwarded) {
       this._contentScope.get().sendAsyncMessage("AccessFu:CursorCleared");
     }
-    this.document.activeElement.blur();
   },
 
   handleAutoMove: function cc_handleAutoMove(aMessage) {
@@ -192,20 +204,10 @@ this.ContentControl.prototype = {
   },
 
   handleActivate: function cc_handleActivate(aMessage) {
-    let activateAccessible = (aAccessible) => {
+    let activateAccessible = aAccessible => {
       Logger.debug(() => {
         return ["activateAccessible", Logger.accessibleToString(aAccessible)];
       });
-      try {
-        if (aMessage.json.activateIfKey &&
-          !Utils.isActivatableOnFingerUp(aAccessible)) {
-          // Only activate keys, don't do anything on other objects.
-          return;
-        }
-      } catch (e) {
-        // accessible is invalid. Silently fail.
-        return;
-      }
 
       if (aAccessible.actionCount > 0) {
         aAccessible.doAction(0);
@@ -220,51 +222,66 @@ this.ContentControl.prototype = {
         // Could possibly be made simpler in the future. Maybe core
         // engine could expose nsCoreUtiles::DispatchMouseEvent()?
         let docAcc = Utils.AccService.getAccessibleFor(this.document);
-        let docX = {}, docY = {}, docW = {}, docH = {};
+        let docX = {},
+          docY = {},
+          docW = {},
+          docH = {};
         docAcc.getBounds(docX, docY, docW, docH);
 
-        let objX = {}, objY = {}, objW = {}, objH = {};
+        let objX = {},
+          objY = {},
+          objW = {},
+          objH = {};
         aAccessible.getBounds(objX, objY, objW, objH);
 
-        let x = Math.round((objX.value - docX.value) + objW.value / 2);
-        let y = Math.round((objY.value - docY.value) + objH.value / 2);
+        let x = Math.round(objX.value - docX.value + objW.value / 2);
+        let y = Math.round(objY.value - docY.value + objH.value / 2);
 
         let node = aAccessible.DOMNode || aAccessible.parent.DOMNode;
 
         for (let eventType of ["mousedown", "mouseup"]) {
           let evt = this.document.createEvent("MouseEvents");
-          evt.initMouseEvent(eventType, true, true, this.window,
-            x, y, 0, 0, 0, false, false, false, false, 0, null);
+          evt.initMouseEvent(
+            eventType,
+            true,
+            true,
+            this.window,
+            x,
+            y,
+            0,
+            0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            0,
+            null
+          );
           node.dispatchEvent(evt);
         }
-      }
-
-      if (!Utils.isActivatableOnFingerUp(aAccessible)) {
-        // Keys will typically have a sound of their own.
-        this._contentScope.get().sendAsyncMessage("AccessFu:Present",
-          Presentation.actionInvoked(aAccessible, "click"));
       }
     };
 
     let focusedAcc = Utils.AccService.getAccessibleFor(
-      this.document.activeElement);
-    if (focusedAcc && this.vc.position === focusedAcc
-        && focusedAcc.role === Roles.ENTRY) {
+      this.document.activeElement
+    );
+    if (
+      focusedAcc &&
+      this.vc.position === focusedAcc &&
+      focusedAcc.role === Roles.ENTRY
+    ) {
       let accText = focusedAcc.QueryInterface(Ci.nsIAccessibleText);
-      let oldOffset = accText.caretOffset;
       let newOffset = aMessage.json.offset;
-      let text = accText.getText(0, accText.characterCount);
-
       if (newOffset >= 0 && newOffset <= accText.characterCount) {
         accText.caretOffset = newOffset;
       }
 
-      this.presentCaretChange(text, oldOffset, accText.caretOffset);
       return;
     }
 
     // recursively find a descendant that is activatable.
-    let getActivatableDescendant = (aAccessible) => {
+    let getActivatableDescendant = aAccessible => {
       if (aAccessible.actionCount > 0) {
         return aAccessible;
       }
@@ -309,7 +326,17 @@ this.ContentControl.prototype = {
       let evt = this.document.createEvent("KeyboardEvent");
       let keycode = aStepUp ? evt.DOM_VK_DOWN : evt.DOM_VK_UP;
       evt.initKeyEvent(
-        "keypress", false, true, null, false, false, false, false, keycode, 0);
+        "keypress",
+        false,
+        true,
+        null,
+        false,
+        false,
+        false,
+        false,
+        keycode,
+        0
+      );
       elem.dispatchEvent(evt);
     }
 
@@ -317,79 +344,99 @@ this.ContentControl.prototype = {
   },
 
   handleMoveByGranularity: function cc_handleMoveByGranularity(aMessage) {
-    // XXX: Add sendToChild. Right now this is only used in Android, so no need.
-    let direction = aMessage.json.direction;
-    let granularity;
+    const { direction, granularity, select } = aMessage.json;
+    const focusedAcc = Utils.AccService.getAccessibleFor(
+      this.document.activeElement
+    );
+    const editable =
+      focusedAcc && Utils.getState(focusedAcc).contains(States.EDITABLE)
+        ? focusedAcc.QueryInterface(Ci.nsIAccessibleText)
+        : null;
 
-    switch (aMessage.json.granularity) {
+    if (editable) {
+      const caretOffset = editable.caretOffset;
+      this.vc.setTextRange(editable, caretOffset, caretOffset, false);
+    }
+
+    let pivotGranularity;
+    switch (granularity) {
       case MOVEMENT_GRANULARITY_CHARACTER:
-        granularity = Ci.nsIAccessiblePivot.CHAR_BOUNDARY;
+        pivotGranularity = Ci.nsIAccessiblePivot.CHAR_BOUNDARY;
         break;
       case MOVEMENT_GRANULARITY_WORD:
-        granularity = Ci.nsIAccessiblePivot.WORD_BOUNDARY;
+        pivotGranularity = Ci.nsIAccessiblePivot.WORD_BOUNDARY;
+        break;
+      case MOVEMENT_GRANULARITY_LINE:
+        pivotGranularity = Ci.nsIAccessiblePivot.LINE_BOUNDARY;
         break;
       default:
         return;
     }
 
     if (direction === "Previous") {
-      this.vc.movePreviousByText(granularity);
+      this.vc.movePreviousByText(pivotGranularity);
     } else if (direction === "Next") {
-      this.vc.moveNextByText(granularity);
+      this.vc.moveNextByText(pivotGranularity);
+    }
+
+    if (editable) {
+      const newOffset =
+        direction === "Next" ? this.vc.endOffset : this.vc.startOffset;
+      if (select) {
+        let anchor = editable.caretOffset;
+        if (editable.selectionCount) {
+          const [startSel, endSel] = Utils.getTextSelection(editable);
+          anchor = startSel == anchor ? endSel : startSel;
+        }
+        editable.setSelectionBounds(0, anchor, newOffset);
+      } else {
+        editable.caretOffset = newOffset;
+      }
     }
   },
 
-  presentCaretChange: function cc_presentCaretChange(
-    aText, aOldOffset, aNewOffset) {
-    if (aOldOffset !== aNewOffset) {
-      let msg = Presentation.textSelectionChanged(aText, aNewOffset, aNewOffset,
-        aOldOffset, aOldOffset, true);
-      this._contentScope.get().sendAsyncMessage("AccessFu:Present", msg);
+  handleSetSelection: function cc_handleSetSelection(aMessage) {
+    const { start, end } = aMessage.json;
+    const focusedAcc = Utils.AccService.getAccessibleFor(
+      this.document.activeElement
+    );
+    if (focusedAcc) {
+      const accText = focusedAcc.QueryInterface(Ci.nsIAccessibleText);
+      if (start == end) {
+        accText.caretOffset = start;
+      } else {
+        accText.setSelectionBounds(0, start, end);
+      }
     }
   },
 
-  handleMoveCaret: function cc_handleMoveCaret(aMessage) {
-    let direction = aMessage.json.direction;
-    let granularity = aMessage.json.granularity;
-    let accessible = this.vc.position;
-    let accText = accessible.QueryInterface(Ci.nsIAccessibleText);
-    let oldOffset = accText.caretOffset;
-    let text = accText.getText(0, accText.characterCount);
-
-    let start = {}, end = {};
-    if (direction === "Previous" && !aMessage.json.atStart) {
-      switch (granularity) {
-        case MOVEMENT_GRANULARITY_CHARACTER:
-          accText.caretOffset--;
+  handleClipboard: function cc_handleClipboard(aMessage) {
+    const { action } = aMessage.json;
+    const focusedAcc = Utils.AccService.getAccessibleFor(
+      this.document.activeElement
+    );
+    if (focusedAcc) {
+      const [startSel, endSel] = Utils.getTextSelection(focusedAcc);
+      const editText = focusedAcc.QueryInterface(Ci.nsIAccessibleEditableText);
+      switch (action) {
+        case CLIPBOARD_COPY:
+          if (startSel != endSel) {
+            editText.copyText(startSel, endSel);
+          }
           break;
-        case MOVEMENT_GRANULARITY_WORD:
-          accText.getTextBeforeOffset(accText.caretOffset,
-            Ci.nsIAccessibleText.BOUNDARY_WORD_START, start, end);
-          accText.caretOffset = end.value === accText.caretOffset ?
-            start.value : end.value;
+        case CLIPBOARD_PASTE:
+          if (startSel != endSel) {
+            editText.deleteText(startSel, endSel);
+          }
+          editText.pasteText(startSel);
           break;
-        case MOVEMENT_GRANULARITY_PARAGRAPH:
-          let startOfParagraph = text.lastIndexOf("\n", accText.caretOffset - 1);
-          accText.caretOffset = startOfParagraph !== -1 ? startOfParagraph : 0;
-          break;
-      }
-    } else if (direction === "Next" && !aMessage.json.atEnd) {
-      switch (granularity) {
-        case MOVEMENT_GRANULARITY_CHARACTER:
-          accText.caretOffset++;
-          break;
-        case MOVEMENT_GRANULARITY_WORD:
-          accText.getTextAtOffset(accText.caretOffset,
-                                  Ci.nsIAccessibleText.BOUNDARY_WORD_END, start, end);
-          accText.caretOffset = end.value;
-          break;
-        case MOVEMENT_GRANULARITY_PARAGRAPH:
-          accText.caretOffset = text.indexOf("\n", accText.caretOffset + 1);
+        case CLIPBOARD_CUT:
+          if (startSel != endSel) {
+            editText.cutText(startSel, endSel);
+          }
           break;
       }
     }
-
-    this.presentCaretChange(text, oldOffset, accText.caretOffset);
   },
 
   getChildCursor: function cc_getChildCursor(aAccessible) {
@@ -398,7 +445,7 @@ this.ContentControl.prototype = {
       let domNode = acc.DOMNode;
       let mm = this._childMessageSenders.get(domNode, null);
       if (!mm) {
-        mm = Utils.getMessageManager(domNode);
+        mm = Utils.getMessageManagerForFrame(domNode);
         mm.addWeakMessageListener("AccessFu:MoveCursor", this);
         this._childMessageSenders.set(domNode, mm);
       }
@@ -409,8 +456,12 @@ this.ContentControl.prototype = {
     return null;
   },
 
-  sendToChild: function cc_sendToChild(aVirtualCursor, aMessage, aReplacer,
-                                       aFocus) {
+  sendToChild: function cc_sendToChild(
+    aVirtualCursor,
+    aMessage,
+    aReplacer,
+    aFocus
+  ) {
     let position = aVirtualCursor.position;
     let mm = this.getChildCursor(position);
     if (!mm) {
@@ -440,13 +491,12 @@ this.ContentControl.prototype = {
   },
 
   /**
-   * Move cursor and/or present its location.
+   * Move cursor.
    * aOptions could have any of these fields:
    * - delay: in ms, before actual move is performed. Another autoMove call
    *    would cancel it. Useful if we want to wait for a possible trailing
    *    focus move. Default 0.
    * - noOpIfOnScreen: if accessible is alive and visible, don't do anything.
-   * - forcePresent: present cursor location, whether we move or don't.
    * - moveToFocused: if there is a focused accessible move to that. This takes
    *    precedence over given anchor.
    * - moveMethod: pivot move method to use, default is 'moveNext',
@@ -457,26 +507,20 @@ this.ContentControl.prototype = {
     let moveFunc = () => {
       let vc = this.vc;
       let acc = aAnchor;
-      let rule = aOptions.onScreenOnly ?
-        TraversalRules.SimpleOnScreen : TraversalRules.Simple;
-      let forcePresentFunc = () => {
-        if (aOptions.forcePresent) {
-          this._contentScope.get().sendAsyncMessage(
-            "AccessFu:Present", Presentation.pivotChanged(
-              vc.position, null, Ci.nsIAccessiblePivot.REASON_NONE,
-              vc.startOffset, vc.endOffset, false));
-        }
-      };
+      let rule = aOptions.onScreenOnly
+        ? TraversalRules.SimpleOnScreen
+        : TraversalRules.Simple;
 
-      if (aOptions.noOpIfOnScreen &&
-        Utils.isAliveAndVisible(vc.position, true)) {
-        forcePresentFunc();
+      if (
+        aOptions.noOpIfOnScreen &&
+        Utils.isAliveAndVisible(vc.position, true)
+      ) {
         return;
       }
 
       if (aOptions.moveToFocused) {
-        acc = Utils.AccService.getAccessibleFor(
-          this.document.activeElement) || acc;
+        acc =
+          Utils.AccService.getAccessibleFor(this.document.activeElement) || acc;
       }
 
       let moved = false;
@@ -484,27 +528,31 @@ this.ContentControl.prototype = {
       let moveFirstOrLast = moveMethod in ["moveFirst", "moveLast"];
       if (!moveFirstOrLast || acc) {
         // We either need next/previous or there is an anchor we need to use.
-        moved = vc[moveFirstOrLast ? "moveNext" : moveMethod](rule, acc, true,
-                                                              false);
+        moved = vc[moveFirstOrLast ? "moveNext" : moveMethod](
+          rule,
+          acc,
+          true,
+          true
+        );
       }
       if (moveFirstOrLast && !moved) {
         // We move to first/last after no anchor move happened or succeeded.
-        moved = vc[moveMethod](rule, false);
+        moved = vc[moveMethod](rule, true);
       }
 
-      let sentToChild = this.sendToChild(vc, {
-        name: "AccessFu:AutoMove",
-        json: {
-          moveMethod: aOptions.moveMethod,
-          moveToFocused: aOptions.moveToFocused,
-          noOpIfOnScreen: true,
-          forcePresent: true
-        }
-      }, null, true);
-
-      if (!moved && !sentToChild) {
-        forcePresentFunc();
-      }
+      this.sendToChild(
+        vc,
+        {
+          name: "AccessFu:AutoMove",
+          json: {
+            moveMethod: aOptions.moveMethod,
+            moveToFocused: aOptions.moveToFocused,
+            noOpIfOnScreen: true,
+          },
+        },
+        null,
+        true
+      );
     };
 
     if (aOptions.delay) {
@@ -519,7 +567,8 @@ this.ContentControl.prototype = {
     this._autoMove = 0;
   },
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsISupportsWeakReference,
-    Ci.nsIMessageListener
-  ])
+  QueryInterface: ChromeUtils.generateQI([
+    Ci.nsISupportsWeakReference,
+    Ci.nsIMessageListener,
+  ]),
 };

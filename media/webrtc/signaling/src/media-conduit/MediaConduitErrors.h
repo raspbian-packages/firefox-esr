@@ -40,6 +40,7 @@ enum MediaConduitErrorCode {
   kMediaConduitHybridNACKFECStatusError,  // Can't set Hybrid NACK / FEC mode
   kMediaConduitVideoSendStreamError       // WebRTC video send stream failure
 };
+
 }
 
 #endif

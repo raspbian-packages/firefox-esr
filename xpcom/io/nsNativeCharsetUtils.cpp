@@ -11,9 +11,9 @@
 //-----------------------------------------------------------------------------
 #ifndef XP_WIN
 
-#include "nsAString.h"
-#include "nsReadableUtils.h"
-#include "nsString.h"
+#  include "nsAString.h"
+#  include "nsReadableUtils.h"
+#  include "nsString.h"
 
 nsresult NS_CopyNativeToUnicode(const nsACString& aInput, nsAString& aOutput) {
   CopyUTF8toUTF16(aInput, aOutput);
@@ -30,10 +30,10 @@ nsresult NS_CopyUnicodeToNative(const nsAString& aInput, nsACString& aOutput) {
 //-----------------------------------------------------------------------------
 #else
 
-#include <windows.h>
-#include "nsString.h"
-#include "nsAString.h"
-#include "nsReadableUtils.h"
+#  include <windows.h>
+#  include "nsString.h"
+#  include "nsAString.h"
+#  include "nsReadableUtils.h"
 
 using namespace mozilla;
 
@@ -85,14 +85,11 @@ nsresult NS_CopyUnicodeToNative(const nsAString& aInput, nsACString& aOutput) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
   if (resultLen > 0) {
-    nsACString::iterator out_iter;
-    aOutput.BeginWriting(out_iter);
+    char* result = aOutput.BeginWriting();
 
     // default "defaultChar" is '?', which is an illegal character on windows
     // file system.  That will cause file uncreatable. Change it to '_'
     const char defaultChar = '_';
-
-    char* result = out_iter.get();
 
     ::WideCharToMultiByte(CP_ACP, 0, buf, inputLen, result, resultLen,
                           &defaultChar, nullptr);

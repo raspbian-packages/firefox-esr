@@ -10,11 +10,14 @@
 #include "RootAccessible.h"
 
 namespace mozilla {
+
+class PresShell;
+
 namespace a11y {
 
 class RootAccessibleWrap : public RootAccessible {
  public:
-  RootAccessibleWrap(nsIDocument* aDocument, nsIPresShell* aPresShell);
+  RootAccessibleWrap(dom::Document* aDocument, PresShell* aPresShell);
   virtual ~RootAccessibleWrap();
 
   // RootAccessible
@@ -41,6 +44,9 @@ class RootAccessibleWrap : public RootAccessible {
       /* [in] */ long navDir,
       /* [optional][in] */ VARIANT varStart,
       /* [retval][out] */ VARIANT __RPC_FAR* pvarEndUpAt) override;
+
+  virtual /* [id][propget] */ HRESULT STDMETHODCALLTYPE get_accFocus(
+      /* [retval][out] */ VARIANT __RPC_FAR* pvarChild) override;
 
  private:
   // DECLARE_AGGREGATABLE declares the internal IUnknown methods as well as

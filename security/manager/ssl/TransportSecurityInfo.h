@@ -7,6 +7,7 @@
 #ifndef TransportSecurityInfo_h
 #define TransportSecurityInfo_h
 
+#include "CertVerifier.h"  // For CertificateTransparencyInfo
 #include "ScopedNSSTypes.h"
 #include "certt.h"
 #include "mozilla/Assertions.h"
@@ -14,26 +15,23 @@
 #include "mozilla/Mutex.h"
 #include "mozilla/RefPtr.h"
 #include "nsDataHashtable.h"
-#include "nsIAssociatedContentSecurity.h"
+#include "nsIClassInfo.h"
 #include "nsIInterfaceRequestor.h"
-#include "nsISSLStatusProvider.h"
 #include "nsITransportSecurityInfo.h"
-#include "nsSSLStatus.h"
+#include "nsNSSCertificate.h"
 #include "nsString.h"
-#include "pkix/pkixtypes.h"
+#include "mozpkix/pkixtypes.h"
 
 namespace mozilla {
 namespace psm {
 
-enum class SSLErrorMessageType {
-  OverridableCert = 1,  // for *overridable* certificate errors
-  Plain = 2,            // all other errors (or "no error")
+enum class EVStatus {
+  NotEV = 0,
+  EV = 1,
 };
 
 class TransportSecurityInfo : public nsITransportSecurityInfo,
                               public nsIInterfaceRequestor,
-                              public nsISSLStatusProvider,
-                              public nsIAssociatedContentSecurity,
                               public nsISerializable,
                               public nsIClassInfo {
  protected:
@@ -45,12 +43,17 @@ class TransportSecurityInfo : public nsITransportSecurityInfo,
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSITRANSPORTSECURITYINFO
   NS_DECL_NSIINTERFACEREQUESTOR
-  NS_DECL_NSISSLSTATUSPROVIDER
-  NS_DECL_NSIASSOCIATEDCONTENTSECURITY
   NS_DECL_NSISERIALIZABLE
   NS_DECL_NSICLASSINFO
 
   void SetSecurityState(uint32_t aState);
+
+  inline int32_t GetErrorCode() {
+    int32_t result;
+    mozilla::DebugOnly<nsresult> rv = GetErrorCode(&result);
+    MOZ_ASSERT(NS_SUCCEEDED(rv));
+    return result;
+  }
 
   const nsACString& GetHostName() const { return mHostName; }
 
@@ -64,21 +67,46 @@ class TransportSecurityInfo : public nsITransportSecurityInfo,
   }
   void SetOriginAttributes(const OriginAttributes& aOriginAttributes);
 
-  void GetErrorLogMessage(PRErrorCode errorCode,
-                          ::mozilla::psm::SSLErrorMessageType errorMessageType,
-                          nsString& result);
+  void SetCanceled(PRErrorCode errorCode);
+  bool IsCanceled();
 
-  void SetCanceled(PRErrorCode errorCode,
-                   ::mozilla::psm::SSLErrorMessageType errorMessageType);
-
-  /* Set SSL Status values */
-  void SetSSLStatus(nsSSLStatus* aSSLStatus);
-  nsSSLStatus* SSLStatus() { return mSSLStatus; }
   void SetStatusErrorBits(nsNSSCertificate* cert, uint32_t collected_errors);
 
   nsresult SetFailedCertChain(UniqueCERTCertList certList);
 
+  void SetServerCert(nsNSSCertificate* aServerCert, EVStatus aEVStatus);
+
+  nsresult SetSucceededCertChain(mozilla::UniqueCERTCertList certList);
+
+  bool HasServerCert() { return mServerCert != nullptr; }
+
+  void SetCertificateTransparencyInfo(
+      const mozilla::psm::CertificateTransparencyInfo& info);
+
+  uint16_t mCipherSuite;
+  uint16_t mProtocolVersion;
+  uint16_t mCertificateTransparencyStatus;
+  nsCString mKeaGroup;
+  nsCString mSignatureSchemeName;
+
+  bool mIsDomainMismatch;
+  bool mIsNotValidAtThisTime;
+  bool mIsUntrusted;
+  bool mIsEV;
+
+  bool mHasIsEVStatus;
+  bool mHaveCipherSuiteAndProtocol;
+
+  /* mHaveCertErrrorBits is relied on to determine whether or not a SPDY
+     connection is eligible for joining in nsNSSSocketInfo::JoinConnection() */
+  bool mHaveCertErrorBits;
+
  private:
+  // True if SetCanceled has been called (or if this was deserialized with a
+  // non-zero mErrorCode, which can only be the case if SetCanceled was called
+  // on the original TransportSecurityInfo).
+  Atomic<bool> mCanceled;
+
   mutable ::mozilla::Mutex mMutex;
 
  protected:
@@ -86,26 +114,20 @@ class TransportSecurityInfo : public nsITransportSecurityInfo,
 
  private:
   uint32_t mSecurityState;
-  int32_t mSubRequestsBrokenSecurity;
-  int32_t mSubRequestsNoSecurity;
 
   PRErrorCode mErrorCode;
-  ::mozilla::psm::SSLErrorMessageType mErrorMessageType;
-  nsString mErrorMessageCached;
-  nsresult formatErrorMessage(
-      ::mozilla::MutexAutoLock const& proofOfLock, PRErrorCode errorCode,
-      ::mozilla::psm::SSLErrorMessageType errorMessageType, bool wantsHtml,
-      bool suppressPort443, nsString& result);
 
   int32_t mPort;
   nsCString mHostName;
   OriginAttributes mOriginAttributes;
 
-  /* SSL Status */
-  RefPtr<nsSSLStatus> mSSLStatus;
+  nsCOMPtr<nsIX509Cert> mServerCert;
+  nsCOMPtr<nsIX509CertList> mSucceededCertChain;
 
   /* Peer cert chain for failed connections (for error reporting) */
   nsCOMPtr<nsIX509CertList> mFailedCertChain;
+
+  nsresult ReadSSLStatus(nsIObjectInputStream* aStream);
 };
 
 class RememberCertErrorsTable {
@@ -120,11 +142,9 @@ class RememberCertErrorsTable {
   nsDataHashtable<nsCStringHashKey, CertStateBits> mErrorHosts;
 
  public:
-  void RememberCertHasError(TransportSecurityInfo* infoobject,
-                            nsSSLStatus* status,
+  void RememberCertHasError(TransportSecurityInfo* infoObject,
                             SECStatus certVerificationResult);
-  void LookupCertErrorBits(TransportSecurityInfo* infoObject,
-                           nsSSLStatus* status);
+  void LookupCertErrorBits(TransportSecurityInfo* infoObject);
 
   static void Init() { sInstance = new RememberCertErrorsTable(); }
 

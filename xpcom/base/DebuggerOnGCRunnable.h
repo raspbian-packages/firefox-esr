@@ -19,7 +19,8 @@ class DebuggerOnGCRunnable : public CancelableRunnable {
   JS::dbg::GarbageCollectionEvent::Ptr mGCData;
 
   explicit DebuggerOnGCRunnable(JS::dbg::GarbageCollectionEvent::Ptr&& aGCData)
-      : CancelableRunnable("DebuggerOnGCRunnable"), mGCData(Move(aGCData)) {}
+      : CancelableRunnable("DebuggerOnGCRunnable"),
+        mGCData(std::move(aGCData)) {}
 
  public:
   static nsresult Enqueue(JSContext* aCx, const JS::GCDescription& aDesc);

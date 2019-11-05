@@ -20,11 +20,10 @@ namespace dom {
 class HTMLAnchorElement final : public nsGenericHTMLElement, public Link {
  public:
   using Element::GetText;
-  using Element::SetText;
 
   explicit HTMLAnchorElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo), Link(this) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)), Link(this) {}
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -33,7 +32,7 @@ class HTMLAnchorElement final : public nsGenericHTMLElement, public Link {
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLAnchorElement,
                                            nsGenericHTMLElement)
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLAnchorElement, a);
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLAnchorElement, a);
 
   virtual int32_t TabIndexDefault() override;
   virtual bool Draggable() const override;
@@ -44,17 +43,16 @@ class HTMLAnchorElement final : public nsGenericHTMLElement, public Link {
   // DOM memory reporter participant
   NS_DECL_ADDSIZEOFEXCLUDINGTHIS
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual bool IsHTMLFocusable(bool aWithMouse, bool* aIsFocusable,
                                int32_t* aTabIndex) override;
 
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
-  virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
+  MOZ_CAN_RUN_SCRIPT
+  nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
   virtual bool IsLink(nsIURI** aURI) const override;
   virtual void GetLinkTarget(nsAString& aTarget) override;
   virtual already_AddRefed<nsIURI> GetHrefURI() const override;
@@ -68,8 +66,7 @@ class HTMLAnchorElement final : public nsGenericHTMLElement, public Link {
                                 nsIPrincipal* aSubjectPrincipal,
                                 bool aNotify) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   virtual EventStates IntrinsicState() const override;
 
@@ -180,7 +177,7 @@ class HTMLAnchorElement final : public nsGenericHTMLElement, public Link {
   void Stringify(nsAString& aResult) { GetHref(aResult); }
   void ToString(nsAString& aSource);
 
-  void NodeInfoChanged(nsIDocument* aOldDoc) final {
+  void NodeInfoChanged(Document* aOldDoc) final {
     ClearHasPendingLinkUpdate();
     nsGenericHTMLElement::NodeInfoChanged(aOldDoc);
   }

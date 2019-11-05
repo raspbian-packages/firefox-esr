@@ -44,7 +44,7 @@ class CacheStorage final : public nsISupports,
  public:
   static already_AddRefed<CacheStorage> CreateOnMainThread(
       Namespace aNamespace, nsIGlobalObject* aGlobal, nsIPrincipal* aPrincipal,
-      bool aStorageDisabled, bool aForceTrustedOrigin, ErrorResult& aRv);
+      bool aForceTrustedOrigin, ErrorResult& aRv);
 
   static already_AddRefed<CacheStorage> CreateOnWorker(
       Namespace aNamespace, nsIGlobalObject* aGlobal,
@@ -94,6 +94,8 @@ class CacheStorage final : public nsISupports,
   void RunRequest(nsAutoPtr<Entry>&& aEntry);
 
   OpenMode GetOpenMode() const;
+
+  bool HasStorageAccess() const;
 
   const Namespace mNamespace;
   nsCOMPtr<nsIGlobalObject> mGlobal;

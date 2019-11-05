@@ -41,6 +41,7 @@
 #include "nsCOMPtr.h"                    // for already_AddRefed
 #include "nsDebug.h"                     // for NS_ASSERTION, etc
 #include "nsISupportsImpl.h"             // for gfxContext::Release, etc
+#include "nsLayoutUtils.h"               // for nsLayoutUtils
 #include "nsPoint.h"                     // for nsIntPoint
 #include "nsRect.h"                      // for mozilla::gfx::IntRect
 #include "nsRegion.h"                    // for nsIntRegion, etc
@@ -105,9 +106,12 @@ bool BasicLayerManager::PushGroupForLayer(gfxContext* aContext, Layer* aLayer,
     ToRect(rect).ToIntRect(&surfRect);
 
     if (!surfRect.IsEmpty()) {
-      RefPtr<DrawTarget> dt =
-          aContext->GetDrawTarget()->CreateSimilarDrawTarget(
-              surfRect.Size(), SurfaceFormat::B8G8R8A8);
+      RefPtr<DrawTarget> dt;
+      if (aContext->GetDrawTarget()->CanCreateSimilarDrawTarget(
+              surfRect.Size(), SurfaceFormat::B8G8R8A8)) {
+        dt = aContext->GetDrawTarget()->CreateSimilarDrawTarget(
+            surfRect.Size(), SurfaceFormat::B8G8R8A8);
+      }
 
       RefPtr<gfxContext> ctx =
           gfxContext::CreateOrNull(dt, ToRect(rect).TopLeft());
@@ -320,7 +324,8 @@ BasicLayerManager::BasicLayerManager(BasicLayerManagerType aType)
       mDoubleBuffering(BufferMode::BUFFER_NONE),
       mType(aType),
       mUsingDefaultTarget(false),
-      mTransactionIncomplete(false) {
+      mTransactionIncomplete(false),
+      mCompositorMightResample(false) {
   MOZ_COUNT_CTOR(BasicLayerManager);
   MOZ_ASSERT(mType != BLM_WIDGET);
 }
@@ -345,13 +350,14 @@ void BasicLayerManager::SetDefaultTargetConfiguration(
   mDoubleBuffering = aDoubleBuffering;
 }
 
-bool BasicLayerManager::BeginTransaction() {
+bool BasicLayerManager::BeginTransaction(const nsCString& aURL) {
   mInTransaction = true;
   mUsingDefaultTarget = true;
-  return BeginTransactionWithTarget(mDefaultTarget);
+  return BeginTransactionWithTarget(mDefaultTarget, aURL);
 }
 
-bool BasicLayerManager::BeginTransactionWithTarget(gfxContext* aTarget) {
+bool BasicLayerManager::BeginTransactionWithTarget(gfxContext* aTarget,
+                                                   const nsCString& aURL) {
   mInTransaction = true;
 
 #ifdef MOZ_LAYERS_HAVE_LOG
@@ -559,11 +565,13 @@ bool BasicLayerManager::EndTransactionInternal(
 
   mTransactionIncomplete = false;
 
+  std::unordered_set<ScrollableLayerGuid::ViewID> scrollIdsUpdated;
+
   if (mRoot) {
     if (aFlags & END_NO_COMPOSITE) {
       // Apply pending tree updates before recomputing effective
       // properties.
-      mRoot->ApplyPendingUpdatesToSubtree();
+      scrollIdsUpdated = mRoot->ApplyPendingUpdatesToSubtree();
     }
 
     // Need to do this before we call ApplyDoubleBuffering,
@@ -619,6 +627,14 @@ bool BasicLayerManager::EndTransactionInternal(
   if (mRoot) {
     mAnimationReadyTime = TimeStamp::Now();
     mRoot->StartPendingAnimations(mAnimationReadyTime);
+
+    // Once we're sure we're not going to fall back to a full paint,
+    // notify the scroll frames which had pending updates.
+    if (!mTransactionIncomplete) {
+      for (ScrollableLayerGuid::ViewID scrollId : scrollIdsUpdated) {
+        nsLayoutUtils::NotifyPaintSkipTransaction(scrollId);
+      }
+    }
   }
 
 #ifdef MOZ_LAYERS_HAVE_LOG
@@ -637,8 +653,6 @@ bool BasicLayerManager::EndTransactionInternal(
 
   NS_ASSERTION(!aCallback || !mTransactionIncomplete,
                "If callback is not null, transaction must be complete");
-
-  ClearDisplayItemLayers();
 
   // XXX - We should probably assert here that for an incomplete transaction
   // out target is the default target.
@@ -767,10 +781,8 @@ static void InstallLayerClipPreserves3D(gfxContext* aTarget, Layer* aLayer) {
   transform *= oldTransform;
   aTarget->SetMatrix(transform);
 
-  aTarget->NewPath();
-  aTarget->SnappedRectangle(gfxRect(clipRect->X(), clipRect->Y(),
-                                    clipRect->Width(), clipRect->Height()));
-  aTarget->Clip();
+  aTarget->SnappedClip(gfxRect(clipRect->X(), clipRect->Y(), clipRect->Width(),
+                               clipRect->Height()));
 
   aTarget->SetMatrix(oldTransform);
 }
@@ -923,9 +935,7 @@ void BasicLayerManager::PaintLayer(gfxContext* aTarget, Layer* aLayer,
       // Azure doesn't support EXTEND_NONE, so to avoid extending the edges
       // of the source surface out to the current clip region, clip to
       // the rectangle of the result surface now.
-      aTarget->NewPath();
-      aTarget->SnappedRectangle(ThebesRect(xformBounds));
-      aTarget->Clip();
+      aTarget->SnappedClip(ThebesRect(xformBounds));
       FlushGroup(paintLayerContext, needsClipToVisibleRegion);
     }
   }

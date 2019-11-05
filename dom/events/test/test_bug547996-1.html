@@ -5,7 +5,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=547996
 -->
 <head>
   <title>Test for Bug 547996</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
 <body>
@@ -26,8 +26,8 @@ function prepareListener(eventName, expectedValue) {
   };
 }
 
-const INPUT_SOURCE_UNKNOWN = SpecialPowers.Ci.nsIDOMMouseEvent.MOZ_SOURCE_UNKNOWN;
-const INPUT_SOURCE_KEYBOARD = SpecialPowers.Ci.nsIDOMMouseEvent.MOZ_SOURCE_KEYBOARD;
+const INPUT_SOURCE_UNKNOWN = MouseEvent.MOZ_SOURCE_UNKNOWN;
+const INPUT_SOURCE_KEYBOARD = MouseEvent.MOZ_SOURCE_KEYBOARD;
 
 function doTest() {
   var eventNames = [

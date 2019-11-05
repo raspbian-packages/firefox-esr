@@ -12,8 +12,8 @@
 
 #include "nsContentList.h"
 #include "nsIContent.h"
-#include "nsIDOMNode.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
+#include "mozilla/ContentIterator.h"
 #include "mozilla/dom/Element.h"
 #include "nsWrapperCacheInlines.h"
 #include "nsContentUtils.h"
@@ -26,14 +26,14 @@
 #include "jsfriendapi.h"
 #include <algorithm>
 #include "mozilla/dom/NodeInfoInlines.h"
+#include "mozilla/MruCache.h"
 
 #include "PLDHashTable.h"
 
 #ifdef DEBUG_CONTENT_LIST
-#include "nsIContentIterator.h"
-#define ASSERT_IN_SYNC AssertInSync()
+#  define ASSERT_IN_SYNC AssertInSync()
 #else
-#define ASSERT_IN_SYNC PR_BEGIN_MACRO PR_END_MACRO
+#  define ASSERT_IN_SYNC PR_BEGIN_MACRO PR_END_MACRO
 #endif
 
 using namespace mozilla;
@@ -76,33 +76,13 @@ NS_IMPL_CYCLE_COLLECTION_CAN_SKIP_THIS_END
 // QueryInterface implementation for nsBaseContentList
 NS_INTERFACE_TABLE_HEAD(nsBaseContentList)
   NS_WRAPPERCACHE_INTERFACE_TABLE_ENTRY
-  NS_INTERFACE_TABLE(nsBaseContentList, nsINodeList, nsIDOMNodeList)
+  NS_INTERFACE_TABLE(nsBaseContentList, nsINodeList)
   NS_INTERFACE_TABLE_TO_MAP_SEGUE_CYCLE_COLLECTION(nsBaseContentList)
 NS_INTERFACE_MAP_END
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(nsBaseContentList)
 NS_IMPL_CYCLE_COLLECTING_RELEASE_WITH_LAST_RELEASE(nsBaseContentList,
                                                    LastRelease())
-
-NS_IMETHODIMP
-nsBaseContentList::GetLength(uint32_t* aLength) {
-  *aLength = mElements.Length();
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsBaseContentList::Item(uint32_t aIndex, nsIDOMNode** aReturn) {
-  nsISupports* tmp = Item(aIndex);
-
-  if (!tmp) {
-    *aReturn = nullptr;
-
-    return NS_OK;
-  }
-
-  return CallQueryInterface(tmp, aReturn);
-}
 
 nsIContent* nsBaseContentList::Item(uint32_t aIndex) {
   return mElements.SafeElementAt(aIndex);
@@ -116,6 +96,13 @@ int32_t nsBaseContentList::IndexOf(nsIContent* aContent) {
   return IndexOf(aContent, true);
 }
 
+size_t nsBaseContentList::SizeOfIncludingThis(
+    MallocSizeOf aMallocSizeOf) const {
+  size_t n = aMallocSizeOf(this);
+  n += mElements.ShallowSizeOfExcludingThis(aMallocSizeOf);
+  return n;
+}
+
 NS_IMPL_CYCLE_COLLECTION_INHERITED(nsSimpleContentList, nsBaseContentList,
                                    mRoot)
 
@@ -127,12 +114,13 @@ NS_IMPL_RELEASE_INHERITED(nsSimpleContentList, nsBaseContentList)
 
 JSObject* nsSimpleContentList::WrapObject(JSContext* cx,
                                           JS::Handle<JSObject*> aGivenProto) {
-  return NodeListBinding::Wrap(cx, this, aGivenProto);
+  return NodeList_Binding::Wrap(cx, this, aGivenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_INHERITED(nsEmptyContentList, nsBaseContentList, mRoot)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(nsEmptyContentList)
+  NS_INTERFACE_MAP_ENTRY(nsIHTMLCollection)
 NS_INTERFACE_MAP_END_INHERITING(nsBaseContentList)
 
 NS_IMPL_ADDREF_INHERITED(nsEmptyContentList, nsBaseContentList)
@@ -140,20 +128,7 @@ NS_IMPL_RELEASE_INHERITED(nsEmptyContentList, nsBaseContentList)
 
 JSObject* nsEmptyContentList::WrapObject(JSContext* cx,
                                          JS::Handle<JSObject*> aGivenProto) {
-  return NodeListBinding::Wrap(cx, this, aGivenProto);
-}
-
-NS_IMETHODIMP
-nsEmptyContentList::GetLength(uint32_t* aLength) {
-  *aLength = 0;
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsEmptyContentList::Item(uint32_t aIndex, nsIDOMNode** aReturn) {
-  *aReturn = nullptr;
-  return NS_OK;
+  return HTMLCollection_Binding::Wrap(cx, this, aGivenProto);
 }
 
 mozilla::dom::Element* nsEmptyContentList::GetElementAt(uint32_t index) {
@@ -173,14 +148,17 @@ nsIContent* nsEmptyContentList::Item(uint32_t aIndex) { return nullptr; }
 // Hashtable for storing nsContentLists
 static PLDHashTable* gContentListHashTable;
 
-#define RECENTLY_USED_CONTENT_LIST_CACHE_SIZE 31
-static nsContentList*
-    sRecentlyUsedContentLists[RECENTLY_USED_CONTENT_LIST_CACHE_SIZE] = {};
+struct ContentListCache
+    : public MruCache<nsContentListKey, nsContentList*, ContentListCache> {
+  static HashNumber Hash(const nsContentListKey& aKey) {
+    return aKey.GetHash();
+  }
+  static bool Match(const nsContentListKey& aKey, const nsContentList* aVal) {
+    return aVal->MatchesKey(aKey);
+  }
+};
 
-static MOZ_ALWAYS_INLINE uint32_t
-RecentlyUsedCacheIndex(const nsContentListKey& aKey) {
-  return aKey.GetHash() % RECENTLY_USED_CONTENT_LIST_CACHE_SIZE;
-}
+static ContentListCache sRecentlyUsedContentLists;
 
 struct ContentListHashEntry : public PLDHashEntryHdr {
   nsContentList* mContentList;
@@ -209,10 +187,9 @@ already_AddRefed<nsContentList> NS_GetContentList(nsINode* aRootNode,
   RefPtr<nsContentList> list;
   nsContentListKey hashKey(aRootNode, aMatchNameSpaceId, aTagname,
                            aRootNode->OwnerDoc()->IsHTMLDocument());
-  uint32_t recentlyUsedCacheIndex = RecentlyUsedCacheIndex(hashKey);
-  nsContentList* cachedList = sRecentlyUsedContentLists[recentlyUsedCacheIndex];
-  if (cachedList && cachedList->MatchesKey(hashKey)) {
-    list = cachedList;
+  auto p = sRecentlyUsedContentLists.Lookup(hashKey);
+  if (p) {
+    list = p.Data();
     return list.forget();
   }
 
@@ -249,7 +226,7 @@ already_AddRefed<nsContentList> NS_GetContentList(nsINode* aRootNode,
     }
   }
 
-  sRecentlyUsedContentLists[recentlyUsedCacheIndex] = list;
+  p.Set(list);
   return list.forget();
 }
 
@@ -386,7 +363,7 @@ nsContentList::nsContentList(nsINode* aRootNode, int32_t aMatchNameSpaceId,
   // document at all right now (in the GetUncomposedDoc() sense), we're
   // not parser-created and don't need to be flushing stuff under us
   // to get our kids right.
-  nsIDocument* doc = mRootNode->GetUncomposedDoc();
+  Document* doc = mRootNode->GetUncomposedDoc();
   mFlushesNeeded = doc && !doc->IsHTMLDocument();
 }
 
@@ -419,7 +396,7 @@ nsContentList::nsContentList(nsINode* aRootNode, nsContentListMatchFunc aFunc,
   // document at all right now (in the GetUncomposedDoc() sense), we're
   // not parser-created and don't need to be flushing stuff under us
   // to get our kids right.
-  nsIDocument* doc = mRootNode->GetUncomposedDoc();
+  Document* doc = mRootNode->GetUncomposedDoc();
   mFlushesNeeded = doc && !doc->IsHTMLDocument();
 }
 
@@ -437,7 +414,7 @@ nsContentList::~nsContentList() {
 
 JSObject* nsContentList::WrapObject(JSContext* cx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return HTMLCollectionBinding::Wrap(cx, this, aGivenProto);
+  return HTMLCollection_Binding::Wrap(cx, this, aGivenProto);
 }
 
 NS_IMPL_ISUPPORTS_INHERITED(nsContentList, nsBaseContentList, nsIHTMLCollection,
@@ -452,7 +429,7 @@ uint32_t nsContentList::Length(bool aDoFlush) {
 nsIContent* nsContentList::Item(uint32_t aIndex, bool aDoFlush) {
   if (mRootNode && aDoFlush && mFlushesNeeded) {
     // XXX sXBL/XBL2 issue
-    nsIDocument* doc = mRootNode->GetUncomposedDoc();
+    Document* doc = mRootNode->GetUncomposedDoc();
     if (doc) {
       // Flush pending content changes Bug 4891.
       doc->FlushPendingNotifications(FlushType::ContentAndNotify);
@@ -512,7 +489,7 @@ void nsContentList::GetSupportedNames(nsTArray<nsString>& aNames) {
       }
     }
 
-    nsGenericHTMLElement* el = nsGenericHTMLElement::FromContent(content);
+    nsGenericHTMLElement* el = nsGenericHTMLElement::FromNode(content);
     if (el) {
       // XXXbz should we be checking for particular tags here?  How
       // stable is this part of the spec?
@@ -566,26 +543,6 @@ void nsContentList::LastRelease() {
   SetDirty();
 }
 
-NS_IMETHODIMP
-nsContentList::GetLength(uint32_t* aLength) {
-  *aLength = Length(true);
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsContentList::Item(uint32_t aIndex, nsIDOMNode** aReturn) {
-  nsINode* node = Item(aIndex);
-
-  if (node) {
-    return CallQueryInterface(node, aReturn);
-  }
-
-  *aReturn = nullptr;
-
-  return NS_OK;
-}
-
 Element* nsContentList::GetElementAt(uint32_t aIndex) {
   return static_cast<Element*>(Item(aIndex, true));
 }
@@ -597,7 +554,7 @@ nsIContent* nsContentList::Item(uint32_t aIndex) {
 void nsContentList::AttributeChanged(Element* aElement, int32_t aNameSpaceID,
                                      nsAtom* aAttribute, int32_t aModType,
                                      const nsAttrValue* aOldValue) {
-  NS_PRECONDITION(aElement, "Must have a content node to work with");
+  MOZ_ASSERT(aElement, "Must have a content node to work with");
 
   if (!mFunc || !mFuncMayDependOnAttr || mState == LIST_DIRTY ||
       !MayContainRelevantNodes(aElement->GetParentNode()) ||
@@ -625,7 +582,7 @@ void nsContentList::AttributeChanged(Element* aElement, int32_t aNameSpaceID,
 
 void nsContentList::ContentAppended(nsIContent* aFirstNewContent) {
   nsIContent* container = aFirstNewContent->GetParent();
-  NS_PRECONDITION(container, "Can't get at the new content if no container!");
+  MOZ_ASSERT(container, "Can't get at the new content if no container!");
 
   /*
    * If the state is LIST_DIRTY then we have no useful information in our list
@@ -781,9 +738,9 @@ bool nsContentList::Match(Element* aElement) {
 }
 
 bool nsContentList::MatchSelf(nsIContent* aContent) {
-  NS_PRECONDITION(aContent, "Can't match null stuff, you know");
-  NS_PRECONDITION(mDeep || aContent->GetParentNode() == mRootNode,
-                  "MatchSelf called on a node that we can't possibly match");
+  MOZ_ASSERT(aContent, "Can't match null stuff, you know");
+  MOZ_ASSERT(mDeep || aContent->GetParentNode() == mRootNode,
+             "MatchSelf called on a node that we can't possibly match");
 
   if (!aContent->IsElement()) {
     return false;
@@ -803,7 +760,8 @@ bool nsContentList::MatchSelf(nsIContent* aContent) {
   return false;
 }
 
-void nsContentList::PopulateSelf(uint32_t aNeededLength) {
+void nsContentList::PopulateSelf(uint32_t aNeededLength,
+                                 uint32_t aExpectedElementsIfDirty) {
   if (!mRootNode) {
     return;
   }
@@ -811,7 +769,7 @@ void nsContentList::PopulateSelf(uint32_t aNeededLength) {
   ASSERT_IN_SYNC;
 
   uint32_t count = mElements.Length();
-  NS_ASSERTION(mState != LIST_DIRTY || count == 0,
+  NS_ASSERTION(mState != LIST_DIRTY || count == aExpectedElementsIfDirty,
                "Reset() not called when setting state to LIST_DIRTY?");
 
   if (count >= aNeededLength)  // We're all set
@@ -867,10 +825,7 @@ void nsContentList::RemoveFromHashtable() {
 
   nsDependentAtomString str(mXMLMatchAtom);
   nsContentListKey key(mRootNode, mMatchNameSpaceId, str, mIsHTMLDocument);
-  uint32_t recentlyUsedCacheIndex = RecentlyUsedCacheIndex(key);
-  if (sRecentlyUsedContentLists[recentlyUsedCacheIndex] == this) {
-    sRecentlyUsedContentLists[recentlyUsedCacheIndex] = nullptr;
-  }
+  sRecentlyUsedContentLists.Remove(key);
 
   if (!gContentListHashTable) return;
 
@@ -885,7 +840,7 @@ void nsContentList::RemoveFromHashtable() {
 void nsContentList::BringSelfUpToDate(bool aDoFlush) {
   if (mRootNode && aDoFlush && mFlushesNeeded) {
     // XXX sXBL/XBL2 issue
-    nsIDocument* doc = mRootNode->GetUncomposedDoc();
+    Document* doc = mRootNode->GetUncomposedDoc();
     if (doc) {
       // Flush pending content changes Bug 4891.
       doc->FlushPendingNotifications(FlushType::ContentAndNotify);
@@ -931,18 +886,14 @@ void nsContentList::AssertInSync() {
 
   // XXX This code will need to change if nsContentLists can ever match
   // elements that are outside of the document element.
-  nsIContent* root;
-  if (mRootNode->IsNodeOfType(nsINode::eDOCUMENT)) {
-    root = static_cast<nsIDocument*>(mRootNode)->GetRootElement();
-  } else {
-    root = static_cast<nsIContent*>(mRootNode);
-  }
+  nsIContent* root = mRootNode->IsDocument()
+                         ? mRootNode->AsDocument()->GetRootElement()
+                         : mRootNode->AsContent();
 
-  nsCOMPtr<nsIContentIterator> iter;
+  PreContentIterator preOrderIter;
   if (mDeep) {
-    iter = NS_NewPreContentIterator();
-    iter->Init(root);
-    iter->First();
+    preOrderIter.Init(root);
+    preOrderIter.First();
   }
 
   uint32_t cnt = 0, index = 0;
@@ -952,7 +903,7 @@ void nsContentList::AssertInSync() {
     }
 
     nsIContent* cur =
-        mDeep ? iter->GetCurrentNode() : mRootNode->GetChildAt(index++);
+        mDeep ? preOrderIter.GetCurrentNode() : mRootNode->GetChildAt(index++);
     if (!cur) {
       break;
     }
@@ -964,7 +915,7 @@ void nsContentList::AssertInSync() {
     }
 
     if (mDeep) {
-      iter->Next();
+      preOrderIter.Next();
     }
   }
 
@@ -977,7 +928,7 @@ void nsContentList::AssertInSync() {
 
 JSObject* nsCachableElementsByNameNodeList::WrapObject(
     JSContext* cx, JS::Handle<JSObject*> aGivenProto) {
-  return NodeListBinding::Wrap(cx, this, aGivenProto);
+  return NodeList_Binding::Wrap(cx, this, aGivenProto);
 }
 
 void nsCachableElementsByNameNodeList::AttributeChanged(
@@ -998,7 +949,7 @@ void nsCachableElementsByNameNodeList::AttributeChanged(
 
 JSObject* nsCacheableFuncStringHTMLCollection::WrapObject(
     JSContext* cx, JS::Handle<JSObject*> aGivenProto) {
-  return HTMLCollectionBinding::Wrap(cx, this, aGivenProto);
+  return HTMLCollection_Binding::Wrap(cx, this, aGivenProto);
 }
 
 //-----------------------------------------------------
@@ -1006,7 +957,7 @@ JSObject* nsCacheableFuncStringHTMLCollection::WrapObject(
 
 JSObject* nsLabelsNodeList::WrapObject(JSContext* cx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return NodeListBinding::Wrap(cx, this, aGivenProto);
+  return NodeList_Binding::Wrap(cx, this, aGivenProto);
 }
 
 void nsLabelsNodeList::AttributeChanged(Element* aElement, int32_t aNameSpaceID,
@@ -1075,7 +1026,8 @@ void nsLabelsNodeList::MaybeResetRoot(nsINode* aRootNode) {
   SetDirty();
 }
 
-void nsLabelsNodeList::PopulateSelf(uint32_t aNeededLength) {
+void nsLabelsNodeList::PopulateSelf(uint32_t aNeededLength,
+                                    uint32_t aExpectedElementsIfDirty) {
   if (!mRootNode) {
     return;
   }
@@ -1084,7 +1036,8 @@ void nsLabelsNodeList::PopulateSelf(uint32_t aNeededLength) {
   nsINode* cur = mRootNode;
   if (mElements.IsEmpty() && cur->IsElement() && Match(cur->AsElement())) {
     mElements.AppendElement(cur->AsElement());
+    ++aExpectedElementsIfDirty;
   }
 
-  nsContentList::PopulateSelf(aNeededLength);
+  nsContentList::PopulateSelf(aNeededLength, aExpectedElementsIfDirty);
 }

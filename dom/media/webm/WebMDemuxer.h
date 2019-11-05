@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #if !defined(WebMDemuxer_h_)
-#define WebMDemuxer_h_
+#  define WebMDemuxer_h_
 
-#include "nsTArray.h"
-#include "MediaDataDemuxer.h"
-#include "MediaResource.h"
-#include "NesteggPacketHolder.h"
-#include "mozilla/Move.h"
+#  include "nsTArray.h"
+#  include "MediaDataDemuxer.h"
+#  include "MediaResource.h"
+#  include "NesteggPacketHolder.h"
+#  include "mozilla/Move.h"
 
-#include <deque>
-#include <stdint.h>
+#  include <deque>
+#  include <stdint.h>
 
 typedef struct nestegg nestegg;
 
@@ -31,13 +31,13 @@ class MediaRawDataQueue {
   void Push(MediaRawData* aItem) { mQueue.push_back(aItem); }
 
   void Push(already_AddRefed<MediaRawData>&& aItem) {
-    mQueue.push_back(Move(aItem));
+    mQueue.push_back(std::move(aItem));
   }
 
   void PushFront(MediaRawData* aItem) { mQueue.push_front(aItem); }
 
   void PushFront(already_AddRefed<MediaRawData>&& aItem) {
-    mQueue.push_front(Move(aItem));
+    mQueue.push_front(std::move(aItem));
   }
 
   void PushFront(MediaRawDataQueue&& aOther) {
@@ -235,11 +235,6 @@ class WebMDemuxer : public MediaDataDemuxer,
   // as nestegg only performs 1-byte read at a time.
   int64_t mLastWebMBlockOffset;
   const bool mIsMediaSource;
-
-  Maybe<gfx::IntSize> mLastSeenFrameSize;
-  // This will be populated only if a resolution change occurs, otherwise it
-  // will be left as null so the original metadata is used
-  RefPtr<TrackInfoSharedPtr> mSharedVideoTrackInfo;
 
   EncryptionInfo mCrypto;
 };

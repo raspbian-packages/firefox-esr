@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -29,6 +29,11 @@ class NonBlockingAsyncInputStream::AsyncWaitRunnable final
     mStream->RunAsyncWaitCallback(this, mCallback.forget());
     return NS_OK;
   }
+
+  nsresult Cancel() override {
+    mStream = nullptr;
+    return NS_OK;
+  }
 };
 
 NS_IMPL_ADDREF(NonBlockingAsyncInputStream);
@@ -47,15 +52,18 @@ NS_INTERFACE_MAP_BEGIN(NonBlockingAsyncInputStream)
                                      mWeakIPCSerializableInputStream)
   NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsISeekableStream,
                                      mWeakSeekableInputStream)
+  NS_INTERFACE_MAP_ENTRY_CONDITIONAL(nsITellableStream,
+                                     mWeakTellableInputStream)
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIInputStream)
 NS_INTERFACE_MAP_END
 
-/* static */ nsresult NonBlockingAsyncInputStream::Create(
+/* static */
+nsresult NonBlockingAsyncInputStream::Create(
     already_AddRefed<nsIInputStream> aInputStream,
     nsIAsyncInputStream** aResult) {
   MOZ_DIAGNOSTIC_ASSERT(aResult);
 
-  nsCOMPtr<nsIInputStream> inputStream = Move(aInputStream);
+  nsCOMPtr<nsIInputStream> inputStream = std::move(aInputStream);
 
   bool nonBlocking = false;
   nsresult rv = inputStream->IsNonBlocking(&nonBlocking);
@@ -80,10 +88,11 @@ NS_INTERFACE_MAP_END
 
 NonBlockingAsyncInputStream::NonBlockingAsyncInputStream(
     already_AddRefed<nsIInputStream> aInputStream)
-    : mInputStream(Move(aInputStream)),
+    : mInputStream(std::move(aInputStream)),
       mWeakCloneableInputStream(nullptr),
       mWeakIPCSerializableInputStream(nullptr),
       mWeakSeekableInputStream(nullptr),
+      mWeakTellableInputStream(nullptr),
       mLock("NonBlockingAsyncInputStream::mLock"),
       mClosed(false) {
   MOZ_ASSERT(mInputStream);
@@ -103,6 +112,11 @@ NonBlockingAsyncInputStream::NonBlockingAsyncInputStream(
   nsCOMPtr<nsISeekableStream> seekableStream = do_QueryInterface(mInputStream);
   if (seekableStream && SameCOMIdentity(mInputStream, seekableStream)) {
     mWeakSeekableInputStream = seekableStream;
+  }
+
+  nsCOMPtr<nsITellableStream> tellableStream = do_QueryInterface(mInputStream);
+  if (tellableStream && SameCOMIdentity(mInputStream, tellableStream)) {
+    mWeakTellableInputStream = tellableStream;
   }
 }
 
@@ -133,8 +147,8 @@ NonBlockingAsyncInputStream::Close() {
 
     // If we have a WaitClosureOnly runnable, it's time to use it.
     if (mWaitClosureOnly.isSome()) {
-      waitClosureOnlyRunnable = Move(mWaitClosureOnly->mRunnable);
-      waitClosureOnlyEventTarget = Move(mWaitClosureOnly->mEventTarget);
+      waitClosureOnlyRunnable = std::move(mWaitClosureOnly->mRunnable);
+      waitClosureOnlyEventTarget = std::move(mWaitClosureOnly->mEventTarget);
 
       mWaitClosureOnly.reset();
 
@@ -159,7 +173,20 @@ NonBlockingAsyncInputStream::Close() {
 
 NS_IMETHODIMP
 NonBlockingAsyncInputStream::Available(uint64_t* aLength) {
-  return mInputStream->Available(aLength);
+  nsresult rv = mInputStream->Available(aLength);
+  // Don't issue warnings for legal condition NS_BASE_STREAM_CLOSED.
+  if (rv == NS_BASE_STREAM_CLOSED || NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  // Nothing more to read. Let's close the stream now.
+  if (*aLength == 0) {
+    mInputStream->Close();
+    mClosed = true;
+    return NS_BASE_STREAM_CLOSED;
+  }
+
+  return NS_OK;
 }
 
 NS_IMETHODIMP
@@ -292,10 +319,49 @@ NonBlockingAsyncInputStream::AsyncWait(nsIInputStreamCallback* aCallback,
 
 void NonBlockingAsyncInputStream::Serialize(
     mozilla::ipc::InputStreamParams& aParams,
-    FileDescriptorArray& aFileDescriptors) {
+    FileDescriptorArray& aFileDescriptors, bool aDelayedStart,
+    uint32_t aMaxSize, uint32_t* aSizeUsed,
+    mozilla::dom::ContentChild* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void NonBlockingAsyncInputStream::Serialize(
+    mozilla::ipc::InputStreamParams& aParams,
+    FileDescriptorArray& aFileDescriptors, bool aDelayedStart,
+    uint32_t aMaxSize, uint32_t* aSizeUsed,
+    mozilla::ipc::PBackgroundChild* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void NonBlockingAsyncInputStream::Serialize(
+    mozilla::ipc::InputStreamParams& aParams,
+    FileDescriptorArray& aFileDescriptors, bool aDelayedStart,
+    uint32_t aMaxSize, uint32_t* aSizeUsed,
+    mozilla::dom::ContentParent* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void NonBlockingAsyncInputStream::Serialize(
+    mozilla::ipc::InputStreamParams& aParams,
+    FileDescriptorArray& aFileDescriptors, bool aDelayedStart,
+    uint32_t aMaxSize, uint32_t* aSizeUsed,
+    mozilla::ipc::PBackgroundParent* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+template <typename M>
+void NonBlockingAsyncInputStream::SerializeInternal(
+    mozilla::ipc::InputStreamParams& aParams,
+    FileDescriptorArray& aFileDescriptors, bool aDelayedStart,
+    uint32_t aMaxSize, uint32_t* aSizeUsed, M* aManager) {
   MOZ_ASSERT(mWeakIPCSerializableInputStream);
   InputStreamHelper::SerializeInputStream(mInputStream, aParams,
-                                          aFileDescriptors);
+                                          aFileDescriptors, aDelayedStart,
+                                          aMaxSize, aSizeUsed, aManager);
 }
 
 bool NonBlockingAsyncInputStream::Deserialize(
@@ -303,11 +369,6 @@ bool NonBlockingAsyncInputStream::Deserialize(
     const FileDescriptorArray& aFileDescriptors) {
   MOZ_CRASH("NonBlockingAsyncInputStream cannot be deserialized!");
   return true;
-}
-
-Maybe<uint64_t> NonBlockingAsyncInputStream::ExpectedSerializedLength() {
-  NS_ENSURE_TRUE(mWeakIPCSerializableInputStream, Nothing());
-  return mWeakIPCSerializableInputStream->ExpectedSerializedLength();
 }
 
 // nsISeekableStream
@@ -319,21 +380,23 @@ NonBlockingAsyncInputStream::Seek(int32_t aWhence, int64_t aOffset) {
 }
 
 NS_IMETHODIMP
-NonBlockingAsyncInputStream::Tell(int64_t* aResult) {
-  NS_ENSURE_STATE(mWeakSeekableInputStream);
-  return mWeakSeekableInputStream->Tell(aResult);
-}
-
-NS_IMETHODIMP
 NonBlockingAsyncInputStream::SetEOF() {
   NS_ENSURE_STATE(mWeakSeekableInputStream);
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+// nsITellableStream
+
+NS_IMETHODIMP
+NonBlockingAsyncInputStream::Tell(int64_t* aResult) {
+  NS_ENSURE_STATE(mWeakTellableInputStream);
+  return mWeakTellableInputStream->Tell(aResult);
+}
+
 void NonBlockingAsyncInputStream::RunAsyncWaitCallback(
     NonBlockingAsyncInputStream::AsyncWaitRunnable* aRunnable,
     already_AddRefed<nsIInputStreamCallback> aCallback) {
-  nsCOMPtr<nsIInputStreamCallback> callback = Move(aCallback);
+  nsCOMPtr<nsIInputStreamCallback> callback = std::move(aCallback);
 
   {
     MutexAutoLock lock(mLock);

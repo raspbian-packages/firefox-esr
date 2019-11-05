@@ -51,17 +51,19 @@ void DetailedPromise::MaybeReject(nsresult aArg, const nsACString& aReason) {
 }
 
 void DetailedPromise::MaybeReject(ErrorResult&, const nsACString& aReason) {
-  NS_NOTREACHED("nsresult expected in MaybeReject()");
+  MOZ_ASSERT_UNREACHABLE("nsresult expected in MaybeReject()");
 }
 
-/* static */ already_AddRefed<DetailedPromise> DetailedPromise::Create(
+/* static */
+already_AddRefed<DetailedPromise> DetailedPromise::Create(
     nsIGlobalObject* aGlobal, ErrorResult& aRv, const nsACString& aName) {
   RefPtr<DetailedPromise> promise = new DetailedPromise(aGlobal, aName);
   promise->CreateWrapper(nullptr, aRv);
   return aRv.Failed() ? nullptr : promise.forget();
 }
 
-/* static */ already_AddRefed<DetailedPromise> DetailedPromise::Create(
+/* static */
+already_AddRefed<DetailedPromise> DetailedPromise::Create(
     nsIGlobalObject* aGlobal, ErrorResult& aRv, const nsACString& aName,
     Telemetry::HistogramID aSuccessLatencyProbe,
     Telemetry::HistogramID aFailureLatencyProbe) {

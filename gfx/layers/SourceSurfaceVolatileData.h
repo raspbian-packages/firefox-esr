@@ -30,7 +30,6 @@ class SourceSurfaceVolatileData : public DataSourceSurface {
   SourceSurfaceVolatileData()
       : mMutex("SourceSurfaceVolatileData"),
         mStride(0),
-        mMapCount(0),
         mFormat(SurfaceFormat::UNKNOWN),
         mWasPurged(false) {}
 
@@ -46,8 +45,8 @@ class SourceSurfaceVolatileData : public DataSourceSurface {
   void GuaranteePersistance() override;
 
   void AddSizeOfExcludingThis(MallocSizeOf aMallocSizeOf, size_t& aHeapSizeOut,
-                              size_t& aNonHeapSizeOut,
-                              size_t& aExtHandlesOut) const override;
+                              size_t& aNonHeapSizeOut, size_t& aExtHandlesOut,
+                              uint64_t& aExtIdOut) const override;
 
   bool OnHeap() const override { return mVBuf->OnHeap(); }
 
@@ -85,11 +84,10 @@ class SourceSurfaceVolatileData : public DataSourceSurface {
   }
 
  private:
-  ~SourceSurfaceVolatileData() override { MOZ_ASSERT(mMapCount == 0); }
+  virtual ~SourceSurfaceVolatileData() = default;
 
   Mutex mMutex;
   int32_t mStride;
-  int32_t mMapCount;
   IntSize mSize;
   RefPtr<VolatileBuffer> mVBuf;
   VolatileBufferPtr<uint8_t> mVBufPtr;

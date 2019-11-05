@@ -16,7 +16,8 @@ extern "C" {
 
 namespace mozilla {
 
-/* static */ const std::string SipccSdpAttributeList::kEmptyString = "";
+/* static */
+const std::string SipccSdpAttributeList::kEmptyString = "";
 
 SipccSdpAttributeList::SipccSdpAttributeList(
     const SipccSdpAttributeList* sessionLevel)
@@ -714,10 +715,11 @@ void SipccSdpAttributeList::LoadFmtp(sdp_t* sdp, uint16_t level) {
         }
         parameters.reset(teParameters);
       } break;
-      default: {}
+      default: {
+      }
     }
 
-    fmtps->PushEntry(osPayloadType.str(), Move(parameters));
+    fmtps->PushEntry(osPayloadType.str(), std::move(parameters));
   }
 
   if (!fmtps->mFmtps.empty()) {
@@ -1281,10 +1283,6 @@ const SdpSsrcAttributeList& SipccSdpAttributeList::GetSsrc() const {
   }
   const SdpAttribute* attr = GetAttribute(SdpAttribute::kSsrcAttribute);
   return *static_cast<const SdpSsrcAttributeList*>(attr);
-}
-
-const SdpSsrcGroupAttributeList& SipccSdpAttributeList::GetSsrcGroup() const {
-  MOZ_CRASH("Not yet implemented");
 }
 
 void SipccSdpAttributeList::Serialize(std::ostream& os) const {

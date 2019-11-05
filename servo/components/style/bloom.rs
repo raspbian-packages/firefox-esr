@@ -1,24 +1,26 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! The style bloom filter is used as an optimization when matching deep
 //! descendant selectors.
 
 #![deny(missing_docs)]
 
-use atomic_refcell::{AtomicRefMut, AtomicRefCell};
-use dom::{SendElement, TElement};
+use crate::dom::{SendElement, TElement};
+use atomic_refcell::{AtomicRefCell, AtomicRefMut};
 use owning_ref::OwningHandle;
 use selectors::bloom::BloomFilter;
 use servo_arc::Arc;
 use smallvec::SmallVec;
 
-/// Bloom filters are large allocations, so we store them in thread-local storage
-/// such that they can be reused across style traversals. StyleBloom is responsible
-/// for ensuring that the bloom filter is zeroed when it is dropped.
-thread_local!(static BLOOM_KEY: Arc<AtomicRefCell<BloomFilter>> =
-              Arc::new(AtomicRefCell::new(BloomFilter::new())));
+thread_local! {
+    /// Bloom filters are large allocations, so we store them in thread-local storage
+    /// such that they can be reused across style traversals. StyleBloom is responsible
+    /// for ensuring that the bloom filter is zeroed when it is dropped.
+    static BLOOM_KEY: Arc<AtomicRefCell<BloomFilter>> =
+              Arc::new(AtomicRefCell::new(BloomFilter::new()));
+}
 
 /// A struct that allows us to fast-reject deep descendant selectors avoiding
 /// selector-matching.
@@ -105,9 +107,7 @@ where
         f(id.get_hash());
     }
 
-    element.each_class(|class| {
-        f(class.get_hash())
-    });
+    element.each_class(|class| f(class.get_hash()));
 }
 
 impl<E: TElement> Drop for StyleBloom<E> {
@@ -129,8 +129,12 @@ impl<E: TElement> StyleBloom<E> {
     #[inline(never)]
     pub fn new() -> Self {
         let bloom_arc = BLOOM_KEY.with(|b| b.clone());
-        let filter = OwningHandle::new_with_fn(bloom_arc, |x| unsafe { x.as_ref() }.unwrap().borrow_mut());
-        debug_assert!(filter.is_zeroed(), "Forgot to zero the bloom filter last time");
+        let filter =
+            OwningHandle::new_with_fn(bloom_arc, |x| unsafe { x.as_ref() }.unwrap().borrow_mut());
+        debug_assert!(
+            filter.is_zeroed(),
+            "Forgot to zero the bloom filter last time"
+        );
         StyleBloom {
             filter: filter,
             elements: Default::default(),
@@ -169,7 +173,10 @@ impl<E: TElement> StyleBloom<E> {
     /// Pop the last element in the bloom filter and return it.
     #[inline]
     fn pop(&mut self) -> Option<E> {
-        let PushedElement { element, num_hashes } = self.elements.pop()?;
+        let PushedElement {
+            element,
+            num_hashes,
+        } = self.elements.pop()?;
         let popped_element = *element;
 
         // Verify that the pushed hashes match the ones we'd get from the element.
@@ -237,7 +244,10 @@ impl<E: TElement> StyleBloom<E> {
         if cfg!(debug_assertions) {
             let mut checked = 0;
             while let Some(parent) = element.traversal_parent() {
-                assert_eq!(parent, *(self.elements[self.elements.len() - 1 - checked].element));
+                assert_eq!(
+                    parent,
+                    *(self.elements[self.elements.len() - 1 - checked].element)
+                );
                 element = parent;
                 checked += 1;
             }
@@ -261,10 +271,7 @@ impl<E: TElement> StyleBloom<E> {
     ///
     /// Returns the new bloom filter depth, that the traversal code is
     /// responsible to keep around if it wants to get an effective filter.
-    pub fn insert_parents_recovering(&mut self,
-                                     element: E,
-                                     element_depth: usize)
-    {
+    pub fn insert_parents_recovering(&mut self, element: E, element_depth: usize) {
         // Easy case, we're in a different restyle, or we're empty.
         if self.elements.is_empty() {
             self.rebuild(element);
@@ -277,7 +284,7 @@ impl<E: TElement> StyleBloom<E> {
                 // Yay, another easy case.
                 self.clear();
                 return;
-            }
+            },
         };
 
         if self.current_parent() == Some(traversal_parent) {
@@ -291,10 +298,11 @@ impl<E: TElement> StyleBloom<E> {
         }
 
         // We should've early exited above.
-        debug_assert!(element_depth != 0,
-                      "We should have already cleared the bloom filter");
-        debug_assert!(!self.elements.is_empty(),
-                      "How! We should've just rebuilt!");
+        debug_assert!(
+            element_depth != 0,
+            "We should have already cleared the bloom filter"
+        );
+        debug_assert!(!self.elements.is_empty(), "How! We should've just rebuilt!");
 
         // Now the fun begins: We have the depth of the dom and the depth of the
         // last element inserted in the filter, let's try to find a common
@@ -327,8 +335,7 @@ impl<E: TElement> StyleBloom<E> {
             // TODO(emilio): Seems like we could insert parents here, then
             // reverse the slice.
             parents_to_insert.push(common_parent);
-            common_parent =
-                common_parent.traversal_parent().expect("We were lied to");
+            common_parent = common_parent.traversal_parent().expect("We were lied to");
             common_parent_depth -= 1;
         }
 
@@ -359,7 +366,7 @@ impl<E: TElement> StyleBloom<E> {
                     } else {
                         panic!("should have found a common ancestor");
                     }
-                }
+                },
             }
         }
 

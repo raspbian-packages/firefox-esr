@@ -6,7 +6,7 @@
 
 "use strict";
 
-define(function (require, exports, module) {
+define(function(require, exports, module) {
   const { Component } = require("devtools/client/shared/vendor/react");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
   const { findDOMNode } = require("devtools/client/shared/vendor/react-dom");
@@ -27,7 +27,7 @@ define(function (require, exports, module) {
     }
 
     componentDidUpdate() {
-      let el = findDOMNode(this);
+      const el = findDOMNode(this);
       if (el.firstChild === this.props.data) {
         return;
       }
@@ -36,7 +36,7 @@ define(function (require, exports, module) {
     }
 
     render() {
-      return pre({className: "data"});
+      return pre({ className: "data" });
     }
   }
 

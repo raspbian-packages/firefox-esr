@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim:expandtab:shiftwidth=4:tabstop=4:
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -14,19 +14,23 @@
 #include "nsWindow.h"
 #include "mozilla/Logging.h"
 #include "prenv.h"
-#include "mozilla/HangMonitor.h"
+#include "mozilla/BackgroundHangMonitor.h"
+#include "mozilla/Hal.h"
 #include "mozilla/Unused.h"
 #include "mozilla/WidgetUtils.h"
 #include "GeckoProfiler.h"
 #include "nsIPowerManagerService.h"
 #ifdef MOZ_ENABLE_DBUS
-#include "WakeLockListener.h"
+#  include "WakeLockListener.h"
 #endif
 #include "gfxPlatform.h"
 #include "nsAppRunner.h"
 #include "ScreenHelperGTK.h"
 #include "HeadlessScreenHelper.h"
 #include "mozilla/widget/ScreenManager.h"
+#ifdef MOZ_WAYLAND
+#  include "nsWaylandDisplay.h"
+#endif
 
 using mozilla::LazyLogModule;
 using mozilla::Unused;
@@ -40,18 +44,20 @@ LazyLogModule gWidgetLog("Widget");
 LazyLogModule gWidgetFocusLog("WidgetFocus");
 LazyLogModule gWidgetDragLog("WidgetDrag");
 LazyLogModule gWidgetDrawLog("WidgetDraw");
+LazyLogModule gWidgetWaylandLog("WidgetWayland");
 
 static GPollFunc sPollFunc;
 
 // Wrapper function to disable hang monitoring while waiting in poll().
 static gint PollWrapper(GPollFD* ufds, guint nfsd, gint timeout_) {
-  mozilla::HangMonitor::Suspend();
+  mozilla::BackgroundHangMonitor().NotifyWait();
   gint result;
   {
+    AUTO_PROFILER_LABEL("PollWrapper", IDLE);
     AUTO_PROFILER_THREAD_SLEEP;
     result = (*sPollFunc)(ufds, nfsd, timeout_);
   }
-  mozilla::HangMonitor::NotifyActivity();
+  mozilla::BackgroundHangMonitor().NotifyActivity();
   return result;
 }
 
@@ -104,9 +110,10 @@ static void WrapGdkFrameClockDispose(GObject* object) {
 }
 #endif
 
-/*static*/ gboolean nsAppShell::EventProcessorCallback(GIOChannel* source,
-                                                       GIOCondition condition,
-                                                       gpointer data) {
+/*static*/
+gboolean nsAppShell::EventProcessorCallback(GIOChannel* source,
+                                            GIOCondition condition,
+                                            gpointer data) {
   nsAppShell* self = static_cast<nsAppShell*>(data);
 
   unsigned char c;
@@ -118,6 +125,8 @@ static void WrapGdkFrameClockDispose(GObject* object) {
 }
 
 nsAppShell::~nsAppShell() {
+  mozilla::hal::Shutdown();
+
   if (mTag) g_source_remove(mTag);
   if (mPipeFDs[0]) close(mPipeFDs[0]);
   if (mPipeFDs[1]) close(mPipeFDs[1]);
@@ -129,6 +138,8 @@ nsresult nsAppShell::Init() {
   // failures/crashes in any code that uses Glib, Gdk, or Gtk. In later versions
   // of Glib, this call is a no-op.
   g_type_init();
+
+  mozilla::hal::Init();
 
 #ifdef MOZ_ENABLE_DBUS
   if (XRE_IsParentProcess()) {
@@ -258,5 +269,9 @@ void nsAppShell::ScheduleNativeEventCallback() {
 }
 
 bool nsAppShell::ProcessNextNativeEvent(bool mayWait) {
-  return g_main_context_iteration(nullptr, mayWait);
+  bool ret = g_main_context_iteration(nullptr, mayWait);
+#ifdef MOZ_WAYLAND
+  WaylandDispatchDisplays();
+#endif
+  return ret;
 }

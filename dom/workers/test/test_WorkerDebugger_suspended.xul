@@ -7,10 +7,8 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="test();">
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"/>
+  <script src="chrome://mochikit/content/tests/SimpleTest/EventUtils.js"/>
   <script type="application/javascript" src="dom_worker_helper.js"/>
 
   <script type="application/javascript">
@@ -41,8 +39,7 @@
         info("Suspend the workers for this window, and send another request " +
              "to the worker. This should cause only the worker debugger to " +
              "send a response.");
-        let windowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                                .getInterface(Ci.nsIDOMWindowUtils);
+        let windowUtils = window.windowUtils;
         windowUtils.suspendTimeouts();
         function onmessage() {
           ok(false, "The worker should not send a response.");

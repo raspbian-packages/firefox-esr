@@ -33,10 +33,8 @@ class nsAppShell : public nsBaseAppShell {
 
   NS_IMETHOD Run(void) override;
   NS_IMETHOD Exit(void) override;
-  NS_IMETHOD OnProcessNextEvent(nsIThreadInternal* aThread,
-                                bool aMayWait) override;
-  NS_IMETHOD AfterProcessNextEvent(nsIThreadInternal* aThread,
-                                   bool aEventWasProcessed) override;
+  NS_IMETHOD OnProcessNextEvent(nsIThreadInternal* aThread, bool aMayWait) override;
+  NS_IMETHOD AfterProcessNextEvent(nsIThreadInternal* aThread, bool aEventWasProcessed) override;
 
   // public only to be visible to Objective-C code that must call it
   void WillTerminate();

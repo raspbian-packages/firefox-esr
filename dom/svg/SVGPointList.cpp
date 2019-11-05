@@ -47,7 +47,7 @@ nsresult SVGPointList::SetValueFromString(const nsAString& aValue) {
 
   SVGPointList temp;
 
-  nsCharSeparatedTokenizerTemplate<IsSVGWhitespace> tokenizer(
+  nsCharSeparatedTokenizerTemplate<nsContentUtils::IsHTMLWhitespace> tokenizer(
       aValue, ',', nsCharSeparatedTokenizer::SEPARATOR_OPTIONAL);
 
   while (tokenizer.hasMoreTokens()) {

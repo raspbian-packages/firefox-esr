@@ -8,14 +8,14 @@
 <!ENTITY places.library.height "500">
 <!ENTITY organize.label        "Organizar">
 <!ENTITY organize.accesskey    "O">
-<!ENTITY organize.tooltip      "Organizar seus favoritos">
+<!ENTITY organize.tooltip      "Organize seus favoritos">
 
 <!ENTITY file.close.label               "Fechar">
 <!ENTITY file.close.accesskey           "F">
 <!ENTITY cmd.close.key                  "w">
 <!ENTITY views.label                    "Visualizações">
 <!ENTITY views.accesskey                "V">
-<!ENTITY views.tooltip                  "Alterar visualização">
+<!ENTITY views.tooltip                  "Altere sua visualização">
 <!ENTITY view.columns.label             "Mostrar colunas">
 <!ENTITY view.columns.accesskey         "c">
 <!ENTITY view.sort.label                "Ordenar por">
@@ -27,9 +27,9 @@
 <!ENTITY view.sortDescending.label      "Ordem decrescente">
 <!ENTITY view.sortDescending.accesskey  "r">
 
-<!ENTITY importBookmarksFromHTML.label     "Importar favoritos em HTML…">
+<!ENTITY importBookmarksFromHTML.label     "Importar favoritos de HTML…">
 <!ENTITY importBookmarksFromHTML.accesskey "I">
-<!ENTITY exportBookmarksToHTML.label       "Exportar favoritos como HTML…">
+<!ENTITY exportBookmarksToHTML.label       "Exportar favoritos para HTML…">
 <!ENTITY exportBookmarksToHTML.accesskey   "E">
 <!ENTITY importOtherBrowser.label          "Importar dados de outro navegador…">
 <!ENTITY importOtherBrowser.accesskey      "m">
@@ -70,20 +70,13 @@
 <!ENTITY cmd.new_separator.label           "Novo separador">
 <!ENTITY cmd.new_separator.accesskey       "e">
 
-<!ENTITY cmd.reloadLivebookmark.label      "Recarregar RSS">
-<!ENTITY cmd.reloadLivebookmark.accesskey  "R">
-
-<!ENTITY cmd.moveBookmarks.label                  "Mover…">
-<!ENTITY cmd.moveBookmarks.accesskey              "M">
-
 <!ENTITY col.name.label          "Nome">
 <!ENTITY col.tags.label          "Etiquetas">
 <!ENTITY col.url.label           "Endereço">
 <!ENTITY col.mostrecentvisit.label "Recentemente visitado">
 <!ENTITY col.visitcount.label    "Número de visitas">
-<!ENTITY col.description.label   "Descrição">
 <!ENTITY col.dateadded.label     "Adicionado">
-<!ENTITY col.lastmodified.label  "Modificado">
+<!ENTITY col.lastmodified.label  "Última modificação">
 
 <!ENTITY historySearch.placeholder  "Pesquisar no histórico">
 <!ENTITY bookmarksSearch.placeholder  "Pesquisar nos favoritos">
@@ -98,21 +91,17 @@
 
 <!ENTITY forwardButton.tooltip  "Avançar">
 
-<!ENTITY detailsPane.more.label "Mais">
-<!ENTITY detailsPane.more.accesskey "M">
-<!ENTITY detailsPane.less.label "Menos">
-<!ENTITY detailsPane.less.accesskey "M">
 <!ENTITY detailsPane.selectAnItemText.description "Selecione um item para ver e editar as suas propriedades">
 
 <!ENTITY view.label               "Exibir">
 <!ENTITY view.accesskey           "b">
-<!ENTITY byDate.label             "Pela data">
+<!ENTITY byDate.label             "Por data">
 <!ENTITY byDate.accesskey         "d">
-<!ENTITY bySite.label             "Pelo site">
-<!ENTITY bySite.accesskey         "P">
-<!ENTITY byMostVisited.label      "Pelo número de visitas">
-<!ENTITY byMostVisited.accesskey  "o">
-<!ENTITY byLastVisited.label      "Pela última visita">
-<!ENTITY byLastVisited.accesskey  "e">
-<!ENTITY byDayAndSite.label       "Pela data e site">
-<!ENTITY byDayAndSite.accesskey   "a">
+<!ENTITY bySite.label             "Por site">
+<!ENTITY bySite.accesskey         "s">
+<!ENTITY byMostVisited.label      "Por número de visitas">
+<!ENTITY byMostVisited.accesskey  "n">
+<!ENTITY byLastVisited.label      "Por último visitado">
+<!ENTITY byLastVisited.accesskey  "v">
+<!ENTITY byDayAndSite.label       "Por data e site">
+<!ENTITY byDayAndSite.accesskey   "e">

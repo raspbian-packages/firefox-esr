@@ -17,7 +17,6 @@ namespace widget {
 class MOZ_STACK_CLASS ModifierKeyState final {
  public:
   ModifierKeyState();
-  ModifierKeyState(bool aIsShiftDown, bool aIsControlDown, bool aIsAltDown);
   explicit ModifierKeyState(Modifiers aModifiers);
 
   void Update();
@@ -27,10 +26,15 @@ class MOZ_STACK_CLASS ModifierKeyState final {
 
   void InitInputEvent(WidgetInputEvent& aInputEvent) const;
 
+  // Do not create IsAltGr() because it's unclear whether:
+  // - AltGr key is actually pressed.
+  // - Both Ctrl and Alt keys are pressed when a keyboard layout which
+  //   has AltGr key.
+  // - Both Ctrl and Alt keys are pressed when a keyboard layout which
+  //   does not have AltGr key.
   bool IsShift() const;
   bool IsControl() const;
   bool IsAlt() const;
-  bool IsAltGr() const;
   bool IsWin() const;
 
   bool MaybeMatchShortcutKey() const;
@@ -43,8 +47,6 @@ class MOZ_STACK_CLASS ModifierKeyState final {
 
  private:
   Modifiers mModifiers;
-
-  MOZ_ALWAYS_INLINE void EnsureAltGr();
 
   void InitMouseEvent(WidgetInputEvent& aMouseEvent) const;
 };

@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(StateWatching_h_)
-#define StateWatching_h_
+#  define StateWatching_h_
 
-#include "mozilla/AbstractThread.h"
-#include "mozilla/Logging.h"
-#include "mozilla/TaskDispatcher.h"
-#include "mozilla/UniquePtr.h"
-#include "mozilla/Unused.h"
+#  include "mozilla/AbstractThread.h"
+#  include "mozilla/Logging.h"
+#  include "mozilla/TaskDispatcher.h"
+#  include "mozilla/UniquePtr.h"
+#  include "mozilla/Unused.h"
 
-#include "nsISupportsImpl.h"
+#  include "nsISupportsImpl.h"
 
 /*
  * The state-watching machinery automates the process of responding to changes
@@ -59,8 +59,8 @@ namespace mozilla {
 
 extern LazyLogModule gStateWatchingLog;
 
-#define WATCH_LOG(x, ...) \
-  MOZ_LOG(gStateWatchingLog, LogLevel::Debug, (x, ##__VA_ARGS__))
+#  define WATCH_LOG(x, ...) \
+    MOZ_LOG(gStateWatchingLog, LogLevel::Debug, (x, ##__VA_ARGS__))
 
 /*
  * AbstractWatcher is a superclass from which all watchers must inherit.
@@ -148,8 +148,8 @@ class Watchable : public WatchTarget {
   }
 
  private:
-  Watchable(const Watchable& aOther);             // Not implemented
-  Watchable& operator=(const Watchable& aOther);  // Not implemented
+  Watchable(const Watchable& aOther) = delete;
+  Watchable& operator=(const Watchable& aOther) = delete;
 
   T mValue;
 };
@@ -190,8 +190,8 @@ class WatchManager {
   // destroyed on a different thread, Shutdown() must be called manually.
   void Shutdown() {
     MOZ_ASSERT(mOwnerThread->IsCurrentThreadIn());
-    for (size_t i = 0; i < mWatchers.Length(); ++i) {
-      mWatchers[i]->Destroy();
+    for (auto& watcher : mWatchers) {
+      watcher->Destroy();
     }
     mWatchers.Clear();
     mOwner = nullptr;
@@ -236,16 +236,22 @@ class WatchManager {
       MOZ_DIAGNOSTIC_ASSERT(mOwner,
                             "mOwner is only null after destruction, "
                             "at which point we shouldn't be notified");
-      if (mStrongRef) {
+      if (mNotificationPending) {
         // We've already got a notification job in the pipe.
         return;
       }
-      mStrongRef = mOwner;  // Hold the owner alive while notifying.
+      mNotificationPending = true;
 
       // Queue up our notification jobs to run in a stable state.
       mOwnerThread->TailDispatcher().AddDirectTask(
-          NewRunnableMethod("WatchManager::PerCallbackWatcher::DoNotify", this,
-                            &PerCallbackWatcher::DoNotify));
+          NS_NewRunnableFunction("WatchManager::PerCallbackWatcher::Notify",
+                                 [self = RefPtr<PerCallbackWatcher>(this),
+                                  owner = RefPtr<OwnerType>(mOwner)]() {
+                                   if (!self->mDestroyed) {
+                                     ((*owner).*(self->mCallbackMethod))();
+                                   }
+                                   self->mNotificationPending = false;
+                                 }));
     }
 
     bool CallbackMethodIs(CallbackMethod aMethod) const {
@@ -253,28 +259,19 @@ class WatchManager {
     }
 
    private:
-    ~PerCallbackWatcher() {}
+    ~PerCallbackWatcher() = default;
 
-    void DoNotify() {
-      MOZ_ASSERT(mOwnerThread->IsCurrentThreadIn());
-      MOZ_ASSERT(mStrongRef);
-      RefPtr<OwnerType> ref = mStrongRef.forget();
-      if (!mDestroyed) {
-        ((*ref).*mCallbackMethod)();
-      }
-    }
-
-    OwnerType* mOwner;             // Never null.
-    RefPtr<OwnerType> mStrongRef;  // Only non-null when notifying.
+    OwnerType* mOwner;  // Never null.
+    bool mNotificationPending = false;
     RefPtr<AbstractThread> mOwnerThread;
     CallbackMethod mCallbackMethod;
   };
 
   PerCallbackWatcher* GetWatcher(CallbackMethod aMethod) {
     MOZ_ASSERT(mOwnerThread->IsCurrentThreadIn());
-    for (size_t i = 0; i < mWatchers.Length(); ++i) {
-      if (mWatchers[i]->CallbackMethodIs(aMethod)) {
-        return mWatchers[i];
+    for (auto& watcher : mWatchers) {
+      if (watcher->CallbackMethodIs(aMethod)) {
+        return watcher;
       }
     }
     return nullptr;
@@ -287,8 +284,8 @@ class WatchManager {
       return *watcher;
     }
     watcher = mWatchers
-                  .AppendElement(
-                      new PerCallbackWatcher(mOwner, mOwnerThread, aMethod))
+                  .AppendElement(MakeAndAddRef<PerCallbackWatcher>(
+                      mOwner, mOwnerThread, aMethod))
                   ->get();
     return *watcher;
   }
@@ -298,7 +295,7 @@ class WatchManager {
   RefPtr<AbstractThread> mOwnerThread;
 };
 
-#undef WATCH_LOG
+#  undef WATCH_LOG
 
 }  // namespace mozilla
 

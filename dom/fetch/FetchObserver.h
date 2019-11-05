@@ -19,7 +19,7 @@ class FetchObserver final : public DOMEventTargetHelper, public AbortFollower {
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(FetchObserver, DOMEventTargetHelper)
 
-  FetchObserver(nsIGlobalObject* aGlobal, AbortSignal* aSignal);
+  FetchObserver(nsIGlobalObject* aGlobal, AbortSignalImpl* aSignalImpl);
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override;

@@ -29,18 +29,17 @@
 #include "nsIFileStreams.h"
 #include "nsIWindowWatcher.h"
 #include "nsIDOMWindow.h"
-#include "mozilla/Services.h"
 #include "nsWindowsHelpers.h"
 
 #include "mozilla/gfx/Logging.h"
 
 #ifdef MOZ_ENABLE_SKIA_PDF
-#include "mozilla/gfx/PrintTargetSkPDF.h"
-#include "mozilla/gfx/PrintTargetEMF.h"
-#include "nsIUUIDGenerator.h"
-#include "nsDirectoryServiceDefs.h"
-#include "nsPrintfCString.h"
-#include "nsThreadUtils.h"
+#  include "mozilla/gfx/PrintTargetSkPDF.h"
+#  include "mozilla/gfx/PrintTargetEMF.h"
+#  include "nsIUUIDGenerator.h"
+#  include "nsDirectoryServiceDefs.h"
+#  include "nsPrintfCString.h"
+#  include "nsThreadUtils.h"
 #endif
 
 static mozilla::LazyLogModule kWidgetPrintingLogMod("printing-widget");
@@ -227,7 +226,7 @@ already_AddRefed<PrintTarget> nsDeviceContextSpecWin::MakePrintTarget() {
 
       nsAutoCString printFile(NS_ConvertUTF16toUTF8(filename).get());
       auto skStream = MakeUnique<SkFILEWStream>(printFile.get());
-      return PrintTargetSkPDF::CreateOrNull(Move(skStream), size);
+      return PrintTargetSkPDF::CreateOrNull(std::move(skStream), size);
     }
 
     if (mDevMode) {
@@ -293,8 +292,8 @@ already_AddRefed<PrintTarget> nsDeviceContextSpecWin::MakePrintTarget() {
 }
 
 float nsDeviceContextSpecWin::GetDPI() {
-// To match the previous printing code we need to return 72 when printing to
-// PDF and 144 when printing to a Windows surface.
+  // To match the previous printing code we need to return 72 when printing to
+  // PDF and 144 when printing to a Windows surface.
 #ifdef MOZ_ENABLE_SKIA_PDF
   if (mPrintViaSkPDF) {
     return 72.0f;
@@ -319,6 +318,20 @@ float nsDeviceContextSpecWin::GetPrintingScale() {
   int32_t resolution;
   mPrintSettings->GetResolution(&resolution);
   return float(resolution) / GetDPI();
+}
+
+gfxPoint nsDeviceContextSpecWin::GetPrintingTranslate() {
+  // The underlying surface on windows is the size of the printable region. When
+  // the region is smaller than the actual paper size the (0, 0) coordinate
+  // refers top-left of that unwritable region. To instead have (0, 0) become
+  // the top-left of the actual paper, translate it's coordinate system by the
+  // unprintable region's width.
+  double marginTop, marginLeft;
+  mPrintSettings->GetUnwriteableMarginTop(&marginTop);
+  mPrintSettings->GetUnwriteableMarginLeft(&marginLeft);
+  int32_t resolution;
+  mPrintSettings->GetResolution(&resolution);
+  return gfxPoint(-marginLeft * resolution, -marginTop * resolution);
 }
 
 //----------------------------------------------------------------------------------

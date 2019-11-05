@@ -8,13 +8,23 @@
 
 "use strict";
 
-const { Component, createFactory } = require("devtools/client/shared/vendor/react");
+const {
+  Component,
+  createFactory,
+} = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
-const Tabs = createFactory(require("devtools/client/shared/components/tabs/Tabs").Tabs);
 
-const Menu = require("devtools/client/framework/menu");
-const MenuItem = require("devtools/client/framework/menu-item");
+const Sidebar = createFactory(
+  require("devtools/client/shared/components/Sidebar")
+);
+
+loader.lazyRequireGetter(this, "Menu", "devtools/client/framework/menu");
+loader.lazyRequireGetter(
+  this,
+  "MenuItem",
+  "devtools/client/framework/menu-item"
+);
 
 // Shortcuts
 const { div } = dom;
@@ -31,6 +41,16 @@ class Tabbar extends Component {
       showAllTabsMenu: PropTypes.bool,
       activeTabId: PropTypes.string,
       renderOnlySelected: PropTypes.bool,
+      sidebarToggleButton: PropTypes.shape({
+        // Set to true if collapsed.
+        collapsed: PropTypes.bool.isRequired,
+        // Tooltip text used when the button indicates expanded state.
+        collapsePaneTitle: PropTypes.string.isRequired,
+        // Tooltip text used when the button indicates collapsed state.
+        expandPaneTitle: PropTypes.string.isRequired,
+        // Click callback
+        onClick: PropTypes.func.isRequired,
+      }),
     };
   }
 
@@ -43,17 +63,22 @@ class Tabbar extends Component {
 
   constructor(props, context) {
     super(props, context);
-    let { activeTabId, children = [] } = props;
-    let tabs = this.createTabs(children);
-    let activeTab = tabs.findIndex((tab, index) => tab.id === activeTabId);
+    const { activeTabId, children = [] } = props;
+    const tabs = this.createTabs(children);
+    const activeTab = tabs.findIndex((tab, index) => tab.id === activeTabId);
 
     this.state = {
       activeTab: activeTab === -1 ? 0 : activeTab,
       tabs,
     };
 
+    // Array of queued tabs to add to the Tabbar.
+    this.queuedTabs = [];
+
     this.createTabs = this.createTabs.bind(this);
     this.addTab = this.addTab.bind(this);
+    this.addAllQueuedTabs = this.addAllQueuedTabs.bind(this);
+    this.queueTab = this.queueTab.bind(this);
     this.toggleTab = this.toggleTab.bind(this);
     this.removeTab = this.removeTab.bind(this);
     this.select = this.select.bind(this);
@@ -66,12 +91,14 @@ class Tabbar extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let { activeTabId, children = [] } = nextProps;
-    let tabs = this.createTabs(children);
-    let activeTab = tabs.findIndex((tab, index) => tab.id === activeTabId);
+    const { activeTabId, children = [] } = nextProps;
+    const tabs = this.createTabs(children);
+    const activeTab = tabs.findIndex((tab, index) => tab.id === activeTabId);
 
-    if (activeTab !== this.state.activeTab ||
-        (children !== this.props.children)) {
+    if (
+      activeTab !== this.state.activeTab ||
+      children !== this.props.children
+    ) {
       this.setState({
         activeTab: activeTab === -1 ? 0 : activeTab,
         tabs,
@@ -81,7 +108,7 @@ class Tabbar extends Component {
 
   createTabs(children) {
     return children
-      .filter((panel) => panel)
+      .filter(panel => panel)
       .map((panel, index) =>
         Object.assign({}, children[index], {
           id: panel.props.id || index,
@@ -94,16 +121,16 @@ class Tabbar extends Component {
   // Public API
 
   addTab(id, title, selected = false, panel, url, index = -1) {
-    let tabs = this.state.tabs.slice();
+    const tabs = this.state.tabs.slice();
 
     if (index >= 0) {
-      tabs.splice(index, 0, {id, title, panel, url});
+      tabs.splice(index, 0, { id, title, panel, url });
     } else {
-      tabs.push({id, title, panel, url});
+      tabs.push({ id, title, panel, url });
     }
 
-    let newState = Object.assign({}, this.state, {
-      tabs: tabs,
+    const newState = Object.assign({}, this.state, {
+      tabs,
     });
 
     if (selected) {
@@ -117,53 +144,113 @@ class Tabbar extends Component {
     });
   }
 
+  addAllQueuedTabs() {
+    if (!this.queuedTabs.length) {
+      return;
+    }
+
+    const tabs = this.state.tabs.slice();
+
+    // Preselect the first sidebar tab if none was explicitly selected.
+    let activeTab = 0;
+    let activeId = this.queuedTabs[0].id;
+
+    for (const { id, index, panel, selected, title, url } of this.queuedTabs) {
+      if (index >= 0) {
+        tabs.splice(index, 0, { id, title, panel, url });
+      } else {
+        tabs.push({ id, title, panel, url });
+      }
+
+      if (selected) {
+        activeId = id;
+        activeTab = index >= 0 ? index : tabs.length - 1;
+      }
+    }
+
+    const newState = Object.assign({}, this.state, {
+      activeTab,
+      tabs,
+    });
+
+    this.setState(newState, () => {
+      if (this.props.onSelect) {
+        this.props.onSelect(activeId);
+      }
+    });
+
+    this.queuedTabs = [];
+  }
+
+  /**
+   * Queues a tab to be added. This is more performant than calling addTab for every
+   * single tab to be added since we will limit the number of renders happening when
+   * a new state is set. Once all the tabs to be added have been queued, call
+   * addAllQueuedTabs() to populate the TabBar with all the queued tabs.
+   */
+  queueTab(id, title, selected = false, panel, url, index = -1) {
+    this.queuedTabs.push({
+      id,
+      index,
+      panel,
+      selected,
+      title,
+      url,
+    });
+  }
+
   toggleTab(tabId, isVisible) {
-    let index = this.getTabIndex(tabId);
+    const index = this.getTabIndex(tabId);
     if (index < 0) {
       return;
     }
 
-    let tabs = this.state.tabs.slice();
+    const tabs = this.state.tabs.slice();
     tabs[index] = Object.assign({}, tabs[index], {
-      isVisible: isVisible
+      isVisible: isVisible,
     });
 
-    this.setState(Object.assign({}, this.state, {
-      tabs: tabs,
-    }));
+    this.setState(
+      Object.assign({}, this.state, {
+        tabs: tabs,
+      })
+    );
   }
 
   removeTab(tabId) {
-    let index = this.getTabIndex(tabId);
+    const index = this.getTabIndex(tabId);
     if (index < 0) {
       return;
     }
 
-    let tabs = this.state.tabs.slice();
+    const tabs = this.state.tabs.slice();
     tabs.splice(index, 1);
 
     let activeTab = this.state.activeTab - 1;
     activeTab = activeTab === -1 ? 0 : activeTab;
 
-    this.setState(Object.assign({}, this.state, {
-      activeTab,
-      tabs,
-    }), () => {
-      // Select the next active tab and force the select event handler to initialize
-      // the panel if needed.
-      if (tabs.length > 0 && this.props.onSelect) {
-        this.props.onSelect(this.getTabId(activeTab));
+    this.setState(
+      Object.assign({}, this.state, {
+        activeTab,
+        tabs,
+      }),
+      () => {
+        // Select the next active tab and force the select event handler to initialize
+        // the panel if needed.
+        if (tabs.length > 0 && this.props.onSelect) {
+          this.props.onSelect(this.getTabId(activeTab));
+        }
       }
-    });
+    );
   }
 
   select(tabId) {
-    let index = this.getTabIndex(tabId);
+    const index = this.getTabIndex(tabId);
     if (index < 0) {
       return;
     }
 
-    let newState = Object.assign({}, this.state, {
+    const newState = Object.assign({}, this.state, {
       activeTab: index,
     });
 
@@ -197,27 +284,32 @@ class Tabbar extends Component {
   // Event Handlers
 
   onTabChanged(index) {
-    this.setState({
-      activeTab: index
-    }, () => {
-      if (this.props.onSelect) {
-        this.props.onSelect(this.state.tabs[index].id);
+    this.setState(
+      {
+        activeTab: index,
+      },
+      () => {
+        if (this.props.onSelect) {
+          this.props.onSelect(this.state.tabs[index].id);
+        }
       }
-    });
+    );
   }
 
   onAllTabsMenuClick(event) {
-    let menu = new Menu();
-    let target = event.target;
+    const menu = new Menu();
+    const target = event.target;
 
     // Generate list of menu items from the list of tabs.
-    this.state.tabs.forEach((tab) => {
-      menu.append(new MenuItem({
-        label: tab.title,
-        type: "checkbox",
-        checked: this.getCurrentTabId() === tab.id,
-        click: () => this.select(tab.id),
-      }));
+    this.state.tabs.forEach(tab => {
+      menu.append(
+        new MenuItem({
+          label: tab.title,
+          type: "checkbox",
+          checked: this.getCurrentTabId() === tab.id,
+          click: () => this.select(tab.id),
+        })
+      );
     });
 
     // Show a drop down menu with frames.
@@ -225,11 +317,14 @@ class Tabbar extends Component {
     // and relative position to it. See also:
     // https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Method/openPopup
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1274551
-    let rect = target.getBoundingClientRect();
-    let screenX = target.ownerDocument.defaultView.mozInnerScreenX;
-    let screenY = target.ownerDocument.defaultView.mozInnerScreenY;
-    menu.popup(rect.left + screenX, rect.bottom + screenY,
-      { doc: this.props.menuDocument });
+    const rect = target.getBoundingClientRect();
+    const screenX = target.ownerDocument.defaultView.mozInnerScreenX;
+    const screenY = target.ownerDocument.defaultView.mozInnerScreenY;
+    menu.popupWithZoom(
+      rect.left + screenX,
+      rect.bottom + screenY,
+      this.props.menuDocument
+    );
 
     return menu;
   }
@@ -250,19 +345,20 @@ class Tabbar extends Component {
   }
 
   render() {
-    let tabs = this.state.tabs.map((tab) => this.renderTab(tab));
+    const tabs = this.state.tabs.map(tab => this.renderTab(tab));
 
-    return (
-      div({className: "devtools-sidebar-tabs"},
-        Tabs({
+    return div(
+      { className: "devtools-sidebar-tabs" },
+      Sidebar(
+        {
           onAllTabsMenuClick: this.onAllTabsMenuClick,
           renderOnlySelected: this.props.renderOnlySelected,
           showAllTabsMenu: this.props.showAllTabsMenu,
-          tabActive: this.state.activeTab,
+          sidebarToggleButton: this.props.sidebarToggleButton,
+          activeTab: this.state.activeTab,
           onAfterChange: this.onTabChanged,
         },
-          tabs
-        )
+        tabs
       )
     );
   }

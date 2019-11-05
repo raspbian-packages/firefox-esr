@@ -10,18 +10,22 @@
 #include "mozilla/Attributes.h"
 #include "nsMathMLContainerFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <mrow> -- horizontally group any number of subexpressions
 // <mphantom> -- make content invisible but preserve its size
 // <mstyle> -- make style changes that affect the rendering of its contents
 //
 
-class nsMathMLmrowFrame : public nsMathMLContainerFrame {
+class nsMathMLmrowFrame final : public nsMathMLContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmrowFrame)
 
-  friend nsIFrame* NS_NewMathMLmrowFrame(nsIPresShell* aPresShell,
-                                         nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmrowFrame(mozilla::PresShell* aPresShell,
+                                         ComputedStyle* aStyle);
 
   virtual nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
                                     int32_t aModType) override;
@@ -44,8 +48,8 @@ class nsMathMLmrowFrame : public nsMathMLContainerFrame {
   }
 
  protected:
-  explicit nsMathMLmrowFrame(nsStyleContext* aContext)
-      : nsMathMLContainerFrame(aContext, kClassID) {}
+  explicit nsMathMLmrowFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsMathMLContainerFrame(aStyle, aPresContext, kClassID) {}
   virtual ~nsMathMLmrowFrame();
 };
 

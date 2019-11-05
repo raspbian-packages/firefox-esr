@@ -5,32 +5,32 @@
 "use strict";
 
 function ResponseInfo(id, response, content) {
-  let {
-    mimeType
-  } = response;
-  const {body, base64Encoded} = content;
+  const { mimeType } = response;
+  const { body, base64Encoded } = content;
   return {
     from: id,
     content: {
       mimeType: mimeType,
       text: !body ? "" : body,
       size: !body ? 0 : body.length,
-      encoding: base64Encoded ? "base64" : undefined
-    }
+      encoding: base64Encoded ? "base64" : undefined,
+    },
   };
 }
 
 function ResponseContent(id, response, content) {
-  const {body} = content;
-  let {mimeType, encodedDataLength} = response;
-  let responseContent = ResponseInfo(id, response, content);
-  let payload = Object.assign(
+  const { body } = content;
+  const { mimeType, encodedDataLength } = response;
+  const responseContent = ResponseInfo(id, response, content);
+  const payload = Object.assign(
     {
       responseContent,
       contentSize: !body ? 0 : body.length,
       transferredSize: encodedDataLength, // TODO: verify
-      mimeType: mimeType
-    }, body);
+      mimeType: mimeType,
+    },
+    body
+  );
   return payload;
 }
 
@@ -47,19 +47,19 @@ function SecurityDetails(id, security) {
 
 function Timings(id, timing) {
   // TODO : implement
-  let {
+  const {
     dnsStart,
     dnsEnd,
     connectStart,
     connectEnd,
     sendStart,
     sendEnd,
-    receiveHeadersEnd
+    receiveHeadersEnd,
   } = timing;
-  let dns = parseInt(dnsEnd - dnsStart, 10);
-  let connect = parseInt(connectEnd - connectStart, 10);
-  let send = parseInt(sendEnd - sendStart, 10);
-  let total = parseInt(receiveHeadersEnd, 10);
+  const dns = parseInt(dnsEnd - dnsStart, 10);
+  const connect = parseInt(connectEnd - connectStart, 10);
+  const send = parseInt(sendEnd - sendStart, 10);
+  const total = parseInt(receiveHeadersEnd, 10);
   return {
     from: id,
     timings: {
@@ -74,24 +74,19 @@ function Timings(id, timing) {
   };
 }
 function State(response, headers) {
-  let { headersSize } = headers;
-  let {
-    status,
-    statusText,
-    remoteIPAddress,
-    remotePort
-  } = response;
+  const { headersSize } = headers;
+  const { status, statusText, remoteIPAddress, remotePort } = response;
   return {
     remoteAddress: remoteIPAddress,
     remotePort,
     status,
     statusText,
-    headersSize
+    headersSize,
   };
 }
 module.exports = {
   State,
   Timings,
   ResponseContent,
-  SecurityDetails
+  SecurityDetails,
 };

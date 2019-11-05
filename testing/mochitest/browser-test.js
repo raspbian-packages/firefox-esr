@@ -1,48 +1,60 @@
 /* -*- js-indent-level: 2; tab-width: 2; indent-tabs-mode: nil -*- */
+
+/* eslint-env mozilla/browser-window */
+/* import-globals-from chrome-harness.js */
+/* import-globals-from mochitest-e10s-utils.js */
+
 // Test timeout (seconds)
 var gTimeoutSeconds = 45;
 var gConfig;
 var gSaveInstrumentationData = null;
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Task.jsm");
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+var { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-ChromeUtils.defineModuleGetter(this, "ContentSearch",
-  "resource:///modules/ContentSearch.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "AddonManager",
+  "resource://gre/modules/AddonManager.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "ContentSearch",
+  "resource:///modules/ContentSearch.jsm"
+);
 
-Cu.importGlobalProperties(["NodeFilter"]);
+const SIMPLETEST_OVERRIDES = [
+  "ok",
+  "record",
+  "is",
+  "isnot",
+  "todo",
+  "todo_is",
+  "todo_isnot",
+  "info",
+  "expectAssertions",
+  "requestCompleteLog",
+];
 
-const SIMPLETEST_OVERRIDES =
-  ["ok", "is", "isnot", "todo", "todo_is", "todo_isnot", "info", "expectAssertions", "requestCompleteLog"];
-
-// non-android is bootstrapped by marionette
-if (Services.appinfo.OS == 'Android') {
-  window.addEventListener("load", function() {
-    window.addEventListener("MozAfterPaint", function() {
-      setTimeout(testInit, 0);
-    }, {once: true});
-  }, {once: true});
-} else {
-  setTimeout(testInit, 0);
-}
+setTimeout(testInit, 0);
 
 var TabDestroyObserver = {
   outstanding: new Set(),
   promiseResolver: null,
 
-  init: function() {
+  init() {
     Services.obs.addObserver(this, "message-manager-close");
     Services.obs.addObserver(this, "message-manager-disconnect");
   },
 
-  destroy: function() {
+  destroy() {
     Services.obs.removeObserver(this, "message-manager-close");
     Services.obs.removeObserver(this, "message-manager-disconnect");
   },
 
-  observe: function(subject, topic, data) {
+  observe(subject, topic, data) {
     if (topic == "message-manager-close") {
       this.outstanding.add(subject);
     } else if (topic == "message-manager-disconnect") {
@@ -53,12 +65,12 @@ var TabDestroyObserver = {
     }
   },
 
-  wait: function() {
+  wait() {
     if (!this.outstanding.size) {
       return Promise.resolve();
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.promiseResolver = resolve;
     });
   },
@@ -69,35 +81,50 @@ function testInit() {
   if (gConfig.testRoot == "browser") {
     // Make sure to launch the test harness for the first opened window only
     var prefs = Services.prefs;
-    if (prefs.prefHasUserValue("testing.browserTestHarness.running"))
+    if (prefs.prefHasUserValue("testing.browserTestHarness.running")) {
       return;
+    }
 
     prefs.setBoolPref("testing.browserTestHarness.running", true);
 
-    if (prefs.prefHasUserValue("testing.browserTestHarness.timeout"))
+    if (prefs.prefHasUserValue("testing.browserTestHarness.timeout")) {
       gTimeoutSeconds = prefs.getIntPref("testing.browserTestHarness.timeout");
+    }
 
-    var sstring = Cc["@mozilla.org/supports-string;1"].
-                  createInstance(Ci.nsISupportsString);
+    var sstring = Cc["@mozilla.org/supports-string;1"].createInstance(
+      Ci.nsISupportsString
+    );
     sstring.data = location.search;
 
-    Services.ww.openWindow(window, "chrome://mochikit/content/browser-harness.xul", "browserTest",
-                           "chrome,centerscreen,dialog=no,resizable,titlebar,toolbar=no,width=800,height=600", sstring);
+    Services.ww.openWindow(
+      window,
+      "chrome://mochikit/content/browser-harness.xul",
+      "browserTest",
+      "chrome,centerscreen,dialog=no,resizable,titlebar,toolbar=no,width=800,height=600",
+      sstring
+    );
   } else {
     // This code allows us to redirect without requiring specialpowers for chrome and a11y tests.
     let messageHandler = function(m) {
+      // eslint-disable-next-line no-undef
       messageManager.removeMessageListener("chromeEvent", messageHandler);
       var url = m.json.data;
 
       // Window is the [ChromeWindow] for messageManager, so we need content.window
       // Currently chrome tests are run in a content window instead of a ChromeWindow
-      var webNav = content.window.QueryInterface(Ci.nsIInterfaceRequestor)
-                         .getInterface(Ci.nsIWebNavigation);
-      webNav.loadURI(url, null, null, null, null);
+      // eslint-disable-next-line no-undef
+      var webNav = content.window.docShell.QueryInterface(Ci.nsIWebNavigation);
+      let loadURIOptions = {
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      };
+      webNav.loadURI(url, loadURIOptions);
     };
 
-    var listener = 'data:,function doLoad(e) { var data=e.detail&&e.detail.data;removeEventListener("contentEvent", function (e) { doLoad(e); }, false, true);sendAsyncMessage("chromeEvent", {"data":data}); };addEventListener("contentEvent", function (e) { doLoad(e); }, false, true);';
+    var listener =
+      'data:,function doLoad(e) { var data=e.detail&&e.detail.data;removeEventListener("contentEvent", function (e) { doLoad(e); }, false, true);sendAsyncMessage("chromeEvent", {"data":data}); };addEventListener("contentEvent", function (e) { doLoad(e); }, false, true);';
+    // eslint-disable-next-line no-undef
     messageManager.addMessageListener("chromeEvent", messageHandler);
+    // eslint-disable-next-line no-undef
     messageManager.loadFrameScript(listener, true);
   }
   if (gConfig.e10s) {
@@ -110,34 +137,37 @@ function testInit() {
       prefs.setIntPref("dom.ipc.keepProcessesAlive.web", processCount);
     }
 
-    let globalMM = Cc["@mozilla.org/globalmessagemanager;1"]
-                     .getService(Ci.nsIMessageListenerManager);
-    globalMM.loadFrameScript("chrome://mochikit/content/shutdown-leaks-collector.js", true);
+    Services.mm.loadFrameScript(
+      "chrome://mochikit/content/shutdown-leaks-collector.js",
+      true
+    );
   } else {
     // In non-e10s, only run the ShutdownLeaksCollector in the parent process.
     ChromeUtils.import("chrome://mochikit/content/ShutdownLeaksCollector.jsm");
   }
 
-  let gmm = Cc["@mozilla.org/globalmessagemanager;1"].getService(Ci.nsIMessageListenerManager);
-  gmm.loadFrameScript("chrome://mochikit/content/tests/SimpleTest/AsyncUtilsContent.js", true);
+  Services.mm.loadFrameScript(
+    "chrome://mochikit/content/tests/SimpleTest/AsyncUtilsContent.js",
+    true
+  );
 
-  var testSuite = Cc["@mozilla.org/process/environment;1"].
-                    getService(Ci.nsIEnvironment).
-                    get("TEST_SUITE");
+  var testSuite = Cc["@mozilla.org/process/environment;1"]
+    .getService(Ci.nsIEnvironment)
+    .get("TEST_SUITE");
   if (testSuite == "browser-chrome-instrumentation") {
     takeInstrumentation();
   }
 }
 
 function takeInstrumentation() {
-
   let instrumentData = {
-    elements: {}
+    elements: {},
   };
 
   function pad(str, length) {
-    if (str.length >= length)
+    if (str.length >= length) {
       return str;
+    }
 
     return str + " ".repeat(length - str.length);
   }
@@ -174,7 +204,10 @@ function takeInstrumentation() {
       if (!localNameMap.has(element.localName)) {
         localNameMap.set(element.localName, 1);
       } else {
-        localNameMap.set(element.localName, localNameMap.get(element.localName) + 1);
+        localNameMap.set(
+          element.localName,
+          localNameMap.get(element.localName) + 1
+        );
       }
     }
 
@@ -207,13 +240,16 @@ function takeInstrumentation() {
 
   // Saves instrumantation data
   function saveData() {
-    let path = Cc["@mozilla.org/process/environment;1"].
-               getService(Ci.nsIEnvironment).
-               get("MOZ_UPLOAD_DIR");
+    let path = Cc["@mozilla.org/process/environment;1"]
+      .getService(Ci.nsIEnvironment)
+      .get("MOZ_UPLOAD_DIR");
     let encoder = new TextEncoder();
 
     let instrumentPath = OS.Path.join(path, "xulinstrument.txt");
-    OS.File.writeAtomic(instrumentPath, encoder.encode(JSON.stringify(instrumentData, null, 2)));
+    OS.File.writeAtomic(
+      instrumentPath,
+      encoder.encode(JSON.stringify(instrumentData, null, 2))
+    );
 
     let summaryPath = OS.Path.join(path, "xulsummary.txt");
     OS.File.writeAtomic(summaryPath, encoder.encode(getSummaryText()));
@@ -222,7 +258,7 @@ function takeInstrumentation() {
   // An iterator over an element and its ancestors
   function* elementPath(element) {
     yield element;
-    while ((element = element.parentNode) && (element instanceof Element)) {
+    while ((element = element.parentNode) && element instanceof Element) {
       yield element;
     }
   }
@@ -235,19 +271,25 @@ function takeInstrumentation() {
     return {
       namespaceURI: element.namespaceURI,
       localName: element.localName,
-      binding: (binding && binding != "none") ? binding : null,
-    }
+      binding: binding && binding != "none" ? binding : null,
+    };
   }
 
   // The selector for just this element
   function immediateSelector(element) {
-    if (element.localName == "notificationbox" && element.parentNode &&
-        element.parentNode.classList.contains("tabbrowser-tabpanels")) {
+    if (
+      element.localName == "notificationbox" &&
+      element.parentNode &&
+      element.parentNode.id == "tabbrowser-tabpanels"
+    ) {
       // Don't do a full selector for a tabpanel's notificationbox
       return element.localName;
     }
 
-    if (element.localName == "tab" && element.classList.contains("tabbrowser-tab")) {
+    if (
+      element.localName == "tab" &&
+      element.classList.contains("tabbrowser-tab")
+    ) {
       // Don't do a full selector for a tab
       return element.localName;
     }
@@ -273,7 +315,10 @@ function takeInstrumentation() {
 
   // The selector chain for the element
   function elementSelector(element) {
-    return Array.from(elementPath(element)).reverse().map(immediateSelector).join(" > ");
+    return Array.from(elementPath(element))
+      .reverse()
+      .map(immediateSelector)
+      .join(" > ");
   }
 
   // An iterator over all elements in the window
@@ -283,8 +328,9 @@ function takeInstrumentation() {
 
   // An iterator over an element and all of its descendants
   function* elementDescendants(element) {
-    let walker = Cc["@mozilla.org/inspector/deep-tree-walker;1"].
-                 createInstance(Ci.inIDeepTreeWalker);
+    let walker = Cc["@mozilla.org/inspector/deep-tree-walker;1"].createInstance(
+      Ci.inIDeepTreeWalker
+    );
     walker.showAnonymousContent = true;
     walker.showSubDocuments = false;
     walker.showDocumentsAsNodes = false;
@@ -337,7 +383,7 @@ function takeInstrumentation() {
   }
   // Watches a window for new elements to instrument
   function observeWindow(win) {
-    let observer = new MutationObserver((mutations) => {
+    let observer = new MutationObserver(mutations => {
       mutations.forEach(handleMutation);
     });
 
@@ -346,9 +392,13 @@ function takeInstrumentation() {
       subtree: true,
     });
 
-    win.addEventListener("unload", () => {
-      observer.takeRecords().forEach(handleMutation);
-    }, { once: true });
+    win.addEventListener(
+      "unload",
+      () => {
+        observer.takeRecords().forEach(handleMutation);
+      },
+      { once: true }
+    );
   }
 
   scanWindow(window);
@@ -360,15 +410,23 @@ function takeInstrumentation() {
       return;
     }
 
-    win.addEventListener("load", () => {
-      if (win.location.href != "chrome://browser/content/browser.xul") {
-        return;
-      }
+    win.addEventListener(
+      "load",
+      () => {
+        if (win.location.href != AppConstants.BROWSER_CHROME_URL) {
+          return;
+        }
 
-      scanWindow(win);
-      observeWindow(win);
-    }, { once: true });
+        scanWindow(win);
+        observeWindow(win);
+      },
+      { once: true }
+    );
   });
+}
+
+function isGenerator(value) {
+  return value && typeof value === "object" && typeof value.next === "function";
 }
 
 function Tester(aTests, structuredLogger, aCallback) {
@@ -378,36 +436,97 @@ function Tester(aTests, structuredLogger, aCallback) {
 
   this._scriptLoader = Services.scriptloader;
   this.EventUtils = {};
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/EventUtils.js", this.EventUtils);
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/EventUtils.js",
+    this.EventUtils
+  );
+
+  // In order to allow existing tests to continue using unsafe CPOWs
+  // with EventUtils, we need to load a separate copy into a sandbox
+  // which has unsafe CPOW usage whitelisted. We need to create a new
+  // compartment for Cu.permitCPOWsInScope.
+  this.cpowSandbox = Cu.Sandbox(window, {
+    freshCompartment: true,
+    sandboxPrototype: window,
+  });
+  Cu.permitCPOWsInScope(this.cpowSandbox);
+
+  this.cpowEventUtils = new this.cpowSandbox.Object();
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/EventUtils.js",
+    this.cpowEventUtils
+  );
+
   var simpleTestScope = {};
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/specialpowersAPI.js", simpleTestScope);
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/SpecialPowersObserverAPI.js", simpleTestScope);
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/ChromePowers.js", simpleTestScope);
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/SimpleTest.js", simpleTestScope);
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/MemoryStats.js", simpleTestScope);
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/chrome-harness.js", simpleTestScope);
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/specialpowersAPI.js",
+    simpleTestScope
+  );
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/SpecialPowersObserverAPI.js",
+    simpleTestScope
+  );
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/ChromePowers.js",
+    simpleTestScope
+  );
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/SimpleTest.js",
+    simpleTestScope
+  );
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/MemoryStats.js",
+    simpleTestScope
+  );
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/chrome-harness.js",
+    simpleTestScope
+  );
   this.SimpleTest = simpleTestScope.SimpleTest;
 
   var extensionUtilsScope = {
-    registerCleanupFunction: (fn) => {
+    registerCleanupFunction: fn => {
       this.currentTest.scope.registerCleanupFunction(fn);
     },
   };
   extensionUtilsScope.SimpleTest = this.SimpleTest;
-  this._scriptLoader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/ExtensionTestUtils.js", extensionUtilsScope);
+  this._scriptLoader.loadSubScript(
+    "chrome://mochikit/content/tests/SimpleTest/ExtensionTestUtils.js",
+    extensionUtilsScope
+  );
   this.ExtensionTestUtils = extensionUtilsScope.ExtensionTestUtils;
 
   this.SimpleTest.harnessParameters = gConfig;
 
   this.MemoryStats = simpleTestScope.MemoryStats;
-  this.Task = Task;
-  this.ContentTask = ChromeUtils.import("resource://testing-common/ContentTask.jsm", null).ContentTask;
-  this.BrowserTestUtils = ChromeUtils.import("resource://testing-common/BrowserTestUtils.jsm", null).BrowserTestUtils;
-  this.TestUtils = ChromeUtils.import("resource://testing-common/TestUtils.jsm", null).TestUtils;
-  this.Task.Debugging.maintainStack = true;
-  this.Promise = ChromeUtils.import("resource://gre/modules/Promise.jsm", null).Promise;
-  this.PromiseTestUtils = ChromeUtils.import("resource://testing-common/PromiseTestUtils.jsm", null).PromiseTestUtils;
-  this.Assert = ChromeUtils.import("resource://testing-common/Assert.jsm", null).Assert;
+  this.ContentTask = ChromeUtils.import(
+    "resource://testing-common/ContentTask.jsm",
+    null
+  ).ContentTask;
+  this.BrowserTestUtils = ChromeUtils.import(
+    "resource://testing-common/BrowserTestUtils.jsm",
+    null
+  ).BrowserTestUtils;
+  this.TestUtils = ChromeUtils.import(
+    "resource://testing-common/TestUtils.jsm",
+    null
+  ).TestUtils;
+  this.Promise = ChromeUtils.import(
+    "resource://gre/modules/Promise.jsm",
+    null
+  ).Promise;
+  this.PromiseTestUtils = ChromeUtils.import(
+    "resource://testing-common/PromiseTestUtils.jsm",
+    null
+  ).PromiseTestUtils;
+  this.Assert = ChromeUtils.import(
+    "resource://testing-common/Assert.jsm",
+    null
+  ).Assert;
+  this.PerTestCoverageUtils = ChromeUtils.import(
+    "resource://testing-common/PerTestCoverageUtils.jsm",
+    null
+  ).PerTestCoverageUtils;
 
   this.PromiseTestUtils.init();
 
@@ -418,7 +537,10 @@ function Tester(aTests, structuredLogger, aCallback) {
 
   this._coverageCollector = null;
 
-  const XPCOMUtilsMod = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", {});
+  const XPCOMUtilsMod = ChromeUtils.import(
+    "resource://gre/modules/XPCOMUtils.jsm",
+    null
+  );
 
   // Avoid failing tests when XPCOMUtils.defineLazyScriptGetter is used.
   XPCOMUtilsMod.Services = Object.create(Services, {
@@ -426,20 +548,27 @@ function Tester(aTests, structuredLogger, aCallback) {
       configurable: true,
       writable: true,
       value: {
-        loadSubScript: (url, obj, charset) => {
+        loadSubScript: (url, obj) => {
           let before = Object.keys(window);
           try {
-            return this._scriptLoader.loadSubScript(url, obj, charset);
+            return this._scriptLoader.loadSubScript(url, obj);
           } finally {
             for (let property of Object.keys(window)) {
-              if (!before.includes(property) && !this._globalProperties.includes(property)) {
+              if (
+                !before.includes(property) &&
+                !this._globalProperties.includes(property)
+              ) {
                 this._globalProperties.push(property);
-                this.SimpleTest.info("Global property added while loading " + url + ": " + property);
+                this.SimpleTest.info(
+                  "Global property added while loading " + url + ": " + property
+                );
               }
             }
           }
         },
-        loadSubScriptWithOptions: this._scriptLoader.loadSubScriptWithOptions.bind(this._scriptLoader),
+        loadSubScriptWithOptions: this._scriptLoader.loadSubScriptWithOptions.bind(
+          this._scriptLoader
+        ),
       },
     },
   });
@@ -447,7 +576,6 @@ function Tester(aTests, structuredLogger, aCallback) {
 Tester.prototype = {
   EventUtils: {},
   SimpleTest: {},
-  Task: null,
   ContentTask: null,
   ExtensionTestUtils: null,
   Assert: null,
@@ -464,26 +592,30 @@ Tester.prototype = {
     return this.tests[this.currentTestIndex];
   },
   get done() {
-    return (this.currentTestIndex == this.tests.length - 1) && (this.repeat <= 0);
+    return this.currentTestIndex == this.tests.length - 1 && this.repeat <= 0;
   },
 
   start: function Tester_start() {
     TabDestroyObserver.init();
 
-    //if testOnLoad was not called, then gConfig is not defined
-    if (!gConfig)
+    // if testOnLoad was not called, then gConfig is not defined
+    if (!gConfig) {
       gConfig = readConfig();
+    }
 
-    if (gConfig.runUntilFailure)
+    if (gConfig.runUntilFailure) {
       this.runUntilFailure = true;
+    }
 
-    if (gConfig.repeat)
+    if (gConfig.repeat) {
       this.repeat = gConfig.repeat;
+    }
 
     if (gConfig.jscovDirPrefix) {
       let coveragePath = gConfig.jscovDirPrefix;
-      let {CoverageCollector} = ChromeUtils.import("resource://testing-common/CoverageUtils.jsm",
-                                                   {});
+      let { CoverageCollector } = ChromeUtils.import(
+        "resource://testing-common/CoverageUtils.jsm"
+      );
       this._coverageCollector = new CoverageCollector(coveragePath);
     }
 
@@ -491,24 +623,61 @@ Tester.prototype = {
     Services.console.registerListener(this);
     this._globalProperties = Object.keys(window);
     this._globalPropertyWhitelist = [
-      "navigator", "constructor", "top",
+      "navigator",
+      "constructor",
+      "top",
       "Application",
-      "__SS_tabsToRestore", "__SSi",
+      "__SS_tabsToRestore",
+      "__SSi",
       "webConsoleCommandController",
+      // Thunderbird
+      "MailMigrator",
+      "SearchIntegration",
     ];
 
-    if (this.tests.length)
-      this.waitForGraphicsTestWindowToBeGone(this.nextTest.bind(this));
-    else
+    this.PerTestCoverageUtils.beforeTestSync();
+
+    if (this.tests.length) {
+      this.waitForWindowsReady().then(() => {
+        this.nextTest();
+      });
+    } else {
       this.finish();
+    }
+  },
+
+  async waitForWindowsReady() {
+    await this.setupDefaultTheme();
+    await new Promise(resolve =>
+      this.waitForGraphicsTestWindowToBeGone(resolve)
+    );
+    await this.promiseMainWindowReady();
+  },
+
+  async promiseMainWindowReady() {
+    if (window.gBrowserInit && !gBrowserInit.idleTasksFinished) {
+      await this.TestUtils.topicObserved(
+        "browser-idle-startup-tasks-finished",
+        subject => subject === window
+      );
+    }
+  },
+
+  async setupDefaultTheme() {
+    // Developer Edition enables the wrong theme by default. Make sure
+    // the ordinary default theme is enabled.
+    let theme = await AddonManager.getAddonByID("default-theme@mozilla.org");
+    await theme.enable();
   },
 
   waitForGraphicsTestWindowToBeGone(aCallback) {
-    let windowsEnum = Services.wm.getEnumerator(null);
-    while (windowsEnum.hasMoreElements()) {
-      let win = windowsEnum.getNext();
-      if (win != window && !win.closed &&
-          win.document.documentURI == "chrome://gfxsanity/content/sanityparent.html") {
+    for (let win of Services.wm.getEnumerator(null)) {
+      if (
+        win != window &&
+        !win.closed &&
+        win.document.documentURI ==
+          "chrome://gfxsanity/content/sanityparent.html"
+      ) {
         this.BrowserTestUtils.domWindowClosed(win).then(aCallback);
         return;
       }
@@ -519,54 +688,78 @@ Tester.prototype = {
 
   waitForWindowsState: function Tester_waitForWindowsState(aCallback) {
     let timedOut = this.currentTest && this.currentTest.timedOut;
-    let startTime = Date.now();
-    let baseMsg = timedOut ? "Found a {elt} after previous test timed out"
-                           : this.currentTest ? "Found an unexpected {elt} at the end of test run"
-                                              : "Found an unexpected {elt}";
+    // eslint-disable-next-line no-nested-ternary
+    let baseMsg = timedOut
+      ? "Found a {elt} after previous test timed out"
+      : this.currentTest
+      ? "Found an unexpected {elt} at the end of test run"
+      : "Found an unexpected {elt}";
 
     // Remove stale tabs
     if (this.currentTest && window.gBrowser && gBrowser.tabs.length > 1) {
       while (gBrowser.tabs.length > 1) {
-        let lastTab = gBrowser.tabContainer.lastChild;
-        this.currentTest.addResult(new testResult({
-          name: baseMsg.replace("{elt}", "tab") + ": " +
+        let lastTab = gBrowser.tabContainer.lastElementChild;
+        if (!lastTab.closing) {
+          // Report the stale tab as an error only when they're not closing.
+          // Tests can finish without waiting for the closing tabs.
+          this.currentTest.addResult(
+            new testResult({
+              name:
+                baseMsg.replace("{elt}", "tab") +
+                ": " +
                 lastTab.linkedBrowser.currentURI.spec,
-          allowFailure: this.currentTest.allowFailure,
-        }));
+              allowFailure: this.currentTest.allowFailure,
+            })
+          );
+        }
         gBrowser.removeTab(lastTab);
       }
     }
 
     // Replace the last tab with a fresh one
     if (window.gBrowser) {
-      let newTab = gBrowser.addTab("about:blank", { skipAnimation: true });
+      gBrowser.addTab("about:blank", {
+        skipAnimation: true,
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      });
       gBrowser.removeTab(gBrowser.selectedTab, { skipPermitUnload: true });
       gBrowser.stop();
     }
 
     // Remove stale windows
     this.structuredLogger.info("checking window state");
-    let windowsEnum = Services.wm.getEnumerator(null);
-    while (windowsEnum.hasMoreElements()) {
-      let win = windowsEnum.getNext();
-      if (win != window && !win.closed &&
-          win.document.documentElement.getAttribute("id") != "browserTestHarness") {
-        let type = win.document.documentElement.getAttribute("windowtype");
+    for (let win of Services.wm.getEnumerator(null)) {
+      let type = win.document.documentElement.getAttribute("windowtype");
+      if (
+        win != window &&
+        !win.closed &&
+        win.document.documentElement.getAttribute("id") !=
+          "browserTestHarness" &&
+        type != "devtools:webconsole"
+      ) {
         switch (type) {
-        case "navigator:browser":
-          type = "browser window";
-          break;
-        case null:
-          type = "unknown window with document URI: " + win.document.documentURI +
-                 " and title: " + win.document.title;
-          break;
+          case "navigator:browser":
+            type = "browser window";
+            break;
+          case "mail:3pane":
+            type = "mail window";
+            break;
+          case null:
+            type =
+              "unknown window with document URI: " +
+              win.document.documentURI +
+              " and title: " +
+              win.document.title;
+            break;
         }
         let msg = baseMsg.replace("{elt}", type);
         if (this.currentTest) {
-          this.currentTest.addResult(new testResult({
-            name: msg,
-            allowFailure: this.currentTest.allowFailure,
-          }));
+          this.currentTest.addResult(
+            new testResult({
+              name: msg,
+              allowFailure: this.currentTest.allowFailure,
+            })
+          );
         } else {
           this.failuresFromInitialWindowState++;
           this.structuredLogger.error("browser-test.js | " + msg);
@@ -595,20 +788,22 @@ Tester.prototype = {
     this.PromiseTestUtils.uninit();
 
     // In the main process, we print the ShutdownLeaksCollector message here.
-    let pid = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).processID;
+    let pid = Services.appinfo.processID;
     dump("Completed ShutdownLeaks collections in process " + pid + "\n");
 
     this.structuredLogger.info("TEST-START | Shutdown");
 
     if (this.tests.length) {
-      let e10sMode = gMultiProcessBrowser ? "e10s" : "non-e10s";
+      let e10sMode = window.gMultiProcessBrowser ? "e10s" : "non-e10s";
       this.structuredLogger.info("Browser Chrome Test Summary");
       this.structuredLogger.info("Passed:  " + passCount);
       this.structuredLogger.info("Failed:  " + failCount);
       this.structuredLogger.info("Todo:    " + todoCount);
       this.structuredLogger.info("Mode:    " + e10sMode);
     } else {
-      this.structuredLogger.error("browser-test.js | No tests to run. Did you pass invalid test_paths?");
+      this.structuredLogger.error(
+        "browser-test.js | No tests to run. Did you pass invalid test_paths?"
+      );
     }
     this.structuredLogger.info("*** End BrowserChrome Test Results ***");
 
@@ -636,26 +831,32 @@ Tester.prototype = {
 
   onConsoleMessage: function Tester_onConsoleMessage(aConsoleMessage) {
     // Ignore empty messages.
-    if (!aConsoleMessage.message)
+    if (!aConsoleMessage.message) {
       return;
+    }
 
     try {
       var msg = "Console message: " + aConsoleMessage.message;
-      if (this.currentTest)
+      if (this.currentTest) {
         this.currentTest.addResult(new testMessage(msg));
-      else
-        this.structuredLogger.info("TEST-INFO | (browser-test.js) | " + msg.replace(/\n$/, "") + "\n");
+      } else {
+        this.structuredLogger.info(
+          "TEST-INFO | (browser-test.js) | " + msg.replace(/\n$/, "") + "\n"
+        );
+      }
     } catch (ex) {
       // Swallow exception so we don't lead to another error being reported,
       // throwing us into an infinite loop
     }
   },
 
-  nextTest: Task.async(function*() {
+  async nextTest() {
     if (this.currentTest) {
       if (this._coverageCollector) {
         this._coverageCollector.recordTestCoverage(this.currentTest.path);
       }
+
+      this.PerTestCoverageUtils.afterTestSync();
 
       // Run cleanup functions for the current test before moving on to the
       // next one.
@@ -663,49 +864,62 @@ Tester.prototype = {
       while (testScope.__cleanupFunctions.length > 0) {
         let func = testScope.__cleanupFunctions.shift();
         try {
-          yield func.apply(testScope);
-        }
-        catch (ex) {
-          this.currentTest.addResult(new testResult({
-            name: "Cleanup function threw an exception",
-            ex,
-            allowFailure: this.currentTest.allowFailure,
-          }));
+          let result = await func.apply(testScope);
+          if (isGenerator(result)) {
+            this.SimpleTest.ok(false, "Cleanup function returned a generator");
+          }
+        } catch (ex) {
+          this.currentTest.addResult(
+            new testResult({
+              name: "Cleanup function threw an exception",
+              ex,
+              allowFailure: this.currentTest.allowFailure,
+            })
+          );
         }
       }
 
-      if (this.currentTest.passCount === 0 &&
-          this.currentTest.failCount === 0 &&
-          this.currentTest.todoCount === 0) {
-        this.currentTest.addResult(new testResult({
-          name: "This test contains no passes, no fails and no todos. Maybe" +
-                " it threw a silent exception? Make sure you use" +
-                " waitForExplicitFinish() if you need it.",
-        }));
+      if (
+        this.currentTest.passCount === 0 &&
+        this.currentTest.failCount === 0 &&
+        this.currentTest.todoCount === 0
+      ) {
+        this.currentTest.addResult(
+          new testResult({
+            name:
+              "This test contains no passes, no fails and no todos. Maybe" +
+              " it threw a silent exception? Make sure you use" +
+              " waitForExplicitFinish() if you need it.",
+          })
+        );
       }
 
-      let winUtils = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                           .getInterface(Ci.nsIDOMWindowUtils);
+      let winUtils = window.windowUtils;
       if (winUtils.isTestControllingRefreshes) {
-        this.currentTest.addResult(new testResult({
-          name: "test left refresh driver under test control",
-        }));
+        this.currentTest.addResult(
+          new testResult({
+            name: "test left refresh driver under test control",
+          })
+        );
         winUtils.restoreNormalRefresh();
       }
 
       if (this.SimpleTest.isExpectingUncaughtException()) {
-        this.currentTest.addResult(new testResult({
-          name: "expectUncaughtException was called but no uncaught" +
-                " exception was detected!",
-          allowFailure: this.currentTest.allowFailure,
-        }));
+        this.currentTest.addResult(
+          new testResult({
+            name:
+              "expectUncaughtException was called but no uncaught" +
+              " exception was detected!",
+            allowFailure: this.currentTest.allowFailure,
+          })
+        );
       }
 
       this.PromiseTestUtils.ensureDOMPromiseRejectionsProcessed();
       this.PromiseTestUtils.assertNoUncaughtRejections();
       this.PromiseTestUtils.assertNoMoreExpectedRejections();
 
-      Object.keys(window).forEach(function (prop) {
+      Object.keys(window).forEach(function(prop) {
         if (parseInt(prop) == prop) {
           // This is a string which when parsed as an integer and then
           // stringified gives the original string.  As in, this is in fact a
@@ -716,10 +930,12 @@ Tester.prototype = {
         if (!this._globalProperties.includes(prop)) {
           this._globalProperties.push(prop);
           if (!this._globalPropertyWhitelist.includes(prop)) {
-            this.currentTest.addResult(new testResult({
-              name: "test left unexpected property on window: " + prop,
-              allowFailure: this.currentTest.allowFailure,
-            }));
+            this.currentTest.addResult(
+              new testResult({
+                name: "test left unexpected property on window: " + prop,
+                allowFailure: this.currentTest.allowFailure,
+              })
+            );
           }
         }
       }, this);
@@ -729,7 +945,8 @@ Tester.prototype = {
       // behavior of returning the last opened popup.
       document.popupNode = null;
 
-      yield new Promise(resolve => SpecialPowers.flushPrefEnv(resolve));
+      // eslint-disable-next-line no-undef
+      await new Promise(resolve => SpecialPowers.flushPrefEnv(resolve));
 
       if (gConfig.cleanupCrashes) {
         let gdir = Services.dirsvc.get("UAppData", Ci.nsIFile);
@@ -738,7 +955,7 @@ Tester.prototype = {
         if (gdir.exists()) {
           let entries = gdir.directoryEntries;
           while (entries.hasMoreElements()) {
-            let entry = entries.getNext().QueryInterface(Ci.nsIFile);
+            let entry = entries.nextFile;
             if (entry.isFile()) {
               let msg = "this test left a pending crash report; ";
               try {
@@ -755,11 +972,14 @@ Tester.prototype = {
 
       // Notify a long running test problem if it didn't end up in a timeout.
       if (this.currentTest.unexpectedTimeouts && !this.currentTest.timedOut) {
-        this.currentTest.addResult(new testResult({
-          name: "This test exceeded the timeout threshold. It should be" +
-                " rewritten or split up. If that's not possible, use" +
-                " requestLongerTimeout(N), but only as a last resort.",
-        }));
+        this.currentTest.addResult(
+          new testResult({
+            name:
+              "This test exceeded the timeout threshold. It should be" +
+              " rewritten or split up. If that's not possible, use" +
+              " requestLongerTimeout(N), but only as a last resort.",
+          })
+        );
       }
 
       // If we're in a debug build, check assertion counts.  This code
@@ -775,73 +995,105 @@ Tester.prototype = {
         let min = testScope.__expectedMinAsserts;
         if (numAsserts > max) {
           // TEST-UNEXPECTED-FAIL
-          this.currentTest.addResult(new testResult({
-            name: "Assertion count " + numAsserts +
-                  " is greater than expected range " +
-                  min + "-" + max + " assertions.",
-            pass: true, // TEMPORARILY TEST-KNOWN-FAIL
-            todo: true,
-            allowFailure: this.currentTest.allowFailure,
-          }));
+          this.currentTest.addResult(
+            new testResult({
+              name:
+                "Assertion count " +
+                numAsserts +
+                " is greater than expected range " +
+                min +
+                "-" +
+                max +
+                " assertions.",
+              pass: true, // TEMPORARILY TEST-KNOWN-FAIL
+              todo: true,
+              allowFailure: this.currentTest.allowFailure,
+            })
+          );
         } else if (numAsserts < min) {
           // TEST-UNEXPECTED-PASS
-          this.currentTest.addResult(new testResult({
-            name: "Assertion count " + numAsserts +
-                  " is less than expected range " +
-                  min + "-" + max + " assertions.",
-            todo: true,
-            allowFailure: this.currentTest.allowFailure,
-          }));
+          this.currentTest.addResult(
+            new testResult({
+              name:
+                "Assertion count " +
+                numAsserts +
+                " is less than expected range " +
+                min +
+                "-" +
+                max +
+                " assertions.",
+              todo: true,
+              allowFailure: this.currentTest.allowFailure,
+            })
+          );
         } else if (numAsserts > 0) {
           // TEST-KNOWN-FAIL
-          this.currentTest.addResult(new testResult({
-            name: "Assertion count " + numAsserts +
-                  " is within expected range " +
-                  min + "-" + max + " assertions.",
-            pass: true,
-            todo: true,
-            allowFailure: this.currentTest.allowFailure,
-          }));
+          this.currentTest.addResult(
+            new testResult({
+              name:
+                "Assertion count " +
+                numAsserts +
+                " is within expected range " +
+                min +
+                "-" +
+                max +
+                " assertions.",
+              pass: true,
+              todo: true,
+              allowFailure: this.currentTest.allowFailure,
+            })
+          );
         }
       }
 
       if (this.currentTest.allowFailure) {
         if (this.currentTest.expectedAllowedFailureCount) {
-          this.currentTest.addResult(new testResult({
-            name: "Expected " +
-                  this.currentTest.expectedAllowedFailureCount +
-                  " failures in this file, got " +
-                  this.currentTest.allowedFailureCount + ".",
-            pass: this.currentTest.expectedAllowedFailureCount ==
-                  this.currentTest.allowedFailureCount,
-          }));
+          this.currentTest.addResult(
+            new testResult({
+              name:
+                "Expected " +
+                this.currentTest.expectedAllowedFailureCount +
+                " failures in this file, got " +
+                this.currentTest.allowedFailureCount +
+                ".",
+              pass:
+                this.currentTest.expectedAllowedFailureCount ==
+                this.currentTest.allowedFailureCount,
+            })
+          );
         } else if (this.currentTest.allowedFailureCount == 0) {
-          this.currentTest.addResult(new testResult({
-            name: "We expect at least one assertion to fail because this" +
-                  " test file is marked as fail-if in the manifest.",
-            todo: true,
-          }));
+          this.currentTest.addResult(
+            new testResult({
+              name:
+                "We expect at least one assertion to fail because this" +
+                " test file is marked as fail-if in the manifest.",
+              todo: true,
+            })
+          );
         }
       }
 
       // Dump memory stats for main thread.
-      if (Cc["@mozilla.org/xre/runtime;1"]
-          .getService(Ci.nsIXULRuntime)
-          .processType == Ci.nsIXULRuntime.PROCESS_TYPE_DEFAULT)
-      {
-        this.MemoryStats.dump(this.currentTestIndex,
-                              this.currentTest.path,
-                              gConfig.dumpOutputDirectory,
-                              gConfig.dumpAboutMemoryAfterTest,
-                              gConfig.dumpDMDAfterTest);
+      if (
+        Services.appinfo.processType == Ci.nsIXULRuntime.PROCESS_TYPE_DEFAULT
+      ) {
+        this.MemoryStats.dump(
+          this.currentTestIndex,
+          this.currentTest.path,
+          gConfig.dumpOutputDirectory,
+          gConfig.dumpAboutMemoryAfterTest,
+          gConfig.dumpDMDAfterTest
+        );
       }
 
       // Note the test run time
       let time = Date.now() - this.lastStartTime;
-      this.structuredLogger.testEnd(this.currentTest.path,
-                                           "OK",
-                                           undefined,
-                                           "finished in " + time + "ms");
+      this.structuredLogger.testEnd(
+        this.currentTest.path,
+        "OK",
+        undefined,
+        "finished in " + time + "ms"
+      );
       this.currentTest.setDuration(time);
 
       if (this.runUntilFailure && this.currentTest.failCount > 0) {
@@ -871,28 +1123,28 @@ Tester.prototype = {
         // frames and browser intentionally kept alive until shutdown to
         // eliminate false positives.
         if (gConfig.testRoot == "browser") {
-          //Skip if SeaMonkey
+          // Skip if SeaMonkey
           if (AppConstants.MOZ_APP_NAME != "seamonkey") {
             // Replace the document currently loaded in the browser's sidebar.
             // This will prevent false positives for tests that were the last
             // to touch the sidebar. They will thus not be blamed for leaking
             // a document.
             let sidebar = document.getElementById("sidebar");
-            sidebar.setAttribute("src", "data:text/html;charset=utf-8,");
-            sidebar.docShell.createAboutBlankContentViewer(null);
-            sidebar.setAttribute("src", "about:blank");
+            if (sidebar) {
+              sidebar.setAttribute("src", "data:text/html;charset=utf-8,");
+              sidebar.docShell.createAboutBlankContentViewer(null);
+              sidebar.setAttribute("src", "about:blank");
+            }
           }
 
           // Destroy BackgroundPageThumbs resources.
-          let {BackgroundPageThumbs} =
-            ChromeUtils.import("resource://gre/modules/BackgroundPageThumbs.jsm", {});
+          let { BackgroundPageThumbs } = ChromeUtils.import(
+            "resource://gre/modules/BackgroundPageThumbs.jsm"
+          );
           BackgroundPageThumbs._destroy();
 
-          // Destroy preloaded browsers.
-          if (gBrowser._preloadedBrowser) {
-            let browser = gBrowser._preloadedBrowser;
-            gBrowser._preloadedBrowser = null;
-            gBrowser.getNotificationBox(browser).remove();
+          if (window.gBrowser) {
+            NewTabPagePreloading.removePreloadedBrowser(window);
           }
         }
 
@@ -914,22 +1166,31 @@ Tester.prototype = {
           });
         };
 
-
-        let {AsyncShutdown} =
-          ChromeUtils.import("resource://gre/modules/AsyncShutdown.jsm", {});
+        let { AsyncShutdown } = ChromeUtils.import(
+          "resource://gre/modules/AsyncShutdown.jsm"
+        );
 
         let barrier = new AsyncShutdown.Barrier(
-          "ShutdownLeaks: Wait for cleanup to be finished before checking for leaks");
-        Services.obs.notifyObservers({wrappedJSObject: barrier},
-          "shutdown-leaks-before-check");
+          "ShutdownLeaks: Wait for cleanup to be finished before checking for leaks"
+        );
+        Services.obs.notifyObservers(
+          { wrappedJSObject: barrier },
+          "shutdown-leaks-before-check"
+        );
 
-        barrier.client.addBlocker("ShutdownLeaks: Wait for tabs to finish closing",
-                                  TabDestroyObserver.wait());
+        barrier.client.addBlocker(
+          "ShutdownLeaks: Wait for tabs to finish closing",
+          TabDestroyObserver.wait()
+        );
 
         barrier.wait().then(() => {
           // Simulate memory pressure so that we're forced to free more resources
           // and thus get rid of more false leaks like already terminated workers.
-          Services.obs.notifyObservers(null, "memory-pressure", "heap-minimize");
+          Services.obs.notifyObservers(
+            null,
+            "memory-pressure",
+            "heap-minimize"
+          );
 
           Services.ppmm.broadcastAsyncMessage("browser-test:collect-request");
 
@@ -953,12 +1214,13 @@ Tester.prototype = {
         this.execTest();
       } else {
         this.currentTestIndex++;
-        if (gConfig.repeat)
+        if (gConfig.repeat) {
           this.repeat = gConfig.repeat;
+        }
         this.execTest();
       }
     });
-  }),
+  },
 
   execTest: function Tester_execTest() {
     this.structuredLogger.testStart(this.currentTest.path);
@@ -966,37 +1228,49 @@ Tester.prototype = {
     this.SimpleTest.reset();
 
     // Load the tests into a testscope
-    let currentScope = this.currentTest.scope = new testScope(this, this.currentTest, this.currentTest.expected);
+    let currentScope = (this.currentTest.scope = new testScope(
+      this,
+      this.currentTest,
+      this.currentTest.expected
+    ));
     let currentTest = this.currentTest;
 
     // Import utils in the test scope.
-    this.currentTest.scope.EventUtils = this.EventUtils;
-    this.currentTest.scope.SimpleTest = this.SimpleTest;
-    this.currentTest.scope.gTestPath = this.currentTest.path;
-    this.currentTest.scope.Task = this.Task;
-    this.currentTest.scope.ContentTask = this.ContentTask;
-    this.currentTest.scope.BrowserTestUtils = this.BrowserTestUtils;
-    this.currentTest.scope.TestUtils = this.TestUtils;
-    this.currentTest.scope.ExtensionTestUtils = this.ExtensionTestUtils;
+    let { scope } = this.currentTest;
+    scope.EventUtils = this.currentTest.usesUnsafeCPOWs
+      ? this.cpowEventUtils
+      : this.EventUtils;
+    scope.SimpleTest = this.SimpleTest;
+    scope.gTestPath = this.currentTest.path;
+    scope.ContentTask = this.ContentTask;
+    scope.BrowserTestUtils = this.BrowserTestUtils;
+    scope.TestUtils = this.TestUtils;
+    scope.ExtensionTestUtils = this.ExtensionTestUtils;
     // Pass a custom report function for mochitest style reporting.
-    this.currentTest.scope.Assert = new this.Assert(function(err, message, stack) {
-      currentTest.addResult(new testResult(err ? {
-        name: err.message,
-        ex: err.stack,
-        stack: err.stack,
-        allowFailure: currentTest.allowFailure,
-      } : {
-        name: message,
-        pass: true,
-        stack,
-        allowFailure: currentTest.allowFailure,
-      }));
+    scope.Assert = new this.Assert(function(err, message, stack) {
+      currentTest.addResult(
+        new testResult(
+          err
+            ? {
+                name: err.message,
+                ex: err.stack,
+                stack: err.stack,
+                allowFailure: currentTest.allowFailure,
+              }
+            : {
+                name: message,
+                pass: true,
+                stack,
+                allowFailure: currentTest.allowFailure,
+              }
+        )
+      );
     }, true);
 
     this.ContentTask.setTestScope(currentScope);
 
     // Allow Assert.jsm methods to be tacked to the current scope.
-    this.currentTest.scope.export_assertions = function() {
+    scope.export_assertions = function() {
       for (let func in this.Assert) {
         this[func] = this.Assert[func].bind(this.Assert);
       }
@@ -1005,49 +1279,62 @@ Tester.prototype = {
     // Override SimpleTest methods with ours.
     SIMPLETEST_OVERRIDES.forEach(function(m) {
       this.SimpleTest[m] = this[m];
-    }, this.currentTest.scope);
+    }, scope);
 
-    //load the tools to work with chrome .jar and remote
+    // load the tools to work with chrome .jar and remote
     try {
-      this._scriptLoader.loadSubScript("chrome://mochikit/content/chrome-harness.js", this.currentTest.scope);
-    } catch (ex) { /* no chrome-harness tools */ }
+      this._scriptLoader.loadSubScript(
+        "chrome://mochikit/content/chrome-harness.js",
+        scope
+      );
+    } catch (ex) {
+      /* no chrome-harness tools */
+    }
 
     // Import head.js script if it exists.
-    var currentTestDirPath =
-      this.currentTest.path.substr(0, this.currentTest.path.lastIndexOf("/"));
+    var currentTestDirPath = this.currentTest.path.substr(
+      0,
+      this.currentTest.path.lastIndexOf("/")
+    );
     var headPath = currentTestDirPath + "/head.js";
     try {
-      this._scriptLoader.loadSubScript(headPath, this.currentTest.scope);
+      this._scriptLoader.loadSubScript(headPath, scope);
     } catch (ex) {
-      // Ignore if no head.js exists, but report all other errors.  Note this
-      // will also ignore an existing head.js attempting to import a missing
-      // module - see bug 755558 for why this strategy is preferred anyway.
-      if (!/^Error opening input stream/.test(ex.toString())) {
-       this.currentTest.addResult(new testResult({
-         name: "head.js import threw an exception",
-         ex,
-       }));
+      // Bug 755558 - Ignore loadSubScript errors due to a missing head.js.
+      const isImportError = /^Error opening input stream/.test(ex.toString());
+
+      // Bug 1503169 - head.js may call loadSubScript, and generate similar errors.
+      // Only swallow errors that are strictly related to loading head.js.
+      const containsHeadPath = ex.toString().includes(headPath);
+
+      if (!isImportError || !containsHeadPath) {
+        this.currentTest.addResult(
+          new testResult({
+            name: "head.js import threw an exception",
+            ex,
+          })
+        );
       }
     }
 
     // Import the test script.
     try {
-      this._scriptLoader.loadSubScript(this.currentTest.path,
-                                       this.currentTest.scope);
+      this._scriptLoader.loadSubScript(this.currentTest.path, scope);
       // Run the test
       this.lastStartTime = Date.now();
       if (this.currentTest.scope.__tasks) {
         // This test consists of tasks, added via the `add_task()` API.
         if ("test" in this.currentTest.scope) {
-          throw "Cannot run both a add_task test and a normal test at the same time.";
+          throw new Error(
+            "Cannot run both a add_task test and a normal test at the same time."
+          );
         }
-        let Promise = this.Promise;
         let PromiseTestUtils = this.PromiseTestUtils;
 
         // Allow for a task to be skipped; we need only use the structured logger
         // for this, whilst deactivating log buffering to ensure that messages
         // are always printed to stdout.
-        let skipTask = (task) => {
+        let skipTask = task => {
           let logger = this.structuredLogger;
           logger.deactivateBuffering();
           logger.testStatus(this.currentTest.path, task.name, "SKIP");
@@ -1055,55 +1342,71 @@ Tester.prototype = {
           logger.activateBuffering();
         };
 
-        this.Task.spawn(function*() {
+        (async function() {
           let task;
           while ((task = this.__tasks.shift())) {
-            if (task.__skipMe || (this.__runOnlyThisTask && task != this.__runOnlyThisTask)) {
+            if (
+              task.__skipMe ||
+              (this.__runOnlyThisTask && task != this.__runOnlyThisTask)
+            ) {
               skipTask(task);
               continue;
             }
             this.SimpleTest.info("Entering test " + task.name);
             try {
-              yield task();
+              let result = await task();
+              if (isGenerator(result)) {
+                this.SimpleTest.ok(false, "Task returned a generator");
+              }
             } catch (ex) {
               if (currentTest.timedOut) {
-                currentTest.addResult(new testResult({
-                  name: "Uncaught exception received from previously timed out test",
-                  pass: false,
-                  ex,
-                  stack: (typeof ex == "object" && "stack" in ex) ? ex.stack : null,
-                  allowFailure: currentTest.allowFailure,
-                }));
+                currentTest.addResult(
+                  new testResult({
+                    name:
+                      "Uncaught exception received from previously timed out test",
+                    pass: false,
+                    ex,
+                    stack:
+                      typeof ex == "object" && "stack" in ex ? ex.stack : null,
+                    allowFailure: currentTest.allowFailure,
+                  })
+                );
                 // We timed out, so we've already cleaned up for this test, just get outta here.
                 return;
-              } else {
-                currentTest.addResult(new testResult({
+              }
+              currentTest.addResult(
+                new testResult({
                   name: "Uncaught exception",
                   pass: this.SimpleTest.isExpectingUncaughtException(),
                   ex,
-                  stack: (typeof ex == "object" && "stack" in ex) ? ex.stack : null,
+                  stack:
+                    typeof ex == "object" && "stack" in ex ? ex.stack : null,
                   allowFailure: currentTest.allowFailure,
-                }));
-              }
+                })
+              );
             }
             PromiseTestUtils.assertNoUncaughtRejections();
             this.SimpleTest.info("Leaving test " + task.name);
           }
           this.finish();
-        }.bind(currentScope));
-      } else if (typeof this.currentTest.scope.test == "function") {
-        this.currentTest.scope.test();
+        }.call(currentScope));
+      } else if (typeof scope.test == "function") {
+        scope.test();
       } else {
-        throw "This test didn't call add_task, nor did it define a generatorTest() function, nor did it define a test() function, so we don't know how to run it.";
+        throw new Error(
+          "This test didn't call add_task, nor did it define a generatorTest() function, nor did it define a test() function, so we don't know how to run it."
+        );
       }
     } catch (ex) {
       if (!this.SimpleTest.isIgnoringAllUncaughtExceptions()) {
-        this.currentTest.addResult(new testResult({
-          name: "Exception thrown",
-          pass: this.SimpleTest.isExpectingUncaughtException(),
-          ex,
-          allowFailure: this.currentTest.allowFailure,
-        }));
+        this.currentTest.addResult(
+          new testResult({
+            name: "Exception thrown",
+            pass: this.SimpleTest.isExpectingUncaughtException(),
+            ex,
+            allowFailure: this.currentTest.allowFailure,
+          })
+        );
         this.SimpleTest.expectUncaughtException(false);
       } else {
         this.currentTest.addResult(new testMessage("Exception thrown: " + ex));
@@ -1115,62 +1418,72 @@ Tester.prototype = {
     // will trigger the next test when it is done.
     if (this.currentTest.scope.__done) {
       this.nextTest();
-    }
-    else {
+    } else {
       var self = this;
       var timeoutExpires = Date.now() + gTimeoutSeconds * 1000;
       var waitUntilAtLeast = timeoutExpires - 1000;
-      this.currentTest.scope.__waitTimer =
-        this.SimpleTest._originalSetTimeout.apply(window, [function timeoutFn() {
-        // We sometimes get woken up long before the gTimeoutSeconds
-        // have elapsed (when running in chaos mode for example). This
-        // code ensures that we don't wrongly time out in that case.
-        if (Date.now() < waitUntilAtLeast) {
-          self.currentTest.scope.__waitTimer =
-            setTimeout(timeoutFn, timeoutExpires - Date.now());
-          return;
-        }
+      this.currentTest.scope.__waitTimer = this.SimpleTest._originalSetTimeout.apply(
+        window,
+        [
+          function timeoutFn() {
+            // We sometimes get woken up long before the gTimeoutSeconds
+            // have elapsed (when running in chaos mode for example). This
+            // code ensures that we don't wrongly time out in that case.
+            if (Date.now() < waitUntilAtLeast) {
+              self.currentTest.scope.__waitTimer = setTimeout(
+                timeoutFn,
+                timeoutExpires - Date.now()
+              );
+              return;
+            }
 
-        if (--self.currentTest.scope.__timeoutFactor > 0) {
-          // We were asked to wait a bit longer.
-          self.currentTest.scope.info(
-            "Longer timeout required, waiting longer...  Remaining timeouts: " +
-            self.currentTest.scope.__timeoutFactor);
-          self.currentTest.scope.__waitTimer =
-            setTimeout(timeoutFn, gTimeoutSeconds * 1000);
-          return;
-        }
+            if (--self.currentTest.scope.__timeoutFactor > 0) {
+              // We were asked to wait a bit longer.
+              self.currentTest.scope.info(
+                "Longer timeout required, waiting longer...  Remaining timeouts: " +
+                  self.currentTest.scope.__timeoutFactor
+              );
+              self.currentTest.scope.__waitTimer = setTimeout(
+                timeoutFn,
+                gTimeoutSeconds * 1000
+              );
+              return;
+            }
 
-        // If the test is taking longer than expected, but it's not hanging,
-        // mark the fact, but let the test continue.  At the end of the test,
-        // if it didn't timeout, we will notify the problem through an error.
-        // To figure whether it's an actual hang, compare the time of the last
-        // result or message to half of the timeout time.
-        // Though, to protect against infinite loops, limit the number of times
-        // we allow the test to proceed.
-        const MAX_UNEXPECTED_TIMEOUTS = 10;
-        if (Date.now() - self.currentTest.lastOutputTime < (gTimeoutSeconds / 2) * 1000 &&
-            ++self.currentTest.unexpectedTimeouts <= MAX_UNEXPECTED_TIMEOUTS) {
-            self.currentTest.scope.__waitTimer =
-              setTimeout(timeoutFn, gTimeoutSeconds * 1000);
-          return;
-        }
+            // If the test is taking longer than expected, but it's not hanging,
+            // mark the fact, but let the test continue.  At the end of the test,
+            // if it didn't timeout, we will notify the problem through an error.
+            // To figure whether it's an actual hang, compare the time of the last
+            // result or message to half of the timeout time.
+            // Though, to protect against infinite loops, limit the number of times
+            // we allow the test to proceed.
+            const MAX_UNEXPECTED_TIMEOUTS = 10;
+            if (
+              Date.now() - self.currentTest.lastOutputTime <
+                (gTimeoutSeconds / 2) * 1000 &&
+              ++self.currentTest.unexpectedTimeouts <= MAX_UNEXPECTED_TIMEOUTS
+            ) {
+              self.currentTest.scope.__waitTimer = setTimeout(
+                timeoutFn,
+                gTimeoutSeconds * 1000
+              );
+              return;
+            }
 
-        self.currentTest.addResult(new testResult({ name: "Test timed out" }));
-        self.currentTest.timedOut = true;
-        self.currentTest.scope.__waitTimer = null;
-        self.nextTest();
-      }, gTimeoutSeconds * 1000]);
+            self.currentTest.addResult(
+              new testResult({ name: "Test timed out" })
+            );
+            self.currentTest.timedOut = true;
+            self.currentTest.scope.__waitTimer = null;
+            self.nextTest();
+          },
+          gTimeoutSeconds * 1000,
+        ]
+      );
     }
   },
 
-  QueryInterface: function(aIID) {
-    if (aIID.equals(Ci.nsIConsoleListener) ||
-        aIID.equals(Ci.nsISupports))
-      return this;
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  }
+  QueryInterface: ChromeUtils.generateQI(["nsIConsoleListener"]),
 };
 
 /**
@@ -1230,19 +1543,25 @@ function testResult({ name, pass, todo, ex, stack, allowFailure }) {
     let normalized;
     if (stack instanceof Ci.nsIStackFrame) {
       let frames = [];
-      for (let frame = stack; frame; frame = frame.caller) {
-        frames.push(frame.filename + ":" + frame.name + ":" + frame.lineNumber);
+      for (
+        let frame = stack;
+        frame;
+        frame = frame.asyncCaller || frame.caller
+      ) {
+        let msg = `${frame.filename}:${frame.name}:${frame.lineNumber}`;
+        frames.push(frame.asyncCause ? `${frame.asyncCause}*${msg}` : msg);
       }
       normalized = frames.join("\n");
     } else {
       normalized = "" + stack;
     }
-    this.msg += Task.Debugging.generateReadableStack(normalized, "    ");
+    this.msg += normalized;
   }
 
   if (gConfig.debugOnFailure) {
     // You've hit this line because you requested to break into the
     // debugger upon a testcase failure on your test run.
+    // eslint-disable-next-line no-debugger
     debugger;
   }
 }
@@ -1260,35 +1579,70 @@ function testScope(aTester, aTest, expected) {
   aTest.allowFailure = expected == "fail";
 
   var self = this;
-  this.ok = function test_ok(condition, name, ex, stack) {
-    aTest.addResult(new testResult({
-      name, pass: condition, ex,
-      stack: stack || Components.stack.caller,
-      allowFailure: aTest.allowFailure,
-    }));
+  this.ok = function test_ok(condition, name) {
+    if (arguments.length > 2) {
+      const ex = "Too many arguments passed to ok(condition, name)`.";
+      self.record(false, name, ex);
+    } else {
+      self.record(condition, name);
+    }
+  };
+  this.record = function test_record(condition, name, ex, stack) {
+    aTest.addResult(
+      new testResult({
+        name,
+        pass: condition,
+        ex,
+        stack: stack || Components.stack.caller,
+        allowFailure: aTest.allowFailure,
+      })
+    );
   };
   this.is = function test_is(a, b, name) {
-    self.ok(a == b, name, "Got " + a + ", expected " + b, false,
-            Components.stack.caller);
+    self.record(
+      a == b,
+      name,
+      "Got " + a + ", expected " + b,
+      false,
+      Components.stack.caller
+    );
   };
   this.isnot = function test_isnot(a, b, name) {
-    self.ok(a != b, name, "Didn't expect " + a + ", but got it", false,
-            Components.stack.caller);
+    self.record(
+      a != b,
+      name,
+      "Didn't expect " + a + ", but got it",
+      false,
+      Components.stack.caller
+    );
   };
   this.todo = function test_todo(condition, name, ex, stack) {
-    aTest.addResult(new testResult({
-      name, pass: !condition, todo: true, ex,
-      stack: stack || Components.stack.caller,
-      allowFailure: aTest.allowFailure,
-    }));
+    aTest.addResult(
+      new testResult({
+        name,
+        pass: !condition,
+        todo: true,
+        ex,
+        stack: stack || Components.stack.caller,
+        allowFailure: aTest.allowFailure,
+      })
+    );
   };
   this.todo_is = function test_todo_is(a, b, name) {
-    self.todo(a == b, name, "Got " + a + ", expected " + b,
-              Components.stack.caller);
+    self.todo(
+      a == b,
+      name,
+      "Got " + a + ", expected " + b,
+      Components.stack.caller
+    );
   };
   this.todo_isnot = function test_todo_isnot(a, b, name) {
-    self.todo(a != b, name, "Didn't expect " + a + ", but got it",
-              Components.stack.caller);
+    self.todo(
+      a != b,
+      name,
+      "Didn't expect " + a + ", but got it",
+      Components.stack.caller
+    );
   };
   this.info = function test_info(name) {
     aTest.addResult(new testMessage(name));
@@ -1296,9 +1650,9 @@ function testScope(aTester, aTest, expected) {
 
   this.executeSoon = function test_executeSoon(func) {
     Services.tm.dispatchToMainThread({
-      run: function() {
+      run() {
         func();
-      }
+      },
     });
   };
 
@@ -1306,15 +1660,27 @@ function testScope(aTester, aTest, expected) {
     self.__done = false;
   };
 
-  this.waitForFocus = function test_waitForFocus(callback, targetWindow, expectBlankPage) {
+  this.waitForFocus = function test_waitForFocus(
+    callback,
+    targetWindow,
+    expectBlankPage
+  ) {
     self.SimpleTest.waitForFocus(callback, targetWindow, expectBlankPage);
   };
 
-  this.waitForClipboard = function test_waitForClipboard(expected, setup, success, failure, flavor) {
+  this.waitForClipboard = function test_waitForClipboard(
+    expected,
+    setup,
+    success,
+    failure,
+    flavor
+  ) {
     self.SimpleTest.waitForClipboard(expected, setup, success, failure, flavor);
   };
 
-  this.registerCleanupFunction = function test_registerCleanupFunction(aFunction) {
+  this.registerCleanupFunction = function test_registerCleanupFunction(
+    aFunction
+  ) {
     self.__cleanupFunctions.push(aFunction);
   };
 
@@ -1326,29 +1692,39 @@ function testScope(aTester, aTest, expected) {
     self.SimpleTest.copyToProfile(filename);
   };
 
-  this.expectUncaughtException = function test_expectUncaughtException(aExpecting) {
+  this.expectUncaughtException = function test_expectUncaughtException(
+    aExpecting
+  ) {
     self.SimpleTest.expectUncaughtException(aExpecting);
   };
 
-  this.ignoreAllUncaughtExceptions = function test_ignoreAllUncaughtExceptions(aIgnoring) {
+  this.ignoreAllUncaughtExceptions = function test_ignoreAllUncaughtExceptions(
+    aIgnoring
+  ) {
     self.SimpleTest.ignoreAllUncaughtExceptions(aIgnoring);
   };
 
   this.expectAssertions = function test_expectAssertions(aMin, aMax) {
     let min = aMin;
     let max = aMax;
-    if (typeof(max) == "undefined") {
+    if (typeof max == "undefined") {
       max = min;
     }
-    if (typeof(min) != "number" || typeof(max) != "number" ||
-        min < 0 || max < min) {
-      throw "bad parameter to expectAssertions";
+    if (
+      typeof min != "number" ||
+      typeof max != "number" ||
+      min < 0 ||
+      max < min
+    ) {
+      throw new Error("bad parameter to expectAssertions");
     }
     self.__expectedMinAsserts = min;
     self.__expectedMaxAsserts = max;
   };
 
-  this.setExpectedFailuresForSelfTest = function test_setExpectedFailuresForSelfTest(expectedAllowedFailureCount) {
+  this.setExpectedFailuresForSelfTest = function test_setExpectedFailuresForSelfTest(
+    expectedAllowedFailureCount
+  ) {
     aTest.allowFailure = true;
     aTest.expectedAllowedFailureCount = expectedAllowedFailureCount;
   };
@@ -1370,14 +1746,27 @@ function testScope(aTester, aTest, expected) {
     self.__tester.structuredLogger.deactivateBuffering();
     self.registerCleanupFunction(function() {
       self.__tester.structuredLogger.activateBuffering();
-    })
+    });
   };
+
+  // If we're running a test that requires unsafe CPOWs, create a
+  // separate sandbox scope, with CPOWS whitelisted, for that test, and
+  // mirror all of our properties onto it. Test files will be loaded
+  // into this sandbox.
+  //
+  // Otherwise, load test files directly into the testScope instance.
+  if (aTest.usesUnsafeCPOWs) {
+    let sandbox = this._createSandbox();
+    Cu.permitCPOWsInScope(sandbox);
+    return sandbox;
+  }
+  return this;
 }
 
 function decorateTaskFn(fn) {
   fn = fn.bind(this);
-  fn.skip = () => fn.__skipMe = true;
-  fn.only = () => this.__runOnlyThisTask = fn;
+  fn.skip = () => (fn.__skipMe = true);
+  fn.only = () => (this.__runOnlyThisTask = fn);
   return fn;
 }
 
@@ -1393,39 +1782,63 @@ testScope.prototype = {
 
   EventUtils: {},
   SimpleTest: {},
-  Task: null,
   ContentTask: null,
   BrowserTestUtils: null,
   TestUtils: null,
   ExtensionTestUtils: null,
   Assert: null,
 
+  _createSandbox() {
+    // Force this sandbox to be in its own compartment because we call
+    // Cu.permitCPOWsInScope on it and we can't call that on objects in the
+    // shared system compartment.
+    let sandbox = Cu.Sandbox(window, {
+      freshCompartment: true,
+      sandboxPrototype: window,
+    });
+
+    for (let prop in this) {
+      if (typeof this[prop] == "function") {
+        sandbox[prop] = this[prop].bind(this);
+      } else {
+        Object.defineProperty(sandbox, prop, {
+          configurable: true,
+          enumerable: true,
+          get: () => {
+            return this[prop];
+          },
+          set: value => {
+            this[prop] = value;
+          },
+        });
+      }
+    }
+
+    return sandbox;
+  },
+
   /**
-   * Add a test function which is a Task function.
+   * Add a function which returns a promise (usually an async function)
+   * as a test task.
    *
-   * Task functions are functions fed into Task.jsm's Task.spawn(). They are
-   * generators that emit promises.
-   *
-   * If an exception is thrown, an assertion fails, or if a rejected
-   * promise is yielded, the test function aborts immediately and the test is
-   * reported as a failure. Execution continues with the next test function.
-   *
-   * To trigger premature (but successful) termination of the function, simply
-   * return or throw a Task.Result instance.
+   * The task ends when the promise returned by the function resolves or
+   * rejects. If the test function throws, or the promise it returns
+   * rejects, the test is reported as a failure. Execution continues
+   * with the next test function.
    *
    * Example usage:
    *
-   * add_task(function test() {
+   * add_task(async function test() {
    *   let result = yield Promise.resolve(true);
    *
    *   ok(result);
    *
-   *   let secondary = yield someFunctionThatReturnsAPromise(result);
+   *   let secondary = await someFunctionThatReturnsAPromise(result);
    *   is(secondary, "expected value");
    * });
    *
-   * add_task(function test_early_return() {
-   *   let result = yield somethingThatReturnsAPromise();
+   * add_task(async function test_early_return() {
+   *   let result = await somethingThatReturnsAPromise();
    *
    *   if (!result) {
    *     // Test is ended immediately, with success.
@@ -1435,7 +1848,7 @@ testScope.prototype = {
    *   is(result, "foo");
    * });
    */
-  add_task: function(aFunction) {
+  add_task(aFunction) {
     if (!this.__tasks) {
       this.waitForExplicitFinish();
       this.__tasks = [];
@@ -1446,7 +1859,8 @@ testScope.prototype = {
   },
 
   destroy: function test_destroy() {
-    for (let prop in this)
+    for (let prop in this) {
       delete this[prop];
-  }
+    }
+  },
 };

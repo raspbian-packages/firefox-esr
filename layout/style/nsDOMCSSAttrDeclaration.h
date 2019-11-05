@@ -13,7 +13,12 @@
 #include "mozilla/dom/DocGroup.h"
 #include "nsDOMCSSDeclaration.h"
 
+struct RawServoUnlockedDeclarationBlock;
+
 namespace mozilla {
+
+class SMILValue;
+
 namespace dom {
 class DomGroup;
 class Element;
@@ -23,34 +28,49 @@ class Element;
 class nsDOMCSSAttributeDeclaration final : public nsDOMCSSDeclaration {
  public:
   typedef mozilla::dom::Element Element;
+  typedef mozilla::SMILValue SMILValue;
   nsDOMCSSAttributeDeclaration(Element* aContent, bool aIsSMILOverride);
 
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SKIPPABLE_SCRIPT_HOLDER_CLASS_AMBIGUOUS(
       nsDOMCSSAttributeDeclaration, nsICSSDeclaration)
 
-  // If GetCSSDeclaration returns non-null, then the decl it returns
-  // is owned by our current style rule.
-  virtual mozilla::DeclarationBlock* GetCSSDeclaration(
-      Operation aOperation) override;
-  virtual void GetCSSParsingEnvironment(
-      CSSParsingEnvironment& aCSSParseEnv,
-      nsIPrincipal* aSubjectPrincipal) override;
-  nsDOMCSSDeclaration::ServoCSSParsingEnvironment GetServoCSSParsingEnvironment(
-      nsIPrincipal* aSubjectPrincipal) const final;
-  mozilla::css::Rule* GetParentRule() override;
+  mozilla::DeclarationBlock* GetOrCreateCSSDeclaration(
+      Operation aOperation, mozilla::DeclarationBlock** aCreated) final;
 
-  virtual nsINode* GetParentObject() override;
+  nsDOMCSSDeclaration::ParsingEnvironment GetParsingEnvironment(
+      nsIPrincipal* aSubjectPrincipal) const final;
+
+  mozilla::css::Rule* GetParentRule() override { return nullptr; }
+
+  nsINode* GetParentObject() override { return mElement; }
+
+  nsresult SetSMILValue(const nsCSSPropertyID aPropID, const SMILValue&);
 
   nsresult SetPropertyValue(const nsCSSPropertyID aPropID,
                             const nsAString& aValue,
                             nsIPrincipal* aSubjectPrincipal) override;
 
+  static void MutationClosureFunction(void* aData);
+
+  void GetPropertyChangeClosure(
+      mozilla::DeclarationBlockMutationClosure* aClosure,
+      mozilla::MutationClosureData* aClosureData) final {
+    if (!mIsSMILOverride) {
+      aClosure->function = MutationClosureFunction;
+      aClosure->data = aClosureData;
+      aClosureData->mClosure = MutationClosureFunction;
+      aClosureData->mElement = mElement;
+    }
+  }
+
  protected:
   ~nsDOMCSSAttributeDeclaration();
 
-  virtual nsresult SetCSSDeclaration(mozilla::DeclarationBlock* aDecl) override;
-  virtual nsIDocument* DocToUpdate() override;
+  nsresult SetCSSDeclaration(
+      mozilla::DeclarationBlock* aDecl,
+      mozilla::MutationClosureData* aClosureData) override;
+  mozilla::dom::Document* DocToUpdate() override;
 
   RefPtr<Element> mElement;
 

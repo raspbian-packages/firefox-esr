@@ -4,8 +4,13 @@
 
 "use strict";
 
-const { createFactory, createElement } = require("devtools/client/shared/vendor/react");
-const VisibilityHandler = createFactory(require("devtools/client/shared/components/VisibilityHandler"));
+const {
+  createFactory,
+  createElement,
+} = require("devtools/client/shared/vendor/react");
+const VisibilityHandler = createFactory(
+  require("devtools/client/shared/components/VisibilityHandler")
+);
 const { connect } = require("devtools/client/shared/vendor/react-redux");
 
 /**
@@ -15,7 +20,7 @@ const { connect } = require("devtools/client/shared/vendor/react-redux");
  * rendering if the owner panel runs in the background.
  */
 function visibilityHandlerConnect() {
-  let args = [].slice.call(arguments);
+  const args = [].slice.call(arguments);
   return component => {
     return connect(...args)(props => {
       return VisibilityHandler(null, createElement(component, props));
@@ -24,5 +29,5 @@ function visibilityHandlerConnect() {
 }
 
 module.exports = {
-  connect: visibilityHandlerConnect
+  connect: visibilityHandlerConnect,
 };

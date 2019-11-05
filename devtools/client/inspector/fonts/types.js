@@ -9,7 +9,7 @@ const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 /**
  * A font variation axis.
  */
-const fontVariationAxis = exports.fontVariationAxis = {
+const fontVariationAxis = (exports.fontVariationAxis = {
   // The OpenType tag name of the variation axis
   tag: PropTypes.string,
 
@@ -24,31 +24,34 @@ const fontVariationAxis = exports.fontVariationAxis = {
 
   // The default value of the variation axis
   defaultValue: PropTypes.number,
-};
+});
 
-const fontVariationInstanceValue = exports.fontVariationInstanceValue = {
+const fontVariationInstanceValue = (exports.fontVariationInstanceValue = {
   // The axis name of the variation axis
   axis: PropTypes.string,
 
   // The value of the variation axis
   value: PropTypes.number,
-};
+});
 
 /**
  * A font variation instance.
  */
-const fontVariationInstance = exports.fontVariationInstance = {
+const fontVariationInstance = (exports.fontVariationInstance = {
   // The variation instance name of the font
-  axis: PropTypes.string,
+  name: PropTypes.string,
 
   // The font variation values for the variation instance of the font
   values: PropTypes.arrayOf(PropTypes.shape(fontVariationInstanceValue)),
-};
+});
 
 /**
  * A single font.
  */
-const font = exports.font = {
+const font = (exports.font = {
+  // Font family name
+  CSSFamilyName: PropTypes.string,
+
   // The format of the font
   format: PropTypes.string,
 
@@ -71,21 +74,36 @@ const font = exports.font = {
   variationAxes: PropTypes.arrayOf(PropTypes.shape(fontVariationAxis)),
 
   // The variation instances of the font
-  variationInstances: PropTypes.arrayOf(PropTypes.shape(fontVariationInstance))
-};
+  variationInstances: PropTypes.arrayOf(PropTypes.shape(fontVariationInstance)),
+});
 
 exports.fontOptions = {
   // The current preview text
   previewText: PropTypes.string,
 };
 
+exports.fontEditor = {
+  // Variable font axes and their values
+  axes: PropTypes.object,
+
+  // Axes values changed at runtime structured like the "values" property
+  // of a fontVariationInstance
+  customInstanceValues: PropTypes.array,
+
+  // Fonts used on the selected element
+  fonts: PropTypes.arrayOf(PropTypes.shape(font)),
+
+  // Font variation instance currently selected
+  instance: PropTypes.shape(fontVariationInstance),
+
+  // CSS font properties defined on the element
+  properties: PropTypes.object,
+};
+
 /**
  * Font data.
  */
 exports.fontData = {
-  // The fonts used in the current element.
-  fonts: PropTypes.arrayOf(PropTypes.shape(font)),
-
-  // Fonts used elsewhere.
-  otherFonts: PropTypes.arrayOf(PropTypes.shape(font)),
+  // All fonts on the current page.
+  allFonts: PropTypes.arrayOf(PropTypes.shape(font)),
 };

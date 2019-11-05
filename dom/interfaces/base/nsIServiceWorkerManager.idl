@@ -10,7 +10,6 @@ interface mozIDOMWindow;
 interface nsPIDOMWindowInner;
 interface mozIDOMWindowProxy;
 interface nsIArray;
-interface nsIDocument;
 interface nsIInterceptedChannel;
 interface nsIPrincipal;
 interface nsIRunnable;
@@ -50,8 +49,8 @@ interface nsIServiceWorkerInfo : nsISupports
   const unsigned short STATE_REDUNDANT = 5;
   const unsigned short STATE_UNKNOWN = 6;
 
-  readonly attribute DOMString scriptSpec;
-  readonly attribute DOMString cacheName;
+  readonly attribute AString scriptSpec;
+  readonly attribute AString cacheName;
 
   readonly attribute unsigned short state;
 
@@ -84,8 +83,8 @@ interface nsIServiceWorkerRegistrationInfo : nsISupports
 
   readonly attribute nsIPrincipal principal;
 
-  readonly attribute DOMString scope;
-  readonly attribute DOMString scriptSpec;
+  readonly attribute AString scope;
+  readonly attribute AString scriptSpec;
   readonly attribute unsigned short updateViaCache;
 
   readonly attribute PRTime lastUpdateTime;
@@ -118,70 +117,34 @@ interface nsIServiceWorkerManagerListener : nsISupports
 interface nsIServiceWorkerManager : nsISupports
 {
   /**
-   * Registers a ServiceWorker with script loaded from `aScriptURI` to act as
-   * the ServiceWorker for aScope.  Requires a valid entry settings object on
-   * the stack. This means you must call this from content code 'within'
-   * a window.
-   *
-   * Returns a Promise.
-   */
-  nsISupports register(in mozIDOMWindow aWindow,
-                       in nsIURI aScope,
-                       in nsIURI aScriptURI,
-                       in uint16_t aUpdateViaCache);
-
-  /**
    * Unregister an existing ServiceWorker registration for `aScope`.
    * It keeps aCallback alive until the operation is concluded.
    */
   void unregister(in nsIPrincipal aPrincipal,
                   in nsIServiceWorkerUnregisterCallback aCallback,
-                  in DOMString aScope);
-
-  // Returns a Promise
-  nsISupports getRegistrations(in mozIDOMWindow aWindow);
-
-  // Returns a Promise
-  nsISupports getRegistration(in mozIDOMWindow aWindow, in DOMString aScope);
-
-  // Returns a Promise
-  nsISupports getReadyPromise(in mozIDOMWindow aWindow);
-
-  // Remove ready pending Promise
-  void removeReadyPromise(in mozIDOMWindow aWindow);
+                  in AString aScope);
 
   nsIServiceWorkerRegistrationInfo getRegistrationByPrincipal(in nsIPrincipal aPrincipal,
-                                                              in DOMString aScope);
+                                                              in AString aScope);
 
   [notxpcom, nostdcall] bool StartControlling(in const_ClientInfoRef aClientInfo,
                                               in const_ServiceWorkerDescriptorRef aServiceWorker);
 
-  /*
-   * Clears ServiceWorker registrations from memory and disk for the specified
-   * host.
-   * - All ServiceWorker instances change their state to redundant.
-   * - Existing ServiceWorker instances handling fetches will keep running.
-   * - All documents will immediately stop being controlled.
-   * - Unregister jobs will be queued for all registrations.
-   *   This eventually results in the registration being deleted from disk too.
-   */
-  void removeAndPropagate(in AUTF8String aHost);
-
   // Testing
-  DOMString getScopeForUrl(in nsIPrincipal aPrincipal, in DOMString aPath);
+  AString getScopeForUrl(in nsIPrincipal aPrincipal, in AString aPath);
 
   // It returns an array of nsIServiceWorkerRegistrationInfos.
   nsIArray getAllRegistrations();
 
   // It calls softUpdate() for each child process.
   [implicit_jscontext] void propagateSoftUpdate(in jsval aOriginAttributes,
-                                                in DOMString aScope);
+                                                in AString aScope);
 
   // It calls unregister() in each child process. The callback is used to
   // inform when unregister() is completed on the current process.
   void propagateUnregister(in nsIPrincipal aPrincipal,
                            in nsIServiceWorkerUnregisterCallback aCallback,
-                           in DOMString aScope);
+                           in AString aScope);
 
   void sendNotificationClickEvent(in ACString aOriginSuffix,
                                   in ACString scope,
@@ -209,14 +172,15 @@ interface nsIServiceWorkerManager : nsISupports
 
   [optional_argc] void sendPushEvent(in ACString aOriginAttributes,
                                      in ACString aScope,
-                                     [optional] in uint32_t aDataLength,
-                                     [optional, array, size_is(aDataLength)] in uint8_t aDataBytes);
+                                     [optional] in Array<uint8_t> aDataBytes);
   void sendPushSubscriptionChangeEvent(in ACString aOriginAttributes,
                                        in ACString scope);
 
   void addListener(in nsIServiceWorkerManagerListener aListener);
 
   void removeListener(in nsIServiceWorkerManagerListener aListener);
+
+  bool isParentInterceptEnabled();
 };
 
 %{ C++

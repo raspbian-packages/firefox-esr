@@ -5,34 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/dom/DocGroup.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/HTMLSlotElement.h"
 #include "mozilla/dom/HTMLSlotElementBinding.h"
 #include "mozilla/dom/HTMLUnknownElement.h"
 #include "mozilla/dom/ShadowRoot.h"
 #include "nsGkAtoms.h"
-#include "nsDocument.h"
 
 nsGenericHTMLElement* NS_NewHTMLSlotElement(
     already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
     mozilla::dom::FromParser aFromParser) {
-  RefPtr<mozilla::dom::NodeInfo> nodeInfo(aNodeInfo);
-  if (nsDocument::IsShadowDOMEnabled(nodeInfo->GetDocument())) {
-    already_AddRefed<mozilla::dom::NodeInfo> nodeInfoArg(nodeInfo.forget());
-    return new mozilla::dom::HTMLSlotElement(nodeInfoArg);
-  }
-
-  already_AddRefed<mozilla::dom::NodeInfo> nodeInfoArg(nodeInfo.forget());
-  return new mozilla::dom::HTMLUnknownElement(nodeInfoArg);
+  RefPtr<mozilla::dom::NodeInfo> nodeInfo(std::move(aNodeInfo));
+  return new mozilla::dom::HTMLSlotElement(nodeInfo.forget());
 }
 
 namespace mozilla {
 namespace dom {
 
 HTMLSlotElement::HTMLSlotElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
-HTMLSlotElement::~HTMLSlotElement() {}
+HTMLSlotElement::~HTMLSlotElement() = default;
 
 NS_IMPL_ADDREF_INHERITED(HTMLSlotElement, nsGenericHTMLElement)
 NS_IMPL_RELEASE_INHERITED(HTMLSlotElement, nsGenericHTMLElement)
@@ -45,14 +39,12 @@ NS_INTERFACE_MAP_END_INHERITING(nsGenericHTMLElement)
 
 NS_IMPL_ELEMENT_CLONE(HTMLSlotElement)
 
-nsresult HTMLSlotElement::BindToTree(nsIDocument* aDocument,
-                                     nsIContent* aParent,
-                                     nsIContent* aBindingParent,
-                                     bool aCompileEventHandlers) {
+nsresult HTMLSlotElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                     nsIContent* aBindingParent) {
   RefPtr<ShadowRoot> oldContainingShadow = GetContainingShadow();
 
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
   ShadowRoot* containingShadow = GetContainingShadow();
@@ -115,14 +107,14 @@ static void FlattenAssignedNodes(HTMLSlotElement* aSlot,
 
   // If assignedNodes is empty, use children of slot as fallback content.
   if (assignedNodes.IsEmpty()) {
-    for (nsIContent* child = aSlot->AsContent()->GetFirstChild(); child;
+    for (nsIContent* child = aSlot->GetFirstChild(); child;
          child = child->GetNextSibling()) {
       if (!child->IsSlotable()) {
         continue;
       }
 
-      if (child->IsHTMLElement(nsGkAtoms::slot)) {
-        FlattenAssignedNodes(HTMLSlotElement::FromContent(child), aNodes);
+      if (auto* slot = HTMLSlotElement::FromNode(child)) {
+        FlattenAssignedNodes(slot, aNodes);
       } else {
         aNodes.AppendElement(child);
       }
@@ -130,11 +122,10 @@ static void FlattenAssignedNodes(HTMLSlotElement* aSlot,
     return;
   }
 
-  for (uint32_t i = 0; i < assignedNodes.Length(); i++) {
-    nsINode* assignedNode = assignedNodes[i];
-    if (assignedNode->IsHTMLElement(nsGkAtoms::slot)) {
-      FlattenAssignedNodes(
-          HTMLSlotElement::FromContent(assignedNode->AsContent()), aNodes);
+  for (const RefPtr<nsINode>& assignedNode : assignedNodes) {
+    auto* slot = HTMLSlotElement::FromNode(assignedNode);
+    if (slot && slot->GetContainingShadow()) {
+      FlattenAssignedNodes(slot, aNodes);
     } else {
       aNodes.AppendElement(assignedNode);
     }
@@ -148,6 +139,17 @@ void HTMLSlotElement::AssignedNodes(const AssignedNodesOptions& aOptions,
   }
 
   aNodes = mAssignedNodes;
+}
+
+void HTMLSlotElement::AssignedElements(const AssignedNodesOptions& aOptions,
+                                       nsTArray<RefPtr<Element>>& aElements) {
+  AutoTArray<RefPtr<nsINode>, 128> assignedNodes;
+  AssignedNodes(aOptions, assignedNodes);
+  for (const RefPtr<nsINode>& assignedNode : assignedNodes) {
+    if (assignedNode->IsElement()) {
+      aElements.AppendElement(assignedNode->AsElement());
+    }
+  }
 }
 
 const nsTArray<RefPtr<nsINode>>& HTMLSlotElement::AssignedNodes() const {
@@ -187,24 +189,35 @@ void HTMLSlotElement::ClearAssignedNodes() {
   mAssignedNodes.Clear();
 }
 
-void HTMLSlotElement::EnqueueSlotChangeEvent() const {
+void HTMLSlotElement::EnqueueSlotChangeEvent() {
+  if (mInSignalSlotList) {
+    return;
+  }
+
+  // FIXME(bug 1459704): Need to figure out how to deal with microtasks posted
+  // during shutdown.
+  if (gXPCOMThreadsShutDown) {
+    return;
+  }
+
   DocGroup* docGroup = OwnerDoc()->GetDocGroup();
   if (!docGroup) {
     return;
   }
 
-  docGroup->SignalSlotChange(this);
+  mInSignalSlotList = true;
+  docGroup->SignalSlotChange(*this);
 }
 
 void HTMLSlotElement::FireSlotChangeEvent() {
   nsContentUtils::DispatchTrustedEvent(
       OwnerDoc(), static_cast<nsIContent*>(this),
-      NS_LITERAL_STRING("slotchange"), true, false);
+      NS_LITERAL_STRING("slotchange"), CanBubble::eYes, Cancelable::eNo);
 }
 
 JSObject* HTMLSlotElement::WrapNode(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return HTMLSlotElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLSlotElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

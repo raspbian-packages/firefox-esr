@@ -9,7 +9,8 @@
 
 #include "mozilla/dom/SVGIRect.h"
 #include "mozilla/gfx/Rect.h"
-#include "nsSVGElement.h"
+#include "nsCOMPtr.h"
+#include "SVGElement.h"
 
 ////////////////////////////////////////////////////////////////////////
 // SVGRect class
@@ -45,7 +46,7 @@ class SVGRect final : public SVGIRect {
   virtual nsIContent* GetParentObject() const override { return mParent; }
 
  protected:
-  ~SVGRect() {}
+  ~SVGRect() = default;
 
   nsCOMPtr<nsIContent> mParent;
   float mX, mY, mWidth, mHeight;

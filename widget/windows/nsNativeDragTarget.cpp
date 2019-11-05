@@ -9,7 +9,7 @@
 #include "nsNativeDragTarget.h"
 #include "nsDragService.h"
 #include "nsIServiceManager.h"
-#include "nsIDOMNode.h"
+#include "nsINode.h"
 #include "nsCOMPtr.h"
 
 #include "nsIWidget.h"
@@ -164,7 +164,7 @@ void nsNativeDragTarget::DispatchDragDropEvent(EventMessage aEventMessage,
   ModifierKeyState modifierKeyState;
   modifierKeyState.InitInputEvent(event);
 
-  event.inputSource =
+  event.mInputSource =
       static_cast<nsBaseDragService*>(mDragService)->GetInputSource();
 
   mWidget->DispatchEvent(&event, status);
@@ -327,7 +327,8 @@ nsNativeDragTarget::DragOver(DWORD grfKeyState, POINTL ptl, LPDWORD pdwEffect) {
   }
 
   ModifierKeyState modifierKeyState;
-  mDragService->FireDragEventAtSource(eDrag, modifierKeyState.GetModifiers());
+  nsCOMPtr<nsIDragService> dragService = mDragService;
+  dragService->FireDragEventAtSource(eDrag, modifierKeyState.GetModifiers());
   // Now process the native drag state and then dispatch the event
   ProcessDrag(eDragOver, grfKeyState, ptl, pdwEffect);
 
@@ -354,7 +355,7 @@ nsNativeDragTarget::DragLeave() {
   mDragService->GetCurrentSession(getter_AddRefs(currentDragSession));
 
   if (currentDragSession) {
-    nsCOMPtr<nsIDOMNode> sourceNode;
+    nsCOMPtr<nsINode> sourceNode;
     currentDragSession->GetSourceNode(getter_AddRefs(sourceNode));
 
     if (!sourceNode) {
@@ -363,7 +364,8 @@ nsNativeDragTarget::DragLeave() {
       // we're done with it for now (until the user drags back into
       // mozilla).
       ModifierKeyState modifierKeyState;
-      mDragService->EndDragSession(false, modifierKeyState.GetModifiers());
+      nsCOMPtr<nsIDragService> dragService = mDragService;
+      dragService->EndDragSession(false, modifierKeyState.GetModifiers());
     }
   }
 
@@ -385,7 +387,8 @@ void nsNativeDragTarget::DragCancel() {
     }
     if (mDragService) {
       ModifierKeyState modifierKeyState;
-      mDragService->EndDragSession(false, modifierKeyState.GetModifiers());
+      nsCOMPtr<nsIDragService> dragService = mDragService;
+      dragService->EndDragSession(false, modifierKeyState.GetModifiers());
     }
     this->Release();  // matching the AddRef in DragEnter
     mTookOwnRef = false;

@@ -42,7 +42,7 @@ struct DDMediaLogs {
               aMessage.mObject.Set(aSubjectTypeName, aSubjectPointer);
               aMessage.mCategory = aCategory;
               aMessage.mLabel = aLabel;
-              aMessage.mValue = Move(aValue);
+              aMessage.mValue = std::move(aValue);
             })) {
       // Filled a buffer-full of messages, process it in another thread.
       DispatchProcessLog();

@@ -16,8 +16,7 @@ const prefDomain = "devtools.netmonitor.har.";
 
 // Helper tracer. Should be generic sharable by other modules (bug 1171927)
 const trace = {
-  log: function (...args) {
-  }
+  log: function(...args) {},
 };
 
 /**
@@ -41,16 +40,14 @@ function HarAutomation(toolbox) {
 HarAutomation.prototype = {
   // Initialization
 
-  initialize: function (toolbox) {
+  initialize: function(toolbox) {
     this.toolbox = toolbox;
 
-    let target = toolbox.target;
-    target.makeRemote().then(() => {
-      this.startMonitoring(target.client, target.form);
-    });
+    const target = toolbox.target;
+    this.startMonitoring(target.client);
   },
 
-  destroy: function () {
+  destroy: function() {
     if (this.collector) {
       this.collector.stop();
     }
@@ -62,28 +59,23 @@ HarAutomation.prototype = {
 
   // Automation
 
-  startMonitoring: function (client, tabGrip, callback) {
+  startMonitoring: function(client, callback) {
     if (!client) {
       return;
     }
 
-    if (!tabGrip) {
-      return;
-    }
-
     this.debuggerClient = client;
-    this.tabClient = this.toolbox.target.activeTab;
     this.webConsoleClient = this.toolbox.target.activeConsole;
 
     this.tabWatcher = new TabWatcher(this.toolbox, this);
     this.tabWatcher.connect();
   },
 
-  pageLoadBegin: function (response) {
+  pageLoadBegin: function(response) {
     this.resetCollector();
   },
 
-  resetCollector: function () {
+  resetCollector: function() {
     if (this.collector) {
       this.collector.stop();
     }
@@ -92,7 +84,7 @@ HarAutomation.prototype = {
     // data from events sent from the backend.
     this.collector = new HarCollector({
       webConsoleClient: this.webConsoleClient,
-      debuggerClient: this.debuggerClient
+      debuggerClient: this.debuggerClient,
     });
 
     this.collector.start();
@@ -108,7 +100,7 @@ HarAutomation.prototype = {
    * The additional traffic can be exported by executing
    * triggerExport on this object.
    */
-  pageLoadDone: function (response) {
+  pageLoadDone: function(response) {
     trace.log("HarAutomation.pageLoadDone; ", response);
 
     if (this.collector) {
@@ -118,9 +110,10 @@ HarAutomation.prototype = {
     }
   },
 
-  autoExport: function () {
-    let autoExport = Services.prefs.getBoolPref(prefDomain +
-      "enableAutoExportToFile");
+  autoExport: function() {
+    const autoExport = Services.prefs.getBoolPref(
+      prefDomain + "enableAutoExportToFile"
+    );
 
     if (!autoExport) {
       return Promise.resolve();
@@ -128,7 +121,7 @@ HarAutomation.prototype = {
 
     // Auto export to file is enabled, so save collected data
     // into a file and use all the default options.
-    let data = {
+    const data = {
       fileName: Services.prefs.getCharPref(prefDomain + "defaultFileName"),
     };
 
@@ -140,10 +133,11 @@ HarAutomation.prototype = {
   /**
    * Export all what is currently collected.
    */
-  triggerExport: function (data) {
+  triggerExport: function(data) {
     if (!data.fileName) {
-      data.fileName = Services.prefs.getCharPref(prefDomain +
-        "defaultFileName");
+      data.fileName = Services.prefs.getCharPref(
+        prefDomain + "defaultFileName"
+      );
     }
 
     return this.executeExport(data);
@@ -152,7 +146,7 @@ HarAutomation.prototype = {
   /**
    * Clear currently collected data.
    */
-  clear: function () {
+  clear: function() {
     this.resetCollector();
   },
 
@@ -162,12 +156,11 @@ HarAutomation.prototype = {
    * Execute HAR export. This method fetches all data from the
    * Network panel (asynchronously) and saves it into a file.
    */
-  executeExport: function (data) {
-    let items = this.collector.getItems();
-    let form = this.toolbox.target.form;
-    let title = form.title || form.url;
+  executeExport: function(data) {
+    const items = this.collector.getItems();
+    const { title } = this.toolbox.target;
 
-    let options = {
+    const options = {
       requestData: null,
       getTimingMarker: null,
       getString: this.getString.bind(this),
@@ -189,7 +182,7 @@ HarAutomation.prototype = {
     return HarExporter.fetchHarData(options).then(jsonString => {
       // Save the HAR file if the file name is provided.
       if (jsonString && options.defaultFileName) {
-        let file = getDefaultTargetFile(options);
+        const file = getDefaultTargetFile(options);
         if (file) {
           HarUtils.saveToFile(file, jsonString, options.compress);
         }
@@ -202,7 +195,7 @@ HarAutomation.prototype = {
   /**
    * Fetches the full text of a string.
    */
-  getString: function (stringGrip) {
+  getString: function(stringGrip) {
     return this.webConsoleClient.getString(stringGrip);
   },
 };
@@ -219,12 +212,12 @@ function TabWatcher(toolbox, listener) {
 TabWatcher.prototype = {
   // Connection
 
-  connect: function () {
+  connect: function() {
     this.target.on("navigate", this.onTabNavigated);
     this.target.on("will-navigate", this.onTabNavigated);
   },
 
-  disconnect: function () {
+  disconnect: function() {
     if (!this.target) {
       return;
     }
@@ -243,7 +236,7 @@ TabWatcher.prototype = {
    * @param object aPacket
    *        Packet received from the server.
    */
-  onTabNavigated: function (type, packet) {
+  onTabNavigated: function(type, packet) {
     switch (type) {
       case "will-navigate": {
         this.listener.pageLoadBegin(packet);
@@ -263,11 +256,15 @@ TabWatcher.prototype = {
  * Returns target file for exported HAR data.
  */
 function getDefaultTargetFile(options) {
-  let path = options.defaultLogDir ||
+  const path =
+    options.defaultLogDir ||
     Services.prefs.getCharPref("devtools.netmonitor.har.defaultLogDir");
-  let folder = HarUtils.getLocalDirectory(path);
-  let fileName = HarUtils.getHarFileName(options.defaultFileName,
-    options.jsonp, options.compress);
+  const folder = HarUtils.getLocalDirectory(path);
+  const fileName = HarUtils.getHarFileName(
+    options.defaultFileName,
+    options.jsonp,
+    options.compress
+  );
 
   folder.append(fileName);
   folder.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));

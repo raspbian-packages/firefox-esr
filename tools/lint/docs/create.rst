@@ -26,8 +26,7 @@ no-eval.yml
 
     EvalLinter:
         description: Ensures the string eval doesn't show up.
-        include:
-            - "**/*.js"
+        extensions: ['js']
         type: string
         payload: eval
 
@@ -54,7 +53,7 @@ external.  External linters call an arbitrary python function which is
 responsible for not only running the linter, but ensuring the results
 are structured properly. For example, an external type could shell out
 to a 3rd party linter, collect the output and format it into a list of
-:class:`ResultContainer` objects. The signature for this python
+:class:`Issue` objects. The signature for this python
 function is ``lint(files, config, **kwargs)``, where ``files`` is a list of
 files to lint and ``config`` is the linter definition defined in the ``.yml``
 file.
@@ -75,10 +74,11 @@ Each ``.yml`` file must have at least one linter defined in it. Here are the sup
 * description - A brief description of the linter's purpose (required)
 * type - One of 'string', 'regex' or 'external' (required)
 * payload - The actual linting logic, depends on the type (required)
-* include - A list of glob patterns that must be matched (optional)
-* exclude - A list of glob patterns that must not be matched (optional)
+* include - A list of file paths that will be considered (optional)
+* exclude - A list of file paths or glob patterns that must not be matched (optional)
 * extensions - A list of file extensions to be considered (optional)
 * setup - A function that sets up external dependencies (optional)
+* support-files - A list of glob patterns matching configuration files (optional)
 
 In addition to the above, some ``.yml`` files correspond to a single lint rule. For these, the
 following additional keys may be specified:
@@ -128,7 +128,7 @@ let's call the file ``flake8_lint.py``:
 
         # Flake8 allows passing in a custom format string. We use
         # this to help mold the default flake8 format into what
-        # mozlint's ResultContainer object expects.
+        # mozlint's Issue object expects.
         cmdargs = [
             binary,
             '--format',
@@ -152,7 +152,7 @@ let's call the file ``flake8_lint.py``:
                 res['level'] = 'warning'
 
             # result.from_linter is a convenience method that
-            # creates a ResultContainer using a LINTER definition
+            # creates a Issue using a LINTER definition
             # to populate some defaults.
             results.append(result.from_config(config, **res))
 
@@ -164,16 +164,23 @@ Now here is the linter definition that would call it:
 
     flake8:
         description: Python linter
-        include:
-            - '**/*.py'
+        include: ['.']
+        extensions: ['py']
         type: external
         payload: py.flake8:lint
+        support-files:
+            - '**/.flake8'
 
 Notice the payload has two parts, delimited by ':'. The first is the module
 path, which ``mozlint`` will attempt to import. The second is the object path
 within that module (e.g, the name of a function to call). It is up to consumers
 of ``mozlint`` to ensure the module is in ``sys.path``. Structured log linters
 use the same import mechanism.
+
+The ``support-files`` key is used to list configuration files or files related
+to the running of the linter itself. If using ``--outgoing`` or ``--workdir``
+and one of these files was modified, the entire tree will be linted instead of
+just the modified files.
 
 
 Bootstrapping Dependencies
@@ -192,8 +199,8 @@ path object format as an external payload. For example:
 
     flake8:
         description: Python linter
-        include:
-            - '**/*.py'
+        include: ['.']
+        extensions: ['py']
         type: external
         payload: py.flake8:lint
         setup: py.flake8:setup
@@ -206,7 +213,7 @@ linted. In the case of ``flake8``, it might look like:
     import subprocess
     from distutils.spawn import find_executable
 
-    def setup(root):
+    def setup(root, **lintargs):
         if not find_executable('flake8'):
             subprocess.call(['pip', 'install', 'flake8'])
 

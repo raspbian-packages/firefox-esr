@@ -7,8 +7,9 @@
 #ifndef MOZILLA_LAYERS_COMPOSITABLETRANSACTIONPARENT_H
 #define MOZILLA_LAYERS_COMPOSITABLETRANSACTIONPARENT_H
 
-#include <vector>                              // for vector
-#include "mozilla/Attributes.h"                // for override
+#include <vector>                // for vector
+#include "mozilla/Attributes.h"  // for override
+#include "mozilla/NotNull.h"
 #include "mozilla/layers/ISurfaceAllocator.h"  // for ISurfaceAllocator
 #include "mozilla/layers/LayersMessages.h"     // for EditReply, etc
 #include "mozilla/layers/TextureClient.h"
@@ -23,8 +24,6 @@ namespace layers {
 // through this interface.
 class CompositableParentManager : public HostIPCAllocator {
  public:
-  typedef InfallibleTArray<ReadLockInit> ReadLockArray;
-
   CompositableParentManager() {}
 
   void DestroyActor(const OpDestroy& aOp);
@@ -41,14 +40,13 @@ class CompositableParentManager : public HostIPCAllocator {
                                            bool aUseWebRender);
   RefPtr<CompositableHost> FindCompositable(const CompositableHandle& aHandle);
 
-  bool AddReadLocks(ReadLockArray&& aReadLocks);
-  TextureReadLock* FindReadLock(const ReadLockHandle& aLockHandle);
-
  protected:
   /**
    * Handle the IPDL messages that affect PCompositable actors.
    */
   bool ReceiveCompositableUpdate(const CompositableOperation& aEdit);
+  bool ReceiveCompositableUpdate(const CompositableOperationDetail& aDetail,
+                                 NotNull<CompositableHost*> aCompositable);
 
   void ReleaseCompositable(const CompositableHandle& aHandle);
 
@@ -58,19 +56,6 @@ class CompositableParentManager : public HostIPCAllocator {
    * Mapping form IDs to CompositableHosts.
    */
   std::map<uint64_t, RefPtr<CompositableHost>> mCompositables;
-  std::map<uint64_t, RefPtr<TextureReadLock>> mReadLocks;
-};
-
-struct AutoClearReadLocks {
-  explicit AutoClearReadLocks(
-      std::map<uint64_t, RefPtr<TextureReadLock>>& aReadLocks)
-      : mReadLocks(aReadLocks)
-
-  {}
-
-  ~AutoClearReadLocks() { mReadLocks.clear(); }
-
-  std::map<uint64_t, RefPtr<TextureReadLock>>& mReadLocks;
 };
 
 }  // namespace layers

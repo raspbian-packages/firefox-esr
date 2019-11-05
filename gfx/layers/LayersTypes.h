@@ -13,14 +13,16 @@
 #include "mozilla/DefineEnum.h"  // for MOZ_DEFINE_ENUM
 #include "mozilla/gfx/Point.h"   // for IntPoint
 #include "mozilla/Maybe.h"
+#include "mozilla/TimeStamp.h"  // for TimeStamp
 #include "mozilla/TypedEnumBits.h"
 #include "nsRegion.h"
+#include "nsStyleConsts.h"
 
 #include <stdio.h>            // FILE
 #include "mozilla/Logging.h"  // for PR_LOG
 
 #ifndef MOZ_LAYERS_HAVE_LOG
-#define MOZ_LAYERS_HAVE_LOG
+#  define MOZ_LAYERS_HAVE_LOG
 #endif
 #define MOZ_LAYERS_LOG(_args) \
   MOZ_LOG(LayerManager::GetLog(), LogLevel::Debug, _args)
@@ -40,10 +42,6 @@ template <typename T>
 struct ParamTraits;
 }  // namespace IPC
 
-namespace android {
-class MOZ_EXPORT GraphicBuffer;
-}  // namespace android
-
 namespace mozilla {
 namespace layers {
 
@@ -51,6 +49,101 @@ class TextureHost;
 
 #undef NONE
 #undef OPAQUE
+
+struct LayersId {
+  uint64_t mId;
+
+  bool IsValid() const { return mId != 0; }
+
+  // Allow explicit cast to a uint64_t for now
+  explicit operator uint64_t() const { return mId; }
+
+  // Implement some operators so this class can be used as a key in
+  // stdlib classes.
+  bool operator<(const LayersId& aOther) const { return mId < aOther.mId; }
+
+  bool operator==(const LayersId& aOther) const { return mId == aOther.mId; }
+
+  bool operator!=(const LayersId& aOther) const { return !(*this == aOther); }
+
+  // Helper struct that allow this class to be used as a key in
+  // std::unordered_map like so:
+  //   std::unordered_map<LayersId, ValueType, LayersId::HashFn> myMap;
+  struct HashFn {
+    std::size_t operator()(const LayersId& aKey) const {
+      return std::hash<uint64_t>{}(aKey.mId);
+    }
+  };
+};
+
+template <typename T>
+struct BaseTransactionId {
+  uint64_t mId = 0;
+
+  bool IsValid() const { return mId != 0; }
+
+  MOZ_MUST_USE BaseTransactionId<T> Next() const {
+    return BaseTransactionId<T>{mId + 1};
+  }
+
+  MOZ_MUST_USE BaseTransactionId<T> Prev() const {
+    return BaseTransactionId<T>{mId - 1};
+  }
+
+  int64_t operator-(const BaseTransactionId<T>& aOther) const {
+    return mId - aOther.mId;
+  }
+
+  // Allow explicit cast to a uint64_t for now
+  explicit operator uint64_t() const { return mId; }
+
+  bool operator<(const BaseTransactionId<T>& aOther) const {
+    return mId < aOther.mId;
+  }
+
+  bool operator<=(const BaseTransactionId<T>& aOther) const {
+    return mId <= aOther.mId;
+  }
+
+  bool operator>(const BaseTransactionId<T>& aOther) const {
+    return mId > aOther.mId;
+  }
+
+  bool operator>=(const BaseTransactionId<T>& aOther) const {
+    return mId >= aOther.mId;
+  }
+
+  bool operator==(const BaseTransactionId<T>& aOther) const {
+    return mId == aOther.mId;
+  }
+};
+
+class TransactionIdType {};
+typedef BaseTransactionId<TransactionIdType> TransactionId;
+
+struct LayersObserverEpoch {
+  uint64_t mId;
+
+  MOZ_MUST_USE LayersObserverEpoch Next() const {
+    return LayersObserverEpoch{mId + 1};
+  }
+
+  bool operator<=(const LayersObserverEpoch& aOther) const {
+    return mId <= aOther.mId;
+  }
+
+  bool operator>=(const LayersObserverEpoch& aOther) const {
+    return mId >= aOther.mId;
+  }
+
+  bool operator==(const LayersObserverEpoch& aOther) const {
+    return mId == aOther.mId;
+  }
+
+  bool operator!=(const LayersObserverEpoch& aOther) const {
+    return mId != aOther.mId;
+  }
+};
 
 enum class LayersBackend : int8_t {
   LAYERS_NONE = 0,
@@ -237,6 +330,8 @@ enum TextureDumpMode {
   DoNotCompress  // dump texture uncompressed
 };
 
+typedef uint32_t TouchBehaviorFlags;
+
 // Some specialized typedefs of Matrix4x4Typed.
 typedef gfx::Matrix4x4Typed<LayerPixel, CSSTransformedLayerPixel>
     CSSTransformMatrix;
@@ -259,14 +354,14 @@ typedef gfx::Matrix4x4Typed<CSSTransformedLayerPixel, ParentLayerPixel>
 typedef Array<gfx::Color, 4> BorderColors;
 typedef Array<LayerSize, 4> BorderCorners;
 typedef Array<LayerCoord, 4> BorderWidths;
-typedef Array<uint8_t, 4> BorderStyles;
+typedef Array<StyleBorderStyle, 4> BorderStyles;
 
 typedef Maybe<LayerRect> MaybeLayerRect;
 
 // This is used to communicate Layers across IPC channels. The Handle is valid
 // for layers in the same PLayerTransaction. Handles are created by
 // ClientLayerManager, and are cached in LayerTransactionParent on first use.
-class LayerHandle {
+class LayerHandle final {
   friend struct IPC::ParamTraits<mozilla::layers::LayerHandle>;
 
  public:
@@ -288,7 +383,7 @@ class LayerHandle {
 // valid for layers in the same PLayerTransaction or PImageBridge. Handles are
 // created by ClientLayerManager or ImageBridgeChild, and are cached in the
 // parent side on first use.
-class CompositableHandle {
+class CompositableHandle final {
   friend struct IPC::ParamTraits<mozilla::layers::CompositableHandle>;
 
  public:
@@ -307,30 +402,29 @@ class CompositableHandle {
   uint64_t mHandle;
 };
 
-class ReadLockHandle {
-  friend struct IPC::ParamTraits<mozilla::layers::ReadLockHandle>;
-
- public:
-  ReadLockHandle() : mHandle(0) {}
-  ReadLockHandle(const ReadLockHandle& aOther) : mHandle(aOther.mHandle) {}
-  explicit ReadLockHandle(uint64_t aHandle) : mHandle(aHandle) {}
-  bool IsValid() const { return mHandle != 0; }
-  explicit operator bool() const { return IsValid(); }
-  bool operator==(const ReadLockHandle& aOther) const {
-    return mHandle == aOther.mHandle;
-  }
-  uint64_t Value() const { return mHandle; }
-
- private:
-  uint64_t mHandle;
-};
-
 // clang-format off
 MOZ_DEFINE_ENUM_CLASS_WITH_BASE(ScrollDirection, uint32_t, (
   eVertical,
   eHorizontal
 ));
+
+MOZ_DEFINE_ENUM_CLASS_WITH_BASE(CompositionPayloadType, uint8_t, (
+  eKeyPress,
+  eAPZScroll,
+  eAPZPinchZoom,
+  eContentPaint
+));
 // clang-format on
+
+struct CompositionPayload {
+  bool operator==(const CompositionPayload& aOther) const {
+    return mType == aOther.mType && mTimeStamp == aOther.mTimeStamp;
+  }
+  /* The type of payload that is in this composition */
+  CompositionPayloadType mType;
+  /* When this payload was generated */
+  TimeStamp mTimeStamp;
+};
 
 }  // namespace layers
 }  // namespace mozilla

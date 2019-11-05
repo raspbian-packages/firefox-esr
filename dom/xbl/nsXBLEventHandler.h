@@ -18,6 +18,7 @@ class nsXBLPrototypeHandler;
 namespace mozilla {
 struct IgnoreModifierState;
 namespace dom {
+class Event;
 class KeyboardEvent;
 }  // namespace dom
 }  // namespace mozilla
@@ -36,7 +37,7 @@ class nsXBLEventHandler : public nsIDOMEventListener {
 
  private:
   nsXBLEventHandler();
-  virtual bool EventMatched(nsIDOMEvent* aEvent) { return true; }
+  virtual bool EventMatched(mozilla::dom::Event* aEvent) { return true; }
 };
 
 class nsXBLMouseEventHandler : public nsXBLEventHandler {
@@ -45,7 +46,7 @@ class nsXBLMouseEventHandler : public nsXBLEventHandler {
   virtual ~nsXBLMouseEventHandler();
 
  private:
-  bool EventMatched(nsIDOMEvent* aEvent) override;
+  bool EventMatched(mozilla::dom::Event* aEvent) override;
 };
 
 class nsXBLKeyEventHandler : public nsIDOMEventListener {
@@ -76,14 +77,11 @@ class nsXBLKeyEventHandler : public nsIDOMEventListener {
     mIsBoundToChrome = aIsBoundToChrome;
   }
 
-  void SetUsingContentXBLScope(bool aUsingContentXBLScope) {
-    mUsingContentXBLScope = aUsingContentXBLScope;
-  }
-
  private:
   nsXBLKeyEventHandler();
   virtual ~nsXBLKeyEventHandler();
 
+  MOZ_CAN_RUN_SCRIPT
   bool ExecuteMatchedHandlers(mozilla::dom::KeyboardEvent* aEvent,
                               uint32_t aCharCode,
                               const IgnoreModifierState& aIgnoreModifierState);
@@ -93,7 +91,6 @@ class nsXBLKeyEventHandler : public nsIDOMEventListener {
   uint8_t mPhase;
   uint8_t mType;
   bool mIsBoundToChrome;
-  bool mUsingContentXBLScope;
 };
 
 already_AddRefed<nsXBLEventHandler> NS_NewXBLEventHandler(

@@ -13,7 +13,6 @@
 #include "nsITransferable.h"
 
 class nsPIDOMWindowOuter;
-class nsISelection;
 class nsITransferable;
 class nsIContent;
 class nsIFile;
@@ -21,6 +20,7 @@ class nsIFile;
 namespace mozilla {
 namespace dom {
 class DataTransfer;
+class Selection;
 }  // namespace dom
 }  // namespace mozilla
 
@@ -46,17 +46,17 @@ class nsContentAreaDragDrop {
    *                    selection is being dragged.
    * aDragNode - [out] the link, image or area being dragged, or null if the
    *             drag occurred on another element.
-   * aPrincipalURISpec - [out] set to the URI of the triggering principal of
-   *                           the drag, or empty string if it's from
-   *                           browser chrome or OS
+   * aPrincipal - [out] set to the triggering principal of the drag, or null if
+   *                    it's from browser chrome or OS
    */
   static nsresult GetDragData(nsPIDOMWindowOuter* aWindow, nsIContent* aTarget,
                               nsIContent* aSelectionTargetNode,
                               bool aIsAltKeyPressed,
                               mozilla::dom::DataTransfer* aDataTransfer,
-                              bool* aCanDrag, nsISelection** aSelection,
+                              bool* aCanDrag,
+                              mozilla::dom::Selection** aSelection,
                               nsIContent** aDragNode,
-                              nsACString& aPrincipalURISpec);
+                              nsIPrincipal** aPrincipal);
 };
 
 // this is used to save images to disk lazily when the image data is asked for
@@ -69,8 +69,9 @@ class nsContentAreaDragDropDataProvider : public nsIFlavorDataProvider {
   NS_DECL_ISUPPORTS
   NS_DECL_NSIFLAVORDATAPROVIDER
 
-  nsresult SaveURIToFile(nsIURI* inSourceURI, nsIFile* inDestFile,
-                         bool isPrivate);
+  nsresult SaveURIToFile(nsIURI* inSourceURI,
+                         nsIPrincipal* inTriggeringPrincipal,
+                         nsIFile* inDestFile, bool isPrivate);
 };
 
 #endif /* nsContentAreaDragDrop_h__ */

@@ -10,13 +10,13 @@ const TEST_URL = `${URL_ROOT}doc_page_state.html`;
 const DUMMY_2_URL = "http://example.com/browser/";
 const DUMMY_3_URL = "http://example.com/browser/devtools/";
 
-add_task(async function () {
+add_task(async function() {
   // Load up a sequence of pages:
   // 0. DUMMY_1_URL
   // 1. TEST_URL
   // 2. DUMMY_2_URL
-  let tab = await addTab(DUMMY_1_URL);
-  let browser = tab.linkedBrowser;
+  const tab = await addTab(DUMMY_1_URL);
+  const browser = tab.linkedBrowser;
   await load(browser, TEST_URL);
   await load(browser, DUMMY_2_URL);
 
@@ -61,10 +61,10 @@ add_task(async function () {
   is(browser.documentURI.spec, DUMMY_1_URL, "documentURI matches page 0");
   is(browser.contentTitle, "mochitest index /", "contentTitle matches page 0");
 
-  let receivedStatusChanges = new Promise(resolve => {
+  const receivedStatusChanges = new Promise(resolve => {
     let statusChangesSeen = 0;
-    let statusChangesExpected = 2;
-    let progressListener = {
+    const statusChangesExpected = 2;
+    const progressListener = {
       onStatusChange(webProgress, request, status, message) {
         info(message);
         if (++statusChangesSeen == statusChangesExpected) {
@@ -72,7 +72,7 @@ add_task(async function () {
           ok(true, `${statusChangesExpected} status changes while loading`);
           resolve();
         }
-      }
+      },
     };
     gBrowser.addProgressListener(progressListener);
   });

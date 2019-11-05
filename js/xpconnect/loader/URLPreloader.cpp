@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -30,8 +30,6 @@
 #include "nsXULAppAPI.h"
 #include "nsZipArchive.h"
 #include "xpcpublic.h"
-
-#include "mozilla/dom/ContentChild.h"
 
 #undef DELAYED_STARTUP_TOPIC
 #define DELAYED_STARTUP_TOPIC "sessionstore-windows-restored"
@@ -163,7 +161,7 @@ Result<nsCOMPtr<nsIFile>, nsresult> URLPreloader::GetCacheFile(
 
   MOZ_TRY(cacheFile->Append(NS_LITERAL_STRING("urlCache") + suffix));
 
-  return Move(cacheFile);
+  return std::move(cacheFile);
 }
 
 static const uint8_t URL_MAGIC[] = "mozURLcachev002";
@@ -185,7 +183,7 @@ Result<nsCOMPtr<nsIFile>, nsresult> URLPreloader::FindCacheFile() {
     }
   }
 
-  return Move(cacheFile);
+  return std::move(cacheFile);
 }
 
 Result<Ok, nsresult> URLPreloader::WriteCache() {
@@ -319,9 +317,14 @@ Result<Ok, nsresult> URLPreloader::ReadCache(
 }
 
 void URLPreloader::BackgroundReadFiles() {
+  auto cleanup = MakeScopeExit([&]() {
+    NS_DispatchToMainThread(NewRunnableMethod(
+        "nsIThread::AsyncShutdown", mReaderThread, &nsIThread::AsyncShutdown));
+    mReaderThread = nullptr;
+  });
+
   Vector<nsZipCursor> cursors;
   LinkedList<URLEntry> pendingURLs;
-
   {
     MonitorAutoLock mal(mMonitor);
 
@@ -414,10 +417,6 @@ void URLPreloader::BackgroundReadFiles() {
 
   // We're done reading pending entries, so clear the list.
   pendingURLs.clear();
-
-  NS_DispatchToMainThread(NewRunnableMethod(
-      "nsIThread::Shutdown", mReaderThread, &nsIThread::Shutdown));
-  mReaderThread = nullptr;
 }
 
 void URLPreloader::BeginBackgroundRead() {
@@ -580,11 +579,11 @@ Result<FileLocation, nsresult> URLPreloader::CacheKey::ToFileLocation() {
     nsCOMPtr<nsIFile> file;
     MOZ_TRY(NS_NewLocalFile(NS_ConvertUTF8toUTF16(mPath), false,
                             getter_AddRefs(file)));
-    return Move(FileLocation(file));
+    return FileLocation(file);
   }
 
   RefPtr<nsZipArchive> zip = Archive();
-  return Move(FileLocation(zip, mPath.get()));
+  return FileLocation(zip, mPath.get());
 }
 
 Result<const nsCString, nsresult> URLPreloader::URLEntry::Read() {
@@ -607,7 +606,7 @@ URLPreloader::URLEntry::ReadLocation(FileLocation& location) {
   result.SetLength(size);
   MOZ_TRY(data.Copy(result.BeginWriting(), size));
 
-  return Move(result);
+  return std::move(result);
 }
 
 Result<const nsCString, nsresult> URLPreloader::URLEntry::ReadOrWait(

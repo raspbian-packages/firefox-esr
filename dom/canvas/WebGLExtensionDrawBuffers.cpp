@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -37,8 +37,14 @@ void WebGLExtensionDrawBuffers::DrawBuffersWEBGL(
 }
 
 bool WebGLExtensionDrawBuffers::IsSupported(const WebGLContext* webgl) {
-  gl::GLContext* gl = webgl->GL();
+  if (webgl->IsWebGL2()) return false;
 
+  gl::GLContext* gl = webgl->GL();
+  if (gl->IsGLES() && gl->Version() >= 300) {
+    // ANGLE's shader translator can't translate ESSL1 exts to ESSL3. (bug
+    // 1524804)
+    return false;
+  }
   return gl->IsSupported(gl::GLFeature::draw_buffers);
 }
 

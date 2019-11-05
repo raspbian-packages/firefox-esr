@@ -22,14 +22,14 @@ enum MediaDrmSessionType {
 
 #ifndef MDRMN_LOG
 LogModule* GetMDRMNLog();
-#define MDRMN_LOG(x, ...)                          \
-  MOZ_LOG(GetMDRMNLog(), mozilla::LogLevel::Debug, \
-          ("[MediaDrmProxySupport][%s]" x, __FUNCTION__, ##__VA_ARGS__))
+#  define MDRMN_LOG(x, ...)                          \
+    MOZ_LOG(GetMDRMNLog(), mozilla::LogLevel::Debug, \
+            ("[MediaDrmProxySupport][%s]" x, __FUNCTION__, ##__VA_ARGS__))
 #endif
 
 class MediaDrmProxySupport final {
  public:
-  MediaDrmProxySupport(const nsAString& aKeySystem);
+  explicit MediaDrmProxySupport(const nsAString& aKeySystem);
   ~MediaDrmProxySupport();
 
   /*
@@ -50,6 +50,8 @@ class MediaDrmProxySupport final {
   void Shutdown();
 
   const nsString& GetMediaDrmStubId() const { return mMediaDrmStubId; }
+
+  bool SetServerCertificate(const nsTArray<uint8_t>& aCert);
 
  private:
   const nsString mKeySystem;

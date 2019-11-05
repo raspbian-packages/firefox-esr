@@ -8,8 +8,7 @@ name result in new windows being opened.
 <head>
   <meta charset="utf-8">
   <title>Test named windows</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/SpawnTask.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <script src="head.js" type="application/javascript"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
@@ -26,11 +25,7 @@ name result in new windows being opened.
 
       let win1 = window.open("data:text/html,<p>This is window 1 for test_blank_named_window.html</p>", "_blank");
 
-      let name = SpecialPowers.wrap(win1)
-                 .QueryInterface(SpecialPowers.Ci.nsIInterfaceRequestor)
-                 .getInterface(SpecialPowers.Ci.nsIWebNavigation)
-                 .QueryInterface(SpecialPowers.Ci.nsIDocShellTreeItem)
-                 .name;
+      let name = SpecialPowers.wrap(win1).docShell.name;
 
       is(name, "", "Should have no name");
 

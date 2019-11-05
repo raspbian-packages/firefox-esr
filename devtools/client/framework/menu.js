@@ -6,7 +6,9 @@
 
 "use strict";
 
-const EventEmitter = require("devtools/shared/old-event-emitter");
+const DevToolsUtils = require("devtools/shared/DevToolsUtils");
+const EventEmitter = require("devtools/shared/event-emitter");
+const { getCurrentZoom } = require("devtools/shared/layout/utils");
 
 /**
  * A partial implementation of the Menu API provided by electron:
@@ -25,7 +27,7 @@ function Menu({ id = null } = {}) {
   Object.defineProperty(this, "items", {
     get() {
       return this.menuitems;
-    }
+    },
   });
 
   EventEmitter.decorate(this);
@@ -36,7 +38,7 @@ function Menu({ id = null } = {}) {
  *
  * @param {MenuItem} menuItem
  */
-Menu.prototype.append = function (menuItem) {
+Menu.prototype.append = function(menuItem) {
   this.menuitems.push(menuItem);
 };
 
@@ -46,8 +48,23 @@ Menu.prototype.append = function (menuItem) {
  * @param {int} pos
  * @param {MenuItem} menuItem
  */
-Menu.prototype.insert = function (pos, menuItem) {
+Menu.prototype.insert = function(pos, menuItem) {
   throw Error("Not implemented");
+};
+
+/**
+ * Show the Menu with anchor element's coordinate.
+ * For example, In the case of zoom in/out the devtool panel, we should multiply
+ * element's position to zoom value.
+ * If you know the screen coodinate of display position, you should use Menu.pop().
+ *
+ * @param {int} x
+ * @param {int} y
+ * @param {Document} doc
+ */
+Menu.prototype.popupWithZoom = function(x, y, doc) {
+  const zoom = getCurrentZoom(doc);
+  this.popup(x * zoom, y * zoom, doc);
 };
 
 /**
@@ -59,38 +76,55 @@ Menu.prototype.insert = function (pos, menuItem) {
  *
  * @param {int} screenX
  * @param {int} screenY
- * @param Toolbox toolbox (non standard)
- *        Needed so we in which window to inject XUL
+ * @param {Document} doc
+ *        The document that should own the context menu.
  */
-Menu.prototype.popup = function (screenX, screenY, toolbox) {
-  let doc = toolbox.doc;
+Menu.prototype.popup = function(screenX, screenY, doc) {
+  // The context-menu will be created in the topmost window to preserve keyboard
+  // navigation (see Bug 1543940).
+  // Keep a reference on the window owning the menu to hide the popup on unload.
+  const win = doc.defaultView;
+  doc = DevToolsUtils.getTopWindow(doc.defaultView).document;
+
   let popupset = doc.querySelector("popupset");
+  if (!popupset) {
+    popupset = doc.createXULElement("popupset");
+    doc.documentElement.appendChild(popupset);
+  }
   // See bug 1285229, on Windows, opening the same popup multiple times in a
   // row ends up duplicating the popup. The newly inserted popup doesn't
   // dismiss the old one. So remove any previously displayed popup before
   // opening a new one.
-  let popup = popupset.querySelector("menupopup[menu-api=\"true\"]");
+  let popup = popupset.querySelector('menupopup[menu-api="true"]');
   if (popup) {
     popup.hidePopup();
   }
 
-  popup = doc.createElement("menupopup");
+  popup = doc.createXULElement("menupopup");
   popup.setAttribute("menu-api", "true");
+  popup.setAttribute("consumeoutsideclicks", "false");
+  popup.setAttribute("incontentshell", "false");
 
   if (this.id) {
     popup.id = this.id;
   }
   this._createMenuItems(popup);
 
+  // The context menu will be created in the topmost chrome window. Hide it manually when
+  // the owner document is unloaded.
+  const onWindowUnload = () => popup.hidePopup();
+  win.addEventListener("unload", onWindowUnload);
+
   // Remove the menu from the DOM once it's hidden.
-  popup.addEventListener("popuphidden", (e) => {
+  popup.addEventListener("popuphidden", e => {
     if (e.target === popup) {
+      win.removeEventListener("unload", onWindowUnload);
       popup.remove();
       this.emit("close");
     }
   });
 
-  popup.addEventListener("popupshown", (e) => {
+  popup.addEventListener("popupshown", e => {
     if (e.target === popup) {
       this.emit("open");
     }
@@ -100,36 +134,30 @@ Menu.prototype.popup = function (screenX, screenY, toolbox) {
   popup.openPopupAtScreen(screenX, screenY, true);
 };
 
-Menu.prototype._createMenuItems = function (parent) {
-  let doc = parent.ownerDocument;
+Menu.prototype._createMenuItems = function(parent) {
+  const doc = parent.ownerDocument;
   this.menuitems.forEach(item => {
     if (!item.visible) {
       return;
     }
 
     if (item.submenu) {
-      let menupopup = doc.createElement("menupopup");
+      const menupopup = doc.createXULElement("menupopup");
+      menupopup.setAttribute("incontentshell", "false");
+
       item.submenu._createMenuItems(menupopup);
 
-      let menu = doc.createElement("menu");
+      const menu = doc.createXULElement("menu");
       menu.appendChild(menupopup);
-      menu.setAttribute("label", item.label);
-      if (item.disabled) {
-        menu.setAttribute("disabled", "true");
-      }
-      if (item.accesskey) {
-        menu.setAttribute("accesskey", item.accesskey);
-      }
-      if (item.id) {
-        menu.id = item.id;
-      }
+      applyItemAttributesToNode(item, menu);
       parent.appendChild(menu);
     } else if (item.type === "separator") {
-      let menusep = doc.createElement("menuseparator");
+      const menusep = doc.createXULElement("menuseparator");
       parent.appendChild(menusep);
     } else {
-      let menuitem = doc.createElement("menuitem");
-      menuitem.setAttribute("label", item.label);
+      const menuitem = doc.createXULElement("menuitem");
+      applyItemAttributesToNode(item, menuitem);
+
       menuitem.addEventListener("command", () => {
         item.click();
       });
@@ -137,28 +165,14 @@ Menu.prototype._createMenuItems = function (parent) {
         item.hover();
       });
 
-      if (item.type === "checkbox") {
-        menuitem.setAttribute("type", "checkbox");
-      }
-      if (item.type === "radio") {
-        menuitem.setAttribute("type", "radio");
-      }
-      if (item.disabled) {
-        menuitem.setAttribute("disabled", "true");
-      }
-      if (item.checked) {
-        menuitem.setAttribute("checked", "true");
-      }
-      if (item.accesskey) {
-        menuitem.setAttribute("accesskey", item.accesskey);
-      }
-      if (item.id) {
-        menuitem.id = item.id;
-      }
-
       parent.appendChild(menuitem);
     }
   });
+};
+
+Menu.getMenuElementById = function(id, doc) {
+  const menuDoc = DevToolsUtils.getTopWindow(doc.defaultView).document;
+  return menuDoc.getElementById(id);
 };
 
 Menu.setApplicationMenu = () => {
@@ -172,5 +186,34 @@ Menu.sendActionToFirstResponder = () => {
 Menu.buildFromTemplate = () => {
   throw Error("Not implemented");
 };
+
+function applyItemAttributesToNode(item, node) {
+  if (item.l10nID) {
+    node.setAttribute("data-l10n-id", item.l10nID);
+  } else {
+    node.setAttribute("label", item.label);
+    if (item.accelerator) {
+      node.setAttribute("acceltext", item.accelerator);
+    }
+    if (item.accesskey) {
+      node.setAttribute("accesskey", item.accesskey);
+    }
+  }
+  if (item.type === "checkbox") {
+    node.setAttribute("type", "checkbox");
+  }
+  if (item.type === "radio") {
+    node.setAttribute("type", "radio");
+  }
+  if (item.disabled) {
+    node.setAttribute("disabled", "true");
+  }
+  if (item.checked) {
+    node.setAttribute("checked", "true");
+  }
+  if (item.id) {
+    node.id = item.id;
+  }
+}
 
 module.exports = Menu;

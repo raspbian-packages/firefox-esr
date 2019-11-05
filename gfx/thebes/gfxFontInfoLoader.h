@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -30,8 +30,8 @@ struct FontFaceData {
     mUVSOffset = aFontFaceData.mUVSOffset;
   }
 
-  nsString mFullName;
-  nsString mPostscriptName;
+  nsCString mFullName;
+  nsCString mPostscriptName;
   RefPtr<gfxCharacterMap> mCharacterMap;
   uint32_t mUVSOffset;
 };
@@ -64,12 +64,12 @@ class FontInfoData {
 
   // loads font data for all fonts of a given family
   // (called on async thread)
-  virtual void LoadFontFamilyData(const nsAString& aFamilyName) = 0;
+  virtual void LoadFontFamilyData(const nsACString& aFamilyName) = 0;
 
   // -- methods overriden by platform-specific versions --
 
   // fetches cmap data for a particular font from cached font data
-  virtual already_AddRefed<gfxCharacterMap> GetCMAP(const nsAString& aFontName,
+  virtual already_AddRefed<gfxCharacterMap> GetCMAP(const nsACString& aFontName,
                                                     uint32_t& aUVSOffset) {
     FontFaceData faceData;
     if (!mFontFaceData.Get(aFontName, &faceData) || !faceData.mCharacterMap) {
@@ -82,8 +82,8 @@ class FontInfoData {
   }
 
   // fetches fullname/postscript names from cached font data
-  virtual void GetFaceNames(const nsAString& aFontName, nsAString& aFullName,
-                            nsAString& aPostscriptName) {
+  virtual void GetFaceNames(const nsACString& aFontName, nsACString& aFullName,
+                            nsACString& aPostscriptName) {
     FontFaceData faceData;
     if (!mFontFaceData.Get(aFontName, &faceData)) {
       return;
@@ -94,12 +94,12 @@ class FontInfoData {
   }
 
   // fetches localized family name data from cached font data
-  virtual bool GetOtherFamilyNames(const nsAString& aFamilyName,
-                                   nsTArray<nsString>& aOtherFamilyNames) {
+  virtual bool GetOtherFamilyNames(const nsACString& aFamilyName,
+                                   nsTArray<nsCString>& aOtherFamilyNames) {
     return mOtherFamilyNames.Get(aFamilyName, &aOtherFamilyNames);
   }
 
-  nsTArray<nsString> mFontFamiliesToLoad;
+  nsTArray<nsCString> mFontFamiliesToLoad;
 
   // currently non-issue but beware,
   // this is also set during cleanup after finishing
@@ -123,10 +123,10 @@ class FontInfoData {
   bool mLoadCmaps;
 
   // face name ==> per-face data
-  nsDataHashtable<nsStringHashKey, FontFaceData> mFontFaceData;
+  nsDataHashtable<nsCStringHashKey, FontFaceData> mFontFaceData;
 
   // canonical family name ==> array of localized family names
-  nsDataHashtable<nsStringHashKey, nsTArray<nsString> > mOtherFamilyNames;
+  nsDataHashtable<nsCStringHashKey, nsTArray<nsCString> > mOtherFamilyNames;
 };
 
 // gfxFontInfoLoader - helper class for loading font info on async thread
@@ -182,7 +182,7 @@ class gfxFontInfoLoader {
     explicit ShutdownObserver(gfxFontInfoLoader* aLoader) : mLoader(aLoader) {}
 
    protected:
-    virtual ~ShutdownObserver() {}
+    virtual ~ShutdownObserver() = default;
 
     gfxFontInfoLoader* mLoader;
   };

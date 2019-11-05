@@ -25,10 +25,10 @@ class nsTableRowGroupFrame;
 class nsTableRowFrame;
 class nsTableColGroupFrame;
 class nsITableLayoutStrategy;
-class nsStyleContext;
 namespace mozilla {
-class WritingMode;
 class LogicalMargin;
+class PresShell;
+class WritingMode;
 struct TableReflowInput;
 namespace layers {
 class StackingContextHelper;
@@ -37,16 +37,16 @@ class StackingContextHelper;
 
 struct BCPropertyData;
 
-static inline bool IS_TABLE_CELL(mozilla::LayoutFrameType frameType) {
+static inline bool IsTableCell(mozilla::LayoutFrameType frameType) {
   return frameType == mozilla::LayoutFrameType::TableCell ||
          frameType == mozilla::LayoutFrameType::BCTableCell;
 }
 
-class nsDisplayTableItem : public nsDisplayItem {
+class nsDisplayTableItem : public nsPaintedDisplayItem {
  public:
   nsDisplayTableItem(nsDisplayListBuilder* aBuilder, nsIFrame* aFrame,
                      bool aDrawsBackground = true)
-      : nsDisplayItem(aBuilder, aFrame),
+      : nsPaintedDisplayItem(aBuilder, aFrame),
         mPartHasFixedBackground(false),
         mDrawsBackground(aDrawsBackground) {}
 
@@ -72,7 +72,7 @@ class nsDisplayTableItem : public nsDisplayItem {
 
 class nsAutoPushCurrentTableItem {
  public:
-  nsAutoPushCurrentTableItem() : mBuilder(nullptr) {}
+  nsAutoPushCurrentTableItem() : mBuilder(nullptr), mOldCurrentItem(nullptr) {}
 
   void Push(nsDisplayListBuilder* aBuilder, nsDisplayTableItem* aPushItem) {
     mBuilder = aBuilder;
@@ -99,8 +99,7 @@ class nsAutoPushCurrentTableItem {
 #endif
 };
 
-/* ============================================================================
- */
+/* ========================================================================== */
 
 enum nsTableColType {
   eColContent = 0,            // there is real col content associated
@@ -132,13 +131,15 @@ class nsTableFrame : public nsContainerFrame {
   /** nsTableWrapperFrame has intimate knowledge of the inner table frame */
   friend class nsTableWrapperFrame;
 
-  /** instantiate a new instance of nsTableRowFrame.
+  /**
+   * instantiate a new instance of nsTableRowFrame.
+   *
    * @param aPresShell the pres shell for this frame
    *
    * @return           the frame that was created
    */
-  friend nsTableFrame* NS_NewTableFrame(nsIPresShell* aPresShell,
-                                        nsStyleContext* aContext);
+  friend nsTableFrame* NS_NewTableFrame(mozilla::PresShell* aPresShell,
+                                        ComputedStyle* aStyle);
 
   /** sets defaults for table-specific style.
    * @see nsIFrame::Init
@@ -185,8 +186,8 @@ class nsTableFrame : public nsContainerFrame {
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
 
-  /** @see nsIFrame::DidSetStyleContext */
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  /** @see nsIFrame::DidSetComputedStyle */
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   virtual void SetInitialChildList(ChildListID aListID,
                                    nsFrameList& aChildList) override;
@@ -287,19 +288,21 @@ class nsTableFrame : public nsContainerFrame {
   friend class nsDelayedCalcBCBorders;
 
   void AddBCDamageArea(const mozilla::TableArea& aValue);
-  bool BCRecalcNeeded(nsStyleContext* aOldStyleContext,
-                      nsStyleContext* aNewStyleContext);
+  bool BCRecalcNeeded(ComputedStyle* aOldComputedStyle,
+                      ComputedStyle* aNewComputedStyle);
   void PaintBCBorders(DrawTarget& aDrawTarget, const nsRect& aDirtyRect);
   void CreateWebRenderCommandsForBCBorders(
       mozilla::wr::DisplayListBuilder& aBuilder,
-      const mozilla::layers::StackingContextHelper& aSc, const nsPoint& aPt);
+      const mozilla::layers::StackingContextHelper& aSc,
+      const nsRect& aVisibleRect, const nsPoint& aOffsetToReferenceFrame);
 
   virtual void MarkIntrinsicISizesDirty() override;
   // For border-collapse tables, the caller must not add padding and
   // border to the results of these functions.
   virtual nscoord GetMinISize(gfxContext* aRenderingContext) override;
   virtual nscoord GetPrefISize(gfxContext* aRenderingContext) override;
-  virtual IntrinsicISizeOffsetData IntrinsicISizeOffsets() override;
+  IntrinsicISizeOffsetData IntrinsicISizeOffsets(
+      nscoord aPercentageBasis = NS_UNCONSTRAINEDSIZE) override;
 
   virtual mozilla::LogicalSize ComputeSize(
       gfxContext* aRenderingContext, mozilla::WritingMode aWM,
@@ -321,16 +324,23 @@ class nsTableFrame : public nsContainerFrame {
                                 nscoord aWidthInCB);
 
   // XXXldb REWRITE THIS COMMENT!
-  /** inner tables are reflowed in two steps.
+  // clang-format off
+  /**
+   * Inner tables are reflowed in two steps.
    * <pre>
-   * if mFirstPassValid is false, this is our first time through since content
-   * was last changed set pass to 1 do pass 1 get min/max info for all cells in
-   * an infinite space do column balancing set mFirstPassValid to true do
-   * pass 2 use column widths to Reflow cells
+   * if mFirstPassValid is false, this is our first time through since content was last changed
+   *   set pass to 1
+   *   do pass 1
+   *     get min/max info for all cells in an infinite space
+   *   do column balancing
+   *   set mFirstPassValid to true
+   *   do pass 2
+   *     use column widths to Reflow cells
    * </pre>
    *
    * @see nsIFrame::Reflow
    */
+  // clang-format on
   virtual void Reflow(nsPresContext* aPresContext, ReflowOutput& aDesiredSize,
                       const ReflowInput& aReflowInput,
                       nsReflowStatus& aStatus) override;
@@ -341,7 +351,7 @@ class nsTableFrame : public nsContainerFrame {
 
   nsFrameList& GetColGroups();
 
-  virtual nsStyleContext* GetParentStyleContext(
+  virtual ComputedStyle* GetParentComputedStyle(
       nsIFrame** aProviderFrame) const override;
 
   virtual bool IsFrameOfType(uint32_t aFlags) const override {
@@ -558,7 +568,8 @@ class nsTableFrame : public nsContainerFrame {
   /** protected constructor.
    * @see NewFrame
    */
-  explicit nsTableFrame(nsStyleContext* aContext, ClassID aID = kClassID);
+  explicit nsTableFrame(ComputedStyle* aStyle, nsPresContext* aPresContext,
+                        ClassID aID = kClassID);
 
   /** destructor, responsible for mColumnLayoutData */
   virtual ~nsTableFrame();
@@ -636,12 +647,12 @@ class nsTableFrame : public nsContainerFrame {
 
  public:
   // calculate the computed block-size of aFrame including its border and
-  // padding given its reflow state.
+  // padding given its reflow input.
   nscoord CalcBorderBoxBSize(const ReflowInput& aReflowInput);
 
  protected:
   // update the  desired block-size of this table taking into account the
-  // current reflow state, the table attributes and the content driven rowgroup
+  // current reflow input, the table attributes and the content driven rowgroup
   // bsizes this function can change the overflow area
   void CalcDesiredBSize(const ReflowInput& aReflowInput,
                         ReflowOutput& aDesiredSize);
@@ -838,8 +849,8 @@ class nsTableFrame : public nsContainerFrame {
     uint32_t mHasPctCol : 1;        // does any cell or col have a pct width
     uint32_t mCellSpansPctCol : 1;  // does any cell span a col with a pct width
                                     // (or containing a cell with a pct width)
-    uint32_t
-        mIsBorderCollapse : 1;  // border collapsing model vs. separate model
+    uint32_t mIsBorderCollapse : 1;  // border collapsing model vs. separate
+                                     // model
     uint32_t mRowInserted : 1;
     uint32_t mNeedToCalcBCBorders : 1;
     uint32_t mGeometryDirty : 1;
@@ -853,11 +864,11 @@ class nsTableFrame : public nsContainerFrame {
 
   std::map<int32_t, int32_t> mDeletedRowIndexRanges;  // maintains ranges of row
                                                       // indices of deleted rows
-  nsTableCellMap*
-      mCellMap;  // maintains the relationships between rows, cols, and cells
-  nsITableLayoutStrategy*
-      mTableLayoutStrategy;  // the layout strategy for this frame
-  nsFrameList mColGroups;    // the list of colgroup frames
+  nsTableCellMap* mCellMap;  // maintains the relationships between rows, cols,
+                             // and cells
+  nsITableLayoutStrategy* mTableLayoutStrategy;  // the layout strategy for this
+                                                 // frame
+  nsFrameList mColGroups;                        // the list of colgroup frames
 };
 
 inline bool nsTableFrame::IsRowGroup(mozilla::StyleDisplay aDisplayType) const {

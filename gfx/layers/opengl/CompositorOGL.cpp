@@ -25,12 +25,17 @@
 #include "mozilla/gfx/Matrix.h"     // for Matrix4x4, Matrix
 #include "mozilla/gfx/Triangle.h"   // for Triangle
 #include "mozilla/gfx/gfxVars.h"    // for gfxVars
+#include "mozilla/layers/ImageDataSerializer.h"
 #include "mozilla/layers/LayerManagerComposite.h"  // for LayerComposite, etc
 #include "mozilla/layers/CompositingRenderTargetOGL.h"
 #include "mozilla/layers/Effects.h"      // for EffectChain, TexturedEffect, etc
 #include "mozilla/layers/TextureHost.h"  // for TextureSource, etc
 #include "mozilla/layers/TextureHostOGL.h"  // for TextureSourceOGL, etc
-#include "mozilla/mozalloc.h"               // for operator delete, etc
+#include "mozilla/layers/PTextureParent.h"  // for OtherPid() on PTextureParent
+#ifdef XP_DARWIN
+#  include "mozilla/layers/TextureSync.h"  // for TextureSync::etc.
+#endif
+#include "mozilla/mozalloc.h"  // for operator delete, etc
 #include "nsAppRunner.h"
 #include "nsAString.h"
 #include "nsIConsoleService.h"      // for nsIConsoleService, etc
@@ -40,13 +45,16 @@
 #include "nsRect.h"                 // for mozilla::gfx::IntRect
 #include "nsServiceManagerUtils.h"  // for do_GetService
 #include "nsString.h"               // for nsString, nsAutoCString, etc
+#include "OGLShaderProgram.h"       // for ShaderProgramOGL, etc
 #include "ScopedGLHelpers.h"
 #include "GLReadTexImageHelper.h"
 #include "GLBlitTextureImageHelper.h"
 #include "HeapCopyOfStackArray.h"
+#include "GLBlitHelper.h"
+#include "mozilla/gfx/Swizzle.h"
 
 #if MOZ_WIDGET_ANDROID
-#include "GeneratedJNIWrappers.h"
+#  include "GeneratedJNIWrappers.h"
 #endif
 
 #include "GeckoProfiler.h"
@@ -62,6 +70,94 @@ using namespace mozilla::gl;
 
 static const GLuint kCoordinateAttributeIndex = 0;
 static const GLuint kTexCoordinateAttributeIndex = 1;
+
+class AsyncReadbackBufferOGL final : public AsyncReadbackBuffer {
+ public:
+  AsyncReadbackBufferOGL(GLContext* aGL, const IntSize& aSize);
+
+  bool MapAndCopyInto(DataSourceSurface* aSurface,
+                      const IntSize& aReadSize) const override;
+
+  void Bind() const {
+    mGL->fBindBuffer(LOCAL_GL_PIXEL_PACK_BUFFER, mBufferHandle);
+    mGL->fPixelStorei(LOCAL_GL_PACK_ALIGNMENT, 1);
+  }
+
+ protected:
+  virtual ~AsyncReadbackBufferOGL();
+
+ private:
+  GLContext* mGL;
+  GLuint mBufferHandle;
+};
+
+AsyncReadbackBufferOGL::AsyncReadbackBufferOGL(GLContext* aGL,
+                                               const IntSize& aSize)
+    : AsyncReadbackBuffer(aSize), mGL(aGL), mBufferHandle(0) {
+  size_t bufferByteCount = mSize.width * mSize.height * 4;
+  mGL->fGenBuffers(1, &mBufferHandle);
+
+  ScopedPackState scopedPackState(mGL);
+  Bind();
+  mGL->fBufferData(LOCAL_GL_PIXEL_PACK_BUFFER, bufferByteCount, nullptr,
+                   LOCAL_GL_STREAM_READ);
+}
+
+AsyncReadbackBufferOGL::~AsyncReadbackBufferOGL() {
+  if (mGL && mGL->MakeCurrent()) {
+    mGL->fDeleteBuffers(1, &mBufferHandle);
+  }
+}
+
+bool AsyncReadbackBufferOGL::MapAndCopyInto(DataSourceSurface* aSurface,
+                                            const IntSize& aReadSize) const {
+  MOZ_RELEASE_ASSERT(aReadSize <= aSurface->GetSize());
+
+  if (!mGL || !mGL->MakeCurrent()) {
+    return false;
+  }
+
+  ScopedPackState scopedPackState(mGL);
+  Bind();
+
+  const uint8_t* srcData = nullptr;
+  if (mGL->IsSupported(GLFeature::map_buffer_range)) {
+    srcData = static_cast<uint8_t*>(mGL->fMapBufferRange(
+        LOCAL_GL_PIXEL_PACK_BUFFER, 0, aReadSize.height * aReadSize.width * 4,
+        LOCAL_GL_MAP_READ_BIT));
+  } else {
+    srcData = static_cast<uint8_t*>(
+        mGL->fMapBuffer(LOCAL_GL_PIXEL_PACK_BUFFER, LOCAL_GL_READ_ONLY));
+  }
+
+  if (!srcData) {
+    return false;
+  }
+
+  int32_t srcStride = mSize.width * 4;  // Bind() sets an alignment of 1
+  DataSourceSurface::ScopedMap map(aSurface, DataSourceSurface::WRITE);
+  uint8_t* destData = map.GetData();
+  int32_t destStride = map.GetStride();
+  SurfaceFormat destFormat = aSurface->GetFormat();
+  for (int32_t destRow = 0; destRow < aReadSize.height; destRow++) {
+    // Turn srcData upside down during the copy.
+    int32_t srcRow = aReadSize.height - 1 - destRow;
+    const uint8_t* src = &srcData[srcRow * srcStride];
+    uint8_t* dest = &destData[destRow * destStride];
+    SwizzleData(src, srcStride, SurfaceFormat::R8G8B8A8, dest, destStride,
+                destFormat, IntSize(aReadSize.width, 1));
+  }
+
+  mGL->fUnmapBuffer(LOCAL_GL_PIXEL_PACK_BUFFER);
+
+  return true;
+}
+
+PerUnitTexturePoolOGL::PerUnitTexturePoolOGL(gl::GLContext* aGL)
+    : mTextureTarget(0),  // zero is never a valid texture target
+      mGL(aGL) {}
+
+PerUnitTexturePoolOGL::~PerUnitTexturePoolOGL() { DestroyTextures(); }
 
 static void BindMaskForProgram(ShaderProgramOGL* aProgram,
                                TextureSourceOGL* aSourceMask, GLenum aTexUnit,
@@ -92,16 +188,26 @@ CompositorOGL::CompositorOGL(CompositorBridgeParent* aParent,
     : Compositor(aWidget, aParent),
       mWidgetSize(-1, -1),
       mSurfaceSize(aSurfaceWidth, aSurfaceHeight),
+      mFBOTextureTarget(0),
+      mWindowRenderTarget(nullptr),
+      mQuadVBO(0),
+      mTriangleVBO(0),
       mHasBGRA(0),
       mUseExternalSurfaceSize(aUseExternalSurfaceSize),
       mFrameInProgress(false),
       mDestroyed(false),
       mViewportSize(0, 0),
       mCurrentProgram(nullptr) {
+#ifdef XP_DARWIN
+  TextureSync::RegisterTextureSourceProvider(this);
+#endif
   MOZ_COUNT_CTOR(CompositorOGL);
 }
 
 CompositorOGL::~CompositorOGL() {
+#ifdef XP_DARWIN
+  TextureSync::UnregisterTextureSourceProvider(this);
+#endif
   MOZ_COUNT_DTOR(CompositorOGL);
   Destroy();
 }
@@ -121,8 +227,8 @@ already_AddRefed<mozilla::gl::GLContext> CompositorOGL::CreateContext() {
 #ifdef XP_WIN
   if (gfxEnv::LayersPreferEGL()) {
     printf_stderr("Trying GL layers...\n");
-    context =
-        gl::GLContextProviderEGL::CreateForCompositorWidget(mWidget, false);
+    context = gl::GLContextProviderEGL::CreateForCompositorWidget(
+        mWidget, /* aWebRender */ false, /* aForceAccelerated */ false);
   }
 #endif
 
@@ -140,7 +246,9 @@ already_AddRefed<mozilla::gl::GLContext> CompositorOGL::CreateContext() {
 
   if (!context) {
     context = gl::GLContextProvider::CreateForCompositorWidget(
-        mWidget, gfxVars::RequiresAcceleratedGLContextForCompositorOGL());
+        mWidget,
+        /* aWebRender */ false,
+        gfxVars::RequiresAcceleratedGLContextForCompositorOGL());
   }
 
   if (!context) {
@@ -157,6 +265,10 @@ void CompositorOGL::Destroy() {
     mTexturePool->Clear();
     mTexturePool = nullptr;
   }
+
+#ifdef XP_DARWIN
+  mMaybeUnlockBeforeNextComposition.Clear();
+#endif
 
   if (!mDestroyed) {
     mDestroyed = true;
@@ -187,6 +299,16 @@ void CompositorOGL::CleanupResources() {
     delete iter->second;
   }
   mPrograms.clear();
+
+#ifdef MOZ_WIDGET_GTK
+  // TextureSources might hold RefPtr<gl::GLContext>.
+  // All of them needs to be released to destroy GLContext.
+  // GLContextGLX has to be destroyed before related gtk window is destroyed.
+  for (auto textureSource : mRegisteredTextureSources) {
+    textureSource->DeallocateDeviceData();
+  }
+  mRegisteredTextureSources.clear();
+#endif
 
   ctx->fBindFramebuffer(LOCAL_GL_FRAMEBUFFER, 0);
 
@@ -428,7 +550,8 @@ void CompositorOGL::PrepareViewport(CompositingRenderTargetOGL* aRenderTarget) {
   const gfx::IntSize& phySize = aRenderTarget->mInitParams.mPhySize;
 
   // Set the viewport correctly.
-  mGLContext->fViewport(0, 0, phySize.width, phySize.height);
+  mGLContext->fViewport(mSurfaceOrigin.x, mSurfaceOrigin.y, phySize.width,
+                        phySize.height);
 
   mViewportSize = size;
 
@@ -542,8 +665,56 @@ void CompositorOGL::SetRenderTarget(CompositingRenderTarget* aSurface) {
   PrepareViewport(mCurrentRenderTarget);
 }
 
-CompositingRenderTarget* CompositorOGL::GetCurrentRenderTarget() const {
-  return mCurrentRenderTarget;
+already_AddRefed<CompositingRenderTarget>
+CompositorOGL::GetCurrentRenderTarget() const {
+  return do_AddRef(mCurrentRenderTarget);
+}
+
+already_AddRefed<CompositingRenderTarget> CompositorOGL::GetWindowRenderTarget()
+    const {
+  return do_AddRef(mWindowRenderTarget);
+}
+
+already_AddRefed<AsyncReadbackBuffer> CompositorOGL::CreateAsyncReadbackBuffer(
+    const IntSize& aSize) {
+  return MakeAndAddRef<AsyncReadbackBufferOGL>(mGLContext, aSize);
+}
+
+bool CompositorOGL::ReadbackRenderTarget(CompositingRenderTarget* aSource,
+                                         AsyncReadbackBuffer* aDest) {
+  IntSize size = aSource->GetSize();
+  MOZ_RELEASE_ASSERT(aDest->GetSize() == size);
+
+  RefPtr<CompositingRenderTarget> previousTarget = GetCurrentRenderTarget();
+  if (previousTarget != aSource) {
+    SetRenderTarget(aSource);
+  }
+
+  ScopedPackState scopedPackState(mGLContext);
+  static_cast<AsyncReadbackBufferOGL*>(aDest)->Bind();
+
+  mGLContext->fReadPixels(0, 0, size.width, size.height, LOCAL_GL_RGBA,
+                          LOCAL_GL_UNSIGNED_BYTE, 0);
+
+  if (previousTarget != aSource) {
+    SetRenderTarget(previousTarget);
+  }
+  return true;
+}
+
+bool CompositorOGL::BlitRenderTarget(CompositingRenderTarget* aSource,
+                                     const gfx::IntSize& aSourceSize,
+                                     const gfx::IntSize& aDestSize) {
+  if (!mGLContext->IsSupported(GLFeature::framebuffer_blit)) {
+    return false;
+  }
+  CompositingRenderTargetOGL* source =
+      static_cast<CompositingRenderTargetOGL*>(aSource);
+  GLuint srcFBO = source->GetFBO();
+  GLuint destFBO = mCurrentRenderTarget->GetFBO();
+  mGLContext->BlitHelper()->BlitFramebufferToFramebuffer(
+      srcFBO, destFBO, aSourceSize, aDestSize, LOCAL_GL_LINEAR);
+  return true;
 }
 
 static GLenum GetFrameBufferInternalFormat(
@@ -615,6 +786,7 @@ void CompositorOGL::BeginFrame(const nsIntRegion& aInvalidRegion,
 
 #ifdef MOZ_WIDGET_ANDROID
   java::GeckoSurfaceTexture::DestroyUnused((int64_t)mGLContext.get());
+  mGLContext->MakeCurrent();  // DestroyUnused can change the current context!
 #endif
 
   // Default blend function implements "OVER"
@@ -626,17 +798,26 @@ void CompositorOGL::BeginFrame(const nsIntRegion& aInvalidRegion,
       CompositingRenderTargetOGL::RenderTargetForWindow(this,
                                                         IntSize(width, height));
   SetRenderTarget(rt);
-
-#ifdef DEBUG
   mWindowRenderTarget = mCurrentRenderTarget;
-#endif
 
   if (aClipRectOut && !aClipRectIn) {
     aClipRectOut->SetRect(0, 0, width, height);
   }
 
+#if defined(MOZ_WIDGET_ANDROID)
+  if ((mSurfaceOrigin.x > 0) || (mSurfaceOrigin.y > 0)) {
+    mGLContext->fClearColor(gfxPrefs::CompositorOverrideClearColorR(),
+                            gfxPrefs::CompositorOverrideClearColorG(),
+                            gfxPrefs::CompositorOverrideClearColorB(),
+                            gfxPrefs::CompositorOverrideClearColorA());
+  } else {
+    mGLContext->fClearColor(mClearColor.r, mClearColor.g, mClearColor.b,
+                            mClearColor.a);
+  }
+#else
   mGLContext->fClearColor(mClearColor.r, mClearColor.g, mClearColor.b,
                           mClearColor.a);
+#endif  // defined(MOZ_WIDGET_ANDROID)
   mGLContext->fClear(LOCAL_GL_COLOR_BUFFER_BIT | LOCAL_GL_DEPTH_BUFFER_BIT);
 }
 
@@ -742,7 +923,7 @@ GLuint CompositorOGL::CreateTexture(const IntRect& aRect, bool aCopyFromSource,
 }
 
 ShaderConfigOGL CompositorOGL::GetShaderConfigFor(Effect* aEffect,
-                                                  MaskType aMask,
+                                                  TextureSourceOGL* aSourceMask,
                                                   gfx::CompositionOp aOp,
                                                   bool aColorMatrix,
                                                   bool aDEAAEnabled) const {
@@ -755,13 +936,10 @@ ShaderConfigOGL CompositorOGL::GetShaderConfigFor(Effect* aEffect,
     case EffectTypes::YCBCR: {
       config.SetYCbCr(true);
       EffectYCbCr* effectYCbCr = static_cast<EffectYCbCr*>(aEffect);
-      uint32_t pixelBits = (8 * BytesPerPixel(SurfaceFormatForAlphaBitDepth(
-                                    effectYCbCr->mBitDepth)));
-      uint32_t paddingBits = pixelBits - effectYCbCr->mBitDepth;
-      // OpenGL expects values between [0,255], this range needs to be adjusted
-      // according to the bit depth.
-      // So we will scale the YUV values by this amount.
-      config.SetColorMultiplier(pow(2, paddingBits));
+      config.SetColorMultiplier(
+          RescalingFactorForColorDepth(effectYCbCr->mColorDepth));
+      config.SetTextureTarget(
+          effectYCbCr->mTexture->AsSourceOGL()->GetTextureTarget());
       break;
     }
     case EffectTypes::NV12:
@@ -808,7 +986,10 @@ ShaderConfigOGL CompositorOGL::GetShaderConfigFor(Effect* aEffect,
     }
   }
   config.SetColorMatrix(aColorMatrix);
-  config.SetMask(aMask == MaskType::Mask);
+  config.SetMask(!!aSourceMask);
+  if (aSourceMask) {
+    config.SetMaskTextureTarget(aSourceMask->GetTextureTarget());
+  }
   config.SetDEAA(aDEAAEnabled);
   config.SetCompositionOp(aOp);
   return config;
@@ -823,6 +1004,10 @@ ShaderProgramOGL* CompositorOGL::GetShaderProgramFor(
   ProgramProfileOGL profile = ProgramProfileOGL::GetProfileFor(aConfig);
   ShaderProgramOGL* shader = new ShaderProgramOGL(gl(), profile);
   if (!shader->Initialize()) {
+    gfxCriticalError() << "Shader compilation failure, cfg:"
+                       << " features: " << gfx::hexa(aConfig.mFeatures)
+                       << " multiplier: " << aConfig.mMultiplier
+                       << " op: " << aConfig.mCompositionOp;
     delete shader;
     return nullptr;
   }
@@ -990,7 +1175,8 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
   // drawing is going to be shifted by mRenderOffset then we need
   // to shift the clip rect by the same amount.
   if (!mTarget && mCurrentRenderTarget->IsWindow()) {
-    clipRect.MoveBy(mRenderOffset.x, mRenderOffset.y);
+    clipRect.MoveBy(mRenderOffset.x + mSurfaceOrigin.x,
+                    mRenderOffset.y - mSurfaceOrigin.y);
   }
 
   ScopedGLState scopedScissorTestState(mGLContext, LOCAL_GL_SCISSOR_TEST, true);
@@ -1051,13 +1237,18 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
       gfxPrefs::LayersDEAAEnabled() && !aTransform.Is2DIntegerTranslation();
 
   bool colorMatrix = aEffectChain.mSecondaryEffects[EffectTypes::COLOR_MATRIX];
-  ShaderConfigOGL config = GetShaderConfigFor(
-      aEffectChain.mPrimaryEffect, maskType, blendMode, colorMatrix, bEnableAA);
+  ShaderConfigOGL config =
+      GetShaderConfigFor(aEffectChain.mPrimaryEffect, sourceMask, blendMode,
+                         colorMatrix, bEnableAA);
 
   config.SetOpacity(aOpacity != 1.f);
   ApplyPrimitiveConfig(config, aGeometry);
 
   ShaderProgramOGL* program = GetShaderProgramFor(config);
+  MOZ_DIAGNOSTIC_ASSERT(program);
+  if (!program) {
+    return;
+  }
   ActivateProgram(program);
   program->SetProjectionMatrix(mProjMatrix);
   program->SetLayerTransform(aTransform);
@@ -1109,6 +1300,11 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
     // 0,0..1,1.
     program->SetTexCoordMultiplier(source->GetSize().width,
                                    source->GetSize().height);
+  }
+
+  if (sourceMask && config.mFeatures & ENABLE_MASK_TEXTURE_RECT) {
+    program->SetMaskCoordMultiplier(sourceMask->GetSize().width,
+                                    sourceMask->GetSize().height);
   }
 
   // XXX kip - These calculations could be performed once per layer rather than
@@ -1227,6 +1423,7 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
 
       BindAndDrawGeometryWithTextureRect(
           program, aGeometry, texturedEffect->mTextureCoords, source);
+      source->AsSourceOGL()->MaybeFenceTexture();
     } break;
     case EffectTypes::YCBCR: {
       EffectYCbCr* effectYCbCr =
@@ -1246,6 +1443,13 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
       sourceCb->BindTexture(LOCAL_GL_TEXTURE1, effectYCbCr->mSamplingFilter);
       sourceCr->BindTexture(LOCAL_GL_TEXTURE2, effectYCbCr->mSamplingFilter);
 
+      if (config.mFeatures & ENABLE_TEXTURE_RECT) {
+        // This is used by IOSurface that use 0,0...w,h coordinate rather then
+        // 0,0..1,1.
+        program->SetCbCrTexCoordMultiplier(sourceCb->GetSize().width,
+                                           sourceCb->GetSize().height);
+      }
+
       program->SetYCbCrTextureUnits(Y, Cb, Cr);
       program->SetTextureTransform(Matrix4x4());
       program->SetYUVColorSpace(effectYCbCr->mYUVColorSpace);
@@ -1261,6 +1465,9 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
       BindAndDrawGeometryWithTextureRect(program, aGeometry,
                                          effectYCbCr->mTextureCoords,
                                          sourceYCbCr->GetSubSource(Y));
+      sourceY->MaybeFenceTexture();
+      sourceCb->MaybeFenceTexture();
+      sourceCr->MaybeFenceTexture();
     } break;
     case EffectTypes::NV12: {
       EffectNV12* effectNV12 =
@@ -1288,6 +1495,7 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
 
       program->SetNV12TextureUnits(Y, CbCr);
       program->SetTextureTransform(Matrix4x4());
+      program->SetYUVColorSpace(effectNV12->mYUVColorSpace);
 
       if (maskType != MaskType::MaskNone) {
         BindMaskForProgram(program, sourceMask, LOCAL_GL_TEXTURE2,
@@ -1300,6 +1508,8 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
       BindAndDrawGeometryWithTextureRect(program, aGeometry,
                                          effectNV12->mTextureCoords,
                                          sourceNV12->GetSubSource(Y));
+      sourceY->MaybeFenceTexture();
+      sourceCbCr->MaybeFenceTexture();
     } break;
     case EffectTypes::RENDER_TARGET: {
       EffectRenderTarget* effectRenderTarget =
@@ -1386,6 +1596,9 @@ void CompositorOGL::DrawGeometry(const Geometry& aGeometry,
       mGLContext->fBlendFuncSeparate(LOCAL_GL_ONE, LOCAL_GL_ONE_MINUS_SRC_ALPHA,
                                      LOCAL_GL_ONE,
                                      LOCAL_GL_ONE_MINUS_SRC_ALPHA);
+
+      sourceOnBlack->MaybeFenceTexture();
+      sourceOnWhite->MaybeFenceTexture();
     } break;
     default:
       MOZ_ASSERT(false, "Unhandled effect type");
@@ -1519,11 +1732,13 @@ void CompositorOGL::EndFrame() {
   if (mTarget) {
     CopyToTarget(mTarget, mTargetBounds.TopLeft(), Matrix());
     mGLContext->fBindBuffer(LOCAL_GL_ARRAY_BUFFER, 0);
+    mWindowRenderTarget = nullptr;
     mCurrentRenderTarget = nullptr;
     Compositor::EndFrame();
     return;
   }
 
+  mWindowRenderTarget = nullptr;
   mCurrentRenderTarget = nullptr;
 
   if (mTexturePool) {
@@ -1604,8 +1819,10 @@ void CompositorOGL::CopyToTarget(DrawTarget* aTarget,
 void CompositorOGL::Pause() {
 #ifdef MOZ_WIDGET_ANDROID
   if (!gl() || gl()->IsDestroyed()) return;
-
-  // ReleaseSurface internally calls MakeCurrent.
+  gl()->MakeCurrent();
+  java::GeckoSurfaceTexture::DestroyUnused((int64_t)mGLContext.get());
+  java::GeckoSurfaceTexture::DetachAllFromGLContext((int64_t)mGLContext.get());
+  // ReleaseSurface internally calls MakeCurrent
   gl()->ReleaseSurface();
 #endif
 }
@@ -1622,7 +1839,102 @@ bool CompositorOGL::Resume() {
 
 already_AddRefed<DataTextureSource> CompositorOGL::CreateDataTextureSource(
     TextureFlags aFlags) {
+  if (!gl()) {
+    return nullptr;
+  }
+
   return MakeAndAddRef<TextureImageTextureSourceOGL>(this, aFlags);
+}
+
+already_AddRefed<DataTextureSource>
+CompositorOGL::CreateDataTextureSourceAroundYCbCr(TextureHost* aTexture) {
+  if (!gl()) {
+    return nullptr;
+  }
+
+  BufferTextureHost* bufferTexture = aTexture->AsBufferTextureHost();
+  MOZ_ASSERT(bufferTexture);
+
+  if (!bufferTexture) {
+    return nullptr;
+  }
+
+  uint8_t* buf = bufferTexture->GetBuffer();
+  const BufferDescriptor& buffDesc = bufferTexture->GetBufferDescriptor();
+  const YCbCrDescriptor& desc = buffDesc.get_YCbCrDescriptor();
+
+  RefPtr<gfx::DataSourceSurface> tempY =
+      gfx::Factory::CreateWrappingDataSourceSurface(
+          ImageDataSerializer::GetYChannel(buf, desc), desc.yStride(),
+          desc.ySize(), SurfaceFormatForColorDepth(desc.colorDepth()));
+  if (!tempY) {
+    return nullptr;
+  }
+  RefPtr<gfx::DataSourceSurface> tempCb =
+      gfx::Factory::CreateWrappingDataSourceSurface(
+          ImageDataSerializer::GetCbChannel(buf, desc), desc.cbCrStride(),
+          desc.cbCrSize(), SurfaceFormatForColorDepth(desc.colorDepth()));
+  if (!tempCb) {
+    return nullptr;
+  }
+  RefPtr<gfx::DataSourceSurface> tempCr =
+      gfx::Factory::CreateWrappingDataSourceSurface(
+          ImageDataSerializer::GetCrChannel(buf, desc), desc.cbCrStride(),
+          desc.cbCrSize(), SurfaceFormatForColorDepth(desc.colorDepth()));
+  if (!tempCr) {
+    return nullptr;
+  }
+
+  RefPtr<DirectMapTextureSource> srcY = new DirectMapTextureSource(this, tempY);
+  RefPtr<DirectMapTextureSource> srcU =
+      new DirectMapTextureSource(this, tempCb);
+  RefPtr<DirectMapTextureSource> srcV =
+      new DirectMapTextureSource(this, tempCr);
+
+  srcY->SetNextSibling(srcU);
+  srcU->SetNextSibling(srcV);
+
+  return srcY.forget();
+}
+
+#ifdef XP_DARWIN
+void CompositorOGL::MaybeUnlockBeforeNextComposition(
+    TextureHost* aTextureHost) {
+  auto bufferTexture = aTextureHost->AsBufferTextureHost();
+  if (bufferTexture) {
+    mMaybeUnlockBeforeNextComposition.AppendElement(bufferTexture);
+  }
+}
+
+void CompositorOGL::TryUnlockTextures() {
+  nsClassHashtable<nsUint32HashKey, nsTArray<uint64_t>>
+      texturesIdsToUnlockByPid;
+  for (auto& texture : mMaybeUnlockBeforeNextComposition) {
+    if (texture->IsDirectMap() && texture->CanUnlock()) {
+      texture->ReadUnlock();
+      auto actor = texture->GetIPDLActor();
+      if (actor) {
+        base::ProcessId pid = actor->OtherPid();
+        nsTArray<uint64_t>* textureIds =
+            texturesIdsToUnlockByPid.LookupOrAdd(pid);
+        textureIds->AppendElement(TextureHost::GetTextureSerial(actor));
+      }
+    }
+  }
+  mMaybeUnlockBeforeNextComposition.Clear();
+  for (auto it = texturesIdsToUnlockByPid.ConstIter(); !it.Done(); it.Next()) {
+    TextureSync::SetTexturesUnlocked(it.Key(), *it.UserData());
+  }
+}
+#endif
+
+already_AddRefed<DataTextureSource>
+CompositorOGL::CreateDataTextureSourceAround(gfx::DataSourceSurface* aSurface) {
+  if (!gl()) {
+    return nullptr;
+  }
+
+  return MakeAndAddRef<DirectMapTextureSource>(this, aSurface);
 }
 
 bool CompositorOGL::SupportsPartialTextureUpdate() {
@@ -1658,6 +1970,21 @@ GLuint CompositorOGL::GetTemporaryTexture(GLenum aTarget, GLenum aUnit) {
     mTexturePool = new PerUnitTexturePoolOGL(gl());
   }
   return mTexturePool->GetTexture(aTarget, aUnit);
+}
+
+bool CompositorOGL::SupportsTextureDirectMapping() {
+  if (!gfxPrefs::AllowTextureDirectMapping()) {
+    return false;
+  }
+
+  if (mGLContext) {
+    mGLContext->MakeCurrent();
+    return mGLContext->IsExtensionSupported(
+               gl::GLContext::APPLE_client_storage) &&
+           mGLContext->IsExtensionSupported(gl::GLContext::APPLE_texture_range);
+  }
+
+  return false;
 }
 
 GLuint PerUnitTexturePoolOGL::GetTexture(GLenum aTarget, GLenum aTextureUnit) {
@@ -1701,6 +2028,24 @@ void PerUnitTexturePoolOGL::DestroyTextures() {
 
 bool CompositorOGL::SupportsLayerGeometry() const {
   return gfxPrefs::OGLLayerGeometry();
+}
+
+void CompositorOGL::RegisterTextureSource(TextureSource* aTextureSource) {
+#ifdef MOZ_WIDGET_GTK
+  if (mDestroyed) {
+    return;
+  }
+  mRegisteredTextureSources.insert(aTextureSource);
+#endif
+}
+
+void CompositorOGL::UnregisterTextureSource(TextureSource* aTextureSource) {
+#ifdef MOZ_WIDGET_GTK
+  if (mDestroyed) {
+    return;
+  }
+  mRegisteredTextureSources.erase(aTextureSource);
+#endif
 }
 
 }  // namespace layers

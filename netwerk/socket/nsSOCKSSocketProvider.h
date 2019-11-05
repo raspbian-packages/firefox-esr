@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,11 +19,11 @@ class nsSOCKSSocketProvider : public nsISocketProvider {
 
   explicit nsSOCKSSocketProvider(uint32_t version) : mVersion(version) {}
 
-  static nsresult CreateV4(nsISupports *, REFNSIID aIID, void **aResult);
-  static nsresult CreateV5(nsISupports *, REFNSIID aIID, void **aResult);
+  static nsresult CreateV4(nsISupports*, REFNSIID aIID, void** aResult);
+  static nsresult CreateV5(nsISupports*, REFNSIID aIID, void** aResult);
 
  private:
-  virtual ~nsSOCKSSocketProvider() {}
+  virtual ~nsSOCKSSocketProvider() = default;
 
   uint32_t mVersion;  // NS_SOCKS_VERSION_4 or 5
 };

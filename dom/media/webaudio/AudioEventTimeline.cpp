@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "AudioEventTimeline.h"
-#include "MediaStreamGraph.h"
+#include "AudioNodeStream.h"
 
 #include "mozilla/ErrorResult.h"
 
@@ -76,7 +76,7 @@ AudioTimelineEvent::AudioTimelineEvent(Type aType, double aTime, float aValue,
   }
 }
 
-AudioTimelineEvent::AudioTimelineEvent(MediaStream* aStream)
+AudioTimelineEvent::AudioTimelineEvent(AudioNodeStream* aStream)
     : mType(Stream),
       mCurve(nullptr),
       mStream(aStream),
@@ -115,7 +115,7 @@ void AudioEventTimeline::GetValuesAtTimeHelper(TimeType aTime, float* aBuffer,
   MOZ_ASSERT(aSize);
 
   auto TimeOf = [](const AudioTimelineEvent& aEvent) -> TimeType {
-    return aEvent.template Time<TimeType>();
+    return aEvent.Time<TimeType>();
   };
 
   size_t eventIndex = 0;
@@ -185,7 +185,7 @@ template void AudioEventTimeline::GetValuesAtTimeHelper(int64_t aTime,
 template <class TimeType>
 float AudioEventTimeline::GetValueAtTimeOfEvent(
     const AudioTimelineEvent* aNext) {
-  TimeType time = aNext->template Time<TimeType>();
+  TimeType time = aNext->Time<TimeType>();
   switch (aNext->mType) {
     case AudioTimelineEvent::SetTarget:
       // SetTarget nodes can be handled no matter what their next node is
@@ -216,22 +216,37 @@ float AudioEventTimeline::GetValuesAtTimeHelperInternal(
     return mValue;
   }
 
+  // If this event is a curve event, this returns the end time of the curve.
+  // Otherwise, this returns the time of the event.
   auto TimeOf = [](const AudioTimelineEvent* aEvent) -> TimeType {
-    return aEvent->template Time<TimeType>();
+    if (aEvent->mType == AudioTimelineEvent::SetValueCurve) {
+      return aEvent->Time<TimeType>() + aEvent->mDuration;
+    }
+    return aEvent->Time<TimeType>();
+  };
+
+  // Value for an event. For a ValueCurve event, this is the value of the last
+  // element of the curve.
+  auto ValueOf = [](const AudioTimelineEvent* aEvent) -> float {
+    if (aEvent->mType == AudioTimelineEvent::SetValueCurve) {
+      return aEvent->mCurve[aEvent->mCurveLength - 1];
+    }
+    return aEvent->mValue;
   };
 
   // SetTarget nodes can be handled no matter what their next node is (if
   // they have one)
   if (aPrevious->mType == AudioTimelineEvent::SetTarget) {
     return ExponentialApproach(TimeOf(aPrevious), mLastComputedValue,
-                               aPrevious->mValue, aPrevious->mTimeConstant,
+                               ValueOf(aPrevious), aPrevious->mTimeConstant,
                                aTime);
   }
 
   // SetValueCurve events can be handled no matter what their next node is
-  // (if they have one)
-  if (aPrevious->mType == AudioTimelineEvent::SetValueCurve) {
-    return ExtractValueFromCurve(TimeOf(aPrevious), aPrevious->mCurve,
+  // (if they have one), when aTime is in the curve region.
+  if (aPrevious->mType == AudioTimelineEvent::SetValueCurve &&
+      aTime <= aPrevious->Time<TimeType>() + aPrevious->mDuration) {
+    return ExtractValueFromCurve(aPrevious->Time<TimeType>(), aPrevious->mCurve,
                                  aPrevious->mCurveLength, aPrevious->mDuration,
                                  aTime);
   }
@@ -245,8 +260,8 @@ float AudioEventTimeline::GetValuesAtTimeHelperInternal(
         // The value will be constant after the last event
         return aPrevious->mValue;
       case AudioTimelineEvent::SetValueCurve:
-        return ExtractValueFromCurve(TimeOf(aPrevious), aPrevious->mCurve,
-                                     aPrevious->mCurveLength,
+        return ExtractValueFromCurve(aPrevious->Time<TimeType>(),
+                                     aPrevious->mCurve, aPrevious->mCurveLength,
                                      aPrevious->mDuration, aTime);
       case AudioTimelineEvent::SetTarget:
         MOZ_FALLTHROUGH_ASSERT("AudioTimelineEvent::SetTarget");
@@ -263,12 +278,12 @@ float AudioEventTimeline::GetValuesAtTimeHelperInternal(
   // First, handle the case where our range ends up in a ramp event
   switch (aNext->mType) {
     case AudioTimelineEvent::LinearRamp:
-      return LinearInterpolate(TimeOf(aPrevious), aPrevious->mValue,
-                               TimeOf(aNext), aNext->mValue, aTime);
+      return LinearInterpolate(TimeOf(aPrevious), ValueOf(aPrevious),
+                               TimeOf(aNext), ValueOf(aNext), aTime);
 
     case AudioTimelineEvent::ExponentialRamp:
-      return ExponentialInterpolate(TimeOf(aPrevious), aPrevious->mValue,
-                                    TimeOf(aNext), aNext->mValue, aTime);
+      return ExponentialInterpolate(TimeOf(aPrevious), ValueOf(aPrevious),
+                                    TimeOf(aNext), ValueOf(aNext), aTime);
 
     case AudioTimelineEvent::SetValueAtTime:
     case AudioTimelineEvent::SetTarget:
@@ -289,8 +304,8 @@ float AudioEventTimeline::GetValuesAtTimeHelperInternal(
       // value is constant.
       return aPrevious->mValue;
     case AudioTimelineEvent::SetValueCurve:
-      return ExtractValueFromCurve(TimeOf(aPrevious), aPrevious->mCurve,
-                                   aPrevious->mCurveLength,
+      return ExtractValueFromCurve(aPrevious->Time<TimeType>(),
+                                   aPrevious->mCurve, aPrevious->mCurveLength,
                                    aPrevious->mDuration, aTime);
     case AudioTimelineEvent::SetTarget:
       MOZ_FALLTHROUGH_ASSERT("AudioTimelineEvent::SetTarget");
@@ -316,7 +331,7 @@ const AudioTimelineEvent* AudioEventTimeline::GetPreviousEvent(
   const AudioTimelineEvent* next = nullptr;
 
   auto TimeOf = [](const AudioTimelineEvent& aEvent) -> double {
-    return aEvent.template Time<double>();
+    return aEvent.Time<double>();
   };
 
   bool bailOut = false;

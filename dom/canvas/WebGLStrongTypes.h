@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -120,11 +120,7 @@ class StrongGLenum final {
   }
 
  public:
-  StrongGLenum()
-#ifdef DEBUG
-      : mValue(NonexistantGLenum)
-#endif
-  {
+  StrongGLenum() : mValue(NonexistantGLenum) {
     AssertOnceThatEnumValuesAreSorted();
   }
 
@@ -153,6 +149,8 @@ class StrongGLenum final {
   bool operator>=(const StrongGLenum& other) const {
     return get() >= other.get();
   }
+
+  explicit operator bool() const { return bool(get()); }
 
   static bool IsValueLegal(GLenum value) {
     if (value > UINT16_MAX) {
@@ -305,10 +303,9 @@ STRONG_GLENUM_VALUE(NONE), STRONG_GLENUM_VALUE(TEXTURE_2D),
     STRONG_GLENUM_VALUE(COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT),
     STRONG_GLENUM_VALUE(COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT),
     STRONG_GLENUM_VALUE(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT),
-    STRONG_GLENUM_VALUE(DEPTH_STENCIL),
-    STRONG_GLENUM_VALUE(ATC_RGBA_INTERPOLATED_ALPHA),
-    STRONG_GLENUM_VALUE(RGBA32F), STRONG_GLENUM_VALUE(RGB32F),
-    STRONG_GLENUM_VALUE(ALPHA32F_EXT), STRONG_GLENUM_VALUE(LUMINANCE32F_EXT),
+    STRONG_GLENUM_VALUE(DEPTH_STENCIL), STRONG_GLENUM_VALUE(RGBA32F),
+    STRONG_GLENUM_VALUE(RGB32F), STRONG_GLENUM_VALUE(ALPHA32F_EXT),
+    STRONG_GLENUM_VALUE(LUMINANCE32F_EXT),
     STRONG_GLENUM_VALUE(LUMINANCE_ALPHA32F_EXT), STRONG_GLENUM_VALUE(RGBA16F),
     STRONG_GLENUM_VALUE(RGB16F), STRONG_GLENUM_VALUE(ALPHA16F_EXT),
     STRONG_GLENUM_VALUE(LUMINANCE16F_EXT),
@@ -321,7 +318,6 @@ STRONG_GLENUM_VALUE(NONE), STRONG_GLENUM_VALUE(TEXTURE_2D),
     STRONG_GLENUM_VALUE(R11F_G11F_B10F), STRONG_GLENUM_VALUE(RGB9_E5),
     STRONG_GLENUM_VALUE(SRGB), STRONG_GLENUM_VALUE(SRGB8),
     STRONG_GLENUM_VALUE(SRGB_ALPHA), STRONG_GLENUM_VALUE(SRGB8_ALPHA8),
-    STRONG_GLENUM_VALUE(ATC_RGB), STRONG_GLENUM_VALUE(ATC_RGBA_EXPLICIT_ALPHA),
     STRONG_GLENUM_VALUE(DEPTH_COMPONENT32F),
     STRONG_GLENUM_VALUE(DEPTH32F_STENCIL8), STRONG_GLENUM_VALUE(RGB565),
     STRONG_GLENUM_VALUE(ETC1_RGB8_OES), STRONG_GLENUM_VALUE(RGBA32UI),

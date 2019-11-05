@@ -11,28 +11,23 @@
 #include "mozilla/dom/UIEvent.h"
 #include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/EventForwards.h"
-#include "nsIDOMMouseEvent.h"
 
 namespace mozilla {
 namespace dom {
 
-class MouseEvent : public UIEvent, public nsIDOMMouseEvent {
+class MouseEvent : public UIEvent {
  public:
   MouseEvent(EventTarget* aOwner, nsPresContext* aPresContext,
              WidgetMouseEventBase* aEvent);
 
-  NS_DECL_ISUPPORTS_INHERITED
-
-  // nsIDOMMouseEvent Interface
-  NS_DECL_NSIDOMMOUSEEVENT
-
-  // Forward to base class
-  NS_FORWARD_TO_UIEVENT
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(MouseEvent, UIEvent)
 
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return MouseEventBinding::Wrap(aCx, this, aGivenProto);
+    return MouseEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
+
+  virtual MouseEvent* AsMouseEvent() override { return this; }
 
   // Web IDL binding methods
   virtual uint32_t Which(CallerType aCallerType) override {
@@ -95,10 +90,6 @@ class MouseEvent : public UIEvent, public nsIDOMMouseEvent {
 
 }  // namespace dom
 }  // namespace mozilla
-
-#define NS_FORWARD_TO_MOUSEEVENT            \
-  NS_FORWARD_NSIDOMMOUSEEVENT(MouseEvent::) \
-  NS_FORWARD_TO_UIEVENT
 
 already_AddRefed<mozilla::dom::MouseEvent> NS_NewDOMMouseEvent(
     mozilla::dom::EventTarget* aOwner, nsPresContext* aPresContext,

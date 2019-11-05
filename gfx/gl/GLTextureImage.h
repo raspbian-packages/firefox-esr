@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -177,16 +177,15 @@ class BasicTextureImage : public TextureImage {
                     GLContext* aContext,
                     TextureImage::Flags aFlags = TextureImage::NoFlags);
 
-  virtual void BindTexture(GLenum aTextureUnit) override;
+  void BindTexture(GLenum aTextureUnit) override;
 
-  virtual bool DirectUpdate(
-      gfx::DataSourceSurface* aSurf, const nsIntRegion& aRegion,
-      const gfx::IntPoint& aFrom = gfx::IntPoint(0, 0)) override;
-  virtual GLuint GetTextureID() override { return mTexture; }
+  bool DirectUpdate(gfx::DataSourceSurface* aSurf, const nsIntRegion& aRegion,
+                    const gfx::IntPoint& aFrom = gfx::IntPoint(0, 0)) override;
+  GLuint GetTextureID() override { return mTexture; }
 
-  virtual void MarkValid() override { mTextureState = Valid; }
+  void MarkValid() override { mTextureState = Valid; }
 
-  virtual void Resize(const gfx::IntSize& aSize) override;
+  void Resize(const gfx::IntSize& aSize) override;
 
  protected:
   GLuint mTexture;
@@ -205,25 +204,24 @@ class TiledTextureImage final : public TextureImage {
       GLContext* aGL, gfx::IntSize aSize, TextureImage::ContentType,
       TextureImage::Flags aFlags = TextureImage::NoFlags,
       TextureImage::ImageFormat aImageFormat = gfx::SurfaceFormat::UNKNOWN);
-  ~TiledTextureImage();
+  virtual ~TiledTextureImage();
   void DumpDiv();
-  virtual void Resize(const gfx::IntSize& aSize) override;
-  virtual uint32_t GetTileCount() override;
-  virtual void BeginBigImageIteration() override;
-  virtual bool NextTile() override;
-  virtual void SetIterationCallback(BigImageIterationCallback aCallback,
-                                    void* aCallbackData) override;
-  virtual gfx::IntRect GetTileRect() override;
-  virtual GLuint GetTextureID() override {
+  void Resize(const gfx::IntSize& aSize) override;
+  uint32_t GetTileCount() override;
+  void BeginBigImageIteration() override;
+  bool NextTile() override;
+  void SetIterationCallback(BigImageIterationCallback aCallback,
+                            void* aCallbackData) override;
+  gfx::IntRect GetTileRect() override;
+  GLuint GetTextureID() override {
     return mImages[mCurrentImage]->GetTextureID();
   }
-  virtual bool DirectUpdate(
-      gfx::DataSourceSurface* aSurf, const nsIntRegion& aRegion,
-      const gfx::IntPoint& aFrom = gfx::IntPoint(0, 0)) override;
-  virtual void BindTexture(GLenum) override;
+  bool DirectUpdate(gfx::DataSourceSurface* aSurf, const nsIntRegion& aRegion,
+                    const gfx::IntPoint& aFrom = gfx::IntPoint(0, 0)) override;
+  void BindTexture(GLenum) override;
 
  protected:
-  virtual gfx::IntRect GetSrcTileRect() override;
+  gfx::IntRect GetSrcTileRect() override;
 
   unsigned int mCurrentImage;
   BigImageIterationCallback mIterationCallback;

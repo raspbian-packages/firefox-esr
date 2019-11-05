@@ -6,10 +6,11 @@
 
 #include "PerformanceTiming.h"
 #include "mozilla/dom/PerformanceTimingBinding.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/Telemetry.h"
 #include "nsIDocShell.h"
 #include "nsIDocShellTreeItem.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsITimedChannel.h"
 
 namespace mozilla {
@@ -20,14 +21,15 @@ NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(PerformanceTiming, mPerformance)
 NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(PerformanceTiming, AddRef)
 NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(PerformanceTiming, Release)
 
-/* static */ PerformanceTimingData* PerformanceTimingData::Create(
+/* static */
+PerformanceTimingData* PerformanceTimingData::Create(
     nsITimedChannel* aTimedChannel, nsIHttpChannel* aChannel,
     DOMHighResTimeStamp aZeroTime, nsAString& aInitiatorType,
     nsAString& aEntryName) {
   MOZ_ASSERT(NS_IsMainThread());
 
   // Check if resource timing is prefed off.
-  if (!nsContentUtils::IsResourceTimingEnabled()) {
+  if (!StaticPrefs::dom_enable_resource_timing()) {
     return nullptr;
   }
 
@@ -85,7 +87,7 @@ PerformanceTiming::PerformanceTiming(Performance* aPerformance,
 
   // Non-null aHttpChannel implies that this PerformanceTiming object is being
   // used for subresources, which is irrelevant to this probe.
-  if (!aHttpChannel && nsContentUtils::IsPerformanceTimingEnabled() &&
+  if (!aHttpChannel && StaticPrefs::dom_enable_performance() &&
       IsTopLevelContentDocument()) {
     Telemetry::Accumulate(Telemetry::TIME_TO_RESPONSE_START_MS,
                           mTimingData->ResponseStartHighRes(aPerformance) -
@@ -112,7 +114,7 @@ PerformanceTimingData::PerformanceTimingData(nsITimedChannel* aChannel,
   mInitialized = !!aChannel;
   mZeroTime = aZeroTime;
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+  if (!StaticPrefs::dom_enable_performance() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     mZeroTime = 0;
   }
@@ -200,17 +202,12 @@ PerformanceTimingData::PerformanceTimingData(nsITimedChannel* aChannel,
   // for resource timing, which can include document loads, both toplevel and
   // in subframes, and resources linked from a document.
   if (aHttpChannel) {
-    mTimingAllowed = CheckAllowedOrigin(aHttpChannel, aChannel);
-    bool redirectsPassCheck = false;
-    aChannel->GetAllRedirectsPassTimingAllowCheck(&redirectsPassCheck);
-    mReportCrossOriginRedirect = mTimingAllowed && redirectsPassCheck;
-
-    SetPropertiesFromHttpChannel(aHttpChannel);
+    SetPropertiesFromHttpChannel(aHttpChannel, aChannel);
   }
 }
 
 void PerformanceTimingData::SetPropertiesFromHttpChannel(
-    nsIHttpChannel* aHttpChannel) {
+    nsIHttpChannel* aHttpChannel, nsITimedChannel* aChannel) {
   MOZ_ASSERT(aHttpChannel);
 
   nsAutoCString protocol;
@@ -223,6 +220,13 @@ void PerformanceTimingData::SetPropertiesFromHttpChannel(
   if (mDecodedBodySize == 0) {
     mDecodedBodySize = mEncodedBodySize;
   }
+
+  mTimingAllowed = CheckAllowedOrigin(aHttpChannel, aChannel);
+  bool redirectsPassCheck = false;
+  aChannel->GetAllRedirectsPassTimingAllowCheck(&redirectsPassCheck);
+  mReportCrossOriginRedirect = mTimingAllowed && redirectsPassCheck;
+
+  aChannel->GetNativeServerTiming(mServerTiming);
 }
 
 PerformanceTiming::~PerformanceTiming() {}
@@ -232,7 +236,7 @@ DOMHighResTimeStamp PerformanceTimingData::FetchStartHighRes(
   MOZ_ASSERT(aPerformance);
 
   if (!mFetchStart) {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+    if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return mZeroTime;
     }
@@ -265,18 +269,12 @@ bool PerformanceTimingData::CheckAllowedOrigin(nsIHttpChannel* aResourceChannel,
   }
 
   // Check that the current document passes the ckeck.
-  nsCOMPtr<nsILoadInfo> loadInfo;
-  aResourceChannel->GetLoadInfo(getter_AddRefs(loadInfo));
-  if (!loadInfo) {
-    return false;
-  }
+  nsCOMPtr<nsILoadInfo> loadInfo = aResourceChannel->LoadInfo();
 
-  // TYPE_DOCUMENT loads have no loadingPrincipal.  And that's OK, because we
-  // never actually need to have a performance timing entry for TYPE_DOCUMENT
-  // loads.
+  // TYPE_DOCUMENT loads have no loadingPrincipal.
   if (loadInfo->GetExternalContentPolicyType() ==
       nsIContentPolicy::TYPE_DOCUMENT) {
-    return false;
+    return true;
   }
 
   nsCOMPtr<nsIPrincipal> principal = loadInfo->LoadingPrincipal();
@@ -288,7 +286,7 @@ bool PerformanceTimingData::CheckAllowedOrigin(nsIHttpChannel* aResourceChannel,
 }
 
 uint8_t PerformanceTimingData::GetRedirectCount() const {
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return 0;
   }
@@ -299,7 +297,7 @@ uint8_t PerformanceTimingData::GetRedirectCount() const {
 }
 
 bool PerformanceTimingData::ShouldReportCrossOriginRedirect() const {
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return false;
   }
@@ -314,7 +312,7 @@ DOMHighResTimeStamp PerformanceTimingData::AsyncOpenHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting() || mAsyncOpen.IsNull()) {
     return mZeroTime;
   }
@@ -331,7 +329,7 @@ DOMHighResTimeStamp PerformanceTimingData::WorkerStartHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting() || mWorkerStart.IsNull()) {
     return mZeroTime;
   }
@@ -358,7 +356,7 @@ DOMHighResTimeStamp PerformanceTimingData::RedirectStartHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -393,7 +391,7 @@ DOMHighResTimeStamp PerformanceTimingData::RedirectEndHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -417,7 +415,7 @@ DOMHighResTimeStamp PerformanceTimingData::DomainLookupStartHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -434,7 +432,7 @@ DOMHighResTimeStamp PerformanceTimingData::DomainLookupEndHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -460,7 +458,7 @@ DOMHighResTimeStamp PerformanceTimingData::ConnectStartHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -484,7 +482,7 @@ DOMHighResTimeStamp PerformanceTimingData::SecureConnectionStartHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -513,7 +511,7 @@ DOMHighResTimeStamp PerformanceTimingData::ConnectEndHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -538,7 +536,7 @@ DOMHighResTimeStamp PerformanceTimingData::RequestStartHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -558,7 +556,7 @@ DOMHighResTimeStamp PerformanceTimingData::ResponseStartHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -582,7 +580,7 @@ DOMHighResTimeStamp PerformanceTimingData::ResponseEndHighRes(
     Performance* aPerformance) {
   MOZ_ASSERT(aPerformance);
 
-  if (!nsContentUtils::IsPerformanceTimingEnabled() || !IsInitialized() ||
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
       nsContentUtils::ShouldResistFingerprinting()) {
     return mZeroTime;
   }
@@ -612,11 +610,11 @@ DOMTimeMilliSec PerformanceTiming::ResponseEnd() {
 
 JSObject* PerformanceTiming::WrapObject(JSContext* cx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return PerformanceTimingBinding::Wrap(cx, this, aGivenProto);
+  return PerformanceTiming_Binding::Wrap(cx, this, aGivenProto);
 }
 
 bool PerformanceTiming::IsTopLevelContentDocument() const {
-  nsCOMPtr<nsIDocument> document = mPerformance->GetDocumentIfCurrent();
+  nsCOMPtr<Document> document = mPerformance->GetDocumentIfCurrent();
   if (!document) {
     return false;
   }
@@ -630,6 +628,15 @@ bool PerformanceTiming::IsTopLevelContentDocument() const {
     return false;
   }
   return rootItem->ItemType() == nsIDocShellTreeItem::typeContent;
+}
+
+nsTArray<nsCOMPtr<nsIServerTiming>> PerformanceTimingData::GetServerTiming() {
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
+      !TimingAllowed() || nsContentUtils::ShouldResistFingerprinting()) {
+    return nsTArray<nsCOMPtr<nsIServerTiming>>();
+  }
+
+  return nsTArray<nsCOMPtr<nsIServerTiming>>(mServerTiming);
 }
 
 }  // namespace dom

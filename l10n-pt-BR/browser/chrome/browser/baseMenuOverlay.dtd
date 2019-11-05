@@ -20,16 +20,13 @@
 <!ENTITY productHelp2.accesskey   "u">
 <!ENTITY helpMac.commandkey       "?">
 
-<!ENTITY helpKeyboardShortcuts.label     "Atalhos do teclado">
+<!ENTITY helpKeyboardShortcuts.label     "Atalhos de teclado">
 <!ENTITY helpKeyboardShortcuts.accesskey "h">
 
-<!ENTITY helpSafeMode.label       "Reiniciar com as extensões desabilitadas…">
+<!ENTITY helpSafeMode.label       "Reiniciar com extensões desativadas…">
 <!ENTITY helpSafeMode.accesskey   "R">
-<!ENTITY helpSafeMode.stop.label       "Reiniciar com as extensões habilitadas">
+<!ENTITY helpSafeMode.stop.label       "Reiniciar com extensões ativadas">
 <!ENTITY helpSafeMode.stop.accesskey   "R">
-
-<!ENTITY healthReport2.label      "Relatório de integridade do &brandShorterName;">
-<!ENTITY healthReport2.accesskey  "e">
 
 <!ENTITY helpTroubleshootingInfo.label      "Informações para resolver problemas">
 <!ENTITY helpTroubleshootingInfo.accesskey  "I">
@@ -37,7 +34,7 @@
 <!ENTITY helpFeedbackPage.label      "Enviar opinião…">
 <!ENTITY helpFeedbackPage.accesskey  "n">
 
-<!ENTITY helpShowTour2.label            "Introdução ao &brandShorterName;">
+<!ENTITY helpShowTour2.label            "Tutorial do &brandShorterName;">
 <!ENTITY helpShowTour2.accesskey        "o">
 
 <!ENTITY preferencesCmdMac.label        "Preferências…">

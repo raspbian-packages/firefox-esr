@@ -76,7 +76,8 @@ class ChannelMediaResource
 
  public:
   ChannelMediaResource(MediaResourceCallback* aDecoder, nsIChannel* aChannel,
-                       nsIURI* aURI, bool aIsPrivateBrowsing = false);
+                       nsIURI* aURI, int64_t aStreamLength,
+                       bool aIsPrivateBrowsing = false);
   ~ChannelMediaResource();
 
   // These are called on the main thread by MediaCache. These must
@@ -219,7 +220,11 @@ class ChannelMediaResource
   // values are out of range.
   nsresult ParseContentRangeHeader(nsIHttpChannel* aHttpChan,
                                    int64_t& aRangeStart, int64_t& aRangeEnd,
-                                   int64_t& aRangeTotal);
+                                   int64_t& aRangeTotal) const;
+
+  // Calculates the length of the resource using HTTP headers, if this
+  // is an HTTP channel. Returns -1 on failure, or for non HTTP channels.
+  int64_t CalculateStreamLength() const;
 
   struct Closure {
     uint32_t mLoadID;
@@ -236,6 +241,8 @@ class ChannelMediaResource
   bool mClosed = false;
   // The last reported seekability state for the underlying channel
   bool mIsTransportSeekable = false;
+  // Length of the content first reported.
+  int64_t mFirstReadLength = -1;
   RefPtr<Listener> mListener;
   // A mono-increasing integer to uniquely identify the channel we are loading.
   uint32_t mLoadID = 0;
@@ -245,6 +252,9 @@ class ChannelMediaResource
   MediaCacheStream mCacheStream;
 
   ChannelSuspendAgent mSuspendAgent;
+
+  // The size of the stream if known at construction time (such as with blob)
+  const int64_t mKnownStreamLength;
 };
 
 }  // namespace mozilla

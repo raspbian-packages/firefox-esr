@@ -7,8 +7,7 @@
 #include "nsAutoWindowStateHelper.h"
 
 #include "mozilla/dom/Event.h"
-#include "nsIDocument.h"
-#include "nsIDOMEvent.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDOMWindow.h"
 #include "nsPIDOMWindow.h"
 #include "nsString.h"
@@ -47,7 +46,7 @@ bool nsAutoWindowStateHelper::DispatchEventToChrome(const char* aEventName) {
 
   // The functions of nsContentUtils do not provide the required behavior,
   // so the following is inlined.
-  nsIDocument* doc = mWindow->GetExtantDoc();
+  Document* doc = mWindow->GetExtantDoc();
   if (!doc) {
     return true;
   }
@@ -64,7 +63,7 @@ bool nsAutoWindowStateHelper::DispatchEventToChrome(const char* aEventName) {
   event->WidgetEventPtr()->mFlags.mOnlyChromeDispatch = true;
 
   nsCOMPtr<EventTarget> target = do_QueryInterface(mWindow);
-  bool defaultActionEnabled;
-  target->DispatchEvent(event, &defaultActionEnabled);
+  bool defaultActionEnabled =
+      target->DispatchEvent(*event, CallerType::System, IgnoreErrors());
   return defaultActionEnabled;
 }

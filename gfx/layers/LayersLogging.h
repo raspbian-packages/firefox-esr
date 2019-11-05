@@ -7,17 +7,21 @@
 #ifndef GFX_LAYERSLOGGING_H
 #define GFX_LAYERSLOGGING_H
 
-#include "FrameMetrics.h"             // for FrameMetrics, etc
+#include "FrameMetrics.h"             // for FrameMetrics
 #include "mozilla/gfx/Matrix.h"       // for Matrix4x4
 #include "mozilla/gfx/Point.h"        // for IntSize, etc
 #include "mozilla/gfx/TiledRegion.h"  // for TiledRegion
 #include "mozilla/gfx/Types.h"        // for SamplingFilter, SurfaceFormat
+#include "mozilla/layers/APZTypes.h"  // for SLGuidAndRenderRoot
 #include "mozilla/layers/CompositorTypes.h"  // for TextureFlags
 #include "mozilla/layers/WebRenderLayersLogging.h"
+#include "mozilla/layers/ZoomConstraints.h"
 #include "nsAString.h"
 #include "nsPrintfCString.h"  // for nsPrintfCString
 #include "nsRegion.h"         // for nsRegion, nsIntRegion
 #include "nscore.h"           // for nsACString, etc
+
+struct nsRectAbsolute;
 
 namespace mozilla {
 
@@ -29,11 +33,12 @@ struct RectTyped;
 enum class ImageFormat;
 
 namespace layers {
+struct ZoomConstraints;
 
 void AppendToString(std::stringstream& aStream, const void* p,
                     const char* pfx = "", const char* sfx = "");
 
-void AppendToString(std::stringstream& aStream, FrameMetrics::ViewID n,
+void AppendToString(std::stringstream& aStream, ScrollableLayerGuid::ViewID n,
                     const char* pfx = "", const char* sfx = "");
 
 void AppendToString(std::stringstream& aStream, const gfx::Color& c,
@@ -43,6 +48,9 @@ void AppendToString(std::stringstream& aStream, const nsPoint& p,
                     const char* pfx = "", const char* sfx = "");
 
 void AppendToString(std::stringstream& aStream, const nsRect& r,
+                    const char* pfx = "", const char* sfx = "");
+
+void AppendToString(std::stringstream& aStream, const nsRectAbsolute& r,
                     const char* pfx = "", const char* sfx = "");
 
 template <class T>
@@ -84,6 +92,28 @@ void AppendToString(std::stringstream& aStream,
   aStream << pfx;
   aStream << nsPrintfCString("(x=%d, y=%d, w=%d, h=%d)", r.X(), r.Y(),
                              r.Width(), r.Height())
+                 .get();
+  aStream << sfx;
+}
+
+template <class T>
+void AppendToString(std::stringstream& aStream,
+                    const mozilla::gfx::RectAbsoluteTyped<T>& r,
+                    const char* pfx = "", const char* sfx = "") {
+  aStream << pfx;
+  aStream << nsPrintfCString("(l=%f, t=%f, r=%f, b=%f)", r.Left(), r.Top(),
+                             r.Right(), r.Bottom())
+                 .get();
+  aStream << sfx;
+}
+
+template <class T>
+void AppendToString(std::stringstream& aStream,
+                    const mozilla::gfx::IntRectAbsoluteTyped<T>& r,
+                    const char* pfx = "", const char* sfx = "") {
+  aStream << pfx;
+  aStream << nsPrintfCString("(l=%d, t=%d, r=%d, b=%d)", r.Left(), r.Top(),
+                             r.Right(), r.Bottom())
                  .get();
   aStream << sfx;
 }
@@ -150,6 +180,9 @@ void AppendToString(std::stringstream& aStream, const FrameMetrics& m,
                     bool detailed = false);
 
 void AppendToString(std::stringstream& aStream, const ScrollableLayerGuid& s,
+                    const char* pfx = "", const char* sfx = "");
+
+void AppendToString(std::stringstream& aStream, const SLGuidAndRenderRoot& s,
                     const char* pfx = "", const char* sfx = "");
 
 void AppendToString(std::stringstream& aStream, const ZoomConstraints& z,

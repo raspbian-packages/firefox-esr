@@ -123,27 +123,6 @@ LayoutDeviceIntRegion nsWindow::GetRegionToPaint(bool aForceFullRepaint,
   return LayoutDeviceIntRegion(WinUtils::ToIntRect(ps.rcPaint));
 }
 
-#define WORDSSIZE(x) ((x).width * (x).height)
-static bool EnsureSharedSurfaceSize(IntSize size) {
-  IntSize screenSize;
-  screenSize.height = GetSystemMetrics(SM_CYSCREEN);
-  screenSize.width = GetSystemMetrics(SM_CXSCREEN);
-
-  if (WORDSSIZE(screenSize) > WORDSSIZE(size)) size = screenSize;
-
-  if (WORDSSIZE(screenSize) < WORDSSIZE(size))
-    NS_WARNING("Trying to create a shared surface larger than the screen");
-
-  if (!sSharedSurfaceData ||
-      (WORDSSIZE(size) > WORDSSIZE(sSharedSurfaceSize))) {
-    sSharedSurfaceSize = size;
-    sSharedSurfaceData =
-        MakeUniqueFallible<uint8_t[]>(WORDSSIZE(sSharedSurfaceSize) * 4);
-  }
-
-  return !sSharedSurfaceData;
-}
-
 nsIWidgetListener* nsWindow::GetPaintListener() {
   if (mDestroyCalled) return nullptr;
   return mAttachedWidgetListener ? mAttachedWidgetListener : mWidgetListener;
@@ -215,6 +194,16 @@ bool nsWindow::OnPaint(HDC aDC, uint32_t aNestingLevel) {
     return true;
   }
 
+  PAINTSTRUCT ps;
+
+  // Avoid starting the GPU process for the initial navigator:blank window.
+  if (mIsEarlyBlankWindow) {
+    // Call BeginPaint/EndPaint or Windows will keep sending us messages.
+    ::BeginPaint(mWnd, &ps);
+    ::EndPaint(mWnd, &ps);
+    return true;
+  }
+
   if (GetLayerManager()->AsKnowsCompositor() &&
       !mBounds.IsEqualEdges(mLastPaintBounds)) {
     // Do an early async composite so that we at least have something on the
@@ -222,8 +211,6 @@ bool nsWindow::OnPaint(HDC aDC, uint32_t aNestingLevel) {
     GetLayerManager()->ScheduleComposite();
   }
   mLastPaintBounds = mBounds;
-
-  PAINTSTRUCT ps;
 
 #ifdef MOZ_XUL
   if (!aDC && (eTransparencyTransparent == mTransparencyMode)) {
@@ -293,8 +280,8 @@ bool nsWindow::OnPaint(HDC aDC, uint32_t aNestingLevel) {
 
   bool result = true;
   if (!region.IsEmpty() && listener) {
-  // Should probably pass in a real region here, using GetRandomRgn
-  // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/clipping_4q0e.asp
+    // Should probably pass in a real region here, using GetRandomRgn
+    // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/clipping_4q0e.asp
 
 #ifdef WIDGET_DEBUG_OUTPUT
     debug_DumpPaintEvent(stdout, this, region.ToUnknownRegion(), "noname",

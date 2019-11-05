@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "مرحبا">
 <!ENTITY firstrun_urlbar_message2 "شكرا على اختيارك &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "مرحبًا في &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "متصفّح هواتف حديث من موزيلا، المؤسسة غير الربحية الملتزمة تجاه وِب حر ومفتوح.">
+<!ENTITY newfirstrun_urlbar_subtext "سريع وخاص ويقف صفًا صفًا معك.">
 <!ENTITY firstrun_panel_title_privacy "الخصوصية">
 <!ENTITY firstrun_privacy_message "تصفح و لا أحد يراقبك">
 <!ENTITY firstrun_privacy_subtext "التّصفّح الخاص مع الحماية من التّعقّب يحجب المتعقبات وأنت تتصفّح ولا يتذكر التأريخ عندما تنتهي من التصفح.">
+<!ENTITY newfirstrun_privacy_subtext "يحجب التصفح الخاص متعقّبات الإعلانات التي تسير ورائك وأنت تجوب الوِب.">
 <!ENTITY firstrun_panel_title_customize "خصّص">
 <!ENTITY firstrun_customize_message "اجعل &brandShortName; ينتمي إليك.">
 <!ENTITY firstrun_customize_subtext "خصِّص &brandShortName; مستخدمًا الإضافات. احجب الإعلانات، أو أضف مزايا أو اختر سمة جديدة تعكس شخصيتك.">
@@ -20,19 +23,17 @@
 <!ENTITY firstrun_sync_title "تزامُن">
 <!ENTITY firstrun_sync_message2 "أكمل من حيث انتهيت.">
 <!ENTITY firstrun_sync_subtext2 "استعمل «تزامن» لتجد العلامات، وكلمات السر وغيرها من الأمور التي تحفظها في &brandShortName; على أجهزتك.">
+<!ENTITY newfirstrun_sync_subtext "زامِن ما حفظته على المحمول في فَيَرفُكس على سطح المكتب، بكل أمان وأقصى خصوصية.">
+<!ENTITY updatednewfirstrun_sync_subtext "لِج إلى حسابك لتستفد أقصى استفادة من &brandShortName;">
 <!ENTITY firstrun_signin_message "اتصل لتبدأ">
 <!ENTITY firstrun_signin_button "لِج إلى «المزامنة»">
+<!ENTITY newfirstrun_signin_button "فعّل «تزامُن»">
+<!ENTITY updatednewfirstrun_signin_button "لِج إلى &brandShortName;">
 <!ENTITY  onboard_start_button_browser "ابدأ التصفح">
 <!ENTITY firstrun_button_notnow "ليس الآن">
 <!ENTITY firstrun_button_next "التالي">
 
 <!ENTITY firstrun_tabqueue_title "الروابط">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "فعّل طابور الألسنة">
-<!ENTITY firstrun_tabqueue_subtext_off "احفظ الروابط لقراءتها لاحقا في &brandShortName; عند الضغط عليها في التطبيقات الأخرى.">
-
-<!ENTITY firstrun_tabqueue_message_on "تم">
-<!ENTITY firstrun_tabqueue_subtext_on "يمكنك متى ما أحببت تعطيل هذا في &settings; تحت &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "المقالات">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -69,6 +70,20 @@
 <!ENTITY  crash_restart_label "أعِد تشغيل &brandShortName;">
 
 <!ENTITY url_bar_default_text2 "ابحث أو أدخل عنوانا">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "ابحث في الوِب">
+<!ENTITY search_widget_default_cropped_text "ابحث">
+<!ENTITY search_widget_logo_description "ابحث في الوِب عبر &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "استخدم قارئ QR للبحث أو لإدخال عنوان">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "استخدم المِكرفون لديك للبحث أو لإدخال عنوان">
 
 <!ENTITY bookmark "علامة">
 <!ENTITY bookmark_remove "أزل العلامة">
@@ -206,7 +221,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "استعادة الألسنة، و حافظ البيانات، و أدوات المطوّرين">
 <!ENTITY pref_category_notifications "التنبيهات">
-<!ENTITY pref_category_notifications_summary "المزايا الجديدة، و تحديثات الموقع">
+<!ENTITY pref_category_notifications_summary2 "مزايا جديدة وفوائد عن المنتج">
 <!ENTITY pref_developer_remotedebugging_usb "التنقيح عن بعد عبر USB">
 <!ENTITY pref_developer_remotedebugging_wifi "التنقيح عن بعد عبر واي-فاي">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "يتطلّب التنقيح عبر واي-فاي تنصيب برنامج لقراءة رموز QR على جهازك.">
@@ -288,6 +303,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "اطّلع على المزيد حول &brandShortName; ومنتجات &vendorShortName; الأخرى">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; ‏> &pref_category_datareporting; ‏> &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(لتفعيل هذا الخيار، لا بد أن يكون &pref_feature_tips_notification_enabling_path; مفعّلا.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -327,6 +348,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "اذهب إلى الإعدادات">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "يُضيف اللسان الجديد إلى صفّ الألسنة&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +385,8 @@
 <!ENTITY pref_use_system_font_size_summary "غيّر حجم محتوى الوِب بناء على حجم خط النظام">
 
 <!ENTITY pref_media_autoplay_enabled "اسمح بالتشغيل التلقائي">
-<!ENTITY pref_media_autoplay_enabled_summary "تحكم في السماح للمواقع بتشغيل الڤديو و غيره من الوسائط تلقائيا">
+<!ENTITY pref_media_autoplay_allow "اسمح بالتشغيل التلقائي">
+<!ENTITY pref_media_autoplay_block "امنع التشغيل التلقائي">
 <!ENTITY pref_zoom_force_enabled "فعّل التقريب دائمًا">
 <!ENTITY pref_zoom_force_enabled_summary "تخطى الإعدادات لتتمكن من تقريب أي صفحة">
 <!ENTITY pref_voice_input "إدخال الصوت">
@@ -384,14 +409,17 @@
 <!ENTITY pref_private_data_searchHistory "تأريخ البحث">
 <!ENTITY pref_private_data_formdata2 "تأريخ الاستمارات">
 <!ENTITY pref_private_data_cookies2 "الكعكات و جلسات الولوج النشطة">
-<!ENTITY pref_private_data_passwords2 "جلسات الولوج المحفوظة">
 <!ENTITY pref_private_data_cache "الخبيئة">
 <!ENTITY pref_private_data_offlineApps "بيانات المواقع للعمل دون اتصال">
 <!ENTITY pref_private_data_siteSettings2 "إعدادات الموقع">
 <!ENTITY pref_private_data_downloadFiles2 "التنزيلات">
 <!ENTITY pref_private_data_syncedTabs "الألسنة المُزامنة">
 
-<!ENTITY pref_default_browser "اجعله المتصفح المبدئي">
+<!ENTITY pref_default_browser2 "اضبط &brandShortName; ليكون متصفّحك المبدئي">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "انقر ”تطبيق المتصفح“ واختر &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "زُر موقع دعم موزيلا">
 <!ENTITY pref_about_firefox "عن &brandShortName;">
 <!ENTITY pref_vendor_faqs "الأسئلة الأكثر شيوعًا">
@@ -437,6 +465,11 @@
 <!ENTITY datareporting_crashreporter_title_short "مُبلّغ الانهيار">
 <!ENTITY datareporting_wifi_title2 "خدمات التموضع من &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "ساعد &vendorShortName; في رسم خريطة العالم! شارك بيانات التموضع من واي-فاي والاتصال الهاتفي لتحسين خدماتنا للتموضع الجغرافي.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "خدمات التموضع من &vendorShortName; تعمل">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -481,6 +514,10 @@
 <!ENTITY find_prev "السابق">
 <!ENTITY find_next "التالي">
 <!ENTITY find_close "أغلِق">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "لا وجود للعبارة">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -543,7 +580,7 @@
 <!ENTITY pref_compact_tabs_summary2 "رتب الألسنة في أعمدة في الوضع العرْضي">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "أزِيلت الصفحة">
 <!ENTITY folder_removed "أُزيل المجلد">
@@ -642,6 +679,7 @@
 <!ENTITY filepicker_audio_title "اختر أو سجل صوتًا">
 <!ENTITY filepicker_image_title "اختر أو التقط صورة">
 <!ENTITY filepicker_video_title "اختر أو سجل فديو">
+
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "تتصل ب‍">
@@ -758,7 +796,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "آخر مزامنة: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "تاريخ آخر مزامنة: أبدًا">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -819,15 +857,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "تعذّر فتح &brandShortName;. رجاء أعِد تنصيبه ثم جرب مرة أخرى.">
 
-<!ENTITY eol_notification_title2 "لن يُحدث &brandShortName; بعد الآن">
-<!ENTITY eol_notification_summary "انقر لتطلع على المزيد">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; مُحدَّث">
 <!ENTITY whatsnew_notification_summary "اعرف ما الجديد في هذا الإصدار">
-
-<!ENTITY promotion_add_page_shortcut "أضِف اختصارا للصفحة">
 
 <!ENTITY helper_first_offline_bookmark_title "اقرأ دون اتصال">
 <!ENTITY helper_first_offline_bookmark_message "اعثر على عناصر منظور القارئ في العلامات حتى بدون اتّصال.">
@@ -878,3 +911,24 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "أضِف إلى شاشة البداية">
 <!ENTITY pwa_continue_to_website "تابِع نحو الموقع">
 <!ENTITY pwa_onboarding_sumo "يمكنك إضافة هذا الموقع إلى شاشة البداية لتصل إليه بسرعة وتتصفّحه كأي تطبيق آخر.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "شغّل">
+<!ENTITY pip_play_button_description "استأنف التشغيل">
+<!ENTITY pip_pause_button_title "ألبِث">
+<!ENTITY pip_pause_button_description "ألبِث التشغيل">
+
+<!ENTITY pref_notification_settings_link "أدِر إعدادات التنبيهات">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "المتصفح">
+<!ENTITY mls_notification_channel "خدمات التموضع من &vendorShortName;">
+<!ENTITY download_notification_channel "التنزيلات">
+<!ENTITY media_notification_channel2 "الصوت والڤديو">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "فوائد وخُدع لِ‍‍ &vendorShortName;">
+<!ENTITY updater_notification_channel "تحديثات التطبيق">
+<!ENTITY synced_tabs_notification_channel "الألسنة المُزامنة">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "تنبيهات المواقع">

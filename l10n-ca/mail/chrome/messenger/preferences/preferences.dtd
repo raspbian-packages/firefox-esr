@@ -2,12 +2,15 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
+<!ENTITY  windowClose.key                  "w">
+<!ENTITY  preferencesDefaultTitleMac.title "Preferències">
+<!ENTITY  preferencesDefaultTitleWin.title "Opcions">
+<!ENTITY  preferencesCloseButton.label     "Tanca">
+<!ENTITY  preferencesCloseButton.accesskey "T">
+
 <!ENTITY  prefWindow.titleWin     "Opcions">
 <!ENTITY  prefWindow.titleGNOME   "Preferències del &brandShortName;">
 <!ENTITY  prefWindow.titleMAC     "Preferències">
-<!ENTITY  prefWindow.styleWindows "width: 50em; min-height: 38.5em;">
-<!ENTITY  prefWindow.styleMac     "width: 58em;">
-<!ENTITY  prefWindow.styleGNOME   "width: 47em; min-height: 43em;">
 
 <!ENTITY paneGeneral.title        "General">
 <!ENTITY paneDisplay.title        "Visualització">
@@ -16,8 +19,11 @@
 <!ENTITY paneAttachments.title    "Adjuncions">
 <!ENTITY panePrivacy.title        "Privadesa">
 <!ENTITY paneSecurity.title       "Seguretat">
+<!ENTITY paneLightning.title      "Calendari">
 <!ENTITY paneAdvanced.title       "Avançat">
 <!ENTITY paneAccount.title        "Comptes">
+
+<!ENTITY addonsButton.label       "Extensions i temes">
 
 <!ENTITY okButton.title           "D'acord">
 <!ENTITY okButton.accesskey       "D">

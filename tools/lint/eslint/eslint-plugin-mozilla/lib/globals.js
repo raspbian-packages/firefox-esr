@@ -11,7 +11,8 @@
 const path = require("path");
 const fs = require("fs");
 const helpers = require("./helpers");
-const escope = require("escope");
+const eslintScope = require("eslint-scope");
+const htmlparser = require("htmlparser2");
 
 /**
  * Parses a list of "name:boolean_value" or/and "name" options divided by comma
@@ -44,8 +45,8 @@ function parseBooleanConfig(string, comment) {
     }
 
     items[name] = {
-      value: (value === "true"),
-      comment
+      value: value === "true",
+      comment,
     };
   });
 
@@ -64,6 +65,13 @@ const globalCache = new Map();
  * into loops whilst the discovery is in progress.
  */
 var globalDiscoveryInProgressForFiles = new Set();
+
+/**
+ * When looking for globals in HTML files, it can be common to have more than
+ * one script tag with inline javascript. These will normally be called together,
+ * so we store the globals for just the last HTML file processed.
+ */
+var lastHTMLGlobals = {};
 
 /**
  * An object that returns found globals for given AST node types. Each prototype
@@ -97,7 +105,7 @@ GlobalsForNode.prototype = {
         for (let name of Object.keys(values)) {
           globals.push({
             name,
-            writable: values[name].value
+            writable: values[name].value,
           });
         }
         // We matched globals, so we won't match import-globals-from.
@@ -127,7 +135,10 @@ GlobalsForNode.prototype = {
     // Note: We check the expression types here and only call the necessary
     // functions to aid performance.
     if (node.expression.type === "AssignmentExpression") {
-      globals = helpers.convertThisAssignmentExpressionToGlobals(node, isGlobal);
+      globals = helpers.convertThisAssignmentExpressionToGlobals(
+        node,
+        isGlobal
+      );
     } else if (node.expression.type === "CallExpression") {
       globals = helpers.convertCallExpressionToGlobals(node, isGlobal);
     }
@@ -136,13 +147,16 @@ GlobalsForNode.prototype = {
     // this is a worker. It would be nice if eslint gave us a way of getting
     // the environment directly.
     if (globalScope && globalScope.set.get("importScripts")) {
-      let workerDetails = helpers.convertWorkerExpressionToGlobals(node,
-        isGlobal, this.dirname);
+      let workerDetails = helpers.convertWorkerExpressionToGlobals(
+        node,
+        isGlobal,
+        this.dirname
+      );
       globals = globals.concat(workerDetails);
     }
 
     return globals;
-  }
+  },
 };
 
 module.exports = {
@@ -153,6 +167,8 @@ module.exports = {
    *
    * @param  {String} filePath
    *         The absolute path of the file to be parsed.
+   * @param  {Object} astOptions
+   *         Extra options to pass to the parser.
    * @return {Array}
    *         An array of objects that contain details about the globals:
    *         - {String} name
@@ -160,7 +176,7 @@ module.exports = {
    *         - {Boolean} writable
    *                     If the global is writeable or not.
    */
-  getGlobalsForFile(filePath) {
+  getGlobalsForFile(filePath, astOptions = {}) {
     if (globalCache.has(filePath)) {
       return globalCache.get(filePath);
     }
@@ -175,16 +191,15 @@ module.exports = {
     let content = fs.readFileSync(filePath, "utf8");
 
     // Parse the content into an AST
-    let ast = helpers.getAST(content);
+    let ast = helpers.getAST(content, astOptions);
 
     // Discover global declarations
-    // The second parameter works around https://github.com/babel/babel-eslint/issues/470
-    let scopeManager = escope.analyze(ast, {});
+    let scopeManager = eslintScope.analyze(ast, astOptions);
     let globalScope = scopeManager.acquire(ast);
 
     let globals = Object.keys(globalScope.variables).map(v => ({
       name: globalScope.variables[v].name,
-      writable: true
+      writable: true,
     }));
 
     // Walk over the AST to find any of our custom globals
@@ -204,6 +219,91 @@ module.exports = {
   },
 
   /**
+   * Returns all the globals for an html file that are defined by imported
+   * scripts (i.e. <script src="foo.js">).
+   *
+   * This function will cache results for one html file only - we expect
+   * this to be called sequentially for each chunk of a HTML file, rather
+   * than chucks of different files in random order.
+   *
+   * @param  {String} filePath
+   *         The absolute path of the file to be parsed.
+   * @return {Array}
+   *         An array of objects that contain details about the globals:
+   *         - {String} name
+   *                    The name of the global.
+   *         - {Boolean} writable
+   *                     If the global is writeable or not.
+   */
+  getImportedGlobalsForHTMLFile(filePath) {
+    if (lastHTMLGlobals.filename === filePath) {
+      return lastHTMLGlobals.globals;
+    }
+
+    let dir = path.dirname(filePath);
+    let globals = [];
+
+    let content = fs.readFileSync(filePath, "utf8");
+    let scriptSrcs = [];
+
+    // We use htmlparser as this ensures we find the script tags correctly.
+    let parser = new htmlparser.Parser({
+      onopentag(name, attribs) {
+        if (name === "script" && "src" in attribs) {
+          scriptSrcs.push({
+            src: attribs.src,
+            type: "type" in attribs ? attribs.type : "script",
+          });
+        }
+      },
+    });
+
+    parser.parseComplete(content);
+
+    for (let script of scriptSrcs) {
+      // Ensure that the script src isn't just "".
+      if (!script.src) {
+        continue;
+      }
+      let scriptName;
+      if (script.src.includes("http:")) {
+        // We don't handle this currently as the paths are complex to match.
+      } else if (script.src.includes("chrome")) {
+        // This is one way of referencing test files.
+        script.src = script.src.replace("chrome://mochikit/content/", "/");
+        scriptName = path.join(
+          helpers.rootDir,
+          "testing",
+          "mochitest",
+          script.src
+        );
+      } else if (script.src.includes("SimpleTest")) {
+        // This is another way of referencing test files...
+        scriptName = path.join(
+          helpers.rootDir,
+          "testing",
+          "mochitest",
+          script.src
+        );
+      } else {
+        // Fallback to hoping this is a relative path.
+        scriptName = path.join(dir, script.src);
+      }
+      if (scriptName && fs.existsSync(scriptName)) {
+        globals.push(
+          ...module.exports.getGlobalsForFile(scriptName, {
+            ecmaVersion: helpers.getECMAVersion(),
+            sourceType: script.type,
+          })
+        );
+      }
+    }
+
+    lastHTMLGlobals.filePath = filePath;
+    return (lastHTMLGlobals.globals = globals);
+  },
+
+  /**
    * Intended to be used as-is for an ESLint rule that parses for globals in
    * the current file and recurses through import-globals-from directives.
    *
@@ -216,8 +316,14 @@ module.exports = {
     let parser = {
       Program(node) {
         globalScope = context.getScope();
-      }
+      },
     };
+    let filename = context.getFilename();
+
+    let extraHTMLGlobals = [];
+    if (filename.endsWith(".html") || filename.endsWith(".xhtml")) {
+      extraHTMLGlobals = module.exports.getImportedGlobalsForHTMLFile(filename);
+    }
 
     // Install thin wrappers around GlobalsForNode
     let handler = new GlobalsForNode(helpers.getAbsoluteFilePath(context));
@@ -226,12 +332,17 @@ module.exports = {
       parser[type] = function(node) {
         if (type === "Program") {
           globalScope = context.getScope();
+          helpers.addGlobals(extraHTMLGlobals, globalScope);
         }
         let globals = handler[type](node, context.getAncestors(), globalScope);
-        helpers.addGlobals(globals, globalScope);
+        helpers.addGlobals(
+          globals,
+          globalScope,
+          node.type !== "Program" && node
+        );
       };
     }
 
     return parser;
-  }
+  },
 };

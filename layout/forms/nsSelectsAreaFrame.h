@@ -9,12 +9,16 @@
 #include "mozilla/Attributes.h"
 #include "nsBlockFrame.h"
 
-class nsSelectsAreaFrame : public nsBlockFrame {
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
+class nsSelectsAreaFrame final : public nsBlockFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsSelectsAreaFrame)
 
-  friend nsContainerFrame* NS_NewSelectsAreaFrame(nsIPresShell* aShell,
-                                                  nsStyleContext* aContext,
+  friend nsContainerFrame* NS_NewSelectsAreaFrame(mozilla::PresShell* aShell,
+                                                  ComputedStyle* aStyle,
                                                   nsFrameState aFlags);
 
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
@@ -30,8 +34,9 @@ class nsSelectsAreaFrame : public nsBlockFrame {
   nscoord BSizeOfARow() const { return mBSizeOfARow; }
 
  protected:
-  explicit nsSelectsAreaFrame(nsStyleContext* aContext)
-      : nsBlockFrame(aContext, kClassID),
+  explicit nsSelectsAreaFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext)
+      : nsBlockFrame(aStyle, aPresContext, kClassID),
         // initialize to wacky value so first call of
         // nsSelectsAreaFrame::Reflow will always invalidate
         mBSizeOfARow(nscoord_MIN) {}

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -39,7 +39,7 @@ class XMLUtils {
   /**
    * Returns true if the given string has only whitespace characters
    */
-  static bool isWhitespace(const nsString& aText);
+  static bool isWhitespace(const nsAString& aText);
 
   /**
    * Normalizes the value of a XML processingInstruction
@@ -49,7 +49,7 @@ class XMLUtils {
   /**
    * Returns true if the given string is a valid XML QName
    */
-  static bool isValidQName(const nsString& aQName, const char16_t** aColon);
+  static bool isValidQName(const nsAString& aQName, const char16_t** aColon);
 
   /**
    * Returns true if the given character represents an Alpha letter

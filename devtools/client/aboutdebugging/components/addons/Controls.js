@@ -7,26 +7,36 @@
 
 "use strict";
 
-loader.lazyImporter(this, "AddonManager",
-  "resource://gre/modules/AddonManager.jsm");
+loader.lazyImporter(
+  this,
+  "AddonManager",
+  "resource://gre/modules/AddonManager.jsm"
+);
 
-const { Cc, Ci } = require("chrome");
-const { createFactory, Component } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  Component,
+} = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
+const {
+  openTemporaryExtension,
+} = require("devtools/client/aboutdebugging/modules/addon");
 const Services = require("Services");
 const AddonsInstallError = createFactory(require("./InstallError"));
 
 const Strings = Services.strings.createBundle(
-  "chrome://devtools/locale/aboutdebugging.properties");
+  "chrome://devtools/locale/aboutdebugging.properties"
+);
 
-const MORE_INFO_URL = "https://developer.mozilla.org/docs/Tools" +
-                      "/about:debugging#Enabling_add-on_debugging";
+const MORE_INFO_URL =
+  "https://developer.mozilla.org/docs/Tools" +
+  "/about:debugging#Enabling_add-on_debugging";
 
 class AddonsControls extends Component {
   static get propTypes() {
     return {
-      debugDisabled: PropTypes.bool
+      debugDisabled: PropTypes.bool,
     };
   }
 
@@ -37,38 +47,24 @@ class AddonsControls extends Component {
       installError: null,
     };
 
-    this.onEnableAddonDebuggingChange = this.onEnableAddonDebuggingChange.bind(this);
+    this.onEnableAddonDebuggingChange = this.onEnableAddonDebuggingChange.bind(
+      this
+    );
     this.loadAddonFromFile = this.loadAddonFromFile.bind(this);
     this.retryInstall = this.retryInstall.bind(this);
     this.installAddon = this.installAddon.bind(this);
   }
 
   onEnableAddonDebuggingChange(event) {
-    let enabled = event.target.checked;
+    const enabled = event.target.checked;
     Services.prefs.setBoolPref("devtools.chrome.enabled", enabled);
     Services.prefs.setBoolPref("devtools.debugger.remote-enabled", enabled);
   }
 
-  loadAddonFromFile() {
-    this.setState({ installError: null });
-    let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
-    fp.init(window,
-      Strings.GetStringFromName("selectAddonFromFile2"),
-      Ci.nsIFilePicker.modeOpen);
-    fp.open(res => {
-      if (res == Ci.nsIFilePicker.returnCancel || !fp.file) {
-        return;
-      }
-      let file = fp.file;
-      // AddonManager.installTemporaryAddon accepts either
-      // addon directory or final xpi file.
-      if (!file.isDirectory() &&
-          !file.leafName.endsWith(".xpi") && !file.leafName.endsWith(".zip")) {
-        file = file.parent;
-      }
-
-      this.installAddon(file);
-    });
+  async loadAddonFromFile() {
+    const message = Strings.GetStringFromName("selectAddonFromFile2");
+    const file = await openTemporaryExtension(window, message);
+    this.installAddon(file);
   }
 
   retryInstall() {
@@ -83,16 +79,23 @@ class AddonsControls extends Component {
       })
       .catch(e => {
         console.error(e);
-        this.setState({ installError: e.message, lastInstallErrorFile: file });
+        this.setState({ installError: e, lastInstallErrorFile: file });
       });
   }
 
   render() {
-    let { debugDisabled } = this.props;
+    const { debugDisabled } = this.props;
+    const isXpinstallEnabled = Services.prefs.getBoolPref(
+      "xpinstall.enabled",
+      true
+    );
 
-    return dom.div({ className: "addons-top" },
-      dom.div({ className: "addons-controls" },
-        dom.div({ className: "addons-options toggle-container-with-text" },
+    return dom.div(
+      { className: "addons-top" },
+      dom.div(
+        { className: "addons-controls" },
+        dom.div(
+          { className: "addons-options toggle-container-with-text" },
           dom.input({
             id: "enable-addon-debugging",
             type: "checkbox",
@@ -100,24 +103,34 @@ class AddonsControls extends Component {
             onChange: this.onEnableAddonDebuggingChange,
             role: "checkbox",
           }),
-          dom.label({
-            className: "addons-debugging-label",
-            htmlFor: "enable-addon-debugging",
-            title: Strings.GetStringFromName("addonDebugging.tooltip")
-          }, Strings.GetStringFromName("addonDebugging.label")),
-          dom.a({ href: MORE_INFO_URL, target: "_blank" },
-            Strings.GetStringFromName("addonDebugging.learnMore")
+          dom.label(
+            {
+              className: "addons-debugging-label",
+              htmlFor: "enable-addon-debugging",
+              title: Strings.GetStringFromName("addonDebugging.tooltip"),
+            },
+            Strings.GetStringFromName("addonDebugging.label")
           ),
+          dom.a(
+            { href: MORE_INFO_URL, target: "_blank" },
+            Strings.GetStringFromName("addonDebugging.learnMore")
+          )
         ),
-        dom.button({
-          id: "load-addon-from-file",
-          onClick: this.loadAddonFromFile,
-        }, Strings.GetStringFromName("loadTemporaryAddon"))
+        isXpinstallEnabled
+          ? dom.button(
+              {
+                id: "load-addon-from-file",
+                onClick: this.loadAddonFromFile,
+              },
+              Strings.GetStringFromName("loadTemporaryAddon2")
+            )
+          : null
       ),
       AddonsInstallError({
         error: this.state.installError,
         retryInstall: this.retryInstall,
-      }));
+      })
+    );
   }
 }
 

@@ -15,16 +15,12 @@ namespace dom {
 struct IPCServiceWorkerDescriptor
 {
   uint64_t id;
+  uint64_t registrationId;
+  uint64_t registrationVersion;
   PrincipalInfo principalInfo;
   nsCString scope;
   nsCString scriptURL;
   ServiceWorkerState state;
-};
-
-union OptionalIPCServiceWorkerDescriptor
-{
-  IPCServiceWorkerDescriptor;
-  void_t;
 };
 
 } // namespace dom

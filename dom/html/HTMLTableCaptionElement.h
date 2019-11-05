@@ -15,8 +15,8 @@ namespace dom {
 class HTMLTableCaptionElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLTableCaptionElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {
     SetHasWeirdParserInsertionMode();
   }
 
@@ -33,8 +33,7 @@ class HTMLTableCaptionElement final : public nsGenericHTMLElement {
       const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual ~HTMLTableCaptionElement();
@@ -44,7 +43,7 @@ class HTMLTableCaptionElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

@@ -18,10 +18,12 @@
  *           or fails to load.
  */
 function appendStyleSheet(xulDocument, url) {
-  let styleSheetAttr = `href="${url}" type="text/css"`;
-  let styleSheet = xulDocument.createProcessingInstruction(
-    "xml-stylesheet", styleSheetAttr);
-  let loadPromise = new Promise((resolve, reject) => {
+  const styleSheetAttr = `href="${url}" type="text/css"`;
+  const styleSheet = xulDocument.createProcessingInstruction(
+    "xml-stylesheet",
+    styleSheetAttr
+  );
+  const loadPromise = new Promise((resolve, reject) => {
     function onload() {
       styleSheet.removeEventListener("load", onload);
       styleSheet.removeEventListener("error", onerror);
@@ -37,7 +39,7 @@ function appendStyleSheet(xulDocument, url) {
     styleSheet.addEventListener("error", onerror);
   });
   xulDocument.insertBefore(styleSheet, xulDocument.documentElement);
-  return {styleSheet, loadPromise};
+  return { styleSheet, loadPromise };
 }
 
 exports.appendStyleSheet = appendStyleSheet;

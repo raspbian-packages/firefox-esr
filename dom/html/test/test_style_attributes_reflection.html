@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Test for HTMLStyleElement attributes reflection</title>
-  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <script type="application/javascript" src="reflect.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
@@ -28,14 +28,6 @@ reflectString({
   element: e,
   attribute: "type"
 });
-
-if (SpecialPowers.getBoolPref("layout.css.scoped-style.enabled")) {
-  // .scoped
-  reflectBoolean({
-    element: e,
-    attribute: "scoped"
-  });
-}
 
 </script>
 </pre>

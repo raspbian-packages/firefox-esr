@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <title>Test for Bug 1175040 - PageStyleActor.getLayout</title>
-<script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+<script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
 <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 <script type="application/javascript" src="inspector-helpers.js"></script>
 <script type="application/javascript">
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
   runNextTest();
 };
@@ -17,49 +17,43 @@ window.onload = function () {
 let gWalker = null;
 let gStyles = null;
 
-addTest(function () {
-  let url = document.getElementById("inspectorContent").href;
-  attachURL(url, function (err, client, tab, doc) {
-    let {InspectorFront} = require("devtools/shared/fronts/inspector");
-    let inspector = InspectorFront(client, tab);
-    promiseDone(inspector.getWalker().then(walker => {
-      ok(walker, "getWalker() should return an actor.");
-      gWalker = walker;
-      return inspector.getPageStyle();
-    }).then(styles => {
-      gStyles = styles;
-    }).then(runNextTest));
-  });
+addTest(async function() {
+  const url = document.getElementById("inspectorContent").href;
+  const { target } = await attachURL(url);
+  const inspector = await target.getInspector();
+  gWalker = inspector.walker;
+  gStyles = await inspector.getPageStyle();
+  runNextTest();
 });
 
-addTest(function () {
+addTest(function() {
   ok(gStyles.getLayout, "The PageStyleActor has a getLayout method");
   runNextTest();
 });
 
-addAsyncTest(async function () {
-  let node = await gWalker.querySelector(gWalker.rootNode, "#layout-element");
-  let layout = await gStyles.getLayout(node, {});
+addAsyncTest(async function() {
+  const node = await gWalker.querySelector(gWalker.rootNode, "#layout-element");
+  const layout = await gStyles.getLayout(node, {});
 
-  let properties = ["width", "height",
-                    "margin-top", "margin-right", "margin-bottom",
-                    "margin-left", "padding-top", "padding-right",
-                    "padding-bottom", "padding-left", "border-top-width",
-                    "border-right-width", "border-bottom-width",
-                    "border-left-width", "z-index", "box-sizing", "display",
-                    "position"];
-  for (let prop of properties) {
+  const properties = ["width", "height",
+                      "margin-top", "margin-right", "margin-bottom",
+                      "margin-left", "padding-top", "padding-right",
+                      "padding-bottom", "padding-left", "border-top-width",
+                      "border-right-width", "border-bottom-width",
+                      "border-left-width", "z-index", "box-sizing", "display",
+                      "position"];
+  for (const prop of properties) {
     ok((prop in layout), "The layout object returned has " + prop);
   }
 
   runNextTest();
 });
 
-addAsyncTest(async function () {
-  let node = await gWalker.querySelector(gWalker.rootNode, "#layout-element");
-  let layout = await gStyles.getLayout(node, {});
+addAsyncTest(async function() {
+  const node = await gWalker.querySelector(gWalker.rootNode, "#layout-element");
+  const layout = await gStyles.getLayout(node, {});
 
-  let expected = {
+  const expected = {
     "box-sizing": "border-box",
     "position": "absolute",
     "z-index": "2",
@@ -69,18 +63,18 @@ addAsyncTest(async function () {
     "margin-top": "10px",
     "margin-right": "20px",
     "margin-bottom": "30px",
-    "margin-left": "0px"
+    "margin-left": "0px",
   };
 
-  for (let name in expected) {
+  for (const name in expected) {
     is(layout[name], expected[name], "The " + name + " property is correct");
   }
 
   runNextTest();
 });
 
-addAsyncTest(async function () {
-  let node = await gWalker.querySelector(gWalker.rootNode,
+addAsyncTest(async function() {
+  const node = await gWalker.querySelector(gWalker.rootNode,
                                          "#layout-auto-margin-element");
 
   let layout = await gStyles.getLayout(node, {});
@@ -98,7 +92,7 @@ addAsyncTest(async function () {
   runNextTest();
 });
 
-addTest(function () {
+addTest(function() {
   gStyles = gWalker = null;
   runNextTest();
 });

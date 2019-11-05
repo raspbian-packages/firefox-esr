@@ -14,10 +14,12 @@ NS_IMPL_CYCLE_COLLECTION_CLASS(FetchObserver)
 
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(FetchObserver,
                                                   DOMEventTargetHelper)
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mFollowingSignal)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(FetchObserver,
                                                 DOMEventTargetHelper)
+  tmp->Unfollow();
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FetchObserver)
@@ -26,16 +28,17 @@ NS_INTERFACE_MAP_END_INHERITING(DOMEventTargetHelper)
 NS_IMPL_ADDREF_INHERITED(FetchObserver, DOMEventTargetHelper)
 NS_IMPL_RELEASE_INHERITED(FetchObserver, DOMEventTargetHelper)
 
-FetchObserver::FetchObserver(nsIGlobalObject* aGlobal, AbortSignal* aSignal)
+FetchObserver::FetchObserver(nsIGlobalObject* aGlobal,
+                             AbortSignalImpl* aSignalImpl)
     : DOMEventTargetHelper(aGlobal), mState(FetchState::Requesting) {
-  if (aSignal) {
-    Follow(aSignal);
+  if (aSignalImpl) {
+    Follow(aSignalImpl);
   }
 }
 
 JSObject* FetchObserver::WrapObject(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return FetchObserverBinding::Wrap(aCx, this, aGivenProto);
+  return FetchObserver_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 FetchState FetchObserver::State() const { return mState; }
@@ -73,8 +76,7 @@ void FetchObserver::SetState(FetchState aState) {
       Event::Constructor(this, NS_LITERAL_STRING("statechange"), init);
   event->SetTrusted(true);
 
-  bool dummy;
-  DispatchEvent(event, &dummy);
+  DispatchEvent(*event);
 }
 
 }  // namespace dom

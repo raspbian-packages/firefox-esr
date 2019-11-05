@@ -6,7 +6,7 @@ Bug 1068171 - Test controlling the memory actor's allocation sampling probabilit
 <head>
   <meta charset="utf-8">
   <title>Memory monitoring actor test</title>
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
 </head>
 <body>
@@ -15,27 +15,27 @@ Bug 1068171 - Test controlling the memory actor's allocation sampling probabilit
 <script>
 "use strict";
 
-window.onload = function () {
+window.onload = function() {
   SimpleTest.waitForExplicitFinish();
 
-  (async function () {
-    let { memory, client } = await startServerAndGetSelectedTabMemory();
+  (async function() {
+    const { memory, target } = await startServerAndGetSelectedTabMemory();
     await memory.attach();
 
-    let allocs = [];
+    const allocs = [];
     function allocator() {
       for (let i = 0; i < 100; i++) {
         allocs.push({});
       }
     }
 
-    let testProbability = async function (p, expected) {
+    const testProbability = async function(p, expected) {
       info("probability = " + p);
       await memory.startRecordingAllocations({
-        probability: p
+        probability: p,
       });
       allocator();
-      let response = await memory.getAllocations();
+      const response = await memory.getAllocations();
       await memory.stopRecordingAllocations();
       return response.allocations.length;
     };
@@ -53,7 +53,7 @@ window.onload = function () {
     // (js/src/jit-test/tests/debug/Memory-allocationsSamplingProbability-*.js).
 
     await memory.detach();
-    destroyServerAndFinish(client);
+    destroyServerAndFinish(target);
   })();
 };
 </script>

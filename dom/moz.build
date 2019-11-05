@@ -6,7 +6,7 @@
 
 # interfaces/*/ are annotated per directory, this is for new files
 with Files("**"):
-    BUG_COMPONENT = ("Core", "DOM")
+    BUG_COMPONENT = ("Core", "DOM: Core & HTML")
 
 with Files("plugins/**"):
     BUG_COMPONENT = ("Core", "Plug-ins")
@@ -15,15 +15,12 @@ JAR_MANIFESTS += ['jar.mn']
 
 interfaces = [
     'base',
-    'core',
     'html',
     'events',
     'sidebar',
-    'range',
     'xul',
     'security',
     'storage',
-    'offline',
     'geolocation',
     'notification',
     'push',
@@ -41,6 +38,7 @@ DIRS += [
     'browser-element',
     'cache',
     'canvas',
+    'webgpu',
     'chrome-webidl',
     'clients',
     'commandhandler',
@@ -58,7 +56,6 @@ DIRS += [
     'grid',
     'html',
     'jsurl',
-    'asmjscache',
     'mathml',
     'media',
     'midi',
@@ -75,6 +72,7 @@ DIRS += [
     'permission',
     'plugins/base',
     'plugins/ipc',
+    'prototype',
     'indexedDB',
     'system',
     'ipc',
@@ -103,6 +101,11 @@ DIRS += [
     'payments',
     'websocket',
     'serviceworkers',
+    'simpledb',
+    'reporting',
+    'localstorage',
+    'prio',
+    'l10n',
 ]
 
 if CONFIG['OS_ARCH'] == 'WINNT':
@@ -118,3 +121,4 @@ TEST_DIRS += [
 if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('gtk3', 'cocoa', 'windows'):
     TEST_DIRS += ['plugins/test']
 
+SPHINX_TREES['dom'] = 'docs'

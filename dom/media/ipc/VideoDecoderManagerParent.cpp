@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=2 et sw=2 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,7 +20,7 @@
 #include "mozilla/SyncRunnable.h"
 
 #if XP_WIN
-#include <objbase.h>
+#  include <objbase.h>
 #endif
 
 namespace mozilla {
@@ -29,8 +29,6 @@ namespace mozilla {
 extern const nsCString GetFoundD3D11BlacklistedDLL();
 extern const nsCString GetFoundD3D9BlacklistedDLL();
 #endif  // XP_WIN
-
-namespace dom {
 
 using namespace ipc;
 using namespace layers;
@@ -43,7 +41,7 @@ SurfaceDescriptorGPUVideo VideoDecoderManagerParent::StoreImage(
 
   mImageMap[ret.handle()] = aImage;
   mTextureMap[ret.handle()] = aTexture;
-  return Move(ret);
+  return ret;
 }
 
 StaticRefPtr<nsIThread> sVideoDecoderManagerThread;
@@ -58,7 +56,7 @@ class VideoDecoderManagerThreadHolder {
  private:
   ~VideoDecoderManagerThreadHolder() {
     NS_DispatchToMainThread(
-        NS_NewRunnableFunction("dom::VideoDecoderManagerThreadHolder::~"
+        NS_NewRunnableFunction("VideoDecoderManagerThreadHolder::~"
                                "VideoDecoderManagerThreadHolder",
                                []() -> void {
                                  sVideoDecoderManagerThread->Shutdown();
@@ -116,7 +114,7 @@ void VideoDecoderManagerParent::StartupThreads() {
       NS_DISPATCH_NORMAL);
 #endif
   sVideoDecoderManagerThread->Dispatch(
-      NS_NewRunnableFunction("dom::VideoDecoderManagerParent::StartupThreads",
+      NS_NewRunnableFunction("VideoDecoderManagerParent::StartupThreads",
                              []() { layers::VideoBridgeChild::Startup(); }),
       NS_DISPATCH_NORMAL);
 
@@ -140,9 +138,9 @@ void VideoDecoderManagerParent::ShutdownThreads() {
 
 void VideoDecoderManagerParent::ShutdownVideoBridge() {
   if (sVideoDecoderManagerThread) {
-    RefPtr<Runnable> task = NS_NewRunnableFunction(
-        "dom::VideoDecoderManagerParent::ShutdownVideoBridge",
-        []() { VideoBridgeChild::Shutdown(); });
+    RefPtr<Runnable> task =
+        NS_NewRunnableFunction("VideoDecoderManagerParent::ShutdownVideoBridge",
+                               []() { VideoBridgeChild::Shutdown(); });
     SyncRunnable::DispatchToThread(sVideoDecoderManagerThread, task);
   }
 }
@@ -166,8 +164,8 @@ bool VideoDecoderManagerParent::CreateForContent(
 
   RefPtr<Runnable> task =
       NewRunnableMethod<Endpoint<PVideoDecoderManagerParent>&&>(
-          "dom::VideoDecoderManagerParent::Open", parent,
-          &VideoDecoderManagerParent::Open, Move(aEndpoint));
+          "VideoDecoderManagerParent::Open", parent,
+          &VideoDecoderManagerParent::Open, std::move(aEndpoint));
   sVideoDecoderManagerThread->Dispatch(task.forget(), NS_DISPATCH_NORMAL);
   return true;
 }
@@ -189,6 +187,7 @@ void VideoDecoderManagerParent::ActorDestroy(
 
 PVideoDecoderParent* VideoDecoderManagerParent::AllocPVideoDecoderParent(
     const VideoInfo& aVideoInfo, const float& aFramerate,
+    const CreateDecoderParams::OptionSet& aOptions,
     const layers::TextureFactoryIdentifier& aIdentifier, bool* aSuccess,
     nsCString* aBlacklistedD3D11Driver, nsCString* aBlacklistedD3D9Driver,
     nsCString* aErrorDescription) {
@@ -197,7 +196,7 @@ PVideoDecoderParent* VideoDecoderManagerParent::AllocPVideoDecoderParent(
                     "VideoDecoderParent::mDecodeTaskQueue");
 
   auto* parent = new VideoDecoderParent(
-      this, aVideoInfo, aFramerate, aIdentifier, sManagerTaskQueue,
+      this, aVideoInfo, aFramerate, aOptions, aIdentifier, sManagerTaskQueue,
       decodeTaskQueue, aSuccess, aErrorDescription);
 
 #ifdef XP_WIN
@@ -266,7 +265,7 @@ mozilla::ipc::IPCResult VideoDecoderManagerParent::RecvReadback(
   dt->Flush();
 
   *aResult = SurfaceDescriptorBuffer(RGBDescriptor(size, format, true),
-                                     MemoryOrShmem(buffer));
+                                     MemoryOrShmem(std::move(buffer)));
   return IPC_OK();
 }
 
@@ -278,5 +277,4 @@ VideoDecoderManagerParent::RecvDeallocateSurfaceDescriptorGPUVideo(
   return IPC_OK();
 }
 
-}  // namespace dom
 }  // namespace mozilla

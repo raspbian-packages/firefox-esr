@@ -1,4 +1,5 @@
-const PAGE = "https://example.com/browser/toolkit/content/tests/browser/file_webAudio.html";
+const PAGE =
+  "https://example.com/browser/toolkit/content/tests/browser/file_webAudio.html";
 
 // The tab closing code leaves an uncaught rejection. This test has been
 // whitelisted until the issue is fixed.
@@ -8,16 +9,18 @@ if (!gMultiProcessBrowser) {
 }
 
 add_task(async function setup_test_preference() {
-  await SpecialPowers.pushPrefEnv({"set": [
-    ["media.useAudioChannelService.testing", true],
-    ["media.block-autoplay-until-in-foreground", true]
-  ]});
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["media.useAudioChannelService.testing", true],
+      ["media.block-autoplay-until-in-foreground", true],
+    ],
+  });
 });
 
 add_task(async function block_web_audio() {
   info("- open new background tab -");
-  let tab = window.gBrowser.addTab("about:blank");
-  tab.linkedBrowser.loadURI(PAGE);
+  let tab = BrowserTestUtils.addTab(window.gBrowser, "about:blank");
+  BrowserTestUtils.loadURI(tab.linkedBrowser, PAGE);
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
 
   info("- tab should be blocked -");
@@ -33,5 +36,5 @@ add_task(async function block_web_audio() {
   await waitForTabPlayingEvent(tab, true);
 
   info("- remove tab -");
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 });

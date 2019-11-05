@@ -43,7 +43,7 @@ class CanvasGradient : public nsWrapperCache {
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override {
-    return CanvasGradientBinding::Wrap(aCx, this, aGivenProto);
+    return CanvasGradient_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   CanvasRenderingContext2D* GetParentObject() { return mContext; }

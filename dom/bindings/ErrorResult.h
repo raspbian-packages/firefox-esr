@@ -25,6 +25,7 @@
 #ifndef mozilla_ErrorResult_h
 #define mozilla_ErrorResult_h
 
+#include <new>
 #include <stdarg.h>
 
 #include "js/GCAnnotations.h"
@@ -59,9 +60,9 @@ enum ErrNum {
 // use in static_assert.
 #if defined(DEBUG) && (defined(__clang__) || defined(__GNUC__))
 uint16_t constexpr ErrorFormatNumArgs[] = {
-#define MSG_DEF(_name, _argc, _exn, _str) _argc,
-#include "mozilla/dom/Errors.msg"
-#undef MSG_DEF
+#  define MSG_DEF(_name, _argc, _exn, _str) _argc,
+#  include "mozilla/dom/Errors.msg"
+#  undef MSG_DEF
 };
 #endif
 
@@ -75,7 +76,7 @@ template <typename... Ts>
 inline bool ThrowErrorMessage(JSContext* aCx, const ErrNum aErrorNumber,
                               Ts&&... aArgs) {
   binding_detail::ThrowErrorMessage(aCx, static_cast<unsigned>(aErrorNumber),
-                                    mozilla::Forward<Ts>(aArgs)...);
+                                    std::forward<Ts>(aArgs)...);
   return false;
 }
 
@@ -96,7 +97,7 @@ struct StringArrayAppender {
       return;
     }
     aArgs.AppendElement(aFirst);
-    Append(aArgs, aCount - 1, Forward<Ts>(aOtherArgs)...);
+    Append(aArgs, aCount - 1, std::forward<Ts>(aOtherArgs)...);
   }
 };
 
@@ -153,13 +154,14 @@ class TErrorResult {
       // the ClearUnionData call in our operator= will do the right thing
       // (nothing).
       : TErrorResult() {
-    *this = Move(aRHS);
+    *this = std::move(aRHS);
   }
   TErrorResult& operator=(TErrorResult&& aRHS);
 
   explicit TErrorResult(nsresult aRv) : TErrorResult() { AssignErrorCode(aRv); }
 
   operator ErrorResult&();
+  operator const ErrorResult&() const;
   operator OOMReporter&();
 
   void MOZ_MUST_RETURN_FROM_CALLER Throw(nsresult rv) {
@@ -282,13 +284,13 @@ class TErrorResult {
   template <dom::ErrNum errorNumber, typename... Ts>
   void ThrowTypeError(Ts&&... messageArgs) {
     ThrowErrorWithMessage<errorNumber>(NS_ERROR_INTERNAL_ERRORRESULT_TYPEERROR,
-                                       Forward<Ts>(messageArgs)...);
+                                       std::forward<Ts>(messageArgs)...);
   }
 
   template <dom::ErrNum errorNumber, typename... Ts>
   void ThrowRangeError(Ts&&... messageArgs) {
     ThrowErrorWithMessage<errorNumber>(NS_ERROR_INTERNAL_ERRORRESULT_RANGEERROR,
-                                       Forward<Ts>(messageArgs)...);
+                                       std::forward<Ts>(messageArgs)...);
   }
 
   bool IsErrorWithMessage() const {
@@ -368,6 +370,8 @@ class TErrorResult {
   // For use in logging ONLY.
   uint32_t ErrorCodeAsInt() const { return static_cast<uint32_t>(ErrorCode()); }
 
+  bool operator==(const ErrorResult& aRight) const;
+
  protected:
   nsresult ErrorCode() const { return mResult; }
 
@@ -409,7 +413,7 @@ class TErrorResult {
         CreateErrorMessageHelper(errorNumber, errorType);
     uint16_t argCount = dom::GetErrorArgCount(errorNumber);
     dom::StringArrayAppender::Append(messageArgsArray, argCount,
-                                     Forward<Ts>(messageArgs)...);
+                                     std::forward<Ts>(messageArgs)...);
 #ifdef DEBUG
     mUnionState = HasMessage;
 #endif  // DEBUG
@@ -417,7 +421,9 @@ class TErrorResult {
 
   MOZ_ALWAYS_INLINE void AssertInOwningThread() const {
 #ifdef DEBUG
-    NS_ASSERT_OWNINGTHREAD(TErrorResult);
+    if (CleanupPolicy::assertSameThread) {
+      NS_ASSERT_OWNINGTHREAD(TErrorResult);
+    }
 #endif
   }
 
@@ -443,12 +449,12 @@ class TErrorResult {
   void ClearMessage();
   void ClearDOMExceptionInfo();
 
-  // ClearUnionData will try to clear the data in our
-  // mMessage/mJSException/mDOMExceptionInfo union.  After this the union may be
-  // in an uninitialized state (e.g. mMessage or mDOMExceptionInfo may be
-  // pointing to deleted memory) and the caller must either reinitialize it or
-  // change mResult to something that will not involve us touching the union
-  // anymore.
+  // ClearUnionData will try to clear the data in our mExtra union.  After this
+  // the union may be in an uninitialized state (e.g. mMessage or
+  // mDOMExceptionInfo may point to deleted memory, or mJSException may be a
+  // JS::Value containing an invalid gcthing) and the caller must either
+  // reinitialize it or change mResult to something that will not involve us
+  // touching the union anymore.
   void ClearUnionData();
 
   // Implementation of MaybeSetPendingException for the case when we're a
@@ -479,17 +485,49 @@ class TErrorResult {
 
   struct Message;
   struct DOMExceptionInfo;
-  // mMessage is set by ThrowErrorWithMessage and reported (and deallocated) by
-  // SetPendingExceptionWithMessage.
-  // mJSException is set (and rooted) by ThrowJSException and reported
-  // (and unrooted) by SetPendingJSException.
-  // mDOMExceptionInfo is set by ThrowDOMException and reported
-  // (and deallocated) by SetPendingDOMException.
-  union {
-    Message* mMessage;                    // valid when IsErrorWithMessage()
-    JS::UninitializedValue mJSException;  // valid when IsJSException()
+  union Extra {
+    // mMessage is set by ThrowErrorWithMessage and reported (and deallocated)
+    // by SetPendingExceptionWithMessage.
+    MOZ_INIT_OUTSIDE_CTOR
+    Message* mMessage;  // valid when IsErrorWithMessage()
+
+    // mJSException is set (and rooted) by ThrowJSException and reported (and
+    // unrooted) by SetPendingJSException.
+    MOZ_INIT_OUTSIDE_CTOR
+    JS::Value mJSException;  // valid when IsJSException()
+
+    // mDOMExceptionInfo is set by ThrowDOMException and reported (and
+    // deallocated) by SetPendingDOMException.
+    MOZ_INIT_OUTSIDE_CTOR
     DOMExceptionInfo* mDOMExceptionInfo;  // valid when IsDOMException()
-  };
+
+    // |mJSException| has a non-trivial constructor and therefore MUST be
+    // placement-new'd into existence.
+    MOZ_PUSH_DISABLE_NONTRIVIAL_UNION_WARNINGS
+    Extra() {}
+    MOZ_POP_DISABLE_NONTRIVIAL_UNION_WARNINGS
+  } mExtra;
+
+  Message* InitMessage(Message* aMessage) {
+    // The |new| here switches the active arm of |mExtra|, from the compiler's
+    // point of view.  Mere assignment *won't* necessarily do the right thing!
+    new (&mExtra.mMessage) Message*(aMessage);
+    return mExtra.mMessage;
+  }
+
+  JS::Value& InitJSException() {
+    // The |new| here switches the active arm of |mExtra|, from the compiler's
+    // point of view.  Mere assignment *won't* necessarily do the right thing!
+    new (&mExtra.mJSException) JS::Value();  // sets to undefined
+    return mExtra.mJSException;
+  }
+
+  DOMExceptionInfo* InitDOMExceptionInfo(DOMExceptionInfo* aDOMExceptionInfo) {
+    // The |new| here switches the active arm of |mExtra|, from the compiler's
+    // point of view.  Mere assignment *won't* necessarily do the right thing!
+    new (&mExtra.mDOMExceptionInfo) DOMExceptionInfo*(aDOMExceptionInfo);
+    return mExtra.mDOMExceptionInfo;
+  }
 
 #ifdef DEBUG
   // Used to keep track of codepaths that might throw JS exceptions,
@@ -510,21 +548,30 @@ class TErrorResult {
   // reference, not by value.
   TErrorResult(const TErrorResult&) = delete;
   void operator=(const TErrorResult&) = delete;
-};
+} JS_HAZ_ROOTED;
 
 struct JustAssertCleanupPolicy {
   static const bool assertHandled = true;
   static const bool suppress = false;
+  static const bool assertSameThread = true;
 };
 
 struct AssertAndSuppressCleanupPolicy {
   static const bool assertHandled = true;
   static const bool suppress = true;
+  static const bool assertSameThread = true;
 };
 
 struct JustSuppressCleanupPolicy {
   static const bool assertHandled = false;
   static const bool suppress = true;
+  static const bool assertSameThread = true;
+};
+
+struct ThreadSafeJustSuppressCleanupPolicy {
+  static const bool assertHandled = false;
+  static const bool suppress = true;
+  static const bool assertSameThread = false;
 };
 
 }  // namespace binding_danger
@@ -540,14 +587,14 @@ class ErrorResult : public binding_danger::TErrorResult<
  public:
   ErrorResult() : BaseErrorResult() {}
 
-  ErrorResult(ErrorResult&& aRHS) : BaseErrorResult(Move(aRHS)) {}
+  ErrorResult(ErrorResult&& aRHS) : BaseErrorResult(std::move(aRHS)) {}
 
   explicit ErrorResult(nsresult aRv) : BaseErrorResult(aRv) {}
 
   void operator=(nsresult rv) { BaseErrorResult::operator=(rv); }
 
   ErrorResult& operator=(ErrorResult&& aRHS) {
-    BaseErrorResult::operator=(Move(aRHS));
+    BaseErrorResult::operator=(std::move(aRHS));
     return *this;
   }
 
@@ -564,27 +611,75 @@ binding_danger::TErrorResult<CleanupPolicy>::operator ErrorResult&() {
       reinterpret_cast<TErrorResult<AssertAndSuppressCleanupPolicy>*>(this));
 }
 
+template <typename CleanupPolicy>
+binding_danger::TErrorResult<CleanupPolicy>::operator const ErrorResult&()
+    const {
+  return *static_cast<const ErrorResult*>(
+      reinterpret_cast<const TErrorResult<AssertAndSuppressCleanupPolicy>*>(
+          this));
+}
+
 // A class for use when an ErrorResult should just automatically be ignored.
 // This doesn't inherit from ErrorResult so we don't make two separate calls to
 // SuppressException.
 class IgnoredErrorResult : public binding_danger::TErrorResult<
                                binding_danger::JustSuppressCleanupPolicy> {};
 
-// A class for use when an ErrorResult should just automatically be
-// ignored.  This is designed to be passed as a temporary only, like
-// so:
-//
-//    foo->Bar(IgnoreErrors());
-class MOZ_TEMPORARY_CLASS IgnoreErrors {
- public:
-  operator ErrorResult&() && { return mInner; }
+// A class for use when an ErrorResult needs to be copied to a lambda, into
+// an IPDL structure, etc.  Since this will often involve crossing thread
+// boundaries this class will assert if you try to copy a JS exception.  Only
+// use this if you are propagating internal errors.  In general its best
+// to use ErrorResult by default and only convert to a CopyableErrorResult when
+// you need it.
+class CopyableErrorResult
+    : public binding_danger::TErrorResult<
+          binding_danger::ThreadSafeJustSuppressCleanupPolicy> {
+  typedef binding_danger::TErrorResult<
+      binding_danger::ThreadSafeJustSuppressCleanupPolicy>
+      BaseErrorResult;
 
- private:
-  // We don't use an ErrorResult member here so we don't make two separate calls
-  // to SuppressException (one from us, one from the ErrorResult destructor
-  // after asserting).
-  binding_danger::TErrorResult<binding_danger::JustSuppressCleanupPolicy>
-      mInner;
+ public:
+  CopyableErrorResult() : BaseErrorResult() {}
+
+  explicit CopyableErrorResult(const ErrorResult& aRight) : BaseErrorResult() {
+    auto val = reinterpret_cast<const CopyableErrorResult&>(aRight);
+    operator=(val);
+  }
+
+  CopyableErrorResult(CopyableErrorResult&& aRHS)
+      : BaseErrorResult(std::move(aRHS)) {}
+
+  explicit CopyableErrorResult(nsresult aRv) : BaseErrorResult(aRv) {}
+
+  void operator=(nsresult rv) { BaseErrorResult::operator=(rv); }
+
+  CopyableErrorResult& operator=(CopyableErrorResult&& aRHS) {
+    BaseErrorResult::operator=(std::move(aRHS));
+    return *this;
+  }
+
+  CopyableErrorResult(const CopyableErrorResult& aRight) : BaseErrorResult() {
+    operator=(aRight);
+  }
+
+  CopyableErrorResult& operator=(const CopyableErrorResult& aRight) {
+    // We must not copy JS exceptions since it can too easily lead to
+    // off-thread use.  Assert this and fall back to a generic error
+    // in release builds.
+    MOZ_DIAGNOSTIC_ASSERT(
+        !IsJSException(),
+        "Attempt to copy to ErrorResult with a JS exception value.");
+    MOZ_DIAGNOSTIC_ASSERT(
+        !aRight.IsJSException(),
+        "Attempt to copy from ErrorResult with a JS exception value.");
+    if (aRight.IsJSException()) {
+      SuppressException();
+      Throw(NS_ERROR_FAILURE);
+    } else {
+      aRight.CloneTo(*this);
+    }
+    return *this;
+  }
 };
 
 namespace dom {
@@ -648,9 +743,27 @@ binding_danger::TErrorResult<CleanupPolicy>::operator OOMReporter&() {
       reinterpret_cast<TErrorResult<JustAssertCleanupPolicy>*>(this));
 }
 
-  /******************************************************************************
-   ** Macros for checking results
-   ******************************************************************************/
+// A class for use when an ErrorResult should just automatically be
+// ignored.  This is designed to be passed as a temporary only, like
+// so:
+//
+//    foo->Bar(IgnoreErrors());
+class MOZ_TEMPORARY_CLASS IgnoreErrors {
+ public:
+  operator ErrorResult&() && { return mInner; }
+  operator OOMReporter&() && { return mInner; }
+
+ private:
+  // We don't use an ErrorResult member here so we don't make two separate calls
+  // to SuppressException (one from us, one from the ErrorResult destructor
+  // after asserting).
+  binding_danger::TErrorResult<binding_danger::JustSuppressCleanupPolicy>
+      mInner;
+} JS_HAZ_ROOTED;
+
+/******************************************************************************
+ ** Macros for checking results
+ ******************************************************************************/
 
 #define ENSURE_SUCCESS(res, ret)                \
   do {                                          \

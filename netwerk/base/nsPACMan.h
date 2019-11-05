@@ -7,23 +7,24 @@
 #ifndef nsPACMan_h__
 #define nsPACMan_h__
 
-#include "nsIStreamLoader.h"
-#include "nsIInterfaceRequestor.h"
-#include "nsIChannelEventSink.h"
-#include "ProxyAutoConfig.h"
-#include "nsThreadUtils.h"
-#include "nsIURI.h"
-#include "nsCOMPtr.h"
-#include "nsString.h"
+#include "mozilla/Atomics.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/LinkedList.h"
-#include "nsAutoPtr.h"
-#include "mozilla/TimeStamp.h"
 #include "mozilla/Logging.h"
-#include "mozilla/Atomics.h"
 #include "mozilla/net/NeckoTargetHolder.h"
+#include "mozilla/TimeStamp.h"
+#include "nsAutoPtr.h"
+#include "nsCOMPtr.h"
+#include "nsIChannelEventSink.h"
+#include "nsIInterfaceRequestor.h"
+#include "nsIStreamLoader.h"
+#include "nsThreadUtils.h"
+#include "nsIURI.h"
+#include "nsString.h"
+#include "ProxyAutoConfig.h"
 
 class nsISystemProxySettings;
+class nsIDHCPClient;
 class nsIThread;
 
 namespace mozilla {
@@ -50,19 +51,19 @@ class NS_NO_VTABLE nsPACManCallback : public nsISupports {
    *        before the query is evaluated again. At least one of pacString and
    *        newPACURL should be 0 length.
    */
-  virtual void OnQueryComplete(nsresult status, const nsCString &pacString,
-                               const nsCString &newPACURL) = 0;
+  virtual void OnQueryComplete(nsresult status, const nsACString& pacString,
+                               const nsACString& newPACURL) = 0;
 };
 
 class PendingPACQuery final : public Runnable,
                               public LinkedListElement<PendingPACQuery> {
  public:
-  PendingPACQuery(nsPACMan *pacMan, nsIURI *uri, nsPACManCallback *callback,
+  PendingPACQuery(nsPACMan* pacMan, nsIURI* uri, nsPACManCallback* callback,
                   bool mainThreadResponse);
 
   // can be called from either thread
-  void Complete(nsresult status, const nsCString &pacString);
-  void UseAlternatePACFile(const nsCString &pacURL);
+  void Complete(nsresult status, const nsACString& pacString);
+  void UseAlternatePACFile(const nsACString& pacURL);
 
   nsCString mSpec;
   nsCString mScheme;
@@ -72,7 +73,7 @@ class PendingPACQuery final : public Runnable,
   NS_IMETHOD Run(void) override; /* Runnable */
 
  private:
-  nsPACMan *mPACMan;  // weak reference
+  nsPACMan* mPACMan;  // weak reference
 
  private:
   RefPtr<nsPACManCallback> mCallback;
@@ -91,7 +92,7 @@ class nsPACMan final : public nsIStreamLoaderObserver,
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
 
-  explicit nsPACMan(nsIEventTarget *mainThreadEventTarget);
+  explicit nsPACMan(nsIEventTarget* mainThreadEventTarget);
 
   /**
    * This method may be called to shutdown the PAC manager.  Any async queries
@@ -113,7 +114,7 @@ class nsPACMan final : public nsIStreamLoaderObserver,
    * @param mustCallbackOnMainThread
    *        If set to false the callback can be made from the PAC thread
    */
-  nsresult AsyncGetProxyForURI(nsIURI *uri, nsPACManCallback *callback,
+  nsresult AsyncGetProxyForURI(nsIURI* uri, nsPACManCallback* callback,
                                bool mustCallbackOnMainThread);
 
   /**
@@ -121,11 +122,11 @@ class nsPACMan final : public nsIStreamLoaderObserver,
    * the PAC file, any asynchronous PAC queries will be queued up to be
    * processed once the PAC file finishes loading.
    *
-   * @param pacSpec
+   * @param aSpec
    *        The non normalized uri spec of this URI used for comparison with
    *        system proxy settings to determine if the PAC uri has changed.
    */
-  nsresult LoadPACFromURI(const nsCString &pacSpec);
+  nsresult LoadPACFromURI(const nsACString& aSpec);
 
   /**
    * Returns true if we are currently loading the PAC file.
@@ -140,12 +141,12 @@ class nsPACMan final : public nsIStreamLoaderObserver,
    * should bypass the proxy (to fetch the pac file) or if the pac
    * configuration has changed (and we should reload the pac file)
    */
-  bool IsPACURI(const nsACString &spec) {
+  bool IsPACURI(const nsACString& spec) {
     return mPACURISpec.Equals(spec) || mPACURIRedirectSpec.Equals(spec) ||
            mNormalPACURISpec.Equals(spec);
   }
 
-  bool IsPACURI(nsIURI *uri) {
+  bool IsPACURI(nsIURI* uri) {
     if (mPACURISpec.IsEmpty() && mPACURIRedirectSpec.IsEmpty()) {
       return false;
     }
@@ -159,12 +160,16 @@ class nsPACMan final : public nsIStreamLoaderObserver,
     return IsPACURI(tmp);
   }
 
-  nsresult Init(nsISystemProxySettings *);
-  static nsPACMan *sInstance;
+  bool IsUsingWPAD() { return mAutoDetect; }
+
+  nsresult Init(nsISystemProxySettings*);
+  static nsPACMan* sInstance;
 
   // PAC thread operations only
   void ProcessPendingQ();
-  void CancelPendingQ(nsresult);
+  void CancelPendingQ(nsresult, bool aShutdown);
+
+  void SetWPADOverDHCPEnabled(bool aValue) { mWPADOverDHCPEnabled = aValue; }
 
  private:
   NS_DECL_NSISTREAMLOADEROBSERVER
@@ -173,8 +178,10 @@ class nsPACMan final : public nsIStreamLoaderObserver,
 
   friend class PendingPACQuery;
   friend class PACLoadComplete;
+  friend class ConfigureWPADComplete;
   friend class ExecutePACThreadAction;
   friend class WaitForThreadShutdown;
+  friend class TestPACMan;
 
   ~nsPACMan();
 
@@ -187,6 +194,25 @@ class nsPACMan final : public nsIStreamLoaderObserver,
    * Start loading the PAC file.
    */
   void StartLoading();
+
+  /**
+   * Continue loading the PAC file.
+   */
+  void ContinueLoadingAfterPACUriKnown();
+
+  /**
+   * This method may be called to reload the PAC file.  While we are loading
+   * the PAC file, any asynchronous PAC queries will be queued up to be
+   * processed once the PAC file finishes loading.
+   *
+   * @param aSpec
+   *        The non normalized uri spec of this URI used for comparison with
+   *        system proxy settings to determine if the PAC uri has changed.
+   * @param aResetLoadFailureCount
+   *        A flag saying whether the exponential back-off for attempting to
+   * reload the PAC should be reset.
+   */
+  nsresult LoadPACFromURI(const nsACString& aSpec, bool aResetLoadFailureCount);
 
   /**
    * Reload the PAC file if there is reason to.
@@ -203,17 +229,34 @@ class nsPACMan final : public nsIStreamLoaderObserver,
    * place a pendingPACQuery into the queue and potentially
    * execute the queue if it was otherwise empty
    */
-  nsresult PostQuery(PendingPACQuery *query);
+  nsresult PostQuery(PendingPACQuery* query);
+
+  // Having found the PAC URI on the PAC thread, copy it to a string which
+  // can be altered on the main thread.
+  void AssignPACURISpec(const nsACString& aSpec);
 
   // PAC thread operations only
   void PostProcessPendingQ();
-  void PostCancelPendingQ(nsresult);
+  void PostCancelPendingQ(nsresult, bool aShutdown = false);
   bool ProcessPending();
+  nsresult GetPACFromDHCP(nsACString& aSpec);
+  nsresult ConfigureWPAD(nsACString& aSpec);
 
  private:
+  /**
+   * Dispatches a runnable to the PAC processing thread. Handles lazy
+   * instantiation of the thread.
+   *
+   * @param aEvent The event to disptach.
+   * @param aSync Whether or not this should be synchronous dispatch.
+   */
+  nsresult DispatchToPAC(already_AddRefed<nsIRunnable> aEvent,
+                         bool aSync = false);
+
   ProxyAutoConfig mPAC;
   nsCOMPtr<nsIThread> mPACThread;
   nsCOMPtr<nsISystemProxySettings> mSystemProxySettings;
+  nsCOMPtr<nsIDHCPClient> mDHCPClient;
 
   LinkedList<PendingPACQuery> mPendingQ; /* pac thread only */
 
@@ -232,6 +275,9 @@ class nsPACMan final : public nsIStreamLoaderObserver,
 
   bool mInProgress;
   bool mIncludePath;
+  bool mAutoDetect;
+  bool mWPADOverDHCPEnabled;
+  int32_t mProxyConfigType;
 };
 
 extern LazyLogModule gProxyLog;

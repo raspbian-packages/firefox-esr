@@ -9,12 +9,12 @@
 #include "nsAccUtils.h"
 #include "DocAccessible-inl.h"
 #include "mozilla/a11y/DocAccessibleParent.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "Role.h"
 #include "States.h"
 
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 using namespace mozilla;
@@ -31,15 +31,15 @@ OuterDocAccessible::OuterDocAccessible(nsIContent* aContent,
 
 #ifdef XP_WIN
   if (DocAccessibleParent* remoteDoc = RemoteChildDoc()) {
-    remoteDoc->SendParentCOMProxy();
+    remoteDoc->SendParentCOMProxy(this);
   }
 #endif
 
   // Request document accessible for the content document to make sure it's
   // created. It will appended to outerdoc accessible children asynchronously.
-  nsIDocument* outerDoc = mContent->GetUncomposedDoc();
+  dom::Document* outerDoc = mContent->GetUncomposedDoc();
   if (outerDoc) {
-    nsIDocument* innerDoc = outerDoc->GetSubDocumentFor(mContent);
+    dom::Document* innerDoc = outerDoc->GetSubDocumentFor(mContent);
     if (innerDoc) GetAccService()->GetDocAccessible(innerDoc);
   }
 }
@@ -49,7 +49,7 @@ OuterDocAccessible::~OuterDocAccessible() {}
 ////////////////////////////////////////////////////////////////////////////////
 // Accessible public (DON'T add methods here)
 
-role OuterDocAccessible::NativeRole() { return roles::INTERNAL_FRAME; }
+role OuterDocAccessible::NativeRole() const { return roles::INTERNAL_FRAME; }
 
 Accessible* OuterDocAccessible::ChildAtPoint(int32_t aX, int32_t aY,
                                              EWhichChildAtPoint aWhichChild) {
@@ -90,7 +90,11 @@ void OuterDocAccessible::Shutdown() {
     // to its parent document. Otherwise a document accessible may be lost if
     // its outerdoc has being recreated (see bug 862863 for details).
     if (!mDoc->IsDefunct()) {
-      mDoc->BindChildDocument(child->AsDoc());
+      MOZ_ASSERT(!child->IsDefunct(),
+                 "Attempt to reattach shutdown document accessible");
+      if (!child->IsDefunct()) {
+        mDoc->BindChildDocument(child->AsDoc());
+      }
     }
   }
 
@@ -123,8 +127,8 @@ bool OuterDocAccessible::InsertChildAt(uint32_t aIdx, Accessible* aAccessible) {
 
 bool OuterDocAccessible::RemoveChild(Accessible* aAccessible) {
   Accessible* child = mChildren.SafeElementAt(0, nullptr);
+  MOZ_ASSERT(child == aAccessible, "Wrong child to remove!");
   if (child != aAccessible) {
-    NS_ERROR("Wrong child to remove!");
     return false;
   }
 
@@ -181,7 +185,7 @@ Accessible* OuterDocAccessible::GetChildAt(uint32_t aIndex) const {
 #endif  // defined(XP_WIN)
 
 DocAccessibleParent* OuterDocAccessible::RemoteChildDoc() const {
-  dom::TabParent* tab = dom::TabParent::GetFrom(GetContent());
+  dom::BrowserParent* tab = dom::BrowserParent::GetFrom(GetContent());
   if (!tab) return nullptr;
 
   return tab->GetTopLevelDocAccessible();

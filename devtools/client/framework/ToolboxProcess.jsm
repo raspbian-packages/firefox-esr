@@ -6,23 +6,33 @@
 
 "use strict";
 
-const DBG_XUL = "chrome://devtools/content/framework/toolbox-process-window.xul";
+const DBG_XUL =
+  "chrome://devtools/content/framework/toolbox-process-window.html";
 const CHROME_DEBUGGER_PROFILE_NAME = "chrome_debugger_profile";
 
-const { require, DevToolsLoader } = ChromeUtils.import("resource://devtools/shared/Loader.jsm", {});
+const { require, DevToolsLoader } = ChromeUtils.import(
+  "resource://devtools/shared/Loader.jsm"
+);
 const { XPCOMUtils } = require("resource://gre/modules/XPCOMUtils.jsm");
 
-ChromeUtils.defineModuleGetter(this, "Subprocess", "resource://gre/modules/Subprocess.jsm");
-XPCOMUtils.defineLazyGetter(this, "Telemetry", function () {
+ChromeUtils.defineModuleGetter(
+  this,
+  "Subprocess",
+  "resource://gre/modules/Subprocess.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "AppConstants",
+  "resource://gre/modules/AppConstants.jsm"
+);
+
+XPCOMUtils.defineLazyGetter(this, "Telemetry", function() {
   return require("devtools/client/shared/telemetry");
 });
-XPCOMUtils.defineLazyGetter(this, "EventEmitter", function () {
-  return require("devtools/shared/old-event-emitter");
+XPCOMUtils.defineLazyGetter(this, "EventEmitter", function() {
+  return require("devtools/shared/event-emitter");
 });
-XPCOMUtils.defineLazyGetter(this, "system", function () {
-  return require("devtools/shared/system");
-});
-const promise = require("promise");
+
 const Services = require("Services");
 
 this.EXPORTED_SYMBOLS = ["BrowserToolboxProcess"];
@@ -36,43 +46,26 @@ var processes = new Set();
  *        A function called when the process stops running.
  * @param function onRun [optional]
  *        A function called when the process starts running.
- * @param object options [optional]
- *        An object with properties for configuring BrowserToolboxProcess.
  */
-this.BrowserToolboxProcess = function BrowserToolboxProcess(onClose, onRun, options) {
-  let emitter = new EventEmitter();
+this.BrowserToolboxProcess = function BrowserToolboxProcess(onClose, onRun) {
+  const emitter = new EventEmitter();
   this.on = emitter.on.bind(emitter);
   this.off = emitter.off.bind(emitter);
   this.once = emitter.once.bind(emitter);
   // Forward any events to the shared emitter.
-  this.emit = function (...args) {
+  this.emit = function(...args) {
     emitter.emit(...args);
     BrowserToolboxProcess.emit(...args);
   };
 
-  // If first argument is an object, use those properties instead of
-  // all three arguments
-  if (typeof onClose === "object") {
-    if (onClose.onClose) {
-      this.once("close", onClose.onClose);
-    }
-    if (onClose.onRun) {
-      this.once("run", onClose.onRun);
-    }
-    this._options = onClose;
-  } else {
-    if (onClose) {
-      this.once("close", onClose);
-    }
-    if (onRun) {
-      this.once("run", onRun);
-    }
-    this._options = options || {};
+  if (onClose) {
+    this.once("close", onClose);
+  }
+  if (onRun) {
+    this.once("run", onRun);
   }
 
   this._telemetry = new Telemetry();
-
-  this._onConnectionChange = this._onConnectionChange.bind(this);
 
   this.close = this.close.bind(this);
   Services.obs.addObserver(this.close, "quit-application");
@@ -89,53 +82,30 @@ EventEmitter.decorate(BrowserToolboxProcess);
  * Initializes and starts a chrome toolbox process.
  * @return object
  */
-BrowserToolboxProcess.init = function (onClose, onRun, options) {
-  if (!Services.prefs.getBoolPref("devtools.chrome.enabled") ||
-      !Services.prefs.getBoolPref("devtools.debugger.remote-enabled")) {
+BrowserToolboxProcess.init = function(onClose, onRun) {
+  if (
+    !Services.prefs.getBoolPref("devtools.chrome.enabled") ||
+    !Services.prefs.getBoolPref("devtools.debugger.remote-enabled")
+  ) {
     console.error("Could not start Browser Toolbox, you need to enable it.");
     return null;
   }
-  return new BrowserToolboxProcess(onClose, onRun, options);
+  return new BrowserToolboxProcess(onClose, onRun);
 };
 
 /**
  * Figure out if there are any open Browser Toolboxes that'll need to be restored.
  * @return bool
  */
-BrowserToolboxProcess.getBrowserToolboxSessionState = function () {
-  for (let process of processes.values()) {
-    // Don't worry about addon toolboxes, we only want to restore the Browser Toolbox.
-    if (!process._options || !process._options.addonID) {
-      return true;
-    }
-  }
-  return false;
-};
-
-/**
- * Passes a set of options to the BrowserAddonActors for the given ID.
- *
- * @param id string
- *        The ID of the add-on to pass the options to
- * @param options object
- *        The options.
- * @return a promise that will be resolved when complete.
- */
-BrowserToolboxProcess.setAddonOptions = function (id, options) {
-  let promises = [];
-
-  for (let process of processes.values()) {
-    promises.push(process.debuggerServer.setAddonOptions(id, options));
-  }
-
-  return promise.all(promises);
+BrowserToolboxProcess.getBrowserToolboxSessionState = function() {
+  return processes.size !== 0;
 };
 
 BrowserToolboxProcess.prototype = {
   /**
    * Initializes the debugger server.
    */
-  _initServer: function () {
+  _initServer: function() {
     if (this.debuggerServer) {
       dumpn("The chrome toolbox server is already running.");
       return;
@@ -150,27 +120,31 @@ BrowserToolboxProcess.prototype = {
     // invisible to the debugger (unlike the usual loader settings).
     this.loader = new DevToolsLoader();
     this.loader.invisibleToDebugger = true;
-    let { DebuggerServer } = this.loader.require("devtools/server/main");
+    const { DebuggerServer } = this.loader.require("devtools/server/main");
+    const { SocketListener } = this.loader.require(
+      "devtools/shared/security/socket"
+    );
     this.debuggerServer = DebuggerServer;
     dumpn("Created a separate loader instance for the DebuggerServer.");
 
-    // Forward interesting events.
-    this.debuggerServer.on("connectionchange", this._onConnectionChange);
-
     this.debuggerServer.init();
-    // We mainly need a root actor and tab actors for opening a toolbox, even
-    // against chrome/content/addon. But the "no auto hide" button uses the
+    // We mainly need a root actor and target actors for opening a toolbox, even
+    // against chrome/content. But the "no auto hide" button uses the
     // preference actor, so also register the browser actors.
     this.debuggerServer.registerAllActors();
     this.debuggerServer.allowChromeProcess = true;
     dumpn("initialized and added the browser actors for the DebuggerServer.");
 
-    let chromeDebuggingWebSocket =
-      Services.prefs.getBoolPref("devtools.debugger.chrome-debugging-websocket");
-    let listener = this.debuggerServer.createListener();
-    listener.portOrPath = -1;
-    listener.webSocket = chromeDebuggingWebSocket;
+    const chromeDebuggingWebSocket = Services.prefs.getBoolPref(
+      "devtools.debugger.chrome-debugging-websocket"
+    );
+    const socketOptions = {
+      portOrPath: -1,
+      webSocket: chromeDebuggingWebSocket,
+    };
+    const listener = new SocketListener(this.debuggerServer, socketOptions);
     listener.open();
+    this.listener = listener;
     this.port = listener.port;
 
     if (!this.port) {
@@ -178,19 +152,21 @@ BrowserToolboxProcess.prototype = {
     }
 
     dumpn("Finished initializing the chrome toolbox server.");
-    dump(`Debugger Server for Browser Toolbox listening on port: ${this.port}\n`);
+    dump(
+      `Debugger Server for Browser Toolbox listening on port: ${this.port}\n`
+    );
   },
 
   /**
    * Initializes a profile for the remote debugger process.
    */
-  _initProfile: function () {
+  _initProfile: function() {
     dumpn("Initializing the chrome toolbox user profile.");
 
     // We used to use `ProfLD` instead of `ProfD`, so migrate old profiles if they exist.
     this._migrateProfileDir();
 
-    let debuggingProfileDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
+    const debuggingProfileDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
     debuggingProfileDir.append(CHROME_DEBUGGER_PROFILE_NAME);
     try {
       debuggingProfileDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0o755);
@@ -208,7 +184,7 @@ BrowserToolboxProcess.prototype = {
     this._dbgProfilePath = debuggingProfileDir.path;
 
     // We would like to copy prefs into this new profile...
-    let prefsFile = debuggingProfileDir.clone();
+    const prefsFile = debuggingProfileDir.clone();
     prefsFile.append("prefs.js");
     // ... but unfortunately, when we run tests, it seems the starting profile
     // clears out the prefs file before re-writing it, and in practice the
@@ -219,8 +195,10 @@ BrowserToolboxProcess.prototype = {
     // always works:
     Services.prefs.savePrefFile(prefsFile);
 
-    dumpn("Finished creating the chrome toolbox user profile at: " +
-          this._dbgProfilePath);
+    dumpn(
+      "Finished creating the chrome toolbox user profile at: " +
+        this._dbgProfilePath
+    );
   },
 
   /**
@@ -229,8 +207,8 @@ BrowserToolboxProcess.prototype = {
    * appropriate place to store supposedly persistent profile data.
    */
   _migrateProfileDir() {
-    let oldDebuggingProfileDir = Services.dirsvc.get("ProfLD", Ci.nsIFile);
-    let newDebuggingProfileDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
+    const oldDebuggingProfileDir = Services.dirsvc.get("ProfLD", Ci.nsIFile);
+    const newDebuggingProfileDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
     if (oldDebuggingProfileDir.path == newDebuggingProfileDir.path) {
       // It's possible for these locations to be the same, such as running from
       // a custom profile directory specified via CLI.
@@ -249,7 +227,10 @@ BrowserToolboxProcess.prototype = {
         newDebuggingProfileDir.remove(true);
       }
       // Move profile from old to new location
-      let newDebuggingProfileParent = Services.dirsvc.get("ProfD", Ci.nsIFile);
+      const newDebuggingProfileParent = Services.dirsvc.get(
+        "ProfD",
+        Ci.nsIFile
+      );
       oldDebuggingProfileDir.moveTo(newDebuggingProfileParent, null);
       dumpn("Debugging profile migrated successfully");
     } catch (e) {
@@ -260,27 +241,26 @@ BrowserToolboxProcess.prototype = {
   /**
    * Creates and initializes the profile & process for the remote debugger.
    */
-  _create: function () {
+  _create: function() {
     dumpn("Initializing chrome debugging process.");
 
-    let command = Services.dirsvc.get("XREExeF", Ci.nsIFile).path;
+    const command = Services.dirsvc.get("XREExeF", Ci.nsIFile).path;
 
     dumpn("Running chrome debugging process.");
-    let args = [
+    const args = [
       "-no-remote",
       "-foreground",
-      "-profile", this._dbgProfilePath,
-      "-chrome", DBG_XUL
+      "-profile",
+      this._dbgProfilePath,
+      "-chrome",
+      DBG_XUL,
     ];
-    let environment = {
+    const environment = {
       // Disable safe mode for the new process in case this was opened via the
       // keyboard shortcut.
       MOZ_DISABLE_SAFE_MODE_KEY: "1",
       MOZ_BROWSER_TOOLBOX_PORT: String(this.port),
     };
-    if (this._options.addonID) {
-      environment.MOZ_BROWSER_TOOLBOX_ADDONID = String(this._options.addonID);
-    }
 
     // During local development, incremental builds can trigger the main process
     // to clear its startup cache with the "flag file" .purgecaches, but this
@@ -289,7 +269,7 @@ BrowserToolboxProcess.prototype = {
     // well.
     //
     // As an approximation of "isLocalBuild", check for an unofficial build.
-    if (!system.constants.MOZILLA_OFFICIAL) {
+    if (!AppConstants.MOZILLA_OFFICIAL) {
       args.push("-purgecaches");
     }
 
@@ -299,49 +279,44 @@ BrowserToolboxProcess.prototype = {
       environmentAppend: true,
       stderr: "stdout",
       environment,
-    }).then(proc => {
-      this._dbgProcess = proc;
+    }).then(
+      proc => {
+        this._dbgProcess = proc;
 
-      this._telemetry.toolOpened("jsbrowserdebugger");
+        // jsbrowserdebugger is not connected with a toolbox so we pass -1 as the
+        // toolbox session id.
+        this._telemetry.toolOpened("jsbrowserdebugger", -1, this);
 
-      dumpn("Chrome toolbox is now running...");
-      this.emit("run", this);
+        dumpn("Chrome toolbox is now running...");
+        this.emit("run", this);
 
-      proc.stdin.close();
-      let dumpPipe = async pipe => {
-        let data = await pipe.readString();
-        while (data) {
-          dump(data);
-          data = await pipe.readString();
-        }
-      };
-      dumpPipe(proc.stdout);
+        proc.stdin.close();
+        const dumpPipe = async pipe => {
+          let data = await pipe.readString();
+          while (data) {
+            dump(data);
+            data = await pipe.readString();
+          }
+        };
+        dumpPipe(proc.stdout);
 
-      proc.wait().then(() => this.close());
+        proc.wait().then(() => this.close());
 
-      return proc;
-    }, err => {
-      console.log(`Error loading Browser Toolbox: ${command} ${args.join(" ")}`, err);
-    });
-  },
-
-  /**
-   * Called upon receiving the connectionchange event from a debuggerServer.
-   *
-   * @param {String} what
-   *        Type of connection change (can be either 'opened' or 'closed').
-   * @param {DebuggerServerConnection} connection
-   *        The connection that was opened or closed.
-   */
-  _onConnectionChange: function (what, connection) {
-    let wrappedJSObject = { what, connection };
-    Services.obs.notifyObservers({ wrappedJSObject }, "toolbox-connection-change");
+        return proc;
+      },
+      err => {
+        console.log(
+          `Error loading Browser Toolbox: ${command} ${args.join(" ")}`,
+          err
+        );
+      }
+    );
   },
 
   /**
    * Closes the remote debugging server and kills the toolbox process.
    */
-  close: async function () {
+  close: async function() {
     if (this.closed) {
       return;
     }
@@ -355,9 +330,15 @@ BrowserToolboxProcess.prototype = {
     this._dbgProcess.stdout.close();
     await this._dbgProcess.kill();
 
-    this._telemetry.toolClosed("jsbrowserdebugger");
+    // jsbrowserdebugger is not connected with a toolbox so we pass -1 as the
+    // toolbox session id.
+    this._telemetry.toolClosed("jsbrowserdebugger", -1, this);
+
+    if (this.listener) {
+      this.listener.close();
+    }
+
     if (this.debuggerServer) {
-      this.debuggerServer.off("connectionchange", this._onConnectionChange);
       this.debuggerServer.destroy();
       this.debuggerServer = null;
     }
@@ -367,13 +348,12 @@ BrowserToolboxProcess.prototype = {
     processes.delete(this);
 
     this._dbgProcess = null;
-    this._options = null;
     if (this.loader) {
       this.loader.destroy();
     }
     this.loader = null;
     this._telemetry = null;
-  }
+  },
 };
 
 /**
@@ -391,12 +371,5 @@ var wantLogging = Services.prefs.getBoolPref("devtools.debugger.log");
 Services.prefs.addObserver("devtools.debugger.log", {
   observe: (...args) => {
     wantLogging = Services.prefs.getBoolPref(args.pop());
-  }
-});
-
-Services.prefs.addObserver("toolbox-update-addon-options", {
-  observe: (subject) => {
-    let {id, options} = subject.wrappedJSObject;
-    BrowserToolboxProcess.setAddonOptions(id, options);
-  }
+  },
 });

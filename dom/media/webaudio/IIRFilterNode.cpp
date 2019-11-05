@@ -50,7 +50,7 @@ class IIRFilterNodeEngine final : public AudioNodeEngine {
           RefPtr<PlayingRefChangeHandler> refchanged =
               new PlayingRefChangeHandler(aStream,
                                           PlayingRefChangeHandler::RELEASE);
-          aStream->Graph()->DispatchToMainThreadAfterStreamStateUpdate(
+          aStream->Graph()->DispatchToMainThreadStableState(
               refchanged.forget());
 
           aOutput->SetNull(WEBAUDIO_BLOCK_SIZE);
@@ -64,8 +64,7 @@ class IIRFilterNodeEngine final : public AudioNodeEngine {
         RefPtr<PlayingRefChangeHandler> refchanged =
             new PlayingRefChangeHandler(aStream,
                                         PlayingRefChangeHandler::ADDREF);
-        aStream->Graph()->DispatchToMainThreadAfterStreamStateUpdate(
-            refchanged.forget());
+        aStream->Graph()->DispatchToMainThreadStableState(refchanged.forget());
       } else {
         WebAudioUtils::LogToDeveloperConsole(
             mWindowID, "IIRFilterChannelCountChangeWarning");
@@ -149,20 +148,20 @@ IIRFilterNode::IIRFilterNode(AudioContext* aContext,
   // We check that this is exactly equal to one later in blink/IIRFilter.cpp
   elements[0] = 1.0;
 
-  uint64_t windowID = aContext->GetParentObject()->WindowID();
+  uint64_t windowID = 0;
+  if (aContext->GetParentObject()) {
+    windowID = aContext->GetParentObject()->WindowID();
+  }
   IIRFilterNodeEngine* engine = new IIRFilterNodeEngine(
       this, aContext->Destination(), mFeedforward, mFeedback, windowID);
   mStream = AudioNodeStream::Create(
       aContext, engine, AudioNodeStream::NO_STREAM_FLAGS, aContext->Graph());
 }
 
-/* static */ already_AddRefed<IIRFilterNode> IIRFilterNode::Create(
+/* static */
+already_AddRefed<IIRFilterNode> IIRFilterNode::Create(
     AudioContext& aAudioContext, const IIRFilterOptions& aOptions,
     ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
   if (aOptions.mFeedforward.Length() == 0 ||
       aOptions.mFeedforward.Length() > 20) {
     aRv.Throw(NS_ERROR_DOM_NOT_SUPPORTED_ERR);
@@ -208,7 +207,7 @@ size_t IIRFilterNode::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
 
 JSObject* IIRFilterNode::WrapObject(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return IIRFilterNodeBinding::Wrap(aCx, this, aGivenProto);
+  return IIRFilterNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void IIRFilterNode::GetFrequencyResponse(const Float32Array& aFrequencyHz,

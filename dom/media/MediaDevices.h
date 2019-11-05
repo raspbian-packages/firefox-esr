@@ -17,6 +17,7 @@ namespace dom {
 
 class Promise;
 struct MediaStreamConstraints;
+struct DisplayMediaStreamConstraints;
 struct MediaTrackSupportedConstraints;
 
 #define MOZILLA_DOM_MEDIADEVICES_IMPLEMENTATION_IID  \
@@ -48,21 +49,18 @@ class MediaDevices final : public DOMEventTargetHelper,
   already_AddRefed<Promise> EnumerateDevices(CallerType aCallerType,
                                              ErrorResult& aRv);
 
+  already_AddRefed<Promise> GetDisplayMedia(
+      const DisplayMediaStreamConstraints& aConstraints, CallerType aCallerType,
+      ErrorResult& aRv);
+
   virtual void OnDeviceChange() override;
 
   mozilla::dom::EventHandlerNonNull* GetOndevicechange();
 
   void SetOndevicechange(mozilla::dom::EventHandlerNonNull* aCallback);
 
-  NS_IMETHOD AddEventListener(const nsAString& aType,
-                              nsIDOMEventListener* aListener, bool aUseCapture,
-                              bool aWantsUntrusted,
-                              uint8_t optional_argc) override;
-
-  virtual void AddEventListener(
-      const nsAString& aType, dom::EventListener* aListener,
-      const dom::AddEventListenerOptionsOrBoolean& aOptions,
-      const dom::Nullable<bool>& aWantsUntrusted, ErrorResult& aRv) override;
+  void EventListenerAdded(nsAtom* aType) override;
+  using DOMEventTargetHelper::EventListenerAdded;
 
  private:
   class GumResolver;
@@ -71,6 +69,8 @@ class MediaDevices final : public DOMEventTargetHelper,
 
   virtual ~MediaDevices();
   nsCOMPtr<nsITimer> mFuzzTimer;
+
+  void RecordAccessTelemetry(const UseCounter counter) const;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(MediaDevices,

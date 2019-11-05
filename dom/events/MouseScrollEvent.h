@@ -20,12 +20,9 @@ class MouseScrollEvent : public MouseEvent {
 
   NS_INLINE_DECL_REFCOUNTING_INHERITED(MouseScrollEvent, MouseEvent)
 
-  // Forward to base class
-  NS_FORWARD_TO_MOUSEEVENT
-
   virtual JSObject* WrapObjectInternal(
       JSContext* aCx, JS::Handle<JSObject*> aGivenProto) override {
-    return MouseScrollEventBinding::Wrap(aCx, this, aGivenProto);
+    return MouseScrollEvent_Binding::Wrap(aCx, this, aGivenProto);
   }
 
   int32_t Axis();

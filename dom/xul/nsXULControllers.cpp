@@ -13,9 +13,9 @@
 #include "nsString.h"
 
 #include "nsIControllers.h"
-#include "nsIDOMElement.h"
 #include "nsXULControllers.h"
 #include "nsIController.h"
+#include "mozilla/RefPtr.h"
 
 //----------------------------------------------------------------------
 
@@ -31,19 +31,6 @@ void nsXULControllers::DeleteControllers() {
   }
 
   mControllers.Clear();
-}
-
-nsresult NS_NewXULControllers(nsISupports* aOuter, REFNSIID aIID,
-                              void** aResult) {
-  NS_PRECONDITION(aOuter == nullptr, "no aggregation");
-  if (aOuter) return NS_ERROR_NO_AGGREGATION;
-
-  nsXULControllers* controllers = new nsXULControllers();
-  nsresult rv;
-  NS_ADDREF(controllers);
-  rv = controllers->QueryInterface(aIID, aResult);
-  NS_RELEASE(controllers);
-  return rv;
 }
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(nsXULControllers)

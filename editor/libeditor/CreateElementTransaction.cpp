@@ -32,17 +32,26 @@ namespace mozilla {
 
 using namespace dom;
 
+template already_AddRefed<CreateElementTransaction>
+CreateElementTransaction::Create(EditorBase& aEditorBase, nsAtom& aTag,
+                                 const EditorDOMPoint& aPointToInsert);
+template already_AddRefed<CreateElementTransaction>
+CreateElementTransaction::Create(EditorBase& aEditorBase, nsAtom& aTag,
+                                 const EditorRawDOMPoint& aPointToInsert);
+
+template <typename PT, typename CT>
 already_AddRefed<CreateElementTransaction> CreateElementTransaction::Create(
     EditorBase& aEditorBase, nsAtom& aTag,
-    const EditorRawDOMPoint& aPointToInsert) {
+    const EditorDOMPointBase<PT, CT>& aPointToInsert) {
   RefPtr<CreateElementTransaction> transaction =
       new CreateElementTransaction(aEditorBase, aTag, aPointToInsert);
   return transaction.forget();
 }
 
+template <typename PT, typename CT>
 CreateElementTransaction::CreateElementTransaction(
     EditorBase& aEditorBase, nsAtom& aTag,
-    const EditorRawDOMPoint& aPointToInsert)
+    const EditorDOMPointBase<PT, CT>& aPointToInsert)
     : EditTransactionBase(),
       mEditorBase(&aEditorBase),
       mTag(&aTag),
@@ -70,7 +79,7 @@ CreateElementTransaction::DoTransaction() {
   NS_ENSURE_STATE(mNewNode);
 
   // Try to insert formatting whitespace for the new node:
-  mEditorBase->MarkNodeDirty(GetAsDOMNode(mNewNode));
+  mEditorBase->MarkNodeDirty(mNewNode);
 
   // Insert the new node
   ErrorResult error;
@@ -80,7 +89,7 @@ CreateElementTransaction::DoTransaction() {
   }
 
   // Only set selection to insertion point if editor gives permission
-  if (!mEditorBase->GetShouldTxnSetSelection()) {
+  if (!mEditorBase->AllowsTransactionsToChangeSelection()) {
     // Do nothing - DOM range gravity will adjust selection
     return NS_OK;
   }

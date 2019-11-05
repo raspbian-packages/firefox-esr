@@ -1,31 +1,30 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 use cssparser::{Parser, ParserInput};
 use euclid::TypedScale;
 use euclid::TypedSize2D;
-use media_queries::CSSErrorReporterTest;
 use servo_arc::Arc;
 use servo_config::prefs::{PREFS, PrefValue};
 use servo_url::ServoUrl;
 use style::context::QuirksMode;
 use style::media_queries::{Device, MediaList, MediaType};
-use style::parser::{ParserContext, ParserErrorContext};
+use style::parser::ParserContext;
 use style::shared_lock::{SharedRwLock, StylesheetGuards};
 use style::stylesheets::{CssRuleType, Stylesheet, StylesheetInDocument, Origin};
 use style::stylesheets::viewport_rule::*;
-use style::values::specified::LengthOrPercentageOrAuto::{self, Auto};
+use style::values::specified::LengthPercentageOrAuto::{self, Auto};
 use style::values::specified::NoCalcLength::{self, ViewportPercentage};
 use style::values::specified::ViewportPercentageLength::Vw;
 use style_traits::{ParsingMode, PinchZoomFactor};
 use style_traits::viewport::*;
 
 macro_rules! stylesheet {
-    ($css:expr, $origin:ident, $error_reporter:expr) => {
-        stylesheet!($css, $origin, $error_reporter, SharedRwLock::new())
+    ($css:expr, $origin:ident) => {
+        stylesheet!($css, $origin, SharedRwLock::new())
     };
-    ($css:expr, $origin:ident, $error_reporter:expr, $shared_lock:expr) => {
+    ($css:expr, $origin:ident, $shared_lock:expr) => {
         Arc::new(Stylesheet::from_str(
             $css,
             ServoUrl::parse("http://localhost").unwrap(),
@@ -33,7 +32,7 @@ macro_rules! stylesheet {
             Arc::new($shared_lock.wrap(MediaList::empty())),
             $shared_lock,
             None,
-            &$error_reporter,
+            None,
             QuirksMode::NoQuirks,
             0
         ))
@@ -46,7 +45,7 @@ fn test_viewport_rule<F>(css: &str,
     where F: Fn(&Vec<ViewportDescriptorDeclaration>, &str)
 {
     PREFS.set("layout.viewport.enabled", PrefValue::Boolean(true));
-    let stylesheet = stylesheet!(css, Author, CSSErrorReporterTest);
+    let stylesheet = stylesheet!(css, Author);
     let mut rule_count = 0;
     stylesheet.effective_viewport_rules(&device, &stylesheet.shared_lock.read(), |rule| {
         rule_count += 1;
@@ -88,10 +87,10 @@ macro_rules! assert_decl_len {
 
 macro_rules! viewport_length {
     ($value:expr, px) => {
-        ViewportLength::Specified(LengthOrPercentageOrAuto::Length(NoCalcLength::from_px($value)))
+        ViewportLength::Specified(LengthPercentageOrAuto::Length(NoCalcLength::from_px($value)))
     };
     ($value:expr, vw) => {
-        ViewportLength::Specified(LengthOrPercentageOrAuto::Length(ViewportPercentage(Vw($value))))
+        ViewportLength::Specified(LengthPercentageOrAuto::Length(ViewportPercentage(Vw($value))))
     }
 }
 
@@ -259,15 +258,15 @@ fn cascading_within_viewport_rule() {
 fn multiple_stylesheets_cascading() {
     PREFS.set("layout.viewport.enabled", PrefValue::Boolean(true));
     let device = Device::new(MediaType::screen(), TypedSize2D::new(800., 600.), TypedScale::new(1.0));
-    let error_reporter = CSSErrorReporterTest;
     let shared_lock = SharedRwLock::new();
     let stylesheets = vec![
         stylesheet!("@viewport { min-width: 100px; min-height: 100px; zoom: 1; }",
-                    UserAgent, error_reporter, shared_lock.clone()),
+                    UserAgent,
+                    shared_lock.clone()),
         stylesheet!("@viewport { min-width: 200px; min-height: 200px; }",
-                    User, error_reporter, shared_lock.clone()),
+                    User, shared_lock.clone()),
         stylesheet!("@viewport { min-width: 300px; }",
-                    Author, error_reporter, shared_lock.clone())
+                    Author, shared_lock.clone())
     ];
 
     let declarations = Cascade::from_stylesheets(
@@ -282,11 +281,11 @@ fn multiple_stylesheets_cascading() {
 
     let stylesheets = vec![
         stylesheet!("@viewport { min-width: 100px !important; }",
-                    UserAgent, error_reporter, shared_lock.clone()),
+                    UserAgent, shared_lock.clone()),
         stylesheet!("@viewport { min-width: 200px !important; min-height: 200px !important; }",
-                    User, error_reporter, shared_lock.clone()),
+                    User, shared_lock.clone()),
         stylesheet!("@viewport { min-width: 300px !important; min-height: 300px !important; zoom: 3 !important; }",
-                    Author, error_reporter, shared_lock.clone())
+                    Author, shared_lock.clone())
     ];
     let declarations = Cascade::from_stylesheets(
         stylesheets.iter().map(|s| (&**s, Origin::Author)),
@@ -302,14 +301,19 @@ fn multiple_stylesheets_cascading() {
 #[test]
 fn constrain_viewport() {
     let url = ServoUrl::parse("http://localhost").unwrap();
-    let context = ParserContext::new(Origin::Author, &url, Some(CssRuleType::Viewport),
-                                     ParsingMode::DEFAULT,
-                                     QuirksMode::NoQuirks);
-    let error_context = ParserErrorContext { error_reporter: &CSSErrorReporterTest };
+    let context = ParserContext::new(
+        Origin::Author,
+        &url,
+        Some(CssRuleType::Viewport),
+        ParsingMode::DEFAULT,
+        QuirksMode::NoQuirks,
+        None,
+        None,
+    );
 
     macro_rules! from_css {
         ($css:expr) => {
-            &ViewportRule::parse(&context, &error_context, &mut Parser::new(&mut $css)).unwrap()
+            &ViewportRule::parse(&context, &mut Parser::new(&mut $css)).unwrap()
         }
     }
 

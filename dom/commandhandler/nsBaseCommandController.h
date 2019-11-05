@@ -7,35 +7,40 @@
 #ifndef nsBaseCommandController_h__
 #define nsBaseCommandController_h__
 
-#define NS_BASECOMMANDCONTROLLER_CID                 \
-  {                                                  \
-    0xbf88b48c, 0xfd8e, 0x40b4, {                    \
-      0xba, 0x36, 0xc7, 0xc3, 0xad, 0x6d, 0x8a, 0xc9 \
-    }                                                \
-  }
-#define NS_BASECOMMANDCONTROLLER_CONTRACTID \
-  "@mozilla.org/embedcomp/base-command-controller;1"
-
 #include "nsIController.h"
 #include "nsIControllerContext.h"
-#include "nsIControllerCommandTable.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsIWeakReferenceUtils.h"
+#include "nsControllerCommandTable.h"
 
 // The base editor controller is used for both text widgets, and all other text
 // and html editing
-class nsBaseCommandController : public nsIController,
-                                public nsIControllerContext,
-                                public nsIInterfaceRequestor,
-                                public nsICommandController {
+class nsBaseCommandController final : public nsIController,
+                                      public nsIControllerContext,
+                                      public nsIInterfaceRequestor,
+                                      public nsICommandController {
  public:
-  nsBaseCommandController();
+  /**
+   * The default constructor initializes the instance with new
+   * nsControllerCommandTable.  The other constructor does it with
+   * the given aControllerCommandTable.
+   */
+  explicit nsBaseCommandController(
+      nsControllerCommandTable* aControllerCommandTable =
+          new nsControllerCommandTable());
 
   NS_DECL_ISUPPORTS
   NS_DECL_NSICONTROLLER
   NS_DECL_NSICOMMANDCONTROLLER
   NS_DECL_NSICONTROLLERCONTEXT
   NS_DECL_NSIINTERFACEREQUESTOR
+
+  static already_AddRefed<nsBaseCommandController> CreateWindowController();
+  static already_AddRefed<nsBaseCommandController> CreateEditorController();
+  static already_AddRefed<nsBaseCommandController> CreateEditingController();
+  static already_AddRefed<nsBaseCommandController> CreateHTMLEditorController();
+  static already_AddRefed<nsBaseCommandController>
+  CreateHTMLEditorDocStateController();
 
  protected:
   virtual ~nsBaseCommandController();
@@ -45,7 +50,7 @@ class nsBaseCommandController : public nsIController,
   nsISupports* mCommandContextRawPtr;
 
   // Our reference to the command manager
-  nsCOMPtr<nsIControllerCommandTable> mCommandTable;
+  RefPtr<nsControllerCommandTable> mCommandTable;
 };
 
 #endif /* nsBaseCommandController_h_ */

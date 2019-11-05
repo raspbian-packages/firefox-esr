@@ -17,9 +17,17 @@
 #include "base/time.h"
 
 #if defined(OS_POSIX)
-#include "chrome/common/file_descriptor_set_posix.h"
+#  include "chrome/common/file_descriptor_set_posix.h"
+#endif
+#if defined(OS_WIN)
+#  include "windows.h"
 #endif
 #include "chrome/common/ipc_message.h"
+
+template <typename T>
+class RefPtr;
+template <typename T>
+class nsCOMPtr;
 
 namespace IPC {
 
@@ -102,25 +110,48 @@ class MessageIterator {
 template <class P>
 struct ParamTraits;
 
-template <class P>
-static inline void WriteParam(Message* m, const P& p) {
-  ParamTraits<P>::Write(m, p);
+// When WriteParam or ReadParam is passed a pointer type like RefPtr<T> or T*,
+// we want to invoke Write() on ParamTraits<T>, as the intype is often T*, while
+// the ReadParam type may be RefPtr<T>.
+namespace detail {
+template <typename T>
+struct StripPointers {
+  typedef T Type;
+};
+template <typename T>
+struct StripPointers<T*> {
+  typedef T Type;
+};
+template <typename T>
+struct StripPointers<RefPtr<T>> {
+  typedef T Type;
+};
+template <typename T>
+struct StripPointers<nsCOMPtr<T>> {
+  typedef T Type;
+};
+}  // namespace detail
+
+// NOTE: This helper is also used in IPDLParamTraits.h
+template <typename T>
+struct ParamTraitsSelector
+    : public detail::StripPointers<typename mozilla::Decay<T>::Type> {};
+
+template <typename P>
+static inline void WriteParam(Message* m, P&& p) {
+  ParamTraits<typename ParamTraitsSelector<P>::Type>::Write(m,
+                                                            std::forward<P>(p));
 }
 
-template <class P>
-static inline void WriteParam(Message* m, P& p) {
-  ParamTraits<P>::Write(m, p);
-}
-
-template <class P>
+template <typename P>
 static inline bool WARN_UNUSED_RESULT ReadParam(const Message* m,
                                                 PickleIterator* iter, P* p) {
-  return ParamTraits<P>::Read(m, iter, p);
+  return ParamTraits<typename ParamTraitsSelector<P>::Type>::Read(m, iter, p);
 }
 
-template <class P>
+template <typename P>
 static inline void LogParam(const P& p, std::wstring* l) {
-  ParamTraits<P>::Log(p, l);
+  ParamTraits<typename ParamTraitsSelector<P>::Type>::Log(p, l);
 }
 
 // Fundamental types.
@@ -283,27 +314,10 @@ struct ParamTraitsFixed<uint64_t> {
   }
 };
 
-// Other standard C types.
-
-template <class P>
-struct ParamTraitsLibC : ParamTraitsFixed<P> {};
-
-template <>
-struct ParamTraitsLibC<size_t> {
-  typedef size_t param_type;
-  static void Write(Message* m, const param_type& p) { m->WriteSize(p); }
-  static bool Read(const Message* m, PickleIterator* iter, param_type* r) {
-    return m->ReadSize(iter, r);
-  }
-  static void Log(const param_type& p, std::wstring* l) {
-    l->append(StringPrintf(L"%u", p));
-  }
-};
-
 // std::* types.
 
 template <class P>
-struct ParamTraitsStd : ParamTraitsLibC<P> {};
+struct ParamTraitsStd : ParamTraitsFixed<P> {};
 
 template <>
 struct ParamTraitsStd<std::string> {
@@ -328,7 +342,7 @@ struct ParamTraitsStd<std::wstring> {
 };
 
 template <class K, class V>
-struct ParamTraitsStd<std::map<K, V> > {
+struct ParamTraitsStd<std::map<K, V>> {
   typedef std::map<K, V> param_type;
   static void Write(Message* m, const param_type& p) {
     WriteParam(m, static_cast<int>(p.size()));
@@ -360,32 +374,36 @@ template <class P>
 struct ParamTraitsWindows : ParamTraitsStd<P> {};
 
 #if defined(OS_WIN)
+// NOTE: HANDLE is a pointer, which we need to strip off, otherwise we won't
+// find this specialization.
 template <>
-struct ParamTraitsWindows<HANDLE> {
-  typedef HANDLE param_type;
-  static void Write(Message* m, const param_type& p) {
+struct ParamTraitsWindows<detail::StripPointers<HANDLE>::Type> {
+  static_assert(sizeof(HANDLE) == sizeof(intptr_t), "Wrong size for HANDLE?");
+
+  static void Write(Message* m, HANDLE p) {
     m->WriteIntPtr(reinterpret_cast<intptr_t>(p));
   }
-  static bool Read(const Message* m, PickleIterator* iter, param_type* r) {
-    DCHECK_EQ(sizeof(param_type), sizeof(intptr_t));
+  static bool Read(const Message* m, PickleIterator* iter, HANDLE* r) {
     return m->ReadIntPtr(iter, reinterpret_cast<intptr_t*>(r));
   }
-  static void Log(const param_type& p, std::wstring* l) {
+  static void Log(const HANDLE& p, std::wstring* l) {
     l->append(StringPrintf(L"0x%X", p));
   }
 };
 
+// NOTE: HWND is a pointer, which we need to strip off, otherwise we won't find
+// this specialization.
 template <>
-struct ParamTraitsWindows<HWND> {
-  typedef HWND param_type;
-  static void Write(Message* m, const param_type& p) {
+struct ParamTraitsWindows<detail::StripPointers<HWND>::Type> {
+  static_assert(sizeof(HWND) == sizeof(intptr_t), "Wrong size for HWND?");
+
+  static void Write(Message* m, HWND p) {
     m->WriteIntPtr(reinterpret_cast<intptr_t>(p));
   }
-  static bool Read(const Message* m, PickleIterator* iter, param_type* r) {
-    DCHECK_EQ(sizeof(param_type), sizeof(intptr_t));
+  static bool Read(const Message* m, PickleIterator* iter, HWND* r) {
     return m->ReadIntPtr(iter, reinterpret_cast<intptr_t*>(r));
   }
-  static void Log(const param_type& p, std::wstring* l) {
+  static void Log(const HWND& p, std::wstring* l) {
     l->append(StringPrintf(L"0x%X", p));
   }
 };

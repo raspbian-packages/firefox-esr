@@ -67,3 +67,24 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Įgaliotojo serverio DNS, kai naudojamas SOCKS v5
     .accesskey = d
+connection-dns-over-https =
+    .label = Įjungti DNS per HTTPS
+    .accesskey = j
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Naudoti numatytąjį ({ $url })
+    .accesskey = N
+    .tooltiptext = DNS išrišimui per HTTPS naudoti numatytąjį URL
+connection-dns-over-https-url-resolver = Naudoti teikėją
+    .accesskey = t
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (numatytasis)
+    .tooltiptext = DNS išrišimui per HTTPS naudoti numatytąjį URL
+connection-dns-over-https-url-custom =
+    .label = Pasirinktinis
+    .accesskey = P
+    .tooltiptext = Įveskite norimą URL, skirtą DNS per HTTPS išrišimui
+connection-dns-over-https-custom-label = Kitas

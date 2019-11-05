@@ -3,13 +3,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const { createStore, applyMiddleware } = require("devtools/client/shared/vendor/redux");
+const {
+  createStore,
+  applyMiddleware,
+} = require("devtools/client/shared/vendor/redux");
 const { thunk } = require("./middleware/thunk");
 const { waitUntilService } = require("./middleware/wait-service");
 const { task } = require("./middleware/task");
-const { log } = require("./middleware/log");
 const { promise } = require("./middleware/promise");
-const { history } = require("./middleware/history");
+
+loader.lazyRequireGetter(
+  this,
+  "history",
+  "devtools/client/shared/redux/middleware/history",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "log",
+  "devtools/client/shared/redux/middleware/log",
+  true
+);
 
 /**
  * This creates a dispatcher with all the standard middleware in place
@@ -32,7 +46,7 @@ module.exports = (opts = {}) => {
     // operate on "already transformed" actions. Actions going through
     // them shouldn't have any special fields like promises, they
     // should just be normal JSON objects.
-    waitUntilService
+    waitUntilService,
   ];
 
   if (opts.history) {

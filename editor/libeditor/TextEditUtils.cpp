@@ -14,8 +14,6 @@
 #include "nsDebug.h"
 #include "nsError.h"
 #include "nsGkAtoms.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMNode.h"
 #include "nsNameSpaceManager.h"
 #include "nsLiteralString.h"
 #include "nsString.h"
@@ -29,10 +27,6 @@ namespace mozilla {
 /**
  * IsBody() returns true if aNode is an html body node.
  */
-bool TextEditUtils::IsBody(nsIDOMNode* aNode) {
-  return EditorBase::NodeIsType(aNode, nsGkAtoms::body);
-}
-
 bool TextEditUtils::IsBody(nsINode* aNode) {
   MOZ_ASSERT(aNode);
   return aNode->IsHTMLElement(nsGkAtoms::body);
@@ -41,10 +35,6 @@ bool TextEditUtils::IsBody(nsINode* aNode) {
 /**
  * IsBreak() returns true if aNode is an html break node.
  */
-bool TextEditUtils::IsBreak(nsIDOMNode* aNode) {
-  return EditorBase::NodeIsType(aNode, nsGkAtoms::br);
-}
-
 bool TextEditUtils::IsBreak(nsINode* aNode) {
   MOZ_ASSERT(aNode);
   return aNode->IsHTMLElement(nsGkAtoms::br);
@@ -53,11 +43,6 @@ bool TextEditUtils::IsBreak(nsINode* aNode) {
 /**
  * IsMozBR() returns true if aNode is an html br node with |type = _moz|.
  */
-bool TextEditUtils::IsMozBR(nsIDOMNode* aNode) {
-  MOZ_ASSERT(aNode);
-  return IsBreak(aNode) && HasMozAttr(aNode);
-}
-
 bool TextEditUtils::IsMozBR(nsINode* aNode) {
   MOZ_ASSERT(aNode);
   return aNode->IsHTMLElement(nsGkAtoms::br) &&
@@ -70,14 +55,11 @@ bool TextEditUtils::IsMozBR(nsINode* aNode) {
  * HasMozAttr() returns true if aNode has type attribute and its value is
  * |_moz|. (Used to indicate div's and br's we use in mail compose rules)
  */
-bool TextEditUtils::HasMozAttr(nsIDOMNode* aNode) {
+bool TextEditUtils::HasMozAttr(nsINode* aNode) {
   MOZ_ASSERT(aNode);
-  nsCOMPtr<Element> element = do_QueryInterface(aNode);
-  if (!element) {
-    return false;
-  }
-  return element->AttrValueIs(kNameSpaceID_None, nsGkAtoms::type,
-                              NS_LITERAL_STRING("_moz"), eIgnoreCase);
+  return aNode->IsElement() && aNode->AsElement()->AttrValueIs(
+                                   kNameSpaceID_None, nsGkAtoms::type,
+                                   NS_LITERAL_STRING("_moz"), eIgnoreCase);
 }
 
 /******************************************************************************
@@ -94,7 +76,7 @@ AutoEditInitRulesTrigger::AutoEditInitRulesTrigger(TextEditor* aTextEditor,
 
 AutoEditInitRulesTrigger::~AutoEditInitRulesTrigger() {
   if (mTextEditor) {
-    mResult = mTextEditor->EndEditorInit();
+    mResult = MOZ_KnownLive(mTextEditor)->EndEditorInit();
   }
 }
 

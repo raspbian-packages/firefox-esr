@@ -62,8 +62,7 @@ class FTPChannelChild final : public PFTPChannelChild,
   void AddIPDLReference();
   void ReleaseIPDLReference();
 
-  NS_IMETHOD AsyncOpen(nsIStreamListener* listener,
-                       nsISupports* aContext) override;
+  NS_IMETHOD AsyncOpen(nsIStreamListener* listener) override;
 
   // Note that we handle this ourselves, overriding the nsBaseChannel
   // default behavior, in order to be e10s-friendly.
@@ -140,6 +139,10 @@ class FTPChannelChild final : public PFTPChannelChild,
   bool mCanceled;
   uint32_t mSuspendCount;
   bool mIsPending;
+
+  // This will only be true while DoOnStartRequest is in progress.
+  // It is used to enforce that DivertToParent is only called during that time.
+  bool mDuringOnStart = false;
 
   PRTime mLastModifiedTime;
   uint64_t mStartPos;

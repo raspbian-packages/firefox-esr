@@ -1,19 +1,19 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Generic implementations of some DOM APIs so they can be shared between Servo
 //! and Gecko.
 
-use Atom;
-use context::QuirksMode;
-use dom::{TDocument, TElement, TNode};
-use invalidation::element::invalidator::{DescendantInvalidationLists, Invalidation};
-use invalidation::element::invalidator::{InvalidationProcessor, InvalidationVector};
-use selectors::{Element, NthIndexCache, SelectorList};
+use crate::context::QuirksMode;
+use crate::dom::{TDocument, TElement, TNode, TShadowRoot};
+use crate::invalidation::element::invalidator::{DescendantInvalidationLists, Invalidation};
+use crate::invalidation::element::invalidator::{InvalidationProcessor, InvalidationVector};
+use crate::Atom;
 use selectors::attr::CaseSensitivity;
 use selectors::matching::{self, MatchingContext, MatchingMode};
-use selectors::parser::{Combinator, Component, LocalName};
+use selectors::parser::{Combinator, Component, LocalName, SelectorImpl};
+use selectors::{Element, NthIndexCache, SelectorList};
 use smallvec::SmallVec;
 use std::borrow::Borrow;
 
@@ -26,13 +26,9 @@ pub fn element_matches<E>(
 where
     E: Element,
 {
-    let mut context = MatchingContext::new(
-        MatchingMode::Normal,
-        None,
-        None,
-        quirks_mode,
-    );
+    let mut context = MatchingContext::new(MatchingMode::Normal, None, None, quirks_mode);
     context.scope_element = Some(element.opaque());
+    context.current_host = element.containing_shadow_host().map(|e| e.opaque());
     matching::matches_selector_list(selector_list, element, &mut context)
 }
 
@@ -54,6 +50,7 @@ where
         quirks_mode,
     );
     context.scope_element = Some(element.opaque());
+    context.current_host = element.containing_shadow_host().map(|e| e.opaque());
 
     let mut current = Some(element);
     while let Some(element) = current.take() {
@@ -91,7 +88,9 @@ pub struct QueryAll;
 impl<E: TElement> SelectorQuery<E> for QueryAll {
     type Output = QuerySelectorAllResult<E>;
 
-    fn should_stop_after_first_match() -> bool { false }
+    fn should_stop_after_first_match() -> bool {
+        false
+    }
 
     fn append_element(output: &mut Self::Output, element: E) {
         output.push(element);
@@ -108,7 +107,9 @@ pub struct QueryFirst;
 impl<E: TElement> SelectorQuery<E> for QueryFirst {
     type Output = Option<E>;
 
-    fn should_stop_after_first_match() -> bool { true }
+    fn should_stop_after_first_match() -> bool {
+        true
+    }
 
     fn append_element(output: &mut Self::Output, element: E) {
         if output.is_none() {
@@ -138,7 +139,9 @@ where
     Q: SelectorQuery<E>,
     Q::Output: 'a,
 {
-    fn light_tree_only(&self) -> bool { true }
+    fn light_tree_only(&self) -> bool {
+        true
+    }
 
     fn collect_invalidations(
         &mut self,
@@ -162,12 +165,11 @@ where
         // For now, assert it's a root element.
         debug_assert!(element.parent_element().is_none());
 
-        let target_vector =
-            if self.matching_context.scope_element.is_some() {
-                &mut descendant_invalidations.dom_descendants
-            } else {
-                self_invalidations
-            };
+        let target_vector = if self.matching_context.scope_element.is_some() {
+            &mut descendant_invalidations.dom_descendants
+        } else {
+            self_invalidations
+        };
 
         for selector in self.selector_list.0.iter() {
             target_vector.push(Invalidation::new(selector, 0))
@@ -182,7 +184,7 @@ where
 
     fn should_process_descendants(&mut self, _: E) -> bool {
         if Q::should_stop_after_first_match() {
-            return Q::is_empty(&self.results)
+            return Q::is_empty(&self.results);
         }
 
         true
@@ -196,11 +198,7 @@ where
     fn invalidated_descendants(&mut self, _e: E, _child: E) {}
 }
 
-fn collect_all_elements<E, Q, F>(
-    root: E::ConcreteNode,
-    results: &mut Q::Output,
-    mut filter: F,
-)
+fn collect_all_elements<E, Q, F>(root: E::ConcreteNode, results: &mut Q::Output, mut filter: F)
 where
     E: TElement,
     Q: SelectorQuery<E>,
@@ -223,14 +221,31 @@ where
     }
 }
 
-/// Returns whether a given element is descendant of a given `root` node.
+/// Returns whether a given element connected to `root` is descendant of `root`.
 ///
 /// NOTE(emilio): if root == element, this returns false.
-fn element_is_descendant_of<E>(element: E, root: E::ConcreteNode) -> bool
+fn connected_element_is_descendant_of<E>(element: E, root: E::ConcreteNode) -> bool
 where
     E: TElement,
 {
-    if element.as_node().is_in_document() && root == root.owner_doc().as_node() {
+    // Optimize for when the root is a document or a shadow root and the element
+    // is connected to that root.
+    if root.as_document().is_some() {
+        debug_assert!(element.as_node().is_in_document(), "Not connected?");
+        debug_assert_eq!(
+            root,
+            root.owner_doc().as_node(),
+            "Where did this element come from?",
+        );
+        return true;
+    }
+
+    if root.as_shadow_root().is_some() {
+        debug_assert_eq!(
+            element.containing_shadow().unwrap().as_node(),
+            root,
+            "Not connected?"
+        );
         return true;
     }
 
@@ -246,28 +261,33 @@ where
 }
 
 /// Fast path for iterating over every element with a given id in the document
-/// that `root` is connected to.
-fn fast_connected_elements_with_id<'a, D>(
-    doc: &'a D,
-    root: D::ConcreteNode,
+/// or shadow root that `root` is connected to.
+fn fast_connected_elements_with_id<'a, N>(
+    root: N,
     id: &Atom,
     quirks_mode: QuirksMode,
-) -> Result<&'a [<D::ConcreteNode as TNode>::ConcreteElement], ()>
+) -> Result<&'a [N::ConcreteElement], ()>
 where
-    D: TDocument,
+    N: TNode + 'a,
 {
-    debug_assert_eq!(root.owner_doc().as_node(), doc.as_node());
-
     let case_sensitivity = quirks_mode.classes_and_ids_case_sensitivity();
     if case_sensitivity != CaseSensitivity::CaseSensitive {
         return Err(());
     }
 
-    if !root.is_in_document() {
-        return Err(());
+    if root.is_in_document() {
+        return root.owner_doc().elements_with_id(id);
     }
 
-    doc.elements_with_id(id)
+    if let Some(shadow) = root.as_shadow_root() {
+        return shadow.elements_with_id(id);
+    }
+
+    if let Some(shadow) = root.as_element().and_then(|e| e.containing_shadow()) {
+        return shadow.elements_with_id(id);
+    }
+
+    Err(())
 }
 
 /// Collects elements with a given id under `root`, that pass `filter`.
@@ -277,31 +297,28 @@ fn collect_elements_with_id<E, Q, F>(
     results: &mut Q::Output,
     quirks_mode: QuirksMode,
     mut filter: F,
-)
-where
+) where
     E: TElement,
     Q: SelectorQuery<E>,
     F: FnMut(E) -> bool,
 {
-    let doc = root.owner_doc();
-    let elements = match fast_connected_elements_with_id(&doc, root, id, quirks_mode) {
+    let elements = match fast_connected_elements_with_id(root, id, quirks_mode) {
         Ok(elements) => elements,
         Err(()) => {
-            let case_sensitivity =
-                quirks_mode.classes_and_ids_case_sensitivity();
+            let case_sensitivity = quirks_mode.classes_and_ids_case_sensitivity();
 
             collect_all_elements::<E, Q, _>(root, results, |e| {
                 e.has_id(id, case_sensitivity) && filter(e)
             });
 
             return;
-        }
+        },
     };
 
     for element in elements {
         // If the element is not an actual descendant of the root, even though
         // it's connected, we don't really care about it.
-        if !element_is_descendant_of(*element, root) {
+        if !connected_element_is_descendant_of(*element, root) {
             continue;
         }
 
@@ -313,6 +330,22 @@ where
         if Q::should_stop_after_first_match() {
             break;
         }
+    }
+}
+
+#[inline(always)]
+fn local_name_matches<E>(element: E, local_name: &LocalName<E::Impl>) -> bool
+where
+    E: TElement,
+{
+    let LocalName {
+        ref name,
+        ref lower_name,
+    } = *local_name;
+    if element.is_html_element_in_html_document() {
+        element.local_name() == lower_name.borrow()
+    } else {
+        element.local_name() == name.borrow()
     }
 }
 
@@ -330,41 +363,39 @@ where
     match *component {
         Component::ExplicitUniversalType => {
             collect_all_elements::<E, Q, _>(root, results, |_| true)
-        }
+        },
         Component::ID(ref id) => {
-            collect_elements_with_id::<E, Q, _>(
-                root,
-                id,
-                results,
-                quirks_mode,
-                |_| true,
-            );
-        }
+            collect_elements_with_id::<E, Q, _>(root, id, results, quirks_mode, |_| true);
+        },
         Component::Class(ref class) => {
             let case_sensitivity = quirks_mode.classes_and_ids_case_sensitivity();
             collect_all_elements::<E, Q, _>(root, results, |element| {
                 element.has_class(class, case_sensitivity)
             })
-        }
-        Component::LocalName(LocalName { ref name, ref lower_name }) => {
+        },
+        Component::LocalName(ref local_name) => {
             collect_all_elements::<E, Q, _>(root, results, |element| {
-                if element.is_html_element_in_html_document() {
-                    element.local_name() == lower_name.borrow()
-                } else {
-                    element.local_name() == name.borrow()
-                }
+                local_name_matches(element, local_name)
             })
-        }
+        },
         // TODO(emilio): More fast paths?
-        _ => {
-            return Err(())
-        }
+        _ => return Err(()),
     }
 
     Ok(())
 }
 
+enum SimpleFilter<'a, Impl: SelectorImpl> {
+    Class(&'a Atom),
+    LocalName(&'a LocalName<Impl>),
+}
+
 /// Fast paths for a given selector query.
+///
+/// When there's only one component, we go directly to
+/// `query_selector_single_query`, otherwise, we try to optimize by looking just
+/// at the subtrees rooted at ids in the selector, and otherwise we try to look
+/// up by class name or local name in the rightmost compound.
 ///
 /// FIXME(emilio, nbp): This may very well be a good candidate for code to be
 /// replaced by HolyJit :)
@@ -400,7 +431,12 @@ where
     let mut iter = selector.iter();
     let mut combinator: Option<Combinator> = None;
 
-    loop {
+    // We want to optimize some cases where there's no id involved whatsoever,
+    // like `.foo .bar`, but we don't want to make `#foo .bar` slower because of
+    // that.
+    let mut simple_filter = None;
+
+    'selector_loop: loop {
         debug_assert!(combinator.map_or(true, |c| !c.is_sibling()));
 
         'component_loop: for component in &mut iter {
@@ -409,27 +445,14 @@ where
                     if combinator.is_none() {
                         // In the rightmost compound, just find descendants of
                         // root that match the selector list with that id.
-                        collect_elements_with_id::<E, Q, _>(
-                            root,
-                            id,
-                            results,
-                            quirks_mode,
-                            |e| {
-                                matching::matches_selector_list(
-                                    selector_list,
-                                    &e,
-                                    matching_context,
-                                )
-                            }
-                        );
+                        collect_elements_with_id::<E, Q, _>(root, id, results, quirks_mode, |e| {
+                            matching::matches_selector_list(selector_list, &e, matching_context)
+                        });
 
                         return Ok(());
                     }
 
-                    let doc = root.owner_doc();
-                    let elements =
-                        fast_connected_elements_with_id(&doc, root, id, quirks_mode)?;
-
+                    let elements = fast_connected_elements_with_id(root, id, quirks_mode)?;
                     if elements.is_empty() {
                         return Ok(());
                     }
@@ -454,7 +477,7 @@ where
                         //
                         // Give up on trying to optimize based on this id and
                         // keep walking our selector.
-                        if !element_is_descendant_of(*element, root) {
+                        if !connected_element_is_descendant_of(*element, root) {
                             continue 'component_loop;
                         }
 
@@ -471,14 +494,29 @@ where
                     }
 
                     return Ok(());
-                }
+                },
+                Component::Class(ref class) => {
+                    if combinator.is_none() {
+                        simple_filter = Some(SimpleFilter::Class(class));
+                    }
+                },
+                Component::LocalName(ref local_name) => {
+                    if combinator.is_none() {
+                        // Prefer to look at class rather than local-name if
+                        // both are present.
+                        if let Some(SimpleFilter::Class(..)) = simple_filter {
+                            continue;
+                        }
+                        simple_filter = Some(SimpleFilter::LocalName(local_name));
+                    }
+                },
                 _ => {},
             }
         }
 
         loop {
             let next_combinator = match iter.next_sequence() {
-                None => return Err(()),
+                None => break 'selector_loop,
                 Some(c) => c,
             };
 
@@ -495,6 +533,31 @@ where
             break;
         }
     }
+
+    // We got here without finding any ID or such that we could handle. Try to
+    // use one of the simple filters.
+    let simple_filter = match simple_filter {
+        Some(f) => f,
+        None => return Err(()),
+    };
+
+    match simple_filter {
+        SimpleFilter::Class(ref class) => {
+            let case_sensitivity = quirks_mode.classes_and_ids_case_sensitivity();
+            collect_all_elements::<E, Q, _>(root, results, |element| {
+                element.has_class(class, case_sensitivity) &&
+                    matching::matches_selector_list(selector_list, &element, matching_context)
+            });
+        },
+        SimpleFilter::LocalName(ref local_name) => {
+            collect_all_elements::<E, Q, _>(root, results, |element| {
+                local_name_matches(element, local_name) &&
+                    matching::matches_selector_list(selector_list, &element, matching_context)
+            });
+        },
+    }
+
+    Ok(())
 }
 
 // Slow path for a given selector query.
@@ -503,8 +566,7 @@ fn query_selector_slow<E, Q>(
     selector_list: &SelectorList<E::Impl>,
     results: &mut Q::Output,
     matching_context: &mut MatchingContext<E::Impl>,
-)
-where
+) where
     E: TElement,
     Q: SelectorQuery<E>,
 {
@@ -528,12 +590,11 @@ pub fn query_selector<E, Q>(
     selector_list: &SelectorList<E::Impl>,
     results: &mut Q::Output,
     may_use_invalidation: MayUseInvalidation,
-)
-where
+) where
     E: TElement,
     Q: SelectorQuery<E>,
 {
-    use invalidation::element::invalidator::TreeStyleInvalidator;
+    use crate::invalidation::element::invalidator::TreeStyleInvalidator;
 
     let quirks_mode = root.owner_doc().quirks_mode();
 
@@ -547,13 +608,13 @@ where
 
     let root_element = root.as_element();
     matching_context.scope_element = root_element.map(|e| e.opaque());
+    matching_context.current_host = match root_element {
+        Some(root) => root.containing_shadow_host().map(|host| host.opaque()),
+        None => root.as_shadow_root().map(|root| root.host().opaque()),
+    };
 
-    let fast_result = query_selector_fast::<E, Q>(
-        root,
-        selector_list,
-        results,
-        &mut matching_context,
-    );
+    let fast_result =
+        query_selector_fast::<E, Q>(root, selector_list, results, &mut matching_context);
 
     if fast_result.is_ok() {
         return;
@@ -571,17 +632,11 @@ where
     //
     // A selector with a combinator needs to have a length of at least 3: A
     // simple selector, a combinator, and another simple selector.
-    let invalidation_may_be_useful =
-        may_use_invalidation == MayUseInvalidation::Yes &&
+    let invalidation_may_be_useful = may_use_invalidation == MayUseInvalidation::Yes &&
         selector_list.0.iter().any(|s| s.len() > 2);
 
     if root_element.is_some() || !invalidation_may_be_useful {
-        query_selector_slow::<E, Q>(
-            root,
-            selector_list,
-            results,
-            &mut matching_context,
-        );
+        query_selector_slow::<E, Q>(root, selector_list, results, &mut matching_context);
     } else {
         let mut processor = QuerySelectorProcessor::<E, Q> {
             results,
@@ -591,11 +646,8 @@ where
 
         for node in root.dom_children() {
             if let Some(e) = node.as_element() {
-                TreeStyleInvalidator::new(
-                    e,
-                    /* stack_limit_checker = */ None,
-                    &mut processor,
-                ).invalidate();
+                TreeStyleInvalidator::new(e, /* stack_limit_checker = */ None, &mut processor)
+                    .invalidate();
             }
         }
     }

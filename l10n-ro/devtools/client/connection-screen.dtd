@@ -7,16 +7,24 @@
   - in the Web Developer menu.
   - -->
 
+<!ENTITY title      "Conectează-te">
+<!ENTITY header     "Conectează-te la un dispozitiv la distanță">
 <!ENTITY host       "Gazdă:">
 <!ENTITY port       "Port:">
+<!ENTITY connect    "Conectează-te">
 <!ENTITY connecting "Se conectează…">
+<!ENTITY availableAddons "Suplimente la distanță disponibile:">
+<!ENTITY availableTabs "File la distanță disponibile:">
+<!ENTITY availableProcesses "Procese la distanță disponibile:">
 <!ENTITY connectionError "Eroare:">
-<!ENTITY errorTimeout "Eroare: conexiunea a expirat.">
+<!ENTITY errorTimeout "Eroare: timpul de conectare a expirat.">
+<!ENTITY errorRefused "Eroare: conexiune refuzată.">
 <!ENTITY errorUnexpected "Eroare neașteptată.">
 
 <!-- LOCALIZATION NOTE (remoteHelp, remoteDocumentation, remoteHelpSuffix):
 these strings will be concatenated in a single label, remoteDocumentation will
 be used as text for a link to MDN. -->
-<!ENTITY remoteDocumentation "documentație">
+<!ENTITY remoteHelp "Uneltele de dezvoltare din Firefox pot depana dispozitive la distanță (Firefox pentru Android și Firefox OS, de exemplu). Asigură-te că ai activat opțiunea „Depanare la distanță” pe dispozitivul la distanță. Pentru mai multe detalii, vezi ">
+<!ENTITY remoteDocumentation "documentația">
 <!ENTITY remoteHelpSuffix ".">
 

@@ -50,8 +50,8 @@ class AutocompletePopup extends Component {
   }
 
   computeState({ autocompleteProvider, filter }) {
-    let list = autocompleteProvider(filter);
-    let selectedIndex = list.length > 0 ? 0 : -1;
+    const list = autocompleteProvider(filter);
+    const selectedIndex = list.length > 0 ? 0 : -1;
 
     return { list, selectedIndex };
   }
@@ -80,7 +80,7 @@ class AutocompletePopup extends Component {
    * @param {number} increment - No. of hops in the direction
    */
   jumpBy(increment = 1) {
-    let { list, selectedIndex } = this.state;
+    const { list, selectedIndex } = this.state;
     let nextIndex = selectedIndex + increment;
     if (increment > 0) {
       // Positive cycling
@@ -89,7 +89,7 @@ class AutocompletePopup extends Component {
       // Inverse cycling
       nextIndex = nextIndex < 0 ? list.length - 1 : nextIndex;
     }
-    this.setState({selectedIndex: nextIndex});
+    this.setState({ selectedIndex: nextIndex });
   }
 
   /**
@@ -104,32 +104,41 @@ class AutocompletePopup extends Component {
 
   onMouseDown(e) {
     e.preventDefault();
-    this.setState({ selectedIndex: Number(e.target.dataset.index) }, this.select);
+    this.setState(
+      { selectedIndex: Number(e.target.dataset.index) },
+      this.select
+    );
   }
 
   render() {
-    let { list } = this.state;
+    const { list } = this.state;
 
-    return list.length > 0 && dom.div(
-      { className: "devtools-autocomplete-popup devtools-monospace" },
-      dom.ul(
-        { className: "devtools-autocomplete-listbox" },
-        list.map((item, i) => {
-          let isSelected = this.state.selectedIndex == i;
-          let itemClassList = ["autocomplete-item"];
+    return (
+      list.length > 0 &&
+      dom.div(
+        { className: "devtools-autocomplete-popup devtools-monospace" },
+        dom.ul(
+          { className: "devtools-autocomplete-listbox" },
+          list.map((item, i) => {
+            const isSelected = this.state.selectedIndex == i;
+            const itemClassList = ["autocomplete-item"];
 
-          if (isSelected) {
-            itemClassList.push("autocomplete-selected");
-          }
-          return dom.li({
-            key: i,
-            "data-index": i,
-            "data-value": item.value,
-            className: itemClassList.join(" "),
-            ref: isSelected ? "selected" : null,
-            onMouseDown: this.onMouseDown,
-          }, item.displayValue);
-        })
+            if (isSelected) {
+              itemClassList.push("autocomplete-selected");
+            }
+            return dom.li(
+              {
+                key: i,
+                "data-index": i,
+                "data-value": item.value,
+                className: itemClassList.join(" "),
+                ref: isSelected ? "selected" : null,
+                onMouseDown: this.onMouseDown,
+              },
+              item.displayValue
+            );
+          })
+        )
       )
     );
   }

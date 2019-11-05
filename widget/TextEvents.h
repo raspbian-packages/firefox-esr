@@ -11,8 +11,10 @@
 #include "mozilla/Assertions.h"
 #include "mozilla/BasicEvents.h"
 #include "mozilla/CheckedInt.h"
+#include "mozilla/dom/DataTransfer.h"
 #include "mozilla/EventForwards.h"  // for KeyNameIndex, temporarily
 #include "mozilla/FontRange.h"
+#include "mozilla/Maybe.h"
 #include "mozilla/TextRange.h"
 #include "mozilla/WritingModes.h"
 #include "mozilla/dom/KeyboardEventBinding.h"
@@ -42,10 +44,10 @@ enum {
 namespace mozilla {
 
 enum : uint32_t {
-  eKeyLocationStandard = dom::KeyboardEventBinding::DOM_KEY_LOCATION_STANDARD,
-  eKeyLocationLeft = dom::KeyboardEventBinding::DOM_KEY_LOCATION_LEFT,
-  eKeyLocationRight = dom::KeyboardEventBinding::DOM_KEY_LOCATION_RIGHT,
-  eKeyLocationNumpad = dom::KeyboardEventBinding::DOM_KEY_LOCATION_NUMPAD
+  eKeyLocationStandard = dom::KeyboardEvent_Binding::DOM_KEY_LOCATION_STANDARD,
+  eKeyLocationLeft = dom::KeyboardEvent_Binding::DOM_KEY_LOCATION_LEFT,
+  eKeyLocationRight = dom::KeyboardEvent_Binding::DOM_KEY_LOCATION_RIGHT,
+  eKeyLocationNumpad = dom::KeyboardEvent_Binding::DOM_KEY_LOCATION_NUMPAD
 };
 
 const nsCString GetDOMKeyCodeName(uint32_t aKeyCode);
@@ -146,6 +148,7 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
         mIsComposing(false),
         mIsSynthesizedByTIP(false),
         mMaybeSkippableInRemoteProcess(true),
+        mUseLegacyKeyCodeAndCharCodeValues(false),
         mEditCommandsForSingleLineEditorInitialized(false),
         mEditCommandsForMultiLineEditorInitialized(false),
         mEditCommandsForRichTextEditorInitialized(false) {
@@ -176,6 +179,7 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
         mIsComposing(false),
         mIsSynthesizedByTIP(false),
         mMaybeSkippableInRemoteProcess(true),
+        mUseLegacyKeyCodeAndCharCodeValues(false),
         mEditCommandsForSingleLineEditorInitialized(false),
         mEditCommandsForMultiLineEditorInitialized(false),
         mEditCommandsForRichTextEditorInitialized(false) {
@@ -203,13 +207,58 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
   }
   bool IsKeyEventOnPlugin() const { return IsKeyEventOnPlugin(mMessage); }
 
+  // IsInputtingText() and IsInputtingLineBreak() are used to check if
+  // it should cause eKeyPress events even on web content.
+  // UI Events defines that "keypress" event should be fired "if and only if
+  // that key normally produces a character value".
+  // <https://www.w3.org/TR/uievents/#event-type-keypress>
+  // Additionally, for backward compatiblity with all existing browsers,
+  // there is a spec issue for Enter key press.
+  // <https://github.com/w3c/uievents/issues/183>
   bool IsInputtingText() const {
     // NOTE: On some keyboard layout, some characters are inputted with Control
-    //       key or Alt key, but at that time, widget unset the modifier flag
-    //       from eKeyPress event.
+    //       key or Alt key, but at that time, widget clears the modifier flag
+    //       from eKeyPress event because our TextEditor won't handle eKeyPress
+    //       events as inputting text (bug 1346832).
+    // NOTE: There are some complicated issues of our traditional behavior.
+    //       -- On Windows, KeyboardLayout::WillDispatchKeyboardEvent() clears
+    //       MODIFIER_ALT and MODIFIER_CONTROL of eKeyPress event if it
+    //       should be treated as inputting a character because AltGr is
+    //       represented with both Alt key and Ctrl key are pressed, and
+    //       some keyboard layouts may produces a character with Ctrl key.
+    //       -- On Linux, KeymapWrapper doesn't have this hack since perhaps,
+    //       we don't have any bug reports that user cannot input proper
+    //       character with Alt and/or Ctrl key.
+    //       -- On macOS, IMEInputHandler::WillDispatchKeyboardEvent() clears
+    //       MODIFIER_ALT and MDOFIEIR_CONTROL of eKeyPress event only when
+    //       TextInputHandler::InsertText() has been called for the event.
+    //       I.e., they are cleared only when an editor has focus (even if IME
+    //       is disabled in password field or by |ime-mode: disabled;|) because
+    //       TextInputHandler::InsertText() is called while
+    //       TextInputHandler::HandleKeyDownEvent() calls interpretKeyEvents:
+    //       to notify text input processor of Cocoa (including IME).  In other
+    //       words, when we need to disable IME completey when no editor has
+    //       focus, we cannot call interpretKeyEvents:.  So,
+    //       TextInputHandler::InsertText() won't be called when no editor has
+    //       focus so that neither MODIFIER_ALT nor MODIFIER_CONTROL is
+    //       cleared.  So, fortunately, altKey and ctrlKey values of "keypress"
+    //       events are same as the other browsers only when no editor has
+    //       focus.
+    // NOTE: As mentioned above, for compatibility with the other browsers on
+    //       macOS, we should keep MODIFIER_ALT and MODIFIER_CONTROL flags of
+    //       eKeyPress events when no editor has focus.  However, Alt key,
+    //       labeled "option" on keyboard for Mac, is AltGraph key on the other
+    //       platforms.  So, even if MODIFIER_ALT is set, we need to dispatch
+    //       eKeyPress event even on web content unless mCharCode is 0.
+    //       Therefore, we need to ignore MODIFIER_ALT flag here only on macOS.
     return mMessage == eKeyPress && mCharCode &&
-           !(mModifiers &
-             (MODIFIER_ALT | MODIFIER_CONTROL | MODIFIER_META | MODIFIER_OS));
+           !(mModifiers & (
+#ifndef XP_MACOSX
+                              // So, ignore MODIFIER_ALT only on macOS since
+                              // option key is used as AltGraph key on macOS.
+                              MODIFIER_ALT |
+#endif  // #ifndef XP_MAXOSX
+                              MODIFIER_CONTROL | MODIFIER_META | MODIFIER_OS));
   }
 
   bool IsInputtingLineBreak() const {
@@ -249,6 +298,68 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
     result->mEditCommandsForRichTextEditor = mEditCommandsForRichTextEditor;
     result->mFlags = mFlags;
     return result;
+  }
+
+  bool CanUserGestureActivateTarget() const {
+    // Printable keys, 'carriage return' and 'space' are supported user gestures
+    // for activating the document. However, if supported key is being pressed
+    // combining with other operation keys, such like alt, control ..etc., we
+    // won't activate the target for them because at that time user might
+    // interact with browser or window manager which doesn't necessarily
+    // demonstrate user's intent to play media.
+    const bool isCombiningWithOperationKeys = (IsControl() && !IsAltGraph()) ||
+                                              (IsAlt() && !IsAltGraph()) ||
+                                              IsMeta() || IsOS();
+    const bool isEnterOrSpaceKey =
+        mKeyNameIndex == KEY_NAME_INDEX_Enter || mKeyCode == NS_VK_SPACE;
+    return (PseudoCharCode() || isEnterOrSpaceKey) &&
+           !isCombiningWithOperationKeys;
+  }
+
+  /**
+   * CanTreatAsUserInput() returns true if the key is pressed for perhaps
+   * doing something on the web app or our UI.  This means that when this
+   * returns false, e.g., when user presses a modifier key, user is probably
+   * displeased by opening popup, entering fullscreen mode, etc.  Therefore,
+   * only when this returns true, such reactions should be allowed.
+   */
+  bool CanTreatAsUserInput() const {
+    if (!IsTrusted()) {
+      return false;
+    }
+    switch (mKeyNameIndex) {
+      case KEY_NAME_INDEX_Escape:
+      // modifier keys:
+      case KEY_NAME_INDEX_Alt:
+      case KEY_NAME_INDEX_AltGraph:
+      case KEY_NAME_INDEX_CapsLock:
+      case KEY_NAME_INDEX_Control:
+      case KEY_NAME_INDEX_Fn:
+      case KEY_NAME_INDEX_FnLock:
+      case KEY_NAME_INDEX_Meta:
+      case KEY_NAME_INDEX_NumLock:
+      case KEY_NAME_INDEX_ScrollLock:
+      case KEY_NAME_INDEX_Shift:
+      case KEY_NAME_INDEX_Symbol:
+      case KEY_NAME_INDEX_SymbolLock:
+      // legacy modifier keys:
+      case KEY_NAME_INDEX_Hyper:
+      case KEY_NAME_INDEX_Super:
+      // obsolete modifier key:
+      case KEY_NAME_INDEX_OS:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  /**
+   * ShouldInteractionTimeRecorded() returns true if the handling time of
+   * the event should be recorded with the telemetry.
+   */
+  bool ShouldInteractionTimeRecorded() const {
+    // Let's record only when we can treat the instance is a user input.
+    return CanTreatAsUserInput();
   }
 
   // OS translated Unicode chars which are used for accesskey and accelkey
@@ -314,6 +425,10 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
   // Don't refer this member directly when you need to check this.
   // Use CanSkipInRemoteProcess() instead.
   bool mMaybeSkippableInRemoteProcess;
+  // Indicates whether the event should return legacy keyCode value and
+  // charCode value to web apps (one of them is always 0) or not, when it's
+  // an eKeyPress event.
+  bool mUseLegacyKeyCodeAndCharCodeValues;
 
   bool CanSkipInRemoteProcess() const {
     // If this is a repeat event (i.e., generated by auto-repeat feature of
@@ -496,10 +611,45 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
   static uint32_t ComputeKeyCodeFromKeyNameIndex(KeyNameIndex aKeyNameIndex);
 
   /**
+   * ComputeCodeNameIndexFromKeyNameIndex() returns a code name index which
+   * is typically mapped to given key name index on the platform.
+   * Note that this returns CODE_NAME_INDEX_UNKNOWN if the key name index is
+   * KEY_NAME_INDEX_Unidentified or KEY_NAME_INDEX_USE_STRING.
+   * This means that this method is useful only for non-printable keys.
+   *
+   * @param aKeyNameIndex      A non-printable key name index.
+   * @param aLocation          Should be one of location value.  This is
+   *                           important when aKeyNameIndex may exist in
+   *                           both Numpad or Standard, or in both Left or
+   *                           Right.  If this is nothing, this method
+   *                           returns Left or Standard position's code
+   *                           value.
+   */
+  static CodeNameIndex ComputeCodeNameIndexFromKeyNameIndex(
+      KeyNameIndex aKeyNameIndex, const Maybe<uint32_t>& aLocation);
+
+  /**
    * GetModifierForKeyName() returns a value of Modifier which is activated
    * by the aKeyNameIndex.
    */
   static Modifier GetModifierForKeyName(KeyNameIndex aKeyNameIndex);
+
+  /**
+   * IsLeftOrRightModiferKeyNameIndex() returns true if aKeyNameIndex is a
+   * modifier key which may be in Left and Right location.
+   */
+  static bool IsLeftOrRightModiferKeyNameIndex(KeyNameIndex aKeyNameIndex) {
+    switch (aKeyNameIndex) {
+      case KEY_NAME_INDEX_Alt:
+      case KEY_NAME_INDEX_Control:
+      case KEY_NAME_INDEX_Meta:
+      case KEY_NAME_INDEX_OS:
+      case KEY_NAME_INDEX_Shift:
+        return true;
+      default:
+        return false;
+    }
+  }
 
   /**
    * IsLockableModifier() returns true if aKeyNameIndex is a lockable modifier
@@ -545,6 +695,8 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
 #endif
     mIsSynthesizedByTIP = aEvent.mIsSynthesizedByTIP;
     mMaybeSkippableInRemoteProcess = aEvent.mMaybeSkippableInRemoteProcess;
+    mUseLegacyKeyCodeAndCharCodeValues =
+        aEvent.mUseLegacyKeyCodeAndCharCodeValues;
 
     // Don't copy mEditCommandsFor*Editor because it may require a lot of
     // memory space.  For example, if the event is dispatched but grabbed by
@@ -556,6 +708,31 @@ class WidgetKeyboardEvent : public WidgetInputEvent {
         aEvent.mEditCommandsForMultiLineEditorInitialized;
     mEditCommandsForRichTextEditorInitialized =
         aEvent.mEditCommandsForRichTextEditorInitialized;
+  }
+
+  void AssignCommands(const WidgetKeyboardEvent& aEvent) {
+    mEditCommandsForSingleLineEditorInitialized =
+        aEvent.mEditCommandsForSingleLineEditorInitialized;
+    if (mEditCommandsForSingleLineEditorInitialized) {
+      mEditCommandsForSingleLineEditor =
+          aEvent.mEditCommandsForSingleLineEditor;
+    } else {
+      mEditCommandsForSingleLineEditor.Clear();
+    }
+    mEditCommandsForMultiLineEditorInitialized =
+        aEvent.mEditCommandsForMultiLineEditorInitialized;
+    if (mEditCommandsForMultiLineEditorInitialized) {
+      mEditCommandsForMultiLineEditor = aEvent.mEditCommandsForMultiLineEditor;
+    } else {
+      mEditCommandsForMultiLineEditor.Clear();
+    }
+    mEditCommandsForRichTextEditorInitialized =
+        aEvent.mEditCommandsForRichTextEditorInitialized;
+    if (mEditCommandsForRichTextEditorInitialized) {
+      mEditCommandsForRichTextEditor = aEvent.mEditCommandsForRichTextEditor;
+    } else {
+      mEditCommandsForRichTextEditor.Clear();
+    }
   }
 
  private:
@@ -624,7 +801,7 @@ class WidgetCompositionEvent : public WidgetGUIEvent {
   friend class mozilla::dom::PBrowserParent;
   friend class mozilla::dom::PBrowserChild;
 
-  WidgetCompositionEvent() {}
+  WidgetCompositionEvent() : mOriginalMessage(eVoidEvent) {}
 
  public:
   virtual WidgetCompositionEvent* AsCompositionEvent() override { return this; }
@@ -719,7 +896,10 @@ class WidgetQueryContentEvent : public WidgetGUIEvent {
   friend class dom::PBrowserChild;
 
   WidgetQueryContentEvent()
-      : mSucceeded(false), mUseNativeLineBreak(true), mWithFontRanges(false) {
+      : mSucceeded(false),
+        mUseNativeLineBreak(true),
+        mWithFontRanges(false),
+        mNeedsToFlushLayout(true) {
     MOZ_CRASH("WidgetQueryContentEvent is created without proper arguments");
   }
 
@@ -733,7 +913,8 @@ class WidgetQueryContentEvent : public WidgetGUIEvent {
       : WidgetGUIEvent(aIsTrusted, aMessage, aWidget, eQueryContentEventClass),
         mSucceeded(false),
         mUseNativeLineBreak(true),
-        mWithFontRanges(false) {}
+        mWithFontRanges(false),
+        mNeedsToFlushLayout(true) {}
 
   WidgetQueryContentEvent(EventMessage aMessage,
                           const WidgetQueryContentEvent& aOtherEvent)
@@ -742,7 +923,8 @@ class WidgetQueryContentEvent : public WidgetGUIEvent {
                        eQueryContentEventClass),
         mSucceeded(false),
         mUseNativeLineBreak(aOtherEvent.mUseNativeLineBreak),
-        mWithFontRanges(false) {}
+        mWithFontRanges(false),
+        mNeedsToFlushLayout(aOtherEvent.mNeedsToFlushLayout) {}
 
   virtual WidgetEvent* Duplicate() const override {
     // This event isn't an internal event of any DOM event.
@@ -819,6 +1001,8 @@ class WidgetQueryContentEvent : public WidgetGUIEvent {
     Init(aOptions);
   }
 
+  bool NeedsToFlushLayout() const { return mNeedsToFlushLayout; }
+
   void RequestFontRanges() {
     NS_ASSERTION(mMessage == eQueryTextContent, "not querying text content");
     mWithFontRanges = true;
@@ -844,6 +1028,7 @@ class WidgetQueryContentEvent : public WidgetGUIEvent {
   bool mSucceeded;
   bool mUseNativeLineBreak;
   bool mWithFontRanges;
+  bool mNeedsToFlushLayout;
   struct Input final {
     uint32_t EndOffset() const {
       CheckedInt<uint32_t> endOffset = CheckedInt<uint32_t>(mOffset) + mLength;
@@ -892,7 +1077,8 @@ class WidgetQueryContentEvent : public WidgetGUIEvent {
         return true;
       }
       // Otherwise, we don't allow too large offset.
-      CheckedInt<uint32_t> absOffset = mOffset + aInsertionPointOffset;
+      CheckedInt<uint32_t> absOffset =
+          CheckedInt<uint32_t>(mOffset) + aInsertionPointOffset;
       if (NS_WARN_IF(!absOffset.isValid())) {
         mOffset = UINT32_MAX;
         return false;
@@ -963,7 +1149,8 @@ class WidgetSelectionEvent : public WidgetGUIEvent {
         mReversed(false),
         mExpandToClusterBoundary(true),
         mSucceeded(false),
-        mUseNativeLineBreak(true) {}
+        mUseNativeLineBreak(true),
+        mReason(nsISelectionListener::NO_REASON) {}
 
  public:
   virtual WidgetSelectionEvent* AsSelectionEvent() override { return this; }
@@ -1010,7 +1197,10 @@ class WidgetSelectionEvent : public WidgetGUIEvent {
 
 class InternalEditorInputEvent : public InternalUIEvent {
  private:
-  InternalEditorInputEvent() : mIsComposing(false) {}
+  InternalEditorInputEvent()
+      : mData(VoidString()),
+        mInputType(EditorInputType::eUnknown),
+        mIsComposing(false) {}
 
  public:
   virtual InternalEditorInputEvent* AsEditorInputEvent() override {
@@ -1020,7 +1210,8 @@ class InternalEditorInputEvent : public InternalUIEvent {
   InternalEditorInputEvent(bool aIsTrusted, EventMessage aMessage,
                            nsIWidget* aWidget = nullptr)
       : InternalUIEvent(aIsTrusted, aMessage, aWidget, eEditorInputEventClass),
-        mIsComposing(false) {}
+        mData(VoidString()),
+        mInputType(EditorInputType::eUnknown) {}
 
   virtual WidgetEvent* Duplicate() const override {
     MOZ_ASSERT(mClass == eEditorInputEventClass,
@@ -1033,14 +1224,36 @@ class InternalEditorInputEvent : public InternalUIEvent {
     return result;
   }
 
+  nsString mData;
+  RefPtr<dom::DataTransfer> mDataTransfer;
+
+  EditorInputType mInputType;
+
   bool mIsComposing;
 
   void AssignEditorInputEventData(const InternalEditorInputEvent& aEvent,
                                   bool aCopyTargets) {
     AssignUIEventData(aEvent, aCopyTargets);
 
+    mData = aEvent.mData;
+    mDataTransfer = aEvent.mDataTransfer;
+    mInputType = aEvent.mInputType;
     mIsComposing = aEvent.mIsComposing;
   }
+
+  void GetDOMInputTypeName(nsAString& aInputTypeName) {
+    GetDOMInputTypeName(mInputType, aInputTypeName);
+  }
+  static void GetDOMInputTypeName(EditorInputType aInputType,
+                                  nsAString& aInputTypeName);
+  static EditorInputType GetEditorInputType(const nsAString& aInputType);
+
+  static void Shutdown();
+
+ private:
+  static const char16_t* const kInputTypeNames[];
+  typedef nsDataHashtable<nsStringHashKey, EditorInputType> InputTypeHashtable;
+  static InputTypeHashtable* sInputTypeHashtable;
 };
 
 }  // namespace mozilla

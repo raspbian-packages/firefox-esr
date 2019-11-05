@@ -7,38 +7,30 @@
 // This file holds various CSS parsing and rewriting utilities.
 // Some entry points of note are:
 // parseDeclarations - parse a CSS rule into declarations
-// RuleRewriter - rewrite CSS rule text
 // parsePseudoClassesAndAttributes - parse selector and extract
 //     pseudo-classes
 // parseSingleValue - parse a single CSS property value
 
 "use strict";
 
-loader.lazyRequireGetter(this, "CSS_ANGLEUNIT",
-  "devtools/shared/css/properties-db", true);
+const { getCSSLexer } = require("devtools/shared/css/lexer");
 
-const promise = require("promise");
-const {getCSSLexer} = require("devtools/shared/css/lexer");
+loader.lazyRequireGetter(
+  this,
+  "CSS_ANGLEUNIT",
+  "devtools/shared/css/constants",
+  true
+);
 
-const SELECTOR_ATTRIBUTE = exports.SELECTOR_ATTRIBUTE = 1;
-const SELECTOR_ELEMENT = exports.SELECTOR_ELEMENT = 2;
-const SELECTOR_PSEUDO_CLASS = exports.SELECTOR_PSEUDO_CLASS = 3;
-
-// Used to test whether a newline appears anywhere in some text.
-const NEWLINE_RX = /[\r\n]/;
-// Used to test whether a bit of text starts an empty comment, either
-// an "ordinary" /* ... */ comment, or a "heuristic bypass" comment
-// like /*! ... */.
-const EMPTY_COMMENT_START_RX = /^\/\*!?[ \r\n\t\f]*$/;
-// Used to test whether a bit of text ends an empty comment.
-const EMPTY_COMMENT_END_RX = /^[ \r\n\t\f]*\*\//;
-// Used to test whether a string starts with a blank line.
-const BLANK_LINE_RX = /^[ \t]*(?:\r\n|\n|\r|\f|$)/;
+const SELECTOR_ATTRIBUTE = (exports.SELECTOR_ATTRIBUTE = 1);
+const SELECTOR_ELEMENT = (exports.SELECTOR_ELEMENT = 2);
+const SELECTOR_PSEUDO_CLASS = (exports.SELECTOR_PSEUDO_CLASS = 3);
 
 // When commenting out a declaration, we put this character into the
 // comment opener so that future parses of the commented text know to
 // bypass the property name validity heuristic.
-const COMMENT_PARSING_HEURISTIC_BYPASS_CHAR = "!";
+const COMMENT_PARSING_HEURISTIC_BYPASS_CHAR = (exports.COMMENT_PARSING_HEURISTIC_BYPASS_CHAR =
+  "!");
 
 /**
  * A generator function that lexes a CSS source string, yielding the
@@ -49,9 +41,9 @@ const COMMENT_PARSING_HEURISTIC_BYPASS_CHAR = "!";
  * @see CSSToken for details about the returned tokens
  */
 function* cssTokenizer(string) {
-  let lexer = getCSSLexer(string);
+  const lexer = getCSSLexer(string);
   while (true) {
-    let token = lexer.nextToken();
+    const token = lexer.nextToken();
     if (!token) {
       break;
     }
@@ -82,18 +74,18 @@ function* cssTokenizer(string) {
  *        line and column information.
  */
 function cssTokenizerWithLineColumn(string) {
-  let lexer = getCSSLexer(string);
-  let result = [];
+  const lexer = getCSSLexer(string);
+  const result = [];
   let prevToken = undefined;
   while (true) {
-    let token = lexer.nextToken();
-    let lineNumber = lexer.lineNumber;
-    let columnNumber = lexer.columnNumber;
+    const token = lexer.nextToken();
+    const lineNumber = lexer.lineNumber;
+    const columnNumber = lexer.columnNumber;
 
     if (prevToken) {
       prevToken.loc.end = {
         line: lineNumber,
-        column: columnNumber
+        column: columnNumber,
       };
     }
 
@@ -105,11 +97,11 @@ function cssTokenizerWithLineColumn(string) {
       // We've already dealt with the previous token's location.
       prevToken = undefined;
     } else {
-      let startLoc = {
+      const startLoc = {
         line: lineNumber,
-        column: columnNumber
+        column: columnNumber,
       };
-      token.loc = {start: startLoc};
+      token.loc = { start: startLoc };
 
       result.push(token);
       prevToken = token;
@@ -129,7 +121,7 @@ function cssTokenizerWithLineColumn(string) {
  * @return {String} the escaped result
  */
 function escapeCSSComment(inputString) {
-  let result = inputString.replace(/\/(\\*)\*/g, "/\\$1*");
+  const result = inputString.replace(/\/(\\*)\*/g, "/\\$1*");
   return result.replace(/\*(\\*)\//g, "*\\$1/");
 }
 
@@ -143,7 +135,7 @@ function escapeCSSComment(inputString) {
  * @return {String} the un-escaped result
  */
 function unescapeCSSComment(inputString) {
-  let result = inputString.replace(/\/\\(\\*)\*/g, "/$1*");
+  const result = inputString.replace(/\/\\(\\*)\*/g, "/$1*");
   return result.replace(/\*\\(\\*)\//g, "*$1/");
 }
 
@@ -165,8 +157,12 @@ function unescapeCSSComment(inputString) {
  * @return {array} Array of declarations of the same form as returned
  *                 by parseDeclarations.
  */
-function parseCommentDeclarations(isCssPropertyKnown, commentText, startOffset,
-                                  endOffset) {
+function parseCommentDeclarations(
+  isCssPropertyKnown,
+  commentText,
+  startOffset,
+  endOffset
+) {
   let commentOverride = false;
   if (commentText === "") {
     return [];
@@ -178,7 +174,7 @@ function parseCommentDeclarations(isCssPropertyKnown, commentText, startOffset,
     commentText = commentText.substring(1);
   }
 
-  let rewrittenText = unescapeCSSComment(commentText);
+  const rewrittenText = unescapeCSSComment(commentText);
 
   // We might have rewritten an embedded comment.  For example
   // /\* ... *\/ would turn into /* ... */.
@@ -195,11 +191,11 @@ function parseCommentDeclarations(isCssPropertyKnown, commentText, startOffset,
   //
   // Note we allocate one extra entry because we can see an ending
   // offset that is equal to the length.
-  let rewrites = new Array(rewrittenText.length + 1).fill(0);
+  const rewrites = new Array(rewrittenText.length + 1).fill(0);
 
-  let commentRe = /\/\\*\*|\*\\*\//g;
+  const commentRe = /\/\\*\*|\*\\*\//g;
   while (true) {
-    let matchData = commentRe.exec(rewrittenText);
+    const matchData = commentRe.exec(rewrittenText);
     if (!matchData) {
       break;
     }
@@ -222,9 +218,14 @@ function parseCommentDeclarations(isCssPropertyKnown, commentText, startOffset,
   // seem worthwhile to support declarations in comments-in-comments
   // here, as there's no way to generate those using the tools, and
   // users would be crazy to write such things.
-  let newDecls = parseDeclarationsInternal(isCssPropertyKnown, rewrittenText,
-                                           false, true, commentOverride);
-  for (let decl of newDecls) {
+  const newDecls = parseDeclarationsInternal(
+    isCssPropertyKnown,
+    rewrittenText,
+    false,
+    true,
+    commentOverride
+  );
+  for (const decl of newDecls) {
     decl.offsets[0] = rewrites[decl.offsets[0]];
     decl.offsets[1] = rewrites[decl.offsets[1]];
     decl.colonOffsets[0] = rewrites[decl.colonOffsets[0]];
@@ -242,28 +243,21 @@ function parseCommentDeclarations(isCssPropertyKnown, commentText, startOffset,
  *                  parseDeclarations
  */
 function getEmptyDeclaration() {
-  return {name: "", value: "", priority: "",
-          terminator: "",
-          offsets: [undefined, undefined],
-          colonOffsets: false};
+  return {
+    name: "",
+    value: "",
+    priority: "",
+    terminator: "",
+    offsets: [undefined, undefined],
+    colonOffsets: false,
+  };
 }
 
 /**
  * Like trim, but only trims CSS-allowed whitespace.
  */
 function cssTrim(str) {
-  let match = /^[ \t\r\n\f]*(.*?)[ \t\r\n\f]*$/.exec(str);
-  if (match) {
-    return match[1];
-  }
-  return str;
-}
-
-/**
- * Like trimRight, but only trims CSS-allowed whitespace.
- */
-function cssTrimRight(str) {
-  let match = /^(.*?)[ \t\r\n\f]*$/.exec(str);
+  const match = /^[ \t\r\n\f]*(.*?)[ \t\r\n\f]*$/.exec(str);
   if (match) {
     return match[1];
   }
@@ -291,28 +285,36 @@ function cssTrimRight(str) {
  *        rewriteDeclarations, and skip the usual name-checking
  *        heuristic.
  */
-function parseDeclarationsInternal(isCssPropertyKnown, inputString,
-                                   parseComments, inComment, commentOverride) {
+function parseDeclarationsInternal(
+  isCssPropertyKnown,
+  inputString,
+  parseComments,
+  inComment,
+  commentOverride
+) {
   if (inputString === null || inputString === undefined) {
     throw new Error("empty input string");
   }
 
-  let lexer = getCSSLexer(inputString);
+  const lexer = getCSSLexer(inputString);
 
   let declarations = [getEmptyDeclaration()];
   let lastProp = declarations[0];
 
-  let current = "", hasBang = false;
+  // This tracks the "!important" parsing state.  The states are:
+  // 0 - haven't seen anything
+  // 1 - have seen "!", looking for "important" next (possibly after
+  //     whitespace).
+  // 2 - have seen "!important"
+  let importantState = 0;
+  // This is true if we saw whitespace or comments between the "!" and
+  // the "important".
+  let importantWS = false;
+  let current = "";
   while (true) {
-    let token = lexer.nextToken();
+    const token = lexer.nextToken();
     if (!token) {
       break;
-    }
-
-    // Ignore HTML comment tokens (but parse anything they might
-    // happen to surround).
-    if (token.tokenType === "htmlcomment") {
-      continue;
     }
 
     // Update the start and end offsets of the declaration, but only
@@ -322,24 +324,36 @@ function parseDeclarationsInternal(isCssPropertyKnown, inputString,
         lastProp.offsets[0] = token.startOffset;
       }
       lastProp.offsets[1] = token.endOffset;
-    } else if (lastProp.name && !current && !hasBang &&
-               !lastProp.priority && lastProp.colonOffsets[1]) {
+    } else if (
+      lastProp.name &&
+      !current &&
+      !importantState &&
+      !lastProp.priority &&
+      lastProp.colonOffsets[1]
+    ) {
       // Whitespace appearing after the ":" is attributed to it.
       lastProp.colonOffsets[1] = token.endOffset;
+    } else if (importantState === 1) {
+      importantWS = true;
     }
 
     if (token.tokenType === "symbol" && token.text === ":") {
+      // Either way, a "!important" we've seen is no longer valid now.
+      importantState = 0;
+      importantWS = false;
       if (!lastProp.name) {
         // Set the current declaration name if there's no name yet
         lastProp.name = cssTrim(current);
         lastProp.colonOffsets = [token.startOffset, token.endOffset];
         current = "";
-        hasBang = false;
 
         // When parsing a comment body, if the left-hand-side is not a
         // valid property name, then drop it and stop parsing.
-        if (inComment && !commentOverride &&
-            !isCssPropertyKnown(lastProp.name)) {
+        if (
+          inComment &&
+          !commentOverride &&
+          !isCssPropertyKnown(lastProp.name)
+        ) {
           lastProp.name = null;
           break;
         }
@@ -357,44 +371,76 @@ function parseDeclarationsInternal(isCssPropertyKnown, inputString,
         current = "";
         break;
       }
+      if (importantState === 2) {
+        lastProp.priority = "important";
+      } else if (importantState === 1) {
+        current += "!";
+        if (importantWS) {
+          current += " ";
+        }
+      }
       lastProp.value = cssTrim(current);
       current = "";
-      hasBang = false;
+      importantState = 0;
+      importantWS = false;
       declarations.push(getEmptyDeclaration());
       lastProp = declarations[declarations.length - 1];
     } else if (token.tokenType === "ident") {
-      if (token.text === "important" && hasBang) {
-        lastProp.priority = "important";
-        hasBang = false;
+      if (token.text === "important" && importantState === 1) {
+        importantState = 2;
       } else {
-        if (hasBang) {
+        if (importantState > 0) {
           current += "!";
+          if (importantWS) {
+            current += " ";
+          }
+          if (importantState === 2) {
+            current += "important ";
+          }
+          importantState = 0;
+          importantWS = false;
         }
         // Re-escape the token to avoid dequoting problems.
         // See bug 1287620.
         current += CSS.escape(token.text);
       }
     } else if (token.tokenType === "symbol" && token.text === "!") {
-      hasBang = true;
+      importantState = 1;
     } else if (token.tokenType === "whitespace") {
       if (current !== "") {
-        current += " ";
+        current = current.trimRight() + " ";
       }
     } else if (token.tokenType === "comment") {
       if (parseComments && !lastProp.name && !lastProp.value) {
-        let commentText = inputString.substring(token.startOffset + 2,
-                                                token.endOffset - 2);
-        let newDecls = parseCommentDeclarations(isCssPropertyKnown, commentText,
-                                                token.startOffset,
-                                                token.endOffset);
+        const commentText = inputString.substring(
+          token.startOffset + 2,
+          token.endOffset - 2
+        );
+        const newDecls = parseCommentDeclarations(
+          isCssPropertyKnown,
+          commentText,
+          token.startOffset,
+          token.endOffset
+        );
 
         // Insert the new declarations just before the final element.
-        let lastDecl = declarations.pop();
+        const lastDecl = declarations.pop();
         declarations = [...declarations, ...newDecls, lastDecl];
       } else {
-        current += " ";
+        current = current.trimRight() + " ";
       }
     } else {
+      if (importantState > 0) {
+        current += "!";
+        if (importantWS) {
+          current += " ";
+        }
+        if (importantState === 2) {
+          current += "important ";
+        }
+        importantState = 0;
+        importantWS = false;
+      }
       current += inputString.substring(token.startOffset, token.endOffset);
     }
   }
@@ -409,8 +455,13 @@ function parseDeclarationsInternal(isCssPropertyKnown, inputString,
       }
     } else {
       // Trailing value found, i.e. value without an ending ;
+      if (importantState === 2) {
+        lastProp.priority = "important";
+      } else if (importantState === 1) {
+        current += "!";
+      }
       lastProp.value = cssTrim(current);
-      let terminator = lexer.performEOFFixup("", true);
+      const terminator = lexer.performEOFFixup("", true);
       lastProp.terminator = terminator + ";";
       // If the input was unterminated, attribute the remainder to
       // this property.  This avoids some bad behavior when rewriting
@@ -464,632 +515,35 @@ function parseDeclarationsInternal(isCssPropertyKnown, inputString,
  *         on the object, which will hold the offsets of the start
  *         and end of the enclosing comment.
  */
-function parseDeclarations(isCssPropertyKnown, inputString,
-                           parseComments = false) {
-  return parseDeclarationsInternal(isCssPropertyKnown, inputString,
-                                   parseComments, false, false);
+function parseDeclarations(
+  isCssPropertyKnown,
+  inputString,
+  parseComments = false
+) {
+  return parseDeclarationsInternal(
+    isCssPropertyKnown,
+    inputString,
+    parseComments,
+    false,
+    false
+  );
 }
 
 /**
  * Like @see parseDeclarations, but removes properties that do not
  * have a name.
  */
-function parseNamedDeclarations(isCssPropertyKnown, inputString,
-                                parseComments = false) {
-  return parseDeclarations(isCssPropertyKnown, inputString, parseComments)
-         .filter(item => !!item.name);
+function parseNamedDeclarations(
+  isCssPropertyKnown,
+  inputString,
+  parseComments = false
+) {
+  return parseDeclarations(
+    isCssPropertyKnown,
+    inputString,
+    parseComments
+  ).filter(item => !!item.name);
 }
-
-/**
- * Return an object that can be used to rewrite declarations in some
- * source text.  The source text and parsing are handled in the same
- * way as @see parseNamedDeclarations, with |parseComments| being true.
- * Rewriting is done by calling one of the modification functions like
- * setPropertyEnabled.  The returned object has the same interface
- * as @see RuleModificationList.
- *
- * An example showing how to disable the 3rd property in a rule:
- *
- *    let rewriter = new RuleRewriter(isCssPropertyKnown, ruleActor,
- *                                    ruleActor.authoredText);
- *    rewriter.setPropertyEnabled(3, "color", false);
- *    rewriter.apply().then(() => { ... the change is made ... });
- *
- * The exported rewriting methods are |renameProperty|, |setPropertyEnabled|,
- * |createProperty|, |setProperty|, and |removeProperty|.  The |apply|
- * method can be used to send the edited text to the StyleRuleActor;
- * |getDefaultIndentation| is useful for the methods requiring a
- * default indentation value; and |getResult| is useful for testing.
- *
- * Additionally, editing will set the |changedDeclarations| property
- * on this object.  This property has the same form as the |changed|
- * property of the object returned by |getResult|.
- *
- * @param {Function} isCssPropertyKnown
- *        A function to check if the CSS property is known. This is either an
- *        internal server function or from the CssPropertiesFront.
- *        that are supported by the server. Note that if Bug 1222047
- *        is completed then isCssPropertyKnown will not need to be passed in.
- *        The CssProperty front will be able to obtained directly from the
- *        RuleRewriter.
- * @param {StyleRuleFront} rule The style rule to use.  Note that this
- *        is only needed by the |apply| and |getDefaultIndentation| methods;
- *        and in particular for testing it can be |null|.
- * @param {String} inputString The CSS source text to parse and modify.
- * @return {Object} an object that can be used to rewrite the input text.
- */
-function RuleRewriter(isCssPropertyKnown, rule, inputString) {
-  this.rule = rule;
-  this.isCssPropertyKnown = isCssPropertyKnown;
-
-  // Keep track of which any declarations we had to rewrite while
-  // performing the requested action.
-  this.changedDeclarations = {};
-
-  // If not null, a promise that must be wait upon before |apply| can
-  // do its work.
-  this.editPromise = null;
-
-  // If the |defaultIndentation| property is set, then it is used;
-  // otherwise the RuleRewriter will try to compute the default
-  // indentation based on the style sheet's text.  This override
-  // facility is for testing.
-  this.defaultIndentation = null;
-
-  this.startInitialization(inputString);
-}
-
-RuleRewriter.prototype = {
-  /**
-   * An internal function to initialize the rewriter with a given
-   * input string.
-   *
-   * @param {String} inputString the input to use
-   */
-  startInitialization: function (inputString) {
-    this.inputString = inputString;
-    // Whether there are any newlines in the input text.
-    this.hasNewLine = /[\r\n]/.test(this.inputString);
-    // The declarations.
-    this.declarations = parseNamedDeclarations(this.isCssPropertyKnown, this.inputString,
-                                               true);
-    this.decl = null;
-    this.result = null;
-  },
-
-  /**
-   * An internal function to complete initialization and set some
-   * properties for further processing.
-   *
-   * @param {Number} index The index of the property to modify
-   */
-  completeInitialization: function (index) {
-    if (index < 0) {
-      throw new Error("Invalid index " + index + ". Expected positive integer");
-    }
-    // |decl| is the declaration to be rewritten, or null if there is no
-    // declaration corresponding to |index|.
-    // |result| is used to accumulate the result text.
-    if (index < this.declarations.length) {
-      this.decl = this.declarations[index];
-      this.result = this.inputString.substring(0, this.decl.offsets[0]);
-    } else {
-      this.decl = null;
-      this.result = this.inputString;
-    }
-  },
-
-  /**
-   * A helper function to compute the indentation of some text.  This
-   * examines the rule's existing text to guess the indentation to use;
-   * unlike |getDefaultIndentation|, which examines the entire style
-   * sheet.
-   *
-   * @param {String} string the input text
-   * @param {Number} offset the offset at which to compute the indentation
-   * @return {String} the indentation at the indicated position
-   */
-  getIndentation: function (string, offset) {
-    let originalOffset = offset;
-    for (--offset; offset >= 0; --offset) {
-      let c = string[offset];
-      if (c === "\r" || c === "\n" || c === "\f") {
-        return string.substring(offset + 1, originalOffset);
-      }
-      if (c !== " " && c !== "\t") {
-        // Found some non-whitespace character before we found a newline
-        // -- let's reset the starting point and keep going, as we saw
-        // something on the line before the declaration.
-        originalOffset = offset;
-      }
-    }
-    // Ran off the end.
-    return "";
-  },
-
-  /**
-   * Modify a property value to ensure it is "lexically safe" for
-   * insertion into a style sheet.  This function doesn't attempt to
-   * ensure that the resulting text is a valid value for the given
-   * property; but rather just that inserting the text into the style
-   * sheet will not cause unwanted changes to other rules or
-   * declarations.
-   *
-   * @param {String} text The input text.  This should include the trailing ";".
-   * @return {Array} An array of the form [anySanitized, text], where
-   *                 |anySanitized| is a boolean that indicates
-   *                  whether anything substantive has changed; and
-   *                  where |text| is the text that has been rewritten
-   *                  to be "lexically safe".
-   */
-  sanitizePropertyValue: function (text) {
-    // Start by stripping any trailing ";".  This is done here to
-    // avoid the case where the user types "url(" (which is turned
-    // into "url(;" by the rule view before coming here), being turned
-    // into "url(;)" by this code -- due to the way "url(...)" is
-    // parsed as a single token.
-    text = text.replace(/;$/, "");
-    let lexer = getCSSLexer(text);
-
-    let result = "";
-    let previousOffset = 0;
-    let parenStack = [];
-    let anySanitized = false;
-
-    // Push a closing paren on the stack.
-    let pushParen = (token, closer) => {
-      result = result + text.substring(previousOffset, token.startOffset) +
-        text.substring(token.startOffset, token.endOffset);
-      // We set the location of the paren in a funny way, to handle
-      // the case where we've seen a function token, where the paren
-      // appears at the end.
-      parenStack.push({closer, offset: result.length - 1});
-      previousOffset = token.endOffset;
-    };
-
-    // Pop a closing paren from the stack.
-    let popSomeParens = (closer) => {
-      while (parenStack.length > 0) {
-        let paren = parenStack.pop();
-
-        if (paren.closer === closer) {
-          return true;
-        }
-
-        // Found a non-matching closing paren, so quote it.  Note that
-        // these are processed in reverse order.
-        result = result.substring(0, paren.offset) + "\\" +
-          result.substring(paren.offset);
-        anySanitized = true;
-      }
-      return false;
-    };
-
-    while (true) {
-      let token = lexer.nextToken();
-      if (!token) {
-        break;
-      }
-
-      if (token.tokenType === "symbol") {
-        switch (token.text) {
-          case ";":
-            // We simply drop the ";" here.  This lets us cope with
-            // declarations that don't have a ";" and also other
-            // termination.  The caller handles adding the ";" again.
-            result += text.substring(previousOffset, token.startOffset);
-            previousOffset = token.endOffset;
-            break;
-
-          case "{":
-            pushParen(token, "}");
-            break;
-
-          case "(":
-            pushParen(token, ")");
-            break;
-
-          case "[":
-            pushParen(token, "]");
-            break;
-
-          case "}":
-          case ")":
-          case "]":
-            // Did we find an unmatched close bracket?
-            if (!popSomeParens(token.text)) {
-              // Copy out text from |previousOffset|.
-              result += text.substring(previousOffset, token.startOffset);
-              // Quote the offending symbol.
-              result += "\\" + token.text;
-              previousOffset = token.endOffset;
-              anySanitized = true;
-            }
-            break;
-        }
-      } else if (token.tokenType === "function") {
-        pushParen(token, ")");
-      }
-    }
-
-    // Fix up any unmatched parens.
-    popSomeParens(null);
-
-    // Copy out any remaining text, then any needed terminators.
-    result += text.substring(previousOffset, text.length);
-    let eofFixup = lexer.performEOFFixup("", true);
-    if (eofFixup) {
-      anySanitized = true;
-      result += eofFixup;
-    }
-    return [anySanitized, result];
-  },
-
-  /**
-   * Start at |index| and skip whitespace
-   * backward in |string|.  Return the index of the first
-   * non-whitespace character, or -1 if the entire string was
-   * whitespace.
-   * @param {String} string the input string
-   * @param {Number} index the index at which to start
-   * @return {Number} index of the first non-whitespace character, or -1
-   */
-  skipWhitespaceBackward: function (string, index) {
-    for (--index;
-         index >= 0 && (string[index] === " " || string[index] === "\t");
-         --index) {
-      // Nothing.
-    }
-    return index;
-  },
-
-  /**
-   * Terminate a given declaration, if needed.
-   *
-   * @param {Number} index The index of the rule to possibly
-   *                       terminate.  It might be invalid, so this
-   *                       function must check for that.
-   */
-  maybeTerminateDecl: function (index) {
-    if (index < 0 || index >= this.declarations.length
-        // No need to rewrite declarations in comments.
-        || ("commentOffsets" in this.declarations[index])) {
-      return;
-    }
-
-    let termDecl = this.declarations[index];
-    let endIndex = termDecl.offsets[1];
-    // Due to an oddity of the lexer, we might have gotten a bit of
-    // extra whitespace in a trailing bad_url token -- so be sure to
-    // skip that as well.
-    endIndex = this.skipWhitespaceBackward(this.result, endIndex) + 1;
-
-    let trailingText = this.result.substring(endIndex);
-    if (termDecl.terminator) {
-      // Insert the terminator just at the end of the declaration,
-      // before any trailing whitespace.
-      this.result = this.result.substring(0, endIndex) + termDecl.terminator +
-        trailingText;
-      // In a couple of cases, we may have had to add something to
-      // terminate the declaration, but the termination did not
-      // actually affect the property's value -- and at this spot, we
-      // only care about reporting value changes.  In particular, we
-      // might have added a plain ";", or we might have terminated a
-      // comment with "*/;".  Neither of these affect the value.
-      if (termDecl.terminator !== ";" && termDecl.terminator !== "*/;") {
-        this.changedDeclarations[index] =
-          termDecl.value + termDecl.terminator.slice(0, -1);
-      }
-    }
-    // If the rule generally has newlines, but this particular
-    // declaration doesn't have a trailing newline, insert one now.
-    // Maybe this style is too weird to bother with.
-    if (this.hasNewLine && !NEWLINE_RX.test(trailingText)) {
-      this.result += "\n";
-    }
-  },
-
-  /**
-   * Sanitize the given property value and return the sanitized form.
-   * If the property is rewritten during sanitization, make a note in
-   * |changedDeclarations|.
-   *
-   * @param {String} text The property text.
-   * @param {Number} index The index of the property.
-   * @return {String} The sanitized text.
-   */
-  sanitizeText: function (text, index) {
-    let [anySanitized, sanitizedText] = this.sanitizePropertyValue(text);
-    if (anySanitized) {
-      this.changedDeclarations[index] = sanitizedText;
-    }
-    return sanitizedText;
-  },
-
-  /**
-   * Rename a declaration.
-   *
-   * @param {Number} index index of the property in the rule.
-   * @param {String} name current name of the property
-   * @param {String} newName new name of the property
-   */
-  renameProperty: function (index, name, newName) {
-    this.completeInitialization(index);
-    this.result += CSS.escape(newName);
-    // We could conceivably compute the name offsets instead so we
-    // could preserve white space and comments on the LHS of the ":".
-    this.completeCopying(this.decl.colonOffsets[0]);
-  },
-
-  /**
-   * Enable or disable a declaration
-   *
-   * @param {Number} index index of the property in the rule.
-   * @param {String} name current name of the property
-   * @param {Boolean} isEnabled true if the property should be enabled;
-   *                        false if it should be disabled
-   */
-  setPropertyEnabled: function (index, name, isEnabled) {
-    this.completeInitialization(index);
-    const decl = this.decl;
-    let copyOffset = decl.offsets[1];
-    if (isEnabled) {
-      // Enable it.  First see if the comment start can be deleted.
-      let commentStart = decl.commentOffsets[0];
-      if (EMPTY_COMMENT_START_RX.test(this.result.substring(commentStart))) {
-        this.result = this.result.substring(0, commentStart);
-      } else {
-        this.result += "*/ ";
-      }
-
-      // Insert the name and value separately, so we can report
-      // sanitization changes properly.
-      let commentNamePart =
-          this.inputString.substring(decl.offsets[0],
-                                     decl.colonOffsets[1]);
-      this.result += unescapeCSSComment(commentNamePart);
-
-      // When uncommenting, we must be sure to sanitize the text, to
-      // avoid things like /* decl: }; */, which will be accepted as
-      // a property but which would break the entire style sheet.
-      let newText = this.inputString.substring(decl.colonOffsets[1],
-                                               decl.offsets[1]);
-      newText = cssTrimRight(unescapeCSSComment(newText));
-      this.result += this.sanitizeText(newText, index) + ";";
-
-      // See if the comment end can be deleted.
-      let trailingText = this.inputString.substring(decl.offsets[1]);
-      if (EMPTY_COMMENT_END_RX.test(trailingText)) {
-        copyOffset = decl.commentOffsets[1];
-      } else {
-        this.result += " /*";
-      }
-    } else {
-      // Disable it.  Note that we use our special comment syntax
-      // here.
-      let declText = this.inputString.substring(decl.offsets[0],
-                                                decl.offsets[1]);
-      this.result += "/*" + COMMENT_PARSING_HEURISTIC_BYPASS_CHAR +
-        " " + escapeCSSComment(declText) + " */";
-    }
-    this.completeCopying(copyOffset);
-  },
-
-  /**
-   * Return a promise that will be resolved to the default indentation
-   * of the rule.  This is a helper for internalCreateProperty.
-   *
-   * @return {Promise} a promise that will be resolved to a string
-   *         that holds the default indentation that should be used
-   *         for edits to the rule.
-   */
-  getDefaultIndentation: function () {
-    return this.rule.parentStyleSheet.guessIndentation();
-  },
-
-  /**
-   * An internal function to create a new declaration.  This does all
-   * the work of |createProperty|.
-   *
-   * @param {Number} index index of the property in the rule.
-   * @param {String} name name of the new property
-   * @param {String} value value of the new property
-   * @param {String} priority priority of the new property; either
-   *                          the empty string or "important"
-   * @param {Boolean} enabled True if the new property should be
-   *                          enabled, false if disabled
-   * @return {Promise} a promise that is resolved when the edit has
-   *                   completed
-   */
-  async internalCreateProperty(index, name, value, priority, enabled) {
-    this.completeInitialization(index);
-    let newIndentation = "";
-    if (this.hasNewLine) {
-      if (this.declarations.length > 0) {
-        newIndentation = this.getIndentation(this.inputString,
-                                             this.declarations[0].offsets[0]);
-      } else if (this.defaultIndentation) {
-        newIndentation = this.defaultIndentation;
-      } else {
-        newIndentation = await this.getDefaultIndentation();
-      }
-    }
-
-    this.maybeTerminateDecl(index - 1);
-
-    // If we generally have newlines, and if skipping whitespace
-    // backward stops at a newline, then insert our text before that
-    // whitespace.  This ensures the indentation we computed is what
-    // is actually used.
-    let savedWhitespace = "";
-    if (this.hasNewLine) {
-      let wsOffset = this.skipWhitespaceBackward(this.result,
-                                                 this.result.length);
-      if (this.result[wsOffset] === "\r" || this.result[wsOffset] === "\n") {
-        savedWhitespace = this.result.substring(wsOffset + 1);
-        this.result = this.result.substring(0, wsOffset + 1);
-      }
-    }
-
-    let newText = CSS.escape(name) + ": " + this.sanitizeText(value, index);
-    if (priority === "important") {
-      newText += " !important";
-    }
-    newText += ";";
-
-    if (!enabled) {
-      newText = "/*" + COMMENT_PARSING_HEURISTIC_BYPASS_CHAR + " " +
-        escapeCSSComment(newText) + " */";
-    }
-
-    this.result += newIndentation + newText;
-    if (this.hasNewLine) {
-      this.result += "\n";
-    }
-    this.result += savedWhitespace;
-
-    if (this.decl) {
-      // Still want to copy in the declaration previously at this
-      // index.
-      this.completeCopying(this.decl.offsets[0]);
-    }
-  },
-
-  /**
-   * Create a new declaration.
-   *
-   * @param {Number} index index of the property in the rule.
-   * @param {String} name name of the new property
-   * @param {String} value value of the new property
-   * @param {String} priority priority of the new property; either
-   *                          the empty string or "important"
-   * @param {Boolean} enabled True if the new property should be
-   *                          enabled, false if disabled
-   */
-  createProperty: function (index, name, value, priority, enabled) {
-    this.editPromise = this.internalCreateProperty(index, name, value,
-                                                   priority, enabled);
-  },
-
-  /**
-   * Set a declaration's value.
-   *
-   * @param {Number} index index of the property in the rule.
-   *                       This can be -1 in the case where
-   *                       the rule does not support setRuleText;
-   *                       generally for setting properties
-   *                       on an element's style.
-   * @param {String} name the property's name
-   * @param {String} value the property's value
-   * @param {String} priority the property's priority, either the empty
-   *                          string or "important"
-   */
-  setProperty: function (index, name, value, priority) {
-    this.completeInitialization(index);
-    // We might see a "set" on a previously non-existent property; in
-    // that case, act like "create".
-    if (!this.decl) {
-      this.createProperty(index, name, value, priority, true);
-      return;
-    }
-
-    // Note that this assumes that "set" never operates on disabled
-    // properties.
-    this.result += this.inputString.substring(this.decl.offsets[0],
-                                              this.decl.colonOffsets[1]) +
-      this.sanitizeText(value, index);
-
-    if (priority === "important") {
-      this.result += " !important";
-    }
-    this.result += ";";
-    this.completeCopying(this.decl.offsets[1]);
-  },
-
-  /**
-   * Remove a declaration.
-   *
-   * @param {Number} index index of the property in the rule.
-   * @param {String} name the name of the property to remove
-   */
-  removeProperty: function (index, name) {
-    this.completeInitialization(index);
-
-    // If asked to remove a property that does not exist, bail out.
-    if (!this.decl) {
-      return;
-    }
-
-    // If the property is disabled, then first enable it, and then
-    // delete it.  We take this approach because we want to remove the
-    // entire comment if possible; but the logic for dealing with
-    // comments is hairy and already implemented in
-    // setPropertyEnabled.
-    if (this.decl.commentOffsets) {
-      this.setPropertyEnabled(index, name, true);
-      this.startInitialization(this.result);
-      this.completeInitialization(index);
-    }
-
-    let copyOffset = this.decl.offsets[1];
-    // Maybe removing this rule left us with a completely blank
-    // line.  In this case, we'll delete the whole thing.  We only
-    // bother with this if we're looking at sources that already
-    // have a newline somewhere.
-    if (this.hasNewLine) {
-      let nlOffset = this.skipWhitespaceBackward(this.result,
-                                                 this.decl.offsets[0]);
-      if (nlOffset < 0 || this.result[nlOffset] === "\r" ||
-          this.result[nlOffset] === "\n") {
-        let trailingText = this.inputString.substring(copyOffset);
-        let match = BLANK_LINE_RX.exec(trailingText);
-        if (match) {
-          this.result = this.result.substring(0, nlOffset + 1);
-          copyOffset += match[0].length;
-        }
-      }
-    }
-    this.completeCopying(copyOffset);
-  },
-
-  /**
-   * An internal function to copy any trailing text to the output
-   * string.
-   *
-   * @param {Number} copyOffset Offset into |inputString| of the
-   *        final text to copy to the output string.
-   */
-  completeCopying: function (copyOffset) {
-    // Add the trailing text.
-    this.result += this.inputString.substring(copyOffset);
-  },
-
-  /**
-   * Apply the modifications in this object to the associated rule.
-   *
-   * @return {Promise} A promise which will be resolved when the modifications
-   *         are complete.
-   */
-  apply: function () {
-    return promise.resolve(this.editPromise).then(() => {
-      return this.rule.setRuleText(this.result);
-    });
-  },
-
-  /**
-   * Get the result of the rewriting.  This is used for testing.
-   *
-   * @return {object} an object of the form {changed: object, text: string}
-   *                  |changed| is an object where each key is
-   *                  the index of a property whose value had to be
-   *                  rewritten during the sanitization process, and
-   *                  whose value is the new text of the property.
-   *                  |text| is the rewritten text of the rule.
-   */
-  getResult: function () {
-    return {changed: this.changedDeclarations, text: this.result};
-  },
-};
 
 /**
  * Returns an array of the parsed CSS selector value and type given a string.
@@ -1114,14 +568,14 @@ function parsePseudoClassesAndAttributes(value) {
     throw new Error("empty input string");
   }
 
-  let tokens = cssTokenizer(value);
-  let result = [];
+  const tokens = cssTokenizer(value);
+  const result = [];
   let current = "";
   let functionCount = 0;
   let hasAttribute = false;
   let hasColon = false;
 
-  for (let token of tokens) {
+  for (const token of tokens) {
     if (token.tokenType === "ident") {
       current += value.substring(token.startOffset, token.endOffset);
 
@@ -1208,11 +662,13 @@ function parsePseudoClassesAndAttributes(value) {
  * @return {Object} an object with 'value' and 'priority' properties.
  */
 function parseSingleValue(isCssPropertyKnown, value) {
-  let declaration = parseDeclarations(isCssPropertyKnown,
-                                      "a: " + value + ";")[0];
+  const declaration = parseDeclarations(
+    isCssPropertyKnown,
+    "a: " + value + ";"
+  )[0];
   return {
     value: declaration ? declaration.value : "",
-    priority: declaration ? declaration.priority : ""
+    priority: declaration ? declaration.priority : "",
   };
 }
 
@@ -1230,7 +686,7 @@ function getAngleValueInDegrees(angleValue, angleUnit) {
     case CSS_ANGLEUNIT.grad:
       return angleValue * 0.9;
     case CSS_ANGLEUNIT.rad:
-      return angleValue * 180 / Math.PI;
+      return (angleValue * 180) / Math.PI;
     case CSS_ANGLEUNIT.turn:
       return angleValue * 360;
     default:
@@ -1241,13 +697,11 @@ function getAngleValueInDegrees(angleValue, angleUnit) {
 exports.cssTokenizer = cssTokenizer;
 exports.cssTokenizerWithLineColumn = cssTokenizerWithLineColumn;
 exports.escapeCSSComment = escapeCSSComment;
-// unescapeCSSComment is exported for testing.
-exports._unescapeCSSComment = unescapeCSSComment;
+exports.unescapeCSSComment = unescapeCSSComment;
 exports.parseDeclarations = parseDeclarations;
 exports.parseNamedDeclarations = parseNamedDeclarations;
 // parseCommentDeclarations is exported for testing.
 exports._parseCommentDeclarations = parseCommentDeclarations;
-exports.RuleRewriter = RuleRewriter;
 exports.parsePseudoClassesAndAttributes = parsePseudoClassesAndAttributes;
 exports.parseSingleValue = parseSingleValue;
 exports.getAngleValueInDegrees = getAngleValueInDegrees;

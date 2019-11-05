@@ -12,6 +12,7 @@
 #include "mozilla/Preferences.h"
 #include "nsContentUtils.h"
 #include "nsIPrincipal.h"
+#include "nsIWebProgressListener.h"
 #include "nsPIDOMWindow.h"
 
 #define DATASET                                          \
@@ -34,7 +35,7 @@ SessionStorage::SessionStorage(nsPIDOMWindowInner* aWindow,
                                SessionStorageCache* aCache,
                                SessionStorageManager* aManager,
                                const nsAString& aDocumentURI, bool aIsPrivate)
-    : Storage(aWindow, aPrincipal),
+    : Storage(aWindow, aPrincipal, aPrincipal),
       mCache(aCache),
       mManager(aManager),
       mDocumentURI(aDocumentURI),
@@ -45,6 +46,7 @@ SessionStorage::SessionStorage(nsPIDOMWindowInner* aWindow,
 SessionStorage::~SessionStorage() {}
 
 already_AddRefed<SessionStorage> SessionStorage::Clone() const {
+  MOZ_ASSERT(Principal() == StoragePrincipal());
   RefPtr<SessionStorage> storage =
       new SessionStorage(GetParentObject(), Principal(), mCache, mManager,
                          mDocumentURI, mIsPrivate);

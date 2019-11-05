@@ -43,7 +43,7 @@ static uint32_t ValueOf(OverSampleType aType) {
     case OverSampleType::_4x:
       return 4;
     default:
-      NS_NOTREACHED("We should never reach here");
+      MOZ_ASSERT_UNREACHABLE("We should never reach here");
       return 1;
   }
 }
@@ -151,7 +151,7 @@ class WaveShaperNodeEngine final : public AudioNodeEngine {
   explicit WaveShaperNodeEngine(AudioNode* aNode)
       : AudioNodeEngine(aNode), mType(OverSampleType::None) {}
 
-  enum Parameteres { TYPE };
+  enum Parameters { TYPE };
 
   void SetRawArrayData(nsTArray<float>& aCurve) override {
     mCurve.SwapElements(aCurve);
@@ -261,7 +261,7 @@ class WaveShaperNodeEngine final : public AudioNodeEngine {
           mResampler.DownSample(i, outputBuffer, 4);
           break;
         default:
-          NS_NOTREACHED("We should never reach here");
+          MOZ_ASSERT_UNREACHABLE("We should never reach here");
       }
     }
   }
@@ -292,13 +292,10 @@ WaveShaperNode::WaveShaperNode(AudioContext* aContext)
       aContext, engine, AudioNodeStream::NO_STREAM_FLAGS, aContext->Graph());
 }
 
-/* static */ already_AddRefed<WaveShaperNode> WaveShaperNode::Create(
+/* static */
+already_AddRefed<WaveShaperNode> WaveShaperNode::Create(
     AudioContext& aAudioContext, const WaveShaperOptions& aOptions,
     ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
   RefPtr<WaveShaperNode> audioNode = new WaveShaperNode(&aAudioContext);
 
   audioNode->Initialize(aOptions, aRv);
@@ -319,13 +316,13 @@ WaveShaperNode::WaveShaperNode(AudioContext* aContext)
 
 JSObject* WaveShaperNode::WrapObject(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return WaveShaperNodeBinding::Wrap(aCx, this, aGivenProto);
+  return WaveShaperNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void WaveShaperNode::SetCurve(const Nullable<Float32Array>& aCurve,
                               ErrorResult& aRv) {
   // Let's purge the cached value for the curve attribute.
-  WaveShaperNodeBinding::ClearCachedCurveValue(this);
+  WaveShaperNode_Binding::ClearCachedCurveValue(this);
 
   if (aCurve.IsNull()) {
     CleanCurveInternal();

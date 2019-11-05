@@ -45,8 +45,8 @@ enum nsFrameborder {
 };
 
 struct nsFramesetDrag {
-  nsHTMLFramesetFrame*
-      mSource;      // frameset whose border was dragged to cause the resize
+  nsHTMLFramesetFrame* mSource;  // frameset whose border was dragged to cause
+                                 // the resize
   int32_t mIndex;   // index of left col or top row of effected area
   int32_t mChange;  // pos for left to right or top to bottom, neg otherwise
   bool mVertical;   // vertical if true, otherwise horizontal
@@ -60,12 +60,13 @@ struct nsFramesetDrag {
 /*******************************************************************************
  * nsHTMLFramesetFrame
  ******************************************************************************/
-class nsHTMLFramesetFrame : public nsContainerFrame {
+class nsHTMLFramesetFrame final : public nsContainerFrame {
  public:
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsHTMLFramesetFrame)
 
-  explicit nsHTMLFramesetFrame(nsStyleContext* aContext);
+  explicit nsHTMLFramesetFrame(ComputedStyle* aStyle,
+                               nsPresContext* aPresContext);
 
   virtual ~nsHTMLFramesetFrame();
 
@@ -87,8 +88,7 @@ class nsHTMLFramesetFrame : public nsContainerFrame {
                                mozilla::WidgetGUIEvent* aEvent,
                                nsEventStatus* aEventStatus) override;
 
-  virtual nsresult GetCursor(const nsPoint& aPoint,
-                             nsIFrame::Cursor& aCursor) override;
+  mozilla::Maybe<Cursor> GetCursor(const nsPoint&) override;
 
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                 const nsDisplayListSet& aLists) override;
@@ -173,8 +173,8 @@ class nsHTMLFramesetFrame : public nsContainerFrame {
   nsBorderColor mEdgeColors;
   nsHTMLFramesetBorderFrame* mDragger;
   nsHTMLFramesetFrame* mTopLevelFrameset;
-  UniquePtr<nsHTMLFramesetBorderFrame* []> mVerBorders;  // vertical borders
-  UniquePtr<nsHTMLFramesetBorderFrame* []> mHorBorders;  // horizontal borders
+  UniquePtr<nsHTMLFramesetBorderFrame*[]> mVerBorders;  // vertical borders
+  UniquePtr<nsHTMLFramesetBorderFrame*[]> mHorBorders;  // horizontal borders
   UniquePtr<nsFrameborder[]>
       mChildFrameborder;  // the frameborder attr of children
   UniquePtr<nsBorderColor[]> mChildBorderColors;

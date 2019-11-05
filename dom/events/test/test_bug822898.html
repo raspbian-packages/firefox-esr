@@ -5,7 +5,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=822898
 -->
 <head>
   <title>Test for Bug 822898</title>
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
 </head>
 <body>
@@ -238,7 +238,7 @@ function testPointerEventCTORS()
   ex = false;
 
   e = new PointerEvent("hello");
-  ok(e.type, "hello", "PointerEvent: Wrong event type!");
+  is(e.type, "hello", "PointerEvent: Wrong event type!");
   ok(!e.isTrusted, "PointerEvent: Event shouldn't be trusted!");
   ok(!e.bubbles, "PointerEvent: Event shouldn't bubble!");
   ok(!e.cancelable, "PointerEvent: Event shouldn't be cancelable!");

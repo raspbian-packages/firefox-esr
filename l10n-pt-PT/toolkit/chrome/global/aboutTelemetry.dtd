@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY aboutTelemetry.pingDataSource "Fonte de datos de ping:">
+<!ENTITY aboutTelemetry.pingDataSource "Fonte de dados de ping:">
 <!ENTITY aboutTelemetry.showCurrentPingData "Dados de ping atuais">
 <!ENTITY aboutTelemetry.showArchivedPingData "Dados de ping arquivados">
 <!ENTITY aboutTelemetry.showSubsessionData "Mostrar dados de sub-sessão">
@@ -12,7 +12,6 @@
 <!ENTITY aboutTelemetry.optionGroupToday "Hoje">
 <!ENTITY aboutTelemetry.optionGroupYesterday "Ontem">
 <!ENTITY aboutTelemetry.optionGroupOlder "Antigo">
-<!ENTITY aboutTelemetry.payloadChoiceHeader "Payload">
 <!-- LOCALIZATION NOTE(aboutTelemetry.previousPing, aboutTelemetry.nextPing):
 	These strings are displayed when selecting Archived pings, and they’re
 	used to move to the next or previous ping. -->
@@ -24,6 +23,8 @@
 <!ENTITY aboutTelemetry.firefoxDataDoc "Os <a>dados de documentação do Firefox</a> contém guias acerca de como trabalhar com as nossas ferramentas de dados.">
 <!ENTITY aboutTelemetry.telemetryClientDoc "A <a>documentação do cliente de telemetria do Firefox</a> incluí definições para conceitos, documentação de API e referências de dados.">
 <!ENTITY aboutTelemetry.telemetryDashboard "Os <a>painéis de telemetria</a> permitem-lhe visualizar os dados que a Mozilla recebe via telemetria.">
+
+<!ENTITY aboutTelemetry.telemetryProbeDictionary "O <a>Probe Dictionary</a> providencia detalhes e descrições para as sondas recolhidas pela telemetria.">
 
 <!ENTITY aboutTelemetry.showInFirefoxJsonViewer "Abrir no visualizador de JSON">
 
@@ -37,15 +38,13 @@
 <!ENTITY aboutTelemetry.keyedHistogramsSection "Histogramas legendados">
 <!ENTITY aboutTelemetry.eventsSection "Eventos">
 <!ENTITY aboutTelemetry.simpleMeasurementsSection "Medições simples">
-<!ENTITY aboutTelemetry.telemetryLogSection "Registo de telemetria">
 <!ENTITY aboutTelemetry.slowSqlSection "Instruções SQL lentas">
-<!ENTITY aboutTelemetry.chromeHangsSection "Bloqueios do navegador">
 <!ENTITY aboutTelemetry.addonDetailsSection "Detalhes de extras">
 <!ENTITY aboutTelemetry.capturedStacksSection "Stacks capturadas">
 <!ENTITY aboutTelemetry.lateWritesSection "Escritas atrasadas">
 <!ENTITY aboutTelemetry.rawPayloadSection "Payload em bruto">
 <!ENTITY aboutTelemetry.raw "JSON em bruto">
 
-<!ENTITY aboutTelemetry.fullSqlWarning "NOTA: A depuração lenta de SQL está ativada. As strings de SQL completas poderão ser mostradas abaixo mas não serão submetidas à telemetria.">
+<!ENTITY aboutTelemetry.fullSqlWarning "NOTA: A depuração de SQL lenta está ativada. As strings de SQL completas poderão ser mostradas abaixo mas não serão submetidas à telemetria.">
 <!ENTITY aboutTelemetry.fetchStackSymbols "Obter nomes de funções para stacks">
 <!ENTITY aboutTelemetry.hideStackSymbols "Mostrar dados de stacks em bruto">

@@ -3,19 +3,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #include "nsTableColGroupFrame.h"
+
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "nsTableColFrame.h"
 #include "nsTableFrame.h"
-#include "nsStyleContext.h"
 #include "nsStyleConsts.h"
 #include "nsPresContext.h"
 #include "nsHTMLParts.h"
 #include "nsGkAtoms.h"
 #include "nsCOMPtr.h"
 #include "nsCSSRendering.h"
-#include "nsIPresShell.h"
-#ifdef MOZ_OLD_STYLE
-#include "mozilla/GeckoStyleContext.h"
-#endif
 
 using namespace mozilla;
 
@@ -117,6 +115,11 @@ void nsTableColGroupFrame::SetInitialChildList(ChildListID aListID,
   MOZ_ASSERT(mFrames.IsEmpty(),
              "unexpected second call to SetInitialChildList");
   MOZ_ASSERT(aListID == kPrincipalList, "unexpected child list");
+#ifdef DEBUG
+  for (nsIFrame* f : aChildList) {
+    MOZ_ASSERT(f->GetParent() == this, "Unexpected parent");
+  }
+#endif
   if (aChildList.IsEmpty()) {
     GetTableFrame()->AppendAnonymousColFrames(this, GetSpan(),
                                               eColAnonymousColGroup, false);
@@ -126,16 +129,17 @@ void nsTableColGroupFrame::SetInitialChildList(ChildListID aListID,
   mFrames.AppendFrames(this, aChildList);
 }
 
-/* virtual */ void nsTableColGroupFrame::DidSetStyleContext(
-    nsStyleContext* aOldStyleContext) {
-  nsContainerFrame::DidSetStyleContext(aOldStyleContext);
+/* virtual */
+void nsTableColGroupFrame::DidSetComputedStyle(
+    ComputedStyle* aOldComputedStyle) {
+  nsContainerFrame::DidSetComputedStyle(aOldComputedStyle);
 
-  if (!aOldStyleContext)  // avoid this on init
+  if (!aOldComputedStyle)  // avoid this on init
     return;
 
   nsTableFrame* tableFrame = GetTableFrame();
   if (tableFrame->IsBorderCollapse() &&
-      tableFrame->BCRecalcNeeded(aOldStyleContext, StyleContext())) {
+      tableFrame->BCRecalcNeeded(aOldComputedStyle, Style())) {
     int32_t colCount = GetColCount();
     if (!colCount) return;  // this is a degenerated colgroup
     TableArea damageArea(GetFirstColumn()->GetColIndex(), 0, colCount,
@@ -225,7 +229,7 @@ void nsTableColGroupFrame::InsertColsReflow(int32_t aColIndex,
                                             const nsFrameList::Slice& aCols) {
   AddColsToTable(aColIndex, true, aCols);
 
-  PresShell()->FrameNeedsReflow(this, nsIPresShell::eTreeChange,
+  PresShell()->FrameNeedsReflow(this, IntrinsicDirty::TreeChange,
                                 NS_FRAME_HAS_DIRTY_CHILDREN);
 }
 
@@ -249,7 +253,7 @@ void nsTableColGroupFrame::RemoveChild(nsTableColFrame& aChild,
     }
   }
 
-  PresShell()->FrameNeedsReflow(this, nsIPresShell::eTreeChange,
+  PresShell()->FrameNeedsReflow(this, IntrinsicDirty::TreeChange,
                                 NS_FRAME_HAS_DIRTY_CHILDREN);
 }
 
@@ -271,23 +275,6 @@ void nsTableColGroupFrame::RemoveFrame(ChildListID aListID,
       nsTableColFrame* nextCol;
       while (col && col->GetColType() == eColAnonymousCol) {
 #ifdef DEBUG
-#ifdef MOZ_OLD_STYLE
-        nsIFrame* providerFrame;
-        nsStyleContext* psc = colFrame->GetParentStyleContext(&providerFrame);
-        if (psc->IsGecko()) {
-          // This check code is useful only in Gecko-backed style system.
-          if (colFrame->StyleContext()->AsGecko()->GetParent() ==
-              psc->AsGecko()) {
-            NS_ASSERTION(col->StyleContext() == colFrame->StyleContext() &&
-                             col->GetContent() == colFrame->GetContent(),
-                         "How did that happen??");
-          }
-          // else colFrame is being removed because of a frame
-          // reconstruct on it, and its style context is still the old
-          // one, so we can't assert anything about how it compares to
-          // col's style context.
-        }
-#endif
 #endif
         nextCol = col->GetNextCol();
         RemoveFrame(kPrincipalList, col);
@@ -419,28 +406,33 @@ void nsTableColGroupFrame::GetContinuousBCBorderWidth(WritingMode aWM,
 
 /* ----- global methods ----- */
 
-nsTableColGroupFrame* NS_NewTableColGroupFrame(nsIPresShell* aPresShell,
-                                               nsStyleContext* aContext) {
-  return new (aPresShell) nsTableColGroupFrame(aContext);
+nsTableColGroupFrame* NS_NewTableColGroupFrame(PresShell* aPresShell,
+                                               ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsTableColGroupFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsTableColGroupFrame)
 
-void nsTableColGroupFrame::InvalidateFrame(uint32_t aDisplayItemKey) {
-  nsIFrame::InvalidateFrame(aDisplayItemKey);
+void nsTableColGroupFrame::InvalidateFrame(uint32_t aDisplayItemKey,
+                                           bool aRebuildDisplayItems) {
+  nsIFrame::InvalidateFrame(aDisplayItemKey, aRebuildDisplayItems);
   if (GetTableFrame()->IsBorderCollapse()) {
     GetParent()->InvalidateFrameWithRect(
-        GetVisualOverflowRect() + GetPosition(), aDisplayItemKey);
+        GetVisualOverflowRect() + GetPosition(), aDisplayItemKey, false);
   }
 }
 
 void nsTableColGroupFrame::InvalidateFrameWithRect(const nsRect& aRect,
-                                                   uint32_t aDisplayItemKey) {
-  nsIFrame::InvalidateFrameWithRect(aRect, aDisplayItemKey);
+                                                   uint32_t aDisplayItemKey,
+                                                   bool aRebuildDisplayItems) {
+  nsIFrame::InvalidateFrameWithRect(aRect, aDisplayItemKey,
+                                    aRebuildDisplayItems);
   // If we have filters applied that would affects our bounds, then
   // we get an inactive layer created and this is computed
   // within FrameLayerBuilder
-  GetParent()->InvalidateFrameWithRect(aRect + GetPosition(), aDisplayItemKey);
+  GetParent()->InvalidateFrameWithRect(aRect + GetPosition(), aDisplayItemKey,
+                                       false);
 }
 
 #ifdef DEBUG_FRAME_DUMP

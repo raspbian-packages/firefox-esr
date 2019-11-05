@@ -7,6 +7,9 @@
 #ifndef _nsNSSComponent_h_
 #define _nsNSSComponent_h_
 
+#include "nsINSSComponent.h"
+
+#include "EnterpriseRoots.h"
 #include "ScopedNSSTypes.h"
 #include "SharedCertVerifier.h"
 #include "mozilla/Attributes.h"
@@ -15,14 +18,13 @@
 #include "mozilla/RefPtr.h"
 #include "nsCOMPtr.h"
 #include "nsIObserver.h"
-#include "nsIStringBundle.h"
 #include "nsNSSCallbacks.h"
 #include "prerror.h"
 #include "sslt.h"
 
 #ifdef XP_WIN
-#include "windows.h"  // this needs to be before the following includes
-#include "wincrypt.h"
+#  include "windows.h"  // this needs to be before the following includes
+#  include "wincrypt.h"
 #endif  // XP_WIN
 
 class nsIDOMWindow;
@@ -46,54 +48,7 @@ MOZ_MUST_USE
     }                                                \
   }
 
-#define PSM_COMPONENT_CONTRACTID "@mozilla.org/psm;1"
-
-#define NS_INSSCOMPONENT_IID                         \
-  {                                                  \
-    0xa0a8f52b, 0xea18, 0x4abc, {                    \
-      0xa3, 0xca, 0xec, 0xcf, 0x70, 0x4f, 0xfe, 0x63 \
-    }                                                \
-  }
-
 extern bool EnsureNSSInitializedChromeOrContent();
-
-class NS_NO_VTABLE nsINSSComponent : public nsISupports {
- public:
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_INSSCOMPONENT_IID)
-
-  NS_IMETHOD GetPIPNSSBundleString(const char* name, nsAString& outString) = 0;
-  NS_IMETHOD PIPBundleFormatStringFromName(const char* name,
-                                           const char16_t** params,
-                                           uint32_t numParams,
-                                           nsAString& outString) = 0;
-
-  NS_IMETHOD GetNSSBundleString(const char* name, nsAString& outString) = 0;
-
-  NS_IMETHOD LogoutAuthenticatedPK11() = 0;
-
-#ifdef DEBUG
-  NS_IMETHOD IsCertTestBuiltInRoot(CERTCertificate* cert, bool& result) = 0;
-#endif
-
-  NS_IMETHOD IsCertContentSigningRoot(CERTCertificate* cert, bool& result) = 0;
-
-#ifdef XP_WIN
-  NS_IMETHOD GetEnterpriseRoots(nsIX509CertList** enterpriseRoots) = 0;
-  NS_IMETHOD TrustLoaded3rdPartyRoots() = 0;
-#endif
-
-  NS_IMETHOD BlockUntilLoadableRootsLoaded() = 0;
-  NS_IMETHOD CheckForSmartCardChanges() = 0;
-
-  // Main thread only
-  NS_IMETHOD HasActiveSmartCards(bool& result) = 0;
-  NS_IMETHOD HasUserCertsInstalled(bool& result) = 0;
-
-  virtual ::already_AddRefed<mozilla::psm::SharedCertVerifier>
-  GetDefaultCertVerifier() = 0;
-};
-
-NS_DEFINE_STATIC_IID_ACCESSOR(nsINSSComponent, NS_INSSCOMPONENT_IID)
 
 // Implementation of the PSM component interface.
 class nsNSSComponent final : public nsINSSComponent, public nsIObserver {
@@ -101,54 +56,19 @@ class nsNSSComponent final : public nsINSSComponent, public nsIObserver {
   // LoadLoadableRootsTask updates mLoadableRootsLoaded and
   // mLoadableRootsLoadedResult and then signals mLoadableRootsLoadedMonitor.
   friend class LoadLoadableRootsTask;
-
-  NS_DEFINE_STATIC_CID_ACCESSOR(NS_NSSCOMPONENT_CID)
+  // BackgroundImportEnterpriseCertsTask calls ImportEnterpriseRoots and
+  // UpdateCertVerifierWithEnterpriseRoots.
+  friend class BackgroundImportEnterpriseCertsTask;
 
   nsNSSComponent();
 
   NS_DECL_THREADSAFE_ISUPPORTS
+  NS_DECL_NSINSSCOMPONENT
   NS_DECL_NSIOBSERVER
 
   nsresult Init();
 
   static nsresult GetNewPrompter(nsIPrompt** result);
-
-  NS_IMETHOD GetPIPNSSBundleString(const char* name,
-                                   nsAString& outString) override;
-  NS_IMETHOD PIPBundleFormatStringFromName(const char* name,
-                                           const char16_t** params,
-                                           uint32_t numParams,
-                                           nsAString& outString) override;
-  NS_IMETHOD GetNSSBundleString(const char* name,
-                                nsAString& outString) override;
-  NS_IMETHOD LogoutAuthenticatedPK11() override;
-
-#ifdef DEBUG
-  NS_IMETHOD IsCertTestBuiltInRoot(CERTCertificate* cert,
-                                   bool& result) override;
-#endif
-
-  NS_IMETHOD IsCertContentSigningRoot(CERTCertificate* cert,
-                                      bool& result) override;
-
-#ifdef XP_WIN
-  NS_IMETHOD GetEnterpriseRoots(nsIX509CertList** enterpriseRoots) override;
-  NS_IMETHOD TrustLoaded3rdPartyRoots() override;
-#endif
-
-  NS_IMETHOD BlockUntilLoadableRootsLoaded() override;
-  NS_IMETHOD CheckForSmartCardChanges() override;
-
-  // Main thread only
-  NS_IMETHOD HasActiveSmartCards(bool& result) override;
-  NS_IMETHOD HasUserCertsInstalled(bool& result) override;
-
-  ::already_AddRefed<mozilla::psm::SharedCertVerifier> GetDefaultCertVerifier()
-      override;
-
-  // The following two methods are thread-safe.
-  static bool AreAnyWeakCiphersEnabled();
-  static void UseWeakCiphersOnSocket(PRFileDesc* fd);
 
   static void FillTLSVersionRange(SSLVersionRange& rangeOut,
                                   uint32_t minFromPrefs, uint32_t maxFromPrefs,
@@ -161,25 +81,19 @@ class nsNSSComponent final : public nsINSSComponent, public nsIObserver {
   nsresult InitializeNSS();
   void ShutdownNSS();
 
-  void UnloadLoadableRoots();
-  void setValidationOptions(bool isInitialSetting);
+  void setValidationOptions(bool isInitialSetting,
+                            const mozilla::MutexAutoLock& proofOfLock);
+  void UpdateCertVerifierWithEnterpriseRoots();
   nsresult setEnabledTLSVersions();
-  nsresult InitializePIPNSSBundle();
-  nsresult ConfigureInternalPKCS11Token();
   nsresult RegisterObservers();
 
-  void MaybeEnableFamilySafetyCompatibility();
   void MaybeImportEnterpriseRoots();
-#ifdef XP_WIN
-  void ImportEnterpriseRootsForLocation(
-      DWORD locationFlag, const mozilla::MutexAutoLock& proofOfLock);
-  nsresult MaybeImportFamilySafetyRoot(PCCERT_CONTEXT certificate,
-                                       bool& wasFamilySafetyRoot);
-  nsresult LoadFamilySafetyRoot();
-  void UnloadFamilySafetyRoot();
-
+  void ImportEnterpriseRoots();
   void UnloadEnterpriseRoots();
-#endif  // XP_WIN
+  nsresult CommonGetEnterpriseCerts(
+      nsTArray<nsTArray<uint8_t>>& enterpriseCerts, bool getRoots);
+
+  bool ShouldEnableEnterpriseRootsForFamilySafety(uint32_t familySafetyMode);
 
   // mLoadableRootsLoadedMonitor protects mLoadableRootsLoaded.
   mozilla::Monitor mLoadableRootsLoadedMonitor;
@@ -190,21 +104,25 @@ class nsNSSComponent final : public nsINSSComponent, public nsIObserver {
   mozilla::Mutex mMutex;
 
   // The following members are accessed from more than one thread:
-  nsCOMPtr<nsIStringBundle> mPIPNSSBundle;
-  nsCOMPtr<nsIStringBundle> mNSSErrorsBundle;
-  bool mNSSInitialized;
+
 #ifdef DEBUG
   nsString mTestBuiltInRootHash;
 #endif
   nsString mContentSigningRootHash;
   RefPtr<mozilla::psm::SharedCertVerifier> mDefaultCertVerifier;
-#ifdef XP_WIN
-  mozilla::UniqueCERTCertificate mFamilySafetyRoot;
-  mozilla::UniqueCERTCertList mEnterpriseRoots;
-#endif  // XP_WIN
+  nsString mMitmCanaryIssuer;
+  bool mMitmDetecionEnabled;
+  mozilla::Vector<EnterpriseCert> mEnterpriseCerts;
 
   // The following members are accessed only on the main thread:
   static int mInstanceCount;
+  // If InitializeNSS succeeds, then we have dispatched an event to load the
+  // loadable roots module on a background thread. We must wait for it to
+  // complete before attempting to unload the module again in ShutdownNSS. If we
+  // never dispatched the event, then we can't wait for it to complete (because
+  // it will never complete) so we use this boolean to keep track of if we
+  // should wait.
+  bool mLoadLoadableRootsTaskDispatched;
 };
 
 inline nsresult BlockUntilLoadableRootsLoaded() {
@@ -226,14 +144,5 @@ inline nsresult CheckForSmartCardChanges() {
   return NS_OK;
 #endif
 }
-
-class nsNSSErrors {
- public:
-  static const char* getDefaultErrorStringName(PRErrorCode err);
-  static const char* getOverrideErrorStringName(PRErrorCode aErrorCode);
-  static nsresult getErrorMessageFromCode(PRErrorCode err,
-                                          nsINSSComponent* component,
-                                          nsString& returnedMessage);
-};
 
 #endif  // _nsNSSComponent_h_

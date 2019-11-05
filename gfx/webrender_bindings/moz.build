@@ -11,13 +11,15 @@ EXPORTS.mozilla.webrender += [
     'RenderBufferTextureHost.h',
     'RenderCompositor.h',
     'RenderCompositorOGL.h',
+    'RenderEGLImageTextureHost.h',
     'RendererOGL.h',
+    'RendererScreenshotGrabber.h',
     'RenderSharedSurfaceTextureHost.h',
     'RenderTextureHost.h',
     'RenderTextureHostOGL.h',
+    'RenderTextureHostWrapper.h',
     'RenderThread.h',
     'webrender_ffi.h',
-    'webrender_ffi_generated.h',
     'WebRenderAPI.h',
     'WebRenderTypes.h',
 ]
@@ -27,10 +29,13 @@ UNIFIED_SOURCES += [
     'RenderBufferTextureHost.cpp',
     'RenderCompositor.cpp',
     'RenderCompositorOGL.cpp',
+    'RenderEGLImageTextureHost.cpp',
     'RendererOGL.cpp',
+    'RendererScreenshotGrabber.cpp',
     'RenderSharedSurfaceTextureHost.cpp',
     'RenderTextureHost.cpp',
     'RenderTextureHostOGL.cpp',
+    'RenderTextureHostWrapper.cpp',
     'RenderThread.cpp',
     'WebRenderAPI.cpp',
     'WebRenderTypes.cpp',
@@ -44,6 +49,16 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
         'RenderMacIOSurfaceTextureHostOGL.cpp',
     ]
 
+if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android':
+    EXPORTS.mozilla.webrender += [
+        'RenderAndroidSurfaceTextureHostOGL.h',
+        'RenderCompositorEGL.h',
+    ]
+    UNIFIED_SOURCES += [
+        'RenderAndroidSurfaceTextureHostOGL.cpp',
+        'RenderCompositorEGL.cpp',
+    ]
+
 if CONFIG['MOZ_ENABLE_D3D10_LAYER']:
     DEFINES['MOZ_ENABLE_D3D10_LAYER'] = True
     EXPORTS.mozilla.webrender += [
@@ -51,14 +66,44 @@ if CONFIG['MOZ_ENABLE_D3D10_LAYER']:
         'RenderD3D11TextureHostOGL.h',
     ]
     UNIFIED_SOURCES += [
-        'RenderCompositorANGLE.cpp',
         'RenderD3D11TextureHostOGL.cpp',
+    ]
+    SOURCES += [
+        'RenderCompositorANGLE.cpp',
+    ]
+
+if CONFIG['MOZ_WAYLAND']:
+    EXPORTS.mozilla.webrender += [
+        'RenderCompositorEGL.h',
+    ]
+    SOURCES += [
+        'RenderCompositorEGL.cpp',
     ]
 
 if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('android', 'gtk3'):
     CXXFLAGS += CONFIG['MOZ_CAIRO_CFLAGS']
     CXXFLAGS += CONFIG['CAIRO_FT_CFLAGS']
 
+if CONFIG['COMPILE_ENVIRONMENT']:
+    GENERATED_FILES += [
+        'webrender_ffi_generated.h',
+    ]
+
+    EXPORTS.mozilla.webrender += [
+        '!webrender_ffi_generated.h',
+    ]
+
+    ffi_generated = GENERATED_FILES['webrender_ffi_generated.h']
+    ffi_generated.script = '/layout/style/RunCbindgen.py:generate'
+    ffi_generated.inputs = [
+        '/gfx/webrender_bindings',
+        '/gfx/wr/webrender',
+        '/gfx/wr/webrender_api',
+    ]
+
+
 include('/ipc/chromium/chromium-config.mozbuild')
 
 FINAL_LIBRARY = 'xul'
+
+CXXFLAGS += CONFIG['TK_CFLAGS']

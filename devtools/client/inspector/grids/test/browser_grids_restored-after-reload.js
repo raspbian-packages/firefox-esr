@@ -32,56 +32,79 @@ const OTHER_URI = `
   </div>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let { gridInspector, inspector } = yield openLayoutView();
-  let { document: doc } = gridInspector;
-  let { highlighters, store } = inspector;
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { gridInspector, inspector } = await openLayoutView();
+  const { document: doc } = gridInspector;
+  const { highlighters, store } = inspector;
 
-  yield selectNode("#grid", inspector);
-  let gridList = doc.getElementById("grid-list");
-  let checkbox = gridList.children[0].querySelector("input");
+  await selectNode("#grid", inspector);
+  const gridList = doc.getElementById("grid-list");
+  const checkbox = gridList.children[0].querySelector("input");
 
   info("Toggling ON the CSS grid highlighter from the layout panel.");
-  let onHighlighterShown = highlighters.once("grid-highlighter-shown");
-  let onCheckboxChange = waitUntilState(store, state =>
-    state.grids.length == 1 &&
-    state.grids[0].highlighted);
+  const onHighlighterShown = highlighters.once("grid-highlighter-shown");
+  const onCheckboxChange = waitUntilState(
+    store,
+    state => state.grids.length == 1 && state.grids[0].highlighted
+  );
   checkbox.click();
-  yield onHighlighterShown;
-  yield onCheckboxChange;
+  await onHighlighterShown;
+  await onCheckboxChange;
 
-  info("Checking the CSS grid highlighter is created.");
-  ok(highlighters.highlighters[HIGHLIGHTER_TYPE],
-    "CSS grid highlighter is created in the highlighters overlay.");
-  ok(highlighters.gridHighlighterShown, "CSS grid highlighter is shown.");
+  info(
+    "Check that the CSS grid highlighter is created and the saved grid state."
+  );
+  is(highlighters.gridHighlighters.size, 1, "CSS grid highlighter is shown.");
+  is(
+    highlighters.state.grids.size,
+    1,
+    "There's a saved grid state to be restored."
+  );
 
-  info("Reload the page, expect the highlighter to be displayed once again and " +
-    "grid is checked");
+  info(
+    "Reload the page, expect the highlighter to be displayed once again and " +
+      "grid is checked"
+  );
   let onStateRestored = highlighters.once("grid-state-restored");
-  let onGridListRestored = waitUntilState(store, state =>
-    state.grids.length == 1 &&
-    state.grids[0].highlighted);
-  yield refreshTab();
-  let { restored } = yield onStateRestored;
-  yield onGridListRestored;
+  let onGridListRestored = waitUntilState(
+    store,
+    state => state.grids.length == 1 && state.grids[0].highlighted
+  );
+  await refreshTab();
+  let { restored } = await onStateRestored;
+  await onGridListRestored;
 
-  info("Check that the grid highlighter can be displayed after reloading the page");
+  info(
+    "Check that the grid highlighter can be displayed after reloading the page"
+  );
   ok(restored, "The highlighter state was restored");
-  ok(highlighters.gridHighlighterShown, "CSS grid highlighter is shown.");
+  is(highlighters.gridHighlighters.size, 1, "CSS grid highlighter is shown.");
+  is(
+    highlighters.state.grids.size,
+    1,
+    "The saved grid state has the correct number of saved states."
+  );
 
-  info("Navigate to another URL, and check that the highlighter is hidden and " +
-    "grid is unchecked");
-  let otherUri = "data:text/html;charset=utf-8," + encodeURIComponent(OTHER_URI);
+  info(
+    "Navigate to another URL, and check that the highlighter is hidden and " +
+      "grid is unchecked"
+  );
+  const otherUri =
+    "data:text/html;charset=utf-8," + encodeURIComponent(OTHER_URI);
   onStateRestored = highlighters.once("grid-state-restored");
-  onGridListRestored = waitUntilState(store, state =>
-    state.grids.length == 1 &&
-    !state.grids[0].highlighted);
-  yield navigateTo(inspector, otherUri);
-  ({ restored } = yield onStateRestored);
-  yield onGridListRestored;
+  onGridListRestored = waitUntilState(
+    store,
+    state => state.grids.length == 1 && !state.grids[0].highlighted
+  );
+  await navigateTo(inspector, otherUri);
+  ({ restored } = await onStateRestored);
+  await onGridListRestored;
 
-  info("Check that the grid highlighter is hidden after navigating to a different page");
+  info(
+    "Check that the grid highlighter is hidden after navigating to a different page"
+  );
   ok(!restored, "The highlighter state was not restored");
-  ok(!highlighters.gridHighlighterShown, "CSS grid highlighter is hidden.");
+  ok(!highlighters.gridHighlighters.size, "CSS grid highlighter is hidden.");
+  ok(!highlighters.state.grids.size, "No grids to be restored on page reload.");
 });

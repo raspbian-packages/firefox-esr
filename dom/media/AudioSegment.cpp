@@ -7,7 +7,6 @@
 
 #include "AudioMixer.h"
 #include "AudioChannelFormat.h"
-#include "Latency.h"
 #include <speex/speex_resampler.h>
 
 namespace mozilla {
@@ -165,8 +164,8 @@ void AudioSegment::Mix(AudioMixer& aMixer, uint32_t aOutputChannels,
   }
 }
 
-void AudioSegment::WriteTo(uint64_t aID, AudioMixer& aMixer,
-                           uint32_t aOutputChannels, uint32_t aSampleRate) {
+void AudioSegment::WriteTo(AudioMixer& aMixer, uint32_t aOutputChannels,
+                           uint32_t aSampleRate) {
   AutoTArray<AudioDataValue,
              SilentChannel::AUDIO_PROCESSING_FRAMES * GUESS_AUDIO_CHANNELS>
       buf;
@@ -200,14 +199,6 @@ void AudioSegment::WriteTo(uint64_t aID, AudioMixer& aMixer,
     }
 
     offset += c.mDuration * aOutputChannels;
-
-    if (!c.mTimeStamp.IsNull()) {
-      TimeStamp now = TimeStamp::Now();
-      // would be more efficient to c.mTimeStamp to ms on create time then pass
-      // here
-      LogTime(AsyncLatencyLogger::AudioMediaStreamTrack, aID,
-              (now - c.mTimeStamp).ToMilliseconds(), c.mTimeStamp);
-    }
   }
 
   if (offset) {

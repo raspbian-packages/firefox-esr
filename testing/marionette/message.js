@@ -4,15 +4,13 @@
 
 "use strict";
 
-ChromeUtils.import("chrome://marionette/content/assert.js");
-ChromeUtils.import("chrome://marionette/content/error.js");
-const {truncate} = ChromeUtils.import("chrome://marionette/content/format.js", {});
+const { assert } = ChromeUtils.import("chrome://marionette/content/assert.js");
+const { error } = ChromeUtils.import("chrome://marionette/content/error.js");
+const { truncate } = ChromeUtils.import(
+  "chrome://marionette/content/format.js"
+);
 
-this.EXPORTED_SYMBOLS = [
-  "Command",
-  "Message",
-  "Response",
-];
+this.EXPORTED_SYMBOLS = ["Command", "Message", "Response"];
 
 /** Representation of the packets transproted over the wire. */
 class Message {
@@ -56,7 +54,8 @@ class Message {
 
       default:
         throw new TypeError(
-            "Unrecognised message type in packet: " + JSON.stringify(data));
+          "Unrecognised message type in packet: " + JSON.stringify(data)
+        );
     }
   }
 }
@@ -165,12 +164,7 @@ class Command extends Message {
    *     Packet.
    */
   toPacket() {
-    return [
-      Command.Type,
-      this.id,
-      this.name,
-      this.parameters,
-    ];
+    return [Command.Type, this.id, this.name, this.parameters];
   }
 
   /**
@@ -199,44 +193,6 @@ class Command extends Message {
   }
 }
 Command.Type = 0;
-
-const validator = {
-  exclusionary: {
-    "capabilities": ["error", "value"],
-    "error": ["value", "sessionId", "capabilities"],
-    "sessionId": ["error", "value"],
-    "value": ["error", "sessionId", "capabilities"],
-  },
-
-  set(obj, prop, val) {
-    let tests = this.exclusionary[prop];
-    if (tests) {
-      for (let t of tests) {
-        if (obj.hasOwnProperty(t)) {
-          throw new TypeError(`${t} set, cannot set ${prop}`);
-        }
-      }
-    }
-
-    obj[prop] = val;
-    return true;
-  },
-};
-
-/**
- * The response body is exposed as an argument to commands.
- * Commands can set fields on the body through defining properties.
- *
- * Setting properties invokes a validator that performs tests for
- * mutually exclusionary fields on the input against the existing data
- * in the body.
- *
- * For example setting the <code>error</code> property on
- * the body when <code>value</code>, <code>sessionId</code>, or
- * <code>capabilities</code> have been set previously will cause
- * an error.
- */
-const ResponseBody = () => new Proxy({}, validator);
 
 /**
  * @callback ResponseCallback
@@ -272,7 +228,7 @@ class Response extends Message {
     this.respHandler_ = assert.callable(respHandler);
 
     this.error = null;
-    this.body = ResponseBody();
+    this.body = { value: null };
 
     this.origin = Message.Origin.Server;
     this.sent = false;
@@ -337,12 +293,7 @@ class Response extends Message {
    *     Packet.
    */
   toPacket() {
-    return [
-      Response.Type,
-      this.id,
-      this.error,
-      this.body,
-    ];
+    return [Response.Type, this.id, this.error, this.body];
   }
 
   /**

@@ -12,7 +12,7 @@
 #include "mozilla/Result.h"
 
 #if defined(MOZILLA_INTERNAL_API)
-#include "nsString.h"
+#  include "nsString.h"
 #endif  // defined(MOZILLA_INTERNAL_API)
 
 #include <windows.h>
@@ -57,7 +57,7 @@ class MOZ_NON_TEMPORARY_CLASS ActivationContextRegion final {
  public:
   template <typename... Args>
   explicit ActivationContextRegion(Args... aArgs)
-      : mActCtx(Forward<Args>(aArgs)...), mActCookie(0) {
+      : mActCtx(std::forward<Args>(aArgs)...), mActCookie(0) {
     Activate();
   }
 

@@ -22,9 +22,11 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     };
     root = CreateLayerTree(layerTreeSyntax, layerVisibleRegions, nullptr, lm,
                            layers);
-    SetScrollableFrameMetrics(root, FrameMetrics::START_SCROLL_ID);
-    SetScrollableFrameMetrics(layers[1], FrameMetrics::START_SCROLL_ID + 1);
-    SetScrollableFrameMetrics(layers[2], FrameMetrics::START_SCROLL_ID + 2);
+    SetScrollableFrameMetrics(root, ScrollableLayerGuid::START_SCROLL_ID);
+    SetScrollableFrameMetrics(layers[1],
+                              ScrollableLayerGuid::START_SCROLL_ID + 1);
+    SetScrollableFrameMetrics(layers[2],
+                              ScrollableLayerGuid::START_SCROLL_ID + 2);
     SetScrollHandoff(layers[1], root);
     SetScrollHandoff(layers[2], root);
 
@@ -43,9 +45,9 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     regions.mHitRegion = nsIntRegion(IntRect(0, 100, 200, 100));
     layers[2]->SetEventRegions(regions);
 
-    registration =
-        MakeUnique<ScopedLayerTreeRegistration>(manager, 0, root, mcc);
-    manager->UpdateHitTestingTree(0, root, false, 0, 0);
+    registration = MakeUnique<ScopedLayerTreeRegistration>(manager, LayersId{0},
+                                                           root, mcc);
+    manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
     rootApzc = ApzcOf(root);
   }
 
@@ -57,7 +59,7 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     };
     root = CreateLayerTree(layerTreeSyntax, layerVisibleRegions, nullptr, lm,
                            layers);
-    SetScrollableFrameMetrics(root, FrameMetrics::START_SCROLL_ID);
+    SetScrollableFrameMetrics(root, ScrollableLayerGuid::START_SCROLL_ID);
 
     // Set up the event regions so that the child thebes layer is positioned far
     // away from the scrolling container layer.
@@ -66,9 +68,9 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     regions.mHitRegion = nsIntRegion(IntRect(0, 150, 100, 100));
     layers[1]->SetEventRegions(regions);
 
-    registration =
-        MakeUnique<ScopedLayerTreeRegistration>(manager, 0, root, mcc);
-    manager->UpdateHitTestingTree(0, root, false, 0, 0);
+    registration = MakeUnique<ScopedLayerTreeRegistration>(manager, LayersId{0},
+                                                           root, mcc);
+    manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
     rootApzc = ApzcOf(root);
   }
 
@@ -89,11 +91,13 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     root = CreateLayerTree(layerTreeSyntax, layerVisibleRegions, nullptr, lm,
                            layers);
 
-    SetScrollableFrameMetrics(root, FrameMetrics::START_SCROLL_ID,
+    SetScrollableFrameMetrics(root, ScrollableLayerGuid::START_SCROLL_ID,
                               CSSRect(0, 0, 200, 200));
-    SetScrollableFrameMetrics(layers[1], FrameMetrics::START_SCROLL_ID + 1,
+    SetScrollableFrameMetrics(layers[1],
+                              ScrollableLayerGuid::START_SCROLL_ID + 1,
                               CSSRect(0, 0, 200, 300));
-    SetScrollableFrameMetrics(layers[2], FrameMetrics::START_SCROLL_ID + 2,
+    SetScrollableFrameMetrics(layers[2],
+                              ScrollableLayerGuid::START_SCROLL_ID + 2,
                               CSSRect(0, 0, 200, 100));
     SetScrollHandoff(layers[2], layers[1]);
     SetScrollHandoff(layers[1], root);
@@ -105,9 +109,9 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     regions.mHitRegion = nsIntRegion(IntRect(0, 100, 200, 100));
     layers[2]->SetEventRegions(regions);
 
-    registration =
-        MakeUnique<ScopedLayerTreeRegistration>(manager, 0, root, mcc);
-    manager->UpdateHitTestingTree(0, root, false, 0, 0);
+    registration = MakeUnique<ScopedLayerTreeRegistration>(manager, LayersId{0},
+                                                           root, mcc);
+    manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
     rootApzc = ApzcOf(root);
   }
 
@@ -126,12 +130,13 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     root = CreateLayerTree(layerTreeSyntax, layerVisibleRegions, nullptr, lm,
                            layers);
 
-    SetScrollableFrameMetrics(root, FrameMetrics::START_SCROLL_ID);
-    SetScrollableFrameMetrics(layers[1], FrameMetrics::START_SCROLL_ID + 1);
+    SetScrollableFrameMetrics(root, ScrollableLayerGuid::START_SCROLL_ID);
+    SetScrollableFrameMetrics(layers[1],
+                              ScrollableLayerGuid::START_SCROLL_ID + 1);
 
-    registration =
-        MakeUnique<ScopedLayerTreeRegistration>(manager, 0, root, mcc);
-    manager->UpdateHitTestingTree(0, root, false, 0, 0);
+    registration = MakeUnique<ScopedLayerTreeRegistration>(manager, LayersId{0},
+                                                           root, mcc);
+    manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
   }
 
   void CreateBug1117712LayerTree() {
@@ -158,9 +163,10 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     root = CreateLayerTree(layerTreeSyntax, layerVisibleRegions,
                            layerTransforms, lm, layers);
 
-    SetScrollableFrameMetrics(layers[2], FrameMetrics::START_SCROLL_ID,
+    SetScrollableFrameMetrics(layers[2], ScrollableLayerGuid::START_SCROLL_ID,
                               CSSRect(0, 0, 10, 10));
-    SetScrollableFrameMetrics(layers[3], FrameMetrics::START_SCROLL_ID + 1,
+    SetScrollableFrameMetrics(layers[3],
+                              ScrollableLayerGuid::START_SCROLL_ID + 1,
                               CSSRect(0, 0, 100, 100));
     SetScrollHandoff(layers[3], layers[2]);
 
@@ -170,14 +176,14 @@ class APZEventRegionsTester : public APZCTreeManagerTester {
     regions.mDispatchToContentHitRegion = nsIntRegion(IntRect(0, 0, 100, 100));
     layers[3]->SetEventRegions(regions);
 
-    registration =
-        MakeUnique<ScopedLayerTreeRegistration>(manager, 0, root, mcc);
-    manager->UpdateHitTestingTree(0, root, false, 0, 0);
+    registration = MakeUnique<ScopedLayerTreeRegistration>(manager, LayersId{0},
+                                                           root, mcc);
+    manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
   }
 };
 
 TEST_F(APZEventRegionsTester, HitRegionImmediateResponse) {
-  SCOPED_GFX_PREF(WebRenderHitTest, bool, false);
+  SCOPED_GFX_VAR(UseWebRender, bool, false);
 
   CreateEventRegionsLayerTree1();
 
@@ -254,23 +260,23 @@ TEST_F(APZEventRegionsTester, HitRegionAccumulatesChildren) {
 }
 
 TEST_F(APZEventRegionsTester, Obscuration) {
-  SCOPED_GFX_PREF(WebRenderHitTest, bool, false);
+  SCOPED_GFX_VAR(UseWebRender, bool, false);
 
   CreateObscuringLayerTree();
-  ScopedLayerTreeRegistration registration(manager, 0, root, mcc);
+  ScopedLayerTreeRegistration registration(manager, LayersId{0}, root, mcc);
 
-  manager->UpdateHitTestingTree(0, root, false, 0, 0);
+  manager->UpdateHitTestingTree(LayersId{0}, root, false, LayersId{0}, 0);
 
-  TestAsyncPanZoomController* parent = ApzcOf(layers[1]);
+  RefPtr<TestAsyncPanZoomController> parent = ApzcOf(layers[1]);
   TestAsyncPanZoomController* child = ApzcOf(layers[2]);
 
-  ApzcPanNoFling(parent, 75, 25);
+  Pan(parent, 75, 25, PanOptions::NoFling);
 
   gfx::CompositorHitTestInfo result;
   RefPtr<AsyncPanZoomController> hit =
-      manager->GetTargetAPZC(ScreenPoint(50, 75), &result);
+      manager->GetTargetAPZC(ScreenPoint(50, 75), &result, nullptr);
   EXPECT_EQ(child, hit.get());
-  EXPECT_EQ(CompositorHitTestInfo::eVisibleToHitTest, result);
+  EXPECT_EQ(result, CompositorHitTestFlags::eVisibleToHitTest);
 }
 
 TEST_F(APZEventRegionsTester, Bug1119497) {
@@ -278,11 +284,11 @@ TEST_F(APZEventRegionsTester, Bug1119497) {
 
   gfx::CompositorHitTestInfo result;
   RefPtr<AsyncPanZoomController> hit =
-      manager->GetTargetAPZC(ScreenPoint(50, 50), &result);
+      manager->GetTargetAPZC(ScreenPoint(50, 50), &result, nullptr);
   // We should hit layers[2], so |result| will be eVisibleToHitTest but there's
   // no actual APZC on layers[2], so it will be the APZC of the root layer.
   EXPECT_EQ(ApzcOf(layers[0]), hit.get());
-  EXPECT_EQ(CompositorHitTestInfo::eVisibleToHitTest, result);
+  EXPECT_EQ(result, CompositorHitTestFlags::eVisibleToHitTest);
 }
 
 TEST_F(APZEventRegionsTester, Bug1117712) {

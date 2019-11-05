@@ -6,9 +6,9 @@
 #ifndef mozInlineSpellWordUtil_h
 #define mozInlineSpellWordUtil_h
 
+#include "mozilla/Attributes.h"
 #include "nsCOMPtr.h"
-#include "nsIDOMDocument.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsString.h"
 #include "nsTArray.h"
 
@@ -22,10 +22,10 @@ class TextEditor;
 }  // namespace mozilla
 
 struct NodeOffset {
-  nsINode* mNode;
+  nsCOMPtr<nsINode> mNode;
   int32_t mOffset;
 
-  NodeOffset() : mNode(nullptr), mOffset(0) {}
+  NodeOffset() : mOffset(0) {}
   NodeOffset(nsINode* aNode, int32_t aOffset)
       : mNode(aNode), mOffset(aOffset) {}
 
@@ -34,6 +34,9 @@ struct NodeOffset {
   }
 
   bool operator!=(const NodeOffset& aOther) const { return !(*this == aOther); }
+
+  nsINode* Node() const { return mNode.get(); }
+  int32_t Offset() const { return mOffset; }
 };
 
 class NodeOffsetRange {
@@ -47,11 +50,11 @@ class NodeOffsetRange {
   NodeOffsetRange(NodeOffset b, NodeOffset e)
       : mBegin(b), mEnd(e), mEmpty(false) {}
 
-  NodeOffset Begin() { return mBegin; }
+  NodeOffset Begin() const { return mBegin; }
 
-  NodeOffset End() { return mEnd; }
+  NodeOffset End() const { return mEnd; }
 
-  bool Empty() { return mEmpty; }
+  bool Empty() const { return mEmpty; }
 };
 
 /**
@@ -66,18 +69,18 @@ class NodeOffsetRange {
  *    The basic operation is:
  *
  *    1. Call Init with the weak pointer to the editor that you're using.
- *    2. Call SetEnd to set where you want to stop spellchecking. We'll stop
- *       at the word boundary after that. If SetEnd is not called, we'll stop
- *       at the end of the document's root element.
- *    3. Call SetPosition to initialize the current position inside the
- *       previously given range.
- *    4. Call GetNextWord over and over until it returns false.
+ *    2. Call SetPositionAndEnd to to initialize the current position inside the
+ *       previously given range and set where you want to stop spellchecking.
+ *       We'll stop at the word boundary after that. If SetEnd is not called,
+ *       we'll stop at the end of the root element.
+ *    3. Call GetNextWord over and over until it returns false.
  */
 
-class mozInlineSpellWordUtil {
+class MOZ_STACK_CLASS mozInlineSpellWordUtil {
  public:
   mozInlineSpellWordUtil()
-      : mRootNode(nullptr),
+      : mIsContentEditableOrDesignMode(false),
+        mRootNode(nullptr),
         mSoftBegin(nullptr, 0),
         mSoftEnd(nullptr, 0),
         mNextWordIndex(-1),
@@ -85,11 +88,10 @@ class mozInlineSpellWordUtil {
 
   nsresult Init(mozilla::TextEditor* aTextEditor);
 
-  nsresult SetEnd(nsINode* aEndNode, int32_t aEndOffset);
-
   // sets the current position, this should be inside the range. If we are in
   // the middle of a word, we'll move to its start.
-  nsresult SetPosition(nsINode* aNode, int32_t aOffset);
+  nsresult SetPositionAndEnd(nsINode* aPositionNode, int32_t aPositionOffset,
+                             nsINode* aEndNode, int32_t aEndOffset);
 
   // Given a point inside or immediately following a word, this returns the
   // DOM range that exactly encloses that word's characters. The current
@@ -100,11 +102,12 @@ class mozInlineSpellWordUtil {
   // THIS CHANGES THE CURRENT POSITION AND RANGE. It is designed to be called
   // before you actually generate the range you are interested in and iterate
   // the words in it.
-  nsresult GetRangeForWord(nsIDOMNode* aWordNode, int32_t aWordOffset,
+  nsresult GetRangeForWord(nsINode* aWordNode, int32_t aWordOffset,
                            nsRange** aRange);
 
   // Convenience functions, object must be initialized
   nsresult MakeRange(NodeOffset aBegin, NodeOffset aEnd, nsRange** aRange);
+  static already_AddRefed<nsRange> MakeRange(const NodeOffsetRange& aRange);
 
   // Moves to the the next word in the range, and retrieves it's text and range.
   // An empty word and a nullptr range are returned when we are done checking.
@@ -117,14 +120,13 @@ class mozInlineSpellWordUtil {
   // so we can access characters directly.
   static void NormalizeWord(nsAString& aWord);
 
-  nsIDOMDocument* GetDOMDocument() const { return mDOMDocument; }
-  nsIDocument* GetDocument() const { return mDocument; }
+  mozilla::dom::Document* GetDocument() const { return mDocument; }
   nsINode* GetRootNode() { return mRootNode; }
 
  private:
   // cached stuff for the editor, set by Init
-  nsCOMPtr<nsIDOMDocument> mDOMDocument;
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<mozilla::dom::Document> mDocument;
+  bool mIsContentEditableOrDesignMode;
 
   // range to check, see SetPosition and SetEnd
   nsINode* mRootNode;

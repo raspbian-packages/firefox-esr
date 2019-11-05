@@ -18,7 +18,7 @@ namespace net {
 NS_IMPL_ADDREF(CacheFileOutputStream)
 NS_IMETHODIMP_(MozExternalRefCountType)
 CacheFileOutputStream::Release() {
-  NS_PRECONDITION(0 != mRefCnt, "dup release");
+  MOZ_ASSERT(0 != mRefCnt, "dup release");
   nsrefcnt count = --mRefCnt;
   NS_LOG_RELEASE(this, count, "CacheFileOutputStream");
 
@@ -39,12 +39,13 @@ NS_INTERFACE_MAP_BEGIN(CacheFileOutputStream)
   NS_INTERFACE_MAP_ENTRY(nsIOutputStream)
   NS_INTERFACE_MAP_ENTRY(nsIAsyncOutputStream)
   NS_INTERFACE_MAP_ENTRY(nsISeekableStream)
+  NS_INTERFACE_MAP_ENTRY(nsITellableStream)
   NS_INTERFACE_MAP_ENTRY(mozilla::net::CacheFileChunkListener)
   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIOutputStream)
 NS_INTERFACE_MAP_END
 
 CacheFileOutputStream::CacheFileOutputStream(
-    CacheFile *aFile, CacheOutputCloseListener *aCloseListener,
+    CacheFile* aFile, CacheOutputCloseListener* aCloseListener,
     bool aAlternativeData)
     : mFile(aFile),
       mCloseListener(aCloseListener),
@@ -79,8 +80,8 @@ CacheFileOutputStream::Flush() {
 }
 
 NS_IMETHODIMP
-CacheFileOutputStream::Write(const char *aBuf, uint32_t aCount,
-                             uint32_t *_retval) {
+CacheFileOutputStream::Write(const char* aBuf, uint32_t aCount,
+                             uint32_t* _retval) {
   CacheFileAutoLock lock(mFile);
 
   LOG(("CacheFileOutputStream::Write() [this=%p, count=%d]", this, aCount));
@@ -96,12 +97,8 @@ CacheFileOutputStream::Write(const char *aBuf, uint32_t aCount,
 
   if (!mFile->mSkipSizeCheck &&
       CacheObserver::EntryIsTooBig(mPos + aCount, !mFile->mMemoryOnly)) {
-    LOG(
-        ("CacheFileOutputStream::Write() - Entry is too big, failing and "
-         "dooming the entry. [this=%p]",
-         this));
+    LOG(("CacheFileOutputStream::Write() - Entry is too big. [this=%p]", this));
 
-    mFile->DoomLocked(nullptr);
     CloseWithStatusLocked(NS_ERROR_FILE_TOO_BIG);
     return NS_ERROR_FILE_TOO_BIG;
   }
@@ -109,13 +106,9 @@ CacheFileOutputStream::Write(const char *aBuf, uint32_t aCount,
   // We use 64-bit offset when accessing the file, unfortunately we use 32-bit
   // metadata offset, so we cannot handle data bigger than 4GB.
   if (mPos + aCount > PR_UINT32_MAX) {
-    LOG(
-        ("CacheFileOutputStream::Write() - Entry's size exceeds 4GB while it "
-         "isn't too big according to CacheObserver::EntryIsTooBig(). Failing "
-         "and dooming the entry. [this=%p]",
+    LOG(("CacheFileOutputStream::Write() - Entry's size exceeds 4GB. [this=%p]",
          this));
 
-    mFile->DoomLocked(nullptr);
     CloseWithStatusLocked(NS_ERROR_FILE_TOO_BIG);
     return NS_ERROR_FILE_TOO_BIG;
   }
@@ -161,8 +154,8 @@ CacheFileOutputStream::Write(const char *aBuf, uint32_t aCount,
 }
 
 NS_IMETHODIMP
-CacheFileOutputStream::WriteFrom(nsIInputStream *aFromStream, uint32_t aCount,
-                                 uint32_t *_retval) {
+CacheFileOutputStream::WriteFrom(nsIInputStream* aFromStream, uint32_t aCount,
+                                 uint32_t* _retval) {
   LOG(
       ("CacheFileOutputStream::WriteFrom() - NOT_IMPLEMENTED [this=%p, from=%p"
        ", count=%d]",
@@ -172,8 +165,8 @@ CacheFileOutputStream::WriteFrom(nsIInputStream *aFromStream, uint32_t aCount,
 }
 
 NS_IMETHODIMP
-CacheFileOutputStream::WriteSegments(nsReadSegmentFun aReader, void *aClosure,
-                                     uint32_t aCount, uint32_t *_retval) {
+CacheFileOutputStream::WriteSegments(nsReadSegmentFun aReader, void* aClosure,
+                                     uint32_t aCount, uint32_t* _retval) {
   LOG(
       ("CacheFileOutputStream::WriteSegments() - NOT_IMPLEMENTED [this=%p, "
        "count=%d]",
@@ -183,7 +176,7 @@ CacheFileOutputStream::WriteSegments(nsReadSegmentFun aReader, void *aClosure,
 }
 
 NS_IMETHODIMP
-CacheFileOutputStream::IsNonBlocking(bool *_retval) {
+CacheFileOutputStream::IsNonBlocking(bool* _retval) {
   *_retval = false;
   return NS_OK;
 }
@@ -228,9 +221,9 @@ nsresult CacheFileOutputStream::CloseWithStatusLocked(nsresult aStatus) {
 }
 
 NS_IMETHODIMP
-CacheFileOutputStream::AsyncWait(nsIOutputStreamCallback *aCallback,
+CacheFileOutputStream::AsyncWait(nsIOutputStreamCallback* aCallback,
                                  uint32_t aFlags, uint32_t aRequestedCount,
-                                 nsIEventTarget *aEventTarget) {
+                                 nsIEventTarget* aEventTarget) {
   CacheFileAutoLock lock(mFile);
 
   LOG(
@@ -292,7 +285,17 @@ CacheFileOutputStream::Seek(int32_t whence, int64_t offset) {
 }
 
 NS_IMETHODIMP
-CacheFileOutputStream::Tell(int64_t *_retval) {
+CacheFileOutputStream::SetEOF() {
+  MOZ_ASSERT(false, "CacheFileOutputStream::SetEOF() not implemented");
+  // Right now we don't use SetEOF(). If we ever need this method, we need
+  // to think about what to do with input streams that already points beyond
+  // new EOF.
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+// nsITellableStream
+NS_IMETHODIMP
+CacheFileOutputStream::Tell(int64_t* _retval) {
   CacheFileAutoLock lock(mFile);
 
   if (mClosed) {
@@ -311,36 +314,27 @@ CacheFileOutputStream::Tell(int64_t *_retval) {
   return NS_OK;
 }
 
-NS_IMETHODIMP
-CacheFileOutputStream::SetEOF() {
-  MOZ_ASSERT(false, "CacheFileOutputStream::SetEOF() not implemented");
-  // Right now we don't use SetEOF(). If we ever need this method, we need
-  // to think about what to do with input streams that already points beyond
-  // new EOF.
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
 // CacheFileChunkListener
 nsresult CacheFileOutputStream::OnChunkRead(nsresult aResult,
-                                            CacheFileChunk *aChunk) {
+                                            CacheFileChunk* aChunk) {
   MOZ_CRASH("CacheFileOutputStream::OnChunkRead should not be called!");
   return NS_ERROR_UNEXPECTED;
 }
 
 nsresult CacheFileOutputStream::OnChunkWritten(nsresult aResult,
-                                               CacheFileChunk *aChunk) {
+                                               CacheFileChunk* aChunk) {
   MOZ_CRASH("CacheFileOutputStream::OnChunkWritten should not be called!");
   return NS_ERROR_UNEXPECTED;
 }
 
 nsresult CacheFileOutputStream::OnChunkAvailable(nsresult aResult,
                                                  uint32_t aChunkIdx,
-                                                 CacheFileChunk *aChunk) {
+                                                 CacheFileChunk* aChunk) {
   MOZ_CRASH("CacheFileOutputStream::OnChunkAvailable should not be called!");
   return NS_ERROR_UNEXPECTED;
 }
 
-nsresult CacheFileOutputStream::OnChunkUpdated(CacheFileChunk *aChunk) {
+nsresult CacheFileOutputStream::OnChunkUpdated(CacheFileChunk* aChunk) {
   MOZ_CRASH("CacheFileOutputStream::OnChunkUpdated should not be called!");
   return NS_ERROR_UNEXPECTED;
 }
@@ -356,6 +350,15 @@ void CacheFileOutputStream::NotifyCloseListener() {
 void CacheFileOutputStream::ReleaseChunk() {
   LOG(("CacheFileOutputStream::ReleaseChunk() [this=%p, idx=%d]", this,
        mChunk->Index()));
+
+  // If the chunk didn't write any data we need to remove hash for this chunk
+  // that was added when the chunk was created in CacheFile::GetChunkLocked.
+  if (mChunk->DataSize() == 0) {
+    // It must be due to a failure, we don't create a new chunk when we don't
+    // have data to write.
+    MOZ_ASSERT(NS_FAILED(mChunk->GetStatus()));
+    mFile->mMetadata->RemoveHash(mChunk->Index());
+  }
 
   mFile->ReleaseOutsideLock(mChunk.forget());
 }
@@ -377,9 +380,8 @@ void CacheFileOutputStream::EnsureCorrectChunk(bool aReleaseOnly) {
            this, chunkIdx));
 
       return;
-    } else {
-      ReleaseChunk();
     }
+    ReleaseChunk();
   }
 
   if (aReleaseOnly) return;

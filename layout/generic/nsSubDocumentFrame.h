@@ -13,6 +13,13 @@
 #include "nsFrameLoader.h"
 #include "Units.h"
 
+namespace mozilla {
+class PresShell;
+namespace layout {
+class RenderFrame;
+}
+}  // namespace mozilla
+
 /******************************************************************************
  * nsSubDocumentFrame
  *****************************************************************************/
@@ -21,7 +28,8 @@ class nsSubDocumentFrame final : public nsAtomicContainerFrame,
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsSubDocumentFrame)
 
-  explicit nsSubDocumentFrame(nsStyleContext* aContext);
+  explicit nsSubDocumentFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext);
 
 #ifdef DEBUG_FRAME_DUMP
   void List(FILE* out = stderr, const char* aPrefix = "",
@@ -47,7 +55,7 @@ class nsSubDocumentFrame final : public nsAtomicContainerFrame,
   nscoord GetPrefISize(gfxContext* aRenderingContext) override;
 
   mozilla::IntrinsicSize GetIntrinsicSize() override;
-  nsSize GetIntrinsicRatio() override;
+  mozilla::AspectRatio GetIntrinsicRatio() override;
 
   mozilla::LogicalSize ComputeAutoSize(
       gfxContext* aRenderingContext, mozilla::WritingMode aWritingMode,
@@ -71,6 +79,8 @@ class nsSubDocumentFrame final : public nsAtomicContainerFrame,
   nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
                             int32_t aModType) override;
 
+  void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
+
   // if the content is "visibility:hidden", then just hide the view
   // and all our contents. We don't extend "visibility:hidden" to
   // the child content ourselves, since it belongs to a different
@@ -81,28 +91,18 @@ class nsSubDocumentFrame final : public nsAtomicContainerFrame,
   mozilla::a11y::AccType AccessibleType() override;
 #endif
 
-  nsresult GetDocShell(nsIDocShell** aDocShell);
+  nsIDocShell* GetDocShell();
   nsresult BeginSwapDocShells(nsIFrame* aOther);
   void EndSwapDocShells(nsIFrame* aOther);
   nsView* EnsureInnerView();
   nsIFrame* GetSubdocumentRootFrame();
   enum { IGNORE_PAINT_SUPPRESSION = 0x1 };
-  nsIPresShell* GetSubdocumentPresShellForPainting(uint32_t aFlags);
+  mozilla::PresShell* GetSubdocumentPresShellForPainting(uint32_t aFlags);
   mozilla::ScreenIntSize GetSubdocumentSize();
 
   // nsIReflowCallback
   bool ReflowFinished() override;
   void ReflowCallbackCanceled() override;
-
-  bool ShouldClipSubdocument() {
-    nsFrameLoader* frameLoader = FrameLoader();
-    return !frameLoader || frameLoader->ShouldClipSubdocument();
-  }
-
-  bool ShouldClampScrollPosition() {
-    nsFrameLoader* frameLoader = FrameLoader();
-    return !frameLoader || frameLoader->ShouldClampScrollPosition();
-  }
 
   /**
    * Return true if pointer event hit-testing should be allowed to target
@@ -116,13 +116,19 @@ class nsSubDocumentFrame final : public nsAtomicContainerFrame,
     }
   }
 
+  nsFrameLoader* FrameLoader() const;
+  void ResetFrameLoader();
+
+  void PropagateIsUnderHiddenEmbedderElementToSubView(
+      bool aIsUnderHiddenEmbedderElement);
+
+  void ClearDisplayItems();
+
  protected:
   friend class AsyncFrameInit;
 
   // Helper method to look up the HTML marginwidth & marginheight attributes.
   mozilla::CSSIntSize GetMarginAttributes();
-
-  nsFrameLoader* FrameLoader();
 
   bool IsInline() { return mIsInline; }
 
@@ -147,10 +153,10 @@ class nsSubDocumentFrame final : public nsAtomicContainerFrame,
   nsView* GetViewInternal() const override { return mOuterView; }
   void SetViewInternal(nsView* aView) override { mOuterView = aView; }
 
-  RefPtr<nsFrameLoader> mFrameLoader;
+  mutable RefPtr<nsFrameLoader> mFrameLoader;
+
   nsView* mOuterView;
   nsView* mInnerView;
-  Maybe<bool> mPreviouslyNeededLayer;
   bool mIsInline;
   bool mPostedReflowCallback;
   bool mDidCreateDoc;

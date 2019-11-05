@@ -81,7 +81,10 @@ void MediaKeySession::SetSessionId(const nsAString& aSessionId) {
   mKeys->OnSessionIdReady(this);
 }
 
-MediaKeySession::~MediaKeySession() {}
+MediaKeySession::~MediaKeySession() {
+  EME_LOG("MediaKeySession[%p,'%s'] dtor", this,
+          NS_ConvertUTF16toUTF8(mSessionId).get());
+}
 
 MediaKeyError* MediaKeySession::GetError() const { return mMediaKeyError; }
 
@@ -93,7 +96,7 @@ const nsString& MediaKeySession::GetSessionId() const { return mSessionId; }
 
 JSObject* MediaKeySession::WrapObject(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return MediaKeySessionBinding::Wrap(aCx, this, aGivenProto);
+  return MediaKeySession_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 double MediaKeySession::Expiration() const { return mExpiration; }
@@ -302,7 +305,7 @@ already_AddRefed<Promise> MediaKeySession::GenerateRequest(
   // Note: Remaining steps of generateRequest method continue in CDM.
 
   // Convert initData to hex for easier logging.
-  // Note: CreateSession() Move()s the data out of the array, so we have
+  // Note: CreateSession() std::move()s the data out of the array, so we have
   // to copy it here.
   nsAutoCString hexInitData(ToHexString(data));
   PromiseId pid = mKeys->StorePromise(promise);
@@ -444,7 +447,7 @@ already_AddRefed<Promise> MediaKeySession::Update(
   }
 
   // Convert response to hex for easier logging.
-  // Note: UpdateSession() Move()s the data out of the array, so we have
+  // Note: UpdateSession() std::move()s the data out of the array, so we have
   // to copy it here.
   nsAutoCString hexResponse(ToHexString(data));
 
@@ -604,7 +607,7 @@ void MediaKeySession::DispatchKeyStatusesChange() {
   UpdateKeyStatusMap();
 
   RefPtr<AsyncEventDispatcher> asyncDispatcher = new AsyncEventDispatcher(
-      this, NS_LITERAL_STRING("keystatuseschange"), false);
+      this, NS_LITERAL_STRING("keystatuseschange"), CanBubble::eNo);
   asyncDispatcher->PostDOMEvent();
 }
 
@@ -612,7 +615,7 @@ uint32_t MediaKeySession::Token() const { return mToken; }
 
 already_AddRefed<DetailedPromise> MediaKeySession::MakePromise(
     ErrorResult& aRv, const nsACString& aName) {
-  nsCOMPtr<nsIGlobalObject> global = do_QueryInterface(GetParentObject());
+  nsCOMPtr<nsIGlobalObject> global = GetParentObject();
   if (!global) {
     NS_WARNING("Passed non-global to MediaKeys ctor!");
     aRv.Throw(NS_ERROR_UNEXPECTED);
@@ -629,19 +632,19 @@ void MediaKeySession::SetExpiration(double aExpiration) {
 }
 
 EventHandlerNonNull* MediaKeySession::GetOnkeystatuseschange() {
-  return GetEventHandler(nsGkAtoms::onkeystatuseschange, EmptyString());
+  return GetEventHandler(nsGkAtoms::onkeystatuseschange);
 }
 
 void MediaKeySession::SetOnkeystatuseschange(EventHandlerNonNull* aCallback) {
-  SetEventHandler(nsGkAtoms::onkeystatuseschange, EmptyString(), aCallback);
+  SetEventHandler(nsGkAtoms::onkeystatuseschange, aCallback);
 }
 
 EventHandlerNonNull* MediaKeySession::GetOnmessage() {
-  return GetEventHandler(nsGkAtoms::onmessage, EmptyString());
+  return GetEventHandler(nsGkAtoms::onmessage);
 }
 
 void MediaKeySession::SetOnmessage(EventHandlerNonNull* aCallback) {
-  SetEventHandler(nsGkAtoms::onmessage, EmptyString(), aCallback);
+  SetEventHandler(nsGkAtoms::onmessage, aCallback);
 }
 
 nsCString ToCString(MediaKeySessionType aType) {

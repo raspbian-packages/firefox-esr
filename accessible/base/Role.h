@@ -201,8 +201,8 @@ enum Role {
   ROW = 28,
 
   /**
-   * Represents a cell within a table. It is used for html:td,
-   * xul:tree cell and xul:listcell. Also, see TABLE.
+   * Represents a cell within a table. It is used for html:td and xul:tree cell.
+   * Also, see TABLE.
    */
   CELL = 29,
 
@@ -319,7 +319,7 @@ enum Role {
 
   /**
    * Represents a progress bar, dynamically showing the user the percent
-   * complete of an operation in progress. It is used for xul:progressmeter,
+   * complete of an operation in progress. It is used for html:progress,
    * role="progressbar".
    */
   PROGRESSBAR = 48,
@@ -1021,7 +1021,31 @@ enum Role {
    */
   EDITCOMBOBOX = 174,
 
-  LAST_ROLE = EDITCOMBOBOX
+  /**
+   * A section of content that is quoted from another source.
+   */
+  BLOCKQUOTE = 175,
+
+  /**
+   * Content previously deleted or proposed for deletion, e.g. in revision
+   * history or a content view providing suggestions from reviewers.
+   */
+  CONTENT_DELETION = 176,
+
+  /**
+   * Content previously inserted or proposed for insertion, e.g. in revision
+   * history or a content view providing suggestions from reviewers.
+   */
+  CONTENT_INSERTION = 177,
+
+  /**
+   * An html:form element with a label provided by WAI-ARIA.
+   * This may also be used if role="form" with a label should be exposed
+   * differently in the future.
+   */
+  FORM_LANDMARK = 178,
+
+  LAST_ROLE = FORM_LANDMARK
 };
 
 }  // namespace roles

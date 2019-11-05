@@ -1,16 +1,16 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! A centralized set of stylesheets for a document.
 
-use dom::TElement;
-use invalidation::stylesheets::StylesheetInvalidationSet;
-use media_queries::Device;
-use selector_parser::SnapshotMap;
-use shared_lock::SharedRwLockReadGuard;
+use crate::dom::TElement;
+use crate::invalidation::stylesheets::StylesheetInvalidationSet;
+use crate::media_queries::Device;
+use crate::selector_parser::SnapshotMap;
+use crate::shared_lock::SharedRwLockReadGuard;
+use crate::stylesheets::{Origin, OriginSet, OriginSetIterator, PerOrigin, StylesheetInDocument};
 use std::{mem, slice};
-use stylesheets::{Origin, OriginSet, OriginSetIterator, PerOrigin, StylesheetInDocument};
 
 /// Entry for a StylesheetSet.
 #[derive(MallocSizeOf)]
@@ -30,7 +30,10 @@ where
     S: StylesheetInDocument + PartialEq + 'static,
 {
     fn new(sheet: S) -> Self {
-        Self { sheet, committed: false }
+        Self {
+            sheet,
+            committed: false,
+        }
     }
 }
 
@@ -47,7 +50,6 @@ where
         StylesheetCollectionIterator(self.0.clone())
     }
 }
-
 
 impl<'a, S> Iterator for StylesheetCollectionIterator<'a, S>
 where
@@ -86,14 +88,16 @@ where
             if self.current.is_none() {
                 let next_origin = self.origins.next()?;
 
-                self.current =
-                    Some((next_origin, self.collections.borrow_for_origin(&next_origin).iter()));
+                self.current = Some((
+                    next_origin,
+                    self.collections.borrow_for_origin(&next_origin).iter(),
+                ));
             }
 
             {
                 let (origin, ref mut iter) = *self.current.as_mut().unwrap();
                 if let Some(s) = iter.next() {
-                    return Some((s, origin))
+                    return Some((s, origin));
                 }
             }
 
@@ -176,7 +180,7 @@ where
 /// appropriate stylesheets that need work.
 pub struct SheetCollectionFlusher<'a, S>
 where
-    S: StylesheetInDocument + PartialEq + 'static
+    S: StylesheetInDocument + PartialEq + 'static,
 {
     iter: slice::IterMut<'a, StylesheetSetEntry<S>>,
     validity: DataValidity,
@@ -207,8 +211,6 @@ where
     type Item = (&'a S, SheetRebuildKind);
 
     fn next(&mut self) -> Option<Self::Item> {
-        use std::mem;
-
         loop {
             let potential_sheet = self.iter.next()?;
 
@@ -216,7 +218,7 @@ where
             if !committed {
                 // If the sheet was uncommitted, we need to do a full rebuild
                 // anyway.
-                return Some((&potential_sheet.sheet, SheetRebuildKind::Full))
+                return Some((&potential_sheet.sheet, SheetRebuildKind::Full));
             }
 
             let rebuild_kind = match self.validity {
@@ -263,7 +265,7 @@ where
         Self {
             entries: vec![],
             data_validity: DataValidity::Valid,
-            dirty: true,
+            dirty: false,
         }
     }
 }
@@ -283,9 +285,7 @@ where
     }
 
     fn remove(&mut self, sheet: &S) {
-        let index = self.entries.iter().position(|entry| {
-            entry.sheet == *sheet
-        });
+        let index = self.entries.iter().position(|entry| entry.sheet == *sheet);
         if cfg!(feature = "gecko") && index.is_none() {
             // FIXME(emilio): Make Gecko's PresShell::AddUserSheet not suck.
             return;
@@ -322,9 +322,11 @@ where
     fn insert_before(&mut self, sheet: S, before_sheet: &S) {
         debug_assert!(!self.contains(&sheet));
 
-        let index = self.entries.iter().position(|entry| {
-            entry.sheet == *before_sheet
-        }).expect("`before_sheet` stylesheet not found");
+        let index = self
+            .entries
+            .iter()
+            .position(|entry| entry.sheet == *before_sheet)
+            .expect("`before_sheet` stylesheet not found");
 
         // Inserting stylesheets somewhere but at the end changes the validity
         // of the cascade data, but not the invalidation data.
@@ -339,14 +341,6 @@ where
 
         self.dirty = true;
         self.data_validity = cmp::max(validity, self.data_validity);
-    }
-
-    fn prepend(&mut self, sheet: S) {
-        debug_assert!(!self.contains(&sheet));
-        // Inserting stylesheets somewhere but at the end changes the validity
-        // of the cascade data, but not the invalidation data.
-        self.set_data_validity_at_least(DataValidity::CascadeInvalid);
-        self.entries.insert(0, StylesheetSetEntry::new(sheet));
     }
 
     /// Returns an iterator over the current list of stylesheets.
@@ -413,20 +407,6 @@ macro_rules! sheet_set_methods {
             collection.append(sheet);
         }
 
-        /// Prepend a new stylesheet to the current set.
-        pub fn prepend_stylesheet(
-            &mut self,
-            device: Option<&Device>,
-            sheet: S,
-            guard: &SharedRwLockReadGuard,
-        ) {
-            debug!(concat!($set_name, "::prepend_stylesheet"));
-            self.collect_invalidations_for(device, &sheet, guard);
-
-            let collection = self.collection_for(&sheet, guard);
-            collection.prepend(sheet);
-        }
-
         /// Insert a given stylesheet before another stylesheet in the document.
         pub fn insert_stylesheet_before(
             &mut self,
@@ -475,7 +455,7 @@ where
         sheet: &S,
         guard: &SharedRwLockReadGuard,
     ) -> &mut SheetCollection<S> {
-        let origin = sheet.contents(guard).origin;
+        let origin = sheet.origin(guard);
         self.collections.borrow_mut_for_origin(&origin)
     }
 
@@ -483,17 +463,28 @@ where
 
     /// Returns the number of stylesheets in the set.
     pub fn len(&self) -> usize {
-        self.collections.iter_origins().fold(0, |s, (item, _)| s + item.len())
+        self.collections
+            .iter_origins()
+            .fold(0, |s, (item, _)| s + item.len())
+    }
+
+    /// Returns the count of stylesheets for a given origin.
+    #[inline]
+    pub fn sheet_count(&self, origin: Origin) -> usize {
+        self.collections.borrow_for_origin(&origin).len()
     }
 
     /// Returns the `index`th stylesheet in the set for the given origin.
+    #[inline]
     pub fn get(&self, origin: Origin, index: usize) -> Option<&S> {
         self.collections.borrow_for_origin(&origin).get(index)
     }
 
     /// Returns whether the given set has changed from the last flush.
     pub fn has_changed(&self) -> bool {
-        self.collections.iter_origins().any(|(collection, _)| collection.dirty)
+        self.collections
+            .iter_origins()
+            .any(|(collection, _)| collection.dirty)
     }
 
     /// Flush the current set, unmarking it as dirty, and returns a
@@ -508,8 +499,7 @@ where
     {
         debug!("DocumentStylesheetSet::flush");
 
-        let had_invalidations =
-            self.invalidations.flush(document_element, snapshots);
+        let had_invalidations = self.invalidations.flush(document_element, snapshots);
 
         DocumentStylesheetFlusher {
             collections: &mut self.collections,
@@ -556,7 +546,7 @@ where
     }
 }
 
-/// The set of stylesheets effective for a given XBL binding or Shadow Root.
+/// The set of stylesheets effective for a given Shadow Root.
 #[derive(MallocSizeOf)]
 pub struct AuthorStylesheetSet<S>
 where
@@ -602,6 +592,16 @@ where
         self.collection.len() == 0
     }
 
+    /// Returns the `index`th stylesheet in the collection of author styles if present.
+    pub fn get(&self, index: usize) -> Option<&S> {
+        self.collection.get(index)
+    }
+
+    /// Returns the number of author stylesheets.
+    pub fn len(&self) -> usize {
+        self.collection.len()
+    }
+
     fn collection_for(
         &mut self,
         _sheet: &S,
@@ -620,7 +620,8 @@ where
     /// Mark the sheet set dirty, as appropriate.
     pub fn force_dirty(&mut self) {
         self.invalidations.invalidate_fully();
-        self.collection.set_data_validity_at_least(DataValidity::FullyInvalid);
+        self.collection
+            .set_data_validity_at_least(DataValidity::FullyInvalid);
     }
 
     /// Flush the stylesheets for this author set.

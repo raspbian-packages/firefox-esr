@@ -19,7 +19,7 @@ class MLGBuffer;
 class MLGDevice;
 
 // Cache MLGBuffers based on how long ago they were last used.
-class BufferCache {
+class BufferCache final {
  public:
   explicit BufferCache(MLGDevice* aDevice);
   ~BufferCache();
@@ -55,7 +55,7 @@ class BufferCache {
         : mLastUsedFrame(aEntry.mLastUsedFrame), mBuffer(aEntry.mBuffer) {}
     CacheEntry(CacheEntry&& aEntry)
         : mLastUsedFrame(aEntry.mLastUsedFrame),
-          mBuffer(Move(aEntry.mBuffer)) {}
+          mBuffer(std::move(aEntry.mBuffer)) {}
     CacheEntry(size_t aLastUsedFrame, MLGBuffer* aBuffer)
         : mLastUsedFrame(aLastUsedFrame), mBuffer(aBuffer) {}
 

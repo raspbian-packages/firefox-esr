@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,12 +8,10 @@
 #include "nsDataChannel.h"
 
 #include "mozilla/Base64.h"
-#include "nsIOService.h"
 #include "nsDataHandler.h"
-#include "nsIPipe.h"
 #include "nsIInputStream.h"
-#include "nsIOutputStream.h"
 #include "nsEscape.h"
+#include "nsStringStream.h"
 
 using namespace mozilla;
 
@@ -30,7 +28,7 @@ const nsACString& Unescape(const nsACString& aStr, nsACString& aBuffer,
   MOZ_ASSERT(rv);
 
   bool appended = false;
-  *rv = NS_UnescapeURL(aStr.Data(), aStr.Length(), /* flags = */ 0, aBuffer,
+  *rv = NS_UnescapeURL(aStr.Data(), aStr.Length(), /* aFlags = */ 0, aBuffer,
                        appended, mozilla::fallible);
   if (NS_FAILED(*rv) || !appended) {
     return aStr;
@@ -50,7 +48,7 @@ nsresult nsDataChannel::OpenContentStream(bool async, nsIInputStream** result,
   // of the URI that does not have a ref and in most cases should share
   // string buffers with the original URI.
   nsCOMPtr<nsIURI> uri;
-  rv = URI()->CloneIgnoringRef(getter_AddRefs(uri));
+  rv = NS_GetURIWithoutRef(URI(), getter_AddRefs(uri));
   if (NS_FAILED(rv)) return rv;
 
   nsAutoCString path;
@@ -80,23 +78,23 @@ nsresult nsDataChannel::OpenContentStream(bool async, nsIInputStream** result,
   }
 
   nsCOMPtr<nsIInputStream> bufInStream;
-  nsCOMPtr<nsIOutputStream> bufOutStream;
-
-  // create an unbounded pipe.
-  rv = NS_NewPipe(getter_AddRefs(bufInStream), getter_AddRefs(bufOutStream),
-                  nsIOService::gDefaultSegmentSize, UINT32_MAX, async, true);
-  if (NS_FAILED(rv)) return rv;
-
   uint32_t contentLen;
   if (lBase64) {
     nsAutoCString decodedData;
     rv = Base64Decode(data, decodedData);
-    NS_ENSURE_SUCCESS(rv, rv);
+    if (NS_FAILED(rv)) {
+      // Returning this error code instead of what Base64Decode returns
+      // (NS_ERROR_ILLEGAL_VALUE) will prevent rendering of redirect response
+      // content by HTTP channels.  It's also more logical error to return.
+      // Here we know the URL is actually corrupted.
+      return NS_ERROR_MALFORMED_URI;
+    }
 
-    rv = bufOutStream->Write(decodedData.get(), decodedData.Length(),
-                             &contentLen);
+    contentLen = decodedData.Length();
+    rv = NS_NewCStringInputStream(getter_AddRefs(bufInStream), decodedData);
   } else {
-    rv = bufOutStream->Write(data.Data(), data.Length(), &contentLen);
+    contentLen = data.Length();
+    rv = NS_NewCStringInputStream(getter_AddRefs(bufInStream), data);
   }
 
   if (NS_FAILED(rv)) return rv;

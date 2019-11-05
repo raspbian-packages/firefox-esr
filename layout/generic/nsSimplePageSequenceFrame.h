@@ -12,6 +12,9 @@
 #include "nsIPrintSettings.h"
 
 namespace mozilla {
+
+class PresShell;
+
 namespace dom {
 
 class HTMLCanvasElement;
@@ -56,7 +59,7 @@ class nsSimplePageSequenceFrame final : public nsContainerFrame,
                                         public nsIPageSequenceFrame {
  public:
   friend nsSimplePageSequenceFrame* NS_NewSimplePageSequenceFrame(
-      nsIPresShell* aPresShell, nsStyleContext* aContext);
+      mozilla::PresShell* aPresShell, ComputedStyle* aStyle);
 
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsSimplePageSequenceFrame)
@@ -103,7 +106,7 @@ class nsSimplePageSequenceFrame final : public nsContainerFrame,
 #endif
 
  protected:
-  explicit nsSimplePageSequenceFrame(nsStyleContext* aContext);
+  nsSimplePageSequenceFrame(ComputedStyle*, nsPresContext*);
   virtual ~nsSimplePageSequenceFrame();
 
   void SetPageNumberFormat(const char* aPropName, const char* aDefPropVal,

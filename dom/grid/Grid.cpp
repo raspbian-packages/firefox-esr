@@ -82,7 +82,7 @@ Grid::Grid(nsISupports* aParent, nsGridContainerFrame* aFrame)
 Grid::~Grid() {}
 
 JSObject* Grid::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return GridBinding::Wrap(aCx, this, aGivenProto);
+  return Grid_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 GridDimension* Grid::Rows() const { return mRows; }

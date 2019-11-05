@@ -8,18 +8,14 @@ project_flag('MOZ_ANDROID_EXCLUDE_FONTS',
              help='Whether to exclude font files from the build',
              default=True)
 
-option('--with-google-play-services',
-       help='Enable features that depend on non-free Google Play Services',
-       default=True)
+option('--without-google-play-services',
+       help='Disable features that depend on non-free Google Play Services')
 
 @depends('--with-google-play-services')
 def google_play_services(value):
     return bool(value)
 
 set_config('MOZ_ANDROID_GOOGLE_PLAY_SERVICES', depends_if(google_play_services)(lambda _: True))
-
-set_config('ANDROID_GOOGLE_PLAY_SERVICES_VERSION', '8.4.0')
-add_old_configure_assignment('ANDROID_GOOGLE_PLAY_SERVICES_VERSION', '8.4.0')
 
 option(env='MOZ_ANDROID_GCM',
        help='Enable GCM (Google Cloud Messaging) registration',
@@ -40,8 +36,8 @@ add_old_configure_assignment('MOZ_NATIVE_DEVICES',
                              depends_if('MOZ_NATIVE_DEVICES')(lambda _: True))
 
 # Enable install tracking SDK if we have Google Play support.
-@depends(milestone, google_play_services, '--help')
-def install_tracking_default(milestone, google_play_services, help):
+@depends(milestone, google_play_services)
+def install_tracking_default(milestone, google_play_services):
     return bool(milestone.is_release_or_beta and google_play_services)
 
 option(env='MOZ_INSTALL_TRACKING',
@@ -112,12 +108,23 @@ option(env='MOZ_ANDROID_MOZILLA_ONLINE',
 set_config('MOZ_ANDROID_MOZILLA_ONLINE',
            depends_if('MOZ_ANDROID_MOZILLA_ONLINE')(lambda _: True))
 
+option(env='FENNEC_NIGHTLY',
+       help='Enable experimental code for Fennec Nightly users. NOTE: This is *not* equivalent '
+            'to the NIGHTLY_BUILD flag set during configure.',
+       default=False)
+
+set_config('FENNEC_NIGHTLY', depends_if('FENNEC_NIGHTLY')(lambda _: True))
+set_define('FENNEC_NIGHTLY', depends_if('FENNEC_NIGHTLY')(lambda _: True))
+
+
+@depends('FENNEC_NIGHTLY')
+def fennec_nightly(nightly):
+    return bool(nightly)
+
+
 imply_option('MOZ_SERVICES_HEALTHREPORT', True)
 imply_option('MOZ_ANDROID_HISTORY', True)
 imply_option('--enable-small-chunk-size', True)
-
-set_config('ANDROID_SUPPORT_LIBRARY_VERSION', '23.4.0')
-add_old_configure_assignment('ANDROID_SUPPORT_LIBRARY_VERSION', '23.4.0')
 
 @depends(target)
 def check_target(target):
@@ -129,6 +136,7 @@ def check_target(target):
             'for more information about the necessary options.')
 
 include('../../toolkit/moz.configure')
+include('../../build/moz.configure/android-sdk.configure')
 include('../../build/moz.configure/java.configure')
 include('gradle.configure')
 

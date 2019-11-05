@@ -11,6 +11,7 @@
 
 #include "nsIObserver.h"
 
+#include "js/ContextOptions.h"
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/dom/workerinternals/JSSettings.h"
 #include "mozilla/Mutex.h"
@@ -23,31 +24,17 @@ class nsPIDOMWindowInner;
 
 namespace mozilla {
 namespace dom {
-class SharedWorker;
 struct WorkerLoadInfo;
 class WorkerThread;
 
 namespace workerinternals {
 
 class RuntimeService final : public nsIObserver {
-  struct SharedWorkerInfo {
-    WorkerPrivate* mWorkerPrivate;
-    nsCString mScriptSpec;
-    nsString mName;
-
-    SharedWorkerInfo(WorkerPrivate* aWorkerPrivate,
-                     const nsACString& aScriptSpec, const nsAString& aName)
-        : mWorkerPrivate(aWorkerPrivate),
-          mScriptSpec(aScriptSpec),
-          mName(aName) {}
-  };
-
   struct WorkerDomainInfo {
     nsCString mDomain;
     nsTArray<WorkerPrivate*> mActiveWorkers;
     nsTArray<WorkerPrivate*> mActiveServiceWorkers;
     nsTArray<WorkerPrivate*> mQueuedWorkers;
-    nsTArray<UniquePtr<SharedWorkerInfo>> mSharedWorkerInfos;
     uint32_t mChildWorkerCount;
 
     WorkerDomainInfo() : mActiveWorkers(1), mChildWorkerCount(0) {}
@@ -76,7 +63,7 @@ class RuntimeService final : public nsIObserver {
   nsTArray<IdleThreadInfo> mIdleThreadArray;
 
   // *Not* protected by mMutex.
-  nsClassHashtable<nsPtrHashKey<nsPIDOMWindowInner>, nsTArray<WorkerPrivate*>>
+  nsClassHashtable<nsPtrHashKey<nsPIDOMWindowInner>, nsTArray<WorkerPrivate*> >
       mWindowMap;
 
   // Only used on the main thread.
@@ -115,9 +102,6 @@ class RuntimeService final : public nsIObserver {
 
   void UnregisterWorker(WorkerPrivate* aWorkerPrivate);
 
-  void RemoveSharedWorker(WorkerDomainInfo* aDomainInfo,
-                          WorkerPrivate* aWorkerPrivate);
-
   void CancelWorkersForWindow(nsPIDOMWindowInner* aWindow);
 
   void FreezeWorkersForWindow(nsPIDOMWindowInner* aWindow);
@@ -128,12 +112,7 @@ class RuntimeService final : public nsIObserver {
 
   void ResumeWorkersForWindow(nsPIDOMWindowInner* aWindow);
 
-  nsresult CreateSharedWorker(const GlobalObject& aGlobal,
-                              const nsAString& aScriptURL,
-                              const nsAString& aName,
-                              SharedWorker** aSharedWorker);
-
-  void ForgetSharedWorker(WorkerPrivate* aWorkerPrivate);
+  void PropagateFirstPartyStorageAccessGranted(nsPIDOMWindowInner* aWindow);
 
   const NavigatorProperties& GetNavigatorProperties() const {
     return mNavigatorProperties;
@@ -209,12 +188,6 @@ class RuntimeService final : public nsIObserver {
   bool ScheduleWorker(WorkerPrivate* aWorkerPrivate);
 
   static void ShutdownIdleThreads(nsITimer* aTimer, void* aClosure);
-
-  nsresult CreateSharedWorkerFromLoadInfo(JSContext* aCx,
-                                          WorkerLoadInfo* aLoadInfo,
-                                          const nsAString& aScriptURL,
-                                          const nsAString& aName,
-                                          SharedWorker** aSharedWorker);
 };
 
 }  // namespace workerinternals

@@ -1,9 +1,19 @@
+/* Any copyright is dedicated to the Public Domain.
+ * http://creativecommons.org/publicdomain/zero/1.0/
+ */
+
+// This test is testing XUL about:addons UI not implemented in the HTML about:addons,
+// it may be adapted or tested in a separate test file in Bug 1525184.
+SpecialPowers.pushPrefEnv({
+  set: [["extensions.htmlaboutaddons.enabled", false]],
+});
 
 add_task(async function() {
-  const INFO_URL = Services.urlFormatter.formatURLPref("app.support.baseURL") + "webextensions";
+  const INFO_URL =
+    Services.urlFormatter.formatURLPref("app.support.baseURL") +
+    "webextensions";
 
   const NAMES = {
-    fullTheme: "Full Theme",
     newTheme: "New LWT",
     legacy: "Legacy Extension",
     webextension: "WebExtension",
@@ -11,12 +21,6 @@ add_task(async function() {
     langpack: "Language Pack",
   };
   let addons = [
-    {
-      id: "full-theme@tests.mozilla.org",
-      name: NAMES.fullTheme,
-      type: "theme",
-      isWebExtension: false,
-    },
     {
       id: "new-theme@tests.mozilla.org",
       name: NAMES.newTheme,
@@ -53,14 +57,19 @@ add_task(async function() {
 
     let document = mgrWin.document;
     // First find the  entry in the list.
-    let item = Array.from(document.getElementById("addon-list").childNodes)
-                    .find(i => i.getAttribute("name") == name);
+    let item = Array.from(
+      document.getElementById("addon-list").childNodes
+    ).find(i => i.getAttribute("name") == name);
 
     ok(item, `Found ${name} in list`);
     item.parentNode.ensureElementIsVisible(item);
 
     // Check the badge
-    let badge = document.getAnonymousElementByAttribute(item, "anonid", "legacy");
+    let badge = document.getAnonymousElementByAttribute(
+      item,
+      "anonid",
+      "legacy"
+    );
 
     if (isLegacy) {
       is_element_visible(badge, `Legacy badge is visible for ${name}`);
@@ -70,8 +79,7 @@ add_task(async function() {
     }
 
     // Click down to the details page.
-    let detailsButton = document.getAnonymousElementByAttribute(item, "anonid", "details-btn");
-    EventUtils.synthesizeMouseAtCenter(detailsButton, {}, mgrWin);
+    EventUtils.synthesizeMouseAtCenter(item, {}, mgrWin);
     await new Promise(resolve => wait_for_view_load(mgrWin, resolve));
 
     // And check the badge
@@ -87,7 +95,6 @@ add_task(async function() {
     }
   }
 
-  await check("theme", NAMES.fullTheme, true);
   await check("theme", NAMES.newTheme, false);
   await check("extension", NAMES.legacy, true);
   await check("extension", NAMES.webextension, false);

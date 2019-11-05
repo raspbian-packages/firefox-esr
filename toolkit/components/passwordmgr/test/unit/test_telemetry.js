@@ -88,8 +88,7 @@ function testHistogram(histogramId, expectedNonZeroRanges) {
 
   // Compute the actual ranges in the format { range1: value1, range2: value2 }.
   let actualNonZeroRanges = {};
-  for (let [index, range] of snapshot.ranges.entries()) {
-    let value = snapshot.counts[index];
+  for (let [range, value] of Object.entries(snapshot.values)) {
     if (value > 0) {
       actualNonZeroRanges[range] = value;
     }
@@ -97,8 +96,10 @@ function testHistogram(histogramId, expectedNonZeroRanges) {
 
   // These are stringified to visualize the differences between the values.
   info("Testing histogram: " + histogramId);
-  Assert.equal(JSON.stringify(actualNonZeroRanges),
-               JSON.stringify(expectedNonZeroRanges));
+  Assert.equal(
+    JSON.stringify(actualNonZeroRanges),
+    JSON.stringify(expectedNonZeroRanges)
+  );
 }
 
 // Tests
@@ -126,26 +127,30 @@ add_task(function test_initialize() {
  */
 add_task(function test_logins_statistics() {
   // Repeat the operation twice to test that histograms are not accumulated.
-  for (let repeating of [false, true]) {
+  for (let pass of [1, 2]) {
+    info(`pass ${pass}`);
     triggerStatisticsCollection();
 
     // Should record 1 in the bucket corresponding to the number of passwords.
-    testHistogram("PWMGR_NUM_SAVED_PASSWORDS",
-                  { 10: 1 });
+    testHistogram("PWMGR_NUM_SAVED_PASSWORDS", { 10: 1 });
 
     // Should record 1 in the bucket corresponding to the number of passwords.
-    testHistogram("PWMGR_NUM_HTTPAUTH_PASSWORDS",
-                  { 1: 1 });
+    testHistogram("PWMGR_NUM_HTTPAUTH_PASSWORDS", { 1: 1 });
 
     // For each saved login, should record 1 in the bucket corresponding to the
     // age in days since the login was last used.
-    testHistogram("PWMGR_LOGIN_LAST_USED_DAYS",
-                  { 0: 1, 1: 1, 7: 2, 29: 2, 356: 2, 750: 1 });
+    testHistogram("PWMGR_LOGIN_LAST_USED_DAYS", {
+      0: 1,
+      1: 1,
+      7: 2,
+      29: 2,
+      356: 2,
+      750: 1,
+    });
 
     // Should record the number of logins without a username in bucket 0, and
     // the number of logins with a username in bucket 1.
-    testHistogram("PWMGR_USERNAME_PRESENT",
-                  { 0: 4, 1: 6 });
+    testHistogram("PWMGR_USERNAME_PRESENT", { 0: 4, 1: 6 });
   }
 });
 

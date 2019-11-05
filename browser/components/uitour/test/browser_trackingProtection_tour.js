@@ -4,19 +4,24 @@ var gTestTab;
 var gContentAPI;
 var gContentWindow;
 
-const { UrlClassifierTestUtils } = ChromeUtils.import("resource://testing-common/UrlClassifierTestUtils.jsm", {});
+const { UrlClassifierTestUtils } = ChromeUtils.import(
+  "resource://testing-common/UrlClassifierTestUtils.jsm"
+);
 
+const PREF_INTRO_DELAY = "browser.contentblocking.introDelaySeconds";
 const TP_ENABLED_PREF = "privacy.trackingprotection.enabled";
 
 add_task(setup_UITourTest);
 
 add_task(async function test_setup() {
   Services.prefs.setBoolPref("privacy.trackingprotection.enabled", true);
+  Services.prefs.setIntPref(PREF_INTRO_DELAY, 0);
   await UrlClassifierTestUtils.addTestTrackers();
 
   registerCleanupFunction(function() {
     UrlClassifierTestUtils.cleanupTestTrackers();
     Services.prefs.clearUserPref("privacy.trackingprotection.enabled");
+    Services.prefs.clearUserPref(PREF_INTRO_DELAY);
   });
 });
 
@@ -29,14 +34,13 @@ add_UITour_task(function setup_block_target() {
   // interferes with UITour as it does a teardown. All we really care about
   // is the permission manager entry but UITour tests shouldn't rely on that
   // implementation detail.
-  TrackingProtection.disableForCurrentPage();
+  window.ContentBlocking.disableForCurrentPage();
 });
 
 add_UITour_task(async function test_block_target() {
   await checkToggleTarget("controlCenter-trackingBlock");
-  TrackingProtection.enableForCurrentPage();
+  window.ContentBlocking.enableForCurrentPage();
 });
-
 
 async function checkToggleTarget(targetID) {
   let popup = document.getElementById("UITourTooltip");
@@ -56,31 +60,35 @@ async function checkToggleTarget(targetID) {
     let iframe = doc.createElement("iframe");
     iframe.setAttribute("id", "tracking-element");
     iframe.setAttribute("src", "https://tracking.example.com/");
-    doc.body.insertBefore(iframe, doc.body.firstChild);
+    doc.body.insertBefore(iframe, doc.body.firstElementChild);
   });
 
   await trackerOpened;
 
   let testTargetAvailability = async function(expectedAvailable) {
     let data = await getConfigurationPromise("availableTargets");
-    let available = (data.targets.includes(targetID));
+    let available = data.targets.includes(targetID);
     is(available, expectedAvailable, "Target has expected availability.");
   };
   await testTargetAvailability(false);
   await showMenuPromise("controlCenter");
   await testTargetAvailability(true);
 
-  await showInfoPromise(targetID, "This is " + targetID,
-                        "My arrow should be on the side");
-  is(popup.popupBoxObject.alignmentPosition, "end_before",
-     "Check " + targetID + " position");
+  await showInfoPromise(
+    targetID,
+    "This is " + targetID,
+    "My arrow should be on the side"
+  );
+  is(popup.alignmentPosition, "end_before", "Check " + targetID + " position");
 
-  let hideMenuPromise =
-        promisePanelElementHidden(window, gIdentityHandler._identityPopup);
+  let hideMenuPromise = promisePanelElementHidden(
+    window,
+    gIdentityHandler._identityPopup
+  );
   await gContentAPI.hideMenu("controlCenter");
   await hideMenuPromise;
 
-  ok(!is_visible(popup), "The tooltip should now be hidden.");
+  ok(!BrowserTestUtils.is_visible(popup), "The tooltip should now be hidden.");
   await testTargetAvailability(false);
 
   await ContentTask.spawn(gBrowser.selectedBrowser, {}, function() {

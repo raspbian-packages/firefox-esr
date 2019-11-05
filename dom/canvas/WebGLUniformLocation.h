@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -50,11 +50,11 @@ class WebGLUniformLocation final : public nsWrapperCache,
                        const webgl::LinkedProgramInfo* linkInfo,
                        webgl::UniformInfo* info, GLuint loc, size_t arrayIndex);
 
-  bool ValidateForProgram(const WebGLProgram* prog, const char* funcName) const;
-  bool ValidateSizeAndType(uint8_t setterElemSize, GLenum setterType,
-                           const char* funcName) const;
-  bool ValidateArrayLength(uint8_t setterElemSize, size_t setterArraySize,
-                           const char* funcName) const;
+  bool ValidateForProgram(const WebGLProgram* prog) const;
+  bool ValidateSizeAndType(uint8_t setterElemSize,
+                           webgl::AttribBaseType setterType) const;
+  bool ValidateArrayLength(uint8_t setterElemSize,
+                           size_t setterArraySize) const;
 
   JS::Value GetUniform(JSContext* js) const;
 

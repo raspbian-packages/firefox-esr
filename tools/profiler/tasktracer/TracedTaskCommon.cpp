@@ -4,8 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "GeckoTaskTracerImpl.h"
 #include "TracedTaskCommon.h"
+
+#include "GeckoTaskTracerImpl.h"
 
 // NS_ENSURE_TRUE_VOID() without the warning on the debug build.
 #define ENSURE_TRUE_VOID(x)   \
@@ -85,7 +86,7 @@ void TracedTaskCommon::ClearTLSTraceInfo() {
 NS_IMPL_ISUPPORTS(TracedRunnable, nsIRunnable);
 
 TracedRunnable::TracedRunnable(already_AddRefed<nsIRunnable>&& aOriginalObj)
-    : TracedTaskCommon(), mOriginalObj(Move(aOriginalObj)) {
+    : TracedTaskCommon(), mOriginalObj(std::move(aOriginalObj)) {
   Init();
   LogVirtualTablePtr(mTaskId, mSourceEventId,
                      *reinterpret_cast<uintptr_t**>(mOriginalObj.get()));
@@ -110,7 +111,7 @@ TracedRunnable::Run() {
  */
 already_AddRefed<nsIRunnable> CreateTracedRunnable(
     already_AddRefed<nsIRunnable>&& aRunnable) {
-  RefPtr<nsIRunnable> runnable = new TracedRunnable(Move(aRunnable));
+  RefPtr<nsIRunnable> runnable = new TracedRunnable(std::move(aRunnable));
   return runnable.forget();
 }
 

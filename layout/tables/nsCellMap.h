@@ -8,7 +8,6 @@
 #include "nscore.h"
 #include "celldata.h"
 #include "nsTArray.h"
-#include "nsTArray.h"
 #include "nsCOMPtr.h"
 #include "nsAlgorithm.h"
 #include "nsRect.h"
@@ -170,8 +169,8 @@ class nsTableCellMap {
 
  public:
   void ResetBStartStart(mozilla::LogicalSide aSide, nsCellMap& aCellMap,
-                        uint32_t aRowGroupStart, uint32_t aYPos, uint32_t aXPos,
-                        bool aIsBEndIEnd = false);
+                        uint32_t aRowGroupStart, uint32_t aYPos,
+                        uint32_t aXPos);
 
   void SetBCBorderEdge(mozilla::LogicalSide aEdge, nsCellMap& aCellMap,
                        uint32_t aCellMapStart, uint32_t aYPos, uint32_t aXPos,
@@ -289,13 +288,13 @@ class nsCellMap {
    *
    * @param aMap               - reference to the table cell map
    * @param aCellFrame         - a pointer to the cellframe which will be
-   * appended to the row
+   *                             appended to the row
    * @param aRowIndex          - to this row the celldata entry will be added
    * @param aRebuildIfNecessay - if a cell spans into a row below it might be
    *                             necesserary to rebuild the cellmap as this
-   * rowspan might overlap another cell.
+   *                             rowspan might overlap another cell.
    * @param aDamageArea        - area in cellmap coordinates which have been
-   * updated.
+   *                             updated.
    * @param aColToBeginSearch  - if not null contains the column number where
    *                             the search for a empty or dead cell in the
    *                             row should start
@@ -487,9 +486,11 @@ class nsCellMapColumnIterator {
         mCurMapStart(0),
         mCurMapRow(0),
         mCol(aCol),
-        mFoundCells(0) {
-    NS_PRECONDITION(aMap, "Must have map");
-    NS_PRECONDITION(mCol < aMap->GetColCount(), "Invalid column");
+        mFoundCells(0),
+        mCurMapContentRowCount(0),
+        mCurMapRelevantRowCount(0) {
+    MOZ_ASSERT(aMap, "Must have map");
+    MOZ_ASSERT(mCol < aMap->GetColCount(), "Invalid column");
     mOrigCells = aMap->GetNumCellsOriginatingInCol(mCol);
     if (mCurMap) {
       mCurMapContentRowCount = mCurMap->GetRowCount();

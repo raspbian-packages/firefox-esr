@@ -13,9 +13,10 @@
 namespace mozilla {
 namespace mscom {
 
-/* static */ HRESULT DispatchForwarder::Create(IInterceptor* aInterceptor,
-                                               STAUniquePtr<IDispatch>& aTarget,
-                                               IUnknown** aOutput) {
+/* static */
+HRESULT DispatchForwarder::Create(IInterceptor* aInterceptor,
+                                  STAUniquePtr<IDispatch>& aTarget,
+                                  IUnknown** aOutput) {
   MOZ_ASSERT(aInterceptor && aOutput);
   if (!aOutput) {
     return E_INVALIDARG;
@@ -32,7 +33,7 @@ namespace mscom {
 
 DispatchForwarder::DispatchForwarder(IInterceptor* aInterceptor,
                                      STAUniquePtr<IDispatch>& aTarget)
-    : mRefCnt(1), mInterceptor(aInterceptor), mTarget(Move(aTarget)) {}
+    : mRefCnt(1), mInterceptor(aInterceptor), mTarget(std::move(aTarget)) {}
 
 DispatchForwarder::~DispatchForwarder() {}
 

@@ -13,27 +13,22 @@ namespace dom {
 
 CDATASection::~CDATASection() {}
 
-NS_IMPL_ISUPPORTS_INHERITED(CDATASection, nsGenericDOMDataNode, nsIDOMNode,
-                            nsIDOMCharacterData, nsIDOMText)
-
 JSObject* CDATASection::WrapNode(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return CDATASectionBinding::Wrap(aCx, this, aGivenProto);
+  return CDATASection_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-bool CDATASection::IsNodeOfType(uint32_t aFlags) const {
-  return !(aFlags & ~(eTEXT | eDATA_NODE));
-}
+bool CDATASection::IsNodeOfType(uint32_t aFlags) const { return false; }
 
-nsGenericDOMDataNode* CDATASection::CloneDataNode(
+already_AddRefed<CharacterData> CDATASection::CloneDataNode(
     mozilla::dom::NodeInfo* aNodeInfo, bool aCloneText) const {
   RefPtr<mozilla::dom::NodeInfo> ni = aNodeInfo;
-  CDATASection* it = new CDATASection(ni.forget());
-  if (it && aCloneText) {
+  RefPtr<CDATASection> it = new CDATASection(ni.forget());
+  if (aCloneText) {
     it->mText = mText;
   }
 
-  return it;
+  return it.forget();
 }
 
 #ifdef DEBUG

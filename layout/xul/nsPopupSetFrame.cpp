@@ -9,15 +9,17 @@
 #include "nsCOMPtr.h"
 #include "nsIContent.h"
 #include "nsPresContext.h"
-#include "nsStyleContext.h"
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "nsBoxLayoutState.h"
 #include "nsIScrollableFrame.h"
-#include "nsIRootBox.h"
+#include "nsIPopupContainer.h"
 #include "nsMenuPopupFrame.h"
 
-nsIFrame* NS_NewPopupSetFrame(nsIPresShell* aPresShell,
-                              nsStyleContext* aContext) {
-  return new (aPresShell) nsPopupSetFrame(aContext);
+typedef mozilla::ComputedStyle ComputedStyle;
+
+nsIFrame* NS_NewPopupSetFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) nsPopupSetFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsPopupSetFrame)
@@ -28,9 +30,10 @@ void nsPopupSetFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
 
   // Normally the root box is our grandparent, but in case of wrapping
   // it can be our great-grandparent.
-  nsIRootBox* rootBox = nsIRootBox::GetRootBox(PresContext()->GetPresShell());
-  if (rootBox) {
-    rootBox->SetPopupSetFrame(this);
+  nsIPopupContainer* popupContainer =
+      nsIPopupContainer::GetPopupContainer(PresContext()->GetPresShell());
+  if (popupContainer) {
+    popupContainer->SetPopupSetFrame(this);
   }
 }
 
@@ -89,9 +92,10 @@ void nsPopupSetFrame::DestroyFrom(nsIFrame* aDestructRoot,
 
   // Normally the root box is our grandparent, but in case of wrapping
   // it can be our great-grandparent.
-  nsIRootBox* rootBox = nsIRootBox::GetRootBox(PresContext()->GetPresShell());
-  if (rootBox) {
-    rootBox->SetPopupSetFrame(nullptr);
+  nsIPopupContainer* popupContainer =
+      nsIPopupContainer::GetPopupContainer(PresContext()->GetPresShell());
+  if (popupContainer) {
+    popupContainer->SetPopupSetFrame(nullptr);
   }
 
   nsBoxFrame::DestroyFrom(aDestructRoot, aPostDestroyData);
@@ -112,9 +116,9 @@ nsPopupSetFrame::DoXULLayout(nsBoxLayoutState& aState) {
 }
 
 void nsPopupSetFrame::RemovePopupFrame(nsIFrame* aPopup) {
-  NS_PRECONDITION((aPopup->GetStateBits() & NS_FRAME_OUT_OF_FLOW) &&
-                      aPopup->IsMenuPopupFrame(),
-                  "removing wrong type of frame in popupset's ::popupList");
+  MOZ_ASSERT((aPopup->GetStateBits() & NS_FRAME_OUT_OF_FLOW) &&
+                 aPopup->IsMenuPopupFrame(),
+             "removing wrong type of frame in popupset's ::popupList");
 
   mPopupList.DestroyFrame(aPopup);
 }

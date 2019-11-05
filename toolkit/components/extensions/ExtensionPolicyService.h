@@ -13,28 +13,38 @@
 #include "nsHashKeys.h"
 #include "nsIAddonPolicyService.h"
 #include "nsAtom.h"
+#include "nsIDOMEventListener.h"
 #include "nsIMemoryReporter.h"
 #include "nsIObserver.h"
 #include "nsIObserverService.h"
 #include "nsISupports.h"
 #include "nsPointerHashKeys.h"
 #include "nsRefPtrHashtable.h"
+#include "nsTHashtable.h"
 
 class nsIChannel;
 class nsIObserverService;
-class nsIDocument;
+
+class nsIPIDOMWindowInner;
 class nsIPIDOMWindowOuter;
 
 namespace mozilla {
+namespace dom {
+class ContentFrameMessageManager;
+class Promise;
+}  // namespace dom
 namespace extensions {
 class DocInfo;
-}
+class DocumentObserver;
+class WebExtensionContentScript;
+}  // namespace extensions
 
 using extensions::DocInfo;
 using extensions::WebExtensionPolicy;
 
 class ExtensionPolicyService final : public nsIAddonPolicyService,
                                      public nsIObserver,
+                                     public nsIDOMEventListener,
                                      public nsIMemoryReporter {
  public:
   NS_DECL_CYCLE_COLLECTION_CLASS_AMBIGUOUS(ExtensionPolicyService,
@@ -42,6 +52,7 @@ class ExtensionPolicyService final : public nsIAddonPolicyService,
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_NSIADDONPOLICYSERVICE
   NS_DECL_NSIOBSERVER
+  NS_DECL_NSIDOMEVENTLISTENER
   NS_DECL_NSIMEMORYREPORTER
 
   static ExtensionPolicyService& GetSingleton();
@@ -70,11 +81,16 @@ class ExtensionPolicyService final : public nsIAddonPolicyService,
   bool RegisterExtension(WebExtensionPolicy& aPolicy);
   bool UnregisterExtension(WebExtensionPolicy& aPolicy);
 
+  bool RegisterObserver(extensions::DocumentObserver& aPolicy);
+  bool UnregisterObserver(extensions::DocumentObserver& aPolicy);
+
   void BaseCSP(nsAString& aDefaultCSP) const;
   void DefaultCSP(nsAString& aDefaultCSP) const;
 
   bool UseRemoteExtensions() const;
   bool IsExtensionProcess() const;
+
+  nsresult InjectContentScripts(WebExtensionPolicy* aExtension);
 
  protected:
   virtual ~ExtensionPolicyService();
@@ -86,13 +102,27 @@ class ExtensionPolicyService final : public nsIAddonPolicyService,
   void UnregisterObservers();
 
   void CheckRequest(nsIChannel* aChannel);
-  void CheckDocument(nsIDocument* aDocument);
-  void CheckWindow(nsPIDOMWindowOuter* aWindow);
+  void CheckDocument(dom::Document* aDocument);
 
   void CheckContentScripts(const DocInfo& aDocInfo, bool aIsPreload);
 
+  already_AddRefed<dom::Promise> ExecuteContentScript(
+      nsPIDOMWindowInner* aWindow,
+      extensions::WebExtensionContentScript& aScript);
+
+  RefPtr<dom::Promise> ExecuteContentScripts(
+      JSContext* aCx, nsPIDOMWindowInner* aWindow,
+      const nsTArray<RefPtr<extensions::WebExtensionContentScript>>& aScripts);
+
   nsRefPtrHashtable<nsPtrHashKey<const nsAtom>, WebExtensionPolicy> mExtensions;
   nsRefPtrHashtable<nsCStringHashKey, WebExtensionPolicy> mExtensionHosts;
+
+  nsTHashtable<nsRefPtrHashKey<dom::ContentFrameMessageManager>>
+      mMessageManagers;
+
+  nsRefPtrHashtable<nsPtrHashKey<const extensions::DocumentObserver>,
+                    extensions::DocumentObserver>
+      mObservers;
 
   nsCOMPtr<nsIObserverService> mObs;
 

@@ -11,7 +11,6 @@
 #include "nsToolkitCompsCID.h"
 #include "nsCategoryCache.h"
 #include "nsTHashtable.h"
-#include "nsWeakReference.h"
 #include "mozilla/Attributes.h"
 #include "prtime.h"
 
@@ -72,10 +71,12 @@ enum BookmarkDate { LAST_MODIFIED };
 }  // namespace places
 }  // namespace mozilla
 
-class nsNavBookmarks final : public nsINavBookmarksService,
-                             public nsINavHistoryObserver,
-                             public nsIObserver,
-                             public nsSupportsWeakReference {
+class nsNavBookmarks final
+    : public nsINavBookmarksService,
+      public nsINavHistoryObserver,
+      public nsIObserver,
+      public nsSupportsWeakReference,
+      public mozilla::places::INativePlacesEventCallback {
  public:
   NS_DECL_ISUPPORTS
   NS_DECL_NSINAVBOOKMARKSSERVICE
@@ -116,7 +117,9 @@ class nsNavBookmarks final : public nsINavBookmarksService,
                    bool aHidden, uint32_t aVisitCount, uint32_t aTyped,
                    const nsAString& aLastKnownTitle);
 
-  nsresult ResultNodeForContainer(int64_t aID,
+  nsresult GetBookmarkURI(int64_t aItemId, nsIURI** _URI);
+
+  nsresult ResultNodeForContainer(const nsCString& aGUID,
                                   nsNavHistoryQueryOptions* aOptions,
                                   nsNavHistoryResultNode** aNode);
 
@@ -171,6 +174,16 @@ class nsNavBookmarks final : public nsINavBookmarksService,
   nsresult FetchItemInfo(int64_t aItemId, BookmarkData& _bookmark);
 
   /**
+   * Fetches information about the specified GUID from the database.
+   *
+   * @param aGUID
+   *        GUID of the item to fetch information for.
+   * @param aBookmark
+   *        BookmarkData to store the information.
+   */
+  nsresult FetchItemInfo(const nsCString& aGUID, BookmarkData& _bookmark);
+
+  /**
    * Notifies that a bookmark has been visited.
    *
    * @param aItemId
@@ -191,16 +204,14 @@ class nsNavBookmarks final : public nsINavBookmarksService,
   void NotifyItemChanged(const ItemChangeData& aData);
 
   /**
-   * Recursively builds an array of descendant folders inside a given folder.
-   *
-   * @param aFolderId
-   *        The folder to fetch descendants from.
-   * @param aDescendantFoldersArray
-   *        Output array to put descendant folders id.
+   * Part of INativePlacesEventCallback - handles events from the places
+   * observer system.
+   * @param aCx
+   *        A JSContext for extracting the values from aEvents.
+   * @param aEvents
+   *        An array of weakly typed events detailing what changed.
    */
-  nsresult GetDescendantFolders(int64_t aFolderId,
-                                nsTArray<int64_t>& aDescendantFoldersArray);
-
+  void HandlePlacesEvent(const PlacesEventSequence& aEvents) override;
   static const int32_t kGetChildrenIndex_Guid;
   static const int32_t kGetChildrenIndex_Position;
   static const int32_t kGetChildrenIndex_Type;
@@ -211,25 +222,13 @@ class nsNavBookmarks final : public nsINavBookmarksService,
   static void StoreLastInsertedId(const nsACString& aTable,
                                   const int64_t aLastInsertedId);
 
+  static mozilla::Atomic<int64_t> sTotalSyncChanges;
+  static void NoteSyncChange();
+
  private:
   static nsNavBookmarks* gBookmarksService;
 
   ~nsNavBookmarks();
-
-  /**
-   * Checks whether or not aFolderId points to a live bookmark.
-   *
-   * @param aFolderId
-   *        the item-id of the folder to check.
-   * @return true if aFolderId points to live bookmarks, false otherwise.
-   */
-  bool IsLivemark(int64_t aFolderId);
-
-  /**
-   * Locates the root items in the bookmarks folder hierarchy assigning folder
-   * ids to the root properties that are exposed through the service interface.
-   */
-  nsresult EnsureRoots();
 
   nsresult AdjustIndices(int64_t aFolder, int32_t aStartIndex,
                          int32_t aEndIndex, int32_t aDelta);
@@ -271,7 +270,8 @@ class nsNavBookmarks final : public nsINavBookmarksService,
   nsresult InsertTombstone(const BookmarkData& aBookmark);
 
   // Inserts tombstones for removed synced items.
-  nsresult InsertTombstones(const nsTArray<TombstoneData>& aTombstones);
+  nsresult InsertTombstones(
+      const nsTArray<mozilla::places::TombstoneData>& aTombstones);
 
   // Removes a stale synced bookmark tombstone.
   nsresult RemoveTombstone(const nsACString& aGUID);
@@ -287,25 +287,15 @@ class nsNavBookmarks final : public nsINavBookmarksService,
 
   nsMaybeWeakPtrArray<nsINavBookmarkObserver> mObservers;
 
-  int64_t TagsRootId() {
-    nsresult rv = EnsureRoots();
-    NS_ENSURE_SUCCESS(rv, -1);
-    return mTagsRoot;
-  }
-
-  // These are lazy loaded, so never access them directly, always use the
-  // XPIDL getters or TagsRootId().
-  int64_t mRoot;
-  int64_t mMenuRoot;
-  int64_t mTagsRoot;
-  int64_t mUnfiledRoot;
-  int64_t mToolbarRoot;
-  int64_t mMobileRoot;
+  int64_t TagsRootId() { return mDB->GetTagsFolderId(); }
 
   inline bool IsRoot(int64_t aFolderId) {
-    return aFolderId == mRoot || aFolderId == mMenuRoot ||
-           aFolderId == mTagsRoot || aFolderId == mUnfiledRoot ||
-           aFolderId == mToolbarRoot || aFolderId == mMobileRoot;
+    return aFolderId == mDB->GetRootFolderId() ||
+           aFolderId == mDB->GetMenuFolderId() ||
+           aFolderId == mDB->GetTagsFolderId() ||
+           aFolderId == mDB->GetUnfiledFolderId() ||
+           aFolderId == mDB->GetToolbarFolderId() ||
+           aFolderId == mDB->GetMobileFolderId();
   }
 
   nsresult SetItemDateInternal(enum mozilla::places::BookmarkDate aDateType,
@@ -366,10 +356,6 @@ class nsNavBookmarks final : public nsINavBookmarksService,
 
   // Used to enable and disable the observer notifications.
   bool mCanNotify;
-
-  // Tracks whether we are in batch mode.
-  // Note: this is only tracking bookmarks batches, not history ones.
-  bool mBatching;
 };
 
 #endif  // nsNavBookmarks_h_

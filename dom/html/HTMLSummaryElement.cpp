@@ -39,6 +39,11 @@ nsresult HTMLSummaryElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
   }
 
   WidgetEvent* const event = aVisitor.mEvent;
+  nsCOMPtr<Element> target =
+      do_QueryInterface(event->GetOriginalDOMEventTarget());
+  if (nsContentUtils::IsInInteractiveHTMLContent(target, this)) {
+    return NS_OK;
+  }
 
   if (event->HasMouseEventMessage()) {
     WidgetMouseEvent* mouseEvent = event->AsMouseEvent();
@@ -131,12 +136,12 @@ bool HTMLSummaryElement::IsMainSummary() const {
 }
 
 HTMLDetailsElement* HTMLSummaryElement::GetDetails() const {
-  return HTMLDetailsElement::FromContentOrNull(GetParent());
+  return HTMLDetailsElement::FromNodeOrNull(GetParent());
 }
 
 JSObject* HTMLSummaryElement::WrapNode(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return HTMLElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

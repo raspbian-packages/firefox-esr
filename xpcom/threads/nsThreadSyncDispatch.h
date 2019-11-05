@@ -19,7 +19,7 @@ class nsThreadSyncDispatch : public mozilla::Runnable {
                        already_AddRefed<nsIRunnable>&& aTask)
       : Runnable("nsThreadSyncDispatch"),
         mOrigin(aOrigin),
-        mSyncTask(mozilla::Move(aTask)),
+        mSyncTask(std::move(aTask)),
         mIsPending(true) {}
 
   bool IsPending() {

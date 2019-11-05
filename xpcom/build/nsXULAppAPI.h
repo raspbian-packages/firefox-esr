@@ -23,7 +23,7 @@
 #include "XREShellData.h"
 
 #if defined(MOZ_WIDGET_ANDROID)
-#include <jni.h>
+#  include <jni.h>
 #endif
 
 /**
@@ -118,8 +118,8 @@
  * directories where native manifests used by the WebExtensions
  * native messaging and managed storage features are found.
  */
-#define XRE_SYS_NATIVE_MANIFESTS "XRESysNativeManifests"
-#define XRE_USER_NATIVE_MANIFESTS "XREUserNativeManifests"
+#  define XRE_SYS_NATIVE_MANIFESTS "XRESysNativeManifests"
+#  define XRE_USER_NATIVE_MANIFESTS "XREUserNativeManifests"
 #endif
 
 /**
@@ -155,29 +155,43 @@
  * A directory service key which provides the update directory. Callers should
  * fall back to appDir.
  * Windows:    If vendor name exists:
- *             Documents and Settings\<User>\Local Settings\Application Data\
- *             <vendor name>\updates\
- *             <hash of the path to XRE_EXECUTABLE_FILE’s parent directory>
+ *             ProgramData\<vendor name>\updates\
+ *             <hash of the path to XRE_EXECUTABLE_FILE's parent directory>
  *
  *             If vendor name doesn't exist, but product name exists:
- *             Documents and Settings\<User>\Local Settings\Application Data\
- *             <product name>\updates\
- *             <hash of the path to XRE_EXECUTABLE_FILE’s parent directory>
+ *             ProgramData\<product name>\updates\
+ *             <hash of the path to XRE_EXECUTABLE_FILE's parent directory>
  *
  *             If neither vendor nor product name exists:
- *               If app dir is under Program Files:
- *               Documents and Settings\<User>\Local Settings\Application Data\
- *               <relative path to app dir from Program Files>
- *
- *               If app dir isn’t under Program Files:
- *               Documents and Settings\<User>\Local Settings\Application Data\
- *               <MOZ_APP_NAME>
+ *             ProgramData\Mozilla\updates
  *
  * Mac:        ~/Library/Caches/Mozilla/updates/<absolute path to app dir>
  *
  * All others: Parent directory of XRE_EXECUTABLE_FILE.
  */
 #define XRE_UPDATE_ROOT_DIR "UpdRootD"
+
+/**
+ * A directory service key which provides the *old* update directory. This
+ * path should only be used when data needs to be migrated from the old update
+ * directory.
+ * Windows:    If vendor name exists:
+ *             Documents and Settings\<User>\Local Settings\Application Data\
+ *             <vendor name>\updates\
+ *             <hash of the path to XRE_EXECUTABLE_FILE's parent directory>
+ *
+ *             If vendor name doesn't exist, but product name exists:
+ *             Documents and Settings\<User>\Local Settings\Application Data\
+ *             <product name>\updates\
+ *             <hash of the path to XRE_EXECUTABLE_FILE's parent directory>
+ *
+ *             If neither vendor nor product name exists:
+ *             Documents and Settings\<User>\Local Settings\Application Data\
+ *             Mozilla\updates
+ *
+ * This path does not exist on other operating systems
+ */
+#define XRE_OLD_UPDATE_ROOT_DIR "OldUpdRootD"
 
 /**
  * Begin an XUL application. Does not return until the user exits the
@@ -275,7 +289,7 @@ XRE_API(nsresult, XRE_AddStaticComponent, (const mozilla::Module* aComponent))
  * manifest instructions.
  *
  * NS_SKIN_LOCATION specifies a location to search for chrome manifest files
- * which are only allowed to register only skin packages and style overlays.
+ * which are only allowed to register skin packages.
  */
 enum NSLocationType {
   NS_APP_LOCATION,
@@ -302,7 +316,7 @@ XRE_API(nsresult, XRE_AddManifestLocation,
  * components as well as component/chrome manifest files.
  *
  * NS_SKIN_LOCATION specifies a location to search for chrome manifest files
- * which are only allowed to register only skin packages and style overlays.
+ * which are only allowed to register skin packages.
  */
 XRE_API(nsresult, XRE_AddJarManifestLocation,
         (NSLocationType aType, nsIFile* aLocation))
@@ -351,41 +365,43 @@ XRE_API(nsresult, XRE_ParseAppData,
         (nsIFile * aINIFile, mozilla::XREAppData& aAppData))
 
 enum GeckoProcessType {
-  GeckoProcessType_Default = 0,
-
-  GeckoProcessType_Plugin,
-  GeckoProcessType_Content,
-
-  GeckoProcessType_IPDLUnitTest,
-
-  GeckoProcessType_GMPlugin,  // Gecko Media Plugin
-
-  GeckoProcessType_GPU,     // GPU and compositor process
-  GeckoProcessType_PDFium,  // Gecko PDFium process
+#define GECKO_PROCESS_TYPE(enum_name, string_name, xre_name, bin_type) \
+  GeckoProcessType_##enum_name,
+#include "mozilla/GeckoProcessTypes.h"
+#undef GECKO_PROCESS_TYPE
   GeckoProcessType_End,
   GeckoProcessType_Invalid = GeckoProcessType_End
 };
 
 static const char* const kGeckoProcessTypeString[] = {
-    "default",          "plugin", "tab",   "ipdlunittest",
-    "geckomediaplugin", "gpu",    "pdfium"};
+#define GECKO_PROCESS_TYPE(enum_name, string_name, xre_name, bin_type) \
+  string_name,
+#include "mozilla/GeckoProcessTypes.h"
+#undef GECKO_PROCESS_TYPE
+};
 
 static_assert(MOZ_ARRAY_LENGTH(kGeckoProcessTypeString) == GeckoProcessType_End,
               "Array length mismatch");
 
 XRE_API(const char*, XRE_ChildProcessTypeToString,
         (GeckoProcessType aProcessType))
+XRE_API(const char*, XRE_ChildProcessTypeToAnnotation,
+        (GeckoProcessType aProcessType))
 
 #if defined(MOZ_WIDGET_ANDROID)
+struct XRE_AndroidChildFds {
+  int mPrefsFd;
+  int mPrefMapFd;
+  int mIpcFd;
+  int mCrashFd;
+  int mCrashAnnotationFd;
+};
+
 XRE_API(void, XRE_SetAndroidChildFds,
-        (JNIEnv * env, int ipcFd, int crashFd, int crashAnnotationFd))
+        (JNIEnv * env, const XRE_AndroidChildFds& fds))
 #endif  // defined(MOZ_WIDGET_ANDROID)
 
 XRE_API(void, XRE_SetProcessType, (const char* aProcessTypeString))
-
-// Used in the "master" parent process hosting the crash server
-XRE_API(bool, XRE_TakeMinidumpForChild,
-        (uint32_t aChildPid, nsIFile** aDump, uint32_t* aSequence))
 
 // Used in child processes.
 #if defined(XP_WIN)
@@ -415,22 +431,32 @@ XRE_API(GeckoProcessType, XRE_GetProcessType, ())
 XRE_API(bool, XRE_IsE10sParentProcess, ())
 
 /**
- * Returns true when called in the e10s parent process or called in the main
- * process when e10s is disabled.
+ * Defines XRE_IsParentProcess, XRE_IsContentProcess, etc.
+ *
+ * XRE_IsParentProcess is unique in that it returns true when called in
+ * the e10s parent process or called in the main process when e10s is
+ * disabled.
  */
-XRE_API(bool, XRE_IsParentProcess, ())
+#define GECKO_PROCESS_TYPE(enum_name, string_name, xre_name, bin_type) \
+  XRE_API(bool, XRE_Is##xre_name##Process, ())
+#include "mozilla/GeckoProcessTypes.h"
+#undef GECKO_PROCESS_TYPE
 
-XRE_API(bool, XRE_IsContentProcess, ())
-
-XRE_API(bool, XRE_IsGPUProcess, ())
-
-XRE_API(bool, XRE_IsPluginProcess, ())
+XRE_API(bool, XRE_IsSocketProcess, ())
 
 /**
  * Returns true if the appshell should run its own native event loop. Returns
  * false if we should rely solely on the Gecko event loop.
  */
 XRE_API(bool, XRE_UseNativeEventProcessing, ())
+
+#if defined(XP_WIN)
+/**
+ * @returns true if win32k calls are allowed in this process type, false if
+ *          win32k is (or should be) disabled.
+ */
+XRE_API(bool, XRE_Win32kCallsAllowed, ())
+#endif
 
 typedef void (*MainFunction)(void* aData);
 
@@ -453,7 +479,7 @@ XRE_API(void, XRE_ShutdownChildProcess, ())
 XRE_API(MessageLoop*, XRE_GetIOMessageLoop, ())
 
 XRE_API(bool, XRE_SendTestShellCommand,
-        (JSContext * aCx, JSString* aCommand, void* aCallback))
+        (JSContext * aCx, JSString* aCommand, JS::Value* aCallback))
 XRE_API(bool, XRE_ShutdownTestShell, ())
 
 XRE_API(void, XRE_InstallX11ErrorHandler, ())
@@ -467,11 +493,17 @@ XRE_API(void, XRE_StopLateWriteChecks, (void))
 
 XRE_API(void, XRE_EnableSameExecutableForContentProc, ())
 
+namespace mozilla {
+enum class BinPathType { Self, PluginContainer };
+}
+XRE_API(mozilla::BinPathType, XRE_GetChildProcBinPathType,
+        (GeckoProcessType aProcessType));
+
 XRE_API(int, XRE_XPCShellMain,
         (int argc, char** argv, char** envp, const XREShellData* aShellData))
 
 #ifdef LIBFUZZER
-#include "FuzzerRegistry.h"
+#  include "FuzzerRegistry.h"
 
 XRE_API(void, XRE_LibFuzzerSetDriver, (LibFuzzerDriver))
 

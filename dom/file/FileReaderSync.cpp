@@ -6,7 +6,9 @@
 
 #include "FileReaderSync.h"
 
-#include "jsfriendapi.h"
+#include "js/ArrayBuffer.h"  // JS::NewArrayBufferWithContents
+#include "js/RootingAPI.h"   // JS::{,Mutable}Handle
+#include "js/Utility.h"  // js::ArrayBufferContentsArena, JS::FreePolicy, js_pod_arena_malloc
 #include "mozilla/Unused.h"
 #include "mozilla/Base64.h"
 #include "mozilla/dom/File.h"
@@ -15,7 +17,6 @@
 #include "nsCExternalHandlerService.h"
 #include "nsComponentManagerUtils.h"
 #include "nsCOMPtr.h"
-#include "nsDOMClassInfoID.h"
 #include "nsError.h"
 #include "nsIConverterInputStream.h"
 #include "nsIInputStream.h"
@@ -45,7 +46,7 @@ already_AddRefed<FileReaderSync> FileReaderSync::Constructor(
 bool FileReaderSync::WrapObject(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto,
                                 JS::MutableHandle<JSObject*> aReflector) {
-  return FileReaderSyncBinding::Wrap(aCx, this, aGivenProto, aReflector);
+  return FileReaderSync_Binding::Wrap(aCx, this, aGivenProto, aReflector);
 }
 
 void FileReaderSync::ReadAsArrayBuffer(JSContext* aCx,
@@ -58,7 +59,8 @@ void FileReaderSync::ReadAsArrayBuffer(JSContext* aCx,
     return;
   }
 
-  UniquePtr<char[], JS::FreePolicy> bufferData(js_pod_malloc<char>(blobSize));
+  UniquePtr<char[], JS::FreePolicy> bufferData(
+      js_pod_arena_malloc<char>(js::ArrayBufferContentsArena, blobSize));
   if (!bufferData) {
     aRv.Throw(NS_ERROR_OUT_OF_MEMORY);
     return;
@@ -83,7 +85,7 @@ void FileReaderSync::ReadAsArrayBuffer(JSContext* aCx,
   }
 
   JSObject* arrayBuffer =
-      JS_NewArrayBufferWithContents(aCx, blobSize, bufferData.get());
+      JS::NewArrayBufferWithContents(aCx, blobSize, bufferData.get());
   if (!arrayBuffer) {
     aRv.Throw(NS_ERROR_OUT_OF_MEMORY);
     return;
@@ -294,8 +296,7 @@ nsresult FileReaderSync::ConvertStream(nsIInputStream* aStream,
       nsIConverterInputStream::DEFAULT_REPLACEMENT_CHARACTER);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsCOMPtr<nsIUnicharInputStream> unicharStream =
-      do_QueryInterface(converterStream);
+  nsCOMPtr<nsIUnicharInputStream> unicharStream = converterStream;
   NS_ENSURE_TRUE(unicharStream, NS_ERROR_FAILURE);
 
   uint32_t numChars;
@@ -415,7 +416,7 @@ nsresult FileReaderSync::SyncRead(nsIInputStream* aStream, char* aBuffer,
   WorkerPrivate* workerPrivate = GetCurrentThreadWorkerPrivate();
   MOZ_ASSERT(workerPrivate);
 
-  AutoSyncLoopHolder syncLoop(workerPrivate, Closing);
+  AutoSyncLoopHolder syncLoop(workerPrivate, Canceling);
 
   nsCOMPtr<nsIEventTarget> syncLoopTarget = syncLoop.GetEventTarget();
   if (!syncLoopTarget) {
@@ -446,7 +447,7 @@ nsresult FileReaderSync::SyncRead(nsIInputStream* aStream, char* aBuffer,
 nsresult FileReaderSync::ConvertAsyncToSyncStream(
     uint64_t aStreamSize, already_AddRefed<nsIInputStream> aAsyncStream,
     nsIInputStream** aSyncStream) {
-  nsCOMPtr<nsIInputStream> asyncInputStream = Move(aAsyncStream);
+  nsCOMPtr<nsIInputStream> asyncInputStream = std::move(aAsyncStream);
 
   // If the stream is not async, we just need it to be bufferable.
   nsCOMPtr<nsIAsyncInputStream> asyncStream =
@@ -472,7 +473,7 @@ nsresult FileReaderSync::ConvertAsyncToSyncStream(
     return NS_ERROR_FAILURE;
   }
 
-  rv = NS_NewCStringInputStream(aSyncStream, buffer);
+  rv = NS_NewCStringInputStream(aSyncStream, std::move(buffer));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }

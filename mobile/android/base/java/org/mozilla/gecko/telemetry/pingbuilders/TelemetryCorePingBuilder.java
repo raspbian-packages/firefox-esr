@@ -14,20 +14,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
-
 import android.util.Log;
 
+import org.mozilla.gecko.AppConstants;
+import org.mozilla.gecko.Experiments;
 import org.mozilla.gecko.GeckoApp;
 import org.mozilla.gecko.GeckoProfile;
 import org.mozilla.gecko.GeckoSharedPrefs;
 import org.mozilla.gecko.Locales;
-import org.mozilla.gecko.mma.MmaDelegate;
 import org.mozilla.gecko.search.SearchEngine;
 import org.mozilla.gecko.sync.ExtendedJSONObject;
 import org.mozilla.gecko.telemetry.TelemetryOutgoingPing;
 import org.mozilla.gecko.util.DateUtil;
-import org.mozilla.gecko.Experiments;
 import org.mozilla.gecko.util.HardwareUtils;
+import org.mozilla.gecko.util.PackageUtil;
 import org.mozilla.gecko.util.StringUtils;
 
 import java.text.DateFormat;
@@ -53,8 +53,7 @@ public class TelemetryCorePingBuilder extends TelemetryPingBuilder {
     private static final String PREF_SEQ_COUNT = "telemetry-seqCount";
 
     private static final String NAME = "core";
-    private static final int VERSION_VALUE = 9; // For version history, see toolkit/components/telemetry/docs/core-ping.rst
-    private static final String OS_VALUE = "Android";
+    private static final int VERSION_VALUE = 10; // For version history, see toolkit/components/telemetry/docs/core-ping.rst
 
     private static final String DEFAULT_BROWSER = "defaultBrowser";
     private static final String ARCHITECTURE = "arch";
@@ -63,6 +62,7 @@ public class TelemetryCorePingBuilder extends TelemetryPingBuilder {
     private static final String DEFAULT_SEARCH_ENGINE = "defaultSearch";
     private static final String DEVICE = "device";
     private static final String DISTRIBUTION_ID = "distributionId";
+    private static final String DISPLAY_VERSION = "displayVersion";
     private static final String EXPERIMENTS = "experiments";
     private static final String LOCALE = "locale";
     private static final String OS_ATTR = "os";
@@ -77,6 +77,7 @@ public class TelemetryCorePingBuilder extends TelemetryPingBuilder {
     private static final String VERSION_ATTR = "v";
     private static final String FLASH_USAGE = "flashUsage";
     private static final String ACCESSIBILITY_SERVICES = "accessibilityServices";
+    private static final String HAD_CANARY_CLIENT_ID = "bug_1501329_affected";
 
     public TelemetryCorePingBuilder(final Context context) {
         initPayloadConstants(context);
@@ -84,7 +85,7 @@ public class TelemetryCorePingBuilder extends TelemetryPingBuilder {
 
     private void initPayloadConstants(final Context context) {
         payload.put(VERSION_ATTR, VERSION_VALUE);
-        payload.put(OS_ATTR, OS_VALUE);
+        payload.put(OS_ATTR, TelemetryPingBuilder.OS_NAME);
 
         // We limit the device descriptor to 32 characters because it can get long. We give fewer characters to the
         // manufacturer because we're less likely to have manufacturers with similar names than we are for a
@@ -95,19 +96,27 @@ public class TelemetryCorePingBuilder extends TelemetryPingBuilder {
         final Calendar nowCalendar = Calendar.getInstance();
         final DateFormat pingCreationDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-        payload.put(DEFAULT_BROWSER, MmaDelegate.isDefaultBrowser(context));
+        payload.put(DEFAULT_BROWSER, PackageUtil.isDefaultBrowser(context));
         payload.put(ARCHITECTURE, HardwareUtils.getRealAbi());
         payload.put(DEVICE, deviceDescriptor);
         payload.put(LOCALE, Locales.getLanguageTag(Locale.getDefault()));
         payload.put(OS_VERSION, Integer.toString(Build.VERSION.SDK_INT)); // A String for cross-platform reasons.
         payload.put(PING_CREATION_DATE, pingCreationDateFormat.format(nowCalendar.getTime()));
         payload.put(TIMEZONE_OFFSET, DateUtil.getTimezoneOffsetInMinutesForGivenDate(nowCalendar));
+        payload.put(DISPLAY_VERSION, AppConstants.MOZ_APP_VERSION_DISPLAY);
         payload.putArray(EXPERIMENTS, Experiments.getActiveExperiments(context));
         synchronized (this) {
             SharedPreferences prefs = GeckoSharedPrefs.forApp(context);
             final int count = prefs.getInt(GeckoApp.PREFS_FLASH_USAGE, 0);
             payload.put(FLASH_USAGE, count);
             prefs.edit().putInt(GeckoApp.PREFS_FLASH_USAGE, 0).apply();
+
+            final boolean searchUsed = prefs.getBoolean(GeckoApp.PREFS_ENHANCED_SEARCH_USAGE, false);
+            payload.put(GeckoApp.PREFS_ENHANCED_SEARCH_USAGE, searchUsed);
+            final boolean searchReady = prefs.getBoolean(GeckoApp.PREFS_ENHANCED_SEARCH_READY, false);
+            payload.put(GeckoApp.PREFS_ENHANCED_SEARCH_READY, searchReady);
+            final String searchVersion = prefs.getString(GeckoApp.PREFS_ENHANCED_SEARCH_VERSION, "");
+            payload.put(GeckoApp.PREFS_ENHANCED_SEARCH_VERSION, searchVersion);
         }
     }
 
@@ -131,6 +140,7 @@ public class TelemetryCorePingBuilder extends TelemetryPingBuilder {
                 SEQ,
                 TIMEZONE_OFFSET,
                 VERSION_ATTR,
+                HAD_CANARY_CLIENT_ID,
         };
     }
 
@@ -139,6 +149,11 @@ public class TelemetryCorePingBuilder extends TelemetryPingBuilder {
             throw new IllegalArgumentException("Expected non-null clientID");
         }
         payload.put(CLIENT_ID, clientID);
+        return this;
+    }
+
+    public TelemetryCorePingBuilder setHadCanaryClientId(final boolean hadCanaryClientId) {
+        payload.put(HAD_CANARY_CLIENT_ID, hadCanaryClientId);
         return this;
     }
 

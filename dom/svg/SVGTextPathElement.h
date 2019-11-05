@@ -7,9 +7,10 @@
 #ifndef mozilla_dom_SVGTextPathElement_h
 #define mozilla_dom_SVGTextPathElement_h
 
-#include "nsSVGEnum.h"
-#include "nsSVGLength2.h"
-#include "nsSVGString.h"
+#include "SVGAnimatedEnumeration.h"
+#include "SVGAnimatedLength.h"
+#include "SVGAnimatedPathSegList.h"
+#include "SVGAnimatedString.h"
 #include "mozilla/dom/SVGTextContentElement.h"
 
 class nsAtom;
@@ -21,6 +22,10 @@ nsresult NS_NewSVGTextPathElement(
 namespace mozilla {
 namespace dom {
 
+// textPath side types
+static const uint16_t TEXTPATH_SIDETYPE_LEFT = 1;
+static const uint16_t TEXTPATH_SIDETYPE_RIGHT = 2;
+
 typedef SVGTextContentElement SVGTextPathElementBase;
 
 class SVGTextPathElement final : public SVGTextPathElementBase {
@@ -31,7 +36,7 @@ class SVGTextPathElement final : public SVGTextPathElementBase {
       nsIContent** aResult,
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
   explicit SVGTextPathElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
   virtual JSObject* WrapNode(JSContext* cx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
@@ -39,14 +44,20 @@ class SVGTextPathElement final : public SVGTextPathElementBase {
   // nsIContent interface
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
+
+  SVGAnimatedPathSegList* GetAnimPathSegList() override { return &mPath; }
+
+  nsStaticAtom* GetPathDataAttrName() const override { return nsGkAtoms::path; }
 
   // WebIDL
-  already_AddRefed<SVGAnimatedLength> StartOffset();
-  already_AddRefed<SVGAnimatedEnumeration> Method();
-  already_AddRefed<SVGAnimatedEnumeration> Spacing();
-  already_AddRefed<SVGAnimatedString> Href();
+  already_AddRefed<DOMSVGAnimatedLength> StartOffset();
+  already_AddRefed<DOMSVGAnimatedEnumeration> Method();
+  already_AddRefed<DOMSVGAnimatedEnumeration> Spacing();
+  already_AddRefed<DOMSVGAnimatedEnumeration> Side();
+  already_AddRefed<DOMSVGAnimatedString> Href();
+
+  void HrefAsString(nsAString& aHref);
 
  protected:
   virtual LengthAttributesInfo GetLengthInfo() override;
@@ -54,22 +65,27 @@ class SVGTextPathElement final : public SVGTextPathElementBase {
   virtual StringAttributesInfo GetStringInfo() override;
 
   enum { /* TEXTLENGTH, */ STARTOFFSET = 1 };
-  nsSVGLength2 mLengthAttributes[2];
-  virtual nsSVGLength2* LengthAttributes() override {
+  SVGAnimatedLength mLengthAttributes[2];
+  virtual SVGAnimatedLength* LengthAttributes() override {
     return mLengthAttributes;
   }
   static LengthInfo sLengthInfo[2];
 
-  enum { /* LENGTHADJUST, */ METHOD = 1, SPACING };
-  nsSVGEnum mEnumAttributes[3];
-  virtual nsSVGEnum* EnumAttributes() override { return mEnumAttributes; }
-  static nsSVGEnumMapping sMethodMap[];
-  static nsSVGEnumMapping sSpacingMap[];
-  static EnumInfo sEnumInfo[3];
+  enum { /* LENGTHADJUST, */ METHOD = 1, SPACING, SIDE };
+  SVGAnimatedEnumeration mEnumAttributes[4];
+  virtual SVGAnimatedEnumeration* EnumAttributes() override {
+    return mEnumAttributes;
+  }
+  static SVGEnumMapping sMethodMap[];
+  static SVGEnumMapping sSpacingMap[];
+  static SVGEnumMapping sSideMap[];
+  static EnumInfo sEnumInfo[4];
 
   enum { HREF, XLINK_HREF };
-  nsSVGString mStringAttributes[2];
+  SVGAnimatedString mStringAttributes[2];
   static StringInfo sStringInfo[2];
+
+  SVGAnimatedPathSegList mPath;
 };
 
 }  // namespace dom

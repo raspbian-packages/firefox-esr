@@ -70,7 +70,7 @@ void ContentHandlerService::nsIHandlerInfoToHandlerInfo(
       while (NS_SUCCEEDED(extensionsIter->HasMore(&hasMore)) && hasMore) {
         nsAutoCString extension;
         if (NS_SUCCEEDED(extensionsIter->GetNext(extension))) {
-          extensions.AppendElement(Move(extension));
+          extensions.AppendElement(std::move(extension));
         }
       }
     }
@@ -79,7 +79,7 @@ void ContentHandlerService::nsIHandlerInfoToHandlerInfo(
   nsHandlerInfoAction action;
   aInfo->GetPreferredAction(&action);
   HandlerInfo info(type, isMIMEInfo, description, alwaysAskBeforeHandling,
-                   Move(extensions), happ, happs, action);
+                   std::move(extensions), happ, happs, action);
   *aHandlerInfo = info;
 }
 
@@ -166,6 +166,25 @@ NS_IMETHODIMP ContentHandlerService::FillHandlerInfo(
   return NS_OK;
 }
 
+NS_IMETHODIMP ContentHandlerService::GetMIMEInfoFromOS(
+    nsIHandlerInfo* aHandlerInfo, const nsACString& aMIMEType,
+    const nsACString& aExtension, bool* aFound) {
+  nsresult rv = NS_ERROR_FAILURE;
+  HandlerInfo returnedInfo;
+  if (!mHandlerServiceChild->SendGetMIMEInfoFromOS(nsCString(aMIMEType),
+                                                   nsCString(aExtension), &rv,
+                                                   &returnedInfo, aFound)) {
+    return NS_ERROR_FAILURE;
+  }
+
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  CopyHanderInfoTonsIHandlerInfo(returnedInfo, aHandlerInfo);
+  return NS_OK;
+}
+
 NS_IMETHODIMP ContentHandlerService::Store(nsIHandlerInfo* aHandlerInfo) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -180,6 +199,16 @@ NS_IMETHODIMP ContentHandlerService::Exists(nsIHandlerInfo* aHandlerInfo,
 
 NS_IMETHODIMP ContentHandlerService::Remove(nsIHandlerInfo* aHandlerInfo) {
   return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP
+ContentHandlerService::ExistsForProtocolOS(const nsACString& aProtocolScheme,
+                                           bool* aRetval) {
+  if (!mHandlerServiceChild->SendExistsForProtocolOS(nsCString(aProtocolScheme),
+                                                     aRetval)) {
+    return NS_ERROR_FAILURE;
+  }
+  return NS_OK;
 }
 
 NS_IMETHODIMP
@@ -206,6 +235,16 @@ NS_IMETHODIMP ContentHandlerService::GetTypeFromExtension(
   mExtToTypeMap.Put(nsCString(aFileExtension), new nsCString(type));
 
   return NS_OK;
+}
+
+NS_IMETHODIMP ContentHandlerService::GetApplicationDescription(
+    const nsACString& aProtocolScheme, nsAString& aRetVal) {
+  nsresult rv = NS_ERROR_FAILURE;
+  nsAutoCString scheme(aProtocolScheme);
+  nsAutoString desc;
+  mHandlerServiceChild->SendGetApplicationDescription(scheme, &rv, &desc);
+  aRetVal.Assign(desc);
+  return rv;
 }
 
 }  // namespace dom

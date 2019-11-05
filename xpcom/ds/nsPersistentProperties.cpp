@@ -52,8 +52,13 @@ enum EParserSpecial {
 class MOZ_STACK_CLASS nsPropertiesParser {
  public:
   explicit nsPropertiesParser(nsIPersistentProperties* aProps)
-      : mHaveMultiLine(false),
+      : mUnicodeValuesRead(0),
+        mUnicodeValue(u'\0'),
+        mHaveMultiLine(false),
+        mMultiLineCanSkipN(false),
+        mMinLength(0),
         mState(eParserState_AwaitingKey),
+        mSpecialState(eParserSpecial_None),
         mProps(aProps) {}
 
   void FinishValueState(nsAString& aOldValue) {
@@ -88,12 +93,11 @@ class MOZ_STACK_CLASS nsPropertiesParser {
 
  private:
   bool ParseValueCharacter(
-      char16_t aChar,        // character that is just being parsed
-      const char16_t* aCur,  // pointer to character aChar in the buffer
-      const char16_t*&
-          aTokenStart,        // string copying is done in blocks as big as
-                              // possible, aTokenStart points to the beginning
-                              // of this block
+      char16_t aChar,                // character that is just being parsed
+      const char16_t* aCur,          // pointer to character aChar in the buffer
+      const char16_t*& aTokenStart,  // string copying is done in blocks as big
+                                     // as possible, aTokenStart points to the
+                                     // beginning of this block
       nsAString& aOldValue);  // when duplicate property is found, new value
                               // is stored into hashtable and the old one is
                               // placed in this variable
@@ -406,13 +410,13 @@ nsPersistentProperties::nsPersistentProperties()
 
 nsPersistentProperties::~nsPersistentProperties() {}
 
-nsresult nsPersistentProperties::Create(nsISupports* aOuter, REFNSIID aIID,
-                                        void** aResult) {
-  if (aOuter) {
-    return NS_ERROR_NO_AGGREGATION;
-  }
-  RefPtr<nsPersistentProperties> props = new nsPersistentProperties();
-  return props->QueryInterface(aIID, aResult);
+size_t nsPersistentProperties::SizeOfIncludingThis(
+    mozilla::MallocSizeOf aMallocSizeOf) const {
+  // The memory used by mTable is accounted for in mArena.
+  size_t n = 0;
+  n += mArena.SizeOfExcludingThis(aMallocSizeOf);
+  n += mTable.ShallowSizeOfExcludingThis(aMallocSizeOf);
+  return aMallocSizeOf(this) + n;
 }
 
 NS_IMPL_ISUPPORTS(nsPersistentProperties, nsIPersistentProperties,
@@ -510,7 +514,7 @@ nsPersistentProperties::Enumerate(nsISimpleEnumerator** aResult) {
     }
   }
 
-  return NS_NewArrayEnumerator(aResult, props);
+  return NS_NewArrayEnumerator(aResult, props, NS_GET_IID(nsIPropertyElement));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -539,7 +543,7 @@ nsPersistentProperties::Has(const char* aProp, bool* aResult) {
 }
 
 NS_IMETHODIMP
-nsPersistentProperties::GetKeys(uint32_t* aCount, char*** aKeys) {
+nsPersistentProperties::GetKeys(nsTArray<nsCString>& aKeys) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 

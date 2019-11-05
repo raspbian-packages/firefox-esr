@@ -21,12 +21,21 @@
 <!-- Tab context menu -->
 <!ENTITY  reloadTab.label                    "ផ្ទុកផ្ទាំងឡើងវិញ">
 <!ENTITY  reloadTab.accesskey                "R">
-<!ENTITY  reloadAllTabs.label                "ផ្ទុក​ផ្ទាំង​ទាំងអស់​ឡើងវិញ">
-<!ENTITY  reloadAllTabs.accesskey            "A">
+<!ENTITY  selectAllTabs.label                "ជ្រើសរើស​ផ្ទាំង​ទាំងអស់">
+<!ENTITY  selectAllTabs.accesskey            "S">
 <!-- LOCALIZATION NOTE (duplicateTab.label): This is a command to duplicate
 a tab (i.e. it is a verb, not adjective). -->
 <!ENTITY  duplicateTab.label                 "ស្ទួន​ផ្ទាំង">
+<!-- LOCALIZATION NOTE (duplicateTab.accesskey, duplicateTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
 <!ENTITY  duplicateTab.accesskey             "D">
+<!ENTITY  closeTabOptions.label              "បិទ​ផ្ទាំងជម្រើស">
+<!ENTITY  closeTabOptions.accesskey          "O">
+<!-- LOCALIZATION NOTE (duplicateTabs.label): This is a command to duplicate
+a tab (i.e. it is a verb, not adjective). -->
+<!-- LOCALIZATION NOTE (duplicateTab.accesskey, duplicateTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  duplicateTabs.accesskey            "D">
 <!-- LOCALIZATION NOTE (closeTabsToTheEnd.label): This should indicate the
 direction in which tabs are closed, i.e. locales that use RTL mode should say
 left instead of right. -->
@@ -35,27 +44,61 @@ left instead of right. -->
 <!ENTITY  closeOtherTabs.label               "បិទ​ផ្ទាំង​ផ្សេងទៀត">
 <!ENTITY  closeOtherTabs.accesskey           "o">
 
+<!ENTITY  closeTabs.label                    "បិទ​ផ្ទាំង">
+<!ENTITY  closeTabs.accesskey                "S">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY  pinSelectedTabs.accesskey          "P">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY  unpinSelectedTabs.accesskey        "p">
+<!-- LOCALIZATION NOTE(reloadTab.label, reloadTabs.label): have the same accesskey
+but will never be visible at the same time. -->
+<!ENTITY  reloadTabs.label                   "ផ្ទុក​ផ្ទាំង​ឡើងវិញ">
+<!ENTITY  reloadTabs.accesskey               "R">
+<!-- LOCALIZATION NOTE(bookmarkTab.accesskey, bookmarkSelectedTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  bookmarkSelectedTabs.accesskey     "B">
+
 <!-- LOCALIZATION NOTE (pinTab.label, unpinTab.label): "Pin" is being
 used as a metaphor for expressing the fact that these tabs are "pinned" to the
 left edge of the tabstrip. Really we just want the string to express the idea
 that this is a lightweight and reversible action that keeps your tab where you
 can reach it easily. -->
 <!ENTITY  pinTab.label                       "ខ្ទាស់​ផ្ទាំង">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
 <!ENTITY  pinTab.accesskey                   "P">
 <!ENTITY  unpinTab.label                     "ដោះ​​ខ្ទាស់​ផ្ទាំង">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
 <!ENTITY  unpinTab.accesskey                 "b">
-<!ENTITY  sendTabToDevice.label              "ផ្ញើ​ផ្ទាំង​ទៅ​ឧបករណ៍">
-<!ENTITY  sendTabToDevice.accesskey          "D">
 <!ENTITY  sendPageToDevice.label             "ផ្ញើ​ទំព័រ​ទៅ​ឧបករណ៍">
 <!ENTITY  sendPageToDevice.accesskey         "D">
 <!ENTITY  sendLinkToDevice.label             "ផ្ញើ​តំណ​ទៅ​ឧបករណ៍">
 <!ENTITY  sendLinkToDevice.accesskey         "D">
-<!ENTITY  sendToDeviceFeedback.label         "បាន​ផ្ញើ!">
-<!ENTITY  sendToDeviceOfflineFeedback.label  "នៅ​ក្នុង​ជួរ (គ្មាន​អ៊ីនធឺណិត)">
+<!-- LOCALIZATION NOTE (moveTabOptions.label and moveSelectedTabOptions.label):
+These two items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  moveTabOptions.label               "ផ្លាស់ទី​ផ្ទាំង">
+<!ENTITY  moveTabOptions.accesskey           "v">
+<!ENTITY  moveSelectedTabOptions.label       "ផ្លាស់ទី​ផ្ទាំង">
+<!ENTITY  moveSelectedTabOptions.accesskey   "v">
+<!ENTITY  moveToStart.label                  "ផ្លាស់ទី​ទៅ​ចាប់ផ្ដើម">
+<!ENTITY  moveToStart.accesskey              "S">
+<!ENTITY  moveToEnd.label                    "ផ្លាស់ទី​ទៅ​ចុង">
+<!ENTITY  moveToEnd.accesskey                "E">
 <!ENTITY  moveToNewWindow.label              "ផ្លាស់ទី​ទៅកាន់​បង្អួច​ថ្មី">
 <!ENTITY  moveToNewWindow.accesskey          "W">
-<!ENTITY  bookmarkAllTabs.label              "ចំណាំ​ផ្ទាំង​​ទាំងអស់…">
-<!ENTITY  bookmarkAllTabs.accesskey          "T">
+<!ENTITY  reopenInContainer.label            "បើក​ឡើង​វិញ​នៅ​ក្នុង​ប្រអប់">
+<!ENTITY  reopenInContainer.accesskey        "e">
+<!ENTITY  bookmarkTab.label                  "ផ្ទាំង​ចំណាំ">
+<!-- LOCALIZATION NOTE(bookmarkTab.accesskey, bookmarkSelectedTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  bookmarkTab.accesskey              "B">
 <!ENTITY  undoCloseTab.label                 "មិនធ្វើវិញ​នូវ​ការ​បិទ​ផ្ទាំង">
 <!ENTITY  undoCloseTab.accesskey             "U">
 <!ENTITY  closeTab.label                     "បិទ​​ផ្ទាំង">
@@ -81,6 +124,8 @@ when there are no windows but Firefox is still running. -->
 <!ENTITY printCmd.accesskey "P">
 <!ENTITY printCmd.commandkey "p">
 
+<!ENTITY taskManagerCmd.label "កម្មវិធី​គ្រប់គ្រង​ភារកិច្ច">
+
 <!ENTITY goOfflineCmd.label "ធ្វើ​ការដោយ​គ្មាន​អ៊ីនធឺណិត">
 <!ENTITY goOfflineCmd.accesskey "k">
 
@@ -91,10 +136,26 @@ when there are no windows but Firefox is still running. -->
 <!ENTITY personalbarCmd.accesskey "B">
 <!ENTITY bookmarksToolbarItem.label "ធាតុ​របារ​ឧបករណ៍​​ចំណាំ">
 
-<!ENTITY toolbarContextMenu.reloadAllTabs.label "ផ្ទុកផ្ទាំង​ទាំងអស់​ឡើងវិញ">
-<!ENTITY toolbarContextMenu.reloadAllTabs.accesskey "A">
-<!ENTITY toolbarContextMenu.bookmarkAllTabs.label "ចំណាំ​ផ្ទាំង​ទាំងអស់…">
-<!ENTITY toolbarContextMenu.bookmarkAllTabs.accesskey "T">
+<!ENTITY toolbarContextMenu.reloadSelectedTab.label "ផ្ទុក​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស​ឡើងវិញ">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.reloadSelectedTab.accesskey,
+toolbarContextMenu.reloadSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.reloadSelectedTab.accesskey "R">
+<!ENTITY toolbarContextMenu.reloadSelectedTabs.label "ផ្ទុក​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស​ឡើងវិញ">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.reloadSelectedTab.accesskey,
+toolbarContextMenu.reloadSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.reloadSelectedTabs.accesskey "R">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.bookmarkSelectedTab.accesskey,
+toolbarContextMenu.bookmarkSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.bookmarkSelectedTab.accesskey "T">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.bookmarkSelectedTab.accesskey,
+toolbarContextMenu.bookmarkSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.bookmarkSelectedTabs.accesskey "T">
+<!ENTITY toolbarContextMenu.selectAllTabs.label "ជ្រើសរើស​ផ្ទាំង​ទាំងអស់">
+<!ENTITY toolbarContextMenu.selectAllTabs.accesskey "S">
 <!ENTITY toolbarContextMenu.undoCloseTab.label "មិនធ្វើវិញ​នូវ​ការ​បិទ​ផ្ទាំង">
 <!ENTITY toolbarContextMenu.undoCloseTab.accesskey "U">
 
@@ -111,6 +172,7 @@ convenience of Safari and Chrome users on macOS. See bug 1398988. -->
 <!ENTITY pageInfoCmd.label "ព័ត៌មាន​ទំព័រ">
 <!ENTITY pageInfoCmd.accesskey "I">
 <!ENTITY pageInfoCmd.commandkey "i">
+<!ENTITY ldbCmd.accesskey "L">
 <!ENTITY mirrorTabCmd.label "ផ្ទាំង​ឆ្លុះ">
 <!ENTITY mirrorTabCmd.accesskey "m">
 <!-- LOCALIZATION NOTE (enterFullScreenCmd.label, exitFullScreenCmd.label):
@@ -125,6 +187,7 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY showAllTabsCmd.label "បង្ហាញ​ផ្ទាំង​ទាំងអស់">
 <!ENTITY showAllTabsCmd.accesskey "A">
 <!ENTITY toggleReaderMode.key "R">
+<!ENTITY toggleReaderMode.win.keycode "VK_F9">
 
 <!ENTITY fxaSignIn.label "ចូល​ទៅកាន់ &syncBrand.shortName.label;">
 <!ENTITY fxaSignedIn.tooltip "បើក​ចំណូលចិត្ត &syncBrand.shortName.label;">
@@ -175,18 +238,12 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY editThisBookmarkCmd.label "កែ​សម្រួល​ចំណាំ​នេះ">
 <!ENTITY bookmarkThisPageCmd.commandkey "d">
 
-<!ENTITY subscribeToPageMenupopup.label "ជាវ​ទំព័រ​នេះ">
-<!ENTITY subscribeToPageMenuitem.label "ជាវ​ទំព័រ​នេះ…">
 <!ENTITY addCurPagesCmd.label "ចំណាំ​ផ្ទាំង​ទាំងអស់…">
 <!ENTITY showAllBookmarks2.label "បង្ហាញ​ចំណាំ​ទាំងអស់">
 <!ENTITY recentBookmarks.label "ដែល​បាន​ចំណាំ​ថ្មីៗ">
 <!ENTITY otherBookmarksCmd.label "ចំណាំ​ផ្សេង​ៗ​ទៀត">
 <!ENTITY mobileBookmarksCmd.label "ចំណាំ​ចល័ត">
 <!ENTITY bookmarksToolbarChevron.tooltip "បង្ហាញ​ចំណាំ​​ថែមទៀត">
-<!ENTITY showRecentlyBookmarked.label     "បង្ហាញ​ចំណាំ​ថ្មីៗ">
-<!ENTITY showRecentlyBookmarked.accesskey "h">
-<!ENTITY hideRecentlyBookmarked.label     "លាក់​ចំណាំ​ថ្មីៗ">
-<!ENTITY hideRecentlyBookmarked.accesskey "H">
 
 <!ENTITY backCmd.label                "ថយក្រោយ">
 <!ENTITY backCmd.accesskey            "B">
@@ -218,6 +275,7 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY urlbar.persistentStorageNotificationAnchor.tooltip     "ផ្ទុក​ទិន្នន័យ​នៅ​ក្នុង​កន្លែង​ផ្ទុក​អចិន្ត្រៃយ៍">
 <!ENTITY urlbar.remoteControlNotificationAnchor.tooltip   "កម្មវិធី​អ៊ីនធឺណិត​គឺ​ស្ថិត​ក្រោម​ការ​ត្រួតពិនិត្យ​ពី​ចម្ងាយ">
 
+
 <!ENTITY urlbar.webRTCShareDevicesNotificationAnchor.tooltip      "គ្រប់គ្រង​ការ​ចែករំលែក​កាមេរ៉ា​របស់​អ្នក និង/ឬ​មីក្រូហ្វូន​ជាមួយ​ទំព័រ​បណ្ដាញ​នេះ">
 <!ENTITY urlbar.webRTCShareMicrophoneNotificationAnchor.tooltip   "គ្រប់គ្រង​ការ​ចែករំលែក​មីក្រូហ្វូន​របស់​អ្នក​ជាមួយ​ទំព័រ​បណ្ដាញ​នេះ">
 <!ENTITY urlbar.webRTCShareScreenNotificationAnchor.tooltip       "គ្រប់គ្រង​ការ​ចែករំលែក​វីនដូ ឬ​អេក្រង់​របស់​អ្នក​ជាមួយ​ទំព័រ​បណ្ដាញ">
@@ -226,18 +284,17 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY urlbar.translateNotificationAnchor.tooltip       "បកប្រែ​ទំព័រ​នេះ">
 <!ENTITY urlbar.translatedNotificationAnchor.tooltip      "គ្រប់គ្រង​ការ​បកប្រែ​ទំព័រ">
 <!ENTITY urlbar.emeNotificationAnchor.tooltip             "គ្រប់គ្រង​ការ​ប្រើប្រាស់​កម្មវិធី DRM">
+<!ENTITY urlbar.midiNotificationAnchor.tooltip            "បើក​ផ្ទាំង MIDI">
 
 <!ENTITY urlbar.cameraBlocked.tooltip            "អ្នក​បាន​បិទ​កាមេរ៉ា​របស់​អ្នក​សម្រាប់​វិបសាយ​នេះ។">
 <!ENTITY urlbar.microphoneBlocked.tooltip        "អ្នក​បាន​បិទ​មីក្រូហ្វូន​របស់​អ្នក​សម្រាប់​វិបសាយ​នេះ។">
 <!ENTITY urlbar.screenBlocked.tooltip            "អ្នក​បាន​បិទ​វិបសាយ​នេះ​ពី​ការ​ចែករំលែក​អេក្រង់​របស់​អ្នក។">
 <!ENTITY urlbar.geolocationBlocked.tooltip       "អ្នក​បាន​បិទ​ព័ត៌មាន​អំពី​ទីតាំង​សម្រាប់​វិបសាយ​នេះ។">
-<!ENTITY urlbar.indexedDBBlocked.tooltip         "អ្នក​បាន​បិទ​ទំហំ​ផ្ទុក​ទិន្នន័យ​សម្រាប់​វិបសាយ​នេះ។">
 <!ENTITY urlbar.webNotificationsBlocked.tooltip  "អ្នក​បាន​បិទ​ការ​ជូនដំណឹង​សម្រាប់​វិបសាយ​នេះ។">
 <!ENTITY urlbar.persistentStorageBlocked.tooltip "អ្នក​បាន​ទប់ស្កាត់​ការ​ផ្ទុក​រហូត​សម្រាប់​វេបសាយ​នេះ។">
-
 <!ENTITY urlbar.popupBlocked.tooltip             "អ្នក​បាន​ទប់ស្កាត់​ផ្ទាំង​លេចឡើង​សម្រាប់​គេហទំព័រ​នេះ។">
-
 <!ENTITY urlbar.canvasBlocked.tooltip            "អ្នក​បាន​ទប់ស្កាត់​ការដកទិន្នន័យ​កម្មវិធីកែ​រូបភាព​សម្រាប់​គេហទំព័រ​នេះ។">
+<!ENTITY urlbar.flashPluginBlocked.tooltip       "អ្នក​បានរារាំង​គេហទំព័រ​នេះ​មិន​ឲ្យ​​ប្រើកម្មវិធីជំនួយ Adobe Flash ។">
 
 <!ENTITY urlbar.openHistoryPopup.tooltip                "បង្ហាញ​ប្រវត្តិ">
 
@@ -262,7 +319,7 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY addBookmarksMenu.label             "បញ្ចូល​ម៉ឺនុយចំណាំទៅកាន់របារឧបករណ៍">
 <!ENTITY removeBookmarksMenu.label          "ដក​ម៉ឺនុយចំណាំចេញពីរបារឧបករណ៍">
 
-<!-- LOCALIZATION NOTE (bookmarksSidebarGtkCmd.commandkey): This command
+<!-- LOCALIZATION NOTE (bookmarksGtkCmd.commandkey): This command
   -  key should not contain the letters A-F, since these are reserved
   -  shortcut keys on Linux. -->
 <!ENTITY bookmarksGtkCmd.commandkey "o">
@@ -294,16 +351,17 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY inspectContextMenu.label     "ត្រួតពិនិត្យ​ធាតុ">
 <!ENTITY inspectContextMenu.accesskey "Q">
 
+
 <!ENTITY fileMenu.label         "ឯកសារ">
 <!ENTITY fileMenu.accesskey       "F">
 <!ENTITY newUserContext.label             "ផ្ទាំង​ឧបករណ៍​ផ្ទុក​ថ្មី">
 <!ENTITY newUserContext.accesskey         "B">
+<!ENTITY manageUserContext.accesskey      "O">
 <!ENTITY newNavigatorCmd.label        "បង្អួច​​​ថ្មី">
 <!ENTITY newNavigatorCmd.key        "N">
 <!ENTITY newNavigatorCmd.accesskey      "N">
 <!ENTITY newPrivateWindow.label     "បង្អួច​ឯកជន​ថ្មី">
 <!ENTITY newPrivateWindow.accesskey "W">
-<!ENTITY newNonRemoteWindow.label   "បង្អួច​គ្មាន-e10s ថ្មី">
 
 <!ENTITY editMenu.label         "កែសម្រួល">
 <!ENTITY editMenu.accesskey       "E">
@@ -358,18 +416,12 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY showAllHistoryCmd2.label "បង្ហាញ​ប្រវត្តិ​ទាំងអស់">
 <!ENTITY showAllHistoryCmd.commandkey "H">
 
-<!ENTITY appMenuCustomize.label "ប្ដូរ​តាម​តម្រូវ​ការ">
-<!ENTITY appMenuCustomize.tooltip "ប្ដូរ​របារ​ឧបករណ៍ និង​ម៉ឺនុយ​តាម​តម្រូវ​ការ">
-<!ENTITY appMenuCustomizeExit.label "បិទ​ការ​ប្ដូរ​តាម​តម្រូវ​ការ">
-<!ENTITY appMenuCustomizeExit.tooltip "បញ្ចប់​ការ​ប្ដូរ​តាម​តម្រូវ​ការ">
-
 <!ENTITY appMenuHistory.showAll.label "បង្ហាញ​ប្រវត្តិ​ទាំងអស់">
 <!ENTITY appMenuHistory.clearRecent.label "សម្អាត​ប្រវត្តិ​ថ្មីៗ…">
 <!ENTITY appMenuHistory.restoreSession.label "ស្ដារ​សម័យ​មុន">
 <!ENTITY appMenuHistory.viewSidebar.label "មើល​របារ​ចំហៀង​ប្រវត្តិ">
 <!ENTITY appMenuHistory.recentHistory.label "ប្រវត្តិ​ថ្មីៗ">
 <!ENTITY appMenuHelp.label "ជំនួយ">
-<!ENTITY appMenuHelp.tooltip "បើក​ម៉ឺនុយ​ជំនួយ">
 
 <!ENTITY appMenuRemoteTabs.label "ផ្ទាំង​ដែល​បាន​ធ្វើ​សមកាលកម្ម">
 <!-- LOCALIZATION NOTE (appMenuRemoteTabs.notabs.label): This is shown beneath
@@ -386,52 +438,44 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!-- LOCALIZATION NOTE (appMenuRemoteTabs.tabsnotsyncing.label): This is shown
      when Sync is configured but syncing tabs is disabled. -->
 <!ENTITY appMenuRemoteTabs.tabsnotsyncing.label "បើកសមកាលកម្មផ្ទាំងដើម្បីបង្ហាញបញ្ជីនៃផ្ទាំងពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក ។">
-<!-- LOCALIZATION NOTE (appMenuRemoteTabs.noclients.label): This is shown
+<!-- LOCALIZATION NOTE (appMenuRemoteTabs.noclients.subtitle): This is shown
      when Sync is configured but this appears to be the only device attached to
      the account. We also show links to download Firefox for android/ios. -->
-<!ENTITY appMenuRemoteTabs.noclients.title "គ្មាន​ផ្ទាំង​ដែល​ធ្វើ​សមកាលកម្ម... នៅ​ឡើយ​ទេ!">
 <!ENTITY appMenuRemoteTabs.noclients.subtitle "ចង់​មើល​ផ្ទាំង​របស់​អ្នក​ពី​ឧបករណ៍​ផ្សេង​នៅ​ទីនេះ​មែន​ទេ?">
-<!ENTITY appMenuRemoteTabs.openprefs.label "សមកាលកម្ម​ចំណូលចិត្ត">
+<!ENTITY appMenuRemoteTabs.opensyncprefs.label "បើកចំណូលចិត្តសមកាលកម្ម">
 <!ENTITY appMenuRemoteTabs.notsignedin.label "ចូល​ដើម្បី​មើល​បញ្ជី​នៃ​ផ្ទាំង​ទាំង​ឡាយ​ពី​ឧបករណ៍​ផ្សេង​ទៀត​របស់​អ្នក។​">
 <!ENTITY appMenuRemoteTabs.unverified.label "គណនី​របស់​អ្នក​ត្រូវធ្វើការ​​ផ្ទៀងផ្ទាត់។">
 <!ENTITY appMenuRemoteTabs.signin.label "ចូល​ដើម្បី​ធ្វើ​សមកាលកម្ម">
 <!ENTITY appMenuRemoteTabs.managedevices.label "គ្រប់គ្រង​ឧបករណ៍…">
 <!ENTITY appMenuRemoteTabs.sidebar.label "មើល​របា​ចំហៀង​នៃផ្ទាំងដែលបានធ្វើ​សមកាលកម្ម​">
-
 <!ENTITY appMenuRemoteTabs.connectdevice.label "ភ្ជាប់​ឧបករណ៍​ផ្សេង">
 
 <!ENTITY appMenuRecentHighlights.label "ការរំលេច​ថ្មីៗ">
 
 <!ENTITY customizeMenu.addToToolbar.label "បន្ថែម​ទៅ​របារ​ឧបករណ៍">
 <!ENTITY customizeMenu.addToToolbar.accesskey "A">
-<!ENTITY customizeMenu.addToPanel.label "បន្ថែម​ទៅម៉ឺនុយ">
-<!ENTITY customizeMenu.addToPanel.accesskey "M">
 <!-- LOCALIZATION NOTE (customizeMenu.addToOverflowMenu.label,
      customizeMenu.pinToOverflowMenu.label, customizeMenu.unpinFromOverflowMenu.label)
      The overflow menu is the menu that appears if you click the chevron (>> button)
-     in the location bar. These labels are only used in Photon, where you can put
-     items into this menu permanently (pinned). -->
+     in the location bar. -->
 <!ENTITY customizeMenu.addToOverflowMenu.label "បន្ថែម​ទៅ​ម៉ឺនុយ Overflow">
 <!ENTITY customizeMenu.addToOverflowMenu.accesskey "M">
-<!ENTITY customizeMenu.moveToToolbar.label "ផ្លាស់ទី​ទៅរបារ​ឧបករណ៍">
-<!ENTITY customizeMenu.moveToToolbar.accesskey "o">
-<!-- LOCALIZATION NOTE (customizeMenu.moveToPanel.accesskey, customizeMenu.pinToOverflowMenu.accesskey)
+<!-- LOCALIZATION NOTE (customizeMenu.pinToOverflowMenu.accesskey)
      can appear on the same context menu as menubarCmd and personalbarCmd,
-     so they should have different access keys. customizeMenu.moveToToolbar and
-     customizeMenu.moveToPanel are mutually exclusive, so can share access
-     keys.  -->
-<!ENTITY customizeMenu.moveToPanel.label "ផ្លាស់​ទី​​ទៅ​ម៉ឺនុយ">
-<!ENTITY customizeMenu.moveToPanel.accesskey "o">
+     so they should have different access keys.  -->
 <!ENTITY customizeMenu.pinToOverflowMenu.label "ខ្ទាស់​ទៅ​ម៉ឺនុយ Overflow">
 <!ENTITY customizeMenu.pinToOverflowMenu.accesskey "P">
 <!ENTITY customizeMenu.unpinFromOverflowMenu.label "ដោះ​ខ្ទាស់​ចេញពី​ម៉ឺនុយ Overflow">
 <!ENTITY customizeMenu.unpinFromOverflowMenu.accesskey "U">
 <!ENTITY customizeMenu.removeFromToolbar.label "លុប​ចេញពី​របារ​ឧបករណ៍">
 <!ENTITY customizeMenu.removeFromToolbar.accesskey "R">
-<!ENTITY customizeMenu.removeFromMenu.label "លុប​ចេញពី​ម៉ឺនុយ">
-<!ENTITY customizeMenu.removeFromMenu.accesskey "R">
 <!ENTITY customizeMenu.addMoreItems.label "បន្ថែម​ធាតុ​ច្រើន​ទៀត…">
 <!ENTITY customizeMenu.addMoreItems.accesskey "A">
+<!ENTITY customizeMenu.autoHideDownloadsButton.accesskey "A">
+<!ENTITY customizeMenu.manageExtension.label "គ្រប់គ្រងផ្នែកបន្ថែម">
+<!ENTITY customizeMenu.manageExtension.accesskey "E">
+<!ENTITY customizeMenu.removeExtension.label "យកផ្នែក​បន្ថែម​ចេញ">
+<!ENTITY customizeMenu.removeExtension.accesskey "v">
 
 <!-- LOCALIZATION NOTE (moreMenu.label) This label is used in the new Photon
     app (hamburger) menu. When clicked, it opens a subview that contains
@@ -444,14 +488,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!-- LOCALIZATION NOTE (urlbar.extension.label): Used to indicate that a selected autocomplete entry is provided by an extension. -->
 <!ENTITY urlbar.extension.label       "ផ្នែក​បន្ថែម៖">
 <!ENTITY urlbar.switchToTab.label     "ប្ដូរ​ទៅ​ផ្ទាំង៖">
-
-<!ENTITY urlbar.searchSuggestionsNotification.question "តើ​អ្នក​ចង់​ធ្វើ​ឲ្យ​បទពិសោធន៍​ស្វែងរក​របស់​អ្នក​ជាមួយ​ការ​ស្នើ​បាន​ប្រសើរ​ដែរ​ ឬ​ទេ?">
-<!ENTITY urlbar.searchSuggestionsNotification.learnMore "ស្វែងយល់​បន្ថែម…">
-<!ENTITY urlbar.searchSuggestionsNotification.learnMore.accesskey "l">
-<!ENTITY urlbar.searchSuggestionsNotification.disable "ទេ">
-<!ENTITY urlbar.searchSuggestionsNotification.disable.accesskey "n">
-<!ENTITY urlbar.searchSuggestionsNotification.enable "បាទ/ចាស">
-<!ENTITY urlbar.searchSuggestionsNotification.enable.accesskey "y">
 
 <!-- LOCALIZATION NOTE (urlbar.searchSuggestionsNotification.hintPrefix): Shown just before the suggestions opt-out hint. -->
 <!ENTITY urlbar.searchSuggestionsNotification.hintPrefix "ព័ត៌មាន​ជំនួយ៖">
@@ -500,7 +536,7 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!-- LOCALIZATION NOTE (searchFor.label, searchWith.label):
      These two strings are used to build the header above the list of one-click
      search providers:  "Search for <used typed keywords> with:" -->
-<!ENTITY searchFor.label              "ស្វែងរក៖">
+<!ENTITY searchFor.label              "ស្វែងរក">
 <!ENTITY searchWith.label             " ជាមួយ៖">
 
 <!-- LOCALIZATION NOTE (search.label, searchAfter.label):
@@ -548,9 +584,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY reloadFrameCmd.label         "ផ្ទុក​ស៊ុម​ឡើងវិញ">
 <!ENTITY reloadFrameCmd.accesskey     "R">
 <!ENTITY viewPartialSourceForSelectionCmd.label "មើល​កូដ​ជម្រើស">
-<!ENTITY viewPartialSourceForMathMLCmd.label    "មើល​កូដ MathML">
-<!-- LOCALIZATION NOTE (viewPartialSourceCmd.accesskey): This accesskey is used for both
-         viewPartialSourceForSelectionCmd.label and viewPartialSourceForMathMLCmd.label -->
 <!ENTITY viewPartialSourceCmd.accesskey "e">
 <!ENTITY viewPageSourceCmd.label      "មើល​កូដ​ទំព័រ">
 <!ENTITY viewPageSourceCmd.accesskey  "V">
@@ -581,7 +614,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY bookmarkThisFrameCmd.label      "ចំណាំ​ស៊ុម​នេះ">
 <!ENTITY bookmarkThisFrameCmd.accesskey  "m">
 <!ENTITY pageAction.copyLink.label    "ចម្លង​តំណ">
-<!ENTITY copyURLFeedback.label        "បាន​ចម្លង!">
 <!ENTITY emailPageCmd.label           "តំណ​អ៊ីមែល…">
 <!ENTITY emailPageCmd.accesskey       "E">
 <!ENTITY savePageCmd.label            "រក្សា​ទុក​ទំព័រជា...">
@@ -612,6 +644,9 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY hidePluginCmd.label          "លាក់​កម្មវិធី​ជំនួយ​នេះ">
 <!ENTITY hidePluginCmd.accesskey      "H">
 <!ENTITY copyLinkCmd.label            "ចម្លង​ទីតាំង​តំណ">
+<!-- LOCALIZATION NOTE (copyLinkCmd.accesskey): The access keys for "Copy Link
+Location" and "Copy Email Address" should be the same if possible; the two
+context menu items are mutually exclusive. -->
 <!ENTITY copyLinkCmd.accesskey        "a">
 <!ENTITY copyImageCmd.label           "ចម្លង​ទីតាំង​រូបភាព">
 <!ENTITY copyImageCmd.accesskey       "o">
@@ -622,6 +657,9 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY copyAudioURLCmd.label        "ចម្លង​ទីតាំង​អូឌីយ៉ូ">
 <!ENTITY copyAudioURLCmd.accesskey    "o">
 <!ENTITY copyEmailCmd.label           "ចម្លង​អាសយដ្ឋានអ៊ីមែល">
+<!-- LOCALIZATION NOTE (copyEmailCmd.accesskey): The access keys for "Copy Link
+Location" and "Copy Email Address" should be the same if possible; the two
+context menu items are mutually exclusive. -->
 <!ENTITY copyEmailCmd.accesskey       "E">
 <!ENTITY thisFrameMenu.label              "ស៊ុម​នេះ">
 <!ENTITY thisFrameMenu.accesskey          "h">
@@ -730,8 +768,6 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY pageStylePersistentOnly.label "រចនាប័ទ្ម​ទំព័រ​មូលដ្ឋាន">
 <!ENTITY pageStylePersistentOnly.accesskey "b">
 
-<!ENTITY pageReportIcon.tooltip            "ផ្លាស់ប្ដូរ​ការ​កំណត់​ទប់ស្កាត់​ការ​លេចឡើង​សម្រាប់​តំបន់​បណ្ដាញ​នេះ">
-
 <!ENTITY allowPopups.accesskey "p">
 <!-- On Windows we use the term "Options" to describe settings, but
      on Linux and Mac OS X we use "Preferences" - carry that distinction
@@ -759,13 +795,17 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY spellAddDictionaries.label "បន្ថែម​​វចនានុក្រម...">
 <!ENTITY spellAddDictionaries.accesskey "A">
 
+<!-- LOCALIZATION NOTE (editBookmark.panel.width): width of the bookmark panel.
+     Should be large enough to fully display the Done and Cancel/
+     Remove Bookmark buttons. -->
 <!ENTITY editBookmark.done.label                     "ធ្វើ​រួច">
-<!ENTITY editBookmark.removeBookmark.accessKey       "R">
+<!ENTITY editBookmark.showForNewBookmarks.accesskey   "S">
 
 <!-- LOCALIZATION NOTE (identity.securityView.label)
      This is the header of the security subview in the Site Identity panel. -->
 <!ENTITY identity.securityView.label "សុវត្ថិភាព​ទំព័រ">
 
+<!ENTITY identity.connection "ការ​តភ្ជាប់">
 <!ENTITY identity.connectionSecure "ការ​តភ្ជាប់​ដែលមាន​សុវត្ថិភាព">
 <!ENTITY identity.connectionNotSecure "ការតភ្ជាប់​ពុំ​មាន​សុវត្ថិភាព">
 <!ENTITY identity.connectionFile "ទំព័រ​នេះ​ត្រូវ​បាន​រក្សាទុក​នៅ​ក្នុង​កុំព្យូទ័រ​របស់​អ្នក។">
@@ -803,6 +843,7 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 
 <!ENTITY identity.moreInfoLinkText2 "ព័ត៌មាន​បន្ថែម">
 
+
 <!ENTITY identity.permissions "ការ​អនុញ្ញាត">
 <!ENTITY identity.permissionsEmpty "អ្នក​មិន​បាន​ផ្ដល់​សិទ្ធិ​អនុញ្ញាត​ពិសេស​ណា​មួយ​​ដល់​តំបន់បណ្ដាញ​នេះ​ទេ។">
 <!ENTITY identity.permissionsReloadHint "អ្នក​ប្រហែល​ត្រូវ​ផ្ទុក​ទំព័រ​ឡើងវិញ​ ដើម្បី​ឲ្យ​ការ​ផ្លាស់ប្ដូរអនុវត្ត។">
@@ -816,7 +857,6 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 
 <!ENTITY syncedTabs.sidebar.label              "ផ្ទាំង​ដែល​បាន​ធ្វើ​សមកាលកម្ម">
 <!ENTITY syncedTabs.sidebar.noclients.label    "ចូលទៅកាន់ Firefox ពីឧបករណ៍ផ្សេងទៀតរបស់អ្នកដើម្បីមើលផ្ទាំងរបស់វានៅទីនេះ។">
-<!ENTITY syncedTabs.sidebar.noclients.title    "មិន​មាន​ផ្ទាំង​បាន​ធ្វើ​សមកាលកម្ម… នៅ​ឡើយ!">
 <!ENTITY syncedTabs.sidebar.noclients.subtitle "តើ​អ្នក​ចង់​មើល​ផ្ទាំង​ពី​ឧបករណ៍​ផ្សេង​ទៀត​នៅ​ទីនេះ​ទេ?">
 <!ENTITY syncedTabs.sidebar.notsignedin.label  "ចូល​ដើម្បី​មើល​បញ្ជី​នៃ​ផ្ទាំង​ទាំង​ឡាយ​ពី​ឧបករណ៍​ផ្សេង​ទៀត​របស់​អ្នក។​">
 <!ENTITY syncedTabs.sidebar.unverified.label   "គណនី​របស់​អ្នក​ត្រូវ​ធ្វើ​ការផ្ទៀងផ្ទាត់។">
@@ -826,7 +866,6 @@ you can use these alternative items. Otherwise, their values should be empty.  -
      when Sync is configured but syncing tabs is disabled. -->
 <!ENTITY syncedTabs.sidebar.tabsnotsyncing.label       "បើកការធ្វើសមកាលកម្មផ្ទាំងដើម្បីមើលបញ្ជីនៃផ្ទាំងទាំងឡាយពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក។">
 <!ENTITY syncedTabs.sidebar.searchPlaceholder  "ផ្ទាំង​បាន​ធ្វើ​សមកាលកម្ម​ការស្វែងរក​">
-
 <!ENTITY syncedTabs.sidebar.connectAnotherDevice  "ភ្ជាប់​ឧបករណ៍​ផ្សេង">
 
 <!-- LOCALIZATION NOTE (syncedTabs.context.open.accesskey,
@@ -840,7 +879,6 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY syncedTabs.context.openInNewWindow.label            "បើក​ក្នុង​បង្អួច​ថ្មី">
 <!ENTITY syncedTabs.context.openInNewWindow.accesskey        "N">
 <!ENTITY syncedTabs.context.openInNewPrivateWindow.label     "បើក​ក្នុង​បង្អួចឯក​ជន​ថ្មី">
-<!ENTITY syncedTabs.context.openInNewPrivateWindow.accesskey "">
 <!ENTITY syncedTabs.context.bookmarkSingleTab.label          "ចំណាំ​​ផ្ទាំង​​នេះ...">
 <!ENTITY syncedTabs.context.bookmarkSingleTab.accesskey      "B">
 <!ENTITY syncedTabs.context.copy.label                       "ចម្លង">
@@ -862,8 +900,6 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY syncReAuthItem.accesskey     "R">
 <!ENTITY syncToolbarButton.label      "ធ្វើ​សមកាលកម្ម">
 
-<!ENTITY customizeMode.menuAndToolbars.empty "ចង់​បាន​ឧបករណ៍​បន្ថែម​ឬ?">
-<!ENTITY customizeMode.menuAndToolbars.emptyLink "ជ្រើស​ពី​កម្មវិធី​បន្ថែម​រាប់​ពាន់">
 <!ENTITY customizeMode.restoreDefaults "ស្ដារ​លំនាំ​ដើម">
 <!ENTITY customizeMode.done "ធ្វើ​រួច">
 <!ENTITY customizeMode.titlebar "របារ​ចំណងជើង">
@@ -875,7 +911,8 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY customizeMode.lwthemes.menuManage.accessKey "M">
 <!ENTITY customizeMode.lwthemes.menuGetMore "យក​រូបរាង​ច្រើនទៀត">
 <!ENTITY customizeMode.lwthemes.menuGetMore.accessKey "G">
-<!ENTITY customizeMode.emptyOverflowList.description "អូស រួច​ទម្លាក់​ធាតុ​នៅ​ទីនេះ​ដើម្បី​ងាយស្រួល​ប្រើ ប៉ុន្តែ​វា​នៅ​ក្រៅ​របា​ឧបករណ៍​របស់​អ្នក…">
+<!ENTITY customizeMode.overflowList.title2 "ម៉ឺនុយ Overflow">
+<!ENTITY customizeMode.overflowList.description "អូស​ទម្លាក់​ធាតុ​នៅ​ត្រង់​នេះ ដើម្បីឲ្យពួកគេអាចចូលប្រើបាន ប៉ុន្តែ​មិន​នៅ​ក្នុង​របារឧបករណ៍របស់អ្នកទេ…">
 <!ENTITY customizeMode.uidensity "ដង់ស៊ីតេ">
 <!-- LOCALIZATION NOTE (customizeMode.uidensity.menuNormal.*):
      “Normal” is displayed in the Customize screen, under the Density menu. -->
@@ -897,6 +934,7 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY customizeMode.uidensity.menuTouch.accessKey "T">
 <!ENTITY customizeMode.uidensity.autoTouchMode.checkbox.label "ប្រើ​ការ​ប៉ះ​សម្រាប់​របៀប​ថេប្លេត">
 
+<!ENTITY customizeMode.autoHideDownloadsButton.label "លាក់​ដោយ​ស្វ័យប្រវត្តិ">
 
 <!ENTITY getUserMedia.selectCamera.label "ម៉ាស៊ីន​ថត​ដែល​ត្រូវ​ចែករំលែក៖">
 <!ENTITY getUserMedia.selectCamera.accesskey "C">
@@ -905,22 +943,77 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY getUserMedia.audioCapture.label "អូឌីយ៉ូ​ពី​ផ្ទាំង​នឹង​ត្រូវ​បាន​ចែករំលែក។">
 <!ENTITY getUserMedia.allWindowsShared.message "បង្អួច​ទាំងអស់​​ដែល​អាច​មើល​ឃើញ​នៅ​លើ​អេក្រង់​របស់​អ្នក​នឹង​ត្រូវ​បាន​ចែករំលែក។">
 
+<!ENTITY contentBlocking.title "ទប់ស្កាត់​មាតិកា">
+<!ENTITY contentBlocking.disabled.label "បាន​បិទ">
+
+<!-- LOCALIZATION NOTE (contentBlocking.fastBlock.blocked.label):
+     This label signals that this type of content blocking is turned
+     ON and is successfully blocking malicious/slow content, so this is
+     a positive thing. It forms the end of the (imaginary) sentence
+     "Slow-Loading Trackers [are] Blocked"-->
+<!ENTITY contentBlocking.fastBlock.blocked.label "បាន​ទប់ស្កាត់">
+<!-- LOCALIZATION NOTE (contentBlocking.fastBlock.blocking.label):
+     This label signals that this type of content blocking is turned
+     ON, so this is a positive thing. It forms the verb in (imaginary) sentence
+     "Firefox is blocking Slow-Loading Trackers"-->
+<!-- LOCALIZATION NOTE (contentBlocking.fastBlock.add.label):
+     This is displayed as a link to preferences, where the user can add
+     this specific type of content blocking. When this text is shown
+     the type of content blocking is currently not enabled. -->
+
+
+<!-- LOCALIZATION NOTE (contentBlocking.trackingProtection.blocked.label):
+     This label signals that this type of content blocking is turned
+     ON and is successfully blocking tracker content, so this is
+     a positive thing. It forms the end of the (imaginary) sentence
+     "Trackers [are] Blocked"-->
+<!ENTITY contentBlocking.trackingProtection.blocked.label "បាន​ទប់ស្កាត់">
+<!-- LOCALIZATION NOTE (contentBlocking.tranckingProtection.blocking.label):
+     This label signals that this type of content blocking is turned
+     ON, so this is a positive thing. It forms the verb in the (imaginary) sentence
+     "Firefox is blocking Trackers"-->
+<!-- LOCALIZATION NOTE (contentBlocking.trackingProtection.add.label):
+     This is displayed as a link to preferences, where the user can add
+     this specific type of content blocking. When this text is shown
+     the type of content blocking is currently not enabled. -->
+
+<!-- LOCALIZATION NOTE (contentBlocking.3rdPartyCookies.blocked.label):
+     This label signals that this type of content blocking is turned
+     ON and is successfully blocking third-party cookies, so this is
+     a positive thing. It forms the end of the (imaginary) sentence
+     "Third-Party Cookies [are] Blocked"-->
+<!ENTITY contentBlocking.3rdPartyCookies.blocked.label "បាន​ទប់ស្កាត់">
+<!-- LOCALIZATION NOTE (contentBlocking.tranckingProtection.blocking.label):
+     This label signals that this type of content blocking is turned
+     ON, so this is a positive thing. It forms the verb in the (imaginary) sentence
+     "Firefox is blocking Third-Party Cookies"-->
+<!-- LOCALIZATION NOTE (contentBlocking.3rdPartyCookies.add.label):
+     This is displayed as a link to preferences, where the user can add
+     this specific type of content blocking. When this text is shown
+     the type of content blocking is currently not enabled. -->
+
+
+
+
+<!ENTITY contentBlocking.breakageReportView.learnMore "ស្វែង​យល់​បន្ថែម">
+<!ENTITY contentBlocking.breakageReportView.sendReport.label "ផ្ញើ​របាយការណ៍">
+<!ENTITY contentBlocking.breakageReportView.cancel.label "បោះបង់">
+
 <!ENTITY trackingProtection.title "ការ​ការពារ​ការ​តាមដាន">
-<!ENTITY trackingProtection.detectedBlocked3 "&brandShortName; កំពុង​បិទ​ផ្នែក​ខ្លះ​នៃ​ទំព័រ​ដែល​អាច​តាម​ដាន​ការ​រក​មើល​របស់​អ្នក។">
-<!ENTITY trackingProtection.detectedNotBlocked3 "តំបន់បណ្ដាញ​នេះ​មាន​ធាតុ​ដែល​អាច​តាម​ដាន​ការ​រក​មើល​របស់​អ្នក។ អ្នក​បាន​បិទ​ការ​ការពារ។">
-<!ENTITY trackingProtection.notDetected3 "រក​មិន​ឃើញ​ធាតុ​ដែល​​តាមដាន​នៅ​លើ​ទំព័រ​នេះ។">
-<!-- LOCALIZATION NOTE (trackingProtection.unblock.label, trackingProtection.unblock.accesskey):
+
+<!-- LOCALIZATION NOTE (trackingProtection.unblock3.label, trackingProtection.unblock3.accesskey):
      The associated button with this label and accesskey is only shown when opening the control
      center while looking at a site with trackers in NON-private browsing mode. -->
-<!ENTITY trackingProtection.unblock.label "បិទ​ការ​ការពារ​សម្រាប់​តំបន់​បណ្ដាញ​នេះ">
-<!ENTITY trackingProtection.unblock.accesskey "D">
-<!-- LOCALIZATION NOTE (trackingProtection.unblockPrivate.label, trackingProtection.unblockPrivate.accesskey):
+<!-- LOCALIZATION NOTE (trackingProtection.unblockPrivate3.label, trackingProtection.unblockPrivate3.accesskey):
      The associated button with this label and accesskey is only shown when opening the control
      center while looking at a site with trackers in PRIVATE browsing mode. -->
-<!ENTITY trackingProtection.unblockPrivate.label "បិទ​ការ​ការពារ​សម្រាប់​សម័យ​នេះ">
-<!ENTITY trackingProtection.unblockPrivate.accesskey "D">
-<!ENTITY trackingProtection.block2.label "បើក​ការការពារ">
-<!ENTITY trackingProtection.block2.accesskey "E">
+
+<!-- LOCALIZATION NOTE (trackingProtection.unblock5.label, trackingProtection.unblock5.accesskey):
+     The associated button with this label and accesskey is only shown when opening the control
+     center while looking at a site with trackers in NON-private browsing mode. -->
+<!-- LOCALIZATION NOTE (trackingProtection.unblockPrivate6.label, trackingProtection.unblockPrivate6.accesskey):
+     The associated button with this label and accesskey is only shown when opening the control
+     center while looking at a site with trackers in PRIVATE browsing mode. -->
 
 <!ENTITY pluginNotification.showAll.label "បង្ហាញ​ទាំងអស់">
 <!ENTITY pluginNotification.showAll.accesskey "S">
@@ -985,6 +1078,7 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY updateManual.cancelButton.accesskey "N">
 <!ENTITY updateManual.panelUI.label "ទាញ​យក​ច្បាប់​ចម្លង &brandShorterName; ថ្មី">
 
+<!ENTITY updateRestart.message2 "បន្ទាប់ពីចាប់ផ្តើមឡើងវិញ &brandShorterName; នឹងស្តារផ្ទាំង ដែលបើកទាំងអស់របស់អ្នក ដែលមិននៅក្នុង​មុខងារ​រុករក​ឯកជន។">
 <!ENTITY updateRestart.header.message2 "ចាប់ផ្ដើម​ឡើងវិញ​ដើម្បី​ធ្វើ​បច្ចុប្បន្នភាព &brandShorterName;។">
 <!ENTITY updateRestart.acceptButton.label "ចាប់ផ្ដើម និង​ស្ដារ">
 <!ENTITY updateRestart.acceptButton.accesskey "R">
@@ -992,14 +1086,29 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY updateRestart.cancelButton.accesskey "N">
 <!ENTITY updateRestart.panelUI.label2 "ចាប់ផ្ដើម​ឡើងវិញ​ដើម្បី​ធ្វើ​បច្ចុប្បន្នភាព &brandShorterName;">
 
+<!ENTITY newTabControlled.header.message "ផ្ទាំងថ្មីរបស់អ្នកត្រូវបានប្តូរ។">
+<!ENTITY newTabControlled.keepButton.label "រក្សា​ការ​ផ្លាស់ប្ដូរ">
+<!ENTITY newTabControlled.keepButton.accesskey "K">
+
+
+<!ENTITY tabHideControlled.disableButton.label "បិទ​ផ្នែក​បន្ថែម">
 
 <!ENTITY pageActionButton.tooltip "ទំព័រ​សកម្មភាព">
-
+<!ENTITY pageAction.addToUrlbar.label "បញ្ចូល​ទៅក្នុង​របារអាសយដ្ឋាន">
+<!ENTITY pageAction.removeFromUrlbar.label "លុបចេញពីរបារអាសយដ្ឋាន">
+<!ENTITY pageAction.manageExtension.label "គ្រប់គ្រងផ្នែកបន្ថែម…">
 
 <!ENTITY sendToDevice.syncNotReady.label "កំពុង​ធ្វើ​សមកាលកម្ម​ឧបករណ៍…">
 
+
+<!ENTITY libraryButton.tooltip "មើលប្រវត្តិ ចំណាំដែលបានរក្សាទុក និងច្រើនទៀត">
 
 <!-- LOCALIZATION NOTE: (accessibilityIndicator.tooltip): This is used to
      display a tooltip for accessibility indicator in toolbar/tabbar. It is also
      used as a textual label for the indicator used by assistive technology
      users. -->
+<!ENTITY accessibilityIndicator.tooltip "បានបើក​មុខងារ​ភាពងាយស្រួលចូលប្រើ">
+
+<!-- LOCALIZATION NOTE: (addonPostInstallMessage.label):
+     The first <image> tag is replaced with the icon for the add-ons menu.
+     The second <image> tag is replaced with the icon for the toolbar menu. -->

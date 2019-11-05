@@ -10,43 +10,51 @@ const { Component } = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const {
-  debugLocalAddon,
-  debugRemoteAddon,
-  isLegacyTemporaryExtension,
+  debugAddon,
+  getExtensionUuid,
   isTemporaryID,
   parseFileUri,
-  uninstallAddon
+  uninstallAddon,
 } = require("../../modules/addon");
 const Services = require("Services");
 
-loader.lazyImporter(this, "BrowserToolboxProcess",
-  "resource://devtools/client/framework/ToolboxProcess.jsm");
-
-loader.lazyRequireGetter(this, "DebuggerClient",
-  "devtools/shared/client/debugger-client", true);
+loader.lazyRequireGetter(
+  this,
+  "DebuggerClient",
+  "devtools/shared/client/debugger-client",
+  true
+);
 
 const Strings = Services.strings.createBundle(
-  "chrome://devtools/locale/aboutdebugging.properties");
+  "chrome://devtools/locale/aboutdebugging.properties"
+);
 
-const TEMP_ID_URL = "https://developer.mozilla.org/Add-ons" +
-                    "/WebExtensions/WebExtensions_and_the_Add-on_ID";
-const LEGACY_WARNING_URL = "https://wiki.mozilla.org/Add-ons/Future_of_Bootstrap";
+const TEMP_ID_URL =
+  "https://developer.mozilla.org/Add-ons" +
+  "/WebExtensions/WebExtensions_and_the_Add-on_ID";
+const LEGACY_WARNING_URL =
+  "https://wiki.mozilla.org/Add-ons/Future_of_Bootstrap";
 
 function filePathForTarget(target) {
   // Only show file system paths, and only for temporarily installed add-ons.
-  if (!target.temporarilyInstalled || !target.url || !target.url.startsWith("file://")) {
+  if (
+    !target.temporarilyInstalled ||
+    !target.url ||
+    !target.url.startsWith("file://")
+  ) {
     return [];
   }
-  let path = parseFileUri(target.url);
+  const path = parseFileUri(target.url);
   return [
     dom.dt(
       { className: "addon-target-info-label" },
-      Strings.GetStringFromName("location")),
+      Strings.GetStringFromName("location")
+    ),
     // Wrap the file path in a span so we can do some RTL/LTR swapping to get
     // the ellipsis on the left.
     dom.dd(
       { className: "addon-target-info-content file-path" },
-      dom.span({ className: "file-path-inner", title: path }, path),
+      dom.span({ className: "file-path-inner", title: path }, path)
     ),
   ];
 }
@@ -55,55 +63,48 @@ function addonIDforTarget(target) {
   return [
     dom.dt(
       { className: "addon-target-info-label" },
-      Strings.GetStringFromName("extensionID"),
+      Strings.GetStringFromName("extensionID")
     ),
     dom.dd(
       { className: "addon-target-info-content extension-id" },
-      dom.span(
-        { title: target.addonID },
-        target.addonID
-      )
+      dom.span({ title: target.addonID }, target.addonID)
     ),
   ];
 }
 
 function internalIDForTarget(target) {
-  if (!target.manifestURL) {
+  const uuid = getExtensionUuid(target);
+  if (!uuid) {
     return [];
   }
-  // Strip off the protocol and rest, leaving us with just the UUID.
-  let uuid = /moz-extension:\/\/([^/]*)/.exec(target.manifestURL)[1];
+
   return [
     dom.dt(
       { className: "addon-target-info-label" },
-      Strings.GetStringFromName("internalUUID"),
+      Strings.GetStringFromName("internalUUID")
     ),
     dom.dd(
       { className: "addon-target-info-content internal-uuid" },
-      dom.span(
-        { title: uuid },
-        uuid
-      ),
+      dom.span({ title: uuid }, uuid),
       dom.span(
         { className: "addon-target-info-more" },
         dom.a(
-          { href: target.manifestURL, target: "_blank", className: "manifest-url" },
-          Strings.GetStringFromName("manifestURL"),
-        ),
+          {
+            href: target.manifestURL,
+            target: "_blank",
+            className: "manifest-url",
+          },
+          Strings.GetStringFromName("manifestURL")
+        )
       )
     ),
   ];
 }
 
 function showMessages(target) {
-  const messages = [
-    ...warningMessages(target),
-    ...infoMessages(target),
-  ];
+  const messages = [...warningMessages(target), ...infoMessages(target)];
   if (messages.length > 0) {
-    return dom.ul(
-      { className: "addon-target-messages" },
-      ...messages);
+    return dom.ul({ className: "addon-target-messages" }, ...messages);
   }
   return null;
 }
@@ -111,13 +112,21 @@ function showMessages(target) {
 function infoMessages(target) {
   const messages = [];
   if (isTemporaryID(target.addonID)) {
-    messages.push(dom.li(
-      { className: "addon-target-info-message addon-target-message" },
-      Strings.GetStringFromName("temporaryID"),
-      " ",
-      dom.a({ href: TEMP_ID_URL, className: "temporary-id-url", target: "_blank" },
-        Strings.GetStringFromName("temporaryID.learnMore")
-      )));
+    messages.push(
+      dom.li(
+        { className: "addon-target-info-message addon-target-message" },
+        Strings.GetStringFromName("temporaryID"),
+        " ",
+        dom.a(
+          {
+            href: TEMP_ID_URL,
+            className: "temporary-id-url",
+            target: "_blank",
+          },
+          Strings.GetStringFromName("temporaryID.learnMore")
+        )
+      )
+    );
   }
 
   return messages;
@@ -126,28 +135,34 @@ function infoMessages(target) {
 function warningMessages(target) {
   let messages = [];
 
-  if (isLegacyTemporaryExtension(target.form)) {
-    messages.push(dom.li(
-      {
-        className: "addon-target-warning-message addon-target-message"
-      },
-      Strings.GetStringFromName("legacyExtensionWarning"),
-      " ",
-      dom.a(
+  if (target.addonTargetFront.isLegacyTemporaryExtension()) {
+    messages.push(
+      dom.li(
         {
-          href: LEGACY_WARNING_URL,
-          target: "_blank"
+          className: "addon-target-warning-message addon-target-message",
         },
-        Strings.GetStringFromName("legacyExtensionWarning.learnMore"))
-    ));
+        Strings.GetStringFromName("legacyExtensionWarning"),
+        " ",
+        dom.a(
+          {
+            href: LEGACY_WARNING_URL,
+            target: "_blank",
+          },
+          Strings.GetStringFromName("legacyExtensionWarning.learnMore")
+        )
+      )
+    );
   }
 
-  let warnings = target.warnings || [];
-  messages = messages.concat(warnings.map((warning) => {
-    return dom.li(
-      { className: "addon-target-warning-message addon-target-message" },
-      warning);
-  }));
+  const warnings = target.warnings || [];
+  messages = messages.concat(
+    warnings.map(warning => {
+      return dom.li(
+        { className: "addon-target-warning-message addon-target-message" },
+        warning
+      );
+    })
+  );
 
   return messages;
 }
@@ -159,15 +174,14 @@ class AddonTarget extends Component {
       connect: PropTypes.object,
       debugDisabled: PropTypes.bool,
       target: PropTypes.shape({
-        addonActor: PropTypes.string.isRequired,
+        addonTargetFront: PropTypes.object.isRequired,
         addonID: PropTypes.string.isRequired,
-        form: PropTypes.object.isRequired,
         icon: PropTypes.string,
         name: PropTypes.string.isRequired,
         temporarilyInstalled: PropTypes.bool,
         url: PropTypes.string,
         warnings: PropTypes.array,
-      }).isRequired
+      }).isRequired,
     };
   }
 
@@ -179,75 +193,87 @@ class AddonTarget extends Component {
   }
 
   debug() {
-    let { client, connect, target } = this.props;
-
-    if (connect.type === "REMOTE") {
-      debugRemoteAddon(target.form, client);
-    } else if (connect.type === "LOCAL") {
-      debugLocalAddon(target.addonID);
-    }
+    const { client, target } = this.props;
+    debugAddon(target.addonID, client);
   }
 
   uninstall() {
-    let { target } = this.props;
+    const { target } = this.props;
     uninstallAddon(target.addonID);
   }
 
   async reload() {
-    let { client, target } = this.props;
-    let { AboutDebugging } = window;
+    const { target } = this.props;
+    const { AboutDebugging } = window;
     try {
-      await client.request({
-        to: target.addonActor,
-        type: "reload"
-      });
+      await target.addonTargetFront.reload();
       AboutDebugging.emit("addon-reload");
     } catch (e) {
-      throw new Error("Error reloading addon " + target.addonID + ": " + e.message);
+      throw new Error(
+        "Error reloading addon " + target.addonID + ": " + e.message
+      );
     }
   }
 
   render() {
-    let { target, debugDisabled } = this.props;
+    const { target, debugDisabled } = this.props;
 
     return dom.li(
-      { className: "addon-target-container", "data-addon-id": target.addonID },
-      dom.div({ className: "target" },
+      {
+        className: "card addon-target-container",
+        "data-addon-id": target.addonID,
+      },
+      dom.div(
+        { className: "target-card-heading target" },
         dom.img({
-          className: "target-icon",
+          className: "target-icon addon-target-icon",
           role: "presentation",
-          src: target.icon
+          src: target.icon,
         }),
         dom.span(
           { className: "target-name addon-target-name", title: target.name },
-          target.name)
+          target.name
+        )
       ),
       showMessages(target),
       dom.dl(
         { className: "addon-target-info" },
         ...filePathForTarget(target),
         ...addonIDforTarget(target),
-        ...internalIDForTarget(target),
+        ...internalIDForTarget(target)
       ),
-      dom.div({className: "addon-target-actions"},
-        dom.button({
-          className: "debug-button addon-target-button",
-          onClick: this.debug,
-          disabled: debugDisabled,
-        }, Strings.GetStringFromName("debug")),
+      dom.div(
+        { className: "target-card-actions" },
+        dom.button(
+          {
+            className:
+              "target-card-action-link debug-button addon-target-button",
+            onClick: this.debug,
+            disabled: debugDisabled,
+          },
+          Strings.GetStringFromName("debug")
+        ),
         target.temporarilyInstalled
-          ? dom.button({
-            className: "reload-button addon-target-button",
-            onClick: this.reload,
-          }, Strings.GetStringFromName("reload"))
+          ? dom.button(
+              {
+                className:
+                  "target-card-action-link reload-button addon-target-button",
+                onClick: this.reload,
+              },
+              Strings.GetStringFromName("reload")
+            )
           : null,
         target.temporarilyInstalled
-          ? dom.button({
-            className: "uninstall-button addon-target-button",
-            onClick: this.uninstall,
-          }, Strings.GetStringFromName("remove"))
-          : null,
-      ),
+          ? dom.button(
+              {
+                className:
+                  "target-card-action-link uninstall-button addon-target-button",
+                onClick: this.uninstall,
+              },
+              Strings.GetStringFromName("remove")
+            )
+          : null
+      )
     );
   }
 }

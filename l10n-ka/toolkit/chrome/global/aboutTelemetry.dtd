@@ -14,9 +14,7 @@
 <!ENTITY aboutTelemetry.choosePing "
 პინგის არჩევა:
 ">
-<!ENTITY aboutTelemetry.archivePingType "
-პინგის სახეობა
-">
+<!ENTITY aboutTelemetry.archivePingType "კავშირის დამოწმების სახეობა">
 <!ENTITY aboutTelemetry.archivePingHeader "
 პინგი
 ">
@@ -29,27 +27,20 @@
 <!ENTITY aboutTelemetry.optionGroupOlder "
 უფრო ძველი
 ">
-<!ENTITY aboutTelemetry.payloadChoiceHeader "
-  მარგი დატვირთვა">
 <!-- LOCALIZATION NOTE(aboutTelemetry.previousPing, aboutTelemetry.nextPing):
 	These strings are displayed when selecting Archived pings, and they’re
 	used to move to the next or previous ping. -->
 <!ENTITY aboutTelemetry.previousPing "&lt;&lt;">
 <!ENTITY aboutTelemetry.nextPing "&gt;&gt;">
 
-<!ENTITY aboutTelemetry.pageTitle "ტელემეტრიის მონაცემები">
+<!ENTITY aboutTelemetry.pageTitle "გაზომვების მონაცემები">
 <!ENTITY aboutTelemetry.moreInformations "
 მეტ ინფორმაციას ეძებთ?
 ">
-<!ENTITY aboutTelemetry.firefoxDataDoc "
-<a>Firefox მონაცემთა დოკუმენტაცია</a> შეიცავს მითითებებს, მონაცემთა ხელსაწყოებთან მუშაობის შესახებ.
-">
-<!ENTITY aboutTelemetry.telemetryClientDoc "
-<a>Firefox ტელემეტრიის კლიენტის დოკუმენტაცია</a> შეიცავს განმარტებებს, კონცეფციას, API დოკუმენტაციასა და მითითებებს, მონაცემების შესახებ.
-">
-<!ENTITY aboutTelemetry.telemetryDashboard "
-<a>ტელემეტრიის გვერდი</a>, Mozilla-ს მიერ აღრიცხული მონაცემების ვიზუალურად წარმოდგენის საშუალებას იძლევა.
-">
+<!ENTITY aboutTelemetry.firefoxDataDoc "<a>Firefox-ის მონაცემთა მასალები</a> შეიცავს მითითებებს, მონაცემთა ხელსაწყოებთან მუშაობის შესახებ.">
+<!ENTITY aboutTelemetry.telemetryClientDoc "<a>Firefox-გაზომვების კლიენტის მასალები</a> შეიცავს განმარტებებს, კონცეფციას, API-დოკუმენტაციასა და მითითებებს, მონაცემების შესახებ.">
+<!ENTITY aboutTelemetry.telemetryDashboard "<a>გაზომვების გვერდი</a>, Mozilla-ს მიერ აღრიცხული მონაცემების ვიზუალურად წარმოდგენის საშუალებას იძლევა.">
+<!ENTITY aboutTelemetry.telemetryProbeDictionary "<a>კვლევის ლექსიკონში</a> მოცემულია დაწვრილებითი ინფორმაცია და აღწერილობა გაზომვებით ჩატარებული კვლევების.">
 
 <!ENTITY aboutTelemetry.showInFirefoxJsonViewer "
 JSON მნახველში გახსნა
@@ -62,36 +53,22 @@ JSON მნახველში გახსნა
 <!ENTITY aboutTelemetry.environmentDataSection "
   გარემოს მონაცემები
 ">
-<!ENTITY aboutTelemetry.sessionInfoSection "
-  სეანსის ინფორმაცია
-">
+<!ENTITY aboutTelemetry.sessionInfoSection "სეანსის მონაცემები">
 <!ENTITY aboutTelemetry.scalarsSection "
   სიდიდეები
 ">
-<!ENTITY aboutTelemetry.keyedScalarsSection "
-  გასაღებებიანი სიდიდეები
-">
+<!ENTITY aboutTelemetry.keyedScalarsSection "შიფრიანი სიდიდეები">
 <!ENTITY aboutTelemetry.histogramsSection "
   გრაფიკები
 ">
-<!ENTITY aboutTelemetry.keyedHistogramsSection "
-  გასაღებებიანი გრაფიკები
-">
+<!ENTITY aboutTelemetry.keyedHistogramsSection "შიფრიანი გრაფიკები">
 <!ENTITY aboutTelemetry.eventsSection "
   მოვლენები
 ">
 <!ENTITY aboutTelemetry.simpleMeasurementsSection "
   მარტივი განსაზღვრებები
 ">
-<!ENTITY aboutTelemetry.telemetryLogSection "
-  ტელემეტრიის ჟურნალი
-">
-<!ENTITY aboutTelemetry.slowSqlSection "
-  ნელი SQL-ს განცხადებები
-">
-<!ENTITY aboutTelemetry.chromeHangsSection "
-  ბრაუზერის გაშეშებები
-">
+<!ENTITY aboutTelemetry.slowSqlSection "ნელი SQL-ს ბრძანებები">
 <!ENTITY aboutTelemetry.addonDetailsSection "
   დამატების მონაცემები
 ">
@@ -107,8 +84,7 @@ JSON მნახველში გახსნა
 ნედლი JSON
 ">
 
-<!ENTITY aboutTelemetry.fullSqlWarning "
-  შენიშვნა: ნელი SQL-ს გამართვა ჩართულია. შესაძლოა ქვემოთ სრული SQL სტრიქონები გამოჩნდეს, მაგრამ ისინი არ გადაეგზავნებიან ტელემეტრიას.">
+<!ENTITY aboutTelemetry.fullSqlWarning "შენიშვნა: ნელი SQL-ის გამართვა ჩართულია. შესაძლოა ქვემოთ სრული SQL-სტრიქონები გამოჩნდეს, მაგრამ ისინი არ აღირიცხება გაზომვებში.">
 <!ENTITY aboutTelemetry.fetchStackSymbols "
   ფუნქციების სახელების გადმოტანა სტეკებითვის
 ">

@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Tervetuloa">
 <!ENTITY firstrun_urlbar_message2 "Kiitos, että valitsit &brandShortName;in">
+<!ENTITY newfirstrun_urlbar_message "Tervetuloa, tämä on &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Nykyaikainen mobiiliselain voittoa tavoittelemattomalta Mozillalta, joka on omistautunut vapaaseen ja avoimeen verkkoon.">
+<!ENTITY newfirstrun_urlbar_subtext "Nopea, yksityinen ja sinun puolellasi.">
 <!ENTITY firstrun_panel_title_privacy "Tietosuoja">
 <!ENTITY firstrun_privacy_message "Selaa kenenkään tarkkailematta sinua">
 <!ENTITY firstrun_privacy_subtext "Yksityinen selaus seurannan suojauksen kanssa estää seurantamenetelmiä selatessasi verkkoa eikä muista historiaa, kun lopetat selaamisen.">
+<!ENTITY newfirstrun_privacy_subtext "Yksityinen selaus torjuu sinua verkossa seuraavat mainosseuraimet.">
 <!ENTITY firstrun_panel_title_customize "Mukauta">
 <!ENTITY firstrun_customize_message "Tee &brandShortName;ista omanlaisesi.">
 <!ENTITY firstrun_customize_subtext "Mukauta &brandShortName;ia lisäosilla. Estä mainoksia, lisää ominaisuuksia tai valitse teema, joka sopii tyyliisi.">
@@ -18,21 +21,20 @@
 <!ENTITY firstrun_data_message "Vähemmän dataa, enemmän säästöä">
 <!ENTITY firstrun_data_subtext2 "Estä kuvat käyttääksesi vähemmän dataa sivustoilla, joilla vierailet.">
 <!ENTITY firstrun_sync_title "Sync">
+<!ENTITY updatednewfirstrun_sync_title "Tili">
 <!ENTITY firstrun_sync_message2 "Jatka siitä, mihin jäit.">
 <!ENTITY firstrun_sync_subtext2 "Käytä Sync-palvelua löytämään kirjanmerkit, salasanat ynnä muut &brandShortName;iin tallentamasi tiedot kaikilla laitteillasi.">
+<!ENTITY newfirstrun_sync_subtext "Synkronoi kaikki mobiililaitteelle tallentamasi Firefoxin työpöytäversioon, yksityisesti ja turvallisesti.">
+<!ENTITY updatednewfirstrun_sync_subtext "Kirjaudu tilillesi saadaksesi täyden hyödyn irti &brandShortName;ista">
 <!ENTITY firstrun_signin_message "Yhdistä ja aloita">
 <!ENTITY firstrun_signin_button "Kirjaudu sisään Sync-palveluun">
+<!ENTITY newfirstrun_signin_button "Ota Sync käyttöön">
+<!ENTITY updatednewfirstrun_signin_button "Kirjaudu sisään &brandShortName;iin">
 <!ENTITY  onboard_start_button_browser "Aloita selaaminen">
 <!ENTITY firstrun_button_notnow "Ei nyt">
 <!ENTITY firstrun_button_next "Seuraava">
 
 <!ENTITY firstrun_tabqueue_title "Linkit">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Ota välilehtijono käyttöön">
-<!ENTITY firstrun_tabqueue_subtext_off "Tallenna linkit &brandShortName;iin myöhempää käyttöä varten muissa sovelluksissa.">
-
-<!ENTITY firstrun_tabqueue_message_on "Valmista!">
-<!ENTITY firstrun_tabqueue_subtext_on "Voit aina ottaa tämän pois käytöstä kohdasta &settings; -> &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Artikkelit">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -55,7 +57,7 @@
 <!-- Localization note: Shown in a snackbar when tab is loaded from cache while device was offline. -->
 <!ENTITY  tab_offline_version "Näytetään yhteydettömän tilan versio">
 
-<!ENTITY  crash_reporter_title "&brandShortName;in kaatumisilmoitusohjelma">
+<!ENTITY  crash_reporter_title "&brandShortName;: Kaatumisen raportointi">
 <!ENTITY  crash_message2 "&brandShortName; kohtasi odottamattoman ongelman ja kaatui. Avoinna olleiden välilehtien pitäisi olla listattuna aloitussivulla kun käynnistät &brandShortName;in uudestaan">
 <!ENTITY  crash_send_report_message3 "Kerro virheestä &vendorShortName;lle ja auta heitä korjaamaan vika">
 <!ENTITY  crash_include_url2 "Lähetä avoinna olleen sivun osoite">
@@ -68,7 +70,27 @@
 <!ENTITY  crash_close_label "Sulje">
 <!ENTITY  crash_restart_label "Käynnistä &brandShortName; uudestaan">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; kaatui">
+<!ENTITY  crash_notification_message "Raportoi &vendorShortName;lle napauttamalla">
+<!ENTITY  crash_notification_negative_button_text "Ohita">
+
 <!ENTITY url_bar_default_text2 "Kirjoita haku tai osoite">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Verkkohaku">
+<!ENTITY search_widget_default_cropped_text "Haku">
+<!ENTITY search_widget_logo_description "Hae verkosta &brandShortName;-selaimella">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Hae tai kirjoita osoite käyttämällä QR-lukijaasi">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Hae tai kirjoita osoite käyttämällä mikrofoniasi">
 
 <!ENTITY bookmark "Lisää kirjanmerkki">
 <!ENTITY bookmark_remove "Poista kirjanmerkki">
@@ -95,6 +117,10 @@
 <!ENTITY bookmark_folder_updated "Kansio päivitetty">
 <!ENTITY bookmark_parent_folder "Yläkansio">
 <!ENTITY bookmark_add_folder "Lisää uusi kansio">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(nimetön)">
 
 <!ENTITY reader_saved_offline "Tallennettiin verkotta luettavaksi">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -206,7 +232,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Välilehtien palauttaminen, datan säästäminen, kehittäjien työkalut">
 <!ENTITY pref_category_notifications "Ilmoitukset">
-<!ENTITY pref_category_notifications_summary "Uudet ominaisuudet, sivustojen päivitykset">
+<!ENTITY pref_category_notifications_summary2 "Uudet ominaisuudet, tuotevinkit">
 <!ENTITY pref_developer_remotedebugging_usb "Remote debugging via USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Remote debugging via Wi-Fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Wi-Fi debugging requires your device to have a QR code reader app installed.">
@@ -265,7 +291,7 @@
 
 <!ENTITY pref_tap_to_load_images_title2 "Näytä kuvat">
 <!ENTITY pref_tap_to_load_images_enabled "Aina">
-<!ENTITY pref_tap_to_load_images_data "Vain Wi-Fi -yhteydellä">
+<!ENTITY pref_tap_to_load_images_data "Vain Wi-Fi-yhteydellä">
 <!ENTITY pref_tap_to_load_images_disabled2 "Estetty">
 
 <!ENTITY pref_show_web_fonts "Näytä sivujen kirjasinlajit">
@@ -284,8 +310,16 @@
 
 <!-- Localization note (pref_feature_tips_notification): Title of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification"-->
+<!ENTITY pref_feature_tips_notification "Tuotteen ja ominaisuuksien vinkit">
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
+<!ENTITY pref_feature_tips_notification_summary "Lue lisää &brandShortName;in ja muiden &vendorShortName;n tuotteiden käyttämisestä">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Tämän valinnan käyttöönottaminen edellyttää, että &pref_feature_tips_notification_enabling_path; on jo otettu käyttöön.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -325,6 +359,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Siirry asetuksiin">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Lisätään uusi välilehti jonoon&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -359,7 +396,8 @@
 <!ENTITY pref_use_system_font_size_summary "Skaalaa verkkosisältö järjestelmän kirjasinkoon perusteella">
 
 <!ENTITY pref_media_autoplay_enabled "Salli automaattinen toisto">
-<!ENTITY pref_media_autoplay_enabled_summary "Voivatko verkkosivustot toistaa automaattisesti videoita ja muuta sisältöä">
+<!ENTITY pref_media_autoplay_allow "Salli automaattinen toisto">
+<!ENTITY pref_media_autoplay_block "Estä automaattinen toisto">
 <!ENTITY pref_zoom_force_enabled "Sivun suurennus sallittu aina">
 <!ENTITY pref_zoom_force_enabled_summary "Sivun lähennys ja loitonnus on mahdollista kaikilla sivuilla">
 <!ENTITY pref_voice_input "Puhesyöte">
@@ -382,14 +420,17 @@
 <!ENTITY pref_private_data_searchHistory "Hakuhistoria">
 <!ENTITY pref_private_data_formdata2 "Lomakehistoria">
 <!ENTITY pref_private_data_cookies2 "Evästeet ja aktiiviset kirjautumiset">
-<!ENTITY pref_private_data_passwords2 "Tallennetut kirjautumistiedot">
 <!ENTITY pref_private_data_cache "Väliaikaistiedostot">
 <!ENTITY pref_private_data_offlineApps "Verkkosivustojen yhteydettömän tilan tiedot">
 <!ENTITY pref_private_data_siteSettings2 "Sivustoasetukset">
 <!ENTITY pref_private_data_downloadFiles2 "Lataukset">
 <!ENTITY pref_private_data_syncedTabs "Synkronoidut välilehdet">
 
-<!ENTITY pref_default_browser "Aseta oletusselaimeksi">
+<!ENTITY pref_default_browser2 "Aseta &brandShortName; oletusselaimeksi">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Paina Selainsovellus &amp; valitse &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Käy Mozillan tukisivustossa">
 <!ENTITY pref_about_firefox "Tietoja &brandShortName;ista">
 <!ENTITY pref_vendor_faqs "UKK">
@@ -428,18 +469,23 @@
 <!ENTITY datareporting_fhr_title "&brandShortName;in terveydentilaraportti">
 <!ENTITY datareporting_fhr_summary2 "Antaa sinulle tietoa selaimesi suorituskyvystä ja jakaa tiedot selaimesi tilasta &vendorShortName;n kanssa">
 <!ENTITY datareporting_telemetry_title "Kaukomittaustiedot">
-<!ENTITY datareporting_telemetry_summary "Lähetä &vendorShortName;lle tietoja selaimen suorituskyvystä, käytöstä, muokkauksista ja käytetystä laitteistosta auttaaksesi meitä kehittämään &brandShortName;ia">
+<!ENTITY datareporting_telemetry_summary "Auta meitä kehittämään &brandShortName;ia lähettämällä &vendorShortName;lle tietoja selaimen suorituskyvystä, käytöstä, muokkauksista ja käytetystä laitteistosta">
 <!ENTITY datareporting_crashreporter_summary "&brandShortName; lähettää tiedot kaatumisista &vendorShortName;lle, jotta voimme tehdä selaimestasi vakaamman ja turvallisen">
 <!-- Localization note (datareporting_crashreporter_title_short) : This string matches
      (crashReporterSection.label) in en-US/chrome/browser/preferences/advanced.dtd.-->
-<!ENTITY datareporting_crashreporter_title_short "Kaatumisilmoitukset">
+<!ENTITY datareporting_crashreporter_title_short "Kaatumisen raportointi">
 <!ENTITY datareporting_wifi_title2 "&vendorShortName;n paikannuspalvelut">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Auta  &vendorShortName;a kartoittamaan maailma! Jaa Wi-Fi- ja matkapuhelinverkoista saatava arvioitu sijaintitietosi parantaaksesi paikannuspalvelujamme.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "&vendorShortName;-paikannuspalvelu käynnissä">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
 <!ENTITY pref_update_autodownload3 "Automaattiset päivitykset">
-<!ENTITY pref_update_autodownload_wifi "Vain Wi-Fi -yhteydellä">
+<!ENTITY pref_update_autodownload_wifi "Vain Wi-Fi-yhteydellä">
 <!ENTITY pref_update_autodownload_never "Ei koskaan">
 <!ENTITY pref_update_autodownload_always "Aina">
 
@@ -479,6 +525,10 @@
 <!ENTITY find_prev "Edellinen">
 <!ENTITY find_next "Seuraava">
 <!ENTITY find_close "Sulje">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Ei hakutuloksia">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -541,7 +591,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Järjestä välilehdet kahteen sarakkeeseen pystyasennossa käytettäessä">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Sivu poistettiin">
 <!ENTITY folder_removed "Kansio poistettu">
@@ -552,6 +602,8 @@
 <!ENTITY bookmark_edit_location "Osoite">
 <!ENTITY bookmark_edit_keyword "Avainsana">
 <!ENTITY bookmark_select_folder "Valitse kansio">
+
+<!ENTITY bookmark_edit_undo "Kumoa">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -641,6 +693,8 @@
 <!ENTITY filepicker_image_title "Valitse tai ota kuva">
 <!ENTITY filepicker_video_title "Valitse tai nauhoita video">
 
+<!ENTITY filepicker_permission_denied "Vaadittuja oikeuksia ei annettu, palataan järjestelmän tiedostovalitsimeen.">
+
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Yhteys muodostettu verkkosivustoon">
 <!-- Localization note (identity_run_by) : This string appears between a
@@ -695,7 +749,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
       via the search engine that uses the icon they clicked. This text is used
       for screen reader users when they hover each icon - &formatS; will be
       replaced with the name of the currently highlighted icon. -->
-<!ENTITY search_bar_item_desc "Etsi palvelusta &formatS;">
+<!ENTITY search_bar_item_desc "Hae hakukoneella &formatS;">
 
 <!-- Localization note (suggestion_for_engine): The placeholder &formatS1; will be
      replaced with the name of the search engine. The placeholder &formatS2; will be
@@ -759,7 +813,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Viimeksi synkronoitu: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Viimeksi synkronoitu: ei koskaan">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -820,15 +874,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "&brandShortName;in käynnistäminen epäonnistui. Yritä uudestaan asennettuasi ohjelman uudestaan.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; ei enää saa päivityksiä">
-<!ENTITY eol_notification_summary "Lue lisää napauttamalla">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "&brandShortName; on ajan tasalla">
 <!ENTITY whatsnew_notification_summary "Lue mitä uutta tässä versiossa on">
-
-<!ENTITY promotion_add_page_shortcut "Lisää sivun pikakuvake">
 
 <!ENTITY helper_first_offline_bookmark_title "Lue yhteydettömässä tilassa">
 <!ENTITY helper_first_offline_bookmark_message "Löydä lukunäkymäsi kohteet kirjanmerkeistä, jopa yhteydettömässä tilassa.">
@@ -879,3 +928,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Lisää aloitusnäytölle">
 <!ENTITY pwa_continue_to_website "Jatka sivustolle">
 <!ENTITY pwa_onboarding_sumo "Voit lisätä tämän sivuston helposti aloitusnäytölle saadaksesi nopean, sovelluksen kaltaisen käyttökokemuksen.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Toista">
+<!ENTITY pip_play_button_description "Jatka toistoa">
+<!ENTITY pip_pause_button_title "Keskeytä">
+<!ENTITY pip_pause_button_description "Keskeytä toisto">
+
+<!ENTITY pref_notification_settings_link "Hallitse ilmoitusten asetuksia">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Selain">
+<!ENTITY mls_notification_channel "&vendorShortName;n paikannuspalvelut">
+<!ENTITY download_notification_channel "Lataukset">
+<!ENTITY media_notification_channel2 "Ääni ja video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "&vendorShortName;-vinkit ja -vihjeet">
+<!ENTITY updater_notification_channel "Ohjelmapäivitykset">
+<!ENTITY synced_tabs_notification_channel "Synkronoidut välilehdet">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Sivustoilmoitukset">
+<!ENTITY crash_handler_notifications_channel "&brandShortName;: Kaatumisen raportointi">

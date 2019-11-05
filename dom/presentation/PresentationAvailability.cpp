@@ -39,10 +39,10 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(PresentationAvailability)
   NS_INTERFACE_MAP_ENTRY(nsIPresentationAvailabilityListener)
 NS_INTERFACE_MAP_END_INHERITING(DOMEventTargetHelper)
 
-/* static */ already_AddRefed<PresentationAvailability>
-PresentationAvailability::Create(nsPIDOMWindowInner* aWindow,
-                                 const nsTArray<nsString>& aUrls,
-                                 RefPtr<Promise>& aPromise) {
+/* static */
+already_AddRefed<PresentationAvailability> PresentationAvailability::Create(
+    nsPIDOMWindowInner* aWindow, const nsTArray<nsString>& aUrls,
+    RefPtr<Promise>& aPromise) {
   RefPtr<PresentationAvailability> availability =
       new PresentationAvailability(aWindow, aUrls);
   return NS_WARN_IF(!availability->Init(aPromise)) ? nullptr
@@ -101,14 +101,16 @@ void PresentationAvailability::Shutdown() {
       NS_FAILED(service->UnregisterAvailabilityListener(mUrls, this)));
 }
 
-/* virtual */ void PresentationAvailability::DisconnectFromOwner() {
+/* virtual */
+void PresentationAvailability::DisconnectFromOwner() {
   Shutdown();
   DOMEventTargetHelper::DisconnectFromOwner();
 }
 
-/* virtual */ JSObject* PresentationAvailability::WrapObject(
+/* virtual */
+JSObject* PresentationAvailability::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return PresentationAvailabilityBinding::Wrap(aCx, this, aGivenProto);
+  return PresentationAvailability_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 bool PresentationAvailability::Equals(const uint64_t aWindowID,
@@ -171,7 +173,7 @@ void PresentationAvailability::UpdateAvailabilityAndDispatchEvent(
   if (!mPromises.IsEmpty()) {
     // Use the first availability change notification to resolve promise.
     do {
-      nsTArray<RefPtr<Promise>> promises = Move(mPromises);
+      nsTArray<RefPtr<Promise>> promises = std::move(mPromises);
 
       if (nsContentUtils::ShouldResistFingerprinting()) {
         continue;

@@ -33,7 +33,7 @@ class SVGPathElement final : public SVGPathElementBase {
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
   virtual JSObject* WrapNode(JSContext* cx,
                              JS::Handle<JSObject*> aGivenProto) override;
-  explicit SVGPathElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit SVGPathElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
  public:
   NS_DECL_ADDSIZEOFEXCLUDINGTHIS
@@ -47,7 +47,7 @@ class SVGPathElement final : public SVGPathElementBase {
   // SVGGeometryElement methods:
   virtual bool AttributeDefinesGeometry(const nsAtom* aName) override;
   virtual bool IsMarkable() override;
-  virtual void GetMarkPoints(nsTArray<nsSVGMark>* aMarks) override;
+  virtual void GetMarkPoints(nsTArray<SVGMark>* aMarks) override;
   virtual already_AddRefed<Path> BuildPath(PathBuilder* aBuilder) override;
 
   /**
@@ -58,21 +58,13 @@ class SVGPathElement final : public SVGPathElementBase {
   virtual already_AddRefed<Path> GetOrBuildPathForMeasuring() override;
 
   // nsIContent interface
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   virtual SVGAnimatedPathSegList* GetAnimPathSegList() override { return &mD; }
 
-  virtual nsAtom* GetPathDataAttrName() const override { return nsGkAtoms::d; }
-
-  enum PathLengthScaleForType { eForTextPath, eForStroking };
-
-  /**
-   * Gets the ratio of the actual path length to the content author's estimated
-   * length (as provided by the <path> element's 'pathLength' attribute). This
-   * is used to scale stroke dashing, and to scale offsets along a textPath.
-   */
-  float GetPathLengthScale(PathLengthScaleForType aFor);
+  virtual nsStaticAtom* GetPathDataAttrName() const override {
+    return nsGkAtoms::d;
+  }
 
   // WebIDL
   uint32_t GetPathSegAtLength(float distance);

@@ -21,6 +21,7 @@ UNIFIED_SOURCES += [
     'ImageAccessible.cpp',
     'OuterDocAccessible.cpp',
     'RootAccessible.cpp',
+    'TableAccessible.cpp',
     'TableCellAccessible.cpp',
     'TextLeafAccessible.cpp',
 ]
@@ -57,6 +58,10 @@ elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'windows':
 elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
     LOCAL_INCLUDES += [
         '/accessible/mac',
+    ]
+elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android':
+    LOCAL_INCLUDES += [
+        '/accessible/android',
     ]
 else:
     LOCAL_INCLUDES += [

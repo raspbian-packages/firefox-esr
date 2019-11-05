@@ -9,7 +9,6 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/EventForwards.h"
 #include "nsMappedAttributeElement.h"
-#include "nsIDOMElement.h"
 #include "nsNameSpaceManager.h"  // for kNameSpaceID_None
 #include "nsIFormControl.h"
 #include "nsGkAtoms.h"
@@ -25,7 +24,6 @@ class nsIFormControlFrame;
 class nsIFrame;
 class nsILayoutHistoryState;
 class nsIURI;
-class nsPresState;
 struct nsSize;
 
 namespace mozilla {
@@ -35,6 +33,7 @@ class EventChainVisitor;
 class EventListenerManager;
 class EventStates;
 class TextEditor;
+class PresState;
 namespace dom {
 class HTMLFormElement;
 class HTMLMenuElement;
@@ -46,26 +45,26 @@ typedef nsMappedAttributeElement nsGenericHTMLElementBase;
 /**
  * A common superclass for HTML elements
  */
-class nsGenericHTMLElement : public nsGenericHTMLElementBase,
-                             public nsIDOMElement {
+class nsGenericHTMLElement : public nsGenericHTMLElementBase {
  public:
   using Element::Focus;
   using Element::SetTabIndex;
   explicit nsGenericHTMLElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElementBase(aNodeInfo) {
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElementBase(std::move(aNodeInfo)) {
     NS_ASSERTION(mNodeInfo->NamespaceID() == kNameSpaceID_XHTML,
                  "Unexpected namespace");
     AddStatesSilently(NS_EVENT_STATE_LTR);
     SetFlags(NODE_HAS_DIRECTION_LTR);
   }
 
-  NS_DECL_ISUPPORTS_INHERITED
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(nsGenericHTMLElement,
+                                       nsGenericHTMLElementBase)
 
-  NS_IMPL_FROMCONTENT(nsGenericHTMLElement, kNameSpaceID_XHTML)
+  NS_IMPL_FROMNODE(nsGenericHTMLElement, kNameSpaceID_XHTML)
 
   // From Element
-  nsresult CopyInnerTo(mozilla::dom::Element* aDest, bool aPreallocateChildren);
+  nsresult CopyInnerTo(mozilla::dom::Element* aDest);
 
   void GetTitle(mozilla::dom::DOMString& aTitle) {
     GetHTMLAttr(nsGkAtoms::title, aTitle);
@@ -129,7 +128,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
   }
   bool IsContentEditable() {
     for (nsIContent* node = this; node; node = node->GetParent()) {
-      nsGenericHTMLElement* element = FromContent(node);
+      nsGenericHTMLElement* element = FromNode(node);
       if (element) {
         ContentEditableTristate value = element->GetContentEditableValue();
         if (value != eInherit) {
@@ -239,13 +238,10 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
   MOZ_CAN_RUN_SCRIPT
   nsSize GetWidthHeightForImage(RefPtr<imgRequestProxy>& aImageRequest);
 
-  virtual nsIDOMNode* AsDOMNode() override { return this; }
-
  public:
   // Implementation for nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
@@ -270,13 +266,13 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    */
   bool CheckHandleEventForAnchorsPreconditions(
       mozilla::EventChainVisitor& aVisitor);
-  nsresult GetEventTargetParentForAnchors(
-      mozilla::EventChainPreVisitor& aVisitor);
+  void GetEventTargetParentForAnchors(mozilla::EventChainPreVisitor& aVisitor);
+  MOZ_CAN_RUN_SCRIPT
   nsresult PostHandleEventForAnchors(mozilla::EventChainPostVisitor& aVisitor);
   bool IsHTMLLink(nsIURI** aURI) const;
 
   // HTML element methods
-  void Compact() { mAttrsAndChildren.Compact(); }
+  void Compact() { mAttrs.Compact(); }
 
   virtual void UpdateEditableState(bool aNotify) override;
 
@@ -418,9 +414,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapCommonAttributesInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapCommonAttributesInto(const nsMappedAttributes* aAttributes,
+                                      mozilla::MappedDeclarations&);
   /**
    * Same as MapCommonAttributesInto except that it does not handle hidden.
    *
@@ -429,8 +424,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @see GetAttributeMappingFunction
    */
   static void MapCommonAttributesIntoExceptHidden(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+      const nsMappedAttributes* aAttributes, mozilla::MappedDeclarations&);
 
   static const MappedAttributeEntry sCommonAttributeMap[];
   static const MappedAttributeEntry sImageMarginSizeAttributeMap[];
@@ -447,9 +441,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapImageAlignAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapImageAlignAttributeInto(const nsMappedAttributes* aAttributes,
+                                         mozilla::MappedDeclarations&);
 
   /**
    * Helper to map the align attribute into a style struct for things
@@ -459,9 +452,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapDivAlignAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapDivAlignAttributeInto(const nsMappedAttributes* aAttributes,
+                                       mozilla::MappedDeclarations&);
 
   /**
    * Helper to map the valign attribute into a style struct for things
@@ -471,9 +463,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapVAlignAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapVAlignAttributeInto(const nsMappedAttributes* aAttributes,
+                                     mozilla::MappedDeclarations&);
 
   /**
    * Helper to map the image border attribute into a style struct.
@@ -482,9 +473,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapImageBorderAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapImageBorderAttributeInto(const nsMappedAttributes* aAttributes,
+                                          mozilla::MappedDeclarations&);
   /**
    * Helper to map the image margin attribute into a style struct.
    *
@@ -492,9 +482,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapImageMarginAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapImageMarginAttributeInto(const nsMappedAttributes* aAttributes,
+                                          mozilla::MappedDeclarations&);
   /**
    * Helper to map the image position attribute into a style struct.
    *
@@ -502,9 +491,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapImageSizeAttributesInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapImageSizeAttributesInto(const nsMappedAttributes* aAttributes,
+                                         mozilla::MappedDeclarations&);
 
   /**
    * Helper to map `width` attribute into a style struct.
@@ -513,9 +501,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapWidthAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapWidthAttributeInto(const nsMappedAttributes* aAttributes,
+                                    mozilla::MappedDeclarations&);
   /**
    * Helper to map `height` attribute into a style struct.
    *
@@ -523,9 +510,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapHeightAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapHeightAttributeInto(const nsMappedAttributes* aAttributes,
+                                     mozilla::MappedDeclarations&);
   /**
    * Helper to map the background attribute
    * into a style struct.
@@ -535,7 +521,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @see GetAttributeMappingFunction
    */
   static void MapBackgroundInto(const nsMappedAttributes* aAttributes,
-                                mozilla::GenericSpecifiedValues* aGenericData);
+                                mozilla::MappedDeclarations&);
   /**
    * Helper to map the bgcolor attribute
    * into a style struct.
@@ -545,7 +531,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @see GetAttributeMappingFunction
    */
   static void MapBGColorInto(const nsMappedAttributes* aAttributes,
-                             mozilla::GenericSpecifiedValues* aGenericData);
+                             mozilla::MappedDeclarations&);
   /**
    * Helper to map the background attributes (currently background and bgcolor)
    * into a style struct.
@@ -554,9 +540,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapBackgroundAttributesInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapBackgroundAttributesInto(const nsMappedAttributes* aAttributes,
+                                          mozilla::MappedDeclarations&);
   /**
    * Helper to map the scrolling attribute on FRAME and IFRAME
    * into a style struct.
@@ -565,9 +550,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * @param aData the returned rule data [INOUT]
    * @see GetAttributeMappingFunction
    */
-  static void MapScrollingAttributeInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapScrollingAttributeInto(const nsMappedAttributes* aAttributes,
+                                        mozilla::MappedDeclarations&);
   /**
    * Get the presentation context for this content node.
    * @return the presentation context
@@ -594,7 +578,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    * See if the document being tested has nav-quirks mode enabled.
    * @param doc the document
    */
-  static bool InNavQuirksMode(nsIDocument* aDoc);
+  static bool InNavQuirksMode(Document*);
 
   /**
    * Gets the absolute URI value of an attribute, by resolving any relative
@@ -636,8 +620,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
 
   virtual bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override;
 
-  static bool TouchEventsEnabled(JSContext* /* unused */,
-                                 JSObject* /* unused */);
+  static bool LegacyTouchAPIEnabled(JSContext* aCx, JSObject* aObj);
 
   static inline bool CanHaveName(nsAtom* aTag) {
     return aTag == nsGkAtoms::img || aTag == nsGkAtoms::form ||
@@ -662,22 +645,8 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
   /**
    * Add/remove this element to the documents name cache
    */
-  void AddToNameTable(nsAtom* aName) {
-    NS_ASSERTION(HasName(), "Node doesn't have name?");
-    nsIDocument* doc = GetUncomposedDoc();
-    if (doc && !IsInAnonymousSubtree()) {
-      doc->AddToNameTable(this, aName);
-    }
-  }
-  void RemoveFromNameTable() {
-    if (HasName() && CanHaveName(NodeInfo()->NameAtom())) {
-      nsIDocument* doc = GetUncomposedDoc();
-      if (doc) {
-        doc->RemoveFromNameTable(
-            this, GetParsedAttr(nsGkAtoms::name)->GetAtomValue());
-      }
-    }
-  }
+  void AddToNameTable(nsAtom* aName);
+  void RemoveFromNameTable();
 
   /**
    * Register or unregister an access key to this element based on the
@@ -725,7 +694,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
   nsresult NewURIFromString(const nsAString& aURISpec, nsIURI** aURI);
 
   void GetHTMLAttr(nsAtom* aName, nsAString& aResult) const {
-    GetAttr(kNameSpaceID_None, aName, aResult);
+    GetAttr(aName, aResult);
   }
   void GetHTMLAttr(nsAtom* aName, mozilla::dom::DOMString& aResult) const {
     GetAttr(kNameSpaceID_None, aName, aResult);
@@ -742,15 +711,15 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
   }
   void SetHTMLAttr(nsAtom* aName, const nsAString& aValue,
                    mozilla::ErrorResult& aError) {
-    mozilla::dom::Element::SetAttr(aName, aValue, aError);
+    SetAttr(aName, aValue, aError);
   }
   void SetHTMLAttr(nsAtom* aName, const nsAString& aValue,
                    nsIPrincipal* aTriggeringPrincipal,
                    mozilla::ErrorResult& aError) {
-    mozilla::dom::Element::SetAttr(aName, aValue, aTriggeringPrincipal, aError);
+    SetAttr(aName, aValue, aTriggeringPrincipal, aError);
   }
   void UnsetHTMLAttr(nsAtom* aName, mozilla::ErrorResult& aError) {
-    mozilla::dom::Element::UnsetAttr(aName, aError);
+    UnsetAttr(aName, aError);
   }
   void SetHTMLBoolAttr(nsAtom* aName, bool aValue,
                        mozilla::ErrorResult& aError) {
@@ -867,7 +836,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
    */
   ContentEditableTristate GetContentEditableValue() const {
     static const Element::AttrValuesArray values[] = {
-        &nsGkAtoms::_false, &nsGkAtoms::_true, &nsGkAtoms::_empty, nullptr};
+        nsGkAtoms::_false, nsGkAtoms::_true, nsGkAtoms::_empty, nullptr};
 
     if (!MayHaveContentEditableAttr()) return eInherit;
 
@@ -880,6 +849,7 @@ class nsGenericHTMLElement : public nsGenericHTMLElementBase,
   // Used by A, AREA, LINK, and STYLE.
   already_AddRefed<nsIURI> GetHrefURIForAnchors() const;
 
+ public:
   /**
    * Returns whether this element is an editable root. There are two types of
    * editable roots:
@@ -938,7 +908,7 @@ ASSERT_NODE_FLAGS_SPACE(ELEMENT_TYPE_SPECIFIC_BITS_OFFSET + 3);
 class nsGenericHTMLFormElement : public nsGenericHTMLElement,
                                  public nsIFormControl {
  public:
-  nsGenericHTMLFormElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo,
+  nsGenericHTMLFormElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,
                            uint8_t aType);
 
   NS_DECL_ISUPPORTS_INHERITED
@@ -952,27 +922,25 @@ class nsGenericHTMLFormElement : public nsGenericHTMLElement,
   virtual mozilla::dom::HTMLFieldSetElement* GetFieldSet() override;
   virtual mozilla::dom::Element* GetFormElement() override;
   mozilla::dom::HTMLFormElement* GetForm() const { return mForm; }
-  virtual void SetForm(nsIDOMHTMLFormElement* aForm) override;
+  virtual void SetForm(mozilla::dom::HTMLFormElement* aForm) override;
   virtual void ClearForm(bool aRemoveFromForm, bool aUnbindOrDelete) override;
-
-  nsresult GetForm(nsIDOMHTMLFormElement** aForm);
 
   NS_IMETHOD SaveState() override { return NS_OK; }
 
-  virtual bool RestoreState(nsPresState* aState) override { return false; }
+  virtual bool RestoreState(mozilla::PresState* aState) override {
+    return false;
+  }
   virtual bool AllowDrop() override { return true; }
 
   // nsIContent
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual IMEState GetDesiredIMEState() override;
   virtual mozilla::EventStates IntrinsicState() const override;
 
-  virtual nsresult GetEventTargetParent(
-      mozilla::EventChainPreVisitor& aVisitor) override;
+  void GetEventTargetParent(mozilla::EventChainPreVisitor& aVisitor) override;
   virtual nsresult PreHandleEvent(
       mozilla::EventChainVisitor& aVisitor) override;
 
@@ -1077,7 +1045,7 @@ class nsGenericHTMLFormElement : public nsGenericHTMLElement,
   void RemoveFormIdObserver();
 
   /**
-   * This method is a a callback for IDTargetObserver (from nsIDocument).
+   * This method is a a callback for IDTargetObserver (from Document).
    * It will be called each time the element associated with the id in @form
    * changes.
    */
@@ -1085,7 +1053,7 @@ class nsGenericHTMLFormElement : public nsGenericHTMLElement,
                             void* aData);
 
   // Returns true if the event should not be handled from GetEventTargetParent
-  bool IsElementDisabledForEvents(mozilla::EventMessage aMessage,
+  bool IsElementDisabledForEvents(mozilla::WidgetEvent* aEvent,
                                   nsIFrame* aFrame);
 
   // The focusability state of this form control.  eUnfocusable means that it
@@ -1107,13 +1075,13 @@ class nsGenericHTMLFormElement : public nsGenericHTMLElement,
 class nsGenericHTMLFormElementWithState : public nsGenericHTMLFormElement {
  public:
   nsGenericHTMLFormElementWithState(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo, uint8_t aType);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo, uint8_t aType);
 
   /**
    * Get the presentation state for a piece of content, or create it if it does
    * not exist.  Generally used by SaveState().
    */
-  nsPresState* GetPrimaryPresState();
+  mozilla::PresState* GetPrimaryPresState();
 
   /**
    * Get the layout history object for a particular piece of content.
@@ -1137,7 +1105,7 @@ class nsGenericHTMLFormElementWithState : public nsGenericHTMLFormElement {
    * Called when we have been cloned and adopted, and the information of the
    * node has been changed.
    */
-  virtual void NodeInfoChanged(nsIDocument* aOldDoc) override;
+  virtual void NodeInfoChanged(Document* aOldDoc) override;
 
  protected:
   /* Generates the state key for saving the form state in the session if not
@@ -1180,25 +1148,26 @@ typedef nsGenericHTMLElement* (*HTMLContentCreatorFunction)(
   inline nsGenericHTMLElement* NS_NewHTML##_elementName##Element(             \
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,                   \
       mozilla::dom::FromParser aFromParser = mozilla::dom::NOT_FROM_PARSER) { \
-    return NS_NewHTMLSharedElement(mozilla::Move(aNodeInfo), aFromParser);    \
+    return NS_NewHTMLSharedElement(std::move(aNodeInfo), aFromParser);        \
   }
 
 /**
  * A macro to implement the NS_NewHTMLXXXElement() functions.
  */
-#define NS_IMPL_NS_NEW_HTML_ELEMENT(_elementName)                    \
-  nsGenericHTMLElement* NS_NewHTML##_elementName##Element(           \
-      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,          \
-      mozilla::dom::FromParser aFromParser) {                        \
-    return new mozilla::dom::HTML##_elementName##Element(aNodeInfo); \
+#define NS_IMPL_NS_NEW_HTML_ELEMENT(_elementName)           \
+  nsGenericHTMLElement* NS_NewHTML##_elementName##Element(  \
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo, \
+      mozilla::dom::FromParser aFromParser) {               \
+    return new mozilla::dom::HTML##_elementName##Element(   \
+        std::move(aNodeInfo));                              \
   }
 
-#define NS_IMPL_NS_NEW_HTML_ELEMENT_CHECK_PARSER(_elementName)         \
-  nsGenericHTMLElement* NS_NewHTML##_elementName##Element(             \
-      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,            \
-      mozilla::dom::FromParser aFromParser) {                          \
-    return new mozilla::dom::HTML##_elementName##Element(aNodeInfo,    \
-                                                         aFromParser); \
+#define NS_IMPL_NS_NEW_HTML_ELEMENT_CHECK_PARSER(_elementName)                 \
+  nsGenericHTMLElement* NS_NewHTML##_elementName##Element(                     \
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo,                    \
+      mozilla::dom::FromParser aFromParser) {                                  \
+    return new mozilla::dom::HTML##_elementName##Element(std::move(aNodeInfo), \
+                                                         aFromParser);         \
   }
 
 // Here, we expand 'NS_DECLARE_NS_NEW_HTML_ELEMENT()' by hand.
@@ -1247,6 +1216,7 @@ NS_DECLARE_NS_NEW_HTML_ELEMENT(LI)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Label)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Legend)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Link)
+NS_DECLARE_NS_NEW_HTML_ELEMENT(Marquee)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Map)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Menu)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(MenuItem)
@@ -1283,13 +1253,5 @@ NS_DECLARE_NS_NEW_HTML_ELEMENT(Title)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Track)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Unknown)
 NS_DECLARE_NS_NEW_HTML_ELEMENT(Video)
-
-inline nsISupports* ToSupports(nsGenericHTMLElement* aHTMLElement) {
-  return static_cast<nsIContent*>(aHTMLElement);
-}
-
-inline nsISupports* ToCanonicalSupports(nsGenericHTMLElement* aHTMLElement) {
-  return static_cast<nsIContent*>(aHTMLElement);
-}
 
 #endif /* nsGenericHTMLElement_h___ */

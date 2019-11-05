@@ -17,22 +17,20 @@
 #include "nsISupportsImpl.h"
 
 class nsIGlobalObject;
-class nsStyleContext;
 class ServoComputedData;
 struct nsStyleDisplay;
+class ServoCSSAnimationBuilder;
 
 namespace mozilla {
+class ComputedStyle;
 namespace css {
 class Declaration;
 } /* namespace css */
 namespace dom {
-class KeyframeEffectReadOnly;
 class Promise;
 } /* namespace dom */
 
-class GeckoStyleContext;
-class ServoStyleContext;
-enum class CSSPseudoElementType : uint8_t;
+enum class PseudoStyleType : uint8_t;
 struct NonOwningAnimationTarget;
 
 namespace dom {
@@ -86,7 +84,7 @@ class CSSAnimation final : public Animation {
 
   void PlayFromStyle();
   void PauseFromStyle();
-  void CancelFromStyle() override {
+  void CancelFromStyle(PostRestyleMode aPostRestyle) {
     // When an animation is disassociated with style it enters an odd state
     // where its composite order is undefined until it first transitions
     // out of the idle state.
@@ -100,10 +98,10 @@ class CSSAnimation final : public Animation {
     mAnimationIndex = sNextAnimationIndex++;
     mNeedsNewAnimationIndexWhenRun = true;
 
-    Animation::CancelFromStyle();
+    Animation::Cancel(aPostRestyle);
 
-    // We need to do this *after* calling CancelFromStyle() since
-    // CancelFromStyle might synchronously trigger a cancel event for which
+    // We need to do this *after* calling Cancel() since
+    // Cancel() might synchronously trigger a cancel event for which
     // we need an owning element to target the event at.
     mOwningElement = OwningElementRef();
   }
@@ -257,6 +255,9 @@ struct AnimationTypeTraits<dom::CSSAnimation> {
   static nsAtom* AfterPropertyAtom() {
     return nsGkAtoms::animationsOfAfterProperty;
   }
+  static nsAtom* MarkerPropertyAtom() {
+    return nsGkAtoms::animationsOfMarkerProperty;
+  }
 };
 
 } /* namespace mozilla */
@@ -268,33 +269,20 @@ class nsAnimationManager final
       : mozilla::CommonAnimationManager<mozilla::dom::CSSAnimation>(
             aPresContext) {}
 
-  NS_INLINE_DECL_REFCOUNTING(nsAnimationManager)
-
   typedef mozilla::AnimationCollection<mozilla::dom::CSSAnimation>
       CSSAnimationCollection;
   typedef nsTArray<RefPtr<mozilla::dom::CSSAnimation>>
       OwningCSSAnimationPtrArray;
 
-#ifdef MOZ_OLD_STYLE
-  /**
-   * Update the set of animations on |aElement| based on |aStyleContext|.
-   * If necessary, this will notify the corresponding EffectCompositor so
-   * that it can update its animation rule.
-   *
-   * aStyleContext may be a style context for aElement or for its
-   * :before or :after pseudo-element.
-   */
-  void UpdateAnimations(mozilla::GeckoStyleContext* aStyleContext,
-                        mozilla::dom::Element* aElement);
-#endif
+  ~nsAnimationManager() override = default;
 
   /**
    * This function does the same thing as the above UpdateAnimations()
    * but with servo's computed values.
    */
   void UpdateAnimations(mozilla::dom::Element* aElement,
-                        mozilla::CSSPseudoElementType aPseudoType,
-                        const mozilla::ServoStyleContext* aComputedValues);
+                        mozilla::PseudoStyleType aPseudoType,
+                        const mozilla::ComputedStyle* aComputedValues);
 
   // Utility function to walk through |aIter| to find the Keyframe with
   // matching offset and timing function but stopping as soon as the offset
@@ -330,9 +318,6 @@ class nsAnimationManager final
     return mMaybeReferencedAnimations.Contains(aName);
   }
 
- protected:
-  ~nsAnimationManager() override = default;
-
  private:
   // This includes all animation names referenced regardless of whether a
   // corresponding `@keyframes` rule is available.
@@ -342,10 +327,9 @@ class nsAnimationManager final
   // style invalidation.
   nsTHashtable<nsRefPtrHashKey<nsAtom>> mMaybeReferencedAnimations;
 
-  template <class BuilderType>
   void DoUpdateAnimations(const mozilla::NonOwningAnimationTarget& aTarget,
                           const nsStyleDisplay& aStyleDisplay,
-                          BuilderType& aBuilder);
+                          ServoCSSAnimationBuilder& aBuilder);
 };
 
 #endif /* !defined(nsAnimationManager_h_) */

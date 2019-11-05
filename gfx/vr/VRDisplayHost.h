@@ -21,7 +21,7 @@
 #include "mozilla/layers/LayersSurfaces.h"  // for SurfaceDescriptor
 
 #if defined(XP_WIN)
-#include <d3d11_1.h>
+#  include <d3d11_1.h>
 #elif defined(XP_MACOSX)
 class MacIOSurface;
 #endif
@@ -42,17 +42,23 @@ class VRDisplayHost {
   virtual void ZeroSensor() = 0;
   virtual void StartPresentation() = 0;
   virtual void StopPresentation() = 0;
+  virtual void StartVRNavigation();
+  virtual void StopVRNavigation(const TimeDuration& aTimeout);
   void NotifyVSync();
+  virtual void Run1msTasks(double aDeltaTime);
+  virtual void Run10msTasks();
+  virtual void Run100msTasks();
 
   void StartFrame();
   void SubmitFrame(VRLayerParent* aLayer,
                    const layers::SurfaceDescriptor& aTexture, uint64_t aFrameId,
                    const gfx::Rect& aLeftEyeRect,
                    const gfx::Rect& aRightEyeRect);
-
+  void CancelCurrentSubmitTask();
   bool CheckClearDisplayInfoDirty();
   void SetGroupMask(uint32_t aGroupMask);
   bool GetIsConnected();
+  void ShutdownSubmitThread();
 
   class AutoRestoreRenderState {
    public:
@@ -72,32 +78,22 @@ class VRDisplayHost {
   explicit VRDisplayHost(VRDeviceType aType);
   virtual ~VRDisplayHost();
 
-#if defined(XP_WIN)
-  // Subclasses should override this SubmitFrame function.
-  // Returns true if the SubmitFrame call will block as necessary
-  // to control timing of the next frame and throttle the render loop
-  // for the needed framerate.
-  virtual bool SubmitFrame(ID3D11Texture2D* aSource, const IntSize& aSize,
-                           const gfx::Rect& aLeftEyeRect,
+  // This SubmitFrame() must be overridden by children and block until
+  // the next frame is ready to start and the resources in aTexture can
+  // safely be released.
+  virtual bool SubmitFrame(const layers::SurfaceDescriptor& aTexture,
+                           uint64_t aFrameId, const gfx::Rect& aLeftEyeRect,
                            const gfx::Rect& aRightEyeRect) = 0;
-#elif defined(XP_MACOSX)
-  virtual bool SubmitFrame(MacIOSurface* aMacIOSurface, const IntSize& aSize,
-                           const gfx::Rect& aLeftEyeRect,
-                           const gfx::Rect& aRightEyeRect) = 0;
-#elif defined(MOZ_ANDROID_GOOGLE_VR)
-  virtual bool SubmitFrame(
-      const mozilla::layers::EGLImageDescriptor* aDescriptor,
-      const gfx::Rect& aLeftEyeRect, const gfx::Rect& aRightEyeRect) = 0;
-#endif
 
   VRDisplayInfo mDisplayInfo;
+  TimeStamp mLastFrameStart[kVRMaxLatencyFrames];
 
   nsTArray<VRLayerParent*> mLayers;
   // Weak reference to mLayers entries are cleared in
   // VRLayerParent destructor
 
  protected:
-  virtual VRHMDSensorState GetSensorState() = 0;
+  virtual VRHMDSensorState& GetSensorState() = 0;
 
   RefPtr<VRThread> mSubmitThread;
 
@@ -105,10 +101,18 @@ class VRDisplayHost {
   void SubmitFrameInternal(const layers::SurfaceDescriptor& aTexture,
                            uint64_t aFrameId, const gfx::Rect& aLeftEyeRect,
                            const gfx::Rect& aRightEyeRect);
+  void CheckWatchDog();
 
   VRDisplayInfo mLastUpdateDisplayInfo;
-  TimeStamp mLastFrameStart;
+
+  mozilla::Monitor mCurrentSubmitTaskMonitor;
+  RefPtr<CancelableRunnable> mCurrentSubmitTask;
   bool mFrameStarted;
+#if defined(MOZ_WIDGET_ANDROID)
+ protected:
+  uint64_t mLastSubmittedFrameId;
+  uint64_t mLastStartedFrame;
+#endif  // defined(MOZ_WIDGET_ANDROID)
 
 #if defined(XP_WIN)
  protected:
@@ -145,10 +149,6 @@ class VRControllerHost {
   virtual ~VRControllerHost();
 
   VRControllerInfo mControllerInfo;
-  // The current button pressed bit of button mask.
-  uint64_t mButtonPressed;
-  // The current button touched bit of button mask.
-  uint64_t mButtonTouched;
   uint64_t mVibrateIndex;
   dom::GamepadPoseState mPose;
 };

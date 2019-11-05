@@ -29,7 +29,7 @@ class RecordEntry {
 
   // Move constructor so we can do Records of Records.
   RecordEntry(RecordEntry<KeyType, ValueType>&& aOther)
-      : mKey(Move(aOther.mKey)), mValue(Move(aOther.mValue)) {}
+      : mKey(std::move(aOther.mKey)), mValue(std::move(aOther.mValue)) {}
 
   KeyType mKey;
   ValueType mValue;
@@ -61,7 +61,7 @@ class Record {
   Record() {}
 
   // Move constructor so we can do Record of Record.
-  Record(SelfType&& aOther) : mEntries(Move(aOther.mEntries)) {}
+  Record(SelfType&& aOther) : mEntries(std::move(aOther.mEntries)) {}
 
   const nsTArray<EntryType>& Entries() const { return mEntries; }
 

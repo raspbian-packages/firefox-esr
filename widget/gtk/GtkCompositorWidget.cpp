@@ -38,13 +38,16 @@ GtkCompositorWidget::GtkCompositorWidget(
 
     // Grab the window's visual and depth
     XWindowAttributes windowAttrs;
-    XGetWindowAttributes(mXDisplay, mXWindow, &windowAttrs);
+    if (!XGetWindowAttributes(mXDisplay, mXWindow, &windowAttrs)) {
+      NS_WARNING("GtkCompositorWidget(): XGetWindowAttributes() failed!");
+    }
 
     Visual* visual = windowAttrs.visual;
     int depth = windowAttrs.depth;
 
     // Initialize the window surface provider
-    mProvider.Initialize(mXDisplay, mXWindow, visual, depth);
+    mProvider.Initialize(mXDisplay, mXWindow, visual, depth,
+                         aInitData.Shaped());
   }
   mClientSize = aInitData.InitialClientSize();
 }
@@ -82,10 +85,26 @@ void GtkCompositorWidget::NotifyClientSizeChanged(
   mClientSize = aClientSize;
 }
 
+#ifdef MOZ_WAYLAND
+void GtkCompositorWidget::RequestsUpdatingEGLSurface() {
+  mWaylandRequestsUpdatingEGLSurface = true;
+}
+
+bool GtkCompositorWidget::WaylandRequestsUpdatingEGLSurface() {
+  bool ret = mWaylandRequestsUpdatingEGLSurface;
+  mWaylandRequestsUpdatingEGLSurface = false;
+  return ret;
+}
+#endif
+
 LayoutDeviceIntSize GtkCompositorWidget::GetClientSize() { return mClientSize; }
 
 uintptr_t GtkCompositorWidget::GetWidgetKey() {
   return reinterpret_cast<uintptr_t>(mWidget);
+}
+
+EGLNativeWindowType GtkCompositorWidget::GetEGLNativeWindow() {
+  return (EGLNativeWindowType)mWidget->GetNativeData(NS_NATIVE_EGL_WINDOW);
 }
 
 }  // namespace widget

@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #if !defined(HLSDemuxer_h_)
-#define HLSDemuxer_h_
+#  define HLSDemuxer_h_
 
-#include "AutoTaskQueue.h"
-#include "GeneratedJNINatives.h"
-#include "GeneratedJNIWrappers.h"
-#include "MediaCodec.h"
-#include "MediaDataDemuxer.h"
-#include "MediaDecoder.h"
-#include "mozilla/Atomics.h"
-#include "mozilla/Maybe.h"
-#include "mozilla/Mutex.h"
+#  include "GeneratedJNINatives.h"
+#  include "GeneratedJNIWrappers.h"
+#  include "MediaCodec.h"
+#  include "MediaDataDemuxer.h"
+#  include "MediaDecoder.h"
+#  include "mozilla/Atomics.h"
+#  include "mozilla/Maybe.h"
+#  include "mozilla/Mutex.h"
+#  include "mozilla/TaskQueue.h"
 
-#include "VideoUtils.h"
+#  include "VideoUtils.h"
 
 namespace mozilla {
 
@@ -50,7 +50,7 @@ class HLSDemuxer final : public MediaDataDemuxer,
 
   void NotifyDataArrived() override;
 
-  AutoTaskQueue* GetTaskQueue() const { return mTaskQueue; }
+  TaskQueue* GetTaskQueue() const { return mTaskQueue; }
   void OnInitialized(bool aHasAudio, bool aHasVideo);
   void OnError(int aErrorCode);
 
@@ -61,7 +61,7 @@ class HLSDemuxer final : public MediaDataDemuxer,
   ~HLSDemuxer();
   friend class HLSTrackDemuxer;
 
-  const RefPtr<AutoTaskQueue> mTaskQueue;
+  const RefPtr<TaskQueue> mTaskQueue;
   RefPtr<HLSTrackDemuxer> mAudioDemuxer;
   RefPtr<HLSTrackDemuxer> mVideoDemuxer;
 

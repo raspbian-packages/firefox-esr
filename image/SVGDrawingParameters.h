@@ -22,17 +22,18 @@ struct SVGDrawingParameters {
   typedef mozilla::gfx::IntSize IntSize;
   typedef mozilla::gfx::SamplingFilter SamplingFilter;
 
-  SVGDrawingParameters(gfxContext* aContext, const nsIntSize& aSize,
-                       const ImageRegion& aRegion,
+  SVGDrawingParameters(gfxContext* aContext, const nsIntSize& aRasterSize,
+                       const nsIntSize& aDrawSize, const ImageRegion& aRegion,
                        SamplingFilter aSamplingFilter,
                        const Maybe<SVGImageContext>& aSVGContext,
                        float aAnimationTime, uint32_t aFlags, float aOpacity)
       : context(aContext),
-        size(aSize.width, aSize.height),
+        size(aRasterSize),
+        drawSize(aDrawSize),
         region(aRegion),
         samplingFilter(aSamplingFilter),
         svgContext(aSVGContext),
-        viewportSize(aSize),
+        viewportSize(aRasterSize),
         animationTime(aAnimationTime),
         flags(aFlags),
         opacity(aOpacity) {
@@ -45,7 +46,8 @@ struct SVGDrawingParameters {
   }
 
   gfxContext* context;
-  IntSize size;
+  IntSize size;      // Size to rasterize a surface at.
+  IntSize drawSize;  // Size to draw the given surface at.
   ImageRegion region;
   SamplingFilter samplingFilter;
   const Maybe<SVGImageContext>& svgContext;

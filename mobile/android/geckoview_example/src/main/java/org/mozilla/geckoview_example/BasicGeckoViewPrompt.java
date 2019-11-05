@@ -48,6 +48,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.mozilla.geckoview.AllowOrDeny;
+import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSession.PermissionDelegate.MediaSource;
 
@@ -360,7 +362,7 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                 final ModifiableChoice item = getItem(position);
                 return !item.choice.separator && !item.choice.disabled &&
                         ((type != Choice.CHOICE_TYPE_SINGLE && type != Choice.CHOICE_TYPE_MULTIPLE) ||
-                         item.choice.items != null);
+                         item.choice.items == null);
             }
 
             @Override
@@ -807,7 +809,12 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
         }
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title)
-               .setNegativeButton(android.R.string.cancel, /* onClickListener */ null)
+               .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(final DialogInterface dialog, final int which) {
+                       callback.reject();
+                   }
+               })
                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(final DialogInterface dialog, final int which) {
@@ -816,12 +823,6 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                });
 
         final AlertDialog dialog = builder.create();
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                   @Override
-                   public void onDismiss(final DialogInterface dialog) {
-                       callback.reject();
-                   }
-               });
         dialog.show();
     }
 
@@ -912,5 +913,10 @@ final class BasicGeckoViewPrompt implements GeckoSession.PromptDelegate {
                                final MediaSource[] video, final MediaSource[] audio,
                                final GeckoSession.PermissionDelegate.MediaCallback callback) {
         onMediaPrompt(session, title, video, audio, null, null, callback);
+    }
+
+    @Override
+    public GeckoResult<AllowOrDeny> onPopupRequest(final GeckoSession session, final String targetUri) {
+        return GeckoResult.fromValue(AllowOrDeny.ALLOW);
     }
 }

@@ -8,14 +8,15 @@
 #define mozilla_dom_PerformanceTiming_h
 
 #include "mozilla/Attributes.h"
+#include "mozilla/StaticPrefs.h"
 #include "nsContentUtils.h"
 #include "nsDOMNavigationTiming.h"
 #include "nsRFPService.h"
 #include "nsWrapperCache.h"
 #include "Performance.h"
+#include "nsITimedChannel.h"
 
 class nsIHttpChannel;
-class nsITimedChannel;
 
 namespace mozilla {
 namespace dom {
@@ -36,21 +37,18 @@ class PerformanceTimingData final {
   PerformanceTimingData(nsITimedChannel* aChannel, nsIHttpChannel* aHttpChannel,
                         DOMHighResTimeStamp aZeroTime);
 
-  void SetPropertiesFromHttpChannel(nsIHttpChannel* aHttpChannel);
+  void SetPropertiesFromHttpChannel(nsIHttpChannel* aHttpChannel,
+                                    nsITimedChannel* aChannel);
 
   bool IsInitialized() const { return mInitialized; }
 
   const nsString& NextHopProtocol() const { return mNextHopProtocol; }
 
-  uint64_t TransferSize() const { return mTimingAllowed ? mTransferSize : 0; }
+  uint64_t TransferSize() const { return mTransferSize; }
 
-  uint64_t EncodedBodySize() const {
-    return mTimingAllowed ? mEncodedBodySize : 0;
-  }
+  uint64_t EncodedBodySize() const { return mEncodedBodySize; }
 
-  uint64_t DecodedBodySize() const {
-    return mTimingAllowed ? mDecodedBodySize : 0;
-  }
+  uint64_t DecodedBodySize() const { return mDecodedBodySize; }
 
   /**
    * @param   aStamp
@@ -149,6 +147,8 @@ class PerformanceTimingData final {
   // attributes of the resourceTiming object will be set to 0
   bool TimingAllowed() const { return mTimingAllowed; }
 
+  nsTArray<nsCOMPtr<nsIServerTiming>> GetServerTiming();
+
  private:
   // Checks if the resource is either same origin as the page that started
   // the load, or if the response contains the Timing-Allow-Origin header
@@ -156,6 +156,7 @@ class PerformanceTimingData final {
   bool CheckAllowedOrigin(nsIHttpChannel* aResourceChannel,
                           nsITimedChannel* aChannel);
 
+  nsTArray<nsCOMPtr<nsIServerTiming>> mServerTiming;
   nsString mNextHopProtocol;
 
   TimeStamp mAsyncOpen;
@@ -244,7 +245,7 @@ class PerformanceTiming final : public nsWrapperCache {
 
   // PerformanceNavigation WebIDL methods
   DOMTimeMilliSec NavigationStart() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -257,7 +258,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec UnloadEventStart() {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -270,7 +271,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec UnloadEventEnd() {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -296,7 +297,7 @@ class PerformanceTiming final : public nsWrapperCache {
   DOMTimeMilliSec ResponseEnd();
 
   DOMTimeMilliSec DomLoading() {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -308,7 +309,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec DomInteractive() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -321,7 +322,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec DomContentLoadedEventStart() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -334,7 +335,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec DomContentLoadedEventEnd() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -347,7 +348,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec DomComplete() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -360,7 +361,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec LoadEventStart() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -373,7 +374,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec LoadEventEnd() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -386,7 +387,7 @@ class PerformanceTiming final : public nsWrapperCache {
   }
 
   DOMTimeMilliSec TimeToNonBlankPaint() const {
-    if (!nsContentUtils::IsPerformanceTimingEnabled() ||
+    if (!StaticPrefs::dom_enable_performance() ||
         nsContentUtils::ShouldResistFingerprinting()) {
       return 0;
     }
@@ -396,6 +397,44 @@ class PerformanceTiming final : public nsWrapperCache {
     return nsRFPService::ReduceTimePrecisionAsMSecs(
         GetDOMTiming()->GetTimeToNonBlankPaint(),
         mPerformance->GetRandomTimelineSeed());
+  }
+
+  DOMTimeMilliSec TimeToContentfulPaint() const {
+    if (!StaticPrefs::dom_enable_performance() ||
+        nsContentUtils::ShouldResistFingerprinting()) {
+      return 0;
+    }
+    if (mPerformance->IsSystemPrincipal()) {
+      return GetDOMTiming()->GetTimeToContentfulPaint();
+    }
+    return nsRFPService::ReduceTimePrecisionAsMSecs(
+        GetDOMTiming()->GetTimeToContentfulPaint(),
+        mPerformance->GetRandomTimelineSeed());
+  }
+
+  DOMTimeMilliSec TimeToDOMContentFlushed() const {
+    if (!StaticPrefs::dom_enable_performance() ||
+        nsContentUtils::ShouldResistFingerprinting()) {
+      return 0;
+    }
+    if (mPerformance->IsSystemPrincipal()) {
+      return GetDOMTiming()->GetTimeToDOMContentFlushed();
+    }
+    return nsRFPService::ReduceTimePrecisionAsMSecs(
+        GetDOMTiming()->GetTimeToDOMContentFlushed(),
+        mPerformance->GetRandomTimelineSeed());
+  }
+
+  DOMTimeMilliSec TimeToFirstInteractive() const {
+    if (!StaticPrefs::dom_enable_performance() ||
+        nsContentUtils::ShouldResistFingerprinting()) {
+      return 0;
+    }
+    if (mPerformance->IsSystemPrincipal()) {
+      return GetDOMTiming()->GetTimeToTTFI();
+    }
+    return nsRFPService::ReduceTimePrecisionAsMSecs(
+        GetDOMTiming()->GetTimeToTTFI(), mPerformance->GetRandomTimelineSeed());
   }
 
   PerformanceTimingData* Data() const { return mTimingData.get(); }

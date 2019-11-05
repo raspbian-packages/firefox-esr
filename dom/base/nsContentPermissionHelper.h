@@ -46,14 +46,13 @@ class ContentPermissionType : public nsIContentPermissionType {
   NS_DECL_ISUPPORTS
   NS_DECL_NSICONTENTPERMISSIONTYPE
 
-  ContentPermissionType(const nsACString& aType, const nsACString& aAccess,
+  ContentPermissionType(const nsACString& aType,
                         const nsTArray<nsString>& aOptions);
 
  protected:
   virtual ~ContentPermissionType();
 
   nsCString mType;
-  nsCString mAccess;
   nsTArray<nsString> mOptions;
 };
 
@@ -66,13 +65,15 @@ class nsContentPermissionUtils {
       nsIArray* aSrcArray, nsTArray<PermissionRequest>& aDesArray);
 
   static nsresult CreatePermissionArray(const nsACString& aType,
-                                        const nsACString& aAccess,
                                         const nsTArray<nsString>& aOptions,
                                         nsIArray** aTypesArray);
 
   static PContentPermissionRequestParent* CreateContentPermissionRequestParent(
       const nsTArray<PermissionRequest>& aRequests, Element* aElement,
-      const IPC::Principal& aPrincipal, const bool aIsHandlingUserInput,
+      nsIPrincipal* aPrincipal, nsIPrincipal* aTopLevelPrincipal,
+      const bool aIsHandlingUserInput,
+      const bool aUserHadInteractedWithDocument,
+      const DOMTimeStamp aDocumentDOMContentLoadedTimestamp,
       const TabId& aTabId);
 
   static nsresult AskPermission(nsIContentPermissionRequest* aRequest,
@@ -106,6 +107,64 @@ class nsContentPermissionRequester final
   RefPtr<VisibilityChangeListener> mListener;
 };
 
+nsresult TranslateChoices(
+    JS::HandleValue aChoices,
+    const nsTArray<PermissionRequest>& aPermissionRequests,
+    nsTArray<PermissionChoice>& aTranslatedChoices);
+
+class ContentPermissionRequestBase : public nsIContentPermissionRequest {
+ public:
+  NS_DECL_CYCLE_COLLECTING_ISUPPORTS
+  NS_DECL_CYCLE_COLLECTION_CLASS(ContentPermissionRequestBase)
+
+  NS_IMETHOD GetTypes(nsIArray** aTypes) override;
+  NS_IMETHOD GetPrincipal(nsIPrincipal** aPrincipal) override;
+  NS_IMETHOD GetTopLevelPrincipal(nsIPrincipal** aTopLevelPrincipal) override;
+  NS_IMETHOD GetWindow(mozIDOMWindow** aWindow) override;
+  NS_IMETHOD GetElement(mozilla::dom::Element** aElement) override;
+  NS_IMETHOD GetIsHandlingUserInput(bool* aIsHandlingUserInput) override;
+  NS_IMETHOD GetUserHadInteractedWithDocument(
+      bool* aUserHadInteractedWithDocument) override;
+  NS_IMETHOD GetDocumentDOMContentLoadedTimestamp(
+      DOMTimeStamp* aDocumentDOMContentLoadedTimestamp) override;
+  NS_IMETHOD GetRequester(nsIContentPermissionRequester** aRequester) override;
+  // Overrides for Allow() and Cancel() aren't provided by this class.
+  // That is the responsibility of the subclasses.
+
+  enum class PromptResult {
+    Granted,
+    Denied,
+    Pending,
+  };
+  nsresult ShowPrompt(PromptResult& aResult);
+
+  PromptResult CheckPromptPrefs();
+
+  enum class DelayedTaskType {
+    Allow,
+    Deny,
+    Request,
+  };
+  void RequestDelayedTask(nsIEventTarget* aTarget, DelayedTaskType aType);
+
+ protected:
+  ContentPermissionRequestBase(nsIPrincipal* aPrincipal,
+                               nsPIDOMWindowInner* aWindow,
+                               const nsACString& aPrefName,
+                               const nsACString& aType);
+  virtual ~ContentPermissionRequestBase() = default;
+
+  nsCOMPtr<nsIPrincipal> mPrincipal;
+  nsCOMPtr<nsIPrincipal> mTopLevelPrincipal;
+  nsCOMPtr<nsPIDOMWindowInner> mWindow;
+  nsCOMPtr<nsIContentPermissionRequester> mRequester;
+  nsCString mPrefName;
+  nsCString mType;
+  bool mIsHandlingUserInput;
+  bool mUserHadInteractedWithDocument;
+  DOMTimeStamp mDocumentDOMContentLoadedTimestamp;
+};
+
 }  // namespace dom
 }  // namespace mozilla
 
@@ -116,10 +175,10 @@ class nsContentPermissionRequestProxy : public nsIContentPermissionRequest {
   NS_DECL_ISUPPORTS
   NS_DECL_NSICONTENTPERMISSIONREQUEST
 
-  nsContentPermissionRequestProxy();
+  explicit nsContentPermissionRequestProxy(
+      ContentPermissionRequestParent* parent);
 
-  nsresult Init(const nsTArray<mozilla::dom::PermissionRequest>& requests,
-                ContentPermissionRequestParent* parent);
+  nsresult Init(const nsTArray<mozilla::dom::PermissionRequest>& requests);
 
   void OnParentDestroyed();
 
@@ -169,12 +228,13 @@ class RemotePermissionRequest final
   RemotePermissionRequest(nsIContentPermissionRequest* aRequest,
                           nsPIDOMWindowInner* aWindow);
 
-  // It will be called when prompt dismissed.
-  virtual mozilla::ipc::IPCResult RecvNotifyResult(
-      const bool& aAllow,
-      InfallibleTArray<PermissionChoice>&& aChoices) override;
+  // It will be called when prompt dismissed.  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  // because we don't have MOZ_CAN_RUN_SCRIPT bits in IPC code yet.
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  mozilla::ipc::IPCResult RecvNotifyResult(
+      const bool& aAllow, InfallibleTArray<PermissionChoice>&& aChoices);
 
-  virtual mozilla::ipc::IPCResult RecvGetVisibility() override;
+  mozilla::ipc::IPCResult RecvGetVisibility();
 
   void IPDLAddRef() {
     mIPCOpen = true;
@@ -193,7 +253,9 @@ class RemotePermissionRequest final
  private:
   virtual ~RemotePermissionRequest();
 
+  MOZ_CAN_RUN_SCRIPT
   void DoAllow(JS::HandleValue aChoices);
+  MOZ_CAN_RUN_SCRIPT
   void DoCancel();
 
   nsCOMPtr<nsIContentPermissionRequest> mRequest;

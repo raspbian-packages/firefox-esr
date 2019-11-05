@@ -11,13 +11,13 @@
 #include "mozilla/dom/WebAuthnTransactionChild.h"
 #include "mozilla/dom/WebAuthnUtil.h"
 #include "nsContentUtils.h"
-#include "nsICryptoHash.h"
 #include "nsIEffectiveTLDService.h"
-#include "nsNetCID.h"
 #include "nsNetUtil.h"
 #include "nsURLParsers.h"
-#include "U2FUtil.h"
-#include "hasht.h"
+
+#ifdef OS_WIN
+#  include "WinWebAuthnManager.h"
+#endif
 
 using namespace mozilla::ipc;
 
@@ -46,14 +46,21 @@ NS_NAMED_LITERAL_STRING(
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(U2F)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
-  NS_INTERFACE_MAP_ENTRY(nsISupports)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMEventListener)
-NS_INTERFACE_MAP_END
+NS_INTERFACE_MAP_END_INHERITING(WebAuthnManagerBase)
 
-NS_IMPL_CYCLE_COLLECTING_ADDREF(U2F)
-NS_IMPL_CYCLE_COLLECTING_RELEASE(U2F)
+NS_IMPL_ADDREF_INHERITED(U2F, WebAuthnManagerBase)
+NS_IMPL_RELEASE_INHERITED(U2F, WebAuthnManagerBase)
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(U2F, mParent)
+NS_IMPL_CYCLE_COLLECTION_CLASS(U2F)
+NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(U2F, WebAuthnManagerBase)
+  NS_IMPL_CYCLE_COLLECTION_UNLINK(mTransaction)
+  NS_IMPL_CYCLE_COLLECTION_UNLINK_PRESERVED_WRAPPER
+  tmp->mTransaction.reset();
+NS_IMPL_CYCLE_COLLECTION_UNLINK_END
+NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(U2F, WebAuthnManagerBase)
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mTransaction)
+NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
+NS_IMPL_CYCLE_COLLECTION_TRACE_WRAPPERCACHE(U2F)
 
 /***********************************************************************
  * Utility Functions
@@ -125,57 +132,6 @@ static void RegisteredKeysToScopedCredentialList(
   }
 }
 
-static nsresult BuildTransactionHashes(
-    const nsCString& aRpId, const nsCString& aClientDataJSON,
-    /* out */ CryptoBuffer& aRpIdHash,
-    /* out */ CryptoBuffer& aClientDataHash) {
-  nsresult srv;
-  nsCOMPtr<nsICryptoHash> hashService =
-      do_CreateInstance(NS_CRYPTO_HASH_CONTRACTID, &srv);
-  if (NS_FAILED(srv)) {
-    return srv;
-  }
-
-  if (!aRpIdHash.SetLength(SHA256_LENGTH, fallible)) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-  srv = HashCString(hashService, aRpId, aRpIdHash);
-  if (NS_WARN_IF(NS_FAILED(srv))) {
-    return NS_ERROR_FAILURE;
-  }
-
-  if (!aClientDataHash.SetLength(SHA256_LENGTH, fallible)) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-  srv = HashCString(hashService, aClientDataJSON, aClientDataHash);
-  if (NS_WARN_IF(NS_FAILED(srv))) {
-    return NS_ERROR_FAILURE;
-  }
-
-  if (MOZ_LOG_TEST(gU2FLog, LogLevel::Debug)) {
-    nsString base64;
-    Unused << NS_WARN_IF(NS_FAILED(aRpIdHash.ToJwkBase64(base64)));
-
-    MOZ_LOG(gU2FLog, LogLevel::Debug,
-            ("dom::U2FManager::RpID: %s", aRpId.get()));
-
-    MOZ_LOG(gU2FLog, LogLevel::Debug,
-            ("dom::U2FManager::Rp ID Hash (base64): %s",
-             NS_ConvertUTF16toUTF8(base64).get()));
-
-    Unused << NS_WARN_IF(NS_FAILED(aClientDataHash.ToJwkBase64(base64)));
-
-    MOZ_LOG(gU2FLog, LogLevel::Debug,
-            ("dom::U2FManager::Client Data JSON: %s", aClientDataJSON.get()));
-
-    MOZ_LOG(gU2FLog, LogLevel::Debug,
-            ("dom::U2FManager::Client Data Hash (base64): %s",
-             NS_ConvertUTF16toUTF8(base64).get()));
-  }
-
-  return NS_OK;
-}
-
 /***********************************************************************
  * U2F JavaScript API Implementation
  **********************************************************************/
@@ -197,7 +153,7 @@ U2F::~U2F() {
 void U2F::Init(ErrorResult& aRv) {
   MOZ_ASSERT(mParent);
 
-  nsCOMPtr<nsIDocument> doc = mParent->GetDoc();
+  nsCOMPtr<Document> doc = mParent->GetDoc();
   MOZ_ASSERT(doc);
   if (!doc) {
     aRv.Throw(NS_ERROR_FAILURE);
@@ -216,19 +172,15 @@ void U2F::Init(ErrorResult& aRv) {
   }
 }
 
-/* virtual */ JSObject* U2F::WrapObject(JSContext* aCx,
-                                        JS::Handle<JSObject*> aGivenProto) {
-  return U2FBinding::Wrap(aCx, this, aGivenProto);
+/* virtual */
+JSObject* U2F::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
+  return U2F_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 template <typename T, typename C>
 void U2F::ExecuteCallback(T& aResp, nsMainThreadPtrHandle<C>& aCb) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aCb);
-
-  // Assert that mTransaction was cleared before before we were called to allow
-  // reentrancy from microtask checkpoints.
-  MOZ_ASSERT(mTransaction.isNothing());
 
   ErrorResult error;
   aCb->Call(aResp, error);
@@ -244,10 +196,6 @@ void U2F::Register(const nsAString& aAppId,
                    ErrorResult& aRv) {
   MOZ_ASSERT(NS_IsMainThread());
 
-  if (mTransaction.isSome()) {
-    CancelTransaction(NS_ERROR_ABORT);
-  }
-
   nsMainThreadPtrHandle<U2FRegisterCallback> callback(
       new nsMainThreadPtrHolder<U2FRegisterCallback>("U2F::Register::callback",
                                                      &aCallback));
@@ -257,9 +205,26 @@ void U2F::Register(const nsAString& aAppId,
     return;
   }
 
+  if (mTransaction.isSome()) {
+    // If there hasn't been a visibility change during the current
+    // transaction, then let's let that one complete rather than
+    // cancelling it on a subsequent call.
+    if (!mTransaction.ref().mVisibilityChanged) {
+      RegisterResponse response;
+      response.mErrorCode.Construct(
+          static_cast<uint32_t>(ErrorCode::OTHER_ERROR));
+      ExecuteCallback(response, callback);
+      return;
+    }
+
+    // Otherwise, the user may well have clicked away, so let's
+    // abort the old transaction and take over control from here.
+    CancelTransaction(NS_ERROR_ABORT);
+  }
+
   // Evaluate the AppID
   nsString adjustedAppId(aAppId);
-  if (!EvaluateAppID(mParent, mOrigin, U2FOperation::Register, adjustedAppId)) {
+  if (!EvaluateAppID(mParent, mOrigin, adjustedAppId)) {
     RegisterResponse response;
     response.mErrorCode.Construct(
         static_cast<uint32_t>(ErrorCode::BAD_REQUEST));
@@ -267,15 +232,16 @@ void U2F::Register(const nsAString& aAppId,
     return;
   }
 
-  // Produce the AppParam from the current AppID
-  nsCString cAppId = NS_ConvertUTF16toUTF8(adjustedAppId);
-
   nsAutoString clientDataJSON;
 
   // Pick the first valid RegisterRequest; we can only work with one.
+  CryptoBuffer challenge;
   for (const RegisterRequest& req : aRegisterRequests) {
     if (!req.mChallenge.WasPassed() || !req.mVersion.WasPassed() ||
         req.mVersion.Value() != kRequiredU2FVersion) {
+      continue;
+    }
+    if (!challenge.Assign(NS_ConvertUTF16toUTF8(req.mChallenge.Value()))) {
       continue;
     }
 
@@ -300,18 +266,6 @@ void U2F::Register(const nsAString& aAppId,
   RegisteredKeysToScopedCredentialList(adjustedAppId, aRegisteredKeys,
                                        excludeList);
 
-  auto clientData = NS_ConvertUTF16toUTF8(clientDataJSON);
-
-  CryptoBuffer rpIdHash, clientDataHash;
-  if (NS_FAILED(BuildTransactionHashes(cAppId, clientData, rpIdHash,
-                                       clientDataHash))) {
-    RegisterResponse response;
-    response.mErrorCode.Construct(
-        static_cast<uint32_t>(ErrorCode::OTHER_ERROR));
-    ExecuteCallback(response, callback);
-    return;
-  }
-
   if (!MaybeCreateBackgroundActor()) {
     RegisterResponse response;
     response.mErrorCode.Construct(
@@ -320,25 +274,57 @@ void U2F::Register(const nsAString& aAppId,
     return;
   }
 
+#ifdef OS_WIN
+  if (!WinWebAuthnManager::AreWebAuthNApisAvailable()) {
+    ListenForVisibilityEvents();
+  }
+#else
   ListenForVisibilityEvents();
+#endif
 
-  // Always blank for U2F
-  nsTArray<WebAuthnExtension> extensions;
-
-  // Default values for U2F.
-  WebAuthnAuthenticatorSelection authSelection(
-      false /* requireResidentKey */, false /* requireUserVerification */,
-      false /* requirePlatformAttachment */);
-
+  NS_ConvertUTF16toUTF8 clientData(clientDataJSON);
   uint32_t adjustedTimeoutMillis = AdjustedTimeoutMillis(opt_aTimeoutSeconds);
 
-  WebAuthnMakeCredentialInfo info(
-      mOrigin, rpIdHash, clientDataHash, adjustedTimeoutMillis, excludeList,
-      extensions, authSelection, false /* RequestDirectAttestation */);
+  WebAuthnMakeCredentialInfo info(mOrigin, adjustedAppId, challenge, clientData,
+                                  adjustedTimeoutMillis, excludeList,
+                                  Nothing() /* no extra info for U2F */);
 
   MOZ_ASSERT(mTransaction.isNothing());
-  mTransaction = Some(U2FTransaction(clientData, Move(AsVariant(callback))));
+  mTransaction = Some(U2FTransaction(AsVariant(callback)));
   mChild->SendRequestRegister(mTransaction.ref().mId, info);
+}
+
+using binding_detail::GenericMethod;
+using binding_detail::NormalThisPolicy;
+using binding_detail::ThrowExceptions;
+
+// register_impl_methodinfo is generated by bindings.
+namespace U2F_Binding {
+extern const JSJitInfo register_impl_methodinfo;
+}  // namespace U2F_Binding
+
+// We have 4 non-optional args.
+static const JSFunctionSpec register_spec = JS_FNSPEC(
+    "register", (GenericMethod<NormalThisPolicy, ThrowExceptions>),
+    &U2F_Binding::register_impl_methodinfo, 4, JSPROP_ENUMERATE, nullptr);
+
+void U2F::GetRegister(JSContext* aCx,
+                      JS::MutableHandle<JSObject*> aRegisterFunc,
+                      ErrorResult& aRv) {
+  JS::Rooted<JSString*> str(aCx, JS_AtomizeAndPinString(aCx, "register"));
+  if (!str) {
+    aRv.NoteJSContextException(aCx);
+    return;
+  }
+
+  JS::Rooted<jsid> id(aCx, INTERNED_STRING_TO_JSID(aCx, str));
+  JSFunction* fun = JS::NewFunctionFromSpec(aCx, &register_spec, id);
+  if (!fun) {
+    aRv.NoteJSContextException(aCx);
+    return;
+  }
+
+  aRegisterFunc.set(JS_GetFunctionObject(fun));
 }
 
 void U2F::FinishMakeCredential(const uint64_t& aTransactionId,
@@ -355,14 +341,20 @@ void U2F::FinishMakeCredential(const uint64_t& aTransactionId,
     return;
   }
 
+  // A CTAP2 response.
+  if (aResult.RegistrationData().Length() == 0) {
+    RejectTransaction(NS_ERROR_ABORT);
+    return;
+  }
+
   CryptoBuffer clientDataBuf;
-  if (NS_WARN_IF(!clientDataBuf.Assign(mTransaction.ref().mClientData))) {
+  if (NS_WARN_IF(!clientDataBuf.Assign(aResult.ClientDataJSON()))) {
     RejectTransaction(NS_ERROR_ABORT);
     return;
   }
 
   CryptoBuffer regBuf;
-  if (NS_WARN_IF(!regBuf.Assign(aResult.RegBuffer()))) {
+  if (NS_WARN_IF(!regBuf.Assign(aResult.RegistrationData()))) {
     RejectTransaction(NS_ERROR_ABORT);
     return;
   }
@@ -400,10 +392,6 @@ void U2F::Sign(const nsAString& aAppId, const nsAString& aChallenge,
                ErrorResult& aRv) {
   MOZ_ASSERT(NS_IsMainThread());
 
-  if (mTransaction.isSome()) {
-    CancelTransaction(NS_ERROR_ABORT);
-  }
-
   nsMainThreadPtrHandle<U2FSignCallback> callback(
       new nsMainThreadPtrHolder<U2FSignCallback>("U2F::Sign::callback",
                                                  &aCallback));
@@ -413,9 +401,26 @@ void U2F::Sign(const nsAString& aAppId, const nsAString& aChallenge,
     return;
   }
 
+  if (mTransaction.isSome()) {
+    // If there hasn't been a visibility change during the current
+    // transaction, then let's let that one complete rather than
+    // cancelling it on a subsequent call.
+    if (!mTransaction.ref().mVisibilityChanged) {
+      SignResponse response;
+      response.mErrorCode.Construct(
+          static_cast<uint32_t>(ErrorCode::OTHER_ERROR));
+      ExecuteCallback(response, callback);
+      return;
+    }
+
+    // Otherwise, the user may well have clicked away, so let's
+    // abort the old transaction and take over control from here.
+    CancelTransaction(NS_ERROR_ABORT);
+  }
+
   // Evaluate the AppID
   nsString adjustedAppId(aAppId);
-  if (!EvaluateAppID(mParent, mOrigin, U2FOperation::Sign, adjustedAppId)) {
+  if (!EvaluateAppID(mParent, mOrigin, adjustedAppId)) {
     SignResponse response;
     response.mErrorCode.Construct(
         static_cast<uint32_t>(ErrorCode::BAD_REQUEST));
@@ -437,22 +442,19 @@ void U2F::Sign(const nsAString& aAppId, const nsAString& aChallenge,
     return;
   }
 
-  // Build the key list, if any
-  nsTArray<WebAuthnScopedCredential> permittedList;
-  RegisteredKeysToScopedCredentialList(adjustedAppId, aRegisteredKeys,
-                                       permittedList);
-
-  auto clientData = NS_ConvertUTF16toUTF8(clientDataJSON);
-
-  CryptoBuffer rpIdHash, clientDataHash;
-  if (NS_FAILED(BuildTransactionHashes(cAppId, clientData, rpIdHash,
-                                       clientDataHash))) {
+  CryptoBuffer challenge;
+  if (!challenge.Assign(NS_ConvertUTF16toUTF8(aChallenge))) {
     SignResponse response;
     response.mErrorCode.Construct(
         static_cast<uint32_t>(ErrorCode::OTHER_ERROR));
     ExecuteCallback(response, callback);
     return;
   }
+
+  // Build the key list, if any
+  nsTArray<WebAuthnScopedCredential> permittedList;
+  RegisteredKeysToScopedCredentialList(adjustedAppId, aRegisteredKeys,
+                                       permittedList);
 
   if (!MaybeCreateBackgroundActor()) {
     SignResponse response;
@@ -462,21 +464,55 @@ void U2F::Sign(const nsAString& aAppId, const nsAString& aChallenge,
     return;
   }
 
+#ifdef OS_WIN
+  if (!WinWebAuthnManager::AreWebAuthNApisAvailable()) {
+    ListenForVisibilityEvents();
+  }
+#else
   ListenForVisibilityEvents();
+#endif
 
   // Always blank for U2F
   nsTArray<WebAuthnExtension> extensions;
 
+  NS_ConvertUTF16toUTF8 clientData(clientDataJSON);
   uint32_t adjustedTimeoutMillis = AdjustedTimeoutMillis(opt_aTimeoutSeconds);
 
-  WebAuthnGetAssertionInfo info(mOrigin, rpIdHash, clientDataHash,
+  WebAuthnGetAssertionInfo info(mOrigin, adjustedAppId, challenge, clientData,
                                 adjustedTimeoutMillis, permittedList,
-                                false, /* requireUserVerification */
-                                extensions);
+                                Nothing() /* no extra info for U2F */);
 
   MOZ_ASSERT(mTransaction.isNothing());
-  mTransaction = Some(U2FTransaction(clientData, Move(AsVariant(callback))));
+  mTransaction = Some(U2FTransaction(AsVariant(callback)));
   mChild->SendRequestSign(mTransaction.ref().mId, info);
+}
+
+// sign_impl_methodinfo is generated by bindings.
+namespace U2F_Binding {
+extern const JSJitInfo sign_impl_methodinfo;
+}  // namespace U2F_Binding
+
+// We have 4 non-optional args.
+static const JSFunctionSpec sign_spec =
+    JS_FNSPEC("sign", (GenericMethod<NormalThisPolicy, ThrowExceptions>),
+              &U2F_Binding::sign_impl_methodinfo, 4, JSPROP_ENUMERATE, nullptr);
+
+void U2F::GetSign(JSContext* aCx, JS::MutableHandle<JSObject*> aSignFunc,
+                  ErrorResult& aRv) {
+  JS::Rooted<JSString*> str(aCx, JS_AtomizeAndPinString(aCx, "sign"));
+  if (!str) {
+    aRv.NoteJSContextException(aCx);
+    return;
+  }
+
+  JS::Rooted<jsid> id(aCx, INTERNED_STRING_TO_JSID(aCx, str));
+  JSFunction* fun = JS::NewFunctionFromSpec(aCx, &sign_spec, id);
+  if (!fun) {
+    aRv.NoteJSContextException(aCx);
+    return;
+  }
+
+  aSignFunc.set(JS_GetFunctionObject(fun));
 }
 
 void U2F::FinishGetAssertion(const uint64_t& aTransactionId,
@@ -493,20 +529,26 @@ void U2F::FinishGetAssertion(const uint64_t& aTransactionId,
     return;
   }
 
+  // A CTAP2 response.
+  if (aResult.SignatureData().Length() == 0) {
+    RejectTransaction(NS_ERROR_ABORT);
+    return;
+  }
+
   CryptoBuffer clientDataBuf;
-  if (NS_WARN_IF(!clientDataBuf.Assign(mTransaction.ref().mClientData))) {
+  if (NS_WARN_IF(!clientDataBuf.Assign(aResult.ClientDataJSON()))) {
     RejectTransaction(NS_ERROR_ABORT);
     return;
   }
 
   CryptoBuffer credBuf;
-  if (NS_WARN_IF(!credBuf.Assign(aResult.CredentialID()))) {
+  if (NS_WARN_IF(!credBuf.Assign(aResult.KeyHandle()))) {
     RejectTransaction(NS_ERROR_ABORT);
     return;
   }
 
   CryptoBuffer sigBuf;
-  if (NS_WARN_IF(!sigBuf.Assign(aResult.SigBuffer()))) {
+  if (NS_WARN_IF(!sigBuf.Assign(aResult.SignatureData()))) {
     RejectTransaction(NS_ERROR_ABORT);
     return;
   }
@@ -540,7 +582,7 @@ void U2F::FinishGetAssertion(const uint64_t& aTransactionId,
 }
 
 void U2F::ClearTransaction() {
-  if (!NS_WARN_IF(mTransaction.isNothing())) {
+  if (!mTransaction.isNothing()) {
     StopListeningForVisibilityEvents();
   }
 
@@ -556,7 +598,7 @@ void U2F::RejectTransaction(const nsresult& aError) {
 
   // Clear out mTransaction before calling ExecuteCallback() below to allow
   // reentrancy from microtask checkpoints.
-  Maybe<U2FTransaction> maybeTransaction(Move(mTransaction));
+  Maybe<U2FTransaction> maybeTransaction(std::move(mTransaction));
   MOZ_ASSERT(mTransaction.isNothing() && maybeTransaction.isSome());
 
   U2FTransaction& transaction = maybeTransaction.ref();
@@ -565,13 +607,15 @@ void U2F::RejectTransaction(const nsresult& aError) {
   if (transaction.HasRegisterCallback()) {
     RegisterResponse response;
     response.mErrorCode.Construct(static_cast<uint32_t>(code));
-    ExecuteCallback(response, transaction.GetRegisterCallback());
+    // MOZ_KnownLive because "transaction" lives on the stack.
+    ExecuteCallback(response, MOZ_KnownLive(transaction.GetRegisterCallback()));
   }
 
   if (transaction.HasSignCallback()) {
     SignResponse response;
     response.mErrorCode.Construct(static_cast<uint32_t>(code));
-    ExecuteCallback(response, transaction.GetSignCallback());
+    // MOZ_KnownLive because "transaction" lives on the stack.
+    ExecuteCallback(response, MOZ_KnownLive(transaction.GetSignCallback()));
   }
 }
 
@@ -589,6 +633,12 @@ void U2F::RequestAborted(const uint64_t& aTransactionId,
 
   if (mTransaction.isSome() && mTransaction.ref().mId == aTransactionId) {
     RejectTransaction(aError);
+  }
+}
+
+void U2F::HandleVisibilityChange() {
+  if (mTransaction.isSome()) {
+    mTransaction.ref().mVisibilityChanged = true;
   }
 }
 

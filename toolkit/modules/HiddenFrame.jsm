@@ -6,9 +6,10 @@
 
 var EXPORTED_SYMBOLS = ["HiddenFrame"];
 
-ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { PromiseUtils } = ChromeUtils.import(
+  "resource://gre/modules/PromiseUtils.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const XUL_PAGE = "chrome://global/content/win.xul";
 
@@ -19,20 +20,20 @@ function ensureCleanupRegistered() {
   if (!cleanupRegistered) {
     cleanupRegistered = true;
     Services.obs.addObserver(function() {
-      for (let hiddenFrame of ChromeUtils.nondeterministicGetWeakSetKeys(gAllHiddenFrames)) {
+      for (let hiddenFrame of ChromeUtils.nondeterministicGetWeakSetKeys(
+        gAllHiddenFrames
+      )) {
         hiddenFrame.destroy();
       }
     }, "xpcom-shutdown");
   }
 }
 
-
 /**
  * An hidden frame object. It takes care of creating a windowless browser and
  * passing the window containing a blank XUL <window> back.
  */
-function HiddenFrame() {
-}
+function HiddenFrame() {}
 
 HiddenFrame.prototype = {
   _frame: null,
@@ -60,10 +61,8 @@ HiddenFrame.prototype = {
    */
   getWindow() {
     this.get();
-    this._browser.QueryInterface(Ci.nsIInterfaceRequestor);
-    return this._browser.getInterface(Ci.nsIDOMWindow);
+    return this._browser.document.ownerGlobal;
   },
-
 
   destroy() {
     if (this._browser) {
@@ -88,9 +87,11 @@ HiddenFrame.prototype = {
     gAllHiddenFrames.add(this);
     this._webProgress = this._browser.getInterface(Ci.nsIWebProgress);
     this._listener = {
-      QueryInterface: XPCOMUtils.generateQI([
-        Ci.nsIWebProgressListener, Ci.nsIWebProgressListener2,
-        Ci.nsISupportsWeakReference]),
+      QueryInterface: ChromeUtils.generateQI([
+        Ci.nsIWebProgressListener,
+        Ci.nsIWebProgressListener2,
+        Ci.nsISupportsWeakReference,
+      ]),
     };
     this._listener.onStateChange = (wbp, request, stateFlags, status) => {
       if (!request) {
@@ -105,10 +106,17 @@ HiddenFrame.prototype = {
         this._deferred.resolve(this._frame);
       }
     };
-    this._webProgress.addProgressListener(this._listener, Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
-    let docShell = this._browser.getInterface(Ci.nsIDocShell);
-    docShell.createAboutBlankContentViewer(Services.scriptSecurityManager.getSystemPrincipal());
+    this._webProgress.addProgressListener(
+      this._listener,
+      Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT
+    );
+    let docShell = this._browser.docShell;
+    let systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+    docShell.createAboutBlankContentViewer(systemPrincipal);
     docShell.useGlobalHistory = false;
-    this._browser.loadURI(XUL_PAGE, 0, null, null, null);
-  }
+    let loadURIOptions = {
+      triggeringPrincipal: systemPrincipal,
+    };
+    this._browser.loadURI(XUL_PAGE, loadURIOptions);
+  },
 };

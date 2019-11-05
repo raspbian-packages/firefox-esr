@@ -4,8 +4,10 @@
 
 #include "FFmpegLibWrapper.h"
 #include "FFmpegLog.h"
-#include "MediaPrefs.h"
 #include "mozilla/PodOperations.h"
+#ifdef MOZ_FFMPEG
+#  include "mozilla/StaticPrefs.h"
+#endif
 #include "mozilla/Types.h"
 #include "PlatformDecoderModule.h"
 #include "prlink.h"
@@ -42,7 +44,7 @@ FFmpegLibWrapper::LinkResult FFmpegLibWrapper::Link() {
     }
 #ifdef MOZ_FFMPEG
     if (version < (54u << 16 | 35u << 8 | 1u) &&
-        !MediaPrefs::LibavcodecAllowObsolete()) {
+        !StaticPrefs::MediaLibavcodecAllowObsolete()) {
       // Refuse any libavcodec version prior to 54.35.1.
       // (Unless media.libavcodec.allow-obsolete==true)
       Unlink();
@@ -92,12 +94,11 @@ FFmpegLibWrapper::LinkResult FFmpegLibWrapper::Link() {
     default:
       FFMPEG_LOG("Unknown avcodec version");
       Unlink();
-      return isFFMpeg
-                 ? ((macro > 57) ? LinkResult::UnknownFutureFFMpegVersion
-                                 : LinkResult::UnknownOlderFFMpegVersion)
-                 // All LibAV versions<54.35.1 are blocked, therefore we must be
-                 // dealing with a later one.
-                 : LinkResult::UnknownFutureLibAVVersion;
+      return isFFMpeg ? ((macro > 57) ? LinkResult::UnknownFutureFFMpegVersion
+                                      : LinkResult::UnknownOlderFFMpegVersion)
+                      // All LibAV versions<54.35.1 are blocked, therefore we
+                      // must be dealing with a later one.
+                      : LinkResult::UnknownFutureLibAVVersion;
   }
 
 #define AV_FUNC_OPTION(func, ver)                                     \
@@ -135,6 +136,11 @@ FFmpegLibWrapper::LinkResult FFmpegLibWrapper::Link() {
   AV_FUNC(avcodec_alloc_frame, (AV_FUNC_53 | AV_FUNC_54))
   AV_FUNC(avcodec_get_frame_defaults, (AV_FUNC_53 | AV_FUNC_54))
   AV_FUNC(avcodec_free_frame, AV_FUNC_54)
+  AV_FUNC(avcodec_send_packet, AV_FUNC_58)
+  AV_FUNC(avcodec_receive_frame, AV_FUNC_58)
+  AV_FUNC_OPTION(av_rdft_init, AV_FUNC_AVCODEC_ALL)
+  AV_FUNC_OPTION(av_rdft_calc, AV_FUNC_AVCODEC_ALL)
+  AV_FUNC_OPTION(av_rdft_end, AV_FUNC_AVCODEC_ALL)
   AV_FUNC(av_log_set_level, AV_FUNC_AVUTIL_ALL)
   AV_FUNC(av_malloc, AV_FUNC_AVUTIL_ALL)
   AV_FUNC(av_freep, AV_FUNC_AVUTIL_ALL)

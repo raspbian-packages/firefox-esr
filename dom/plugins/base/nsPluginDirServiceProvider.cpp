@@ -35,8 +35,8 @@ NS_IMPL_ISUPPORTS(nsPluginDirServiceProvider, nsIDirectoryServiceProvider)
 //*****************************************************************************
 
 NS_IMETHODIMP
-nsPluginDirServiceProvider::GetFile(const char *charProp, bool *persistant,
-                                    nsIFile **_retval) {
+nsPluginDirServiceProvider::GetFile(const char* charProp, bool* persistant,
+                                    nsIFile** _retval) {
   NS_ENSURE_ARG(charProp);
 
   *_retval = nullptr;
@@ -46,7 +46,7 @@ nsPluginDirServiceProvider::GetFile(const char *charProp, bool *persistant,
 }
 
 nsresult nsPluginDirServiceProvider::GetPLIDDirectories(
-    nsISimpleEnumerator **aEnumerator) {
+    nsISimpleEnumerator** aEnumerator) {
   NS_ENSURE_ARG_POINTER(aEnumerator);
   *aEnumerator = nullptr;
 
@@ -55,11 +55,11 @@ nsresult nsPluginDirServiceProvider::GetPLIDDirectories(
   GetPLIDDirectoriesWithRootKey(nsIWindowsRegKey::ROOT_KEY_CURRENT_USER, dirs);
   GetPLIDDirectoriesWithRootKey(nsIWindowsRegKey::ROOT_KEY_LOCAL_MACHINE, dirs);
 
-  return NS_NewArrayEnumerator(aEnumerator, dirs);
+  return NS_NewArrayEnumerator(aEnumerator, dirs, NS_GET_IID(nsIFile));
 }
 
 nsresult nsPluginDirServiceProvider::GetPLIDDirectoriesWithRootKey(
-    uint32_t aKey, nsCOMArray<nsIFile> &aDirs) {
+    uint32_t aKey, nsCOMArray<nsIFile>& aDirs) {
   nsCOMPtr<nsIWindowsRegKey> regKey =
       do_CreateInstance("@mozilla.org/windows-registry-key;1");
   NS_ENSURE_TRUE(regKey, NS_ERROR_FAILURE);
@@ -105,7 +105,7 @@ nsresult nsPluginDirServiceProvider::GetPLIDDirectoriesWithRootKey(
             if (NS_SUCCEEDED(localFile->Exists(&isFileThere)) && isFileThere) {
               int32_t c = aDirs.Count();
               for (int32_t i = 0; i < c; i++) {
-                nsIFile *dup = static_cast<nsIFile *>(aDirs[i]);
+                nsIFile* dup = static_cast<nsIFile*>(aDirs[i]);
                 if (dup && NS_SUCCEEDED(dup->Equals(localFile, &isDupEntry)) &&
                     isDupEntry) {
                   break;

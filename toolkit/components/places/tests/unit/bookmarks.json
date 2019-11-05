@@ -142,14 +142,6 @@
                   "value": "item description"
                 },
                 {
-                  "name": "bookmarkProperties/POSTData",
-                  "flags": 0,
-                  "expires": 4,
-                  "mimeType": null,
-                  "type": 3,
-                  "value": "hidden1%3Dbar&text1%3D%25s"
-                },
-                {
                   "name": "bookmarkProperties/loadInSidebar",
                   "flags": 0,
                   "expires": 4,
@@ -161,7 +153,8 @@
               "type": "text/x-moz-place",
               "uri": "http://test/post",
               "keyword": "test",
-              "charset": "ISO-8859-1"
+              "charset": "ISO-8859-1",
+              "postData": "hidden1%3Dbar&text1%3D%25s"
             }
           ]
         }
@@ -208,14 +201,6 @@
           "lastModified": 1361551979457086,
           "livemark": 1,
           "annos": [
-            {
-              "name": "placesInternal/READ_ONLY",
-              "flags": 0,
-              "expires": 4,
-              "mimeType": null,
-              "type": 1,
-              "value": 1
-            },
             {
               "name": "livemark/feedURI",
               "flags": 0,
@@ -279,6 +264,42 @@
           "type": "text/x-moz-place",
           "uri": "http://example.tld/tagged",
           "tags": "foo"
+        },
+        {
+          "guid": "lOZGoFR1eXbl",
+          "title": "Bookmarks Toolbar Shortcut",
+          "dateAdded": 1507025843703345,
+          "lastModified": 1507025844703124,
+          "id": 16,
+          "type": "text/x-moz-place",
+          "uri": "place:folder=TOOLBAR"
+        },
+        {
+          "guid": "7yJWnBVhjRtP",
+          "title": "Folder Shortcut",
+          "dateAdded": 1507025843703345,
+          "lastModified": 1507025844703124,
+          "id": 17,
+          "type": "text/x-moz-place",
+          "uri": "place:folder=6"
+        },
+        {
+          "guid": "vm5QXWuWc12l",
+          "title": "Folder Shortcut 2",
+          "dateAdded": 1507025843703345,
+          "lastModified": 1507025844703124,
+          "id": 18,
+          "type": "text/x-moz-place",
+          "uri": "place:folder=6123443"
+        },
+        {
+          "guid": "Icg1XlIozA1D",
+          "title": "Folder Shortcut 3",
+          "dateAdded": 1507025843703345,
+          "lastModified": 1507025844703124,
+          "id": 18,
+          "type": "text/x-moz-place",
+          "uri": "place:folder=6&folder=BOOKMARKS_MENU"
         }
       ]
     }

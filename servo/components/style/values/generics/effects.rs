@@ -1,32 +1,55 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Generic types for CSS values related to effects.
 
-use std::fmt::{self, Write};
-use style_traits::values::{CssWriter, SequenceWriter, ToCss};
-#[cfg(feature = "gecko")]
-use values::specified::url::SpecifiedUrl;
-
 /// A generic value for a single `box-shadow`.
-#[derive(Animate, Clone, Debug, MallocSizeOf, PartialEq)]
-#[derive(ToAnimatedValue, ToAnimatedZero)]
-pub struct BoxShadow<Color, SizeLength, BlurShapeLength, ShapeLength> {
+#[derive(
+    Animate,
+    Clone,
+    ComputeSquaredDistance,
+    Debug,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToAnimatedValue,
+    ToAnimatedZero,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+#[repr(C)]
+pub struct GenericBoxShadow<Color, SizeLength, BlurShapeLength, ShapeLength> {
     /// The base shadow.
-    pub base: SimpleShadow<Color, SizeLength, BlurShapeLength>,
+    pub base: GenericSimpleShadow<Color, SizeLength, BlurShapeLength>,
     /// The spread radius.
     pub spread: ShapeLength,
     /// Whether this is an inset box shadow.
     #[animation(constant)]
+    #[css(represents_keyword)]
     pub inset: bool,
 }
 
+pub use self::GenericBoxShadow as BoxShadow;
+
 /// A generic value for a single `filter`.
 #[cfg_attr(feature = "servo", derive(Deserialize, Serialize))]
-#[derive(Clone, ComputeSquaredDistance, Debug, MallocSizeOf, PartialEq)]
-#[derive(ToAnimatedValue, ToComputedValue, ToCss)]
-pub enum Filter<Angle, Factor, Length, DropShadow> {
+#[animation(no_bound(Url))]
+#[derive(
+    Clone,
+    ComputeSquaredDistance,
+    Debug,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToAnimatedValue,
+    ToComputedValue,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+pub enum Filter<Angle, Factor, Length, DropShadow, Url> {
     /// `blur(<length>)`
     #[css(function)]
     Blur(Length),
@@ -59,17 +82,29 @@ pub enum Filter<Angle, Factor, Length, DropShadow> {
     DropShadow(DropShadow),
     /// `<url>`
     #[animation(error)]
-    #[cfg(feature = "gecko")]
-    Url(SpecifiedUrl),
+    Url(Url),
 }
 
 /// A generic value for the `drop-shadow()` filter and the `text-shadow` property.
 ///
 /// Contrary to the canonical order from the spec, the color is serialised
 /// first, like in Gecko and Webkit.
-#[derive(Animate, Clone, ComputeSquaredDistance, Debug)]
-#[derive(MallocSizeOf, PartialEq, ToAnimatedValue, ToAnimatedZero, ToCss)]
-pub struct SimpleShadow<Color, SizeLength, ShapeLength> {
+#[derive(
+    Animate,
+    Clone,
+    ComputeSquaredDistance,
+    Debug,
+    MallocSizeOf,
+    PartialEq,
+    SpecifiedValueInfo,
+    ToAnimatedValue,
+    ToAnimatedZero,
+    ToCss,
+    ToResolvedValue,
+    ToShmem,
+)]
+#[repr(C)]
+pub struct GenericSimpleShadow<Color, SizeLength, ShapeLength> {
     /// Color.
     pub color: Color,
     /// Horizontal radius.
@@ -80,28 +115,4 @@ pub struct SimpleShadow<Color, SizeLength, ShapeLength> {
     pub blur: ShapeLength,
 }
 
-impl<Color, SizeLength, BlurShapeLength, ShapeLength> ToCss for BoxShadow<Color,
-                                                                          SizeLength,
-                                                                          BlurShapeLength,
-                                                                          ShapeLength>
-where
-    Color: ToCss,
-    SizeLength: ToCss,
-    BlurShapeLength: ToCss,
-    ShapeLength: ToCss,
-{
-    fn to_css<W>(&self, dest: &mut CssWriter<W>) -> fmt::Result
-    where
-        W: Write,
-    {
-        {
-            let mut writer = SequenceWriter::new(&mut *dest, " ");
-            writer.item(&self.base)?;
-            writer.item(&self.spread)?;
-        }
-        if self.inset {
-            dest.write_str(" inset")?;
-        }
-        Ok(())
-    }
-}
+pub use self::GenericSimpleShadow as SimpleShadow;

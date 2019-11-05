@@ -9,8 +9,8 @@
 
 // We intentionally shadow non-virtual methods, but gcc gets confused.
 #ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Woverloaded-virtual"
 #endif
 
 #include <stdint.h>
@@ -18,7 +18,6 @@
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsID.h"
-#include "nsIDOMDOMException.h"
 #include "nsWrapperCache.h"
 #include "nsIException.h"
 #include "nsString.h"
@@ -87,6 +86,8 @@ class Exception : public nsIException, public nsWrapperCache {
 
   void GetFilename(JSContext* aCx, nsAString& aFilename);
 
+  uint32_t SourceId(JSContext* aCx) const;
+
   uint32_t LineNumber(JSContext* aCx) const;
 
   uint32_t ColumnNumber() const;
@@ -126,7 +127,6 @@ class Exception : public nsIException, public nsWrapperCache {
   nsCString mName;
   nsCOMPtr<nsIStackFrame> mLocation;
   nsCOMPtr<nsISupports> mData;
-  bool mInitialized;
 
   bool mHoldingJSVal;
   JS::Heap<JS::Value> mThrownJSVal;
@@ -134,13 +134,12 @@ class Exception : public nsIException, public nsWrapperCache {
 
 NS_DEFINE_STATIC_IID_ACCESSOR(Exception, MOZILLA_EXCEPTION_IID)
 
-class DOMException : public Exception, public nsIDOMDOMException {
+class DOMException : public Exception {
  public:
   DOMException(nsresult aRv, const nsACString& aMessage,
                const nsACString& aName, uint16_t aCode);
 
-  NS_DECL_ISUPPORTS_INHERITED
-  NS_DECL_NSIDOMDOMEXCEPTION
+  NS_INLINE_DECL_REFCOUNTING_INHERITED(DOMException, Exception)
 
   // nsWrapperCache overrides
   virtual JSObject* WrapObject(JSContext* aCx,
@@ -180,7 +179,7 @@ class DOMException : public Exception, public nsIDOMDOMException {
 }  // namespace mozilla
 
 #ifdef __GNUC__
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 #endif

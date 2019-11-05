@@ -20,49 +20,77 @@ const TEST_URL = `
   </body>
 `;
 
-add_task(function* () {
-  let {inspector, toolbox} = yield openInspectorForURL(
-    "data:text/html;charset=utf-8," + encodeURI(TEST_URL));
+add_task(async function() {
+  const { inspector, toolbox } = await openInspectorForURL(
+    "data:text/html;charset=utf-8," + encodeURI(TEST_URL)
+  );
 
-  yield inspector.markup.expandAll();
+  await inspector.markup.expandAll();
 
-  let container1 = yield getContainerForSelector("#d1", inspector);
-  let evHolder1 = container1.elt.querySelector(".markupview-events");
+  const container1 = await getContainerForSelector("#d1", inspector);
+  const evHolder1 = container1.elt.querySelector(
+    ".inspector-badge.interactive[data-event]"
+  );
 
-  let container2 = yield getContainerForSelector("#d2", inspector);
-  let evHolder2 = container2.elt.querySelector(".markupview-events");
+  const container2 = await getContainerForSelector("#d2", inspector);
+  const evHolder2 = container2.elt.querySelector(
+    ".inspector-badge.interactive[data-event]"
+  );
 
-  let tooltip = inspector.markup.eventDetailsTooltip;
+  const tooltip = inspector.markup.eventDetailsTooltip;
 
   info("Click the event icon for the first element");
   let onShown = tooltip.once("shown");
-  EventUtils.synthesizeMouseAtCenter(evHolder1, {},
-    inspector.markup.doc.defaultView);
-  yield onShown;
+  EventUtils.synthesizeMouseAtCenter(evHolder1, {}, inspector.markup.win);
+  await onShown;
   info("event tooltip for the first div is shown");
 
   info("Click the event icon for the second element");
   let onHidden = tooltip.once("hidden");
   onShown = tooltip.once("shown");
-  EventUtils.synthesizeMouseAtCenter(evHolder2, {},
-    inspector.markup.doc.defaultView);
+  EventUtils.synthesizeMouseAtCenter(evHolder2, {}, inspector.markup.win);
 
-  yield onHidden;
+  await onHidden;
   info("previous tooltip hidden");
 
-  yield onShown;
+  await onShown;
   info("event tooltip for the second div is shown");
 
-  info("Click on the animation inspector tab");
-  let onHighlighterHidden = toolbox.once("node-unhighlight");
-  let onTabInspectorSelected = inspector.sidebar.once("animationinspector-selected");
-  let animationInspectorTab = inspector.panelDoc.querySelector("#animationinspector-tab");
-  EventUtils.synthesizeMouseAtCenter(animationInspectorTab, {},
-    inspector.panelDoc.defaultView);
+  info("Check that clicking on evHolder2 again hides the tooltip");
+  onHidden = tooltip.once("hidden");
+  EventUtils.synthesizeMouseAtCenter(evHolder2, {}, inspector.markup.win);
+  await onHidden;
 
-  yield onTabInspectorSelected;
-  info("animation inspector was selected");
+  info("Check that the tooltip does not reappear immediately after");
+  await waitForTime(1000);
+  is(
+    tooltip.isVisible(),
+    false,
+    "The tooltip is still hidden after waiting for one second"
+  );
 
-  yield onHighlighterHidden;
-  info("box model highlighter hidden after moving the mouse out of the markup view");
+  info("Open the tooltip on evHolder2 again");
+  onShown = tooltip.once("shown");
+  EventUtils.synthesizeMouseAtCenter(evHolder2, {}, inspector.markup.win);
+  await onShown;
+
+  info("Click on the computed view tab");
+  const onHighlighterHidden = toolbox.highlighter.once("node-unhighlight");
+  const onTabComputedViewSelected = inspector.sidebar.once(
+    "computedview-selected"
+  );
+  const computedViewTab = inspector.panelDoc.querySelector("#computedview-tab");
+  EventUtils.synthesizeMouseAtCenter(
+    computedViewTab,
+    {},
+    inspector.panelDoc.defaultView
+  );
+
+  await onTabComputedViewSelected;
+  info("computed view was selected");
+
+  await onHighlighterHidden;
+  info(
+    "box model highlighter hidden after moving the mouse out of the markup view"
+  );
 });

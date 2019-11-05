@@ -10,15 +10,16 @@
 #include "DocAccessible.h"
 #include "ARIAMap.h"
 #include "nsCoreUtils.h"
+#include "mozilla/PresShell.h"
 
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 namespace mozilla {
 namespace a11y {
 
-inline mozilla::a11y::role Accessible::Role() {
+inline mozilla::a11y::role Accessible::Role() const {
   const nsRoleMapEntry* roleMapEntry = ARIARoleMap();
   if (!roleMapEntry || roleMapEntry->roleRule != kUseMapRole)
     return ARIATransformRole(NativeRole());
@@ -90,7 +91,11 @@ inline bool Accessible::IsDefunct() const {
 }
 
 inline void Accessible::ScrollTo(uint32_t aHow) const {
-  if (mContent) nsCoreUtils::ScrollTo(mDoc->PresShell(), mContent, aHow);
+  if (mContent) {
+    RefPtr<PresShell> presShell = mDoc->PresShellPtr();
+    nsCOMPtr<nsIContent> content = mContent;
+    nsCoreUtils::ScrollTo(presShell, content, aHow);
+  }
 }
 
 inline bool Accessible::InsertAfter(Accessible* aNewChild,

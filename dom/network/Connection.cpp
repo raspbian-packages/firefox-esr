@@ -7,7 +7,6 @@
 #include "Connection.h"
 #include "ConnectionMainThread.h"
 #include "ConnectionWorker.h"
-#include "nsIDOMClassInfo.h"
 #include "Constants.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/dom/WorkerPrivate.h"
@@ -23,13 +22,9 @@ namespace dom {
 
 namespace network {
 
-NS_IMPL_QUERY_INTERFACE_INHERITED(Connection, DOMEventTargetHelper,
-                                  nsINetworkProperties)
-
 // Don't use |Connection| alone, since that confuses nsTraceRefcnt since
 // we're not the only class with that name.
-NS_IMPL_ADDREF_INHERITED(dom::network::Connection, DOMEventTargetHelper)
-NS_IMPL_RELEASE_INHERITED(dom::network::Connection, DOMEventTargetHelper)
+NS_IMPL_ISUPPORTS_INHERITED0(dom::network::Connection, DOMEventTargetHelper)
 
 Connection::Connection(nsPIDOMWindowInner* aWindow)
     : DOMEventTargetHelper(aWindow),
@@ -56,27 +51,9 @@ void Connection::Shutdown() {
   ShutdownInternal();
 }
 
-NS_IMETHODIMP
-Connection::GetIsWifi(bool* aIsWifi) {
-  NS_ENSURE_ARG_POINTER(aIsWifi);
-  NS_ASSERT_OWNINGTHREAD(Connection);
-
-  *aIsWifi = mIsWifi;
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-Connection::GetDhcpGateway(uint32_t* aGW) {
-  NS_ENSURE_ARG_POINTER(aGW);
-  NS_ASSERT_OWNINGTHREAD(Connection);
-
-  *aGW = mDHCPGateway;
-  return NS_OK;
-}
-
 JSObject* Connection::WrapObject(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return NetworkInformationBinding::Wrap(aCx, this, aGivenProto);
+  return NetworkInformation_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void Connection::Update(ConnectionType aType, bool aIsWifi,
@@ -95,13 +72,14 @@ void Connection::Update(ConnectionType aType, bool aIsWifi,
   }
 }
 
-/* static */ Connection* Connection::CreateForWindow(
-    nsPIDOMWindowInner* aWindow) {
+/* static */
+Connection* Connection::CreateForWindow(nsPIDOMWindowInner* aWindow) {
   MOZ_ASSERT(aWindow);
   return new ConnectionMainThread(aWindow);
 }
 
-/* static */ already_AddRefed<Connection> Connection::CreateForWorker(
+/* static */
+already_AddRefed<Connection> Connection::CreateForWorker(
     WorkerPrivate* aWorkerPrivate, ErrorResult& aRv) {
   MOZ_ASSERT(aWorkerPrivate);
   aWorkerPrivate->AssertIsOnWorkerThread();

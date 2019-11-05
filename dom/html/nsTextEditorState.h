@@ -41,6 +41,10 @@ class HTMLInputElement;
  * nsTextEditorState is a class which is responsible for managing the state of
  * plaintext controls.  This currently includes the following HTML elements:
  *   <input type=text>
+ *   <input type=search>
+ *   <input type=url>
+ *   <input type=telephone>
+ *   <input type=email>
  *   <input type=password>
  *   <textarea>
  * and also XUL controls such as <textbox> which use one of these elements
@@ -61,40 +65,38 @@ class HTMLInputElement;
  *
  *  * The control's associated frame.  This value is stored in the mBoundFrame
  * member. A text control might never have an associated frame during its life
- * cycle, or might have several different ones, but at any given moment in
- * time there is a maximum of 1 bound frame to each text control.
+ * cycle, or might have several different ones, but at any given moment in time
+ * there is a maximum of 1 bound frame to each text control.
  *
  *  * The control's associated editor.  This value is stored in the mEditor
  * member. An editor is initilized for the control only when necessary (that is,
- * when either the user is about to interact with the text control, or when
- * some other code needs to access the editor object.  Without a frame bound
- * to the control, an editor is never initialzied.  Once initialized, the
- * editor might outlive the frame, in which case the same editor will be used
- * if a new frame gets bound to the text control.
+ * when either the user is about to interact with the text control, or when some
+ * other code needs to access the editor object.  Without a frame bound to the
+ * control, an editor is never initialzied.  Once initialized, the editor might
+ * outlive the frame, in which case the same editor will be used if a new frame
+ * gets bound to the text control.
  *
  *  * The anonymous content associated with the text control's frame, including
  * the value div (the DIV element responsible for holding the value of the text
- * control) and the placeholder div (the DIV element responsible for holding
- * the placeholder value of the text control.)  These values are stored in
- * the mRootNode and mPlaceholderDiv members, respectively.  They will be
- * created when a frame is bound to the text control.  They will be destroyed
- * when the frame is unbound from the object.  We could try and hold on to
- * the anonymous content between different frames, but unfortunately that is
- * not currently possible because they are not unbound from the document in
- * time.
+ * control) and the placeholder div (the DIV element responsible for holding the
+ * placeholder value of the text control.)  These values are stored in the
+ * mRootNode and mPlaceholderDiv members, respectively.  They will be created
+ * when a frame is bound to the text control.  They will be destroyed when the
+ * frame is unbound from the object.  We could try and hold on to the anonymous
+ * content between different frames, but unfortunately that is not currently
+ * possible because they are not unbound from the document in time.
  *
  *  * The frame selection controller.  This value is stored in the mSelCon
  * member. The frame selection controller is responsible for maintaining the
- * selection state on a frame.  It is created when a frame is bound to the
- * text control element, and will be destroy when the frame is being unbound
- * from the text control element. It is created alongside with the frame
- * selection object which is stored in the mFrameSel member.
+ * selection state on a frame.  It is created when a frame is bound to the text
+ * control element, and will be destroy when the frame is being unbound from the
+ * text control element. It is created alongside with the frame selection object
+ * which is stored in the mFrameSel member.
  *
  *  * The editor text listener.  This value is stored in the mTextListener
  * member. Its job is to listen to selection and keyboard events, and act
- * accordingly. It is created when an a frame is first bound to the control,
- * and will be destroyed when the frame is unbound from the text control
- * element.
+ * accordingly. It is created when an a frame is first bound to the control, and
+ * will be destroyed when the frame is unbound from the text control element.
  *
  *  * The editor's cached value.  This value is stored in the mCachedValue
  * member. It is used to improve the performance of append operations to the
@@ -115,8 +117,8 @@ class HTMLInputElement;
  *
  *   * When the control is first initialized, its value is equal to the default
  * value of the DOM node.  For <input> text controls, this default value is the
- * value of the value attribute.  For <textarea> elements, this default
- * value is the value of the text node children of the element.
+ * value of the value attribute.  For <textarea> elements, this default value is
+ * the value of the text node children of the element.
  *
  *   * If the value has been changed through the DOM node (before the editor for
  * the object is initialized), the value is stored as a simple string inside the
@@ -140,10 +142,10 @@ class nsTextEditorState : public mozilla::SupportsWeakPtr<nsTextEditorState> {
   explicit nsTextEditorState(nsITextControlElement* aOwningElement);
   static nsTextEditorState* Construct(nsITextControlElement* aOwningElement,
                                       nsTextEditorState** aReusedState);
-  ~nsTextEditorState();
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY ~nsTextEditorState();
 
   void Traverse(nsCycleCollectionTraversalCallback& cb);
-  void Unlink();
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY void Unlink();
 
   void PrepareForReuse() {
     Unlink();
@@ -153,36 +155,52 @@ class nsTextEditorState : public mozilla::SupportsWeakPtr<nsTextEditorState> {
   }
 
   mozilla::TextEditor* GetTextEditor();
+  mozilla::TextEditor* GetTextEditorWithoutCreation();
   nsISelectionController* GetSelectionController() const;
   nsFrameSelection* GetConstFrameSelection();
   nsresult BindToFrame(nsTextControlFrame* aFrame);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   void UnbindFromFrame(nsTextControlFrame* aFrame);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   nsresult PrepareEditor(const nsAString* aValue = nullptr);
   void InitializeKeyboardEventListeners();
 
   enum SetValueFlags {
     // The call is for internal processing.
-    eSetValue_Internal = 0,
+    eSetValue_Internal = 1 << 0,
     // The value is changed by a call of setUserInput() from chrome.
-    eSetValue_BySetUserInput = 1 << 0,
+    eSetValue_BySetUserInput = 1 << 1,
     // The value is changed by changing value attribute of the element or
     // something like setRangeText().
-    eSetValue_ByContent = 1 << 1,
+    eSetValue_ByContent = 1 << 2,
     // Whether the value change should be notified to the frame/contet nor not.
-    eSetValue_Notify = 1 << 2,
+    eSetValue_Notify = 1 << 3,
     // Whether to move the cursor to end of the value (in the case when we have
     // cached selection offsets), in the case when the value has changed.  If
-    // this is not set, the cached selection offsets will simply be clamped to
-    // be within the length of the new value.  In either case, if the value has
+    // this is not set and
+    // eSetValue_MoveCursorToBeginSetSelectionDirectionForward
+    // is not set, the cached selection offsets will simply be clamped to
+    // be within the length of the new value. In either case, if the value has
     // not changed the cursor won't move.
-    eSetValue_MoveCursorToEndIfValueChanged = 1 << 3,
+    // TODO(mbrodesser): update comment and enumerator identifier to reflect
+    // that also the direction is set to forward.
+    eSetValue_MoveCursorToEndIfValueChanged = 1 << 4,
     // The value is changed for a XUL text control as opposed to for an HTML
     // text control.  Such value changes are different in that they preserve the
     // undo history.
-    eSetValue_ForXUL = 1 << 4,
+    eSetValue_ForXUL = 1 << 5,
+    // Whether it should be tried to move the cursor to the beginning of the
+    // text control and set the selection direction to "forward".
+    // TODO(mbrodesser): As soon as "none" is supported
+    // (https://bugzilla.mozilla.org/show_bug.cgi?id=1541454), it should be set
+    // to "none" and only fall back to "forward" if the platform doesn't support
+    // it.
+    eSetValue_MoveCursorToBeginSetSelectionDirectionForward = 1 << 6,
   };
+  MOZ_CAN_RUN_SCRIPT
   MOZ_MUST_USE bool SetValue(const nsAString& aValue,
                              const nsAString* aOldValue, uint32_t aFlags);
+  MOZ_CAN_RUN_SCRIPT
   MOZ_MUST_USE bool SetValue(const nsAString& aValue, uint32_t aFlags) {
     return SetValue(aValue, nullptr, aFlags);
   }
@@ -198,7 +216,6 @@ class nsTextEditorState : public mozilla::SupportsWeakPtr<nsTextEditorState> {
   bool IsEmpty() const { return mValue ? mValue->IsEmpty() : true; }
 
   mozilla::dom::Element* GetRootNode();
-  mozilla::dom::Element* GetPlaceholderNode();
   mozilla::dom::Element* GetPreviewNode();
 
   bool IsSingleLineTextControl() const {
@@ -275,6 +292,7 @@ class nsTextEditorState : public mozilla::SupportsWeakPtr<nsTextEditorState> {
   // Sync up our selection properties with our editor prior to being destroyed.
   // This will invoke UnbindFromFrame() to ensure that we grab whatever
   // selection state may be at the moment.
+  MOZ_CAN_RUN_SCRIPT
   void SyncUpSelectionPropertiesBeforeDestruction();
 
   // Get the selection range start and end points in our text.
@@ -359,8 +377,8 @@ class nsTextEditorState : public mozilla::SupportsWeakPtr<nsTextEditorState> {
 
   void ValueWasChanged(bool aNotify);
 
-  void DestroyEditor();
-  void Clear();
+  MOZ_CAN_RUN_SCRIPT void DestroyEditor();
+  MOZ_CAN_RUN_SCRIPT void Clear();
 
   nsresult InitializeRootNode();
 

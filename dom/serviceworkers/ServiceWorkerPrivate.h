@@ -14,14 +14,23 @@
 #define NOTIFICATION_CLOSE_EVENT_NAME "notificationclose"
 
 class nsIInterceptedChannel;
+class nsIWorkerDebugger;
 
 namespace mozilla {
+
+class JSObjectHolder;
+
 namespace dom {
 
 class ClientInfoAndState;
 class KeepAliveToken;
+class ServiceWorkerCloneData;
 class ServiceWorkerInfo;
 class ServiceWorkerRegistrationInfo;
+
+namespace ipc {
+class StructuredCloneData;
+}  // namespace ipc
 
 class LifeCycleEventCallback : public Runnable {
  public:
@@ -79,8 +88,7 @@ class ServiceWorkerPrivate final {
  public:
   explicit ServiceWorkerPrivate(ServiceWorkerInfo* aInfo);
 
-  nsresult SendMessageEvent(JSContext* aCx, JS::Handle<JS::Value> aMessage,
-                            const Sequence<JSObject*>& aTransferable,
+  nsresult SendMessageEvent(RefPtr<ServiceWorkerCloneData>&& aData,
                             const ClientInfoAndState& aClientInfoAndState);
 
   // This is used to validate the worker script and continue the installation
@@ -88,8 +96,7 @@ class ServiceWorkerPrivate final {
   nsresult CheckScriptEvaluation(LifeCycleEventCallback* aCallback);
 
   nsresult SendLifeCycleEvent(const nsAString& aEventType,
-                              LifeCycleEventCallback* aCallback,
-                              nsIRunnable* aLoadFailure);
+                              LifeCycleEventCallback* aCallback);
 
   nsresult SendPushEvent(const nsAString& aMessageId,
                          const Maybe<nsTArray<uint8_t>>& aData,
@@ -107,7 +114,7 @@ class ServiceWorkerPrivate final {
 
   nsresult SendFetchEvent(nsIInterceptedChannel* aChannel,
                           nsILoadGroup* aLoadGroup, const nsAString& aClientId,
-                          bool aIsReload);
+                          const nsAString& aResultingClientId, bool aIsReload);
 
   bool MaybeStoreISupports(nsISupports* aSupports);
 
@@ -161,10 +168,7 @@ class ServiceWorkerPrivate final {
 
   void ReleaseToken();
 
-  // |aLoadFailedRunnable| is a runnable dispatched to the main thread
-  // if the script loader failed for some reason, but can be null.
   nsresult SpawnWorkerIfNeeded(WakeUpReason aWhy,
-                               nsIRunnable* aLoadFailedRunnable,
                                bool* aNewWorkerCreated = nullptr,
                                nsILoadGroup* aLoadGroup = nullptr);
 

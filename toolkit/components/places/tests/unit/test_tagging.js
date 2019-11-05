@@ -6,14 +6,15 @@
 
 // Notice we use createInstance because later we will have to terminate the
 // service and restart it.
-var tagssvc = Cc["@mozilla.org/browser/tagging-service;1"].
-              createInstance().QueryInterface(Ci.nsITaggingService);
+var tagssvc = Cc["@mozilla.org/browser/tagging-service;1"]
+  .createInstance()
+  .QueryInterface(Ci.nsITaggingService);
 
 function run_test() {
   var options = PlacesUtils.history.getNewQueryOptions();
   var query = PlacesUtils.history.getNewQuery();
 
-  query.setFolders([PlacesUtils.tagsFolderId], 1);
+  query.setParents([PlacesUtils.bookmarks.tagsGuid]);
   var result = PlacesUtils.history.executeQuery(query, options);
   var tagRoot = result.root;
   tagRoot.containerOpen = true;
@@ -28,8 +29,9 @@ function run_test() {
   tagssvc.tagURI(uri2, ["tag 1"]);
   Assert.equal(tagRoot.childCount, 1);
 
-  var tag1node = tagRoot.getChild(0)
-                        .QueryInterface(Ci.nsINavHistoryContainerResultNode);
+  var tag1node = tagRoot
+    .getChild(0)
+    .QueryInterface(Ci.nsINavHistoryContainerResultNode);
   var tag1itemId = tag1node.itemId;
 
   Assert.equal(tag1node.title, "tag 1");
@@ -57,18 +59,6 @@ function run_test() {
   var uri2tags = tagssvc.getTagsForURI(uri2);
   Assert.equal(uri2tags.length, 1);
   Assert.equal(uri2tags[0], "Tag 1");
-
-  // test getURIsForTag
-  var tag1uris = tagssvc.getURIsForTag("tag 1");
-  Assert.equal(tag1uris.length, 2);
-  Assert.ok(tag1uris[0].equals(uri1));
-  Assert.ok(tag1uris[1].equals(uri2));
-
-  // test allTags attribute
-  var allTags = tagssvc.allTags;
-  Assert.equal(allTags.length, 2);
-  Assert.equal(allTags[0], "Tag 1");
-  Assert.equal(allTags[1], "Tag 2");
 
   // test untagging
   tagssvc.untagURI(uri1, ["tag 1"]);
@@ -107,8 +97,9 @@ function run_test() {
   var uri4 = uri("http://testuri/4");
   tagssvc.tagURI(uri4, [tagId, "tag 3", "456"]);
   tagssvc = null;
-  tagssvc = Cc["@mozilla.org/browser/tagging-service;1"].
-            getService(Ci.nsITaggingService);
+  tagssvc = Cc["@mozilla.org/browser/tagging-service;1"].getService(
+    Ci.nsITaggingService
+  );
   var uri4Tags = tagssvc.getTagsForURI(uri4);
   Assert.equal(uri4Tags.length, 3);
   Assert.ok(uri4Tags.includes(tagTitle));
@@ -157,17 +148,15 @@ function run_test() {
     Assert.equal(ex.name, "NS_ERROR_ILLEGAL_VALUE");
   }
 
-  // Tag name length should be limited to nsITaggingService.MAX_TAG_LENGTH (bug407821)
+  // Tag name length should be limited to PlacesUtils.bookmarks.MAX_TAG_LENGTH (bug407821)
   try {
-
     // generate a long tag name. i.e. looooo...oong_tag
-    var n = Ci.nsITaggingService.MAX_TAG_LENGTH;
+    var n = PlacesUtils.bookmarks.MAX_TAG_LENGTH;
     var someOos = new Array(n).join("o");
     var longTagName = "l" + someOos + "ng_tag";
 
     tagssvc.tagURI(uri1, ["short_tag", longTagName]);
     do_throw("Passing a bad tags array should throw");
-
   } catch (ex) {
     Assert.equal(ex.name, "NS_ERROR_ILLEGAL_VALUE");
   }
@@ -177,13 +166,13 @@ function run_test() {
 
   // Tagging service should trim tags (Bug967196)
   let exampleURI = uri("http://www.example.com/");
-  PlacesUtils.tagging.tagURI(exampleURI, [ " test " ]);
+  PlacesUtils.tagging.tagURI(exampleURI, [" test "]);
 
   let exampleTags = PlacesUtils.tagging.getTagsForURI(exampleURI);
   Assert.equal(exampleTags.length, 1);
   Assert.equal(exampleTags[0], "test");
 
-  PlacesUtils.tagging.untagURI(exampleURI, [ "test" ]);
+  PlacesUtils.tagging.untagURI(exampleURI, ["test"]);
   exampleTags = PlacesUtils.tagging.getTagsForURI(exampleURI);
   Assert.equal(exampleTags.length, 0);
 }

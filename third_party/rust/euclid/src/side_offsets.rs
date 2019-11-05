@@ -13,19 +13,21 @@
 use super::UnknownUnit;
 use length::Length;
 use num::Zero;
-use std::fmt;
-use std::ops::Add;
-use std::marker::PhantomData;
+use core::fmt;
+use core::ops::Add;
+use core::marker::PhantomData;
 
 /// A group of side offsets, which correspond to top/left/bottom/right for borders, padding,
 /// and margins in CSS, optionally tagged with a unit.
-define_matrix! {
-    pub struct TypedSideOffsets2D<T, U> {
-        pub top: T,
-        pub right: T,
-        pub bottom: T,
-        pub left: T,
-    }
+#[derive(EuclidMatrix)]
+#[repr(C)]
+pub struct TypedSideOffsets2D<T, U> {
+    pub top: T,
+    pub right: T,
+    pub bottom: T,
+    pub left: T,
+    #[doc(hidden)]
+    pub _unit: PhantomData<U>,
 }
 
 impl<T: fmt::Debug, U> fmt::Debug for TypedSideOffsets2D<T, U> {
@@ -45,10 +47,10 @@ impl<T: Copy, U> TypedSideOffsets2D<T, U> {
     /// Constructor taking a scalar for each side.
     pub fn new(top: T, right: T, bottom: T, left: T) -> Self {
         TypedSideOffsets2D {
-            top: top,
-            right: right,
-            bottom: bottom,
-            left: left,
+            top,
+            right,
+            bottom,
+            left,
             _unit: PhantomData,
         }
     }

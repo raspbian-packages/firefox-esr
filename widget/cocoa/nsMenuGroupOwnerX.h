@@ -25,8 +25,7 @@ class nsMenuGroupOwnerX : public nsMenuObjectX, public nsIMutationObserver {
 
   nsresult Create(mozilla::dom::Element* aContent);
 
-  void RegisterForContentChanges(nsIContent* aContent,
-                                 nsChangeObserver* aMenuObject);
+  void RegisterForContentChanges(nsIContent* aContent, nsChangeObserver* aMenuObject);
   void UnregisterForContentChanges(nsIContent* aContent);
   uint32_t RegisterForCommand(nsMenuItemX* aItem);
   void UnregisterCommand(uint32_t aCommandID);
@@ -45,8 +44,7 @@ class nsMenuGroupOwnerX : public nsMenuObjectX, public nsIMutationObserver {
                                // give to next item that asks
 
   // stores observers for content change notification
-  nsDataHashtable<nsPtrHashKey<nsIContent>, nsChangeObserver*>
-      mContentToObserverTable;
+  nsDataHashtable<nsPtrHashKey<nsIContent>, nsChangeObserver*> mContentToObserverTable;
 
   // stores mapping of command IDs to menu objects
   nsDataHashtable<nsUint32HashKey, nsMenuItemX*> mCommandToMenuObjectTable;

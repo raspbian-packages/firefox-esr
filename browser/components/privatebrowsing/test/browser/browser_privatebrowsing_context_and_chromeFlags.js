@@ -12,28 +12,35 @@
  * @return Promise
  */
 function assertWindowIsPrivate(win) {
-  let winDocShell = win.QueryInterface(Ci.nsIInterfaceRequestor)
-                       .getInterface(Ci.nsIDocShell);
-  let chromeFlags = winDocShell.QueryInterface(Ci.nsIDocShellTreeItem)
-                               .treeOwner
-                               .QueryInterface(Ci.nsIInterfaceRequestor)
-                               .getInterface(Ci.nsIXULWindow)
-                               .chromeFlags;
+  let winDocShell = win.docShell;
+  let chromeFlags = winDocShell.treeOwner
+    .QueryInterface(Ci.nsIInterfaceRequestor)
+    .getInterface(Ci.nsIXULWindow).chromeFlags;
 
   if (!win.gBrowser.selectedBrowser.hasContentOpener) {
-    Assert.ok(chromeFlags & Ci.nsIWebBrowserChrome.CHROME_PRIVATE_WINDOW,
-              "Should have the private window chrome flag");
+    Assert.ok(
+      chromeFlags & Ci.nsIWebBrowserChrome.CHROME_PRIVATE_WINDOW,
+      "Should have the private window chrome flag"
+    );
   }
 
   let loadContext = winDocShell.QueryInterface(Ci.nsILoadContext);
-  Assert.ok(loadContext.usePrivateBrowsing,
-            "The parent window should be using private browsing");
+  Assert.ok(
+    loadContext.usePrivateBrowsing,
+    "The parent window should be using private browsing"
+  );
 
-  return ContentTask.spawn(win.gBrowser.selectedBrowser, null, async function() {
-    let contentLoadContext = docShell.QueryInterface(Ci.nsILoadContext);
-    Assert.ok(contentLoadContext.usePrivateBrowsing,
-              "Content docShell should be using private browsing");
-  });
+  return ContentTask.spawn(
+    win.gBrowser.selectedBrowser,
+    null,
+    async function() {
+      let contentLoadContext = docShell.QueryInterface(Ci.nsILoadContext);
+      Assert.ok(
+        contentLoadContext.usePrivateBrowsing,
+        "Content docShell should be using private browsing"
+      );
+    }
+  );
 }
 
 /**

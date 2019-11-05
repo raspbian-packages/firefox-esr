@@ -5,7 +5,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=156716
 -->
 <head>
   <title>Test for Bug 156716</title>
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
 </head>
 <body onload="run()">
@@ -137,7 +137,7 @@ function run() {
     expression_should_not_be_parseable(max_name);
   }
 
-  function test_serialization(q, test_application, should_apply) {
+  function test_serialization(q, test_application, expected_to_apply) {
     style.setAttribute("media", q);
     var ser1 = style.sheet.media.mediaText;
     isnot(ser1, "", "serialization of '" + q + "' should not be empty");
@@ -145,9 +145,9 @@ function run() {
     var ser2 = style.sheet.media.mediaText;
     is(ser2, ser1, "parse+serialize of '" + q + "' should be idempotent");
     if (test_application) {
-      var applies = body_cs.getPropertyValue("text-decoration") == "underline";
-      is(applies, should_apply,
-         "Media query '" + q + "' should " + (should_apply ? "" : "NOT ") +
+      let applies = body_cs.getPropertyValue("text-decoration") == "underline";
+      is(applies, expected_to_apply,
+         "Media query '" + q + "' should " + (expected_to_apply ? "" : "NOT ") +
          "apply after serialize + reparse");
     }
 
@@ -156,11 +156,9 @@ function run() {
     var sheeturl = "data:text/css," + escape(sheet);
     var link = "<link rel='stylesheet' href='" + sheeturl + "'>";
     var htmldoc = "<!DOCTYPE HTML>" + link + link  + "<body>";
-    var docurl = "data:text/html," + escape(htmldoc);
-    post_clone_test(docurl, function() {
-      var wrappedFrame = SpecialPowers.wrap(iframe);
-      var clonedoc = wrappedFrame.contentDocument;
-      var clonewin = wrappedFrame.contentWindow;
+    post_clone_test(htmldoc, function() {
+      var clonedoc = iframe.contentDocument;
+      var clonewin = iframe.contentWindow;
       var links = clonedoc.getElementsByTagName("link");
       // cause a clone
       var clonedsheet = links[1].sheet;
@@ -172,10 +170,10 @@ function run() {
       is(ser3, ser1, "cloning query '" + q + "' should not change " +
                      "serialization");
       if (test_application) {
-        var applies = clonewin.getComputedStyle(clonedoc.body).
+        let applies = clonewin.getComputedStyle(clonedoc.body).
                         textDecoration == "underline";
-        is(applies, should_apply,
-           "Media query '" + q + "' should " + (should_apply ? "" : "NOT ") +
+        is(applies, expected_to_apply,
+           "Media query '" + q + "' should " + (expected_to_apply ? "" : "NOT ") +
            "apply after cloning");
       }
     });
@@ -183,14 +181,26 @@ function run() {
 
   // The no-type syntax doesn't mix with the not and only keywords.
   query_should_be_parseable("(orientation)");
-  query_should_not_be_parseable("not (orientation)");
+  query_should_be_parseable("not (orientation)");
   query_should_not_be_parseable("only (orientation)");
   query_should_be_parseable("all and (orientation)");
   query_should_be_parseable("not all and (orientation)");
   query_should_be_parseable("only all and (orientation)");
 
+  query_should_not_be_parseable("not not (orientation)");
+  query_should_be_parseable("(orientation) and (orientation)");
+  query_should_be_parseable("(orientation) or (orientation)");
+  query_should_be_parseable("(orientation) or ((orientation) and ((orientation) or (orientation) or (not (orientation))))");
+
+  query_should_not_be_parseable("all and (orientation) or (orientation)");
+  query_should_be_parseable("all and (orientation) and (orientation)");
+
+  query_should_not_be_parseable("(orientation) and (orientation) or (orientation)");
+  query_should_not_be_parseable("(orientation) and not (orientation)");
+
+
   query_should_be_parseable("(-moz-device-orientation)");
-  query_should_not_be_parseable("not (-moz-device-orientation)");
+  query_should_be_parseable("not (-moz-device-orientation)");
   query_should_not_be_parseable("only (-moz-device-orientation)");
   query_should_be_parseable("all and (-moz-device-orientation)");
   query_should_be_parseable("not all and (-moz-device-orientation)");
@@ -230,28 +240,37 @@ function run() {
   query_should_be_parseable("only unknowntype and (width)");
 
   var features = [ "width", "height", "device-width", "device-height" ];
+  var separators = [ ":", ">", ">=", "=", "<=", "<" ];
+
   var feature;
   var i;
   for (i in features) {
     feature = features[i];
     expression_should_be_parseable(feature);
-    expression_should_be_parseable(feature + ": 0");
-    expression_should_be_parseable(feature + ": 0px");
-    expression_should_be_parseable(feature + ": 0em");
-    expression_should_be_parseable(feature + ": -0");
-    expression_should_be_parseable("min-" + feature + ": -0");
-    expression_should_be_parseable("max-" + feature + ": -0");
-    expression_should_be_parseable(feature + ": -0cm");
-    expression_should_be_parseable(feature + ": 1px");
-    expression_should_be_parseable(feature + ": 0.001mm");
-    expression_should_be_parseable(feature + ": 100000px");
-    expression_should_not_be_parseable(feature + ": -1px");
-    expression_should_not_be_parseable("min-" + feature + ": -1px");
-    expression_should_not_be_parseable("max-" + feature + ": -1px");
-    expression_should_not_be_parseable(feature + ": -0.00001mm");
-    expression_should_not_be_parseable(feature + ": -100000em");
     expression_should_not_be_parseable("min-" + feature);
     expression_should_not_be_parseable("max-" + feature);
+    for (let separator of separators) {
+      expression_should_be_parseable(feature + " " + separator + " 0");
+      expression_should_be_parseable(feature + " " + separator + " 0px");
+      expression_should_be_parseable(feature + " " + separator + " 0em");
+      expression_should_be_parseable(feature + " " + separator + " -0");
+      expression_should_be_parseable(feature + " " + separator + " -0cm");
+      expression_should_be_parseable(feature + " " + separator + " 1px");
+      expression_should_be_parseable(feature + " " + separator + " 0.001mm");
+      expression_should_be_parseable(feature + " " + separator + " 100000px");
+      if (separator == ":") {
+        expression_should_be_parseable("min-" + feature + " " + separator + " -0");
+        expression_should_be_parseable("max-" + feature + " " + separator + " -0");
+      } else {
+        expression_should_not_be_parseable("min-" + feature + " " + separator + " -0");
+        expression_should_not_be_parseable("max-" + feature + " " + separator + " -0");
+      }
+      expression_should_not_be_parseable(feature + " " + separator + " -1px");
+      expression_should_not_be_parseable("min-" + feature + " " + separator + " -1px");
+      expression_should_not_be_parseable("max-" + feature + " " + separator + " -1px");
+      expression_should_not_be_parseable(feature + " " + separator + " -0.00001mm");
+      expression_should_not_be_parseable(feature + " " + separator + " -100000em");
+    }
   }
 
   var mediatypes = ["browser", "minimal-ui", "standalone", "fullscreen"];
@@ -276,15 +295,21 @@ function run() {
   });
   var device_width = window.screen.width;
   var device_height = window.screen.height;
-  features = { "width": width_val,
-                    "height": height_val,
-                    "device-width": device_width,
-                    "device-height": device_height };
+  features = {
+    "width": width_val,
+    "height": height_val,
+    "device-width": device_width,
+    "device-height": device_height
+  };
   for (feature in features) {
     var value = features[feature];
     should_apply("all and (" + feature + ": " + value + "px)");
+    should_apply("all and (" + feature + " = " + value + "px)");
     should_not_apply("all and (" + feature + ": " + (value + 1) + "px)");
     should_not_apply("all and (" + feature + ": " + (value - 1) + "px)");
+    should_not_apply("all and (" + feature + " = " + (value + 1) + "px)");
+    should_not_apply("all and (" + feature + " = " + (value - 1) + "px)");
+
     should_apply("all and (min-" + feature + ": " + value + "px)");
     should_not_apply("all and (min-" + feature + ": " + (value + 1) + "px)");
     should_apply("all and (min-" + feature + ": " + (value - 1) + "px)");
@@ -307,6 +332,21 @@ function run() {
                  (Math.ceil(value/em_size) + 1) + "rem)");
     should_not_apply("all and (max-" + feature + ": " +
                      (Math.floor(value/em_size) - 1) + "rem)");
+
+    should_apply("(" + feature + " <= " + value + "px)");
+    should_apply("(" + feature + " >= " + value + "px)");
+    should_not_apply("(" + feature + " < " + value + "px)");
+    should_not_apply("(" + feature + " > " + value + "px)");
+
+    should_apply("(" + feature + " < " + (value + 1) + "px)");
+    should_apply("(" + feature + " <= " + (value + 1) + "px)");
+    should_not_apply("(" + feature + " > " + (value + 1) + "px)");
+    should_not_apply("(" + feature + " >= " + (value + 1) + "px)");
+
+    should_apply("(" + feature + " > " + (value - 1) + "px)");
+    should_apply("(" + feature + " >= " + (value - 1) + "px)");
+    should_not_apply("(" + feature + " < " + (value - 1) + "px)");
+    should_not_apply("(" + feature + " <= " + (value - 1) + "px)");
   }
 
   change_state(function() {
@@ -552,11 +592,14 @@ function run() {
     expression_should_be_parseable(feature + ": 3.4dpi");
     expression_should_be_parseable(feature + "\t: 120dpcm");
     expression_should_be_parseable(feature + ": 1dppx");
+    expression_should_be_parseable(feature + ": 1x");
     expression_should_be_parseable(feature + ": 1.5dppx");
+    expression_should_be_parseable(feature + ": 1.5x");
     expression_should_be_parseable(feature + ": 2.0dppx");
     expression_should_not_be_parseable(feature + ": 0dpi");
     expression_should_not_be_parseable(feature + ": -3dpi");
     expression_should_not_be_parseable(feature + ": 0dppx");
+    expression_should_not_be_parseable(feature + ": 0x");
   }
 
   // Find the resolution using max-resolution
@@ -576,6 +619,7 @@ function run() {
     // It's exact!
     should_apply("(resolution: " + resolution + "dpi)");
     should_apply("(resolution: " + Math.floor(resolution/96) + "dppx)");
+    should_apply("(resolution: " + Math.floor(resolution/96) + "x)");
     should_not_apply("(resolution: " + (resolution + 1) + "dpi)");
     should_not_apply("(resolution: " + (resolution - 1) + "dpi)");
     dpi_high = resolution + 1;
@@ -648,9 +692,12 @@ function run() {
   expression_should_not_be_parseable("-moz-windows-glass");
   expression_should_not_be_parseable("-moz-swipe-animation-enabled");
   expression_should_not_be_parseable("-moz-gtk-csd-available");
+  expression_should_not_be_parseable("-moz-gtk-csd-hide-titlebar-by-default");
+  expression_should_not_be_parseable("-moz-gtk-csd-transparent-background");
   expression_should_not_be_parseable("-moz-gtk-csd-minimize-button");
   expression_should_not_be_parseable("-moz-gtk-csd-maximize-button");
   expression_should_not_be_parseable("-moz-gtk-csd-close-button");
+  expression_should_not_be_parseable("-moz-gtk-csd-reversed-placement");
   expression_should_be_parseable("-moz-touch-enabled");
 
   expression_should_not_be_parseable("-moz-scrollbar-start-backward: 0");
@@ -668,9 +715,12 @@ function run() {
   expression_should_not_be_parseable("-moz-windows-glass: 0");
   expression_should_not_be_parseable("-moz-swipe-animation-enabled: 0");
   expression_should_not_be_parseable("-moz-gtk-csd-available: 0");
+  expression_should_not_be_parseable("-moz-gtk-csd-hide-titlebar-by-default: 0");
+  expression_should_not_be_parseable("-moz-gtk-csd-transparent-background: 0");
   expression_should_not_be_parseable("-moz-gtk-csd-minimize-button: 0");
   expression_should_not_be_parseable("-moz-gtk-csd-maximize-button: 0");
   expression_should_not_be_parseable("-moz-gtk-csd-close-button: 0");
+  expression_should_not_be_parseable("-moz-gtk-csd-reversed-placement: 0");
   expression_should_be_parseable("-moz-touch-enabled: 0");
 
   expression_should_not_be_parseable("-moz-scrollbar-start-backward: 1");
@@ -688,9 +738,12 @@ function run() {
   expression_should_not_be_parseable("-moz-windows-glass: 1");
   expression_should_not_be_parseable("-moz-swipe-animation-enabled: 1");
   expression_should_not_be_parseable("-moz-gtk-csd-available: 1");
+  expression_should_not_be_parseable("-moz-gtk-csd-hide-titlebar-by-default: 1");
+  expression_should_not_be_parseable("-moz-gtk-csd-transparent-background: 1");
   expression_should_not_be_parseable("-moz-gtk-csd-minimize-button: 1");
   expression_should_not_be_parseable("-moz-gtk-csd-maximize-button: 1");
   expression_should_not_be_parseable("-moz-gtk-csd-close-button: 1");
+  expression_should_not_be_parseable("-moz-gtk-csd-reversed-placement: 1");
   expression_should_be_parseable("-moz-touch-enabled: 1");
 
   expression_should_not_be_parseable("-moz-scrollbar-start-backward: -1");
@@ -709,9 +762,12 @@ function run() {
   expression_should_not_be_parseable("-moz-touch-enabled: -1");
   expression_should_not_be_parseable("-moz-swipe-animation-enabled: -1");
   expression_should_not_be_parseable("-moz-gtk-csd-available: -1");
+  expression_should_not_be_parseable("-moz-gtk-csd-hide-titlebar-by-default: -1");
+  expression_should_not_be_parseable("-moz-gtk-csd-transparent-background: -1");
   expression_should_not_be_parseable("-moz-gtk-csd-minimize-button: -1");
   expression_should_not_be_parseable("-moz-gtk-csd-maximize-button: -1");
   expression_should_not_be_parseable("-moz-gtk-csd-close-button: -1");
+  expression_should_not_be_parseable("-moz-gtk-csd-reversed-placement: -1");
 
   expression_should_not_be_parseable("-moz-scrollbar-start-backward: true");
   expression_should_not_be_parseable("-moz-scrollbar-start-forward: true");
@@ -729,22 +785,12 @@ function run() {
   expression_should_not_be_parseable("-moz-touch-enabled: true");
   expression_should_not_be_parseable("-moz-swipe-animation-enabled: true");
   expression_should_not_be_parseable("-moz-gtk-csd-available: true");
+  expression_should_not_be_parseable("-moz-gtk-csd-hide-titlebar-by-default: true");
+  expression_should_not_be_parseable("-moz-gtk-csd-transparent-background: true");
   expression_should_not_be_parseable("-moz-gtk-csd-minimize-button: true");
   expression_should_not_be_parseable("-moz-gtk-csd-maximize-button: true");
   expression_should_not_be_parseable("-moz-gtk-csd-close-button: true");
-
-  // windows theme media queries
-  expression_should_not_be_parseable("-moz-windows-theme: aero");
-  expression_should_not_be_parseable("-moz-windows-theme: aero-lite");
-  expression_should_not_be_parseable("-moz-windows-theme: luna-blue");
-  expression_should_not_be_parseable("-moz-windows-theme: luna-olive");
-  expression_should_not_be_parseable("-moz-windows-theme: luna-silver");
-  expression_should_not_be_parseable("-moz-windows-theme: royale");
-  expression_should_not_be_parseable("-moz-windows-theme: generic");
-  expression_should_not_be_parseable("-moz-windows-theme: zune");
-  expression_should_not_be_parseable("-moz-windows-theme: garbage");
-  expression_should_not_be_parseable("-moz-windows-theme: ''");
-  expression_should_not_be_parseable("-moz-windows-theme: ");
+  expression_should_not_be_parseable("-moz-gtk-csd-reversed-placement: true");
 
   // os version media queries (currently windows only)
   expression_should_not_be_parseable("-moz-os-version: windows-win7");
@@ -787,6 +833,9 @@ function run() {
   should_not_apply("(-moz-is-glyph:1)");
   should_not_apply("not all and (-moz-is-glyph:0)");
   should_not_apply("only all and (-moz-is-glyph:1)");
+
+  // Resource documents (UA-only).
+  query_should_not_be_parseable("(-moz-is-resource-document)");
 
   // Parsing tests
   // bug 454227
@@ -840,9 +889,9 @@ function change_state(func)
   posted_items.push({state: func});
 }
 
-function post_clone_test(docurl, testfunc)
+function post_clone_test(srcdoc, testfunc)
 {
-  posted_items.push({docurl: docurl, testfunc: testfunc});
+  posted_items.push({srcdoc, testfunc});
 }
 
 function handle_posted_items()
@@ -859,9 +908,9 @@ function handle_posted_items()
     return;
   }
 
-  var docurl = posted_items[0].docurl;
+  var srcdoc = posted_items[0].srcdoc;
   iframe.onload = handle_iframe_onload;
-  iframe.src = docurl;
+  iframe.srcdoc = srcdoc;
 }
 
 function handle_iframe_onload(event)
@@ -878,5 +927,3 @@ function handle_iframe_onload(event)
 </pre>
 </body>
 </html>
-
-

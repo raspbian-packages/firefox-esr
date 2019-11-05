@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,19 +20,37 @@ class SandboxPrivate : public nsIGlobalObject,
                        public nsSupportsWeakReference,
                        public nsWrapperCache {
  public:
-  SandboxPrivate(nsIPrincipal* principal, JSObject* global)
-      : mPrincipal(principal) {
-    SetIsNotDOMBinding();
-    SetWrapper(global);
-  }
-
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_AMBIGUOUS(SandboxPrivate,
                                                          nsIGlobalObject)
 
+  static void Create(nsIPrincipal* principal, JS::Handle<JSObject*> global) {
+    RefPtr<SandboxPrivate> sbp = new SandboxPrivate(principal);
+    sbp->SetWrapper(global);
+    sbp->PreserveWrapper(ToSupports(sbp.get()));
+
+    // Pass on ownership of sbp to |global|.
+    // The type used to cast to void needs to match the one in GetPrivate.
+    nsIScriptObjectPrincipal* sop =
+        static_cast<nsIScriptObjectPrincipal*>(sbp.forget().take());
+    mozilla::RecordReplayRegisterDeferredFinalizeThing(nullptr, nullptr, sop);
+    JS_SetPrivate(global, sop);
+  }
+
+  static SandboxPrivate* GetPrivate(JSObject* obj) {
+    // The type used to cast to void needs to match the one in Create.
+    return static_cast<SandboxPrivate*>(
+        static_cast<nsIScriptObjectPrincipal*>(JS_GetPrivate(obj)));
+  }
+
   nsIPrincipal* GetPrincipal() override { return mPrincipal; }
 
+  nsIPrincipal* GetEffectiveStoragePrincipal() override { return nullptr; }
+
   JSObject* GetGlobalJSObject() override { return GetWrapper(); }
+  JSObject* GetGlobalJSObjectPreserveColor() const override {
+    return GetWrapperPreserveColor();
+  }
 
   void ForgetGlobalObject(JSObject* obj) { ClearWrapper(obj); }
 
@@ -47,6 +65,8 @@ class SandboxPrivate : public nsIGlobalObject,
   }
 
  private:
+  explicit SandboxPrivate(nsIPrincipal* principal) : mPrincipal(principal) {}
+
   virtual ~SandboxPrivate() {}
 
   nsCOMPtr<nsIPrincipal> mPrincipal;

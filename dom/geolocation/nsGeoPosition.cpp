@@ -6,8 +6,20 @@
 
 #include "nsGeoPosition.h"
 
+#include "mozilla/FloatingPoint.h"
 #include "mozilla/dom/PositionBinding.h"
 #include "mozilla/dom/CoordinatesBinding.h"
+
+using mozilla::IsNaN;
+
+// NaN() is a more convenient function name.
+inline double NaN() { return mozilla::UnspecifiedNaN<double>(); }
+
+#ifdef DEBUG
+static bool EqualOrNaN(double a, double b) {
+  return (a == b) || (IsNaN(a) && IsNaN(b));
+}
+#endif
 
 ////////////////////////////////////////////////////
 // nsGeoPositionCoords
@@ -18,10 +30,31 @@ nsGeoPositionCoords::nsGeoPositionCoords(double aLat, double aLong, double aAlt,
     : mLat(aLat),
       mLong(aLong),
       mAlt(aAlt),
-      mHError(aHError),
-      mVError(aVError),
-      mHeading(aHeading),
-      mSpeed(aSpeed) {}
+      mHError((aHError >= 0) ? aHError : 0)
+      // altitudeAccuracy without an altitude doesn't make any sense.
+      ,
+      mVError((aVError >= 0 && !IsNaN(aAlt)) ? aVError : NaN())
+      // If the hosting device is stationary (i.e. the value of the speed
+      // attribute is 0), then the value of the heading attribute must be NaN
+      // (or null).
+      ,
+      mHeading((aHeading >= 0 && aHeading < 360 && aSpeed > 0) ? aHeading
+                                                               : NaN()),
+      mSpeed(aSpeed >= 0 ? aSpeed : NaN()) {
+  // Sanity check the location provider's results in debug builds. If the
+  // location provider is returning bogus results, we'd like to know, but
+  // we prefer to return some position data to JavaScript over a
+  // POSITION_UNAVAILABLE error.
+  MOZ_ASSERT(aLat >= -90 && aLat <= 90);
+  MOZ_ASSERT(aLong >= -180 && aLong <= 180);
+  MOZ_ASSERT(!(aLat == 0 && aLong == 0));  // valid but probably a bug
+
+  MOZ_ASSERT(EqualOrNaN(mAlt, aAlt));
+  MOZ_ASSERT(mHError == aHError);
+  MOZ_ASSERT(EqualOrNaN(mVError, aVError));
+  MOZ_ASSERT(EqualOrNaN(mHeading, aHeading));
+  MOZ_ASSERT(EqualOrNaN(mSpeed, aSpeed));
+}
 
 nsGeoPositionCoords::~nsGeoPositionCoords() {}
 
@@ -81,15 +114,11 @@ nsGeoPositionCoords::GetSpeed(double* aSpeed) {
 
 nsGeoPosition::nsGeoPosition(double aLat, double aLong, double aAlt,
                              double aHError, double aVError, double aHeading,
-                             double aSpeed, long long aTimestamp)
+                             double aSpeed, DOMTimeStamp aTimestamp)
     : mTimestamp(aTimestamp) {
   mCoords = new nsGeoPositionCoords(aLat, aLong, aAlt, aHError, aVError,
                                     aHeading, aSpeed);
 }
-
-nsGeoPosition::nsGeoPosition(nsIDOMGeoPositionCoords* aCoords,
-                             long long aTimestamp)
-    : mTimestamp(aTimestamp), mCoords(aCoords) {}
 
 nsGeoPosition::nsGeoPosition(nsIDOMGeoPositionCoords* aCoords,
                              DOMTimeStamp aTimestamp)
@@ -137,7 +166,7 @@ nsISupports* Position::GetParentObject() const { return mParent; }
 
 JSObject* Position::WrapObject(JSContext* aCx,
                                JS::Handle<JSObject*> aGivenProto) {
-  return PositionBinding::Wrap(aCx, this, aGivenProto);
+  return Position_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 Coordinates* Position::Coords() {
@@ -176,7 +205,7 @@ Position* Coordinates::GetParentObject() const { return mPosition; }
 
 JSObject* Coordinates::WrapObject(JSContext* aCx,
                                   JS::Handle<JSObject*> aGivenProto) {
-  return CoordinatesBinding::Wrap(aCx, this, aGivenProto);
+  return Coordinates_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 #define GENERATE_COORDS_WRAPPED_GETTER(name) \
@@ -188,9 +217,13 @@ JSObject* Coordinates::WrapObject(JSContext* aCx,
 
 #define GENERATE_COORDS_WRAPPED_GETTER_NULLABLE(name) \
   Nullable<double> Coordinates::Get##name() const {   \
-    double rv;                                        \
-    mCoords->Get##name(&rv);                          \
-    return Nullable<double>(rv);                      \
+    double value;                                     \
+    mCoords->Get##name(&value);                       \
+    Nullable<double> rv;                              \
+    if (!IsNaN(value)) {                              \
+      rv.SetValue(value);                             \
+    }                                                 \
+    return rv;                                        \
   }
 
 GENERATE_COORDS_WRAPPED_GETTER(Latitude)

@@ -44,17 +44,19 @@ OriginalSource.prototype = {
    * string.  This is done because the style editor elsewhere expects
    * a long string actor.
    */
-  getText: function () {
+  getText: function() {
     if (!this._sourcePromise) {
-      this._sourcePromise = this._sourceMapService.getOriginalSourceText({
-        id: this._sourceId,
-        url: this._url,
-      }).then(contents => {
-        // Make it look like a long string actor.
-        return {
-          string: () => contents.text,
-        };
-      });
+      this._sourcePromise = this._sourceMapService
+        .getOriginalSourceText({
+          id: this._sourceId,
+          url: this._url,
+        })
+        .then(contents => {
+          // Make it look like a long string actor.
+          return {
+            string: () => contents.text,
+          };
+        });
     }
     return this._sourcePromise;
   },
@@ -75,25 +77,27 @@ OriginalSource.prototype = {
    *        `sourceUrl`, `source`, `styleSheet`, `line`, and `column`
    *        properties.
    */
-  getOriginalLocation: function (relatedSheet, line, column) {
-    let {href, nodeHref, actorID: sourceId} = relatedSheet;
-    let sourceUrl = href || nodeHref;
-    return this._sourceMapService.getOriginalLocation({
-      sourceId,
-      line,
-      column,
-      sourceUrl,
-    }).then(location => {
-      // Add some properties for the style editor.
-      location.source = location.sourceUrl;
-      location.styleSheet = relatedSheet;
-      return location;
-    });
+  getOriginalLocation: function(relatedSheet, line, column) {
+    const { href, nodeHref, actorID: sourceId } = relatedSheet;
+    const sourceUrl = href || nodeHref;
+    return this._sourceMapService
+      .getOriginalLocation({
+        sourceId,
+        line,
+        column,
+        sourceUrl,
+      })
+      .then(location => {
+        // Add some properties for the style editor.
+        location.source = location.sourceUrl;
+        location.styleSheet = relatedSheet;
+        return location;
+      });
   },
 
   // Dummy implementations, as we never emit an event.
-  on: function () { },
-  off: function () { },
+  on: function() {},
+  off: function() {},
 };
 
 exports.OriginalSource = OriginalSource;

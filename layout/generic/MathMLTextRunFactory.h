@@ -20,7 +20,7 @@ class MathMLTextRunFactory : public nsTransformingTextRunFactory {
                        uint32_t aFlags, uint8_t aSSTYScriptLevel,
                        float aFontInflation)
       : mInnerTransformingTextRunFactory(
-            Move(aInnerTransformingTextRunFactory)),
+            std::move(aInnerTransformingTextRunFactory)),
         mFlags(aFlags),
         mFontInflation(aFontInflation),
         mSSTYScriptLevel(aSSTYScriptLevel) {}

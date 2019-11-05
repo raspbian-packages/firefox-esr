@@ -13,15 +13,18 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONException;
+import org.mozilla.gecko.activitystream.homepanel.ActivityStreamPanel;
 import org.mozilla.gecko.background.fxa.FxAccountUtils;
 import org.mozilla.gecko.fxa.FirefoxAccounts;
 import org.mozilla.gecko.fxa.FxAccountConstants;
 import org.mozilla.gecko.fxa.authenticator.AndroidFxAccount;
 import org.mozilla.gecko.fxa.login.Engaged;
 import org.mozilla.gecko.fxa.login.State;
+import org.mozilla.gecko.mma.MmaDelegate;
 import org.mozilla.gecko.restrictions.Restrictable;
 import org.mozilla.gecko.restrictions.Restrictions;
 import org.mozilla.gecko.sync.SyncConfiguration;
@@ -91,6 +94,7 @@ public class AccountsHelper implements BundleEventListener {
             AndroidFxAccount fxAccount = null;
             try {
                 final GeckoBundle json = message.getBundle("json");
+                final String action = json.getString("action");
                 final String email = json.getString("email");
                 final String uid = json.getString("uid");
                 final boolean verified = json.getBoolean("verified", false);
@@ -136,6 +140,20 @@ public class AccountsHelper implements BundleEventListener {
                         Log.e(LOGTAG, "Got exception storing selected engines; ignoring.", e);
                     }
                 }
+
+                // Bug 1570880 - If the user has signed in to FxA make sure to reset the dismiss flag for the awesomescreem sign in row.
+                final SharedPreferences sharedPreferences = GeckoSharedPrefs.forProfile(mContext);
+
+                // We could be either signing-up for an account, or logging into one.
+                // Send a correct telemetry event.
+                if (action.equals("signin")) {
+                    MmaDelegate.track(MmaDelegate.USER_SIGNED_IN_TO_FXA);
+                    sharedPreferences.edit().putBoolean(ActivityStreamPanel.PREF_USER_DISMISSED_SIGNIN, false).apply();
+                } else if (action.equals("signup")) {
+                    MmaDelegate.track(MmaDelegate.USER_SIGNED_UP_FOR_FXA);
+                    sharedPreferences.edit().putBoolean(ActivityStreamPanel.PREF_USER_DISMISSED_SIGNIN, false).apply();
+                }
+
             } catch (URISyntaxException | GeneralSecurityException |
                      UnsupportedEncodingException e) {
                 Log.w(LOGTAG, "Got exception creating Firefox Account from JSON; ignoring.", e);
@@ -145,6 +163,7 @@ public class AccountsHelper implements BundleEventListener {
                     return;
                 }
             }
+
             if (callback != null) {
                 callback.sendSuccess(fxAccount != null);
             }
@@ -159,6 +178,7 @@ public class AccountsHelper implements BundleEventListener {
             }
 
             final GeckoBundle json = message.getBundle("json");
+            final String action = json.getString("action");
             final String email = json.getString("email");
             final String uid = json.getString("uid");
 
@@ -193,6 +213,18 @@ public class AccountsHelper implements BundleEventListener {
             final AndroidFxAccount fxAccount = new AndroidFxAccount(mContext, account);
             fxAccount.setState(state);
             fxAccount.updateFirstRunScope(mContext);
+            // This will force a device registration later.
+            fxAccount.resetDeviceRegistrationVersion();
+            fxAccount.setDeviceRegistrationTimestamp(0L);
+            // Trigger a sync to try to update the device registration and
+            // upload a fresh client record.
+            fxAccount.requestImmediateSync(null, null, false);
+
+            // 'UpdateFirefoxAccountFromJSON' message will be sent during a password change as well
+            // during a reconnect, so we need to ensure we don't fire-off false sign-in telemtry events.
+            if (!action.equals("passwordChange")) {
+                MmaDelegate.track(MmaDelegate.USER_RECONNECTED_TO_FXA);
+            }
 
             if (callback != null) {
                 callback.sendSuccess(true);

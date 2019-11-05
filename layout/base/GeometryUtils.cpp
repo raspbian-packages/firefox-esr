@@ -6,6 +6,8 @@
 
 #include "GeometryUtils.h"
 
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/CharacterData.h"
 #include "mozilla/dom/DOMPointBinding.h"
 #include "mozilla/dom/GeometryUtilsBinding.h"
 #include "mozilla/dom/Element.h"
@@ -13,9 +15,7 @@
 #include "mozilla/dom/DOMPoint.h"
 #include "mozilla/dom/DOMQuad.h"
 #include "mozilla/dom/DOMRect.h"
-#include "nsContentUtils.h"
 #include "nsIFrame.h"
-#include "nsGenericDOMDataNode.h"
 #include "nsCSSFrameConstructor.h"
 #include "nsLayoutUtils.h"
 #include "nsSVGUtils.h"
@@ -32,11 +32,11 @@ enum GeometryNodeType {
 };
 
 static nsIFrame* GetFrameForNode(nsINode* aNode, GeometryNodeType aType) {
-  nsIDocument* doc = aNode->OwnerDoc();
+  Document* doc = aNode->OwnerDoc();
   if (aType == GEOMETRY_NODE_TEXT) {
-    if (nsIPresShell* shell = doc->GetShell()) {
-      shell->FrameConstructor()->EnsureFrameForTextNodeIsCreatedAfterFlush(
-          static_cast<nsGenericDOMDataNode*>(aNode));
+    if (PresShell* presShell = doc->GetPresShell()) {
+      presShell->FrameConstructor()->EnsureFrameForTextNodeIsCreatedAfterFlush(
+          static_cast<CharacterData*>(aNode));
     }
   }
   doc->FlushPendingNotifications(FlushType::Layout);
@@ -46,7 +46,7 @@ static nsIFrame* GetFrameForNode(nsINode* aNode, GeometryNodeType aType) {
     case GEOMETRY_NODE_ELEMENT:
       return aNode->AsContent()->GetPrimaryFrame();
     case GEOMETRY_NODE_DOCUMENT: {
-      nsIPresShell* presShell = doc->GetShell();
+      PresShell* presShell = doc->GetPresShell();
       return presShell ? presShell->GetRootFrame() : nullptr;
     }
     default:
@@ -90,7 +90,7 @@ static nsIFrame* GetFrameForNode(nsINode* aNode) {
   if (aNode == aNode->OwnerDoc()) {
     return GetFrameForNode(aNode, GEOMETRY_NODE_DOCUMENT);
   }
-  NS_ASSERTION(aNode->IsNodeOfType(nsINode::eTEXT), "Unknown node type");
+  NS_ASSERTION(aNode->IsText(), "Unknown node type");
   return GetFrameForNode(aNode, GEOMETRY_NODE_TEXT);
 }
 
@@ -145,11 +145,9 @@ static nsRect GetBoxRectForFrame(nsIFrame** aFrame, CSSBoxType aType) {
     case CSSBoxType::Border:
       r = nsRect(nsPoint(0, 0), f->GetSize());
       break;
-    case CSSBoxType::Margin: {
-      r = nsRect(nsPoint(0, 0), f->GetSize());
-      r.Inflate(f->GetUsedMargin());
+    case CSSBoxType::Margin:
+      r = f->GetMarginRectRelativeToSelf();
       break;
-    }
     default:
       MOZ_ASSERT(false, "unknown box type");
       return r;
@@ -160,12 +158,12 @@ static nsRect GetBoxRectForFrame(nsIFrame** aFrame, CSSBoxType aType) {
 
 class AccumulateQuadCallback : public nsLayoutUtils::BoxCallback {
  public:
-  AccumulateQuadCallback(nsISupports* aParentObject,
+  AccumulateQuadCallback(Document* aParentObject,
                          nsTArray<RefPtr<DOMQuad> >& aResult,
                          nsIFrame* aRelativeToFrame,
                          const nsPoint& aRelativeToBoxTopLeft,
                          CSSBoxType aBoxType)
-      : mParentObject(aParentObject),
+      : mParentObject(ToSupports(aParentObject)),
         mResult(aResult),
         mRelativeToFrame(aRelativeToFrame),
         mRelativeToBoxTopLeft(aRelativeToBoxTopLeft),
@@ -253,7 +251,7 @@ void GetBoxQuads(nsINode* aNode, const dom::BoxQuadOptions& aOptions,
     return;
   }
   AutoWeakFrame weakFrame(frame);
-  nsIDocument* ownerDoc = aNode->OwnerDoc();
+  Document* ownerDoc = aNode->OwnerDoc();
   nsIFrame* relativeToFrame =
       GetFirstNonAnonymousFrameForGeometryNode(aOptions.mRelativeTo, ownerDoc);
   // The first frame might be destroyed now if the above call lead to an

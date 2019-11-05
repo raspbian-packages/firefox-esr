@@ -12,32 +12,76 @@
 
 var EXPORTED_SYMBOLS = ["EnsureFxAccountsWebChannel"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/FxAccountsCommon.js");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const {
+  COMMAND_PROFILE_CHANGE,
+  COMMAND_LOGIN,
+  COMMAND_LOGOUT,
+  COMMAND_DELETE,
+  COMMAND_CAN_LINK_ACCOUNT,
+  COMMAND_SYNC_PREFERENCES,
+  COMMAND_CHANGE_PASSWORD,
+  COMMAND_FXA_STATUS,
+  COMMAND_PAIR_HEARTBEAT,
+  COMMAND_PAIR_SUPP_METADATA,
+  COMMAND_PAIR_AUTHORIZE,
+  COMMAND_PAIR_DECLINE,
+  COMMAND_PAIR_COMPLETE,
+  COMMAND_PAIR_PREFERENCES,
+  ON_PROFILE_CHANGE_NOTIFICATION,
+  PREF_LAST_FXA_USER,
+  WEBCHANNEL_ID,
+  log,
+  logPII,
+} = ChromeUtils.import("resource://gre/modules/FxAccountsCommon.js");
 
-ChromeUtils.defineModuleGetter(this, "Services",
-                               "resource://gre/modules/Services.jsm");
-ChromeUtils.defineModuleGetter(this, "WebChannel",
-                               "resource://gre/modules/WebChannel.jsm");
-ChromeUtils.defineModuleGetter(this, "fxAccounts",
-                               "resource://gre/modules/FxAccounts.jsm");
-ChromeUtils.defineModuleGetter(this, "FxAccountsStorageManagerCanStoreField",
-                               "resource://gre/modules/FxAccountsStorage.jsm");
-ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
-                               "resource://gre/modules/PrivateBrowsingUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "Weave",
-                               "resource://services-sync/main.js");
-ChromeUtils.defineModuleGetter(this, "CryptoUtils",
-                               "resource://services-crypto/utils.js");
-
-const COMMAND_PROFILE_CHANGE       = "profile:change";
-const COMMAND_CAN_LINK_ACCOUNT     = "fxaccounts:can_link_account";
-const COMMAND_LOGIN                = "fxaccounts:login";
-const COMMAND_LOGOUT               = "fxaccounts:logout";
-const COMMAND_DELETE               = "fxaccounts:delete";
-const COMMAND_SYNC_PREFERENCES     = "fxaccounts:sync_preferences";
-const COMMAND_CHANGE_PASSWORD      = "fxaccounts:change_password";
-const COMMAND_FXA_STATUS           = "fxaccounts:fxa_status";
+ChromeUtils.defineModuleGetter(
+  this,
+  "Services",
+  "resource://gre/modules/Services.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "WebChannel",
+  "resource://gre/modules/WebChannel.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "fxAccounts",
+  "resource://gre/modules/FxAccounts.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "FxAccountsStorageManagerCanStoreField",
+  "resource://gre/modules/FxAccountsStorage.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "Weave",
+  "resource://services-sync/main.js"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "CryptoUtils",
+  "resource://services-crypto/utils.js"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "FxAccountsPairingFlow",
+  "resource://gre/modules/FxAccountsPairing.jsm"
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  this,
+  "pairingEnabled",
+  "identity.fxaccounts.pairing.enabled"
+);
 
 // These engines were added years after Sync had been introduced, they need
 // special handling since they are system add-ons and are un-available on
@@ -145,21 +189,26 @@ this.FxAccountsWebChannel.prototype = {
   },
 
   _receiveMessage(message, sendingContext) {
-    let command = message.command;
-    let data = message.data;
+    const { command, data } = message;
 
     switch (command) {
       case COMMAND_PROFILE_CHANGE:
-        Services.obs.notifyObservers(null, ON_PROFILE_CHANGE_NOTIFICATION, data.uid);
+        Services.obs.notifyObservers(
+          null,
+          ON_PROFILE_CHANGE_NOTIFICATION,
+          data.uid
+        );
         break;
       case COMMAND_LOGIN:
-        this._helpers.login(data).catch(error =>
-          this._sendError(error, message, sendingContext));
+        this._helpers
+          .login(data)
+          .catch(error => this._sendError(error, message, sendingContext));
         break;
       case COMMAND_LOGOUT:
       case COMMAND_DELETE:
-        this._helpers.logout(data.uid).catch(error =>
-          this._sendError(error, message, sendingContext));
+        this._helpers
+          .logout(data.uid)
+          .catch(error => this._sendError(error, message, sendingContext));
         break;
       case COMMAND_CAN_LINK_ACCOUNT:
         let canLinkAccount = this._helpers.shouldAllowRelink(data.email);
@@ -167,50 +216,91 @@ this.FxAccountsWebChannel.prototype = {
         let response = {
           command,
           messageId: message.messageId,
-          data: { ok: canLinkAccount }
+          data: { ok: canLinkAccount },
         };
 
         log.debug("FxAccountsWebChannel response", response);
         this._channel.send(response, sendingContext);
         break;
       case COMMAND_SYNC_PREFERENCES:
-        this._helpers.openSyncPreferences(sendingContext.browser, data.entryPoint);
+        this._helpers.openSyncPreferences(
+          sendingContext.browser,
+          data.entryPoint
+        );
+        break;
+      case COMMAND_PAIR_PREFERENCES:
+        if (pairingEnabled) {
+          sendingContext.browser.loadURI("about:preferences?action=pair#sync", {
+            triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+          });
+        }
         break;
       case COMMAND_CHANGE_PASSWORD:
-        this._helpers.changePassword(data).catch(error =>
-          this._sendError(error, message, sendingContext));
+        this._helpers
+          .changePassword(data)
+          .catch(error => this._sendError(error, message, sendingContext));
         break;
       case COMMAND_FXA_STATUS:
         log.debug("fxa_status received");
 
         const service = data && data.service;
-        this._helpers.getFxaStatus(service, sendingContext)
+        const isPairing = data && data.isPairing;
+        this._helpers
+          .getFxaStatus(service, sendingContext, isPairing)
           .then(fxaStatus => {
             let response = {
               command,
               messageId: message.messageId,
-              data: fxaStatus
+              data: fxaStatus,
             };
             this._channel.send(response, sendingContext);
-          }).catch(error =>
-            this._sendError(error, message, sendingContext)
+          })
+          .catch(error => this._sendError(error, message, sendingContext));
+        break;
+      case COMMAND_PAIR_HEARTBEAT:
+      case COMMAND_PAIR_SUPP_METADATA:
+      case COMMAND_PAIR_AUTHORIZE:
+      case COMMAND_PAIR_DECLINE:
+      case COMMAND_PAIR_COMPLETE:
+        log.debug(`Pairing command ${command} received`);
+        const { channel_id: channelId } = data;
+        delete data.channel_id;
+        const flow = FxAccountsPairingFlow.get(channelId);
+        if (!flow) {
+          log.warn(`Could not find a pairing flow for ${channelId}`);
+          return;
+        }
+        flow.onWebChannelMessage(command, data).then(replyData => {
+          this._channel.send(
+            {
+              command,
+              messageId: message.messageId,
+              data: replyData,
+            },
+            sendingContext
           );
+        });
         break;
       default:
         log.warn("Unrecognized FxAccountsWebChannel command", command);
+        // As a safety measure we also terminate any pending FxA pairing flow.
+        FxAccountsPairingFlow.finalizeAll();
         break;
     }
   },
 
   _sendError(error, incomingMessage, sendingContext) {
     log.error("Failed to handle FxAccountsWebChannel message", error);
-    this._channel.send({
-      command: incomingMessage.command,
-      messageId: incomingMessage.messageId,
-      data: {
-        error: getErrorDetails(error),
+    this._channel.send(
+      {
+        command: incomingMessage.command,
+        messageId: incomingMessage.messageId,
+        data: {
+          error: getErrorDetails(error),
+        },
       },
-    }, sendingContext);
+      sendingContext
+    );
   },
 
   /**
@@ -254,15 +344,21 @@ this.FxAccountsWebChannel.prototype = {
     this._channelCallback = listener;
     this._channel = new WebChannel(this._webChannelId, this._webChannelOrigin);
     this._channel.listen(listener);
-    log.debug("FxAccountsWebChannel registered: " + this._webChannelId + " with origin " + this._webChannelOrigin.prePath);
-  }
+    log.debug(
+      "FxAccountsWebChannel registered: " +
+        this._webChannelId +
+        " with origin " +
+        this._webChannelOrigin.prePath
+    );
+  },
 };
 
 this.FxAccountsWebChannelHelpers = function(options) {
   options = options || {};
 
   this._fxAccounts = options.fxAccounts || fxAccounts;
-  this._privateBrowsingUtils = options.privateBrowsingUtils || PrivateBrowsingUtils;
+  this._privateBrowsingUtils =
+    options.privateBrowsingUtils || PrivateBrowsingUtils;
 };
 
 this.FxAccountsWebChannelHelpers.prototype = {
@@ -272,8 +368,9 @@ this.FxAccountsWebChannelHelpers.prototype = {
   // but it's a little more seamless to do here, and sync is currently the
   // only fxa consumer, so...
   shouldAllowRelink(acctName) {
-    return !this._needRelinkWarning(acctName) ||
-            this._promptForRelink(acctName);
+    return (
+      !this._needRelinkWarning(acctName) || this._promptForRelink(acctName)
+    );
   },
 
   /**
@@ -282,15 +379,16 @@ this.FxAccountsWebChannelHelpers.prototype = {
    * @param accountData the user's account data and credentials
    */
   login(accountData) {
-
     // We don't act on customizeSync anymore, it used to open a dialog inside
     // the browser to selecte the engines to sync but we do it on the web now.
     delete accountData.customizeSync;
 
     if (accountData.offeredSyncEngines) {
       EXTRA_ENGINES.forEach(engine => {
-        if (accountData.offeredSyncEngines.includes(engine) &&
-            !accountData.declinedSyncEngines.includes(engine)) {
+        if (
+          accountData.offeredSyncEngines.includes(engine) &&
+          !accountData.declinedSyncEngines.includes(engine)
+        ) {
           // These extra engines are disabled by default.
           Services.prefs.setBoolPref(`services.sync.engine.${engine}`, true);
         }
@@ -317,9 +415,8 @@ this.FxAccountsWebChannelHelpers.prototype = {
 
     // A sync-specific hack - we want to ensure sync has been initialized
     // before we set the signed-in user.
-    let xps = Cc["@mozilla.org/weave/service;1"]
-              .getService(Ci.nsISupports)
-              .wrappedJSObject;
+    let xps = Cc["@mozilla.org/weave/service;1"].getService(Ci.nsISupports)
+      .wrappedJSObject;
     return xps.whenLoaded().then(() => {
       return this._fxAccounts.setSignedInUser(accountData);
     });
@@ -350,7 +447,9 @@ this.FxAccountsWebChannelHelpers.prototype = {
       return true;
     }
 
-    const isPrivateBrowsing = this._privateBrowsingUtils.isBrowserPrivate(sendingContext.browser);
+    const isPrivateBrowsing = this._privateBrowsingUtils.isBrowserPrivate(
+      sendingContext.browser
+    );
     log.debug("is private browsing", isPrivateBrowsing);
     return isPrivateBrowsing;
   },
@@ -358,9 +457,10 @@ this.FxAccountsWebChannelHelpers.prototype = {
   /**
    * Check whether sending fxa_status data should be allowed.
    */
-  shouldAllowFxaStatus(service, sendingContext) {
+  shouldAllowFxaStatus(service, sendingContext, isPairing) {
     // Return user data for any service in non-PB mode. In PB mode,
-    // only return user data if service==="sync".
+    // only return user data if service==="sync" or is in pairing mode
+    // (as service will be equal to the OAuth client ID and not "sync").
     //
     // This behaviour allows users to click the "Manage Account"
     // link from about:preferences#sync while in PB mode and things
@@ -375,7 +475,11 @@ this.FxAccountsWebChannelHelpers.prototype = {
     // Sync is broken in PB mode, users will think Firefox is broken.
     // See https://bugzilla.mozilla.org/show_bug.cgi?id=1323853
     log.debug("service", service);
-    return !this.isPrivateBrowsingMode(sendingContext) || service === "sync";
+    return (
+      !this.isPrivateBrowsingMode(sendingContext) ||
+      service === "sync" ||
+      isPairing
+    );
   },
 
   /**
@@ -383,17 +487,17 @@ this.FxAccountsWebChannelHelpers.prototype = {
    * If returning status information is not allowed or no user is signed into
    * Sync, `user_data` will be null.
    */
-  async getFxaStatus(service, sendingContext) {
+  async getFxaStatus(service, sendingContext, isPairing) {
     let signedInUser = null;
 
-    if (this.shouldAllowFxaStatus(service, sendingContext)) {
+    if (this.shouldAllowFxaStatus(service, sendingContext, isPairing)) {
       const userData = await this._fxAccounts.getSignedInUser();
       if (userData) {
         signedInUser = {
           email: userData.email,
           sessionToken: userData.sessionToken,
           uid: userData.uid,
-          verified: userData.verified
+          verified: userData.verified,
         };
       }
     }
@@ -401,22 +505,25 @@ this.FxAccountsWebChannelHelpers.prototype = {
     return {
       signedInUser,
       capabilities: {
-        engines: this._getAvailableExtraEngines()
-      }
+        pairing: pairingEnabled,
+        engines: this._getAvailableExtraEngines(),
+      },
     };
   },
 
   _getAvailableExtraEngines() {
     return EXTRA_ENGINES.filter(engineName => {
       try {
-        return Services.prefs.getBoolPref(`services.sync.engine.${engineName}.available`);
+        return Services.prefs.getBoolPref(
+          `services.sync.engine.${engineName}.available`
+        );
       } catch (e) {
         return false;
       }
     });
   },
 
-  changePassword(credentials) {
+  async changePassword(credentials) {
     // If |credentials| has fields that aren't handled by accounts storage,
     // updateUserAccountData will throw - mainly to prevent errors in code
     // that hard-codes field names.
@@ -427,17 +534,28 @@ this.FxAccountsWebChannelHelpers.prototype = {
     // versions to supported field names doesn't buy us much.
     // So we just remove field names we know aren't handled.
     let newCredentials = {
-      deviceId: null
+      device: null, // Force a brand new device registration.
     };
     for (let name of Object.keys(credentials)) {
-      if (name == "email" || name == "uid" || FxAccountsStorageManagerCanStoreField(name)) {
+      if (
+        name == "email" ||
+        name == "uid" ||
+        FxAccountsStorageManagerCanStoreField(name)
+      ) {
         newCredentials[name] = credentials[name];
       } else {
         log.info("changePassword ignoring unsupported field", name);
       }
     }
-    return this._fxAccounts.updateUserAccountData(newCredentials)
-      .then(() => this._fxAccounts.updateDeviceRegistration());
+    await this._fxAccounts.updateUserAccountData(newCredentials);
+    // Force the keys derivation, to be able to register a send-tab command
+    // in updateDeviceRegistration.
+    try {
+      await this._fxAccounts.getKeys();
+    } catch (e) {
+      log.error("getKeys errored", e);
+    }
+    await this._fxAccounts.updateDeviceRegistration();
   },
 
   /**
@@ -457,7 +575,10 @@ this.FxAccountsWebChannelHelpers.prototype = {
    * @param acctName the account name of the user's account.
    */
   setPreviousAccountNameHashPref(acctName) {
-    Services.prefs.setStringPref(PREF_LAST_FXA_USER, CryptoUtils.sha256Base64(acctName));
+    Services.prefs.setStringPref(
+      PREF_LAST_FXA_USER,
+      CryptoUtils.sha256Base64(acctName)
+    );
   },
 
   /**
@@ -473,7 +594,9 @@ this.FxAccountsWebChannelHelpers.prototype = {
     }
     uri += "#sync";
 
-    browser.loadURI(uri);
+    browser.loadURI(uri, {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+    });
   },
 
   /**
@@ -495,24 +618,38 @@ this.FxAccountsWebChannelHelpers.prototype = {
    * @private
    */
   _promptForRelink(acctName) {
-    let sb = Services.strings.createBundle("chrome://browser/locale/syncSetup.properties");
+    let sb = Services.strings.createBundle(
+      "chrome://browser/locale/syncSetup.properties"
+    );
     let continueLabel = sb.GetStringFromName("continue.label");
     let title = sb.GetStringFromName("relinkVerify.title");
-    let description = sb.formatStringFromName("relinkVerify.description",
-                                              [acctName], 1);
-    let body = sb.GetStringFromName("relinkVerify.heading") +
-               "\n\n" + description;
+    let description = sb.formatStringFromName(
+      "relinkVerify.description",
+      [acctName],
+      1
+    );
+    let body =
+      sb.GetStringFromName("relinkVerify.heading") + "\n\n" + description;
     let ps = Services.prompt;
-    let buttonFlags = (ps.BUTTON_POS_0 * ps.BUTTON_TITLE_IS_STRING) +
-                      (ps.BUTTON_POS_1 * ps.BUTTON_TITLE_CANCEL) +
-                      ps.BUTTON_POS_1_DEFAULT;
+    let buttonFlags =
+      ps.BUTTON_POS_0 * ps.BUTTON_TITLE_IS_STRING +
+      ps.BUTTON_POS_1 * ps.BUTTON_TITLE_CANCEL +
+      ps.BUTTON_POS_1_DEFAULT;
 
     // If running in context of the browser chrome, window does not exist.
-    let pressed = Services.prompt.confirmEx(null, title, body, buttonFlags,
-                                       continueLabel, null, null, null,
-                                       {});
+    let pressed = Services.prompt.confirmEx(
+      null,
+      title,
+      body,
+      buttonFlags,
+      continueLabel,
+      null,
+      null,
+      null,
+      {}
+    );
     return pressed === 0; // 0 is the "continue" button
-  }
+  },
 };
 
 var singleton;
@@ -522,7 +659,9 @@ var singleton;
 // things) and allowing multiple channels would cause such notifications to be
 // sent multiple times.
 var EnsureFxAccountsWebChannel = () => {
-  let contentUri = Services.urlFormatter.formatURLPref("identity.fxaccounts.remote.root");
+  let contentUri = Services.urlFormatter.formatURLPref(
+    "identity.fxaccounts.remote.root"
+  );
   if (singleton && singleton._contentUri !== contentUri) {
     singleton.tearDown();
     singleton = null;

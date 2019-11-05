@@ -8,7 +8,12 @@
 <!ENTITY loadError.label "Problemas al cargar la página">
 <!ENTITY retry.label "Volver a intentarlo">
 <!ENTITY returnToPreviousPage.label "Retroceder">
+<!ENTITY returnToPreviousPage1.label "Retroceder (recomendado)">
 <!ENTITY advanced.label "Avanzado">
+<!ENTITY continue2.label "Más…">
+<!ENTITY advanced2.label "Avanzado…">
+<!ENTITY moreInformation.label "Más información">
+<!ENTITY viewCertificate.label "Ver certificado">
 
 <!-- Specific error messages -->
 
@@ -116,10 +121,34 @@
 </ul>">
 
 <!ENTITY certerror.longpagetitle1 "Tu conexión no es segura">
-<!-- Localization note (certerror.introPara) - The text content of the span tag
+<!ENTITY certerror.longpagetitle2 "Advertencia: Riesgo potencial de seguridad a continuación">
+<!ENTITY certerror.sts.longpagetitle  "No se conectó: Posible problema de seguridad">
+<!-- Localization note (certerror.introPara, certerror.introPara2) - The text content of the span tag
 will be replaced at runtime with the name of the server to which the user
 was trying to connect. -->
 <!ENTITY certerror.introPara "El dueño de <span class='hostname'/> ha configurado su sitio web de forma incorrecta. Para proteger tu información de ser robada, &brandShortName; no se ha conectado a este sitio.">
+<!ENTITY certerror.introPara2 "&brandShortName; ha detectado una amenaza potencial y no ha continuado a <span class='hostname'/>. Si visitas este sitio, los atacantes podrían intentar robar tu información tal como tus contraseñas, correos o datos de tu tarjeta de crédito.">
+<!ENTITY certerror.sts.introPara "&brandShortName; detectó una posible amenaza de seguridad y no continuó a <span class='hostname'/> porque este sitio requiere una conexión segura.">
+
+<!ENTITY certerror.expiredCert.introPara "&brandShortName; detectó un problema y no continuó a <span class='hostname'/>. O el sitio está mal configurado o el reloj de tu computador tiene mala la hora.">
+<!ENTITY certerror.expiredCert.secondPara2 "Es probable que el certificado del sitio esté expirado, lo que previene a &brandShortName; de conectarse de forma segura. Si visitas este sitio, los atacantes pueden intentar robar información como tus contraseñas, correos o datos de la tarjeta de crédito.">
+<!ENTITY certerror.expiredCert.sts.secondPara "Es probable que el certificado del sitio esté expirado, lo que previene a &brandShortName; de conectarse de forma segura.">
+
+<!ENTITY certerror.whatCanYouDoAboutItTitle "¿Qué puedes hacer al respecto?">
+
+<!ENTITY certerror.unknownIssuer.whatCanYouDoAboutIt "
+<p>El problema probablemente es con el sitio, y no hay nada que puedas hacer para resolverlo.</p>
+<p>Si estás en una red corporativa o usando un programa antivirus, puedes tratar de contactar a los equipos de soporte. Podrías también intentar notificar al administrador del sitio sobre el problema.</p>
+">
+
+<!ENTITY certerror.expiredCert.whatCanYouDoAboutIt2 "
+<p>El reloj de tu computador está ajustado a las <span id='wrongSystemTime_systemDate2'/>. Asegúrate de que tu computador está ajustado a la fecha, hora y zona horaria correctas en los ajustes de tu sistema, y luego recarga <span class='hostname'/>.</p>
+<p>Si tu reloj ya está ajustado a la hora correcta, el sitio web probablemente está mal configurado, y no hay nada que puedas hacer para resolverlo. Podrías intentar notificar al administrador del sitio sobre el problema.</p>
+">
+
+<!ENTITY certerror.badCertDomain.whatCanYouDoAboutIt "
+<p>El problema probablemente es con el sitio, y no hay nada que puedas hacer para resolverlo. Podrías intentar notificar al administrador del sitio sobre el problema.</p>
+">
 
 <!ENTITY sharedLongDesc "<ul>
   <li>El sitio está temporalmente no disponible o muy ocupado. Vuelve a intentarlo en un rato.</li>
@@ -128,13 +157,14 @@ was trying to connect. -->
 </ul>">
 
 <!ENTITY cspBlocked.title "Bloqueado por la política de seguridad de contenido">
-<!ENTITY cspBlocked.longDesc "<p>&brandShortName; previno que esta página cargara de esta forma porque la página contiene una política de seguridad de contenido que no lo permite.</p>">
+<!ENTITY cspBlocked.longDesc "<p>&brandShortName; ha evitado que esta página cargara de esta forma porque la página contiene una política de seguridad de contenido que no lo permite.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Error de contenido corrupto">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>La página que estás intentando ver no puede ser mostrada por que se detectó un error en la transmisión de datos.</p><ul><li>Por favor, contacta a los dueños del sitio para avisarles de este problema.</li></ul>">
 
 
 <!ENTITY securityOverride.exceptionButtonLabel "Añadir excepción…">
+<!ENTITY securityOverride.exceptionButton1Label "Aceptar el riesgo y continuar">
 
 <!ENTITY errorReporting.automatic2 "Reporta errores como este para ayudar a Mozilla a identificar y bloquear sitios maliciosos">
 <!ENTITY errorReporting.learnMore "Aprender más…">
@@ -154,7 +184,10 @@ was trying to connect. -->
 <!ENTITY certerror.wrongSystemTimeWithoutReference "<p> &brandShortName; no se conectó a <span id='wrongSystemTimeWithoutReference_URL'/> porque al parecer el reloj de tu computador no muestra la hora correcta y esto no permite una conexión segura.</p> <p>Tu computador está ajustado a las <span id='wrongSystemTimeWithoutReference_systemDate'/>. Para arreglar este problema, cambia tus ajustes de fecha y hora para que reflejen la realidad.</p>">
 
 <!ENTITY certerror.pagetitle1  "Conexión insegura">
+<!ENTITY certerror.pagetitle2  "Advertencia: Riesgo potencial de seguridad a continuación">
+<!ENTITY certerror.sts.pagetitle  "No se conectó: Posible problema de seguridad">
 <!ENTITY certerror.whatShouldIDo.badStsCertExplanation "Este sitio usa HTTP Strict Transport Security (HSTS) para especificar que &brandShortName; solo se conecte a él de forma segura. Como resultado, no es posible añadir una excepción para este certificado.">
+<!ENTITY certerror.whatShouldIDo.badStsCertExplanation1 "<span class='hostname'></span> tiene una política de seguridad llamada HTTP Strict Transport Security (HSTS), lo que se traduce en que &brandShortName; solo puede conectarse de forma segura. No puedes añadir una excepción para visitar este sitio.">
 <!ENTITY certerror.copyToClipboard.label "Copiar texto al portapapeles">
 
 <!ENTITY inadequateSecurityError.title "Tu conexión no es segura">
@@ -164,5 +197,18 @@ was trying to connect. -->
 
 <!ENTITY blockedByPolicy.title "Página bloqueada">
 
+<!ENTITY certerror.mitm.title "Hay un software que impide a &brandShortName; de conectarse de forma segura a este sitio">
+<!ENTITY certerror.mitm.longDesc "<span class='hostname'></span> es probablemente un sitio seguro, pero una conexión segura no pudo ser establecida. este problema es causado por <span class='mitm-name'/>, el cual es un software en tu computador o en tu red.">
+<!ENTITY certerror.mitm.whatCanYouDoAboutIt1 'Si tu antivirus incluye una función que escanea conexiones cifradas (normalmente llamada "escaner web" o "escáner https"), puedes desactivar esa función. Si eso no funciona, puedes eliminar y reinstalar el programa antivirus.'>
+<!ENTITY certerror.mitm.whatCanYouDoAboutIt2 "Si estás en una red corporativa, puedes contactar a tu departamento de tecnologías de la información.">
+<!ENTITY certerror.mitm.whatCanYouDoAboutIt3 "Si no estás familiarizado con <span class='mitm-name'/>, entonces esto puede ser un ataque y debieras no continuar al sitio.">
+<!ENTITY certerror.mitm.sts.whatCanYouDoAboutIt3 "Si no estás familiarizado con <span class='mitm-name'/>, entonces esto puede ser un ataque y no hay nada que puedas hacer para acceder al sitio.">
+
+<!ENTITY clockSkewError.title "El reloj de tu computador está mal">
+<!ENTITY clockSkewError.longDesc "Tu computador cree que son las <span id='wrongSystemTime_systemDate1'/>, lo que previene a &brandShortName; de conectarse de forma segura. Para visitar <span class='hostname'></span>, actualiza la hora de tu computador en los ajustes de tu sistema a la hora, fecha y zona horaria actuales, y luego recarga <span class='hostname'></span>.">
+
 <!ENTITY prefReset.longDesc "Parece que tus ajustes de seguridad de red están causando esto. ¿Quieres que se restauren los ajustes predeterminados?">
 <!ENTITY prefReset.label "Restaurar ajustes predeterminados">
+
+<!ENTITY networkProtocolError.title "Error de protocolo de red">
+<!ENTITY networkProtocolError.longDesc "<p>La página que estás intentando ver no puede ser mostrada debido a un error detectado en el protocolo de red.</p><ul><li>Por favor, contacta al propietario del sitio para informarle de este problema.</li></ul>">

@@ -80,17 +80,18 @@ bool Compatibility::IsModuleVersionLessThan(HMODULE aModuleHandle,
 ////////////////////////////////////////////////////////////////////////////////
 
 static WindowsDllInterceptor sUser32Interceptor;
-static decltype(&InSendMessageEx) sInSendMessageExStub = nullptr;
+static WindowsDllInterceptor::FuncHookType<decltype(&InSendMessageEx)>
+    sInSendMessageExStub;
 static bool sInSendMessageExHackEnabled = false;
 static PVOID sVectoredExceptionHandler = nullptr;
 
 #if defined(_MSC_VER)
-#include <intrin.h>
-#pragma intrinsic(_ReturnAddress)
-#define RETURN_ADDRESS() _ReturnAddress()
+#  include <intrin.h>
+#  pragma intrinsic(_ReturnAddress)
+#  define RETURN_ADDRESS() _ReturnAddress()
 #elif defined(__GNUC__) || defined(__clang__)
-#define RETURN_ADDRESS() \
-  __builtin_extract_return_addr(__builtin_return_address(0))
+#  define RETURN_ADDRESS() \
+    __builtin_extract_return_addr(__builtin_return_address(0))
 #endif
 
 static inline bool IsCurrentThreadInBlockingMessageSend(
@@ -165,7 +166,8 @@ uint32_t Compatibility::sConsumers = Compatibility::UNKNOWN;
 /**
  * This function is safe to call multiple times.
  */
-/* static */ void Compatibility::InitConsumers() {
+/* static */
+void Compatibility::InitConsumers() {
   HMODULE jawsHandle = ::GetModuleHandleW(L"jhook");
   if (jawsHandle) {
     sConsumers |=
@@ -202,7 +204,8 @@ uint32_t Compatibility::sConsumers = Compatibility::UNKNOWN;
     sConsumers &= ~Compatibility::UNKNOWN;
 }
 
-/* static */ bool Compatibility::HasKnownNonUiaConsumer() {
+/* static */
+bool Compatibility::HasKnownNonUiaConsumer() {
   InitConsumers();
   return sConsumers & ~(Compatibility::UNKNOWN | UIAUTOMATION);
 }
@@ -212,7 +215,7 @@ void Compatibility::Init() {
   InitConsumers();
 
   CrashReporter::AnnotateCrashReport(
-      NS_LITERAL_CSTRING("AccessibilityInProcClient"),
+      CrashReporter::Annotation::AccessibilityInProcClient,
       nsPrintfCString("0x%X", sConsumers));
 
   // Gather telemetry
@@ -236,16 +239,18 @@ void Compatibility::Init() {
   // We also skip UIA, as we see crashes there.
   if ((sConsumers & (~(UIAUTOMATION | NVDA))) && BrowserTabsRemoteAutostart()) {
     sUser32Interceptor.Init("user32.dll");
-    if (!sInSendMessageExStub) {
-      sUser32Interceptor.AddHook(
-          "InSendMessageEx", reinterpret_cast<intptr_t>(&InSendMessageExHook),
-          (void**)&sInSendMessageExStub);
-    }
+    sInSendMessageExStub.Set(sUser32Interceptor, "InSendMessageEx",
+                             &InSendMessageExHook);
+
     // The vectored exception handler allows us to catch exceptions ahead of any
     // SEH handlers.
     if (!sVectoredExceptionHandler) {
-      sVectoredExceptionHandler =
-          AddVectoredExceptionHandler(TRUE, &DetectInSendMessageExCompat);
+      // We need to let ASan's ShadowExceptionHandler remain in the firstHandler
+      // position, otherwise we'll get infinite recursion when our handler
+      // faults on shadow memory.
+      const ULONG firstHandler = FALSE;
+      sVectoredExceptionHandler = AddVectoredExceptionHandler(
+          firstHandler, &DetectInSendMessageExCompat);
     }
   }
 }
@@ -397,8 +402,9 @@ static bool UseIAccessibleProxyStub() {
   // If we reach this point then something is seriously wrong with the
   // IAccessible configuration in the computer's registry. Let's annotate this
   // so that we can easily determine this condition during crash analysis.
-  CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("IAccessibleConfig"),
-                                     NS_LITERAL_CSTRING("NoSystemTypeLibOrPS"));
+  CrashReporter::AnnotateCrashReport(
+      CrashReporter::Annotation::IAccessibleConfig,
+      NS_LITERAL_CSTRING("NoSystemTypeLibOrPS"));
   return false;
 }
 

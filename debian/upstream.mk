@@ -42,14 +42,11 @@ DIST = unknown
 ifneq (,$(filter experimental,$(DEB_DISTRIBUTION)))
 DIST = experimental
 endif
-ifneq (,$(filter testing% buster% unstable sid,$(DEB_DISTRIBUTION)))
-DIST = buster
+ifneq (,$(filter testing% bullseye% unstable sid,$(DEB_DISTRIBUTION)))
+DIST = bullseye
 endif
 ifneq (,$(filter bpo% deb%,$(DEBIAN_RELEASE_EXTRA)))
 DEBIAN_TARGET := $(subst bpo,,$(subst deb,,$(DEBIAN_RELEASE_EXTRA)))
-ifneq (,$(filter 7%,$(DEBIAN_TARGET)))
-DIST = wheezy
-endif
 ifneq (,$(filter 8%,$(DEBIAN_TARGET)))
 DIST = jessie
 endif
@@ -58,6 +55,9 @@ DIST = stretch
 endif
 ifneq (,$(filter 10%,$(DEBIAN_TARGET)))
 DIST = buster
+endif
+ifneq (,$(filter 11%,$(DEBIAN_TARGET)))
+DIST = bullseye
 endif
 endif
 
@@ -122,9 +122,9 @@ ifeq ($(SOURCE_TYPE),releases)
 SOURCE_URL = $(BASE_URL)/$(SOURCE_VERSION)/source/$(PRODUCT_DOWNLOAD_NAME)-$(SOURCE_VERSION).source.tar.$(SOURCE_TARBALL_EXT)
 CANDIDATE_BASE_URL = http://archive.mozilla.org/pub/$(PRODUCT_DOWNLOAD_NAME)/candidates/$(SOURCE_VERSION)-candidates
 CANDIDATE = $(shell curl -s $(CANDIDATE_BASE_URL)/ | sed -n '/href.*build/s/.*>\(build[0-9]*\)\/<.*/\1/p' | tail -1)
-$(call lazy,SOURCE_REPO_URL,$$(shell curl -s $(CANDIDATE_BASE_URL)/$$(CANDIDATE)/linux-x86_64/en-US/$(PRODUCT_DOWNLOAD_NAME)-$(SOURCE_VERSION).txt | tail -1))
-SOURCE_REV = $(notdir $(SOURCE_REPO_URL))
-SOURCE_REPO = $(patsubst %/rev/,%,$(dir $(SOURCE_REPO_URL)))
+$(call lazy,SOURCE_REPO_REV,$$(shell curl -s $(CANDIDATE_BASE_URL)/$$(CANDIDATE)/linux-x86_64/en-US/$(PRODUCT_DOWNLOAD_NAME)-$(SOURCE_VERSION).json | python3 -c 'import json, sys; d = json.load(sys.stdin); print(d["moz_source_repo"], d["moz_source_stamp"])'))
+SOURCE_REV = $(word 2,$(SOURCE_REPO_REV))
+SOURCE_REPO = $(firstword $(SOURCE_REPO_REV))
 else
 ifeq ($(SOURCE_TYPE),nightly)
 SOURCE_TARBALL_EXT = bz2
@@ -135,15 +135,15 @@ SOURCE_URL = $(subst /rev/,/archive/,$(word 3, $(LATEST_NIGHTLY))).tar.bz2
 endif
 endif
 
-SOURCE_REV ?= $(patsubst %.tar.$(SOURCE_TARBALL_EXT),%,$(notdir $(SOURCE_URL)))
-SOURCE_REPO ?= $(patsubst %/,%,$(dir $(patsubst %/,%,$(dir $(SOURCE_URL)))))
-
 L10N_REPO := https://hg.mozilla.org/l10n-central
 
 ifeq (file,$(origin VERSION))
-$(call lazy,L10N_CHANGESETS,$$(shell python debian/l10n_revs.py < $(PRODUCT)/locales/l10n-changesets.json))
+$(call lazy,L10N_CHANGESETS,$$(shell $$(PYTHON) debian/l10n_revs.py < $(PRODUCT)/locales/l10n-changesets.json))
 else
-$(call lazy,L10N_CHANGESETS,$$(shell curl -sL $(SOURCE_REPO)/raw-file/$(SOURCE_REV)/$(PRODUCT)/locales/l10n-changesets.json | python debian/l10n_revs.py))
+SOURCE_REV ?= $(patsubst %.tar.$(SOURCE_TARBALL_EXT),%,$(notdir $(SOURCE_URL)))
+SOURCE_REPO ?= $(patsubst %/,%,$(dir $(patsubst %/,%,$(dir $(SOURCE_URL)))))
+
+$(call lazy,L10N_CHANGESETS,$$(shell curl -sL $(SOURCE_REPO)/raw-file/$(SOURCE_REV)/$(PRODUCT)/locales/l10n-changesets.json | $$(PYTHON) debian/l10n_revs.py))
 endif
 
 L10N_REV = $(subst $1:,,$(filter $1:%,$(L10N_CHANGESETS)))

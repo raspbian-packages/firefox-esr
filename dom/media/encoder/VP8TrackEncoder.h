@@ -28,7 +28,8 @@ class VP8TrackEncoder : public VideoTrackEncoder {
   };
 
  public:
-  VP8TrackEncoder(TrackRate aTrackRate, FrameDroppingMode aFrameDroppingMode);
+  VP8TrackEncoder(RefPtr<DriftCompensator> aDriftCompensator,
+                  TrackRate aTrackRate, FrameDroppingMode aFrameDroppingMode);
   virtual ~VP8TrackEncoder();
 
   already_AddRefed<TrackMetadataBase> GetMetadata() final;
@@ -65,7 +66,7 @@ class VP8TrackEncoder : public VideoTrackEncoder {
                                   vpx_codec_enc_cfg_t& config);
 
   // Encoded timestamp.
-  StreamTime mEncodedTimestamp;
+  StreamTime mEncodedTimestamp = 0;
 
   // Total duration in mTrackRate extracted by GetEncodedPartitions().
   CheckedInt64 mExtractedDuration;
@@ -77,12 +78,13 @@ class VP8TrackEncoder : public VideoTrackEncoder {
   RefPtr<layers::Image> mMuteFrame;
 
   // I420 frame, for converting to I420.
-  nsTArray<uint8_t> mI420Frame;
+  UniquePtr<uint8_t[]> mI420Frame;
+  size_t mI420FrameSize = 0;
 
   /**
    * A duration of non-key frames in milliseconds.
    */
-  StreamTime mDurationSinceLastKeyframe;
+  StreamTime mDurationSinceLastKeyframe = 0;
 
   /**
    * A local segment queue which takes the raw data out from mRawSegment in the

@@ -24,10 +24,10 @@ class nsStreamListenerTee : public nsIStreamListenerTee,
   NS_DECL_NSITHREADRETARGETABLESTREAMLISTENER
   NS_DECL_NSISTREAMLISTENERTEE
 
-  nsStreamListenerTee() {}
+  nsStreamListenerTee() = default;
 
  private:
-  virtual ~nsStreamListenerTee() {}
+  virtual ~nsStreamListenerTee() = default;
 
   nsCOMPtr<nsIInputStreamTee> mInputTee;
   nsCOMPtr<nsIOutputStream> mSink;

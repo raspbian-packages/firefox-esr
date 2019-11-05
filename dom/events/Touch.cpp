@@ -34,6 +34,7 @@ Touch::Touch(EventTarget* aTarget, int32_t aIdentifier, int32_t aPageX,
              int32_t aRadiusY, float aRotationAngle, float aForce)
     : mIsTouchEventSuppressed(false) {
   mTarget = aTarget;
+  mOriginalTarget = aTarget;
   mIdentifier = aIdentifier;
   mPagePoint = CSSIntPoint(aPageX, aPageY);
   mScreenPoint = CSSIntPoint(aScreenX, aScreenY);
@@ -69,7 +70,8 @@ Touch::Touch(int32_t aIdentifier, LayoutDeviceIntPoint aPoint,
 }
 
 Touch::Touch(const Touch& aOther)
-    : mTarget(aOther.mTarget),
+    : mOriginalTarget(aOther.mOriginalTarget),
+      mTarget(aOther.mTarget),
       mRefPoint(aOther.mRefPoint),
       mChanged(aOther.mChanged),
       mIsTouchEventSuppressed(aOther.mIsTouchEventSuppressed),
@@ -92,7 +94,7 @@ bool Touch::PrefEnabled(JSContext* aCx, JSObject* aGlobal) {
   return TouchEvent::PrefEnabled(aCx, aGlobal);
 }
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(Touch, mTarget)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(Touch, mTarget, mOriginalTarget)
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(Touch)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
@@ -173,26 +175,29 @@ void Touch::InitializePoints(nsPresContext* aPresContext, WidgetEvent* aEvent) {
   mPointsInitialized = true;
 }
 
-void Touch::SetTarget(EventTarget* aTarget) { mTarget = aTarget; }
+void Touch::SetTouchTarget(EventTarget* aTarget) {
+  mOriginalTarget = aTarget;
+  mTarget = aTarget;
+}
 
-bool Touch::Equals(Touch* aTouch) {
+bool Touch::Equals(Touch* aTouch) const {
   return mRefPoint == aTouch->mRefPoint && mForce == aTouch->mForce &&
          mRotationAngle == aTouch->mRotationAngle &&
          mRadius.x == aTouch->mRadius.x && mRadius.y == aTouch->mRadius.y;
 }
 
 JSObject* Touch::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return TouchBinding::Wrap(aCx, this, aGivenProto);
+  return Touch_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 // Parent ourselves to the global of the target. This achieves the desirable
 // effects of parenting to the target, but avoids making the touch inaccessible
 // when the target happens to be NAC and therefore reflected into the XBL scope.
 nsIGlobalObject* Touch::GetParentObject() {
-  if (!mTarget) {
+  if (!mOriginalTarget) {
     return nullptr;
   }
-  return mTarget->GetOwnerGlobal();
+  return mOriginalTarget->GetOwnerGlobal();
 }
 
 }  // namespace dom

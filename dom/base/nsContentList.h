@@ -19,7 +19,6 @@
 #include "nsTArray.h"
 #include "nsString.h"
 #include "nsIHTMLCollection.h"
-#include "nsIDOMNodeList.h"
 #include "nsINodeList.h"
 #include "nsStubMutationObserver.h"
 #include "nsAtom.h"
@@ -28,6 +27,7 @@
 #include "nsWrapperCache.h"
 #include "nsHashKeys.h"
 #include "mozilla/HashFunctions.h"
+#include "mozilla/MemoryReporting.h"
 #include "mozilla/dom/NameSpaceConstants.h"
 
 namespace mozilla {
@@ -40,14 +40,11 @@ class nsBaseContentList : public nsINodeList {
  public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
 
-  // nsIDOMNodeList
-  NS_DECL_NSIDOMNODELIST
-
   // nsINodeList
   virtual int32_t IndexOf(nsIContent* aContent) override;
   virtual nsIContent* Item(uint32_t aIndex) override;
 
-  uint32_t Length() const { return mElements.Length(); }
+  uint32_t Length() override { return mElements.Length(); }
 
   NS_DECL_CYCLE_COLLECTION_SKIPPABLE_SCRIPT_HOLDER_CLASS(nsBaseContentList)
 
@@ -83,6 +80,11 @@ class nsBaseContentList : public nsINodeList {
   void SetCapacity(uint32_t aCapacity) { mElements.SetCapacity(aCapacity); }
 
   virtual void LastRelease() {}
+
+  // Memory reporting.  For now, subclasses of nsBaseContentList don't really
+  // need to report any members that are not part of the object itself, so we
+  // don't need to make this virtual.
+  size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;
 
  protected:
   virtual ~nsBaseContentList();
@@ -128,8 +130,6 @@ class nsEmptyContentList final : public nsBaseContentList,
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(nsEmptyContentList,
                                            nsBaseContentList)
-  // nsIDOMNodeList, which we also implement.
-  NS_DECL_NSIDOMNODELIST
 
   virtual nsINode* GetParentObject() override { return mRoot; }
 
@@ -165,7 +165,7 @@ class nsEmptyContentList final : public nsBaseContentList,
  */
 struct nsContentListKey {
   // We have to take an aIsHTMLDocument arg for two reasons:
-  // 1) We don't want to include nsIDocument.h in this header.
+  // 1) We don't want to include Document.h in this header.
   // 2) We need to do that to make nsContentList::RemoveFromHashtable
   //    work, because by the time it's called the document of the
   //    list's root node might have changed.
@@ -288,16 +288,13 @@ class nsContentList : public nsBaseContentList,
   }
 
  public:
-  // nsIDOMNodeList, which we also implement.
-  NS_DECL_NSIDOMNODELIST
-
   // nsBaseContentList overrides
   virtual int32_t IndexOf(nsIContent* aContent, bool aDoFlush) override;
   virtual int32_t IndexOf(nsIContent* aContent) override;
   virtual nsINode* GetParentObject() override { return mRootNode; }
 
   uint32_t Length() final { return Length(true); }
-  virtual nsIContent* Item(uint32_t aIndex) override;
+  nsIContent* Item(uint32_t aIndex) final;
   virtual mozilla::dom::Element* GetElementAt(uint32_t index) override;
   virtual mozilla::dom::Element* GetFirstNamedElement(const nsAString& aName,
                                                       bool& aFound) override {
@@ -339,8 +336,8 @@ class nsContentList : public nsBaseContentList,
     // most common namespace id is kNameSpaceID_Unknown.  So check the
     // string first.  Cases in which whether our root's ownerDocument
     // is HTML changes are extremely rare, so check those last.
-    NS_PRECONDITION(mXMLMatchAtom,
-                    "How did we get here with a null match atom on our list?");
+    MOZ_ASSERT(mXMLMatchAtom,
+               "How did we get here with a null match atom on our list?");
     return mXMLMatchAtom->Equals(aKey.mTagname) &&
            mRootNode == aKey.mRootNode &&
            mMatchNameSpaceId == aKey.mMatchNameSpaceId &&
@@ -383,8 +380,11 @@ class nsContentList : public nsBaseContentList,
    *
    * @param aNeededLength the length the list should have when we are
    *        done (unless it exhausts the document)
+   * @param aExpectedElementsIfDirty is for debugging only to
+   *        assert that mElements has expected number of entries.
    */
-  virtual void PopulateSelf(uint32_t aNeededLength);
+  virtual void PopulateSelf(uint32_t aNeededLength,
+                            uint32_t aExpectedElementsIfDirty = 0);
 
   /**
    * @param  aContainer a content node which must be a descendant of
@@ -514,8 +514,8 @@ class nsCacheableFuncStringContentList : public nsContentList {
            mString == aKey->mString;
   }
 
-#ifdef DEBUG
   enum ContentListType { eNodeList, eHTMLCollection };
+#ifdef DEBUG
   ContentListType mType;
 #endif
 
@@ -524,8 +524,11 @@ class nsCacheableFuncStringContentList : public nsContentList {
       nsINode* aRootNode, nsContentListMatchFunc aFunc,
       nsContentListDestroyFunc aDestroyFunc,
       nsFuncStringContentListDataAllocator aDataAllocator,
-      const nsAString& aString)
+      const nsAString& aString, mozilla::DebugOnly<ContentListType> aType)
       : nsContentList(aRootNode, aFunc, aDestroyFunc, nullptr),
+#ifdef DEBUG
+        mType(aType),
+#endif
         mString(aString) {
     mData = (*aDataAllocator)(aRootNode, &mString);
     MOZ_ASSERT(mData);
@@ -546,11 +549,7 @@ class nsCachableElementsByNameNodeList
       nsFuncStringContentListDataAllocator aDataAllocator,
       const nsAString& aString)
       : nsCacheableFuncStringContentList(aRootNode, aFunc, aDestroyFunc,
-                                         aDataAllocator, aString) {
-#ifdef DEBUG
-    mType = eNodeList;
-#endif
-  }
+                                         aDataAllocator, aString, eNodeList) {}
 
   NS_DECL_NSIMUTATIONOBSERVER_ATTRIBUTECHANGED
 
@@ -571,11 +570,8 @@ class nsCacheableFuncStringHTMLCollection
       nsFuncStringContentListDataAllocator aDataAllocator,
       const nsAString& aString)
       : nsCacheableFuncStringContentList(aRootNode, aFunc, aDestroyFunc,
-                                         aDataAllocator, aString) {
-#ifdef DEBUG
-    mType = eHTMLCollection;
-#endif
-  }
+                                         aDataAllocator, aString,
+                                         eHTMLCollection) {}
 
   virtual JSObject* WrapObject(JSContext* cx,
                                JS::Handle<JSObject*> aGivenProto) override;
@@ -614,7 +610,10 @@ class nsLabelsNodeList final : public nsContentList {
    *
    * @param aNeededLength The list of length should have when we are
    *                      done (unless it exhausts the document).
+   * @param aExpectedElementsIfDirty is for debugging only to
+   *        assert that mElements has expected number of entries.
    */
-  void PopulateSelf(uint32_t aNeededLength) override;
+  void PopulateSelf(uint32_t aNeededLength,
+                    uint32_t aExpectedElementsIfDirty = 0) override;
 };
 #endif  // nsContentList_h___

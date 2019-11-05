@@ -52,8 +52,12 @@ containers-color-pink =
     .label = Pinc
 containers-color-purple =
     .label = Porffor
+containers-color-toolbar =
+    .label = Cydweddu'r bar offer
+containers-icon-fence =
+    .label = Ffens
 containers-icon-fingerprint =
-    .label = Ôl Bys
+    .label = Bysbrint
 containers-icon-briefcase =
     .label = Bag Dogfennau
 # String represents a money sign but currently uses a dollar sign

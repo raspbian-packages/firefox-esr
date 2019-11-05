@@ -17,9 +17,8 @@ class VideoTrack;
 
 class VideoTrackList : public MediaTrackList {
  public:
-  VideoTrackList(nsPIDOMWindowInner* aOwnerWindow,
-                 HTMLMediaElement* aMediaElement)
-      : MediaTrackList(aOwnerWindow, aMediaElement), mSelectedIndex(-1) {}
+  VideoTrackList(nsIGlobalObject* aOwnerObject, HTMLMediaElement* aMediaElement)
+      : MediaTrackList(aOwnerObject, aMediaElement), mSelectedIndex(-1) {}
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override;

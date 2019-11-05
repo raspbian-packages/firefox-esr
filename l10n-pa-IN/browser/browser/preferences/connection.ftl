@@ -61,9 +61,30 @@ connection-proxy-reload =
     .label = ਮੁੜ ਲੋਡ
     .accesskey = l
 connection-proxy-autologin =
-    .label = ਜੇ ਪਾਸਵਰਡ ਨੂੰ ਸੰਭਾਲਿਆ ਹੈ ਤਾਂ ਪਰਮਾਣਿਤ ਕਰਨ ਲਈ ਨਾ ਪੁੱਛੋ
+    .label = ਜੇ ਪਛਾਣ-ਸ਼ਬਦ ਸੰਭਾਲਿਆ ਹੈ ਤਾਂ ਪਰਮਾਣਿਤ ਕਰਨ ਲਈ ਨਾ ਪੁੱਛੋ
     .accesskey = i
     .tooltip = ਇਹ ਚੋਣ ਚੁੱਪਚਾਪ ਢੰਗ ਨਾਲ ਤੁਹਾਨੂੰ ਪਰਾਕਸੀਆਂ ਲਈ ਪਰਮਾਣਿਤ ਕਰਦੀ ਹੈ, ਜਦੋਂ ਤੁਸੀਂ ਉਹਨਾਂ ਲਈ ਪਰਮਾਣਕਿਤਾ ਸੰਭਾਲਦੇ ਹੋ। ਤੁਹਾਨੂੰ ਪੁੱਛਿਆ ਜਾਵੇਗਾ, ਜੇ ਪ੍ਰਮਾਣਕਿਤਾ ਫੇਲ੍ਹ ਹੋਈ।
 connection-proxy-socks-remote-dns =
     .label = ਪਰਾਕਸੀ DNS, ਜਦੋਂ SOCKS v5 ਦੀ ਵਰਤੋਂ ਹੋਵੇ
     .accesskey = d
+connection-dns-over-https =
+    .label = HTTPS ‘ਤੇ DNS ਸਮਰੱਥ ਕਰੋ
+    .accesskey = b
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = ਮੂਲ ਵਰਤੋਂ ({ $url })
+    .accesskey = U
+    .tooltiptext = HTTPS ਉੱਤੇ DNS ਲੱਭਣ ਲਈ ਮੂਲ URL ਵਰਤੋਂ
+connection-dns-over-https-url-resolver = ਪੂਰਕ ਵਰਤੋ
+    .accesskey = P
+# Variables:
+#   $name (String) - Display name or URL for the DNS over HTTPS provider
+connection-dns-over-https-url-item-default =
+    .label = { $name } (ਮੂਲ)
+    .tooltiptext = HTTPS ਉੱਤੇ DNS ਹੱਲ਼ ਕਰਨ ਲਈ ਮੂਲ URL ਵਰਤੋ
+connection-dns-over-https-url-custom =
+    .label = ਕਸਟਮ
+    .accesskey = C
+    .tooltiptext = HTTS ਉੱਤੇ DNS ਹੱਲ਼ ਕਰਨ ਲਈ ਆਪਣਾ ਤਰਜੀਹੀ URL ਦਰਜ ਕਰੋ
+connection-dns-over-https-custom-label = ਪਸੰਦੀਦਾ

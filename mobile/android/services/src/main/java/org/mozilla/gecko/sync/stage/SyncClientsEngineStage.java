@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -80,6 +79,7 @@ public class SyncClientsEngineStage extends AbstractSessionManagingSyncStage {
 
   protected volatile boolean shouldWipe;
   protected volatile boolean shouldUploadLocalRecord;     // Set if, e.g., we received commands or need to refresh our version.
+  protected volatile boolean shouldNotifyOtherClients = false; // If set, ask the FxA server to notify other clients that the client collection changed.
   protected final AtomicInteger uploadAttemptsCount = new AtomicInteger();
   protected final List<ClientRecord> modifiedClientsToUpload = new ArrayList<ClientRecord>();
 
@@ -145,11 +145,10 @@ public class SyncClientsEngineStage extends AbstractSessionManagingSyncStage {
 
       // If we successfully downloaded all records but ours was not one of them
       // then reset the timestamp.
-      boolean isFirstLocalClientRecordUpload = false;
       if (!localAccountGUIDDownloaded) {
         Logger.info(LOG_TAG, "Local client GUID does not exist on the server. Upload timestamp will be reset.");
         session.config.persistServerClientRecordTimestamp(0);
-        isFirstLocalClientRecordUpload = true;
+        shouldNotifyOtherClients = true;
       }
       localAccountGUIDDownloaded = false;
 
@@ -185,7 +184,7 @@ public class SyncClientsEngineStage extends AbstractSessionManagingSyncStage {
         uploadRemoteRecords();
 
         // We will send a push notification later anyway.
-        if (!isFirstLocalClientRecordUpload && account != null) {
+        if (!shouldNotifyOtherClients && account != null) {
           // Notify the clients who got their record written
           final AndroidFxAccount fxAccount = new AndroidFxAccount(context, account);
           notifyClients(fxAccount, devicesToNotify, NOTIFY_TAB_SENT_TTL_SECS, COLLECTION_MODIFIED_REASON_SENDTAB);
@@ -194,7 +193,7 @@ public class SyncClientsEngineStage extends AbstractSessionManagingSyncStage {
         return;
       }
       checkAndUpload();
-      if (isFirstLocalClientRecordUpload && account != null) {
+      if (shouldNotifyOtherClients && account != null) {
         final AndroidFxAccount fxAccount = new AndroidFxAccount(context, account);
         notifyAllClients(fxAccount, 0, COLLECTION_MODIFIED_REASON_FIRSTSYNC);
       }
@@ -572,9 +571,21 @@ public class SyncClientsEngineStage extends AbstractSessionManagingSyncStage {
   protected void handleDownloadedLocalRecord(ClientRecord r) {
     session.config.persistServerClientRecordTimestamp(r.lastModified);
 
-    if (!getLocalClientVersion().equals(r.version) ||
+    final Context context = session.getContext();
+    final Account account = FirefoxAccounts.getFirefoxAccount(context);
+    String fxaDeviceId;
+    if (account != null) {
+      final AndroidFxAccount fxAccount = new AndroidFxAccount(context, account);
+      fxaDeviceId = fxAccount.getDeviceId();
+    } else {
+      fxaDeviceId = null;
+    }
+
+    if (!TextUtils.equals(r.fxaDeviceId, fxaDeviceId) ||
+        !getLocalClientVersion().equals(r.version) ||
         !getLocalClientProtocols().equals(r.protocols)) {
       shouldUploadLocalRecord = true;
+      shouldNotifyOtherClients = true;
     }
     processCommands(r.commands);
   }
@@ -672,8 +683,6 @@ public class SyncClientsEngineStage extends AbstractSessionManagingSyncStage {
         return null;
       }
       return cryptoRecord.encrypt();
-    } catch (UnsupportedEncodingException e) {
-      doAbort(e, encryptionFailure + " Unsupported encoding.");
     } catch (CryptoException e) {
       doAbort(e, encryptionFailure);
     }

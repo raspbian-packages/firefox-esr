@@ -19,11 +19,13 @@ const XHTML_NS = "http://www.w3.org/1999/xhtml";
  */
 function setVariableTooltip(tooltip, doc, text) {
   // Create tooltip content
-  let div = doc.createElementNS(XHTML_NS, "div");
+  const div = doc.createElementNS(XHTML_NS, "div");
   div.classList.add("devtools-monospace", "devtools-tooltip-css-variable");
   div.textContent = text;
 
-  tooltip.setContent(div);
+  tooltip.panel.innerHTML = "";
+  tooltip.panel.appendChild(div);
+  tooltip.setContentSize({ width: "auto", height: "auto" });
 }
 
 module.exports.setVariableTooltip = setVariableTooltip;

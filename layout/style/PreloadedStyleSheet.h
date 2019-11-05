@@ -12,7 +12,6 @@
 #include "mozilla/css/SheetParsingMode.h"
 #include "mozilla/NotNull.h"
 #include "mozilla/Result.h"
-#include "mozilla/StyleBackendType.h"
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsICSSLoaderObserver.h"
@@ -38,7 +37,7 @@ class PreloadedStyleSheet : public nsIPreloadedStyleSheet {
 
   // *aResult is not addrefed, since the PreloadedStyleSheet holds a strong
   // reference to the sheet.
-  nsresult GetSheet(StyleBackendType aType, StyleSheet** aResult);
+  nsresult GetSheet(StyleSheet** aResult);
 
   nsresult Preload();
   nsresult PreloadAsync(NotNull<dom::Promise*> aPromise);
@@ -68,8 +67,7 @@ class PreloadedStyleSheet : public nsIPreloadedStyleSheet {
     RefPtr<PreloadedStyleSheet> mPreloadedSheet;
   };
 
-  RefPtr<StyleSheet> mGecko;
-  RefPtr<StyleSheet> mServo;
+  RefPtr<StyleSheet> mSheet;
 
   bool mLoaded;
   nsCOMPtr<nsIURI> mURI;

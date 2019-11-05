@@ -13,7 +13,8 @@
 namespace mozilla {
 namespace widget {
 
-/* static */ LayoutDeviceIntRect HeadlessScreenHelper::GetScreenRect() {
+/* static */
+LayoutDeviceIntRect HeadlessScreenHelper::GetScreenRect() {
   char* ev = PR_GetEnv("MOZ_HEADLESS_WIDTH");
   int width = 1366;
   if (ev) {
@@ -35,7 +36,7 @@ HeadlessScreenHelper::HeadlessScreenHelper() {
                  CSSToLayoutDeviceScale(), 96.0f);
   screenList.AppendElement(ret.forget());
   ScreenManager& screenManager = ScreenManager::GetSingleton();
-  screenManager.Refresh(Move(screenList));
+  screenManager.Refresh(std::move(screenList));
 }
 
 }  // namespace widget

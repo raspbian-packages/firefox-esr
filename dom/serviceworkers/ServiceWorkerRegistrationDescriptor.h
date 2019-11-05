@@ -19,7 +19,6 @@ class PrincipalInfo;
 namespace dom {
 
 class IPCServiceWorkerRegistrationDescriptor;
-class OptionalIPCServiceWorkerDescriptor;
 class ServiceWorkerInfo;
 enum class ServiceWorkerUpdateViaCache : uint8_t;
 
@@ -36,11 +35,12 @@ class ServiceWorkerRegistrationDescriptor final {
 
  public:
   ServiceWorkerRegistrationDescriptor(
-      uint64_t aId, nsIPrincipal* aPrincipal, const nsACString& aScope,
-      ServiceWorkerUpdateViaCache aUpdateViaCache);
+      uint64_t aId, uint64_t aVersion, nsIPrincipal* aPrincipal,
+      const nsACString& aScope, ServiceWorkerUpdateViaCache aUpdateViaCache);
 
   ServiceWorkerRegistrationDescriptor(
-      uint64_t aId, const mozilla::ipc::PrincipalInfo& aPrincipalInfo,
+      uint64_t aId, uint64_t aVersion,
+      const mozilla::ipc::PrincipalInfo& aPrincipalInfo,
       const nsACString& aScope, ServiceWorkerUpdateViaCache aUpdateViaCache);
 
   explicit ServiceWorkerRegistrationDescriptor(
@@ -64,9 +64,13 @@ class ServiceWorkerRegistrationDescriptor final {
 
   uint64_t Id() const;
 
+  uint64_t Version() const;
+
   ServiceWorkerUpdateViaCache UpdateViaCache() const;
 
   const mozilla::ipc::PrincipalInfo& PrincipalInfo() const;
+
+  nsCOMPtr<nsIPrincipal> GetPrincipal() const;
 
   const nsCString& Scope() const;
 
@@ -78,6 +82,8 @@ class ServiceWorkerRegistrationDescriptor final {
 
   Maybe<ServiceWorkerDescriptor> Newest() const;
 
+  bool HasWorker(const ServiceWorkerDescriptor& aDescriptor) const;
+
   bool IsValid() const;
 
   void SetUpdateViaCache(ServiceWorkerUpdateViaCache aUpdateViaCache);
@@ -85,9 +91,7 @@ class ServiceWorkerRegistrationDescriptor final {
   void SetWorkers(ServiceWorkerInfo* aInstalling, ServiceWorkerInfo* aWaiting,
                   ServiceWorkerInfo* aActive);
 
-  void SetWorkers(const OptionalIPCServiceWorkerDescriptor& aInstalling,
-                  const OptionalIPCServiceWorkerDescriptor& aWaiting,
-                  const OptionalIPCServiceWorkerDescriptor& aActive);
+  void SetVersion(uint64_t aVersion);
 
   // Expose the underlying IPC type so that it can be passed via IPC.
   const IPCServiceWorkerRegistrationDescriptor& ToIPC() const;

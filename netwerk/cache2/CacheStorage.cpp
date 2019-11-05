@@ -16,6 +16,7 @@
 #include "nsIApplicationCacheService.h"
 #include "nsIURI.h"
 #include "nsNetCID.h"
+#include "nsNetUtil.h"
 #include "nsServiceManagerUtils.h"
 
 namespace mozilla {
@@ -23,7 +24,7 @@ namespace net {
 
 NS_IMPL_ISUPPORTS(CacheStorage, nsICacheStorage)
 
-CacheStorage::CacheStorage(nsILoadContextInfo *aInfo, bool aAllowDisk,
+CacheStorage::CacheStorage(nsILoadContextInfo* aInfo, bool aAllowDisk,
                            bool aLookupAppCache, bool aSkipSizeCheck,
                            bool aPinning)
     : mLoadContextInfo(GetLoadContextInfo(aInfo)),
@@ -32,12 +33,10 @@ CacheStorage::CacheStorage(nsILoadContextInfo *aInfo, bool aAllowDisk,
       mSkipSizeCheck(aSkipSizeCheck),
       mPinning(aPinning) {}
 
-CacheStorage::~CacheStorage() {}
-
-NS_IMETHODIMP CacheStorage::AsyncOpenURI(nsIURI *aURI,
-                                         const nsACString &aIdExtension,
+NS_IMETHODIMP CacheStorage::AsyncOpenURI(nsIURI* aURI,
+                                         const nsACString& aIdExtension,
                                          uint32_t aFlags,
-                                         nsICacheEntryOpenCallback *aCallback) {
+                                         nsICacheEntryOpenCallback* aCallback) {
   if (!CacheStorageService::Self()) return NS_ERROR_NOT_INITIALIZED;
 
   if (MOZ_UNLIKELY(!CacheObserver::UseDiskCache()) && mWriteToDisk &&
@@ -62,7 +61,7 @@ NS_IMETHODIMP CacheStorage::AsyncOpenURI(nsIURI *aURI,
   bool truncate = aFlags & nsICacheStorage::OPEN_TRUNCATE;
 
   nsCOMPtr<nsIURI> noRefURI;
-  rv = aURI->CloneIgnoringRef(getter_AddRefs(noRefURI));
+  rv = NS_GetURIWithoutRef(aURI, getter_AddRefs(noRefURI));
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoCString asciiSpec;
@@ -108,15 +107,15 @@ NS_IMETHODIMP CacheStorage::AsyncOpenURI(nsIURI *aURI,
   return NS_OK;
 }
 
-NS_IMETHODIMP CacheStorage::OpenTruncate(nsIURI *aURI,
-                                         const nsACString &aIdExtension,
-                                         nsICacheEntry **aCacheEntry) {
+NS_IMETHODIMP CacheStorage::OpenTruncate(nsIURI* aURI,
+                                         const nsACString& aIdExtension,
+                                         nsICacheEntry** aCacheEntry) {
   if (!CacheStorageService::Self()) return NS_ERROR_NOT_INITIALIZED;
 
   nsresult rv;
 
   nsCOMPtr<nsIURI> noRefURI;
-  rv = aURI->CloneIgnoringRef(getter_AddRefs(noRefURI));
+  rv = NS_GetURIWithoutRef(aURI, getter_AddRefs(noRefURI));
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoCString asciiSpec;
@@ -140,8 +139,8 @@ NS_IMETHODIMP CacheStorage::OpenTruncate(nsIURI *aURI,
   return NS_OK;
 }
 
-NS_IMETHODIMP CacheStorage::Exists(nsIURI *aURI, const nsACString &aIdExtension,
-                                   bool *aResult) {
+NS_IMETHODIMP CacheStorage::Exists(nsIURI* aURI, const nsACString& aIdExtension,
+                                   bool* aResult) {
   NS_ENSURE_ARG(aURI);
   NS_ENSURE_ARG(aResult);
 
@@ -150,7 +149,7 @@ NS_IMETHODIMP CacheStorage::Exists(nsIURI *aURI, const nsACString &aIdExtension,
   nsresult rv;
 
   nsCOMPtr<nsIURI> noRefURI;
-  rv = aURI->CloneIgnoringRef(getter_AddRefs(noRefURI));
+  rv = NS_GetURIWithoutRef(aURI, getter_AddRefs(noRefURI));
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoCString asciiSpec;
@@ -162,9 +161,9 @@ NS_IMETHODIMP CacheStorage::Exists(nsIURI *aURI, const nsACString &aIdExtension,
 }
 
 NS_IMETHODIMP
-CacheStorage::GetCacheIndexEntryAttrs(nsIURI *aURI,
-                                      const nsACString &aIdExtension,
-                                      bool *aHasAltData, uint32_t *aSizeInKB) {
+CacheStorage::GetCacheIndexEntryAttrs(nsIURI* aURI,
+                                      const nsACString& aIdExtension,
+                                      bool* aHasAltData, uint32_t* aSizeInKB) {
   NS_ENSURE_ARG(aURI);
   NS_ENSURE_ARG(aHasAltData);
   NS_ENSURE_ARG(aSizeInKB);
@@ -175,7 +174,7 @@ CacheStorage::GetCacheIndexEntryAttrs(nsIURI *aURI,
   nsresult rv;
 
   nsCOMPtr<nsIURI> noRefURI;
-  rv = aURI->CloneIgnoringRef(getter_AddRefs(noRefURI));
+  rv = NS_GetURIWithoutRef(aURI, getter_AddRefs(noRefURI));
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoCString asciiSpec;
@@ -186,15 +185,15 @@ CacheStorage::GetCacheIndexEntryAttrs(nsIURI *aURI,
       this, asciiSpec, aIdExtension, aHasAltData, aSizeInKB);
 }
 
-NS_IMETHODIMP CacheStorage::AsyncDoomURI(nsIURI *aURI,
-                                         const nsACString &aIdExtension,
-                                         nsICacheEntryDoomCallback *aCallback) {
+NS_IMETHODIMP CacheStorage::AsyncDoomURI(nsIURI* aURI,
+                                         const nsACString& aIdExtension,
+                                         nsICacheEntryDoomCallback* aCallback) {
   if (!CacheStorageService::Self()) return NS_ERROR_NOT_INITIALIZED;
 
   nsresult rv;
 
   nsCOMPtr<nsIURI> noRefURI;
-  rv = aURI->CloneIgnoringRef(getter_AddRefs(noRefURI));
+  rv = NS_GetURIWithoutRef(aURI, getter_AddRefs(noRefURI));
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsAutoCString asciiSpec;
@@ -209,7 +208,7 @@ NS_IMETHODIMP CacheStorage::AsyncDoomURI(nsIURI *aURI,
 }
 
 NS_IMETHODIMP CacheStorage::AsyncEvictStorage(
-    nsICacheEntryDoomCallback *aCallback) {
+    nsICacheEntryDoomCallback* aCallback) {
   if (!CacheStorageService::Self()) return NS_ERROR_NOT_INITIALIZED;
 
   nsresult rv =
@@ -219,7 +218,7 @@ NS_IMETHODIMP CacheStorage::AsyncEvictStorage(
   return NS_OK;
 }
 
-NS_IMETHODIMP CacheStorage::AsyncVisitStorage(nsICacheStorageVisitor *aVisitor,
+NS_IMETHODIMP CacheStorage::AsyncVisitStorage(nsICacheStorageVisitor* aVisitor,
                                               bool aVisitEntries) {
   LOG(("CacheStorage::AsyncVisitStorage [this=%p, cb=%p, disk=%d]", this,
        aVisitor, (bool)mWriteToDisk));
@@ -234,8 +233,8 @@ NS_IMETHODIMP CacheStorage::AsyncVisitStorage(nsICacheStorageVisitor *aVisitor,
 
 // Internal
 
-nsresult CacheStorage::ChooseApplicationCache(nsIURI *aURI,
-                                              nsIApplicationCache **aCache) {
+nsresult CacheStorage::ChooseApplicationCache(nsIURI* aURI,
+                                              nsIApplicationCache** aCache) {
   nsresult rv;
 
   nsCOMPtr<nsIApplicationCacheService> appCacheService =

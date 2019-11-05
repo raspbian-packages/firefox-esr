@@ -60,7 +60,8 @@ class nsLeafFrame : public nsFrame {
   }
 
  protected:
-  nsLeafFrame(nsStyleContext* aContext, ClassID aID) : nsFrame(aContext, aID) {}
+  nsLeafFrame(ComputedStyle* aStyle, nsPresContext* aPresContext, ClassID aID)
+      : nsFrame(aStyle, aPresContext, aID) {}
 
   virtual ~nsLeafFrame();
 

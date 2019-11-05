@@ -29,11 +29,12 @@
 #include "nsAtom.h"
 #include "nsHashKeys.h"
 
-class nsIDocument;
 class nsNodeInfoManager;
 
 namespace mozilla {
 namespace dom {
+
+class Document;
 
 class NodeInfo final {
  public:
@@ -104,8 +105,8 @@ class NodeInfo final {
   int32_t NamespaceID() const { return mInner.mNamespaceID; }
 
   /*
-   * Get the nodetype for the node. Returns the values specified in nsIDOMNode
-   * for nsIDOMNode.nodeType
+   * Get the nodetype for the node. Returns the values specified in Node
+   * for Node.nodeType
    */
   uint16_t NodeType() const { return mInner.mNodeType; }
 
@@ -129,18 +130,20 @@ class NodeInfo final {
 
   bool NameAndNamespaceEquals(NodeInfo* aNodeInfo) const;
 
-  bool Equals(nsAtom* aNameAtom) const { return mInner.mName == aNameAtom; }
+  bool Equals(const nsAtom* aNameAtom) const {
+    return mInner.mName == aNameAtom;
+  }
 
-  bool Equals(nsAtom* aNameAtom, nsAtom* aPrefixAtom) const {
+  bool Equals(const nsAtom* aNameAtom, const nsAtom* aPrefixAtom) const {
     return (mInner.mName == aNameAtom) && (mInner.mPrefix == aPrefixAtom);
   }
 
-  bool Equals(nsAtom* aNameAtom, int32_t aNamespaceID) const {
+  bool Equals(const nsAtom* aNameAtom, int32_t aNamespaceID) const {
     return ((mInner.mName == aNameAtom) &&
             (mInner.mNamespaceID == aNamespaceID));
   }
 
-  bool Equals(nsAtom* aNameAtom, nsAtom* aPrefixAtom,
+  bool Equals(const nsAtom* aNameAtom, const nsAtom* aPrefixAtom,
               int32_t aNamespaceID) const {
     return ((mInner.mName == aNameAtom) && (mInner.mPrefix == aPrefixAtom) &&
             (mInner.mNamespaceID == aNamespaceID));
@@ -161,7 +164,7 @@ class NodeInfo final {
 
   bool NamespaceEquals(const nsAString& aNamespaceURI) const;
 
-  inline bool QualifiedNameEquals(nsAtom* aNameAtom) const;
+  inline bool QualifiedNameEquals(const nsAtom* aNameAtom) const;
 
   bool QualifiedNameEquals(const nsAString& aQualifiedName) const {
     return mQualifiedName == aQualifiedName;
@@ -170,7 +173,7 @@ class NodeInfo final {
   /*
    * Retrieve a pointer to the document that owns this node info.
    */
-  nsIDocument* GetDocument() const { return mDocument; }
+  Document* GetDocument() const { return mDocument; }
 
  private:
   NodeInfo() = delete;
@@ -268,7 +271,7 @@ class NodeInfo final {
     nsAtom* const MOZ_OWNING_REF mName;
     nsAtom* MOZ_OWNING_REF mPrefix;
     int32_t mNamespaceID;
-    uint16_t mNodeType;  // As defined by nsIDOMNode.nodeType
+    uint16_t mNodeType;  // As defined by Node.nodeType
     const nsAString* const mNameString;
     nsAtom* MOZ_OWNING_REF mExtraName;  // Only used by PIs and DocTypes
     mutable mozilla::Maybe<const uint32_t> mHash;
@@ -279,8 +282,7 @@ class NodeInfo final {
 
   // This is a non-owning reference, but it's safe since it's set to nullptr
   // by nsNodeInfoManager::DropDocumentReference when the document is destroyed.
-  nsIDocument* MOZ_NON_OWNING_REF
-      mDocument;  // Cache of mOwnerManager->mDocument
+  Document* MOZ_NON_OWNING_REF mDocument;  // Cache of mOwnerManager->mDocument
 
   NodeInfoInner mInner;
 

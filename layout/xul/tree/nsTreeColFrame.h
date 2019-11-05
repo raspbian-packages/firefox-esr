@@ -5,19 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/Attributes.h"
+#include "mozilla/ComputedStyle.h"
 #include "nsBoxFrame.h"
 
-class nsITreeBoxObject;
+namespace mozilla {
+class PresShell;
+namespace dom {
+class XULTreeElement;
+}
+}  // namespace mozilla
 
-nsIFrame* NS_NewTreeColFrame(nsIPresShell* aPresShell,
-                             nsStyleContext* aContext);
+nsIFrame* NS_NewTreeColFrame(mozilla::PresShell* aPresShell,
+                             mozilla::ComputedStyle* aStyle);
 
 class nsTreeColFrame final : public nsBoxFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsTreeColFrame)
 
-  explicit nsTreeColFrame(nsStyleContext* aContext)
-      : nsBoxFrame(aContext, kClassID) {}
+  explicit nsTreeColFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsBoxFrame(aStyle, aPresContext, kClassID) {}
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
@@ -35,19 +41,19 @@ class nsTreeColFrame final : public nsBoxFrame {
                             const nsRect& aRect,
                             bool aRemoveOverflowArea = false) override;
 
-  friend nsIFrame* NS_NewTreeColFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext);
+  friend nsIFrame* NS_NewTreeColFrame(mozilla::PresShell* aPresShell,
+                                      ComputedStyle* aStyle);
 
  protected:
   virtual ~nsTreeColFrame();
 
   /**
-   * @return the tree box object of the tree this column belongs to, or nullptr.
+   * @return the tree that this column belongs to, or nullptr.
    */
-  nsITreeBoxObject* GetTreeBoxObject();
+  mozilla::dom::XULTreeElement* GetTree();
 
   /**
-   * Helper method that gets the nsITreeColumns object this column belongs to
+   * Helper method that gets the TreeColumns object this column belongs to
    * and calls InvalidateColumns() on it.
    */
   void InvalidateColumns(bool aCanWalkFrameTree = true);

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim:expandtab:shiftwidth=4:tabstop=4:
  */
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -14,8 +14,8 @@
  * overflow situations.
  ***/
 #ifndef SAFE_COMPARE_EVEN_WITH_WRAPPING
-#define SAFE_COMPARE_EVEN_WITH_WRAPPING(A, B) \
-  (((int)((long)A - (long)B) & 0xFFFFFFFF))
+#  define SAFE_COMPARE_EVEN_WITH_WRAPPING(A, B) \
+    (((int)((long)A - (long)B) & 0xFFFFFFFF))
 #endif
 
 class nsIdleServiceWin : public nsIdleService {

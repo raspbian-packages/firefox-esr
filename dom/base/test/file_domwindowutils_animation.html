@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>DOMWindowUtils test with animation</title>
   <script src="/tests/SimpleTest/paint_listener.js"></script>
+  <script src="/tests/dom/animation/test/testcommon.js"></script>
 </head>
 <body>
 <script type="application/javascript">
@@ -127,25 +128,23 @@ function test_getUnanimatedComputedStyle() {
     "NS_ERROR_INVALID_ARG",
     "FLUSH_DISPLAY option should throw");
 
-  if (utils.isStyledByServo) {
-    SimpleTest.doesThrow(
-      () => utils.getUnanimatedComputedStyle(div, "::before", "opacity", utils.FLUSH_NONE),
-      "NS_ERROR_FAILURE",
-      "Non-existent pseudo should throw");
+  SimpleTest.doesThrow(
+    () => utils.getUnanimatedComputedStyle(div, "::before", "opacity", utils.FLUSH_NONE),
+    "NS_ERROR_FAILURE",
+    "Non-existent pseudo should throw");
 
-    // Flush styles since getUnanimatedComputedStyle flushes pending styles even
-    // with FLUSH_NONE option if the element hasn't yet styled.
-    getComputedStyle(div).opacity;
+  // Flush styles since getUnanimatedComputedStyle flushes pending styles even
+  // with FLUSH_NONE option if the element hasn't yet styled.
+  getComputedStyle(div).opacity;
 
-    div.style.opacity = "0";
-    is(utils.getUnanimatedComputedStyle(div, null, "opacity", utils.FLUSH_NONE),
-       "1",
-       "getUnanimatedComputedStyle with FLUSH_NONE should not flush pending styles");
+  div.style.opacity = "0";
+  is(utils.getUnanimatedComputedStyle(div, null, "opacity", utils.FLUSH_NONE),
+     "1",
+     "getUnanimatedComputedStyle with FLUSH_NONE should not flush pending styles");
 
-    is(utils.getUnanimatedComputedStyle(div, null, "opacity", utils.FLUSH_STYLE),
-       "0",
-       "getUnanimatedComputedStyle with FLUSH_STYLE should flush pending styles");
-  }
+  is(utils.getUnanimatedComputedStyle(div, null, "opacity", utils.FLUSH_STYLE),
+     "0",
+     "getUnanimatedComputedStyle with FLUSH_STYLE should flush pending styles");
 
   div.remove();
 
@@ -190,28 +189,24 @@ function test_needsFlushWithThrottledAnimations() {
 
   const animation = div.animate({ opacity: [ 0, 1 ] },
                                 { duration: 100000, iterations: Infinity });
-  animation.ready.then(() => {
-    // Make sure pending styles in the previous test has been already processed.
-    // (I.e. the target element in the test has surely removed.)
-    waitForAllPaintsFlushed(() => {
-      ok(SpecialPowers.wrap(animation).isRunningOnCompositor,
-         "Opacity animation should run on the compositor");
+  waitForAnimationReadyToRestyle(animation).then(() => {
+    ok(SpecialPowers.wrap(animation).isRunningOnCompositor,
+        "Opacity animation should run on the compositor");
 
-      // FIXME! Bug 1442861: We should make sure needsFlush() returns true
-      // before flusing layout.
-      //ok(utils.needsFlush(SpecialPowers.Ci.nsIDOMWindowUtils.FLUSH_STYLE),
-      //   "needsFlush should return true if there is an animation on the compositor");
+    // FIXME! Bug 1442861: We should make sure needsFlush() returns true
+    // before flusing layout.
+    //ok(utils.needsFlush(SpecialPowers.Ci.nsIDOMWindowUtils.FLUSH_STYLE),
+    //   "needsFlush should return true if there is an animation on the compositor");
 
-      // Flush layout.
-      document.documentElement.getBoundingClientRect();
+    // Flush layout.
+    document.documentElement.getBoundingClientRect();
 
-      ok(!utils.needsFlush(SpecialPowers.Ci.nsIDOMWindowUtils.FLUSH_STYLE),
-         "needsFlush should return false after flushing layout");
+    ok(!utils.needsFlush(SpecialPowers.Ci.nsIDOMWindowUtils.FLUSH_STYLE),
+        "needsFlush should return false after flushing layout");
 
-      div.remove();
-      next();
-      window.close();
-    });
+    div.remove();
+    next();
+    window.close();
   });
 }
 

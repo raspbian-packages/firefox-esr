@@ -8,14 +8,15 @@
 #define mozilla_dom_network_ConnectionMainThread_h
 
 #include "Connection.h"
+#include "mozilla/Hal.h"
 #include "mozilla/Observer.h"
-#include "Types.h"
 
 namespace mozilla {
 namespace dom {
 namespace network {
 
-class ConnectionMainThread final : public Connection, public NetworkObserver {
+class ConnectionMainThread final : public Connection,
+                                   public hal::NetworkObserver {
  public:
   explicit ConnectionMainThread(nsPIDOMWindowInner* aWindow);
 

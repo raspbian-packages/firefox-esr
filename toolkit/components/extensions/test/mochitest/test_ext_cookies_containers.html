@@ -3,9 +3,8 @@
 <head>
   <title>WebExtension test</title>
   <meta charset="utf-8">
-  <script type="text/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/SpawnTask.js"></script>
-  <script type="text/javascript" src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
+  <script src="/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="/tests/SimpleTest/ExtensionTestUtils.js"></script>
   <script type="text/javascript" src="head.js"></script>
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
 </head>
@@ -45,6 +44,7 @@ add_task(async function test_cookie_containers() {
       path: "/",
       secure: false,
       httpOnly: false,
+      sameSite: "no_restriction",
       session: false,
       expirationDate: THE_FUTURE,
       storeId: "firefox-container-1",

@@ -9,13 +9,16 @@ add_task(async function() {
   let browser = tab.linkedBrowser;
   await promiseBrowserLoaded(browser);
 
-  is(gBrowser.browsers[1].currentURI.spec, "about:privatebrowsing",
-     "we will be removing an about:privatebrowsing tab");
+  is(
+    gBrowser.browsers[1].currentURI.spec,
+    "about:privatebrowsing",
+    "we will be removing an about:privatebrowsing tab"
+  );
 
   let r = `rand-${Math.random()}`;
-  ss.setTabValue(tab, "foobar", r);
+  ss.setCustomTabValue(tab, "foobar", r);
 
-  await promiseRemoveTab(tab);
+  await promiseRemoveTabAndSessionState(tab);
   let closedTabData = ss.getClosedTabData(window);
   ok(!closedTabData.includes(r), "tab not stored in _closedTabs");
 });

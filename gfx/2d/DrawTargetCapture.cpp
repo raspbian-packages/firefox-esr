@@ -10,6 +10,7 @@
 #include "gfxPlatform.h"
 #include "SourceSurfaceCapture.h"
 #include "FilterNodeCapture.h"
+#include "PathCapture.h"
 
 namespace mozilla {
 namespace gfx {
@@ -21,10 +22,27 @@ DrawTargetCaptureImpl::~DrawTargetCaptureImpl() {
   }
 }
 
+DrawTargetCaptureImpl::DrawTargetCaptureImpl(gfx::DrawTarget* aTarget,
+                                             size_t aFlushBytes)
+    : mSnapshot(nullptr),
+      mStride(0),
+      mSurfaceAllocationSize(0),
+      mFlushBytes(aFlushBytes) {
+  mSize = aTarget->GetSize();
+  mFormat = aTarget->GetFormat();
+  SetPermitSubpixelAA(aTarget->GetPermitSubpixelAA());
+
+  mRefDT = aTarget;
+}
+
 DrawTargetCaptureImpl::DrawTargetCaptureImpl(BackendType aBackend,
                                              const IntSize& aSize,
                                              SurfaceFormat aFormat)
-    : mSize(aSize), mSnapshot(nullptr), mStride(0), mSurfaceAllocationSize(0) {
+    : mSize(aSize),
+      mSnapshot(nullptr),
+      mStride(0),
+      mSurfaceAllocationSize(0),
+      mFlushBytes(0) {
   RefPtr<DrawTarget> screenRefDT =
       gfxPlatform::GetPlatform()->ScreenReferenceDrawTarget();
 
@@ -66,6 +84,7 @@ bool DrawTargetCaptureImpl::Init(const IntSize& aSize, DrawTarget* aRefDT) {
 
 void DrawTargetCaptureImpl::InitForData(int32_t aStride,
                                         size_t aSurfaceAllocationSize) {
+  MOZ_ASSERT(!mFlushBytes);
   mStride = aStride;
   mSurfaceAllocationSize = aSurfaceAllocationSize;
 }
@@ -94,7 +113,9 @@ already_AddRefed<SourceSurface> DrawTargetCaptureImpl::OptimizeSourceSurface(
     RefPtr<SourceSurface> surface = aSurface;
     return surface.forget();
   }
-  return mRefDT->OptimizeSourceSurface(aSurface);
+  RefPtr<SourceSurfaceCapture> surface = new SourceSurfaceCapture(
+      const_cast<DrawTargetCaptureImpl*>(this), aSurface);
+  return surface.forget();
 }
 
 void DrawTargetCaptureImpl::DetachAllSnapshots() { MarkChanged(); }
@@ -160,9 +181,20 @@ void DrawTargetCaptureImpl::CopySurface(SourceSurface* aSurface,
   AppendCommand(CopySurfaceCommand)(aSurface, aSourceRect, aDestination);
 }
 
+void DrawTargetCaptureImpl::CopyRect(const IntRect& aSourceRect,
+                                     const IntPoint& aDestination) {
+  AppendCommand(CopyRectCommand)(aSourceRect, aDestination);
+}
+
 void DrawTargetCaptureImpl::FillRect(const Rect& aRect, const Pattern& aPattern,
                                      const DrawOptions& aOptions) {
   AppendCommand(FillRectCommand)(aRect, aPattern, aOptions);
+}
+
+void DrawTargetCaptureImpl::FillRoundedRect(const RoundedRect& aRect,
+                                            const Pattern& aPattern,
+                                            const DrawOptions& aOptions) {
+  AppendCommand(FillRoundedRectCommand)(aRect, aPattern, aOptions);
 }
 
 void DrawTargetCaptureImpl::StrokeRect(const Rect& aRect,
@@ -232,6 +264,10 @@ void DrawTargetCaptureImpl::PushLayer(bool aOpaque, Float aOpacity,
   mPushedLayers.push_back(layer);
   DrawTarget::SetPermitSubpixelAA(aOpaque);
 
+  if (aMask) {
+    aMask->GuaranteePersistance();
+  }
+
   AppendCommand(PushLayerCommand)(aOpaque, aOpacity, aMask, aMaskTransform,
                                   aBounds, aCopyBackground);
 }
@@ -267,6 +303,10 @@ void DrawTargetCaptureImpl::Blur(const AlphaBoxBlur& aBlur) {
   AppendCommand(BlurCommand)(aBlur);
 }
 
+void DrawTargetCaptureImpl::PadEdges(const IntRegion& aRegion) {
+  AppendCommand(PadEdgesCommand)(aRegion);
+}
+
 void DrawTargetCaptureImpl::ReplayToDrawTarget(DrawTarget* aDT,
                                                const Matrix& aTransform) {
   for (CaptureCommandList::iterator iter(mCommands); !iter.Done();
@@ -274,61 +314,6 @@ void DrawTargetCaptureImpl::ReplayToDrawTarget(DrawTarget* aDT,
     DrawingCommand* cmd = iter.Get();
     cmd->ExecuteOnDT(aDT, &aTransform);
   }
-}
-
-bool DrawTargetCaptureImpl::ContainsOnlyColoredGlyphs(
-    RefPtr<ScaledFont>& aScaledFont, Color& aColor,
-    std::vector<Glyph>& aGlyphs) {
-  bool result = false;
-
-  for (CaptureCommandList::iterator iter(mCommands); !iter.Done();
-       iter.Next()) {
-    DrawingCommand* command = iter.Get();
-
-    if (command->GetType() != CommandType::FILLGLYPHS &&
-        command->GetType() != CommandType::SETTRANSFORM) {
-      return false;
-    }
-
-    if (command->GetType() == CommandType::SETTRANSFORM) {
-      SetTransformCommand* transform =
-          static_cast<SetTransformCommand*>(command);
-      if (!transform->mTransform.IsIdentity()) {
-        return false;
-      }
-      continue;
-    }
-
-    FillGlyphsCommand* fillGlyphs = static_cast<FillGlyphsCommand*>(command);
-    if (aScaledFont && fillGlyphs->mFont != aScaledFont) {
-      return false;
-    }
-    aScaledFont = fillGlyphs->mFont;
-
-    Pattern& pat = fillGlyphs->mPattern;
-
-    if (pat.GetType() != PatternType::COLOR) {
-      return false;
-    }
-
-    ColorPattern* colorPat = static_cast<ColorPattern*>(&pat);
-    if (aColor != Color() && colorPat->mColor != aColor) {
-      return false;
-    }
-    aColor = colorPat->mColor;
-
-    if (fillGlyphs->mOptions.mCompositionOp != CompositionOp::OP_OVER ||
-        fillGlyphs->mOptions.mAlpha != 1.0f) {
-      return false;
-    }
-
-    // TODO: Deal with AA on the DrawOptions
-
-    aGlyphs.insert(aGlyphs.end(), fillGlyphs->mGlyphs.begin(),
-                   fillGlyphs->mGlyphs.end());
-    result = true;
-  }
-  return result;
 }
 
 void DrawTargetCaptureImpl::MarkChanged() {
@@ -356,6 +341,15 @@ RefPtr<DrawTarget> DrawTargetCaptureImpl::CreateSimilarRasterTarget(
   return mRefDT->CreateSimilarDrawTarget(aSize, aFormat);
 }
 
+already_AddRefed<PathBuilder> DrawTargetCaptureImpl::CreatePathBuilder(
+    FillRule aFillRule) const {
+  if (mRefDT->GetBackendType() == BackendType::DIRECT2D1_1) {
+    return MakeRefPtr<PathBuilderCapture>(aFillRule, mRefDT).forget();
+  }
+
+  return mRefDT->CreatePathBuilder(aFillRule);
+}
+
 already_AddRefed<FilterNode> DrawTargetCaptureImpl::CreateFilter(
     FilterType aType) {
   if (mRefDT->GetBackendType() == BackendType::DIRECT2D1_1) {
@@ -365,10 +359,12 @@ already_AddRefed<FilterNode> DrawTargetCaptureImpl::CreateFilter(
   }
 }
 
+bool DrawTargetCaptureImpl::IsEmpty() const { return mCommands.IsEmpty(); }
+
 void DrawTargetCaptureImpl::Dump() {
-  TreeLog output;
+  TreeLog<> output;
   output << "DrawTargetCapture(" << (void*)(this) << ")\n";
-  TreeAutoIndent indent(output);
+  TreeAutoIndent<> indent(output);
   mCommands.Log(output);
   output << "\n";
 }

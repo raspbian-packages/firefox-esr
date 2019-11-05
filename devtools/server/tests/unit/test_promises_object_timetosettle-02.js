@@ -8,54 +8,50 @@
 
 "use strict";
 
-const { PromisesFront } = require("devtools/shared/fronts/promises");
-const { setTimeout } = ChromeUtils.import("resource://gre/modules/Timer.jsm", {});
+const { setTimeout } = ChromeUtils.import("resource://gre/modules/Timer.jsm");
 
-var EventEmitter = require("devtools/shared/event-emitter");
-
-add_task(async function () {
-  let client = await startTestDebuggerServer("test-promises-timetosettle");
-  let chromeActors = await getChromeActors(client);
-  await attachTab(client, chromeActors);
+add_task(async function() {
+  const { promisesFront } = await createMainProcessPromisesFront();
 
   ok(Promise.toString().includes("native code"), "Expect native DOM Promise.");
 
-  // We have to attach the chrome TabActor before playing with the PromiseActor
-  await attachTab(client, chromeActors);
-  await testGetTimeToSettle(client, chromeActors,
-    v => new Promise(resolve => setTimeout(() => resolve(v), 100)));
-
-  let response = await listTabs(client);
-  let targetTab = findTab(response.tabs, "test-promises-timetosettle");
-  ok(targetTab, "Found our target tab.");
-  await attachTab(client, targetTab);
-
-  await testGetTimeToSettle(client, targetTab, v => {
-    const debuggee =
-      DebuggerServer.getTestGlobal("test-promises-timetosettle");
-    return new debuggee.Promise(resolve => setTimeout(() => resolve(v), 100));
-  });
-
-  await close(client);
+  await testGetTimeToSettle(
+    promisesFront,
+    v => new Promise(resolve => setTimeout(() => resolve(v), 100))
+  );
 });
 
-async function testGetTimeToSettle(client, form, makePromise) {
-  let front = PromisesFront(client, form);
-  let resolution = "MyLittleSecret" + Math.random();
+add_task(async function() {
+  const { debuggee, promisesFront } = await createTabPromisesFront();
+
+  await testGetTimeToSettle(promisesFront, v => {
+    return new debuggee.Promise(resolve => setTimeout(() => resolve(v), 100));
+  });
+});
+
+async function testGetTimeToSettle(front, makePromise) {
+  const resolution = "MyLittleSecret" + Math.random();
   let found = false;
 
   await front.attach();
   await front.listPromises();
 
-  let onNewPromise = new Promise(resolve => {
-    EventEmitter.on(front, "promises-settled", promises => {
-      for (let p of promises) {
-        if (p.promiseState.state === "fulfilled" &&
-            p.promiseState.value === resolution) {
-          let timeToSettle = Math.floor(p.promiseState.timeToSettle / 100) * 100;
-          ok(timeToSettle >= 100,
+  const onNewPromise = new Promise(resolve => {
+    front.on("promises-settled", promises => {
+      for (const p of promises) {
+        if (
+          p.promiseState.state === "fulfilled" &&
+          p.promiseState.value === resolution
+        ) {
+          const timeToSettle =
+            Math.floor(p.promiseState.timeToSettle / 100) * 100;
+          ok(
+            timeToSettle >= 100,
             "Expect time to settle for resolved promise to be " +
-            "at least 100ms, got " + timeToSettle + "ms.");
+              "at least 100ms, got " +
+              timeToSettle +
+              "ms."
+          );
           found = true;
           resolve();
         } else {
@@ -65,7 +61,7 @@ async function testGetTimeToSettle(client, form, makePromise) {
     });
   });
 
-  let promise = makePromise(resolution);
+  const promise = makePromise(resolution);
 
   await onNewPromise;
   ok(found, "Found our new promise.");

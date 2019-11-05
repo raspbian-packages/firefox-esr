@@ -16,8 +16,8 @@ namespace dom {
 
 class HTMLPreElement final : public nsGenericHTMLElement {
  public:
-  explicit HTMLPreElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : nsGenericHTMLElement(aNodeInfo) {}
+  explicit HTMLPreElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : nsGenericHTMLElement(std::move(aNodeInfo)) {}
 
   // nsISupports
   NS_INLINE_DECL_REFCOUNTING_INHERITED(HTMLPreElement, nsGenericHTMLElement)
@@ -30,8 +30,7 @@ class HTMLPreElement final : public nsGenericHTMLElement {
   virtual nsMapRuleToAttributesFunc GetAttributeMappingFunction()
       const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // WebIDL API
   int32_t Width() const { return GetIntAttr(nsGkAtoms::width, 0); }
@@ -47,7 +46,7 @@ class HTMLPreElement final : public nsGenericHTMLElement {
 
  private:
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
-                                    GenericSpecifiedValues* aGenericData);
+                                    MappedDeclarations&);
 };
 
 }  // namespace dom

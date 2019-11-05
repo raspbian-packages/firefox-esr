@@ -5,61 +5,74 @@
 "use strict";
 
 const { connect } = require("devtools/client/shared/vendor/react-redux");
-const { createFactory, PureComponent } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  PureComponent,
+} = require("devtools/client/shared/vendor/react");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 
 const AnimationDetailHeader = createFactory(require("./AnimationDetailHeader"));
-const AnimatedPropertyListContainer =
-  createFactory(require("./AnimatedPropertyListContainer"));
+const AnimatedPropertyListContainer = createFactory(
+  require("./AnimatedPropertyListContainer")
+);
 
 class AnimationDetailContainer extends PureComponent {
   static get propTypes() {
     return {
+      addAnimationsCurrentTimeListener: PropTypes.func.isRequired,
       animation: PropTypes.object.isRequired,
       emitEventForTest: PropTypes.func.isRequired,
       getAnimatedPropertyMap: PropTypes.func.isRequired,
+      getAnimationsCurrentTime: PropTypes.func.isRequired,
       getComputedStyle: PropTypes.func.isRequired,
+      removeAnimationsCurrentTimeListener: PropTypes.func.isRequired,
       setDetailVisibility: PropTypes.func.isRequired,
       simulateAnimation: PropTypes.func.isRequired,
+      simulateAnimationForKeyframesProgressBar: PropTypes.func.isRequired,
+      timeScale: PropTypes.object.isRequired,
     };
   }
 
   render() {
     const {
+      addAnimationsCurrentTimeListener,
       animation,
       emitEventForTest,
       getAnimatedPropertyMap,
+      getAnimationsCurrentTime,
       getComputedStyle,
+      removeAnimationsCurrentTimeListener,
       setDetailVisibility,
       simulateAnimation,
+      simulateAnimationForKeyframesProgressBar,
+      timeScale,
     } = this.props;
 
     return dom.div(
       {
-        className: "animation-detail-container"
+        className: "animation-detail-container",
       },
-      animation ?
-        AnimationDetailHeader(
-          {
+      animation
+        ? AnimationDetailHeader({
             animation,
             setDetailVisibility,
-          }
-        )
-      :
-        null,
-      animation ?
-        AnimatedPropertyListContainer(
-          {
+          })
+        : null,
+      animation
+        ? AnimatedPropertyListContainer({
+            addAnimationsCurrentTimeListener,
             animation,
             emitEventForTest,
             getAnimatedPropertyMap,
+            getAnimationsCurrentTime,
             getComputedStyle,
+            removeAnimationsCurrentTimeListener,
             simulateAnimation,
-          }
-        )
-      :
-        null
+            simulateAnimationForKeyframesProgressBar,
+            timeScale,
+          })
+        : null
     );
   }
 }

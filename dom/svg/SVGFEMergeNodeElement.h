@@ -7,7 +7,7 @@
 #ifndef mozilla_dom_SVGFEMergeNodeElement_h
 #define mozilla_dom_SVGFEMergeNodeElement_h
 
-#include "nsSVGFilters.h"
+#include "SVGFilters.h"
 
 nsresult NS_NewSVGFEMergeNodeElement(
     nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
@@ -24,28 +24,27 @@ class SVGFEMergeNodeElement : public SVGFEMergeNodeElementBase {
 
  protected:
   explicit SVGFEMergeNodeElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-      : SVGFEMergeNodeElementBase(aNodeInfo) {}
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+      : SVGFEMergeNodeElementBase(std::move(aNodeInfo)) {}
   virtual JSObject* WrapNode(JSContext* aCx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
  public:
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   virtual bool AttributeAffectsRendering(int32_t aNameSpaceID,
                                          nsAtom* aAttribute) const override;
 
-  const nsSVGString* GetIn1() { return &mStringAttributes[IN1]; }
+  const SVGAnimatedString* GetIn1() { return &mStringAttributes[IN1]; }
 
   // WebIDL
-  already_AddRefed<SVGAnimatedString> In1();
+  already_AddRefed<DOMSVGAnimatedString> In1();
 
  protected:
   virtual StringAttributesInfo GetStringInfo() override;
 
   enum { IN1 };
-  nsSVGString mStringAttributes[1];
+  SVGAnimatedString mStringAttributes[1];
   static StringInfo sStringInfo[1];
 };
 

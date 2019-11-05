@@ -6,8 +6,12 @@
 "use strict";
 
 // Make this available to both AMD and CJS environments
-define(function (require, exports, module) {
-  const { Component, createFactory } = require("devtools/client/shared/vendor/react");
+define(function(require, exports, module) {
+  const {
+    Component,
+    createFactory,
+    createRef,
+  } = require("devtools/client/shared/vendor/react");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
   const dom = require("devtools/client/shared/vendor/react-dom-factories");
   const { findDOMNode } = require("devtools/client/shared/vendor/react-dom");
@@ -17,8 +21,18 @@ define(function (require, exports, module) {
   const TreeCell = createFactory(require("./TreeCell"));
   const LabelCell = createFactory(require("./LabelCell"));
 
-  // Scroll
-  const { scrollIntoViewIfNeeded } = require("devtools/client/shared/scroll");
+  const { focusableSelector } = require("devtools/client/shared/focus");
+
+  const UPDATE_ON_PROPS = [
+    "name",
+    "open",
+    "value",
+    "loading",
+    "level",
+    "selected",
+    "active",
+    "hasChildren",
+  ];
 
   /**
    * This template represents a node in TreeView component. It's rendered
@@ -41,6 +55,7 @@ define(function (require, exports, module) {
           path: PropTypes.string.isRequired,
           hidden: PropTypes.bool,
           selected: PropTypes.bool,
+          active: PropTypes.bool,
         }),
         decorator: PropTypes.object,
         renderCell: PropTypes.object,
@@ -49,14 +64,35 @@ define(function (require, exports, module) {
         id: PropTypes.string.isRequired,
         provider: PropTypes.object.isRequired,
         onClick: PropTypes.func.isRequired,
+        onContextMenu: PropTypes.func,
         onMouseOver: PropTypes.func,
-        onMouseOut: PropTypes.func
+        onMouseOut: PropTypes.func,
       };
     }
 
     constructor(props) {
       super(props);
+
+      this.treeRowRef = createRef();
+
       this.getRowClass = this.getRowClass.bind(this);
+      this._onKeyDown = this._onKeyDown.bind(this);
+    }
+
+    componentDidMount() {
+      this._setTabbableState();
+
+      // Child components might add/remove new focusable elements, watch for the
+      // additions/removals of descendant nodes and update focusable state.
+      const win = this.treeRowRef.current.ownerDocument.defaultView;
+      const { MutationObserver } = win;
+      this.observer = new MutationObserver(() => {
+        this._setTabbableState();
+      });
+      this.observer.observe(this.treeRowRef.current, {
+        childList: true,
+        subtree: true,
+      });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -67,7 +103,7 @@ define(function (require, exports, module) {
       // The important part is that DOM elements don't need to be
       // re-created when they should appear again.
       if (nextProps.member.hidden != this.props.member.hidden) {
-        let row = findDOMNode(this);
+        const row = findDOMNode(this);
         row.classList.toggle("hidden");
       }
     }
@@ -77,9 +113,8 @@ define(function (require, exports, module) {
      * This makes the rendering a lot faster!
      */
     shouldComponentUpdate(nextProps) {
-      let props = ["name", "open", "value", "loading", "selected", "hasChildren"];
-      for (let p in props) {
-        if (nextProps.member[props[p]] != this.props.member[props[p]]) {
+      for (const prop of UPDATE_ON_PROPS) {
+        if (nextProps.member[prop] != this.props.member[prop]) {
           return true;
         }
       }
@@ -87,19 +122,92 @@ define(function (require, exports, module) {
       return false;
     }
 
-    componentDidUpdate() {
-      if (this.props.member.selected) {
-        let row = findDOMNode(this);
-        // Because this is called asynchronously, context window might be
-        // already gone.
-        if (row.ownerDocument.defaultView) {
-          scrollIntoViewIfNeeded(row);
-        }
+    componentWillUnmount() {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+
+    /**
+     * Makes sure that none of the focusable elements inside the row container
+     * are tabbable if the row is not active. If the row is active and focus
+     * is outside its container, focus on the first focusable element inside.
+     */
+    _setTabbableState() {
+      const elms = this.getFocusableElements();
+      if (elms.length === 0) {
+        return;
+      }
+
+      const { active } = this.props.member;
+      if (!active) {
+        elms.forEach(elm => elm.setAttribute("tabindex", "-1"));
+        return;
+      }
+
+      if (!elms.includes(document.activeElement)) {
+        elms[0].focus();
       }
     }
 
+    /**
+     * Get a list of all elements that are focusable with a keyboard inside the
+     * tree node.
+     */
+    getFocusableElements() {
+      return Array.from(
+        this.treeRowRef.current.querySelectorAll(focusableSelector)
+      );
+    }
+
+    /**
+     * Wrap and move keyboard focus to first/last focusable element inside the
+     * tree node to prevent the focus from escaping the tree node boundaries.
+     * element).
+     *
+     * @param  {DOMNode} current  currently focused element
+     * @param  {Boolean} back     direction
+     * @return {Boolean}          true there is a newly focused element.
+     */
+    _wrapMoveFocus(current, back) {
+      const elms = this.getFocusableElements();
+      let next;
+
+      if (elms.length === 0) {
+        return false;
+      }
+
+      if (back) {
+        if (elms.indexOf(current) === 0) {
+          next = elms[elms.length - 1];
+          next.focus();
+        }
+      } else if (elms.indexOf(current) === elms.length - 1) {
+        next = elms[0];
+        next.focus();
+      }
+
+      return !!next;
+    }
+
+    _onKeyDown(e) {
+      const { target, key, shiftKey } = e;
+
+      if (key !== "Tab") {
+        return;
+      }
+
+      const focusMoved = this._wrapMoveFocus(target, shiftKey);
+      if (focusMoved) {
+        // Focus was moved to the begining/end of the list, so we need to
+        // prevent the default focus change that would happen here.
+        e.preventDefault();
+      }
+
+      e.stopPropagation();
+    }
+
     getRowClass(object) {
-      let decorator = this.props.decorator;
+      const decorator = this.props.decorator;
       if (!decorator || !decorator.getRowClass) {
         return [];
       }
@@ -118,20 +226,24 @@ define(function (require, exports, module) {
     }
 
     render() {
-      let member = this.props.member;
-      let decorator = this.props.decorator;
-      let props = {
+      const member = this.props.member;
+      const decorator = this.props.decorator;
+
+      const props = {
         id: this.props.id,
+        ref: this.treeRowRef,
         role: "treeitem",
-        "aria-level": member.level,
+        "aria-level": member.level + 1,
         "aria-selected": !!member.selected,
         onClick: this.props.onClick,
+        onContextMenu: this.props.onContextMenu,
+        onKeyDownCapture: member.active ? this._onKeyDown : undefined,
         onMouseOver: this.props.onMouseOver,
-        onMouseOut: this.props.onMouseOut
+        onMouseOut: this.props.onMouseOut,
       };
 
       // Compute class name list for the <tr> element.
-      let classNames = this.getRowClass(member.object) || [];
+      const classNames = this.getRowClass(member.object) || [];
       classNames.push("treeRow");
       classNames.push(member.type + "Row");
 
@@ -163,29 +275,29 @@ define(function (require, exports, module) {
       // the first one, but there might be cases (like in
       // the Memory panel) where the toggling is done
       // in the last column.
-      let cells = [];
+      const cells = [];
 
       // Get components for rendering cells.
       let renderCell = this.props.renderCell || RenderCell;
       let renderLabelCell = this.props.renderLabelCell || RenderLabelCell;
       if (decorator && decorator.renderLabelCell) {
-        renderLabelCell = decorator.renderLabelCell(member.object) ||
-          renderLabelCell;
+        renderLabelCell =
+          decorator.renderLabelCell(member.object) || renderLabelCell;
       }
 
       // Render a cell for every column.
       this.props.columns.forEach(col => {
-        let cellProps = Object.assign({}, this.props, {
+        const cellProps = Object.assign({}, this.props, {
           key: col.id,
           id: col.id,
-          value: this.props.provider.getValue(member.object, col.id)
+          value: this.props.provider.getValue(member.object, col.id),
         });
 
         if (decorator && decorator.renderCell) {
           renderCell = decorator.renderCell(member.object, col.id);
         }
 
-        let render = (col.id == "default") ? renderLabelCell : renderCell;
+        const render = col.id == "default" ? renderLabelCell : renderCell;
 
         // Some cells don't have to be rendered. This happens when some
         // other cells span more columns. Note that the label cells contains
@@ -197,19 +309,17 @@ define(function (require, exports, module) {
       });
 
       // Render tree row
-      return (
-        tr(props, cells)
-      );
+      return tr(props, cells);
     }
   }
 
   // Helpers
 
-  let RenderCell = props => {
+  const RenderCell = props => {
     return TreeCell(props);
   };
 
-  let RenderLabelCell = props => {
+  const RenderLabelCell = props => {
     return LabelCell(props);
   };
 

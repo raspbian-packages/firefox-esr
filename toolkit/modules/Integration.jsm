@@ -106,11 +106,11 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "Integration",
-];
+var EXPORTED_SYMBOLS = ["Integration"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 /**
  * Maps integration point names to IntegrationPoint objects.
@@ -124,16 +124,19 @@ const gIntegrationPoints = new Map();
  *   Integration.downloads.register(...);
  *   Integration["addon-provided-integration"].register(...);
  */
-var Integration = new Proxy({}, {
-  get(target, name) {
-    let integrationPoint = gIntegrationPoints.get(name);
-    if (!integrationPoint) {
-      integrationPoint = new IntegrationPoint();
-      gIntegrationPoints.set(name, integrationPoint);
-    }
-    return integrationPoint;
-  },
-});
+var Integration = new Proxy(
+  {},
+  {
+    get(target, name) {
+      let integrationPoint = gIntegrationPoints.get(name);
+      if (!integrationPoint) {
+        integrationPoint = new IntegrationPoint();
+        gIntegrationPoints.set(name, integrationPoint);
+      }
+      return integrationPoint;
+    },
+  }
+);
 
 /**
  * Individual integration point for which overrides can be registered.
@@ -141,11 +144,13 @@ var Integration = new Proxy({}, {
 var IntegrationPoint = function() {
   this._overrideFns = new Set();
   this._combined = {
+    // eslint-disable-next-line mozilla/use-chromeutils-generateqi
     QueryInterface() {
       let ex = new Components.Exception(
-                   "Integration objects should not be used with XPCOM because" +
-                   " they change when new overrides are registered.",
-                   Cr.NS_ERROR_NO_INTERFACE);
+        "Integration objects should not be used with XPCOM because" +
+          " they change when new overrides are registered.",
+        Cr.NS_ERROR_NO_INTERFACE
+      );
       Cu.reportError(ex);
       throw ex;
     },
@@ -248,7 +253,7 @@ this.IntegrationPoint.prototype = {
     }
 
     this._combinedIsCurrent = true;
-    return this._combined = combined;
+    return (this._combined = combined);
   },
 
   /**

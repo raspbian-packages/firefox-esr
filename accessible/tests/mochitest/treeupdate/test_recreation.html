@@ -7,8 +7,7 @@
   <link rel="stylesheet" type="text/css"
         href="chrome://mochikit/content/tests/SimpleTest/test.css" />
 
-  <script type="application/javascript"
-          src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
 
   <script type="application/javascript"
           src="../common.js"></script>
@@ -42,7 +41,7 @@
 
       if (this.accessible) {
         this.unexpectedEventSeq = [
-          new invokerChecker(EVENT_SHOW, this.accessible)
+          new invokerChecker(EVENT_SHOW, this.accessible),
         ];
       }
     }
@@ -87,6 +86,14 @@
       this.__proto__ = new changeAttr(aID, "aria-multiselectable", "true");
     }
 
+    function changeTypeToPassword(aID) {
+      this.__proto__ = new changeAttr(aID, "type", "password");
+    }
+
+    function changeTypeToText(aID) {
+      this.__proto__ = new changeAttr(aID, "type", "text");
+    }
+
     // //////////////////////////////////////////////////////////////////////////
     // Test
 
@@ -112,6 +119,10 @@
 
       // recreate an accessible by aria-multiselectable change
       gQueue.push(new changeMultiselectable("div3"));
+
+      // recreate an accessible by type
+      gQueue.push(new changeTypeToText("password"));
+      gQueue.push(new changeTypeToPassword("text"));
 
       gQueue.invoke(); // SimpleTest.finish() will be called in the end
     }
@@ -139,5 +150,8 @@
   <div id="div3" role="listbox">list</div>
 
   <div id="eventdump"></div>
+
+  <form><input type="password" id="password"/></form>
+  <form><input type="text" id="text"/></form>
 </body>
 </html>

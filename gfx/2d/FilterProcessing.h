@@ -70,6 +70,13 @@ class FilterProcessing {
                                                int32_t aTargetStride,
                                                uint8_t* aSourceData,
                                                int32_t aSourceStride);
+  static void DoOpacityCalculation(const IntSize& aSize, uint8_t* aTargetData,
+                                   int32_t aTargetStride, uint8_t* aSourceData,
+                                   int32_t aSourceStride, Float aValue);
+  static void DoOpacityCalculationA8(const IntSize& aSize, uint8_t* aTargetData,
+                                     int32_t aTargetStride,
+                                     uint8_t* aSourceData,
+                                     int32_t aSourceStride, Float aValue);
   static already_AddRefed<DataSourceSurface> RenderTurbulence(
       const IntSize& aSize, const Point& aOffset, const Size& aBaseFrequency,
       int32_t aSeed, int aNumOctaves, TurbulenceType aType, bool aStitch,
@@ -116,6 +123,14 @@ class FilterProcessing {
                                                       int32_t aTargetStride,
                                                       uint8_t* aSourceData,
                                                       int32_t aSourceStride);
+  static void DoOpacityCalculation_Scalar(const IntSize& aSize,
+                                          uint8_t* aTargetData,
+                                          int32_t aTargetStride,
+                                          uint8_t* aSourceData,
+                                          int32_t aSourceStride, Float aValue);
+  static void DoOpacityCalculationA8_Scalar(
+      const IntSize& aSize, uint8_t* aTargetData, int32_t aTargetStride,
+      uint8_t* aSourceData, int32_t aSourceStride, Float aValue);
   static already_AddRefed<DataSourceSurface> RenderTurbulence_Scalar(
       const IntSize& aSize, const Point& aOffset, const Size& aBaseFrequency,
       int32_t aSeed, int aNumOctaves, TurbulenceType aType, bool aStitch,
@@ -164,6 +179,11 @@ class FilterProcessing {
                                                     int32_t aTargetStride,
                                                     uint8_t* aSourceData,
                                                     int32_t aSourceStride);
+  static void DoOpacityCalculation_SSE2(const IntSize& aSize,
+                                        uint8_t* aTargetData,
+                                        int32_t aTargetStride,
+                                        uint8_t* aSourceData,
+                                        int32_t aSourceStride, Float aValue);
   static already_AddRefed<DataSourceSurface> RenderTurbulence_SSE2(
       const IntSize& aSize, const Point& aOffset, const Size& aBaseFrequency,
       int32_t aSeed, int aNumOctaves, TurbulenceType aType, bool aStitch,

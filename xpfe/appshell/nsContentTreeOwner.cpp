@@ -1,5 +1,5 @@
 /* -*- Mode: C++; tab-width: 3; indent-tabs-mode: nil; c-basic-offset: 2 -*-
- * vim: set ts=2 sw=2 et tw=79:
+ * vim: set ts=2 sw=2 et tw=80:
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,13 +14,9 @@
 #include "nsAutoPtr.h"
 
 // Interfaces needed to be included
-#include "nsIDOMNode.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMNodeList.h"
 #include "nsIDOMWindow.h"
 #include "nsIDOMChromeWindow.h"
 #include "nsIBrowserDOMWindow.h"
-#include "nsIDOMXULElement.h"
 #include "nsIEmbeddingSiteWindow.h"
 #include "nsIPrompt.h"
 #include "nsIAuthPrompt.h"
@@ -28,23 +24,23 @@
 #include "nsIXULBrowserWindow.h"
 #include "nsIPrincipal.h"
 #include "nsIURIFixup.h"
-#include "nsCDefaultURIFixup.h"
 #include "nsIWebNavigation.h"
 #include "nsDocShellCID.h"
 #include "nsIExternalURLHandlerService.h"
 #include "nsIMIMEInfo.h"
 #include "nsIWidget.h"
 #include "nsWindowWatcher.h"
-#include "NullPrincipal.h"
 #include "mozilla/BrowserElementParent.h"
-#include "nsIDocShellLoadInfo.h"
+#include "mozilla/Components.h"
+#include "mozilla/NullPrincipal.h"
+#include "nsDocShell.h"
+#include "nsDocShellLoadState.h"
 
-#include "nsIDOMDocument.h"
 #include "nsIScriptObjectPrincipal.h"
 #include "nsIURI.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #if defined(XP_MACOSX)
-#include "nsThreadUtils.h"
+#  include "nsThreadUtils.h"
 #endif
 
 #include "mozilla/Preferences.h"
@@ -185,21 +181,21 @@ nsContentTreeOwner::GetPrimaryContentShell(nsIDocShellTreeItem** aShell) {
 }
 
 NS_IMETHODIMP
-nsContentTreeOwner::TabParentAdded(nsITabParent* aTab, bool aPrimary) {
+nsContentTreeOwner::RemoteTabAdded(nsIRemoteTab* aTab, bool aPrimary) {
   NS_ENSURE_STATE(mXULWindow);
-  return mXULWindow->TabParentAdded(aTab, aPrimary);
+  return mXULWindow->RemoteTabAdded(aTab, aPrimary);
 }
 
 NS_IMETHODIMP
-nsContentTreeOwner::TabParentRemoved(nsITabParent* aTab) {
+nsContentTreeOwner::RemoteTabRemoved(nsIRemoteTab* aTab) {
   NS_ENSURE_STATE(mXULWindow);
-  return mXULWindow->TabParentRemoved(aTab);
+  return mXULWindow->RemoteTabRemoved(aTab);
 }
 
 NS_IMETHODIMP
-nsContentTreeOwner::GetPrimaryTabParent(nsITabParent** aTab) {
+nsContentTreeOwner::GetPrimaryRemoteTab(nsIRemoteTab** aTab) {
   NS_ENSURE_STATE(mXULWindow);
-  return mXULWindow->GetPrimaryTabParent(aTab);
+  return mXULWindow->GetPrimaryRemoteTab(aTab);
 }
 
 NS_IMETHODIMP
@@ -349,7 +345,7 @@ nsContentTreeOwner::GetHasPrimaryContent(bool* aResult) {
 //*****************************************************************************
 
 NS_IMETHODIMP nsContentTreeOwner::OnBeforeLinkTraversal(
-    const nsAString& originalTarget, nsIURI* linkURI, nsIDOMNode* linkNode,
+    const nsAString& originalTarget, nsIURI* linkURI, nsINode* linkNode,
     bool isAppTab, nsAString& _retval) {
   NS_ENSURE_STATE(mXULWindow);
 
@@ -366,7 +362,8 @@ NS_IMETHODIMP nsContentTreeOwner::OnBeforeLinkTraversal(
 
 NS_IMETHODIMP nsContentTreeOwner::ShouldLoadURI(
     nsIDocShell* aDocShell, nsIURI* aURI, nsIURI* aReferrer, bool aHasPostData,
-    nsIPrincipal* aTriggeringPrincipal, bool* _retval) {
+    nsIPrincipal* aTriggeringPrincipal, nsIContentSecurityPolicy* aCsp,
+    bool* _retval) {
   NS_ENSURE_STATE(mXULWindow);
 
   nsCOMPtr<nsIXULBrowserWindow> xulBrowserWindow;
@@ -375,7 +372,7 @@ NS_IMETHODIMP nsContentTreeOwner::ShouldLoadURI(
   if (xulBrowserWindow)
     return xulBrowserWindow->ShouldLoadURI(aDocShell, aURI, aReferrer,
                                            aHasPostData, aTriggeringPrincipal,
-                                           _retval);
+                                           aCsp, _retval);
 
   *_retval = true;
   return NS_OK;
@@ -390,7 +387,8 @@ NS_IMETHODIMP nsContentTreeOwner::ShouldLoadURIInThisProcess(nsIURI* aURI,
 
 NS_IMETHODIMP nsContentTreeOwner::ReloadInFreshProcess(
     nsIDocShell* aDocShell, nsIURI* aURI, nsIURI* aReferrer,
-    nsIPrincipal* aTriggeringPrincipal, uint32_t aLoadFlags, bool* aRetVal) {
+    nsIPrincipal* aTriggeringPrincipal, uint32_t aLoadFlags,
+    nsIContentSecurityPolicy* aCsp, bool* aRetVal) {
   NS_WARNING("Cannot reload in fresh process from a nsContentTreeOwner!");
   *aRetVal = false;
   return NS_OK;
@@ -413,11 +411,8 @@ NS_IMETHODIMP nsContentTreeOwner::SetStatusWithContext(
 
   if (xulBrowserWindow) {
     switch (aStatusType) {
-      case STATUS_SCRIPT:
-        xulBrowserWindow->SetJSStatus(aStatusText);
-        break;
       case STATUS_LINK: {
-        nsCOMPtr<nsIDOMElement> element = do_QueryInterface(aStatusContext);
+        nsCOMPtr<dom::Element> element = do_QueryInterface(aStatusContext);
         xulBrowserWindow->SetOverLink(aStatusText, element);
         break;
       }
@@ -440,19 +435,6 @@ NS_IMETHODIMP nsContentTreeOwner::SetStatus(uint32_t aStatusType,
       nullptr);
 }
 
-NS_IMETHODIMP nsContentTreeOwner::SetWebBrowser(nsIWebBrowser* aWebBrowser) {
-  NS_ERROR("Haven't Implemented this yet");
-  return NS_ERROR_FAILURE;
-}
-
-NS_IMETHODIMP nsContentTreeOwner::GetWebBrowser(nsIWebBrowser** aWebBrowser) {
-  // Unimplemented, and probably will remain so; xpfe windows have docshells,
-  // not webbrowsers.
-  NS_ENSURE_ARG_POINTER(aWebBrowser);
-  *aWebBrowser = 0;
-  return NS_ERROR_FAILURE;
-}
-
 NS_IMETHODIMP nsContentTreeOwner::SetChromeFlags(uint32_t aChromeFlags) {
   NS_ENSURE_STATE(mXULWindow);
   return mXULWindow->SetChromeFlags(aChromeFlags);
@@ -461,16 +443,6 @@ NS_IMETHODIMP nsContentTreeOwner::SetChromeFlags(uint32_t aChromeFlags) {
 NS_IMETHODIMP nsContentTreeOwner::GetChromeFlags(uint32_t* aChromeFlags) {
   NS_ENSURE_STATE(mXULWindow);
   return mXULWindow->GetChromeFlags(aChromeFlags);
-}
-
-NS_IMETHODIMP nsContentTreeOwner::DestroyBrowserWindow() {
-  NS_ERROR("Haven't Implemented this yet");
-  return NS_ERROR_FAILURE;
-}
-
-NS_IMETHODIMP nsContentTreeOwner::SizeBrowserTo(int32_t aCX, int32_t aCY) {
-  NS_ERROR("Haven't Implemented this yet");
-  return NS_ERROR_FAILURE;
 }
 
 NS_IMETHODIMP nsContentTreeOwner::ShowAsModal() {
@@ -482,11 +454,6 @@ NS_IMETHODIMP nsContentTreeOwner::IsWindowModal(bool* _retval) {
   NS_ENSURE_STATE(mXULWindow);
   *_retval = mXULWindow->mContinueModalLoop;
   return NS_OK;
-}
-
-NS_IMETHODIMP nsContentTreeOwner::ExitModalEventLoop(nsresult aStatus) {
-  NS_ENSURE_STATE(mXULWindow);
-  return mXULWindow->ExitModalLoop(aStatus);
 }
 
 //*****************************************************************************
@@ -685,8 +652,7 @@ NS_IMETHODIMP nsContentTreeOwner::SetTitle(const nsAString& aTitle) {
       //
       nsCOMPtr<nsIDocShellTreeItem> dsitem;
       GetPrimaryContentShell(getter_AddRefs(dsitem));
-      nsCOMPtr<nsIScriptObjectPrincipal> doc =
-          do_QueryInterface(dsitem ? dsitem->GetDocument() : nullptr);
+      RefPtr<dom::Document> doc = dsitem ? dsitem->GetDocument() : nullptr;
       if (doc) {
         nsCOMPtr<nsIURI> uri;
         nsIPrincipal* principal = doc->GetPrincipal();
@@ -696,7 +662,7 @@ NS_IMETHODIMP nsContentTreeOwner::SetTitle(const nsAString& aTitle) {
             //
             // remove any user:pass information
             //
-            nsCOMPtr<nsIURIFixup> fixup(do_GetService(NS_URIFIXUP_CONTRACTID));
+            nsCOMPtr<nsIURIFixup> fixup(components::URIFixup::Service());
             if (fixup) {
               nsCOMPtr<nsIURI> tmpuri;
               nsresult rv =
@@ -720,7 +686,7 @@ NS_IMETHODIMP nsContentTreeOwner::SetTitle(const nsAString& aTitle) {
         }
       }
     }
-    nsIDocument* document = docShellElement->OwnerDoc();
+    dom::Document* document = docShellElement->OwnerDoc();
     ErrorResult rv;
     document->SetTitle(title, rv);
     return rv.StealNSResult();
@@ -737,11 +703,13 @@ nsContentTreeOwner::ProvideWindow(
     mozIDOMWindowProxy* aParent, uint32_t aChromeFlags, bool aCalledFromJS,
     bool aPositionSpecified, bool aSizeSpecified, nsIURI* aURI,
     const nsAString& aName, const nsACString& aFeatures, bool aForceNoOpener,
-    nsIDocShellLoadInfo* aLoadInfo, bool* aWindowIsNew,
+    bool aForceNoReferrer, nsDocShellLoadState* aLoadState, bool* aWindowIsNew,
     mozIDOMWindowProxy** aReturn) {
   NS_ENSURE_ARG_POINTER(aParent);
 
-  auto* parent = nsPIDOMWindowOuter::From(aParent);
+  auto* parentWin = nsPIDOMWindowOuter::From(aParent);
+  dom::BrowsingContext* parent =
+      parentWin ? parentWin->GetBrowsingContext() : nullptr;
 
   *aReturn = nullptr;
 
@@ -796,7 +764,8 @@ nsContentTreeOwner::ProvideWindow(
   }
 
   int32_t openLocation = nsWindowWatcher::GetWindowOpenLocation(
-      parent, aChromeFlags, aCalledFromJS, aPositionSpecified, aSizeSpecified);
+      parentWin, aChromeFlags, aCalledFromJS, aPositionSpecified,
+      aSizeSpecified);
 
   if (openLocation != nsIBrowserDOMWindow::OPEN_NEWTAB &&
       openLocation != nsIBrowserDOMWindow::OPEN_CURRENTWINDOW) {
@@ -828,6 +797,9 @@ nsContentTreeOwner::ProvideWindow(
     if (aForceNoOpener) {
       flags |= nsIBrowserDOMWindow::OPEN_NO_OPENER;
     }
+    if (aForceNoReferrer) {
+      flags |= nsIBrowserDOMWindow::OPEN_NO_REFERRER;
+    }
 
     // Get a new rendering area from the browserDOMWin.
     // Since we are not loading any URI, we follow the principle of least
@@ -835,15 +807,16 @@ nsContentTreeOwner::ProvideWindow(
     //
     // This method handles setting the opener for us, so we don't need to set it
     // ourselves.
-    RefPtr<NullPrincipal> nullPrincipal = NullPrincipal::Create();
-    return browserDOMWin->CreateContentWindow(aURI, aParent, openLocation,
-                                              flags, nullPrincipal, aReturn);
+    RefPtr<NullPrincipal> nullPrincipal =
+        NullPrincipal::CreateWithoutOriginAttributes();
+    return browserDOMWin->CreateContentWindow(
+        aURI, aParent, openLocation, flags, nullPrincipal, nullptr, aReturn);
   }
 }
 
-  //*****************************************************************************
-  // nsContentTreeOwner: Accessors
-  //*****************************************************************************
+//*****************************************************************************
+// nsContentTreeOwner: Accessors
+//*****************************************************************************
 
 #if defined(XP_MACOSX)
 class nsContentTitleSettingEvent : public Runnable {

@@ -9,12 +9,12 @@
 #include "GeckoProfiler.h"
 #include "MainThreadUtils.h"
 #include "mozilla/Assertions.h"
+#include "mozilla/BackgroundHangMonitor.h"
 #include "mozilla/ClearOnShutdown.h"
-#include "mozilla/DebugOnly.h"
-#include "mozilla/HangMonitor.h"
 #include "mozilla/mscom/SpinEvent.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/SystemGroup.h"
+#include "mozilla/Unused.h"
 #include "private/prpriv.h"  // For PR_GetThreadID
 #include <winternl.h>        // For NTSTATUS and NTAPI
 
@@ -35,6 +35,7 @@ class SyncRunnable : public mozilla::Runnable {
       : mozilla::Runnable("MainThreadInvoker"), mRunnable(aRunnable) {
     static const bool gotStatics = InitStatics();
     MOZ_ASSERT(gotStatics);
+    Unused << gotStatics;
   }
 
   ~SyncRunnable() = default;
@@ -95,7 +96,8 @@ namespace mscom {
 
 HANDLE MainThreadInvoker::sMainThread = nullptr;
 
-/* static */ bool MainThreadInvoker::InitStatics() {
+/* static */
+bool MainThreadInvoker::InitStatics() {
   nsCOMPtr<nsIThread> mainThread;
   nsresult rv = ::NS_GetMainThread(getter_AddRefs(mainThread));
   if (NS_FAILED(rv)) {
@@ -117,10 +119,11 @@ HANDLE MainThreadInvoker::sMainThread = nullptr;
 MainThreadInvoker::MainThreadInvoker() {
   static const bool gotStatics = InitStatics();
   MOZ_ASSERT(gotStatics);
+  Unused << gotStatics;
 }
 
 bool MainThreadInvoker::Invoke(already_AddRefed<nsIRunnable>&& aRunnable) {
-  nsCOMPtr<nsIRunnable> runnable(Move(aRunnable));
+  nsCOMPtr<nsIRunnable> runnable(std::move(aRunnable));
   if (!runnable) {
     return false;
   }
@@ -163,7 +166,7 @@ bool MainThreadInvoker::Invoke(already_AddRefed<nsIRunnable>&& aRunnable) {
 
 /* static */ VOID CALLBACK MainThreadInvoker::MainThreadAPC(ULONG_PTR aParam) {
   AUTO_PROFILER_THREAD_WAKE;
-  mozilla::HangMonitor::NotifyActivity(mozilla::HangMonitor::kGeneralActivity);
+  mozilla::BackgroundHangMonitor().NotifyActivity();
   MOZ_ASSERT(NS_IsMainThread());
   auto runnable = reinterpret_cast<SyncRunnable*>(aParam);
   runnable->APCRun();

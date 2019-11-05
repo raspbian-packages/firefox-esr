@@ -95,8 +95,6 @@ class VRPose final : public Pose {
   VRPose(nsISupports* aParent, const gfx::VRHMDSensorState& aState);
   explicit VRPose(nsISupports* aParent);
 
-  uint64_t FrameID() const { return mFrameId; }
-
   virtual void GetPosition(JSContext* aCx, JS::MutableHandle<JSObject*> aRetval,
                            ErrorResult& aRv) override;
   virtual void GetLinearVelocity(JSContext* aCx,
@@ -121,7 +119,6 @@ class VRPose final : public Pose {
  protected:
   ~VRPose();
 
-  uint64_t mFrameId;
   gfx::VRHMDSensorState mVRState;
 };
 
@@ -348,9 +345,11 @@ class VRDisplay final : public DOMEventTargetHelper, public nsIObserver {
   int32_t RequestAnimationFrame(mozilla::dom::FrameRequestCallback& aCallback,
                                 mozilla::ErrorResult& aError);
   void CancelAnimationFrame(int32_t aHandle, mozilla::ErrorResult& aError);
+  void StartVRNavigation();
   void StartHandlingVRNavigationEvent();
   void StopHandlingVRNavigationEvent();
   bool IsHandlingVRNavigationEvent();
+  void OnPresentationGenerationChanged();
 
  protected:
   VRDisplay(nsPIDOMWindowInner* aWindow, gfx::VRDisplayClient* aClient);

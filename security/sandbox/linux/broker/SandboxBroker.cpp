@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 #ifdef XP_LINUX
-#include <sys/prctl.h>
+#  include <sys/prctl.h>
 #endif
 
 #include "base/string_util.h"
@@ -31,6 +31,7 @@
 #include "mozilla/ipc/FileDescriptor.h"
 #include "nsDirectoryServiceDefs.h"
 #include "nsAppDirectoryServiceDefs.h"
+#include "nsThreadUtils.h"
 #include "SpecialSystemDirectory.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
@@ -42,7 +43,7 @@ static const nsLiteralCString tempDirPrefix("/tmp");
 // This constructor signals failure by setting mFileDesc and aClientFd to -1.
 SandboxBroker::SandboxBroker(UniquePtr<const Policy> aPolicy, int aChildPid,
                              int& aClientFd)
-    : mChildPid(aChildPid), mPolicy(Move(aPolicy)) {
+    : mChildPid(aChildPid), mPolicy(std::move(aPolicy)) {
   int fds[2];
   if (0 != socketpair(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, fds)) {
     SANDBOX_LOG_ERROR("SandboxBroker: socketpair failed: %s", strerror(errno));
@@ -69,13 +70,13 @@ UniquePtr<SandboxBroker> SandboxBroker::Create(
   int clientFd;
   // Can't use MakeUnique here because the constructor is private.
   UniquePtr<SandboxBroker> rv(
-      new SandboxBroker(Move(aPolicy), aChildPid, clientFd));
+      new SandboxBroker(std::move(aPolicy), aChildPid, clientFd));
   if (clientFd < 0) {
     rv = nullptr;
   } else {
     aClientFdOut = ipc::FileDescriptor(clientFd);
   }
-  return Move(rv);
+  return rv;
 }
 
 SandboxBroker::~SandboxBroker() {
@@ -382,7 +383,7 @@ static bool AllowOperation(int aReqFlags, int aPerms) {
   }
   // We don't really allow executing anything,
   // so in true unix tradition we hijack this
-  // for directories.
+  // for directory access (creation).
   if (aReqFlags & X_OK) {
     needed |= SandboxBroker::MAY_CREATE;
   }
@@ -615,6 +616,10 @@ int SandboxBroker::SymlinkPermissions(const char* aPath,
 }
 
 void SandboxBroker::ThreadMain(void) {
+  // Create a nsThread wrapper for the current platform thread, and register it
+  // with the thread manager.
+  (void)NS_GetCurrentThread();
+
   char threadName[16];
   SprintfLiteral(threadName, "FS Broker %d", mChildPid);
   PlatformThread::SetName(threadName);
@@ -852,7 +857,7 @@ void SandboxBroker::ThreadMain(void) {
 
         case SANDBOX_FILE_LINK:
         case SANDBOX_FILE_SYMLINK:
-          if (permissive || AllowOperation(W_OK, perms)) {
+          if (permissive || AllowOperation(W_OK | X_OK, perms)) {
             if (DoLink(pathBuf, pathBuf2, req.mOp) == 0) {
               resp.mError = 0;
             } else {
@@ -864,7 +869,7 @@ void SandboxBroker::ThreadMain(void) {
           break;
 
         case SANDBOX_FILE_RENAME:
-          if (permissive || AllowOperation(W_OK, perms)) {
+          if (permissive || AllowOperation(W_OK | X_OK, perms)) {
             if (rename(pathBuf, pathBuf2) == 0) {
               resp.mError = 0;
             } else {
@@ -895,7 +900,7 @@ void SandboxBroker::ThreadMain(void) {
           break;
 
         case SANDBOX_FILE_UNLINK:
-          if (permissive || AllowOperation(W_OK, perms)) {
+          if (permissive || AllowOperation(W_OK | X_OK, perms)) {
             if (unlink(pathBuf) == 0) {
               resp.mError = 0;
             } else {
@@ -986,10 +991,30 @@ void SandboxBroker::ThreadMain(void) {
     if (sent < 0) {
       SANDBOX_LOG_ERROR("failed to send broker response to pid %d: %s",
                         mChildPid, strerror(errno));
+    } else {
+      MOZ_ASSERT(static_cast<size_t>(sent) == ios[0].iov_len + ios[1].iov_len);
     }
+
+    // Work around Linux kernel bug: recvmsg checks for pending data
+    // and then checks for EOF or shutdown, without synchronization;
+    // if the sendmsg and last close occur between those points, it
+    // will see no pending data (before) and a closed socket (after),
+    // and incorrectly return EOF even though there is a message to be
+    // read.  To avoid this, we send an extra message with a reference
+    // to respfd, so the last close can't happen until after the real
+    // response is read.
+    //
+    // See also: https://bugzil.la/1243108#c48
+    const struct Response fakeResp = {-4095};
+    const struct iovec fakeIO = {const_cast<Response*>(&fakeResp),
+                                 sizeof(fakeResp)};
+    // If the client has already read the real response and closed its
+    // socket then this will fail, but that's fine.
+    if (SendWithFd(respfd, &fakeIO, 1, respfd) < 0) {
+      MOZ_ASSERT(errno == EPIPE || errno == ECONNREFUSED || errno == ENOTCONN);
+    }
+
     close(respfd);
-    MOZ_ASSERT(sent < 0 ||
-               static_cast<size_t>(sent) == ios[0].iov_len + ios[1].iov_len);
 
     if (openedFd >= 0) {
       close(openedFd);

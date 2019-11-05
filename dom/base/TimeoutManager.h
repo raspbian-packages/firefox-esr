@@ -12,18 +12,24 @@
 
 class nsIEventTarget;
 class nsITimeoutHandler;
+class nsITimer;
 class nsGlobalWindowInner;
 
 namespace mozilla {
+
+class PerformanceCounter;
+
 namespace dom {
 
-class OrderedTimeoutIterator;
 class TimeoutExecutor;
 
 // This class manages the timeouts in a Window's setTimeout/setInterval pool.
 class TimeoutManager final {
+ private:
+  struct Timeouts;
+
  public:
-  explicit TimeoutManager(nsGlobalWindowInner& aWindow);
+  TimeoutManager(nsGlobalWindowInner& aWindow, uint32_t aMaxIdleDeferMS);
   ~TimeoutManager();
   TimeoutManager(const TimeoutManager& rhs) = delete;
   void operator=(const TimeoutManager& rhs) = delete;
@@ -34,16 +40,21 @@ class TimeoutManager final {
   static void SetNestingLevel(uint32_t aLevel) { sNestingLevel = aLevel; }
 
   bool HasTimeouts() const {
-    return !mNormalTimeouts.IsEmpty() || !mTrackingTimeouts.IsEmpty();
+    return !mTimeouts.IsEmpty() || !mIdleTimeouts.IsEmpty();
   }
 
   nsresult SetTimeout(nsITimeoutHandler* aHandler, int32_t interval,
                       bool aIsInterval, mozilla::dom::Timeout::Reason aReason,
                       int32_t* aReturn);
   void ClearTimeout(int32_t aTimerId, mozilla::dom::Timeout::Reason aReason);
+  bool ClearTimeoutInternal(int32_t aTimerId,
+                            mozilla::dom::Timeout::Reason aReason,
+                            bool aIsIdle);
 
   // The timeout implementation functions.
-  void RunTimeout(const TimeStamp& aNow, const TimeStamp& aTargetDeadline);
+  MOZ_CAN_RUN_SCRIPT
+  void RunTimeout(const TimeStamp& aNow, const TimeStamp& aTargetDeadline,
+                  bool aProcessIdle);
 
   void ClearAllTimeouts();
   uint32_t GetTimeoutId(mozilla::dom::Timeout::Reason aReason);
@@ -72,9 +83,6 @@ class TimeoutManager final {
   // Initialize TimeoutManager before the first time it is accessed.
   static void Initialize();
 
-  // Exposed only for testing
-  bool IsTimeoutTracking(uint32_t aTimeoutId);
-
   // The document finished loading
   void OnDocumentLoaded();
   void StartThrottlingTimeouts();
@@ -83,18 +91,8 @@ class TimeoutManager final {
   // doesn't guarantee that Timeouts are iterated in any particular order.
   template <class Callable>
   void ForEachUnorderedTimeout(Callable c) {
-    mNormalTimeouts.ForEach(c);
-    mTrackingTimeouts.ForEach(c);
-  }
-
-  // Run some code for each Timeout in our list, but let the callback cancel the
-  // iteration by returning true.  Note that this function doesn't guarantee
-  // that Timeouts are iterated in any particular order.
-  template <class Callable>
-  void ForEachUnorderedTimeoutAbortable(Callable c) {
-    if (!mNormalTimeouts.ForEachAbortable(c)) {
-      mTrackingTimeouts.ForEachAbortable(c);
-    }
+    mIdleTimeouts.ForEach(c);
+    mTimeouts.ForEach(c);
   }
 
   void BeginSyncOperation();
@@ -102,7 +100,11 @@ class TimeoutManager final {
 
   nsIEventTarget* EventTarget();
 
+  bool BudgetThrottlingEnabled(bool aIsBackground) const;
+
   static const uint32_t InvalidFiringId;
+
+  void SetLoading(bool value);
 
  private:
   void MaybeStartThrottleTimeout();
@@ -111,6 +113,8 @@ class TimeoutManager final {
   bool RescheduleTimeout(mozilla::dom::Timeout* aTimeout,
                          const TimeStamp& aLastCallbackTime,
                          const TimeStamp& aCurrentNow);
+
+  void MoveIdleToActive();
 
   bool IsBackground() const;
 
@@ -134,7 +138,7 @@ class TimeoutManager final {
   void UpdateBudget(const TimeStamp& aNow,
                     const TimeDuration& aDuration = TimeDuration());
 
-  bool BudgetThrottlingEnabled(bool aIsBackground) const;
+  mozilla::PerformanceCounter* GetPerformanceCounter();
 
  private:
   struct Timeouts {
@@ -152,6 +156,7 @@ class TimeoutManager final {
     Timeout* GetLast() { return mTimeoutList.getLast(); }
     bool IsEmpty() const { return mTimeoutList.isEmpty(); }
     void InsertFront(Timeout* aTimeout) { mTimeoutList.insertFront(aTimeout); }
+    void InsertBack(Timeout* aTimeout) { mTimeoutList.insertBack(aTimeout); }
     void Clear() { mTimeoutList.clear(); }
 
     template <class Callable>
@@ -174,8 +179,6 @@ class TimeoutManager final {
       return false;
     }
 
-    friend class OrderedTimeoutIterator;
-
    private:
     // The TimeoutManager that owns this Timeouts structure.  This is
     // mainly used to call state inspecting methods like IsValidFiringId().
@@ -188,8 +191,6 @@ class TimeoutManager final {
     TimeoutList mTimeoutList;
   };
 
-  friend class OrderedTimeoutIterator;
-
   // Each nsGlobalWindowInner object has a TimeoutManager member.  This
   // reference points to that holder object.
   nsGlobalWindowInner& mWindow;
@@ -197,14 +198,22 @@ class TimeoutManager final {
   // can live past the destruction of the window if its scheduled.  Therefore
   // it must be a separate ref-counted object.
   RefPtr<TimeoutExecutor> mExecutor;
+  // For timeouts run off the idle queue
+  RefPtr<TimeoutExecutor> mIdleExecutor;
   // The list of timeouts coming from non-tracking scripts.
-  Timeouts mNormalTimeouts;
-  // The list of timeouts coming from scripts on the tracking protection list.
-  Timeouts mTrackingTimeouts;
+  Timeouts mTimeouts;
   uint32_t mTimeoutIdCounter;
   uint32_t mNextFiringId;
+#ifdef DEBUG
+  int64_t mFiringIndex;
+  int64_t mLastFiringIndex;
+#endif
   AutoTArray<uint32_t, 2> mFiringIdStack;
   mozilla::dom::Timeout* mRunningTimeout;
+
+  // Timeouts that would have fired but are being deferred until MainThread
+  // is idle (because we're loading)
+  Timeouts mIdleTimeouts;
 
   // The current idle request callback timeout handle
   uint32_t mIdleCallbackTimeoutCounter;
@@ -216,6 +225,8 @@ class TimeoutManager final {
   bool mThrottleTimeouts;
   bool mThrottleTrackingTimeouts;
   bool mBudgetThrottleTimeouts;
+
+  bool mIsLoading;
 
   static uint32_t sNestingLevel;
 };

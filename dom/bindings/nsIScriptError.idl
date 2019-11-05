@@ -22,6 +22,13 @@ interface nsIScriptErrorNote : nsISupports
 {
     readonly attribute AString errorMessage;
     readonly attribute AString sourceName;
+
+    /**
+     * Unique identifier within the process for the script source this note is
+     * associated with, or zero.
+     */
+    readonly attribute uint32_t sourceId;
+
     readonly attribute uint32_t lineNumber;
     readonly attribute uint32_t columnNumber;
 
@@ -57,6 +64,13 @@ interface nsIScriptError : nsIConsoleMessage
 
     readonly attribute AString sourceName;
     readonly attribute AString sourceLine;
+
+    /**
+     * Unique identifier within the process for the script source this error is
+     * associated with, or zero.
+     */
+    readonly attribute uint32_t sourceId;
+
     readonly attribute uint32_t lineNumber;
     readonly attribute uint32_t columnNumber;
     readonly attribute uint32_t flags;
@@ -79,7 +93,18 @@ interface nsIScriptError : nsIConsoleMessage
 
     readonly attribute boolean isFromPrivateWindow;
 
+    readonly attribute boolean isFromChromeContext;
+
     attribute jsval stack;
+
+    /**
+     * If |stack| is an object, then stackGlobal must be a global object that's
+     * same-compartment with |stack|. This can be used to enter the correct
+     * realm when working with the stack object. We can't use the object itself
+     * because it might be a cross-compartment wrapper and CCWs are not
+     * associated with a single realm/global.
+     */
+    [noscript] readonly attribute jsval stackGlobal;
 
     /**
      * The name of a template string, as found in js.msg, associated with the
@@ -89,13 +114,27 @@ interface nsIScriptError : nsIConsoleMessage
 
     readonly attribute nsIArray notes;
 
+    /**
+     * If we are recording or replaying, this value may identify the point
+     * where the error was generated, otherwise zero.
+     */
+    attribute unsigned long long timeWarpTarget;
+
+    /**
+     * If the ScriptError is a CSS parser error, this value will contain the
+     * CSS selectors of the CSS ruleset where the error occured.
+     */
+    attribute AString cssSelectors;
+
     void init(in AString message,
               in AString sourceName,
               in AString sourceLine,
               in uint32_t lineNumber,
               in uint32_t columnNumber,
               in uint32_t flags,
-              in string category);
+              in string category,
+              [optional] in bool fromPrivateWindow,
+              [optional] in bool fromChromeContext);
 
     /* This should be called instead of nsIScriptError.init to
      * initialize with a window id.  The window id should be for the
@@ -141,6 +180,9 @@ interface nsIScriptError : nsIConsoleMessage
                            in uint32_t flags,
                            in ACString category,
                            in unsigned long long innerWindowID);
+
+    /* Initialize the script source ID in a new error. */
+    void initSourceId(in uint32_t sourceId);
 
 %{C++
     // These overloads allow passing a literal string for category.

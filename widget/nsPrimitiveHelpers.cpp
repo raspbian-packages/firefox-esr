@@ -95,7 +95,6 @@ void nsPrimitiveHelpers ::CreatePrimitiveForCFHTML(const void* aDataBuff,
   // We need to duplicate the input buffer, since the removal of linebreaks
   // might reallocte it.
   void* utf8 = moz_xmalloc(*aDataLen);
-  if (!utf8) return;
   memcpy(utf8, aDataBuff, *aDataLen);
   int32_t signedLen = static_cast<int32_t>(*aDataLen);
   nsLinebreakHelpers::ConvertPlatformToDOMLinebreaks(
@@ -117,13 +116,14 @@ void nsPrimitiveHelpers ::CreatePrimitiveForCFHTML(const void* aDataBuff,
 // data buffer with the data in it. This data will be null terminated, but the
 // length parameter does not reflect that.
 //
-void nsPrimitiveHelpers ::CreateDataFromPrimitive(const nsACString& aFlavor,
-                                                  nsISupports* aPrimitive,
-                                                  void** aDataBuff,
-                                                  uint32_t aDataLen) {
+void nsPrimitiveHelpers::CreateDataFromPrimitive(const nsACString& aFlavor,
+                                                 nsISupports* aPrimitive,
+                                                 void** aDataBuff,
+                                                 uint32_t* aDataLen) {
   if (!aDataBuff) return;
 
   *aDataBuff = nullptr;
+  *aDataLen = 0;
 
   if (aFlavor.EqualsLiteral(kTextMime) ||
       aFlavor.EqualsLiteral(kCustomTypesMime)) {
@@ -132,6 +132,7 @@ void nsPrimitiveHelpers ::CreateDataFromPrimitive(const nsACString& aFlavor,
       nsAutoCString data;
       plainText->GetData(data);
       *aDataBuff = ToNewCString(data);
+      *aDataLen = data.Length() * sizeof(char);
     }
   } else {
     nsCOMPtr<nsISupportsString> doubleByteText(do_QueryInterface(aPrimitive));
@@ -139,6 +140,7 @@ void nsPrimitiveHelpers ::CreateDataFromPrimitive(const nsACString& aFlavor,
       nsAutoString data;
       doubleByteText->GetData(data);
       *aDataBuff = ToNewUnicode(data);
+      *aDataLen = data.Length() * sizeof(char16_t);
     }
   }
 }

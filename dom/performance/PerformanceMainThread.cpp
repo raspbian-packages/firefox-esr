@@ -6,11 +6,38 @@
 
 #include "PerformanceMainThread.h"
 #include "PerformanceNavigation.h"
-#include "mozilla/dom/DOMPrefs.h"
+#include "mozilla/StaticPrefs.h"
 #include "nsICacheInfoChannel.h"
 
 namespace mozilla {
 namespace dom {
+
+namespace {
+
+void GetURLSpecFromChannel(nsITimedChannel* aChannel, nsAString& aSpec) {
+  aSpec.AssignLiteral("document");
+
+  nsCOMPtr<nsIChannel> channel = do_QueryInterface(aChannel);
+  if (!channel) {
+    return;
+  }
+
+  nsCOMPtr<nsIURI> uri;
+  nsresult rv = channel->GetURI(getter_AddRefs(uri));
+  if (NS_WARN_IF(NS_FAILED(rv)) || !uri) {
+    return;
+  }
+
+  nsAutoCString spec;
+  rv = uri->GetSpec(spec);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return;
+  }
+
+  aSpec = NS_ConvertUTF8toUTF16(spec);
+}
+
+}  // namespace
 
 NS_IMPL_CYCLE_COLLECTION_CLASS(PerformanceMainThread)
 
@@ -42,9 +69,13 @@ NS_INTERFACE_MAP_END_INHERITING(Performance)
 
 PerformanceMainThread::PerformanceMainThread(nsPIDOMWindowInner* aWindow,
                                              nsDOMNavigationTiming* aDOMTiming,
-                                             nsITimedChannel* aChannel)
-    : Performance(aWindow), mDOMTiming(aDOMTiming), mChannel(aChannel) {
+                                             nsITimedChannel* aChannel,
+                                             bool aPrincipal)
+    : Performance(aWindow, aPrincipal),
+      mDOMTiming(aDOMTiming),
+      mChannel(aChannel) {
   MOZ_ASSERT(aWindow, "Parent window object should be provided");
+  CreateNavigationTimingEntry();
 }
 
 PerformanceMainThread::~PerformanceMainThread() {
@@ -80,8 +111,7 @@ void PerformanceMainThread::DispatchBufferFullEvent() {
   // it bubbles, and it isn't cancelable
   event->InitEvent(NS_LITERAL_STRING("resourcetimingbufferfull"), true, false);
   event->SetTrusted(true);
-  bool dummy;
-  DispatchEvent(event, &dummy);
+  DispatchEvent(*event);
 }
 
 PerformanceNavigation* PerformanceMainThread::Navigation() {
@@ -113,7 +143,7 @@ void PerformanceMainThread::AddEntry(nsIHttpChannel* channel,
   // The PerformanceResourceTiming object will use the PerformanceTimingData
   // object to get all the required timings.
   RefPtr<PerformanceResourceTiming> performanceEntry =
-      new PerformanceResourceTiming(Move(performanceTimingData), this,
+      new PerformanceResourceTiming(std::move(performanceTimingData), this,
                                     entryName);
 
   performanceEntry->SetInitiatorType(initiatorType);
@@ -238,8 +268,8 @@ void PerformanceMainThread::InsertUserEntry(PerformanceEntry* aEntry) {
   nsAutoCString uri;
   uint64_t markCreationEpoch = 0;
 
-  if (DOMPrefs::PerformanceLoggingEnabled() ||
-      nsContentUtils::SendPerformanceTimingNotifications()) {
+  if (StaticPrefs::dom_performance_enable_user_timing_logging() ||
+      StaticPrefs::dom_performance_enable_notify_performance_timing()) {
     nsresult rv = NS_ERROR_FAILURE;
     nsCOMPtr<nsPIDOMWindowInner> owner = GetOwner();
     if (owner && owner->GetDocumentURI()) {
@@ -252,12 +282,12 @@ void PerformanceMainThread::InsertUserEntry(PerformanceEntry* aEntry) {
     }
     markCreationEpoch = static_cast<uint64_t>(PR_Now() / PR_USEC_PER_MSEC);
 
-    if (DOMPrefs::PerformanceLoggingEnabled()) {
+    if (StaticPrefs::dom_performance_enable_user_timing_logging()) {
       Performance::LogEntry(aEntry, uri);
     }
   }
 
-  if (nsContentUtils::SendPerformanceTimingNotifications()) {
+  if (StaticPrefs::dom_performance_enable_notify_performance_timing()) {
     TimingNotification(aEntry, uri, markCreationEpoch);
   }
 
@@ -272,18 +302,39 @@ DOMHighResTimeStamp PerformanceMainThread::CreationTime() const {
   return GetDOMTiming()->GetNavigationStart();
 }
 
-void PerformanceMainThread::EnsureDocEntry() {
-  if (!mDocEntry && nsContentUtils::IsPerformanceNavigationTimingEnabled()) {
-    UniquePtr<PerformanceTimingData> timing(
-        new PerformanceTimingData(mChannel, nullptr, 0));
+void PerformanceMainThread::CreateNavigationTimingEntry() {
+  MOZ_ASSERT(!mDocEntry, "mDocEntry should be null.");
 
-    nsCOMPtr<nsIHttpChannel> httpChannel = do_QueryInterface(mChannel);
-    if (httpChannel) {
-      timing->SetPropertiesFromHttpChannel(httpChannel);
-    }
-
-    mDocEntry = new PerformanceNavigationTiming(Move(timing), this);
+  if (!StaticPrefs::dom_enable_performance_navigation_timing()) {
+    return;
   }
+
+  nsAutoString name;
+  GetURLSpecFromChannel(mChannel, name);
+
+  UniquePtr<PerformanceTimingData> timing(
+      new PerformanceTimingData(mChannel, nullptr, 0));
+
+  nsCOMPtr<nsIHttpChannel> httpChannel = do_QueryInterface(mChannel);
+  if (httpChannel) {
+    timing->SetPropertiesFromHttpChannel(httpChannel, mChannel);
+  }
+
+  mDocEntry = new PerformanceNavigationTiming(std::move(timing), this, name);
+}
+
+void PerformanceMainThread::QueueNavigationTimingEntry() {
+  if (!mDocEntry) {
+    return;
+  }
+
+  // Let's update some values.
+  nsCOMPtr<nsIHttpChannel> httpChannel = do_QueryInterface(mChannel);
+  if (httpChannel) {
+    mDocEntry->UpdatePropertiesFromHttpChannel(httpChannel, mChannel);
+  }
+
+  QueueEntry(mDocEntry);
 }
 
 void PerformanceMainThread::GetEntries(
@@ -297,7 +348,6 @@ void PerformanceMainThread::GetEntries(
   aRetval = mResourceEntries;
   aRetval.AppendElements(mUserEntries);
 
-  EnsureDocEntry();
   if (mDocEntry) {
     aRetval.AppendElement(mDocEntry);
   }
@@ -315,7 +365,7 @@ void PerformanceMainThread::GetEntriesByType(
 
   if (aEntryType.EqualsLiteral("navigation")) {
     aRetval.Clear();
-    EnsureDocEntry();
+
     if (mDocEntry) {
       aRetval.AppendElement(mDocEntry);
     }
@@ -334,16 +384,14 @@ void PerformanceMainThread::GetEntriesByName(
     return;
   }
 
-  if (aName.EqualsLiteral("document")) {
-    aRetval.Clear();
-    EnsureDocEntry();
-    if (mDocEntry) {
-      aRetval.AppendElement(mDocEntry);
-    }
+  Performance::GetEntriesByName(aName, aEntryType, aRetval);
+
+  // The navigation entry is the first one. If it exists and the name matches,
+  // let put it in front.
+  if (mDocEntry && mDocEntry->GetName().Equals(aName)) {
+    aRetval.InsertElementAt(0, mDocEntry);
     return;
   }
-
-  Performance::GetEntriesByName(aName, aEntryType, aRetval);
 }
 
 }  // namespace dom

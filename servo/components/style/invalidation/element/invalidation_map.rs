@@ -1,37 +1,21 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Code for invalidations due to state or attribute changes.
 
-use {Atom, LocalName, Namespace};
-use context::QuirksMode;
-use element_state::{DocumentState, ElementState};
+use crate::context::QuirksMode;
+use crate::element_state::{DocumentState, ElementState};
+use crate::selector_map::{MaybeCaseInsensitiveHashMap, SelectorMap, SelectorMapEntry};
+use crate::selector_parser::SelectorImpl;
+use crate::{Atom, LocalName, Namespace};
 use fallible::FallibleVec;
 use hashglobe::FailedAllocationError;
-use selector_map::{MaybeCaseInsensitiveHashMap, SelectorMap, SelectorMapEntry};
-#[cfg(feature = "gecko")]
-use selector_parser::Direction;
-use selector_parser::SelectorImpl;
 use selectors::attr::NamespaceConstraint;
 use selectors::parser::{Combinator, Component};
 use selectors::parser::{Selector, SelectorIter, Visit};
 use selectors::visitor::SelectorVisitor;
 use smallvec::SmallVec;
-
-#[cfg(feature = "gecko")]
-/// Gets the element state relevant to the given `:dir` pseudo-class selector.
-pub fn dir_selector_to_state(dir: &Direction) -> ElementState {
-    match *dir {
-        Direction::Ltr => ElementState::IN_LTR_STATE,
-        Direction::Rtl => ElementState::IN_RTL_STATE,
-        Direction::Other(_) => {
-            // :dir(something-random) is a valid selector, but shouldn't
-            // match anything.
-            ElementState::empty()
-        },
-    }
-}
 
 /// Mapping between (partial) CompoundSelectors (and the combinator to their
 /// right) and the states and attributes they depend on.
@@ -54,8 +38,10 @@ pub fn dir_selector_to_state(dir: &Direction) -> ElementState {
 #[derive(Clone, Debug, MallocSizeOf)]
 pub struct Dependency {
     /// The dependency selector.
-    #[cfg_attr(feature = "gecko",
-               ignore_malloc_size_of = "CssRules have primary refs, we measure there")]
+    #[cfg_attr(
+        feature = "gecko",
+        ignore_malloc_size_of = "CssRules have primary refs, we measure there"
+    )]
     #[cfg_attr(feature = "servo", ignore_malloc_size_of = "Arc")]
     pub selector: Selector<SelectorImpl>,
 
@@ -92,21 +78,27 @@ impl Dependency {
             return None;
         }
 
-        Some(self.selector.combinator_at_match_order(self.selector_offset - 1))
+        Some(
+            self.selector
+                .combinator_at_match_order(self.selector_offset - 1),
+        )
     }
 
     /// The kind of invalidation that this would generate.
     pub fn invalidation_kind(&self) -> DependencyInvalidationKind {
         match self.combinator() {
             None => DependencyInvalidationKind::Element,
-            Some(Combinator::Child) |
-            Some(Combinator::Descendant) => DependencyInvalidationKind::Descendants,
-            Some(Combinator::LaterSibling) |
-            Some(Combinator::NextSibling) => DependencyInvalidationKind::Siblings,
+            Some(Combinator::Child) | Some(Combinator::Descendant) => {
+                DependencyInvalidationKind::Descendants
+            },
+            Some(Combinator::LaterSibling) | Some(Combinator::NextSibling) => {
+                DependencyInvalidationKind::Siblings
+            },
             // TODO(emilio): We could look at the selector itself to see if it's
             // an eager pseudo, and return only Descendants here if not.
             Some(Combinator::PseudoElement) => DependencyInvalidationKind::ElementAndDescendants,
             Some(Combinator::SlotAssignment) => DependencyInvalidationKind::SlottedElements,
+            Some(Combinator::Part) => unimplemented!("Need to add invalidation for shadow parts"),
         }
     }
 }
@@ -138,8 +130,10 @@ impl SelectorMapEntry for StateDependency {
 pub struct DocumentStateDependency {
     /// The selector that is affected. We don't need to track an offset, since
     /// when it changes it changes for the whole document anyway.
-    #[cfg_attr(feature = "gecko",
-               ignore_malloc_size_of = "CssRules have primary refs, we measure there")]
+    #[cfg_attr(
+        feature = "gecko",
+        ignore_malloc_size_of = "CssRules have primary refs, we measure there"
+    )]
     #[cfg_attr(feature = "servo", ignore_malloc_size_of = "Arc")]
     pub selector: Selector<SelectorImpl>,
     /// The state this dependency is affected by.
@@ -197,24 +191,14 @@ impl InvalidationMap {
     /// Returns the number of dependencies stored in the invalidation map.
     pub fn len(&self) -> usize {
         self.state_affecting_selectors.len() +
-        self.document_state_selectors.len() +
-        self.other_attribute_affecting_selectors.len() +
-        self.id_to_selector.iter().fold(0, |accum, (_, ref v)| {
-            accum + v.len()
-        }) +
-        self.class_to_selector.iter().fold(0, |accum, (_, ref v)| {
-            accum + v.len()
-        })
-    }
-
-    /// Adds a selector to this `InvalidationMap`.  Returns Err(..) to
-    /// signify OOM.
-    pub fn note_selector(
-        &mut self,
-        selector: &Selector<SelectorImpl>,
-        quirks_mode: QuirksMode,
-    ) -> Result<(), FailedAllocationError> {
-        self.collect_invalidations_for(selector, quirks_mode)
+            self.document_state_selectors.len() +
+            self.other_attribute_affecting_selectors.len() +
+            self.id_to_selector
+                .iter()
+                .fold(0, |accum, (_, ref v)| accum + v.len()) +
+            self.class_to_selector
+                .iter()
+                .fold(0, |accum, (_, ref v)| accum + v.len())
     }
 
     /// Clears this map, leaving it empty.
@@ -228,13 +212,14 @@ impl InvalidationMap {
         self.has_class_attribute_selectors = false;
     }
 
-    // Returns Err(..) to signify OOM.
-    fn collect_invalidations_for(
+    /// Adds a selector to this `InvalidationMap`.  Returns Err(..) to
+    /// signify OOM.
+    pub fn note_selector(
         &mut self,
         selector: &Selector<SelectorImpl>,
-        quirks_mode: QuirksMode
+        quirks_mode: QuirksMode,
     ) -> Result<(), FailedAllocationError> {
-        debug!("InvalidationMap::collect_invalidations_for({:?})", selector);
+        debug!("InvalidationMap::note_selector({:?})", selector);
 
         let mut iter = selector.iter();
         let mut combinator;
@@ -292,22 +277,26 @@ impl InvalidationMap {
             }
 
             if !compound_visitor.state.is_empty() {
-                self.state_affecting_selectors
-                    .insert(StateDependency {
+                self.state_affecting_selectors.insert(
+                    StateDependency {
                         dep: Dependency {
                             selector: selector.clone(),
                             selector_offset: sequence_start,
                         },
                         state: compound_visitor.state,
-                    }, quirks_mode)?;
+                    },
+                    quirks_mode,
+                )?;
             }
 
             if compound_visitor.other_attributes {
-                self.other_attribute_affecting_selectors
-                    .insert(Dependency {
+                self.other_attribute_affecting_selectors.insert(
+                    Dependency {
                         selector: selector.clone(),
                         selector_offset: sequence_start,
-                    }, quirks_mode)?;
+                    },
+                    quirks_mode,
+                )?;
             }
 
             combinator = iter.next_sequence();
@@ -319,10 +308,11 @@ impl InvalidationMap {
         }
 
         if !document_state.is_empty() {
-            self.document_state_selectors.try_push(DocumentStateDependency {
-                state: document_state,
-                selector: selector.clone(),
-            })?;
+            self.document_state_selectors
+                .try_push(DocumentStateDependency {
+                    state: document_state,
+                    selector: selector.clone(),
+                })?;
         }
 
         Ok(())
@@ -369,27 +359,25 @@ impl<'a> SelectorVisitor for CompoundSelectorDependencyCollector<'a> {
 
     fn visit_simple_selector(&mut self, s: &Component<SelectorImpl>) -> bool {
         #[cfg(feature = "gecko")]
-        use selector_parser::NonTSPseudoClass;
+        use crate::selector_parser::NonTSPseudoClass;
 
         match *s {
             Component::ID(ref id) => {
                 self.ids.push(id.clone());
-            }
+            },
             Component::Class(ref class) => {
                 self.classes.push(class.clone());
-            }
+            },
             Component::NonTSPseudoClass(ref pc) => {
                 self.other_attributes |= pc.is_attr_based();
                 self.state |= match *pc {
                     #[cfg(feature = "gecko")]
-                    NonTSPseudoClass::Dir(ref dir) => {
-                        dir_selector_to_state(dir)
-                    }
+                    NonTSPseudoClass::Dir(ref dir) => dir.element_state(),
                     _ => pc.state_flag(),
                 };
                 *self.document_state |= pc.document_state_flag();
-            }
-            _ => {}
+            },
+            _ => {},
         }
 
         true

@@ -23,15 +23,15 @@
 #include "prio.h"
 
 #ifdef XP_WIN
-#define NS_SLASH "\\"
-#include <fcntl.h>
-#include <io.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <windows.h>
+#  define NS_SLASH "\\"
+#  include <fcntl.h>
+#  include <io.h>
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <sys/stat.h>
+#  include <windows.h>
 #else
-#define NS_SLASH "/"
+#  define NS_SLASH "/"
 #endif
 
 #include "LateWriteChecks.h"
@@ -90,7 +90,7 @@ class LateWriteObserver final : public IOInterposeObserver {
 
  public:
   explicit LateWriteObserver(const char_type* aProfileDirectory)
-      : mProfileDirectory(NS_strdup(aProfileDirectory)) {}
+      : mProfileDirectory(NS_xstrdup(aProfileDirectory)) {}
   ~LateWriteObserver() {
     free(mProfileDirectory);
     mProfileDirectory = nullptr;
@@ -123,8 +123,7 @@ void LateWriteObserver::Observe(IOInterposeObserver::Observation& aOb) {
 
   nsTAutoString<char_type> nameAux(mProfileDirectory);
   nameAux.AppendLiteral(NS_SLASH "Telemetry.LateWriteTmpXXXXXX");
-  char_type* name;
-  nameAux.GetMutableData(&name);
+  char_type* name = nameAux.BeginWriting();
 
   // We want the sha1 of the entire file, so please don't write to fd
   // directly; use sha1Stream.
@@ -163,7 +162,7 @@ void LateWriteObserver::Observe(IOInterposeObserver::Observation& aOb) {
   sha1Stream.Printf("%u\n", (unsigned)numModules);
   for (size_t i = 0; i < numModules; ++i) {
     Telemetry::ProcessedStack::Module module = stack.GetModule(i);
-    sha1Stream.Printf("%s %s\n", module.mBreakpadId.c_str(),
+    sha1Stream.Printf("%s %s\n", module.mBreakpadId.get(),
                       NS_ConvertUTF16toUTF8(module.mName).get());
   }
 

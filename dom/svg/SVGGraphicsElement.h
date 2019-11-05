@@ -18,14 +18,20 @@ typedef SVGTransformableElement SVGGraphicsElementBase;
 class SVGGraphicsElement : public SVGGraphicsElementBase, public SVGTests {
  protected:
   explicit SVGGraphicsElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
-  ~SVGGraphicsElement();
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
+  ~SVGGraphicsElement() = default;
 
  public:
   // interfaces:
   NS_DECL_ISUPPORTS_INHERITED
 
-  nsSVGElement* AsSVGElement() final { return this; }
+  bool IsFocusableInternal(int32_t* aTabIndex, bool aWithMouse) override;
+  SVGElement* AsSVGElement() final { return this; }
+
+ protected:
+  // returns true if focusability has been definitively determined otherwise
+  // false
+  bool IsSVGFocusable(bool* aIsFocusable, int32_t* aTabIndex);
 };
 
 }  // namespace dom

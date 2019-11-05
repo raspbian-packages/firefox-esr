@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set ts=4 sw=4 sts=4 et cin: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=4 sw=2 sts=2 et cin: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -23,10 +23,10 @@ namespace net {
 // nsHttpResponseHead <public>
 //-----------------------------------------------------------------------------
 
-nsHttpResponseHead::nsHttpResponseHead(const nsHttpResponseHead &aOther)
+nsHttpResponseHead::nsHttpResponseHead(const nsHttpResponseHead& aOther)
     : mRecursiveMutex("nsHttpResponseHead.mRecursiveMutex"),
       mInVisitHeaders(false) {
-  nsHttpResponseHead &other = const_cast<nsHttpResponseHead &>(aOther);
+  nsHttpResponseHead& other = const_cast<nsHttpResponseHead&>(aOther);
   RecursiveMutexAutoLock monitor(other.mRecursiveMutex);
 
   mHeaders = other.mHeaders;
@@ -43,9 +43,9 @@ nsHttpResponseHead::nsHttpResponseHead(const nsHttpResponseHead &aOther)
   mPragmaNoCache = other.mPragmaNoCache;
 }
 
-nsHttpResponseHead &nsHttpResponseHead::operator=(
-    const nsHttpResponseHead &aOther) {
-  nsHttpResponseHead &other = const_cast<nsHttpResponseHead &>(aOther);
+nsHttpResponseHead& nsHttpResponseHead::operator=(
+    const nsHttpResponseHead& aOther) {
+  nsHttpResponseHead& other = const_cast<nsHttpResponseHead&>(aOther);
   RecursiveMutexAutoLock monitorOther(other.mRecursiveMutex);
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
 
@@ -65,7 +65,7 @@ nsHttpResponseHead &nsHttpResponseHead::operator=(
   return *this;
 }
 
-nsHttpVersion nsHttpResponseHead::Version() {
+HttpVersion nsHttpResponseHead::Version() {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return mVersion;
 }
@@ -75,7 +75,7 @@ uint16_t nsHttpResponseHead::Status() {
   return mStatus;
 }
 
-void nsHttpResponseHead::StatusText(nsACString &aStatusText) {
+void nsHttpResponseHead::StatusText(nsACString& aStatusText) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   aStatusText = mStatusText;
 }
@@ -85,12 +85,12 @@ int64_t nsHttpResponseHead::ContentLength() {
   return mContentLength;
 }
 
-void nsHttpResponseHead::ContentType(nsACString &aContentType) {
+void nsHttpResponseHead::ContentType(nsACString& aContentType) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   aContentType = mContentType;
 }
 
-void nsHttpResponseHead::ContentCharset(nsACString &aContentCharset) {
+void nsHttpResponseHead::ContentCharset(nsACString& aContentCharset) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   aContentCharset = mContentCharset;
 }
@@ -115,8 +115,8 @@ bool nsHttpResponseHead::Immutable() {
   return mCacheControlImmutable;
 }
 
-nsresult nsHttpResponseHead::SetHeader(const nsACString &hdr,
-                                       const nsACString &val, bool merge) {
+nsresult nsHttpResponseHead::SetHeader(const nsACString& hdr,
+                                       const nsACString& val, bool merge) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
 
   if (mInVisitHeaders) {
@@ -132,7 +132,7 @@ nsresult nsHttpResponseHead::SetHeader(const nsACString &hdr,
   return SetHeader_locked(atom, hdr, val, merge);
 }
 
-nsresult nsHttpResponseHead::SetHeader(nsHttpAtom hdr, const nsACString &val,
+nsresult nsHttpResponseHead::SetHeader(nsHttpAtom hdr, const nsACString& val,
                                        bool merge) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
 
@@ -144,8 +144,8 @@ nsresult nsHttpResponseHead::SetHeader(nsHttpAtom hdr, const nsACString &val,
 }
 
 nsresult nsHttpResponseHead::SetHeader_locked(nsHttpAtom atom,
-                                              const nsACString &hdr,
-                                              const nsACString &val,
+                                              const nsACString& hdr,
+                                              const nsACString& val,
                                               bool merge) {
   nsresult rv = mHeaders.SetHeader(atom, hdr, val, merge,
                                    nsHttpHeaderArray::eVarietyResponse);
@@ -161,7 +161,7 @@ nsresult nsHttpResponseHead::SetHeader_locked(nsHttpAtom atom,
   return NS_OK;
 }
 
-nsresult nsHttpResponseHead::GetHeader(nsHttpAtom h, nsACString &v) {
+nsresult nsHttpResponseHead::GetHeader(nsHttpAtom h, nsACString& v) {
   v.Truncate();
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return mHeaders.GetHeader(h, v);
@@ -177,7 +177,7 @@ void nsHttpResponseHead::ClearHeaders() {
   mHeaders.Clear();
 }
 
-bool nsHttpResponseHead::HasHeaderValue(nsHttpAtom h, const char *v) {
+bool nsHttpResponseHead::HasHeaderValue(nsHttpAtom h, const char* v) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return mHeaders.HasHeaderValue(h, v);
 }
@@ -187,12 +187,12 @@ bool nsHttpResponseHead::HasHeader(nsHttpAtom h) {
   return mHeaders.HasHeader(h);
 }
 
-void nsHttpResponseHead::SetContentType(const nsACString &s) {
+void nsHttpResponseHead::SetContentType(const nsACString& s) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   mContentType = s;
 }
 
-void nsHttpResponseHead::SetContentCharset(const nsACString &s) {
+void nsHttpResponseHead::SetContentCharset(const nsACString& s) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   mContentCharset = s;
 }
@@ -211,14 +211,14 @@ void nsHttpResponseHead::SetContentLength(int64_t len) {
   }
 }
 
-void nsHttpResponseHead::Flatten(nsACString &buf, bool pruneTransients) {
+void nsHttpResponseHead::Flatten(nsACString& buf, bool pruneTransients) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
-  if (mVersion == NS_HTTP_VERSION_0_9) return;
+  if (mVersion == HttpVersion::v0_9) return;
 
   buf.AppendLiteral("HTTP/");
-  if (mVersion == NS_HTTP_VERSION_2_0)
+  if (mVersion == HttpVersion::v2_0)
     buf.AppendLiteral("2.0 ");
-  else if (mVersion == NS_HTTP_VERSION_1_1)
+  else if (mVersion == HttpVersion::v1_1)
     buf.AppendLiteral("1.1 ");
   else
     buf.AppendLiteral("1.0 ");
@@ -230,23 +230,23 @@ void nsHttpResponseHead::Flatten(nsACString &buf, bool pruneTransients) {
   mHeaders.Flatten(buf, false, pruneTransients);
 }
 
-void nsHttpResponseHead::FlattenNetworkOriginalHeaders(nsACString &buf) {
+void nsHttpResponseHead::FlattenNetworkOriginalHeaders(nsACString& buf) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
-  if (mVersion == NS_HTTP_VERSION_0_9) {
+  if (mVersion == HttpVersion::v0_9) {
     return;
   }
 
   mHeaders.FlattenOriginalHeader(buf);
 }
 
-nsresult nsHttpResponseHead::ParseCachedHead(const char *block) {
+nsresult nsHttpResponseHead::ParseCachedHead(const char* block) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   LOG(("nsHttpResponseHead::ParseCachedHead [this=%p]\n", this));
 
   // this command works on a buffer as prepared by Flatten, as such it is
   // not very forgiving ;-)
 
-  char *p = PL_strstr(block, "\r\n");
+  char* p = PL_strstr(block, "\r\n");
   if (!p) return NS_ERROR_UNEXPECTED;
 
   ParseStatusLine_locked(nsDependentCSubstring(block, p - block));
@@ -262,12 +262,12 @@ nsresult nsHttpResponseHead::ParseCachedHead(const char *block) {
     Unused << ParseHeaderLine_locked(nsDependentCSubstring(block, p - block),
                                      false);
 
-  } while (1);
+  } while (true);
 
   return NS_OK;
 }
 
-nsresult nsHttpResponseHead::ParseCachedOriginalHeaders(char *block) {
+nsresult nsHttpResponseHead::ParseCachedOriginalHeaders(char* block) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   LOG(("nsHttpResponseHead::ParseCachedOriginalHeader [this=%p]\n", this));
 
@@ -278,8 +278,8 @@ nsresult nsHttpResponseHead::ParseCachedOriginalHeaders(char *block) {
     return NS_ERROR_UNEXPECTED;
   }
 
-  char *p = block;
-  nsHttpAtom hdr = {0};
+  char* p = block;
+  nsHttpAtom hdr = {nullptr};
   nsAutoCString headerNameOriginal;
   nsAutoCString val;
   nsresult rv;
@@ -308,7 +308,7 @@ nsresult nsHttpResponseHead::ParseCachedOriginalHeaders(char *block) {
     }
 
     p = p + 2;
-  } while (1);
+  } while (true);
 
   return NS_OK;
 }
@@ -465,26 +465,26 @@ void nsHttpResponseHead::AssignDefaultStatusText() {
   }
 }
 
-void nsHttpResponseHead::ParseStatusLine(const nsACString &line) {
+void nsHttpResponseHead::ParseStatusLine(const nsACString& line) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   ParseStatusLine_locked(line);
 }
 
-void nsHttpResponseHead::ParseStatusLine_locked(const nsACString &line) {
+void nsHttpResponseHead::ParseStatusLine_locked(const nsACString& line) {
   //
   // Parse Status-Line:: HTTP-Version SP Status-Code SP Reason-Phrase CRLF
   //
 
-  const char *start = line.BeginReading();
-  const char *end = line.EndReading();
-  const char *p = start;
+  const char* start = line.BeginReading();
+  const char* end = line.EndReading();
+  const char* p = start;
 
   // HTTP-Version
   ParseVersion(start);
 
   int32_t index = line.FindChar(' ');
 
-  if ((mVersion == NS_HTTP_VERSION_0_9) || (index == -1)) {
+  if ((mVersion == HttpVersion::v0_9) || (index == -1)) {
     mStatus = 200;
     AssignDefaultStatusText();
   } else {
@@ -506,18 +506,18 @@ void nsHttpResponseHead::ParseStatusLine_locked(const nsACString &line) {
     }
   }
 
-  LOG(("Have status line [version=%u status=%u statusText=%s]\n",
-       unsigned(mVersion), unsigned(mStatus), mStatusText.get()));
+  LOG1(("Have status line [version=%u status=%u statusText=%s]\n",
+        unsigned(mVersion), unsigned(mStatus), mStatusText.get()));
 }
 
-nsresult nsHttpResponseHead::ParseHeaderLine(const nsACString &line) {
+nsresult nsHttpResponseHead::ParseHeaderLine(const nsACString& line) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return ParseHeaderLine_locked(line, true);
 }
 
 nsresult nsHttpResponseHead::ParseHeaderLine_locked(
-    const nsACString &line, bool originalFromNetHeaders) {
-  nsHttpAtom hdr = {0};
+    const nsACString& line, bool originalFromNetHeaders) {
+  nsHttpAtom hdr = {nullptr};
   nsAutoCString headerNameOriginal;
   nsAutoCString val;
 
@@ -541,7 +541,7 @@ nsresult nsHttpResponseHead::ParseHeaderLine_locked(
   // handle some special case headers...
   if (hdr == nsHttp::Content_Length) {
     int64_t len;
-    const char *ignored;
+    const char* ignored;
     // permit only a single value here.
     if (nsHttp::ParseInt64(val.get(), &ignored, &len)) {
       mContentLength = len;
@@ -572,7 +572,7 @@ nsresult nsHttpResponseHead::ParseHeaderLine_locked(
 //
 nsresult nsHttpResponseHead::ComputeCurrentAge(uint32_t now,
                                                uint32_t requestTime,
-                                               uint32_t *result) {
+                                               uint32_t* result) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   uint32_t dateValue;
   uint32_t ageValue;
@@ -619,7 +619,7 @@ nsresult nsHttpResponseHead::ComputeCurrentAge(uint32_t now,
 // <or>
 //     freshnessLifetime = 0
 //
-nsresult nsHttpResponseHead::ComputeFreshnessLifetime(uint32_t *result) {
+nsresult nsHttpResponseHead::ComputeFreshnessLifetime(uint32_t* result) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   *result = 0;
 
@@ -709,6 +709,7 @@ bool nsHttpResponseHead::MustValidate() {
     case 407:
     case 412:
     case 416:
+    case 429:
     default:  // revalidate unknown error pages
       LOG(("Must validate since response is an uncacheable error page\n"));
       return true;
@@ -753,6 +754,36 @@ bool nsHttpResponseHead::MustValidateIfExpired() {
   return HasHeaderValue(nsHttp::Cache_Control, "must-revalidate");
 }
 
+bool nsHttpResponseHead::StaleWhileRevalidate(uint32_t now,
+                                              uint32_t expiration) {
+  nsresult rv;
+
+  if (expiration <= 0) {
+    return false;
+  }
+
+  uint32_t revalidateWindow;
+  rv = GetStaleWhileRevalidateValue(&revalidateWindow);
+  if (NS_FAILED(rv)) {
+    return false;
+  }
+
+  // 'expiration' is the expiration time (an absolute unit), the swr window
+  // extends the expiration time.
+  CheckedInt<uint32_t> stallValidUntil = expiration;
+  stallValidUntil += revalidateWindow;
+  if (!stallValidUntil.isValid()) {
+    // overflow means an indefinite stale window
+    return true;
+  }
+
+  if (now > stallValidUntil.value()) {
+    return false;
+  }
+
+  return true;
+}
+
 bool nsHttpResponseHead::IsResumable() {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   // even though some HTTP/1.0 servers may support byte range requests, we're
@@ -760,7 +791,7 @@ bool nsHttpResponseHead::IsResumable() {
   // If-Range. Also, while in theory it may be possible to resume when the
   // status code is not 200, it is unlikely to be worth the trouble, especially
   // for non-2xx responses.
-  return mStatus == 200 && mVersion >= NS_HTTP_VERSION_1_1 &&
+  return mStatus == 200 && mVersion >= HttpVersion::v1_1 &&
          mHeaders.PeekHeader(nsHttp::Content_Length) &&
          (mHeaders.PeekHeader(nsHttp::ETag) ||
           mHeaders.PeekHeader(nsHttp::Last_Modified)) &&
@@ -784,7 +815,7 @@ bool nsHttpResponseHead::ExpiresInPast_locked() const {
          NS_SUCCEEDED(GetDateValue_locked(&dateVal)) && expiresVal < dateVal;
 }
 
-nsresult nsHttpResponseHead::UpdateHeaders(nsHttpResponseHead *aOther) {
+nsresult nsHttpResponseHead::UpdateHeaders(nsHttpResponseHead* aOther) {
   LOG(("nsHttpResponseHead::UpdateHeaders [this=%p]\n", this));
 
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
@@ -794,7 +825,7 @@ nsresult nsHttpResponseHead::UpdateHeaders(nsHttpResponseHead *aOther) {
   for (i = 0; i < count; ++i) {
     nsHttpAtom header;
     nsAutoCString headerNameOriginal;
-    const char *val =
+    const char* val =
         aOther->mHeaders.PeekHeaderAt(i, header, headerNameOriginal);
 
     if (!val) {
@@ -838,7 +869,7 @@ void nsHttpResponseHead::Reset() {
 
   mHeaders.Clear();
 
-  mVersion = NS_HTTP_VERSION_1_1;
+  mVersion = HttpVersion::v1_1;
   mStatus = 200;
   mContentLength = -1;
   mCacheControlPrivate = false;
@@ -852,8 +883,8 @@ void nsHttpResponseHead::Reset() {
 }
 
 nsresult nsHttpResponseHead::ParseDateHeader(nsHttpAtom header,
-                                             uint32_t *result) const {
-  const char *val = mHeaders.PeekHeader(header);
+                                             uint32_t* result) const {
+  const char* val = mHeaders.PeekHeader(header);
   if (!val) return NS_ERROR_NOT_AVAILABLE;
 
   PRTime time;
@@ -864,13 +895,13 @@ nsresult nsHttpResponseHead::ParseDateHeader(nsHttpAtom header,
   return NS_OK;
 }
 
-nsresult nsHttpResponseHead::GetAgeValue(uint32_t *result) {
+nsresult nsHttpResponseHead::GetAgeValue(uint32_t* result) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return GetAgeValue_locked(result);
 }
 
-nsresult nsHttpResponseHead::GetAgeValue_locked(uint32_t *result) const {
-  const char *val = mHeaders.PeekHeader(nsHttp::Age);
+nsresult nsHttpResponseHead::GetAgeValue_locked(uint32_t* result) const {
+  const char* val = mHeaders.PeekHeader(nsHttp::Age);
   if (!val) return NS_ERROR_NOT_AVAILABLE;
 
   *result = (uint32_t)atoi(val);
@@ -879,16 +910,16 @@ nsresult nsHttpResponseHead::GetAgeValue_locked(uint32_t *result) const {
 
 // Return the value of the (HTTP 1.1) max-age directive, which itself is a
 // component of the Cache-Control response header
-nsresult nsHttpResponseHead::GetMaxAgeValue(uint32_t *result) {
+nsresult nsHttpResponseHead::GetMaxAgeValue(uint32_t* result) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return GetMaxAgeValue_locked(result);
 }
 
-nsresult nsHttpResponseHead::GetMaxAgeValue_locked(uint32_t *result) const {
-  const char *val = mHeaders.PeekHeader(nsHttp::Cache_Control);
+nsresult nsHttpResponseHead::GetMaxAgeValue_locked(uint32_t* result) const {
+  const char* val = mHeaders.PeekHeader(nsHttp::Cache_Control);
   if (!val) return NS_ERROR_NOT_AVAILABLE;
 
-  const char *p = nsHttp::FindToken(val, "max-age", HTTP_HEADER_VALUE_SEPS "=");
+  const char* p = nsHttp::FindToken(val, "max-age", HTTP_HEADER_VALUE_SEPS "=");
   if (!p) return NS_ERROR_NOT_AVAILABLE;
   p += 7;
   while (*p == ' ' || *p == '\t') ++p;
@@ -902,18 +933,57 @@ nsresult nsHttpResponseHead::GetMaxAgeValue_locked(uint32_t *result) const {
   return NS_OK;
 }
 
-nsresult nsHttpResponseHead::GetDateValue(uint32_t *result) {
+// Get the stale-while-revalidate directive value, if present
+nsresult nsHttpResponseHead::GetStaleWhileRevalidateValue(uint32_t* result) {
+  RecursiveMutexAutoLock monitor(mRecursiveMutex);
+  return GetStaleWhileRevalidateValue_locked(result);
+}
+
+nsresult nsHttpResponseHead::GetStaleWhileRevalidateValue_locked(
+    uint32_t* result) const {
+  const char* val = mHeaders.PeekHeader(nsHttp::Cache_Control);
+  if (!val) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+
+  // Rewrite (best all FindToken users) to mozilla::Tokenizer, bug 1542293.
+  const char* p = nsHttp::FindToken(val, "stale-while-revalidate",
+                                    HTTP_HEADER_VALUE_SEPS "=");
+  if (!p) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+  p += 22;
+  while (*p == ' ' || *p == '\t') {
+    ++p;
+  }
+  if (*p != '=') {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+  ++p;
+  while (*p == ' ' || *p == '\t') {
+    ++p;
+  }
+
+  int revalidateWindow = atoi(p);
+  if (revalidateWindow < 0) {
+    revalidateWindow = 0;
+  }
+  *result = static_cast<uint32_t>(revalidateWindow);
+  return NS_OK;
+}
+
+nsresult nsHttpResponseHead::GetDateValue(uint32_t* result) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return GetDateValue_locked(result);
 }
 
-nsresult nsHttpResponseHead::GetExpiresValue(uint32_t *result) {
+nsresult nsHttpResponseHead::GetExpiresValue(uint32_t* result) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return GetExpiresValue_locked(result);
 }
 
-nsresult nsHttpResponseHead::GetExpiresValue_locked(uint32_t *result) const {
-  const char *val = mHeaders.PeekHeader(nsHttp::Expires);
+nsresult nsHttpResponseHead::GetExpiresValue_locked(uint32_t* result) const {
+  const char* val = mHeaders.PeekHeader(nsHttp::Expires);
   if (!val) return NS_ERROR_NOT_AVAILABLE;
 
   PRTime time;
@@ -932,14 +1002,14 @@ nsresult nsHttpResponseHead::GetExpiresValue_locked(uint32_t *result) const {
   return NS_OK;
 }
 
-nsresult nsHttpResponseHead::GetLastModifiedValue(uint32_t *result) {
+nsresult nsHttpResponseHead::GetLastModifiedValue(uint32_t* result) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   return ParseDateHeader(nsHttp::Last_Modified, result);
 }
 
-bool nsHttpResponseHead::operator==(const nsHttpResponseHead &aOther) const {
-  nsHttpResponseHead &curr = const_cast<nsHttpResponseHead &>(*this);
-  nsHttpResponseHead &other = const_cast<nsHttpResponseHead &>(aOther);
+bool nsHttpResponseHead::operator==(const nsHttpResponseHead& aOther) const {
+  nsHttpResponseHead& curr = const_cast<nsHttpResponseHead&>(*this);
+  nsHttpResponseHead& other = const_cast<nsHttpResponseHead&>(aOther);
   RecursiveMutexAutoLock monitorOther(other.mRecursiveMutex);
   RecursiveMutexAutoLock monitor(curr.mRecursiveMutex);
 
@@ -957,11 +1027,11 @@ bool nsHttpResponseHead::operator==(const nsHttpResponseHead &aOther) const {
 
 int64_t nsHttpResponseHead::TotalEntitySize() {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
-  const char *contentRange = mHeaders.PeekHeader(nsHttp::Content_Range);
+  const char* contentRange = mHeaders.PeekHeader(nsHttp::Content_Range);
   if (!contentRange) return mContentLength;
 
   // Total length is after a slash
-  const char *slash = strrchr(contentRange, '/');
+  const char* slash = strrchr(contentRange, '/');
   if (!slash) return -1;  // No idea what the length is
 
   slash++;
@@ -977,7 +1047,7 @@ int64_t nsHttpResponseHead::TotalEntitySize() {
 // nsHttpResponseHead <private>
 //-----------------------------------------------------------------------------
 
-void nsHttpResponseHead::ParseVersion(const char *str) {
+void nsHttpResponseHead::ParseVersion(const char* str) {
   // Parse HTTP-Version:: "HTTP" "/" 1*DIGIT "." 1*DIGIT
 
   LOG(("nsHttpResponseHead::ParseVersion [version=%s]\n", str));
@@ -987,11 +1057,11 @@ void nsHttpResponseHead::ParseVersion(const char *str) {
     if (PL_strncasecmp(str, "ICY ", 4) == 0) {
       // ShoutCast ICY is HTTP/1.0-like. Assume it is HTTP/1.0.
       LOG(("Treating ICY as HTTP 1.0\n"));
-      mVersion = NS_HTTP_VERSION_1_0;
+      mVersion = HttpVersion::v1_0;
       return;
     }
     LOG(("looks like a HTTP/0.9 response\n"));
-    mVersion = NS_HTTP_VERSION_0_9;
+    mVersion = HttpVersion::v0_9;
     return;
   }
   str += 4;
@@ -1000,14 +1070,14 @@ void nsHttpResponseHead::ParseVersion(const char *str) {
     LOG(("server did not send a version number; assuming HTTP/1.0\n"));
     // NCSA/1.5.2 has a bug in which it fails to send a version number
     // if the request version is HTTP/1.1, so we fall back on HTTP/1.0
-    mVersion = NS_HTTP_VERSION_1_0;
+    mVersion = HttpVersion::v1_0;
     return;
   }
 
-  char *p = PL_strchr(str, '.');
+  char* p = PL_strchr(str, '.');
   if (p == nullptr) {
     LOG(("mal-formed server version; assuming HTTP/1.0\n"));
-    mVersion = NS_HTTP_VERSION_1_0;
+    mVersion = HttpVersion::v1_0;
     return;
   }
 
@@ -1017,16 +1087,16 @@ void nsHttpResponseHead::ParseVersion(const char *str) {
   int minor = atoi(p);
 
   if ((major > 2) || ((major == 2) && (minor >= 0)))
-    mVersion = NS_HTTP_VERSION_2_0;
+    mVersion = HttpVersion::v2_0;
   else if ((major == 1) && (minor >= 1))
     // at least HTTP/1.1
-    mVersion = NS_HTTP_VERSION_1_1;
+    mVersion = HttpVersion::v1_1;
   else
     // treat anything else as version 1.0
-    mVersion = NS_HTTP_VERSION_1_0;
+    mVersion = HttpVersion::v1_0;
 }
 
-void nsHttpResponseHead::ParseCacheControl(const char *val) {
+void nsHttpResponseHead::ParseCacheControl(const char* val) {
   if (!(val && *val)) {
     // clear flags
     mCacheControlPrivate = false;
@@ -1055,7 +1125,7 @@ void nsHttpResponseHead::ParseCacheControl(const char *val) {
   }
 }
 
-void nsHttpResponseHead::ParsePragma(const char *val) {
+void nsHttpResponseHead::ParsePragma(const char* val) {
   LOG(("nsHttpResponseHead::ParsePragma [val=%s]\n", val));
 
   if (!(val && *val)) {
@@ -1072,7 +1142,7 @@ void nsHttpResponseHead::ParsePragma(const char *val) {
 }
 
 nsresult nsHttpResponseHead::VisitHeaders(
-    nsIHttpHeaderVisitor *visitor, nsHttpHeaderArray::VisitorFilter filter) {
+    nsIHttpHeaderVisitor* visitor, nsHttpHeaderArray::VisitorFilter filter) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   mInVisitHeaders = true;
   nsresult rv = mHeaders.VisitHeaders(visitor, filter);
@@ -1081,7 +1151,7 @@ nsresult nsHttpResponseHead::VisitHeaders(
 }
 
 nsresult nsHttpResponseHead::GetOriginalHeader(nsHttpAtom aHeader,
-                                               nsIHttpHeaderVisitor *aVisitor) {
+                                               nsIHttpHeaderVisitor* aVisitor) {
   RecursiveMutexAutoLock monitor(mRecursiveMutex);
   mInVisitHeaders = true;
   nsresult rv = mHeaders.GetOriginalHeader(aHeader, aVisitor);

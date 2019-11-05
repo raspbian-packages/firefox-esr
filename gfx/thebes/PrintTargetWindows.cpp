@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -20,16 +20,19 @@ PrintTargetWindows::PrintTargetWindows(cairo_surface_t* aCairoSurface,
   // 4 * mSize.width * mSize.height + sizeof(PrintTargetWindows) ?
 }
 
-/* static */ already_AddRefed<PrintTargetWindows>
-PrintTargetWindows::CreateOrNull(HDC aDC) {
-  // Figure out the cairo surface size - Windows we need to use the printable
-  // area of the page.  Note: we only scale the printing using the LOGPIXELSY,
+/* static */
+already_AddRefed<PrintTargetWindows> PrintTargetWindows::CreateOrNull(HDC aDC) {
+  // Figure out the paper size, the actual surface size will be the printable
+  // area which is likely smaller, but the size here is later used to create the
+  // draw target where the full page size is needed.
+  // Note: we only scale the printing using the LOGPIXELSY,
   // so we use that when calculating the surface width as well as the height.
   int32_t heightDPI = ::GetDeviceCaps(aDC, LOGPIXELSY);
   float width =
-      (::GetDeviceCaps(aDC, HORZRES) * POINTS_PER_INCH_FLOAT) / heightDPI;
+      (::GetDeviceCaps(aDC, PHYSICALWIDTH) * POINTS_PER_INCH_FLOAT) / heightDPI;
   float height =
-      (::GetDeviceCaps(aDC, VERTRES) * POINTS_PER_INCH_FLOAT) / heightDPI;
+      (::GetDeviceCaps(aDC, PHYSICALHEIGHT) * POINTS_PER_INCH_FLOAT) /
+      heightDPI;
   IntSize size = IntSize::Truncate(width, height);
 
   if (!Factory::CheckSurfaceSize(size)) {

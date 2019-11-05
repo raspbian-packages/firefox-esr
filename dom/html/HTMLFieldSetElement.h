@@ -25,16 +25,15 @@ class HTMLFieldSetElement final : public nsGenericHTMLFormElement,
   using nsIConstraintValidation::SetCustomValidity;
 
   explicit HTMLFieldSetElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLFieldSetElement, fieldset)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLFieldSetElement, fieldset)
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
 
   // nsIContent
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
   virtual nsresult AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
                                 const nsAttrValue* aValue,
                                 const nsAttrValue* aOldValue,
@@ -44,17 +43,13 @@ class HTMLFieldSetElement final : public nsGenericHTMLFormElement,
   virtual nsresult InsertChildBefore(nsIContent* aChild,
                                      nsIContent* aBeforeThis,
                                      bool aNotify) override;
-  virtual nsresult InsertChildAt_Deprecated(nsIContent* aChild, uint32_t aIndex,
-                                            bool aNotify) override;
-  virtual void RemoveChildAt_Deprecated(uint32_t aIndex, bool aNotify) override;
   virtual void RemoveChildNode(nsIContent* aKid, bool aNotify) override;
 
   // nsIFormControl
   NS_IMETHOD Reset() override;
   NS_IMETHOD SubmitNamesValues(HTMLFormSubmission* aFormSubmission) override;
-  virtual bool IsDisabledForEvents(EventMessage aMessage) override;
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual bool IsDisabledForEvents(WidgetEvent* aEvent) override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   const nsIContent* GetFirstLegend() const { return mFirstLegend; }
 
@@ -77,7 +72,7 @@ class HTMLFieldSetElement final : public nsGenericHTMLFormElement,
     SetHTMLAttr(nsGkAtoms::name, aValue, aRv);
   }
 
-  NS_IMETHOD GetType(nsAString& aType);
+  void GetType(nsAString& aType) const;
 
   nsIHTMLCollection* Elements();
 

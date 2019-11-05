@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: sw=4 ts=4 et :
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: sw=2 ts=4 et :
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -24,7 +24,7 @@
 #include "nsHashKeys.h"
 
 #ifdef MOZ_WIDGET_COCOA
-#include "PluginInterposeOSX.h"
+#  include "PluginInterposeOSX.h"
 #endif
 
 #include "mozilla/plugins/PPluginModuleChild.h"
@@ -41,6 +41,8 @@ namespace plugins {
 class PluginInstanceChild;
 
 class PluginModuleChild : public PPluginModuleChild {
+  friend class PPluginModuleChild;
+
  protected:
   virtual mozilla::ipc::RacyInterruptPolicy MediateInterruptRace(
       const MessageInfo& parent, const MessageInfo& child) override {
@@ -49,72 +51,73 @@ class PluginModuleChild : public PPluginModuleChild {
 
   virtual bool ShouldContinueFromReplyTimeout() override;
 
-  virtual mozilla::ipc::IPCResult RecvSettingChanged(
-      const PluginSettings& aSettings) override;
+  mozilla::ipc::IPCResult RecvSettingChanged(const PluginSettings& aSettings);
 
   // Implement the PPluginModuleChild interface
-  virtual mozilla::ipc::IPCResult RecvInitProfiler(
-      Endpoint<mozilla::PProfilerChild>&& aEndpoint) override;
-  virtual mozilla::ipc::IPCResult RecvDisableFlashProtectedMode() override;
-  virtual mozilla::ipc::IPCResult AnswerNP_GetEntryPoints(NPError* rv) override;
-  virtual mozilla::ipc::IPCResult AnswerNP_Initialize(
-      const PluginSettings& aSettings, NPError* rv) override;
-  virtual mozilla::ipc::IPCResult AnswerSyncNPP_New(
-      PPluginInstanceChild* aActor, NPError* rv) override;
+  mozilla::ipc::IPCResult RecvInitProfiler(
+      Endpoint<mozilla::PProfilerChild>&& aEndpoint);
+  mozilla::ipc::IPCResult RecvDisableFlashProtectedMode();
+  mozilla::ipc::IPCResult AnswerNP_GetEntryPoints(NPError* rv);
+  mozilla::ipc::IPCResult AnswerNP_Initialize(const PluginSettings& aSettings,
+                                              NPError* rv);
+  mozilla::ipc::IPCResult AnswerSyncNPP_New(PPluginInstanceChild* aActor,
+                                            NPError* rv);
 
-  virtual mozilla::ipc::IPCResult RecvInitPluginModuleChild(
-      Endpoint<PPluginModuleChild>&& endpoint) override;
+  mozilla::ipc::IPCResult RecvInitPluginModuleChild(
+      Endpoint<PPluginModuleChild>&& endpoint);
 
-  virtual mozilla::ipc::IPCResult RecvInitPluginFunctionBroker(
-      Endpoint<PFunctionBrokerChild>&& endpoint) override;
+  mozilla::ipc::IPCResult RecvInitPluginFunctionBroker(
+      Endpoint<PFunctionBrokerChild>&& endpoint);
 
-  virtual PPluginInstanceChild* AllocPPluginInstanceChild(
+  PPluginInstanceChild* AllocPPluginInstanceChild(
       const nsCString& aMimeType, const InfallibleTArray<nsCString>& aNames,
-      const InfallibleTArray<nsCString>& aValues) override;
+      const InfallibleTArray<nsCString>& aValues);
 
-  virtual bool DeallocPPluginInstanceChild(
-      PPluginInstanceChild* aActor) override;
+  bool DeallocPPluginInstanceChild(PPluginInstanceChild* aActor);
 
-  virtual mozilla::ipc::IPCResult RecvPPluginInstanceConstructor(
+  mozilla::ipc::IPCResult RecvPPluginInstanceConstructor(
       PPluginInstanceChild* aActor, const nsCString& aMimeType,
       InfallibleTArray<nsCString>&& aNames,
       InfallibleTArray<nsCString>&& aValues) override;
-  virtual mozilla::ipc::IPCResult AnswerNP_Shutdown(NPError* rv) override;
+  mozilla::ipc::IPCResult AnswerNP_Shutdown(NPError* rv);
 
-  virtual mozilla::ipc::IPCResult AnswerOptionalFunctionsSupported(
-      bool* aURLRedirectNotify, bool* aClearSiteData,
-      bool* aGetSitesWithData) override;
+  mozilla::ipc::IPCResult AnswerOptionalFunctionsSupported(
+      bool* aURLRedirectNotify, bool* aClearSiteData, bool* aGetSitesWithData);
 
-  virtual mozilla::ipc::IPCResult RecvNPP_ClearSiteData(
-      const nsCString& aSite, const uint64_t& aFlags, const uint64_t& aMaxAge,
-      const uint64_t& aCallbackId) override;
+  mozilla::ipc::IPCResult RecvNPP_ClearSiteData(const nsCString& aSite,
+                                                const uint64_t& aFlags,
+                                                const uint64_t& aMaxAge,
+                                                const uint64_t& aCallbackId);
 
-  virtual mozilla::ipc::IPCResult RecvNPP_GetSitesWithData(
-      const uint64_t& aCallbackId) override;
+  mozilla::ipc::IPCResult RecvNPP_GetSitesWithData(const uint64_t& aCallbackId);
 
-  virtual mozilla::ipc::IPCResult RecvSetAudioSessionData(
-      const nsID& aId, const nsString& aDisplayName,
-      const nsString& aIconPath) override;
+  mozilla::ipc::IPCResult RecvSetAudioSessionData(const nsID& aId,
+                                                  const nsString& aDisplayName,
+                                                  const nsString& aIconPath);
 
-  virtual mozilla::ipc::IPCResult RecvSetParentHangTimeout(
-      const uint32_t& aSeconds) override;
+  mozilla::ipc::IPCResult RecvSetParentHangTimeout(const uint32_t& aSeconds);
 
-  virtual mozilla::ipc::IPCResult AnswerInitCrashReporter(
-      Shmem&& aShmem, mozilla::dom::NativeThreadId* aId) override;
+  mozilla::ipc::IPCResult AnswerInitCrashReporter(
+      Shmem&& aShmem, mozilla::dom::NativeThreadId* aId);
 
   virtual void ActorDestroy(ActorDestroyReason why) override;
 
-  virtual mozilla::ipc::IPCResult RecvProcessNativeEventsInInterruptCall()
-      override;
+  mozilla::ipc::IPCResult RecvProcessNativeEventsInInterruptCall();
 
-  virtual mozilla::ipc::IPCResult AnswerModuleSupportsAsyncRender(
-      bool* aResult) override;
+  mozilla::ipc::IPCResult AnswerModuleSupportsAsyncRender(bool* aResult);
 
  public:
   explicit PluginModuleChild(bool aIsChrome);
   virtual ~PluginModuleChild();
 
   void CommonInit();
+
+#if defined(OS_WIN) && defined(MOZ_SANDBOX)
+  // Path to the roaming Flash Player folder.  This is used to restore some
+  // behavior blocked by the sandbox.
+  static void SetFlashRoamingPath(const std::wstring& aRoamingPath);
+  static std::wstring GetFlashRoamingPath();
+#endif
 
   // aPluginFilename is UTF8, not native-charset!
   bool InitForChrome(const std::string& aPluginFilename,
@@ -190,7 +193,9 @@ class PluginModuleChild : public PPluginModuleChild {
   NPError PluginRequiresAudioDeviceChanges(PluginInstanceChild* aInstance,
                                            NPBool aShouldRegister);
   mozilla::ipc::IPCResult RecvNPP_SetValue_NPNVaudioDeviceChangeDetails(
-      const NPAudioDeviceChangeDetailsIPC& detailsIPC) override;
+      const NPAudioDeviceChangeDetailsIPC& detailsIPC);
+  mozilla::ipc::IPCResult RecvNPP_SetValue_NPNVaudioDeviceStateChanged(
+      const NPAudioDeviceStateChangedIPC& aDeviceStateIPC);
 
  private:
   NPError DoNP_Initialize(const PluginSettings& aSettings);
@@ -265,13 +270,13 @@ class PluginModuleChild : public PPluginModuleChild {
   // When the browser no longer might be blocked on a plugin's IPC
   // response, we deschedule whichever of (1) or (2) is active.
   guint mNestedLoopTimerId;
-#ifdef DEBUG
+#  ifdef DEBUG
   // Depth of the stack of calls to g_main_context_dispatch before any
   // nested loops are run.  This is 1 when IPC calls are dispatched from
   // g_main_context_iteration, or 0 when dispatched directly from
   // MessagePumpForUI.
   int mTopLoopDepth;
-#endif
+#  endif
 #endif
 
 #if defined(XP_WIN)
@@ -293,12 +298,12 @@ class PluginModuleChild : public PPluginModuleChild {
   }
 
 #if defined(OS_MACOSX) && defined(MOZ_SANDBOX)
-  void EnableFlashSandbox(bool aShouldEnableLogging);
+  void EnableFlashSandbox(int aLevel, bool aShouldEnableLogging);
 #endif
 
  private:
 #if defined(OS_MACOSX) && defined(MOZ_SANDBOX)
-  bool mEnableFlashSandbox;
+  int mFlashSandboxLevel;
   bool mEnableFlashSandboxLogging;
 #endif
 

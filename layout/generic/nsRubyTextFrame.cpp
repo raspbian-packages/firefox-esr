@@ -8,10 +8,11 @@
 
 #include "nsRubyTextFrame.h"
 
+#include "mozilla/ComputedStyle.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/WritingModes.h"
 #include "nsLineLayout.h"
 #include "nsPresContext.h"
-#include "nsStyleContext.h"
 
 using namespace mozilla;
 
@@ -21,14 +22,14 @@ using namespace mozilla;
 // =======================
 
 NS_QUERYFRAME_HEAD(nsRubyTextFrame)
-NS_QUERYFRAME_ENTRY(nsRubyTextFrame)
+  NS_QUERYFRAME_ENTRY(nsRubyTextFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsRubyContentFrame)
 
 NS_IMPL_FRAMEARENA_HELPERS(nsRubyTextFrame)
 
-nsContainerFrame* NS_NewRubyTextFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext) {
-  return new (aPresShell) nsRubyTextFrame(aContext);
+nsContainerFrame* NS_NewRubyTextFrame(PresShell* aPresShell,
+                                      ComputedStyle* aStyle) {
+  return new (aPresShell) nsRubyTextFrame(aStyle, aPresShell->GetPresContext());
 }
 
 //----------------------------------------------------------------------
@@ -36,7 +37,8 @@ nsContainerFrame* NS_NewRubyTextFrame(nsIPresShell* aPresShell,
 // nsRubyTextFrame Method Implementations
 // ======================================
 
-/* virtual */ bool nsRubyTextFrame::CanContinueTextRun() const { return false; }
+/* virtual */
+bool nsRubyTextFrame::CanContinueTextRun() const { return false; }
 
 #ifdef DEBUG_FRAME_DUMP
 nsresult nsRubyTextFrame::GetFrameName(nsAString& aResult) const {
@@ -44,8 +46,9 @@ nsresult nsRubyTextFrame::GetFrameName(nsAString& aResult) const {
 }
 #endif
 
-/* virtual */ void nsRubyTextFrame::BuildDisplayList(
-    nsDisplayListBuilder* aBuilder, const nsDisplayListSet& aLists) {
+/* virtual */
+void nsRubyTextFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
+                                       const nsDisplayListSet& aLists) {
   if (IsAutoHidden()) {
     return;
   }
@@ -53,10 +56,11 @@ nsresult nsRubyTextFrame::GetFrameName(nsAString& aResult) const {
   nsRubyContentFrame::BuildDisplayList(aBuilder, aLists);
 }
 
-/* virtual */ void nsRubyTextFrame::Reflow(nsPresContext* aPresContext,
-                                           ReflowOutput& aDesiredSize,
-                                           const ReflowInput& aReflowInput,
-                                           nsReflowStatus& aStatus) {
+/* virtual */
+void nsRubyTextFrame::Reflow(nsPresContext* aPresContext,
+                             ReflowOutput& aDesiredSize,
+                             const ReflowInput& aReflowInput,
+                             nsReflowStatus& aStatus) {
   // Even if we want to hide this frame, we have to reflow it first.
   // If we leave it dirty, changes to its content will never be
   // propagated to the ancestors, then it won't be displayed even if

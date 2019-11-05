@@ -10,16 +10,20 @@
 #include "mozilla/Attributes.h"
 #include "nsMathMLContainerFrame.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <mspace> -- space
 //
 
-class nsMathMLmspaceFrame : public nsMathMLContainerFrame {
+class nsMathMLmspaceFrame final : public nsMathMLContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmspaceFrame)
 
-  friend nsIFrame* NS_NewMathMLmspaceFrame(nsIPresShell* aPresShell,
-                                           nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmspaceFrame(mozilla::PresShell* aPresShell,
+                                           ComputedStyle* aStyle);
 
   NS_IMETHOD
   TransmitAutomaticData() override {
@@ -34,8 +38,9 @@ class nsMathMLmspaceFrame : public nsMathMLContainerFrame {
                       nsReflowStatus& aStatus) override;
 
  protected:
-  explicit nsMathMLmspaceFrame(nsStyleContext* aContext)
-      : nsMathMLContainerFrame(aContext, kClassID),
+  explicit nsMathMLmspaceFrame(ComputedStyle* aStyle,
+                               nsPresContext* aPresContext)
+      : nsMathMLContainerFrame(aStyle, aPresContext, kClassID),
         mWidth(0),
         mHeight(0),
         mDepth(0) {}

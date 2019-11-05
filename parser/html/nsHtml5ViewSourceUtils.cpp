@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsHtml5ViewSourceUtils.h"
-#include "nsHtml5AttributeName.h"
 #include "mozilla/Preferences.h"
+#include "nsHtml5AttributeName.h"
 #include "nsHtml5String.h"
 
 // static
@@ -28,7 +28,7 @@ nsHtml5HtmlAttributes* nsHtml5ViewSourceUtils::NewBodyAttributes() {
   int32_t tabSize = mozilla::Preferences::GetInt("view_source.tab_size", 4);
   if (tabSize > 0) {
     nsString style;
-    style.AssignASCII("-moz-tab-size: ");
+    style.AssignLiteral("-moz-tab-size: ");
     style.AppendInt(tabSize);
     bodyAttrs->addAttribute(nsHtml5AttributeName::ATTR_STYLE,
                             nsHtml5String::FromString(style), -1);

@@ -1,34 +1,47 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-use cg::{self, WhereClause};
-use quote::Tokens;
-use syn::{DeriveInput, Path};
+use darling::util::IdentList;
+use derive_common::cg;
+use proc_macro2::TokenStream;
+use quote::TokenStreamExt;
+use syn::{DeriveInput, Path, WhereClause};
 use synstructure::{Structure, VariantInfo};
 
-pub fn derive(input: DeriveInput) -> Tokens {
-    let name = &input.ident;
-    let trait_path = parse_quote!(values::animated::Animate);
-    let (impl_generics, ty_generics, mut where_clause) =
-        cg::trait_parts(&input, &trait_path);
+pub fn derive(mut input: DeriveInput) -> TokenStream {
+    let animation_input_attrs = cg::parse_input_attrs::<AnimationInputAttrs>(&input);
+    let no_bound = animation_input_attrs.no_bound.unwrap_or_default();
+    let mut where_clause = input.generics.where_clause.take();
+    for param in input.generics.type_params() {
+        if !no_bound.contains(&param.ident) {
+            cg::add_predicate(
+                &mut where_clause,
+                parse_quote!(#param: crate::values::animated::Animate),
+            );
+        }
+    }
+    let (mut match_body, append_error_clause) = {
+        let s = Structure::new(&input);
+        let mut append_error_clause = s.variants().len() > 1;
 
-    let input_attrs = cg::parse_input_attrs::<AnimateInputAttrs>(&input);
-    let s = Structure::new(&input);
-    let mut append_error_clause = s.variants().len() > 1;
+        let match_body = s.variants().iter().fold(quote!(), |body, variant| {
+            let arm = match derive_variant_arm(variant, &mut where_clause) {
+                Ok(arm) => arm,
+                Err(()) => {
+                    append_error_clause = true;
+                    return body;
+                },
+            };
+            quote! { #body #arm }
+        });
+        (match_body, append_error_clause)
+    };
 
-    let mut match_body = s.variants().iter().fold(quote!(), |body, variant| {
-        let arm = match derive_variant_arm(variant, &mut where_clause) {
-            Ok(arm) => arm,
-            Err(()) => {
-                append_error_clause = true;
-                return body;
-            }
-        };
-        quote! { #body #arm }
-    });
+    input.generics.where_clause = where_clause;
 
     if append_error_clause {
+        let input_attrs = cg::parse_input_attrs::<AnimateInputAttrs>(&input);
         if let Some(fallback) = input_attrs.fallback {
             match_body.append_all(quote! {
                 (this, other) => #fallback(this, other, procedure)
@@ -38,14 +51,17 @@ pub fn derive(input: DeriveInput) -> Tokens {
         }
     }
 
+    let name = &input.ident;
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+
     quote! {
-        impl #impl_generics ::values::animated::Animate for #name #ty_generics #where_clause {
+        impl #impl_generics crate::values::animated::Animate for #name #ty_generics #where_clause {
             #[allow(unused_variables, unused_imports)]
             #[inline]
             fn animate(
                 &self,
                 other: &Self,
-                procedure: ::values::animated::Procedure,
+                procedure: crate::values::animated::Procedure,
             ) -> Result<Self, ()> {
                 match (self, other) {
                     #match_body
@@ -57,9 +73,9 @@ pub fn derive(input: DeriveInput) -> Tokens {
 
 fn derive_variant_arm(
     variant: &VariantInfo,
-    where_clause: &mut WhereClause,
-) -> Result<Tokens, ()> {
-    let variant_attrs = cg::parse_variant_attrs::<AnimationVariantAttrs>(&variant.ast());
+    where_clause: &mut Option<WhereClause>,
+) -> Result<TokenStream, ()> {
+    let variant_attrs = cg::parse_variant_attrs_from_ast::<AnimationVariantAttrs>(&variant.ast());
     if variant_attrs.error {
         return Err(());
     }
@@ -70,18 +86,24 @@ fn derive_variant_arm(
     let iter = result_info.iter().zip(this_info.iter().zip(&other_info));
     computations.append_all(iter.map(|(result, (this, other))| {
         let field_attrs = cg::parse_field_attrs::<AnimationFieldAttrs>(&result.ast());
+        if field_attrs.field_bound {
+            let ty = &this.ast().ty;
+            cg::add_predicate(
+                where_clause,
+                parse_quote!(#ty: crate::values::animated::Animate),
+            );
+        }
         if field_attrs.constant {
             quote! {
                 if #this != #other {
                     return Err(());
                 }
-                let #result = ::std::clone::Clone::clone(#this);
+                let #result = std::clone::Clone::clone(#this);
             }
         } else {
-            where_clause.add_trait_bound(&result.ast().ty);
             quote! {
                 let #result =
-                    ::values::animated::Animate::animate(#this, #other, procedure)?;
+                    crate::values::animated::Animate::animate(#this, #other, procedure)?;
             }
         }
     }));
@@ -100,13 +122,23 @@ struct AnimateInputAttrs {
 }
 
 #[darling(attributes(animation), default)]
+#[derive(Default, FromDeriveInput)]
+pub struct AnimationInputAttrs {
+    pub no_bound: Option<IdentList>,
+}
+
+#[darling(attributes(animation), default)]
 #[derive(Default, FromVariant)]
 pub struct AnimationVariantAttrs {
     pub error: bool,
+    // Only here because of structs, where the struct definition acts as a
+    // variant itself.
+    pub no_bound: Option<IdentList>,
 }
 
 #[darling(attributes(animation), default)]
 #[derive(Default, FromField)]
 pub struct AnimationFieldAttrs {
     pub constant: bool,
+    pub field_bound: bool,
 }

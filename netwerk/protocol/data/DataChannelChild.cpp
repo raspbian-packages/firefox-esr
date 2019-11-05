@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=4 sw=4 sts=4 et tw=80: */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=4 sw=2 sts=2 et tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,8 +17,6 @@ NS_IMPL_ISUPPORTS_INHERITED(DataChannelChild, nsDataChannel, nsIChildChannel)
 
 DataChannelChild::DataChannelChild(nsIURI* aURI)
     : nsDataChannel(aURI), mIPCOpen(false) {}
-
-DataChannelChild::~DataChannelChild() {}
 
 NS_IMETHODIMP
 DataChannelChild::ConnectParent(uint32_t aId) {
@@ -41,12 +39,8 @@ NS_IMETHODIMP
 DataChannelChild::CompleteRedirectSetup(nsIStreamListener* aListener,
                                         nsISupports* aContext) {
   nsresult rv;
-  if (mLoadInfo && mLoadInfo->GetEnforceSecurity()) {
-    MOZ_ASSERT(!aContext, "aContext should be null!");
-    rv = AsyncOpen2(aListener);
-  } else {
-    rv = AsyncOpen(aListener, aContext);
-  }
+  MOZ_ASSERT(!aContext, "aContext should be null!");
+  rv = AsyncOpen(aListener);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }

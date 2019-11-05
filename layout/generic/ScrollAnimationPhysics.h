@@ -9,6 +9,7 @@
 
 #include "mozilla/TimeStamp.h"
 #include "nsPoint.h"
+#include "Units.h"
 
 namespace mozilla {
 
@@ -16,6 +17,8 @@ class ScrollAnimationPhysics {
  public:
   virtual void Update(const TimeStamp& aTime, const nsPoint& aDestination,
                       const nsSize& aCurrentVelocity) = 0;
+
+  virtual void ApplyContentShift(const CSSPoint& aShiftDelta) = 0;
 
   // Get the velocity at a point in time in nscoords/sec.
   virtual nsSize VelocityAt(const TimeStamp& aTime) = 0;

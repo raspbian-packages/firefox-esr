@@ -34,10 +34,9 @@ static const float ANIMATION_DURATION =
 static const int32_t MOVE_TOOLBAR_DOWN =
     1;  // Multiplier to move the toolbar down
 static const int32_t MOVE_TOOLBAR_UP = -1;  // Multiplier to move the toolbar up
-static const float SHRINK_FACTOR = 0.95f;   // Amount to shrink the either the
-                                            // full content for small pages or
-                                            // the amount left See:
-// PageTooSmallEnsureToolbarVisible()
+static const float SHRINK_FACTOR =
+    0.95f;  // Amount to shrink the either the full content for small pages or
+            // the amount left See: PageTooSmallEnsureToolbarVisible()
 }  // namespace
 
 namespace mozilla {
@@ -45,7 +44,7 @@ namespace layers {
 
 AndroidDynamicToolbarAnimator::AndroidDynamicToolbarAnimator(
     APZCTreeManager* aApz)
-    : mRootLayerTreeId(0),
+    : mRootLayerTreeId{0},
       mApz(aApz)
       // Read/Write Compositor Thread, Read only Controller thread
       ,
@@ -74,7 +73,6 @@ AndroidDynamicToolbarAnimator::AndroidDynamicToolbarAnimator(
       ,
       mCompositorShutdown(false),
       mCompositorAnimationDeferred(false),
-      mCompositorLayersUpdateEnabled(false),
       mCompositorAnimationStarted(false),
       mCompositorReceivedFirstPaint(false),
       mCompositorWaitForPageResize(false),
@@ -87,7 +85,7 @@ AndroidDynamicToolbarAnimator::AndroidDynamicToolbarAnimator(
       mCompositorAnimationDirection(0),
       mCompositorAnimationStartHeight(0) {}
 
-void AndroidDynamicToolbarAnimator::Initialize(uint64_t aRootLayerTreeId) {
+void AndroidDynamicToolbarAnimator::Initialize(LayersId aRootLayerTreeId) {
   MOZ_ASSERT(CompositorThreadHolder::IsInCompositorThread());
   mRootLayerTreeId = aRootLayerTreeId;
   RefPtr<UiCompositorControllerParent> uiController =
@@ -455,7 +453,6 @@ bool AndroidDynamicToolbarAnimator::UpdateAnimation(
 void AndroidDynamicToolbarAnimator::FirstPaint() {
   MOZ_ASSERT(CompositorThreadHolder::IsInCompositorThread());
   mCompositorReceivedFirstPaint = true;
-  PostMessage(FIRST_PAINT);
 }
 
 void AndroidDynamicToolbarAnimator::UpdateRootFrameMetrics(
@@ -501,24 +498,10 @@ void AndroidDynamicToolbarAnimator::
   UpdateRootFrameMetrics(aMetrics);
 }
 
-// Layers updates are need by Robocop test which enables them
-void AndroidDynamicToolbarAnimator::EnableLayersUpdateNotifications(
-    bool aEnable) {
-  MOZ_ASSERT(CompositorThreadHolder::IsInCompositorThread());
-  mCompositorLayersUpdateEnabled = aEnable;
-}
-
-void AndroidDynamicToolbarAnimator::NotifyLayersUpdated() {
-  MOZ_ASSERT(CompositorThreadHolder::IsInCompositorThread());
-  if (mCompositorLayersUpdateEnabled) {
-    PostMessage(LAYERS_UPDATED);
-  }
-}
-
 void AndroidDynamicToolbarAnimator::AdoptToolbarPixels(
     mozilla::ipc::Shmem&& aMem, const ScreenIntSize& aSize) {
   MOZ_ASSERT(CompositorThreadHolder::IsInCompositorThread());
-  mCompositorToolbarPixels = Some(Move(aMem));
+  mCompositorToolbarPixels = Some(std::move(aMem));
   mCompositorToolbarPixelsSize = aSize;
 }
 
@@ -661,11 +644,11 @@ nsEventStatus AndroidDynamicToolbarAnimator::ProcessTouchDelta(
 
     uint32_t timeDelta = aTimeStamp - mControllerLastEventTimeStamp;
     if (mControllerLastEventTimeStamp && timeDelta && aDelta) {
-      float speed = -(float)aDelta / (float)timeDelta;
       // we can't use mApz because we're on the controller thread, so we have
       // the caller provide a RefPtr to the same underlying object, which should
       // be safe to use.
-      aApz->ProcessTouchVelocity(aTimeStamp, speed);
+      aApz->ProcessDynamicToolbarMovement(mControllerLastEventTimeStamp,
+                                          aTimeStamp, (float)aDelta);
     }
   }
 
@@ -777,7 +760,7 @@ void AndroidDynamicToolbarAnimator::HandleTouchEnd(
 void AndroidDynamicToolbarAnimator::PostMessage(int32_t aMessage) {
   // if the root layer tree id is zero then Initialize() has not been called yet
   // so queue the message until Initialize() is called.
-  if (mRootLayerTreeId == 0) {
+  if (!mRootLayerTreeId.IsValid()) {
     QueueMessage(aMessage);
     return;
   }
@@ -1023,6 +1006,7 @@ void AndroidDynamicToolbarAnimator::NotifyControllerAnimationStopped(
   }
 
   mControllerToolbarHeight = aHeight;
+  RequestComposite();
 }
 
 void AndroidDynamicToolbarAnimator::RequestComposite() {
@@ -1235,7 +1219,7 @@ void AndroidDynamicToolbarAnimator::QueueMessage(int32_t aMessage) {
 
   // If the root layer tree id is no longer zero, Initialize() was called before
   // QueueMessage was processed so just post the message now.
-  if (mRootLayerTreeId != 0) {
+  if (mRootLayerTreeId.IsValid()) {
     PostMessage(aMessage);
     return;
   }

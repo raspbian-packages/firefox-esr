@@ -15,39 +15,54 @@ const TEST_URI = `
   </style>
 `;
 
-add_task(function* () {
-  yield addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
-  let {view} = yield openRuleView();
-  yield testPressingEscapeRevertsChanges(view);
+add_task(async function() {
+  await addTab("data:text/html;charset=utf-8," + encodeURIComponent(TEST_URI));
+  const { view } = await openRuleView();
+  await testPressingEscapeRevertsChanges(view);
 });
 
-function* testPressingEscapeRevertsChanges(view) {
-  let {propEditor} = yield openCubicBezierAndChangeCoords(view, 1, 0,
-    [0.1, 2, 0.9, -1], {
+async function testPressingEscapeRevertsChanges(view) {
+  const { propEditor } = await openCubicBezierAndChangeCoords(
+    view,
+    1,
+    0,
+    [0.1, 2, 0.9, -1],
+    {
       selector: "body",
       name: "animation-timing-function",
-      value: "cubic-bezier(0.1, 2, 0.9, -1)"
-    });
+      value: "cubic-bezier(0.1, 2, 0.9, -1)",
+    }
+  );
 
-  is(propEditor.valueSpan.textContent, "cubic-bezier(.1,2,.9,-1)",
-    "Got expected property value.");
+  is(
+    propEditor.valueSpan.textContent,
+    "cubic-bezier(.1,2,.9,-1)",
+    "Got expected property value."
+  );
 
-  yield escapeTooltip(view);
+  await escapeTooltip(view);
 
-  yield waitForComputedStyleProperty("body", null, "animation-timing-function",
-    "linear");
-  is(propEditor.valueSpan.textContent, "linear",
-    "Got expected property value.");
+  await waitForComputedStyleProperty(
+    "body",
+    null,
+    "animation-timing-function",
+    "linear"
+  );
+  is(
+    propEditor.valueSpan.textContent,
+    "linear",
+    "Got expected property value."
+  );
 }
 
-function* escapeTooltip(view) {
+async function escapeTooltip(view) {
   info("Pressing ESCAPE to close the tooltip");
 
-  let bezierTooltip = view.tooltips.getTooltip("cubicBezier");
-  let widget = yield bezierTooltip.widget;
-  let onHidden = bezierTooltip.tooltip.once("hidden");
-  let onModifications = view.once("ruleview-changed");
+  const bezierTooltip = view.tooltips.getTooltip("cubicBezier");
+  const widget = await bezierTooltip.widget;
+  const onHidden = bezierTooltip.tooltip.once("hidden");
+  const onModifications = view.once("ruleview-changed");
   focusAndSendKey(widget.parent.ownerDocument.defaultView, "ESCAPE");
-  yield onHidden;
-  yield onModifications;
+  await onHidden;
+  await onModifications;
 }

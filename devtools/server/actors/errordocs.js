@@ -9,9 +9,11 @@
 
 "use strict";
 
-const baseURL = "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Errors/";
+const baseErrorURL =
+  "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Errors/";
 const params =
   "?utm_source=mozilla&utm_medium=firefox-console-errors&utm_campaign=default";
+
 const ErrorDocs = {
   JSMSG_READ_ONLY: "Read-only",
   JSMSG_BAD_ARRAY_LENGTH: "Invalid_array_length",
@@ -84,16 +86,31 @@ const ErrorDocs = {
   JSMSG_INCOMPATIBLE_PROTO: "Called_on_incompatible_type",
   JSMSG_INCOMPATIBLE_METHOD: "Called_on_incompatible_type",
   JSMSG_BAD_INSTANCEOF_RHS: "invalid_right_hand_side_instanceof_operand",
+  JSMSG_EMPTY_ARRAY_REDUCE: "Reduce_of_empty_array_with_no_initial_value",
+  JSMSG_NOT_ITERABLE: "is_not_iterable",
+  JSMSG_PROPERTY_FAIL: "cant_access_property",
+  JSMSG_PROPERTY_FAIL_EXPR: "cant_access_property",
+  JSMSG_REDECLARED_VAR: "Redeclared_parameter",
 };
 
-const MIXED_CONTENT_LEARN_MORE = "https://developer.mozilla.org/docs/Web/Security/Mixed_content";
-const TRACKING_PROTECTION_LEARN_MORE = "https://developer.mozilla.org/Firefox/Privacy/Tracking_Protection";
-const INSECURE_PASSWORDS_LEARN_MORE = "https://developer.mozilla.org/docs/Web/Security/Insecure_passwords";
-const PUBLIC_KEY_PINS_LEARN_MORE = "https://developer.mozilla.org/docs/Web/HTTP/Public_Key_Pinning";
-const STRICT_TRANSPORT_SECURITY_LEARN_MORE = "https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security";
-const WEAK_SIGNATURE_ALGORITHM_LEARN_MORE = "https://developer.mozilla.org/docs/Web/Security/Weak_Signature_Algorithm";
-const MIME_TYPE_MISMATCH_LEARN_MORE = "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options";
-const SOURCE_MAP_LEARN_MORE = "https://developer.mozilla.org/en-US/docs/Tools/Debugger/Source_map_errors";
+const MIXED_CONTENT_LEARN_MORE =
+  "https://developer.mozilla.org/docs/Web/Security/Mixed_content";
+const TRACKING_PROTECTION_LEARN_MORE =
+  "https://developer.mozilla.org/Firefox/Privacy/Tracking_Protection";
+const INSECURE_PASSWORDS_LEARN_MORE =
+  "https://developer.mozilla.org/docs/Web/Security/Insecure_passwords";
+const PUBLIC_KEY_PINS_LEARN_MORE =
+  "https://developer.mozilla.org/docs/Web/HTTP/Public_Key_Pinning";
+const STRICT_TRANSPORT_SECURITY_LEARN_MORE =
+  "https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security";
+const WEAK_SIGNATURE_ALGORITHM_LEARN_MORE =
+  "https://developer.mozilla.org/docs/Web/Security/Weak_Signature_Algorithm";
+const MIME_TYPE_MISMATCH_LEARN_MORE =
+  "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options";
+const SOURCE_MAP_LEARN_MORE =
+  "https://developer.mozilla.org/en-US/docs/Tools/Debugger/Source_map_errors";
+const TLS_LEARN_MORE =
+  "https://blog.mozilla.org/security/2018/10/15/removing-old-versions-of-tls/";
 const ErrorCategories = {
   "Insecure Password Field": INSECURE_PASSWORDS_LEARN_MORE,
   "Mixed Content Message": MIXED_CONTENT_LEARN_MORE,
@@ -102,21 +119,69 @@ const ErrorCategories = {
   "Invalid HSTS Headers": STRICT_TRANSPORT_SECURITY_LEARN_MORE,
   "SHA-1 Signature": WEAK_SIGNATURE_ALGORITHM_LEARN_MORE,
   "Tracking Protection": TRACKING_PROTECTION_LEARN_MORE,
-  "MIMEMISMATCH": MIME_TYPE_MISMATCH_LEARN_MORE,
+  MIMEMISMATCH: MIME_TYPE_MISMATCH_LEARN_MORE,
   "source map": SOURCE_MAP_LEARN_MORE,
+  TLS: TLS_LEARN_MORE,
 };
 
-exports.GetURL = (error) => {
+const baseCorsErrorUrl =
+  "https://developer.mozilla.org/docs/Web/HTTP/CORS/Errors/";
+const corsParams =
+  "?utm_source=devtools&utm_medium=firefox-cors-errors&utm_campaign=default";
+const CorsErrorDocs = {
+  CORSDisabled: "CORSDisabled",
+  CORSDidNotSucceed: "CORSDidNotSucceed",
+  CORSOriginHeaderNotAdded: "CORSOriginHeaderNotAdded",
+  CORSExternalRedirectNotAllowed: "CORSExternalRedirectNotAllowed",
+  CORSRequestNotHttp: "CORSRequestNotHttp",
+  CORSMissingAllowOrigin: "CORSMissingAllowOrigin",
+  CORSMultipleAllowOriginNotAllowed: "CORSMultipleAllowOriginNotAllowed",
+  CORSAllowOriginNotMatchingOrigin: "CORSAllowOriginNotMatchingOrigin",
+  CORSNotSupportingCredentials: "CORSNotSupportingCredentials",
+  CORSMethodNotFound: "CORSMethodNotFound",
+  CORSMissingAllowCredentials: "CORSMissingAllowCredentials",
+  CORSPreflightDidNotSucceed: "CORSPreflightDidNotSucceed",
+  CORSInvalidAllowMethod: "CORSInvalidAllowMethod",
+  CORSInvalidAllowHeader: "CORSInvalidAllowHeader",
+  CORSMissingAllowHeaderFromPreflight: "CORSMissingAllowHeaderFromPreflight",
+};
+
+const baseStorageAccessPolicyErrorUrl =
+  "https://developer.mozilla.org/docs/Mozilla/Firefox/Privacy/Storage_access_policy/Errors/";
+const storageAccessPolicyParams =
+  "?utm_source=devtools&utm_medium=firefox-cookie-errors&utm_campaign=default";
+const StorageAccessPolicyErrorDocs = {
+  cookieBlockedPermission: "CookieBlockedByPermission",
+  cookieBlockedTracker: "CookieBlockedTracker",
+  cookieBlockedAll: "CookieBlockedAll",
+  cookieBlockedForeign: "CookieBlockedForeign",
+};
+
+exports.GetURL = error => {
   if (!error) {
     return undefined;
   }
 
-  let doc = ErrorDocs[error.errorMessageName];
+  const doc = ErrorDocs[error.errorMessageName];
   if (doc) {
-    return baseURL + doc + params;
+    return baseErrorURL + doc + params;
   }
 
-  let categoryURL = ErrorCategories[error.category];
+  const corsDoc = CorsErrorDocs[error.category];
+  if (corsDoc) {
+    return baseCorsErrorUrl + corsDoc + corsParams;
+  }
+
+  const storageAccessPolicyDoc = StorageAccessPolicyErrorDocs[error.category];
+  if (storageAccessPolicyDoc) {
+    return (
+      baseStorageAccessPolicyErrorUrl +
+      storageAccessPolicyDoc +
+      storageAccessPolicyParams
+    );
+  }
+
+  const categoryURL = ErrorCategories[error.category];
   if (categoryURL) {
     return categoryURL + params;
   }

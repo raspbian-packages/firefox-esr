@@ -1,11 +1,3 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 use super::*;
 
 ast_struct! {
@@ -18,9 +10,7 @@ ast_struct! {
     /// Parse a Rust source file into a `syn::File` and print out a debug
     /// representation of the syntax tree.
     ///
-    /// ```
-    /// extern crate syn;
-    ///
+    /// ```edition2018
     /// use std::env;
     /// use std::fs::File;
     /// use std::io::Read;
@@ -88,21 +78,21 @@ ast_struct! {
 pub mod parsing {
     use super::*;
 
-    use synom::Synom;
+    use parse::{Parse, ParseStream, Result};
 
-    impl Synom for File {
-        named!(parse -> Self, do_parse!(
-            attrs: many0!(Attribute::parse_inner) >>
-            items: many0!(Item::parse) >>
-            (File {
+    impl Parse for File {
+        fn parse(input: ParseStream) -> Result<Self> {
+            Ok(File {
                 shebang: None,
-                attrs: attrs,
-                items: items,
+                attrs: input.call(Attribute::parse_inner)?,
+                items: {
+                    let mut items = Vec::new();
+                    while !input.is_empty() {
+                        items.push(input.parse()?);
+                    }
+                    items
+                },
             })
-        ));
-
-        fn description() -> Option<&'static str> {
-            Some("crate")
         }
     }
 }
@@ -111,10 +101,11 @@ pub mod parsing {
 mod printing {
     use super::*;
     use attr::FilterAttrs;
-    use quote::{ToTokens, Tokens};
+    use proc_macro2::TokenStream;
+    use quote::{ToTokens, TokenStreamExt};
 
     impl ToTokens for File {
-        fn to_tokens(&self, tokens: &mut Tokens) {
+        fn to_tokens(&self, tokens: &mut TokenStream) {
             tokens.append_all(self.attrs.inner());
             tokens.append_all(&self.items);
         }

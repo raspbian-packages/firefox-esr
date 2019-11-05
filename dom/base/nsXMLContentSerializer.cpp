@@ -13,12 +13,9 @@
 #include "nsXMLContentSerializer.h"
 
 #include "nsGkAtoms.h"
-#include "nsIDOMProcessingInstruction.h"
-#include "nsIDOMComment.h"
-#include "nsIDOMDocumentType.h"
 #include "nsIContent.h"
 #include "nsIContentInlines.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIDocumentEncoder.h"
 #include "nsElementTable.h"
 #include "nsNameSpaceManager.h"
@@ -29,7 +26,11 @@
 #include "nsCRT.h"
 #include "nsContentUtils.h"
 #include "nsAttrName.h"
+#include "mozilla/dom/Comment.h"
+#include "mozilla/dom/CustomElementRegistry.h"
+#include "mozilla/dom/DocumentType.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/dom/ProcessingInstruction.h"
 #include "mozilla/intl/LineBreaker.h"
 #include "nsParserConstants.h"
 #include "mozilla/Encoding.h"
@@ -238,22 +239,17 @@ nsXMLContentSerializer::AppendCDATASection(nsIContent* aCDATASection,
 }
 
 NS_IMETHODIMP
-nsXMLContentSerializer::AppendProcessingInstruction(nsIContent* aPI,
+nsXMLContentSerializer::AppendProcessingInstruction(ProcessingInstruction* aPI,
                                                     int32_t aStartOffset,
                                                     int32_t aEndOffset,
                                                     nsAString& aStr) {
-  nsCOMPtr<nsIDOMProcessingInstruction> pi = do_QueryInterface(aPI);
-  NS_ENSURE_ARG(pi);
-  nsresult rv;
   nsAutoString target, data, start;
 
   NS_ENSURE_TRUE(MaybeAddNewlineForRootNode(aStr), NS_ERROR_OUT_OF_MEMORY);
 
-  rv = pi->GetTarget(target);
-  if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
+  aPI->GetTarget(target);
 
-  rv = pi->GetData(data);
-  if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
+  aPI->GetData(data);
 
   NS_ENSURE_TRUE(start.AppendLiteral("<?", mozilla::fallible),
                  NS_ERROR_OUT_OF_MEMORY);
@@ -287,16 +283,10 @@ nsXMLContentSerializer::AppendProcessingInstruction(nsIContent* aPI,
 }
 
 NS_IMETHODIMP
-nsXMLContentSerializer::AppendComment(nsIContent* aComment,
-                                      int32_t aStartOffset, int32_t aEndOffset,
-                                      nsAString& aStr) {
-  nsCOMPtr<nsIDOMComment> comment = do_QueryInterface(aComment);
-  NS_ENSURE_ARG(comment);
-  nsresult rv;
+nsXMLContentSerializer::AppendComment(Comment* aComment, int32_t aStartOffset,
+                                      int32_t aEndOffset, nsAString& aStr) {
   nsAutoString data;
-
-  rv = comment->GetData(data);
-  if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
+  aComment->GetData(data);
 
   int32_t dataLength = data.Length();
   if (aStartOffset || (aEndOffset != -1 && aEndOffset < dataLength)) {
@@ -342,18 +332,11 @@ nsXMLContentSerializer::AppendComment(nsIContent* aComment,
 }
 
 NS_IMETHODIMP
-nsXMLContentSerializer::AppendDoctype(nsIContent* aDocType, nsAString& aStr) {
-  nsCOMPtr<nsIDOMDocumentType> docType = do_QueryInterface(aDocType);
-  NS_ENSURE_ARG(docType);
-  nsresult rv;
+nsXMLContentSerializer::AppendDoctype(DocumentType* aDocType, nsAString& aStr) {
   nsAutoString name, publicId, systemId;
-
-  rv = docType->GetName(name);
-  if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
-  rv = docType->GetPublicId(publicId);
-  if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
-  rv = docType->GetSystemId(systemId);
-  if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
+  aDocType->GetName(name);
+  aDocType->GetPublicId(publicId);
+  aDocType->GetSystemId(systemId);
 
   NS_ENSURE_TRUE(MaybeAddNewlineForRootNode(aStr), NS_ERROR_OUT_OF_MEMORY);
 
@@ -579,9 +562,7 @@ bool nsXMLContentSerializer::ConfirmPrefix(nsAString& aPrefix,
 
 void nsXMLContentSerializer::GenerateNewPrefix(nsAString& aPrefix) {
   aPrefix.Assign('a');
-  char buf[128];
-  SprintfLiteral(buf, "%d", mPrefixIndex++);
-  AppendASCIItoUTF16(buf, aPrefix);
+  aPrefix.AppendInt(mPrefixIndex++);
 }
 
 bool nsXMLContentSerializer::SerializeAttr(const nsAString& aPrefix,
@@ -763,6 +744,8 @@ bool nsXMLContentSerializer::SerializeAttributes(
   nsAutoString xmlnsStr;
   xmlnsStr.AssignLiteral(kXMLNS);
   uint32_t index, count;
+
+  MaybeSerializeIsValue(aElement, aStr);
 
   // If we had to add a new namespace declaration, serialize
   // and push it on the namespace stack
@@ -1054,7 +1037,7 @@ nsXMLContentSerializer::AppendElementEnd(Element* aElement, nsAString& aStr) {
 }
 
 NS_IMETHODIMP
-nsXMLContentSerializer::AppendDocumentStart(nsIDocument* aDocument,
+nsXMLContentSerializer::AppendDocumentStart(Document* aDocument,
                                             nsAString& aStr) {
   NS_ENSURE_ARG_POINTER(aDocument);
 
@@ -1072,8 +1055,8 @@ nsXMLContentSerializer::AppendDocumentStart(nsIDocument* aDocument,
     aStr += NS_LITERAL_STRING(" encoding=\"") +
             NS_ConvertASCIItoUTF16(mCharset) + endQuote;
   }
-    // Otherwise just don't output an encoding attr.  Not that we expect
-    // mCharset to ever be empty.
+  // Otherwise just don't output an encoding attr.  Not that we expect
+  // mCharset to ever be empty.
 #ifdef DEBUG
   else {
     NS_WARNING("Empty mCharset?  How come?");
@@ -1129,8 +1112,6 @@ bool nsXMLContentSerializer::AppendToString(const nsAString& aStr,
   return aOutputStr.Append(aStr, mozilla::fallible);
 }
 
-static const uint16_t kGTVal = 62;
-
 #define _ 0
 
 // This table indexes into kEntityStrings[].
@@ -1174,14 +1155,25 @@ static const char* const kEntityStrings[] = {
 
 bool nsXMLContentSerializer::AppendAndTranslateEntities(const nsAString& aStr,
                                                         nsAString& aOutputStr) {
+  if (mInAttribute) {
+    return AppendAndTranslateEntities<kGTVal>(aStr, aOutputStr, kAttrEntities,
+                                              kEntityStrings);
+  }
+
+  return AppendAndTranslateEntities<kGTVal>(aStr, aOutputStr, kEntities,
+                                            kEntityStrings);
+}
+
+/* static */
+bool nsXMLContentSerializer::AppendAndTranslateEntities(
+    const nsAString& aStr, nsAString& aOutputStr, const uint8_t aEntityTable[],
+    uint16_t aMaxTableIndex, const char* const aStringTable[]) {
   nsReadingIterator<char16_t> done_reading;
   aStr.EndReading(done_reading);
 
   // for each chunk of |aString|...
   uint32_t advanceLength = 0;
   nsReadingIterator<char16_t> iter;
-
-  const uint8_t* entityTable = mInAttribute ? kAttrEntities : kEntities;
 
   for (aStr.BeginReading(iter); iter != done_reading;
        iter.advance(int32_t(advanceLength))) {
@@ -1196,8 +1188,8 @@ bool nsXMLContentSerializer::AppendAndTranslateEntities(const nsAString& aStr,
     // needs to be replaced
     for (; c < fragmentEnd; c++, advanceLength++) {
       char16_t val = *c;
-      if ((val <= kGTVal) && entityTable[val]) {
-        entityText = kEntityStrings[entityTable[val]];
+      if ((val <= aMaxTableIndex) && aEntityTable[val]) {
+        entityText = aStringTable[aEntityTable[val]];
         break;
       }
     }
@@ -1206,8 +1198,9 @@ bool nsXMLContentSerializer::AppendAndTranslateEntities(const nsAString& aStr,
         aOutputStr.Append(fragmentStart, advanceLength, mozilla::fallible),
         false);
     if (entityText) {
-      NS_ENSURE_TRUE(
-          AppendASCIItoUTF16(entityText, aOutputStr, mozilla::fallible), false);
+      NS_ENSURE_TRUE(AppendASCIItoUTF16(mozilla::MakeStringSpan(entityText),
+                                        aOutputStr, mozilla::fallible),
+                     false);
       advanceLength++;
     }
   }
@@ -1226,7 +1219,7 @@ bool nsXMLContentSerializer::MaybeAddNewlineForRootNode(nsAString& aStr) {
 void nsXMLContentSerializer::MaybeFlagNewlineForRootNode(nsINode* aNode) {
   nsINode* parent = aNode->GetParentNode();
   if (parent) {
-    mAddNewlineForRootNode = parent->IsNodeOfType(nsINode::eDOCUMENT);
+    mAddNewlineForRootNode = parent->IsDocument();
   }
 }
 
@@ -1730,4 +1723,20 @@ bool nsXMLContentSerializer::AppendToStringWrapped(const nsAString& aStr,
 bool nsXMLContentSerializer::ShouldMaintainPreLevel() const {
   // Only attempt to maintain the pre level for consumers who care about it.
   return !mDoRaw || (mFlags & nsIDocumentEncoder::OutputNoFormattingInPre);
+}
+
+bool nsXMLContentSerializer::MaybeSerializeIsValue(Element* aElement,
+                                                   nsAString& aStr) {
+  CustomElementData* ceData = aElement->GetCustomElementData();
+  if (ceData) {
+    nsAtom* isAttr = ceData->GetIs(aElement);
+    if (isAttr && !aElement->HasAttr(kNameSpaceID_None, nsGkAtoms::is)) {
+      NS_ENSURE_TRUE(aStr.AppendLiteral(" is=\"", mozilla::fallible), false);
+      NS_ENSURE_TRUE(
+          aStr.Append(nsDependentAtomString(isAttr), mozilla::fallible), false);
+      NS_ENSURE_TRUE(aStr.AppendLiteral("\"", mozilla::fallible), false);
+    }
+  }
+
+  return true;
 }

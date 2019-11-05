@@ -23,10 +23,22 @@
 <!ENTITY  reloadTab.accesskey                "r">
 <!ENTITY  reloadAllTabs.label                "Pārlādēt visas cilnes">
 <!ENTITY  reloadAllTabs.accesskey            "a">
+<!ENTITY  selectAllTabs.label                "Izvēlēties visas cilnes">
+<!ENTITY  selectAllTabs.accesskey            "S">
 <!-- LOCALIZATION NOTE (duplicateTab.label): This is a command to duplicate
 a tab (i.e. it is a verb, not adjective). -->
 <!ENTITY  duplicateTab.label                 "Dublēt cilni">
+<!-- LOCALIZATION NOTE (duplicateTab.accesskey, duplicateTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
 <!ENTITY  duplicateTab.accesskey             "D">
+<!ENTITY  closeTabOptions.label              "Aizvērt cilnes iestatījumus">
+<!ENTITY  closeTabOptions.accesskey          "A">
+<!-- LOCALIZATION NOTE (duplicateTabs.label): This is a command to duplicate
+a tab (i.e. it is a verb, not adjective). -->
+<!ENTITY  duplicateTabs.label                "Dublēt cilnes">
+<!-- LOCALIZATION NOTE (duplicateTab.accesskey, duplicateTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  duplicateTabs.accesskey            "D">
 <!-- LOCALIZATION NOTE (closeTabsToTheEnd.label): This should indicate the
 direction in which tabs are closed, i.e. locales that use RTL mode should say
 left instead of right. -->
@@ -35,14 +47,48 @@ left instead of right. -->
 <!ENTITY  closeOtherTabs.label               "Aizvērt citas cilnes">
 <!ENTITY  closeOtherTabs.accesskey           "v">
 
+<!ENTITY  closeSelectedTabs.label            "Aizvērt izvēlētās cilnes">
+<!ENTITY  closeSelectedTabs.accesskey        "S">
+
+<!ENTITY  closeTabs.label                    "Aizvērt cilnes">
+<!ENTITY  closeTabs.accesskey                "S">
+<!ENTITY  pinSelectedTabs.label              "Pielīmēt cilnes">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY  pinSelectedTabs.accesskey          "P">
+<!ENTITY  unpinSelectedTabs.label            "Atbrīvot cilnes">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY  unpinSelectedTabs.accesskey        "b">
+<!-- Reload Tab and Reload Selected Tabs have the same accesskey
+but will never be visible at the same time. -->
+<!ENTITY  reloadSelectedTabs.label           "Pārlādēt izvēlētās cilnes">
+<!ENTITY  reloadSelectedTabs.accesskey       "R">
+<!-- LOCALIZATION NOTE(reloadTab.label, reloadTabs.label): have the same accesskey
+but will never be visible at the same time. -->
+<!ENTITY  reloadTabs.label                   "Pārlādēt cilnes">
+<!ENTITY  reloadTabs.accesskey               "R">
+<!ENTITY  bookmarkSelectedTabs.label         "Saglabāt cilnes grāmatzīmēs…">
+<!-- LOCALIZATION NOTE(bookmarkTab.accesskey, bookmarkSelectedTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  bookmarkSelectedTabs.accesskey     "g">
+
 <!-- LOCALIZATION NOTE (pinTab.label, unpinTab.label): "Pin" is being
 used as a metaphor for expressing the fact that these tabs are "pinned" to the
 left edge of the tabstrip. Really we just want the string to express the idea
 that this is a lightweight and reversible action that keeps your tab where you
 can reach it easily. -->
 <!ENTITY  pinTab.label                       "Pielīmēt cilni">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
 <!ENTITY  pinTab.accesskey                   "P">
 <!ENTITY  unpinTab.label                     "Atbrīvot cilni">
+<!-- LOCALIZATION NOTE(pinTab.accesskey, pinSelectedTabs.accesskey,
+unpinTab.accesskey, unpinSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
 <!ENTITY  unpinTab.accesskey                 "c">
 <!ENTITY  sendTabToDevice.label              "Sūtīt cilni uz ierīci">
 <!ENTITY  sendTabToDevice.accesskey          "I">
@@ -50,17 +96,30 @@ can reach it easily. -->
 <!ENTITY  sendPageToDevice.accesskey         "I">
 <!ENTITY  sendLinkToDevice.label             "Sūtīt saiti uz ierīci">
 <!ENTITY  sendLinkToDevice.accesskey         "I">
-<!ENTITY  sendToDeviceFeedback.label         "Nosūtīts!">
-<!ENTITY  sendToDeviceOfflineFeedback.label  "Ierindots (nesaistē)">
+<!-- LOCALIZATION NOTE (moveTabOptions.label and moveSelectedTabOptions.label):
+These two items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  moveTabOptions.label               "Pārvietot cilni">
+<!ENTITY  moveTabOptions.accesskey           "v">
+<!ENTITY  moveSelectedTabOptions.label       "Pārvietot cilnes">
+<!ENTITY  moveSelectedTabOptions.accesskey   "v">
+<!ENTITY  moveToStart.label                  "Pārvietot uz sākumu">
+<!ENTITY  moveToStart.accesskey              "S">
+<!ENTITY  moveToEnd.label                    "Pārvietot uz beigām">
+<!ENTITY  moveToEnd.accesskey                "E">
 <!ENTITY  moveToNewWindow.label              "Pāriet uz jaunu logu">
 <!ENTITY  moveToNewWindow.accesskey          "P">
+<!ENTITY  reopenInContainer.label            "Atvērt konteinerā">
+<!ENTITY  reopenInContainer.accesskey        "t">
 <!ENTITY  bookmarkAllTabs.label              "Saglabāt visas cilnes grāmatzīmēs…">
 <!ENTITY  bookmarkAllTabs.accesskey          "t">
+<!ENTITY  bookmarkTab.label                  "Saglabāt grāmatzīmēs">
+<!-- LOCALIZATION NOTE(bookmarkTab.accesskey, bookmarkSelectedTabs.accesskey):
+These items have the same accesskey but will never be visible at the same time. -->
+<!ENTITY  bookmarkTab.accesskey              "B">
 <!ENTITY  undoCloseTab.label                 "Atsaukt cilnes aizvēršanu">
 <!ENTITY  undoCloseTab.accesskey             "u">
 <!ENTITY  closeTab.label                     "Aizvērt cilni">
 <!ENTITY  closeTab.accesskey                 "c">
-
 <!ENTITY  hiddenTabs.label                   "Slēptās cilnes">
 
 <!ENTITY  listAllTabs.label      "Visu ciļņu saraksts">
@@ -83,6 +142,8 @@ when there are no windows but Firefox is still running. -->
 <!ENTITY printCmd.accesskey "D">
 <!ENTITY printCmd.commandkey "p">
 
+<!ENTITY taskManagerCmd.label "Uzdevumu pārvaldnieks">
+
 <!ENTITY goOfflineCmd.label "Strādāt nesaistē">
 <!ENTITY goOfflineCmd.accesskey "r">
 
@@ -97,6 +158,29 @@ when there are no windows but Firefox is still running. -->
 <!ENTITY toolbarContextMenu.reloadAllTabs.accesskey "a">
 <!ENTITY toolbarContextMenu.bookmarkAllTabs.label "Saglabāt visas cilnes grāmatzīmēs…">
 <!ENTITY toolbarContextMenu.bookmarkAllTabs.accesskey "t">
+
+<!ENTITY toolbarContextMenu.reloadSelectedTab.label "Pārlādēt izvēlēto cilni">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.reloadSelectedTab.accesskey,
+toolbarContextMenu.reloadSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.reloadSelectedTab.accesskey "R">
+<!ENTITY toolbarContextMenu.reloadSelectedTabs.label "Pārlādēt izvēlētās cilnes">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.reloadSelectedTab.accesskey,
+toolbarContextMenu.reloadSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.reloadSelectedTabs.accesskey "R">
+<!ENTITY toolbarContextMenu.bookmarkSelectedTab.label "Pievienot izvēlēto cilni grāmatzīmēm…">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.bookmarkSelectedTab.accesskey,
+toolbarContextMenu.bookmarkSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.bookmarkSelectedTab.accesskey "T">
+<!ENTITY toolbarContextMenu.bookmarkSelectedTabs.label "Pievienot izvēlētās cilnes grāmatzīmēm…">
+<!-- LOCALIZATION NOTE (toolbarContextMenu.bookmarkSelectedTab.accesskey,
+toolbarContextMenu.bookmarkSelectedTabs.accesskey): These share the
+same accesskey but will never be visible at the same time. -->
+<!ENTITY toolbarContextMenu.bookmarkSelectedTabs.accesskey "T">
+<!ENTITY toolbarContextMenu.selectAllTabs.label "Izvēlēties visas cilnes">
+<!ENTITY toolbarContextMenu.selectAllTabs.accesskey "S">
 <!ENTITY toolbarContextMenu.undoCloseTab.label "Atsaukt cilnes aizvēršanu">
 <!ENTITY toolbarContextMenu.undoCloseTab.accesskey "u">
 
@@ -129,7 +213,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY showAllTabsCmd.label "Rādīt visas cilnes">
 <!ENTITY showAllTabsCmd.accesskey "v">
 <!ENTITY toggleReaderMode.key "R">
-
 <!ENTITY toggleReaderMode.win.keycode "VK_F9">
 
 <!ENTITY fxaSignIn.label "Pierakstīties &syncBrand.shortName.label;">
@@ -183,16 +266,13 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 
 <!ENTITY subscribeToPageMenupopup.label "Pierakstīties uz šo lapu">
 <!ENTITY subscribeToPageMenuitem.label "Pierakstīties uz šo lapu…">
+
 <!ENTITY addCurPagesCmd.label "Saglabāt visas cilnes grāmatzīmēs…">
 <!ENTITY showAllBookmarks2.label "Rādīt visas grāmatzīmes">
 <!ENTITY recentBookmarks.label "Nesen saglabātās">
 <!ENTITY otherBookmarksCmd.label "Citas grāmatzīmes">
 <!ENTITY mobileBookmarksCmd.label "Mobilās grāmatzīmes">
 <!ENTITY bookmarksToolbarChevron.tooltip "Rādīt vairāk grāmatzīmju">
-<!ENTITY showRecentlyBookmarked.label     "Rādīt nesen saglabātās">
-<!ENTITY showRecentlyBookmarked.accesskey "n">
-<!ENTITY hideRecentlyBookmarked.label     "Slēpt nesen saglabātās">
-<!ENTITY hideRecentlyBookmarked.accesskey "n">
 
 <!ENTITY backCmd.label                "Atpakaļ">
 <!ENTITY backCmd.accesskey            "A">
@@ -215,6 +295,7 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 
 <!ENTITY urlbar.defaultNotificationAnchor.tooltip         "Atvērt ziņojumu paneli">
 <!ENTITY urlbar.geolocationNotificationAnchor.tooltip     "Atvērt atrašanās vietu pieprasījumu paneli">
+<!ENTITY urlbar.autoplayNotificationAnchor.tooltip        "Atvērt automātiskās atskaņošanas paneli">
 <!ENTITY urlbar.addonsNotificationAnchor.tooltip          "Atvērt papildinājumu instalēšanas ziņojumu paneli">
 <!ENTITY urlbar.canvasNotificationAnchor.tooltip          "Pārvaldīt audekla izguves atļaujas">
 <!ENTITY urlbar.indexedDBNotificationAnchor.tooltip       "Atvērt nesaistes datu saglabāšanas ziņojumu paneli">
@@ -223,7 +304,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY urlbar.webNotificationAnchor.tooltip             "Izmainiet vai varat saņemt paziņojumus no šīs lapas">
 <!ENTITY urlbar.persistentStorageNotificationAnchor.tooltip     "Glabāt datus pastāvīgajā krātuvē">
 <!ENTITY urlbar.remoteControlNotificationAnchor.tooltip   "Pārlūks tiek attālināti kontrolēts">
-
 <!ENTITY urlbar.webAuthnAnchor.tooltip                    "Atver autentifikācijas paneli">
 
 <!ENTITY urlbar.webRTCShareDevicesNotificationAnchor.tooltip      "Pārvaldiet kameras un/vai mikrofona koplietošanu ar šo lapu">
@@ -234,7 +314,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY urlbar.translateNotificationAnchor.tooltip       "Tulkot šo lapu">
 <!ENTITY urlbar.translatedNotificationAnchor.tooltip      "Pārvaldīt lapas tulkojumus">
 <!ENTITY urlbar.emeNotificationAnchor.tooltip             "Pārvaldīt DRM programmatūras izmantošanu">
-
 <!ENTITY urlbar.midiNotificationAnchor.tooltip            "Atvērt MIDI paneli">
 
 <!ENTITY urlbar.cameraBlocked.tooltip            "Kameras izmantošana šajā lapā ir bloķēta.">
@@ -244,8 +323,8 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY urlbar.webNotificationsBlocked.tooltip  "Paziņojumu saņemšana no šīs lapas ir bloķēta.">
 <!ENTITY urlbar.persistentStorageBlocked.tooltip "Datu glabāšana ir bloķēta šajā lapā.">
 <!ENTITY urlbar.popupBlocked.tooltip             "Uzlecošo logu rādīšana no šīs lapas ir bloķēta.">
+<!ENTITY urlbar.autoplayMediaBlocked.tooltip     "Automātiskā multimēdiju ar skaņu atskaņošana šajā lapā ir bloķēta.">
 <!ENTITY urlbar.canvasBlocked.tooltip            "Šīs lapas canvas datu ieguve ir bloķēta.">
-
 <!ENTITY urlbar.flashPluginBlocked.tooltip       "Adobe Flash spraudņa izmantošana šajā lapā ir bloķēta.">
 <!ENTITY urlbar.midiBlocked.tooltip              "MIDI izmantošana šajā lapā ir bloķēta.">
 
@@ -255,6 +334,7 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 
 <!-- Toolbar items -->
 <!ENTITY homeButton.label             "Sākumlapa">
+<!ENTITY homeButton.defaultPage.tooltip "&brandShortName; sākumlapa">
 
 <!ENTITY bookmarksButton.label          "Grāmatzīmes">
 <!ENTITY bookmarksCmd.commandkey "b">
@@ -301,13 +381,21 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY webDeveloperMenu.label       "Izstrādātāju rīki">
 <!ENTITY webDeveloperMenu.accesskey   "T">
 
+<!ENTITY devtoolsRecordExecution.label "Ierakstīt izpildi">
+<!ENTITY devtoolsSaveRecording.label "Saglabāt ierakstu">
+<!ENTITY devtoolsReplayExecution.label "Atskaņot izpildi">
+
 <!ENTITY inspectContextMenu.label     "Izmeklēt">
 <!ENTITY inspectContextMenu.accesskey "I">
+
+<!ENTITY inspectA11YContextMenu.label     "Izmeklēt pieejamības iestatījumus">
 
 <!ENTITY fileMenu.label         "Fails">
 <!ENTITY fileMenu.accesskey       "F">
 <!ENTITY newUserContext.label             "Jauna saturošā cilne">
 <!ENTITY newUserContext.accesskey         "c">
+<!ENTITY manageUserContext.label          "Pārvaldīt konteinerus">
+<!ENTITY manageUserContext.accesskey      "O">
 <!ENTITY newNavigatorCmd.label        "Jauns logs">
 <!ENTITY newNavigatorCmd.key        "N">
 <!ENTITY newNavigatorCmd.accesskey      "n">
@@ -393,7 +481,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
      when Sync is configured but this appears to be the only device attached to
      the account. We also show links to download Firefox for android/ios. -->
 <!ENTITY appMenuRemoteTabs.noclients.subtitle "Gribat redzēt cilnes no citām savām ierīcēm?">
-<!ENTITY appMenuRemoteTabs.openprefs.label "Sinhronizācijas iestatījumi">
 <!ENTITY appMenuRemoteTabs.opensyncprefs.label "Atvērt Sync iestatījumus">
 <!ENTITY appMenuRemoteTabs.notsignedin.label "Pierakstieties, lai redzētu šeit cilnes no šīm ierīcēm.">
 <!ENTITY appMenuRemoteTabs.unverified.label "Jūsu kontam nepieciešams apstiprinājums.">
@@ -406,34 +493,30 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 
 <!ENTITY customizeMenu.addToToolbar.label "Pievienot rīkjoslai">
 <!ENTITY customizeMenu.addToToolbar.accesskey "a">
-<!ENTITY customizeMenu.addToPanel.label "Pievienot izvēlnei">
-<!ENTITY customizeMenu.addToPanel.accesskey "n">
 <!-- LOCALIZATION NOTE (customizeMenu.addToOverflowMenu.label,
      customizeMenu.pinToOverflowMenu.label, customizeMenu.unpinFromOverflowMenu.label)
      The overflow menu is the menu that appears if you click the chevron (>> button)
-     in the location bar. These labels are only used in Photon, where you can put
-     items into this menu permanently (pinned). -->
+     in the location bar. -->
 <!ENTITY customizeMenu.addToOverflowMenu.label "Pievienot izvēlnei">
 <!ENTITY customizeMenu.addToOverflowMenu.accesskey "M">
-<!ENTITY customizeMenu.moveToToolbar.label "Pārvietot uz rīkjoslu">
-<!ENTITY customizeMenu.moveToToolbar.accesskey "o">
-<!-- LOCALIZATION NOTE (customizeMenu.moveToPanel.accesskey, customizeMenu.pinToOverflowMenu.accesskey)
+<!-- LOCALIZATION NOTE (customizeMenu.pinToOverflowMenu.accesskey)
      can appear on the same context menu as menubarCmd and personalbarCmd,
-     so they should have different access keys. customizeMenu.moveToToolbar and
-     customizeMenu.moveToPanel are mutually exclusive, so can share access
-     keys.  -->
-<!ENTITY customizeMenu.moveToPanel.label "Pārvietot uz izvēlni">
-<!ENTITY customizeMenu.moveToPanel.accesskey "o">
+     so they should have different access keys.  -->
 <!ENTITY customizeMenu.pinToOverflowMenu.label "Pieslēgt izvēlnei">
 <!ENTITY customizeMenu.pinToOverflowMenu.accesskey "P">
 <!ENTITY customizeMenu.unpinFromOverflowMenu.label "Atslēgt no izvēlnes">
 <!ENTITY customizeMenu.unpinFromOverflowMenu.accesskey "U">
 <!ENTITY customizeMenu.removeFromToolbar.label "Aizvākt no rīkjoslas">
 <!ENTITY customizeMenu.removeFromToolbar.accesskey "r">
-<!ENTITY customizeMenu.removeFromMenu.label "Aizvākt no izvēlnes">
-<!ENTITY customizeMenu.removeFromMenu.accesskey "z">
 <!ENTITY customizeMenu.addMoreItems.label "Pievienot citas lietas…">
 <!ENTITY customizeMenu.addMoreItems.accesskey "a">
+<!ENTITY customizeMenu.autoHideDownloadsButton.label "Automātiski paslēpt rīkjoslu">
+<!ENTITY customizeMenu.autoHideDownloadsButton.accesskey "A">
+<!ENTITY customizeMenu.manageExtension.label "Pārvaldīt paplašinājumu">
+<!ENTITY customizeMenu.manageExtension.accesskey "P">
+
+<!ENTITY customizeMenu.removeExtension.label "Aizvākt meklētāju">
+<!ENTITY customizeMenu.removeExtension.accesskey "n">
 
 <!-- LOCALIZATION NOTE (moreMenu.label) This label is used in the new Photon
     app (hamburger) menu. When clicked, it opens a subview that contains
@@ -442,7 +525,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 
 <!ENTITY openCmd.commandkey           "l">
 <!ENTITY urlbar.placeholder2          "Ieraksti meklējamo tekstu vai mājas lapas adresi">
-<!ENTITY urlbar.placeholder3          "Ievadiet meklējamo frāzi vai lapas adresi šeit">
 <!ENTITY urlbar.accesskey             "d">
 <!-- LOCALIZATION NOTE (urlbar.extension.label): Used to indicate that a selected autocomplete entry is provided by an extension. -->
 <!ENTITY urlbar.extension.label       "Paplašinājums:">
@@ -452,7 +534,7 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY urlbar.searchSuggestionsNotification.hintPrefix "Padoms:">
 <!-- LOCALIZATION NOTE (urlbar.searchSuggestionsNotification.hint): &#x1F50E; is the magnifier icon emoji, please don't change it. -->
 <!ENTITY urlbar.searchSuggestionsNotification.hint "Lai vieglāk atrastu vajadzīgo, Meklējiet &#x1F50E; meklēšanas ieteikumos.">
-<!ENTITY urlbar.searchSuggestionsNotification.changeSettingsWin "Mainītu opcijas…">
+<!ENTITY urlbar.searchSuggestionsNotification.changeSettingsWin "Mainīt iestatījumus…">
 <!ENTITY urlbar.searchSuggestionsNotification.changeSettingsWin.accesskey "C">
 <!ENTITY urlbar.searchSuggestionsNotification.changeSettingsUnix "Mainīt iestatījumus…">
 <!ENTITY urlbar.searchSuggestionsNotification.changeSettingsUnix.accesskey "C">
@@ -543,9 +625,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY reloadFrameCmd.label         "Pārlādēt ietvaru">
 <!ENTITY reloadFrameCmd.accesskey     "r">
 <!ENTITY viewPartialSourceForSelectionCmd.label "Skatīt iezīmētā pirmkodu">
-<!ENTITY viewPartialSourceForMathMLCmd.label    "Skatīt MathML pirmkodu">
-<!-- LOCALIZATION NOTE (viewPartialSourceCmd.accesskey): This accesskey is used for both
-         viewPartialSourceForSelectionCmd.label and viewPartialSourceForMathMLCmd.label -->
 <!ENTITY viewPartialSourceCmd.accesskey "e">
 <!ENTITY viewPageSourceCmd.label      "Skatīt lapas pirmkodu">
 <!ENTITY viewPageSourceCmd.accesskey  "S">
@@ -576,7 +655,6 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY bookmarkThisFrameCmd.label      "Pievienot šo ietvaru grāmatzīmēm">
 <!ENTITY bookmarkThisFrameCmd.accesskey  "m">
 <!ENTITY pageAction.copyLink.label    "Kopēt saiti">
-<!ENTITY copyURLFeedback.label        "Nokopēts!">
 <!ENTITY emailPageCmd.label           "Nosūtīt saiti…">
 <!ENTITY emailPageCmd.accesskey       "N">
 <!ENTITY savePageCmd.label            "Saglabāt lapu kā…">
@@ -607,6 +685,9 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY hidePluginCmd.label          "Paslēpt šo spraudni">
 <!ENTITY hidePluginCmd.accesskey      "p">
 <!ENTITY copyLinkCmd.label            "Kopēt saiti">
+<!-- LOCALIZATION NOTE (copyLinkCmd.accesskey): The access keys for "Copy Link
+Location" and "Copy Email Address" should be the same if possible; the two
+context menu items are mutually exclusive. -->
 <!ENTITY copyLinkCmd.accesskey        "a">
 <!ENTITY copyImageCmd.label           "Kopēt attēla adresi">
 <!ENTITY copyImageCmd.accesskey       "o">
@@ -617,6 +698,9 @@ These should match what Safari and other Apple applications use on OS X Lion. --
 <!ENTITY copyAudioURLCmd.label        "Kopēt audio adresi">
 <!ENTITY copyAudioURLCmd.accesskey    "o">
 <!ENTITY copyEmailCmd.label           "Kopēt epasta adresi">
+<!-- LOCALIZATION NOTE (copyEmailCmd.accesskey): The access keys for "Copy Link
+Location" and "Copy Email Address" should be the same if possible; the two
+context menu items are mutually exclusive. -->
 <!ENTITY copyEmailCmd.accesskey       "e">
 <!ENTITY thisFrameMenu.label              "Šis ietvars">
 <!ENTITY thisFrameMenu.accesskey          "a">
@@ -752,13 +836,19 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY spellAddDictionaries.label "Pievienot vārdnīcas…">
 <!ENTITY spellAddDictionaries.accesskey "i">
 
+<!-- LOCALIZATION NOTE (editBookmark.panel.width): width of the bookmark panel.
+     Should be large enough to fully display the Done and Cancel/
+     Remove Bookmark buttons. -->
+<!ENTITY editBookmark.panel.width                    "23em">
 <!ENTITY editBookmark.done.label                     "Gatavs">
-<!ENTITY editBookmark.removeBookmark.accessKey       "K">
+<!ENTITY editBookmark.showForNewBookmarks.label       "Rādīt redaktoru, saglabājot">
+<!ENTITY editBookmark.showForNewBookmarks.accesskey   "S">
 
 <!-- LOCALIZATION NOTE (identity.securityView.label)
      This is the header of the security subview in the Site Identity panel. -->
 <!ENTITY identity.securityView.label "Lapas drošība">
 
+<!ENTITY identity.connection "Savienojums">
 <!ENTITY identity.connectionSecure "Drošs savienojums">
 <!ENTITY identity.connectionNotSecure "Savienojums nav drošs">
 <!ENTITY identity.connectionFile "Šī lapa ir saglabāta jūsu datorā.">
@@ -796,9 +886,12 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 
 <!ENTITY identity.moreInfoLinkText2 "Sīkāka informācija">
 
+<!ENTITY identity.clearSiteData "Notīrīt sīkdatnes un lapu datus…">
+
 <!ENTITY identity.permissions "Atļaujas">
 <!ENTITY identity.permissionsEmpty "Šai lapai nav piešķirtas nekādas īpašas atļaujas.">
 <!ENTITY identity.permissionsReloadHint "Lai redzētu izmaiņas iespējams būs nepieciešama lapas pārlāde.">
+<!ENTITY identity.permissionsPreferences.tooltip "Atvērt atļauju iestatījumus">
 
 <!-- Name for the tabs toolbar as spoken by screen readers.
      The word "toolbar" is appended automatically and should not be contained below! -->
@@ -898,22 +991,121 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY getUserMedia.audioCapture.label "Skaņa no cilnes tiks koplietota.">
 <!ENTITY getUserMedia.allWindowsShared.message "Visi uz ekrāna redzamie logi tiks koplietoti.">
 
+<!ENTITY contentBlocking.title "Satura bloķēšana">
+<!ENTITY contentBlocking.detected "Šajā lapā ir atrasts bloķējams saturs.">
+<!ENTITY contentBlocking.notDetected "Šajā lapā nav izsekojošu elementu.">
+<!ENTITY contentBlocking.disabled.label "Deaktivēts">
+<!ENTITY contentBlocking.disabled.tooltip "Satura bloķēšana ir atslēgta.">
+<!ENTITY contentBlocking.exception.tooltip "Satura bloķēšana ir atslēgta šai lapai.">
+
+<!ENTITY contentBlocking.fastBlock.label "Lēni sekotāji">
+<!-- LOCALIZATION NOTE (contentBlocking.fastBlock.blocked.label):
+     This label signals that this type of content blocking is turned
+     ON and is successfully blocking malicious/slow content, so this is
+     a positive thing. It forms the end of the (imaginary) sentence
+     "Slow-Loading Trackers [are] Blocked"-->
+<!ENTITY contentBlocking.fastBlock.blocked.label "Bloķēts">
+<!-- LOCALIZATION NOTE (contentBlocking.fastBlock.blocking.label):
+     This label signals that this type of content blocking is turned
+     ON, so this is a positive thing. It forms the verb in (imaginary) sentence
+     "Firefox is blocking Slow-Loading Trackers"-->
+<!ENTITY contentBlocking.fastBlock.blocking.label "Bloķēšana">
+<!-- LOCALIZATION NOTE (contentBlocking.fastBlock.add.label):
+     This is displayed as a link to preferences, where the user can add
+     this specific type of content blocking. When this text is shown
+     the type of content blocking is currently not enabled. -->
+<!ENTITY contentBlocking.fastBlock.add.label "Pievienot bloķēšanu…">
+
+<!ENTITY contentBlocking.trackingProtection2.label "Visus atrastos sekotājus">
+
+<!ENTITY contentBlocking.trackingProtection3.label "Izsekotāji">
+<!-- LOCALIZATION NOTE (contentBlocking.trackingProtection.allowed.label):
+     This label signals that this type of content blocking is turned
+     OFF and is not blocking tracker content, so this is not
+     a positive thing. It forms the end of the (imaginary) sentence
+     "Trackers [are] Allowed"-->
+<!ENTITY contentBlocking.trackingProtection.allowed.label "Atļauts">
+<!-- LOCALIZATION NOTE (contentBlocking.trackingProtection.blocked.label):
+     This label signals that this type of content blocking is turned
+     ON and is successfully blocking tracker content, so this is
+     a positive thing. It forms the end of the (imaginary) sentence
+     "Trackers [are] Blocked"-->
+<!ENTITY contentBlocking.trackingProtection.blocked.label "Bloķēts">
+<!-- LOCALIZATION NOTE (contentBlocking.tranckingProtection.blocking.label):
+     This label signals that this type of content blocking is turned
+     ON, so this is a positive thing. It forms the verb in the (imaginary) sentence
+     "Firefox is blocking Trackers"-->
+<!ENTITY contentBlocking.trackingProtection.blocking.label "Bloķēšana">
+<!-- LOCALIZATION NOTE (contentBlocking.trackingProtection.add.label):
+     This is displayed as a link to preferences, where the user can add
+     this specific type of content blocking. When this text is shown
+     the type of content blocking is currently not enabled. -->
+<!ENTITY contentBlocking.trackingProtection.add.label "Pievienot bloķēšanu…">
+
+<!ENTITY contentBlocking.3rdPartyCookies.label "Trešo pušu sīkdatnes">
+<!ENTITY contentBlocking.3rdPartyCookies.trackers.label "Izsekošanas sīkfaili">
+<!-- LOCALIZATION NOTE (contentBlocking.3rdPartyCookies.blocked.label):
+     This label signals that this type of content blocking is turned
+     ON and is successfully blocking third-party cookies, so this is
+     a positive thing. It forms the end of the (imaginary) sentence
+     "Third-Party Cookies [are] Blocked"-->
+<!ENTITY contentBlocking.3rdPartyCookies.blocked.label "Bloķēts">
+<!-- LOCALIZATION NOTE (contentBlocking.tranckingProtection.blocking.label):
+     This label signals that this type of content blocking is turned
+     ON, so this is a positive thing. It forms the verb in the (imaginary) sentence
+     "Firefox is blocking Third-Party Cookies"-->
+<!ENTITY contentBlocking.3rdPartyCookies.blocking.label "Bloķēšana">
+<!-- LOCALIZATION NOTE (contentBlocking.3rdPartyCookies.add.label):
+     This is displayed as a link to preferences, where the user can add
+     this specific type of content blocking. When this text is shown
+     the type of content blocking is currently not enabled. -->
+<!ENTITY contentBlocking.3rdPartyCookies.add.label "Pievienot bloķēšanu…">
+
+<!ENTITY contentBlocking.manageSettings.label "Pārvaldiet satura bloķēšanu">
+<!ENTITY contentBlocking.manageSettings.accesskey "P">
+
+<!ENTITY contentBlocking.trackersView.label "Izsekotāji">
+<!ENTITY contentBlocking.trackersView.strictInfo.label "Lai bloķētu visus izsekotājus, iestatiet satura bloķēšanu uz “Strikts”.">
+
+<!ENTITY contentBlocking.openBreakageReportView2.label "Ziņot par problēmu">
+<!ENTITY contentBlocking.breakageReportView.label "Ziņot par problēmām">
+<!ENTITY contentBlocking.breakageReportView2.description "Satura bloķēšana var radīt problēmas ar dažu lapu darbību. Ziņojot par šīm problēmām jūs palīdzat uzlabot &brandShortName;. (Šis nosūtīts lapas adresi un ziņas par jūsu pārlūku Mozilla.)">
+<!ENTITY contentBlocking.breakageReportView.learnMore "Uzzināt vairāk">
+<!ENTITY contentBlocking.breakageReportView.collection.url.label "URL">
+<!ENTITY contentBlocking.breakageReportView.collection.comments.label "Kādas problēmas jums bija? (neobligāts)">
+<!ENTITY contentBlocking.breakageReportView.sendReport.label "Sūtīt ziņojumu">
+<!ENTITY contentBlocking.breakageReportView.cancel.label "Atcelt">
+
 <!ENTITY trackingProtection.title "Izsekošanas aizsardzība">
-<!ENTITY trackingProtection.detectedBlocked3 "&brandShortName; bloķē tās lapas daļas, kas var izsekot jūsu pārlūkošanas aktivitātēm.">
-<!ENTITY trackingProtection.detectedNotBlocked3 "Šajā lapā ir elementi, kas var izsekot jūsu aktivitātēm internetā. Jūs esat deaktivējis aizsardzību.">
-<!ENTITY trackingProtection.notDetected3 "Šajā lapā nav izsekojošu elementu.">
-<!-- LOCALIZATION NOTE (trackingProtection.unblock.label, trackingProtection.unblock.accesskey):
+<!ENTITY trackingProtection.tooltip "Atvērt izsekošanas aizsardzības iestatījumus">
+
+<!-- LOCALIZATION NOTE (trackingProtection.unblock3.label, trackingProtection.unblock3.accesskey):
      The associated button with this label and accesskey is only shown when opening the control
      center while looking at a site with trackers in NON-private browsing mode. -->
-<!ENTITY trackingProtection.unblock.label "Deaktivēt aizsardzību šajā lapā">
-<!ENTITY trackingProtection.unblock.accesskey "D">
-<!-- LOCALIZATION NOTE (trackingProtection.unblockPrivate.label, trackingProtection.unblockPrivate.accesskey):
+<!ENTITY trackingProtection.unblock4.label "Deaktivēt bloķēšanu šai lapai">
+<!ENTITY trackingProtection.unblock4.accesskey "D">
+<!-- LOCALIZATION NOTE (trackingProtection.unblockPrivate3.label, trackingProtection.unblockPrivate3.accesskey):
      The associated button with this label and accesskey is only shown when opening the control
      center while looking at a site with trackers in PRIVATE browsing mode. -->
-<!ENTITY trackingProtection.unblockPrivate.label "Deaktivēt aizsardzību šajā sesijā">
-<!ENTITY trackingProtection.unblockPrivate.accesskey "D">
-<!ENTITY trackingProtection.block2.label "Aktivēt aizsardzību">
-<!ENTITY trackingProtection.block2.accesskey "b">
+<!ENTITY trackingProtection.unblockPrivate4.label "Īslaicīgi deaktivēt bloķēšanu">
+<!ENTITY trackingProtection.unblockPrivate4.accesskey "D">
+<!ENTITY trackingProtection.block5.label "Aktivēt bloķēšanu šai lapai">
+<!ENTITY trackingProtection.block5.accesskey "A">
+
+<!-- LOCALIZATION NOTE (trackingProtection.unblock5.label, trackingProtection.unblock5.accesskey):
+     The associated button with this label and accesskey is only shown when opening the control
+     center while looking at a site with trackers in NON-private browsing mode. -->
+<!ENTITY trackingProtection.unblock5.label "Atslēgt šīs vietnes bloķēšanu">
+<!ENTITY trackingProtection.unblock5.accesskey "T">
+<!-- LOCALIZATION NOTE (trackingProtection.unblockPrivate6.label, trackingProtection.unblockPrivate6.accesskey):
+     The associated button with this label and accesskey is only shown when opening the control
+     center while looking at a site with trackers in PRIVATE browsing mode. -->
+<!ENTITY trackingProtection.unblockPrivate5.label "Izslēgt bloķēšanu uz laiku">
+<!ENTITY trackingProtection.unblockPrivate5.accesskey "T">
+<!ENTITY trackingProtection.block6.label "Ieslēgt šīs vietnes bloķēšanu">
+<!ENTITY trackingProtection.block6.accesskey "T">
+<!ENTITY trackingProtection.reload2.label "Pārlādēt lapu">
+<!ENTITY trackingProtection.reload2.accesskey "R">
 
 <!ENTITY pluginNotification.showAll.label "Rādīt visus">
 <!ENTITY pluginNotification.showAll.accesskey "s">
@@ -986,16 +1178,24 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY updateRestart.cancelButton.accesskey "N">
 <!ENTITY updateRestart.panelUI.label2 "Pārstartēt &brandShorterName;, lai atjauninātu">
 
-<!ENTITY newTabControlled.message "Paplašinājums ir mainījis lapu, kas redzama atverot jaunu cilni. Ja nevēlaties šīs izmaiņas, varat atjaunot iestatījumus.">
-
 <!ENTITY newTabControlled.header.message "Jaunā cilne ir izmainīta.">
 <!ENTITY newTabControlled.keepButton.label "Saglabāt izmaiņas">
 <!ENTITY newTabControlled.keepButton.accesskey "S">
-<!ENTITY newTabControlled.restoreButton.label "Atjaunot iestatījumus">
-<!ENTITY newTabControlled.restoreButton.accesskey "A">
-
 <!ENTITY newTabControlled.disableButton.label "Deaktivēt paplašinājumu">
 <!ENTITY newTabControlled.disableButton.accesskey "D">
+
+<!ENTITY homepageControlled.message "Paplašinājums ir mainījis lapu, kas redzama kā sākumlapa. Ja nevēlaties šīs izmaiņas, varat atjaunot iestatījumus.">
+<!ENTITY homepageControlled.header.message "Sākumlapa ir izmainīta.">
+<!ENTITY homepageControlled.keepButton.label "Saglabāt izmaiņas">
+<!ENTITY homepageControlled.keepButton.accesskey "S">
+<!ENTITY homepageControlled.disableButton.label "Deaktivēt paplašinājumu">
+<!ENTITY homepageControlled.disableButton.accesskey "D">
+
+<!ENTITY tabHideControlled.header.message "Piekļūstiet paslēptajām cilnēm">
+<!ENTITY tabHideControlled.keepButton.label "Atstāt cilnes paslēptas">
+<!ENTITY tabHideControlled.keepButton.accesskey "A">
+<!ENTITY tabHideControlled.disableButton.label "Deaktivēt paplašinājumu">
+<!ENTITY tabHideControlled.disableButton.accesskey "D">
 
 <!ENTITY pageActionButton.tooltip "Lapas darbības">
 <!ENTITY pageAction.addToUrlbar.label "Pievienot adreses joslai">
@@ -1005,7 +1205,11 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY pageAction.manageExtension.label "Pārvaldīt paplašinājumu…">
 
 <!ENTITY pageAction.sendTabToDevice.label "Sūtīt cilni uz ierīci">
+
 <!ENTITY sendToDevice.syncNotReady.label "Sinhronizē ierīces…">
+
+<!ENTITY pageAction.shareUrl.label "Dalīties">
+<!ENTITY pageAction.shareMore.label "Vairāk…">
 
 <!ENTITY libraryButton.tooltip "Skatīt vēsturi, saglabātās grāmatzīmes un daudz ko citu">
 

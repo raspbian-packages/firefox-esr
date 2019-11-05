@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
- * Implementation of DOM Core's nsIDOMDocumentFragment.
+ * Implementation of DOM Core's DocumentFragment.
  */
 
 #include "mozilla/dom/DocumentFragment.h"
@@ -18,7 +18,7 @@
 #include "nsContentUtils.h"  // for NS_INTERFACE_MAP_ENTRY_TEAROFF
 #include "mozilla/dom/DocumentFragmentBinding.h"
 #include "nsPIDOMWindow.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/IntegerPrintfMacros.h"
 
 namespace mozilla {
@@ -26,12 +26,10 @@ namespace dom {
 
 JSObject* DocumentFragment::WrapNode(JSContext* aCx,
                                      JS::Handle<JSObject*> aGivenProto) {
-  return DocumentFragmentBinding::Wrap(aCx, this, aGivenProto);
+  return DocumentFragment_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-bool DocumentFragment::IsNodeOfType(uint32_t aFlags) const {
-  return !(aFlags & ~eDOCUMENT_FRAGMENT);
-}
+bool DocumentFragment::IsNodeOfType(uint32_t aFlags) const { return false; }
 
 #ifdef DEBUG
 void DocumentFragment::List(FILE* out, int32_t aIndent) const {
@@ -90,7 +88,8 @@ void DocumentFragment::DumpContent(FILE* out, int32_t aIndent,
 }
 #endif
 
-/* static */ already_AddRefed<DocumentFragment> DocumentFragment::Constructor(
+/* static */
+already_AddRefed<DocumentFragment> DocumentFragment::Constructor(
     const GlobalObject& aGlobal, ErrorResult& aRv) {
   nsCOMPtr<nsPIDOMWindowInner> window =
       do_QueryInterface(aGlobal.GetAsSupports());
@@ -110,9 +109,6 @@ NS_INTERFACE_MAP_BEGIN(DocumentFragment)
   NS_INTERFACE_MAP_ENTRIES_CYCLE_COLLECTION(DocumentFragment)
   NS_INTERFACE_MAP_ENTRY(nsIContent)
   NS_INTERFACE_MAP_ENTRY(nsINode)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMDocumentFragment)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMNode)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMEventTarget)
   NS_INTERFACE_MAP_ENTRY(mozilla::dom::EventTarget)
   NS_INTERFACE_MAP_ENTRY_TEAROFF(nsISupportsWeakReference,
                                  new nsNodeSupportsWeakRefTearoff(this))

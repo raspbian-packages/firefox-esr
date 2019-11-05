@@ -7,37 +7,21 @@
 /* DOM object representing lists of values in DOM computed style */
 
 #include "nsDOMCSSValueList.h"
-#include "mozilla/dom/CSSValueBinding.h"
-#include "mozilla/dom/CSSValueListBinding.h"
+#include "nsString.h"
+#include "mozilla/ErrorResult.h"
 #include "mozilla/Move.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
 
-nsDOMCSSValueList::nsDOMCSSValueList(bool aCommaDelimited, bool aReadonly)
-    : CSSValue(), mCommaDelimited(aCommaDelimited), mReadonly(aReadonly) {}
+nsDOMCSSValueList::nsDOMCSSValueList(bool aCommaDelimited)
+    : CSSValue(), mCommaDelimited(aCommaDelimited) {}
 
-nsDOMCSSValueList::~nsDOMCSSValueList() {}
-
-NS_IMPL_CYCLE_COLLECTING_ADDREF(nsDOMCSSValueList)
-NS_IMPL_CYCLE_COLLECTING_RELEASE(nsDOMCSSValueList)
-
-// QueryInterface implementation for nsDOMCSSValueList
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(nsDOMCSSValueList)
-  NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
-  NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, CSSValue)
-NS_INTERFACE_MAP_END
-
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(nsDOMCSSValueList, mCSSValues)
-
-JSObject* nsDOMCSSValueList::WrapObject(JSContext* cx,
-                                        JS::Handle<JSObject*> aGivenProto) {
-  return dom::CSSValueListBinding::Wrap(cx, this, aGivenProto);
-}
+nsDOMCSSValueList::~nsDOMCSSValueList() = default;
 
 void nsDOMCSSValueList::AppendCSSValue(already_AddRefed<CSSValue> aValue) {
   RefPtr<CSSValue> val = aValue;
-  mCSSValues.AppendElement(Move(val));
+  mCSSValues.AppendElement(std::move(val));
 }
 
 void nsDOMCSSValueList::GetCssText(nsAString& aCssText) {
@@ -81,17 +65,4 @@ void nsDOMCSSValueList::GetCssText(nsAString& aCssText) {
 
 void nsDOMCSSValueList::GetCssText(nsString& aCssText, ErrorResult& aRv) {
   GetCssText(aCssText);
-}
-
-void nsDOMCSSValueList::SetCssText(const nsAString& aText, ErrorResult& aRv) {
-  if (mReadonly) {
-    aRv.Throw(NS_ERROR_DOM_NO_MODIFICATION_ALLOWED_ERR);
-    return;
-  }
-
-  MOZ_ASSERT_UNREACHABLE("Can't SetCssText yet: please write me!");
-}
-
-uint16_t nsDOMCSSValueList::CssValueType() const {
-  return CSSValueBinding::CSS_VALUE_LIST;
 }

@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozilla/ArrayUtils.h"
-
 #include "SVGNumberList.h"
+
+#include "mozilla/ArrayUtils.h"
 #include "nsCharSeparatedTokenizer.h"
 #include "nsString.h"
 #include "nsTextFormatter.h"
@@ -41,7 +41,7 @@ void SVGNumberList::GetValueAsString(nsAString& aValue) const {
 nsresult SVGNumberList::SetValueFromString(const nsAString& aValue) {
   SVGNumberList temp;
 
-  nsCharSeparatedTokenizerTemplate<IsSVGWhitespace> tokenizer(
+  nsCharSeparatedTokenizerTemplate<nsContentUtils::IsHTMLWhitespace> tokenizer(
       aValue, ',', nsCharSeparatedTokenizer::SEPARATOR_OPTIONAL);
 
   while (tokenizer.hasMoreTokens()) {

@@ -13,6 +13,10 @@ class nsAccessKeyInfo;
 class nsAsyncAccesskeyUpdate;
 class nsFontMetrics;
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 class nsTextBoxFrame final : public nsLeafBoxFrame {
  public:
   NS_DECL_QUERYFRAME
@@ -26,8 +30,8 @@ class nsTextBoxFrame final : public nsLeafBoxFrame {
 
   enum CroppingStyle { CropNone, CropLeft, CropRight, CropCenter, CropAuto };
 
-  friend nsIFrame* NS_NewTextBoxFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext);
+  friend nsIFrame* NS_NewTextBoxFrame(mozilla::PresShell* aPresShell,
+                                      ComputedStyle* aStyle);
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* asPrevInFlow) override;
@@ -58,7 +62,7 @@ class nsTextBoxFrame final : public nsLeafBoxFrame {
 
   void GetCroppedTitle(nsString& aTitle) const { aTitle = mCroppedTitle; }
 
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
  protected:
   friend class nsAsyncAccesskeyUpdate;
@@ -83,7 +87,7 @@ class nsTextBoxFrame final : public nsLeafBoxFrame {
 
   void CalcDrawRect(gfxContext& aRenderingContext);
 
-  explicit nsTextBoxFrame(nsStyleContext* aContext);
+  explicit nsTextBoxFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
 
   nscoord CalculateTitleForWidth(gfxContext& aRenderingContext, nscoord aWidth);
 

@@ -6,19 +6,21 @@
 
 #include <map>
 #include "nsCOMPtr.h"
-#include "nsIDOMElement.h"
 #include "nsIPrincipal.h"
 #include "mozilla/dom/ContentChild.h"
 #include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/Event.h"
 #include "mozilla/dom/PContentPermission.h"
+#include "mozilla/dom/Performance.h"
 #include "mozilla/dom/PermissionMessageUtils.h"
 #include "mozilla/dom/PContentPermissionRequestParent.h"
 #include "mozilla/dom/ScriptSettings.h"
-#include "mozilla/dom/TabChild.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserChild.h"
+#include "mozilla/dom/BrowserParent.h"
+#include "mozilla/Attributes.h"
 #include "mozilla/EventStateManager.h"
+#include "mozilla/Preferences.h"
 #include "mozilla/Unused.h"
 #include "nsComponentManagerUtils.h"
 #include "nsArrayUtils.h"
@@ -27,9 +29,8 @@
 #include "nsJSUtils.h"
 #include "nsISupportsPrimitives.h"
 #include "nsServiceManagerUtils.h"
-#include "nsIDocument.h"
-#include "nsIDOMEvent.h"
-#include "nsWeakPtr.h"
+#include "mozilla/dom/Document.h"
+#include "nsIWeakReferenceUtils.h"
 
 using mozilla::Unused;  // <snicker>
 using namespace mozilla::dom;
@@ -62,7 +63,7 @@ VisibilityChangeListener::VisibilityChangeListener(
   MOZ_ASSERT(aWindow);
 
   mWindow = do_GetWeakReference(aWindow);
-  nsCOMPtr<nsIDocument> doc = aWindow->GetExtantDoc();
+  nsCOMPtr<Document> doc = aWindow->GetExtantDoc();
   if (doc) {
     doc->AddSystemEventListener(NS_LITERAL_STRING(kVisibilityChange),
                                 /* listener */ this,
@@ -72,15 +73,14 @@ VisibilityChangeListener::VisibilityChangeListener(
 }
 
 NS_IMETHODIMP
-VisibilityChangeListener::HandleEvent(nsIDOMEvent* aEvent) {
+VisibilityChangeListener::HandleEvent(Event* aEvent) {
   nsAutoString type;
   aEvent->GetType(type);
   if (!type.EqualsLiteral(kVisibilityChange)) {
     return NS_ERROR_FAILURE;
   }
 
-  nsCOMPtr<nsIDocument> doc =
-      do_QueryInterface(aEvent->InternalDOMEvent()->GetTarget());
+  nsCOMPtr<Document> doc = do_QueryInterface(aEvent->GetTarget());
   MOZ_ASSERT(doc);
 
   if (mCallback) {
@@ -96,7 +96,7 @@ void VisibilityChangeListener::RemoveListener() {
     return;
   }
 
-  nsCOMPtr<EventTarget> target = do_QueryInterface(window->GetExtantDoc());
+  nsCOMPtr<EventTarget> target = window->GetExtantDoc();
   if (target) {
     target->RemoveSystemEventListener(NS_LITERAL_STRING(kVisibilityChange),
                                       /* listener */ this,
@@ -120,21 +120,28 @@ namespace dom {
 
 class ContentPermissionRequestParent : public PContentPermissionRequestParent {
  public:
-  ContentPermissionRequestParent(const nsTArray<PermissionRequest>& aRequests,
-                                 Element* aElement,
-                                 const IPC::Principal& aPrincipal,
-                                 const bool aIsHandlingUserInput);
+  ContentPermissionRequestParent(
+      const nsTArray<PermissionRequest>& aRequests, Element* aElement,
+      nsIPrincipal* aPrincipal, nsIPrincipal* aTopLevelPrincipal,
+      const bool aIsHandlingUserInput,
+      const bool aUserHadInteractedWithDocument,
+      const DOMTimeStamp aDocumentDOMContentLoadedTimestamp);
   virtual ~ContentPermissionRequestParent();
 
   bool IsBeingDestroyed();
 
   nsCOMPtr<nsIPrincipal> mPrincipal;
+  nsCOMPtr<nsIPrincipal> mTopLevelPrincipal;
   nsCOMPtr<Element> mElement;
   bool mIsHandlingUserInput;
+  bool mUserHadInteractedWithDocument;
+  DOMTimeStamp mDocumentDOMContentLoadedTimestamp;
   RefPtr<nsContentPermissionRequestProxy> mProxy;
   nsTArray<PermissionRequest> mRequests;
 
  private:
+  // Not MOZ_CAN_RUN_SCRIPT because we can't annotate the thing we override yet.
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   virtual mozilla::ipc::IPCResult Recvprompt() override;
   virtual mozilla::ipc::IPCResult RecvNotifyVisibility(
       const bool& aIsVisible) override;
@@ -144,13 +151,18 @@ class ContentPermissionRequestParent : public PContentPermissionRequestParent {
 
 ContentPermissionRequestParent::ContentPermissionRequestParent(
     const nsTArray<PermissionRequest>& aRequests, Element* aElement,
-    const IPC::Principal& aPrincipal, const bool aIsHandlingUserInput) {
+    nsIPrincipal* aPrincipal, nsIPrincipal* aTopLevelPrincipal,
+    const bool aIsHandlingUserInput, const bool aUserHadInteractedWithDocument,
+    const DOMTimeStamp aDocumentDOMContentLoadedTimestamp) {
   MOZ_COUNT_CTOR(ContentPermissionRequestParent);
 
   mPrincipal = aPrincipal;
+  mTopLevelPrincipal = aTopLevelPrincipal;
   mElement = aElement;
   mRequests = aRequests;
   mIsHandlingUserInput = aIsHandlingUserInput;
+  mUserHadInteractedWithDocument = aUserHadInteractedWithDocument;
+  mDocumentDOMContentLoadedTimestamp = aDocumentDOMContentLoadedTimestamp;
 }
 
 ContentPermissionRequestParent::~ContentPermissionRequestParent() {
@@ -158,9 +170,10 @@ ContentPermissionRequestParent::~ContentPermissionRequestParent() {
 }
 
 mozilla::ipc::IPCResult ContentPermissionRequestParent::Recvprompt() {
-  mProxy = new nsContentPermissionRequestProxy();
-  if (NS_FAILED(mProxy->Init(mRequests, this))) {
-    mProxy->Cancel();
+  mProxy = new nsContentPermissionRequestProxy(this);
+  if (NS_FAILED(mProxy->Init(mRequests))) {
+    RefPtr<nsContentPermissionRequestProxy> proxy(mProxy);
+    proxy->Cancel();
   }
   return IPC_OK();
 }
@@ -195,10 +208,8 @@ bool ContentPermissionRequestParent::IsBeingDestroyed() {
 NS_IMPL_ISUPPORTS(ContentPermissionType, nsIContentPermissionType)
 
 ContentPermissionType::ContentPermissionType(
-    const nsACString& aType, const nsACString& aAccess,
-    const nsTArray<nsString>& aOptions) {
+    const nsACString& aType, const nsTArray<nsString>& aOptions) {
   mType = aType;
-  mAccess = aAccess;
   mOptions = aOptions;
 }
 
@@ -207,12 +218,6 @@ ContentPermissionType::~ContentPermissionType() {}
 NS_IMETHODIMP
 ContentPermissionType::GetType(nsACString& aType) {
   aType = mType;
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-ContentPermissionType::GetAccess(nsACString& aAccess) {
-  aAccess = mAccess;
   return NS_OK;
 }
 
@@ -246,27 +251,27 @@ ContentPermissionType::GetOptions(nsIArray** aOptions) {
 
 // nsContentPermissionUtils
 
-/* static */ uint32_t nsContentPermissionUtils::ConvertPermissionRequestToArray(
+/* static */
+uint32_t nsContentPermissionUtils::ConvertPermissionRequestToArray(
     nsTArray<PermissionRequest>& aSrcArray, nsIMutableArray* aDesArray) {
   uint32_t len = aSrcArray.Length();
   for (uint32_t i = 0; i < len; i++) {
-    RefPtr<ContentPermissionType> cpt = new ContentPermissionType(
-        aSrcArray[i].type(), aSrcArray[i].access(), aSrcArray[i].options());
+    RefPtr<ContentPermissionType> cpt =
+        new ContentPermissionType(aSrcArray[i].type(), aSrcArray[i].options());
     aDesArray->AppendElement(cpt);
   }
   return len;
 }
 
-/* static */ uint32_t nsContentPermissionUtils::ConvertArrayToPermissionRequest(
+/* static */
+uint32_t nsContentPermissionUtils::ConvertArrayToPermissionRequest(
     nsIArray* aSrcArray, nsTArray<PermissionRequest>& aDesArray) {
   uint32_t len = 0;
   aSrcArray->GetLength(&len);
   for (uint32_t i = 0; i < len; i++) {
     nsCOMPtr<nsIContentPermissionType> cpt = do_QueryElementAt(aSrcArray, i);
     nsAutoCString type;
-    nsAutoCString access;
     cpt->GetType(type);
-    cpt->GetAccess(access);
 
     nsCOMPtr<nsIArray> optionArray;
     cpt->GetOptions(getter_AddRefs(optionArray));
@@ -285,7 +290,7 @@ ContentPermissionType::GetOptions(nsIArray** aOptions) {
       }
     }
 
-    aDesArray.AppendElement(PermissionRequest(type, access, options));
+    aDesArray.AppendElement(PermissionRequest(type, options));
   }
   return len;
 }
@@ -306,31 +311,37 @@ ContentPermissionRequestChildMap() {
   return sPermissionRequestChildMap;
 }
 
-/* static */ nsresult nsContentPermissionUtils::CreatePermissionArray(
-    const nsACString& aType, const nsACString& aAccess,
-    const nsTArray<nsString>& aOptions, nsIArray** aTypesArray) {
+/* static */
+nsresult nsContentPermissionUtils::CreatePermissionArray(
+    const nsACString& aType, const nsTArray<nsString>& aOptions,
+    nsIArray** aTypesArray) {
   nsCOMPtr<nsIMutableArray> types = do_CreateInstance(NS_ARRAY_CONTRACTID);
   RefPtr<ContentPermissionType> permType =
-      new ContentPermissionType(aType, aAccess, aOptions);
+      new ContentPermissionType(aType, aOptions);
   types->AppendElement(permType);
   types.forget(aTypesArray);
 
   return NS_OK;
 }
 
-/* static */ PContentPermissionRequestParent*
+/* static */
+PContentPermissionRequestParent*
 nsContentPermissionUtils::CreateContentPermissionRequestParent(
     const nsTArray<PermissionRequest>& aRequests, Element* aElement,
-    const IPC::Principal& aPrincipal, const bool aIsHandlingUserInput,
+    nsIPrincipal* aPrincipal, nsIPrincipal* aTopLevelPrincipal,
+    const bool aIsHandlingUserInput, const bool aUserHadInteractedWithDocument,
+    const DOMTimeStamp aDocumentDOMContentLoadedTimestamp,
     const TabId& aTabId) {
   PContentPermissionRequestParent* parent = new ContentPermissionRequestParent(
-      aRequests, aElement, aPrincipal, aIsHandlingUserInput);
+      aRequests, aElement, aPrincipal, aTopLevelPrincipal, aIsHandlingUserInput,
+      aUserHadInteractedWithDocument, aDocumentDOMContentLoadedTimestamp);
   ContentPermissionRequestParentMap()[parent] = aTabId;
 
   return parent;
 }
 
-/* static */ nsresult nsContentPermissionUtils::AskPermission(
+/* static */
+nsresult nsContentPermissionUtils::AskPermission(
     nsIContentPermissionRequest* aRequest, nsPIDOMWindowInner* aWindow) {
   NS_ENSURE_STATE(aWindow && aWindow->IsCurrentInnerWindow());
 
@@ -341,7 +352,7 @@ nsContentPermissionUtils::CreateContentPermissionRequestParent(
 
     MOZ_ASSERT(NS_IsMainThread());  // IPC can only be execute on main thread.
 
-    TabChild* child = TabChild::GetFrom(aWindow->GetDocShell());
+    BrowserChild* child = BrowserChild::GetFrom(aWindow->GetDocShell());
     NS_ENSURE_TRUE(child, NS_ERROR_FAILURE);
 
     nsCOMPtr<nsIArray> typeArray;
@@ -355,8 +366,22 @@ nsContentPermissionUtils::CreateContentPermissionRequestParent(
     rv = aRequest->GetPrincipal(getter_AddRefs(principal));
     NS_ENSURE_SUCCESS(rv, rv);
 
+    nsCOMPtr<nsIPrincipal> topLevelPrincipal;
+    rv = aRequest->GetTopLevelPrincipal(getter_AddRefs(topLevelPrincipal));
+    NS_ENSURE_SUCCESS(rv, rv);
+
     bool isHandlingUserInput;
     rv = aRequest->GetIsHandlingUserInput(&isHandlingUserInput);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    bool userHadInteractedWithDocument;
+    rv = aRequest->GetUserHadInteractedWithDocument(
+        &userHadInteractedWithDocument);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    DOMTimeStamp documentDOMContentLoadedTimestamp;
+    rv = aRequest->GetDocumentDOMContentLoadedTimestamp(
+        &documentDOMContentLoadedTimestamp);
     NS_ENSURE_SUCCESS(rv, rv);
 
     ContentChild::GetSingleton()->SetEventTargetForActor(
@@ -364,7 +389,9 @@ nsContentPermissionUtils::CreateContentPermissionRequestParent(
 
     req->IPDLAddRef();
     ContentChild::GetSingleton()->SendPContentPermissionRequestConstructor(
-        req, permArray, IPC::Principal(principal), isHandlingUserInput,
+        req, permArray, IPC::Principal(principal),
+        IPC::Principal(topLevelPrincipal), isHandlingUserInput,
+        userHadInteractedWithDocument, documentDOMContentLoadedTimestamp,
         child->GetTabId());
     ContentPermissionRequestChildMap()[req.get()] = child->GetTabId();
 
@@ -383,7 +410,8 @@ nsContentPermissionUtils::CreateContentPermissionRequestParent(
   return NS_OK;
 }
 
-/* static */ nsTArray<PContentPermissionRequestParent*>
+/* static */
+nsTArray<PContentPermissionRequestParent*>
 nsContentPermissionUtils::GetContentPermissionRequestParentById(
     const TabId& aTabId) {
   nsTArray<PContentPermissionRequestParent*> parentArray;
@@ -393,11 +421,11 @@ nsContentPermissionUtils::GetContentPermissionRequestParentById(
     }
   }
 
-  return Move(parentArray);
+  return parentArray;
 }
 
-/* static */ void
-nsContentPermissionUtils::NotifyRemoveContentPermissionRequestParent(
+/* static */
+void nsContentPermissionUtils::NotifyRemoveContentPermissionRequestParent(
     PContentPermissionRequestParent* aParent) {
   auto it = ContentPermissionRequestParentMap().find(aParent);
   MOZ_ASSERT(it != ContentPermissionRequestParentMap().end());
@@ -405,7 +433,8 @@ nsContentPermissionUtils::NotifyRemoveContentPermissionRequestParent(
   ContentPermissionRequestParentMap().erase(it);
 }
 
-/* static */ nsTArray<PContentPermissionRequestChild*>
+/* static */
+nsTArray<PContentPermissionRequestChild*>
 nsContentPermissionUtils::GetContentPermissionRequestChildById(
     const TabId& aTabId) {
   nsTArray<PContentPermissionRequestChild*> childArray;
@@ -415,11 +444,11 @@ nsContentPermissionUtils::GetContentPermissionRequestChildById(
     }
   }
 
-  return Move(childArray);
+  return childArray;
 }
 
-/* static */ void
-nsContentPermissionUtils::NotifyRemoveContentPermissionRequestChild(
+/* static */
+void nsContentPermissionUtils::NotifyRemoveContentPermissionRequestChild(
     PContentPermissionRequestChild* aChild) {
   auto it = ContentPermissionRequestChildMap().find(aChild);
   MOZ_ASSERT(it != ContentPermissionRequestChildMap().end());
@@ -483,6 +512,266 @@ nsContentPermissionRequester::GetOnVisibilityChange(
   return NS_OK;
 }
 
+static nsIPrincipal* GetTopLevelPrincipal(nsPIDOMWindowInner* aWindow) {
+  MOZ_ASSERT(aWindow);
+
+  nsPIDOMWindowOuter* top = aWindow->GetScriptableTop();
+  if (!top) {
+    return nullptr;
+  }
+
+  nsPIDOMWindowInner* inner = top->GetCurrentInnerWindow();
+  if (!inner) {
+    return nullptr;
+  }
+
+  return nsGlobalWindowInner::Cast(inner)->GetPrincipal();
+}
+
+NS_IMPL_CYCLE_COLLECTION(ContentPermissionRequestBase, mPrincipal,
+                         mTopLevelPrincipal, mWindow)
+
+NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(ContentPermissionRequestBase)
+  NS_INTERFACE_MAP_ENTRY_CONCRETE(nsISupports)
+  NS_INTERFACE_MAP_ENTRY_CONCRETE(nsIContentPermissionRequest)
+NS_INTERFACE_MAP_END
+
+NS_IMPL_CYCLE_COLLECTING_ADDREF(ContentPermissionRequestBase)
+NS_IMPL_CYCLE_COLLECTING_RELEASE(ContentPermissionRequestBase)
+
+ContentPermissionRequestBase::ContentPermissionRequestBase(
+    nsIPrincipal* aPrincipal, nsPIDOMWindowInner* aWindow,
+    const nsACString& aPrefName, const nsACString& aType)
+    : mPrincipal(aPrincipal),
+      mTopLevelPrincipal(aWindow ? ::GetTopLevelPrincipal(aWindow) : nullptr),
+      mWindow(aWindow),
+      mRequester(aWindow ? new nsContentPermissionRequester(aWindow) : nullptr),
+      mPrefName(aPrefName),
+      mType(aType),
+      mIsHandlingUserInput(EventStateManager::IsHandlingUserInput()),
+      mUserHadInteractedWithDocument(false),
+      mDocumentDOMContentLoadedTimestamp(0) {
+  if (!aWindow) {
+    return;
+  }
+
+  Document* doc = aWindow->GetExtantDoc();
+  if (!doc) {
+    return;
+  }
+
+  mUserHadInteractedWithDocument = doc->UserHasInteracted();
+
+  nsDOMNavigationTiming* navTiming = doc->GetNavigationTiming();
+  if (navTiming) {
+    mDocumentDOMContentLoadedTimestamp =
+        navTiming->GetDomContentLoadedEventEnd();
+  }
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetPrincipal(
+    nsIPrincipal** aRequestingPrincipal) {
+  NS_IF_ADDREF(*aRequestingPrincipal = mPrincipal);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetTopLevelPrincipal(
+    nsIPrincipal** aRequestingPrincipal) {
+  NS_IF_ADDREF(*aRequestingPrincipal = mTopLevelPrincipal);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetWindow(mozIDOMWindow** aRequestingWindow) {
+  NS_IF_ADDREF(*aRequestingWindow = mWindow);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetElement(Element** aElement) {
+  NS_ENSURE_ARG_POINTER(aElement);
+  *aElement = nullptr;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetIsHandlingUserInput(
+    bool* aIsHandlingUserInput) {
+  *aIsHandlingUserInput = mIsHandlingUserInput;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetUserHadInteractedWithDocument(
+    bool* aUserHadInteractedWithDocument) {
+  *aUserHadInteractedWithDocument = mUserHadInteractedWithDocument;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetDocumentDOMContentLoadedTimestamp(
+    DOMTimeStamp* aDocumentDOMContentLoadedTimestamp) {
+  *aDocumentDOMContentLoadedTimestamp = mDocumentDOMContentLoadedTimestamp;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetRequester(
+    nsIContentPermissionRequester** aRequester) {
+  NS_ENSURE_ARG_POINTER(aRequester);
+
+  nsCOMPtr<nsIContentPermissionRequester> requester = mRequester;
+  requester.forget(aRequester);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ContentPermissionRequestBase::GetTypes(nsIArray** aTypes) {
+  nsTArray<nsString> emptyOptions;
+  return nsContentPermissionUtils::CreatePermissionArray(mType, emptyOptions,
+                                                         aTypes);
+}
+
+ContentPermissionRequestBase::PromptResult
+ContentPermissionRequestBase::CheckPromptPrefs() {
+  MOZ_ASSERT(!mPrefName.IsEmpty(),
+             "This derived class must support checking pref types");
+
+  nsAutoCString prefName(mPrefName);
+  prefName.AppendLiteral(".prompt.testing");
+  if (Preferences::GetBool(PromiseFlatCString(prefName).get(), false)) {
+    prefName.AppendLiteral(".allow");
+    if (Preferences::GetBool(PromiseFlatCString(prefName).get(), true)) {
+      return PromptResult::Granted;
+    }
+    return PromptResult::Denied;
+  }
+
+  return PromptResult::Pending;
+}
+
+nsresult ContentPermissionRequestBase::ShowPrompt(
+    ContentPermissionRequestBase::PromptResult& aResult) {
+  aResult = CheckPromptPrefs();
+
+  if (aResult != PromptResult::Pending) {
+    return NS_OK;
+  }
+
+  return nsContentPermissionUtils::AskPermission(this, mWindow);
+}
+
+class RequestPromptEvent : public Runnable {
+ public:
+  RequestPromptEvent(ContentPermissionRequestBase* aRequest,
+                     nsPIDOMWindowInner* aWindow)
+      : mozilla::Runnable("RequestPromptEvent"),
+        mRequest(aRequest),
+        mWindow(aWindow) {}
+
+  NS_IMETHOD Run() override {
+    nsContentPermissionUtils::AskPermission(mRequest, mWindow);
+    return NS_OK;
+  }
+
+ private:
+  RefPtr<ContentPermissionRequestBase> mRequest;
+  nsCOMPtr<nsPIDOMWindowInner> mWindow;
+};
+
+class RequestAllowEvent : public Runnable {
+ public:
+  RequestAllowEvent(bool allow, ContentPermissionRequestBase* request)
+      : mozilla::Runnable("RequestAllowEvent"),
+        mAllow(allow),
+        mRequest(request) {}
+
+  // Not MOZ_CAN_RUN_SCRIPT because we can't annotate the thing we override yet.
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  NS_IMETHOD Run() override {
+    // MOZ_KnownLive is OK, because we never drop the ref to mRequest.
+    if (mAllow) {
+      MOZ_KnownLive(mRequest)->Allow(JS::UndefinedHandleValue);
+    } else {
+      MOZ_KnownLive(mRequest)->Cancel();
+    }
+    return NS_OK;
+  }
+
+ private:
+  bool mAllow;
+  RefPtr<ContentPermissionRequestBase> mRequest;
+};
+
+void ContentPermissionRequestBase::RequestDelayedTask(
+    nsIEventTarget* aTarget,
+    ContentPermissionRequestBase::DelayedTaskType aType) {
+  nsCOMPtr<nsIRunnable> r;
+  switch (aType) {
+    case DelayedTaskType::Allow:
+      r = new RequestAllowEvent(true, this);
+      break;
+    case DelayedTaskType::Deny:
+      r = new RequestAllowEvent(false, this);
+      break;
+    default:
+      r = new RequestPromptEvent(this, mWindow);
+      break;
+  }
+
+  aTarget->Dispatch(r.forget());
+}
+
+nsresult TranslateChoices(
+    JS::HandleValue aChoices,
+    const nsTArray<PermissionRequest>& aPermissionRequests,
+    nsTArray<PermissionChoice>& aTranslatedChoices) {
+  if (aChoices.isNullOrUndefined()) {
+    // No choice is specified.
+  } else if (aChoices.isObject()) {
+    // Iterate through all permission types.
+    for (uint32_t i = 0; i < aPermissionRequests.Length(); ++i) {
+      nsCString type = aPermissionRequests[i].type();
+
+      JS::Rooted<JSObject*> obj(RootingCx(), &aChoices.toObject());
+      // People really shouldn't be passing WindowProxy or Location
+      // objects for the choices here.
+      obj = js::CheckedUnwrapStatic(obj);
+      if (!obj) {
+        return NS_ERROR_FAILURE;
+      }
+
+      AutoJSAPI jsapi;
+      jsapi.Init();
+
+      JSContext* cx = jsapi.cx();
+      JSAutoRealm ar(cx, obj);
+
+      JS::Rooted<JS::Value> val(cx);
+
+      if (!JS_GetProperty(cx, obj, type.BeginReading(), &val) ||
+          !val.isString()) {
+        // no setting for the permission type, clear exception and skip it
+        jsapi.ClearException();
+      } else {
+        nsAutoJSString choice;
+        if (!choice.init(cx, val)) {
+          jsapi.ClearException();
+          return NS_ERROR_FAILURE;
+        }
+        aTranslatedChoices.AppendElement(PermissionChoice(type, choice));
+      }
+    }
+  } else {
+    MOZ_ASSERT(false, "SelectedChoices should be undefined or an JS object");
+    return NS_ERROR_FAILURE;
+  }
+
+  return NS_OK;
+}
+
 }  // namespace dom
 }  // namespace mozilla
 
@@ -532,15 +821,16 @@ void nsContentPermissionRequestProxy::nsContentPermissionRequesterProxy ::
   }
 }
 
-nsContentPermissionRequestProxy::nsContentPermissionRequestProxy() {}
+nsContentPermissionRequestProxy::nsContentPermissionRequestProxy(
+    ContentPermissionRequestParent* parent)
+    : mParent(parent) {
+  NS_ASSERTION(mParent, "null parent");
+}
 
-nsContentPermissionRequestProxy::~nsContentPermissionRequestProxy() {}
+nsContentPermissionRequestProxy::~nsContentPermissionRequestProxy() = default;
 
 nsresult nsContentPermissionRequestProxy::Init(
-    const nsTArray<PermissionRequest>& requests,
-    ContentPermissionRequestParent* parent) {
-  NS_ASSERTION(parent, "null parent");
-  mParent = parent;
+    const nsTArray<PermissionRequest>& requests) {
   mPermissionRequests = requests;
   mRequester = new nsContentPermissionRequesterProxy(mParent);
 
@@ -592,14 +882,25 @@ nsContentPermissionRequestProxy::GetPrincipal(
 }
 
 NS_IMETHODIMP
-nsContentPermissionRequestProxy::GetElement(
-    nsIDOMElement** aRequestingElement) {
+nsContentPermissionRequestProxy::GetTopLevelPrincipal(
+    nsIPrincipal** aRequestingPrincipal) {
+  NS_ENSURE_ARG_POINTER(aRequestingPrincipal);
+  if (mParent == nullptr) {
+    return NS_ERROR_FAILURE;
+  }
+
+  NS_ADDREF(*aRequestingPrincipal = mParent->mTopLevelPrincipal);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsContentPermissionRequestProxy::GetElement(Element** aRequestingElement) {
   NS_ENSURE_ARG_POINTER(aRequestingElement);
   if (mParent == nullptr) {
     return NS_ERROR_FAILURE;
   }
 
-  nsCOMPtr<nsIDOMElement> elem = do_QueryInterface(mParent->mElement);
+  nsCOMPtr<Element> elem = mParent->mElement;
   elem.forget(aRequestingElement);
   return NS_OK;
 }
@@ -612,6 +913,29 @@ nsContentPermissionRequestProxy::GetIsHandlingUserInput(
     return NS_ERROR_FAILURE;
   }
   *aIsHandlingUserInput = mParent->mIsHandlingUserInput;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsContentPermissionRequestProxy::GetUserHadInteractedWithDocument(
+    bool* aUserHadInteractedWithDocument) {
+  NS_ENSURE_ARG_POINTER(aUserHadInteractedWithDocument);
+  if (mParent == nullptr) {
+    return NS_ERROR_FAILURE;
+  }
+  *aUserHadInteractedWithDocument = mParent->mUserHadInteractedWithDocument;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsContentPermissionRequestProxy::GetDocumentDOMContentLoadedTimestamp(
+    DOMTimeStamp* aDocumentDOMContentLoadedTimestamp) {
+  NS_ENSURE_ARG_POINTER(aDocumentDOMContentLoadedTimestamp);
+  if (mParent == nullptr) {
+    return NS_ERROR_FAILURE;
+  }
+  *aDocumentDOMContentLoadedTimestamp =
+      mParent->mDocumentDOMContentLoadedTimestamp;
   return NS_OK;
 }
 
@@ -630,7 +954,6 @@ nsContentPermissionRequestProxy::Cancel() {
   nsTArray<PermissionChoice> emptyChoices;
 
   Unused << mParent->SendNotifyResult(false, emptyChoices);
-  mParent = nullptr;
   return NS_OK;
 }
 
@@ -647,42 +970,12 @@ nsContentPermissionRequestProxy::Allow(JS::HandleValue aChoices) {
   }
 
   nsTArray<PermissionChoice> choices;
-  if (aChoices.isNullOrUndefined()) {
-    // No choice is specified.
-  } else if (aChoices.isObject()) {
-    // Iterate through all permission types.
-    for (uint32_t i = 0; i < mPermissionRequests.Length(); ++i) {
-      nsCString type = mPermissionRequests[i].type();
-
-      AutoJSAPI jsapi;
-      jsapi.Init();
-
-      JSContext* cx = jsapi.cx();
-      JS::Rooted<JSObject*> obj(cx, &aChoices.toObject());
-      JSAutoCompartment ac(cx, obj);
-
-      JS::Rooted<JS::Value> val(cx);
-
-      if (!JS_GetProperty(cx, obj, type.BeginReading(), &val) ||
-          !val.isString()) {
-        // no setting for the permission type, clear exception and skip it
-        jsapi.ClearException();
-      } else {
-        nsAutoJSString choice;
-        if (!choice.init(cx, val)) {
-          jsapi.ClearException();
-          return NS_ERROR_FAILURE;
-        }
-        choices.AppendElement(PermissionChoice(type, choice));
-      }
-    }
-  } else {
-    MOZ_ASSERT(false, "SelectedChoices should be undefined or an JS object");
-    return NS_ERROR_FAILURE;
+  nsresult rv = TranslateChoices(aChoices, mPermissionRequests, choices);
+  if (NS_FAILED(rv)) {
+    return rv;
   }
 
   Unused << mParent->SendNotifyResult(true, choices);
-  mParent = nullptr;
   return NS_OK;
 }
 
@@ -721,12 +1014,14 @@ RemotePermissionRequest::~RemotePermissionRequest() {
 
 void RemotePermissionRequest::DoCancel() {
   NS_ASSERTION(mRequest, "We need a request");
-  mRequest->Cancel();
+  nsCOMPtr<nsIContentPermissionRequest> request(mRequest);
+  request->Cancel();
 }
 
 void RemotePermissionRequest::DoAllow(JS::HandleValue aChoices) {
   NS_ASSERTION(mRequest, "We need a request");
-  mRequest->Allow(aChoices);
+  nsCOMPtr<nsIContentPermissionRequest> request(mRequest);
+  request->Allow(aChoices);
 }
 
 // PContentPermissionRequestChild

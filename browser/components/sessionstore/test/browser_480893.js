@@ -6,9 +6,7 @@
  */
 add_task(async function() {
   await SpecialPowers.pushPrefEnv({
-    "set": [
-      ["browser.startup.page", 0],
-    ]
+    set: [["browser.startup.page", 0]],
   });
 
   let tab = BrowserTestUtils.addTab(gBrowser, "about:sessionrestore");
@@ -16,7 +14,6 @@ add_task(async function() {
   let browser = tab.linkedBrowser;
   await BrowserTestUtils.browserLoaded(browser, false, "about:sessionrestore");
 
-  // eslint-disable-next-line mozilla/no-cpows-in-tests
   let doc = browser.contentDocument;
 
   // Click on the "Close" button after about:sessionrestore is loaded.
@@ -28,15 +25,11 @@ add_task(async function() {
   // if Firefox is configured to display a homepage at startup (browser.startup.page = 1)
   let homepage = "http://mochi.test:8888/";
   await SpecialPowers.pushPrefEnv({
-    "set": [
-      ["browser.startup.homepage", homepage],
-      ["browser.startup.page", 1],
-    ]
+    set: [["browser.startup.homepage", homepage], ["browser.startup.page", 1]],
   });
 
-  browser.loadURI("about:sessionrestore");
+  BrowserTestUtils.loadURI(browser, "about:sessionrestore");
   await BrowserTestUtils.browserLoaded(browser, false, "about:sessionrestore");
-  // eslint-disable-next-line mozilla/no-cpows-in-tests
   doc = browser.contentDocument;
 
   // Click on the "Close" button after about:sessionrestore is loaded.
@@ -45,5 +38,5 @@ add_task(async function() {
 
   is(browser.currentURI.spec, homepage, "loaded page is the homepage");
 
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 });

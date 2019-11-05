@@ -38,6 +38,8 @@ class nsDeviceContextSpecProxy final : public nsIDeviceContextSpec {
 
   float GetPrintingScale() final;
 
+  gfxPoint GetPrintingTranslate() final;
+
   NS_IMETHOD BeginDocument(const nsAString& aTitle,
                            const nsAString& aPrintToFileName,
                            int32_t aStartPage, int32_t aEndPage) final;

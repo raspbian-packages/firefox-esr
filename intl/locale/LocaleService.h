@@ -81,7 +81,9 @@ class LocaleService final : public mozILocaleService,
    * See the mozILocaleService.idl for detailed description of the
    * strategies.
    */
-  enum class LangNegStrategy { Filtering, Matching, Lookup };
+  static const int32_t kLangNegStrategyFiltering = 0;
+  static const int32_t kLangNegStrategyMatching = 1;
+  static const int32_t kLangNegStrategyLookup = 2;
 
   explicit LocaleService(bool aIsServer);
 
@@ -103,44 +105,6 @@ class LocaleService final : public mozILocaleService,
   }
 
   /**
-   * Returns a list of locales that the application should be localized to.
-   *
-   * The result is a ordered list of valid locale IDs and it should be
-   * used for all APIs that accept list of locales, like ECMA402 and L10n APIs.
-   *
-   * This API always returns at least one locale.
-   *
-   * Example: ["en-US", "de", "pl", "sr-Cyrl", "zh-Hans-HK"]
-   *
-   * Usage:
-   *   nsTArray<nsCString> appLocales;
-   *   LocaleService::GetInstance()->GetAppLocalesAsLangTags(appLocales);
-   *
-   * (See mozILocaleService.idl for a JS-callable version of this.)
-   */
-  void GetAppLocalesAsLangTags(nsTArray<nsCString>& aRetVal);
-  void GetAppLocalesAsBCP47(nsTArray<nsCString>& aRetVal);
-
-  /**
-   * Returns a list of locales to use for any regional specific operations
-   * like date formatting, calendars, unit formatting etc.
-   *
-   * The result is a ordered list of valid locale IDs and it should be
-   * used for all APIs that accept list of locales, like ECMA402 and L10n APIs.
-   *
-   * This API always returns at least one locale.
-   *
-   * Example: ["en-US", "de", "pl", "sr-Cyrl", "zh-Hans-HK"]
-   *
-   * Usage:
-   *   nsTArray<nsCString> rgLocales;
-   *   LocaleService::GetInstance()->GetRegionalPrefsLocales(rgLocales);
-   *
-   * (See mozILocaleService.idl for a JS-callable version of this.)
-   */
-  void GetRegionalPrefsLocales(nsTArray<nsCString>& aRetVal);
-
-  /**
    * This method should only be called in the client mode.
    *
    * It replaces all the language negotiation and is supposed to be called
@@ -151,53 +115,6 @@ class LocaleService final : public mozILocaleService,
    */
   void AssignAppLocales(const nsTArray<nsCString>& aAppLocales);
   void AssignRequestedLocales(const nsTArray<nsCString>& aRequestedLocales);
-
-  /**
-   * Returns a list of locales that the user requested the app to be
-   * localized to.
-   *
-   * The result is a sorted list of valid locale IDs and it should be
-   * used as a requestedLocales input list for languages negotiation.
-   *
-   * Example: ["en-US", "de", "pl", "sr-Cyrl", "zh-Hans-HK"]
-   *
-   * Usage:
-   *   nsTArray<nsCString> reqLocales;
-   *   LocaleService::GetInstance()->GetRequestedLocales(reqLocales);
-   *
-   * Returns a boolean indicating if the attempt to retrieve prefs
-   * was successful.
-   *
-   * (See mozILocaleService.idl for a JS-callable version of this.)
-   */
-  bool GetRequestedLocales(nsTArray<nsCString>& aRetVal);
-
-  /**
-   * Returns a list of available locales that can be used to
-   * localize the app.
-   *
-   * The result is an unsorted list of valid locale IDs and it should be
-   * used as a availableLocales input list for languages negotiation.
-   *
-   * Example: ["de", "en-US", "pl", "sr-Cyrl", "zh-Hans-HK"]
-   *
-   * Usage:
-   *   nsTArray<nsCString> availLocales;
-   *   LocaleService::GetInstance()->GetAvailableLocales(availLocales);
-   *
-   * Returns a boolean indicating if the attempt to retrieve at least
-   * one locale was successful.
-   *
-   * (See mozILocaleService.idl for a JS-callable version of this.)
-   */
-  bool GetAvailableLocales(nsTArray<nsCString>& aRetVal);
-
-  /**
-   * Returns a list of locales packaged into the app bundle.
-   *
-   * (See mozILocaleService.idl for a JS-callable version of this.)
-   */
-  void GetPackagedLocales(nsTArray<nsCString>& aRetVal);
 
   /**
    * Those two functions allow to trigger cache invalidation on one of the
@@ -216,30 +133,9 @@ class LocaleService final : public mozILocaleService,
   void LocalesChanged();
 
   /**
-   * Negotiates the best locales out of an ordered list of requested locales and
-   * a list of available locales.
-   *
-   * Internally it uses the following naming scheme:
-   *
-   *  Requested - locales requested by the user
-   *  Available - locales for which the data is available
-   *  Supported - locales negotiated by the algorithm
-   *
-   * Additionally, if defaultLocale is provided, it adds it to the end of the
-   * result list as a "last resort" locale.
-   *
-   * Strategy is one of the three strategies described at the top of this file.
-   *
-   * The result list is canonicalized and ordered according to the order
-   * of the requested locales.
-   *
-   * (See mozILocaleService.idl for a JS-callable version of this.)
+   * This function keeps the pref setting updated.
    */
-  bool NegotiateLanguages(const nsTArray<nsCString>& aRequested,
-                          const nsTArray<nsCString>& aAvailable,
-                          const nsACString& aDefaultLocale,
-                          LangNegStrategy aLangNegStrategy,
-                          nsTArray<nsCString>& aRetVal);
+  void WebExposedLocalesChanged();
 
   /**
    * Returns whether the current app locale is RTL.
@@ -253,8 +149,8 @@ class LocaleService final : public mozILocaleService,
 
  private:
   void FilterMatches(const nsTArray<nsCString>& aRequested,
-                     const nsTArray<nsCString>& aAvailable,
-                     LangNegStrategy aStrategy, nsTArray<nsCString>& aRetVal);
+                     const nsTArray<nsCString>& aAvailable, int32_t aStrategy,
+                     nsTArray<nsCString>& aRetVal);
 
   void NegotiateAppLocales(nsTArray<nsCString>& aRetVal);
 
@@ -267,6 +163,7 @@ class LocaleService final : public mozILocaleService,
   nsTArray<nsCString> mRequestedLocales;
   nsTArray<nsCString> mAvailableLocales;
   nsTArray<nsCString> mPackagedLocales;
+  nsTArray<nsCString> mWebExposedLocales;
   const bool mIsServer;
 
   static StaticRefPtr<LocaleService> sInstance;

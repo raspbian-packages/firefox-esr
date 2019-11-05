@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,12 +18,15 @@ class nsProfilerStartParams : public nsIProfilerStartParams {
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIPROFILERSTARTPARAMS
 
-  nsProfilerStartParams(uint32_t aEntries, double aInterval, uint32_t aFeatures,
-                        const nsTArray<nsCString>& aFilters);
+  nsProfilerStartParams(uint32_t aEntries,
+                        const mozilla::Maybe<double>& aDuration,
+                        double aInterval, uint32_t aFeatures,
+                        nsTArray<nsCString>&& aFilters);
 
  private:
   virtual ~nsProfilerStartParams();
   uint32_t mEntries;
+  mozilla::Maybe<double> mDuration;
   double mInterval;
   uint32_t mFeatures;
   nsTArray<nsCString> mFilters;

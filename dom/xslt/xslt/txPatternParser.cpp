@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -222,8 +222,9 @@ nsresult txPatternParser::createKeyPattern(txExprLexer& aLexer,
     return NS_ERROR_XSLT_CALL_TO_KEY_NOT_ALLOWED;
 
   const char16_t* colon;
-  if (!XMLUtils::isValidQName(PromiseFlatString(key), &colon))
+  if (!XMLUtils::isValidQName(key, &colon)) {
     return NS_ERROR_XPATH_PARSE_FAILURE;
+  }
   RefPtr<nsAtom> prefix, localName;
   int32_t namespaceID;
   nsresult rv = resolveQName(key, getter_AddRefs(prefix), aContext,

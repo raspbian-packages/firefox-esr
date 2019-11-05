@@ -8,7 +8,7 @@
 
 <!--LOCALIZATION NOTE (onStartLegend.label): Don't translate "&brandShortName;".
     Place "&brandShortName;" in the phrase where the name of the application should
-	 appear
+    appear
 -->
 <!ENTITY imageDetails                   "&brandShortName; の画像の取り扱い方法を指定します。">
 
@@ -20,10 +20,3 @@
 <!ENTITY loadNoImagesRadio.accesskey    "D">
 <!ENTITY viewPermissions.label          "可否設定の管理">
 <!ENTITY viewPermissions.accesskey      "P">
-<!ENTITY animLoopingTitle.label         "アニメーション画像の繰り返し">
-<!ENTITY animLoopAsSpecified.label      "画像が指定した回数まで">
-<!ENTITY animLoopAsSpecified.accesskey  "m">
-<!ENTITY animLoopOnce.label             "1 回だけ">
-<!ENTITY animLoopOnce.accesskey         "O">
-<!ENTITY animLoopNever.label            "繰り返さない">
-<!ENTITY animLoopNever.accesskey        "v">

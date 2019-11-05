@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/dom/DragEvent.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/MouseEvents.h"
 #include "nsContentUtils.h"
 #include "prtime.h"
@@ -23,16 +24,10 @@ DragEvent::DragEvent(EventTarget* aOwner, nsPresContext* aPresContext,
     mEventIsInternal = true;
     mEvent->mTime = PR_Now();
     mEvent->mRefPoint = LayoutDeviceIntPoint(0, 0);
-    mEvent->AsMouseEvent()->inputSource = nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN;
+    mEvent->AsMouseEvent()->mInputSource =
+        MouseEvent_Binding::MOZ_SOURCE_UNKNOWN;
   }
 }
-
-NS_IMPL_ADDREF_INHERITED(DragEvent, MouseEvent)
-NS_IMPL_RELEASE_INHERITED(DragEvent, MouseEvent)
-
-NS_INTERFACE_MAP_BEGIN(DragEvent)
-  NS_INTERFACE_MAP_ENTRY(nsIDOMDragEvent)
-NS_INTERFACE_MAP_END_INHERITING(MouseEvent)
 
 void DragEvent::InitDragEvent(const nsAString& aType, bool aCanBubble,
                               bool aCancelable, nsGlobalWindowInner* aView,
@@ -51,12 +46,6 @@ void DragEvent::InitDragEvent(const nsAString& aType, bool aCanBubble,
   if (mEventIsInternal) {
     mEvent->AsDragEvent()->mDataTransfer = aDataTransfer;
   }
-}
-
-NS_IMETHODIMP
-DragEvent::GetDataTransfer(nsIDOMDataTransfer** aDataTransfer) {
-  NS_IF_ADDREF(*aDataTransfer = GetDataTransfer());
-  return NS_OK;
 }
 
 DataTransfer* DragEvent::GetDataTransfer() {

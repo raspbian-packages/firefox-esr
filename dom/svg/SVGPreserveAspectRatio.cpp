@@ -7,12 +7,13 @@
 #include "SVGPreserveAspectRatio.h"
 
 #include "mozilla/dom/SVGPreserveAspectRatioBinding.h"
+#include "nsContentUtils.h"
 #include "nsWhitespaceTokenizer.h"
 #include "SVGAnimatedPreserveAspectRatio.h"
 
 using namespace mozilla;
 using namespace dom;
-using namespace SVGPreserveAspectRatioBinding;
+using namespace SVGPreserveAspectRatio_Binding;
 
 NS_SVG_VAL_IMPL_CYCLE_COLLECTION_WRAPPERCACHED(DOMSVGPreserveAspectRatio,
                                                mSVGElement)
@@ -51,9 +52,11 @@ static uint16_t GetMeetOrSliceForString(const nsAString& aMeetOrSlice) {
   return SVG_MEETORSLICE_UNKNOWN;
 }
 
-/* static */ nsresult SVGPreserveAspectRatio::FromString(
-    const nsAString& aString, SVGPreserveAspectRatio* aValue) {
-  nsWhitespaceTokenizerTemplate<IsSVGWhitespace> tokenizer(aString);
+/* static */
+nsresult SVGPreserveAspectRatio::FromString(const nsAString& aString,
+                                            SVGPreserveAspectRatio* aValue) {
+  nsWhitespaceTokenizerTemplate<nsContentUtils::IsHTMLWhitespace> tokenizer(
+      aString);
   if (tokenizer.whitespaceBeforeFirstToken() || !tokenizer.hasMoreTokens()) {
     return NS_ERROR_DOM_SYNTAX_ERR;
   }
@@ -107,8 +110,8 @@ bool SVGPreserveAspectRatio::operator==(
 
 JSObject* DOMSVGPreserveAspectRatio::WrapObject(
     JSContext* aCx, JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::SVGPreserveAspectRatioBinding::Wrap(aCx, this,
-                                                           aGivenProto);
+  return mozilla::dom::SVGPreserveAspectRatio_Binding::Wrap(aCx, this,
+                                                            aGivenProto);
 }
 
 uint16_t DOMSVGPreserveAspectRatio::Align() {

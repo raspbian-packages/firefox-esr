@@ -46,37 +46,43 @@ class AltSvcMapping {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(AltSvcMapping)
 
  private:  // ctor from ProcessHeader
-  AltSvcMapping(DataStorage *storage, int32_t storageEpoch,
-                const nsACString &originScheme, const nsACString &originHost,
-                int32_t originPort, const nsACString &username,
-                bool privateBrowsing, uint32_t expiresAt,
-                const nsACString &alternateHost, int32_t alternatePort,
-                const nsACString &npnToken,
-                const OriginAttributes &originAttributes);
+  AltSvcMapping(DataStorage* storage, int32_t storageEpoch,
+                const nsACString& originScheme, const nsACString& originHost,
+                int32_t originPort, const nsACString& username,
+                const nsACString& topWindowOrigin, bool privateBrowsing,
+                uint32_t expiresAt, const nsACString& alternateHost,
+                int32_t alternatePort, const nsACString& npnToken,
+                const OriginAttributes& originAttributes);
 
  public:
-  AltSvcMapping(DataStorage *storage, int32_t storageEpoch,
-                const nsCString &serialized);
+  AltSvcMapping(DataStorage* storage, int32_t storageEpoch,
+                const nsCString& serialized);
 
-  static void ProcessHeader(const nsCString &buf, const nsCString &originScheme,
-                            const nsCString &originHost, int32_t originPort,
-                            const nsACString &username, bool privateBrowsing,
-                            nsIInterfaceRequestor *callbacks,
-                            nsProxyInfo *proxyInfo, uint32_t caps,
-                            const OriginAttributes &originAttributes);
+  static void ProcessHeader(const nsCString& buf, const nsCString& originScheme,
+                            const nsCString& originHost, int32_t originPort,
+                            const nsACString& username,
+                            const nsACString& topWindowOrigin,
+                            bool privateBrowsing,
+                            nsIInterfaceRequestor* callbacks,
+                            nsProxyInfo* proxyInfo, uint32_t caps,
+                            const OriginAttributes& originAttributes);
 
-  const nsCString &AlternateHost() const { return mAlternateHost; }
-  const nsCString &OriginHost() const { return mOriginHost; }
+  // AcceptableProxy() decides whether a particular proxy configuration (pi) is
+  // suitable for use with Alt-Svc. No proxy (including a null pi) is suitable.
+  static bool AcceptableProxy(nsProxyInfo* pi);
+
+  const nsCString& AlternateHost() const { return mAlternateHost; }
+  const nsCString& OriginHost() const { return mOriginHost; }
   uint32_t OriginPort() const { return mOriginPort; }
-  const nsCString &HashKey() const { return mHashKey; }
+  const nsCString& HashKey() const { return mHashKey; }
   uint32_t AlternatePort() const { return mAlternatePort; }
   bool Validated() { return mValidated; }
   int32_t GetExpiresAt() { return mExpiresAt; }
-  bool RouteEquals(AltSvcMapping *map);
+  bool RouteEquals(AltSvcMapping* map);
   bool HTTPS() { return mHttps; }
 
-  void GetConnectionInfo(nsHttpConnectionInfo **outCI, nsProxyInfo *pi,
-                         const OriginAttributes &originAttributes);
+  void GetConnectionInfo(nsHttpConnectionInfo** outCI, nsProxyInfo* pi,
+                         const OriginAttributes& originAttributes);
 
   int32_t TTL();
   int32_t StorageEpoch() { return mStorageEpoch; }
@@ -87,18 +93,19 @@ class AltSvcMapping {
   void SetExpiresAt(int32_t val);
   void SetExpired();
   void Sync();
+  void SetSyncOnlyOnSuccess(bool aSOOS) { mSyncOnlyOnSuccess = aSOOS; }
 
-  static void MakeHashKey(nsCString &outKey, const nsACString &originScheme,
-                          const nsACString &originHost, int32_t originPort,
+  static void MakeHashKey(nsCString& outKey, const nsACString& originScheme,
+                          const nsACString& originHost, int32_t originPort,
                           bool privateBrowsing,
-                          const OriginAttributes &originAttributes);
+                          const OriginAttributes& originAttributes);
 
  private:
-  virtual ~AltSvcMapping(){};
-  void SyncString(const nsCString &val);
+  virtual ~AltSvcMapping() = default;
+  void SyncString(const nsCString& val);
   RefPtr<DataStorage> mStorage;
   int32_t mStorageEpoch;
-  void Serialize(nsCString &out);
+  void Serialize(nsCString& out);
 
   nsCString mHashKey;
 
@@ -110,6 +117,7 @@ class AltSvcMapping {
   MOZ_INIT_OUTSIDE_CTOR int32_t mOriginPort;
 
   nsCString mUsername;
+  nsCString mTopWindowOrigin;
   MOZ_INIT_OUTSIDE_CTOR bool mPrivate;
 
   MOZ_INIT_OUTSIDE_CTOR uint32_t mExpiresAt;  // alt-svc mappping
@@ -122,6 +130,8 @@ class AltSvcMapping {
   nsCString mNPNToken;
 
   OriginAttributes mOriginAttributes;
+
+  bool mSyncOnlyOnSuccess;
 };
 
 class AltSvcOverride : public nsIInterfaceRequestor,
@@ -131,30 +141,30 @@ class AltSvcOverride : public nsIInterfaceRequestor,
   NS_DECL_NSISPECULATIVECONNECTIONOVERRIDER
   NS_DECL_NSIINTERFACEREQUESTOR
 
-  explicit AltSvcOverride(nsIInterfaceRequestor *aRequestor)
+  explicit AltSvcOverride(nsIInterfaceRequestor* aRequestor)
       : mCallbacks(aRequestor) {}
 
  private:
-  virtual ~AltSvcOverride() {}
+  virtual ~AltSvcOverride() = default;
   nsCOMPtr<nsIInterfaceRequestor> mCallbacks;
 };
 
-class TransactionObserver : public nsIStreamListener {
+class TransactionObserver final : public nsIStreamListener {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSISTREAMLISTENER
   NS_DECL_NSIREQUESTOBSERVER
 
-  TransactionObserver(nsHttpChannel *channel, WellKnownChecker *checker);
-  void Complete(nsHttpTransaction *, nsresult);
+  TransactionObserver(nsHttpChannel* channel, WellKnownChecker* checker);
+  void Complete(nsHttpTransaction*, nsresult);
 
  private:
   friend class WellKnownChecker;
-  virtual ~TransactionObserver() {}
+  virtual ~TransactionObserver() = default;
 
   nsCOMPtr<nsISupports> mChannelRef;
-  nsHttpChannel *mChannel;
-  WellKnownChecker *mChecker;
+  nsHttpChannel* mChannel;
+  WellKnownChecker* mChecker;
   nsCString mWKResponse;
 
   bool mRanOnce;
@@ -166,23 +176,23 @@ class TransactionObserver : public nsIStreamListener {
 class AltSvcCache {
  public:
   AltSvcCache() : mStorageEpoch(0) {}
-  virtual ~AltSvcCache(){};
+  virtual ~AltSvcCache() = default;
   void UpdateAltServiceMapping(
-      AltSvcMapping *map, nsProxyInfo *pi, nsIInterfaceRequestor *,
+      AltSvcMapping* map, nsProxyInfo* pi, nsIInterfaceRequestor*,
       uint32_t caps,
-      const OriginAttributes &originAttributes);  // main thread
+      const OriginAttributes& originAttributes);  // main thread
   already_AddRefed<AltSvcMapping> GetAltServiceMapping(
-      const nsACString &scheme, const nsACString &host, int32_t port, bool pb,
-      const OriginAttributes &originAttributes);
+      const nsACString& scheme, const nsACString& host, int32_t port, bool pb,
+      const OriginAttributes& originAttributes);
   void ClearAltServiceMappings();
-  void ClearHostMapping(const nsACString &host, int32_t port,
-                        const OriginAttributes &originAttributes);
-  void ClearHostMapping(nsHttpConnectionInfo *ci);
-  DataStorage *GetStoragePtr() { return mStorage.get(); }
+  void ClearHostMapping(const nsACString& host, int32_t port,
+                        const OriginAttributes& originAttributes);
+  void ClearHostMapping(nsHttpConnectionInfo* ci);
+  DataStorage* GetStoragePtr() { return mStorage.get(); }
   int32_t StorageEpoch() { return mStorageEpoch; }
 
  private:
-  already_AddRefed<AltSvcMapping> LookupMapping(const nsCString &key,
+  already_AddRefed<AltSvcMapping> LookupMapping(const nsCString& key,
                                                 bool privateBrowsing);
   RefPtr<DataStorage> mStorage;
   int32_t mStorageEpoch;

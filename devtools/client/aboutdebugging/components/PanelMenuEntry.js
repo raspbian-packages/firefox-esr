@@ -15,7 +15,7 @@ class PanelMenuEntry extends Component {
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       selected: PropTypes.bool,
-      selectPanel: PropTypes.func.isRequired
+      selectPanel: PropTypes.func.isRequired,
     };
   }
 
@@ -29,20 +29,23 @@ class PanelMenuEntry extends Component {
   }
 
   render() {
-    let { id, name, icon, selected } = this.props;
+    const { id, name, icon, selected } = this.props;
 
     // Here .category, .category-icon, .category-name classnames are used to
     // apply common styles defined.
-    let className = "category" + (selected ? " selected" : "");
-    return dom.button({
-      "aria-selected": selected,
-      "aria-controls": id + "-panel",
-      className,
-      onClick: this.onClick,
-      tabIndex: "0",
-      role: "tab" },
-    dom.img({ className: "category-icon", src: icon, role: "presentation" }),
-    dom.div({ className: "category-name" }, name));
+    const className = "category" + (selected ? " selected" : "");
+    return dom.button(
+      {
+        "aria-selected": selected,
+        "aria-controls": id + "-panel",
+        className,
+        onClick: this.onClick,
+        tabIndex: "0",
+        role: "tab",
+      },
+      dom.img({ className: "category-icon", src: icon, role: "presentation" }),
+      dom.div({ className: "category-name" }, name)
+    );
   }
 }
 

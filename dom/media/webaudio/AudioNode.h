@@ -132,7 +132,8 @@ class AudioNode : public DOMEventTargetHelper, public nsSupportsWeakReference {
   ChannelInterpretation ChannelInterpretationValue() const {
     return mChannelInterpretation;
   }
-  void SetChannelInterpretationValue(ChannelInterpretation aMode) {
+  virtual void SetChannelInterpretationValue(ChannelInterpretation aMode,
+                                             ErrorResult& aRv) {
     mChannelInterpretation = aMode;
     SendChannelMixingParametersToStream();
   }
@@ -167,10 +168,10 @@ class AudioNode : public DOMEventTargetHelper, public nsSupportsWeakReference {
   AudioNodeStream* GetStream() const { return mStream; }
 
   const nsTArray<InputNode>& InputNodes() const { return mInputNodes; }
-  const nsTArray<RefPtr<AudioNode> >& OutputNodes() const {
+  const nsTArray<RefPtr<AudioNode>>& OutputNodes() const {
     return mOutputNodes;
   }
-  const nsTArray<RefPtr<AudioParam> >& OutputParams() const {
+  const nsTArray<RefPtr<AudioParam>>& OutputParams() const {
     return mOutputParams;
   }
 
@@ -197,7 +198,11 @@ class AudioNode : public DOMEventTargetHelper, public nsSupportsWeakReference {
   // type.
   virtual const char* NodeType() const = 0;
 
-  AbstractThread* AbstractMainThread() const { return mAbstractMainThread; }
+  // This can return nullptr, but only when the AudioNode has been created
+  // during document shutdown.
+  AbstractThread* GetAbstractMainThread() const { return mAbstractMainThread; }
+
+  const nsTArray<RefPtr<AudioParam>>& GetAudioParams() const { return mParams; }
 
  private:
   // Given:
@@ -239,8 +244,18 @@ class AudioNode : public DOMEventTargetHelper, public nsSupportsWeakReference {
   RefPtr<AudioContext> mContext;
 
  protected:
-  // Must be set in the constructor. Must not be null unless finished.
+  // Set in the constructor of all nodes except offline AudioDestinationNode.
+  // Must not become null until finished.
   RefPtr<AudioNodeStream> mStream;
+
+  // The reference pointing out all audio params which belong to this node.
+  nsTArray<RefPtr<AudioParam>> mParams;
+  // Use this function to create a AudioParam, which will automatically add the
+  // new AudioParam to `mParams`.
+  void CreateAudioParam(RefPtr<AudioParam>& aParam, uint32_t aIndex,
+                        const char* aName, float aDefaultValue,
+                        float aMinValue = std::numeric_limits<float>::lowest(),
+                        float aMaxValue = std::numeric_limits<float>::max());
 
  private:
   // For every InputNode, there is a corresponding entry in mOutputNodes of the
@@ -250,13 +265,13 @@ class AudioNode : public DOMEventTargetHelper, public nsSupportsWeakReference {
   // of the mOutputNode entry. We won't necessarily be able to identify the
   // exact matching entry, since mOutputNodes doesn't include the port
   // identifiers and the same node could be connected on multiple ports.
-  nsTArray<RefPtr<AudioNode> > mOutputNodes;
+  nsTArray<RefPtr<AudioNode>> mOutputNodes;
   // For every mOutputParams entry, there is a corresponding entry in
   // AudioParam::mInputNodes of the mOutputParams entry. We won't necessarily be
   // able to identify the exact matching entry, since mOutputParams doesn't
   // include the port identifiers and the same node could be connected on
   // multiple ports.
-  nsTArray<RefPtr<AudioParam> > mOutputParams;
+  nsTArray<RefPtr<AudioParam>> mOutputParams;
   uint32_t mChannelCount;
   ChannelCountMode mChannelCountMode;
   ChannelInterpretation mChannelInterpretation;

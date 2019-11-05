@@ -17,7 +17,8 @@
  * Creates a new ExprLexer
  */
 txExprLexer::txExprLexer()
-    : mCurrentItem(nullptr),
+    : mPosition(nullptr),
+      mCurrentItem(nullptr),
       mFirstItem(nullptr),
       mLastItem(nullptr),
       mTokenCount(0) {}
@@ -38,7 +39,7 @@ txExprLexer::~txExprLexer() {
 
 Token* txExprLexer::nextToken() {
   if (!mCurrentItem) {
-    NS_NOTREACHED("nextToken called on uninitialized lexer");
+    MOZ_ASSERT_UNREACHABLE("nextToken called on uninitialized lexer");
     return nullptr;
   }
 

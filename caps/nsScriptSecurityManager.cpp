@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,6 +7,7 @@
 #include "nsScriptSecurityManager.h"
 
 #include "mozilla/ArrayUtils.h"
+#include "mozilla/StoragePrincipalHelper.h"
 
 #include "xpcpublic.h"
 #include "XPCWrapper.h"
@@ -15,6 +16,7 @@
 #include "nsIServiceManager.h"
 #include "nsIScriptObjectPrincipal.h"
 #include "nsIScriptContext.h"
+#include "nsIScriptError.h"
 #include "nsIURL.h"
 #include "nsIURIMutator.h"
 #include "nsINestedURI.h"
@@ -23,13 +25,14 @@
 #include "mozilla/BasePrincipal.h"
 #include "ExpandedPrincipal.h"
 #include "SystemPrincipal.h"
-#include "NullPrincipal.h"
 #include "DomainPolicy.h"
 #include "nsString.h"
 #include "nsCRT.h"
 #include "nsCRTGlue.h"
+#include "nsContentSecurityManager.h"
 #include "nsDocShell.h"
 #include "nsError.h"
+#include "nsGlobalWindowInner.h"
 #include "nsDOMCID.h"
 #include "nsTextFormatter.h"
 #include "nsIStringBundle.h"
@@ -46,24 +49,27 @@
 #include "nsIPrompt.h"
 #include "nsIWindowWatcher.h"
 #include "nsIConsoleService.h"
-#include "nsIObserverService.h"
 #include "nsIOService.h"
 #include "nsIContent.h"
 #include "nsDOMJSUtils.h"
 #include "nsAboutProtocolUtils.h"
 #include "nsIClassInfo.h"
 #include "nsIURIFixup.h"
-#include "nsCDefaultURIFixup.h"
 #include "nsIChromeRegistry.h"
 #include "nsIResProtocolHandler.h"
 #include "nsIContentSecurityPolicy.h"
 #include "nsIAsyncVerifyRedirectCallback.h"
+#include "mozilla/Components.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/dom/BindingUtils.h"
+#include "mozilla/NullPrincipal.h"
 #include <stdint.h>
+#include "mozilla/dom/nsCSPContext.h"
 #include "mozilla/dom/ScriptSettings.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StaticPtr.h"
+#include "mozilla/dom/WorkerCommon.h"
+#include "mozilla/dom/WorkerPrivate.h"
 #include "nsContentUtils.h"
 #include "nsJSUtils.h"
 #include "nsILoadInfo.h"
@@ -77,9 +83,68 @@ using namespace mozilla;
 using namespace mozilla::dom;
 
 nsIIOService* nsScriptSecurityManager::sIOService = nullptr;
-nsIStringBundle* nsScriptSecurityManager::sStrBundle = nullptr;
 JSContext* nsScriptSecurityManager::sContext = nullptr;
 bool nsScriptSecurityManager::sStrictFileOriginPolicy = true;
+
+namespace {
+
+class BundleHelper {
+ public:
+  NS_INLINE_DECL_REFCOUNTING(BundleHelper)
+
+  static nsIStringBundle* GetOrCreate() {
+    MOZ_ASSERT(!sShutdown);
+
+    // Already shutting down. Nothing should require the use of the string
+    // bundle when shutting down.
+    if (sShutdown) {
+      return nullptr;
+    }
+
+    if (!sSelf) {
+      sSelf = new BundleHelper();
+    }
+
+    return sSelf->GetOrCreateInternal();
+  }
+
+  static void Shutdown() {
+    sSelf = nullptr;
+    sShutdown = true;
+  }
+
+ private:
+  ~BundleHelper() = default;
+
+  nsIStringBundle* GetOrCreateInternal() {
+    if (!mBundle) {
+      nsCOMPtr<nsIStringBundleService> bundleService =
+          mozilla::services::GetStringBundleService();
+      if (NS_WARN_IF(!bundleService)) {
+        return nullptr;
+      }
+
+      nsresult rv = bundleService->CreateBundle(
+          "chrome://global/locale/security/caps.properties",
+          getter_AddRefs(mBundle));
+      if (NS_WARN_IF(NS_FAILED(rv))) {
+        return nullptr;
+      }
+    }
+
+    return mBundle;
+  }
+
+  nsCOMPtr<nsIStringBundle> mBundle;
+
+  static StaticRefPtr<BundleHelper> sSelf;
+  static bool sShutdown;
+};
+
+StaticRefPtr<BundleHelper> BundleHelper::sSelf;
+bool BundleHelper::sShutdown = false;
+
+}  // namespace
 
 ///////////////////////////
 // Convenience Functions //
@@ -182,6 +247,33 @@ nsresult nsScriptSecurityManager::GetChannelResultPrincipalIfNotSandboxed(
                                    /*aIgnoreSandboxing*/ true);
 }
 
+NS_IMETHODIMP
+nsScriptSecurityManager::GetChannelResultStoragePrincipal(
+    nsIChannel* aChannel, nsIPrincipal** aPrincipal) {
+  nsCOMPtr<nsIPrincipal> principal;
+  nsresult rv = GetChannelResultPrincipal(aChannel, getter_AddRefs(principal),
+                                          /*aIgnoreSandboxing*/ false);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  return StoragePrincipalHelper::Create(aChannel, principal, aPrincipal);
+}
+
+NS_IMETHODIMP
+nsScriptSecurityManager::GetChannelResultPrincipals(
+    nsIChannel* aChannel, nsIPrincipal** aPrincipal,
+    nsIPrincipal** aStoragePrincipal) {
+  nsresult rv = GetChannelResultPrincipal(aChannel, aPrincipal,
+                                          /*aIgnoreSandboxing*/ false);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  return StoragePrincipalHelper::Create(aChannel, *aPrincipal,
+                                        aStoragePrincipal);
+}
+
 static void InheritAndSetCSPOnPrincipalIfNeeded(nsIChannel* aChannel,
                                                 nsIPrincipal* aPrincipal) {
   // loading a data: URI into an iframe, or loading frame[srcdoc] need
@@ -191,9 +283,9 @@ static void InheritAndSetCSPOnPrincipalIfNeeded(nsIChannel* aChannel,
     return;
   }
 
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->GetLoadInfo();
-  if (!loadInfo || loadInfo->GetExternalContentPolicyType() !=
-                       nsIContentPolicy::TYPE_SUBDOCUMENT) {
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
+  if (loadInfo->GetExternalContentPolicyType() !=
+      nsIContentPolicy::TYPE_SUBDOCUMENT) {
     return;
   }
 
@@ -227,20 +319,59 @@ static void InheritAndSetCSPOnPrincipalIfNeeded(nsIChannel* aChannel,
   nsCOMPtr<nsIContentSecurityPolicy> nullPrincipalCSP;
   aPrincipal->GetCsp(getter_AddRefs(nullPrincipalCSP));
   if (nullPrincipalCSP) {
-    MOZ_ASSERT(nullPrincipalCSP == originalCSP,
-               "There should be no other CSP here.");
+    MOZ_ASSERT(nsCSPContext::Equals(originalCSP, nullPrincipalCSP));
     // CSPs are equal, no need to set it again.
     return;
   }
-  aPrincipal->SetCsp(originalCSP);
+
+  // After 965637 all that magical CSP inheritance goes away. For now,
+  // we have to create a clone of the current CSP and have to manually
+  // set it on the Principal.
+  uint32_t count = 0;
+  rv = originalCSP->GetPolicyCount(&count);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return;
+  }
+
+  if (count == 0) {
+    // fast path: if there is nothing to inherit, we can return here.
+    return;
+  }
+
+  RefPtr<nsCSPContext> newCSP = new nsCSPContext();
+  nsWeakPtr loadingContext =
+      static_cast<nsCSPContext*>(originalCSP.get())->GetLoadingContext();
+  nsCOMPtr<Document> doc = do_QueryReferent(loadingContext);
+
+  rv = doc ? newCSP->SetRequestContext(doc, nullptr)
+           : newCSP->SetRequestContext(nullptr, aPrincipal);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return;
+  }
+
+  for (uint32_t i = 0; i < count; ++i) {
+    const nsCSPPolicy* policy = originalCSP->GetPolicy(i);
+    MOZ_ASSERT(policy);
+
+    nsAutoString policyString;
+    policy->toString(policyString);
+
+    rv = newCSP->AppendPolicy(policyString, policy->getReportOnlyFlag(),
+                              policy->getDeliveredViaMetaTagFlag());
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return;
+    }
+  }
+  aPrincipal->SetCsp(newCSP);
 }
 
 nsresult nsScriptSecurityManager::GetChannelResultPrincipal(
     nsIChannel* aChannel, nsIPrincipal** aPrincipal, bool aIgnoreSandboxing) {
-  NS_PRECONDITION(aChannel, "Must have channel!");
+  MOZ_ASSERT(aChannel, "Must have channel!");
+
   // Check whether we have an nsILoadInfo that says what we should do.
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->GetLoadInfo();
-  if (loadInfo && loadInfo->GetForceInheritPrincipalOverruleOwner()) {
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
+  if (loadInfo->GetForceInheritPrincipalOverruleOwner()) {
     nsCOMPtr<nsIPrincipal> principalToInherit =
         loadInfo->FindPrincipalToInherit(aChannel);
     principalToInherit.forget(aPrincipal);
@@ -256,51 +387,50 @@ nsresult nsScriptSecurityManager::GetChannelResultPrincipal(
     }
   }
 
-  if (loadInfo) {
-    if (!aIgnoreSandboxing && loadInfo->GetLoadingSandboxed()) {
-      MOZ_ALWAYS_TRUE(
-          NS_SUCCEEDED(loadInfo->GetSandboxedLoadingPrincipal(aPrincipal)));
-      MOZ_ASSERT(*aPrincipal);
-      InheritAndSetCSPOnPrincipalIfNeeded(aChannel, *aPrincipal);
-      return NS_OK;
-    }
+  if (!aIgnoreSandboxing && loadInfo->GetLoadingSandboxed()) {
+    nsCOMPtr<nsIPrincipal> sandboxedLoadingPrincipal =
+        loadInfo->GetSandboxedLoadingPrincipal();
+    MOZ_ASSERT(sandboxedLoadingPrincipal);
+    InheritAndSetCSPOnPrincipalIfNeeded(aChannel, sandboxedLoadingPrincipal);
+    sandboxedLoadingPrincipal.forget(aPrincipal);
+    return NS_OK;
+  }
 
-    bool forceInherit = loadInfo->GetForceInheritPrincipal();
-    if (aIgnoreSandboxing && !forceInherit) {
-      // Check if SEC_FORCE_INHERIT_PRINCIPAL was dropped because of
-      // sandboxing:
-      if (loadInfo->GetLoadingSandboxed() &&
-          loadInfo->GetForceInheritPrincipalDropped()) {
-        forceInherit = true;
-      }
+  bool forceInherit = loadInfo->GetForceInheritPrincipal();
+  if (aIgnoreSandboxing && !forceInherit) {
+    // Check if SEC_FORCE_INHERIT_PRINCIPAL was dropped because of
+    // sandboxing:
+    if (loadInfo->GetLoadingSandboxed() &&
+        loadInfo->GetForceInheritPrincipalDropped()) {
+      forceInherit = true;
     }
-    if (forceInherit) {
-      nsCOMPtr<nsIPrincipal> principalToInherit =
-          loadInfo->FindPrincipalToInherit(aChannel);
+  }
+  if (forceInherit) {
+    nsCOMPtr<nsIPrincipal> principalToInherit =
+        loadInfo->FindPrincipalToInherit(aChannel);
+    principalToInherit.forget(aPrincipal);
+    return NS_OK;
+  }
+
+  auto securityMode = loadInfo->GetSecurityMode();
+  // The data: inheritance flags should only apply to the initial load,
+  // not to loads that it might have redirected to.
+  if (loadInfo->RedirectChain().IsEmpty() &&
+      (securityMode == nsILoadInfo::SEC_REQUIRE_SAME_ORIGIN_DATA_INHERITS ||
+       securityMode == nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_DATA_INHERITS ||
+       securityMode == nsILoadInfo::SEC_REQUIRE_CORS_DATA_INHERITS)) {
+    nsCOMPtr<nsIURI> uri;
+    nsresult rv = NS_GetFinalChannelURI(aChannel, getter_AddRefs(uri));
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    nsCOMPtr<nsIPrincipal> principalToInherit =
+        loadInfo->FindPrincipalToInherit(aChannel);
+    bool inheritForAboutBlank = loadInfo->GetAboutBlankInherits();
+
+    if (nsContentUtils::ChannelShouldInheritPrincipal(
+            principalToInherit, uri, inheritForAboutBlank, false)) {
       principalToInherit.forget(aPrincipal);
       return NS_OK;
-    }
-
-    auto securityMode = loadInfo->GetSecurityMode();
-    // The data: inheritance flags should only apply to the initial load,
-    // not to loads that it might have redirected to.
-    if (loadInfo->RedirectChain().IsEmpty() &&
-        (securityMode == nsILoadInfo::SEC_REQUIRE_SAME_ORIGIN_DATA_INHERITS ||
-         securityMode == nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_DATA_INHERITS ||
-         securityMode == nsILoadInfo::SEC_REQUIRE_CORS_DATA_INHERITS)) {
-      nsCOMPtr<nsIURI> uri;
-      nsresult rv = NS_GetFinalChannelURI(aChannel, getter_AddRefs(uri));
-      NS_ENSURE_SUCCESS(rv, rv);
-
-      nsCOMPtr<nsIPrincipal> principalToInherit =
-          loadInfo->FindPrincipalToInherit(aChannel);
-      bool inheritForAboutBlank = loadInfo->GetAboutBlankInherits();
-
-      if (nsContentUtils::ChannelShouldInheritPrincipal(
-              principalToInherit, uri, inheritForAboutBlank, false)) {
-        principalToInherit.forget(aPrincipal);
-        return NS_OK;
-      }
     }
   }
   nsresult rv = GetChannelURIPrincipal(aChannel, aPrincipal);
@@ -323,40 +453,27 @@ nsresult nsScriptSecurityManager::GetChannelResultPrincipal(
 NS_IMETHODIMP
 nsScriptSecurityManager::GetChannelURIPrincipal(nsIChannel* aChannel,
                                                 nsIPrincipal** aPrincipal) {
-  NS_PRECONDITION(aChannel, "Must have channel!");
+  MOZ_ASSERT(aChannel, "Must have channel!");
 
   // Get the principal from the URI.  Make sure this does the same thing
-  // as nsDocument::Reset and XULDocument::StartDocumentLoad.
+  // as Document::Reset and XULDocument::StartDocumentLoad.
   nsCOMPtr<nsIURI> uri;
   nsresult rv = NS_GetFinalChannelURI(aChannel, getter_AddRefs(uri));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsCOMPtr<nsILoadInfo> loadInfo;
-  aChannel->GetLoadInfo(getter_AddRefs(loadInfo));
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
 
   // Inherit the origin attributes from loadInfo.
   // If this is a top-level document load, the origin attributes of the
   // loadInfo will be set from nsDocShell::DoURILoad.
   // For subresource loading, the origin attributes of the loadInfo is from
   // its loadingPrincipal.
-  OriginAttributes attrs;
-
-  // For addons loadInfo might be null.
-  if (loadInfo) {
-    attrs = loadInfo->GetOriginAttributes();
-  }
+  OriginAttributes attrs = loadInfo->GetOriginAttributes();
 
   nsCOMPtr<nsIPrincipal> prin =
       BasePrincipal::CreateCodebasePrincipal(uri, attrs);
   prin.forget(aPrincipal);
   return *aPrincipal ? NS_OK : NS_ERROR_FAILURE;
-}
-
-NS_IMETHODIMP
-nsScriptSecurityManager::IsSystemPrincipal(nsIPrincipal* aPrincipal,
-                                           bool* aIsSystem) {
-  *aIsSystem = (aPrincipal == mSystemPrincipal);
-  return NS_OK;
 }
 
 /////////////////////////////
@@ -366,8 +483,7 @@ nsScriptSecurityManager::IsSystemPrincipal(nsIPrincipal* aPrincipal,
 ////////////////////////////////////
 // Methods implementing ISupports //
 ////////////////////////////////////
-NS_IMPL_ISUPPORTS(nsScriptSecurityManager, nsIScriptSecurityManager,
-                  nsIObserver)
+NS_IMPL_ISUPPORTS(nsScriptSecurityManager, nsIScriptSecurityManager)
 
 ///////////////////////////////////////////////////
 // Methods implementing nsIScriptSecurityManager //
@@ -376,15 +492,30 @@ NS_IMPL_ISUPPORTS(nsScriptSecurityManager, nsIScriptSecurityManager,
 ///////////////// Security Checks /////////////////
 
 bool nsScriptSecurityManager::ContentSecurityPolicyPermitsJSAction(
-    JSContext* cx) {
+    JSContext* cx, JS::HandleValue aValue) {
   MOZ_ASSERT(cx == nsContentUtils::GetCurrentJSContext());
   nsCOMPtr<nsIPrincipal> subjectPrincipal = nsContentUtils::SubjectPrincipal();
+
+#if defined(DEBUG) && !defined(ANDROID)
+  nsContentSecurityManager::AssertEvalNotUsingSystemPrincipal(subjectPrincipal,
+                                                              cx);
+#endif
+
   nsCOMPtr<nsIContentSecurityPolicy> csp;
   nsresult rv = subjectPrincipal->GetCsp(getter_AddRefs(csp));
   NS_ASSERTION(NS_SUCCEEDED(rv), "CSP: Failed to get CSP from principal.");
 
   // don't do anything unless there's a CSP
   if (!csp) return true;
+
+  nsCOMPtr<nsICSPEventListener> cspEventListener;
+  if (!NS_IsMainThread()) {
+    WorkerPrivate* workerPrivate =
+        mozilla::dom::GetWorkerPrivateFromContext(cx);
+    if (workerPrivate) {
+      cspEventListener = workerPrivate->CSPEventListener();
+    }
+  }
 
   bool evalOK = true;
   bool reportViolation = false;
@@ -396,13 +527,23 @@ bool nsScriptSecurityManager::ContentSecurityPolicyPermitsJSAction(
   }
 
   if (reportViolation) {
-    nsAutoString fileName;
-    unsigned lineNum = 0;
-    NS_NAMED_LITERAL_STRING(
-        scriptSample, "call to eval() or related function blocked by CSP");
+    JS::Rooted<JSString*> jsString(cx, JS::ToString(cx, aValue));
+    if (NS_WARN_IF(!jsString)) {
+      JS_ClearPendingException(cx);
+      return false;
+    }
+
+    nsAutoJSString scriptSample;
+    if (NS_WARN_IF(!scriptSample.init(cx, jsString))) {
+      JS_ClearPendingException(cx);
+      return false;
+    }
 
     JS::AutoFilename scriptFilename;
-    if (JS::DescribeScriptedCaller(cx, &scriptFilename, &lineNum)) {
+    nsAutoString fileName;
+    unsigned lineNum = 0;
+    unsigned columnNum = 0;
+    if (JS::DescribeScriptedCaller(cx, &scriptFilename, &lineNum, &columnNum)) {
       if (const char* file = scriptFilename.get()) {
         CopyUTF8toUTF16(nsDependentCString(file), fileName);
       }
@@ -410,8 +551,9 @@ bool nsScriptSecurityManager::ContentSecurityPolicyPermitsJSAction(
       MOZ_ASSERT(!JS_IsExceptionPending(cx));
     }
     csp->LogViolationDetails(nsIContentSecurityPolicy::VIOLATION_TYPE_EVAL,
-                             fileName, scriptSample, lineNum, EmptyString(),
-                             EmptyString());
+                             nullptr,  // triggering element
+                             cspEventListener, fileName, scriptSample, lineNum,
+                             columnNum, EmptyString(), EmptyString());
   }
 
   return evalOK;
@@ -426,17 +568,22 @@ bool nsScriptSecurityManager::JSPrincipalsSubsume(JSPrincipals* first,
 NS_IMETHODIMP
 nsScriptSecurityManager::CheckSameOriginURI(nsIURI* aSourceURI,
                                             nsIURI* aTargetURI,
-                                            bool reportError) {
+                                            bool reportError,
+                                            bool aFromPrivateWindow) {
+  // Please note that aFromPrivateWindow is only 100% accurate if
+  // reportError is true.
   if (!SecurityCompareURIs(aSourceURI, aTargetURI)) {
     if (reportError) {
-      ReportError(nullptr, "CheckSameOriginError", aSourceURI, aTargetURI);
+      ReportError("CheckSameOriginError", aSourceURI, aTargetURI,
+                  aFromPrivateWindow);
     }
     return NS_ERROR_DOM_BAD_URI;
   }
   return NS_OK;
 }
 
-/*static*/ uint32_t nsScriptSecurityManager::HashPrincipalByOrigin(
+/*static*/
+uint32_t nsScriptSecurityManager::HashPrincipalByOrigin(
     nsIPrincipal* aPrincipal) {
   nsCOMPtr<nsIURI> uri;
   aPrincipal->GetDomain(getter_AddRefs(uri));
@@ -473,7 +620,7 @@ nsScriptSecurityManager::CheckLoadURIFromScript(JSContext* cx, nsIURI* aURI) {
  * @return if success, access is allowed. Otherwise, deny access
  */
 static nsresult DenyAccessIfURIHasFlags(nsIURI* aURI, uint32_t aURIFlags) {
-  NS_PRECONDITION(aURI, "Must have URI!");
+  MOZ_ASSERT(aURI, "Must have URI!");
 
   bool uriHasFlags;
   nsresult rv = NS_URIChainHasFlags(aURI, aURIFlags, &uriHasFlags);
@@ -516,8 +663,8 @@ NS_IMETHODIMP
 nsScriptSecurityManager::CheckLoadURIWithPrincipal(nsIPrincipal* aPrincipal,
                                                    nsIURI* aTargetURI,
                                                    uint32_t aFlags) {
-  NS_PRECONDITION(aPrincipal,
-                  "CheckLoadURIWithPrincipal must have a principal");
+  MOZ_ASSERT(aPrincipal, "CheckLoadURIWithPrincipal must have a principal");
+
   // If someone passes a flag that we don't understand, we should
   // fail, because they may need a security check that we don't
   // provide.
@@ -552,15 +699,14 @@ nsScriptSecurityManager::CheckLoadURIWithPrincipal(nsIPrincipal* aPrincipal,
     auto* basePrin = BasePrincipal::Cast(aPrincipal);
     if (basePrin->Is<ExpandedPrincipal>()) {
       auto expanded = basePrin->As<ExpandedPrincipal>();
-      for (auto& prin : expanded->WhiteList()) {
+      for (auto& prin : expanded->AllowList()) {
         nsresult rv = CheckLoadURIWithPrincipal(prin, aTargetURI, aFlags);
         if (NS_SUCCEEDED(rv)) {
-          // Allow access if it succeeded with one of the white listed
-          // principals
+          // Allow access if it succeeded with one of the allowlisted principals
           return NS_OK;
         }
       }
-      // None of our whitelisted principals worked.
+      // None of our allowlisted principals worked.
       return NS_ERROR_DOM_BAD_URI;
     }
     NS_ERROR(
@@ -603,8 +749,9 @@ nsScriptSecurityManager::CheckLoadURIWithPrincipal(nsIPrincipal* aPrincipal,
   if (hasFlags) {
     // check nothing else in the URI chain has flags that prevent
     // access:
-    rv = CheckLoadURIFlags(sourceURI, aTargetURI, sourceBaseURI, targetBaseURI,
-                           aFlags);
+    rv = CheckLoadURIFlags(
+        sourceURI, aTargetURI, sourceBaseURI, targetBaseURI, aFlags,
+        aPrincipal->OriginAttributesRef().mPrivateBrowsingId > 0);
     NS_ENSURE_SUCCESS(rv, rv);
     // Check the principal is allowed to load the target.
     return aPrincipal->CheckMayLoad(targetBaseURI, true, false);
@@ -737,8 +884,9 @@ nsScriptSecurityManager::CheckLoadURIWithPrincipal(nsIPrincipal* aPrincipal,
     // URI allow the current source URI to link to it.
     // The policy is specified by the protocol flags on both URIs.
     if (!schemesMatch || (denySameSchemeLinks && !isSamePage)) {
-      return CheckLoadURIFlags(currentURI, currentOtherURI, sourceBaseURI,
-                               targetBaseURI, aFlags);
+      return CheckLoadURIFlags(
+          currentURI, currentOtherURI, sourceBaseURI, targetBaseURI, aFlags,
+          aPrincipal->OriginAttributesRef().mPrivateBrowsingId > 0);
     }
     // Otherwise... check if we can nest another level:
     nsCOMPtr<nsINestedURI> nestedURI = do_QueryInterface(currentURI);
@@ -770,11 +918,9 @@ nsScriptSecurityManager::CheckLoadURIWithPrincipal(nsIPrincipal* aPrincipal,
  *
  * @return if success, access is allowed. Otherwise, deny access
  */
-nsresult nsScriptSecurityManager::CheckLoadURIFlags(nsIURI* aSourceURI,
-                                                    nsIURI* aTargetURI,
-                                                    nsIURI* aSourceBaseURI,
-                                                    nsIURI* aTargetBaseURI,
-                                                    uint32_t aFlags) {
+nsresult nsScriptSecurityManager::CheckLoadURIFlags(
+    nsIURI* aSourceURI, nsIURI* aTargetURI, nsIURI* aSourceBaseURI,
+    nsIURI* aTargetBaseURI, uint32_t aFlags, bool aFromPrivateWindow) {
   // Note that the order of policy checks here is very important!
   // We start from most restrictive and work our way down.
   bool reportErrors = !(aFlags & nsIScriptSecurityManager::DONT_REPORT_ERRORS);
@@ -790,9 +936,22 @@ nsresult nsScriptSecurityManager::CheckLoadURIFlags(nsIURI* aSourceURI,
   if (NS_FAILED(rv)) {
     // Deny access, since the origin principal is not system
     if (reportErrors) {
-      ReportError(nullptr, errorTag, aSourceURI, aTargetURI);
+      ReportError(errorTag, aSourceURI, aTargetURI, aFromPrivateWindow);
     }
     return rv;
+  }
+
+  // Used by ExtensionProtocolHandler to prevent loading extension resources
+  // in private contexts if the extension does not have permission.
+  if (aFromPrivateWindow) {
+    rv = DenyAccessIfURIHasFlags(
+        aTargetURI, nsIProtocolHandler::URI_DISALLOW_IN_PRIVATE_CONTEXT);
+    if (NS_FAILED(rv)) {
+      if (reportErrors) {
+        ReportError(errorTag, aSourceURI, aTargetURI, aFromPrivateWindow);
+      }
+      return rv;
+    }
   }
 
   // Check for chrome target URI
@@ -853,7 +1012,7 @@ nsresult nsScriptSecurityManager::CheckLoadURIFlags(nsIURI* aSourceURI,
           return NS_OK;
         }
       } else if (targetScheme.EqualsLiteral("chrome")) {
-        // Allow the load only if the chrome package is whitelisted.
+        // Allow the load only if the chrome package is allowlisted.
         nsCOMPtr<nsIXULChromeRegistry> reg(
             do_GetService(NS_CHROMEREGISTRY_CONTRACTID));
         if (reg) {
@@ -866,27 +1025,8 @@ nsresult nsScriptSecurityManager::CheckLoadURIFlags(nsIURI* aSourceURI,
       }
     }
 
-    static bool sCanLoadChromeInContent = false;
-    static bool sCachedCanLoadChromeInContentPref = false;
-    if (!sCachedCanLoadChromeInContentPref) {
-      sCachedCanLoadChromeInContentPref = true;
-      mozilla::Preferences::AddBoolVarCache(
-          &sCanLoadChromeInContent,
-          "security.allow_chrome_frames_inside_content");
-    }
-    if (sCanLoadChromeInContent) {
-      // Special-case the hidden window: it's allowed to load
-      // URI_IS_UI_RESOURCE no matter what.  Bug 1145470 tracks removing this.
-      nsAutoCString sourceSpec;
-      if (NS_SUCCEEDED(aSourceBaseURI->GetSpec(sourceSpec)) &&
-          sourceSpec.EqualsLiteral(
-              "resource://gre-resources/hiddenWindow.html")) {
-        return NS_OK;
-      }
-    }
-
     if (reportErrors) {
-      ReportError(nullptr, errorTag, aSourceURI, aTargetURI);
+      ReportError(errorTag, aSourceURI, aTargetURI, aFromPrivateWindow);
     }
     return NS_ERROR_DOM_BAD_URI;
   }
@@ -896,11 +1036,11 @@ nsresult nsScriptSecurityManager::CheckLoadURIFlags(nsIURI* aSourceURI,
                            &hasFlags);
   NS_ENSURE_SUCCESS(rv, rv);
   if (hasFlags) {
-    // Allow domains that were whitelisted in the prefs. In 99.9% of cases,
+    // Allow domains that were allowlisted in the prefs. In 99.9% of cases,
     // this array is empty.
-    bool isWhitelisted;
-    MOZ_ALWAYS_SUCCEEDS(InFileURIWhitelist(aSourceURI, &isWhitelisted));
-    if (isWhitelisted) {
+    bool isAllowlisted;
+    MOZ_ALWAYS_SUCCEEDS(InFileURIAllowlist(aSourceURI, &isAllowlisted));
+    if (isAllowlisted) {
       return NS_OK;
     }
 
@@ -913,7 +1053,7 @@ nsresult nsScriptSecurityManager::CheckLoadURIFlags(nsIURI* aSourceURI,
 
     // Nothing else.
     if (reportErrors) {
-      ReportError(nullptr, errorTag, aSourceURI, aTargetURI);
+      ReportError(errorTag, aSourceURI, aTargetURI, aFromPrivateWindow);
     }
     return NS_ERROR_DOM_BAD_URI;
   }
@@ -934,27 +1074,29 @@ nsresult nsScriptSecurityManager::CheckLoadURIFlags(nsIURI* aSourceURI,
                            &hasSubsumersFlag);
   NS_ENSURE_SUCCESS(rv, rv);
   if (!hasFlags && !hasSubsumersFlag) {
-    nsAutoString message;
-    NS_ConvertASCIItoUTF16 ucsTargetScheme(targetScheme);
-    const char16_t* formatStrings[] = {ucsTargetScheme.get()};
-    rv = sStrBundle->FormatStringFromName("ProtocolFlagError", formatStrings,
-                                          ArrayLength(formatStrings), message);
-    if (NS_SUCCEEDED(rv)) {
-      nsCOMPtr<nsIConsoleService> console(
-          do_GetService("@mozilla.org/consoleservice;1"));
-      NS_ENSURE_TRUE(console, NS_ERROR_FAILURE);
+    nsCOMPtr<nsIStringBundle> bundle = BundleHelper::GetOrCreate();
+    if (bundle) {
+      nsAutoString message;
+      NS_ConvertASCIItoUTF16 ucsTargetScheme(targetScheme);
+      const char16_t* formatStrings[] = {ucsTargetScheme.get()};
+      rv = bundle->FormatStringFromName("ProtocolFlagError", formatStrings,
+                                        ArrayLength(formatStrings), message);
+      if (NS_SUCCEEDED(rv)) {
+        nsCOMPtr<nsIConsoleService> console(
+            do_GetService("@mozilla.org/consoleservice;1"));
+        NS_ENSURE_TRUE(console, NS_ERROR_FAILURE);
 
-      console->LogStringMessage(message.get());
+        console->LogStringMessage(message.get());
+      }
     }
   }
 
   return NS_OK;
 }
 
-nsresult nsScriptSecurityManager::ReportError(JSContext* cx,
-                                              const char* aMessageTag,
-                                              nsIURI* aSource,
-                                              nsIURI* aTarget) {
+nsresult nsScriptSecurityManager::ReportError(const char* aMessageTag,
+                                              nsIURI* aSource, nsIURI* aTarget,
+                                              bool aFromPrivateWindow) {
   nsresult rv;
   NS_ENSURE_TRUE(aSource && aTarget, NS_ERROR_NULL_POINTER);
 
@@ -968,28 +1110,32 @@ nsresult nsScriptSecurityManager::ReportError(JSContext* cx,
   rv = aTarget->GetAsciiSpec(targetSpec);
   NS_ENSURE_SUCCESS(rv, rv);
 
+  nsCOMPtr<nsIStringBundle> bundle = BundleHelper::GetOrCreate();
+  if (NS_WARN_IF(!bundle)) {
+    return NS_OK;
+  }
+
   // Localize the error message
   nsAutoString message;
   NS_ConvertASCIItoUTF16 ucsSourceSpec(sourceSpec);
   NS_ConvertASCIItoUTF16 ucsTargetSpec(targetSpec);
   const char16_t* formatStrings[] = {ucsSourceSpec.get(), ucsTargetSpec.get()};
-  rv = sStrBundle->FormatStringFromName(aMessageTag, formatStrings,
-                                        ArrayLength(formatStrings), message);
+  rv = bundle->FormatStringFromName(aMessageTag, formatStrings,
+                                    ArrayLength(formatStrings), message);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // If a JS context was passed in, set a JS exception.
-  // Otherwise, print the error message directly to the JS console
-  // and to standard output
-  if (cx) {
-    SetPendingException(cx, message.get());
-  } else  // Print directly to the console
-  {
-    nsCOMPtr<nsIConsoleService> console(
-        do_GetService("@mozilla.org/consoleservice;1"));
-    NS_ENSURE_TRUE(console, NS_ERROR_FAILURE);
+  nsCOMPtr<nsIConsoleService> console(
+      do_GetService(NS_CONSOLESERVICE_CONTRACTID));
+  NS_ENSURE_TRUE(console, NS_ERROR_FAILURE);
+  nsCOMPtr<nsIScriptError> error(do_CreateInstance(NS_SCRIPTERROR_CONTRACTID));
+  NS_ENSURE_TRUE(error, NS_ERROR_FAILURE);
 
-    console->LogStringMessage(message.get());
-  }
+  // using category of "SOP" so we can link to MDN
+  rv = error->Init(message, EmptyString(), EmptyString(), 0, 0,
+                   nsIScriptError::errorFlag, "SOP", aFromPrivateWindow,
+                   true /* From chrome context */);
+  NS_ENSURE_SUCCESS(rv, rv);
+  console->LogMessage(error);
   return NS_OK;
 }
 
@@ -1014,7 +1160,7 @@ nsScriptSecurityManager::CheckLoadURIStrWithPrincipal(
   // Now start testing fixup -- since aTargetURIStr is a string, not
   // an nsIURI, we may well end up fixing it up before loading.
   // Note: This needs to stay in sync with the nsIURIFixup api.
-  nsCOMPtr<nsIURIFixup> fixup = do_GetService(NS_URIFIXUP_CONTRACTID);
+  nsCOMPtr<nsIURIFixup> fixup = components::URIFixup::Service();
   if (!fixup) {
     return rv;
   }
@@ -1044,12 +1190,12 @@ nsScriptSecurityManager::CheckLoadURIStrWithPrincipal(
 }
 
 NS_IMETHODIMP
-nsScriptSecurityManager::InFileURIWhitelist(nsIURI* aUri, bool* aResult) {
+nsScriptSecurityManager::InFileURIAllowlist(nsIURI* aUri, bool* aResult) {
   MOZ_ASSERT(aUri);
   MOZ_ASSERT(aResult);
 
   *aResult = false;
-  for (nsIURI* uri : EnsureFileURIWhitelist()) {
+  for (nsIURI* uri : EnsureFileURIAllowlist()) {
     if (EqualOrSubdomain(aUri, uri)) {
       *aResult = true;
       return NS_OK;
@@ -1134,11 +1280,33 @@ nsScriptSecurityManager::GetDocShellCodebasePrincipal(
   return *aPrincipal ? NS_OK : NS_ERROR_FAILURE;
 }
 
-// static
-nsIPrincipal* nsScriptSecurityManager::doGetObjectPrincipal(JSObject* aObj) {
-  JSCompartment* compartment = js::GetObjectCompartment(aObj);
-  JSPrincipals* principals = JS_GetCompartmentPrincipals(compartment);
-  return nsJSPrincipals::get(principals);
+NS_IMETHODIMP
+nsScriptSecurityManager::PrincipalWithOA(
+    nsIPrincipal* aPrincipal, JS::Handle<JS::Value> aOriginAttributes,
+    JSContext* aCx, nsIPrincipal** aReturnPrincipal) {
+  if (!aPrincipal) {
+    return NS_OK;
+  }
+  if (aPrincipal->GetIsCodebasePrincipal()) {
+    OriginAttributes attrs;
+    if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
+      return NS_ERROR_INVALID_ARG;
+    }
+    RefPtr<ContentPrincipal> copy = new ContentPrincipal();
+    ContentPrincipal* contentPrincipal =
+        static_cast<ContentPrincipal*>(aPrincipal);
+    nsresult rv = copy->Init(contentPrincipal, attrs);
+    NS_ENSURE_SUCCESS(rv, rv);
+    copy.forget(aReturnPrincipal);
+  } else {
+    // We do this for null principals, system principals (both fine)
+    // ... and expanded principals, where we should probably do something
+    // cleverer, but I also don't think we care too much.
+    nsCOMPtr<nsIPrincipal> prin = aPrincipal;
+    prin.forget(aReturnPrincipal);
+  }
+
+  return *aReturnPrincipal ? NS_OK : NS_ERROR_FAILURE;
 }
 
 NS_IMETHODIMP
@@ -1147,13 +1315,7 @@ nsScriptSecurityManager::CanCreateWrapper(JSContext* cx, const nsIID& aIID,
                                           nsIClassInfo* aClassInfo) {
   // XXX Special case for Exception ?
 
-  uint32_t flags;
-  if (aClassInfo && NS_SUCCEEDED(aClassInfo->GetFlags(&flags)) &&
-      (flags & nsIClassInfo::DOM_OBJECT)) {
-    return NS_OK;
-  }
-
-  // We give remote-XUL whitelisted domains a free pass here. See bug 932906.
+  // We give remote-XUL allowlisted domains a free pass here. See bug 932906.
   JS::Rooted<JS::Realm*> contextRealm(cx, JS::GetCurrentRealmOrNull(cx));
   MOZ_RELEASE_ASSERT(contextRealm);
   if (!xpc::AllowContentXBLScope(contextRealm)) {
@@ -1162,20 +1324,6 @@ nsScriptSecurityManager::CanCreateWrapper(JSContext* cx, const nsIID& aIID,
 
   if (nsContentUtils::IsCallerChrome()) {
     return NS_OK;
-  }
-
-  // We want to expose nsIDOMXULCommandDispatcher and nsITreeSelection
-  // implementations in XBL scopes.
-  if (xpc::IsContentXBLScope(contextRealm)) {
-    nsCOMPtr<nsIDOMXULCommandDispatcher> dispatcher = do_QueryInterface(aObj);
-    if (dispatcher) {
-      return NS_OK;
-    }
-
-    nsCOMPtr<nsITreeSelection> treeSelection = do_QueryInterface(aObj);
-    if (treeSelection) {
-      return NS_OK;
-    }
   }
 
   //-- Access denied, report an error
@@ -1190,17 +1338,23 @@ nsScriptSecurityManager::CanCreateWrapper(JSContext* cx, const nsIID& aIID,
   if (classInfoNameUTF8.IsEmpty()) {
     classInfoNameUTF8.AssignLiteral("UnnamedClass");
   }
+
+  nsCOMPtr<nsIStringBundle> bundle = BundleHelper::GetOrCreate();
+  if (NS_WARN_IF(!bundle)) {
+    return NS_OK;
+  }
+
   NS_ConvertUTF8toUTF16 classInfoUTF16(classInfoNameUTF8);
   nsresult rv;
   nsAutoString errorMsg;
   if (originUTF16.IsEmpty()) {
     const char16_t* formatStrings[] = {classInfoUTF16.get()};
-    rv = sStrBundle->FormatStringFromName("CreateWrapperDenied", formatStrings,
-                                          1, errorMsg);
+    rv = bundle->FormatStringFromName("CreateWrapperDenied", formatStrings, 1,
+                                      errorMsg);
   } else {
     const char16_t* formatStrings[] = {classInfoUTF16.get(), originUTF16.get()};
-    rv = sStrBundle->FormatStringFromName("CreateWrapperDeniedForOrigin",
-                                          formatStrings, 2, errorMsg);
+    rv = bundle->FormatStringFromName("CreateWrapperDeniedForOrigin",
+                                      formatStrings, 2, errorMsg);
   }
   NS_ENSURE_SUCCESS(rv, rv);
 
@@ -1238,9 +1392,6 @@ nsScriptSecurityManager::CanGetService(JSContext* cx, const nsCID& aCID) {
   return NS_ERROR_DOM_XPCONNECT_ACCESS_DENIED;
 }
 
-/////////////////////////////////////
-// Method implementing nsIObserver //
-/////////////////////////////////////
 const char sJSEnabledPrefName[] = "javascript.enabled";
 const char sFileOriginPolicyPrefName[] =
     "security.fileuri.strict_origin_policy";
@@ -1248,13 +1399,6 @@ const char sFileOriginPolicyPrefName[] =
 static const char* kObservedPrefs[] = {sJSEnabledPrefName,
                                        sFileOriginPolicyPrefName,
                                        "capability.policy.", nullptr};
-
-NS_IMETHODIMP
-nsScriptSecurityManager::Observe(nsISupports* aObject, const char* aTopic,
-                                 const char16_t* aMessage) {
-  ScriptSecurityPrefChanged();
-  return NS_OK;
-}
 
 /////////////////////////////////////////////
 // Constructor, Destructor, Initialization //
@@ -1272,14 +1416,6 @@ nsresult nsScriptSecurityManager::Init() {
   NS_ENSURE_SUCCESS(rv, rv);
 
   InitPrefs();
-
-  nsCOMPtr<nsIStringBundleService> bundleService =
-      mozilla::services::GetStringBundleService();
-  if (!bundleService) return NS_ERROR_FAILURE;
-
-  rv = bundleService->CreateBundle(
-      "chrome://global/locale/security/caps.properties", &sStrBundle);
-  NS_ENSURE_SUCCESS(rv, rv);
 
   // Create our system principal singleton
   RefPtr<SystemPrincipal> system = SystemPrincipal::Create();
@@ -1307,7 +1443,9 @@ nsresult nsScriptSecurityManager::Init() {
 static StaticRefPtr<nsScriptSecurityManager> gScriptSecMan;
 
 nsScriptSecurityManager::~nsScriptSecurityManager(void) {
-  Preferences::RemoveObservers(this, kObservedPrefs);
+  Preferences::UnregisterPrefixCallbacks(
+      PREF_CHANGE_METHOD(nsScriptSecurityManager::ScriptSecurityPrefChanged),
+      kObservedPrefs, this);
   if (mDomainPolicy) {
     mDomainPolicy->Deactivate();
   }
@@ -1325,14 +1463,15 @@ void nsScriptSecurityManager::Shutdown() {
   }
 
   NS_IF_RELEASE(sIOService);
-  NS_IF_RELEASE(sStrBundle);
+  BundleHelper::Shutdown();
 }
 
 nsScriptSecurityManager* nsScriptSecurityManager::GetScriptSecurityManager() {
   return gScriptSecMan;
 }
 
-/* static */ void nsScriptSecurityManager::InitStatics() {
+/* static */
+void nsScriptSecurityManager::InitStatics() {
   RefPtr<nsScriptSecurityManager> ssManager = new nsScriptSecurityManager();
   nsresult rv = ssManager->Init();
   if (NS_FAILED(rv)) {
@@ -1379,16 +1518,17 @@ uint32_t SkipUntil(const nsCString& str, uint32_t base) {
   return base;
 }
 
-inline void nsScriptSecurityManager::ScriptSecurityPrefChanged() {
+inline void nsScriptSecurityManager::ScriptSecurityPrefChanged(
+    const char* aPref) {
   MOZ_ASSERT(mPrefInitialized);
   mIsJavaScriptEnabled =
       Preferences::GetBool(sJSEnabledPrefName, mIsJavaScriptEnabled);
   sStrictFileOriginPolicy =
       Preferences::GetBool(sFileOriginPolicyPrefName, false);
-  mFileURIWhitelist.reset();
+  mFileURIAllowlist.reset();
 }
 
-void nsScriptSecurityManager::AddSitesToFileURIWhitelist(
+void nsScriptSecurityManager::AddSitesToFileURIAllowlist(
     const nsCString& aSiteList) {
   for (uint32_t base = SkipPast<IsWhitespace>(aSiteList, 0), bound = 0;
        base < aSiteList.Length();
@@ -1400,8 +1540,8 @@ void nsScriptSecurityManager::AddSitesToFileURIWhitelist(
     // Check if the URI is schemeless. If so, add both http and https.
     nsAutoCString unused;
     if (NS_FAILED(sIOService->ExtractScheme(site, unused))) {
-      AddSitesToFileURIWhitelist(NS_LITERAL_CSTRING("http://") + site);
-      AddSitesToFileURIWhitelist(NS_LITERAL_CSTRING("https://") + site);
+      AddSitesToFileURIAllowlist(NS_LITERAL_CSTRING("http://") + site);
+      AddSitesToFileURIAllowlist(NS_LITERAL_CSTRING("https://") + site);
       continue;
     }
 
@@ -1410,14 +1550,14 @@ void nsScriptSecurityManager::AddSitesToFileURIWhitelist(
     nsresult rv =
         NS_NewURI(getter_AddRefs(uri), site, nullptr, nullptr, sIOService);
     if (NS_SUCCEEDED(rv)) {
-      mFileURIWhitelist.ref().AppendElement(uri);
+      mFileURIAllowlist.ref().AppendElement(uri);
     } else {
       nsCOMPtr<nsIConsoleService> console(
           do_GetService("@mozilla.org/consoleservice;1"));
       if (console) {
         nsAutoString msg =
             NS_LITERAL_STRING(
-                "Unable to to add site to file:// URI whitelist: ") +
+                "Unable to to add site to file:// URI allowlist: ") +
             NS_ConvertASCIItoUTF16(site);
         console->LogStringMessage(msg.get());
       }
@@ -1435,7 +1575,9 @@ nsresult nsScriptSecurityManager::InitPrefs() {
   ScriptSecurityPrefChanged();
 
   // set observer callbacks in case the value of the prefs change
-  Preferences::AddStrongObservers(this, kObservedPrefs);
+  Preferences::RegisterPrefixCallbacks(
+      PREF_CHANGE_METHOD(nsScriptSecurityManager::ScriptSecurityPrefChanged),
+      kObservedPrefs, this);
 
   OriginAttributes::InitPrefs();
 
@@ -1498,16 +1640,16 @@ nsScriptSecurityManager::PolicyAllowsScript(nsIURI* aURI, bool* aRv) {
   }
 
   // We have a domain policy. Grab the appropriate set of exceptions to the
-  // rule (either the blacklist or the whitelist, depending on whether script
+  // rule (either the blocklist or the allowlist, depending on whether script
   // is enabled or disabled by default).
   nsCOMPtr<nsIDomainSet> exceptions;
   nsCOMPtr<nsIDomainSet> superExceptions;
   if (*aRv) {
-    mDomainPolicy->GetBlacklist(getter_AddRefs(exceptions));
-    mDomainPolicy->GetSuperBlacklist(getter_AddRefs(superExceptions));
+    mDomainPolicy->GetBlocklist(getter_AddRefs(exceptions));
+    mDomainPolicy->GetSuperBlocklist(getter_AddRefs(superExceptions));
   } else {
-    mDomainPolicy->GetWhitelist(getter_AddRefs(exceptions));
-    mDomainPolicy->GetSuperWhitelist(getter_AddRefs(superExceptions));
+    mDomainPolicy->GetAllowlist(getter_AddRefs(exceptions));
+    mDomainPolicy->GetSuperAllowlist(getter_AddRefs(superExceptions));
   }
 
   bool contains;
@@ -1527,9 +1669,9 @@ nsScriptSecurityManager::PolicyAllowsScript(nsIURI* aURI, bool* aRv) {
 }
 
 const nsTArray<nsCOMPtr<nsIURI>>&
-nsScriptSecurityManager::EnsureFileURIWhitelist() {
-  if (mFileURIWhitelist.isSome()) {
-    return mFileURIWhitelist.ref();
+nsScriptSecurityManager::EnsureFileURIAllowlist() {
+  if (mFileURIAllowlist.isSome()) {
+    return mFileURIAllowlist.ref();
   }
 
   //
@@ -1538,7 +1680,7 @@ nsScriptSecurityManager::EnsureFileURIWhitelist() {
   // have come to depend on. See bug 995943.
   //
 
-  mFileURIWhitelist.emplace();
+  mFileURIAllowlist.emplace();
   nsAutoCString policies;
   mozilla::Preferences::GetCString("capability.policy.policynames", policies);
   for (uint32_t base = SkipPast<IsWhitespaceOrComma>(policies, 0), bound = 0;
@@ -1564,8 +1706,8 @@ nsScriptSecurityManager::EnsureFileURIWhitelist() {
                                policyName + NS_LITERAL_CSTRING(".sites");
     nsAutoCString siteList;
     Preferences::GetCString(domainPrefName.get(), siteList);
-    AddSitesToFileURIWhitelist(siteList);
+    AddSitesToFileURIAllowlist(siteList);
   }
 
-  return mFileURIWhitelist.ref();
+  return mFileURIAllowlist.ref();
 }

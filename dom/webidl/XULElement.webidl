@@ -16,8 +16,6 @@ interface XULElement : Element {
   [SetterThrows]
   attribute DOMString flex;
   [SetterThrows]
-  attribute DOMString flexGroup;
-  [SetterThrows]
   attribute DOMString ordinal;
   [SetterThrows]
   attribute DOMString orient;
@@ -54,10 +52,6 @@ interface XULElement : Element {
   [SetterThrows]
   attribute DOMString maxHeight;
 
-  // Persistence
-  [SetterThrows]
-  attribute DOMString persist;
-
   // Position properties for
   // * popups - these are screen coordinates
   // * other elements - these are client coordinates relative to parent stack.
@@ -66,11 +60,13 @@ interface XULElement : Element {
   [SetterThrows]
   attribute DOMString top;
 
-  // Tooltip and status info
+  // Return the screen coordinates of the element.
+  readonly attribute long screenX;
+  readonly attribute long screenY;
+
+  // Tooltip
   [SetterThrows]
   attribute DOMString tooltipText;
-  [SetterThrows]
-  attribute DOMString statusText;
 
   // Properties for images
   [SetterThrows]
@@ -83,43 +79,27 @@ interface XULElement : Element {
   [Throws]
   readonly attribute BoxObject?                 boxObject;
 
-  [Throws]
-  void                      focus();
+  [SetterThrows]
+  attribute long tabIndex;
   [Throws]
   void                      blur();
   [NeedsCallerType]
   void                      click();
   void                      doCommand();
 
-  // XXXbz this isn't really a nodelist!  See bug 818548
-  NodeList            getElementsByAttribute(DOMString name,
-                                             DOMString value);
-  // XXXbz this isn't really a nodelist!  See bug 818548
-  [Throws]
-  NodeList            getElementsByAttributeNS(DOMString namespaceURI,
-                                               DOMString name,
-                                               DOMString value);
   [Constant]
   readonly attribute CSSStyleDeclaration style;
-};
 
-// And the things from nsIFrameLoaderOwner
-[NoInterfaceObject]
-interface MozFrameLoaderOwner {
-  [ChromeOnly]
-  readonly attribute FrameLoader? frameLoader;
+  // Returns true if this is a menu-type element that has a menu
+  // frame associated with it.
+  boolean hasMenu();
 
-  [ChromeOnly, Throws]
-  void presetOpenerWindow(WindowProxy? window);
-
-  [ChromeOnly, Throws]
-  void swapFrameLoaders(XULElement aOtherLoaderOwner);
-
-  [ChromeOnly, Throws]
-  void swapFrameLoaders(HTMLIFrameElement aOtherLoaderOwner);
+  // If this is a menu-type element, opens or closes the menu
+  // depending on the argument passed.
+  void openMenu(boolean open);
 };
 
 XULElement implements GlobalEventHandlers;
+XULElement implements HTMLOrSVGOrXULElementMixin;
 XULElement implements TouchEventHandlers;
-XULElement implements MozFrameLoaderOwner;
 XULElement implements OnErrorEventHandlerForNodes;

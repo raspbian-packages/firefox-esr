@@ -43,8 +43,6 @@ AudioNodeStream::AudioNodeStream(AudioNodeEngine* aEngine, Flags aFlags,
   mSuspendedCount = !(mIsActive || mFlags & EXTERNAL_OUTPUT);
   mChannelCountMode = ChannelCountMode::Max;
   mChannelInterpretation = ChannelInterpretation::Speakers;
-  // AudioNodes are always producing data
-  mHasCurrentData = true;
   mLastChunks.SetLength(std::max(uint16_t(1), mEngine->OutputCount()));
   MOZ_COUNT_CTOR(AudioNodeStream);
 }
@@ -62,7 +60,8 @@ void AudioNodeStream::DestroyImpl() {
   ProcessedMediaStream::DestroyImpl();
 }
 
-/* static */ already_AddRefed<AudioNodeStream> AudioNodeStream::Create(
+/* static */
+already_AddRefed<AudioNodeStream> AudioNodeStream::Create(
     AudioContext* aCtx, AudioNodeEngine* aEngine, Flags aFlags,
     MediaStreamGraph* aGraph) {
   MOZ_ASSERT(NS_IsMainThread());
@@ -227,12 +226,12 @@ void AudioNodeStream::SetBuffer(AudioChunk&& aBuffer) {
         : ControlMessage(aStream), mBuffer(aBuffer) {}
     void Run() override {
       static_cast<AudioNodeStream*>(mStream)->Engine()->SetBuffer(
-          Move(mBuffer));
+          std::move(mBuffer));
     }
     AudioChunk mBuffer;
   };
 
-  GraphImpl()->AppendMessage(MakeUnique<Message>(this, Move(aBuffer)));
+  GraphImpl()->AppendMessage(MakeUnique<Message>(this, std::move(aBuffer)));
 }
 
 void AudioNodeStream::SetRawArrayData(nsTArray<float>& aData) {
@@ -288,6 +287,20 @@ void AudioNodeStream::SetPassThrough(bool aPassThrough) {
   };
 
   GraphImpl()->AppendMessage(MakeUnique<Message>(this, aPassThrough));
+}
+
+void AudioNodeStream::SendRunnable(already_AddRefed<nsIRunnable> aRunnable) {
+  class Message final : public ControlMessage {
+   public:
+    Message(MediaStream* aStream, already_AddRefed<nsIRunnable> aRunnable)
+        : ControlMessage(aStream), mRunnable(aRunnable) {}
+    void Run() override { mRunnable->Run(); }
+
+   private:
+    nsCOMPtr<nsIRunnable> mRunnable;
+  };
+
+  GraphImpl()->AppendMessage(MakeUnique<Message>(this, std::move(aRunnable)));
 }
 
 void AudioNodeStream::SetChannelMixingParametersImpl(
@@ -472,7 +485,7 @@ void AudioNodeStream::ProcessInput(GraphTime aFrom, GraphTime aTo,
   MOZ_ASSERT(outputCount == std::max(uint16_t(1), mEngine->OutputCount()));
 
   if (!mIsActive) {
-  // mLastChunks are already null.
+    // mLastChunks are already null.
 #ifdef DEBUG
     for (const auto& chunk : mLastChunks) {
       MOZ_ASSERT(chunk.IsNull());
@@ -562,22 +575,12 @@ void AudioNodeStream::ProduceOutputBeforeInput(GraphTime aFrom) {
 
 void AudioNodeStream::AdvanceOutputSegment() {
   StreamTracks::Track* track = EnsureTrack(AUDIO_TRACK);
-  // No more tracks will be coming
-  mTracks.AdvanceKnownTracksTime(STREAM_TIME_MAX);
-
   AudioSegment* segment = track->Get<AudioSegment>();
 
   AudioChunk copyChunk = *mLastChunks[0].AsMutableChunk();
   AudioSegment tmpSegment;
   tmpSegment.AppendAndConsumeChunk(&copyChunk);
 
-  for (uint32_t j = 0; j < mListeners.Length(); ++j) {
-    MediaStreamListener* l = mListeners[j];
-    // Notify MediaStreamListeners.
-    l->NotifyQueuedTrackChanges(Graph(), AUDIO_TRACK, segment->GetDuration(),
-                                TrackEventCommand::TRACK_EVENT_NONE,
-                                tmpSegment);
-  }
   for (TrackBound<MediaStreamTrackListener>& b : mTrackListeners) {
     // Notify MediaStreamTrackListeners.
     if (b.mTrackID != AUDIO_TRACK) {
@@ -597,21 +600,6 @@ void AudioNodeStream::AdvanceOutputSegment() {
 void AudioNodeStream::FinishOutput() {
   StreamTracks::Track* track = EnsureTrack(AUDIO_TRACK);
   track->SetEnded();
-
-  for (uint32_t j = 0; j < mListeners.Length(); ++j) {
-    MediaStreamListener* l = mListeners[j];
-    AudioSegment emptySegment;
-    l->NotifyQueuedTrackChanges(
-        Graph(), AUDIO_TRACK, track->GetSegment()->GetDuration(),
-        TrackEventCommand::TRACK_EVENT_ENDED, emptySegment);
-  }
-  for (TrackBound<MediaStreamTrackListener>& b : mTrackListeners) {
-    // Notify MediaStreamTrackListeners.
-    if (b.mTrackID != AUDIO_TRACK) {
-      continue;
-    }
-    b.mListener->NotifyEnded();
-  }
 }
 
 void AudioNodeStream::AddInput(MediaInputPort* aPort) {
@@ -670,7 +658,7 @@ void AudioNodeStream::ScheduleCheckForInactive() {
   }
 
   auto message = MakeUnique<CheckForInactiveMessage>(this);
-  GraphImpl()->RunMessageAfterProcessing(Move(message));
+  GraphImpl()->RunMessageAfterProcessing(std::move(message));
 }
 
 void AudioNodeStream::CheckForInactive() {

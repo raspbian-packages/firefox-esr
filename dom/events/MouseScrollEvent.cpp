@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/dom/MouseScrollEvent.h"
+#include "mozilla/dom/MouseEventBinding.h"
 #include "mozilla/MouseEvents.h"
 #include "prtime.h"
-#include "nsIDOMMouseScrollEvent.h"
 
 namespace mozilla {
 namespace dom {
@@ -25,8 +25,8 @@ MouseScrollEvent::MouseScrollEvent(EventTarget* aOwner,
     mEventIsInternal = true;
     mEvent->mTime = PR_Now();
     mEvent->mRefPoint = LayoutDeviceIntPoint(0, 0);
-    static_cast<WidgetMouseEventBase*>(mEvent)->inputSource =
-        nsIDOMMouseEvent::MOZ_SOURCE_UNKNOWN;
+    static_cast<WidgetMouseEventBase*>(mEvent)->mInputSource =
+        MouseEvent_Binding::MOZ_SOURCE_UNKNOWN;
   }
 
   mDetail = mEvent->AsMouseScrollEvent()->mDelta;
@@ -45,13 +45,13 @@ void MouseScrollEvent::InitMouseScrollEvent(
                              aAltKey, aShiftKey, aMetaKey, aButton,
                              aRelatedTarget);
   mEvent->AsMouseScrollEvent()->mIsHorizontal =
-      (aAxis == nsIDOMMouseScrollEvent::HORIZONTAL_AXIS);
+      (aAxis == MouseScrollEvent_Binding::HORIZONTAL_AXIS);
 }
 
 int32_t MouseScrollEvent::Axis() {
   return mEvent->AsMouseScrollEvent()->mIsHorizontal
-             ? static_cast<int32_t>(nsIDOMMouseScrollEvent::HORIZONTAL_AXIS)
-             : static_cast<int32_t>(nsIDOMMouseScrollEvent::VERTICAL_AXIS);
+             ? MouseScrollEvent_Binding::HORIZONTAL_AXIS
+             : MouseScrollEvent_Binding::VERTICAL_AXIS;
 }
 
 }  // namespace dom

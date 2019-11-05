@@ -116,7 +116,7 @@ class ChromiumCDMProxy : public CDMProxy {
   // main thread.
   bool mIsShutdown = false;
 
-  GMPCrashHelper* mCrashHelper;
+  RefPtr<GMPCrashHelper> mCrashHelper;
 
   Mutex mCDMMutex;
   RefPtr<gmp::ChromiumCDMParent> mCDM;

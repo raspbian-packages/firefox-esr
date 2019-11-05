@@ -5,6 +5,9 @@
 languages-window =
     .title = Språk
     .style = width: 30em
+webpage-languages-window =
+    .title = Språkinställningar för webbsidor
+    .style = width: 40em
 languages-close-key =
     .key = w
 languages-description = Webbsidor erbjuds ibland på mer än ett språk. Välj vilka språk som ska visas och i vilken ordning du föredrar dem
@@ -24,3 +27,32 @@ languages-customize-select-language =
 languages-customize-add =
     .label = Lägg till
     .accesskey = L
+# The pattern used to generate strings presented to the user in the
+# locale selection list.
+#
+# Example:
+#   Icelandic [is]
+#   Spanish (Chile) [es-CL]
+#
+# Variables:
+#   $locale (String) - A name of the locale (for example: "Icelandic", "Spanish (Chile)")
+#   $code (String) - Locale code of the locale (for example: "is", "es-CL")
+languages-code-format =
+    .label = { $locale }  [{ $code }]
+languages-active-code-format =
+    .value = { languages-code-format.label }
+browser-languages-window =
+    .title = { -brand-short-name } språkinställningar
+    .style = width: 40em
+browser-languages-description = { -brand-short-name } visar första språket som standard och kommer att visa alternativa språk om det behövs i den ordning de tillkommer.
+browser-languages-search = Sök efter fler språk...'
+browser-languages-searching =
+    .label = Söker efter språk...
+browser-languages-downloading =
+    .label = Hämtar…
+browser-languages-select-language =
+    .label = Välj ett språk att lägga till…
+    .placeholder = Välj ett språk att lägga till…
+browser-languages-installed-label = Installerade språk
+browser-languages-available-label = Tillgängliga språk
+browser-languages-error = { -brand-short-name } kan inte uppdatera dina språk just nu. Kontrollera att du är ansluten till internet eller försök igen.

@@ -36,12 +36,12 @@
 <!ENTITY runtimeMenu_takeScreenshot_accesskey		"S">
 <!ENTITY runtimeMenu_showDetails_label			"ランタイム情報">
 <!ENTITY runtimeMenu_showDetails_accesskey		"E">
-<!ENTITY runtimeMenu_showMonitor_label			"モニター">
-<!ENTITY runtimeMenu_showMonitor_accesskey		"M">
 <!ENTITY runtimeMenu_showDevicePrefs_label		"端末の設定">
 <!ENTITY runtimeMenu_showDevicePrefs_accesskey		"D">
 <!ENTITY runtimeMenu_showSettings_label			"端末オプション">
 <!ENTITY runtimeMenu_showSettings_accesskey		"s">
+<!ENTITY runtimeMenu_showPerformancePanel_label		"パフォーマンス">
+<!ENTITY runtimeMenu_showPerformancePanel_accesskey	"p">
 
 <!ENTITY viewMenu_label					"表示">
 <!ENTITY viewMenu_accesskey				"V">
@@ -76,7 +76,6 @@
 <!ENTITY runtimePanel_usb				"USB デバイス">
 <!ENTITY runtimePanel_wifi				"Wi-Fi デバイス">
 <!ENTITY runtimePanel_other				"その他">
-<!ENTITY runtimePanel_noadbhelper			"ADB Helper をインストール">
 <!ENTITY runtimePanel_nousbdevice			"端末が見つかりませんか？">
 <!ENTITY runtimePanel_refreshDevices_label		"端末をリフレッシュ">
 
@@ -119,12 +118,6 @@
 
 <!-- Runtime Details -->
 <!ENTITY runtimedetails_title				"ランタイム情報">
-<!ENTITY runtimedetails_adbIsRoot			"ADB は root です: ">
-<!ENTITY runtimedetails_summonADBRoot			"root 端末">
-<!ENTITY runtimedetails_ADBRootWarning			"(ロック解除されたブートローダが必要です)">
-<!ENTITY runtimedetails_unrestrictedPrivileges		"開発ツールの権限の制限解除: ">
-<!ENTITY runtimedetails_requestPrivileges		"上位の権限を要求">
-<!ENTITY runtimedetails_privilegesWarning		"(端末が再起動されます。root アクセス権限が必要です。)">
 
 <!-- Device Preferences and Settings -->
 <!ENTITY device_typeboolean				"真偽値">
@@ -146,10 +139,6 @@
 <!ENTITY devicesetting_newname				"新しい設定名">
 <!ENTITY devicesetting_newtext				"設定値">
 <!ENTITY devicesetting_addnew				"新しい設定値を追加">
-
-<!-- Monitor -->
-<!ENTITY monitor_title					"モニター">
-<!ENTITY monitor_help					"ヘルプ">
 
 <!-- WiFi Authentication -->
 <!-- LOCALIZATION NOTE (wifi_auth_header): The header displayed on the dialog

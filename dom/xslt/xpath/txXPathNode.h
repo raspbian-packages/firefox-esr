@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,7 +8,7 @@
 
 #include "nsAutoPtr.h"
 #include "nsIContent.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsINode.h"
 #include "nsNameSpaceManager.h"
 #include "nsContentUtils.h"  // For NameSpaceManager().
@@ -29,7 +29,7 @@ class txXPathNode {
 
   txXPathNode(const txXPathNode& aNode);
 
-  explicit txXPathNode(nsIDocument* aDocument)
+  explicit txXPathNode(mozilla::dom::Document* aDocument)
       : mNode(aDocument), mRefCountRoot(0), mIndex(eDocument) {
     MOZ_COUNT_CTOR(txXPathNode);
   }
@@ -59,9 +59,9 @@ class txXPathNode {
     NS_ASSERTION(isContent() || isAttribute(), "wrong type");
     return static_cast<nsIContent*>(mNode);
   }
-  nsIDocument* Document() const {
+  mozilla::dom::Document* Document() const {
     NS_ASSERTION(isDocument(), "wrong type");
-    return static_cast<nsIDocument*>(mNode);
+    return static_cast<mozilla::dom::Document*>(mNode);
   }
 
   enum PositionType { eDocument = (1 << 30), eContent = eDocument - 1 };

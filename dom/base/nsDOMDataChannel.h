@@ -12,8 +12,6 @@
 #include "mozilla/dom/RTCDataChannelBinding.h"
 #include "mozilla/dom/TypedArray.h"
 #include "mozilla/net/DataChannelListener.h"
-#include "nsIDOMDataChannel.h"
-#include "nsIInputStream.h"
 
 namespace mozilla {
 namespace dom {
@@ -24,7 +22,6 @@ class DataChannel;
 };  // namespace mozilla
 
 class nsDOMDataChannel final : public mozilla::DOMEventTargetHelper,
-                               public nsIDOMDataChannel,
                                public mozilla::DataChannelListener {
  public:
   nsDOMDataChannel(already_AddRefed<mozilla::DataChannel>& aDataChannel,
@@ -33,9 +30,6 @@ class nsDOMDataChannel final : public mozilla::DOMEventTargetHelper,
   nsresult Init(nsPIDOMWindowInner* aDOMWindow);
 
   NS_DECL_ISUPPORTS_INHERITED
-  NS_DECL_NSIDOMDATACHANNEL
-
-  NS_REALLY_FORWARD_NSIDOMEVENTTARGET(mozilla::DOMEventTargetHelper)
 
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(nsDOMDataChannel,
                                            mozilla::DOMEventTargetHelper)
@@ -55,6 +49,8 @@ class nsDOMDataChannel final : public mozilla::DOMEventTargetHelper,
   void GetLabel(nsAString& aLabel);
   void GetProtocol(nsAString& aProtocol);
   bool Reliable() const;
+  mozilla::dom::Nullable<uint16_t> GetMaxPacketLifeTime() const;
+  mozilla::dom::Nullable<uint16_t> GetMaxRetransmits() const;
   mozilla::dom::RTCDataChannelState ReadyState() const;
   uint32_t BufferedAmount() const;
   uint32_t BufferedAmountLowThreshold() const;
@@ -78,8 +74,9 @@ class nsDOMDataChannel final : public mozilla::DOMEventTargetHelper,
   void Send(const mozilla::dom::ArrayBufferView& aData,
             mozilla::ErrorResult& aRv);
 
+  bool Negotiated() const;
   bool Ordered() const;
-  uint16_t Id() const;
+  mozilla::dom::Nullable<uint16_t> GetId() const;
 
   nsresult DoOnMessageAvailable(const nsACString& aMessage, bool aBinary);
 
@@ -113,7 +110,7 @@ class nsDOMDataChannel final : public mozilla::DOMEventTargetHelper,
   ~nsDOMDataChannel();
 
  private:
-  void Send(nsIInputStream* aMsgStream, const nsACString& aMsgString,
+  void Send(mozilla::dom::Blob* aMsgBlob, const nsACString* aMsgString,
             bool aIsBinary, mozilla::ErrorResult& aRv);
 
   void ReleaseSelf();

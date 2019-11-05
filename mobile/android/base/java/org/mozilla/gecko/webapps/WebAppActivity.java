@@ -21,16 +21,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import org.json.JSONObject;
 import org.mozilla.gecko.ActivityHandlerHelper;
 import org.mozilla.gecko.AppConstants;
 import org.mozilla.gecko.BrowserApp;
 import org.mozilla.gecko.DoorHangerPopup;
 import org.mozilla.gecko.FormAssistPopup;
-import org.mozilla.gecko.GeckoAccessibility;
+import org.mozilla.gecko.GeckoApplication;
 import org.mozilla.gecko.GeckoScreenOrientation;
-import org.mozilla.gecko.GeckoSharedPrefs;
-import org.mozilla.gecko.preferences.GeckoPreferences;
 import org.mozilla.gecko.R;
+import org.mozilla.gecko.Telemetry;
+import org.mozilla.gecko.TelemetryContract;
 import org.mozilla.gecko.customtabs.CustomTabsActivity;
 import org.mozilla.gecko.permissions.Permissions;
 import org.mozilla.gecko.prompts.PromptService;
@@ -38,9 +39,13 @@ import org.mozilla.gecko.text.TextSelection;
 import org.mozilla.gecko.util.ActivityUtils;
 import org.mozilla.gecko.util.ColorUtil;
 import org.mozilla.gecko.widget.ActionModePresenter;
+import org.mozilla.geckoview.AllowOrDeny;
+import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.GeckoView;
+import org.mozilla.geckoview.GeckoViewBridge;
+import org.mozilla.geckoview.WebRequestError;
 
 public class WebAppActivity extends AppCompatActivity
                             implements ActionModePresenter,
@@ -72,6 +77,8 @@ public class WebAppActivity extends AppCompatActivity
 
     private WebAppManifest mManifest;
 
+    private boolean mIsFirstLoad = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0 &&
@@ -85,14 +92,19 @@ public class WebAppActivity extends AppCompatActivity
 
             Intent lastLaunchIntent = savedInstanceState.getParcelable(SAVED_INTENT);
             setIntent(lastLaunchIntent);
+        } else {
+            Telemetry.sendUIEvent(TelemetryContract.Event.PWA, TelemetryContract.Method.HOMESCREEN);
         }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.webapp_activity);
         mGeckoView = (GeckoView) findViewById(R.id.pwa_gecko_view);
 
-        mGeckoSession = new GeckoSession();
-        mGeckoView.setSession(mGeckoSession);
+        final GeckoSessionSettings settings = new GeckoSessionSettings.Builder()
+                .useMultiprocess(false)
+                .build();
+        mGeckoSession = new GeckoSession(settings);
+        mGeckoView.setSession(mGeckoSession, GeckoApplication.ensureRuntime(this));
 
         mGeckoSession.setNavigationDelegate(this);
         mGeckoSession.setContentDelegate(this);
@@ -108,7 +120,19 @@ public class WebAppActivity extends AppCompatActivity
             }
 
             @Override
+            public void onProgressChange(GeckoSession session, int progress) {
+
+            }
+
+            @Override
             public void onSecurityChange(GeckoSession session, SecurityInformation security) {
+                // We want to ignore the extraneous first about:blank load
+                if (mIsFirstLoad && security.origin.startsWith("moz-nullprincipal:")) {
+                    mIsFirstLoad = false;
+                    return;
+                }
+                mIsFirstLoad = false;
+
                 int message;
                 if (!security.isSecure) {
                     if (SecurityInformation.CONTENT_LOADED == security.mixedModeActive) {
@@ -132,27 +156,18 @@ public class WebAppActivity extends AppCompatActivity
                         fallbackToFennec(getString(message));
                     }
                 }
-
             }
         });
 
-        GeckoAccessibility.setDelegate(mGeckoView);
-
-        mPromptService = new PromptService(this, mGeckoView.getEventDispatcher());
-        mDoorHangerPopup = new DoorHangerPopup(this, mGeckoView.getEventDispatcher());
+        mPromptService = new PromptService(this, GeckoViewBridge.getEventDispatcher(mGeckoView));
+        mDoorHangerPopup = new DoorHangerPopup(this,
+                                               GeckoViewBridge.getEventDispatcher(mGeckoView));
 
         mFormAssistPopup = (FormAssistPopup) findViewById(R.id.pwa_form_assist_popup);
         mFormAssistPopup.create(mGeckoView);
 
         mTextSelection = TextSelection.Factory.create(mGeckoView, this);
         mTextSelection.create();
-
-        final GeckoSessionSettings settings = mGeckoView.getSettings();
-        settings.setBoolean(GeckoSessionSettings.USE_MULTIPROCESS, false);
-        settings.setBoolean(
-            GeckoSessionSettings.USE_REMOTE_DEBUGGER,
-            GeckoSharedPrefs.forApp(this).getBoolean(
-                GeckoPreferences.PREFS_DEVTOOLS_REMOTE_USB_ENABLED, false));
 
         try {
             mManifest = WebAppManifest.fromFile(getIntent().getStringExtra(MANIFEST_URL),
@@ -189,18 +204,6 @@ public class WebAppActivity extends AppCompatActivity
         } else {
             finish();
         }
-    }
-
-    @Override
-    public void onResume() {
-        mGeckoSession.setActive(true);
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        mGeckoSession.setActive(false);
-        super.onPause();
     }
 
     @Override
@@ -320,24 +323,12 @@ public class WebAppActivity extends AppCompatActivity
                 break;
         }
 
-        mGeckoView.getSettings().setInt(GeckoSessionSettings.DISPLAY_MODE, mode);
-    }
-
-    @Override // GeckoSession.NavigationDelegate
-    public void onLocationChange(GeckoSession session, String url) {
+        mGeckoSession.getSettings().setDisplayMode(mode);
     }
 
     @Override // GeckoSession.NavigationDelegate
     public void onCanGoBack(GeckoSession session, boolean canGoBack) {
         mCanGoBack = canGoBack;
-    }
-
-    @Override // GeckoSession.NavigationDelegate
-    public void onCanGoForward(GeckoSession session, boolean canGoForward) {
-    }
-
-    @Override // GeckoSession.ContentDelegate
-    public void onTitleChange(GeckoSession session, String title) {
     }
 
     @Override // GeckoSession.ContentDelegate
@@ -348,14 +339,12 @@ public class WebAppActivity extends AppCompatActivity
     }
 
     @Override // GeckoSession.ContentDelegate
-    public void onCloseRequest(GeckoSession session) {
-        // Ignore
-    }
-
-    @Override // GeckoSession.ContentDelegate
-    public void onContextMenu(GeckoSession session, int screenX, int screenY,
-                              String uri, String elementSrc) {
-        final String content = uri != null ? uri : elementSrc != null ? elementSrc : "";
+    public void onContextMenu(final GeckoSession session,
+                              int screenX, int screenY,
+                              final ContextElement element) {
+        final String content = element.linkUri != null
+                               ? element.linkUri
+                               : element.srcUri != null ? element.srcUri : "";
         final Uri validUri = WebApps.getValidURL(content);
         if (validUri == null) {
             return;
@@ -370,24 +359,19 @@ public class WebAppActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onLoadRequest(final GeckoSession session, final String urlStr,
-                                 final int target) {
-        final Uri uri = Uri.parse(urlStr);
+    public GeckoResult<AllowOrDeny> onLoadRequest(final GeckoSession session,
+                                                  final LoadRequest request) {
+        final Uri uri = Uri.parse(request.uri);
         if (uri == null) {
             // We can't really handle this, so deny it?
-            Log.w(LOGTAG, "Failed to parse URL for navigation: " + urlStr);
-            return true;
+            Log.w(LOGTAG, "Failed to parse URL for navigation: " + request.uri);
+            return GeckoResult.fromValue(AllowOrDeny.DENY);
         }
 
-        if (mManifest.isInScope(uri) && target != TARGET_WINDOW_NEW) {
+        if (mManifest.isInScope(uri) && request.target != TARGET_WINDOW_NEW) {
             // This is in scope and wants to load in the same frame, so
             // let Gecko handle it.
-            return false;
-        }
-
-        if ("javascript".equals(uri.getScheme())) {
-            // These URIs will fail the scope check but should still be loaded in the PWA.
-            return false;
+            return GeckoResult.fromValue(AllowOrDeny.ALLOW);
         }
 
         if ("http".equals(uri.getScheme()) || "https".equals(uri.getScheme()) ||
@@ -412,17 +396,23 @@ public class WebAppActivity extends AppCompatActivity
             try {
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                Log.w(LOGTAG, "No activity handler found for: " + urlStr);
+                Log.w(LOGTAG, "No activity handler found for: " + request.uri);
             }
         }
-        return true;
+
+        return GeckoResult.fromValue(AllowOrDeny.DENY);
     }
 
     @Override
-    public void onNewSession(final GeckoSession session, final String uri,
-                             final GeckoSession.Response<GeckoSession> response) {
+    public GeckoResult<GeckoSession> onNewSession(final GeckoSession session, final String uri) {
         // We should never get here because we abort loads that need a new session in onLoadRequest()
         throw new IllegalStateException("Unexpected new session");
+    }
+
+    @Override
+    public GeckoResult<String> onLoadError(final GeckoSession session, final String urlStr,
+                                           final WebRequestError error) {
+        return null;
     }
 
     private void updateFullScreen() {

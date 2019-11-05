@@ -8,39 +8,40 @@
 
 #include "mozilla/AnimationUtils.h"
 #include "mozilla/dom/AnimatableBinding.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/KeyframeAnimationOptionsBinding.h"
 #include "mozilla/dom/KeyframeEffectBinding.h"
 #include "mozilla/ServoCSSParser.h"
-#include "nsCSSParser.h"  // For nsCSSParser
-#include "nsIDocument.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsRuleNode.h"
-#endif
 
 namespace mozilla {
 
 template <class OptionsType>
-static const dom::AnimationEffectTimingProperties& GetTimingProperties(
+static const dom::EffectTiming& GetTimingProperties(
     const OptionsType& aOptions);
 
 template <>
-/* static */ const dom::AnimationEffectTimingProperties& GetTimingProperties(
+/* static */
+const dom::EffectTiming& GetTimingProperties(
     const dom::UnrestrictedDoubleOrKeyframeEffectOptions& aOptions) {
   MOZ_ASSERT(aOptions.IsKeyframeEffectOptions());
   return aOptions.GetAsKeyframeEffectOptions();
 }
 
 template <>
-/* static */ const dom::AnimationEffectTimingProperties& GetTimingProperties(
+/* static */
+const dom::EffectTiming& GetTimingProperties(
     const dom::UnrestrictedDoubleOrKeyframeAnimationOptions& aOptions) {
   MOZ_ASSERT(aOptions.IsKeyframeAnimationOptions());
   return aOptions.GetAsKeyframeAnimationOptions();
 }
 
 template <class OptionsType>
-/* static */ TimingParams TimingParams::FromOptionsType(
-    const OptionsType& aOptions, nsIDocument* aDocument, ErrorResult& aRv) {
+/* static */
+TimingParams TimingParams::FromOptionsType(const OptionsType& aOptions,
+                                           dom::Document* aDocument,
+                                           ErrorResult& aRv) {
   TimingParams result;
+
   if (aOptions.IsUnrestrictedDouble()) {
     double durationInMs = aOptions.GetAsUnrestrictedDouble();
     if (durationInMs >= 0) {
@@ -50,136 +51,169 @@ template <class OptionsType>
       aRv.Throw(NS_ERROR_DOM_TYPE_ERR);
       return result;
     }
+    result.Update();
   } else {
-    const dom::AnimationEffectTimingProperties& timing =
-        GetTimingProperties(aOptions);
-
-    Maybe<StickyTimeDuration> duration =
-        TimingParams::ParseDuration(timing.mDuration, aRv);
-    if (aRv.Failed()) {
-      return result;
-    }
-    TimingParams::ValidateIterationStart(timing.mIterationStart, aRv);
-    if (aRv.Failed()) {
-      return result;
-    }
-    TimingParams::ValidateIterations(timing.mIterations, aRv);
-    if (aRv.Failed()) {
-      return result;
-    }
-    Maybe<ComputedTimingFunction> easing =
-        TimingParams::ParseEasing(timing.mEasing, aDocument, aRv);
-    if (aRv.Failed()) {
-      return result;
-    }
-
-    result.mDuration = duration;
-    result.mDelay = TimeDuration::FromMilliseconds(timing.mDelay);
-    result.mEndDelay = TimeDuration::FromMilliseconds(timing.mEndDelay);
-    result.mIterations = timing.mIterations;
-    result.mIterationStart = timing.mIterationStart;
-    result.mDirection = timing.mDirection;
-    result.mFill = timing.mFill;
-    result.mFunction = easing;
+    const dom::EffectTiming& timing = GetTimingProperties(aOptions);
+    result = FromEffectTiming(timing, aDocument, aRv);
   }
+
+  return result;
+}
+
+/* static */
+TimingParams TimingParams::FromOptionsUnion(
+    const dom::UnrestrictedDoubleOrKeyframeEffectOptions& aOptions,
+    dom::Document* aDocument, ErrorResult& aRv) {
+  return FromOptionsType(aOptions, aDocument, aRv);
+}
+
+/* static */
+TimingParams TimingParams::FromOptionsUnion(
+    const dom::UnrestrictedDoubleOrKeyframeAnimationOptions& aOptions,
+    dom::Document* aDocument, ErrorResult& aRv) {
+  return FromOptionsType(aOptions, aDocument, aRv);
+}
+
+/* static */
+TimingParams TimingParams::FromEffectTiming(
+    const dom::EffectTiming& aEffectTiming, dom::Document* aDocument,
+    ErrorResult& aRv) {
+  TimingParams result;
+
+  Maybe<StickyTimeDuration> duration =
+      TimingParams::ParseDuration(aEffectTiming.mDuration, aRv);
+  if (aRv.Failed()) {
+    return result;
+  }
+  TimingParams::ValidateIterationStart(aEffectTiming.mIterationStart, aRv);
+  if (aRv.Failed()) {
+    return result;
+  }
+  TimingParams::ValidateIterations(aEffectTiming.mIterations, aRv);
+  if (aRv.Failed()) {
+    return result;
+  }
+  Maybe<ComputedTimingFunction> easing =
+      TimingParams::ParseEasing(aEffectTiming.mEasing, aDocument, aRv);
+  if (aRv.Failed()) {
+    return result;
+  }
+
+  result.mDuration = duration;
+  result.mDelay = TimeDuration::FromMilliseconds(aEffectTiming.mDelay);
+  result.mEndDelay = TimeDuration::FromMilliseconds(aEffectTiming.mEndDelay);
+  result.mIterations = aEffectTiming.mIterations;
+  result.mIterationStart = aEffectTiming.mIterationStart;
+  result.mDirection = aEffectTiming.mDirection;
+  result.mFill = aEffectTiming.mFill;
+  result.mFunction = easing;
+
   result.Update();
 
   return result;
 }
 
-/* static */ TimingParams TimingParams::FromOptionsUnion(
-    const dom::UnrestrictedDoubleOrKeyframeEffectOptions& aOptions,
-    nsIDocument* aDocument, ErrorResult& aRv) {
-  return FromOptionsType(aOptions, aDocument, aRv);
+/* static */
+TimingParams TimingParams::MergeOptionalEffectTiming(
+    const TimingParams& aSource, const dom::OptionalEffectTiming& aEffectTiming,
+    dom::Document* aDocument, ErrorResult& aRv) {
+  MOZ_ASSERT(!aRv.Failed(), "Initially return value should be ok");
+
+  TimingParams result = aSource;
+
+  // Check for errors first
+
+  Maybe<StickyTimeDuration> duration;
+  if (aEffectTiming.mDuration.WasPassed()) {
+    duration =
+        TimingParams::ParseDuration(aEffectTiming.mDuration.Value(), aRv);
+    if (aRv.Failed()) {
+      return result;
+    }
+  }
+
+  if (aEffectTiming.mIterationStart.WasPassed()) {
+    TimingParams::ValidateIterationStart(aEffectTiming.mIterationStart.Value(),
+                                         aRv);
+    if (aRv.Failed()) {
+      return result;
+    }
+  }
+
+  if (aEffectTiming.mIterations.WasPassed()) {
+    TimingParams::ValidateIterations(aEffectTiming.mIterations.Value(), aRv);
+    if (aRv.Failed()) {
+      return result;
+    }
+  }
+
+  Maybe<ComputedTimingFunction> easing;
+  if (aEffectTiming.mEasing.WasPassed()) {
+    easing = TimingParams::ParseEasing(aEffectTiming.mEasing.Value(), aDocument,
+                                       aRv);
+    if (aRv.Failed()) {
+      return result;
+    }
+  }
+
+  // Assign values
+
+  if (aEffectTiming.mDuration.WasPassed()) {
+    result.mDuration = duration;
+  }
+  if (aEffectTiming.mDelay.WasPassed()) {
+    result.mDelay =
+        TimeDuration::FromMilliseconds(aEffectTiming.mDelay.Value());
+  }
+  if (aEffectTiming.mEndDelay.WasPassed()) {
+    result.mEndDelay =
+        TimeDuration::FromMilliseconds(aEffectTiming.mEndDelay.Value());
+  }
+  if (aEffectTiming.mIterations.WasPassed()) {
+    result.mIterations = aEffectTiming.mIterations.Value();
+  }
+  if (aEffectTiming.mIterationStart.WasPassed()) {
+    result.mIterationStart = aEffectTiming.mIterationStart.Value();
+  }
+  if (aEffectTiming.mDirection.WasPassed()) {
+    result.mDirection = aEffectTiming.mDirection.Value();
+  }
+  if (aEffectTiming.mFill.WasPassed()) {
+    result.mFill = aEffectTiming.mFill.Value();
+  }
+  if (aEffectTiming.mEasing.WasPassed()) {
+    result.mFunction = easing;
+  }
+
+  result.Update();
+
+  return result;
 }
 
-/* static */ TimingParams TimingParams::FromOptionsUnion(
-    const dom::UnrestrictedDoubleOrKeyframeAnimationOptions& aOptions,
-    nsIDocument* aDocument, ErrorResult& aRv) {
-  return FromOptionsType(aOptions, aDocument, aRv);
-}
-
-/* static */ Maybe<ComputedTimingFunction> TimingParams::ParseEasing(
-    const nsAString& aEasing, nsIDocument* aDocument, ErrorResult& aRv) {
+/* static */
+Maybe<ComputedTimingFunction> TimingParams::ParseEasing(
+    const nsAString& aEasing, dom::Document* aDocument, ErrorResult& aRv) {
   MOZ_ASSERT(aDocument);
 
-  if (aDocument->IsStyledByServo()) {
-    nsTimingFunction timingFunction;
-    RefPtr<URLExtraData> url = ServoCSSParser::GetURLExtraData(aDocument);
-    if (!ServoCSSParser::ParseEasing(aEasing, url, timingFunction)) {
-      aRv.ThrowTypeError<dom::MSG_INVALID_EASING_ERROR>(aEasing);
-      return Nothing();
-    }
-
-    if (timingFunction.mType == nsTimingFunction::Type::Linear) {
-      return Nothing();
-    }
-
-    return Some(ComputedTimingFunction(timingFunction));
+  nsTimingFunction timingFunction;
+  RefPtr<URLExtraData> url = ServoCSSParser::GetURLExtraData(aDocument);
+  if (!ServoCSSParser::ParseEasing(aEasing, url, timingFunction)) {
+    aRv.ThrowTypeError<dom::MSG_INVALID_EASING_ERROR>(aEasing);
+    return Nothing();
   }
 
-#ifdef MOZ_OLD_STYLE
-  nsCSSValue value;
-  nsCSSParser parser;
-  parser.ParseLonghandProperty(eCSSProperty_animation_timing_function, aEasing,
-                               aDocument->GetDocumentURI(),
-                               aDocument->GetDocumentURI(),
-                               aDocument->NodePrincipal(), value);
-
-  switch (value.GetUnit()) {
-    case eCSSUnit_List: {
-      const nsCSSValueList* list = value.GetListValue();
-      if (list->mNext) {
-        // don't support a list of timing functions
-        break;
-      }
-      switch (list->mValue.GetUnit()) {
-        case eCSSUnit_Enumerated:
-          // Return Nothing() if "linear" is passed in.
-          if (list->mValue.GetIntValue() ==
-              NS_STYLE_TRANSITION_TIMING_FUNCTION_LINEAR) {
-            return Nothing();
-          }
-          MOZ_FALLTHROUGH;
-        case eCSSUnit_Cubic_Bezier:
-        case eCSSUnit_Function:
-        case eCSSUnit_Steps: {
-          nsTimingFunction timingFunction;
-          nsRuleNode::ComputeTimingFunction(list->mValue, timingFunction);
-          return Some(ComputedTimingFunction(timingFunction));
-        }
-        default:
-          MOZ_ASSERT_UNREACHABLE(
-              "unexpected animation-timing-function list "
-              "item unit");
-          break;
-      }
-      break;
-    }
-    case eCSSUnit_Inherit:
-    case eCSSUnit_Initial:
-    case eCSSUnit_Unset:
-    case eCSSUnit_TokenStream:
-    case eCSSUnit_Null:
-      break;
-    default:
-      MOZ_ASSERT_UNREACHABLE("unexpected animation-timing-function unit");
-      break;
+  if (timingFunction.IsLinear()) {
+    return Nothing();
   }
 
-  aRv.ThrowTypeError<dom::MSG_INVALID_EASING_ERROR>(aEasing);
-#else
-  MOZ_CRASH("old style system disabled");
-#endif
-
-  return Nothing();
+  return Some(ComputedTimingFunction(timingFunction));
 }
 
 bool TimingParams::operator==(const TimingParams& aOther) const {
   // We don't compare mActiveDuration and mEndTime because they are calculated
   // from other timing parameters.
   return mDuration == aOther.mDuration && mDelay == aOther.mDelay &&
-         mIterations == aOther.mIterations &&
+         mEndDelay == aOther.mEndDelay && mIterations == aOther.mIterations &&
          mIterationStart == aOther.mIterationStart &&
          mDirection == aOther.mDirection && mFill == aOther.mFill &&
          mFunction == aOther.mFunction;

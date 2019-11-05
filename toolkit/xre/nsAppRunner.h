@@ -7,30 +7,26 @@
 #define nsAppRunner_h__
 
 #ifdef XP_WIN
-#include <windows.h>
+#  include <windows.h>
+#  include "mozilla/WindowsConsole.h"
 #else
-#include <limits.h>
+#  include <limits.h>
 #endif
 
 #ifndef MAXPATHLEN
-#ifdef PATH_MAX
-#define MAXPATHLEN PATH_MAX
-#elif defined(_MAX_PATH)
-#define MAXPATHLEN _MAX_PATH
-#elif defined(CCHMAXPATH)
-#define MAXPATHLEN CCHMAXPATH
-#else
-#define MAXPATHLEN 1024
-#endif
+#  ifdef PATH_MAX
+#    define MAXPATHLEN PATH_MAX
+#  elif defined(_MAX_PATH)
+#    define MAXPATHLEN _MAX_PATH
+#  elif defined(CCHMAXPATH)
+#    define MAXPATHLEN CCHMAXPATH
+#  else
+#    define MAXPATHLEN 1024
+#  endif
 #endif
 
 #include "nsStringFwd.h"
 #include "nsXULAppAPI.h"
-
-// This directory service key is a lot like NS_APP_LOCALSTORE_50_FILE,
-// but it is always the "main" localstore file, even when we're in safe mode
-// and we load localstore from somewhere else.
-#define NS_LOCALSTORE_UNSAFE_FILE "LStoreS"
 
 class nsINativeAppSupport;
 class nsXREDirProvider;
@@ -50,10 +46,28 @@ extern int gArgc;
 extern char** gArgv;
 extern int gRestartArgc;
 extern char** gRestartArgv;
+extern bool gRestartedByOS;
 extern bool gLogConsoleErrors;
 extern nsString gAbsoluteArgv0Path;
 
 extern bool gIsGtest;
+
+namespace mozilla {
+nsresult AppInfoConstructor(nsISupports* aOuter, const nsID& aIID,
+                            void** aResult);
+}  // namespace mozilla
+
+// Exported for gtests.
+void BuildCompatVersion(const char* aAppVersion, const char* aAppBuildID,
+                        const char* aToolkitBuildID, nsACString& aBuf);
+
+/**
+ * Compares the provided compatibility versions. Returns 0 if they match,
+ * < 0 if the new version is considered an upgrade from the old version and
+ * > 0 if the new version is considered a downgrade from the old version.
+ */
+int32_t CompareCompatVersions(const nsACString& aOldCompatVersion,
+                              const nsACString& aNewCompatVersion);
 
 /**
  * Create the nativeappsupport implementation.
@@ -61,6 +75,7 @@ extern bool gIsGtest;
  * @note XPCOMInit has not happened yet.
  */
 nsresult NS_CreateNativeAppSupport(nsINativeAppSupport** aResult);
+already_AddRefed<nsINativeAppSupport> NS_GetNativeAppSupport();
 
 nsresult NS_NewToolkitProfileService(nsIToolkitProfileService** aResult);
 
@@ -98,14 +113,17 @@ void OverrideDefaultLocaleIfNeeded();
 void MozExpectedExit();
 
 #ifdef XP_WIN
-void UseParentConsole();
 
 BOOL WinLaunchChild(const wchar_t* exePath, int argc, char** argv,
                     HANDLE userToken = nullptr, HANDLE* hProcess = nullptr);
-#endif
 
-#define NS_NATIVEAPPSUPPORT_CONTRACTID \
-  "@mozilla.org/toolkit/native-app-support;1"
+#  define PREF_WIN_REGISTER_APPLICATION_RESTART \
+    "toolkit.winRegisterApplicationRestart"
+
+#  if defined(MOZ_LAUNCHER_PROCESS)
+#    define PREF_WIN_LAUNCHER_PROCESS_ENABLED "browser.launcherProcess.enabled"
+#  endif  // defined(MOZ_LAUNCHER_PROCESS)
+#endif
 
 namespace mozilla {
 namespace startup {
@@ -123,5 +141,16 @@ const char* PlatformBuildID();
  * and the JIT debugger on Windows, and install unix signal handlers.
  */
 void SetupErrorHandling(const char* progname);
+
+#ifdef MOZ_ASAN_REPORTER
+extern "C" {
+void MOZ_EXPORT __sanitizer_set_report_path(const char* path);
+}
+void setASanReporterPath(nsIFile* aDir);
+#endif
+
+#ifdef MOZ_WAYLAND
+bool IsWaylandDisabled();
+#endif
 
 #endif  // nsAppRunner_h__

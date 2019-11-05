@@ -16,18 +16,25 @@ var EXPORTED_SYMBOLS = ["Subprocess"];
 
 /* exported Subprocess */
 
-Cu.importGlobalProperties(["TextEncoder"]);
-
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/subprocess/subprocess_common.jsm");
+const { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
+const { SubprocessConstants } = ChromeUtils.import(
+  "resource://gre/modules/subprocess/subprocess_common.jsm"
+);
 
 if (AppConstants.platform == "win") {
-  ChromeUtils.defineModuleGetter(this, "SubprocessImpl",
-                                 "resource://gre/modules/subprocess/subprocess_win.jsm");
+  ChromeUtils.defineModuleGetter(
+    this,
+    "SubprocessImpl",
+    "resource://gre/modules/subprocess/subprocess_win.jsm"
+  );
 } else {
-  ChromeUtils.defineModuleGetter(this, "SubprocessImpl",
-                                 "resource://gre/modules/subprocess/subprocess_unix.jsm");
+  ChromeUtils.defineModuleGetter(
+    this,
+    "SubprocessImpl",
+    "resource://gre/modules/subprocess/subprocess_unix.jsm"
+  );
 }
 
 function encodeEnvVar(name, value) {
@@ -55,7 +62,7 @@ var Subprocess = {
    * An object describing the process to launch.
    *
    * @param {string} options.command
-   * The full path of the execuable to launch. Relative paths are not
+   * The full path of the executable to launch. Relative paths are not
    * accepted, and `$PATH` is not searched.
    *
    * If a path search is necessary, the {@link Subprocess.pathSearch} method may
@@ -115,14 +122,21 @@ var Subprocess = {
       Object.assign(environment, options.environment);
     }
 
-    options.environment = Object.entries(environment)
-                                .map(([key, val]) => encodeEnvVar(key, val));
+    options.environment = Object.entries(environment).map(([key, val]) =>
+      encodeEnvVar(key, val)
+    );
 
     options.arguments = Array.from(options.arguments || []);
 
-    return Promise.resolve(SubprocessImpl.isExecutableFile(options.command)).then(isExecutable => {
+    return Promise.resolve(
+      SubprocessImpl.isExecutableFile(options.command)
+    ).then(isExecutable => {
       if (!isExecutable) {
-        let error = new Error(`File at path "${options.command}" does not exist, or is not executable`);
+        let error = new Error(
+          `File at path "${
+            options.command
+          }" does not exist, or is not executable`
+        );
         error.errorCode = SubprocessConstants.ERROR_BAD_EXECUTABLE;
         throw error;
       }

@@ -41,7 +41,7 @@ HandlerProvider::HandlerProvider(REFIID aIid,
     : mRefCnt(0),
       mMutex("mozilla::a11y::HandlerProvider::mMutex"),
       mTargetUnkIid(aIid),
-      mTargetUnk(Move(aTarget)) {}
+      mTargetUnk(std::move(aTarget)) {}
 
 HRESULT
 HandlerProvider::QueryInterface(REFIID riid, void** ppv) {
@@ -135,8 +135,8 @@ HandlerProvider::GetHandlerPayloadSize(
   MOZ_ASSERT(mscom::IsCurrentThreadMTA());
 
   if (!IsTargetInterfaceCacheable()) {
-    *aOutPayloadSize = mscom::StructToStream::GetEmptySize();
-    return S_OK;
+    // No handler, so no payload for this instance.
+    return E_NOTIMPL;
   }
 
   MutexAutoLock lock(mMutex);
@@ -229,7 +229,7 @@ void HandlerProvider::BuildDynamicIA2Data(DynamicIA2Data* aOutIA2Data) {
 
   auto hasFailed = [&hr]() -> bool { return FAILED(hr); };
 
-  auto cleanup = [this, aOutIA2Data]() -> void {
+  auto cleanup = [aOutIA2Data]() -> void {
     CleanupDynamicIA2Data(*aOutIA2Data);
   };
 
@@ -378,6 +378,11 @@ bool HandlerProvider::IsTargetInterfaceCacheable() {
 HRESULT
 HandlerProvider::WriteHandlerPayload(NotNull<mscom::IInterceptor*> aInterceptor,
                                      NotNull<IStream*> aStream) {
+  if (!IsTargetInterfaceCacheable()) {
+    // No handler, so no payload for this instance.
+    return E_NOTIMPL;
+  }
+
   MutexAutoLock lock(mMutex);
 
   if (!mSerializer || !(*mSerializer)) {
@@ -435,6 +440,13 @@ HandlerProvider::GetEffectiveOutParamIid(REFIID aCallIid, ULONG aCallMethod) {
     return NEWEST_IA2_IID;
   }
 
+  // IAccessible::get_accSelection
+  if ((aCallIid == IID_IAccessible || aCallIid == IID_IAccessible2 ||
+       aCallIid == IID_IAccessible2_2 || aCallIid == IID_IAccessible2_3) &&
+      aCallMethod == 19) {
+    return IID_IEnumVARIANT;
+  }
+
   MOZ_ASSERT(false);
   return IID_IUnknown;
 }
@@ -443,7 +455,8 @@ HRESULT
 HandlerProvider::NewInstance(
     REFIID aIid, mscom::InterceptorTargetPtr<IUnknown> aTarget,
     NotNull<mscom::IHandlerProvider**> aOutNewPayload) {
-  RefPtr<IHandlerProvider> newPayload(new HandlerProvider(aIid, Move(aTarget)));
+  RefPtr<IHandlerProvider> newPayload(
+      new HandlerProvider(aIid, std::move(aTarget)));
   newPayload.forget(aOutNewPayload.get());
   return S_OK;
 }
@@ -455,7 +468,8 @@ void HandlerProvider::SetHandlerControlOnMainThread(
   auto content = dom::ContentChild::GetSingleton();
   MOZ_ASSERT(content);
 
-  IHandlerControlHolder holder(CreateHolderFromHandlerControl(Move(aCtrl)));
+  IHandlerControlHolder holder(
+      CreateHolderFromHandlerControl(std::move(aCtrl)));
   Unused << content->SendA11yHandlerControl(aPid, holder);
 }
 
@@ -472,7 +486,7 @@ HandlerProvider::put_HandlerControl(long aPid, IHandlerControl* aCtrl) {
   if (!mscom::InvokeOnMainThread(
           "HandlerProvider::SetHandlerControlOnMainThread", this,
           &HandlerProvider::SetHandlerControlOnMainThread,
-          static_cast<DWORD>(aPid), Move(ptrProxy))) {
+          static_cast<DWORD>(aPid), std::move(ptrProxy))) {
     return E_FAIL;
   }
 
@@ -512,7 +526,7 @@ HRESULT HandlerProvider::ToWrappedObject(Interface** aObj) {
   RefPtr<HandlerProvider> hprov = new HandlerProvider(
       __uuidof(Interface), mscom::ToInterceptorTargetPtr(inObj));
   HRESULT hr =
-      mscom::MainThreadHandoff::WrapInterface(Move(inObj), hprov, aObj);
+      mscom::MainThreadHandoff::WrapInterface(std::move(inObj), hprov, aObj);
   if (FAILED(hr)) {
     *aObj = nullptr;
   }
@@ -645,7 +659,7 @@ void HandlerProvider::GetRelationsInfoMainThread(IARelationData** aRelations,
     return;
   }
 
-  auto rawRels = MakeUnique<IAccessibleRelation* []>(*aNRelations);
+  auto rawRels = MakeUnique<IAccessibleRelation*[]>(*aNRelations);
   *hr = acc->get_relations(*aNRelations, rawRels.get(), aNRelations);
   if (FAILED(*hr)) {
     return;

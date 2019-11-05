@@ -6,6 +6,7 @@
 
 /* rendering object for HTML <br> elements */
 
+#include "mozilla/PresShell.h"
 #include "gfxContext.h"
 #include "nsCOMPtr.h"
 #include "nsContainerFrame.h"
@@ -29,8 +30,8 @@ class BRFrame final : public nsFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(BRFrame)
 
-  friend nsIFrame* ::NS_NewBRFrame(nsIPresShell* aPresShell,
-                                   nsStyleContext* aContext);
+  friend nsIFrame* ::NS_NewBRFrame(mozilla::PresShell* aPresShell,
+                                   ComputedStyle* aStyle);
 
   ContentOffsets CalcContentOffsetsFromFramePoint(
       const nsPoint& aPoint) override;
@@ -41,11 +42,9 @@ class BRFrame final : public nsFrame {
       bool aForward, int32_t* aOffset,
       PeekOffsetCharacterOptions aOptions =
           PeekOffsetCharacterOptions()) override;
-  virtual FrameSearchResult PeekOffsetWord(bool aForward,
-                                           bool aWordSelectEatSpace,
-                                           bool aIsKeyboardSelect,
-                                           int32_t* aOffset,
-                                           PeekWordState* aState) override;
+  virtual FrameSearchResult PeekOffsetWord(
+      bool aForward, bool aWordSelectEatSpace, bool aIsKeyboardSelect,
+      int32_t* aOffset, PeekWordState* aState, bool aTrimSpaces) override;
 
   virtual void Reflow(nsPresContext* aPresContext, ReflowOutput& aDesiredSize,
                       const ReflowInput& aReflowInput,
@@ -69,8 +68,9 @@ class BRFrame final : public nsFrame {
 #endif
 
  protected:
-  explicit BRFrame(nsStyleContext* aContext)
-      : nsFrame(aContext, kClassID), mAscent(NS_INTRINSIC_WIDTH_UNKNOWN) {}
+  explicit BRFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsFrame(aStyle, aPresContext, kClassID),
+        mAscent(NS_INTRINSIC_ISIZE_UNKNOWN) {}
 
   virtual ~BRFrame();
 
@@ -79,8 +79,8 @@ class BRFrame final : public nsFrame {
 
 }  // namespace mozilla
 
-nsIFrame* NS_NewBRFrame(nsIPresShell* aPresShell, nsStyleContext* aContext) {
-  return new (aPresShell) BRFrame(aContext);
+nsIFrame* NS_NewBRFrame(mozilla::PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell) BRFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(BRFrame)
@@ -109,7 +109,7 @@ void BRFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
   // own, because we may have custom "display" value that makes our
   // ShouldSuppressLineBreak() return false.
   nsLineLayout* ll = aReflowInput.mLineLayout;
-  if (ll && !GetParent()->StyleContext()->ShouldSuppressLineBreak()) {
+  if (ll && !GetParent()->Style()->ShouldSuppressLineBreak()) {
     // Note that the compatibility mode check excludes AlmostStandards
     // mode, since this is the inline box model.  See bug 161691.
     if (ll->LineIsEmpty() ||
@@ -150,7 +150,7 @@ void BRFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
     }
 
     // Return our reflow status
-    StyleClear breakType = aReflowInput.mStyleDisplay->PhysicalBreakType(wm);
+    StyleClear breakType = aReflowInput.mStyleDisplay->mBreakType;
     if (StyleClear::None == breakType) {
       breakType = StyleClear::Line;
     }
@@ -167,31 +167,35 @@ void BRFrame::Reflow(nsPresContext* aPresContext, ReflowOutput& aMetrics,
   NS_FRAME_SET_TRUNCATION(aStatus, aReflowInput, aMetrics);
 }
 
-/* virtual */ void BRFrame::AddInlineMinISize(
-    gfxContext* aRenderingContext, nsIFrame::InlineMinISizeData* aData) {
-  if (!GetParent()->StyleContext()->ShouldSuppressLineBreak()) {
+/* virtual */
+void BRFrame::AddInlineMinISize(gfxContext* aRenderingContext,
+                                nsIFrame::InlineMinISizeData* aData) {
+  if (!GetParent()->Style()->ShouldSuppressLineBreak()) {
     aData->ForceBreak();
   }
 }
 
-/* virtual */ void BRFrame::AddInlinePrefISize(
-    gfxContext* aRenderingContext, nsIFrame::InlinePrefISizeData* aData) {
-  if (!GetParent()->StyleContext()->ShouldSuppressLineBreak()) {
+/* virtual */
+void BRFrame::AddInlinePrefISize(gfxContext* aRenderingContext,
+                                 nsIFrame::InlinePrefISizeData* aData) {
+  if (!GetParent()->Style()->ShouldSuppressLineBreak()) {
     // Match the 1 appunit width assigned in the Reflow method above
     aData->mCurrentLine += 1;
     aData->ForceBreak();
   }
 }
 
-/* virtual */ nscoord BRFrame::GetMinISize(gfxContext* aRenderingContext) {
+/* virtual */
+nscoord BRFrame::GetMinISize(gfxContext* aRenderingContext) {
   nscoord result = 0;
-  DISPLAY_MIN_WIDTH(this, result);
+  DISPLAY_MIN_INLINE_SIZE(this, result);
   return result;
 }
 
-/* virtual */ nscoord BRFrame::GetPrefISize(gfxContext* aRenderingContext) {
+/* virtual */
+nscoord BRFrame::GetPrefISize(gfxContext* aRenderingContext) {
   nscoord result = 0;
-  DISPLAY_PREF_WIDTH(this, result);
+  DISPLAY_PREF_INLINE_SIZE(this, result);
   return result;
 }
 
@@ -233,11 +237,9 @@ nsIFrame::FrameSearchResult BRFrame::PeekOffsetCharacter(
   return CONTINUE;
 }
 
-nsIFrame::FrameSearchResult BRFrame::PeekOffsetWord(bool aForward,
-                                                    bool aWordSelectEatSpace,
-                                                    bool aIsKeyboardSelect,
-                                                    int32_t* aOffset,
-                                                    PeekWordState* aState) {
+nsIFrame::FrameSearchResult BRFrame::PeekOffsetWord(
+    bool aForward, bool aWordSelectEatSpace, bool aIsKeyboardSelect,
+    int32_t* aOffset, PeekWordState* aState, bool aTrimSpaces) {
   NS_ASSERTION(aOffset && *aOffset <= 1, "aOffset out of range");
   // Keep going. The actual line jumping will stop us.
   return CONTINUE;

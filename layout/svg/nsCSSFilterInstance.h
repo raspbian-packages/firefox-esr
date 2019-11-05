@@ -26,7 +26,6 @@ class nsCSSFilterInstance {
   typedef mozilla::gfx::Color Color;
   typedef mozilla::gfx::FilterPrimitiveDescription FilterPrimitiveDescription;
   typedef mozilla::gfx::IntPoint IntPoint;
-  typedef mozilla::gfx::PrimitiveType PrimitiveType;
   typedef mozilla::gfx::Size Size;
 
  public:
@@ -68,7 +67,6 @@ class nsCSSFilterInstance {
    * See the comment above BuildPrimitives for the meaning of aInputIsTainted.
    */
   FilterPrimitiveDescription CreatePrimitiveDescription(
-      PrimitiveType aType,
       const nsTArray<FilterPrimitiveDescription>& aPrimitiveDescrs,
       bool aInputIsTainted);
 

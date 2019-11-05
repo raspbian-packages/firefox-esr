@@ -12,7 +12,7 @@
 #include "SVGMotionSMILAnimationFunction.h"
 
 nsresult NS_NewSVGAnimateMotionElement(
-    nsIContent **aResult, already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo);
+    nsIContent** aResult, already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
 namespace mozilla {
 namespace dom {
@@ -20,28 +20,27 @@ namespace dom {
 class SVGAnimateMotionElement final : public SVGAnimationElement {
  protected:
   explicit SVGAnimateMotionElement(
-      already_AddRefed<mozilla::dom::NodeInfo> &aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   SVGMotionSMILAnimationFunction mAnimationFunction;
   friend nsresult(::NS_NewSVGAnimateMotionElement(
-      nsIContent **aResult,
-      already_AddRefed<mozilla::dom::NodeInfo> &&aNodeInfo));
+      nsIContent** aResult,
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
 
-  virtual JSObject *WrapNode(JSContext *aCx,
-                             JS::Handle<JSObject *> aGivenProto) override;
+  virtual JSObject* WrapNode(JSContext* aCx,
+                             JS::Handle<JSObject*> aGivenProto) override;
 
  public:
-  // nsIDOMNode specializations
-  virtual nsresult Clone(mozilla::dom::NodeInfo *aNodeInfo, nsINode **aResult,
-                         bool aPreallocateChildren) const override;
+  // nsINode specializations
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // SVGAnimationElement
-  virtual nsSMILAnimationFunction &AnimationFunction() override;
-  virtual bool GetTargetAttributeName(int32_t *aNamespaceID,
-                                      nsAtom **aLocalName) const override;
+  virtual SMILAnimationFunction& AnimationFunction() override;
+  virtual bool GetTargetAttributeName(int32_t* aNamespaceID,
+                                      nsAtom** aLocalName) const override;
 
-  // nsSVGElement
-  virtual nsAtom *GetPathDataAttrName() const override {
+  // SVGElement
+  virtual nsStaticAtom* GetPathDataAttrName() const override {
     return nsGkAtoms::path;
   }
 

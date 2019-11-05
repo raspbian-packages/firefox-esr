@@ -9,7 +9,6 @@
 #include "xpcprivate.h"
 #include "XPCWrapper.h"
 #include "WrapperFactory.h"
-#include "nsDOMClassInfo.h"
 #include "nsWrapperCacheInlines.h"
 #include "mozilla/dom/BindingUtils.h"
 
@@ -67,9 +66,51 @@ struct SetDOMProxyInformation {
 
 SetDOMProxyInformation gSetDOMProxyInformation;
 
+static inline void CheckExpandoObject(JSObject* proxy,
+                                      const JS::Value& expando) {
+#ifdef DEBUG
+  JSObject* obj = &expando.toObject();
+  MOZ_ASSERT(!js::gc::EdgeNeedsSweepUnbarriered(&obj));
+  MOZ_ASSERT(js::GetObjectCompartment(proxy) == js::GetObjectCompartment(obj));
+
+  // When we create an expando object in EnsureExpandoObject below, we preserve
+  // the wrapper. The wrapper is released when the object is unlinked, but we
+  // should never call these functions after that point.
+  nsISupports* native = UnwrapDOMObject<nsISupports>(proxy);
+  nsWrapperCache* cache;
+  // QueryInterface to nsWrapperCache will not GC.
+  JS::AutoSuppressGCAnalysis suppress;
+  CallQueryInterface(native, &cache);
+  MOZ_ASSERT(cache->PreservingWrapper());
+#endif
+}
+
+static inline void CheckExpandoAndGeneration(
+    JSObject* proxy, js::ExpandoAndGeneration* expandoAndGeneration) {
+#ifdef DEBUG
+  JS::Value value = expandoAndGeneration->expando;
+  if (!value.isUndefined()) CheckExpandoObject(proxy, value);
+#endif
+}
+
+static inline void CheckDOMProxy(JSObject* proxy) {
+#ifdef DEBUG
+  MOZ_ASSERT(IsDOMProxy(proxy), "expected a DOM proxy object");
+  MOZ_ASSERT(!js::gc::EdgeNeedsSweepUnbarriered(&proxy));
+  nsISupports* native = UnwrapDOMObject<nsISupports>(proxy);
+  nsWrapperCache* cache;
+  // QI to nsWrapperCache cannot GC for very non-obvious reasons; see
+  // https://searchfox.org/mozilla-central/rev/55da592d85c2baf8d8818010c41d9738c97013d2/js/xpconnect/src/XPCWrappedJSClass.cpp#521,545-548
+  JS::AutoSuppressGCAnalysis nogc;
+  CallQueryInterface(native, &cache);
+  MOZ_ASSERT(cache->GetWrapperPreserveColor() == proxy);
+#endif
+}
+
 // static
 JSObject* DOMProxyHandler::GetAndClearExpandoObject(JSObject* obj) {
-  MOZ_ASSERT(IsDOMProxy(obj), "expected a DOM proxy object");
+  CheckDOMProxy(obj);
+
   JS::Value v = js::GetProxyPrivate(obj);
   if (v.isUndefined()) {
     return nullptr;
@@ -84,21 +125,10 @@ JSObject* DOMProxyHandler::GetAndClearExpandoObject(JSObject* obj) {
     if (v.isUndefined()) {
       return nullptr;
     }
-    // We have to expose v to active JS here.  The reason for that is that we
-    // might be in the middle of a GC right now.  If our proxy hasn't been
-    // traced yet, when it _does_ get traced it won't trace the expando, since
-    // we're breaking that link.  But the Rooted we're presumably being placed
-    // into is also not going to trace us, because Rooted marking is done at
-    // the very beginning of the GC.  In that situation, we need to manually
-    // mark the expando as live here.  JS::ExposeValueToActiveJS will do just
-    // that for us.
-    //
-    // We don't need to do this in the non-expandoAndGeneration case, because
-    // in that case our value is stored in a slot and slots will already mark
-    // the old thing live when the value in the slot changes.
-    JS::ExposeValueToActiveJS(v);
     expandoAndGeneration->expando = UndefinedValue();
   }
+
+  CheckExpandoObject(obj, v);
 
   return &v.toObject();
 }
@@ -106,9 +136,11 @@ JSObject* DOMProxyHandler::GetAndClearExpandoObject(JSObject* obj) {
 // static
 JSObject* DOMProxyHandler::EnsureExpandoObject(JSContext* cx,
                                                JS::Handle<JSObject*> obj) {
-  NS_ASSERTION(IsDOMProxy(obj), "expected a DOM proxy object");
+  CheckDOMProxy(obj);
+
   JS::Value v = js::GetProxyPrivate(obj);
   if (v.isObject()) {
+    CheckExpandoObject(obj, v);
     return &v.toObject();
   }
 
@@ -116,6 +148,7 @@ JSObject* DOMProxyHandler::EnsureExpandoObject(JSContext* cx,
   if (!v.isUndefined()) {
     expandoAndGeneration =
         static_cast<js::ExpandoAndGeneration*>(v.toPrivate());
+    CheckExpandoAndGeneration(obj, expandoAndGeneration);
     if (expandoAndGeneration->expando.isObject()) {
       return &expandoAndGeneration->expando.toObject();
     }
@@ -222,9 +255,9 @@ bool DOMProxyHandler::delete_(JSContext* cx, JS::Handle<JSObject*> proxy,
   return result.succeed();
 }
 
-bool BaseDOMProxyHandler::ownPropertyKeys(JSContext* cx,
-                                          JS::Handle<JSObject*> proxy,
-                                          JS::AutoIdVector& props) const {
+bool BaseDOMProxyHandler::ownPropertyKeys(
+    JSContext* cx, JS::Handle<JSObject*> proxy,
+    JS::MutableHandleVector<jsid> props) const {
   return ownPropNames(cx, proxy,
                       JSITER_OWNONLY | JSITER_HIDDEN | JSITER_SYMBOLS, props);
 }
@@ -238,7 +271,8 @@ bool BaseDOMProxyHandler::getPrototypeIfOrdinary(
 }
 
 bool BaseDOMProxyHandler::getOwnEnumerablePropertyKeys(
-    JSContext* cx, JS::Handle<JSObject*> proxy, JS::AutoIdVector& props) const {
+    JSContext* cx, JS::Handle<JSObject*> proxy,
+    JS::MutableHandleVector<jsid> props) const {
   return ownPropNames(cx, proxy, JSITER_OWNONLY, props);
 }
 
@@ -251,9 +285,11 @@ bool DOMProxyHandler::setCustom(JSContext* cx, JS::Handle<JSObject*> proxy,
 
 // static
 JSObject* DOMProxyHandler::GetExpandoObject(JSObject* obj) {
-  MOZ_ASSERT(IsDOMProxy(obj), "expected a DOM proxy object");
+  CheckDOMProxy(obj);
+
   JS::Value v = js::GetProxyPrivate(obj);
   if (v.isObject()) {
+    CheckExpandoObject(obj, v);
     return &v.toObject();
   }
 
@@ -263,6 +299,8 @@ JSObject* DOMProxyHandler::GetExpandoObject(JSObject* obj) {
 
   js::ExpandoAndGeneration* expandoAndGeneration =
       static_cast<js::ExpandoAndGeneration*>(v.toPrivate());
+  CheckExpandoAndGeneration(obj, expandoAndGeneration);
+
   v = expandoAndGeneration->expando;
   return v.isUndefined() ? nullptr : &v.toObject();
 }

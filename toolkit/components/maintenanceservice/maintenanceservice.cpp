@@ -29,9 +29,9 @@ bool gServiceControlStopping = false;
 // logs are pretty small, about 20 lines, so 10 seems reasonable.
 #define LOGS_TO_KEEP 10
 
-BOOL GetLogDirectoryPath(WCHAR *path);
+BOOL GetLogDirectoryPath(WCHAR* path);
 
-int wmain(int argc, WCHAR **argv) {
+int wmain(int argc, WCHAR** argv) {
   // If command-line parameter is "install", install the service
   // or upgrade if already installed
   // If command line parameter is "forceinstall", install the service
@@ -106,7 +106,9 @@ int wmain(int argc, WCHAR **argv) {
   }
 
   SERVICE_TABLE_ENTRYW DispatchTable[] = {
-      {SVC_NAME, (LPSERVICE_MAIN_FUNCTIONW)SvcMain}, {nullptr, nullptr}};
+      {const_cast<LPWSTR>(SVC_NAME),
+       (LPSERVICE_MAIN_FUNCTIONW)SvcMain},  // -Wwritable-strings
+      {nullptr, nullptr}};
 
   // This call returns when the service has stopped.
   // The process should simply terminate when the call returns.
@@ -123,7 +125,7 @@ int wmain(int argc, WCHAR **argv) {
  * @param  path The out buffer for the backup log path of size MAX_PATH + 1
  * @return TRUE if successful.
  */
-BOOL GetLogDirectoryPath(WCHAR *path) {
+BOOL GetLogDirectoryPath(WCHAR* path) {
   if (!GetModuleFileNameW(nullptr, path, MAX_PATH)) {
     return FALSE;
   }
@@ -222,7 +224,7 @@ void StartTerminationThread() {
 /**
  * Main entry point when running as a service.
  */
-void WINAPI SvcMain(DWORD argc, LPWSTR *argv) {
+void WINAPI SvcMain(DWORD argc, LPWSTR* argv) {
   // Setup logging, and backup the old logs
   WCHAR updatePath[MAX_PATH + 1];
   if (GetLogDirectoryPath(updatePath)) {
@@ -266,7 +268,7 @@ void WINAPI SvcMain(DWORD argc, LPWSTR *argv) {
   // The service command was executed, stop logging and set an event
   // to indicate the work is done in case someone is waiting on a
   // service stop operation.
-  ExecuteServiceCommand(argc, argv);
+  BOOL success = ExecuteServiceCommand(argc, argv);
   LogFinish();
 
   SetEvent(gWorkDoneEvent);
@@ -275,7 +277,7 @@ void WINAPI SvcMain(DWORD argc, LPWSTR *argv) {
   // now.  If we are already in a stopping state then the SERVICE_STOPPED state
   // will be set by the SvcCtrlHandler.
   if (!gServiceControlStopping) {
-    ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
+    ReportSvcStatus(SERVICE_STOPPED, success ? NO_ERROR : 1, 0);
     StartTerminationThread();
   }
 }

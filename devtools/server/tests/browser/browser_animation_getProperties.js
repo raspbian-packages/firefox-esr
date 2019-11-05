@@ -9,28 +9,31 @@
 
 const URL = MAIN_DOMAIN + "animation.html";
 
-add_task(async function () {
-  let {client, walker, animations} = await initAnimationsFrontForUrl(URL);
+add_task(async function() {
+  const { target, walker, animations } = await initAnimationsFrontForUrl(URL);
 
   info("Get the test node and its animation front");
-  let node = await walker.querySelector(walker.rootNode, ".simple-animation");
-  let [player] = await animations.getAnimationPlayersForNode(node);
+  const node = await walker.querySelector(walker.rootNode, ".simple-animation");
+  const [player] = await animations.getAnimationPlayersForNode(node);
 
   ok(player.getProperties, "The front has the getProperties method");
 
-  let properties = await player.getProperties();
+  const properties = await player.getProperties();
   is(properties.length, 1, "The correct number of properties was retrieved");
 
-  let propertyObject = properties[0];
+  const propertyObject = properties[0];
   is(propertyObject.name, "transform", "Property 0 is transform");
 
-  is(propertyObject.values.length, 2,
-    "The correct number of property values was retrieved");
+  is(
+    propertyObject.values.length,
+    2,
+    "The correct number of property values was retrieved"
+  );
 
   // Note that we don't really test the content of the frame object here on
   // purpose. This object comes straight out of the web animations API
   // unmodified.
 
-  await client.close();
+  await target.destroy();
   gBrowser.removeCurrentTab();
 });

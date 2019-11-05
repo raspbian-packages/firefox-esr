@@ -22,8 +22,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-/* static */ already_AddRefed<FileSystem> FileSystem::Create(
-    nsIGlobalObject* aGlobalObject)
+/* static */
+already_AddRefed<FileSystem> FileSystem::Create(nsIGlobalObject* aGlobalObject)
 
 {
   MOZ_ASSERT(aGlobalObject);
@@ -56,7 +56,7 @@ FileSystem::~FileSystem() {}
 
 JSObject* FileSystem::WrapObject(JSContext* aCx,
                                  JS::Handle<JSObject*> aGivenProto) {
-  return FileSystemBinding::Wrap(aCx, this, aGivenProto);
+  return FileSystem_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void FileSystem::CreateRoot(const Sequence<RefPtr<FileSystemEntry>>& aEntries) {

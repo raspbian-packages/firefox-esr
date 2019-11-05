@@ -7,14 +7,16 @@
 
 const { censusState, viewState } = require("devtools/client/memory/constants");
 const { toggleDiffing } = require("devtools/client/memory/actions/diffing");
-const { takeSnapshotAndCensus } = require("devtools/client/memory/actions/snapshot");
+const {
+  takeSnapshotAndCensus,
+} = require("devtools/client/memory/actions/snapshot");
 const { changeView } = require("devtools/client/memory/actions/view");
 
-add_task(function* () {
-  let front = new StubbedMemoryFront();
-  let heapWorker = new HeapAnalysesClient();
-  yield front.attach();
-  let store = Store();
+add_task(async function() {
+  const front = new StubbedMemoryFront();
+  const heapWorker = new HeapAnalysesClient();
+  await front.attach();
+  const store = Store();
   const { getState, dispatch } = store;
 
   dispatch(changeView(viewState.CENSUS));
@@ -24,20 +26,27 @@ add_task(function* () {
   dispatch(takeSnapshotAndCensus(front, heapWorker));
   dispatch(takeSnapshotAndCensus(front, heapWorker));
   dispatch(takeSnapshotAndCensus(front, heapWorker));
-  yield waitUntilCensusState(store, s => s.census,
-    [censusState.SAVED, censusState.SAVED, censusState.SAVED]);
+  await waitUntilCensusState(store, s => s.census, [
+    censusState.SAVED,
+    censusState.SAVED,
+    censusState.SAVED,
+  ]);
 
-  ok(getState().snapshots.some(s => s.selected),
-     "One of the new snapshots is selected");
+  ok(
+    getState().snapshots.some(s => s.selected),
+    "One of the new snapshots is selected"
+  );
 
   dispatch(toggleDiffing());
   ok(getState().diffing, "now diffing after toggling");
 
-  for (let s of getState().snapshots) {
-    ok(!s.selected,
-       "No snapshot should be selected after entering diffing mode");
+  for (const s of getState().snapshots) {
+    ok(
+      !s.selected,
+      "No snapshot should be selected after entering diffing mode"
+    );
   }
 
   heapWorker.destroy();
-  yield front.detach();
+  await front.detach();
 });

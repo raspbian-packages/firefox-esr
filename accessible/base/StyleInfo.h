@@ -8,9 +8,12 @@
 #define _mozilla_a11y_style_h_
 
 #include "mozilla/gfx/Types.h"
-#include "nsStyleContext.h"
+#include "mozilla/ComputedStyle.h"
 
 namespace mozilla {
+namespace dom {
+class Element;
+}  // namespace dom
 namespace a11y {
 
 class StyleInfo {
@@ -27,8 +30,6 @@ class StyleInfo {
   void MarginBottom(nsAString& aValue) { Margin(eSideBottom, aValue); }
 
   static void FormatColor(const nscolor& aValue, nsString& aFormattedValue);
-  static void FormatFontStyle(const nscoord& aValue,
-                              nsAString& aFormattedValue);
   static void FormatTextDecorationStyle(uint8_t aValue,
                                         nsAString& aFormattedValue);
 
@@ -40,7 +41,7 @@ class StyleInfo {
   void Margin(Side aSide, nsAString& aValue);
 
   dom::Element* mElement;
-  RefPtr<nsStyleContext> mStyleContext;
+  RefPtr<ComputedStyle> mComputedStyle;
 };
 
 }  // namespace a11y

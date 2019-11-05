@@ -12,34 +12,45 @@
 namespace mozilla {
 namespace dom {
 
+class PaymentRequest;
+
 class PaymentRequestChild final : public PPaymentRequestChild {
-  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(PaymentRequestChild);
+  friend class PPaymentRequestChild;
 
  public:
-  PaymentRequestChild();
+  explicit PaymentRequestChild(PaymentRequest* aRequest);
 
-  void MaybeDelete();
+  void MaybeDelete(bool aCanBeInManager);
 
   nsresult RequestPayment(const IPCPaymentActionRequest& aAction);
 
  protected:
   mozilla::ipc::IPCResult RecvRespondPayment(
-      const IPCPaymentActionResponse& aResponse) override;
+      const IPCPaymentActionResponse& aResponse);
 
   mozilla::ipc::IPCResult RecvChangeShippingAddress(
-      const nsString& aRequestId, const IPCPaymentAddress& aAddress) override;
+      const nsString& aRequestId, const IPCPaymentAddress& aAddress);
 
-  mozilla::ipc::IPCResult RecvChangeShippingOption(
-      const nsString& aRequestId, const nsString& aOption) override;
+  mozilla::ipc::IPCResult RecvChangeShippingOption(const nsString& aRequestId,
+                                                   const nsString& aOption);
+
+  mozilla::ipc::IPCResult RecvChangePayerDetail(const nsString& aRequestId,
+                                                const nsString& aPayerName,
+                                                const nsString& aPayerEmail,
+                                                const nsString& aPayerPhone);
+
+  mozilla::ipc::IPCResult RecvChangePaymentMethod(
+      const nsString& aRequestId, const nsString& aMethodName,
+      const IPCMethodChangeDetails& aMethodDetails);
 
   void ActorDestroy(ActorDestroyReason aWhy) override;
 
  private:
   ~PaymentRequestChild() = default;
 
-  bool SendRequestPayment(const IPCPaymentActionRequest& aAction);
+  void DetachFromRequest(bool aCanBeInManager);
 
-  bool mActorAlive;
+  PaymentRequest* MOZ_NON_OWNING_REF mRequest;
 };
 
 }  // end of namespace dom

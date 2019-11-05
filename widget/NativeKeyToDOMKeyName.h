@@ -25,63 +25,61 @@
 #define KEY_MAP_COCOA(aCPPKeyName, aNativeKey)
 // GTK
 #define KEY_MAP_GTK(aCPPKeyName, aNativeKey)
-// Android and B2G
-#define KEY_MAP_ANDROID(aCPPKeyName, aNativeKey)
 // Only for Android
-#define KEY_MAP_ANDROID_EXCEPT_B2G(aCPPKeyName, aNativeKey)
-// Only for B2G
-#define KEY_MAP_B2G(aCPPKeyName, aNativeKey)
+#define KEY_MAP_ANDROID(aCPPKeyName, aNativeKey)
 
 #if defined(XP_WIN)
-#if defined(NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
+#  if defined(NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
 // KEY_MAP_WIN() defines the mapping not depending on keyboard layout.
-#undef KEY_MAP_WIN
-#define KEY_MAP_WIN(aCPPKeyName, aNativeKey) \
-  NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, KEY_NAME_INDEX_##aCPPKeyName)
-#elif defined(NS_JAPANESE_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
+#    undef KEY_MAP_WIN
+#    define KEY_MAP_WIN(aCPPKeyName, aNativeKey)      \
+      NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
+                                          KEY_NAME_INDEX_##aCPPKeyName)
+#  elif defined(NS_JAPANESE_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
 // KEY_MAP_WIN_JPN() defines the mapping which is valid only with Japanese
 // keyboard layout.
-#undef KEY_MAP_WIN_JPN
-#define KEY_MAP_WIN_JPN(aCPPKeyName, aNativeKey)           \
-  NS_JAPANESE_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
-                                               KEY_NAME_INDEX_##aCPPKeyName)
-#elif defined(NS_KOREAN_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
+#    undef KEY_MAP_WIN_JPN
+#    define KEY_MAP_WIN_JPN(aCPPKeyName, aNativeKey) \
+      NS_JAPANESE_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(  \
+          aNativeKey, KEY_NAME_INDEX_##aCPPKeyName)
+#  elif defined(NS_KOREAN_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
 // KEY_MAP_WIN_KOR() defines the mapping which is valid only with Korean
 // keyboard layout.
-#undef KEY_MAP_WIN_KOR
-#define KEY_MAP_WIN_KOR(aCPPKeyName, aNativeKey)         \
-  NS_KOREAN_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
-                                             KEY_NAME_INDEX_##aCPPKeyName)
-#elif defined(NS_OTHER_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
+#    undef KEY_MAP_WIN_KOR
+#    define KEY_MAP_WIN_KOR(aCPPKeyName, aNativeKey)         \
+      NS_KOREAN_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
+                                                 KEY_NAME_INDEX_##aCPPKeyName)
+#  elif defined(NS_OTHER_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX)
 // KEY_MAP_WIN_OTH() defines the mapping which is valid with neither
 // Japanese keyboard layout nor Korean keyboard layout.
-#undef KEY_MAP_WIN_OTH
-#define KEY_MAP_WIN_OTH(aCPPKeyName, aNativeKey)        \
-  NS_OTHER_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
-                                            KEY_NAME_INDEX_##aCPPKeyName)
-#elif defined(NS_APPCOMMAND_TO_DOM_KEY_NAME_INDEX)
+#    undef KEY_MAP_WIN_OTH
+#    define KEY_MAP_WIN_OTH(aCPPKeyName, aNativeKey)        \
+      NS_OTHER_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
+                                                KEY_NAME_INDEX_##aCPPKeyName)
+#  elif defined(NS_APPCOMMAND_TO_DOM_KEY_NAME_INDEX)
 // KEY_MAP_WIN_CMD() defines the mapping from APPCOMMAND_* of WM_APPCOMMAND.
-#undef KEY_MAP_WIN_CMD
-#define KEY_MAP_WIN_CMD(aCPPKeyName, aAppCommand) \
-  NS_APPCOMMAND_TO_DOM_KEY_NAME_INDEX(aAppCommand, KEY_NAME_INDEX_##aCPPKeyName)
-#else
-#error Any NS_*_TO_DOM_KEY_NAME_INDEX() is not defined.
-#endif  // #if defined(NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX) ...
+#    undef KEY_MAP_WIN_CMD
+#    define KEY_MAP_WIN_CMD(aCPPKeyName, aAppCommand)  \
+      NS_APPCOMMAND_TO_DOM_KEY_NAME_INDEX(aAppCommand, \
+                                          KEY_NAME_INDEX_##aCPPKeyName)
+#  else
+#    error Any NS_*_TO_DOM_KEY_NAME_INDEX() is not defined.
+#  endif  // #if defined(NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX) ...
 #elif defined(XP_MACOSX)
-#undef KEY_MAP_COCOA
-#define KEY_MAP_COCOA(aCPPKeyName, aNativeKey) \
-  NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, KEY_NAME_INDEX_##aCPPKeyName)
+#  undef KEY_MAP_COCOA
+#  define KEY_MAP_COCOA(aCPPKeyName, aNativeKey)    \
+    NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
+                                        KEY_NAME_INDEX_##aCPPKeyName)
 #elif defined(MOZ_WIDGET_GTK)
-#undef KEY_MAP_GTK
-#define KEY_MAP_GTK(aCPPKeyName, aNativeKey) \
-  NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, KEY_NAME_INDEX_##aCPPKeyName)
+#  undef KEY_MAP_GTK
+#  define KEY_MAP_GTK(aCPPKeyName, aNativeKey)      \
+    NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
+                                        KEY_NAME_INDEX_##aCPPKeyName)
 #elif defined(ANDROID)
-#undef KEY_MAP_ANDROID
-#define KEY_MAP_ANDROID(aCPPKeyName, aNativeKey) \
-  NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, KEY_NAME_INDEX_##aCPPKeyName)
-#undef KEY_MAP_ANDROID_EXCEPT_B2G
-#define KEY_MAP_ANDROID_EXCEPT_B2G(aCPPKeyName, aNativeKey) \
-  NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, KEY_NAME_INDEX_##aCPPKeyName)
+#  undef KEY_MAP_ANDROID
+#  define KEY_MAP_ANDROID(aCPPKeyName, aNativeKey)  \
+    NS_NATIVE_KEY_TO_DOM_KEY_NAME_INDEX(aNativeKey, \
+                                        KEY_NAME_INDEX_##aCPPKeyName)
 #endif
 
 /******************************************************************************
@@ -90,7 +88,8 @@
 // Alt
 KEY_MAP_WIN(Alt, VK_MENU)
 KEY_MAP_WIN(Alt, VK_LMENU)
-KEY_MAP_WIN(Alt, VK_RMENU)
+KEY_MAP_WIN(Alt, VK_RMENU)  // This is ignored if active keyboard layout
+                            // has AltGr.  In such case, AltGraph is mapped.
 KEY_MAP_COCOA(Alt, kVK_Option)
 KEY_MAP_COCOA(Alt, kVK_RightOption)
 KEY_MAP_GTK(Alt, GDK_Alt_L)
@@ -99,7 +98,7 @@ KEY_MAP_ANDROID(Alt, AKEYCODE_ALT_LEFT)
 KEY_MAP_ANDROID(Alt, AKEYCODE_ALT_RIGHT)
 
 // AltGraph
-KEY_MAP_GTK(AltGraph, GDK_Mode_switch /* same as GDK_kana_switch,
+KEY_MAP_GTK     (AltGraph, GDK_Mode_switch /* same as GDK_kana_switch,
                                               GDK_ISO_Group_Shift and
                                               GDK_script_switch */)
 // Let's treat both Level 3 shift and Level 5 shift as AltGr.
@@ -527,6 +526,9 @@ KEY_MAP_ANDROID(NonConvert, AKEYCODE_MUHENKAN)
 
 // PreviousCandidate
 KEY_MAP_GTK(PreviousCandidate, GDK_PreviousCandidate)  // OADG 109, Mae Koho
+
+// Process
+KEY_MAP_WIN(Process, VK_PROCESSKEY)
 
 // SingleCandidate
 KEY_MAP_GTK(SingleCandidate, GDK_SingleCandidate)
@@ -1052,7 +1054,7 @@ KEY_MAP_ANDROID(Call, AKEYCODE_CALL)
 KEY_MAP_ANDROID(Camera, AKEYCODE_CAMERA)
 
 // CameraFocus
-KEY_MAP_ANDROID_EXCEPT_B2G(CameraFocus, AKEYCODE_FOCUS)
+KEY_MAP_ANDROID(CameraFocus, AKEYCODE_FOCUS)
 
 // EndCall
 KEY_MAP_ANDROID(EndCall, AKEYCODE_ENDCALL)
@@ -1061,8 +1063,7 @@ KEY_MAP_ANDROID(EndCall, AKEYCODE_ENDCALL)
 KEY_MAP_ANDROID(GoBack, AKEYCODE_BACK)
 
 // GoHome
-KEY_MAP_ANDROID_EXCEPT_B2G(GoHome, AKEYCODE_HOME)
-KEY_MAP_B2G(HomeScreen, AKEYCODE_HOME)
+KEY_MAP_ANDROID(GoHome, AKEYCODE_HOME)
 
 // HeadsetHook
 KEY_MAP_ANDROID(HeadsetHook, AKEYCODE_HEADSETHOOK)
@@ -1285,5 +1286,3 @@ KEY_MAP_ANDROID(SoftRight, AKEYCODE_SOFT_RIGHT)
 #undef KEY_MAP_COCOA
 #undef KEY_MAP_GTK
 #undef KEY_MAP_ANDROID
-#undef KEY_MAP_ANDROID_EXCEPT_B2G
-#undef KEY_MAP_B2G

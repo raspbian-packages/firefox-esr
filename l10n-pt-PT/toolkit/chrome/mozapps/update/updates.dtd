@@ -20,14 +20,14 @@
 <!ENTITY  unsupported.label               "O seu &brandShortName; está desatualizado, mas a versão mais recente não é
                                            suportada no seu sistema. Por favor atualize o seu sistema e tente novamente.
                                            Não irá voltar a ver este aviso novamente, mas pode obter">
-<!ENTITY  unsupportedLink.label           "mais informações.">
+<!ENTITY  unsupportedLink.label           "saiba mais.">
 
-<!ENTITY  clickHere.label                 "Saber mais informações sobre esta atualização">
+<!ENTITY  clickHere.label                 "Ver mais informação acerca desta atualização">
 
 <!ENTITY  evangelism.desc                 "Recomendamos que aplique esta atualização do &brandShortName; o mais depressa possível.">
 
 <!ENTITY  downloadPage.title              "A transferir o &brandShortName;">
-<!ENTITY  downloading.intro               "A transferir atualização…">
+<!ENTITY  downloading.intro               "A transferir a atualização…">
 <!ENTITY  connecting.label                "A ligar ao servidor de atualizações…">
 <!ENTITY  verificationFailedText.label    "O &brandShortName; não conseguiu verificar a integridade da 
                                            atualização parcial transferida, pelo que está a transferir agora
@@ -46,7 +46,7 @@
                                            e transferindo a versão mais recente da aplicação:">
                                            
 <!ENTITY  errorpatching.intro             "A atualização parcial não pôde ser aplicada. 
-                                           O &brandShortName; vai tentar transferir o pacote de atualização completo.">
+                                           O &brandShortName; irá tentar novamente ao transferir a atualização completa.">
 
 <!ENTITY  genericBackgroundError.label    "O &brandShortName; não consegue determinar se existe uma atualização disponível. Por favor verifique se tem a última versão do &brandShortName; em:">
 
@@ -65,6 +65,3 @@
                                            o &brandShortName; agora, e continuar a trabalhar e reiniciar mais tarde, ou rejeitar esta
                                            atualização.">
 
-<!ENTITY  update.details.label            "Detalhes">
-<!ENTITY  update.installedOn.label        "Instalada em:">
-<!ENTITY  update.status.label             "Estado:">

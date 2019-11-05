@@ -7,8 +7,8 @@
 #ifndef ProfilerParent_h
 #define ProfilerParent_h
 
-#include "mozilla/RefPtr.h"
 #include "mozilla/PProfilerParent.h"
+#include "mozilla/RefPtr.h"
 
 class nsIProfilerStartParams;
 
@@ -35,7 +35,7 @@ class ProfilerParent final : public PProfilerParent {
   static mozilla::ipc::Endpoint<PProfilerChild> CreateForProcess(
       base::ProcessId aOtherPid);
 
-  typedef MozPromise<nsCString, ResponseRejectReason, false>
+  typedef MozPromise<Shmem, ResponseRejectReason, true>
       SingleProcessProfilePromise;
 
   // The following static methods can be called on any thread, but they are
@@ -58,6 +58,7 @@ class ProfilerParent final : public PProfilerParent {
   static void ProfilerStopped();
   static void ProfilerPaused();
   static void ProfilerResumed();
+  static void ClearAllPages();
 
  private:
   friend class ProfilerParentTracker;

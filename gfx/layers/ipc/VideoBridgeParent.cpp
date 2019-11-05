@@ -24,7 +24,8 @@ VideoBridgeParent::VideoBridgeParent() : mClosed(false) {
 
 VideoBridgeParent::~VideoBridgeParent() { sVideoBridgeSingleton = nullptr; }
 
-/* static */ VideoBridgeParent* VideoBridgeParent::GetSingleton() {
+/* static */
+VideoBridgeParent* VideoBridgeParent::GetSingleton() {
   return sVideoBridgeSingleton;
 }
 
@@ -48,6 +49,11 @@ PTextureParent* VideoBridgeParent::AllocPTextureParent(
     const uint64_t& aSerial) {
   PTextureParent* parent = TextureHost::CreateIPDLActor(
       this, aSharedData, aReadLock, aLayersBackend, aFlags, aSerial, Nothing());
+
+  if (!parent) {
+    return nullptr;
+  }
+
   mTextureMap[aSerial] = parent;
   return parent;
 }

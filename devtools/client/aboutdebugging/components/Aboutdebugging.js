@@ -6,44 +6,58 @@
 
 "use strict";
 
-const { createFactory, Component } = require("devtools/client/shared/vendor/react");
+const {
+  createFactory,
+  Component,
+} = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
 const Services = require("Services");
 
 const PanelMenu = createFactory(require("./PanelMenu"));
 
-loader.lazyGetter(this, "AddonsPanel",
-  () => createFactory(require("./addons/Panel")));
-loader.lazyGetter(this, "TabsPanel",
-  () => createFactory(require("./tabs/Panel")));
-loader.lazyGetter(this, "WorkersPanel",
-  () => createFactory(require("./workers/Panel")));
+loader.lazyGetter(this, "AddonsPanel", () =>
+  createFactory(require("./addons/Panel"))
+);
+loader.lazyGetter(this, "TabsPanel", () =>
+  createFactory(require("./tabs/Panel"))
+);
+loader.lazyGetter(this, "WorkersPanel", () =>
+  createFactory(require("./workers/Panel"))
+);
 
-loader.lazyRequireGetter(this, "DebuggerClient",
-  "devtools/shared/client/debugger-client", true);
-loader.lazyRequireGetter(this, "Telemetry",
-  "devtools/client/shared/telemetry");
+loader.lazyRequireGetter(
+  this,
+  "DebuggerClient",
+  "devtools/shared/client/debugger-client",
+  true
+);
+loader.lazyRequireGetter(this, "Telemetry", "devtools/client/shared/telemetry");
 
 const Strings = Services.strings.createBundle(
-  "chrome://devtools/locale/aboutdebugging.properties");
+  "chrome://devtools/locale/aboutdebugging.properties"
+);
 
-const panels = [{
-  id: "addons",
-  name: Strings.GetStringFromName("addons"),
-  icon: "chrome://devtools/skin/images/debugging-addons.svg",
-  component: AddonsPanel
-}, {
-  id: "tabs",
-  name: Strings.GetStringFromName("tabs"),
-  icon: "chrome://devtools/skin/images/debugging-tabs.svg",
-  component: TabsPanel
-}, {
-  id: "workers",
-  name: Strings.GetStringFromName("workers"),
-  icon: "chrome://devtools/skin/images/debugging-workers.svg",
-  component: WorkersPanel
-}];
+const panels = [
+  {
+    id: "addons",
+    name: Strings.GetStringFromName("addons"),
+    icon: "chrome://devtools/skin/images/debugging-addons.svg",
+    component: AddonsPanel,
+  },
+  {
+    id: "tabs",
+    name: Strings.GetStringFromName("tabs"),
+    icon: "chrome://devtools/skin/images/debugging-tabs.svg",
+    component: TabsPanel,
+  },
+  {
+    id: "workers",
+    name: Strings.GetStringFromName("workers"),
+    icon: "chrome://devtools/skin/images/debugging-workers.svg",
+    component: WorkersPanel,
+  },
+];
 
 const defaultPanelId = "addons";
 
@@ -52,7 +66,7 @@ class AboutDebuggingApp extends Component {
     return {
       client: PropTypes.instanceOf(DebuggerClient).isRequired,
       connect: PropTypes.object.isRequired,
-      telemetry: PropTypes.instanceOf(Telemetry).isRequired
+      telemetry: PropTypes.instanceOf(Telemetry).isRequired,
     };
   }
 
@@ -60,7 +74,7 @@ class AboutDebuggingApp extends Component {
     super(props);
 
     this.state = {
-      selectedPanelId: defaultPanelId
+      selectedPanelId: window.location.hash.substr(1) || defaultPanelId,
     };
 
     this.onHashChange = this.onHashChange.bind(this);
@@ -69,19 +83,23 @@ class AboutDebuggingApp extends Component {
 
   componentDidMount() {
     window.addEventListener("hashchange", this.onHashChange);
-    this.onHashChange();
-    this.props.telemetry.toolOpened("aboutdebugging");
+
+    // aboutdebugging is not connected with a toolbox so we pass -1 as the
+    // toolbox session id.
+    this.props.telemetry.toolOpened("aboutdebugging", -1, this);
   }
 
   componentWillUnmount() {
     window.removeEventListener("hashchange", this.onHashChange);
-    this.props.telemetry.toolClosed("aboutdebugging");
-    this.props.telemetry.destroy();
+
+    // aboutdebugging is not connected with a toolbox so we pass -1 as the
+    // toolbox session id.
+    this.props.telemetry.toolClosed("aboutdebugging", -1, this);
   }
 
   onHashChange() {
     this.setState({
-      selectedPanelId: window.location.hash.substr(1) || defaultPanelId
+      selectedPanelId: window.location.hash.substr(1) || defaultPanelId,
     });
   }
 
@@ -90,27 +108,34 @@ class AboutDebuggingApp extends Component {
   }
 
   render() {
-    let { client, connect } = this.props;
-    let { selectedPanelId } = this.state;
-    let selectPanel = this.selectPanel;
-    let selectedPanel = panels.find(p => p.id == selectedPanelId);
+    const { client, connect } = this.props;
+    const { selectedPanelId } = this.state;
+    const selectPanel = this.selectPanel;
+    const selectedPanel = panels.find(p => p.id == selectedPanelId);
     let panel;
 
     if (selectedPanel) {
-      panel = selectedPanel.component({ client, connect, id: selectedPanel.id });
+      panel = selectedPanel.component({
+        client,
+        connect,
+        id: selectedPanel.id,
+      });
     } else {
-      panel = (
-        dom.div({ className: "error-page" },
-          dom.h1({ className: "header-name" },
-            Strings.GetStringFromName("pageNotFound")
-          ),
-          dom.h4({ className: "error-page-details" },
-            Strings.formatStringFromName("doesNotExist", [selectedPanelId], 1))
+      panel = dom.div(
+        { className: "error-page" },
+        dom.h1(
+          { className: "header-name" },
+          Strings.GetStringFromName("pageNotFound")
+        ),
+        dom.h4(
+          { className: "error-page-details" },
+          Strings.formatStringFromName("doesNotExist", [selectedPanelId], 1)
         )
       );
     }
 
-    return dom.div({ className: "app" },
+    return dom.div(
+      { className: "app" },
       PanelMenu({ panels, selectedPanelId, selectPanel }),
       dom.div({ className: "main-content" }, panel)
     );

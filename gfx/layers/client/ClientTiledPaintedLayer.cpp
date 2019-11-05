@@ -23,6 +23,7 @@
 #include "mozilla/mozalloc.h"  // for operator delete, etc
 #include "nsISupportsImpl.h"   // for MOZ_COUNT_CTOR, etc
 #include "LayersLogging.h"
+#include "mozilla/layers/MultiTiledContentClient.h"
 #include "mozilla/layers/SingleTiledContentClient.h"
 
 namespace mozilla {
@@ -68,8 +69,17 @@ static Maybe<LayerRect> ApplyParentLayerToLayerTransform(
 
 static LayerToParentLayerMatrix4x4 GetTransformToAncestorsParentLayer(
     Layer* aStart, const LayerMetricsWrapper& aAncestor) {
+  // If the ancestor layer Combines3DTransformWithAncestors, then the
+  // scroll offset is contained in the transform of the layer at the
+  // root of the 3D context. So we must first find that layer, then
+  // calcuate the transform to its parent.
+  LayerMetricsWrapper root3dAncestor = aAncestor;
+  while (root3dAncestor.Combines3DTransformWithAncestors()) {
+    root3dAncestor = root3dAncestor.GetParent();
+  }
+
   gfx::Matrix4x4 transform;
-  const LayerMetricsWrapper& ancestorParent = aAncestor.GetParent();
+  const LayerMetricsWrapper& ancestorParent = root3dAncestor.GetParent();
   for (LayerMetricsWrapper iter(aStart, LayerMetricsWrapper::StartAt::BOTTOM);
        ancestorParent ? iter != ancestorParent : iter.IsValid();
        iter = iter.GetParent()) {
@@ -105,7 +115,7 @@ void ClientTiledPaintedLayer::GetAncestorLayers(
     hasTransformAnimation |= ancestor.HasTransformAnimation();
     const FrameMetrics& metrics = ancestor.Metrics();
     if (!scrollAncestor &&
-        metrics.GetScrollId() != FrameMetrics::NULL_SCROLL_ID) {
+        metrics.GetScrollId() != ScrollableLayerGuid::NULL_SCROLL_ID) {
       scrollAncestor = ancestor;
     }
     if (!metrics.GetDisplayPort().IsEmpty()) {
@@ -145,7 +155,7 @@ void ClientTiledPaintedLayer::BeginPaint() {
                     &hasTransformAnimation);
 
   if (!displayPortAncestor || !scrollAncestor) {
-  // No displayport or scroll ancestor, so we can't do progressive rendering.
+    // No displayport or scroll ancestor, so we can't do progressive rendering.
 #if defined(MOZ_WIDGET_ANDROID)
     // Android are guaranteed to have a displayport set, so this
     // should never happen.
@@ -447,11 +457,16 @@ void ClientTiledPaintedLayer::EndPaint() {
 }
 
 void ClientTiledPaintedLayer::RenderLayer() {
+  if (!ClientManager()->IsRepeatTransaction()) {
+    // Only paint the mask layers on the first transaction.
+    RenderMaskLayers(this);
+  }
+
   LayerManager::DrawPaintedLayerCallback callback =
       ClientManager()->GetPaintedLayerCallback();
   void* data = ClientManager()->GetPaintedLayerCallbackData();
 
-  IntSize layerSize = mVisibleRegion.ToUnknownRegion().GetBounds().Size();
+  IntSize layerSize = mVisibleRegion.GetBounds().ToUnknownRect().Size();
   IntSize tileSize = gfx::gfxVars::TileSize();
   bool isHalfTileWidthOrHeight = layerSize.width <= tileSize.width / 2 ||
                                  layerSize.height <= tileSize.height / 2;
@@ -530,9 +545,6 @@ void ClientTiledPaintedLayer::RenderLayer() {
   }
 
   if (!ClientManager()->IsRepeatTransaction()) {
-    // Only paint the mask layers on the first transaction.
-    RenderMaskLayers(this);
-
     // For more complex cases we need to calculate a bunch of metrics before we
     // can do the paint.
     BeginPaint();

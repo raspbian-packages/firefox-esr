@@ -8,17 +8,22 @@
 #define mozilla_dom_PendingAnimationTracker_h
 
 #include "mozilla/dom/Animation.h"
+#include "mozilla/dom/Document.h"
+#include "mozilla/TypedEnumBits.h"
 #include "nsCycleCollectionParticipant.h"
-#include "nsIDocument.h"
 #include "nsTHashtable.h"
 
 class nsIFrame;
 
 namespace mozilla {
 
+namespace dom {
+class Document;
+}
+
 class PendingAnimationTracker final {
  public:
-  explicit PendingAnimationTracker(nsIDocument* aDocument)
+  explicit PendingAnimationTracker(dom::Document* aDocument)
       : mDocument(aDocument) {}
 
   NS_INLINE_DECL_CYCLE_COLLECTING_NATIVE_REFCOUNTING(PendingAnimationTracker)
@@ -74,7 +79,6 @@ class PendingAnimationTracker final {
  private:
   ~PendingAnimationTracker() {}
 
-  bool HasPlayPendingGeometricAnimations();
   void EnsurePaintIsScheduled();
 
   typedef nsTHashtable<nsRefPtrHashKey<dom::Animation>> AnimationSet;
@@ -86,11 +90,21 @@ class PendingAnimationTracker final {
 
   AnimationSet mPlayPendingSet;
   AnimationSet mPausePendingSet;
-  nsCOMPtr<nsIDocument> mDocument;
+  RefPtr<dom::Document> mDocument;
 
-  enum class CheckState { Indeterminate, Absent, Present };
+ public:
+  enum class CheckState {
+    Indeterminate = 0,
+    Absent = 1 << 0,
+    AnimationsPresent = 1 << 1,
+    TransitionsPresent = 1 << 2,
+  };
+
+ private:
   CheckState mHasPlayPendingGeometricAnimations = CheckState::Indeterminate;
 };
+
+MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(PendingAnimationTracker::CheckState)
 
 }  // namespace mozilla
 

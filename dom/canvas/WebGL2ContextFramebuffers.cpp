@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,6 +7,7 @@
 
 #include "GLContext.h"
 #include "GLScreenBuffer.h"
+#include "mozilla/CheckedInt.h"
 #include "WebGLContextUtils.h"
 #include "WebGLFormats.h"
 #include "WebGLFramebuffer.h"
@@ -17,13 +18,14 @@ void WebGL2Context::BlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1,
                                     GLint srcY1, GLint dstX0, GLint dstY0,
                                     GLint dstX1, GLint dstY1, GLbitfield mask,
                                     GLenum filter) {
+  const FuncScope funcScope(*this, "blitFramebuffer");
   if (IsContextLost()) return;
 
   const GLbitfield validBits = LOCAL_GL_COLOR_BUFFER_BIT |
                                LOCAL_GL_DEPTH_BUFFER_BIT |
                                LOCAL_GL_STENCIL_BUFFER_BIT;
   if ((mask | validBits) != validBits) {
-    ErrorInvalidValue("blitFramebuffer: Invalid bit set in mask.");
+    ErrorInvalidValue("Invalid bit set in mask.");
     return;
   }
 
@@ -32,16 +34,28 @@ void WebGL2Context::BlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1,
     case LOCAL_GL_LINEAR:
       break;
     default:
-      ErrorInvalidEnumInfo("blitFramebuffer: Bad `filter`:", filter);
+      ErrorInvalidEnumInfo("filter", filter);
       return;
   }
 
-  ////
+  // --
 
-  if (!ValidateAndInitFB("blitFramebuffer: READ_FRAMEBUFFER",
-                         mBoundReadFramebuffer) ||
-      !ValidateAndInitFB("blitFramebuffer: DRAW_FRAMEBUFFER",
-                         mBoundDrawFramebuffer)) {
+  const auto fnLikelyOverflow = [](GLint p0, GLint p1) {
+    auto checked = CheckedInt<GLint>(p1) - p0;
+    checked = -checked;  // And check the negation!
+    return !checked.isValid();
+  };
+
+  if (fnLikelyOverflow(srcX0, srcX1) || fnLikelyOverflow(srcY0, srcY1) ||
+      fnLikelyOverflow(dstX0, dstX1) || fnLikelyOverflow(dstY0, dstY1)) {
+    ErrorInvalidValue("Likely-to-overflow large ranges are forbidden.");
+    return;
+  }
+
+  // --
+
+  if (!ValidateAndInitFB(mBoundReadFramebuffer) ||
+      !ValidateAndInitFB(mBoundDrawFramebuffer)) {
     return;
   }
 
@@ -55,10 +69,10 @@ void WebGL2Context::BlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1,
 void WebGL2Context::FramebufferTextureLayer(GLenum target, GLenum attachment,
                                             WebGLTexture* texture, GLint level,
                                             GLint layer) {
-  const char funcName[] = "framebufferTextureLayer";
+  const FuncScope funcScope(*this, "framebufferTextureLayer");
   if (IsContextLost()) return;
 
-  if (!ValidateFramebufferTarget(target, funcName)) return;
+  if (!ValidateFramebufferTarget(target)) return;
 
   WebGLFramebuffer* fb;
   switch (target) {
@@ -75,10 +89,9 @@ void WebGL2Context::FramebufferTextureLayer(GLenum target, GLenum attachment,
       MOZ_CRASH("GFX: Bad target.");
   }
 
-  if (!fb)
-    return ErrorInvalidOperation("%s: Cannot modify framebuffer 0.", funcName);
+  if (!fb) return ErrorInvalidOperation("Cannot modify framebuffer 0.");
 
-  fb->FramebufferTextureLayer(funcName, attachment, texture, level, layer);
+  fb->FramebufferTextureLayer(attachment, texture, level, layer);
 }
 
 JS::Value WebGL2Context::GetFramebufferAttachmentParameter(
@@ -91,7 +104,6 @@ JS::Value WebGL2Context::GetFramebufferAttachmentParameter(
 ////
 
 static bool ValidateBackbufferAttachmentEnum(WebGLContext* webgl,
-                                             const char* funcName,
                                              GLenum attachment) {
   switch (attachment) {
     case LOCAL_GL_COLOR:
@@ -100,14 +112,12 @@ static bool ValidateBackbufferAttachmentEnum(WebGLContext* webgl,
       return true;
 
     default:
-      webgl->ErrorInvalidEnum("%s: attachment: invalid enum value 0x%x.",
-                              funcName, attachment);
+      webgl->ErrorInvalidEnumInfo("attachment", attachment);
       return false;
   }
 }
 
 static bool ValidateFramebufferAttachmentEnum(WebGLContext* webgl,
-                                              const char* funcName,
                                               GLenum attachment) {
   switch (attachment) {
     case LOCAL_GL_DEPTH_ATTACHMENT:
@@ -117,15 +127,13 @@ static bool ValidateFramebufferAttachmentEnum(WebGLContext* webgl,
   }
 
   if (attachment < LOCAL_GL_COLOR_ATTACHMENT0) {
-    webgl->ErrorInvalidEnum("%s: attachment: invalid enum value 0x%x.",
-                            funcName, attachment);
+    webgl->ErrorInvalidEnumInfo("attachment", attachment);
     return false;
   }
 
   if (attachment > webgl->LastColorAttachmentEnum()) {
     // That these errors have different types is ridiculous.
-    webgl->ErrorInvalidOperation("%s: Too-large LOCAL_GL_COLOR_ATTACHMENTn.",
-                                 funcName);
+    webgl->ErrorInvalidOperation("Too-large LOCAL_GL_COLOR_ATTACHMENTn.");
     return false;
   }
 
@@ -133,14 +141,13 @@ static bool ValidateFramebufferAttachmentEnum(WebGLContext* webgl,
 }
 
 bool WebGLContext::ValidateInvalidateFramebuffer(
-    const char* funcName, GLenum target,
-    const dom::Sequence<GLenum>& attachments, ErrorResult* const out_rv,
-    std::vector<GLenum>* const scopedVector,
+    GLenum target, const dom::Sequence<GLenum>& attachments,
+    ErrorResult* const out_rv, std::vector<GLenum>* const scopedVector,
     GLsizei* const out_glNumAttachments,
     const GLenum** const out_glAttachments) {
   if (IsContextLost()) return false;
 
-  if (!ValidateFramebufferTarget(target, funcName)) return false;
+  if (!ValidateFramebufferTarget(target)) return false;
 
   const WebGLFramebuffer* fb;
   bool isDefaultFB = false;
@@ -159,11 +166,11 @@ bool WebGLContext::ValidateInvalidateFramebuffer(
   }
 
   if (fb) {
-    const auto fbStatus = fb->CheckFramebufferStatus(funcName);
+    const auto fbStatus = fb->CheckFramebufferStatus();
     if (fbStatus != LOCAL_GL_FRAMEBUFFER_COMPLETE)
       return false;  // Not an error, but don't run forward to driver either.
   } else {
-    if (!EnsureDefaultFB(funcName)) return false;
+    if (!EnsureDefaultFB()) return false;
   }
   DoBindFB(fb, target);
 
@@ -172,13 +179,11 @@ bool WebGLContext::ValidateInvalidateFramebuffer(
 
   if (fb) {
     for (const auto& attachment : attachments) {
-      if (!ValidateFramebufferAttachmentEnum(this, funcName, attachment))
-        return false;
+      if (!ValidateFramebufferAttachmentEnum(this, attachment)) return false;
     }
   } else {
     for (const auto& attachment : attachments) {
-      if (!ValidateBackbufferAttachmentEnum(this, funcName, attachment))
-        return false;
+      if (!ValidateBackbufferAttachmentEnum(this, attachment)) return false;
     }
 
     if (!isDefaultFB) {
@@ -214,14 +219,13 @@ bool WebGLContext::ValidateInvalidateFramebuffer(
 
 void WebGL2Context::InvalidateFramebuffer(
     GLenum target, const dom::Sequence<GLenum>& attachments, ErrorResult& rv) {
-  const char funcName[] = "invalidateSubFramebuffer";
+  const FuncScope funcScope(*this, "invalidateFramebuffer");
 
   std::vector<GLenum> scopedVector;
   GLsizei glNumAttachments;
   const GLenum* glAttachments;
-  if (!ValidateInvalidateFramebuffer(funcName, target, attachments, &rv,
-                                     &scopedVector, &glNumAttachments,
-                                     &glAttachments)) {
+  if (!ValidateInvalidateFramebuffer(target, attachments, &rv, &scopedVector,
+                                     &glNumAttachments, &glAttachments)) {
     return;
   }
 
@@ -243,19 +247,18 @@ void WebGL2Context::InvalidateFramebuffer(
 void WebGL2Context::InvalidateSubFramebuffer(
     GLenum target, const dom::Sequence<GLenum>& attachments, GLint x, GLint y,
     GLsizei width, GLsizei height, ErrorResult& rv) {
-  const char funcName[] = "invalidateSubFramebuffer";
-
-  if (!ValidateNonNegative(funcName, "width", width) ||
-      !ValidateNonNegative(funcName, "height", height)) {
-    return;
-  }
+  const FuncScope funcScope(*this, "invalidateSubFramebuffer");
 
   std::vector<GLenum> scopedVector;
   GLsizei glNumAttachments;
   const GLenum* glAttachments;
-  if (!ValidateInvalidateFramebuffer(funcName, target, attachments, &rv,
-                                     &scopedVector, &glNumAttachments,
-                                     &glAttachments)) {
+  if (!ValidateInvalidateFramebuffer(target, attachments, &rv, &scopedVector,
+                                     &glNumAttachments, &glAttachments)) {
+    return;
+  }
+
+  if (!ValidateNonNegative("width", width) ||
+      !ValidateNonNegative("height", height)) {
     return;
   }
 
@@ -276,11 +279,11 @@ void WebGL2Context::InvalidateSubFramebuffer(
 }
 
 void WebGL2Context::ReadBuffer(GLenum mode) {
-  const char funcName[] = "readBuffer";
+  const FuncScope funcScope(*this, "readBuffer");
   if (IsContextLost()) return;
 
   if (mBoundReadFramebuffer) {
-    mBoundReadFramebuffer->ReadBuffer(funcName, mode);
+    mBoundReadFramebuffer->ReadBuffer(mode);
     return;
   }
 
@@ -289,9 +292,9 @@ void WebGL2Context::ReadBuffer(GLenum mode) {
     nsCString enumName;
     EnumName(mode, &enumName);
     ErrorInvalidOperation(
-        "%s: If READ_FRAMEBUFFER is null, `mode` must be BACK or"
+        "If READ_FRAMEBUFFER is null, `mode` must be BACK or"
         " NONE. Was %s.",
-        funcName, enumName.BeginReading());
+        enumName.BeginReading());
     return;
   }
 

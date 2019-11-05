@@ -15,7 +15,9 @@
 #include "xpcpublic.h"
 
 #include "mozilla/dom/BindingDeclarations.h"
+#include "mozilla/dom/Blob.h"
 #include "mozilla/dom/BlobBinding.h"
+#include "mozilla/dom/File.h"
 #include "mozilla/dom/IDBObjectStoreBinding.h"
 
 namespace mozilla {
@@ -157,14 +159,9 @@ nsresult GetJSValFromKeyPathString(
 
                 intermediate = JS_NumberValue(lastModifiedDate);
                 hasProp = true;
-              } else if (token.EqualsLiteral("lastModifiedDate")) {
-                ErrorResult rv;
-                Date lastModifiedDate = file->GetLastModifiedDate(rv);
-                MOZ_ALWAYS_TRUE(!rv.Failed());
-
-                lastModifiedDate.ToDateObject(aCx, &intermediate);
-                hasProp = true;
               }
+              // The spec also lists "lastModifiedDate", but we deprecated and
+              // removed support for it.
             }
           }
         }
@@ -337,7 +334,7 @@ bool KeyPath::AppendStringWithValidation(const nsAString& aString) {
     return true;
   }
 
-  NS_NOTREACHED("What?!");
+  MOZ_ASSERT_UNREACHABLE("What?!");
   return false;
 }
 
@@ -356,8 +353,11 @@ nsresult KeyPath::ExtractKey(JSContext* aCx, const JS::Value& aValue,
       return rv;
     }
 
-    if (NS_FAILED(aKey.AppendItem(aCx, IsArray() && i == 0, value))) {
+    ErrorResult errorResult;
+    auto result = aKey.AppendItem(aCx, IsArray() && i == 0, value, errorResult);
+    if (!result.Is(Ok, errorResult)) {
       NS_ASSERTION(aKey.IsUnset(), "Encoding error should unset");
+      errorResult.SuppressException();
       return NS_ERROR_DOM_INDEXEDDB_DATA_ERR;
     }
   }
@@ -418,8 +418,11 @@ nsresult KeyPath::ExtractOrCreateKey(JSContext* aCx, const JS::Value& aValue,
     return rv;
   }
 
-  if (NS_FAILED(aKey.AppendItem(aCx, false, value))) {
+  ErrorResult errorResult;
+  auto result = aKey.AppendItem(aCx, false, value, errorResult);
+  if (!result.Is(Ok, errorResult)) {
     NS_ASSERTION(aKey.IsUnset(), "Should be unset");
+    errorResult.SuppressException();
     return value.isUndefined() ? NS_OK : NS_ERROR_DOM_INDEXEDDB_DATA_ERR;
   }
 
@@ -450,7 +453,7 @@ void KeyPath::SerializeToString(nsAString& aString) const {
     return;
   }
 
-  NS_NOTREACHED("What?");
+  MOZ_ASSERT_UNREACHABLE("What?");
 }
 
 // static
@@ -467,6 +470,13 @@ KeyPath KeyPath::DeserializeFromString(const nsAString& aString) {
     tokenizer.nextToken();
     while (tokenizer.hasMoreTokens()) {
       keyPath.mStrings.AppendElement(tokenizer.nextToken());
+    }
+
+    if (tokenizer.separatorAfterCurrentToken()) {
+      // There is a trailing comma, indicating the original KeyPath has
+      // a trailing empty string, i.e. [..., '']. We should append this
+      // empty string.
+      keyPath.mStrings.AppendElement(nsString{});
     }
 
     return keyPath;

@@ -29,7 +29,17 @@ class SourceBufferIterator;
  * The type of decoder; this is usually determined from a MIME type using
  * DecoderFactory::GetDecoderType().
  */
-enum class DecoderType { PNG, GIF, JPEG, BMP, ICO, ICON, UNKNOWN };
+enum class DecoderType {
+  PNG,
+  GIF,
+  JPEG,
+  BMP,
+  BMP_CLIPBOARD,
+  ICO,
+  ICON,
+  WEBP,
+  UNKNOWN
+};
 
 class DecoderFactory {
  public:
@@ -157,12 +167,14 @@ class DecoderFactory {
    *                    smaller than the intrinsic size, the decoder will
    *                    downscale the image. If Nothing(), the output size will
    *                    be the intrinsic size.
+   * @param aDecoderFlags Flags specifying the behavior of this decoder.
    * @param aSurfaceFlags Flags specifying the type of output this decoder
    *                      should produce.
    */
   static already_AddRefed<Decoder> CreateAnonymousDecoder(
       DecoderType aType, NotNull<SourceBuffer*> aSourceBuffer,
-      const Maybe<gfx::IntSize>& aOutputSize, SurfaceFlags aSurfaceFlags);
+      const Maybe<gfx::IntSize>& aOutputSize, DecoderFlags aDecoderFlags,
+      SurfaceFlags aSurfaceFlags);
 
   /**
    * Creates and initializes an anonymous metadata decoder (one which isn't

@@ -6,7 +6,7 @@
 
 "use strict";
 
-define(function (require, exports, module) {
+define(function(require, exports, module) {
   const { Component } = require("devtools/client/shared/vendor/react");
   const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
   const dom = require("devtools/client/shared/vendor/react-dom-factories");
@@ -34,14 +34,14 @@ define(function (require, exports, module) {
     }
 
     onSearch(event) {
-      let searchBox = event.target;
-      let win = searchBox.ownerDocument.defaultView;
+      const searchBox = event.target;
+      const win = searchBox.ownerDocument.defaultView;
 
       if (this.searchTimeout) {
         win.clearTimeout(this.searchTimeout);
       }
 
-      let callback = this.doSearch.bind(this, searchBox);
+      const callback = this.doSearch.bind(this, searchBox);
       this.searchTimeout = win.setTimeout(callback, searchDelay);
     }
 
@@ -50,11 +50,11 @@ define(function (require, exports, module) {
     }
 
     render() {
-      return (
-        input({className: "searchBox devtools-filterinput",
-               placeholder: JSONView.Locale.$STR("jsonViewer.filterJSON"),
-               onChange: this.onSearch})
-      );
+      return input({
+        className: "searchBox devtools-filterinput",
+        placeholder: JSONView.Locale["jsonViewer.filterJSON"],
+        onChange: this.onSearch,
+      });
     }
   }
 

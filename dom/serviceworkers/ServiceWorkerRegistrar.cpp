@@ -9,16 +9,19 @@
 #include "mozilla/dom/DOMException.h"
 #include "mozilla/net/MozURL.h"
 
+#include "mozIThirdPartyUtil.h"
 #include "nsIEventTarget.h"
 #include "nsIInputStream.h"
 #include "nsILineInputStream.h"
 #include "nsIObserverService.h"
 #include "nsIOutputStream.h"
 #include "nsISafeOutputStream.h"
+#include "nsIServiceWorkerManager.h"
 
 #include "MainThreadUtils.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/CycleCollectedJSContext.h"
+#include "mozilla/dom/StorageActivityService.h"
 #include "mozilla/ErrorNames.h"
 #include "mozilla/ipc/BackgroundChild.h"
 #include "mozilla/ipc/BackgroundParent.h"
@@ -35,6 +38,7 @@
 #include "nsServiceManagerUtils.h"
 #include "nsThreadUtils.h"
 #include "nsXULAppAPI.h"
+#include "ServiceWorkerUtils.h"
 
 using namespace mozilla::ipc;
 
@@ -46,16 +50,21 @@ namespace {
 static const char* gSupportedRegistrarVersions[] = {
     SERVICEWORKERREGISTRAR_VERSION, "7", "6", "5", "4", "3", "2"};
 
+static const uint32_t kInvalidGeneration = static_cast<uint32_t>(-1);
+
 StaticRefPtr<ServiceWorkerRegistrar> gServiceWorkerRegistrar;
 
-nsresult GetOrigin(const nsACString& aURL, nsACString& aOrigin) {
-  RefPtr<MozURL> url;
-  nsresult rv = MozURL::Init(getter_AddRefs(url), aURL);
+nsresult GetOriginAndBaseDomain(const nsACString& aURL, nsACString& aOrigin,
+                                nsACString& aBaseDomain) {
+  RefPtr<net::MozURL> url;
+  nsresult rv = net::MozURL::Init(getter_AddRefs(url), aURL);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
-  rv = url->GetOrigin(aOrigin);
+  url->Origin(aOrigin);
+
+  rv = url->BaseDomain(aBaseDomain);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
@@ -105,13 +114,17 @@ nsresult CreatePrincipalInfo(nsILineInputStream* aStream,
   }
 
   nsCString origin;
-  rv = GetOrigin(aEntry->scope(), origin);
+  nsCString baseDomain;
+  rv = GetOriginAndBaseDomain(aEntry->scope(), origin, baseDomain);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
 
-  aEntry->principal() =
-      mozilla::ipc::ContentPrincipalInfo(attrs, origin, aEntry->scope());
+  // CSP will be applied during the script load.
+  nsTArray<mozilla::ipc::ContentSecurityPolicy> policies;
+  aEntry->principal() = mozilla::ipc::ContentPrincipalInfo(
+      attrs, origin, aEntry->scope(), Nothing(), std::move(policies),
+      baseDomain);
 
   return NS_OK;
 }
@@ -138,8 +151,8 @@ void ServiceWorkerRegistrar::Initialize() {
   }
 }
 
-/* static */ already_AddRefed<ServiceWorkerRegistrar>
-ServiceWorkerRegistrar::Get() {
+/* static */
+already_AddRefed<ServiceWorkerRegistrar> ServiceWorkerRegistrar::Get() {
   MOZ_ASSERT(XRE_IsParentProcess());
 
   MOZ_ASSERT(gServiceWorkerRegistrar);
@@ -150,13 +163,16 @@ ServiceWorkerRegistrar::Get() {
 ServiceWorkerRegistrar::ServiceWorkerRegistrar()
     : mMonitor("ServiceWorkerRegistrar.mMonitor"),
       mDataLoaded(false),
+      mDataGeneration(kInvalidGeneration),
+      mFileGeneration(kInvalidGeneration),
+      mRetryCount(0),
       mShuttingDown(false),
-      mRunnableCounter(0) {
+      mRunnableDispatched(false) {
   MOZ_ASSERT(NS_IsMainThread());
 }
 
 ServiceWorkerRegistrar::~ServiceWorkerRegistrar() {
-  MOZ_ASSERT(!mRunnableCounter);
+  MOZ_ASSERT(!mRunnableDispatched);
 }
 
 void ServiceWorkerRegistrar::GetRegistrations(
@@ -188,6 +204,10 @@ void ServiceWorkerRegistrar::GetRegistrations(
   }
 
   aValues.AppendElements(mData);
+
+  MaybeResetGeneration();
+  MOZ_DIAGNOSTIC_ASSERT(mDataGeneration != kInvalidGeneration);
+  MOZ_DIAGNOSTIC_ASSERT(mFileGeneration != kInvalidGeneration);
 
   if (firstTime) {
     firstTime = false;
@@ -233,7 +253,8 @@ void ServiceWorkerRegistrar::RegisterServiceWorker(
     RegisterServiceWorkerInternal(aData);
   }
 
-  ScheduleSaveData();
+  MaybeScheduleSaveData();
+  StorageActivityService::SendActivity(aData.principal());
 }
 
 void ServiceWorkerRegistrar::UnregisterServiceWorker(
@@ -258,6 +279,7 @@ void ServiceWorkerRegistrar::UnregisterServiceWorker(
     for (uint32_t i = 0; i < mData.Length(); ++i) {
       if (Equivalent(tmp, mData[i])) {
         mData.RemoveElementAt(i);
+        mDataGeneration = GetNextGeneration();
         deleted = true;
         break;
       }
@@ -265,7 +287,8 @@ void ServiceWorkerRegistrar::UnregisterServiceWorker(
   }
 
   if (deleted) {
-    ScheduleSaveData();
+    MaybeScheduleSaveData();
+    StorageActivityService::SendActivity(aPrincipalInfo);
   }
 }
 
@@ -279,16 +302,28 @@ void ServiceWorkerRegistrar::RemoveAll() {
 
   bool deleted = false;
 
+  nsTArray<ServiceWorkerRegistrationData> data;
   {
     MonitorAutoLock lock(mMonitor);
     MOZ_ASSERT(mDataLoaded);
 
+    // Let's take a copy in order to inform StorageActivityService.
+    data = mData;
+
     deleted = !mData.IsEmpty();
     mData.Clear();
+
+    mDataGeneration = GetNextGeneration();
   }
 
-  if (deleted) {
-    ScheduleSaveData();
+  if (!deleted) {
+    return;
+  }
+
+  MaybeScheduleSaveData();
+
+  for (uint32_t i = 0, len = data.Length(); i < len; ++i) {
+    StorageActivityService::SendActivity(data[i].principal());
   }
 }
 
@@ -655,8 +690,20 @@ nsresult ServiceWorkerRegistrar::ReadData() {
 
   stream->Close();
 
+  // XXX: The following code is writing to mData without holding a
+  //      monitor lock.  This might be ok since this is currently
+  //      only called at startup where we block the main thread
+  //      preventing further operation until it completes.  We should
+  //      consider better locking here in the future.
+
   // Copy data over to mData.
   for (uint32_t i = 0; i < tmpData.Length(); ++i) {
+    // Older versions could sometimes write out empty, useless entries.
+    // Prune those here.
+    if (!ServiceWorkerRegistrationDataIsValid(tmpData[i])) {
+      continue;
+    }
+
     bool match = false;
     if (dedupe) {
       MOZ_ASSERT(overwrite);
@@ -689,7 +736,7 @@ nsresult ServiceWorkerRegistrar::ReadData() {
 
   // Overwrite previous version.
   // Cannot call SaveData directly because gtest uses main-thread.
-  if (overwrite && NS_FAILED(WriteData())) {
+  if (overwrite && NS_FAILED(WriteData(mData))) {
     NS_WARNING("Failed to write data for the ServiceWorker Registations.");
     DeleteData();
   }
@@ -744,16 +791,27 @@ void ServiceWorkerRegistrar::RegisterServiceWorkerInternal(
   }
 
   if (!found) {
+    MOZ_ASSERT(ServiceWorkerRegistrationDataIsValid(aData));
     mData.AppendElement(aData);
   }
+
+  mDataGeneration = GetNextGeneration();
 }
 
 class ServiceWorkerRegistrarSaveDataRunnable final : public Runnable {
+  nsCOMPtr<nsIEventTarget> mEventTarget;
+  const nsTArray<ServiceWorkerRegistrationData> mData;
+  const uint32_t mGeneration;
+
  public:
-  ServiceWorkerRegistrarSaveDataRunnable()
+  ServiceWorkerRegistrarSaveDataRunnable(
+      nsTArray<ServiceWorkerRegistrationData>&& aData, uint32_t aGeneration)
       : Runnable("dom::ServiceWorkerRegistrarSaveDataRunnable"),
-        mEventTarget(GetCurrentThreadEventTarget()) {
+        mEventTarget(GetCurrentThreadEventTarget()),
+        mData(std::move(aData)),
+        mGeneration(aGeneration) {
     AssertIsOnBackgroundThread();
+    MOZ_DIAGNOSTIC_ASSERT(mGeneration != kInvalidGeneration);
   }
 
   NS_IMETHOD
@@ -761,38 +819,50 @@ class ServiceWorkerRegistrarSaveDataRunnable final : public Runnable {
     RefPtr<ServiceWorkerRegistrar> service = ServiceWorkerRegistrar::Get();
     MOZ_ASSERT(service);
 
-    service->SaveData();
+    uint32_t fileGeneration = kInvalidGeneration;
 
-    RefPtr<Runnable> runnable =
-        NewRunnableMethod("ServiceWorkerRegistrar::DataSaved", service,
-                          &ServiceWorkerRegistrar::DataSaved);
-    nsresult rv = mEventTarget->Dispatch(runnable, NS_DISPATCH_NORMAL);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      return rv;
+    if (NS_SUCCEEDED(service->SaveData(mData))) {
+      fileGeneration = mGeneration;
     }
+
+    RefPtr<Runnable> runnable = NewRunnableMethod<uint32_t>(
+        "ServiceWorkerRegistrar::DataSaved", service,
+        &ServiceWorkerRegistrar::DataSaved, fileGeneration);
+    MOZ_ALWAYS_SUCCEEDS(
+        mEventTarget->Dispatch(runnable.forget(), NS_DISPATCH_NORMAL));
 
     return NS_OK;
   }
-
- private:
-  nsCOMPtr<nsIEventTarget> mEventTarget;
 };
 
-void ServiceWorkerRegistrar::ScheduleSaveData() {
+void ServiceWorkerRegistrar::MaybeScheduleSaveData() {
   AssertIsOnBackgroundThread();
   MOZ_ASSERT(!mShuttingDown);
+
+  if (mShuttingDown || mRunnableDispatched ||
+      mDataGeneration <= mFileGeneration) {
+    return;
+  }
 
   nsCOMPtr<nsIEventTarget> target =
       do_GetService(NS_STREAMTRANSPORTSERVICE_CONTRACTID);
   MOZ_ASSERT(target, "Must have stream transport service");
 
-  RefPtr<Runnable> runnable = new ServiceWorkerRegistrarSaveDataRunnable();
-  nsresult rv = target->Dispatch(runnable, NS_DISPATCH_NORMAL);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return;
+  uint32_t generation = kInvalidGeneration;
+  nsTArray<ServiceWorkerRegistrationData> data;
+
+  {
+    MonitorAutoLock lock(mMonitor);
+    generation = mDataGeneration;
+    data.AppendElements(mData);
   }
 
-  ++mRunnableCounter;
+  RefPtr<Runnable> runnable =
+      new ServiceWorkerRegistrarSaveDataRunnable(std::move(data), generation);
+  nsresult rv = target->Dispatch(runnable.forget(), NS_DISPATCH_NORMAL);
+  NS_ENSURE_SUCCESS_VOID(rv);
+
+  mRunnableDispatched = true;
 }
 
 void ServiceWorkerRegistrar::ShutdownCompleted() {
@@ -802,38 +872,90 @@ void ServiceWorkerRegistrar::ShutdownCompleted() {
   MOZ_ASSERT(NS_SUCCEEDED(rv));
 }
 
-void ServiceWorkerRegistrar::SaveData() {
+nsresult ServiceWorkerRegistrar::SaveData(
+    const nsTArray<ServiceWorkerRegistrationData>& aData) {
   MOZ_ASSERT(!NS_IsMainThread());
 
-  nsresult rv = WriteData();
+  nsresult rv = WriteData(aData);
   if (NS_FAILED(rv)) {
     NS_WARNING("Failed to write data for the ServiceWorker Registations.");
-    DeleteData();
+    // Don't touch the file or in-memory state.  Writing files can
+    // sometimes fail due to virus scanning, etc.  We should just leave
+    // things as is so the next save operation can pick up any changes
+    // without losing data.
   }
+  return rv;
 }
 
-void ServiceWorkerRegistrar::DataSaved() {
+void ServiceWorkerRegistrar::DataSaved(uint32_t aFileGeneration) {
   AssertIsOnBackgroundThread();
-  MOZ_ASSERT(mRunnableCounter);
+  MOZ_ASSERT(mRunnableDispatched);
 
-  --mRunnableCounter;
+  mRunnableDispatched = false;
+
+  // Check for shutdown before possibly triggering any more saves
+  // runnables.
   MaybeScheduleShutdownCompleted();
+  if (mShuttingDown) {
+    return;
+  }
+
+  // If we got a valid generation, then the save was successful.
+  if (aFileGeneration != kInvalidGeneration) {
+    // Update the file generation.  We also check to see if we
+    // can reset the generation back to zero if the file and data
+    // are now in sync.  This allows us to avoid dealing with wrap
+    // around of the generation count.
+    mFileGeneration = aFileGeneration;
+    MaybeResetGeneration();
+
+    // Successful write resets the retry count.
+    mRetryCount = 0;
+
+    // Possibly schedule another save operation if more data
+    // has come in while processing this one.
+    MaybeScheduleSaveData();
+
+    return;
+  }
+
+  // Otherwise, the save failed since the generation is invalid.  We
+  // want to retry the save, but only a limited number of times.
+  static const uint32_t kMaxRetryCount = 2;
+  if (mRetryCount >= kMaxRetryCount) {
+    return;
+  }
+
+  mRetryCount += 1;
+  MaybeScheduleSaveData();
 }
 
 void ServiceWorkerRegistrar::MaybeScheduleShutdownCompleted() {
   AssertIsOnBackgroundThread();
 
-  if (mRunnableCounter || !mShuttingDown) {
+  if (mRunnableDispatched || !mShuttingDown) {
     return;
   }
 
   RefPtr<Runnable> runnable =
       NewRunnableMethod("dom::ServiceWorkerRegistrar::ShutdownCompleted", this,
                         &ServiceWorkerRegistrar::ShutdownCompleted);
-  nsresult rv = NS_DispatchToMainThread(runnable);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
+  MOZ_ALWAYS_SUCCEEDS(NS_DispatchToMainThread(runnable.forget()));
+}
+
+uint32_t ServiceWorkerRegistrar::GetNextGeneration() {
+  uint32_t ret = mDataGeneration + 1;
+  if (ret == kInvalidGeneration) {
+    ret += 1;
+  }
+  return ret;
+}
+
+void ServiceWorkerRegistrar::MaybeResetGeneration() {
+  if (mDataGeneration != mFileGeneration) {
     return;
   }
+  mDataGeneration = mFileGeneration = 0;
 }
 
 bool ServiceWorkerRegistrar::IsSupportedVersion(
@@ -847,7 +969,8 @@ bool ServiceWorkerRegistrar::IsSupportedVersion(
   return false;
 }
 
-nsresult ServiceWorkerRegistrar::WriteData() {
+nsresult ServiceWorkerRegistrar::WriteData(
+    const nsTArray<ServiceWorkerRegistrationData>& aData) {
   // We cannot assert about the correct thread because normally this method
   // runs on a IO thread, but in gTests we call it from the main-thread.
 
@@ -871,13 +994,6 @@ nsresult ServiceWorkerRegistrar::WriteData() {
     return rv;
   }
 
-  // We need a lock to take a snapshot of the data.
-  nsTArray<ServiceWorkerRegistrationData> data;
-  {
-    MonitorAutoLock lock(mMonitor);
-    data = mData;
-  }
-
   nsCOMPtr<nsIOutputStream> stream;
   rv = NS_NewSafeLocalFileOutputStream(getter_AddRefs(stream), file);
   if (NS_WARN_IF(NS_FAILED(rv))) {
@@ -898,8 +1014,14 @@ nsresult ServiceWorkerRegistrar::WriteData() {
     return NS_ERROR_UNEXPECTED;
   }
 
-  for (uint32_t i = 0, len = data.Length(); i < len; ++i) {
-    const mozilla::ipc::PrincipalInfo& info = data[i].principal();
+  for (uint32_t i = 0, len = aData.Length(); i < len; ++i) {
+    // We have an assertion further up the stack, but as a last
+    // resort avoid writing out broken entries here.
+    if (!ServiceWorkerRegistrationDataIsValid(aData[i])) {
+      continue;
+    }
+
+    const mozilla::ipc::PrincipalInfo& info = aData[i].principal();
 
     MOZ_ASSERT(info.type() ==
                mozilla::ipc::PrincipalInfo::TContentPrincipalInfo);
@@ -914,28 +1036,28 @@ nsresult ServiceWorkerRegistrar::WriteData() {
     buffer.Append(suffix.get());
     buffer.Append('\n');
 
-    buffer.Append(data[i].scope());
+    buffer.Append(aData[i].scope());
     buffer.Append('\n');
 
-    buffer.Append(data[i].currentWorkerURL());
+    buffer.Append(aData[i].currentWorkerURL());
     buffer.Append('\n');
 
-    buffer.Append(data[i].currentWorkerHandlesFetch()
+    buffer.Append(aData[i].currentWorkerHandlesFetch()
                       ? SERVICEWORKERREGISTRAR_TRUE
                       : SERVICEWORKERREGISTRAR_FALSE);
     buffer.Append('\n');
 
-    buffer.Append(NS_ConvertUTF16toUTF8(data[i].cacheName()));
+    buffer.Append(NS_ConvertUTF16toUTF8(aData[i].cacheName()));
     buffer.Append('\n');
 
-    buffer.AppendInt(data[i].updateViaCache(), 16);
+    buffer.AppendInt(aData[i].updateViaCache(), 16);
     buffer.Append('\n');
     MOZ_DIAGNOSTIC_ASSERT(
-        data[i].updateViaCache() ==
+        aData[i].updateViaCache() ==
             nsIServiceWorkerRegistrationInfo::UPDATE_VIA_CACHE_IMPORTS ||
-        data[i].updateViaCache() ==
+        aData[i].updateViaCache() ==
             nsIServiceWorkerRegistrationInfo::UPDATE_VIA_CACHE_ALL ||
-        data[i].updateViaCache() ==
+        aData[i].updateViaCache() ==
             nsIServiceWorkerRegistrationInfo::UPDATE_VIA_CACHE_NONE);
 
     static_assert(nsIRequest::LOAD_NORMAL == 0,
@@ -943,13 +1065,13 @@ nsresult ServiceWorkerRegistrar::WriteData() {
     static_assert(nsIRequest::VALIDATE_ALWAYS == (1 << 11),
                   "VALIDATE_ALWAYS matches serialized value");
 
-    buffer.AppendInt(data[i].currentWorkerInstalledTime());
+    buffer.AppendInt(aData[i].currentWorkerInstalledTime());
     buffer.Append('\n');
 
-    buffer.AppendInt(data[i].currentWorkerActivatedTime());
+    buffer.AppendInt(aData[i].currentWorkerActivatedTime());
     buffer.Append('\n');
 
-    buffer.AppendInt(data[i].lastUpdateTime());
+    buffer.AppendInt(aData[i].lastUpdateTime());
     buffer.Append('\n');
 
     buffer.AppendLiteral(SERVICEWORKERREGISTRAR_TERMINATOR);
@@ -1002,7 +1124,7 @@ void ServiceWorkerRegistrar::ProfileStarted() {
   nsCOMPtr<nsIRunnable> runnable =
       NewRunnableMethod("dom::ServiceWorkerRegistrar::LoadData", this,
                         &ServiceWorkerRegistrar::LoadData);
-  rv = target->Dispatch(runnable, NS_DISPATCH_NORMAL);
+  rv = target->Dispatch(runnable.forget(), NS_DISPATCH_NORMAL);
   if (NS_FAILED(rv)) {
     NS_WARNING("Failed to dispatch the LoadDataRunnable.");
   }
@@ -1040,8 +1162,8 @@ void ServiceWorkerRegistrar::ProfileStopped() {
     //   can't get to.
     // - All Shutdown() does is set mShuttingDown=true (essential for
     //   invariants) and invoke MaybeScheduleShutdownCompleted().
-    // - Since there is no PBackground thread, mRunnableCounter must be 0
-    //   because only ScheduleSaveData() increments it and it only runs on the
+    // - Since there is no PBackground thread, mRunnableDispatched must be false
+    //   because only MaybeScheduleSaveData() set it and it only runs on the
     //   background thread, so it cannot have run.  And so we would expect
     //   MaybeScheduleShutdownCompleted() to schedule an invocation of
     //   ShutdownCompleted on the main thread.
@@ -1106,7 +1228,7 @@ nsCOMPtr<nsIAsyncShutdownClient> ServiceWorkerRegistrar::GetShutdownPhase()
   nsCOMPtr<nsIAsyncShutdownClient> client;
   rv = svc->GetProfileBeforeChange(getter_AddRefs(client));
   RELEASE_ASSERT_SUCCEEDED(rv, "profileBeforeChange shutdown blocker");
-  return Move(client);
+  return client;
 }
 
 #undef RELEASE_ASSERT_SUCCEEDED

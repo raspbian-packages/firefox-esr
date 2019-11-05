@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -33,10 +33,7 @@ void WebGLTransformFeedback::Delete() {
 ////////////////////////////////////////
 
 void WebGLTransformFeedback::BeginTransformFeedback(GLenum primMode) {
-  const char funcName[] = "beginTransformFeedback";
-
-  if (mIsActive)
-    return mContext->ErrorInvalidOperation("%s: Already active.", funcName);
+  if (mIsActive) return mContext->ErrorInvalidOperation("Already active.");
 
   switch (primMode) {
     case LOCAL_GL_POINTS:
@@ -45,9 +42,8 @@ void WebGLTransformFeedback::BeginTransformFeedback(GLenum primMode) {
       break;
     default:
       mContext->ErrorInvalidEnum(
-          "%s: `primitiveMode` must be one of POINTS, LINES, or"
-          " TRIANGLES.",
-          funcName);
+          "`primitiveMode` must be one of POINTS, LINES, or"
+          " TRIANGLES.");
       return;
   }
 
@@ -55,9 +51,8 @@ void WebGLTransformFeedback::BeginTransformFeedback(GLenum primMode) {
   if (!prog || !prog->IsLinked() ||
       prog->LinkInfo()->componentsPerTFVert.empty()) {
     mContext->ErrorInvalidOperation(
-        "%s: Current program not valid for transform"
-        " feedback.",
-        funcName);
+        "Current program not valid for transform"
+        " feedback.");
     return;
   }
 
@@ -72,9 +67,9 @@ void WebGLTransformFeedback::BeginTransformFeedback(GLenum primMode) {
     const auto& buffer = indexedBinding.mBufferBinding;
     if (!buffer) {
       mContext->ErrorInvalidOperation(
-          "%s: No buffer attached to required transform"
+          "No buffer attached to required transform"
           " feedback index %u.",
-          funcName, (uint32_t)i);
+          (uint32_t)i);
       return;
     }
 
@@ -103,10 +98,7 @@ void WebGLTransformFeedback::BeginTransformFeedback(GLenum primMode) {
 }
 
 void WebGLTransformFeedback::EndTransformFeedback() {
-  const char funcName[] = "endTransformFeedback";
-
-  if (!mIsActive)
-    return mContext->ErrorInvalidOperation("%s: Not active.", funcName);
+  if (!mIsActive) return mContext->ErrorInvalidOperation("Not active.");
 
   ////
 
@@ -136,10 +128,8 @@ void WebGLTransformFeedback::EndTransformFeedback() {
 }
 
 void WebGLTransformFeedback::PauseTransformFeedback() {
-  const char funcName[] = "pauseTransformFeedback";
-
   if (!mIsActive || mIsPaused) {
-    mContext->ErrorInvalidOperation("%s: Not active or is paused.", funcName);
+    mContext->ErrorInvalidOperation("Not active or is paused.");
     return;
   }
 
@@ -154,14 +144,10 @@ void WebGLTransformFeedback::PauseTransformFeedback() {
 }
 
 void WebGLTransformFeedback::ResumeTransformFeedback() {
-  const char funcName[] = "resumeTransformFeedback";
-
-  if (!mIsPaused)
-    return mContext->ErrorInvalidOperation("%s: Not paused.", funcName);
+  if (!mIsPaused) return mContext->ErrorInvalidOperation("Not paused.");
 
   if (mContext->mCurrentProgram != mActive_Program) {
-    mContext->ErrorInvalidOperation("%s: Active program differs from original.",
-                                    funcName);
+    mContext->ErrorInvalidOperation("Active program differs from original.");
     return;
   }
 
@@ -180,7 +166,6 @@ void WebGLTransformFeedback::ResumeTransformFeedback() {
 
 void WebGLTransformFeedback::AddBufferBindCounts(int8_t addVal) const {
   const GLenum target = LOCAL_GL_TRANSFORM_FEEDBACK_BUFFER;
-  WebGLBuffer::AddBindCount(target, mGenericBufferBinding.get(), addVal);
   for (const auto& binding : mIndexedBindings) {
     WebGLBuffer::AddBindCount(target, binding.mBufferBinding.get(), addVal);
   }
@@ -190,13 +175,12 @@ void WebGLTransformFeedback::AddBufferBindCounts(int8_t addVal) const {
 
 JSObject* WebGLTransformFeedback::WrapObject(JSContext* cx,
                                              JS::Handle<JSObject*> givenProto) {
-  return dom::WebGLTransformFeedbackBinding::Wrap(cx, this, givenProto);
+  return dom::WebGLTransformFeedback_Binding::Wrap(cx, this, givenProto);
 }
 
 NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(WebGLTransformFeedback, AddRef)
 NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(WebGLTransformFeedback, Release)
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(WebGLTransformFeedback,
-                                      mGenericBufferBinding, mIndexedBindings,
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(WebGLTransformFeedback, mIndexedBindings,
                                       mActive_Program)
 
 }  // namespace mozilla

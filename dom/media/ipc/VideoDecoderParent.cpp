@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=2 et sw=2 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,11 +14,10 @@
 #include "PDMFactory.h"
 #include "VideoDecoderManagerParent.h"
 #ifdef XP_WIN
-#include "WMFDecoderModule.h"
+#  include "WMFDecoderModule.h"
 #endif
 
 namespace mozilla {
-namespace dom {
 
 using base::Thread;
 using media::TimeUnit;
@@ -43,7 +42,8 @@ class KnowsCompositorVideo : public layers::KnowsCompositor {
 
 VideoDecoderParent::VideoDecoderParent(
     VideoDecoderManagerParent* aParent, const VideoInfo& aVideoInfo,
-    float aFramerate, const layers::TextureFactoryIdentifier& aIdentifier,
+    float aFramerate, const CreateDecoderParams::OptionSet& aOptions,
+    const layers::TextureFactoryIdentifier& aIdentifier,
     TaskQueue* aManagerTaskQueue, TaskQueue* aDecodeTaskQueue, bool* aSuccess,
     nsCString* aErrorDescription)
     : mParent(aParent),
@@ -62,6 +62,9 @@ VideoDecoderParent::VideoDecoderParent(
   mKnowsCompositor->IdentifyTextureHost(aIdentifier);
 
 #ifdef XP_WIN
+  using Option = CreateDecoderParams::Option;
+  using OptionSet = CreateDecoderParams::OptionSet;
+
   // Ensure everything is properly initialized on the right thread.
   PDMFactory::EnsureInit();
 
@@ -75,6 +78,7 @@ VideoDecoderParent::VideoDecoderParent(
   params.mKnowsCompositor = mKnowsCompositor;
   params.mImageContainer = new layers::ImageContainer();
   params.mRate = CreateDecoderParams::VideoFrameRate(aFramerate);
+  params.mOptions = aOptions;
   MediaResult error(NS_OK);
   params.mError = &error;
 
@@ -97,7 +101,6 @@ VideoDecoderParent::~VideoDecoderParent() {
 
 void VideoDecoderParent::Destroy() {
   MOZ_ASSERT(OnManagerThread());
-  mDecodeTaskQueue->AwaitShutdownAndIdle();
   mDestroyed = true;
   mIPDLSelfRef = nullptr;
 }
@@ -140,21 +143,22 @@ mozilla::ipc::IPCResult VideoDecoderParent::RecvInput(
     return IPC_OK();
   }
   data->mOffset = aData.base().offset();
-  data->mTime = TimeUnit::FromMicroseconds(aData.base().time());
-  data->mTimecode = TimeUnit::FromMicroseconds(aData.base().timecode());
-  data->mDuration = TimeUnit::FromMicroseconds(aData.base().duration());
+  data->mTime = aData.base().time();
+  data->mTimecode = aData.base().timecode();
+  data->mDuration = aData.base().duration();
   data->mKeyframe = aData.base().keyframe();
+  data->mEOS = aData.eos();
 
   DeallocShmem(aData.buffer());
 
   RefPtr<VideoDecoderParent> self = this;
   mDecoder->Decode(data)->Then(
       mManagerTaskQueue, __func__,
-      [self, this](const MediaDataDecoder::DecodedData& aResults) {
+      [self, this](MediaDataDecoder::DecodedData&& aResults) {
         if (mDestroyed) {
           return;
         }
-        ProcessDecodedData(aResults);
+        ProcessDecodedData(std::move(aResults));
         Unused << SendInputExhausted();
       },
       [self](const MediaResult& aError) { self->Error(aError); });
@@ -162,7 +166,7 @@ mozilla::ipc::IPCResult VideoDecoderParent::RecvInput(
 }
 
 void VideoDecoderParent::ProcessDecodedData(
-    const MediaDataDecoder::DecodedData& aData) {
+    MediaDataDecoder::DecodedData&& aData) {
   MOZ_ASSERT(OnManagerThread());
 
   // If the video decoder bridge has shut down, stop.
@@ -170,8 +174,8 @@ void VideoDecoderParent::ProcessDecodedData(
     return;
   }
 
-  for (const auto& data : aData) {
-    MOZ_ASSERT(data->mType == MediaData::VIDEO_DATA,
+  for (auto&& data : aData) {
+    MOZ_ASSERT(data->mType == MediaData::Type::VIDEO_DATA,
                "Can only decode videos using VideoDecoderParent!");
     VideoData* video = static_cast<VideoData*>(data.get());
 
@@ -193,10 +197,8 @@ void VideoDecoderParent::ProcessDecodedData(
     }
 
     VideoDataIPDL output(
-        MediaDataIPDL(data->mOffset, data->mTime.ToMicroseconds(),
-                      data->mTimecode.ToMicroseconds(),
-                      data->mDuration.ToMicroseconds(), data->mFrames,
-                      data->mKeyframe),
+        MediaDataIPDL(data->mOffset, data->mTime, data->mTimecode,
+                      data->mDuration, data->mKeyframe),
         video->mDisplay, texture ? texture->GetSize() : IntSize(),
         texture ? mParent->StoreImage(video->mImage, texture)
                 : SurfaceDescriptorGPUVideo(0, null_t()),
@@ -227,9 +229,9 @@ mozilla::ipc::IPCResult VideoDecoderParent::RecvDrain() {
   RefPtr<VideoDecoderParent> self = this;
   mDecoder->Drain()->Then(
       mManagerTaskQueue, __func__,
-      [self, this](const MediaDataDecoder::DecodedData& aResults) {
+      [self, this](MediaDataDecoder::DecodedData&& aResults) {
         if (!mDestroyed) {
-          ProcessDecodedData(aResults);
+          ProcessDecodedData(std::move(aResults));
           Unused << SendDrainComplete();
         }
       },
@@ -241,17 +243,25 @@ mozilla::ipc::IPCResult VideoDecoderParent::RecvShutdown() {
   MOZ_ASSERT(!mDestroyed);
   MOZ_ASSERT(OnManagerThread());
   if (mDecoder) {
-    mDecoder->Shutdown();
+    RefPtr<VideoDecoderParent> self = this;
+    mDecoder->Shutdown()->Then(
+        mManagerTaskQueue, __func__,
+        [self](const ShutdownPromise::ResolveOrRejectValue& aValue) {
+          MOZ_ASSERT(aValue.IsResolve());
+          if (!self->mDestroyed) {
+            Unused << self->SendShutdownComplete();
+          }
+        });
   }
   mDecoder = nullptr;
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult VideoDecoderParent::RecvSetSeekThreshold(
-    const int64_t& aTime) {
+    const TimeUnit& aTime) {
   MOZ_ASSERT(!mDestroyed);
   MOZ_ASSERT(OnManagerThread());
-  mDecoder->SetSeekThreshold(TimeUnit::FromMicroseconds(aTime));
+  mDecoder->SetSeekThreshold(aTime);
   return IPC_OK();
 }
 
@@ -261,9 +271,6 @@ void VideoDecoderParent::ActorDestroy(ActorDestroyReason aWhy) {
   if (mDecoder) {
     mDecoder->Shutdown();
     mDecoder = nullptr;
-  }
-  if (mDecodeTaskQueue) {
-    mDecodeTaskQueue->BeginShutdown();
   }
 }
 
@@ -278,5 +285,4 @@ bool VideoDecoderParent::OnManagerThread() {
   return mParent->OnManagerThread();
 }
 
-}  // namespace dom
 }  // namespace mozilla

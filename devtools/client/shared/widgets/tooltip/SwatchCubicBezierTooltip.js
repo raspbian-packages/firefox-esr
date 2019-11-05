@@ -4,8 +4,9 @@
 
 "use strict";
 
-const defer = require("devtools/shared/defer");
-const {CubicBezierWidget} = require("devtools/client/shared/widgets/CubicBezierWidget");
+const {
+  CubicBezierWidget,
+} = require("devtools/client/shared/widgets/CubicBezierWidget");
 const SwatchBasedEditorTooltip = require("devtools/client/shared/widgets/tooltip/SwatchBasedEditorTooltip");
 
 const XHTML_NS = "http://www.w3.org/1999/xhtml";
@@ -39,24 +40,18 @@ class SwatchCubicBezierTooltip extends SwatchBasedEditorTooltip {
    * the instance of the widget
    */
 
-  setCubicBezierContent(bezier) {
-    let { doc } = this.tooltip;
+  async setCubicBezierContent(bezier) {
+    const { doc } = this.tooltip;
+    this.tooltip.panel.innerHTML = "";
 
-    let container = doc.createElementNS(XHTML_NS, "div");
+    const container = doc.createElementNS(XHTML_NS, "div");
     container.className = "cubic-bezier-container";
 
-    this.tooltip.setContent(container, { width: 510, height: 370 });
+    this.tooltip.panel.appendChild(container);
+    this.tooltip.setContentSize({ width: 510, height: 370 });
 
-    let def = defer();
-
-    // Wait for the tooltip to be shown before calling instanciating the widget
-    // as it expect its DOM elements to be visible.
-    this.tooltip.once("shown", () => {
-      let widget = new CubicBezierWidget(container, bezier);
-      def.resolve(widget);
-    });
-
-    return def.promise;
+    await this.tooltip.once("shown");
+    return new CubicBezierWidget(container, bezier);
   }
 
   /**

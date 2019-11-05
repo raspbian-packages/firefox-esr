@@ -11,8 +11,12 @@
 #include "mozilla/gfx/gfxVars.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/TextEvents.h"
+#include "mozilla/widget/HeadlessWidgetTypes.h"
+#include "mozilla/widget/PlatformWidgetTypes.h"
+#include "nsIScreen.h"
 #include "HeadlessKeyBindings.h"
 
+using namespace mozilla;
 using namespace mozilla::gfx;
 using namespace mozilla::layers;
 
@@ -20,37 +24,28 @@ using mozilla::LogLevel;
 
 #ifdef MOZ_LOGGING
 
-#include "mozilla/Logging.h"
+#  include "mozilla/Logging.h"
 static mozilla::LazyLogModule sWidgetLog("Widget");
 static mozilla::LazyLogModule sWidgetFocusLog("WidgetFocus");
-#define LOG(args) MOZ_LOG(sWidgetLog, mozilla::LogLevel::Debug, args)
-#define LOGFOCUS(args) MOZ_LOG(sWidgetFocusLog, mozilla::LogLevel::Debug, args)
+#  define LOG(args) MOZ_LOG(sWidgetLog, mozilla::LogLevel::Debug, args)
+#  define LOGFOCUS(args) \
+    MOZ_LOG(sWidgetFocusLog, mozilla::LogLevel::Debug, args)
 
 #else
 
-#define LOG(args)
-#define LOGFOCUS(args)
+#  define LOG(args)
+#  define LOGFOCUS(args)
 
 #endif /* MOZ_LOGGING */
 
-/*static*/ already_AddRefed<nsIWidget> nsIWidget::CreateHeadlessWidget() {
+/*static*/
+already_AddRefed<nsIWidget> nsIWidget::CreateHeadlessWidget() {
   nsCOMPtr<nsIWidget> widget = new mozilla::widget::HeadlessWidget();
   return widget.forget();
 }
 
 namespace mozilla {
 namespace widget {
-
-already_AddRefed<gfxContext> CreateDefaultTarget(IntSize aSize) {
-  // Always use at least a 1x1 draw target to avoid gfx issues
-  // with 0x0 targets.
-  IntSize size =
-      (aSize.width <= 0 || aSize.height <= 0) ? gfx::IntSize(1, 1) : aSize;
-  RefPtr<DrawTarget> target = Factory::CreateDrawTarget(
-      gfxVars::ContentBackend(), size, SurfaceFormat::B8G8R8A8);
-  RefPtr<gfxContext> ctx = gfxContext::CreatePreservingTransformOrNull(target);
-  return ctx.forget();
-}
 
 StaticAutoPtr<nsTArray<HeadlessWidget*>> HeadlessWidget::sActiveWindows;
 
@@ -366,12 +361,25 @@ nsresult HeadlessWidget::MakeFullScreen(bool aFullScreen,
     mSizeMode = mLastSizeMode;
   }
 
-  nsBaseWidget::InfallibleMakeFullScreen(aFullScreen, aTargetScreen);
-
+  // Notify the listener first so size mode change events are triggered before
+  // resize events.
   if (mWidgetListener) {
     mWidgetListener->SizeModeChanged(mSizeMode);
     mWidgetListener->FullscreenChanged(aFullScreen);
   }
+
+  // Real widget backends don't seem to follow a common approach for
+  // when and how many resize events are triggered during fullscreen
+  // transitions. InfallibleMakeFullScreen will trigger a resize, but it
+  // will be ignored if still transitioning to fullscreen, so it must be
+  // triggered on the next tick.
+  RefPtr<HeadlessWidget> self(this);
+  nsCOMPtr<nsIScreen> targetScreen(aTargetScreen);
+  NS_DispatchToCurrentThread(NS_NewRunnableFunction(
+      "HeadlessWidget::MakeFullScreen",
+      [self, targetScreen, aFullScreen]() -> void {
+        self->InfallibleMakeFullScreen(aFullScreen, targetScreen);
+      }));
 
   return NS_OK;
 }
@@ -431,7 +439,7 @@ nsresult HeadlessWidget::SynthesizeNativeMouseEvent(LayoutDeviceIntPoint aPoint,
   WidgetMouseEvent event(true, msg, this, WidgetMouseEvent::eReal);
   event.mRefPoint = aPoint - WidgetToScreenOffset();
   if (msg == eMouseDown || msg == eMouseUp) {
-    event.button = WidgetMouseEvent::eLeftButton;
+    event.mButton = MouseButton::eLeft;
   }
   if (msg == eMouseDown) {
     event.mClickCount = 1;

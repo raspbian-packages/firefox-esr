@@ -62,7 +62,7 @@ class xpcAccessibleTextRange final : public nsIAccessibleTextRange {
 
  private:
   explicit xpcAccessibleTextRange(TextRange&& aRange)
-      : mRange(Forward<TextRange>(aRange)) {}
+      : mRange(std::forward<TextRange>(aRange)) {}
   xpcAccessibleTextRange() {}
 
   ~xpcAccessibleTextRange() {}

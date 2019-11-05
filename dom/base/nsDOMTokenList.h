@@ -68,7 +68,7 @@ class nsDOMTokenList : public nsISupports, public nsWrapperCache {
   void Add(const nsTArray<nsString>& aTokens, mozilla::ErrorResult& aError);
   void Remove(const nsAString& aToken, mozilla::ErrorResult& aError);
   void Remove(const nsTArray<nsString>& aTokens, mozilla::ErrorResult& aError);
-  void Replace(const nsAString& aToken, const nsAString& aNewToken,
+  bool Replace(const nsAString& aToken, const nsAString& aNewToken,
                mozilla::ErrorResult& aError);
   bool Toggle(const nsAString& aToken,
               const mozilla::dom::Optional<bool>& force,
@@ -89,7 +89,7 @@ class nsDOMTokenList : public nsISupports, public nsWrapperCache {
   void AddInternal(const nsAttrValue* aAttr, const nsTArray<nsString>& aTokens);
   void RemoveInternal(const nsAttrValue* aAttr,
                       const nsTArray<nsString>& aTokens);
-  void ReplaceInternal(const nsAttrValue* aAttr, const nsAString& aToken,
+  bool ReplaceInternal(const nsAttrValue* aAttr, const nsAString& aToken,
                        const nsAString& aNewToken);
   inline const nsAttrValue* GetParsedAttr();
 

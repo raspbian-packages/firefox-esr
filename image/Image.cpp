@@ -4,10 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "Image.h"
+#include "gfxPrefs.h"
 #include "Layers.h"  // for LayerManager
 #include "nsRefreshDriver.h"
+#include "nsContentUtils.h"
+#include "mozilla/SizeOfState.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/Tuple.h"  // for Tie
+#include "mozilla/layers/SharedSurfacesChild.h"
 
 namespace mozilla {
 namespace image {
@@ -22,7 +26,7 @@ ImageMemoryCounter::ImageMemoryCounter(Image* aImage, SizeOfState& aState,
   MOZ_ASSERT(aImage);
 
   // Extract metadata about the image.
-  RefPtr<ImageURL> imageURL(aImage->GetURI());
+  nsCOMPtr<nsIURI> imageURL(aImage->GetURI());
   if (imageURL) {
     imageURL->GetSpec(mURI);
   }
@@ -49,9 +53,21 @@ ImageMemoryCounter::ImageMemoryCounter(Image* aImage, SizeOfState& aState,
 // Image Base Types
 ///////////////////////////////////////////////////////////////////////////////
 
+bool ImageResource::GetSpecTruncatedTo1k(nsCString& aSpec) const {
+  static const size_t sMaxTruncatedLength = 1024;
+
+  mURI->GetSpec(aSpec);
+  if (sMaxTruncatedLength >= aSpec.Length()) {
+    return true;
+  }
+
+  aSpec.Truncate(sMaxTruncatedLength);
+  return false;
+}
+
 void ImageResource::SetCurrentImage(ImageContainer* aContainer,
                                     SourceSurface* aSurface,
-                                    bool aInTransaction) {
+                                    const Maybe<IntRect>& aDirtyRect) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aContainer);
 
@@ -75,16 +91,31 @@ void ImageResource::SetCurrentImage(ImageContainer* aContainer,
   imageList.AppendElement(ImageContainer::NonOwningImage(
       image, TimeStamp(), mLastFrameID++, mImageProducerID));
 
-  if (aInTransaction) {
+  if (aDirtyRect) {
     aContainer->SetCurrentImagesInTransaction(imageList);
   } else {
     aContainer->SetCurrentImages(imageList);
   }
+
+  // If we are animated, then we should request that the image container be
+  // treated as such, to avoid display list rebuilding to update frames for
+  // WebRender.
+  if (mProgressTracker->GetProgress() & FLAG_IS_ANIMATED) {
+    if (aDirtyRect) {
+      layers::SharedSurfacesChild::UpdateAnimation(aContainer, aSurface,
+                                                   aDirtyRect.ref());
+    } else {
+      IntRect dirtyRect(IntPoint(0, 0), aSurface->GetSize());
+      layers::SharedSurfacesChild::UpdateAnimation(aContainer, aSurface,
+                                                   dirtyRect);
+    }
+  }
 }
 
-already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
+ImgDrawResult ImageResource::GetImageContainerImpl(
     LayerManager* aManager, const IntSize& aSize,
-    const Maybe<SVGImageContext>& aSVGContext, uint32_t aFlags) {
+    const Maybe<SVGImageContext>& aSVGContext, uint32_t aFlags,
+    ImageContainer** aOutContainer) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(aManager);
   MOZ_ASSERT(
@@ -92,10 +123,14 @@ already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
                   FLAG_ASYNC_NOTIFY | FLAG_HIGH_QUALITY_SCALING)) == FLAG_NONE,
       "Unsupported flag passed to GetImageContainer");
 
-  IntSize size = GetImageContainerSize(aManager, aSize, aFlags);
-  if (size.IsEmpty()) {
-    return nullptr;
+  ImgDrawResult drawResult;
+  IntSize size;
+  Tie(drawResult, size) = GetImageContainerSize(aManager, aSize, aFlags);
+  if (drawResult != ImgDrawResult::SUCCESS) {
+    return drawResult;
   }
+
+  MOZ_ASSERT(!size.IsEmpty());
 
   if (mAnimationConsumers == 0) {
     SendOnUnlockedDraw(aFlags);
@@ -128,7 +163,9 @@ already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
       case ImgDrawResult::SUCCESS:
       case ImgDrawResult::BAD_IMAGE:
       case ImgDrawResult::BAD_ARGS:
-        return container.forget();
+      case ImgDrawResult::NOT_SUPPORTED:
+        container.forget(aOutContainer);
+        return entry->mLastDrawResult;
       case ImgDrawResult::NOT_READY:
       case ImgDrawResult::INCOMPLETE:
       case ImgDrawResult::TEMPORARY_ERROR:
@@ -138,7 +175,8 @@ already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
         // Unused by GetFrameInternal
       default:
         MOZ_ASSERT_UNREACHABLE("Unhandled ImgDrawResult type!");
-        return container.forget();
+        container.forget(aOutContainer);
+        return entry->mLastDrawResult;
     }
   }
 
@@ -146,7 +184,6 @@ already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
   NotifyDrawingObservers();
 #endif
 
-  ImgDrawResult drawResult;
   IntSize bestSize;
   RefPtr<SourceSurface> surface;
   Tie(drawResult, bestSize, surface) = GetFrameInternal(
@@ -184,7 +221,9 @@ already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
             case ImgDrawResult::SUCCESS:
             case ImgDrawResult::BAD_IMAGE:
             case ImgDrawResult::BAD_ARGS:
-              return container.forget();
+            case ImgDrawResult::NOT_SUPPORTED:
+              container.forget(aOutContainer);
+              return entry->mLastDrawResult;
             case ImgDrawResult::NOT_READY:
             case ImgDrawResult::INCOMPLETE:
             case ImgDrawResult::TEMPORARY_ERROR:
@@ -195,7 +234,8 @@ already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
               // Unused by GetFrameInternal
             default:
               MOZ_ASSERT_UNREACHABLE("Unhandled DrawResult type!");
-              return container.forget();
+              container.forget(aOutContainer);
+              return entry->mLastDrawResult;
           }
         }
         break;
@@ -215,12 +255,13 @@ already_AddRefed<ImageContainer> ImageResource::GetImageContainerImpl(
     }
   }
 
-  SetCurrentImage(container, surface, true);
+  SetCurrentImage(container, surface, Nothing());
   entry->mLastDrawResult = drawResult;
-  return container.forget();
+  container.forget(aOutContainer);
+  return drawResult;
 }
 
-void ImageResource::UpdateImageContainer() {
+bool ImageResource::UpdateImageContainer(const Maybe<IntRect>& aDirtyRect) {
   MOZ_ASSERT(NS_IsMainThread());
 
   for (int i = mImageContainers.Length() - 1; i >= 0; --i) {
@@ -236,12 +277,19 @@ void ImageResource::UpdateImageContainer() {
       // managed to convert the weak reference into a strong reference, that
       // means that an imagelib user still is holding onto the container. thus
       // we cannot consolidate and must keep updating the duplicate container.
-      SetCurrentImage(container, surface, false);
+      if (aDirtyRect) {
+        SetCurrentImage(container, surface, aDirtyRect);
+      } else {
+        IntRect dirtyRect(IntPoint(0, 0), bestSize);
+        SetCurrentImage(container, surface, Some(dirtyRect));
+      }
     } else {
       // Stop tracking if our weak pointer to the image container was freed.
       mImageContainers.RemoveElementAt(i);
     }
   }
+
+  return !mImageContainers.IsEmpty();
 }
 
 void ImageResource::ReleaseImageContainer() {
@@ -250,7 +298,7 @@ void ImageResource::ReleaseImageContainer() {
 }
 
 // Constructor
-ImageResource::ImageResource(ImageURL* aURI)
+ImageResource::ImageResource(nsIURI* aURI)
     : mURI(aURI),
       mInnerWindowId(0),
       mAnimationConsumers(0),
@@ -351,7 +399,8 @@ void ImageResource::SendOnUnlockedDraw(uint32_t aFlags) {
             tracker->OnUnlockedDraw();
           }
         });
-    eventTarget->Dispatch(ev.forget(), NS_DISPATCH_NORMAL);
+    eventTarget->Dispatch(CreateMediumHighRunnable(ev.forget()),
+                          NS_DISPATCH_NORMAL);
   }
 }
 
@@ -368,15 +417,18 @@ void ImageResource::NotifyDrawingObservers() {
   }
 
   // Record the image drawing for startup performance testing.
-  nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
-  NS_WARNING_ASSERTION(obs, "Can't get an observer service handle");
-  if (obs) {
-    nsCOMPtr<nsIURI> imageURI = mURI->ToIURI();
-    nsAutoCString spec;
-    imageURI->GetSpec(spec);
-    obs->NotifyObservers(nullptr, "image-drawing",
-                         NS_ConvertUTF8toUTF16(spec).get());
-  }
+  nsCOMPtr<nsIURI> uri = mURI;
+  nsContentUtils::AddScriptRunner(NS_NewRunnableFunction(
+      "image::ImageResource::NotifyDrawingObservers", [uri]() {
+        nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
+        NS_WARNING_ASSERTION(obs, "Can't get an observer service handle");
+        if (obs) {
+          nsAutoCString spec;
+          uri->GetSpec(spec);
+          obs->NotifyObservers(nullptr, "image-drawing",
+                               NS_ConvertUTF8toUTF16(spec).get());
+        }
+      }));
 }
 #endif
 

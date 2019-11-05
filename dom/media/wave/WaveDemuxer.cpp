@@ -12,7 +12,6 @@
 #include "mozilla/Assertions.h"
 #include "mozilla/EndianUtils.h"
 #include "BufferReader.h"
-#include "nsAutoPtr.h"
 #include "VideoUtils.h"
 #include "TimeUnits.h"
 
@@ -65,10 +64,12 @@ WAVTrackDemuxer::WAVTrackDemuxer(MediaResource* aSource)
       mFirstChunkOffset(0),
       mNumParsedChunks(0),
       mChunkIndex(0),
+      mDataLength(0),
       mTotalChunkLen(0),
       mSamplesPerChunk(0),
       mSamplesPerSecond(0),
-      mChannels(0) {
+      mChannels(0),
+      mSampleFormat(0) {
   DDLINKCHILD("source", aSource);
   Reset();
 }
@@ -439,7 +440,7 @@ already_AddRefed<MediaRawData> WAVTrackDemuxer::GetNextChunk(
   RefPtr<MediaRawData> datachunk = new MediaRawData();
   datachunk->mOffset = aRange.mStart;
 
-  nsAutoPtr<MediaRawDataWriter> chunkWriter(datachunk->CreateWriter());
+  UniquePtr<MediaRawDataWriter> chunkWriter(datachunk->CreateWriter());
   if (!chunkWriter->SetSize(aRange.Length())) {
     return nullptr;
   }
@@ -481,7 +482,7 @@ already_AddRefed<MediaRawData> WAVTrackDemuxer::GetFileHeader(
   RefPtr<MediaRawData> fileHeader = new MediaRawData();
   fileHeader->mOffset = aRange.mStart;
 
-  nsAutoPtr<MediaRawDataWriter> headerWriter(fileHeader->CreateWriter());
+  UniquePtr<MediaRawDataWriter> headerWriter(fileHeader->CreateWriter());
   if (!headerWriter->SetSize(aRange.Length())) {
     return nullptr;
   }

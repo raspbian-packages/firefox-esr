@@ -23,7 +23,7 @@
 #include "nsIRunnable.h"
 #include "nsIThreadInternal.h"
 #include "nsIFrame.h"
-#include "nsIFrameLoader.h"
+#include "nsFrameLoaderOwner.h"
 
 class nsAsyncInstantiateEvent;
 class nsStopPluginRunnable;
@@ -31,7 +31,6 @@ class AutoSetInstantiatingToFalse;
 class nsIPrincipal;
 class nsFrameLoader;
 class nsPluginFrame;
-class nsXULElement;
 class nsPluginInstanceOwner;
 
 namespace mozilla {
@@ -40,12 +39,16 @@ template <typename T>
 class Sequence;
 struct MozPluginParameter;
 class HTMLIFrameElement;
+template <typename T>
+struct Nullable;
+class WindowProxyHolder;
+class XULFrameElement;
 }  // namespace dom
 }  // namespace mozilla
 
 class nsObjectLoadingContent : public nsImageLoadingContent,
                                public nsIStreamListener,
-                               public nsIFrameLoaderOwner,
+                               public nsFrameLoaderOwner,
                                public nsIObjectLoadingContent,
                                public nsIChannelEventSink {
   friend class AutoSetInstantiatingToFalse;
@@ -113,7 +116,6 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
 
   NS_DECL_NSIREQUESTOBSERVER
   NS_DECL_NSISTREAMLISTENER
-  NS_DECL_NSIFRAMELOADEROWNER
   NS_DECL_NSIOBJECTLOADINGCONTENT
   NS_DECL_NSICHANNELEVENTSINK
 
@@ -155,7 +157,7 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
 
   /**
    * Notify this class the document state has changed
-   * Called by nsDocument so we may suspend plugins in inactive documents)
+   * Called by Document so we may suspend plugins in inactive documents)
    */
   void NotifyOwnerDocumentActivityChanged();
 
@@ -187,11 +189,12 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
   static bool MayResolve(jsid aId);
 
   // Helper for WebIDL enumeration
-  void GetOwnPropertyNames(JSContext* aCx, JS::AutoIdVector& /* unused */,
+  void GetOwnPropertyNames(JSContext* aCx,
+                           JS::MutableHandleVector<jsid> /* unused */,
                            bool /* unused */, mozilla::ErrorResult& aRv);
 
   // WebIDL API
-  nsIDocument* GetContentDocument(nsIPrincipal& aSubjectPrincipal);
+  mozilla::dom::Document* GetContentDocument(nsIPrincipal& aSubjectPrincipal);
   void GetActualType(nsAString& aType) const {
     CopyUTF8toUTF16(mContentType, aType);
   }
@@ -221,7 +224,7 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
                         mozilla::ErrorResult& aRv) {
     aRv.Throw(NS_ERROR_NOT_IMPLEMENTED);
   }
-  void SwapFrameLoaders(nsXULElement& aOtherLoaderOwner,
+  void SwapFrameLoaders(mozilla::dom::XULFrameElement& aOtherLoaderOwner,
                         mozilla::ErrorResult& aRv) {
     aRv.Throw(NS_ERROR_NOT_IMPLEMENTED);
   }
@@ -235,7 +238,8 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
 
   bool IsRewrittenYoutubeEmbed() const { return mRewrittenYoutubeEmbed; }
 
-  void PresetOpenerWindow(mozIDOMWindowProxy* aOpenerWindow,
+  void PresetOpenerWindow(const mozilla::dom::Nullable<
+                              mozilla::dom::WindowProxyHolder>& aOpenerWindow,
                           mozilla::ErrorResult& aRv);
 
  protected:
@@ -280,7 +284,7 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
     eSupportImages = 1u << 0,     // Images are supported (imgILoader)
     eSupportPlugins = 1u << 1,    // Plugins are supported (nsIPluginHost)
     eSupportDocuments = 1u << 2,  // Documents are supported
-                                  // (nsIDocumentLoaderFactory)
+                                  // (DocumentLoaderFactory)
                                   // This flag always includes SVG
 
     // Node supports class ID as an attribute, and should fallback if it is
@@ -316,8 +320,8 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
 
   void DoStopPlugin(nsPluginInstanceOwner* aInstanceOwner);
 
-  nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                      nsIContent* aBindingParent, bool aCompileEventHandler);
+  nsresult BindToTree(mozilla::dom::Document* aDocument, nsIContent* aParent,
+                      nsIContent* aBindingParent);
   void UnbindFromTree(bool aDeep = true, bool aNullParent = true);
 
   /**
@@ -592,11 +596,10 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
   };
 
   // Utility getter for getting our nsNPAPIPluginInstance in a safe way.
-  nsresult ScriptRequestPluginInstance(JSContext* aCx,
-                                       nsNPAPIPluginInstance** aResult);
+  nsNPAPIPluginInstance* ScriptRequestPluginInstance(JSContext* aCx);
 
   // Utility method for getting our plugin JSObject
-  static nsresult GetPluginJSObject(JSContext* cx, JS::Handle<JSObject*> obj,
+  static nsresult GetPluginJSObject(JSContext* cx,
                                     nsNPAPIPluginInstance* plugin_inst,
                                     JS::MutableHandle<JSObject*> plugin_obj,
                                     JS::MutableHandle<JSObject*> plugin_proto);
@@ -606,9 +609,6 @@ class nsObjectLoadingContent : public nsImageLoadingContent,
 
   // The final listener for mChannel (uriloader, pluginstreamlistener, etc.)
   nsCOMPtr<nsIStreamListener> mFinalListener;
-
-  // Frame loader, for content documents we load.
-  RefPtr<nsFrameLoader> mFrameLoader;
 
   // Track if we have a pending AsyncInstantiateEvent
   nsCOMPtr<nsIRunnable> mPendingInstantiateEvent;

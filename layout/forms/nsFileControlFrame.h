@@ -14,35 +14,41 @@
 #include "nsIAnonymousContentCreator.h"
 #include "nsCOMPtr.h"
 
-class nsIDOMDataTransfer;
-class nsIDOMFileList;
 namespace mozilla {
 namespace dom {
+class FileList;
 class BlobImpl;
+class DataTransfer;
 }  // namespace dom
 }  // namespace mozilla
 
-class nsFileControlFrame : public nsBlockFrame,
-                           public nsIFormControlFrame,
-                           public nsIAnonymousContentCreator {
+class nsFileControlFrame final : public nsBlockFrame,
+                                 public nsIFormControlFrame,
+                                 public nsIAnonymousContentCreator {
  public:
-  explicit nsFileControlFrame(nsStyleContext* aContext);
+  NS_DECL_QUERYFRAME
+  NS_DECL_FRAMEARENA_HELPERS(nsFileControlFrame)
+
+  explicit nsFileControlFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext);
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
 
+  void Reflow(nsPresContext* aPresContext, ReflowOutput& aDesiredSize,
+              const ReflowInput& aReflowInput,
+              nsReflowStatus& aStatus) override;
+
   virtual void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                 const nsDisplayListSet& aLists) override;
-
-  NS_DECL_QUERYFRAME
-  NS_DECL_FRAMEARENA_HELPERS(nsFileControlFrame)
 
   // nsIFormControlFrame
   virtual nsresult SetFormProperty(nsAtom* aName,
                                    const nsAString& aValue) override;
   virtual void SetFocus(bool aOn, bool aRepaint) override;
 
-  virtual nscoord GetMinISize(gfxContext* aRenderingContext) override;
+  nscoord GetMinISize(gfxContext* aRenderingContext) override;
+  nscoord GetPrefISize(gfxContext* aRenderingContext) override;
 
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
@@ -51,8 +57,8 @@ class nsFileControlFrame : public nsBlockFrame,
   virtual nsresult GetFrameName(nsAString& aResult) const override;
 #endif
 
-  virtual nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
-                                    int32_t aModType) override;
+  nsresult AttributeChanged(int32_t aNameSpaceID, nsAtom* aAttribute,
+                            int32_t aModType) override;
   virtual void ContentStatesChanged(mozilla::EventStates aStates) override;
 
   // nsIAnonymousContentCreator
@@ -109,13 +115,15 @@ class nsFileControlFrame : public nsBlockFrame,
    public:
     explicit DnDListener(nsFileControlFrame* aFrame) : MouseListener(aFrame) {}
 
-    NS_DECL_NSIDOMEVENTLISTENER
+    // nsIDOMEventListener
+    MOZ_CAN_RUN_SCRIPT_BOUNDARY
+    NS_IMETHOD HandleEvent(mozilla::dom::Event* aEvent) override;
 
-    nsresult GetBlobImplForWebkitDirectory(nsIDOMFileList* aFileList,
+    nsresult GetBlobImplForWebkitDirectory(mozilla::dom::FileList* aFileList,
                                            mozilla::dom::BlobImpl** aBlobImpl);
 
-    bool IsValidDropData(nsIDOMDataTransfer* aDOMDataTransfer);
-    bool CanDropTheseFiles(nsIDOMDataTransfer* aDOMDataTransfer,
+    bool IsValidDropData(mozilla::dom::DataTransfer* aDataTransfer);
+    bool CanDropTheseFiles(mozilla::dom::DataTransfer* aDataTransfer,
                            bool aSupportsMultiple);
   };
 
@@ -142,6 +150,14 @@ class nsFileControlFrame : public nsBlockFrame,
   RefPtr<DnDListener> mMouseListener;
 
  protected:
+  /**
+   * Crop aText to fit inside aWidth using the styles of aFrame.
+   * @return true if aText was modified
+   */
+  static bool CropTextToWidth(gfxContext& aRenderingContext,
+                              const nsIFrame* aFrame, nscoord aWidth,
+                              nsString& aText);
+
   /**
    * Sync the disabled state of the content with anonymous children.
    */

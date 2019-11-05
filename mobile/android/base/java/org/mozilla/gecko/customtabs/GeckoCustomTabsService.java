@@ -14,6 +14,7 @@ import android.util.Log;
 
 import org.mozilla.gecko.GeckoProfile;
 import org.mozilla.gecko.GeckoService;
+import org.mozilla.gecko.GeckoStarterService;
 import org.mozilla.gecko.GeckoThread;
 import org.mozilla.gecko.Telemetry;
 import org.mozilla.gecko.TelemetryContract;
@@ -36,6 +37,15 @@ public class GeckoCustomTabsService extends CustomTabsService {
     }
 
     @Override
+    protected boolean validateRelationship(
+        final CustomTabsSessionToken sessionToken, final int relation,
+        final Uri origin, final Bundle extras) {
+        Log.v(LOGTAG, "validateRelationship()");
+
+        return false;
+    }
+
+    @Override
     protected boolean warmup(long flags) {
 
         Telemetry.sendUIEvent(TelemetryContract.Event.ACTION, TelemetryContract.Method.SERVICE, "customtab-warmup");
@@ -48,11 +58,11 @@ public class GeckoCustomTabsService extends CustomTabsService {
             return true;
         }
 
-        final Intent intent = GeckoService.getIntentToStartGecko(this);
+        final Intent intent = GeckoService.getIntentToStartGecko();
         // Use a default profile for warming up Gecko.
         final GeckoProfile profile = GeckoProfile.get(this);
         GeckoService.setIntentProfile(intent, profile.getName(), profile.getDir().getAbsolutePath());
-        startService(intent);
+        GeckoStarterService.enqueueWork(this, intent);
         return true;
     }
 
@@ -102,5 +112,19 @@ public class GeckoCustomTabsService extends CustomTabsService {
         Log.v(LOGTAG, "extraCommand()");
 
         return null;
+    }
+
+    @Override
+    protected boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken, Uri postMessageOrigin) {
+        Log.v(LOGTAG, "requestPostMessageChannel()");
+
+        return false;
+    }
+
+    @Override
+    protected int postMessage(CustomTabsSessionToken sessionToken, String message, Bundle extras) {
+        Log.v(LOGTAG, "postMessage()");
+
+        return RESULT_FAILURE_DISALLOWED;
     }
 }

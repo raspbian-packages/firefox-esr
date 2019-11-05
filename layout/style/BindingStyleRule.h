@@ -27,8 +27,9 @@ class Element;
 
 class BindingStyleRule : public css::Rule {
  protected:
-  BindingStyleRule(uint32_t aLineNumber, uint32_t aColumnNumber)
-      : css::Rule(aLineNumber, aColumnNumber) {}
+  BindingStyleRule(StyleSheet* aSheet, css::Rule* aParentRule,
+                   uint32_t aLineNumber, uint32_t aColumnNumber)
+      : css::Rule(aSheet, aParentRule, aLineNumber, aColumnNumber) {}
   BindingStyleRule(const BindingStyleRule& aCopy) : css::Rule(aCopy) {}
   virtual ~BindingStyleRule() {}
 

@@ -20,30 +20,40 @@ RemoteSpellcheckEngineChild::~RemoteSpellcheckEngineChild() {
 RefPtr<GenericPromise>
 RemoteSpellcheckEngineChild::SetCurrentDictionaryFromList(
     const nsTArray<nsString>& aList) {
-  MozPromiseHolder<GenericPromise>* promiseHolder =
-      new MozPromiseHolder<GenericPromise>();
-  if (!SendSetDictionaryFromList(aList,
-                                 reinterpret_cast<intptr_t>(promiseHolder))) {
-    delete promiseHolder;
-    return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
-  }
-  // promiseHolder will removed by receive message
-  return promiseHolder->Ensure(__func__);
+  RefPtr<mozSpellChecker> spellChecker = mOwner;
+
+  return SendSetDictionaryFromList(aList)->Then(
+      GetMainThreadSerialEventTarget(), __func__,
+      [spellChecker](Tuple<bool, nsString>&& aParam) {
+        if (!Get<0>(aParam)) {
+          spellChecker->mCurrentDictionary.Truncate();
+          return GenericPromise::CreateAndReject(NS_ERROR_NOT_AVAILABLE,
+                                                 __func__);
+        }
+        spellChecker->mCurrentDictionary = std::move(Get<1>(aParam));
+        return GenericPromise::CreateAndResolve(true, __func__);
+      },
+      [spellChecker](ResponseRejectReason&& aReason) {
+        spellChecker->mCurrentDictionary.Truncate();
+        return GenericPromise::CreateAndReject(NS_ERROR_NOT_AVAILABLE,
+                                               __func__);
+      });
 }
 
-mozilla::ipc::IPCResult
-RemoteSpellcheckEngineChild::RecvNotifyOfCurrentDictionary(
-    const nsString& aDictionary, const intptr_t& aId) {
-  MozPromiseHolder<GenericPromise>* promiseHolder =
-      reinterpret_cast<MozPromiseHolder<GenericPromise>*>(aId);
-  mOwner->mCurrentDictionary = aDictionary;
-  if (aDictionary.IsEmpty()) {
-    promiseHolder->RejectIfExists(NS_ERROR_NOT_AVAILABLE, __func__);
-  } else {
-    promiseHolder->ResolveIfExists(true, __func__);
-  }
-  delete promiseHolder;
-  return IPC_OK();
+RefPtr<CheckWordPromise> RemoteSpellcheckEngineChild::CheckWords(
+    const nsTArray<nsString>& aWords) {
+  RefPtr<mozSpellChecker> kungFuDeathGrip = mOwner;
+
+  return SendCheckAsync(aWords)->Then(
+      GetMainThreadSerialEventTarget(), __func__,
+      [kungFuDeathGrip](nsTArray<bool>&& aIsMisspelled) {
+        return CheckWordPromise::CreateAndResolve(std::move(aIsMisspelled),
+                                                  __func__);
+      },
+      [kungFuDeathGrip](mozilla::ipc::ResponseRejectReason&& aReason) {
+        return CheckWordPromise::CreateAndReject(NS_ERROR_NOT_AVAILABLE,
+                                                 __func__);
+      });
 }
 
 }  // namespace mozilla

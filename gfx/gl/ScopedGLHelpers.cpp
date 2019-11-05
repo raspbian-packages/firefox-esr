@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,10 +10,6 @@
 
 namespace mozilla {
 namespace gl {
-
-#ifdef DEBUG
-bool IsContextCurrent(GLContext* gl) { return gl->IsCurrent(); }
-#endif
 
 /* ScopedGLState - Wraps glEnable/glDisable. **********************************/
 
@@ -80,7 +76,7 @@ void ScopedBindFramebuffer::UnwrapImpl() {
 /* ScopedBindTextureUnit ******************************************************/
 
 ScopedBindTextureUnit::ScopedBindTextureUnit(GLContext* aGL, GLenum aTexUnit)
-    : ScopedGLWrapper<ScopedBindTextureUnit>(aGL) {
+    : ScopedGLWrapper<ScopedBindTextureUnit>(aGL), mOldTexUnit(0) {
   MOZ_ASSERT(aTexUnit >= LOCAL_GL_TEXTURE0);
   mGL->GetUIntegerv(LOCAL_GL_ACTIVE_TEXTURE, &mOldTexUnit);
   mGL->fActiveTexture(aTexUnit);
@@ -91,7 +87,7 @@ void ScopedBindTextureUnit::UnwrapImpl() { mGL->fActiveTexture(mOldTexUnit); }
 /* ScopedTexture **************************************************************/
 
 ScopedTexture::ScopedTexture(GLContext* aGL)
-    : ScopedGLWrapper<ScopedTexture>(aGL) {
+    : ScopedGLWrapper<ScopedTexture>(aGL), mTexture(0) {
   mGL->fGenTextures(1, &mTexture);
 }
 
@@ -101,7 +97,7 @@ void ScopedTexture::UnwrapImpl() { mGL->fDeleteTextures(1, &mTexture); }
  * **************************************************************/
 
 ScopedFramebuffer::ScopedFramebuffer(GLContext* aGL)
-    : ScopedGLWrapper<ScopedFramebuffer>(aGL) {
+    : ScopedGLWrapper<ScopedFramebuffer>(aGL), mFB(0) {
   mGL->fGenFramebuffers(1, &mFB);
 }
 
@@ -111,7 +107,7 @@ void ScopedFramebuffer::UnwrapImpl() { mGL->fDeleteFramebuffers(1, &mFB); }
  * **************************************************************/
 
 ScopedRenderbuffer::ScopedRenderbuffer(GLContext* aGL)
-    : ScopedGLWrapper<ScopedRenderbuffer>(aGL) {
+    : ScopedGLWrapper<ScopedRenderbuffer>(aGL), mRB(0) {
   mGL->fGenRenderbuffers(1, &mRB);
 }
 
@@ -283,7 +279,15 @@ ScopedVertexAttribPointer::ScopedVertexAttribPointer(
     GLContext* aGL, GLuint index, GLint size, GLenum type,
     realGLboolean normalized, GLsizei stride, GLuint buffer,
     const GLvoid* pointer)
-    : ScopedGLWrapper<ScopedVertexAttribPointer>(aGL) {
+    : ScopedGLWrapper<ScopedVertexAttribPointer>(aGL),
+      mAttribEnabled(0),
+      mAttribSize(0),
+      mAttribStride(0),
+      mAttribType(0),
+      mAttribNormalized(0),
+      mAttribBufferBinding(0),
+      mAttribPointer(nullptr),
+      mBoundBuffer(0) {
   WrapImpl(index);
   mGL->fBindBuffer(LOCAL_GL_ARRAY_BUFFER, buffer);
   mGL->fVertexAttribPointer(index, size, type, normalized, stride, pointer);
@@ -292,7 +296,15 @@ ScopedVertexAttribPointer::ScopedVertexAttribPointer(
 
 ScopedVertexAttribPointer::ScopedVertexAttribPointer(GLContext* aGL,
                                                      GLuint index)
-    : ScopedGLWrapper<ScopedVertexAttribPointer>(aGL) {
+    : ScopedGLWrapper<ScopedVertexAttribPointer>(aGL),
+      mAttribEnabled(0),
+      mAttribSize(0),
+      mAttribStride(0),
+      mAttribType(0),
+      mAttribNormalized(0),
+      mAttribBufferBinding(0),
+      mAttribPointer(nullptr),
+      mBoundBuffer(0) {
   WrapImpl(index);
 }
 
@@ -352,7 +364,12 @@ void ScopedVertexAttribPointer::UnwrapImpl() {
 // ScopedPackState
 
 ScopedPackState::ScopedPackState(GLContext* gl)
-    : ScopedGLWrapper<ScopedPackState>(gl) {
+    : ScopedGLWrapper<ScopedPackState>(gl),
+      mAlignment(0),
+      mPixelBuffer(0),
+      mRowLength(0),
+      mSkipPixels(0),
+      mSkipRows(0) {
   mGL->fGetIntegerv(LOCAL_GL_PACK_ALIGNMENT, &mAlignment);
 
   if (mAlignment != 4) mGL->fPixelStorei(LOCAL_GL_PACK_ALIGNMENT, 4);
@@ -370,6 +387,22 @@ ScopedPackState::ScopedPackState(GLContext* gl)
   if (mSkipRows != 0) mGL->fPixelStorei(LOCAL_GL_PACK_SKIP_ROWS, 0);
 }
 
+bool ScopedPackState::SetForWidthAndStrideRGBA(GLsizei aWidth,
+                                               GLsizei aStride) {
+  MOZ_ASSERT(aStride % 4 == 0, "RGBA data should always be 4-byte aligned");
+  MOZ_ASSERT(aStride / 4 >= aWidth, "Stride too small");
+  if (aStride / 4 == aWidth) {
+    // No special handling needed.
+    return true;
+  }
+  if (mGL->HasPBOState()) {
+    // HasPBOState implies support for GL_PACK_ROW_LENGTH.
+    mGL->fPixelStorei(LOCAL_GL_PACK_ROW_LENGTH, aStride / 4);
+    return true;
+  }
+  return false;
+}
+
 void ScopedPackState::UnwrapImpl() {
   mGL->fPixelStorei(LOCAL_GL_PACK_ALIGNMENT, mAlignment);
 
@@ -385,7 +418,14 @@ void ScopedPackState::UnwrapImpl() {
 // ResetUnpackState
 
 ResetUnpackState::ResetUnpackState(GLContext* gl)
-    : ScopedGLWrapper<ResetUnpackState>(gl) {
+    : ScopedGLWrapper<ResetUnpackState>(gl),
+      mAlignment(0),
+      mPBO(0),
+      mRowLength(0),
+      mImageHeight(0),
+      mSkipPixels(0),
+      mSkipRows(0),
+      mSkipImages(0) {
   const auto fnReset = [&](GLenum pname, GLuint val, GLuint* const out_old) {
     mGL->GetUIntegerv(pname, out_old);
     if (*out_old != val) {

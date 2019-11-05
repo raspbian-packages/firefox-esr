@@ -71,7 +71,6 @@ class ProxyAccessibleBase {
   uint32_t EmbeddedChildCount() const;
   int32_t IndexOfEmbeddedChild(const Derived* aChild);
   Derived* EmbeddedChildAt(size_t aChildIdx);
-  bool MustPruneChildren() const;
 
   void Shutdown();
 
@@ -154,7 +153,8 @@ class ProxyAccessibleBase {
         mIsDoc(false),
         mHasValue(aInterfaces & Interfaces::VALUE),
         mIsHyperLink(aInterfaces & Interfaces::HYPERLINK),
-        mIsHyperText(aInterfaces & Interfaces::HYPERTEXT) {}
+        mIsHyperText(aInterfaces & Interfaces::HYPERTEXT),
+        mIsSelection(aInterfaces & Interfaces::SELECTION) {}
 
   explicit ProxyAccessibleBase(DocAccessibleParent* aThisAsDoc)
       : mParent(kNoParent),
@@ -166,7 +166,8 @@ class ProxyAccessibleBase {
         mIsDoc(true),
         mHasValue(false),
         mIsHyperLink(false),
-        mIsHyperText(false) {}
+        mIsHyperText(false),
+        mIsSelection(false) {}
 
  protected:
   void SetParent(Derived* aParent);
@@ -195,6 +196,7 @@ class ProxyAccessibleBase {
   const bool mHasValue : 1;
   const bool mIsHyperLink : 1;
   const bool mIsHyperText : 1;
+  const bool mIsSelection : 1;
 };
 
 extern template class ProxyAccessibleBase<ProxyAccessible>;

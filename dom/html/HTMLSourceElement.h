@@ -21,23 +21,21 @@ class MediaList;
 class HTMLSourceElement final : public nsGenericHTMLElement {
  public:
   explicit HTMLSourceElement(
-      already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLSourceElement,
                                            nsGenericHTMLElement)
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLSourceElement, source)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLSourceElement, source)
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   // Override BindToTree() so that we can trigger a load when we add a
   // child source element.
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
 
   // If this element's media attr matches for its owner document.  Returns true
   // if no media attr was set.
@@ -47,7 +45,7 @@ class HTMLSourceElement final : public nsGenericHTMLElement {
   // specified document. Used by the preloader to determine valid <source> tags
   // prior to DOM creation.
   static bool WouldMatchMediaForDocument(const nsAString& aMediaStr,
-                                         const nsIDocument* aDocument);
+                                         const Document* aDocument);
 
   // Return the MediaSource object if any associated with the src attribute
   // when it was set.

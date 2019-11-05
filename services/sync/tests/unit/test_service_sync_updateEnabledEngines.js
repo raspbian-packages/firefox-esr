@@ -1,12 +1,7 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-ChromeUtils.import("resource://services-sync/constants.js");
-ChromeUtils.import("resource://services-sync/engines.js");
-ChromeUtils.import("resource://services-sync/engines/clients.js");
-ChromeUtils.import("resource://services-sync/record.js");
-ChromeUtils.import("resource://services-sync/service.js");
-ChromeUtils.import("resource://services-sync/util.js");
+const { Service } = ChromeUtils.import("resource://services-sync/service.js");
 
 function QuietStore() {
   Store.call("Quiet");
@@ -14,7 +9,7 @@ function QuietStore() {
 QuietStore.prototype = {
   async getAllIDs() {
     return [];
-  }
+  },
 };
 
 function SteamEngine() {
@@ -27,7 +22,7 @@ SteamEngine.prototype = {
 
   _sync: async function _sync() {
     await this._syncStartup();
-  }
+  },
 };
 
 function StirlingEngine() {
@@ -38,7 +33,7 @@ StirlingEngine.prototype = {
   // This engine's enabled state is the same as the SteamEngine's.
   get prefName() {
     return "steam";
-  }
+  },
 };
 
 // Tracking info/collections.
@@ -46,18 +41,15 @@ var collectionsHelper = track_collections_helper();
 var upd = collectionsHelper.with_updated_collection;
 
 function sync_httpd_setup(handlers) {
-
   handlers["/1.1/johndoe/info/collections"] = collectionsHelper.handler;
   delete collectionsHelper.collections.crypto;
   delete collectionsHelper.collections.meta;
 
   let cr = new ServerWBO("keys");
-  handlers["/1.1/johndoe/storage/crypto/keys"] =
-    upd("crypto", cr.handler());
+  handlers["/1.1/johndoe/storage/crypto/keys"] = upd("crypto", cr.handler());
 
   let cl = new ServerCollection();
-  handlers["/1.1/johndoe/storage/clients"] =
-    upd("clients", cl.handler());
+  handlers["/1.1/johndoe/storage/clients"] = upd("clients", cl.handler());
 
   return httpd_setup(handlers);
 }
@@ -69,7 +61,9 @@ async function setUp(server) {
   await generateNewKeys(Service.collectionKeys);
   let serverKeys = Service.collectionKeys.asWBO("crypto", "keys");
   await serverKeys.encrypt(Service.identity.syncKeyBundle);
-  let {success} = await serverKeys.upload(Service.resource(Service.cryptoKeysURL));
+  let { success } = await serverKeys.upload(
+    Service.resource(Service.cryptoKeysURL)
+  );
   ok(success);
 }
 
@@ -90,7 +84,7 @@ add_task(async function test_newAccount() {
   let engine = Service.engineManager.get("steam");
   let server = sync_httpd_setup({
     "/1.1/johndoe/storage/meta/global": new ServerWBO("global", {}).handler(),
-    "/1.1/johndoe/storage/steam": new ServerWBO("steam", {}).handler()
+    "/1.1/johndoe/storage/steam": new ServerWBO("steam", {}).handler(),
   });
   await setUp(server);
 
@@ -117,12 +111,14 @@ add_task(async function test_enabledLocally() {
   _("Test: Engine is disabled on remote clients and enabled locally");
   Service.syncID = "abcdefghij";
   let engine = Service.engineManager.get("steam");
-  let metaWBO = new ServerWBO("global", {syncID: Service.syncID,
-                                         storageVersion: STORAGE_VERSION,
-                                         engines: {}});
+  let metaWBO = new ServerWBO("global", {
+    syncID: Service.syncID,
+    storageVersion: STORAGE_VERSION,
+    engines: {},
+  });
   let server = sync_httpd_setup({
     "/1.1/johndoe/storage/meta/global": metaWBO.handler(),
-    "/1.1/johndoe/storage/steam": new ServerWBO("steam", {}).handler()
+    "/1.1/johndoe/storage/steam": new ServerWBO("steam", {}).handler(),
   });
   await setUp(server);
 
@@ -150,17 +146,17 @@ add_task(async function test_disabledLocally() {
   _("Test: Engine is enabled on remote clients and disabled locally");
   Service.syncID = "abcdefghij";
   let engine = Service.engineManager.get("steam");
+  let syncID = await engine.resetLocalSyncID();
   let metaWBO = new ServerWBO("global", {
     syncID: Service.syncID,
     storageVersion: STORAGE_VERSION,
-    engines: {steam: {syncID: engine.syncID,
-                      version: engine.version}}
+    engines: { steam: { syncID, version: engine.version } },
   });
   let steamCollection = new ServerWBO("steam", PAYLOAD);
 
   let server = sync_httpd_setup({
     "/1.1/johndoe/storage/meta/global": metaWBO.handler(),
-    "/1.1/johndoe/storage/steam": steamCollection.handler()
+    "/1.1/johndoe/storage/steam": steamCollection.handler(),
   });
   await setUp(server);
 
@@ -194,11 +190,11 @@ add_task(async function test_disabledLocally_wipe503() {
   _("Test: Engine is enabled on remote clients and disabled locally");
   Service.syncID = "abcdefghij";
   let engine = Service.engineManager.get("steam");
+  let syncID = await engine.resetLocalSyncID();
   let metaWBO = new ServerWBO("global", {
     syncID: Service.syncID,
     storageVersion: STORAGE_VERSION,
-    engines: {steam: {syncID: engine.syncID,
-                      version: engine.version}}
+    engines: { steam: { syncID, version: engine.version } },
   });
 
   function service_unavailable(request, response) {
@@ -210,7 +206,7 @@ add_task(async function test_disabledLocally_wipe503() {
 
   let server = sync_httpd_setup({
     "/1.1/johndoe/storage/meta/global": metaWBO.handler(),
-    "/1.1/johndoe/storage/steam": service_unavailable
+    "/1.1/johndoe/storage/steam": service_unavailable,
   });
   await setUp(server);
 
@@ -234,18 +230,19 @@ add_task(async function test_enabledRemotely() {
   _("Test: Engine is disabled locally and enabled on a remote client");
   Service.syncID = "abcdefghij";
   let engine = Service.engineManager.get("steam");
+  let syncID = await engine.resetLocalSyncID();
   let metaWBO = new ServerWBO("global", {
     syncID: Service.syncID,
     storageVersion: STORAGE_VERSION,
-    engines: {steam: {syncID: engine.syncID,
-                      version: engine.version}}
+    engines: { steam: { syncID, version: engine.version } },
   });
   let server = sync_httpd_setup({
-    "/1.1/johndoe/storage/meta/global":
-    upd("meta", metaWBO.handler()),
+    "/1.1/johndoe/storage/meta/global": upd("meta", metaWBO.handler()),
 
-    "/1.1/johndoe/storage/steam":
-    upd("steam", new ServerWBO("steam", {}).handler())
+    "/1.1/johndoe/storage/steam": upd(
+      "steam",
+      new ServerWBO("steam", {}).handler()
+    ),
   });
   await setUp(server);
 
@@ -255,7 +252,10 @@ add_task(async function test_enabledRemotely() {
     _("Upload some keys to avoid a fresh start.");
     let wbo = await Service.collectionKeys.generateNewKeysWBO();
     await wbo.encrypt(Service.identity.syncKeyBundle);
-    Assert.equal(200, (await wbo.upload(Service.resource(Service.cryptoKeysURL))).status);
+    Assert.equal(
+      200,
+      (await wbo.upload(Service.resource(Service.cryptoKeysURL))).status
+    );
 
     _("Engine is disabled.");
     Assert.ok(!engine.enabled);
@@ -267,7 +267,7 @@ add_task(async function test_enabledRemotely() {
     Assert.ok(engine.enabled);
 
     _("Meta record still present.");
-    Assert.equal(metaWBO.data.engines.steam.syncID, engine.syncID);
+    Assert.equal(metaWBO.data.engines.steam.syncID, await engine.getSyncID());
   } finally {
     await Service.startOver();
     await promiseStopServer(server);
@@ -277,18 +277,23 @@ add_task(async function test_enabledRemotely() {
 add_task(async function test_disabledRemotelyTwoClients() {
   enableValidationPrefs();
 
-  _("Test: Engine is enabled locally and disabled on a remote client... with two clients.");
+  _(
+    "Test: Engine is enabled locally and disabled on a remote client... with two clients."
+  );
   Service.syncID = "abcdefghij";
   let engine = Service.engineManager.get("steam");
-  let metaWBO = new ServerWBO("global", {syncID: Service.syncID,
-                                         storageVersion: STORAGE_VERSION,
-                                         engines: {}});
+  let metaWBO = new ServerWBO("global", {
+    syncID: Service.syncID,
+    storageVersion: STORAGE_VERSION,
+    engines: {},
+  });
   let server = sync_httpd_setup({
-    "/1.1/johndoe/storage/meta/global":
-    upd("meta", metaWBO.handler()),
+    "/1.1/johndoe/storage/meta/global": upd("meta", metaWBO.handler()),
 
-    "/1.1/johndoe/storage/steam":
-    upd("steam", new ServerWBO("steam", {}).handler())
+    "/1.1/johndoe/storage/steam": upd(
+      "steam",
+      new ServerWBO("steam", {}).handler()
+    ),
   });
   await setUp(server);
 
@@ -308,12 +313,14 @@ add_task(async function test_disabledRemotelyTwoClients() {
     metaWBO.modified = Date.now() / 1000;
 
     _("Add a second client and verify that the local pref is changed.");
-    Service.clientsEngine._store._remoteClients.foobar = {name: "foobar", type: "desktop"};
+    Service.clientsEngine._store._remoteClients.foobar = {
+      name: "foobar",
+      type: "desktop",
+    };
     await Service.sync();
 
     _("Engine is disabled.");
     Assert.ok(!engine.enabled);
-
   } finally {
     await Service.startOver();
     await promiseStopServer(server);
@@ -326,12 +333,14 @@ add_task(async function test_disabledRemotely() {
   _("Test: Engine is enabled locally and disabled on a remote client");
   Service.syncID = "abcdefghij";
   let engine = Service.engineManager.get("steam");
-  let metaWBO = new ServerWBO("global", {syncID: Service.syncID,
-                                         storageVersion: STORAGE_VERSION,
-                                         engines: {}});
+  let metaWBO = new ServerWBO("global", {
+    syncID: Service.syncID,
+    storageVersion: STORAGE_VERSION,
+    engines: {},
+  });
   let server = sync_httpd_setup({
     "/1.1/johndoe/storage/meta/global": metaWBO.handler(),
-    "/1.1/johndoe/storage/steam": new ServerWBO("steam", {}).handler()
+    "/1.1/johndoe/storage/steam": new ServerWBO("steam", {}).handler(),
   });
   await setUp(server);
 
@@ -346,7 +355,6 @@ add_task(async function test_disabledRemotely() {
 
     _("Engine is not disabled: only one client.");
     Assert.ok(engine.enabled);
-
   } finally {
     await Service.startOver();
     await promiseStopServer(server);
@@ -360,13 +368,15 @@ add_task(async function test_dependentEnginesEnabledLocally() {
   Service.syncID = "abcdefghij";
   let steamEngine = Service.engineManager.get("steam");
   let stirlingEngine = Service.engineManager.get("stirling");
-  let metaWBO = new ServerWBO("global", {syncID: Service.syncID,
-                                         storageVersion: STORAGE_VERSION,
-                                         engines: {}});
+  let metaWBO = new ServerWBO("global", {
+    syncID: Service.syncID,
+    storageVersion: STORAGE_VERSION,
+    engines: {},
+  });
   let server = sync_httpd_setup({
     "/1.1/johndoe/storage/meta/global": metaWBO.handler(),
     "/1.1/johndoe/storage/steam": new ServerWBO("steam", {}).handler(),
-    "/1.1/johndoe/storage/stirling": new ServerWBO("stirling", {}).handler()
+    "/1.1/johndoe/storage/stirling": new ServerWBO("stirling", {}).handler(),
   });
   await setUp(server);
 
@@ -393,26 +403,30 @@ add_task(async function test_dependentEnginesEnabledLocally() {
 add_task(async function test_dependentEnginesDisabledLocally() {
   enableValidationPrefs();
 
-  _("Test: Two dependent engines are enabled on remote clients and disabled locally");
+  _(
+    "Test: Two dependent engines are enabled on remote clients and disabled locally"
+  );
   Service.syncID = "abcdefghij";
   let steamEngine = Service.engineManager.get("steam");
+  let steamSyncID = await steamEngine.resetLocalSyncID();
   let stirlingEngine = Service.engineManager.get("stirling");
+  let stirlingSyncID = await stirlingEngine.resetLocalSyncID();
   let metaWBO = new ServerWBO("global", {
     syncID: Service.syncID,
     storageVersion: STORAGE_VERSION,
-    engines: {steam: {syncID: steamEngine.syncID,
-                      version: steamEngine.version},
-              stirling: {syncID: stirlingEngine.syncID,
-                         version: stirlingEngine.version}}
+    engines: {
+      steam: { syncID: steamSyncID, version: steamEngine.version },
+      stirling: { syncID: stirlingSyncID, version: stirlingEngine.version },
+    },
   });
 
   let steamCollection = new ServerWBO("steam", PAYLOAD);
   let stirlingCollection = new ServerWBO("stirling", PAYLOAD);
 
   let server = sync_httpd_setup({
-    "/1.1/johndoe/storage/meta/global":     metaWBO.handler(),
-    "/1.1/johndoe/storage/steam":           steamCollection.handler(),
-    "/1.1/johndoe/storage/stirling":        stirlingCollection.handler()
+    "/1.1/johndoe/storage/meta/global": metaWBO.handler(),
+    "/1.1/johndoe/storage/steam": steamCollection.handler(),
+    "/1.1/johndoe/storage/stirling": stirlingCollection.handler(),
   });
   await setUp(server);
 

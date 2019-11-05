@@ -301,6 +301,7 @@ if target_platform() == 'WINNT':
                     "FILE 0 %s" % sourcefile,
                     "PUBLIC xyz 123"
                     ])
+            mock_Popen.return_value.wait.return_value = 0
             mock_communicate = mock_Popen.return_value.communicate
             mock_communicate.side_effect = [("abcd1234", ""),
                                             ("http://example.com/repo", ""),
@@ -441,6 +442,7 @@ class TestFileMapping(HelperMixin, unittest.TestCase):
                 ]
             )
         mock_Popen.return_value.stdout = mk_output(dumped_files)
+        mock_Popen.return_value.wait.return_value = 0
 
         d = symbolstore.Dumper('dump_syms', self.symboldir,
                                file_mapping=file_mapping)
@@ -472,27 +474,21 @@ class TestFunctional(HelperMixin, unittest.TestCase):
                                         'crashreporter', 'tools',
                                         'symbolstore.py')
         if target_platform() == 'WINNT':
-            if buildconfig.substs['MSVC_HAS_DIA_SDK']:
+            if buildconfig.substs['WIN_DIA_SDK_BIN_DIR']:
                 self.dump_syms = os.path.join(buildconfig.topobjdir,
                                               'dist', 'host', 'bin',
                                               'dump_syms.exe')
             else:
-                self.dump_syms = os.path.join(self.topsrcdir,
-                                              'toolkit',
-                                              'crashreporter',
-                                              'tools',
-                                              'win32',
-                                              'dump_syms_vc{_MSC_VER}.exe'.format(**buildconfig.substs))
+                self.skip_test = True
             self.target_bin = os.path.join(buildconfig.topobjdir,
-                                           'browser',
-                                           'app',
+                                           'dist', 'bin',
                                            'firefox.exe')
         else:
             self.dump_syms = os.path.join(buildconfig.topobjdir,
                                           'dist', 'host', 'bin',
                                           'dump_syms')
             self.target_bin = os.path.join(buildconfig.topobjdir,
-                                           'dist', 'bin', 'firefox')
+                                           'dist', 'bin', 'firefox-bin')
 
 
     def tearDown(self):
@@ -504,6 +500,7 @@ class TestFunctional(HelperMixin, unittest.TestCase):
         dist_include_manifest = os.path.join(buildconfig.topobjdir,
                                              '_build_manifests/install/dist_include')
         dist_include = os.path.join(buildconfig.topobjdir, 'dist/include')
+        browser_app = os.path.join(buildconfig.topobjdir, 'browser/app')
         output = subprocess.check_output([sys.executable,
                                           self.script_path,
                                           '--vcs-info',
@@ -513,7 +510,8 @@ class TestFunctional(HelperMixin, unittest.TestCase):
                                           self.dump_syms,
                                           self.test_dir,
                                           self.target_bin],
-                                         stderr=open(os.devnull, 'w'))
+                                         stderr=open(os.devnull, 'w'),
+                                         cwd=browser_app)
         lines = filter(lambda x: x.strip(), output.splitlines())
         self.assertEqual(1, len(lines),
                          'should have one filename in the output')
@@ -534,9 +532,9 @@ class TestFunctional(HelperMixin, unittest.TestCase):
         # Check that nsBrowserApp.cpp is listed as a FILE line, and that
         # it was properly mapped to the source repo.
         check_hg_path(file_lines, 'nsBrowserApp.cpp')
-        # Also check Assertions.h to verify that files from dist/include
+        # Also check Sprintf.h to verify that files from dist/include
         # are properly mapped.
-        check_hg_path(file_lines, 'mfbt/Assertions.h')
+        check_hg_path(file_lines, 'mfbt/Sprintf.h')
 
 
 if __name__ == '__main__':

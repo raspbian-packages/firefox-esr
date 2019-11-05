@@ -125,12 +125,17 @@ RefPtr<MediaDataDecoder::DecodePromise> WMFMediaDataDecoder::ProcessDecode(
     return ProcessError(hr, "MFTManager::Input");
   }
 
+  if (!mLastTime || aSample->mTime > *mLastTime) {
+    mLastTime = Some(aSample->mTime);
+    mLastDuration = aSample->mDuration;
+  }
+  mSamplesCount++;
   mDrainStatus = DrainStatus::DRAINABLE;
   mLastStreamOffset = aSample->mOffset;
 
   hr = ProcessOutput(results);
   if (SUCCEEDED(hr) || hr == MF_E_TRANSFORM_NEED_MORE_INPUT) {
-    return DecodePromise::CreateAndResolve(Move(results), __func__);
+    return DecodePromise::CreateAndResolve(std::move(results), __func__);
   }
   return ProcessError(hr, "MFTManager::Output(2)");
 }
@@ -142,7 +147,7 @@ WMFMediaDataDecoder::ProcessOutput(DecodedData& aResults) {
   while (SUCCEEDED(hr = mMFTManager->Output(mLastStreamOffset, output))) {
     MOZ_ASSERT(output.get(), "Upon success, we must receive an output");
     mHasSuccessfulOutput = true;
-    aResults.AppendElement(Move(output));
+    aResults.AppendElement(std::move(output));
     if (mDrainStatus == DrainStatus::DRAINING) {
       break;
     }
@@ -155,6 +160,8 @@ RefPtr<MediaDataDecoder::FlushPromise> WMFMediaDataDecoder::ProcessFlush() {
     mMFTManager->Flush();
   }
   mDrainStatus = DrainStatus::DRAINED;
+  mSamplesCount = 0;
+  mLastTime.reset();
   return FlushPromise::CreateAndResolve(true, __func__);
 }
 
@@ -183,7 +190,26 @@ RefPtr<MediaDataDecoder::DecodePromise> WMFMediaDataDecoder::ProcessDrain() {
     mDrainStatus = DrainStatus::DRAINED;
   }
   if (SUCCEEDED(hr) || hr == MF_E_TRANSFORM_NEED_MORE_INPUT) {
-    return DecodePromise::CreateAndResolve(Move(results), __func__);
+    if (results.Length() > 0 &&
+        results.LastElement()->mType == MediaData::Type::VIDEO_DATA) {
+      const RefPtr<MediaData>& data = results.LastElement();
+      if (mSamplesCount == 1 && data->mTime == media::TimeUnit::Zero()) {
+        // WMF is unable to calculate a duration if only a single sample
+        // was parsed. Additionally, the pts always comes out at 0 under those
+        // circumstances.
+        // Seeing that we've only fed the decoder a single frame, the pts
+        // and duration are known, it's of the last sample.
+        data->mTime = *mLastTime;
+      }
+      if (data->mTime == *mLastTime) {
+        // The WMF Video decoder is sometimes unable to provide a valid duration
+        // on the last sample even if it has been first set through
+        // SetSampleTime (appears to always happen on Windows 7). So we force
+        // set the duration of the last sample as it was input.
+        data->mDuration = mLastDuration;
+      }
+    }
+    return DecodePromise::CreateAndResolve(std::move(results), __func__);
   }
   return ProcessError(hr, "MFTManager::Output");
 }
@@ -211,7 +237,9 @@ void WMFMediaDataDecoder::SetSeekThreshold(const media::TimeUnit& aTime) {
         media::TimeUnit threshold = aTime;
         self->mMFTManager->SetSeekThreshold(threshold);
       });
-  mTaskQueue->Dispatch(runnable.forget());
+  nsresult rv = mTaskQueue->Dispatch(runnable.forget());
+  MOZ_DIAGNOSTIC_ASSERT(NS_SUCCEEDED(rv));
+  Unused << rv;
 }
 
 }  // namespace mozilla

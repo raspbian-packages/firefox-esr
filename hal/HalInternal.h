@@ -18,7 +18,7 @@
  */
 
 #ifndef MOZ_HAL_NAMESPACE
-#error "You shouldn't directly include HalInternal.h!"
+#  error "You shouldn't directly include HalInternal.h!"
 #endif
 
 namespace mozilla {
@@ -53,26 +53,6 @@ void EnableScreenConfigurationNotifications();
  * Disables screen orientation notifications from the backend.
  */
 void DisableScreenConfigurationNotifications();
-
-/**
- * Enable system clock change notifications from the backend.
- */
-void EnableSystemClockChangeNotifications();
-
-/**
- * Disable system clock change notifications from the backend.
- */
-void DisableSystemClockChangeNotifications();
-
-/**
- * Enable system timezone change notifications from the backend.
- */
-void EnableSystemTimezoneChangeNotifications();
-
-/**
- * Disable system timezone change notifications from the backend.
- */
-void DisableSystemTimezoneChangeNotifications();
 
 /**
  * Has the child-side HAL IPC object been destroyed?  If so, you shouldn't send

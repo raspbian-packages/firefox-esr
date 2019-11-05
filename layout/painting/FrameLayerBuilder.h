@@ -8,6 +8,7 @@
 #define FRAMELAYERBUILDER_H_
 
 #include "nsAutoPtr.h"
+#include "nsCSSPropertyIDSet.h"
 #include "nsTHashtable.h"
 #include "nsHashKeys.h"
 #include "nsTArray.h"
@@ -20,13 +21,15 @@
 #include "Layers.h"
 #include "LayerUserData.h"
 #include "nsDisplayItemTypes.h"
+#include "TransformClipNode.h"
 
 class nsDisplayListBuilder;
 class nsDisplayList;
 class nsDisplayItem;
+class nsPaintedDisplayItem;
 class gfxContext;
 class nsDisplayItemGeometry;
-class nsDisplayMask;
+class nsDisplayMasksAndClipPaths;
 
 namespace mozilla {
 struct ActiveScrolledRoot;
@@ -37,6 +40,7 @@ class LayerManager;
 class BasicLayerManager;
 class PaintedLayer;
 class ImageLayer;
+struct LayerProperties;
 }  // namespace layers
 
 class FrameLayerBuilder;
@@ -44,6 +48,16 @@ class LayerManagerData;
 class PaintedLayerData;
 class ContainerState;
 class PaintedDisplayItemLayerUserData;
+
+enum class DisplayItemEntryType : uint8_t {
+  Item,
+  PushOpacity,
+  PushOpacityWithBg,
+  PopOpacity,
+  PushTransform,
+  PopTransform,
+  HitTestInfo,
+};
 
 /**
  * Retained data storage:
@@ -73,6 +87,12 @@ class DisplayItemData final {
   const DisplayItemClip& GetClip() const { return mClip; }
   void Invalidate() { mIsInvalid = true; }
   void ClearAnimationCompositorState();
+  void SetItem(nsPaintedDisplayItem* aItem) { mItem = aItem; }
+  nsPaintedDisplayItem* GetItem() const { return mItem; }
+  nsIFrame* FirstFrame() const { return mFrameList[0]; }
+  layers::BasicLayerManager* InactiveManager() const {
+    return mInactiveManager;
+  }
 
   bool HasMergedFrames() const { return mFrameList.Length() > 1; }
 
@@ -90,7 +110,7 @@ class DisplayItemData final {
       return mRefCnt;
     }
     ++mRefCnt;
-    NS_LOG_ADDREF(this, mRefCnt, "nsStyleContext", sizeof(nsStyleContext));
+    NS_LOG_ADDREF(this, mRefCnt, "DisplayItemData", sizeof(DisplayItemData));
     return mRefCnt;
   }
 
@@ -100,7 +120,7 @@ class DisplayItemData final {
       return mRefCnt;
     }
     --mRefCnt;
-    NS_LOG_RELEASE(this, mRefCnt, "nsStyleContext");
+    NS_LOG_RELEASE(this, mRefCnt, "DisplayItemData");
     if (mRefCnt == 0) {
       Destroy();
       return 0;
@@ -108,9 +128,8 @@ class DisplayItemData final {
     return mRefCnt;
   }
 
-  void Disconnect();
-
-  bool Disconnected() { return mDisconnected; }
+  RefPtr<TransformClipNode> mTransform;
+  RefPtr<TransformClipNode> mOldTransform;
 
  private:
   DisplayItemData(LayerManagerData* aParent, uint32_t aKey,
@@ -152,10 +171,10 @@ class DisplayItemData final {
    * EndUpdate must be called before the end of the transaction to complete the
    * update.
    */
+  void BeginUpdate(layers::Layer* aLayer, LayerState aState, bool aFirstUpdate,
+                   nsPaintedDisplayItem* aItem = nullptr);
   void BeginUpdate(layers::Layer* aLayer, LayerState aState,
-                   nsDisplayItem* aItem = nullptr);
-  void BeginUpdate(layers::Layer* aLayer, LayerState aState,
-                   nsDisplayItem* aItem, bool aIsReused, bool aIsMerged);
+                   nsPaintedDisplayItem* aItem, bool aIsReused, bool aIsMerged);
 
   /**
    * Completes the update of this, and removes any references to data that won't
@@ -184,7 +203,7 @@ class DisplayItemData final {
    * Temporary stoarage of the display item being referenced, only valid between
    * BeginUpdate and EndUpdate.
    */
-  nsDisplayItem* mItem;
+  nsPaintedDisplayItem* mItem;
   nsRegion mChangedFrameInvalidations;
 
   /**
@@ -194,12 +213,11 @@ class DisplayItemData final {
   bool mUsed;
   bool mIsInvalid;
   bool mReusedItem;
-  bool mDisconnected;
 };
 
 class RefCountedRegion {
  private:
-  ~RefCountedRegion() {}
+  ~RefCountedRegion() = default;
 
  public:
   NS_INLINE_DECL_REFCOUNTING(RefCountedRegion)
@@ -209,14 +227,27 @@ class RefCountedRegion {
   bool mIsInfinite;
 };
 
-struct AssignedDisplayItem {
-  AssignedDisplayItem(nsDisplayItem* aItem, const DisplayItemClip& aClip,
-                      LayerState aLayerState, DisplayItemData* aData);
-  ~AssignedDisplayItem();
+struct InactiveLayerData {
+  RefPtr<layers::BasicLayerManager> mLayerManager;
+  RefPtr<layers::Layer> mLayer;
+  UniquePtr<layers::LayerProperties> mProps;
 
-  nsDisplayItem* mItem;
-  DisplayItemClip mClip;
-  LayerState mLayerState;
+  ~InactiveLayerData();
+};
+
+struct AssignedDisplayItem {
+  AssignedDisplayItem(nsPaintedDisplayItem* aItem, LayerState aLayerState,
+                      DisplayItemData* aData, const nsRect& aContentRect,
+                      DisplayItemEntryType aType, const bool aHasOpacity,
+                      const RefPtr<TransformClipNode>& aTransform,
+                      const bool aIsMerged);
+  AssignedDisplayItem(AssignedDisplayItem&& aRhs) = default;
+
+  bool HasOpacity() const { return mHasOpacity; }
+
+  bool HasTransform() const { return mTransform; }
+
+  nsPaintedDisplayItem* mItem;
   DisplayItemData* mDisplayItemData;
 
   /**
@@ -224,10 +255,17 @@ struct AssignedDisplayItem {
    * layer, then this stores the layer manager being
    * used for the inactive transaction.
    */
-  RefPtr<layers::LayerManager> mInactiveLayerManager;
+  UniquePtr<InactiveLayerData> mInactiveLayerData;
+  RefPtr<TransformClipNode> mTransform;
+
+  nsRect mContentRect;
+  LayerState mLayerState;
+  DisplayItemEntryType mType;
 
   bool mReused;
   bool mMerged;
+  bool mHasOpacity;
+  bool mHasPaintRect;
 };
 
 struct ContainerLayerParameters {
@@ -241,7 +279,6 @@ struct ContainerLayerParameters {
         mInTransformedSubtree(false),
         mInActiveTransformedSubtree(false),
         mDisableSubpixelAntialiasingInDescendants(false),
-        mForEventsAndPluginsOnly(false),
         mLayerCreationHint(layers::LayerManager::NONE) {}
   ContainerLayerParameters(float aXScale, float aYScale)
       : mXScale(aXScale),
@@ -253,7 +290,6 @@ struct ContainerLayerParameters {
         mInTransformedSubtree(false),
         mInActiveTransformedSubtree(false),
         mDisableSubpixelAntialiasingInDescendants(false),
-        mForEventsAndPluginsOnly(false),
         mLayerCreationHint(layers::LayerManager::NONE) {}
   ContainerLayerParameters(float aXScale, float aYScale,
                            const nsIntPoint& aOffset,
@@ -269,7 +305,6 @@ struct ContainerLayerParameters {
         mInActiveTransformedSubtree(aParent.mInActiveTransformedSubtree),
         mDisableSubpixelAntialiasingInDescendants(
             aParent.mDisableSubpixelAntialiasingInDescendants),
-        mForEventsAndPluginsOnly(aParent.mForEventsAndPluginsOnly),
         mLayerCreationHint(aParent.mLayerCreationHint) {}
 
   float mXScale, mYScale;
@@ -300,7 +335,6 @@ struct ContainerLayerParameters {
   bool mInTransformedSubtree;
   bool mInActiveTransformedSubtree;
   bool mDisableSubpixelAntialiasingInDescendants;
-  bool mForEventsAndPluginsOnly;
   layers::LayerManager::PaintedLayerCreationHint mLayerCreationHint;
 
   /**
@@ -364,7 +398,13 @@ class FrameLayerBuilder : public layers::LayerUserData {
   typedef layers::EventRegions EventRegions;
 
   FrameLayerBuilder();
-  ~FrameLayerBuilder();
+  ~FrameLayerBuilder() override;
+
+  static gfx::Size ChooseScale(nsIFrame* aContainerFrame,
+                               nsDisplayItem* aContainerItem,
+                               const nsRect& aVisibleRect, float aXScale,
+                               float aYScale, const gfx::Matrix& aTransform2d,
+                               bool aCanDraw2D);
 
   static void Shutdown();
 
@@ -453,6 +493,20 @@ class FrameLayerBuilder : public layers::LayerUserData {
   static Layer* GetDedicatedLayer(nsIFrame* aFrame,
                                   DisplayItemType aDisplayItemType);
 
+  using AnimationGenerationCallback = std::function<bool(
+      const Maybe<uint64_t>& aGeneration, DisplayItemType aDisplayItemType)>;
+  /**
+   * Enumerates layers for the all display item types that correspond to
+   * properties we can animate on layers and calls |aCallback|
+   * with the animation generation for the layer.  If there is no corresponding
+   * layer for the display item or the layer has no animation, the animation
+   * generation is Nothing().
+   *
+   * The enumeration stops if |aCallback| returns false.
+   */
+  static void EnumerateGenerationForDedicatedLayers(
+      const nsIFrame* aFrame, const AnimationGenerationCallback& aCallback);
+
   /**
    * This callback must be provided to EndTransaction. The callback data
    * must be the nsDisplayListBuilder containing this FrameLayerBuilder.
@@ -501,7 +555,7 @@ class FrameLayerBuilder : public layers::LayerUserData {
    */
   void AddPaintedDisplayItem(PaintedLayerData* aLayerData,
                              AssignedDisplayItem& aAssignedDisplayItem,
-                             ContainerState& aContainerState, Layer* aLayer);
+                             Layer* aLayer);
 
   /**
    * Calls GetOldLayerForFrame on the underlying frame of the display item,
@@ -587,15 +641,16 @@ class FrameLayerBuilder : public layers::LayerUserData {
    * This could be a dedicated layer for the display item, or a PaintedLayer
    * that renders many display items.
    */
-  DisplayItemData* GetOldLayerForFrame(nsIFrame* aFrame,
-                                       uint32_t aDisplayItemKey,
-                                       DisplayItemData* aOldData = nullptr);
+  DisplayItemData* GetOldLayerForFrame(
+      nsIFrame* aFrame, uint32_t aDisplayItemKey,
+      DisplayItemData* aOldData = nullptr,
+      LayerManager* aOldLayerManager = nullptr);
 
   /**
    * Stores DisplayItemData associated with aFrame, stores the data in
    * mNewDisplayItemData.
    */
-  DisplayItemData* StoreDataForFrame(nsDisplayItem* aItem, Layer* aLayer,
+  DisplayItemData* StoreDataForFrame(nsPaintedDisplayItem* aItem, Layer* aLayer,
                                      LayerState aState, DisplayItemData* aData);
   void StoreDataForFrame(nsIFrame* aFrame, uint32_t aDisplayItemKey,
                          Layer* aLayer, LayerState aState);
@@ -616,19 +671,11 @@ class FrameLayerBuilder : public layers::LayerUserData {
   DisplayItemData* GetDisplayItemData(nsIFrame* aFrame, uint32_t aKey);
 
   /*
-   * Get the DisplayItemData associated with this frame / display item pair,
+   * Get the DisplayItemData associated with this display item,
    * using the LayerManager instead of FrameLayerBuilder.
    */
-  static DisplayItemData* GetDisplayItemDataForManager(nsIFrame* aFrame,
-                                                       uint32_t aDisplayItemKey,
-                                                       LayerManager* aManager);
   static DisplayItemData* GetDisplayItemDataForManager(
-      nsIFrame* aFrame, uint32_t aDisplayItemKey);
-  static DisplayItemData* GetDisplayItemDataForManager(nsDisplayItem* aItem,
-                                                       LayerManager* aManager);
-  static DisplayItemData* GetDisplayItemDataForManager(nsIFrame* aFrame,
-                                                       uint32_t aDisplayItemKey,
-                                                       LayerManagerData* aData);
+      nsPaintedDisplayItem* aItem, LayerManager* aManager);
 
   /**
    * We store one of these for each display item associated with a
@@ -640,17 +687,16 @@ class FrameLayerBuilder : public layers::LayerUserData {
    * PaintedLayer.
    */
 
-  static void RecomputeVisibilityForItems(nsTArray<AssignedDisplayItem>& aItems,
-                                          nsDisplayListBuilder* aBuilder,
-                                          const nsIntRegion& aRegionToDraw,
-                                          const nsIntPoint& aOffset,
-                                          int32_t aAppUnitsPerDevPixel,
-                                          float aXScale, float aYScale);
+  static void RecomputeVisibilityForItems(
+      std::vector<AssignedDisplayItem>& aItems, nsDisplayListBuilder* aBuilder,
+      const nsIntRegion& aRegionToDraw, nsRect& aPreviousRectToDraw,
+      const nsIntPoint& aOffset, int32_t aAppUnitsPerDevPixel, float aXScale,
+      float aYScale);
 
-  void PaintItems(nsTArray<AssignedDisplayItem>& aItems, const nsIntRect& aRect,
-                  gfxContext* aContext, nsDisplayListBuilder* aBuilder,
-                  nsPresContext* aPresContext, const nsIntPoint& aOffset,
-                  float aXScale, float aYScale, int32_t aCommonClipCount);
+  void PaintItems(std::vector<AssignedDisplayItem>& aItems,
+                  const nsIntRect& aRect, gfxContext* aContext,
+                  nsDisplayListBuilder* aBuilder, nsPresContext* aPresContext,
+                  const nsIntPoint& aOffset, float aXScale, float aYScale);
 
   /**
    * We accumulate ClippedDisplayItem elements in a hashtable during
@@ -669,6 +715,16 @@ class FrameLayerBuilder : public layers::LayerUserData {
 
   const DisplayItemClip* GetInactiveLayerClip() const {
     return mInactiveLayerClip;
+  }
+
+  /*
+   * If we're building layers for an item with an inactive layer tree,
+   * this function saves the item's clip, which will later be applied
+   * to the event regions. The clip should be relative to
+   * mContainingPaintedLayer->mReferenceFrame.
+   */
+  void SetInactiveLayerClip(const DisplayItemClip* aClip) {
+    mInactiveLayerClip = aClip;
   }
 
   bool IsBuildingRetainedLayers() {

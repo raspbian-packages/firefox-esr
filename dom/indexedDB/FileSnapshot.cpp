@@ -10,6 +10,7 @@
 #include "IDBFileHandle.h"
 #include "IDBMutableFile.h"
 #include "mozilla/Assertions.h"
+#include "mozilla/Mutex.h"
 #include "nsIAsyncInputStream.h"
 #include "nsICloneableInputStream.h"
 #include "nsIIPCSerializableInputStream.h"
@@ -34,14 +35,18 @@ class StreamWrapper final : public nsIAsyncInputStream,
   bool mFinished;
 
   // This is needed to call OnInputStreamReady() with the correct inputStream.
+  // It is protected by mutex.
   nsCOMPtr<nsIInputStreamCallback> mAsyncWaitCallback;
+
+  Mutex mMutex;
 
  public:
   StreamWrapper(nsIInputStream* aInputStream, IDBFileHandle* aFileHandle)
       : mOwningThread(aFileHandle->GetMutableFile()->Database()->EventTarget()),
         mInputStream(aInputStream),
         mFileHandle(aFileHandle),
-        mFinished(false) {
+        mFinished(false),
+        mMutex("StreamWrapper::mMutex") {
     AssertIsOnOwningThread();
     MOZ_ASSERT(aInputStream);
     MOZ_ASSERT(aFileHandle);
@@ -52,6 +57,12 @@ class StreamWrapper final : public nsIAsyncInputStream,
 
  private:
   virtual ~StreamWrapper();
+
+  template <typename M>
+  void SerializeInternal(InputStreamParams& aParams,
+                         FileDescriptorArray& aFileDescriptors,
+                         bool aDelayedStart, uint32_t aMaxSize,
+                         uint32_t* aSizeUsed, M* aManager);
 
   bool IsOnOwningThread() const {
     MOZ_ASSERT(mOwningThread);
@@ -197,6 +208,16 @@ BlobImpl* BlobImplSnapshot::GetBlobImpl() const {
   return mBlobImpl;
 }
 
+void BlobImplSnapshot::GetBlobImplType(nsAString& aBlobImplType) const {
+  aBlobImplType.AssignLiteral("BlobImplSnapshot[");
+
+  nsAutoString blobImplType;
+  mBlobImpl->GetBlobImplType(blobImplType);
+  aBlobImplType.Append(blobImplType);
+
+  aBlobImplType.AppendLiteral("]");
+}
+
 StreamWrapper::~StreamWrapper() {
   AssertIsOnOwningThread();
 
@@ -250,12 +271,52 @@ StreamWrapper::IsNonBlocking(bool* _retval) {
 }
 
 void StreamWrapper::Serialize(InputStreamParams& aParams,
-                              FileDescriptorArray& aFileDescriptors) {
+                              FileDescriptorArray& aFileDescriptors,
+                              bool aDelayedStart, uint32_t aMaxSize,
+                              uint32_t* aSizeUsed, ContentChild* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void StreamWrapper::Serialize(InputStreamParams& aParams,
+                              FileDescriptorArray& aFileDescriptors,
+                              bool aDelayedStart, uint32_t aMaxSize,
+                              uint32_t* aSizeUsed, PBackgroundChild* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void StreamWrapper::Serialize(InputStreamParams& aParams,
+                              FileDescriptorArray& aFileDescriptors,
+                              bool aDelayedStart, uint32_t aMaxSize,
+                              uint32_t* aSizeUsed, ContentParent* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+void StreamWrapper::Serialize(InputStreamParams& aParams,
+                              FileDescriptorArray& aFileDescriptors,
+                              bool aDelayedStart, uint32_t aMaxSize,
+                              uint32_t* aSizeUsed,
+                              PBackgroundParent* aManager) {
+  SerializeInternal(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                    aSizeUsed, aManager);
+}
+
+template <typename M>
+void StreamWrapper::SerializeInternal(InputStreamParams& aParams,
+                                      FileDescriptorArray& aFileDescriptors,
+                                      bool aDelayedStart, uint32_t aMaxSize,
+                                      uint32_t* aSizeUsed, M* aManager) {
+  MOZ_ASSERT(aSizeUsed);
+  *aSizeUsed = 0;
+
   nsCOMPtr<nsIIPCSerializableInputStream> stream =
       do_QueryInterface(mInputStream);
 
   if (stream) {
-    stream->Serialize(aParams, aFileDescriptors);
+    stream->Serialize(aParams, aFileDescriptors, aDelayedStart, aMaxSize,
+                      aSizeUsed, aManager);
   }
 }
 
@@ -263,16 +324,6 @@ bool StreamWrapper::Deserialize(const InputStreamParams& aParams,
                                 const FileDescriptorArray& aFileDescriptors) {
   MOZ_CRASH("This method should never be called");
   return false;
-}
-
-Maybe<uint64_t> StreamWrapper::ExpectedSerializedLength() {
-  nsCOMPtr<nsIIPCSerializableInputStream> stream =
-      do_QueryInterface(mInputStream);
-
-  if (stream) {
-    return stream->ExpectedSerializedLength();
-  }
-  return Nothing();
 }
 
 NS_IMETHODIMP
@@ -299,17 +350,18 @@ StreamWrapper::AsyncWait(nsIInputStreamCallback* aCallback, uint32_t aFlags,
     return NS_ERROR_NO_INTERFACE;
   }
 
-  if (mAsyncWaitCallback && aCallback) {
-    return NS_ERROR_FAILURE;
+  nsCOMPtr<nsIInputStreamCallback> callback = aCallback ? this : nullptr;
+  {
+    MutexAutoLock lock(mMutex);
+
+    if (mAsyncWaitCallback && aCallback) {
+      return NS_ERROR_FAILURE;
+    }
+
+    mAsyncWaitCallback = aCallback;
   }
 
-  mAsyncWaitCallback = aCallback;
-
-  if (!mAsyncWaitCallback) {
-    return NS_OK;
-  }
-
-  return stream->AsyncWait(this, aFlags, aRequestedCount, aEventTarget);
+  return stream->AsyncWait(callback, aFlags, aRequestedCount, aEventTarget);
 }
 
 // nsIInputStreamCallback
@@ -321,14 +373,19 @@ StreamWrapper::OnInputStreamReady(nsIAsyncInputStream* aStream) {
     return NS_ERROR_NO_INTERFACE;
   }
 
-  // We have been canceled in the meanwhile.
-  if (!mAsyncWaitCallback) {
-    return NS_OK;
+  nsCOMPtr<nsIInputStreamCallback> callback;
+  {
+    MutexAutoLock lock(mMutex);
+
+    // We have been canceled in the meanwhile.
+    if (!mAsyncWaitCallback) {
+      return NS_OK;
+    }
+
+    callback.swap(mAsyncWaitCallback);
   }
 
-  nsCOMPtr<nsIInputStreamCallback> callback;
-  callback.swap(mAsyncWaitCallback);
-
+  MOZ_ASSERT(callback);
   return callback->OnInputStreamReady(this);
 }
 

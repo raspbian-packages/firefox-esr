@@ -12,7 +12,7 @@
 #include "mozilla/Attributes.h"
 
 class nsNetAddr final : public nsINetAddr {
-  ~nsNetAddr() {}
+  ~nsNetAddr() = default;
 
  public:
   NS_DECL_ISUPPORTS

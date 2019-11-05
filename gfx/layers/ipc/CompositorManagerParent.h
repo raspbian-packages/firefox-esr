@@ -22,7 +22,7 @@ class CompositorBridgeParent;
 class CompositorThreadHolder;
 
 #ifndef DEBUG
-#define COMPOSITOR_MANAGER_PARENT_EXPLICIT_SHUTDOWN
+#  define COMPOSITOR_MANAGER_PARENT_EXPLICIT_SHUTDOWN
 #endif
 
 class CompositorManagerParent final : public PCompositorManagerParent {
@@ -30,7 +30,8 @@ class CompositorManagerParent final : public PCompositorManagerParent {
 
  public:
   static already_AddRefed<CompositorManagerParent> CreateSameProcess();
-  static bool Create(Endpoint<PCompositorManagerParent>&& aEndpoint);
+  static bool Create(Endpoint<PCompositorManagerParent>&& aEndpoint,
+                     bool aIsRoot);
   static void Shutdown();
 
   static already_AddRefed<CompositorBridgeParent>
@@ -40,17 +41,24 @@ class CompositorManagerParent final : public PCompositorManagerParent {
                                           const gfx::IntSize& aSurfaceSize);
 
   mozilla::ipc::IPCResult RecvAddSharedSurface(
-      const wr::ExternalImageId& aId,
-      const SurfaceDescriptorShared& aDesc) override;
+      const wr::ExternalImageId& aId, const SurfaceDescriptorShared& aDesc);
   mozilla::ipc::IPCResult RecvRemoveSharedSurface(
-      const wr::ExternalImageId& aId) override;
+      const wr::ExternalImageId& aId);
+  mozilla::ipc::IPCResult RecvReportSharedSurfacesMemory(
+      ReportSharedSurfacesMemoryResolver&&);
 
-  void BindComplete();
+  mozilla::ipc::IPCResult RecvNotifyMemoryPressure();
+
+  mozilla::ipc::IPCResult RecvReportMemory(ReportMemoryResolver&&);
+
+  void BindComplete(bool aIsRoot);
   void ActorDestroy(ActorDestroyReason aReason) override;
 
-  bool DeallocPCompositorBridgeParent(PCompositorBridgeParent* aActor) override;
+  bool DeallocPCompositorBridgeParent(PCompositorBridgeParent* aActor);
   PCompositorBridgeParent* AllocPCompositorBridgeParent(
-      const CompositorBridgeOptions& aOpt) override;
+      const CompositorBridgeOptions& aOpt);
+
+  static void NotifyWebRenderError(wr::WebRenderError aError);
 
  private:
   static StaticRefPtr<CompositorManagerParent> sInstance;
@@ -62,9 +70,9 @@ class CompositorManagerParent final : public PCompositorManagerParent {
 #endif
 
   CompositorManagerParent();
-  ~CompositorManagerParent() override;
+  virtual ~CompositorManagerParent();
 
-  void Bind(Endpoint<PCompositorManagerParent>&& aEndpoint);
+  void Bind(Endpoint<PCompositorManagerParent>&& aEndpoint, bool aIsRoot);
 
   void DeallocPCompositorManagerParent() override;
 

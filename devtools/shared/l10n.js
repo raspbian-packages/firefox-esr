@@ -26,24 +26,36 @@ const propertiesMap = {};
 // file.  In the webpack case this results in just the locale property
 // files being included in the pack; and in the devtools case this is
 // a wordy no-op.
-const reqShared = require.context("raw!devtools/shared/locales/",
-                                  true, /^.*\.properties$/);
-const reqClient = require.context("raw!devtools/client/locales/",
-                                  true, /^.*\.properties$/);
-const reqShim = require.context("raw!devtools/shim/locales/",
-                                  true, /^.*\.properties$/);
-const reqGlobal = require.context("raw!toolkit/locales/",
-                                  true, /^.*\.properties$/);
+const reqShared = require.context(
+  "raw!devtools/shared/locales/",
+  true,
+  /^.*\.properties$/
+);
+const reqClient = require.context(
+  "raw!devtools/client/locales/",
+  true,
+  /^.*\.properties$/
+);
+const reqStartup = require.context(
+  "raw!devtools/startup/locales/",
+  true,
+  /^.*\.properties$/
+);
+const reqGlobal = require.context(
+  "raw!toolkit/locales/",
+  true,
+  /^.*\.properties$/
+);
 
 // Map used to memoize Number formatters.
 const numberFormatters = new Map();
-const getNumberFormatter = function (decimals) {
+const getNumberFormatter = function(decimals) {
   let formatter = numberFormatters.get(decimals);
   if (!formatter) {
     // Create and memoize a formatter for the provided decimals
     formatter = Intl.NumberFormat(undefined, {
       maximumFractionDigits: decimals,
-      minimumFractionDigits: decimals
+      minimumFractionDigits: decimals,
     });
     numberFormatters.set(decimals, formatter);
   }
@@ -66,16 +78,16 @@ function getProperties(url) {
     // and decide which context require function to use.  Despite the
     // string processing here, in the end a string identical to |url|
     // ends up being passed to "require".
-    let index = url.lastIndexOf("/");
+    const index = url.lastIndexOf("/");
     // Turn "mumble/locales/resource.properties" => "./resource.properties".
-    let baseName = "." + url.substr(index);
+    const baseName = "." + url.substr(index);
     let reqFn;
     if (/^toolkit/.test(url)) {
       reqFn = reqGlobal;
     } else if (/^devtools\/shared/.test(url)) {
       reqFn = reqShared;
-    } else if (/^devtools\/shim/.test(url)) {
-      reqFn = reqShim;
+    } else if (/^devtools\/startup/.test(url)) {
+      reqFn = reqStartup;
     } else {
       reqFn = reqClient;
     }
@@ -90,9 +102,12 @@ function getProperties(url) {
  *
  * @param string stringBundleName
  *        The desired string bundle's name.
+ * @param boolean strict
+ *        (legacy) pass true to force the helper to throw if the l10n id cannot be found.
  */
-function LocalizationHelper(stringBundleName) {
+function LocalizationHelper(stringBundleName, strict = false) {
   this.stringBundleName = stringBundleName;
+  this.strict = strict;
 }
 
 LocalizationHelper.prototype = {
@@ -102,13 +117,18 @@ LocalizationHelper.prototype = {
    * @param string name
    * @return string
    */
-  getStr: function (name) {
-    let properties = getProperties(this.stringBundleName);
+  getStr: function(name) {
+    const properties = getProperties(this.stringBundleName);
     if (name in properties) {
       return properties[name];
     }
 
-    throw new Error("No localization found for [" + name + "]");
+    if (this.strict) {
+      throw new Error("No localization found for [" + name + "]");
+    }
+
+    console.error("No localization found for [" + name + "]");
+    return name;
   },
 
   /**
@@ -118,7 +138,7 @@ LocalizationHelper.prototype = {
    * @param array args
    * @return string
    */
-  getFormatStr: function (name, ...args) {
+  getFormatStr: function(name, ...args) {
     return sprintf(this.getStr(name), ...args);
   },
 
@@ -131,8 +151,8 @@ LocalizationHelper.prototype = {
    * @param array args
    * @return string
    */
-  getFormatStrWithNumbers: function (name, ...args) {
-    let newArgs = args.map(x => {
+  getFormatStrWithNumbers: function(name, ...args) {
+    const newArgs = args.map(x => {
       return typeof x == "number" ? this.numberWithDecimals(x, 2) : x;
     });
 
@@ -150,9 +170,9 @@ LocalizationHelper.prototype = {
    * @return string
    *         The localized number as a string.
    */
-  numberWithDecimals: function (number, decimals = 0) {
+  numberWithDecimals: function(number, decimals = 0) {
     // Do not show decimals for integers.
-    if (number === (number|0)) {
+    if (number === (number | 0)) {
       return getNumberFormatter(0).format(number);
     }
 
@@ -162,27 +182,27 @@ LocalizationHelper.prototype = {
     }
 
     // Localize the number using a memoized Intl.NumberFormat formatter.
-    let localized = getNumberFormatter(decimals).format(number);
+    const localized = getNumberFormatter(decimals).format(number);
 
     // Convert the localized number to a number again.
-    let localizedNumber = localized * 1;
+    const localizedNumber = localized * 1;
     // Check if this number is now equal to an integer.
-    if (localizedNumber === (localizedNumber|0)) {
-    // If it is, remove the fraction part.
+    if (localizedNumber === (localizedNumber | 0)) {
+      // If it is, remove the fraction part.
       return getNumberFormatter(0).format(localizedNumber);
     }
 
     return localized;
-  }
+  },
 };
 
 function getPropertiesForNode(node) {
-  let bundleEl = node.closest("[data-localization-bundle]");
+  const bundleEl = node.closest("[data-localization-bundle]");
   if (!bundleEl) {
     return null;
   }
 
-  let propertiesUrl = bundleEl.getAttribute("data-localization-bundle");
+  const propertiesUrl = bundleEl.getAttribute("data-localization-bundle");
   return getProperties(propertiesUrl);
 }
 
@@ -212,16 +232,16 @@ function getPropertiesForNode(node) {
  *        The root node to use for the localization
  */
 function localizeMarkup(root) {
-  let elements = root.querySelectorAll("[data-localization]");
-  for (let element of elements) {
-    let properties = getPropertiesForNode(element);
+  const elements = root.querySelectorAll("[data-localization]");
+  for (const element of elements) {
+    const properties = getPropertiesForNode(element);
     if (!properties) {
       continue;
     }
 
-    let attributes = element.getAttribute("data-localization").split(";");
-    for (let attribute of attributes) {
-      let [name, value] = attribute.trim().split("=");
+    const attributes = element.getAttribute("data-localization").split(";");
+    for (const attribute of attributes) {
+      const [name, value] = attribute.trim().split("=");
       if (name === "content") {
         element.textContent = properties[value];
       } else {
@@ -233,15 +253,19 @@ function localizeMarkup(root) {
   }
 }
 
-const sharedL10N = new LocalizationHelper("devtools/shared/locales/shared.properties");
+const sharedL10N = new LocalizationHelper(
+  "devtools/shared/locales/shared.properties"
+);
 
 /**
  * A helper for having the same interface as LocalizationHelper, but for more
  * than one file. Useful for abstracting l10n string locations.
  */
 function MultiLocalizationHelper(...stringBundleNames) {
-  let instances = stringBundleNames.map(bundle => {
-    return new LocalizationHelper(bundle);
+  const instances = stringBundleNames.map(bundle => {
+    // Use strict = true because the MultiLocalizationHelper logic relies on try/catch
+    // around the underlying LocalizationHelper APIs.
+    return new LocalizationHelper(bundle, true);
   });
 
   // Get all function members of the LocalizationHelper class, making sure we're
@@ -250,13 +274,15 @@ function MultiLocalizationHelper(...stringBundleNames) {
   Object.getOwnPropertyNames(LocalizationHelper.prototype)
     .map(name => ({
       name: name,
-      descriptor: Object.getOwnPropertyDescriptor(LocalizationHelper.prototype,
-                                                  name)
+      descriptor: Object.getOwnPropertyDescriptor(
+        LocalizationHelper.prototype,
+        name
+      ),
     }))
     .filter(({ descriptor }) => descriptor.value instanceof Function)
     .forEach(method => {
       this[method.name] = (...args) => {
-        for (let l10n of instances) {
+        for (const l10n of instances) {
           try {
             return method.descriptor.value.apply(l10n, args);
           } catch (e) {
@@ -271,4 +297,6 @@ function MultiLocalizationHelper(...stringBundleNames) {
 exports.LocalizationHelper = LocalizationHelper;
 exports.localizeMarkup = localizeMarkup;
 exports.MultiLocalizationHelper = MultiLocalizationHelper;
-Object.defineProperty(exports, "ELLIPSIS", { get: () => sharedL10N.getStr("ellipsis") });
+Object.defineProperty(exports, "ELLIPSIS", {
+  get: () => sharedL10N.getStr("ellipsis"),
+});

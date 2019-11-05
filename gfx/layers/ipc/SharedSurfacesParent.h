@@ -9,6 +9,7 @@
 
 #include <stdint.h>                            // for uint32_t
 #include "mozilla/Attributes.h"                // for override
+#include "mozilla/StaticMutex.h"               // for StaticMutex
 #include "mozilla/StaticPtr.h"                 // for StaticAutoPtr
 #include "mozilla/RefPtr.h"                    // for already_AddRefed
 #include "mozilla/ipc/SharedMemory.h"          // for SharedMemory, etc
@@ -28,6 +29,7 @@ class SourceSurfaceSharedDataWrapper;
 namespace layers {
 
 class SharedSurfacesChild;
+class SharedSurfacesMemoryReport;
 
 class SharedSurfacesParent final {
  public:
@@ -42,7 +44,7 @@ class SharedSurfacesParent final {
   static already_AddRefed<gfx::DataSourceSurface> Acquire(
       const wr::ExternalImageId& aId);
 
-  static bool Release(const wr::ExternalImageId& aId);
+  static bool Release(const wr::ExternalImageId& aId, bool aForCreator = false);
 
   static void Add(const wr::ExternalImageId& aId,
                   const SurfaceDescriptorShared& aDesc, base::ProcessId aPid);
@@ -50,6 +52,11 @@ class SharedSurfacesParent final {
   static void Remove(const wr::ExternalImageId& aId);
 
   static void DestroyProcess(base::ProcessId aPid);
+
+  static void AccumulateMemoryReport(base::ProcessId aPid,
+                                     SharedSurfacesMemoryReport& aReport);
+
+  static bool AccumulateMemoryReport(SharedSurfacesMemoryReport& aReport);
 
   ~SharedSurfacesParent();
 
@@ -61,6 +68,8 @@ class SharedSurfacesParent final {
   static void AddSameProcess(const wr::ExternalImageId& aId,
                              gfx::SourceSurfaceSharedData* aSurface);
   static void RemoveSameProcess(const wr::ExternalImageId& aId);
+
+  static StaticMutex sMutex;
 
   static StaticAutoPtr<SharedSurfacesParent> sInstance;
 

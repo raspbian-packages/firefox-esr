@@ -12,12 +12,14 @@
 #include "nsIPrincipal.h"
 #include "nsIWeakReferenceUtils.h"  // for nsWeakPtr
 #include "nsIURI.h"
+#include "nsString.h"
 #include "nsTArray.h"
 
 #include "mozilla/BasePrincipal.h"
 #include "mozilla/dom/ClientInfo.h"
 #include "mozilla/dom/ServiceWorkerDescriptor.h"
 
+class nsICookieSettings;
 class nsINode;
 class nsPIDOMWindowOuter;
 
@@ -29,13 +31,13 @@ class XMLHttpRequestMainThread;
 }  // namespace dom
 
 namespace net {
-class OptionalLoadInfoArgs;
+class LoadInfoArgs;
 }  // namespace net
 
 namespace ipc {
 // we have to forward declare that function so we can use it as a friend.
 nsresult LoadInfoArgsToLoadInfo(
-    const mozilla::net::OptionalLoadInfoArgs& aLoadInfoArgs,
+    const Maybe<mozilla::net::LoadInfoArgs>& aLoadInfoArgs,
     nsILoadInfo** outLoadInfo);
 }  // namespace ipc
 
@@ -69,6 +71,7 @@ class LoadInfo final : public nsILoadInfo {
 
   // create an exact copy of the loadinfo
   already_AddRefed<nsILoadInfo> Clone() const;
+
   // hands off!!! don't use CloneWithNewSecFlags unless you know
   // exactly what you are doing - it should only be used within
   // nsBaseChannel::Redirect()
@@ -79,17 +82,10 @@ class LoadInfo final : public nsILoadInfo {
   // when a separate request is made with the same security properties.
   already_AddRefed<nsILoadInfo> CloneForNewRequest() const;
 
-  // The service worker and fetch specifications require returning the
-  // exact tainting level of the Response passed to FetchEvent.respondWith().
-  // This method allows us to override the tainting level in that case.
-  //
-  // NOTE: This should not be used outside of service worker code! Use
-  //       nsILoadInfo::MaybeIncreaseTainting() instead.
-  void SynthesizeServiceWorkerTainting(LoadTainting aTainting);
-
   void SetIsPreflight();
   void SetUpgradeInsecureRequests();
   void SetBrowserUpgradeInsecureRequests();
+  void SetBrowserWouldUpgradeInsecureRequests();
   void SetIsFromProcessingFrameAttributes();
 
  private:
@@ -100,7 +96,9 @@ class LoadInfo final : public nsILoadInfo {
   LoadInfo(nsIPrincipal* aLoadingPrincipal, nsIPrincipal* aTriggeringPrincipal,
            nsIPrincipal* aPrincipalToInherit,
            nsIPrincipal* aSandboxedLoadingPrincipal,
-           nsIURI* aResultPrincipalURI,
+           nsIPrincipal* aTopLevelPrincipal,
+           nsIPrincipal* aTopLevelStorageAreaPrincipal,
+           nsIURI* aResultPrincipalURI, nsICookieSettings* aCookieSettings,
            const Maybe<mozilla::dom::ClientInfo>& aClientInfo,
            const Maybe<mozilla::dom::ClientInfo>& aReservedClientInfo,
            const Maybe<mozilla::dom::ClientInfo>& aInitialClientInfo,
@@ -108,14 +106,15 @@ class LoadInfo final : public nsILoadInfo {
            nsSecurityFlags aSecurityFlags,
            nsContentPolicyType aContentPolicyType, LoadTainting aTainting,
            bool aUpgradeInsecureRequests, bool aBrowserUpgradeInsecureRequests,
-           bool aVerifySignedContent, bool aEnforceSRI,
-           bool aAllowDocumentToBeAgnosticToCSP, bool aForceAllowDataURI,
+           bool aBrowserWouldUpgradeInsecureRequests, bool aForceAllowDataURI,
            bool aAllowInsecureRedirectToDataURI,
+           bool aSkipContentPolicyCheckForWebRequest,
            bool aForceInheritPrincipalDropped, uint64_t aInnerWindowID,
            uint64_t aOuterWindowID, uint64_t aParentOuterWindowID,
            uint64_t aTopOuterWindowID, uint64_t aFrameOuterWindowID,
-           bool aEnforceSecurity, bool aInitialSecurityCheckDone,
-           bool aIsThirdPartyRequest, bool aIsDocshellReload,
+           uint64_t aBrowsingContextID, uint64_t aFrameBrowsingContextID,
+           bool aInitialSecurityCheckDone, bool aIsThirdPartyRequest,
+           bool aIsDocshellReload, bool aSendCSPViolationEvents,
            const OriginAttributes& aOriginAttributes,
            RedirectHistoryArray& aRedirectChainIncludingInternalRedirects,
            RedirectHistoryArray& aRedirectChain,
@@ -123,7 +122,9 @@ class LoadInfo final : public nsILoadInfo {
            const nsTArray<uint64_t>& aAncestorOuterWindowIDs,
            const nsTArray<nsCString>& aUnsafeHeaders, bool aForcePreflight,
            bool aIsPreflight, bool aLoadTriggeredFromExternal,
-           bool aServiceWorkerTaintingSynthesized);
+           bool aServiceWorkerTaintingSynthesized,
+           bool aDocumentHasUserInteracted, bool aDocumentHasLoaded,
+           const nsAString& aCspNonce, uint32_t aRequestBlockingReason);
   LoadInfo(const LoadInfo& rhs);
 
   NS_IMETHOD GetRedirects(JSContext* aCx,
@@ -131,10 +132,10 @@ class LoadInfo final : public nsILoadInfo {
                           const RedirectHistoryArray& aArra);
 
   friend nsresult mozilla::ipc::LoadInfoArgsToLoadInfo(
-      const mozilla::net::OptionalLoadInfoArgs& aLoadInfoArgs,
+      const Maybe<mozilla::net::LoadInfoArgs>& aLoadInfoArgs,
       nsILoadInfo** outLoadInfo);
 
-  ~LoadInfo();
+  ~LoadInfo() = default;
 
   void ComputeIsThirdPartyContext(nsPIDOMWindowOuter* aOuterWindow);
 
@@ -151,7 +152,11 @@ class LoadInfo final : public nsILoadInfo {
   nsCOMPtr<nsIPrincipal> mTriggeringPrincipal;
   nsCOMPtr<nsIPrincipal> mPrincipalToInherit;
   nsCOMPtr<nsIPrincipal> mSandboxedLoadingPrincipal;
+  nsCOMPtr<nsIPrincipal> mTopLevelPrincipal;
+  nsCOMPtr<nsIPrincipal> mTopLevelStorageAreaPrincipal;
   nsCOMPtr<nsIURI> mResultPrincipalURI;
+  nsCOMPtr<nsICSPEventListener> mCSPEventListener;
+  nsCOMPtr<nsICookieSettings> mCookieSettings;
 
   Maybe<mozilla::dom::ClientInfo> mClientInfo;
   UniquePtr<mozilla::dom::ClientSource> mReservedClientSource;
@@ -167,11 +172,10 @@ class LoadInfo final : public nsILoadInfo {
   LoadTainting mTainting;
   bool mUpgradeInsecureRequests;
   bool mBrowserUpgradeInsecureRequests;
-  bool mVerifySignedContent;
-  bool mEnforceSRI;
-  bool mAllowDocumentToBeAgnosticToCSP;
+  bool mBrowserWouldUpgradeInsecureRequests;
   bool mForceAllowDataURI;
   bool mAllowInsecureRedirectToDataURI;
+  bool mSkipContentPolicyCheckForWebRequest;
   bool mOriginalFrameSrcLoad;
   bool mForceInheritPrincipalDropped;
   uint64_t mInnerWindowID;
@@ -179,20 +183,26 @@ class LoadInfo final : public nsILoadInfo {
   uint64_t mParentOuterWindowID;
   uint64_t mTopOuterWindowID;
   uint64_t mFrameOuterWindowID;
-  bool mEnforceSecurity;
+  uint64_t mBrowsingContextID;
+  uint64_t mFrameBrowsingContextID;
   bool mInitialSecurityCheckDone;
   bool mIsThirdPartyContext;
   bool mIsDocshellReload;
+  bool mSendCSPViolationEvents;
   OriginAttributes mOriginAttributes;
   RedirectHistoryArray mRedirectChainIncludingInternalRedirects;
   RedirectHistoryArray mRedirectChain;
   nsTArray<nsCOMPtr<nsIPrincipal>> mAncestorPrincipals;
   nsTArray<uint64_t> mAncestorOuterWindowIDs;
   nsTArray<nsCString> mCorsUnsafeHeaders;
+  uint32_t mRequestBlockingReason;
   bool mForcePreflight;
   bool mIsPreflight;
   bool mLoadTriggeredFromExternal;
   bool mServiceWorkerTaintingSynthesized;
+  bool mDocumentHasUserInteracted;
+  bool mDocumentHasLoaded;
+  nsString mCspNonce;
 
   // Is true if this load was triggered by processing the attributes of the
   // browsing context container.

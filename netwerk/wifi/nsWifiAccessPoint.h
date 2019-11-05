@@ -16,7 +16,7 @@
 #include "mozilla/Sprintf.h"
 
 class nsWifiAccessPoint final : public nsIWifiAccessPoint {
-  ~nsWifiAccessPoint();
+  ~nsWifiAccessPoint() = default;
 
  public:
   NS_DECL_THREADSAFE_ISUPPORTS

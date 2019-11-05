@@ -7,7 +7,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=
   <meta charset="utf-8">
   <title>Test for Bug </title>
 
-  <script type="application/javascript" src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
+  <script src="chrome://mochikit/content/tests/SimpleTest/SimpleTest.js"></script>
   <link rel="stylesheet" type="text/css" href="chrome://mochikit/content/tests/SimpleTest/test.css">
   <script type="application/javascript">
 
@@ -46,38 +46,21 @@ addTest(function findAllCssSelectors() {
 });
 
 addTest(function findCssSelectorNotContainedInDocument() {
-
   var unattached = document.createElement("div");
   unattached.id = "unattached";
-  try {
-    findCssSelector(unattached);
-    ok(false, "Unattached node did not throw");
-  } catch (e) {
-    ok(e, "Unattached node throws an exception");
-  }
+  is(findCssSelector(unattached), "", "Unattached node returns empty string");
 
   var unattachedChild = document.createElement("div");
   unattached.appendChild(unattachedChild);
-  try {
-    findCssSelector(unattachedChild);
-    ok(false, "Unattached child node did not throw");
-  } catch (e) {
-    ok(e, "Unattached child node throws an exception");
-  }
+  is(findCssSelector(unattachedChild), "", "Unattached child returns empty string");
 
   var unattachedBody = document.createElement("body");
-  try {
-    findCssSelector(unattachedBody);
-    ok(false, "Unattached body node did not throw");
-  } catch (e) {
-    ok(e, "Unattached body node throws an exception");
-  }
+  is(findCssSelector(unattachedBody), "", "Unattached body returns empty string");
 
   runNextTest();
 });
 
 addTest(function findCssSelectorBasic() {
-
   let data = [
     "#one",
     "#" + CSS.escape("2"),

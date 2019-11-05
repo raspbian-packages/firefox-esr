@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,19 +8,15 @@
  * directory with a Unicode character to test bug 473417.
  */
 #ifdef XP_WIN
-#include <windows.h>
-#define NS_main wmain
-#define NS_tstrrchr wcsrchr
-#define NS_T(str) L##str
-#define PATH_SEPARATOR_CHAR L'\\'
+#  include <windows.h>
+#  define NS_main wmain
+#  define PATH_SEPARATOR_CHAR L'\\'
 // On Windows, argv[0] can also have forward slashes instead
-#define ALT_PATH_SEPARATOR_CHAR L'/'
+#  define ALT_PATH_SEPARATOR_CHAR L'/'
 #else
-#include <unistd.h>
-#define NS_main main
-#define NS_tstrrchr strrchr
-#define NS_T(str) str
-#define PATH_SEPARATOR_CHAR '/'
+#  include <unistd.h>
+#  define NS_main main
+#  define PATH_SEPARATOR_CHAR '/'
 #endif
 
 #include <stdio.h>
@@ -30,21 +26,22 @@
 #include "updater/resource.h"
 #include "updater/progressui.h"
 #include "common/readstrings.h"
-#include "common/errors.h"
+#include "common/updatererrors.h"
+#include "common/updatedefines.h"
 #include "mozilla/ArrayUtils.h"
 
 #ifndef MAXPATHLEN
-#ifdef PATH_MAX
-#define MAXPATHLEN PATH_MAX
-#elif defined(MAX_PATH)
-#define MAXPATHLEN MAX_PATH
-#elif defined(_MAX_PATH)
-#define MAXPATHLEN _MAX_PATH
-#elif defined(CCHMAXPATH)
-#define MAXPATHLEN CCHMAXPATH
-#else
-#define MAXPATHLEN 1024
-#endif
+#  ifdef PATH_MAX
+#    define MAXPATHLEN PATH_MAX
+#  elif defined(MAX_PATH)
+#    define MAXPATHLEN MAX_PATH
+#  elif defined(_MAX_PATH)
+#    define MAXPATHLEN _MAX_PATH
+#  elif defined(CCHMAXPATH)
+#    define MAXPATHLEN CCHMAXPATH
+#  else
+#    define MAXPATHLEN 1024
+#  endif
 #endif
 
 #define TEST_NAME "Updater ReadStrings"
@@ -58,7 +55,7 @@ static int gFailCount = 0;
  * "TEST-UNEXPECTED-FAIL " for the benefit of the test harness and
  * appending "\n" to eliminate having to type it at each call site.
  */
-void fail(const char *msg, ...) {
+void fail(const char* msg, ...) {
   va_list ap;
 
   printf("TEST-UNEXPECTED-FAIL | ");
@@ -71,7 +68,7 @@ void fail(const char *msg, ...) {
   ++gFailCount;
 }
 
-int NS_main(int argc, NS_tchar **argv) {
+int NS_main(int argc, NS_tchar** argv) {
   printf("Running TestAUSReadStrings tests\n");
 
   int rv = 0;
@@ -79,9 +76,9 @@ int NS_main(int argc, NS_tchar **argv) {
   NS_tchar inifile[MAXPATHLEN];
   StringTable testStrings;
 
-  NS_tchar *slash = NS_tstrrchr(argv[0], PATH_SEPARATOR_CHAR);
+  NS_tchar* slash = NS_tstrrchr(argv[0], PATH_SEPARATOR_CHAR);
 #ifdef ALT_PATH_SEPARATOR_CHAR
-  NS_tchar *altslash = NS_tstrrchr(argv[0], ALT_PATH_SEPARATOR_CHAR);
+  NS_tchar* altslash = NS_tstrrchr(argv[0], ALT_PATH_SEPARATOR_CHAR);
   slash = (slash > altslash) ? slash : altslash;
 #endif  // ALT_PATH_SEPARATOR_CHAR
 

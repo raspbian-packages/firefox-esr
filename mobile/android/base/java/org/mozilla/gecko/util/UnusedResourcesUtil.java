@@ -50,7 +50,6 @@ final class UnusedResourcesUtil {
             R.drawable.pause,
             R.drawable.phone,
             R.drawable.play,
-            R.drawable.sync_promo,
             R.drawable.undo_button_icon,
     };
 
@@ -88,8 +87,7 @@ final class UnusedResourcesUtil {
             R.xml.preferences_accessibility,
             R.xml.preferences_home,
             R.xml.preferences_privacy,
-            R.xml.preferences_privacy_clear_tablet,
-            R.xml.preferences_default_browser_tablet
+            R.xml.preferences_privacy_clear_tablet
     };
 
     // String resources that are used in the full-pane Activity Stream that are temporarily

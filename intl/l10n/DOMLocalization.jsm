@@ -15,340 +15,50 @@
  * limitations under the License.
  */
 
-
-/* fluent@0.6.3 */
+/* Based on fluent-dom@fa25466f (October 12, 2018) */
+/* global DOMOverlays */
 
 const { Localization } =
-  ChromeUtils.import("resource://gre/modules/Localization.jsm", {});
-
-// Match the opening angle bracket (<) in HTML tags, and HTML entities like
-// &amp;, &#0038;, &#x0026;.
-const reOverlay = /<|&#?\w+;/;
-
-/**
- * The list of elements that are allowed to be inserted into a localization.
- *
- * Source: https://www.w3.org/TR/html5/text-level-semantics.html
- */
-const LOCALIZABLE_ELEMENTS = {
-  "http://www.w3.org/1999/xhtml": [
-    "a", "em", "strong", "small", "s", "cite", "q", "dfn", "abbr", "data",
-    "time", "code", "var", "samp", "kbd", "sub", "sup", "i", "b", "u",
-    "mark", "ruby", "rt", "rp", "bdi", "bdo", "span", "br", "wbr"
-  ],
-};
-
-const LOCALIZABLE_ATTRIBUTES = {
-  "http://www.w3.org/1999/xhtml": {
-    global: ["title", "aria-label", "aria-valuetext", "aria-moz-hint"],
-    a: ["download"],
-    area: ["download", "alt"],
-    // value is special-cased in isAttrNameLocalizable
-    input: ["alt", "placeholder"],
-    menuitem: ["label"],
-    menu: ["label"],
-    optgroup: ["label"],
-    option: ["label"],
-    track: ["label"],
-    img: ["alt"],
-    textarea: ["placeholder"],
-    th: ["abbr"]
-  },
-  "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul": {
-    global: [
-      "accesskey", "aria-label", "aria-valuetext", "aria-moz-hint", "label"
-    ],
-    key: ["key", "keycode"],
-    textbox: ["placeholder"],
-    toolbarbutton: ["tooltiptext"],
-  }
-};
-
-
-/**
- * Overlay translation onto a DOM element.
- *
- * @param   {Element} targetElement
- * @param   {string|Object} translation
- * @private
- */
-function overlayElement(targetElement, translation) {
-  const value = translation.value;
-
-  if (typeof value === "string") {
-    if (!reOverlay.test(value)) {
-      // If the translation doesn't contain any markup skip the overlay logic.
-      targetElement.textContent = value;
-    } else {
-      // Else parse the translation's HTML using an inert template element,
-      // sanitize it and replace the targetElement's content.
-      const templateElement = targetElement.ownerDocument.createElementNS(
-        "http://www.w3.org/1999/xhtml", "template");
-      // eslint-disable-next-line no-unsanitized/property
-      templateElement.innerHTML = value;
-      targetElement.appendChild(
-        // The targetElement will be cleared at the end of sanitization.
-        sanitizeUsing(templateElement.content, targetElement)
-      );
-    }
-  }
-
-  const explicitlyAllowed = targetElement.hasAttribute("data-l10n-attrs")
-    ? targetElement.getAttribute("data-l10n-attrs")
-      .split(",").map(i => i.trim())
-    : null;
-
-  // Remove localizable attributes which may have been set by a previous
-  // translation.
-  for (const attr of Array.from(targetElement.attributes)) {
-    if (isAttrNameLocalizable(attr.name, targetElement, explicitlyAllowed)) {
-      targetElement.removeAttribute(attr.name);
-    }
-  }
-
-  if (translation.attrs) {
-    for (const {name, value} of translation.attrs) {
-      if (isAttrNameLocalizable(name, targetElement, explicitlyAllowed)) {
-        targetElement.setAttribute(name, value);
-      }
-    }
-  }
-}
-
-/**
- * Sanitize `translationFragment` using `sourceElement` to add functional
- * HTML attributes to children.  `sourceElement` will have all its child nodes
- * removed.
- *
- * The sanitization is conducted according to the following rules:
- *
- *   - Allow text nodes.
- *   - Replace forbidden children with their textContent.
- *   - Remove forbidden attributes from allowed children.
- *
- * Additionally when a child of the same type is present in `sourceElement` its
- * attributes will be merged into the translated child.  Whitelisted attributes
- * of the translated child will then overwrite the ones present in the source.
- *
- * The overlay logic is subject to the following limitations:
- *
- *   - Children are always cloned.  Event handlers attached to them are lost.
- *   - Nested HTML in source and in translations is not supported.
- *   - Multiple children of the same type will be matched in order.
- *
- * @param {DocumentFragment} translationFragment
- * @param {Element} sourceElement
- * @returns {DocumentFragment}
- * @private
- */
-function sanitizeUsing(translationFragment, sourceElement) {
-  const ownerDocument = translationFragment.ownerDocument;
-  // Take one node from translationFragment at a time and check it against
-  // the allowed list or try to match it with a corresponding element
-  // in the source.
-  for (const childNode of translationFragment.childNodes) {
-
-    if (childNode.nodeType === childNode.TEXT_NODE) {
-      continue;
-    }
-
-    // If the child is forbidden just take its textContent.
-    if (!isElementLocalizable(childNode)) {
-      const text = ownerDocument.createTextNode(childNode.textContent);
-      translationFragment.replaceChild(text, childNode);
-      continue;
-    }
-
-    // Start the sanitization with an empty element.
-    const mergedChild = ownerDocument.createElement(childNode.localName);
-
-    // Explicitly discard nested HTML by serializing childNode to a TextNode.
-    mergedChild.textContent = childNode.textContent;
-
-    // If a child of the same type exists in sourceElement, take its functional
-    // (i.e. non-localizable) attributes. This also removes the child from
-    // sourceElement.
-    const sourceChild = shiftNamedElement(sourceElement, childNode.localName);
-
-    // Find the union of all safe attributes: localizable attributes from
-    // childNode and functional attributes from sourceChild.
-    const safeAttributes = sanitizeAttrsUsing(childNode, sourceChild);
-
-    for (const attr of safeAttributes) {
-      mergedChild.setAttribute(attr.name, attr.value);
-    }
-
-    translationFragment.replaceChild(mergedChild, childNode);
-  }
-
-  // SourceElement might have been already modified by shiftNamedElement.
-  // Let's clear it to make sure other code doesn't rely on random leftovers.
-  sourceElement.textContent = "";
-
-  return translationFragment;
-}
-
-/**
- * Sanitize and merge attributes.
- *
- * Only localizable attributes from the translated child element and only
- * functional attributes from the source child element are considered safe.
- *
- * @param {Element} translatedElement
- * @param {Element} sourceElement
- * @returns {Array<Attr>}
- * @private
- */
-function sanitizeAttrsUsing(translatedElement, sourceElement) {
-  const localizedAttrs = Array.from(translatedElement.attributes).filter(
-    attr => isAttrNameLocalizable(attr.name, translatedElement)
-  );
-
-  if (!sourceElement) {
-    return localizedAttrs;
-  }
-
-  const functionalAttrs = Array.from(sourceElement.attributes).filter(
-    attr => !isAttrNameLocalizable(attr.name, sourceElement)
-  );
-
-  return localizedAttrs.concat(functionalAttrs);
-}
-
-/**
- * Check if element is allowed in the translation.
- *
- * This method is used by the sanitizer when the translation markup contains
- * an element which is not present in the source code.
- *
- * @param   {Element} element
- * @returns {boolean}
- * @private
- */
-function isElementLocalizable(element) {
-  const allowed = LOCALIZABLE_ELEMENTS[element.namespaceURI];
-  return allowed && allowed.includes(element.localName);
-}
-
-/**
- * Check if attribute is allowed for the given element.
- *
- * This method is used by the sanitizer when the translation markup contains
- * DOM attributes, or when the translation has traits which map to DOM
- * attributes.
- *
- * `explicitlyAllowed` can be passed as a list of attributes explicitly
- * allowed on this element.
- *
- * @param   {string}         name
- * @param   {Element}        element
- * @param   {Array}          explicitlyAllowed
- * @returns {boolean}
- * @private
- */
-function isAttrNameLocalizable(name, element, explicitlyAllowed = null) {
-  if (explicitlyAllowed && explicitlyAllowed.includes(name)) {
-    return true;
-  }
-
-  const allowed = LOCALIZABLE_ATTRIBUTES[element.namespaceURI];
-  if (!allowed) {
-    return false;
-  }
-
-  const attrName = name.toLowerCase();
-  const elemName = element.localName;
-
-  // Is it a globally safe attribute?
-  if (allowed.global.includes(attrName)) {
-    return true;
-  }
-
-  // Are there no allowed attributes for this element?
-  if (!allowed[elemName]) {
-    return false;
-  }
-
-  // Is it allowed on this element?
-  if (allowed[elemName].includes(attrName)) {
-    return true;
-  }
-
-  // Special case for value on HTML inputs with type button, reset, submit
-  if (element.namespaceURI === "http://www.w3.org/1999/xhtml" &&
-      elemName === "input" && attrName === "value") {
-    const type = element.type.toLowerCase();
-    if (type === "submit" || type === "button" || type === "reset") {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Remove and return the first child of the given type.
- *
- * @param {DOMFragment} element
- * @param {string}      localName
- * @returns {Element | null}
- * @private
- */
-function shiftNamedElement(element, localName) {
-  for (const child of element.children) {
-    if (child.localName === localName) {
-      element.removeChild(child);
-      return child;
-    }
-  }
-  return null;
-}
-
-/**
- * Sanitizes a translation before passing them to Node.localize API.
- *
- * It returns `false` if the translation contains DOM Overlays and should
- * not go into Node.localize.
- *
- * Note: There's a third item of work that JS DOM Overlays do - removal
- * of attributes from the previous translation.
- * This is not trivial to implement for Node.localize scenario, so
- * at the moment it is not supported.
- *
- * @param {{
- *          localName: string,
- *          namespaceURI: string,
- *          type: string || null
- *          l10nId: string,
- *          l10nArgs: Array<Object> || null,
- *          l10nAttrs: string ||null,
- *        }}                                     l10nItems
- * @param {{value: string, attrs: Object}} translations
- * @returns boolean
- * @private
- */
-function sanitizeTranslationForNodeLocalize(l10nItem, translation) {
-  if (reOverlay.test(translation.value)) {
-    return false;
-  }
-
-  if (translation.attrs) {
-    const explicitlyAllowed = l10nItem.l10nAttrs === null ? null :
-      l10nItem.l10nAttrs.split(",").map(i => i.trim());
-    for (const [j, {name}] of translation.attrs.entries()) {
-      if (!isAttrNameLocalizable(name, l10nItem, explicitlyAllowed)) {
-        translation.attrs.splice(j, 1);
-      }
-    }
-  }
-  return true;
-}
-
+  ChromeUtils.import("resource://gre/modules/Localization.jsm");
+const { Services } =
+  ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const L10NID_ATTR_NAME = "data-l10n-id";
 const L10NARGS_ATTR_NAME = "data-l10n-args";
 
 const L10N_ELEMENT_QUERY = `[${L10NID_ATTR_NAME}]`;
+
+function reportDOMOverlayErrors(errors) {
+  for (let error of errors) {
+    switch (error.code) {
+      case DOMOverlays.ERROR_FORBIDDEN_TYPE: {
+        console.warn(
+          `An element of forbidden type "${error.translatedElementName}" was found in ` +
+          "the translation. Only safe text-level elements and elements with " +
+          "data-l10n-name are allowed."
+        );
+        break;
+      }
+      case DOMOverlays.ERROR_NAMED_ELEMENT_MISSING: {
+        console.warn(
+          `An element named "${error.l10nName}" wasn't found in the source.`
+        );
+        break;
+      }
+      case DOMOverlays.ERROR_NAMED_ELEMENT_TYPE_MISMATCH: {
+        console.warn(
+          `An element named "${error.l10nName}" was found in the translation ` +
+          `but its type ${error.translatedElementName} didn't match the ` +
+          `element found in the source (${error.sourceElementName}).`
+        );
+        break;
+      }
+      default: {
+        console.warn(`Unknown error ${error.code} happend while translation an element.`);
+      }
+    }
+  }
+}
 
 /**
  * The `DOMLocalization` class is responsible for fetching resources and
@@ -360,14 +70,13 @@ const L10N_ELEMENT_QUERY = `[${L10NID_ATTR_NAME}]`;
  */
 class DOMLocalization extends Localization {
   /**
-   * @param {Window}           windowElement
-   * @param {Array<String>}    resourceIds      - List of resource IDs
-   * @param {Function}         generateMessages - Function that returns a
-   *                                              generator over MessageContexts
+   * @param {Array<String>}    resourceIds     - List of resource IDs
+   * @param {Function}         generateBundles - Function that returns a
+   *                                             generator over FluentBundles
    * @returns {DOMLocalization}
    */
-  constructor(windowElement, resourceIds, generateMessages) {
-    super(resourceIds, generateMessages);
+  constructor(resourceIds, generateBundles) {
+    super(resourceIds, generateBundles);
 
     // A Set of DOM trees observed by the `MutationObserver`.
     this.roots = new Set();
@@ -375,22 +84,20 @@ class DOMLocalization extends Localization {
     this.pendingrAF = null;
     // list of elements pending for translation.
     this.pendingElements = new Set();
-    this.windowElement = windowElement;
-    this.mutationObserver = new windowElement.MutationObserver(
-      mutations => this.translateMutations(mutations)
-    );
+    this.windowElement = null;
+    this.mutationObserver = null;
 
     this.observerConfig = {
       attribute: true,
       characterData: false,
       childList: true,
       subtree: true,
-      attributeFilter: [L10NID_ATTR_NAME, L10NARGS_ATTR_NAME]
+      attributeFilter: [L10NID_ATTR_NAME, L10NARGS_ATTR_NAME],
     };
   }
 
-  onLanguageChange() {
-    super.onLanguageChange();
+  onChange(eager = false) {
+    super.onChange(eager);
     this.translateRoots();
   }
 
@@ -429,10 +136,15 @@ class DOMLocalization extends Localization {
    * @param {Object<string, string>} args    - KVP list of l10n arguments
    * @returns {Element}
    */
-  setAttributes(element, id, args) {
-    element.setAttribute(L10NID_ATTR_NAME, id);
+  setAttributes(element, id, args = null) {
+    if (element.getAttribute(L10NID_ATTR_NAME) !== id) {
+      element.setAttribute(L10NID_ATTR_NAME, id);
+    }
     if (args) {
-      element.setAttribute(L10NARGS_ATTR_NAME, JSON.stringify(args));
+      let argsString = JSON.stringify(args);
+      if (argsString !== element.getAttribute(L10NARGS_ATTR_NAME)) {
+        element.setAttribute(L10NARGS_ATTR_NAME, argsString);
+      }
     } else {
       element.removeAttribute(L10NARGS_ATTR_NAME);
     }
@@ -455,7 +167,7 @@ class DOMLocalization extends Localization {
   getAttributes(element) {
     return {
       id: element.getAttribute(L10NID_ATTR_NAME),
-      args: JSON.parse(element.getAttribute(L10NARGS_ATTR_NAME) || null)
+      args: JSON.parse(element.getAttribute(L10NARGS_ATTR_NAME) || null),
     };
   }
 
@@ -468,12 +180,31 @@ class DOMLocalization extends Localization {
    * @param {Element}      newRoot - Root to observe.
    */
   connectRoot(newRoot) {
+    // Sometimes we connect the root while the document is already in the
+    // process of being closed. Bail out gracefully.
+    // See bug 1532712 for details.
+    if (!newRoot.ownerGlobal) {
+      return;
+    }
+
     for (const root of this.roots) {
       if (root === newRoot ||
           root.contains(newRoot) ||
           newRoot.contains(root)) {
         throw new Error("Cannot add a root that overlaps with existing root.");
       }
+    }
+
+    if (this.windowElement) {
+      if (this.windowElement !== newRoot.ownerGlobal) {
+        throw new Error(`Cannot connect a root:
+          DOMLocalization already has a root from a different window.`);
+      }
+    } else {
+      this.windowElement = newRoot.ownerGlobal;
+      this.mutationObserver = new this.windowElement.MutationObserver(
+        mutations => this.translateMutations(mutations)
+      );
     }
 
     this.roots.add(newRoot);
@@ -494,11 +225,20 @@ class DOMLocalization extends Localization {
    */
   disconnectRoot(root) {
     this.roots.delete(root);
-    // Pause and resume the mutation observer to stop observing `root`.
+    // Pause the mutation observer to stop observing `root`.
     this.pauseObserving();
-    this.resumeObserving();
 
-    return this.roots.size === 0;
+    if (this.roots.size === 0) {
+      this.mutationObserver = null;
+      this.windowElement = null;
+      this.pendingrAF = null;
+      this.pendingElements.clear();
+      return true;
+    }
+
+    // Resume observing all other roots.
+    this.resumeObserving();
+    return false;
   }
 
   /**
@@ -507,9 +247,26 @@ class DOMLocalization extends Localization {
    * @returns {Promise}
    */
   translateRoots() {
+    if (this.resourceIds.length === 0) {
+      return Promise.resolve();
+    }
+
     const roots = Array.from(this.roots);
     return Promise.all(
-      roots.map(root => this.translateFragment(root))
+      roots.map(async root => {
+        // We want to first retranslate the UI, and
+        // then (potentially) flip the directionality.
+        //
+        // This means that the DOM alternations and directionality
+        // are set in the same microtask.
+        await this.translateFragment(root);
+        let primaryLocale = Services.locale.appLocaleAsBCP47;
+        let direction = Services.locale.isAppLocaleRTL ? "rtl" : "ltr";
+        root.setAttribute("lang", primaryLocale);
+        root.setAttribute(root.namespaceURI ===
+          "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          ? "localedir" : "dir", direction);
+      })
     );
   }
 
@@ -519,6 +276,10 @@ class DOMLocalization extends Localization {
    * @private
    */
   pauseObserving() {
+    if (!this.mutationObserver) {
+      return;
+    }
+
     this.translateMutations(this.mutationObserver.takeRecords());
     this.mutationObserver.disconnect();
   }
@@ -529,6 +290,10 @@ class DOMLocalization extends Localization {
    * @private
    */
   resumeObserving() {
+    if (!this.mutationObserver) {
+      return;
+    }
+
     for (const root of this.roots) {
       this.mutationObserver.observe(root, this.observerConfig);
     }
@@ -543,7 +308,9 @@ class DOMLocalization extends Localization {
     for (const mutation of mutations) {
       switch (mutation.type) {
         case "attributes":
-          this.pendingElements.add(mutation.target);
+          if (mutation.target.hasAttribute("data-l10n-id")) {
+            this.pendingElements.add(mutation.target);
+          }
           break;
         case "childList":
           for (const addedNode of mutation.addedNodes) {
@@ -566,7 +333,10 @@ class DOMLocalization extends Localization {
     if (this.pendingElements.size > 0) {
       if (this.pendingrAF === null) {
         this.pendingrAF = this.windowElement.requestAnimationFrame(() => {
-          this.translateElements(Array.from(this.pendingElements));
+          // We need to filter for elements that lost their l10n-id while
+          // waiting for the animation frame.
+          this.translateElements(Array.from(this.pendingElements)
+            .filter(elem => elem.hasAttribute("data-l10n-id")));
           this.pendingElements.clear();
           this.pendingrAF = null;
         });
@@ -587,61 +357,16 @@ class DOMLocalization extends Localization {
    * @param   {DOMFragment} frag - Element or DocumentFragment to be translated
    * @returns {Promise}
    */
-  translateFragment(frag) {
-    if (frag.localize) {
-      // This is a temporary fast-path offered by Gecko to workaround performance
-      // issues coming from Fluent and XBL+Stylo performing unnecesary
-      // operations during startup.
-      // For details see bug 1441037, bug 1442262, and bug 1363862.
-
-      // A sparse array which will store translations separated out from
-      // all translations that is needed for DOM Overlay.
-      const overlayTranslations = [];
-
-      const getTranslationsForItems = async l10nItems => {
-        const keys = l10nItems.map(l10nItem => [l10nItem.l10nId, l10nItem.l10nArgs]);
-        const translations = await this.formatMessages(keys);
-
-        // Here we want to separate out elements that require DOM Overlays.
-        // Those elements will have to be translated using our JS
-        // implementation, while everything else is going to use the fast-path.
-        for (const [i, translation] of translations.entries()) {
-          if (translation === undefined) {
-            continue;
-          }
-
-          const hasOnlyText =
-            sanitizeTranslationForNodeLocalize(l10nItems[i], translation);
-          if (!hasOnlyText) {
-            // Removing from translations to make Node.localize skip it.
-            // We will translate it below using JS DOM Overlays.
-            overlayTranslations[i] = translations[i];
-            translations[i] = undefined;
-          }
-        }
-
-        // We pause translation observing here because Node.localize
-        // will translate the whole DOM next, using the `translations`.
-        //
-        // The observer will be resumed after DOM Overlays are localized
-        // in the next microtask.
-        this.pauseObserving();
-        return translations;
-      };
-
-      return frag.localize(getTranslationsForItems.bind(this))
-        .then(untranslatedElements => {
-          for (let i = 0; i < overlayTranslations.length; i++) {
-            if (overlayTranslations[i] !== undefined &&
-                untranslatedElements[i] !== undefined) {
-              overlayElement(untranslatedElements[i], overlayTranslations[i]);
-            }
-          }
-          this.resumeObserving();
-        })
-        .catch(() => this.resumeObserving());
+  async translateFragment(frag) {
+    if (frag.ownerDocument.l10n) {
+      // We use DocumentL10n's version of this API.
+      let errors = await frag.ownerDocument.l10n.translateFragment(frag);
+      if (errors) {
+        reportDOMOverlayErrors(errors);
+      }
+    } else {
+      await this.translateElements(this.getTranslatables(frag));
     }
-    return this.translateElements(this.getTranslatables(frag));
   }
 
   /**
@@ -662,6 +387,12 @@ class DOMLocalization extends Localization {
       return undefined;
     }
 
+    // Remove elements from the pending list since
+    // their translations will get applied below.
+    for (let element of elements) {
+      this.pendingElements.delete(element);
+    }
+
     const keys = elements.map(this.getKeysForElement);
     const translations = await this.formatMessages(keys);
     return this.applyTranslations(elements, translations);
@@ -677,10 +408,17 @@ class DOMLocalization extends Localization {
   applyTranslations(elements, translations) {
     this.pauseObserving();
 
+    const errors = [];
     for (let i = 0; i < elements.length; i++) {
       if (translations[i] !== undefined) {
-        overlayElement(elements[i], translations[i]);
+        const translationErrors = DOMOverlays.translateElement(elements[i], translations[i]);
+        if (translationErrors) {
+          errors.push(...translationErrors);
+        }
       }
+    }
+    if (errors.length) {
+      reportDOMOverlayErrors(errors);
     }
 
     this.resumeObserving();
@@ -709,16 +447,21 @@ class DOMLocalization extends Localization {
    * array.
    *
    * @param {Element} element
-   * @returns {Array<string, Object>}
+   * @returns {Object}
    * @private
    */
   getKeysForElement(element) {
-    return [
-      element.getAttribute(L10NID_ATTR_NAME),
-      JSON.parse(element.getAttribute(L10NARGS_ATTR_NAME) || null)
-    ];
+    return {
+      id: element.getAttribute(L10NID_ATTR_NAME),
+      args: JSON.parse(element.getAttribute(L10NARGS_ATTR_NAME) || null),
+    };
   }
 }
 
-this.DOMLocalization = DOMLocalization;
-var EXPORTED_SYMBOLS = ["DOMLocalization"];
+/**
+ * Helper function which allows us to construct a new
+ * DOMLocalization from DocumentL10n.
+ */
+var getDOMLocalization = () => new DOMLocalization();
+
+var EXPORTED_SYMBOLS = ["DOMLocalization", "getDOMLocalization"];

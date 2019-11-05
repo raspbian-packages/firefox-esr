@@ -25,10 +25,14 @@ function debounceActions(wait, maxWait) {
   let queuedActions = [];
 
   return store => next => {
-    let debounced = debounce(() => {
-      next(batchActions(queuedActions));
-      queuedActions = [];
-    }, wait, maxWait);
+    const debounced = debounce(
+      () => {
+        next(batchActions(queuedActions));
+        queuedActions = [];
+      },
+      wait,
+      maxWait
+    );
 
     return action => {
       if (!action.meta || !action.meta.debounce) {
@@ -52,7 +56,7 @@ function debounceActions(wait, maxWait) {
 
 function debounce(cb, wait, maxWait) {
   let timeout, maxTimeout;
-  let doFunction = () => {
+  const doFunction = () => {
     clearTimeout(timeout);
     clearTimeout(maxTimeout);
     timeout = maxTimeout = null;
@@ -61,7 +65,7 @@ function debounce(cb, wait, maxWait) {
 
   return () => {
     return new Promise(resolve => {
-      let onTimeout = () => {
+      const onTimeout = () => {
         doFunction();
         resolve();
       };

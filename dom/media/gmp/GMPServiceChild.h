@@ -9,10 +9,10 @@
 #include "GMPService.h"
 #include "MediaResult.h"
 #include "base/process.h"
+#include "mozilla/dom/PContent.h"
 #include "mozilla/ipc/Transport.h"
 #include "mozilla/gmp/PGMPServiceChild.h"
 #include "nsRefPtrHashtable.h"
-#include "mozilla/dom/ContentChild.h"
 
 namespace mozilla {
 namespace gmp {
@@ -49,7 +49,7 @@ class GeckoMediaPluginServiceChild : public GeckoMediaPluginService {
     // Nothing to do here.
   }
 
-  virtual RefPtr<GetGMPContentParentPromise> GetContentParent(
+  RefPtr<GetGMPContentParentPromise> GetContentParent(
       GMPCrashHelper* aHelper, const nsACString& aNodeIdString,
       const nsCString& aAPI, const nsTArray<nsCString>& aTags) override;
 

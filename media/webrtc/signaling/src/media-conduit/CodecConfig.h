@@ -24,9 +24,7 @@ struct AudioCodecConfig {
   int mType;
   std::string mName;
   int mFreq;
-  int mPacSize;
   int mChannels;
-  int mRate;
 
   bool mFECEnabled;
   bool mDtmfEnabled;
@@ -34,17 +32,12 @@ struct AudioCodecConfig {
   // OPUS-specific
   int mMaxPlaybackRate;
 
-  /* Default constructor is not provided since as a consumer, we
-   * can't decide the default configuration for the codec
-   */
-  explicit AudioCodecConfig(int type, std::string name, int freq, int pacSize,
-                            int channels, int rate, bool FECEnabled)
+  AudioCodecConfig(int type, std::string name, int freq, int channels,
+                   bool FECEnabled)
       : mType(type),
         mName(name),
         mFreq(freq),
-        mPacSize(pacSize),
         mChannels(channels),
-        mRate(rate),
         mFECEnabled(FECEnabled),
         mDtmfEnabled(false),
         mMaxPlaybackRate(0) {}
@@ -89,14 +82,14 @@ class VideoCodecConfig {
 
   uint32_t mTias;
   EncodingConstraints mEncodingConstraints;
-  struct SimulcastEncoding {
+  struct Encoding {
     std::string rid;
     EncodingConstraints constraints;
-    bool operator==(const SimulcastEncoding& aOther) const {
+    bool operator==(const Encoding& aOther) const {
       return rid == aOther.rid && constraints == aOther.constraints;
     }
   };
-  std::vector<SimulcastEncoding> mSimulcastEncodings;
+  std::vector<Encoding> mEncodings;
   std::string mSpropParameterSets;
   uint8_t mProfile;
   uint8_t mConstraints;
@@ -113,7 +106,7 @@ class VideoCodecConfig {
         mREDPayloadType != aRhs.mREDPayloadType ||
         mREDRTXPayloadType != aRhs.mREDRTXPayloadType || mTias != aRhs.mTias ||
         !(mEncodingConstraints == aRhs.mEncodingConstraints) ||
-        !(mSimulcastEncodings == aRhs.mSimulcastEncodings) ||
+        !(mEncodings == aRhs.mEncodings) ||
         mSpropParameterSets != aRhs.mSpropParameterSets ||
         mProfile != aRhs.mProfile || mConstraints != aRhs.mConstraints ||
         mLevel != aRhs.mLevel ||
@@ -150,12 +143,12 @@ class VideoCodecConfig {
   }
 
   bool ResolutionEquals(const VideoCodecConfig& aConfig) const {
-    if (mSimulcastEncodings.size() != aConfig.mSimulcastEncodings.size()) {
+    if (mEncodings.size() != aConfig.mEncodings.size()) {
       return false;
     }
-    for (size_t i = 0; i < mSimulcastEncodings.size(); ++i) {
-      if (!mSimulcastEncodings[i].constraints.ResolutionEquals(
-              aConfig.mSimulcastEncodings[i].constraints)) {
+    for (size_t i = 0; i < mEncodings.size(); ++i) {
+      if (!mEncodings[i].constraints.ResolutionEquals(
+              aConfig.mEncodings[i].constraints)) {
         return false;
       }
     }

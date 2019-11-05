@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import org.mozilla.gecko.firstrun.PanelConfig;
+
 import java.util.Map;
 
 
@@ -47,6 +49,11 @@ public class MmaStubImp implements MmaInterface {
     }
 
     @Override
+    public void setToken(String token) {
+
+    }
+
+    @Override
     public boolean handleGcmMessage(Context context, String from, Bundle bundle) {
         return false;
     }
@@ -56,4 +63,13 @@ public class MmaStubImp implements MmaInterface {
 
     }
 
+    @Override
+    public PanelConfig getPanelConfig(@NonNull Context context, PanelConfig.TYPE panelConfigType, boolean useLocalValues) {
+        return null;
+    }
+
+    @Override
+    public void listenOnceForVariableChanges(@NonNull MmaDelegate.MmaVariablesChangedListener listener) {
+        listener.onRemoteVariablesUnavailable();
+    }
 }

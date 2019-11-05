@@ -22,7 +22,7 @@ namespace dom {
 class FilePickerParent : public PFilePickerParent {
  public:
   FilePickerParent(const nsString& aTitle, const int16_t& aMode)
-      : mTitle(aTitle), mMode(aMode) {}
+      : mTitle(aTitle), mMode(aMode), mResult(nsIFilePicker::returnOK) {}
 
   virtual ~FilePickerParent();
 
@@ -37,14 +37,16 @@ class FilePickerParent : public PFilePickerParent {
 
   void SendFilesOrDirectories(const nsTArray<BlobImplOrString>& aData);
 
-  virtual mozilla::ipc::IPCResult RecvOpen(
-      const int16_t& aSelectedType, const bool& aAddToRecentDocs,
-      const nsString& aDefaultFile, const nsString& aDefaultExtension,
-      InfallibleTArray<nsString>&& aFilters,
-      InfallibleTArray<nsString>&& aFilterNames,
-      const nsString& aDisplayDirectory,
-      const nsString& aDisplaySpecialDirectory,
-      const nsString& aOkButtonLabel) override;
+  mozilla::ipc::IPCResult RecvOpen(const int16_t& aSelectedType,
+                                   const bool& aAddToRecentDocs,
+                                   const nsString& aDefaultFile,
+                                   const nsString& aDefaultExtension,
+                                   InfallibleTArray<nsString>&& aFilters,
+                                   InfallibleTArray<nsString>&& aFilterNames,
+                                   InfallibleTArray<nsString>&& aRawFilters,
+                                   const nsString& aDisplayDirectory,
+                                   const nsString& aDisplaySpecialDirectory,
+                                   const nsString& aOkButtonLabel);
 
   virtual void ActorDestroy(ActorDestroyReason aWhy) override;
 

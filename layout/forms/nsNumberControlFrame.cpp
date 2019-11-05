@@ -6,52 +6,50 @@
 
 #include "nsNumberControlFrame.h"
 
+#include "mozilla/BasicEvents.h"
+#include "mozilla/EventStates.h"
+#include "mozilla/FloatingPoint.h"
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/MutationEventBinding.h"
 #include "HTMLInputElement.h"
 #include "ICUUtils.h"
 #include "nsIFocusManager.h"
-#include "nsIPresShell.h"
 #include "nsFocusManager.h"
 #include "nsFontMetrics.h"
 #include "nsCheckboxRadioFrame.h"
 #include "nsGkAtoms.h"
 #include "nsNameSpaceManager.h"
-#include "nsThemeConstants.h"
-#include "mozilla/BasicEvents.h"
-#include "mozilla/EventStates.h"
+#include "nsStyleConsts.h"
 #include "nsContentUtils.h"
 #include "nsContentCreatorFunctions.h"
 #include "nsCSSPseudoElements.h"
-#ifdef MOZ_OLD_STYLE
-#include "nsStyleSet.h"
-#endif
-#include "mozilla/StyleSetHandle.h"
-#include "mozilla/StyleSetHandleInlines.h"
 #include "nsThreadUtils.h"
-#include "mozilla/FloatingPoint.h"
-#include "mozilla/dom/MutationEventBinding.h"
 
 #ifdef ACCESSIBILITY
-#include "mozilla/a11y/AccTypes.h"
+#  include "mozilla/a11y/AccTypes.h"
 #endif
 
 using namespace mozilla;
 using namespace mozilla::dom;
 
-nsIFrame* NS_NewNumberControlFrame(nsIPresShell* aPresShell,
-                                   nsStyleContext* aContext) {
-  return new (aPresShell) nsNumberControlFrame(aContext);
+nsIFrame* NS_NewNumberControlFrame(PresShell* aPresShell,
+                                   ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsNumberControlFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsNumberControlFrame)
 
 NS_QUERYFRAME_HEAD(nsNumberControlFrame)
-NS_QUERYFRAME_ENTRY(nsNumberControlFrame)
-NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
-NS_QUERYFRAME_ENTRY(nsIFormControlFrame)
+  NS_QUERYFRAME_ENTRY(nsNumberControlFrame)
+  NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
+  NS_QUERYFRAME_ENTRY(nsIFormControlFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
-nsNumberControlFrame::nsNumberControlFrame(nsStyleContext* aContext)
-    : nsContainerFrame(aContext, kClassID), mHandlingInputEvent(false) {}
+nsNumberControlFrame::nsNumberControlFrame(ComputedStyle* aStyle,
+                                           nsPresContext* aPresContext)
+    : nsContainerFrame(aStyle, aPresContext, kClassID),
+      mHandlingInputEvent(false) {}
 
 void nsNumberControlFrame::DestroyFrom(nsIFrame* aDestructRoot,
                                        PostDestroyData& aPostDestroyData) {
@@ -66,7 +64,7 @@ void nsNumberControlFrame::DestroyFrom(nsIFrame* aDestructRoot,
 
 nscoord nsNumberControlFrame::GetMinISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_MIN_WIDTH(this, result);
+  DISPLAY_MIN_INLINE_SIZE(this, result);
 
   nsIFrame* kid = mFrames.FirstChild();
   if (kid) {  // display:none?
@@ -81,7 +79,7 @@ nscoord nsNumberControlFrame::GetMinISize(gfxContext* aRenderingContext) {
 
 nscoord nsNumberControlFrame::GetPrefISize(gfxContext* aRenderingContext) {
   nscoord result;
-  DISPLAY_PREF_WIDTH(this, result);
+  DISPLAY_PREF_INLINE_SIZE(this, result);
 
   nsIFrame* kid = mFrames.FirstChild();
   if (kid) {  // display:none?
@@ -257,11 +255,11 @@ nsresult nsNumberControlFrame::AttributeChanged(int32_t aNameSpaceID,
     if (aAttribute == nsGkAtoms::placeholder ||
         aAttribute == nsGkAtoms::readonly ||
         aAttribute == nsGkAtoms::tabindex) {
-      if (aModType == MutationEventBinding::REMOVAL) {
+      if (aModType == MutationEvent_Binding::REMOVAL) {
         mTextField->UnsetAttr(aNameSpaceID, aAttribute, true);
       } else {
-        MOZ_ASSERT(aModType == MutationEventBinding::ADDITION ||
-                   aModType == MutationEventBinding::MODIFICATION);
+        MOZ_ASSERT(aModType == MutationEvent_Binding::ADDITION ||
+                   aModType == MutationEvent_Binding::MODIFICATION);
         nsAutoString value;
         mContent->AsElement()->GetAttr(aNameSpaceID, aAttribute, value);
         mTextField->SetAttr(aNameSpaceID, aAttribute, value, true);
@@ -291,7 +289,10 @@ class FocusTextField : public Runnable {
 
   NS_IMETHOD Run() override {
     if (mNumber->AsElement()->State().HasState(NS_EVENT_STATE_FOCUS)) {
-      HTMLInputElement::FromContent(mTextField)->Focus(IgnoreErrors());
+      // This job shouldn't be triggered by a WebIDL interface, hence the
+      // default options can be used.
+      FocusOptions options;
+      HTMLInputElement::FromNode(mTextField)->Focus(options, IgnoreErrors());
     }
 
     return NS_OK;
@@ -302,33 +303,28 @@ class FocusTextField : public Runnable {
   nsCOMPtr<nsIContent> mTextField;
 };
 
-nsresult nsNumberControlFrame::MakeAnonymousElement(
-    Element** aResult, nsTArray<ContentInfo>& aElements, nsAtom* aTagName,
-    CSSPseudoElementType aPseudoType) {
+already_AddRefed<Element> nsNumberControlFrame::MakeAnonymousElement(
+    Element* aParent, nsAtom* aTagName, PseudoStyleType aPseudoType) {
   // Get the NodeInfoManager and tag necessary to create the anonymous divs.
-  nsCOMPtr<nsIDocument> doc = mContent->GetComposedDoc();
+  Document* doc = mContent->GetComposedDoc();
   RefPtr<Element> resultElement = doc->CreateHTMLElement(aTagName);
   resultElement->SetPseudoElementType(aPseudoType);
 
-  // Associate the pseudo-element with the anonymous child
-  if (!aElements.AppendElement(resultElement)) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
-
-  if (aPseudoType == CSSPseudoElementType::mozNumberSpinDown ||
-      aPseudoType == CSSPseudoElementType::mozNumberSpinUp) {
+  if (aPseudoType == PseudoStyleType::mozNumberSpinDown ||
+      aPseudoType == PseudoStyleType::mozNumberSpinUp) {
     resultElement->SetAttr(kNameSpaceID_None, nsGkAtoms::role,
                            NS_LITERAL_STRING("button"), false);
   }
 
-  resultElement.forget(aResult);
-  return NS_OK;
+  if (aParent) {
+    aParent->AppendChildTo(resultElement, false);
+  }
+
+  return resultElement.forget();
 }
 
 nsresult nsNumberControlFrame::CreateAnonymousContent(
     nsTArray<ContentInfo>& aElements) {
-  nsresult rv;
-
   // We create an anonymous tree for our input element that is structured as
   // follows:
   //
@@ -343,24 +339,20 @@ nsresult nsNumberControlFrame::CreateAnonymousContent(
   // nsNumberControlFrame::DestroyFrom.
 
   // Create the anonymous outer wrapper:
-  rv = MakeAnonymousElement(getter_AddRefs(mOuterWrapper), aElements,
-                            nsGkAtoms::div,
-                            CSSPseudoElementType::mozNumberWrapper);
-  NS_ENSURE_SUCCESS(rv, rv);
+  mOuterWrapper = MakeAnonymousElement(nullptr, nsGkAtoms::div,
+                                       PseudoStyleType::mozNumberWrapper);
 
-  ContentInfo& outerWrapperCI = aElements.LastElement();
+  aElements.AppendElement(mOuterWrapper);
 
   // Create the ::-moz-number-text pseudo-element:
-  rv = MakeAnonymousElement(getter_AddRefs(mTextField),
-                            outerWrapperCI.mChildren, nsGkAtoms::input,
-                            CSSPseudoElementType::mozNumberText);
-  NS_ENSURE_SUCCESS(rv, rv);
+  mTextField = MakeAnonymousElement(mOuterWrapper, nsGkAtoms::input,
+                                    PseudoStyleType::mozNumberText);
 
   mTextField->SetAttr(kNameSpaceID_None, nsGkAtoms::type,
-                      NS_LITERAL_STRING("text"), PR_FALSE);
+                      NS_LITERAL_STRING("text"), false);
 
-  HTMLInputElement* content = HTMLInputElement::FromContent(mContent);
-  HTMLInputElement* textField = HTMLInputElement::FromContent(mTextField);
+  HTMLInputElement* content = HTMLInputElement::FromNode(mContent);
+  HTMLInputElement* textField = HTMLInputElement::FromNode(mTextField);
 
   // Initialize the text field value:
   nsAutoString value;
@@ -394,32 +386,25 @@ nsresult nsNumberControlFrame::CreateAnonymousContent(
 
   SyncDisabledState();  // Sync disabled state of 'mTextField'.
 
-  if (StyleDisplay()->mAppearance == NS_THEME_TEXTFIELD) {
+  if (StyleDisplay()->mAppearance == StyleAppearance::Textfield) {
     // The author has elected to hide the spinner by setting this
     // -moz-appearance. We will reframe if it changes.
-    return rv;
+    return NS_OK;
   }
 
   // Create the ::-moz-number-spin-box pseudo-element:
-  rv = MakeAnonymousElement(getter_AddRefs(mSpinBox), outerWrapperCI.mChildren,
-                            nsGkAtoms::div,
-                            CSSPseudoElementType::mozNumberSpinBox);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  ContentInfo& spinBoxCI = outerWrapperCI.mChildren.LastElement();
+  mSpinBox = MakeAnonymousElement(mOuterWrapper, nsGkAtoms::div,
+                                  PseudoStyleType::mozNumberSpinBox);
 
   // Create the ::-moz-number-spin-up pseudo-element:
-  rv = MakeAnonymousElement(getter_AddRefs(mSpinUp), spinBoxCI.mChildren,
-                            nsGkAtoms::div,
-                            CSSPseudoElementType::mozNumberSpinUp);
-  NS_ENSURE_SUCCESS(rv, rv);
+  mSpinUp = MakeAnonymousElement(mSpinBox, nsGkAtoms::div,
+                                 PseudoStyleType::mozNumberSpinUp);
 
   // Create the ::-moz-number-spin-down pseudo-element:
-  rv = MakeAnonymousElement(getter_AddRefs(mSpinDown), spinBoxCI.mChildren,
-                            nsGkAtoms::div,
-                            CSSPseudoElementType::mozNumberSpinDown);
+  mSpinDown = MakeAnonymousElement(mSpinBox, nsGkAtoms::div,
+                                   PseudoStyleType::mozNumberSpinDown);
 
-  return rv;
+  return NS_OK;
 }
 
 void nsNumberControlFrame::SetFocus(bool aOn, bool aRepaint) {
@@ -432,11 +417,12 @@ nsresult nsNumberControlFrame::SetFormProperty(nsAtom* aName,
 }
 
 HTMLInputElement* nsNumberControlFrame::GetAnonTextControl() {
-  return mTextField ? HTMLInputElement::FromContent(mTextField) : nullptr;
+  return HTMLInputElement::FromNode(mTextField);
 }
 
-/* static */ nsNumberControlFrame*
-nsNumberControlFrame::GetNumberControlFrameForTextField(nsIFrame* aFrame) {
+/* static */
+nsNumberControlFrame* nsNumberControlFrame::GetNumberControlFrameForTextField(
+    nsIFrame* aFrame) {
   // If aFrame is the anon text field for an <input type=number> then we expect
   // the frame of its mContent's grandparent to be that input's frame. We
   // have to check for this via the content tree because we don't know whether
@@ -456,8 +442,9 @@ nsNumberControlFrame::GetNumberControlFrameForTextField(nsIFrame* aFrame) {
   return nullptr;
 }
 
-/* static */ nsNumberControlFrame*
-nsNumberControlFrame::GetNumberControlFrameForSpinButton(nsIFrame* aFrame) {
+/* static */
+nsNumberControlFrame* nsNumberControlFrame::GetNumberControlFrameForSpinButton(
+    nsIFrame* aFrame) {
   // If aFrame is a spin button for an <input type=number> then we expect the
   // frame of its mContent's great-grandparent to be that input's frame. We
   // have to check for this via the content tree because we don't know whether
@@ -527,12 +514,12 @@ void nsNumberControlFrame::SpinnerStateChanged() const {
 }
 
 bool nsNumberControlFrame::SpinnerUpButtonIsDepressed() const {
-  return HTMLInputElement::FromContent(mContent)
+  return HTMLInputElement::FromNode(mContent)
       ->NumberSpinnerUpButtonIsDepressed();
 }
 
 bool nsNumberControlFrame::SpinnerDownButtonIsDepressed() const {
-  return HTMLInputElement::FromContent(mContent)
+  return HTMLInputElement::FromNode(mContent)
       ->NumberSpinnerDownButtonIsDepressed();
 }
 
@@ -540,22 +527,24 @@ bool nsNumberControlFrame::IsFocused() const {
   // Normally this depends on the state of our anonymous text control (which
   // takes focus for us), but in the case that it does not have a frame we will
   // have focus ourself.
-  return mTextField->AsElement()->State().HasState(NS_EVENT_STATE_FOCUS) ||
+  return mTextField->State().HasState(NS_EVENT_STATE_FOCUS) ||
          mContent->AsElement()->State().HasState(NS_EVENT_STATE_FOCUS);
 }
 
 void nsNumberControlFrame::HandleFocusEvent(WidgetEvent* aEvent) {
   if (aEvent->mOriginalTarget != mTextField) {
     // Move focus to our text field
-    RefPtr<HTMLInputElement> textField =
-        HTMLInputElement::FromContent(mTextField);
-    textField->Focus(IgnoreErrors());
+    RefPtr<HTMLInputElement> textField = HTMLInputElement::FromNode(mTextField);
+
+    // Use default FocusOptions, because this method isn't supposed to be called
+    // from a WebIDL interface.
+    FocusOptions options;
+    textField->Focus(options, IgnoreErrors());
   }
 }
 
 void nsNumberControlFrame::HandleSelectCall() {
-  RefPtr<HTMLInputElement> textField =
-      HTMLInputElement::FromContent(mTextField);
+  RefPtr<HTMLInputElement> textField = HTMLInputElement::FromNode(mTextField);
   textField->Select();
 }
 
@@ -572,12 +561,12 @@ bool nsNumberControlFrame::ShouldUseNativeStyleForSpinner() const {
 
   return spinUpFrame &&
          spinUpFrame->StyleDisplay()->mAppearance ==
-             NS_THEME_SPINNER_UPBUTTON &&
+             StyleAppearance::SpinnerUpbutton &&
          !PresContext()->HasAuthorSpecifiedRules(
              spinUpFrame, STYLES_DISABLING_NATIVE_THEMING) &&
          spinDownFrame &&
          spinDownFrame->StyleDisplay()->mAppearance ==
-             NS_THEME_SPINNER_DOWNBUTTON &&
+             StyleAppearance::SpinnerDownbutton &&
          !PresContext()->HasAuthorSpecifiedRules(
              spinDownFrame, STYLES_DISABLING_NATIVE_THEMING);
 }
@@ -624,7 +613,7 @@ void nsNumberControlFrame::SetValueOfAnonTextControl(const nsAString& aValue) {
   // Pass NonSystem as the caller type; this should work fine for actual number
   // inputs, and be safe in case our input has a type we don't expect for some
   // reason.
-  HTMLInputElement::FromContent(mTextField)
+  HTMLInputElement::FromNode(mTextField)
       ->SetValue(localizedValue, CallerType::NonSystem, IgnoreErrors());
 }
 
@@ -634,8 +623,7 @@ void nsNumberControlFrame::GetValueOfAnonTextControl(nsAString& aValue) {
     return;
   }
 
-  HTMLInputElement::FromContent(mTextField)
-      ->GetValue(aValue, CallerType::System);
+  HTMLInputElement::FromNode(mTextField)->GetValue(aValue, CallerType::System);
 
   // Here we need to de-localize any number typed in by the user. That is, we
   // need to convert it from the number format of the user's language, region,
@@ -684,36 +672,8 @@ bool nsNumberControlFrame::AnonTextControlIsEmpty() {
     return true;
   }
   nsAutoString value;
-  HTMLInputElement::FromContent(mTextField)
-      ->GetValue(value, CallerType::System);
+  HTMLInputElement::FromNode(mTextField)->GetValue(value, CallerType::System);
   return value.IsEmpty();
-}
-
-Element* nsNumberControlFrame::GetPseudoElement(CSSPseudoElementType aType) {
-  if (aType == CSSPseudoElementType::mozNumberWrapper) {
-    return mOuterWrapper;
-  }
-
-  if (aType == CSSPseudoElementType::mozNumberText) {
-    return mTextField;
-  }
-
-  if (aType == CSSPseudoElementType::mozNumberSpinBox) {
-    // Might be null.
-    return mSpinBox;
-  }
-
-  if (aType == CSSPseudoElementType::mozNumberSpinUp) {
-    // Might be null.
-    return mSpinUp;
-  }
-
-  if (aType == CSSPseudoElementType::mozNumberSpinDown) {
-    // Might be null.
-    return mSpinDown;
-  }
-
-  return nsContainerFrame::GetPseudoElement(aType);
 }
 
 #ifdef ACCESSIBILITY

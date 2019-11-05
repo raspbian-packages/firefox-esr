@@ -7,7 +7,6 @@
 #define nsFaviconService_h_
 
 #include "nsIFaviconService.h"
-#include "mozIAsyncFavicons.h"
 
 #include "nsCOMPtr.h"
 #include "nsString.h"
@@ -22,11 +21,13 @@
 #include "imgITools.h"
 #include "mozilla/storage.h"
 #include "mozilla/Attributes.h"
+#include "mozilla/Move.h"
 
 #include "FaviconHelpers.h"
 
 // The target dimension in pixels for favicons we store, in reverse order.
-static uint16_t sFaviconSizes[8] = {256, 192, 144, 96, 64, 48, 32, 16};
+// When adding/removing sizes from here, make sure to update the vector size.
+extern const uint16_t gFaviconSizes[7];
 
 // forward class definitions
 class mozIStorageStatementCallback;
@@ -34,16 +35,17 @@ class mozIStorageStatementCallback;
 class UnassociatedIconHashKey : public nsURIHashKey {
  public:
   explicit UnassociatedIconHashKey(const nsIURI* aURI) : nsURIHashKey(aURI) {}
-  UnassociatedIconHashKey(const UnassociatedIconHashKey& aOther)
-      : nsURIHashKey(aOther) {
-    NS_NOTREACHED("Do not call me!");
+  UnassociatedIconHashKey(UnassociatedIconHashKey&& aOther)
+      : nsURIHashKey(std::move(aOther)),
+        iconData(std::move(aOther.iconData)),
+        created(std::move(aOther.created)) {
+    MOZ_ASSERT_UNREACHABLE("Do not call me!");
   }
   mozilla::places::IconData iconData;
   PRTime created;
 };
 
 class nsFaviconService final : public nsIFaviconService,
-                               public mozIAsyncFavicons,
                                public nsITimerCallback,
                                public nsINamed {
  public:
@@ -116,7 +118,6 @@ class nsFaviconService final : public nsIFaviconService,
 
   NS_DECL_ISUPPORTS
   NS_DECL_NSIFAVICONSERVICE
-  NS_DECL_MOZIASYNCFAVICONS
   NS_DECL_NSITIMERCALLBACK
   NS_DECL_NSINAMED
 
@@ -144,9 +145,6 @@ class nsFaviconService final : public nsIFaviconService,
    * they get back. May be null, in which case it needs initialization.
    */
   nsCOMPtr<nsIURI> mDefaultIcon;
-
-  uint32_t mFailedFaviconSerial;
-  nsDataHashtable<nsCStringHashKey, uint32_t> mFailedFavicons;
 
   // This class needs access to the icons cache.
   friend class mozilla::places::AsyncReplaceFaviconData;

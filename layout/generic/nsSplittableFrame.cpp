@@ -37,10 +37,6 @@ void nsSplittableFrame::DestroyFrom(nsIFrame* aDestructRoot,
   nsFrame::DestroyFrom(aDestructRoot, aPostDestroyData);
 }
 
-nsSplittableType nsSplittableFrame::GetSplittableType() const {
-  return NS_FRAME_SPLITTABLE;
-}
-
 nsIFrame* nsSplittableFrame::GetPrevContinuation() const {
   return mPrevContinuation;
 }

@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sw=4 et tw=80:
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * vim: set ts=8 sw=2 et tw=80:
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,8 +29,9 @@ class ObjectId {
 
   explicit ObjectId(uint64_t serialNumber, bool hasXrayWaiver)
       : serialNumber_(serialNumber), hasXrayWaiver_(hasXrayWaiver) {
-    if (MOZ_UNLIKELY(serialNumber == 0 || serialNumber > SERIAL_NUMBER_MAX))
+    if (isInvalidSerialNumber(serialNumber)) {
       MOZ_CRASH("Bad CPOW Id");
+    }
   }
 
   bool operator==(const ObjectId& other) const {
@@ -50,8 +51,11 @@ class ObjectId {
   }
 
   static ObjectId nullId() { return ObjectId(); }
-  static ObjectId deserialize(uint64_t data) {
-    return ObjectId(data >> FLAG_BITS, data & 1);
+  static Maybe<ObjectId> deserialize(uint64_t data) {
+    if (isInvalidSerialNumber(data >> FLAG_BITS)) {
+      return Nothing();
+    }
+    return Some(ObjectId(data >> FLAG_BITS, data & 1));
   }
 
   // For use with StructGCPolicy.
@@ -60,6 +64,10 @@ class ObjectId {
 
  private:
   ObjectId() : serialNumber_(0), hasXrayWaiver_(false) {}
+
+  static bool isInvalidSerialNumber(uint64_t aSerialNumber) {
+    return aSerialNumber == 0 || aSerialNumber > SERIAL_NUMBER_MAX;
+  }
 
   uint64_t serialNumber_ : SERIAL_NUMBER_BITS;
   bool hasXrayWaiver_ : 1;
@@ -88,7 +96,6 @@ class IdToObjectMap {
  public:
   IdToObjectMap();
 
-  bool init();
   void trace(JSTracer* trc, uint64_t minimumId = 0);
   void sweep();
 
@@ -115,7 +122,8 @@ class ObjectToIdMap {
                               js::SystemAllocPolicy>;
 
  public:
-  bool init();
+  ObjectToIdMap();
+
   void trace(JSTracer* trc);
   void sweep();
 
@@ -134,8 +142,6 @@ class JavaScriptShared : public CPOWManager {
  public:
   JavaScriptShared();
   virtual ~JavaScriptShared();
-
-  bool init();
 
   void decref();
   void incref();

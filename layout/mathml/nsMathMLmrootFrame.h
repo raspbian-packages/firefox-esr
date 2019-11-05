@@ -11,20 +11,24 @@
 #include "nsMathMLContainerFrame.h"
 #include "nsMathMLChar.h"
 
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
+
 //
 // <msqrt> and <mroot> -- form a radical
 //
 
-class nsMathMLmrootFrame : public nsMathMLContainerFrame {
+class nsMathMLmrootFrame final : public nsMathMLContainerFrame {
  public:
   NS_DECL_FRAMEARENA_HELPERS(nsMathMLmrootFrame)
 
-  friend nsIFrame* NS_NewMathMLmrootFrame(nsIPresShell* aPresShell,
-                                          nsStyleContext* aContext);
+  friend nsIFrame* NS_NewMathMLmrootFrame(mozilla::PresShell* aPresShell,
+                                          ComputedStyle* aStyle);
 
-  virtual void SetAdditionalStyleContext(
-      int32_t aIndex, nsStyleContext* aStyleContext) override;
-  virtual nsStyleContext* GetAdditionalStyleContext(
+  virtual void SetAdditionalComputedStyle(
+      int32_t aIndex, ComputedStyle* aComputedStyle) override;
+  virtual ComputedStyle* GetAdditionalComputedStyle(
       int32_t aIndex) const override;
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
@@ -52,7 +56,8 @@ class nsMathMLmrootFrame : public nsMathMLContainerFrame {
   }
 
  protected:
-  explicit nsMathMLmrootFrame(nsStyleContext* aContext);
+  explicit nsMathMLmrootFrame(ComputedStyle* aStyle,
+                              nsPresContext* aPresContext);
   virtual ~nsMathMLmrootFrame();
 
   nsMathMLChar mSqrChar;

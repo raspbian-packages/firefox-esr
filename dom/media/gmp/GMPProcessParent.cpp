@@ -9,7 +9,7 @@
 #include "nsIFile.h"
 #include "nsIRunnable.h"
 #if defined(XP_WIN) && defined(MOZ_SANDBOX)
-#include "WinUtils.h"
+#  include "WinUtils.h"
 #endif
 #include "GMPLog.h"
 
@@ -23,6 +23,8 @@ using std::vector;
 
 using mozilla::gmp::GMPProcessParent;
 using mozilla::ipc::GeckoChildProcessHost;
+
+static const int kInvalidFd = -1;
 
 namespace mozilla {
 namespace gmp {
@@ -70,6 +72,12 @@ bool GMPProcessParent::Launch(int32_t aTimeoutMs) {
   args.push_back(mGMPPath);
 #endif
 
+#ifdef MOZ_WIDGET_ANDROID
+  // Add dummy values for pref and pref map to the file descriptors remapping
+  // table. See bug 1440207 and 1481139.
+  AddFdToRemap(kInvalidFd, kInvalidFd);
+  AddFdToRemap(kInvalidFd, kInvalidFd);
+#endif
   return SyncLaunch(args, aTimeoutMs);
 }
 
@@ -87,7 +95,7 @@ void GMPProcessParent::DoDelete() {
     mDeletedCallback->Run();
   }
 
-  delete this;
+  Destroy();
 }
 
 }  // namespace gmp

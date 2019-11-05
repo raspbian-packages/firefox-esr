@@ -9,9 +9,11 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
 #include "mozilla/dom/HistoryBinding.h"
+#include "mozilla/dom/ChildSHistory.h"
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
-#include "nsPIDOMWindow.h"  // for GetParentObject
+#include "nsIWeakReferenceUtils.h"  // for nsWeakPtr
+#include "nsPIDOMWindow.h"          // for GetParentObject
 #include "nsStringFwd.h"
 #include "nsWrapperCache.h"
 
@@ -59,9 +61,9 @@ class nsHistory final : public nsISupports, public nsWrapperCache {
                           const nsAString& aTitle, const nsAString& aUrl,
                           mozilla::ErrorResult& aRv, bool aReplace);
 
-  already_AddRefed<nsISHistory> GetSessionHistory() const;
+  already_AddRefed<mozilla::dom::ChildSHistory> GetSessionHistory() const;
 
-  nsCOMPtr<nsIWeakReference> mInnerWindow;
+  nsWeakPtr mInnerWindow;
 };
 
 #endif /* nsHistory_h___ */

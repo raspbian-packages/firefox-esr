@@ -13,19 +13,19 @@
 # documentation for the reasons why we don't generate certain types of bindings,
 # so that we don't accidentally start generating them in the future.
 
-# notxpcom methods return their results directly by value. The x86 windows
-# stdcall ABI returns aggregates by value differently for methods than
+# notxpcom methods and attributes return their results directly by value. The x86
+# windows stdcall ABI returns aggregates by value differently for methods than
 # functions, and rust only exposes the function ABI, so that's the one we're
-# using. The correct ABI can be emulated for notxpcom methods returning
-# aggregates by passing an &mut ReturnType parameter as the second parameter.
-# This strategy is used by the winapi-rs crate.
+# using. The correct ABI can be emulated for notxpcom methods returning aggregates
+# by passing an &mut ReturnType parameter as the second parameter.  This strategy
+# is used by the winapi-rs crate.
 # https://github.com/retep998/winapi-rs/blob/7338a5216a6a7abeefcc6bb1bc34381c81d3e247/src/macros.rs#L220-L231
 #
-# Right now we can generate code for notxpcom methods, as we don't support
-# passing aggregates by value over these APIs ever (the types which are allowed
-# in xpidl.py shouldn't include any aggregates), so the code is correct. In the
-# future if we want to start supporting returning aggregates by value, we will
-# need to use a workaround such as the one used by winapi.rs.
+# Right now we can generate code for notxpcom methods and attributes, as we don't
+# support passing aggregates by value over these APIs ever (the types which are
+# allowed in xpidl.py shouldn't include any aggregates), so the code is
+# correct. In the future if we want to start supporting returning aggregates by
+# value, we will need to use a workaround such as the one used by winapi.rs.
 
 # nostdcall methods on x86 windows will use the thiscall ABI, which is not
 # stable in rust right now, so we cannot generate bindings to them.
@@ -34,7 +34,6 @@
 # and when possible we should avoid doing so. We don't generate bindings for
 # these methods here currently.
 
-import sys
 import os.path
 import re
 import xpidl
@@ -121,13 +120,24 @@ def attributeNativeName(a, getter):
     return "%s%s" % ('Get' if getter else 'Set', binaryname)
 
 
+def attributeReturnType(a, getter):
+    if a.notxpcom:
+        if getter:
+            return a.realtype.rustType('in').strip()
+        return "::libc::c_void"
+    return "::nserror::nsresult"
+
+
 def attributeParamName(a):
     return "a" + firstCap(a.name)
 
 
 def attributeRawParamList(iface, a, getter):
-    l = [(attributeParamName(a),
-          a.realtype.rustType('out' if getter else 'in'))]
+    if getter and a.notxpcom:
+        l = []
+    else:
+        l = [(attributeParamName(a),
+              a.realtype.rustType('out' if getter else 'in'))]
     if a.implicit_jscontext:
         raise xpidl.RustNoncompat("jscontext is unsupported")
     if a.nostdcall:
@@ -143,9 +153,10 @@ def attributeParamList(iface, a, getter):
 
 def attrAsVTableEntry(iface, m, getter):
     try:
-        return "pub %s: unsafe extern \"system\" fn (%s) -> nsresult" % \
+        return "pub %s: unsafe extern \"system\" fn (%s) -> %s" % \
             (attributeNativeName(m, getter),
-             attributeParamList(iface, m, getter))
+             attributeParamList(iface, m, getter),
+             attributeReturnType(m, getter))
     except xpidl.RustNoncompat as reason:
         return """\
 /// Unable to generate binding because `%s`
@@ -161,7 +172,7 @@ def methodNativeName(m):
 def methodReturnType(m):
     if m.notxpcom:
         return m.realtype.rustType('in').strip()
-    return "nsresult"
+    return "::nserror::nsresult"
 
 
 def methodRawParamList(iface, m):
@@ -207,6 +218,7 @@ pub unsafe fn %(name)s(&self, %(params)s) -> %(ret_ty)s {
 }
 """
 
+
 def methodAsWrapper(iface, m):
     try:
         param_list = methodRawParamList(iface, m)
@@ -230,10 +242,11 @@ infallible_impl_tmpl = """\
 pub unsafe fn %(name)s(&self) -> %(realtype)s {
     let mut result = <%(realtype)s as ::std::default::Default>::default();
     let _rv = ((*self.vtable).%(name)s)(self, &mut result);
-    debug_assert!(::nserror::NsresultExt::succeeded(_rv));
+    debug_assert!(_rv.succeeded());
     result
 }
 """
+
 
 def attrAsWrapper(iface, m, getter):
     try:
@@ -245,18 +258,20 @@ def attrAsWrapper(iface, m, getter):
 
         name = attributeParamName(m)
 
-        if getter and m.infallible:
+        if getter and m.infallible and m.realtype.kind == 'builtin':
+            # NOTE: We don't support non-builtin infallible getters in Rust code.
             return infallible_impl_tmpl % {
                 'name': attributeNativeName(m, getter),
                 'realtype': m.realtype.rustType('in'),
             }
 
-        rust_type = m.realtype.rustType('out' if getter else 'in')
+        param_list = attributeRawParamList(iface, m, getter)
+        params = ["%s: %s" % x for x in param_list]
         return method_impl_tmpl % {
             'name': attributeNativeName(m, getter),
-            'params': name + ': ' + rust_type,
-            'ret_ty': 'nsresult',
-            'args': name,
+            'params': ', '.join(params),
+            'ret_ty': attributeReturnType(m, getter),
+            'args': '' if getter and m.notxpcom else name,
         }
 
     except xpidl.RustNoncompat:
@@ -303,7 +318,7 @@ def print_rust_bindings(idl, fd, filename):
 
                 if printdoccomments:
                     fd.write("/// `typedef %s %s;`\n///\n" %
-                        (p.realtype.nativeType('in'), p.name))
+                             (p.realtype.nativeType('in'), p.name))
                     fd.write(doccomments(p.doccomments))
                 fd.write("pub type %s = %s;\n\n" % (p.name, p.realtype.rustType('in')))
             except xpidl.RustNoncompat as reason:
@@ -480,10 +495,10 @@ def write_interface(iface, fd):
     if printdoccomments:
         if iface.base is not None:
             fd.write("/// `interface %s : %s`\n///\n" %
-                (iface.name, iface.base))
+                     (iface.name, iface.base))
         else:
             fd.write("/// `interface %s`\n///\n" %
-                iface.name)
+                     iface.name)
     printComments(fd, iface.doccomments, '')
     fd.write(struct_tmpl % names)
 

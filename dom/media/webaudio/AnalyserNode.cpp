@@ -86,13 +86,10 @@ class AnalyserNodeEngine final : public AudioNodeEngine {
   uint32_t mChunksToProcess = 0;
 };
 
-/* static */ already_AddRefed<AnalyserNode> AnalyserNode::Create(
+/* static */
+already_AddRefed<AnalyserNode> AnalyserNode::Create(
     AudioContext& aAudioContext, const AnalyserOptions& aOptions,
     ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
   RefPtr<AnalyserNode> analyserNode = new AnalyserNode(&aAudioContext);
 
   analyserNode->Initialize(aOptions, aRv);
@@ -105,12 +102,8 @@ class AnalyserNodeEngine final : public AudioNodeEngine {
     return nullptr;
   }
 
-  analyserNode->SetMinDecibels(aOptions.mMinDecibels, aRv);
-  if (NS_WARN_IF(aRv.Failed())) {
-    return nullptr;
-  }
-
-  analyserNode->SetMaxDecibels(aOptions.mMaxDecibels, aRv);
+  analyserNode->SetMinAndMaxDecibels(aOptions.mMinDecibels,
+                                     aOptions.mMaxDecibels, aRv);
   if (NS_WARN_IF(aRv.Failed())) {
     return nullptr;
   }
@@ -156,7 +149,7 @@ size_t AnalyserNode::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
 
 JSObject* AnalyserNode::WrapObject(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return AnalyserNodeBinding::Wrap(aCx, this, aGivenProto);
+  return AnalyserNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void AnalyserNode::SetFftSize(uint32_t aValue, ErrorResult& aRv) {
@@ -185,6 +178,16 @@ void AnalyserNode::SetMaxDecibels(double aValue, ErrorResult& aRv) {
     return;
   }
   mMaxDecibels = aValue;
+}
+
+void AnalyserNode::SetMinAndMaxDecibels(double aMinValue, double aMaxValue,
+                                        ErrorResult& aRv) {
+  if (aMinValue >= aMaxValue) {
+    aRv.Throw(NS_ERROR_DOM_INDEX_SIZE_ERR);
+    return;
+  }
+  mMinDecibels = aMinValue;
+  mMaxDecibels = aMaxValue;
 }
 
 void AnalyserNode::SetSmoothingTimeConstant(double aValue, ErrorResult& aRv) {

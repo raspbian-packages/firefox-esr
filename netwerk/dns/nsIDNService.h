@@ -13,6 +13,7 @@
 #include "nsWeakReference.h"
 
 #include "unicode/uidna.h"
+#include "mozilla/net/IDNBlocklistUtils.h"
 
 #include "nsString.h"
 
@@ -23,12 +24,10 @@ class nsIPrefBranch;
 //-----------------------------------------------------------------------------
 
 class nsIDNService final : public nsIIDNService,
-                           public nsIObserver,
                            public nsSupportsWeakReference {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIIDNSERVICE
-  NS_DECL_NSIOBSERVER
 
   nsIDNService();
 
@@ -97,7 +96,12 @@ class nsIDNService final : public nsIIDNService,
                      stringPrepFlag flag);
 
   bool isInWhitelist(const nsACString& host);
-  void prefsChanged(nsIPrefBranch* prefBranch, const char16_t* pref);
+  void prefsChanged(const char* pref);
+
+  static void PrefChanged(const char* aPref, nsIDNService* aSelf) {
+    mozilla::MutexAutoLock lock(aSelf->mLock);
+    aSelf->prefsChanged(aPref);
+  }
 
   /**
    * Determine whether a label is considered safe to display to the user
@@ -159,7 +163,7 @@ class nsIDNService final : public nsIIDNService,
   UIDNA* mIDNA;
 
   // We use this mutex to guard access to:
-  // |mIDNBlacklist|, |mShowPunycode|, |mRestrictionProfile|,
+  // |mIDNBlocklist|, |mShowPunycode|, |mRestrictionProfile|,
   // |mIDNUseWhitelist|.
   //
   // These members can only be updated on the main thread and
@@ -168,7 +172,7 @@ class nsIDNService final : public nsIIDNService,
   mozilla::Mutex mLock;
 
   // guarded by mLock
-  nsString mIDNBlacklist;
+  nsTArray<mozilla::net::BlocklistRange> mIDNBlocklist;
 
   /**
    * Flag set by the pref network.IDN_show_punycode. When it is true,

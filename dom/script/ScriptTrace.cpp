@@ -28,8 +28,8 @@ static nsresult TestingDispatchEvent(nsIScriptElement* aScriptElement,
     return NS_OK;
   }
 
-  RefPtr<AsyncEventDispatcher> dispatcher =
-      new AsyncEventDispatcher(target, aEventType, true, false);
+  RefPtr<AsyncEventDispatcher> dispatcher = new AsyncEventDispatcher(
+      target, aEventType, CanBubble::eYes, ChromeOnlyDispatch::eNo);
   return dispatcher->PostDOMEvent();
 }
 

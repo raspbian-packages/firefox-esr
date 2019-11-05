@@ -32,11 +32,9 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -84,20 +82,6 @@ public class BaseMessageDialog extends Dialog {
   private boolean isWeb = false;
   private boolean isHtml = false;
   private boolean isClosing = false;
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      final Window window = getWindow();
-      window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-      window.setStatusBarColor(Color.TRANSPARENT);
-
-      int flags = window.getDecorView().getSystemUiVisibility();
-      flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-      window.getDecorView().setSystemUiVisibility(flags);
-    }
-  }
 
   protected BaseMessageDialog(Activity activity, boolean fullscreen, BaseMessageOptions options,
       WebInterstitialOptions webOptions, HTMLOptions htmlOptions) {
@@ -158,7 +142,7 @@ public class BaseMessageDialog extends Dialog {
   @Override
   public void onWindowFocusChanged(boolean hasFocus) {
     try {
-      if (webView != null && Build.VERSION.SDK_INT >= 11) {
+      if (webView != null) {
         if (hasFocus) {
           webView.onResume();
         } else {
@@ -258,19 +242,31 @@ public class BaseMessageDialog extends Dialog {
           LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     } else if (isHtml) {
       int height = SizeUtil.dpToPx(context, htmlOptions.getHtmlHeight());
-      layoutParams = new RelativeLayout.LayoutParams(
-          LayoutParams.MATCH_PARENT, height);
-    } else {
-
-      // Make sure the dialog fits on screen.
-      Display display = context.getWindowManager().getDefaultDisplay();
-      Point size = new Point();
-      if (Build.VERSION.SDK_INT >= 13) {
-        display.getSize(size);
+      HTMLOptions.Size htmlWidth = htmlOptions.getHtmlWidth();
+      if (htmlWidth == null || TextUtils.isEmpty(htmlWidth.type)) {
+        layoutParams = new RelativeLayout.LayoutParams(
+            LayoutParams.MATCH_PARENT, height);
       } else {
-        size = new Point(display.getHeight(), display.getHeight());
+        int width = htmlWidth.value;
+        if ("%".equals(htmlWidth.type)) {
+          Point size = SizeUtil.getDisplaySize(context);
+          width = size.x * width / 100;
+        } else {
+          width = SizeUtil.dpToPx(context, width);
+        }
+        layoutParams = new RelativeLayout.LayoutParams(width, height);
       }
 
+      layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+      int htmlYOffset = htmlOptions.getHtmlYOffset(context);
+      if (MessageTemplates.Args.HTML_ALIGN_BOTTOM.equals(htmlOptions.getHtmlAlign())) {
+        layoutParams.bottomMargin = htmlYOffset;
+      } else {
+        layoutParams.topMargin = htmlYOffset;
+      }
+    } else {
+      // Make sure the dialog fits on screen.
+      Point size = SizeUtil.getDisplaySize(context);
       int width = SizeUtil.dpToPx(context, ((CenterPopupOptions) options).getWidth());
       int height = SizeUtil.dpToPx(context, ((CenterPopupOptions) options).getHeight());
 
@@ -336,6 +332,7 @@ public class BaseMessageDialog extends Dialog {
     return new RoundRectShape(outerRadii, null, null);
   }
 
+  // setBackgroundDrawable was deprecated at API 16.
   @SuppressWarnings("deprecation")
   private ImageView createBackgroundImageView(Context context, boolean fullscreen) {
     BackgroundImageView view = new BackgroundImageView(context, fullscreen);
@@ -460,7 +457,6 @@ public class BaseMessageDialog extends Dialog {
       webViewSettings.setMediaPlaybackRequiresUserGesture(false);
     }
     webViewSettings.setAppCacheEnabled(true);
-    webViewSettings.getSaveFormData();
     webViewSettings.setAllowFileAccess(true);
     webViewSettings.setJavaScriptEnabled(true);
     webViewSettings.setDomStorageEnabled(true);
@@ -472,10 +468,9 @@ public class BaseMessageDialog extends Dialog {
       webViewSettings.setAllowFileAccessFromFileURLs(true);
       webViewSettings.setAllowUniversalAccessFromFileURLs(true);
     }
-    if (Build.VERSION.SDK_INT >= 11) {
-      webViewSettings.setBuiltInZoomControls(false);
-      webViewSettings.setDisplayZoomControls(false);
-    }
+
+    webViewSettings.setBuiltInZoomControls(false);
+    webViewSettings.setDisplayZoomControls(false);
     webViewSettings.setSupportZoom(false);
 
     RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -484,6 +479,7 @@ public class BaseMessageDialog extends Dialog {
     final Dialog currentDialog = this;
     webView.setWebChromeClient(new WebChromeClient());
     webView.setWebViewClient(new WebViewClient() {
+      // shouldOverrideUrlLoading(WebView wView, String url) was deprecated at API 24.
       @SuppressWarnings("deprecation")
       @Override
       public boolean shouldOverrideUrlLoading(WebView wView, String url) {

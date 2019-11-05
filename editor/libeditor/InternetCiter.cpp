@@ -64,55 +64,6 @@ nsresult InternetCiter::GetCiteString(const nsAString& aInString,
   return NS_OK;
 }
 
-nsresult InternetCiter::StripCitesAndLinebreaks(const nsAString& aInString,
-                                                nsAString& aOutString,
-                                                bool aLinebreaksToo,
-                                                int32_t* aCiteLevel) {
-  if (aCiteLevel) {
-    *aCiteLevel = 0;
-  }
-
-  aOutString.Truncate();
-  nsReadingIterator<char16_t> beginIter, endIter;
-  aInString.BeginReading(beginIter);
-  aInString.EndReading(endIter);
-  while (beginIter != endIter) {  // loop over lines
-    // Clear out cites first, at the beginning of the line:
-    int32_t thisLineCiteLevel = 0;
-    while (beginIter != endIter &&
-           (*beginIter == gt || nsCRT::IsAsciiSpace(*beginIter))) {
-      if (*beginIter == gt) {
-        ++thisLineCiteLevel;
-      }
-      ++beginIter;
-    }
-    // Now copy characters until line end:
-    while (beginIter != endIter && (*beginIter != '\r' && *beginIter != '\n')) {
-      aOutString.Append(*beginIter);
-      ++beginIter;
-    }
-    if (aLinebreaksToo) {
-      aOutString.Append(char16_t(' '));
-    } else {
-      aOutString.Append(char16_t('\n'));  // DOM linebreaks, not NS_LINEBREAK
-    }
-    // Skip over any more consecutive linebreak-like characters:
-    while (beginIter != endIter && (*beginIter == '\r' || *beginIter == '\n')) {
-      ++beginIter;
-    }
-    // Done with this line -- update cite level
-    if (aCiteLevel && (thisLineCiteLevel > *aCiteLevel)) {
-      *aCiteLevel = thisLineCiteLevel;
-    }
-  }
-  return NS_OK;
-}
-
-nsresult InternetCiter::StripCites(const nsAString& aInString,
-                                   nsAString& aOutString) {
-  return StripCitesAndLinebreaks(aInString, aOutString, false, 0);
-}
-
 static void AddCite(nsAString& aOutString, int32_t citeLevel) {
   for (int32_t i = 0; i < citeLevel; ++i) {
     aOutString.Append(gt);
@@ -141,8 +92,8 @@ static inline bool IsSpace(char16_t c) {
 nsresult InternetCiter::Rewrap(const nsAString& aInString, uint32_t aWrapCol,
                                uint32_t aFirstLineOffset, bool aRespectNewlines,
                                nsAString& aOutString) {
-// There shouldn't be returns in this string, only dom newlines.
-// Check to make sure:
+  // There shouldn't be returns in this string, only dom newlines.
+  // Check to make sure:
 #ifdef DEBUG
   int32_t cr = aInString.FindChar(char16_t('\r'));
   NS_ASSERTION((cr < 0), "Rewrap: CR in string gotten from DOM!\n");

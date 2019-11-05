@@ -23,11 +23,11 @@
 
 // Distinguish architectures for the telemetry key.
 #if defined(__i386__)
-#define SANDBOX_ARCH_NAME "x86"
+#  define SANDBOX_ARCH_NAME "x86"
 #elif defined(__x86_64__)
-#define SANDBOX_ARCH_NAME "amd64"
+#  define SANDBOX_ARCH_NAME "amd64"
 #else
-#error "unrecognized architecture"
+#  error "unrecognized architecture"
 #endif
 
 namespace mozilla {
@@ -74,7 +74,8 @@ SandboxReporter::~SandboxReporter() {
   close(mClientFd);
 }
 
-/* static */ SandboxReporter* SandboxReporter::Singleton() {
+/* static */
+SandboxReporter* SandboxReporter::Singleton() {
   static StaticMutex sMutex;
   StaticMutexAutoLock lock(sMutex);
 
@@ -126,11 +127,14 @@ static void SubmitToTelemetry(const SandboxReport& aReport) {
     case SandboxReport::ProcType::CONTENT:
       key.AppendLiteral("content");
       break;
+    case SandboxReport::ProcType::FILE:
+      key.AppendLiteral("file");
+      break;
     case SandboxReport::ProcType::MEDIA_PLUGIN:
       key.AppendLiteral("gmp");
       break;
-    case SandboxReport::ProcType::FILE:
-      key.AppendLiteral("file");
+    case SandboxReport::ProcType::RDD:
+      key.AppendLiteral("rdd");
       break;
     default:
       MOZ_ASSERT(false);
@@ -138,43 +142,43 @@ static void SubmitToTelemetry(const SandboxReport& aReport) {
   key.Append(':');
 
   switch (aReport.mSyscall) {
-  // Syscalls that are filtered by arguments in one or more of the
-  // policies in SandboxFilter.cpp should generally have those
-  // arguments included here, but don't include irrelevant
-  // information that would cause large numbers of distinct keys for
-  // the same issue -- for example, pids or pointers.  When in
-  // doubt, include arguments only if they would typically be
-  // constants (or asm immediates) in the code making the syscall.
-  //
-  // Also, keep in mind that this is opt-out data collection and
-  // privacy is critical.  While it's unlikely that information in
-  // the register values alone could personally identify a user
-  // (see also crash reports, where register contents are public),
-  // and the guidelines in the previous paragraph should rule out
-  // any value that's capable of holding PII, please be careful.
-  //
-  // When making changes here, please consult with a data steward
-  // (https://wiki.mozilla.org/Firefox/Data_Collection) and ask for
-  // a review if you are unsure about anything.
+    // Syscalls that are filtered by arguments in one or more of the
+    // policies in SandboxFilter.cpp should generally have those
+    // arguments included here, but don't include irrelevant
+    // information that would cause large numbers of distinct keys for
+    // the same issue -- for example, pids or pointers.  When in
+    // doubt, include arguments only if they would typically be
+    // constants (or asm immediates) in the code making the syscall.
+    //
+    // Also, keep in mind that this is opt-out data collection and
+    // privacy is critical.  While it's unlikely that information in
+    // the register values alone could personally identify a user
+    // (see also crash reports, where register contents are public),
+    // and the guidelines in the previous paragraph should rule out
+    // any value that's capable of holding PII, please be careful.
+    //
+    // When making changes here, please consult with a data steward
+    // (https://wiki.mozilla.org/Firefox/Data_Collection) and ask for
+    // a review if you are unsure about anything.
 
-  // This macro includes one argument as a decimal number; it should
-  // be enough for most cases.
+    // This macro includes one argument as a decimal number; it should
+    // be enough for most cases.
 #define ARG_DECIMAL(name, idx)         \
   case __NR_##name:                    \
     key.AppendLiteral(#name ":");      \
     key.AppendInt(aReport.mArgs[idx]); \
     break
 
-  // This may be more convenient if the argument is a set of bit flags.
+    // This may be more convenient if the argument is a set of bit flags.
 #define ARG_HEX(name, idx)                 \
   case __NR_##name:                        \
     key.AppendLiteral(#name ":0x");        \
     key.AppendInt(aReport.mArgs[idx], 16); \
     break
 
-  // clockid_t is annoying: there are a small set of fixed timers,
-  // but it can also encode a pid/tid (or a fd for a hardware clock
-  // device); in this case the value is negative.
+    // clockid_t is annoying: there are a small set of fixed timers,
+    // but it can also encode a pid/tid (or a fd for a hardware clock
+    // device); in this case the value is negative.
 #define ARG_CLOCKID(name, idx)                            \
   case __NR_##name:                                       \
     key.AppendLiteral(#name ":");                         \
@@ -223,6 +227,10 @@ void SandboxReporter::AddOne(const SandboxReport& aReport) {
 }
 
 void SandboxReporter::ThreadMain(void) {
+  // Create a nsThread wrapper for the current platform thread, and register it
+  // with the thread manager.
+  (void)NS_GetCurrentThread();
+
   for (;;) {
     SandboxReport rep;
     struct iovec iov;
@@ -273,11 +281,7 @@ SandboxReporter::Snapshot SandboxReporter::GetSnapshot() {
     MOZ_ASSERT(rep->IsValid());
     snapshot.mReports.AppendElement(*rep);
   }
-  // Named Return Value Optimization would apply here, but C++11
-  // doesn't require it; so, instead of possibly copying the entire
-  // array contents, invoke the move constructor and copy at most a
-  // few words.
-  return Move(snapshot);
+  return snapshot;
 }
 
 }  // namespace mozilla

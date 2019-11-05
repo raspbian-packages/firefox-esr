@@ -67,3 +67,16 @@ connection-proxy-autologin =
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS када се користи SOCKS v5
     .accesskey = D
+connection-dns-over-https =
+    .label = Омогући DNS путем HTTPS
+    .accesskey = О
+# Variables:
+#   $url (String) - URL for the DNS over HTTPS provider
+connection-dns-over-https-url-default =
+    .label = Користи подразумевани ({ $url })
+    .accesskey = К
+    .tooltiptext = Користи подразумевану адресу за разрешавање DNS-а преко HTTPS-a
+connection-dns-over-https-url-custom =
+    .label = Прилагођено
+    .accesskey = П
+    .tooltiptext = Унесите жељену адресу за разрешавање DNS-a преко HTTPS-а

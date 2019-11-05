@@ -68,11 +68,9 @@ SurfaceDescriptorX11::SurfaceDescriptorX11(gfxXlibSurface* aSurf,
     mFormat = cairo_xlib_surface_get_visual(aSurf->CairoSurface())->visualid;
   }
 
-#ifdef GL_PROVIDER_GLX
   if (aForwardGLX) {
     mGLXPixmap = aSurf->GetGLXPixmap();
   }
-#endif
 }
 
 SurfaceDescriptorX11::SurfaceDescriptorX11(Drawable aDrawable, XID aFormatID,
@@ -81,6 +79,9 @@ SurfaceDescriptorX11::SurfaceDescriptorX11(Drawable aDrawable, XID aFormatID,
 
 already_AddRefed<gfxXlibSurface> SurfaceDescriptorX11::OpenForeign() const {
   Display* display = DefaultXDisplay();
+  if (!display) {
+    return nullptr;
+  }
   Screen* screen = DefaultScreenOfDisplay(display);
 
   RefPtr<gfxXlibSurface> surf;
@@ -96,14 +97,13 @@ already_AddRefed<gfxXlibSurface> SurfaceDescriptorX11::OpenForeign() const {
     surf = new gfxXlibSurface(display, mId, visual, mSize);
   }
 
-#ifdef GL_PROVIDER_GLX
   if (mGLXPixmap) surf->BindGLXPixmap(mGLXPixmap);
-#endif
 
   return surf->CairoStatus() ? nullptr : surf.forget();
 }
 
-/*static*/ void ShadowLayerForwarder::PlatformSyncBeforeUpdate() {
+/*static*/
+void ShadowLayerForwarder::PlatformSyncBeforeUpdate() {
   if (UsingXCompositing()) {
     // If we're using X surfaces, then we need to finish all pending
     // operations on the back buffers before handing them to the
@@ -113,7 +113,8 @@ already_AddRefed<gfxXlibSurface> SurfaceDescriptorX11::OpenForeign() const {
   }
 }
 
-/*static*/ void LayerManagerComposite::PlatformSyncBeforeReplyUpdate() {
+/*static*/
+void LayerManagerComposite::PlatformSyncBeforeReplyUpdate() {
   if (UsingXCompositing()) {
     // If we're using X surfaces, we need to finish all pending
     // operations on the *front buffers* before handing them back to
@@ -124,9 +125,8 @@ already_AddRefed<gfxXlibSurface> SurfaceDescriptorX11::OpenForeign() const {
   }
 }
 
-/*static*/ bool LayerManagerComposite::SupportsDirectTexturing() {
-  return false;
-}
+/*static*/
+bool LayerManagerComposite::SupportsDirectTexturing() { return false; }
 
 }  // namespace layers
 }  // namespace mozilla

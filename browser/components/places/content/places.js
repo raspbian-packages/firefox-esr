@@ -3,41 +3,68 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* import-globals-from editBookmarkOverlay.js */
-// Via downloadsViewOverlay.xul -> allDownloadsViewOverlay.xul
+/* import-globals-from editBookmark.js */
 /* import-globals-from ../../../../toolkit/content/contentAreaUtils.js */
+/* import-globals-from ../../downloads/content/allDownloadsView.js */
 
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/TelemetryStopwatch.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.defineModuleGetter(this, "MigrationUtils",
-                               "resource:///modules/MigrationUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "BookmarkJSONUtils",
-                               "resource://gre/modules/BookmarkJSONUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "PlacesBackups",
-                               "resource://gre/modules/PlacesBackups.jsm");
-ChromeUtils.defineModuleGetter(this, "DownloadUtils",
-                               "resource://gre/modules/DownloadUtils.jsm");
+/* Shared Places Import - change other consumers if you change this: */
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+var { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+XPCOMUtils.defineLazyModuleGetters(this, {
+  PlacesUtils: "resource://gre/modules/PlacesUtils.jsm",
+  PlacesUIUtils: "resource:///modules/PlacesUIUtils.jsm",
+  PlacesTransactions: "resource://gre/modules/PlacesTransactions.jsm",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
+});
+XPCOMUtils.defineLazyScriptGetter(
+  this,
+  "PlacesTreeView",
+  "chrome://browser/content/places/treeView.js"
+);
+XPCOMUtils.defineLazyScriptGetter(
+  this,
+  ["PlacesInsertionPoint", "PlacesController", "PlacesControllerDragHelper"],
+  "chrome://browser/content/places/controller.js"
+);
+/* End Shared Places Import */
+
+var { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "MigrationUtils",
+  "resource:///modules/MigrationUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "BookmarkJSONUtils",
+  "resource://gre/modules/BookmarkJSONUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesBackups",
+  "resource://gre/modules/PlacesBackups.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "DownloadUtils",
+  "resource://gre/modules/DownloadUtils.jsm"
+);
 
 const RESTORE_FILEPICKER_FILTER_EXT = "*.json;*.jsonlz4";
-const HISTORY_LIBRARY_SEARCH_TELEMETRY = "PLACES_HISTORY_LIBRARY_SEARCH_TIME_MS";
+const HISTORY_LIBRARY_SEARCH_TELEMETRY =
+  "PLACES_HISTORY_LIBRARY_SEARCH_TIME_MS";
 
 var PlacesOrganizer = {
   _places: null,
 
-  // IDs of fields from editBookmarkOverlay that should be hidden when infoBox
-  // is minimal. IDs should be kept in sync with the IDs of the elements
-  // observing additionalInfoBroadcaster.
-  _additionalInfoFields: [
-    "editBMPanel_descriptionRow",
-    "editBMPanel_loadInSidebarCheckbox",
-    "editBMPanel_keywordRow",
-  ],
-
   _initFolderTree() {
-    var leftPaneRoot = PlacesUIUtils.leftPaneFolderId;
-    this._places.place = "place:excludeItems=1&expandQueries=0&folder=" + leftPaneRoot;
+    this._places.place = `place:type=${
+      Ci.nsINavHistoryQueryOptions.RESULTS_AS_LEFT_PANE_QUERY
+    }&excludeItems=1&expandQueries=0`;
   },
 
   /**
@@ -50,36 +77,41 @@ var PlacesOrganizer = {
   selectLeftPaneBuiltIn(item) {
     switch (item) {
       case "AllBookmarks":
-      case "History":
-      case "Downloads":
-      case "Tags": {
-        var itemId = PlacesUIUtils.leftPaneQueries[item];
-        this._places.selectItems([itemId]);
-        // Forcefully expand all-bookmarks
-        if (item == "AllBookmarks" || item == "History")
-          PlacesUtils.asContainer(this._places.selectedNode).containerOpen = true;
+        this._places.selectItems([PlacesUtils.virtualAllBookmarksGuid]);
+        PlacesUtils.asContainer(this._places.selectedNode).containerOpen = true;
         break;
-      }
+      case "History":
+        this._places.selectItems([PlacesUtils.virtualHistoryGuid]);
+        PlacesUtils.asContainer(this._places.selectedNode).containerOpen = true;
+        break;
+      case "Downloads":
+        this._places.selectItems([PlacesUtils.virtualDownloadsGuid]);
+        break;
+      case "Tags":
+        this._places.selectItems([PlacesUtils.virtualTagsGuid]);
+        break;
       case "BookmarksMenu":
         this.selectLeftPaneContainerByHierarchy([
-          PlacesUIUtils.leftPaneQueries.AllBookmarks,
-          PlacesUtils.bookmarks.virtualMenuGuid
+          PlacesUtils.virtualAllBookmarksGuid,
+          PlacesUtils.bookmarks.virtualMenuGuid,
         ]);
         break;
       case "BookmarksToolbar":
         this.selectLeftPaneContainerByHierarchy([
-          PlacesUIUtils.leftPaneQueries.AllBookmarks,
-          PlacesUtils.bookmarks.virtualToolbarGuid
+          PlacesUtils.virtualAllBookmarksGuid,
+          PlacesUtils.bookmarks.virtualToolbarGuid,
         ]);
         break;
       case "UnfiledBookmarks":
         this.selectLeftPaneContainerByHierarchy([
-          PlacesUIUtils.leftPaneQueries.AllBookmarks,
-          PlacesUtils.bookmarks.virtualUnfiledGuid
+          PlacesUtils.virtualAllBookmarksGuid,
+          PlacesUtils.bookmarks.virtualUnfiledGuid,
         ]);
         break;
       default:
-        throw new Error(`Unrecognized item ${item} passed to selectLeftPaneRootItem`);
+        throw new Error(
+          `Unrecognized item ${item} passed to selectLeftPaneRootItem`
+        );
     }
   },
 
@@ -92,69 +124,97 @@ var PlacesOrganizer = {
    *                   container may be either an item id, a Places URI string,
    *                   or a named query, like:
    *                   "BookmarksMenu", "BookmarksToolbar", "UnfiledBookmarks", "AllBookmarks".
-   * @see PlacesUIUtils.leftPaneQueries for supported named queries.
    */
   selectLeftPaneContainerByHierarchy(aHierarchy) {
-    if (!aHierarchy)
+    if (!aHierarchy) {
       throw new Error("Containers hierarchy not specified");
+    }
     let hierarchy = [].concat(aHierarchy);
-    let selectWasSuppressed = this._places.view.selection.selectEventsSuppressed;
-    if (!selectWasSuppressed)
+    let selectWasSuppressed = this._places.view.selection
+      .selectEventsSuppressed;
+    if (!selectWasSuppressed) {
       this._places.view.selection.selectEventsSuppressed = true;
+    }
     try {
       for (let container of hierarchy) {
-        switch (typeof container) {
-          case "number":
+        if (typeof container != "string") {
+          throw new Error("Invalid container type found: " + container);
+        }
+
+        try {
+          this.selectLeftPaneBuiltIn(container);
+        } catch (ex) {
+          if (container.substr(0, 6) == "place:") {
+            this._places.selectPlaceURI(container);
+          } else {
+            // Must be a guid.
             this._places.selectItems([container], false);
-            break;
-          case "string":
-            try {
-              this.selectLeftPaneBuiltIn(container);
-            } catch (ex) {
-              if (container.substr(0, 6) == "place:") {
-                this._places.selectPlaceURI(container);
-              } else {
-                // May be a guid.
-                this._places.selectItems([container], false);
-              }
-            }
-            break;
-          default:
-            throw new Error("Invalid container type found: " + container);
+          }
         }
         PlacesUtils.asContainer(this._places.selectedNode).containerOpen = true;
       }
     } finally {
-      if (!selectWasSuppressed)
+      if (!selectWasSuppressed) {
         this._places.view.selection.selectEventsSuppressed = false;
+      }
     }
   },
 
   init: function PO_init() {
+    // Register the downloads view.
+    const DOWNLOADS_QUERY =
+      "place:transition=" +
+      Ci.nsINavHistoryService.TRANSITION_DOWNLOAD +
+      "&sort=" +
+      Ci.nsINavHistoryQueryOptions.SORT_BY_DATE_DESCENDING;
+
+    ContentArea.setContentViewForQueryString(
+      DOWNLOADS_QUERY,
+      () =>
+        new DownloadsPlacesView(
+          document.getElementById("downloadsRichListBox"),
+          false
+        ),
+      {
+        showDetailsPane: false,
+        toolbarSet:
+          "back-button, forward-button, organizeButton, clearDownloadsButton, libraryToolbarSpacer, searchFilter",
+      }
+    );
+
     ContentArea.init();
 
     this._places = document.getElementById("placesList");
     this._initFolderTree();
 
     var leftPaneSelection = "AllBookmarks"; // default to all-bookmarks
-    if (window.arguments && window.arguments[0])
+    if (window.arguments && window.arguments[0]) {
       leftPaneSelection = window.arguments[0];
+    }
 
     this.selectLeftPaneContainerByHierarchy(leftPaneSelection);
     if (leftPaneSelection === "History") {
       let historyNode = this._places.selectedNode;
-      if (historyNode.childCount > 0)
+      if (historyNode.childCount > 0) {
         this._places.selectNode(historyNode.getChild(0));
+      }
     }
 
     // clear the back-stack
     this._backHistory.splice(0, this._backHistory.length);
-    document.getElementById("OrganizerCommand:Back").setAttribute("disabled", true);
+    document
+      .getElementById("OrganizerCommand:Back")
+      .setAttribute("disabled", true);
 
     // Set up the search UI.
     PlacesSearchBox.init();
 
     window.addEventListener("AppCommand", this, true);
+
+    let placeContentElement = document.getElementById("placeContent");
+    placeContentElement.addEventListener("onOpenFlatContainer", function(e) {
+      PlacesOrganizer.openFlatContainer(e.detail);
+    });
 
     if (AppConstants.platform === "macosx") {
       // 1. Map Edit->Find command to OrganizerCommand_find:all.  Need to map
@@ -172,37 +232,37 @@ var PlacesOrganizer = {
     }
 
     // remove the "Properties" context-menu item, we've our own details pane
-    document.getElementById("placesContext")
-            .removeChild(document.getElementById("placesContext_show:info"));
+    document
+      .getElementById("placesContext")
+      .removeChild(document.getElementById("placesContext_show:info"));
 
     if (!Services.policies.isAllowed("profileImport")) {
-      document.getElementById("OrganizerCommand_browserImport").setAttribute("disabled", true);
+      document
+        .getElementById("OrganizerCommand_browserImport")
+        .setAttribute("disabled", true);
     }
 
     ContentArea.focus();
   },
 
-  QueryInterface: function PO_QueryInterface(aIID) {
-    if (aIID.equals(Ci.nsIDOMEventListener) ||
-        aIID.equals(Ci.nsISupports))
-      return this;
-
-    throw Cr.NS_NOINTERFACE;
-  },
+  QueryInterface: ChromeUtils.generateQI([]),
 
   handleEvent: function PO_handleEvent(aEvent) {
-    if (aEvent.type != "AppCommand")
+    if (aEvent.type != "AppCommand") {
       return;
+    }
 
     aEvent.stopPropagation();
     switch (aEvent.command) {
       case "Back":
-        if (this._backHistory.length > 0)
+        if (this._backHistory.length > 0) {
           this.back();
+        }
         break;
       case "Forward":
-        if (this._forwardHistory.length > 0)
+        if (this._forwardHistory.length > 0) {
           this.forward();
+        }
         break;
       case "Search":
         PlacesSearchBox.findAll();
@@ -210,8 +270,7 @@ var PlacesOrganizer = {
     }
   },
 
-  destroy: function PO_destroy() {
-  },
+  destroy: function PO_destroy() {},
 
   _location: null,
   get location() {
@@ -219,8 +278,9 @@ var PlacesOrganizer = {
   },
 
   set location(aLocation) {
-    if (!aLocation || this._location == aLocation)
+    if (!aLocation || this._location == aLocation) {
       return aLocation;
+    }
 
     if (this.location) {
       this._backHistory.unshift(this.location);
@@ -237,14 +297,24 @@ var PlacesOrganizer = {
     this.updateDetailsPane();
 
     // update navigation commands
-    if (this._backHistory.length == 0)
-      document.getElementById("OrganizerCommand:Back").setAttribute("disabled", true);
-    else
-      document.getElementById("OrganizerCommand:Back").removeAttribute("disabled");
-    if (this._forwardHistory.length == 0)
-      document.getElementById("OrganizerCommand:Forward").setAttribute("disabled", true);
-    else
-      document.getElementById("OrganizerCommand:Forward").removeAttribute("disabled");
+    if (this._backHistory.length == 0) {
+      document
+        .getElementById("OrganizerCommand:Back")
+        .setAttribute("disabled", true);
+    } else {
+      document
+        .getElementById("OrganizerCommand:Back")
+        .removeAttribute("disabled");
+    }
+    if (this._forwardHistory.length == 0) {
+      document
+        .getElementById("OrganizerCommand:Forward")
+        .setAttribute("disabled", true);
+    } else {
+      document
+        .getElementById("OrganizerCommand:Forward")
+        .removeAttribute("disabled");
+    }
 
     return aLocation;
   },
@@ -278,8 +348,9 @@ var PlacesOrganizer = {
   _cachedLeftPaneSelectedURI: null,
   onPlaceSelected: function PO_onPlaceSelected(resetSearchBox) {
     // Don't change the right-hand pane contents when there's no selection.
-    if (!this._places.hasSelection)
+    if (!this._places.hasSelection) {
       return;
+    }
 
     let node = this._places.selectedNode;
     let placeURI = node.uri;
@@ -298,8 +369,9 @@ var PlacesOrganizer = {
     // that we cannot return any earlier than this point, because when
     // !resetSearchBox, we need to update location and hide the UI as above,
     // even though the selection has not changed.
-    if (placeURI == this._cachedLeftPaneSelectedURI)
+    if (placeURI == this._cachedLeftPaneSelectedURI) {
       return;
+    }
     this._cachedLeftPaneSelectedURI = placeURI;
 
     // At this point, resetSearchBox is true, because the left pane selection
@@ -316,12 +388,14 @@ var PlacesOrganizer = {
    *          the node to set up scope from
    */
   _setSearchScopeForNode: function PO__setScopeForNode(aNode) {
-    let itemId = aNode.itemId;
+    let itemGuid = aNode.bookmarkGuid;
 
-    if (PlacesUtils.nodeIsHistoryContainer(aNode) ||
-        itemId == PlacesUIUtils.leftPaneQueries.History) {
+    if (
+      PlacesUtils.nodeIsHistoryContainer(aNode) ||
+      itemGuid == PlacesUtils.virtualHistoryGuid
+    ) {
       PlacesQueryBuilder.setScope("history");
-    } else if (itemId == PlacesUIUtils.leftPaneQueries.Downloads) {
+    } else if (itemGuid == PlacesUtils.virtualDownloadsGuid) {
       PlacesQueryBuilder.setScope("downloads");
     } else {
       // Default to All Bookmarks for all other nodes, per bug 469437.
@@ -338,8 +412,9 @@ var PlacesOrganizer = {
    */
   onPlacesListClick: function PO_onPlacesListClick(aEvent) {
     // Only handle clicks on tree children.
-    if (aEvent.target.localName != "treechildren")
+    if (aEvent.target.localName != "treechildren") {
       return;
+    }
 
     let node = this._places.selectedNode;
     if (node) {
@@ -348,7 +423,7 @@ var PlacesOrganizer = {
         // The command execution function will take care of seeing if the
         // selection is a folder or a different container type, and will
         // load its contents in tabs.
-        PlacesUIUtils.openContainerNodeInTabs(node, aEvent, this._places);
+        PlacesUIUtils.openMultipleLinksInTabs(node, aEvent, this._places);
       }
     }
   },
@@ -357,20 +432,27 @@ var PlacesOrganizer = {
    * Handle focus changes on the places list and the current content view.
    */
   updateDetailsPane: function PO_updateDetailsPane() {
-    if (!ContentArea.currentViewOptions.showDetailsPane)
+    if (!ContentArea.currentViewOptions.showDetailsPane) {
       return;
+    }
     let view = PlacesUIUtils.getViewForNode(document.activeElement);
     if (view) {
-      let selectedNodes = view.selectedNode ?
-                          [view.selectedNode] : view.selectedNodes;
+      let selectedNodes = view.selectedNode
+        ? [view.selectedNode]
+        : view.selectedNodes;
       this._fillDetailsPane(selectedNodes);
     }
   },
 
-  openFlatContainer: function PO_openFlatContainerFlatContainer(aContainer) {
-    if (aContainer.itemId != -1) {
+  /**
+   * Handle openFlatContainer events.
+   * @param aContainer
+   *        The node the event was dispatched on.
+   */
+  openFlatContainer(aContainer) {
+    if (aContainer.bookmarkGuid) {
       PlacesUtils.asContainer(this._places.selectedNode).containerOpen = true;
-      this._places.selectItems([aContainer.itemId], false);
+      this._places.selectItems([aContainer.bookmarkGuid], false);
     } else if (PlacesUtils.nodeIsQuery(aContainer)) {
       this._places.selectPlaceURI(aContainer.uri);
     }
@@ -381,15 +463,8 @@ var PlacesOrganizer = {
    * main places pane.
    */
   getCurrentOptions: function PO_getCurrentOptions() {
-    return PlacesUtils.asQuery(ContentArea.currentView.result.root).queryOptions;
-  },
-
-  /**
-   * Returns the queries associated with the query currently loaded in the
-   * main places pane.
-   */
-  getCurrentQueries: function PO_getCurrentQueries() {
-    return PlacesUtils.asQuery(ContentArea.currentView.result.root).getQueries();
+    return PlacesUtils.asQuery(ContentArea.currentView.result.root)
+      .queryOptions;
   },
 
   /**
@@ -398,7 +473,9 @@ var PlacesOrganizer = {
    */
   importFromBrowser: function PO_importFromBrowser() {
     // We pass in the type of source we're using for use in telemetry:
-    MigrationUtils.showMigrationWizard(window, [MigrationUtils.MIGRATION_ENTRYPOINT_PLACES]);
+    MigrationUtils.showMigrationWizard(window, [
+      MigrationUtils.MIGRATION_ENTRYPOINT_PLACES,
+    ]);
   },
 
   /**
@@ -408,14 +485,18 @@ var PlacesOrganizer = {
     let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let fpCallback = function fpCallback_done(aResult) {
       if (aResult != Ci.nsIFilePicker.returnCancel && fp.fileURL) {
-        ChromeUtils.import("resource://gre/modules/BookmarkHTMLUtils.jsm");
-        BookmarkHTMLUtils.importFromURL(fp.fileURL.spec, false)
-                         .catch(Cu.reportError);
+        var { BookmarkHTMLUtils } = ChromeUtils.import(
+          "resource://gre/modules/BookmarkHTMLUtils.jsm"
+        );
+        BookmarkHTMLUtils.importFromURL(fp.fileURL.spec).catch(Cu.reportError);
       }
     };
 
-    fp.init(window, PlacesUIUtils.getString("SelectImport"),
-            Ci.nsIFilePicker.modeOpen);
+    fp.init(
+      window,
+      PlacesUIUtils.getString("SelectImport"),
+      Ci.nsIFilePicker.modeOpen
+    );
     fp.appendFilters(Ci.nsIFilePicker.filterHTML);
     fp.open(fpCallback);
   },
@@ -427,14 +508,18 @@ var PlacesOrganizer = {
     let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let fpCallback = function fpCallback_done(aResult) {
       if (aResult != Ci.nsIFilePicker.returnCancel) {
-        ChromeUtils.import("resource://gre/modules/BookmarkHTMLUtils.jsm");
-        BookmarkHTMLUtils.exportToFile(fp.file.path)
-                         .catch(Cu.reportError);
+        var { BookmarkHTMLUtils } = ChromeUtils.import(
+          "resource://gre/modules/BookmarkHTMLUtils.jsm"
+        );
+        BookmarkHTMLUtils.exportToFile(fp.file.path).catch(Cu.reportError);
       }
     };
 
-    fp.init(window, PlacesUIUtils.getString("EnterExport"),
-            Ci.nsIFilePicker.modeSave);
+    fp.init(
+      window,
+      PlacesUIUtils.getString("EnterExport"),
+      Ci.nsIFilePicker.modeSave
+    );
     fp.appendFilters(Ci.nsIFilePicker.filterHTML);
     fp.defaultString = "bookmarks.html";
     fp.open(fpCallback);
@@ -447,49 +532,66 @@ var PlacesOrganizer = {
     let restorePopup = document.getElementById("fileRestorePopup");
 
     const dtOptions = {
-      dateStyle: "long"
+      dateStyle: "long",
     };
     let dateFormatter = new Services.intl.DateTimeFormat(undefined, dtOptions);
 
     // Remove existing menu items.  Last item is the restoreFromFile item.
-    while (restorePopup.childNodes.length > 1)
+    while (restorePopup.childNodes.length > 1) {
       restorePopup.firstChild.remove();
+    }
 
     (async function() {
       let backupFiles = await PlacesBackups.getBackupFiles();
-      if (backupFiles.length == 0)
+      if (backupFiles.length == 0) {
         return;
+      }
 
       // Populate menu with backups.
       for (let i = 0; i < backupFiles.length; i++) {
         let fileSize = (await OS.File.stat(backupFiles[i])).size;
         let [size, unit] = DownloadUtils.convertByteUnits(fileSize);
-        let sizeString = PlacesUtils.getFormattedString("backupFileSizeText",
-                                                        [size, unit]);
+        let sizeString = PlacesUtils.getFormattedString("backupFileSizeText", [
+          size,
+          unit,
+        ]);
         let sizeInfo;
-        let bookmarkCount = PlacesBackups.getBookmarkCountForFile(backupFiles[i]);
+        let bookmarkCount = PlacesBackups.getBookmarkCountForFile(
+          backupFiles[i]
+        );
         if (bookmarkCount != null) {
-          sizeInfo = " (" + sizeString + " - " +
-                     PlacesUIUtils.getPluralString("detailsPane.itemsCountLabel",
-                                                   bookmarkCount,
-                                                   [bookmarkCount]) +
-                     ")";
+          sizeInfo =
+            " (" +
+            sizeString +
+            " - " +
+            PlacesUIUtils.getPluralString(
+              "detailsPane.itemsCountLabel",
+              bookmarkCount,
+              [bookmarkCount]
+            ) +
+            ")";
         } else {
           sizeInfo = " (" + sizeString + ")";
         }
 
         let backupDate = PlacesBackups.getDateForFile(backupFiles[i]);
-        let m = restorePopup.insertBefore(document.createElement("menuitem"),
-                                          document.getElementById("restoreFromFile"));
+        let m = restorePopup.insertBefore(
+          document.createElement("menuitem"),
+          document.getElementById("restoreFromFile")
+        );
         m.setAttribute("label", dateFormatter.format(backupDate) + sizeInfo);
         m.setAttribute("value", OS.Path.basename(backupFiles[i]));
-        m.setAttribute("oncommand",
-                       "PlacesOrganizer.onRestoreMenuItemClick(this);");
+        m.setAttribute(
+          "oncommand",
+          "PlacesOrganizer.onRestoreMenuItemClick(this);"
+        );
       }
 
       // Add the restoreFromFile item.
-      restorePopup.insertBefore(document.createElement("menuseparator"),
-                                document.getElementById("restoreFromFile"));
+      restorePopup.insertBefore(
+        document.createElement("menuseparator"),
+        document.getElementById("restoreFromFile")
+      );
     })();
   },
 
@@ -520,10 +622,15 @@ var PlacesOrganizer = {
       }
     };
 
-    fp.init(window, PlacesUIUtils.getString("bookmarksRestoreTitle"),
-            Ci.nsIFilePicker.modeOpen);
-    fp.appendFilter(PlacesUIUtils.getString("bookmarksRestoreFilterName"),
-                    RESTORE_FILEPICKER_FILTER_EXT);
+    fp.init(
+      window,
+      PlacesUIUtils.getString("bookmarksRestoreTitle"),
+      Ci.nsIFilePicker.modeOpen
+    );
+    fp.appendFilter(
+      PlacesUIUtils.getString("bookmarksRestoreFilterName"),
+      RESTORE_FILEPICKER_FILTER_EXT
+    );
     fp.appendFilters(Ci.nsIFilePicker.filterAll);
     fp.displayDirectory = backupsDir;
     fp.open(fpCallback);
@@ -534,30 +641,44 @@ var PlacesOrganizer = {
    */
   restoreBookmarksFromFile: function PO_restoreBookmarksFromFile(aFilePath) {
     // check file extension
-    if (!aFilePath.toLowerCase().endsWith("json") &&
-        !aFilePath.toLowerCase().endsWith("jsonlz4")) {
-      this._showErrorAlert(PlacesUIUtils.getString("bookmarksRestoreFormatError"));
+    if (
+      !aFilePath.toLowerCase().endsWith("json") &&
+      !aFilePath.toLowerCase().endsWith("jsonlz4")
+    ) {
+      this._showErrorAlert(
+        PlacesUIUtils.getString("bookmarksRestoreFormatError")
+      );
       return;
     }
 
     // confirm ok to delete existing bookmarks
-    if (!Services.prompt.confirm(null,
-           PlacesUIUtils.getString("bookmarksRestoreAlertTitle"),
-           PlacesUIUtils.getString("bookmarksRestoreAlert")))
+    if (
+      !Services.prompt.confirm(
+        null,
+        PlacesUIUtils.getString("bookmarksRestoreAlertTitle"),
+        PlacesUIUtils.getString("bookmarksRestoreAlert")
+      )
+    ) {
       return;
+    }
 
     (async function() {
       try {
-        await BookmarkJSONUtils.importFromFile(aFilePath, true);
+        await BookmarkJSONUtils.importFromFile(aFilePath, {
+          replace: true,
+        });
       } catch (ex) {
-        PlacesOrganizer._showErrorAlert(PlacesUIUtils.getString("bookmarksRestoreParseError"));
+        PlacesOrganizer._showErrorAlert(
+          PlacesUIUtils.getString("bookmarksRestoreParseError")
+        );
       }
     })();
   },
 
   _showErrorAlert: function PO__showErrorAlert(aMsg) {
-    var brandShortName = document.getElementById("brandStrings").
-                                  getString("brandShortName");
+    var brandShortName = document
+      .getElementById("brandStrings")
+      .getString("brandShortName");
 
     Services.prompt.alert(window, brandShortName, aMsg);
   },
@@ -573,64 +694,25 @@ var PlacesOrganizer = {
     let fpCallback = function fpCallback_done(aResult) {
       if (aResult != Ci.nsIFilePicker.returnCancel) {
         // There is no OS.File version of the filepicker yet (Bug 937812).
-        PlacesBackups.saveBookmarksToJSONFile(fp.file.path)
-                     .catch(Cu.reportError);
+        PlacesBackups.saveBookmarksToJSONFile(fp.file.path).catch(
+          Cu.reportError
+        );
       }
     };
 
-    fp.init(window, PlacesUIUtils.getString("bookmarksBackupTitle"),
-            Ci.nsIFilePicker.modeSave);
-    fp.appendFilter(PlacesUIUtils.getString("bookmarksRestoreFilterName"),
-                    RESTORE_FILEPICKER_FILTER_EXT);
+    fp.init(
+      window,
+      PlacesUIUtils.getString("bookmarksBackupTitle"),
+      Ci.nsIFilePicker.modeSave
+    );
+    fp.appendFilter(
+      PlacesUIUtils.getString("bookmarksRestoreFilterName"),
+      RESTORE_FILEPICKER_FILTER_EXT
+    );
     fp.defaultString = PlacesBackups.getFilenameForDate();
     fp.defaultExtension = "json";
     fp.displayDirectory = backupsDir;
     fp.open(fpCallback);
-  },
-
-  _detectAndSetDetailsPaneMinimalState:
-  function PO__detectAndSetDetailsPaneMinimalState(aNode) {
-    /**
-     * The details of simple folder-items (as opposed to livemarks) or the
-     * of livemark-children are not likely to fill the infoBox anyway,
-     * thus we remove the "More/Less" button and show all details.
-     *
-     * the wasminimal attribute here is used to persist the "more/less"
-     * state in a bookmark->folder->bookmark scenario.
-     */
-    var infoBox = document.getElementById("infoBox");
-    var infoBoxExpanderWrapper = document.getElementById("infoBoxExpanderWrapper");
-    var additionalInfoBroadcaster = document.getElementById("additionalInfoBroadcaster");
-
-    if (!aNode) {
-      infoBoxExpanderWrapper.hidden = true;
-      return;
-    }
-    if (aNode.itemId != -1 &&
-        PlacesUtils.nodeIsFolder(aNode) && !aNode._feedURI) {
-      if (infoBox.getAttribute("minimal") == "true")
-        infoBox.setAttribute("wasminimal", "true");
-      infoBox.removeAttribute("minimal");
-      infoBoxExpanderWrapper.hidden = true;
-    } else {
-      if (infoBox.getAttribute("wasminimal") == "true")
-        infoBox.setAttribute("minimal", "true");
-      infoBox.removeAttribute("wasminimal");
-      infoBoxExpanderWrapper.hidden =
-        this._additionalInfoFields.every(id =>
-          document.getElementById(id).collapsed);
-    }
-    additionalInfoBroadcaster.hidden = infoBox.getAttribute("minimal") == "true";
-  },
-
-  // NOT YET USED
-  updateThumbnailProportions: function PO_updateThumbnailProportions() {
-    var previewBox = document.getElementById("previewBox");
-    var canvas = document.getElementById("itemThumbnail");
-    var height = previewBox.boxObject.height;
-    var width = height * (screen.width / screen.height);
-    canvas.width = width;
-    canvas.height = height;
   },
 
   _fillDetailsPane: function PO__fillDetailsPane(aNodeList) {
@@ -646,22 +728,31 @@ var PlacesOrganizer = {
     // are saved
     if (gEditItemOverlay.itemId != -1) {
       var focusedElement = document.commandDispatcher.focusedElement;
-      if ((focusedElement instanceof HTMLInputElement ||
-           focusedElement instanceof HTMLTextAreaElement) &&
-          /^editBMPanel.*/.test(focusedElement.parentNode.parentNode.id))
+      if (
+        (focusedElement instanceof HTMLInputElement ||
+          focusedElement instanceof HTMLTextAreaElement) &&
+        /^editBMPanel.*/.test(focusedElement.parentNode.parentNode.id)
+      ) {
         focusedElement.blur();
+      }
 
       // don't update the panel if we are already editing this node unless we're
       // in multi-edit mode
       if (selectedNode) {
         let concreteId = PlacesUtils.getConcreteItemId(selectedNode);
-        var nodeIsSame = gEditItemOverlay.itemId == selectedNode.itemId ||
-                         gEditItemOverlay.itemId == concreteId ||
-                         (selectedNode.itemId == -1 && gEditItemOverlay.uri &&
-                          gEditItemOverlay.uri == selectedNode.uri);
-        if (nodeIsSame && detailsDeck.selectedIndex == 1 &&
-            !gEditItemOverlay.multiEdit)
+        var nodeIsSame =
+          gEditItemOverlay.itemId == selectedNode.itemId ||
+          gEditItemOverlay.itemId == concreteId ||
+          (selectedNode.itemId == -1 &&
+            gEditItemOverlay.uri &&
+            gEditItemOverlay.uri == selectedNode.uri);
+        if (
+          nodeIsSame &&
+          detailsDeck.selectedIndex == 1 &&
+          !gEditItemOverlay.multiEdit
+        ) {
           return;
+        }
       }
     }
 
@@ -671,30 +762,28 @@ var PlacesOrganizer = {
     if (selectedNode && !PlacesUtils.nodeIsSeparator(selectedNode)) {
       detailsDeck.selectedIndex = 1;
 
-      gEditItemOverlay.initPanel({ node: selectedNode,
-                                   hiddenRows: ["folderPicker"] });
-
-      this._detectAndSetDetailsPaneMinimalState(selectedNode);
+      gEditItemOverlay.initPanel({
+        node: selectedNode,
+        hiddenRows: ["folderPicker"],
+      });
     } else if (!selectedNode && aNodeList[0]) {
       if (aNodeList.every(PlacesUtils.nodeIsURI)) {
         let uris = aNodeList.map(node => Services.io.newURI(node.uri));
         detailsDeck.selectedIndex = 1;
-        gEditItemOverlay.initPanel({ uris,
-                                     hiddenRows: ["folderPicker",
-                                                  "loadInSidebar",
-                                                  "location",
-                                                  "keyword",
-                                                  "description",
-                                                  "name"]});
-        this._detectAndSetDetailsPaneMinimalState(selectedNode);
+        gEditItemOverlay.initPanel({
+          uris,
+          hiddenRows: ["folderPicker", "location", "keyword", "name"],
+        });
       } else {
         detailsDeck.selectedIndex = 0;
         let selectItemDesc = document.getElementById("selectItemDescription");
         let itemsCountLabel = document.getElementById("itemsCountText");
         selectItemDesc.hidden = false;
-        itemsCountLabel.value =
-          PlacesUIUtils.getPluralString("detailsPane.itemsCountLabel",
-                                        aNodeList.length, [aNodeList.length]);
+        itemsCountLabel.value = PlacesUIUtils.getPluralString(
+          "detailsPane.itemsCountLabel",
+          aNodeList.length,
+          [aNodeList.length]
+        );
         infoBox.hidden = true;
       }
     } else {
@@ -705,61 +794,21 @@ var PlacesOrganizer = {
       let itemsCount = 0;
       if (ContentArea.currentView.result) {
         let rootNode = ContentArea.currentView.result.root;
-        if (rootNode.containerOpen)
+        if (rootNode.containerOpen) {
           itemsCount = rootNode.childCount;
+        }
       }
       if (itemsCount == 0) {
         selectItemDesc.hidden = true;
         itemsCountLabel.value = PlacesUIUtils.getString("detailsPane.noItems");
       } else {
         selectItemDesc.hidden = false;
-        itemsCountLabel.value =
-          PlacesUIUtils.getPluralString("detailsPane.itemsCountLabel",
-                                        itemsCount, [itemsCount]);
+        itemsCountLabel.value = PlacesUIUtils.getPluralString(
+          "detailsPane.itemsCountLabel",
+          itemsCount,
+          [itemsCount]
+        );
       }
-    }
-  },
-
-  // NOT YET USED
-  _updateThumbnail: function PO__updateThumbnail() {
-    var bo = document.getElementById("previewBox").boxObject;
-    var width  = bo.width;
-    var height = bo.height;
-
-    var canvas = document.getElementById("itemThumbnail");
-    var ctx = canvas.getContext("2d");
-    var notAvailableText = canvas.getAttribute("notavailabletext");
-    ctx.save();
-    ctx.fillStyle = "-moz-Dialog";
-    ctx.fillRect(0, 0, width, height);
-    ctx.translate(width / 2, height / 2);
-
-    ctx.fillStyle = "GrayText";
-    ctx.mozTextStyle = "12pt sans serif";
-    var len = ctx.mozMeasureText(notAvailableText);
-    ctx.translate(-len / 2, 0);
-    ctx.mozDrawText(notAvailableText);
-    ctx.restore();
-  },
-
-  toggleAdditionalInfoFields: function PO_toggleAdditionalInfoFields() {
-    var infoBox = document.getElementById("infoBox");
-    var infoBoxExpander = document.getElementById("infoBoxExpander");
-    var infoBoxExpanderLabel = document.getElementById("infoBoxExpanderLabel");
-    var additionalInfoBroadcaster = document.getElementById("additionalInfoBroadcaster");
-
-    if (infoBox.getAttribute("minimal") == "true") {
-      infoBox.removeAttribute("minimal");
-      infoBoxExpanderLabel.value = infoBoxExpanderLabel.getAttribute("lesslabel");
-      infoBoxExpanderLabel.accessKey = infoBoxExpanderLabel.getAttribute("lessaccesskey");
-      infoBoxExpander.className = "expander-up";
-      additionalInfoBroadcaster.removeAttribute("hidden");
-    } else {
-      infoBox.setAttribute("minimal", "true");
-      infoBoxExpanderLabel.value = infoBoxExpanderLabel.getAttribute("morelabel");
-      infoBoxExpanderLabel.accessKey = infoBoxExpanderLabel.getAttribute("moreaccesskey");
-      infoBoxExpander.className = "expander-down";
-      additionalInfoBroadcaster.setAttribute("hidden", "true");
     }
   },
 };
@@ -768,7 +817,6 @@ var PlacesOrganizer = {
  * A set of utilities relating to search within Bookmarks and History.
  */
 var PlacesSearchBox = {
-
   /**
    * The Search text field
    */
@@ -782,10 +830,7 @@ var PlacesSearchBox = {
   _folders: [],
   get folders() {
     if (this._folders.length == 0) {
-      this._folders.push(PlacesUtils.bookmarksMenuFolderId,
-                         PlacesUtils.unfiledBookmarksFolderId,
-                         PlacesUtils.toolbarFolderId,
-                         PlacesUtils.mobileFolderId);
+      this._folders = PlacesUtils.bookmarks.userContentRoots;
     }
     return this._folders;
   },
@@ -822,7 +867,10 @@ var PlacesSearchBox = {
         break;
       case "history": {
         let currentOptions = PO.getCurrentOptions();
-        if (currentOptions.queryType != Ci.nsINavHistoryQueryOptions.QUERY_TYPE_HISTORY) {
+        if (
+          currentOptions.queryType !=
+          Ci.nsINavHistoryQueryOptions.QUERY_TYPE_HISTORY
+        ) {
           let query = PlacesUtils.history.getNewQuery();
           query.searchTerms = filterString;
           let options = currentOptions.clone();
@@ -844,7 +892,7 @@ var PlacesSearchBox = {
         break;
       }
       default:
-        throw "Invalid filterCollection on search";
+        throw new Error("Invalid filterCollection on search");
     }
 
     // Update the details panel
@@ -896,8 +944,9 @@ var PlacesSearchBox = {
     return this.searchFilter.getAttribute("collection");
   },
   set filterCollection(collectionName) {
-    if (collectionName == this.filterCollection)
+    if (collectionName == this.filterCollection) {
       return collectionName;
+    }
 
     this.searchFilter.setAttribute("collection", collectionName);
     this.updateCollectionTitle();
@@ -929,7 +978,7 @@ var PlacesSearchBox = {
     return this.searchFilter.value;
   },
   set value(value) {
-    return this.searchFilter.value = value;
+    return (this.searchFilter.value = value);
   },
 };
 
@@ -937,7 +986,6 @@ var PlacesSearchBox = {
  * Functions and data for advanced query builder
  */
 var PlacesQueryBuilder = {
-
   queries: [],
   queryOptions: null,
 
@@ -960,25 +1008,23 @@ var PlacesQueryBuilder = {
         break;
       case "bookmarks":
         filterCollection = "bookmarks";
-        folders.push(PlacesUtils.bookmarksMenuFolderId,
-                     PlacesUtils.toolbarFolderId,
-                     PlacesUtils.unfiledBookmarksFolderId,
-                     PlacesUtils.mobileFolderId);
+        folders = PlacesUtils.bookmarks.userContentRoots;
         break;
       case "downloads":
         filterCollection = "downloads";
         break;
       default:
-        throw "Invalid search scope";
+        throw new Error("Invalid search scope");
     }
 
     // Update the search box.  Re-search if there's an active search.
     PlacesSearchBox.filterCollection = filterCollection;
     PlacesSearchBox.folders = folders;
     var searchStr = PlacesSearchBox.searchFilter.value;
-    if (searchStr)
+    if (searchStr) {
       PlacesSearchBox.search(searchStr);
-  }
+    }
+  },
 };
 
 /**
@@ -1006,24 +1052,30 @@ var ViewMenu = {
    *          null if the caller should just append to the popup.
    */
   _clean: function VM__clean(popup, startID, endID) {
-    if (endID)
-      NS_ASSERT(startID, "meaningless to have valid endID and null startID");
+    if (endID && !startID) {
+      throw new Error("meaningless to have valid endID and null startID");
+    }
     if (startID) {
       var startElement = document.getElementById(startID);
-      NS_ASSERT(startElement.parentNode ==
-                popup, "startElement is not in popup");
-      NS_ASSERT(startElement,
-                "startID does not correspond to an existing element");
+      if (startElement.parentNode != popup) {
+        throw new Error("startElement is not in popup");
+      }
+      if (!startElement) {
+        throw new Error("startID does not correspond to an existing element");
+      }
       var endElement = null;
       if (endID) {
         endElement = document.getElementById(endID);
-        NS_ASSERT(endElement.parentNode == popup,
-                  "endElement is not in popup");
-        NS_ASSERT(endElement,
-                  "endID does not correspond to an existing element");
+        if (endElement.parentNode != popup) {
+          throw new Error("endElement is not in popup");
+        }
+        if (!endElement) {
+          throw new Error("endID does not correspond to an existing element");
+        }
       }
-      while (startElement.nextSibling != endElement)
+      while (startElement.nextSibling != endElement) {
         popup.removeChild(startElement.nextSibling);
+      }
       return endElement;
     }
     while (popup.hasChildNodes()) {
@@ -1053,7 +1105,13 @@ var ViewMenu = {
    *          If propertyPrefix is null, the column label is used as label and
    *          no accesskey is assigned.
    */
-  fillWithColumns: function VM_fillWithColumns(event, startID, endID, type, propertyPrefix) {
+  fillWithColumns: function VM_fillWithColumns(
+    event,
+    startID,
+    endID,
+    type,
+    propertyPrefix
+  ) {
     var popup = event.target;
     var pivot = this._clean(popup, startID, endID);
 
@@ -1086,16 +1144,19 @@ var ViewMenu = {
       } else if (type == "checkbox") {
         menuitem.setAttribute("type", "checkbox");
         // Cannot uncheck the primary column.
-        if (column.getAttribute("primary") == "true")
+        if (column.getAttribute("primary") == "true") {
           menuitem.setAttribute("disabled", "true");
+        }
         // Items for visible columns are checked.
-        if (!column.hidden)
+        if (!column.hidden) {
           menuitem.setAttribute("checked", "true");
+        }
       }
-      if (pivot)
+      if (pivot) {
         popup.insertBefore(menuitem, pivot);
-      else
+      } else {
         popup.appendChild(menuitem);
+      }
     }
     event.stopPropagation();
   },
@@ -1104,7 +1165,13 @@ var ViewMenu = {
    * Set up the content of the view menu.
    */
   populateSortMenu: function VM_populateSortMenu(event) {
-    this.fillWithColumns(event, "viewUnsorted", "directionSeparator", "radio", "view.sortBy.1.");
+    this.fillWithColumns(
+      event,
+      "viewUnsorted",
+      "directionSeparator",
+      "radio",
+      "view.sortBy.1."
+    );
 
     var sortColumn = this._getSortColumn();
     var viewSortAscending = document.getElementById("viewSortAscending");
@@ -1136,17 +1203,20 @@ var ViewMenu = {
     var column = element.column;
 
     var splitter = column.nextSibling;
-    if (splitter && splitter.localName != "splitter")
+    if (splitter && splitter.localName != "splitter") {
       splitter = null;
+    }
 
     if (element.getAttribute("checked") == "true") {
       column.setAttribute("hidden", "false");
-      if (splitter)
+      if (splitter) {
         splitter.removeAttribute("hidden");
+      }
     } else {
       column.setAttribute("hidden", "true");
-      if (splitter)
+      if (splitter) {
         splitter.setAttribute("hidden", "true");
+      }
     }
   },
 
@@ -1160,8 +1230,9 @@ var ViewMenu = {
     for (var i = 0; i < cols.count; ++i) {
       var column = cols.getColumnAt(i).element;
       var sortDirection = column.getAttribute("sortDirection");
-      if (sortDirection == "ascending" || sortDirection == "descending")
+      if (sortDirection == "ascending" || sortDirection == "descending") {
         return column;
+      }
     }
     return null;
   },
@@ -1189,8 +1260,9 @@ var ViewMenu = {
       columnId = aColumn.getAttribute("anonid");
       if (!aDirection) {
         let sortColumn = this._getSortColumn();
-        if (sortColumn)
+        if (sortColumn) {
           aDirection = sortColumn.getAttribute("sortDirection");
+        }
       }
     } else {
       let sortColumn = this._getSortColumn();
@@ -1198,38 +1270,34 @@ var ViewMenu = {
     }
 
     // This maps the possible values of columnId (i.e., anonid's of treecols in
-    // placeContent) to the default sortingMode and sortingAnnotation values for
-    // each column.
+    // placeContent) to the default sortingMode for each column.
     //   key:  Sort key in the name of one of the
     //         nsINavHistoryQueryOptions.SORT_BY_* constants
     //   dir:  Default sort direction to use if none has been specified
-    //   anno: The annotation to sort by, if key is "ANNOTATION"
-    var colLookupTable = {
-      title:        { key: "TITLE",        dir: "ascending"  },
-      tags:         { key: "TAGS",         dir: "ascending"  },
-      url:          { key: "URI",          dir: "ascending"  },
-      date:         { key: "DATE",         dir: "descending" },
-      visitCount:   { key: "VISITCOUNT",   dir: "descending" },
-      dateAdded:    { key: "DATEADDED",    dir: "descending" },
+    const colLookupTable = {
+      title: { key: "TITLE", dir: "ascending" },
+      tags: { key: "TAGS", dir: "ascending" },
+      url: { key: "URI", dir: "ascending" },
+      date: { key: "DATE", dir: "descending" },
+      visitCount: { key: "VISITCOUNT", dir: "descending" },
+      dateAdded: { key: "DATEADDED", dir: "descending" },
       lastModified: { key: "LASTMODIFIED", dir: "descending" },
-      description:  { key: "ANNOTATION",
-                      dir: "ascending",
-                      anno: PlacesUIUtils.DESCRIPTION_ANNO }
     };
 
     // Make sure we have a valid column.
-    if (!colLookupTable.hasOwnProperty(columnId))
+    if (!colLookupTable.hasOwnProperty(columnId)) {
       throw new Error("Invalid column");
+    }
 
     // Use a default sort direction if none has been specified.  If aDirection
     // is invalid, result.sortingMode will be undefined, which has the effect
     // of unsorting the tree.
     aDirection = (aDirection || colLookupTable[columnId].dir).toUpperCase();
 
-    var sortConst = "SORT_BY_" + colLookupTable[columnId].key + "_" + aDirection;
-    result.sortingAnnotation = colLookupTable[columnId].anno || "";
+    var sortConst =
+      "SORT_BY_" + colLookupTable[columnId].key + "_" + aDirection;
     result.sortingMode = Ci.nsINavHistoryQueryOptions[sortConst];
-  }
+  },
 };
 
 var ContentArea = {
@@ -1251,8 +1319,9 @@ var ContentArea = {
    *        a query string
    * @return the view to be used for loading aQueryString.
    */
-  getContentViewForQueryString:
-  function CA_getContentViewForQueryString(aQueryString) {
+  getContentViewForQueryString: function CA_getContentViewForQueryString(
+    aQueryString
+  ) {
     try {
       if (this._specialViews.has(aQueryString)) {
         let { view, options } = this._specialViews.get(aQueryString);
@@ -1280,14 +1349,22 @@ var ContentArea = {
    *        Object defining special options for the view.
    * @see ContentTree.viewOptions for supported options and default values.
    */
-  setContentViewForQueryString:
-  function CA_setContentViewForQueryString(aQueryString, aView, aOptions) {
-    if (!aQueryString ||
-        typeof aView != "object" && typeof aView != "function")
+  setContentViewForQueryString: function CA_setContentViewForQueryString(
+    aQueryString,
+    aView,
+    aOptions
+  ) {
+    if (
+      !aQueryString ||
+      (typeof aView != "object" && typeof aView != "function")
+    ) {
       throw new Error("Invalid arguments");
+    }
 
-    this._specialViews.set(aQueryString, { view: aView,
-                                           options: aOptions || {} });
+    this._specialViews.set(aQueryString, {
+      view: aView,
+      options: aOptions || {},
+    });
   },
 
   get currentView() {
@@ -1300,8 +1377,9 @@ var ContentArea = {
 
       // If the content area inactivated view was focused, move focus
       // to the new view.
-      if (document.activeElement == oldView.associatedElement)
+      if (document.activeElement == oldView.associatedElement) {
         aNewView.associatedElement.focus();
+      }
     }
     return aNewView;
   },
@@ -1364,7 +1442,7 @@ var ContentArea = {
 
   focus() {
     this._deck.selectedPanel.focus();
-  }
+  },
 };
 
 var ContentTree = {
@@ -1379,7 +1457,8 @@ var ContentTree = {
   get viewOptions() {
     return Object.seal({
       showDetailsPane: true,
-      toolbarSet: "back-button, forward-button, organizeButton, viewMenu, maintenanceButton, libraryToolbarSpacer, searchFilter"
+      toolbarSet:
+        "back-button, forward-button, organizeButton, viewMenu, maintenanceButton, libraryToolbarSpacer, searchFilter",
     });
   },
 
@@ -1400,13 +1479,14 @@ var ContentTree = {
         // The command execution function will take care of seeing if the
         // selection is a folder or a different container type, and will
         // load its contents in tabs.
-        PlacesUIUtils.openContainerNodeInTabs(node, aEvent, this.view);
+        PlacesUIUtils.openMultipleLinksInTabs(node, aEvent, this.view);
       }
     }
   },
 
   onKeyPress: function CT_onKeyPress(aEvent) {
-    if (aEvent.keyCode == KeyEvent.DOM_VK_RETURN)
+    if (aEvent.keyCode == KeyEvent.DOM_VK_RETURN) {
       this.openSelectedNode(aEvent);
-  }
+    }
+  },
 };

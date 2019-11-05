@@ -13,9 +13,9 @@ use time;
 use podio::{WritePodExt, LittleEndian};
 use msdos_time::TmMsDosExt;
 
-#[cfg(feature = "deflate")]
+#[cfg(feature = "flate2")]
 use flate2;
-#[cfg(feature = "deflate")]
+#[cfg(feature = "flate2")]
 use flate2::write::DeflateEncoder;
 
 #[cfg(feature = "bzip2")]
@@ -29,7 +29,7 @@ enum GenericZipWriter<W: Write + io::Seek>
 {
     Closed,
     Storer(W),
-    #[cfg(feature = "deflate")]
+    #[cfg(feature = "flate2")]
     Deflater(DeflateEncoder<W>),
     #[cfg(feature = "bzip2")]
     Bzip2(BzEncoder<W>),
@@ -83,7 +83,7 @@ pub struct FileOptions {
 }
 
 impl FileOptions {
-    #[cfg(feature = "deflate")]
+    #[cfg(feature = "flate2")]
     /// Construct a new FileOptions object
     pub fn default() -> FileOptions {
         FileOptions {
@@ -93,7 +93,7 @@ impl FileOptions {
         }
     }
 
-    #[cfg(not(feature = "deflate"))]
+    #[cfg(not(feature = "flate2"))]
     /// Construct a new FileOptions object
     pub fn default() -> FileOptions {
         FileOptions {
@@ -349,7 +349,7 @@ impl<W: Write+io::Seek> GenericZipWriter<W>
         let bare = match mem::replace(self, GenericZipWriter::Closed)
         {
             GenericZipWriter::Storer(w) => w,
-            #[cfg(feature = "deflate")]
+            #[cfg(feature = "flate2")]
             GenericZipWriter::Deflater(w) => try!(w.finish()),
             #[cfg(feature = "bzip2")]
             GenericZipWriter::Bzip2(w) => try!(w.finish()),
@@ -359,7 +359,7 @@ impl<W: Write+io::Seek> GenericZipWriter<W>
         *self = match compression
         {
             CompressionMethod::Stored => GenericZipWriter::Storer(bare),
-            #[cfg(feature = "deflate")]
+            #[cfg(feature = "flate2")]
             CompressionMethod::Deflated => GenericZipWriter::Deflater(DeflateEncoder::new(bare, flate2::Compression::default())),
             #[cfg(feature = "bzip2")]
             CompressionMethod::Bzip2 => GenericZipWriter::Bzip2(BzEncoder::new(bare, bzip2::Compression::Default)),
@@ -372,7 +372,7 @@ impl<W: Write+io::Seek> GenericZipWriter<W>
     fn ref_mut(&mut self) -> Option<&mut Write> {
         match *self {
             GenericZipWriter::Storer(ref mut w) => Some(w as &mut Write),
-            #[cfg(feature = "deflate")]
+            #[cfg(feature = "flate2")]
             GenericZipWriter::Deflater(ref mut w) => Some(w as &mut Write),
             #[cfg(feature = "bzip2")]
             GenericZipWriter::Bzip2(ref mut w) => Some(w as &mut Write),
@@ -401,7 +401,7 @@ impl<W: Write+io::Seek> GenericZipWriter<W>
     fn current_compression(&self) -> Option<CompressionMethod> {
         match *self {
             GenericZipWriter::Storer(..) => Some(CompressionMethod::Stored),
-            #[cfg(feature = "deflate")]
+            #[cfg(feature = "flate2")]
             GenericZipWriter::Deflater(..) => Some(CompressionMethod::Deflated),
             #[cfg(feature = "bzip2")]
             GenericZipWriter::Bzip2(..) => Some(CompressionMethod::Bzip2),
@@ -424,8 +424,7 @@ fn write_local_file_header<T: Write>(writer: &mut T, file: &ZipFileData) -> ZipR
     // local file header signature
     try!(writer.write_u32::<LittleEndian>(spec::LOCAL_FILE_HEADER_SIGNATURE));
     // version needed to extract
-    let version_made_by = (file.system as u16) << 8 | (file.version_made_by as u16);
-    try!(writer.write_u16::<LittleEndian>(version_made_by));
+    try!(writer.write_u16::<LittleEndian>(file.version_needed()));
     // general purpose bit flag
     let flag = if !file.file_name.is_ascii() { 1u16 << 11 } else { 0 };
     try!(writer.write_u16::<LittleEndian>(flag));
@@ -472,7 +471,7 @@ fn write_central_directory_header<T: Write>(writer: &mut T, file: &ZipFileData) 
     let version_made_by = (file.system as u16) << 8 | (file.version_made_by as u16);
     try!(writer.write_u16::<LittleEndian>(version_made_by));
     // version needed to extract
-    try!(writer.write_u16::<LittleEndian>(20));
+    try!(writer.write_u16::<LittleEndian>(file.version_needed()));
     // general puprose bit flag
     let flag = if !file.file_name.is_ascii() { 1u16 << 11 } else { 0 };
     try!(writer.write_u16::<LittleEndian>(flag));

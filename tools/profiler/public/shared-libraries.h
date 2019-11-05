@@ -8,24 +8,25 @@
 #define SHARED_LIBRARIES_H_
 
 #ifndef MOZ_GECKO_PROFILER
-#error This header does not have a useful implementation on your platform!
+#  error This header does not have a useful implementation on your platform!
 #endif
 
-#include <algorithm>
-#include <vector>
-#include <string>
-#include <stdlib.h>
-#include <stdint.h>
-#include <nsID.h>
-#include "nsString.h"
 #include "nsNativeCharsetUtils.h"
+#include "nsString.h"
+#include <nsID.h>
+
+#include <algorithm>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string>
+#include <vector>
 
 class SharedLibrary {
  public:
   SharedLibrary(uintptr_t aStart, uintptr_t aEnd, uintptr_t aOffset,
-                const std::string& aBreakpadId, const nsString& aModuleName,
+                const nsCString& aBreakpadId, const nsString& aModuleName,
                 const nsString& aModulePath, const nsString& aDebugName,
-                const nsString& aDebugPath, const std::string& aVersion,
+                const nsString& aDebugPath, const nsCString& aVersion,
                 const char* aArch)
       : mStart(aStart),
         mEnd(aEnd),
@@ -80,7 +81,7 @@ class SharedLibrary {
   uintptr_t GetStart() const { return mStart; }
   uintptr_t GetEnd() const { return mEnd; }
   uintptr_t GetOffset() const { return mOffset; }
-  const std::string& GetBreakpadId() const { return mBreakpadId; }
+  const nsCString& GetBreakpadId() const { return mBreakpadId; }
   const nsString& GetModuleName() const { return mModuleName; }
   const nsString& GetModulePath() const { return mModulePath; }
   const std::string GetNativeDebugPath() const {
@@ -92,7 +93,7 @@ class SharedLibrary {
   }
   const nsString& GetDebugName() const { return mDebugName; }
   const nsString& GetDebugPath() const { return mDebugPath; }
-  const std::string& GetVersion() const { return mVersion; }
+  const nsCString& GetVersion() const { return mVersion; }
   const std::string& GetArch() const { return mArch; }
 
  private:
@@ -101,12 +102,12 @@ class SharedLibrary {
   uintptr_t mStart;
   uintptr_t mEnd;
   uintptr_t mOffset;
-  std::string mBreakpadId;
+  nsCString mBreakpadId;
   nsString mModuleName;
   nsString mModulePath;
   nsString mDebugName;
   nsString mDebugPath;
-  std::string mVersion;
+  nsCString mVersion;
   std::string mArch;
 };
 

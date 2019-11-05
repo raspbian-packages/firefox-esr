@@ -15,9 +15,9 @@ struct HTMLElement {
 };
 
 #ifdef DEBUG
-#define ELEM(tag, block, container) {eHTMLTag_##tag, block, container},
+#  define ELEM(tag, block, container) {eHTMLTag_##tag, block, container},
 #else
-#define ELEM(tag, block, container) {block, container},
+#  define ELEM(tag, block, container) {block, container},
 #endif
 
 #define ____ false  // This makes the table easier to read.
@@ -47,6 +47,7 @@ static const HTMLElement gHTMLElements[] = {
   ELEM(b,           ____, true)
   ELEM(base,        ____, ____)
   ELEM(basefont,    ____, ____)
+  ELEM(bdi,         ____, true)
   ELEM(bdo,         ____, true)
   ELEM(bgsound,     ____, ____)
   ELEM(big,         ____, true)

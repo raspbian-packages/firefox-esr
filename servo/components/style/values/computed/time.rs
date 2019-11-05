@@ -1,15 +1,15 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Computed time values.
 
+use crate::values::CSSFloat;
 use std::fmt::{self, Write};
 use style_traits::{CssWriter, ToCss};
-use values::CSSFloat;
 
 /// A computed `<time>` value.
-#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, MallocSizeOf, PartialEq, PartialOrd, ToResolvedValue)]
 #[cfg_attr(feature = "servo", derive(Deserialize, Serialize))]
 pub struct Time {
     seconds: CSSFloat,
@@ -18,9 +18,7 @@ pub struct Time {
 impl Time {
     /// Creates a time value from a seconds amount.
     pub fn from_seconds(seconds: CSSFloat) -> Self {
-        Time {
-            seconds: seconds,
-        }
+        Time { seconds: seconds }
     }
 
     /// Returns `0s`.

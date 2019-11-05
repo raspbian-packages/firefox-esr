@@ -9,7 +9,7 @@
 
 #include "nsContentSink.h"
 #include "nsHtml5DocumentMode.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIContent.h"
 
 typedef nsIContent* nsIContentPtr;
@@ -35,11 +35,11 @@ class nsHtml5DocumentBuilder : public nsContentSink {
     *(mOwnedElements.AppendElement()) = aContent;
   }
 
-  nsresult Init(nsIDocument* aDoc, nsIURI* aURI, nsISupports* aContainer,
+  nsresult Init(Document* aDoc, nsIURI* aURI, nsISupports* aContainer,
                 nsIChannel* aChannel);
 
   // Getters and setters for fields from nsContentSink
-  nsIDocument* GetDocument() { return mDocument; }
+  Document* GetDocument() { return mDocument; }
 
   nsNodeInfoManager* GetNodeInfoManager() { return mNodeInfoManager; }
 
@@ -63,14 +63,14 @@ class nsHtml5DocumentBuilder : public nsContentSink {
     MOZ_RELEASE_ASSERT(IsInFlush(), "Tried to double-open doc update.");
     MOZ_RELEASE_ASSERT(mParser, "Started doc update without parser.");
     mFlushState = eInDocUpdate;
-    mDocument->BeginUpdate(UPDATE_CONTENT_MODEL);
+    mDocument->BeginUpdate();
   }
 
   inline void EndDocUpdate() {
     MOZ_RELEASE_ASSERT(IsInDocUpdate(),
                        "Tried to end doc update without one open.");
     mFlushState = eInFlush;
-    mDocument->EndUpdate(UPDATE_CONTENT_MODEL);
+    mDocument->EndUpdate();
   }
 
   inline void BeginFlush() {

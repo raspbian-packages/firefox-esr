@@ -18,8 +18,8 @@ namespace mozilla {
 namespace dom {
 
 HTMLFieldSetElement::HTMLFieldSetElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLFormElement(aNodeInfo, NS_FORM_FIELDSET),
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLFormElement(std::move(aNodeInfo), NS_FORM_FIELDSET),
       mElements(nullptr),
       mFirstLegend(nullptr),
       mInvalidElementsCount(0) {
@@ -47,20 +47,19 @@ NS_IMPL_ISUPPORTS_CYCLE_COLLECTION_INHERITED(HTMLFieldSetElement,
 
 NS_IMPL_ELEMENT_CLONE(HTMLFieldSetElement)
 
-bool HTMLFieldSetElement::IsDisabledForEvents(EventMessage aMessage) {
-  return IsElementDisabledForEvents(aMessage, nullptr);
+bool HTMLFieldSetElement::IsDisabledForEvents(WidgetEvent* aEvent) {
+  return IsElementDisabledForEvents(aEvent, nullptr);
 }
 
 // nsIContent
-nsresult HTMLFieldSetElement::GetEventTargetParent(
-    EventChainPreVisitor& aVisitor) {
+void HTMLFieldSetElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   // Do not process any DOM events if the element is disabled.
   aVisitor.mCanHandle = false;
-  if (IsDisabledForEvents(aVisitor.mEvent->mMessage)) {
-    return NS_OK;
+  if (IsDisabledForEvents(aVisitor.mEvent)) {
+    return;
   }
 
-  return nsGenericHTMLFormElement::GetEventTargetParent(aVisitor);
+  nsGenericHTMLFormElement::GetEventTargetParent(aVisitor);
 }
 
 nsresult HTMLFieldSetElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
@@ -91,10 +90,8 @@ nsresult HTMLFieldSetElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
       aNameSpaceID, aName, aValue, aOldValue, aSubjectPrincipal, aNotify);
 }
 
-NS_IMETHODIMP
-HTMLFieldSetElement::GetType(nsAString& aType) {
+void HTMLFieldSetElement::GetType(nsAString& aType) const {
   aType.AssignLiteral("fieldset");
-  return NS_OK;
 }
 
 /* static */
@@ -155,61 +152,6 @@ nsresult HTMLFieldSetElement::InsertChildBefore(nsIContent* aChild,
   return rv;
 }
 
-nsresult HTMLFieldSetElement::InsertChildAt_Deprecated(nsIContent* aChild,
-                                                       uint32_t aIndex,
-                                                       bool aNotify) {
-  bool firstLegendHasChanged = false;
-
-  if (aChild->IsHTMLElement(nsGkAtoms::legend)) {
-    if (!mFirstLegend) {
-      mFirstLegend = aChild;
-      // We do not want to notify the first time mFirstElement is set.
-    } else {
-      // If mFirstLegend is before aIndex, we do not change it.
-      // Otherwise, mFirstLegend is now aChild.
-      if (int32_t(aIndex) <= ComputeIndexOf(mFirstLegend)) {
-        mFirstLegend = aChild;
-        firstLegendHasChanged = true;
-      }
-    }
-  }
-
-  nsresult rv = nsGenericHTMLFormElement::InsertChildAt_Deprecated(
-      aChild, aIndex, aNotify);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  if (firstLegendHasChanged) {
-    NotifyElementsForFirstLegendChange(aNotify);
-  }
-
-  return rv;
-}
-
-void HTMLFieldSetElement::RemoveChildAt_Deprecated(uint32_t aIndex,
-                                                   bool aNotify) {
-  bool firstLegendHasChanged = false;
-
-  if (mFirstLegend && (GetChildAt_Deprecated(aIndex) == mFirstLegend)) {
-    // If we are removing the first legend we have to found another one.
-    nsIContent* child = mFirstLegend->GetNextSibling();
-    mFirstLegend = nullptr;
-    firstLegendHasChanged = true;
-
-    for (; child; child = child->GetNextSibling()) {
-      if (child->IsHTMLElement(nsGkAtoms::legend)) {
-        mFirstLegend = child;
-        break;
-      }
-    }
-  }
-
-  nsGenericHTMLFormElement::RemoveChildAt_Deprecated(aIndex, aNotify);
-
-  if (firstLegendHasChanged) {
-    NotifyElementsForFirstLegendChange(aNotify);
-  }
-}
-
 void HTMLFieldSetElement::RemoveChildNode(nsIContent* aKid, bool aNotify) {
   bool firstLegendHasChanged = false;
 
@@ -239,7 +181,7 @@ void HTMLFieldSetElement::AddElement(nsGenericHTMLFormElement* aElement) {
 
   // If the element that we are adding aElement is a fieldset, then all the
   // invalid elements in aElement are also invalid elements of this.
-  HTMLFieldSetElement* fieldSet = FromContent(aElement);
+  HTMLFieldSetElement* fieldSet = FromNode(aElement);
   if (fieldSet) {
     for (int32_t i = 0; i < fieldSet->mInvalidElementsCount; i++) {
       UpdateValidity(false);
@@ -257,7 +199,7 @@ void HTMLFieldSetElement::AddElement(nsGenericHTMLFormElement* aElement) {
 #if DEBUG
   int32_t debugInvalidElementsCount = 0;
   for (uint32_t i = 0; i < mDependentElements.Length(); i++) {
-    HTMLFieldSetElement* fieldSet = FromContent(mDependentElements[i]);
+    HTMLFieldSetElement* fieldSet = FromNode(mDependentElements[i]);
     if (fieldSet) {
       debugInvalidElementsCount += fieldSet->mInvalidElementsCount;
       continue;
@@ -278,7 +220,7 @@ void HTMLFieldSetElement::RemoveElement(nsGenericHTMLFormElement* aElement) {
 
   // If the element that we are removing aElement is a fieldset, then all the
   // invalid elements in aElement are also removed from this.
-  HTMLFieldSetElement* fieldSet = FromContent(aElement);
+  HTMLFieldSetElement* fieldSet = FromNode(aElement);
   if (fieldSet) {
     for (int32_t i = 0; i < fieldSet->mInvalidElementsCount; i++) {
       UpdateValidity(true);
@@ -296,7 +238,7 @@ void HTMLFieldSetElement::RemoveElement(nsGenericHTMLFormElement* aElement) {
 #if DEBUG
   int32_t debugInvalidElementsCount = 0;
   for (uint32_t i = 0; i < mDependentElements.Length(); i++) {
-    HTMLFieldSetElement* fieldSet = FromContent(mDependentElements[i]);
+    HTMLFieldSetElement* fieldSet = FromNode(mDependentElements[i]);
     if (fieldSet) {
       debugInvalidElementsCount += fieldSet->mInvalidElementsCount;
       continue;
@@ -368,7 +310,7 @@ EventStates HTMLFieldSetElement::IntrinsicState() const {
 
 JSObject* HTMLFieldSetElement::WrapNode(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return HTMLFieldSetElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLFieldSetElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

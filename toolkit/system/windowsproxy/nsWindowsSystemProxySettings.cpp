@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,7 +11,7 @@
 #include "mozilla/Attributes.h"
 #include "nsISystemProxySettings.h"
 #include "nsIServiceManager.h"
-#include "mozilla/ModuleUtils.h"
+#include "mozilla/Components.h"
 #include "nsPrintfCString.h"
 #include "nsNetCID.h"
 #include "nsISupportsPrimitives.h"
@@ -27,7 +27,6 @@ class nsWindowsSystemProxySettings final : public nsISystemProxySettings {
   NS_DECL_NSISYSTEMPROXYSETTINGS
 
   nsWindowsSystemProxySettings(){};
-  nsresult Init();
 
  private:
   ~nsWindowsSystemProxySettings(){};
@@ -47,8 +46,6 @@ nsWindowsSystemProxySettings::GetMainThreadOnly(bool* aMainThreadOnly) {
   return NS_OK;
 }
 
-nsresult nsWindowsSystemProxySettings::Init() { return NS_OK; }
-
 static void SetProxyResult(const char* aType, const nsACString& aHostPort,
                            nsACString& aResult) {
   aResult.AssignASCII(aType);
@@ -58,7 +55,7 @@ static void SetProxyResult(const char* aType, const nsACString& aHostPort,
 
 static void SetProxyResultDirect(nsACString& aResult) {
   // For whatever reason, a proxy is not to be used.
-  aResult.AssignASCII("DIRECT");
+  aResult.AssignLiteral("DIRECT");
 }
 
 static nsresult ReadInternetOption(uint32_t aOption, uint32_t& aFlags,
@@ -247,27 +244,7 @@ nsresult nsWindowsSystemProxySettings::GetProxyForURI(const nsACString& aSpec,
   return NS_OK;
 }
 
-/* 4e22d3ea-aaa2-436e-ada4-9247de57d367 */
-#define NS_WINDOWSSYSTEMPROXYSERVICE_CID             \
-  {                                                  \
-    0x4e22d3ea, 0xaaa2, 0x436e, {                    \
-      0xad, 0xa4, 0x92, 0x47, 0xde, 0x57, 0xd3, 0x67 \
-    }                                                \
-  }
-
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsWindowsSystemProxySettings, Init)
-NS_DEFINE_NAMED_CID(NS_WINDOWSSYSTEMPROXYSERVICE_CID);
-
-static const mozilla::Module::CIDEntry kSysProxyCIDs[] = {
-    {&kNS_WINDOWSSYSTEMPROXYSERVICE_CID, false, nullptr,
-     nsWindowsSystemProxySettingsConstructor},
-    {nullptr}};
-
-static const mozilla::Module::ContractIDEntry kSysProxyContracts[] = {
-    {NS_SYSTEMPROXYSETTINGS_CONTRACTID, &kNS_WINDOWSSYSTEMPROXYSERVICE_CID},
-    {nullptr}};
-
-static const mozilla::Module kSysProxyModule = {
-    mozilla::Module::kVersion, kSysProxyCIDs, kSysProxyContracts};
-
-NSMODULE_DEFN(nsWindowsProxyModule) = &kSysProxyModule;
+NS_IMPL_COMPONENT_FACTORY(nsWindowsSystemProxySettings) {
+  return mozilla::MakeAndAddRef<nsWindowsSystemProxySettings>()
+      .downcast<nsISupports>();
+}

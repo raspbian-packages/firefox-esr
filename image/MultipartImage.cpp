@@ -36,13 +36,15 @@ class NextPartObserver : public IProgressObserver {
   }
 
   void BlockUntilDecodedAndFinishObserving() {
-    // Use GetFrame() to block until our image finishes decoding.
-    RefPtr<SourceSurface> surface = mImage->GetFrame(
-        imgIContainer::FRAME_CURRENT, imgIContainer::FLAG_SYNC_DECODE);
+    // Use RequestDecodeForSize() to block until our image finishes decoding.
+    // The size is ignored because we don't pass the FLAG_HIGH_QUALITY_SCALING
+    // flag.
+    mImage->RequestDecodeForSize(gfx::IntSize(0, 0),
+                                 imgIContainer::FLAG_SYNC_DECODE);
 
-    // GetFrame() should've sent synchronous notifications that would have
-    // caused us to call FinishObserving() (and null out mImage) already. If for
-    // some reason it didn't, we should do so here.
+    // RequestDecodeForSize() should've sent synchronous notifications that
+    // would have caused us to call FinishObserving() (and null out mImage)
+    // already. If for some reason it didn't, we should do so here.
     if (mImage) {
       FinishObserving();
     }
@@ -74,7 +76,8 @@ class NextPartObserver : public IProgressObserver {
 
     // Request decoding at the intrinsic size.
     mImage->RequestDecodeForSize(IntSize(width, height),
-                                 imgIContainer::DECODE_FLAGS_DEFAULT);
+                                 imgIContainer::DECODE_FLAGS_DEFAULT |
+                                     imgIContainer::FLAG_HIGH_QUALITY_SCALING);
 
     // If there's already an error, we may never get a FRAME_COMPLETE
     // notification, so go ahead and notify our owner right away.
@@ -277,7 +280,7 @@ void MultipartImage::Notify(int32_t aType,
   } else if (aType == imgINotificationObserver::HAS_TRANSPARENCY) {
     mTracker->SyncNotifyProgress(FLAG_HAS_TRANSPARENCY);
   } else {
-    NS_NOTREACHED("Notification list should be exhaustive");
+    MOZ_ASSERT_UNREACHABLE("Notification list should be exhaustive");
   }
 }
 

@@ -9,21 +9,35 @@ const { reportException } = require("devtools/shared/DevToolsUtils");
 const { expectState } = require("devtools/server/actors/common");
 
 loader.lazyRequireGetter(this, "EventEmitter", "devtools/shared/event-emitter");
-loader.lazyRequireGetter(this, "DeferredTask",
-  "resource://gre/modules/DeferredTask.jsm", true);
-loader.lazyRequireGetter(this, "StackFrameCache",
-  "devtools/server/actors/utils/stack", true);
+loader.lazyRequireGetter(
+  this,
+  "DeferredTask",
+  "resource://gre/modules/DeferredTask.jsm",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "StackFrameCache",
+  "devtools/server/actors/utils/stack",
+  true
+);
 loader.lazyRequireGetter(this, "ChromeUtils");
-loader.lazyRequireGetter(this, "HeapSnapshotFileUtils",
-  "devtools/shared/heapsnapshot/HeapSnapshotFileUtils");
-loader.lazyRequireGetter(this, "ChromeActor", "devtools/server/actors/chrome",
-                         true);
-loader.lazyRequireGetter(this, "ChildProcessActor",
-                         "devtools/server/actors/child-process", true);
+loader.lazyRequireGetter(
+  this,
+  "ParentProcessTargetActor",
+  "devtools/server/actors/targets/parent-process",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "ContentProcessTargetActor",
+  "devtools/server/actors/targets/content-process",
+  true
+);
 
 /**
  * A class that returns memory data for a parent actor's window.
- * Using a tab-scoped actor with this instance will measure the memory footprint of its
+ * Using a target-scoped actor with this instance will measure the memory footprint of its
  * parent tab. Using a global-scoped actor instance however, will measure the memory
  * footprint of the chrome window referenced by its root actor.
  *
@@ -35,8 +49,9 @@ function Memory(parent, frameCache = new StackFrameCache()) {
   EventEmitter.decorate(this);
 
   this.parent = parent;
-  this._mgr = Cc["@mozilla.org/memory-reporter-manager;1"]
-                .getService(Ci.nsIMemoryReporterManager);
+  this._mgr = Cc["@mozilla.org/memory-reporter-manager;1"].getService(
+    Ci.nsIMemoryReporterManager
+  );
   this.state = "detached";
   this._dbg = null;
   this._frameCache = frameCache;
@@ -49,7 +64,7 @@ function Memory(parent, frameCache = new StackFrameCache()) {
 }
 
 Memory.prototype = {
-  destroy: function () {
+  destroy: function() {
     EventEmitter.off(this.parent, "window-ready", this._onWindowReady);
 
     this._mgr = null;
@@ -72,30 +87,42 @@ Memory.prototype = {
    * recording allocations or take a census of the heap. In addition, the
    * MemoryBridge will start emitting GC events.
    */
-  attach: expectState("detached", function () {
-    this.dbg.addDebuggees();
-    this.dbg.memory.onGarbageCollection = this._onGarbageCollection.bind(this);
-    this.state = "attached";
-  }, "attaching to the debugger"),
+  attach: expectState(
+    "detached",
+    function() {
+      this.dbg.addDebuggees();
+      this.dbg.memory.onGarbageCollection = this._onGarbageCollection.bind(
+        this
+      );
+      this.state = "attached";
+      return this.state;
+    },
+    "attaching to the debugger"
+  ),
 
   /**
    * Detach from this MemoryBridge.
    */
-  detach: expectState("attached", function () {
-    this._clearDebuggees();
-    this.dbg.enabled = false;
-    this._dbg = null;
-    this.state = "detached";
-  }, "detaching from the debugger"),
+  detach: expectState(
+    "attached",
+    function() {
+      this._clearDebuggees();
+      this.dbg.enabled = false;
+      this._dbg = null;
+      this.state = "detached";
+      return this.state;
+    },
+    "detaching from the debugger"
+  ),
 
   /**
    * Gets the current MemoryBridge attach/detach state.
    */
-  getState: function () {
+  getState: function() {
     return this.state;
   },
 
-  _clearDebuggees: function () {
+  _clearDebuggees: function() {
     if (this._dbg) {
       if (this.isRecordingAllocations()) {
         this.dbg.memory.drainAllocationsLog();
@@ -105,7 +132,7 @@ Memory.prototype = {
     }
   },
 
-  _clearFrames: function () {
+  _clearFrames: function() {
     if (this.isRecordingAllocations()) {
       this._frameCache.clearFrames();
     }
@@ -114,7 +141,7 @@ Memory.prototype = {
   /**
    * Handler for the parent actor's "window-ready" event.
    */
-  _onWindowReady: function ({ isTopLevel }) {
+  _onWindowReady: function({ isTopLevel }) {
     if (this.state == "attached") {
       this._clearDebuggees();
       if (isTopLevel && this.isRecordingAllocations()) {
@@ -128,7 +155,7 @@ Memory.prototype = {
    * Returns a boolean indicating whether or not allocation
    * sites are being tracked.
    */
-  isRecordingAllocations: function () {
+  isRecordingAllocations: function() {
     return this.dbg.memory.trackingAllocationSites;
   },
 
@@ -140,27 +167,37 @@ Memory.prototype = {
    *
    * @returns {String} The snapshot id.
    */
-  saveHeapSnapshot: expectState("attached", function (boundaries = null) {
-    // If we are observing the whole process, then scope the snapshot
-    // accordingly. Otherwise, use the debugger's debuggees.
-    if (!boundaries) {
-      if (this.parent instanceof ChromeActor ||
-          this.parent instanceof ChildProcessActor) {
-        boundaries = { runtime: true };
-      } else {
-        boundaries = { debugger: this.dbg };
+  saveHeapSnapshot: expectState(
+    "attached",
+    function(boundaries = null) {
+      // If we are observing the whole process, then scope the snapshot
+      // accordingly. Otherwise, use the debugger's debuggees.
+      if (!boundaries) {
+        if (
+          this.parent instanceof ParentProcessTargetActor ||
+          this.parent instanceof ContentProcessTargetActor
+        ) {
+          boundaries = { runtime: true };
+        } else {
+          boundaries = { debugger: this.dbg };
+        }
       }
-    }
-    return ChromeUtils.saveHeapSnapshotGetId(boundaries);
-  }, "saveHeapSnapshot"),
+      return ChromeUtils.saveHeapSnapshotGetId(boundaries);
+    },
+    "saveHeapSnapshot"
+  ),
 
   /**
    * Take a census of the heap. See js/src/doc/Debugger/Debugger.Memory.md for
    * more information.
    */
-  takeCensus: expectState("attached", function () {
-    return this.dbg.memory.takeCensus();
-  }, "taking census"),
+  takeCensus: expectState(
+    "attached",
+    function() {
+      return this.dbg.memory.takeCensus();
+    },
+    "taking census"
+  ),
 
   /**
    * Start recording allocation sites.
@@ -177,64 +214,78 @@ Memory.prototype = {
    *                 event gets emitted (and drained), and also emits and drains on every
    *                 GC event, resetting the timer.
    */
-  startRecordingAllocations: expectState("attached", function (options = {}) {
-    if (this.isRecordingAllocations()) {
-      return this._getCurrentTime();
-    }
-
-    this._frameCache.initFrames();
-
-    this.dbg.memory.allocationSamplingProbability = options.probability != null
-      ? options.probability
-      : 1.0;
-
-    this.drainAllocationsTimeoutTimer = options.drainAllocationsTimeout;
-
-    if (this.drainAllocationsTimeoutTimer != null) {
-      if (this._poller) {
-        this._poller.disarm();
+  startRecordingAllocations: expectState(
+    "attached",
+    function(options = {}) {
+      if (this.isRecordingAllocations()) {
+        return this._getCurrentTime();
       }
-      this._poller = new DeferredTask(this._emitAllocations,
-                                      this.drainAllocationsTimeoutTimer, 0);
-      this._poller.arm();
-    }
 
-    if (options.maxLogLength != null) {
-      this.dbg.memory.maxAllocationsLogLength = options.maxLogLength;
-    }
-    this.dbg.memory.trackingAllocationSites = true;
+      this._frameCache.initFrames();
 
-    return this._getCurrentTime();
-  }, "starting recording allocations"),
+      this.dbg.memory.allocationSamplingProbability =
+        options.probability != null ? options.probability : 1.0;
+
+      this.drainAllocationsTimeoutTimer = options.drainAllocationsTimeout;
+
+      if (this.drainAllocationsTimeoutTimer != null) {
+        if (this._poller) {
+          this._poller.disarm();
+        }
+        this._poller = new DeferredTask(
+          this._emitAllocations,
+          this.drainAllocationsTimeoutTimer,
+          0
+        );
+        this._poller.arm();
+      }
+
+      if (options.maxLogLength != null) {
+        this.dbg.memory.maxAllocationsLogLength = options.maxLogLength;
+      }
+      this.dbg.memory.trackingAllocationSites = true;
+
+      return this._getCurrentTime();
+    },
+    "starting recording allocations"
+  ),
 
   /**
    * Stop recording allocation sites.
    */
-  stopRecordingAllocations: expectState("attached", function () {
-    if (!this.isRecordingAllocations()) {
+  stopRecordingAllocations: expectState(
+    "attached",
+    function() {
+      if (!this.isRecordingAllocations()) {
+        return this._getCurrentTime();
+      }
+      this.dbg.memory.trackingAllocationSites = false;
+      this._clearFrames();
+
+      if (this._poller) {
+        this._poller.disarm();
+        this._poller = null;
+      }
+
       return this._getCurrentTime();
-    }
-    this.dbg.memory.trackingAllocationSites = false;
-    this._clearFrames();
-
-    if (this._poller) {
-      this._poller.disarm();
-      this._poller = null;
-    }
-
-    return this._getCurrentTime();
-  }, "stopping recording allocations"),
+    },
+    "stopping recording allocations"
+  ),
 
   /**
    * Return settings used in `startRecordingAllocations` for `probability`
    * and `maxLogLength`. Currently only uses in tests.
    */
-  getAllocationsSettings: expectState("attached", function () {
-    return {
-      maxLogLength: this.dbg.memory.maxAllocationsLogLength,
-      probability: this.dbg.memory.allocationSamplingProbability
-    };
-  }, "getting allocations settings"),
+  getAllocationsSettings: expectState(
+    "attached",
+    function() {
+      return {
+        maxLogLength: this.dbg.memory.maxAllocationsLogLength,
+        probability: this.dbg.memory.allocationSamplingProbability,
+      };
+    },
+    "getting allocations settings"
+  ),
 
   /**
    * Get a list of the most recent allocations since the last time we got
@@ -292,48 +343,54 @@ Memory.prototype = {
    *          usage to build the packet, and it should, of course, be guided by
    *          profiling and done only when necessary.
    */
-  getAllocations: expectState("attached", function () {
-    if (this.dbg.memory.allocationsLogOverflowed) {
-      // Since the last time we drained the allocations log, there have been
-      // more allocations than the log's capacity, and we lost some data. There
-      // isn't anything actionable we can do about this, but put a message in
-      // the browser console so we at least know that it occurred.
-      reportException("MemoryBridge.prototype.getAllocations",
-                      "Warning: allocations log overflowed and lost some data.");
-    }
-
-    const allocations = this.dbg.memory.drainAllocationsLog();
-    const packet = {
-      allocations: [],
-      allocationsTimestamps: [],
-      allocationSizes: [],
-    };
-    for (let { frame: stack, timestamp, size } of allocations) {
-      if (stack && Cu.isDeadWrapper(stack)) {
-        continue;
+  getAllocations: expectState(
+    "attached",
+    function() {
+      if (this.dbg.memory.allocationsLogOverflowed) {
+        // Since the last time we drained the allocations log, there have been
+        // more allocations than the log's capacity, and we lost some data. There
+        // isn't anything actionable we can do about this, but put a message in
+        // the browser console so we at least know that it occurred.
+        reportException(
+          "MemoryBridge.prototype.getAllocations",
+          "Warning: allocations log overflowed and lost some data."
+        );
       }
 
-      // Safe because SavedFrames are frozen/immutable.
-      let waived = Cu.waiveXrays(stack);
+      const allocations = this.dbg.memory.drainAllocationsLog();
+      const packet = {
+        allocations: [],
+        allocationsTimestamps: [],
+        allocationSizes: [],
+      };
+      for (const { frame: stack, timestamp, size } of allocations) {
+        if (stack && Cu.isDeadWrapper(stack)) {
+          continue;
+        }
 
-      // Ensure that we have a form, size, and index for new allocations
-      // because we potentially haven't seen some or all of them yet. After this
-      // loop, we can rely on the fact that every frame we deal with already has
-      // its metadata stored.
-      let index = this._frameCache.addFrame(waived);
+        // Safe because SavedFrames are frozen/immutable.
+        const waived = Cu.waiveXrays(stack);
 
-      packet.allocations.push(index);
-      packet.allocationsTimestamps.push(timestamp);
-      packet.allocationSizes.push(size);
-    }
+        // Ensure that we have a form, size, and index for new allocations
+        // because we potentially haven't seen some or all of them yet. After this
+        // loop, we can rely on the fact that every frame we deal with already has
+        // its metadata stored.
+        const index = this._frameCache.addFrame(waived);
 
-    return this._frameCache.updateFramePacket(packet);
-  }, "getting allocations"),
+        packet.allocations.push(index);
+        packet.allocationsTimestamps.push(timestamp);
+        packet.allocationSizes.push(size);
+      }
+
+      return this._frameCache.updateFramePacket(packet);
+    },
+    "getting allocations"
+  ),
 
   /*
    * Force a browser-wide GC.
    */
-  forceGarbageCollection: function () {
+  forceGarbageCollection: function() {
     for (let i = 0; i < 3; i++) {
       Cu.forceGC();
     }
@@ -344,7 +401,7 @@ Memory.prototype = {
    * collection, see
    * https://developer.mozilla.org/en-US/docs/Interfacing_with_the_XPCOM_cycle_collector#What_the_cycle_collector_does
    */
-  forceCycleCollection: function () {
+  forceCycleCollection: function() {
     Cu.forceCC();
   },
 
@@ -354,23 +411,32 @@ Memory.prototype = {
    *
    * @returns object
    */
-  measure: function () {
-    let result = {};
+  measure: function() {
+    const result = {};
 
-    let jsObjectsSize = {};
-    let jsStringsSize = {};
-    let jsOtherSize = {};
-    let domSize = {};
-    let styleSize = {};
-    let otherSize = {};
-    let totalSize = {};
-    let jsMilliseconds = {};
-    let nonJSMilliseconds = {};
+    const jsObjectsSize = {};
+    const jsStringsSize = {};
+    const jsOtherSize = {};
+    const domSize = {};
+    const styleSize = {};
+    const otherSize = {};
+    const totalSize = {};
+    const jsMilliseconds = {};
+    const nonJSMilliseconds = {};
 
     try {
-      this._mgr.sizeOfTab(this.parent.window, jsObjectsSize, jsStringsSize, jsOtherSize,
-                          domSize, styleSize, otherSize, totalSize, jsMilliseconds,
-                          nonJSMilliseconds);
+      this._mgr.sizeOfTab(
+        this.parent.window,
+        jsObjectsSize,
+        jsStringsSize,
+        jsOtherSize,
+        domSize,
+        styleSize,
+        otherSize,
+        totalSize,
+        jsMilliseconds,
+        nonJSMilliseconds
+      );
       result.total = totalSize.value;
       result.domSize = domSize.value;
       result.styleSize = styleSize.value;
@@ -387,14 +453,14 @@ Memory.prototype = {
     return result;
   },
 
-  residentUnique: function () {
+  residentUnique: function() {
     return this._mgr.residentUnique;
   },
 
   /**
    * Handler for GC events on the Debugger.Memory instance.
    */
-  _onGarbageCollection: function (data) {
+  _onGarbageCollection: function(data) {
     this.emit("garbage-collection", data);
 
     // If `drainAllocationsTimeout` set, fire an allocations event with the drained log,
@@ -411,7 +477,7 @@ Memory.prototype = {
    * drainAllocationsTimeout was set.
    * Drains allocation log and emits as an event and restarts the timer.
    */
-  _emitAllocations: function () {
+  _emitAllocations: function() {
     this.emit("allocations", this.getAllocations());
     this._poller.arm();
   },
@@ -419,9 +485,16 @@ Memory.prototype = {
   /**
    * Accesses the docshell to return the current process time.
    */
-  _getCurrentTime: function () {
-    return (this.parent.isRootActor ? this.parent.docShell :
-                                      this.parent.originalDocShell).now();
+  _getCurrentTime: function() {
+    const docShell = this.parent.isRootActor
+      ? this.parent.docShell
+      : this.parent.originalDocShell;
+    if (docShell) {
+      return docShell.now();
+    }
+    // When used from the ContentProcessTargetActor, parent has no docShell,
+    // so fallback to Cu.now
+    return Cu.now();
   },
 };
 

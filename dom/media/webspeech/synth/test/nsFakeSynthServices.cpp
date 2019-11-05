@@ -7,10 +7,10 @@
 #include "nsISupports.h"
 #include "nsFakeSynthServices.h"
 #include "nsPrintfCString.h"
-#include "nsIWeakReferenceUtils.h"
 #include "SharedBuffer.h"
 #include "nsISimpleEnumerator.h"
 
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/dom/nsSynthVoiceRegistry.h"
 #include "mozilla/dom/nsSpeechTask.h"
 
@@ -274,6 +274,7 @@ nsFakeSynthServices* nsFakeSynthServices::GetInstance() {
 
   if (!sSingleton) {
     sSingleton = new nsFakeSynthServices();
+    ClearOnShutdown(&sSingleton);
   }
 
   return sSingleton;
@@ -283,14 +284,6 @@ already_AddRefed<nsFakeSynthServices>
 nsFakeSynthServices::GetInstanceForService() {
   RefPtr<nsFakeSynthServices> picoService = GetInstance();
   return picoService.forget();
-}
-
-void nsFakeSynthServices::Shutdown() {
-  if (!sSingleton) {
-    return;
-  }
-
-  sSingleton = nullptr;
 }
 
 }  // namespace dom

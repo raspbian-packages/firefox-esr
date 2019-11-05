@@ -2,10 +2,8 @@
 
 extensions.registerModules({
   tabs: {
-    url: "chrome://browser/content/ext-c-tabs.js",
+    url: "chrome://geckoview/content/ext-c-tabs.js",
     scopes: ["addon_child"],
-    paths: [
-      ["tabs"],
-    ],
+    paths: [["tabs"]],
   },
 });

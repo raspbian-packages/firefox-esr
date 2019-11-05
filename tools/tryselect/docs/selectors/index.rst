@@ -33,6 +33,7 @@ See selector specific options by running:
 
   Chooser <chooser>
   Fuzzy <fuzzy>
+  Again <again>
   Empty <empty>
   Syntax <syntax>
   Release <release>

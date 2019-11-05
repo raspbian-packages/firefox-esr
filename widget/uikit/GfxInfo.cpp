@@ -112,7 +112,7 @@ NS_IMETHODIMP
 GfxInfo::GetIsGPU2Active(bool* aIsGPU2Active) { return NS_ERROR_FAILURE; }
 
 const nsTArray<GfxDriverInfo>& GfxInfo::GetGfxDriverInfo() {
-  if (mDriverInfo->IsEmpty()) {
+  if (sDriverInfo->IsEmpty()) {
     APPEND_TO_DRIVER_BLOCKLIST2(
         OperatingSystem::Ios,
         (nsAString&)GfxDriverInfo::GetDeviceVendor(VendorAll),
@@ -121,7 +121,7 @@ const nsTArray<GfxDriverInfo>& GfxInfo::GetGfxDriverInfo() {
         GfxDriverInfo::allDriverVersions);
   }
 
-  return *mDriverInfo;
+  return *sDriverInfo;
 }
 
 nsresult GfxInfo::GetFeatureStatusImpl(
@@ -133,7 +133,7 @@ nsresult GfxInfo::GetFeatureStatusImpl(
   *aStatus = nsIGfxInfo::FEATURE_STATUS_UNKNOWN;
   if (aOS) *aOS = OperatingSystem::Ios;
 
-  if (mShutdownOccurred) {
+  if (sShutdownOccurred) {
     return NS_OK;
   }
 
@@ -172,5 +172,6 @@ NS_IMETHODIMP GfxInfo::SpoofOSVersion(uint32_t aVersion) {
 }
 
 #endif
-}
+
+}  // namespace widget
 }  // namespace mozilla

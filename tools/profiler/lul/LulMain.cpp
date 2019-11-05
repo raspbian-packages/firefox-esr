@@ -29,7 +29,7 @@
 
 #include "LulMainInt.h"
 
-#include "platform-linux-lul.h"  // for gettid()
+#include "GeckoProfiler.h"  // for profiler_current_thread_id()
 
 // Set this to 1 for verbose logging
 #define DEBUG_MAIN 0
@@ -82,6 +82,13 @@ static const char* NameOf_DW_REG(int16_t aReg) {
       return "r14";
     case DW_REG_ARM_R15:
       return "r15";
+#elif defined(GP_ARCH_arm64)
+    case DW_REG_AARCH64_X29:
+      return "x29";
+    case DW_REG_AARCH64_X30:
+      return "x30";
+    case DW_REG_AARCH64_SP:
+      return "sp";
 #elif defined(GP_ARCH_mips64)
     case DW_REG_MIPS_SP:
       return "sp";
@@ -90,7 +97,7 @@ static const char* NameOf_DW_REG(int16_t aReg) {
     case DW_REG_MIPS_PC:
       return "pc";
 #else
-#error "Unsupported arch"
+#  error "Unsupported arch"
 #endif
     default:
       return "???";
@@ -142,12 +149,16 @@ void RuleSet::Print(void (*aLog)(const char*)) const {
   res += mR12expr.ShowRule(" R12");
   res += mR13expr.ShowRule(" R13");
   res += mR14expr.ShowRule(" R14");
+#elif defined(GP_ARCH_arm64)
+  res += mX29expr.ShowRule(" X29");
+  res += mX30expr.ShowRule(" X30");
+  res += mSPexpr.ShowRule(" SP");
 #elif defined(GP_ARCH_mips64)
   res += mPCexpr.ShowRule(" PC");
   res += mSPexpr.ShowRule(" SP");
   res += mFPexpr.ShowRule(" FP");
 #else
-#error "Unsupported arch"
+#  error "Unsupported arch"
 #endif
   aLog(res.c_str());
 }
@@ -176,6 +187,13 @@ LExpr* RuleSet::ExprForRegno(DW_REG_NUMBER aRegno) {
       return &mR11expr;
     case DW_REG_ARM_R7:
       return &mR7expr;
+#elif defined(GP_ARCH_arm64)
+    case DW_REG_AARCH64_X29:
+      return &mX29expr;
+    case DW_REG_AARCH64_X30:
+      return &mX30expr;
+    case DW_REG_AARCH64_SP:
+      return &mSPexpr;
 #elif defined(GP_ARCH_mips64)
     case DW_REG_MIPS_SP:
       return &mSPexpr;
@@ -184,7 +202,7 @@ LExpr* RuleSet::ExprForRegno(DW_REG_NUMBER aRegno) {
     case DW_REG_MIPS_PC:
       return &mPCexpr;
 #else
-#error "Unknown arch"
+#  error "Unknown arch"
 #endif
     default:
       return nullptr;
@@ -380,14 +398,14 @@ void SecMap::PrepareRuleSets(uintptr_t aStart, size_t aLen) {
   // Is now usable for binary search.
   mUsable = true;
 
-  if (0) {
-    mLog("\nRulesets after preening\n");
-    for (size_t i = 0; i < mRuleSets.size(); ++i) {
-      mRuleSets[i].Print(mLog);
-      mLog("\n");
-    }
+#if 0
+  mLog("\nRulesets after preening\n");
+  for (size_t i = 0; i < mRuleSets.size(); ++i) {
+    mRuleSets[i].Print(mLog);
     mLog("\n");
   }
+  mLog("\n");
+#endif
 }
 
 bool SecMap::IsEmpty() { return mRuleSets.empty(); }
@@ -567,11 +585,11 @@ class PriMap {
     MOZ_ASSERT(i <= num_secMaps);
     if (i == num_secMaps) {
       // It goes at the end.
-      mSecMaps.push_back(mozilla::Move(aSecMap));
+      mSecMaps.push_back(std::move(aSecMap));
     } else {
       std::vector<mozilla::UniquePtr<SecMap>>::iterator iter =
           mSecMaps.begin() + i;
-      mSecMaps.insert(iter, mozilla::Move(aSecMap));
+      mSecMaps.insert(iter, std::move(aSecMap));
     }
     char buf[100];
     SprintfLiteral(buf, "AddSecMap: now have %d SecMaps\n",
@@ -666,19 +684,20 @@ class PriMap {
 // LUL                                                        //
 ////////////////////////////////////////////////////////////////
 
-#define LUL_LOG(_str)                                                  \
-  do {                                                                 \
-    char buf[200];                                                     \
-    SprintfLiteral(buf, "LUL: pid %d tid %d lul-obj %p: %s", getpid(), \
-                   gettid(), this, (_str));                            \
-    buf[sizeof(buf) - 1] = 0;                                          \
-    mLog(buf);                                                         \
+#define LUL_LOG(_str)                                           \
+  do {                                                          \
+    char buf[200];                                              \
+    SprintfLiteral(buf, "LUL: pid %d tid %d lul-obj %p: %s",    \
+                   profiler_current_process_id(),               \
+                   profiler_current_thread_id(), this, (_str)); \
+    buf[sizeof(buf) - 1] = 0;                                   \
+    mLog(buf);                                                  \
   } while (0)
 
 LUL::LUL(void (*aLog)(const char*))
     : mLog(aLog),
       mAdminMode(true),
-      mAdminThreadId(gettid()),
+      mAdminThreadId(profiler_current_thread_id()),
       mPriMap(new PriMap(aLog)),
       mSegArray(new SegArray()),
       mUSU(new UniqueStringUniverse()) {
@@ -731,15 +750,15 @@ void LUL::EnableUnwinding() {
   LUL_LOG("LUL::EnableUnwinding");
   // Don't assert for Admin mode here.  That is, tolerate a call here
   // if we are already in Unwinding mode.
-  MOZ_ASSERT(gettid() == mAdminThreadId);
+  MOZ_RELEASE_ASSERT(profiler_current_thread_id() == mAdminThreadId);
 
   mAdminMode = false;
 }
 
 void LUL::NotifyAfterMap(uintptr_t aRXavma, size_t aSize, const char* aFileName,
                          const void* aMappedImage) {
-  MOZ_ASSERT(mAdminMode);
-  MOZ_ASSERT(gettid() == mAdminThreadId);
+  MOZ_RELEASE_ASSERT(mAdminMode);
+  MOZ_RELEASE_ASSERT(profiler_current_thread_id() == mAdminThreadId);
 
   mLog(":\n");
   char buf[200];
@@ -774,7 +793,7 @@ void LUL::NotifyAfterMap(uintptr_t aRXavma, size_t aSize, const char* aFileName,
     mLog(buf);
 
     // Add it to the primary map (the top level set of mapped objects).
-    mPriMap->AddSecMap(mozilla::Move(smap));
+    mPriMap->AddSecMap(std::move(smap));
 
     // Tell the segment array about the mapping, so that the stack
     // scan and __kernel_syscall mechanisms know where valid code is.
@@ -783,8 +802,8 @@ void LUL::NotifyAfterMap(uintptr_t aRXavma, size_t aSize, const char* aFileName,
 }
 
 void LUL::NotifyExecutableArea(uintptr_t aRXavma, size_t aSize) {
-  MOZ_ASSERT(mAdminMode);
-  MOZ_ASSERT(gettid() == mAdminThreadId);
+  MOZ_RELEASE_ASSERT(mAdminMode);
+  MOZ_RELEASE_ASSERT(profiler_current_thread_id() == mAdminThreadId);
 
   mLog(":\n");
   char buf[200];
@@ -803,8 +822,8 @@ void LUL::NotifyExecutableArea(uintptr_t aRXavma, size_t aSize) {
 }
 
 void LUL::NotifyBeforeUnmap(uintptr_t aRXavmaMin, uintptr_t aRXavmaMax) {
-  MOZ_ASSERT(mAdminMode);
-  MOZ_ASSERT(gettid() == mAdminThreadId);
+  MOZ_RELEASE_ASSERT(mAdminMode);
+  MOZ_RELEASE_ASSERT(profiler_current_thread_id() == mAdminThreadId);
 
   mLog(":\n");
   char buf[100];
@@ -831,8 +850,8 @@ void LUL::NotifyBeforeUnmap(uintptr_t aRXavmaMin, uintptr_t aRXavmaMax) {
 }
 
 size_t LUL::CountMappings() {
-  MOZ_ASSERT(mAdminMode);
-  MOZ_ASSERT(gettid() == mAdminThreadId);
+  MOZ_RELEASE_ASSERT(mAdminMode);
+  MOZ_RELEASE_ASSERT(profiler_current_thread_id() == mAdminThreadId);
 
   return mPriMap->CountSecMaps();
 }
@@ -866,8 +885,9 @@ static TaggedUWord DerefTUW(TaggedUWord aAddr, const StackImage* aStackImg) {
     return TaggedUWord();
   }
 
-  return TaggedUWord(*(uintptr_t*)(aStackImg->mContents + aAddr.Value() -
-                                   aStackImg->mStartAvma));
+  return TaggedUWord(
+      *(uintptr_t*)(&aStackImg
+                         ->mContents[aAddr.Value() - aStackImg->mStartAvma]));
 }
 
 // RUNS IN NO-MALLOC CONTEXT
@@ -896,6 +916,13 @@ static TaggedUWord EvaluateReg(int16_t aReg, const UnwindRegs* aOldRegs,
       return aOldRegs->r14;
     case DW_REG_ARM_R15:
       return aOldRegs->r15;
+#elif defined(GP_ARCH_arm64)
+    case DW_REG_AARCH64_X29:
+      return aOldRegs->x29;
+    case DW_REG_AARCH64_X30:
+      return aOldRegs->x30;
+    case DW_REG_AARCH64_SP:
+      return aOldRegs->sp;
 #elif defined(GP_ARCH_mips64)
     case DW_REG_MIPS_SP:
       return aOldRegs->sp;
@@ -904,7 +931,7 @@ static TaggedUWord EvaluateReg(int16_t aReg, const UnwindRegs* aOldRegs,
     case DW_REG_MIPS_PC:
       return aOldRegs->pc;
 #else
-#error "Unsupported arch"
+#  error "Unsupported arch"
 #endif
     default:
       MOZ_ASSERT(0);
@@ -1097,12 +1124,17 @@ static void UseRuleSet(/*MOD*/ UnwindRegs* aRegs, const StackImage* aStackImg,
   aRegs->r13 = TaggedUWord();
   aRegs->r14 = TaggedUWord();
   aRegs->r15 = TaggedUWord();
+#elif defined(GP_ARCH_arm64)
+  aRegs->x29 = TaggedUWord();
+  aRegs->x30 = TaggedUWord();
+  aRegs->sp = TaggedUWord();
+  aRegs->pc = TaggedUWord();
 #elif defined(GP_ARCH_mips64)
   aRegs->sp = TaggedUWord();
   aRegs->fp = TaggedUWord();
   aRegs->pc = TaggedUWord();
 #else
-#error "Unsupported arch"
+#  error "Unsupported arch"
 #endif
 
   // This is generally useful.
@@ -1136,12 +1168,18 @@ static void UseRuleSet(/*MOD*/ UnwindRegs* aRegs, const StackImage* aStackImg,
       aRS->mR14expr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
   aRegs->r15 =
       aRS->mR15expr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
+#elif defined(GP_ARCH_arm64)
+  aRegs->x29 =
+      aRS->mX29expr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
+  aRegs->x30 =
+      aRS->mX30expr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
+  aRegs->sp = aRS->mSPexpr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
 #elif defined(GP_ARCH_mips64)
   aRegs->sp = aRS->mSPexpr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
   aRegs->fp = aRS->mFPexpr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
   aRegs->pc = aRS->mPCexpr.EvaluateExpr(&old_regs, cfa, aStackImg, aPfxInstrs);
 #else
-#error "Unsupported arch"
+#  error "Unsupported arch"
 #endif
 
   // We're done.  Any regs for which we didn't manage to compute a
@@ -1155,7 +1193,7 @@ void LUL::Unwind(/*OUT*/ uintptr_t* aFramePCs,
                  /*OUT*/ size_t* aFramePointerFramesAcquired,
                  size_t aFramesAvail, UnwindRegs* aStartRegs,
                  StackImage* aStackImg) {
-  MOZ_ASSERT(!mAdminMode);
+  MOZ_RELEASE_ASSERT(!mAdminMode);
 
   /////////////////////////////////////////////////////////
   // BEGIN UNWIND
@@ -1190,6 +1228,17 @@ void LUL::Unwind(/*OUT*/ uintptr_t* aFramePCs,
           (int)regs.r14.Valid(), (unsigned long long int)regs.r14.Value());
       buf[sizeof(buf) - 1] = 0;
       mLog(buf);
+#elif defined(GP_ARCH_arm64)
+      SprintfLiteral(
+          buf,
+          "LoopTop: pc %d/%llx  x29 %d/%llx  x30 %d/%llx"
+          "  sp %d/%llx\n",
+          (int)regs.pc.Valid(), (unsigned long long int)regs.pc.Value(),
+          (int)regs.x29.Valid(), (unsigned long long int)regs.x29.Value(),
+          (int)regs.x30.Valid(), (unsigned long long int)regs.x30.Value(),
+          (int)regs.sp.Valid(), (unsigned long long int)regs.sp.Value());
+      buf[sizeof(buf) - 1] = 0;
+      mLog(buf);
 #elif defined(GP_ARCH_mips64)
       SprintfLiteral(
           buf, "LoopTop: pc %d/%llx  sp %d/%llx  fp %d/%llx\n",
@@ -1199,7 +1248,7 @@ void LUL::Unwind(/*OUT*/ uintptr_t* aFramePCs,
       buf[sizeof(buf) - 1] = 0;
       mLog(buf);
 #else
-#error "Unsupported arch"
+#  error "Unsupported arch"
 #endif
     }
 
@@ -1209,11 +1258,14 @@ void LUL::Unwind(/*OUT*/ uintptr_t* aFramePCs,
 #elif defined(GP_ARCH_arm)
     TaggedUWord ia = (*aFramesUsed == 0 ? regs.r15 : regs.r14);
     TaggedUWord sp = regs.r13;
+#elif defined(GP_ARCH_arm64)
+    TaggedUWord ia = (*aFramesUsed == 0 ? regs.pc : regs.x30);
+    TaggedUWord sp = regs.sp;
 #elif defined(GP_ARCH_mips64)
     TaggedUWord ia = regs.pc;
     TaggedUWord sp = regs.sp;
 #else
-#error "Unsupported arch"
+#  error "Unsupported arch"
 #endif
 
     if (*aFramesUsed >= aFramesAvail) {
@@ -1340,8 +1392,8 @@ void LUL::Unwind(/*OUT*/ uintptr_t* aFramePCs,
         }
       }
     }
-      ////
-      /////////////////////////////////////////////
+    ////
+    /////////////////////////////////////////////
 #endif  // defined(GP_PLAT_x86_android) || defined(GP_PLAT_x86_linux)
 
     // So, do we have a ruleset for this address?  If so, use it now.
@@ -1356,11 +1408,9 @@ void LUL::Unwind(/*OUT*/ uintptr_t* aFramePCs,
       continue;
     }
 
-#if defined(GP_PLAT_amd64_linux)
-    // There's no RuleSet for the specified address.  On amd64_linux, see if
+#if defined(GP_PLAT_amd64_linux) || defined(GP_PLAT_x86_linux)
+    // There's no RuleSet for the specified address.  On amd64/x86_linux, see if
     // it's possible to recover the caller's frame by using the frame pointer.
-    // This would probably work for the 32-bit case too, but hasn't been
-    // tested for that case.
 
     // We seek to compute (new_IP, new_SP, new_BP) from (old_BP, stack image),
     // and assume the following layout:
@@ -1407,7 +1457,68 @@ void LUL::Unwind(/*OUT*/ uintptr_t* aFramePCs,
         }
       }
     }
-#endif  // defined(GP_PLAT_amd64_linux)
+#elif defined(GP_ARCH_arm64)
+    // Here is an example of generated code for prologue and epilogue..
+    //
+    // stp     x29, x30, [sp, #-16]!
+    // mov     x29, sp
+    // ...
+    // ldp     x29, x30, [sp], #16
+    // ret
+    //
+    // Next is another example of generated code.
+    //
+    // stp     x20, x19, [sp, #-32]!
+    // stp     x29, x30, [sp, #16]
+    // add     x29, sp, #0x10
+    // ...
+    // ldp     x29, x30, [sp, #16]
+    // ldp     x20, x19, [sp], #32
+    // ret
+    //
+    // Previous x29 and x30 register are stored in the address of x29 register.
+    // But since sp register value depends on local variables, we cannot compute
+    // previous sp register from current sp/fp/lr register and there is no
+    // regular rule for sp register in prologue. But since return address is lr
+    // register, if x29 is valid, we will get return address without sp
+    // register.
+    //
+    // So we assume the following layout that if no rule set. x29 is frame
+    // pointer, so we will be able to compute x29 and x30 .
+    //
+    //   +----------+  <--- new_sp (cannot compute)
+    //   |   ....   |
+    //   +----------+
+    //   |  new_lr  |  (return address)
+    //   +----------+
+    //   |  new_fp  |  <--- old_fp
+    //   +----------+
+    //   |   ....   |
+    //   |   ....   |
+    //   +----------+  <---- old_sp (arbitrary, but unused)
+
+    TaggedUWord old_fp = regs.x29;
+    if (old_fp.Valid() && old_fp.IsAligned() && last_valid_sp.Valid() &&
+        last_valid_sp.Value() <= old_fp.Value()) {
+      TaggedUWord new_fp = DerefTUW(old_fp, aStackImg);
+      if (new_fp.Valid() && new_fp.IsAligned() &&
+          old_fp.Value() < new_fp.Value()) {
+        TaggedUWord old_fp_plus1 = old_fp + TaggedUWord(8);
+        TaggedUWord new_lr = DerefTUW(old_fp_plus1, aStackImg);
+        if (new_lr.Valid()) {
+          regs.x29 = new_fp;
+          regs.x30 = new_lr;
+          // When using frame pointer to walk stack, we cannot compute sp
+          // register since we cannot compute sp register from fp/lr/sp
+          // register, and there is no regular rule to compute previous sp
+          // register. So mark as invalid.
+          regs.sp = TaggedUWord();
+          (*aFramePointerFramesAcquired)++;
+          continue;
+        }
+      }
+    }
+#endif  // defined(GP_PLAT_amd64_linux) || defined(GP_PLAT_x86_linux)
 
     // We failed to recover a frame either using CFI or FP chasing, and we
     // have no other ways to recover the frame.  So we have to give up.
@@ -1450,7 +1561,7 @@ static __attribute__((noinline)) bool GetAndCheckStackTrace(
   // Get hold of the current unwind-start registers.
   UnwindRegs startRegs;
   memset(&startRegs, 0, sizeof(startRegs));
-#if defined(GP_PLAT_amd64_linux)
+#if defined(GP_ARCH_amd64)
   volatile uintptr_t block[3];
   MOZ_ASSERT(sizeof(block) == 24);
   __asm__ __volatile__(
@@ -1521,6 +1632,25 @@ static __attribute__((noinline)) bool GetAndCheckStackTrace(
   startRegs.r7 = TaggedUWord(block[5]);
   const uintptr_t REDZONE_SIZE = 0;
   uintptr_t start = block[1] - REDZONE_SIZE;
+#elif defined(GP_ARCH_arm64)
+  volatile uintptr_t block[4];
+  MOZ_ASSERT(sizeof(block) == 32);
+  __asm__ __volatile__(
+      "adr x0, . \n\t"
+      "str x0, [%0, #0] \n\t"
+      "str x29, [%0, #8] \n\t"
+      "str x30, [%0, #16] \n\t"
+      "mov x0, sp \n\t"
+      "str x0, [%0, #24] \n\t"
+      :
+      : "r"(&block[0])
+      : "memory", "x0");
+  startRegs.pc = TaggedUWord(block[0]);
+  startRegs.x29 = TaggedUWord(block[1]);
+  startRegs.x30 = TaggedUWord(block[2]);
+  startRegs.sp = TaggedUWord(block[3]);
+  const uintptr_t REDZONE_SIZE = 0;
+  uintptr_t start = block[1] - REDZONE_SIZE;
 #elif defined(GP_ARCH_mips64)
   volatile uintptr_t block[3];
   MOZ_ASSERT(sizeof(block) == 24);
@@ -1537,7 +1667,7 @@ static __attribute__((noinline)) bool GetAndCheckStackTrace(
   const uintptr_t REDZONE_SIZE = 0;
   uintptr_t start = block[1] - REDZONE_SIZE;
 #else
-#error "Unsupported platform"
+#  error "Unsupported platform"
 #endif
 
   // Get hold of the innermost LUL_UNIT_TEST_STACK_SIZE bytes of the
@@ -1658,13 +1788,13 @@ static __attribute__((noinline)) bool GetAndCheckStackTrace(
   return passed;
 }
 
-  // Macro magic to create a set of 8 mutually recursive functions with
-  // varying frame sizes.  These will recurse amongst themselves as
-  // specified by |strP|, the directory string, and call
-  // GetAndCheckStackTrace when the string becomes empty, passing it the
-  // original value of the string.  This checks the result, printing
-  // results on |aLUL|'s logging sink, and also returns a boolean
-  // indicating whether or not the results are acceptable (correct).
+// Macro magic to create a set of 8 mutually recursive functions with
+// varying frame sizes.  These will recurse amongst themselves as
+// specified by |strP|, the directory string, and call
+// GetAndCheckStackTrace when the string becomes empty, passing it the
+// original value of the string.  This checks the result, printing
+// results on |aLUL|'s logging sink, and also returns a boolean
+// indicating whether or not the results are acceptable (correct).
 
 #define DECL_TEST_FN(NAME) \
   bool NAME(LUL* aLUL, const char* strPorig, const char* strP);

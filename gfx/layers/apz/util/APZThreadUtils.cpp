@@ -6,30 +6,32 @@
 
 #include "mozilla/layers/APZThreadUtils.h"
 
-#include "mozilla/layers/CompositorThread.h"
-
 namespace mozilla {
 namespace layers {
 
 static bool sThreadAssertionsEnabled = true;
 static MessageLoop* sControllerThread;
 
-/*static*/ void APZThreadUtils::SetThreadAssertionsEnabled(bool aEnabled) {
+/*static*/
+void APZThreadUtils::SetThreadAssertionsEnabled(bool aEnabled) {
   sThreadAssertionsEnabled = aEnabled;
 }
 
-/*static*/ bool APZThreadUtils::GetThreadAssertionsEnabled() {
+/*static*/
+bool APZThreadUtils::GetThreadAssertionsEnabled() {
   return sThreadAssertionsEnabled;
 }
 
-/*static*/ void APZThreadUtils::SetControllerThread(MessageLoop* aLoop) {
+/*static*/
+void APZThreadUtils::SetControllerThread(MessageLoop* aLoop) {
   // We must either be setting the initial controller thread, or removing it,
   // or re-using an existing controller thread.
   MOZ_ASSERT(!sControllerThread || !aLoop || sControllerThread == aLoop);
   sControllerThread = aLoop;
 }
 
-/*static*/ void APZThreadUtils::AssertOnControllerThread() {
+/*static*/
+void APZThreadUtils::AssertOnControllerThread() {
   if (!GetThreadAssertionsEnabled()) {
     return;
   }
@@ -37,15 +39,9 @@ static MessageLoop* sControllerThread;
   MOZ_ASSERT(sControllerThread == MessageLoop::current());
 }
 
-/*static*/ void APZThreadUtils::AssertOnSamplerThread() {
-  if (GetThreadAssertionsEnabled()) {
-    MOZ_ASSERT(CompositorThreadHolder::IsInCompositorThread());
-  }
-}
-
-/*static*/ void APZThreadUtils::RunOnControllerThread(
-    already_AddRefed<Runnable> aTask) {
-  RefPtr<Runnable> task = aTask;
+/*static*/
+void APZThreadUtils::RunOnControllerThread(RefPtr<Runnable>&& aTask) {
+  RefPtr<Runnable> task = std::move(aTask);
 
   if (!sControllerThread) {
     // Could happen on startup
@@ -60,7 +56,8 @@ static MessageLoop* sControllerThread;
   }
 }
 
-/*static*/ bool APZThreadUtils::IsControllerThread() {
+/*static*/
+bool APZThreadUtils::IsControllerThread() {
   return sControllerThread == MessageLoop::current();
 }
 

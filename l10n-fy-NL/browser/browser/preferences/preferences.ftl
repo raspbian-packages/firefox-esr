@@ -4,8 +4,8 @@
 
 do-not-track-description = Websites in ‘Net folgje’-sinjaal stjoere om litte te witten dat jo net folge wurde wolle
 do-not-track-learn-more = Mear ynfo
-do-not-track-option-default =
-    .label = Allinnich by gebrûk fan Beskerming tsjin folgjen
+do-not-track-option-default-content-blocking-known =
+    .label = Allinnich wannear't { -brand-short-name } ynsteld is om bekende trackers te blokkearjen
 do-not-track-option-always =
     .label = Altyd
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Opsjes
            *[other] Opsjes
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Jo organisaasje hat de mooglikheid om guon opsjes te wizigjen útskeakele.
        *[other] Jo organisaasje hat de mooglikheid om guon foarkarren te wizigjen útskeakele.
     }
+managed-notice = Jo browser wurdt troch jo organisaasje beheard.
 pane-general-title = Algemien
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Privacy & Befeiliging
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox-account
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = { -brand-short-name }-stipe
+addons-button-label = Utwreidingen & Tema’s
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = { -brand-short-name } opnij starte
 should-restart-ok = { -brand-short-name } no opnij starte
 cancel-no-restart-button = Annulearje
 restart-later = Letter opnij starte
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = In útwreiding, <img data-l10n-name="icon"/> { $name }, beheart jo startside.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = In útwreiding, <img data-l10n-name="icon"/> { $name }, beheart jo Nij-ljepblêd-side.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = In útwreiding, <img data-l10n-name="icon"/> { $name }, hat behear oer dizze ynstelling.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = In útwreiding, <img data-l10n-name="icon"/> { $name }, hat jo standertsykmasine ynsteld.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = In útwreiding, <img data-l10n-name="icon"/> { $name }, fereasket kontenerljepblêden.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = In útwreiding, <img data-l10n-name="icon"/> { $name }, hat behear oer dizze ynstelling.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = De útwreiding <img data-l10n-name="icon"/> { $name } bepaalt hoe't { -brand-short-name } ferbining makket mei it ynternet.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Gean nei <img data-l10n-name="addons-icon"/> Add-ons yn it menu <img data-l10n-name="menu-icon"/> om de útwreiding yn te skeakeljen.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } is net jo standertbrowser
 set-as-my-default-browser =
     .label = Standert meitsje…
     .accesskey = S
-startup-page = As { -brand-short-name } start
-    .accesskey = s
-startup-user-homepage =
-    .label = Jo startside toane
-startup-blank-page =
-    .label = In lege side toane
-startup-prev-session =
-    .label = Myn finsters en ljepblêden fan de foarige kear toane
+startup-restore-previous-session =
+    .label = Foargeande sesje werom bringe
+    .accesskey = F
+startup-restore-warn-on-quit =
+    .label = Warskôgje by it ôfsluten fan de browser
 disable-extension =
     .label = Utwreiding útskeakelje
-home-page-header = Begjinside
 tabs-group-header = Ljepblêden
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab rint troch ljepblêden yn koartlyn brûkte folchoarder
@@ -181,6 +208,12 @@ choose-language-description = Talen kieze dêr't websites yn werjûn wurde moatt
 choose-button =
     .label = Kieze…
     .accesskey = i
+choose-browser-language-description = Kies de talen dy't brûkt wurde foar it werjaan fan menu’s, berjochten en notifikaasjes fan { -brand-short-name }.
+manage-browser-languages-button =
+    .label = Alternativen ynstelle…
+    .accesskey = A
+confirm-browser-language-change-description = Start { -brand-short-name } opnij om dizze wizigingen ta te passen.
+confirm-browser-language-change-button = Tapasse en opnij starte
 translate-web-pages =
     .label = Webynhâld oersette
     .accesskey = W
@@ -232,7 +265,6 @@ play-drm-content =
 play-drm-content-learn-more = Mear ynfo
 update-application-title = { -brand-short-name }-fernijingen
 update-application-description = Hâld { -brand-short-name } by de tiid foar de bêste prestaasjes, stabiliteit en feilichheid.
-update-application-info = Ferzje { $version } <a>Wat is der nij</a>
 update-application-version = Ferzje { $version } <a data-l10n-name="learn-more">Wat is der nij</a>
 update-history =
     .label = Fernijingsskiednis toane…
@@ -247,12 +279,32 @@ update-application-check-choose =
 update-application-manual =
     .label = Nea kontrolearje op fernijingen (net oanrekommandearre)
     .accesskey = N
+update-application-warning-cross-user-setting = Dizze ynstelling is fan tapassing op alle Windows-accounts en { -brand-short-name }-profilen dy't dizze ynstallaasje fan { -brand-short-name } brûke.
 update-application-use-service =
     .label = Brûk in eftergrûntsjinst om fernijingen te ynstallearjen
     .accesskey = a
 update-enable-search-update =
     .label = Sykmasines automatysk bywurkje
     .accesskey = y
+update-pref-write-failure-title = Skriuwflater
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Kin foarkar net bewarje. Koe net skriuwe nei bestân: { $path }
+update-setting-write-failure-title = Flater by bewarjen fernijingsfoarkarren
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } hat in flater oantroffen en hat dizze wiziging net bewarre. Merk op dat foar it ynstellen fan dizze fernijingsfoarkar skriuwrjochten foar ûndersteand bestân nedich binne. Jo of jo systeembehearder kin dizze flater oplosse troch de groep ‘Gebruikers’ folsleine tagong ta dit bestân te jaan.
+    
+    Koe net skriuwe nei bestân: { $path }
+update-in-progress-title = Fernijing wurdt útfierd
+update-in-progress-message = Wolle jo dat { -brand-short-name } trochgiet mei dizze fernijing?
+update-in-progress-ok-button = &Ferwerpe
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Trochgean
 
 ## General Section - Performance
 
@@ -268,7 +320,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Limyt fan ynhâldsprosessen
     .accesskey = L
 performance-limit-content-process-enabled-desc = Ekstra ynhâldsprosessen kinne de prestaasjes by it gebrûk fan mear ljepblêden ferbetterje, mar sille ek mear ûnthâld brûke.
-performance-limit-content-process-disabled-desc = Oanpassen fan it oantal ynhâldsprosessen is allinnich mooglik mei multiproses-{ -brand-short-name }. <a>Ynformaasje oer it kontrolearjen of multiproses ynskeakele is</a>
 performance-limit-content-process-blocked-desc = Oanpassen fan it oantal ynhâldsprosessen is allinnich mooglik mei multiproses-{ -brand-short-name }. <a data-l10n-name="learn-more">Ynformaasje oer it kontrolearjen of multiproses ynskeakele is</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -293,10 +344,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Nei tekst sykje as ik begjin mei typen
     .accesskey = N
+browsing-cfr-recommendations =
+    .label = Utwreidingen oanrekommandearje wylst jo sneupe
+    .accesskey = a
+browsing-cfr-features =
+    .label = Funksjes oanrekommandearje wylst jo sneupe
+    .accesskey = F
+browsing-cfr-recommendations-learn-more = Mear ynfo
 
 ## General Section - Proxy
 
-network-proxy-title = Netwurkproxy
+network-settings-title = Netwurkynstellingen
+network-proxy-connection-description = Konfigurearje hoe { -brand-short-name } ferbining makket mei it ynternet.
 network-proxy-connection-learn-more = Mear ynfo
 network-proxy-connection-settings =
     .label = Ynstellingen…
@@ -338,9 +397,6 @@ use-current-pages =
 choose-bookmark =
     .label = Blêdwizer brûke…
     .accesskey = B
-restore-default =
-    .label = Standert werom bringe
-    .accesskey = w
 
 ## Search Section
 
@@ -484,10 +540,11 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Bewarje
     .accesskey = B
-sync-mobilepromo-single = Noch in apparaat keppelje
-sync-mobilepromo-multi = Apparaten beheare
+sync-connect-another-device = In oar apparaat ferbine
+sync-manage-devices = Apparaten beheare
+sync-fxa-begin-pairing = In apparaat keppelje
 sync-tos-link = Tsjinstbetingsten (In)
-sync-fxa-privacy-notice = Privacy-opmerking
+sync-fxa-privacy-notice = Privacyferklearring
 
 ## Privacy Section
 
@@ -495,13 +552,16 @@ privacy-header = Browserprivacy
 
 ## Privacy Section - Forms
 
-forms-header = Formulieren en wachtwurden
+logins-header = Oanmeldingen & Wachtwurden
 forms-ask-to-save-logins =
     .label = Freegje om oanmeldingen en wachtwurden foar websites te ûnthâlden
     .accesskey = F
 forms-exceptions =
     .label = Utsûnderingen…
     .accesskey = s
+forms-generate-passwords =
+    .label = Sterke wachtwurden foarstelle en generearje
+    .accesskey = w
 forms-saved-logins =
     .label = Bewarre oanmeldingen…
     .accesskey = m
@@ -537,9 +597,9 @@ history-dontremember-description = { -brand-short-name } sil deselde ynstellinge
 history-private-browsing-permanent =
     .label = Altyd de priveenavigaasje brûke
     .accesskey = P
-history-remember-option =
-    .label = Myn navigaasje- en downloadskiednis ûnthâlde
-    .accesskey = a
+history-remember-browser-option =
+    .label = Navigaasje- en downloadskiednis ûnthâlde
+    .accesskey = N
 history-remember-search-option =
     .label = Syk- en formulierskiednis ûnthâlde
     .accesskey = S
@@ -556,36 +616,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Cookies en websitegegevens
+sitedata-total-size-calculating = Grutte fan websitegegevens en buffer berekkenje…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Jo bewarre cookies, websitegegevens en buffer brûke op dit stuit { $value } { $unit } oan skiifromte.
 sitedata-learn-more = Mear ynfo
-sitedata-accept-cookies-option =
-    .label = Cookies en websitegegevens fan websites akseptearje (oanrekommandearre)
+sitedata-delete-on-close =
+    .label = Cookies en websitegegevens fuortsmite sa gau as { -brand-short-name } sluten wurdt
     .accesskey = C
-sitedata-block-cookies-option =
-    .label = Cookies en websitegegevens blokkearje (kin derfoar soargje dat websites net goed wurkje)
+sitedata-delete-on-close-private-browsing = Yn permaninte priveenavigaasjemodus wurde cookies en websitegegevens altyd wiske sa gau as { -brand-short-name } sluten wurdt.
+sitedata-allow-cookies-option =
+    .label = Cookies en websitegegevens akseptearje
+    .accesskey = a
+sitedata-disallow-cookies-option =
+    .label = Cookies en websitegegevens blokkearje
     .accesskey = b
-sitedata-keep-until = Bewarje oant
-    .accesskey = o
-sitedata-keep-until-expire =
-    .label = Se ferrinne
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } sluten wurdt
-sitedata-accept-third-party-desc = Cookies fan tredden en websitegegevens akseptearje
-    .accesskey = d
-sitedata-accept-third-party-always-option =
-    .label = Altyd
-sitedata-accept-third-party-visited-option =
-    .label = Fan besochte
-sitedata-accept-third-party-never-option =
-    .label = Nea
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Blokkearre type
+    .accesskey = t
+sitedata-option-block-trackers =
+    .label = Trackers fan tredden
+sitedata-option-block-unvisited =
+    .label = Cookies fan net-besochte websites
+sitedata-option-block-all-third-party =
+    .label = Alle cookies fan tredden (kin derfoar soargje dat websites net goed wurkje)
+sitedata-option-block-all =
+    .label = Alle cookies (sil derfoar soargje dat websites net goed wurkje)
 sitedata-clear =
     .label = Gegevens wiskje…
     .accesskey = e
 sitedata-settings =
     .label = Gegevens beheare…
     .accesskey = G
-sitedata-cookies-exceptions =
-    .label = Utsûnderingen…
-    .accesskey = d
+sitedata-cookies-permissions =
+    .label = Tastimmingen beheare…
+    .accesskey = T
 
 ## Privacy Section - Address Bar
 
@@ -602,30 +669,73 @@ addressbar-locbar-openpage-option =
     .accesskey = I
 addressbar-suggestions-settings = Foarkarren foar sykmasinesuggestjes wizigje
 
-## Privacy Section - Tracking
+## Privacy Section - Content Blocking
 
-tracking-header = Beskerming tsjin folgjen
-tracking-desc = Beskerming tsjin folgjen blokkearret online trackers dy't op mear websites jo surfgegevens sammelje. <a data-l10n-name="learn-more">Lês mear oer online folgjen en jo privacy</a>
-tracking-mode-label = Beskerming tsjin folgjen brûke om bekende folgers te blokkearjen
-tracking-mode-always =
-    .label = Altyd
+content-blocking-header = Ynhâldsblokkearring
+content-blocking-description = Blokkearje ynhâld fan tredden dy't jo sneupgedrach folget. Bepaal hoefolle fan jo online-aktiviteit bewarre wurdt en tusken websites dield wurdt.
+content-blocking-section-description = Beskermje jo privacy wylst jo sneupe. Blokkearje ûnsichtbere ynhâld dy't de troch jo besochte websites folget en jo profilearje. Troch wat fan dizze ynhâld te blokkearjen lade siden mooglik flugger.
+content-blocking-learn-more = Mear ynfo
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Standert
+    .accesskey = S
+content-blocking-setting-strict =
+    .label = Streng
+    .accesskey = g
+content-blocking-setting-custom =
+    .label = Oanpast
+    .accesskey = O
+content-blocking-standard-description = Blokkearret allinnich bekende trackers yn priveefinsters.
+content-blocking-standard-desc = Balansearre foar beskerming en prestaasjes. Stiet bepaalde trackers ta, sadat websites goed wurkje.
+content-blocking-strict-desc = Blokkearret alle trackers dy't { -brand-short-name } detektearret. Kin derfoar soargje dat bepaalde websites net goed wurkje.
+content-blocking-strict-description = Strangere beskerming, kin derfoar soargje dat bepaalde websites net goed wurkje.
+content-blocking-custom-desc = Kies wat der blokkearre wurdt.
+content-blocking-private-trackers = Bekende trackers allinnich yn priveefinsters
+content-blocking-third-party-cookies = Tracking-cookies fan tredden
+content-blocking-all-cookies = Alle cookies
+content-blocking-unvisited-cookies = Cookies fan net-besochte websites
+content-blocking-all-windows-trackers = Bekende trackers yn alle finsters
+content-blocking-all-third-party-cookies = Alle cookies fan tredden
+content-blocking-cryptominers = Cryptominers
+content-blocking-fingerprinters = Fingerprinters
+content-blocking-warning-title = Let op!
+content-blocking-warning-description = It blokkearjen fan ynhâld kin derfoar soargje dat bepaalde websites net goed wurkje. Blokkearring kin ienfâldich útskeakele wurde foar websites dy't jo fertrouwe.
+content-blocking-learn-how = Mear ynfo
+content-blocking-reload-description = Jo moatte jo ljepblêden fernije om dizze wizigingen ta te passen.
+content-blocking-reload-tabs-button =
+    .label = Alle ljepblêden fernije
     .accesskey = A
-tracking-mode-private =
+content-blocking-trackers-label =
+    .label = Trackers
+    .accesskey = T
+content-blocking-tracking-protection-option-all-windows =
+    .label = Yn alle finsters
+    .accesskey = a
+content-blocking-option-private =
     .label = Allinnich yn priveefinsters
     .accesskey = r
-tracking-mode-never =
-    .label = Nea
-    .accesskey = N
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Beskerming tsjin folgjen brûke yn Priveenavigaasje om bekende folgers te blokkearjen
-    .accesskey = f
-tracking-exceptions =
-    .label = Utsûnderingen…
-    .accesskey = i
-tracking-change-block-list =
-    .label = Blokkearlist wizigje…
-    .accesskey = B
+content-blocking-tracking-protection-change-block-list = Blokkearlist wizigje
+content-blocking-cookies-label =
+    .label = Cookies
+    .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = Mear ynformaasje
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Cryptominers
+    .accesskey = y
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Fingerprinters
+    .accesskey = F
+
+## Privacy Section - Tracking
+
+tracking-manage-exceptions =
+    .label = Utsûndering beheare…
+    .accesskey = U
 
 ## Privacy Section - Permissions
 
@@ -650,6 +760,16 @@ permissions-notification-link = Mear ynfo
 permissions-notification-pause =
     .label = Notifikaasjes pauzearje oant { -brand-short-name } opnij start wurdt
     .accesskey = N
+permissions-block-autoplay-media2 =
+    .label = Automatysk ôfspyljen fan lûd troch websites blokkearje
+    .accesskey = s
+permissions-block-autoplay-media-exceptions =
+    .label = Utsûnderingen…
+    .accesskey = U
+permissions-autoplay = Automatysk ôfspylje
+permissions-autoplay-settings =
+    .label = Ynstellingen…
+    .accesskey = Y
 permissions-block-popups =
     .label = Pop-upfinsters blokkearje
     .accesskey = P
@@ -676,13 +796,15 @@ collection-health-report =
     .label = Tastean dat { -brand-short-name } technyske en brûksgegevens ferstjoert nei { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Mear ynfo
+collection-studies =
+    .label = { -brand-short-name } tastean om ûndersiken te ynstallearjen en út te fieren
+collection-studies-link = { -brand-short-name }-ûndersiken werjaan
+addon-recommendations =
+    .label = { -brand-short-name } tastean om personalisearre útrweidingsrekommandaasjes te dwaan
+addon-recommendations-link = Mear ynfo
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Gegevensrapporten binne foar dizze build-konfiguraasje útskeakele
-collection-browser-errors =
-    .label = { -brand-short-name } tastean om flaterrapporten (ynklusyf flaterberjochten) nei { -vendor-short-name } te ferstjoeren
-    .accesskey = f
-collection-browser-errors-link = Mear ynfo
 collection-backlogged-crash-reports =
     .label = { -brand-short-name } tastean om út jo namme jo efterstallige ûngelokrapporten te ferstjoeren
     .accesskey = r
@@ -725,3 +847,36 @@ certs-view =
 certs-devices =
     .label = Feilichheidsapparaten…
     .accesskey = F
+space-alert-learn-more-button =
+    .label = Mear ynfo
+    .accesskey = M
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Opsjes iepenje
+           *[other] Foarkarren iepenje
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] F
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } hat hast gjin skiifromte mear. Ynhâld fan websites wurdt mooglik net goed werjûn. Jo kinne bewarre gegevens wiskje yn Opsjes > Privacy & Befeiliging > Cookies en websitegegevens.
+       *[other] { -brand-short-name } hat hast gjin skiifromte mear. Ynhâld fan websites wurdt mooglik net goed werjûn. Jo kinne bewarre gegevens wiskje yn Foarkarren > Privacy & Befeiliging > Cookies en websitegegevens.
+    }
+space-alert-under-5gb-ok-button =
+    .label = Ok, begrepen
+    .accesskey = k
+space-alert-under-5gb-message = { -brand-short-name } hat hast gjin skiifromte mear. Ynhâld fan websites wurdt mooglik net goed werjûn. Besykje ‘Mear ynfo’ om jo skiifgebrûk te optimalisearjen foar bettere prestaasjes.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Búroblêd
+downloads-folder-name = Myn downloads
+choose-download-folder-title = Downloadmap kieze:
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Bestannen bewarje nei { $service-name }

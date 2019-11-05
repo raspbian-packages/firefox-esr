@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,9 +11,9 @@
 namespace mozilla {
 
 WebGLVertexArrayFake::WebGLVertexArrayFake(WebGLContext* webgl)
-    : WebGLVertexArray(webgl), mIsVAO(false) {}
+    : WebGLVertexArray(webgl, 0) {}
 
-void WebGLVertexArrayFake::BindVertexArrayImpl() {
+void WebGLVertexArrayFake::BindVertexArray() {
   // Go through and re-bind all buffers and setup all
   // vertex attribute pointers
   gl::GLContext* gl = mContext->gl;
@@ -48,11 +48,6 @@ void WebGLVertexArrayFake::BindVertexArrayImpl() {
   }
 
   mContext->BindBuffer(LOCAL_GL_ARRAY_BUFFER, prevBuffer);
-  mIsVAO = true;
 }
-
-void WebGLVertexArrayFake::DeleteImpl() { mIsVAO = false; }
-
-bool WebGLVertexArrayFake::IsVertexArrayImpl() const { return mIsVAO; }
 
 }  // namespace mozilla

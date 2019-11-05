@@ -46,6 +46,13 @@ class ByteBuf final {
     aFrom.mCapacity = 0;
   }
 
+  ByteBuf& operator=(ByteBuf&& aFrom) {
+    std::swap(mData, aFrom.mData);
+    std::swap(mLen, aFrom.mLen);
+    std::swap(mCapacity, aFrom.mCapacity);
+    return *this;
+  }
+
   ~ByteBuf() { free(mData); }
 
   uint8_t* mData;
@@ -64,7 +71,7 @@ struct ParamTraits<mozilla::ipc::ByteBuf> {
 
   // this is where we transfer the memory from the ByteBuf to IPDL, avoiding a
   // copy
-  static void Write(Message* aMsg, paramType& aParam) {
+  static void Write(Message* aMsg, paramType&& aParam) {
     WriteParam(aMsg, aParam.mLen);
     // hand over ownership of the buffer to the Message
     aMsg->WriteBytesZeroCopy(aParam.mData, aParam.mLen, aParam.mCapacity);

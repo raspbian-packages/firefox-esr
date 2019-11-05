@@ -21,11 +21,11 @@ namespace mozilla {
     return {rv, nullptr};
   }
 
-  return {rv, new DDMediaLogs(Move(mThread))};
+  return {rv, new DDMediaLogs(std::move(mThread))};
 }
 
 DDMediaLogs::DDMediaLogs(nsCOMPtr<nsIThread>&& aThread)
-    : mMediaLogs(1), mMutex("DDMediaLogs"), mThread(Move(aThread)) {
+    : mMediaLogs(1), mMutex("DDMediaLogs"), mThread(std::move(aThread)) {
   mMediaLogs.SetLength(1);
   mMediaLogs[0].mMediaElement = nullptr;
   DDL_INFO("DDMediaLogs constructed, processing thread: %p", mThread.get());
@@ -177,7 +177,7 @@ void DDMediaLogs::SetMediaElement(DDLifetime& aLifetime,
       }
     }
     if (found) {
-      messages.AppendElement(Move(message));
+      messages.AppendElement(std::move(message));
       messages0.RemoveElementAt(i);
       // No increment, as we've removed this element; next element is now at
       // the same index.
@@ -393,7 +393,7 @@ void DDMediaLogs::FulfillPromises() {
     if (mPendingPromises.IsEmpty()) {
       return;
     }
-    promiseHolder = Move(mPendingPromises[0].mPromiseHolder);
+    promiseHolder = std::move(mPendingPromises[0].mPromiseHolder);
     mediaElement = mPendingPromises[0].mMediaElement;
   }
   for (;;) {
@@ -409,7 +409,7 @@ void DDMediaLogs::FulfillPromises() {
       if (mPendingPromises.IsEmpty()) {
         break;
       }
-      promiseHolder = Move(mPendingPromises[0].mPromiseHolder);
+      promiseHolder = std::move(mPendingPromises[0].mPromiseHolder);
       mediaElement = mPendingPromises[0].mMediaElement;
       continue;
     }
@@ -495,7 +495,7 @@ void DDMediaLogs::FulfillPromises() {
              log->mMessages.IsEmpty()
                  ? 0
                  : log->mMessages[log->mMessages.Length() - 1].mIndex.Value());
-    promiseHolder.Resolve(Move(json), __func__);
+    promiseHolder.Resolve(std::move(json), __func__);
 
     // Remove exported messages.
     log->mMessages.Clear();
@@ -506,7 +506,7 @@ void DDMediaLogs::FulfillPromises() {
     if (mPendingPromises.IsEmpty()) {
       break;
     }
-    promiseHolder = Move(mPendingPromises[0].mPromiseHolder);
+    promiseHolder = std::move(mPendingPromises[0].mPromiseHolder);
     mediaElement = mPendingPromises[0].mMediaElement;
   }
 }
@@ -663,7 +663,8 @@ RefPtr<DDMediaLogs::LogMessagesPromise> DDMediaLogs::RetrieveMessages(
         holder.Reject(rv, __func__);
       }
     }
-    mPendingPromises.AppendElement(PendingPromise{Move(holder), aMediaElement});
+    mPendingPromises.AppendElement(
+        PendingPromise{std::move(holder), aMediaElement});
   }
   return promise;
 }

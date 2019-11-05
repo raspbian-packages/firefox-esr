@@ -13,6 +13,7 @@
 #include "nsRefreshDriver.h"
 #include "mozilla/dom/HTMLCanvasElement.h"
 #include "mozilla/dom/OffscreenCanvas.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/UniquePtr.h"
 #include "mozilla/NotNull.h"
@@ -27,6 +28,7 @@
 class nsDisplayListBuilder;
 
 namespace mozilla {
+class PresShell;
 namespace layers {
 class CanvasLayer;
 class CanvasRenderer;
@@ -56,9 +58,9 @@ class nsICanvasRenderingContextInternal : public nsISupports,
     AddPostRefreshObserverIfNecessary();
   }
 
-  virtual nsIPresShell* GetPresShell() {
+  virtual mozilla::PresShell* GetPresShell() {
     if (mCanvasElement) {
-      return mCanvasElement->OwnerDoc()->GetShell();
+      return mCanvasElement->OwnerDoc()->GetPresShell();
     }
     return nullptr;
   }
@@ -111,7 +113,7 @@ class nsICanvasRenderingContextInternal : public nsISupports,
   // is false, alpha will be discarded and the result will be the image
   // composited on black.
   NS_IMETHOD GetInputStream(const char* mimeType,
-                            const char16_t* encoderOptions,
+                            const nsAString& encoderOptions,
                             nsIInputStream** stream) = 0;
 
   // This gets an Azure SourceSurface for the canvas, this will be a snapshot
@@ -122,11 +124,16 @@ class nsICanvasRenderingContextInternal : public nsISupports,
   virtual already_AddRefed<mozilla::gfx::SourceSurface> GetSurfaceSnapshot(
       gfxAlphaType* out_alphaType = nullptr) = 0;
 
-  // If this context is opaque, the backing store of the canvas should
+  // If this is called with true, the backing store of the canvas should
   // be created as opaque; all compositing operators should assume the
-  // dst alpha is always 1.0.  If this is never called, the context
-  // defaults to false (not opaque).
-  virtual void SetIsOpaque(bool isOpaque) = 0;
+  // dst alpha is always 1.0.  If this is never called, the context's
+  // opaqueness is determined by the context attributes that it's initialized
+  // with.
+  virtual void SetOpaqueValueFromOpaqueAttr(bool aOpaqueAttrValue) = 0;
+
+  // Returns whether the context is opaque. This value can be based both on
+  // the value of the moz-opaque attribute and on the context's initialization
+  // attributes.
   virtual bool GetIsOpaque() = 0;
 
   // Invalidate this context and release any held resources, in preperation

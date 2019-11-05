@@ -12,20 +12,32 @@
 #define nsScrollbarFrame_h__
 
 #include "mozilla/Attributes.h"
+#include "nsIAnonymousContentCreator.h"
 #include "nsBoxFrame.h"
 
 class nsIScrollbarMediator;
 
-nsIFrame* NS_NewScrollbarFrame(nsIPresShell* aPresShell,
-                               nsStyleContext* aContext);
+namespace mozilla {
+class PresShell;
+}  // namespace mozilla
 
-class nsScrollbarFrame final : public nsBoxFrame {
+nsIFrame* NS_NewScrollbarFrame(mozilla::PresShell* aPresShell,
+                               mozilla::ComputedStyle* aStyle);
+
+class nsScrollbarFrame final : public nsBoxFrame,
+                               public nsIAnonymousContentCreator {
  public:
-  explicit nsScrollbarFrame(nsStyleContext* aContext)
-      : nsBoxFrame(aContext, kClassID),
+  explicit nsScrollbarFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsBoxFrame(aStyle, aPresContext, kClassID),
         mIncrement(0),
         mSmoothScroll(false),
-        mScrollbarMediator(nullptr) {}
+        mScrollbarMediator(nullptr),
+        mUpTopButton(nullptr),
+        mDownTopButton(nullptr),
+        mSlider(nullptr),
+        mThumb(nullptr),
+        mUpBottomButton(nullptr),
+        mDownBottomButton(nullptr) {}
 
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsScrollbarFrame)
@@ -49,6 +61,7 @@ class nsScrollbarFrame final : public nsBoxFrame {
                                  nsEventStatus* aEventStatus,
                                  bool aControlHeld) override;
 
+  MOZ_CAN_RUN_SCRIPT
   NS_IMETHOD HandleDrag(nsPresContext* aPresContext,
                         mozilla::WidgetGUIEvent* aEvent,
                         nsEventStatus* aEventStatus) override;
@@ -56,6 +69,9 @@ class nsScrollbarFrame final : public nsBoxFrame {
   NS_IMETHOD HandleRelease(nsPresContext* aPresContext,
                            mozilla::WidgetGUIEvent* aEvent,
                            nsEventStatus* aEventStatus) override;
+
+  virtual void DestroyFrom(nsIFrame* aDestructRoot,
+                           PostDestroyData& aPostDestroyData) override;
 
   virtual void Init(nsIContent* aContent, nsContainerFrame* aParent,
                     nsIFrame* aPrevInFlow) override;
@@ -96,12 +112,27 @@ class nsScrollbarFrame final : public nsBoxFrame {
   int32_t MoveToNewPosition();
   int32_t GetIncrement() { return mIncrement; }
 
+  // nsIAnonymousContentCreator
+  virtual nsresult CreateAnonymousContent(
+      nsTArray<ContentInfo>& aElements) override;
+  virtual void AppendAnonymousContentTo(nsTArray<nsIContent*>& aElements,
+                                        uint32_t aFilter) override;
+
+  void UpdateChildrenAttributeValue(nsAtom* aAttribute, bool aNotify);
+
  protected:
   int32_t mIncrement;  // Amount to scroll, in CSSPixels
   bool mSmoothScroll;
 
  private:
   nsCOMPtr<nsIContent> mScrollbarMediator;
+
+  nsCOMPtr<Element> mUpTopButton;
+  nsCOMPtr<Element> mDownTopButton;
+  nsCOMPtr<Element> mSlider;
+  nsCOMPtr<Element> mThumb;
+  nsCOMPtr<Element> mUpBottomButton;
+  nsCOMPtr<Element> mDownBottomButton;
 };  // class nsScrollbarFrame
 
 #endif

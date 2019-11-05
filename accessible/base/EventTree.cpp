@@ -6,10 +6,12 @@
 #include "EventTree.h"
 
 #include "Accessible-inl.h"
+#include "EmbeddedObjCollector.h"
+#include "NotificationController.h"
 #include "nsEventShell.h"
 #include "DocAccessible.h"
 #ifdef A11Y_LOG
-#include "Logging.h"
+#  include "Logging.h"
 #endif
 
 #include "mozilla/UniquePtr.h"
@@ -101,6 +103,9 @@ void TreeMutation::Done() {
 
   for (uint32_t idx = mStartIdx; idx < length; idx++) {
     mParent->mChildren[idx]->mInt.mIndexOfEmbeddedChild = -1;
+  }
+
+  for (uint32_t idx = 0; idx < length; idx++) {
     mParent->mChildren[idx]->mStateFlags |= Accessible::eGroupInfoDirty;
   }
 
@@ -161,7 +166,7 @@ void EventTree::Process(const RefPtr<DocAccessible>& aDeathGrip) {
         return;
       }
     }
-    mFirst = Move(mFirst->mNext);
+    mFirst = std::move(mFirst->mNext);
   }
 
   MOZ_ASSERT(mContainer || mDependentEvents.IsEmpty(),
@@ -312,9 +317,9 @@ EventTree* EventTree::FindOrInsert(Accessible* aContainer) {
       UniquePtr<EventTree>& nodeOwnerRef = prevNode ? prevNode->mNext : mFirst;
       UniquePtr<EventTree> newNode(
           new EventTree(aContainer, mDependentEvents.IsEmpty()));
-      newNode->mFirst = Move(nodeOwnerRef);
-      nodeOwnerRef = Move(newNode);
-      nodeOwnerRef->mNext = Move(node->mNext);
+      newNode->mFirst = std::move(nodeOwnerRef);
+      nodeOwnerRef = std::move(newNode);
+      nodeOwnerRef->mNext = std::move(node->mNext);
 
       // Check if a next node is contained by the given node too, and move them
       // under the given node if so.
@@ -333,10 +338,10 @@ EventTree* EventTree::FindOrInsert(Accessible* aContainer) {
           MOZ_ASSERT(!insNode->mNext);
 
           node->mFireReorder = false;
-          insNode->mNext = Move(*nodeRef);
+          insNode->mNext = std::move(*nodeRef);
           insNode = insNode->mNext.get();
 
-          prevNode->mNext = Move(node->mNext);
+          prevNode->mNext = std::move(node->mNext);
           node = prevNode;
           break;
         }
@@ -483,7 +488,7 @@ void EventTree::Mutated(AccMutationEvent* aEv) {
                 if (childShowEv->mPrecedingEvents.Length() > 0) {
                   Controller(mContainer)
                       ->StorePrecedingEvents(
-                          mozilla::Move(childShowEv->mPrecedingEvents));
+                          std::move(childShowEv->mPrecedingEvents));
                 }
               }
             }
@@ -518,7 +523,7 @@ void EventTree::Mutated(AccMutationEvent* aEv) {
           }
         }
 
-        *node = Move((*node)->mNext);
+        *node = std::move((*node)->mNext);
         break;
       }
       cntr = cntr->Parent();

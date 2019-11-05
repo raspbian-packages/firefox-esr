@@ -1,27 +1,21 @@
-// Copyright 2018 Syn Developers
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
-use proc_macro2::{Literal, Span, TokenNode};
+use proc_macro2::{Literal, Span};
 use std::str;
 
 #[cfg(feature = "printing")]
-use proc_macro2::Term;
+use proc_macro2::Ident;
 
 #[cfg(feature = "parsing")]
 use proc_macro2::TokenStream;
-#[cfg(feature = "parsing")]
-use {ParseError, Synom};
 
-#[cfg(any(feature = "printing", feature = "parsing"))]
 use proc_macro2::TokenTree;
 
 #[cfg(feature = "extra-traits")]
 use std::hash::{Hash, Hasher};
+
+#[cfg(feature = "parsing")]
+use lookahead;
+#[cfg(feature = "parsing")]
+use parse::{Parse, Parser, Result};
 
 ast_enum_of_structs! {
     /// A Rust literal such as a string or integer or boolean.
@@ -41,7 +35,6 @@ ast_enum_of_structs! {
         /// `"full"` feature.*
         pub Str(LitStr #manual_extra_traits {
             token: Literal,
-            pub span: Span,
         }),
 
         /// A byte string literal: `b"foo"`.
@@ -50,7 +43,6 @@ ast_enum_of_structs! {
         /// `"full"` feature.*
         pub ByteStr(LitByteStr #manual_extra_traits {
             token: Literal,
-            pub span: Span,
         }),
 
         /// A byte literal: `b'f'`.
@@ -59,7 +51,6 @@ ast_enum_of_structs! {
         /// `"full"` feature.*
         pub Byte(LitByte #manual_extra_traits {
             token: Literal,
-            pub span: Span,
         }),
 
         /// A character literal: `'a'`.
@@ -68,7 +59,6 @@ ast_enum_of_structs! {
         /// `"full"` feature.*
         pub Char(LitChar #manual_extra_traits {
             token: Literal,
-            pub span: Span,
         }),
 
         /// An integer literal: `1` or `1u16`.
@@ -80,7 +70,6 @@ ast_enum_of_structs! {
         /// `"full"` feature.*
         pub Int(LitInt #manual_extra_traits {
             token: Literal,
-            pub span: Span,
         }),
 
         /// A floating point literal: `1f64` or `1.0e10f64`.
@@ -91,7 +80,6 @@ ast_enum_of_structs! {
         /// `"full"` feature.*
         pub Float(LitFloat #manual_extra_traits {
             token: Literal,
-            pub span: Span,
         }),
 
         /// A boolean literal: `true` or `false`.
@@ -110,17 +98,15 @@ ast_enum_of_structs! {
         /// `"full"` feature.*
         pub Verbatim(LitVerbatim #manual_extra_traits {
             pub token: Literal,
-            pub span: Span,
         }),
     }
 }
 
 impl LitStr {
     pub fn new(value: &str, span: Span) -> Self {
-        LitStr {
-            token: Literal::string(value),
-            span: span,
-        }
+        let mut lit = Literal::string(value);
+        lit.set_span(span);
+        LitStr { token: lit }
     }
 
     pub fn value(&self) -> String {
@@ -130,96 +116,184 @@ impl LitStr {
     /// Parse a syntax tree node from the content of this string literal.
     ///
     /// All spans in the syntax tree will point to the span of this `LitStr`.
+    ///
+    /// # Example
+    ///
+    /// ```edition2018
+    /// use proc_macro2::Span;
+    /// use syn::{Attribute, Error, Ident, Lit, Meta, MetaNameValue, Path, Result};
+    ///
+    /// // Parses the path from an attribute that looks like:
+    /// //
+    /// //     #[path = "a::b::c"]
+    /// //
+    /// // or returns `None` if the input is some other attribute.
+    /// fn get_path(attr: &Attribute) -> Result<Option<Path>> {
+    ///     if !attr.path.is_ident("path") {
+    ///         return Ok(None);
+    ///     }
+    ///
+    ///     match attr.parse_meta()? {
+    ///         Meta::NameValue(MetaNameValue { lit: Lit::Str(lit_str), .. }) => {
+    ///             lit_str.parse().map(Some)
+    ///         }
+    ///         _ => {
+    ///             let message = "expected #[path = \"...\"]";
+    ///             Err(Error::new_spanned(attr, message))
+    ///         }
+    ///     }
+    /// }
+    /// ```
     #[cfg(feature = "parsing")]
-    pub fn parse<T: Synom>(&self) -> Result<T, ParseError> {
-        // Parse string literal into a token stream with every span equal to the
-        // original literal's span.
-        fn spanned_tokens(s: &LitStr) -> Result<TokenStream, ParseError> {
-            let stream = ::parse_str(&s.value())?;
-            Ok(respan_token_stream(stream, s.span))
-        }
+    pub fn parse<T: Parse>(&self) -> Result<T> {
+        self.parse_with(T::parse)
+    }
+
+    /// Invoke parser on the content of this string literal.
+    ///
+    /// All spans in the syntax tree will point to the span of this `LitStr`.
+    ///
+    /// # Example
+    ///
+    /// ```edition2018
+    /// # use proc_macro2::Span;
+    /// # use syn::{LitStr, Result};
+    /// #
+    /// # fn main() -> Result<()> {
+    /// #     let lit_str = LitStr::new("a::b::c", Span::call_site());
+    /// #
+    /// #     const IGNORE: &str = stringify! {
+    /// let lit_str: LitStr = /* ... */;
+    /// #     };
+    ///
+    /// // Parse a string literal like "a::b::c" into a Path, not allowing
+    /// // generic arguments on any of the path segments.
+    /// let basic_path = lit_str.parse_with(syn::Path::parse_mod_style)?;
+    /// #
+    /// #     Ok(())
+    /// # }
+    /// ```
+    #[cfg(feature = "parsing")]
+    pub fn parse_with<F: Parser>(&self, parser: F) -> Result<F::Output> {
+        use proc_macro2::Group;
 
         // Token stream with every span replaced by the given one.
         fn respan_token_stream(stream: TokenStream, span: Span) -> TokenStream {
-            stream.into_iter().map(|token| respan_token_tree(token, span)).collect()
+            stream
+                .into_iter()
+                .map(|token| respan_token_tree(token, span))
+                .collect()
         }
 
         // Token tree with every span replaced by the given one.
-        fn respan_token_tree(token: TokenTree, span: Span) -> TokenTree {
-            TokenTree {
-                span: span,
-                kind: match token.kind {
-                    TokenNode::Group(delimiter, nested) => {
-                        TokenNode::Group(delimiter, respan_token_stream(nested, span))
-                    }
-                    other => other,
-                },
+        fn respan_token_tree(mut token: TokenTree, span: Span) -> TokenTree {
+            match token {
+                TokenTree::Group(ref mut g) => {
+                    let stream = respan_token_stream(g.stream().clone(), span);
+                    *g = Group::new(g.delimiter(), stream);
+                    g.set_span(span);
+                }
+                ref mut other => other.set_span(span),
             }
+            token
         }
 
-        spanned_tokens(self).and_then(::parse2)
+        // Parse string literal into a token stream with every span equal to the
+        // original literal's span.
+        let mut tokens = ::parse_str(&self.value())?;
+        tokens = respan_token_stream(tokens, self.span());
+
+        parser.parse2(tokens)
+    }
+
+    pub fn span(&self) -> Span {
+        self.token.span()
+    }
+
+    pub fn set_span(&mut self, span: Span) {
+        self.token.set_span(span)
     }
 }
 
 impl LitByteStr {
     pub fn new(value: &[u8], span: Span) -> Self {
-        LitByteStr {
-            token: Literal::byte_string(value),
-            span: span,
-        }
+        let mut token = Literal::byte_string(value);
+        token.set_span(span);
+        LitByteStr { token: token }
     }
 
     pub fn value(&self) -> Vec<u8> {
         value::parse_lit_byte_str(&self.token.to_string())
     }
+
+    pub fn span(&self) -> Span {
+        self.token.span()
+    }
+
+    pub fn set_span(&mut self, span: Span) {
+        self.token.set_span(span)
+    }
 }
 
 impl LitByte {
     pub fn new(value: u8, span: Span) -> Self {
-        LitByte {
-            token: Literal::byte_char(value),
-            span: span,
-        }
+        let mut token = Literal::u8_suffixed(value);
+        token.set_span(span);
+        LitByte { token: token }
     }
 
     pub fn value(&self) -> u8 {
         value::parse_lit_byte(&self.token.to_string())
     }
+
+    pub fn span(&self) -> Span {
+        self.token.span()
+    }
+
+    pub fn set_span(&mut self, span: Span) {
+        self.token.set_span(span)
+    }
 }
 
 impl LitChar {
     pub fn new(value: char, span: Span) -> Self {
-        LitChar {
-            token: Literal::character(value),
-            span: span,
-        }
+        let mut token = Literal::character(value);
+        token.set_span(span);
+        LitChar { token: token }
     }
 
     pub fn value(&self) -> char {
         value::parse_lit_char(&self.token.to_string())
     }
+
+    pub fn span(&self) -> Span {
+        self.token.span()
+    }
+
+    pub fn set_span(&mut self, span: Span) {
+        self.token.set_span(span)
+    }
 }
 
 impl LitInt {
     pub fn new(value: u64, suffix: IntSuffix, span: Span) -> Self {
-        LitInt {
-            token: match suffix {
-                IntSuffix::Isize => Literal::isize(value as isize),
-                IntSuffix::I8 => Literal::i8(value as i8),
-                IntSuffix::I16 => Literal::i16(value as i16),
-                IntSuffix::I32 => Literal::i32(value as i32),
-                IntSuffix::I64 => Literal::i64(value as i64),
-                IntSuffix::I128 => value::to_literal(&format!("{}i128", value)),
-                IntSuffix::Usize => Literal::usize(value as usize),
-                IntSuffix::U8 => Literal::u8(value as u8),
-                IntSuffix::U16 => Literal::u16(value as u16),
-                IntSuffix::U32 => Literal::u32(value as u32),
-                IntSuffix::U64 => Literal::u64(value),
-                IntSuffix::U128 => value::to_literal(&format!("{}u128", value)),
-                IntSuffix::None => Literal::integer(value as i64),
-            },
-            span: span,
-        }
+        let mut token = match suffix {
+            IntSuffix::Isize => Literal::isize_suffixed(value as isize),
+            IntSuffix::I8 => Literal::i8_suffixed(value as i8),
+            IntSuffix::I16 => Literal::i16_suffixed(value as i16),
+            IntSuffix::I32 => Literal::i32_suffixed(value as i32),
+            IntSuffix::I64 => Literal::i64_suffixed(value as i64),
+            IntSuffix::I128 => value::to_literal(&format!("{}i128", value)),
+            IntSuffix::Usize => Literal::usize_suffixed(value as usize),
+            IntSuffix::U8 => Literal::u8_suffixed(value as u8),
+            IntSuffix::U16 => Literal::u16_suffixed(value as u16),
+            IntSuffix::U32 => Literal::u32_suffixed(value as u32),
+            IntSuffix::U64 => Literal::u64_suffixed(value),
+            IntSuffix::U128 => value::to_literal(&format!("{}u128", value)),
+            IntSuffix::None => Literal::u64_unsuffixed(value),
+        };
+        token.set_span(span);
+        LitInt { token: token }
     }
 
     pub fn value(&self) -> u64 {
@@ -248,18 +322,25 @@ impl LitInt {
         }
         IntSuffix::None
     }
+
+    pub fn span(&self) -> Span {
+        self.token.span()
+    }
+
+    pub fn set_span(&mut self, span: Span) {
+        self.token.set_span(span)
+    }
 }
 
 impl LitFloat {
     pub fn new(value: f64, suffix: FloatSuffix, span: Span) -> Self {
-        LitFloat {
-            token: match suffix {
-                FloatSuffix::F32 => Literal::f32(value as f32),
-                FloatSuffix::F64 => Literal::f64(value),
-                FloatSuffix::None => Literal::float(value),
-            },
-            span: span,
-        }
+        let mut token = match suffix {
+            FloatSuffix::F32 => Literal::f32_suffixed(value as f32),
+            FloatSuffix::F64 => Literal::f64_suffixed(value),
+            FloatSuffix::None => Literal::f64_unsuffixed(value),
+        };
+        token.set_span(span);
+        LitFloat { token: token }
     }
 
     pub fn value(&self) -> f64 {
@@ -274,6 +355,14 @@ impl LitFloat {
             }
         }
         FloatSuffix::None
+    }
+
+    pub fn span(&self) -> Span {
+        self.token.span()
+    }
+
+    pub fn set_span(&mut self, span: Span) {
+        self.token.set_span(span)
     }
 }
 
@@ -298,6 +387,23 @@ macro_rules! lit_extra_traits {
                 self.$field.to_string().hash(state);
             }
         }
+
+        #[cfg(feature = "parsing")]
+        #[doc(hidden)]
+        #[allow(non_snake_case)]
+        pub fn $ty(marker: lookahead::TokenMarker) -> $ty {
+            match marker {}
+        }
+    };
+}
+
+impl LitVerbatim {
+    pub fn span(&self) -> Span {
+        self.token.span()
+    }
+
+    pub fn set_span(&mut self, span: Span) {
+        self.token.set_span(span)
     }
 }
 
@@ -362,181 +468,174 @@ ast_enum! {
 }
 
 #[cfg(feature = "parsing")]
+#[doc(hidden)]
+#[allow(non_snake_case)]
+pub fn Lit(marker: lookahead::TokenMarker) -> Lit {
+    match marker {}
+}
+
+#[cfg(feature = "parsing")]
 pub mod parsing {
     use super::*;
-    use synom::Synom;
-    use buffer::Cursor;
-    use parse_error;
-    use synom::PResult;
+    use parse::{Parse, ParseStream, Result};
 
-    impl Synom for Lit {
-        fn parse(input: Cursor) -> PResult<Self> {
-            match input.literal() {
-                Some((span, lit, rest)) => {
-                    if lit.to_string().starts_with('/') {
-                        // Doc comment literal which is not a Syn literal
-                        parse_error()
-                    } else {
-                        Ok((Lit::new(lit, span), rest))
-                    }
+    impl Parse for Lit {
+        fn parse(input: ParseStream) -> Result<Self> {
+            input.step(|cursor| {
+                if let Some((lit, rest)) = cursor.literal() {
+                    return Ok((Lit::new(lit), rest));
                 }
-                _ => match input.term() {
-                    Some((span, term, rest)) => Ok((
-                        Lit::Bool(LitBool {
-                            value: if term.as_str() == "true" {
-                                true
-                            } else if term.as_str() == "false" {
-                                false
-                            } else {
-                                return parse_error();
-                            },
-                            span: span,
-                        }),
-                        rest,
-                    )),
-                    _ => parse_error(),
-                },
-            }
-        }
-
-        fn description() -> Option<&'static str> {
-            Some("literal")
+                while let Some((ident, rest)) = cursor.ident() {
+                    let value = if ident == "true" {
+                        true
+                    } else if ident == "false" {
+                        false
+                    } else {
+                        break;
+                    };
+                    let lit_bool = LitBool {
+                        value: value,
+                        span: ident.span(),
+                    };
+                    return Ok((Lit::Bool(lit_bool), rest));
+                }
+                Err(cursor.error("expected literal"))
+            })
         }
     }
 
-    impl_synom!(LitStr "string literal" switch!(
-        syn!(Lit),
-        Lit::Str(lit) => value!(lit)
-        |
-        _ => reject!()
-    ));
+    impl Parse for LitStr {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let head = input.fork();
+            match input.parse()? {
+                Lit::Str(lit) => Ok(lit),
+                _ => Err(head.error("expected string literal")),
+            }
+        }
+    }
 
-    impl_synom!(LitByteStr "byte string literal" switch!(
-        syn!(Lit),
-        Lit::ByteStr(lit) => value!(lit)
-        |
-        _ => reject!()
-    ));
+    impl Parse for LitByteStr {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let head = input.fork();
+            match input.parse()? {
+                Lit::ByteStr(lit) => Ok(lit),
+                _ => Err(head.error("expected byte string literal")),
+            }
+        }
+    }
 
-    impl_synom!(LitByte "byte literal" switch!(
-        syn!(Lit),
-        Lit::Byte(lit) => value!(lit)
-        |
-        _ => reject!()
-    ));
+    impl Parse for LitByte {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let head = input.fork();
+            match input.parse()? {
+                Lit::Byte(lit) => Ok(lit),
+                _ => Err(head.error("expected byte literal")),
+            }
+        }
+    }
 
-    impl_synom!(LitChar "character literal" switch!(
-        syn!(Lit),
-        Lit::Char(lit) => value!(lit)
-        |
-        _ => reject!()
-    ));
+    impl Parse for LitChar {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let head = input.fork();
+            match input.parse()? {
+                Lit::Char(lit) => Ok(lit),
+                _ => Err(head.error("expected character literal")),
+            }
+        }
+    }
 
-    impl_synom!(LitInt "integer literal" switch!(
-        syn!(Lit),
-        Lit::Int(lit) => value!(lit)
-        |
-        _ => reject!()
-    ));
+    impl Parse for LitInt {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let head = input.fork();
+            match input.parse()? {
+                Lit::Int(lit) => Ok(lit),
+                _ => Err(head.error("expected integer literal")),
+            }
+        }
+    }
 
-    impl_synom!(LitFloat "floating point literal" switch!(
-        syn!(Lit),
-        Lit::Float(lit) => value!(lit)
-        |
-        _ => reject!()
-    ));
+    impl Parse for LitFloat {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let head = input.fork();
+            match input.parse()? {
+                Lit::Float(lit) => Ok(lit),
+                _ => Err(head.error("expected floating point literal")),
+            }
+        }
+    }
 
-    impl_synom!(LitBool "boolean literal" switch!(
-        syn!(Lit),
-        Lit::Bool(lit) => value!(lit)
-        |
-        _ => reject!()
-    ));
+    impl Parse for LitBool {
+        fn parse(input: ParseStream) -> Result<Self> {
+            let head = input.fork();
+            match input.parse()? {
+                Lit::Bool(lit) => Ok(lit),
+                _ => Err(head.error("expected boolean literal")),
+            }
+        }
+    }
 }
 
 #[cfg(feature = "printing")]
 mod printing {
     use super::*;
-    use quote::{ToTokens, Tokens};
+    use proc_macro2::TokenStream;
+    use quote::{ToTokens, TokenStreamExt};
 
     impl ToTokens for LitStr {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Literal(self.token.clone()),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            self.token.to_tokens(tokens);
         }
     }
 
     impl ToTokens for LitByteStr {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Literal(self.token.clone()),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            self.token.to_tokens(tokens);
         }
     }
 
     impl ToTokens for LitByte {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Literal(self.token.clone()),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            self.token.to_tokens(tokens);
         }
     }
 
     impl ToTokens for LitChar {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Literal(self.token.clone()),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            self.token.to_tokens(tokens);
         }
     }
 
     impl ToTokens for LitInt {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Literal(self.token.clone()),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            self.token.to_tokens(tokens);
         }
     }
 
     impl ToTokens for LitFloat {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Literal(self.token.clone()),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            self.token.to_tokens(tokens);
         }
     }
 
     impl ToTokens for LitBool {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Term(Term::intern(if self.value { "true" } else { "false" })),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            let s = if self.value { "true" } else { "false" };
+            tokens.append(Ident::new(s, self.span));
         }
     }
 
     impl ToTokens for LitVerbatim {
-        fn to_tokens(&self, tokens: &mut Tokens) {
-            tokens.append(TokenTree {
-                span: self.span,
-                kind: TokenNode::Literal(self.token.clone()),
-            });
+        fn to_tokens(&self, tokens: &mut TokenStream) {
+            self.token.to_tokens(tokens);
         }
     }
 }
 
 mod value {
     use super::*;
+    use proc_macro2::TokenStream;
     use std::char;
     use std::ops::{Index, RangeFrom};
-    use proc_macro2::TokenStream;
 
     impl Lit {
         /// Interpret a Syn literal from a proc-macro2 literal.
@@ -550,60 +649,35 @@ mod value {
         /// # Panics
         ///
         /// Panics if the input is a doc comment literal.
-        pub fn new(token: Literal, span: Span) -> Self {
+        pub fn new(token: Literal) -> Self {
             let value = token.to_string();
 
             match value::byte(&value, 0) {
-                b'"' | b'r' => {
-                    return Lit::Str(LitStr {
-                        token: token,
-                        span: span,
-                    })
-                }
+                b'"' | b'r' => return Lit::Str(LitStr { token: token }),
                 b'b' => match value::byte(&value, 1) {
-                    b'"' | b'r' => {
-                        return Lit::ByteStr(LitByteStr {
-                            token: token,
-                            span: span,
-                        })
-                    }
-                    b'\'' => {
-                        return Lit::Byte(LitByte {
-                            token: token,
-                            span: span,
-                        })
-                    }
+                    b'"' | b'r' => return Lit::ByteStr(LitByteStr { token: token }),
+                    b'\'' => return Lit::Byte(LitByte { token: token }),
                     _ => {}
                 },
-                b'\'' => {
-                    return Lit::Char(LitChar {
-                        token: token,
-                        span: span,
-                    })
+                b'\'' => return Lit::Char(LitChar { token: token }),
+                b'0'...b'9' => {
+                    if number_is_int(&value) {
+                        return Lit::Int(LitInt { token: token });
+                    } else if number_is_float(&value) {
+                        return Lit::Float(LitFloat { token: token });
+                    } else {
+                        // number overflow
+                        return Lit::Verbatim(LitVerbatim { token: token });
+                    }
                 }
-                b'0'...b'9' => if number_is_int(&value) {
-                    return Lit::Int(LitInt {
-                        token: token,
-                        span: span,
-                    });
-                } else if number_is_float(&value) {
-                    return Lit::Float(LitFloat {
-                        token: token,
-                        span: span,
-                    });
-                } else {
-                    // number overflow
-                    return Lit::Verbatim(LitVerbatim {
-                        token: token,
-                        span: span,
-                    });
-                },
-                _ => if value == "true" || value == "false" {
-                    return Lit::Bool(LitBool {
-                        value: value == "true",
-                        span: span,
-                    });
-                },
+                _ => {
+                    if value == "true" || value == "false" {
+                        return Lit::Bool(LitBool {
+                            value: value == "true",
+                            span: token.span(),
+                        });
+                    }
+                }
             }
 
             panic!("Unrecognized literal: {}", value);
@@ -888,12 +962,13 @@ mod value {
         let mut ch = 0;
         let b0 = byte(s, 0);
         let b1 = byte(s, 1);
-        ch += 0x10 * match b0 {
-            b'0'...b'9' => b0 - b'0',
-            b'a'...b'f' => 10 + (b0 - b'a'),
-            b'A'...b'F' => 10 + (b0 - b'A'),
-            _ => panic!("unexpected non-hex character after \\x"),
-        };
+        ch += 0x10
+            * match b0 {
+                b'0'...b'9' => b0 - b'0',
+                b'a'...b'f' => 10 + (b0 - b'a'),
+                b'A'...b'F' => 10 + (b0 - b'A'),
+                _ => panic!("unexpected non-hex character after \\x"),
+            };
         ch += match b1 {
             b'0'...b'9' => b1 - b'0',
             b'a'...b'f' => 10 + (b1 - b'a'),
@@ -1020,8 +1095,8 @@ mod value {
 
     pub fn to_literal(s: &str) -> Literal {
         let stream = s.parse::<TokenStream>().unwrap();
-        match stream.into_iter().next().unwrap().kind {
-            TokenNode::Literal(l) => l,
+        match stream.into_iter().next().unwrap() {
+            TokenTree::Literal(l) => l,
             _ => unreachable!(),
         }
     }

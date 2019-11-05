@@ -5,16 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "PaymentRequestChild.h"
+#include "mozilla/dom/PaymentRequest.h"
 #include "mozilla/dom/PaymentRequestManager.h"
 
 namespace mozilla {
 namespace dom {
 
-PaymentRequestChild::PaymentRequestChild() : mActorAlive(true) {}
+PaymentRequestChild::PaymentRequestChild(PaymentRequest* aRequest)
+    : mRequest(aRequest) {
+  mRequest->SetIPC(this);
+}
 
 nsresult PaymentRequestChild::RequestPayment(
     const IPCPaymentActionRequest& aAction) {
-  if (!mActorAlive) {
+  if (!mRequest) {
     return NS_ERROR_FAILURE;
   }
   if (!SendRequestPayment(aAction)) {
@@ -25,13 +29,16 @@ nsresult PaymentRequestChild::RequestPayment(
 
 mozilla::ipc::IPCResult PaymentRequestChild::RecvRespondPayment(
     const IPCPaymentActionResponse& aResponse) {
-  if (!mActorAlive) {
+  if (!mRequest) {
     return IPC_FAIL_NO_REASON(this);
   }
   const IPCPaymentActionResponse& response = aResponse;
   RefPtr<PaymentRequestManager> manager = PaymentRequestManager::GetSingleton();
   MOZ_ASSERT(manager);
-  nsresult rv = manager->RespondPayment(response);
+
+  // Hold a strong reference to our request for the entire response.
+  RefPtr<PaymentRequest> request(mRequest);
+  nsresult rv = manager->RespondPayment(request, response);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return IPC_FAIL_NO_REASON(this);
   }
@@ -40,12 +47,13 @@ mozilla::ipc::IPCResult PaymentRequestChild::RecvRespondPayment(
 
 mozilla::ipc::IPCResult PaymentRequestChild::RecvChangeShippingAddress(
     const nsString& aRequestId, const IPCPaymentAddress& aAddress) {
-  if (!mActorAlive) {
+  if (!mRequest) {
     return IPC_FAIL_NO_REASON(this);
   }
   RefPtr<PaymentRequestManager> manager = PaymentRequestManager::GetSingleton();
   MOZ_ASSERT(manager);
-  nsresult rv = manager->ChangeShippingAddress(aRequestId, aAddress);
+  RefPtr<PaymentRequest> request(mRequest);
+  nsresult rv = manager->ChangeShippingAddress(request, aAddress);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return IPC_FAIL_NO_REASON(this);
   }
@@ -54,12 +62,47 @@ mozilla::ipc::IPCResult PaymentRequestChild::RecvChangeShippingAddress(
 
 mozilla::ipc::IPCResult PaymentRequestChild::RecvChangeShippingOption(
     const nsString& aRequestId, const nsString& aOption) {
-  if (!mActorAlive) {
+  if (!mRequest) {
     return IPC_FAIL_NO_REASON(this);
   }
   RefPtr<PaymentRequestManager> manager = PaymentRequestManager::GetSingleton();
   MOZ_ASSERT(manager);
-  nsresult rv = manager->ChangeShippingOption(aRequestId, aOption);
+  RefPtr<PaymentRequest> request(mRequest);
+  nsresult rv = manager->ChangeShippingOption(request, aOption);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return IPC_FAIL_NO_REASON(this);
+  }
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult PaymentRequestChild::RecvChangePayerDetail(
+    const nsString& aRequestId, const nsString& aPayerName,
+    const nsString& aPayerEmail, const nsString& aPayerPhone) {
+  if (!mRequest) {
+    return IPC_FAIL_NO_REASON(this);
+  }
+  RefPtr<PaymentRequestManager> manager = PaymentRequestManager::GetSingleton();
+  MOZ_ASSERT(manager);
+  RefPtr<PaymentRequest> request(mRequest);
+  nsresult rv =
+      manager->ChangePayerDetail(request, aPayerName, aPayerEmail, aPayerPhone);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return IPC_FAIL_NO_REASON(this);
+  }
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult PaymentRequestChild::RecvChangePaymentMethod(
+    const nsString& aRequestId, const nsString& aMethodName,
+    const IPCMethodChangeDetails& aMethodDetails) {
+  if (!mRequest) {
+    return IPC_FAIL_NO_REASON(this);
+  }
+  RefPtr<PaymentRequestManager> manager = PaymentRequestManager::GetSingleton();
+  MOZ_ASSERT(manager);
+  RefPtr<PaymentRequest> request(mRequest);
+  nsresult rv =
+      manager->ChangePaymentMethod(request, aMethodName, aMethodDetails);
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return IPC_FAIL_NO_REASON(this);
   }
@@ -67,25 +110,32 @@ mozilla::ipc::IPCResult PaymentRequestChild::RecvChangeShippingOption(
 }
 
 void PaymentRequestChild::ActorDestroy(ActorDestroyReason aWhy) {
-  mActorAlive = false;
-  RefPtr<PaymentRequestManager> manager = PaymentRequestManager::GetSingleton();
-  MOZ_ASSERT(manager);
-  nsresult rv = manager->ReleasePaymentChild(this);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    MOZ_ASSERT(false);
+  if (mRequest) {
+    DetachFromRequest(true);
   }
 }
 
-void PaymentRequestChild::MaybeDelete() {
-  if (mActorAlive) {
-    mActorAlive = false;
+void PaymentRequestChild::MaybeDelete(bool aCanBeInManager) {
+  if (mRequest) {
+    DetachFromRequest(aCanBeInManager);
     Send__delete__(this);
   }
 }
 
-bool PaymentRequestChild::SendRequestPayment(
-    const IPCPaymentActionRequest& aAction) {
-  return PPaymentRequestChild::SendRequestPayment(aAction);
+void PaymentRequestChild::DetachFromRequest(bool aCanBeInManager) {
+  MOZ_ASSERT(mRequest);
+
+  if (aCanBeInManager) {
+    RefPtr<PaymentRequestManager> manager =
+        PaymentRequestManager::GetSingleton();
+    MOZ_ASSERT(manager);
+
+    RefPtr<PaymentRequest> request(mRequest);
+    manager->RequestIPCOver(request);
+  }
+
+  mRequest->SetIPC(nullptr);
+  mRequest = nullptr;
 }
 
 }  // end of namespace dom

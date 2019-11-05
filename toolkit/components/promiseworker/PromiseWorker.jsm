@@ -19,10 +19,11 @@
 
 var EXPORTED_SYMBOLS = ["BasePromiseWorker"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", this);
-
-ChromeUtils.defineModuleGetter(this, "PromiseUtils",
-  "resource://gre/modules/PromiseUtils.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "PromiseUtils",
+  "resource://gre/modules/PromiseUtils.jsm"
+);
 
 /**
  * An implementation of queues (FIFO).
@@ -42,7 +43,7 @@ Queue.prototype = {
   },
   isEmpty: function isEmpty() {
     return this._array.length == 0;
-  }
+  },
 };
 
 /**
@@ -56,22 +57,38 @@ const EXCEPTION_CONSTRUCTORS = {
     return result;
   },
   InternalError(error) {
-    let result = new InternalError(error.message, error.fileName, error.lineNumber);
+    let result = new InternalError(
+      error.message,
+      error.fileName,
+      error.lineNumber
+    );
     result.stack = error.stack;
     return result;
   },
   RangeError(error) {
-    let result = new RangeError(error.message, error.fileName, error.lineNumber);
+    let result = new RangeError(
+      error.message,
+      error.fileName,
+      error.lineNumber
+    );
     result.stack = error.stack;
     return result;
   },
   ReferenceError(error) {
-    let result = new ReferenceError(error.message, error.fileName, error.lineNumber);
+    let result = new ReferenceError(
+      error.message,
+      error.fileName,
+      error.lineNumber
+    );
     result.stack = error.stack;
     return result;
   },
   SyntaxError(error) {
-    let result = new SyntaxError(error.message, error.fileName, error.lineNumber);
+    let result = new SyntaxError(
+      error.message,
+      error.fileName,
+      error.lineNumber
+    );
     result.stack = error.stack;
     return result;
   },
@@ -165,7 +182,7 @@ this.BasePromiseWorker.prototype = {
       return this.__worker;
     }
 
-    let worker = this.__worker = new ChromeWorker(this._url);
+    let worker = (this.__worker = new ChromeWorker(this._url));
 
     // We assume that we call to _worker for the purpose of calling
     // postMessage().
@@ -184,9 +201,14 @@ this.BasePromiseWorker.prototype = {
      * @param {Error} error Some JS error.
      */
     worker.onerror = error => {
-      this.log("Received uncaught error from worker", error.message, error.filename, error.lineno);
+      this.log(
+        "Received uncaught error from worker",
+        error.message,
+        error.filename,
+        error.lineno
+      );
       error.preventDefault();
-      let {deferred} = this._queue.pop();
+      let { deferred } = this._queue.pop();
       deferred.reject(error);
     };
 
@@ -212,8 +234,15 @@ this.BasePromiseWorker.prototype = {
       let deferred = handler.deferred;
       let data = msg.data;
       if (data.id != handler.id) {
-        throw new Error("Internal error: expecting msg " + handler.id + ", " +
-                        " got " + data.id + ": " + JSON.stringify(msg.data));
+        throw new Error(
+          "Internal error: expecting msg " +
+            handler.id +
+            ", " +
+            " got " +
+            data.id +
+            ": " +
+            JSON.stringify(msg.data)
+        );
       }
       if ("timeStamps" in data) {
         this.workerTimeStamps = data.timeStamps;
@@ -252,7 +281,7 @@ this.BasePromiseWorker.prototype = {
    * @return {promise}
    */
   post(fun, args, closure, transfers) {
-    return (async function postMessage() {
+    return async function postMessage() {
       // Normalize in case any of the arguments is a promise
       if (args) {
         args = await Promise.resolve(Promise.all(args));
@@ -277,7 +306,7 @@ this.BasePromiseWorker.prototype = {
       }
 
       let id = ++this._id;
-      let message = {fun, args, id};
+      let message = { fun, args, id };
       this.log("Posting message", message);
       try {
         this._worker.postMessage(message, ...[transfers]);
@@ -293,7 +322,7 @@ this.BasePromiseWorker.prototype = {
       }
 
       let deferred = PromiseUtils.defer();
-      this._queue.push({deferred, closure, id});
+      this._queue.push({ deferred, closure, id });
       this.log("Message posted");
 
       let reply;
@@ -311,7 +340,12 @@ this.BasePromiseWorker.prototype = {
 
         if (error instanceof ErrorEvent) {
           // Other errors get propagated as instances of ErrorEvent
-          this.log("Error serialized by DOM", error.message, error.filename, error.lineno);
+          this.log(
+            "Error serialized by DOM",
+            error.message,
+            error.filename,
+            error.lineno
+          );
           throw new Error(error.message, error.filename, error.lineno);
         }
 
@@ -326,9 +360,11 @@ this.BasePromiseWorker.prototype = {
       }
 
       // Check for duration and return result.
-      if (!options ||
-          typeof options !== "object" ||
-          !("outExecutionDuration" in options)) {
+      if (
+        !options ||
+        typeof options !== "object" ||
+        !("outExecutionDuration" in options)
+      ) {
         return reply.ok;
       }
       // If reply.durationMs is not present, just return the result,
@@ -349,8 +385,7 @@ this.BasePromiseWorker.prototype = {
         options.outExecutionDuration = durationMs;
       }
       return reply.ok;
-
-    }.bind(this))();
+    }.bind(this)();
   },
 
   /**
@@ -377,10 +412,10 @@ this.BasePromiseWorker.prototype = {
         // We create this lazily, because error objects are not cheap.
         error = new Error("Internal error: worker terminated");
       }
-      let {deferred} = this._queue.pop();
+      let { deferred } = this._queue.pop();
       deferred.reject(error);
     }
-  }
+  },
 };
 
 /**

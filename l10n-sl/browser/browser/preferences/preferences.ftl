@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-do-not-track-description = S signalom “Brez sledenja” sporočaj spletnim stranem, naj vam ne sledijo
+do-not-track-description = Spletnim stranem pošiljajte signal “Brez sledenja”, torej da vam naj ne sledijo
 do-not-track-learn-more = Več o tem
-do-not-track-option-default =
-    .label = Samo pri uporabi zaščite pred sledenjem
+do-not-track-option-default-content-blocking-known =
+    .label = Samo, ko je { -brand-short-name } nastavljen na zavračanje znanih sledilcev
 do-not-track-option-always =
     .label = Vedno
 pref-page =
@@ -14,14 +14,6 @@ pref-page =
             [windows] Možnosti
            *[other] Nastavitve
         }
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-input =
-    .style = width: 15.4em
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -42,6 +34,7 @@ policies-notice =
         [windows] Vaša organizacija vam je onemogočila spreminjanje nekaterih možnosti.
        *[other] Vaša organizacija vam je onemogočila spreminjanje nekaterih nastavitev.
     }
+managed-notice = Vaš brskalnik upravlja vaša organizacija.
 pane-general-title = Splošno
 category-general =
     .tooltiptext = { pane-general-title }
@@ -54,11 +47,11 @@ category-search =
 pane-privacy-title = Zasebnost in varnost
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Firefox Račun
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Podpora za { -brand-short-name }
+addons-button-label = Razširitve in teme
 focus-search =
     .key = f
 close-button =
@@ -72,6 +65,44 @@ should-restart-title = Ponovno zaženi { -brand-short-name }
 should-restart-ok = Ponovno zaženi { -brand-short-name } zdaj
 cancel-no-restart-button = Prekliči
 restart-later = Ponovno zaženi pozneje
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (String): name of the extension
+
+# This string is shown to notify the user that their home page
+# is being controlled by an extension.
+extension-controlled-homepage-override = Razširitev <img data-l10n-name="icon"/> { $name } nadzira vašo domačo stran.
+# This string is shown to notify the user that their new tab page
+# is being controlled by an extension.
+extension-controlled-new-tab-url = Razširitev <img data-l10n-name="icon"/> { $name } nadzira vašo stran novega zavihka.
+# This string is shown to notify the user that their notifications permission
+# is being controlled by an extension.
+extension-controlled-web-notifications = Razširitev <img data-l10n-name="icon"/> { $name } nadzoruje to nastavitev.
+# This string is shown to notify the user that the default search engine
+# is being controlled by an extension.
+extension-controlled-default-search = Razširitev <img data-l10n-name="icon"/> { $name } je nastavila privzeti iskalnik.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlled-privacy-containers = Razširitev <img data-l10n-name="icon"/> { $name } zahteva vsebniške zavihke.
+# This string is shown to notify the user that their content blocking "All Detected Trackers"
+# preferences are being controlled by an extension.
+extension-controlled-websites-content-blocking-all-trackers = To nastavitev nadzira razširitev <img data-l10n-name="icon"/> { $name }.
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = Razširitev <img data-l10n-name="icon"/> { $name } nadzira, kako { -brand-short-name } vzpostavi povezavo z internetom.
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = Da bi omogočili to razširitev, izberite <img data-l10n-name="addons-icon"/> Dodatki v meniju <img data-l10n-name="menu-icon"/>.
 
 ## Preferences UI Search Results
 
@@ -102,17 +133,13 @@ is-not-default = { -brand-short-name } ni vaš privzeti brskalnik
 set-as-my-default-browser =
     .label = Nastavi za privzeto …
     .accesskey = N
-startup-page = Ko se { -brand-short-name } zažene,
-    .accesskey = K
-startup-user-homepage =
-    .label = prikaži domačo stran
-startup-blank-page =
-    .label = prikaži prazno stran
-startup-prev-session =
-    .label = prikaži nazadnje odprta okna in zavihke
+startup-restore-previous-session =
+    .label = Obnovi prejšnjo sejo
+    .accesskey = s
+startup-restore-warn-on-quit =
+    .label = Opozori ob zapiranju brskalnika
 disable-extension =
     .label = Onemogoči razširitev
-home-page-header = Domača stran
 tabs-group-header = Zavihki
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab kroži med zavihki po vrsti, kot so bili nazadnje uporabljeni
@@ -187,6 +214,12 @@ choose-language-description = Izberite prednosten jezik za prikazovanje strani
 choose-button =
     .label = Izberi …
     .accesskey = e
+choose-browser-language-description = Izberite jezike, v katerih naj bodo prikazani meniji, sporočila in obvestila { -brand-short-name }a.
+manage-browser-languages-button =
+    .label = Nastavi pomožne jezike …
+    .accesskey = m
+confirm-browser-language-change-description = Ponovno zaženite { -brand-short-name } za uveljavitev sprememb
+confirm-browser-language-change-button = Uveljavi in ponovno zaženi
 translate-web-pages =
     .label = Prevajanje spletne vsebine
     .accesskey = T
@@ -238,7 +271,6 @@ play-drm-content =
 play-drm-content-learn-more = Več o tem
 update-application-title = Posodobitve { -brand-short-name }a
 update-application-description = Ohranite { -brand-short-name } posodobljen za najboljšo zmogljivost, stabilnost in varnost.
-update-application-info = Različica { $version } <a>Novosti</a>
 update-application-version = Različica { $version } <a data-l10n-name="learn-more">Novosti</a>
 update-history =
     .label = Prikaži zgodovino posodobitev …
@@ -253,12 +285,32 @@ update-application-check-choose =
 update-application-manual =
     .label = nikoli ne preverja posodobitev (ni priporočeno)
     .accesskey = N
+update-application-warning-cross-user-setting = Ta nastavitev bo uveljavljena v vseh uporabniških računih sistema Windows in { -brand-short-name }ovih profilih, ki uporabljajo to različico { -brand-short-name }a.
 update-application-use-service =
     .label = Uporabi storitev za nameščanje posodobitev v ozadju
     .accesskey = s
 update-enable-search-update =
     .label = Samodejno posodabljaj iskalnike
     .accesskey = i
+update-pref-write-failure-title = Napaka pri pisanju
+# Variables:
+#   $path (String) - Path to the configuration file
+update-pref-write-failure-message = Nastavitve ni bilo mogoče shraniti. Ni bilo mogoče pisati v datoteko: { $path }
+update-setting-write-failure-title = Napaka pri shranjevanju nastavitev posodobitve
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } je naletel na napako in te spremembe ni shranil. Upoštevajte, da takšna nastavitev posodobitev zahteva dovoljenje za pisanje v spodnjo datoteko. Napako lahko morda odpravite sami ali vaš skrbnik sistema, tako da skupini Users omogoči popoln dostop do te datoteke.
+    
+    Ni mogoče pisati v datoteko: { $path }
+update-in-progress-title = Posodobitev v teku
+update-in-progress-message = Želite, da { -brand-short-name } nadaljuje s to posodobitvijo?
+update-in-progress-ok-button = &Opusti
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Nadaljuj
 
 ## General Section - Performance
 
@@ -274,7 +326,6 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = Omejitev procesov vsebine
     .accesskey = O
 performance-limit-content-process-enabled-desc = Dodatni procesi vsebine lahko pospešijo delovanje pri uporabi večjega števila zavihkov, a tudi porabijo več pomnilnika.
-performance-limit-content-process-disabled-desc = Število procesov vsebine je mogoče spreminjati samo v večprocesnem { -brand-short-name }u. <a>Kako izveste, ali je večprocesni način omogočen</a>
 performance-limit-content-process-blocked-desc = Število procesov vsebine je mogoče spreminjati samo v večprocesnem { -brand-short-name }u. <a data-l10n-name="learn-more">Kako izveste, ali je večprocesni način omogočen</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -299,10 +350,18 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Začni iskati ob začetku tipkanja
     .accesskey = k
+browsing-cfr-recommendations =
+    .label = Med brskanjem priporoči razširitve
+    .accesskey = r
+browsing-cfr-features =
+    .label = Med brskanjem priporoči možnosti
+    .accesskey = m
+browsing-cfr-recommendations-learn-more = Več o tem
 
 ## General Section - Proxy
 
-network-proxy-title = Omrežni posrednik
+network-settings-title = Nastavitve omrežja
+network-proxy-connection-description = Nastavite, kako se { -brand-short-name } poveže z internetom.
 network-proxy-connection-learn-more = Več o tem
 network-proxy-connection-settings =
     .label = Nastavitve …
@@ -344,9 +403,6 @@ use-current-pages =
 choose-bookmark =
     .label = Uporabi zaznamek …
     .accesskey = z
-restore-default =
-    .label = Uporabi privzeto stran
-    .accesskey = r
 
 ## Search Section
 
@@ -490,8 +546,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Shrani
     .accesskey = S
-sync-mobilepromo-single = Poveži drugo napravo
-sync-mobilepromo-multi = Upravljanje naprav
+sync-connect-another-device = Poveži drugo napravo
+sync-manage-devices = Upravljanje naprav
+sync-fxa-begin-pairing = Seznani napravo
 sync-tos-link = Pogoji uporabe
 sync-fxa-privacy-notice = Obvestilo o zasebnosti
 
@@ -501,13 +558,16 @@ privacy-header = Zasebnost brskalnika
 
 ## Privacy Section - Forms
 
-forms-header = Obrazci in gesla
+logins-header = Prijave in gesla
 forms-ask-to-save-logins =
     .label = Ponujaj shranjevanje prijav in gesel za spletne strani
     .accesskey = g
 forms-exceptions =
     .label = Izjeme …
     .accesskey = i
+forms-generate-passwords =
+    .label = Predlagaj in ustvarjaj močna gesla
+    .accesskey = u
 forms-saved-logins =
     .label = Shranjene prijave …
     .accesskey = H
@@ -543,7 +603,7 @@ history-dontremember-description = { -brand-short-name } bo uporabljal enake nas
 history-private-browsing-permanent =
     .label = Vedno uporabljaj zasebno brskanje
     .accesskey = S
-history-remember-option =
+history-remember-browser-option =
     .label = Shranjuj zgodovino brskanja in prenosov
     .accesskey = b
 history-remember-search-option =
@@ -562,36 +622,43 @@ history-clear-button =
 ## Privacy Section - Site Data
 
 sitedata-header = Piškotki in podatki strani
+sitedata-total-size-calculating = Računanje velikosti podatkov strani in predpomnilnika …
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = Shranjeni piškotki, podatki strani in predpomnilnik trenutno zavzemajo { $value } { $unit } prostora na disku.
 sitedata-learn-more = Več o tem
-sitedata-accept-cookies-option =
-    .label = Sprejemaj piškotke in podatke spletnih strani (priporočeno)
+sitedata-delete-on-close =
+    .label = Izbriši piškotke in podatke strani, ko se { -brand-short-name } zapre
+    .accesskey = z
+sitedata-delete-on-close-private-browsing = V načinu stalnega zasebnega brskanja bodo piškotki in podatki strani izbrisani ob vsakem zaprtju { -brand-short-name }a.
+sitedata-allow-cookies-option =
+    .label = Sprejemaj piškotke in podatke strani
     .accesskey = S
-sitedata-block-cookies-option =
-    .label = Zavračaj piškotke in podatke spletnih strani (lahko povzroči nepravilno delovanje strani)
+sitedata-disallow-cookies-option =
+    .label = Zavračaj piškotke in podatke strani
     .accesskey = Z
-sitedata-keep-until = Obdrži jih,
-    .accesskey = j
-sitedata-keep-until-expire =
-    .label = dokler ne pretečejo
-sitedata-keep-until-closed =
-    .label = dokler se { -brand-short-name } ne zapre
-sitedata-accept-third-party-desc = Sprejemaj piškotke in podatke tretjih strani
-    .accesskey = t
-sitedata-accept-third-party-always-option =
-    .label = Vedno
-sitedata-accept-third-party-visited-option =
-    .label = Izmed obiskanih
-sitedata-accept-third-party-never-option =
-    .label = Nikoli
+# This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
+# The list items are the strings named sitedata-block-*-option*.
+sitedata-block-desc = Zavračaj
+    .accesskey = Z
+sitedata-option-block-trackers =
+    .label = Sledilce tretjih strani
+sitedata-option-block-unvisited =
+    .label = Piškotke neobiskanih spletnih strani
+sitedata-option-block-all-third-party =
+    .label = Vse piškotke tretjih strani (lahko povzroči nedelovanje spletnih strani)
+sitedata-option-block-all =
+    .label = Vse piškotke (povzroči nedelovanje spletnih strani)
 sitedata-clear =
     .label = Počisti podatke …
     .accesskey = č
 sitedata-settings =
     .label = Upravljanje podatkov …
     .accesskey = U
-sitedata-cookies-exceptions =
-    .label = Izjeme …
-    .accesskey = Z
+sitedata-cookies-permissions =
+    .label = Upravljanje dovoljenj ...
+    .accesskey = a
 
 ## Privacy Section - Address Bar
 
@@ -608,30 +675,73 @@ addressbar-locbar-openpage-option =
     .accesskey = O
 addressbar-suggestions-settings = Spremeni nastavitve predlogov iskanja
 
+## Privacy Section - Content Blocking
+
+content-blocking-header = Zavračanje vsebine
+content-blocking-description = Zavračajte vsebino tretjih strani, ki vam sledi po spletu. Nadzirajte, koliko vaše spletne dejavnosti se shranjuje in deli med spletnimi stranmi.
+content-blocking-section-description = Zaščitite svojo zasebnost med brskanjem. Zavrnite nevidno vsebino, ki spremlja vaše obiskane strani in ustvarja profil o vas. Če zavrnete nekaj te vsebine, se lahko strani hitreje naložijo.
+content-blocking-learn-more = Več o tem
+# The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+content-blocking-setting-standard =
+    .label = Običajno
+    .accesskey = č
+content-blocking-setting-strict =
+    .label = Strogo
+    .accesskey = S
+content-blocking-setting-custom =
+    .label = Po meri
+    .accesskey = m
+content-blocking-standard-description = Zavrača samo znane sledilce v zasebnih oknih.
+content-blocking-standard-desc = Uravnotežena zaščita in delovanje. Omogoča nekaj sledilcev, tako da spletne strani delujejo pravilno.
+content-blocking-strict-desc = Zavrača vse sledilce, ki jih { -brand-short-name } zazna. Lahko povzroči nedelovanje nekaterih strani.
+content-blocking-strict-description = Močnejša zaščita; lahko povzroči nedelovanje nekaterih strani.
+content-blocking-custom-desc = Izberite, kaj želite zavračati.
+content-blocking-private-trackers = Znane sledilce samo v zasebnih oknih
+content-blocking-third-party-cookies = Sledilne piškotke tretjih strani
+content-blocking-all-cookies = Vse piškotke
+content-blocking-unvisited-cookies = Piškotke neobiskanih spletnih strani
+content-blocking-all-windows-trackers = Znane sledilce v vseh oknih
+content-blocking-all-third-party-cookies = Vse piškotke tretjih strani
+content-blocking-cryptominers = Kriptorudarje
+content-blocking-fingerprinters = Sledilce prstnih odtisov
+content-blocking-warning-title = Opozorilo!
+content-blocking-warning-description = Zavračanje vsebine lahko povzroči nedelovanje nekaterih spletnih mest. Zavračanje vsebine strani, ki jim zaupate, lahko enostavno onemogočite.
+content-blocking-learn-how = Naučite se, kako
+content-blocking-reload-description = Za uveljavitev sprememb boste morali znova naložiti zavihke.
+content-blocking-reload-tabs-button =
+    .label = Znova naloži vse zavihke
+    .accesskey = Z
+content-blocking-trackers-label =
+    .label = Sledilce
+    .accesskey = S
+content-blocking-tracking-protection-option-all-windows =
+    .label = V vseh oknih
+    .accesskey = s
+content-blocking-option-private =
+    .label = Le v zasebnih oknih
+    .accesskey = s
+content-blocking-tracking-protection-change-block-list = Zamenjaj seznam za zavračanje
+content-blocking-cookies-label =
+    .label = Piškotke
+    .accesskey = š
+content-blocking-expand-section =
+    .tooltiptext = Več informacij
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Kriptorudarje
+    .accesskey = K
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Sledilce prstnih odtisov
+    .accesskey = p
+
 ## Privacy Section - Tracking
 
-tracking-header = Zaščita pred sledenjem
-tracking-desc = Zaščita pred sledenjem zavrača spletne sledilce, ki zbirajo podatke brskanja po spletnih straneh. <a data-l10n-name="learn-more">Več o zaščiti pred sledenjem in vaši zasebnost</a>
-tracking-mode-label = Uporabljaj zaščito pred sledenjem za zavračanje znanih sledilcev
-tracking-mode-always =
-    .label = Vedno
-    .accesskey = e
-tracking-mode-private =
-    .label = Le v zasebnih oknih
-    .accesskey = L
-tracking-mode-never =
-    .label = Nikoli
-    .accesskey = o
-# This string is displayed if privacy.trackingprotection.ui.enabled is set to false.
-# This currently happens on the release and beta channel.
-tracking-pbm-label = Uporabljaj zaščito pred sledenjem v zasebnem brskanju za zavračanje znanih sledilcev
-    .accesskey = r
-tracking-exceptions =
-    .label = Izjeme …
+tracking-manage-exceptions =
+    .label = Upravljanje izjem ...
     .accesskey = j
-tracking-change-block-list =
-    .label = Zamenjaj seznam za zavračanje …
-    .accesskey = a
 
 ## Privacy Section - Permissions
 
@@ -656,6 +766,16 @@ permissions-notification-link = Več o tem
 permissions-notification-pause =
     .label = Ne prikazuj obvestil do naslednjega zagona { -brand-short-name }a
     .accesskey = u
+permissions-block-autoplay-media2 =
+    .label = Spletnim stranem prepreči samodejno predvajanje zvoka
+    .accesskey = z
+permissions-block-autoplay-media-exceptions =
+    .label = Izjeme …
+    .accesskey = I
+permissions-autoplay = Samodejno predvajanje
+permissions-autoplay-settings =
+    .label = Nastavitve …
+    .accesskey = t
 permissions-block-popups =
     .label = Prepovej pojavna okna
     .accesskey = r
@@ -667,7 +787,7 @@ permissions-addon-install-warning =
     .accesskey = P
 permissions-addon-exceptions =
     .label = Izjeme …
-    .accesskey = E
+    .accesskey = I
 permissions-a11y-privacy-checkbox =
     .label = Storitvam za dostopnost prepreči dostop do brskalnika
     .accesskey = a
@@ -679,18 +799,20 @@ collection-header = Zbiranje in uporaba podatkov { -brand-short-name }a
 collection-description = Trudimo se, da vam ponudimo izbiro in da zbiramo samo tisto, kar potrebujemo za razvoj in izboljšave { -brand-short-name }a za vse uporabnike. Pred sprejemanjem osebnih podatkov vas vedno vprašamo za dovoljenje.
 collection-privacy-notice = Obvestilo o zasebnosti
 collection-health-report =
-    .label = Dovoli { -brand-short-name }u pošiljanje tehničnih podatkov in podatkov o uporabi organizaciji { -vendor-short-name }
+    .label = { -brand-short-name }u dovoli pošiljanje tehničnih podatkov in podatkov o uporabi organizaciji { -vendor-short-name }
     .accesskey = h
 collection-health-report-link = Več o tem
+collection-studies =
+    .label = { -brand-short-name }u dovoli nameščanje in izvajanje raziskav
+collection-studies-link = Prikaži raziskave { -brand-short-name }a
+addon-recommendations =
+    .label = { -brand-short-name }u dovoli prilagojena priporočila o razširitvah
+addon-recommendations-link = Več o tem
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Pošiljanje podatkov je onemogočeno za to nastavitev graditve
-collection-browser-errors =
-    .label = Dovoli { -brand-short-name }u pošiljanje poročil o napakah brskalnika (vključno s sporočili o napakah) organizaciji { -vendor-short-name }
-    .accesskey = b
-collection-browser-errors-link = Več o tem
 collection-backlogged-crash-reports =
-    .label = Dovoli { -brand-short-name }u, da v vašem imenu pošilja poročila o sesutju iz zaloge
+    .label = { -brand-short-name }u dovoli, da v vašem imenu pošilja poročila o sesutju iz zaloge
     .accesskey = z
 collection-backlogged-crash-reports-link = Več o tem
 
@@ -731,3 +853,36 @@ certs-view =
 certs-devices =
     .label = Varnostne naprave …
     .accesskey = V
+space-alert-learn-more-button =
+    .label = Več o tem
+    .accesskey = t
+space-alert-over-5gb-pref-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Odpri možnosti
+           *[other] Odpri nastavitve
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] O
+        }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name }u zmanjkuje prostora. Vsebina spletnih strani morda ne bo prikazana pravilno. Shranjene podatke lahko izbrišete v Možnosti > Zasebnost in varnost > Piškotki in podatki strani.
+       *[other] { -brand-short-name }u zmanjkuje prostora. Vsebina spletnih strani morda ne bo prikazana pravilno. Shranjene podatke lahko izbrišete v Nastavitve > Zasebnost in varnost > Piškotki in podatki strani.
+    }
+space-alert-under-5gb-ok-button =
+    .label = V redu, razumem
+    .accesskey = V
+space-alert-under-5gb-message = Brskalniku { -brand-short-name } zmanjkuje prostora na disku. Strani se morda ne bodo prikazovale pravilno. Obiščite "Več o tem" za optimizacijo uporabe prostora na disku in boljšo izkušnjo brskanja po spletu.
+
+## The following strings are used in the Download section of settings
+
+desktop-folder-name = Namizje
+downloads-folder-name = Prenosi
+choose-download-folder-title = Izbira mape za prenose
+# Variables:
+#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
+save-files-to-cloud-storage =
+    .label = Shrani datoteke v { $service-name }

@@ -101,9 +101,8 @@ class PresentationDeviceRequest final : public nsIPresentationDeviceRequest {
 
   PresentationDeviceRequest(
       const nsTArray<nsString>& aUrls, const nsAString& aId,
-      const nsAString& aOrigin, uint64_t aWindowId,
-      nsIDOMEventTarget* aEventTarget, nsIPrincipal* aPrincipal,
-      nsIPresentationServiceCallback* aCallback,
+      const nsAString& aOrigin, uint64_t aWindowId, EventTarget* aEventTarget,
+      nsIPrincipal* aPrincipal, nsIPresentationServiceCallback* aCallback,
       nsIPresentationTransportBuilderConstructor* aBuilderConstructor);
 
  private:
@@ -127,9 +126,8 @@ NS_IMPL_ISUPPORTS(PresentationDeviceRequest, nsIPresentationDeviceRequest)
 
 PresentationDeviceRequest::PresentationDeviceRequest(
     const nsTArray<nsString>& aUrls, const nsAString& aId,
-    const nsAString& aOrigin, uint64_t aWindowId,
-    nsIDOMEventTarget* aEventTarget, nsIPrincipal* aPrincipal,
-    nsIPresentationServiceCallback* aCallback,
+    const nsAString& aOrigin, uint64_t aWindowId, EventTarget* aEventTarget,
+    nsIPrincipal* aPrincipal, nsIPresentationServiceCallback* aCallback,
     nsIPresentationTransportBuilderConstructor* aBuilderConstructor)
     : mRequestUrls(aUrls),
       mId(aId),
@@ -159,8 +157,8 @@ PresentationDeviceRequest::GetRequestURLs(nsIArray** aUrls) {
 
 NS_IMETHODIMP
 PresentationDeviceRequest::GetChromeEventHandler(
-    nsIDOMEventTarget** aChromeEventHandler) {
-  nsCOMPtr<nsIDOMEventTarget> handler(do_QueryReferent(mChromeEventHandler));
+    EventTarget** aChromeEventHandler) {
+  RefPtr<EventTarget> handler(do_QueryReferent(mChromeEventHandler));
   handler.forget(aChromeEventHandler);
   return NS_OK;
 }
@@ -506,14 +504,13 @@ nsresult PresentationService::HandleSessionRequest(
     ctrlChannel->Disconnect(NS_ERROR_DOM_OPERATION_ERR);
     return info->ReplyError(NS_ERROR_DOM_OPERATION_ERR);
   }
-  nsCOMPtr<nsISupports> promise;
+  RefPtr<Promise> promise;
   rv = glue->SendRequest(url, sessionId, device, getter_AddRefs(promise));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     ctrlChannel->Disconnect(rv);
     return info->ReplyError(NS_ERROR_DOM_OPERATION_ERR);
   }
-  nsCOMPtr<Promise> realPromise = do_QueryInterface(promise);
-  static_cast<PresentationPresentingInfo*>(info.get())->SetPromise(realPromise);
+  static_cast<PresentationPresentingInfo*>(info.get())->SetPromise(promise);
 
   return NS_OK;
 }
@@ -623,7 +620,7 @@ NS_IMETHODIMP
 PresentationService::StartSession(
     const nsTArray<nsString>& aUrls, const nsAString& aSessionId,
     const nsAString& aOrigin, const nsAString& aDeviceId, uint64_t aWindowId,
-    nsIDOMEventTarget* aEventTarget, nsIPrincipal* aPrincipal,
+    EventTarget* aEventTarget, nsIPrincipal* aPrincipal,
     nsIPresentationServiceCallback* aCallback,
     nsIPresentationTransportBuilderConstructor* aBuilderConstructor) {
   PRES_DEBUG("%s:id[%s]\n", __func__, NS_ConvertUTF16toUTF8(aSessionId).get());
@@ -756,7 +753,7 @@ PresentationService::SendSessionBinaryMsg(const nsAString& aSessionId,
 
 NS_IMETHODIMP
 PresentationService::SendSessionBlob(const nsAString& aSessionId, uint8_t aRole,
-                                     nsIDOMBlob* aBlob) {
+                                     Blob* aBlob) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!aSessionId.IsEmpty());
   MOZ_ASSERT(aRole == nsIPresentationService::ROLE_CONTROLLER ||

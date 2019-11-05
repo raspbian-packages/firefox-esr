@@ -16,8 +16,8 @@ using namespace mozilla::a11y;
 
 NS_IMPL_ISUPPORTS_INHERITED0(ARIAGridAccessibleWrap, ARIAGridAccessible)
 
-IMPL_IUNKNOWN_INHERITED1(ARIAGridAccessibleWrap, AccessibleWrap,
-                         ia2AccessibleTable)
+IMPL_IUNKNOWN_INHERITED2(ARIAGridAccessibleWrap, AccessibleWrap,
+                         HyperTextAccessibleWrap, ia2AccessibleTable)
 
 void ARIAGridAccessibleWrap::Shutdown() {
   ia2AccessibleTable::mTable = nullptr;

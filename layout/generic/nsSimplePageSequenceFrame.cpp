@@ -6,13 +6,15 @@
 
 #include "nsSimplePageSequenceFrame.h"
 
+#include "mozilla/PresShell.h"
+#include "mozilla/dom/HTMLCanvasElement.h"
+
 #include "DateTimeFormat.h"
 #include "nsCOMPtr.h"
 #include "nsDeviceContext.h"
 #include "nsPresContext.h"
 #include "gfxContext.h"
 #include "nsGkAtoms.h"
-#include "nsIPresShell.h"
 #include "nsIPrintSettings.h"
 #include "nsPageFrame.h"
 #include "nsSubDocumentFrame.h"
@@ -21,7 +23,6 @@
 #include "nsContentUtils.h"
 #include "nsDisplayList.h"
 #include "nsHTMLCanvasFrame.h"
-#include "mozilla/dom/HTMLCanvasElement.h"
 #include "nsICanvasRenderingContextInternal.h"
 #include "nsServiceManagerUtils.h"
 #include <algorithm>
@@ -37,24 +38,28 @@ mozilla::LazyLogModule gLayoutPrintingLog("printing-layout");
 #define PR_PL(_p1) MOZ_LOG(gLayoutPrintingLog, mozilla::LogLevel::Debug, _p1)
 
 nsSimplePageSequenceFrame* NS_NewSimplePageSequenceFrame(
-    nsIPresShell* aPresShell, nsStyleContext* aContext) {
-  return new (aPresShell) nsSimplePageSequenceFrame(aContext);
+    PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsSimplePageSequenceFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsSimplePageSequenceFrame)
 
-nsSimplePageSequenceFrame::nsSimplePageSequenceFrame(nsStyleContext* aContext)
-    : nsContainerFrame(aContext, kClassID),
+nsSimplePageSequenceFrame::nsSimplePageSequenceFrame(
+    ComputedStyle* aStyle, nsPresContext* aPresContext)
+    : nsContainerFrame(aStyle, aPresContext, kClassID),
       mTotalPages(-1),
       mCalledBeginPage(false),
       mCurrentCanvasListSetup(false) {
   nscoord halfInch = PresContext()->CSSTwipsToAppUnits(NS_INCHES_TO_TWIPS(0.5));
   mMargin.SizeTo(halfInch, halfInch, halfInch, halfInch);
 
-  // XXX Unsafe to assume successful allocation
   mPageData = new nsSharedPageData();
-  mPageData->mHeadFootFont = *PresContext()->GetDefaultFont(
-      kGenericFont_serif, aContext->StyleFont()->mLanguage);
+  mPageData->mHeadFootFont =
+      *PresContext()
+           ->Document()
+           ->GetFontPrefsForLang(aStyle->StyleFont()->mLanguage)
+           ->GetDefaultFont(StyleGenericFontFamily::Serif);
   mPageData->mHeadFootFont.size = nsPresContext::CSSPointsToAppUnits(10);
 
   // Doing this here so we only have to go get these formats once
@@ -68,7 +73,7 @@ nsSimplePageSequenceFrame::~nsSimplePageSequenceFrame() {
 }
 
 NS_QUERYFRAME_HEAD(nsSimplePageSequenceFrame)
-NS_QUERYFRAME_ENTRY(nsIPageSequenceFrame)
+  NS_QUERYFRAME_ENTRY(nsIPageSequenceFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 //----------------------------------------------------------------------
@@ -136,8 +141,8 @@ void nsSimplePageSequenceFrame::Reflow(nsPresContext* aPresContext,
                                        const ReflowInput& aReflowInput,
                                        nsReflowStatus& aStatus) {
   MarkInReflow();
-  NS_PRECONDITION(aPresContext->IsRootPaginatedDocument(),
-                  "A Page Sequence is only for real pages");
+  MOZ_ASSERT(aPresContext->IsRootPaginatedDocument(),
+             "A Page Sequence is only for real pages");
   DO_GLOBAL_REFLOW_COUNT("nsSimplePageSequenceFrame");
   DISPLAY_REFLOW(aPresContext, this, aReflowInput, aDesiredSize, aStatus);
   MOZ_ASSERT(aStatus.IsEmpty(), "Caller should pass a fresh reflow status!");
@@ -185,7 +190,7 @@ void nsSimplePageSequenceFrame::Reflow(nsPresContext* aPresContext,
 
     nsIntMargin marginTwips;
     mPageData->mPrintSettings->GetMarginInTwips(marginTwips);
-    mMargin = aPresContext->CSSTwipsToAppUnits(marginTwips + unwriteableTwips);
+    mMargin = nsPresContext::CSSTwipsToAppUnits(marginTwips + unwriteableTwips);
 
     int16_t printType;
     mPageData->mPrintSettings->GetPrintRange(&printType);
@@ -202,7 +207,7 @@ void nsSimplePageSequenceFrame::Reflow(nsPresContext* aPresContext,
     edgeTwips.right = clamped(edgeTwips.right, 0, inchInTwips);
 
     mPageData->mEdgePaperMargin =
-        aPresContext->CSSTwipsToAppUnits(edgeTwips + unwriteableTwips);
+        nsPresContext::CSSTwipsToAppUnits(edgeTwips + unwriteableTwips);
   }
 
   // *** Special Override ***
@@ -316,7 +321,7 @@ void nsSimplePageSequenceFrame::Reflow(nsPresContext* aPresContext,
   NS_FRAME_SET_TRUNCATION(aStatus, aReflowInput, aDesiredSize);
 }
 
-  //----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 #ifdef DEBUG_FRAME_DUMP
 nsresult nsSimplePageSequenceFrame::GetFrameName(nsAString& aResult) const {
@@ -438,7 +443,7 @@ static void GetPrintCanvasElementsInFrame(
       // If there is a canvasFrame, try to get actual canvas element.
       if (canvasFrame) {
         HTMLCanvasElement* canvas =
-            HTMLCanvasElement::FromContentOrNull(canvasFrame->GetContent());
+            HTMLCanvasElement::FromNodeOrNull(canvasFrame->GetContent());
         if (canvas && canvas->GetMozPrintCallback()) {
           aArr->AppendElement(canvas);
           continue;
@@ -658,10 +663,10 @@ nsSimplePageSequenceFrame::PrintNextPage() {
 
     nsRect drawingRect(nsPoint(0, 0), currentPageFrame->GetSize());
     nsRegion drawingRegion(drawingRect);
-    nsLayoutUtils::PaintFrame(
-        gCtx, currentPageFrame, drawingRegion, NS_RGBA(0, 0, 0, 0),
-        nsDisplayListBuilderMode::PAINTING,
-        nsLayoutUtils::PaintFrameFlags::PAINT_SYNC_DECODE_IMAGES);
+    nsLayoutUtils::PaintFrame(gCtx, currentPageFrame, drawingRegion,
+                              NS_RGBA(0, 0, 0, 0),
+                              nsDisplayListBuilderMode::Painting,
+                              nsLayoutUtils::PaintFrameFlags::SyncDecodeImages);
   }
   return rv;
 }
@@ -691,6 +696,8 @@ inline gfx::Matrix4x4 ComputePageSequenceTransform(nsIFrame* aFrame,
 
 void nsSimplePageSequenceFrame::BuildDisplayList(
     nsDisplayListBuilder* aBuilder, const nsDisplayListSet& aLists) {
+  aBuilder->SetInPageSequence(true);
+  aBuilder->SetDisablePartialUpdates(true);
   DisplayBorderBackgroundOutline(aBuilder, aLists);
 
   nsDisplayList content;
@@ -709,8 +716,7 @@ void nsSimplePageSequenceFrame::BuildDisplayList(
       if (child->GetVisualOverflowRectRelativeToParent().Intersects(visible)) {
         nsDisplayListBuilder::AutoBuildingDisplayList buildingForChild(
             aBuilder, child, visible - child->GetPosition(),
-            visible - child->GetPosition(),
-            aBuilder->IsAtRootOfPseudoStackingContext());
+            visible - child->GetPosition());
         child->BuildDisplayListForStackingContext(aBuilder, &content);
         aBuilder->ResetMarkedFramesForDisplayList(this);
       }
@@ -718,11 +724,12 @@ void nsSimplePageSequenceFrame::BuildDisplayList(
     }
   }
 
-  content.AppendToTop(MakeDisplayItem<nsDisplayTransform>(
-      aBuilder, this, &content, content.GetVisibleRect(),
-      ::ComputePageSequenceTransform));
+  content.AppendNewToTop<nsDisplayTransform>(aBuilder, this, &content,
+                                             content.GetBuildingRect(), 0,
+                                             ::ComputePageSequenceTransform);
 
   aLists.Content()->AppendToTop(&content);
+  aBuilder->SetInPageSequence(false);
 }
 
 //------------------------------------------------------------------------------

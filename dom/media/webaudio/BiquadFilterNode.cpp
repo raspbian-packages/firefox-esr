@@ -34,7 +34,7 @@ static void SetParamsOnBiquad(WebCore::Biquad& aBiquad, float aSampleRate,
   double normalizedFrequency = aFrequency / nyquist;
 
   if (aDetune) {
-    normalizedFrequency *= std::pow(2.0, aDetune / 1200);
+    normalizedFrequency *= std::exp2(aDetune / 1200);
   }
 
   switch (aType) {
@@ -63,7 +63,7 @@ static void SetParamsOnBiquad(WebCore::Biquad& aBiquad, float aSampleRate,
       aBiquad.setAllpassParams(normalizedFrequency, aQ);
       break;
     default:
-      NS_NOTREACHED("We should never see the alternate names here");
+      MOZ_ASSERT_UNREACHABLE("We should never see the alternate names here");
       break;
   }
 }
@@ -84,7 +84,7 @@ class BiquadFilterNodeEngine final : public AudioNodeEngine {
         mGain(0.f),
         mWindowID(aWindowID) {}
 
-  enum Parameteres { TYPE, FREQUENCY, DETUNE, Q, GAIN };
+  enum Parameters { TYPE, FREQUENCY, DETUNE, Q, GAIN };
   void SetInt32Parameter(uint32_t aIndex, int32_t aValue) override {
     switch (aIndex) {
       case TYPE:
@@ -140,7 +140,7 @@ class BiquadFilterNodeEngine final : public AudioNodeEngine {
           RefPtr<PlayingRefChangeHandler> refchanged =
               new PlayingRefChangeHandler(aStream,
                                           PlayingRefChangeHandler::RELEASE);
-          aStream->Graph()->DispatchToMainThreadAfterStreamStateUpdate(
+          aStream->Graph()->DispatchToMainThreadStableState(
               refchanged.forget());
         }
 
@@ -155,8 +155,7 @@ class BiquadFilterNodeEngine final : public AudioNodeEngine {
         RefPtr<PlayingRefChangeHandler> refchanged =
             new PlayingRefChangeHandler(aStream,
                                         PlayingRefChangeHandler::ADDREF);
-        aStream->Graph()->DispatchToMainThreadAfterStreamStateUpdate(
-            refchanged.forget());
+        aStream->Graph()->DispatchToMainThreadStableState(refchanged.forget());
       } else {  // Help people diagnose bug 924718
         WebAudioUtils::LogToDeveloperConsole(
             mWindowID, "BiquadFilterChannelCountChangeWarning");
@@ -225,28 +224,28 @@ class BiquadFilterNodeEngine final : public AudioNodeEngine {
 BiquadFilterNode::BiquadFilterNode(AudioContext* aContext)
     : AudioNode(aContext, 2, ChannelCountMode::Max,
                 ChannelInterpretation::Speakers),
-      mType(BiquadFilterType::Lowpass),
-      mFrequency(new AudioParam(
-          this, BiquadFilterNodeEngine::FREQUENCY, "frequency", 350.f,
-          -(aContext->SampleRate() / 2), aContext->SampleRate() / 2)),
-      mDetune(
-          new AudioParam(this, BiquadFilterNodeEngine::DETUNE, "detune", 0.f)),
-      mQ(new AudioParam(this, BiquadFilterNodeEngine::Q, "Q", 1.f)),
-      mGain(new AudioParam(this, BiquadFilterNodeEngine::GAIN, "gain", 0.f)) {
-  uint64_t windowID = aContext->GetParentObject()->WindowID();
+      mType(BiquadFilterType::Lowpass) {
+  CreateAudioParam(mFrequency, BiquadFilterNodeEngine::FREQUENCY, "frequency",
+                   350.f, -(aContext->SampleRate() / 2),
+                   aContext->SampleRate() / 2);
+  CreateAudioParam(mDetune, BiquadFilterNodeEngine::DETUNE, "detune", 0.f);
+  CreateAudioParam(mQ, BiquadFilterNodeEngine::Q, "Q", 1.f);
+  CreateAudioParam(mGain, BiquadFilterNodeEngine::GAIN, "gain", 0.f);
+
+  uint64_t windowID = 0;
+  if (aContext->GetParentObject()) {
+    windowID = aContext->GetParentObject()->WindowID();
+  }
   BiquadFilterNodeEngine* engine =
       new BiquadFilterNodeEngine(this, aContext->Destination(), windowID);
   mStream = AudioNodeStream::Create(
       aContext, engine, AudioNodeStream::NO_STREAM_FLAGS, aContext->Graph());
 }
 
-/* static */ already_AddRefed<BiquadFilterNode> BiquadFilterNode::Create(
+/* static */
+already_AddRefed<BiquadFilterNode> BiquadFilterNode::Create(
     AudioContext& aAudioContext, const BiquadFilterOptions& aOptions,
     ErrorResult& aRv) {
-  if (aAudioContext.CheckClosed(aRv)) {
-    return nullptr;
-  }
-
   RefPtr<BiquadFilterNode> audioNode = new BiquadFilterNode(&aAudioContext);
 
   audioNode->Initialize(aOptions, aRv);
@@ -291,7 +290,7 @@ size_t BiquadFilterNode::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
 
 JSObject* BiquadFilterNode::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {
-  return BiquadFilterNodeBinding::Wrap(aCx, this, aGivenProto);
+  return BiquadFilterNode_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void BiquadFilterNode::SetType(BiquadFilterType aType) {

@@ -9,7 +9,10 @@ function test() {
   var tab = BrowserTestUtils.addTab(gBrowser, TESTROOT + "file_pdfjs_test.pdf");
   // Test: "Open with" dialog comes up when pdf.js is not selected as the default
   // handler.
-  addWindowListener("chrome://mozapps/content/downloads/unknownContentType.xul", finish);
+  addWindowListener(
+    "chrome://mozapps/content/downloads/unknownContentType.xul",
+    finish
+  );
 
   waitForExplicitFinish();
   registerCleanupFunction(function() {
@@ -19,10 +22,18 @@ function test() {
 }
 
 function changeMimeHandler(preferredAction, alwaysAskBeforeHandling) {
-  let handlerService = Cc["@mozilla.org/uriloader/handler-service;1"].getService(Ci.nsIHandlerService);
+  let handlerService = Cc[
+    "@mozilla.org/uriloader/handler-service;1"
+  ].getService(Ci.nsIHandlerService);
   let mimeService = Cc["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService);
-  let handlerInfo = mimeService.getFromTypeAndExtension("application/pdf", "pdf");
-  var oldAction = [handlerInfo.preferredAction, handlerInfo.alwaysAskBeforeHandling];
+  let handlerInfo = mimeService.getFromTypeAndExtension(
+    "application/pdf",
+    "pdf"
+  );
+  var oldAction = [
+    handlerInfo.preferredAction,
+    handlerInfo.alwaysAskBeforeHandling,
+  ];
 
   // Change and save mime handler settings
   handlerInfo.alwaysAskBeforeHandling = alwaysAskBeforeHandling;
@@ -30,13 +41,22 @@ function changeMimeHandler(preferredAction, alwaysAskBeforeHandling) {
   handlerService.store(handlerInfo);
 
   Services.obs.notifyObservers(null, "pdfjs:handlerChanged");
+  Services.ppmm.sharedData.flush();
 
   // Refresh data
   handlerInfo = mimeService.getFromTypeAndExtension("application/pdf", "pdf");
 
   // Test: Mime handler was updated
-  is(handlerInfo.alwaysAskBeforeHandling, alwaysAskBeforeHandling, "always-ask prompt change successful");
-  is(handlerInfo.preferredAction, preferredAction, "mime handler change successful");
+  is(
+    handlerInfo.alwaysAskBeforeHandling,
+    alwaysAskBeforeHandling,
+    "always-ask prompt change successful"
+  );
+  is(
+    handlerInfo.preferredAction,
+    preferredAction,
+    "mime handler change successful"
+  );
 
   return oldAction;
 }
@@ -47,14 +67,17 @@ function addWindowListener(aURL, aCallback) {
       info("window opened, waiting for focus");
       Services.wm.removeListener(this);
 
-      var domwindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-                                .getInterface(Ci.nsIDOMWindow);
+      var domwindow = aXULWindow.docShell.domWindow;
       waitForFocus(function() {
-        is(domwindow.document.location.href, aURL, "should have seen the right window open");
+        is(
+          domwindow.document.location.href,
+          aURL,
+          "should have seen the right window open"
+        );
         domwindow.close();
         aCallback();
       }, domwindow);
     },
-    onCloseWindow(aXULWindow) { },
+    onCloseWindow(aXULWindow) {},
   });
 }

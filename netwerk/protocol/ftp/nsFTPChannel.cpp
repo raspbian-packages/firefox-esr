@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim:set ts=4 sts=4 sw=4 et cin: */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=4 sts=2 sw=2 et cin: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -27,13 +27,14 @@ extern LazyLogModule gFTPLog;
 NS_IMPL_ISUPPORTS_INHERITED(nsFtpChannel, nsBaseChannel, nsIUploadChannel,
                             nsIResumableChannel, nsIFTPChannel,
                             nsIProxiedChannel, nsIForcePendingChannel,
+                            nsISupportsWeakReference,
                             nsIChannelWithDivertableParentListener)
 
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsFtpChannel::SetUploadStream(nsIInputStream *stream,
-                              const nsACString &contentType,
+nsFtpChannel::SetUploadStream(nsIInputStream* stream,
+                              const nsACString& contentType,
                               int64_t contentLength) {
   NS_ENSURE_TRUE(!Pending(), NS_ERROR_IN_PROGRESS);
 
@@ -45,17 +46,17 @@ nsFtpChannel::SetUploadStream(nsIInputStream *stream,
 }
 
 NS_IMETHODIMP
-nsFtpChannel::GetUploadStream(nsIInputStream **stream) {
-  NS_ENSURE_ARG_POINTER(stream);
-  *stream = mUploadStream;
-  NS_IF_ADDREF(*stream);
+nsFtpChannel::GetUploadStream(nsIInputStream** aStream) {
+  NS_ENSURE_ARG_POINTER(aStream);
+  nsCOMPtr<nsIInputStream> stream = mUploadStream;
+  stream.forget(aStream);
   return NS_OK;
 }
 
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsFtpChannel::ResumeAt(uint64_t aStartPos, const nsACString &aEntityID) {
+nsFtpChannel::ResumeAt(uint64_t aStartPos, const nsACString& aEntityID) {
   NS_ENSURE_TRUE(!Pending(), NS_ERROR_IN_PROGRESS);
   mEntityID = aEntityID;
   mStartPos = aStartPos;
@@ -64,7 +65,7 @@ nsFtpChannel::ResumeAt(uint64_t aStartPos, const nsACString &aEntityID) {
 }
 
 NS_IMETHODIMP
-nsFtpChannel::GetEntityID(nsACString &entityID) {
+nsFtpChannel::GetEntityID(nsACString& entityID) {
   if (mEntityID.IsEmpty()) return NS_ERROR_NOT_RESUMABLE;
 
   entityID = mEntityID;
@@ -73,33 +74,30 @@ nsFtpChannel::GetEntityID(nsACString &entityID) {
 
 //-----------------------------------------------------------------------------
 NS_IMETHODIMP
-nsFtpChannel::GetProxyInfo(nsIProxyInfo **aProxyInfo) {
-  *aProxyInfo = ProxyInfo();
-  NS_IF_ADDREF(*aProxyInfo);
+nsFtpChannel::GetProxyInfo(nsIProxyInfo** aProxyInfo) {
+  nsCOMPtr<nsIProxyInfo> info = ProxyInfo();
+  info.forget(aProxyInfo);
   return NS_OK;
 }
 
 //-----------------------------------------------------------------------------
 
-nsresult nsFtpChannel::OpenContentStream(bool async, nsIInputStream **result,
-                                         nsIChannel **channel) {
+nsresult nsFtpChannel::OpenContentStream(bool async, nsIInputStream** result,
+                                         nsIChannel** channel) {
   if (!async) return NS_ERROR_NOT_IMPLEMENTED;
 
-  nsFtpState *state = new nsFtpState();
-  if (!state) return NS_ERROR_OUT_OF_MEMORY;
-  NS_ADDREF(state);
+  RefPtr<nsFtpState> state = new nsFtpState();
 
   nsresult rv = state->Init(this);
   if (NS_FAILED(rv)) {
-    NS_RELEASE(state);
     return rv;
   }
 
-  *result = state;
+  state.forget(result);
   return NS_OK;
 }
 
-bool nsFtpChannel::GetStatusArg(nsresult status, nsString &statusArg) {
+bool nsFtpChannel::GetStatusArg(nsresult status, nsString& statusArg) {
   nsAutoCString host;
   URI()->GetHost(host);
   CopyUTF8toUTF16(host, statusArg);
@@ -113,10 +111,10 @@ void nsFtpChannel::OnCallbacksChanged() { mFTPEventSink = nullptr; }
 namespace {
 
 class FTPEventSinkProxy final : public nsIFTPEventSink {
-  ~FTPEventSinkProxy() {}
+  ~FTPEventSinkProxy() = default;
 
  public:
-  explicit FTPEventSinkProxy(nsIFTPEventSink *aTarget)
+  explicit FTPEventSinkProxy(nsIFTPEventSink* aTarget)
       : mTarget(aTarget), mEventTarget(GetCurrentThreadEventTarget()) {}
 
   NS_DECL_THREADSAFE_ISUPPORTS
@@ -124,8 +122,8 @@ class FTPEventSinkProxy final : public nsIFTPEventSink {
 
   class OnFTPControlLogRunnable : public Runnable {
    public:
-    OnFTPControlLogRunnable(nsIFTPEventSink *aTarget, bool aServer,
-                            const char *aMessage)
+    OnFTPControlLogRunnable(nsIFTPEventSink* aTarget, bool aServer,
+                            const char* aMessage)
         : mozilla::Runnable("FTPEventSinkProxy::OnFTPControlLogRunnable"),
           mTarget(aTarget),
           mServer(aServer),
@@ -147,7 +145,7 @@ class FTPEventSinkProxy final : public nsIFTPEventSink {
 NS_IMPL_ISUPPORTS(FTPEventSinkProxy, nsIFTPEventSink)
 
 NS_IMETHODIMP
-FTPEventSinkProxy::OnFTPControlLog(bool aServer, const char *aMsg) {
+FTPEventSinkProxy::OnFTPControlLog(bool aServer, const char* aMsg) {
   RefPtr<OnFTPControlLogRunnable> r =
       new OnFTPControlLogRunnable(mTarget, aServer, aMsg);
   return mEventTarget->Dispatch(r, NS_DISPATCH_NORMAL);
@@ -161,7 +159,7 @@ FTPEventSinkProxy::OnFTPControlLogRunnable::Run() {
 
 }  // namespace
 
-void nsFtpChannel::GetFTPEventSink(nsCOMPtr<nsIFTPEventSink> &aResult) {
+void nsFtpChannel::GetFTPEventSink(nsCOMPtr<nsIFTPEventSink>& aResult) {
   if (!mFTPEventSink) {
     nsCOMPtr<nsIFTPEventSink> ftpSink;
     GetCallback(ftpSink);
@@ -184,7 +182,7 @@ nsFtpChannel::ForcePending(bool aForcePending) {
 }
 
 NS_IMETHODIMP
-nsFtpChannel::IsPending(bool *result) {
+nsFtpChannel::IsPending(bool* result) {
   *result = Pending();
   return NS_OK;
 }
@@ -197,7 +195,7 @@ NS_IMETHODIMP
 nsFtpChannel::Suspend() {
   LOG(("nsFtpChannel::Suspend [this=%p]\n", this));
 
-  nsresult rv = nsBaseChannel::Suspend();
+  nsresult rv = SuspendInternal();
 
   nsresult rvParentChannel = NS_OK;
   if (mParentChannel) {
@@ -211,7 +209,7 @@ NS_IMETHODIMP
 nsFtpChannel::Resume() {
   LOG(("nsFtpChannel::Resume [this=%p]\n", this));
 
-  nsresult rv = nsBaseChannel::Resume();
+  nsresult rv = ResumeInternal();
 
   nsresult rvParentChannel = NS_OK;
   if (mParentChannel) {
@@ -227,9 +225,14 @@ nsFtpChannel::Resume() {
 
 NS_IMETHODIMP
 nsFtpChannel::MessageDiversionStarted(
-    ADivertableParentChannel *aParentChannel) {
+    ADivertableParentChannel* aParentChannel) {
   MOZ_ASSERT(!mParentChannel);
   mParentChannel = aParentChannel;
+  // If the channel is suspended, propagate that info to the parent's mEventQ.
+  uint32_t suspendCount = mSuspendCount;
+  while (suspendCount--) {
+    mParentChannel->SuspendMessageDiversion();
+  }
   return NS_OK;
 }
 
@@ -244,13 +247,14 @@ nsFtpChannel::MessageDiversionStop() {
 NS_IMETHODIMP
 nsFtpChannel::SuspendInternal() {
   LOG(("nsFtpChannel::SuspendInternal [this=%p]\n", this));
-
+  ++mSuspendCount;
   return nsBaseChannel::Suspend();
 }
 
 NS_IMETHODIMP
 nsFtpChannel::ResumeInternal() {
   LOG(("nsFtpChannel::ResumeInternal [this=%p]\n", this));
-
+  NS_ENSURE_TRUE(mSuspendCount > 0, NS_ERROR_UNEXPECTED);
+  --mSuspendCount;
   return nsBaseChannel::Resume();
 }

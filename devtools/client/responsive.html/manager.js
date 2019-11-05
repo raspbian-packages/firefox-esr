@@ -7,13 +7,12 @@
 const { Ci } = require("chrome");
 const promise = require("promise");
 const Services = require("Services");
-const EventEmitter = require("devtools/shared/old-event-emitter");
-
-const TOOL_URL = "chrome://devtools/content/responsive.html/index.xhtml";
+const EventEmitter = require("devtools/shared/event-emitter");
 
 loader.lazyRequireGetter(this, "DebuggerClient", "devtools/shared/client/debugger-client", true);
 loader.lazyRequireGetter(this, "DebuggerServer", "devtools/server/main", true);
-loader.lazyRequireGetter(this, "throttlingProfiles", "devtools/client/shared/network-throttling-profiles");
+loader.lazyRequireGetter(this, "throttlingProfiles", "devtools/client/shared/components/throttling/profiles");
+loader.lazyRequireGetter(this, "SettingOnboardingTooltip", "devtools/client/responsive.html/setting-onboarding-tooltip");
 loader.lazyRequireGetter(this, "swapToInnerBrowser", "devtools/client/responsive.html/browser/swap", true);
 loader.lazyRequireGetter(this, "startup", "devtools/client/responsive.html/utils/window", true);
 loader.lazyRequireGetter(this, "message", "devtools/client/responsive.html/utils/message");
@@ -21,9 +20,16 @@ loader.lazyRequireGetter(this, "showNotification", "devtools/client/responsive.h
 loader.lazyRequireGetter(this, "l10n", "devtools/client/responsive.html/utils/l10n");
 loader.lazyRequireGetter(this, "EmulationFront", "devtools/shared/fronts/emulation", true);
 loader.lazyRequireGetter(this, "PriorityLevels", "devtools/client/shared/components/NotificationBox", true);
+loader.lazyRequireGetter(this, "TargetFactory", "devtools/client/framework/target", true);
+loader.lazyRequireGetter(this, "gDevTools", "devtools/client/framework/devtools", true);
+loader.lazyRequireGetter(this, "Telemetry", "devtools/client/shared/telemetry");
+loader.lazyRequireGetter(this, "asyncStorage", "devtools/shared/async-storage");
+
+const TOOL_URL = "chrome://devtools/content/responsive.html/index.xhtml";
 
 const RELOAD_CONDITION_PREF_PREFIX = "devtools.responsive.reloadConditions.";
 const RELOAD_NOTIFICATION_PREF = "devtools.responsive.reloadNotification.enabled";
+const SHOW_SETTING_TOOLTIP_PREF = "devtools.responsive.show-setting-tooltip";
 
 function debug(msg) {
   // console.log(`RDM manager: ${msg}`);
@@ -34,6 +40,8 @@ function debug(msg) {
  * opening and closing the responsive UI.
  */
 const ResponsiveUIManager = exports.ResponsiveUIManager = {
+  _telemetry: new Telemetry(),
+
   activeTabs: new Map(),
 
   /**
@@ -45,15 +53,18 @@ const ResponsiveUIManager = exports.ResponsiveUIManager = {
    *        The browser tab.
    * @param options
    *        Other options associated with toggling.  Currently includes:
-   *        - `command`: Whether initiated via GCLI command bar or toolbox button
+   *        - `trigger`: String denoting the UI entry point, such as:
+   *          - `toolbox`:  Toolbox Button
+   *          - `menu`:     Web Developer menu item
+   *          - `shortcut`: Keyboard shortcut
    * @return Promise
    *         Resolved when the toggling has completed.  If the UI has opened,
    *         it is resolved to the ResponsiveUI instance for this tab.  If the
    *         the UI has closed, there is no resolution value.
    */
-  toggle(window, tab, options) {
-    let action = this.isActiveForTab(tab) ? "close" : "open";
-    let completed = this[action + "IfNeeded"](window, tab, options);
+  toggle(window, tab, options = {}) {
+    const action = this.isActiveForTab(tab) ? "close" : "open";
+    const completed = this[action + "IfNeeded"](window, tab, options);
     completed.catch(console.error);
     return completed;
   },
@@ -67,32 +78,66 @@ const ResponsiveUIManager = exports.ResponsiveUIManager = {
    *        The browser tab.
    * @param options
    *        Other options associated with opening.  Currently includes:
-   *        - `command`: Whether initiated via GCLI command bar or toolbox button
+   *        - `trigger`: String denoting the UI entry point, such as:
+   *          - `toolbox`:  Toolbox Button
+   *          - `menu`:     Web Developer menu item
+   *          - `shortcut`: Keyboard shortcut
    * @return Promise
    *         Resolved to the ResponsiveUI instance for this tab when opening is
    *         complete.
    */
-  async openIfNeeded(window, tab, options) {
+  async openIfNeeded(window, tab, options = {}) {
     if (!tab.linkedBrowser.isRemoteBrowser) {
-      this.showRemoteOnlyNotification(window, tab, options);
+      await this.showRemoteOnlyNotification(window, tab, options);
       return promise.reject(new Error("RDM only available for remote tabs."));
-    }
-    // Remove this once we support this case in bug 1306975.
-    if (tab.linkedBrowser.hasAttribute("usercontextid")) {
-      this.showNoContainerTabsNotification(window, tab, options);
-      return promise.reject(new Error("RDM not available for container tabs."));
     }
     if (!this.isActiveForTab(tab)) {
       this.initMenuCheckListenerFor(window);
 
-      let ui = new ResponsiveUI(window, tab);
+      const ui = new ResponsiveUI(window, tab);
       this.activeTabs.set(tab, ui);
+
+      // Explicitly not await on telemetry to avoid delaying RDM opening
+      this.recordTelemetryOpen(window, tab, options);
+
       await this.setMenuCheckFor(tab, window);
       await ui.inited;
       this.emit("on", { tab });
     }
 
     return this.getResponsiveUIForTab(tab);
+  },
+
+  /**
+   * Record all telemetry probes related to RDM opening.
+   */
+  async recordTelemetryOpen(window, tab, options) {
+    // Track whether a toolbox was opened before RDM was opened.
+    const isKnownTab = TargetFactory.isKnownTab(tab);
+    let toolbox;
+    if (isKnownTab) {
+      const target = await TargetFactory.forTab(tab);
+      toolbox = gDevTools.getToolbox(target);
+    }
+    const hostType = toolbox ? toolbox.hostType : "none";
+    const hasToolbox = !!toolbox;
+    const tel = this._telemetry;
+    if (hasToolbox) {
+      tel.scalarAdd("devtools.responsive.toolbox_opened_first", 1);
+    }
+
+    tel.recordEvent("activate", "responsive_design", null, {
+      "host": hostType,
+      "width": Math.ceil(window.outerWidth / 50) * 50,
+      "session_id": toolbox ? toolbox.sessionId : -1,
+    });
+
+    // Track opens keyed by the UI entry point used.
+    let { trigger } = options;
+    if (!trigger) {
+      trigger = "unknown";
+    }
+    tel.keyedScalarAdd("devtools.responsive.open_trigger", trigger, 1);
   },
 
   /**
@@ -104,19 +149,23 @@ const ResponsiveUIManager = exports.ResponsiveUIManager = {
    *        The browser tab.
    * @param options
    *        Other options associated with closing.  Currently includes:
-   *        - `command`: Whether initiated via GCLI command bar or toolbox button
+   *        - `trigger`: String denoting the UI entry point, such as:
+   *          - `toolbox`:  Toolbox Button
+   *          - `menu`:     Web Developer menu item
+   *          - `shortcut`: Keyboard shortcut
    *        - `reason`: String detailing the specific cause for closing
    * @return Promise
    *         Resolved (with no value) when closing is complete.
    */
-  async closeIfNeeded(window, tab, options) {
+  async closeIfNeeded(window, tab, options = {}) {
     if (this.isActiveForTab(tab)) {
-      let ui = this.activeTabs.get(tab);
-      let destroyed = await ui.destroy(options);
+      const ui = this.activeTabs.get(tab);
+      const destroyed = await ui.destroy(options);
       if (!destroyed) {
         // Already in the process of destroying, abort.
         return;
       }
+
       this.activeTabs.delete(tab);
 
       if (!this.isActiveForWindow(window)) {
@@ -124,7 +173,27 @@ const ResponsiveUIManager = exports.ResponsiveUIManager = {
       }
       this.emit("off", { tab });
       await this.setMenuCheckFor(tab, window);
+
+      // Explicitly not await on telemetry to avoid delaying RDM closing
+      this.recordTelemetryClose(window, tab);
     }
+  },
+
+  async recordTelemetryClose(window, tab) {
+    const isKnownTab = TargetFactory.isKnownTab(tab);
+    let toolbox;
+    if (isKnownTab) {
+      const target = await TargetFactory.forTab(tab);
+      toolbox = gDevTools.getToolbox(target);
+    }
+
+    const hostType = toolbox ? toolbox.hostType : "none";
+    const t = this._telemetry;
+    t.recordEvent("deactivate", "responsive_design", null, {
+      "host": hostType,
+      "width": Math.ceil(window.outerWidth / 50) * 50,
+      "session_id": toolbox ? toolbox.sessionId : -1,
+    });
   },
 
   /**
@@ -161,51 +230,18 @@ const ResponsiveUIManager = exports.ResponsiveUIManager = {
     return this.activeTabs.get(tab);
   },
 
-  /**
-   * Handle GCLI commands.
-   *
-   * @param window
-   *        The main browser chrome window.
-   * @param tab
-   *        The browser tab.
-   * @param command
-   *        The GCLI command name.
-   * @param args
-   *        The GCLI command arguments.
-   */
-  handleGcliCommand(window, tab, command, args) {
-    let completed;
-    switch (command) {
-      case "resize to":
-        completed = this.openIfNeeded(window, tab, { command: true });
-        this.activeTabs.get(tab).setViewportSize(args);
-        break;
-      case "resize on":
-        completed = this.openIfNeeded(window, tab, { command: true });
-        break;
-      case "resize off":
-        completed = this.closeIfNeeded(window, tab, { command: true });
-        break;
-      case "resize toggle":
-        completed = this.toggle(window, tab, { command: true });
-        break;
-      default:
-    }
-    completed.catch(console.error);
-  },
-
   handleMenuCheck({target}) {
     ResponsiveUIManager.setMenuCheckFor(target);
   },
 
   initMenuCheckListenerFor(window) {
-    let { tabContainer } = window.gBrowser;
+    const { tabContainer } = window.gBrowser;
     tabContainer.addEventListener("TabSelect", this.handleMenuCheck);
   },
 
   removeMenuCheckListenerFor(window) {
     if (window && window.gBrowser && window.gBrowser.tabContainer) {
-      let { tabContainer } = window.gBrowser;
+      const { tabContainer } = window.gBrowser;
       tabContainer.removeEventListener("TabSelect", this.handleMenuCheck);
     }
   },
@@ -213,31 +249,21 @@ const ResponsiveUIManager = exports.ResponsiveUIManager = {
   async setMenuCheckFor(tab, window = tab.ownerGlobal) {
     await startup(window);
 
-    let menu = window.document.getElementById("menu_responsiveUI");
+    const menu = window.document.getElementById("menu_responsiveUI");
     if (menu) {
       menu.setAttribute("checked", this.isActiveForTab(tab));
     }
   },
 
-  showRemoteOnlyNotification(window, tab, { command } = {}) {
-    showNotification(window, tab, {
-      command,
+  showRemoteOnlyNotification(window, tab, { trigger } = {}) {
+    return showNotification(window, tab, {
+      toolboxButton: trigger == "toolbox",
       msg: l10n.getStr("responsive.remoteOnly"),
-      priority: PriorityLevels.PRIORITY_CRITICAL_MEDIUM,
-    });
-  },
-
-  showNoContainerTabsNotification(window, tab, { command } = {}) {
-    showNotification(window, tab, {
-      command,
-      msg: l10n.getStr("responsive.noContainerTabs"),
       priority: PriorityLevels.PRIORITY_CRITICAL_MEDIUM,
     });
   },
 };
 
-// GCLI commands in ./commands.js listen for events from this object to know
-// when the UI for a tab has opened or closed.
 EventEmitter.decorate(ResponsiveUIManager);
 
 /**
@@ -298,7 +324,7 @@ ResponsiveUI.prototype = {
   async init() {
     debug("Init start");
 
-    let ui = this;
+    const ui = this;
 
     // Watch for tab close and window close so we can clean up RDM synchronously
     this.tab.addEventListener("TabClose", this);
@@ -310,18 +336,40 @@ ResponsiveUI.prototype = {
       tab: this.tab,
       containerURL: TOOL_URL,
       async getInnerBrowser(containerBrowser) {
-        let toolWindow = ui.toolWindow = containerBrowser.contentWindow;
+        const toolWindow = ui.toolWindow = containerBrowser.contentWindow;
         toolWindow.addEventListener("message", ui);
         debug("Wait until init from inner");
         await message.request(toolWindow, "init");
-        toolWindow.addInitialViewport("about:blank");
+        toolWindow.addInitialViewport({
+          uri: "about:blank",
+          userContextId: ui.tab.userContextId,
+        });
         debug("Wait until browser mounted");
         await message.wait(toolWindow, "browser-mounted");
         return ui.getViewportBrowser();
-      }
+      },
     });
     debug("Wait until swap start");
     await this.swap.start();
+
+    // Set the ui toolWindow to fullZoom and textZoom of 100%. Directly change
+    // the zoom levels of the toolwindow docshell. That doesn't affect the zoom
+    // of the RDM content, but it does send events that confuse the Zoom UI.
+    // So before we adjust the zoom levels of the toolWindow, we first cache
+    // the reported zoom levels of the RDM content, because we'll have to
+    // re-apply them to re-sync the Zoom UI.
+
+    // Cache the values now and we'll re-apply them near the end of this function.
+    // This is important since other steps here can also cause the Zoom UI update
+    // event to be sent for other browsers, and this means that the changes from
+    // our Zoom UI update event would be overwritten. After this function, future
+    // changes to zoom levels will send Zoom UI update events in an order that
+    // keeps the Zoom UI synchronized with the RDM content zoom levels.
+    const fullZoom = this.tab.linkedBrowser.fullZoom;
+    const textZoom = this.tab.linkedBrowser.textZoom;
+
+    ui.toolWindow.docShell.contentViewer.fullZoom = 1;
+    ui.toolWindow.docShell.contentViewer.textZoom = 1;
 
     this.tab.addEventListener("BeforeTabRemotenessChange", this);
 
@@ -332,6 +380,20 @@ ResponsiveUI.prototype = {
     // Get the protocol ready to speak with emulation actor
     debug("Wait until RDP server connect");
     await this.connectToServer();
+
+    // Restore the previous state of RDM.
+    await this.restoreState();
+
+    // Show the settings onboarding tooltip
+    if (Services.prefs.getBoolPref(SHOW_SETTING_TOOLTIP_PREF)) {
+      this.settingOnboardingTooltip =
+        new SettingOnboardingTooltip(ui.toolWindow.document);
+    }
+
+    // Re-apply our cached zoom levels. Other Zoom UI update events have finished
+    // by now.
+    this.tab.linkedBrowser.fullZoom = fullZoom;
+    this.tab.linkedBrowser.textZoom = textZoom;
 
     // Non-blocking message to tool UI to start any delayed init activities
     message.post(this.toolWindow, "post-init");
@@ -357,8 +419,9 @@ ResponsiveUI.prototype = {
     // If our tab is about to be closed, there's not enough time to exit
     // gracefully, but that shouldn't be a problem since the tab will go away.
     // So, skip any waiting when we're about to close the tab.
-    let isWindowClosing = options && options.reason === "unload";
-    let isTabContentDestroying =
+    const isTabDestroyed = !this.tab.linkedBrowser;
+    const isWindowClosing = (options && options.reason === "unload") || isTabDestroyed;
+    const isTabContentDestroying =
       isWindowClosing || (options && (options.reason === "TabClose" ||
                                       options.reason === "BeforeTabRemotenessChange"));
 
@@ -392,8 +455,13 @@ ResponsiveUI.prototype = {
       }
     }
 
+    if (this.settingOnboardingTooltip) {
+      this.settingOnboardingTooltip.destroy();
+      this.settingOnboardingTooltip = null;
+    }
+
     // Destroy local state
-    let swap = this.swap;
+    const swap = this.swap;
     this.browserWindow = null;
     this.tab = null;
     this.inited = null;
@@ -403,7 +471,7 @@ ResponsiveUI.prototype = {
     // Close the debugger client used to speak with emulation actor.
     // The actor handles clearing any overrides itself, so it's not necessary to clear
     // anything on shutdown client side.
-    let clientClosed = this.client.close();
+    const clientClosed = this.client.close();
     if (!isTabContentDestroying) {
       await clientClosed;
     }
@@ -420,12 +488,23 @@ ResponsiveUI.prototype = {
   },
 
   async connectToServer() {
+    // The client being instantiated here is separate from the toolbox. It is being used
+    // separately and has a life cycle that doesn't correspond to the toolbox. As a
+    // result, it does not have a target, so we are not using `target.getFront` here. See
+    // also the implementation for about:debugging
     DebuggerServer.init();
     DebuggerServer.registerAllActors();
     this.client = new DebuggerClient(DebuggerServer.connectPipe());
     await this.client.connect();
-    let { tab } = await this.client.getTab();
-    this.emulationFront = EmulationFront(this.client, tab);
+    const targetFront = await this.client.mainRoot.getTab();
+    this.emulationFront = new EmulationFront(this.client);
+    // Because we are not using getFront (see previous comment), we have to do what it
+    // does and manually set the front's actor ID here.
+    // Once bug 1465635 is resolved, we will be able to use getFront from here and remove
+    // this.
+    this.emulationFront.actorID =
+      targetFront.targetForm[this.emulationFront.formAttributeName];
+    this.emulationFront.manage(this.emulationFront);
   },
 
   /**
@@ -434,8 +513,7 @@ ResponsiveUI.prototype = {
   showReloadNotification() {
     if (Services.prefs.getBoolPref(RELOAD_NOTIFICATION_PREF, false)) {
       showNotification(this.browserWindow, this.tab, {
-        msg: l10n.getFormatStr("responsive.reloadNotification.description",
-                               l10n.getStr("responsive.reloadConditions.label")),
+        msg: l10n.getFormatStr("responsive.reloadNotification.description2"),
       });
       Services.prefs.setBoolPref(RELOAD_NOTIFICATION_PREF, false);
     }
@@ -443,12 +521,12 @@ ResponsiveUI.prototype = {
 
   reloadOnChange(id) {
     this.showReloadNotification();
-    let pref = RELOAD_CONDITION_PREF_PREFIX + id;
+    const pref = RELOAD_CONDITION_PREF_PREFIX + id;
     return Services.prefs.getBoolPref(pref, false);
   },
 
   handleEvent(event) {
-    let { browserWindow, tab } = this;
+    const { browserWindow, tab } = this;
 
     switch (event.type) {
       case "message":
@@ -473,7 +551,7 @@ ResponsiveUI.prototype = {
       case "change-device":
         this.onChangeDevice(event);
         break;
-      case "change-network-throtting":
+      case "change-network-throttling":
         this.onChangeNetworkThrottling(event);
         break;
       case "change-pixel-ratio":
@@ -482,6 +560,9 @@ ResponsiveUI.prototype = {
       case "change-touch-simulation":
         this.onChangeTouchSimulation(event);
         break;
+      case "change-user-agent":
+        this.onChangeUserAgent(event);
+        break;
       case "content-resize":
         this.onContentResize(event);
         break;
@@ -489,13 +570,19 @@ ResponsiveUI.prototype = {
         this.onExit();
         break;
       case "remove-device-association":
-        this.onRemoveDeviceAssociation(event);
+        this.onRemoveDeviceAssociation();
+        break;
+      case "viewport-orientation-change":
+        this.onRotateViewport(event);
+        break;
+      case "viewport-resize":
+        this.onResizeViewport(event);
         break;
     }
   },
 
   async onChangeDevice(event) {
-    let { userAgent, pixelRatio, touch } = event.data.device;
+    const { userAgent, pixelRatio, touch } = event.data.device;
     let reloadNeeded = false;
     await this.updateDPPX(pixelRatio);
     reloadNeeded |= await this.updateUserAgent(userAgent) &&
@@ -510,21 +597,21 @@ ResponsiveUI.prototype = {
   },
 
   async onChangeNetworkThrottling(event) {
-    let { enabled, profile } = event.data;
+    const { enabled, profile } = event.data;
     await this.updateNetworkThrottling(enabled, profile);
     // Used by tests
     this.emit("network-throttling-changed");
   },
 
   onChangePixelRatio(event) {
-    let { pixelRatio } = event.data;
+    const { pixelRatio } = event.data;
     this.updateDPPX(pixelRatio);
   },
 
   async onChangeTouchSimulation(event) {
-    let { enabled } = event.data;
-    let reloadNeeded = await this.updateTouchSimulation(enabled) &&
-                       this.reloadOnChange("touchSimulation");
+    const { enabled } = event.data;
+    const reloadNeeded = await this.updateTouchSimulation(enabled) &&
+                         this.reloadOnChange("touchSimulation");
     if (reloadNeeded) {
       this.getViewportBrowser().reload();
     }
@@ -532,8 +619,18 @@ ResponsiveUI.prototype = {
     this.emit("touch-simulation-changed");
   },
 
+  async onChangeUserAgent(event) {
+    const { userAgent } = event.data;
+    const reloadNeeded = await this.updateUserAgent(userAgent) &&
+                         this.reloadOnChange("userAgent");
+    if (reloadNeeded) {
+      this.getViewportBrowser().reload();
+    }
+    this.emit("user-agent-changed");
+  },
+
   onContentResize(event) {
-    let { width, height } = event.data;
+    const { width, height } = event.data;
     this.emit("content-resize", {
       width,
       height,
@@ -541,11 +638,11 @@ ResponsiveUI.prototype = {
   },
 
   onExit() {
-    let { browserWindow, tab } = this;
+    const { browserWindow, tab } = this;
     ResponsiveUIManager.closeIfNeeded(browserWindow, tab);
   },
 
-  async onRemoveDeviceAssociation(event) {
+  async onRemoveDeviceAssociation() {
     let reloadNeeded = false;
     await this.updateDPPX();
     reloadNeeded |= await this.updateUserAgent() &&
@@ -557,6 +654,60 @@ ResponsiveUI.prototype = {
     }
     // Used by tests
     this.emit("device-association-removed");
+  },
+
+  onResizeViewport(event) {
+    const { width, height } = event.data;
+    this.emit("viewport-resize", {
+      width,
+      height,
+    });
+  },
+
+  async onRotateViewport(event) {
+    const targetFront = await this.client.mainRoot.getTab();
+
+    // Ensure that simulateScreenOrientationChange is supported.
+    if (await targetFront.actorHasMethod("emulation",
+        "simulateScreenOrientationChange")) {
+      // TODO: From event.data, pass orientation and angle as arguments.
+      // See Bug 1357774.
+      await this.emulationFront.simulateScreenOrientationChange();
+    }
+  },
+
+  /**
+   * Restores the previous state of RDM.
+   */
+  async restoreState() {
+    const deviceState = await asyncStorage.getItem("devtools.responsive.deviceState");
+    if (deviceState) {
+      // Return if there is a device state to restore, this will be done when the
+      // device list is loaded after the post-init.
+      return;
+    }
+
+    const pixelRatio =
+      Services.prefs.getIntPref("devtools.responsive.viewport.pixelRatio", 0);
+    const touchSimulationEnabled =
+      Services.prefs.getBoolPref("devtools.responsive.touchSimulation.enabled", false);
+    const userAgent = Services.prefs.getCharPref("devtools.responsive.userAgent", "");
+
+    let reloadNeeded = false;
+
+    await this.updateDPPX(pixelRatio);
+
+    if (touchSimulationEnabled) {
+      reloadNeeded |= await this.updateTouchSimulation(touchSimulationEnabled) &&
+                      this.reloadOnChange("touchSimulation");
+    }
+    if (userAgent) {
+      reloadNeeded |= await this.updateUserAgent(userAgent) &&
+                      this.reloadOnChange("userAgent");
+    }
+    if (reloadNeeded) {
+      this.getViewportBrowser().reload();
+    }
   },
 
   /**
@@ -587,8 +738,8 @@ ResponsiveUI.prototype = {
       await this.emulationFront.clearNetworkThrottling();
       return false;
     }
-    let data = throttlingProfiles.find(({ id }) => id == profile);
-    let { download, upload, latency } = data;
+    const data = throttlingProfiles.find(({ id }) => id == profile);
+    const { download, upload, latency } = data;
     await this.emulationFront.setNetworkThrottling({
       downloadThroughput: download,
       uploadThroughput: upload,
@@ -611,18 +762,33 @@ ResponsiveUI.prototype = {
   },
 
   /**
-   * Set or clear touch simulation.
+   * Set or clear touch simulation. When setting to true, this method will
+   * additionally set meta viewport override if the pref
+   * "devtools.responsive.metaViewport.enabled" is true. When setting to
+   * false, this method will clear all touch simulation and meta viewport
+   * overrides, returning to default behavior for both settings.
    *
    * @return boolean
-   *         Whether a reload is needed to apply the change.
+   *         Whether a reload is needed to apply the override change(s).
    */
-  updateTouchSimulation(enabled) {
-    if (!enabled) {
-      return this.emulationFront.clearTouchEventsOverride();
+  async updateTouchSimulation(enabled) {
+    let reloadNeeded;
+    if (enabled) {
+      const metaViewportEnabled =
+        Services.prefs.getBoolPref("devtools.responsive.metaViewport.enabled", false);
+
+      reloadNeeded = await this.emulationFront.setTouchEventsOverride(
+        Ci.nsIDocShell.TOUCHEVENTS_OVERRIDE_ENABLED);
+
+      if (metaViewportEnabled) {
+        reloadNeeded |= await this.emulationFront.setMetaViewportOverride(
+          Ci.nsIDocShell.META_VIEWPORT_OVERRIDE_ENABLED);
+      }
+    } else {
+      reloadNeeded = await this.emulationFront.clearTouchEventsOverride();
+      reloadNeeded |= await this.emulationFront.clearMetaViewportOverride();
     }
-    return this.emulationFront.setTouchEventsOverride(
-      Ci.nsIDocShell.TOUCHEVENTS_OVERRIDE_ENABLED
-    );
+    return reloadNeeded;
   },
 
   /**
@@ -633,7 +799,7 @@ ResponsiveUI.prototype = {
   },
 
   /**
-   * Helper for tests, GCLI, etc. Assumes a single viewport for now.
+   * Helper for tests, etc. Assumes a single viewport for now.
    */
   async setViewportSize(size) {
     await this.inited;

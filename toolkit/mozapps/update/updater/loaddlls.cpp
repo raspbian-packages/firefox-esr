@@ -28,9 +28,9 @@ struct AutoLoadSystemDependencies {
       }
     }
 
-      // When SetDefaultDllDirectories is not available, fallback to preloading
-      // dlls. The order that these are loaded does not matter since they are
-      // loaded using the LOAD_WITH_ALTERED_SEARCH_PATH flag.
+    // When SetDefaultDllDirectories is not available, fallback to preloading
+    // dlls. The order that these are loaded does not matter since they are
+    // loaded using the LOAD_WITH_ALTERED_SEARCH_PATH flag.
 #ifdef HAVE_64BIT_BUILD
     // DLLs for Firefox x64 on Windows 7 (x64).
     // Note: dwmapi.dll is preloaded since a crash will try to load it from the

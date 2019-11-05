@@ -34,9 +34,9 @@
 #include "nsThreadUtils.h"
 
 #if defined(XP_WIN)
-#include <windows.h>
+#  include <windows.h>
 #else
-#include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #include "mozilla/ArrayUtils.h"
@@ -157,16 +157,16 @@ void RunWatchdog(void* arg) {
 
   const uint32_t timeToLive = crashAfterTicks;
   while (true) {
-  //
-  // We do not want to sleep for the entire duration,
-  // as putting the computer to sleep would suddenly
-  // cause us to timeout on wakeup.
-  //
-  // Rather, we prefer sleeping for at most 1 second
-  // at a time. If the computer sleeps then wakes up,
-  // we have lost at most one second, which is much
-  // more reasonable.
-  //
+    //
+    // We do not want to sleep for the entire duration,
+    // as putting the computer to sleep would suddenly
+    // cause us to timeout on wakeup.
+    //
+    // Rather, we prefer sleeping for at most 1 second
+    // at a time. If the computer sleeps then wakes up,
+    // we have lost at most one second, which is much
+    // more reasonable.
+    //
 #if defined(XP_WIN)
     Sleep(1000 /* ms */);
 #else
@@ -194,7 +194,7 @@ void RunWatchdog(void* arg) {
             "Something is blocking the main-thread.",
             lastStep);
         // This string will be leaked.
-        MOZ_CRASH_UNSAFE_OOL(strdup(msg.BeginReading()));
+        MOZ_CRASH_UNSAFE(strdup(msg.BeginReading()));
       }
 
       MOZ_CRASH("Shutdown hanging before starting.");
@@ -574,7 +574,7 @@ void nsTerminator::UpdateCrashReport(const char* aTopic) {
   nsAutoCString report(aTopic);
 
   Unused << CrashReporter::AnnotateCrashReport(
-      NS_LITERAL_CSTRING("ShutdownProgress"), report);
+      CrashReporter::Annotation::ShutdownProgress, report);
 }
 
 void XPCOMShutdownNotified() {

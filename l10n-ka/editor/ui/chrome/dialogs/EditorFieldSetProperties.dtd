@@ -7,7 +7,7 @@
 <!ENTITY Legend.label "ლეგენდა">
 <!ENTITY Legend.accesskey "L">
 
-<!ENTITY EditLegendText.label "ლეგენდის რედაქტირება:">
+<!ENTITY EditLegendText.label "ლეგენდის ჩასწორება:">
 <!ENTITY EditLegendText.accesskey "T">
 <!ENTITY LegendAlign.label "ლეგენდის განთავსება:">
 <!ENTITY LegendAlign.accesskey "A">
@@ -16,5 +16,5 @@
 <!ENTITY AlignCenter.label "ცენტრში">
 <!ENTITY AlignRight.label "მარჯვნივ">
 
-<!ENTITY RemoveFieldSet.label "ველების ამოღება">
+<!ENTITY RemoveFieldSet.label "ველების მოცილება">
 <!ENTITY RemoveFieldSet.accesskey "R">

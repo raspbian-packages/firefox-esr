@@ -4,8 +4,14 @@
 
 "use strict";
 
-const { createStore, applyMiddleware } = require("devtools/client/shared/vendor/redux");
-const { task, ERROR_TYPE } = require("devtools/client/shared/redux/middleware/task");
+const {
+  createStore,
+  applyMiddleware,
+} = require("devtools/client/shared/vendor/redux");
+const {
+  task,
+  ERROR_TYPE,
+} = require("devtools/client/shared/redux/middleware/task");
 
 /**
  * Tests that the middleware handles errors thrown in tasks, and rejected promises.
@@ -15,20 +21,26 @@ function run_test() {
   run_next_test();
 }
 
-add_task(function* () {
-  let store = applyMiddleware(task)(createStore)(reducer);
+add_task(async function() {
+  const store = applyMiddleware(task)(createStore)(reducer);
 
   store.dispatch(generatorError());
-  yield waitUntilState(store, () => store.getState().length === 1);
-  equal(store.getState()[0].type, ERROR_TYPE,
-        "generator errors dispatch ERROR_TYPE actions");
-  equal(store.getState()[0].error, "task-middleware-error-generator",
-        "generator errors dispatch ERROR_TYPE actions with error");
+  await waitUntilState(store, () => store.getState().length === 1);
+  equal(
+    store.getState()[0].type,
+    ERROR_TYPE,
+    "generator errors dispatch ERROR_TYPE actions"
+  );
+  equal(
+    store.getState()[0].error,
+    "task-middleware-error-generator",
+    "generator errors dispatch ERROR_TYPE actions with error"
+  );
 });
 
 function generatorError() {
-  return function* (dispatch, getState) {
-    let error = "task-middleware-error-generator";
+  return function*(dispatch, getState) {
+    const error = "task-middleware-error-generator";
     throw error;
   };
 }

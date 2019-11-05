@@ -13,12 +13,14 @@
 #include "mozilla/EventForwards.h"
 #include "nsContainerFrame.h"
 #include "nsIScrollPositionListener.h"
+#include "nsIPopupContainer.h"
 #include "nsDisplayList.h"
 #include "nsIAnonymousContentCreator.h"
 #include "gfxPrefs.h"
 
 class nsPresContext;
 class gfxContext;
+class nsPopupSetFrame;
 
 /**
  * Root frame class.
@@ -31,15 +33,22 @@ class gfxContext;
  */
 class nsCanvasFrame final : public nsContainerFrame,
                             public nsIScrollPositionListener,
-                            public nsIAnonymousContentCreator {
+                            public nsIAnonymousContentCreator,
+                            public nsIPopupContainer {
  public:
-  explicit nsCanvasFrame(nsStyleContext* aContext)
-      : nsContainerFrame(aContext, kClassID),
+  explicit nsCanvasFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsContainerFrame(aStyle, aPresContext, kClassID),
         mDoPaintFocus(false),
-        mAddedScrollPositionListener(false) {}
+        mAddedScrollPositionListener(false),
+        mPopupSetFrame(nullptr) {}
 
   NS_DECL_QUERYFRAME
   NS_DECL_FRAMEARENA_HELPERS(nsCanvasFrame)
+
+  nsPopupSetFrame* GetPopupSetFrame() override;
+  void SetPopupSetFrame(nsPopupSetFrame* aPopupSet) override;
+  Element* GetDefaultTooltip() override;
+  void SetDefaultTooltip(Element* aTooltip) override;
 
   virtual void DestroyFrom(nsIFrame* aDestructRoot,
                            PostDestroyData& aPostDestroyData) override;
@@ -118,6 +127,11 @@ class nsCanvasFrame final : public nsContainerFrame,
   bool mAddedScrollPositionListener;
 
   nsCOMPtr<mozilla::dom::Element> mCustomContentContainer;
+
+ private:
+  nsPopupSetFrame* mPopupSetFrame;
+  nsCOMPtr<mozilla::dom::Element> mPopupgroupContent;
+  nsCOMPtr<mozilla::dom::Element> mTooltipContent;
 };
 
 /**
@@ -126,7 +140,7 @@ class nsCanvasFrame final : public nsContainerFrame,
  * We can also paint an "extra background color" behind the normal
  * background.
  */
-class nsDisplayCanvasBackgroundColor : public nsDisplaySolidColorBase {
+class nsDisplayCanvasBackgroundColor final : public nsDisplaySolidColorBase {
  public:
   nsDisplayCanvasBackgroundColor(nsDisplayListBuilder* aBuilder,
                                  nsIFrame* aFrame)
@@ -155,17 +169,15 @@ class nsDisplayCanvasBackgroundColor : public nsDisplaySolidColorBase {
       mozilla::wr::DisplayListBuilder& aBuilder,
       mozilla::wr::IpcResourceUpdateQueue& aResources,
       const StackingContextHelper& aSc,
-      mozilla::layers::WebRenderLayerManager* aManager,
+      mozilla::layers::RenderRootStateManager* aManager,
       nsDisplayListBuilder* aDisplayListBuilder) override;
   virtual LayerState GetLayerState(
       nsDisplayListBuilder* aBuilder, LayerManager* aManager,
       const ContainerLayerParameters& aParameters) override {
-    if (ShouldUseAdvancedLayer(
-            aManager, gfxPrefs::LayersAllowCanvasBackgroundColorLayers) ||
-        ForceActiveLayers()) {
-      return mozilla::LAYER_ACTIVE;
+    if (ForceActiveLayers()) {
+      return mozilla::LayerState::LAYER_ACTIVE;
     }
-    return mozilla::LAYER_NONE;
+    return mozilla::LayerState::LAYER_NONE;
   }
   virtual void Paint(nsDisplayListBuilder* aBuilder, gfxContext* aCtx) override;
 
@@ -180,8 +192,9 @@ class nsDisplayCanvasBackgroundColor : public nsDisplaySolidColorBase {
 class nsDisplayCanvasBackgroundImage : public nsDisplayBackgroundImage {
  public:
   explicit nsDisplayCanvasBackgroundImage(nsDisplayListBuilder* aBuilder,
+                                          nsIFrame* aFrame,
                                           const InitData& aInitData)
-      : nsDisplayBackgroundImage(aBuilder, aInitData) {}
+      : nsDisplayBackgroundImage(aBuilder, aFrame, aInitData) {}
 
   virtual void Paint(nsDisplayListBuilder* aBuilder, gfxContext* aCtx) override;
 
@@ -201,7 +214,9 @@ class nsDisplayCanvasThemedBackground : public nsDisplayThemedBackground {
                                   nsIFrame* aFrame)
       : nsDisplayThemedBackground(aBuilder, aFrame,
                                   aFrame->GetRectRelativeToSelf() +
-                                      aBuilder->ToReferenceFrame(aFrame)) {}
+                                      aBuilder->ToReferenceFrame(aFrame)) {
+    nsDisplayThemedBackground::Init(aBuilder);
+  }
 
   virtual void Paint(nsDisplayListBuilder* aBuilder, gfxContext* aCtx) override;
 

@@ -7,34 +7,34 @@
 #include "mozilla/dom/SVGTextElement.h"
 #include "mozilla/dom/SVGTextElementBinding.h"
 
-NS_IMPL_NS_NEW_NAMESPACED_SVG_ELEMENT(Text)
+NS_IMPL_NS_NEW_SVG_ELEMENT(Text)
 
 namespace mozilla {
 namespace dom {
 
 JSObject* SVGTextElement::WrapNode(JSContext* aCx,
                                    JS::Handle<JSObject*> aGivenProto) {
-  return SVGTextElementBinding::Wrap(aCx, this, aGivenProto);
+  return SVGTextElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 //----------------------------------------------------------------------
 // Implementation
 
 SVGTextElement::SVGTextElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : SVGTextElementBase(aNodeInfo) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : SVGTextElementBase(std::move(aNodeInfo)) {}
 
-nsSVGElement::EnumAttributesInfo SVGTextElement::GetEnumInfo() {
+SVGElement::EnumAttributesInfo SVGTextElement::GetEnumInfo() {
   return EnumAttributesInfo(mEnumAttributes, sEnumInfo, ArrayLength(sEnumInfo));
 }
 
-nsSVGElement::LengthAttributesInfo SVGTextElement::GetLengthInfo() {
+SVGElement::LengthAttributesInfo SVGTextElement::GetLengthInfo() {
   return LengthAttributesInfo(mLengthAttributes, sLengthInfo,
                               ArrayLength(sLengthInfo));
 }
 
 //----------------------------------------------------------------------
-// nsIDOMNode methods
+// nsINode methods
 
 NS_IMPL_ELEMENT_CLONE_WITH_INIT(SVGTextElement)
 

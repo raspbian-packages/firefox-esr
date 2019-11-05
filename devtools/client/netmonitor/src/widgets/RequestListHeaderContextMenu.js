@@ -4,21 +4,24 @@
 
 "use strict";
 
-const { showMenu } = require("devtools/client/netmonitor/src/utils/menu");
+const { showMenu } = require("devtools/client/shared/components/menu/utils");
 const { HEADERS } = require("../constants");
 const { L10N } = require("../utils/l10n");
 
-const stringMap = HEADERS
-  .filter((header) => header.hasOwnProperty("label"))
-  .reduce((acc, { name, label }) => Object.assign(acc, { [name]: label }), {});
+const stringMap = HEADERS.filter(header =>
+  header.hasOwnProperty("label")
+).reduce((acc, { name, label }) => Object.assign(acc, { [name]: label }), {});
 
-const subMenuMap = HEADERS
-  .filter((header) => header.hasOwnProperty("subMenu"))
-  .reduce((acc, { name, subMenu }) => Object.assign(acc, { [name]: subMenu }), {});
+const subMenuMap = HEADERS.filter(header =>
+  header.hasOwnProperty("subMenu")
+).reduce(
+  (acc, { name, subMenu }) => Object.assign(acc, { [name]: subMenu }),
+  {}
+);
 
-const nonLocalizedHeaders = HEADERS
-  .filter((header) => header.hasOwnProperty("noLocalization"))
-  .map((header) => header.name);
+const nonLocalizedHeaders = HEADERS.filter(header =>
+  header.hasOwnProperty("noLocalization")
+).map(header => header.name);
 
 class RequestListHeaderContextMenu {
   constructor(props) {
@@ -29,17 +32,19 @@ class RequestListHeaderContextMenu {
    * Handle the context menu opening.
    */
   open(event = {}, columns) {
-    let menu = [];
-    let subMenu = { timings: [], responseHeaders: [] };
-    let visibleColumns = Object.entries(columns).filter(([column, shown]) => shown);
-    let onlyOneColumn = visibleColumns.length === 1;
+    const menu = [];
+    const subMenu = { timings: [], responseHeaders: [] };
+    const visibleColumns = Object.entries(columns).filter(
+      ([column, shown]) => shown
+    );
+    const onlyOneColumn = visibleColumns.length === 1;
 
-    for (let column in columns) {
-      let shown = columns[column];
-      let label = nonLocalizedHeaders.includes(column)
-          ? stringMap[column] || column
-          : L10N.getStr(`netmonitor.toolbar.${stringMap[column] || column}`);
-      let entry = {
+    for (const column in columns) {
+      const shown = columns[column];
+      const label = nonLocalizedHeaders.includes(column)
+        ? stringMap[column] || column
+        : L10N.getStr(`netmonitor.toolbar.${stringMap[column] || column}`);
+      const entry = {
         id: `request-list-header-${column}-toggle`,
         label,
         type: "checkbox",
@@ -48,9 +53,9 @@ class RequestListHeaderContextMenu {
         // We don't want to allow hiding the last visible column
         disabled: onlyOneColumn && shown,
       };
-      subMenuMap.hasOwnProperty(column) ?
-        subMenu[subMenuMap[column]].push(entry) :
-        menu.push(entry);
+      subMenuMap.hasOwnProperty(column)
+        ? subMenu[subMenuMap[column]].push(entry)
+        : menu.push(entry);
     }
 
     menu.push({ type: "separator" });
@@ -70,7 +75,16 @@ class RequestListHeaderContextMenu {
       click: () => this.props.resetColumns(),
     });
 
-    return showMenu(event, menu);
+    menu.push({
+      id: "request-list-header-reset-sorting",
+      label: L10N.getStr("netmonitor.toolbar.resetSorting"),
+      click: () => this.props.resetSorting(),
+    });
+
+    showMenu(menu, {
+      screenX: event.screenX,
+      screenY: event.screenY,
+    });
   }
 }
 

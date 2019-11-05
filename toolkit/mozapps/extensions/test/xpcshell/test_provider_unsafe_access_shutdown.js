@@ -9,12 +9,13 @@ function mockAddonProvider(name) {
 
     shutdownCallback: null,
 
-    startup() { },
+    startup() {},
     shutdown() {
       this.hasShutdown = true;
       shutdownOrder.push(this.name);
-      if (this.shutdownCallback)
+      if (this.shutdownCallback) {
         return this.shutdownCallback();
+      }
       return undefined;
     },
     getAddonByID(id, callback) {
@@ -38,7 +39,7 @@ add_task(async function unsafeProviderShutdown() {
   let secondProvider = mockAddonProvider("Mock2");
   AddonManagerPrivate.registerProvider(secondProvider);
 
-  startupManager();
+  await promiseStartupManager();
 
   let shutdownPromise = null;
   await new Promise(resolve => {
@@ -52,6 +53,13 @@ add_task(async function unsafeProviderShutdown() {
   });
   await shutdownPromise;
 
-  equal(shutdownOrder.join(","), ["Mock1", "Mock2"].join(","), "Mock providers should have shutdown in expected order");
-  ok(!firstProvider.unsafeAccess, "First registered mock provider should not have been accessed unsafely");
+  equal(
+    shutdownOrder.join(","),
+    ["Mock1", "Mock2"].join(","),
+    "Mock providers should have shutdown in expected order"
+  );
+  ok(
+    !firstProvider.unsafeAccess,
+    "First registered mock provider should not have been accessed unsafely"
+  );
 });

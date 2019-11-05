@@ -45,16 +45,24 @@ void VsyncChild::ActorDestroy(ActorDestroyReason aActorDestroyReason) {
   MOZ_ASSERT(!mIsShutdown);
   mIsShutdown = true;
   mObserver = nullptr;
+
+  if (recordreplay::IsRecordingOrReplaying()) {
+    recordreplay::child::SetVsyncObserver(nullptr);
+  }
 }
 
-mozilla::ipc::IPCResult VsyncChild::RecvNotify(
-    const TimeStamp& aVsyncTimestamp) {
+mozilla::ipc::IPCResult VsyncChild::RecvNotify(const VsyncEvent& aVsync) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!mIsShutdown);
 
   SchedulerGroup::MarkVsyncRan();
   if (mObservingVsync && mObserver) {
-    mObserver->NotifyVsync(aVsyncTimestamp);
+    if (recordreplay::IsRecordingOrReplaying() &&
+        !recordreplay::child::OnVsync()) {
+      return IPC_OK();
+    }
+
+    mObserver->NotifyVsync(aVsync);
   }
   return IPC_OK();
 }
@@ -62,6 +70,10 @@ mozilla::ipc::IPCResult VsyncChild::RecvNotify(
 void VsyncChild::SetVsyncObserver(VsyncObserver* aVsyncObserver) {
   MOZ_ASSERT(NS_IsMainThread());
   mObserver = aVsyncObserver;
+
+  if (recordreplay::IsRecordingOrReplaying()) {
+    recordreplay::child::SetVsyncObserver(mObserver);
+  }
 }
 
 TimeDuration VsyncChild::GetVsyncRate() {

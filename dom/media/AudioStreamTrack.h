@@ -21,11 +21,7 @@ class AudioStreamTrack : public MediaStreamTrack {
       : MediaStreamTrack(aStream, aTrackID, aInputTrackID, aSource,
                          aConstraints) {}
 
-  JSObject* WrapObject(JSContext* aCx,
-                       JS::Handle<JSObject*> aGivenProto) override;
-
   AudioStreamTrack* AsAudioStreamTrack() override { return this; }
-
   const AudioStreamTrack* AsAudioStreamTrack() const override { return this; }
 
   // WebIDL

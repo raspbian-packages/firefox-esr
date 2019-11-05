@@ -16,9 +16,8 @@
 #include "nsIPluginTag.h"
 #include "nsPluginsDir.h"
 #include "nsPluginDirServiceProvider.h"
-#include "nsWeakPtr.h"
-#include "nsIPrompt.h"
 #include "nsWeakReference.h"
+#include "nsIPrompt.h"
 #include "MainThreadUtils.h"
 #include "nsTArray.h"
 #include "nsINamed.h"
@@ -28,16 +27,18 @@
 #include "nsIEffectiveTLDService.h"
 #include "nsIIDNService.h"
 #include "nsCRT.h"
+#include "mozilla/dom/PromiseNativeHandler.h"
 
 #ifdef XP_WIN
-#include <minwindef.h>
-#include "nsIWindowsRegKey.h"
+#  include <minwindef.h>
+#  include "nsIWindowsRegKey.h"
 #endif
 
 namespace mozilla {
 namespace plugins {
 class FakePluginTag;
 class PluginTag;
+class BlocklistPromiseHandler;
 }  // namespace plugins
 }  // namespace mozilla
 
@@ -244,6 +245,7 @@ class nsPluginHost final : public nsIPluginHost,
 
  private:
   friend class nsPluginUnloadRunnable;
+  friend class mozilla::plugins::BlocklistPromiseHandler;
 
   void DestroyRunningInstances(nsPluginTag* aPluginTag);
 
@@ -306,6 +308,9 @@ class nsPluginHost final : public nsIPluginHost,
                                    nsRegisterType aType);
 
   void AddPluginTag(nsPluginTag* aPluginTag);
+
+  void UpdatePluginBlocklistState(nsPluginTag* aPluginTag,
+                                  bool aShouldSoftblock = false);
 
   nsresult ScanPluginsDirectory(nsIFile* pluginsDir, bool aCreatePluginList,
                                 bool* aPluginsChanged);

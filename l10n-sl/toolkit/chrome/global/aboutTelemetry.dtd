@@ -32,8 +32,6 @@ Včeraj
 <!ENTITY aboutTelemetry.optionGroupOlder "
 Starejše
 ">
-<!ENTITY aboutTelemetry.payloadChoiceHeader "
-  Koristna vsebina">
 <!-- LOCALIZATION NOTE(aboutTelemetry.previousPing, aboutTelemetry.nextPing):
 	These strings are displayed when selecting Archived pings, and they’re
 	used to move to the next or previous ping. -->
@@ -45,6 +43,8 @@ Starejše
 <!ENTITY aboutTelemetry.firefoxDataDoc "<a>Dokumentacija o Firefoxovih podatkih</a> vsebuje vodnike o tem, kako uporabljati naša podatkovna orodja.">
 <!ENTITY aboutTelemetry.telemetryClientDoc "<a>Dokumentacija o Firefoxovem odjemalcu za telemetrijo</a> vsebuje definicije konceptov, dokumentacijo API in sklice podatkov.">
 <!ENTITY aboutTelemetry.telemetryDashboard "<a>Pregledne plošče telemetrije</a> omogočajo predstavitev podatkov, ki jih Mozilla prejme preko telemetrije.">
+
+<!ENTITY aboutTelemetry.telemetryProbeDictionary "<a>Slovar sond</a> vsebuje podrobnosti in opise sond, ki jih zbira telemetrija.">
 
 <!ENTITY aboutTelemetry.showInFirefoxJsonViewer "Odpri v pregledovalniku JSON">
 
@@ -70,20 +70,13 @@ Starejše
 <!ENTITY aboutTelemetry.simpleMeasurementsSection "
   Enostavne meritve
 ">
-<!ENTITY aboutTelemetry.telemetryLogSection "
-  Dnevnik telemetrije
-">
 <!ENTITY aboutTelemetry.slowSqlSection "
   Počasni stavki SQL
-">
-<!ENTITY aboutTelemetry.chromeHangsSection "
-  Sesutja brskalnika
 ">
 <!ENTITY aboutTelemetry.addonDetailsSection "
   Podrobnosti dodatkov
 ">
-<!ENTITY aboutTelemetry.capturedStacksSection "
-  Zajeti skladi">
+<!ENTITY aboutTelemetry.capturedStacksSection "Zajeti skladi">
 <!ENTITY aboutTelemetry.lateWritesSection "
   Poznejša pisanja
 ">

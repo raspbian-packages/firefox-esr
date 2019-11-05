@@ -7,15 +7,14 @@
 #include "mozilla/ArrayUtils.h"
 
 #include "nsXBLContentSink.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsBindingManager.h"
-#include "nsIDOMNode.h"
 #include "nsGkAtoms.h"
 #include "nsNameSpaceManager.h"
 #include "nsIURI.h"
 #include "nsTextFragment.h"
 #ifdef MOZ_XUL
-#include "nsXULElement.h"
+#  include "nsXULElement.h"
 #endif
 #include "nsXBLProtoImplProperty.h"
 #include "nsXBLProtoImplMethod.h"
@@ -31,7 +30,7 @@
 using namespace mozilla;
 using namespace mozilla::dom;
 
-nsresult NS_NewXBLContentSink(nsIXMLContentSink** aResult, nsIDocument* aDoc,
+nsresult NS_NewXBLContentSink(nsIXMLContentSink** aResult, Document* aDoc,
                               nsIURI* aURI, nsISupports* aContainer) {
   NS_ENSURE_ARG_POINTER(aResult);
 
@@ -62,7 +61,7 @@ nsXBLContentSink::nsXBLContentSink()
 
 nsXBLContentSink::~nsXBLContentSink() {}
 
-nsresult nsXBLContentSink::Init(nsIDocument* aDoc, nsIURI* aURI,
+nsresult nsXBLContentSink::Init(Document* aDoc, nsIURI* aURI,
                                 nsISupports* aContainer) {
   nsresult rv;
   rv = nsXMLContentSink::Init(aDoc, aURI, aContainer, nullptr);
@@ -144,7 +143,7 @@ NS_IMETHODIMP
 nsXBLContentSink::ReportError(const char16_t* aErrorText,
                               const char16_t* aSourceText,
                               nsIScriptError* aError, bool* _retval) {
-  NS_PRECONDITION(aError && aSourceText && aErrorText, "Check arguments!!!");
+  MOZ_ASSERT(aError && aSourceText && aErrorText, "Check arguments!!!");
 
   // XXX FIXME This function overrides and calls on
   // nsXMLContentSink::ReportError, and probably should die.  See bug 347826.
@@ -213,10 +212,10 @@ void nsXBLContentSink::AddField(nsXBLProtoImplField* aField) {
 NS_IMETHODIMP
 nsXBLContentSink::HandleStartElement(const char16_t* aName,
                                      const char16_t** aAtts,
-                                     uint32_t aAttsCount,
-                                     uint32_t aLineNumber) {
-  nsresult rv = nsXMLContentSink::HandleStartElement(aName, aAtts, aAttsCount,
-                                                     aLineNumber);
+                                     uint32_t aAttsCount, uint32_t aLineNumber,
+                                     uint32_t aColumnNumber) {
+  nsresult rv = nsXMLContentSink::HandleStartElement(
+      aName, aAtts, aAttsCount, aLineNumber, aColumnNumber);
   if (NS_FAILED(rv)) return rv;
 
   if (mState == eXBL_InBinding && !mBinding) {
@@ -255,9 +254,6 @@ nsXBLContentSink::HandleEndElement(const char16_t* aName) {
           mHandler = nullptr;
         } else if (localName == nsGkAtoms::handler)
           mSecondaryState = eXBL_None;
-        return NS_OK;
-      } else if (mState == eXBL_InResources) {
-        if (localName == nsGkAtoms::resources) mState = eXBL_InBinding;
         return NS_OK;
       } else if (mState == eXBL_InImplementation) {
         if (localName == nsGkAtoms::implementation)
@@ -372,16 +368,6 @@ bool nsXBLContentSink::OnOpenContainer(const char16_t** aAtts,
     mSecondaryState = eXBL_InHandler;
     ConstructHandler(aAtts, aLineNumber);
     ret = false;
-  } else if (aTagName == nsGkAtoms::resources) {
-    ENSURE_XBL_STATE(mState == eXBL_InBinding && mBinding);
-    mState = eXBL_InResources;
-    // Note that this mState will cause us to return false, so no need
-    // to set ret to false.
-  } else if (aTagName == nsGkAtoms::stylesheet ||
-             aTagName == nsGkAtoms::image) {
-    ENSURE_XBL_STATE(mState == eXBL_InResources);
-    NS_ASSERTION(mBinding, "Must have binding here");
-    ConstructResource(aAtts, aTagName);
   } else if (aTagName == nsGkAtoms::implementation) {
     ENSURE_XBL_STATE(mState == eXBL_InBinding && mBinding);
     mState = eXBL_InImplementation;
@@ -463,7 +449,7 @@ bool nsXBLContentSink::OnOpenContainer(const char16_t** aAtts,
     mSecondaryState = eXBL_InBody;
   }
 
-  return ret && mState != eXBL_InResources && mState != eXBL_InImplementation;
+  return ret && mState != eXBL_InImplementation;
 }
 
 #undef ENSURE_XBL_STATE
@@ -603,16 +589,6 @@ void nsXBLContentSink::ConstructHandler(const char16_t** aAtts,
   // Adjust our mHandler pointer to point to the new last handler in the
   // chain.
   mHandler = newHandler;
-}
-
-void nsXBLContentSink::ConstructResource(const char16_t** aAtts,
-                                         nsAtom* aResourceType) {
-  if (!mBinding) return;
-
-  const char16_t* src = nullptr;
-  if (FindValue(aAtts, nsGkAtoms::src, &src)) {
-    mBinding->AddResource(aResourceType, nsDependentString(src));
-  }
 }
 
 void nsXBLContentSink::ConstructImplementation(const char16_t** aAtts) {
@@ -756,13 +732,14 @@ void nsXBLContentSink::ConstructParameter(const char16_t** aAtts) {
 nsresult nsXBLContentSink::CreateElement(
     const char16_t** aAtts, uint32_t aAttsCount,
     mozilla::dom::NodeInfo* aNodeInfo, uint32_t aLineNumber,
-    nsIContent** aResult, bool* aAppendContent, FromParser aFromParser) {
+    uint32_t aColumnNumber, nsIContent** aResult, bool* aAppendContent,
+    FromParser aFromParser) {
 #ifdef MOZ_XUL
   if (!aNodeInfo->NamespaceEquals(kNameSpaceID_XUL)) {
 #endif
     return nsXMLContentSink::CreateElement(aAtts, aAttsCount, aNodeInfo,
-                                           aLineNumber, aResult, aAppendContent,
-                                           aFromParser);
+                                           aLineNumber, aColumnNumber, aResult,
+                                           aAppendContent, aFromParser);
 #ifdef MOZ_XUL
   }
 
@@ -777,8 +754,8 @@ nsresult nsXBLContentSink::CreateElement(
   AddAttributesToXULPrototype(aAtts, aAttsCount, prototype);
 
   Element* result;
-  nsresult rv =
-      nsXULElement::Create(prototype, mDocument, false, false, &result);
+  nsresult rv = nsXULElement::CreateFromPrototype(prototype, mDocument, false,
+                                                  false, &result);
   *aResult = result;
   return rv;
 #endif

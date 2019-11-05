@@ -40,15 +40,14 @@ class CompositorVsyncScheduler {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(CompositorVsyncScheduler)
 
  public:
-  explicit CompositorVsyncScheduler(
-      CompositorVsyncSchedulerOwner* aVsyncSchedulerOwner,
-      widget::CompositorWidget* aWidget);
+  CompositorVsyncScheduler(CompositorVsyncSchedulerOwner* aVsyncSchedulerOwner,
+                           widget::CompositorWidget* aWidget);
 
   /**
    * Notify this class of a vsync. This will trigger a composite if one is
    * needed. This must be called from the vsync dispatch thread.
    */
-  bool NotifyVsync(TimeStamp aVsyncTimestamp);
+  bool NotifyVsync(const VsyncEvent& aVsync);
 
   /**
    * Do cleanup. This must be called on the compositor thread.
@@ -93,6 +92,20 @@ class CompositorVsyncScheduler {
    */
   const TimeStamp& GetLastComposeTime() const;
 
+  /**
+   * Return the vsync timestamp and id of the most recently received
+   * vsync event. Must be called on the compositor thread.
+   */
+  const TimeStamp& GetLastVsyncTime() const;
+  const VsyncId& GetLastVsyncId() const;
+
+  /**
+   * Update LastCompose TimeStamp to current timestamp.
+   * The function is typically used when composition is handled outside the
+   * CompositorVsyncScheduler.
+   */
+  void UpdateLastComposeTime();
+
  private:
   virtual ~CompositorVsyncScheduler();
 
@@ -101,15 +114,20 @@ class CompositorVsyncScheduler {
 
   // Post a task to run Composite() on the compositor thread, if there isn't
   // such a task already queued. Can be called from any thread.
-  void PostCompositeTask(TimeStamp aCompositeTimestamp);
+  void PostCompositeTask(VsyncId aId, TimeStamp aCompositeTimestamp);
 
   // Post a task to run DispatchVREvents() on the VR thread, if there isn't
   // such a task already queued. Can be called from any thread.
   void PostVRTask(TimeStamp aTimestamp);
 
+  /**
+   * Cancel any VR task that has been scheduled but hasn't run yet.
+   */
+  void CancelCurrentVRTask();
+
   // This gets run at vsync time and "does" a composite (which really means
   // update internal state and call the owner to do the composite).
-  void Composite(TimeStamp aVsyncTimestamp);
+  void Composite(VsyncId aId, TimeStamp aVsyncTimestamp);
 
   void ObserveVsync();
   void UnobserveVsync();
@@ -119,7 +137,7 @@ class CompositorVsyncScheduler {
   class Observer final : public VsyncObserver {
    public:
     explicit Observer(CompositorVsyncScheduler* aOwner);
-    virtual bool NotifyVsync(TimeStamp aVsyncTimestamp) override;
+    bool NotifyVsync(const VsyncEvent& aVsync) override;
     void Destroy();
 
    private:
@@ -132,10 +150,12 @@ class CompositorVsyncScheduler {
 
   CompositorVsyncSchedulerOwner* mVsyncSchedulerOwner;
   TimeStamp mLastCompose;
+  TimeStamp mLastVsync;
+  VsyncId mLastVsyncId;
 
   bool mAsapScheduling;
   bool mIsObservingVsync;
-  uint32_t mNeedsComposite;
+  TimeStamp mCompositeRequestedAt;
   int32_t mVsyncNotificationsSkipped;
   widget::CompositorWidget* mWidget;
   RefPtr<CompositorVsyncScheduler::Observer> mVsyncObserver;
@@ -143,8 +163,8 @@ class CompositorVsyncScheduler {
   mozilla::Monitor mCurrentCompositeTaskMonitor;
   RefPtr<CancelableRunnable> mCurrentCompositeTask;
 
-  mozilla::Monitor mCurrentVRListenerTaskMonitor;
-  RefPtr<Runnable> mCurrentVRListenerTask;
+  mozilla::Monitor mCurrentVRTaskMonitor;
+  RefPtr<CancelableRunnable> mCurrentVRTask;
 };
 
 }  // namespace layers

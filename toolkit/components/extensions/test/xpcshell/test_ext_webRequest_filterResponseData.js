@@ -1,39 +1,10 @@
 "use strict";
 
-XPCOMUtils.defineLazyServiceGetter(this, "proxyService",
-                                   "@mozilla.org/network/protocol-proxy-service;1",
-                                   "nsIProtocolProxyService");
+const HOSTS = new Set(["example.com", "example.org", "example.net"]);
 
-const server = createHttpServer();
-const gHost = "localhost";
-const gPort = server.identity.primaryPort;
+const server = createHttpServer({ hosts: HOSTS });
 
-const HOSTS = new Set([
-  "example.com",
-  "example.org",
-  "example.net",
-]);
-
-for (let host of HOSTS) {
-  server.identity.add("http", host, 80);
-}
-
-const proxyFilter = {
-  proxyInfo: proxyService.newProxyInfo("http", gHost, gPort, 0, 4096, null),
-
-  applyFilter(service, channel, defaultProxyInfo, callback) {
-    if (HOSTS.has(channel.URI.host)) {
-      callback.onProxyFilterResult(this.proxyInfo);
-    } else {
-      callback.onProxyFilterResult(defaultProxyInfo);
-    }
-  },
-};
-
-proxyService.registerChannelFilter(proxyFilter, 0);
-registerCleanupFunction(() => {
-  proxyService.unregisterChannelFilter(proxyFilter);
-});
+const FETCH_ORIGIN = "http://example.com/dummy";
 
 server.registerPathHandler("/redirect", (request, response) => {
   let params = new URLSearchParams(request.queryString);
@@ -48,11 +19,117 @@ server.registerPathHandler("/dummy", (request, response) => {
   response.write("ok");
 });
 
-Cu.importGlobalProperties(["fetch"]);
+server.registerPathHandler("/dummy.xhtml", (request, response) => {
+  response.setStatusLine(request.httpVersion, 200, "OK");
+  response.setHeader("Content-Type", "application/xhtml+xml");
+  response.write(String.raw`<?xml version="1.0"?>
+    <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+      <head/>
+      <body/>
+    </html>
+  `);
+});
+
+// Tests that the stream filter request is added to the document's load
+// group, and blocks an XML document's load event until after the filter
+// stops sending data.
+add_task(async function test_xml_document_loadgroup_blocking() {
+  let extension = ExtensionTestUtils.loadExtension({
+    background() {
+      browser.webRequest.onBeforeRequest.addListener(
+        request => {
+          let filter = browser.webRequest.filterResponseData(request.requestId);
+
+          let data = [];
+          filter.ondata = event => {
+            data.push(event.data);
+          };
+          filter.onstop = async () => {
+            browser.test.sendMessage("phase", "original-onstop");
+
+            // Make a few trips through the event loop.
+            for (let i = 0; i < 10; i++) {
+              await new Promise(resolve => setTimeout(resolve, 0));
+            }
+
+            for (let buffer of data) {
+              filter.write(buffer);
+            }
+            browser.test.sendMessage("phase", "filter-onstop");
+            filter.close();
+          };
+        },
+        {
+          urls: ["http://example.com/dummy.xhtml"],
+        },
+        ["blocking"]
+      );
+    },
+
+    files: {
+      "content_script.js"() {
+        browser.test.sendMessage("phase", "content-script-start");
+        window.addEventListener(
+          "DOMContentLoaded",
+          () => {
+            browser.test.sendMessage("phase", "content-script-domload");
+          },
+          { once: true }
+        );
+        window.addEventListener(
+          "load",
+          () => {
+            browser.test.sendMessage("phase", "content-script-load");
+          },
+          { once: true }
+        );
+      },
+    },
+
+    manifest: {
+      permissions: ["webRequest", "webRequestBlocking", "http://example.com/"],
+
+      content_scripts: [
+        {
+          matches: ["http://example.com/dummy.xhtml"],
+          run_at: "document_start",
+          js: ["content_script.js"],
+        },
+      ],
+    },
+  });
+
+  await extension.startup();
+
+  const EXPECTED = [
+    "original-onstop",
+    "filter-onstop",
+    "content-script-start",
+    "content-script-domload",
+    "content-script-load",
+  ];
+
+  let done = new Promise(resolve => {
+    let phases = [];
+    extension.onMessage("phase", phase => {
+      phases.push(phase);
+      if (phases.length === EXPECTED.length) {
+        resolve(phases);
+      }
+    });
+  });
+
+  let contentPage = await ExtensionTestUtils.loadContentPage(
+    "http://example.com/dummy.xhtml"
+  );
+
+  deepEqual(await done, EXPECTED, "Things happened, and in the right order");
+
+  await contentPage.close();
+  await extension.unload();
+});
 
 add_task(async function() {
-  const {fetch} = Cu.Sandbox("http://example.com/", {wantGlobalProperties: ["fetch"]});
-
   let extension = ExtensionTestUtils.loadExtension({
     background() {
       let pending = [];
@@ -65,10 +142,16 @@ add_task(async function() {
 
           if (url.searchParams.get("redirect_uri")) {
             pending.push(
-              new Promise(resolve => { filter.onerror = resolve; }).then(() => {
-                browser.test.assertEq("Channel redirected", filter.error,
-                                      "Got correct error for redirected filter");
-              }));
+              new Promise(resolve => {
+                filter.onerror = resolve;
+              }).then(() => {
+                browser.test.assertEq(
+                  "Channel redirected",
+                  filter.error,
+                  "Got correct error for redirected filter"
+                );
+              })
+            );
           }
 
           filter.onstart = () => {
@@ -76,15 +159,21 @@ add_task(async function() {
           };
           filter.ondata = event => {
             let str = new TextDecoder().decode(event.data);
-            browser.test.assertEq("ok", str, `Got unfiltered data for ${data.url}`);
+            browser.test.assertEq(
+              "ok",
+              str,
+              `Got unfiltered data for ${data.url}`
+            );
           };
           filter.onstop = () => {
             filter.close();
           };
-        }, {
+        },
+        {
           urls: ["<all_urls>"],
         },
-        ["blocking"]);
+        ["blocking"]
+      );
 
       browser.test.onMessage.addListener(async msg => {
         if (msg === "done") {
@@ -110,13 +199,21 @@ add_task(async function() {
     ["http://example.com/dummy", "http://example.com/dummy"],
     ["http://example.org/dummy", "http://example.org/dummy"],
     ["http://example.net/dummy", "ok"],
-    ["http://example.com/redirect?redirect_uri=http://example.com/dummy", "http://example.com/dummy"],
-    ["http://example.com/redirect?redirect_uri=http://example.org/dummy", "http://example.org/dummy"],
+    [
+      "http://example.com/redirect?redirect_uri=http://example.com/dummy",
+      "http://example.com/dummy",
+    ],
+    [
+      "http://example.com/redirect?redirect_uri=http://example.org/dummy",
+      "http://example.org/dummy",
+    ],
     ["http://example.com/redirect?redirect_uri=http://example.net/dummy", "ok"],
-    ["http://example.net/redirect?redirect_uri=http://example.com/dummy", "http://example.com/dummy"],
+    [
+      "http://example.net/redirect?redirect_uri=http://example.com/dummy",
+      "http://example.com/dummy",
+    ],
   ].map(async ([url, expectedResponse]) => {
-    let resp = await fetch(url);
-    let text = await resp.text();
+    let text = await ExtensionTestUtils.fetch(FETCH_ORIGIN, url);
     equal(text, expectedResponse, `Expected response for ${url}`);
   });
 

@@ -27,7 +27,7 @@ IncrementalTokenizer::IncrementalTokenizer(Consumer&& aConsumer,
       mNeedMoreInput(false),
       mRollback(false),
       mInputCursor(0),
-      mConsumer(Move(aConsumer)) {
+      mConsumer(std::move(aConsumer)) {
   mInputFinished = false;
   mMinRawDelivery = aRawMinBuffered;
 }
@@ -71,7 +71,7 @@ nsresult IncrementalTokenizer::FeedInput(nsIInputStream* aInput,
       return NS_ERROR_OUT_OF_MEMORY;
     }
 
-    nsCString::char_iterator buffer = mInput.BeginWriting() + remainder;
+    auto buffer = mInput.BeginWriting() + remainder;
 
     uint32_t read;
     rv = aInput->Read(buffer, load, &read);

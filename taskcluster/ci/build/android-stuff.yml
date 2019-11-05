@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
 job-defaults:
     tags:
         android-stuff: "true"
@@ -14,7 +18,7 @@ android-test/opt:
         kind: build
         tier: 1
         symbol: A(test)
-    worker-type: aws-provisioner-v1/gecko-{level}-b-android
+    worker-type: b-linux
     worker:
         docker-image: {in-tree: android-build}
         env:
@@ -43,6 +47,7 @@ android-test/opt:
     toolchains:
         - android-gradle-dependencies
         - android-sdk-linux
+        - linux64-node
     optimization:
         skip-unless-changed:
             - "mobile/android/base/**"
@@ -61,21 +66,21 @@ android-lint/opt:
         kind: build
         tier: 1
         symbol: A(lint)
-    worker-type: aws-provisioner-v1/gecko-{level}-b-android
+    worker-type: b-linux
     worker:
         docker-image: {in-tree: android-build}
         env:
             GRADLE_USER_HOME: "/builds/worker/workspace/build/src/mobile/android/gradle/dotgradle-offline"
             PERFHERDER_EXTRA_OPTIONS: android-lint
         artifacts:
-            - name: public/android/lint/lint-results-officialPhotonDebug.html
-              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/lint-results-officialPhotonDebug.html
+            - name: public/android/lint/lint-results-officialWithoutGeckoBinariesDebug.html
+              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/lint-results-officialWithoutGeckoBinariesDebug.html
               type: file
-            - name: public/android/lint/lint-results-officialPhotonDebug.xml
-              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/lint-results-officialPhotonDebug.xml
+            - name: public/android/lint/lint-results-officialWithoutGeckoBinariesDebug.xml
+              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/lint-results-officialWithoutGeckoBinariesDebug.xml
               type: file
-            - name: public/android/lint/lint-results-officialPhotonDebug_files
-              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/lint-results-officialPhotonDebug_files
+            - name: public/android/lint/lint-results-officialWithoutGeckoBinariesDebug_files
+              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/lint-results-officialWithoutGeckoBinariesDebug_files
               type: directory
             - name: public/build
               path: /builds/worker/artifacts/
@@ -93,6 +98,7 @@ android-lint/opt:
     toolchains:
         - android-gradle-dependencies
         - android-sdk-linux
+        - linux64-node
     optimization:
         skip-unless-changed:
             - "mobile/android/**/*.java"
@@ -101,6 +107,53 @@ android-lint/opt:
             - "mobile/android/**/*.png"
             - "mobile/android/**/*.svg"
             - "mobile/android/**/*.xml"
+            - "mobile/android/**/Makefile.in"
+            - "mobile/android/config/**"
+            - "mobile/android/gradle.configure"
+            - "mobile/android/**/moz.build"
+            - "**/*.gradle"
+
+android-api-lint/opt:
+    description: "Android apilint"
+    index:
+        product: mobile
+        job-name: android-api-lint
+    treeherder:
+        platform: android-4-0-armv7-api16/opt
+        kind: build
+        tier: 1
+        symbol: A(apilint)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: android-build}
+        env:
+            GRADLE_USER_HOME: "/builds/worker/workspace/build/src/mobile/android/gradle/dotgradle-offline"
+            PERFHERDER_EXTRA_OPTIONS: android-api-lint
+        artifacts:
+            - name: public/android/geckoview/api.txt
+              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/geckoview/intermediates/classes/withGeckoBinaries/debug/api.txt
+              type: file
+            - name: public/android/geckoview/apilint-result.json
+              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/geckoview/intermediates/classes/withGeckoBinaries/debug/apilint-result.json
+              type: file
+        max-run-time: 7200
+    run:
+        using: mozharness
+        actions: [get-secrets, build]
+        config:
+            - builds/releng_base_android_64_builds.py
+        script: "mozharness/scripts/fx_desktop_build.py"
+        secrets: true
+        custom-build-variant-cfg: android-api-lint
+        tooltool-downloads: internal
+    toolchains:
+        - android-gradle-dependencies
+        - android-sdk-linux
+        - linux64-node
+    optimization:
+        skip-unless-changed:
+            - "mobile/android/**/*.java"
+            - "mobile/android/**/*.kt"
             - "mobile/android/**/Makefile.in"
             - "mobile/android/config/**"
             - "mobile/android/gradle.configure"
@@ -117,7 +170,7 @@ android-checkstyle/opt:
         kind: build
         tier: 1
         symbol: A(checkstyle)
-    worker-type: aws-provisioner-v1/gecko-{level}-b-android
+    worker-type: b-linux
     worker:
         docker-image: {in-tree: android-build}
         env:
@@ -146,6 +199,7 @@ android-checkstyle/opt:
     toolchains:
         - android-gradle-dependencies
         - android-sdk-linux
+        - linux64-node
     optimization:
         skip-unless-changed:
             - "mobile/android/**/checkstyle.xml"
@@ -166,18 +220,18 @@ android-findbugs/opt:
         kind: build
         tier: 1
         symbol: A(findbugs)
-    worker-type: aws-provisioner-v1/gecko-{level}-b-android
+    worker-type: b-linux
     worker:
         docker-image: {in-tree: android-build}
         env:
             GRADLE_USER_HOME: "/builds/worker/workspace/build/src/mobile/android/gradle/dotgradle-offline"
             PERFHERDER_EXTRA_OPTIONS: android-findbugs
         artifacts:
-            - name: public/android/findbugs/findbugs-officialPhotonDebug-output.html
-              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/findbugs/findbugs-officialPhotonDebug-output.html
+            - name: public/android/findbugs/findbugs-officialWithoutGeckoBinariesDebug-output.html
+              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/findbugs/findbugs-officialWithoutGeckoBinariesDebug-output.html
               type: file
-            - name: public/android/findbugs/findbugs-officialPhotonDebug-output.xml
-              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/findbugs/findbugs-officialPhotonDebug-output.xml
+            - name: public/android/findbugs/findbugs-officialWithoutGeckoBinariesDebug-output.xml
+              path: /builds/worker/workspace/build/src/obj-firefox/gradle/build/mobile/android/app/reports/findbugs/findbugs-officialWithoutGeckoBinariesDebug-output.xml
               type: file
             - name: public/build
               path: /builds/worker/artifacts/
@@ -195,6 +249,7 @@ android-findbugs/opt:
     toolchains:
         - android-gradle-dependencies
         - android-sdk-linux
+        - linux64-node
     optimization:
         skip-unless-changed:
             - "mobile/android/**/*.java"
@@ -212,10 +267,10 @@ android-geckoview-docs/opt:
     treeherder:
         platform: android-4-0-armv7-api16/opt
         kind: build
-        tier: 3
+        tier: 2
         symbol: A(gv-docs)
     run-on-projects: [mozilla-central]
-    worker-type: aws-provisioner-v1/gecko-{level}-b-android
+    worker-type: b-linux
     worker:
         docker-image: {in-tree: android-build}
         env:
@@ -239,6 +294,7 @@ android-geckoview-docs/opt:
     toolchains:
         - android-gradle-dependencies
         - android-sdk-linux
+        - linux64-node
     optimization:
         skip-unless-changed:
             - "mobile/android/**/*.java"

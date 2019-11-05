@@ -185,11 +185,11 @@ bool IsHeadRequest(const CacheRequest& aRequest,
          aRequest.method().LowerCaseEqualsLiteral("head");
 }
 
-bool IsHeadRequest(const CacheRequestOrVoid& aRequest,
+bool IsHeadRequest(const Maybe<CacheRequest>& aRequest,
                    const CacheQueryParams& aParams) {
-  if (aRequest.type() == CacheRequestOrVoid::TCacheRequest) {
+  if (aRequest.isSome()) {
     return !aParams.ignoreMethod() &&
-           aRequest.get_CacheRequest().method().LowerCaseEqualsLiteral("head");
+           aRequest.ref().method().LowerCaseEqualsLiteral("head");
   }
   return false;
 }
@@ -544,18 +544,18 @@ class Manager::CacheMatchAction final : public Manager::BaseAction {
       }
     }
 
-    mStreamList->Add(mResponse.mBodyId, Move(stream));
+    mStreamList->Add(mResponse.mBodyId, std::move(stream));
 
     return rv;
   }
 
   virtual void Complete(Listener* aListener, ErrorResult&& aRv) override {
     if (!mFoundResponse) {
-      aListener->OnOpComplete(Move(aRv), CacheMatchResult(void_t()));
+      aListener->OnOpComplete(std::move(aRv), CacheMatchResult(Nothing()));
     } else {
       mStreamList->Activate(mCacheId);
-      aListener->OnOpComplete(Move(aRv), CacheMatchResult(void_t()), mResponse,
-                              mStreamList);
+      aListener->OnOpComplete(std::move(aRv), CacheMatchResult(Nothing()),
+                              mResponse, mStreamList);
     }
     mStreamList = nullptr;
   }
@@ -587,7 +587,7 @@ class Manager::CacheMatchAllAction final : public Manager::BaseAction {
   virtual nsresult RunSyncWithDBOnTarget(
       const QuotaInfo& aQuotaInfo, nsIFile* aDBDir,
       mozIStorageConnection* aConn) override {
-    nsresult rv = db::CacheMatchAll(aConn, mCacheId, mArgs.requestOrVoid(),
+    nsresult rv = db::CacheMatchAll(aConn, mCacheId, mArgs.maybeRequest(),
                                     mArgs.params(), mSavedResponses);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
@@ -595,7 +595,7 @@ class Manager::CacheMatchAllAction final : public Manager::BaseAction {
 
     for (uint32_t i = 0; i < mSavedResponses.Length(); ++i) {
       if (!mSavedResponses[i].mHasBodyId ||
-          IsHeadRequest(mArgs.requestOrVoid(), mArgs.params())) {
+          IsHeadRequest(mArgs.maybeRequest(), mArgs.params())) {
         mSavedResponses[i].mHasBodyId = false;
         continue;
       }
@@ -612,7 +612,7 @@ class Manager::CacheMatchAllAction final : public Manager::BaseAction {
         }
       }
 
-      mStreamList->Add(mSavedResponses[i].mBodyId, Move(stream));
+      mStreamList->Add(mSavedResponses[i].mBodyId, std::move(stream));
     }
 
     return rv;
@@ -620,8 +620,8 @@ class Manager::CacheMatchAllAction final : public Manager::BaseAction {
 
   virtual void Complete(Listener* aListener, ErrorResult&& aRv) override {
     mStreamList->Activate(mCacheId);
-    aListener->OnOpComplete(Move(aRv), CacheMatchAllResult(), mSavedResponses,
-                            mStreamList);
+    aListener->OnOpComplete(std::move(aRv), CacheMatchAllResult(),
+                            mSavedResponses, mStreamList);
     mStreamList = nullptr;
   }
 
@@ -1089,7 +1089,7 @@ class Manager::CacheDeleteAction final : public Manager::BaseAction {
       DecreaseUsageForQuotaInfo(mQuotaInfo.ref(), mDeletedPaddingSize);
     }
 
-    aListener->OnOpComplete(Move(aRv), CacheDeleteResult(mSuccess));
+    aListener->OnOpComplete(std::move(aRv), CacheDeleteResult(mSuccess));
   }
 
   virtual bool MatchesCacheId(CacheId aCacheId) const override {
@@ -1120,7 +1120,7 @@ class Manager::CacheKeysAction final : public Manager::BaseAction {
   virtual nsresult RunSyncWithDBOnTarget(
       const QuotaInfo& aQuotaInfo, nsIFile* aDBDir,
       mozIStorageConnection* aConn) override {
-    nsresult rv = db::CacheKeys(aConn, mCacheId, mArgs.requestOrVoid(),
+    nsresult rv = db::CacheKeys(aConn, mCacheId, mArgs.maybeRequest(),
                                 mArgs.params(), mSavedRequests);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return rv;
@@ -1128,7 +1128,7 @@ class Manager::CacheKeysAction final : public Manager::BaseAction {
 
     for (uint32_t i = 0; i < mSavedRequests.Length(); ++i) {
       if (!mSavedRequests[i].mHasBodyId ||
-          IsHeadRequest(mArgs.requestOrVoid(), mArgs.params())) {
+          IsHeadRequest(mArgs.maybeRequest(), mArgs.params())) {
         mSavedRequests[i].mHasBodyId = false;
         continue;
       }
@@ -1145,7 +1145,7 @@ class Manager::CacheKeysAction final : public Manager::BaseAction {
         }
       }
 
-      mStreamList->Add(mSavedRequests[i].mBodyId, Move(stream));
+      mStreamList->Add(mSavedRequests[i].mBodyId, std::move(stream));
     }
 
     return rv;
@@ -1153,7 +1153,7 @@ class Manager::CacheKeysAction final : public Manager::BaseAction {
 
   virtual void Complete(Listener* aListener, ErrorResult&& aRv) override {
     mStreamList->Activate(mCacheId);
-    aListener->OnOpComplete(Move(aRv), CacheKeysResult(), mSavedRequests,
+    aListener->OnOpComplete(std::move(aRv), CacheKeysResult(), mSavedRequests,
                             mStreamList);
     mStreamList = nullptr;
   }
@@ -1210,17 +1210,17 @@ class Manager::StorageMatchAction final : public Manager::BaseAction {
       }
     }
 
-    mStreamList->Add(mSavedResponse.mBodyId, Move(stream));
+    mStreamList->Add(mSavedResponse.mBodyId, std::move(stream));
 
     return rv;
   }
 
   virtual void Complete(Listener* aListener, ErrorResult&& aRv) override {
     if (!mFoundResponse) {
-      aListener->OnOpComplete(Move(aRv), StorageMatchResult(void_t()));
+      aListener->OnOpComplete(std::move(aRv), StorageMatchResult(Nothing()));
     } else {
       mStreamList->Activate(mSavedResponse.mCacheId);
-      aListener->OnOpComplete(Move(aRv), StorageMatchResult(void_t()),
+      aListener->OnOpComplete(std::move(aRv), StorageMatchResult(Nothing()),
                               mSavedResponse, mStreamList);
     }
     mStreamList = nullptr;
@@ -1254,7 +1254,7 @@ class Manager::StorageHasAction final : public Manager::BaseAction {
   }
 
   virtual void Complete(Listener* aListener, ErrorResult&& aRv) override {
-    aListener->OnOpComplete(Move(aRv), StorageHasResult(mCacheFound));
+    aListener->OnOpComplete(std::move(aRv), StorageHasResult(mCacheFound));
   }
 
  private:
@@ -1314,8 +1314,9 @@ class Manager::StorageOpenAction final : public Manager::BaseAction {
 
   virtual void Complete(Listener* aListener, ErrorResult&& aRv) override {
     MOZ_DIAGNOSTIC_ASSERT(aRv.Failed() || mCacheId != INVALID_CACHE_ID);
-    aListener->OnOpComplete(
-        Move(aRv), StorageOpenResult(nullptr, nullptr, mNamespace), mCacheId);
+    aListener->OnOpComplete(std::move(aRv),
+                            StorageOpenResult(nullptr, nullptr, mNamespace),
+                            mCacheId);
   }
 
  private:
@@ -1389,7 +1390,7 @@ class Manager::StorageDeleteAction final : public Manager::BaseAction {
       }
     }
 
-    aListener->OnOpComplete(Move(aRv), StorageDeleteResult(mCacheDeleted));
+    aListener->OnOpComplete(std::move(aRv), StorageDeleteResult(mCacheDeleted));
   }
 
  private:
@@ -1417,7 +1418,7 @@ class Manager::StorageKeysAction final : public Manager::BaseAction {
     if (aRv.Failed()) {
       mKeys.Clear();
     }
-    aListener->OnOpComplete(Move(aRv), StorageKeysResult(mKeys));
+    aListener->OnOpComplete(std::move(aRv), StorageKeysResult(mKeys));
   }
 
  private:
@@ -1432,7 +1433,7 @@ class Manager::OpenStreamAction final : public Manager::BaseAction {
   OpenStreamAction(Manager* aManager, ListenerId aListenerId,
                    InputStreamResolver&& aResolver, const nsID& aBodyId)
       : BaseAction(aManager, aListenerId),
-        mResolver(Move(aResolver)),
+        mResolver(std::move(aResolver)),
         mBodyId(aBodyId) {}
 
   virtual nsresult RunSyncWithDBOnTarget(
@@ -1451,7 +1452,7 @@ class Manager::OpenStreamAction final : public Manager::BaseAction {
   }
 
   virtual void Complete(Listener* aListener, ErrorResult&& aRv) override {
-    mResolver(Move(mBodyStream));
+    mResolver(std::move(mBodyStream));
     mResolver = nullptr;
   }
 
@@ -1468,15 +1469,15 @@ Manager::ListenerId Manager::sNextListenerId = 0;
 
 void Manager::Listener::OnOpComplete(ErrorResult&& aRv,
                                      const CacheOpResult& aResult) {
-  OnOpComplete(Move(aRv), aResult, INVALID_CACHE_ID, nsTArray<SavedResponse>(),
-               nsTArray<SavedRequest>(), nullptr);
+  OnOpComplete(std::move(aRv), aResult, INVALID_CACHE_ID,
+               nsTArray<SavedResponse>(), nsTArray<SavedRequest>(), nullptr);
 }
 
 void Manager::Listener::OnOpComplete(ErrorResult&& aRv,
                                      const CacheOpResult& aResult,
                                      CacheId aOpenedCacheId) {
-  OnOpComplete(Move(aRv), aResult, aOpenedCacheId, nsTArray<SavedResponse>(),
-               nsTArray<SavedRequest>(), nullptr);
+  OnOpComplete(std::move(aRv), aResult, aOpenedCacheId,
+               nsTArray<SavedResponse>(), nsTArray<SavedRequest>(), nullptr);
 }
 
 void Manager::Listener::OnOpComplete(ErrorResult&& aRv,
@@ -1485,7 +1486,7 @@ void Manager::Listener::OnOpComplete(ErrorResult&& aRv,
                                      StreamList* aStreamList) {
   AutoTArray<SavedResponse, 1> responseList;
   responseList.AppendElement(aSavedResponse);
-  OnOpComplete(Move(aRv), aResult, INVALID_CACHE_ID, responseList,
+  OnOpComplete(std::move(aRv), aResult, INVALID_CACHE_ID, responseList,
                nsTArray<SavedRequest>(), aStreamList);
 }
 
@@ -1493,15 +1494,15 @@ void Manager::Listener::OnOpComplete(
     ErrorResult&& aRv, const CacheOpResult& aResult,
     const nsTArray<SavedResponse>& aSavedResponseList,
     StreamList* aStreamList) {
-  OnOpComplete(Move(aRv), aResult, INVALID_CACHE_ID, aSavedResponseList,
+  OnOpComplete(std::move(aRv), aResult, INVALID_CACHE_ID, aSavedResponseList,
                nsTArray<SavedRequest>(), aStreamList);
 }
 
 void Manager::Listener::OnOpComplete(
     ErrorResult&& aRv, const CacheOpResult& aResult,
     const nsTArray<SavedRequest>& aSavedRequestList, StreamList* aStreamList) {
-  OnOpComplete(Move(aRv), aResult, INVALID_CACHE_ID, nsTArray<SavedResponse>(),
-               aSavedRequestList, aStreamList);
+  OnOpComplete(std::move(aRv), aResult, INVALID_CACHE_ID,
+               nsTArray<SavedResponse>(), aSavedRequestList, aStreamList);
 }
 
 // static
@@ -1810,7 +1811,7 @@ void Manager::ExecuteOpenStream(Listener* aListener,
   ListenerId listenerId = SaveListener(aListener);
 
   RefPtr<Action> action =
-      new OpenStreamAction(this, listenerId, Move(aResolver), aBodyId);
+      new OpenStreamAction(this, listenerId, std::move(aResolver), aBodyId);
 
   context->Dispatch(action);
 }
@@ -1861,7 +1862,7 @@ Manager::~Manager() {
   // Don't spin the event loop in the destructor waiting for the thread to
   // shutdown.  Defer this to the main thread, instead.
   MOZ_ALWAYS_SUCCEEDS(NS_DispatchToMainThread(NewRunnableMethod(
-      "nsIThread::Shutdown", ioThread, &nsIThread::Shutdown)));
+      "nsIThread::AsyncShutdown", ioThread, &nsIThread::AsyncShutdown)));
 }
 
 void Manager::Init(Manager* aOldManager) {

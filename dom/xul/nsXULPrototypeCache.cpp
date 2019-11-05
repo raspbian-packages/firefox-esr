@@ -10,6 +10,7 @@
 #include "nsXULPrototypeDocument.h"
 #include "nsIServiceManager.h"
 #include "nsIURI.h"
+#include "nsNetUtil.h"
 
 #include "nsIFile.h"
 #include "nsIMemoryReporter.h"
@@ -75,7 +76,8 @@ nsXULPrototypeCache::~nsXULPrototypeCache() { FlushScripts(); }
 
 NS_IMPL_ISUPPORTS(nsXULPrototypeCache, nsIObserver)
 
-/* static */ nsXULPrototypeCache* nsXULPrototypeCache::GetInstance() {
+/* static */
+nsXULPrototypeCache* nsXULPrototypeCache::GetInstance() {
   if (!sInstance) {
     NS_ADDREF(sInstance = new nsXULPrototypeCache());
 
@@ -88,7 +90,6 @@ NS_IMPL_ISUPPORTS(nsXULPrototypeCache, nsIObserver)
         mozilla::services::GetObserverService();
     if (obsSvc) {
       nsXULPrototypeCache* p = sInstance;
-      obsSvc->AddObserver(p, "chrome-flush-skin-caches", false);
       obsSvc->AddObserver(p, "chrome-flush-caches", false);
       obsSvc->AddObserver(p, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
       obsSvc->AddObserver(p, "startupcache-invalidate", false);
@@ -102,10 +103,8 @@ NS_IMPL_ISUPPORTS(nsXULPrototypeCache, nsIObserver)
 NS_IMETHODIMP
 nsXULPrototypeCache::Observe(nsISupports* aSubject, const char* aTopic,
                              const char16_t* aData) {
-  if (!strcmp(aTopic, "chrome-flush-skin-caches")) {
-    FlushSkinFiles();
-  } else if (!strcmp(aTopic, "chrome-flush-caches") ||
-             !strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID)) {
+  if (!strcmp(aTopic, "chrome-flush-caches") ||
+      !strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID)) {
     Flush();
   } else if (!strcmp(aTopic, "startupcache-invalidate")) {
     AbortCaching();
@@ -119,7 +118,7 @@ nsXULPrototypeDocument* nsXULPrototypeCache::GetPrototype(nsIURI* aURI) {
   if (!aURI) return nullptr;
 
   nsCOMPtr<nsIURI> uriWithoutRef;
-  aURI->CloneIgnoringRef(getter_AddRefs(uriWithoutRef));
+  NS_GetURIWithoutRef(aURI, getter_AddRefs(uriWithoutRef));
 
   nsXULPrototypeDocument* protoDoc = mPrototypeTable.GetWeak(uriWithoutRef);
   if (protoDoc) return protoDoc;
@@ -153,7 +152,7 @@ nsresult nsXULPrototypeCache::PutPrototype(nsXULPrototypeDocument* aDocument) {
   }
 
   nsCOMPtr<nsIURI> uri;
-  aDocument->GetURI()->CloneIgnoringRef(getter_AddRefs(uri));
+  NS_GetURIWithoutRef(aDocument->GetURI(), getter_AddRefs(uri));
 
   // Put() releases any old value and addrefs the new one
   mPrototypeTable.Put(uri, aDocument);
@@ -161,19 +160,13 @@ nsresult nsXULPrototypeCache::PutPrototype(nsXULPrototypeDocument* aDocument) {
   return NS_OK;
 }
 
-mozilla::StyleSheet* nsXULPrototypeCache::GetStyleSheet(
-    nsIURI* aURI, StyleBackendType aType) {
-  StyleSheetTable& table = StyleSheetTableFor(aType);
-  return table.GetWeak(aURI);
+mozilla::StyleSheet* nsXULPrototypeCache::GetStyleSheet(nsIURI* aURI) {
+  return mStyleSheetTable.GetWeak(aURI);
 }
 
-nsresult nsXULPrototypeCache::PutStyleSheet(StyleSheet* aStyleSheet,
-                                            StyleBackendType aType) {
+nsresult nsXULPrototypeCache::PutStyleSheet(StyleSheet* aStyleSheet) {
   nsIURI* uri = aStyleSheet->GetSheetURI();
-
-  StyleSheetTable& table = StyleSheetTableFor(aType);
-  table.Put(uri, aStyleSheet);
-
+  mStyleSheetTable.Put(uri, aStyleSheet);
   return NS_OK;
 }
 
@@ -201,58 +194,18 @@ nsresult nsXULPrototypeCache::PutScript(nsIURI* aURI,
   return NS_OK;
 }
 
-nsXBLDocumentInfo* nsXULPrototypeCache::GetXBLDocumentInfo(
-    nsIURI* aURL, StyleBackendType aType) {
-  MOZ_ASSERT(aType != StyleBackendType::None,
-             "Please use either gecko or servo when looking up for the cache!");
-  return XBLDocTableFor(aType).GetWeak(aURL);
+nsXBLDocumentInfo* nsXULPrototypeCache::GetXBLDocumentInfo(nsIURI* aURL) {
+  return mXBLDocTable.GetWeak(aURL);
 }
 
 nsresult nsXULPrototypeCache::PutXBLDocumentInfo(
     nsXBLDocumentInfo* aDocumentInfo) {
   nsIURI* uri = aDocumentInfo->DocumentURI();
-  XBLDocTable& table =
-      XBLDocTableFor(aDocumentInfo->GetDocument()->GetStyleBackendType());
-
-  nsXBLDocumentInfo* info = table.GetWeak(uri);
+  nsXBLDocumentInfo* info = mXBLDocTable.GetWeak(uri);
   if (!info) {
-    table.Put(uri, aDocumentInfo);
+    mXBLDocTable.Put(uri, aDocumentInfo);
   }
   return NS_OK;
-}
-
-void nsXULPrototypeCache::FlushSkinFiles() {
-  StyleBackendType tableTypes[] = {StyleBackendType::Gecko,
-                                   StyleBackendType::Servo};
-
-  for (auto tableType : tableTypes) {
-    // Flush out skin XBL files from the cache.
-    XBLDocTable& xblDocTable = XBLDocTableFor(tableType);
-    for (auto iter = xblDocTable.Iter(); !iter.Done(); iter.Next()) {
-      nsAutoCString str;
-      iter.Key()->GetPathQueryRef(str);
-      if (strncmp(str.get(), "/skin", 5) == 0) {
-        iter.Remove();
-      }
-    }
-
-    // Now flush out our skin stylesheets from the cache.
-    StyleSheetTable& table = StyleSheetTableFor(tableType);
-    for (auto iter = table.Iter(); !iter.Done(); iter.Next()) {
-      nsAutoCString str;
-      iter.Data()->GetSheetURI()->GetPathQueryRef(str);
-      if (strncmp(str.get(), "/skin", 5) == 0) {
-        iter.Remove();
-      }
-    }
-
-    // Iterate over all the remaining XBL and make sure cached
-    // scoped skin stylesheets are flushed and refetched by the
-    // prototype bindings.
-    for (auto iter = xblDocTable.Iter(); !iter.Done(); iter.Next()) {
-      iter.Data()->FlushSkinStylesheets();
-    }
-  }
 }
 
 void nsXULPrototypeCache::FlushScripts() { mScriptTable.Clear(); }
@@ -260,10 +213,8 @@ void nsXULPrototypeCache::FlushScripts() { mScriptTable.Clear(); }
 void nsXULPrototypeCache::Flush() {
   mPrototypeTable.Clear();
   mScriptTable.Clear();
-  mGeckoStyleSheetTable.Clear();
-  mServoStyleSheetTable.Clear();
-  mGeckoXBLDocTable.Clear();
-  mServoXBLDocTable.Clear();
+  mStyleSheetTable.Clear();
+  mXBLDocTable.Clear();
 }
 
 bool nsXULPrototypeCache::IsEnabled() { return !gDisableXULCache; }
@@ -314,7 +265,7 @@ nsresult nsXULPrototypeCache::GetInputStream(nsIURI* uri,
   rv = sc->GetBuffer(spec.get(), &buf, &len);
   if (NS_FAILED(rv)) return NS_ERROR_NOT_AVAILABLE;
 
-  rv = NewObjectInputStreamFromBuffer(Move(buf), len, getter_AddRefs(ois));
+  rv = NewObjectInputStreamFromBuffer(std::move(buf), len, getter_AddRefs(ois));
   NS_ENSURE_SUCCESS(rv, rv);
 
   mInputStreamTable.Put(uri, ois);
@@ -374,7 +325,7 @@ nsresult nsXULPrototypeCache::FinishOutputStream(nsIURI* uri) {
     nsAutoCString spec(kXULCachePrefix);
     rv = PathifyURI(uri, spec);
     if (NS_FAILED(rv)) return NS_ERROR_NOT_AVAILABLE;
-    rv = sc->PutBuffer(spec.get(), Move(buf), len);
+    rv = sc->PutBuffer(spec.get(), std::move(buf), len);
     if (NS_SUCCEEDED(rv)) {
       mOutputStreamTable.Remove(uri);
       mStartupCacheURITable.PutEntry(uri);
@@ -415,8 +366,10 @@ nsresult nsXULPrototypeCache::BeginCaching(nsIURI* aURI) {
 
   nsAutoCString path;
   aURI->GetPathQueryRef(path);
-  if (!StringEndsWith(path, NS_LITERAL_CSTRING(".xul")))
+  if (!(StringEndsWith(path, NS_LITERAL_CSTRING(".xul")) ||
+        StringEndsWith(path, NS_LITERAL_CSTRING(".xhtml")))) {
     return NS_ERROR_NOT_AVAILABLE;
+  }
 
   StartupCache* startupCache = StartupCache::GetSingleton();
   if (!startupCache) return NS_ERROR_FAILURE;
@@ -448,7 +401,7 @@ nsresult nsXULPrototypeCache::BeginCaching(nsIURI* aURI) {
 
   rv = startupCache->GetBuffer(kXULCacheInfoKey, &buf, &len);
   if (NS_SUCCEEDED(rv))
-    rv = NewObjectInputStreamFromBuffer(Move(buf), len,
+    rv = NewObjectInputStreamFromBuffer(std::move(buf), len,
                                         getter_AddRefs(objectInput));
 
   if (NS_SUCCEEDED(rv)) {
@@ -508,7 +461,7 @@ nsresult nsXULPrototypeCache::BeginCaching(nsIURI* aURI) {
       buf = MakeUnique<char[]>(len);
       rv = inputStream->Read(buf.get(), len, &amtRead);
       if (NS_SUCCEEDED(rv) && len == amtRead)
-        rv = startupCache->PutBuffer(kXULCacheInfoKey, Move(buf), len);
+        rv = startupCache->PutBuffer(kXULCacheInfoKey, std::move(buf), len);
       else {
         rv = NS_ERROR_UNEXPECTED;
       }
@@ -526,14 +479,8 @@ nsresult nsXULPrototypeCache::BeginCaching(nsIURI* aURI) {
 }
 
 void nsXULPrototypeCache::MarkInCCGeneration(uint32_t aGeneration) {
-  StyleBackendType tableTypes[] = {StyleBackendType::Gecko,
-                                   StyleBackendType::Servo};
-
-  for (auto tableType : tableTypes) {
-    XBLDocTable& xblDocTable = XBLDocTableFor(tableType);
-    for (auto iter = xblDocTable.Iter(); !iter.Done(); iter.Next()) {
-      iter.Data()->MarkInCCGeneration(aGeneration);
-    }
+  for (auto iter = mXBLDocTable.Iter(); !iter.Done(); iter.Next()) {
+    iter.Data()->MarkInCCGeneration(aGeneration);
   }
   for (auto iter = mPrototypeTable.Iter(); !iter.Done(); iter.Next()) {
     iter.Data()->MarkInCCGeneration(aGeneration);
@@ -569,7 +516,8 @@ static void AppendURIForMemoryReport(nsIURI* aUri, nsACString& aOutput) {
   aOutput += spec;
 }
 
-/* static */ void nsXULPrototypeCache::CollectMemoryReports(
+/* static */
+void nsXULPrototypeCache::CollectMemoryReports(
     nsIHandleReportCallback* aHandleReport, nsISupports* aData) {
   if (!sInstance) {
     return;
@@ -584,30 +532,22 @@ static void AppendURIForMemoryReport(nsIURI* aUri, nsACString& aOutput) {
   other += sInstance->mPrototypeTable.ShallowSizeOfExcludingThis(mallocSizeOf);
   // TODO Report content in mPrototypeTable?
 
-  other +=
-      sInstance->mGeckoStyleSheetTable.ShallowSizeOfExcludingThis(mallocSizeOf);
-  // TODO Report content inside mGeckoStyleSheetTable?
-  other +=
-      sInstance->mServoStyleSheetTable.ShallowSizeOfExcludingThis(mallocSizeOf);
-  // TODO Report content inside mServoStyleSheetTable?
+  other += sInstance->mStyleSheetTable.ShallowSizeOfExcludingThis(mallocSizeOf);
+  // TODO Report content inside mStyleSheetTable?
 
   other += sInstance->mScriptTable.ShallowSizeOfExcludingThis(mallocSizeOf);
   // TODO Report content inside mScriptTable?
 
-  auto reportXBLDocTable = [&](const nsACString& prefix,
-                               const XBLDocTable& table) {
-    other += table.ShallowSizeOfExcludingThis(mallocSizeOf);
-    for (auto iter = table.ConstIter(); !iter.Done(); iter.Next()) {
-      nsAutoCString path(prefix);
-      path += "-xbl-docs/(";
-      AppendURIForMemoryReport(iter.Key(), path);
-      path += ")";
-      size_t size = iter.UserData()->SizeOfIncludingThis(mallocSizeOf);
-      REPORT_SIZE(path, size, "Memory used by this XBL document.");
-    }
-  };
-  reportXBLDocTable(NS_LITERAL_CSTRING("gecko"), sInstance->mGeckoXBLDocTable);
-  reportXBLDocTable(NS_LITERAL_CSTRING("servo"), sInstance->mServoXBLDocTable);
+  other += sInstance->mXBLDocTable.ShallowSizeOfExcludingThis(mallocSizeOf);
+  for (auto iter = sInstance->mXBLDocTable.ConstIter(); !iter.Done();
+       iter.Next()) {
+    nsAutoCString path;
+    path += "xbl-docs/(";
+    AppendURIForMemoryReport(iter.Key(), path);
+    path += ")";
+    size_t size = iter.UserData()->SizeOfIncludingThis(mallocSizeOf);
+    REPORT_SIZE(path, size, "Memory used by this XBL document.");
+  }
 
   other +=
       sInstance->mStartupCacheURITable.ShallowSizeOfExcludingThis(mallocSizeOf);

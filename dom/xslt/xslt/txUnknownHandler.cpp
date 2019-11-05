@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -10,8 +10,6 @@
 #include "txStringUtils.h"
 #include "txStylesheet.h"
 #include "nsGkAtoms.h"
-
-using mozilla::Move;
 
 txUnknownHandler::txUnknownHandler(txExecutionState* aEs)
     : mEs(aEs), mFlushed(false) {
@@ -170,6 +168,6 @@ nsresult txUnknownHandler::createHandlerAndFlush(bool aHTMLRoot,
   // Let go of out buffer as soon as we're done flushing it, we're not going
   // to need it anymore from this point on (all hooks get forwarded to
   // mEs->mResultHandler.
-  nsAutoPtr<txResultBuffer> buffer(Move(mBuffer));
+  nsAutoPtr<txResultBuffer> buffer(std::move(mBuffer));
   return buffer->flushToHandler(mEs->mResultHandler);
 }

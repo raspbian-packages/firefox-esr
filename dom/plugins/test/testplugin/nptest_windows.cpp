@@ -63,8 +63,6 @@ bool pluginSupportsWindowMode() { return true; }
 bool pluginSupportsWindowlessMode() { return true; }
 
 NPError pluginInstanceInit(InstanceData* instanceData) {
-  NPP npp = instanceData->npp;
-
   instanceData->platformData =
       static_cast<PlatformData*>(NPN_MemAlloc(sizeof(PlatformData)));
   if (!instanceData->platformData) return NPERR_OUT_OF_MEMORY_ERROR;
@@ -289,6 +287,7 @@ void pluginInstanceShutdown(InstanceData* instanceData) {
   }
   NPN_MemFree(instanceData->platformData);
   instanceData->platformData = 0;
+  ClearSubclass((HWND)instanceData->window.window);
 }
 
 void pluginDoSetWindow(InstanceData* instanceData, NPWindow* newWindow) {

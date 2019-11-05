@@ -7,37 +7,32 @@
  * Test if request and response body logging stays on after opening the console.
  */
 
-add_task(async function () {
-  let { L10N } = require("devtools/client/netmonitor/src/utils/l10n");
+add_task(async function() {
+  const { L10N } = require("devtools/client/netmonitor/src/utils/l10n");
 
-  let { tab, monitor } = await initNetMonitor(JSON_LONG_URL);
+  const { tab, monitor } = await initNetMonitor(JSON_LONG_URL);
   info("Starting test... ");
 
-  let { document, store, windowRequire } = monitor.panelWin;
-  let Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
-  let {
-    getDisplayedRequests,
-    getSortedRequests,
-  } = windowRequire("devtools/client/netmonitor/src/selectors/index");
+  const { document, store, windowRequire } = monitor.panelWin;
+  const Actions = windowRequire("devtools/client/netmonitor/src/actions/index");
+  const { getDisplayedRequests, getSortedRequests } = windowRequire(
+    "devtools/client/netmonitor/src/selectors/index"
+  );
 
   store.dispatch(Actions.batchEnable(false));
 
   // Perform first batch of requests.
-  let wait = waitForNetworkEvents(monitor, 1);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests();
-  });
-  await wait;
+  await performRequests(monitor, tab, 1);
 
   await verifyRequest(0);
 
   // Switch to the webconsole.
-  let onWebConsole = monitor.toolbox.once("webconsole-selected");
+  const onWebConsole = monitor.toolbox.once("webconsole-selected");
   monitor.toolbox.selectTool("webconsole");
   await onWebConsole;
 
   // Switch back to the netmonitor.
-  let onNetMonitor = monitor.toolbox.once("netmonitor-selected");
+  const onNetMonitor = monitor.toolbox.once("netmonitor-selected");
   monitor.toolbox.selectTool("netmonitor");
   await onNetMonitor;
 
@@ -47,21 +42,17 @@ add_task(async function () {
   await wait;
 
   // Perform another batch of requests.
-  wait = waitForNetworkEvents(monitor, 1);
-  await ContentTask.spawn(tab.linkedBrowser, {}, async function () {
-    content.wrappedJSObject.performRequests();
-  });
-  await wait;
+  await performRequests(monitor, tab, 1);
 
   await verifyRequest(1);
 
   return teardown(monitor);
 
   async function verifyRequest(index) {
-    let requestItems = document.querySelectorAll(".request-list-item");
-    for (let requestItem of requestItems) {
+    const requestItems = document.querySelectorAll(".request-list-item");
+    for (const requestItem of requestItems) {
       requestItem.scrollIntoView();
-      let requestsListStatus = requestItem.querySelector(".requests-list-status");
+      const requestsListStatus = requestItem.querySelector(".status-code");
       EventUtils.sendMouseEvent({ type: "mouseover" }, requestsListStatus);
       await waitUntil(() => requestsListStatus.title);
     }
@@ -76,9 +67,12 @@ add_task(async function () {
         statusText: "OK",
         type: "json",
         fullMimeType: "text/json; charset=utf-8",
-        size: L10N.getFormatStr("networkMenu.sizeKB",
-          L10N.numberWithDecimals(85975 / 1024, 2)),
-        time: true
-      });
+        size: L10N.getFormatStr(
+          "networkMenu.sizeKB",
+          L10N.numberWithDecimals(85975 / 1024, 2)
+        ),
+        time: true,
+      }
+    );
   }
 });

@@ -6,7 +6,7 @@ from __future__ import absolute_import
 
 from marionette_driver.errors import JavascriptException
 
-from marionette_harness import MarionetteTestCase
+from marionette_harness import MarionetteTestCase, skip_if_mobile
 
 
 class TestExecuteSandboxes(MarionetteTestCase):
@@ -25,7 +25,7 @@ class TestExecuteSandboxes(MarionetteTestCase):
         # execute_async_script.
         result = self.marionette.execute_async_script("""
             let result = Ci.nsIPermissionManager.ALLOW_ACTION;
-            marionetteScriptFinished(result);""",
+            arguments[0](result);""",
             sandbox="system")
         self.assertEqual(result, 1)
 
@@ -41,6 +41,7 @@ class TestExecuteSandboxes(MarionetteTestCase):
             "return foo", sandbox="2", new_sandbox=False)
         self.assertEqual(foo, 2)
 
+    @skip_if_mobile("Intermittent on Android - bug 1526914")
     def test_execute_new_sandbox(self):
         # test that clearing a sandbox does not affect other sandboxes
         self.marionette.execute_script("foo = 1", sandbox="1")
@@ -59,16 +60,16 @@ class TestExecuteSandboxes(MarionetteTestCase):
         # Test that sandboxes are retained when switching between them
         # for execute_async_script.
         self.marionette.execute_async_script(
-            "foo = 1; marionetteScriptFinished()", sandbox="1")
+            "foo = 1; arguments[0]();", sandbox="1")
         self.marionette.execute_async_script(
-            "foo = 2; marionetteScriptFinished()", sandbox='2')
+            "foo = 2; arguments[0]();", sandbox='2')
         foo = self.marionette.execute_async_script(
-            "marionetteScriptFinished(foo)",
+            "arguments[0](foo);",
             sandbox="1",
             new_sandbox=False)
         self.assertEqual(foo, 1)
         foo = self.marionette.execute_async_script(
-            "marionetteScriptFinished(foo)",
+            "arguments[0](foo);",
             sandbox="2",
             new_sandbox=False)
         self.assertEqual(foo, 2)

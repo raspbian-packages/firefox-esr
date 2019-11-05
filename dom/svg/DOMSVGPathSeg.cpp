@@ -7,14 +7,14 @@
 #include "DOMSVGPathSeg.h"
 #include "DOMSVGPathSegList.h"
 #include "SVGAnimatedPathSegList.h"
-#include "nsSVGElement.h"
+#include "SVGElement.h"
 #include "nsError.h"
 
 // See the architecture comment in DOMSVGPathSegList.h.
 
 namespace mozilla {
 
-using namespace dom::SVGPathSegBinding;
+using namespace dom::SVGPathSeg_Binding;
 
 // We could use NS_IMPL_CYCLE_COLLECTION(, except that in Unlink() we need to
 // clear our list's weak ref to us to be safe. (The other option would be to
@@ -60,7 +60,9 @@ class MOZ_RAII AutoChangePathSegNotifier {
 
   ~AutoChangePathSegNotifier() {
     mPathSeg->Element()->DidChangePathSegList(mEmptyOrOldValue);
-    if (mPathSeg->mList->AttrIsAnimating()) {
+    // Null check mPathSeg->mList, since DidChangePathSegList can run script,
+    // potentially removing mPathSeg from its list.
+    if (mPathSeg->mList && mPathSeg->mList->AttrIsAnimating()) {
       mPathSeg->Element()->AnimationNeedsResample();
     }
   }
@@ -129,8 +131,8 @@ bool DOMSVGPathSeg::IndexIsValid() {
 }
 #endif
 
-  ////////////////////////////////////////////////////////////////////////
-  // Implementation of DOMSVGPathSeg sub-classes below this point
+////////////////////////////////////////////////////////////////////////
+// Implementation of DOMSVGPathSeg sub-classes below this point
 
 #define IMPL_PROP_WITH_TYPE(segName, propName, index, type)             \
   type DOMSVGPathSeg##segName::propName() {                             \
@@ -277,9 +279,10 @@ IMPL_FLOAT_PROP(CurvetoQuadraticSmoothRel, X, 0)
 IMPL_FLOAT_PROP(CurvetoQuadraticSmoothRel, Y, 1)
 
 // This must come after DOMSVGPathSegClosePath et. al. have been declared.
-/* static */ DOMSVGPathSeg* DOMSVGPathSeg::CreateFor(DOMSVGPathSegList* aList,
-                                                     uint32_t aListIndex,
-                                                     bool aIsAnimValItem) {
+/* static */
+DOMSVGPathSeg* DOMSVGPathSeg::CreateFor(DOMSVGPathSegList* aList,
+                                        uint32_t aListIndex,
+                                        bool aIsAnimValItem) {
   uint32_t dataIndex = aList->mItems[aListIndex].mInternalDataIndex;
   float* data = &aList->InternalList().mData[dataIndex];
   uint32_t type = SVGPathSegUtils::DecodeType(data[0]);
@@ -336,7 +339,7 @@ IMPL_FLOAT_PROP(CurvetoQuadraticSmoothRel, Y, 1)
       return new DOMSVGPathSegCurvetoQuadraticSmoothRel(aList, aListIndex,
                                                         aIsAnimValItem);
     default:
-      NS_NOTREACHED("Invalid path segment type");
+      MOZ_ASSERT_UNREACHABLE("Invalid path segment type");
       return nullptr;
   }
 }

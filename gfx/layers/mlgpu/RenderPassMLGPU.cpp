@@ -34,7 +34,7 @@ ItemInfo::ItemInfo(FrameBuilder* aBuilder, RenderViewMLGPU* aView,
       layerIndex(kInvalidResourceIndex),
       sortOrder(aSortOrder),
       bounds(aBounds),
-      geometry(Move(aGeometry)) {
+      geometry(std::move(aGeometry)) {
   const Matrix4x4& transform = aLayer->GetLayer()->GetEffectiveTransform();
 
   Matrix transform2D;
@@ -106,7 +106,9 @@ RenderPassType RenderPassMLGPU::GetPreferredPassType(FrameBuilder* aBuilder,
       ImageHost* host = layer->AsTexturedLayerMLGPU()->GetImageHost();
       TextureHost* texture = host->CurrentTextureHost();
       if (texture->GetReadFormat() == SurfaceFormat::YUV ||
-          texture->GetReadFormat() == SurfaceFormat::NV12) {
+          texture->GetReadFormat() == SurfaceFormat::NV12 ||
+          texture->GetReadFormat() == SurfaceFormat::P010 ||
+          texture->GetReadFormat() == SurfaceFormat::P016) {
         return RenderPassType::Video;
       }
       return RenderPassType::SingleTexture;
@@ -494,7 +496,9 @@ bool TexturedRenderPass::AddClippedItem(Txn& aTxn, const Info& aInfo,
 
 SingleTexturePass::SingleTexturePass(FrameBuilder* aBuilder,
                                      const ItemInfo& aItem)
-    : TexturedRenderPass(aBuilder, aItem), mOpacity(1.0f) {
+    : TexturedRenderPass(aBuilder, aItem),
+      mSamplerMode(SamplerMode::LinearClamp),
+      mOpacity(1.0f) {
   SetDefaultGeometry(aItem);
 }
 
@@ -596,7 +600,9 @@ void SingleTexturePass::SetupPipeline() {
 
 ComponentAlphaPass::ComponentAlphaPass(FrameBuilder* aBuilder,
                                        const ItemInfo& aItem)
-    : TexturedRenderPass(aBuilder, aItem), mOpacity(1.0f) {
+    : TexturedRenderPass(aBuilder, aItem),
+      mOpacity(1.0f),
+      mSamplerMode(SamplerMode::LinearClamp) {
   SetDefaultGeometry(aItem);
 }
 
@@ -647,7 +653,9 @@ void ComponentAlphaPass::SetupPipeline() {
 }
 
 VideoRenderPass::VideoRenderPass(FrameBuilder* aBuilder, const ItemInfo& aItem)
-    : TexturedRenderPass(aBuilder, aItem), mOpacity(1.0f) {
+    : TexturedRenderPass(aBuilder, aItem),
+      mSamplerMode(SamplerMode::LinearClamp),
+      mOpacity(1.0f) {
   SetDefaultGeometry(aItem);
 }
 
@@ -697,12 +705,11 @@ bool VideoRenderPass::AddToPass(LayerMLGPU* aLayer, ItemInfo& aItem) {
 void VideoRenderPass::SetupPipeline() {
   YUVColorSpace colorSpace = YUVColorSpace::UNKNOWN;
   switch (mHost->GetReadFormat()) {
-    case SurfaceFormat::YUV: {
-      colorSpace = mHost->GetYUVColorSpace();
-      break;
-    }
+    case SurfaceFormat::YUV:
     case SurfaceFormat::NV12:
-      colorSpace = YUVColorSpace::BT601;
+    case SurfaceFormat::P010:
+    case SurfaceFormat::P016:
+      colorSpace = mHost->GetYUVColorSpace();
       break;
     default:
       MOZ_ASSERT_UNREACHABLE("Unexpected surface format in VideoRenderPass");
@@ -712,6 +719,12 @@ void VideoRenderPass::SetupPipeline() {
 
   RefPtr<MLGBuffer> ps1 = mDevice->GetBufferForColorSpace(colorSpace);
   if (!ps1) {
+    return;
+  }
+
+  RefPtr<MLGBuffer> ps2 =
+      mDevice->GetBufferForColorDepthCoefficient(mHost->GetColorDepth());
+  if (!ps2) {
     return;
   }
 
@@ -731,6 +744,8 @@ void VideoRenderPass::SetupPipeline() {
       break;
     }
     case SurfaceFormat::NV12:
+    case SurfaceFormat::P010:
+    case SurfaceFormat::P016:
       if (mGeometry == GeometryMode::UnitQuad)
         mDevice->SetPixelShader(PixelShaderID::TexturedQuadNV12);
       else
@@ -744,6 +759,7 @@ void VideoRenderPass::SetupPipeline() {
 
   mDevice->SetSamplerMode(kDefaultSamplerSlot, mSamplerMode);
   mDevice->SetPSConstantBuffer(1, ps1);
+  mDevice->SetPSConstantBuffer(2, ps2);
 }
 
 RenderViewPass::RenderViewPass(FrameBuilder* aBuilder, const ItemInfo& aItem)

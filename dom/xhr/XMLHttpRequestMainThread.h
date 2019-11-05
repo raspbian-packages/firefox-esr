@@ -12,7 +12,7 @@
 #include "nsISupportsUtils.h"
 #include "nsIURI.h"
 #include "nsIHttpChannel.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIStreamListener.h"
 #include "nsIChannelEventSink.h"
 #include "nsIAsyncVerifyRedirectCallback.h"
@@ -27,6 +27,7 @@
 #include "nsISizeOfEventTarget.h"
 #include "nsIXPConnect.h"
 #include "nsIInputStream.h"
+#include "nsIContentSecurityPolicy.h"
 #include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/DOMEventTargetHelper.h"
@@ -39,6 +40,7 @@
 #include "mozilla/dom/TypedArray.h"
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/FormData.h"
+#include "mozilla/dom/MimeType.h"
 #include "mozilla/dom/PerformanceStorage.h"
 #include "mozilla/dom/ServiceWorkerDescriptor.h"
 #include "mozilla/dom/URLSearchParams.h"
@@ -51,19 +53,20 @@
 #ifdef Status
 /* Xlib headers insist on this for some reason... Nuke it because
    it'll override our member name */
-#undef Status
+typedef Status __StatusTmp;
+#  undef Status
+typedef __StatusTmp Status;
 #endif
 
 class nsIJARChannel;
 class nsILoadGroup;
-class nsIJSID;
 
 namespace mozilla {
 namespace dom {
 
-class BlobSet;
 class DOMString;
 class XMLHttpRequestUpload;
+class SerializedStackHolder;
 struct OriginAttributesDictionary;
 
 // A helper for building up an ArrayBuffer object's data
@@ -155,6 +158,7 @@ class RequestHeaders {
 };
 
 class nsXHRParseEndListener;
+class XMLHttpRequestDoneNotifier;
 
 // Make sure that any non-DOM interfaces added here are also added to
 // nsXMLHttpRequestXPCOMifier.
@@ -169,6 +173,7 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
                                        public MutableBlobStorageCallback {
   friend class nsXHRParseEndListener;
   friend class nsXMLHttpRequestXPCOMifier;
+  friend class XMLHttpRequestDoneNotifier;
 
  public:
   enum class ProgressEventType : uint8_t {
@@ -182,6 +187,8 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
     ENUM_MAX
   };
 
+  // Make sure that any additions done to ErrorType enum are also mirrored in
+  // XHR_ERROR_TYPE enum of TelemetrySend.jsm.
   enum class ErrorType : uint16_t {
     eOK,
     eRequest,
@@ -195,14 +202,19 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   XMLHttpRequestMainThread();
 
   void Construct(nsIPrincipal* aPrincipal, nsIGlobalObject* aGlobalObject,
+                 nsICookieSettings* aCookieSettings, bool aForWorker,
                  nsIURI* aBaseURI = nullptr, nsILoadGroup* aLoadGroup = nullptr,
-                 PerformanceStorage* aPerformanceStorage = nullptr) {
+                 PerformanceStorage* aPerformanceStorage = nullptr,
+                 nsICSPEventListener* aCSPEventListener = nullptr) {
     MOZ_ASSERT(aPrincipal);
     mPrincipal = aPrincipal;
     BindToOwner(aGlobalObject);
     mBaseURI = aBaseURI;
     mLoadGroup = aLoadGroup;
+    mCookieSettings = aCookieSettings;
+    mForWorker = aForWorker;
     mPerformanceStorage = aPerformanceStorage;
+    mCSPEventListener = aCSPEventListener;
   }
 
   void InitParameters(bool aAnon, bool aSystem);
@@ -243,8 +255,6 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   virtual size_t SizeOfEventTargetIncludingThis(
       MallocSizeOf aMallocSizeOf) const override;
 
-  NS_REALLY_FORWARD_NSIDOMEVENTTARGET(XMLHttpRequestEventTarget)
-
   // states
   virtual uint16_t ReadyState() const override;
 
@@ -282,15 +292,11 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   virtual ~XMLHttpRequestMainThread();
 
   nsresult MaybeSilentSendFailure(nsresult aRv);
-  nsresult SendInternal(const BodyExtractorBase* aBody);
+  nsresult SendInternal(const BodyExtractorBase* aBody,
+                        bool aBodyIsDocumentOrString = false);
 
   bool IsCrossSiteCORSRequest() const;
   bool IsDeniedCrossSiteCORSRequest();
-
-  // Tell our channel what network interface ID we were told to use.
-  // If it's an HTTP channel and we were told to use a non-default
-  // interface ID.
-  void PopulateNetworkInterfaceId();
 
   void UnsuppressEventHandlingAndResume();
 
@@ -378,7 +384,7 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   void GetResponseText(XMLHttpRequestStringSnapshot& aSnapshot,
                        ErrorResult& aRv);
 
-  virtual nsIDocument* GetResponseXML(ErrorResult& aRv) override;
+  virtual Document* GetResponseXML(ErrorResult& aRv) override;
 
   virtual bool MozBackgroundRequest() const override;
 
@@ -386,6 +392,8 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
 
   virtual void SetMozBackgroundRequest(bool aMozBackgroundRequest,
                                        ErrorResult& aRv) override;
+
+  void SetOriginStack(UniquePtr<SerializedStackHolder> aOriginStack);
 
   virtual uint16_t ErrorCode() const override {
     return static_cast<uint16_t>(mErrorLoad);
@@ -397,16 +405,8 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
 
   virtual nsIChannel* GetChannel() const override { return mChannel; }
 
-  virtual void GetNetworkInterfaceId(nsACString& aId) const override {
-    aId = mNetworkInterfaceId;
-  }
-
-  virtual void SetNetworkInterfaceId(const nsACString& aId) override {
-    mNetworkInterfaceId = aId;
-  }
-
   // We need a GetInterface callable from JS for chrome JS
-  virtual void GetInterface(JSContext* aCx, nsIJSID* aIID,
+  virtual void GetInterface(JSContext* aCx, JS::Handle<JS::Value> aIID,
                             JS::MutableHandle<JS::Value> aRetval,
                             ErrorResult& aRv) override;
 
@@ -416,10 +416,6 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   void DispatchProgressEvent(DOMEventTargetHelper* aTarget,
                              const ProgressEventType aType, int64_t aLoaded,
                              int64_t aTotal);
-
-  // This is called by nsXULTemplateQueryProcessorXML.
-  nsresult Init(nsIPrincipal* aPrincipal, nsIGlobalObject* aGlobalObject,
-                nsIURI* aBaseURI, nsILoadGroup* aLoadGroup);
 
   void SetRequestObserver(nsIRequestObserver* aObserver);
 
@@ -446,7 +442,8 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
 
  protected:
   nsresult DetectCharset();
-  nsresult AppendToResponseText(const char* aBuffer, uint32_t aBufferLen);
+  nsresult AppendToResponseText(Span<const uint8_t> aBuffer,
+                                bool aLast = false);
   static nsresult StreamReaderFunc(nsIInputStream* in, void* closure,
                                    const char* fromRawSegment,
                                    uint32_t toOffset, uint32_t count,
@@ -467,7 +464,8 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   bool InUploadPhase() const;
 
   void OnBodyParseEnd();
-  void ChangeStateToDone();
+  void ChangeStateToDone(bool aWasSync);
+  void ChangeStateToDoneInternal();
 
   void StartProgressEventTimer();
   void StopProgressEventTimer();
@@ -476,7 +474,7 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
 
   nsresult OnRedirectVerifyCallback(nsresult result);
 
-  void SetTimerEventTarget(nsITimer* aTimer);
+  nsIEventTarget* GetTimerEventTarget();
 
   nsresult DispatchToMainThread(already_AddRefed<nsIRunnable> aRunnable);
 
@@ -501,11 +499,14 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   nsCOMPtr<nsIChannel> mChannel;
   nsCString mRequestMethod;
   nsCOMPtr<nsIURI> mRequestURL;
-  nsCOMPtr<nsIDocument> mResponseXML;
+  RefPtr<Document> mResponseXML;
 
   nsCOMPtr<nsIStreamListener> mXMLParserStreamListener;
 
+  nsCOMPtr<nsICookieSettings> mCookieSettings;
+
   RefPtr<PerformanceStorage> mPerformanceStorage;
+  nsCOMPtr<nsICSPEventListener> mCSPEventListener;
 
   // used to implement getAllResponseHeaders()
   class nsHeaderVisitor : public nsIHttpHeaderVisitor {
@@ -575,8 +576,6 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   // part of the surrogate.
   mozilla::UniquePtr<mozilla::Decoder> mDecoder;
 
-  const Encoding* mResponseCharset;
-
   void MatchCharsetAndDecoderToResponseDocument();
 
   XMLHttpRequestResponseType mResponseType;
@@ -612,6 +611,9 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
 
   uint16_t mState;
 
+  // If true, this object is used by the worker's XMLHttpRequest.
+  bool mForWorker;
+
   bool mFlagSynchronous;
   bool mFlagAborted;
   bool mFlagParseBody;
@@ -641,7 +643,7 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   void StartTimeoutTimer();
   void HandleTimeoutCallback();
 
-  nsCOMPtr<nsIDocument> mSuspendedDoc;
+  RefPtr<Document> mSuspendedDoc;
   nsCOMPtr<nsIRunnable> mResumeTimeoutRunnable;
 
   nsCOMPtr<nsITimer> mSyncTimeoutTimer;
@@ -672,10 +674,6 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
 
   bool mIsSystem;
   bool mIsAnon;
-
-  // A platform-specific identifer to represent the network interface
-  // that this request is associated with.
-  nsCString mNetworkInterfaceId;
 
   /**
    * Close the XMLHttpRequest's channels.
@@ -717,8 +715,21 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   // useful to change the correct state when XHR is working sync.
   bool mEventDispatchingSuspended;
 
+  // True iff mDecoder has processed the end of the stream.
+  // Used in lazy decoding to distinguish between having
+  // processed all the bytes but not the EOF and having
+  // processed all the bytes and the EOF.
+  bool mEofDecoded;
+
   // Our parse-end listener, if we are parsing.
   RefPtr<nsXHRParseEndListener> mParseEndListener;
+
+  XMLHttpRequestDoneNotifier* mDelayedDoneNotifier;
+  void DisconnectDoneNotifier();
+
+  // Any stack information for the point the XHR was opened. This is deleted
+  // after the XHR is opened, to avoid retaining references to the worker.
+  UniquePtr<SerializedStackHolder> mOriginStack;
 
   static bool sDontWarnAboutSyncXHR;
 };
@@ -776,10 +787,31 @@ class nsXMLHttpRequestXPCOMifier final : public nsIStreamListener,
   RefPtr<XMLHttpRequestMainThread> mXHR;
 };
 
+class XMLHttpRequestDoneNotifier : public Runnable {
+ public:
+  explicit XMLHttpRequestDoneNotifier(XMLHttpRequestMainThread* aXHR)
+      : Runnable("XMLHttpRequestDoneNotifier"), mXHR(aXHR) {}
+
+  NS_IMETHOD Run() override {
+    if (mXHR) {
+      RefPtr<XMLHttpRequestMainThread> xhr = mXHR;
+      // ChangeStateToDoneInternal ends up calling Disconnect();
+      xhr->ChangeStateToDoneInternal();
+      MOZ_ASSERT(!mXHR);
+    }
+    return NS_OK;
+  }
+
+  void Disconnect() { mXHR = nullptr; }
+
+ private:
+  RefPtr<XMLHttpRequestMainThread> mXHR;
+};
+
 class nsXHRParseEndListener : public nsIDOMEventListener {
  public:
   NS_DECL_ISUPPORTS
-  NS_IMETHOD HandleEvent(nsIDOMEvent* event) override {
+  NS_IMETHOD HandleEvent(Event* event) override {
     if (mXHR) {
       mXHR->OnBodyParseEnd();
     }

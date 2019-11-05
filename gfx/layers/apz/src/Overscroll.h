@@ -9,7 +9,6 @@
 
 #include "AsyncPanZoomAnimation.h"
 #include "AsyncPanZoomController.h"
-#include "FrameMetrics.h"
 #include "mozilla/TimeStamp.h"
 #include "nsThreadUtils.h"
 
@@ -19,13 +18,13 @@ namespace layers {
 // Animation used by GenericOverscrollEffect.
 class OverscrollAnimation : public AsyncPanZoomAnimation {
  public:
-  explicit OverscrollAnimation(AsyncPanZoomController& aApzc,
-                               const ParentLayerPoint& aVelocity)
+  OverscrollAnimation(AsyncPanZoomController& aApzc,
+                      const ParentLayerPoint& aVelocity)
       : mApzc(aApzc) {
     mApzc.mX.StartOverscrollAnimation(aVelocity.x);
     mApzc.mY.StartOverscrollAnimation(aVelocity.y);
   }
-  ~OverscrollAnimation() {
+  virtual ~OverscrollAnimation() {
     mApzc.mX.EndOverscrollAnimation();
     mApzc.mY.EndOverscrollAnimation();
   }
@@ -63,7 +62,7 @@ class OverscrollAnimation : public AsyncPanZoomAnimation {
 // Base class for different overscroll effects;
 class OverscrollEffectBase {
  public:
-  virtual ~OverscrollEffectBase() {}
+  virtual ~OverscrollEffectBase() = default;
   virtual void ConsumeOverscroll(ParentLayerPoint& aOverscroll,
                                  bool aShouldOverscrollX,
                                  bool aShouldOverscrollY) = 0;

@@ -27,13 +27,8 @@ class CSPService : public nsIContentPolicy, public nsIChannelEventSink {
   NS_DECL_NSICHANNELEVENTSINK
 
   CSPService();
-  static bool sCSPEnabled;
 
  protected:
   virtual ~CSPService();
-
- private:
-  // Maps origins to app status.
-  nsDataHashtable<nsCStringHashKey, uint16_t> mAppStatusCache;
 };
 #endif /* nsCSPService_h___ */

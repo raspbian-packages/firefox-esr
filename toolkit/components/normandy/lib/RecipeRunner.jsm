@@ -4,41 +4,39 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://normandy/lib/LogManager.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+const { LogManager } = ChromeUtils.import(
+  "resource://normandy/lib/LogManager.jsm"
+);
 
-XPCOMUtils.defineLazyServiceGetter(this, "timerManager",
-                                   "@mozilla.org/updates/timer-manager;1",
-                                   "nsIUpdateTimerManager");
-ChromeUtils.defineModuleGetter(this, "Preferences", "resource://gre/modules/Preferences.jsm");
-ChromeUtils.defineModuleGetter(this, "Storage",
-                               "resource://normandy/lib/Storage.jsm");
-ChromeUtils.defineModuleGetter(this, "NormandyDriver",
-                               "resource://normandy/lib/NormandyDriver.jsm");
-ChromeUtils.defineModuleGetter(this, "FilterExpressions",
-                               "resource://normandy/lib/FilterExpressions.jsm");
-ChromeUtils.defineModuleGetter(this, "NormandyApi",
-                               "resource://normandy/lib/NormandyApi.jsm");
-ChromeUtils.defineModuleGetter(this, "SandboxManager",
-                               "resource://normandy/lib/SandboxManager.jsm");
-ChromeUtils.defineModuleGetter(this, "ClientEnvironment",
-                               "resource://normandy/lib/ClientEnvironment.jsm");
-ChromeUtils.defineModuleGetter(this, "CleanupManager",
-                               "resource://normandy/lib/CleanupManager.jsm");
-ChromeUtils.defineModuleGetter(this, "ActionSandboxManager",
-                               "resource://normandy/lib/ActionSandboxManager.jsm");
-ChromeUtils.defineModuleGetter(this, "AddonStudies",
-                               "resource://normandy/lib/AddonStudies.jsm");
-ChromeUtils.defineModuleGetter(this, "Uptake",
-                               "resource://normandy/lib/Uptake.jsm");
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "timerManager",
+  "@mozilla.org/updates/timer-manager;1",
+  "nsIUpdateTimerManager"
+);
 
-Cu.importGlobalProperties(["fetch"]);
+XPCOMUtils.defineLazyModuleGetters(this, {
+  RemoteSettings: "resource://services-settings/remote-settings.js",
+  FeatureGate: "resource://featuregates/FeatureGate.jsm",
+  Storage: "resource://normandy/lib/Storage.jsm",
+  FilterExpressions:
+    "resource://gre/modules/components-utils/FilterExpressions.jsm",
+  NormandyApi: "resource://normandy/lib/NormandyApi.jsm",
+  ClientEnvironment: "resource://normandy/lib/ClientEnvironment.jsm",
+  CleanupManager: "resource://normandy/lib/CleanupManager.jsm",
+  Uptake: "resource://normandy/lib/Uptake.jsm",
+  ActionsManager: "resource://normandy/lib/ActionsManager.jsm",
+});
 
 var EXPORTED_SYMBOLS = ["RecipeRunner"];
 
 const log = LogManager.getLogger("recipe-runner");
 const TIMER_NAME = "recipe-client-addon-run";
+const REMOTE_SETTINGS_COLLECTION = "normandy-recipes";
 const PREF_CHANGED_TOPIC = "nsPref:changed";
 
 const TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
@@ -58,19 +56,63 @@ const PREFS_TO_WATCH = [
   API_URL_PREF,
 ];
 
+XPCOMUtils.defineLazyGetter(this, "gRemoteSettingsClient", () => {
+  return RemoteSettings(REMOTE_SETTINGS_COLLECTION, {
+    filterFunc: async entry =>
+      (await RecipeRunner.checkFilter(entry.recipe)) ? entry : null,
+  });
+});
+
+XPCOMUtils.defineLazyGetter(this, "gRemoteSettingsGate", () => {
+  return FeatureGate.fromId("normandy-remote-settings");
+});
+
+/**
+ * cacheProxy returns an object Proxy that will memoize properties of the target.
+ */
+function cacheProxy(target) {
+  const cache = new Map();
+  return new Proxy(target, {
+    get(target, prop, receiver) {
+      if (!cache.has(prop)) {
+        cache.set(prop, target[prop]);
+      }
+      return cache.get(prop);
+    },
+  });
+}
+
 var RecipeRunner = {
   async init() {
     this.enabled = null;
     this.checkPrefs(); // sets this.enabled
     this.watchPrefs();
 
-    // Run if enabled immediately on first run, or if dev mode is enabled.
+    // Here "first run" means the first run this profile has ever done. This
+    // preference is set to true at the end of this function, and never reset to
+    // false.
     const firstRun = Services.prefs.getBoolPref(FIRST_RUN_PREF, true);
+
+    // Dev mode is a mode used for development and QA that bypasses the normal
+    // timer function of Normandy, to make testing more convenient.
     const devMode = Services.prefs.getBoolPref(DEV_MODE_PREF, false);
 
     if (this.enabled && (devMode || firstRun)) {
+      // In dev mode, if remote settings is enabled, force an immediate sync
+      // before running. This ensures that the latest data is used for testing.
+      // This is not needed for the first run case, because remote settings
+      // already handles empty collections well.
+      if (devMode) {
+        let remoteSettingsGate = await gRemoteSettingsGate;
+        if (await remoteSettingsGate.isEnabled()) {
+          await gRemoteSettingsClient.sync();
+        }
+      }
       await this.run();
     }
+
+    // Update the firstRun pref, to indicate that Normandy has run at least once
+    // on this profile.
     if (firstRun) {
       Services.prefs.setBoolPref(FIRST_RUN_PREF, false);
     }
@@ -126,7 +168,9 @@ var RecipeRunner = {
             break;
 
           default:
-            log.debug(`Observer fired with unexpected pref change: ${prefName}`);
+            log.debug(
+              `Observer fired with unexpected pref change: ${prefName}`
+            );
         }
 
         break;
@@ -137,13 +181,17 @@ var RecipeRunner = {
   checkPrefs() {
     // Only run if Unified Telemetry is enabled.
     if (!Services.prefs.getBoolPref(TELEMETRY_ENABLED_PREF)) {
-      log.debug("Disabling RecipeRunner because Unified Telemetry is disabled.");
+      log.debug(
+        "Disabling RecipeRunner because Unified Telemetry is disabled."
+      );
       this.disable();
       return;
     }
 
     if (!Services.prefs.getBoolPref(SHIELD_ENABLED_PREF)) {
-      log.debug(`Disabling Shield because ${SHIELD_ENABLED_PREF} is set to false`);
+      log.debug(
+        `Disabling Shield because ${SHIELD_ENABLED_PREF} is set to false`
+      );
       this.disable();
       return;
     }
@@ -155,8 +203,15 @@ var RecipeRunner = {
     }
 
     const apiUrl = Services.prefs.getCharPref(API_URL_PREF);
-    if (!apiUrl || !apiUrl.startsWith("https://")) {
-      log.warn(`Disabling Shield because ${API_URL_PREF} is not an HTTPS url: ${apiUrl}.`);
+    if (!apiUrl) {
+      log.warn(`Disabling Shield because ${API_URL_PREF} is not set.`);
+      this.disable();
+      return;
+    }
+    if (!apiUrl.startsWith("https://")) {
+      log.warn(
+        `Disabling Shield because ${API_URL_PREF} is not an HTTPS url: ${apiUrl}.`
+      );
       this.disable();
       return;
     }
@@ -167,7 +222,9 @@ var RecipeRunner = {
 
   registerTimer() {
     this.updateRunInterval();
-    CleanupManager.addCleanupHandler(() => timerManager.unregisterTimer(TIMER_NAME));
+    CleanupManager.addCleanupHandler(() =>
+      timerManager.unregisterTimer(TIMER_NAME)
+    );
   },
 
   unregisterTimer() {
@@ -195,39 +252,69 @@ var RecipeRunner = {
     }
 
     // Fetch recipes before execution in case we fail and exit early.
-    let recipes;
+    let recipesToRun;
     try {
-      recipes = await NormandyApi.fetchRecipes({enabled: true});
+      recipesToRun = await this.loadRecipes();
     } catch (e) {
-      const apiUrl = Services.prefs.getCharPref(API_URL_PREF);
-      log.error(`Could not fetch recipes from ${apiUrl}: "${e}"`);
-
+      // Either we failed at fetching the recipes from server (legacy),
+      // or the recipes signature verification failed.
       let status = Uptake.RUNNER_SERVER_ERROR;
       if (/NetworkError/.test(e)) {
         status = Uptake.RUNNER_NETWORK_ERROR;
       } else if (e instanceof NormandyApi.InvalidSignatureError) {
         status = Uptake.RUNNER_INVALID_SIGNATURE;
       }
-      Uptake.reportRunner(status);
+      await Uptake.reportRunner(status);
       return;
     }
 
-    const actionSandboxManagers = await this.loadActionSandboxManagers();
-    Object.values(actionSandboxManagers).forEach(manager => manager.addHold("recipeRunner"));
+    const actions = new ActionsManager();
 
-    // Run pre-execution hooks. If a hook fails, we don't run recipes with that
-    // action to avoid inconsistencies.
-    for (const [actionName, manager] of Object.entries(actionSandboxManagers)) {
-      try {
-        await manager.runAsyncCallback("preExecution");
-        manager.disabled = false;
-      } catch (err) {
-        log.error(`Could not run pre-execution hook for ${actionName}:`, err.message);
-        manager.disabled = true;
-        Uptake.reportAction(actionName, Uptake.ACTION_PRE_EXECUTION_ERROR);
+    // Execute recipes, if we have any.
+    if (recipesToRun.length === 0) {
+      log.debug("No recipes to execute");
+    } else {
+      for (const recipe of recipesToRun) {
+        await actions.runRecipe(recipe);
       }
     }
 
+    await actions.finalize();
+
+    await Uptake.reportRunner(Uptake.RUNNER_SUCCESS);
+  },
+
+  /**
+   * Return the list of recipes to run, filtered for the current environment.
+   */
+  async loadRecipes() {
+    // If RemoteSettings is enabled, we read the list of recipes from there.
+    // The JEXL filtering is done via the provided callback (see `gRemoteSettingsClient`).
+    if (await FeatureGate.isEnabled("normandy-remote-settings")) {
+      // First, fetch recipes whose JEXL filters match.
+      const entries = await gRemoteSettingsClient.get();
+      // Then, verify the signature of each recipe. It will throw if invalid.
+      return Promise.all(
+        entries.map(async ({ recipe, signature }) => {
+          await NormandyApi.verifyObjectSignature(recipe, signature, "recipe");
+          return recipe;
+        })
+      );
+    }
+
+    // Obtain the recipes from the Normandy server (legacy).
+    let recipes;
+    try {
+      recipes = await NormandyApi.fetchRecipes({ enabled: true });
+      log.debug(
+        `Fetched ${recipes.length} recipes from the server: ` +
+          recipes.map(r => r.name).join(", ")
+      );
+    } catch (e) {
+      const apiUrl = Services.prefs.getCharPref(API_URL_PREF);
+      log.error(`Could not fetch recipes from ${apiUrl}: "${e}"`);
+      throw e;
+    }
     // Evaluate recipe filters
     const recipesToRun = [];
     for (const recipe of recipes) {
@@ -235,95 +322,19 @@ var RecipeRunner = {
         recipesToRun.push(recipe);
       }
     }
-
-    // Execute recipes, if we have any.
-    if (recipesToRun.length === 0) {
-      log.debug("No recipes to execute");
-    } else {
-      for (const recipe of recipesToRun) {
-        const manager = actionSandboxManagers[recipe.action];
-        let status;
-        if (!manager) {
-          log.error(
-            `Could not execute recipe ${recipe.name}:`,
-            `Action ${recipe.action} is either missing or invalid.`
-          );
-          status = Uptake.RECIPE_INVALID_ACTION;
-        } else if (manager.disabled) {
-          log.warn(
-            `Skipping recipe ${recipe.name} because ${recipe.action} failed during pre-execution.`
-          );
-          status = Uptake.RECIPE_ACTION_DISABLED;
-        } else {
-          try {
-            log.info(`Executing recipe "${recipe.name}" (action=${recipe.action})`);
-            await manager.runAsyncCallback("action", recipe);
-            status = Uptake.RECIPE_SUCCESS;
-          } catch (e) {
-            log.error(`Could not execute recipe ${recipe.name}:`);
-            Cu.reportError(e);
-            status = Uptake.RECIPE_EXECUTION_ERROR;
-          }
-        }
-
-        Uptake.reportRecipe(recipe.id, status);
-      }
-    }
-
-    // Run post-execution hooks
-    for (const [actionName, manager] of Object.entries(actionSandboxManagers)) {
-      // Skip if pre-execution failed.
-      if (manager.disabled) {
-        log.info(`Skipping post-execution hook for ${actionName} due to earlier failure.`);
-        continue;
-      }
-
-      try {
-        await manager.runAsyncCallback("postExecution");
-        Uptake.reportAction(actionName, Uptake.ACTION_SUCCESS);
-      } catch (err) {
-        log.info(`Could not run post-execution hook for ${actionName}:`, err.message);
-        Uptake.reportAction(actionName, Uptake.ACTION_POST_EXECUTION_ERROR);
-      }
-    }
-
-    // Nuke sandboxes
-    Object.values(actionSandboxManagers).forEach(manager => manager.removeHold("recipeRunner"));
-
-    // Close storage connections
-    await AddonStudies.close();
-
-    Uptake.reportRunner(Uptake.RUNNER_SUCCESS);
-  },
-
-  async loadActionSandboxManagers() {
-    const actions = await NormandyApi.fetchActions();
-    const actionSandboxManagers = {};
-    for (const action of actions) {
-      try {
-        const implementation = await NormandyApi.fetchImplementation(action);
-        actionSandboxManagers[action.name] = new ActionSandboxManager(implementation);
-      } catch (err) {
-        log.warn(`Could not fetch implementation for ${action.name}:`, err);
-
-        let status = Uptake.ACTION_SERVER_ERROR;
-        if (/NetworkError/.test(err)) {
-          status = Uptake.ACTION_NETWORK_ERROR;
-        }
-        Uptake.reportAction(action.name, status);
-      }
-    }
-    return actionSandboxManagers;
+    return recipesToRun;
   },
 
   getFilterContext(recipe) {
+    const environment = cacheProxy(ClientEnvironment);
+    environment.recipe = {
+      id: recipe.id,
+      arguments: recipe.arguments,
+    };
     return {
-      normandy: Object.assign(ClientEnvironment.getEnvironment(), {
-        recipe: {
-          id: recipe.id,
-          arguments: recipe.arguments,
-        },
-      }),
+      env: environment,
+      // Backwards compatibility -- see bug 1477255.
+      normandy: environment,
     };
   },
 
@@ -336,15 +347,28 @@ var RecipeRunner = {
    */
   async checkFilter(recipe) {
     const context = this.getFilterContext(recipe);
+    let result;
     try {
-      const result = await FilterExpressions.eval(recipe.filter_expression, context);
-      return !!result;
+      result = await FilterExpressions.eval(recipe.filter_expression, context);
     } catch (err) {
-      log.error(`Error checking filter for "${recipe.name}"`);
-      log.error(`Filter: "${recipe.filter_expression}"`);
-      log.error(`Error: "${err}"`);
+      log.error(
+        `Error checking filter for "${recipe.name}". Filter: [${
+          recipe.filter_expression
+        }]. Error: "${err}"`
+      );
+      await Uptake.reportRecipe(recipe, Uptake.RECIPE_FILTER_BROKEN);
       return false;
     }
+
+    if (!result) {
+      // This represents a terminal state for the given recipe, so
+      // report its outcome. Others are reported when executed in
+      // ActionsManager.
+      await Uptake.reportRecipe(recipe, Uptake.RECIPE_DIDNT_MATCH_FILTER);
+      return false;
+    }
+
+    return true;
   },
 
   /**
@@ -373,5 +397,19 @@ var RecipeRunner = {
       Services.prefs.setCharPref(API_URL_PREF, oldApiUrl);
       this.clearCaches();
     }
+  },
+
+  /**
+   * Offer a mechanism to get access to the lazily-instantiated
+   * gRemoteSettingsClient, because if someone instantiates it
+   * themselves, it won't have the options we provided in this module,
+   * and it will prevent instantiation by this module later.
+   *
+   * This is only meant to be used in testing, where it is a
+   * convenient hook to store data in the underlying remote-settings
+   * collection.
+   */
+  get _remoteSettingsClientForTesting() {
+    return gRemoteSettingsClient;
   },
 };

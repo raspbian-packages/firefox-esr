@@ -6,7 +6,8 @@
 ## Settings
 
 site-data-settings-window =
-    .title = Gerenciar os cookies e dados do site
+    .title = Gerenciar cookies e dados de sites
+site-data-settings-description = Os seguintes sites armazenam cookies e dados de site no seu computador. O { -brand-short-name } mantém dados de sites com armazenamento persistente até você excluí-los, e apaga dados de sites com armazenamento não persistente à medida que necessita de espaço.
 site-data-search-textbox =
     .placeholder = Pesquisar sites
     .accesskey = P
@@ -27,11 +28,30 @@ site-data-button-cancel =
 site-data-button-save =
     .label = Salvar alterações
     .accesskey = a
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-usage-pattern = { $value } { $unit }
+site-usage-persistent = { site-usage-pattern } (persistente)
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-storage-usage =
+    .value = { $value } { $unit }
+site-storage-persistent =
+    .value = { site-storage-usage.value } (persistente)
+site-data-remove-all =
+    .label = Remover tudo
+    .accesskey = e
+site-data-remove-shown =
+    .label = Remover todos os mostrados
+    .accesskey = e
 
 ## Removing
 
-site-data-removing-window =
+site-data-removing-dialog =
     .title = { site-data-removing-header }
-site-data-removing-header = Removendo cookies e dados do site
-site-data-removing-desc = Remover os cookies e dados de site podem desconectar você dos sites. Tem certeza que deseja fazer as alterações?
+    .buttonlabelaccept = Remover
+site-data-removing-header = Removendo cookies e dados de sites
+site-data-removing-desc = Remover cookies e dados de sites pode desconectar você de sites. Tem certeza que deseja fazer as alterações?
 site-data-removing-table = Os cookies e dados dos seguintes sites serão removidos

@@ -9,9 +9,12 @@ from __future__ import absolute_import, print_function, unicode_literals
 from taskgraph.loader.single_dep import schema
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.util.attributes import copy_attributes_from_dependent_job
-from taskgraph.util.scriptworker import (get_beetmover_bucket_scope,
+from taskgraph.util.scriptworker import (generate_beetmover_artifact_map,
+                                         generate_beetmover_upstream_artifacts,
+                                         get_beetmover_bucket_scope,
                                          get_beetmover_action_scope,
                                          get_worker_type_for_scope,
+                                         should_use_artifact_map,
                                          )
 from taskgraph.util.taskcluster import get_artifact_prefix
 from taskgraph.transforms.beetmover import craft_release_properties
@@ -33,10 +36,6 @@ CHECKSUMS_SIGNING_ARTIFACTS = [
     "SHA512SUMS.asc"
 ]
 
-
-# Voluptuous uses marker objects as dictionary *keys*, but they are not
-# comparable, so we cast all of the keys back to regular strings
-task_description_schema = {str(k): v for k, v in task_description_schema.schema.iteritems()}
 
 release_generate_checksums_beetmover_schema = schema.extend({
     # depname is used in taskref's to identify the taskID of the unsigned things
@@ -65,6 +64,7 @@ def make_task_description(config, jobs):
     for job in jobs:
         dep_job = job['primary-dependency']
         attributes = copy_attributes_from_dependent_job(dep_job)
+        attributes.update(job.get('attributes', {}))
 
         treeherder = job.get('treeherder', {})
         treeherder.setdefault('symbol', 'BM-SGenChcks')
@@ -81,9 +81,7 @@ def make_task_description(config, jobs):
         description = "Transfer *SUMS and *SUMMARY checksums file to S3."
 
         # first dependency is the signing task for the *SUMS files
-        dependencies = {
-            str(dep_job.kind): dep_job.label
-        }
+        dependencies = {dep_job.kind: dep_job.label}
 
         if len(dep_job.dependencies) > 1:
             raise NotImplementedError(
@@ -91,8 +89,12 @@ def make_task_description(config, jobs):
         # update the dependencies with the dependencies of the signing task
         dependencies.update(dep_job.dependencies)
 
-        bucket_scope = get_beetmover_bucket_scope(config)
-        action_scope = get_beetmover_action_scope(config)
+        bucket_scope = get_beetmover_bucket_scope(
+            config, job_release_type=attributes.get('release-type')
+        )
+        action_scope = get_beetmover_action_scope(
+            config, job_release_type=attributes.get('release-type')
+        )
 
         task = {
             'label': label,
@@ -121,7 +123,7 @@ def generate_upstream_artifacts(job, signing_task_ref, build_task_ref):
         "paths": ["{}/{}".format(artifact_prefix, p)
                   for p in build_mapping],
         "locale": "en-US",
-        }, {
+    }, {
         "taskId": {"task-reference": signing_task_ref},
         "taskType": "signing",
         "paths": ["{}/{}".format(artifact_prefix, p)
@@ -154,10 +156,25 @@ def make_task_worker(config, jobs):
         worker = {
             'implementation': 'beetmover',
             'release-properties': craft_release_properties(config, job),
-            'upstream-artifacts': generate_upstream_artifacts(
+        }
+
+        platform = job["attributes"]["build_platform"]
+        # Works with Firefox/Devedition. Commented for migration.
+        if should_use_artifact_map(platform):
+            upstream_artifacts = generate_beetmover_upstream_artifacts(
+                config, job, platform=None, locale=None
+            )
+        else:
+            upstream_artifacts = generate_upstream_artifacts(
                 job, signing_task_ref, build_task_ref
             )
-        }
+
+        worker['upstream-artifacts'] = upstream_artifacts
+
+        # Works with Firefox/Devedition. Commented for migration.
+        if should_use_artifact_map(platform):
+            worker['artifact-map'] = generate_beetmover_artifact_map(
+                config, job, platform=platform)
 
         job["worker"] = worker
 

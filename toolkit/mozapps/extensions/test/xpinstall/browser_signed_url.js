@@ -8,15 +8,12 @@ function test() {
 
   gBrowser.selectedTab = BrowserTestUtils.addTab(gBrowser, "about:blank");
   BrowserTestUtils.browserLoaded(gBrowser.selectedBrowser).then(() => {
-    gBrowser.loadURI(TESTROOT + "amosigned.xpi");
+    BrowserTestUtils.loadURI(gBrowser, TESTROOT + "amosigned.xpi");
   });
 }
 
-function confirm_install(window) {
-  let items = window.document.getElementById("itemList").childNodes;
-  is(items.length, 1, "Should only be 1 item listed in the confirmation dialog");
-  is(items[0].name, "XPI Test", "Should have had the name");
-  is(items[0].url, TESTROOT + "amosigned.xpi", "Should have listed the correct url for the item");
+function confirm_install(panel) {
+  is(panel.getAttribute("name"), "XPI Test", "Should have seen the name");
   return true;
 }
 

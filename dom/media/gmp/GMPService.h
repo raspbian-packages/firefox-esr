@@ -17,8 +17,7 @@
 #include "nsCOMPtr.h"
 #include "nsIThread.h"
 #include "nsThreadUtils.h"
-#include "nsIDocument.h"
-#include "nsIWeakReference.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/AbstractThread.h"
 #include "nsClassHashtable.h"
 #include "nsISupportsImpl.h"
@@ -89,7 +88,7 @@ class GeckoMediaPluginService : public mozIGeckoMediaPluginService,
       const nsACString& aNodeId,
       UniquePtr<GetGMPVideoDecoderCallback>&& aCallback) override {
     return GetDecryptingGMPVideoDecoder(aHelper, aTags, aNodeId,
-                                        Move(aCallback), 0);
+                                        std::move(aCallback), 0);
   }
 
   NS_IMETHOD RunPluginCrashCallbacks(uint32_t aPluginId,

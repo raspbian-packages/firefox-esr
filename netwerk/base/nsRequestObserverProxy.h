@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -19,18 +19,18 @@ namespace net {
 class nsARequestObserverEvent;
 
 class nsRequestObserverProxy final : public nsIRequestObserverProxy {
-  ~nsRequestObserverProxy() {}
+  ~nsRequestObserverProxy() = default;
 
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIREQUESTOBSERVER
   NS_DECL_NSIREQUESTOBSERVERPROXY
 
-  nsRequestObserverProxy() {}
+  nsRequestObserverProxy() = default;
 
-  nsIRequestObserver *Observer() { return mObserver; }
+  nsIRequestObserver* Observer() { return mObserver; }
 
-  nsresult FireEvent(nsARequestObserverEvent *);
+  nsresult FireEvent(nsARequestObserverEvent*);
 
  protected:
   nsMainThreadPtrHandle<nsIRequestObserver> mObserver;
@@ -42,10 +42,10 @@ class nsRequestObserverProxy final : public nsIRequestObserverProxy {
 
 class nsARequestObserverEvent : public Runnable {
  public:
-  explicit nsARequestObserverEvent(nsIRequest *);
+  explicit nsARequestObserverEvent(nsIRequest*);
 
  protected:
-  virtual ~nsARequestObserverEvent() {}
+  virtual ~nsARequestObserverEvent() = default;
 
   nsCOMPtr<nsIRequest> mRequest;
 };

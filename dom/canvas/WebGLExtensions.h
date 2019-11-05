@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -59,7 +59,7 @@ class WebGLExtensionBase : public nsWrapperCache,
 #define IMPL_WEBGL_EXTENSION_GOOP(WebGLExtensionType, WebGLBindingType)        \
   JSObject* WebGLExtensionType::WrapObject(JSContext* cx,                      \
                                            JS::Handle<JSObject*> givenProto) { \
-    return dom::WebGLBindingType##Binding::Wrap(cx, this, givenProto);         \
+    return dom::WebGLBindingType##_Binding::Wrap(cx, this, givenProto);        \
   }
 
 ////
@@ -76,10 +76,11 @@ class WebGLExtensionCompressedTextureASTC : public WebGLExtensionBase {
   DECL_WEBGL_EXTENSION_GOOP
 };
 
-class WebGLExtensionCompressedTextureATC : public WebGLExtensionBase {
+class WebGLExtensionCompressedTextureBPTC final : public WebGLExtensionBase {
  public:
-  explicit WebGLExtensionCompressedTextureATC(WebGLContext*);
-  virtual ~WebGLExtensionCompressedTextureATC();
+  explicit WebGLExtensionCompressedTextureBPTC(WebGLContext* webgl);
+
+  static bool IsSupported(const WebGLContext* webgl);
 
   DECL_WEBGL_EXTENSION_GOOP
 };
@@ -104,6 +105,15 @@ class WebGLExtensionCompressedTexturePVRTC : public WebGLExtensionBase {
  public:
   explicit WebGLExtensionCompressedTexturePVRTC(WebGLContext*);
   virtual ~WebGLExtensionCompressedTexturePVRTC();
+
+  DECL_WEBGL_EXTENSION_GOOP
+};
+
+class WebGLExtensionCompressedTextureRGTC final : public WebGLExtensionBase {
+ public:
+  explicit WebGLExtensionCompressedTextureRGTC(WebGLContext* webgl);
+
+  static bool IsSupported(const WebGLContext* webgl);
 
   DECL_WEBGL_EXTENSION_GOOP
 };
@@ -152,6 +162,8 @@ class WebGLExtensionDepthTexture : public WebGLExtensionBase {
   explicit WebGLExtensionDepthTexture(WebGLContext*);
   virtual ~WebGLExtensionDepthTexture();
 
+  static bool IsSupported(const WebGLContext*);
+
   DECL_WEBGL_EXTENSION_GOOP
 };
 
@@ -167,6 +179,26 @@ class WebGLExtensionEXTColorBufferFloat : public WebGLExtensionBase {
  public:
   explicit WebGLExtensionEXTColorBufferFloat(WebGLContext*);
   virtual ~WebGLExtensionEXTColorBufferFloat() {}
+
+  static bool IsSupported(const WebGLContext*);
+
+  DECL_WEBGL_EXTENSION_GOOP
+};
+
+class WebGLExtensionFBORenderMipmap : public WebGLExtensionBase {
+ public:
+  explicit WebGLExtensionFBORenderMipmap(WebGLContext* webgl);
+  virtual ~WebGLExtensionFBORenderMipmap();
+
+  static bool IsSupported(const WebGLContext*);
+
+  DECL_WEBGL_EXTENSION_GOOP
+};
+
+class WebGLExtensionFloatBlend : public WebGLExtensionBase {
+ public:
+  explicit WebGLExtensionFloatBlend(WebGLContext* webgl);
+  virtual ~WebGLExtensionFloatBlend();
 
   static bool IsSupported(const WebGLContext*);
 
@@ -216,6 +248,8 @@ class WebGLExtensionShaderTextureLod : public WebGLExtensionBase {
  public:
   explicit WebGLExtensionShaderTextureLod(WebGLContext*);
   virtual ~WebGLExtensionShaderTextureLod();
+
+  static bool IsSupported(const WebGLContext* context);
 
   DECL_WEBGL_EXTENSION_GOOP
 };

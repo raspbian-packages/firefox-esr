@@ -7,37 +7,54 @@
 #ifndef mozilla_dom_CSSKeyframesRule_h
 #define mozilla_dom_CSSKeyframesRule_h
 
-#include "mozilla/css/GroupRule.h"
+#include "mozilla/css/Rule.h"
 #include "mozilla/dom/CSSKeyframeRule.h"
 
 namespace mozilla {
 namespace dom {
 
-class CSSKeyframesRule : public css::GroupRule {
- protected:
-  using css::GroupRule::GroupRule;
-  virtual ~CSSKeyframesRule() {}
+class CSSKeyframeList;
 
+class CSSKeyframesRule final : public css::Rule {
  public:
-  int32_t GetType() const final { return Rule::KEYFRAMES_RULE; }
+  CSSKeyframesRule(RefPtr<RawServoKeyframesRule> aRawRule, StyleSheet* aSheet,
+                   css::Rule* aParentRule, uint32_t aLine, uint32_t aColumn);
 
-  // WebIDL interface
-  uint16_t Type() const final { return CSSRuleBinding::KEYFRAMES_RULE; }
-  virtual void GetName(nsAString& aName) const = 0;
-  virtual void SetName(const nsAString& aName) = 0;
-  virtual CSSRuleList* CssRules() = 0;
-  virtual void AppendRule(const nsAString& aRule) = 0;
-  virtual void DeleteRule(const nsAString& aKey) = 0;
-  virtual CSSKeyframeRule* FindRule(const nsAString& aKey) = 0;
+  NS_DECL_ISUPPORTS_INHERITED
+  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(CSSKeyframesRule, css::Rule)
 
-#ifdef MOZ_OLD_STYLE
-  bool UseForPresentation(nsPresContext* aPresContext,
-                          nsMediaQueryResultCacheKey& aKey) final;
+  bool IsCCLeaf() const final;
+
+#ifdef DEBUG
+  void List(FILE* out = stdout, int32_t aIndent = 0) const final;
 #endif
 
-  size_t SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const override = 0;
+  void DropSheetReference() final;
+
+  // WebIDL interface
+  uint16_t Type() const final { return CSSRule_Binding::KEYFRAMES_RULE; }
+  void GetCssText(nsAString& aCssText) const final;
+  void GetName(nsAString& aName) const;
+  void SetName(const nsAString& aName);
+  CSSRuleList* CssRules();
+  void AppendRule(const nsAString& aRule);
+  void DeleteRule(const nsAString& aKey);
+  CSSKeyframeRule* FindRule(const nsAString& aKey);
+
+  size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const final;
 
   JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aGivenProto) final;
+
+ private:
+  uint32_t FindRuleIndexForKey(const nsAString& aKey);
+
+  template <typename Func>
+  nsresult UpdateRule(Func aCallback);
+
+  virtual ~CSSKeyframesRule();
+
+  RefPtr<RawServoKeyframesRule> mRawRule;
+  RefPtr<CSSKeyframeList> mKeyframeList;  // lazily constructed
 };
 
 }  // namespace dom

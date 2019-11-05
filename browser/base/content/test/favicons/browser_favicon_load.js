@@ -14,20 +14,27 @@ const TEST_PAGE =
 const FAVICON_URI =
   TEST_SITE + "/browser/browser/base/content/test/favicons/file_favicon.png";
 const TEST_THIRD_PARTY_PAGE =
-  TEST_SITE + "/browser/browser/base/content/test/favicons/file_favicon_thirdParty.html";
+  TEST_SITE +
+  "/browser/browser/base/content/test/favicons/file_favicon_thirdParty.html";
 const THIRD_PARTY_FAVICON_URI =
-  TEST_THIRD_PARTY_SITE + "/browser/browser/base/content/test/favicons/file_favicon.png";
+  TEST_THIRD_PARTY_SITE +
+  "/browser/browser/base/content/test/favicons/file_favicon.png";
 
-ChromeUtils.defineModuleGetter(this, "PromiseUtils",
-                               "resource://gre/modules/PromiseUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "PlacesTestUtils",
-                               "resource://testing-common/PlacesTestUtils.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "PromiseUtils",
+  "resource://gre/modules/PromiseUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesTestUtils",
+  "resource://testing-common/PlacesTestUtils.jsm"
+);
 
 let systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
 
 function clearAllImageCaches() {
-  var tools = Cc["@mozilla.org/image/tools;1"]
-                .getService(SpecialPowers.Ci.imgITools);
+  var tools = Cc["@mozilla.org/image/tools;1"].getService(Ci.imgITools);
   var imageCache = tools.getImgCacheForDocument(window.document);
   imageCache.clearCache(true); // true=chrome
   imageCache.clearCache(false); // false=content
@@ -70,14 +77,6 @@ FaviconObserver.prototype = {
         return;
       }
 
-      let loadingPrincipal = reqLoadInfo.loadingPrincipal;
-
-      if (loadingPrincipal.equals(systemPrincipal)) {
-        this._faviconReqXUL = true;
-      } else {
-        this._faviconReqPlaces = true;
-      }
-
       let haveTailFlag = !!(cos.classFlags & Ci.nsIClassOfService.Tail);
       info("classFlags=" + cos.classFlags);
       is(haveTailFlag, this._tailingEnabled, "Should have correct cos flag.");
@@ -85,14 +84,10 @@ FaviconObserver.prototype = {
       ok(false, "Received unexpected topic: ", aTopic);
     }
 
-    if (this._faviconReqXUL && this._faviconReqPlaces) {
-      this._faviconLoaded.resolve();
-    }
+    this._faviconLoaded.resolve();
   },
 
   reset(aPageURI, aFaviconURL, aTailingEnabled) {
-    this._faviconReqXUL = false;
-    this._faviconReqPlaces = false;
     this._faviconURL = aFaviconURL;
     this._faviconLoaded = PromiseUtils.defer();
     this._tailingEnabled = aTailingEnabled;
@@ -100,15 +95,17 @@ FaviconObserver.prototype = {
 
   get promise() {
     return this._faviconLoaded.promise;
-  }
+  },
 };
 
 function waitOnFaviconLoaded(aFaviconURL) {
   return PlacesTestUtils.waitForNotification(
     "onPageChanged",
-    (uri, attr, value, id) => attr === Ci.nsINavHistoryObserver.ATTRIBUTE_FAVICON &&
-                              value === aFaviconURL,
-    "history");
+    (uri, attr, value, id) =>
+      attr === Ci.nsINavHistoryObserver.ATTRIBUTE_FAVICON &&
+      value === aFaviconURL,
+    "history"
+  );
 }
 
 async function doTest(aTestPage, aFaviconURL, aTailingEnabled) {
@@ -129,14 +126,16 @@ async function doTest(aTestPage, aFaviconURL, aTailingEnabled) {
   // Waiting for favicon loaded.
   await promiseWaitOnFaviconLoaded;
 
+  Services.obs.removeObserver(observer, "http-on-modify-request");
+
   // Close the tab.
-  await BrowserTestUtils.removeTab(tab);
+  BrowserTestUtils.removeTab(tab);
 }
 
 async function setupTailingPreference(aTailingEnabled) {
-  await SpecialPowers.pushPrefEnv({"set": [
-      ["network.http.tailing.enabled", aTailingEnabled]
-  ]});
+  await SpecialPowers.pushPrefEnv({
+    set: [["network.http.tailing.enabled", aTailingEnabled]],
+  });
 }
 
 async function cleanup() {

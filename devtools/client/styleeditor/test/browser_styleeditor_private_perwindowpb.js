@@ -7,28 +7,31 @@
 // This test makes sure that the style editor does not store any
 // content CSS files in the permanent cache when opened from PB mode.
 
-const TEST_URL = "http://" + TEST_HOST + "/browser/devtools/client/" +
+const TEST_URL =
+  "http://" +
+  TEST_HOST +
+  "/browser/devtools/client/" +
   "styleeditor/test/test_private.html";
 
-add_task(function* () {
+add_task(async function() {
   info("Opening a new private window");
-  let win = OpenBrowserWindow({private: true});
-  yield waitForDelayedStartupFinished(win);
+  const win = OpenBrowserWindow({ private: true });
+  await waitForDelayedStartupFinished(win);
 
   info("Clearing the browser cache");
   Services.cache2.clear();
 
-  let { toolbox, ui } = yield openStyleEditorForURL(TEST_URL, win);
+  const { toolbox, ui } = await openStyleEditorForURL(TEST_URL, win);
 
   is(ui.editors.length, 1, "The style editor contains one sheet.");
-  let editor = ui.editors[0];
+  const editor = ui.editors[0];
 
-  yield editor.getSourceEditor();
-  yield checkDiskCacheFor(TEST_HOST);
+  await editor.getSourceEditor();
+  await checkDiskCacheFor(TEST_HOST);
 
-  yield toolbox.destroy();
+  await toolbox.destroy();
 
-  let onUnload = new Promise(done => {
+  const onUnload = new Promise(done => {
     win.addEventListener("unload", function listener(event) {
       if (event.target == win.document) {
         win.removeEventListener("unload", listener);
@@ -37,7 +40,7 @@ add_task(function* () {
     });
   });
   win.close();
-  yield onUnload;
+  await onUnload;
 });
 
 function checkDiskCacheFor(host) {
@@ -45,26 +48,30 @@ function checkDiskCacheFor(host) {
 
   return new Promise(resolve => {
     Visitor.prototype = {
-      onCacheStorageInfo: function (num) {
+      onCacheStorageInfo: function(num) {
         info("disk storage contains " + num + " entries");
       },
-      onCacheEntryInfo: function (uri) {
-        let urispec = uri.asciiSpec;
+      onCacheEntryInfo: function(uri) {
+        const urispec = uri.asciiSpec;
         info(urispec);
         foundPrivateData |= urispec.includes(host);
       },
-      onCacheEntryVisitCompleted: function () {
+      onCacheEntryVisitCompleted: function() {
         is(foundPrivateData, false, "web content present in disk cache");
         resolve();
-      }
+      },
     };
     function Visitor() {}
 
-    let storage =
-      Services.cache2.diskCacheStorage(Services.loadContextInfo.default, false);
-    storage.asyncVisitStorage(new Visitor(),
+    const storage = Services.cache2.diskCacheStorage(
+      Services.loadContextInfo.default,
+      false
+    );
+    storage.asyncVisitStorage(
+      new Visitor(),
       /* Do walk entries */
-      true);
+      true
+    );
   });
 }
 

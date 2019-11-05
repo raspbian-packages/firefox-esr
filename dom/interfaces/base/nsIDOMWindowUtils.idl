@@ -31,26 +31,28 @@ native nscolor(nscolor);
 
 interface nsIArray;
 interface nsICycleCollectorListener;
-interface nsIDOMNode;
-interface nsIDOMNodeList;
-interface nsIDOMElement;
-interface nsIDOMEvent;
 interface nsIPreloadedStyleSheet;
 interface nsITransferable;
 interface nsIQueryContentEventResult;
 interface nsIDOMWindow;
 interface nsIFile;
-interface nsIDOMClientRect;
 interface nsIURI;
-interface nsIDOMEventTarget;
 interface nsIRunnable;
 interface nsITranslationNodeList;
 interface nsIJSRAIIHelper;
 interface nsIContentPermissionRequest;
 interface nsIObserver;
-interface nsIDOMStorage;
 
-[scriptable, uuid(4d6732ca-9da7-4176-b8a1-8dde15cd0bf9)]
+webidl Animation;
+webidl DOMRect;
+webidl Element;
+webidl EventTarget;
+webidl Event;
+webidl Node;
+webidl NodeList;
+webidl Storage;
+
+[builtinclass, scriptable, uuid(4d6732ca-9da7-4176-b8a1-8dde15cd0bf9)]
 interface nsIDOMWindowUtils : nsISupports {
 
   /**
@@ -104,6 +106,7 @@ interface nsIDOMWindowUtils : nsISupports {
   /**
    * Force a synchronous layer transaction for this window if necessary.
    */
+  [can_run_script]
   void updateLayerTree();
 
   /**
@@ -113,7 +116,7 @@ interface nsIDOMWindowUtils : nsISupports {
 
   /**
    * Information retrieved from the <meta name="viewport"> tag.
-   * See nsContentUtils::GetViewportInfo for more information.
+   * See Document::GetViewportInfo for more information.
    */
   void getViewportInfo(in uint32_t aDisplayWidth, in uint32_t aDisplayHeight,
                        out double aDefaultZoom, out boolean aAllowZoom,
@@ -162,7 +165,7 @@ interface nsIDOMWindowUtils : nsISupports {
    */
   void setDisplayPortForElement(in float aXPx, in float aYPx,
                                 in float aWidthPx, in float aHeightPx,
-                                in nsIDOMElement aElement,
+                                in Element aElement,
                                 in uint32_t aPriority);
   /**
    * An alternate way to represent a displayport rect as a set of margins and a
@@ -187,14 +190,14 @@ interface nsIDOMWindowUtils : nsISupports {
                                        in float aTopMargin,
                                        in float aRightMargin,
                                        in float aBottomMargin,
-                                       in nsIDOMElement aElement,
+                                       in Element aElement,
                                        in uint32_t aPriority);
 
   void setDisplayPortBaseForElement(in int32_t aX,
                                     in int32_t aY,
                                     in int32_t aWidth,
                                     in int32_t aHeight,
-                                    in nsIDOMElement aElement);
+                                    in Element aElement);
 
   /**
    * Get/set the resolution at which rescalable web content is drawn.
@@ -205,20 +208,11 @@ interface nsIDOMWindowUtils : nsISupports {
    *
    * The effect of this API is for gfx code to allocate more or fewer
    * pixels for rescalable content by a factor of |resolution| in
-   * both dimensions.  The scale at which the content is displayed does
-   * not change; if that is desired, use setResolutionAndScaleTo() instead.
-   *
-   * The caller of this method must have chrome privileges.
-   */
-  void setResolution(in float aResolution);
-
-  void getResolution(out float aResolution);
-
-  /**
-   * Similar to setResolution(), but also scales the content by the
-   * amount of the resolution, so that it is displayed at a
-   * correspondingly larger or smaller size, without the need for
-   * the caller to set an additional transform.
+   * both dimensions.
+   * 
+   * In addition, the content is scaled by the amount of the resolution,
+   * so that it is displayed at a correspondingly larger or smaller size, 
+   * without the need for the caller to set an additional transform.
    *
    * This can be used to implement a non-reflowing scale-zoom, e.g.
    * for pinch-zoom on mobile platforms.
@@ -226,6 +220,8 @@ interface nsIDOMWindowUtils : nsISupports {
    * The caller of this method must have chrome privileges.
    */
   void setResolutionAndScaleTo(in float aResolution);
+
+  float getResolution();
 
   /**
    * Set a resolution on the presShell which is the "restored" from history.
@@ -238,15 +234,6 @@ interface nsIDOMWindowUtils : nsISupports {
   void setRestoreResolution(in float aResolution,
                             in uint32_t aDisplayWidth,
                             in uint32_t aDisplayHeight);
-
-  /**
-   * Whether the resolution has been set by the user.
-   * This gives a way to check whether the provided resolution is the default
-   * value or restored from a previous session.
-   *
-   * Can only be accessed with chrome privileges.
-   */
-  readonly attribute boolean isResolutionSet;
 
   /**
    * Whether the next paint should be flagged as the first paint for a document.
@@ -262,7 +249,7 @@ interface nsIDOMWindowUtils : nsISupports {
   /**
    * Following modifiers are for sent*Event() except sendNative*Event().
    * NOTE: MODIFIER_ALT, MODIFIER_CONTROL, MODIFIER_SHIFT and MODIFIER_META
-   *       are must be same values as nsIDOMNSEvent::*_MASK for backward
+   *       are must be same values as Event_Binding::*_MASK for backward
    *       compatibility.
    */
   const long MODIFIER_ALT        = 0x0001;
@@ -315,9 +302,9 @@ interface nsIDOMWindowUtils : nsISupports {
    * @param aIgnoreRootScrollFrame whether the event should ignore viewport bounds
    *                           during dispatch
    * @param aPressure touch input pressure: 0.0 -> 1.0
-   * @param aInputSourceArg input source, see nsIDOMMouseEvent for values,
+   * @param aInputSourceArg input source, see MouseEvent for values,
    *        defaults to mouse input.
-   * @param aIsDOMEventSynthesized controls nsIDOMEvent.isSynthesized value
+   * @param aIsDOMEventSynthesized controls Event.isSynthesized value
    *                               that helps identifying test related events,
    *                               defaults to true
    * @param aIsWidgetEventSynthesized controls WidgetMouseEvent.mReason value
@@ -327,7 +314,7 @@ interface nsIDOMWindowUtils : nsISupports {
    *
    * returns true if the page called prevent default on this event
    */
-  [optional_argc]
+  [optional_argc, can_run_script]
   boolean sendMouseEvent(in AString aType,
                          in float aX,
                          in float aY,
@@ -368,22 +355,22 @@ interface nsIDOMWindowUtils : nsISupports {
    *
    * returns true if the page called prevent default on this touch event
    */
+  [can_run_script]
   boolean sendTouchEvent(in AString aType,
-                         [array, size_is(count)] in uint32_t aIdentifiers,
-                         [array, size_is(count)] in int32_t aXs,
-                         [array, size_is(count)] in int32_t aYs,
-                         [array, size_is(count)] in uint32_t aRxs,
-                         [array, size_is(count)] in uint32_t aRys,
-                         [array, size_is(count)] in float aRotationAngles,
-                         [array, size_is(count)] in float aForces,
-                         in uint32_t count,
+                         in Array<uint32_t> aIdentifiers,
+                         in Array<int32_t> aXs,
+                         in Array<int32_t> aYs,
+                         in Array<uint32_t> aRxs,
+                         in Array<uint32_t> aRys,
+                         in Array<float> aRotationAngles,
+                         in Array<float> aForces,
                          in long aModifiers,
                          [optional] in boolean aIgnoreRootScrollFrame);
 
   /** The same as sendMouseEvent but ensures that the event is dispatched to
    *  this DOM window or one of its children.
    */
-  [optional_argc]
+  [optional_argc, can_run_script]
   void sendMouseEventToWindow(in AString aType,
                               in float aX,
                               in float aY,
@@ -401,15 +388,15 @@ interface nsIDOMWindowUtils : nsISupports {
   /** The same as sendTouchEvent but ensures that the event is dispatched to
    *  this DOM window or one of its children.
    */
+  [can_run_script]
   boolean sendTouchEventToWindow(in AString aType,
-                                 [array, size_is(count)] in uint32_t aIdentifiers,
-                                 [array, size_is(count)] in int32_t aXs,
-                                 [array, size_is(count)] in int32_t aYs,
-                                 [array, size_is(count)] in uint32_t aRxs,
-                                 [array, size_is(count)] in uint32_t aRys,
-                                 [array, size_is(count)] in float aRotationAngles,
-                                 [array, size_is(count)] in float aForces,
-                                 in uint32_t count,
+                                 in Array<uint32_t> aIdentifiers,
+                                 in Array<int32_t> aXs,
+                                 in Array<int32_t> aYs,
+                                 in Array<uint32_t> aRxs,
+                                 in Array<uint32_t> aRys,
+                                 in Array<float> aRotationAngles,
+                                 in Array<float> aForces,
                                  in long aModifiers,
                                  [optional] in boolean aIgnoreRootScrollFrame);
 
@@ -426,8 +413,8 @@ interface nsIDOMWindowUtils : nsISupports {
    * @param aDeltaX            deltaX value.
    * @param aDeltaY            deltaY value.
    * @param aDeltaZ            deltaZ value.
-   * @param aDeltaMode         deltaMode value which must be one of
-   *                           nsIDOMWheelEvent::DOM_DELTA_*.
+   * @param aDeltaMode         deltaMode value which must be one of the
+   *                           WheelEvent DOM_DELTA_* constants.
    * @param aModifiers         modifiers pressed, using constants defined as
    *                           MODIFIER_*
    * @param aLineOrPageDeltaX  If you set this value non-zero for
@@ -496,14 +483,14 @@ interface nsIDOMWindowUtils : nsISupports {
                             in long aScreenY,
                             in long aNativeMessage,
                             in long aModifierFlags,
-                            in nsIDOMElement aElement,
+                            in Element aElement,
                             [optional] in nsIObserver aObserver);
   /**
    * See nsIWidget::SynthesizeNativeMouseMove and sendNativeMouseEvent
    */
   void sendNativeMouseMove(in long aScreenX,
                            in long aScreenY,
-                           in nsIDOMElement aElement,
+                           in Element aElement,
                            [optional] in nsIObserver aObserver);
 
   /**
@@ -562,7 +549,7 @@ interface nsIDOMWindowUtils : nsISupports {
                                   in double aDeltaZ,
                                   in unsigned long aModifierFlags,
                                   in unsigned long aAdditionalFlags,
-                                  in nsIDOMElement aElement,
+                                  in Element aElement,
                                   [optional] in nsIObserver aObserver);
 
   /**
@@ -685,8 +672,6 @@ interface nsIDOMWindowUtils : nsISupports {
    * non-debug builds. Available to all callers in debug builds.
    *
    * @param aListener listener that receives information about the CC graph
-   *                  (see @mozilla.org/cycle-collector-logger;1 for a logger
-   *                   component)
    */
   void garbageCollect([optional] in nsICycleCollectorListener aListener);
 
@@ -697,8 +682,6 @@ interface nsIDOMWindowUtils : nsISupports {
    * non-debug builds. Available to all callers in debug builds.
    *
    * @param aListener listener that receives information about the CC graph
-   *                  (see @mozilla.org/cycle-collector-logger;1 for a logger
-   *                   component)
    */
   void cycleCollect([optional] in nsICycleCollectorListener aListener);
 
@@ -724,7 +707,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * @param aY y offset in CSS pixels
    * @param aDirection direction, using constants defined in SimpleGestureEvent.webidl
    * @param aDelta  amount of magnification or rotation for magnify and rotation events
-   * @param aModifiers modifiers pressed, using constants defined in nsIDOMNSEvent
+   * @param aModifiers modifiers pressed, using constants defined in Event.webidl
    * @param aClickCount For tap gestures, the number of taps.
    */
   void sendSimpleGestureEvent(in AString aType,
@@ -743,10 +726,10 @@ interface nsIDOMWindowUtils : nsISupports {
    *        null for coordinates outside of the viewport.
    * @param aFlushLayout flushes layout if true. Otherwise, no flush occurs.
    */
-  nsIDOMElement elementFromPoint(in float aX,
-                                 in float aY,
-                                 in boolean aIgnoreRootScrollFrame,
-                                 in boolean aFlushLayout);
+  Element elementFromPoint(in float aX,
+                           in float aY,
+                           in boolean aIgnoreRootScrollFrame,
+                           in boolean aFlushLayout);
 
   /**
    * Retrieve all nodes that intersect a rect in the window's document.
@@ -761,15 +744,18 @@ interface nsIDOMWindowUtils : nsISupports {
    *        frame when retrieving the element. If false, this method returns
    *        null for coordinates outside of the viewport.
    * @param aFlushLayout flushes layout if true. Otherwise, no flush occurs.
+   * @param aOnlyVisible Set to true if you only want nodes that pass a visibility
+   *        hit test.
    */
-  nsIDOMNodeList nodesFromRect(in float aX,
-                               in float aY,
-                               in float aTopSize,
-                               in float aRightSize,
-                               in float aBottomSize,
-                               in float aLeftSize,
-                               in boolean aIgnoreRootScrollFrame,
-                               in boolean aFlushLayout);
+  NodeList nodesFromRect(in float aX,
+                         in float aY,
+                         in float aTopSize,
+                         in float aRightSize,
+                         in float aBottomSize,
+                         in float aLeftSize,
+                         in boolean aIgnoreRootScrollFrame,
+                         in boolean aFlushLayout,
+                         in boolean aOnlyVisible);
 
 
   /**
@@ -779,7 +765,7 @@ interface nsIDOMWindowUtils : nsISupports {
    *
    * This method requires chrome privileges.
    */
-  nsITranslationNodeList getTranslationNodes(in nsIDOMNode aRoot);
+  nsITranslationNodeList getTranslationNodes(in Node aRoot);
 
   /**
    * Compare the two canvases, returning the number of differing pixels and
@@ -844,7 +830,36 @@ interface nsIDOMWindowUtils : nsISupports {
   /**
    * Returns the given element's bounds without flushing pending layout changes.
    */
-  nsIDOMClientRect getBoundsWithoutFlushing(in nsIDOMElement aElement);
+  DOMRect getBoundsWithoutFlushing(in Element aElement);
+
+  /**
+   * Scroll the visual viewport to the given coordinates, relative to the
+   * document origin.
+   * Only applicable to the window associated with the root content document.
+   * Note: this does not take effect right away. Rather, the visual scroll
+   *       request is sent to APZ with the next transaction, and will be
+   *       reflected in the main thread with the subsequent APZ repaint request.
+   * Please see the caveats mentioned at PresShell::ScrollToVisual(), and
+   * request APZ review if adding a new call to this.
+   */
+  const long UPDATE_TYPE_RESTORE = 0;
+  const long UPDATE_TYPE_MAIN_THREAD = 1;
+  const long SCROLL_MODE_INSTANT = 0;
+  const long SCROLL_MODE_SMOOTH = 1;
+  void scrollToVisual(in float aOffsetX, in float aOffsetY,
+                      in long aUpdateType, in long aScrollMode);
+
+  /**
+   * Returns the offset of the window's visual viewport relative to the
+   * layout viewport.
+   */
+  void getVisualViewportOffsetRelativeToLayoutViewport(out float aOffsetX,
+                                                       out float aOffsetY);
+
+  /**
+   * Returns the scroll position of the window's visual viewport.
+   */
+  void getVisualViewportOffset(out long aOffsetX, out long aOffsetY);
 
   const long FLUSH_NONE = -1;
   const long FLUSH_STYLE = 0;
@@ -857,11 +872,17 @@ interface nsIDOMWindowUtils : nsISupports {
   bool needsFlush(in long aFlushtype);
 
   /**
+   * Flush pending layout-type notification without flushing throttled
+   * animations.
+   */
+  void flushLayoutWithoutThrottledAnimations();
+
+  /**
    * Returns the bounds of the window's currently loaded document. This will
    * generally be (0, 0, pageWidth, pageHeight) but in some cases (e.g. RTL
    * documents) may have a negative left value.
    */
-  nsIDOMClientRect getRootBounds();
+  DOMRect getRootBounds();
 
   /**
    * Get IME open state. TRUE means 'Open', otherwise, 'Close'.
@@ -918,7 +939,8 @@ interface nsIDOMWindowUtils : nsISupports {
   readonly attribute float fullZoom;
 
   /**
-   * Dispatches aEvent via the nsIPresShell object of the window's document.
+   * Dispatches aEvent as a trusted event via the PresShell object of the
+   * window's document.
    * The event is dispatched to aTarget, which should be an object
    * which implements nsIContent interface (#element, #text, etc).
    *
@@ -929,9 +951,9 @@ interface nsIDOMWindowUtils : nsISupports {
    * @note Event handlers won't get aEvent as parameter, but a similar event.
    *       Also, aEvent should not be reused.
    */
-  boolean dispatchDOMEventViaPresShell(in nsIDOMNode aTarget,
-                                       in nsIDOMEvent aEvent,
-                                       in boolean aTrusted);
+  [can_run_script]
+  boolean dispatchDOMEventViaPresShell(in Node aTarget,
+                                       in Event aEvent);
 
   /**
    * Sets WidgetEvent::mFlags::mOnlyChromeDispatch to true to ensure that
@@ -939,8 +961,8 @@ interface nsIDOMWindowUtils : nsISupports {
    * Event's .target property will be aTarget.
    * Returns the same value as what EventTarget.dispatchEvent does.
    */
-  boolean dispatchEventToChromeOnly(in nsIDOMEventTarget aTarget,
-                                    in nsIDOMEvent aEvent);
+  boolean dispatchEventToChromeOnly(in EventTarget aTarget,
+                                    in Event aEvent);
 
   /**
    * Returns the real classname (possibly of the mostly-transparent security
@@ -1118,7 +1140,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * aFrameElement is the iframe element which contains the child-process
    * fullscreen document.
    */
-  void remoteFrameFullscreenChanged(in nsIDOMElement aFrameElement);
+  void remoteFrameFullscreenChanged(in Element aFrameElement);
 
   /**
    * Called when the remote frame has popped all fullscreen elements off its
@@ -1213,7 +1235,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * to this API, and is sufficient for the present testing
    * requirements (which are essentially testing 'color').
    */
-  AString getVisitedDependentComputedStyle(in nsIDOMElement aElement,
+  AString getVisitedDependentComputedStyle(in Element aElement,
                                            in AString aPseudoElement,
                                            in AString aPropertyName);
 
@@ -1276,6 +1298,11 @@ interface nsIDOMWindowUtils : nsISupports {
   readonly attribute boolean usingAdvancedLayers;
 
   /**
+   * True if the current build includes WebRender.
+   */
+  readonly attribute boolean isWebRenderBuilt;
+
+  /**
    * True if webrender was requested by the user (via pref or env-var), false
    * otherwise. Note that this doesn't represent whether or not webrender is
    * *actually* enabled, just whether or not it was requested.
@@ -1291,11 +1318,6 @@ interface nsIDOMWindowUtils : nsISupports {
    * Returns the max channel counts of the current audio device.
    */
   readonly attribute unsigned long currentMaxAudioChannels;
-
-  /**
-   * Returns the preferred channel layout of the current audio device.
-   */
-  readonly attribute AString currentPreferredChannelLayout;
 
   /**
    * Returns the preferred sample rate of the current audio device.
@@ -1327,13 +1349,10 @@ interface nsIDOMWindowUtils : nsISupports {
   void startFrameTimeRecording([retval] out unsigned long startIndex);
 
   /**
-   * Returns number of recorded frames since startIndex was issued,
-   *   and allocates+populates 2 arraye with the recorded data.
-   * - Allocation is infallible. Should be released even if size is 0.
+   * Returns array of frame intervals since the time when the given startIndex
+   * was handed out from startFrameTimeRecording.
    */
-  void stopFrameTimeRecording(in unsigned long startIndex,
-                             [optional] out unsigned long frameCount,
-                             [retval, array, size_is(frameCount)] out float frameIntervals);
+  Array<float> stopFrameTimeRecording(in unsigned long startIndex);
 
   /**
    * The DPI of the display
@@ -1344,12 +1363,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * Return this window's frame element.
    * Ignores all chrome/content or mozbrowser boundaries.
    */
-  readonly attribute nsIDOMElement containerElement;
-
-  [noscript] void RenderDocument(in nsConstRect aRect,
-                                 in uint32_t aFlags,
-                                 in nscolor aBackgroundColor,
-                                 in gfxContext aThebesContext);
+  readonly attribute Element containerElement;
 
   /**
    * advanceTimeAndRefresh allows the caller to take over the refresh
@@ -1395,7 +1409,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * with that offset if async scrolling is enabled, and then the offset
    * will be removed. Only call this while test-controlled refreshes is enabled.
    */
-  void setAsyncScrollOffset(in nsIDOMNode aNode, in float aX, in float aY);
+  void setAsyncScrollOffset(in Element aElement, in float aX, in float aY);
 
   /**
    * Set async zoom value. aRootElement should be the document element of our
@@ -1403,7 +1417,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * existing zoom if async scrolling is enabled, and then the zoom will be
    * removed. Only call this while test-controlled refreshes is enabled.
    */
-  void setAsyncZoom(in nsIDOMNode aRootElement, in float aValue);
+  void setAsyncZoom(in Element aRootElement, in float aValue);
 
   /**
    * Do a round-trip to the compositor to ensure any pending APZ repaint requests
@@ -1418,7 +1432,7 @@ interface nsIDOMWindowUtils : nsISupports {
   /**
    * Ask APZ to pan and zoom to the focused input element.
    */
-  void zoomToFocusedInput();
+  [can_run_script] void zoomToFocusedInput();
 
   /**
    * Method for testing StyleAnimationValue::ComputeDistance.
@@ -1427,17 +1441,10 @@ interface nsIDOMWindowUtils : nsISupports {
    * StyleAnimationValue::ComputeDistance for the given element and
    * property.
    */
-  double computeAnimationDistance(in nsIDOMElement element,
+  double computeAnimationDistance(in Element element,
                                   in AString property,
                                   in AString value1,
                                   in AString value2);
-
-  /**
-   * Returns the animation type of the specified property (e.g. 'coord').
-   *
-   * @param aProperty A longhand CSS property (e.g. 'background-color').
-   */
-  AString getAnimationTypeForLonghand(in AString aProperty);
 
   /**
    * Returns the computed style for the specified property of given pseudo type
@@ -1448,7 +1455,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * @param aFlushType - FLUSH_NONE if any pending styles should not happen,
    *                     FLUSH_STYLE to flush pending styles.
    */
-  AString getUnanimatedComputedStyle(in nsIDOMElement aElement,
+  AString getUnanimatedComputedStyle(in Element aElement,
                                      in AString aPseudoElement,
                                      in AString aProperty,
                                      in long aFlushType);
@@ -1459,10 +1466,15 @@ interface nsIDOMWindowUtils : nsISupports {
   readonly attribute AString focusedInputType;
 
   /**
+   * Get the action hint of the currently focused html input, if any.
+   */
+  readonly attribute AString focusedActionHint;
+
+  /**
    * Find the view ID for a given element. This is the reverse of
    * findElementWithViewId().
    */
-  nsViewID getViewId(in nsIDOMElement aElement);
+  nsViewID getViewId(in Element aElement);
 
   /**
    * Checks the layer tree for this window and returns true
@@ -1476,13 +1488,13 @@ interface nsIDOMWindowUtils : nsISupports {
    * Check if any PaintedLayer painting has been done for this element,
    * clears the painted flags if they have.
    */
-  boolean checkAndClearPaintedState(in nsIDOMElement aElement);
+  boolean checkAndClearPaintedState(in Element aElement);
 
   /**
    * Check if any display list building has been done for this element,
    * clears the display list flags if they have.
    */
-  boolean checkAndClearDisplayListState(in nsIDOMElement aElement);
+  boolean checkAndClearDisplayListState(in Element aElement);
 
   /**
    * Check whether all display items of the primary frame of aElement have been
@@ -1490,7 +1502,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * case, returns whether that PaintedLayer is opaque; if it's not the case, an
    * exception is thrown.
    */
-  boolean isPartOfOpaqueLayer(in nsIDOMElement aElement);
+  boolean isPartOfOpaqueLayer(in Element aElement);
 
   /**
    * Count the number of different PaintedLayers that the supplied elements have
@@ -1498,8 +1510,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * elements doesn't have a primary frame, or if that frame's display items are
    * assigned to any other layers than just a single PaintedLayer per element.
    */
-  unsigned long numberOfAssignedPaintedLayers([array, size_is(count)] in nsIDOMElement aElements,
-                                              in uint32_t count);
+  unsigned long numberOfAssignedPaintedLayers(in Array<Element> aElements);
 
   /**
    * Get internal id of the stored blob, file or file handle.
@@ -1590,12 +1601,12 @@ interface nsIDOMWindowUtils : nsISupports {
   readonly attribute jsval plugins;
 
   /**
-   * Set the scrollport size for the purposes of clamping scroll positions for
+   * Set the viewport size for the purposes of clamping scroll positions for
    * the root scroll frame of this document to be (aWidth,aHeight) in CSS pixels.
    *
    * The caller of this method must have chrome privileges.
    */
-  void setScrollPositionClampingScrollPortSize(in float aWidth, in float aHeight);
+  void setVisualViewportSize(in float aWidth, in float aHeight);
 
   /**
    * These are used to control whether dialogs (alert, prompt, confirm) are
@@ -1653,7 +1664,8 @@ interface nsIDOMWindowUtils : nsISupports {
   readonly attribute boolean isHandlingUserInput;
 
   /**
-   * Returns milliseconds elapsed since last user input was started
+   * Returns milliseconds elapsed since last user input was started.
+   * Returns -1 if there wasn't any previous user input.
    *
    * This relies on EventStateManager::LatestUserInputStart()
    */
@@ -1681,7 +1693,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * may be disabled. Such cases are for example the existence of disabled
    * attribute or -moz-user-input: none.
    */
-  boolean isNodeDisabledForEvents(in nsIDOMNode aNode);
+  boolean isNodeDisabledForEvents(in Node aNode);
 
   /**
    * Setting paintFlashing to true will flash newly painted area.
@@ -1693,18 +1705,24 @@ interface nsIDOMWindowUtils : nsISupports {
    * If the property is NOT currently being animated on the compositor thread,
    * returns an empty string.
    */
-  AString getOMTAStyle(in nsIDOMElement aElement, in AString aProperty,
+  AString getOMTAStyle(in Element aElement, in AString aProperty,
                        [optional] in AString aPseudoElement);
 
-  /**
-   * Special function that gets a property syncronously from the last composite
-   * that occured.
-   *
-   * Supported properties:
-   *   "overdraw": Report a percentage between 0 and 999 indicate how many times
-   *               each pixels on the destination window have been touched.
+  /*
+   * Returns the value of the transform on the compositor, in layer pixels.
+   * Unlike the above getOMTAStyle, the transform value returned by this
+   * includes both of animating and APZ values.
+   * Note: This function doesn't work on WebRender at all.  Also this function
+   * does work only for transform layer and opacity layer with animations.
    */
-  float requestCompositorProperty(in AString aProperty);
+  AString getOMTCTransform(in Element aElement,
+                           [optional] in AString aPseudoElement);
+
+  /*
+   * Returns true if the given animation is being tracked by the pending
+   * animation tracker for the current document.
+   */
+  bool isAnimationInPendingTracker(in Animation aAnimation);
 
   /**
    * If aHandlingInput is true, this informs the event state manager that
@@ -1723,9 +1741,9 @@ interface nsIDOMWindowUtils : nsISupports {
   [implicit_jscontext] jsval getCompositorAPZTestData();
 
   /**
-   * Posts an eRestyle_Self restyle event for the given element.
+   * Posts an RestyleHint::RESTYLE_SELF restyle event for the given element.
    */
-  void postRestyleSelfEvent(in nsIDOMElement aElement);
+  void postRestyleSelfEvent(in Element aElement);
 
   /**
    * Used to pause or resume all media in this window. Use-cases are audio
@@ -1750,7 +1768,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * This method doesn't do anything useful.  It was solely added for the
    * purpose of the test for bug 503926.
    */
-  void xpconnectArgument(in nsIDOMWindowUtils aThis);
+  void xpconnectArgument(in nsISupports aObj);
 
   /**
    * Helper for JS components that need to send permission requests with
@@ -1839,7 +1857,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * non-deterministic, we have this method here for more determinism when
    * running tests.
    */
-  void forceUseCounterFlush(in nsIDOMNode aNode);
+  void forceUseCounterFlush(in Node aNode);
 
   /**
    * Enable or disable displayport suppression. This is intended to be used by
@@ -1866,12 +1884,6 @@ interface nsIDOMWindowUtils : nsISupports {
   readonly attribute int32_t gpuProcessPid;
 
   /**
-   * Returns true if the given timeout ID is in the list of tracking
-   * timeouts.
-   */
-  boolean isTimeoutTracking(in unsigned long timeoutId);
-
-  /**
    * Adds an EventStates bit to the element.
    *
    * The state string must be one of the following:
@@ -1880,7 +1892,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * The supported state strings are defined in kManuallyManagedStates
    * in nsDOMWindowUtils.cpp.
    */
-  void addManuallyManagedState(in nsIDOMElement element,
+  void addManuallyManagedState(in Element element,
                                in AString state);
 
   /**
@@ -1888,7 +1900,7 @@ interface nsIDOMWindowUtils : nsISupports {
    *
    * See above for the strings that can be passed for |state|.
    */
-  void removeManuallyManagedState(in nsIDOMElement element,
+  void removeManuallyManagedState(in Element element,
                                   in AString state);
 
   /**
@@ -1897,7 +1909,7 @@ interface nsIDOMWindowUtils : nsISupports {
    * @param aStorage
    *    The storage object to get usage data for.
    */
-  int64_t getStorageUsage(in nsIDOMStorage aStorage);
+  int64_t getStorageUsage(in Storage aStorage);
 
   /**
    * Returns the directionality of a string using the first-strong character
@@ -1918,29 +1930,53 @@ interface nsIDOMWindowUtils : nsISupports {
   void ensureDirtyRootFrame();
 
   /**
-   * Whether the current document is styled by Servo's style engine.
-   *
-   * This calls nsIDocument::IsStyledByServo().
-   */
-  readonly attribute boolean isStyledByServo;
-
-  /**
    * Capture the contents of the current WebRender frame and
    * save them to a folder relative to the current working directory.
    */
   void wrCapture();
+
+  /**
+   * Toggle recording of composition on and off.
+   */
+  void setCompositionRecording(in boolean aValue);
+
+  /**
+   * Returns whether the document we're associated to has recorded a given CSS
+   * property via the use counter mechanism.
+   *
+   * Throws if there's no document or the property is invalid.
+   */
+  bool isCssPropertyRecordedInUseCounter(in ACString aProperty);
+
+  /**
+   * NOTE: Currently works only on GTK+.
+   */
+  attribute ACString systemFont;
+
+
+  /**
+   * Simulate the system setting corresponding to 'prefers-reduced-motion'
+   * media queries feature is changed to 'on' or 'off'.
+   *
+   * Currently this function is available only on MacOSX.
+   */
+  void setPrefersReducedMotionOverrideForTest(in boolean aValue);
+  /**
+   * Reset the internal state to be used for above setPrefersReducedMotion.
+   */
+  void resetPrefersReducedMotionOverrideForTest();
 
   // These consts are only for testing purposes.
   const long DEFAULT_MOUSE_POINTER_ID = 0;
   const long DEFAULT_PEN_POINTER_ID   = 1;
   const long DEFAULT_TOUCH_POINTER_ID = 2;
 
-  // Match WidgetMouseEventBase::buttonType.
+  // Match mozilla::MouseButton.
   const long MOUSE_BUTTON_LEFT_BUTTON   = 0;
   const long MOUSE_BUTTON_MIDDLE_BUTTON = 1;
   const long MOUSE_BUTTON_RIGHT_BUTTON  = 2;
 
-  // Match WidgetMouseEventBase::buttonsFlag.
+  // Match mozilla::MouseButtonsFlag.
   const long MOUSE_BUTTONS_NO_BUTTON = 0x00;
   const long MOUSE_BUTTONS_LEFT_BUTTON = 0x01;
   const long MOUSE_BUTTONS_RIGHT_BUTTON = 0x02;
@@ -1958,12 +1994,14 @@ interface nsIDOMWindowUtils : nsISupports {
   const long DIRECTION_LTR = 0;
   const long DIRECTION_RTL = 1;
   const long DIRECTION_NOT_SET = 2;
+
+  void syncFlushCompositor();
 };
 
 [scriptable, uuid(c694e359-7227-4392-a138-33c0cc1f15a6)]
 interface nsITranslationNodeList : nsISupports {
   readonly attribute unsigned long length;
-  nsIDOMNode item(in unsigned long index);
+  Node item(in unsigned long index);
 
   // A translation root is a block element, or an inline element
   // which its parent is not a translation node.

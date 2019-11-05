@@ -27,7 +27,7 @@ SpeechSynthesisVoice::~SpeechSynthesisVoice() {}
 
 JSObject* SpeechSynthesisVoice::WrapObject(JSContext* aCx,
                                            JS::Handle<JSObject*> aGivenProto) {
-  return SpeechSynthesisVoiceBinding::Wrap(aCx, this, aGivenProto);
+  return SpeechSynthesisVoice_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 nsISupports* SpeechSynthesisVoice::GetParentObject() const { return mParent; }

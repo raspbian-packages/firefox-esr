@@ -25,7 +25,7 @@ PerformanceNavigation::~PerformanceNavigation() {}
 
 JSObject* PerformanceNavigation::WrapObject(JSContext* cx,
                                             JS::Handle<JSObject*> aGivenProto) {
-  return PerformanceNavigationBinding::Wrap(cx, this, aGivenProto);
+  return PerformanceNavigation_Binding::Wrap(cx, this, aGivenProto);
 }
 
 uint16_t PerformanceNavigation::RedirectCount() const {

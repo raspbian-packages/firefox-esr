@@ -4,10 +4,13 @@
 
 <!ENTITY firstrun_panel_title_welcome "Vitajte">
 <!ENTITY firstrun_urlbar_message2 "Ďakujeme, že ste si vybrali &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Víta vás &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Moderný mobilný prehliadač od Mozilly - neziskovej organizácie, odhodlanej chrániť slobodný a otvorený web.">
+<!ENTITY newfirstrun_urlbar_subtext "Rýchly, súkromný a vždy na vašej strane.">
 <!ENTITY firstrun_panel_title_privacy "Súkromie">
 <!ENTITY firstrun_privacy_message "Prehliadajte, akoby sa nikto nepozeral">
 <!ENTITY firstrun_privacy_subtext "Súkromné prehliadanie s Ochranou pred sledovaním blokuje sledovacie prvky a po ukončení prehliadania si nebude pamätať históriu.">
+<!ENTITY newfirstrun_privacy_subtext "Súkromné prehliadanie blokuje reklamné sledovacie prvky, ktoré sledujú vaše správanie na internete.">
 <!ENTITY firstrun_panel_title_customize "Prispôsobenie">
 <!ENTITY firstrun_customize_message "Prispôsobte si svoj prehliadač &brandShortName;.">
 <!ENTITY firstrun_customize_subtext "Prispôsobte si svoj prehliadač &brandShortName; pomocou doplnkov. Blokujte reklamy, pridajte si doň funkcie alebo si vyberte tému vzhľadu, ktorá korešponduje s vašou osobnosťou.">
@@ -20,19 +23,17 @@
 <!ENTITY firstrun_sync_title "Synchronizácia">
 <!ENTITY firstrun_sync_message2 "Pokračujte tam, kde ste prestali.">
 <!ENTITY firstrun_sync_subtext2 "Nájdite pomocou služby Sync záložky, heslá a ďalšie veci, ktoré ste si uložili do prehliadača &brandShortName; na všetkých svojich zariadeniach.">
+<!ENTITY newfirstrun_sync_subtext "Zosynchronizujte si veci, ktoré si uložíte na mobile s počítačom - bezpečne a s ohľadom na súkromie.">
+<!ENTITY updatednewfirstrun_sync_subtext "Prihláste sa do svojho účtu a vyťažte zo svojej aplikácie &brandShortName; čo najviac">
 <!ENTITY firstrun_signin_message "Pripojte sa a začnite">
 <!ENTITY firstrun_signin_button "Prihlásiť sa k službe Sync">
+<!ENTITY newfirstrun_signin_button "Zapnúť synchronizáciu">
+<!ENTITY updatednewfirstrun_signin_button "Prihlásiť sa do aplikácie &brandShortName;">
 <!ENTITY  onboard_start_button_browser "Začať prehliadať">
 <!ENTITY firstrun_button_notnow "Teraz nie">
 <!ENTITY firstrun_button_next "Ďalej">
 
 <!ENTITY firstrun_tabqueue_title "Odkazy">
-<!-- Localization note (firstrun_tabqueue_message): 'Tab queue' is a feature that allows users to queue up or save links from outside of Firefox (without switching apps) - these links will be loaded in Firefox the next time Firefox is opened. -->
-<!ENTITY firstrun_tabqueue_message_off "Zapnúť frontu kariet">
-<!ENTITY firstrun_tabqueue_subtext_off "Uložte si odkazy v prehliadači &brandShortName; na neskôr, na kliknutie v iných aplikáciách.">
-
-<!ENTITY firstrun_tabqueue_message_on "Úspech!">
-<!ENTITY firstrun_tabqueue_subtext_on "Toto môžete kedykoľvek vypnúť v &settings; v kategórii &pref_category_general;.">
 
 <!ENTITY firstrun_readerview_title "Články">
 <!-- Localization note (firstrun_readerview_message): This is a casual way of describing getting rid of unnecessary things, and is referring to simplifying websites so only the article text and images are visible, removing unnecessary headers or ads. -->
@@ -68,7 +69,27 @@
 <!ENTITY  crash_close_label "Zavrieť">
 <!ENTITY  crash_restart_label "Reštartovať &brandShortName;">
 
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "Aplikácia &brandShortName; zlyhala">
+<!ENTITY  crash_notification_message "Ťuknutím sem nahlásite zlyhanie organizácii &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Ignorovať">
+
 <!ENTITY url_bar_default_text2 "Adresa alebo výraz vyhľadávania">
+
+<!-- Localization note: this text will be displayed in the Search Widget -->
+<!ENTITY search_widget_default_text "Hľadať">
+<!ENTITY search_widget_default_cropped_text "Hľadať">
+<!ENTITY search_widget_logo_description "Vyhľadávanie na webe pomocou &brandShortName;">
+
+<!-- Localization note (url_bar_qrcode_text2) : This text will be
+     heard by non-visual users when the focus is on the QR Code
+     icon in the url bar. -->
+<!ENTITY url_bar_qrcode_text2 "Na vyhľadávanie alebo zadanie adresy použite čítačku QR kódov">
+<!-- Localization note (url_bar_mic_text2) : This text will be
+     heard by non-visual users when the focus is on the Microphone
+     icon in the url bar. -->
+<!ENTITY url_bar_mic_text2 "Na vyhľadávanie alebo zadanie adresy použite mikrofón">
 
 <!ENTITY bookmark "Záložka">
 <!ENTITY bookmark_remove "Odstrániť záložku">
@@ -95,6 +116,10 @@
 <!ENTITY bookmark_folder_updated "Priečinok bol aktualizovaný">
 <!ENTITY bookmark_parent_folder "Nadradený priečinok">
 <!ENTITY bookmark_add_folder "Pridať nový priečinok">
+
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(bez názvu)">
 
 <!ENTITY reader_saved_offline "Uložené offline">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -185,7 +210,7 @@
 <!ENTITY pref_category_privacy_short "Súkromie">
 <!ENTITY pref_category_privacy_summary4 "Sledovanie, prihlasovacie údaje, údaje o používaní">
 <!ENTITY pref_category_vendor2 "&vendorShortName; &brandShortName;">
-<!ENTITY pref_category_vendor_summary2 "O prehliadači &brandShortName;, často kladené otázky, spätná väzba">
+<!ENTITY pref_category_vendor_summary2 "O aplikácii &brandShortName;, často kladené otázky, spätná väzba">
 <!ENTITY pref_category_datareporting "Odosielanie údajov">
 <!ENTITY pref_category_logins "Prihlasovacie údaje">
 <!ENTITY pref_learn_more "Ďalšie informácie">
@@ -206,7 +231,7 @@
      “storing data”. -->
 <!ENTITY pref_category_advanced_summary3 "Obnovenie kariet, šetrenie dát, vývojárske nástroje">
 <!ENTITY pref_category_notifications "Upozornenia">
-<!ENTITY pref_category_notifications_summary "Nové funkcie, aktualizácie webových stránok">
+<!ENTITY pref_category_notifications_summary2 "Nové funkcie, tipy ohľadom produktu">
 <!ENTITY pref_developer_remotedebugging_usb "Vzdialené ladenie cez USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Vzdialené ladenie cez Wi-Fi">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Ladenie cez sieť Wi-Fi vyžaduje, aby vaše zariadenie malo nainštalovanú aplikáciu čítačky kódov QR.">
@@ -288,6 +313,12 @@
 <!-- Localization note (pref_feature_tips_notification_summary): Description of a new toggleable setting in Settings-Notifications screen.
      Similar to the already existing "pref_whats_new_notification_summary"-->
 <!ENTITY pref_feature_tips_notification_summary "Zistite viac o používaní aplikácie &brandShortName; a ďalších produktoch organizácie &vendorShortName;">
+<!-- Localization note (pref_feature_tips_notification_enabling_path):
+     Nothing to translate. Simple concatenation of already localized strings. Result is used below. -->
+<!ENTITY pref_feature_tips_notification_enabling_path "&pref_category_privacy_short; > &pref_category_datareporting; > &datareporting_fhr_title;">
+<!-- Localization note (pref_feature_tips_notification_enabling_hint):
+     Describe the action the user should do to enable this preference. -->
+<!ENTITY pref_feature_tips_notification_enabling_hint2 "(Ak chcete povoliť túto možnosť, predvoľba &pref_feature_tips_notification_enabling_path; musí byť aktivovaná.)">
 
 <!-- Localization note (pref_category_experimental): Title of a sub category in the 'advanced' category
      for experimental features. -->
@@ -327,6 +358,9 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Prejsť do Nastavení">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
+<!ENTITY tab_queue_notification_prompt "Pridávam novú kartu do radu&#8230;">
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -361,7 +395,8 @@
 <!ENTITY pref_use_system_font_size_summary "Upraviť webový obsah v súlade so systémovým nastavením veľkosti písma">
 
 <!ENTITY pref_media_autoplay_enabled "Povoliť automatické prehrávanie">
-<!ENTITY pref_media_autoplay_enabled_summary "Určuje, či webové stránky môžu automaticky prehrávať videá a iné médiá">
+<!ENTITY pref_media_autoplay_allow "Povoliť automatické prehrávanie">
+<!ENTITY pref_media_autoplay_block "Zablokovať automatické prehrávanie">
 <!ENTITY pref_zoom_force_enabled "Vždy povoliť lupu">
 <!ENTITY pref_zoom_force_enabled_summary "Lupu bude možné používať pre akúkoľvek stránku">
 <!ENTITY pref_voice_input "Hlasový vstup">
@@ -384,14 +419,17 @@
 <!ENTITY pref_private_data_searchHistory "História vyhľadávania">
 <!ENTITY pref_private_data_formdata2 "Údaje zadané do formulárov">
 <!ENTITY pref_private_data_cookies2 "Cookies a aktívne prihlásenia">
-<!ENTITY pref_private_data_passwords2 "Uložené prihlasovacie údaje">
 <!ENTITY pref_private_data_cache "Vyrovnávacia pamäť">
 <!ENTITY pref_private_data_offlineApps "Údaje stránok v režime offline">
 <!ENTITY pref_private_data_siteSettings2 "Nastavenia stránok">
 <!ENTITY pref_private_data_downloadFiles2 "Prevzaté súbory">
 <!ENTITY pref_private_data_syncedTabs "Synchronizované karty">
 
-<!ENTITY pref_default_browser "Nastaviť ako predvolený prehliadač">
+<!ENTITY pref_default_browser2 "Nastaviť &brandShortName; ako predvolený prehliadač">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
+<!ENTITY default_browser_system_settings_toast "Ťuknite na „Prehliadač“ a vyberte &brandShortName;">
 <!ENTITY pref_default_browser_mozilla_support_tablet "Navštíviť Podporu Mozilly">
 <!ENTITY pref_about_firefox "O prehliadači &brandShortName;">
 <!ENTITY pref_vendor_faqs "Často kladené otázky">
@@ -437,6 +475,11 @@
 <!ENTITY datareporting_crashreporter_title_short "Správy o zlyhaní">
 <!ENTITY datareporting_wifi_title2 "Služba zisťovania polohy &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Pomôžte spoločnosti &vendorShortName; mapovať svet. Zdieľajte približnú polohu vášho zariadenia na základe údajov zo siete operátora a Wi-Fi s cieľom vylepšiť presnosť služby zisťovania polohy.">
+<!-- Localization note (datareporting_notification_title ) : This will be the title
+     of the notification shown whenever the user has enabled data reporting and the stumbler
+     service is running. -->
+<!ENTITY datareporting_stumbler_notification_title "Služba zisťovania polohy &vendorShortName; Location Service je spustená">
+
 <!-- Localization note (pref_update_autodownload2) : This should mention downloading
      specifically, since the pref only prevents automatic downloads and not the
      actual notification that an update is available. -->
@@ -481,6 +524,10 @@
 <!ENTITY find_prev "Predchádzajúci">
 <!ENTITY find_next "Ďalší">
 <!ENTITY find_close "Zavrieť">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
+<!ENTITY find_error "Hľadaný text sa nenašiel">
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -534,7 +581,7 @@
 <!ENTITY pref_scroll_title_bar2 "Prehliadanie na celú obrazovku">
 <!ENTITY pref_scroll_title_bar_summary2 "Skrýva panel nástrojov prehliadača &brandShortName; počas posúvania stránky">
 
-<!ENTITY pref_tab_queue_title3 "Fronta kariet">
+<!ENTITY pref_tab_queue_title3 "Rad kariet">
 <!ENTITY pref_tab_queue_summary4 "Linky ostanú uložené až pokiaľ znova nespustíte &brandShortName;.">
 
 <!-- Localization note (pref_compact_tabs): Label for setting that controls whether 1 wide column or
@@ -543,7 +590,7 @@
 <!ENTITY pref_compact_tabs_summary2 "Usporiadať karty pri zobrazení na výšku do dvoch stĺpcov">
 
 <!-- Localization note (page_removed): This string appears in a toast message when
-     any page is removed frome about:home. This includes pages that are in history,
+     any page is removed from about:home. This includes pages that are in history,
      bookmarks, or reading list. -->
 <!ENTITY page_removed "Stránka odstránená">
 <!ENTITY folder_removed "Priečinok bol odstránený">
@@ -554,6 +601,8 @@
 <!ENTITY bookmark_edit_location "Umiestnenie">
 <!ENTITY bookmark_edit_keyword "Kľúčové slovo">
 <!ENTITY bookmark_select_folder "Vybrať priečinok">
+
+<!ENTITY bookmark_edit_undo "Späť">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -642,6 +691,8 @@
 <!ENTITY filepicker_audio_title "Vyberte alebo nahrajte zvuk">
 <!ENTITY filepicker_image_title "Vyberte alebo spravte snímku">
 <!ENTITY filepicker_video_title "Vyberte alebo natočte video">
+
+<!ENTITY filepicker_permission_denied "Požadované povolenia nie sú udelené, vraciam sa do výberu súborov.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Pripojené k stránke">
@@ -758,7 +809,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
      "Last synced" is one of the user's other Sync clients, typically Firefox on
      their desktop or laptop.-->
 <!ENTITY remote_tabs_last_synced "Synchronizované: &formatS;">
-<!-- Localization note: Used when the sync has not happend yet, showed in place of a date -->
+<!-- Localization note: Used when the sync has not happened yet, showed in place of a date -->
 <!ENTITY remote_tabs_never_synced "Synchronizované: nikdy">
 
 <!-- LOCALIZATION NOTE (intent_uri_private_browsing_prompt): This string will
@@ -819,15 +870,10 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- LOCALIZATION NOTE(corrupt_apk): This notification is shown if corruption has been detected on startup and the user has to reinstall Firefox -->
 <!ENTITY corrupt_apk "Aplikáciu &brandShortName; sa nepodarilo otvoriť. Preinštalujte ju a skúste to znova.">
 
-<!ENTITY eol_notification_title2 "&brandShortName; nebude viac aktualizovaný">
-<!ENTITY eol_notification_summary "Ťuknutím zistíte ďalšie informácie">
-
 <!-- LOCALIZATION NOTE (whatsnew_notification_title, whatsnew_notification_summary): These strings
      are used for a system notification that's shown to users after the app updates. -->
 <!ENTITY whatsnew_notification_title "Používate najnovšiu verziu prehliadača &brandShortName;">
 <!ENTITY whatsnew_notification_summary "Zistite, čo je nové v tejto verzii">
-
-<!ENTITY promotion_add_page_shortcut "Pridať odkaz na stránku">
 
 <!ENTITY helper_first_offline_bookmark_title "Prečítať offline">
 <!ENTITY helper_first_offline_bookmark_message "Nájdite svoje položky zo Zoznamu na prečítanie medzi Záložkami, aj v režime offline.">
@@ -878,3 +924,25 @@ See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Pridať na úvodnú obrazovku">
 <!ENTITY pwa_continue_to_website "Pokračovať na webovú stránku">
 <!ENTITY pwa_onboarding_sumo "Túto webovú stránku si môžete jednoducho pridať na svoju úvodnú obrazovku a mať tak okamžitý prístup k prehliadaniu.">
+
+<!-- Used by accessibility services to identify the play/pause buttons shown in the
+Picture-in-picture mini window -->
+<!ENTITY pip_play_button_title "Prehrať">
+<!ENTITY pip_play_button_description "Pokračovať v prehrávaní">
+<!ENTITY pip_pause_button_title "Pozastaviť">
+<!ENTITY pip_pause_button_description "Pozastaviť prehrávanie">
+
+<!ENTITY pref_notification_settings_link "Nastavenie upozornení">
+<!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Prehliadač">
+<!ENTITY mls_notification_channel "&vendorShortName; Location Service">
+<!ENTITY download_notification_channel "Prevzaté súbory">
+<!ENTITY media_notification_channel2 "Zvuk a video">
+<!-- These push notifications come without a specific channel and/or name from Leanplum -->
+<!ENTITY leanplum_default_notifications_channel2 "Tipy a triky od spoločnosti &vendorShortName;">
+<!ENTITY updater_notification_channel "Aktualizácie aplikácie">
+<!ENTITY synced_tabs_notification_channel "Synchronizované karty">
+<!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
+web sites through the HTML Notifications API. -->
+<!ENTITY site_notifications_channel "Upozornenia stránok">
+<!ENTITY crash_handler_notifications_channel "Oznamovateľ zlyhania aplikácie &brandShortName;">

@@ -17,17 +17,24 @@
 
 class nsDisplayRangeFocusRing;
 
+namespace mozilla {
+class PresShell;
+namespace dom {
+class Event;
+}  // namespace dom
+}  // namespace mozilla
+
 class nsRangeFrame final : public nsContainerFrame,
                            public nsIAnonymousContentCreator {
-  friend nsIFrame* NS_NewRangeFrame(nsIPresShell* aPresShell,
-                                    nsStyleContext* aContext);
+  friend nsIFrame* NS_NewRangeFrame(mozilla::PresShell* aPresShell,
+                                    ComputedStyle* aStyle);
 
   friend class nsDisplayRangeFocusRing;
 
-  explicit nsRangeFrame(nsStyleContext* aContext);
+  explicit nsRangeFrame(ComputedStyle* aStyle, nsPresContext* aPresContext);
   virtual ~nsRangeFrame();
 
-  typedef mozilla::CSSPseudoElementType CSSPseudoElementType;
+  typedef mozilla::PseudoStyleType PseudoStyleType;
   typedef mozilla::dom::Element Element;
 
  public:
@@ -81,9 +88,9 @@ class nsRangeFrame final : public nsContainerFrame,
         aFlags & ~(nsIFrame::eReplaced | nsIFrame::eReplacedContainsBlock));
   }
 
-  nsStyleContext* GetAdditionalStyleContext(int32_t aIndex) const override;
-  void SetAdditionalStyleContext(int32_t aIndex,
-                                 nsStyleContext* aStyleContext) override;
+  ComputedStyle* GetAdditionalComputedStyle(int32_t aIndex) const override;
+  void SetAdditionalComputedStyle(int32_t aIndex,
+                                  ComputedStyle* aComputedStyle) override;
 
   /**
    * Returns true if the slider's thumb moves horizontally, or else false if it
@@ -136,10 +143,12 @@ class nsRangeFrame final : public nsContainerFrame,
    */
   void UpdateForValueChange();
 
-  virtual Element* GetPseudoElement(CSSPseudoElementType aType) override;
-
  private:
-  nsresult MakeAnonymousDiv(Element** aResult, CSSPseudoElementType aPseudoType,
+  // Return our preferred size in the cross-axis (the axis perpendicular
+  // to the direction of movement of the thumb).
+  nscoord AutoCrossSize(nscoord aEm);
+
+  nsresult MakeAnonymousDiv(Element** aResult, PseudoStyleType aPseudoType,
                             nsTArray<ContentInfo>& aElements);
 
   // Helper function which reflows the anonymous div frames.
@@ -173,9 +182,9 @@ class nsRangeFrame final : public nsContainerFrame,
   nsCOMPtr<Element> mThumbDiv;
 
   /**
-   * Cached style context for -moz-focus-outer CSS pseudo-element style.
+   * Cached ComputedStyle for -moz-focus-outer CSS pseudo-element style.
    */
-  RefPtr<nsStyleContext> mOuterFocusStyle;
+  RefPtr<ComputedStyle> mOuterFocusStyle;
 
   class DummyTouchListener final : public nsIDOMEventListener {
    private:
@@ -184,7 +193,9 @@ class nsRangeFrame final : public nsContainerFrame,
    public:
     NS_DECL_ISUPPORTS
 
-    NS_IMETHOD HandleEvent(nsIDOMEvent* aEvent) override { return NS_OK; }
+    NS_IMETHOD HandleEvent(mozilla::dom::Event* aEvent) override {
+      return NS_OK;
+    }
   };
 
   /**

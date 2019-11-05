@@ -13,8 +13,6 @@
 #include "nsGkAtoms.h"
 #include "nsIURL.h"
 
-class nsIDocument;
-
 namespace mozilla {
 class EventChainPostVisitor;
 class EventChainPreVisitor;
@@ -22,7 +20,8 @@ namespace dom {
 
 class HTMLAreaElement final : public nsGenericHTMLElement, public Link {
  public:
-  explicit HTMLAreaElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit HTMLAreaElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
@@ -33,25 +32,23 @@ class HTMLAreaElement final : public nsGenericHTMLElement, public Link {
 
   NS_DECL_ADDSIZEOFEXCLUDINGTHIS
 
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLAreaElement, area)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLAreaElement, area)
 
   virtual int32_t TabIndexDefault() override;
 
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
-  virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
+  MOZ_CAN_RUN_SCRIPT
+  nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
   virtual bool IsLink(nsIURI** aURI) const override;
   virtual void GetLinkTarget(nsAString& aTarget) override;
   virtual already_AddRefed<nsIURI> GetHrefURI() const override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   virtual EventStates IntrinsicState() const override;
 
@@ -152,7 +149,7 @@ class HTMLAreaElement final : public nsGenericHTMLElement, public Link {
   void ToString(nsAString& aSource);
   void Stringify(nsAString& aResult) { GetHref(aResult); }
 
-  void NodeInfoChanged(nsIDocument* aOldDoc) final {
+  void NodeInfoChanged(Document* aOldDoc) final {
     ClearHasPendingLinkUpdate();
     nsGenericHTMLElement::NodeInfoChanged(aOldDoc);
   }

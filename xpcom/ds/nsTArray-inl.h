@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ifndef nsTArray_h__
-#error "Don't include this file directly"
+#  error "Don't include this file directly"
 #endif
 
 template <class Alloc, class Copy>
@@ -356,8 +356,8 @@ typename ActualAlloc::ResultTypeProxy nsTArray_base<Alloc, Copy>::InsertSlotsAt(
 // that
 //
 //   * array.mIsAutoArray has the same value as it did when we started, and
-//   * if array has an auto buffer and mHdr would otherwise point to sEmptyHdr,
-//     array.mHdr points to array's auto buffer.
+//   * if array has an auto buffer and mHdr would otherwise point to
+//     sEmptyTArrayHeader, array.mHdr points to array's auto buffer.
 
 template <class Alloc, class Copy>
 nsTArray_base<Alloc, Copy>::IsAutoArrayRestorer::IsAutoArrayRestorer(
@@ -366,7 +366,7 @@ nsTArray_base<Alloc, Copy>::IsAutoArrayRestorer::IsAutoArrayRestorer(
 
 template <class Alloc, class Copy>
 nsTArray_base<Alloc, Copy>::IsAutoArrayRestorer::~IsAutoArrayRestorer() {
-  // Careful: We don't want to set mIsAutoArray = 1 on sEmptyHdr.
+  // Careful: We don't want to set mIsAutoArray = 1 on sEmptyTArrayHeader.
   if (mIsAuto && mArray.mHdr == mArray.EmptyHdr()) {
     // Call GetAutoArrayBufferUnsafe() because GetAutoArrayBuffer() asserts
     // that mHdr->mIsAutoArray is true, which surely isn't the case here.
@@ -383,9 +383,9 @@ typename ActualAlloc::ResultTypeProxy
 nsTArray_base<Alloc, Copy>::SwapArrayElements(
     nsTArray_base<Allocator, Copy>& aOther, size_type aElemSize,
     size_t aElemAlign) {
-  // EnsureNotUsingAutoArrayBuffer will set mHdr = sEmptyHdr even if we have an
-  // auto buffer.  We need to point mHdr back to our auto buffer before we
-  // return, otherwise we'll forget that we have an auto buffer at all!
+  // EnsureNotUsingAutoArrayBuffer will set mHdr = sEmptyTArrayHeader even if we
+  // have an auto buffer.  We need to point mHdr back to our auto buffer before
+  // we return, otherwise we'll forget that we have an auto buffer at all!
   // IsAutoArrayRestorer takes care of this for us.
 
   IsAutoArrayRestorer ourAutoRestorer(*this, aElemAlign);
@@ -450,9 +450,9 @@ nsTArray_base<Alloc, Copy>::SwapArrayElements(
   // job for AutoTArray!  (One of the two arrays we're swapping is using an
   // auto buffer, so we're likely not allocating a lot of space here.  But one
   // could, in theory, allocate a huge AutoTArray on the heap.)
-  AutoTArray<nsTArray_Impl<uint8_t, ActualAlloc>, 64> temp;
+  AutoTArray<uint8_t, 64 * sizeof(void*)> temp;
   if (!ActualAlloc::Successful(temp.template EnsureCapacity<ActualAlloc>(
-          smallerLength, aElemSize))) {
+          smallerLength * aElemSize, sizeof(uint8_t)))) {
     return ActualAlloc::FailureResult();
   }
 
@@ -466,7 +466,7 @@ nsTArray_base<Alloc, Copy>::SwapArrayElements(
   // Swap the arrays' lengths.
   MOZ_ASSERT((aOther.Length() == 0 || mHdr != EmptyHdr()) &&
                  (Length() == 0 || aOther.mHdr != EmptyHdr()),
-             "Don't set sEmptyHdr's length.");
+             "Don't set sEmptyTArrayHeader's length.");
   size_type tempLength = Length();
 
   // Avoid writing to EmptyHdr, since it can trigger false
@@ -487,9 +487,9 @@ bool nsTArray_base<Alloc, Copy>::EnsureNotUsingAutoArrayBuffer(
     size_type aElemSize) {
   if (UsesAutoArrayBuffer()) {
     // If you call this on a 0-length array, we'll set that array's mHdr to
-    // sEmptyHdr, in flagrant violation of the AutoTArray invariants.  It's
-    // up to you to set it back!  (If you don't, the AutoTArray will forget
-    // that it has an auto buffer.)
+    // sEmptyTArrayHeader, in flagrant violation of the AutoTArray invariants.
+    // It's up to you to set it back!  (If you don't, the AutoTArray will
+    // forget that it has an auto buffer.)
     if (Length() == 0) {
       mHdr = EmptyHdr();
       return true;

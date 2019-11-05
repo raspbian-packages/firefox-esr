@@ -5,6 +5,7 @@
 #include "nsCRT.h"
 #include "mozilla/EndianUtils.h"
 #include "nsBMPEncoder.h"
+#include "BMPHeaders.h"
 #include "nsPNGEncoder.h"
 #include "nsICOEncoder.h"
 #include "nsString.h"
@@ -18,7 +19,9 @@ NS_IMPL_ISUPPORTS(nsICOEncoder, imgIEncoder, nsIInputStream,
                   nsIAsyncInputStream)
 
 nsICOEncoder::nsICOEncoder()
-    : mImageBufferStart(nullptr),
+    : mICOFileHeader{},
+      mICODirEntry{},
+      mImageBufferStart(nullptr),
       mImageBufferCurr(0),
       mImageBufferSize(0),
       mImageBufferReadPoint(0),

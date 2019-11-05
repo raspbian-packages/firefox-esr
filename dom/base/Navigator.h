@@ -17,14 +17,12 @@
 #include "nsInterfaceHashtable.h"
 #include "nsString.h"
 #include "nsTArray.h"
-#include "nsWeakPtr.h"
 #include "mozilla/dom/MediaKeySystemAccessManager.h"
 
 class nsPluginArray;
 class nsMimeTypeArray;
 class nsPIDOMWindowInner;
 class nsIDOMNavigatorSystemMessages;
-class nsINetworkProperties;
 class nsIPrincipal;
 class nsIURI;
 
@@ -40,6 +38,7 @@ class ArrayBufferOrArrayBufferViewOrBlobOrFormDataOrUSVStringOrURLSearchParams;
 class ServiceWorkerContainer;
 class DOMRequest;
 class CredentialsContainer;
+class Clipboard;
 }  // namespace dom
 }  // namespace mozilla
 
@@ -58,7 +57,6 @@ class BatteryManager;
 
 class Promise;
 
-class MozIdleObserver;
 class Gamepad;
 class GamepadServiceTest;
 class NavigatorUserMediaSuccessCallback;
@@ -76,6 +74,7 @@ class LegacyMozTCPSocket;
 class VRDisplay;
 class VRServiceTest;
 class StorageManager;
+class MediaCapabilities;
 
 class Navigator final : public nsISupports, public nsWrapperCache {
  public:
@@ -113,6 +112,9 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   void GetUserAgent(nsAString& aUserAgent, CallerType aCallerType,
                     ErrorResult& aRv) const;
   bool OnLine();
+  void CheckProtocolHandlerAllowed(const nsAString& aScheme,
+                                   nsIURI* aHandlerURI, nsIURI* aDocumentURI,
+                                   ErrorResult& aRv);
   void RegisterProtocolHandler(const nsAString& aScheme, const nsAString& aURL,
                                const nsAString& aTitle, ErrorResult& aRv);
   void RegisterContentHandler(const nsAString& aMIMEType, const nsAString& aURL,
@@ -124,25 +126,29 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   Geolocation* GetGeolocation(ErrorResult& aRv);
   Promise* GetBattery(ErrorResult& aRv);
 
-  static void AppName(nsAString& aAppName, bool aUsePrefOverriddenValue);
+  static void AppName(nsAString& aAppName, nsIPrincipal* aCallerPrincipal,
+                      bool aUsePrefOverriddenValue);
 
   static nsresult GetPlatform(nsAString& aPlatform,
+                              nsIPrincipal* aCallerPrincipal,
                               bool aUsePrefOverriddenValue);
 
   static nsresult GetAppVersion(nsAString& aAppVersion,
+                                nsIPrincipal* aCallerPrincipal,
                                 bool aUsePrefOverriddenValue);
 
   static nsresult GetUserAgent(nsPIDOMWindowInner* aWindow,
+                               nsIPrincipal* aCallerPrincipal,
                                bool aIsCallerChrome, nsAString& aUserAgent);
 
   // Clears the user agent cache by calling:
-  // NavigatorBinding::ClearCachedUserAgentValue(this);
+  // Navigator_Binding::ClearCachedUserAgentValue(this);
   void ClearUserAgentCache();
 
   bool Vibrate(uint32_t aDuration);
   bool Vibrate(const nsTArray<uint32_t>& aDuration);
   void SetVibrationPermission(bool aPermitted, bool aPersistent);
-  uint32_t MaxTouchPoints();
+  uint32_t MaxTouchPoints(CallerType aCallerType);
   void GetAppCodeName(nsAString& aAppCodeName, ErrorResult& aRv);
   void GetOscpu(nsAString& aOscpu, CallerType aCallerType,
                 ErrorResult& aRv) const;
@@ -152,11 +158,9 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   bool CookieEnabled();
   void GetBuildID(nsAString& aBuildID, CallerType aCallerType,
                   ErrorResult& aRv) const;
-  bool JavaEnabled(CallerType aCallerType, ErrorResult& aRv);
+  bool JavaEnabled() { return false; }
   uint64_t HardwareConcurrency();
   bool TaintEnabled() { return false; }
-  void AddIdleObserver(MozIdleObserver& aObserver, ErrorResult& aRv);
-  void RemoveIdleObserver(MozIdleObserver& aObserver, ErrorResult& aRv);
 
   already_AddRefed<LegacyMozTCPSocket> MozTCPSocket();
   network::Connection* GetConnection(ErrorResult& aRv);
@@ -170,7 +174,6 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   bool IsWebVRContentDetected() const;
   bool IsWebVRContentPresenting() const;
   void RequestVRPresentation(VRDisplay& aDisplay);
-  nsINetworkProperties* GetNetworkProperties();
   already_AddRefed<Promise> RequestMIDIAccess(const MIDIOptions& aOptions,
                                               ErrorResult& aRv);
 
@@ -183,6 +186,7 @@ class Navigator final : public nsISupports, public nsWrapperCache {
                        NavigatorUserMediaSuccessCallback& aOnSuccess,
                        NavigatorUserMediaErrorCallback& aOnError,
                        CallerType aCallerType, ErrorResult& aRv);
+  MOZ_CAN_RUN_SCRIPT
   void MozGetUserMediaDevices(const MediaStreamConstraints& aConstraints,
                               MozGetUserMediaDevicesSuccessCallback& aOnSuccess,
                               NavigatorUserMediaErrorCallback& aOnError,
@@ -192,6 +196,7 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   already_AddRefed<ServiceWorkerContainer> ServiceWorker();
 
   mozilla::dom::CredentialsContainer* Credentials();
+  dom::Clipboard* Clipboard();
 
   static bool Webdriver();
 
@@ -201,9 +206,9 @@ class Navigator final : public nsISupports, public nsWrapperCache {
 
   static void GetAcceptLanguages(nsTArray<nsString>& aLanguages);
 
+  dom::MediaCapabilities* MediaCapabilities();
+
   // WebIDL helper methods
-  static bool HasWakeLockSupport(JSContext* /* unused*/, JSObject* /*unused */);
-  static bool HasWifiManagerSupport(JSContext* /* unused */, JSObject* aGlobal);
   static bool HasUserMediaSupport(JSContext* /* unused */,
                                   JSObject* /* unused */);
 
@@ -231,15 +236,16 @@ class Navigator final : public nsISupports, public nsWrapperCache {
  private:
   virtual ~Navigator();
 
-  bool CheckPermission(const char* type);
-  static bool CheckPermission(nsPIDOMWindowInner* aWindow, const char* aType);
-
   // This enum helps SendBeaconInternal to apply different behaviors to body
   // types.
   enum BeaconType { eBeaconTypeBlob, eBeaconTypeArrayBuffer, eBeaconTypeOther };
 
   bool SendBeaconInternal(const nsAString& aUrl, BodyExtractorBase* aBody,
                           BeaconType aType, ErrorResult& aRv);
+
+  nsIDocShell* GetDocShell() const {
+    return mWindow ? mWindow->GetDocShell() : nullptr;
+  }
 
   RefPtr<nsMimeTypeArray> mMimeTypes;
   RefPtr<nsPluginArray> mPlugins;
@@ -249,6 +255,7 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   RefPtr<Promise> mBatteryPromise;
   RefPtr<network::Connection> mConnection;
   RefPtr<CredentialsContainer> mCredentials;
+  RefPtr<dom::Clipboard> mClipboard;
   RefPtr<MediaDevices> mMediaDevices;
   RefPtr<ServiceWorkerContainer> mServiceWorkerContainer;
   nsCOMPtr<nsPIDOMWindowInner> mWindow;
@@ -258,6 +265,7 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   RefPtr<VRServiceTest> mVRServiceTest;
   nsTArray<uint32_t> mRequestedVibrationPattern;
   RefPtr<StorageManager> mStorageManager;
+  RefPtr<dom::MediaCapabilities> mMediaCapabilities;
 };
 
 }  // namespace dom

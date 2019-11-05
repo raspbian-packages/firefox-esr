@@ -9,10 +9,11 @@
 
 #include "base/revocable_store.h"
 #include "base/tuple.h"
-#include "mozilla/IndexSequence.h"
 #include "mozilla/Tuple.h"
 #include "nsISupportsImpl.h"
 #include "nsThreadUtils.h"
+
+#include <utility>
 
 // Helper functions so that we can call a function a pass it arguments that come
 // from a Tuple.
@@ -23,16 +24,16 @@ namespace details {
 // semantics from the given tuple. If the tuple has length N, the sequence must
 // be IndexSequence<0, 1, ..., N-1>.
 template <size_t... Indices, class ObjT, class Method, typename... Args>
-void CallMethod(mozilla::IndexSequence<Indices...>, ObjT* obj, Method method,
+void CallMethod(std::index_sequence<Indices...>, ObjT* obj, Method method,
                 mozilla::Tuple<Args...>& arg) {
-  (obj->*method)(mozilla::Move(mozilla::Get<Indices>(arg))...);
+  (obj->*method)(std::move(mozilla::Get<Indices>(arg))...);
 }
 
 // Same as above, but call a function.
 template <size_t... Indices, typename Function, typename... Args>
-void CallFunction(mozilla::IndexSequence<Indices...>, Function function,
+void CallFunction(std::index_sequence<Indices...>, Function function,
                   mozilla::Tuple<Args...>& arg) {
-  (*function)(mozilla::Move(mozilla::Get<Indices>(arg))...);
+  (*function)(std::move(mozilla::Get<Indices>(arg))...);
 }
 
 }  // namespace details
@@ -42,15 +43,13 @@ void CallFunction(mozilla::IndexSequence<Indices...>, Function function,
 template <class ObjT, class Method, typename... Args>
 void DispatchTupleToMethod(ObjT* obj, Method method,
                            mozilla::Tuple<Args...>& arg) {
-  details::CallMethod(typename mozilla::IndexSequenceFor<Args...>::Type(), obj,
-                      method, arg);
+  details::CallMethod(std::index_sequence_for<Args...>{}, obj, method, arg);
 }
 
 // Same as above, but call a function.
 template <typename Function, typename... Args>
 void DispatchTupleToFunction(Function function, mozilla::Tuple<Args...>& arg) {
-  details::CallFunction(typename mozilla::IndexSequenceFor<Args...>::Type(),
-                        function, arg);
+  details::CallFunction(std::index_sequence_for<Args...>{}, function, arg);
 }
 
 // Scoped Factories ------------------------------------------------------------
@@ -145,7 +144,7 @@ class ScopedRunnableMethodFactory : public RevocableStore {
 
     RefPtr<TaskWrapper> task = new TaskWrapper(this);
     task->Init(object_, method,
-               mozilla::MakeTuple(mozilla::Forward<Elements>(elements)...));
+               mozilla::MakeTuple(std::forward<Elements>(elements)...));
     return task.forget();
   }
 
@@ -159,7 +158,7 @@ class ScopedRunnableMethodFactory : public RevocableStore {
     void Init(T* obj, Method meth, Params&& params) {
       obj_ = obj;
       meth_ = meth;
-      params_ = mozilla::Forward<Params>(params);
+      params_ = std::forward<Params>(params);
     }
 
     NS_IMETHOD Run() override {
@@ -264,7 +263,7 @@ class RunnableMethod : public mozilla::CancelableRunnable,
       : mozilla::CancelableRunnable("RunnableMethod"),
         obj_(obj),
         meth_(meth),
-        params_(mozilla::Forward<Params>(params)) {
+        params_(std::forward<Params>(params)) {
     this->RetainCallee(obj_);
   }
   ~RunnableMethod() { ReleaseCallee(); }
@@ -303,7 +302,7 @@ inline already_AddRefed<mozilla::Runnable> NewRunnableMethod(T* object,
                                                              Args&&... args) {
   typedef mozilla::Tuple<typename mozilla::Decay<Args>::Type...> ArgsTuple;
   RefPtr<mozilla::Runnable> t = new RunnableMethod<T, Method, ArgsTuple>(
-      object, method, mozilla::MakeTuple(mozilla::Forward<Args>(args)...));
+      object, method, mozilla::MakeTuple(std::forward<Args>(args)...));
   return t.forget();
 }
 
@@ -317,7 +316,7 @@ class RunnableFunction : public mozilla::CancelableRunnable {
   RunnableFunction(const char* name, Function function, Params&& params)
       : mozilla::CancelableRunnable(name),
         function_(function),
-        params_(mozilla::Forward<Params>(params)) {}
+        params_(std::forward<Params>(params)) {}
 
   ~RunnableFunction() {}
 
@@ -342,7 +341,7 @@ NewCancelableRunnableFunction(const char* name, Function function,
   typedef mozilla::Tuple<typename mozilla::Decay<Args>::Type...> ArgsTuple;
   RefPtr<mozilla::CancelableRunnable> t =
       new RunnableFunction<Function, ArgsTuple>(
-          name, function, mozilla::MakeTuple(mozilla::Forward<Args>(args)...));
+          name, function, mozilla::MakeTuple(std::forward<Args>(args)...));
   return t.forget();
 }
 
@@ -351,7 +350,7 @@ inline already_AddRefed<mozilla::Runnable> NewRunnableFunction(
     const char* name, Function function, Args&&... args) {
   typedef mozilla::Tuple<typename mozilla::Decay<Args>::Type...> ArgsTuple;
   RefPtr<mozilla::Runnable> t = new RunnableFunction<Function, ArgsTuple>(
-      name, function, mozilla::MakeTuple(mozilla::Forward<Args>(args)...));
+      name, function, mozilla::MakeTuple(std::forward<Args>(args)...));
   return t.forget();
 }
 

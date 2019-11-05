@@ -38,7 +38,7 @@ StorageEvent* StorageEvent::AsStorageEvent() { return this; }
 
 JSObject* StorageEvent::WrapObjectInternal(JSContext* aCx,
                                            JS::Handle<JSObject*> aGivenProto) {
-  return StorageEventBinding::Wrap(aCx, this, aGivenProto);
+  return StorageEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 already_AddRefed<StorageEvent> StorageEvent::Constructor(

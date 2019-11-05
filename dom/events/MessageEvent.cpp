@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/dom/MessageEvent.h"
+#include "mozilla/dom/BrowsingContext.h"
 #include "mozilla/dom/MessageEventBinding.h"
 #include "mozilla/dom/MessagePort.h"
 #include "mozilla/dom/MessagePortBinding.h"
@@ -12,7 +13,6 @@
 
 #include "mozilla/HoldDropJSObjects.h"
 #include "jsapi.h"
-#include "nsGlobalWindow.h"  // So we can assign an nsGlobalWindow* to mWindowSource
 
 namespace mozilla {
 namespace dom {
@@ -55,7 +55,7 @@ MessageEvent::~MessageEvent() {
 
 JSObject* MessageEvent::WrapObjectInternal(JSContext* aCx,
                                            JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::MessageEventBinding::Wrap(aCx, this, aGivenProto);
+  return mozilla::dom::MessageEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void MessageEvent::GetData(JSContext* aCx, JS::MutableHandle<JS::Value> aData,
@@ -83,14 +83,16 @@ void MessageEvent::GetSource(
   }
 }
 
-/* static */ already_AddRefed<MessageEvent> MessageEvent::Constructor(
+/* static */
+already_AddRefed<MessageEvent> MessageEvent::Constructor(
     const GlobalObject& aGlobal, const nsAString& aType,
     const MessageEventInit& aParam, ErrorResult& aRv) {
   nsCOMPtr<EventTarget> t = do_QueryInterface(aGlobal.GetAsSupports());
   return Constructor(t, aType, aParam);
 }
 
-/* static */ already_AddRefed<MessageEvent> MessageEvent::Constructor(
+/* static */
+already_AddRefed<MessageEvent> MessageEvent::Constructor(
     EventTarget* aEventTarget, const nsAString& aType,
     const MessageEventInit& aParam) {
   RefPtr<MessageEvent> event = new MessageEvent(aEventTarget, nullptr, nullptr);
@@ -108,7 +110,7 @@ void MessageEvent::GetSource(
 
   if (!aParam.mSource.IsNull()) {
     if (aParam.mSource.Value().IsWindowProxy()) {
-      event->mWindowSource = aParam.mSource.Value().GetAsWindowProxy();
+      event->mWindowSource = aParam.mSource.Value().GetAsWindowProxy().get();
     } else if (aParam.mSource.Value().IsMessagePort()) {
       event->mPortSource = aParam.mSource.Value().GetAsMessagePort();
     } else {
@@ -125,9 +127,9 @@ void MessageEvent::GetSource(
 }
 
 void MessageEvent::InitMessageEvent(
-    JSContext* aCx, const nsAString& aType, bool aCanBubble, bool aCancelable,
-    JS::Handle<JS::Value> aData, const nsAString& aOrigin,
-    const nsAString& aLastEventId,
+    JSContext* aCx, const nsAString& aType, mozilla::CanBubble aCanBubble,
+    mozilla::Cancelable aCancelable, JS::Handle<JS::Value> aData,
+    const nsAString& aOrigin, const nsAString& aLastEventId,
     const Nullable<WindowProxyOrMessagePortOrServiceWorker>& aSource,
     const Sequence<OwningNonNull<MessagePort>>& aPorts) {
   NS_ENSURE_TRUE_VOID(!mEvent->mFlags.mIsBeingDispatched);
@@ -144,7 +146,7 @@ void MessageEvent::InitMessageEvent(
 
   if (!aSource.IsNull()) {
     if (aSource.Value().IsWindowProxy()) {
-      mWindowSource = aSource.Value().GetAsWindowProxy();
+      mWindowSource = aSource.Value().GetAsWindowProxy().get();
     } else if (aSource.Value().IsMessagePort()) {
       mPortSource = &aSource.Value().GetAsMessagePort();
     } else {
@@ -154,7 +156,7 @@ void MessageEvent::InitMessageEvent(
 
   mPorts.Clear();
   mPorts.AppendElements(aPorts);
-  MessageEventBinding::ClearCachedPortsValue(this);
+  MessageEvent_Binding::ClearCachedPortsValue(this);
 }
 
 void MessageEvent::GetPorts(nsTArray<RefPtr<MessagePort>>& aPorts) {

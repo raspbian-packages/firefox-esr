@@ -16,8 +16,8 @@
 #include "DataSurfaceHelpers.h"
 #include "Tools.h"
 
-#ifdef BUILD_ARM_NEON
-#include "mozilla/arm.h"
+#ifdef USE_NEON
+#  include "mozilla/arm.h"
 #endif
 
 using namespace std;
@@ -466,11 +466,12 @@ CheckedInt<int32_t> AlphaBoxBlur::RoundUpToMultipleOf4(int32_t aVal) {
 AlphaBoxBlur::AlphaBoxBlur(const Rect& aRect, const IntSize& aSpreadRadius,
                            const IntSize& aBlurRadius, const Rect* aDirtyRect,
                            const Rect* aSkipRect)
-    : mSurfaceAllocationSize(0) {
+    : mStride(0), mSurfaceAllocationSize(0) {
   Init(aRect, aSpreadRadius, aBlurRadius, aDirtyRect, aSkipRect);
 }
 
-AlphaBoxBlur::AlphaBoxBlur() : mSurfaceAllocationSize(0) {}
+AlphaBoxBlur::AlphaBoxBlur()
+    : mStride(0), mSurfaceAllocationSize(0), mHasDirtyRect(false) {}
 
 void AlphaBoxBlur::Init(const Rect& aRect, const IntSize& aSpreadRadius,
                         const IntSize& aBlurRadius, const Rect* aDirtyRect,
@@ -533,7 +534,8 @@ AlphaBoxBlur::AlphaBoxBlur(const Rect& aRect, int32_t aStride, float aSigmaX,
       mSpreadRadius(),
       mBlurRadius(CalculateBlurRadius(Point(aSigmaX, aSigmaY))),
       mStride(aStride),
-      mSurfaceAllocationSize(0) {
+      mSurfaceAllocationSize(0),
+      mHasDirtyRect(false) {
   IntRect intRect;
   if (aRect.ToIntRect(&intRect)) {
     size_t minDataSize =
@@ -658,7 +660,7 @@ void AlphaBoxBlur::Blur(uint8_t* aData) const {
                      integralImageStride);
       } else
 #endif
-#ifdef BUILD_ARM_NEON
+#ifdef USE_NEON
           if (mozilla::supports_neon()) {
         BoxBlur_NEON(aData, horizontalLobes[0][0], horizontalLobes[0][1],
                      verticalLobes[0][0], verticalLobes[0][1], integralImage,

@@ -14,6 +14,7 @@
 #include "gfxUtils.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/Helpers.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/SVGContextPaint.h"
 #include "nsDisplayList.h"
@@ -37,9 +38,9 @@ using namespace mozilla::image;
 //----------------------------------------------------------------------
 // Implementation
 
-nsIFrame* NS_NewSVGGeometryFrame(nsIPresShell* aPresShell,
-                                 nsStyleContext* aContext) {
-  return new (aPresShell) SVGGeometryFrame(aContext);
+nsIFrame* NS_NewSVGGeometryFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      SVGGeometryFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(SVGGeometryFrame)
@@ -48,19 +49,19 @@ NS_IMPL_FRAMEARENA_HELPERS(SVGGeometryFrame)
 // nsQueryFrame methods
 
 NS_QUERYFRAME_HEAD(SVGGeometryFrame)
-NS_QUERYFRAME_ENTRY(nsSVGDisplayableFrame)
-NS_QUERYFRAME_ENTRY(SVGGeometryFrame)
+  NS_QUERYFRAME_ENTRY(nsSVGDisplayableFrame)
+  NS_QUERYFRAME_ENTRY(SVGGeometryFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsFrame)
 
 //----------------------------------------------------------------------
 // Display list item:
 
-class nsDisplaySVGGeometry : public nsDisplayItem {
+class nsDisplaySVGGeometry final : public nsPaintedDisplayItem {
   typedef mozilla::image::imgDrawingParams imgDrawingParams;
 
  public:
   nsDisplaySVGGeometry(nsDisplayListBuilder* aBuilder, SVGGeometryFrame* aFrame)
-      : nsDisplayItem(aBuilder, aFrame) {
+      : nsPaintedDisplayItem(aBuilder, aFrame) {
     MOZ_COUNT_CTOR(nsDisplaySVGGeometry);
     MOZ_ASSERT(aFrame, "Must have a frame!");
   }
@@ -95,7 +96,7 @@ void nsDisplaySVGGeometry::HitTest(nsDisplayListBuilder* aBuilder,
                                   (ToReferenceFrame() - frame->GetPosition());
   gfxPoint userSpacePt =
       gfxPoint(userSpacePtInAppUnits.x, userSpacePtInAppUnits.y) /
-      frame->PresContext()->AppUnitsPerCSSPixel();
+      AppUnitsPerCSSPixel();
   if (frame->GetFrameForPoint(userSpacePt)) {
     aOutFrames->AppendElement(frame);
   }
@@ -115,10 +116,7 @@ void nsDisplaySVGGeometry::Paint(nsDisplayListBuilder* aBuilder,
 
   gfxMatrix tm = nsSVGUtils::GetCSSPxToDevPxMatrix(mFrame) *
                  gfxMatrix::Translation(devPixelOffset);
-  imgDrawingParams imgParams(aBuilder->ShouldSyncDecodeImages()
-                                 ? imgIContainer::FLAG_SYNC_DECODE
-                                 : imgIContainer::FLAG_SYNC_DECODE_IF_FAST);
-
+  imgDrawingParams imgParams(aBuilder->GetImageDecodeFlags());
   static_cast<SVGGeometryFrame*>(mFrame)->PaintSVG(*aCtx, tm, imgParams);
 
   nsDisplayItemGenericImageGeometry::UpdateDrawResult(this, imgParams.result);
@@ -136,7 +134,8 @@ void nsDisplaySVGGeometry::ComputeInvalidationRegion(
     aInvalidRegion->Or(*aInvalidRegion, GetBounds(aBuilder, &snap));
   }
 
-  nsDisplayItem::ComputeInvalidationRegion(aBuilder, aGeometry, aInvalidRegion);
+  nsPaintedDisplayItem::ComputeInvalidationRegion(aBuilder, aGeometry,
+                                                  aInvalidRegion);
 }
 
 namespace mozilla {
@@ -161,23 +160,23 @@ nsresult SVGGeometryFrame::AttributeChanged(int32_t aNameSpaceID,
   if (aNameSpaceID == kNameSpaceID_None &&
       (static_cast<SVGGeometryElement*>(GetContent())
            ->AttributeDefinesGeometry(aAttribute))) {
-    nsLayoutUtils::PostRestyleEvent(mContent->AsElement(), nsRestyleHint(0),
+    nsLayoutUtils::PostRestyleEvent(mContent->AsElement(), RestyleHint{0},
                                     nsChangeHint_InvalidateRenderingObservers);
     nsSVGUtils::ScheduleReflowSVG(this);
   }
   return NS_OK;
 }
 
-/* virtual */ void SVGGeometryFrame::DidSetStyleContext(
-    nsStyleContext* aOldStyleContext) {
-  nsFrame::DidSetStyleContext(aOldStyleContext);
+/* virtual */
+void SVGGeometryFrame::DidSetComputedStyle(ComputedStyle* aOldComputedStyle) {
+  nsFrame::DidSetComputedStyle(aOldComputedStyle);
 
-  if (aOldStyleContext) {
+  if (aOldComputedStyle) {
     SVGGeometryElement* element =
         static_cast<SVGGeometryElement*>(GetContent());
 
-    auto oldStyleSVG = aOldStyleContext->PeekStyleSVG();
-    if (oldStyleSVG && !SVGContentUtils::ShapeTypeHasNoCorners(GetContent())) {
+    auto* oldStyleSVG = aOldComputedStyle->StyleSVG();
+    if (!SVGContentUtils::ShapeTypeHasNoCorners(GetContent())) {
       if (StyleSVG()->mStrokeLinecap != oldStyleSVG->mStrokeLinecap &&
           element->IsSVGElement(nsGkAtoms::path)) {
         // If the stroke-linecap changes to or from "butt" then our element
@@ -214,9 +213,8 @@ bool SVGGeometryFrame::IsSVGTransformed(
             aFromParentTransform);
   }
 
-  nsSVGElement* content = static_cast<nsSVGElement*>(GetContent());
-  nsSVGAnimatedTransformList* transformList =
-      content->GetAnimatedTransformList();
+  SVGElement* content = static_cast<SVGElement*>(GetContent());
+  SVGAnimatedTransformList* transformList = content->GetAnimatedTransformList();
   if ((transformList && transformList->HasTransform()) ||
       content->GetAnimateMotionTransform()) {
     if (aOwnTransform) {
@@ -230,13 +228,13 @@ bool SVGGeometryFrame::IsSVGTransformed(
 
 void SVGGeometryFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
                                         const nsDisplayListSet& aLists) {
-  if (!static_cast<const nsSVGElement*>(GetContent())->HasValidDimensions() ||
-      (!IsVisibleForPainting(aBuilder) && aBuilder->IsForPainting())) {
+  if (!static_cast<const SVGElement*>(GetContent())->HasValidDimensions() ||
+      ((!IsVisibleForPainting() || StyleEffects()->mOpacity == 0.0f) &&
+       aBuilder->IsForPainting())) {
     return;
   }
   DisplayOutline(aBuilder, aLists);
-  aLists.Content()->AppendToTop(
-      MakeDisplayItem<nsDisplaySVGGeometry>(aBuilder, this));
+  aLists.Content()->AppendNewToTop<nsDisplaySVGGeometry>(aBuilder, this);
 }
 
 //----------------------------------------------------------------------
@@ -246,7 +244,9 @@ void SVGGeometryFrame::PaintSVG(gfxContext& aContext,
                                 const gfxMatrix& aTransform,
                                 imgDrawingParams& aImgParams,
                                 const nsIntRect* aDirtyRect) {
-  if (!StyleVisibility()->IsVisible()) return;
+  if (!StyleVisibility()->IsVisible()) {
+    return;
+  }
 
   // Matrix to the geometry's user space:
   gfxMatrix newMatrix =
@@ -292,8 +292,7 @@ nsIFrame* SVGGeometryFrame::GetFrameForPoint(const gfxPoint& aPoint) {
       return nullptr;
     }
     if (hitTestFlags & SVG_HIT_TEST_CHECK_MRECT) {
-      gfxRect rect = nsLayoutUtils::RectToGfxRect(
-          mRect, PresContext()->AppUnitsPerCSSPixel());
+      gfxRect rect = nsLayoutUtils::RectToGfxRect(mRect, AppUnitsPerCSSPixel());
       if (!rect.Contains(aPoint)) {
         return nullptr;
       }
@@ -321,8 +320,7 @@ nsIFrame* SVGGeometryFrame::GetFrameForPoint(const gfxPoint& aPoint) {
   if (!isHit && (hitTestFlags & SVG_HIT_TEST_STROKE)) {
     Point point = ToPoint(aPoint);
     SVGContentUtils::AutoStrokeOptions stroke;
-    SVGContentUtils::GetStrokeOptions(&stroke, content, StyleContext(),
-                                      nullptr);
+    SVGContentUtils::GetStrokeOptions(&stroke, content, Style(), nullptr);
     gfxMatrix userToOuterSVG;
     if (nsSVGUtils::GetNonScalingStrokeTransform(this, &userToOuterSVG)) {
       // We need to transform the path back into the appropriate ancestor
@@ -337,7 +335,9 @@ nsIFrame* SVGGeometryFrame::GetFrameForPoint(const gfxPoint& aPoint) {
     isHit = path->StrokeContainsPoint(stroke, point, Matrix());
   }
 
-  if (isHit && nsSVGUtils::HitTestClip(this, aPoint)) return this;
+  if (isHit && nsSVGUtils::HitTestClip(this, aPoint)) {
+    return this;
+  }
 
   return nullptr;
 }
@@ -370,8 +370,7 @@ void SVGGeometryFrame::ReflowSVG() {
   }
 
   gfxRect extent = GetBBoxContribution(Matrix(), flags).ToThebesRect();
-  mRect = nsLayoutUtils::RoundGfxRectToAppRect(
-      extent, PresContext()->AppUnitsPerCSSPixel());
+  mRect = nsLayoutUtils::RoundGfxRectToAppRect(extent, AppUnitsPerCSSPixel());
 
   if (mState & NS_FRAME_FIRST_REFLOW) {
     // Make sure we have our filter property (if any) before calling
@@ -443,7 +442,7 @@ SVGBBox SVGGeometryFrame::GetBBoxContribution(const Matrix& aToBBoxUserspace,
 
   if ((aFlags & nsSVGUtils::eForGetClientRects) &&
       aToBBoxUserspace.PreservesAxisAlignedRectangles()) {
-    Rect rect = NSRectToRect(mRect, PresContext()->AppUnitsPerCSSPixel());
+    Rect rect = NSRectToRect(mRect, AppUnitsPerCSSPixel());
     bbox = aToBBoxUserspace.TransformBounds(rect);
     return bbox;
   }
@@ -460,8 +459,7 @@ SVGBBox SVGGeometryFrame::GetBBoxContribution(const Matrix& aToBBoxUserspace,
 
   SVGContentUtils::AutoStrokeOptions strokeOptions;
   if (getStroke) {
-    SVGContentUtils::GetStrokeOptions(&strokeOptions, element, StyleContext(),
-                                      nullptr,
+    SVGContentUtils::GetStrokeOptions(&strokeOptions, element, Style(), nullptr,
                                       SVGContentUtils::eIgnoreStrokeDashing);
   } else {
     // Override the default line width of 1.f so that when we call
@@ -567,7 +565,7 @@ SVGBBox SVGGeometryFrame::GetBBoxContribution(const Matrix& aToBBoxUserspace,
       // into aToBBoxUserspace and then scales the bounds that we return.
       SVGContentUtils::AutoStrokeOptions strokeOptions;
       SVGContentUtils::GetStrokeOptions(&strokeOptions, element,
-                                        StyleContext(), nullptr,
+                                        Style(), nullptr,
                                         SVGContentUtils::eIgnoreStrokeDashing);
       Rect strokeBBoxExtents;
       gfxMatrix userToOuterSVG;
@@ -599,32 +597,22 @@ SVGBBox SVGGeometryFrame::GetBBoxContribution(const Matrix& aToBBoxUserspace,
 
   // Account for markers:
   if ((aFlags & nsSVGUtils::eBBoxIncludeMarkers) != 0 &&
-      static_cast<SVGGeometryElement*>(GetContent())->IsMarkable()) {
-    float strokeWidth = nsSVGUtils::GetStrokeWidth(this);
-    MarkerProperties properties = GetMarkerProperties(this);
-
-    if (properties.MarkersExist()) {
-      nsTArray<nsSVGMark> marks;
-      static_cast<SVGGeometryElement*>(GetContent())->GetMarkPoints(&marks);
-      uint32_t num = marks.Length();
-
-      // These are in the same order as the nsSVGMark::Type constants.
-      nsSVGMarkerFrame* markerFrames[] = {
-          properties.GetMarkerStartFrame(),
-          properties.GetMarkerMidFrame(),
-          properties.GetMarkerEndFrame(),
-      };
-      static_assert(MOZ_ARRAY_LENGTH(markerFrames) == nsSVGMark::eTypeCount,
-                    "Number of Marker frames should be equal to eTypeCount");
-
-      for (uint32_t i = 0; i < num; i++) {
-        const nsSVGMark& mark = marks[i];
-        nsSVGMarkerFrame* frame = markerFrames[mark.type];
-        if (frame) {
-          SVGBBox mbbox = frame->GetMarkBBoxContribution(
-              aToBBoxUserspace, aFlags, this, mark, strokeWidth);
-          MOZ_ASSERT(mbbox.IsFinite(), "bbox is about to go bad");
-          bbox.UnionEdges(mbbox);
+      element->IsMarkable()) {
+    nsSVGMarkerFrame* markerFrames[SVGMark::eTypeCount];
+    if (SVGObserverUtils::GetAndObserveMarkers(this, &markerFrames)) {
+      nsTArray<SVGMark> marks;
+      element->GetMarkPoints(&marks);
+      if (uint32_t num = marks.Length()) {
+        float strokeWidth = nsSVGUtils::GetStrokeWidth(this);
+        for (uint32_t i = 0; i < num; i++) {
+          const SVGMark& mark = marks[i];
+          nsSVGMarkerFrame* frame = markerFrames[mark.type];
+          if (frame) {
+            SVGBBox mbbox = frame->GetMarkBBoxContribution(
+                aToBBoxUserspace, aFlags, this, mark, strokeWidth);
+            MOZ_ASSERT(mbbox.IsFinite(), "bbox is about to go bad");
+            bbox.UnionEdges(mbbox);
+          }
         }
       }
     }
@@ -645,51 +633,17 @@ gfxMatrix SVGGeometryFrame::GetCanvasTM() {
   return content->PrependLocalTransformsTo(parent->GetCanvasTM());
 }
 
-SVGGeometryFrame::MarkerProperties SVGGeometryFrame::GetMarkerProperties(
-    SVGGeometryFrame* aFrame) {
-  NS_ASSERTION(!aFrame->GetPrevContinuation(),
-               "aFrame should be first continuation");
-
-  MarkerProperties result;
-  nsCOMPtr<nsIURI> markerURL =
-      SVGObserverUtils::GetMarkerURI(aFrame, &nsStyleSVG::mMarkerStart);
-  result.mMarkerStart = SVGObserverUtils::GetMarkerProperty(
-      markerURL, aFrame, SVGObserverUtils::MarkerBeginProperty());
-
-  markerURL = SVGObserverUtils::GetMarkerURI(aFrame, &nsStyleSVG::mMarkerMid);
-  result.mMarkerMid = SVGObserverUtils::GetMarkerProperty(
-      markerURL, aFrame, SVGObserverUtils::MarkerMiddleProperty());
-
-  markerURL = SVGObserverUtils::GetMarkerURI(aFrame, &nsStyleSVG::mMarkerEnd);
-  result.mMarkerEnd = SVGObserverUtils::GetMarkerProperty(
-      markerURL, aFrame, SVGObserverUtils::MarkerEndProperty());
-  return result;
-}
-
-nsSVGMarkerFrame* SVGGeometryFrame::MarkerProperties::GetMarkerStartFrame() {
-  if (!mMarkerStart) return nullptr;
-  return static_cast<nsSVGMarkerFrame*>(
-      mMarkerStart->GetReferencedFrame(LayoutFrameType::SVGMarker, nullptr));
-}
-
-nsSVGMarkerFrame* SVGGeometryFrame::MarkerProperties::GetMarkerMidFrame() {
-  if (!mMarkerMid) return nullptr;
-  return static_cast<nsSVGMarkerFrame*>(
-      mMarkerMid->GetReferencedFrame(LayoutFrameType::SVGMarker, nullptr));
-}
-
-nsSVGMarkerFrame* SVGGeometryFrame::MarkerProperties::GetMarkerEndFrame() {
-  if (!mMarkerEnd) return nullptr;
-  return static_cast<nsSVGMarkerFrame*>(
-      mMarkerEnd->GetReferencedFrame(LayoutFrameType::SVGMarker, nullptr));
-}
-
 void SVGGeometryFrame::Render(gfxContext* aContext, uint32_t aRenderComponents,
-                              const gfxMatrix& aNewTransform,
+                              const gfxMatrix& aTransform,
                               imgDrawingParams& aImgParams) {
-  MOZ_ASSERT(!aNewTransform.IsSingular());
+  MOZ_ASSERT(!aTransform.IsSingular());
 
   DrawTarget* drawTarget = aContext->GetDrawTarget();
+
+  MOZ_ASSERT(drawTarget);
+  if (!drawTarget->IsValid()) {
+    return;
+  }
 
   FillRule fillRule = nsSVGUtils::ToFillRule(
       (GetStateBits() & NS_STATE_SVG_CLIPPATH_CHILD) ? StyleSVG()->mClipRule
@@ -707,7 +661,7 @@ void SVGGeometryFrame::Render(gfxContext* aContext, uint32_t aRenderComponents,
   // set it unnecessarily if we return early (it's an expensive operation for
   // some backends).
   gfxContextMatrixAutoSaveRestore autoRestoreTransform(aContext);
-  aContext->SetMatrixDouble(aNewTransform);
+  aContext->SetMatrixDouble(aTransform);
 
   if (GetStateBits() & NS_STATE_SVG_CLIPPATH_CHILD) {
     // We don't complicate this code with GetAsSimplePath since the cost of
@@ -780,9 +734,9 @@ void SVGGeometryFrame::Render(gfxContext* aContext, uint32_t aRenderComponents,
 
     if (strokePattern.GetPattern()) {
       SVGContentUtils::AutoStrokeOptions strokeOptions;
-      SVGContentUtils::GetStrokeOptions(
-          &strokeOptions, static_cast<nsSVGElement*>(GetContent()),
-          StyleContext(), contextPaint);
+      SVGContentUtils::GetStrokeOptions(&strokeOptions,
+                                        static_cast<SVGElement*>(GetContent()),
+                                        Style(), contextPaint);
       // GetStrokeOptions may set the line width to zero as an optimization
       if (strokeOptions.mLineWidth <= 0) {
         return;
@@ -804,30 +758,19 @@ void SVGGeometryFrame::Render(gfxContext* aContext, uint32_t aRenderComponents,
 void SVGGeometryFrame::PaintMarkers(gfxContext& aContext,
                                     const gfxMatrix& aTransform,
                                     imgDrawingParams& aImgParams) {
-  SVGContextPaint* contextPaint =
-      SVGContextPaint::GetContextPaint(GetContent());
-  if (static_cast<SVGGeometryElement*>(GetContent())->IsMarkable()) {
-    MarkerProperties properties = GetMarkerProperties(this);
+  auto element = static_cast<SVGGeometryElement*>(GetContent());
 
-    if (properties.MarkersExist()) {
-      float strokeWidth = nsSVGUtils::GetStrokeWidth(this, contextPaint);
-
-      nsTArray<nsSVGMark> marks;
-      static_cast<SVGGeometryElement*>(GetContent())->GetMarkPoints(&marks);
-
-      uint32_t num = marks.Length();
-      if (num) {
-        // These are in the same order as the nsSVGMark::Type constants.
-        nsSVGMarkerFrame* markerFrames[] = {
-            properties.GetMarkerStartFrame(),
-            properties.GetMarkerMidFrame(),
-            properties.GetMarkerEndFrame(),
-        };
-        static_assert(MOZ_ARRAY_LENGTH(markerFrames) == nsSVGMark::eTypeCount,
-                      "Number of Marker frames should be equal to eTypeCount");
-
+  if (element->IsMarkable()) {
+    nsSVGMarkerFrame* markerFrames[SVGMark::eTypeCount];
+    if (SVGObserverUtils::GetAndObserveMarkers(this, &markerFrames)) {
+      nsTArray<SVGMark> marks;
+      element->GetMarkPoints(&marks);
+      if (uint32_t num = marks.Length()) {
+        SVGContextPaint* contextPaint =
+            SVGContextPaint::GetContextPaint(GetContent());
+        float strokeWidth = nsSVGUtils::GetStrokeWidth(this, contextPaint);
         for (uint32_t i = 0; i < num; i++) {
-          const nsSVGMark& mark = marks[i];
+          const SVGMark& mark = marks[i];
           nsSVGMarkerFrame* frame = markerFrames[mark.type];
           if (frame) {
             frame->PaintMark(aContext, aTransform, this, mark, strokeWidth,

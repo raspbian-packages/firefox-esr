@@ -45,6 +45,43 @@ static gboolean grabFocusCB(AtkComponent* aComponent) {
 
   return FALSE;
 }
+
+// ScrollType is compatible
+MOZ_CAN_RUN_SCRIPT_BOUNDARY
+static gboolean scrollToCB(AtkComponent* aComponent, AtkScrollType type) {
+  AtkObject* atkObject = ATK_OBJECT(aComponent);
+  if (RefPtr<AccessibleWrap> accWrap = GetAccessibleWrap(atkObject)) {
+    accWrap->ScrollTo(type);
+    return TRUE;
+  }
+
+  ProxyAccessible* proxy = GetProxy(atkObject);
+  if (proxy) {
+    proxy->ScrollTo(type);
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+// CoordType is compatible
+static gboolean scrollToPointCB(AtkComponent* aComponent, AtkCoordType coords,
+                                gint x, gint y) {
+  AtkObject* atkObject = ATK_OBJECT(aComponent);
+  AccessibleWrap* accWrap = GetAccessibleWrap(atkObject);
+  if (accWrap) {
+    accWrap->ScrollToPoint(coords, x, y);
+    return TRUE;
+  }
+
+  ProxyAccessible* proxy = GetProxy(atkObject);
+  if (proxy) {
+    proxy->ScrollToPoint(coords, x, y);
+    return TRUE;
+  }
+
+  return FALSE;
+}
 }
 
 AtkObject* refAccessibleAtPointHelper(AtkObject* aAtkObj, gint aX, gint aY,
@@ -133,4 +170,8 @@ void componentInterfaceInitCB(AtkComponentIface* aIface) {
   aIface->ref_accessible_at_point = refAccessibleAtPointCB;
   aIface->get_extents = getExtentsCB;
   aIface->grab_focus = grabFocusCB;
+  if (IsAtkVersionAtLeast(2, 30)) {
+    aIface->scroll_to = scrollToCB;
+    aIface->scroll_to_point = scrollToPointCB;
+  }
 }

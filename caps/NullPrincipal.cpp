@@ -16,7 +16,6 @@
 #include "NullPrincipal.h"
 #include "NullPrincipalURI.h"
 #include "nsMemory.h"
-#include "nsIURIWithPrincipal.h"
 #include "nsIClassInfoImpl.h"
 #include "nsNetCID.h"
 #include "nsError.h"
@@ -32,32 +31,45 @@ NS_IMPL_CLASSINFO(NullPrincipal, nullptr, nsIClassInfo::MAIN_THREAD_ONLY,
 NS_IMPL_QUERY_INTERFACE_CI(NullPrincipal, nsIPrincipal, nsISerializable)
 NS_IMPL_CI_INTERFACE_GETTER(NullPrincipal, nsIPrincipal, nsISerializable)
 
-/* static */ already_AddRefed<NullPrincipal>
-NullPrincipal::CreateWithInheritedAttributes(nsIPrincipal* aInheritFrom) {
-  RefPtr<NullPrincipal> nullPrin = new NullPrincipal();
-  nsresult rv = nullPrin->Init(Cast(aInheritFrom)->OriginAttributesRef());
-  MOZ_RELEASE_ASSERT(NS_SUCCEEDED(rv));
-  return nullPrin.forget();
+/* static */
+already_AddRefed<NullPrincipal> NullPrincipal::CreateWithInheritedAttributes(
+    nsIPrincipal* aInheritFrom) {
+  MOZ_ASSERT(aInheritFrom);
+  return CreateWithInheritedAttributes(
+      Cast(aInheritFrom)->OriginAttributesRef(), false);
 }
 
-/* static */ already_AddRefed<NullPrincipal>
-NullPrincipal::CreateWithInheritedAttributes(nsIDocShell* aDocShell,
-                                             bool aIsFirstParty) {
+/* static */
+already_AddRefed<NullPrincipal> NullPrincipal::CreateWithInheritedAttributes(
+    nsIDocShell* aDocShell, bool aIsFirstParty) {
+  MOZ_ASSERT(aDocShell);
+
   OriginAttributes attrs = nsDocShell::Cast(aDocShell)->GetOriginAttributes();
+  return CreateWithInheritedAttributes(attrs, aIsFirstParty);
+}
 
+/* static */
+already_AddRefed<NullPrincipal> NullPrincipal::CreateWithInheritedAttributes(
+    const OriginAttributes& aOriginAttributes, bool aIsFirstParty) {
   RefPtr<NullPrincipal> nullPrin = new NullPrincipal();
-  nsresult rv = nullPrin->Init(attrs, aIsFirstParty);
+  nsresult rv = nullPrin->Init(aOriginAttributes, aIsFirstParty);
   MOZ_RELEASE_ASSERT(NS_SUCCEEDED(rv));
   return nullPrin.forget();
 }
 
-/* static */ already_AddRefed<NullPrincipal> NullPrincipal::Create(
+/* static */
+already_AddRefed<NullPrincipal> NullPrincipal::Create(
     const OriginAttributes& aOriginAttributes, nsIURI* aURI) {
   RefPtr<NullPrincipal> nullPrin = new NullPrincipal();
   nsresult rv = nullPrin->Init(aOriginAttributes, aURI);
   MOZ_RELEASE_ASSERT(NS_SUCCEEDED(rv));
 
   return nullPrin.forget();
+}
+
+/* static */
+already_AddRefed<NullPrincipal> NullPrincipal::CreateWithoutOriginAttributes() {
+  return NullPrincipal::Create(OriginAttributes(), nullptr);
 }
 
 nsresult NullPrincipal::Init(const OriginAttributes& aOriginAttributes,
@@ -119,11 +131,7 @@ nsresult NullPrincipal::GetScriptLocation(nsACString& aStr) {
  * nsIPrincipal implementation
  */
 
-NS_IMETHODIMP
-NullPrincipal::GetHashValue(uint32_t* aResult) {
-  *aResult = (NS_PTR_TO_INT32(this) >> 2);
-  return NS_OK;
-}
+uint32_t NullPrincipal::GetHashValue() { return (NS_PTR_TO_INT32(this) >> 2); }
 
 NS_IMETHODIMP
 NullPrincipal::SetCsp(nsIContentSecurityPolicy* aCsp) {
@@ -141,12 +149,16 @@ NullPrincipal::SetCsp(nsIContentSecurityPolicy* aCsp) {
 
 NS_IMETHODIMP
 NullPrincipal::GetURI(nsIURI** aURI) {
-  return NS_EnsureSafeToReturn(mURI, aURI);
+  nsCOMPtr<nsIURI> uri = mURI;
+  uri.forget(aURI);
+  return NS_OK;
 }
 
 NS_IMETHODIMP
 NullPrincipal::GetDomain(nsIURI** aDomain) {
-  return NS_EnsureSafeToReturn(mURI, aDomain);
+  nsCOMPtr<nsIURI> uri = mURI;
+  uri.forget(aDomain);
+  return NS_OK;
 }
 
 NS_IMETHODIMP
@@ -158,14 +170,12 @@ NullPrincipal::SetDomain(nsIURI* aDomain) {
 
 bool NullPrincipal::MayLoadInternal(nsIURI* aURI) {
   // Also allow the load if we are the principal of the URI being checked.
-  nsCOMPtr<nsIURIWithPrincipal> uriPrinc = do_QueryInterface(aURI);
-  if (uriPrinc) {
-    nsCOMPtr<nsIPrincipal> principal;
-    uriPrinc->GetPrincipal(getter_AddRefs(principal));
-
-    if (principal == this) {
-      return true;
-    }
+  nsCOMPtr<nsIPrincipal> blobPrincipal;
+  if (dom::BlobURLProtocolHandler::GetBlobURLPrincipal(
+          aURI, getter_AddRefs(blobPrincipal))) {
+    MOZ_ASSERT(blobPrincipal);
+    return SubsumesInternal(blobPrincipal,
+                            BasePrincipal::ConsiderDocumentDomain);
   }
 
   return false;

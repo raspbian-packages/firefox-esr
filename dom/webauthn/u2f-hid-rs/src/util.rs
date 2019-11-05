@@ -12,10 +12,12 @@ use boxfnonce::SendBoxFnOnce;
 macro_rules! try_or {
     ($val:expr, $or:expr) => {
         match $val {
-            Ok(v) => { v }
-            Err(e) => { return $or(e); }
+            Ok(v) => v,
+            Err(e) => {
+                return $or(e);
+            }
         }
-    }
+    };
 }
 
 pub trait Signed {
@@ -38,6 +40,16 @@ impl Signed for usize {
 pub fn from_unix_result<T: Signed>(rv: T) -> io::Result<T> {
     if rv.is_negative() {
         let errno = unsafe { *libc::__errno_location() };
+        Err(io::Error::from_raw_os_error(errno))
+    } else {
+        Ok(rv)
+    }
+}
+
+#[cfg(any(target_os = "freebsd"))]
+pub fn from_unix_result<T: Signed>(rv: T) -> io::Result<T> {
+    if rv.is_negative() {
+        let errno = unsafe { *libc::__error() };
         Err(io::Error::from_raw_os_error(errno))
     } else {
         Ok(rv)

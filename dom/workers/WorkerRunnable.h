@@ -8,7 +8,7 @@
 #define mozilla_dom_workers_workerrunnable_h__
 
 #include "mozilla/dom/WorkerCommon.h"
-#include "mozilla/dom/WorkerHolder.h"
+#include "mozilla/dom/WorkerRef.h"
 
 #include "nsICancelableRunnable.h"
 
@@ -79,6 +79,17 @@ class WorkerRunnable : public nsIRunnable, public nsICancelableRunnable {
 
   // See above note about Cancel().
   virtual bool IsCanceled() const { return mCanceled != 0; }
+
+  // True if this runnable is handled by running JavaScript in some global that
+  // could possibly be a debuggee, and thus needs to be deferred when the target
+  // is paused in the debugger, until the JavaScript invocation in progress has
+  // run to completion. Examples are MessageEventRunnable and
+  // ReportErrorRunnable. These runnables are segregated into separate
+  // ThrottledEventQueues, which the debugger pauses.
+  //
+  // Note that debugger runnables do not fall in this category, since we don't
+  // support debugging the debugger server at the moment.
+  virtual bool IsDebuggeeRunnable() const { return false; }
 
   static WorkerRunnable* FromRunnable(nsIRunnable* aRunnable);
 
@@ -220,7 +231,7 @@ class MainThreadWorkerSyncRunnable : public WorkerSyncRunnable {
   MainThreadWorkerSyncRunnable(
       WorkerPrivate* aWorkerPrivate,
       already_AddRefed<nsIEventTarget>&& aSyncLoopTarget)
-      : WorkerSyncRunnable(aWorkerPrivate, Move(aSyncLoopTarget)) {
+      : WorkerSyncRunnable(aWorkerPrivate, std::move(aSyncLoopTarget)) {
     AssertIsOnMainThread();
   }
 
@@ -351,7 +362,7 @@ class WorkerMainThreadRunnable : public Runnable {
  public:
   // Dispatch the runnable to the main thread.  If dispatch to main thread
   // fails, or if the worker is in a state equal or greater of aFailStatus, an
-  // error will be reported on aRv. Normally you want to use 'Terminating' for
+  // error will be reported on aRv. Normally you want to use 'Canceling' for
   // aFailStatus, except if you want an infallible runnable. In this case, use
   // 'Killing'.
   // In that case the error MUST be propagated out to script.
@@ -372,30 +383,30 @@ class WorkerMainThreadRunnable : public Runnable {
 // runnables.
 class WorkerProxyToMainThreadRunnable : public Runnable {
  protected:
-  explicit WorkerProxyToMainThreadRunnable(WorkerPrivate* aWorkerPrivate);
+  WorkerProxyToMainThreadRunnable();
 
   virtual ~WorkerProxyToMainThreadRunnable();
 
   // First this method is called on the main-thread.
-  virtual void RunOnMainThread() = 0;
+  virtual void RunOnMainThread(WorkerPrivate* aWorkerPrivate) = 0;
 
   // After this second method is called on the worker-thread.
-  virtual void RunBackOnWorkerThreadForCleanup() = 0;
+  virtual void RunBackOnWorkerThreadForCleanup(
+      WorkerPrivate* aWorkerPrivate) = 0;
 
  public:
-  bool Dispatch();
+  bool Dispatch(WorkerPrivate* aWorkerPrivate);
+
+  virtual bool ForMessaging() const { return false; }
 
  private:
   NS_IMETHOD Run() override;
 
   void PostDispatchOnMainThread();
 
-  bool HoldWorker();
   void ReleaseWorker();
 
- protected:
-  WorkerPrivate* mWorkerPrivate;
-  UniquePtr<WorkerHolder> mWorkerHolder;
+  RefPtr<ThreadSafeWorkerRef> mWorkerRef;
 };
 
 // This runnable is used to stop a sync loop and it's meant to be used on the
@@ -431,6 +442,53 @@ class MainThreadStopSyncLoopRunnable : public WorkerSyncRunnable {
                          WorkerPrivate* aWorkerPrivate) override;
 
   bool DispatchInternal() final;
+};
+
+// Runnables handled by content JavaScript (MessageEventRunnable, JavaScript
+// error reports, and so on) must not be delivered while that content is in the
+// midst of being debugged; the debuggee must be allowed to complete its current
+// JavaScript invocation and return to its own event loop. Only then is it
+// prepared for messages sent from the worker.
+//
+// Runnables that need to be deferred in this way should inherit from this
+// class. They will be routed to mMainThreadDebuggeeEventTarget, which is paused
+// while the window is suspended, as it is whenever the debugger spins its
+// nested event loop. When the debugger leaves its nested event loop, it resumes
+// the window, so that mMainThreadDebuggeeEventTarget will resume delivering
+// runnables from the worker when control returns to the main event loop.
+//
+// When a page enters the bfcache, it freezes all its workers. Since a frozen
+// worker processes only control runnables, it doesn't take any special
+// consideration to prevent WorkerDebuggeeRunnables sent from child to parent
+// workers from running; they'll never run anyway. But WorkerDebuggeeRunnables
+// from a top-level frozen worker to its parent window must not be delivered
+// either, even as the main thread event loop continues to spin. Thus, freezing
+// a top-level worker also pauses mMainThreadDebuggeeEventTarget.
+class WorkerDebuggeeRunnable : public WorkerRunnable {
+ protected:
+  WorkerDebuggeeRunnable(
+      WorkerPrivate* aWorkerPrivate,
+      TargetAndBusyBehavior aBehavior = ParentThreadUnchangedBusyCount)
+      : WorkerRunnable(aWorkerPrivate, aBehavior) {}
+
+  bool PreDispatch(WorkerPrivate* aWorkerPrivate) override;
+
+ private:
+  // This override is deliberately private: it doesn't make sense to call it if
+  // we know statically that we are a WorkerDebuggeeRunnable.
+  bool IsDebuggeeRunnable() const override { return true; }
+
+  // Runnables sent upwards, to the content window or parent worker, must keep
+  // their sender alive until they are delivered: they check back with the
+  // sender in case it has been terminated after having dispatched the runnable
+  // (in which case it should not be acted upon); and runnables sent to content
+  // wait until delivery to determine the target window, since
+  // WorkerPrivate::GetWindow may only be used on the main thread.
+  //
+  // Runnables sent downwards, from content to a worker or from a worker to a
+  // child, keep the sender alive because they are WorkerThreadModifyBusyCount
+  // runnables, and so leave this null.
+  RefPtr<ThreadSafeWorkerRef> mSender;
 };
 
 }  // namespace dom

@@ -19,15 +19,11 @@ const TEST_DATA = [ // eslint-disable-line
       {
         type: "click",
         filename: TEST_URL + ":66",
-        attributes: [
-          "Bubbling",
-          "DOM2"
-        ],
-        handler: "es6Method(foo, bar) {\n" +
-                 "  alert(\"obj.es6Method\");\n" +
-                 "}"
-      }
-    ]
+        attributes: ["Bubbling", "DOM2"],
+        handler:
+          "es6Method(foo, bar) {\n" + '  alert("obj.es6Method");\n' + "}",
+      },
+    ],
   },
   {
     selector: "#generator",
@@ -35,15 +31,10 @@ const TEST_DATA = [ // eslint-disable-line
       {
         type: "click",
         filename: TEST_URL + ":85",
-        attributes: [
-          "Bubbling",
-          "DOM2"
-        ],
-        handler: "function* generator() {\n" +
-                 "  alert(\"generator\");\n" +
-                 "}"
-      }
-    ]
+        attributes: ["Bubbling", "DOM2"],
+        handler: "function* generator() {\n" + '  alert("generator");\n' + "}",
+      },
+    ],
   },
   {
     selector: "#anon-generator",
@@ -51,15 +42,10 @@ const TEST_DATA = [ // eslint-disable-line
       {
         type: "click",
         filename: TEST_URL + ":43",
-        attributes: [
-          "Bubbling",
-          "DOM2"
-        ],
-        handler: "function*() {\n" +
-                 "  alert(\"anonGenerator\");\n" +
-                 "}"
-      }
-    ]
+        attributes: ["Bubbling", "DOM2"],
+        handler: "function*() {\n" + '  alert("anonGenerator");\n' + "}",
+      },
+    ],
   },
   {
     selector: "#named-function-expression",
@@ -67,15 +53,11 @@ const TEST_DATA = [ // eslint-disable-line
       {
         type: "click",
         filename: TEST_URL + ":20",
-        attributes: [
-          "Bubbling",
-          "DOM2"
-        ],
-        handler: "function foo() {\n" +
-                 "  alert(\"namedFunctionExpression\");\n" +
-                 "}"
-      }
-    ]
+        attributes: ["Bubbling", "DOM2"],
+        handler:
+          "function foo() {\n" + '  alert("namedFunctionExpression");\n' + "}",
+      },
+    ],
   },
   {
     selector: "#anon-function-expression",
@@ -83,15 +65,11 @@ const TEST_DATA = [ // eslint-disable-line
       {
         type: "click",
         filename: TEST_URL + ":24",
-        attributes: [
-          "Bubbling",
-          "DOM2"
-        ],
-        handler: "function() {\n" +
-                 "  alert(\"anonFunctionExpression\");\n" +
-                 "}"
-      }
-    ]
+        attributes: ["Bubbling", "DOM2"],
+        handler:
+          "function() {\n" + '  alert("anonFunctionExpression");\n' + "}",
+      },
+    ],
   },
   {
     selector: "#returned-function",
@@ -99,18 +77,13 @@ const TEST_DATA = [ // eslint-disable-line
       {
         type: "click",
         filename: TEST_URL + ":29",
-        attributes: [
-          "Bubbling",
-          "DOM2"
-        ],
-        handler: "function bar() {\n" +
-                 "  alert(\"returnedFunction\");\n" +
-                 "}"
-      }
-    ]
+        attributes: ["Bubbling", "DOM2"],
+        handler: "function bar() {\n" + '  alert("returnedFunction");\n' + "}",
+      },
+    ],
   },
 ];
 
-add_task(function* () {
-  yield runEventPopupTests(TEST_URL, TEST_DATA);
+add_task(async function() {
+  await runEventPopupTests(TEST_URL, TEST_DATA);
 });

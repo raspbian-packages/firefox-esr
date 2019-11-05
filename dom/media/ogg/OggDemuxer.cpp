@@ -4,20 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "nsError.h"
-#include "MediaDecoderStateMachine.h"
 #include "OggDemuxer.h"
+#include "MediaDataDemuxer.h"
 #include "OggCodecState.h"
+#include "XiphExtradata.h"
 #include "mozilla/AbstractThread.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/PodOperations.h"
 #include "mozilla/SharedThreadPool.h"
+#include "mozilla/StaticPrefs.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/TimeStamp.h"
-#include "MediaDataDemuxer.h"
 #include "nsAutoRef.h"
-#include "XiphExtradata.h"
-#include "MediaPrefs.h"
+#include "nsError.h"
 
 #include <algorithm>
 
@@ -29,9 +28,9 @@ extern mozilla::LazyLogModule gMediaDemuxerLog;
 // Un-comment to enable logging of seek bisections.
 //#define SEEK_LOGGING
 #ifdef SEEK_LOGGING
-#define SEEK_LOG(type, msg) MOZ_LOG(gMediaDemuxerLog, type, msg)
+#  define SEEK_LOG(type, msg) MOZ_LOG(gMediaDemuxerLog, type, msg)
 #else
-#define SEEK_LOG(type, msg)
+#  define SEEK_LOG(type, msg)
 #endif
 
 namespace mozilla {
@@ -278,7 +277,7 @@ bool OggDemuxer::ReadHeaders(TrackInfo::TrackType aType,
 
     // Local OggCodecState needs to decode headers in order to process
     // packet granulepos -> time mappings, etc.
-    if (!aState->DecodeHeader(Move(packet))) {
+    if (!aState->DecodeHeader(std::move(packet))) {
       OGG_DEBUG(
           "Failed to decode ogg header packet; deactivating stream %" PRIu32,
           aState->mSerial);
@@ -392,12 +391,12 @@ void OggDemuxer::SetupMediaTracksInfo(const nsTArray<uint32_t>& aSerials) {
   }
 }
 
-void OggDemuxer::FillTags(TrackInfo* aInfo, MetadataTags* aTags) {
+void OggDemuxer::FillTags(TrackInfo* aInfo, UniquePtr<MetadataTags>&& aTags) {
   if (!aTags) {
     return;
   }
-  nsAutoPtr<MetadataTags> tags(aTags);
-  for (auto iter = aTags->Iter(); !iter.Done(); iter.Next()) {
+  UniquePtr<MetadataTags> tags(std::move(aTags));
+  for (auto iter = tags->Iter(); !iter.Done(); iter.Next()) {
     aInfo->mTags.AppendElement(MetadataTag(iter.Key(), iter.Data()));
   }
 }
@@ -486,8 +485,7 @@ nsresult OggDemuxer::ReadMetadata() {
               "Opus decoding disabled."
               " See media.opus.enabled in about:config");
         }
-      } else if (MediaPrefs::FlacInOgg() &&
-                 s->GetType() == OggCodecState::TYPE_FLAC &&
+      } else if (s->GetType() == OggCodecState::TYPE_FLAC &&
                  ReadHeaders(TrackInfo::kAudioTrack, s)) {
         if (!mFlacState) {
           SetupTarget(&mFlacState, s);
@@ -568,7 +566,7 @@ bool OggDemuxer::ReadOggChain(const media::TimeUnit& aLastEndTime) {
   OpusState* newOpusState = nullptr;
   VorbisState* newVorbisState = nullptr;
   FlacState* newFlacState = nullptr;
-  nsAutoPtr<MetadataTags> tags;
+  UniquePtr<MetadataTags> tags;
 
   if (HasVideo() || HasSkeleton() || !HasAudio()) {
     return false;
@@ -672,7 +670,7 @@ bool OggDemuxer::ReadOggChain(const media::TimeUnit& aLastEndTime) {
     mDecodedAudioDuration += aLastEndTime;
     if (mTimedMetadataEvent) {
       mTimedMetadataEvent->Notify(
-          TimedMetadata(mDecodedAudioDuration, Move(tags),
+          TimedMetadata(mDecodedAudioDuration, std::move(tags),
                         nsAutoPtr<MediaInfo>(new MediaInfo(mInfo))));
     }
     // Setup a new TrackInfo so that the MediaFormatReader will flush the
@@ -1050,7 +1048,7 @@ nsresult OggDemuxer::SeekInternal(TrackInfo::TrackType aType,
     }
   }
   // Re-add all packet into the codec state in order.
-  state->PushFront(Move(tempPackets));
+  state->PushFront(std::move(tempPackets));
 
   return NS_OK;
 }
@@ -1312,7 +1310,8 @@ OggTrackDemuxer::SkipToNextRandomAccessPoint(const TimeUnit& aTimeThreshold) {
     return SkipAccessPointPromise::CreateAndResolve(parsed, __func__);
   } else {
     SkipFailureHolder failure(NS_ERROR_DOM_MEDIA_END_OF_STREAM, parsed);
-    return SkipAccessPointPromise::CreateAndReject(Move(failure), __func__);
+    return SkipAccessPointPromise::CreateAndReject(std::move(failure),
+                                                   __func__);
   }
 }
 

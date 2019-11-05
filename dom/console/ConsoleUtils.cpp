@@ -8,7 +8,7 @@
 #include "ConsoleCommon.h"
 
 #include "mozilla/ClearOnShutdown.h"
-#include "NullPrincipal.h"
+#include "mozilla/NullPrincipal.h"
 
 namespace mozilla {
 namespace dom {
@@ -16,9 +16,11 @@ namespace dom {
 namespace {
 
 StaticRefPtr<ConsoleUtils> gConsoleUtilsService;
+
 }
 
-/* static */ ConsoleUtils* ConsoleUtils::GetOrCreate() {
+/* static */
+ConsoleUtils* ConsoleUtils::GetOrCreate() {
   if (!gConsoleUtilsService) {
     MOZ_ASSERT(NS_IsMainThread());
 
@@ -32,10 +34,13 @@ StaticRefPtr<ConsoleUtils> gConsoleUtilsService;
 ConsoleUtils::ConsoleUtils() = default;
 ConsoleUtils::~ConsoleUtils() = default;
 
-/* static */ void ConsoleUtils::ReportForServiceWorkerScope(
-    const nsAString& aScope, const nsAString& aMessage,
-    const nsAString& aFilename, uint32_t aLineNumber, uint32_t aColumnNumber,
-    Level aLevel) {
+/* static */
+void ConsoleUtils::ReportForServiceWorkerScope(const nsAString& aScope,
+                                               const nsAString& aMessage,
+                                               const nsAString& aFilename,
+                                               uint32_t aLineNumber,
+                                               uint32_t aColumnNumber,
+                                               Level aLevel) {
   MOZ_ASSERT(NS_IsMainThread());
 
   RefPtr<ConsoleUtils> service = ConsoleUtils::GetOrCreate();
@@ -68,7 +73,7 @@ void ConsoleUtils::ReportForServiceWorkerScopeInternal(
   // We don't need a proxy here.
   global = js::UncheckedUnwrap(global);
 
-  JSAutoCompartment ac(cx, global);
+  JSAutoRealm ar(cx, global);
 
   RootedDictionary<ConsoleEvent> event(cx);
 
@@ -136,7 +141,8 @@ JSObject* ConsoleUtils::GetOrCreateSandbox(JSContext* aCx) {
     nsIXPConnect* xpc = nsContentUtils::XPConnect();
     MOZ_ASSERT(xpc, "This should never be null!");
 
-    RefPtr<NullPrincipal> nullPrincipal = NullPrincipal::Create();
+    RefPtr<NullPrincipal> nullPrincipal =
+        NullPrincipal::CreateWithoutOriginAttributes();
 
     JS::Rooted<JSObject*> sandbox(aCx);
     nsresult rv = xpc->CreateSandbox(aCx, nullPrincipal, sandbox.address());

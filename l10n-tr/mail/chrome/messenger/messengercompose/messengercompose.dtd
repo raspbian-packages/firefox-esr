@@ -94,14 +94,13 @@
      as attachments.accesskey. -->
 <!ENTITY toggleAttachmentPaneCmd.accesskey "m">
 <!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.key):
-     With OS-specific access modifier, this defines the shortcut key for showing/
-     hiding/minimizing the attachment pane, e.g. Alt+M on Windows.
-     toggleAttachmentPaneCmd.key and attachments.accesskey must be the same
-     for the bucket view state machinery to work. -->
+     As Mac does not have access keys, this key defines a Mac-only, cross-l10n
+     shortcut key (Ctrl+M). Typically, this key should not be translated unless
+     otherwise required by specific needs of the localization. -->
 <!ENTITY toggleAttachmentPaneCmd.key "m">
 <!ENTITY selectAllCmd.label "Tümünü seç">
-<!ENTITY selectAllCmd.key "A">
 <!ENTITY selectAllCmd.accesskey "e">
+<!ENTITY selectAllCmd.key "A">
 <!ENTITY findBarCmd.label "Bul…">
 <!ENTITY findBarCmd.accesskey "B">
 <!ENTITY findBarCmd.key "F">
@@ -135,6 +134,7 @@
      sortAttachmentsPanelBtn.SortSelection.ZA.label, except for the sort direction. -->
 <!ENTITY sortAttachmentsPanelBtn.SortSelection.AZ.label "Seçimi sırala: A - Z">
 <!ENTITY sortAttachmentsPanelBtn.SortSelection.ZA.label "Seçimi sırala: Z - A">
+<!ENTITY sortAttachmentsPanelBtn.key "y">
 
 <!-- View Menu -->
 <!ENTITY viewMenu.label "Görünüm">
@@ -162,7 +162,7 @@
 <!-- Options Menu -->
 <!ENTITY optionsMenu.label "Seçenekler">
 <!ENTITY optionsMenu.accesskey "S">
-<!ENTITY checkSpellingCmd2.label "Yazım Denetimi…">
+<!ENTITY checkSpellingCmd2.label "Yazımı denetle…">
 <!ENTITY checkSpellingCmd2.key "p">
 <!ENTITY checkSpellingCmd2.key2 "VK_F7">
 <!ENTITY checkSpellingCmd2.accesskey "Y">
@@ -217,7 +217,7 @@
 <!ENTITY addressBookCmd.label "Adres Defteri">
 <!ENTITY addressBookCmd.accesskey "A">
 <!ENTITY addressBookCmd.key "B">
-<!ENTITY accountManagerCmd2.label "Hesap Ayarları">
+<!ENTITY accountManagerCmd2.label "Hesap ayarları">
 <!ENTITY accountManagerCmd2.accesskey "A">
 <!ENTITY accountManagerCmdUnix2.accesskey "S">
 <!ENTITY preferencesCmd2.label "Seçenekler">
@@ -228,7 +228,7 @@
 <!--  Mac OS X Window Menu -->
 <!ENTITY minimizeWindow.key "m">
 <!ENTITY minimizeWindow.label "Küçült">
-<!ENTITY bringAllToFront.label "Tümünü Öne Getir">
+<!ENTITY bringAllToFront.label "Tümünü öne getir">
 <!ENTITY zoomWindow.label "Yaklaştır">
 <!ENTITY windowMenu.label "Pencere">
 
@@ -246,7 +246,6 @@
 <!ENTITY sendlaterButton.tooltip "Bu iletiyi daha sonra gönder">
 <!ENTITY quoteButton.tooltip "Önceki iletiden alıntı yap">
 <!ENTITY addressButton.tooltip "Adres Defteri'nden alıcı seç">
-<!ENTITY attachButton.tooltip "Bir dosya ekle">
 <!ENTITY attachButton.tooltip2 "Dosya ekle">
 <!ENTITY spellingButton.tooltip "Seçimin veya tüm iletinin yazımını denetle">
 <!ENTITY saveButton.tooltip "Bu iletiyi kaydet">
@@ -270,11 +269,12 @@
 <!ENTITY subject.label "Konu:">
 <!ENTITY subject.accesskey "K">
 <!-- LOCALIZATION NOTE (attachments.accesskey) This access key character should
-     be taken from the strings in attachmentCount in composeMsgs.properties,
-     and it must be the same as toggleAttachmentPaneCmd.key, otherwise it won't
-     work, as the shortcut key functionality supersedes the access key. -->
+     be taken from the strings of attachmentCount in composeMsgs.properties.
+     Please ensure that this access key is unique: Do not duplicate any other
+     first-level access keys of the compose window, e.g. those of main menu,
+     buttons, or labels (message headers, contacts side bar, attachment reminder
+     bar). -->
 <!ENTITY attachments.accesskey "e">
-
 <!ENTITY attachmentBucketHeader.tooltip "Ek bölmesi">
 <!ENTITY attachmentBucketCloseButton.tooltip "Ek bölmesini gizle">
 
@@ -359,6 +359,9 @@
 <!-- Identity popup customize menuitem -->
 <!ENTITY customizeFromAddress.label "Kimden adresini özelleştir…">
 <!ENTITY customizeFromAddress.accesskey "a">
+
+<!-- Accessibility name for the document -->
+<!ENTITY aria.message.bodyName "İleti gövdesi">
 
 <!-- Status Bar -->
 <!ENTITY languageStatusButton.tooltip "Yazım denetimi yap">

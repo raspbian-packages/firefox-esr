@@ -11,12 +11,13 @@
 #include "base/message_loop.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/TimeStamp.h"
-#include "FrameMetrics.h"
 #include "nsISupportsImpl.h"
 #include "nsTArray.h"
 
 namespace mozilla {
 namespace layers {
+
+struct FrameMetrics;
 
 class WheelScrollAnimation;
 class KeyboardScrollAnimation;
@@ -26,10 +27,28 @@ class AsyncPanZoomAnimation {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(AsyncPanZoomAnimation)
 
  public:
-  explicit AsyncPanZoomAnimation() {}
+  explicit AsyncPanZoomAnimation() = default;
 
   virtual bool DoSample(FrameMetrics& aFrameMetrics,
                         const TimeDuration& aDelta) = 0;
+
+  /**
+   * Attempt to handle a main-thread scroll offset update without cancelling
+   * the animation. This may or may not make sense depending on the type of
+   * the animation and whether the scroll update is relative or absolute.
+   *
+   * If the scroll update is relative, |aRelativeDelta| will contain the
+   * delta of the relative update. If the scroll update is absolute,
+   * |aRelativeDelta| will be Nothing() (the animation can check the APZC's
+   * FrameMetrics for the new absolute scroll offset if it wants to handle
+   * and absolute update).
+   *
+   * Returns whether the animation could handle the scroll update. If the
+   * return value is false, the animation will be cancelled.
+   */
+  virtual bool HandleScrollOffsetUpdate(const Maybe<CSSPoint>& aRelativeDelta) {
+    return false;
+  }
 
   bool Sample(FrameMetrics& aFrameMetrics, const TimeDuration& aDelta) {
     // In some situations, particularly when handoff is involved, it's possible
@@ -47,7 +66,7 @@ class AsyncPanZoomAnimation {
    * |mDeferredTasks| for more information.  Clears |mDeferredTasks|.
    */
   nsTArray<RefPtr<Runnable>> TakeDeferredTasks() {
-    return Move(mDeferredTasks);
+    return std::move(mDeferredTasks);
   }
 
   virtual KeyboardScrollAnimation* AsKeyboardScrollAnimation() {
@@ -62,7 +81,7 @@ class AsyncPanZoomAnimation {
 
  protected:
   // Protected destructor, to discourage deletion outside of Release():
-  virtual ~AsyncPanZoomAnimation() {}
+  virtual ~AsyncPanZoomAnimation() = default;
 
   /**
    * Tasks scheduled for execution after the APZC's mMonitor is released.

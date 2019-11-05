@@ -44,7 +44,7 @@ function generateTest(internalFormat, pixelFormat, pixelType, prologue, resource
     // differently. Some might be GPU accelerated, some might not. Etc...
     var videos = [
       { src: resourcePath + "red-green.mp4"         , type: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"', },
-      { src: resourcePath + "red-green.webmvp9.webm", type: 'video/webm; codecs="vp9"',                   },
+      { src: resourcePath + "red-green.bt601.vp9.webm", type: 'video/webm; codecs="vp9"',                   },
       { src: resourcePath + "red-green.webmvp8.webm", type: 'video/webm; codecs="vp8, vorbis"',           },
       { src: resourcePath + "red-green.theora.ogv",   type: 'video/ogg; codecs="theora, vorbis"',         },
     ];
@@ -209,6 +209,7 @@ function generateTest(internalFormat, pixelFormat, pixelType, prologue, resource
                     debug("");
                     debug("testing: " + info.type);
                     video = document.createElement("video");
+                    video.muted = true;
                     var canPlay = true;
                     if (!video.canPlayType) {
                       testFailed("video.canPlayType required method missing");

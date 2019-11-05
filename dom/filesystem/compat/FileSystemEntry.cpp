@@ -24,7 +24,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystemEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-/* static */ already_AddRefed<FileSystemEntry> FileSystemEntry::Create(
+/* static */
+already_AddRefed<FileSystemEntry> FileSystemEntry::Create(
     nsIGlobalObject* aGlobalObject,
     const OwningFileOrDirectory& aFileOrDirectory, FileSystem* aFileSystem) {
   MOZ_ASSERT(aGlobalObject);
@@ -55,7 +56,7 @@ FileSystemEntry::~FileSystemEntry() {}
 
 JSObject* FileSystemEntry::WrapObject(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return FileSystemEntryBinding::Wrap(aCx, this, aGivenProto);
+  return FileSystemEntry_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void FileSystemEntry::GetParent(

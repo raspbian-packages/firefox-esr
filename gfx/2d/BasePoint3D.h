@@ -117,6 +117,18 @@ struct BasePoint3D {
   // Invalid for points with distance from origin of 0.
   void Normalize() { *this /= Length(); }
 
+  void RobustNormalize() {
+    // If the distance is infinite, we scale it by 1/(the maximum value of T)
+    // before doing normalization, so we can avoid getting a zero point.
+    T length = Length();
+    if (mozilla::IsInfinite(length)) {
+      *this /= std::numeric_limits<T>::max();
+      length = Length();
+    }
+
+    *this /= length;
+  }
+
   friend std::ostream& operator<<(std::ostream& stream,
                                   const BasePoint3D<T, Sub>& aPoint) {
     return stream << '(' << aPoint.x << ',' << aPoint.y << ',' << aPoint.z

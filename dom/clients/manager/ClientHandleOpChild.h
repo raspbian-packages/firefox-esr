@@ -8,13 +8,16 @@
 
 #include "mozilla/dom/ClientOpPromise.h"
 #include "mozilla/dom/PClientHandleOpChild.h"
-#include "mozilla/MozPromise.h"
 
 namespace mozilla {
 namespace dom {
 
+class ClientHandle;
+
 class ClientHandleOpChild final : public PClientHandleOpChild {
-  RefPtr<ClientOpPromise::Private> mPromise;
+  RefPtr<ClientHandle> mClientHandle;
+  const ClientOpCallback mResolveCallback;
+  const ClientOpCallback mRejectCallback;
 
   // PClientHandleOpChild interface
   void ActorDestroy(ActorDestroyReason aReason) override;
@@ -23,10 +26,12 @@ class ClientHandleOpChild final : public PClientHandleOpChild {
       const ClientOpResult& aResult) override;
 
  public:
-  ClientHandleOpChild(const ClientOpConstructorArgs& aArgs,
-                      ClientOpPromise::Private* aPromise);
+  ClientHandleOpChild(ClientHandle* aClientHandle,
+                      const ClientOpConstructorArgs& aArgs,
+                      const ClientOpCallback&& aResolveCallback,
+                      const ClientOpCallback&& aRejectCallback);
 
-  ~ClientHandleOpChild();
+  ~ClientHandleOpChild() = default;
 };
 
 }  // namespace dom

@@ -31,20 +31,11 @@ NS_IMPL_ISUPPORTS(nsHTMLFormatConverter, nsIFormatConverter)
 // Creates a new list and returns the list of all the flavors this converter
 // knows how to import. In this case, it's just HTML.
 //
-// Flavors (strings) are wrapped in a primitive object so that JavaScript can
-// access them easily via XPConnect.
-//
 NS_IMETHODIMP
-nsHTMLFormatConverter::GetInputDataFlavors(nsIArray **_retval) {
-  if (!_retval) return NS_ERROR_INVALID_ARG;
-
-  nsCOMPtr<nsIMutableArray> array = nsArray::Create();
-  nsresult rv = AddFlavorToList(array, kHTMLMime);
-
-  array.forget(_retval);
-  return rv;
-
-}  // GetInputDataFlavors
+nsHTMLFormatConverter::GetInputDataFlavors(nsTArray<nsCString>& aFlavors) {
+  aFlavors.AppendElement(NS_LITERAL_CSTRING(kHTMLMime));
+  return NS_OK;
+}
 
 //
 // GetOutputDataFlavors
@@ -53,46 +44,12 @@ nsHTMLFormatConverter::GetInputDataFlavors(nsIArray **_retval) {
 // knows how to export (convert). In this case, it's all sorts of things that
 // HTML can be converted to.
 //
-// Flavors (strings) are wrapped in a primitive object so that JavaScript can
-// access them easily via XPConnect.
-//
 NS_IMETHODIMP
-nsHTMLFormatConverter::GetOutputDataFlavors(nsIArray **_retval) {
-  if (!_retval) return NS_ERROR_INVALID_ARG;
-
-  nsCOMPtr<nsIMutableArray> array = nsArray::Create();
-  nsresult rv = AddFlavorToList(array, kHTMLMime);
-  if (NS_FAILED(rv)) return rv;
-  rv = AddFlavorToList(array, kUnicodeMime);
-  if (NS_FAILED(rv)) return rv;
-
-  array.forget(_retval);
-  return rv;
-
-}  // GetOutputDataFlavors
-
-//
-// AddFlavorToList
-//
-// Convenience routine for adding a flavor wrapped in an nsISupportsCString
-// object to a list
-//
-nsresult nsHTMLFormatConverter ::AddFlavorToList(
-    nsCOMPtr<nsIMutableArray> &inList, const char *inFlavor) {
-  nsresult rv;
-
-  nsCOMPtr<nsISupportsCString> dataFlavor =
-      do_CreateInstance(NS_SUPPORTS_CSTRING_CONTRACTID, &rv);
-  if (dataFlavor) {
-    dataFlavor->SetData(nsDependentCString(inFlavor));
-    // add to list as an nsISupports so the correct interface gets the addref
-    // in AppendElement()
-    nsCOMPtr<nsISupports> genericFlavor(do_QueryInterface(dataFlavor));
-    inList->AppendElement(genericFlavor);
-  }
-  return rv;
-
-}  // AddFlavorToList
+nsHTMLFormatConverter::GetOutputDataFlavors(nsTArray<nsCString>& aFlavors) {
+  aFlavors.AppendElement(NS_LITERAL_CSTRING(kHTMLMime));
+  aFlavors.AppendElement(NS_LITERAL_CSTRING(kUnicodeMime));
+  return NS_OK;
+}
 
 //
 // CanConvert
@@ -101,8 +58,8 @@ nsresult nsHTMLFormatConverter ::AddFlavorToList(
 // converts from HTML to others.
 //
 NS_IMETHODIMP
-nsHTMLFormatConverter::CanConvert(const char *aFromDataFlavor,
-                                  const char *aToDataFlavor, bool *_retval) {
+nsHTMLFormatConverter::CanConvert(const char* aFromDataFlavor,
+                                  const char* aToDataFlavor, bool* _retval) {
   if (!_retval) return NS_ERROR_INVALID_ARG;
 
   *_retval = false;
@@ -139,15 +96,14 @@ nsHTMLFormatConverter::CanConvert(const char *aFromDataFlavor,
 // XXX unicode out of the string. Lame lame lame.
 //
 NS_IMETHODIMP
-nsHTMLFormatConverter::Convert(const char *aFromDataFlavor,
-                               nsISupports *aFromData, uint32_t aDataLen,
-                               const char *aToDataFlavor, nsISupports **aToData,
-                               uint32_t *aDataToLen) {
-  if (!aToData || !aDataToLen) return NS_ERROR_INVALID_ARG;
+nsHTMLFormatConverter::Convert(const char* aFromDataFlavor,
+                               nsISupports* aFromData,
+                               const char* aToDataFlavor,
+                               nsISupports** aToData) {
+  if (!aToData) return NS_ERROR_INVALID_ARG;
 
   nsresult rv = NS_OK;
   *aToData = nullptr;
-  *aDataToLen = 0;
 
   if (!nsCRT::strcmp(aFromDataFlavor, kHTMLMime)) {
     nsAutoCString toFlavor(aToDataFlavor);
@@ -171,7 +127,6 @@ nsHTMLFormatConverter::Convert(const char *aFromDataFlavor,
         int32_t dataLen = dataStr.Length() * 2;
         nsPrimitiveHelpers::CreatePrimitiveForData(toFlavor, dataStr.get(),
                                                    dataLen, aToData);
-        if (*aToData) *aDataToLen = dataLen;
       } else {
         nsAutoString outStr;
         res = ConvertFromHTMLToUnicode(dataStr, outStr);
@@ -179,7 +134,6 @@ nsHTMLFormatConverter::Convert(const char *aFromDataFlavor,
           int32_t dataLen = outStr.Length() * 2;
           nsPrimitiveHelpers::CreatePrimitiveForData(toFlavor, outStr.get(),
                                                      dataLen, aToData);
-          if (*aToData) *aDataToLen = dataLen;
         }
       }
     }  // else if HTML or Unicode
@@ -189,7 +143,6 @@ nsHTMLFormatConverter::Convert(const char *aFromDataFlavor,
         int32_t dataLen = outStr.Length() * 2;
         nsPrimitiveHelpers::CreatePrimitiveForData(toFlavor, outStr.get(),
                                                    dataLen, aToData);
-        if (*aToData) *aDataToLen = dataLen;
       }
     }  // else if AOL mail
     else {
@@ -209,8 +162,8 @@ nsHTMLFormatConverter::Convert(const char *aFromDataFlavor,
 // Takes HTML and converts it to plain text but in unicode.
 //
 NS_IMETHODIMP
-nsHTMLFormatConverter::ConvertFromHTMLToUnicode(const nsAutoString &aFromStr,
-                                                nsAutoString &aToStr) {
+nsHTMLFormatConverter::ConvertFromHTMLToUnicode(const nsAutoString& aFromStr,
+                                                nsAutoString& aToStr) {
   return nsContentUtils::ConvertToPlainText(
       aFromStr, aToStr,
       nsIDocumentEncoder::OutputSelectionOnly |
@@ -221,8 +174,8 @@ nsHTMLFormatConverter::ConvertFromHTMLToUnicode(const nsAutoString &aFromStr,
 }  // ConvertFromHTMLToUnicode
 
 NS_IMETHODIMP
-nsHTMLFormatConverter::ConvertFromHTMLToAOLMail(const nsAutoString &aFromStr,
-                                                nsAutoString &aToStr) {
+nsHTMLFormatConverter::ConvertFromHTMLToAOLMail(const nsAutoString& aFromStr,
+                                                nsAutoString& aToStr) {
   aToStr.AssignLiteral("<HTML>");
   aToStr.Append(aFromStr);
   aToStr.AppendLiteral("</HTML>");

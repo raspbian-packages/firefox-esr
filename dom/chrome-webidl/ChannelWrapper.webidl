@@ -4,7 +4,7 @@
 
 interface LoadInfo;
 interface MozChannel;
-interface TabParent;
+interface RemoteTab;
 interface URI;
 interface nsISupports;
 
@@ -33,6 +33,7 @@ enum MozContentPolicyType {
   "csp_report",
   "imageset",
   "web_manifest",
+  "speculative",
   "other"
 };
 
@@ -40,13 +41,21 @@ enum MozContentPolicyType {
  * A thin wrapper around nsIChannel and nsIHttpChannel that allows JS
  * callers to access them without XPConnect overhead.
  */
-[ChromeOnly, Exposed=System]
+[ChromeOnly, Exposed=Window]
 interface ChannelWrapper : EventTarget {
   /**
    * Returns the wrapper instance for the given channel. The same wrapper is
    * always returned for a given channel.
    */
   static ChannelWrapper get(MozChannel channel);
+
+  /**
+   * Returns the wrapper instance for the given channel. The same wrapper is
+   * always returned for a given channel.
+   */
+  static ChannelWrapper? getRegisteredChannel(unsigned long long aChannelId,
+                                             WebExtensionPolicy extension,
+                                             RemoteTab? remoteTab);
 
   /**
    * A unique ID for for the requests which remains constant throughout the
@@ -147,9 +156,9 @@ interface ChannelWrapper : EventTarget {
 
   /**
    * Register's this channel as traceable by the given add-on when accessed
-   * via the process of the given TabParent.
+   * via the process of the given RemoteTab.
    */
-  void registerTraceableChannel(WebExtensionPolicy extension, TabParent? tabParent);
+  void registerTraceableChannel(WebExtensionPolicy extension, RemoteTab? remoteTab);
 
   /**
    * The current HTTP status code of the request. This will be 0 if a response
@@ -293,6 +302,9 @@ interface ChannelWrapper : EventTarget {
    * For cross-process requests, the <browser> or <iframe> element to which the
    * content loading this request belongs. For requests that don't originate
    * from a remote browser, this is null.
+   *
+   * This is not an Element because those are by default only exposed in
+   * Window, but we're exposed in System.
    */
   [Cached, Pure]
   readonly attribute nsISupports? browserElement;
@@ -405,6 +417,18 @@ dictionary MozProxyInfo {
    * next candidate proxy server if it has not received a response.
    */
   unsigned long failoverTimeout;
+
+  /**
+   * Any non-empty value will be passed directly as Proxy-Authorization header
+   * value for the CONNECT request attempt.  However, this header set on the
+   * resource request itself takes precedence.
+   */
+  ByteString? proxyAuthorizationHeader = null;
+
+  /**
+   * An optional key used for additional isolation of this proxy connection.
+   */
+  ByteString? connectionIsolationKey = null;
 };
 
 /**
@@ -414,7 +438,7 @@ dictionary MozProxyInfo {
  * url represents the parent of the loading window.
  * frameId is the outerWindowID for the parent of the loading window.
  *
- * For further details see nsILoadInfo.idl and nsIDocument::AncestorPrincipals.
+ * For further details see nsILoadInfo.idl and Document::AncestorPrincipals.
  */
 dictionary MozFrameAncestorInfo {
   required ByteString url;
@@ -450,6 +474,12 @@ dictionary MozRequestFilter {
    * match pattern set.
    */
   MatchPatternSet? urls = null;
+
+  /**
+   * If present, the request only matches if the loadInfo privateBrowsingId matches
+   * against the given incognito value.
+   */
+  boolean? incognito = null;
 };
 
 dictionary MozRequestMatchOptions {

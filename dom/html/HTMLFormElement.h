@@ -15,7 +15,6 @@
 #include "nsIForm.h"
 #include "nsIFormControl.h"
 #include "nsGenericHTMLElement.h"
-#include "nsIDOMHTMLFormElement.h"
 #include "nsIWebProgressListener.h"
 #include "nsIRadioGroupContainer.h"
 #include "nsIWeakReferenceUtils.h"
@@ -36,24 +35,21 @@ class HTMLFormControlsCollection;
 class HTMLImageElement;
 
 class HTMLFormElement final : public nsGenericHTMLElement,
-                              public nsIDOMHTMLFormElement,
                               public nsIWebProgressListener,
                               public nsIForm,
                               public nsIRadioGroupContainer {
   friend class HTMLFormControlsCollection;
 
  public:
-  NS_IMPL_FROMCONTENT_HTML_WITH_TAG(HTMLFormElement, form)
+  NS_IMPL_FROMNODE_HTML_WITH_TAG(HTMLFormElement, form)
 
-  explicit HTMLFormElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit HTMLFormElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
 
   enum { FORM_CONTROL_LIST_HASHTABLE_LENGTH = 8 };
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
-
-  // nsIDOMHTMLFormElement
-  NS_DECL_NSIDOMHTMLFORMELEMENT
 
   // nsIWebProgressListener
   NS_DECL_NSIWEBPROGRESSLISTENER
@@ -94,14 +90,12 @@ class HTMLFormElement final : public nsGenericHTMLElement,
                               const nsAString& aValue,
                               nsIPrincipal* aMaybeScriptedPrincipal,
                               nsAttrValue& aResult) override;
-  virtual nsresult GetEventTargetParent(
-      EventChainPreVisitor& aVisitor) override;
-  virtual nsresult WillHandleEvent(EventChainPostVisitor& aVisitor) override;
+  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
+  void WillHandleEvent(EventChainPostVisitor& aVisitor) override;
   virtual nsresult PostHandleEvent(EventChainPostVisitor& aVisitor) override;
 
-  virtual nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent,
-                              bool aCompileEventHandlers) override;
+  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                              nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
   virtual nsresult BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
@@ -119,8 +113,7 @@ class HTMLFormElement final : public nsGenericHTMLElement,
    */
   void ForgetCurrentSubmission();
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
   NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(HTMLFormElement,
                                            nsGenericHTMLElement)
@@ -154,7 +147,7 @@ class HTMLFormElement final : public nsGenericHTMLElement,
    *
    * @param aElement the element to add
    * @param aUpdateValidity If true, the form validity will be updated.
-   * @param aNotify If true, send nsIDocumentObserver notifications as needed.
+   * @param aNotify If true, send DocumentObserver notifications as needed.
    * @return NS_OK if the element was successfully added
    */
   nsresult AddElement(nsGenericHTMLFormElement* aElement, bool aUpdateValidity,
@@ -491,7 +484,7 @@ class HTMLFormElement final : public nsGenericHTMLElement,
    *
    * @return Whether the form is currently valid.
    */
-  bool CheckFormValidity(nsIMutableArray* aInvalidElements) const;
+  bool CheckFormValidity(nsTArray<RefPtr<Element>>* aInvalidElements) const;
 
   // Clear the mImageNameLookupTable and mImageElements.
   void Clear();
@@ -580,7 +573,7 @@ class HTMLFormElement final : public nsGenericHTMLElement,
   nsInterfaceHashtable<nsStringHashKey, nsISupports> mPastNameLookupTable;
 
   /** Keep track of what the popup state was when the submit was initiated */
-  PopupControlState mSubmitPopupState;
+  PopupBlocker::PopupControlState mSubmitPopupState;
 
   /**
    * Number of invalid and candidate for constraint validation elements in the
@@ -601,19 +594,11 @@ class HTMLFormElement final : public nsGenericHTMLElement,
   bool mNotifiedObservers;
   /** If we notified the listeners early, what was the result? */
   bool mNotifiedObserversResult;
-  /** Keep track of whether a submission was user-initiated or not */
-  bool mSubmitInitiatedFromUserInput;
   /**
    * Whether the submission of this form has been ever prevented because of
    * being invalid.
    */
   bool mEverTriedInvalidSubmit;
-
- protected:
-  /** Detection of first form to notify observers */
-  static bool gFirstFormSubmitted;
-  /** Detection of first password input to initialize the password manager */
-  static bool gPasswordManagerInitialized;
 
  private:
   ~HTMLFormElement();

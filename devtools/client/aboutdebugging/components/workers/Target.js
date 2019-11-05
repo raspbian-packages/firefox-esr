@@ -9,14 +9,24 @@
 const { Component } = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 const dom = require("devtools/client/shared/vendor/react-dom-factories");
-const { debugWorker } = require("../../modules/worker");
 const Services = require("Services");
 
-loader.lazyRequireGetter(this, "DebuggerClient",
-  "devtools/shared/client/debugger-client", true);
+loader.lazyRequireGetter(
+  this,
+  "DebuggerClient",
+  "devtools/shared/client/debugger-client",
+  true
+);
+loader.lazyRequireGetter(
+  this,
+  "gDevToolsBrowser",
+  "devtools/client/framework/devtools-browser",
+  true
+);
 
 const Strings = Services.strings.createBundle(
-  "chrome://devtools/locale/aboutdebugging.properties");
+  "chrome://devtools/locale/aboutdebugging.properties"
+);
 
 class WorkerTarget extends Component {
   static get propTypes() {
@@ -26,8 +36,8 @@ class WorkerTarget extends Component {
       target: PropTypes.shape({
         icon: PropTypes.string,
         name: PropTypes.string.isRequired,
-        workerActor: PropTypes.string
-      }).isRequired
+        workerTargetFront: PropTypes.object,
+      }).isRequired,
     };
   }
 
@@ -37,27 +47,32 @@ class WorkerTarget extends Component {
   }
 
   debug() {
-    let { client, target } = this.props;
-    debugWorker(client, target.workerActor);
+    const { workerTargetFront } = this.props.target;
+    gDevToolsBrowser.openWorkerToolbox(workerTargetFront);
   }
 
   render() {
-    let { target, debugDisabled } = this.props;
+    const { target, debugDisabled } = this.props;
 
-    return dom.li({ className: "target-container" },
+    return dom.li(
+      { className: "target-container" },
       dom.img({
         className: "target-icon",
         role: "presentation",
-        src: target.icon
+        src: target.icon,
       }),
-      dom.div({ className: "target" },
+      dom.div(
+        { className: "target" },
         dom.div({ className: "target-name", title: target.name }, target.name)
       ),
-      dom.button({
-        className: "debug-button",
-        onClick: this.debug,
-        disabled: debugDisabled
-      }, Strings.GetStringFromName("debug"))
+      dom.button(
+        {
+          className: "debug-button",
+          onClick: this.debug,
+          disabled: debugDisabled,
+        },
+        Strings.GetStringFromName("debug")
+      )
     );
   }
 }

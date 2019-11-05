@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,29 +8,44 @@
 
 #include "nsContentUtils.h"
 #include "BackstagePass.h"
-#include "nsDOMClassInfo.h"
 #include "nsIPrincipal.h"
 #include "mozilla/dom/BindingUtils.h"
+#include "mozilla/dom/WebIDLGlobalNameHash.h"
+
+using namespace mozilla::dom;
 
 NS_IMPL_ISUPPORTS(BackstagePass, nsIXPCScriptable, nsIGlobalObject,
                   nsIClassInfo, nsIScriptObjectPrincipal,
                   nsISupportsWeakReference)
 
+// XXX(nika): It appears we don't have support for mayresolve hooks in
+// nsIXPCScriptable, and I don't really want to add it because I'd rather just
+// kill nsIXPCScriptable alltogether, so we don't use it here.
+
 // The nsIXPCScriptable map declaration that will generate stubs for us...
 #define XPC_MAP_CLASSNAME BackstagePass
 #define XPC_MAP_QUOTED_CLASSNAME "BackstagePass"
-#define XPC_MAP_FLAGS                                             \
-  (XPC_SCRIPTABLE_WANT_RESOLVE | XPC_SCRIPTABLE_WANT_ENUMERATE |  \
-   XPC_SCRIPTABLE_WANT_FINALIZE | XPC_SCRIPTABLE_WANT_PRECREATE | \
-   XPC_SCRIPTABLE_USE_JSSTUB_FOR_ADDPROPERTY |                    \
-   XPC_SCRIPTABLE_USE_JSSTUB_FOR_DELPROPERTY |                    \
-   XPC_SCRIPTABLE_DONT_ENUM_QUERY_INTERFACE |                     \
-   XPC_SCRIPTABLE_IS_GLOBAL_OBJECT |                              \
+#define XPC_MAP_FLAGS                                               \
+  (XPC_SCRIPTABLE_WANT_RESOLVE | XPC_SCRIPTABLE_WANT_NEWENUMERATE | \
+   XPC_SCRIPTABLE_WANT_FINALIZE | XPC_SCRIPTABLE_WANT_PRECREATE |   \
+   XPC_SCRIPTABLE_USE_JSSTUB_FOR_ADDPROPERTY |                      \
+   XPC_SCRIPTABLE_USE_JSSTUB_FOR_DELPROPERTY |                      \
+   XPC_SCRIPTABLE_DONT_ENUM_QUERY_INTERFACE |                       \
+   XPC_SCRIPTABLE_IS_GLOBAL_OBJECT |                                \
    XPC_SCRIPTABLE_DONT_REFLECT_INTERFACE_NAMES)
 #include "xpc_map_end.h" /* This will #undef the above */
 
 JSObject* BackstagePass::GetGlobalJSObject() {
-  if (mWrapper) return mWrapper->GetFlatJSObject();
+  if (mWrapper) {
+    return mWrapper->GetFlatJSObject();
+  }
+  return nullptr;
+}
+
+JSObject* BackstagePass::GetGlobalJSObjectPreserveColor() const {
+  if (mWrapper) {
+    return mWrapper->GetFlatJSObjectPreserveColor();
+  }
   return nullptr;
 }
 
@@ -46,27 +61,27 @@ BackstagePass::Resolve(nsIXPConnectWrappedNative* wrapper, JSContext* cx,
                        bool* _retval) {
   JS::RootedObject obj(cx, objArg);
   JS::RootedId id(cx, idArg);
-  *_retval = mozilla::dom::SystemGlobalResolve(cx, obj, id, resolvedp);
+  *_retval =
+      WebIDLGlobalNameHash::ResolveForSystemGlobal(cx, obj, id, resolvedp);
   return *_retval ? NS_OK : NS_ERROR_FAILURE;
 }
 
 NS_IMETHODIMP
-BackstagePass::Enumerate(nsIXPConnectWrappedNative* wrapper, JSContext* cx,
-                         JSObject* objArg, bool* _retval) {
+BackstagePass::NewEnumerate(nsIXPConnectWrappedNative* wrapper, JSContext* cx,
+                            JSObject* objArg,
+                            JS::MutableHandleIdVector properties,
+                            bool enumerableOnly, bool* _retval) {
   JS::RootedObject obj(cx, objArg);
-  *_retval = mozilla::dom::SystemGlobalEnumerate(cx, obj);
+  *_retval = WebIDLGlobalNameHash::NewEnumerateSystemGlobal(cx, obj, properties,
+                                                            enumerableOnly);
   return *_retval ? NS_OK : NS_ERROR_FAILURE;
 }
 
 /***************************************************************************/
 NS_IMETHODIMP
-BackstagePass::GetInterfaces(uint32_t* aCount, nsIID*** aArray) {
-  *aCount = 2;
-  nsIID** array = static_cast<nsIID**>(moz_xmalloc(2 * sizeof(nsIID*)));
-  *aArray = array;
-
-  array[0] = NS_GET_IID(nsIXPCScriptable).Clone();
-  array[1] = NS_GET_IID(nsIScriptObjectPrincipal).Clone();
+BackstagePass::GetInterfaces(nsTArray<nsIID>& aArray) {
+  aArray = nsTArray<nsIID>{NS_GET_IID(nsIXPCScriptable),
+                           NS_GET_IID(nsIScriptObjectPrincipal)};
   return NS_OK;
 }
 
@@ -109,7 +124,7 @@ BackstagePass::GetClassIDNoAlloc(nsCID* aClassIDNoAlloc) {
 NS_IMETHODIMP
 BackstagePass::Finalize(nsIXPConnectWrappedNative* wrapper, JSFreeOp* fop,
                         JSObject* obj) {
-  nsCOMPtr<nsIGlobalObject> bsp(do_QueryWrappedNative(wrapper));
+  nsCOMPtr<nsIGlobalObject> bsp(do_QueryInterface(wrapper->Native()));
   MOZ_ASSERT(bsp);
   static_cast<BackstagePass*>(bsp.get())->ForgetGlobalObject();
   return NS_OK;
@@ -125,7 +140,9 @@ BackstagePass::PreCreate(nsISupports* nativeObj, JSContext* cx,
   MOZ_ASSERT(global, "nativeObj not a global object!");
 
   JSObject* jsglobal = global->GetGlobalJSObject();
-  if (jsglobal) *parentObj = jsglobal;
+  if (jsglobal) {
+    *parentObj = jsglobal;
+  }
   return NS_OK;
 }
 

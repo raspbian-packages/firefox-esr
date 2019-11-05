@@ -1,21 +1,32 @@
-add_task(async function testSetHomepageUseCurrent() {
-  is(gBrowser.currentURI.spec, "about:blank", "Test starts with about:blank open");
-  await BrowserTestUtils.openNewForegroundTab(gBrowser, "about:home");
-  await openPreferencesViaOpenPreferencesAPI("paneGeneral", {leaveOpen: true});
-  // eslint-disable-next-line mozilla/no-cpows-in-tests
-  let doc = gBrowser.contentDocument;
-  is(gBrowser.currentURI.spec, "about:preferences#general",
-     "#general should be in the URI for about:preferences");
-  let oldHomepagePref = Services.prefs.getCharPref("browser.startup.homepage");
+var { HomePage } = ChromeUtils.import("resource:///modules/HomePage.jsm");
 
-  let useCurrent = doc.getElementById("useCurrent");
+add_task(async function testSetHomepageUseCurrent() {
+  is(
+    gBrowser.currentURI.spec,
+    "about:blank",
+    "Test starts with about:blank open"
+  );
+  await BrowserTestUtils.openNewForegroundTab(gBrowser, "about:home");
+  await openPreferencesViaOpenPreferencesAPI("paneHome", { leaveOpen: true });
+  let doc = gBrowser.contentDocument;
+  is(
+    gBrowser.currentURI.spec,
+    "about:preferences#home",
+    "#home should be in the URI for about:preferences"
+  );
+  let oldHomepage = HomePage.get();
+
+  let useCurrent = doc.getElementById("useCurrentBtn");
   useCurrent.click();
 
   is(gBrowser.tabs.length, 3, "Three tabs should be open");
-  is(Services.prefs.getCharPref("browser.startup.homepage"), "about:blank|about:home",
-     "about:blank and about:home should be the only homepages set");
+  is(
+    HomePage.get(),
+    "about:blank|about:home",
+    "about:blank and about:home should be the only homepages set"
+  );
 
-  Services.prefs.setCharPref("browser.startup.homepage", oldHomepagePref);
-  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
-  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
+  HomePage.set(oldHomepage);
+  BrowserTestUtils.removeTab(gBrowser.selectedTab);
+  BrowserTestUtils.removeTab(gBrowser.selectedTab);
 });

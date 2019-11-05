@@ -11,7 +11,13 @@
 namespace mozilla {
 namespace layers {
 
-KeyboardShortcut::KeyboardShortcut() {}
+KeyboardShortcut::KeyboardShortcut()
+    : mKeyCode(0),
+      mCharCode(0),
+      mModifiers(0),
+      mModifiersMask(0),
+      mEventType(KeyboardInput::KeyboardEventType::KEY_OTHER),
+      mDispatchToContent(false) {}
 
 KeyboardShortcut::KeyboardShortcut(KeyboardInput::KeyboardEventType aEventType,
                                    uint32_t aKeyCode, uint32_t aCharCode,
@@ -37,7 +43,8 @@ KeyboardShortcut::KeyboardShortcut(KeyboardInput::KeyboardEventType aEventType,
       mEventType(aEventType),
       mDispatchToContent(true) {}
 
-/* static */ void KeyboardShortcut::AppendHardcodedShortcuts(
+/* static */
+void KeyboardShortcut::AppendHardcodedShortcuts(
     nsTArray<KeyboardShortcut>& aShortcuts) {
   // Tab
   KeyboardShortcut tab1;
@@ -112,7 +119,7 @@ bool KeyboardShortcut::MatchesModifiers(
 KeyboardMap::KeyboardMap(nsTArray<KeyboardShortcut>&& aShortcuts)
     : mShortcuts(aShortcuts) {}
 
-KeyboardMap::KeyboardMap() {}
+KeyboardMap::KeyboardMap() = default;
 
 Maybe<KeyboardShortcut> KeyboardMap::FindMatch(
     const KeyboardInput& aEvent) const {

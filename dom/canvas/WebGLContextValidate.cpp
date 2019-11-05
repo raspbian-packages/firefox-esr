@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,7 +13,6 @@
 #include "jsfriendapi.h"
 #include "mozilla/CheckedInt.h"
 #include "mozilla/Preferences.h"
-#include "mozilla/Services.h"
 #include "nsIObserverService.h"
 #include "nsPrintfCString.h"
 #include "WebGLActiveInfo.h"
@@ -31,7 +30,7 @@
 #include "WebGLVertexAttribData.h"
 
 #if defined(MOZ_WIDGET_COCOA)
-#include "nsCocoaFeatures.h"
+#  include "nsCocoaFeatures.h"
 #endif
 
 ////////////////////
@@ -142,24 +141,6 @@ bool WebGLContext::ValidateBlendFuncEnumsCompatibility(GLenum sfactor,
   return true;
 }
 
-bool WebGLContext::ValidateComparisonEnum(GLenum target, const char* info) {
-  switch (target) {
-    case LOCAL_GL_NEVER:
-    case LOCAL_GL_LESS:
-    case LOCAL_GL_LEQUAL:
-    case LOCAL_GL_GREATER:
-    case LOCAL_GL_GEQUAL:
-    case LOCAL_GL_EQUAL:
-    case LOCAL_GL_NOTEQUAL:
-    case LOCAL_GL_ALWAYS:
-      return true;
-
-    default:
-      ErrorInvalidEnumInfo(info, target);
-      return false;
-  }
-}
-
 bool WebGLContext::ValidateStencilOpEnum(GLenum action, const char* info) {
   switch (action) {
     case LOCAL_GL_KEEP:
@@ -178,7 +159,7 @@ bool WebGLContext::ValidateStencilOpEnum(GLenum action, const char* info) {
   }
 }
 
-bool WebGLContext::ValidateFaceEnum(GLenum face, const char* info) {
+bool WebGLContext::ValidateFaceEnum(const GLenum face) {
   switch (face) {
     case LOCAL_GL_FRONT:
     case LOCAL_GL_BACK:
@@ -186,30 +167,13 @@ bool WebGLContext::ValidateFaceEnum(GLenum face, const char* info) {
       return true;
 
     default:
-      ErrorInvalidEnumInfo(info, face);
+      ErrorInvalidEnumInfo("face", face);
       return false;
   }
 }
 
-bool WebGLContext::ValidateDrawModeEnum(GLenum mode, const char* info) {
-  switch (mode) {
-    case LOCAL_GL_TRIANGLES:
-    case LOCAL_GL_TRIANGLE_STRIP:
-    case LOCAL_GL_TRIANGLE_FAN:
-    case LOCAL_GL_POINTS:
-    case LOCAL_GL_LINE_STRIP:
-    case LOCAL_GL_LINE_LOOP:
-    case LOCAL_GL_LINES:
-      return true;
-
-    default:
-      ErrorInvalidEnumInfo(info, mode);
-      return false;
-  }
-}
-
-bool WebGLContext::ValidateUniformLocation(WebGLUniformLocation* loc,
-                                           const char* funcName) {
+bool WebGLContext::ValidateUniformLocation(
+    const WebGLUniformLocation* const loc) {
   /* GLES 2.0.25, p38:
    *   If the value of location is -1, the Uniform* commands will silently
    *   ignore the data passed in, and the current uniform values will not be
@@ -217,57 +181,51 @@ bool WebGLContext::ValidateUniformLocation(WebGLUniformLocation* loc,
    */
   if (!loc) return false;
 
-  if (!ValidateObjectAllowDeleted(funcName, *loc)) return false;
+  if (!ValidateObjectAllowDeleted("loc", *loc)) return false;
 
   if (!mCurrentProgram) {
-    ErrorInvalidOperation("%s: No program is currently bound.", funcName);
+    ErrorInvalidOperation("No program is currently bound.");
     return false;
   }
 
-  return loc->ValidateForProgram(mCurrentProgram, funcName);
+  return loc->ValidateForProgram(mCurrentProgram);
 }
 
-bool WebGLContext::ValidateAttribArraySetter(const char* name,
-                                             uint32_t setterElemSize,
+bool WebGLContext::ValidateAttribArraySetter(uint32_t setterElemSize,
                                              uint32_t arrayLength) {
   if (IsContextLost()) return false;
 
   if (arrayLength < setterElemSize) {
-    ErrorInvalidValue("%s: Array must have >= %d elements.", name,
-                      setterElemSize);
+    ErrorInvalidValue("Array must have >= %d elements.", setterElemSize);
     return false;
   }
 
   return true;
 }
 
-bool WebGLContext::ValidateUniformSetter(WebGLUniformLocation* loc,
-                                         uint8_t setterElemSize,
-                                         GLenum setterType,
-                                         const char* funcName) {
+bool WebGLContext::ValidateUniformSetter(
+    const WebGLUniformLocation* const loc, const uint8_t setterElemSize,
+    const webgl::AttribBaseType setterType) {
   if (IsContextLost()) return false;
 
-  if (!ValidateUniformLocation(loc, funcName)) return false;
+  if (!ValidateUniformLocation(loc)) return false;
 
-  if (!loc->ValidateSizeAndType(setterElemSize, setterType, funcName))
-    return false;
+  if (!loc->ValidateSizeAndType(setterElemSize, setterType)) return false;
 
   return true;
 }
 
 bool WebGLContext::ValidateUniformArraySetter(
-    WebGLUniformLocation* loc, uint8_t setterElemSize, GLenum setterType,
-    uint32_t setterArraySize, const char* funcName,
+    const WebGLUniformLocation* const loc, const uint8_t setterElemSize,
+    const webgl::AttribBaseType setterType, const uint32_t setterArraySize,
     uint32_t* const out_numElementsToUpload) {
   if (IsContextLost()) return false;
 
-  if (!ValidateUniformLocation(loc, funcName)) return false;
+  if (!ValidateUniformLocation(loc)) return false;
 
-  if (!loc->ValidateSizeAndType(setterElemSize, setterType, funcName))
-    return false;
+  if (!loc->ValidateSizeAndType(setterElemSize, setterType)) return false;
 
-  if (!loc->ValidateArrayLength(setterElemSize, setterArraySize, funcName))
-    return false;
+  if (!loc->ValidateArrayLength(setterElemSize, setterArraySize)) return false;
 
   const auto& elemCount = loc->mInfo->mActiveInfo->mElemCount;
   MOZ_ASSERT(elemCount > loc->mArrayIndex);
@@ -279,23 +237,22 @@ bool WebGLContext::ValidateUniformArraySetter(
 }
 
 bool WebGLContext::ValidateUniformMatrixArraySetter(
-    WebGLUniformLocation* loc, uint8_t setterCols, uint8_t setterRows,
-    GLenum setterType, uint32_t setterArraySize, bool setterTranspose,
-    const char* funcName, uint32_t* const out_numElementsToUpload) {
+    const WebGLUniformLocation* const loc, const uint8_t setterCols,
+    const uint8_t setterRows, const webgl::AttribBaseType setterType,
+    const uint32_t setterArraySize, const bool setterTranspose,
+    uint32_t* const out_numElementsToUpload) {
   const uint8_t setterElemSize = setterCols * setterRows;
 
   if (IsContextLost()) return false;
 
-  if (!ValidateUniformLocation(loc, funcName)) return false;
+  if (!ValidateUniformLocation(loc)) return false;
 
-  if (!loc->ValidateSizeAndType(setterElemSize, setterType, funcName))
-    return false;
+  if (!loc->ValidateSizeAndType(setterElemSize, setterType)) return false;
 
-  if (!loc->ValidateArrayLength(setterElemSize, setterArraySize, funcName))
-    return false;
+  if (!loc->ValidateArrayLength(setterElemSize, setterArraySize)) return false;
 
   if (setterTranspose && !IsWebGL2()) {
-    ErrorInvalidValue("%s: `transpose` must be false.", funcName);
+    ErrorInvalidValue("`transpose` must be false.");
     return false;
   }
 
@@ -305,53 +262,6 @@ bool WebGLContext::ValidateUniformMatrixArraySetter(
 
   *out_numElementsToUpload =
       std::min(uniformElemCount, setterArraySize / setterElemSize);
-  return true;
-}
-
-bool WebGLContext::ValidateAttribIndex(GLuint index, const char* info) {
-  bool valid = (index < MaxVertexAttribs());
-
-  if (!valid) {
-    if (index == GLuint(-1)) {
-      ErrorInvalidValue(
-          "%s: -1 is not a valid `index`. This value"
-          " probably comes from a getAttribLocation()"
-          " call, where this return value -1 means"
-          " that the passed name didn't correspond to"
-          " an active attribute in the specified"
-          " program.",
-          info);
-    } else {
-      ErrorInvalidValue(
-          "%s: `index` must be less than"
-          " MAX_VERTEX_ATTRIBS.",
-          info);
-    }
-  }
-
-  return valid;
-}
-
-bool WebGLContext::ValidateStencilParamsForDrawCall() {
-  const char msg[] =
-      "%s set different front and back stencil %s. Drawing in"
-      " this configuration is not allowed.";
-
-  if (mStencilRefFront != mStencilRefBack) {
-    ErrorInvalidOperation(msg, "stencilFuncSeparate", "reference values");
-    return false;
-  }
-
-  if (mStencilValueMaskFront != mStencilValueMaskBack) {
-    ErrorInvalidOperation(msg, "stencilFuncSeparate", "value masks");
-    return false;
-  }
-
-  if (mStencilWriteMaskFront != mStencilWriteMaskBack) {
-    ErrorInvalidOperation(msg, "stencilMaskSeparate", "write masks");
-    return false;
-  }
-
   return true;
 }
 
@@ -381,7 +291,6 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
   mDisableExtensions = gfxPrefs::WebGLDisableExtensions();
   mLoseContextOnMemoryPressure = gfxPrefs::WebGLLoseContextOnMemoryPressure();
   mCanLoseContextInForeground = gfxPrefs::WebGLCanLoseContextInForeground();
-  mRestoreWhenVisible = gfxPrefs::WebGLRestoreWhenVisible();
 
   // These are the default values, see 6.2 State tables in the
   // OpenGL ES 2.0.25 spec.
@@ -441,9 +350,7 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
   mDefaultFB_DrawBuffer0 = LOCAL_GL_BACK;
   mDefaultFB_ReadBuffer = LOCAL_GL_BACK;
 
-  mEmitContextLostErrorOnce = true;
   mWebGLError = LOCAL_GL_NO_ERROR;
-  mUnderlyingGLError = LOCAL_GL_NO_ERROR;
 
   mBound2DTextures.Clear();
   mBoundCubeMapTextures.Clear();
@@ -520,44 +427,37 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
 
   ////////////////
 
-  if (gl->IsSupported(gl::GLFeature::ES2_compatibility)) {
-    gl->GetUIntegerv(LOCAL_GL_MAX_FRAGMENT_UNIFORM_VECTORS,
-                     &mGLMaxFragmentUniformVectors);
-    gl->GetUIntegerv(LOCAL_GL_MAX_VERTEX_UNIFORM_VECTORS,
-                     &mGLMaxVertexUniformVectors);
-    gl->GetUIntegerv(LOCAL_GL_MAX_VARYING_VECTORS, &mGLMaxVaryingVectors);
-  } else {
-    gl->GetUIntegerv(LOCAL_GL_MAX_FRAGMENT_UNIFORM_COMPONENTS,
-                     &mGLMaxFragmentUniformVectors);
-    mGLMaxFragmentUniformVectors /= 4;
-    gl->GetUIntegerv(LOCAL_GL_MAX_VERTEX_UNIFORM_COMPONENTS,
-                     &mGLMaxVertexUniformVectors);
-    mGLMaxVertexUniformVectors /= 4;
-
-    /* We are now going to try to read GL_MAX_VERTEX_OUTPUT_COMPONENTS
-     * and GL_MAX_FRAGMENT_INPUT_COMPONENTS, however these constants
-     * only entered the OpenGL standard at OpenGL 3.2. So we will try
-     * reading, and check OpenGL error for INVALID_ENUM.
-     *
-     * On the public_webgl list, "problematic GetParameter pnames"
-     * thread, the following formula was given:
-     *   maxVaryingVectors = min(GL_MAX_VERTEX_OUTPUT_COMPONENTS,
-     *                           GL_MAX_FRAGMENT_INPUT_COMPONENTS) / 4
-     */
-    uint32_t maxVertexOutputComponents = 0;
-    uint32_t maxFragmentInputComponents = 0;
-    bool ok = true;
-    ok &= gl->GetPotentialInteger(LOCAL_GL_MAX_VERTEX_OUTPUT_COMPONENTS,
-                                  (GLint*)&maxVertexOutputComponents);
-    ok &= gl->GetPotentialInteger(LOCAL_GL_MAX_FRAGMENT_INPUT_COMPONENTS,
-                                  (GLint*)&maxFragmentInputComponents);
-    if (ok) {
-      mGLMaxVaryingVectors =
-          std::min(maxVertexOutputComponents, maxFragmentInputComponents) / 4;
+  if (gl->IsGLES()) {
+    mGLMaxFragmentUniformVectors =
+        gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_FRAGMENT_UNIFORM_VECTORS);
+    mGLMaxVertexUniformVectors =
+        gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_VERTEX_UNIFORM_VECTORS);
+    if (gl->Version() >= 300) {
+      mGLMaxVertexOutputVectors =
+          gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_VERTEX_OUTPUT_COMPONENTS) / 4;
+      mGLMaxFragmentInputVectors =
+          gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_FRAGMENT_INPUT_COMPONENTS) / 4;
     } else {
-      mGLMaxVaryingVectors = 16;
-      // 16 = 64/4, and 64 is the min value for
-      // maxVertexOutputComponents in the OpenGL 3.2 spec.
+      mGLMaxFragmentInputVectors =
+          gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_VARYING_VECTORS);
+      mGLMaxVertexOutputVectors = mGLMaxFragmentInputVectors;
+    }
+  } else {
+    mGLMaxFragmentUniformVectors =
+        gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_FRAGMENT_UNIFORM_COMPONENTS) / 4;
+    mGLMaxVertexUniformVectors =
+        gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_VERTEX_UNIFORM_COMPONENTS) / 4;
+
+    if (gl->Version() >= 320) {
+      mGLMaxVertexOutputVectors =
+          gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_VERTEX_OUTPUT_COMPONENTS) / 4;
+      mGLMaxFragmentInputVectors =
+          gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_FRAGMENT_INPUT_COMPONENTS) / 4;
+    } else {
+      // Same enum val as GL2's GL_MAX_VARYING_FLOATS.
+      mGLMaxFragmentInputVectors =
+          gl->GetIntAs<uint32_t>(LOCAL_GL_MAX_VARYING_COMPONENTS) / 4;
+      mGLMaxVertexOutputVectors = mGLMaxFragmentInputVectors;
     }
   }
 
@@ -571,6 +471,18 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
   gl->fGetFloatv(driverPName, mGLAliasedPointSizeRange);
 
   ////////////////
+  bool shouldResistFingerprinting =
+      mCanvasElement ?
+                     // If we're constructed from a canvas element
+          nsContentUtils::ShouldResistFingerprinting(GetOwnerDoc())
+                     :
+                     // If we're constructed from an offscreen canvas
+          (mOffscreenCanvas->GetOwnerGlobal()
+               ? nsContentUtils::ShouldResistFingerprinting(
+                     mOffscreenCanvas->GetOwnerGlobal()->PrincipalOrNull())
+               :
+               // Last resort, just check the global preference
+               nsContentUtils::ShouldResistFingerprinting());
 
   if (gfxPrefs::WebGLMinCapabilityMode()) {
     bool ok = true;
@@ -586,7 +498,8 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
     ok &= RestrictCap(&mGLMaxVertexUniformVectors, kMinMaxVertexUniformVectors);
     ok &= RestrictCap(&mGLMaxFragmentUniformVectors,
                       kMinMaxFragmentUniformVectors);
-    ok &= RestrictCap(&mGLMaxVaryingVectors, kMinMaxVaryingVectors);
+    ok &= RestrictCap(&mGLMaxVertexOutputVectors, kMinMaxVaryingVectors);
+    ok &= RestrictCap(&mGLMaxFragmentInputVectors, kMinMaxVaryingVectors);
 
     ok &= RestrictCap(&mGLMaxColorAttachments, kMinMaxColorAttachments);
     ok &= RestrictCap(&mGLMaxDrawBuffers, kMinMaxDrawBuffers);
@@ -604,7 +517,7 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
     }
 
     mDisableFragHighP = true;
-  } else if (nsContentUtils::ShouldResistFingerprinting()) {
+  } else if (shouldResistFingerprinting) {
     bool ok = true;
 
     ok &= RestrictCap(&mGLMaxTextureSize, kCommonMaxTextureSize);
@@ -623,7 +536,8 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
                       kCommonMaxVertexUniformVectors);
     ok &= RestrictCap(&mGLMaxFragmentUniformVectors,
                       kCommonMaxFragmentUniformVectors);
-    ok &= RestrictCap(&mGLMaxVaryingVectors, kCommonMaxVaryingVectors);
+    ok &= RestrictCap(&mGLMaxVertexOutputVectors, kCommonMaxVaryingVectors);
+    ok &= RestrictCap(&mGLMaxFragmentInputVectors, kCommonMaxVaryingVectors);
 
     ok &= RestrictCap(&mGLAliasedLineWidthRange[0],
                       kCommonAliasedLineWidthRangeMin);
@@ -668,9 +582,6 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
     gl->fEnable(LOCAL_GL_TEXTURE_CUBE_MAP_SEAMLESS);
   }
 
-  // Check the shader validator pref
-  mBypassShaderValidation = gfxPrefs::WebGLBypassShaderValidator();
-
   // initialize shader translator
   if (!sh::Initialize()) {
     *out_failReason = {"FEATURE_FAILURE_WEBGL_GLSL",
@@ -707,10 +618,6 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
     return false;
   }
 
-  mDefaultVertexArray = WebGLVertexArray::Create(this);
-  mDefaultVertexArray->mAttribs.SetLength(mGLMaxVertexAttribs);
-  mBoundVertexArray = mDefaultVertexArray;
-
   // OpenGL core profiles remove the default VAO object from version
   // 4.0.0. We create a default VAO for all core profiles,
   // regardless of version.
@@ -719,11 +626,9 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
   // (https://www.opengl.org/registry/doc/glspec40.core.20100311.pdf)
   // in Section E.2.2 "Removed Features", pg 397: "[...] The default
   // vertex array object (the name zero) is also deprecated. [...]"
-
-  if (gl->IsCoreProfile()) {
-    mDefaultVertexArray->GenVertexArray();
-    mDefaultVertexArray->BindVertexArray();
-  }
+  mDefaultVertexArray = WebGLVertexArray::Create(this);
+  mDefaultVertexArray->BindVertexArray();
+  mDefaultVertexArray->mAttribs.SetLength(mGLMaxVertexAttribs);
 
   mPixelStore_FlipY = false;
   mPixelStore_PremultiplyAlpha = false;
@@ -744,9 +649,8 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
 
   mPrimRestartTypeBytes = 0;
 
-  mGenericVertexAttribTypes.reset(new GLenum[mGLMaxVertexAttribs]);
-  std::fill_n(mGenericVertexAttribTypes.get(), mGLMaxVertexAttribs,
-              LOCAL_GL_FLOAT);
+  mGenericVertexAttribTypes.assign(mGLMaxVertexAttribs,
+                                   webgl::AttribBaseType::Float);
   mGenericVertexAttribTypeInvalidator.InvalidateCaches();
 
   static const float kDefaultGenericVertexAttribData[4] = {0, 0, 0, 1};
@@ -772,8 +676,7 @@ bool WebGLContext::InitAndValidateGL(FailureReason* const out_failReason) {
   return true;
 }
 
-bool WebGLContext::ValidateFramebufferTarget(GLenum target,
-                                             const char* const info) {
+bool WebGLContext::ValidateFramebufferTarget(GLenum target) {
   bool isValid = true;
   switch (target) {
     case LOCAL_GL_FRAMEBUFFER:
@@ -793,7 +696,7 @@ bool WebGLContext::ValidateFramebufferTarget(GLenum target,
     return true;
   }
 
-  ErrorInvalidEnumArg(info, "target", target);
+  ErrorInvalidEnumArg("target", target);
   return false;
 }
 

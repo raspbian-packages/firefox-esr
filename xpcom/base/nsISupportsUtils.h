@@ -96,19 +96,19 @@ inline void ns_if_addref(T aExpr) {
     }                       \
   } while (0)
 
-  /*
-   * Often you have to cast an implementation pointer, e.g., |this|, to an
-   * |nsISupports*|, but because you have multiple inheritance, a simple cast
-   * is ambiguous.  One could simply say, e.g., (given a base |nsIBase|),
-   * |static_cast<nsIBase*>(this)|; but that disguises the fact that what
-   * you are really doing is disambiguating the |nsISupports|.  You could make
-   * that more obvious with a double cast, e.g., |static_cast<nsISupports*>
-                                                             (*
-   static_cast<nsIBase*>(this))|, but that is bulky and harder to read...
-   *
-   * The following macro is clean, short, and obvious.  In the example above,
-   * you would use it like this: |NS_ISUPPORTS_CAST(nsIBase*, this)|.
-   */
+/*
+ * Often you have to cast an implementation pointer, e.g., |this|, to an
+ * |nsISupports*|, but because you have multiple inheritance, a simple cast
+ * is ambiguous.  One could simply say, e.g., (given a base |nsIBase|),
+ * |static_cast<nsIBase*>(this)|; but that disguises the fact that what
+ * you are really doing is disambiguating the |nsISupports|.  You could make
+ * that more obvious with a double cast, e.g., |static_cast<nsISupports*>
+                                                           (*
+ static_cast<nsIBase*>(this))|, but that is bulky and harder to read...
+ *
+ * The following macro is clean, short, and obvious.  In the example above,
+ * you would use it like this: |NS_ISUPPORTS_CAST(nsIBase*, this)|.
+ */
 
 #define NS_ISUPPORTS_CAST(__unambiguousBase, __expr) \
   static_cast<nsISupports*>(static_cast<__unambiguousBase>(__expr))
@@ -119,12 +119,13 @@ inline nsresult CallQueryInterface(T* aSource, DestinationType** aDestination) {
   // We permit nsISupports-to-nsISupports here so that one can still obtain
   // the canonical nsISupports pointer with CallQueryInterface.
   static_assert(
-      !mozilla::IsSame<T, DestinationType>::value ||
+      !(mozilla::IsSame<DestinationType, T>::value ||
+        mozilla::IsBaseOf<DestinationType, T>::value) ||
           mozilla::IsSame<DestinationType, nsISupports>::value,
       "don't use CallQueryInterface for compile-time-determinable casts");
 
-  NS_PRECONDITION(aSource, "null parameter");
-  NS_PRECONDITION(aDestination, "null parameter");
+  MOZ_ASSERT(aSource, "null parameter");
+  MOZ_ASSERT(aDestination, "null parameter");
 
   return aSource->QueryInterface(NS_GET_TEMPLATE_IID(DestinationType),
                                  reinterpret_cast<void**>(aDestination));

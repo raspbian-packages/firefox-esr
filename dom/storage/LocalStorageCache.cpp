@@ -77,7 +77,6 @@ LocalStorageCache::LocalStorageCache(const nsACString* aOriginNoSuffix)
       mLoadResult(NS_OK),
       mInitialized(false),
       mPersistent(false),
-      mSessionOnlyDataSetActive(false),
       mPreloadTelemetryRecorded(false) {
   MOZ_COUNT_CTOR(LocalStorageCache);
 }
@@ -183,29 +182,7 @@ const nsCString LocalStorageCache::Origin() const {
 
 LocalStorageCache::Data& LocalStorageCache::DataSet(
     const LocalStorage* aStorage) {
-  uint32_t index = GetDataSetIndex(aStorage);
-
-  if (index == kSessionSet && !mSessionOnlyDataSetActive) {
-    // Session only data set is demanded but not filled with
-    // current data set, copy to session only set now.
-
-    WaitForPreload(Telemetry::LOCALDOMSTORAGE_SESSIONONLY_PRELOAD_BLOCKING_MS);
-
-    Data& defaultSet = mData[kDefaultSet];
-    Data& sessionSet = mData[kSessionSet];
-
-    for (auto iter = defaultSet.mKeys.Iter(); !iter.Done(); iter.Next()) {
-      sessionSet.mKeys.Put(iter.Key(), iter.UserData());
-    }
-
-    mSessionOnlyDataSetActive = true;
-
-    // This updates sessionSet.mOriginQuotaUsage and also updates global usage
-    // for all session only data
-    ProcessUsageDelta(kSessionSet, defaultSet.mOriginQuotaUsage);
-  }
-
-  return mData[index];
+  return mData[GetDataSetIndex(aStorage)];
 }
 
 bool LocalStorageCache::ProcessUsageDelta(const LocalStorage* aStorage,
@@ -217,12 +194,6 @@ bool LocalStorageCache::ProcessUsageDelta(const LocalStorage* aStorage,
 bool LocalStorageCache::ProcessUsageDelta(uint32_t aGetDataSetIndex,
                                           const int64_t aDelta,
                                           const MutationSource aSource) {
-  // Check if we are in a low disk space situation
-  if (aSource == ContentMutation && aDelta > 0 && mManager &&
-      mManager->IsLowDiskSpace()) {
-    return false;
-  }
-
   // Check limit per this origin
   Data& data = mData[aGetDataSetIndex];
   uint64_t newOriginUsage = data.mOriginQuotaUsage + aDelta;
@@ -257,25 +228,6 @@ void LocalStorageCache::Preload() {
   storageChild->AsyncPreload(this);
 }
 
-namespace {
-
-// The AutoTimer provided by telemetry headers is only using static,
-// i.e. compile time known ID, but here we know the ID only at run time.
-// Hence a new class.
-class TelemetryAutoTimer {
- public:
-  explicit TelemetryAutoTimer(Telemetry::HistogramID aId)
-      : id(aId), start(TimeStamp::Now()) {}
-
-  ~TelemetryAutoTimer() { Telemetry::AccumulateTimeDelta(id, start); }
-
- private:
-  Telemetry::HistogramID id;
-  const TimeStamp start;
-};
-
-}  // namespace
-
 void LocalStorageCache::WaitForPreload(Telemetry::HistogramID aTelemetryID) {
   if (!mPersistent) {
     return;
@@ -295,7 +247,7 @@ void LocalStorageCache::WaitForPreload(Telemetry::HistogramID aTelemetryID) {
   }
 
   // Measure which operation blocks and for how long
-  TelemetryAutoTimer timer(aTelemetryID);
+  Telemetry::RuntimeAutoTimer timer(aTelemetryID);
 
   // If preload already started (i.e. we got some first data, but not all)
   // SyncPreload will just wait for it to finish rather then synchronously
@@ -408,7 +360,7 @@ nsresult LocalStorageCache::SetItem(const LocalStorage* aStorage,
            static_cast<int64_t>(aOld.Length());
 
   if (!ProcessUsageDelta(aStorage, delta, aSource)) {
-    return NS_ERROR_DOM_QUOTA_REACHED;
+    return NS_ERROR_DOM_QUOTA_EXCEEDED_ERR;
   }
 
   if (aValue == aOld && DOMStringIsNull(aValue) == DOMStringIsNull(aOld)) {
@@ -421,7 +373,9 @@ nsresult LocalStorageCache::SetItem(const LocalStorage* aStorage,
     return NS_OK;
   }
 
+#if !defined(MOZ_WIDGET_ANDROID)
   NotifyObservers(aStorage, nsString(aKey), aOld, aValue);
+#endif
 
   if (Persist(aStorage)) {
     StorageDBChild* storageChild = StorageDBChild::Get();
@@ -468,7 +422,9 @@ nsresult LocalStorageCache::RemoveItem(const LocalStorage* aStorage,
     return NS_OK;
   }
 
+#if !defined(MOZ_WIDGET_ANDROID)
   NotifyObservers(aStorage, nsString(aKey), aOld, VoidString());
+#endif
 
   if (Persist(aStorage)) {
     StorageDBChild* storageChild = StorageDBChild::Get();
@@ -515,9 +471,11 @@ nsresult LocalStorageCache::Clear(const LocalStorage* aStorage,
     return hadData ? NS_OK : NS_SUCCESS_DOM_NO_OPERATION;
   }
 
+#if !defined(MOZ_WIDGET_ANDROID)
   if (hadData) {
     NotifyObservers(aStorage, VoidString(), VoidString(), VoidString());
   }
+#endif
 
   if (Persist(aStorage) && (refresh || hadData)) {
     StorageDBChild* storageChild = StorageDBChild::Get();
@@ -560,7 +518,6 @@ void LocalStorageCache::UnloadItems(uint32_t aUnloadFlags) {
   if (aUnloadFlags & kUnloadSession) {
     mData[kSessionSet].mKeys.Clear();
     ProcessUsageDelta(kSessionSet, -mData[kSessionSet].mOriginQuotaUsage);
-    mSessionOnlyDataSetActive = false;
   }
 
 #ifdef DOM_STORAGE_TESTS

@@ -5,17 +5,23 @@
 
 // Test that whether close button in header of animation detail works.
 
-add_task(async function () {
-  await addTab(URL_ROOT + "doc_multi_timings.html");
+add_task(async function() {
+  await addTab(URL_ROOT + "doc_custom_playback_rate.html");
   const { animationInspector, panel } = await openAnimationInspector();
 
   info("Checking close button in header of animation detail");
   await clickOnAnimation(animationInspector, panel, 0);
   const detailEl = panel.querySelector("#animation-container .controlled");
   const win = panel.ownerGlobal;
-  isnot(win.getComputedStyle(detailEl).display, "none",
-    "detailEl should be visibled before clicking close button");
+  isnot(
+    win.getComputedStyle(detailEl).display,
+    "none",
+    "detailEl should be visibled before clicking close button"
+  );
   clickOnDetailCloseButton(panel);
-  is(win.getComputedStyle(detailEl).display, "none",
-    "detailEl should be unvisibled after clicking close button");
+  is(
+    win.getComputedStyle(detailEl).display,
+    "none",
+    "detailEl should be unvisibled after clicking close button"
+  );
 });

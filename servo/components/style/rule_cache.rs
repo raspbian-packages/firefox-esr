@@ -1,19 +1,19 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! A cache from rule node to computed values, in order to cache reset
 //! properties.
 
-use fnv::FnvHashMap;
-use logical_geometry::WritingMode;
-use properties::{ComputedValues, StyleBuilder};
-use rule_tree::{StrongRuleNode, StyleSource};
-use selector_parser::PseudoElement;
+use crate::logical_geometry::WritingMode;
+use crate::properties::{ComputedValues, StyleBuilder};
+use crate::rule_tree::StrongRuleNode;
+use crate::selector_parser::PseudoElement;
+use crate::shared_lock::StylesheetGuards;
+use crate::values::computed::NonNegativeLength;
+use fxhash::FxHashMap;
 use servo_arc::Arc;
-use shared_lock::StylesheetGuards;
 use smallvec::SmallVec;
-use values::computed::NonNegativeLength;
 
 /// The conditions for caching and matching a style in the rule cache.
 #[derive(Clone, Debug, Default)]
@@ -71,14 +71,14 @@ impl RuleCacheConditions {
 /// A TLS cache from rules matched to computed values.
 pub struct RuleCache {
     // FIXME(emilio): Consider using LRUCache or something like that?
-    map: FnvHashMap<StrongRuleNode, SmallVec<[(RuleCacheConditions, Arc<ComputedValues>); 1]>>,
+    map: FxHashMap<StrongRuleNode, SmallVec<[(RuleCacheConditions, Arc<ComputedValues>); 1]>>,
 }
 
 impl RuleCache {
     /// Creates an empty `RuleCache`.
     pub fn new() -> Self {
         Self {
-            map: FnvHashMap::default(),
+            map: FxHashMap::default(),
         }
     }
 
@@ -94,19 +94,21 @@ impl RuleCache {
     /// and animations.
     fn get_rule_node_for_cache<'r>(
         guards: &StylesheetGuards,
-        mut rule_node: Option<&'r StrongRuleNode>
+        mut rule_node: Option<&'r StrongRuleNode>,
     ) -> Option<&'r StrongRuleNode> {
         while let Some(node) = rule_node {
-            match *node.style_source() {
-                StyleSource::Declarations(ref decls) => {
-                    let cascade_level = node.cascade_level();
-                    let decls = decls.read_with(cascade_level.guard(guards));
-                    if decls.contains_any_reset() {
-                        break;
-                    }
-                }
-                StyleSource::None => {}
-                StyleSource::Style(_) => break,
+            match node.style_source() {
+                Some(s) => match s.as_declarations() {
+                    Some(decls) => {
+                        let cascade_level = node.cascade_level();
+                        let decls = decls.read_with(cascade_level.guard(guards));
+                        if decls.contains_any_reset() {
+                            break;
+                        }
+                    },
+                    None => break,
+                },
+                None => {},
             }
             rule_node = node.parent();
         }
@@ -122,16 +124,13 @@ impl RuleCache {
         guards: &StylesheetGuards,
         builder_with_early_props: &StyleBuilder,
     ) -> Option<&ComputedValues> {
-        if builder_with_early_props.is_style_if_visited() {
-            // FIXME(emilio): We can probably do better, does it matter much?
-            return None;
-        }
-
         // A pseudo-element with property restrictions can result in different
         // computed values if it's also used for a non-pseudo.
-        if builder_with_early_props.pseudo
-           .and_then(|p| p.property_restriction())
-           .is_some() {
+        if builder_with_early_props
+            .pseudo
+            .and_then(|p| p.property_restriction())
+            .is_some()
+        {
             return None;
         }
 
@@ -142,7 +141,7 @@ impl RuleCache {
         for &(ref conditions, ref values) in cached_values.iter() {
             if conditions.matches(builder_with_early_props) {
                 debug!("Using cached reset style with conditions {:?}", conditions);
-                return Some(&**values)
+                return Some(&**values);
             }
         }
         None
@@ -162,11 +161,6 @@ impl RuleCache {
             return false;
         }
 
-        if style.is_style_if_visited() {
-            // FIXME(emilio): We can probably do better, does it matter much?
-            return false;
-        }
-
         // A pseudo-element with property restrictions can result in different
         // computed values if it's also used for a non-pseudo.
         if pseudo.and_then(|p| p.property_restriction()).is_some() {
@@ -179,7 +173,10 @@ impl RuleCache {
             None => return false,
         };
 
-        debug!("Inserting cached reset style with conditions {:?}", conditions);
+        debug!(
+            "Inserting cached reset style with conditions {:?}",
+            conditions
+        );
         self.map
             .entry(rules)
             .or_insert_with(SmallVec::new)
@@ -187,5 +184,4 @@ impl RuleCache {
 
         true
     }
-
 }

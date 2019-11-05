@@ -16,21 +16,24 @@ var DevelopmentHelpers = {
   quickRestart() {
     Services.obs.notifyObservers(null, "startupcache-invalidate");
 
-    let env = Cc["@mozilla.org/process/environment;1"].
-              getService(Ci.nsIEnvironment);
+    let env = Cc["@mozilla.org/process/environment;1"].getService(
+      Ci.nsIEnvironment
+    );
     env.set("MOZ_DISABLE_SAFE_MODE_KEY", "1");
 
-    Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+    Services.startup.quit(
+      Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+    );
   },
 
   addRestartShortcut() {
-    let command = document.createElement("command");
+    let command = document.createXULElement("command");
     command.setAttribute("id", "cmd_quickRestart");
     command.addEventListener("command", this.quickRestart, true);
     command.setAttribute("oncommand", "void 0;"); // Needed - bug 371900
     document.getElementById("mainCommandSet").prepend(command);
 
-    let key = document.createElement("key");
+    let key = document.createXULElement("key");
     key.setAttribute("id", "key_quickRestart");
     key.setAttribute("key", "r");
     key.setAttribute("modifiers", "accel,alt");
@@ -38,7 +41,7 @@ var DevelopmentHelpers = {
     key.setAttribute("oncommand", "void 0;"); // Needed - bug 371900
     document.getElementById("mainKeyset").prepend(key);
 
-    let menuitem = document.createElement("menuitem");
+    let menuitem = document.createXULElement("menuitem");
     menuitem.setAttribute("id", "menu_FileRestartItem");
     menuitem.setAttribute("key", "key_quickRestart");
     menuitem.setAttribute("label", "Restart (Developer)");

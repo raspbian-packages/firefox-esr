@@ -17,6 +17,7 @@
 #include "mozilla/SegmentedVector.h"
 #include "jsapi.h"
 #include "jsfriendapi.h"
+#include "js/TraceKind.h"
 
 #include "nsCycleCollectionParticipant.h"
 #include "nsDataHashtable.h"
@@ -156,7 +157,7 @@ class CycleCollectedJSRuntime {
                               const JS::GCDescription& aDesc);
   static void GCNurseryCollectionCallback(JSContext* aContext,
                                           JS::GCNurseryProgress aProgress,
-                                          JS::gcreason::Reason aReason);
+                                          JS::GCReason aReason);
   static void OutOfMemoryCallback(JSContext* aContext, void* aData);
   /**
    * Callback for reporting external string memory.
@@ -211,6 +212,8 @@ class CycleCollectedJSRuntime {
     Recovered
   };
 
+  const char* OOMStateToString(const OOMState aOomState) const;
+
   void SetLargeAllocationFailure(OOMState aNewState);
 
   void AnnotateAndSetOutOfMemory(OOMState* aStatePtr, OOMState aNewState);
@@ -261,7 +264,7 @@ class CycleCollectedJSRuntime {
   void FixWeakMappingGrayBits() const;
   void CheckGrayBits() const;
   bool AreGCGrayBitsValid() const;
-  void GarbageCollect(uint32_t aReason) const;
+  void GarbageCollect(JS::GCReason aReason) const;
 
   // This needs to be an nsWrapperCache, not a JSObject, because we need to know
   // when our object gets moved.  But we can't trace it (and hence update our
@@ -338,7 +341,7 @@ class CycleCollectedJSRuntime {
   nsTHashtable<nsPtrHashKey<JS::Zone>> mZonesWaitingForGC;
 
   struct EnvironmentPreparer : public js::ScriptEnvironmentPreparer {
-    void invoke(JS::HandleObject scope, Closure& closure) override;
+    void invoke(JS::HandleObject global, Closure& closure) override;
   };
   EnvironmentPreparer mEnvironmentPreparer;
 
@@ -351,7 +354,7 @@ class CycleCollectedJSRuntime {
   // Built on nightly only to avoid any possible performance impact on release
 
   struct ErrorInterceptor final : public JSErrorInterceptor {
-    virtual void interceptError(JSContext* cx, const JS::Value& val) override;
+    virtual void interceptError(JSContext* cx, JS::HandleValue exn) override;
     void Shutdown(JSRuntime* rt);
 
     // Copy of the details of the exception.
@@ -378,14 +381,6 @@ class CycleCollectedJSRuntime {
 };
 
 void TraceScriptHolder(nsISupports* aHolder, JSTracer* aTracer);
-
-// Returns true if the JS::TraceKind is one the cycle collector cares about.
-inline bool AddToCCKind(JS::TraceKind aKind) {
-  return aKind == JS::TraceKind::Object || aKind == JS::TraceKind::Script ||
-         aKind == JS::TraceKind::Scope || aKind == JS::TraceKind::RegExpShared;
-}
-
-bool GetBuildId(JS::BuildIdCharVector* aBuildID);
 
 }  // namespace mozilla
 

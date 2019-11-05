@@ -17,6 +17,10 @@ pref(font.default.zh-CN,"sans-serif") pref(font.default.zh-TW,"sans-serif") pref
 == 1367860-2.htm 1367860-ref.htm
 == 1367860-3.htm 1367860-ref.htm
 
+# Test for bug 1458158: Arabic text in Arial weight 900 should fall back to Bold rather than Regular.
+# Limited to Windows because this is specific to the fonts shipped on Windows by default.
+random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) skip-if(!winWidget) == 1458158-1.html 1458158-1-ref.html # Bug 1392106
+
 # basic tests for bug 538730
 != synthetic-bold-1.html synthetic-bold-1-ref.html
 != synthetic-bold-2.html synthetic-bold-2-ref.html
@@ -74,18 +78,18 @@ fails-if(gtkWidget) == familyname-escapedidents.html familyname-escapedidents-re
 != normalmedium.html normalmedium-notref.html
 
 # Linux fails due to bug 604815
-fuzzy-if(OSX==1010&&browserIsRemote,1,23) == weightmapping-12.html weightmapping-12-ref.html
+fuzzy-if(OSX==1010&&browserIsRemote,0-1,0-23) == weightmapping-12.html weightmapping-12-ref.html
 == weightmapping-25.html weightmapping-25-ref.html
 == weightmapping-45.html weightmapping-45-ref.html
 == weightmapping-458.html weightmapping-458-ref.html
 == weightmapping-478.html weightmapping-478-ref.html
 == weightmapping-7.html weightmapping-7-ref.html
-fuzzy-if(OSX==1010,1,30) == weightmapping-12579.html weightmapping-12579-ref.html
+fuzzy-if(OSX==1010,0-1,0-30) == weightmapping-12579.html weightmapping-12579-ref.html
 
 random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == stretchmapping-all.html stretchmapping-all-ref.html # Bug 1392106
 == stretchmapping-reverse.html stretchmapping-reverse-ref.html
-fuzzy-if(OSX==1010&&browserIsRemote,1,17) fuzzy-if(Android,4,8) == stretchmapping-35.html stretchmapping-35-ref.html
-fuzzy-if(OSX==1010,3,5) == stretchmapping-137.html stretchmapping-137-ref.html
+fuzzy-if(OSX==1010&&browserIsRemote,0-1,0-17) fuzzy-if(Android,0-4,0-8) == stretchmapping-35.html stretchmapping-35-ref.html
+fuzzy-if(OSX==1010,0-3,0-5) == stretchmapping-137.html stretchmapping-137-ref.html
 
 # test for font-stretch using @font-face
 random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == font-stretch-1.html font-stretch-1-ref.html # Bug 1392106
@@ -153,6 +157,8 @@ skip-if(gtkWidget||/^Windows\x20NT\x206\.1/.test(http.oscpu)) == emoji-fallback-
 # and are not expected to pass on platforms that don't have those same fonts.
 skip-if(!cocoaWidget) == legacy-family-names-1.html legacy-family-names-1-ref.html
 skip-if(!winWidget) == legacy-family-names-2.html legacy-family-names-2-ref.html
+
+random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == descriptor-ranges.html descriptor-ranges-ref.html # Bug 1392106
 
 # Reset default prefs.
 default-preferences

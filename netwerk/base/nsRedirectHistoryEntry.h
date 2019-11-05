@@ -22,7 +22,7 @@ class nsRedirectHistoryEntry final : public nsIRedirectHistoryEntry {
                          const nsACString& aRemoteAddress);
 
  private:
-  ~nsRedirectHistoryEntry();
+  ~nsRedirectHistoryEntry() = default;
 
   nsCOMPtr<nsIPrincipal> mPrincipal;
   nsCOMPtr<nsIURI> mReferrer;

@@ -49,19 +49,18 @@ class EventTargetWrapper : public AbstractThread {
     AbstractThread* currentThread;
     if (aReason != TailDispatch && (currentThread = GetCurrent()) &&
         RequiresTailDispatch(currentThread)) {
-      return currentThread->TailDispatcher().AddTask(this, Move(aRunnable));
+      return currentThread->TailDispatcher().AddTask(this,
+                                                     std::move(aRunnable));
     }
 
-    RefPtr<nsIRunnable> runner(
-        new Runner(this, Move(aRunnable),
-                   false /* already drained by TaskGroupRunnable  */));
+    RefPtr<nsIRunnable> runner = new Runner(this, std::move(aRunnable));
     return mTarget->Dispatch(runner.forget(), NS_DISPATCH_NORMAL);
   }
 
   // Prevent a GCC warning about the other overload of Dispatch being hidden.
   using AbstractThread::Dispatch;
 
-  virtual bool IsCurrentThreadIn() override {
+  virtual bool IsCurrentThreadIn() const override {
     return mTarget->IsOnCurrentThread();
   }
 
@@ -98,55 +97,25 @@ class EventTargetWrapper : public AbstractThread {
   RefPtr<nsIEventTarget> mTarget;
   Maybe<AutoTaskDispatcher> mTailDispatcher;
 
-  virtual already_AddRefed<nsIRunnable> CreateDirectTaskDrainer(
-      already_AddRefed<nsIRunnable> aRunnable) override {
-    RefPtr<Runner> runner =
-        new Runner(this, Move(aRunnable), /* aDrainDirectTasks */ true);
-    return runner.forget();
-  }
-
   class Runner : public CancelableRunnable {
-    class MOZ_STACK_CLASS AutoTaskGuard final {
-     public:
-      explicit AutoTaskGuard(EventTargetWrapper* aThread)
-          : mLastCurrentThread(nullptr) {
-        MOZ_ASSERT(aThread);
-        mLastCurrentThread = sCurrentThreadTLS.get();
-        sCurrentThreadTLS.set(aThread);
-      }
-
-      ~AutoTaskGuard() { sCurrentThreadTLS.set(mLastCurrentThread); }
-
-     private:
-      AbstractThread* mLastCurrentThread;
-    };
-
    public:
     explicit Runner(EventTargetWrapper* aThread,
-                    already_AddRefed<nsIRunnable> aRunnable,
-                    bool aDrainDirectTasks)
+                    already_AddRefed<nsIRunnable> aRunnable)
         : CancelableRunnable("EventTargetWrapper::Runner"),
           mThread(aThread),
-          mRunnable(aRunnable),
-          mDrainDirectTasks(aDrainDirectTasks) {}
+          mRunnable(aRunnable) {}
 
     NS_IMETHOD Run() override {
-      AutoTaskGuard taskGuard(mThread);
+      AutoEnter taskGuard(mThread);
 
       MOZ_ASSERT(mThread == AbstractThread::GetCurrent());
       MOZ_ASSERT(mThread->IsCurrentThreadIn());
-      nsresult rv = mRunnable->Run();
-
-      if (mDrainDirectTasks) {
-        mThread->TailDispatcher().DrainDirectTasks();
-      }
-
-      return rv;
+      return mRunnable->Run();
     }
 
     nsresult Cancel() override {
       // Set the TLS during Cancel() just in case it calls Run().
-      AutoTaskGuard taskGuard(mThread);
+      AutoEnter taskGuard(mThread);
 
       nsresult rv = NS_OK;
 
@@ -160,6 +129,7 @@ class EventTargetWrapper : public AbstractThread {
       return rv;
     }
 
+#ifdef MOZ_COLLECTING_RUNNABLE_TELEMETRY
     NS_IMETHOD GetName(nsACString& aName) override {
       aName.AssignLiteral("AbstractThread::Runner");
       if (nsCOMPtr<nsINamed> named = do_QueryInterface(mRunnable)) {
@@ -172,11 +142,11 @@ class EventTargetWrapper : public AbstractThread {
       }
       return NS_OK;
     }
+#endif
 
    private:
-    RefPtr<EventTargetWrapper> mThread;
-    RefPtr<nsIRunnable> mRunnable;
-    bool mDrainDirectTasks;
+    const RefPtr<EventTargetWrapper> mThread;
+    const RefPtr<nsIRunnable> mRunnable;
   };
 };
 
@@ -200,7 +170,7 @@ AbstractThread::DispatchFromScript(nsIRunnable* aEvent, uint32_t aFlags) {
 NS_IMETHODIMP
 AbstractThread::Dispatch(already_AddRefed<nsIRunnable> aEvent,
                          uint32_t aFlags) {
-  return Dispatch(Move(aEvent), NormalDispatch);
+  return Dispatch(std::move(aEvent), NormalDispatch);
 }
 
 NS_IMETHODIMP
@@ -264,12 +234,13 @@ void AbstractThread::InitMainThread() {
 
 void AbstractThread::DispatchStateChange(
     already_AddRefed<nsIRunnable> aRunnable) {
-  GetCurrent()->TailDispatcher().AddStateChangeTask(this, Move(aRunnable));
+  GetCurrent()->TailDispatcher().AddStateChangeTask(this, std::move(aRunnable));
 }
 
-/* static */ void AbstractThread::DispatchDirectTask(
+/* static */
+void AbstractThread::DispatchDirectTask(
     already_AddRefed<nsIRunnable> aRunnable) {
-  GetCurrent()->TailDispatcher().AddDirectTask(Move(aRunnable));
+  GetCurrent()->TailDispatcher().AddDirectTask(std::move(aRunnable));
 }
 
 /* static */

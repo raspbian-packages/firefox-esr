@@ -16,7 +16,7 @@ class nsIInputStream;
 
 namespace mozilla {
 
-class IncrementalTokenizer : public TokenizerBase {
+class IncrementalTokenizer : public TokenizerBase<char> {
  public:
   /**
    * The consumer callback.  The function is called for every single token
@@ -40,8 +40,8 @@ class IncrementalTokenizer : public TokenizerBase {
    * @param aRawMinBuffered
    *    When we have buffered at least aRawMinBuffered data, but there was no
    * custom token found so far because of too small incremental feed chunks,
-   * deliver the raw data to preserve streaming and to save memory.  This
-   * only has effect in OnlyCustomTokenizing mode.
+   * deliver the raw data to preserve streaming and to save memory.  This only
+   * has effect in OnlyCustomTokenizing mode.
    */
   explicit IncrementalTokenizer(Consumer&& aConsumer,
                                 const char* aWhitespaces = nullptr,

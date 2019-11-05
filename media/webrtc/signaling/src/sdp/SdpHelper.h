@@ -54,21 +54,16 @@ class SdpHelper {
 
   nsresult GetMidFromLevel(const Sdp& sdp, uint16_t level, std::string* mid);
   nsresult GetIdsFromMsid(const Sdp& sdp, const SdpMediaSection& msection,
-                          std::vector<std::string>* streamId,
-                          std::string* trackId);
+                          std::vector<std::string>* streamId);
   nsresult GetMsids(const SdpMediaSection& msection,
                     std::vector<SdpMsidAttributeList::Msid>* msids);
   nsresult ParseMsid(const std::string& msidAttribute, std::string* streamId,
                      std::string* trackId);
   nsresult AddCandidateToSdp(Sdp* sdp, const std::string& candidate,
-                             const std::string& mid, uint16_t level);
-  void SetIceGatheringComplete(Sdp* sdp, uint16_t level,
-                               BundledMids bundledMids);
-  void SetDefaultAddresses(const std::string& defaultCandidateAddr,
-                           uint16_t defaultCandidatePort,
-                           const std::string& defaultRtcpCandidateAddr,
-                           uint16_t defaultRtcpCandidatePort, Sdp* sdp,
-                           uint16_t level, BundledMids bundledMids);
+                             uint16_t level, const std::string& ufrag);
+  nsresult SetIceGatheringComplete(Sdp* sdp, const std::string& ufrag);
+  nsresult SetIceGatheringComplete(Sdp* sdp, uint16_t level,
+                                   const std::string& ufrag);
   void SetDefaultAddresses(const std::string& defaultCandidateAddr,
                            uint16_t defaultCandidatePort,
                            const std::string& defaultRtcpCandidateAddr,
@@ -101,6 +96,8 @@ class SdpHelper {
       const SdpMediaSection& remoteMsection,
       const std::vector<SdpExtmapAttributeList::Extmap>& localExtensions,
       SdpMediaSection* localMsection);
+
+  bool SdpMatch(const Sdp& sdp1, const Sdp& sdp2);
 
  private:
   std::string& mLastError;

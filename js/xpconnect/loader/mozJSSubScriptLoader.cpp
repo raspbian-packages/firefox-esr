@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=99: */
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=8 sts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -19,16 +19,21 @@
 #include "jsapi.h"
 #include "jsfriendapi.h"
 #include "xpcprivate.h"  // For xpc::OptionsBase
+#include "js/CompilationAndEvaluation.h"
+#include "js/SourceText.h"  // JS::Source{Ownership,Text}
 #include "js/Wrapper.h"
 
+#include "mozilla/ContentPrincipal.h"
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/ToJSValue.h"
 #include "mozilla/dom/ScriptLoader.h"
 #include "mozilla/HoldDropJSObjects.h"
 #include "mozilla/ScriptPreloader.h"
+#include "mozilla/SystemPrincipal.h"
 #include "mozilla/scache/StartupCache.h"
 #include "mozilla/scache/StartupCacheUtils.h"
 #include "mozilla/Unused.h"
+#include "mozilla/Utf8.h"  // mozilla::Utf8Unit
 #include "nsContentUtils.h"
 #include "nsString.h"
 #include "nsCycleCollectionParticipant.h"
@@ -46,20 +51,18 @@ class MOZ_STACK_CLASS LoadSubScriptOptions : public OptionsBase {
                                 JSObject* options = nullptr)
       : OptionsBase(cx, options),
         target(cx),
-        charset(VoidString()),
         ignoreCache(false),
         async(false),
         wantReturnValue(false) {}
 
   virtual bool Parse() override {
-    return ParseObject("target", &target) && ParseString("charset", charset) &&
+    return ParseObject("target", &target) &&
            ParseBoolean("ignoreCache", &ignoreCache) &&
            ParseBoolean("async", &async) &&
            ParseBoolean("wantReturnValue", &wantReturnValue);
   }
 
   RootedObject target;
-  nsString charset;
   bool ignoreCache;
   bool async;
   bool wantReturnValue;
@@ -89,9 +92,11 @@ static void SubscriptCachePath(JSContext* cx, nsIURI* uri,
                                nsACString& cachePath) {
   // StartupCache must distinguish between non-syntactic vs global when
   // computing the cache key.
-  bool hasNonSyntacticScope = !JS_IsGlobalObject(targetObj);
-  cachePath.Assign(hasNonSyntacticScope ? JSSUB_CACHE_PREFIX("non-syntactic")
-                                        : JSSUB_CACHE_PREFIX("global"));
+  if (!JS_IsGlobalObject(targetObj)) {
+    cachePath.AssignLiteral(JSSUB_CACHE_PREFIX("non-syntactic"));
+  } else {
+    cachePath.AssignLiteral(JSSUB_CACHE_PREFIX("global"));
+  }
   PathifyURI(uri, cachePath);
 }
 
@@ -112,7 +117,9 @@ static void ReportError(JSContext* cx, const char* origMsg, nsIURI* uri) {
 
   nsAutoCString spec;
   nsresult rv = uri->GetSpec(spec);
-  if (NS_FAILED(rv)) spec.AssignLiteral("(unknown)");
+  if (NS_FAILED(rv)) {
+    spec.AssignLiteral("(unknown)");
+  }
 
   nsAutoCString msg(origMsg);
   msg.AppendLiteral(": ");
@@ -120,46 +127,40 @@ static void ReportError(JSContext* cx, const char* origMsg, nsIURI* uri) {
   ReportError(cx, msg);
 }
 
-static bool PrepareScript(nsIURI* uri, JSContext* cx, HandleObject targetObj,
-                          const char* uriStr, const nsAString& charset,
-                          const char* buf, int64_t len, bool wantReturnValue,
-                          MutableHandleScript script) {
+static JSScript* PrepareScript(nsIURI* uri, JSContext* cx,
+                               bool wantGlobalScript, const char* uriStr,
+                               const char* buf, int64_t len,
+                               bool wantReturnValue) {
   JS::CompileOptions options(cx);
   options.setFileAndLine(uriStr, 1).setNoScriptRval(!wantReturnValue);
-  if (!charset.IsVoid()) {
-    char16_t* scriptBuf = nullptr;
-    size_t scriptLength = 0;
 
-    nsresult rv = ScriptLoader::ConvertToUTF16(
-        nullptr, reinterpret_cast<const uint8_t*>(buf), len, charset, nullptr,
-        scriptBuf, scriptLength);
-
-    JS::SourceBufferHolder srcBuf(scriptBuf, scriptLength,
-                                  JS::SourceBufferHolder::GiveOwnership);
-
-    if (NS_FAILED(rv)) {
-      ReportError(cx, LOAD_ERROR_BADCHARSET, uri);
-      return false;
-    }
-
-    if (JS_IsGlobalObject(targetObj)) {
-      return JS::Compile(cx, options, srcBuf, script);
-    }
-    return JS::CompileForNonSyntacticScope(cx, options, srcBuf, script);
-  }
-  // We only use lazy source when no special encoding is specified because
-  // the lazy source loader doesn't know the encoding.
+  // This presumes that no one else might be compiling a script for this
+  // (URL, syntactic-or-not) key *not* using UTF-8.  Seeing as JS source can
+  // only be compiled as UTF-8 or UTF-16 now -- there isn't a JSAPI function to
+  // compile Latin-1 now -- this presumption seems relatively safe.
+  //
+  // This also presumes that lazy parsing is disabled, for the sake of the
+  // startup cache.  If lazy parsing is ever enabled for pertinent scripts that
+  // pass through here, we may need to disable lazy source for them.
   options.setSourceIsLazy(true);
-  if (JS_IsGlobalObject(targetObj)) {
-    return JS::Compile(cx, options, buf, len, script);
+
+  JS::SourceText<Utf8Unit> srcBuf;
+  if (!srcBuf.init(cx, buf, len, JS::SourceOwnership::Borrowed)) {
+    return nullptr;
   }
-  return JS::CompileForNonSyntacticScope(cx, options, buf, len, script);
+
+  if (wantGlobalScript) {
+    return JS::Compile(cx, options, srcBuf);
+  }
+  return JS::CompileForNonSyntacticScope(cx, options, srcBuf);
 }
 
 static bool EvalScript(JSContext* cx, HandleObject targetObj,
                        HandleObject loadScope, MutableHandleValue retval,
                        nsIURI* uri, bool startupCache, bool preloadCache,
                        MutableHandleScript script) {
+  MOZ_ASSERT(!js::IsWrapper(targetObj));
+
   if (JS_IsGlobalObject(targetObj)) {
     if (!JS::CloneAndExecuteScript(cx, script, retval)) {
       return false;
@@ -170,21 +171,20 @@ static bool EvalScript(JSContext* cx, HandleObject targetObj,
     }
     retval.setUndefined();
   } else {
-    JS::AutoObjectVector envChain(cx);
+    JS::RootedObjectVector envChain(cx);
     if (!envChain.append(targetObj)) {
       return false;
     }
     if (!loadScope) {
-    // A null loadScope means we are cross-compartment. In this case, we
-    // should check the target isn't in the JSM loader shared-global or
-    // we will contaiminate all JSMs in the compartment.
-    //
-    // NOTE: If loadScope is already a shared-global JSM, we can't
-    // determine which JSM the target belongs to and have to assume it
-    // is in our JSM.
+      // A null loadScope means we are cross-realm. In this case, we should
+      // check the target isn't in the JSM loader shared-global or we will
+      // contaminate all JSMs in the realm.
+      //
+      // NOTE: If loadScope is already a shared-global JSM, we can't
+      // determine which JSM the target belongs to and have to assume it
+      // is in our JSM.
 #ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
-      JSObject* targetGlobal =
-          js::GetGlobalForObjectCrossCompartment(targetObj);
+      JSObject* targetGlobal = JS::GetNonCCWObjectGlobal(targetObj);
       MOZ_DIAGNOSTIC_ASSERT(
           !mozJSComponentLoader::Get()->IsLoaderGlobal(targetGlobal),
           "Don't load subscript into target in a shared-global JSM");
@@ -205,7 +205,7 @@ static bool EvalScript(JSContext* cx, HandleObject targetObj,
     }
   }
 
-  JSAutoCompartment rac(cx, targetObj);
+  JSAutoRealm rar(cx, targetObj);
   if (!JS_WrapValue(cx, retval)) {
     return false;
   }
@@ -226,7 +226,9 @@ static bool EvalScript(JSContext* cx, HandleObject targetObj,
       // needed during the last startup in that scope. But for startups
       // when a non-cached script is used (e.g., after add-on
       // installation), this may be a Sandbox global, which may be
-      // nuked but held alive by the JSScript.
+      // nuked but held alive by the JSScript. We can avoid this problem
+      // by using a different scope when compiling the script. See
+      // useCompilationScope in ReadScript().
       //
       // In general, this isn't a problem, since add-on Sandboxes which
       // use the script preloader are not destroyed until add-on shutdown,
@@ -240,7 +242,7 @@ static bool EvalScript(JSContext* cx, HandleObject targetObj,
     }
 
     if (startupCache) {
-      JSAutoCompartment ac(cx, script);
+      JSAutoRealm ar(cx, script);
       WriteCachedScript(StartupCache::GetSingleton(), cachePath, cx, script);
     }
   }
@@ -256,13 +258,12 @@ class AsyncScriptLoader : public nsIIncrementalStreamLoaderObserver {
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(AsyncScriptLoader)
 
   AsyncScriptLoader(nsIChannel* aChannel, bool aWantReturnValue,
-                    JSObject* aTargetObj, JSObject* aLoadScope,
-                    const nsAString& aCharset, bool aCache, Promise* aPromise)
+                    JSObject* aTargetObj, JSObject* aLoadScope, bool aCache,
+                    Promise* aPromise)
       : mChannel(aChannel),
         mTargetObj(aTargetObj),
         mLoadScope(aLoadScope),
         mPromise(aPromise),
-        mCharset(aCharset),
         mWantReturnValue(aWantReturnValue),
         mCache(aCache) {
     // Needed for the cycle collector to manage mTargetObj.
@@ -276,7 +277,6 @@ class AsyncScriptLoader : public nsIIncrementalStreamLoaderObserver {
   Heap<JSObject*> mTargetObj;
   Heap<JSObject*> mLoadScope;
   RefPtr<Promise> mPromise;
-  nsString mCharset;
   bool mWantReturnValue;
   bool mCache;
 };
@@ -318,9 +318,9 @@ class MOZ_STACK_CLASS AutoRejectPromise {
       JSContext* cx = mAutoEntryScript.cx();
       RootedValue rejectionValue(cx, JS::UndefinedValue());
       if (mAutoEntryScript.HasException()) {
-        Unused << mAutoEntryScript.PeekException(&rejectionValue);
+        Unused << mAutoEntryScript.StealException(&rejectionValue);
       }
-      mPromise->MaybeReject(cx, rejectionValue);
+      mPromise->MaybeReject(rejectionValue);
     }
   }
 
@@ -379,9 +379,10 @@ AsyncScriptLoader::OnStreamComplete(nsIIncrementalStreamLoader* aLoader,
   RootedObject targetObj(cx, mTargetObj);
   RootedObject loadScope(cx, mLoadScope);
 
-  if (!PrepareScript(uri, cx, targetObj, spec.get(), mCharset,
-                     reinterpret_cast<const char*>(aBuf), aLength,
-                     mWantReturnValue, &script)) {
+  script = PrepareScript(uri, cx, JS_IsGlobalObject(targetObj), spec.get(),
+                         reinterpret_cast<const char*>(aBuf), aLength,
+                         mWantReturnValue);
+  if (!script) {
     return NS_OK;
   }
 
@@ -394,10 +395,12 @@ AsyncScriptLoader::OnStreamComplete(nsIIncrementalStreamLoader* aLoader,
   return NS_OK;
 }
 
-nsresult mozJSSubScriptLoader::ReadScriptAsync(
-    nsIURI* uri, HandleObject targetObj, HandleObject loadScope,
-    const nsAString& charset, nsIIOService* serv, bool wantReturnValue,
-    bool cache, MutableHandleValue retval) {
+nsresult mozJSSubScriptLoader::ReadScriptAsync(nsIURI* uri,
+                                               HandleObject targetObj,
+                                               HandleObject loadScope,
+                                               nsIIOService* serv,
+                                               bool wantReturnValue, bool cache,
+                                               MutableHandleValue retval) {
   nsCOMPtr<nsIGlobalObject> globalObject = xpc::NativeGlobal(targetObj);
   ErrorResult result;
 
@@ -422,6 +425,7 @@ nsresult mozJSSubScriptLoader::ReadScriptAsync(
                      nsContentUtils::GetSystemPrincipal(),
                      nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_DATA_IS_NULL,
                      nsIContentPolicy::TYPE_OTHER,
+                     nullptr,  // nsICookieSettings
                      nullptr,  // aPerformanceStorage
                      nullptr,  // aLoadGroup
                      nullptr,  // aCallbacks
@@ -434,24 +438,19 @@ nsresult mozJSSubScriptLoader::ReadScriptAsync(
   channel->SetContentType(NS_LITERAL_CSTRING("application/javascript"));
 
   RefPtr<AsyncScriptLoader> loadObserver = new AsyncScriptLoader(
-      channel, wantReturnValue, targetObj, loadScope, charset, cache, promise);
+      channel, wantReturnValue, targetObj, loadScope, cache, promise);
 
   nsCOMPtr<nsIIncrementalStreamLoader> loader;
   rv = NS_NewIncrementalStreamLoader(getter_AddRefs(loader), loadObserver);
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsIStreamListener> listener = loader.get();
-  return channel->AsyncOpen2(listener);
+  return channel->AsyncOpen(listener);
 }
 
-bool mozJSSubScriptLoader::ReadScript(nsIURI* uri, JSContext* cx,
-                                      HandleObject targetObj,
-                                      const nsAString& charset,
-                                      const char* uriStr, nsIIOService* serv,
-                                      bool wantReturnValue,
-                                      MutableHandleScript script) {
-  script.set(nullptr);
-
+JSScript* mozJSSubScriptLoader::ReadScript(
+    nsIURI* uri, JSContext* cx, HandleObject targetObj, const char* uriStr,
+    nsIIOService* serv, bool wantReturnValue, bool useCompilationScope) {
   // We create a channel and call SetContentType, to avoid expensive MIME type
   // lookups (bug 632490).
   nsCOMPtr<nsIChannel> chan;
@@ -461,6 +460,7 @@ bool mozJSSubScriptLoader::ReadScript(nsIURI* uri, JSContext* cx,
                      nsContentUtils::GetSystemPrincipal(),
                      nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_DATA_IS_NULL,
                      nsIContentPolicy::TYPE_OTHER,
+                     nullptr,  // nsICookieSettings
                      nullptr,  // PerformanceStorage
                      nullptr,  // aLoadGroup
                      nullptr,  // aCallbacks
@@ -468,12 +468,12 @@ bool mozJSSubScriptLoader::ReadScript(nsIURI* uri, JSContext* cx,
 
   if (NS_SUCCEEDED(rv)) {
     chan->SetContentType(NS_LITERAL_CSTRING("application/javascript"));
-    rv = chan->Open2(getter_AddRefs(instream));
+    rv = chan->Open(getter_AddRefs(instream));
   }
 
   if (NS_FAILED(rv)) {
     ReportError(cx, LOAD_ERROR_NOSTREAM, uri);
-    return false;
+    return nullptr;
   }
 
   int64_t len = -1;
@@ -481,39 +481,50 @@ bool mozJSSubScriptLoader::ReadScript(nsIURI* uri, JSContext* cx,
   rv = chan->GetContentLength(&len);
   if (NS_FAILED(rv) || len == -1) {
     ReportError(cx, LOAD_ERROR_NOCONTENT, uri);
-    return false;
+    return nullptr;
   }
 
   if (len > INT32_MAX) {
     ReportError(cx, LOAD_ERROR_CONTENTTOOBIG, uri);
-    return false;
+    return nullptr;
   }
 
   nsCString buf;
   rv = NS_ReadInputStreamToString(instream, buf, len);
-  NS_ENSURE_SUCCESS(rv, false);
+  NS_ENSURE_SUCCESS(rv, nullptr);
 
-  return PrepareScript(uri, cx, targetObj, uriStr, charset, buf.get(), len,
-                       wantReturnValue, script);
+  Maybe<JSAutoRealm> ar;
+
+  // Note that when using the ScriptPreloader cache with loadSubScript, there
+  // will be a side-effect of keeping the global that the script was compiled
+  // for alive. See note above in EvalScript().
+  //
+  // This will compile the script in XPConnect compilation scope. When the
+  // script is evaluated, it will be cloned into the target scope to be
+  // executed, avoiding leaks on the first session when we don't have a
+  // startup cache.
+  if (useCompilationScope) {
+    ar.emplace(cx, xpc::CompilationScope());
+  }
+
+  return PrepareScript(uri, cx, JS_IsGlobalObject(targetObj), uriStr, buf.get(),
+                       len, wantReturnValue);
 }
 
 NS_IMETHODIMP
 mozJSSubScriptLoader::LoadSubScript(const nsAString& url, HandleValue target,
-                                    const nsAString& charset, JSContext* cx,
-                                    MutableHandleValue retval) {
+                                    JSContext* cx, MutableHandleValue retval) {
   /*
-   * Loads a local url and evals it into the current cx
-   * Synchronous (an async version would be cool too.)
+   * Loads a local url, referring to UTF-8-encoded data, and evals it into the
+   * current cx.  Synchronous (an async version would be cool too.)
    *   url: The url to load.  Must be local so that it can be loaded
    *        synchronously.
    *   targetObj: Optional object to eval the script onto (defaults to context
    *              global)
-   *   charset: Optional character set to use for reading
    *   returns: Whatever jsval the script pointed to by the url returns.
    * Should ONLY (O N L Y !) be called from JavaScript code.
    */
   LoadSubScriptOptions options(cx);
-  options.charset = charset;
   options.target = target.isObject() ? &target.toObject() : nullptr;
   return DoLoadSubScriptWithOptions(url, options, cx, retval);
 }
@@ -523,9 +534,15 @@ mozJSSubScriptLoader::LoadSubScriptWithOptions(const nsAString& url,
                                                HandleValue optionsVal,
                                                JSContext* cx,
                                                MutableHandleValue retval) {
-  if (!optionsVal.isObject()) return NS_ERROR_INVALID_ARG;
+  if (!optionsVal.isObject()) {
+    return NS_ERROR_INVALID_ARG;
+  }
+
   LoadSubScriptOptions options(cx, &optionsVal.toObject());
-  if (!options.Parse()) return NS_ERROR_INVALID_ARG;
+  if (!options.Parse()) {
+    return NS_ERROR_INVALID_ARG;
+  }
+
   return DoLoadSubScriptWithOptions(url, options, cx, retval);
 }
 
@@ -538,17 +555,23 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
   mozJSComponentLoader* loader = mozJSComponentLoader::Get();
   loader->FindTargetObject(cx, &loadScope);
 
-  if (options.target)
+  if (options.target) {
     targetObj = options.target;
-  else
+  } else {
     targetObj = loadScope;
+  }
 
   targetObj = JS_FindCompilationScope(cx, targetObj);
-  if (!targetObj || !loadScope) return NS_ERROR_FAILURE;
+  if (!targetObj || !loadScope) {
+    return NS_ERROR_FAILURE;
+  }
 
-  if (js::GetObjectCompartment(loadScope) !=
-      js::GetObjectCompartment(targetObj))
+  MOZ_ASSERT(!js::IsWrapper(targetObj), "JS_FindCompilationScope must unwrap");
+
+  if (js::GetNonCCWObjectRealm(loadScope) !=
+      js::GetNonCCWObjectRealm(targetObj)) {
     loadScope = nullptr;
+  }
 
   /* load up the url.  From here on, failures are reflected as ``custom''
    * js exceptions */
@@ -563,7 +586,7 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
     return NS_ERROR_FAILURE;
   }
 
-  JSAutoCompartment ac(cx, targetObj);
+  JSAutoRealm ar(cx, targetObj);
 
   nsCOMPtr<nsIIOService> serv = do_GetService(NS_IOSERVICE_CONTRACTID);
   if (!serv) {
@@ -572,6 +595,8 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
   }
 
   NS_LossyConvertUTF16toASCII asciiUrl(url);
+  AUTO_PROFILER_TEXT_MARKER_CAUSE("SubScript", asciiUrl, JS,
+                                  profiler_get_backtrace());
   AUTO_PROFILER_LABEL_DYNAMIC_NSCSTRING(
       "mozJSSubScriptLoader::DoLoadSubScriptWithOptions", OTHER, asciiUrl);
 
@@ -595,30 +620,32 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
     return NS_OK;
   }
 
-  if (!scheme.EqualsLiteral("chrome") && !scheme.EqualsLiteral("app") &&
-      !scheme.EqualsLiteral("blob")) {
-    // This might be a URI to a local file, though!
-    nsCOMPtr<nsIURI> innerURI = NS_GetInnermostURI(uri);
-    nsCOMPtr<nsIFileURL> fileURL = do_QueryInterface(innerURI);
-    if (!fileURL) {
-      ReportError(cx, LOAD_ERROR_URI_NOT_LOCAL, uri);
-      return NS_OK;
-    }
-
-    // For file URIs prepend the filename with the filename of the
-    // calling script, and " -> ". See bug 418356.
-    nsAutoCString tmp(filename.get());
-    tmp.AppendLiteral(" -> ");
-    tmp.Append(uriStr);
-
-    uriStr = tmp;
-  }
-
   // Suppress caching if we're compiling as content or if we're loading a
   // blob: URI.
-  bool ignoreCache = options.ignoreCache ||
-                     !GetObjectPrincipal(targetObj)->GetIsSystemPrincipal() ||
-                     scheme.EqualsLiteral("blob");
+  bool useCompilationScope = false;
+  auto* principal = BasePrincipal::Cast(GetObjectPrincipal(targetObj));
+  bool isSystem = principal->Is<SystemPrincipal>();
+  if (!isSystem && principal->Is<ContentPrincipal>()) {
+    auto* content = principal->As<ContentPrincipal>();
+
+    nsAutoCString scheme;
+    content->mCodebase->GetScheme(scheme);
+
+    // We want to enable caching for scripts with Activity Stream's
+    // codebase URLs.
+    if (scheme.EqualsLiteral("about")) {
+      nsAutoCString filePath;
+      content->mCodebase->GetFilePath(filePath);
+
+      useCompilationScope = filePath.EqualsLiteral("home") ||
+                            filePath.EqualsLiteral("newtab") ||
+                            filePath.EqualsLiteral("welcome");
+      isSystem = true;
+    }
+  }
+  bool ignoreCache =
+      options.ignoreCache || !isSystem || scheme.EqualsLiteral("blob");
+
   StartupCache* cache = ignoreCache ? nullptr : StartupCache::GetSingleton();
 
   nsAutoCString cachePath;
@@ -626,9 +653,12 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
 
   RootedScript script(cx);
   if (!options.ignoreCache) {
-    if (!options.wantReturnValue)
+    if (!options.wantReturnValue) {
       script = ScriptPreloader::GetSingleton().GetCachedScript(cx, cachePath);
-    if (!script && cache) rv = ReadCachedScript(cache, cachePath, cx, &script);
+    }
+    if (!script && cache) {
+      rv = ReadCachedScript(cache, cachePath, cx, &script);
+    }
     if (NS_FAILED(rv) || !script) {
       // ReadCachedScript may have set a pending exception.
       JS_ClearPendingException(cx);
@@ -637,7 +667,7 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
 
   // If we are doing an async load, trigger it and bail out.
   if (!script && options.async) {
-    return ReadScriptAsync(uri, targetObj, loadScope, options.charset, serv,
+    return ReadScriptAsync(uri, targetObj, loadScope, serv,
                            options.wantReturnValue, !!cache, retval);
   }
 
@@ -645,10 +675,13 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
     // |script| came from the cache, so don't bother writing it
     // |back there.
     cache = nullptr;
-  } else if (!ReadScript(uri, cx, targetObj, options.charset,
-                         static_cast<const char*>(uriStr.get()), serv,
-                         options.wantReturnValue, &script)) {
-    return NS_OK;
+  } else {
+    script =
+        ReadScript(uri, cx, targetObj, static_cast<const char*>(uriStr.get()),
+                   serv, options.wantReturnValue, useCompilationScope);
+    if (!script) {
+      return NS_OK;
+    }
   }
 
   Unused << EvalScript(cx, targetObj, loadScope, retval, uri, !!cache,

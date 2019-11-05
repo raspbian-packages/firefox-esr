@@ -17,9 +17,9 @@ nsHtml5Highlighter* mViewSource;
 nsTArray<nsHtml5TreeOperation> mOpQueue;
 nsTArray<nsHtml5SpeculativeLoad> mSpeculativeLoadQueue;
 nsAHtml5TreeOpSink* mOpSink;
-mozilla::UniquePtr<nsIContent* []> mHandles;
+mozilla::UniquePtr<nsIContent*[]> mHandles;
 int32_t mHandlesUsed;
-nsTArray<mozilla::UniquePtr<nsIContent* []>> mOldHandles;
+nsTArray<mozilla::UniquePtr<nsIContent*[]>> mOldHandles;
 nsHtml5TreeOpStage* mSpeculativeLoadStage;
 nsresult mBroken;
 bool mCurrentHtmlScriptIsAsyncOrDefer;
@@ -114,7 +114,7 @@ void NeedsCharsetSwitchTo(NotNull<const Encoding*> aEncoding, int32_t aSource,
 void MaybeComplainAboutCharset(const char* aMsgId, bool aError,
                                int32_t aLineNumber);
 
-void TryToDisableEncodingMenu();
+void TryToEnableEncodingMenu();
 
 void AddSnapshotToScript(nsAHtml5TreeBuilderState* aSnapshot, int32_t aLine);
 
@@ -137,6 +137,8 @@ bool HasBuilder() { return mBuilder; }
 bool EnsureBufferSpace(int32_t aLength);
 
 void EnableViewSource(nsHtml5Highlighter* aHighlighter);
+
+void errDeepTree();
 
 void errStrayStartTag(nsAtom* aName);
 

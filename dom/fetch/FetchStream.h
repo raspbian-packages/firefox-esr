@@ -9,6 +9,7 @@
 
 #include "Fetch.h"
 #include "jsapi.h"
+#include "js/Stream.h"
 #include "nsIAsyncInputStream.h"
 #include "nsIObserver.h"
 #include "nsISupportsImpl.h"
@@ -22,11 +23,12 @@ namespace mozilla {
 namespace dom {
 
 class FetchStreamHolder;
-class WorkerHolder;
+class WeakWorkerRef;
 
 class FetchStream final : public nsIInputStreamCallback,
                           public nsIObserver,
-                          public nsSupportsWeakReference {
+                          public nsSupportsWeakReference,
+                          private JS::ReadableStreamUnderlyingSource {
  public:
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIINPUTSTREAMCALLBACK
@@ -38,44 +40,56 @@ class FetchStream final : public nsIInputStreamCallback,
 
   void Close();
 
-  static nsresult RetrieveInputStream(void* aUnderlyingReadableStreamSource,
-                                      nsIInputStream** aInputStream);
+  static nsresult RetrieveInputStream(
+      JS::ReadableStreamUnderlyingSource* aUnderlyingReadableStreamSource,
+      nsIInputStream** aInputStream);
 
  private:
   FetchStream(nsIGlobalObject* aGlobal, FetchStreamHolder* aStreamHolder,
               nsIInputStream* aInputStream);
   ~FetchStream();
 
-  static void RequestDataCallback(JSContext* aCx, JS::HandleObject aStream,
-                                  void* aUnderlyingSource, uint8_t aFlags,
-                                  size_t aDesiredSize);
+#ifdef DEBUG
+  void AssertIsOnOwningThread();
+#else
+  void AssertIsOnOwningThread() {}
+#endif
 
-  static void WriteIntoReadRequestCallback(
-      JSContext* aCx, JS::HandleObject aStream, void* aUnderlyingSource,
-      uint8_t aFlags, void* aBuffer, size_t aLength, size_t* aByteWritten);
+  void requestData(JSContext* aCx, JS::HandleObject aStream,
+                   size_t aDesiredSize) override;
 
-  static JS::Value CancelCallback(JSContext* aCx, JS::HandleObject aStream,
-                                  void* aUnderlyingSource, uint8_t aFlags,
-                                  JS::HandleValue aReason);
+  void writeIntoReadRequestBuffer(JSContext* aCx, JS::HandleObject aStream,
+                                  void* aBuffer, size_t aLength,
+                                  size_t* aBytesWritten) override;
 
-  static void ClosedCallback(JSContext* aCx, JS::HandleObject aStream,
-                             void* aUnderlyingSource, uint8_t aFlags);
+  JS::Value cancel(JSContext* aCx, JS::HandleObject aStream,
+                   JS::HandleValue aReason) override;
 
-  static void ErroredCallback(JSContext* aCx, JS::HandleObject aStream,
-                              void* aUnderlyingSource, uint8_t aFlags,
-                              JS::HandleValue reason);
+  void onClosed(JSContext* aCx, JS::HandleObject aStream) override;
 
-  static void FinalizeCallback(void* aUnderlyingSource, uint8_t aFlags);
+  void onErrored(JSContext* aCx, JS::HandleObject aStream,
+                 JS::HandleValue aReason) override;
 
-  void ErrorPropagation(JSContext* aCx, JS::HandleObject aStream, nsresult aRv);
+  void finalize() override;
 
-  void CloseAndReleaseObjects(JSContext* aCx, JS::HandleObject aSteam);
+  void ErrorPropagation(JSContext* aCx, const MutexAutoLock& aProofOfLock,
+                        JS::HandleObject aStream, nsresult aRv);
+
+  void CloseAndReleaseObjects(JSContext* aCx, const MutexAutoLock& aProofOfLock,
+                              JS::HandleObject aSteam);
+
+  class WorkerShutdown;
+
+  void ReleaseObjects(const MutexAutoLock& aProofOfLock);
 
   void ReleaseObjects();
 
   // Common methods
 
   enum State {
+    // This is the beginning state before any reading operation.
+    eInitializing,
+
     // RequestDataCallback has not been called yet. We haven't started to read
     // data from the stream yet.
     eWaiting,
@@ -95,7 +109,12 @@ class FetchStream final : public nsIInputStreamCallback,
     eClosed,
   };
 
-  // Touched only on the target thread.
+  // We need a mutex because JS engine can release FetchStream on a non-owning
+  // thread. We must be sure that the releasing of resources doesn't trigger
+  // race conditions.
+  Mutex mMutex;
+
+  // Protected by mutex.
   State mState;
 
   nsCOMPtr<nsIGlobalObject> mGlobal;
@@ -108,7 +127,7 @@ class FetchStream final : public nsIInputStreamCallback,
   nsCOMPtr<nsIInputStream> mOriginalInputStream;
   nsCOMPtr<nsIAsyncInputStream> mInputStream;
 
-  UniquePtr<WorkerHolder> mWorkerHolder;
+  RefPtr<WeakWorkerRef> mWorkerRef;
 };
 
 }  // namespace dom

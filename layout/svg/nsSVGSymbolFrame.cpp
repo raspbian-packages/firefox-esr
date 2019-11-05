@@ -7,9 +7,13 @@
 // Main header first:
 #include "nsSVGSymbolFrame.h"
 
-nsIFrame* NS_NewSVGSymbolFrame(nsIPresShell* aPresShell,
-                               nsStyleContext* aContext) {
-  return new (aPresShell) nsSVGSymbolFrame(aContext);
+#include "mozilla/PresShell.h"
+
+using namespace mozilla;
+
+nsIFrame* NS_NewSVGSymbolFrame(PresShell* aPresShell, ComputedStyle* aStyle) {
+  return new (aPresShell)
+      nsSVGSymbolFrame(aStyle, aPresShell->GetPresContext());
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsSVGSymbolFrame)
@@ -18,7 +22,7 @@ NS_IMPL_FRAMEARENA_HELPERS(nsSVGSymbolFrame)
 // nsIFrame methods
 
 NS_QUERYFRAME_HEAD(nsSVGSymbolFrame)
-NS_QUERYFRAME_ENTRY(nsSVGSymbolFrame)
+  NS_QUERYFRAME_ENTRY(nsSVGSymbolFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsSVGViewportFrame)
 
 #ifdef DEBUG

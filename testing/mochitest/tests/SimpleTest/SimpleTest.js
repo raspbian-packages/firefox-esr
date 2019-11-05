@@ -267,8 +267,16 @@ SimpleTest.setExpected();
 /**
  * Something like assert.
 **/
-SimpleTest.ok = function (condition, name, diag, stack = null) {
+SimpleTest.ok = function (condition, name) {
+    if (arguments.length > 2) {
+      const diag = "Too many arguments passed to `ok(condition, name)`";
+      SimpleTest.record(false, name, diag);
+    } else {
+      SimpleTest.record(condition, name);
+    }
+};
 
+SimpleTest.record = function (condition, name, diag, stack) {
     var test = {'result': !!condition, 'name': name, 'diag': diag};
     if (SimpleTest.expected == 'fail') {
       if (!test.result) {
@@ -309,19 +317,19 @@ SimpleTest.is = function (a, b, name) {
     // Be lazy and use Object.is til we want to test a browser without it.
     var pass = Object.is(a, b);
     var diag = pass ? "" : "got " + repr(a) + ", expected " + repr(b)
-    SimpleTest.ok(pass, name, diag);
+    SimpleTest.record(pass, name, diag);
 };
 
 SimpleTest.isfuzzy = function (a, b, epsilon, name) {
   var pass = (a >= b - epsilon) && (a <= b + epsilon);
   var diag = pass ? "" : "got " + repr(a) + ", expected " + repr(b) + " epsilon: +/- " + repr(epsilon)
-  SimpleTest.ok(pass, name, diag);
+  SimpleTest.record(pass, name, diag);
 };
 
 SimpleTest.isnot = function (a, b, name) {
     var pass = !Object.is(a, b);
     var diag = pass ? "" : "didn't expect " + repr(a) + ", but got it";
-    SimpleTest.ok(pass, name, diag);
+    SimpleTest.record(pass, name, diag);
 };
 
 /**
@@ -731,7 +739,7 @@ SimpleTest.promiseFocus = function (targetWindow, expectBlankPage)
  * @param targetWindow
  *        optional window to be loaded and focused, defaults to 'window'.
  *        This may also be a <browser> element, in which case the window within
- *        that browser will be focused.
+ *        that browser will be focused. This cannot be a window CPOW.
  * @param expectBlankPage
  *        true if targetWindow.location is 'about:blank'. Defaults to false
  */
@@ -865,10 +873,20 @@ SimpleTest.waitForFocus = function (callback, targetWindow, expectBlankPage) {
 
     // If this is a request to focus a remote child window, the request must
     // be forwarded to the child process.
-    // XXXndeakin now sure what this issue with Components.utils is about, but
-    // browser tests require the former and plain tests require the latter.
-    var Cu = Components.utils || SpecialPowers.Cu;
-    var Ci = Components.interfaces || SpecialPowers.Ci;
+    //
+    // Even if the real |Components| doesn't exist, we might shim in a simple JS
+    // placebo for compat. An easy way to differentiate this from the real thing
+    // is whether the property is read-only or not.  The real |Components|
+    // property is read-only.
+    var c = Object.getOwnPropertyDescriptor(window, 'Components');
+    var Cu, Ci;
+    if (c && c.value && !c.writable) {
+        Cu = Components.utils;
+        Ci = Components.interfaces;
+    } else {
+        Cu = SpecialPowers.Cu;
+        Ci = SpecialPowers.Ci;
+    }
 
     var browser = null;
     if (typeof(XULElement) != "undefined" &&
@@ -878,35 +896,15 @@ SimpleTest.waitForFocus = function (callback, targetWindow, expectBlankPage) {
     }
 
     var isWrapper = Cu.isCrossProcessWrapper(targetWindow);
-    if (isWrapper || (browser && browser.isRemoteBrowser)) {
-        var mustFocusSubframe = false;
-        if (isWrapper) {
-            // Look for a tabbrowser and see if targetWindow corresponds to one
-            // within that tabbrowser. If not, just return.
-            var tabBrowser = window.gBrowser || null;
-            browser = tabBrowser ? tabBrowser.getBrowserForContentWindow(targetWindow.top) : null;
-            if (!browser) {
-                SimpleTest.info("child process window cannot be focused");
-                return;
-            }
+    if (isWrapper) {
+        throw new Error("Can't pass CPOW to SimpleTest.focus as the content window.");
+    }
 
-            mustFocusSubframe = (targetWindow != targetWindow.top);
-        }
-
-        // If a subframe in a child process needs to be focused, first focus the
-        // parent frame, then send a WaitForFocus:FocusChild message to the child
-        // containing the subframe to focus.
+    if (browser && browser.isRemoteBrowser) {
         browser.messageManager.addMessageListener("WaitForFocus:ChildFocused", function waitTest(msg) {
-            if (mustFocusSubframe) {
-                mustFocusSubframe = false;
-                var mm = gBrowser.selectedBrowser.messageManager;
-                mm.sendAsyncMessage("WaitForFocus:FocusChild", {}, { child: targetWindow } );
-            }
-            else {
-                browser.messageManager.removeMessageListener("WaitForFocus:ChildFocused", waitTest);
-                SimpleTest._pendingWaitForFocusCount--;
-                setTimeout(callback, 0, browser ? browser.contentWindowAsCPOW : targetWindow);
-            }
+            browser.messageManager.removeMessageListener("WaitForFocus:ChildFocused", waitTest);
+            SimpleTest._pendingWaitForFocusCount--;
+            setTimeout(callback, 0, browser);
         });
 
         // Serialize the waitForFocusInner function and run it in the child process.
@@ -992,7 +990,7 @@ SimpleTest.promiseClipboardChange = async function(aExpectedStringOrValidatorFn,
     let maxPolls = aTimeout ? aTimeout / 100 : 50;
 
     async function putAndVerify(operationFn, validatorFn, flavor) {
-        operationFn();
+        await operationFn();
 
         let data;
         for (let i = 0; i < maxPolls; i++) {
@@ -1180,27 +1178,48 @@ SimpleTest.finish = function() {
                                + "SimpleTest.waitForExplicitFinish() if you need "
                                + "it.)");
         }
+
+        let workers = SpecialPowers.registeredServiceWorkers();
+        let promise = null;
         if (SimpleTest._expectingRegisteredServiceWorker) {
-            if (!SpecialPowers.isServiceWorkerRegistered()) {
+            if (workers.length === 0) {
                 SimpleTest.ok(false, "This test is expected to leave a service worker registered");
             }
         } else {
-            if (SpecialPowers.isServiceWorkerRegistered()) {
+            if (workers.length > 0) {
                 SimpleTest.ok(false, "This test left a service worker registered without cleaning it up");
+                for (let worker of workers) {
+                    SimpleTest.ok(false, `Left over worker: ${worker.scriptSpec} (scope: ${worker.scope})`);
+                }
+                promise = SpecialPowers.removeAllServiceWorkerData();
             }
         }
 
-        if (parentRunner) {
-            /* We're running in an iframe, and the parent has a TestRunner */
-            parentRunner.testFinished(SimpleTest._tests);
+        // If we want to wait for removeAllServiceWorkerData to finish, above,
+        // there's a small chance that spinning the event loop could cause
+        // SpecialPowers and SimpleTest to go away (e.g. if the test did
+        // document.open). promise being non-null should be rare (a test would
+        // have had to already fail by leaving a service worker around), so
+        // limit the chances of the async wait happening to that case.
+        function finish() {
+            if (parentRunner) {
+                /* We're running in an iframe, and the parent has a TestRunner */
+                parentRunner.testFinished(SimpleTest._tests);
+            }
+
+            if (!parentRunner || parentRunner.showTestReport) {
+                SpecialPowers.flushPermissions(function () {
+                  SpecialPowers.flushPrefEnv(function() {
+                    SimpleTest.showReport();
+                  });
+                });
+            }
         }
 
-        if (!parentRunner || parentRunner.showTestReport) {
-            SpecialPowers.flushPermissions(function () {
-              SpecialPowers.flushPrefEnv(function() {
-                SimpleTest.showReport();
-              });
-            });
+        if (promise) {
+            promise.then(finish);
+        } else {
+            finish();
         }
     }
 
@@ -1587,9 +1606,9 @@ SimpleTest.isDeeply = function (it, as, name) {
     var stack = [{ vals: [it, as] }];
     var seen = [];
     if ( SimpleTest._deepCheck(it, as, stack, seen)) {
-        SimpleTest.ok(true, name);
+        SimpleTest.record(true, name);
     } else {
-        SimpleTest.ok(false, name, SimpleTest._formatStack(stack));
+        SimpleTest.record(false, name, SimpleTest._formatStack(stack));
     }
 };
 
@@ -1612,6 +1631,7 @@ SimpleTest.isa = function (object, clas) {
 
 // Global symbols:
 var ok = SimpleTest.ok;
+var record = SimpleTest.record;
 var is = SimpleTest.is;
 var isfuzzy = SimpleTest.isfuzzy;
 var isnot = SimpleTest.isnot;
@@ -1641,8 +1661,9 @@ window.onerror = function simpletestOnerror(errorMsg, url, lineNumber,
     }
     if (!SimpleTest._ignoringAllUncaughtExceptions) {
         // Don't log if SimpleTest.finish() is already called, it would cause failures
-        if (!SimpleTest._alreadyFinished)
-          SimpleTest.ok(isExpected, message, error);
+        if (!SimpleTest._alreadyFinished) {
+            SimpleTest.record(isExpected, message, error);
+        }
         SimpleTest._expectingUncaughtException = false;
     } else {
         SimpleTest.todo(false, message + ": " + error);
@@ -1699,6 +1720,104 @@ function getAndroidSdk() {
     }
     return gAndroidSdk;
 }
+
+// add_task(generatorFunction):
+// Call `add_task(generatorFunction)` for each separate
+// asynchronous task in a mochitest. Tasks are run consecutively.
+// Before the first task, `SimpleTest.waitForExplicitFinish()`
+// will be called automatically, and after the last task,
+// `SimpleTest.finish()` will be called.
+var add_task = (function () {
+  // The list of tasks to run.
+  var task_list = [];
+  var run_only_this_task = null;
+
+  function isGenerator(value) {
+    return value && typeof value === "object" && typeof value.next === "function";
+  }
+
+  // The "add_task" function
+  return function (generatorFunction) {
+    if (task_list.length === 0) {
+      // This is the first time add_task has been called.
+      // First, confirm that SimpleTest is available.
+      if (!SimpleTest) {
+        throw new Error("SimpleTest not available.");
+      }
+      // Don't stop tests until asynchronous tasks are finished.
+      SimpleTest.waitForExplicitFinish();
+      // Because the client is using add_task for this set of tests,
+      // we need to spawn a "master task" that calls each task in succesion.
+      // Use setTimeout to ensure the master task runs after the client
+      // script finishes.
+      setTimeout(function nextTick() {
+        // If we are in a HTML document, we should wait for the document
+        // to be fully loaded.
+        // These checks ensure that we are in an HTML document without
+        // throwing TypeError; also I am told that readyState in XUL documents
+        // are totally bogus so we don't try to do this there.
+        if (typeof window !== "undefined" &&
+            typeof HTMLDocument !== "undefined" &&
+            window.document instanceof HTMLDocument &&
+            window.document.readyState !== "complete") {
+          setTimeout(nextTick);
+          return;
+        }
+
+        (async () => {
+          // Allow for a task to be skipped; we need only use the structured logger
+          // for this, whilst deactivating log buffering to ensure that messages
+          // are always printed to stdout.
+          function skipTask(name) {
+            let logger = parentRunner && parentRunner.structuredLogger;
+            if (!logger) {
+              info("add_task | Skipping test " + name);
+              return;
+            }
+            logger.deactivateBuffering();
+            logger.testStatus(SimpleTest._getCurrentTestURL(), name, "SKIP");
+            logger.warning("add_task | Skipping test " + name);
+            logger.activateBuffering();
+          }
+
+          // We stop the entire test file at the first exception because this
+          // may mean that the state of subsequent tests may be corrupt.
+          try {
+            for (var task of task_list) {
+              var name = task.name || "";
+              if (task.__skipMe || (run_only_this_task && task != run_only_this_task)) {
+                skipTask(name);
+                continue;
+              }
+              info("add_task | Entering test " + name);
+              let result = await task();
+              if (isGenerator(result)) {
+                ok(false, "Task returned a generator");
+              }
+              info("add_task | Leaving test " + name);
+            }
+          } catch (ex) {
+            try {
+              SimpleTest.record(false, "" + ex, "Should not throw any errors", ex.stack);
+            } catch (ex2) {
+              SimpleTest.record(false, "(The exception cannot be converted to string.)",
+                 "Should not throw any errors", ex.stack);
+            }
+          }
+          // All tasks are finished.
+          SimpleTest.finish();
+        })();
+      });
+    }
+    generatorFunction.skip = () => generatorFunction.__skipMe = true;
+    generatorFunction.only = () => run_only_this_task = generatorFunction;
+    // Add the task to the list of tasks to run after
+    // the main thread is finished.
+    task_list.push(generatorFunction);
+    return generatorFunction;
+  };
+})();
+
 
 // Request complete log when using failure patterns so that failure info
 // from infra can be useful.

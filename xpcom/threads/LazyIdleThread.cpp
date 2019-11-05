@@ -16,12 +16,12 @@
 #include "mozilla/Services.h"
 
 #ifdef DEBUG
-#define ASSERT_OWNING_THREAD()                           \
-  do {                                                   \
-    MOZ_ASSERT(mOwningEventTarget->IsOnCurrentThread()); \
-  } while (0)
+#  define ASSERT_OWNING_THREAD()                           \
+    do {                                                   \
+      MOZ_ASSERT(mOwningEventTarget->IsOnCurrentThread()); \
+    } while (0)
 #else
-#define ASSERT_OWNING_THREAD() /* nothing */
+#  define ASSERT_OWNING_THREAD() /* nothing */
 #endif
 
 namespace mozilla {
@@ -436,6 +436,16 @@ LazyIdleThread::SetCanInvokeJS(bool aCanInvokeJS) {
 }
 
 NS_IMETHODIMP
+LazyIdleThread::GetLastLongTaskEnd(TimeStamp* _retval) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP
+LazyIdleThread::GetLastLongNonIdleTaskEnd(TimeStamp* _retval) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP
 LazyIdleThread::AsyncShutdown() {
   ASSERT_OWNING_THREAD();
   return NS_ERROR_NOT_IMPLEMENTED;
@@ -463,12 +473,21 @@ NS_IMETHODIMP
 LazyIdleThread::HasPendingEvents(bool* aHasPendingEvents) {
   // This is only supposed to be called from the thread itself so it's not
   // implemented here.
-  NS_NOTREACHED("Shouldn't ever call this!");
+  MOZ_ASSERT_UNREACHABLE("Shouldn't ever call this!");
   return NS_ERROR_UNEXPECTED;
 }
 
 NS_IMETHODIMP
-LazyIdleThread::IdleDispatch(already_AddRefed<nsIRunnable> aEvent) {
+LazyIdleThread::HasPendingHighPriorityEvents(bool* aHasPendingEvents) {
+  // This is only supposed to be called from the thread itself so it's not
+  // implemented here.
+  MOZ_ASSERT_UNREACHABLE("Shouldn't ever call this!");
+  return NS_ERROR_UNEXPECTED;
+}
+
+NS_IMETHODIMP
+LazyIdleThread::DispatchToQueue(already_AddRefed<nsIRunnable> aEvent,
+                                EventQueuePriority aQueue) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -476,7 +495,7 @@ NS_IMETHODIMP
 LazyIdleThread::ProcessNextEvent(bool aMayWait, bool* aEventWasProcessed) {
   // This is only supposed to be called from the thread itself so it's not
   // implemented here.
-  NS_NOTREACHED("Shouldn't ever call this!");
+  MOZ_ASSERT_UNREACHABLE("Shouldn't ever call this!");
   return NS_ERROR_UNEXPECTED;
 }
 

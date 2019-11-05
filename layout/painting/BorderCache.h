@@ -48,7 +48,7 @@ class FourFloatsHashKey : public PLDHashEntryHdr {
   explicit FourFloatsHashKey(KeyTypePointer aKey) : mValue(*aKey) {}
   FourFloatsHashKey(const FourFloatsHashKey& aToCopy)
       : mValue(aToCopy.mValue) {}
-  ~FourFloatsHashKey() {}
+  ~FourFloatsHashKey() = default;
 
   KeyType GetKey() const { return mValue; }
   bool KeyEquals(KeyTypePointer aKey) const { return *aKey == mValue; }

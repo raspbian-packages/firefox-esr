@@ -18,11 +18,7 @@
 #include "nsFrameSelection.h"
 #include "nsIFrame.h"
 #include "nsIScrollableFrame.h"
-#include "nsIDOMNode.h"
-#include "nsISelection.h"
-#include "nsISelectionPrivate.h"
 #include "nsIContent.h"
-#include "nsIPresShell.h"
 #include "nsLayoutUtils.h"
 #include "nsPresContext.h"
 #include "nsBlockFrame.h"
@@ -32,7 +28,9 @@
 #include "nsMenuPopupFrame.h"
 #include "nsTextFragment.h"
 #include "mozilla/Preferences.h"
+#include "mozilla/PresShell.h"
 #include "mozilla/LookAndFeel.h"
+#include "mozilla/dom/Selection.h"
 #include "nsIBidiKeyboard.h"
 #include "nsContentUtils.h"
 
@@ -72,7 +70,7 @@ static nsIFrame* CheckForTrailingTextFrameRecursive(nsIFrame* aFrame,
 static nsLineBox* FindContainingLine(nsIFrame* aFrame) {
   while (aFrame && aFrame->IsFrameOfType(nsIFrame::eLineParticipant)) {
     nsIFrame* parent = aFrame->GetParent();
-    nsBlockFrame* blockParent = nsLayoutUtils::GetAsBlock(parent);
+    nsBlockFrame* blockParent = do_QueryFrame(parent);
     if (blockParent) {
       bool isValid;
       nsBlockInFlowLineIterator iter(blockParent, aFrame, &isValid);
@@ -87,13 +85,17 @@ static void AdjustCaretFrameForLineEnd(nsIFrame** aFrame, int32_t* aOffset) {
   nsLineBox* line = FindContainingLine(*aFrame);
   if (!line) return;
   int32_t count = line->GetChildCount();
-  for (nsIFrame *f = line->mFirstChild; count > 0;
+  for (nsIFrame* f = line->mFirstChild; count > 0;
        --count, f = f->GetNextSibling()) {
     nsIFrame* r = CheckForTrailingTextFrameRecursive(f, *aFrame);
-    if (r == *aFrame) return;
+    if (r == *aFrame) {
+      return;
+    }
     if (r) {
+      // We found our frame, but we may not be able to properly paint the caret
+      // if -moz-user-modify differs from our actual frame.
+      MOZ_ASSERT(r->IsTextFrame(), "Expected text frame");
       *aFrame = r;
-      NS_ASSERTION(r->IsTextFrame(), "Expected text frame");
       *aOffset = (static_cast<nsTextFrame*>(r))->GetContentEnd();
       return;
     }
@@ -115,33 +117,25 @@ nsCaret::nsCaret()
 
 nsCaret::~nsCaret() { StopBlinking(); }
 
-nsresult nsCaret::Init(nsIPresShell* inPresShell) {
-  NS_ENSURE_ARG(inPresShell);
+nsresult nsCaret::Init(PresShell* aPresShell) {
+  NS_ENSURE_ARG(aPresShell);
 
   mPresShell =
-      do_GetWeakReference(inPresShell);  // the presshell owns us, so no addref
+      do_GetWeakReference(aPresShell);  // the presshell owns us, so no addref
   NS_ASSERTION(mPresShell, "Hey, pres shell should support weak refs");
 
   mShowDuringSelection =
       LookAndFeel::GetInt(LookAndFeel::eIntID_ShowCaretDuringSelection,
                           mShowDuringSelection ? 1 : 0) != 0;
 
-  // get the selection from the pres shell, and set ourselves up as a selection
-  // listener
+  RefPtr<Selection> selection =
+      aPresShell->GetSelection(nsISelectionController::SELECTION_NORMAL);
+  if (!selection) {
+    return NS_ERROR_FAILURE;
+  }
 
-  nsCOMPtr<nsISelectionController> selCon = do_QueryReferent(mPresShell);
-  if (!selCon) return NS_ERROR_FAILURE;
-
-  nsCOMPtr<nsISelection> domSelection;
-  nsresult rv = selCon->GetSelection(nsISelectionController::SELECTION_NORMAL,
-                                     getter_AddRefs(domSelection));
-  if (NS_FAILED(rv)) return rv;
-  if (!domSelection) return NS_ERROR_FAILURE;
-
-  nsCOMPtr<nsISelectionPrivate> privateSelection =
-      do_QueryInterface(domSelection);
-  if (privateSelection) privateSelection->AddSelectionListener(this);
-  mDomSelectionWeak = do_GetWeakReference(domSelection);
+  selection->AddSelectionListener(this);
+  mDomSelectionWeak = selection;
 
   return NS_OK;
 }
@@ -188,10 +182,9 @@ void nsCaret::Terminate() {
   mBlinkTimer = nullptr;
 
   // unregiser ourselves as a selection listener
-  nsCOMPtr<nsISelection> domSelection = do_QueryReferent(mDomSelectionWeak);
-  nsCOMPtr<nsISelectionPrivate> privateSelection(
-      do_QueryInterface(domSelection));
-  if (privateSelection) privateSelection->RemoveSelectionListener(this);
+  if (mDomSelectionWeak) {
+    mDomSelectionWeak->RemoveSelectionListener(this);
+  }
   mDomSelectionWeak = nullptr;
   mPresShell = nullptr;
 
@@ -200,15 +193,11 @@ void nsCaret::Terminate() {
 
 NS_IMPL_ISUPPORTS(nsCaret, nsISelectionListener)
 
-nsISelection* nsCaret::GetSelection() {
-  nsCOMPtr<nsISelection> sel(do_QueryReferent(mDomSelectionWeak));
-  return sel;
-}
+Selection* nsCaret::GetSelection() { return mDomSelectionWeak; }
 
-void nsCaret::SetSelection(nsISelection* aDOMSel) {
+void nsCaret::SetSelection(Selection* aDOMSel) {
   MOZ_ASSERT(aDOMSel);
-  mDomSelectionWeak =
-      do_GetWeakReference(aDOMSel);  // weak reference to pres shell
+  mDomSelectionWeak = aDOMSel;
   ResetBlinking();
   SchedulePaint(aDOMSel);
 }
@@ -243,9 +232,9 @@ void nsCaret::SetCaretReadOnly(bool inMakeReadonly) {
   SchedulePaint();
 }
 
-/* static */ nsRect nsCaret::GetGeometryForFrame(nsIFrame* aFrame,
-                                                 int32_t aFrameOffset,
-                                                 nscoord* aBidiIndicatorSize) {
+/* static */
+nsRect nsCaret::GetGeometryForFrame(nsIFrame* aFrame, int32_t aFrameOffset,
+                                    nscoord* aBidiIndicatorSize) {
   nsPoint framePos(0, 0);
   nsRect rect;
   nsresult rv = aFrame->GetPointFromOffset(aFrameOffset, &framePos);
@@ -317,9 +306,26 @@ void nsCaret::SetCaretReadOnly(bool inMakeReadonly) {
 
   // Clamp the inline-position to be within our scroll frame. If we don't, then
   // it clips us, and we don't appear at all. See bug 335560.
-  nsIFrame* scrollFrame =
-      nsLayoutUtils::GetClosestFrameOfType(aFrame, LayoutFrameType::Scroll);
-  if (scrollFrame) {
+
+  // Find the ancestor scroll frame and determine whether we have any transforms
+  // up the ancestor chain.
+  bool hasTransform = false;
+  nsIFrame* scrollFrame = nullptr;
+  for (nsIFrame* f = aFrame; f; f = f->GetParent()) {
+    if (f->IsScrollFrame()) {
+      scrollFrame = f;
+      break;
+    }
+    if (f->IsTransformed()) {
+      hasTransform = true;
+    }
+  }
+
+  // FIXME(heycam): Skip clamping if we find any transform up the ancestor
+  // chain, since the GetOffsetTo call below doesn't take transforms into
+  // account. We could change this clamping to take transforms into account, but
+  // the clamping seems to be broken anyway; see bug 1539720.
+  if (scrollFrame && !hasTransform) {
     // First, use the scrollFrame to get at the scrollable view that we're in.
     nsIScrollableFrame* sf = do_QueryFrame(scrollFrame);
     nsIFrame* scrolled = sf->GetScrolledFrame();
@@ -351,7 +357,12 @@ void nsCaret::SetCaretReadOnly(bool inMakeReadonly) {
 nsIFrame* nsCaret::GetFrameAndOffset(Selection* aSelection,
                                      nsINode* aOverrideNode,
                                      int32_t aOverrideOffset,
-                                     int32_t* aFrameOffset) {
+                                     int32_t* aFrameOffset,
+                                     nsIFrame** aUnadjustedFrame) {
+  if (aUnadjustedFrame) {
+    *aUnadjustedFrame = nullptr;
+  }
+
   nsINode* focusNode;
   int32_t focusOffset;
 
@@ -360,7 +371,7 @@ nsIFrame* nsCaret::GetFrameAndOffset(Selection* aSelection,
     focusOffset = aOverrideOffset;
   } else if (aSelection) {
     focusNode = aSelection->GetFocusNode();
-    aSelection->GetFocusOffset(&focusOffset);
+    focusOffset = aSelection->FocusOffset();
   } else {
     return nullptr;
   }
@@ -375,55 +386,38 @@ nsIFrame* nsCaret::GetFrameAndOffset(Selection* aSelection,
   nsIFrame* frame;
   nsresult rv = nsCaret::GetCaretFrameForNodeOffset(
       frameSelection, contentNode, focusOffset, frameSelection->GetHint(),
-      bidiLevel, &frame, aFrameOffset);
+      bidiLevel, &frame, aUnadjustedFrame, aFrameOffset);
   if (NS_FAILED(rv) || !frame) {
     return nullptr;
   }
-
   return frame;
 }
 
-/* static */ nsIFrame* nsCaret::GetGeometry(nsISelection* aSelection,
-                                            nsRect* aRect) {
+/* static */
+nsIFrame* nsCaret::GetGeometry(Selection* aSelection, nsRect* aRect) {
   int32_t frameOffset;
-  Selection* selection = aSelection ? aSelection->AsSelection() : nullptr;
-  nsIFrame* frame = GetFrameAndOffset(selection, nullptr, 0, &frameOffset);
+  nsIFrame* frame = GetFrameAndOffset(aSelection, nullptr, 0, &frameOffset);
   if (frame) {
     *aRect = GetGeometryForFrame(frame, frameOffset, nullptr);
   }
   return frame;
 }
 
-Selection* nsCaret::GetSelectionInternal() {
-  nsISelection* domSelection = GetSelection();
-  return domSelection ? domSelection->AsSelection() : nullptr;
-}
-
-void nsCaret::SchedulePaint(nsISelection* aSelection) {
+void nsCaret::SchedulePaint(Selection* aSelection) {
   Selection* selection;
   if (aSelection) {
-    selection = aSelection->AsSelection();
+    selection = aSelection;
   } else {
-    selection = GetSelectionInternal();
+    selection = GetSelection();
   }
-  nsINode* focusNode;
-  if (mOverrideContent) {
-    focusNode = mOverrideContent;
-  } else if (selection) {
-    focusNode = selection->GetFocusNode();
-  } else {
-    return;
+
+  int32_t frameOffset;
+  nsIFrame* frame = GetFrameAndOffset(selection, mOverrideContent,
+                                      mOverrideOffset, &frameOffset);
+
+  if (frame) {
+    frame->SchedulePaint();
   }
-  if (!focusNode || !focusNode->IsContent()) {
-    return;
-  }
-  nsIFrame* f = focusNode->AsContent()->GetPrimaryFrame();
-  if (!f) {
-    return;
-  }
-  // This may not be the correct continuation frame, but that's OK since we're
-  // just scheduling a paint of the window (or popup).
-  f->SchedulePaint();
 }
 
 void nsCaret::SetVisibilityDuringSelection(bool aVisibility) {
@@ -431,8 +425,8 @@ void nsCaret::SetVisibilityDuringSelection(bool aVisibility) {
   SchedulePaint();
 }
 
-void nsCaret::SetCaretPosition(nsIDOMNode* aNode, int32_t aOffset) {
-  mOverrideContent = do_QueryInterface(aNode);
+void nsCaret::SetCaretPosition(nsINode* aNode, int32_t aOffset) {
+  mOverrideContent = aNode;
   mOverrideOffset = aOffset;
 
   ResetBlinking();
@@ -452,7 +446,7 @@ void nsCaret::CheckSelectionLanguageChange() {
   // Call SelectionLanguageChange on every paint. Mostly it will be a noop
   // but it should be fast anyway. This guarantees we never paint the caret
   // at the wrong place.
-  Selection* selection = GetSelectionInternal();
+  Selection* selection = GetSelection();
   if (selection) {
     selection->SelectionLanguageChange(isKeyboardRTL);
   }
@@ -469,17 +463,27 @@ nsIFrame* nsCaret::GetPaintGeometry(nsRect* aRect) {
   CheckSelectionLanguageChange();
 
   int32_t frameOffset;
-  nsIFrame* frame = GetFrameAndOffset(GetSelectionInternal(), mOverrideContent,
-                                      mOverrideOffset, &frameOffset);
+  nsIFrame* unadjustedFrame = nullptr;
+  nsIFrame* frame =
+      GetFrameAndOffset(GetSelection(), mOverrideContent, mOverrideOffset,
+                        &frameOffset, &unadjustedFrame);
+  MOZ_ASSERT(!!frame == !!unadjustedFrame);
   if (!frame) {
     return nullptr;
   }
 
-  // now we have a frame, check whether it's appropriate to show the caret here
-  const nsStyleUserInterface* userinterface = frame->StyleUserInterface();
-  if ((!mIgnoreUserModify &&
-       userinterface->mUserModify == StyleUserModify::ReadOnly) ||
-      frame->IsContentDisabled()) {
+  // Now we have a frame, check whether it's appropriate to show the caret here.
+  // Note we need to check the unadjusted frame, otherwise consider the
+  // following case:
+  //
+  //   <div contenteditable><span contenteditable=false>Text   </span><br>
+  //
+  // Where the selection is targeting the <br>. We want to display the caret,
+  // since the <br> we're focused at is editable, but we do want to paint it at
+  // the adjusted frame offset, so that we can see the collapsed whitespace.
+  const nsStyleUI* ui = unadjustedFrame->StyleUI();
+  if ((!mIgnoreUserModify && ui->mUserModify == StyleUserModify::ReadOnly) ||
+      unadjustedFrame->IsContentDisabled()) {
     return nullptr;
   }
 
@@ -500,8 +504,8 @@ nsIFrame* nsCaret::GetPaintGeometry(nsRect* aRect) {
 }
 
 nsIFrame* nsCaret::GetFrame(int32_t* aContentOffset) {
-  return GetFrameAndOffset(GetSelectionInternal(), mOverrideContent,
-                           mOverrideOffset, aContentOffset);
+  return GetFrameAndOffset(GetSelection(), mOverrideContent, mOverrideOffset,
+                           aContentOffset);
 }
 
 void nsCaret::PaintCaret(DrawTarget& aDrawTarget, nsIFrame* aForFrame,
@@ -532,7 +536,7 @@ void nsCaret::PaintCaret(DrawTarget& aDrawTarget, nsIFrame* aForFrame,
 }
 
 NS_IMETHODIMP
-nsCaret::NotifySelectionChanged(nsIDOMDocument*, nsISelection* aDomSel,
+nsCaret::NotifySelectionChanged(Document*, Selection* aDomSel,
                                 int16_t aReason) {
   // Note that aDomSel, per the comment below may not be the same as our
   // selection, but that's OK since if that is the case, it wouldn't have
@@ -542,8 +546,6 @@ nsCaret::NotifySelectionChanged(nsIDOMDocument*, nsISelection* aDomSel,
       !IsVisible(aDomSel))  // this wont do
     return NS_OK;
 
-  nsCOMPtr<nsISelection> domSel(do_QueryReferent(mDomSelectionWeak));
-
   // The same caret is shared amongst the document and any text widgets it
   // may contain. This means that the caret could get notifications from
   // multiple selections.
@@ -552,7 +554,7 @@ nsCaret::NotifySelectionChanged(nsIDOMDocument*, nsISelection* aDomSel,
   // the caret is currently interested in (mDomSelectionWeak), then there
   // is nothing to do!
 
-  if (domSel != aDomSel) return NS_OK;
+  if (mDomSelectionWeak != aDomSel) return NS_OK;
 
   ResetBlinking();
   SchedulePaint(aDomSel);
@@ -580,8 +582,8 @@ void nsCaret::ResetBlinking() {
     mBlinkTimer->Cancel();
   } else {
     nsIEventTarget* target = nullptr;
-    if (nsCOMPtr<nsIPresShell> presShell = do_QueryReferent(mPresShell)) {
-      if (nsCOMPtr<nsIDocument> doc = presShell->GetDocument()) {
+    if (RefPtr<PresShell> presShell = do_QueryReferent(mPresShell)) {
+      if (nsCOMPtr<Document> doc = presShell->GetDocument()) {
         target = doc->EventTargetFor(TaskCategory::Other);
       }
     }
@@ -610,10 +612,13 @@ void nsCaret::StopBlinking() {
 nsresult nsCaret::GetCaretFrameForNodeOffset(
     nsFrameSelection* aFrameSelection, nsIContent* aContentNode,
     int32_t aOffset, CaretAssociationHint aFrameHint, nsBidiLevel aBidiLevel,
-    nsIFrame** aReturnFrame, int32_t* aReturnOffset) {
+    nsIFrame** aReturnFrame, nsIFrame** aReturnUnadjustedFrame,
+    int32_t* aReturnOffset) {
   if (!aFrameSelection) return NS_ERROR_FAILURE;
-  nsIPresShell* presShell = aFrameSelection->GetShell();
-  if (!presShell) return NS_ERROR_FAILURE;
+  PresShell* presShell = aFrameSelection->GetPresShell();
+  if (!presShell) {
+    return NS_ERROR_FAILURE;
+  }
 
   if (!aContentNode || !aContentNode->IsInComposedDoc() ||
       presShell->GetDocument() != aContentNode->GetComposedDoc())
@@ -625,6 +630,10 @@ nsresult nsCaret::GetCaretFrameForNodeOffset(
   theFrame = aFrameSelection->GetFrameForNodeOffset(
       aContentNode, aOffset, aFrameHint, &theFrameOffset);
   if (!theFrame) return NS_ERROR_FAILURE;
+
+  if (aReturnUnadjustedFrame) {
+    *aReturnUnadjustedFrame = theFrame;
+  }
 
   // if theFrame is after a text frame that's logically at the end of the line
   // (e.g. if theFrame is a <br> frame), then put the caret at the end of
@@ -671,15 +680,14 @@ nsresult nsCaret::GetCaretFrameForNodeOffset(
                                 std::min(levelBefore, levelAfter));  // rule c3
           aBidiLevel = std::min(aBidiLevel,
                                 std::max(levelBefore, levelAfter));  // rule c4
-          if (aBidiLevel == levelBefore                              // rule c1
-              || (aBidiLevel > levelBefore && aBidiLevel < levelAfter &&
-                  IS_SAME_DIRECTION(aBidiLevel, levelBefore))  // rule c5
-              || (aBidiLevel < levelBefore && aBidiLevel > levelAfter &&
-                  IS_SAME_DIRECTION(aBidiLevel, levelBefore)))  // rule c9
+          if (aBidiLevel == levelBefore ||                           // rule c1
+              (aBidiLevel > levelBefore && aBidiLevel < levelAfter &&
+               IS_SAME_DIRECTION(aBidiLevel, levelBefore)) ||  // rule c5
+              (aBidiLevel < levelBefore && aBidiLevel > levelAfter &&
+               IS_SAME_DIRECTION(aBidiLevel, levelBefore)))  // rule c9
           {
             if (theFrame != frameBefore) {
-              if (frameBefore)  // if there is a frameBefore, move into it
-              {
+              if (frameBefore) {  // if there is a frameBefore, move into it
                 theFrame = frameBefore;
                 theFrame->GetOffsets(start, end);
                 theFrameOffset = end;
@@ -701,10 +709,9 @@ nsresult nsCaret::GetCaretFrameForNodeOffset(
                 }
               }
             }
-          } else if (aBidiLevel == levelAfter  // rule c2
-                     || (aBidiLevel > levelBefore && aBidiLevel < levelAfter &&
-                         IS_SAME_DIRECTION(aBidiLevel, levelAfter))  // rule c6
-                     ||
+          } else if (aBidiLevel == levelAfter ||  // rule c2
+                     (aBidiLevel > levelBefore && aBidiLevel < levelAfter &&
+                      IS_SAME_DIRECTION(aBidiLevel, levelAfter)) ||  // rule c6
                      (aBidiLevel < levelBefore && aBidiLevel > levelAfter &&
                       IS_SAME_DIRECTION(aBidiLevel, levelAfter)))  // rule c10
           {
@@ -734,15 +741,11 @@ nsresult nsCaret::GetCaretFrameForNodeOffset(
               }
             }
           } else if (aBidiLevel > levelBefore &&
-                     aBidiLevel < levelAfter  // rule c7/8
-                     &&
-                     IS_SAME_DIRECTION(
-                         levelBefore,
-                         levelAfter)  // before and after have the same parity
-                     &&
-                     !IS_SAME_DIRECTION(
-                         aBidiLevel, levelAfter))  // caret has different parity
-          {
+                     aBidiLevel < levelAfter &&  // rule c7/8
+                     // before and after have the same parity
+                     IS_SAME_DIRECTION(levelBefore, levelAfter) &&
+                     // caret has different parity
+                     !IS_SAME_DIRECTION(aBidiLevel, levelAfter)) {
             if (NS_SUCCEEDED(aFrameSelection->GetFrameFromLevel(
                     frameAfter, eDirNext, aBidiLevel, &theFrame))) {
               theFrame->GetOffsets(start, end);
@@ -754,15 +757,11 @@ nsresult nsCaret::GetCaretFrameForNodeOffset(
                 theFrameOffset = IS_LEVEL_RTL(levelAfter) ? end : start;
             }
           } else if (aBidiLevel < levelBefore &&
-                     aBidiLevel > levelAfter  // rule c11/12
-                     &&
-                     IS_SAME_DIRECTION(
-                         levelBefore,
-                         levelAfter)  // before and after have the same parity
-                     &&
-                     !IS_SAME_DIRECTION(
-                         aBidiLevel, levelAfter))  // caret has different parity
-          {
+                     aBidiLevel > levelAfter &&  // rule c11/12
+                     // before and after have the same parity
+                     IS_SAME_DIRECTION(levelBefore, levelAfter) &&
+                     // caret has different parity
+                     !IS_SAME_DIRECTION(aBidiLevel, levelAfter)) {
             if (NS_SUCCEEDED(aFrameSelection->GetFrameFromLevel(
                     frameBefore, eDirPrevious, aBidiLevel, &theFrame))) {
               theFrame->GetOffsets(start, end);
@@ -791,11 +790,6 @@ size_t nsCaret::SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const {
     // (since we don't own the PresShell).
     total += mPresShell->SizeOfOnlyThis(aMallocSizeOf);
   }
-  if (mDomSelectionWeak) {
-    // We only want size of the nsWeakReference object, not the selection
-    // (again, we don't own the selection).
-    total += mDomSelectionWeak->SizeOfOnlyThis(aMallocSizeOf);
-  }
   if (mBlinkTimer) {
     total += mBlinkTimer->SizeOfIncludingThis(aMallocSizeOf);
   }
@@ -814,12 +808,11 @@ bool nsCaret::IsMenuPopupHidingCaret() {
 
   // Get the selection focus content, that's where the caret would
   // go if it was drawn.
-  nsCOMPtr<nsIDOMNode> node;
-  nsCOMPtr<nsISelection> domSelection = do_QueryReferent(mDomSelectionWeak);
-  if (!domSelection) return true;  // No selection/caret to draw.
-  domSelection->GetFocusNode(getter_AddRefs(node));
-  if (!node) return true;  // No selection/caret to draw.
-  nsCOMPtr<nsIContent> caretContent = do_QueryInterface(node);
+  if (!mDomSelectionWeak) {
+    return true;  // No selection/caret to draw.
+  }
+  nsCOMPtr<nsIContent> caretContent =
+      nsIContent::FromNodeOrNull(mDomSelectionWeak->GetFocusNode());
   if (!caretContent) return true;  // No selection/caret to draw.
 
   // If there's a menu popup open before the popup with

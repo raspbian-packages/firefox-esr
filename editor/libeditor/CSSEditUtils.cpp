@@ -9,14 +9,12 @@
 #include "mozilla/ChangeStyleTransaction.h"
 #include "mozilla/HTMLEditor.h"
 #include "mozilla/Preferences.h"
-#include "mozilla/DeclarationBlockInlines.h"
-#ifdef MOZ_OLD_STYLE
-#include "mozilla/css/StyleRule.h"
-#endif
+#include "mozilla/DeclarationBlock.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/mozalloc.h"
 #include "nsAString.h"
 #include "nsCOMPtr.h"
+#include "nsCSSProps.h"
 #include "nsColor.h"
 #include "nsComputedDOMStyle.h"
 #include "nsDebug.h"
@@ -26,9 +24,8 @@
 #include "nsAtom.h"
 #include "nsIContent.h"
 #include "nsICSSDeclaration.h"
-#include "nsIDOMNode.h"
 #include "nsIDOMWindow.h"
-#include "nsIDocument.h"
+#include "mozilla/dom/Document.h"
 #include "nsIEditor.h"
 #include "nsINode.h"
 #include "nsISupportsImpl.h"
@@ -63,7 +60,7 @@ static void ProcessDefaultValue(const nsAString* aInputString,
                                 const char* aDefaultValueString,
                                 const char* aPrependString,
                                 const char* aAppendString) {
-  CopyASCIItoUTF16(aDefaultValueString, aOutputString);
+  CopyASCIItoUTF16(MakeStringSpan(aDefaultValueString), aOutputString);
 }
 
 static void ProcessSameValue(const nsAString* aInputString,
@@ -85,11 +82,11 @@ static void ProcessExtendedValue(const nsAString* aInputString,
   aOutputString.Truncate();
   if (aInputString) {
     if (aPrependString) {
-      AppendASCIItoUTF16(aPrependString, aOutputString);
+      AppendASCIItoUTF16(MakeStringSpan(aPrependString), aOutputString);
     }
     aOutputString.Append(*aInputString);
     if (aAppendString) {
-      AppendASCIItoUTF16(aAppendString, aOutputString);
+      AppendASCIItoUTF16(MakeStringSpan(aAppendString), aOutputString);
     }
   }
 }
@@ -400,7 +397,7 @@ nsresult CSSEditUtils::SetCSSProperty(Element& aElement, nsAtom& aProperty,
     return NS_ERROR_NOT_AVAILABLE;
   }
   RefPtr<HTMLEditor> htmlEditor(mHTMLEditor);
-  return htmlEditor->DoTransaction(transaction);
+  return htmlEditor->DoTransactionInternal(transaction);
 }
 
 nsresult CSSEditUtils::SetCSSPropertyPixels(Element& aElement,
@@ -427,7 +424,7 @@ nsresult CSSEditUtils::RemoveCSSProperty(Element& aElement, nsAtom& aProperty,
     return NS_ERROR_NOT_AVAILABLE;
   }
   RefPtr<HTMLEditor> htmlEditor(mHTMLEditor);
-  return htmlEditor->DoTransaction(transaction);
+  return htmlEditor->DoTransactionInternal(transaction);
 }
 
 // static
@@ -471,8 +468,8 @@ nsresult CSSEditUtils::GetCSSInlinePropertyBase(nsINode* aNode,
     return NS_OK;
   }
 
-  nsCSSPropertyID prop = nsCSSProps::LookupProperty(
-      nsDependentAtomString(aProperty), CSSEnabledState::eForAllContent);
+  nsCSSPropertyID prop =
+      nsCSSProps::LookupProperty(nsDependentAtomString(aProperty));
   MOZ_ASSERT(prop != eCSSProperty_UNKNOWN);
 
   decl->GetPropertyValueByID(prop, aValue);
@@ -485,14 +482,11 @@ already_AddRefed<nsComputedDOMStyle> CSSEditUtils::GetComputedStyle(
     Element* aElement) {
   MOZ_ASSERT(aElement);
 
-  nsIDocument* doc = aElement->GetComposedDoc();
+  Document* doc = aElement->GetComposedDoc();
   NS_ENSURE_TRUE(doc, nullptr);
 
-  nsIPresShell* presShell = doc->GetShell();
-  NS_ENSURE_TRUE(presShell, nullptr);
-
   RefPtr<nsComputedDOMStyle> style =
-      NS_NewComputedDOMStyle(aElement, EmptyString(), presShell);
+      NS_NewComputedDOMStyle(aElement, EmptyString(), doc);
 
   return style.forget();
 }
@@ -501,11 +495,10 @@ already_AddRefed<nsComputedDOMStyle> CSSEditUtils::GetComputedStyle(
 // whole node if it is a span and if its only attribute is _moz_dirty
 nsresult CSSEditUtils::RemoveCSSInlineStyle(nsINode& aNode, nsAtom* aProperty,
                                             const nsAString& aPropertyValue) {
-  RefPtr<Element> element = aNode.AsElement();
-  NS_ENSURE_STATE(element);
+  OwningNonNull<Element> element(*aNode.AsElement());
 
   // remove the property from the style attribute
-  nsresult rv = RemoveCSSProperty(*element, *aProperty, aPropertyValue);
+  nsresult rv = RemoveCSSProperty(element, *aProperty, aPropertyValue);
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (!element->IsHTMLElement(nsGkAtoms::span) ||
@@ -513,7 +506,8 @@ nsresult CSSEditUtils::RemoveCSSInlineStyle(nsINode& aNode, nsAtom* aProperty,
     return NS_OK;
   }
 
-  return mHTMLEditor->RemoveContainer(element);
+  OwningNonNull<HTMLEditor> htmlEditor(*mHTMLEditor);
+  return htmlEditor->RemoveContainerWithTransaction(element);
 }
 
 // Answers true if the property can be removed by setting a "none" CSS value
@@ -563,10 +557,6 @@ void CSSEditUtils::GetDefaultLengthUnit(nsAString& aLengthUnit) {
     aLengthUnit.AssignLiteral("px");
   }
 }
-
-// Unfortunately, CSSStyleDeclaration::GetPropertyCSSValue is not yet
-// implemented... We need then a way to determine the number part and the unit
-// from aString, aString being the result of a GetPropertyValue query...
 
 // static
 void CSSEditUtils::ParseLength(const nsAString& aString, float* aValue,
@@ -822,8 +812,9 @@ int32_t CSSEditUtils::SetCSSEquivalentToHTMLStyle(Element* aElement,
   // set the individual CSS inline styles
   size_t count = cssPropertyArray.Length();
   for (size_t index = 0; index < count; index++) {
-    nsresult rv = SetCSSProperty(*aElement, *cssPropertyArray[index],
-                                 cssValueArray[index], aSuppressTransaction);
+    nsresult rv =
+        SetCSSProperty(*aElement, MOZ_KnownLive(*cssPropertyArray[index]),
+                       cssValueArray[index], aSuppressTransaction);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return 0;
     }
@@ -857,8 +848,9 @@ nsresult CSSEditUtils::RemoveCSSEquivalentToHTMLStyle(
   // remove the individual CSS inline styles
   int32_t count = cssPropertyArray.Length();
   for (int32_t index = 0; index < count; index++) {
-    nsresult rv = RemoveCSSProperty(*aElement, *cssPropertyArray[index],
-                                    cssValueArray[index], aSuppressTransaction);
+    nsresult rv =
+        RemoveCSSProperty(*aElement, MOZ_KnownLive(*cssPropertyArray[index]),
+                          cssValueArray[index], aSuppressTransaction);
     NS_ENSURE_SUCCESS(rv, rv);
   }
   return NS_OK;

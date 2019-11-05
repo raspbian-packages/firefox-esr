@@ -22,7 +22,8 @@ class SVGTSpanElement final : public SVGTSpanElementBase {
   friend nsresult(::NS_NewSVGTSpanElement(
       nsIContent** aResult,
       already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo));
-  explicit SVGTSpanElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
+  explicit SVGTSpanElement(
+      already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo);
   virtual JSObject* WrapNode(JSContext* cx,
                              JS::Handle<JSObject*> aGivenProto) override;
 
@@ -30,18 +31,19 @@ class SVGTSpanElement final : public SVGTSpanElementBase {
   // nsIContent interface
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
 
-  virtual nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                         bool aPreallocateChildren) const override;
+  virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
 
  protected:
   virtual EnumAttributesInfo GetEnumInfo() override;
   virtual LengthAttributesInfo GetLengthInfo() override;
 
-  nsSVGEnum mEnumAttributes[1];
-  virtual nsSVGEnum* EnumAttributes() override { return mEnumAttributes; }
+  SVGAnimatedEnumeration mEnumAttributes[1];
+  virtual SVGAnimatedEnumeration* EnumAttributes() override {
+    return mEnumAttributes;
+  }
 
-  nsSVGLength2 mLengthAttributes[1];
-  virtual nsSVGLength2* LengthAttributes() override {
+  SVGAnimatedLength mLengthAttributes[1];
+  virtual SVGAnimatedLength* LengthAttributes() override {
     return mLengthAttributes;
   }
 };

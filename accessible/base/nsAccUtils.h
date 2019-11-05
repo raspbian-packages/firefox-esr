@@ -7,7 +7,9 @@
 #define nsAccUtils_h_
 
 #include "mozilla/a11y/Accessible.h"
+#include "mozilla/a11y/DocManager.h"
 
+#include "AccessibleOrProxy.h"
 #include "nsAccessibilityService.h"
 #include "nsCoreUtils.h"
 
@@ -15,6 +17,8 @@
 #include "nsPoint.h"
 
 namespace mozilla {
+
+class PresShell;
 
 namespace dom {
 class Element;
@@ -24,6 +28,7 @@ namespace a11y {
 
 class HyperTextAccessible;
 class DocAccessible;
+class Attribute;
 
 class nsAccUtils {
  public:
@@ -60,13 +65,13 @@ class nsAccUtils {
   /**
    * Get default value of the level for the given accessible.
    */
-  static int32_t GetDefaultLevel(Accessible* aAcc);
+  static int32_t GetDefaultLevel(const Accessible* aAcc);
 
   /**
    * Return ARIA level value or the default one if ARIA is missed for the
    * given accessible.
    */
-  static int32_t GetARIAOrDefaultLevel(Accessible* aAccessible);
+  static int32_t GetARIAOrDefaultLevel(const Accessible* aAccessible);
 
   /**
    * Compute group level for nsIDOMXULContainerItemElement node.
@@ -96,14 +101,23 @@ class nsAccUtils {
   /**
    * Return atomic value of ARIA attribute of boolean or NMTOKEN type.
    */
-  static nsAtom* GetARIAToken(mozilla::dom::Element* aElement, nsAtom* aAttr);
+  static nsStaticAtom* GetARIAToken(mozilla::dom::Element* aElement,
+                                    nsAtom* aAttr);
+
+  /**
+   * If the given ARIA attribute has a specific known token value, return it.
+   * If the specification demands for a fallback value for unknown attribute
+   * values, return that. For all others, return a nullptr.
+   */
+  static nsStaticAtom* NormalizeARIAToken(mozilla::dom::Element* aElement,
+                                          nsAtom* aAttr);
 
   /**
    * Return document accessible for the given DOM node.
    */
   static DocAccessible* GetDocAccessibleFor(nsINode* aNode) {
-    nsIPresShell* presShell = nsCoreUtils::GetPresShellFor(aNode);
-    return GetAccService()->GetDocAccessible(presShell);
+    return GetAccService()->GetDocAccessible(
+        nsCoreUtils::GetPresShellFor(aNode));
   }
 
   /**
@@ -131,10 +145,26 @@ class nsAccUtils {
   static Accessible* TableFor(Accessible* aRow);
 
   /**
+   * Return true if the DOM node of a given accessible has a given attribute
+   * with a value of "true".
+   */
+  static bool IsDOMAttrTrue(const Accessible* aAccessible, nsAtom* aAttr);
+
+  /**
    * Return true if the DOM node of given accessible has aria-selected="true"
    * attribute.
    */
-  static bool IsARIASelected(Accessible* aAccessible);
+  static inline bool IsARIASelected(const Accessible* aAccessible) {
+    return IsDOMAttrTrue(aAccessible, nsGkAtoms::aria_selected);
+  }
+
+  /**
+   * Return true if the DOM node of given accessible has
+   * aria-multiselectable="true" attribute.
+   */
+  static inline bool IsARIAMultiSelectable(const Accessible* aAccessible) {
+    return IsDOMAttrTrue(aAccessible, nsGkAtoms::aria_multiselectable);
+  }
 
   /**
    * Converts the given coordinates to coordinates relative screen.
@@ -224,7 +254,16 @@ class nsAccUtils {
    * Return true if the given accessible can't have children. Used when exposing
    * to platform accessibility APIs, should the children be pruned off?
    */
-  static bool MustPrune(Accessible* aAccessible);
+  static bool MustPrune(AccessibleOrProxy aAccessible);
+
+  static bool PersistentPropertiesToArray(nsIPersistentProperties* aProps,
+                                          nsTArray<Attribute>* aAttributes);
+
+  /**
+   * Return true if the given accessible is within an ARIA live region; i.e.
+   * the container-live attribute would be something other than "off" or empty.
+   */
+  static bool IsARIALive(const Accessible* aAccessible);
 };
 
 }  // namespace a11y

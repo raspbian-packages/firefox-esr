@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,8 +11,8 @@
 #include "SharedSurface.h"
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "GeneratedJNIWrappers.h"
-#include "AndroidNativeWindow.h"
+#  include "GeneratedJNIWrappers.h"
+#  include "AndroidNativeWindow.h"
 #endif
 
 namespace mozilla {
@@ -166,6 +166,8 @@ class SharedSurface_SurfaceTexture : public SharedSurface {
   virtual void Commit() override;
 
   virtual void WaitForBufferOwnership() override;
+
+  virtual bool IsBufferAvailable() const override;
 };
 
 class SurfaceFactory_SurfaceTexture : public SurfaceFactory {

@@ -33,6 +33,7 @@
 #include "mozilla/Preferences.h"
 #include "mozilla/dom/BodyUtil.h"
 #include "mozilla/dom/Client.h"
+#include "mozilla/dom/EventBinding.h"
 #include "mozilla/dom/FetchEventBinding.h"
 #include "mozilla/dom/MessagePort.h"
 #include "mozilla/dom/PromiseNativeHandler.h"
@@ -44,6 +45,7 @@
 #include "mozilla/dom/Response.h"
 #include "mozilla/dom/WorkerScope.h"
 #include "mozilla/dom/WorkerPrivate.h"
+#include "mozilla/net/NeckoChannelParams.h"
 
 #include "js/Conversions.h"
 #include "js/TypeDecls.h"
@@ -83,7 +85,7 @@ void AsyncLog(nsIInterceptedChannel* aInterceptedChannel,
               Params&&... aParams) {
   nsTArray<nsString> paramsList(sizeof...(Params) + 1);
   StringArrayAppender::Append(paramsList, sizeof...(Params) + 1, aFirstParam,
-                              Forward<Params>(aParams)...);
+                              std::forward<Params>(aParams)...);
   AsyncLog(aInterceptedChannel, aRespondWithScriptSpec, aRespondWithLineNumber,
            aRespondWithColumnNumber, aMessageName, paramsList);
 }
@@ -134,7 +136,8 @@ void FetchEvent::PostInit(
   mScriptSpec.Assign(aScriptSpec);
 }
 
-/*static*/ already_AddRefed<FetchEvent> FetchEvent::Constructor(
+/*static*/
+already_AddRefed<FetchEvent> FetchEvent::Constructor(
     const GlobalObject& aGlobal, const nsAString& aType,
     const FetchEventInit& aOptions, ErrorResult& aRv) {
   RefPtr<EventTarget> owner = do_QueryObject(aGlobal.GetAsSupports());
@@ -146,6 +149,7 @@ void FetchEvent::PostInit(
   e->SetComposed(aOptions.mComposed);
   e->mRequest = aOptions.mRequest;
   e->mClientId = aOptions.mClientId;
+  e->mResultingClientId = aOptions.mResultingClientId;
   e->mIsReload = aOptions.mIsReload;
   return e.forget();
 }
@@ -209,7 +213,7 @@ class BodyCopyHandle final : public nsIInterceptedBodyCallback {
   NS_DECL_THREADSAFE_ISUPPORTS
 
   explicit BodyCopyHandle(UniquePtr<RespondWithClosure>&& aClosure)
-      : mClosure(Move(aClosure)) {}
+      : mClosure(std::move(aClosure)) {}
 
   NS_IMETHOD
   BodyComplete(nsresult aRv) override {
@@ -260,7 +264,7 @@ class StartResponse final : public Runnable {
         mWorkerChannelInfo(aWorkerChannelInfo),
         mScriptSpec(aScriptSpec),
         mResponseURLSpec(aResponseURLSpec),
-        mClosure(Move(aClosure)) {}
+        mClosure(std::move(aClosure)) {}
 
   NS_IMETHOD
   Run() override {
@@ -270,9 +274,9 @@ class StartResponse final : public Runnable {
     nsresult rv = mChannel->GetChannel(getter_AddRefs(underlyingChannel));
     NS_ENSURE_SUCCESS(rv, rv);
     NS_ENSURE_TRUE(underlyingChannel, NS_ERROR_UNEXPECTED);
-    nsCOMPtr<nsILoadInfo> loadInfo = underlyingChannel->GetLoadInfo();
+    nsCOMPtr<nsILoadInfo> loadInfo = underlyingChannel->LoadInfo();
 
-    if (!loadInfo || !CSPPermitsResponse(loadInfo)) {
+    if (!CSPPermitsResponse(loadInfo)) {
       mChannel->CancelInterception(NS_ERROR_CONTENT_BLOCKED);
       return NS_OK;
     }
@@ -305,7 +309,7 @@ class StartResponse final : public Runnable {
       mChannel->SynthesizeHeader(entries[i].mName, entries[i].mValue);
     }
 
-    auto castLoadInfo = static_cast<LoadInfo*>(loadInfo.get());
+    auto castLoadInfo = static_cast<mozilla::net::LoadInfo*>(loadInfo.get());
     castLoadInfo->SynthesizeServiceWorkerTainting(
         mInternalResponse->GetTainting());
 
@@ -313,8 +317,11 @@ class StartResponse final : public Runnable {
     nsAutoCString preferredAltDataType(EmptyCString());
     nsCOMPtr<nsICacheInfoChannel> outerChannel =
         do_QueryInterface(underlyingChannel);
-    if (outerChannel) {
-      outerChannel->GetPreferredAlternativeDataType(preferredAltDataType);
+    if (outerChannel &&
+        !outerChannel->PreferredAlternativeDataTypes().IsEmpty()) {
+      // TODO: handle multiple types properly.
+      preferredAltDataType.Assign(
+          outerChannel->PreferredAlternativeDataTypes()[0].type());
     }
 
     // Get the alternative data type saved in the InternalResponse
@@ -337,7 +344,7 @@ class StartResponse final : public Runnable {
     }
 
     RefPtr<BodyCopyHandle> copyHandle;
-    copyHandle = new BodyCopyHandle(Move(mClosure));
+    copyHandle = new BodyCopyHandle(std::move(mClosure));
 
     rv = mChannel->StartSynthesizedResponse(body, copyHandle, cacheInfoChannel,
                                             mResponseURLSpec,
@@ -369,10 +376,7 @@ class StartResponse final : public Runnable {
     rv = NS_NewURI(getter_AddRefs(uri), url, nullptr, nullptr);
     NS_ENSURE_SUCCESS(rv, false);
     int16_t decision = nsIContentPolicy::ACCEPT;
-    rv = NS_CheckContentLoadPolicy(
-        aLoadInfo->InternalContentPolicyType(), uri,
-        aLoadInfo->LoadingPrincipal(), aLoadInfo->TriggeringPrincipal(),
-        aLoadInfo->LoadingNode(), EmptyCString(), nullptr, &decision);
+    rv = NS_CheckContentLoadPolicy(uri, aLoadInfo, EmptyCString(), &decision);
     NS_ENSURE_SUCCESS(rv, false);
     return decision == nsIContentPolicy::ACCEPT;
   }
@@ -526,7 +530,7 @@ class MOZ_STACK_CLASS AutoCancel {
     mMessageName = aMessageName;
     mParams.Clear();
     StringArrayAppender::Append(mParams, sizeof...(Params),
-                                Forward<Params>(aParams)...);
+                                std::forward<Params>(aParams)...);
   }
 
   template <typename... Params>
@@ -545,7 +549,7 @@ class MOZ_STACK_CLASS AutoCancel {
     mMessageName = aMessageName;
     mParams.Clear();
     StringArrayAppender::Append(mParams, sizeof...(Params),
-                                Forward<Params>(aParams)...);
+                                std::forward<Params>(aParams)...);
   }
 
   void Reset() { mOwner = nullptr; }
@@ -643,10 +647,19 @@ void RespondWithHandler::ResolvedCallback(JSContext* aCx,
     return;
   }
 
-  if (NS_WARN_IF(response->BodyUsed())) {
-    autoCancel.SetCancelMessage(
-        NS_LITERAL_CSTRING("InterceptedUsedResponseWithURL"), mRequestURL);
-    return;
+  {
+    ErrorResult error;
+    bool bodyUsed = response->GetBodyUsed(error);
+    error.WouldReportJSException();
+    if (NS_WARN_IF(error.Failed())) {
+      autoCancel.SetCancelErrorResult(aCx, error);
+      return;
+    }
+    if (NS_WARN_IF(bodyUsed)) {
+      autoCancel.SetCancelMessage(
+          NS_LITERAL_CSTRING("InterceptedUsedResponseWithURL"), mRequestURL);
+      return;
+    }
   }
 
   RefPtr<InternalResponse> ir = response->GetInternalResponse();
@@ -705,7 +718,7 @@ void RespondWithHandler::ResolvedCallback(JSContext* aCx,
 
   nsCOMPtr<nsIRunnable> startRunnable =
       new StartResponse(mInterceptedChannel, ir, worker->GetChannelInfo(),
-                        mScriptSpec, responseURL, Move(closure));
+                        mScriptSpec, responseURL, std::move(closure));
 
   nsCOMPtr<nsIInputStream> body;
   ir->GetUnfilteredBody(getter_AddRefs(body));
@@ -713,6 +726,7 @@ void RespondWithHandler::ResolvedCallback(JSContext* aCx,
   if (body) {
     ErrorResult error;
     response->SetBodyUsed(aCx, error);
+    error.WouldReportJSException();
     if (NS_WARN_IF(error.Failed())) {
       autoCancel.SetCancelErrorResult(aCx, error);
       return;
@@ -761,7 +775,7 @@ void RespondWithHandler::CancelRequest(nsresult aStatus) {
 }  // namespace
 
 void FetchEvent::RespondWith(JSContext* aCx, Promise& aArg, ErrorResult& aRv) {
-  if (EventPhase() == nsIDOMEvent::NONE || mWaitToRespond) {
+  if (EventPhase() == Event_Binding::NONE || mWaitToRespond) {
     aRv.Throw(NS_ERROR_DOM_INVALID_STATE_ERR);
     return;
   }
@@ -1005,14 +1019,14 @@ nsresult ExtractBytesFromData(
   if (aDataInit.IsUSVString()) {
     return ExtractBytesFromUSVString(aDataInit.GetAsUSVString(), aBytes);
   }
-  NS_NOTREACHED("Unexpected push message data");
+  MOZ_ASSERT_UNREACHABLE("Unexpected push message data");
   return NS_ERROR_FAILURE;
 }
 }  // namespace
 
 PushMessageData::PushMessageData(nsISupports* aOwner,
                                  nsTArray<uint8_t>&& aBytes)
-    : mOwner(aOwner), mBytes(Move(aBytes)) {}
+    : mOwner(aOwner), mBytes(std::move(aBytes)) {}
 
 PushMessageData::~PushMessageData() {}
 
@@ -1028,7 +1042,7 @@ NS_INTERFACE_MAP_END
 
 JSObject* PushMessageData::WrapObject(JSContext* aCx,
                                       JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::PushMessageDataBinding::Wrap(aCx, this, aGivenProto);
+  return mozilla::dom::PushMessageData_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 void PushMessageData::Json(JSContext* cx, JS::MutableHandle<JS::Value> aRetval,
@@ -1108,7 +1122,7 @@ already_AddRefed<PushEvent> PushEvent::Constructor(
       aRv.Throw(rv);
       return nullptr;
     }
-    e->mData = new PushMessageData(aOwner, Move(bytes));
+    e->mData = new PushMessageData(aOwner, std::move(bytes));
   }
   return e.forget();
 }
@@ -1123,7 +1137,7 @@ NS_IMPL_CYCLE_COLLECTION_INHERITED(PushEvent, ExtendableEvent, mData)
 
 JSObject* PushEvent::WrapObjectInternal(JSContext* aCx,
                                         JS::Handle<JSObject*> aGivenProto) {
-  return mozilla::dom::PushEventBinding::Wrap(aCx, this, aGivenProto);
+  return mozilla::dom::PushEvent_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 ExtendableMessageEvent::ExtendableMessageEvent(EventTarget* aOwner)
@@ -1159,20 +1173,18 @@ void ExtendableMessageEvent::GetSource(
   }
 }
 
-/* static */ already_AddRefed<ExtendableMessageEvent>
-ExtendableMessageEvent::Constructor(const GlobalObject& aGlobal,
-                                    const nsAString& aType,
-                                    const ExtendableMessageEventInit& aOptions,
-                                    ErrorResult& aRv) {
+/* static */
+already_AddRefed<ExtendableMessageEvent> ExtendableMessageEvent::Constructor(
+    const GlobalObject& aGlobal, const nsAString& aType,
+    const ExtendableMessageEventInit& aOptions, ErrorResult& aRv) {
   nsCOMPtr<EventTarget> t = do_QueryInterface(aGlobal.GetAsSupports());
   return Constructor(t, aType, aOptions, aRv);
 }
 
-/* static */ already_AddRefed<ExtendableMessageEvent>
-ExtendableMessageEvent::Constructor(mozilla::dom::EventTarget* aEventTarget,
-                                    const nsAString& aType,
-                                    const ExtendableMessageEventInit& aOptions,
-                                    ErrorResult& aRv) {
+/* static */
+already_AddRefed<ExtendableMessageEvent> ExtendableMessageEvent::Constructor(
+    mozilla::dom::EventTarget* aEventTarget, const nsAString& aType,
+    const ExtendableMessageEventInit& aOptions, ErrorResult& aRv) {
   RefPtr<ExtendableMessageEvent> event =
       new ExtendableMessageEvent(aEventTarget);
 

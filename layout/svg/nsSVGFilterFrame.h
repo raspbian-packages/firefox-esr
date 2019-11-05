@@ -16,25 +16,24 @@
 class nsAtom;
 class nsIContent;
 class nsIFrame;
-class nsIPresShell;
-class nsStyleContext;
-class nsSVGLength2;
 
 struct nsRect;
 
 namespace mozilla {
+class SVGAnimatedLength;
+class PresShell;
 namespace dom {
 class SVGFilterElement;
 }  // namespace dom
 }  // namespace mozilla
 
-class nsSVGFilterFrame : public nsSVGContainerFrame {
-  friend nsIFrame* NS_NewSVGFilterFrame(nsIPresShell* aPresShell,
-                                        nsStyleContext* aContext);
+class nsSVGFilterFrame final : public nsSVGContainerFrame {
+  friend nsIFrame* NS_NewSVGFilterFrame(mozilla::PresShell* aPresShell,
+                                        ComputedStyle* aStyle);
 
  protected:
-  explicit nsSVGFilterFrame(nsStyleContext* aContext)
-      : nsSVGContainerFrame(aContext, kClassID),
+  explicit nsSVGFilterFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsSVGContainerFrame(aStyle, aPresContext, kClassID),
         mLoopFlag(false),
         mNoHRefURI(false) {
     AddStateBits(NS_FRAME_IS_NONDISPLAY);
@@ -56,10 +55,12 @@ class nsSVGFilterFrame : public nsSVGContainerFrame {
 #endif
 
  private:
-  // Parse our xlink:href and set up our nsSVGPaintingProperty if we
-  // reference another filter and we don't have a property. Return
-  // the referenced filter's frame if available, null otherwise.
   friend class nsSVGFilterInstance;
+
+  /**
+   * Parses this frame's href and - if it references another filter - returns
+   * it.  It also makes this frame a rendering observer of the specified ID.
+   */
   nsSVGFilterFrame* GetReferencedFilter();
 
   // Accessors to lookup filter attributes
@@ -67,8 +68,9 @@ class nsSVGFilterFrame : public nsSVGContainerFrame {
   uint16_t GetEnumValue(uint32_t aIndex) {
     return GetEnumValue(aIndex, mContent);
   }
-  const nsSVGLength2* GetLengthValue(uint32_t aIndex, nsIContent* aDefault);
-  const nsSVGLength2* GetLengthValue(uint32_t aIndex) {
+  const mozilla::SVGAnimatedLength* GetLengthValue(uint32_t aIndex,
+                                                   nsIContent* aDefault);
+  const mozilla::SVGAnimatedLength* GetLengthValue(uint32_t aIndex) {
     return GetLengthValue(aIndex, mContent);
   }
   const mozilla::dom::SVGFilterElement* GetFilterContent(nsIContent* aDefault);

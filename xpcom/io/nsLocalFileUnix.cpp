@@ -25,13 +25,13 @@
 #include <locale.h>
 
 #if defined(HAVE_SYS_QUOTA_H) && defined(HAVE_LINUX_QUOTA_H)
-#define USE_LINUX_QUOTACTL
-#include <sys/mount.h>
-#include <sys/quota.h>
-#include <sys/sysmacros.h>
-#ifndef BLOCK_SIZE
-#define BLOCK_SIZE 1024 /* kernel block size */
-#endif
+#  define USE_LINUX_QUOTACTL
+#  include <sys/mount.h>
+#  include <sys/quota.h>
+#  include <sys/sysmacros.h>
+#  ifndef BLOCK_SIZE
+#    define BLOCK_SIZE 1024 /* kernel block size */
+#  endif
 #endif
 
 #include "xpcom-private.h"
@@ -46,27 +46,27 @@
 #include "nsIComponentManager.h"
 #include "prproces.h"
 #include "nsIDirectoryEnumerator.h"
-#include "nsISimpleEnumerator.h"
+#include "nsSimpleEnumerator.h"
 #include "private/pprio.h"
 #include "prlink.h"
 
 #ifdef MOZ_WIDGET_GTK
-#include "nsIGIOService.h"
+#  include "nsIGIOService.h"
 #endif
 
 #ifdef MOZ_WIDGET_COCOA
-#include <Carbon/Carbon.h>
-#include "CocoaFileUtils.h"
-#include "prmem.h"
-#include "plbase64.h"
+#  include <Carbon/Carbon.h>
+#  include "CocoaFileUtils.h"
+#  include "prmem.h"
+#  include "plbase64.h"
 
 static nsresult MacErrorMapper(OSErr inErr);
 #endif
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "GeneratedJNIWrappers.h"
-#include "nsIMIMEService.h"
-#include <linux/magic.h>
+#  include "GeneratedJNIWrappers.h"
+#  include "nsIMIMEService.h"
+#  include <linux/magic.h>
 #endif
 
 #include "nsNativeCharsetUtils.h"
@@ -88,13 +88,13 @@ using namespace mozilla;
   } while (0)
 
 /* directory enumerator */
-class nsDirEnumeratorUnix final : public nsISimpleEnumerator,
+class nsDirEnumeratorUnix final : public nsSimpleEnumerator,
                                   public nsIDirectoryEnumerator {
  public:
   nsDirEnumeratorUnix();
 
   // nsISupports interface
-  NS_DECL_ISUPPORTS
+  NS_DECL_ISUPPORTS_INHERITED
 
   // nsISimpleEnumerator interface
   NS_DECL_NSISIMPLEENUMERATOR
@@ -104,8 +104,12 @@ class nsDirEnumeratorUnix final : public nsISimpleEnumerator,
 
   NS_IMETHOD Init(nsLocalFile* aParent, bool aIgnored);
 
+  NS_FORWARD_NSISIMPLEENUMERATORBASE(nsSimpleEnumerator::)
+
+  const nsID& DefaultInterface() override { return NS_GET_IID(nsIFile); }
+
  private:
-  ~nsDirEnumeratorUnix();
+  ~nsDirEnumeratorUnix() override;
 
  protected:
   NS_IMETHOD GetNextEntry();
@@ -119,8 +123,8 @@ nsDirEnumeratorUnix::nsDirEnumeratorUnix() : mDir(nullptr), mEntry(nullptr) {}
 
 nsDirEnumeratorUnix::~nsDirEnumeratorUnix() { Close(); }
 
-NS_IMPL_ISUPPORTS(nsDirEnumeratorUnix, nsISimpleEnumerator,
-                  nsIDirectoryEnumerator)
+NS_IMPL_ISUPPORTS_INHERITED(nsDirEnumeratorUnix, nsSimpleEnumerator,
+                            nsIDirectoryEnumerator)
 
 NS_IMETHODIMP
 nsDirEnumeratorUnix::Init(nsLocalFile* aParent,
@@ -164,7 +168,10 @@ nsDirEnumeratorUnix::GetNext(nsISupports** aResult) {
   if (NS_FAILED(rv)) {
     return rv;
   }
-  NS_IF_ADDREF(*aResult = file);
+  if (!file) {
+    return NS_ERROR_FAILURE;
+  }
+  file.forget(aResult);
   return NS_OK;
 }
 
@@ -214,18 +221,18 @@ nsDirEnumeratorUnix::Close() {
   return NS_OK;
 }
 
-nsLocalFile::nsLocalFile() {}
+nsLocalFile::nsLocalFile() : mCachedStat() {}
 
-nsLocalFile::nsLocalFile(const nsACString& aFilePath) {
+nsLocalFile::nsLocalFile(const nsACString& aFilePath) : mCachedStat() {
   InitWithNativePath(aFilePath);
 }
 
 nsLocalFile::nsLocalFile(const nsLocalFile& aOther) : mPath(aOther.mPath) {}
 
 #ifdef MOZ_WIDGET_COCOA
-NS_IMPL_ISUPPORTS(nsLocalFile, nsILocalFileMac, nsIFile, nsIHashable)
+NS_IMPL_ISUPPORTS(nsLocalFile, nsILocalFileMac, nsIFile)
 #else
-NS_IMPL_ISUPPORTS(nsLocalFile, nsIFile, nsIHashable)
+NS_IMPL_ISUPPORTS(nsLocalFile, nsIFile)
 #endif
 
 nsresult nsLocalFile::nsLocalFileConstructor(nsISupports* aOuter,
@@ -708,20 +715,14 @@ nsresult nsLocalFile::CopyDirectoryTo(nsIFile* aNewParent) {
     }
   }
 
-  nsCOMPtr<nsISimpleEnumerator> dirIterator;
+  nsCOMPtr<nsIDirectoryEnumerator> dirIterator;
   if (NS_FAILED(rv = GetDirectoryEntries(getter_AddRefs(dirIterator)))) {
     return rv;
   }
 
-  bool hasMore = false;
-  while (NS_SUCCEEDED(dirIterator->HasMoreElements(&hasMore)) && hasMore) {
-    nsCOMPtr<nsISupports> supports;
-    nsCOMPtr<nsIFile> entry;
-    rv = dirIterator->GetNext(getter_AddRefs(supports));
-    entry = do_QueryInterface(supports);
-    if (NS_FAILED(rv) || !entry) {
-      continue;
-    }
+  nsCOMPtr<nsIFile> entry;
+  while (NS_SUCCEEDED(dirIterator->GetNextFile(getter_AddRefs(entry))) &&
+         entry) {
     if (NS_FAILED(rv = entry->IsSymlink(&isSymlink))) {
       return rv;
     }
@@ -1034,7 +1035,7 @@ nsLocalFile::Remove(bool aRecursive) {
   if (aRecursive) {
     auto* dir = new nsDirEnumeratorUnix();
 
-    nsCOMPtr<nsISimpleEnumerator> dirRef(dir);  // release on exit
+    RefPtr<nsSimpleEnumerator> dirRef(dir);  // release on exit
 
     rv = dir->Init(this, false);
     if (NS_FAILED(rv)) {
@@ -1134,10 +1135,10 @@ nsLocalFile::SetLastModifiedTimeOfLink(PRTime aLastModTimeOfLink) {
   return SetLastModifiedTime(aLastModTimeOfLink);
 }
 
-  /*
-   * Only send back permissions bits: maybe we want to send back the whole
-   * mode_t to permit checks against other file types?
-   */
+/*
+ * Only send back permissions bits: maybe we want to send back the whole
+ * mode_t to permit checks against other file types?
+ */
 
 #define NORMALIZE_PERMS(mode) ((mode) & (S_IRWXU | S_IRWXG | S_IRWXO))
 
@@ -1318,7 +1319,7 @@ nsLocalFile::GetDiskSpaceAvailable(int64_t* aDiskSpaceAvailable) {
     return NS_ERROR_INVALID_ARG;
   }
 
-    // These systems have the operations necessary to check disk space.
+  // These systems have the operations necessary to check disk space.
 
 #ifdef STATFS
 
@@ -1335,20 +1336,20 @@ nsLocalFile::GetDiskSpaceAvailable(int64_t* aDiskSpaceAvailable) {
    */
 
   if (STATFS(mPath.get(), &fs_buf) < 0) {
-  // The call to STATFS failed.
-#ifdef DEBUG
+    // The call to STATFS failed.
+#  ifdef DEBUG
     printf("ERROR: GetDiskSpaceAvailable: STATFS call FAILED. \n");
-#endif
+#  endif
     return NS_ERROR_FAILURE;
   }
 
   *aDiskSpaceAvailable = (int64_t)fs_buf.F_BSIZE * fs_buf.f_bavail;
 
-#ifdef DEBUG_DISK_SPACE
+#  ifdef DEBUG_DISK_SPACE
   printf("DiskSpaceAvailable: %lu bytes\n", *aDiskSpaceAvailable);
-#endif
+#  endif
 
-#if defined(USE_LINUX_QUOTACTL)
+#  if defined(USE_LINUX_QUOTACTL)
 
   if (!FillStatCache()) {
     // Return available size from statfs
@@ -1364,9 +1365,9 @@ nsLocalFile::GetDiskSpaceAvailable(int64_t* aDiskSpaceAvailable) {
   struct dqblk dq;
   if (!quotactl(QCMD(Q_GETQUOTA, USRQUOTA), deviceName.get(), getuid(),
                 (caddr_t)&dq)
-#ifdef QIF_BLIMITS
+#    ifdef QIF_BLIMITS
       && dq.dqb_valid & QIF_BLIMITS
-#endif
+#    endif
       && dq.dqb_bhardlimit) {
     int64_t QuotaSpaceAvailable = 0;
     // dqb_bhardlimit is count of BLOCK_SIZE blocks, dqb_curspace is bytes
@@ -1377,24 +1378,24 @@ nsLocalFile::GetDiskSpaceAvailable(int64_t* aDiskSpaceAvailable) {
       *aDiskSpaceAvailable = QuotaSpaceAvailable;
     }
   }
-#endif
+#  endif
 
   return NS_OK;
 
 #else
-    /*
-     * This platform doesn't have statfs or statvfs.  I'm sure that there's
-     * a way to check for free disk space on platforms that don't have statfs
-     * (I'm SURE they have df, for example).
-     *
-     * Until we figure out how to do that, lets be honest and say that this
-     * command isn't implemented properly for these platforms yet.
-     */
-#ifdef DEBUG
+  /*
+   * This platform doesn't have statfs or statvfs.  I'm sure that there's
+   * a way to check for free disk space on platforms that don't have statfs
+   * (I'm SURE they have df, for example).
+   *
+   * Until we figure out how to do that, lets be honest and say that this
+   * command isn't implemented properly for these platforms yet.
+   */
+#  ifdef DEBUG
   printf(
       "ERROR: GetDiskSpaceAvailable: Not implemented for plaforms without "
       "statfs.\n");
-#endif
+#  endif
   return NS_ERROR_NOT_IMPLEMENTED;
 
 #endif /* STATFS */
@@ -1538,7 +1539,7 @@ nsLocalFile::IsExecutable(bool* aResult) {
     }
   }
 
-    // On OS X, then query Launch Services.
+  // On OS X, then query Launch Services.
 #ifdef MOZ_WIDGET_COCOA
   // Certain Mac applications, such as Classic applications, which
   // run under Rosetta, might not have the +x mode bit but are still
@@ -1795,7 +1796,7 @@ NS_IMETHODIMP
 nsLocalFile::SetFollowLinks(bool aFollowLinks) { return NS_OK; }
 
 NS_IMETHODIMP
-nsLocalFile::GetDirectoryEntries(nsISimpleEnumerator** aEntries) {
+nsLocalFile::GetDirectoryEntriesImpl(nsIDirectoryEnumerator** aEntries) {
   RefPtr<nsDirEnumeratorUnix> dir = new nsDirEnumeratorUnix();
 
   nsresult rv = dir->Init(this, false);
@@ -2003,9 +2004,9 @@ nsresult NS_NewNativeLocalFile(const nsACString& aPath, bool aFollowSymlinks,
   return NS_OK;
 }
 
-  //-----------------------------------------------------------------------------
-  // unicode support
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// unicode support
+//-----------------------------------------------------------------------------
 
 #define SET_UCS(func, ucsArg)                          \
   {                                                    \
@@ -2103,25 +2104,6 @@ nsresult nsLocalFile::GetTarget(nsAString& aResult) {
   GET_UCS(GetNativeTarget, aResult);
 }
 
-// nsIHashable
-
-NS_IMETHODIMP
-nsLocalFile::Equals(nsIHashable* aOther, bool* aResult) {
-  nsCOMPtr<nsIFile> otherFile(do_QueryInterface(aOther));
-  if (!otherFile) {
-    *aResult = false;
-    return NS_OK;
-  }
-
-  return Equals(otherFile, aResult);
-}
-
-NS_IMETHODIMP
-nsLocalFile::GetHashCode(uint32_t* aResult) {
-  *aResult = HashString(mPath);
-  return NS_OK;
-}
-
 nsresult NS_NewLocalFile(const nsAString& aPath, bool aFollowLinks,
                          nsIFile** aResult) {
   nsAutoCString buf;
@@ -2132,7 +2114,7 @@ nsresult NS_NewLocalFile(const nsAString& aPath, bool aFollowLinks,
   return NS_NewNativeLocalFile(buf, aFollowLinks, aResult);
 }
 
-  // nsILocalFileMac
+// nsILocalFileMac
 
 #ifdef MOZ_WIDGET_COCOA
 

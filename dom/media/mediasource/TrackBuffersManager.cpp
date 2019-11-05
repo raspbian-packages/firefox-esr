@@ -6,19 +6,19 @@
 
 #include "TrackBuffersManager.h"
 #include "ContainerParser.h"
-#include "MediaPrefs.h"
 #include "MediaSourceDemuxer.h"
 #include "MediaSourceUtils.h"
-#include "mozilla/ErrorResult.h"
-#include "mozilla/Preferences.h"
-#include "nsMimeTypes.h"
 #include "SourceBuffer.h"
 #include "SourceBufferResource.h"
 #include "SourceBufferTask.h"
 #include "WebMDemuxer.h"
+#include "mozilla/ErrorResult.h"
+#include "mozilla/Preferences.h"
+#include "mozilla/StaticPrefs.h"
+#include "nsMimeTypes.h"
 
 #ifdef MOZ_FMP4
-#include "MP4Demuxer.h"
+#  include "MP4Demuxer.h"
 #endif
 
 #include <limits>
@@ -96,6 +96,7 @@ TrackBuffersManager::TrackBuffersManager(MediaSourceDecoder* aParentDecoder,
     : mInputBuffer(new MediaByteBuffer),
       mBufferFull(false),
       mFirstInitializationSegmentReceived(false),
+      mChangeTypeReceived(false),
       mNewMediaSegmentStarted(false),
       mActiveTrack(false),
       mType(aType),
@@ -137,7 +138,7 @@ RefPtr<TrackBuffersManager::AppendPromise> TrackBuffersManager::DoAppendData(
     already_AddRefed<MediaByteBuffer> aData,
     const SourceBufferAttributes& aAttributes) {
   RefPtr<AppendBufferTask> task =
-      new AppendBufferTask(Move(aData), aAttributes);
+      new AppendBufferTask(std::move(aData), aAttributes);
   RefPtr<AppendPromise> p = task->mPromise.Ensure(__func__);
   QueueTask(task);
 
@@ -148,7 +149,7 @@ void TrackBuffersManager::QueueTask(SourceBufferTask* aTask) {
   // The source buffer is a wrapped native, it would be unlinked twice and so
   // the TrackBuffersManager::Detach() would also be called twice. Since the
   // detach task has been done before, we could ignore this task.
-  RefPtr<AutoTaskQueue> taskQueue = GetTaskQueueSafe();
+  RefPtr<TaskQueue> taskQueue = GetTaskQueueSafe();
   if (!taskQueue) {
     MOZ_ASSERT(aTask->GetType() == SourceBufferTask::Type::Detach,
                "only detach task could happen here!");
@@ -249,6 +250,17 @@ void TrackBuffersManager::ProcessTasks() {
       ShutdownDemuxers();
       ResetTaskQueue();
       return;
+    case Type::ChangeType:
+      MOZ_RELEASE_ASSERT(!mCurrentTask);
+      mType = task->As<ChangeTypeTask>()->mType;
+      mChangeTypeReceived = true;
+      mInitData = nullptr;
+      // A new input buffer will be created once we receive a new init segment.
+      // The first segment received after a changeType call must be an init
+      // segment.
+      mCurrentInputBuffer = nullptr;
+      CompleteResetParserState();
+      break;
     default:
       NS_WARNING("Invalid Task");
   }
@@ -354,6 +366,12 @@ TrackBuffersManager::EvictDataResult TrackBuffersManager::EvictData(
   return result;
 }
 
+void TrackBuffersManager::ChangeType(const MediaContainerType& aType) {
+  MOZ_ASSERT(NS_IsMainThread());
+
+  QueueTask(new ChangeTypeTask(aType));
+}
+
 TimeIntervals TrackBuffersManager::Buffered() const {
   MSE_DEBUG("");
 
@@ -439,10 +457,13 @@ void TrackBuffersManager::CompleteResetParserState() {
   }
 
   // We could be left with a demuxer in an unusable state. It needs to be
-  // recreated. We store in the InputBuffer an init segment which will be parsed
-  // during the next Segment Parser Loop and a new demuxer will be created and
-  // initialized.
-  if (mFirstInitializationSegmentReceived) {
+  // recreated. Unless we have a pending changeType operation, we store in the
+  // InputBuffer an init segment which will be parsed during the next Segment
+  // Parser Loop and a new demuxer will be created and initialized.
+  // If we are in the middle of a changeType operation, then we do not have an
+  // init segment yet. The next appendBuffer operation will need to provide such
+  // init segment.
+  if (mFirstInitializationSegmentReceived && !mChangeTypeReceived) {
     MOZ_ASSERT(mInitData && mInitData->Length(),
                "we must have an init segment");
     // The aim here is really to destroy our current demuxer.
@@ -451,8 +472,10 @@ void TrackBuffersManager::CompleteResetParserState() {
     // to mInputBuffer as it will get modified in the Segment Parser Loop.
     mInputBuffer = new MediaByteBuffer;
     mInputBuffer->AppendElements(*mInitData);
+    RecreateParser(true);
+  } else {
+    RecreateParser(false);
   }
-  RecreateParser(true);
 }
 
 int64_t TrackBuffersManager::EvictionThreshold() const {
@@ -498,9 +521,12 @@ void TrackBuffersManager::DoEvictData(const TimeUnit& aPlaybackTime,
   if (lastKeyFrameIndex > 0) {
     MSE_DEBUG("Step1. Evicting %" PRId64 " bytes prior currentTime",
               aSizeToEvict - toEvict);
-    CodedFrameRemoval(TimeInterval(
-        TimeUnit::Zero(),
-        buffer[lastKeyFrameIndex]->mTime - TimeUnit::FromMicroseconds(1)));
+    TimeUnit start = track.mBufferedRanges[0].mStart;
+    TimeUnit end =
+        buffer[lastKeyFrameIndex]->mTime - TimeUnit::FromMicroseconds(1);
+    if (end > start) {
+      CodedFrameRemoval(TimeInterval(start, end));
+    }
   }
 
   if (mSizeSourceBuffer <= finalSize) {
@@ -613,7 +639,7 @@ bool TrackBuffersManager::CodedFrameRemoval(TimeInterval aInterval) {
     // in the previous step and the next random access point after those removed
     // frames.
     TimeIntervals removedInterval{TimeInterval(start, removeEndTimestamp)};
-    RemoveFrames(removedInterval, *track, 0);
+    RemoveFrames(removedInterval, *track, 0, RemovalMode::kRemoveFrame);
 
     // 5. If this object is in activeSourceBuffers, the current playback
     // position is greater than or equal to start and less than the remove end
@@ -682,7 +708,7 @@ void TrackBuffersManager::SegmentParserLoop() {
       MediaResult haveInitSegment = mParser->IsInitSegmentPresent(mInputBuffer);
       if (NS_SUCCEEDED(haveInitSegment)) {
         SetAppendState(AppendState::PARSING_INIT_SEGMENT);
-        if (mFirstInitializationSegmentReceived) {
+        if (mFirstInitializationSegmentReceived && !mChangeTypeReceived) {
           // This is a new initialization segment. Obsolete the old one.
           RecreateParser(false);
         }
@@ -736,9 +762,11 @@ void TrackBuffersManager::SegmentParserLoop() {
     if (mSourceBufferAttributes->GetAppendState() ==
         AppendState::PARSING_MEDIA_SEGMENT) {
       // 1. If the first initialization segment received flag is false, then run
-      // the append error algorithm with the decode error parameter set to true
-      // and abort this algorithm.
-      if (!mFirstInitializationSegmentReceived) {
+      //    the append error algorithm with the decode error parameter set to
+      //    true and abort this algorithm.
+      //    Or we are in the process of changeType, in which case we must first
+      //    get an init segment before getting a media segment.
+      if (!mFirstInitializationSegmentReceived || mChangeTypeReceived) {
         RejectAppend(NS_ERROR_FAILURE, __func__);
         return;
       }
@@ -783,19 +811,20 @@ void TrackBuffersManager::SegmentParserLoop() {
       // run the coded frame processing algorithm.
       RefPtr<TrackBuffersManager> self = this;
       CodedFrameProcessing()
-          ->Then(TaskQueueFromTaskQueue(), __func__,
-                 [self](bool aNeedMoreData) {
-                   self->mProcessingRequest.Complete();
-                   if (aNeedMoreData) {
-                     self->NeedMoreData();
-                   } else {
-                     self->ScheduleSegmentParserLoop();
-                   }
-                 },
-                 [self](const MediaResult& aRejectValue) {
-                   self->mProcessingRequest.Complete();
-                   self->RejectAppend(aRejectValue, __func__);
-                 })
+          ->Then(
+              TaskQueueFromTaskQueue(), __func__,
+              [self](bool aNeedMoreData) {
+                self->mProcessingRequest.Complete();
+                if (aNeedMoreData) {
+                  self->NeedMoreData();
+                } else {
+                  self->ScheduleSegmentParserLoop();
+                }
+              },
+              [self](const MediaResult& aRejectValue) {
+                self->mProcessingRequest.Complete();
+                self->RejectAppend(aRejectValue, __func__);
+              })
           ->Track(mProcessingRequest);
       return;
     }
@@ -902,7 +931,7 @@ void TrackBuffersManager::OnDemuxerResetDone(const MediaResult& aResult) {
   MOZ_ASSERT(OnTaskQueue());
   mDemuxerInitRequest.Complete();
 
-  if (NS_FAILED(aResult) && MediaPrefs::MediaWarningsAsErrors()) {
+  if (NS_FAILED(aResult) && StaticPrefs::MediaPlaybackWarningsAsErrors()) {
     RejectAppend(aResult, __func__);
     return;
   }
@@ -1003,7 +1032,7 @@ void TrackBuffersManager::OnDemuxerInitDone(const MediaResult& aResult) {
 
   mDemuxerInitRequest.Complete();
 
-  if (NS_FAILED(aResult) && MediaPrefs::MediaWarningsAsErrors()) {
+  if (NS_FAILED(aResult) && StaticPrefs::MediaPlaybackWarningsAsErrors()) {
     RejectAppend(aResult, __func__);
     return;
   }
@@ -1056,9 +1085,7 @@ void TrackBuffersManager::OnDemuxerInitDone(const MediaResult& aResult) {
   // following steps:
   if (mFirstInitializationSegmentReceived) {
     if (numVideos != mVideoTracks.mNumTracks ||
-        numAudios != mAudioTracks.mNumTracks ||
-        (numVideos && info.mVideo.mMimeType != mVideoTracks.mInfo->mMimeType) ||
-        (numAudios && info.mAudio.mMimeType != mAudioTracks.mInfo->mMimeType)) {
+        numAudios != mAudioTracks.mNumTracks) {
       RejectAppend(NS_ERROR_FAILURE, __func__);
       return;
     }
@@ -1074,170 +1101,204 @@ void TrackBuffersManager::OnDemuxerInitDone(const MediaResult& aResult) {
     mAudioTracks.mNeedRandomAccessPoint = true;
   }
 
-  // 4. Let active track flag equal false.
-  bool activeTrack = false;
+  // Check if we've received the same init data again. Some streams will
+  // resend the same data. In these cases we don't need to change the stream
+  // id as it's the same stream. Doing so would recreate decoders, possibly
+  // leading to gaps in audio and/or video (see bug 1450952).
+  //
+  // It's possible to have the different binary representations for the same
+  // logical init data. If this case is encountered in the wild then these
+  // checks could be revised to compare MediaInfo rather than init segment
+  // bytes.
+  // For audio only source buffer we can check that only the AudioInfo has
+  // changed.
+  bool isRepeatInitData =
+      !mChangeTypeReceived && mInitData &&
+      ((*mInitData.get() == *mParser->InitData()) ||
+       (numVideos == 0 && numAudios > 0 && mAudioTracks.mLastInfo &&
+        *mAudioTracks.mLastInfo->GetAsAudioInfo() == info.mAudio));
 
-  // Increase our stream id.
-  uint32_t streamID = sStreamSourceID++;
+  MOZ_ASSERT(mFirstInitializationSegmentReceived || !isRepeatInitData,
+             "Should never detect repeat init data for first segment!");
 
-  // 5. If the first initialization segment received flag is false, then run the
-  // following steps:
-  if (!mFirstInitializationSegmentReceived) {
-    mAudioTracks.mNumTracks = numAudios;
-    // TODO:
-    // 1. If the initialization segment contains tracks with codecs the user
-    // agent does not support, then run the append error algorithm with the
-    // decode error parameter set to true and abort these steps.
+  // If we have new init data we configure and set track info as needed. If we
+  // have repeat init data we carry forward our existing track info.
+  if (!isRepeatInitData) {
+    // Increase our stream id.
+    uint32_t streamID = sStreamSourceID++;
 
-    // 2. For each audio track in the initialization segment, run following
-    // steps: for (uint32_t i = 0; i < numAudios; i++) {
-    if (numAudios) {
-      // 1. Let audio byte stream track ID be the Track ID for the current track
-      // being processed.
-      // 2. Let audio language be a BCP 47 language tag for the language
-      // specified in the initialization segment for this track or an empty
-      // string if no language info is present.
-      // 3. If audio language equals an empty string or the 'und' BCP 47 value,
-      // then run the default track language algorithm with byteStreamTrackID
-      // set to audio byte stream track ID and type set to "audio" and assign
-      // the value returned by the algorithm to audio language.
-      // 4. Let audio label be a label specified in the initialization segment
-      // for this track or an empty string if no label info is present.
-      // 5. If audio label equals an empty string, then run the default track
-      // label algorithm with byteStreamTrackID set to audio byte stream track
-      // ID and type set to "audio" and assign the value returned by the
-      // algorithm to audio label.
-      // 6. Let audio kinds be an array of kind strings specified in the
-      // initialization segment for this track or an empty array if no kind
-      // information is provided.
-      // 7. If audio kinds equals an empty array, then run the default track
-      // kinds algorithm with byteStreamTrackID set to audio byte stream track
-      // ID and type set to "audio" and assign the value returned by the
-      // algorithm to audio kinds.
-      // 8. For each value in audio kinds, run the following steps:
-      //   1. Let current audio kind equal the value from audio kinds for this
-      //   iteration of the loop.
-      //   2. Let new audio track be a new AudioTrack object.
-      //   3. Generate a unique ID and assign it to the id property on new audio
-      //   track.
-      //   4. Assign audio language to the language property on new audio track.
-      //   5. Assign audio label to the label property on new audio track.
-      //   6. Assign current audio kind to the kind property on new audio track.
-      //   7. If audioTracks.length equals 0, then run the following steps:
-      //     1. Set the enabled property on new audio track to true.
-      //     2. Set active track flag to true.
-      activeTrack = true;
-      //   8. Add new audio track to the audioTracks attribute on this
-      //   SourceBuffer object.
-      //   9. Queue a task to fire a trusted event named addtrack, that does not
-      //   bubble and is not cancelable, and that uses the TrackEvent interface,
-      //   at the AudioTrackList object referenced by the audioTracks attribute
-      //   on this SourceBuffer object.
-      //   10. Add new audio track to the audioTracks attribute on the
-      //   HTMLMediaElement.
-      //   11. Queue a task to fire a trusted event named addtrack, that does
-      //   not bubble and is not cancelable, and that uses the TrackEvent
-      //   interface, at the AudioTrackList object referenced by the audioTracks
-      //   attribute on the HTMLMediaElement.
-      mAudioTracks.mBuffers.AppendElement(TrackBuffer());
-      // 10. Add the track description for this track to the track buffer.
-      mAudioTracks.mInfo = new TrackInfoSharedPtr(info.mAudio, streamID);
-      mAudioTracks.mLastInfo = mAudioTracks.mInfo;
+    // 4. Let active track flag equal false.
+    bool activeTrack = false;
+
+    // 5. If the first initialization segment received flag is false, then run
+    // the following steps:
+    if (!mFirstInitializationSegmentReceived) {
+      mAudioTracks.mNumTracks = numAudios;
+      // TODO:
+      // 1. If the initialization segment contains tracks with codecs the user
+      // agent does not support, then run the append error algorithm with the
+      // decode error parameter set to true and abort these steps.
+
+      // 2. For each audio track in the initialization segment, run following
+      // steps: for (uint32_t i = 0; i < numAudios; i++) {
+      if (numAudios) {
+        // 1. Let audio byte stream track ID be the Track ID for the current
+        // track being processed.
+        // 2. Let audio language be a BCP 47 language tag for the language
+        // specified in the initialization segment for this track or an empty
+        // string if no language info is present.
+        // 3. If audio language equals an empty string or the 'und' BCP 47
+        // value, then run the default track language algorithm with
+        // byteStreamTrackID set to audio byte stream track ID and type set to
+        // "audio" and assign the value returned by the algorithm to audio
+        // language.
+        // 4. Let audio label be a label specified in the initialization segment
+        // for this track or an empty string if no label info is present.
+        // 5. If audio label equals an empty string, then run the default track
+        // label algorithm with byteStreamTrackID set to audio byte stream track
+        // ID and type set to "audio" and assign the value returned by the
+        // algorithm to audio label.
+        // 6. Let audio kinds be an array of kind strings specified in the
+        // initialization segment for this track or an empty array if no kind
+        // information is provided.
+        // 7. If audio kinds equals an empty array, then run the default track
+        // kinds algorithm with byteStreamTrackID set to audio byte stream track
+        // ID and type set to "audio" and assign the value returned by the
+        // algorithm to audio kinds.
+        // 8. For each value in audio kinds, run the following steps:
+        //   1. Let current audio kind equal the value from audio kinds for this
+        //   iteration of the loop.
+        //   2. Let new audio track be a new AudioTrack object.
+        //   3. Generate a unique ID and assign it to the id property on new
+        //   audio track.
+        //   4. Assign audio language to the language property on new audio
+        //   track.
+        //   5. Assign audio label to the label property on new audio track.
+        //   6. Assign current audio kind to the kind property on new audio
+        //   track.
+        //   7. If audioTracks.length equals 0, then run the following steps:
+        //     1. Set the enabled property on new audio track to true.
+        //     2. Set active track flag to true.
+        activeTrack = true;
+        //   8. Add new audio track to the audioTracks attribute on this
+        //   SourceBuffer object.
+        //   9. Queue a task to fire a trusted event named addtrack, that does
+        //   not bubble and is not cancelable, and that uses the TrackEvent
+        //   interface, at the AudioTrackList object referenced by the
+        //   audioTracks attribute on this SourceBuffer object.
+        //   10. Add new audio track to the audioTracks attribute on the
+        //   HTMLMediaElement.
+        //   11. Queue a task to fire a trusted event named addtrack, that does
+        //   not bubble and is not cancelable, and that uses the TrackEvent
+        //   interface, at the AudioTrackList object referenced by the
+        //   audioTracks attribute on the HTMLMediaElement.
+        mAudioTracks.mBuffers.AppendElement(TrackBuffer());
+        // 10. Add the track description for this track to the track buffer.
+        mAudioTracks.mInfo = new TrackInfoSharedPtr(info.mAudio, streamID);
+        mAudioTracks.mLastInfo = mAudioTracks.mInfo;
+      }
+
+      mVideoTracks.mNumTracks = numVideos;
+      // 3. For each video track in the initialization segment, run following
+      // steps: for (uint32_t i = 0; i < numVideos; i++) {
+      if (numVideos) {
+        // 1. Let video byte stream track ID be the Track ID for the current
+        // track being processed.
+        // 2. Let video language be a BCP 47 language tag for the language
+        // specified in the initialization segment for this track or an empty
+        // string if no language info is present.
+        // 3. If video language equals an empty string or the 'und' BCP 47
+        // value, then run the default track language algorithm with
+        // byteStreamTrackID set to video byte stream track ID and type set to
+        // "video" and assign the value returned by the algorithm to video
+        // language.
+        // 4. Let video label be a label specified in the initialization segment
+        // for this track or an empty string if no label info is present.
+        // 5. If video label equals an empty string, then run the default track
+        // label algorithm with byteStreamTrackID set to video byte stream track
+        // ID and type set to "video" and assign the value returned by the
+        // algorithm to video label.
+        // 6. Let video kinds be an array of kind strings specified in the
+        // initialization segment for this track or an empty array if no kind
+        // information is provided.
+        // 7. If video kinds equals an empty array, then run the default track
+        // kinds algorithm with byteStreamTrackID set to video byte stream track
+        // ID and type set to "video" and assign the value returned by the
+        // algorithm to video kinds.
+        // 8. For each value in video kinds, run the following steps:
+        //   1. Let current video kind equal the value from video kinds for this
+        //   iteration of the loop.
+        //   2. Let new video track be a new VideoTrack object.
+        //   3. Generate a unique ID and assign it to the id property on new
+        //   video track.
+        //   4. Assign video language to the language property on new video
+        //   track.
+        //   5. Assign video label to the label property on new video track.
+        //   6. Assign current video kind to the kind property on new video
+        //   track.
+        //   7. If videoTracks.length equals 0, then run the following steps:
+        //     1. Set the selected property on new video track to true.
+        //     2. Set active track flag to true.
+        activeTrack = true;
+        //   8. Add new video track to the videoTracks attribute on this
+        //   SourceBuffer object.
+        //   9. Queue a task to fire a trusted event named addtrack, that does
+        //   not bubble and is not cancelable, and that uses the TrackEvent
+        //   interface, at the VideoTrackList object referenced by the
+        //   videoTracks attribute on this SourceBuffer object.
+        //   10. Add new video track to the videoTracks attribute on the
+        //   HTMLMediaElement.
+        //   11. Queue a task to fire a trusted event named addtrack, that does
+        //   not bubble and is not cancelable, and that uses the TrackEvent
+        //   interface, at the VideoTrackList object referenced by the
+        //   videoTracks attribute on the HTMLMediaElement.
+        mVideoTracks.mBuffers.AppendElement(TrackBuffer());
+        // 10. Add the track description for this track to the track buffer.
+        mVideoTracks.mInfo = new TrackInfoSharedPtr(info.mVideo, streamID);
+        mVideoTracks.mLastInfo = mVideoTracks.mInfo;
+      }
+      // 4. For each text track in the initialization segment, run following
+      // steps:
+      // 5. If active track flag equals true, then run the following steps:
+      // This is handled by SourceBuffer once the promise is resolved.
+      if (activeTrack) {
+        mActiveTrack = true;
+      }
+
+      // 6. Set first initialization segment received flag to true.
+      mFirstInitializationSegmentReceived = true;
+    } else {
+      mAudioTracks.mLastInfo = new TrackInfoSharedPtr(info.mAudio, streamID);
+      mVideoTracks.mLastInfo = new TrackInfoSharedPtr(info.mVideo, streamID);
     }
 
-    mVideoTracks.mNumTracks = numVideos;
-    // 3. For each video track in the initialization segment, run following
-    // steps: for (uint32_t i = 0; i < numVideos; i++) {
-    if (numVideos) {
-      // 1. Let video byte stream track ID be the Track ID for the current track
-      // being processed.
-      // 2. Let video language be a BCP 47 language tag for the language
-      // specified in the initialization segment for this track or an empty
-      // string if no language info is present.
-      // 3. If video language equals an empty string or the 'und' BCP 47 value,
-      // then run the default track language algorithm with byteStreamTrackID
-      // set to video byte stream track ID and type set to "video" and assign
-      // the value returned by the algorithm to video language.
-      // 4. Let video label be a label specified in the initialization segment
-      // for this track or an empty string if no label info is present.
-      // 5. If video label equals an empty string, then run the default track
-      // label algorithm with byteStreamTrackID set to video byte stream track
-      // ID and type set to "video" and assign the value returned by the
-      // algorithm to video label.
-      // 6. Let video kinds be an array of kind strings specified in the
-      // initialization segment for this track or an empty array if no kind
-      // information is provided.
-      // 7. If video kinds equals an empty array, then run the default track
-      // kinds algorithm with byteStreamTrackID set to video byte stream track
-      // ID and type set to "video" and assign the value returned by the
-      // algorithm to video kinds.
-      // 8. For each value in video kinds, run the following steps:
-      //   1. Let current video kind equal the value from video kinds for this
-      //   iteration of the loop.
-      //   2. Let new video track be a new VideoTrack object.
-      //   3. Generate a unique ID and assign it to the id property on new video
-      //   track.
-      //   4. Assign video language to the language property on new video track.
-      //   5. Assign video label to the label property on new video track.
-      //   6. Assign current video kind to the kind property on new video track.
-      //   7. If videoTracks.length equals 0, then run the following steps:
-      //     1. Set the selected property on new video track to true.
-      //     2. Set active track flag to true.
-      activeTrack = true;
-      //   8. Add new video track to the videoTracks attribute on this
-      //   SourceBuffer object.
-      //   9. Queue a task to fire a trusted event named addtrack, that does not
-      //   bubble and is not cancelable, and that uses the TrackEvent interface,
-      //   at the VideoTrackList object referenced by the videoTracks attribute
-      //   on this SourceBuffer object.
-      //   10. Add new video track to the videoTracks attribute on the
-      //   HTMLMediaElement.
-      //   11. Queue a task to fire a trusted event named addtrack, that does
-      //   not bubble and is not cancelable, and that uses the TrackEvent
-      //   interface, at the VideoTrackList object referenced by the videoTracks
-      //   attribute on the HTMLMediaElement.
-      mVideoTracks.mBuffers.AppendElement(TrackBuffer());
-      // 10. Add the track description for this track to the track buffer.
-      mVideoTracks.mInfo = new TrackInfoSharedPtr(info.mVideo, streamID);
-      mVideoTracks.mLastInfo = mVideoTracks.mInfo;
-    }
-    // 4. For each text track in the initialization segment, run following
-    // steps:
-    // 5. If active track flag equals true, then run the following steps:
-    // This is handled by SourceBuffer once the promise is resolved.
-    if (activeTrack) {
-      mActiveTrack = true;
+    UniquePtr<EncryptionInfo> crypto = mInputDemuxer->GetCrypto();
+    if (crypto && crypto->IsEncrypted()) {
+      // Try and dispatch 'encrypted'. Won't go if ready state still
+      // HAVE_NOTHING.
+      for (uint32_t i = 0; i < crypto->mInitDatas.Length(); i++) {
+        nsCOMPtr<nsIRunnable> r = new DispatchKeyNeededEvent(
+            mParentDecoder, crypto->mInitDatas[i].mInitData,
+            crypto->mInitDatas[i].mType);
+        mAbstractMainThread->Dispatch(r.forget());
+      }
+      info.mCrypto = *crypto;
+      // We clear our crypto init data array, so the MediaFormatReader will
+      // not emit an encrypted event for the same init data again.
+      info.mCrypto.mInitDatas.Clear();
     }
 
-    // 6. Set first initialization segment received flag to true.
-    mFirstInitializationSegmentReceived = true;
-  } else {
-    mAudioTracks.mLastInfo = new TrackInfoSharedPtr(info.mAudio, streamID);
-    mVideoTracks.mLastInfo = new TrackInfoSharedPtr(info.mVideo, streamID);
+    {
+      MutexAutoLock mut(mMutex);
+      mInfo = info;
+    }
+
+    // We now have a valid init data ; we can store it for later use.
+    mInitData = mParser->InitData();
   }
 
-  UniquePtr<EncryptionInfo> crypto = mInputDemuxer->GetCrypto();
-  if (crypto && crypto->IsEncrypted()) {
-    // Try and dispatch 'encrypted'. Won't go if ready state still HAVE_NOTHING.
-    for (uint32_t i = 0; i < crypto->mInitDatas.Length(); i++) {
-      nsCOMPtr<nsIRunnable> r = new DispatchKeyNeededEvent(
-          mParentDecoder, crypto->mInitDatas[i].mInitData,
-          crypto->mInitDatas[i].mType);
-      mAbstractMainThread->Dispatch(r.forget());
-    }
-    info.mCrypto = *crypto;
-    // We clear our crypto init data array, so the MediaFormatReader will
-    // not emit an encrypted event for the same init data again.
-    info.mCrypto.mInitDatas.Clear();
-  }
-
-  {
-    MutexAutoLock mut(mMutex);
-    mInfo = info;
-  }
-
-  // We now have a valid init data ; we can store it for later use.
-  mInitData = mParser->InitData();
+  // We have now completed the changeType operation.
+  mChangeTypeReceived = false;
 
   // 3. Remove the initialization segment bytes from the beginning of the input
   // buffer. This step has already been done in InitializationSegmentReceived
@@ -1561,21 +1622,6 @@ void TrackBuffersManager::ProcessFrames(TrackBuffer& aSamples,
   // added to.
   auto& trackBuffer = aTrackData;
 
-  // Some videos do not exactly start at 0, but instead a small negative value.
-  // To avoid evicting the starting frame of those videos, we allow a leeway
-  // of +- mLongestFrameDuration on the append window start.
-  // We only apply the leeway with the default append window start of 0 and
-  // append window end of infinity.
-  // Otherwise do as per spec.
-  TimeInterval targetWindow =
-      (mAppendWindow.mStart != TimeUnit::FromSeconds(0) ||
-       mAppendWindow.mEnd != TimeUnit::FromInfinity())
-          ? mAppendWindow
-          : TimeInterval(mAppendWindow.mStart, mAppendWindow.mEnd,
-                         trackBuffer.mLastFrameDuration.isSome()
-                             ? trackBuffer.mLongestFrameDuration
-                             : aSamples[0]->mDuration);
-
   TimeIntervals samplesRange;
   uint32_t sizeNewSamples = 0;
   TrackBuffer samples;  // array that will contain the frames to be added
@@ -1593,17 +1639,25 @@ void TrackBuffersManager::ProcessFrames(TrackBuffer& aSamples,
     aTrackData.mLastParsedEndTime = TimeUnit();
   }
 
-  for (auto& sample : aSamples) {
-    SAMPLE_DEBUG("Processing %s frame(pts:%" PRId64 " end:%" PRId64
-                 ", dts:%" PRId64 ", duration:%" PRId64
-                 ", "
-                 "kf:%d)",
-                 aTrackData.mInfo->mMimeType.get(),
-                 sample->mTime.ToMicroseconds(),
-                 sample->GetEndTime().ToMicroseconds(),
-                 sample->mTimecode.ToMicroseconds(),
-                 sample->mDuration.ToMicroseconds(), sample->mKeyframe);
+  auto addToSamples = [&](MediaRawData* aSample,
+                          const TimeInterval& aInterval) {
+    aSample->mTime = aInterval.mStart;
+    aSample->mDuration = aInterval.Length();
+    aSample->mTrackInfo = trackBuffer.mLastInfo;
+    samplesRange += aInterval;
+    sizeNewSamples += aSample->ComputedSizeOfIncludingThis();
+    samples.AppendElement(aSample);
+  };
 
+  // Will be set to the last frame dropped due to being outside mAppendWindow.
+  // It will be added prior the first following frame which can be added to the
+  // track buffer.
+  // This sample will be set with a duration of only 1us which will cause it to
+  // be dropped once returned by the decoder.
+  // This sample is required to "prime" the decoder so that the following frame
+  // can be fully decoded.
+  RefPtr<MediaRawData> previouslyDroppedSample;
+  for (auto& sample : aSamples) {
     const TimeUnit sampleEndTime = sample->GetEndTime();
     if (sampleEndTime > aTrackData.mLastParsedEndTime) {
       aTrackData.mLastParsedEndTime = sampleEndTime;
@@ -1619,6 +1673,7 @@ void TrackBuffersManager::ProcessFrames(TrackBuffer& aSamples,
       // frame and jump to the top of the loop to start processing the next
       // coded frame.
       if (!sample->mKeyframe) {
+        previouslyDroppedSample = nullptr;
         continue;
       }
       // 2. Set the need random access point flag on track buffer to false.
@@ -1653,6 +1708,16 @@ void TrackBuffersManager::ProcessFrames(TrackBuffer& aSamples,
     TimeUnit decodeTimestamp = mSourceBufferAttributes->mGenerateTimestamps
                                    ? timestampOffset
                                    : timestampOffset + sampleTimecode;
+
+    SAMPLE_DEBUG(
+        "Processing %s frame [%" PRId64 ",%" PRId64 "] (adjusted:[%" PRId64
+        ",%" PRId64 "]), dts:%" PRId64 ", duration:%" PRId64 ", kf:%d)",
+        aTrackData.mInfo->mMimeType.get(), sample->mTime.ToMicroseconds(),
+        sample->GetEndTime().ToMicroseconds(),
+        sampleInterval.mStart.ToMicroseconds(),
+        sampleInterval.mEnd.ToMicroseconds(),
+        sample->mTimecode.ToMicroseconds(), sample->mDuration.ToMicroseconds(),
+        sample->mKeyframe);
 
     // 6. If last decode timestamp for track buffer is set and decode timestamp
     // is less than last decode timestamp: OR If last decode timestamp for track
@@ -1697,6 +1762,7 @@ void TrackBuffersManager::ProcessFrames(TrackBuffer& aSamples,
       CheckSequenceDiscontinuity(presentationTimestamp);
 
       if (!sample->mKeyframe) {
+        previouslyDroppedSample = nullptr;
         continue;
       }
       if (appendMode == SourceBufferAppendMode::Sequence) {
@@ -1726,28 +1792,78 @@ void TrackBuffersManager::ProcessFrames(TrackBuffer& aSamples,
     // 9. If frame end timestamp is greater than appendWindowEnd, then set the
     // need random access point flag to true, drop the coded frame, and jump to
     // the top of the loop to start processing the next coded frame.
-    if (!targetWindow.ContainsWithStrictEnd(sampleInterval)) {
-      if (samples.Length()) {
-        // We are creating a discontinuity in the samples.
-        // Insert the samples processed so far.
-        InsertFrames(samples, samplesRange, trackBuffer);
-        samples.Clear();
-        samplesRange = TimeIntervals();
-        trackBuffer.mSizeBuffer += sizeNewSamples;
-        sizeNewSamples = 0;
-        UpdateHighestTimestamp(trackBuffer, highestSampleTime);
+    if (!mAppendWindow.ContainsStrict(sampleInterval)) {
+      if (mAppendWindow.IntersectsStrict(sampleInterval)) {
+        // 8. Note: Some implementations MAY choose to collect some of these
+        //    coded frames with presentation timestamp less than
+        //    appendWindowStart and use them to generate a splice at the first
+        //    coded frame that has a presentation timestamp greater than or
+        //    equal to appendWindowStart even if that frame is not a random
+        //    access point. Supporting this requires multiple decoders or faster
+        //    than real-time decoding so for now this behavior will not be a
+        //    normative requirement.
+        // 9. Note: Some implementations MAY choose to collect coded frames with
+        //    presentation timestamp less than appendWindowEnd and frame end
+        //    timestamp greater than appendWindowEnd and use them to generate a
+        //    splice across the portion of the collected coded frames within the
+        //    append window at time of collection, and the beginning portion of
+        //    later processed frames which only partially overlap the end of the
+        //    collected coded frames. Supporting this requires multiple decoders
+        //    or faster than real-time decoding so for now this behavior will
+        //    not be a normative requirement. In conjunction with collecting
+        //    coded frames that span appendWindowStart, implementations MAY thus
+        //    support gapless audio splicing.
+        TimeInterval intersection = mAppendWindow.Intersection(sampleInterval);
+        sample->mOriginalPresentationWindow = Some(sampleInterval);
+        MSE_DEBUGV("will truncate frame from [%" PRId64 ",%" PRId64
+                   "] to [%" PRId64 ",%" PRId64 "]",
+                   sampleInterval.mStart.ToMicroseconds(),
+                   sampleInterval.mEnd.ToMicroseconds(),
+                   intersection.mStart.ToMicroseconds(),
+                   intersection.mEnd.ToMicroseconds());
+        sampleInterval = intersection;
+      } else {
+        sample->mOriginalPresentationWindow = Some(sampleInterval);
+        sample->mTimecode = decodeTimestamp;
+        previouslyDroppedSample = sample;
+        MSE_DEBUGV("frame [%" PRId64 ",%" PRId64
+                   "] outside appendWindow [%" PRId64 ",%" PRId64 "] dropping",
+                   sampleInterval.mStart.ToMicroseconds(),
+                   sampleInterval.mEnd.ToMicroseconds(),
+                   mAppendWindow.mStart.ToMicroseconds(),
+                   mAppendWindow.mEnd.ToMicroseconds());
+        if (samples.Length()) {
+          // We are creating a discontinuity in the samples.
+          // Insert the samples processed so far.
+          InsertFrames(samples, samplesRange, trackBuffer);
+          samples.Clear();
+          samplesRange = TimeIntervals();
+          trackBuffer.mSizeBuffer += sizeNewSamples;
+          sizeNewSamples = 0;
+          UpdateHighestTimestamp(trackBuffer, highestSampleTime);
+        }
+        trackBuffer.mNeedRandomAccessPoint = true;
+        needDiscontinuityCheck = true;
+        continue;
       }
-      trackBuffer.mNeedRandomAccessPoint = true;
-      needDiscontinuityCheck = true;
-      continue;
+    }
+    if (previouslyDroppedSample) {
+      MSE_DEBUGV("Adding silent frame");
+      // This "silent" sample will be added so that it starts exactly before the
+      // first usable one. The duration of the actual sample will be adjusted so
+      // that the total duration staty the same.
+      // Setting a dummy presentation window of 1us will cause this sample to be
+      // dropped after decoding by the AudioTrimmer (if audio).
+      TimeInterval previouslyDroppedSampleInterval =
+          TimeInterval(sampleInterval.mStart,
+                       sampleInterval.mStart + TimeUnit::FromMicroseconds(1));
+      addToSamples(previouslyDroppedSample, previouslyDroppedSampleInterval);
+      previouslyDroppedSample = nullptr;
+      sampleInterval.mStart += previouslyDroppedSampleInterval.Length();
     }
 
-    samplesRange += sampleInterval;
-    sizeNewSamples += sample->ComputedSizeOfIncludingThis();
-    sample->mTime = sampleInterval.mStart;
     sample->mTimecode = decodeTimestamp;
-    sample->mTrackInfo = trackBuffer.mLastInfo;
-    samples.AppendElement(sample);
+    addToSamples(sample, sampleInterval);
 
     // Steps 11,12,13,14, 15 and 16 will be done in one block in InsertFrames.
 
@@ -1844,7 +1960,6 @@ void TrackBuffersManager::InsertFrames(TrackBuffer& aSamples,
              aIntervals.GetStart().ToMicroseconds(),
              aIntervals.GetEnd().ToMicroseconds());
 
-  // TODO: Handle splicing of audio (and text) frames.
   // 11. Let spliced audio frame be an unset variable for holding audio splice
   // information
   // 12. Let spliced timed text frame be an unset variable for holding timed
@@ -1893,7 +2008,8 @@ void TrackBuffersManager::InsertFrames(TrackBuffer& aSamples,
       trackBuffer.mNextInsertionIndex.reset();
     }
     uint32_t index = RemoveFrames(aIntervals, trackBuffer,
-                                  trackBuffer.mNextInsertionIndex.refOr(0));
+                                  trackBuffer.mNextInsertionIndex.refOr(0),
+                                  RemovalMode::kTruncateFrame);
     if (index) {
       trackBuffer.mNextInsertionIndex = Some(index);
     }
@@ -1952,7 +2068,8 @@ void TrackBuffersManager::UpdateHighestTimestamp(
 
 uint32_t TrackBuffersManager::RemoveFrames(const TimeIntervals& aIntervals,
                                            TrackData& aTrackData,
-                                           uint32_t aStartIndex) {
+                                           uint32_t aStartIndex,
+                                           RemovalMode aMode) {
   TrackBuffer& data = aTrackData.GetTrackBuffer();
   Maybe<uint32_t> firstRemovedIndex;
   uint32_t lastRemovedIndex = 0;
@@ -1972,24 +2089,56 @@ uint32_t TrackBuffersManager::RemoveFrames(const TimeIntervals& aIntervals,
   //   timestamp greater than or equal to highest end timestamp and less than
   //   frame end timestamp"
   TimeUnit intervalsEnd = aIntervals.GetEnd();
-  bool mayBreakLoop = false;
   for (uint32_t i = aStartIndex; i < data.Length(); i++) {
-    const RefPtr<MediaRawData> sample = data[i];
-    TimeInterval sampleInterval =
-        TimeInterval(sample->mTime, sample->GetEndTime());
-    if (aIntervals.Contains(sampleInterval)) {
+    RefPtr<MediaRawData>& sample = data[i];
+    if (aIntervals.ContainsStrict(sample->mTime)) {
+      // The start of this existing frame will be overwritten, we drop that
+      // entire frame.
+      MSE_DEBUGV("overridding start of frame [%" PRId64 ",%" PRId64
+                 "] with [%" PRId64 ",%" PRId64 "] dropping",
+                 sample->mTime.ToMicroseconds(),
+                 sample->GetEndTime().ToMicroseconds(),
+                 aIntervals.GetStart().ToMicroseconds(),
+                 aIntervals.GetEnd().ToMicroseconds());
       if (firstRemovedIndex.isNothing()) {
         firstRemovedIndex = Some(i);
       }
       lastRemovedIndex = i;
-      mayBreakLoop = false;
       continue;
     }
-    if (sample->mKeyframe && mayBreakLoop) {
-      break;
+    TimeInterval sampleInterval(sample->mTime, sample->GetEndTime());
+    if (aMode == RemovalMode::kTruncateFrame &&
+        aIntervals.IntersectsStrict(sampleInterval)) {
+      // The sample to be overwritten is only partially covered.
+      TimeIntervals intersection =
+          Intersection(aIntervals, TimeIntervals(sampleInterval));
+      bool found = false;
+      TimeUnit startTime = intersection.GetStart(&found);
+      MOZ_DIAGNOSTIC_ASSERT(found, "Must intersect with added coded frames");
+      Unused << found;
+      // Signal that this frame should be truncated when decoded.
+      if (!sample->mOriginalPresentationWindow) {
+        sample->mOriginalPresentationWindow = Some(sampleInterval);
+      }
+      MOZ_ASSERT(startTime > sample->mTime);
+      sample->mDuration = startTime - sample->mTime;
+      MSE_DEBUGV("partial overwrite of frame [%" PRId64 ",%" PRId64
+                 "] with [%" PRId64 ",%" PRId64
+                 "] trim to "
+                 "[%" PRId64 ",%" PRId64 "]",
+                 sampleInterval.mStart.ToMicroseconds(),
+                 sampleInterval.mEnd.ToMicroseconds(),
+                 aIntervals.GetStart().ToMicroseconds(),
+                 aIntervals.GetEnd().ToMicroseconds(),
+                 sample->mTime.ToMicroseconds(),
+                 sample->GetEndTime().ToMicroseconds());
+      continue;
     }
-    if (sampleInterval.mStart > intervalsEnd) {
-      mayBreakLoop = true;
+
+    if (sample->mTime >= intervalsEnd) {
+      // We can break the loop now. All frames up to the next keyframe will be
+      // removed during the next step.
+      break;
     }
   }
 
@@ -2073,7 +2222,8 @@ uint32_t TrackBuffersManager::RemoveFrames(const TimeIntervals& aIntervals,
   data.RemoveElementsAt(firstRemovedIndex.ref(),
                         lastRemovedIndex - firstRemovedIndex.ref() + 1);
 
-  if (aIntervals.GetEnd() >= aTrackData.mHighestStartTimestamp) {
+  if (removedIntervals.GetEnd() >= aTrackData.mHighestStartTimestamp &&
+      removedIntervals.GetStart() <= aTrackData.mHighestStartTimestamp) {
     // The sample with the highest presentation time got removed.
     // Rescan the trackbuffer to determine the new one.
     TimeUnit highestStartTime;
@@ -2410,17 +2560,6 @@ already_AddRefed<MediaRawData> TrackBuffersManager::GetSample(
 
   aResult = NS_ERROR_DOM_MEDIA_WAITING_FOR_DATA;
 
-  if (!track.Length()) {
-    aResult = NS_ERROR_DOM_MEDIA_END_OF_STREAM;
-    return nullptr;
-  }
-
-  if (trackData.mNextGetSampleIndex.isNothing() &&
-      trackData.mNextSampleTimecode == TimeUnit()) {
-    // First demux, get first sample.
-    trackData.mNextGetSampleIndex = Some(0u);
-  }
-
   if (trackData.mNextGetSampleIndex.isSome()) {
     if (trackData.mNextGetSampleIndex.ref() >= track.Length()) {
       aResult = NS_ERROR_DOM_MEDIA_END_OF_STREAM;
@@ -2461,24 +2600,16 @@ already_AddRefed<MediaRawData> TrackBuffersManager::GetSample(
     return p.forget();
   }
 
-  if (trackData.mNextSampleTimecode >
-      track.LastElement()->mTimecode + track.LastElement()->mDuration) {
-    // The next element is past our last sample. We're done.
-    trackData.mNextGetSampleIndex = Some(uint32_t(track.Length()));
-    aResult = NS_ERROR_DOM_MEDIA_END_OF_STREAM;
+  aResult = SetNextGetSampleIndexIfNeeded(aTrack, aFuzz);
+
+  if (NS_FAILED(aResult)) {
     return nullptr;
   }
 
-  // Our previous index has been overwritten, attempt to find the new one.
-  int32_t pos = FindCurrentPosition(aTrack, aFuzz);
-  if (pos < 0) {
-    MSE_DEBUG("Couldn't find sample (pts:%" PRId64 " dts:%" PRId64 ")",
-              trackData.mNextSampleTime.ToMicroseconds(),
-              trackData.mNextSampleTimecode.ToMicroseconds());
-    return nullptr;
-  }
-
-  const RefPtr<MediaRawData>& sample = track[pos];
+  MOZ_RELEASE_ASSERT(trackData.mNextGetSampleIndex.isSome() &&
+                     trackData.mNextGetSampleIndex.ref() < track.Length());
+  const RefPtr<MediaRawData>& sample =
+      track[trackData.mNextGetSampleIndex.ref()];
   RefPtr<MediaRawData> p = sample->Clone();
   if (!p) {
     // OOM
@@ -2487,15 +2618,14 @@ already_AddRefed<MediaRawData> TrackBuffersManager::GetSample(
   }
 
   // Find the previous keyframe to calculate the evictable amount.
-  int32_t i = pos;
+  uint32_t i = trackData.mNextGetSampleIndex.ref();
   for (; !track[i]->mKeyframe; i--) {
   }
   UpdateEvictionIndex(trackData, i);
 
-  trackData.mNextGetSampleIndex = Some(uint32_t(pos) + 1);
+  trackData.mNextGetSampleIndex.ref()++;
   trackData.mNextSampleTimecode = sample->mTimecode + sample->mDuration;
   trackData.mNextSampleTime = sample->GetEndTime();
-  aResult = NS_OK;
   return p.forget();
 }
 
@@ -2618,6 +2748,9 @@ nsresult TrackBuffersManager::SetNextGetSampleIndexIfNeeded(
   int32_t pos = FindCurrentPosition(aTrack, aFuzz);
   if (pos < 0) {
     // Not found, must wait for more data.
+    MSE_DEBUG("Couldn't find sample (pts:%" PRId64 " dts:%" PRId64 ")",
+              trackData.mNextSampleTime.ToMicroseconds(),
+              trackData.mNextSampleTimecode.ToMicroseconds());
     return NS_ERROR_DOM_MEDIA_WAITING_FOR_DATA;
   }
   trackData.mNextGetSampleIndex = Some(uint32_t(pos));

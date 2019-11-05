@@ -17,7 +17,8 @@ using namespace mozilla;
 using namespace mozilla::dom;
 
 #ifdef DEBUG
-/* static */ bool nsWrapperCache::HasJSObjectMovedOp(JSObject* aWrapper) {
+/* static */
+bool nsWrapperCache::HasJSObjectMovedOp(JSObject* aWrapper) {
   return js::HasObjectMovedOp(aWrapper);
 }
 #endif
@@ -32,10 +33,14 @@ void nsWrapperCache::HoldJSObjects(void* aScriptObjectHolder,
 
 void nsWrapperCache::SetWrapperJSObject(JSObject* aWrapper) {
   mWrapper = aWrapper;
-  UnsetWrapperFlags(kWrapperFlagsMask & ~WRAPPER_IS_NOT_DOM_BINDING);
+  UnsetWrapperFlags(kWrapperFlagsMask);
 
   if (aWrapper && !JS::ObjectIsTenured(aWrapper)) {
     CycleCollectedJSRuntime::Get()->NurseryWrapperAdded(this);
+  }
+
+  if (mozilla::recordreplay::IsReplaying()) {
+    mozilla::recordreplay::SetWeakPointerJSRoot(this, aWrapper);
   }
 }
 
@@ -91,6 +96,12 @@ static void DebugWrapperTraceCallback(JS::GCCellPtr aPtr, const char* aName,
 
 void nsWrapperCache::CheckCCWrapperTraversal(void* aScriptObjectHolder,
                                              nsScriptObjectTracer* aTracer) {
+  // Skip checking if we are recording or replaying, as calling
+  // GetWrapperPreserveColor() can cause the cache's wrapper to be cleared.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
+
   JSObject* wrapper = GetWrapperPreserveColor();
   if (!wrapper) {
     return;

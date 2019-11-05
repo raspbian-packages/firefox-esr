@@ -2,7 +2,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-// This is a test for asyncExecuteLegacyQueries API.
+// This is a test for asyncExecuteLegacyQuery API.
 
 add_task(async function test_history_query() {
   let uri = "http://test.visit.mozilla.com/";
@@ -14,10 +14,9 @@ add_task(async function test_history_query() {
   let query = PlacesUtils.history.getNewQuery();
 
   return new Promise(resolve => {
-    PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase)
-                       .asyncExecuteLegacyQueries([query], 1, options, {
+    PlacesUtils.history.asyncExecuteLegacyQuery(query, options, {
       handleResult(aResultSet) {
-        for (let row; (row = aResultSet.getNextRow());) {
+        for (let row; (row = aResultSet.getNextRow()); ) {
           try {
             Assert.equal(row.getResultByIndex(1), uri);
             Assert.equal(row.getResultByIndex(2), title);
@@ -27,7 +26,9 @@ add_task(async function test_history_query() {
         }
       },
       handleError(aError) {
-        do_throw("Async execution error (" + aError.result + "): " + aError.message);
+        do_throw(
+          "Async execution error (" + aError.result + "): " + aError.message
+        );
       },
       handleCompletion(aReason) {
         cleanupTest().then(resolve);
@@ -46,15 +47,15 @@ add_task(async function test_bookmarks_query() {
   });
 
   let options = PlacesUtils.history.getNewQueryOptions();
-  options.sortingMode = Ci.nsINavHistoryQueryOptions.SORT_BY_LASMODIFIED_DESCENDING;
+  options.sortingMode =
+    Ci.nsINavHistoryQueryOptions.SORT_BY_LASTMODIFIED_DESCENDING;
   options.queryType = options.QUERY_TYPE_BOOKMARKS;
   let query = PlacesUtils.history.getNewQuery();
 
   return new Promise(resolve => {
-    PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase)
-                       .asyncExecuteLegacyQueries([query], 1, options, {
+    PlacesUtils.history.asyncExecuteLegacyQuery(query, options, {
       handleResult(aResultSet) {
-        for (let row; (row = aResultSet.getNextRow());) {
+        for (let row; (row = aResultSet.getNextRow()); ) {
           try {
             Assert.equal(row.getResultByIndex(1), url);
             Assert.equal(row.getResultByIndex(2), title);
@@ -64,7 +65,9 @@ add_task(async function test_bookmarks_query() {
         }
       },
       handleError(aError) {
-        do_throw("Async execution error (" + aError.result + "): " + aError.message);
+        do_throw(
+          "Async execution error (" + aError.result + "): " + aError.message
+        );
       },
       handleCompletion(aReason) {
         cleanupTest().then(resolve);
@@ -76,6 +79,6 @@ add_task(async function test_bookmarks_query() {
 function cleanupTest() {
   return Promise.all([
     PlacesUtils.history.clear(),
-    PlacesUtils.bookmarks.eraseEverything()
+    PlacesUtils.bookmarks.eraseEverything(),
   ]);
 }

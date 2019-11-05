@@ -17,9 +17,9 @@
 #include "nsIInputStream.h"
 #include "nsISupportsImpl.h"
 #ifdef DEBUG
-#include "nsIURLParser.h"
-#include "nsNetCID.h"
-#include "nsServiceManagerUtils.h"
+#  include "nsIURLParser.h"
+#  include "nsNetCID.h"
+#  include "nsServiceManagerUtils.h"
 #endif
 
 namespace mozilla {
@@ -31,62 +31,44 @@ class PrincipalInfo;
 namespace dom {
 
 /*
- * The mapping of RequestContext and nsContentPolicyType is currently as the
+ * The mapping of RequestDestination and nsContentPolicyType is currently as the
  * following.  Note that this mapping is not perfect yet (see the TODO comments
  * below for examples).
  *
- * RequestContext    | nsContentPolicyType
+ * RequestDestination| nsContentPolicyType
  * ------------------+--------------------
  * audio             | TYPE_INTERNAL_AUDIO
- * beacon            | TYPE_BEACON
- * cspreport         | TYPE_CSP_REPORT
- * download          |
+ * audioworklet      | TODO
+ * document          | TYPE_DOCUMENT, TYPE_INTERNAL_IFRAME, TYPE_SUBDOCUMENT
  * embed             | TYPE_INTERNAL_EMBED
- * eventsource       |
- * favicon           |
- * fetch             | TYPE_FETCH
  * font              | TYPE_FONT
- * form              |
- * frame             | TYPE_INTERNAL_FRAME
- * hyperlink         |
- * iframe            | TYPE_INTERNAL_IFRAME
  * image             | TYPE_INTERNAL_IMAGE, TYPE_INTERNAL_IMAGE_PRELOAD,
- *                   | TYPE_INTERNAL_IMAGE_FAVICON
- * imageset          | TYPE_IMAGESET
- * import            | Not supported by Gecko
- * internal          | TYPE_DOCUMENT, TYPE_XBL, TYPE_OTHER, TYPE_SAVEAS_DOWNLOAD
- * location          |
+ *                   | TYPE_IMAGE, TYPE_INTERNAL_IMAGE_FAVICON, TYPE_IMAGESET
  * manifest          | TYPE_WEB_MANIFEST
- * object            | TYPE_INTERNAL_OBJECT
- * ping              | TYPE_PING
- * plugin            | TYPE_OBJECT_SUBREQUEST
- * prefetch          |
- * script            | TYPE_INTERNAL_SCRIPT, TYPE_INTERNAL_SCRIPT_PRELOAD
+ * object            | TYPE_INTERNAL_OBJECT, TYPE_OBJECT
+ * "paintworklet"    | TODO
+ * report"           | TODO
+ * script            | TYPE_INTERNAL_SCRIPT, TYPE_INTERNAL_SCRIPT_PRELOAD,
+ *                   | TYPE_INTERNAL_MODULE, TYPE_INTERNAL_MODULE_PRELOAD,
+ *                   | TYPE_SCRIPT,
+ *                   | TYPE_INTERNAL_SERVICE_WORKER,
+ *                   | TYPE_INTERNAL_WORKER_IMPORT_SCRIPTS
  * sharedworker      | TYPE_INTERNAL_SHARED_WORKER
- * subresource       | Not supported by Gecko
+ * serviceworker     | The spec lists this as a valid value for the enum,
+ *                   | however it is impossible to observe a request with this
+ *                   | destination value.
  * style             | TYPE_INTERNAL_STYLESHEET,
- *                   | TYPE_INTERNAL_STYLESHEET_PRELOAD
+ *                   | TYPE_INTERNAL_STYLESHEET_PRELOAD,
+ *                   | TYPE_STYLESHEET
  * track             | TYPE_INTERNAL_TRACK
  * video             | TYPE_INTERNAL_VIDEO
  * worker            | TYPE_INTERNAL_WORKER
- * xmlhttprequest    | TYPE_INTERNAL_XMLHTTPREQUEST
- * eventsource       | TYPE_INTERNAL_EVENTSOURCE
  * xslt              | TYPE_XSLT
+ * _empty            | Default for everything else.
  *
- * TODO: Figure out if TYPE_REFRESH maps to anything useful
- * TODO: Figure out if TYPE_DTD maps to anything useful
- * TODO: Figure out if TYPE_WEBSOCKET maps to anything useful
- * TODO: Add a content type for prefetch
- * TODO: Use the content type for manifest when it becomes available
- * TODO: Add a content type for location
- * TODO: Add a content type for hyperlink
- * TODO: Add a content type for form
- * TODO: Add a content type for favicon
- * TODO: Add a content type for download
  */
 
 class Request;
-class IPCInternalRequest;
 
 #define kFETCH_CLIENT_REFERRER_STR "about:client"
 class InternalRequest final {
@@ -104,10 +86,6 @@ class InternalRequest final {
                   const nsAString& aReferrer, ReferrerPolicy aReferrerPolicy,
                   nsContentPolicyType aContentPolicyType,
                   const nsAString& aIntegrity);
-
-  explicit InternalRequest(const IPCInternalRequest& aIPCRequest);
-
-  void ToIPC(IPCInternalRequest* aIPCRequest);
 
   already_AddRefed<InternalRequest> Clone();
 
@@ -138,6 +116,17 @@ class InternalRequest final {
 
     return mURLList.LastElement();
   }
+
+  // A safe guard for ensuring that request's URL is only allowed to be set in a
+  // sw internal redirect.
+  void SetURLForInternalRedirect(const uint32_t aFlag, const nsACString& aURL,
+                                 const nsACString& aFragment) {
+    // Only check in debug build to prevent it from being used unexpectedly.
+    MOZ_ASSERT(aFlag & nsIChannelEventSink::REDIRECT_INTERNAL);
+
+    return SetURL(aURL, aFragment);
+  }
+
   // AddURL should append the url into url list.
   // Normally we strip the fragment from the URL in Request::Constructor and
   // pass the fragment as the second argument into it.
@@ -322,8 +311,8 @@ class InternalRequest final {
 
   void OverrideContentPolicyType(nsContentPolicyType aContentPolicyType);
 
-  RequestContext Context() const {
-    return MapContentPolicyTypeToRequestContext(mContentPolicyType);
+  RequestDestination Destination() const {
+    return MapContentPolicyTypeToRequestDestination(mContentPolicyType);
   }
 
   bool UnsafeRequest() const { return mUnsafeRequest; }
@@ -332,7 +321,10 @@ class InternalRequest final {
 
   InternalHeaders* Headers() { return mHeaders; }
 
-  bool ForceOriginHeader() { return mForceOriginHeader; }
+  void SetHeaders(InternalHeaders* aHeaders) {
+    MOZ_ASSERT(aHeaders);
+    mHeaders = aHeaders;
+  }
 
   bool SameOriginDataURL() const { return mSameOriginDataURL; }
 
@@ -355,6 +347,16 @@ class InternalRequest final {
       *aBodyLength = mBodyLength;
     }
   }
+
+  void SetBodyBlobURISpec(nsACString& aBlobURISpec) {
+    mBodyBlobURISpec = aBlobURISpec;
+  }
+
+  const nsACString& BodyBlobURISpec() const { return mBodyBlobURISpec; }
+
+  void SetBodyLocalPath(nsAString& aLocalPath) { mBodyLocalPath = aLocalPath; }
+
+  const nsAString& BodyLocalPath() const { return mBodyLocalPath; }
 
   // The global is used as the client for the new object.
   already_AddRefed<InternalRequest> GetRequestConstructorCopy(
@@ -404,17 +406,37 @@ class InternalRequest final {
 
   ~InternalRequest();
 
-  static RequestContext MapContentPolicyTypeToRequestContext(
+  // Map the content policy type to the associated fetch destination, as defined
+  // by the spec at https://fetch.spec.whatwg.org/#concept-request-destination.
+  // Note that while the HTML spec for the "Link" element and its "as" attribute
+  // (https://html.spec.whatwg.org/#attr-link-as) reuse fetch's definition of
+  // destination, and the Link class has an internal Link::AsDestination enum
+  // type, the latter is only a support type to map the string values via
+  // Link::ParseAsValue and Link::AsValueToContentPolicy to our canonical
+  // nsContentPolicyType.
+  static RequestDestination MapContentPolicyTypeToRequestDestination(
       nsContentPolicyType aContentPolicyType);
 
   static bool IsNavigationContentPolicy(nsContentPolicyType aContentPolicyType);
 
   static bool IsWorkerContentPolicy(nsContentPolicyType aContentPolicyType);
 
+  // It should only be called while there is a service-worker-internal-redirect.
+  void SetURL(const nsACString& aURL, const nsACString& aFragment) {
+    MOZ_ASSERT(!aURL.IsEmpty());
+    MOZ_ASSERT(!aURL.Contains('#'));
+    MOZ_ASSERT(mURLList.Length() > 0);
+
+    mURLList.LastElement() = aURL;
+    mFragment.Assign(aFragment);
+  }
+
   nsCString mMethod;
   // mURLList: a list of one or more fetch URLs
   nsTArray<nsCString> mURLList;
   RefPtr<InternalHeaders> mHeaders;
+  nsCString mBodyBlobURISpec;
+  nsString mBodyLocalPath;
   nsCOMPtr<nsIInputStream> mBodyStream;
   int64_t mBodyLength;
 
@@ -443,7 +465,6 @@ class InternalRequest final {
   bool mMozErrors;
   nsCString mFragment;
   MOZ_INIT_OUTSIDE_CTOR bool mAuthenticationFlag;
-  MOZ_INIT_OUTSIDE_CTOR bool mForceOriginHeader;
   MOZ_INIT_OUTSIDE_CTOR bool mPreserveContentCodings;
   MOZ_INIT_OUTSIDE_CTOR bool mSameOriginDataURL;
   MOZ_INIT_OUTSIDE_CTOR bool mSkipServiceWorker;

@@ -20,11 +20,11 @@ class PaymentAddress final : public nsISupports, public nsWrapperCache {
 
   PaymentAddress(nsPIDOMWindowInner* aWindow, const nsAString& aCountry,
                  const nsTArray<nsString>& aAddressLine,
-                 const nsAString& aRegion, const nsAString& aCity,
-                 const nsAString& aDependentLocality,
+                 const nsAString& aRegion, const nsAString& aRegionCode,
+                 const nsAString& aCity, const nsAString& aDependentLocality,
                  const nsAString& aPostalCode, const nsAString& aSortingCode,
-                 const nsAString& aLanguageCode, const nsAString& aOrganization,
-                 const nsAString& aRecipient, const nsAString& aPhone);
+                 const nsAString& aOrganization, const nsAString& aRecipient,
+                 const nsAString& aPhone);
 
   nsPIDOMWindowInner* GetParentObject() const { return mOwner; }
 
@@ -38,6 +38,8 @@ class PaymentAddress final : public nsISupports, public nsWrapperCache {
 
   void GetRegion(nsAString& aRetVal) const;
 
+  void GetRegionCode(nsAString& aRetVal) const;
+
   void GetCity(nsAString& aRetVal) const;
 
   void GetDependentLocality(nsAString& aRetVal) const;
@@ -45,8 +47,6 @@ class PaymentAddress final : public nsISupports, public nsWrapperCache {
   void GetPostalCode(nsAString& aRetVal) const;
 
   void GetSortingCode(nsAString& aRetVal) const;
-
-  void GetLanguageCode(nsAString& aRetVal) const;
 
   void GetOrganization(nsAString& aRetVal) const;
 
@@ -60,11 +60,11 @@ class PaymentAddress final : public nsISupports, public nsWrapperCache {
   nsString mCountry;
   nsTArray<nsString> mAddressLine;
   nsString mRegion;
+  nsString mRegionCode;
   nsString mCity;
   nsString mDependentLocality;
   nsString mPostalCode;
   nsString mSortingCode;
-  nsString mLanguageCode;
   nsString mOrganization;
   nsString mRecipient;
   nsString mPhone;

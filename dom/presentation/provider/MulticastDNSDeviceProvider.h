@@ -16,9 +16,9 @@
 #include "nsIPresentationDeviceProvider.h"
 #include "nsIPresentationControlService.h"
 #include "nsITimer.h"
+#include "nsIWeakReferenceUtils.h"
 #include "nsString.h"
 #include "nsTArray.h"
-#include "nsWeakPtr.h"
 
 class nsITCPDeviceInfo;
 
@@ -45,7 +45,7 @@ class MulticastDNSDeviceProvider final
   NS_DECL_NSIPRESENTATIONCONTROLSERVERLISTENER
   NS_DECL_NSIOBSERVER
 
-  explicit MulticastDNSDeviceProvider() = default;
+  explicit MulticastDNSDeviceProvider();
   nsresult Init();
   nsresult Uninit();
 

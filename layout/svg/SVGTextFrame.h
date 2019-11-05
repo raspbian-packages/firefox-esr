@@ -8,6 +8,7 @@
 #define MOZILLA_SVGTEXTFRAME_H
 
 #include "mozilla/Attributes.h"
+#include "mozilla/PresShellForwards.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/gfx/2D.h"
 #include "gfxMatrix.h"
@@ -34,7 +35,7 @@ class TextRenderedRunIterator;
 
 namespace dom {
 class SVGIRect;
-class SVGPathElement;
+class SVGGeometryElement;
 }  // namespace dom
 
 /**
@@ -158,8 +159,8 @@ class GlyphMetricsUpdater : public Runnable {
  * PaintText so that we can fill the text geometry with SVG paint servers.
  */
 class SVGTextFrame final : public nsSVGDisplayContainerFrame {
-  friend nsIFrame* NS_NewSVGTextFrame(nsIPresShell* aPresShell,
-                                      nsStyleContext* aContext);
+  friend nsIFrame* NS_NewSVGTextFrame(mozilla::PresShell* aPresShell,
+                                      ComputedStyle* aStyle);
 
   friend class mozilla::CharIterator;
   friend class mozilla::GlyphMetricsUpdater;
@@ -176,8 +177,8 @@ class SVGTextFrame final : public nsSVGDisplayContainerFrame {
   typedef mozilla::gfx::Point Point;
 
  protected:
-  explicit SVGTextFrame(nsStyleContext* aContext)
-      : nsSVGDisplayContainerFrame(aContext, kClassID),
+  explicit SVGTextFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : nsSVGDisplayContainerFrame(aStyle, aPresContext, kClassID),
         mTrailingUndisplayedCharacters(0),
         mFontSizeScaleFactor(1.0f),
         mLastContextScale(1.0f),
@@ -186,7 +187,7 @@ class SVGTextFrame final : public nsSVGDisplayContainerFrame {
                  NS_STATE_SVG_POSITIONING_DIRTY);
   }
 
-  ~SVGTextFrame() {}
+  ~SVGTextFrame() = default;
 
  public:
   NS_DECL_QUERYFRAME
@@ -212,7 +213,7 @@ class SVGTextFrame final : public nsSVGDisplayContainerFrame {
   }
 #endif
 
-  virtual void DidSetStyleContext(nsStyleContext* aOldStyleContext) override;
+  virtual void DidSetComputedStyle(ComputedStyle* aOldComputedStyle) override;
 
   /**
    * Finds the nsTextFrame for the closest rendered run to the specified point.
@@ -299,7 +300,7 @@ class SVGTextFrame final : public nsSVGDisplayContainerFrame {
    * animated SVG-in-OpenType glyphs), in which case aReason will be eResize,
    * since layout doesn't need to be recomputed.
    */
-  void ScheduleReflowSVGNonDisplayText(nsIPresShell::IntrinsicDirty aReason);
+  void ScheduleReflowSVGNonDisplayText(mozilla::IntrinsicDirty aReason);
 
   /**
    * Updates the mFontSizeScaleFactor value by looking at the range of
@@ -326,7 +327,7 @@ class SVGTextFrame final : public nsSVGDisplayContainerFrame {
    * rectangle.
    */
   gfxRect TransformFrameRectFromTextChild(const nsRect& aRect,
-                                          nsIFrame* aChildFrame);
+                                          const nsIFrame* aChildFrame);
 
   // Return our ::-moz-svg-text anonymous box.
   void AppendDirectlyOwnedAnonBoxes(nsTArray<OwnedAnonBox>& aResult) override;
@@ -394,6 +395,7 @@ class SVGTextFrame final : public nsSVGDisplayContainerFrame {
    * exception is text in a textPath where we need to ignore characters that
    * fall off the end of the textPath path.
    */
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
   nsresult GetSubStringLengthSlowFallback(nsIContent* aContent,
                                           uint32_t charnum, uint32_t nchars,
                                           float* aResult);
@@ -504,8 +506,6 @@ class SVGTextFrame final : public nsSVGDisplayContainerFrame {
   bool ShouldRenderAsPath(nsTextFrame* aFrame, bool& aShouldPaintSVGGlyphs);
 
   // Methods to get information for a <textPath> frame.
-  mozilla::dom::SVGPathElement* GetTextPathPathElement(
-      nsIFrame* aTextPathFrame);
   already_AddRefed<Path> GetTextPath(nsIFrame* aTextPathFrame);
   gfxFloat GetOffsetScale(nsIFrame* aTextPathFrame);
   gfxFloat GetStartOffset(nsIFrame* aTextPathFrame);

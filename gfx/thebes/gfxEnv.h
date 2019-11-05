@@ -86,7 +86,7 @@ class gfxEnv final {
   // Count GL extensions
   DECL_GFX_ENV("MOZ_GL_DUMP_EXTS", GlDumpExtensions);
 
-  // Very noisy GLContext and GLContextProviderELG
+  // Very noisy GLContext and GLContextProviderEGL
   DECL_GFX_ENV("MOZ_GL_SPEW", GlSpew);
 
   // Do extra work before and after each GLX call in GLContextProviderGLX
@@ -100,6 +100,12 @@ class gfxEnv final {
 
   // Offscreen GL context for main layer manager
   DECL_GFX_ENV("MOZ_LAYERS_PREFER_OFFSCREEN", LayersPreferOffscreen);
+
+  // Skip final window composition
+  DECL_GFX_ENV("MOZ_SKIPCOMPOSITION", SkipComposition);
+
+  // Skip rasterizing painted layer contents
+  DECL_GFX_ENV("MOZ_SKIPRASTERIZATION", SkipRasterization);
 
   // Stop the VR rendering
   DECL_GFX_ENV("NO_VR_RENDERING", NoVRRendering);

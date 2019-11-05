@@ -11,7 +11,6 @@
 #include "Role.h"
 
 #include "nsIServiceManager.h"
-#include "nsIDOMElement.h"
 #include "nsIFrame.h"
 #include "nsImageFrame.h"
 #include "nsImageMap.h"
@@ -35,7 +34,7 @@ HTMLImageMapAccessible::HTMLImageMapAccessible(nsIContent* aContent,
 ////////////////////////////////////////////////////////////////////////////////
 // HTMLImageMapAccessible: Accessible public
 
-role HTMLImageMapAccessible::NativeRole() { return roles::IMAGE_MAP; }
+role HTMLImageMapAccessible::NativeRole() const { return roles::IMAGE_MAP; }
 
 ////////////////////////////////////////////////////////////////////////////////
 // HTMLImageMapAccessible: HyperLinkAccessible
@@ -47,7 +46,7 @@ Accessible* HTMLImageMapAccessible::AnchorAt(uint32_t aAnchorIndex) {
 }
 
 already_AddRefed<nsIURI> HTMLImageMapAccessible::AnchorURIAt(
-    uint32_t aAnchorIndex) {
+    uint32_t aAnchorIndex) const {
   Accessible* area = GetChildAt(aAnchorIndex);
   if (!area) return nullptr;
 
@@ -123,7 +122,7 @@ HTMLAreaAccessible::HTMLAreaAccessible(nsIContent* aContent,
 ////////////////////////////////////////////////////////////////////////////////
 // HTMLAreaAccessible: Accessible
 
-ENameValueFlag HTMLAreaAccessible::NativeName(nsString& aName) {
+ENameValueFlag HTMLAreaAccessible::NativeName(nsString& aName) const {
   ENameValueFlag nameFlag = Accessible::NativeName(aName);
   if (!aName.IsEmpty()) return nameFlag;
 
@@ -138,7 +137,7 @@ void HTMLAreaAccessible::Description(nsString& aDescription) {
 
   // Still to do - follow IE's standard here
   RefPtr<dom::HTMLAreaElement> area =
-      dom::HTMLAreaElement::FromContentOrNull(mContent);
+      dom::HTMLAreaElement::FromNodeOrNull(mContent);
   if (area) area->GetShape(aDescription);
 }
 

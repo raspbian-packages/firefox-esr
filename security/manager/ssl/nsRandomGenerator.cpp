@@ -23,9 +23,6 @@ nsRandomGenerator::GenerateRandomBytes(uint32_t aLength, uint8_t** aBuffer) {
   }
 
   auto buf = static_cast<uint8_t*>(moz_xmalloc(aLength));
-  if (!buf) {
-    return NS_ERROR_OUT_OF_MEMORY;
-  }
 
   SECStatus srv = PK11_GenerateRandomOnSlot(slot.get(), buf, aLength);
   if (srv != SECSuccess) {

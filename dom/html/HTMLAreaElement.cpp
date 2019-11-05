@@ -12,6 +12,7 @@
 #include "mozilla/EventDispatcher.h"
 #include "mozilla/EventStates.h"
 #include "mozilla/MemoryReporting.h"
+#include "nsWindowSizes.h"
 
 NS_IMPL_NS_NEW_HTML_ELEMENT(Area)
 
@@ -19,8 +20,8 @@ namespace mozilla {
 namespace dom {
 
 HTMLAreaElement::HTMLAreaElement(
-    already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
-    : nsGenericHTMLElement(aNodeInfo), Link(this) {}
+    already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
+    : nsGenericHTMLElement(std::move(aNodeInfo)), Link(this) {}
 
 HTMLAreaElement::~HTMLAreaElement() {}
 
@@ -40,8 +41,8 @@ void HTMLAreaElement::GetTarget(DOMString& aValue) {
   }
 }
 
-nsresult HTMLAreaElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
-  return GetEventTargetParentForAnchors(aVisitor);
+void HTMLAreaElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
+  GetEventTargetParentForAnchors(aVisitor);
 }
 
 nsresult HTMLAreaElement::PostHandleEvent(EventChainPostVisitor& aVisitor) {
@@ -65,16 +66,14 @@ nsDOMTokenList* HTMLAreaElement::RelList() {
   return mRelList;
 }
 
-nsresult HTMLAreaElement::BindToTree(nsIDocument* aDocument,
-                                     nsIContent* aParent,
-                                     nsIContent* aBindingParent,
-                                     bool aCompileEventHandlers) {
+nsresult HTMLAreaElement::BindToTree(Document* aDocument, nsIContent* aParent,
+                                     nsIContent* aBindingParent) {
   Link::ResetLinkState(false, Link::ElementHasHref());
-  nsresult rv = nsGenericHTMLElement::BindToTree(
-      aDocument, aParent, aBindingParent, aCompileEventHandlers);
+  nsresult rv =
+      nsGenericHTMLElement::BindToTree(aDocument, aParent, aBindingParent);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsIDocument* doc = GetComposedDoc();
+  Document* doc = GetComposedDoc();
   if (doc) {
     doc->RegisterPendingLinkUpdate(this);
   }
@@ -82,8 +81,8 @@ nsresult HTMLAreaElement::BindToTree(nsIDocument* aDocument,
 }
 
 void HTMLAreaElement::UnbindFromTree(bool aDeep, bool aNullParent) {
-  // If this link is ever reinserted into a document, it might
-  // be under a different xml:base, so forget the cached state now.
+  // Without removing the link state we risk a dangling pointer
+  // in the mStyledLinks hashtable
   Link::ResetLinkState(false, Link::ElementHasHref());
 
   nsGenericHTMLElement::UnbindFromTree(aDeep, aNullParent);
@@ -126,7 +125,7 @@ void HTMLAreaElement::AddSizeOfExcludingThis(nsWindowSizes& aSizes,
 
 JSObject* HTMLAreaElement::WrapNode(JSContext* aCx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  return HTMLAreaElementBinding::Wrap(aCx, this, aGivenProto);
+  return HTMLAreaElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
 }  // namespace dom

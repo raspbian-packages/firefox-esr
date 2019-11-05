@@ -8,8 +8,8 @@
 #include "ExceptionThrower.h"
 
 #ifdef XP_WIN
-#include <malloc.h>
-#include <windows.h>
+#  include <malloc.h>
+#  include <windows.h>
 #endif
 
 /*
@@ -41,7 +41,7 @@ void PureVirtualCall() {
 }
 
 extern "C" {
-#if XP_WIN && HAVE_64BIT_BUILD && !defined(__MINGW32__)
+#if XP_WIN && HAVE_64BIT_BUILD && defined(_M_X64) && !defined(__MINGW32__)
 // Implementation in win64unwindInfoTests.asm
 uint64_t x64CrashCFITest_NO_MANS_LAND(uint64_t returnpfn, void*);
 uint64_t x64CrashCFITest_Launcher(uint64_t returnpfn, void* testProc);
@@ -78,7 +78,7 @@ const int16_t CRASH_X64CFI_SAVE_XMM128_FAR = 18;
 const int16_t CRASH_X64CFI_EPILOG = 19;
 const int16_t CRASH_X64CFI_EOF = 20;
 
-#if XP_WIN && HAVE_64BIT_BUILD && !defined(__MINGW32__)
+#if XP_WIN && HAVE_64BIT_BUILD && defined(_M_X64) && !defined(__MINGW32__)
 
 typedef decltype(&x64CrashCFITest_UnknownOpcode) win64CFITestFnPtr_t;
 
@@ -104,11 +104,16 @@ static std::map<int16_t, win64CFITestFnPtr_t> GetWin64CFITestMap() {
   return ret;
 }
 
-void ReserveStack() {
-  // This ensures our tests have enough reserved stack space.
-  uint8_t* p = (uint8_t*)alloca(1024000);
-  // This ensures we don't optimized away this meaningless code at build time.
-  mozilla::Unused << (int)(uint64_t)p;
+// This ensures tests have enough committed stack space.
+// Must not be inlined, or the stack space would not be freed for the caller
+// to use.
+void MOZ_NEVER_INLINE ReserveStack() {
+  // We must actually use the memory in some way that the compiler can't
+  // optimize away.
+  static const size_t elements = (1024000 / sizeof(FILETIME)) + 1;
+  FILETIME stackmem[elements];
+  ::GetSystemTimeAsFileTime(&stackmem[0]);
+  ::GetSystemTimeAsFileTime(&stackmem[elements - 1]);
 }
 
 #endif  // XP_WIN && HAVE_64BIT_BUILD
@@ -144,7 +149,7 @@ extern "C" NS_EXPORT void Crash(int16_t how) {
       ThrowException();
       break;
     }
-#if XP_WIN && HAVE_64BIT_BUILD && !defined(__MINGW32__)
+#if XP_WIN && HAVE_64BIT_BUILD && defined(_M_X64) && !defined(__MINGW32__)
     case CRASH_X64CFI_UNKNOWN_OPCODE:
     case CRASH_X64CFI_PUSH_NONVOL:
     case CRASH_X64CFI_ALLOC_SMALL:
@@ -154,14 +159,14 @@ extern "C" NS_EXPORT void Crash(int16_t how) {
     case CRASH_X64CFI_SAVE_XMM128:
     case CRASH_X64CFI_SAVE_XMM128_FAR:
     case CRASH_X64CFI_EPILOG: {
-      ReserveStack();
       auto m = GetWin64CFITestMap();
       if (m.find(how) == m.end()) {
         break;
       }
       auto pfnTest = m[how];
       auto pfnLauncher = m[CRASH_X64CFI_LAUNCHER];
-      pfnLauncher(0, pfnTest);
+      ReserveStack();
+      pfnLauncher(0, reinterpret_cast<void*>(pfnTest));
       break;
     }
 #endif  // XP_WIN && HAVE_64BIT_BUILD && !defined(__MINGW32__)
@@ -183,7 +188,7 @@ extern "C" NS_EXPORT uint64_t SaveAppMemory() {
   return (int64_t)testData;
 }
 
-#ifdef XP_WIN32
+#ifdef XP_WIN
 static LONG WINAPI HandleException(EXCEPTION_POINTERS* exinfo) {
   TerminateProcess(GetCurrentProcess(), 0);
   return 0;
@@ -195,7 +200,7 @@ extern "C" NS_EXPORT void TryOverrideExceptionHandler() {
 #endif
 
 extern "C" NS_EXPORT uint32_t GetWin64CFITestFnAddrOffset(int16_t fnid) {
-#if XP_WIN && HAVE_64BIT_BUILD && !defined(__MINGW32__)
+#if XP_WIN && HAVE_64BIT_BUILD && defined(_M_X64) && !defined(__MINGW32__)
   // fnid uses the same constants as Crash().
   // Returns the RVA of the requested function.
   // Returns 0 on failure.

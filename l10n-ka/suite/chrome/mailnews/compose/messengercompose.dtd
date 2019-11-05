@@ -7,7 +7,13 @@
 
 <!ENTITY fromAddr.label "ვისგან:">
 <!ENTITY fromAddr.accesskey "r">
-<!ENTITY subject.label  "თემა:">
+<!ENTITY toAddr.label "ვის:">
+<!ENTITY ccAddr.label "ასლი:">
+<!ENTITY bccAddr.label "ფარული ასლი:">
+<!ENTITY replyAddr.label "პასუხი:">
+<!ENTITY newsgroupsAddr.label "ჯგუფი:">
+<!ENTITY followupAddr.label "კრება:">
+<!ENTITY subject.label "თემა:">
 <!ENTITY subject.accesskey "S">
 <!ENTITY attachments.label "დანართები:">
 <!ENTITY attachments.accesskey "c">
@@ -49,9 +55,9 @@
 <!ENTITY accountManagerCmd.accesskey "m">
 
 <!-- View menu items -->
-<!ENTITY showComposeToolbarCmd.label "ფოსტის პულტი">
-<!ENTITY showComposeToolbarCmd.accesskey "o">
-<!ENTITY showFormatToolbarCmd.label "ფორმატის პულტი">
+<!ENTITY showComposeToolbarCmd.label "ფოსტის ხელსაწყოთა ზოლი">
+<!ENTITY showComposeToolbarCmd.accesskey "ო">
+<!ENTITY showFormatToolbarCmd.label "გაფორმების ხელსაწყოთა ზოლი">
 <!ENTITY showFormatToolbarCmd.accesskey "F">
 
 <!-- Format menu items -->
@@ -82,7 +88,7 @@
 <!ENTITY highestPriorityCmd.accesskey "H">
 
 <!ENTITY returnReceiptMenu.label "მიღების დასტური">
-<!ENTITY returnReceiptMenu.accesskey "t">
+<!ENTITY returnReceiptMenu.accesskey "ტ">
 <!ENTITY dsnMenu.label "მიწოდების სტატუსის გზავნილი">
 <!ENTITY dsnMenu.accesskey "N">
 
@@ -98,7 +104,7 @@
 <!ENTITY bothFormatCmd.accesskey "l">
 
 <!ENTITY fileCarbonCopyCmd.label "ასლის გადაგზავნა">
-<!ENTITY fileCarbonCopyCmd.accesskey "d">
+<!ENTITY fileCarbonCopyCmd.accesskey "გ">
 <!ENTITY fileHereMenu.label "შენახვა აქ">
 
 <!--LOCALIZATION NOTE Toolbar items Don't change any "chrome://" URLs -->
@@ -113,10 +119,10 @@
 <!--tooltips-->
 <!-- We already inherit &menuBar.tooltip and &mailToolbar.tooltip from messenger.dtd -->
 <!ENTITY addressBar.tooltip "მისამართების პანელი">
-<!ENTITY formatToolbar.tooltip "დაფორმატების პულტი">
+<!ENTITY formatToolbar.tooltip "გაფორმების ხელსაწყოთა ზოლი">
 <!ENTITY sendButton.tooltip "ამ წერილის გაგზავნა ახლავე"> 
 <!ENTITY sendlaterButton.tooltip "ამ წერილის გაგზავნა მოგვიანებით"> 
-<!ENTITY addressButton.tooltip "ადრესატის შერჩევა წიგნაკიდან"> 
+<!ENTITY addressButton.tooltip "მიმღების შერჩევა წიგნაკიდან"> 
 <!ENTITY attachButton.tooltip "დანართის ჩათვლით"> 
 <!ENTITY saveButton.tooltip "ამ გზავნილის შენახვა"> 
 <!ENTITY stopButton.tooltip "მიმდინარე გადაცემის შეწყვეტა"> 

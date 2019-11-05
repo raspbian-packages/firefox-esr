@@ -30,6 +30,8 @@ class MOZ_NON_TEMPORARY_CLASS SpinEvent final {
  private:
   Atomic<bool, ReleaseAcquire> mDone;
   nsAutoHandle mDoneEvent;
+  static bool InitStatics();
+  static bool sIsMulticore;
 };
 
 }  // namespace mscom

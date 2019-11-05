@@ -12,9 +12,6 @@ config = {
     'app_ini_path': '%(obj_dir)s/dist/bin/application.ini',
     'max_build_output_timeout': 0,
     'secret_files': [
-        {'filename': '/builds/gapi.data',
-         'secret_name': 'project/releng/gecko/build/level-%(scm-level)s/gapi.data',
-         'min_scm_level': 1},
         {'filename': '/builds/gls-gapi.data',
          'secret_name': 'project/releng/gecko/build/level-%(scm-level)s/gls-gapi.data',
          'min_scm_level': 1},
@@ -51,7 +48,6 @@ config = {
     ],
     'vcs_share_base': '/builds/hg-shared',
     'objdir': 'obj-firefox',
-    'enable_count_ctors': False,
     'multi_locale': True,
     #########################################################################
 

@@ -10,7 +10,6 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/dom/Element.h"
 #include "nsMappedAttributeElement.h"
-#include "nsIDOMElement.h"
 #include "Link.h"
 #include "mozilla/dom/DOMRect.h"
 
@@ -27,7 +26,6 @@ class EventChainPreVisitor;
  * The base class for MathML elements.
  */
 class nsMathMLElement final : public nsMathMLElementBase,
-                              public nsIDOMElement,
                               public mozilla::dom::Link {
  public:
   explicit nsMathMLElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
@@ -37,9 +35,8 @@ class nsMathMLElement final : public nsMathMLElementBase,
   // Implementation of nsISupports is inherited from nsMathMLElementBase
   NS_DECL_ISUPPORTS_INHERITED
 
-  nsresult BindToTree(nsIDocument* aDocument, nsIContent* aParent,
-                      nsIContent* aBindingParent,
-                      bool aCompileEventHandlers) override;
+  nsresult BindToTree(Document* aDocument, nsIContent* aParent,
+                      nsIContent* aBindingParent) override;
   virtual void UnbindFromTree(bool aDeep = true,
                               bool aNullParent = true) override;
 
@@ -62,18 +59,15 @@ class nsMathMLElement final : public nsMathMLElementBase,
                                    nsCSSValue& aCSSValue, uint32_t aFlags);
 
   static bool ParseNumericValue(const nsString& aString, nsCSSValue& aCSSValue,
-                                uint32_t aFlags, nsIDocument* aDocument);
+                                uint32_t aFlags, Document* aDocument);
 
-  static void MapMathMLAttributesInto(
-      const nsMappedAttributes* aAttributes,
-      mozilla::GenericSpecifiedValues* aGenericData);
+  static void MapMathMLAttributesInto(const nsMappedAttributes* aAttributes,
+                                      mozilla::MappedDeclarations&);
 
-  virtual nsresult GetEventTargetParent(
-      mozilla::EventChainPreVisitor& aVisitor) override;
-  virtual nsresult PostHandleEvent(
-      mozilla::EventChainPostVisitor& aVisitor) override;
-  nsresult Clone(mozilla::dom::NodeInfo* aNodeInfo, nsINode** aResult,
-                 bool aPreallocateChildren) const override;
+  void GetEventTargetParent(mozilla::EventChainPreVisitor& aVisitor) override;
+  MOZ_CAN_RUN_SCRIPT
+  nsresult PostHandleEvent(mozilla::EventChainPostVisitor& aVisitor) override;
+  nsresult Clone(mozilla::dom::NodeInfo*, nsINode** aResult) const override;
   virtual mozilla::EventStates IntrinsicState() const override;
   virtual bool IsNodeOfType(uint32_t aFlags) const override;
 
@@ -88,9 +82,7 @@ class nsMathMLElement final : public nsMathMLElementBase,
   virtual void GetLinkTarget(nsAString& aTarget) override;
   virtual already_AddRefed<nsIURI> GetHrefURI() const override;
 
-  virtual nsIDOMNode* AsDOMNode() override { return this; }
-
-  virtual void NodeInfoChanged(nsIDocument* aOldDoc) override {
+  virtual void NodeInfoChanged(Document* aOldDoc) override {
     ClearHasPendingLinkUpdate();
     nsMathMLElementBase::NodeInfoChanged(aOldDoc);
   }

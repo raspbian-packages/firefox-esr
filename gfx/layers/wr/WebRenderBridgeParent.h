@@ -7,16 +7,22 @@
 #ifndef mozilla_layers_WebRenderBridgeParent_h
 #define mozilla_layers_WebRenderBridgeParent_h
 
+#include <unordered_map>
 #include <unordered_set>
 
 #include "CompositableHost.h"  // for CompositableHost, ImageCompositeNotificationInfo
 #include "GLContextProvider.h"
 #include "mozilla/layers/CompositableTransactionParent.h"
+#include "mozilla/layers/CompositorTypes.h"
 #include "mozilla/layers/CompositorVsyncSchedulerOwner.h"
 #include "mozilla/layers/PWebRenderBridgeParent.h"
+#include "mozilla/layers/UiCompositorControllerParent.h"
 #include "mozilla/Maybe.h"
+#include "mozilla/UniquePtr.h"
+#include "mozilla/WeakPtr.h"
 #include "mozilla/webrender/WebRenderTypes.h"
 #include "mozilla/webrender/WebRenderAPI.h"
+#include "mozilla/webrender/RenderThread.h"
 #include "nsTArrayForwardDeclare.h"
 
 namespace mozilla {
@@ -42,40 +48,66 @@ class CompositorVsyncScheduler;
 class AsyncImagePipelineManager;
 class WebRenderImageHost;
 
-class WebRenderBridgeParent final : public PWebRenderBridgeParent,
-                                    public CompositorVsyncSchedulerOwner,
-                                    public CompositableParentManager {
+class WebRenderBridgeParent final
+    : public PWebRenderBridgeParent,
+      public CompositorVsyncSchedulerOwner,
+      public CompositableParentManager,
+      public layers::FrameRecorder,
+      public SupportsWeakPtr<WebRenderBridgeParent> {
  public:
+  MOZ_DECLARE_WEAKREFERENCE_TYPENAME(WebRenderBridgeParent)
   WebRenderBridgeParent(CompositorBridgeParentBase* aCompositorBridge,
                         const wr::PipelineId& aPipelineId,
                         widget::CompositorWidget* aWidget,
                         CompositorVsyncScheduler* aScheduler,
-                        RefPtr<wr::WebRenderAPI>&& aApi,
+                        nsTArray<RefPtr<wr::WebRenderAPI>>&& aApis,
                         RefPtr<AsyncImagePipelineManager>&& aImageMgr,
-                        RefPtr<CompositorAnimationStorage>&& aAnimStorage);
+                        RefPtr<CompositorAnimationStorage>&& aAnimStorage,
+                        TimeDuration aVsyncRate);
 
   static WebRenderBridgeParent* CreateDestroyed(
       const wr::PipelineId& aPipelineId);
 
   wr::PipelineId PipelineId() { return mPipelineId; }
-  already_AddRefed<wr::WebRenderAPI> GetWebRenderAPI() {
-    return do_AddRef(mApi);
+
+  bool CloneWebRenderAPIs(nsTArray<RefPtr<wr::WebRenderAPI>>& aOutAPIs) {
+    for (auto& api : mApis) {
+      if (api) {
+        RefPtr<wr::WebRenderAPI> clone = api->Clone();
+        if (!clone) {
+          return false;
+        }
+        aOutAPIs.AppendElement(clone);
+      }
+    }
+    return true;
   }
-  wr::Epoch WrEpoch() { return wr::NewEpoch(mWrEpoch); }
+  already_AddRefed<wr::WebRenderAPI> GetWebRenderAPIAtPoint(
+      const ScreenPoint& aPoint);
+  already_AddRefed<wr::WebRenderAPI> GetWebRenderAPI(
+      wr::RenderRoot aRenderRoot) {
+    if (aRenderRoot > wr::kHighestRenderRoot) {
+      return nullptr;
+    }
+    return do_AddRef(mApis[aRenderRoot]);
+  }
   AsyncImagePipelineManager* AsyncImageManager() { return mAsyncImageManager; }
   CompositorVsyncScheduler* CompositorScheduler() {
     return mCompositorScheduler.get();
   }
+  CompositorBridgeParentBase* GetCompositorBridge() {
+    return mCompositorBridge;
+  }
+
+  mozilla::ipc::IPCResult RecvEnsureConnected(
+      TextureFactoryIdentifier* aTextureFactoryIdentifier,
+      MaybeIdNamespace* aMaybeIdNamespace) override;
 
   mozilla::ipc::IPCResult RecvNewCompositable(
       const CompositableHandle& aHandle, const TextureInfo& aInfo) override;
   mozilla::ipc::IPCResult RecvReleaseCompositable(
       const CompositableHandle& aHandle) override;
 
-  mozilla::ipc::IPCResult RecvInitReadLocks(
-      ReadLockArray&& aReadLocks) override;
-
-  mozilla::ipc::IPCResult RecvCreate(const gfx::IntSize& aSize) override;
   mozilla::ipc::IPCResult RecvShutdown() override;
   mozilla::ipc::IPCResult RecvShutdownSync() override;
   mozilla::ipc::IPCResult RecvDeleteCompositorAnimations(
@@ -83,68 +115,57 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
   mozilla::ipc::IPCResult RecvUpdateResources(
       nsTArray<OpUpdateResource>&& aUpdates,
       nsTArray<RefCountedShmem>&& aSmallShmems,
-      nsTArray<ipc::Shmem>&& aLargeShmems) override;
+      nsTArray<ipc::Shmem>&& aLargeShmems,
+      const wr::RenderRoot& aRenderRoot) override;
   mozilla::ipc::IPCResult RecvSetDisplayList(
-      const gfx::IntSize& aSize,
-      InfallibleTArray<WebRenderParentCommand>&& aCommands,
+      nsTArray<RenderRootDisplayListData>&& aDisplayLists,
       InfallibleTArray<OpDestroy>&& aToDestroy,
-      const uint64_t& aFwdTransactionId, const uint64_t& aTransactionId,
-      const wr::LayoutSize& aContentSize, ipc::ByteBuf&& dl,
-      const wr::BuiltDisplayListDescriptor& dlDesc,
-      const WebRenderScrollData& aScrollData,
-      nsTArray<OpUpdateResource>&& aResourceUpdates,
-      nsTArray<RefCountedShmem>&& aSmallShmems,
-      nsTArray<ipc::Shmem>&& aLargeShmems, const wr::IdNamespace& aIdNamespace,
-      const TimeStamp& aTxnStartTime, const TimeStamp& aFwdTime) override;
+      const uint64_t& aFwdTransactionId, const TransactionId& aTransactionId,
+      const wr::IdNamespace& aIdNamespace, const bool& aContainsSVGGroup,
+      const VsyncId& aVsyncId, const TimeStamp& aVsyncStartTime,
+      const TimeStamp& aRefreshStartTime, const TimeStamp& aTxnStartTime,
+      const nsCString& aTxnURL, const TimeStamp& aFwdTime,
+      nsTArray<CompositionPayload>&& aPayloads) override;
   mozilla::ipc::IPCResult RecvEmptyTransaction(
-      const FocusTarget& aFocusTarget,
-      InfallibleTArray<WebRenderParentCommand>&& aCommands,
+      const FocusTarget& aFocusTarget, const uint32_t& aPaintSequenceNumber,
+      nsTArray<RenderRootUpdates>&& aRenderRootUpdates,
       InfallibleTArray<OpDestroy>&& aToDestroy,
-      const uint64_t& aFwdTransactionId, const uint64_t& aTransactionId,
-      const wr::IdNamespace& aIdNamespace, const TimeStamp& aTxnStartTime,
-      const TimeStamp& aFwdTime) override;
+      const uint64_t& aFwdTransactionId, const TransactionId& aTransactionId,
+      const wr::IdNamespace& aIdNamespace, const VsyncId& aVsyncId,
+      const TimeStamp& aVsyncStartTime, const TimeStamp& aRefreshStartTime,
+      const TimeStamp& aTxnStartTime, const nsCString& aTxnURL,
+      const TimeStamp& aFwdTime,
+      nsTArray<CompositionPayload>&& aPayloads) override;
   mozilla::ipc::IPCResult RecvSetFocusTarget(
       const FocusTarget& aFocusTarget) override;
   mozilla::ipc::IPCResult RecvParentCommands(
-      nsTArray<WebRenderParentCommand>&& commands) override;
+      nsTArray<WebRenderParentCommand>&& commands,
+      const wr::RenderRoot& aRenderRoot) override;
   mozilla::ipc::IPCResult RecvGetSnapshot(PTextureParent* aTexture) override;
 
-  mozilla::ipc::IPCResult RecvAddPipelineIdForCompositable(
-      const wr::PipelineId& aPipelineIds, const CompositableHandle& aHandle,
-      const bool& aAsync) override;
-  mozilla::ipc::IPCResult RecvRemovePipelineIdForCompositable(
-      const wr::PipelineId& aPipelineId) override;
-
-  mozilla::ipc::IPCResult RecvAddExternalImageIdForCompositable(
-      const ExternalImageId& aImageId,
-      const CompositableHandle& aHandle) override;
-  mozilla::ipc::IPCResult RecvRemoveExternalImageId(
-      const ExternalImageId& aImageId) override;
-  mozilla::ipc::IPCResult RecvSetLayerObserverEpoch(
-      const uint64_t& aLayerObserverEpoch) override;
+  mozilla::ipc::IPCResult RecvSetLayersObserverEpoch(
+      const LayersObserverEpoch& aChildEpoch) override;
 
   mozilla::ipc::IPCResult RecvClearCachedResources() override;
   mozilla::ipc::IPCResult RecvScheduleComposite() override;
   mozilla::ipc::IPCResult RecvCapture() override;
+  mozilla::ipc::IPCResult RecvSyncWithCompositor() override;
 
   mozilla::ipc::IPCResult RecvSetConfirmedTargetAPZC(
       const uint64_t& aBlockId,
-      nsTArray<ScrollableLayerGuid>&& aTargets) override;
+      nsTArray<SLGuidAndRenderRoot>&& aTargets) override;
 
   mozilla::ipc::IPCResult RecvSetTestSampleTime(
       const TimeStamp& aTime) override;
   mozilla::ipc::IPCResult RecvLeaveTestMode() override;
-  mozilla::ipc::IPCResult RecvGetAnimationOpacity(
-      const uint64_t& aCompositorAnimationsId, float* aOpacity,
-      bool* aHasAnimationOpacity) override;
-  mozilla::ipc::IPCResult RecvGetAnimationTransform(
-      const uint64_t& aCompositorAnimationsId,
-      MaybeTransform* aTransform) override;
+  mozilla::ipc::IPCResult RecvGetAnimationValue(
+      const uint64_t& aCompositorAnimationsId, OMTAValue* aValue) override;
   mozilla::ipc::IPCResult RecvSetAsyncScrollOffset(
-      const FrameMetrics::ViewID& aScrollId, const float& aX,
+      const ScrollableLayerGuid::ViewID& aScrollId, const float& aX,
       const float& aY) override;
   mozilla::ipc::IPCResult RecvSetAsyncZoom(
-      const FrameMetrics::ViewID& aScrollId, const float& aZoom) override;
+      const ScrollableLayerGuid::ViewID& aScrollId,
+      const float& aZoom) override;
   mozilla::ipc::IPCResult RecvFlushApzRepaints() override;
   mozilla::ipc::IPCResult RecvGetAPZTestData(APZTestData* data) override;
 
@@ -158,8 +179,9 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
   // CompositorVsyncSchedulerOwner
   bool IsPendingComposite() override { return false; }
   void FinishPendingComposite() override {}
-  void CompositeToTarget(gfx::DrawTarget* aTarget,
+  void CompositeToTarget(VsyncId aId, gfx::DrawTarget* aTarget,
                          const gfx::IntRect* aRect = nullptr) override;
+  TimeDuration GetVsyncInterval() const override;
 
   // CompositableParentManager
   bool IsSameProcess() const override;
@@ -171,26 +193,35 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
   void SendPendingAsyncMessages() override;
   void SetAboutToSendAsyncMessages() override;
 
-  void HoldPendingTransactionId(uint32_t aWrEpoch, uint64_t aTransactionId,
-                                const TimeStamp& aTxnStartTime,
-                                const TimeStamp& aFwdTime);
-  uint64_t LastPendingTransactionId();
-  uint64_t FlushPendingTransactionIds();
-  uint64_t FlushTransactionIdsForEpoch(const wr::Epoch& aEpoch,
-                                       const TimeStamp& aEndTime);
+  void HoldPendingTransactionId(
+      const wr::Epoch& aWrEpoch, TransactionId aTransactionId,
+      bool aContainsSVGGroup, const VsyncId& aVsyncId,
+      const TimeStamp& aVsyncStartTime, const TimeStamp& aRefreshStartTime,
+      const TimeStamp& aTxnStartTime, const nsCString& aTxnURL,
+      const TimeStamp& aFwdTime, const bool aIsFirstPaint,
+      nsTArray<CompositionPayload>&& aPayloads,
+      const bool aUseForTelemetry = true);
+  TransactionId LastPendingTransactionId();
+  TransactionId FlushTransactionIdsForEpoch(
+      const wr::Epoch& aEpoch, const VsyncId& aCompositeStartId,
+      const TimeStamp& aCompositeStartTime, const TimeStamp& aRenderStartTime,
+      const TimeStamp& aEndTime, UiCompositorControllerParent* aUiController,
+      wr::RendererStats* aStats = nullptr,
+      nsTArray<FrameStats>* aOutputStats = nullptr);
+  void NotifySceneBuiltForEpoch(const wr::Epoch& aEpoch,
+                                const TimeStamp& aEndTime);
+
+  void CompositeIfNeeded();
 
   TextureFactoryIdentifier GetTextureFactoryIdentifier();
 
   void ExtractImageCompositeNotifications(
       nsTArray<ImageCompositeNotificationInfo>* aNotifications);
 
+  wr::Epoch GetCurrentEpoch() const { return mWrEpoch; }
   wr::IdNamespace GetIdNamespace() { return mIdNamespace; }
 
-  void UpdateAPZ(bool aUpdateHitTestingTree);
-  const WebRenderScrollData& GetScrollData() const;
-
-  void FlushRendering();
-  void FlushRenderingAsync();
+  void FlushRendering(bool aWaitForPresent = true);
 
   /**
    * Schedule generating WebRender frame definitely at next composite timing.
@@ -203,16 +234,90 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
    * Call CompositorVsyncScheduler::ScheduleComposition() directly, if we just
    * want to trigger AsyncImagePipelines update checks.
    */
-  void ScheduleGenerateFrame();
+  void ScheduleGenerateFrame(const Maybe<wr::RenderRoot>& aRenderRoot);
+  void ScheduleGenerateFrame(const wr::RenderRootSet& aRenderRoots);
+  void ScheduleGenerateFrameAllRenderRoots();
 
-  void UpdateWebRender(CompositorVsyncScheduler* aScheduler,
-                       wr::WebRenderAPI* aApi,
-                       AsyncImagePipelineManager* aImageMgr,
-                       CompositorAnimationStorage* aAnimStorage);
+  /**
+   * Schedule forced frame rendering at next composite timing.
+   *
+   * WebRender could skip frame rendering if there is no update.
+   * This function is used to force rendering even when there is not update.
+   */
+  void ScheduleForcedGenerateFrame();
+
+  void NotifyDidSceneBuild(const nsTArray<wr::RenderRoot>& aRenderRoots,
+                           RefPtr<wr::WebRenderPipelineInfo> aInfo);
+
+  wr::Epoch UpdateWebRender(
+      CompositorVsyncScheduler* aScheduler,
+      nsTArray<RefPtr<wr::WebRenderAPI>>&& aApis,
+      AsyncImagePipelineManager* aImageMgr,
+      CompositorAnimationStorage* aAnimStorage,
+      const TextureFactoryIdentifier& aTextureFactoryIdentifier);
+
+  void RemoveEpochDataPriorTo(const wr::Epoch& aRenderedEpoch);
+
+  /**
+   * This sets the is-first-paint flag to true for the next received
+   * display list. This is intended to be called by the widget code when it
+   * loses its viewport information (or for whatever reason wants to refresh
+   * the viewport information). The message will sent back to the widget code
+   * via UiCompositorControllerParent::NotifyFirstPaint() when the corresponding
+   * transaction is flushed.
+   */
+  void ForceIsFirstPaint() { mIsFirstPaint = true; }
+
+  bool IsRootWebRenderBridgeParent() const;
+  LayersId GetLayersId() const;
+  WRRootId GetWRRootId() const;
 
  private:
+  class ScheduleSharedSurfaceRelease;
+
   explicit WebRenderBridgeParent(const wr::PipelineId& aPipelineId);
-  virtual ~WebRenderBridgeParent();
+  virtual ~WebRenderBridgeParent() = default;
+
+  wr::WebRenderAPI* Api(wr::RenderRoot aRenderRoot) {
+    if (IsRootWebRenderBridgeParent()) {
+      return mApis[aRenderRoot];
+    } else {
+      MOZ_ASSERT(aRenderRoot == wr::RenderRoot::Default);
+      return mApis[mRenderRoot];
+    }
+  }
+
+  // Within WebRenderBridgeParent, we can use wr::RenderRoot::Default to
+  // refer to DefaultApi(), which can be the content API if this
+  // WebRenderBridgeParent is for a content WebRenderBridgeChild. However,
+  // different WebRenderBridgeParents use the same AsyncImagePipelineManager,
+  // for example, which doesn't have this distinction, so we need to
+  // convert out our RenderRoot.
+  wr::RenderRoot RenderRootForExternal(wr::RenderRoot aRenderRoot) {
+    if (IsRootWebRenderBridgeParent()) {
+      return aRenderRoot;
+    } else {
+      MOZ_ASSERT(aRenderRoot == wr::RenderRoot::Default);
+      return mRenderRoot;
+    }
+  }
+
+  bool SetDisplayList(wr::RenderRoot aRenderRoot, const LayoutDeviceRect& aRect,
+                      const wr::LayoutSize& aContentSize, ipc::ByteBuf&& aDL,
+                      const wr::BuiltDisplayListDescriptor& aDLDesc,
+                      const nsTArray<OpUpdateResource>& aResourceUpdates,
+                      const nsTArray<RefCountedShmem>& aSmallShmems,
+                      const nsTArray<ipc::Shmem>& aLargeShmems,
+                      const TimeStamp& aTxnStartTime,
+                      wr::TransactionBuilder& aTxn, wr::Epoch aWrEpoch,
+                      bool aValidTransaction, bool aObserveLayersUpdate);
+
+  void UpdateAPZFocusState(const FocusTarget& aFocus);
+  void UpdateAPZScrollData(const wr::Epoch& aEpoch, WebRenderScrollData&& aData,
+                           wr::RenderRoot aRenderRoot);
+  void UpdateAPZScrollOffsets(ScrollUpdatesMap&& aUpdates,
+                              uint32_t aPaintSequenceNumber,
+                              wr::RenderRoot aRenderRoot);
 
   bool UpdateResources(const nsTArray<OpUpdateResource>& aResourceUpdates,
                        const nsTArray<RefCountedShmem>& aSmallShmems,
@@ -220,83 +325,174 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
                        wr::TransactionBuilder& aUpdates);
   bool AddExternalImage(wr::ExternalImageId aExtId, wr::ImageKey aKey,
                         wr::TransactionBuilder& aResources);
+  bool UpdateExternalImage(
+      wr::ExternalImageId aExtId, wr::ImageKey aKey,
+      const ImageIntRect& aDirtyRect, wr::TransactionBuilder& aResources,
+      UniquePtr<ScheduleSharedSurfaceRelease>& aScheduleRelease);
+  void ObserveSharedSurfaceRelease(
+      const nsTArray<wr::ExternalImageKeyPair>& aPairs);
 
-  uint64_t GetLayersId() const;
-  void ProcessWebRenderParentCommands(
-      const InfallibleTArray<WebRenderParentCommand>& aCommands);
+  bool PushExternalImageForTexture(wr::ExternalImageId aExtId,
+                                   wr::ImageKey aKey, TextureHost* aTexture,
+                                   bool aIsUpdate,
+                                   wr::TransactionBuilder& aResources);
+
+  void AddPipelineIdForCompositable(const wr::PipelineId& aPipelineIds,
+                                    const CompositableHandle& aHandle,
+                                    const bool& aAsync,
+                                    wr::TransactionBuilder& aTxn,
+                                    wr::TransactionBuilder& aTxnForImageBridge,
+                                    const wr::RenderRoot& aRenderRoot);
+  void RemovePipelineIdForCompositable(const wr::PipelineId& aPipelineId,
+                                       wr::TransactionBuilder& aTxn,
+                                       wr::RenderRoot aRenderRoot);
+
+  void DeleteImage(const wr::ImageKey& aKey, wr::TransactionBuilder& aUpdates);
+  void ReleaseTextureOfImage(const wr::ImageKey& aKey);
+
+  bool ProcessWebRenderParentCommands(
+      const InfallibleTArray<WebRenderParentCommand>& aCommands,
+      wr::TransactionBuilder& aTxn, wr::RenderRoot aRenderRoot);
 
   void ClearResources();
-  uint64_t GetChildLayerObserverEpoch() const {
-    return mChildLayerObserverEpoch;
-  }
   bool ShouldParentObserveEpoch();
   mozilla::ipc::IPCResult HandleShutdown();
 
-  void AdvanceAnimations();
-  void SampleAnimations(nsTArray<wr::WrOpacityProperty>& aOpacityArray,
-                        nsTArray<wr::WrTransformProperty>& aTransformArray);
+  // Returns true if there is any animation (including animations in delay
+  // phase).
+  bool AdvanceAnimations();
+  bool SampleAnimations(
+      wr::RenderRootArray<nsTArray<wr::WrOpacityProperty>>& aOpacityArrays,
+      wr::RenderRootArray<nsTArray<wr::WrTransformProperty>>& aTransformArrays);
 
   CompositorBridgeParent* GetRootCompositorBridgeParent() const;
 
-  // Have APZ push the async scroll state to WR. Returns true if an APZ
-  // animation is in effect and we need to schedule another composition.
-  // If scrollbars need their transforms updated, the provided aTransformArray
-  // is populated with the property update details.
-  bool PushAPZStateToWR(wr::TransactionBuilder& aTxn,
-                        nsTArray<wr::WrTransformProperty>& aTransformArray);
+  RefPtr<WebRenderBridgeParent> GetRootWebRenderBridgeParent() const;
 
-  uint32_t GetNextWrEpoch();
+  // Tell APZ what the subsequent sampling's timestamp should be.
+  void SetAPZSampleTime();
+
+  wr::Epoch GetNextWrEpoch();
+  // This function is expected to be used when GetNextWrEpoch() is called,
+  // but TransactionBuilder does not have resource updates nor display list.
+  // In this case, ScheduleGenerateFrame is not triggered via SceneBuilder.
+  // Then we want to rollback WrEpoch. See Bug 1490117.
+  void RollbackWrEpoch();
+
+  void FlushSceneBuilds();
+  void FlushFrameGeneration();
+  void FlushFramePresentation();
+
+  void MaybeGenerateFrame(VsyncId aId, bool aForceGenerateFrame);
+
+  VsyncId GetVsyncIdForEpoch(const wr::Epoch& aEpoch) {
+    for (auto& id : mPendingTransactionIds) {
+      if (id.mEpoch.mHandle == aEpoch.mHandle) {
+        return id.mVsyncId;
+      }
+    }
+    return VsyncId();
+  }
 
  private:
   struct PendingTransactionId {
-    PendingTransactionId(wr::Epoch aEpoch, uint64_t aId,
+    PendingTransactionId(const wr::Epoch& aEpoch, TransactionId aId,
+                         bool aContainsSVGGroup, const VsyncId& aVsyncId,
+                         const TimeStamp& aVsyncStartTime,
+                         const TimeStamp& aRefreshStartTime,
                          const TimeStamp& aTxnStartTime,
-                         const TimeStamp& aFwdTime)
+                         const nsCString& aTxnURL, const TimeStamp& aFwdTime,
+                         const bool aIsFirstPaint, const bool aUseForTelemetry,
+                         nsTArray<CompositionPayload>&& aPayloads)
         : mEpoch(aEpoch),
           mId(aId),
+          mVsyncId(aVsyncId),
+          mVsyncStartTime(aVsyncStartTime),
+          mRefreshStartTime(aRefreshStartTime),
           mTxnStartTime(aTxnStartTime),
-          mFwdTime(aFwdTime) {}
+          mTxnURL(aTxnURL),
+          mFwdTime(aFwdTime),
+          mSkippedComposites(0),
+          mContainsSVGGroup(aContainsSVGGroup),
+          mIsFirstPaint(aIsFirstPaint),
+          mUseForTelemetry(aUseForTelemetry),
+          mPayloads(std::move(aPayloads)) {}
     wr::Epoch mEpoch;
-    uint64_t mId;
+    TransactionId mId;
+    VsyncId mVsyncId;
+    TimeStamp mVsyncStartTime;
+    TimeStamp mRefreshStartTime;
     TimeStamp mTxnStartTime;
+    nsCString mTxnURL;
     TimeStamp mFwdTime;
+    TimeStamp mSceneBuiltTime;
+    uint32_t mSkippedComposites;
+    bool mContainsSVGGroup;
+    bool mIsFirstPaint;
+    bool mUseForTelemetry;
+    nsTArray<CompositionPayload> mPayloads;
+  };
+
+  struct CompositorAnimationIdsForEpoch {
+    CompositorAnimationIdsForEpoch(const wr::Epoch& aEpoch,
+                                   InfallibleTArray<uint64_t>&& aIds)
+        : mEpoch(aEpoch), mIds(std::move(aIds)) {}
+
+    wr::Epoch mEpoch;
+    InfallibleTArray<uint64_t> mIds;
   };
 
   CompositorBridgeParentBase* MOZ_NON_OWNING_REF mCompositorBridge;
   wr::PipelineId mPipelineId;
   RefPtr<widget::CompositorWidget> mWidget;
-  RefPtr<wr::WebRenderAPI> mApi;
+  // The RenderRootArray means there will always be a fixed number of apis,
+  // one for each RenderRoot, even if renderroot splitting isn't enabled.
+  // In this case, the unused apis will be nullptrs. Also, if this is not
+  // the root WebRenderBridgeParent, there should only be one api in this
+  // list. We avoid using a dynamically sized array for this because we
+  // need to be able to null these out in a thread-safe way from
+  // ClearResources, and there's no way to do that with an nsTArray.
+  wr::RenderRootArray<RefPtr<wr::WebRenderAPI>> mApis;
   RefPtr<AsyncImagePipelineManager> mAsyncImageManager;
   RefPtr<CompositorVsyncScheduler> mCompositorScheduler;
   RefPtr<CompositorAnimationStorage> mAnimStorage;
   // mActiveAnimations is used to avoid leaking animations when
   // WebRenderBridgeParent is destroyed abnormally and Tab move between
   // different windows.
-  std::unordered_set<uint64_t> mActiveAnimations;
-  nsDataHashtable<nsUint64HashKey, RefPtr<WebRenderImageHost>>
+  std::unordered_map<uint64_t, wr::Epoch> mActiveAnimations;
+  wr::RenderRootArray<std::unordered_map<uint64_t, RefPtr<WebRenderImageHost>>>
       mAsyncCompositables;
-  nsDataHashtable<nsUint64HashKey, RefPtr<WebRenderImageHost>>
-      mExternalImageIds;
+  std::unordered_map<uint64_t, CompositableTextureHostRef> mTextureHosts;
+  std::unordered_map<uint64_t, wr::ExternalImageId> mSharedSurfaceIds;
 
+  TimeDuration mVsyncRate;
   TimeStamp mPreviousFrameTimeStamp;
   // These fields keep track of the latest layer observer epoch values in the
-  // child and the parent. mChildLayerObserverEpoch is the latest epoch value
-  // received from the child. mParentLayerObserverEpoch is the latest epoch
-  // value that we have told TabParent about (via ObserveLayerUpdate).
-  uint64_t mChildLayerObserverEpoch;
-  uint64_t mParentLayerObserverEpoch;
+  // child and the parent. mChildLayersObserverEpoch is the latest epoch value
+  // received from the child. mParentLayersObserverEpoch is the latest epoch
+  // value that we have told BrowserParent about (via ObserveLayerUpdate).
+  LayersObserverEpoch mChildLayersObserverEpoch;
+  LayersObserverEpoch mParentLayersObserverEpoch;
 
-  std::queue<PendingTransactionId> mPendingTransactionIds;
-  uint32_t mWrEpoch;
+  std::deque<PendingTransactionId> mPendingTransactionIds;
+  std::queue<CompositorAnimationIdsForEpoch> mCompositorAnimationsToDelete;
+  wr::Epoch mWrEpoch;
   wr::IdNamespace mIdNamespace;
 
+  VsyncId mSkippedCompositeId;
+  TimeStamp mMostRecentComposite;
+
+  // Kind of clunky, but I can't sort out a more elegant way of getting this to
+  // work.
+  Mutex mRenderRootRectMutex;
+  wr::NonDefaultRenderRootArray<ScreenRect> mRenderRootRects;
+
+  wr::RenderRoot mRenderRoot;
   bool mPaused;
   bool mDestroyed;
-  bool mForceRendering;
   bool mReceivedDisplayList;
-
-  // Can only be accessed on the compositor thread.
-  WebRenderScrollData mScrollData;
+  bool mIsFirstPaint;
+  bool mSkippedComposite;
 };
 
 }  // namespace layers

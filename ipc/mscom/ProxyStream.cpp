@@ -6,9 +6,9 @@
 
 #include "mozilla/Move.h"
 #if defined(ACCESSIBILITY)
-#include "HandlerData.h"
-#include "mozilla/a11y/Platform.h"
-#include "mozilla/mscom/ActivationContext.h"
+#  include "HandlerData.h"
+#  include "mozilla/a11y/Platform.h"
+#  include "mozilla/mscom/ActivationContext.h"
 #endif  // defined(ACCESSIBILITY)
 #include "mozilla/mscom/EnsureMTA.h"
 #include "mozilla/mscom/ProxyStream.h"
@@ -41,7 +41,8 @@ ProxyStream::ProxyStream(REFIID aIID, const BYTE* aInitBuf,
       mHGlobal(nullptr),
       mBufSize(aInitBufSize),
       mPreserveStream(false) {
-  NS_NAMED_LITERAL_CSTRING(kCrashReportKey, "ProxyStreamUnmarshalStatus");
+  CrashReporter::Annotation kCrashReportKey =
+      CrashReporter::Annotation::ProxyStreamUnmarshalStatus;
 
   if (!aInitBufSize) {
     CrashReporter::AnnotateCrashReport(kCrashReportKey,
@@ -100,7 +101,10 @@ ProxyStream::ProxyStream(REFIID aIID, const BYTE* aInitBuf,
         return;
       }
 
-      bool popOk = aEnv->Pop();
+#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
+      bool popOk =
+#endif
+          aEnv->Pop();
       MOZ_DIAGNOSTIC_ASSERT(popOk);
     });
 
@@ -134,7 +138,7 @@ ProxyStream::ProxyStream(REFIID aIID, const BYTE* aInitBuf,
   if (FAILED(unmarshalResult) || !mUnmarshaledProxy) {
     nsPrintfCString hrAsStr("0x%08X", unmarshalResult);
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("CoUnmarshalInterfaceResult"), hrAsStr);
+        CrashReporter::Annotation::CoUnmarshalInterfaceResult, hrAsStr);
     AnnotateInterfaceRegistration(aIID);
     if (!mUnmarshaledProxy) {
       CrashReporter::AnnotateCrashReport(
@@ -143,25 +147,21 @@ ProxyStream::ProxyStream(REFIID aIID, const BYTE* aInitBuf,
 
 #if defined(ACCESSIBILITY)
     AnnotateClassRegistration(CLSID_AccessibleHandler);
-    CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("UnmarshalActCtx"),
-                                       strActCtx);
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("UnmarshalActCtxManifestPath"),
+        CrashReporter::Annotation::UnmarshalActCtx, strActCtx);
+    CrashReporter::AnnotateCrashReport(
+        CrashReporter::Annotation::UnmarshalActCtxManifestPath,
         NS_ConvertUTF16toUTF8(manifestPath));
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("A11yHandlerRegistered"),
+        CrashReporter::Annotation::A11yHandlerRegistered,
         a11y::IsHandlerRegistered() ? NS_LITERAL_CSTRING("true")
                                     : NS_LITERAL_CSTRING("false"));
 
-    nsAutoCString strExpectedStreamLen;
-    strExpectedStreamLen.AppendInt(expectedStreamLen);
-    CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("ExpectedStreamLen"),
-                                       strExpectedStreamLen);
+    CrashReporter::AnnotateCrashReport(
+        CrashReporter::Annotation::ExpectedStreamLen, expectedStreamLen);
 
-    nsAutoCString actualStreamLen;
-    actualStreamLen.AppendInt(aInitBufSize);
-    CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("ActualStreamLen"),
-                                       actualStreamLen);
+    CrashReporter::AnnotateCrashReport(
+        CrashReporter::Annotation::ActualStreamLen, aInitBufSize);
 #endif  // defined(ACCESSIBILITY)
   }
 }
@@ -171,7 +171,7 @@ ProxyStream::ProxyStream(ProxyStream&& aOther)
       mHGlobal(nullptr),
       mBufSize(0),
       mPreserveStream(false) {
-  *this = mozilla::Move(aOther);
+  *this = std::move(aOther);
 }
 
 ProxyStream& ProxyStream::operator=(ProxyStream&& aOther) {
@@ -180,7 +180,7 @@ ProxyStream& ProxyStream::operator=(ProxyStream&& aOther) {
     MOZ_ASSERT(!result && ::GetLastError() == NO_ERROR);
   }
 
-  mStream = Move(aOther.mStream);
+  mStream = std::move(aOther.mStream);
 
   mGlobalLockedBuf = aOther.mGlobalLockedBuf;
   aOther.mGlobalLockedBuf = nullptr;
@@ -192,7 +192,7 @@ ProxyStream& ProxyStream::operator=(ProxyStream&& aOther) {
   mBufSize = aOther.mBufSize;
   aOther.mBufSize = 0;
 
-  mUnmarshaledProxy = Move(aOther.mUnmarshaledProxy);
+  mUnmarshaledProxy = std::move(aOther.mUnmarshaledProxy);
 
   mPreserveStream = aOther.mPreserveStream;
   return *this;
@@ -248,7 +248,7 @@ PreservedStreamPtr ProxyStream::GetPreservedStream() {
   }
 
   mPreserveStream = false;
-  return ToPreservedStreamPtr(Move(cloned));
+  return ToPreservedStreamPtr(std::move(cloned));
 }
 
 bool ProxyStream::GetInterface(void** aOutInterface) {
@@ -286,8 +286,8 @@ ProxyStream::ProxyStream(REFIID aIID, IUnknown* aObject, Environment* aEnv,
 
   nsAutoString manifestPath;
 
-  auto marshalFn = [this, &aIID, aObject, mshlFlags, &stream, &streamSize,
-                    &hglobal, &createStreamResult, &marshalResult, &statResult,
+  auto marshalFn = [&aIID, aObject, mshlFlags, &stream, &streamSize, &hglobal,
+                    &createStreamResult, &marshalResult, &statResult,
                     &getHGlobalResult, aEnv, &manifestPath]() -> void {
     if (aEnv) {
       bool pushOk = aEnv->Push();
@@ -302,7 +302,10 @@ ProxyStream::ProxyStream(REFIID aIID, IUnknown* aObject, Environment* aEnv,
         return;
       }
 
-      bool popOk = aEnv->Pop();
+#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
+      bool popOk =
+#endif
+          aEnv->Pop();
       MOZ_DIAGNOSTIC_ASSERT(popOk);
     });
 
@@ -318,9 +321,7 @@ ProxyStream::ProxyStream(REFIID aIID, IUnknown* aObject, Environment* aEnv,
 
     marshalResult = ::CoMarshalInterface(stream, aIID, aObject, MSHCTX_LOCAL,
                                          nullptr, mshlFlags);
-#if !defined(MOZ_DEV_EDITION)
-    MOZ_DIAGNOSTIC_ASSERT(marshalResult != E_INVALIDARG);
-#endif  // !defined(MOZ_DEV_EDITION)
+    MOZ_ASSERT(marshalResult != E_INVALIDARG);
     if (FAILED(marshalResult)) {
       return;
     }
@@ -349,36 +350,36 @@ ProxyStream::ProxyStream(REFIID aIID, IUnknown* aObject, Environment* aEnv,
   if (FAILED(createStreamResult)) {
     nsPrintfCString hrAsStr("0x%08X", createStreamResult);
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("CreateStreamOnHGlobalFailure"), hrAsStr);
+        CrashReporter::Annotation::CreateStreamOnHGlobalFailure, hrAsStr);
   }
 
   if (FAILED(marshalResult)) {
     AnnotateInterfaceRegistration(aIID);
     nsPrintfCString hrAsStr("0x%08X", marshalResult);
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("CoMarshalInterfaceFailure"), hrAsStr);
+        CrashReporter::Annotation::CoMarshalInterfaceFailure, hrAsStr);
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("MarshalActCtxManifestPath"),
+        CrashReporter::Annotation::MarshalActCtxManifestPath,
         NS_ConvertUTF16toUTF8(manifestPath));
   }
 
   if (FAILED(statResult)) {
     nsPrintfCString hrAsStr("0x%08X", statResult);
-    CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("StatFailure"),
+    CrashReporter::AnnotateCrashReport(CrashReporter::Annotation::StatFailure,
                                        hrAsStr);
   }
 
   if (FAILED(getHGlobalResult)) {
     nsPrintfCString hrAsStr("0x%08X", getHGlobalResult);
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("GetHGlobalFromStreamFailure"), hrAsStr);
+        CrashReporter::Annotation::GetHGlobalFromStreamFailure, hrAsStr);
   }
 
-  mStream = mozilla::Move(stream);
+  mStream = std::move(stream);
 
   if (streamSize) {
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("ProxyStreamSizeFrom"),
+        CrashReporter::Annotation::ProxyStreamSizeFrom,
         NS_LITERAL_CSTRING("IStream::Stat"));
     mBufSize = streamSize;
   }
@@ -395,16 +396,13 @@ ProxyStream::ProxyStream(REFIID aIID, IUnknown* aObject, Environment* aEnv,
   // be larger than the actual stream size.
   if (!streamSize) {
     CrashReporter::AnnotateCrashReport(
-        NS_LITERAL_CSTRING("ProxyStreamSizeFrom"),
+        CrashReporter::Annotation::ProxyStreamSizeFrom,
         NS_LITERAL_CSTRING("GlobalSize"));
     mBufSize = static_cast<int>(::GlobalSize(hglobal));
   }
 
-  nsAutoCString strBufSize;
-  strBufSize.AppendInt(mBufSize);
-
-  CrashReporter::AnnotateCrashReport(NS_LITERAL_CSTRING("ProxyStreamSize"),
-                                     strBufSize);
+  CrashReporter::AnnotateCrashReport(CrashReporter::Annotation::ProxyStreamSize,
+                                     mBufSize);
 }
 
 }  // namespace mscom

@@ -18,10 +18,6 @@ class nsICharsetDetectionObserver;
     }                                               \
   }
 
-#define NS_CHARSET_DETECTOR_CONTRACTID_BASE \
-  "@mozilla.org/intl/charsetdetect;1?type="
-#define NS_CHARSET_DETECTOR_CATEGORY "charset-detectors"
-
 class nsICharsetDetector : public nsISupports {
  public:
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICHARSETDETECTOR_IID)

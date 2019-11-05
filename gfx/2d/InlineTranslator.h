@@ -8,6 +8,7 @@
 #define mozilla_layout_InlineTranslator_h
 
 #include <istream>
+#include <string>
 
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/Filters.h"
@@ -27,11 +28,16 @@ using gfx::ScaledFont;
 using gfx::SourceSurface;
 using gfx::Translator;
 
-class InlineTranslator final : public Translator {
+class InlineTranslator : public Translator {
  public:
   explicit InlineTranslator(DrawTarget* aDT, void* aFontContext = nullptr);
 
   bool TranslateRecording(char*, size_t len);
+
+  void SetExternalSurfaces(
+      nsRefPtrHashtable<nsUint64HashKey, SourceSurface>* aExternalSurfaces) {
+    mExternalSurfaces = aExternalSurfaces;
+  }
 
   DrawTarget* LookupDrawTarget(ReferencePtr aRefPtr) final {
     DrawTarget* result = mDrawTargets.GetWeak(aRefPtr);
@@ -75,15 +81,15 @@ class InlineTranslator final : public Translator {
     return result;
   }
 
-  UnscaledFont* LookupUnscaledFontByIndex(size_t index) final {
-    UnscaledFont* result = mUnscaledFontTable[index];
-    return result;
-  }
-
   NativeFontResource* LookupNativeFontResource(uint64_t aKey) final {
     NativeFontResource* result = mNativeFontResources.GetWeak(aKey);
     MOZ_ASSERT(result);
     return result;
+  }
+
+  already_AddRefed<SourceSurface> LookupExternalSurface(
+      uint64_t aKey) override {
+    return mExternalSurfaces->Get(aKey);
   }
 
   void AddDrawTarget(ReferencePtr aRefPtr, DrawTarget* aDT) final {
@@ -112,7 +118,6 @@ class InlineTranslator final : public Translator {
 
   void AddUnscaledFont(ReferencePtr aRefPtr,
                        UnscaledFont* aUnscaledFont) final {
-    mUnscaledFontTable.push_back(aUnscaledFont);
     mUnscaledFonts.Put(aRefPtr, aUnscaledFont);
   }
 
@@ -154,12 +159,13 @@ class InlineTranslator final : public Translator {
   mozilla::gfx::DrawTarget* GetReferenceDrawTarget() final { return mBaseDT; }
 
   void* GetFontContext() final { return mFontContext; }
+  std::string GetError() { return mError; }
 
  private:
   RefPtr<DrawTarget> mBaseDT;
   void* mFontContext;
+  std::string mError;
 
-  std::vector<RefPtr<UnscaledFont>> mUnscaledFontTable;
   nsRefPtrHashtable<nsPtrHashKey<void>, DrawTarget> mDrawTargets;
   nsRefPtrHashtable<nsPtrHashKey<void>, Path> mPaths;
   nsRefPtrHashtable<nsPtrHashKey<void>, SourceSurface> mSourceSurfaces;
@@ -168,6 +174,7 @@ class InlineTranslator final : public Translator {
   nsRefPtrHashtable<nsPtrHashKey<void>, ScaledFont> mScaledFonts;
   nsRefPtrHashtable<nsPtrHashKey<void>, UnscaledFont> mUnscaledFonts;
   nsRefPtrHashtable<nsUint64HashKey, NativeFontResource> mNativeFontResources;
+  nsRefPtrHashtable<nsUint64HashKey, SourceSurface>* mExternalSurfaces;
 };
 
 }  // namespace gfx

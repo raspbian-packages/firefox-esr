@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,6 +9,7 @@
 #include "nsCOMPtr.h"
 #include "nsIURI.h"
 #include "nsHashKeys.h"
+#include "mozilla/Move.h"
 #include "mozilla/Unused.h"
 
 /**
@@ -22,7 +23,8 @@ class nsURIHashKey : public PLDHashEntryHdr {
   explicit nsURIHashKey(const nsIURI* aKey) : mKey(const_cast<nsIURI*>(aKey)) {
     MOZ_COUNT_CTOR(nsURIHashKey);
   }
-  nsURIHashKey(const nsURIHashKey& toCopy) : mKey(toCopy.mKey) {
+  nsURIHashKey(nsURIHashKey&& toMove)
+      : PLDHashEntryHdr(std::move(toMove)), mKey(std::move(toMove.mKey)) {
     MOZ_COUNT_CTOR(nsURIHashKey);
   }
   ~nsURIHashKey() { MOZ_COUNT_DTOR(nsURIHashKey); }

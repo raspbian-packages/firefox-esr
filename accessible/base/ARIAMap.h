@@ -129,7 +129,7 @@ struct nsRoleMapEntry {
   /**
    * Return true if matches to the given ARIA role.
    */
-  bool Is(nsAtom* aARIARole) const { return *roleAtom == aARIARole; }
+  bool Is(nsAtom* aARIARole) const { return roleAtom == aARIARole; }
 
   /**
    * Return true if ARIA role has the given accessible type.
@@ -142,11 +142,11 @@ struct nsRoleMapEntry {
    * Return ARIA role.
    */
   const nsDependentAtomString ARIARoleString() const {
-    return nsDependentAtomString(*roleAtom);
+    return nsDependentAtomString(roleAtom);
   }
 
   // ARIA role: string representation such as "button"
-  nsStaticAtom** roleAtom;
+  nsStaticAtom* const roleAtom;
 
   // Role mapping rule: maps to enum Role
   mozilla::a11y::role role;
@@ -277,8 +277,7 @@ bool HasDefinedARIAHidden(nsIContent* aContent);
 class AttrIterator {
  public:
   explicit AttrIterator(nsIContent* aContent)
-      : mElement(aContent->IsElement() ? aContent->AsElement() : nullptr),
-        mAttrIdx(0) {
+      : mElement(Element::FromNode(aContent)), mAttrIdx(0) {
     mAttrCount = mElement ? mElement->GetAttrCount() : 0;
   }
 

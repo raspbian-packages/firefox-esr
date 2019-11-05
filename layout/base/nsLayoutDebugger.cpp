@@ -42,7 +42,7 @@ class nsLayoutDebugger : public nsILayoutDebugger {
 };
 
 nsresult NS_NewLayoutDebugger(nsILayoutDebugger** aResult) {
-  NS_PRECONDITION(aResult, "null OUT ptr");
+  MOZ_ASSERT(aResult, "null OUT ptr");
   if (!aResult) {
     return NS_ERROR_NULL_POINTER;
   }
@@ -128,7 +128,8 @@ static void PrintDisplayItemTo(nsDisplayListBuilder* aBuilder,
   nsRect rect = aItem->GetBounds(aBuilder, &snap);
   nsRect layerRect = rect - (*aItem->GetAnimatedGeometryRoot())
                                 ->GetOffsetToCrossDoc(aItem->ReferenceFrame());
-  nsRect vis = aItem->GetVisibleRect();
+  nsRect vis = aItem->GetPaintRect();
+  nsRect build = aItem->GetBuildingRect();
   nsRect component = aItem->GetComponentAlphaBounds(aBuilder);
   nsDisplayList* list = aItem->GetChildren();
   const DisplayItemClip& clip = aItem->GetClip();
@@ -146,7 +147,7 @@ static void PrintDisplayItemTo(nsDisplayListBuilder* aBuilder,
 
   aStream << nsPrintfCString(
       "%s p=0x%p f=0x%p(%s) key=%d %sbounds(%d,%d,%d,%d) "
-      "layerBounds(%d,%d,%d,%d) visible(%d,%d,%d,%d) "
+      "layerBounds(%d,%d,%d,%d) visible(%d,%d,%d,%d) building(%d,%d,%d,%d) "
       "componentAlpha(%d,%d,%d,%d) clip(%s) asr(%s) clipChain(%s)%s ref=0x%p "
       "agr=0x%p",
       aItem->Name(), aItem, (void*)f, NS_ConvertUTF16toUTF8(contentData).get(),
@@ -154,8 +155,8 @@ static void PrintDisplayItemTo(nsDisplayListBuilder* aBuilder,
       (aItem->ZIndex() ? nsPrintfCString("z=%d ", aItem->ZIndex()).get() : ""),
       rect.x, rect.y, rect.width, rect.height, layerRect.x, layerRect.y,
       layerRect.width, layerRect.height, vis.x, vis.y, vis.width, vis.height,
-      component.x, component.y, component.width, component.height,
-      clip.ToString().get(),
+      build.x, build.y, build.width, build.height, component.x, component.y,
+      component.width, component.height, clip.ToString().get(),
       ActiveScrolledRoot::ToString(aItem->GetActiveScrolledRoot()).get(),
       DisplayItemClipChain::ToString(aItem->GetClipChain()).get(),
       aItem->IsUniform(aBuilder) ? " uniform" : "", aItem->ReferenceFrame(),
@@ -168,16 +169,27 @@ static void PrintDisplayItemTo(nsDisplayListBuilder* aBuilder,
   }
 
   const auto& willChange = aItem->Frame()->StyleDisplay()->mWillChange;
-  if (!willChange.IsEmpty()) {
+  if (!willChange.features.IsEmpty()) {
     aStream << " (will-change=";
-    for (size_t i = 0; i < willChange.Length(); i++) {
+    for (size_t i = 0; i < willChange.features.Length(); i++) {
       if (i > 0) {
         aStream << ",";
       }
-      nsDependentAtomString buffer(willChange[i]);
+      nsDependentAtomString buffer(willChange.features.AsSpan()[i].AsAtom());
       aStream << NS_LossyConvertUTF16toASCII(buffer).get();
     }
     aStream << ")";
+  }
+
+  if (aItem->HasHitTestInfo()) {
+    auto* hitTestInfoItem = static_cast<nsDisplayHitTestInfoItem*>(aItem);
+
+    aStream << nsPrintfCString(" hitTestInfo(0x%x)",
+                               hitTestInfoItem->HitTestFlags().serialize());
+
+    nsRect area = hitTestInfoItem->HitTestArea();
+    aStream << nsPrintfCString(" hitTestArea(%d,%d,%d,%d)", area.x, area.y,
+                               area.width, area.height);
   }
 
   // Display item specific debug info
@@ -200,13 +212,13 @@ static void PrintDisplayItemTo(nsDisplayListBuilder* aBuilder,
 #ifdef MOZ_DUMP_PAINTING
   if (aItem->GetType() == DisplayItemType::TYPE_MASK) {
     nsCString str;
-    (static_cast<nsDisplayMask*>(aItem))->PrintEffects(str);
+    (static_cast<nsDisplayMasksAndClipPaths*>(aItem))->PrintEffects(str);
     aStream << str.get();
   }
 
   if (aItem->GetType() == DisplayItemType::TYPE_FILTER) {
     nsCString str;
-    (static_cast<nsDisplayFilter*>(aItem))->PrintEffects(str);
+    (static_cast<nsDisplayFilters*>(aItem))->PrintEffects(str);
     aStream << str.get();
   }
 #endif
@@ -252,6 +264,14 @@ void nsFrame::PrintDisplayList(nsDisplayListBuilder* aBuilder,
                                const nsDisplayList& aList,
                                std::stringstream& aStream, bool aDumpHtml) {
   PrintDisplayListTo(aBuilder, aList, aStream, 0, aDumpHtml);
+}
+
+void nsFrame::PrintDisplayItem(nsDisplayListBuilder* aBuilder,
+                               nsDisplayItem* aItem, std::stringstream& aStream,
+                               uint32_t aIndent, bool aDumpSublist,
+                               bool aDumpHtml) {
+  PrintDisplayItemTo(aBuilder, aItem, aStream, aIndent, aDumpSublist,
+                     aDumpHtml);
 }
 
 /**

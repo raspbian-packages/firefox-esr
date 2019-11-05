@@ -7,8 +7,8 @@ use std::sync::mpsc::{channel, RecvTimeoutError, Sender};
 use std::time::Duration;
 
 use consts::PARAMETER_SIZE;
-use statemachine::StateMachine;
 use runloop::RunLoop;
+use statemachine::StateMachine;
 use util::OnceCallback;
 
 enum QueueAction {
@@ -91,10 +91,7 @@ impl U2FManager {
             sm.cancel();
         })?;
 
-        Ok(Self {
-            queue: queue,
-            tx: tx,
-        })
+        Ok(Self { queue, tx })
     }
 
     pub fn register<F>(
@@ -149,7 +146,7 @@ impl U2FManager {
             return Err(::Error::Unknown);
         }
 
-        if app_ids.len() < 1 {
+        if app_ids.is_empty() {
             return Err(::Error::Unknown);
         }
 

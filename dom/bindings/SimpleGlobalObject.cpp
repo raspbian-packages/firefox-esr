@@ -10,13 +10,13 @@
 #include "js/Class.h"
 
 #include "nsJSPrincipals.h"
-#include "NullPrincipal.h"
 #include "nsThreadUtils.h"
 #include "nsContentUtils.h"
 
 #include "xpcprivate.h"
 
 #include "mozilla/dom/ScriptSettings.h"
+#include "mozilla/NullPrincipal.h"
 
 namespace mozilla {
 namespace dom {
@@ -74,7 +74,7 @@ static const js::ClassOps SimpleGlobalClassOps = {
 };
 
 static const js::ClassExtension SimpleGlobalClassExtension = {
-    nullptr, SimpleGlobal_moved};
+    SimpleGlobal_moved};
 
 const js::Class SimpleGlobalClass = {
     "",
@@ -98,17 +98,18 @@ JSObject* SimpleGlobalObject::Create(GlobalType globalType,
     jsapi.Init();
     JSContext* cx = jsapi.cx();
 
-    JS::CompartmentOptions options;
+    JS::RealmOptions options;
     options.creationOptions()
         .setInvisibleToDebugger(true)
         // Put our SimpleGlobalObjects in the system zone, so we won't create
         // lots of zones for what are probably very short-lived
         // compartments.  This should help them be GCed quicker and take up
         // less memory before they're GCed.
-        .setSystemZone();
+        .setNewCompartmentInSystemZone();
 
     if (NS_IsMainThread()) {
-      nsCOMPtr<nsIPrincipal> principal = NullPrincipal::Create();
+      nsCOMPtr<nsIPrincipal> principal =
+          NullPrincipal::CreateWithoutOriginAttributes();
       options.creationOptions().setTrace(xpc::TraceXPCGlobal);
       global = xpc::CreateGlobalObject(cx, js::Jsvalify(&SimpleGlobalClass),
                                        nsJSPrincipals::get(principal), options);
@@ -122,7 +123,7 @@ JSObject* SimpleGlobalObject::Create(GlobalType globalType,
       return nullptr;
     }
 
-    JSAutoCompartment ac(cx, global);
+    JSAutoRealm ar(cx, global);
 
     // It's important to create the nsIGlobalObject for our new global before we
     // start trying to wrap things like the prototype into its compartment,

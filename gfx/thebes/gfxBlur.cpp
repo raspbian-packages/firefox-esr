@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -16,11 +16,11 @@
 #include "nsExpirationTracker.h"
 #include "nsClassHashtable.h"
 #include "gfxUtils.h"
+#include <limits>
+#include <cmath>
 
 using namespace mozilla;
 using namespace mozilla::gfx;
-
-gfxAlphaBoxBlur::gfxAlphaBoxBlur() : mData(nullptr), mAccelerated(false) {}
 
 gfxAlphaBoxBlur::~gfxAlphaBoxBlur() {}
 
@@ -86,6 +86,10 @@ already_AddRefed<DrawTarget> gfxAlphaBoxBlur::InitDrawTarget(
     mDrawTarget = aReferenceDT->CreateShadowDrawTarget(
         mBlur.GetSize(), SurfaceFormat::A8,
         AlphaBoxBlur::CalculateBlurSigma(aBlurRadius.width));
+    if (mDrawTarget) {
+      // See Bug 1526045 - this is to force DT initialization.
+      mDrawTarget->ClearRect(gfx::Rect());
+    }
   } else {
     // Make an alpha-only surface to draw on. We will play with the data after
     // everything is drawn to create a blur effect.
@@ -312,7 +316,7 @@ struct BlurCacheKey : public PLDHashEntryHdr {
 struct BlurCacheData {
   BlurCacheData(SourceSurface* aBlur, const IntMargin& aBlurMargin,
                 BlurCacheKey&& aKey)
-      : mBlur(aBlur), mBlurMargin(aBlurMargin), mKey(Move(aKey)) {}
+      : mBlur(aBlur), mBlurMargin(aBlurMargin), mKey(std::move(aKey)) {}
 
   BlurCacheData(BlurCacheData&& aOther) = default;
 
@@ -439,13 +443,15 @@ static IntSize ComputeMinSizeForShadowShape(const RectCornerRadii* aCornerRadii,
   return minSize;
 }
 
-void CacheBlur(DrawTarget* aDT, const IntSize& aMinSize,
-               const IntSize& aBlurRadius, const RectCornerRadii* aCornerRadii,
-               const Color& aShadowColor, const IntMargin& aBlurMargin,
-               SourceSurface* aBoxShadow) {
+static void CacheBlur(DrawTarget* aDT, const IntSize& aMinSize,
+                      const IntSize& aBlurRadius,
+                      const RectCornerRadii* aCornerRadii,
+                      const Color& aShadowColor, const IntMargin& aBlurMargin,
+                      SourceSurface* aBoxShadow) {
   BlurCacheKey key(aMinSize, aBlurRadius, aCornerRadii, aShadowColor,
                    aDT->GetBackendType());
-  BlurCacheData* data = new BlurCacheData(aBoxShadow, aBlurMargin, Move(key));
+  BlurCacheData* data =
+      new BlurCacheData(aBoxShadow, aBlurMargin, std::move(key));
   if (!gBlurCache->RegisterEntry(data)) {
     delete data;
   }
@@ -526,6 +532,12 @@ static already_AddRefed<SourceSurface> GetBlur(
   if (useDestRect) {
     minSize = aRectSize;
   }
+
+  int32_t maxTextureSize = gfxPlatform::MaxTextureSize();
+  if (minSize.width > maxTextureSize || minSize.height > maxTextureSize) {
+    return nullptr;
+  }
+
   aOutMinSize = minSize;
 
   DrawTarget* destDT = aDestinationCtx->GetDrawTarget();
@@ -576,11 +588,7 @@ static bool ShouldStretchSurface(DrawTarget* aDT, SourceSurface* aSurface) {
   // because if cairo is using pixman it won't render anything for large
   // stretch factors because pixman's internal fixed point precision is not
   // high enough to handle those scale factors.
-  // Calling FillRect on a D2D backend with a repeating pattern is much slower
-  // than DrawSurface, so special case the D2D backend here.
-  return (!aDT->GetTransform().IsRectilinear() &&
-          aDT->GetBackendType() != BackendType::CAIRO) ||
-         (aDT->GetBackendType() == BackendType::DIRECT2D1_1);
+  return aDT->GetBackendType() != BackendType::CAIRO;
 }
 
 static void RepeatOrStretchSurface(DrawTarget* aDT, SourceSurface* aSurface,
@@ -864,11 +872,18 @@ static void DrawMirroredMinBoxShadow(
  * the space between the corners.
  */
 
-/* static */ void gfxAlphaBoxBlur::BlurRectangle(
-    gfxContext* aDestinationCtx, const gfxRect& aRect,
-    const RectCornerRadii* aCornerRadii, const gfxPoint& aBlurStdDev,
-    const Color& aShadowColor, const gfxRect& aDirtyRect,
-    const gfxRect& aSkipRect) {
+/* static */
+void gfxAlphaBoxBlur::BlurRectangle(gfxContext* aDestinationCtx,
+                                    const gfxRect& aRect,
+                                    const RectCornerRadii* aCornerRadii,
+                                    const gfxPoint& aBlurStdDev,
+                                    const Color& aShadowColor,
+                                    const gfxRect& aDirtyRect,
+                                    const gfxRect& aSkipRect) {
+  if (!RectIsInt32Safe(ToRect(aRect))) {
+    return;
+  }
+
   IntSize blurRadius = CalculateBlurRadius(aBlurStdDev);
   bool mirrorCorners = !aCornerRadii || aCornerRadii->AreRadiiSame();
 
@@ -923,17 +938,12 @@ static void DrawMirroredMinBoxShadow(
   // so if there's a transform on destDrawTarget that is not pixel-aligned,
   // there will be seams between adjacent parts of the box-shadow. It's hard to
   // avoid those without the use of an intermediate surface.
-  // You might think that we could avoid those by just turning of AA, but there
+  // You might think that we could avoid those by just turning off AA, but there
   // is a problem with that: Box-shadow rendering needs to clip out the
   // element's border box, and we'd like that clip to have anti-aliasing -
   // especially if the element has rounded corners! So we can't do that unless
   // we have a way to say "Please anti-alias the clip, but don't antialias the
   // destination rect of the DrawSurface call".
-  // On OS X there is an additional problem with turning off AA: CoreGraphics
-  // will not just fill the pixels that have their pixel center inside the
-  // filled shape. Instead, it will fill all the pixels which are partially
-  // covered by the shape. So for pixels on the edge between two adjacent parts,
-  // all those pixels will be painted to by both parts, which looks very bad.
 
   destDrawTarget->PopClip();
 }
@@ -991,7 +1001,8 @@ static void CacheInsetBlur(const IntSize& aMinOuterSize,
   BlurCacheKey key(aMinOuterSize, aMinInnerSize, aBlurRadius, aCornerRadii,
                    aShadowColor, isInsetBlur, aBackendType);
   IntMargin blurMargin(0, 0, 0, 0);
-  BlurCacheData* data = new BlurCacheData(aBoxShadow, blurMargin, Move(key));
+  BlurCacheData* data =
+      new BlurCacheData(aBoxShadow, blurMargin, std::move(key));
   if (!gBlurCache->RegisterEntry(data)) {
     delete data;
   }
@@ -1199,7 +1210,7 @@ void gfxAlphaBoxBlur::BlurInsetBox(
       DrawMirroredBoxShadow(destDrawTarget, minBlur.get(), destBlur);
     } else {
       Rect srcBlur(Point(0, 0), Size(minBlur->GetSize()));
-      MOZ_ASSERT(srcBlur.Size() == destBlur.Size());
+      MOZ_ASSERT(RoundedOut(srcBlur).Size() == RoundedOut(destBlur).Size());
       destDrawTarget->DrawSurface(minBlur, destBlur, srcBlur);
     }
   } else {

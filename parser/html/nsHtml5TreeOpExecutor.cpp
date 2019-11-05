@@ -1,41 +1,41 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* vim: set sw=2 ts=2 et tw=79: */
+/* vim: set sw=2 ts=2 et tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/DebugOnly.h"
 #include "mozilla/Likely.h"
-#include "mozilla/dom/nsCSPService.h"
 #include "mozilla/dom/ScriptLoader.h"
+#include "mozilla/dom/nsCSPService.h"
 
-#include "nsError.h"
-#include "nsHtml5TreeOpExecutor.h"
-#include "nsIContentViewer.h"
-#include "nsIContentSecurityPolicy.h"
-#include "nsIDocShellTreeItem.h"
-#include "nsIDocShell.h"
-#include "nsIDOMDocument.h"
-#include "nsINestedURI.h"
-#include "nsIScriptGlobalObject.h"
-#include "nsIWebShellServices.h"
-#include "nsContentUtils.h"
+#include "GeckoProfiler.h"
 #include "mozAutoDocUpdate.h"
-#include "nsNetUtil.h"
+#include "mozilla/IdleTaskRunner.h"
+#include "mozilla/Preferences.h"
+#include "mozilla/StaticPrefs.h"
+#include "mozilla/css/Loader.h"
+#include "nsContentUtils.h"
+#include "nsDocShell.h"
+#include "nsError.h"
+#include "nsHtml5AutoPauseUpdate.h"
 #include "nsHtml5Parser.h"
+#include "nsHtml5StreamParser.h"
 #include "nsHtml5Tokenizer.h"
 #include "nsHtml5TreeBuilder.h"
-#include "nsHtml5StreamParser.h"
-#include "mozilla/css/Loader.h"
-#include "GeckoProfiler.h"
-#include "nsIScriptError.h"
-#include "nsIScriptContext.h"
-#include "mozilla/Preferences.h"
+#include "nsHtml5TreeOpExecutor.h"
+#include "nsIContentSecurityPolicy.h"
+#include "nsIContentViewer.h"
+#include "nsIDocShell.h"
+#include "nsIDocShellTreeItem.h"
 #include "nsIHTMLDocument.h"
+#include "nsINestedURI.h"
+#include "nsIScriptContext.h"
+#include "nsIScriptError.h"
+#include "nsIScriptGlobalObject.h"
 #include "nsIViewSourceChannel.h"
+#include "nsNetUtil.h"
 #include "xpcpublic.h"
-#include "mozilla/IdleTaskRunner.h"
-#include "nsHtml5AutoPauseUpdate.h"
 
 using namespace mozilla;
 
@@ -51,6 +51,20 @@ class nsHtml5ExecutorReflusher : public Runnable {
   explicit nsHtml5ExecutorReflusher(nsHtml5TreeOpExecutor* aExecutor)
       : mozilla::Runnable("nsHtml5ExecutorReflusher"), mExecutor(aExecutor) {}
   NS_IMETHOD Run() override {
+    Document* doc = mExecutor->GetDocument();
+    if (XRE_IsContentProcess() &&
+        nsContentUtils::
+            HighPriorityEventPendingForTopLevelDocumentBeforeContentfulPaint(
+                doc)) {
+      // Possible early paint pending, reuse the runnable and try to
+      // call RunFlushLoop later.
+      nsCOMPtr<nsIRunnable> flusher = this;
+      if (NS_SUCCEEDED(
+              doc->Dispatch(TaskCategory::Network, flusher.forget()))) {
+        PROFILER_ADD_MARKER("HighPrio blocking parser flushing(2)", DOM);
+        return NS_OK;
+      }
+    }
     mExecutor->RunFlushLoop();
     return NS_OK;
   }
@@ -103,7 +117,8 @@ nsHtml5TreeOpExecutor::nsHtml5TreeOpExecutor()
       mStarted(false),
       mRunFlushLoopOnStack(false),
       mCallContinueInterruptedParsingIfEnabled(false),
-      mAlreadyComplainedAboutCharset(false) {}
+      mAlreadyComplainedAboutCharset(false),
+      mAlreadyComplainedAboutDeepTree(false) {}
 
 nsHtml5TreeOpExecutor::~nsHtml5TreeOpExecutor() {
   if (gBackgroundFlushList && isInList()) {
@@ -124,7 +139,7 @@ nsHtml5TreeOpExecutor::~nsHtml5TreeOpExecutor() {
 // nsIContentSink
 NS_IMETHODIMP
 nsHtml5TreeOpExecutor::WillParse() {
-  NS_NOTREACHED("No one should call this");
+  MOZ_ASSERT_UNREACHABLE("No one should call this");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -169,6 +184,7 @@ nsHtml5TreeOpExecutor::DidBuildModel(bool aTerminated) {
     }
 
     if (!destroying) {
+      mDocument->TriggerInitialDocumentTranslation();
       nsContentSink::StartLayout(false);
     }
   }
@@ -187,6 +203,11 @@ nsHtml5TreeOpExecutor::DidBuildModel(bool aTerminated) {
     mDocument->EndLoad();
   }
 
+  // Dropping the stream parser changes the parser's apparent
+  // script-createdness, which is why the stream parser must not be dropped
+  // before this executor's nsHtml5Parser has been made unreachable from its
+  // nsHTMLDocument. (mDocument->EndLoad() above drops the parser from the
+  // document.)
   GetParser()->DropStreamParser();
   DropParserAndPerfHint();
 #ifdef GATHER_DOCWRITE_STATISTICS
@@ -206,13 +227,13 @@ nsHtml5TreeOpExecutor::DidBuildModel(bool aTerminated) {
 
 NS_IMETHODIMP
 nsHtml5TreeOpExecutor::WillInterrupt() {
-  NS_NOTREACHED("Don't call. For interface compat only.");
+  MOZ_ASSERT_UNREACHABLE("Don't call. For interface compat only.");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
 nsHtml5TreeOpExecutor::WillResume() {
-  NS_NOTREACHED("Don't call. For interface compat only.");
+  MOZ_ASSERT_UNREACHABLE("Don't call. For interface compat only.");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -222,6 +243,10 @@ nsHtml5TreeOpExecutor::SetParser(nsParserBase* aParser) {
   return NS_OK;
 }
 
+void nsHtml5TreeOpExecutor::InitialDocumentTranslationCompleted() {
+  nsContentSink::StartLayout(false);
+}
+
 void nsHtml5TreeOpExecutor::FlushPendingNotifications(FlushType aType) {
   if (aType >= FlushType::EnsurePresShellInitAndFrames) {
     // Bug 577508 / 253951
@@ -229,7 +254,9 @@ void nsHtml5TreeOpExecutor::FlushPendingNotifications(FlushType aType) {
   }
 }
 
-nsISupports* nsHtml5TreeOpExecutor::GetTarget() { return mDocument; }
+nsISupports* nsHtml5TreeOpExecutor::GetTarget() {
+  return ToSupports(mDocument);
+}
 
 nsresult nsHtml5TreeOpExecutor::MarkAsBroken(nsresult aReason) {
   NS_ASSERTION(NS_IsMainThread(), "Wrong thread!");
@@ -715,7 +742,7 @@ void nsHtml5TreeOpExecutor::RunScript(nsIContent* aScriptElement) {
 }
 
 void nsHtml5TreeOpExecutor::Start() {
-  NS_PRECONDITION(!mStarted, "Tried to start when already started.");
+  MOZ_ASSERT(!mStarted, "Tried to start when already started.");
   mStarted = true;
 }
 
@@ -727,18 +754,18 @@ void nsHtml5TreeOpExecutor::NeedsCharsetSwitchTo(
     return;
   }
 
-  nsCOMPtr<nsIWebShellServices> wss = do_QueryInterface(mDocShell);
-  if (!wss) {
+  if (!mDocShell) {
     return;
   }
 
-  // ask the webshellservice to load the URL
-  if (NS_SUCCEEDED(wss->StopDocumentLoad())) {
+  nsDocShell* docShell = static_cast<nsDocShell*>(mDocShell.get());
+
+  if (NS_SUCCEEDED(docShell->CharsetChangeStopDocumentLoad())) {
     nsAutoCString charset;
     aEncoding->Name(charset);
-    wss->ReloadDocument(charset.get(), aSource);
+    docShell->CharsetChangeReloadDocument(charset.get(), aSource);
   }
-  // if the charset switch was accepted, wss has called Terminate() on the
+  // if the charset switch was accepted, mDocShell has called Terminate() on the
   // parser by now
 
   if (!mParser) {
@@ -786,14 +813,24 @@ void nsHtml5TreeOpExecutor::MaybeComplainAboutCharset(const char* aMsgId,
       EmptyString(), aLineNumber);
 }
 
-void nsHtml5TreeOpExecutor::ComplainAboutBogusProtocolCharset(
-    nsIDocument* aDoc) {
+void nsHtml5TreeOpExecutor::ComplainAboutBogusProtocolCharset(Document* aDoc) {
   NS_ASSERTION(!mAlreadyComplainedAboutCharset,
                "How come we already managed to complain?");
   mAlreadyComplainedAboutCharset = true;
   nsContentUtils::ReportToConsole(
       nsIScriptError::errorFlag, NS_LITERAL_CSTRING("HTML parser"), aDoc,
       nsContentUtils::eHTMLPARSER_PROPERTIES, "EncProtocolUnsupported");
+}
+
+void nsHtml5TreeOpExecutor::MaybeComplainAboutDeepTree(uint32_t aLineNumber) {
+  if (mAlreadyComplainedAboutDeepTree) {
+    return;
+  }
+  mAlreadyComplainedAboutDeepTree = true;
+  nsContentUtils::ReportToConsole(
+      nsIScriptError::errorFlag, NS_LITERAL_CSTRING("HTML parser"), mDocument,
+      nsContentUtils::eHTMLPARSER_PROPERTIES, "errDeepTree", nullptr, 0,
+      nullptr, EmptyString(), aLineNumber);
 }
 
 nsHtml5Parser* nsHtml5TreeOpExecutor::GetParser() {
@@ -805,7 +842,7 @@ void nsHtml5TreeOpExecutor::MoveOpsFrom(
     nsTArray<nsHtml5TreeOperation>& aOpQueue) {
   MOZ_RELEASE_ASSERT(mFlushState == eNotFlushing,
                      "Ops added to mOpQueue during tree op execution.");
-  mOpQueue.AppendElements(Move(aOpQueue));
+  mOpQueue.AppendElements(std::move(aOpQueue));
 }
 
 void nsHtml5TreeOpExecutor::ClearOpQueue() {
@@ -856,14 +893,8 @@ nsIURI* nsHtml5TreeOpExecutor::GetViewSourceBaseURI() {
   return mViewSourceBaseURI;
 }
 
-// static
-void nsHtml5TreeOpExecutor::InitializeStatics() {
-  mozilla::Preferences::AddBoolVarCache(&sExternalViewSource,
-                                        "view_source.editor.external");
-}
-
 bool nsHtml5TreeOpExecutor::IsExternalViewSource() {
-  if (!sExternalViewSource) {
+  if (!StaticPrefs::view_source_editor_external()) {
     return false;
   }
   bool isViewSource = false;
@@ -918,17 +949,29 @@ bool nsHtml5TreeOpExecutor::ShouldPreloadURI(nsIURI* aURI) {
   return mPreloadedURLs.EnsureInserted(spec);
 }
 
+net::ReferrerPolicy nsHtml5TreeOpExecutor::GetPreloadReferrerPolicy(
+    const nsAString& aReferrerPolicy) {
+  net::ReferrerPolicy referrerPolicy =
+      net::AttributeReferrerPolicyFromString(aReferrerPolicy);
+  return referrerPolicy != net::RP_Unset ? referrerPolicy
+                                         : mSpeculationReferrerPolicy;
+}
+
 void nsHtml5TreeOpExecutor::PreloadScript(
     const nsAString& aURL, const nsAString& aCharset, const nsAString& aType,
     const nsAString& aCrossOrigin, const nsAString& aIntegrity,
-    bool aScriptFromHead, bool aAsync, bool aDefer, bool aNoModule) {
+    net::ReferrerPolicy aReferrerPolicy, bool aScriptFromHead, bool aAsync,
+    bool aDefer, bool aNoModule) {
   nsCOMPtr<nsIURI> uri = ConvertIfNotPreloadedYet(aURL);
   if (!uri) {
     return;
   }
-  mDocument->ScriptLoader()->PreloadURI(
-      uri, aCharset, aType, aCrossOrigin, aIntegrity, aScriptFromHead, aAsync,
-      aDefer, aNoModule, mSpeculationReferrerPolicy);
+  net::ReferrerPolicy referrerPolicy = aReferrerPolicy != net::RP_Unset
+                                           ? aReferrerPolicy
+                                           : mSpeculationReferrerPolicy;
+  mDocument->ScriptLoader()->PreloadURI(uri, aCharset, aType, aCrossOrigin,
+                                        aIntegrity, aScriptFromHead, aAsync,
+                                        aDefer, aNoModule, referrerPolicy);
 }
 
 void nsHtml5TreeOpExecutor::PreloadStyle(const nsAString& aURL,
@@ -941,15 +984,9 @@ void nsHtml5TreeOpExecutor::PreloadStyle(const nsAString& aURL,
     return;
   }
 
-  mozilla::net::ReferrerPolicy referrerPolicy = mSpeculationReferrerPolicy;
-  mozilla::net::ReferrerPolicy styleReferrerPolicy =
-      mozilla::net::AttributeReferrerPolicyFromString(aReferrerPolicy);
-  if (styleReferrerPolicy != mozilla::net::RP_Unset) {
-    referrerPolicy = styleReferrerPolicy;
-  }
-
   mDocument->PreloadStyle(uri, Encoding::ForLabel(aCharset), aCrossOrigin,
-                          referrerPolicy, aIntegrity);
+                          GetPreloadReferrerPolicy(aReferrerPolicy),
+                          aIntegrity);
 }
 
 void nsHtml5TreeOpExecutor::PreloadImage(
@@ -962,14 +999,9 @@ void nsHtml5TreeOpExecutor::PreloadImage(
       mDocument->ResolvePreloadImage(baseURI, aURL, aSrcset, aSizes, &isImgSet);
   if (uri && ShouldPreloadURI(uri)) {
     // use document wide referrer policy
-    mozilla::net::ReferrerPolicy referrerPolicy = mSpeculationReferrerPolicy;
-    mozilla::net::ReferrerPolicy imageReferrerPolicy =
-        mozilla::net::AttributeReferrerPolicyFromString(aImageReferrerPolicy);
-    if (imageReferrerPolicy != mozilla::net::RP_Unset) {
-      referrerPolicy = imageReferrerPolicy;
-    }
-
-    mDocument->MaybePreLoadImage(uri, aCrossOrigin, referrerPolicy, isImgSet);
+    mDocument->MaybePreLoadImage(uri, aCrossOrigin,
+                                 GetPreloadReferrerPolicy(aImageReferrerPolicy),
+                                 isImgSet);
   }
 }
 
@@ -1030,7 +1062,7 @@ void nsHtml5TreeOpExecutor::SetSpeculationReferrerPolicy(
 }
 
 void nsHtml5TreeOpExecutor::AddSpeculationCSP(const nsAString& aCSP) {
-  if (!CSPService::sCSPEnabled) {
+  if (!StaticPrefs::security_csp_enable()) {
     return;
   }
 
@@ -1038,8 +1070,8 @@ void nsHtml5TreeOpExecutor::AddSpeculationCSP(const nsAString& aCSP) {
 
   nsIPrincipal* principal = mDocument->NodePrincipal();
   nsCOMPtr<nsIContentSecurityPolicy> preloadCsp;
-  nsCOMPtr<nsIDOMDocument> domDoc = do_QueryInterface(mDocument);
-  nsresult rv = principal->EnsurePreloadCSP(domDoc, getter_AddRefs(preloadCsp));
+  nsresult rv =
+      principal->EnsurePreloadCSP(mDocument, getter_AddRefs(preloadCsp));
   NS_ENSURE_SUCCESS_VOID(rv);
 
   // please note that meta CSPs and CSPs delivered through a header need
@@ -1049,15 +1081,6 @@ void nsHtml5TreeOpExecutor::AddSpeculationCSP(const nsAString& aCSP) {
       false,  // csp via meta tag can not be report only
       true);  // delivered through the meta tag
   NS_ENSURE_SUCCESS_VOID(rv);
-
-  // Record "speculated" referrer policy for preloads
-  bool hasReferrerPolicy = false;
-  uint32_t referrerPolicy = mozilla::net::RP_Unset;
-  rv = preloadCsp->GetReferrerPolicy(&referrerPolicy, &hasReferrerPolicy);
-  NS_ENSURE_SUCCESS_VOID(rv);
-  if (hasReferrerPolicy) {
-    SetSpeculationReferrerPolicy(static_cast<ReferrerPolicy>(referrerPolicy));
-  }
 
   mDocument->ApplySettingsFromCSP(true);
 }
@@ -1077,4 +1100,3 @@ uint32_t nsHtml5TreeOpExecutor::sAppendBatchExaminations = 0;
 uint32_t nsHtml5TreeOpExecutor::sLongestTimeOffTheEventLoop = 0;
 uint32_t nsHtml5TreeOpExecutor::sTimesFlushLoopInterrupted = 0;
 #endif
-bool nsHtml5TreeOpExecutor::sExternalViewSource = false;

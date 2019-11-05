@@ -18,38 +18,26 @@
 # link title for http://www.seamonkey-project.org/ (in normal bookmarks)
 #define seamonkey_long El Proyecto SeaMonkey
 
-# LOCALIZATION NOTE (mozilla_org):
-# link title for http://www.mozilla.org/ (in the personal toolbar)
-#define mozilla_org mozilla.org
-
 # LOCALIZATION NOTE (mozilla_org_long):
 # link title for http://www.mozilla.org/ (in normal bookmarks)
 #define mozilla_org_long La Organización Mozilla
 
-# LOCALIZATION NOTE (mozilla_projects):
-# link title for http://www.mozilla.org/projects/
-#define mozilla_projects Proyectos Mozilla
-
-# LOCALIZATION NOTE (mozilla_about):
-# link title for http://www.mozilla.org/about/
-#define mozilla_about Acerca de Mozilla
-
 #define extend_seamonkey Extender SeaMonkey
 
 # LOCALIZATION NOTE (seamonkey_addons):
-# link title for https://en-US.add-ons.mozilla.com/en-US/seamonkey/
+# link title for https://addons.thunderbird.net/en-US/seamonkey/
 #define seamonkey_addons Complementos para SeaMonkey
 
 # LOCALIZATION NOTE (seamonkey_themes):
-# link title for https://en-US.add-ons.mozilla.com/en-US/seamonkey/themes
+# link title for https://addons.thunderbird.net/en-US/seamonkey/themes
 #define seamonkey_themes Temas para SeaMonkey
 
 # LOCALIZATION NOTE (seamonkey_dictionaries):
-# link title for https://en-US.add-ons.mozilla.com/en-US/seamonkey/dictionaries
+# link title for https://addons.thunderbird.net/en-US/seamonkey/dictionaries
 #define seamonkey_dictionaries Diccionarios para corrección ortográfica
 
 # LOCALIZATION NOTE (seamonkey_plugins):
-# link title for https://en-US.add-ons.mozilla.com/en-US/seamonkey/plugins
+# link title for https://addons.thunderbird.net/en-US/seamonkey/plugins
 #define seamonkey_plugins Plugins para SeaMonkey
 
 # LOCALIZATION NOTE (mozdev):
@@ -76,12 +64,14 @@
 
 # LOCALIZATION NOTE (seamonkey_l10n):
 # insert full bookmark line for localized SeaMonkey page (personal toolbar)
-# e.g. #define seamonkey_l10n <DT><A HREF="http://www.seamonkey.tlh/">SeaMonkey tlhIngan</a>
-#define seamonkey_l10n  <DT><A HREF="http://www.proyectonave.es/productos/seamonkey/start">Inicio de SeaMonkey</a>
+# e.g. #define seamonkey_l10n <DT><A HREF="http://www.seamonkey.tlh/">SeaMonkey tlhIngan</a>v
+# Do not remove the trailing spaces here or MERGE_FILE in l0n builds will fail!
+#define seamonkey_l10n  <DT><A HREF="http://www.proyectonave.es/productos/seamonkey/start">Inicio de SeaMonkey</a>  
 
 # LOCALIZATION NOTE (seamonkey_l10n_long):
 # insert full bookmark line for localized SeaMonkey page (normal bookmark)
 # e.g. #define seamonkey_l10n <DT><A HREF="http://www.seamonkey.tld/">tlhIngan Hol SeaMonkey</a>
-#define seamonkey_l10n_long  <DT><A HREF="http://www.proyectonave.es/productos/seamonkey/start">Inicio de SeaMonkey</a>
+# Do not remove the trailing spaces here or or MERGE_FILE in l0n builds will fail!
+#define seamonkey_l10n_long  <DT><A HREF="http://www.proyectonave.es/productos/seamonkey/start">Inicio de SeaMonkey</a>  
 
 #unfilter emptyLines

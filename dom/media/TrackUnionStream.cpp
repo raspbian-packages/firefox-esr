@@ -36,7 +36,7 @@ using namespace mozilla::gfx;
 namespace mozilla {
 
 #ifdef STREAM_LOG
-#undef STREAM_LOG
+#  undef STREAM_LOG
 #endif
 
 LazyLogModule gTrackUnionStreamLog("TrackUnionStream");
@@ -66,6 +66,7 @@ void TrackUnionStream::RemoveInput(MediaInputPort* aPort) {
 }
 void TrackUnionStream::ProcessInput(GraphTime aFrom, GraphTime aTo,
                                     uint32_t aFlags) {
+  TRACE_AUDIO_CALLBACK_COMMENT("TrackUnionStream %p", this);
   if (IsFinishedOnGraphThread()) {
     return;
   }
@@ -80,7 +81,6 @@ void TrackUnionStream::ProcessInput(GraphTime aFrom, GraphTime aTo,
   inputs.AppendElements(mSuspendedInputs);
 
   bool allFinished = !inputs.IsEmpty();
-  bool allHaveCurrentData = !inputs.IsEmpty();
   for (uint32_t i = 0; i < inputs.Length(); ++i) {
     MediaStream* stream = inputs[i]->GetSource();
     if (!stream->IsFinishedOnGraphThread()) {
@@ -89,10 +89,6 @@ void TrackUnionStream::ProcessInput(GraphTime aFrom, GraphTime aTo,
       // runs out.
       allFinished = false;
     }
-    if (!stream->HasCurrentData()) {
-      allHaveCurrentData = false;
-    }
-    bool trackAdded = false;
     for (StreamTracks::TrackIter tracks(stream->GetStreamTracks());
          !tracks.IsEnded(); tracks.Next()) {
       bool found = false;
@@ -117,16 +113,10 @@ void TrackUnionStream::ProcessInput(GraphTime aFrom, GraphTime aTo,
       }
       if (!found && inputs[i]->AllowCreationOf(tracks->GetID())) {
         bool trackFinished = false;
-        trackAdded = true;
         uint32_t mapIndex = AddTrack(inputs[i], tracks.get(), aFrom);
         CopyTrackData(tracks.get(), mapIndex, aFrom, aTo, &trackFinished);
         mappedTracksFinished.AppendElement(trackFinished);
         mappedTracksWithMatchingInputTracks.AppendElement(true);
-      }
-    }
-    if (trackAdded) {
-      for (MediaStreamListener* l : mListeners) {
-        l->NotifyFinishedTrackCreation(Graph());
       }
     }
   }
@@ -149,12 +139,6 @@ void TrackUnionStream::ProcessInput(GraphTime aFrom, GraphTime aTo,
     // all our tracks have actually finished and been removed from our map,
     // so we're finished now.
     FinishOnGraphThread();
-  } else {
-    mTracks.AdvanceKnownTracksTime(GraphTimeToStreamTimeWithBlocking(aTo));
-  }
-  if (allHaveCurrentData) {
-    // We can make progress if we're not blocked
-    mHasCurrentData = true;
   }
 }
 
@@ -209,12 +193,6 @@ uint32_t TrackUnionStream::AddTrack(MediaInputPort* aPort,
 
   nsAutoPtr<MediaSegment> segment;
   segment = aTrack->GetSegment()->CreateEmptyClone();
-  for (uint32_t j = 0; j < mListeners.Length(); ++j) {
-    MediaStreamListener* l = mListeners[j];
-    l->NotifyQueuedTrackChanges(Graph(), id, outputStart,
-                                TrackEventCommand::TRACK_EVENT_CREATED,
-                                *segment, aPort->GetSource(), aTrack->GetID());
-  }
   segment->AppendNullData(outputStart);
   StreamTracks::Track* track =
       &mTracks.AddTrack(id, outputStart, segment.forget());
@@ -263,21 +241,6 @@ void TrackUnionStream::EndTrack(uint32_t aIndex) {
   if (!outputTrack || outputTrack->IsEnded()) return;
   STREAM_LOG(LogLevel::Debug, ("TrackUnionStream %p ending track %d", this,
                                outputTrack->GetID()));
-  for (uint32_t j = 0; j < mListeners.Length(); ++j) {
-    MediaStreamListener* l = mListeners[j];
-    StreamTime offset = outputTrack->GetSegment()->GetDuration();
-    nsAutoPtr<MediaSegment> segment;
-    segment = outputTrack->GetSegment()->CreateEmptyClone();
-    l->NotifyQueuedTrackChanges(Graph(), outputTrack->GetID(), offset,
-                                TrackEventCommand::TRACK_EVENT_ENDED, *segment,
-                                mTrackMap[aIndex].mInputPort->GetSource(),
-                                mTrackMap[aIndex].mInputTrackID);
-  }
-  for (TrackBound<MediaStreamTrackListener>& b : mTrackListeners) {
-    if (b.mTrackID == outputTrack->GetID()) {
-      b.mListener->NotifyEnded();
-    }
-  }
   outputTrack->SetEnded();
 }
 
@@ -286,6 +249,10 @@ void TrackUnionStream::CopyTrackData(StreamTracks::Track* aInputTrack,
                                      GraphTime aTo,
                                      bool* aOutputTrackFinished) {
   TrackMapEntry* map = &mTrackMap[aMapIndex];
+  TRACE_AUDIO_CALLBACK_COMMENT(
+      "Input stream %p track %i -> TrackUnionStream %p track %i",
+      map->mInputPort->GetSource(), map->mInputTrackID, this,
+      map->mOutputTrackID);
   StreamTracks::Track* outputTrack = mTracks.FindTrack(map->mOutputTrackID);
   MOZ_ASSERT(outputTrack && !outputTrack->IsEnded(),
              "Can't copy to ended track");
@@ -301,10 +268,8 @@ void TrackUnionStream::CopyTrackData(StreamTracks::Track* aInputTrack,
     interval.mEnd = std::min(interval.mEnd, aTo);
     StreamTime inputEnd =
         source->GraphTimeToStreamTimeWithBlocking(interval.mEnd);
-    StreamTime inputTrackEndPoint = STREAM_TIME_MAX;
 
     if (aInputTrack->IsEnded() && aInputTrack->GetEnd() <= inputEnd) {
-      inputTrackEndPoint = aInputTrack->GetEnd();
       *aOutputTrackFinished = true;
       break;
     }
@@ -334,22 +299,10 @@ void TrackUnionStream::CopyTrackData(StreamTracks::Track* aInputTrack,
                    "Samples missing");
         StreamTime inputStart =
             source->GraphTimeToStreamTimeWithBlocking(interval.mStart);
-        segment->AppendSlice(*aInputTrack->GetSegment(),
-                             std::min(inputTrackEndPoint, inputStart),
-                             std::min(inputTrackEndPoint, inputEnd));
+        segment->AppendSlice(*aInputTrack->GetSegment(), inputStart, inputEnd);
       }
     }
     ApplyTrackDisabling(outputTrack->GetID(), segment);
-    for (uint32_t j = 0; j < mListeners.Length(); ++j) {
-      MediaStreamListener* l = mListeners[j];
-      // Separate Audio and Video.
-      if (segment->GetType() == MediaSegment::AUDIO) {
-        l->NotifyQueuedAudioData(Graph(), outputTrack->GetID(), outputStart,
-                                 *static_cast<AudioSegment*>(segment),
-                                 map->mInputPort->GetSource(),
-                                 map->mInputTrackID);
-      }
-    }
     for (TrackBound<MediaStreamTrackListener>& b : mTrackListeners) {
       if (b.mTrackID != outputTrack->GetID()) {
         continue;

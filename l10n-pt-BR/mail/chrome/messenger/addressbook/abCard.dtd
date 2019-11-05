@@ -58,7 +58,7 @@
 <!ENTITY CellularNumber.label           "Celular:">
 <!ENTITY CellularNumber.accesskey       "l">
 
-<!ENTITY Home.tab                       "Privado">
+<!ENTITY Home.tab                       "Privativo">
 <!ENTITY Home.accesskey                 "P">
 <!ENTITY HomeAddress.label              "Endereço:">
 <!ENTITY HomeAddress.accesskey          "d">
@@ -77,8 +77,11 @@
 <!ENTITY Birthday.label                 "Data de nascimento:">
 <!ENTITY Birthday.accesskey             "n">
 <!ENTITY In.label                       "">
+<!ENTITY Month.placeholder              "Mês">
+<!ENTITY Day.placeholder                "Dia">
 <!ENTITY Year.placeholder               "Ano">
 <!ENTITY Or.value                       "ou">
+<!ENTITY Age.label                      "Idade:">
 <!ENTITY Age.placeholder                "Idade">
 <!ENTITY YearsOld.label                 "">
 
@@ -141,7 +144,6 @@
 
 <!ENTITY Photo.tab                      "Foto">
 <!ENTITY Photo.accesskey                "o">
-<!ENTITY PhotoDesc.label                "Escolha uma das seguintes:">
 <!ENTITY GenericPhoto.label             "Foto genérica">
 <!ENTITY GenericPhoto.accesskey         "g">
 <!ENTITY DefaultPhoto.label             "Padrão">
@@ -151,7 +153,7 @@
 <!ENTITY BrowsePhoto.accesskey          "r">
 <!ENTITY PhotoURL.label                 "Na Web">
 <!ENTITY PhotoURL.accesskey             "b">
-<!ENTITY PhotoURL.placeholder           "Digite ou cole o endereço web da foto">
+<!ENTITY PhotoURL.placeholder           "Digite ou cole o endereço web de uma foto">
 <!ENTITY UpdatePhoto.label              "Atualizar">
 <!ENTITY UpdatePhoto.accesskey          "u">
 <!ENTITY PhotoDropTarget.label          "Arraste até aqui uma nova foto">

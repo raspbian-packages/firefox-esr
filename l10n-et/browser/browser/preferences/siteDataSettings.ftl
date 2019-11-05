@@ -7,6 +7,7 @@
 
 site-data-settings-window =
     .title = Küpsiste ja saitide andmete haldamine
+site-data-settings-description = Järgmised saidid salvestavad küpsiseid ja oma andmeid sinu arvutis. { -brand-short-name } säilitab nende saitide andmed, kuni sa need kustutad, ja kustutab muude saitide andmed vastavalt salvestuspinna täitumisele.
 site-data-search-textbox =
     .placeholder = Otsi saite
     .accesskey = O
@@ -27,11 +28,25 @@ site-data-button-cancel =
 site-data-button-save =
     .label = Salvesta muudatused
     .accesskey = S
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+site-storage-usage =
+    .value = { $value } { $unit }
+site-storage-persistent =
+    .value = { site-storage-usage.value } (püsivad andmed)
+site-data-remove-all =
+    .label = Kustuta kõik andmed
+    .accesskey = K
+site-data-remove-shown =
+    .label = Kustuta kõik kuvatud andmed
+    .accesskey = K
 
 ## Removing
 
-site-data-removing-window =
+site-data-removing-dialog =
     .title = { site-data-removing-header }
+    .buttonlabelaccept = Kustuta
 site-data-removing-header = Küpsiste ja saitide andmete kustutamine
 site-data-removing-desc = Küpsiste ja saitide andmete kustutamine võib põhjustada saitidest väljalogimist. Kas oled kindel, et soovid need muudatused teha?
 site-data-removing-table = Järgmiste saitide küpsised ja andmed kustutatakse

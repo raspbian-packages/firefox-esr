@@ -19,20 +19,15 @@
 #include "mozilla/Observer.h"
 #include "nsIObserver.h"
 #include "nsIObserverService.h"
-#include "nsIDOMElement.h"
-#include "nsIDOMNode.h"
-#include "nsIDOMNodeList.h"
 #include "nsTArray.h"
 #include "nsXULAppAPI.h"
 #include "nsIXULAppInfo.h"
 #include "mozilla/Preferences.h"
-#include "mozilla/dom/ContentChild.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/GPUProcessManager.h"
 #include "mozilla/gfx/Logging.h"
 #include "mozilla/gfx/gfxVars.h"
 #include "mozilla/layers/PaintThread.h"
-#include "MediaPrefs.h"
 #include "gfxPrefs.h"
 #include "gfxPlatform.h"
 #include "gfxConfig.h"
@@ -42,10 +37,10 @@ using namespace mozilla::widget;
 using namespace mozilla;
 using mozilla::MutexAutoLock;
 
-nsTArray<GfxDriverInfo>* GfxInfoBase::mDriverInfo;
-nsTArray<dom::GfxInfoFeatureStatus>* GfxInfoBase::mFeatureStatus;
-bool GfxInfoBase::mDriverInfoObserverInitialized;
-bool GfxInfoBase::mShutdownOccurred;
+nsTArray<GfxDriverInfo>* GfxInfoBase::sDriverInfo;
+nsTArray<dom::GfxInfoFeatureStatus>* GfxInfoBase::sFeatureStatus;
+bool GfxInfoBase::sDriverInfoObserverInitialized;
+bool GfxInfoBase::sShutdownOccurred;
 
 // Observes for shutdown so that the child GfxDriverInfo list is freed.
 class ShutdownObserver : public nsIObserver {
@@ -60,23 +55,28 @@ class ShutdownObserver : public nsIObserver {
                      const char16_t* aData) override {
     MOZ_ASSERT(strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID) == 0);
 
-    delete GfxInfoBase::mDriverInfo;
-    GfxInfoBase::mDriverInfo = nullptr;
+    delete GfxInfoBase::sDriverInfo;
+    GfxInfoBase::sDriverInfo = nullptr;
 
-    delete GfxInfoBase::mFeatureStatus;
-    GfxInfoBase::mFeatureStatus = nullptr;
+    delete GfxInfoBase::sFeatureStatus;
+    GfxInfoBase::sFeatureStatus = nullptr;
 
     for (uint32_t i = 0; i < DeviceFamilyMax; i++) {
-      delete GfxDriverInfo::mDeviceFamilies[i];
-      GfxDriverInfo::mDeviceFamilies[i] = nullptr;
+      delete GfxDriverInfo::sDeviceFamilies[i];
+      GfxDriverInfo::sDeviceFamilies[i] = nullptr;
     }
 
     for (uint32_t i = 0; i < DeviceVendorMax; i++) {
-      delete GfxDriverInfo::mDeviceVendors[i];
-      GfxDriverInfo::mDeviceVendors[i] = nullptr;
+      delete GfxDriverInfo::sDeviceVendors[i];
+      GfxDriverInfo::sDeviceVendors[i] = nullptr;
     }
 
-    GfxInfoBase::mShutdownOccurred = true;
+    for (uint32_t i = 0; i < DriverVendorMax; i++) {
+      delete GfxDriverInfo::sDriverVendors[i];
+      GfxDriverInfo::sDriverVendors[i] = nullptr;
+    }
+
+    GfxInfoBase::sShutdownOccurred = true;
 
     return NS_OK;
   }
@@ -84,10 +84,10 @@ class ShutdownObserver : public nsIObserver {
 
 NS_IMPL_ISUPPORTS(ShutdownObserver, nsIObserver)
 
-void InitGfxDriverInfoShutdownObserver() {
-  if (GfxInfoBase::mDriverInfoObserverInitialized) return;
+static void InitGfxDriverInfoShutdownObserver() {
+  if (GfxInfoBase::sDriverInfoObserverInitialized) return;
 
-  GfxInfoBase::mDriverInfoObserverInitialized = true;
+  GfxInfoBase::sDriverInfoObserverInitialized = true;
 
   nsCOMPtr<nsIObserverService> observerService = services::GetObserverService();
   if (!observerService) {
@@ -177,10 +177,16 @@ static const char* GetPrefNameForFeature(int32_t aFeature) {
       name = BLACKLIST_PREF_BRANCH "d3d11.keyed.mutex";
       break;
     case nsIGfxInfo::FEATURE_WEBRENDER:
-      // no WebRender in 60
+      name = BLACKLIST_PREF_BRANCH "webrender";
       break;
     case nsIGfxInfo::FEATURE_DX_NV12:
       name = BLACKLIST_PREF_BRANCH "dx.nv12";
+      break;
+    case nsIGfxInfo::FEATURE_DX_P010:
+      name = BLACKLIST_PREF_BRANCH "dx.p010";
+      break;
+    case nsIGfxInfo::FEATURE_DX_P016:
+      name = BLACKLIST_PREF_BRANCH "dx.p016";
       break;
     case nsIGfxInfo::FEATURE_VP8_HW_DECODE:
     case nsIGfxInfo::FEATURE_VP9_HW_DECODE:
@@ -352,6 +358,8 @@ static int32_t BlacklistFeatureToGfxFeature(const nsAString& aFeature) {
     return nsIGfxInfo::FEATURE_ADVANCED_LAYERS;
   else if (aFeature.EqualsLiteral("D3D11_KEYED_MUTEX"))
     return nsIGfxInfo::FEATURE_D3D11_KEYED_MUTEX;
+  else if (aFeature.EqualsLiteral("WEBRENDER"))
+    return nsIGfxInfo::FEATURE_WEBRENDER;
   else if (aFeature.EqualsLiteral("DX_NV12"))
     return nsIGfxInfo::FEATURE_DX_NV12;
   // We do not support FEATURE_VP8_HW_DECODE and FEATURE_VP9_HW_DECODE
@@ -468,6 +476,8 @@ static bool BlacklistEntryToDriverInfo(nsCString& aBlacklistEntry,
       aDriverInfo.mOperatingSystemVersion = strtoul(value.get(), nullptr, 10);
     } else if (key.EqualsLiteral("vendor")) {
       aDriverInfo.mAdapterVendor = dataValue;
+    } else if (key.EqualsLiteral("driverVendor")) {
+      aDriverInfo.mDriverVendor = dataValue;
     } else if (key.EqualsLiteral("feature")) {
       aDriverInfo.mFeature = BlacklistFeatureToGfxFeature(dataValue);
       if (aDriverInfo.mFeature < 0) {
@@ -579,10 +589,6 @@ GfxInfoBase::~GfxInfoBase() {}
 nsresult GfxInfoBase::Init() {
   InitGfxDriverInfoShutdownObserver();
   gfxPrefs::GetSingleton();
-  if (!XRE_IsGPUProcess()) {
-    // MediaPrefs can't run in the GPU process.
-    MediaPrefs::GetSingleton();
-  }
 
   nsCOMPtr<nsIObserverService> os = mozilla::services::GetObserverService();
   if (os) {
@@ -615,9 +621,9 @@ GfxInfoBase::GetFeatureStatus(int32_t aFeature, nsACString& aFailureId,
 
   if (XRE_IsContentProcess()) {
     // Use the cached data received from the parent process.
-    MOZ_ASSERT(mFeatureStatus);
+    MOZ_ASSERT(sFeatureStatus);
     bool success = false;
-    for (const auto& fs : *mFeatureStatus) {
+    for (const auto& fs : *sFeatureStatus) {
       if (fs.feature() == aFeature) {
         aFailureId = fs.failureId();
         *aStatus = fs.status();
@@ -680,23 +686,26 @@ int32_t GfxInfoBase::FindBlocklistedDeviceInList(
   // Get the adapters once then reuse below
   nsAutoString adapterVendorID[2];
   nsAutoString adapterDeviceID[2];
+  nsAutoString adapterDriverVendor[2];
   nsAutoString adapterDriverVersionString[2];
   bool adapterInfoFailed[2];
 
   adapterInfoFailed[0] =
       (NS_FAILED(GetAdapterVendorID(adapterVendorID[0])) ||
        NS_FAILED(GetAdapterDeviceID(adapterDeviceID[0])) ||
+       NS_FAILED(GetAdapterDriverVendor(adapterDriverVendor[0])) ||
        NS_FAILED(GetAdapterDriverVersion(adapterDriverVersionString[0])));
   adapterInfoFailed[1] =
       (NS_FAILED(GetAdapterVendorID2(adapterVendorID[1])) ||
        NS_FAILED(GetAdapterDeviceID2(adapterDeviceID[1])) ||
+       NS_FAILED(GetAdapterDriverVendor2(adapterDriverVendor[1])) ||
        NS_FAILED(GetAdapterDriverVersion2(adapterDriverVersionString[1])));
   // No point in going on if we don't have adapter info
   if (adapterInfoFailed[0] && adapterInfoFailed[1]) {
     return 0;
   }
 
-#if defined(XP_WIN) || defined(ANDROID)
+#if defined(XP_WIN) || defined(ANDROID) || defined(MOZ_X11)
   uint64_t driverVersion[2] = {0, 0};
   if (!adapterInfoFailed[0]) {
     ParseDriverVersion(adapterDriverVersionString[0], &driverVersion[0]);
@@ -729,11 +738,12 @@ int32_t GfxInfoBase::FindBlocklistedDeviceInList(
       continue;
     }
 
-    if (!info[i].mAdapterVendor.Equals(
-            GfxDriverInfo::GetDeviceVendor(VendorAll),
-            nsCaseInsensitiveStringComparator()) &&
-        !info[i].mAdapterVendor.Equals(adapterVendorID[infoIndex],
-                                       nsCaseInsensitiveStringComparator())) {
+    if (!DoesVendorMatch(info[i].mAdapterVendor, adapterVendorID[infoIndex])) {
+      continue;
+    }
+
+    if (!DoesDriverVendorMatch(info[i].mDriverVendor,
+                               adapterDriverVendor[infoIndex])) {
       continue;
     }
 
@@ -770,7 +780,7 @@ int32_t GfxInfoBase::FindBlocklistedDeviceInList(
       continue;
     }
 
-#if defined(XP_WIN) || defined(ANDROID)
+#if defined(XP_WIN) || defined(ANDROID) || defined(MOZ_X11)
     switch (info[i].mComparisonOp) {
       case DRIVER_LESS_THAN:
         match = driverVersion[infoIndex] < info[i].mDriverVersion;
@@ -880,8 +890,25 @@ int32_t GfxInfoBase::FindBlocklistedDeviceInList(
 
 void GfxInfoBase::SetFeatureStatus(
     const nsTArray<dom::GfxInfoFeatureStatus>& aFS) {
-  MOZ_ASSERT(!mFeatureStatus);
-  mFeatureStatus = new nsTArray<dom::GfxInfoFeatureStatus>(aFS);
+  MOZ_ASSERT(!sFeatureStatus);
+  sFeatureStatus = new nsTArray<dom::GfxInfoFeatureStatus>(aFS);
+}
+
+bool GfxInfoBase::DoesVendorMatch(const nsAString& aBlocklistVendor,
+                                  const nsAString& aAdapterVendor) {
+  return aBlocklistVendor.Equals(aAdapterVendor,
+                                 nsCaseInsensitiveStringComparator()) ||
+         aBlocklistVendor.Equals(GfxDriverInfo::GetDeviceVendor(VendorAll),
+                                 nsCaseInsensitiveStringComparator());
+}
+
+bool GfxInfoBase::DoesDriverVendorMatch(const nsAString& aBlocklistVendor,
+                                        const nsAString& aDriverVendor) {
+  return aBlocklistVendor.Equals(aDriverVendor,
+                                 nsCaseInsensitiveStringComparator()) ||
+         aBlocklistVendor.Equals(
+             GfxDriverInfo::GetDriverVendor(DriverVendorAll),
+             nsCaseInsensitiveStringComparator());
 }
 
 nsresult GfxInfoBase::GetFeatureStatusImpl(
@@ -899,7 +926,7 @@ nsresult GfxInfoBase::GetFeatureStatusImpl(
     return NS_OK;
   }
 
-  if (mShutdownOccurred) {
+  if (sShutdownOccurred) {
     // This is futile; we've already commenced shutdown and our blocklists have
     // been deleted. We may want to look into resurrecting the blocklist instead
     // but for now, just don't even go there.
@@ -930,8 +957,8 @@ nsresult GfxInfoBase::GetFeatureStatusImpl(
     status = FindBlocklistedDeviceInList(aDriverInfo, aSuggestedVersion,
                                          aFeature, aFailureId, os);
   } else {
-    if (!mDriverInfo) {
-      mDriverInfo = new nsTArray<GfxDriverInfo>();
+    if (!sDriverInfo) {
+      sDriverInfo = new nsTArray<GfxDriverInfo>();
     }
     status = FindBlocklistedDeviceInList(GetGfxDriverInfo(), aSuggestedVersion,
                                          aFeature, aFailureId, os);
@@ -988,7 +1015,10 @@ void GfxInfoBase::EvaluateDownloadedBlacklist(
                         nsIGfxInfo::FEATURE_WEBGL2,
                         nsIGfxInfo::FEATURE_ADVANCED_LAYERS,
                         nsIGfxInfo::FEATURE_D3D11_KEYED_MUTEX,
+                        nsIGfxInfo::FEATURE_WEBRENDER,
                         nsIGfxInfo::FEATURE_DX_NV12,
+                        nsIGfxInfo::FEATURE_DX_P010,
+                        nsIGfxInfo::FEATURE_DX_P016,
                         0};
 
   // For every feature we know about, we evaluate whether this blacklist has a
@@ -1074,16 +1104,8 @@ NS_IMETHODIMP GfxInfoBase::GetFailures(uint32_t* failureCount,
 
   if (*failureCount != 0) {
     *failures = (char**)moz_xmalloc(*failureCount * sizeof(char*));
-    if (!(*failures)) {
-      return NS_ERROR_OUT_OF_MEMORY;
-    }
     if (indices) {
       *indices = (int32_t*)moz_xmalloc(*failureCount * sizeof(int32_t));
-      if (!(*indices)) {
-        free(*failures);
-        *failures = nullptr;
-        return NS_ERROR_OUT_OF_MEMORY;
-      }
     }
 
     /* copy over the failure messages into the array we just allocated */
@@ -1091,15 +1113,8 @@ NS_IMETHODIMP GfxInfoBase::GetFailures(uint32_t* failureCount,
     uint32_t i = 0;
     for (it = loggedStrings.begin(); it != loggedStrings.end(); ++it, i++) {
       (*failures)[i] =
-          (char*)nsMemory::Clone(Get<1>(*it).c_str(), Get<1>(*it).size() + 1);
+          (char*)moz_xmemdup(Get<1>(*it).c_str(), Get<1>(*it).size() + 1);
       if (indices) (*indices)[i] = Get<0>(*it);
-
-      if (!(*failures)[i]) {
-        /* <sarcasm> I'm too afraid to use an inline function... </sarcasm> */
-        NS_FREE_XPCOM_ALLOCATED_POINTER_ARRAY(i, (*failures));
-        *failureCount = i;
-        return NS_ERROR_OUT_OF_MEMORY;
-      }
     }
   }
 
@@ -1168,6 +1183,30 @@ void GfxInfoBase::RemoveCollector(GfxInfoCollectorBase* collector) {
     delete sCollectors;
     sCollectors = nullptr;
   }
+}
+
+nsresult GfxInfoBase::FindMonitors(JSContext* aCx, JS::HandleObject aOutArray) {
+  // If we have no platform specific implementation for detecting monitors, we
+  // can just get the screen size from gfxPlatform as the best guess.
+  if (!gfxPlatform::Initialized()) {
+    return NS_OK;
+  }
+
+  // If the screen size is empty, we are probably in xpcshell.
+  gfx::IntSize screenSize = gfxPlatform::GetPlatform()->GetScreenSize();
+
+  JS::Rooted<JSObject*> obj(aCx, JS_NewPlainObject(aCx));
+
+  JS::Rooted<JS::Value> screenWidth(aCx, JS::Int32Value(screenSize.width));
+  JS_SetProperty(aCx, obj, "screenWidth", screenWidth);
+
+  JS::Rooted<JS::Value> screenHeight(aCx, JS::Int32Value(screenSize.height));
+  JS_SetProperty(aCx, obj, "screenHeight", screenHeight);
+
+  JS::Rooted<JS::Value> element(aCx, JS::ObjectValue(*obj));
+  JS_SetElement(aCx, aOutArray, 0, element);
+
+  return NS_OK;
 }
 
 NS_IMETHODIMP
@@ -1358,15 +1397,20 @@ void GfxInfoBase::DescribeFeatures(JSContext* aCx, JS::Handle<JSObject*> aObj) {
   JS::Rooted<JSObject*> obj(aCx);
 
   gfx::FeatureStatus gpuProcess = gfxConfig::GetValue(Feature::GPU_PROCESS);
-  InitFeatureObject(aCx, aObj, "gpuProcess", FEATURE_GPU_PROCESS,
-                    Some(gpuProcess), &obj);
+  InitFeatureObject(aCx, aObj, "gpuProcess", gpuProcess, &obj);
+
+  gfx::FeatureStatus wrQualified =
+      gfxConfig::GetValue(Feature::WEBRENDER_QUALIFIED);
+  InitFeatureObject(aCx, aObj, "wrQualified", wrQualified, &obj);
+
+  gfx::FeatureStatus webrender = gfxConfig::GetValue(Feature::WEBRENDER);
+  InitFeatureObject(aCx, aObj, "webrender", webrender, &obj);
 
   // Only include AL if the platform attempted to use it.
   gfx::FeatureStatus advancedLayers =
       gfxConfig::GetValue(Feature::ADVANCED_LAYERS);
   if (advancedLayers != FeatureStatus::Unused) {
-    InitFeatureObject(aCx, aObj, "advancedLayers", FEATURE_ADVANCED_LAYERS,
-                      Some(advancedLayers), &obj);
+    InitFeatureObject(aCx, aObj, "advancedLayers", advancedLayers, &obj);
 
     if (gfxConfig::UseFallback(Fallback::NO_CONSTANT_BUFFER_OFFSETTING)) {
       JS::Rooted<JS::Value> trueVal(aCx, JS::BooleanValue(true));
@@ -1375,29 +1419,22 @@ void GfxInfoBase::DescribeFeatures(JSContext* aCx, JS::Handle<JSObject*> aObj) {
   }
 }
 
-bool GfxInfoBase::InitFeatureObject(
-    JSContext* aCx, JS::Handle<JSObject*> aContainer, const char* aName,
-    int32_t aFeature, const Maybe<mozilla::gfx::FeatureStatus>& aFeatureStatus,
-    JS::MutableHandle<JSObject*> aOutObj) {
+bool GfxInfoBase::InitFeatureObject(JSContext* aCx,
+                                    JS::Handle<JSObject*> aContainer,
+                                    const char* aName,
+                                    mozilla::gfx::FeatureStatus& aFeatureStatus,
+                                    JS::MutableHandle<JSObject*> aOutObj) {
   JS::Rooted<JSObject*> obj(aCx, JS_NewPlainObject(aCx));
   if (!obj) {
     return false;
   }
 
-  nsCString failureId = NS_LITERAL_CSTRING("OK");
-  int32_t unused;
-  if (!NS_SUCCEEDED(GetFeatureStatus(aFeature, failureId, &unused))) {
-    return false;
-  }
-
   // Set "status".
-  if (aFeatureStatus) {
-    const char* status = FeatureStatusToString(aFeatureStatus.value());
+  const char* status = FeatureStatusToString(aFeatureStatus);
 
-    JS::Rooted<JSString*> str(aCx, JS_NewStringCopyZ(aCx, status));
-    JS::Rooted<JS::Value> val(aCx, JS::StringValue(str));
-    JS_SetProperty(aCx, obj, "status", val);
-  }
+  JS::Rooted<JSString*> str(aCx, JS_NewStringCopyZ(aCx, status));
+  JS::Rooted<JS::Value> val(aCx, JS::StringValue(str));
+  JS_SetProperty(aCx, obj, "status", val);
 
   // Add the feature object to the container.
   {
@@ -1450,6 +1487,12 @@ GfxInfoBase::GetUsesTiling(bool* aUsesTiling) {
 }
 
 NS_IMETHODIMP
+GfxInfoBase::GetContentUsesTiling(bool* aUsesTiling) {
+  *aUsesTiling = gfxPlatform::GetPlatform()->ContentUsesTiling();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 GfxInfoBase::GetOffMainThreadPaintEnabled(bool* aOffMainThreadPaintEnabled) {
   *aOffMainThreadPaintEnabled = gfxConfig::IsEnabled(Feature::OMTP);
   return NS_OK;
@@ -1464,6 +1507,12 @@ GfxInfoBase::GetOffMainThreadPaintWorkerCount(
   } else {
     *aOffMainThreadPaintWorkerCount = 0;
   }
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+GfxInfoBase::GetTargetFrameRate(uint32_t* aTargetFrameRate) {
+  *aTargetFrameRate = gfxPlatform::TargetFrameRate();
   return NS_OK;
 }
 

@@ -1,4 +1,4 @@
-/* -*- Mode: c++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*- */
+/* -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 4; -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -307,9 +307,10 @@ class DXInterop2Device : public RefCounted<DXInterop2Device> {
 ////////////////////////////////////////////////////////////////////////////////
 // Shared Surface
 
-/*static*/ UniquePtr<SharedSurface_D3D11Interop>
-SharedSurface_D3D11Interop::Create(DXInterop2Device* interop, GLContext* gl,
-                                   const gfx::IntSize& size, bool hasAlpha) {
+/*static*/
+UniquePtr<SharedSurface_D3D11Interop> SharedSurface_D3D11Interop::Create(
+    DXInterop2Device* interop, GLContext* gl, const gfx::IntSize& size,
+    bool hasAlpha) {
   const auto& d3d = interop->mD3D;
 
   // Create a texture in case we need to readback.
@@ -396,7 +397,7 @@ SharedSurface_D3D11Interop::Create(DXInterop2Device* interop, GLContext* gl,
   UniquePtr<ptrT> ret(new ptrT(gl, size, hasAlpha, prodTex, interopFB,
                                interopRB, interop, lockHandle, texD3D,
                                dxgiHandle));
-  return Move(ret);
+  return ret;
 }
 
 SharedSurface_D3D11Interop::SharedSurface_D3D11Interop(
@@ -465,18 +466,18 @@ bool SharedSurface_D3D11Interop::ToSurfaceDescriptor(
     layers::SurfaceDescriptor* const out_descriptor) {
   const auto format =
       (mHasAlpha ? gfx::SurfaceFormat::B8G8R8A8 : gfx::SurfaceFormat::B8G8R8X8);
-  *out_descriptor =
-      layers::SurfaceDescriptorD3D10(WindowsHandle(mDXGIHandle), format, mSize);
+  *out_descriptor = layers::SurfaceDescriptorD3D10(
+      WindowsHandle(mDXGIHandle), format, mSize, gfx::YUVColorSpace::UNKNOWN);
   return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Factory
 
-/*static*/ UniquePtr<SurfaceFactory_D3D11Interop>
-SurfaceFactory_D3D11Interop::Create(GLContext* gl, const SurfaceCaps& caps,
-                                    layers::LayersIPCChannel* allocator,
-                                    const layers::TextureFlags& flags) {
+/*static*/
+UniquePtr<SurfaceFactory_D3D11Interop> SurfaceFactory_D3D11Interop::Create(
+    GLContext* gl, const SurfaceCaps& caps, layers::LayersIPCChannel* allocator,
+    const layers::TextureFlags& flags) {
   WGLLibrary* wgl = &sWGLLib;
   if (!wgl || !wgl->HasDXInterop2()) return nullptr;
 
@@ -488,7 +489,7 @@ SurfaceFactory_D3D11Interop::Create(GLContext* gl, const SurfaceCaps& caps,
 
   typedef SurfaceFactory_D3D11Interop ptrT;
   UniquePtr<ptrT> ret(new ptrT(gl, caps, allocator, flags, interop));
-  return Move(ret);
+  return ret;
 }
 
 SurfaceFactory_D3D11Interop::SurfaceFactory_D3D11Interop(

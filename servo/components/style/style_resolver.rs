@@ -1,22 +1,23 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 //! Style resolution for a given element or pseudo-element.
 
-use applicable_declarations::ApplicableDeclarationList;
-use context::{CascadeInputs, ElementCascadeInputs, StyleContext};
-use data::{ElementStyles, EagerPseudoStyles};
-use dom::TElement;
-use log::LogLevel::Trace;
-use matching::MatchMethods;
-use properties::{AnimationRules, ComputedValues};
-use properties::longhands::display::computed_value::T as Display;
-use rule_tree::StrongRuleNode;
-use selector_parser::{PseudoElement, SelectorImpl};
-use selectors::matching::{ElementSelectorFlags, MatchingContext, MatchingMode, VisitedHandlingMode};
+use crate::applicable_declarations::ApplicableDeclarationList;
+use crate::context::{CascadeInputs, ElementCascadeInputs, StyleContext};
+use crate::data::{EagerPseudoStyles, ElementStyles};
+use crate::dom::TElement;
+use crate::matching::MatchMethods;
+use crate::properties::longhands::display::computed_value::T as Display;
+use crate::properties::{AnimationRules, ComputedValues};
+use crate::rule_tree::StrongRuleNode;
+use crate::selector_parser::{PseudoElement, SelectorImpl};
+use crate::stylist::RuleInclusion;
+use log::Level::Trace;
+use selectors::matching::{ElementSelectorFlags, MatchingContext};
+use selectors::matching::{MatchingMode, VisitedHandlingMode};
 use servo_arc::Arc;
-use stylist::RuleInclusion;
 
 /// Whether pseudo-elements should be resolved or not.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -99,26 +100,31 @@ where
         layout_parent_style = Some(layout_parent_data.styles.primary());
     }
 
-    f(parent_style.map(|x| &**x), layout_parent_style.map(|s| &**s))
+    f(
+        parent_style.map(|x| &**x),
+        layout_parent_style.map(|s| &**s),
+    )
 }
 
 fn eager_pseudo_is_definitely_not_generated(
     pseudo: &PseudoElement,
     style: &ComputedValues,
 ) -> bool {
-    use properties::computed_value_flags::ComputedValueFlags;
+    use crate::properties::computed_value_flags::ComputedValueFlags;
 
     if !pseudo.is_before_or_after() {
         return false;
     }
 
     if !style.flags.intersects(ComputedValueFlags::INHERITS_DISPLAY) &&
-       style.get_box().clone_display() == Display::None {
+        style.get_box().clone_display() == Display::None
+    {
         return true;
     }
 
     if !style.flags.intersects(ComputedValueFlags::INHERITS_CONTENT) &&
-       style.ineffective_content_property() {
+        style.ineffective_content_property()
+    {
         return true;
     }
 
@@ -153,21 +159,19 @@ where
         parent_style: Option<&ComputedValues>,
         layout_parent_style: Option<&ComputedValues>,
     ) -> PrimaryStyle {
-        let primary_results =
-            self.match_primary(VisitedHandlingMode::AllLinksUnvisited);
+        let primary_results = self.match_primary(VisitedHandlingMode::AllLinksUnvisited);
 
-        let inside_link =
-            parent_style.map_or(false, |s| s.visited_style().is_some());
+        let inside_link = parent_style.map_or(false, |s| s.visited_style().is_some());
 
-        let visited_rules =
-            if self.context.shared.visited_styles_enabled &&
-                (inside_link || self.element.is_link()) {
-                let visited_matching_results =
-                    self.match_primary(VisitedHandlingMode::RelevantLinkVisited);
-                Some(visited_matching_results.rule_node)
-            } else {
-                None
-            };
+        let visited_rules = if self.context.shared.visited_styles_enabled &&
+            (inside_link || self.element.is_link())
+        {
+            let visited_matching_results =
+                self.match_primary(VisitedHandlingMode::RelevantLinkVisited);
+            Some(visited_matching_results.rule_node)
+        } else {
+            None
+        };
 
         self.cascade_primary_style(
             CascadeInputs {
@@ -187,8 +191,7 @@ where
     ) -> PrimaryStyle {
         // Before doing the cascade, check the sharing cache and see if we can
         // reuse the style via rule node identity.
-        let may_reuse =
-            !self.element.is_native_anonymous() &&
+        let may_reuse = !self.element.is_in_native_anonymous_subtree() &&
             parent_style.is_some() &&
             inputs.rules.is_some();
 
@@ -226,28 +229,27 @@ where
         parent_style: Option<&ComputedValues>,
         layout_parent_style: Option<&ComputedValues>,
     ) -> ResolvedElementStyles {
-        let primary_style =
-            self.resolve_primary_style(parent_style, layout_parent_style);
+        let primary_style = self.resolve_primary_style(parent_style, layout_parent_style);
 
         let mut pseudo_styles = EagerPseudoStyles::default();
 
         if self.element.implemented_pseudo_element().is_none() {
-            let layout_parent_style_for_pseudo =
-                if primary_style.style().is_display_contents() {
-                    layout_parent_style
-                } else {
-                    Some(primary_style.style())
-                };
+            let layout_parent_style_for_pseudo = if primary_style.style().is_display_contents() {
+                layout_parent_style
+            } else {
+                Some(primary_style.style())
+            };
             SelectorImpl::each_eagerly_cascaded_pseudo_element(|pseudo| {
                 let pseudo_style = self.resolve_pseudo_style(
                     &pseudo,
                     &primary_style,
-                    layout_parent_style_for_pseudo
+                    layout_parent_style_for_pseudo,
                 );
 
                 if let Some(style) = pseudo_style {
                     if !matches!(self.pseudo_resolution, PseudoElementResolution::Force) &&
-                       eager_pseudo_is_definitely_not_generated(&pseudo, &style.0) {
+                        eager_pseudo_is_definitely_not_generated(&pseudo, &style.0)
+                    {
                         return;
                     }
                     pseudo_styles.set(&pseudo, style.0);
@@ -279,7 +281,7 @@ where
                 inputs,
                 parent_style,
                 layout_parent_style,
-                /* pseudo = */ None
+                /* pseudo = */ None,
             )
         })
     }
@@ -318,7 +320,7 @@ where
             &self.context.shared.guards,
             &values,
             pseudo,
-            &conditions
+            &conditions,
         );
 
         ResolvedStyle(values)
@@ -330,35 +332,32 @@ where
         inputs: ElementCascadeInputs,
     ) -> ResolvedElementStyles {
         with_default_parent_styles(self.element, move |parent_style, layout_parent_style| {
-            let primary_style = self.cascade_primary_style(
-                inputs.primary,
-                parent_style,
-                layout_parent_style,
-            );
+            let primary_style =
+                self.cascade_primary_style(inputs.primary, parent_style, layout_parent_style);
 
             let mut pseudo_styles = EagerPseudoStyles::default();
             if let Some(mut pseudo_array) = inputs.pseudos.into_array() {
-                let layout_parent_style_for_pseudo =
-                    if primary_style.style().is_display_contents() {
-                        layout_parent_style
-                    } else {
-                        Some(primary_style.style())
-                    };
+                let layout_parent_style_for_pseudo = if primary_style.style().is_display_contents()
+                {
+                    layout_parent_style
+                } else {
+                    Some(primary_style.style())
+                };
 
                 for (i, inputs) in pseudo_array.iter_mut().enumerate() {
                     if let Some(inputs) = inputs.take() {
                         let pseudo = PseudoElement::from_eager_index(i);
 
-                        let style =
-                            self.cascade_style_and_visited(
-                                inputs,
-                                Some(primary_style.style()),
-                                layout_parent_style_for_pseudo,
-                                Some(&pseudo),
-                            );
+                        let style = self.cascade_style_and_visited(
+                            inputs,
+                            Some(primary_style.style()),
+                            layout_parent_style_for_pseudo,
+                            Some(&pseudo),
+                        );
 
                         if !matches!(self.pseudo_resolution, PseudoElementResolution::Force) &&
-                           eager_pseudo_is_definitely_not_generated(&pseudo, &style.0) {
+                            eager_pseudo_is_definitely_not_generated(&pseudo, &style.0)
+                        {
                             continue;
                         }
 
@@ -383,7 +382,7 @@ where
         let rules = self.match_pseudo(
             originating_element_style.style(),
             pseudo,
-            VisitedHandlingMode::AllLinksUnvisited
+            VisitedHandlingMode::AllLinksUnvisited,
         )?;
 
         let mut visited_rules = None;
@@ -398,7 +397,7 @@ where
         Some(self.cascade_style_and_visited(
             CascadeInputs {
                 rules: Some(rules),
-                visited_rules
+                visited_rules,
             },
             Some(originating_element_style.style()),
             layout_parent_style,
@@ -406,25 +405,23 @@ where
         ))
     }
 
-    fn match_primary(
-        &mut self,
-        visited_handling: VisitedHandlingMode,
-    ) -> MatchingResults {
-        debug!("Match primary for {:?}, visited: {:?}",
-               self.element, visited_handling);
+    fn match_primary(&mut self, visited_handling: VisitedHandlingMode) -> MatchingResults {
+        debug!(
+            "Match primary for {:?}, visited: {:?}",
+            self.element, visited_handling
+        );
         let mut applicable_declarations = ApplicableDeclarationList::new();
 
         let map = &mut self.context.thread_local.selector_flags;
         let bloom_filter = self.context.thread_local.bloom_filter.filter();
         let nth_index_cache = &mut self.context.thread_local.nth_index_cache;
-        let mut matching_context =
-            MatchingContext::new_for_visited(
-                MatchingMode::Normal,
-                Some(bloom_filter),
-                Some(nth_index_cache),
-                visited_handling,
-                self.context.shared.quirks_mode(),
-            );
+        let mut matching_context = MatchingContext::new_for_visited(
+            MatchingMode::Normal,
+            Some(bloom_filter),
+            Some(nth_index_cache),
+            visited_handling,
+            self.context.shared.quirks_mode(),
+        );
 
         let stylist = &self.context.shared.stylist;
         let implemented_pseudo = self.element.implemented_pseudo_element();
@@ -451,10 +448,9 @@ where
         // FIXME(emilio): This is a hack for animations, and should go away.
         self.element.unset_dirty_style_attribute();
 
-        let rule_node = stylist.rule_tree().compute_rule_node(
-            &mut applicable_declarations,
-            &self.context.shared.guards
-        );
+        let rule_node = stylist
+            .rule_tree()
+            .compute_rule_node(&mut applicable_declarations, &self.context.shared.guards);
 
         if log_enabled!(Trace) {
             trace!("Matched rules for {:?}:", self.element);
@@ -466,7 +462,7 @@ where
             }
         }
 
-        MatchingResults { rule_node, }
+        MatchingResults { rule_node }
     }
 
     fn match_pseudo(
@@ -475,31 +471,37 @@ where
         pseudo_element: &PseudoElement,
         visited_handling: VisitedHandlingMode,
     ) -> Option<StrongRuleNode> {
-        debug!("Match pseudo {:?} for {:?}, visited: {:?}",
-               self.element, pseudo_element, visited_handling);
+        debug!(
+            "Match pseudo {:?} for {:?}, visited: {:?}",
+            self.element, pseudo_element, visited_handling
+        );
         debug_assert!(pseudo_element.is_eager());
-        debug_assert!(self.element.implemented_pseudo_element().is_none(),
-                      "Element pseudos can't have any other pseudo.");
+        debug_assert!(
+            self.element.implemented_pseudo_element().is_none(),
+            "Element pseudos can't have any other pseudo."
+        );
 
         let mut applicable_declarations = ApplicableDeclarationList::new();
 
         let stylist = &self.context.shared.stylist;
 
-        if !self.element.may_generate_pseudo(pseudo_element, originating_element_style) {
+        if !self
+            .element
+            .may_generate_pseudo(pseudo_element, originating_element_style)
+        {
             return None;
         }
 
         let bloom_filter = self.context.thread_local.bloom_filter.filter();
         let nth_index_cache = &mut self.context.thread_local.nth_index_cache;
 
-        let mut matching_context =
-            MatchingContext::new_for_visited(
-                MatchingMode::ForStatelessPseudoElement,
-                Some(bloom_filter),
-                Some(nth_index_cache),
-                visited_handling,
-                self.context.shared.quirks_mode(),
-            );
+        let mut matching_context = MatchingContext::new_for_visited(
+            MatchingMode::ForStatelessPseudoElement,
+            Some(bloom_filter),
+            Some(nth_index_cache),
+            visited_handling,
+            self.context.shared.quirks_mode(),
+        );
 
         let map = &mut self.context.thread_local.selector_flags;
         let resolving_element = self.element;
@@ -518,17 +520,16 @@ where
             self.rule_inclusion,
             &mut applicable_declarations,
             &mut matching_context,
-            &mut set_selector_flags
+            &mut set_selector_flags,
         );
 
         if applicable_declarations.is_empty() {
             return None;
         }
 
-        let rule_node = stylist.rule_tree().compute_rule_node(
-            &mut applicable_declarations,
-            &self.context.shared.guards
-        );
+        let rule_node = stylist
+            .rule_tree()
+            .compute_rule_node(&mut applicable_declarations, &self.context.shared.guards);
 
         Some(rule_node)
     }

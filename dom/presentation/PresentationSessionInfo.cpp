@@ -6,20 +6,21 @@
 
 #include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/HTMLIFrameElementBinding.h"
-#include "mozilla/dom/TabParent.h"
+#include "mozilla/dom/BrowserParent.h"
 #include "mozilla/Logging.h"
 #include "mozilla/Move.h"
 #include "mozilla/Preferences.h"
-#include "mozilla/Services.h"
 #include "nsContentUtils.h"
 #include "nsGlobalWindow.h"
 #include "nsIDocShell.h"
 #include "nsFrameLoader.h"
+#include "nsFrameLoaderOwner.h"
 #include "nsIMutableArray.h"
 #include "nsINetAddr.h"
 #include "nsISocketTransport.h"
 #include "nsISupportsPrimitives.h"
 #include "nsNetCID.h"
+#include "nsQueryObject.h"
 #include "nsServiceManagerUtils.h"
 #include "nsThreadUtils.h"
 #include "PresentationLog.h"
@@ -27,7 +28,7 @@
 #include "PresentationSessionInfo.h"
 
 #ifdef MOZ_WIDGET_ANDROID
-#include "nsIPresentationNetworkHelper.h"
+#  include "nsIPresentationNetworkHelper.h"
 #endif  // MOZ_WIDGET_ANDROID
 
 using namespace mozilla;
@@ -194,13 +195,15 @@ NS_IMPL_ISUPPORTS(PresentationSessionInfo,
                   nsIPresentationControlChannelListener,
                   nsIPresentationSessionTransportBuilderListener);
 
-/* virtual */ nsresult PresentationSessionInfo::Init(
+/* virtual */
+nsresult PresentationSessionInfo::Init(
     nsIPresentationControlChannel* aControlChannel) {
   SetControlChannel(aControlChannel);
   return NS_OK;
 }
 
-/* virtual */ void PresentationSessionInfo::Shutdown(nsresult aReason) {
+/* virtual */
+void PresentationSessionInfo::Shutdown(nsresult aReason) {
   PRES_DEBUG("%s:id[%s], reason[%" PRIx32 "], role[%d]\n", __func__,
              NS_ConvertUTF16toUTF8(mSessionId).get(),
              static_cast<uint32_t>(aReason), mRole);
@@ -269,7 +272,7 @@ nsresult PresentationSessionInfo::SendBinaryMsg(const nsACString& aData) {
   return mTransport->SendBinaryMsg(aData);
 }
 
-nsresult PresentationSessionInfo::SendBlob(nsIDOMBlob* aBlob) {
+nsresult PresentationSessionInfo::SendBlob(Blob* aBlob) {
   if (NS_WARN_IF(!IsSessionReady())) {
     return NS_ERROR_DOM_INVALID_STATE_ERR;
   }
@@ -337,7 +340,8 @@ nsresult PresentationSessionInfo::ReplyError(nsresult aError) {
   return UntrackFromService();
 }
 
-/* virtual */ nsresult PresentationSessionInfo::UntrackFromService() {
+/* virtual */
+nsresult PresentationSessionInfo::UntrackFromService() {
   nsCOMPtr<nsIPresentationService> service =
       do_GetService(PRESENTATION_SERVICE_CONTRACTID);
   if (NS_WARN_IF(!service)) {
@@ -361,16 +365,11 @@ nsPIDOMWindowInner* PresentationSessionInfo::GetWindow() {
     return nullptr;
   }
 
-  auto window = nsGlobalWindowInner::GetInnerWindowWithId(windowId);
-  if (!window) {
-    return nullptr;
-  }
-
-  return window->AsInner();
+  return nsGlobalWindowInner::GetInnerWindowWithId(windowId);
 }
 
-/* virtual */ bool PresentationSessionInfo::IsAccessible(
-    base::ProcessId aProcessId) {
+/* virtual */
+bool PresentationSessionInfo::IsAccessible(base::ProcessId aProcessId) {
   // No restriction by default.
   return true;
 }
@@ -1490,33 +1489,32 @@ void PresentationPresentingInfo::ResolvedCallback(
     return;
   }
 
-  nsCOMPtr<nsIFrameLoaderOwner> owner =
-      do_QueryInterface((nsIFrameLoaderOwner*)frame);
+  RefPtr<nsFrameLoaderOwner> owner = do_QueryObject(frame);
   if (NS_WARN_IF(!owner)) {
     ReplyError(NS_ERROR_DOM_OPERATION_ERR);
     return;
   }
 
-  nsCOMPtr<nsIFrameLoader> frameLoader = owner->GetFrameLoader();
+  RefPtr<nsFrameLoader> frameLoader = owner->GetFrameLoader();
   if (NS_WARN_IF(!frameLoader)) {
     ReplyError(NS_ERROR_DOM_OPERATION_ERR);
     return;
   }
 
-  RefPtr<TabParent> tabParent = TabParent::GetFrom(frameLoader);
-  if (tabParent) {
+  RefPtr<BrowserParent> browserParent = BrowserParent::GetFrom(frameLoader);
+  if (browserParent) {
     // OOP frame
     // Notify the content process that a receiver page has launched, so it can
     // start monitoring the loading progress.
-    mContentParent = tabParent->Manager();
-    Unused << NS_WARN_IF(
-        !static_cast<ContentParent*>(mContentParent.get())
-             ->SendNotifyPresentationReceiverLaunched(tabParent, mSessionId));
+    mContentParent = browserParent->Manager();
+    Unused << NS_WARN_IF(!static_cast<ContentParent*>(mContentParent.get())
+                              ->SendNotifyPresentationReceiverLaunched(
+                                  browserParent, mSessionId));
   } else {
     // In-process frame
-    nsCOMPtr<nsIDocShell> docShell;
-    rv = frameLoader->GetDocShell(getter_AddRefs(docShell));
-    if (NS_WARN_IF(NS_FAILED(rv))) {
+    IgnoredErrorResult error;
+    nsCOMPtr<nsIDocShell> docShell = frameLoader->GetDocShell(error);
+    if (NS_WARN_IF(error.Failed())) {
       ReplyError(NS_ERROR_DOM_OPERATION_ERR);
       return;
     }
